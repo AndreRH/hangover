@@ -1,0 +1,6 @@
+[submodule "wine"]
+	path = wine
+	url = ssh://stefandoesinger.ddns.net/~git/hangover/wine
+[submodule "qemu"]
+	path = qemu
+	url = ssh://stefandoesinger.ddns.net/~git/hangover/qemu
