@@ -19,16 +19,14 @@
 /* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
 
 #include <windows.h>
+#include <stdio.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "kernel32.h"
 
 #ifndef QEMU_DLL_GUEST
-void qemu_dll_register(const struct qemu_op *op)
-{
-}
-
+const struct qemu_op *qemu_op;
 #endif
 
 struct qemu_exitprocess
@@ -38,6 +36,7 @@ struct qemu_exitprocess
 };
 
 #ifdef QEMU_DLL_GUEST
+
 WINBASEAPI DECLSPEC_NORETURN void WINAPI ExitProcess(UINT exitcode)
 {
     struct qemu_exitprocess call;
@@ -46,11 +45,30 @@ WINBASEAPI DECLSPEC_NORETURN void WINAPI ExitProcess(UINT exitcode)
     qemu_syscall(&call.super);
     while(1); /* The syscall does not exit, but gcc does not know that. */
 }
+
 #else
+
 void qemu_ExitProcess(struct qemu_syscall *call)
 {
     struct qemu_exitprocess *c = (struct qemu_exitprocess *)call;
+    fprintf(stderr, "Hello qemu_ExitProcess\n");
     ExitProcess(c->exitcode);
+}
+
+#endif
+
+#ifndef QEMU_DLL_GUEST
+
+static const syscall_handler dll_functions[] =
+{
+    qemu_ExitProcess,
+};
+
+const WINAPI syscall_handler *qemu_dll_register(const struct qemu_op *op, uint32_t *dll_num)
+{
+    qemu_op = op;
+    *dll_num = QEMU_CURRENT_DLL;
+    return dll_functions;
 }
 
 #endif
