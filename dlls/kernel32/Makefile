@@ -3,17 +3,17 @@ CFLAGS=-I../include -I../../qemu/include -DQEMU_CURRENT_DLL=$(CURRENT_DLL)
 
 all: kernel32.dll qemu_kernel32.dll.so
 
-kernel32.dll: process_g.o
-	x86_64-w64-mingw32-ld -shared process_g.o -o kernel32.dll -nostdlib
+kernel32.dll: process_g.o main_g.o
+	x86_64-w64-mingw32-ld -shared *_g.o -o kernel32.dll -nostdlib
 
-qemu_kernel32.dll.so: process_h.o kernel32.spec
-	winegcc -shared kernel32.spec process_h.o -o qemu_kernel32.dll.so
+qemu_kernel32.dll.so: process_h.o main_h.o kernel32.spec
+	winegcc -shared kernel32.spec *_h.o -o qemu_kernel32.dll.so
 
-process_g.o: kernel32.h process.c
-	x86_64-w64-mingw32-gcc process.c -c -o process_g.o $(CFLAGS) -DQEMU_DLL_GUEST
+%_g.o: %.c kernel32.h
+	x86_64-w64-mingw32-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
-process_h.o: kernel32.h process.c
-	winegcc process.c -c -o process_h.o $(CFLAGS)
+%_h.o: %.c kernel32.h
+	winegcc $< -c -o $@ $(CFLAGS)
 
 clean:
 	rm -rf *o *.dll *.so
