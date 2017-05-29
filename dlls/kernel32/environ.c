@@ -25,30 +25,30 @@
 #include "dll_list.h"
 #include "kernel32.h"
 
-struct qemu_ExitProcess
+struct qemu_GetStdHandle
 {
     struct qemu_syscall super;
-    uint64_t exitcode;
+    uint64_t std_handle;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DECLSPEC_NORETURN void WINAPI ExitProcess(UINT exitcode)
+WINBASEAPI HANDLE WINAPI GetStdHandle(DWORD std_handle)
 {
-    struct qemu_ExitProcess call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_EXITPROCESS);
-    call.exitcode = exitcode;
+    struct qemu_GetStdHandle call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSTDHANDLE);
+    call.std_handle = std_handle;
     qemu_syscall(&call.super);
-    while(1); /* The syscall does not exit, but gcc does not know that. */
+    return (HANDLE)call.super.iret;
 }
 
 #else
 
-void qemu_ExitProcess(struct qemu_syscall *call)
+void qemu_GetStdHandle(struct qemu_syscall *call)
 {
-    struct qemu_ExitProcess *c = (struct qemu_ExitProcess *)call;
-    fprintf(stderr, "Hello qemu_ExitProcess\n");
-    ExitProcess(c->exitcode);
+    struct qemu_GetStdHandle *c = (struct qemu_GetStdHandle *)call;
+    fprintf(stderr, "Hello qemu_GetStdHandle\n");
+    c->super.iret = (uint64_t)GetStdHandle(c->std_handle);
 }
 
 #endif

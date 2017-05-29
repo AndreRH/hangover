@@ -32,6 +32,7 @@ const struct qemu_op *qemu_op;
 static const syscall_handler dll_functions[] =
 {
     qemu_ExitProcess,
+    qemu_GetStdHandle,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_op *op, uint32_t *dll_num)
