@@ -25,22 +25,42 @@
 #include "dll_list.h"
 #include "kernel32.h"
 
-#ifndef QEMU_DLL_GUEST
+/* FIXME */
+#define g2h(a)((void *)(a))
 
-const struct qemu_op *qemu_op;
-
-static const syscall_handler dll_functions[] =
+struct qemu_WriteFile
 {
-    qemu_ExitProcess,
-    qemu_GetStdHandle,
-    qemu_WriteFile,
+    struct qemu_syscall super;
+    uint64_t file;
+    uint64_t buffer;
+    uint64_t to_write;
+    uint64_t written;
+    uint64_t ovl;
 };
 
-const WINAPI syscall_handler *qemu_dll_register(const struct qemu_op *op, uint32_t *dll_num)
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI WINBOOL WINAPI WriteFile (HANDLE file, const void *buffer, DWORD to_write, DWORD *written, OVERLAPPED *ovl)
 {
-    qemu_op = op;
-    *dll_num = QEMU_CURRENT_DLL;
-    return dll_functions;
+    struct qemu_WriteFile call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WRITEFILE);
+    call.file = (uint64_t)file;
+    call.buffer = (uint64_t)buffer;
+    call.to_write = to_write;
+    call.written = (uint64_t)written;
+    call.ovl = (uint64_t)ovl;
+    qemu_syscall(&call.super);
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WriteFile(struct qemu_syscall *call)
+{
+    struct qemu_WriteFile *c = (struct qemu_WriteFile *)call;
+    fprintf(stderr, "hello qemu_WriteFile\n");
+    c->super.iret = WriteFile((HANDLE)c->file, g2h(c->buffer), c->to_write, g2h(c->written), g2h(c->ovl));
 }
 
 #endif
+
