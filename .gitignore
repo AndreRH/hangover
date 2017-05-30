@@ -1,2 +1,5 @@
 build
-
+*_h.o
+*_g.o
+*.dll
+qemu_*.dll.so

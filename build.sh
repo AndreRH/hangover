@@ -26,10 +26,10 @@ mkdir -p $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
 mkdir -p $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
 
 # Build the wrapper DLLs. FIXME: automate this better.
-cd ../dlls/kernel32
-PATH=$DESTDIR/build/install/bin make
-ln -s kernel32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -s kernel32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+cd ../../dlls/kernel32
+PATH=$PATH:$DESTDIR/build/install/bin make
+ln -sf $PWD/kernel32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
+ln -sf $PWD/qemu_kernel32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
 
 # Cross-compile the Wine DLLs for x86 to quick-start higher level DLLs without having to wrap everything
 # Copy selected higher level DLLs into the guest DLL directory.
