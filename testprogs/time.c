@@ -12,6 +12,7 @@ void __stdcall WinMainCRTStartup()
     char buffer3[32] = "tickcount=0x";
     DWORD written;
     FILETIME time;
+    LARGE_INTEGER li;
 
     HANDLE stdout = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -27,6 +28,8 @@ void __stdcall WinMainCRTStartup()
     dword_to_char(buffer3 + 12, written);
     buffer3[12+8] = '\n';
     WriteFile(stdout, buffer3, sizeof(buffer), &written, NULL);
+
+    QueryPerformanceCounter(&li);
 
     ExitProcess(0);
 }

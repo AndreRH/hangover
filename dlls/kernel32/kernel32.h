@@ -19,6 +19,7 @@ enum kernel32_calls
     CALL_GETTICKCOUNT,
     CALL_INITIALIZECRITICALSECTION,
     CALL_LEAVECRITICALSECTION,
+    CALL_QUERYPERFORMANCECOUNTER,
     CALL_SETLASTERROR,
     CALL_WRITEFILE,
 };
@@ -42,6 +43,7 @@ void qemu_GetTickCount(struct qemu_syscall *call);
 void qemu_GetProcAddress(struct qemu_syscall *call);
 void qemu_InitializeCriticalSection(struct qemu_syscall *call);
 void qemu_LeaveCriticalSection(struct qemu_syscall *call);
+void qemu_QueryPerformanceCounter(struct qemu_syscall *call);
 void qemu_SetLastError(struct qemu_syscall *call);
 void qemu_WriteFile(struct qemu_syscall *call);
 #endif

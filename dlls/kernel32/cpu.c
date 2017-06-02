@@ -28,38 +28,31 @@
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
+#endif
 
-const struct qemu_ops *qemu_ops;
-
-static const syscall_handler dll_functions[] =
+struct qemu_QueryPerformanceCounter
 {
-    qemu_DeleteCriticalSection,
-    qemu_EnterCriticalSection,
-    qemu_ExitProcess,
-    qemu_GetCurrentProcess,
-    qemu_GetCurrentProcessId,
-    qemu_GetCurrentThreadId,
-    qemu_GetLastError,
-    qemu_GetModuleHandleA,
-    qemu_GetModuleHandleExA,
-    qemu_GetProcAddress,
-    qemu_GetStartupInfoA,
-    qemu_GetStdHandle,
-    qemu_GetSystemTimeAsFileTime,
-    qemu_GetTickCount,
-    qemu_InitializeCriticalSection,
-    qemu_LeaveCriticalSection,
-    qemu_QueryPerformanceCounter,
-    qemu_SetLastError,
-    qemu_WriteFile,
+    struct qemu_syscall super;
+    uint64_t count;
 };
 
-const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI QueryPerformanceCounter(LARGE_INTEGER *count)
 {
-    WINE_TRACE("Loading host-side kernel32 wrapper.\n");
-    qemu_ops = ops;
-    *dll_num = QEMU_CURRENT_DLL;
-    return dll_functions;
+    struct qemu_QueryPerformanceCounter call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_QUERYPERFORMANCECOUNTER);
+    call.count = (uint64_t)count;
+    qemu_syscall(&call.super);
+    return call.super.iret;
+}
+
+#else
+
+void qemu_QueryPerformanceCounter(struct qemu_syscall *call)
+{
+    struct qemu_QueryPerformanceCounter *c = (struct qemu_QueryPerformanceCounter *)call;
+    c->super.iret = QueryPerformanceCounter(QEMU_G2H(c->count));
 }
 
 #endif
