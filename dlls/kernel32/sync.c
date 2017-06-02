@@ -127,3 +127,30 @@ void qemu_LeaveCriticalSection(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_Sleep
+{
+    struct qemu_syscall super;
+    uint64_t timeout;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void WINAPI Sleep(DWORD timeout)
+{
+    struct qemu_Sleep call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SLEEP);
+    call.timeout = (uint64_t)timeout;
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_Sleep(struct qemu_syscall *call)
+{
+    struct qemu_Sleep *c = (struct qemu_Sleep *)call;
+    WINE_TRACE("\n");
+    Sleep(c->timeout);
+}
+
+#endif

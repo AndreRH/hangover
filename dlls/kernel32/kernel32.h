@@ -21,6 +21,7 @@ enum kernel32_calls
     CALL_LEAVECRITICALSECTION,
     CALL_QUERYPERFORMANCECOUNTER,
     CALL_SETLASTERROR,
+    CALL_SLEEP,
     CALL_WRITEFILE,
 };
 
@@ -45,6 +46,7 @@ void qemu_InitializeCriticalSection(struct qemu_syscall *call);
 void qemu_LeaveCriticalSection(struct qemu_syscall *call);
 void qemu_QueryPerformanceCounter(struct qemu_syscall *call);
 void qemu_SetLastError(struct qemu_syscall *call);
+void qemu_Sleep(struct qemu_syscall *call);
 void qemu_WriteFile(struct qemu_syscall *call);
 #endif
 

@@ -51,6 +51,7 @@ static const syscall_handler dll_functions[] =
     qemu_LeaveCriticalSection,
     qemu_QueryPerformanceCounter,
     qemu_SetLastError,
+    qemu_Sleep,
     qemu_WriteFile,
 };
 
