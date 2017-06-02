@@ -30,6 +30,32 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
+struct qemu_GetStartupInfo
+{
+    struct qemu_syscall super;
+    uint64_t info;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void WINAPI GetStartupInfoA(STARTUPINFOA *info)
+{
+    struct qemu_GetStartupInfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSTARTUPINFOA);
+    call.info = (uint64_t)info;
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_GetStartupInfoA(struct qemu_syscall *call)
+{
+    struct qemu_GetStartupInfo *c = (struct qemu_GetStartupInfo *)call;
+    GetStartupInfoA(QEMU_G2H(c->info));
+}
+
+#endif
+
 struct qemu_GetStdHandle
 {
     struct qemu_syscall super;

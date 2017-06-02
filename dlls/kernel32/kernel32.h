@@ -13,6 +13,7 @@ enum kernel32_calls
     CALL_GETMODULEHANDLEA,
     CALL_GETMODULEHANDLEEXA,
     CALL_GETPROCADDRESS,
+    CALL_GETSTARTUPINFOA,
     CALL_GETSTDHANDLE,
     CALL_INITIALIZECRITICALSECTION,
     CALL_LEAVECRITICALSECTION,
@@ -32,6 +33,7 @@ void qemu_GetCurrentThreadId(struct qemu_syscall *call);
 void qemu_GetLastError(struct qemu_syscall *call);
 void qemu_GetModuleHandleA(struct qemu_syscall *call);
 void qemu_GetModuleHandleExA(struct qemu_syscall *call);
+void qemu_GetStartupInfoA(struct qemu_syscall *call);
 void qemu_GetStdHandle(struct qemu_syscall *call);
 void qemu_GetProcAddress(struct qemu_syscall *call);
 void qemu_InitializeCriticalSection(struct qemu_syscall *call);

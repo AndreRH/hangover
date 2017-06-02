@@ -43,6 +43,7 @@ static const syscall_handler dll_functions[] =
     qemu_GetModuleHandleA,
     qemu_GetModuleHandleExA,
     qemu_GetProcAddress,
+    qemu_GetStartupInfoA,
     qemu_GetStdHandle,
     qemu_InitializeCriticalSection,
     qemu_LeaveCriticalSection,
