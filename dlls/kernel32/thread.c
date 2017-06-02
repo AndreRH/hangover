@@ -28,34 +28,54 @@
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
+#endif
 
-const struct qemu_ops *qemu_ops;
+#ifdef QEMU_DLL_GUEST
 
-static const syscall_handler dll_functions[] =
+WINBASEAPI DWORD WINAPI GetLastError()
 {
-    qemu_DeleteCriticalSection,
-    qemu_EnterCriticalSection,
-    qemu_ExitProcess,
-    qemu_GetCurrentProcess,
-    qemu_GetCurrentProcessId,
-    qemu_GetCurrentThreadId,
-    qemu_GetLastError,
-    qemu_GetModuleHandleA,
-    qemu_GetModuleHandleExA,
-    qemu_GetProcAddress,
-    qemu_GetStdHandle,
-    qemu_InitializeCriticalSection,
-    qemu_LeaveCriticalSection,
-    qemu_SetLastError,
-    qemu_WriteFile,
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL_GETLASTERROR);
+    qemu_syscall(&call);
+    return call.iret;
+}
+
+#else
+
+void qemu_GetLastError(struct qemu_syscall *call)
+{
+    /* FIXME: This reads the result from the host-side TEB. Ab application
+     * that manually reads the TEB will read from the client-side TEB and
+     * get a different result. A possible solution is to hook the host-side
+     * SetLastError function and update both TEBs. */
+    WINE_TRACE("\n");
+    call->iret = GetLastError();
+}
+
+#endif
+struct qemu_SetLastError
+{
+    struct qemu_syscall super;
+    uint64_t error;
 };
 
-const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void WINAPI SetLastError(DWORD error)
 {
-    WINE_TRACE("Loading host-side kernel32 wrapper.\n");
-    qemu_ops = ops;
-    *dll_num = QEMU_CURRENT_DLL;
-    return dll_functions;
+    struct qemu_SetLastError call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETLASTERROR);
+    call.error = error;
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_SetLastError(struct qemu_syscall *call)
+{
+    struct qemu_SetLastError *c = (struct qemu_SetLastError *)call;
+    WINE_TRACE("\n");
+    SetLastError(c->error);
 }
 
 #endif
