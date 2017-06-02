@@ -53,6 +53,7 @@ static const syscall_handler dll_functions[] =
     qemu_SetLastError,
     qemu_Sleep,
     qemu_TerminateProcess,
+    qemu_TlsGetValue,
     qemu_WriteFile,
 };
 

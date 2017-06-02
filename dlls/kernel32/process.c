@@ -148,3 +148,37 @@ void qemu_TerminateProcess(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_TlsGetValue
+{
+    struct qemu_syscall super;
+    uint64_t index;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void WINAPI *TlsGetValue(DWORD index)
+{
+    struct qemu_TlsGetValue call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_TLSGETVALUE);
+    call.index = index;
+
+    qemu_syscall(&call.super);
+
+    return (void *)call.super.iret;
+}
+
+#else
+
+void qemu_TlsGetValue(struct qemu_syscall *call)
+{
+    struct qemu_TlsGetValue *c = (struct qemu_TlsGetValue *)call;
+    DWORD index = c->index;
+    WINE_FIXME("(%u) This is most likely wrong\n", index);
+    
+    /* This should read the TLS entry from the guest TEB instead of
+     * reading the host TLS entries. */
+    c->super.iret = (uint64_t)TlsGetValue(index);
+}
+
+#endif
