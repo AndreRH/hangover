@@ -26,19 +26,25 @@
 #include "kernel32.h"
 
 #ifndef QEMU_DLL_GUEST
+#include <wine/debug.h>
+WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 
-const struct qemu_op *qemu_op;
+const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
     qemu_ExitProcess,
+    qemu_GetModuleHandleA,
+    qemu_GetModuleHandleExA,
+    qemu_GetProcAddress,
     qemu_GetStdHandle,
     qemu_WriteFile,
 };
 
-const WINAPI syscall_handler *qemu_dll_register(const struct qemu_op *op, uint32_t *dll_num)
+const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
-    qemu_op = op;
+    WINE_TRACE("Loading host-side kernel32 wrapper.\n");
+    qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
     return dll_functions;
 }
