@@ -9,6 +9,7 @@ void __stdcall WinMainCRTStartup()
 {
     char buffer[32] = "timehigh=0x";
     char buffer2[32] = "timelow=0x";
+    char buffer3[32] = "tickcount=0x";
     DWORD written;
     FILETIME time;
 
@@ -21,6 +22,11 @@ void __stdcall WinMainCRTStartup()
     dword_to_char(buffer + 11, time.dwLowDateTime);
     buffer[11+8] = '\n';
     WriteFile(stdout, buffer, sizeof(buffer), &written, NULL);
+
+    written = GetTickCount();
+    dword_to_char(buffer3 + 12, written);
+    buffer3[12+8] = '\n';
+    WriteFile(stdout, buffer3, sizeof(buffer), &written, NULL);
 
     ExitProcess(0);
 }

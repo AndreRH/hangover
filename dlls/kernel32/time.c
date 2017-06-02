@@ -55,3 +55,22 @@ void qemu_GetSystemTimeAsFileTime(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI GetTickCount(void)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL_GETTICKCOUNT);
+    qemu_syscall(&call);
+    return call.iret;
+}
+
+#else
+
+void qemu_GetTickCount(struct qemu_syscall *call)
+{
+    call->iret = GetTickCount();
+}
+
+#endif
