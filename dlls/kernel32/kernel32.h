@@ -24,6 +24,7 @@ enum kernel32_calls
     CALL_SLEEP,
     CALL_TERMINATEPROCESS,
     CALL_TLSGETVALUE,
+    CALL_VIRTUALQUERY,
     CALL_WRITEFILE,
 };
 
@@ -51,6 +52,7 @@ void qemu_SetLastError(struct qemu_syscall *call);
 void qemu_Sleep(struct qemu_syscall *call);
 void qemu_TerminateProcess(struct qemu_syscall *call);
 void qemu_TlsGetValue(struct qemu_syscall *call);
+void qemu_VirtualQuery(struct qemu_syscall *call);
 void qemu_WriteFile(struct qemu_syscall *call);
 #endif
 

@@ -28,42 +28,39 @@
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
+#endif
 
-const struct qemu_ops *qemu_ops;
-
-static const syscall_handler dll_functions[] =
+struct qemu_VirtualQuery
 {
-    qemu_DeleteCriticalSection,
-    qemu_EnterCriticalSection,
-    qemu_ExitProcess,
-    qemu_GetCurrentProcess,
-    qemu_GetCurrentProcessId,
-    qemu_GetCurrentThreadId,
-    qemu_GetLastError,
-    qemu_GetModuleHandleA,
-    qemu_GetModuleHandleExA,
-    qemu_GetProcAddress,
-    qemu_GetStartupInfoA,
-    qemu_GetStdHandle,
-    qemu_GetSystemTimeAsFileTime,
-    qemu_GetTickCount,
-    qemu_InitializeCriticalSection,
-    qemu_LeaveCriticalSection,
-    qemu_QueryPerformanceCounter,
-    qemu_SetLastError,
-    qemu_Sleep,
-    qemu_TerminateProcess,
-    qemu_TlsGetValue,
-    qemu_VirtualQuery,
-    qemu_WriteFile,
+    struct qemu_syscall super;
+    uint64_t address;
+    uint64_t info;
+    uint64_t size;
 };
 
-const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI SIZE_T WINAPI VirtualQuery(const void *address,
+        MEMORY_BASIC_INFORMATION *info, SIZE_T size)
 {
-    WINE_TRACE("Loading host-side kernel32 wrapper.\n");
-    qemu_ops = ops;
-    *dll_num = QEMU_CURRENT_DLL;
-    return dll_functions;
+    struct qemu_VirtualQuery call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_VIRTUALQUERY);
+    call.address = (uint64_t)address;
+    call.info = (uint64_t)info;
+    call.size = size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_VirtualQuery(struct qemu_syscall *call)
+{
+    struct qemu_VirtualQuery *c = (struct qemu_VirtualQuery *)call;
+    WINE_TRACE("\n");
+    c->super.iret = VirtualQuery(QEMU_G2H(c->address), QEMU_G2H(c->info), c->size);
 }
 
 #endif
