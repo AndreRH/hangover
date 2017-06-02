@@ -117,3 +117,34 @@ void qemu_GetCurrentThreadId(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_TerminateProcess
+{
+    struct qemu_syscall super;
+    uint64_t process, exitcode;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI TerminateProcess(HANDLE process, UINT exitcode)
+{
+    struct qemu_TerminateProcess call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_TERMINATEPROCESS);
+    call.process = (uint64_t)process;
+    call.exitcode = exitcode;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_TerminateProcess(struct qemu_syscall *call)
+{
+    struct qemu_TerminateProcess *c = (struct qemu_TerminateProcess *)call;
+    WINE_TRACE("\n");
+    c->super.iret = TerminateProcess((HANDLE)c->process, c->exitcode);
+}
+
+#endif

@@ -11,10 +11,12 @@ void __stdcall WinMainCRTStartup()
     char buffer2[64] = "GetCurrentProcessId = 0x";
     char buffer3[64] = "GetCurrentThreadId  = 0x";
     DWORD written;
+    HANDLE current;
 
     HANDLE stdout = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    ptr_to_char(buffer1 + 24, (void *)GetCurrentProcess());
+    current = GetCurrentProcess();
+    ptr_to_char(buffer1 + 24, (void *)current);
     buffer1[24+16] = '\n';
     WriteFile(stdout, buffer1, sizeof(buffer1), &written, NULL);
 
@@ -26,7 +28,7 @@ void __stdcall WinMainCRTStartup()
     buffer3[24+16] = '\n';
     WriteFile(stdout, buffer3, sizeof(buffer3), &written, NULL);
 
-    ExitProcess(0);
+    TerminateProcess(current, 123);
 }
 
 static void ptr_to_char(char *c, const void *ptr)

@@ -22,6 +22,7 @@ enum kernel32_calls
     CALL_QUERYPERFORMANCECOUNTER,
     CALL_SETLASTERROR,
     CALL_SLEEP,
+    CALL_TERMINATEPROCESS,
     CALL_WRITEFILE,
 };
 
@@ -47,6 +48,7 @@ void qemu_LeaveCriticalSection(struct qemu_syscall *call);
 void qemu_QueryPerformanceCounter(struct qemu_syscall *call);
 void qemu_SetLastError(struct qemu_syscall *call);
 void qemu_Sleep(struct qemu_syscall *call);
+void qemu_TerminateProcess(struct qemu_syscall *call);
 void qemu_WriteFile(struct qemu_syscall *call);
 #endif
 
