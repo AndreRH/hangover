@@ -30,9 +30,6 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
-/* FIXME */
-#define g2h(a)((void *)(a))
-
 struct qemu_WriteFile
 {
     struct qemu_syscall super;
@@ -69,7 +66,8 @@ void qemu_WriteFile(struct qemu_syscall *call)
     if (c->ovl)
         WINE_FIXME("OVERLAPPED structure not handled yet.\n");
 
-    c->super.iret = WriteFile((HANDLE)c->file, g2h(c->buffer), c->to_write, g2h(c->written), g2h(c->ovl));
+    c->super.iret = WriteFile((HANDLE)c->file, QEMU_G2H(c->buffer), c->to_write,
+            QEMU_G2H(c->written), QEMU_G2H(c->ovl));
 }
 
 #endif
