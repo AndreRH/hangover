@@ -33,6 +33,8 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu_DeleteCriticalSection,
+    qemu_EnterCriticalSection,
     qemu_ExitProcess,
     qemu_GetCurrentProcess,
     qemu_GetCurrentProcessId,
@@ -41,6 +43,8 @@ static const syscall_handler dll_functions[] =
     qemu_GetModuleHandleExA,
     qemu_GetProcAddress,
     qemu_GetStdHandle,
+    qemu_InitializeCriticalSection,
+    qemu_LeaveCriticalSection,
     qemu_WriteFile,
 };
 
