@@ -25,6 +25,11 @@
 #include "dll_list.h"
 #include "kernel32.h"
 
+#ifndef QEMU_DLL_GUEST
+#include <wine/debug.h>
+WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
+#endif
+
 struct qemu_ExitProcess
 {
     struct qemu_syscall super;
@@ -47,7 +52,7 @@ WINBASEAPI DECLSPEC_NORETURN void WINAPI ExitProcess(UINT exitcode)
 void qemu_ExitProcess(struct qemu_syscall *call)
 {
     struct qemu_ExitProcess *c = (struct qemu_ExitProcess *)call;
-    fprintf(stderr, "Hello qemu_ExitProcess\n");
+    WINE_TRACE("\n");
     ExitProcess(c->exitcode);
 }
 

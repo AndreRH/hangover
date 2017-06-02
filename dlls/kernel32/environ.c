@@ -25,6 +25,11 @@
 #include "dll_list.h"
 #include "kernel32.h"
 
+#ifndef QEMU_DLL_GUEST
+#include <wine/debug.h>
+WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
+#endif
+
 struct qemu_GetStdHandle
 {
     struct qemu_syscall super;
@@ -47,7 +52,7 @@ WINBASEAPI HANDLE WINAPI GetStdHandle(DWORD std_handle)
 void qemu_GetStdHandle(struct qemu_syscall *call)
 {
     struct qemu_GetStdHandle *c = (struct qemu_GetStdHandle *)call;
-    fprintf(stderr, "Hello qemu_GetStdHandle\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetStdHandle(c->std_handle);
 }
 

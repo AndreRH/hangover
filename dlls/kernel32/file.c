@@ -25,6 +25,11 @@
 #include "dll_list.h"
 #include "kernel32.h"
 
+#ifndef QEMU_DLL_GUEST
+#include <wine/debug.h>
+WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
+#endif
+
 /* FIXME */
 #define g2h(a)((void *)(a))
 
@@ -58,7 +63,12 @@ WINBASEAPI WINBOOL WINAPI WriteFile (HANDLE file, const void *buffer, DWORD to_w
 void qemu_WriteFile(struct qemu_syscall *call)
 {
     struct qemu_WriteFile *c = (struct qemu_WriteFile *)call;
-    fprintf(stderr, "hello qemu_WriteFile\n");
+    WINE_TRACE("\n");
+
+    /* This structure probably works just fine when just passed on, but write a FIXME until tested. */
+    if (c->ovl)
+        WINE_FIXME("OVERLAPPED structure not handled yet.\n");
+
     c->super.iret = WriteFile((HANDLE)c->file, g2h(c->buffer), c->to_write, g2h(c->written), g2h(c->ovl));
 }
 
