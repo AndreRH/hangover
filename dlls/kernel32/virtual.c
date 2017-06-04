@@ -64,3 +64,40 @@ void qemu_VirtualQuery(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_VirtualProtect
+{
+    struct qemu_syscall super;
+    uint64_t address;
+    uint64_t size;
+    uint64_t new_protect;
+    uint64_t old_protect;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI VirtualProtect(void *address, SIZE_T size, DWORD new_protect, DWORD *old_protect)
+{
+    struct qemu_VirtualProtect call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_VIRTUALPROTECT);
+    call.address = (uint64_t)address;
+    call.size = size;
+    call.new_protect = new_protect;
+    call.old_protect = (uint64_t)old_protect;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_VirtualProtect(struct qemu_syscall *call)
+{
+    struct qemu_VirtualProtect *c = (struct qemu_VirtualProtect *)call;
+    WINE_TRACE("\n");
+    c->super.iret = VirtualProtect(QEMU_G2H(c->address), c->size, c->new_protect,
+            QEMU_G2H(c->old_protect));
+}
+
+#endif

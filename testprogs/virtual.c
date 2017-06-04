@@ -9,9 +9,11 @@ void __stdcall WinMainCRTStartup()
 {
     char buffer[32] = "addr=0x";
     char buffer2[32] = "prot=0x";
+    char buffer3[32] = "oldp=0x";
     DWORD written;
     HANDLE stdout = GetStdHandle(STD_OUTPUT_HANDLE);
     MEMORY_BASIC_INFORMATION info;
+    DWORD old_protect;
     
     VirtualQuery(WinMainCRTStartup, &info, sizeof(info));
 
@@ -22,6 +24,22 @@ void __stdcall WinMainCRTStartup()
     ptr_to_char(buffer2 + 7, (void *)(int64_t)info.Protect);
     buffer2[7+16] = '\n';
     WriteFile(stdout, buffer2, sizeof(buffer2), &written, NULL);
+
+    VirtualProtect(WinMainCRTStartup, 4096, PAGE_EXECUTE_READWRITE, &old_protect);
+    ptr_to_char(buffer3 + 7, (void *)(int64_t)old_protect);
+    buffer3[7+16] = '\n';
+    WriteFile(stdout, buffer3, sizeof(buffer3), &written, NULL);
+
+    /* See if we can overwrite code now. */
+    *(DWORD *)WinMainCRTStartup = 0;
+
+    VirtualProtect(WinMainCRTStartup, 4096, old_protect, &old_protect);
+    ptr_to_char(buffer3 + 7, (void *)(int64_t)old_protect);
+    buffer3[7+16] = '\n';
+    WriteFile(stdout, buffer3, sizeof(buffer3), &written, NULL);
+    
+    /* This would crash again. */
+    /* *(DWORD *)WinMainCRTStartup = 1; */
 
     ExitProcess(0);
 }
