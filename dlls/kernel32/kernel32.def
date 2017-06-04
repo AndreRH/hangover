@@ -1,0 +1,27 @@
+LIBRARY kernel32.dll
+
+EXPORTS
+  DeleteCriticalSection
+  EnterCriticalSection
+  ExitProcess
+  GetCurrentProcess
+  GetCurrentProcessId
+  GetCurrentThreadId
+  GetLastError
+  GetModuleHandleA
+  GetModuleHandleExA
+  GetProcAddress
+  GetStartupInfoA
+  GetStdHandle
+  GetSystemTimeAsFileTime
+  GetTickCount
+  InitializeCriticalSection
+  LeaveCriticalSection
+  QueryPerformanceCounter
+  SetLastError
+  Sleep
+  TerminateProcess
+  TlsGetValue
+  VirtualQuery
+  VirtualProtect
+  WriteFile
