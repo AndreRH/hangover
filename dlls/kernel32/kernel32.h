@@ -3,9 +3,7 @@
 
 enum kernel32_calls
 {
-    CALL_DELETECRITICALSECTION = 0,
-    CALL_ENTERCRITICALSECTION,
-    CALL_EXITPROCESS,
+    CALL_EXITPROCESS = 0,
     CALL_GETCURRENTPROCESS,
     CALL_GETCURRENTPROCESSID,
     CALL_GETCURRENTTHREADID,
@@ -18,7 +16,6 @@ enum kernel32_calls
     CALL_GETSYSTEMTIMEASFILETIME,
     CALL_GETTICKCOUNT,
     CALL_INITIALIZECRITICALSECTION,
-    CALL_LEAVECRITICALSECTION,
     CALL_QUERYPERFORMANCECOUNTER,
     CALL_SETLASTERROR,
     CALL_SLEEP,
@@ -32,8 +29,6 @@ enum kernel32_calls
 #ifndef QEMU_DLL_GUEST
 extern const struct qemu_ops *qemu_ops;
 
-void qemu_DeleteCriticalSection(struct qemu_syscall *call);
-void qemu_EnterCriticalSection(struct qemu_syscall *call);
 void qemu_ExitProcess(struct qemu_syscall *call);
 void qemu_GetCurrentProcess(struct qemu_syscall *call);
 void qemu_GetCurrentProcessId(struct qemu_syscall *call);
@@ -47,7 +42,6 @@ void qemu_GetSystemTimeAsFileTime(struct qemu_syscall *call);
 void qemu_GetTickCount(struct qemu_syscall *call);
 void qemu_GetProcAddress(struct qemu_syscall *call);
 void qemu_InitializeCriticalSection(struct qemu_syscall *call);
-void qemu_LeaveCriticalSection(struct qemu_syscall *call);
 void qemu_QueryPerformanceCounter(struct qemu_syscall *call);
 void qemu_SetLastError(struct qemu_syscall *call);
 void qemu_Sleep(struct qemu_syscall *call);

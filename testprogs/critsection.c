@@ -2,6 +2,7 @@
 
 #include <windows.h>
 #include <stdint.h>
+#include <winternl.h>
 
 static void ptr_to_char(char *c, const void *ptr);
 
@@ -12,9 +13,9 @@ void __stdcall WinMainCRTStartup()
     /* Testing critical sections without multithreading support is
      * largely pointless. */
     InitializeCriticalSection(&cs);
-    EnterCriticalSection(&cs);
-    LeaveCriticalSection(&cs);
-    DeleteCriticalSection(&cs);
+    RtlEnterCriticalSection(&cs);
+    RtlLeaveCriticalSection(&cs);
+    RtlDeleteCriticalSection(&cs);
 
     ExitProcess(0);
 }

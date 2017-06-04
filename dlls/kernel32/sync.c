@@ -46,48 +46,6 @@ struct qemu_CriticalSectionOp
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI void WINAPI DeleteCriticalSection(CRITICAL_SECTION *section)
-{
-    struct qemu_CriticalSectionOp call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_DELETECRITICALSECTION);
-    call.section = (uint64_t)section;
-    qemu_syscall(&call.super);
-}
-
-#else
-
-void qemu_DeleteCriticalSection(struct qemu_syscall *call)
-{
-    struct qemu_CriticalSectionOp *c = (struct qemu_CriticalSectionOp *)call;
-    WINE_TRACE("\n");
-    DeleteCriticalSection(QEMU_G2H(c->section));
-}
-
-#endif
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI void WINAPI EnterCriticalSection(CRITICAL_SECTION *section)
-{
-    struct qemu_CriticalSectionOp call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_ENTERCRITICALSECTION);
-    call.section = (uint64_t)section;
-    qemu_syscall(&call.super);
-}
-
-#else
-
-void qemu_EnterCriticalSection(struct qemu_syscall *call)
-{
-    struct qemu_CriticalSectionOp *c = (struct qemu_CriticalSectionOp *)call;
-    WINE_TRACE("\n");
-    EnterCriticalSection(QEMU_G2H(c->section));
-}
-
-#endif
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI void WINAPI InitializeCriticalSection(CRITICAL_SECTION *section)
 {
     struct qemu_CriticalSectionOp call;
@@ -108,24 +66,12 @@ void qemu_InitializeCriticalSection(struct qemu_syscall *call)
 #endif
 
 #ifdef QEMU_DLL_GUEST
-
-WINBASEAPI void WINAPI LeaveCriticalSection(CRITICAL_SECTION *section)
+/* For now the main purpose of this one is to force this library to import ntdll for the RVA Forwards. */
+NTSYSAPI NTSTATUS WINAPI RtlInitializeCriticalSectionEx(RTL_CRITICAL_SECTION *,ULONG,ULONG);
+WINBASEAPI BOOL WINAPI InitializeCriticalSectionEx(CRITICAL_SECTION *section, DWORD spincount, DWORD flags)
 {
-    struct qemu_CriticalSectionOp call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_LEAVECRITICALSECTION);
-    call.section = (uint64_t)section;
-    qemu_syscall(&call.super);
+    return !RtlInitializeCriticalSectionEx(section, spincount, flags);
 }
-
-#else
-
-void qemu_LeaveCriticalSection(struct qemu_syscall *call)
-{
-    struct qemu_CriticalSectionOp *c = (struct qemu_CriticalSectionOp *)call;
-    WINE_TRACE("\n");
-    LeaveCriticalSection(QEMU_G2H(c->section));
-}
-
 #endif
 
 struct qemu_Sleep

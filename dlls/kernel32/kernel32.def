@@ -1,8 +1,8 @@
-LIBRARY kernel32.dll
+LIBRARY kernel32.dll BASE=0x20000000
 
 EXPORTS
-  DeleteCriticalSection
-  EnterCriticalSection
+  DeleteCriticalSection=ntdll.RtlDeleteCriticalSection
+  EnterCriticalSection=ntdll.RtlEnterCriticalSection
   ExitProcess
   GetCurrentProcess
   GetCurrentProcessId
@@ -16,7 +16,8 @@ EXPORTS
   GetSystemTimeAsFileTime
   GetTickCount
   InitializeCriticalSection
-  LeaveCriticalSection
+  InitializeCriticalSectionEx
+  LeaveCriticalSection=ntdll.RtlLeaveCriticalSection
   QueryPerformanceCounter
   SetLastError
   Sleep

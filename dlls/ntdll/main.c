@@ -23,42 +23,25 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "kernel32.h"
+#include "ntdll.h"
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
-WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
+WINE_DEFAULT_DEBUG_CHANNEL(qemu_ntdll);
 
 const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
-    qemu_ExitProcess,
-    qemu_GetCurrentProcess,
-    qemu_GetCurrentProcessId,
-    qemu_GetCurrentThreadId,
-    qemu_GetLastError,
-    qemu_GetModuleHandleA,
-    qemu_GetModuleHandleExA,
-    qemu_GetProcAddress,
-    qemu_GetStartupInfoA,
-    qemu_GetStdHandle,
-    qemu_GetSystemTimeAsFileTime,
-    qemu_GetTickCount,
-    qemu_InitializeCriticalSection,
-    qemu_QueryPerformanceCounter,
-    qemu_SetLastError,
-    qemu_Sleep,
-    qemu_TerminateProcess,
-    qemu_TlsGetValue,
-    qemu_VirtualQuery,
-    qemu_VirtualProtect,
-    qemu_WriteFile,
+    qemu_RtlDeleteCriticalSection,
+    qemu_RtlEnterCriticalSection,
+    qemu_RtlInitializeCriticalSectionEx,
+    qemu_RtlLeaveCriticalSection,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
-    WINE_TRACE("Loading host-side kernel32 wrapper.\n");
+    WINE_TRACE("Loading host-side ntdll wrapper.\n");
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
     return dll_functions;
