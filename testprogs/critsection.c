@@ -13,9 +13,9 @@ void __stdcall WinMainCRTStartup()
     /* Testing critical sections without multithreading support is
      * largely pointless. */
     InitializeCriticalSection(&cs);
-    RtlEnterCriticalSection(&cs);
-    RtlLeaveCriticalSection(&cs);
-    RtlDeleteCriticalSection(&cs);
+    EnterCriticalSection(&cs);
+    LeaveCriticalSection(&cs);
+    DeleteCriticalSection(&cs);
 
     ExitProcess(0);
 }
