@@ -53,6 +53,7 @@ void qemu_GetLastError(struct qemu_syscall *call)
 }
 
 #endif
+
 struct qemu_SetLastError
 {
     struct qemu_syscall super;

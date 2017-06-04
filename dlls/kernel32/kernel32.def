@@ -19,6 +19,7 @@ EXPORTS
   InitializeCriticalSectionEx
   LeaveCriticalSection=ntdll.RtlLeaveCriticalSection
   QueryPerformanceCounter
+  SetConsoleCtrlHandler,
   SetLastError
   Sleep
   TerminateProcess
