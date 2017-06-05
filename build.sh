@@ -28,7 +28,7 @@ make install
 # Build qemu
 cd ../qemu
 LIBS=-lpthread_nonshared WINEBUILD=$DESTDIR/build/install/bin/winebuild CC="$DESTDIR/build/install/bin/winegcc -lpthread -lpthread_nonshared -DWINE_NOWINSOCK" CXX="$DESTDIR/build/install/bin/wineg++ -lpthread -lpthread_nonshared -DWINE_NOWINSOCK" $SRCDIR/qemu/configure --disable-bzip2 --disable-libusb --disable-sdl --disable-snappy --disable-virtfs --disable-opengl --python=/usr/bin/python2.7 --disable-xen --disable-lzo --disable-qom-cast-debug --disable-vnc --disable-seccomp --disable-strip --disable-hax --disable-gnutls --disable-nettle --disable-replication --disable-tpm --disable-gtk --disable-gcrypt --disable-linux-aio --disable-system --without-pixman --disable-tools --disable-linux-user --disable-guest-agent --enable-windows-user
-WINEBUILD=$DESTDIR/build/install/bin/winebuild make
+WINEBUILD=$DESTDIR/build/install/bin/winebuild make -j 4
 mkdir -p $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
 mkdir -p $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
 
