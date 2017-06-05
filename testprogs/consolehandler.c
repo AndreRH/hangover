@@ -3,7 +3,6 @@
 #include <windows.h>
 #include <stdint.h>
 
-static void dword_to_char(char *c, DWORD ptr);
 static BOOL WINAPI handler(DWORD type);
 static BOOL quit = FALSE;
 
