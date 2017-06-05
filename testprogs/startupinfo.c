@@ -2,6 +2,8 @@
 
 #include <windows.h>
 
+static int getstrlen(const char *str);
+
 void __stdcall WinMainCRTStartup()
 {
     STARTUPINFOA info;
@@ -11,7 +13,15 @@ void __stdcall WinMainCRTStartup()
     /* Not sure if Wine stores sane information in these things. Even writing
      * them in the host Wine code only prints garbage. */
     GetStartupInfoA(&info);
-    //WriteFile(stdout, info.lpDesktop, 16, &written, NULL);
+    WriteFile(stdout, info.lpTitle, getstrlen(info.lpTitle), &written, NULL);
+    WriteFile(stdout, "\n", 1, &written, NULL);
 
     ExitProcess(0);
+}
+
+static int getstrlen(const char *str)
+{
+    const char *s = str;
+    while (*str) str++;
+    return str - s;
 }
