@@ -15,6 +15,9 @@ enum kernel32_calls
     CALL_GETSTDHANDLE,
     CALL_GETSYSTEMTIMEASFILETIME,
     CALL_GETTICKCOUNT,
+    CALL_GETVERSION,
+    CALL_GETVERSIONEXA,
+    CALL_GETVERSIONEXW,
     CALL_INITIALIZECRITICALSECTION,
     CALL_QUERYPERFORMANCECOUNTER,
     CALL_SETCONSOLECTRLHANDLER,
@@ -22,6 +25,8 @@ enum kernel32_calls
     CALL_SLEEP,
     CALL_TERMINATEPROCESS,
     CALL_TLSGETVALUE,
+    CALL_VERIFYVERSIONINFOA,
+    CALL_VERIFYVERSIONINFOW,
     CALL_VIRTUALQUERY,
     CALL_VIRTUALPROTECT,
     CALL_WRITEFILE,
@@ -42,6 +47,9 @@ void qemu_GetStdHandle(struct qemu_syscall *call);
 void qemu_GetSystemTimeAsFileTime(struct qemu_syscall *call);
 void qemu_GetTickCount(struct qemu_syscall *call);
 void qemu_GetProcAddress(struct qemu_syscall *call);
+void qemu_GetVersion(struct qemu_syscall *call);
+void qemu_GetVersionExA(struct qemu_syscall *call);
+void qemu_GetVersionExW(struct qemu_syscall *call);
 void qemu_InitializeCriticalSection(struct qemu_syscall *call);
 void qemu_QueryPerformanceCounter(struct qemu_syscall *call);
 void qemu_SetConsoleCtrlHandler(struct qemu_syscall *call);
@@ -49,6 +57,8 @@ void qemu_SetLastError(struct qemu_syscall *call);
 void qemu_Sleep(struct qemu_syscall *call);
 void qemu_TerminateProcess(struct qemu_syscall *call);
 void qemu_TlsGetValue(struct qemu_syscall *call);
+void qemu_VerifyVersionInfoA(struct qemu_syscall *call);
+void qemu_VerifyVersionInfoW(struct qemu_syscall *call);
 void qemu_VirtualQuery(struct qemu_syscall *call);
 void qemu_VirtualProtect(struct qemu_syscall *call);
 void qemu_WriteFile(struct qemu_syscall *call);

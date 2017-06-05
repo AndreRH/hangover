@@ -15,6 +15,9 @@ EXPORTS
   GetStdHandle
   GetSystemTimeAsFileTime
   GetTickCount
+  GetVersion
+  GetVersionExA
+  GetVersionExW
   InitializeCriticalSection
   InitializeCriticalSectionEx
   LeaveCriticalSection=ntdll.RtlLeaveCriticalSection
@@ -24,6 +27,8 @@ EXPORTS
   Sleep
   TerminateProcess
   TlsGetValue
+  VerifyVersionInfoA
+  VerifyVersionInfoW
   VirtualQuery
   VirtualProtect
   WriteFile
