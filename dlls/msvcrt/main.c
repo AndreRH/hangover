@@ -46,6 +46,9 @@ const struct qemu_ops *qemu_ops;
 static const syscall_handler dll_functions[] =
 {
     qemu_exit,
+    qemu_free,
+    qemu_malloc,
+    qemu_realloc,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
@@ -61,6 +64,9 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
         WINE_ERR("Cannot find msvcrt.dll\n");
 
     p_exit = (void *)GetProcAddress(msvcrt, "exit");
+    p_free = (void *)GetProcAddress(msvcrt, "free");
+    p_malloc = (void *)GetProcAddress(msvcrt, "malloc");
+    p_realloc = (void *)GetProcAddress(msvcrt, "realloc");
 
     return dll_functions;
 }

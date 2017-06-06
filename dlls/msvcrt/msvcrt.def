@@ -3,3 +3,6 @@ LIBRARY msvcrt.dll BASE=0x30000000
 EXPORTS
   __C_specific_handler=ntdll.__C_specific_handler
   exit=MSVCRT_exit
+  free=MSVCRT_free
+  malloc=MSVCRT_malloc
+  realloc=MSVCRT_realloc
