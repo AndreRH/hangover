@@ -110,22 +110,24 @@ void qemu_GetVersionExW(struct qemu_syscall *call)
 struct qemu_VerifyVersionInfoA
 {
     struct qemu_syscall super;
-    uint64_t lpVersionInfo;
-    uint64_t dwTypeMask;
-    uint64_t dwlConditionMask;
+    uint64_t info;
+    uint64_t type_mask;
+    uint64_t condition_mask;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI VerifyVersionInfoA(LPOSVERSIONINFOEXA lpVersionInfo, DWORD dwTypeMask,
-                                          DWORDLONG dwlConditionMask)
+WINBASEAPI BOOL WINAPI VerifyVersionInfoA(OSVERSIONINFOEXA *info, DWORD type_mask,
+                                          DWORDLONG condition_mask)
 {
     struct qemu_VerifyVersionInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VERIFYVERSIONINFOA);
-    call.lpVersionInfo = (uint64_t)lpVersionInfo;
-    call.dwTypeMask = (uint64_t)dwTypeMask;
-    call.dwlConditionMask = (uint64_t)dwlConditionMask;
+    call.info = (uint64_t)info;
+    call.type_mask = (uint64_t)type_mask;
+    call.condition_mask = (uint64_t)condition_mask;
+
     qemu_syscall(&call.super);
+
     return call.super.iret;
 }
 
@@ -135,7 +137,7 @@ void qemu_VerifyVersionInfoA(struct qemu_syscall *call)
 {
     struct qemu_VerifyVersionInfoA *c = (struct qemu_VerifyVersionInfoA *)call;
     WINE_TRACE("\n");
-    c->super.iret = VerifyVersionInfoA(QEMU_G2H(c->lpVersionInfo), c->dwTypeMask, c->dwlConditionMask);
+    c->super.iret = VerifyVersionInfoA(QEMU_G2H(c->info), c->type_mask, c->condition_mask);
 }
 
 #endif
@@ -143,22 +145,24 @@ void qemu_VerifyVersionInfoA(struct qemu_syscall *call)
 struct qemu_VerifyVersionInfoW
 {
     struct qemu_syscall super;
-    uint64_t lpVersionInfo;
-    uint64_t dwTypeMask;
-    uint64_t dwlConditionMask;
+    uint64_t info;
+    uint64_t type_mask;
+    uint64_t condition_mask;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI VerifyVersionInfoW(LPOSVERSIONINFOEXW lpVersionInfo, DWORD dwTypeMask,
-                                          DWORDLONG dwlConditionMask)
+WINBASEAPI BOOL WINAPI VerifyVersionInfoW(LPOSVERSIONINFOEXW info, DWORD type_mask,
+                                          DWORDLONG condition_mask)
 {
     struct qemu_VerifyVersionInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VERIFYVERSIONINFOW);
-    call.lpVersionInfo = (uint64_t)lpVersionInfo;
-    call.dwTypeMask = (uint64_t)dwTypeMask;
-    call.dwlConditionMask = (uint64_t)dwlConditionMask;
+    call.info = (uint64_t)info;
+    call.type_mask = (uint64_t)type_mask;
+    call.condition_mask = (uint64_t)condition_mask;
+
     qemu_syscall(&call.super);
+
     return call.super.iret;
 }
 
@@ -168,7 +172,7 @@ void qemu_VerifyVersionInfoW(struct qemu_syscall *call)
 {
     struct qemu_VerifyVersionInfoW *c = (struct qemu_VerifyVersionInfoW *)call;
     WINE_TRACE("\n");
-    c->super.iret = VerifyVersionInfoW(QEMU_G2H(c->lpVersionInfo), c->dwTypeMask, c->dwlConditionMask);
+    c->super.iret = VerifyVersionInfoW(QEMU_G2H(c->info), c->type_mask, c->condition_mask);
 }
 
 #endif
