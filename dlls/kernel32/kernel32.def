@@ -28,6 +28,7 @@ EXPORTS
   RtlVirtualUnwind=ntdll.RtlVirtualUnwind
   SetConsoleCtrlHandler
   SetLastError
+  SetUnhandledExceptionFilter
   Sleep
   TerminateProcess
   TlsGetValue

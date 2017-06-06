@@ -28,47 +28,26 @@
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
+#endif
 
-const struct qemu_ops *qemu_ops;
 
-static const syscall_handler dll_functions[] =
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LPTOP_LEVEL_EXCEPTION_FILTER WINAPI SetUnhandledExceptionFilter(LPTOP_LEVEL_EXCEPTION_FILTER top_filter)
 {
-    qemu_ExitProcess,
-    qemu_GetCurrentProcess,
-    qemu_GetCurrentProcessId,
-    qemu_GetCurrentThreadId,
-    qemu_GetLastError,
-    qemu_GetModuleHandleA,
-    qemu_GetModuleHandleExA,
-    qemu_GetProcAddress,
-    qemu_GetStartupInfoA,
-    qemu_GetStdHandle,
-    qemu_GetSystemTimeAsFileTime,
-    qemu_GetTickCount,
-    qemu_GetVersion,
-    qemu_GetVersionExA,
-    qemu_GetVersionExW,
-    qemu_InitializeCriticalSection,
-    qemu_QueryPerformanceCounter,
-    qemu_SetConsoleCtrlHandler,
-    qemu_SetLastError,
-    qemu_SetUnhandledExceptionFilter,
-    qemu_Sleep,
-    qemu_TerminateProcess,
-    qemu_TlsGetValue,
-    qemu_VerifyVersionInfoA,
-    qemu_VerifyVersionInfoW,
-    qemu_VirtualQuery,
-    qemu_VirtualProtect,
-    qemu_WriteFile,
-};
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL_SETUNHANDLEDEXCEPTIONFILTER);
 
-const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
+    qemu_syscall(&call);
+
+    return (void *)call.iret;
+}
+
+#else
+
+void qemu_SetUnhandledExceptionFilter(struct qemu_syscall *call)
 {
-    WINE_TRACE("Loading host-side kernel32 wrapper.\n");
-    qemu_ops = ops;
-    *dll_num = QEMU_CURRENT_DLL;
-    return dll_functions;
+    WINE_FIXME("Stub!\n");
 }
 
 #endif
