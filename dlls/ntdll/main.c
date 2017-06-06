@@ -39,6 +39,7 @@ static const syscall_handler dll_functions[] =
     qemu_RtlEnterCriticalSection,
     qemu_RtlInitializeCriticalSectionEx,
     qemu_RtlLeaveCriticalSection,
+    qemu_RtlLookupFunctionEntry,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)

@@ -85,3 +85,25 @@ void qemu_RtlCaptureContext(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+/* This will probably have to cooperate with the qemu PE loader. */
+NTSYSAPI PRUNTIME_FUNCTION NTAPI RtlLookupFunctionEntry(DWORD64 pc, DWORD64 *base, UNWIND_HISTORY_TABLE *history)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL_RTLLOOKUPFUNCTIONENTRY);
+
+    qemu_syscall(&call);
+
+    return NULL;
+}
+
+#else
+
+void qemu_RtlLookupFunctionEntry(struct qemu_syscall *call)
+{
+    WINE_FIXME("Stub!\n");
+}
+
+#endif

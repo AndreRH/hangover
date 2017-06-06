@@ -7,3 +7,4 @@ EXPORTS
   RtlEnterCriticalSection
   RtlInitializeCriticalSectionEx
   RtlLeaveCriticalSection
+  RtlLookupFunctionEntry

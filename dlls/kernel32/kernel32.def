@@ -24,6 +24,7 @@ EXPORTS
   QueryPerformanceCounter
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   RtlCaptureContext=ntdll.RtlCaptureContext
+  RtlLookupFunctionEntry=ntdll.RtlLookupFunctionEntry
   SetConsoleCtrlHandler
   SetLastError
   Sleep
