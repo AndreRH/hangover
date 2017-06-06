@@ -4,6 +4,7 @@ EXPORTS
   __C_specific_handler=ntdll.__C_specific_handler
   __dllonexit
   _onexit=MSVCRT__onexit
+  calloc=MSVCRT_calloc
   exit=MSVCRT_exit
   free=MSVCRT_free
   malloc=MSVCRT_malloc

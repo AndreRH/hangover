@@ -30,6 +30,37 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 #endif
 
+struct qemu_calloc
+{
+    struct qemu_syscall super;
+    uint64_t item_count, size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+void * CDECL MSVCRT_calloc(size_t item_count,size_t size)
+{
+    struct qemu_calloc call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CALLOC);
+    call.item_count = item_count;
+    call.size = size;
+
+    qemu_syscall(&call.super);
+
+    return (void *)call.super.iret;
+}
+
+#else
+
+void qemu_calloc(struct qemu_syscall *call)
+{
+    struct qemu_calloc *c = (struct qemu_calloc *)call;
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)p_calloc(c->item_count, c->size);
+}
+
+#endif
+
 struct qemu_free
 {
     struct qemu_syscall super;

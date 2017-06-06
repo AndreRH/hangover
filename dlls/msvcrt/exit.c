@@ -83,7 +83,7 @@ MSVCRT__onexit_t CDECL MSVCRT__onexit(MSVCRT__onexit_t func)
     if (MSVCRT_atexit_registered > MSVCRT_atexit_table_size - 1)
     {
         MSVCRT__onexit_t *newtable;
-        newtable = MSVCRT_malloc((MSVCRT_atexit_table_size + 32) * sizeof(void *)); /* FIXME: calloc */
+        newtable = MSVCRT_calloc((MSVCRT_atexit_table_size + 32), sizeof(void *));
         if (!newtable)
         {
             UNLOCK_EXIT;
