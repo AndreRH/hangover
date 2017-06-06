@@ -64,3 +64,24 @@ void qemu_RtlAddFunctionTable(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+/* We'll want to copypaste the assembler version from Wine and handle this entirely
+ * inside the guest lib. This call out of the emulator is only there to print a
+ * FIXME. */
+NTSYSAPI void NTAPI RtlCaptureContext(CONTEXT *context)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL_RTLCAPTURECONTEXT);
+    qemu_syscall(&call);
+}
+
+#else
+
+void qemu_RtlCaptureContext(struct qemu_syscall *call)
+{
+    WINE_FIXME("Stub!\n");
+}
+
+#endif

@@ -23,7 +23,8 @@ EXPORTS
   LeaveCriticalSection=ntdll.RtlLeaveCriticalSection
   QueryPerformanceCounter
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
-  SetConsoleCtrlHandler,
+  RtlCaptureContext=ntdll.RtlCaptureContext
+  SetConsoleCtrlHandler
   SetLastError
   Sleep
   TerminateProcess

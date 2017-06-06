@@ -4,6 +4,7 @@
 enum ntdll_calls
 {
     CALL_RTLADDFUNCTIONTABLE = 0,
+    CALL_RTLCAPTURECONTEXT,
     CALL_RTLDELETECRITICALSECTION,
     CALL_RTLENTERCRITICALSECTION,
     CALL_RTLINITIALIZECRITICALSECTIONEX,
@@ -14,6 +15,7 @@ enum ntdll_calls
 extern const struct qemu_ops *qemu_ops;
 
 void qemu_RtlAddFunctionTable(struct qemu_syscall *call);
+void qemu_RtlCaptureContext(struct qemu_syscall *call);
 void qemu_RtlDeleteCriticalSection(struct qemu_syscall *call);
 void qemu_RtlEnterCriticalSection(struct qemu_syscall *call);
 void qemu_RtlInitializeCriticalSectionEx(struct qemu_syscall *call);

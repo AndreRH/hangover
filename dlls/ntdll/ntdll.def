@@ -2,6 +2,7 @@ LIBRARY ntdll.dll BASE=0x10000000
 
 EXPORTS
   RtlAddFunctionTable
+  RtlCaptureContext
   RtlDeleteCriticalSection
   RtlEnterCriticalSection
   RtlInitializeCriticalSectionEx
