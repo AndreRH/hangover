@@ -10,6 +10,7 @@ enum msvcrt_calls
     CALL_MEMCPY,
     CALL_MEMSET,
     CALL_REALLOC,
+    CALL_STRLEN,
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -32,6 +33,7 @@ void qemu_malloc(struct qemu_syscall *call);
 void qemu_memcpy(struct qemu_syscall *call);
 void qemu_memset(struct qemu_syscall *call);
 void qemu_realloc(struct qemu_syscall *call);
+void qemu_strlen(struct qemu_syscall *call);
 
 /* Be careful not to call the Linux libc! */
 void *(* CDECL p_calloc)(size_t item_count,size_t size);
@@ -41,6 +43,7 @@ void *(* CDECL p_malloc)(size_t size);
 void *(* CDECL p_memset)(void *dst, int c, size_t n);
 void *(* CDECL p_memcpy)(void *dst, const void *src, size_t size);
 void *(* CDECL p_realloc)(void *ptr, size_t size);
+size_t (* CDECL p_strlen)(const char *str);
 
 #endif
 

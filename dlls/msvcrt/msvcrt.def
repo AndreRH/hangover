@@ -11,3 +11,4 @@ EXPORTS
   memcpy=MSVCRT_memcpy
   memset=MSVCRT_memset
   realloc=MSVCRT_realloc
+  strlen=MSVCRT_strlen

@@ -101,3 +101,35 @@ void qemu_memcpy(struct qemu_syscall *call)
 }
 
 #endif
+
+/* FIXME: Calling out of the vm for strlen is probably a waste of time. */
+struct qemu_strlen
+{
+    struct qemu_syscall super;
+    uint64_t str;
+};
+
+
+#ifdef QEMU_DLL_GUEST
+
+size_t CDECL MSVCRT_strlen(const char *str)
+{
+    struct qemu_strlen call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_STRLEN);
+    call.str = (uint64_t)str;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_strlen(struct qemu_syscall *call)
+{
+    struct qemu_strlen *c = (struct qemu_strlen *)call;
+    WINE_TRACE("\n");
+    c->super.iret = p_strlen(QEMU_G2H(c->str));
+}
+
+#endif

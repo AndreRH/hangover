@@ -3,8 +3,6 @@
 #include <windows.h>
 #include <stdint.h>
 
-static int getstrlen(const char *str);
-
 void __stdcall WinMainCRTStartup()
 {
     char buffer[] = "Going to call exit(123)\n";
@@ -17,6 +15,7 @@ void __stdcall WinMainCRTStartup()
     void *(CDECL *p_memcpy)(void *dst, const void *src, size_t size);
     void *(CDECL *p_memset)(void *ptr, int val, size_t size);
     void *(CDECL *p_realloc)(void *ptr, size_t size);
+    size_t (CDECL *p_strlen)(const char *str);
 
     HANDLE stdout = GetStdHandle(STD_OUTPUT_HANDLE);
     HANDLE msvcrt = LoadLibraryA("msvcrt.dll");
@@ -28,6 +27,7 @@ void __stdcall WinMainCRTStartup()
     p_memcpy = (void *)GetProcAddress(msvcrt, "memcpy");
     p_memset = (void *)GetProcAddress(msvcrt, "memset");
     p_realloc = (void *)GetProcAddress(msvcrt, "realloc");
+    p_strlen = (void *)GetProcAddress(msvcrt, "strlen");
 
     ptr = p_malloc(sizeof(*ptr));
     ptr[0] = 123;
@@ -39,17 +39,10 @@ void __stdcall WinMainCRTStartup()
     p_memset(charp, 'A', 7);
     charp[7] = '\n';
     charp[9] = 'X';
-    WriteFile(stdout, charp, getstrlen(charp), &written, NULL);
+    WriteFile(stdout, charp, p_strlen(charp), &written, NULL);
     p_memcpy(charp, WinMainCRTStartup, 4);
     p_free(charp);
 
     WriteFile(stdout, buffer, sizeof(buffer), &written, NULL);
     p_exit(123);
-}
-
-static int getstrlen(const char *str)
-{
-    const char *s = str;
-    while (*str) str++;
-    return str - s;
 }
