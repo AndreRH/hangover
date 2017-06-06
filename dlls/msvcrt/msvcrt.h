@@ -18,9 +18,7 @@ enum msvcrt_calls
 
 void * CDECL MSVCRT_calloc(size_t item_count,size_t size);
 void CDECL MSVCRT_free(void *ptr);
-void * CDECL MSVCRT_malloc(size_t size);
 void * CDECL MSVCRT_memcpy(void *dst, const void *src, size_t size);
-void * CDECL MSVCRT_memset(void *dst, int c, size_t n);
 void * CDECL MSVCRT_realloc(void *ptr, size_t size);
 
 #else
