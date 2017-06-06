@@ -26,6 +26,7 @@ enum kernel32_calls
     CALL_SLEEP,
     CALL_TERMINATEPROCESS,
     CALL_TLSGETVALUE,
+    CALL_UNHANDLEDEXCEPTIONFILTER,
     CALL_VERIFYVERSIONINFOA,
     CALL_VERIFYVERSIONINFOW,
     CALL_VIRTUALQUERY,
@@ -59,6 +60,7 @@ void qemu_SetUnhandledExceptionFilter(struct qemu_syscall *call);
 void qemu_Sleep(struct qemu_syscall *call);
 void qemu_TerminateProcess(struct qemu_syscall *call);
 void qemu_TlsGetValue(struct qemu_syscall *call);
+void qemu_UnhandledExceptionFilter(struct qemu_syscall *call);
 void qemu_VerifyVersionInfoA(struct qemu_syscall *call);
 void qemu_VerifyVersionInfoW(struct qemu_syscall *call);
 void qemu_VirtualQuery(struct qemu_syscall *call);

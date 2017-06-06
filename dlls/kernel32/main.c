@@ -56,6 +56,7 @@ static const syscall_handler dll_functions[] =
     qemu_Sleep,
     qemu_TerminateProcess,
     qemu_TlsGetValue,
+    qemu_UnhandledExceptionFilter,
     qemu_VerifyVersionInfoA,
     qemu_VerifyVersionInfoW,
     qemu_VirtualQuery,

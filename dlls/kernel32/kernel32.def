@@ -32,6 +32,7 @@ EXPORTS
   Sleep
   TerminateProcess
   TlsGetValue
+  UnhandledExceptionFilter
   VerifyVersionInfoA
   VerifyVersionInfoW
   VirtualQuery

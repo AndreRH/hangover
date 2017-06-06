@@ -51,3 +51,28 @@ void qemu_SetUnhandledExceptionFilter(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LONG WINAPI UnhandledExceptionFilter(struct _EXCEPTION_POINTERS *info)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL_UNHANDLEDEXCEPTIONFILTER);
+
+    qemu_syscall(&call);
+
+    return call.iret;
+}
+
+#else
+
+void qemu_UnhandledExceptionFilter(struct qemu_syscall *call)
+{
+    WINE_FIXME("Stub!\n");
+
+    /* Don't forward this to native because this would notify qemu that there
+     * has been an exception, restarting the exception handling cycle! */
+    ExitProcess(1);
+}
+
+#endif
