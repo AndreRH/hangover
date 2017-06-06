@@ -16,6 +16,7 @@ void __stdcall WinMainCRTStartup()
     FILE *(CDECL *p___iob_func)();
     void *(CDECL *p_calloc)(size_t, size_t);
     void (CDECL *p_exit)(int code);
+    int (* CDECL p_fprintf)(FILE *file, const char *format, ...);
     void (CDECL *p_free)(void *ptr);
     size_t (* CDECL p_fwrite)(const void *str, size_t size, size_t count, FILE *file);
     void *(CDECL *p_malloc)(size_t size);
@@ -30,6 +31,7 @@ void __stdcall WinMainCRTStartup()
     p___iob_func = (void *)GetProcAddress(msvcrt, "__iob_func");
     p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
     p_exit = (void *)GetProcAddress(msvcrt, "exit");
+    p_fprintf = (void *)GetProcAddress(msvcrt, "fprintf");
     p_free = (void *)GetProcAddress(msvcrt, "free");
     p_fwrite = (void *)GetProcAddress(msvcrt, "fwrite");
     p_malloc = (void *)GetProcAddress(msvcrt, "malloc");
@@ -57,6 +59,9 @@ void __stdcall WinMainCRTStartup()
     iob = p___iob_func();
     p_fwrite(tostdout, p_strlen(tostdout), 1, iob + 1);
     p_fwrite(tostderr, p_strlen(tostderr), 1, iob + 2);
+
+    p_fprintf(iob + 1, "Test \\ int=%05d %% str=\"%s\" %% ptr=%p %% float=%f\n",
+            -5, "HelloString", WinMainCRTStartup, 123.5f);
 
     p_exit(123);
 }
