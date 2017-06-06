@@ -45,6 +45,7 @@ WINBASEAPI DWORD WINAPI GetVersion(void)
 
 void qemu_GetVersion(struct qemu_syscall *call)
 {
+    WINE_TRACE("\n");
     call->iret = GetVersion();
 }
 
@@ -72,6 +73,7 @@ WINBASEAPI BOOL WINAPI GetVersionExA(OSVERSIONINFOA *v)
 void qemu_GetVersionExA(struct qemu_syscall *call)
 {
     struct qemu_GetVersionExA *c = (struct qemu_GetVersionExA *)call;
+    WINE_TRACE("\n");
     c->super.iret = GetVersionExA(QEMU_G2H(c->v));
 }
 
@@ -99,6 +101,7 @@ WINBASEAPI BOOL WINAPI GetVersionExW(OSVERSIONINFOW *v)
 void qemu_GetVersionExW(struct qemu_syscall *call)
 {
     struct qemu_GetVersionExW *c = (struct qemu_GetVersionExW *)call;
+    WINE_TRACE("\n");
     c->super.iret = GetVersionExW(QEMU_G2H(c->v));
 }
 
@@ -131,6 +134,7 @@ WINBASEAPI BOOL WINAPI VerifyVersionInfoA(LPOSVERSIONINFOEXA lpVersionInfo, DWOR
 void qemu_VerifyVersionInfoA(struct qemu_syscall *call)
 {
     struct qemu_VerifyVersionInfoA *c = (struct qemu_VerifyVersionInfoA *)call;
+    WINE_TRACE("\n");
     c->super.iret = VerifyVersionInfoA(QEMU_G2H(c->lpVersionInfo), c->dwTypeMask, c->dwlConditionMask);
 }
 
@@ -163,6 +167,7 @@ WINBASEAPI BOOL WINAPI VerifyVersionInfoW(LPOSVERSIONINFOEXW lpVersionInfo, DWOR
 void qemu_VerifyVersionInfoW(struct qemu_syscall *call)
 {
     struct qemu_VerifyVersionInfoW *c = (struct qemu_VerifyVersionInfoW *)call;
+    WINE_TRACE("\n");
     c->super.iret = VerifyVersionInfoW(QEMU_G2H(c->lpVersionInfo), c->dwTypeMask, c->dwlConditionMask);
 }
 

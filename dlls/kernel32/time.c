@@ -51,6 +51,7 @@ WINBASEAPI void WINAPI GetSystemTimeAsFileTime(FILETIME *time)
 void qemu_GetSystemTimeAsFileTime(struct qemu_syscall *call)
 {
     struct qemu_GetSystemTimeAsFileTime *c = (struct qemu_GetSystemTimeAsFileTime *)call;
+    WINE_TRACE("\n");
     GetSystemTimeAsFileTime(QEMU_G2H(c->time));
 }
 
@@ -70,6 +71,7 @@ WINBASEAPI DWORD WINAPI GetTickCount(void)
 
 void qemu_GetTickCount(struct qemu_syscall *call)
 {
+    WINE_TRACE("\n");
     call->iret = GetTickCount();
 }
 

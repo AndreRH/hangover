@@ -52,6 +52,7 @@ WINBASEAPI BOOL WINAPI QueryPerformanceCounter(LARGE_INTEGER *count)
 void qemu_QueryPerformanceCounter(struct qemu_syscall *call)
 {
     struct qemu_QueryPerformanceCounter *c = (struct qemu_QueryPerformanceCounter *)call;
+    WINE_TRACE("\n");
     c->super.iret = QueryPerformanceCounter(QEMU_G2H(c->count));
 }
 

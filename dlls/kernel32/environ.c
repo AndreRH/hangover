@@ -51,6 +51,7 @@ WINBASEAPI void WINAPI GetStartupInfoA(STARTUPINFOA *info)
 void qemu_GetStartupInfoA(struct qemu_syscall *call)
 {
     struct qemu_GetStartupInfo *c = (struct qemu_GetStartupInfo *)call;
+    WINE_TRACE("\n");
     GetStartupInfoA(QEMU_G2H(c->info));
 }
 
