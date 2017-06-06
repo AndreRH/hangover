@@ -1,0 +1,4 @@
+LIBRARY msvcrt.dll BASE=0x30000000
+
+EXPORTS
+  exit=MSVCRT_exit

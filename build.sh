@@ -43,5 +43,10 @@ PATH=$PATH:$DESTDIR/build/install/bin make
 ln -sf $PWD/kernel32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
 ln -sf $PWD/qemu_kernel32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
 
+cd ../../dlls/msvcrt
+PATH=$PATH:$DESTDIR/build/install/bin make
+ln -sf $PWD/msvcrt.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
+ln -sf $PWD/qemu_msvcrt.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+
 #cd $DESTDIR/build
 #ln -s wine-host/dlls/msvcrt/msvcrt.dll qemu/x86_64-windows-user/qemu_guest_dll
