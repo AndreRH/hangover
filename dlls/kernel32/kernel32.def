@@ -25,6 +25,7 @@ EXPORTS
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   RtlCaptureContext=ntdll.RtlCaptureContext
   RtlLookupFunctionEntry=ntdll.RtlLookupFunctionEntry
+  RtlVirtualUnwind=ntdll.RtlVirtualUnwind
   SetConsoleCtrlHandler
   SetLastError
   Sleep

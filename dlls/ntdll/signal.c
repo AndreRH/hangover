@@ -107,3 +107,25 @@ void qemu_RtlLookupFunctionEntry(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+NTSYSAPI PEXCEPTION_ROUTINE NTAPI RtlVirtualUnwind(DWORD type, DWORD64 image, DWORD64 pc, PRUNTIME_FUNCTION function,
+        CONTEXT *context, void **data, DWORD64 *frame, KNONVOLATILE_CONTEXT_POINTERS *pointers)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL_RTLVIRTUALUNWIND);
+
+    qemu_syscall(&call);
+
+    return NULL;
+}
+
+#else
+
+void qemu_RtlVirtualUnwind(struct qemu_syscall *call)
+{
+    WINE_FIXME("Stub!\n");
+}
+
+#endif
