@@ -33,6 +33,7 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu___C_specific_handler,
     qemu_RtlAddFunctionTable,
     qemu_RtlCaptureContext,
     qemu_RtlDeleteCriticalSection,

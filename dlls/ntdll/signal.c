@@ -31,6 +31,29 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_ntdll);
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec,
+        ULONG64 frame, CONTEXT *context, struct _DISPATCHER_CONTEXT *dispatch)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL___C_SPECIFIC_HANDLER);
+
+    qemu_syscall(&call);
+
+    return call.iret;
+}
+
+#else
+
+void qemu___C_specific_handler(struct qemu_syscall *call)
+{
+    WINE_FIXME("Stub!\n");
+    call->iret = ExceptionContinueSearch;
+}
+
+#endif
+
 struct qemu_RtlAddFunctionTable
 {
     struct qemu_syscall super;

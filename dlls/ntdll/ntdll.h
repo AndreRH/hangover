@@ -3,7 +3,8 @@
 
 enum ntdll_calls
 {
-    CALL_RTLADDFUNCTIONTABLE = 0,
+    CALL___C_SPECIFIC_HANDLER = 0,
+    CALL_RTLADDFUNCTIONTABLE,
     CALL_RTLCAPTURECONTEXT,
     CALL_RTLDELETECRITICALSECTION,
     CALL_RTLENTERCRITICALSECTION,
@@ -16,6 +17,7 @@ enum ntdll_calls
 #ifndef QEMU_DLL_GUEST
 extern const struct qemu_ops *qemu_ops;
 
+void qemu___C_specific_handler(struct qemu_syscall *call);
 void qemu_RtlAddFunctionTable(struct qemu_syscall *call);
 void qemu_RtlCaptureContext(struct qemu_syscall *call);
 void qemu_RtlDeleteCriticalSection(struct qemu_syscall *call);
