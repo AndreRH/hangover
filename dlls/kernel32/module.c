@@ -28,7 +28,7 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
-struct qemu_GetModuleHandleA
+struct qemu_ModuleOpA
 {
     struct qemu_syscall super;
     uint64_t name;
@@ -38,10 +38,12 @@ struct qemu_GetModuleHandleA
 
 WINBASEAPI HMODULE WINAPI GetModuleHandleA(const char *name)
 {
-    struct qemu_GetModuleHandleA call;
+    struct qemu_ModuleOpA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEHANDLEA);
     call.name = (uint64_t)name;
+
     qemu_syscall(&call.super);
+
     return (HMODULE)call.super.iret;
 }
 
@@ -49,7 +51,7 @@ WINBASEAPI HMODULE WINAPI GetModuleHandleA(const char *name)
 
 void qemu_GetModuleHandleA(struct qemu_syscall *call)
 {
-    struct qemu_GetModuleHandleA *c = (struct qemu_GetModuleHandleA *)call;
+    struct qemu_ModuleOpA *c = (struct qemu_ModuleOpA *)call;
     WINE_TRACE("(\"%s\")\n", (char *)QEMU_G2H(c->name));
 
     c->super.iret = (uint64_t)qemu_ops->qemu_GetModuleHandleEx(
@@ -124,6 +126,33 @@ void qemu_GetProcAddress(struct qemu_syscall *call)
 
     c->super.iret = (uint64_t)qemu_ops->qemu_GetProcAddress((HMODULE)c->module,
             QEMU_G2H(c->name));
+}
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HMODULE WINAPI LoadLibraryA(const char *name)
+{
+    struct qemu_ModuleOpA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LOADLIBRARYA);
+    call.name = (uint64_t)name;
+
+    qemu_syscall(&call.super);
+
+    return (HMODULE)call.super.iret;
+}
+
+#else
+
+void qemu_LoadLibraryA(struct qemu_syscall *call)
+{
+    struct qemu_ModuleOpA *c = (struct qemu_ModuleOpA *)call;
+    WINE_TRACE("(\"%s\")\n", (char *)QEMU_G2H(c->name));
+
+    c->super.iret = (uint64_t)qemu_ops->qemu_LoadLibrary(QEMU_G2H(c->name));
+
+    WINE_TRACE("Returning %p\n", (void *)c->super.iret);
 }
 
 #endif

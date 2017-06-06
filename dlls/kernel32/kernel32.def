@@ -21,6 +21,7 @@ EXPORTS
   InitializeCriticalSection
   InitializeCriticalSectionEx
   LeaveCriticalSection=ntdll.RtlLeaveCriticalSection
+  LoadLibraryA
   QueryPerformanceCounter
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   RtlCaptureContext=ntdll.RtlCaptureContext
