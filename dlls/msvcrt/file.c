@@ -34,10 +34,10 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 
 /* FIXME: Passing the IOB and FILE pointers like this only works when they have the same size
  * in guest and host. */
-FILE * CDECL MSVCRT___iob(void)
+FILE * CDECL MSVCRT___iob_func(void)
 {
     struct qemu_syscall call;
-    call.id = QEMU_SYSCALL_ID(CALL___IOB);
+    call.id = QEMU_SYSCALL_ID(CALL___IOB_FUNC);
 
     qemu_syscall(&call);
 
@@ -46,10 +46,10 @@ FILE * CDECL MSVCRT___iob(void)
 
 #else
 
-void qemu___iob(struct qemu_syscall *c)
+void qemu___iob_func(struct qemu_syscall *c)
 {
     WINE_TRACE("\n");
-    c->iret = (uint64_t)p___iob();
+    c->iret = (uint64_t)p___iob_func();
 }
 
 #endif

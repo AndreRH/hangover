@@ -3,7 +3,7 @@
 
 enum msvcrt_calls
 {
-    CALL___IOB = 0,
+    CALL___IOB_FUNC = 0,
     CALL_CALLOC,
     CALL_EXIT,
     CALL_FREE,
@@ -25,7 +25,7 @@ void * CDECL MSVCRT_realloc(void *ptr, size_t size);
 
 extern const struct qemu_ops *qemu_ops;
 
-void qemu___iob(struct qemu_syscall *call);
+void qemu___iob_func(struct qemu_syscall *call);
 void qemu_calloc(struct qemu_syscall *call);
 void qemu_exit(struct qemu_syscall *call);
 void qemu_free(struct qemu_syscall *call);
@@ -36,7 +36,7 @@ void qemu_realloc(struct qemu_syscall *call);
 void qemu_strlen(struct qemu_syscall *call);
 
 /* Be careful not to call the Linux libc! */
-FILE *(* CDECL p___iob)();
+FILE *(* CDECL p___iob_func)();
 void *(* CDECL p_calloc)(size_t item_count,size_t size);
 void (* CDECL p_exit)(int code);
 void (* CDECL p_free)(void *ptr);

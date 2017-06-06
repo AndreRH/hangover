@@ -45,7 +45,7 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
-    qemu___iob,
+    qemu___iob_func,
     qemu_calloc,
     qemu_exit,
     qemu_free,
@@ -68,7 +68,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (!msvcrt)
         WINE_ERR("Cannot find msvcrt.dll\n");
 
-    p___iob = (void *)GetProcAddress(msvcrt, "__iob");
+    p___iob_func = (void *)GetProcAddress(msvcrt, "__iob_func");
     p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
     p_exit = (void *)GetProcAddress(msvcrt, "exit");
     p_free = (void *)GetProcAddress(msvcrt, "free");
