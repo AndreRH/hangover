@@ -49,6 +49,7 @@ static const syscall_handler dll_functions[] =
     qemu_exit,
     qemu_free,
     qemu_malloc,
+    qemu_memset,
     qemu_realloc,
 };
 
@@ -68,6 +69,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_exit = (void *)GetProcAddress(msvcrt, "exit");
     p_free = (void *)GetProcAddress(msvcrt, "free");
     p_malloc = (void *)GetProcAddress(msvcrt, "malloc");
+    p_memset = (void *)GetProcAddress(msvcrt, "memset");
     p_realloc = (void *)GetProcAddress(msvcrt, "realloc");
 
     return dll_functions;

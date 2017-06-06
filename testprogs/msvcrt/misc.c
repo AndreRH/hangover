@@ -3,23 +3,28 @@
 #include <windows.h>
 #include <stdint.h>
 
-static void ptr_to_char(char *c, const void *ptr);
+static int getstrlen(const char *str);
 
 void __stdcall WinMainCRTStartup()
 {
     char buffer[] = "Going to call exit(123)\n";
     DWORD written, *ptr;
+    char *charp;
+    void *(CDECL *p_calloc)(size_t, size_t);
     void (CDECL *p_exit)(int code);
     void (CDECL *p_free)(void *ptr);
     void *(CDECL *p_malloc)(size_t size);
+    void *(CDECL *p_memset)(void *ptr, int val, size_t size);
     void *(CDECL *p_realloc)(void *ptr, size_t size);
 
     HANDLE stdout = GetStdHandle(STD_OUTPUT_HANDLE);
     HANDLE msvcrt = LoadLibraryA("msvcrt.dll");
 
+    p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
     p_exit = (void *)GetProcAddress(msvcrt, "exit");
     p_free = (void *)GetProcAddress(msvcrt, "free");
     p_malloc = (void *)GetProcAddress(msvcrt, "malloc");
+    p_memset = (void *)GetProcAddress(msvcrt, "memset");
     p_realloc = (void *)GetProcAddress(msvcrt, "realloc");
 
     ptr = p_malloc(sizeof(*ptr));
@@ -28,6 +33,20 @@ void __stdcall WinMainCRTStartup()
     ptr[1] = 456;
     p_free(ptr);
 
+    charp = p_calloc(10, sizeof(*charp));
+    p_memset(charp, 'A', 7);
+    charp[7] = '\n';
+    charp[9] = 'X';
+    WriteFile(stdout, charp, getstrlen(charp), &written, NULL);
+    p_free(charp);
+
     WriteFile(stdout, buffer, sizeof(buffer), &written, NULL);
     p_exit(123);
+}
+
+static int getstrlen(const char *str)
+{
+    const char *s = str;
+    while (*str) str++;
+    return str - s;
 }

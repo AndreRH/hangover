@@ -8,4 +8,5 @@ EXPORTS
   exit=MSVCRT_exit
   free=MSVCRT_free
   malloc=MSVCRT_malloc
+  memset=MSVCRT_memset
   realloc=MSVCRT_realloc
