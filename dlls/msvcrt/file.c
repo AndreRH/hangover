@@ -53,3 +53,39 @@ void qemu___iob_func(struct qemu_syscall *c)
 }
 
 #endif
+
+struct qemu_fwrite
+{
+    struct qemu_syscall super;
+    uint64_t str;
+    uint64_t size, count;
+    uint64_t file;
+};
+
+
+#ifdef QEMU_DLL_GUEST
+
+size_t CDECL MSVCRT_fwrite(const void *str, size_t size, size_t count, FILE *file)
+{
+    struct qemu_fwrite call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_FWRITE);
+    call.str = (uint64_t)str;
+    call.size = (uint64_t)size;
+    call.count = (uint64_t)count;
+    call.file = (uint64_t)file;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_fwrite(struct qemu_syscall *call)
+{
+    struct qemu_fwrite *c = (struct qemu_fwrite *)call;
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)p_fwrite(QEMU_G2H(c->str), c->size, c->count, QEMU_G2H(c->file));
+}
+
+#endif

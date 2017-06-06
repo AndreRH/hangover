@@ -8,6 +8,7 @@ EXPORTS
   calloc=MSVCRT_calloc
   exit=MSVCRT_exit
   free=MSVCRT_free
+  fwrite=MSVCRT_fwrite
   malloc=MSVCRT_malloc
   memcpy=MSVCRT_memcpy
   memset=MSVCRT_memset
