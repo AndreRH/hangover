@@ -27,25 +27,40 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <winternl.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_ntdll);
+#endif
 
-const struct qemu_ops *qemu_ops;
-
-static const syscall_handler dll_functions[] =
+struct qemu_RtlAddFunctionTable
 {
-    qemu_RtlAddFunctionTable,
-    qemu_RtlDeleteCriticalSection,
-    qemu_RtlEnterCriticalSection,
-    qemu_RtlInitializeCriticalSectionEx,
-    qemu_RtlLeaveCriticalSection,
+    struct qemu_syscall super;
+    uint64_t func;
+    uint64_t entry_count;
+    uint64_t base;
 };
 
-const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
+#ifdef QEMU_DLL_GUEST
+
+NTSYSAPI BOOLEAN CDECL RtlAddFunctionTable(PRUNTIME_FUNCTION func, DWORD entry_count, DWORD64 base)
 {
-    WINE_TRACE("Loading host-side ntdll wrapper.\n");
-    qemu_ops = ops;
-    *dll_num = QEMU_CURRENT_DLL;
-    return dll_functions;
+    struct qemu_RtlAddFunctionTable call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLADDFUNCTIONTABLE);
+    call.func = (uint64_t)func;
+    call.entry_count = entry_count;
+    call.base = base;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlAddFunctionTable(struct qemu_syscall *call)
+{
+    struct qemu_RtlAddFunctionTable *c = (struct qemu_RtlAddFunctionTable *)call;
+    WINE_FIXME("(%p, %lu, %#lx) Stub!\n", QEMU_G2H(c->func), c->entry_count, c->base);
+    c->super.iret = FALSE;
 }
 
 #endif

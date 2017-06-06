@@ -22,6 +22,7 @@ EXPORTS
   InitializeCriticalSectionEx
   LeaveCriticalSection=ntdll.RtlLeaveCriticalSection
   QueryPerformanceCounter
+  RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   SetConsoleCtrlHandler,
   SetLastError
   Sleep
