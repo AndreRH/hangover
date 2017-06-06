@@ -9,7 +9,13 @@ enum msvcrt_calls
     CALL_REALLOC,
 };
 
-#ifndef QEMU_DLL_GUEST
+#ifdef QEMU_DLL_GUEST
+
+void CDECL MSVCRT_free(void *ptr);
+void * CDECL MSVCRT_malloc(size_t size);
+void * CDECL MSVCRT_realloc(void *ptr, size_t size);
+
+#else
 
 extern const struct qemu_ops *qemu_ops;
 

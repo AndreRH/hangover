@@ -1,4 +1,5 @@
 /*
+ * Copyright 2000 Jon Griffiths
  * Copyright 2017 Stefan Dösinger for CodeWeavers
  *
  * This library is free software; you can redistribute it and/or
@@ -28,6 +29,77 @@
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
+/* This code is taken from Wine, without the traces. */
+#define LOCK_EXIT   while(0) /*_mlock(_EXIT_LOCK1) */
+#define UNLOCK_EXIT while(0) /*_munlock(_EXIT_LOCK1) */
+
+typedef int (__cdecl *MSVCRT__onexit_t)(void);
+
+static MSVCRT__onexit_t *MSVCRT_atexit_table = NULL;
+static int MSVCRT_atexit_table_size = 0;
+static int MSVCRT_atexit_registered = 0; /* Points to free slot */
+
+typedef struct MSVCRT__onexit_table_t
+{
+    MSVCRT__onexit_t *_first;
+    MSVCRT__onexit_t *_last;
+    MSVCRT__onexit_t *_end;
+} MSVCRT__onexit_table_t;
+
+MSVCRT__onexit_t CDECL __dllonexit(MSVCRT__onexit_t func, MSVCRT__onexit_t **start, MSVCRT__onexit_t **end)
+{
+    MSVCRT__onexit_t *tmp;
+    int len;
+
+    if (!start || !*start || !end || !*end)
+    {
+        return NULL;
+    }
+
+    len = (*end - *start);
+
+    if (++len <= 0)
+        return NULL;
+
+    tmp = MSVCRT_realloc(*start, len * sizeof(*tmp));
+    if (!tmp)
+        return NULL;
+    *start = tmp;
+    *end = tmp + len;
+    tmp[len - 1] = func;
+    return func;
+}
+
+MSVCRT__onexit_t CDECL MSVCRT__onexit(MSVCRT__onexit_t func)
+{
+    if (!func)
+        return NULL;
+
+    LOCK_EXIT;
+    if (MSVCRT_atexit_registered > MSVCRT_atexit_table_size - 1)
+    {
+        MSVCRT__onexit_t *newtable;
+        newtable = MSVCRT_malloc((MSVCRT_atexit_table_size + 32) * sizeof(void *)); /* FIXME: calloc */
+        if (!newtable)
+        {
+            UNLOCK_EXIT;
+            return NULL;
+        }
+        //memcpy (newtable, MSVCRT_atexit_table, MSVCRT_atexit_table_size*sizeof(void *));
+        MSVCRT_atexit_table_size += 32;
+        MSVCRT_free (MSVCRT_atexit_table);
+        MSVCRT_atexit_table = newtable;
+    }
+    MSVCRT_atexit_table[MSVCRT_atexit_registered] = func;
+    MSVCRT_atexit_registered++;
+    UNLOCK_EXIT;
+    return func;
+}
+
 #endif
 
 struct qemu_exit
