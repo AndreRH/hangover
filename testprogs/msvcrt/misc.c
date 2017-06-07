@@ -12,6 +12,7 @@ void __stdcall WinMainCRTStartup()
     DWORD written, *ptr;
     char *charp;
     FILE *iob;
+    int n = 0;
 
     FILE *(CDECL *p___iob_func)();
     void *(CDECL *p_calloc)(size_t, size_t);
@@ -62,6 +63,15 @@ void __stdcall WinMainCRTStartup()
 
     p_fprintf(iob + 1, "Test \\ int=%05d %% str=\"%s\" %% ptr=%p %% float=%f\n",
             -5, "HelloString", WinMainCRTStartup, 123.5f);
+
+    p_fprintf(iob + 1, "Test \\ hex=%04x %% HEX=%X %% long=%li%n\n",
+            0xdead, 0xBEEF, 1073741824, &n);
+    p_fprintf(iob + 1, "Test \\ n=%i\n", n);
+
+    p_fprintf(iob + 1, "Test \\ e=%e %% f=%f %% g=%g %% a=%a\n",
+            1.23, 2.34, 3.45, 4.56);
+    p_fprintf(iob + 1, "Test \\ E=%E %% F=%F %% G=%G %% A=%A\n",
+            1.23, 2.34, 3.45, 4.56);
 
     p_exit(123);
 }

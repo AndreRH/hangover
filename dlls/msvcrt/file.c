@@ -84,15 +84,23 @@ static unsigned int count_printf_args(const char *format, char *fmts)
 
         switch (format[i])
         {
+            case 'A':
+            case 'a':
             case 'c':
             case 'd':
+            case 'E':
             case 'e':
+            case 'F':
             case 'f':
+            case 'G':
+            case 'g':
             case 'i':
+            case 'n':
             case 'o':
             case 'p':
             case 's':
             case 'u':
+            case 'X':
             case 'x':
                 fmts[count++] = format[i];
                 if (count == 256)
@@ -134,8 +142,14 @@ int CDECL MSVCRT_fprintf(FILE *file, const char *format, ...)
     {
         switch (fmts[i])
         {
+            case 'A':
+            case 'a':
+            case 'E':
             case 'e':
+            case 'F':
             case 'f':
+            case 'G':
+            case 'g':
                 conv.d = va_arg(list, double);
                 call->args[i] = conv.i;
                 call->warn_float = TRUE;
