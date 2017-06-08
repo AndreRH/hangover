@@ -73,5 +73,12 @@ void __stdcall WinMainCRTStartup()
     p_fprintf(iob + 1, "Test \\ E=%E %% F=%F %% G=%G %% A=%A\n",
             1.23, 2.34, 3.45, 4.56);
 
+    p_fprintf(iob + 1, "6 ints: %d %d %d %d %d %d\n"
+                       "8 floats: %f %f %f %f %f %f %f %f\n"
+                       "mix: %x %f %s %f %d\n",
+                       1, 2, 3, 4, 5, 6, 1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8,
+                       7, 9.9, "hi", 10.1, 8);
+    p_fprintf(iob + 1, "\n");
+
     p_exit(123);
 }

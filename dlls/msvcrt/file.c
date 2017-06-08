@@ -57,10 +57,14 @@ void qemu___iob_func(struct qemu_syscall *c)
 struct qemu_fprintf
 {
     struct qemu_syscall super;
-    uint64_t argcount, warn_float;
+    uint64_t argcount, argcount_float;
     uint64_t file;
     uint64_t format;
-    uint64_t args[1];
+    struct _args
+    {
+        uint64_t is_float;
+        uint64_t arg;
+    } args[1];
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -130,12 +134,15 @@ int CDECL MSVCRT_fprintf(FILE *file, const char *format, ...)
         uint64_t i;
     } conv;
 
-    call = MSVCRT_malloc(sizeof(*call) + (count - 1) * sizeof(call->args));
+    if (count)
+        call = MSVCRT_malloc(sizeof(*call) + (count - 1) * sizeof(call->args));
+    else
+        call = MSVCRT_malloc(sizeof(*call));
     call->super.id = QEMU_SYSCALL_ID(CALL_FPRINTF);
     call->argcount = count;
     call->file = (uint64_t)file;
     call->format = (uint64_t)format;
-    call->warn_float = FALSE;
+    call->argcount_float = 0;
 
     va_start(list, format);
     for (i = 0; i < count; ++i)
@@ -151,12 +158,14 @@ int CDECL MSVCRT_fprintf(FILE *file, const char *format, ...)
             case 'G':
             case 'g':
                 conv.d = va_arg(list, double);
-                call->args[i] = conv.i;
-                call->warn_float = TRUE;
+                call->args[i].is_float = TRUE;
+                call->args[i].arg = conv.i;
+                call->argcount_float++;
                 break;
 
             default:
-                call->args[i] = va_arg(list, uint64_t);
+                call->args[i].is_float = FALSE;
+                call->args[i].arg = va_arg(list, uint64_t);
                 break;
         }
     }
@@ -172,59 +181,104 @@ int CDECL MSVCRT_fprintf(FILE *file, const char *format, ...)
 
 #else
 
+#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.type " #name suffix ",@function\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc\n\t.previous");
+#define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
+extern int CDECL call_fprintf( FILE *file, const char *format, void *func, int nb_args, int nb_onstack, const void *args );
+__ASM_GLOBAL_FUNC( call_fprintf,
+                   "stp x29, x30, [SP,#-16]!\n\t"           /* push FP & LR */
+                   "stp x19, x20, [SP,#-16]!\n\t"           /* push some regs we'll use */
+                   "add x9, x5, x3, lsl #4\n\t"             /* end=args+nb_args*sizeof(args[0]) */
+                   "mov x10, x2\n\t"                        /* remember func */
+                   "mov x11, x5\n\t"                        /* remember args */
+                   "mov x12, #0\n\t"                        /* init arg counter */
+                   "mov x13, #0\n\t"                        /* init float arg counter */
+                   "mov x19, #0\n\t"                        /* init align */
+                   "mov x20, #0\n\t"                        /* init stack arg counter */
+                   "cbz x4, 1f\n\t"                         /* if nb_onstack == 0 goto 1 */
+                   "lsl x4, x4, #3\n\t"                     /* nb_onstack *= 8 */
+                   "add x4, x4, #0x16\n\t"                  /* align helper */
+                   "and x4, x4, #0xfffffffffffffff0\n\t"    /* align */
+                   "sub SP, SP, x4\n\t"                     /* allocate space on stack for later */
+                   "mov x19, x4\n\t"                        /* remember align */
+                   "1: cbz x3, 11f\n\t"                     /* if nb_args == 0 goto 4 */
+                   /* init  done */
+                   "2: ldr x14, [x11]\n\t"                  /* is_float */
+                   "cbz x14, 6f\n\t"                        /* if !is_float goto 97 */
+                   "cmp x13, #8\n\t"                        /* if floats exceed 8, */
+                   "b.eq 5f\n\t"                            /* they need to continue on the stack */
+                   /* floats -> regs */
+                   "adr x14, 3f\n\t"                        /* different reg per arg nubmer */
+                   "add x14, x14, x13, lsl #3\n\t"          /* some kind of switch statement */
+                   "br x14\n\t"
+                   "3: ldr d0, [x11,#8]\n\t"
+                   "b 4f\n\t"
+                   "ldr d1, [x11,#8]\n\t"
+                   "b 4f\n\t"
+                   "ldr d2, [x11,#8]\n\t"
+                   "b 4f\n\t"
+                   "ldr d3, [x11,#8]\n\t"
+                   "b 4f\n\t"
+                   "ldr d4, [x11,#8]\n\t"
+                   "b 4f\n\t"
+                   "ldr d5, [x11,#8]\n\t"
+                   "b 4f\n\t"
+                   "ldr d6, [x11,#8]\n\t"
+                   "b 4f\n\t"
+                   "ldr d7, [x11,#8]\n\t"
+                   "4: add x13, x13, #1\n\t"                /* increment the float arg counter */
+                   "b 10f\n\t"                              /* next */
+                   /* floats -> stack */
+                   "5: add x17, sp, x20, lsl #3\n\t"        /* pos = 8 * stack arg count + SP */
+                   "ldr x16, [x11,#8]\n\t"                  /* load the value */
+                   "str x16, [x17]\n\t"                     /* store it at the calculated position */
+                   "add x20, x20, #1\n\t"                   /* increment the stack arg counter */
+                   "b 10f\n\t"                              /* next */
+                   "6: cmp x12, #6\n\t"                     /* if args exceed file+fmt+6, */
+                   "b.eq 9f\n\t"                            /* they need to continue on the stack */
+                   /* ints -> reg */
+                   "adr x14, 7f\n\t"                        /* different reg per arg nubmer */
+                   "add x14, x14, x12, lsl #3\n\t"          /* some kind of switch statement */
+                   "br x14\n\t"
+                   "7: ldr x2, [x11,#8]\n\t"
+                   "b 8f\n\t"
+                   "ldr x3, [x11,#8]\n\t"
+                   "b 8f\n\t"
+                   "ldr x4, [x11,#8]\n\t"
+                   "b 8f\n\t"
+                   "ldr x5, [x11,#8]\n\t"
+                   "b 8f\n\t"
+                   "ldr x6, [x11,#8]\n\t"
+                   "b 8f\n\t"
+                   "ldr x7, [x11,#8]\n\t"
+                   "8: add x12, x12, #1\n\t"                /* increment the arg counter */
+                   "b 10f\n\t"                              /* next */
+                   /* ints -> stack */
+                   "9: add x17, sp, x20, lsl #3\n\t"        /* pos = 8 * stack arg count + SP */
+                   "ldr x16, [x11,#8]\n\t"                  /* load the value */
+                   "str x16, [x17]\n\t"                     /* store it at the calculated position */
+                   "add x20, x20, #1\n\t"                   /* increment the stack arg counter */
+                   "10: add x11, x11, #0x10\n\t"            /* next in args */
+                   "cmp	x11, x9\n\t"                        /* end? */
+                   "b.ne 2b\n\t"                            /* if not, loop */
+                   "11: blr x10\n\t"                        /* call func */
+                   "add SP, SP, x19\n\t"                    /* restore stack */
+                   "ldp x19, x20, [SP], #16\n\t"            /* pop local regs */
+                   "ldp x29, x30, [SP], #16\n\t"            /* pop FP & LR */
+                   "ret\n\t" )
+
 void qemu_fprintf(struct qemu_syscall *call)
 {
     struct qemu_fprintf *c = (struct qemu_fprintf *)call;
-    int ret;
-    WINE_TRACE("(%lu args, format \"%s\"\n", c->argcount, (char *)QEMU_G2H(c->format));
-    union
-    {
-        double d;
-        uint64_t i;
-    } conv;
+    int ret, onstack = 0;
 
-    /* This is obviously not nice. I haven't found a way in C to push varargs into
-     * registers / the stack or construct a va_list. It probably needs arch-specific
-     * assembler code.
-     *
-     * This also doesn't pass doubles correctly. The double arrives correctly in
-     * the call structure but apparently needs to be re-interpreted as a float before
-     * being passed to fprintf, similarly to what the guest side does. */
-    switch (c->argcount)
-    {
-        case 0:
-            ret = p_fprintf(QEMU_G2H(c->file), QEMU_G2H(c->format));
-            break;
-        case 1:
-            ret = p_fprintf(QEMU_G2H(c->file), QEMU_G2H(c->format), c->args[0]);
-            break;
-        case 2:
-            ret = p_fprintf(QEMU_G2H(c->file), QEMU_G2H(c->format), c->args[0], c->args[1]);
-            break;
-        case 3:
-            ret = p_fprintf(QEMU_G2H(c->file), QEMU_G2H(c->format), c->args[0], c->args[1], c->args[2]);
-            break;
-        case 4:
-            ret = p_fprintf(QEMU_G2H(c->file), QEMU_G2H(c->format), c->args[0], c->args[1], c->args[2],
-                    c->args[3]);
-            break;
-        case 5:
-            ret = p_fprintf(QEMU_G2H(c->file), QEMU_G2H(c->format), c->args[0], c->args[1], c->args[2],
-                    c->args[3], c->args[4]);
-            break;
-        case 6:
-            ret = p_fprintf(QEMU_G2H(c->file), QEMU_G2H(c->format), c->args[0], c->args[1], c->args[2],
-                    c->args[3], c->args[4], c->args[5]);
-            break;
-        case 7:
-            ret = p_fprintf(QEMU_G2H(c->file), QEMU_G2H(c->format), c->args[0], c->args[1], c->args[2],
-                    c->args[3], c->args[4], c->args[5], c->args[6]);
-            break;
-        default:
-            WINE_FIXME("Write assembler code to push fprintf args onto the stack.\n");
-    }
-    if (c->warn_float)
-        WINE_FIXME("Floating point numbers not handled yet.\n");
+    if (c->argcount - c->argcount_float > 6)
+        onstack = c->argcount - c->argcount_float - 6;
+    if (c->argcount_float > 8)
+        onstack += c->argcount_float - 8;
+
+    WINE_TRACE("(%lu floats/%lu args, onstack %i, format \"%s\"\n", c->argcount_float, c->argcount, onstack, (char *)QEMU_G2H(c->format));
+
+    ret = call_fprintf(QEMU_G2H(c->file), QEMU_G2H(c->format), p_fprintf, c->argcount, onstack, c->args);
 
     c->super.iret = ret;
 }
