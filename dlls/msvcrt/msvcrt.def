@@ -19,6 +19,7 @@ EXPORTS
   _onexit=MSVCRT__onexit
   _unlock
   _wcmdln=MSVCRT__wcmdln
+  abort=MSVCRT_abort
   calloc=MSVCRT_calloc
   exit=MSVCRT_exit
   fprintf=MSVCRT_fprintf

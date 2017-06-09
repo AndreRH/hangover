@@ -13,6 +13,7 @@ enum msvcrt_calls
     CALL__LOCK,
     CALL__MATHERR,
     CALL__UNLOCK,
+    CALL_ABORT,
     CALL_CALLOC,
     CALL_EXIT,
     CALL_FPRINTF,
@@ -48,6 +49,7 @@ void qemu__cexit(struct qemu_syscall *call);
 void qemu__lock(struct qemu_syscall *call);
 void qemu__matherr(struct qemu_syscall *call);
 void qemu__unlock(struct qemu_syscall *call);
+void qemu_abort(struct qemu_syscall *call);
 void qemu_calloc(struct qemu_syscall *call);
 void qemu_exit(struct qemu_syscall *call);
 void qemu_fprintf(struct qemu_syscall *call);
@@ -71,6 +73,7 @@ void (* CDECL p__cexit)(void);
 void (* CDECL p__lock)(int locknum);
 int (* CDECL p__matherr)(void *exception);
 void (* CDECL p__unlock)(int locknum);
+void (* CDECL p_abort)(void);
 void *(* CDECL p_calloc)(size_t item_count,size_t size);
 void (* CDECL p_exit)(int code);
 int (* CDECL p_fprintf)(FILE *file, const char *format, ...);

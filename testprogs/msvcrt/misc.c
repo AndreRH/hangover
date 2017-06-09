@@ -29,6 +29,7 @@ void __stdcall WinMainCRTStartup()
     void (CDECL *p__lock)(int num);
     int (CDECL *p__matherr)(void *exception);
     void (CDECL *p__unlock)(int num);
+    void (CDECL *p_abort)(void);
     void *(CDECL *p_calloc)(size_t, size_t);
     void (CDECL *p_exit)(int code);
     void (CDECL *p_free)(void *ptr);
@@ -53,6 +54,7 @@ void __stdcall WinMainCRTStartup()
     p__lock = (void *)GetProcAddress(msvcrt, "_lock");
     p__matherr = (void *)GetProcAddress(msvcrt, "_matherr");
     p__unlock = (void *)GetProcAddress(msvcrt, "_unlock");
+    p_abort = (void *)GetProcAddress(msvcrt, "abort");
     p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
     p_exit = (void *)GetProcAddress(msvcrt, "exit");
     p_fprintf = (void *)GetProcAddress(msvcrt, "fprintf");
@@ -115,7 +117,10 @@ void __stdcall WinMainCRTStartup()
     p__lock(0);
     p__unlock(0);
 
-    /* p__cexit(); */
+    /*
+    p__cexit();
+    p_abort();
+     */
 
     WriteFile(hstdout, buffer, sizeof(buffer), &written, NULL);
     p_exit(123);

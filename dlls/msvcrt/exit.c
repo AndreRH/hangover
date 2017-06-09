@@ -130,6 +130,29 @@ void qemu__amsg_exit(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+void CDECL DECLSPEC_NORETURN MSVCRT_abort(void)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL_ABORT);
+
+    qemu_syscall(&call);
+
+    /* The syscall does not exit, but gcc does not know that. */
+    while(1);
+}
+
+#else
+
+void qemu_abort(struct qemu_syscall *c)
+{
+    WINE_TRACE("\n");
+    p_abort();
+}
+
+#endif
+
 struct qemu_exit
 {
     struct qemu_syscall super;
