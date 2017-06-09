@@ -3,7 +3,8 @@
 
 enum kernel32_calls
 {
-    CALL_EXITPROCESS = 0,
+    CALL_CLOSEHANDLE = 0,
+    CALL_EXITPROCESS,
     CALL_GETCURRENTPROCESS,
     CALL_GETCURRENTPROCESSID,
     CALL_GETCURRENTTHREADID,
@@ -38,6 +39,7 @@ enum kernel32_calls
 #ifndef QEMU_DLL_GUEST
 extern const struct qemu_ops *qemu_ops;
 
+void qemu_CloseHandle(struct qemu_syscall *call);
 void qemu_ExitProcess(struct qemu_syscall *call);
 void qemu_GetCurrentProcess(struct qemu_syscall *call);
 void qemu_GetCurrentProcessId(struct qemu_syscall *call);

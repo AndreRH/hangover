@@ -1,6 +1,7 @@
 LIBRARY kernel32.dll BASE=0x20000000
 
 EXPORTS
+  CloseHandle
   DeleteCriticalSection=ntdll.RtlDeleteCriticalSection
   EnterCriticalSection=ntdll.RtlEnterCriticalSection
   ExitProcess

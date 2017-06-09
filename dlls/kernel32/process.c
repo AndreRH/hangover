@@ -30,6 +30,36 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
+struct qemu_CloseHandle
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI WINBOOL WINAPI CloseHandle(HANDLE handle)
+{
+    struct qemu_CloseHandle call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CLOSEHANDLE);
+    call.handle = (uint64_t)handle;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_CloseHandle(struct qemu_syscall *call)
+{
+    struct qemu_CloseHandle *c = (struct qemu_CloseHandle *)call;
+    WINE_TRACE("\n");
+    c->super.iret = CloseHandle((HANDLE)c->handle);
+}
+
+#endif
+
 struct qemu_ExitProcess
 {
     struct qemu_syscall super;
@@ -43,7 +73,9 @@ WINBASEAPI DECLSPEC_NORETURN void WINAPI ExitProcess(UINT exitcode)
     struct qemu_ExitProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXITPROCESS);
     call.exitcode = exitcode;
+
     qemu_syscall(&call.super);
+
     while(1); /* The syscall does not exit, but gcc does not know that. */
 }
 

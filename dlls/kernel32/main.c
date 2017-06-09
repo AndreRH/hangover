@@ -33,6 +33,7 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu_CloseHandle,
     qemu_ExitProcess,
     qemu_GetCurrentProcess,
     qemu_GetCurrentProcessId,
