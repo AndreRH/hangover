@@ -30,3 +30,4 @@ EXPORTS
   memset=MSVCRT_memset
   realloc=MSVCRT_realloc
   strlen=MSVCRT_strlen
+  strncmp=MSVCRT_strncmp

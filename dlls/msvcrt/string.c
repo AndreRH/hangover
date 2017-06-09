@@ -133,3 +133,38 @@ void qemu_strlen(struct qemu_syscall *call)
 }
 
 #endif
+
+/* FIXME: Calling out of the vm for strncmp is probably a waste of time. */
+struct qemu_strncmp
+{
+    struct qemu_syscall super;
+    uint64_t str1, str2;
+    uint64_t len;
+};
+
+
+#ifdef QEMU_DLL_GUEST
+
+int CDECL MSVCRT_strncmp(const char *str1, const char *str2, size_t len)
+{
+    struct qemu_strncmp call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_STRNCMP);
+    call.str1 = (uint64_t)str1;
+    call.str2 = (uint64_t)str2;
+    call.len = len;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_strncmp(struct qemu_syscall *call)
+{
+    struct qemu_strncmp *c = (struct qemu_strncmp *)call;
+    WINE_TRACE("\n");
+    c->super.iret = p_strncmp(QEMU_G2H(c->str1), QEMU_G2H(c->str2), c->len);
+}
+
+#endif

@@ -41,6 +41,7 @@ void __stdcall WinMainCRTStartup()
     size_t (CDECL *p_strlen)(const char *str);
     void (* CDECL p___getmainargs)(int *argc, char** *argv, char** *envp,
             int expand_wildcards, int *new_mode);
+    int (CDECL *p_strncmp)(const char *str1, const char *str2, size_t len);
 
     HANDLE hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
     HANDLE msvcrt = LoadLibraryA("msvcrt.dll");
@@ -65,6 +66,7 @@ void __stdcall WinMainCRTStartup()
     p_memset = (void *)GetProcAddress(msvcrt, "memset");
     p_realloc = (void *)GetProcAddress(msvcrt, "realloc");
     p_strlen = (void *)GetProcAddress(msvcrt, "strlen");
+    p_strncmp = (void *)GetProcAddress(msvcrt, "strncmp");
 
     ptr = p_malloc(sizeof(*ptr));
     ptr[0] = 123;
@@ -121,6 +123,9 @@ void __stdcall WinMainCRTStartup()
     p__cexit();
     p_abort();
      */
+
+    p_fprintf(iob + 1, "string compare 9 chars \"%.13s\" and \"%.13s\" = %d\n",
+            tostdout, tostderr, p_strncmp(tostdout, tostderr, 9));
 
     WriteFile(hstdout, buffer, sizeof(buffer), &written, NULL);
     p_exit(123);
