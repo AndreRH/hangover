@@ -74,3 +74,34 @@ void qemu___getmainargs(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu___set_app_type
+{
+    struct qemu_syscall super;
+    uint64_t type;
+};
+
+
+#ifdef QEMU_DLL_GUEST
+
+void CDECL MSVCRT___set_app_type(int type)
+{
+    struct qemu___set_app_type call;
+    call.super.id = QEMU_SYSCALL_ID(CALL___SET_APP_TYPE);
+    call.type = type;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu___set_app_type(struct qemu_syscall *call)
+{
+    struct qemu___set_app_type *c = (struct qemu___set_app_type *)call;
+    WINE_TRACE("\n");
+    /* No harm in forwarding this. If there is a conflict with qemu then qemu should
+     * leave this thing alone. */
+    p___set_app_type(c->type);
+}
+
+#endif

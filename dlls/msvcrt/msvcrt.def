@@ -7,6 +7,7 @@ EXPORTS
   __initenv=MSVCRT___initenv
   __iob_func=MSVCRT___iob_func
   __lconv_init
+  __set_app_type=MSVCRT___set_app_type
   _onexit=MSVCRT__onexit
   calloc=MSVCRT_calloc
   exit=MSVCRT_exit
