@@ -68,13 +68,18 @@ void CDECL __getmainargs(int *argc, char** *argv, char** *envp, int expand_wildc
 
 void qemu___getmainargs(struct qemu_syscall *call)
 {
+    char **host_argv, **host_envp;
+
     struct qemu___getmainargs *c = (struct qemu___getmainargs *)call;
     /* This shouldn't forward, because we need to remove qemu and its args from
      * the arguments we pass to the guest file. Linux-user/main.c has some code
      * for that that can be used as a reference. */
     WINE_FIXME("\n");
-    p___getmainargs(QEMU_G2H(c->argc), QEMU_G2H(c->argv), QEMU_G2H(c->envp),
+    p___getmainargs(QEMU_G2H(c->argc), &host_argv, &host_envp,
             c->expand_wildcards, QEMU_G2H(c->new_mode));
+
+    *(uint64_t *)(QEMU_G2H(c->argv)) = QEMU_H2G(host_argv);
+    *(uint64_t *)(QEMU_G2H(c->envp)) = QEMU_H2G(host_envp);
 }
 
 #endif

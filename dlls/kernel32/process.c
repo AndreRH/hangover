@@ -178,7 +178,7 @@ void qemu_TlsGetValue(struct qemu_syscall *call)
     
     /* This should read the TLS entry from the guest TEB instead of
      * reading the host TLS entries. */
-    c->super.iret = (uint64_t)TlsGetValue(index);
+    c->super.iret = QEMU_H2G(TlsGetValue(index));
 }
 
 #endif

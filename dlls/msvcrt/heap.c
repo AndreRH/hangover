@@ -56,7 +56,7 @@ void qemu_calloc(struct qemu_syscall *call)
 {
     struct qemu_calloc *c = (struct qemu_calloc *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)p_calloc(c->item_count, c->size);
+    c->super.iret = QEMU_H2G(p_calloc(c->item_count, c->size));
 }
 
 #endif
@@ -114,7 +114,7 @@ void qemu_malloc(struct qemu_syscall *call)
 {
     struct qemu_malloc *c = (struct qemu_malloc *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)p_malloc(c->size);
+    c->super.iret = QEMU_H2G(p_malloc(c->size));
 }
 
 #endif
@@ -145,7 +145,7 @@ void qemu_realloc(struct qemu_syscall *call)
 {
     struct qemu_realloc *c = (struct qemu_realloc *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)p_realloc(QEMU_G2H(c->ptr), c->size);
+    c->super.iret = QEMU_H2G(p_realloc(QEMU_G2H(c->ptr), c->size));
 }
 
 #endif

@@ -61,7 +61,7 @@ void qemu_memset(struct qemu_syscall *call)
 {
     struct qemu_memset *c = (struct qemu_memset *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)p_memset(QEMU_G2H(c->ptr), c->c, c->size);
+    c->super.iret = QEMU_H2G(p_memset(QEMU_G2H(c->ptr), c->c, c->size));
 }
 
 #endif
@@ -97,7 +97,7 @@ void qemu_memcpy(struct qemu_syscall *call)
 {
     struct qemu_memcpy *c = (struct qemu_memcpy *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)p_memcpy(QEMU_G2H(c->dst), QEMU_G2H(c->src), c->size);
+    c->super.iret = QEMU_H2G(p_memcpy(QEMU_G2H(c->dst), QEMU_G2H(c->src), c->size));
 }
 
 #endif

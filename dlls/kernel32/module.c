@@ -124,8 +124,8 @@ void qemu_GetProcAddress(struct qemu_syscall *call)
     struct qemu_GetProcAddress *c = (struct qemu_GetProcAddress *)call;
     WINE_TRACE("\n");
 
-    c->super.iret = (uint64_t)qemu_ops->qemu_GetProcAddress((HMODULE)c->module,
-            QEMU_G2H(c->name));
+    c->super.iret = QEMU_H2G(qemu_ops->qemu_GetProcAddress((HMODULE)c->module,
+            QEMU_G2H(c->name)));
 }
 
 #endif

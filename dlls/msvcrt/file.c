@@ -49,7 +49,7 @@ FILE * CDECL MSVCRT___iob_func(void)
 void qemu___iob_func(struct qemu_syscall *c)
 {
     WINE_TRACE("\n");
-    c->iret = (uint64_t)p___iob_func();
+    c->iret = QEMU_H2G(p___iob_func());
 }
 
 #endif
@@ -352,7 +352,7 @@ void qemu_puts(struct qemu_syscall *call)
 {
     struct qemu_puts *c = (struct qemu_puts *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)p_puts(QEMU_G2H(c->str));
+    c->super.iret = p_puts(QEMU_G2H(c->str));
 }
 
 #endif

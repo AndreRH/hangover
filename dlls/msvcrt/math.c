@@ -67,7 +67,7 @@ static int host_matherr_callback(void *exception)
 {
     WINE_TRACE("Calling guest function at %p.\n", matherr_guest_func);
     if (matherr_guest_func)
-        return qemu_ops->qemu_execute(matherr_guest_func, (uint64_t)exception);
+        return qemu_ops->qemu_execute(matherr_guest_func, QEMU_H2G(exception));
 
     WINE_ERR("Unhandled math error!\n");
     return 0;
