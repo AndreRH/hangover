@@ -9,8 +9,10 @@ EXPORTS
   __lconv_init
   __set_app_type=MSVCRT___set_app_type
   __setusermatherr=MSVCRT___setusermatherr
+  _acmdln=MSVCRT__acmdln
   _matherr=MSVCRT__matherr
   _onexit=MSVCRT__onexit
+  _wcmdln=MSVCRT__wcmdln
   calloc=MSVCRT_calloc
   exit=MSVCRT_exit
   fprintf=MSVCRT_fprintf
