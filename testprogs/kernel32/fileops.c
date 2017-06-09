@@ -8,6 +8,8 @@ void __stdcall WinMainCRTStartup()
     char buffer2[] = "Calling CreateFile to create testfile.txt\n";
     HANDLE file, stdout = GetStdHandle(STD_OUTPUT_HANDLE);
     DWORD written;
+    WIN32_FIND_DATAW find_data = {0};
+    HANDLE find_handle;
 
     WriteFile(stdout, buffer2, sizeof(buffer2), &written, NULL);
 
@@ -15,6 +17,9 @@ void __stdcall WinMainCRTStartup()
             CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     WriteFile(f, buffer, sizeof(buffer), &written, NULL);
     CloseHandle(f);
+
+    find_handle = FindFirstFileW(L"*", &find_data);
+    FindClose(find_handle);
 
     ExitProcess(0);
 }

@@ -7,6 +7,8 @@ EXPORTS
   DeleteCriticalSection=ntdll.RtlDeleteCriticalSection
   EnterCriticalSection=ntdll.RtlEnterCriticalSection
   ExitProcess
+  FindClose
+  FindFirstFileW
   GetCurrentProcess
   GetCurrentProcessId
   GetCurrentThreadId

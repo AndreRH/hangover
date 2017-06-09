@@ -75,6 +75,68 @@ void qemu_CreateFileW(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_FindClose
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI WINBOOL WINAPI FindClose(HANDLE handle)
+{
+    struct qemu_FindClose call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_FINDCLOSE);
+    call.handle = (uint64_t)handle;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_FindClose(struct qemu_syscall *call)
+{
+    struct qemu_FindClose *c = (struct qemu_FindClose *)call;
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)FindClose((HANDLE)c->handle);
+}
+
+#endif
+
+struct qemu_FindFirstFileW
+{
+    struct qemu_syscall super;
+    uint64_t name;
+    uint64_t finddata;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HANDLE WINAPI FindFirstFileW(const wchar_t *name, WIN32_FIND_DATAW *finddata)
+{
+    struct qemu_FindFirstFileW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_FINDFIRSTFILEW);
+    call.name = (uint64_t)name;
+    call.finddata = (uint64_t)finddata;
+
+    qemu_syscall(&call.super);
+
+    return (HANDLE)call.super.iret;
+}
+
+#else
+
+void qemu_FindFirstFileW(struct qemu_syscall *call)
+{
+    struct qemu_FindFirstFileW *c = (struct qemu_FindFirstFileW *)call;
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)FindFirstFileW(QEMU_G2H(c->name), QEMU_G2H(c->finddata));
+}
+
+#endif
+
 struct qemu_WriteFile
 {
     struct qemu_syscall super;
