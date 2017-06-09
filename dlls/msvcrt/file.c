@@ -134,10 +134,7 @@ int CDECL MSVCRT_fprintf(FILE *file, const char *format, ...)
         uint64_t i;
     } conv;
 
-    if (count)
-        call = MSVCRT_malloc(sizeof(*call) + (count - 1) * sizeof(call->args));
-    else
-        call = MSVCRT_malloc(sizeof(*call));
+    call = MSVCRT_malloc(offsetof(struct qemu_fprintf, args[count]));
     call->super.id = QEMU_SYSCALL_ID(CALL_FPRINTF);
     call->argcount = count;
     call->file = (uint64_t)file;
