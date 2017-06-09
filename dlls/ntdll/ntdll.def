@@ -2,6 +2,7 @@ LIBRARY ntdll.dll BASE=0x10000000
 
 EXPORTS
   __C_specific_handler
+  DbgBreakPoint
   RtlAddFunctionTable
   RtlCaptureContext
   RtlDeleteCriticalSection
