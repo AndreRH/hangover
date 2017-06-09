@@ -26,7 +26,9 @@ void __stdcall WinMainCRTStartup()
     void (CDECL *p___set_app_type)(int type);
     void (CDECL *p___setusermatherr)(void *func);
     int (CDECL *p__cexit)(void);
+    void (CDECL *p__lock)(int num);
     int (CDECL *p__matherr)(void *exception);
+    void (CDECL *p__unlock)(int num);
     void *(CDECL *p_calloc)(size_t, size_t);
     void (CDECL *p_exit)(int code);
     void (CDECL *p_free)(void *ptr);
@@ -48,7 +50,9 @@ void __stdcall WinMainCRTStartup()
     p___set_app_type = (void *)GetProcAddress(msvcrt, "__set_app_type");
     p___setusermatherr = (void *)GetProcAddress(msvcrt, "__setusermatherr");
     p__cexit = (void *)GetProcAddress(msvcrt, "_cexit");
+    p__lock = (void *)GetProcAddress(msvcrt, "_lock");
     p__matherr = (void *)GetProcAddress(msvcrt, "_matherr");
+    p__unlock = (void *)GetProcAddress(msvcrt, "_unlock");
     p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
     p_exit = (void *)GetProcAddress(msvcrt, "exit");
     p_fprintf = (void *)GetProcAddress(msvcrt, "fprintf");
@@ -107,6 +111,9 @@ void __stdcall WinMainCRTStartup()
     p_fprintf(iob + 1, "Calling matherr\n");
     n = p__matherr(NULL);
     p_fprintf(iob + 1, "Got %x from matherr\n", n);
+
+    p__lock(0);
+    p__unlock(0);
 
     /* p__cexit(); */
 
