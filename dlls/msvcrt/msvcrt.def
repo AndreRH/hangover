@@ -11,6 +11,7 @@ EXPORTS
   __setusermatherr=MSVCRT___setusermatherr
   _acmdln=MSVCRT__acmdln
   _amsg_exit
+  _cexit=MSVCRT__cexit
   _matherr=MSVCRT__matherr
   _onexit=MSVCRT__onexit
   _wcmdln=MSVCRT__wcmdln

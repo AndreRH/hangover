@@ -25,6 +25,7 @@ void __stdcall WinMainCRTStartup()
     void (CDECL *p___lconv_init)(void);
     void (CDECL *p___set_app_type)(int type);
     void (CDECL *p___setusermatherr)(void *func);
+    int (CDECL *p__cexit)(void);
     int (CDECL *p__matherr)(void *exception);
     void *(CDECL *p_calloc)(size_t, size_t);
     void (CDECL *p_exit)(int code);
@@ -46,6 +47,7 @@ void __stdcall WinMainCRTStartup()
     p___lconv_init = (void *)GetProcAddress(msvcrt, "__lconv_init");
     p___set_app_type = (void *)GetProcAddress(msvcrt, "__set_app_type");
     p___setusermatherr = (void *)GetProcAddress(msvcrt, "__setusermatherr");
+    p__cexit = (void *)GetProcAddress(msvcrt, "_cexit");
     p__matherr = (void *)GetProcAddress(msvcrt, "_matherr");
     p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
     p_exit = (void *)GetProcAddress(msvcrt, "exit");
@@ -105,6 +107,8 @@ void __stdcall WinMainCRTStartup()
     p_fprintf(iob + 1, "Calling matherr\n");
     n = p__matherr(NULL);
     p_fprintf(iob + 1, "Got %x from matherr\n", n);
+
+    /* p__cexit(); */
 
     WriteFile(hstdout, buffer, sizeof(buffer), &written, NULL);
     p_exit(123);

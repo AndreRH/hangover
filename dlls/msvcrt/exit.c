@@ -160,3 +160,23 @@ void qemu_exit(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+CDECL void MSVCRT__cexit(int garbble)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL__CEXIT);
+
+    qemu_syscall(&call);
+}
+
+#else
+
+void qemu__cexit(struct qemu_syscall *call)
+{
+    WINE_TRACE("\n");
+    p__cexit();
+}
+
+#endif
