@@ -30,6 +30,51 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
+struct qemu_CreateFileW
+{
+    struct qemu_syscall super;
+    uint64_t name;
+    uint64_t access;
+    uint64_t share;
+    uint64_t security;
+    uint64_t disposition;
+    uint64_t flags;
+    uint64_t template;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HANDLE WINAPI CreateFileW(const wchar_t *name, DWORD access, DWORD share,
+        SECURITY_ATTRIBUTES *security, DWORD disposition, DWORD flags,
+        HANDLE template)
+{
+    struct qemu_CreateFileW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CREATEFILEW);
+    call.name = (uint64_t)name;
+    call.access = access;
+    call.share = share;
+    call.security = (uint64_t)security;
+    call.disposition = disposition;
+    call.flags = flags;
+    call.template = (uint64_t)template;
+
+    qemu_syscall(&call.super);
+
+    return (HANDLE)call.super.iret;
+}
+
+#else
+
+void qemu_CreateFileW(struct qemu_syscall *call)
+{
+    struct qemu_CreateFileW *c = (struct qemu_CreateFileW *)call;
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)CreateFileW(QEMU_G2H(c->name), c->access, c->share,
+            QEMU_G2H(c->security), c->disposition, c->flags, (HANDLE)c->template);
+}
+
+#endif
+
 struct qemu_WriteFile
 {
     struct qemu_syscall super;
@@ -42,7 +87,7 @@ struct qemu_WriteFile
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI WINBOOL WINAPI WriteFile (HANDLE file, const void *buffer, DWORD to_write, DWORD *written, OVERLAPPED *ovl)
+WINBASEAPI WINBOOL WINAPI WriteFile(HANDLE file, const void *buffer, DWORD to_write, DWORD *written, OVERLAPPED *ovl)
 {
     struct qemu_WriteFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITEFILE);
@@ -51,7 +96,9 @@ WINBASEAPI WINBOOL WINAPI WriteFile (HANDLE file, const void *buffer, DWORD to_w
     call.to_write = to_write;
     call.written = (uint64_t)written;
     call.ovl = (uint64_t)ovl;
+
     qemu_syscall(&call.super);
+
     return call.super.iret;
 }
 
