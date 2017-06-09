@@ -184,3 +184,45 @@ void qemu_RegQueryValueExW(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_RegSetValueExW
+{
+    struct qemu_syscall super;
+    uint64_t key;
+    uint64_t name;
+    uint64_t reserved;
+    uint64_t type;
+    uint64_t data;
+    uint64_t count;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINADVAPI LONG WINAPI RegSetValueExW(HKEY key, const wchar_t *name, DWORD reserved,
+        DWORD type, const BYTE *data, DWORD count)
+{
+    struct qemu_RegQueryValueExW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_REGSETVALUEEXW);
+    call.key = (uint64_t)key;
+    call.name = (uint64_t)name;
+    call.reserved = reserved;
+    call.type = type;
+    call.data = (uint64_t)data;
+    call.count = count;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RegSetValueExW(struct qemu_syscall *call)
+{
+    struct qemu_RegSetValueExW *c = (struct qemu_RegSetValueExW *)call;
+    WINE_TRACE("\n");
+    c->super.iret = RegSetValueExW((HANDLE)c->key, QEMU_G2H(c->name), c->reserved,
+            c->type, QEMU_G2H(c->data), c->count);
+}
+
+#endif

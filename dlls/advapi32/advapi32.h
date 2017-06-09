@@ -10,6 +10,7 @@ enum msvcrt_calls
     CALL_REGCREATEKEYEXW,
     CALL_REGOPENKEY,
     CALL_REGQUERYVALUEEXW,
+    CALL_REGSETVALUEEXW,
 };
 
 #ifndef QEMU_DLL_GUEST
@@ -21,6 +22,7 @@ void qemu_RegCloseKey(struct qemu_syscall *call);
 void qemu_RegCreateKeyExW(struct qemu_syscall *call);
 void qemu_RegOpenKeyW(struct qemu_syscall *call);
 void qemu_RegQueryValueExW(struct qemu_syscall *call);
+void qemu_RegSetValueExW(struct qemu_syscall *call);
 
 #endif
 

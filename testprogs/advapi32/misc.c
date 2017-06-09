@@ -31,6 +31,9 @@ int WINAPI WinMain2()
             KEY_ALL_ACCESS, NULL, &key2, &disp);
     fprintf(stdout, "RegCreateKeyExW %lu, key=%p\n", lret, key2);
 
+    lret = RegSetValueExW(key, L"testtest", 0, REG_SZ, (BYTE *)buffer2, sizeof(buffer2));
+    fprintf(stdout, "RegSetValueExW %lu\n", lret);
+
     lret = RegCloseKey(key);
     fprintf(stdout, "RegCloseKey %lu\n", lret);
 

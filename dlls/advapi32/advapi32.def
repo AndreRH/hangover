@@ -6,3 +6,4 @@ EXPORTS
   RegCreateKeyExW
   RegOpenKeyW
   RegQueryValueExW
+  RegSetValueExW

@@ -38,6 +38,7 @@ static const syscall_handler dll_functions[] =
     qemu_RegCreateKeyExW,
     qemu_RegOpenKeyW,
     qemu_RegQueryValueExW,
+    qemu_RegSetValueExW,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
