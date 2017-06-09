@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <signal.h>
 
 int CDECL matherr_callback(void *exception);
 
@@ -41,6 +42,7 @@ void __stdcall WinMainCRTStartup()
     void *(CDECL *p_memcpy)(void *dst, const void *src, size_t size);
     void *(CDECL *p_memset)(void *ptr, int val, size_t size);
     void *(CDECL *p_realloc)(void *ptr, size_t size);
+    __p_sig_fn_t (CDECL *p_signal)(int sig, __p_sig_fn_t func);
     size_t (CDECL *p_strlen)(const char *str);
     void (* CDECL p___getmainargs)(int *argc, char** *argv, char** *envp,
             int expand_wildcards, int *new_mode);
@@ -68,6 +70,7 @@ void __stdcall WinMainCRTStartup()
     p_memcpy = (void *)GetProcAddress(msvcrt, "memcpy");
     p_memset = (void *)GetProcAddress(msvcrt, "memset");
     p_realloc = (void *)GetProcAddress(msvcrt, "realloc");
+    p_signal = (void *)GetProcAddress(msvcrt, "signal");
     p_strlen = (void *)GetProcAddress(msvcrt, "strlen");
     p_strncmp = (void *)GetProcAddress(msvcrt, "strncmp");
     p_vfprintf = (void *)GetProcAddress(msvcrt, "vfprintf");
@@ -132,6 +135,8 @@ void __stdcall WinMainCRTStartup()
             tostdout, tostderr, p_strncmp(tostdout, tostderr, 9));
 
     call_vfprintf("Hello vfprintf(i1=%d, f=%f)\n", 1, 123.45);
+
+    p_signal(SIGINT, NULL);
 
     WriteFile(hstdout, buffer, sizeof(buffer), &written, NULL);
     p_exit(123);

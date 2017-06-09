@@ -65,6 +65,7 @@ static const syscall_handler dll_functions[] =
     qemu_memcpy,
     qemu_memset,
     qemu_realloc,
+    qemu_signal,
     qemu_strlen,
     qemu_strncmp
 };

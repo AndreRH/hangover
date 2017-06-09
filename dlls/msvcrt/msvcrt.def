@@ -29,6 +29,7 @@ EXPORTS
   memcpy=MSVCRT_memcpy
   memset=MSVCRT_memset
   realloc=MSVCRT_realloc
+  signal=MSVCRT_signal
   strlen=MSVCRT_strlen
   strncmp=MSVCRT_strncmp
   vfprintf=MSVCRT_vfprintf
