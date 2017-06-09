@@ -109,3 +109,21 @@ void qemu___set_app_type(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+typedef void (CDECL *_INITTERMFUN)(void);
+void CDECL _initterm(_INITTERMFUN *start,_INITTERMFUN *end)
+{
+    _INITTERMFUN* current = start;
+
+    while (current<end)
+    {
+        if (*current)
+        {
+            (**current)();
+        }
+        current++;
+    }
+}
+#endif
