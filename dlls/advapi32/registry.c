@@ -59,6 +59,56 @@ void qemu_RegCloseKey(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_RegCreateKeyExW
+{
+    struct qemu_syscall super;
+    uint64_t key;
+    uint64_t subkey;
+    uint64_t reserved;
+    uint64_t class;
+    uint64_t options;
+    uint64_t sam;
+    uint64_t security;
+    uint64_t result;
+    uint64_t disposition;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINADVAPI LONG WINAPI RegCreateKeyExW(HKEY key, const wchar_t *subkey, DWORD reserved,
+        wchar_t *class, DWORD options, REGSAM sam, SECURITY_ATTRIBUTES *security,
+        HKEY *result, DWORD *disposition)
+{
+    struct qemu_RegCreateKeyExW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_REGCREATEKEYEXW);
+    call.key = (uint64_t)key;
+    call.subkey = (uint64_t)subkey;
+    call.reserved = reserved;
+    call.class = (uint64_t)class;
+    call.options = options;
+    call.sam = sam;
+    call.security = (uint64_t)security;
+    call.result = (uint64_t)result;
+    call.disposition = (uint64_t)disposition;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RegCreateKeyExW(struct qemu_syscall *call)
+{
+    struct qemu_RegCreateKeyExW *c = (struct qemu_RegCreateKeyExW *)call;
+    WINE_TRACE("\n");
+    c->super.iret = RegCreateKeyExW((HANDLE)c->key, QEMU_G2H(c->subkey), c->reserved,
+            QEMU_G2H(c->class), c->options, c->sam, QEMU_G2H(c->security),
+            QEMU_G2H(c->result), QEMU_G2H(c->disposition));
+}
+
+#endif
+
 struct qemu_RegOpenKeyW
 {
     struct qemu_syscall super;

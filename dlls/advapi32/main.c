@@ -35,6 +35,7 @@ static const syscall_handler dll_functions[] =
 {
     qemu_IsTextUnicode,
     qemu_RegCloseKey,
+    qemu_RegCreateKeyExW,
     qemu_RegOpenKeyW,
     qemu_RegQueryValueExW,
 };

@@ -3,5 +3,6 @@ LIBRARY advapi32.dll BASE=0x40000000
 EXPORTS
   IsTextUnicode
   RegCloseKey
+  RegCreateKeyExW
   RegOpenKeyW
   RegQueryValueExW
