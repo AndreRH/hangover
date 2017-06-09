@@ -8,6 +8,7 @@ enum msvcrt_calls
     CALL___LCONV_INIT,
     CALL___SET_APP_TYPE,
     CALL___SETUSERMATHERR,
+    CALL__AMSG_EXIT,
     CALL__MATHERR,
     CALL_CALLOC,
     CALL_EXIT,
@@ -39,6 +40,7 @@ void qemu___iob_func(struct qemu_syscall *call);
 void qemu___lconv_init(struct qemu_syscall *call);
 void qemu___set_app_type(struct qemu_syscall *call);
 void qemu___setusermatherr(struct qemu_syscall *call);
+void qemu__amsg_exit(struct qemu_syscall *call);
 void qemu__matherr(struct qemu_syscall *call);
 void qemu_calloc(struct qemu_syscall *call);
 void qemu_exit(struct qemu_syscall *call);
@@ -58,6 +60,7 @@ FILE *(* CDECL p___iob_func)();
 int CDECL (*p___lconv_init)(void);
 void CDECL (*p___set_app_type)(int type);
 void CDECL (*p___setusermatherr)(void *func);
+void CDECL (*p__amsg_exit)(int errnum);
 int CDECL (*p__matherr)(void *exception);
 void *(* CDECL p_calloc)(size_t item_count,size_t size);
 void (* CDECL p_exit)(int code);

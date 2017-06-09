@@ -102,12 +102,39 @@ MSVCRT__onexit_t CDECL MSVCRT__onexit(MSVCRT__onexit_t func)
 
 #endif
 
+struct qemu__amsg_exit
+{
+    struct qemu_syscall super;
+    uint64_t errnum;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+CDECL void _amsg_exit(int errnum)
+{
+    struct qemu__amsg_exit call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__AMSG_EXIT);
+    call.errnum = errnum;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu__amsg_exit(struct qemu_syscall *call)
+{
+    struct qemu__amsg_exit *c = (struct qemu__amsg_exit *)call;
+    WINE_TRACE("\n");
+    p__amsg_exit(c->errnum);
+}
+
+#endif
+
 struct qemu_exit
 {
     struct qemu_syscall super;
     uint64_t code;
 };
-
 
 #ifdef QEMU_DLL_GUEST
 
