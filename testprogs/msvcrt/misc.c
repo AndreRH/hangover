@@ -4,6 +4,11 @@
 #include <stdint.h>
 #include <stdio.h>
 
+int CDECL matherr_callback(void *exception);
+
+static int (* CDECL p_fprintf)(FILE *file, const char *format, ...);
+static FILE *iob;
+
 void __stdcall WinMainCRTStartup()
 {
     char buffer[] = "Going to call exit(123)\n";
@@ -11,7 +16,6 @@ void __stdcall WinMainCRTStartup()
     const char *tostderr = "Hello stderr!\n";
     DWORD written, *ptr;
     char *charp;
-    FILE *iob;
     int n = 0;
     int argc;
     char **argv, **envp;
@@ -20,9 +24,10 @@ void __stdcall WinMainCRTStartup()
     FILE *(CDECL *p___iob_func)(void);
     void (CDECL *p___lconv_init)(void);
     void (CDECL *p___set_app_type)(int type);
+    void (CDECL *p___setusermatherr)(void *func);
+    int (CDECL *p__matherr)(void *exception);
     void *(CDECL *p_calloc)(size_t, size_t);
     void (CDECL *p_exit)(int code);
-    int (* CDECL p_fprintf)(FILE *file, const char *format, ...);
     void (CDECL *p_free)(void *ptr);
     size_t (* CDECL p_fwrite)(const void *str, size_t size, size_t count, FILE *file);
     void *(CDECL *p_malloc)(size_t size);
@@ -40,6 +45,8 @@ void __stdcall WinMainCRTStartup()
     p___iob_func = (void *)GetProcAddress(msvcrt, "__iob_func");
     p___lconv_init = (void *)GetProcAddress(msvcrt, "__lconv_init");
     p___set_app_type = (void *)GetProcAddress(msvcrt, "__set_app_type");
+    p___setusermatherr = (void *)GetProcAddress(msvcrt, "__setusermatherr");
+    p__matherr = (void *)GetProcAddress(msvcrt, "_matherr");
     p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
     p_exit = (void *)GetProcAddress(msvcrt, "exit");
     p_fprintf = (void *)GetProcAddress(msvcrt, "fprintf");
@@ -94,6 +101,17 @@ void __stdcall WinMainCRTStartup()
     p___lconv_init();
     p___set_app_type(2);
 
+    p___setusermatherr(matherr_callback);
+    p_fprintf(iob + 1, "Calling matherr\n");
+    n = p__matherr(NULL);
+    p_fprintf(iob + 1, "Got %x from matherr\n", n);
+
     WriteFile(hstdout, buffer, sizeof(buffer), &written, NULL);
     p_exit(123);
+}
+
+int CDECL matherr_callback(void *exception)
+{
+    p_fprintf(iob + 1, "math err callback, exception %p\n", exception);
+    return 0x1234567;
 }
