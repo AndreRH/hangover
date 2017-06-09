@@ -53,5 +53,15 @@ PATH=$PATH:$DESTDIR/build/install/bin make
 ln -sf $PWD/advapi32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
 ln -sf $PWD/qemu_advapi32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
 
+cd ../../dlls/comdlg32
+PATH=$PATH:$DESTDIR/build/install/bin make
+ln -sf $PWD/comdlg32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
+ln -sf $PWD/qemu_comdlg32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+
+cd ../../dlls/gdi32
+PATH=$PATH:$DESTDIR/build/install/bin make
+ln -sf $PWD/gdi32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
+ln -sf $PWD/qemu_gdi32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+
 #cd $DESTDIR/build
 #ln -s wine-host/dlls/msvcrt/msvcrt.dll qemu/x86_64-windows-user/qemu_guest_dll
