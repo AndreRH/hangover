@@ -13,6 +13,9 @@ void __stdcall WinMainCRTStartup()
     char *charp;
     FILE *iob;
     int n = 0;
+    int argc;
+    char **argv, **envp;
+    int new_mode;
 
     FILE *(CDECL *p___iob_func)();
     void *(CDECL *p_calloc)(size_t, size_t);
@@ -25,10 +28,13 @@ void __stdcall WinMainCRTStartup()
     void *(CDECL *p_memset)(void *ptr, int val, size_t size);
     void *(CDECL *p_realloc)(void *ptr, size_t size);
     size_t (CDECL *p_strlen)(const char *str);
+    void (* CDECL p___getmainargs)(int *argc, char** *argv, char** *envp,
+            int expand_wildcards, int *new_mode);
 
     HANDLE hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
     HANDLE msvcrt = LoadLibraryA("msvcrt.dll");
 
+    p___getmainargs = (void *)GetProcAddress(msvcrt, "__getmainargs");
     p___iob_func = (void *)GetProcAddress(msvcrt, "__iob_func");
     p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
     p_exit = (void *)GetProcAddress(msvcrt, "exit");
@@ -55,8 +61,6 @@ void __stdcall WinMainCRTStartup()
     p_memcpy(charp, WinMainCRTStartup, 4);
     p_free(charp);
 
-    WriteFile(hstdout, buffer, sizeof(buffer), &written, NULL);
-
     iob = p___iob_func();
     p_fwrite(tostdout, p_strlen(tostdout), 1, iob + 1);
     p_fwrite(tostderr, p_strlen(tostderr), 1, iob + 2);
@@ -80,5 +84,9 @@ void __stdcall WinMainCRTStartup()
                        7, 9.9, "hi", 10.1, 8);
     p_fprintf(iob + 1, "\n");
 
+    p___getmainargs(&argc, &argv, &envp, 0, &new_mode);
+    p_fprintf(iob + 1, "%d arguments, argv[0]=%s\n", argc, argv[0]);
+
+    WriteFile(hstdout, buffer, sizeof(buffer), &written, NULL);
     p_exit(123);
 }
