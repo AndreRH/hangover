@@ -7,7 +7,10 @@
 int CDECL matherr_callback(void *exception);
 
 static int (* CDECL p_fprintf)(FILE *file, const char *format, ...);
+int (CDECL *p_vfprintf)(FILE *file, const char *format, va_list args);
 static FILE *iob;
+
+void call_vfprintf(const char *fmt, ...);
 
 void __stdcall WinMainCRTStartup()
 {
@@ -67,6 +70,7 @@ void __stdcall WinMainCRTStartup()
     p_realloc = (void *)GetProcAddress(msvcrt, "realloc");
     p_strlen = (void *)GetProcAddress(msvcrt, "strlen");
     p_strncmp = (void *)GetProcAddress(msvcrt, "strncmp");
+    p_vfprintf = (void *)GetProcAddress(msvcrt, "vfprintf");
 
     ptr = p_malloc(sizeof(*ptr));
     ptr[0] = 123;
@@ -127,6 +131,8 @@ void __stdcall WinMainCRTStartup()
     p_fprintf(iob + 1, "string compare 9 chars \"%.13s\" and \"%.13s\" = %d\n",
             tostdout, tostderr, p_strncmp(tostdout, tostderr, 9));
 
+    call_vfprintf("Hello vfprintf(i1=%d, f=%f)\n", 1, 123.45);
+
     WriteFile(hstdout, buffer, sizeof(buffer), &written, NULL);
     p_exit(123);
 }
@@ -135,4 +141,13 @@ int CDECL matherr_callback(void *exception)
 {
     p_fprintf(iob + 1, "math err callback, exception %p\n", exception);
     return 0x1234567;
+}
+
+void call_vfprintf(const char *fmt, ...)
+{
+    va_list list;
+
+    va_start(list, fmt);
+    p_vfprintf(iob + 1, fmt, list);
+    va_end(list);
 }

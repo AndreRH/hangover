@@ -121,13 +121,12 @@ static unsigned int count_printf_args(const char *format, char *fmts)
     return count;
 }
 
-int CDECL MSVCRT_fprintf(FILE *file, const char *format, ...)
+int CDECL MSVCRT_vfprintf(FILE *file, const char *format, va_list args)
 {
     struct qemu_fprintf *call;
     int ret;
     char fmts[256] = {0};
     unsigned int count = count_printf_args(format, fmts), i, arg = 0;
-    va_list list;
     union
     {
         double d;
@@ -141,7 +140,6 @@ int CDECL MSVCRT_fprintf(FILE *file, const char *format, ...)
     call->format = (uint64_t)format;
     call->argcount_float = 0;
 
-    va_start(list, format);
     for (i = 0; i < count; ++i)
     {
         switch (fmts[i])
@@ -154,7 +152,7 @@ int CDECL MSVCRT_fprintf(FILE *file, const char *format, ...)
             case 'f':
             case 'G':
             case 'g':
-                conv.d = va_arg(list, double);
+                conv.d = va_arg(args, double);
                 call->args[i].is_float = TRUE;
                 call->args[i].arg = conv.i;
                 call->argcount_float++;
@@ -162,16 +160,27 @@ int CDECL MSVCRT_fprintf(FILE *file, const char *format, ...)
 
             default:
                 call->args[i].is_float = FALSE;
-                call->args[i].arg = va_arg(list, uint64_t);
+                call->args[i].arg = va_arg(args, uint64_t);
                 break;
         }
     }
-    va_end(list);
 
     qemu_syscall(&call->super);
     ret = call->super.iret;
 
     MSVCRT_free(call);
+
+    return ret;
+}
+
+int CDECL MSVCRT_fprintf(FILE *file, const char *format, ...)
+{
+    int ret;
+    va_list list;
+
+    va_start(list, format);
+    ret = MSVCRT_vfprintf(file, format, list);
+    va_end(list);
 
     return ret;
 }

@@ -31,3 +31,4 @@ EXPORTS
   realloc=MSVCRT_realloc
   strlen=MSVCRT_strlen
   strncmp=MSVCRT_strncmp
+  vfprintf=MSVCRT_vfprintf
