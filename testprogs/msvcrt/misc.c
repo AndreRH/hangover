@@ -41,10 +41,11 @@ void __stdcall WinMainCRTStartup()
     void *(CDECL *p_malloc)(size_t size);
     void *(CDECL *p_memcpy)(void *dst, const void *src, size_t size);
     void *(CDECL *p_memset)(void *ptr, int val, size_t size);
+    int (CDECL *p_puts)(const char *str);
     void *(CDECL *p_realloc)(void *ptr, size_t size);
     __p_sig_fn_t (CDECL *p_signal)(int sig, __p_sig_fn_t func);
     size_t (CDECL *p_strlen)(const char *str);
-    void (* CDECL p___getmainargs)(int *argc, char** *argv, char** *envp,
+    void (CDECL *p___getmainargs)(int *argc, char** *argv, char** *envp,
             int expand_wildcards, int *new_mode);
     int (CDECL *p_strncmp)(const char *str1, const char *str2, size_t len);
 
@@ -69,6 +70,7 @@ void __stdcall WinMainCRTStartup()
     p_malloc = (void *)GetProcAddress(msvcrt, "malloc");
     p_memcpy = (void *)GetProcAddress(msvcrt, "memcpy");
     p_memset = (void *)GetProcAddress(msvcrt, "memset");
+    p_puts = (void *)GetProcAddress(msvcrt, "puts");
     p_realloc = (void *)GetProcAddress(msvcrt, "realloc");
     p_signal = (void *)GetProcAddress(msvcrt, "signal");
     p_strlen = (void *)GetProcAddress(msvcrt, "strlen");
@@ -137,6 +139,8 @@ void __stdcall WinMainCRTStartup()
     call_vfprintf("Hello vfprintf(i1=%d, f=%f)\n", 1, 123.45);
 
     p_signal(SIGINT, NULL);
+
+    p_puts("This is from puts()");
 
     WriteFile(hstdout, buffer, sizeof(buffer), &written, NULL);
     p_exit(123);

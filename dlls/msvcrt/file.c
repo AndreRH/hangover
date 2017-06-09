@@ -326,3 +326,33 @@ void qemu_fwrite(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_puts
+{
+    struct qemu_syscall super;
+    uint64_t str;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+int CDECL MSVCRT_puts(const char *str)
+{
+    struct qemu_puts call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_PUTS);
+    call.str = (uint64_t)str;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_puts(struct qemu_syscall *call)
+{
+    struct qemu_puts *c = (struct qemu_puts *)call;
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)p_puts(QEMU_G2H(c->str));
+}
+
+#endif

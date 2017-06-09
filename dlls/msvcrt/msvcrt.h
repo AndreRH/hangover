@@ -22,6 +22,7 @@ enum msvcrt_calls
     CALL_MALLOC,
     CALL_MEMCPY,
     CALL_MEMSET,
+    CALL_PUTS,
     CALL_REALLOC,
     CALL_SIGNAL,
     CALL_STRLEN,
@@ -60,6 +61,7 @@ void qemu_fwrite(struct qemu_syscall *call);
 void qemu_malloc(struct qemu_syscall *call);
 void qemu_memcpy(struct qemu_syscall *call);
 void qemu_memset(struct qemu_syscall *call);
+void qemu_puts(struct qemu_syscall *call);
 void qemu_realloc(struct qemu_syscall *call);
 void qemu_signal(struct qemu_syscall *call);
 void qemu_strlen(struct qemu_syscall *call);
@@ -86,6 +88,7 @@ size_t (* CDECL p_fwrite)(const void *str, size_t size, size_t count, FILE *file
 void *(* CDECL p_malloc)(size_t size);
 void *(* CDECL p_memset)(void *dst, int c, size_t n);
 void *(* CDECL p_memcpy)(void *dst, const void *src, size_t size);
+int (* CDECL p_puts)(const char *str);
 void *(* CDECL p_realloc)(void *ptr, size_t size);
 size_t (* CDECL p_strlen)(const char *str);
 int (* CDECL p_strncmp)(const char *str1, const char *str2, size_t len);
