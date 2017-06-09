@@ -36,6 +36,7 @@ static const syscall_handler dll_functions[] =
     qemu_IsTextUnicode,
     qemu_RegCloseKey,
     qemu_RegOpenKeyW,
+    qemu_RegQueryValueExW,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)

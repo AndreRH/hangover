@@ -10,6 +10,8 @@ int WINAPI WinMain2()
     BOOL ret;
     HKEY key = NULL;
     LONG lret;
+    wchar_t wstr[32];
+    DWORD size = sizeof(wstr);
 
     fprintf(stdout, "Hello!\n");
     ret = IsTextUnicode(buffer, sizeof(buffer), NULL);
@@ -19,7 +21,8 @@ int WINAPI WinMain2()
 
     lret = RegOpenKeyW(HKEY_CURRENT_USER, L"Environment", &key);
     fprintf(stdout, "RegOpenKeyW %lu, key %p\n", lret, key);
-
+    lret = RegQueryValueExW(key, L"TEMP", NULL, NULL, (BYTE *)wstr, &size);
+    fprintf(stdout, "RegQueryValueExW %lu, temp=%ls\n", lret, wstr);
     lret = RegCloseKey(key);
     fprintf(stdout, "RegCloseKey %lu\n", lret);
 

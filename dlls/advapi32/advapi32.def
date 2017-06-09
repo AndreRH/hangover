@@ -4,3 +4,4 @@ EXPORTS
   IsTextUnicode
   RegCloseKey
   RegOpenKeyW
+  RegQueryValueExW
