@@ -1,6 +1,8 @@
 #ifndef MSVCRT_H
 #define MSVCRT_H
 
+#include <stdlib.h>
+
 enum msvcrt_calls
 {
     CALL___GETMAINARGS = 0,
@@ -12,6 +14,7 @@ enum msvcrt_calls
     CALL__CEXIT,
     CALL__LOCK,
     CALL__MATHERR,
+    CALL__ONEXIT,
     CALL__UNLOCK,
     CALL_ABORT,
     CALL_CALLOC,
@@ -28,6 +31,8 @@ enum msvcrt_calls
     CALL_STRLEN,
     CALL_STRNCMP,
 };
+
+typedef int (__cdecl *MSVCRT__onexit_t)(void);
 
 #ifdef QEMU_DLL_GUEST
 
@@ -51,6 +56,7 @@ void qemu__amsg_exit(struct qemu_syscall *call);
 void qemu__cexit(struct qemu_syscall *call);
 void qemu__lock(struct qemu_syscall *call);
 void qemu__matherr(struct qemu_syscall *call);
+void qemu__onexit(struct qemu_syscall *call);
 void qemu__unlock(struct qemu_syscall *call);
 void qemu_abort(struct qemu_syscall *call);
 void qemu_calloc(struct qemu_syscall *call);
@@ -78,6 +84,7 @@ void (* CDECL p__amsg_exit)(int errnum);
 void (* CDECL p__cexit)(void);
 void (* CDECL p__lock)(int locknum);
 int (* CDECL p__matherr)(void *exception);
+MSVCRT__onexit_t (* CDECL p__onexit)(MSVCRT__onexit_t func);
 void (* CDECL p__unlock)(int locknum);
 void (* CDECL p_abort)(void);
 void *(* CDECL p_calloc)(size_t item_count,size_t size);

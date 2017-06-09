@@ -21,6 +21,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -31,13 +32,17 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 #endif
 
+struct qemu_onexit
+{
+    struct qemu_syscall super;
+    uint64_t func;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 /* This code is taken from Wine, without the traces. */
 #define LOCK_EXIT   while(0) /*_mlock(_EXIT_LOCK1) */
 #define UNLOCK_EXIT while(0) /*_munlock(_EXIT_LOCK1) */
-
-typedef int (__cdecl *MSVCRT__onexit_t)(void);
 
 static MSVCRT__onexit_t *MSVCRT_atexit_table = NULL;
 static int MSVCRT_atexit_table_size = 0;
@@ -74,10 +79,29 @@ MSVCRT__onexit_t CDECL __dllonexit(MSVCRT__onexit_t func, MSVCRT__onexit_t **sta
     return func;
 }
 
+static int guest_onexit_callback(void)
+{
+    /* Note: should only be called with the exit lock held */
+    /* Last registered gets executed first */
+    while (MSVCRT_atexit_registered > 0)
+    {
+        MSVCRT_atexit_registered--;
+        if (MSVCRT_atexit_table[MSVCRT_atexit_registered])
+            (*MSVCRT_atexit_table[MSVCRT_atexit_registered])();
+    }
+}
+
 MSVCRT__onexit_t CDECL MSVCRT__onexit(MSVCRT__onexit_t func)
 {
+    struct qemu_onexit call;
+
     if (!func)
         return NULL;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL__ONEXIT);
+    call.func = (uint64_t)guest_onexit_callback;
+
+    qemu_syscall(&call.super);
 
     LOCK_EXIT;
     if (MSVCRT_atexit_registered > MSVCRT_atexit_table_size - 1)
@@ -99,6 +123,28 @@ MSVCRT__onexit_t CDECL MSVCRT__onexit(MSVCRT__onexit_t func)
     UNLOCK_EXIT;
     return func;
 }
+
+#else
+
+static void *guest_onexit_callback = 0;
+
+static int CDECL onexit_callback(void)
+{
+    return qemu_ops->qemu_execute(guest_onexit_callback, 0);
+}
+
+void qemu__onexit(struct qemu_syscall *call)
+{
+    struct qemu_onexit *c = (struct qemu_onexit *)call;
+    WINE_TRACE("\n");
+
+    if (!guest_onexit_callback)
+    {
+        p__onexit(onexit_callback);
+        guest_onexit_callback = QEMU_G2H(c->func);
+    }
+}
+
 
 #endif
 

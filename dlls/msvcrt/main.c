@@ -54,6 +54,7 @@ static const syscall_handler dll_functions[] =
     qemu__cexit,
     qemu__lock,
     qemu__matherr,
+    qemu__onexit,
     qemu__unlock,
     qemu_abort,
     qemu_calloc,
@@ -92,6 +93,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__cexit = (void *)GetProcAddress(msvcrt, "_cexit");
     p__lock = (void *)GetProcAddress(msvcrt, "_lock");
     p__matherr = (void *)GetProcAddress(msvcrt, "_matherr");
+    p__onexit = (void *)GetProcAddress(msvcrt, "_onexit");
     p__unlock = (void *)GetProcAddress(msvcrt, "_unlock");
     p_abort = (void *)GetProcAddress(msvcrt, "abort");
     p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
