@@ -35,6 +35,8 @@ char **MSVCRT___initenv = NULL;
 char *MSVCRT__acmdln = NULL;
 wchar_t *MSVCRT__wcmdln = NULL;
 
+unsigned int MSVCRT__fmode = 0;
+
 #endif
 
 struct qemu___getmainargs
