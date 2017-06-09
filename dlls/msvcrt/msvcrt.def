@@ -4,7 +4,9 @@ EXPORTS
   __C_specific_handler=ntdll.__C_specific_handler
   __dllonexit
   __getmainargs
+  __initenv=MSVCRT___initenv
   __iob_func=MSVCRT___iob_func
+  __lconv_init
   _onexit=MSVCRT__onexit
   calloc=MSVCRT_calloc
   exit=MSVCRT_exit

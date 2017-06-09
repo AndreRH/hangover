@@ -17,7 +17,8 @@ void __stdcall WinMainCRTStartup()
     char **argv, **envp;
     int new_mode;
 
-    FILE *(CDECL *p___iob_func)();
+    FILE *(CDECL *p___iob_func)(void);
+    void (CDECL *p___lconv_init)(void);
     void *(CDECL *p_calloc)(size_t, size_t);
     void (CDECL *p_exit)(int code);
     int (* CDECL p_fprintf)(FILE *file, const char *format, ...);
@@ -36,6 +37,7 @@ void __stdcall WinMainCRTStartup()
 
     p___getmainargs = (void *)GetProcAddress(msvcrt, "__getmainargs");
     p___iob_func = (void *)GetProcAddress(msvcrt, "__iob_func");
+    p___lconv_init = (void *)GetProcAddress(msvcrt, "__lconv_init");
     p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
     p_exit = (void *)GetProcAddress(msvcrt, "exit");
     p_fprintf = (void *)GetProcAddress(msvcrt, "fprintf");
@@ -86,6 +88,8 @@ void __stdcall WinMainCRTStartup()
 
     p___getmainargs(&argc, &argv, &envp, 0, &new_mode);
     p_fprintf(iob + 1, "%d arguments, argv[0]=%s\n", argc, argv[0]);
+
+    p___lconv_init();
 
     WriteFile(hstdout, buffer, sizeof(buffer), &written, NULL);
     p_exit(123);

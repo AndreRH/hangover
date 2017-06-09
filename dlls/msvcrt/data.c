@@ -28,6 +28,11 @@
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
+#else
+
+/* FIXME: This needs DllMain support to grab the pointer from the host. */
+char **MSVCRT___initenv = NULL;
+
 #endif
 
 struct qemu___getmainargs
