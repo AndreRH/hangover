@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <stdio.h>
 
-int WINAPI WinMain2()
+int main(int argc, char *argv[])
 {
     char buffer[] = "ThisIsAText";
     wchar_t buffer2[] = L"ThisIsAText";
