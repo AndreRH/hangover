@@ -9,11 +9,13 @@ void __stdcall WinMainCRTStartup()
 {
     char buffer[32] = "kernel32=0x";
     char buffer2[32] = "ExitProcess=0x";
+    char buffer3[32] = "self=0x";
     DWORD written;
     void (* WINAPI pExitProcess)(UINT exitcode);
 
     HANDLE stdout = GetStdHandle(STD_OUTPUT_HANDLE);
     HANDLE k32 = GetModuleHandle("kernel32.dll");
+    HANDLE self = GetModuleHandle(NULL);
 
     ptr_to_char(buffer + 11, k32);
     buffer[11+16] = '\n';
@@ -23,6 +25,10 @@ void __stdcall WinMainCRTStartup()
     ptr_to_char(buffer2 + 14, pExitProcess);
     buffer2[14+16] = '\n';
     WriteFile(stdout, buffer2, sizeof(buffer2), &written, NULL);
+
+    ptr_to_char(buffer3 + 7, self);
+    buffer3[7+16] = '\n';
+    WriteFile(stdout, buffer3, 7 + 16 + 1, &written, NULL);
 
     pExitProcess(0);
 }
