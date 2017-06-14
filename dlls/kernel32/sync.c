@@ -1,5 +1,6 @@
 /*
  * Copyright 2017 Stefan Dösinger for CodeWeavers
+ * Copyright 2017 André Hentschel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +29,44 @@
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
+#endif
+
+
+struct qemu_CreateEventW
+{
+    struct qemu_syscall super;
+    uint64_t sa;
+    uint64_t manual_reset;
+    uint64_t initial_state;
+    uint64_t name;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HANDLE WINAPI CreateEventW( SECURITY_ATTRIBUTES *sa, BOOL manual_reset,
+                                       BOOL initial_state, LPCWSTR name )
+{
+    struct qemu_CreateEventW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CREATEEVENTW);
+    call.sa = (uint64_t)sa;
+    call.manual_reset = (uint64_t)manual_reset;
+    call.initial_state = (uint64_t)initial_state;
+    call.name = (uint64_t)name;
+
+    qemu_syscall(&call.super);
+
+    return (HANDLE)call.super.iret;
+}
+
+#else
+
+void qemu_CreateEventW(struct qemu_syscall *call)
+{
+    struct qemu_CreateEventW *c = (struct qemu_CreateEventW *)call;
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)CreateEventW(QEMU_G2H(c->sa), c->manual_reset, c->initial_state, QEMU_G2H(c->name));
+}
+
 #endif
 
 /* Critical section already destroy the hope of 32 bit emulation in a 64 bit emulator

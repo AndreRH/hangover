@@ -4,6 +4,7 @@ EXPORTS
   __C_specific_handler=ntdll.__C_specific_handler
   CloseHandle
   CompareStringW
+  CreateEventW
   CreateFileW
   DeleteCriticalSection=ntdll.RtlDeleteCriticalSection
   EnterCriticalSection=ntdll.RtlEnterCriticalSection
