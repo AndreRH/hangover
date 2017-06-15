@@ -27,6 +27,7 @@ enum kernel32_calls
     CALL_GETVERSIONEXW,
     CALL_INITIALIZECRITICALSECTION,
     CALL_LOADLIBRARYA,
+    CALL_LOCALFREE,
     CALL_QUERYPERFORMANCECOUNTER,
     CALL_SETCONSOLECTRLHANDLER,
     CALL_SETLASTERROR,
@@ -69,6 +70,7 @@ void qemu_GetVersionExA(struct qemu_syscall *call);
 void qemu_GetVersionExW(struct qemu_syscall *call);
 void qemu_InitializeCriticalSection(struct qemu_syscall *call);
 void qemu_LoadLibraryA(struct qemu_syscall *call);
+void qemu_LocalFree(struct qemu_syscall *call);
 void qemu_QueryPerformanceCounter(struct qemu_syscall *call);
 void qemu_SetConsoleCtrlHandler(struct qemu_syscall *call);
 void qemu_SetLastError(struct qemu_syscall *call);

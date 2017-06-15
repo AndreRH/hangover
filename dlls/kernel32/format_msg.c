@@ -157,7 +157,7 @@ void qemu_FormatMessageW(struct qemu_syscall *call)
     }
 
     if (c->flags & FORMAT_MESSAGE_ALLOCATE_BUFFER)
-        *((wchar_t *)(QEMU_G2H(c->buffer))) = QEMU_H2G(local_buffer);
+        *((uint64_t *)(QEMU_G2H(c->buffer))) = QEMU_H2G(local_buffer);
 
     if (c->free)
         LocalFree(QEMU_G2H(c->free));

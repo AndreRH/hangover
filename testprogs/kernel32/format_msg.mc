@@ -8,5 +8,5 @@ Horray, I can load strings from the x86 binary into arm wine!
 MessageId=1
 SymbolicName=MYSTRING2
 Language=ENU
-My Invalid function.
+Look, allocated memory!
 .

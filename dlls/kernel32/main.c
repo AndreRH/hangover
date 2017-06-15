@@ -57,6 +57,7 @@ static const syscall_handler dll_functions[] =
     qemu_GetVersionExW,
     qemu_InitializeCriticalSection,
     qemu_LoadLibraryA,
+    qemu_LocalFree,
     qemu_QueryPerformanceCounter,
     qemu_SetConsoleCtrlHandler,
     qemu_SetLastError,
