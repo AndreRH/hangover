@@ -39,6 +39,7 @@ struct qemu_FormatMessage
     uint64_t buffer;
     uint64_t size;
     uint64_t array;
+    uint64_t array_size;
     uint64_t free;
 };
 
@@ -50,7 +51,6 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
     struct qemu_FormatMessage call;
     const wchar_t *local_string = src;
     DWORD_PTR array[100];
-    BOOL is_float[100];
     char highest = 0;
     unsigned int i;
 
@@ -58,11 +58,10 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
     call.src = (uint64_t)src;
     call.msg_id = msg_id;
     call.lang_id = lang_id;
-    call.size = size;
     call.free = 0;
 
     /* If we have a va_args list we need to count the number of parameters the string loads. */
-    if (!(flags & (FORMAT_MESSAGE_ARGUMENT_ARRAY | FORMAT_MESSAGE_IGNORE_INSERTS)))
+    if (!(flags & (FORMAT_MESSAGE_ARGUMENT_ARRAY | FORMAT_MESSAGE_IGNORE_INSERTS)) && args)
     {
         /* If the string is not immediately accessible, we need to load it first. */
         if (!(flags & FORMAT_MESSAGE_FROM_STRING))
@@ -76,12 +75,13 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
             qemu_syscall(&call.super);
         }
 
-        for (i = 0; local_string[i]; i++)
+        for (i = 0; local_string[i]; ++i)
         {
             if (local_string[i] == '%' && local_string[i + 1] >= '0' && local_string[i + 1] <= '9')
             {
                 char cur;
                 i++;
+
                 cur = local_string[i] - '0';
                 if (local_string[i + 1] >= '0' && local_string[i + 1] <= '9')
                 {
@@ -92,12 +92,15 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
 
                 /* TODO: Parse * that might require extra args. */
 
-                if (highest > cur)
+                if (cur > highest)
                     highest = cur;
-
-                is_float[cur] = FALSE; /* TODO: Parse format. */
             }
         }
+
+        /* Note that this function does not support floats. */
+        for (i = 0; i < highest; i++)
+            array[i] = va_arg(*args, uint64_t);
+        call.array_size = highest;
 
         if (!(flags & FORMAT_MESSAGE_FROM_STRING))
             call.free = (uint64_t)local_string;
@@ -110,6 +113,7 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
     }
     call.flags = flags;
     call.buffer = (uint64_t)buffer;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -117,6 +121,19 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
 }
 
 #else
+
+static DWORD call_FormatMessageW_va_list(DWORD flags, const void *src, DWORD msg_id, DWORD lang_id,
+        wchar_t *buffer, DWORD size, ...)
+{
+    DWORD ret;
+    va_list list;
+
+    va_start(list, size);
+    ret = FormatMessageW(flags, src, msg_id, lang_id, buffer, size, &list);
+    va_end(list);
+
+    return ret;
+}
 
 void qemu_FormatMessageW(struct qemu_syscall *call)
 {
@@ -142,25 +159,69 @@ void qemu_FormatMessageW(struct qemu_syscall *call)
     else
         buffer_arg = QEMU_G2H(c->buffer);
 
-    if (c->flags & (FORMAT_MESSAGE_ARGUMENT_ARRAY | FORMAT_MESSAGE_IGNORE_INSERTS))
+    if (c->flags & (FORMAT_MESSAGE_ARGUMENT_ARRAY | FORMAT_MESSAGE_IGNORE_INSERTS)
+            || !c->array)
     {
         c->super.iret = FormatMessageW(c->flags, src, c->msg_id, c->lang_id,
                 buffer_arg, c->size, QEMU_G2H(c->array));
     }
     else
     {
-        /* Passing the array does not work right in this case. The argument indices
-         * are wrong, so we'd have to edit the source string. */
-        WINE_FIXME("va_arg input not handled yet\n");
-        c->super.iret = FormatMessageW(c->flags | FORMAT_MESSAGE_ARGUMENT_ARRAY,
-                src, c->msg_id, c->lang_id, buffer_arg, c->size, QEMU_G2H(c->array));
+        uint64_t *array = QEMU_G2H(c->array);
+
+        WINE_TRACE("Calling va_arg version, %lu args\n", c->array_size);
+        /* You'd think we can just add FORMAT_MESSAGE_ARGUMENT_ARRAY and pass the array,
+         * but you'd be wrong. Using argument-dependent width and precision specifiers
+         * shifts the argument offsets, and it does so in a different way for va_args
+         * and arrays. So we can either fix up the string or call the va_args version.
+         * I opted for the va_args version because of the hypothetical issue of 64 bit
+         * ints in Win32 and because the extra offset that is added for arrays may
+         * push a message with 99 inserts beyond the 99 limit. */
+        switch(c->array_size)
+        {
+            case 0:
+                c->super.iret = call_FormatMessageW_va_list(c->flags, src, c->msg_id,
+                        c->lang_id, buffer_arg, c->size);
+                break;
+            case 1:
+                c->super.iret = call_FormatMessageW_va_list(c->flags, src, c->msg_id,
+                        c->lang_id, buffer_arg, c->size, array[0]);
+                break;
+
+            case 2:
+                c->super.iret = call_FormatMessageW_va_list(c->flags, src, c->msg_id,
+                        c->lang_id, buffer_arg, c->size, array[0], array[1]);
+                break;
+
+            case 3:
+                c->super.iret = call_FormatMessageW_va_list(c->flags, src, c->msg_id,
+                        c->lang_id, buffer_arg, c->size, array[0], array[1], array[2]);
+                break;
+
+            case 4:
+                c->super.iret = call_FormatMessageW_va_list(c->flags, src, c->msg_id,
+                        c->lang_id, buffer_arg, c->size, array[0], array[1], array[2],
+                        array[3]);
+                break;
+
+            default:
+                WINE_FIXME("Handle arbitrary number of arguments\n");
+            case 5:
+                c->super.iret = call_FormatMessageW_va_list(c->flags, src, c->msg_id,
+                        c->lang_id, buffer_arg, c->size, array[0], array[1], array[2],
+                        array[3], array[4]);
+                break;
+        }
     }
 
     if (c->flags & FORMAT_MESSAGE_ALLOCATE_BUFFER)
         *((uint64_t *)(QEMU_G2H(c->buffer))) = QEMU_H2G(local_buffer);
 
     if (c->free)
+    {
+        WINE_TRACE("Freeing old buffer %p\n", QEMU_G2H(c->free));
         LocalFree(QEMU_G2H(c->free));
+    }
 }
 
 #endif
