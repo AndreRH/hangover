@@ -45,6 +45,8 @@ enum kernel32_calls
 extern const struct qemu_ops *qemu_ops;
 
 void qemu_CloseHandle(struct qemu_syscall *call);
+void qemu_CompareStringW(struct qemu_syscall *call);
+void qemu_CreateEventW(struct qemu_syscall *call);
 void qemu_CreateFileW(struct qemu_syscall *call);
 void qemu_ExitProcess(struct qemu_syscall *call);
 void qemu_FindClose(struct qemu_syscall *call);

@@ -34,6 +34,8 @@ const struct qemu_ops *qemu_ops;
 static const syscall_handler dll_functions[] =
 {
     qemu_CloseHandle,
+    qemu_CompareStringW,
+    qemu_CreateEventW,
     qemu_CreateFileW,
     qemu_ExitProcess,
     qemu_FindClose,
