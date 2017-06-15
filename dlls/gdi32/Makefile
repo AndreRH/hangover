@@ -1,7 +1,7 @@
 DESTDIR?=../..
 CURRENT_DLL=DLL_GDI32
 CFLAGS=-I../include -I../../qemu/include -DQEMU_CURRENT_DLL=$(CURRENT_DLL) -O2
-WINEGCC=$(DESTDIR)/build/wine-host/tools/winegcc/winegcc -I$(DESTDIR)/build/wine-host/include -I$(DESTDIR)/wine/include
+WINEGCC=$(DESTDIR)/build/wine-host/tools/winegcc/winegcc -B$(DESTDIR)/build/wine-host/tools/winebuild -I$(DESTDIR)/build/wine-host/include -I$(DESTDIR)/wine/include
 
 all: gdi32.dll
 
