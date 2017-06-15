@@ -11,6 +11,7 @@ EXPORTS
   ExitProcess
   FindClose
   FindFirstFileW
+  FormatMessageW
   GetCurrentProcess
   GetCurrentProcessId
   GetCurrentThreadId
