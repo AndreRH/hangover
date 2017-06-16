@@ -118,3 +118,13 @@ void qemu__matherr(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+/* Copypaste from Wine. */
+int CDECL MSVCRT_abs(int n)
+{
+    return n >= 0 ? n : -n;
+}
+
+#endif

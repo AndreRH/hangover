@@ -21,6 +21,7 @@ EXPORTS
   _unlock
   _wcmdln=MSVCRT__wcmdln
   abort=MSVCRT_abort
+  abs=MSVCRT_abs
   calloc=MSVCRT_calloc
   exit=MSVCRT_exit
   fprintf=MSVCRT_fprintf
