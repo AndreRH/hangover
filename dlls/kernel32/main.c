@@ -101,6 +101,7 @@ static const syscall_handler dll_functions[] =
     qemu_InitializeCriticalSection,
     qemu_LoadLibraryA,
     qemu_LocalFree,
+    qemu_MultiByteToWideChar,
     qemu_QueryPerformanceCounter,
     qemu_SetConsoleCtrlHandler,
     qemu_SetLastError,
@@ -113,6 +114,7 @@ static const syscall_handler dll_functions[] =
     qemu_VerifyVersionInfoW,
     qemu_VirtualQuery,
     qemu_VirtualProtect,
+    qemu_WideCharToMultiByte,
     qemu_WriteFile,
 };
 

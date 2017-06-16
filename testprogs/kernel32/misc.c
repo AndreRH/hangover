@@ -63,5 +63,11 @@ int main()
     printf("%s\n", heaptest);
     HeapFree(GetProcessHeap(), 0, heaptest);
 
+    MultiByteToWideChar(CP_ACP, 0, "char input", -1, bufferW, COUNTOF(bufferW));
+    printf("MultiByteToWideChar: %ls\n", bufferW);
+
+    WideCharToMultiByte(CP_ACP, 0, L"wide char input", -1, bufferA, COUNTOF(bufferA), NULL, NULL);
+    printf("WideCharToMultiByte: %s\n", bufferA);
+
     return 0;
 }

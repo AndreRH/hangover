@@ -46,6 +46,7 @@ EXPORTS
   LoadLibraryA
   LocalFree
   MulDiv
+  MultiByteToWideChar
   QueryPerformanceCounter
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   RtlCaptureContext=ntdll.RtlCaptureContext
@@ -62,4 +63,5 @@ EXPORTS
   VerifyVersionInfoW
   VirtualQuery
   VirtualProtect
+  WideCharToMultiByte
   WriteFile

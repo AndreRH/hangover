@@ -104,3 +104,90 @@ void qemu_GetCPInfoExW(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_MultiByteToWideChar
+{
+    struct qemu_syscall super;
+    uint64_t codepage;
+    uint64_t flags;
+    uint64_t mbstr;
+    uint64_t mblen;
+    uint64_t wstr;
+    uint64_t wlen;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int WINAPI MultiByteToWideChar(UINT codepage, DWORD flags, LPCCH mbstr, int mblen, WCHAR *wstr, int wlen)
+{
+    struct qemu_MultiByteToWideChar call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_MULTIBYTETOWIDECHAR);
+    call.codepage = codepage;
+    call.flags = flags;
+    call.mbstr = (uint64_t)mbstr;
+    call.mblen = mblen;
+    call.wstr = (uint64_t)wstr;
+    call.wlen = wlen;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_MultiByteToWideChar(struct qemu_syscall *call)
+{
+    struct qemu_MultiByteToWideChar *c = (struct qemu_MultiByteToWideChar *)call;
+    WINE_TRACE("\n");
+    c->super.iret = MultiByteToWideChar(c->codepage, c->flags, QEMU_G2H(c->mbstr), c->mblen, QEMU_G2H(c->wstr), c->wlen);
+}
+
+
+#endif
+
+struct qemu_WideCharToMultiByte
+{
+    struct qemu_syscall super;
+    uint64_t codepage;
+    uint64_t flags;
+    uint64_t wstr;
+    uint64_t wlen;
+    uint64_t mbstr;
+    uint64_t mblen;
+    uint64_t default_char;
+    uint64_t used_default;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int WINAPI WideCharToMultiByte(UINT codepage, DWORD flags, LPCWCH wstr, int wlen, CHAR *mbstr, int mblen,
+        LPCCH default_char, BOOL *used_default)
+{
+    struct qemu_WideCharToMultiByte call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WIDECHARTOMULTIBYTE);
+    call.codepage = codepage;
+    call.flags = flags;
+    call.wstr = (uint64_t)wstr;
+    call.wlen = wlen;
+    call.mbstr = (uint64_t)mbstr;
+    call.mblen = mblen;
+    call.default_char = (uint64_t)default_char;
+    call.used_default = (uint64_t)used_default;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WideCharToMultiByte(struct qemu_syscall *call)
+{
+    struct qemu_WideCharToMultiByte *c = (struct qemu_WideCharToMultiByte *)call;
+    WINE_TRACE("\n");
+    c->super.iret = WideCharToMultiByte(c->codepage, c->flags, QEMU_G2H(c->wstr), c->wlen, QEMU_G2H(c->mbstr), c->mblen,
+            QEMU_G2H(c->default_char), QEMU_G2H(c->used_default));
+}
+
+#endif
