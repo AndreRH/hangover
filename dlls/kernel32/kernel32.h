@@ -42,6 +42,7 @@ enum kernel32_calls
     CALL_INITIALIZECRITICALSECTION,
     CALL_LOADLIBRARYA,
     CALL_LOCALFREE,
+    CALL_LSTRCMPW,
     CALL_MULTIBYTETOWIDECHAR,
     CALL_QUERYPERFORMANCECOUNTER,
     CALL_READFILE,
@@ -103,6 +104,7 @@ void qemu_HeapFree(struct qemu_syscall *call);
 void qemu_InitializeCriticalSection(struct qemu_syscall *call);
 void qemu_LoadLibraryA(struct qemu_syscall *call);
 void qemu_LocalFree(struct qemu_syscall *call);
+void qemu_lstrcmpW(struct qemu_syscall *call);
 void qemu_MultiByteToWideChar(struct qemu_syscall *call);
 void qemu_QueryPerformanceCounter(struct qemu_syscall *call);
 void qemu_ReadFile(struct qemu_syscall *call);
@@ -120,6 +122,7 @@ void qemu_VirtualQuery(struct qemu_syscall *call);
 void qemu_VirtualProtect(struct qemu_syscall *call);
 void qemu_WideCharToMultiByte(struct qemu_syscall *call);
 void qemu_WriteFile(struct qemu_syscall *call);
+
 #endif
 
 #endif

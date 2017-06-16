@@ -69,5 +69,9 @@ int main()
     WideCharToMultiByte(CP_ACP, 0, L"wide char input", -1, bufferA, COUNTOF(bufferA), NULL, NULL);
     printf("WideCharToMultiByte: %s\n", bufferA);
 
+    printf("lstrcmpW(abc123, abc456)=%d\n", lstrcmpW(L"abc123", L"abc456"));
+    printf("lstrcmpW(abc123, abc123)=%d\n", lstrcmpW(L"abc123", L"abc123"));
+    printf("lstrcmpW(abc456, abc123)=%d\n", lstrcmpW(L"abc456", L"abc123"));
+
     return 0;
 }

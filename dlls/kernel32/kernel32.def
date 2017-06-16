@@ -45,6 +45,7 @@ EXPORTS
   LeaveCriticalSection=ntdll.RtlLeaveCriticalSection
   LoadLibraryA
   LocalFree
+  lstrcmpW
   MulDiv
   MultiByteToWideChar
   QueryPerformanceCounter

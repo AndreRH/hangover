@@ -101,6 +101,7 @@ static const syscall_handler dll_functions[] =
     qemu_InitializeCriticalSection,
     qemu_LoadLibraryA,
     qemu_LocalFree,
+    qemu_lstrcmpW,
     qemu_MultiByteToWideChar,
     qemu_QueryPerformanceCounter,
     qemu_ReadFile,
@@ -125,6 +126,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     WINE_TRACE("Loading host-side kernel32 wrapper.\n");
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
+
     return dll_functions;
 }
 

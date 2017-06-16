@@ -105,6 +105,37 @@ void qemu_GetCPInfoExW(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_lstrcmpW
+{
+    struct qemu_syscall super;
+    uint64_t str1;
+    uint64_t str2;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int WINAPI lstrcmpW(const WCHAR *str1, const WCHAR *str2)
+{
+    struct qemu_lstrcmpW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LSTRCMPW);
+    call.str1 = (uint64_t)str1;
+    call.str2 = (uint64_t)str2;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_lstrcmpW(struct qemu_syscall *call)
+{
+    struct qemu_lstrcmpW *c = (struct qemu_lstrcmpW *)call;
+    c->super.iret = lstrcmpW(QEMU_G2H(c->str1), QEMU_G2H(c->str2));
+}
+
+#endif
+
 struct qemu_MultiByteToWideChar
 {
     struct qemu_syscall super;
