@@ -2,24 +2,41 @@ LIBRARY kernel32.dll BASE=0x20000000
 
 EXPORTS
   __C_specific_handler=ntdll.__C_specific_handler
+  BuildCommDCBA
+  BuildCommDCBAndTimeoutsA
+  BuildCommDCBAndTimeoutsW
+  BuildCommDCBW
+  ClearCommBreak
+  ClearCommError
   CloseHandle
+  CommConfigDialogA
+  CommConfigDialogW
   CompareStringW
   CreateEventW
   CreateFileW
   DeleteCriticalSection=ntdll.RtlDeleteCriticalSection
   EnterCriticalSection=ntdll.RtlEnterCriticalSection
+  EscapeCommFunction
   ExitProcess
   FindClose
   FindFirstFileW
   FormatMessageW
   GetCommandLineA
   GetCommandLineW
+  GetCommConfig
+  GetCommMask
+  GetCommModemStatus
+  GetCommProperties
+  GetCommState
+  GetCommTimeouts
   GetCPInfoExW
   GetCurrentProcess
   GetCurrentProcessId
   GetCurrentThreadId
   GetDateFormatA
   GetDateFormatW
+  GetDefaultCommConfigA
+  GetDefaultCommConfigW
   GetFileSize
   GetLastError
   GetLocalTime
@@ -48,23 +65,34 @@ EXPORTS
   lstrcmpW
   MulDiv
   MultiByteToWideChar
+  PurgeComm
   QueryPerformanceCounter
   ReadFile
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   RtlCaptureContext=ntdll.RtlCaptureContext
   RtlLookupFunctionEntry=ntdll.RtlLookupFunctionEntry
   RtlVirtualUnwind=ntdll.RtlVirtualUnwind
+  SetCommBreak
+  SetCommConfig
+  SetCommMask
+  SetCommState
+  SetCommTimeouts
   SetConsoleCtrlHandler
+  SetDefaultCommConfigA
+  SetDefaultCommConfigW
   SetEndOfFile
   SetLastError
   SetUnhandledExceptionFilter
+  SetupComm
   Sleep
   TerminateProcess
   TlsGetValue
+  TransmitCommChar
   UnhandledExceptionFilter
   VerifyVersionInfoA
   VerifyVersionInfoW
-  VirtualQuery
   VirtualProtect
+  VirtualQuery
+  WaitCommEvent
   WideCharToMultiByte
   WriteFile
