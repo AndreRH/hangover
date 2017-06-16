@@ -22,6 +22,7 @@ EXPORTS
   GetDateFormatW
   GetFileSize
   GetLastError
+  GetLocalTime
   GetModuleHandleA
   GetModuleHandleExA
   GetProcAddress

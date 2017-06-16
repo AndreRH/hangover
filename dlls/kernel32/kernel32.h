@@ -20,6 +20,7 @@ enum kernel32_calls
     CALL_GETDATEFORMATA,
     CALL_GETDATEFORMATW,
     CALL_GETFILESIZE,
+    CALL_GETLOCALTIME,
     CALL_GETLASTERROR,
     CALL_GETMODULEHANDLEA,
     CALL_GETMODULEHANDLEEXA,
@@ -69,6 +70,7 @@ void qemu_GetCurrentThreadId(struct qemu_syscall *call);
 void qemu_GetDateFormatA(struct qemu_syscall *call);
 void qemu_GetDateFormatW(struct qemu_syscall *call);
 void qemu_GetFileSize(struct qemu_syscall *call);
+void qemu_GetLocalTime(struct qemu_syscall *call);
 void qemu_GetLastError(struct qemu_syscall *call);
 void qemu_GetModuleHandleA(struct qemu_syscall *call);
 void qemu_GetModuleHandleExA(struct qemu_syscall *call);

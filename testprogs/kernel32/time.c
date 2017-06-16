@@ -12,9 +12,11 @@ void __stdcall WinMainCRTStartup()
     char buffer3[32] = "tickcount=0x";
     char buffer4[32] = "Sleeping now\n";
     char buffer5[32] = "Awake!\n";
+    char buffer6[32] = "Year \n";
     DWORD written;
     FILETIME time;
     LARGE_INTEGER li;
+    SYSTEMTIME localtime;
 
     HANDLE stdout = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -29,13 +31,18 @@ void __stdcall WinMainCRTStartup()
     WriteFile(stdout, buffer4, sizeof(buffer4), &written, NULL);
     Sleep(5000);
     WriteFile(stdout, buffer5, sizeof(buffer5), &written, NULL);
-    
+
     written = GetTickCount();
     dword_to_char(buffer3 + 12, written);
     buffer3[12+8] = '\n';
     WriteFile(stdout, buffer3, sizeof(buffer), &written, NULL);
 
     QueryPerformanceCounter(&li);
+
+    GetLocalTime(&localtime);
+    dword_to_char(buffer6 + 5, localtime.wYear);
+    buffer6[5+8] = '\n';
+    WriteFile(stdout, buffer6, 5 + 8 + 1, &written, NULL);
 
     ExitProcess(0);
 }

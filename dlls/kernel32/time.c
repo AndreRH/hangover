@@ -30,6 +30,33 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
+struct qemu_GetLocalTime
+{
+    struct qemu_syscall super;
+    uint64_t time;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void WINAPI GetLocalTime(SYSTEMTIME *time)
+{
+    struct qemu_GetLocalTime call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETLOCALTIME);
+    call.time = (uint64_t)time;
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_GetLocalTime(struct qemu_syscall *call)
+{
+    struct qemu_GetLocalTime *c = (struct qemu_GetLocalTime *)call;
+    WINE_TRACE("\n");
+    GetLocalTime(QEMU_G2H(c->time));
+}
+
+#endif
+
 struct qemu_GetSystemTimeAsFileTime
 {
     struct qemu_syscall super;
