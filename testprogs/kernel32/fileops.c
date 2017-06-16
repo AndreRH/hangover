@@ -23,5 +23,7 @@ void __stdcall WinMainCRTStartup()
     find_handle = FindFirstFileW(L"*", &find_data);
     FindClose(find_handle);
 
+    ReadFile(NULL, NULL, 0, NULL, NULL);
+
     ExitProcess(0);
 }

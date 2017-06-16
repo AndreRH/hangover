@@ -48,6 +48,7 @@ EXPORTS
   MulDiv
   MultiByteToWideChar
   QueryPerformanceCounter
+  ReadFile
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   RtlCaptureContext=ntdll.RtlCaptureContext
   RtlLookupFunctionEntry=ntdll.RtlLookupFunctionEntry

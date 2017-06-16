@@ -169,6 +169,45 @@ void qemu_GetFileSize(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_ReadFile
+{
+    struct qemu_syscall super;
+    uint64_t file;
+    uint64_t buffer;
+    uint64_t to_read;
+    uint64_t read;
+    uint64_t ovl;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI WINBOOL WINAPI ReadFile(HANDLE file, void *buffer, DWORD to_read, DWORD *read, OVERLAPPED *ovl)
+{
+    struct qemu_ReadFile call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_READFILE);
+    call.file = (uint64_t)file;
+    call.buffer = (uint64_t)buffer;
+    call.to_read = to_read;
+    call.read = (uint64_t)read;
+    call.ovl = (uint64_t)ovl;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_ReadFile(struct qemu_syscall *call)
+{
+    struct qemu_ReadFile *c = (struct qemu_ReadFile *)call;
+    WINE_TRACE("\n");
+    c->super.iret = ReadFile((HANDLE)c->file, QEMU_G2H(c->buffer), c->to_read,
+            QEMU_G2H(c->read), QEMU_G2H(c->ovl));
+}
+
+#endif
+
 struct qemu_WriteFile
 {
     struct qemu_syscall super;

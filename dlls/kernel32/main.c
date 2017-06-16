@@ -103,6 +103,7 @@ static const syscall_handler dll_functions[] =
     qemu_LocalFree,
     qemu_MultiByteToWideChar,
     qemu_QueryPerformanceCounter,
+    qemu_ReadFile,
     qemu_SetConsoleCtrlHandler,
     qemu_SetLastError,
     qemu_SetUnhandledExceptionFilter,
