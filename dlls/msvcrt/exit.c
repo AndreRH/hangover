@@ -207,6 +207,18 @@ struct qemu_exit
 
 #ifdef QEMU_DLL_GUEST
 
+CDECL DECLSPEC_NORETURN void __MINGW_NOTHROW MSVCRT__exit(int code)
+{
+    struct qemu_exit call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__EXIT);
+    call.code = code;
+
+    qemu_syscall(&call.super);
+
+    /* The syscall does not exit, but gcc does not know that. */
+    while(1);
+}
+
 CDECL DECLSPEC_NORETURN void __MINGW_NOTHROW MSVCRT_exit(int code)
 {
     struct qemu_exit call;
@@ -220,6 +232,13 @@ CDECL DECLSPEC_NORETURN void __MINGW_NOTHROW MSVCRT_exit(int code)
 }
 
 #else
+
+void qemu__exit(struct qemu_syscall *call)
+{
+    struct qemu_exit *c = (struct qemu_exit *)call;
+    WINE_TRACE("\n");
+    p__exit(c->code);
+}
 
 void qemu_exit(struct qemu_syscall *call)
 {

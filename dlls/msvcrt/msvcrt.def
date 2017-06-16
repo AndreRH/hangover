@@ -12,6 +12,7 @@ EXPORTS
   _acmdln=MSVCRT__acmdln
   _amsg_exit
   _cexit=MSVCRT__cexit
+  _exit=MSVCRT__exit
   _fmode=MSVCRT__fmode
   _initterm
   _lock

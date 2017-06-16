@@ -12,6 +12,7 @@ enum msvcrt_calls
     CALL___SETUSERMATHERR,
     CALL__AMSG_EXIT,
     CALL__CEXIT,
+    CALL__EXIT,
     CALL__LOCK,
     CALL__MATHERR,
     CALL__ONEXIT,
@@ -56,6 +57,7 @@ void qemu___set_app_type(struct qemu_syscall *call);
 void qemu___setusermatherr(struct qemu_syscall *call);
 void qemu__amsg_exit(struct qemu_syscall *call);
 void qemu__cexit(struct qemu_syscall *call);
+void qemu__exit(struct qemu_syscall *call);
 void qemu__lock(struct qemu_syscall *call);
 void qemu__matherr(struct qemu_syscall *call);
 void qemu__onexit(struct qemu_syscall *call);
@@ -85,6 +87,7 @@ void (* CDECL p___set_app_type)(int type);
 void (* CDECL p___setusermatherr)(void *func);
 void (* CDECL p__amsg_exit)(int errnum);
 void (* CDECL p__cexit)(void);
+void (* CDECL p__exit)(int code);
 void (* CDECL p__lock)(int locknum);
 int (* CDECL p__matherr)(void *exception);
 MSVCRT__onexit_t (* CDECL p__onexit)(MSVCRT__onexit_t func);
