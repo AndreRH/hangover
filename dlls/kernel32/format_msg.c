@@ -123,7 +123,7 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
 #else
 
 static DWORD call_FormatMessageW_va_list(DWORD flags, const void *src, DWORD msg_id, DWORD lang_id,
-        wchar_t *buffer, DWORD size, ...)
+        WCHAR *buffer, DWORD size, ...)
 {
     DWORD ret;
     va_list list;
