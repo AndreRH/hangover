@@ -27,6 +27,7 @@ enum kernel32_calls
     CALL_GETMODULEHANDLEA,
     CALL_GETMODULEHANDLEEXA,
     CALL_GETPROCADDRESS,
+    CALL_GETPROCESSHEAP,
     CALL_GETSTARTUPINFOA,
     CALL_GETSTDHANDLE,
     CALL_GETSYSTEMTIMEASFILETIME,
@@ -34,6 +35,8 @@ enum kernel32_calls
     CALL_GETVERSION,
     CALL_GETVERSIONEXA,
     CALL_GETVERSIONEXW,
+    CALL_HEAPALLOC,
+    CALL_HEAPFREE,
     CALL_INITIALIZECRITICALSECTION,
     CALL_LOADLIBRARYA,
     CALL_LOCALFREE,
@@ -83,9 +86,12 @@ void qemu_GetStdHandle(struct qemu_syscall *call);
 void qemu_GetSystemTimeAsFileTime(struct qemu_syscall *call);
 void qemu_GetTickCount(struct qemu_syscall *call);
 void qemu_GetProcAddress(struct qemu_syscall *call);
+void qemu_GetProcessHeap(struct qemu_syscall *call);
 void qemu_GetVersion(struct qemu_syscall *call);
 void qemu_GetVersionExA(struct qemu_syscall *call);
 void qemu_GetVersionExW(struct qemu_syscall *call);
+void qemu_HeapAlloc(struct qemu_syscall *call);
+void qemu_HeapFree(struct qemu_syscall *call);
 void qemu_InitializeCriticalSection(struct qemu_syscall *call);
 void qemu_LoadLibraryA(struct qemu_syscall *call);
 void qemu_LocalFree(struct qemu_syscall *call);

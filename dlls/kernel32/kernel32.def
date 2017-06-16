@@ -28,6 +28,7 @@ EXPORTS
   GetModuleHandleA
   GetModuleHandleExA
   GetProcAddress
+  GetProcessHeap
   GetStartupInfoA
   GetStdHandle
   GetSystemTimeAsFileTime
@@ -35,6 +36,8 @@ EXPORTS
   GetVersion
   GetVersionExA
   GetVersionExW
+  HeapAlloc
+  HeapFree
   InitializeCriticalSection
   InitializeCriticalSectionEx
   LeaveCriticalSection=ntdll.RtlLeaveCriticalSection

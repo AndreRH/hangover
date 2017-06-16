@@ -13,6 +13,7 @@ int main()
     CHAR bufferA[128], inputA[128];
     WCHAR bufferW[128], inputW[128];
     HMODULE k32;
+    char *heaptest;
 
     GetCPInfoExW(CP_UTF8, 0, &cpinfo);
     printf("%ls\n", cpinfo.CodePageName);
@@ -44,6 +45,11 @@ int main()
     k32 = GetModuleHandleA("kernel32.dll");
     GetModuleFileNameW(k32, bufferW, COUNTOF(bufferW));
     printf("GetModuleFileNameW(GetModuleHandleA(\"kernel32\")=%p): %ls\n", k32, bufferW);
+
+    heaptest = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, 16);
+    memcpy(heaptest, "12345", 5);
+    printf("%s\n", heaptest);
+    HeapFree(GetProcessHeap(), 0, heaptest);
 
     return 0;
 }
