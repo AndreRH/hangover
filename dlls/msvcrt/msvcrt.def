@@ -28,6 +28,7 @@ EXPORTS
   malloc=MSVCRT_malloc
   memcpy=MSVCRT_memcpy
   memset=MSVCRT_memset
+  printf=MSVCRT_printf
   puts=MSVCRT_puts
   realloc=MSVCRT_realloc
   signal=MSVCRT_signal

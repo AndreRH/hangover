@@ -8,7 +8,7 @@ int main()
     CPINFOEXW cpinfo;
 
     GetCPInfoExW(CP_UTF8, 0, &cpinfo);
-    fprintf(stdout, "%ls\n", cpinfo.CodePageName);
+    printf("%ls\n", cpinfo.CodePageName);
 
     return 0;
 }

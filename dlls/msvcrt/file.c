@@ -60,6 +60,7 @@ struct qemu_fprintf
     uint64_t argcount, argcount_float;
     uint64_t file;
     uint64_t format;
+    uint64_t MSVCRT_FILE_size;
     struct _args
     {
         uint64_t is_float;
@@ -121,7 +122,9 @@ static unsigned int count_printf_args(const char *format, char *fmts)
     return count;
 }
 
-int CDECL MSVCRT_vfprintf(FILE *file, const char *format, va_list args)
+/* Looking up "stdout" requires a call out of the VM to get __iob, so do
+ * the printf(...) -> fprintf(stdout, ...) wrapping outside the VM. */
+static int CDECL vfprintf_helper(uint64_t op, FILE *file, const char *format, va_list args)
 {
     struct qemu_fprintf *call;
     int ret;
@@ -134,10 +137,11 @@ int CDECL MSVCRT_vfprintf(FILE *file, const char *format, va_list args)
     } conv;
 
     call = MSVCRT_malloc(offsetof(struct qemu_fprintf, args[count]));
-    call->super.id = QEMU_SYSCALL_ID(CALL_FPRINTF);
+    call->super.id = op;
     call->argcount = count;
     call->file = (uint64_t)file;
     call->format = (uint64_t)format;
+    call->MSVCRT_FILE_size = sizeof(FILE);
     call->argcount_float = 0;
 
     for (i = 0; i < count; ++i)
@@ -173,13 +177,30 @@ int CDECL MSVCRT_vfprintf(FILE *file, const char *format, va_list args)
     return ret;
 }
 
+int CDECL MSVCRT_vfprintf(FILE *file, const char *format, va_list args)
+{
+    vfprintf_helper(QEMU_SYSCALL_ID(CALL_FPRINTF), file, format, args);
+}
+
 int CDECL MSVCRT_fprintf(FILE *file, const char *format, ...)
 {
     int ret;
     va_list list;
 
     va_start(list, format);
-    ret = MSVCRT_vfprintf(file, format, list);
+    ret = vfprintf_helper(QEMU_SYSCALL_ID(CALL_FPRINTF), file, format, list);
+    va_end(list);
+
+    return ret;
+}
+
+int CDECL MSVCRT_printf(const char *format, ...)
+{
+    int ret;
+    va_list list;
+
+    va_start(list, format);
+    ret = vfprintf_helper(QEMU_SYSCALL_ID(CALL_PRINTF), NULL, format, list);
     va_end(list);
 
     return ret;
@@ -276,6 +297,7 @@ void qemu_fprintf(struct qemu_syscall *call)
 {
     struct qemu_fprintf *c = (struct qemu_fprintf *)call;
     int ret, onstack = 0;
+    void *file;
 
     if (c->argcount - c->argcount_float > 6)
         onstack = c->argcount - c->argcount_float - 6;
@@ -284,7 +306,25 @@ void qemu_fprintf(struct qemu_syscall *call)
 
     WINE_TRACE("(%lu floats/%lu args, onstack %i, format \"%s\"\n", c->argcount_float, c->argcount, onstack, (char *)QEMU_G2H(c->format));
 
-    ret = call_fprintf(QEMU_G2H(c->file), QEMU_G2H(c->format), p_fprintf, c->argcount, onstack, c->args);
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_PRINTF):
+            /* Don't put "stdout" here, it will call the Linux libc __iob_func export.
+             * Plus, the size of FILE is different between Linux and Windows, and I
+             * haven't found a nice way to get MSVCRT_FILE from Wine, other than
+             * copypasting it, so grab the proper offset from the VM. */
+            file = (BYTE *)p___iob_func() + c->MSVCRT_FILE_size;
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_FPRINTF):
+            file = QEMU_G2H(c->file);
+            break;
+
+        default:
+            WINE_ERR("Unexpected op %lx\n", c->super.id);
+    }
+
+    ret = call_fprintf(file, QEMU_G2H(c->format), p_fprintf, c->argcount, onstack, c->args);
 
     c->super.iret = ret;
 }

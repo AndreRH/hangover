@@ -14,28 +14,28 @@ int main(int argc, char *argv[])
     DWORD size = sizeof(wstr);
     DWORD disp;
 
-    fprintf(stdout, "Hello!\n");
+    printf("Hello!\n");
     ret = IsTextUnicode(buffer, sizeof(buffer), NULL);
-    fprintf(stdout, "buffer: retval %u\n", ret);
+    printf("buffer: retval %u\n", ret);
     ret = IsTextUnicode(buffer2, sizeof(buffer2), NULL);
-    fprintf(stdout, "buffer2: retval %u\n", ret);
+    printf("buffer2: retval %u\n", ret);
 
     lret = RegOpenKeyW(HKEY_CURRENT_USER, L"Environment", &key);
-    fprintf(stdout, "RegOpenKeyW %lu, key %p\n", lret, key);
+    printf("RegOpenKeyW %lu, key %p\n", lret, key);
 
     lret = RegQueryValueExW(key, L"TEMP", NULL, NULL, (BYTE *)wstr, &size);
-    fprintf(stdout, "RegQueryValueExW %lu, temp=%ls\n", lret, wstr);
+    printf("RegQueryValueExW %lu, temp=%ls\n", lret, wstr);
 
     /* This doesn't seem to create the key. Never mind. */
     lret = RegCreateKeyExW(key, L"garbage", 0, NULL, REG_OPTION_NON_VOLATILE,
             KEY_ALL_ACCESS, NULL, &key2, &disp);
-    fprintf(stdout, "RegCreateKeyExW %lu, key=%p\n", lret, key2);
+    printf("RegCreateKeyExW %lu, key=%p\n", lret, key2);
 
     lret = RegSetValueExW(key, L"testtest", 0, REG_SZ, (BYTE *)buffer2, sizeof(buffer2));
-    fprintf(stdout, "RegSetValueExW %lu\n", lret);
+    printf("RegSetValueExW %lu\n", lret);
 
     lret = RegCloseKey(key);
-    fprintf(stdout, "RegCloseKey %lu\n", lret);
+    printf("RegCloseKey %lu\n", lret);
 
     ExitProcess(0);
 }

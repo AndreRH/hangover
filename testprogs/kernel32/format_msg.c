@@ -30,61 +30,61 @@ int main()
     FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_IGNORE_INSERTS,
             L"Dummy input string", 0, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
             output, sizeof(output)/sizeof(*output), NULL);
-    fprintf(stderr, "Output 1: \"%ls\" \n", output);
+    printf("Output 1: \"%ls\" \n", output);
 
     FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ARGUMENT_ARRAY,
             L"1: \"%1\", 3: \"%3\". 2: \"%2\", 1: \"%1\".", 0,
             MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), output,
             sizeof(output)/sizeof(*output), (void *)inserts);
-    fprintf(stderr, "Output 2: \"%ls\" \n", output);
+    printf("Output 2: \"%ls\" \n", output);
 
     FormatMessageW(FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_FROM_SYSTEM
             | FORMAT_MESSAGE_IGNORE_INSERTS,
             kernel32, 193 /* ERROR_BAD_EXE_FORMAT */,
             MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
             output, sizeof(output)/sizeof(*output), NULL);
-    fprintf(stderr, "Output 3: %ls", output);
+    printf("Output 3: %ls", output);
 
     FormatMessageW(FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_FROM_SYSTEM
             | FORMAT_MESSAGE_ARGUMENT_ARRAY,
             kernel32, 193 /* ERROR_BAD_EXE_FORMAT */,
             MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
             output, sizeof(output)/sizeof(*output), (void *)inserts);
-    fprintf(stderr, "Output 4: %ls", output);
+    printf("Output 4: %ls", output);
 
     FormatMessageW(FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_IGNORE_INSERTS,
             NULL, MYSTRING1,
             MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
             output, sizeof(output)/sizeof(*output), NULL);
-    fprintf(stderr, "Output 5: %ls", output);
+    printf("Output 5: %ls", output);
 
     inserts[0] = (const wchar_t *)12345;
     FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ARGUMENT_ARRAY,
             L"Here be integers: %1!d!. And strings: %2", 0,
             MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), output,
             sizeof(output)/sizeof(*output), (void *)inserts);
-    fprintf(stderr, "Output 6: %ls\n", output);
+    printf("Output 6: %ls\n", output);
 
     FormatMessageW(FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_IGNORE_INSERTS
             | FORMAT_MESSAGE_ALLOCATE_BUFFER,
             NULL, MYSTRING2,
             MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
             (void *)&allocbuf, 0, NULL);
-    fprintf(stderr, "Output 7: %ls", allocbuf);
+    printf("Output 7: %ls", allocbuf);
     LocalFree(allocbuf);
 
     ret = doitW(FORMAT_MESSAGE_FROM_STRING,
             L"va_args version: Here be integers: %1!d!. And strings: %2", 0,
             MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), output,
             sizeof(output)/sizeof(*output), 1234, L"a vararg string");
-    fprintf(stderr, "Output 8: %ls\n", output);
+    printf("Output 8: %ls\n", output);
 
     memset(output, 0, sizeof(output));
     doitW(FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_FROM_SYSTEM,
             kernel32, 193 /* ERROR_BAD_EXE_FORMAT */,
             MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
             output, sizeof(output)/sizeof(*output), L"vararg from module :-)");
-    fprintf(stderr, "Output 9: %ls", output);
+    printf("Output 9: %ls", output);
 
     return 0;
 }

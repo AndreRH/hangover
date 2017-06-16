@@ -25,6 +25,7 @@ enum msvcrt_calls
     CALL_MALLOC,
     CALL_MEMCPY,
     CALL_MEMSET,
+    CALL_PRINTF,
     CALL_PUTS,
     CALL_REALLOC,
     CALL_SIGNAL,
