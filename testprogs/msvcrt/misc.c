@@ -8,10 +8,13 @@
 int CDECL matherr_callback(void *exception);
 
 static int (* CDECL p_fprintf)(FILE *file, const char *format, ...);
+static int (* CDECL p_fwprintf)(FILE *file, const WCHAR *format, ...);
 int (CDECL *p_vfprintf)(FILE *file, const char *format, va_list args);
+int (CDECL *p_vfwprintf)(FILE *file, const WCHAR *format, va_list args);
 static FILE *iob;
 
 void call_vfprintf(const char *fmt, ...);
+void call_vfwprintf(const WCHAR *fmt, ...);
 
 void __stdcall WinMainCRTStartup()
 {
@@ -49,6 +52,7 @@ void __stdcall WinMainCRTStartup()
     void (CDECL *p___getmainargs)(int *argc, char** *argv, char** *envp,
             int expand_wildcards, int *new_mode);
     int (CDECL *p_strncmp)(const char *str1, const char *str2, size_t len);
+    int (* CDECL p_wprintf)(const WCHAR *format, ...);
 
     HANDLE hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
     HANDLE msvcrt = LoadLibraryA("msvcrt.dll");
@@ -66,6 +70,7 @@ void __stdcall WinMainCRTStartup()
     p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
     p_exit = (void *)GetProcAddress(msvcrt, "exit");
     p_fprintf = (void *)GetProcAddress(msvcrt, "fprintf");
+    p_fwprintf = (void *)GetProcAddress(msvcrt, "fwprintf");
     p_free = (void *)GetProcAddress(msvcrt, "free");
     p_fwrite = (void *)GetProcAddress(msvcrt, "fwrite");
     p_malloc = (void *)GetProcAddress(msvcrt, "malloc");
@@ -78,6 +83,8 @@ void __stdcall WinMainCRTStartup()
     p_strlen = (void *)GetProcAddress(msvcrt, "strlen");
     p_strncmp = (void *)GetProcAddress(msvcrt, "strncmp");
     p_vfprintf = (void *)GetProcAddress(msvcrt, "vfprintf");
+    p_vfwprintf = (void *)GetProcAddress(msvcrt, "vfwprintf");
+    p_wprintf = (void *)GetProcAddress(msvcrt, "wprintf");
 
     ptr = p_malloc(sizeof(*ptr));
     ptr[0] = 123;
@@ -147,6 +154,10 @@ void __stdcall WinMainCRTStartup()
     p_fprintf(iob + 1, "memcmp(\"1234\", \"1235\", 4)=%d\n", p_memcmp("1234", "1235", 4));
     p_fprintf(iob + 1, "memcmp(\"1235\", \"1234\", 4)=%d\n", p_memcmp("1235", "1234", 4));
 
+    p_wprintf(L"This is from wprintf: %d\n", 1234);
+    p_fwprintf(iob + 1, L"This is from fwprintf: %d\n", 5678);
+    call_vfwprintf(L"Hello vfwprintf(i1=%d, f=%f)\n", 1, 123.45);
+
     WriteFile(hstdout, buffer, sizeof(buffer), &written, NULL);
     p_exit(123);
 }
@@ -163,5 +174,14 @@ void call_vfprintf(const char *fmt, ...)
 
     va_start(list, fmt);
     p_vfprintf(iob + 1, fmt, list);
+    va_end(list);
+}
+
+void call_vfwprintf(const WCHAR *fmt, ...)
+{
+    va_list list;
+
+    va_start(list, fmt);
+    p_vfwprintf(iob + 1, fmt, list);
     va_end(list);
 }

@@ -25,6 +25,7 @@ EXPORTS
   calloc=MSVCRT_calloc
   exit=MSVCRT_exit
   fprintf=MSVCRT_fprintf
+  fwprintf=MSVCRT_fwprintf
   free=MSVCRT_free
   fwrite=MSVCRT_fwrite
   malloc=MSVCRT_malloc
@@ -38,4 +39,6 @@ EXPORTS
   strlen=MSVCRT_strlen
   strncmp=MSVCRT_strncmp
   vfprintf=MSVCRT_vfprintf
+  vfwprintf=MSVCRT_vfwprintf
   wcscpy=MSVCRT_wcscpy
+  wprintf=MSVCRT_wprintf

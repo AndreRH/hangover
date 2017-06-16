@@ -21,6 +21,7 @@ enum msvcrt_calls
     CALL_CALLOC,
     CALL_EXIT,
     CALL_FPRINTF,
+    CALL_FWPRINTF,
     CALL_FREE,
     CALL_FWRITE,
     CALL_MALLOC,
@@ -34,6 +35,7 @@ enum msvcrt_calls
     CALL_STRLEN,
     CALL_STRNCMP,
     CALL_WCSCPY,
+    CALL_WPRINTF,
 };
 
 typedef int (__cdecl *MSVCRT__onexit_t)(void);
@@ -98,6 +100,7 @@ void (* CDECL p_abort)(void);
 void *(* CDECL p_calloc)(size_t item_count,size_t size);
 void (* CDECL p_exit)(int code);
 int (* CDECL p_fprintf)(FILE *file, const char *format, ...);
+int (* CDECL p_fwprintf)(FILE *file, const WCHAR *format, ...);
 void (* CDECL p_free)(void *ptr);
 size_t (* CDECL p_fwrite)(const void *str, size_t size, size_t count, FILE *file);
 void *(* CDECL p_malloc)(size_t size);

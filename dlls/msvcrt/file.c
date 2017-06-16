@@ -70,7 +70,7 @@ struct qemu_fprintf
 
 #ifdef QEMU_DLL_GUEST
 
-static unsigned int count_printf_args(const char *format, char *fmts)
+static unsigned int count_printf_argsA(const char *format, char *fmts)
 {
     unsigned int i, count = 0;
     BOOL fmt_start = FALSE;
@@ -129,7 +129,7 @@ static int CDECL vfprintf_helper(uint64_t op, FILE *file, const char *format, va
     struct qemu_fprintf *call;
     int ret;
     char fmts[256] = {0};
-    unsigned int count = count_printf_args(format, fmts), i, arg = 0;
+    unsigned int count = count_printf_argsA(format, fmts), i, arg = 0;
     union
     {
         double d;
@@ -201,6 +201,140 @@ int CDECL MSVCRT_printf(const char *format, ...)
 
     va_start(list, format);
     ret = vfprintf_helper(QEMU_SYSCALL_ID(CALL_PRINTF), NULL, format, list);
+    va_end(list);
+
+    return ret;
+}
+
+static unsigned int count_printf_argsW(const WCHAR *format, WCHAR *fmts)
+{
+    unsigned int i, count = 0;
+    BOOL fmt_start = FALSE;
+
+    for (i = 0; format[i]; ++i)
+    {
+        if (!fmt_start)
+        {
+            if (format[i] != '%')
+                continue;
+            i++;
+        }
+
+        if (format[i] == '%')
+            continue;
+
+        switch (format[i])
+        {
+            case 'A':
+            case 'a':
+            case 'c':
+            case 'd':
+            case 'E':
+            case 'e':
+            case 'F':
+            case 'f':
+            case 'G':
+            case 'g':
+            case 'i':
+            case 'n':
+            case 'o':
+            case 'p':
+            case 's':
+            case 'u':
+            case 'X':
+            case 'x':
+                fmts[count++] = format[i];
+                if (count == 256)
+                    MSVCRT_exit(255);
+                fmt_start = FALSE;
+                break;
+
+            default:
+                fmt_start = TRUE;
+                break;
+        }
+    }
+
+    return count;
+}
+
+static int CDECL vfwprintf_helper(uint64_t op, FILE *file, const WCHAR *format, va_list args)
+{
+    struct qemu_fprintf *call;
+    int ret;
+    WCHAR fmts[256] = {0};
+    unsigned int count = count_printf_argsW(format, fmts), i, arg = 0;
+    union
+    {
+        double d;
+        uint64_t i;
+    } conv;
+
+    call = MSVCRT_malloc(offsetof(struct qemu_fprintf, args[count]));
+    call->super.id = op;
+    call->argcount = count;
+    call->file = (uint64_t)file;
+    call->format = (uint64_t)format;
+    call->MSVCRT_FILE_size = sizeof(FILE);
+    call->argcount_float = 0;
+
+    for (i = 0; i < count; ++i)
+    {
+        switch (fmts[i])
+        {
+            case 'A':
+            case 'a':
+            case 'E':
+            case 'e':
+            case 'F':
+            case 'f':
+            case 'G':
+            case 'g':
+                conv.d = va_arg(args, double);
+                call->args[i].is_float = TRUE;
+                call->args[i].arg = conv.i;
+                call->argcount_float++;
+                break;
+
+            default:
+                call->args[i].is_float = FALSE;
+                call->args[i].arg = va_arg(args, uint64_t);
+                break;
+        }
+    }
+
+    qemu_syscall(&call->super);
+    ret = call->super.iret;
+
+    MSVCRT_free(call);
+
+    return ret;
+}
+
+int CDECL MSVCRT_vfwprintf(FILE *file, const WCHAR *format, va_list args)
+{
+    vfwprintf_helper(QEMU_SYSCALL_ID(CALL_FWPRINTF), file, format, args);
+}
+
+int CDECL MSVCRT_fwprintf(FILE *file, const WCHAR *format, ...)
+{
+    int ret;
+    va_list list;
+
+    va_start(list, format);
+    ret = vfwprintf_helper(QEMU_SYSCALL_ID(CALL_FWPRINTF), file, format, list);
+    va_end(list);
+
+    return ret;
+}
+
+int CDECL MSVCRT_wprintf(const WCHAR *format, ...)
+{
+    int ret;
+    va_list list;
+
+    va_start(list, format);
+    ret = vfwprintf_helper(QEMU_SYSCALL_ID(CALL_WPRINTF), NULL, format, list);
     va_end(list);
 
     return ret;
@@ -297,7 +431,7 @@ void qemu_fprintf(struct qemu_syscall *call)
 {
     struct qemu_fprintf *c = (struct qemu_fprintf *)call;
     int ret, onstack = 0;
-    void *file;
+    void *file, *func;
 
     if (c->argcount - c->argcount_float > 6)
         onstack = c->argcount - c->argcount_float - 6;
@@ -314,17 +448,29 @@ void qemu_fprintf(struct qemu_syscall *call)
              * haven't found a nice way to get MSVCRT_FILE from Wine, other than
              * copypasting it, so grab the proper offset from the VM. */
             file = (BYTE *)p___iob_func() + c->MSVCRT_FILE_size;
+            func = p_fprintf;
             break;
 
         case QEMU_SYSCALL_ID(CALL_FPRINTF):
             file = QEMU_G2H(c->file);
+            func = p_fprintf;
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_WPRINTF):
+            file = (BYTE *)p___iob_func() + c->MSVCRT_FILE_size;
+            func = p_fwprintf;
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_FWPRINTF):
+            file = QEMU_G2H(c->file);
+            func = p_fwprintf;
             break;
 
         default:
             WINE_ERR("Unexpected op %lx\n", c->super.id);
     }
 
-    ret = call_fprintf(file, QEMU_G2H(c->format), p_fprintf, c->argcount, onstack, c->args);
+    ret = call_fprintf(file, QEMU_G2H(c->format), func, c->argcount, onstack, c->args);
 
     c->super.iret = ret;
 }
