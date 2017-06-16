@@ -70,3 +70,37 @@ void qemu_CompareStringW(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_GetCPInfoExW
+{
+    struct qemu_syscall super;
+    uint64_t codepage;
+    uint64_t flags;
+    uint64_t info;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI WINBOOL WINAPI GetCPInfoExW(UINT codepage, DWORD flags, CPINFOEXW *info)
+{
+    struct qemu_GetCPInfoExW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETCPINFOEXW);
+    call.codepage = codepage;
+    call.flags = flags;
+    call.info = (uint64_t)info;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetCPInfoExW(struct qemu_syscall *call)
+{
+    struct qemu_GetCPInfoExW *c = (struct qemu_GetCPInfoExW *)call;
+    WINE_TRACE("\n");
+    c->super.iret = GetCPInfoExW(c->codepage, c->flags, QEMU_G2H(c->info));
+}
+
+#endif

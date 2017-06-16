@@ -12,6 +12,7 @@ EXPORTS
   FindClose
   FindFirstFileW
   FormatMessageW
+  GetCPInfoExW,
   GetCurrentProcess
   GetCurrentProcessId
   GetCurrentThreadId
