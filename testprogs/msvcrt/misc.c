@@ -39,6 +39,7 @@ void __stdcall WinMainCRTStartup()
     void (CDECL *p_free)(void *ptr);
     size_t (* CDECL p_fwrite)(const void *str, size_t size, size_t count, FILE *file);
     void *(CDECL *p_malloc)(size_t size);
+    int (* CDECL p_memcmp)(const void *ptr1, const void *ptr2, size_t size);
     void *(CDECL *p_memcpy)(void *dst, const void *src, size_t size);
     void *(CDECL *p_memset)(void *ptr, int val, size_t size);
     int (CDECL *p_puts)(const char *str);
@@ -68,6 +69,7 @@ void __stdcall WinMainCRTStartup()
     p_free = (void *)GetProcAddress(msvcrt, "free");
     p_fwrite = (void *)GetProcAddress(msvcrt, "fwrite");
     p_malloc = (void *)GetProcAddress(msvcrt, "malloc");
+    p_memcmp = (void *)GetProcAddress(msvcrt, "memcmp");
     p_memcpy = (void *)GetProcAddress(msvcrt, "memcpy");
     p_memset = (void *)GetProcAddress(msvcrt, "memset");
     p_puts = (void *)GetProcAddress(msvcrt, "puts");
@@ -141,6 +143,9 @@ void __stdcall WinMainCRTStartup()
     p_signal(SIGINT, NULL);
 
     p_puts("This is from puts()");
+
+    p_fprintf(iob + 1, "memcmp(\"1234\", \"1235\", 4)=%d\n", p_memcmp("1234", "1235", 4));
+    p_fprintf(iob + 1, "memcmp(\"1235\", \"1234\", 4)=%d\n", p_memcmp("1235", "1234", 4));
 
     WriteFile(hstdout, buffer, sizeof(buffer), &written, NULL);
     p_exit(123);

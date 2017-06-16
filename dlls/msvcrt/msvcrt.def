@@ -28,6 +28,7 @@ EXPORTS
   free=MSVCRT_free
   fwrite=MSVCRT_fwrite
   malloc=MSVCRT_malloc
+  memcmp=MSVCRT_memcmp
   memcpy=MSVCRT_memcpy
   memset=MSVCRT_memset
   printf=MSVCRT_printf

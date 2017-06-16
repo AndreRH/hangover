@@ -64,6 +64,7 @@ static const syscall_handler dll_functions[] =
     qemu_free,
     qemu_fwrite,
     qemu_malloc,
+    qemu_memcmp,
     qemu_memcpy,
     qemu_memset,
     qemu_fprintf,
@@ -106,6 +107,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_free = (void *)GetProcAddress(msvcrt, "free");
     p_fwrite = (void *)GetProcAddress(msvcrt, "fwrite");
     p_malloc = (void *)GetProcAddress(msvcrt, "malloc");
+    p_memcmp = (void *)GetProcAddress(msvcrt, "memcmp");
     p_memcpy = (void *)GetProcAddress(msvcrt, "memcpy");
     p_memset = (void *)GetProcAddress(msvcrt, "memset");
     p_puts = (void *)GetProcAddress(msvcrt, "puts");
