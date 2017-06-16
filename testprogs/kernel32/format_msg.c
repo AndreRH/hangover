@@ -4,7 +4,17 @@
 #include "format_msg.h"
 
 static DWORD doitW(DWORD flags, const void *src, DWORD msg_id, DWORD lang_id,
-        wchar_t *buffer, DWORD size, ...);
+        wchar_t *buffer, DWORD size, ...)
+{
+    DWORD ret;
+    va_list list;
+
+    va_start(list, size);
+    ret = FormatMessageW(flags, src, msg_id, lang_id, buffer, size, &list);
+    va_end(list);
+
+    return ret;
+}
 
 int main()
 {
@@ -77,17 +87,4 @@ int main()
     fprintf(stderr, "Output 9: %ls", output);
 
     return 0;
-}
-
-static DWORD doitW(DWORD flags, const void *src, DWORD msg_id, DWORD lang_id,
-        wchar_t *buffer, DWORD size, ...)
-{
-    DWORD ret;
-    va_list list;
-
-    va_start(list, size);
-    ret = FormatMessageW(flags, src, msg_id, lang_id, buffer, size, &list);
-    va_end(list);
-
-    return ret;
 }

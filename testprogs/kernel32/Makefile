@@ -1,7 +1,7 @@
 all: consolehandler.exe critsection.exe helloworld.exe lasterror.exe library.exe process.exe startupinfo.exe time.exe virtual.exe version.exe fileops.exe format_msg.exe
 
 format_msg.exe: format_msg.o format_msg.res Makefile
-	x86_64-w64-mingw32-ld format_msg.o format_msg.res -o $@ -lkernel32 -lmingw32 -lmsvcrt
+	x86_64-w64-mingw32-gcc format_msg.o format_msg.res -o $@ -Wl,-eWinMainCRTStartup
 
 format_msg.res: format_msg.rc Makefile
 	x86_64-w64-mingw32-windres $< -O coff -o $@
