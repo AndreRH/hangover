@@ -41,6 +41,8 @@ static const syscall_handler dll_functions[] =
     qemu_FindClose,
     qemu_FindFirstFileW,
     qemu_FormatMessageW,
+    qemu_GetCommandLineA,
+    qemu_GetCommandLineW,
     qemu_GetCPInfoExW,
     qemu_GetCurrentProcess,
     qemu_GetCurrentProcessId,

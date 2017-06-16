@@ -10,5 +10,8 @@ int main()
     GetCPInfoExW(CP_UTF8, 0, &cpinfo);
     printf("%ls\n", cpinfo.CodePageName);
 
+    printf("CommandLineA: %s\n", GetCommandLineA());
+    printf("CommandLineW: %ls\n", GetCommandLineW());
+
     return 0;
 }

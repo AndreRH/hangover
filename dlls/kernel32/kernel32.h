@@ -11,6 +11,8 @@ enum kernel32_calls
     CALL_FINDCLOSE,
     CALL_FINDFIRSTFILEW,
     CALL_FORMATMESSAGEW,
+    CALL_GETCOMMANDLINEA,
+    CALL_GETCOMMANDLINEW,
     CALL_GETCPINFOEXW,
     CALL_GETCURRENTPROCESS,
     CALL_GETCURRENTPROCESSID,
@@ -55,6 +57,8 @@ void qemu_ExitProcess(struct qemu_syscall *call);
 void qemu_FindClose(struct qemu_syscall *call);
 void qemu_FindFirstFileW(struct qemu_syscall *call);
 void qemu_FormatMessageW(struct qemu_syscall *call);
+void qemu_GetCommandLineA(struct qemu_syscall *c);
+void qemu_GetCommandLineW(struct qemu_syscall *c);
 void qemu_GetCPInfoExW(struct qemu_syscall *call);
 void qemu_GetCurrentProcess(struct qemu_syscall *call);
 void qemu_GetCurrentProcessId(struct qemu_syscall *call);

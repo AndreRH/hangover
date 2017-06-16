@@ -12,6 +12,8 @@ EXPORTS
   FindClose
   FindFirstFileW
   FormatMessageW
+  GetCommandLineA,
+  GetCommandLineW,
   GetCPInfoExW,
   GetCurrentProcess
   GetCurrentProcessId
