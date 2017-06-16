@@ -54,6 +54,7 @@ EXPORTS
   RtlLookupFunctionEntry=ntdll.RtlLookupFunctionEntry
   RtlVirtualUnwind=ntdll.RtlVirtualUnwind
   SetConsoleCtrlHandler
+  SetEndOfFile
   SetLastError
   SetUnhandledExceptionFilter
   Sleep

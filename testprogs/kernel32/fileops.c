@@ -17,6 +17,7 @@ void __stdcall WinMainCRTStartup()
     HANDLE f = CreateFileW(L"testfile.txt", GENERIC_READ | GENERIC_WRITE, 0, NULL,
             CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     WriteFile(f, buffer, sizeof(buffer), &written, NULL);
+    SetEndOfFile(f);
     GetFileSize(f, &high);
     CloseHandle(f);
 

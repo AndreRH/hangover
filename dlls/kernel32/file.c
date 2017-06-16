@@ -208,6 +208,40 @@ void qemu_ReadFile(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_SetEndOfFile
+{
+    struct qemu_syscall super;
+    uint64_t file;
+    uint64_t buffer;
+    uint64_t to_read;
+    uint64_t read;
+    uint64_t ovl;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI WINBOOL WINAPI SetEndOfFile(HANDLE file)
+{
+    struct qemu_SetEndOfFile call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETENDOFFILE);
+    call.file = (uint64_t)file;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_SetEndOfFile(struct qemu_syscall *call)
+{
+    struct qemu_SetEndOfFile *c = (struct qemu_SetEndOfFile *)call;
+    WINE_TRACE("\n");
+    c->super.iret = SetEndOfFile((HANDLE)c->file);
+}
+
+#endif
+
 struct qemu_WriteFile
 {
     struct qemu_syscall super;

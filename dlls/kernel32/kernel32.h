@@ -46,6 +46,7 @@ enum kernel32_calls
     CALL_QUERYPERFORMANCECOUNTER,
     CALL_READFILE,
     CALL_SETCONSOLECTRLHANDLER,
+    CALL_SETENDOFFILE,
     CALL_SETLASTERROR,
     CALL_SETUNHANDLEDEXCEPTIONFILTER,
     CALL_SLEEP,
@@ -106,6 +107,7 @@ void qemu_MultiByteToWideChar(struct qemu_syscall *call);
 void qemu_QueryPerformanceCounter(struct qemu_syscall *call);
 void qemu_ReadFile(struct qemu_syscall *call);
 void qemu_SetConsoleCtrlHandler(struct qemu_syscall *call);
+void qemu_SetEndOfFile(struct qemu_syscall *call);
 void qemu_SetLastError(struct qemu_syscall *call);
 void qemu_SetUnhandledExceptionFilter(struct qemu_syscall *call);
 void qemu_Sleep(struct qemu_syscall *call);
