@@ -75,8 +75,8 @@ struct qemu_RegCreateKeyExW
 
 #ifdef QEMU_DLL_GUEST
 
-WINADVAPI LONG WINAPI RegCreateKeyExW(HKEY key, const wchar_t *subkey, DWORD reserved,
-        wchar_t *class, DWORD options, REGSAM sam, SECURITY_ATTRIBUTES *security,
+WINADVAPI LONG WINAPI RegCreateKeyExW(HKEY key, const WCHAR *subkey, DWORD reserved,
+        WCHAR *class, DWORD options, REGSAM sam, SECURITY_ATTRIBUTES *security,
         HKEY *result, DWORD *disposition)
 {
     struct qemu_RegCreateKeyExW call;
@@ -119,7 +119,7 @@ struct qemu_RegOpenKeyW
 
 #ifdef QEMU_DLL_GUEST
 
-WINADVAPI LONG WINAPI RegOpenKeyW(HKEY key, const wchar_t *subkey, HKEY *result)
+WINADVAPI LONG WINAPI RegOpenKeyW(HKEY key, const WCHAR *subkey, HKEY *result)
 {
     struct qemu_RegOpenKeyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGOPENKEY);
@@ -156,7 +156,7 @@ struct qemu_RegQueryValueExW
 
 #ifdef QEMU_DLL_GUEST
 
-WINADVAPI LONG WINAPI RegQueryValueExW(HKEY key, const wchar_t *name, DWORD *reserved,
+WINADVAPI LONG WINAPI RegQueryValueExW(HKEY key, const WCHAR *name, DWORD *reserved,
         DWORD *type, BYTE *data, DWORD *count)
 {
     struct qemu_RegQueryValueExW call;
@@ -198,7 +198,7 @@ struct qemu_RegSetValueExW
 
 #ifdef QEMU_DLL_GUEST
 
-WINADVAPI LONG WINAPI RegSetValueExW(HKEY key, const wchar_t *name, DWORD reserved,
+WINADVAPI LONG WINAPI RegSetValueExW(HKEY key, const WCHAR *name, DWORD reserved,
         DWORD type, const BYTE *data, DWORD count)
 {
     struct qemu_RegQueryValueExW call;

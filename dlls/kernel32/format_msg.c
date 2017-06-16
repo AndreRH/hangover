@@ -46,10 +46,10 @@ struct qemu_FormatMessage
 #ifdef QEMU_DLL_GUEST
 
 WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_id, DWORD lang_id,
-        wchar_t *buffer, DWORD size, va_list *args)
+        WCHAR *buffer, DWORD size, va_list *args)
 {
     struct qemu_FormatMessage call;
-    const wchar_t *local_string = src;
+    const WCHAR *local_string = src;
     DWORD_PTR array[100];
     char highest = 0;
     unsigned int i;
@@ -140,7 +140,7 @@ void qemu_FormatMessageW(struct qemu_syscall *call)
     struct qemu_FormatMessage *c = (struct qemu_FormatMessage *)call;
     WINE_TRACE("\n");
     void *src;
-    wchar_t *local_buffer;
+    WCHAR *local_buffer;
     void *buffer_arg;
 
     if (c->flags & FORMAT_MESSAGE_FROM_STRING)

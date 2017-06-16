@@ -44,7 +44,7 @@ struct qemu_CreateFileW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HANDLE WINAPI CreateFileW(const wchar_t *name, DWORD access, DWORD share,
+WINBASEAPI HANDLE WINAPI CreateFileW(const WCHAR *name, DWORD access, DWORD share,
         SECURITY_ATTRIBUTES *security, DWORD disposition, DWORD flags,
         HANDLE template)
 {
@@ -114,7 +114,7 @@ struct qemu_FindFirstFileW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HANDLE WINAPI FindFirstFileW(const wchar_t *name, WIN32_FIND_DATAW *finddata)
+WINBASEAPI HANDLE WINAPI FindFirstFileW(const WCHAR *name, WIN32_FIND_DATAW *finddata)
 {
     struct qemu_FindFirstFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDFIRSTFILEW);
