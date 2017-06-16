@@ -93,3 +93,57 @@ void qemu_GetDateFormatW(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int WINAPI GetTimeFormatA(LCID locale, DWORD flags, CONST SYSTEMTIME *time, const CHAR *format, CHAR *datestr, int cchOut)
+{
+    struct qemu_GetDateFormat call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETTIMEFORMATA);
+    call.locale = locale;
+    call.flags = flags;
+    call.date = (uint64_t)time;
+    call.format = (uint64_t)format;
+    call.datestr = (uint64_t)datestr;
+    call.cchDate = cchOut;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+WINBASEAPI int WINAPI GetTimeFormatW(LCID locale, DWORD flags, CONST SYSTEMTIME *date, const WCHAR *format, WCHAR *datestr, int cchOut)
+{
+    struct qemu_GetDateFormat call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETTIMEFORMATW);
+    call.locale = locale;
+    call.flags = flags;
+    call.date = (uint64_t)date;
+    call.format = (uint64_t)format;
+    call.datestr = (uint64_t)datestr;
+    call.cchDate = cchOut;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetTimeFormatA(struct qemu_syscall *call)
+{
+    struct qemu_GetDateFormat *c = (struct qemu_GetDateFormat *)call;
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)GetTimeFormatA(c->locale, c->flags, QEMU_G2H(c->date),
+            QEMU_G2H(c->format), QEMU_G2H(c->datestr), c->cchDate);
+}
+
+void qemu_GetTimeFormatW(struct qemu_syscall *call)
+{
+    struct qemu_GetDateFormat *c = (struct qemu_GetDateFormat *)call;
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)GetTimeFormatW(c->locale, c->flags, QEMU_G2H(c->date),
+            QEMU_G2H(c->format), QEMU_G2H(c->datestr), c->cchDate);
+}
+
+#endif

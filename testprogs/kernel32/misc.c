@@ -37,6 +37,18 @@ int main()
     GetDateFormatW(lcid, 0, &curtime, inputW, bufferW, COUNTOF(bufferW));
     printf("GetDateFormatW: %ls\n", bufferW);
 
+    curtime.wHour = 8;
+    curtime.wMinute = 56;
+    curtime.wSecond = 13;
+    curtime.wMilliseconds = 22;
+    strcpy(inputA, "tt HH':'mm'@'ss");
+    GetTimeFormatA(lcid, TIME_FORCE24HOURFORMAT, &curtime, inputA, bufferA, COUNTOF(bufferA));
+    printf("GetTimeFormatA: %s\n", bufferA);
+
+    wcscpy(inputW, L"tt HH':'mm'@'ss");
+    GetTimeFormatW(lcid, TIME_FORCE24HOURFORMAT, &curtime, inputW, bufferW, COUNTOF(bufferW));
+    printf("GetTimeFormatW: %ls\n", bufferW);
+
     GetModuleFileNameA(NULL, bufferA, COUNTOF(bufferA));
     printf("GetModuleFileNameA(NULL): %s\n", bufferA);
     GetModuleFileNameW(NULL, bufferW, COUNTOF(bufferW));

@@ -32,6 +32,8 @@ enum kernel32_calls
     CALL_GETSTDHANDLE,
     CALL_GETSYSTEMTIMEASFILETIME,
     CALL_GETTICKCOUNT,
+    CALL_GETTIMEFORMATA,
+    CALL_GETTIMEFORMATW,
     CALL_GETVERSION,
     CALL_GETVERSIONEXA,
     CALL_GETVERSIONEXW,
@@ -85,6 +87,8 @@ void qemu_GetStartupInfoA(struct qemu_syscall *call);
 void qemu_GetStdHandle(struct qemu_syscall *call);
 void qemu_GetSystemTimeAsFileTime(struct qemu_syscall *call);
 void qemu_GetTickCount(struct qemu_syscall *call);
+void qemu_GetTimeFormatA(struct qemu_syscall *call);
+void qemu_GetTimeFormatW(struct qemu_syscall *call);
 void qemu_GetProcAddress(struct qemu_syscall *call);
 void qemu_GetProcessHeap(struct qemu_syscall *call);
 void qemu_GetVersion(struct qemu_syscall *call);

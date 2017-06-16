@@ -33,6 +33,8 @@ EXPORTS
   GetStdHandle
   GetSystemTimeAsFileTime
   GetTickCount
+  GetTimeFormatA
+  GetTimeFormatW
   GetVersion
   GetVersionExA
   GetVersionExW
