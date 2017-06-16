@@ -35,3 +35,4 @@ EXPORTS
   strlen=MSVCRT_strlen
   strncmp=MSVCRT_strncmp
   vfprintf=MSVCRT_vfprintf
+  wcscpy=MSVCRT_wcscpy

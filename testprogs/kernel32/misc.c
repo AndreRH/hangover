@@ -31,9 +31,9 @@ int main()
     GetDateFormatA(lcid, 0, &curtime, inputA, bufferA, COUNTOF(bufferA));
     printf("GetDateFormatA: %s\n", bufferA);
 
-//     wcscpy(inputW, L"dddd d MMMM yyyy");
-//     GetDateFormatW(lcid, 0, &curtime, inputW, bufferW, COUNTOF(bufferW));
-//     printf("GetDateFormatW: %ls\n", bufferW);
+    wcscpy(inputW, L"dddd d MMMM yyyy");
+    GetDateFormatW(lcid, 0, &curtime, inputW, bufferW, COUNTOF(bufferW));
+    printf("GetDateFormatW: %ls\n", bufferW);
 
     return 0;
 }

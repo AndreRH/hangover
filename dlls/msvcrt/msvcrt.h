@@ -31,6 +31,7 @@ enum msvcrt_calls
     CALL_SIGNAL,
     CALL_STRLEN,
     CALL_STRNCMP,
+    CALL_WCSCPY,
 };
 
 typedef int (__cdecl *MSVCRT__onexit_t)(void);
@@ -73,6 +74,7 @@ void qemu_realloc(struct qemu_syscall *call);
 void qemu_signal(struct qemu_syscall *call);
 void qemu_strlen(struct qemu_syscall *call);
 void qemu_strncmp(struct qemu_syscall *call);
+void qemu_wcscpy(struct qemu_syscall *call);
 
 /* Be careful not to call the Linux libc! */
 void (* CDECL p___getmainargs)(int *argc, char** *argv, char** *envp,
@@ -100,6 +102,7 @@ int (* CDECL p_puts)(const char *str);
 void *(* CDECL p_realloc)(void *ptr, size_t size);
 size_t (* CDECL p_strlen)(const char *str);
 int (* CDECL p_strncmp)(const char *str1, const char *str2, size_t len);
+WCHAR (* CDECL p_wcscpy)(WCHAR *dst, const WCHAR *src);
 
 #endif
 
