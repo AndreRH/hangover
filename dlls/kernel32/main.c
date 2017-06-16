@@ -25,6 +25,35 @@
 #include "dll_list.h"
 #include "kernel32.h"
 
+#ifdef QEMU_DLL_GUEST
+
+/* Copypyasted from Wine. */
+WINBASEAPI INT WINAPI MulDiv( INT nMultiplicand, INT nMultiplier, INT nDivisor)
+{
+    LONGLONG ret;
+
+    if (!nDivisor) return -1;
+
+    /* We want to deal with a positive divisor to simplify the logic. */
+    if (nDivisor < 0)
+    {
+        nMultiplicand = - nMultiplicand;
+        nDivisor = -nDivisor;
+    }
+
+    /* If the result is positive, we "add" to round. else, we subtract to round. */
+    if ( ( (nMultiplicand <  0) && (nMultiplier <  0) ) ||
+         ( (nMultiplicand >= 0) && (nMultiplier >= 0) ) )
+      ret = (((LONGLONG)nMultiplicand * nMultiplier) + (nDivisor/2)) / nDivisor;
+    else
+      ret = (((LONGLONG)nMultiplicand * nMultiplier) - (nDivisor/2)) / nDivisor;
+
+    if ((ret > 2147483647) || (ret < -2147483647)) return -1;
+    return ret;
+}
+
+#endif
+
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);

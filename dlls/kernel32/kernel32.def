@@ -45,6 +45,7 @@ EXPORTS
   LeaveCriticalSection=ntdll.RtlLeaveCriticalSection
   LoadLibraryA
   LocalFree
+  MulDiv
   QueryPerformanceCounter
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   RtlCaptureContext=ntdll.RtlCaptureContext
