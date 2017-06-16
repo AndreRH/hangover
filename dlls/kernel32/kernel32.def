@@ -12,9 +12,9 @@ EXPORTS
   FindClose
   FindFirstFileW
   FormatMessageW
-  GetCommandLineA,
-  GetCommandLineW,
-  GetCPInfoExW,
+  GetCommandLineA
+  GetCommandLineW
+  GetCPInfoExW
   GetCurrentProcess
   GetCurrentProcessId
   GetCurrentThreadId
