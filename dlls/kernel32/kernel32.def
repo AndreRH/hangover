@@ -18,6 +18,8 @@ EXPORTS
   GetCurrentProcess
   GetCurrentProcessId
   GetCurrentThreadId
+  GetDateFormatA
+  GetDateFormatW
   GetLastError
   GetModuleHandleA
   GetModuleHandleExA
