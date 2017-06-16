@@ -51,3 +51,24 @@ void qemu_signal(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+int CDECL MSVCRT_raise(int signum)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL_RAISE);
+
+    qemu_syscall(&call);
+
+    return 0;
+}
+
+#else
+
+void qemu_raise(struct qemu_syscall *call)
+{
+    WINE_FIXME("Stub!\n");
+}
+
+#endif

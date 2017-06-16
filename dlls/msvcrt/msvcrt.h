@@ -30,6 +30,7 @@ enum msvcrt_calls
     CALL_MEMSET,
     CALL_PRINTF,
     CALL_PUTS,
+    CALL_RAISE,
     CALL_REALLOC,
     CALL_SIGNAL,
     CALL_STRLEN,
@@ -76,6 +77,7 @@ void qemu_memcmp(struct qemu_syscall *call);
 void qemu_memcpy(struct qemu_syscall *call);
 void qemu_memset(struct qemu_syscall *call);
 void qemu_puts(struct qemu_syscall *call);
+void qemu_raise(struct qemu_syscall *call);
 void qemu_realloc(struct qemu_syscall *call);
 void qemu_signal(struct qemu_syscall *call);
 void qemu_strlen(struct qemu_syscall *call);
