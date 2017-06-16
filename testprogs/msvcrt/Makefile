@@ -1,5 +1,8 @@
 all: misc.exe fullcrt.exe atexit.exe
 
+atexit.exe: atexit.o Makefile
+	x86_64-w64-mingw32-gcc atexit.o -o $@ -Wl,-eWinMainCRTStartup
+
 misc.exe: misc.c Makefile
 	x86_64-w64-mingw32-gcc $< -o $@ -lkernel32 -nostdlib
 
