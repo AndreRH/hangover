@@ -137,6 +137,38 @@ void qemu_FindFirstFileW(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_GetFileSize
+{
+    struct qemu_syscall super;
+    uint64_t file;
+    uint64_t high;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI GetFileSize(HANDLE file, DWORD *high)
+{
+    struct qemu_GetFileSize call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETFILESIZE);
+    call.file = (uint64_t)file;
+    call.high = (uint64_t)high;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetFileSize(struct qemu_syscall *call)
+{
+    struct qemu_GetFileSize *c = (struct qemu_GetFileSize *)call;
+    WINE_TRACE("\n");
+    c->super.iret = GetFileSize((HANDLE)c->file, QEMU_G2H(c->high));
+}
+
+#endif
+
 struct qemu_WriteFile
 {
     struct qemu_syscall super;

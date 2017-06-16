@@ -10,12 +10,14 @@ void __stdcall WinMainCRTStartup()
     DWORD written;
     WIN32_FIND_DATAW find_data = {0};
     HANDLE find_handle;
+    DWORD high;
 
     WriteFile(stdout, buffer2, sizeof(buffer2), &written, NULL);
 
     HANDLE f = CreateFileW(L"testfile.txt", GENERIC_READ | GENERIC_WRITE, 0, NULL,
             CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     WriteFile(f, buffer, sizeof(buffer), &written, NULL);
+    GetFileSize(f, &high);
     CloseHandle(f);
 
     find_handle = FindFirstFileW(L"*", &find_data);

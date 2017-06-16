@@ -20,6 +20,7 @@ EXPORTS
   GetCurrentThreadId
   GetDateFormatA
   GetDateFormatW
+  GetFileSize
   GetLastError
   GetModuleHandleA
   GetModuleHandleExA
