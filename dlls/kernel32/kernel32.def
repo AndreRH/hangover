@@ -23,6 +23,8 @@ EXPORTS
   GetFileSize
   GetLastError
   GetLocalTime
+  GetModuleFileNameA
+  GetModuleFileNameW
   GetModuleHandleA
   GetModuleHandleExA
   GetProcAddress

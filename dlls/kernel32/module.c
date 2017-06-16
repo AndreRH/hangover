@@ -28,6 +28,69 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
+struct qemu_ModuleFileName
+{
+    struct qemu_syscall super;
+    uint64_t module;
+    uint64_t name;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI GetModuleFileNameA(HMODULE module, CHAR *name, DWORD size)
+{
+    struct qemu_ModuleFileName call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEFILENAMEA);
+    call.module = (uint64_t)module;
+    call.name = (uint64_t)name;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+WINBASEAPI DWORD WINAPI GetModuleFileNameW(HMODULE module, WCHAR *name, DWORD size)
+{
+    struct qemu_ModuleFileName call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEFILENAMEW);
+    call.module = (uint64_t)module;
+    call.name = (uint64_t)name;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetModuleFileNameA(struct qemu_syscall *call)
+{
+    struct qemu_ModuleFileName *c = (struct qemu_ModuleFileName *)call;
+    WCHAR *wbuf;
+    WINE_TRACE("\n");
+
+    wbuf = malloc((c->size + 1) * sizeof(*wbuf));
+
+    /* Allocate one more to make sure WideCharToMultiByte triggers an error, if there is an error. */
+    qemu_ops->qemu_GetModuleFileName((HANDLE)c->module, wbuf, c->size ? c->size + 1 : 0);
+
+    c->super.iret = WideCharToMultiByte(CP_ACP, 0, wbuf, -1, QEMU_G2H(c->name), c->size, NULL, NULL);
+    if (!c->super.iret)
+        c->super.iret = WideCharToMultiByte(CP_ACP, 0, wbuf, c->size, QEMU_G2H(c->name), c->size, NULL, NULL);
+}
+
+void qemu_GetModuleFileNameW(struct qemu_syscall *call)
+{
+    struct qemu_ModuleFileName *c = (struct qemu_ModuleFileName *)call;
+    WINE_TRACE("\n");
+    c->super.iret = qemu_ops->qemu_GetModuleFileName((HANDLE)c->module, QEMU_G2H(c->name), c->size);
+}
+
+#endif
+
 struct qemu_ModuleOpA
 {
     struct qemu_syscall super;
