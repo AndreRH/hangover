@@ -58,3 +58,13 @@ cd $DESTDIR/dlls/gdi32
 make -j4
 ln -sf $PWD/gdi32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
 ln -sf $PWD/qemu_gdi32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+
+# Build the test progs. FIXME: automate this better.
+cd $DESTDIR/testprogs/advapi32
+make -j4
+
+cd $DESTDIR/testprogs/kernel32
+make -j4
+
+cd $DESTDIR/testprogs/msvcrt
+make -j4
