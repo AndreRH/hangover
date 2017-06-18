@@ -72,7 +72,7 @@ void qemu_GetModuleFileNameA(struct qemu_syscall *call)
     WCHAR *wbuf;
     WINE_TRACE("\n");
 
-    wbuf = malloc((c->size + 1) * sizeof(*wbuf));
+    wbuf = HeapAlloc(GetProcessHeap(), 0, (c->size + 1) * sizeof(*wbuf));
 
     /* Allocate one more to make sure WideCharToMultiByte triggers an error, if there is an error. */
     qemu_ops->qemu_GetModuleFileName((HANDLE)c->module, wbuf, c->size ? c->size + 1 : 0);
@@ -80,6 +80,8 @@ void qemu_GetModuleFileNameA(struct qemu_syscall *call)
     c->super.iret = WideCharToMultiByte(CP_ACP, 0, wbuf, -1, QEMU_G2H(c->name), c->size, NULL, NULL);
     if (!c->super.iret)
         c->super.iret = WideCharToMultiByte(CP_ACP, 0, wbuf, c->size, QEMU_G2H(c->name), c->size, NULL, NULL);
+
+    HeapFree(GetProcessHeap(), 0, wbuf);
 }
 
 void qemu_GetModuleFileNameW(struct qemu_syscall *call)
@@ -115,10 +117,22 @@ WINBASEAPI HMODULE WINAPI GetModuleHandleA(const char *name)
 void qemu_GetModuleHandleA(struct qemu_syscall *call)
 {
     struct qemu_ModuleOpA *c = (struct qemu_ModuleOpA *)call;
+    WCHAR *nameW = NULL;
+    int size;
+
     WINE_TRACE("(\"%s\")\n", (char *)QEMU_G2H(c->name));
 
+    if (c->name)
+    {
+        size = MultiByteToWideChar(CP_ACP, 0, QEMU_G2H(c->name), -1, NULL, 0);
+        nameW = HeapAlloc(GetProcessHeap(), 0, size * sizeof(*nameW));
+        MultiByteToWideChar(CP_ACP, 0, QEMU_G2H(c->name), -1, nameW, size);
+    }
+
     c->super.iret = (uint64_t)qemu_ops->qemu_GetModuleHandleEx(
-            GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, QEMU_G2H(c->name));
+            GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, nameW);
+
+    HeapFree(GetProcessHeap(), 0, nameW);
     WINE_TRACE("Returning %p\n", (void *)c->super.iret);
 }
 
@@ -211,9 +225,20 @@ WINBASEAPI HMODULE WINAPI LoadLibraryA(const char *name)
 void qemu_LoadLibraryA(struct qemu_syscall *call)
 {
     struct qemu_ModuleOpA *c = (struct qemu_ModuleOpA *)call;
+    WCHAR *nameW = NULL;
+    int size;
     WINE_TRACE("(\"%s\")\n", (char *)QEMU_G2H(c->name));
 
-    c->super.iret = (uint64_t)qemu_ops->qemu_LoadLibrary(QEMU_G2H(c->name));
+    if (c->name)
+    {
+        size = MultiByteToWideChar(CP_ACP, 0, QEMU_G2H(c->name), -1, NULL, 0);
+        nameW = HeapAlloc(GetProcessHeap(), 0, size * sizeof(*nameW));
+        MultiByteToWideChar(CP_ACP, 0, QEMU_G2H(c->name), -1, nameW, size);
+    }
+
+    c->super.iret = (uint64_t)qemu_ops->qemu_LoadLibrary(nameW);
+
+    HeapFree(GetProcessHeap(), 0, nameW);
 
     WINE_TRACE("Returning %p\n", (void *)c->super.iret);
 }
