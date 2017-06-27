@@ -93,6 +93,10 @@ EXPORTS
   DrawIconEx
   DrawMenuBar
   DrawMenuBarTemp
+  DrawTextA
+  DrawTextExA
+  DrawTextExW
+  DrawTextW
   EmptyClipboard
   EnableMenuItem
   EnableScrollBar
@@ -215,12 +219,16 @@ EXPORTS
   GetSysColorBrush
   GetSystemMenu
   GetSystemMetrics
+  GetTabbedTextExtentA
+  GetTabbedTextExtentW
   GetTaskmanWindow
   GetTitleBarInfo
   GetUpdatedClipboardFormats
   GetUpdateRect
   GetUpdateRgn
   GetWindowDC
+  GrayStringA
+  GrayStringW
   HideCaret
   HiliteMenuItem
   InSendMessage
@@ -413,6 +421,8 @@ EXPORTS
   SwapMouseButton
   SystemParametersInfoA
   SystemParametersInfoW
+  TabbedTextOutA
+  TabbedTextOutW
   TileChildWindows
   TileWindows
   ToAscii

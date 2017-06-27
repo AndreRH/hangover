@@ -97,6 +97,10 @@ enum user32_calls
     CALL_DRAWICONEX,
     CALL_DRAWMENUBAR,
     CALL_DRAWMENUBARTEMP,
+    CALL_DRAWTEXTA,
+    CALL_DRAWTEXTEXA,
+    CALL_DRAWTEXTEXW,
+    CALL_DRAWTEXTW,
     CALL_EMPTYCLIPBOARD,
     CALL_ENABLEMENUITEM,
     CALL_ENABLESCROLLBAR,
@@ -219,12 +223,16 @@ enum user32_calls
     CALL_GETSYSCOLORBRUSH,
     CALL_GETSYSTEMMENU,
     CALL_GETSYSTEMMETRICS,
+    CALL_GETTABBEDTEXTEXTENTA,
+    CALL_GETTABBEDTEXTEXTENTW,
     CALL_GETTASKMANWINDOW,
     CALL_GETTITLEBARINFO,
     CALL_GETUPDATEDCLIPBOARDFORMATS,
     CALL_GETUPDATERECT,
     CALL_GETUPDATERGN,
     CALL_GETWINDOWDC,
+    CALL_GRAYSTRINGA,
+    CALL_GRAYSTRINGW,
     CALL_HIDECARET,
     CALL_HILITEMENUITEM,
     CALL_INSENDMESSAGE,
@@ -417,6 +425,8 @@ enum user32_calls
     CALL_SWAPMOUSEBUTTON,
     CALL_SYSTEMPARAMETERSINFOA,
     CALL_SYSTEMPARAMETERSINFOW,
+    CALL_TABBEDTEXTOUTA,
+    CALL_TABBEDTEXTOUTW,
     CALL_TILECHILDWINDOWS,
     CALL_TILEWINDOWS,
     CALL_TOASCII,
@@ -550,6 +560,10 @@ void qemu_DrawIcon(struct qemu_syscall *call);
 void qemu_DrawIconEx(struct qemu_syscall *call);
 void qemu_DrawMenuBar(struct qemu_syscall *call);
 void qemu_DrawMenuBarTemp(struct qemu_syscall *call);
+void qemu_DrawTextA(struct qemu_syscall *call);
+void qemu_DrawTextExA(struct qemu_syscall *call);
+void qemu_DrawTextExW(struct qemu_syscall *call);
+void qemu_DrawTextW(struct qemu_syscall *call);
 void qemu_EmptyClipboard(struct qemu_syscall *call);
 void qemu_EnableMenuItem(struct qemu_syscall *call);
 void qemu_EnableScrollBar(struct qemu_syscall *call);
@@ -672,12 +686,16 @@ void qemu_GetSysColor(struct qemu_syscall *call);
 void qemu_GetSysColorBrush(struct qemu_syscall *call);
 void qemu_GetSystemMenu(struct qemu_syscall *call);
 void qemu_GetSystemMetrics(struct qemu_syscall *call);
+void qemu_GetTabbedTextExtentA(struct qemu_syscall *call);
+void qemu_GetTabbedTextExtentW(struct qemu_syscall *call);
 void qemu_GetTaskmanWindow(struct qemu_syscall *call);
 void qemu_GetTitleBarInfo(struct qemu_syscall *call);
 void qemu_GetUpdatedClipboardFormats(struct qemu_syscall *call);
 void qemu_GetUpdateRect(struct qemu_syscall *call);
 void qemu_GetUpdateRgn(struct qemu_syscall *call);
 void qemu_GetWindowDC(struct qemu_syscall *call);
+void qemu_GrayStringA(struct qemu_syscall *call);
+void qemu_GrayStringW(struct qemu_syscall *call);
 void qemu_HideCaret(struct qemu_syscall *call);
 void qemu_HiliteMenuItem(struct qemu_syscall *call);
 void qemu_InSendMessage(struct qemu_syscall *call);
@@ -870,6 +888,8 @@ void qemu_ShowScrollBar(struct qemu_syscall *call);
 void qemu_SwapMouseButton(struct qemu_syscall *call);
 void qemu_SystemParametersInfoA(struct qemu_syscall *call);
 void qemu_SystemParametersInfoW(struct qemu_syscall *call);
+void qemu_TabbedTextOutA(struct qemu_syscall *call);
+void qemu_TabbedTextOutW(struct qemu_syscall *call);
 void qemu_TileChildWindows(struct qemu_syscall *call);
 void qemu_TileWindows(struct qemu_syscall *call);
 void qemu_ToAscii(struct qemu_syscall *call);
