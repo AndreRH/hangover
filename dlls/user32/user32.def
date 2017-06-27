@@ -9,6 +9,7 @@ EXPORTS
   AppendMenuA
   AppendMenuW
   AttachThreadInput
+  BeginPaint
   BlockInput
   BroadcastSystemMessageA
   BroadcastSystemMessageExA
@@ -87,10 +88,12 @@ EXPORTS
   EnableMenuItem
   EndDialog
   EndMenu
+  EndPaint
   EnumClipboardFormats
   EnumDisplayDevicesA
   EnumDisplayDevicesW
   EnumDisplayMonitors
+  ExcludeUpdateRgn
   GetActiveWindow
   GetAltTabInfoA
   GetAltTabInfoW
@@ -123,6 +126,8 @@ EXPORTS
   GetCursorFrameInfo
   GetCursorInfo
   GetCursorPos
+  GetDC
+  GetDCEx
   GetDisplayConfigBufferSizes
   GetDlgCtrlID
   GetDlgItem
@@ -184,6 +189,9 @@ EXPORTS
   GetTaskmanWindow
   GetTitleBarInfo
   GetUpdatedClipboardFormats
+  GetUpdateRect
+  GetUpdateRgn
+  GetWindowDC
   HideCaret
   HiliteMenuItem
   InSendMessage
@@ -192,6 +200,8 @@ EXPORTS
   InsertMenuItemA
   InsertMenuItemW
   InsertMenuW
+  InvalidateRect
+  InvalidateRgn
   IsClipboardFormatAvailable
   IsDialogMessageA
   IsDialogMessageW
@@ -222,6 +232,7 @@ EXPORTS
   LoadMenuIndirectA
   LoadMenuIndirectW
   LoadMenuW
+  LockWindowUpdate
   LookupIconIdFromDirectory
   LookupIconIdFromDirectoryEx
   MapDialogRect
@@ -257,12 +268,14 @@ EXPORTS
   PostQuitMessage
   PostThreadMessageA
   PostThreadMessageW
+  PrintWindow
   PrivateExtractIconExA
   PrivateExtractIconExW
   PrivateExtractIconsA
   PrivateExtractIconsW
   RealGetWindowClassA
   RealGetWindowClassW
+  RedrawWindow
   RegisterClassA
   RegisterClassExA
   RegisterClassExW
@@ -280,10 +293,14 @@ EXPORTS
   RegisterWindowMessageA
   RegisterWindowMessageW
   ReleaseCapture
+  ReleaseDC
   RemoveClipboardFormatListener
   RemoveMenu
   ReplyMessage
   ScrollChildren
+  ScrollDC
+  ScrollWindow
+  ScrollWindowEx
   SendDlgItemMessageA
   SendDlgItemMessageW
   SendIMEMessageExA
@@ -369,12 +386,16 @@ EXPORTS
   UnregisterDeviceNotification
   UnregisterHotKey
   UnregisterPowerSettingNotification
+  UpdateWindow
   User32InitializeImmEntryTable
   UserHandleGrantAccess
+  ValidateRect
+  ValidateRgn
   VkKeyScanA
   VkKeyScanW
   WaitForInputIdle
   WaitMessage
+  WindowFromDC
   WINNLSEnableIME
   WINNLSGetEnableStatus
   WINNLSGetIMEHotkey
