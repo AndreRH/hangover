@@ -6,6 +6,7 @@ EXPORTS
   AdjustWindowRect
   AdjustWindowRectEx
   AlignRects
+  AnyPopup
   AppendMenuA
   AppendMenuW
   AttachThreadInput
@@ -35,6 +36,7 @@ EXPORTS
   CheckRadioButton
   ClipCursor
   CloseClipboard
+  CloseWindow
   CopyAcceleratorTableA
   CopyAcceleratorTableW
   CopyIcon
@@ -55,6 +57,8 @@ EXPORTS
   CreateMDIWindowW
   CreateMenu
   CreatePopupMenu
+  CreateWindowExA
+  CreateWindowExW
   DefDlgProcA
   DefDlgProcW
   DefFrameProcA
@@ -71,6 +75,7 @@ EXPORTS
   DestroyCursor
   DestroyIcon
   DestroyMenu
+  DestroyWindow
   DialogBoxIndirectParamA
   DialogBoxIndirectParamAorW
   DialogBoxIndirectParamW
@@ -107,10 +112,13 @@ EXPORTS
   EmptyClipboard
   EnableMenuItem
   EnableScrollBar
+  EnableWindow
   EndDialog
   EndMenu
   EndPaint
+  EnumChildWindows
   EnumClipboardFormats
+  EnumDesktopWindows
   EnumDisplayDevicesA
   EnumDisplayDevicesW
   EnumDisplayMonitors
@@ -122,14 +130,23 @@ EXPORTS
   EnumPropsExA
   EnumPropsExW
   EnumPropsW
+  EnumThreadWindows
+  EnumWindows
   EqualRect
   ExcludeUpdateRgn
   ExitWindowsEx
   FillRect
+  FindWindowA
+  FindWindowExA
+  FindWindowExW
+  FindWindowW
+  FlashWindow
+  FlashWindowEx
   FrameRect
   GetActiveWindow
   GetAltTabInfoA
   GetAltTabInfoW
+  GetAncestor
   GetAppCompatFlags
   GetAppCompatFlags2
   GetAsyncKeyState
@@ -161,6 +178,7 @@ EXPORTS
   GetCursorPos
   GetDC
   GetDCEx
+  GetDesktopWindow
   GetDisplayConfigBufferSizes
   GetDlgCtrlID
   GetDlgItem
@@ -183,7 +201,9 @@ EXPORTS
   GetKeyNameTextA
   GetKeyNameTextW
   GetKeyState
+  GetLastActivePopup
   GetLastInputInfo
+  GetLayeredWindowAttributes
   GetListBoxInfo
   GetMenu
   GetMenuBarInfo
@@ -208,8 +228,10 @@ EXPORTS
   GetNextDlgGroupItem
   GetNextDlgTabItem
   GetOpenClipboardWindow
+  GetParent
   GetPhysicalCursorPos
   GetPriorityClipboardFormat
+  GetProcessDefaultLayout
   GetProgmanWindow
   GetPropA
   GetPropW
@@ -234,10 +256,26 @@ EXPORTS
   GetTabbedTextExtentW
   GetTaskmanWindow
   GetTitleBarInfo
+  GetTopWindow
   GetUpdatedClipboardFormats
   GetUpdateRect
   GetUpdateRgn
+  GetWindow
+  GetWindowContextHelpId
   GetWindowDC
+  GetWindowInfo
+  GetWindowLongA
+  GetWindowLongPtrA
+  GetWindowLongPtrW
+  GetWindowLongW
+  GetWindowModuleFileNameA
+  GetWindowModuleFileNameW
+  GetWindowTextA
+  GetWindowTextLengthA
+  GetWindowTextLengthW
+  GetWindowTextW
+  GetWindowThreadProcessId
+  GetWindowWord
   GrayStringA
   GrayStringW
   HideCaret
@@ -249,10 +287,12 @@ EXPORTS
   InsertMenuItemA
   InsertMenuItemW
   InsertMenuW
+  InternalGetWindowText
   IntersectRect
   InvalidateRect
   InvalidateRgn
   InvertRect
+  IsChild
   IsClipboardFormatAvailable
   IsDialogMessageA
   IsDialogMessageW
@@ -263,7 +303,11 @@ EXPORTS
   IsProcessDPIAware
   IsRectEmpty
   IsTouchWindow
+  IsWindow
+  IsWindowEnabled
   IsWindowRedirectedForPrint
+  IsWindowUnicode
+  IsWindowVisible
   IsWinEventHookInstalled
   keybd_event
   KillSystemTimer
@@ -319,6 +363,7 @@ EXPORTS
   OemToCharA
   OffsetRect
   OpenClipboard
+  OpenIcon
   PaintDesktop
   PeekMessageA
   PeekMessageW
@@ -350,6 +395,7 @@ EXPORTS
   RegisterShellHookWindow
   RegisterSystemThread
   RegisterTasklist
+  RegisterTouchWindow
   RegisterWindowMessageA
   RegisterWindowMessageW
   ReleaseCapture
@@ -400,6 +446,7 @@ EXPORTS
   SetForegroundWindow
   SetKeyboardState
   SetLastErrorEx
+  SetLayeredWindowAttributes
   SetLogonNotifyWindow
   SetMenu
   SetMenuContextHelpId
@@ -410,7 +457,9 @@ EXPORTS
   SetMenuItemInfoW
   SetMessageExtraInfo
   SetMessageQueue
+  SetParent
   SetPhysicalCursorPos
+  SetProcessDefaultLayout
   SetProcessDPIAware
   SetProgmanWindow
   SetPropA
@@ -429,19 +478,29 @@ EXPORTS
   SetSystemTimer
   SetTaskmanWindow
   SetTimer
+  SetWindowContextHelpId
+  SetWindowLongA
+  SetWindowLongPtrA
+  SetWindowLongPtrW
+  SetWindowLongW
   SetWindowsHookA
   SetWindowsHookExA
   SetWindowsHookExW
   SetWindowsHookW
   SetWindowStationUser
+  SetWindowTextA
+  SetWindowTextW
+  SetWindowWord
   SetWinEventHook
   ShowCaret
   ShowCursor
+  ShowOwnedPopups
   ShowScrollBar
   ShutdownBlockReasonCreate
   ShutdownBlockReasonDestroy
   SubtractRect
   SwapMouseButton
+  SwitchDesktop
   SystemParametersInfoA
   SystemParametersInfoW
   TabbedTextOutA
@@ -469,6 +528,8 @@ EXPORTS
   UnregisterDeviceNotification
   UnregisterHotKey
   UnregisterPowerSettingNotification
+  UpdateLayeredWindow
+  UpdateLayeredWindowIndirect
   UpdateWindow
   User32InitializeImmEntryTable
   UserHandleGrantAccess

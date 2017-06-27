@@ -10,6 +10,7 @@ enum user32_calls
     CALL_ADJUSTWINDOWRECT,
     CALL_ADJUSTWINDOWRECTEX,
     CALL_ALIGNRECTS,
+    CALL_ANYPOPUP,
     CALL_APPENDMENUA,
     CALL_APPENDMENUW,
     CALL_ATTACHTHREADINPUT,
@@ -39,6 +40,7 @@ enum user32_calls
     CALL_CHECKRADIOBUTTON,
     CALL_CLIPCURSOR,
     CALL_CLOSECLIPBOARD,
+    CALL_CLOSEWINDOW,
     CALL_COPYACCELERATORTABLEA,
     CALL_COPYACCELERATORTABLEW,
     CALL_COPYICON,
@@ -59,6 +61,8 @@ enum user32_calls
     CALL_CREATEMDIWINDOWW,
     CALL_CREATEMENU,
     CALL_CREATEPOPUPMENU,
+    CALL_CREATEWINDOWEXA,
+    CALL_CREATEWINDOWEXW,
     CALL_DEFDLGPROCA,
     CALL_DEFDLGPROCW,
     CALL_DEFFRAMEPROCA,
@@ -75,6 +79,7 @@ enum user32_calls
     CALL_DESTROYCURSOR,
     CALL_DESTROYICON,
     CALL_DESTROYMENU,
+    CALL_DESTROYWINDOW,
     CALL_DIALOGBOXINDIRECTPARAMA,
     CALL_DIALOGBOXINDIRECTPARAMAORW,
     CALL_DIALOGBOXINDIRECTPARAMW,
@@ -111,10 +116,13 @@ enum user32_calls
     CALL_EMPTYCLIPBOARD,
     CALL_ENABLEMENUITEM,
     CALL_ENABLESCROLLBAR,
+    CALL_ENABLEWINDOW,
     CALL_ENDDIALOG,
     CALL_ENDMENU,
     CALL_ENDPAINT,
+    CALL_ENUMCHILDWINDOWS,
     CALL_ENUMCLIPBOARDFORMATS,
+    CALL_ENUMDESKTOPWINDOWS,
     CALL_ENUMDISPLAYDEVICESA,
     CALL_ENUMDISPLAYDEVICESW,
     CALL_ENUMDISPLAYMONITORS,
@@ -126,14 +134,23 @@ enum user32_calls
     CALL_ENUMPROPSEXA,
     CALL_ENUMPROPSEXW,
     CALL_ENUMPROPSW,
+    CALL_ENUMTHREADWINDOWS,
+    CALL_ENUMWINDOWS,
     CALL_EQUALRECT,
     CALL_EXCLUDEUPDATERGN,
     CALL_EXITWINDOWSEX,
     CALL_FILLRECT,
+    CALL_FINDWINDOWA,
+    CALL_FINDWINDOWEXA,
+    CALL_FINDWINDOWEXW,
+    CALL_FINDWINDOWW,
+    CALL_FLASHWINDOW,
+    CALL_FLASHWINDOWEX,
     CALL_FRAMERECT,
     CALL_GETACTIVEWINDOW,
     CALL_GETALTTABINFOA,
     CALL_GETALTTABINFOW,
+    CALL_GETANCESTOR,
     CALL_GETAPPCOMPATFLAGS,
     CALL_GETAPPCOMPATFLAGS2,
     CALL_GETASYNCKEYSTATE,
@@ -165,6 +182,7 @@ enum user32_calls
     CALL_GETCURSORPOS,
     CALL_GETDC,
     CALL_GETDCEX,
+    CALL_GETDESKTOPWINDOW,
     CALL_GETDISPLAYCONFIGBUFFERSIZES,
     CALL_GETDLGCTRLID,
     CALL_GETDLGITEM,
@@ -187,7 +205,9 @@ enum user32_calls
     CALL_GETKEYNAMETEXTA,
     CALL_GETKEYNAMETEXTW,
     CALL_GETKEYSTATE,
+    CALL_GETLASTACTIVEPOPUP,
     CALL_GETLASTINPUTINFO,
+    CALL_GETLAYEREDWINDOWATTRIBUTES,
     CALL_GETLISTBOXINFO,
     CALL_GETMENU,
     CALL_GETMENUBARINFO,
@@ -212,8 +232,10 @@ enum user32_calls
     CALL_GETNEXTDLGGROUPITEM,
     CALL_GETNEXTDLGTABITEM,
     CALL_GETOPENCLIPBOARDWINDOW,
+    CALL_GETPARENT,
     CALL_GETPHYSICALCURSORPOS,
     CALL_GETPRIORITYCLIPBOARDFORMAT,
+    CALL_GETPROCESSDEFAULTLAYOUT,
     CALL_GETPROGMANWINDOW,
     CALL_GETPROPA,
     CALL_GETPROPW,
@@ -238,10 +260,26 @@ enum user32_calls
     CALL_GETTABBEDTEXTEXTENTW,
     CALL_GETTASKMANWINDOW,
     CALL_GETTITLEBARINFO,
+    CALL_GETTOPWINDOW,
     CALL_GETUPDATEDCLIPBOARDFORMATS,
     CALL_GETUPDATERECT,
     CALL_GETUPDATERGN,
+    CALL_GETWINDOW,
+    CALL_GETWINDOWCONTEXTHELPID,
     CALL_GETWINDOWDC,
+    CALL_GETWINDOWINFO,
+    CALL_GETWINDOWLONGA,
+    CALL_GETWINDOWLONGPTRA,
+    CALL_GETWINDOWLONGPTRW,
+    CALL_GETWINDOWLONGW,
+    CALL_GETWINDOWMODULEFILENAMEA,
+    CALL_GETWINDOWMODULEFILENAMEW,
+    CALL_GETWINDOWTEXTA,
+    CALL_GETWINDOWTEXTLENGTHA,
+    CALL_GETWINDOWTEXTLENGTHW,
+    CALL_GETWINDOWTEXTW,
+    CALL_GETWINDOWTHREADPROCESSID,
+    CALL_GETWINDOWWORD,
     CALL_GRAYSTRINGA,
     CALL_GRAYSTRINGW,
     CALL_HIDECARET,
@@ -253,10 +291,12 @@ enum user32_calls
     CALL_INSERTMENUITEMA,
     CALL_INSERTMENUITEMW,
     CALL_INSERTMENUW,
+    CALL_INTERNALGETWINDOWTEXT,
     CALL_INTERSECTRECT,
     CALL_INVALIDATERECT,
     CALL_INVALIDATERGN,
     CALL_INVERTRECT,
+    CALL_ISCHILD,
     CALL_ISCLIPBOARDFORMATAVAILABLE,
     CALL_ISDIALOGMESSAGEA,
     CALL_ISDIALOGMESSAGEW,
@@ -267,7 +307,11 @@ enum user32_calls
     CALL_ISPROCESSDPIAWARE,
     CALL_ISRECTEMPTY,
     CALL_ISTOUCHWINDOW,
+    CALL_ISWINDOW,
+    CALL_ISWINDOWENABLED,
     CALL_ISWINDOWREDIRECTEDFORPRINT,
+    CALL_ISWINDOWUNICODE,
+    CALL_ISWINDOWVISIBLE,
     CALL_ISWINEVENTHOOKINSTALLED,
     CALL_KEYBD_EVENT,
     CALL_KILLSYSTEMTIMER,
@@ -323,6 +367,7 @@ enum user32_calls
     CALL_OEMTOCHARA,
     CALL_OFFSETRECT,
     CALL_OPENCLIPBOARD,
+    CALL_OPENICON,
     CALL_PAINTDESKTOP,
     CALL_PEEKMESSAGEA,
     CALL_PEEKMESSAGEW,
@@ -354,6 +399,7 @@ enum user32_calls
     CALL_REGISTERSHELLHOOKWINDOW,
     CALL_REGISTERSYSTEMTHREAD,
     CALL_REGISTERTASKLIST,
+    CALL_REGISTERTOUCHWINDOW,
     CALL_REGISTERWINDOWMESSAGEA,
     CALL_REGISTERWINDOWMESSAGEW,
     CALL_RELEASECAPTURE,
@@ -404,6 +450,7 @@ enum user32_calls
     CALL_SETFOREGROUNDWINDOW,
     CALL_SETKEYBOARDSTATE,
     CALL_SETLASTERROREX,
+    CALL_SETLAYEREDWINDOWATTRIBUTES,
     CALL_SETLOGONNOTIFYWINDOW,
     CALL_SETMENU,
     CALL_SETMENUCONTEXTHELPID,
@@ -414,7 +461,9 @@ enum user32_calls
     CALL_SETMENUITEMINFOW,
     CALL_SETMESSAGEEXTRAINFO,
     CALL_SETMESSAGEQUEUE,
+    CALL_SETPARENT,
     CALL_SETPHYSICALCURSORPOS,
+    CALL_SETPROCESSDEFAULTLAYOUT,
     CALL_SETPROCESSDPIAWARE,
     CALL_SETPROGMANWINDOW,
     CALL_SETPROPA,
@@ -433,19 +482,29 @@ enum user32_calls
     CALL_SETSYSTEMTIMER,
     CALL_SETTASKMANWINDOW,
     CALL_SETTIMER,
+    CALL_SETWINDOWCONTEXTHELPID,
+    CALL_SETWINDOWLONGA,
+    CALL_SETWINDOWLONGPTRA,
+    CALL_SETWINDOWLONGPTRW,
+    CALL_SETWINDOWLONGW,
     CALL_SETWINDOWSHOOKA,
     CALL_SETWINDOWSHOOKEXA,
     CALL_SETWINDOWSHOOKEXW,
     CALL_SETWINDOWSHOOKW,
     CALL_SETWINDOWSTATIONUSER,
+    CALL_SETWINDOWTEXTA,
+    CALL_SETWINDOWTEXTW,
+    CALL_SETWINDOWWORD,
     CALL_SETWINEVENTHOOK,
     CALL_SHOWCARET,
     CALL_SHOWCURSOR,
+    CALL_SHOWOWNEDPOPUPS,
     CALL_SHOWSCROLLBAR,
     CALL_SHUTDOWNBLOCKREASONCREATE,
     CALL_SHUTDOWNBLOCKREASONDESTROY,
     CALL_SUBTRACTRECT,
     CALL_SWAPMOUSEBUTTON,
+    CALL_SWITCHDESKTOP,
     CALL_SYSTEMPARAMETERSINFOA,
     CALL_SYSTEMPARAMETERSINFOW,
     CALL_TABBEDTEXTOUTA,
@@ -473,6 +532,8 @@ enum user32_calls
     CALL_UNREGISTERDEVICENOTIFICATION,
     CALL_UNREGISTERHOTKEY,
     CALL_UNREGISTERPOWERSETTINGNOTIFICATION,
+    CALL_UPDATELAYEREDWINDOW,
+    CALL_UPDATELAYEREDWINDOWINDIRECT,
     CALL_UPDATEWINDOW,
     CALL_USER32INITIALIZEIMMENTRYTABLE,
     CALL_USERHANDLEGRANTACCESS,
@@ -498,6 +559,7 @@ void qemu_AddClipboardFormatListener(struct qemu_syscall *call);
 void qemu_AdjustWindowRect(struct qemu_syscall *call);
 void qemu_AdjustWindowRectEx(struct qemu_syscall *call);
 void qemu_AlignRects(struct qemu_syscall *call);
+void qemu_AnyPopup(struct qemu_syscall *call);
 void qemu_AppendMenuA(struct qemu_syscall *call);
 void qemu_AppendMenuW(struct qemu_syscall *call);
 void qemu_AttachThreadInput(struct qemu_syscall *call);
@@ -527,6 +589,7 @@ void qemu_CheckMenuRadioItem(struct qemu_syscall *call);
 void qemu_CheckRadioButton(struct qemu_syscall *call);
 void qemu_ClipCursor(struct qemu_syscall *call);
 void qemu_CloseClipboard(struct qemu_syscall *call);
+void qemu_CloseWindow(struct qemu_syscall *call);
 void qemu_CopyAcceleratorTableA(struct qemu_syscall *call);
 void qemu_CopyAcceleratorTableW(struct qemu_syscall *call);
 void qemu_CopyIcon(struct qemu_syscall *call);
@@ -547,6 +610,8 @@ void qemu_CreateMDIWindowA(struct qemu_syscall *call);
 void qemu_CreateMDIWindowW(struct qemu_syscall *call);
 void qemu_CreateMenu(struct qemu_syscall *call);
 void qemu_CreatePopupMenu(struct qemu_syscall *call);
+void qemu_CreateWindowExA(struct qemu_syscall *call);
+void qemu_CreateWindowExW(struct qemu_syscall *call);
 void qemu_DefDlgProcA(struct qemu_syscall *call);
 void qemu_DefDlgProcW(struct qemu_syscall *call);
 void qemu_DefFrameProcA(struct qemu_syscall *call);
@@ -563,6 +628,7 @@ void qemu_DestroyCaret(struct qemu_syscall *call);
 void qemu_DestroyCursor(struct qemu_syscall *call);
 void qemu_DestroyIcon(struct qemu_syscall *call);
 void qemu_DestroyMenu(struct qemu_syscall *call);
+void qemu_DestroyWindow(struct qemu_syscall *call);
 void qemu_DialogBoxIndirectParamA(struct qemu_syscall *call);
 void qemu_DialogBoxIndirectParamAorW(struct qemu_syscall *call);
 void qemu_DialogBoxIndirectParamW(struct qemu_syscall *call);
@@ -599,10 +665,13 @@ void qemu_DrawTextW(struct qemu_syscall *call);
 void qemu_EmptyClipboard(struct qemu_syscall *call);
 void qemu_EnableMenuItem(struct qemu_syscall *call);
 void qemu_EnableScrollBar(struct qemu_syscall *call);
+void qemu_EnableWindow(struct qemu_syscall *call);
 void qemu_EndDialog(struct qemu_syscall *call);
 void qemu_EndMenu(struct qemu_syscall *call);
 void qemu_EndPaint(struct qemu_syscall *call);
+void qemu_EnumChildWindows(struct qemu_syscall *call);
 void qemu_EnumClipboardFormats(struct qemu_syscall *call);
+void qemu_EnumDesktopWindows(struct qemu_syscall *call);
 void qemu_EnumDisplayDevicesA(struct qemu_syscall *call);
 void qemu_EnumDisplayDevicesW(struct qemu_syscall *call);
 void qemu_EnumDisplayMonitors(struct qemu_syscall *call);
@@ -614,14 +683,23 @@ void qemu_EnumPropsA(struct qemu_syscall *call);
 void qemu_EnumPropsExA(struct qemu_syscall *call);
 void qemu_EnumPropsExW(struct qemu_syscall *call);
 void qemu_EnumPropsW(struct qemu_syscall *call);
+void qemu_EnumThreadWindows(struct qemu_syscall *call);
+void qemu_EnumWindows(struct qemu_syscall *call);
 void qemu_EqualRect(struct qemu_syscall *call);
 void qemu_ExcludeUpdateRgn(struct qemu_syscall *call);
 void qemu_ExitWindowsEx(struct qemu_syscall *call);
 void qemu_FillRect(struct qemu_syscall *call);
+void qemu_FindWindowA(struct qemu_syscall *call);
+void qemu_FindWindowExA(struct qemu_syscall *call);
+void qemu_FindWindowExW(struct qemu_syscall *call);
+void qemu_FindWindowW(struct qemu_syscall *call);
+void qemu_FlashWindow(struct qemu_syscall *call);
+void qemu_FlashWindowEx(struct qemu_syscall *call);
 void qemu_FrameRect(struct qemu_syscall *call);
 void qemu_GetActiveWindow(struct qemu_syscall *call);
 void qemu_GetAltTabInfoA(struct qemu_syscall *call);
 void qemu_GetAltTabInfoW(struct qemu_syscall *call);
+void qemu_GetAncestor(struct qemu_syscall *call);
 void qemu_GetAppCompatFlags(struct qemu_syscall *call);
 void qemu_GetAppCompatFlags2(struct qemu_syscall *call);
 void qemu_GetAsyncKeyState(struct qemu_syscall *call);
@@ -653,6 +731,7 @@ void qemu_GetCursorInfo(struct qemu_syscall *call);
 void qemu_GetCursorPos(struct qemu_syscall *call);
 void qemu_GetDC(struct qemu_syscall *call);
 void qemu_GetDCEx(struct qemu_syscall *call);
+void qemu_GetDesktopWindow(struct qemu_syscall *call);
 void qemu_GetDisplayConfigBufferSizes(struct qemu_syscall *call);
 void qemu_GetDlgCtrlID(struct qemu_syscall *call);
 void qemu_GetDlgItem(struct qemu_syscall *call);
@@ -675,7 +754,9 @@ void qemu_GetKeyboardType(struct qemu_syscall *call);
 void qemu_GetKeyNameTextA(struct qemu_syscall *call);
 void qemu_GetKeyNameTextW(struct qemu_syscall *call);
 void qemu_GetKeyState(struct qemu_syscall *call);
+void qemu_GetLastActivePopup(struct qemu_syscall *call);
 void qemu_GetLastInputInfo(struct qemu_syscall *call);
+void qemu_GetLayeredWindowAttributes(struct qemu_syscall *call);
 void qemu_GetListBoxInfo(struct qemu_syscall *call);
 void qemu_GetMenu(struct qemu_syscall *call);
 void qemu_GetMenuBarInfo(struct qemu_syscall *call);
@@ -700,8 +781,10 @@ void qemu_GetMonitorInfoW(struct qemu_syscall *call);
 void qemu_GetNextDlgGroupItem(struct qemu_syscall *call);
 void qemu_GetNextDlgTabItem(struct qemu_syscall *call);
 void qemu_GetOpenClipboardWindow(struct qemu_syscall *call);
+void qemu_GetParent(struct qemu_syscall *call);
 void qemu_GetPhysicalCursorPos(struct qemu_syscall *call);
 void qemu_GetPriorityClipboardFormat(struct qemu_syscall *call);
+void qemu_GetProcessDefaultLayout(struct qemu_syscall *call);
 void qemu_GetProgmanWindow(struct qemu_syscall *call);
 void qemu_GetPropA(struct qemu_syscall *call);
 void qemu_GetPropW(struct qemu_syscall *call);
@@ -726,10 +809,26 @@ void qemu_GetTabbedTextExtentA(struct qemu_syscall *call);
 void qemu_GetTabbedTextExtentW(struct qemu_syscall *call);
 void qemu_GetTaskmanWindow(struct qemu_syscall *call);
 void qemu_GetTitleBarInfo(struct qemu_syscall *call);
+void qemu_GetTopWindow(struct qemu_syscall *call);
 void qemu_GetUpdatedClipboardFormats(struct qemu_syscall *call);
 void qemu_GetUpdateRect(struct qemu_syscall *call);
 void qemu_GetUpdateRgn(struct qemu_syscall *call);
+void qemu_GetWindow(struct qemu_syscall *call);
+void qemu_GetWindowContextHelpId(struct qemu_syscall *call);
 void qemu_GetWindowDC(struct qemu_syscall *call);
+void qemu_GetWindowInfo(struct qemu_syscall *call);
+void qemu_GetWindowLongA(struct qemu_syscall *call);
+void qemu_GetWindowLongPtrA(struct qemu_syscall *call);
+void qemu_GetWindowLongPtrW(struct qemu_syscall *call);
+void qemu_GetWindowLongW(struct qemu_syscall *call);
+void qemu_GetWindowModuleFileNameA(struct qemu_syscall *call);
+void qemu_GetWindowModuleFileNameW(struct qemu_syscall *call);
+void qemu_GetWindowTextA(struct qemu_syscall *call);
+void qemu_GetWindowTextLengthA(struct qemu_syscall *call);
+void qemu_GetWindowTextLengthW(struct qemu_syscall *call);
+void qemu_GetWindowTextW(struct qemu_syscall *call);
+void qemu_GetWindowThreadProcessId(struct qemu_syscall *call);
+void qemu_GetWindowWord(struct qemu_syscall *call);
 void qemu_GrayStringA(struct qemu_syscall *call);
 void qemu_GrayStringW(struct qemu_syscall *call);
 void qemu_HideCaret(struct qemu_syscall *call);
@@ -741,10 +840,12 @@ void qemu_InsertMenuA(struct qemu_syscall *call);
 void qemu_InsertMenuItemA(struct qemu_syscall *call);
 void qemu_InsertMenuItemW(struct qemu_syscall *call);
 void qemu_InsertMenuW(struct qemu_syscall *call);
+void qemu_InternalGetWindowText(struct qemu_syscall *call);
 void qemu_IntersectRect(struct qemu_syscall *call);
 void qemu_InvalidateRect(struct qemu_syscall *call);
 void qemu_InvalidateRgn(struct qemu_syscall *call);
 void qemu_InvertRect(struct qemu_syscall *call);
+void qemu_IsChild(struct qemu_syscall *call);
 void qemu_IsClipboardFormatAvailable(struct qemu_syscall *call);
 void qemu_IsDialogMessageA(struct qemu_syscall *call);
 void qemu_IsDialogMessageW(struct qemu_syscall *call);
@@ -755,7 +856,11 @@ void qemu_IsMenu(struct qemu_syscall *call);
 void qemu_IsProcessDPIAware(struct qemu_syscall *call);
 void qemu_IsRectEmpty(struct qemu_syscall *call);
 void qemu_IsTouchWindow(struct qemu_syscall *call);
+void qemu_IsWindow(struct qemu_syscall *call);
+void qemu_IsWindowEnabled(struct qemu_syscall *call);
 void qemu_IsWindowRedirectedForPrint(struct qemu_syscall *call);
+void qemu_IsWindowUnicode(struct qemu_syscall *call);
+void qemu_IsWindowVisible(struct qemu_syscall *call);
 void qemu_IsWinEventHookInstalled(struct qemu_syscall *call);
 void qemu_keybd_event(struct qemu_syscall *call);
 void qemu_KillSystemTimer(struct qemu_syscall *call);
@@ -811,6 +916,7 @@ void qemu_OemKeyScan(struct qemu_syscall *call);
 void qemu_OemToCharA(struct qemu_syscall *call);
 void qemu_OffsetRect(struct qemu_syscall *call);
 void qemu_OpenClipboard(struct qemu_syscall *call);
+void qemu_OpenIcon(struct qemu_syscall *call);
 void qemu_PaintDesktop(struct qemu_syscall *call);
 void qemu_PeekMessageA(struct qemu_syscall *call);
 void qemu_PeekMessageW(struct qemu_syscall *call);
@@ -842,6 +948,7 @@ void qemu_RegisterServicesProcess(struct qemu_syscall *call);
 void qemu_RegisterShellHookWindow(struct qemu_syscall *call);
 void qemu_RegisterSystemThread(struct qemu_syscall *call);
 void qemu_RegisterTasklist(struct qemu_syscall *call);
+void qemu_RegisterTouchWindow(struct qemu_syscall *call);
 void qemu_RegisterWindowMessageA(struct qemu_syscall *call);
 void qemu_RegisterWindowMessageW(struct qemu_syscall *call);
 void qemu_ReleaseCapture(struct qemu_syscall *call);
@@ -892,6 +999,7 @@ void qemu_SetFocus(struct qemu_syscall *call);
 void qemu_SetForegroundWindow(struct qemu_syscall *call);
 void qemu_SetKeyboardState(struct qemu_syscall *call);
 void qemu_SetLastErrorEx(struct qemu_syscall *call);
+void qemu_SetLayeredWindowAttributes(struct qemu_syscall *call);
 void qemu_SetLogonNotifyWindow(struct qemu_syscall *call);
 void qemu_SetMenu(struct qemu_syscall *call);
 void qemu_SetMenuContextHelpId(struct qemu_syscall *call);
@@ -902,7 +1010,9 @@ void qemu_SetMenuItemInfoA(struct qemu_syscall *call);
 void qemu_SetMenuItemInfoW(struct qemu_syscall *call);
 void qemu_SetMessageExtraInfo(struct qemu_syscall *call);
 void qemu_SetMessageQueue(struct qemu_syscall *call);
+void qemu_SetParent(struct qemu_syscall *call);
 void qemu_SetPhysicalCursorPos(struct qemu_syscall *call);
+void qemu_SetProcessDefaultLayout(struct qemu_syscall *call);
 void qemu_SetProcessDPIAware(struct qemu_syscall *call);
 void qemu_SetProgmanWindow(struct qemu_syscall *call);
 void qemu_SetPropA(struct qemu_syscall *call);
@@ -921,19 +1031,29 @@ void qemu_SetSystemMenu(struct qemu_syscall *call);
 void qemu_SetSystemTimer(struct qemu_syscall *call);
 void qemu_SetTaskmanWindow(struct qemu_syscall *call);
 void qemu_SetTimer(struct qemu_syscall *call);
+void qemu_SetWindowContextHelpId(struct qemu_syscall *call);
+void qemu_SetWindowLongA(struct qemu_syscall *call);
+void qemu_SetWindowLongPtrA(struct qemu_syscall *call);
+void qemu_SetWindowLongPtrW(struct qemu_syscall *call);
+void qemu_SetWindowLongW(struct qemu_syscall *call);
 void qemu_SetWindowsHookA(struct qemu_syscall *call);
 void qemu_SetWindowsHookExA(struct qemu_syscall *call);
 void qemu_SetWindowsHookExW(struct qemu_syscall *call);
 void qemu_SetWindowsHookW(struct qemu_syscall *call);
 void qemu_SetWindowStationUser(struct qemu_syscall *call);
+void qemu_SetWindowTextA(struct qemu_syscall *call);
+void qemu_SetWindowTextW(struct qemu_syscall *call);
+void qemu_SetWindowWord(struct qemu_syscall *call);
 void qemu_SetWinEventHook(struct qemu_syscall *call);
 void qemu_ShowCaret(struct qemu_syscall *call);
 void qemu_ShowCursor(struct qemu_syscall *call);
+void qemu_ShowOwnedPopups(struct qemu_syscall *call);
 void qemu_ShowScrollBar(struct qemu_syscall *call);
 void qemu_ShutdownBlockReasonCreate(struct qemu_syscall *call);
 void qemu_ShutdownBlockReasonDestroy(struct qemu_syscall *call);
 void qemu_SubtractRect(struct qemu_syscall *call);
 void qemu_SwapMouseButton(struct qemu_syscall *call);
+void qemu_SwitchDesktop(struct qemu_syscall *call);
 void qemu_SystemParametersInfoA(struct qemu_syscall *call);
 void qemu_SystemParametersInfoW(struct qemu_syscall *call);
 void qemu_TabbedTextOutA(struct qemu_syscall *call);
@@ -961,6 +1081,8 @@ void qemu_UnregisterClassW(struct qemu_syscall *call);
 void qemu_UnregisterDeviceNotification(struct qemu_syscall *call);
 void qemu_UnregisterHotKey(struct qemu_syscall *call);
 void qemu_UnregisterPowerSettingNotification(struct qemu_syscall *call);
+void qemu_UpdateLayeredWindow(struct qemu_syscall *call);
+void qemu_UpdateLayeredWindowIndirect(struct qemu_syscall *call);
 void qemu_UpdateWindow(struct qemu_syscall *call);
 void qemu_User32InitializeImmEntryTable(struct qemu_syscall *call);
 void qemu_UserHandleGrantAccess(struct qemu_syscall *call);
