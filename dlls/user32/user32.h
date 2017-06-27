@@ -29,6 +29,8 @@ enum user32_calls
     CALL_CALLMSGFILTERA,
     CALL_CALLMSGFILTERW,
     CALL_CALLNEXTHOOKEX,
+    CALL_CALLWINDOWPROCA,
+    CALL_CALLWINDOWPROCW,
     CALL_CASCADECHILDWINDOWS,
     CALL_CASCADEWINDOWS,
     CALL_CHANGECLIPBOARDCHAIN,
@@ -609,6 +611,8 @@ void qemu_CalcChildScroll(struct qemu_syscall *call);
 void qemu_CallMsgFilterA(struct qemu_syscall *call);
 void qemu_CallMsgFilterW(struct qemu_syscall *call);
 void qemu_CallNextHookEx(struct qemu_syscall *call);
+void qemu_CallWindowProcA(struct qemu_syscall *call);
+void qemu_CallWindowProcW(struct qemu_syscall *call);
 void qemu_CascadeChildWindows(struct qemu_syscall *call);
 void qemu_CascadeWindows(struct qemu_syscall *call);
 void qemu_ChangeClipboardChain(struct qemu_syscall *call);

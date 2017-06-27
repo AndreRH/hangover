@@ -25,6 +25,8 @@ EXPORTS
   CallMsgFilterA
   CallMsgFilterW
   CallNextHookEx
+  CallWindowProcA
+  CallWindowProcW
   CascadeChildWindows
   CascadeWindows
   ChangeClipboardChain

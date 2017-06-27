@@ -57,6 +57,8 @@ static const syscall_handler dll_functions[] =
     qemu_CallMsgFilterA,
     qemu_CallMsgFilterW,
     qemu_CallNextHookEx,
+    qemu_CallWindowProcA,
+    qemu_CallWindowProcW,
     qemu_CascadeChildWindows,
     qemu_CascadeWindows,
     qemu_ChangeClipboardChain,
