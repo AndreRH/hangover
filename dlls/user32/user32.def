@@ -541,6 +541,8 @@ EXPORTS
   WaitForInputIdle
   WaitMessage
   WindowFromDC
+  WinHelpA
+  WinHelpW
   WINNLSEnableIME
   WINNLSGetEnableStatus
   WINNLSGetIMEHotkey

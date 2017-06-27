@@ -545,6 +545,8 @@ enum user32_calls
     CALL_WAITFORINPUTIDLE,
     CALL_WAITMESSAGE,
     CALL_WINDOWFROMDC,
+    CALL_WINHELPA,
+    CALL_WINHELPW,
     CALL_WINNLSENABLEIME,
     CALL_WINNLSGETENABLESTATUS,
     CALL_WINNLSGETIMEHOTKEY,
@@ -1094,6 +1096,8 @@ void qemu_VkKeyScanW(struct qemu_syscall *call);
 void qemu_WaitForInputIdle(struct qemu_syscall *call);
 void qemu_WaitMessage(struct qemu_syscall *call);
 void qemu_WindowFromDC(struct qemu_syscall *call);
+void qemu_WinHelpA(struct qemu_syscall *call);
+void qemu_WinHelpW(struct qemu_syscall *call);
 void qemu_WINNLSEnableIME(struct qemu_syscall *call);
 void qemu_WINNLSGetEnableStatus(struct qemu_syscall *call);
 void qemu_WINNLSGetIMEHotkey(struct qemu_syscall *call);

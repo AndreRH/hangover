@@ -573,6 +573,8 @@ static const syscall_handler dll_functions[] =
     qemu_WaitForInputIdle,
     qemu_WaitMessage,
     qemu_WindowFromDC,
+    qemu_WinHelpA,
+    qemu_WinHelpW,
     qemu_WINNLSEnableIME,
     qemu_WINNLSGetEnableStatus,
     qemu_WINNLSGetIMEHotkey,
