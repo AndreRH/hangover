@@ -5,9 +5,12 @@ EXPORTS
   AddClipboardFormatListener
   AttachThreadInput
   BlockInput
+  CalcChildScroll
   CallMsgFilterA
   CallMsgFilterW
   CallNextHookEx
+  CascadeChildWindows
+  CascadeWindows
   ChangeClipboardChain
   CheckDlgButton
   CheckRadioButton
@@ -24,8 +27,14 @@ EXPORTS
   CreateDialogParamA
   CreateDialogParamW
   CreateIconIndirect
+  CreateMDIWindowA
+  CreateMDIWindowW
   DefDlgProcA
   DefDlgProcW
+  DefFrameProcA
+  DefFrameProcW
+  DefMDIChildProcA
+  DefMDIChildProcW
   DefRawInputProc
   DefWindowProcA
   DefWindowProcW
@@ -160,6 +169,7 @@ EXPORTS
   RegisterHotKey
   ReleaseCapture
   RemoveClipboardFormatListener
+  ScrollChildren
   SendDlgItemMessageA
   SendDlgItemMessageW
   SendInput
@@ -196,11 +206,14 @@ EXPORTS
   SetWinEventHook
   ShowCaret
   ShowCursor
+  TileChildWindows
+  TileWindows
   ToAscii
   ToAsciiEx
   ToUnicode
   ToUnicodeEx
   TrackMouseEvent
+  TranslateMDISysAccel
   UnhookWindowsHook
   UnhookWindowsHookEx
   UnhookWinEvent

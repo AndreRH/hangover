@@ -9,9 +9,12 @@ enum user32_calls
     CALL_ADDCLIPBOARDFORMATLISTENER,
     CALL_ATTACHTHREADINPUT,
     CALL_BLOCKINPUT,
+    CALL_CALCCHILDSCROLL,
     CALL_CALLMSGFILTERA,
     CALL_CALLMSGFILTERW,
     CALL_CALLNEXTHOOKEX,
+    CALL_CASCADECHILDWINDOWS,
+    CALL_CASCADEWINDOWS,
     CALL_CHANGECLIPBOARDCHAIN,
     CALL_CHECKDLGBUTTON,
     CALL_CHECKRADIOBUTTON,
@@ -28,8 +31,14 @@ enum user32_calls
     CALL_CREATEDIALOGPARAMA,
     CALL_CREATEDIALOGPARAMW,
     CALL_CREATEICONINDIRECT,
+    CALL_CREATEMDIWINDOWA,
+    CALL_CREATEMDIWINDOWW,
     CALL_DEFDLGPROCA,
     CALL_DEFDLGPROCW,
+    CALL_DEFFRAMEPROCA,
+    CALL_DEFFRAMEPROCW,
+    CALL_DEFMDICHILDPROCA,
+    CALL_DEFMDICHILDPROCW,
     CALL_DEFRAWINPUTPROC,
     CALL_DEFWINDOWPROCA,
     CALL_DEFWINDOWPROCW,
@@ -164,6 +173,7 @@ enum user32_calls
     CALL_REGISTERHOTKEY,
     CALL_RELEASECAPTURE,
     CALL_REMOVECLIPBOARDFORMATLISTENER,
+    CALL_SCROLLCHILDREN,
     CALL_SENDDLGITEMMESSAGEA,
     CALL_SENDDLGITEMMESSAGEW,
     CALL_SENDINPUT,
@@ -200,11 +210,14 @@ enum user32_calls
     CALL_SETWINEVENTHOOK,
     CALL_SHOWCARET,
     CALL_SHOWCURSOR,
+    CALL_TILECHILDWINDOWS,
+    CALL_TILEWINDOWS,
     CALL_TOASCII,
     CALL_TOASCIIEX,
     CALL_TOUNICODE,
     CALL_TOUNICODEEX,
     CALL_TRACKMOUSEEVENT,
+    CALL_TRANSLATEMDISYSACCEL,
     CALL_UNHOOKWINDOWSHOOK,
     CALL_UNHOOKWINDOWSHOOKEX,
     CALL_UNHOOKWINEVENT,
@@ -224,9 +237,12 @@ void qemu_ActivateKeyboardLayout(struct qemu_syscall *call);
 void qemu_AddClipboardFormatListener(struct qemu_syscall *call);
 void qemu_AttachThreadInput(struct qemu_syscall *call);
 void qemu_BlockInput(struct qemu_syscall *call);
+void qemu_CalcChildScroll(struct qemu_syscall *call);
 void qemu_CallMsgFilterA(struct qemu_syscall *call);
 void qemu_CallMsgFilterW(struct qemu_syscall *call);
 void qemu_CallNextHookEx(struct qemu_syscall *call);
+void qemu_CascadeChildWindows(struct qemu_syscall *call);
+void qemu_CascadeWindows(struct qemu_syscall *call);
 void qemu_ChangeClipboardChain(struct qemu_syscall *call);
 void qemu_CheckDlgButton(struct qemu_syscall *call);
 void qemu_CheckRadioButton(struct qemu_syscall *call);
@@ -243,8 +259,14 @@ void qemu_CreateDialogIndirectParamW(struct qemu_syscall *call);
 void qemu_CreateDialogParamA(struct qemu_syscall *call);
 void qemu_CreateDialogParamW(struct qemu_syscall *call);
 void qemu_CreateIconIndirect(struct qemu_syscall *call);
+void qemu_CreateMDIWindowA(struct qemu_syscall *call);
+void qemu_CreateMDIWindowW(struct qemu_syscall *call);
 void qemu_DefDlgProcA(struct qemu_syscall *call);
 void qemu_DefDlgProcW(struct qemu_syscall *call);
+void qemu_DefFrameProcA(struct qemu_syscall *call);
+void qemu_DefFrameProcW(struct qemu_syscall *call);
+void qemu_DefMDIChildProcA(struct qemu_syscall *call);
+void qemu_DefMDIChildProcW(struct qemu_syscall *call);
 void qemu_DefRawInputProc(struct qemu_syscall *call);
 void qemu_DefWindowProcA(struct qemu_syscall *call);
 void qemu_DefWindowProcW(struct qemu_syscall *call);
@@ -379,6 +401,7 @@ void qemu_RegisterClipboardFormatW(struct qemu_syscall *call);
 void qemu_RegisterHotKey(struct qemu_syscall *call);
 void qemu_ReleaseCapture(struct qemu_syscall *call);
 void qemu_RemoveClipboardFormatListener(struct qemu_syscall *call);
+void qemu_ScrollChildren(struct qemu_syscall *call);
 void qemu_SendDlgItemMessageA(struct qemu_syscall *call);
 void qemu_SendDlgItemMessageW(struct qemu_syscall *call);
 void qemu_SendInput(struct qemu_syscall *call);
@@ -415,11 +438,14 @@ void qemu_SetWindowsHookW(struct qemu_syscall *call);
 void qemu_SetWinEventHook(struct qemu_syscall *call);
 void qemu_ShowCaret(struct qemu_syscall *call);
 void qemu_ShowCursor(struct qemu_syscall *call);
+void qemu_TileChildWindows(struct qemu_syscall *call);
+void qemu_TileWindows(struct qemu_syscall *call);
 void qemu_ToAscii(struct qemu_syscall *call);
 void qemu_ToAsciiEx(struct qemu_syscall *call);
 void qemu_ToUnicode(struct qemu_syscall *call);
 void qemu_ToUnicodeEx(struct qemu_syscall *call);
 void qemu_TrackMouseEvent(struct qemu_syscall *call);
+void qemu_TranslateMDISysAccel(struct qemu_syscall *call);
 void qemu_UnhookWindowsHook(struct qemu_syscall *call);
 void qemu_UnhookWindowsHookEx(struct qemu_syscall *call);
 void qemu_UnhookWinEvent(struct qemu_syscall *call);
