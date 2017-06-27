@@ -1,4 +1,12 @@
 LIBRARY user32.dll BASE=0x70000000
 
 EXPORTS
+  CreateCaret
+  DestroyCaret
+  GetCaretBlinkTime
+  GetCaretPos
+  HideCaret
   OemToCharA
+  SetCaretBlinkTime
+  SetCaretPos
+  ShowCaret
