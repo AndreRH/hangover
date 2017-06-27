@@ -15,6 +15,8 @@ enum user32_calls
     CALL_CREATECARET,
     CALL_CREATECURSOR,
     CALL_CREATEICONINDIRECT,
+    CALL_DEFDLGPROCA,
+    CALL_DEFDLGPROCW,
     CALL_DESTROYCARET,
     CALL_DESTROYCURSOR,
     CALL_DESTROYICON,
@@ -105,6 +107,8 @@ void qemu_CountClipboardFormats(struct qemu_syscall *call);
 void qemu_CreateCaret(struct qemu_syscall *call);
 void qemu_CreateCursor(struct qemu_syscall *call);
 void qemu_CreateIconIndirect(struct qemu_syscall *call);
+void qemu_DefDlgProcA(struct qemu_syscall *call);
+void qemu_DefDlgProcW(struct qemu_syscall *call);
 void qemu_DestroyCaret(struct qemu_syscall *call);
 void qemu_DestroyCursor(struct qemu_syscall *call);
 void qemu_DestroyIcon(struct qemu_syscall *call);

@@ -11,6 +11,8 @@ EXPORTS
   CreateCaret
   CreateCursor
   CreateIconIndirect
+  DefDlgProcA
+  DefDlgProcW
   DestroyCaret
   DestroyCursor
   DestroyIcon

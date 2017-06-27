@@ -43,6 +43,8 @@ static const syscall_handler dll_functions[] =
     qemu_CreateCaret,
     qemu_CreateCursor,
     qemu_CreateIconIndirect,
+    qemu_DefDlgProcA,
+    qemu_DefDlgProcW,
     qemu_DestroyCaret,
     qemu_DestroyCursor,
     qemu_DestroyIcon,
