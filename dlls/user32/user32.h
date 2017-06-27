@@ -32,6 +32,7 @@ enum user32_calls
     CALL_GETCLIPBOARDOWNER,
     CALL_GETCLIPBOARDSEQUENCENUMBER,
     CALL_GETCLIPBOARDVIEWER,
+    CALL_GETCOMBOBOXINFO,
     CALL_GETOPENCLIPBOARDWINDOW,
     CALL_GETPRIORITYCLIPBOARDFORMAT,
     CALL_GETUPDATEDCLIPBOARDFORMATS,
@@ -93,6 +94,7 @@ void qemu_GetClipboardFormatNameW(struct qemu_syscall *call);
 void qemu_GetClipboardOwner(struct qemu_syscall *call);
 void qemu_GetClipboardSequenceNumber(struct qemu_syscall *call);
 void qemu_GetClipboardViewer(struct qemu_syscall *call);
+void qemu_GetComboBoxInfo(struct qemu_syscall *call);
 void qemu_GetOpenClipboardWindow(struct qemu_syscall *call);
 void qemu_GetPriorityClipboardFormat(struct qemu_syscall *call);
 void qemu_GetUpdatedClipboardFormats(struct qemu_syscall *call);

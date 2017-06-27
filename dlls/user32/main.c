@@ -60,6 +60,7 @@ static const syscall_handler dll_functions[] =
     qemu_GetClipboardOwner,
     qemu_GetClipboardSequenceNumber,
     qemu_GetClipboardViewer,
+    qemu_GetComboBoxInfo,
     qemu_GetOpenClipboardWindow,
     qemu_GetPriorityClipboardFormat,
     qemu_GetUpdatedClipboardFormats,

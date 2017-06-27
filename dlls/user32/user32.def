@@ -28,6 +28,7 @@ EXPORTS
   GetClipboardOwner
   GetClipboardSequenceNumber
   GetClipboardViewer
+  GetComboBoxInfo
   GetOpenClipboardWindow
   GetPriorityClipboardFormat
   GetUpdatedClipboardFormats
