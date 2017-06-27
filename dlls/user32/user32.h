@@ -35,9 +35,13 @@ enum user32_calls
     CALL_CHECKRADIOBUTTON,
     CALL_CLIPCURSOR,
     CALL_CLOSECLIPBOARD,
+    CALL_COPYACCELERATORTABLEA,
+    CALL_COPYACCELERATORTABLEW,
     CALL_COPYICON,
     CALL_COPYIMAGE,
     CALL_COUNTCLIPBOARDFORMATS,
+    CALL_CREATEACCELERATORTABLEA,
+    CALL_CREATEACCELERATORTABLEW,
     CALL_CREATECARET,
     CALL_CREATECURSOR,
     CALL_CREATEDIALOGINDIRECTPARAMA,
@@ -61,6 +65,7 @@ enum user32_calls
     CALL_DEFWINDOWPROCW,
     CALL_DELETEMENU,
     CALL_DEREGISTERSHELLHOOKWINDOW,
+    CALL_DESTROYACCELERATORTABLE,
     CALL_DESTROYCARET,
     CALL_DESTROYCURSOR,
     CALL_DESTROYICON,
@@ -144,6 +149,7 @@ enum user32_calls
     CALL_GETDLGITEMTEXTW,
     CALL_GETFOCUS,
     CALL_GETFOREGROUNDWINDOW,
+    CALL_GETGUIRESOURCES,
     CALL_GETGUITHREADINFO,
     CALL_GETICONINFO,
     CALL_GETINPUTSTATE,
@@ -225,6 +231,8 @@ enum user32_calls
     CALL_KEYBD_EVENT,
     CALL_KILLSYSTEMTIMER,
     CALL_KILLTIMER,
+    CALL_LOADACCELERATORSA,
+    CALL_LOADACCELERATORSW,
     CALL_LOADBITMAPA,
     CALL_LOADBITMAPW,
     CALL_LOADCURSORA,
@@ -242,6 +250,8 @@ enum user32_calls
     CALL_LOADMENUINDIRECTA,
     CALL_LOADMENUINDIRECTW,
     CALL_LOADMENUW,
+    CALL_LOADSTRINGA,
+    CALL_LOADSTRINGW,
     CALL_LOCKWINDOWUPDATE,
     CALL_LOOKUPICONIDFROMDIRECTORY,
     CALL_LOOKUPICONIDFROMDIRECTORYEX,
@@ -449,9 +459,13 @@ void qemu_CheckMenuRadioItem(struct qemu_syscall *call);
 void qemu_CheckRadioButton(struct qemu_syscall *call);
 void qemu_ClipCursor(struct qemu_syscall *call);
 void qemu_CloseClipboard(struct qemu_syscall *call);
+void qemu_CopyAcceleratorTableA(struct qemu_syscall *call);
+void qemu_CopyAcceleratorTableW(struct qemu_syscall *call);
 void qemu_CopyIcon(struct qemu_syscall *call);
 void qemu_CopyImage(struct qemu_syscall *call);
 void qemu_CountClipboardFormats(struct qemu_syscall *call);
+void qemu_CreateAcceleratorTableA(struct qemu_syscall *call);
+void qemu_CreateAcceleratorTableW(struct qemu_syscall *call);
 void qemu_CreateCaret(struct qemu_syscall *call);
 void qemu_CreateCursor(struct qemu_syscall *call);
 void qemu_CreateDialogIndirectParamA(struct qemu_syscall *call);
@@ -475,6 +489,7 @@ void qemu_DefWindowProcA(struct qemu_syscall *call);
 void qemu_DefWindowProcW(struct qemu_syscall *call);
 void qemu_DeleteMenu(struct qemu_syscall *call);
 void qemu_DeregisterShellHookWindow(struct qemu_syscall *call);
+void qemu_DestroyAcceleratorTable(struct qemu_syscall *call);
 void qemu_DestroyCaret(struct qemu_syscall *call);
 void qemu_DestroyCursor(struct qemu_syscall *call);
 void qemu_DestroyIcon(struct qemu_syscall *call);
@@ -558,6 +573,7 @@ void qemu_GetDlgItemTextA(struct qemu_syscall *call);
 void qemu_GetDlgItemTextW(struct qemu_syscall *call);
 void qemu_GetFocus(struct qemu_syscall *call);
 void qemu_GetForegroundWindow(struct qemu_syscall *call);
+void qemu_GetGuiResources(struct qemu_syscall *call);
 void qemu_GetGUIThreadInfo(struct qemu_syscall *call);
 void qemu_GetIconInfo(struct qemu_syscall *call);
 void qemu_GetInputState(struct qemu_syscall *call);
@@ -639,6 +655,8 @@ void qemu_IsWinEventHookInstalled(struct qemu_syscall *call);
 void qemu_keybd_event(struct qemu_syscall *call);
 void qemu_KillSystemTimer(struct qemu_syscall *call);
 void qemu_KillTimer(struct qemu_syscall *call);
+void qemu_LoadAcceleratorsA(struct qemu_syscall *call);
+void qemu_LoadAcceleratorsW(struct qemu_syscall *call);
 void qemu_LoadBitmapA(struct qemu_syscall *call);
 void qemu_LoadBitmapW(struct qemu_syscall *call);
 void qemu_LoadCursorA(struct qemu_syscall *call);
@@ -656,6 +674,8 @@ void qemu_LoadMenuA(struct qemu_syscall *call);
 void qemu_LoadMenuIndirectA(struct qemu_syscall *call);
 void qemu_LoadMenuIndirectW(struct qemu_syscall *call);
 void qemu_LoadMenuW(struct qemu_syscall *call);
+void qemu_LoadStringA(struct qemu_syscall *call);
+void qemu_LoadStringW(struct qemu_syscall *call);
 void qemu_LockWindowUpdate(struct qemu_syscall *call);
 void qemu_LookupIconIdFromDirectory(struct qemu_syscall *call);
 void qemu_LookupIconIdFromDirectoryEx(struct qemu_syscall *call);
