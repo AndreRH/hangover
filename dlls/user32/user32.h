@@ -7,6 +7,8 @@ enum user32_calls
 {
     CALL_ACTIVATEKEYBOARDLAYOUT = 0,
     CALL_ADDCLIPBOARDFORMATLISTENER,
+    CALL_ADJUSTWINDOWRECT,
+    CALL_ADJUSTWINDOWRECTEX,
     CALL_ALIGNRECTS,
     CALL_APPENDMENUA,
     CALL_APPENDMENUW,
@@ -78,6 +80,9 @@ enum user32_calls
     CALL_DLGDIRSELECTCOMBOBOXEXW,
     CALL_DLGDIRSELECTEXA,
     CALL_DLGDIRSELECTEXW,
+    CALL_DRAWCAPTION,
+    CALL_DRAWCAPTIONTEMPA,
+    CALL_DRAWCAPTIONTEMPW,
     CALL_DRAWICON,
     CALL_DRAWICONEX,
     CALL_DRAWMENUBAR,
@@ -181,6 +186,7 @@ enum user32_calls
     CALL_GETSUBMENU,
     CALL_GETSYSTEMMENU,
     CALL_GETTASKMANWINDOW,
+    CALL_GETTITLEBARINFO,
     CALL_GETUPDATEDCLIPBOARDFORMATS,
     CALL_HIDECARET,
     CALL_HILITEMENUITEM,
@@ -384,6 +390,8 @@ extern const struct qemu_ops *qemu_ops;
 
 void qemu_ActivateKeyboardLayout(struct qemu_syscall *call);
 void qemu_AddClipboardFormatListener(struct qemu_syscall *call);
+void qemu_AdjustWindowRect(struct qemu_syscall *call);
+void qemu_AdjustWindowRectEx(struct qemu_syscall *call);
 void qemu_AlignRects(struct qemu_syscall *call);
 void qemu_AppendMenuA(struct qemu_syscall *call);
 void qemu_AppendMenuW(struct qemu_syscall *call);
@@ -455,6 +463,9 @@ void qemu_DlgDirSelectComboBoxExA(struct qemu_syscall *call);
 void qemu_DlgDirSelectComboBoxExW(struct qemu_syscall *call);
 void qemu_DlgDirSelectExA(struct qemu_syscall *call);
 void qemu_DlgDirSelectExW(struct qemu_syscall *call);
+void qemu_DrawCaption(struct qemu_syscall *call);
+void qemu_DrawCaptionTempA(struct qemu_syscall *call);
+void qemu_DrawCaptionTempW(struct qemu_syscall *call);
 void qemu_DrawIcon(struct qemu_syscall *call);
 void qemu_DrawIconEx(struct qemu_syscall *call);
 void qemu_DrawMenuBar(struct qemu_syscall *call);
@@ -558,6 +569,7 @@ void qemu_GetShellWindow(struct qemu_syscall *call);
 void qemu_GetSubMenu(struct qemu_syscall *call);
 void qemu_GetSystemMenu(struct qemu_syscall *call);
 void qemu_GetTaskmanWindow(struct qemu_syscall *call);
+void qemu_GetTitleBarInfo(struct qemu_syscall *call);
 void qemu_GetUpdatedClipboardFormats(struct qemu_syscall *call);
 void qemu_HideCaret(struct qemu_syscall *call);
 void qemu_HiliteMenuItem(struct qemu_syscall *call);
