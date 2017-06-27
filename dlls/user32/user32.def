@@ -3,6 +3,7 @@ LIBRARY user32.dll BASE=0x70000000
 EXPORTS
   ActivateKeyboardLayout
   AddClipboardFormatListener
+  AlignRects
   AppendMenuA
   AppendMenuW
   AttachThreadInput
@@ -52,6 +53,7 @@ EXPORTS
   DefWindowProcA
   DefWindowProcW
   DeleteMenu
+  DeregisterShellHookWindow
   DestroyCaret
   DestroyCursor
   DestroyIcon
@@ -61,6 +63,7 @@ EXPORTS
   DialogBoxIndirectParamW
   DialogBoxParamA
   DialogBoxParamW
+  DisableProcessWindowsGhosting
   DispatchMessageA
   DispatchMessageW
   DlgDirListA
@@ -80,7 +83,14 @@ EXPORTS
   EndDialog
   EndMenu
   EnumClipboardFormats
+  EnumDisplayDevicesA
+  EnumDisplayDevicesW
+  EnumDisplayMonitors
   GetActiveWindow
+  GetAltTabInfoA
+  GetAltTabInfoW
+  GetAppCompatFlags
+  GetAppCompatFlags2
   GetAsyncKeyState
   GetCapture
   GetCaretBlinkTime
@@ -108,6 +118,7 @@ EXPORTS
   GetCursorFrameInfo
   GetCursorInfo
   GetCursorPos
+  GetDisplayConfigBufferSizes
   GetDlgCtrlID
   GetDlgItem
   GetDlgItemInt
@@ -147,6 +158,8 @@ EXPORTS
   GetMessagePos
   GetMessageTime
   GetMessageW
+  GetMonitorInfoA
+  GetMonitorInfoW
   GetNextDlgGroupItem
   GetNextDlgTabItem
   GetOpenClipboardWindow
@@ -180,6 +193,8 @@ EXPORTS
   IsGUIThread
   IsHungAppWindow
   IsMenu
+  IsTouchWindow
+  IsWindowRedirectedForPrint
   IsWinEventHookInstalled
   keybd_event
   KillSystemTimer
@@ -196,6 +211,7 @@ EXPORTS
   LoadImageW
   LoadKeyboardLayoutA
   LoadKeyboardLayoutW
+  LoadLocalFonts
   LoadMenuA
   LoadMenuIndirectA
   LoadMenuIndirectW
@@ -210,6 +226,8 @@ EXPORTS
   MessageBeep
   ModifyMenuA
   ModifyMenuW
+  MonitorFromRect
+  MonitorFromWindow
   mouse_event
   MsgWaitForMultipleObjects
   MsgWaitForMultipleObjectsEx
@@ -237,7 +255,14 @@ EXPORTS
   RegisterClassW
   RegisterClipboardFormatA
   RegisterClipboardFormatW
+  RegisterDeviceNotificationA
+  RegisterDeviceNotificationW
   RegisterHotKey
+  RegisterLogonProcess
+  RegisterPowerSettingNotification
+  RegisterShellHookWindow
+  RegisterSystemThread
+  RegisterTasklist
   RegisterWindowMessageA
   RegisterWindowMessageW
   ReleaseCapture
@@ -247,6 +272,8 @@ EXPORTS
   ScrollChildren
   SendDlgItemMessageA
   SendDlgItemMessageW
+  SendIMEMessageExA
+  SendIMEMessageExW
   SendInput
   SendMessageA
   SendMessageCallbackA
@@ -270,6 +297,7 @@ EXPORTS
   SetCoalescableTimer
   SetCursor
   SetCursorPos
+  SetDebugErrorLevel
   SetDeskWallPaper
   SetDlgItemInt
   SetDlgItemTextA
@@ -277,6 +305,8 @@ EXPORTS
   SetFocus
   SetForegroundWindow
   SetKeyboardState
+  SetLastErrorEx
+  SetLogonNotifyWindow
   SetMenu
   SetMenuContextHelpId
   SetMenuDefaultItem
@@ -299,6 +329,7 @@ EXPORTS
   SetWindowsHookExA
   SetWindowsHookExW
   SetWindowsHookW
+  SetWindowStationUser
   SetWinEventHook
   ShowCaret
   ShowCursor
@@ -321,8 +352,15 @@ EXPORTS
   UnloadKeyboardLayout
   UnregisterClassA
   UnregisterClassW
+  UnregisterDeviceNotification
   UnregisterHotKey
+  UnregisterPowerSettingNotification
+  User32InitializeImmEntryTable
+  UserHandleGrantAccess
   VkKeyScanA
   VkKeyScanW
   WaitForInputIdle
   WaitMessage
+  WINNLSEnableIME
+  WINNLSGetEnableStatus
+  WINNLSGetIMEHotkey
