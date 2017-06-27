@@ -2,6 +2,9 @@ LIBRARY user32.dll BASE=0x70000000
 
 EXPORTS
   AddClipboardFormatListener
+  CallMsgFilterA
+  CallMsgFilterW
+  CallNextHookEx
   ChangeClipboardChain
   CheckDlgButton
   CheckRadioButton
@@ -87,6 +90,7 @@ EXPORTS
   IsClipboardFormatAvailable
   IsDialogMessageW
   IsDlgButtonChecked
+  IsWinEventHookInstalled
   LoadBitmapA
   LoadBitmapW
   LoadCursorA
@@ -100,6 +104,7 @@ EXPORTS
   LookupIconIdFromDirectory
   LookupIconIdFromDirectoryEx
   MapDialogRect
+  NotifyWinEvent
   OemToCharA
   OpenClipboard
   PaintDesktop
@@ -140,7 +145,15 @@ EXPORTS
   SetShellWindowEx
   SetSystemCursor
   SetTaskmanWindow
+  SetWindowsHookA
+  SetWindowsHookExA
+  SetWindowsHookExW
+  SetWindowsHookW
+  SetWinEventHook
   ShowCaret
   ShowCursor
+  UnhookWindowsHook
+  UnhookWindowsHookEx
+  UnhookWinEvent
   UnregisterClassA
   UnregisterClassW

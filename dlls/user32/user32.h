@@ -6,6 +6,9 @@
 enum user32_calls
 {
     CALL_ADDCLIPBOARDFORMATLISTENER = 0,
+    CALL_CALLMSGFILTERA,
+    CALL_CALLMSGFILTERW,
+    CALL_CALLNEXTHOOKEX,
     CALL_CHANGECLIPBOARDCHAIN,
     CALL_CHECKDLGBUTTON,
     CALL_CHECKRADIOBUTTON,
@@ -91,6 +94,7 @@ enum user32_calls
     CALL_ISCLIPBOARDFORMATAVAILABLE,
     CALL_ISDIALOGMESSAGEW,
     CALL_ISDLGBUTTONCHECKED,
+    CALL_ISWINEVENTHOOKINSTALLED,
     CALL_LOADBITMAPA,
     CALL_LOADBITMAPW,
     CALL_LOADCURSORA,
@@ -104,6 +108,7 @@ enum user32_calls
     CALL_LOOKUPICONIDFROMDIRECTORY,
     CALL_LOOKUPICONIDFROMDIRECTORYEX,
     CALL_MAPDIALOGRECT,
+    CALL_NOTIFYWINEVENT,
     CALL_OEMTOCHARA,
     CALL_OPENCLIPBOARD,
     CALL_PAINTDESKTOP,
@@ -144,8 +149,16 @@ enum user32_calls
     CALL_SETSHELLWINDOWEX,
     CALL_SETSYSTEMCURSOR,
     CALL_SETTASKMANWINDOW,
+    CALL_SETWINDOWSHOOKA,
+    CALL_SETWINDOWSHOOKEXA,
+    CALL_SETWINDOWSHOOKEXW,
+    CALL_SETWINDOWSHOOKW,
+    CALL_SETWINEVENTHOOK,
     CALL_SHOWCARET,
     CALL_SHOWCURSOR,
+    CALL_UNHOOKWINDOWSHOOK,
+    CALL_UNHOOKWINDOWSHOOKEX,
+    CALL_UNHOOKWINEVENT,
     CALL_UNREGISTERCLASSA,
     CALL_UNREGISTERCLASSW,
 };
@@ -155,6 +168,9 @@ enum user32_calls
 extern const struct qemu_ops *qemu_ops;
 
 void qemu_AddClipboardFormatListener(struct qemu_syscall *call);
+void qemu_CallMsgFilterA(struct qemu_syscall *call);
+void qemu_CallMsgFilterW(struct qemu_syscall *call);
+void qemu_CallNextHookEx(struct qemu_syscall *call);
 void qemu_ChangeClipboardChain(struct qemu_syscall *call);
 void qemu_CheckDlgButton(struct qemu_syscall *call);
 void qemu_CheckRadioButton(struct qemu_syscall *call);
@@ -240,6 +256,7 @@ void qemu_HideCaret(struct qemu_syscall *call);
 void qemu_IsClipboardFormatAvailable(struct qemu_syscall *call);
 void qemu_IsDialogMessageW(struct qemu_syscall *call);
 void qemu_IsDlgButtonChecked(struct qemu_syscall *call);
+void qemu_IsWinEventHookInstalled(struct qemu_syscall *call);
 void qemu_LoadBitmapA(struct qemu_syscall *call);
 void qemu_LoadBitmapW(struct qemu_syscall *call);
 void qemu_LoadCursorA(struct qemu_syscall *call);
@@ -253,6 +270,7 @@ void qemu_LoadImageW(struct qemu_syscall *call);
 void qemu_LookupIconIdFromDirectory(struct qemu_syscall *call);
 void qemu_LookupIconIdFromDirectoryEx(struct qemu_syscall *call);
 void qemu_MapDialogRect(struct qemu_syscall *call);
+void qemu_NotifyWinEvent(struct qemu_syscall *call);
 void qemu_OemToCharA(struct qemu_syscall *call);
 void qemu_OpenClipboard(struct qemu_syscall *call);
 void qemu_PaintDesktop(struct qemu_syscall *call);
@@ -293,8 +311,16 @@ void qemu_SetShellWindow(struct qemu_syscall *call);
 void qemu_SetShellWindowEx(struct qemu_syscall *call);
 void qemu_SetSystemCursor(struct qemu_syscall *call);
 void qemu_SetTaskmanWindow(struct qemu_syscall *call);
+void qemu_SetWindowsHookA(struct qemu_syscall *call);
+void qemu_SetWindowsHookExA(struct qemu_syscall *call);
+void qemu_SetWindowsHookExW(struct qemu_syscall *call);
+void qemu_SetWindowsHookW(struct qemu_syscall *call);
+void qemu_SetWinEventHook(struct qemu_syscall *call);
 void qemu_ShowCaret(struct qemu_syscall *call);
 void qemu_ShowCursor(struct qemu_syscall *call);
+void qemu_UnhookWindowsHook(struct qemu_syscall *call);
+void qemu_UnhookWindowsHookEx(struct qemu_syscall *call);
+void qemu_UnhookWinEvent(struct qemu_syscall *call);
 void qemu_UnregisterClassA(struct qemu_syscall *call);
 void qemu_UnregisterClassW(struct qemu_syscall *call);
 
