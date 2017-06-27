@@ -3,6 +3,8 @@ LIBRARY user32.dll BASE=0x70000000
 EXPORTS
   ActivateKeyboardLayout
   AddClipboardFormatListener
+  AppendMenuA
+  AppendMenuW
   AttachThreadInput
   BlockInput
   CalcChildScroll
@@ -12,7 +14,11 @@ EXPORTS
   CascadeChildWindows
   CascadeWindows
   ChangeClipboardChain
+  ChangeMenuA
+  ChangeMenuW
   CheckDlgButton
+  CheckMenuItem
+  CheckMenuRadioItem
   CheckRadioButton
   ClipCursor
   CloseClipboard
@@ -29,6 +35,8 @@ EXPORTS
   CreateIconIndirect
   CreateMDIWindowA
   CreateMDIWindowW
+  CreateMenu
+  CreatePopupMenu
   DefDlgProcA
   DefDlgProcW
   DefFrameProcA
@@ -38,9 +46,11 @@ EXPORTS
   DefRawInputProc
   DefWindowProcA
   DefWindowProcW
+  DeleteMenu
   DestroyCaret
   DestroyCursor
   DestroyIcon
+  DestroyMenu
   DialogBoxIndirectParamA
   DialogBoxIndirectParamAorW
   DialogBoxIndirectParamW
@@ -56,8 +66,12 @@ EXPORTS
   DlgDirSelectExW
   DrawIcon
   DrawIconEx
+  DrawMenuBar
+  DrawMenuBarTemp
   EmptyClipboard
+  EnableMenuItem
   EndDialog
+  EndMenu
   EnumClipboardFormats
   GetActiveWindow
   GetAsyncKeyState
@@ -107,6 +121,19 @@ EXPORTS
   GetKeyState
   GetLastInputInfo
   GetListBoxInfo
+  GetMenu
+  GetMenuBarInfo
+  GetMenuContextHelpId
+  GetMenuDefaultItem
+  GetMenuInfo
+  GetMenuItemCount
+  GetMenuItemID
+  GetMenuItemInfoA
+  GetMenuItemInfoW
+  GetMenuItemRect
+  GetMenuState
+  GetMenuStringA
+  GetMenuStringW
   GetNextDlgGroupItem
   GetNextDlgTabItem
   GetOpenClipboardWindow
@@ -121,12 +148,20 @@ EXPORTS
   GetRawInputDeviceList
   GetRegisteredRawInputDevices
   GetShellWindow
+  GetSubMenu
+  GetSystemMenu
   GetTaskmanWindow
   GetUpdatedClipboardFormats
   HideCaret
+  HiliteMenuItem
+  InsertMenuA
+  InsertMenuItemA
+  InsertMenuItemW
+  InsertMenuW
   IsClipboardFormatAvailable
   IsDialogMessageW
   IsDlgButtonChecked
+  IsMenu
   IsWinEventHookInstalled
   keybd_event
   LoadBitmapA
@@ -141,6 +176,10 @@ EXPORTS
   LoadImageW
   LoadKeyboardLayoutA
   LoadKeyboardLayoutW
+  LoadMenuA
+  LoadMenuIndirectA
+  LoadMenuIndirectW
+  LoadMenuW
   LookupIconIdFromDirectory
   LookupIconIdFromDirectoryEx
   MapDialogRect
@@ -148,6 +187,8 @@ EXPORTS
   MapVirtualKeyExA
   MapVirtualKeyExW
   MapVirtualKeyW
+  ModifyMenuA
+  ModifyMenuW
   mouse_event
   NotifyWinEvent
   OemKeyScan
@@ -169,6 +210,7 @@ EXPORTS
   RegisterHotKey
   ReleaseCapture
   RemoveClipboardFormatListener
+  RemoveMenu
   ScrollChildren
   SendDlgItemMessageA
   SendDlgItemMessageW
@@ -193,11 +235,19 @@ EXPORTS
   SetFocus
   SetForegroundWindow
   SetKeyboardState
+  SetMenu
+  SetMenuContextHelpId
+  SetMenuDefaultItem
+  SetMenuInfo
+  SetMenuItemBitmaps
+  SetMenuItemInfoA
+  SetMenuItemInfoW
   SetPhysicalCursorPos
   SetProgmanWindow
   SetShellWindow
   SetShellWindowEx
   SetSystemCursor
+  SetSystemMenu
   SetTaskmanWindow
   SetWindowsHookA
   SetWindowsHookExA
@@ -213,6 +263,10 @@ EXPORTS
   ToUnicode
   ToUnicodeEx
   TrackMouseEvent
+  TrackPopupMenu
+  TrackPopupMenuEx
+  TranslateAcceleratorA
+  TranslateAcceleratorW
   TranslateMDISysAccel
   UnhookWindowsHook
   UnhookWindowsHookEx
