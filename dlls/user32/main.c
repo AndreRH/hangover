@@ -129,6 +129,7 @@ static const syscall_handler dll_functions[] =
     qemu_GetKeyNameTextW,
     qemu_GetKeyState,
     qemu_GetLastInputInfo,
+    qemu_GetListBoxInfo,
     qemu_GetNextDlgGroupItem,
     qemu_GetNextDlgTabItem,
     qemu_GetOpenClipboardWindow,

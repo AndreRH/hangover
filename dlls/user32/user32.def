@@ -97,6 +97,7 @@ EXPORTS
   GetKeyNameTextW
   GetKeyState
   GetLastInputInfo
+  GetListBoxInfo
   GetNextDlgGroupItem
   GetNextDlgTabItem
   GetOpenClipboardWindow

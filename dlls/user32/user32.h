@@ -101,6 +101,7 @@ enum user32_calls
     CALL_GETKEYNAMETEXTW,
     CALL_GETKEYSTATE,
     CALL_GETLASTINPUTINFO,
+    CALL_GETLISTBOXINFO,
     CALL_GETNEXTDLGGROUPITEM,
     CALL_GETNEXTDLGTABITEM,
     CALL_GETOPENCLIPBOARDWINDOW,
@@ -315,6 +316,7 @@ void qemu_GetKeyNameTextA(struct qemu_syscall *call);
 void qemu_GetKeyNameTextW(struct qemu_syscall *call);
 void qemu_GetKeyState(struct qemu_syscall *call);
 void qemu_GetLastInputInfo(struct qemu_syscall *call);
+void qemu_GetListBoxInfo(struct qemu_syscall *call);
 void qemu_GetNextDlgGroupItem(struct qemu_syscall *call);
 void qemu_GetNextDlgTabItem(struct qemu_syscall *call);
 void qemu_GetOpenClipboardWindow(struct qemu_syscall *call);
