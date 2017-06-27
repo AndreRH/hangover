@@ -3,10 +3,19 @@ LIBRARY user32.dll BASE=0x70000000
 EXPORTS
   AddClipboardFormatListener
   ChangeClipboardChain
+  ClipCursor
   CloseClipboard
+  CopyIcon
+  CopyImage
   CountClipboardFormats
   CreateCaret
+  CreateCursor
+  CreateIconIndirect
   DestroyCaret
+  DestroyCursor
+  DestroyIcon
+  DrawIcon
+  DrawIconEx
   EmptyClipboard
   EnumClipboardFormats
   GetCaretBlinkTime
@@ -28,12 +37,28 @@ EXPORTS
   GetClipboardOwner
   GetClipboardSequenceNumber
   GetClipboardViewer
+  GetClipCursor
   GetComboBoxInfo
+  GetCursor
+  GetCursorFrameInfo
+  GetIconInfo
   GetOpenClipboardWindow
   GetPriorityClipboardFormat
   GetUpdatedClipboardFormats
   HideCaret
   IsClipboardFormatAvailable
+  LoadBitmapA
+  LoadBitmapW
+  LoadCursorA
+  LoadCursorFromFileA
+  LoadCursorFromFileW
+  LoadCursorW
+  LoadIconA
+  LoadIconW
+  LoadImageA
+  LoadImageW
+  LookupIconIdFromDirectory
+  LookupIconIdFromDirectoryEx
   OemToCharA
   OpenClipboard
   RealGetWindowClassA
@@ -54,6 +79,9 @@ EXPORTS
   SetClassWord
   SetClipboardData
   SetClipboardViewer
+  SetCursor
+  SetSystemCursor
   ShowCaret
+  ShowCursor
   UnregisterClassA
   UnregisterClassW

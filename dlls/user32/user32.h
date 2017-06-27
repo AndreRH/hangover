@@ -7,10 +7,19 @@ enum user32_calls
 {
     CALL_ADDCLIPBOARDFORMATLISTENER = 0,
     CALL_CHANGECLIPBOARDCHAIN,
+    CALL_CLIPCURSOR,
     CALL_CLOSECLIPBOARD,
+    CALL_COPYICON,
+    CALL_COPYIMAGE,
     CALL_COUNTCLIPBOARDFORMATS,
     CALL_CREATECARET,
+    CALL_CREATECURSOR,
+    CALL_CREATEICONINDIRECT,
     CALL_DESTROYCARET,
+    CALL_DESTROYCURSOR,
+    CALL_DESTROYICON,
+    CALL_DRAWICON,
+    CALL_DRAWICONEX,
     CALL_EMPTYCLIPBOARD,
     CALL_ENUMCLIPBOARDFORMATS,
     CALL_GETCARETBLINKTIME,
@@ -32,12 +41,28 @@ enum user32_calls
     CALL_GETCLIPBOARDOWNER,
     CALL_GETCLIPBOARDSEQUENCENUMBER,
     CALL_GETCLIPBOARDVIEWER,
+    CALL_GETCLIPCURSOR,
     CALL_GETCOMBOBOXINFO,
+    CALL_GETCURSOR,
+    CALL_GETCURSORFRAMEINFO,
+    CALL_GETICONINFO,
     CALL_GETOPENCLIPBOARDWINDOW,
     CALL_GETPRIORITYCLIPBOARDFORMAT,
     CALL_GETUPDATEDCLIPBOARDFORMATS,
     CALL_HIDECARET,
     CALL_ISCLIPBOARDFORMATAVAILABLE,
+    CALL_LOADBITMAPA,
+    CALL_LOADBITMAPW,
+    CALL_LOADCURSORA,
+    CALL_LOADCURSORFROMFILEA,
+    CALL_LOADCURSORFROMFILEW,
+    CALL_LOADCURSORW,
+    CALL_LOADICONA,
+    CALL_LOADICONW,
+    CALL_LOADIMAGEA,
+    CALL_LOADIMAGEW,
+    CALL_LOOKUPICONIDFROMDIRECTORY,
+    CALL_LOOKUPICONIDFROMDIRECTORYEX,
     CALL_OEMTOCHARA,
     CALL_OPENCLIPBOARD,
     CALL_REALGETWINDOWCLASSA,
@@ -58,7 +83,10 @@ enum user32_calls
     CALL_SETCLASSWORD,
     CALL_SETCLIPBOARDDATA,
     CALL_SETCLIPBOARDVIEWER,
+    CALL_SETCURSOR,
+    CALL_SETSYSTEMCURSOR,
     CALL_SHOWCARET,
+    CALL_SHOWCURSOR,
     CALL_UNREGISTERCLASSA,
     CALL_UNREGISTERCLASSW,
 };
@@ -69,10 +97,19 @@ extern const struct qemu_ops *qemu_ops;
 
 void qemu_AddClipboardFormatListener(struct qemu_syscall *call);
 void qemu_ChangeClipboardChain(struct qemu_syscall *call);
+void qemu_ClipCursor(struct qemu_syscall *call);
 void qemu_CloseClipboard(struct qemu_syscall *call);
+void qemu_CopyIcon(struct qemu_syscall *call);
+void qemu_CopyImage(struct qemu_syscall *call);
 void qemu_CountClipboardFormats(struct qemu_syscall *call);
 void qemu_CreateCaret(struct qemu_syscall *call);
+void qemu_CreateCursor(struct qemu_syscall *call);
+void qemu_CreateIconIndirect(struct qemu_syscall *call);
 void qemu_DestroyCaret(struct qemu_syscall *call);
+void qemu_DestroyCursor(struct qemu_syscall *call);
+void qemu_DestroyIcon(struct qemu_syscall *call);
+void qemu_DrawIcon(struct qemu_syscall *call);
+void qemu_DrawIconEx(struct qemu_syscall *call);
 void qemu_EmptyClipboard(struct qemu_syscall *call);
 void qemu_EnumClipboardFormats(struct qemu_syscall *call);
 void qemu_GetCaretBlinkTime(struct qemu_syscall *call);
@@ -94,12 +131,28 @@ void qemu_GetClipboardFormatNameW(struct qemu_syscall *call);
 void qemu_GetClipboardOwner(struct qemu_syscall *call);
 void qemu_GetClipboardSequenceNumber(struct qemu_syscall *call);
 void qemu_GetClipboardViewer(struct qemu_syscall *call);
+void qemu_GetClipCursor(struct qemu_syscall *call);
 void qemu_GetComboBoxInfo(struct qemu_syscall *call);
+void qemu_GetCursor(struct qemu_syscall *call);
+void qemu_GetCursorFrameInfo(struct qemu_syscall *call);
+void qemu_GetIconInfo(struct qemu_syscall *call);
 void qemu_GetOpenClipboardWindow(struct qemu_syscall *call);
 void qemu_GetPriorityClipboardFormat(struct qemu_syscall *call);
 void qemu_GetUpdatedClipboardFormats(struct qemu_syscall *call);
 void qemu_HideCaret(struct qemu_syscall *call);
 void qemu_IsClipboardFormatAvailable(struct qemu_syscall *call);
+void qemu_LoadBitmapA(struct qemu_syscall *call);
+void qemu_LoadBitmapW(struct qemu_syscall *call);
+void qemu_LoadCursorA(struct qemu_syscall *call);
+void qemu_LoadCursorFromFileA(struct qemu_syscall *call);
+void qemu_LoadCursorFromFileW(struct qemu_syscall *call);
+void qemu_LoadCursorW(struct qemu_syscall *call);
+void qemu_LoadIconA(struct qemu_syscall *call);
+void qemu_LoadIconW(struct qemu_syscall *call);
+void qemu_LoadImageA(struct qemu_syscall *call);
+void qemu_LoadImageW(struct qemu_syscall *call);
+void qemu_LookupIconIdFromDirectory(struct qemu_syscall *call);
+void qemu_LookupIconIdFromDirectoryEx(struct qemu_syscall *call);
 void qemu_OemToCharA(struct qemu_syscall *call);
 void qemu_OpenClipboard(struct qemu_syscall *call);
 void qemu_RealGetWindowClassA(struct qemu_syscall *call);
@@ -120,7 +173,10 @@ void qemu_SetClassLongW(struct qemu_syscall *call);
 void qemu_SetClassWord(struct qemu_syscall *call);
 void qemu_SetClipboardData(struct qemu_syscall *call);
 void qemu_SetClipboardViewer(struct qemu_syscall *call);
+void qemu_SetCursor(struct qemu_syscall *call);
+void qemu_SetSystemCursor(struct qemu_syscall *call);
 void qemu_ShowCaret(struct qemu_syscall *call);
+void qemu_ShowCursor(struct qemu_syscall *call);
 void qemu_UnregisterClassA(struct qemu_syscall *call);
 void qemu_UnregisterClassW(struct qemu_syscall *call);
 
