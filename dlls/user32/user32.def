@@ -22,6 +22,10 @@ EXPORTS
   CascadeChildWindows
   CascadeWindows
   ChangeClipboardChain
+  ChangeDisplaySettingsA
+  ChangeDisplaySettingsExA
+  ChangeDisplaySettingsExW
+  ChangeDisplaySettingsW
   ChangeMenuA
   ChangeMenuW
   ChangeWindowMessageFilter
@@ -99,6 +103,10 @@ EXPORTS
   EnumDisplayDevicesA
   EnumDisplayDevicesW
   EnumDisplayMonitors
+  EnumDisplaySettingsA
+  EnumDisplaySettingsExA
+  EnumDisplaySettingsExW
+  EnumDisplaySettingsW
   EnumPropsA
   EnumPropsExA
   EnumPropsExW
@@ -144,6 +152,7 @@ EXPORTS
   GetDlgItemInt
   GetDlgItemTextA
   GetDlgItemTextW
+  GetDoubleClickTime
   GetFocus
   GetForegroundWindow
   GetGuiResources
@@ -202,7 +211,10 @@ EXPORTS
   GetScrollRange
   GetShellWindow
   GetSubMenu
+  GetSysColor
+  GetSysColorBrush
   GetSystemMenu
+  GetSystemMetrics
   GetTaskmanWindow
   GetTitleBarInfo
   GetUpdatedClipboardFormats
@@ -226,6 +238,7 @@ EXPORTS
   IsGUIThread
   IsHungAppWindow
   IsMenu
+  IsProcessDPIAware
   IsTouchWindow
   IsWindowRedirectedForPrint
   IsWinEventHookInstalled
@@ -356,6 +369,7 @@ EXPORTS
   SetDlgItemInt
   SetDlgItemTextA
   SetDlgItemTextW
+  SetDoubleClickTime
   SetFocus
   SetForegroundWindow
   SetKeyboardState
@@ -371,6 +385,7 @@ EXPORTS
   SetMessageExtraInfo
   SetMessageQueue
   SetPhysicalCursorPos
+  SetProcessDPIAware
   SetProgmanWindow
   SetPropA
   SetPropW
@@ -379,6 +394,8 @@ EXPORTS
   SetScrollRange
   SetShellWindow
   SetShellWindowEx
+  SetSysColors
+  SetSysColorsTemp
   SetSystemCursor
   SetSystemMenu
   SetSystemTimer
@@ -393,6 +410,9 @@ EXPORTS
   ShowCaret
   ShowCursor
   ShowScrollBar
+  SwapMouseButton
+  SystemParametersInfoA
+  SystemParametersInfoW
   TileChildWindows
   TileWindows
   ToAscii
