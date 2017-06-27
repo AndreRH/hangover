@@ -6,12 +6,17 @@ EXPORTS
   AdjustWindowRect
   AdjustWindowRectEx
   AlignRects
+  AllowSetForegroundWindow
+  AnimateWindow
   AnyPopup
   AppendMenuA
   AppendMenuW
+  ArrangeIconicWindows
   AttachThreadInput
+  BeginDeferWindowPos
   BeginPaint
   BlockInput
+  BringWindowToTop
   BroadcastSystemMessageA
   BroadcastSystemMessageExA
   BroadcastSystemMessageExW
@@ -34,6 +39,7 @@ EXPORTS
   CheckMenuItem
   CheckMenuRadioItem
   CheckRadioButton
+  ClientToScreen
   ClipCursor
   CloseClipboard
   CloseWindow
@@ -61,6 +67,7 @@ EXPORTS
   CreateWindowExW
   DefDlgProcA
   DefDlgProcW
+  DeferWindowPos
   DefFrameProcA
   DefFrameProcW
   DefMDIChildProcA
@@ -113,6 +120,7 @@ EXPORTS
   EnableMenuItem
   EnableScrollBar
   EnableWindow
+  EndDeferWindowPos
   EndDialog
   EndMenu
   EndPaint
@@ -164,6 +172,7 @@ EXPORTS
   GetClassNameA
   GetClassNameW
   GetClassWord
+  GetClientRect
   GetClipboardData
   GetClipboardFormatNameA
   GetClipboardFormatNameW
@@ -192,6 +201,7 @@ EXPORTS
   GetGUIThreadInfo
   GetIconInfo
   GetInputState
+  GetInternalWindowPos
   GetKBCodePage
   GetKeyboardLayout
   GetKeyboardLayoutNameA
@@ -270,6 +280,10 @@ EXPORTS
   GetWindowLongW
   GetWindowModuleFileNameA
   GetWindowModuleFileNameW
+  GetWindowPlacement
+  GetWindowRect
+  GetWindowRgn
+  GetWindowRgnBox
   GetWindowTextA
   GetWindowTextLengthA
   GetWindowTextLengthW
@@ -299,6 +313,7 @@ EXPORTS
   IsDlgButtonChecked
   IsGUIThread
   IsHungAppWindow
+  IsIconic
   IsMenu
   IsProcessDPIAware
   IsRectEmpty
@@ -309,6 +324,7 @@ EXPORTS
   IsWindowUnicode
   IsWindowVisible
   IsWinEventHookInstalled
+  IsZoomed
   keybd_event
   KillSystemTimer
   KillTimer
@@ -333,8 +349,10 @@ EXPORTS
   LoadMenuW
   LoadStringA
   LoadStringW
+  LockSetForegroundWindow
   LockWindowUpdate
   LockWorkStation
+  LogicalToPhysicalPoint
   LookupIconIdFromDirectory
   LookupIconIdFromDirectoryEx
   MapDialogRect
@@ -342,6 +360,7 @@ EXPORTS
   MapVirtualKeyExA
   MapVirtualKeyExW
   MapVirtualKeyW
+  MapWindowPoints
   MessageBeep
   MessageBoxA
   MessageBoxExA
@@ -356,6 +375,7 @@ EXPORTS
   MonitorFromRect
   MonitorFromWindow
   mouse_event
+  MoveWindow
   MsgWaitForMultipleObjects
   MsgWaitForMultipleObjectsEx
   NotifyWinEvent
@@ -367,6 +387,7 @@ EXPORTS
   PaintDesktop
   PeekMessageA
   PeekMessageW
+  PhysicalToLogicalPoint
   PostMessageA
   PostMessageW
   PostQuitMessage
@@ -405,6 +426,7 @@ EXPORTS
   RemovePropA
   RemovePropW
   ReplyMessage
+  ScreenToClient
   ScrollChildren
   ScrollDC
   ScrollWindow
@@ -444,6 +466,7 @@ EXPORTS
   SetDoubleClickTime
   SetFocus
   SetForegroundWindow
+  SetInternalWindowPos
   SetKeyboardState
   SetLastErrorEx
   SetLayeredWindowAttributes
@@ -483,6 +506,9 @@ EXPORTS
   SetWindowLongPtrA
   SetWindowLongPtrW
   SetWindowLongW
+  SetWindowPlacement
+  SetWindowPos
+  SetWindowRgn
   SetWindowsHookA
   SetWindowsHookExA
   SetWindowsHookExW
@@ -496,11 +522,14 @@ EXPORTS
   ShowCursor
   ShowOwnedPopups
   ShowScrollBar
+  ShowWindow
+  ShowWindowAsync
   ShutdownBlockReasonCreate
   ShutdownBlockReasonDestroy
   SubtractRect
   SwapMouseButton
   SwitchDesktop
+  SwitchToThisWindow
   SystemParametersInfoA
   SystemParametersInfoW
   TabbedTextOutA
