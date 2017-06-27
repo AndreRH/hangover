@@ -228,6 +228,14 @@ enum user32_calls
     CALL_MAPVIRTUALKEYEXW,
     CALL_MAPVIRTUALKEYW,
     CALL_MESSAGEBEEP,
+    CALL_MESSAGEBOXA,
+    CALL_MESSAGEBOXEXA,
+    CALL_MESSAGEBOXEXW,
+    CALL_MESSAGEBOXINDIRECTA,
+    CALL_MESSAGEBOXINDIRECTW,
+    CALL_MESSAGEBOXTIMEOUTA,
+    CALL_MESSAGEBOXTIMEOUTW,
+    CALL_MESSAGEBOXW,
     CALL_MODIFYMENUA,
     CALL_MODIFYMENUW,
     CALL_MONITORFROMRECT,
@@ -597,6 +605,14 @@ void qemu_MapVirtualKeyExA(struct qemu_syscall *call);
 void qemu_MapVirtualKeyExW(struct qemu_syscall *call);
 void qemu_MapVirtualKeyW(struct qemu_syscall *call);
 void qemu_MessageBeep(struct qemu_syscall *call);
+void qemu_MessageBoxA(struct qemu_syscall *call);
+void qemu_MessageBoxExA(struct qemu_syscall *call);
+void qemu_MessageBoxExW(struct qemu_syscall *call);
+void qemu_MessageBoxIndirectA(struct qemu_syscall *call);
+void qemu_MessageBoxIndirectW(struct qemu_syscall *call);
+void qemu_MessageBoxTimeoutA(struct qemu_syscall *call);
+void qemu_MessageBoxTimeoutW(struct qemu_syscall *call);
+void qemu_MessageBoxW(struct qemu_syscall *call);
 void qemu_ModifyMenuA(struct qemu_syscall *call);
 void qemu_ModifyMenuW(struct qemu_syscall *call);
 void qemu_MonitorFromRect(struct qemu_syscall *call);

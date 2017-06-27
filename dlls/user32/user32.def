@@ -224,6 +224,14 @@ EXPORTS
   MapVirtualKeyExW
   MapVirtualKeyW
   MessageBeep
+  MessageBoxA
+  MessageBoxExA
+  MessageBoxExW
+  MessageBoxIndirectA
+  MessageBoxIndirectW
+  MessageBoxTimeoutA
+  MessageBoxTimeoutW
+  MessageBoxW
   ModifyMenuA
   ModifyMenuW
   MonitorFromRect
