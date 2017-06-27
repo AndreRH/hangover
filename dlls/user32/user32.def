@@ -1,7 +1,10 @@
 LIBRARY user32.dll BASE=0x70000000
 
 EXPORTS
+  ActivateKeyboardLayout
   AddClipboardFormatListener
+  AttachThreadInput
+  BlockInput
   CallMsgFilterA
   CallMsgFilterW
   CallNextHookEx
@@ -23,6 +26,7 @@ EXPORTS
   CreateIconIndirect
   DefDlgProcA
   DefDlgProcW
+  DefRawInputProc
   DefWindowProcA
   DefWindowProcW
   DestroyCaret
@@ -47,6 +51,8 @@ EXPORTS
   EndDialog
   EnumClipboardFormats
   GetActiveWindow
+  GetAsyncKeyState
+  GetCapture
   GetCaretBlinkTime
   GetCaretPos
   GetClassInfoA
@@ -70,6 +76,8 @@ EXPORTS
   GetComboBoxInfo
   GetCursor
   GetCursorFrameInfo
+  GetCursorInfo
+  GetCursorPos
   GetDlgCtrlID
   GetDlgItem
   GetDlgItemInt
@@ -78,11 +86,30 @@ EXPORTS
   GetFocus
   GetForegroundWindow
   GetIconInfo
+  GetInputState
+  GetKBCodePage
+  GetKeyboardLayout
+  GetKeyboardLayoutNameA
+  GetKeyboardLayoutNameW
+  GetKeyboardState
+  GetKeyboardType
+  GetKeyNameTextA
+  GetKeyNameTextW
+  GetKeyState
+  GetLastInputInfo
   GetNextDlgGroupItem
   GetNextDlgTabItem
   GetOpenClipboardWindow
+  GetPhysicalCursorPos
   GetPriorityClipboardFormat
   GetProgmanWindow
+  GetQueueStatus
+  GetRawInputBuffer
+  GetRawInputData
+  GetRawInputDeviceInfoA
+  GetRawInputDeviceInfoW
+  GetRawInputDeviceList
+  GetRegisteredRawInputDevices
   GetShellWindow
   GetTaskmanWindow
   GetUpdatedClipboardFormats
@@ -91,6 +118,7 @@ EXPORTS
   IsDialogMessageW
   IsDlgButtonChecked
   IsWinEventHookInstalled
+  keybd_event
   LoadBitmapA
   LoadBitmapW
   LoadCursorA
@@ -101,10 +129,18 @@ EXPORTS
   LoadIconW
   LoadImageA
   LoadImageW
+  LoadKeyboardLayoutA
+  LoadKeyboardLayoutW
   LookupIconIdFromDirectory
   LookupIconIdFromDirectoryEx
   MapDialogRect
+  MapVirtualKeyA
+  MapVirtualKeyExA
+  MapVirtualKeyExW
+  MapVirtualKeyW
+  mouse_event
   NotifyWinEvent
+  OemKeyScan
   OemToCharA
   OpenClipboard
   PaintDesktop
@@ -120,10 +156,14 @@ EXPORTS
   RegisterClassW
   RegisterClipboardFormatA
   RegisterClipboardFormatW
+  RegisterHotKey
+  ReleaseCapture
   RemoveClipboardFormatListener
   SendDlgItemMessageA
   SendDlgItemMessageW
+  SendInput
   SetActiveWindow
+  SetCapture
   SetCaretBlinkTime
   SetCaretPos
   SetClassLongA
@@ -134,12 +174,15 @@ EXPORTS
   SetClipboardData
   SetClipboardViewer
   SetCursor
+  SetCursorPos
   SetDeskWallPaper
   SetDlgItemInt
   SetDlgItemTextA
   SetDlgItemTextW
   SetFocus
   SetForegroundWindow
+  SetKeyboardState
+  SetPhysicalCursorPos
   SetProgmanWindow
   SetShellWindow
   SetShellWindowEx
@@ -152,8 +195,17 @@ EXPORTS
   SetWinEventHook
   ShowCaret
   ShowCursor
+  ToAscii
+  ToAsciiEx
+  ToUnicode
+  ToUnicodeEx
+  TrackMouseEvent
   UnhookWindowsHook
   UnhookWindowsHookEx
   UnhookWinEvent
+  UnloadKeyboardLayout
   UnregisterClassA
   UnregisterClassW
+  UnregisterHotKey
+  VkKeyScanA
+  VkKeyScanW
