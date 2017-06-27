@@ -5,8 +5,32 @@ EXPORTS
   DestroyCaret
   GetCaretBlinkTime
   GetCaretPos
+  GetClassInfoA
+  GetClassInfoExA
+  GetClassInfoExW
+  GetClassInfoW
+  GetClassLongA
+  GetClassLongPtrA
+  GetClassLongPtrW
+  GetClassLongW
+  GetClassNameA
+  GetClassNameW
+  GetClassWord
   HideCaret
   OemToCharA
+  RealGetWindowClassA
+  RealGetWindowClassW
+  RegisterClassA
+  RegisterClassExA
+  RegisterClassExW
+  RegisterClassW
   SetCaretBlinkTime
   SetCaretPos
+  SetClassLongA
+  SetClassLongPtrA
+  SetClassLongPtrW
+  SetClassLongW
+  SetClassWord
   ShowCaret
+  UnregisterClassA
+  UnregisterClassW
