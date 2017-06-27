@@ -65,6 +65,7 @@ EXPORTS
   LookupIconIdFromDirectoryEx
   OemToCharA
   OpenClipboard
+  PaintDesktop
   RealGetWindowClassA
   RealGetWindowClassW
   RegisterClassA
@@ -84,6 +85,7 @@ EXPORTS
   SetClipboardData
   SetClipboardViewer
   SetCursor
+  SetDeskWallPaper
   SetSystemCursor
   ShowCaret
   ShowCursor

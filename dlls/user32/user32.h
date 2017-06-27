@@ -69,6 +69,7 @@ enum user32_calls
     CALL_LOOKUPICONIDFROMDIRECTORYEX,
     CALL_OEMTOCHARA,
     CALL_OPENCLIPBOARD,
+    CALL_PAINTDESKTOP,
     CALL_REALGETWINDOWCLASSA,
     CALL_REALGETWINDOWCLASSW,
     CALL_REGISTERCLASSA,
@@ -88,6 +89,7 @@ enum user32_calls
     CALL_SETCLIPBOARDDATA,
     CALL_SETCLIPBOARDVIEWER,
     CALL_SETCURSOR,
+    CALL_SETDESKWALLPAPER,
     CALL_SETSYSTEMCURSOR,
     CALL_SHOWCARET,
     CALL_SHOWCURSOR,
@@ -163,6 +165,7 @@ void qemu_LookupIconIdFromDirectory(struct qemu_syscall *call);
 void qemu_LookupIconIdFromDirectoryEx(struct qemu_syscall *call);
 void qemu_OemToCharA(struct qemu_syscall *call);
 void qemu_OpenClipboard(struct qemu_syscall *call);
+void qemu_PaintDesktop(struct qemu_syscall *call);
 void qemu_RealGetWindowClassA(struct qemu_syscall *call);
 void qemu_RealGetWindowClassW(struct qemu_syscall *call);
 void qemu_RegisterClassA(struct qemu_syscall *call);
@@ -182,6 +185,7 @@ void qemu_SetClassWord(struct qemu_syscall *call);
 void qemu_SetClipboardData(struct qemu_syscall *call);
 void qemu_SetClipboardViewer(struct qemu_syscall *call);
 void qemu_SetCursor(struct qemu_syscall *call);
+void qemu_SetDeskWallPaper(struct qemu_syscall *call);
 void qemu_SetSystemCursor(struct qemu_syscall *call);
 void qemu_ShowCaret(struct qemu_syscall *call);
 void qemu_ShowCursor(struct qemu_syscall *call);
