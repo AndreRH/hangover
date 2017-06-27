@@ -44,7 +44,9 @@ EXPORTS
   ClientToScreen
   ClipCursor
   CloseClipboard
+  CloseDesktop
   CloseWindow
+  CloseWindowStation
   CopyAcceleratorTableA
   CopyAcceleratorTableW
   CopyIcon
@@ -55,6 +57,8 @@ EXPORTS
   CreateAcceleratorTableW
   CreateCaret
   CreateCursor
+  CreateDesktopA
+  CreateDesktopW
   CreateDialogIndirectParamA
   CreateDialogIndirectParamAorW
   CreateDialogIndirectParamW
@@ -67,6 +71,8 @@ EXPORTS
   CreatePopupMenu
   CreateWindowExA
   CreateWindowExW
+  CreateWindowStationA
+  CreateWindowStationW
   DefDlgProcA
   DefDlgProcW
   DeferWindowPos
@@ -128,6 +134,8 @@ EXPORTS
   EndPaint
   EnumChildWindows
   EnumClipboardFormats
+  EnumDesktopsA
+  EnumDesktopsW
   EnumDesktopWindows
   EnumDisplayDevicesA
   EnumDisplayDevicesW
@@ -142,6 +150,8 @@ EXPORTS
   EnumPropsW
   EnumThreadWindows
   EnumWindows
+  EnumWindowStationsA
+  EnumWindowStationsW
   EqualRect
   ExcludeUpdateRgn
   ExitWindowsEx
@@ -244,6 +254,7 @@ EXPORTS
   GetPhysicalCursorPos
   GetPriorityClipboardFormat
   GetProcessDefaultLayout
+  GetProcessWindowStation
   GetProgmanWindow
   GetPropA
   GetPropW
@@ -267,11 +278,15 @@ EXPORTS
   GetTabbedTextExtentA
   GetTabbedTextExtentW
   GetTaskmanWindow
+  GetThreadDesktop
   GetTitleBarInfo
   GetTopWindow
   GetUpdatedClipboardFormats
   GetUpdateRect
   GetUpdateRgn
+  GetUserObjectInformationA
+  GetUserObjectInformationW
+  GetUserObjectSecurity
   GetWindow
   GetWindowContextHelpId
   GetWindowDC
@@ -385,7 +400,12 @@ EXPORTS
   OemToCharA
   OffsetRect
   OpenClipboard
+  OpenDesktopA
+  OpenDesktopW
   OpenIcon
+  OpenInputDesktop
+  OpenWindowStationA
+  OpenWindowStationW
   PaintDesktop
   PeekMessageA
   PeekMessageW
@@ -486,6 +506,7 @@ EXPORTS
   SetPhysicalCursorPos
   SetProcessDefaultLayout
   SetProcessDPIAware
+  SetProcessWindowStation
   SetProgmanWindow
   SetPropA
   SetPropW
@@ -502,7 +523,11 @@ EXPORTS
   SetSystemMenu
   SetSystemTimer
   SetTaskmanWindow
+  SetThreadDesktop
   SetTimer
+  SetUserObjectInformationA
+  SetUserObjectInformationW
+  SetUserObjectSecurity
   SetWindowContextHelpId
   SetWindowLongA
   SetWindowLongPtrA
