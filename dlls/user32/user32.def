@@ -97,6 +97,10 @@ EXPORTS
   OemToCharA
   OpenClipboard
   PaintDesktop
+  PrivateExtractIconExA
+  PrivateExtractIconExW
+  PrivateExtractIconsA
+  PrivateExtractIconsW
   RealGetWindowClassA
   RealGetWindowClassW
   RegisterClassA

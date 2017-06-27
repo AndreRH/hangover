@@ -101,6 +101,10 @@ enum user32_calls
     CALL_OEMTOCHARA,
     CALL_OPENCLIPBOARD,
     CALL_PAINTDESKTOP,
+    CALL_PRIVATEEXTRACTICONEXA,
+    CALL_PRIVATEEXTRACTICONEXW,
+    CALL_PRIVATEEXTRACTICONSA,
+    CALL_PRIVATEEXTRACTICONSW,
     CALL_REALGETWINDOWCLASSA,
     CALL_REALGETWINDOWCLASSW,
     CALL_REGISTERCLASSA,
@@ -233,6 +237,10 @@ void qemu_MapDialogRect(struct qemu_syscall *call);
 void qemu_OemToCharA(struct qemu_syscall *call);
 void qemu_OpenClipboard(struct qemu_syscall *call);
 void qemu_PaintDesktop(struct qemu_syscall *call);
+void qemu_PrivateExtractIconExA(struct qemu_syscall *call);
+void qemu_PrivateExtractIconExW(struct qemu_syscall *call);
+void qemu_PrivateExtractIconsA(struct qemu_syscall *call);
+void qemu_PrivateExtractIconsW(struct qemu_syscall *call);
 void qemu_RealGetWindowClassA(struct qemu_syscall *call);
 void qemu_RealGetWindowClassW(struct qemu_syscall *call);
 void qemu_RegisterClassA(struct qemu_syscall *call);
