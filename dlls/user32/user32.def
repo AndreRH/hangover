@@ -3,6 +3,8 @@ LIBRARY user32.dll BASE=0x70000000
 EXPORTS
   AddClipboardFormatListener
   ChangeClipboardChain
+  CheckDlgButton
+  CheckRadioButton
   ClipCursor
   CloseClipboard
   CopyIcon
@@ -10,6 +12,11 @@ EXPORTS
   CountClipboardFormats
   CreateCaret
   CreateCursor
+  CreateDialogIndirectParamA
+  CreateDialogIndirectParamAorW
+  CreateDialogIndirectParamW
+  CreateDialogParamA
+  CreateDialogParamW
   CreateIconIndirect
   DefDlgProcA
   DefDlgProcW
@@ -18,9 +25,23 @@ EXPORTS
   DestroyCaret
   DestroyCursor
   DestroyIcon
+  DialogBoxIndirectParamA
+  DialogBoxIndirectParamAorW
+  DialogBoxIndirectParamW
+  DialogBoxParamA
+  DialogBoxParamW
+  DlgDirListA
+  DlgDirListComboBoxA
+  DlgDirListComboBoxW
+  DlgDirListW
+  DlgDirSelectComboBoxExA
+  DlgDirSelectComboBoxExW
+  DlgDirSelectExA
+  DlgDirSelectExW
   DrawIcon
   DrawIconEx
   EmptyClipboard
+  EndDialog
   EnumClipboardFormats
   GetCaretBlinkTime
   GetCaretPos
@@ -45,12 +66,21 @@ EXPORTS
   GetComboBoxInfo
   GetCursor
   GetCursorFrameInfo
+  GetDlgCtrlID
+  GetDlgItem
+  GetDlgItemInt
+  GetDlgItemTextA
+  GetDlgItemTextW
   GetIconInfo
+  GetNextDlgGroupItem
+  GetNextDlgTabItem
   GetOpenClipboardWindow
   GetPriorityClipboardFormat
   GetUpdatedClipboardFormats
   HideCaret
   IsClipboardFormatAvailable
+  IsDialogMessageW
+  IsDlgButtonChecked
   LoadBitmapA
   LoadBitmapW
   LoadCursorA
@@ -63,6 +93,7 @@ EXPORTS
   LoadImageW
   LookupIconIdFromDirectory
   LookupIconIdFromDirectoryEx
+  MapDialogRect
   OemToCharA
   OpenClipboard
   PaintDesktop
@@ -75,6 +106,8 @@ EXPORTS
   RegisterClipboardFormatA
   RegisterClipboardFormatW
   RemoveClipboardFormatListener
+  SendDlgItemMessageA
+  SendDlgItemMessageW
   SetCaretBlinkTime
   SetCaretPos
   SetClassLongA
@@ -86,6 +119,9 @@ EXPORTS
   SetClipboardViewer
   SetCursor
   SetDeskWallPaper
+  SetDlgItemInt
+  SetDlgItemTextA
+  SetDlgItemTextW
   SetSystemCursor
   ShowCaret
   ShowCursor
