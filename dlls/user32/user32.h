@@ -97,6 +97,10 @@ enum user32_calls
     CALL_ENUMDISPLAYDEVICESA,
     CALL_ENUMDISPLAYDEVICESW,
     CALL_ENUMDISPLAYMONITORS,
+    CALL_ENUMPROPSA,
+    CALL_ENUMPROPSEXA,
+    CALL_ENUMPROPSEXW,
+    CALL_ENUMPROPSW,
     CALL_EXCLUDEUPDATERGN,
     CALL_GETACTIVEWINDOW,
     CALL_GETALTTABINFOA,
@@ -180,6 +184,8 @@ enum user32_calls
     CALL_GETPHYSICALCURSORPOS,
     CALL_GETPRIORITYCLIPBOARDFORMAT,
     CALL_GETPROGMANWINDOW,
+    CALL_GETPROPA,
+    CALL_GETPROPW,
     CALL_GETQUEUESTATUS,
     CALL_GETRAWINPUTBUFFER,
     CALL_GETRAWINPUTDATA,
@@ -300,6 +306,8 @@ enum user32_calls
     CALL_RELEASEDC,
     CALL_REMOVECLIPBOARDFORMATLISTENER,
     CALL_REMOVEMENU,
+    CALL_REMOVEPROPA,
+    CALL_REMOVEPROPW,
     CALL_REPLYMESSAGE,
     CALL_SCROLLCHILDREN,
     CALL_SCROLLDC,
@@ -353,6 +361,8 @@ enum user32_calls
     CALL_SETMESSAGEQUEUE,
     CALL_SETPHYSICALCURSORPOS,
     CALL_SETPROGMANWINDOW,
+    CALL_SETPROPA,
+    CALL_SETPROPW,
     CALL_SETSHELLWINDOW,
     CALL_SETSHELLWINDOWEX,
     CALL_SETSYSTEMCURSOR,
@@ -501,6 +511,10 @@ void qemu_EnumClipboardFormats(struct qemu_syscall *call);
 void qemu_EnumDisplayDevicesA(struct qemu_syscall *call);
 void qemu_EnumDisplayDevicesW(struct qemu_syscall *call);
 void qemu_EnumDisplayMonitors(struct qemu_syscall *call);
+void qemu_EnumPropsA(struct qemu_syscall *call);
+void qemu_EnumPropsExA(struct qemu_syscall *call);
+void qemu_EnumPropsExW(struct qemu_syscall *call);
+void qemu_EnumPropsW(struct qemu_syscall *call);
 void qemu_ExcludeUpdateRgn(struct qemu_syscall *call);
 void qemu_GetActiveWindow(struct qemu_syscall *call);
 void qemu_GetAltTabInfoA(struct qemu_syscall *call);
@@ -584,6 +598,8 @@ void qemu_GetOpenClipboardWindow(struct qemu_syscall *call);
 void qemu_GetPhysicalCursorPos(struct qemu_syscall *call);
 void qemu_GetPriorityClipboardFormat(struct qemu_syscall *call);
 void qemu_GetProgmanWindow(struct qemu_syscall *call);
+void qemu_GetPropA(struct qemu_syscall *call);
+void qemu_GetPropW(struct qemu_syscall *call);
 void qemu_GetQueueStatus(struct qemu_syscall *call);
 void qemu_GetRawInputBuffer(struct qemu_syscall *call);
 void qemu_GetRawInputData(struct qemu_syscall *call);
@@ -704,6 +720,8 @@ void qemu_ReleaseCapture(struct qemu_syscall *call);
 void qemu_ReleaseDC(struct qemu_syscall *call);
 void qemu_RemoveClipboardFormatListener(struct qemu_syscall *call);
 void qemu_RemoveMenu(struct qemu_syscall *call);
+void qemu_RemovePropA(struct qemu_syscall *call);
+void qemu_RemovePropW(struct qemu_syscall *call);
 void qemu_ReplyMessage(struct qemu_syscall *call);
 void qemu_ScrollChildren(struct qemu_syscall *call);
 void qemu_ScrollDC(struct qemu_syscall *call);
@@ -757,6 +775,8 @@ void qemu_SetMessageExtraInfo(struct qemu_syscall *call);
 void qemu_SetMessageQueue(struct qemu_syscall *call);
 void qemu_SetPhysicalCursorPos(struct qemu_syscall *call);
 void qemu_SetProgmanWindow(struct qemu_syscall *call);
+void qemu_SetPropA(struct qemu_syscall *call);
+void qemu_SetPropW(struct qemu_syscall *call);
 void qemu_SetShellWindow(struct qemu_syscall *call);
 void qemu_SetShellWindowEx(struct qemu_syscall *call);
 void qemu_SetSystemCursor(struct qemu_syscall *call);

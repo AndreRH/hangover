@@ -93,6 +93,10 @@ EXPORTS
   EnumDisplayDevicesA
   EnumDisplayDevicesW
   EnumDisplayMonitors
+  EnumPropsA
+  EnumPropsExA
+  EnumPropsExW
+  EnumPropsW
   ExcludeUpdateRgn
   GetActiveWindow
   GetAltTabInfoA
@@ -176,6 +180,8 @@ EXPORTS
   GetPhysicalCursorPos
   GetPriorityClipboardFormat
   GetProgmanWindow
+  GetPropA
+  GetPropW
   GetQueueStatus
   GetRawInputBuffer
   GetRawInputData
@@ -296,6 +302,8 @@ EXPORTS
   ReleaseDC
   RemoveClipboardFormatListener
   RemoveMenu
+  RemovePropA
+  RemovePropW
   ReplyMessage
   ScrollChildren
   ScrollDC
@@ -349,6 +357,8 @@ EXPORTS
   SetMessageQueue
   SetPhysicalCursorPos
   SetProgmanWindow
+  SetPropA
+  SetPropW
   SetShellWindow
   SetShellWindowEx
   SetSystemCursor
