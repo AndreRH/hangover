@@ -13,6 +13,8 @@ EXPORTS
   CreateIconIndirect
   DefDlgProcA
   DefDlgProcW
+  DefWindowProcA
+  DefWindowProcW
   DestroyCaret
   DestroyCursor
   DestroyIcon
