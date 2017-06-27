@@ -124,6 +124,7 @@ EXPORTS
   EnumPropsW
   EqualRect
   ExcludeUpdateRgn
+  ExitWindowsEx
   FillRect
   FrameRect
   GetActiveWindow
@@ -289,6 +290,7 @@ EXPORTS
   LoadStringA
   LoadStringW
   LockWindowUpdate
+  LockWorkStation
   LookupIconIdFromDirectory
   LookupIconIdFromDirectoryEx
   MapDialogRect
@@ -344,6 +346,7 @@ EXPORTS
   RegisterHotKey
   RegisterLogonProcess
   RegisterPowerSettingNotification
+  RegisterServicesProcess
   RegisterShellHookWindow
   RegisterSystemThread
   RegisterTasklist
@@ -435,6 +438,8 @@ EXPORTS
   ShowCaret
   ShowCursor
   ShowScrollBar
+  ShutdownBlockReasonCreate
+  ShutdownBlockReasonDestroy
   SubtractRect
   SwapMouseButton
   SystemParametersInfoA
@@ -467,6 +472,7 @@ EXPORTS
   UpdateWindow
   User32InitializeImmEntryTable
   UserHandleGrantAccess
+  UserRealizePalette
   ValidateRect
   ValidateRgn
   VkKeyScanA

@@ -128,6 +128,7 @@ enum user32_calls
     CALL_ENUMPROPSW,
     CALL_EQUALRECT,
     CALL_EXCLUDEUPDATERGN,
+    CALL_EXITWINDOWSEX,
     CALL_FILLRECT,
     CALL_FRAMERECT,
     CALL_GETACTIVEWINDOW,
@@ -293,6 +294,7 @@ enum user32_calls
     CALL_LOADSTRINGA,
     CALL_LOADSTRINGW,
     CALL_LOCKWINDOWUPDATE,
+    CALL_LOCKWORKSTATION,
     CALL_LOOKUPICONIDFROMDIRECTORY,
     CALL_LOOKUPICONIDFROMDIRECTORYEX,
     CALL_MAPDIALOGRECT,
@@ -348,6 +350,7 @@ enum user32_calls
     CALL_REGISTERHOTKEY,
     CALL_REGISTERLOGONPROCESS,
     CALL_REGISTERPOWERSETTINGNOTIFICATION,
+    CALL_REGISTERSERVICESPROCESS,
     CALL_REGISTERSHELLHOOKWINDOW,
     CALL_REGISTERSYSTEMTHREAD,
     CALL_REGISTERTASKLIST,
@@ -439,6 +442,8 @@ enum user32_calls
     CALL_SHOWCARET,
     CALL_SHOWCURSOR,
     CALL_SHOWSCROLLBAR,
+    CALL_SHUTDOWNBLOCKREASONCREATE,
+    CALL_SHUTDOWNBLOCKREASONDESTROY,
     CALL_SUBTRACTRECT,
     CALL_SWAPMOUSEBUTTON,
     CALL_SYSTEMPARAMETERSINFOA,
@@ -471,6 +476,7 @@ enum user32_calls
     CALL_UPDATEWINDOW,
     CALL_USER32INITIALIZEIMMENTRYTABLE,
     CALL_USERHANDLEGRANTACCESS,
+    CALL_USERREALIZEPALETTE,
     CALL_VALIDATERECT,
     CALL_VALIDATERGN,
     CALL_VKKEYSCANA,
@@ -610,6 +616,7 @@ void qemu_EnumPropsExW(struct qemu_syscall *call);
 void qemu_EnumPropsW(struct qemu_syscall *call);
 void qemu_EqualRect(struct qemu_syscall *call);
 void qemu_ExcludeUpdateRgn(struct qemu_syscall *call);
+void qemu_ExitWindowsEx(struct qemu_syscall *call);
 void qemu_FillRect(struct qemu_syscall *call);
 void qemu_FrameRect(struct qemu_syscall *call);
 void qemu_GetActiveWindow(struct qemu_syscall *call);
@@ -775,6 +782,7 @@ void qemu_LoadMenuW(struct qemu_syscall *call);
 void qemu_LoadStringA(struct qemu_syscall *call);
 void qemu_LoadStringW(struct qemu_syscall *call);
 void qemu_LockWindowUpdate(struct qemu_syscall *call);
+void qemu_LockWorkStation(struct qemu_syscall *call);
 void qemu_LookupIconIdFromDirectory(struct qemu_syscall *call);
 void qemu_LookupIconIdFromDirectoryEx(struct qemu_syscall *call);
 void qemu_MapDialogRect(struct qemu_syscall *call);
@@ -830,6 +838,7 @@ void qemu_RegisterDeviceNotificationW(struct qemu_syscall *call);
 void qemu_RegisterHotKey(struct qemu_syscall *call);
 void qemu_RegisterLogonProcess(struct qemu_syscall *call);
 void qemu_RegisterPowerSettingNotification(struct qemu_syscall *call);
+void qemu_RegisterServicesProcess(struct qemu_syscall *call);
 void qemu_RegisterShellHookWindow(struct qemu_syscall *call);
 void qemu_RegisterSystemThread(struct qemu_syscall *call);
 void qemu_RegisterTasklist(struct qemu_syscall *call);
@@ -921,6 +930,8 @@ void qemu_SetWinEventHook(struct qemu_syscall *call);
 void qemu_ShowCaret(struct qemu_syscall *call);
 void qemu_ShowCursor(struct qemu_syscall *call);
 void qemu_ShowScrollBar(struct qemu_syscall *call);
+void qemu_ShutdownBlockReasonCreate(struct qemu_syscall *call);
+void qemu_ShutdownBlockReasonDestroy(struct qemu_syscall *call);
 void qemu_SubtractRect(struct qemu_syscall *call);
 void qemu_SwapMouseButton(struct qemu_syscall *call);
 void qemu_SystemParametersInfoA(struct qemu_syscall *call);
@@ -953,6 +964,7 @@ void qemu_UnregisterPowerSettingNotification(struct qemu_syscall *call);
 void qemu_UpdateWindow(struct qemu_syscall *call);
 void qemu_User32InitializeImmEntryTable(struct qemu_syscall *call);
 void qemu_UserHandleGrantAccess(struct qemu_syscall *call);
+void qemu_UserRealizePalette(struct qemu_syscall *call);
 void qemu_ValidateRect(struct qemu_syscall *call);
 void qemu_ValidateRgn(struct qemu_syscall *call);
 void qemu_VkKeyScanA(struct qemu_syscall *call);
