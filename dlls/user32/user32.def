@@ -91,6 +91,7 @@ EXPORTS
   DrawMenuBarTemp
   EmptyClipboard
   EnableMenuItem
+  EnableScrollBar
   EndDialog
   EndMenu
   EndPaint
@@ -195,6 +196,10 @@ EXPORTS
   GetRawInputDeviceInfoW
   GetRawInputDeviceList
   GetRegisteredRawInputDevices
+  GetScrollBarInfo
+  GetScrollInfo
+  GetScrollPos
+  GetScrollRange
   GetShellWindow
   GetSubMenu
   GetSystemMenu
@@ -369,6 +374,9 @@ EXPORTS
   SetProgmanWindow
   SetPropA
   SetPropW
+  SetScrollInfo
+  SetScrollPos
+  SetScrollRange
   SetShellWindow
   SetShellWindowEx
   SetSystemCursor
@@ -384,6 +392,7 @@ EXPORTS
   SetWinEventHook
   ShowCaret
   ShowCursor
+  ShowScrollBar
   TileChildWindows
   TileWindows
   ToAscii

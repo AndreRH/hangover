@@ -95,6 +95,7 @@ enum user32_calls
     CALL_DRAWMENUBARTEMP,
     CALL_EMPTYCLIPBOARD,
     CALL_ENABLEMENUITEM,
+    CALL_ENABLESCROLLBAR,
     CALL_ENDDIALOG,
     CALL_ENDMENU,
     CALL_ENDPAINT,
@@ -199,6 +200,10 @@ enum user32_calls
     CALL_GETRAWINPUTDEVICEINFOW,
     CALL_GETRAWINPUTDEVICELIST,
     CALL_GETREGISTEREDRAWINPUTDEVICES,
+    CALL_GETSCROLLBARINFO,
+    CALL_GETSCROLLINFO,
+    CALL_GETSCROLLPOS,
+    CALL_GETSCROLLRANGE,
     CALL_GETSHELLWINDOW,
     CALL_GETSUBMENU,
     CALL_GETSYSTEMMENU,
@@ -373,6 +378,9 @@ enum user32_calls
     CALL_SETPROGMANWINDOW,
     CALL_SETPROPA,
     CALL_SETPROPW,
+    CALL_SETSCROLLINFO,
+    CALL_SETSCROLLPOS,
+    CALL_SETSCROLLRANGE,
     CALL_SETSHELLWINDOW,
     CALL_SETSHELLWINDOWEX,
     CALL_SETSYSTEMCURSOR,
@@ -388,6 +396,7 @@ enum user32_calls
     CALL_SETWINEVENTHOOK,
     CALL_SHOWCARET,
     CALL_SHOWCURSOR,
+    CALL_SHOWSCROLLBAR,
     CALL_TILECHILDWINDOWS,
     CALL_TILEWINDOWS,
     CALL_TOASCII,
@@ -519,6 +528,7 @@ void qemu_DrawMenuBar(struct qemu_syscall *call);
 void qemu_DrawMenuBarTemp(struct qemu_syscall *call);
 void qemu_EmptyClipboard(struct qemu_syscall *call);
 void qemu_EnableMenuItem(struct qemu_syscall *call);
+void qemu_EnableScrollBar(struct qemu_syscall *call);
 void qemu_EndDialog(struct qemu_syscall *call);
 void qemu_EndMenu(struct qemu_syscall *call);
 void qemu_EndPaint(struct qemu_syscall *call);
@@ -623,6 +633,10 @@ void qemu_GetRawInputDeviceInfoA(struct qemu_syscall *call);
 void qemu_GetRawInputDeviceInfoW(struct qemu_syscall *call);
 void qemu_GetRawInputDeviceList(struct qemu_syscall *call);
 void qemu_GetRegisteredRawInputDevices(struct qemu_syscall *call);
+void qemu_GetScrollBarInfo(struct qemu_syscall *call);
+void qemu_GetScrollInfo(struct qemu_syscall *call);
+void qemu_GetScrollPos(struct qemu_syscall *call);
+void qemu_GetScrollRange(struct qemu_syscall *call);
 void qemu_GetShellWindow(struct qemu_syscall *call);
 void qemu_GetSubMenu(struct qemu_syscall *call);
 void qemu_GetSystemMenu(struct qemu_syscall *call);
@@ -797,6 +811,9 @@ void qemu_SetPhysicalCursorPos(struct qemu_syscall *call);
 void qemu_SetProgmanWindow(struct qemu_syscall *call);
 void qemu_SetPropA(struct qemu_syscall *call);
 void qemu_SetPropW(struct qemu_syscall *call);
+void qemu_SetScrollInfo(struct qemu_syscall *call);
+void qemu_SetScrollPos(struct qemu_syscall *call);
+void qemu_SetScrollRange(struct qemu_syscall *call);
 void qemu_SetShellWindow(struct qemu_syscall *call);
 void qemu_SetShellWindowEx(struct qemu_syscall *call);
 void qemu_SetSystemCursor(struct qemu_syscall *call);
@@ -812,6 +829,7 @@ void qemu_SetWindowStationUser(struct qemu_syscall *call);
 void qemu_SetWinEventHook(struct qemu_syscall *call);
 void qemu_ShowCaret(struct qemu_syscall *call);
 void qemu_ShowCursor(struct qemu_syscall *call);
+void qemu_ShowScrollBar(struct qemu_syscall *call);
 void qemu_TileChildWindows(struct qemu_syscall *call);
 void qemu_TileWindows(struct qemu_syscall *call);
 void qemu_ToAscii(struct qemu_syscall *call);
