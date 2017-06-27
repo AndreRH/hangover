@@ -43,6 +43,7 @@ EXPORTS
   EmptyClipboard
   EndDialog
   EnumClipboardFormats
+  GetActiveWindow
   GetCaretBlinkTime
   GetCaretPos
   GetClassInfoA
@@ -71,11 +72,16 @@ EXPORTS
   GetDlgItemInt
   GetDlgItemTextA
   GetDlgItemTextW
+  GetFocus
+  GetForegroundWindow
   GetIconInfo
   GetNextDlgGroupItem
   GetNextDlgTabItem
   GetOpenClipboardWindow
   GetPriorityClipboardFormat
+  GetProgmanWindow
+  GetShellWindow
+  GetTaskmanWindow
   GetUpdatedClipboardFormats
   HideCaret
   IsClipboardFormatAvailable
@@ -112,6 +118,7 @@ EXPORTS
   RemoveClipboardFormatListener
   SendDlgItemMessageA
   SendDlgItemMessageW
+  SetActiveWindow
   SetCaretBlinkTime
   SetCaretPos
   SetClassLongA
@@ -126,7 +133,13 @@ EXPORTS
   SetDlgItemInt
   SetDlgItemTextA
   SetDlgItemTextW
+  SetFocus
+  SetForegroundWindow
+  SetProgmanWindow
+  SetShellWindow
+  SetShellWindowEx
   SetSystemCursor
+  SetTaskmanWindow
   ShowCaret
   ShowCursor
   UnregisterClassA

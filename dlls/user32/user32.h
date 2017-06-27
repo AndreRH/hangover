@@ -47,6 +47,7 @@ enum user32_calls
     CALL_EMPTYCLIPBOARD,
     CALL_ENDDIALOG,
     CALL_ENUMCLIPBOARDFORMATS,
+    CALL_GETACTIVEWINDOW,
     CALL_GETCARETBLINKTIME,
     CALL_GETCARETPOS,
     CALL_GETCLASSINFOA,
@@ -75,11 +76,16 @@ enum user32_calls
     CALL_GETDLGITEMINT,
     CALL_GETDLGITEMTEXTA,
     CALL_GETDLGITEMTEXTW,
+    CALL_GETFOCUS,
+    CALL_GETFOREGROUNDWINDOW,
     CALL_GETICONINFO,
     CALL_GETNEXTDLGGROUPITEM,
     CALL_GETNEXTDLGTABITEM,
     CALL_GETOPENCLIPBOARDWINDOW,
     CALL_GETPRIORITYCLIPBOARDFORMAT,
+    CALL_GETPROGMANWINDOW,
+    CALL_GETSHELLWINDOW,
+    CALL_GETTASKMANWINDOW,
     CALL_GETUPDATEDCLIPBOARDFORMATS,
     CALL_HIDECARET,
     CALL_ISCLIPBOARDFORMATAVAILABLE,
@@ -116,6 +122,7 @@ enum user32_calls
     CALL_REMOVECLIPBOARDFORMATLISTENER,
     CALL_SENDDLGITEMMESSAGEA,
     CALL_SENDDLGITEMMESSAGEW,
+    CALL_SETACTIVEWINDOW,
     CALL_SETCARETBLINKTIME,
     CALL_SETCARETPOS,
     CALL_SETCLASSLONGA,
@@ -130,7 +137,13 @@ enum user32_calls
     CALL_SETDLGITEMINT,
     CALL_SETDLGITEMTEXTA,
     CALL_SETDLGITEMTEXTW,
+    CALL_SETFOCUS,
+    CALL_SETFOREGROUNDWINDOW,
+    CALL_SETPROGMANWINDOW,
+    CALL_SETSHELLWINDOW,
+    CALL_SETSHELLWINDOWEX,
     CALL_SETSYSTEMCURSOR,
+    CALL_SETTASKMANWINDOW,
     CALL_SHOWCARET,
     CALL_SHOWCURSOR,
     CALL_UNREGISTERCLASSA,
@@ -183,6 +196,7 @@ void qemu_DrawIconEx(struct qemu_syscall *call);
 void qemu_EmptyClipboard(struct qemu_syscall *call);
 void qemu_EndDialog(struct qemu_syscall *call);
 void qemu_EnumClipboardFormats(struct qemu_syscall *call);
+void qemu_GetActiveWindow(struct qemu_syscall *call);
 void qemu_GetCaretBlinkTime(struct qemu_syscall *call);
 void qemu_GetCaretPos(struct qemu_syscall *call);
 void qemu_GetClassInfoA(struct qemu_syscall *call);
@@ -211,11 +225,16 @@ void qemu_GetDlgItem(struct qemu_syscall *call);
 void qemu_GetDlgItemInt(struct qemu_syscall *call);
 void qemu_GetDlgItemTextA(struct qemu_syscall *call);
 void qemu_GetDlgItemTextW(struct qemu_syscall *call);
+void qemu_GetFocus(struct qemu_syscall *call);
+void qemu_GetForegroundWindow(struct qemu_syscall *call);
 void qemu_GetIconInfo(struct qemu_syscall *call);
 void qemu_GetNextDlgGroupItem(struct qemu_syscall *call);
 void qemu_GetNextDlgTabItem(struct qemu_syscall *call);
 void qemu_GetOpenClipboardWindow(struct qemu_syscall *call);
 void qemu_GetPriorityClipboardFormat(struct qemu_syscall *call);
+void qemu_GetProgmanWindow(struct qemu_syscall *call);
+void qemu_GetShellWindow(struct qemu_syscall *call);
+void qemu_GetTaskmanWindow(struct qemu_syscall *call);
 void qemu_GetUpdatedClipboardFormats(struct qemu_syscall *call);
 void qemu_HideCaret(struct qemu_syscall *call);
 void qemu_IsClipboardFormatAvailable(struct qemu_syscall *call);
@@ -252,6 +271,7 @@ void qemu_RegisterClipboardFormatW(struct qemu_syscall *call);
 void qemu_RemoveClipboardFormatListener(struct qemu_syscall *call);
 void qemu_SendDlgItemMessageA(struct qemu_syscall *call);
 void qemu_SendDlgItemMessageW(struct qemu_syscall *call);
+void qemu_SetActiveWindow(struct qemu_syscall *call);
 void qemu_SetCaretBlinkTime(struct qemu_syscall *call);
 void qemu_SetCaretPos(struct qemu_syscall *call);
 void qemu_SetClassLongA(struct qemu_syscall *call);
@@ -266,7 +286,13 @@ void qemu_SetDeskWallPaper(struct qemu_syscall *call);
 void qemu_SetDlgItemInt(struct qemu_syscall *call);
 void qemu_SetDlgItemTextA(struct qemu_syscall *call);
 void qemu_SetDlgItemTextW(struct qemu_syscall *call);
+void qemu_SetFocus(struct qemu_syscall *call);
+void qemu_SetForegroundWindow(struct qemu_syscall *call);
+void qemu_SetProgmanWindow(struct qemu_syscall *call);
+void qemu_SetShellWindow(struct qemu_syscall *call);
+void qemu_SetShellWindowEx(struct qemu_syscall *call);
 void qemu_SetSystemCursor(struct qemu_syscall *call);
+void qemu_SetTaskmanWindow(struct qemu_syscall *call);
 void qemu_ShowCaret(struct qemu_syscall *call);
 void qemu_ShowCursor(struct qemu_syscall *call);
 void qemu_UnregisterClassA(struct qemu_syscall *call);
