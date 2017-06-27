@@ -39,6 +39,7 @@ EXPORTS
   CopyAcceleratorTableW
   CopyIcon
   CopyImage
+  CopyRect
   CountClipboardFormats
   CreateAcceleratorTableA
   CreateAcceleratorTableW
@@ -86,13 +87,19 @@ EXPORTS
   DlgDirSelectComboBoxExW
   DlgDirSelectExA
   DlgDirSelectExW
+  DrawAnimatedRects
   DrawCaption
   DrawCaptionTempA
   DrawCaptionTempW
+  DrawEdge
+  DrawFocusRect
+  DrawFrameControl
   DrawIcon
   DrawIconEx
   DrawMenuBar
   DrawMenuBarTemp
+  DrawStateA
+  DrawStateW
   DrawTextA
   DrawTextExA
   DrawTextExW
@@ -115,7 +122,10 @@ EXPORTS
   EnumPropsExA
   EnumPropsExW
   EnumPropsW
+  EqualRect
   ExcludeUpdateRgn
+  FillRect
+  FrameRect
   GetActiveWindow
   GetAltTabInfoA
   GetAltTabInfoW
@@ -231,14 +241,17 @@ EXPORTS
   GrayStringW
   HideCaret
   HiliteMenuItem
+  InflateRect
   InSendMessage
   InSendMessageEx
   InsertMenuA
   InsertMenuItemA
   InsertMenuItemW
   InsertMenuW
+  IntersectRect
   InvalidateRect
   InvalidateRgn
+  InvertRect
   IsClipboardFormatAvailable
   IsDialogMessageA
   IsDialogMessageW
@@ -247,6 +260,7 @@ EXPORTS
   IsHungAppWindow
   IsMenu
   IsProcessDPIAware
+  IsRectEmpty
   IsTouchWindow
   IsWindowRedirectedForPrint
   IsWinEventHookInstalled
@@ -301,6 +315,7 @@ EXPORTS
   NotifyWinEvent
   OemKeyScan
   OemToCharA
+  OffsetRect
   OpenClipboard
   PaintDesktop
   PeekMessageA
@@ -397,6 +412,8 @@ EXPORTS
   SetProgmanWindow
   SetPropA
   SetPropW
+  SetRect
+  SetRectEmpty
   SetScrollInfo
   SetScrollPos
   SetScrollRange
@@ -418,6 +435,7 @@ EXPORTS
   ShowCaret
   ShowCursor
   ShowScrollBar
+  SubtractRect
   SwapMouseButton
   SystemParametersInfoA
   SystemParametersInfoW
@@ -439,6 +457,7 @@ EXPORTS
   UnhookWindowsHook
   UnhookWindowsHookEx
   UnhookWinEvent
+  UnionRect
   UnloadKeyboardLayout
   UnregisterClassA
   UnregisterClassW
