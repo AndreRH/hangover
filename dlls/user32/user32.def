@@ -1,8 +1,14 @@
 LIBRARY user32.dll BASE=0x70000000
 
 EXPORTS
+  AddClipboardFormatListener
+  ChangeClipboardChain
+  CloseClipboard
+  CountClipboardFormats
   CreateCaret
   DestroyCaret
+  EmptyClipboard
+  EnumClipboardFormats
   GetCaretBlinkTime
   GetCaretPos
   GetClassInfoA
@@ -16,14 +22,28 @@ EXPORTS
   GetClassNameA
   GetClassNameW
   GetClassWord
+  GetClipboardData
+  GetClipboardFormatNameA
+  GetClipboardFormatNameW
+  GetClipboardOwner
+  GetClipboardSequenceNumber
+  GetClipboardViewer
+  GetOpenClipboardWindow
+  GetPriorityClipboardFormat
+  GetUpdatedClipboardFormats
   HideCaret
+  IsClipboardFormatAvailable
   OemToCharA
+  OpenClipboard
   RealGetWindowClassA
   RealGetWindowClassW
   RegisterClassA
   RegisterClassExA
   RegisterClassExW
   RegisterClassW
+  RegisterClipboardFormatA
+  RegisterClipboardFormatW
+  RemoveClipboardFormatListener
   SetCaretBlinkTime
   SetCaretPos
   SetClassLongA
@@ -31,6 +51,8 @@ EXPORTS
   SetClassLongPtrW
   SetClassLongW
   SetClassWord
+  SetClipboardData
+  SetClipboardViewer
   ShowCaret
   UnregisterClassA
   UnregisterClassW
