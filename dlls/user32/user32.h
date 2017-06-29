@@ -41,6 +41,26 @@ enum user32_calls
     CALL_CHANGEMENUA,
     CALL_CHANGEMENUW,
     CALL_CHANGEWINDOWMESSAGEFILTER,
+    CALL_CHARLOWERA,
+    CALL_CHARLOWERBUFFA,
+    CALL_CHARLOWERBUFFW,
+    CALL_CHARLOWERW,
+    CALL_CHARNEXTA,
+    CALL_CHARNEXTEXA,
+    CALL_CHARNEXTEXW,
+    CALL_CHARNEXTW,
+    CALL_CHARPREVA,
+    CALL_CHARPREVEXA,
+    CALL_CHARPREVEXW,
+    CALL_CHARPREVW,
+    CALL_CHARTOOEMA,
+    CALL_CHARTOOEMBUFFA,
+    CALL_CHARTOOEMBUFFW,
+    CALL_CHARTOOEMW,
+    CALL_CHARUPPERA,
+    CALL_CHARUPPERBUFFA,
+    CALL_CHARUPPERBUFFW,
+    CALL_CHARUPPERW,
     CALL_CHECKDLGBUTTON,
     CALL_CHECKMENUITEM,
     CALL_CHECKMENURADIOITEM,
@@ -360,6 +380,14 @@ enum user32_calls
     CALL_INVALIDATERECT,
     CALL_INVALIDATERGN,
     CALL_INVERTRECT,
+    CALL_ISCHARALPHAA,
+    CALL_ISCHARALPHANUMERICA,
+    CALL_ISCHARALPHANUMERICW,
+    CALL_ISCHARALPHAW,
+    CALL_ISCHARLOWERA,
+    CALL_ISCHARLOWERW,
+    CALL_ISCHARUPPERA,
+    CALL_ISCHARUPPERW,
     CALL_ISCHILD,
     CALL_ISCLIPBOARDFORMATAVAILABLE,
     CALL_ISDIALOGMESSAGEA,
@@ -435,6 +463,9 @@ enum user32_calls
     CALL_NOTIFYWINEVENT,
     CALL_OEMKEYSCAN,
     CALL_OEMTOCHARA,
+    CALL_OEMTOCHARBUFFA,
+    CALL_OEMTOCHARBUFFW,
+    CALL_OEMTOCHARW,
     CALL_OFFSETRECT,
     CALL_OPENCLIPBOARD,
     CALL_OPENDESKTOPA,
@@ -684,6 +715,26 @@ void qemu_ChangeDisplaySettingsW(struct qemu_syscall *call);
 void qemu_ChangeMenuA(struct qemu_syscall *call);
 void qemu_ChangeMenuW(struct qemu_syscall *call);
 void qemu_ChangeWindowMessageFilter(struct qemu_syscall *call);
+void qemu_CharLowerA(struct qemu_syscall *call);
+void qemu_CharLowerBuffA(struct qemu_syscall *call);
+void qemu_CharLowerBuffW(struct qemu_syscall *call);
+void qemu_CharLowerW(struct qemu_syscall *call);
+void qemu_CharNextA(struct qemu_syscall *call);
+void qemu_CharNextExA(struct qemu_syscall *call);
+void qemu_CharNextExW(struct qemu_syscall *call);
+void qemu_CharNextW(struct qemu_syscall *call);
+void qemu_CharPrevA(struct qemu_syscall *call);
+void qemu_CharPrevExA(struct qemu_syscall *call);
+void qemu_CharPrevExW(struct qemu_syscall *call);
+void qemu_CharPrevW(struct qemu_syscall *call);
+void qemu_CharToOemA(struct qemu_syscall *call);
+void qemu_CharToOemBuffA(struct qemu_syscall *call);
+void qemu_CharToOemBuffW(struct qemu_syscall *call);
+void qemu_CharToOemW(struct qemu_syscall *call);
+void qemu_CharUpperA(struct qemu_syscall *call);
+void qemu_CharUpperBuffA(struct qemu_syscall *call);
+void qemu_CharUpperBuffW(struct qemu_syscall *call);
+void qemu_CharUpperW(struct qemu_syscall *call);
 void qemu_CheckDlgButton(struct qemu_syscall *call);
 void qemu_CheckMenuItem(struct qemu_syscall *call);
 void qemu_CheckMenuRadioItem(struct qemu_syscall *call);
@@ -1003,6 +1054,14 @@ void qemu_IntersectRect(struct qemu_syscall *call);
 void qemu_InvalidateRect(struct qemu_syscall *call);
 void qemu_InvalidateRgn(struct qemu_syscall *call);
 void qemu_InvertRect(struct qemu_syscall *call);
+void qemu_IsCharAlphaA(struct qemu_syscall *call);
+void qemu_IsCharAlphaNumericA(struct qemu_syscall *call);
+void qemu_IsCharAlphaNumericW(struct qemu_syscall *call);
+void qemu_IsCharAlphaW(struct qemu_syscall *call);
+void qemu_IsCharLowerA(struct qemu_syscall *call);
+void qemu_IsCharLowerW(struct qemu_syscall *call);
+void qemu_IsCharUpperA(struct qemu_syscall *call);
+void qemu_IsCharUpperW(struct qemu_syscall *call);
 void qemu_IsChild(struct qemu_syscall *call);
 void qemu_IsClipboardFormatAvailable(struct qemu_syscall *call);
 void qemu_IsDialogMessageA(struct qemu_syscall *call);
@@ -1078,6 +1137,9 @@ void qemu_MsgWaitForMultipleObjectsEx(struct qemu_syscall *call);
 void qemu_NotifyWinEvent(struct qemu_syscall *call);
 void qemu_OemKeyScan(struct qemu_syscall *call);
 void qemu_OemToCharA(struct qemu_syscall *call);
+void qemu_OemToCharBuffA(struct qemu_syscall *call);
+void qemu_OemToCharBuffW(struct qemu_syscall *call);
+void qemu_OemToCharW(struct qemu_syscall *call);
 void qemu_OffsetRect(struct qemu_syscall *call);
 void qemu_OpenClipboard(struct qemu_syscall *call);
 void qemu_OpenDesktopA(struct qemu_syscall *call);

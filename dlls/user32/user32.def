@@ -37,6 +37,26 @@ EXPORTS
   ChangeMenuA
   ChangeMenuW
   ChangeWindowMessageFilter
+  CharLowerA
+  CharLowerBuffA
+  CharLowerBuffW
+  CharLowerW
+  CharNextA
+  CharNextExA
+  CharNextExW
+  CharNextW
+  CharPrevA
+  CharPrevExA
+  CharPrevExW
+  CharPrevW
+  CharToOemA
+  CharToOemBuffA
+  CharToOemBuffW
+  CharToOemW
+  CharUpperA
+  CharUpperBuffA
+  CharUpperBuffW
+  CharUpperW
   CheckDlgButton
   CheckMenuItem
   CheckMenuRadioItem
@@ -356,6 +376,14 @@ EXPORTS
   InvalidateRect
   InvalidateRgn
   InvertRect
+  IsCharAlphaA
+  IsCharAlphaNumericA
+  IsCharAlphaNumericW
+  IsCharAlphaW
+  IsCharLowerA
+  IsCharLowerW
+  IsCharUpperA
+  IsCharUpperW
   IsChild
   IsClipboardFormatAvailable
   IsDialogMessageA
@@ -431,6 +459,9 @@ EXPORTS
   NotifyWinEvent
   OemKeyScan
   OemToCharA
+  OemToCharBuffA
+  OemToCharBuffW
+  OemToCharW
   OffsetRect
   OpenClipboard
   OpenDesktopA
