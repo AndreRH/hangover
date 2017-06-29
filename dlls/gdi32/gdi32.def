@@ -1,6 +1,7 @@
 LIBRARY gdi32.dll BASE=0x60000000
 
 EXPORTS
+  AbortDoc
   CopyEnhMetaFileA
   CopyEnhMetaFileW
   CopyMetaFileA
@@ -8,8 +9,12 @@ EXPORTS
   DeleteEnhMetaFile
   DeleteMetaFile
   DPtoLP
+  EndDoc
+  EndPage
   EnumEnhMetaFile
   EnumMetaFile
+  GdiGetSpoolMessage
+  GdiInitSpool
   GetDeviceCaps
   GetEnhMetaFileA
   GetEnhMetaFileBits
@@ -32,6 +37,7 @@ EXPORTS
   PlayMetaFileRecord
   ScaleViewportExtEx
   ScaleWindowExtEx
+  SetAbortProc
   SetEnhMetaFileBits
   SetMapMode
   SetMetaFileBitsEx
@@ -42,3 +48,6 @@ EXPORTS
   SetWindowOrgEx
   SetWinMetaFileBits
   SetWorldTransform
+  StartDocA
+  StartDocW
+  StartPage

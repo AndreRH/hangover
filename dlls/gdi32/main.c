@@ -33,6 +33,7 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu_AbortDoc,
     qemu_CopyEnhMetaFileA,
     qemu_CopyEnhMetaFileW,
     qemu_CopyMetaFileA,
@@ -40,8 +41,12 @@ static const syscall_handler dll_functions[] =
     qemu_DeleteEnhMetaFile,
     qemu_DeleteMetaFile,
     qemu_DPtoLP,
+    qemu_EndDoc,
+    qemu_EndPage,
     qemu_EnumEnhMetaFile,
     qemu_EnumMetaFile,
+    qemu_GdiGetSpoolMessage,
+    qemu_GdiInitSpool,
     qemu_GetDeviceCaps,
     qemu_GetEnhMetaFileA,
     qemu_GetEnhMetaFileBits,
@@ -64,6 +69,7 @@ static const syscall_handler dll_functions[] =
     qemu_PlayMetaFileRecord,
     qemu_ScaleViewportExtEx,
     qemu_ScaleWindowExtEx,
+    qemu_SetAbortProc,
     qemu_SetEnhMetaFileBits,
     qemu_SetMapMode,
     qemu_SetMetaFileBitsEx,
@@ -74,6 +80,9 @@ static const syscall_handler dll_functions[] =
     qemu_SetWindowOrgEx,
     qemu_SetWinMetaFileBits,
     qemu_SetWorldTransform,
+    qemu_StartDocA,
+    qemu_StartDocW,
+    qemu_StartPage,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
