@@ -1,4 +1,30 @@
 LIBRARY gdi32.dll BASE=0x60000000
 
 EXPORTS
+  CopyEnhMetaFileA
+  CopyEnhMetaFileW
+  CopyMetaFileA
+  CopyMetaFileW
+  DeleteEnhMetaFile
+  DeleteMetaFile
+  EnumEnhMetaFile
+  EnumMetaFile
   GetDeviceCaps
+  GetEnhMetaFileA
+  GetEnhMetaFileBits
+  GetEnhMetaFileDescriptionA
+  GetEnhMetaFileDescriptionW
+  GetEnhMetaFileHeader
+  GetEnhMetaFilePaletteEntries
+  GetEnhMetaFileW
+  GetMetaFileA
+  GetMetaFileBitsEx
+  GetMetaFileW
+  GetWinMetaFileBits
+  PlayEnhMetaFile
+  PlayEnhMetaFileRecord
+  PlayMetaFile
+  PlayMetaFileRecord
+  SetEnhMetaFileBits
+  SetMetaFileBitsEx
+  SetWinMetaFileBits

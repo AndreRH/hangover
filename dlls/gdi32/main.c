@@ -33,7 +33,33 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu_CopyEnhMetaFileA,
+    qemu_CopyEnhMetaFileW,
+    qemu_CopyMetaFileA,
+    qemu_CopyMetaFileW,
+    qemu_DeleteEnhMetaFile,
+    qemu_DeleteMetaFile,
+    qemu_EnumEnhMetaFile,
+    qemu_EnumMetaFile,
     qemu_GetDeviceCaps,
+    qemu_GetEnhMetaFileA,
+    qemu_GetEnhMetaFileBits,
+    qemu_GetEnhMetaFileDescriptionA,
+    qemu_GetEnhMetaFileDescriptionW,
+    qemu_GetEnhMetaFileHeader,
+    qemu_GetEnhMetaFilePaletteEntries,
+    qemu_GetEnhMetaFileW,
+    qemu_GetMetaFileA,
+    qemu_GetMetaFileBitsEx,
+    qemu_GetMetaFileW,
+    qemu_GetWinMetaFileBits,
+    qemu_PlayEnhMetaFile,
+    qemu_PlayEnhMetaFileRecord,
+    qemu_PlayMetaFile,
+    qemu_PlayMetaFileRecord,
+    qemu_SetEnhMetaFileBits,
+    qemu_SetMetaFileBitsEx,
+    qemu_SetWinMetaFileBits,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
