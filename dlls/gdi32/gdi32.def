@@ -2,19 +2,57 @@ LIBRARY gdi32.dll BASE=0x60000000
 
 EXPORTS
   AbortDoc
+  AddFontMemResourceEx
+  AddFontResourceA
+  AddFontResourceExA
+  AddFontResourceExW
+  AddFontResourceW
   CopyEnhMetaFileA
   CopyEnhMetaFileW
   CopyMetaFileA
   CopyMetaFileW
+  CreateFontA
+  CreateFontIndirectA
+  CreateFontIndirectExA
+  CreateFontIndirectExW
+  CreateFontIndirectW
+  CreateFontW
+  CreateScalableFontResourceA
+  CreateScalableFontResourceW
   DeleteEnhMetaFile
   DeleteMetaFile
   DPtoLP
+  EnableEUDC
   EndDoc
   EndPage
   EnumEnhMetaFile
+  EnumFontFamiliesA
+  EnumFontFamiliesExA
+  EnumFontFamiliesExW
+  EnumFontFamiliesW
+  EnumFontsA
+  EnumFontsW
   EnumMetaFile
+  ExtTextOutA
+  ExtTextOutW
+  FontIsLinked
+  GdiGetCharDimensions
+  GdiGetCodePage
   GdiGetSpoolMessage
   GdiInitSpool
+  GetAspectRatioFilterEx
+  GetCharABCWidthsA
+  GetCharABCWidthsFloatA
+  GetCharABCWidthsFloatW
+  GetCharABCWidthsI
+  GetCharABCWidthsW
+  GetCharacterPlacementA
+  GetCharacterPlacementW
+  GetCharWidth32A
+  GetCharWidth32W
+  GetCharWidthFloatA
+  GetCharWidthFloatW
+  GetCharWidthI
   GetDeviceCaps
   GetEnhMetaFileA
   GetEnhMetaFileBits
@@ -23,9 +61,32 @@ EXPORTS
   GetEnhMetaFileHeader
   GetEnhMetaFilePaletteEntries
   GetEnhMetaFileW
+  GetFontData
+  GetFontLanguageInfo
+  GetFontResourceInfoW
+  GetFontUnicodeRanges
+  GetGlyphIndicesA
+  GetGlyphIndicesW
+  GetGlyphOutlineA
+  GetGlyphOutlineW
+  GetKerningPairsA
+  GetKerningPairsW
   GetMetaFileA
   GetMetaFileBitsEx
   GetMetaFileW
+  GetOutlineTextMetricsA
+  GetOutlineTextMetricsW
+  GetTextCharacterExtra
+  GetTextExtentExPointA
+  GetTextExtentExPointW
+  GetTextExtentPoint32A
+  GetTextExtentPoint32W
+  GetTextExtentPointA
+  GetTextExtentPointW
+  GetTextFaceA
+  GetTextFaceW
+  GetTextMetricsA
+  GetTextMetricsW
   GetWinMetaFileBits
   LPtoDP
   ModifyWorldTransform
@@ -35,12 +96,22 @@ EXPORTS
   PlayEnhMetaFileRecord
   PlayMetaFile
   PlayMetaFileRecord
+  PolyTextOutA
+  PolyTextOutW
+  RemoveFontMemResourceEx
+  RemoveFontResourceA
+  RemoveFontResourceExA
+  RemoveFontResourceExW
+  RemoveFontResourceW
   ScaleViewportExtEx
   ScaleWindowExtEx
   SetAbortProc
   SetEnhMetaFileBits
   SetMapMode
+  SetMapperFlags
   SetMetaFileBitsEx
+  SetTextCharacterExtra
+  SetTextJustification
   SetViewportExtEx
   SetViewportOrgEx
   SetVirtualResolution
@@ -51,3 +122,6 @@ EXPORTS
   StartDocA
   StartDocW
   StartPage
+  TextOutA
+  TextOutW
+  TranslateCharsetInfo
