@@ -106,6 +106,7 @@ static const syscall_handler dll_functions[] =
     qemu_GetProcAddress,
     qemu_GetProcessHeap,
     qemu_GetStartupInfoA,
+    qemu_GetStartupInfoW,
     qemu_GetStdHandle,
     qemu_GetSystemTimeAsFileTime,
     qemu_GetTickCount,

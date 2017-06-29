@@ -48,6 +48,7 @@ EXPORTS
   GetProcAddress
   GetProcessHeap
   GetStartupInfoA
+  GetStartupInfoW
   GetStdHandle
   GetSystemTimeAsFileTime
   GetTickCount

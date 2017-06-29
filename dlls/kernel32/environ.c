@@ -119,6 +119,33 @@ void qemu_GetStartupInfoA(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_GetStartupInfoW
+{
+    struct qemu_syscall super;
+    uint64_t info;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void WINAPI GetStartupInfoW(STARTUPINFOW *info)
+{
+    struct qemu_GetStartupInfoW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSTARTUPINFOW);
+    call.info = (uint64_t)info;
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_GetStartupInfoW(struct qemu_syscall *call)
+{
+    struct qemu_GetStartupInfoW *c = (struct qemu_GetStartupInfoW *)call;
+    WINE_TRACE("\n");
+    GetStartupInfoW(QEMU_G2H(c->info));
+}
+
+#endif
+
 struct qemu_GetStdHandle
 {
     struct qemu_syscall super;
