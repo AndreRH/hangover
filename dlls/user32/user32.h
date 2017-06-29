@@ -77,6 +77,37 @@ enum user32_calls
     CALL_CREATEWINDOWEXW,
     CALL_CREATEWINDOWSTATIONA,
     CALL_CREATEWINDOWSTATIONW,
+    CALL_DDEABANDONTRANSACTION,
+    CALL_DDEACCESSDATA,
+    CALL_DDEADDDATA,
+    CALL_DDECLIENTTRANSACTION,
+    CALL_DDECMPSTRINGHANDLES,
+    CALL_DDECONNECT,
+    CALL_DDECONNECTLIST,
+    CALL_DDECREATEDATAHANDLE,
+    CALL_DDECREATESTRINGHANDLEA,
+    CALL_DDECREATESTRINGHANDLEW,
+    CALL_DDEDISCONNECT,
+    CALL_DDEDISCONNECTLIST,
+    CALL_DDEENABLECALLBACK,
+    CALL_DDEFREEDATAHANDLE,
+    CALL_DDEFREESTRINGHANDLE,
+    CALL_DDEGETDATA,
+    CALL_DDEGETLASTERROR,
+    CALL_DDEIMPERSONATECLIENT,
+    CALL_DDEINITIALIZEA,
+    CALL_DDEINITIALIZEW,
+    CALL_DDEKEEPSTRINGHANDLE,
+    CALL_DDENAMESERVICE,
+    CALL_DDEPOSTADVISE,
+    CALL_DDEQUERYCONVINFO,
+    CALL_DDEQUERYNEXTSERVER,
+    CALL_DDEQUERYSTRINGA,
+    CALL_DDEQUERYSTRINGW,
+    CALL_DDERECONNECT,
+    CALL_DDESETQUALITYOFSERVICE,
+    CALL_DDEUNACCESSDATA,
+    CALL_DDEUNINITIALIZE,
     CALL_DEFDLGPROCA,
     CALL_DEFDLGPROCW,
     CALL_DEFERWINDOWPOS,
@@ -167,6 +198,7 @@ enum user32_calls
     CALL_FLASHWINDOW,
     CALL_FLASHWINDOWEX,
     CALL_FRAMERECT,
+    CALL_FREEDDELPARAM,
     CALL_GETACTIVEWINDOW,
     CALL_GETALTTABINFOA,
     CALL_GETALTTABINFOW,
@@ -315,6 +347,7 @@ enum user32_calls
     CALL_GRAYSTRINGW,
     CALL_HIDECARET,
     CALL_HILITEMENUITEM,
+    CALL_IMPERSONATEDDECLIENTWINDOW,
     CALL_INFLATERECT,
     CALL_INSENDMESSAGE,
     CALL_INSENDMESSAGEEX,
@@ -410,6 +443,7 @@ enum user32_calls
     CALL_OPENINPUTDESKTOP,
     CALL_OPENWINDOWSTATIONA,
     CALL_OPENWINDOWSTATIONW,
+    CALL_PACKDDELPARAM,
     CALL_PAINTDESKTOP,
     CALL_PEEKMESSAGEA,
     CALL_PEEKMESSAGEW,
@@ -452,6 +486,7 @@ enum user32_calls
     CALL_REMOVEPROPA,
     CALL_REMOVEPROPW,
     CALL_REPLYMESSAGE,
+    CALL_REUSEDDELPARAM,
     CALL_SCREENTOCLIENT,
     CALL_SCROLLCHILDREN,
     CALL_SCROLLDC,
@@ -583,6 +618,7 @@ enum user32_calls
     CALL_UNHOOKWINEVENT,
     CALL_UNIONRECT,
     CALL_UNLOADKEYBOARDLAYOUT,
+    CALL_UNPACKDDELPARAM,
     CALL_UNREGISTERCLASSA,
     CALL_UNREGISTERCLASSW,
     CALL_UNREGISTERDEVICENOTIFICATION,
@@ -684,6 +720,37 @@ void qemu_CreateWindowExA(struct qemu_syscall *call);
 void qemu_CreateWindowExW(struct qemu_syscall *call);
 void qemu_CreateWindowStationA(struct qemu_syscall *call);
 void qemu_CreateWindowStationW(struct qemu_syscall *call);
+void qemu_DdeAbandonTransaction(struct qemu_syscall *call);
+void qemu_DdeAccessData(struct qemu_syscall *call);
+void qemu_DdeAddData(struct qemu_syscall *call);
+void qemu_DdeClientTransaction(struct qemu_syscall *call);
+void qemu_DdeCmpStringHandles(struct qemu_syscall *call);
+void qemu_DdeConnect(struct qemu_syscall *call);
+void qemu_DdeConnectList(struct qemu_syscall *call);
+void qemu_DdeCreateDataHandle(struct qemu_syscall *call);
+void qemu_DdeCreateStringHandleA(struct qemu_syscall *call);
+void qemu_DdeCreateStringHandleW(struct qemu_syscall *call);
+void qemu_DdeDisconnect(struct qemu_syscall *call);
+void qemu_DdeDisconnectList(struct qemu_syscall *call);
+void qemu_DdeEnableCallback(struct qemu_syscall *call);
+void qemu_DdeFreeDataHandle(struct qemu_syscall *call);
+void qemu_DdeFreeStringHandle(struct qemu_syscall *call);
+void qemu_DdeGetData(struct qemu_syscall *call);
+void qemu_DdeGetLastError(struct qemu_syscall *call);
+void qemu_DdeImpersonateClient(struct qemu_syscall *call);
+void qemu_DdeInitializeA(struct qemu_syscall *call);
+void qemu_DdeInitializeW(struct qemu_syscall *call);
+void qemu_DdeKeepStringHandle(struct qemu_syscall *call);
+void qemu_DdeNameService(struct qemu_syscall *call);
+void qemu_DdePostAdvise(struct qemu_syscall *call);
+void qemu_DdeQueryConvInfo(struct qemu_syscall *call);
+void qemu_DdeQueryNextServer(struct qemu_syscall *call);
+void qemu_DdeQueryStringA(struct qemu_syscall *call);
+void qemu_DdeQueryStringW(struct qemu_syscall *call);
+void qemu_DdeReconnect(struct qemu_syscall *call);
+void qemu_DdeSetQualityOfService(struct qemu_syscall *call);
+void qemu_DdeUnaccessData(struct qemu_syscall *call);
+void qemu_DdeUninitialize(struct qemu_syscall *call);
 void qemu_DefDlgProcA(struct qemu_syscall *call);
 void qemu_DefDlgProcW(struct qemu_syscall *call);
 void qemu_DeferWindowPos(struct qemu_syscall *call);
@@ -774,6 +841,7 @@ void qemu_FindWindowW(struct qemu_syscall *call);
 void qemu_FlashWindow(struct qemu_syscall *call);
 void qemu_FlashWindowEx(struct qemu_syscall *call);
 void qemu_FrameRect(struct qemu_syscall *call);
+void qemu_FreeDDElParam(struct qemu_syscall *call);
 void qemu_GetActiveWindow(struct qemu_syscall *call);
 void qemu_GetAltTabInfoA(struct qemu_syscall *call);
 void qemu_GetAltTabInfoW(struct qemu_syscall *call);
@@ -922,6 +990,7 @@ void qemu_GrayStringA(struct qemu_syscall *call);
 void qemu_GrayStringW(struct qemu_syscall *call);
 void qemu_HideCaret(struct qemu_syscall *call);
 void qemu_HiliteMenuItem(struct qemu_syscall *call);
+void qemu_ImpersonateDdeClientWindow(struct qemu_syscall *call);
 void qemu_InflateRect(struct qemu_syscall *call);
 void qemu_InSendMessage(struct qemu_syscall *call);
 void qemu_InSendMessageEx(struct qemu_syscall *call);
@@ -1017,6 +1086,7 @@ void qemu_OpenIcon(struct qemu_syscall *call);
 void qemu_OpenInputDesktop(struct qemu_syscall *call);
 void qemu_OpenWindowStationA(struct qemu_syscall *call);
 void qemu_OpenWindowStationW(struct qemu_syscall *call);
+void qemu_PackDDElParam(struct qemu_syscall *call);
 void qemu_PaintDesktop(struct qemu_syscall *call);
 void qemu_PeekMessageA(struct qemu_syscall *call);
 void qemu_PeekMessageW(struct qemu_syscall *call);
@@ -1059,6 +1129,7 @@ void qemu_RemoveMenu(struct qemu_syscall *call);
 void qemu_RemovePropA(struct qemu_syscall *call);
 void qemu_RemovePropW(struct qemu_syscall *call);
 void qemu_ReplyMessage(struct qemu_syscall *call);
+void qemu_ReuseDDElParam(struct qemu_syscall *call);
 void qemu_ScreenToClient(struct qemu_syscall *call);
 void qemu_ScrollChildren(struct qemu_syscall *call);
 void qemu_ScrollDC(struct qemu_syscall *call);
@@ -1190,6 +1261,7 @@ void qemu_UnhookWindowsHookEx(struct qemu_syscall *call);
 void qemu_UnhookWinEvent(struct qemu_syscall *call);
 void qemu_UnionRect(struct qemu_syscall *call);
 void qemu_UnloadKeyboardLayout(struct qemu_syscall *call);
+void qemu_UnpackDDElParam(struct qemu_syscall *call);
 void qemu_UnregisterClassA(struct qemu_syscall *call);
 void qemu_UnregisterClassW(struct qemu_syscall *call);
 void qemu_UnregisterDeviceNotification(struct qemu_syscall *call);

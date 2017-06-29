@@ -73,6 +73,37 @@ EXPORTS
   CreateWindowExW
   CreateWindowStationA
   CreateWindowStationW
+  DdeAbandonTransaction
+  DdeAccessData
+  DdeAddData
+  DdeClientTransaction
+  DdeCmpStringHandles
+  DdeConnect
+  DdeConnectList
+  DdeCreateDataHandle
+  DdeCreateStringHandleA
+  DdeCreateStringHandleW
+  DdeDisconnect
+  DdeDisconnectList
+  DdeEnableCallback
+  DdeFreeDataHandle
+  DdeFreeStringHandle
+  DdeGetData
+  DdeGetLastError
+  DdeImpersonateClient
+  DdeInitializeA
+  DdeInitializeW
+  DdeKeepStringHandle
+  DdeNameService
+  DdePostAdvise
+  DdeQueryConvInfo
+  DdeQueryNextServer
+  DdeQueryStringA
+  DdeQueryStringW
+  DdeReconnect
+  DdeSetQualityOfService
+  DdeUnaccessData
+  DdeUninitialize
   DefDlgProcA
   DefDlgProcW
   DeferWindowPos
@@ -163,6 +194,7 @@ EXPORTS
   FlashWindow
   FlashWindowEx
   FrameRect
+  FreeDDElParam
   GetActiveWindow
   GetAltTabInfoA
   GetAltTabInfoW
@@ -311,6 +343,7 @@ EXPORTS
   GrayStringW
   HideCaret
   HiliteMenuItem
+  ImpersonateDdeClientWindow
   InflateRect
   InSendMessage
   InSendMessageEx
@@ -406,6 +439,7 @@ EXPORTS
   OpenInputDesktop
   OpenWindowStationA
   OpenWindowStationW
+  PackDDElParam
   PaintDesktop
   PeekMessageA
   PeekMessageW
@@ -448,6 +482,7 @@ EXPORTS
   RemovePropA
   RemovePropW
   ReplyMessage
+  ReuseDDElParam
   ScreenToClient
   ScrollChildren
   ScrollDC
@@ -579,6 +614,7 @@ EXPORTS
   UnhookWinEvent
   UnionRect
   UnloadKeyboardLayout
+  UnpackDDElParam
   UnregisterClassA
   UnregisterClassW
   UnregisterDeviceNotification
