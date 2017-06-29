@@ -1,18 +1,4 @@
 LIBRARY gdi32.dll BASE=0x60000000
 
 EXPORTS
-  CreateFontIndirectW=ntdll.DbgBreakPoint
-  DeleteDC=ntdll.DbgBreakPoint
-  DeleteObject=ntdll.DbgBreakPoint
-  EndDoc=ntdll.DbgBreakPoint
-  EndPage=ntdll.DbgBreakPoint
-  ExtTextOutW=ntdll.DbgBreakPoint
-  GetDeviceCaps=ntdll.DbgBreakPoint
-  GetTextExtentExPointW=ntdll.DbgBreakPoint
-  GetTextExtentPoint32W=ntdll.DbgBreakPoint
-  GetTextMetricsW=ntdll.DbgBreakPoint
-  SelectObject=ntdll.DbgBreakPoint
-  SetMapMode=ntdll.DbgBreakPoint
-  StartDocW=ntdll.DbgBreakPoint
-  StartPage=ntdll.DbgBreakPoint
-
+  GetDeviceCaps
