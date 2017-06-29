@@ -11,6 +11,7 @@ enum gdi32_calls
     CALL_COPYMETAFILEW,
     CALL_DELETEENHMETAFILE,
     CALL_DELETEMETAFILE,
+    CALL_DPTOLP,
     CALL_ENUMENHMETAFILE,
     CALL_ENUMMETAFILE,
     CALL_GETDEVICECAPS,
@@ -25,13 +26,26 @@ enum gdi32_calls
     CALL_GETMETAFILEBITSEX,
     CALL_GETMETAFILEW,
     CALL_GETWINMETAFILEBITS,
+    CALL_LPTODP,
+    CALL_MODIFYWORLDTRANSFORM,
+    CALL_OFFSETVIEWPORTORGEX,
+    CALL_OFFSETWINDOWORGEX,
     CALL_PLAYENHMETAFILE,
     CALL_PLAYENHMETAFILERECORD,
     CALL_PLAYMETAFILE,
     CALL_PLAYMETAFILERECORD,
+    CALL_SCALEVIEWPORTEXTEX,
+    CALL_SCALEWINDOWEXTEX,
     CALL_SETENHMETAFILEBITS,
+    CALL_SETMAPMODE,
     CALL_SETMETAFILEBITSEX,
+    CALL_SETVIEWPORTEXTEX,
+    CALL_SETVIEWPORTORGEX,
+    CALL_SETVIRTUALRESOLUTION,
+    CALL_SETWINDOWEXTEX,
+    CALL_SETWINDOWORGEX,
     CALL_SETWINMETAFILEBITS,
+    CALL_SETWORLDTRANSFORM,
 };
 
 #ifndef QEMU_DLL_GUEST
@@ -44,6 +58,7 @@ void qemu_CopyMetaFileA(struct qemu_syscall *call);
 void qemu_CopyMetaFileW(struct qemu_syscall *call);
 void qemu_DeleteEnhMetaFile(struct qemu_syscall *call);
 void qemu_DeleteMetaFile(struct qemu_syscall *call);
+void qemu_DPtoLP(struct qemu_syscall *call);
 void qemu_EnumEnhMetaFile(struct qemu_syscall *call);
 void qemu_EnumMetaFile(struct qemu_syscall *call);
 void qemu_GetDeviceCaps(struct qemu_syscall *call);
@@ -58,13 +73,26 @@ void qemu_GetMetaFileA(struct qemu_syscall *call);
 void qemu_GetMetaFileBitsEx(struct qemu_syscall *call);
 void qemu_GetMetaFileW(struct qemu_syscall *call);
 void qemu_GetWinMetaFileBits(struct qemu_syscall *call);
+void qemu_LPtoDP(struct qemu_syscall *call);
+void qemu_ModifyWorldTransform(struct qemu_syscall *call);
+void qemu_OffsetViewportOrgEx(struct qemu_syscall *call);
+void qemu_OffsetWindowOrgEx(struct qemu_syscall *call);
 void qemu_PlayEnhMetaFile(struct qemu_syscall *call);
 void qemu_PlayEnhMetaFileRecord(struct qemu_syscall *call);
 void qemu_PlayMetaFile(struct qemu_syscall *call);
 void qemu_PlayMetaFileRecord(struct qemu_syscall *call);
+void qemu_ScaleViewportExtEx(struct qemu_syscall *call);
+void qemu_ScaleWindowExtEx(struct qemu_syscall *call);
 void qemu_SetEnhMetaFileBits(struct qemu_syscall *call);
+void qemu_SetMapMode(struct qemu_syscall *call);
 void qemu_SetMetaFileBitsEx(struct qemu_syscall *call);
+void qemu_SetViewportExtEx(struct qemu_syscall *call);
+void qemu_SetViewportOrgEx(struct qemu_syscall *call);
+void qemu_SetVirtualResolution(struct qemu_syscall *call);
+void qemu_SetWindowExtEx(struct qemu_syscall *call);
+void qemu_SetWindowOrgEx(struct qemu_syscall *call);
 void qemu_SetWinMetaFileBits(struct qemu_syscall *call);
+void qemu_SetWorldTransform(struct qemu_syscall *call);
 
 #endif
 

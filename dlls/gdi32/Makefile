@@ -5,10 +5,10 @@ WINEGCC=$(DESTDIR)/build/wine-host/tools/winegcc/winegcc -B$(DESTDIR)/build/wine
 
 all: gdi32.dll qemu_gdi32.dll.so
 
-gdi32.dll: dc_g.o enhmetafile_g.o gdi32.def main_g.o metafile_g.o
+gdi32.dll: dc_g.o enhmetafile_g.o gdi32.def main_g.o mapping_g.o metafile_g.o
 	x86_64-w64-mingw32-ld -shared gdi32.def *_g.o -o gdi32.dll -nostdlib
 
-qemu_gdi32.dll.so: dc_h.o enhmetafile_h.o main_h.o metafile_h.o qemu_gdi32.spec
+qemu_gdi32.dll.so: dc_h.o enhmetafile_h.o main_h.o mapping_h.o metafile_h.o qemu_gdi32.spec
 	$(WINEGCC) -shared qemu_gdi32.spec *_h.o -o qemu_gdi32.dll.so -lgdi32
 
 %_g.o: %.c gdi32.h Makefile
