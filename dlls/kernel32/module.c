@@ -175,6 +175,42 @@ void qemu_GetModuleHandleExA(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_ModuleOpW
+{
+    struct qemu_syscall super;
+    uint64_t name;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HMODULE WINAPI GetModuleHandleW(const WCHAR *name)
+{
+    struct qemu_ModuleOpW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEHANDLEW);
+    call.name = (uint64_t)name;
+
+    qemu_syscall(&call.super);
+
+    return (HMODULE)call.super.iret;
+}
+
+#else
+
+void qemu_GetModuleHandleW(struct qemu_syscall *call)
+{
+    struct qemu_ModuleOpW *c = (struct qemu_ModuleOpW *)call;
+    int size;
+
+    WINE_TRACE("(\"%s\")\n", (char *)QEMU_G2H(c->name));
+
+    c->super.iret = (uint64_t)qemu_ops->qemu_GetModuleHandleEx(
+            GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, QEMU_G2H(c->name));
+
+    WINE_TRACE("Returning %p\n", (void *)c->super.iret);
+}
+
+#endif
+
 struct qemu_GetProcAddress
 {
     struct qemu_syscall super;

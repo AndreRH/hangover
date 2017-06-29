@@ -43,6 +43,7 @@ EXPORTS
   GetModuleFileNameA
   GetModuleFileNameW
   GetModuleHandleA
+  GetModuleHandleW
   GetModuleHandleExA
   GetProcAddress
   GetProcessHeap
