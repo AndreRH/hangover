@@ -7,18 +7,29 @@ EXPORTS
   AddFontResourceExA
   AddFontResourceExW
   AddFontResourceW
+  CancelDC
+  CombineTransform
   CopyEnhMetaFileA
   CopyEnhMetaFileW
   CopyMetaFileA
   CopyMetaFileW
+  CreateColorSpaceA
+  CreateColorSpaceW
+  CreateCompatibleDC
+  CreateDCA
+  CreateDCW
   CreateFontA
   CreateFontIndirectA
   CreateFontIndirectExA
   CreateFontIndirectExW
   CreateFontIndirectW
   CreateFontW
+  CreateICA
+  CreateICW
   CreateScalableFontResourceA
   CreateScalableFontResourceW
+  DeleteColorSpace
+  DeleteDC
   DeleteEnhMetaFile
   DeleteMetaFile
   DPtoLP
@@ -40,7 +51,15 @@ EXPORTS
   GdiGetCodePage
   GdiGetSpoolMessage
   GdiInitSpool
+  GdiIsMetaFileDC
+  GdiIsMetaPrintDC
+  GdiIsPlayMetafileDC
+  GetArcDirection
   GetAspectRatioFilterEx
+  GetBkColor
+  GetBkMode
+  GetBoundsRect
+  GetBrushOrgEx
   GetCharABCWidthsA
   GetCharABCWidthsFloatA
   GetCharABCWidthsFloatW
@@ -53,7 +72,13 @@ EXPORTS
   GetCharWidthFloatA
   GetCharWidthFloatW
   GetCharWidthI
+  GetColorSpace
+  GetCurrentPositionEx
+  GetDCBrushColor
+  GetDCOrgEx
+  GetDCPenColor
   GetDeviceCaps
+  GetDeviceGammaRamp
   GetEnhMetaFileA
   GetEnhMetaFileBits
   GetEnhMetaFileDescriptionA
@@ -69,14 +94,24 @@ EXPORTS
   GetGlyphIndicesW
   GetGlyphOutlineA
   GetGlyphOutlineW
+  GetGraphicsMode
   GetKerningPairsA
   GetKerningPairsW
+  GetLayout
+  GetMapMode
   GetMetaFileA
   GetMetaFileBitsEx
   GetMetaFileW
+  GetMiterLimit
   GetOutlineTextMetricsA
   GetOutlineTextMetricsW
+  GetPolyFillMode
+  GetRelAbs
+  GetROP2
+  GetStretchBltMode
+  GetTextAlign
   GetTextCharacterExtra
+  GetTextColor
   GetTextExtentExPointA
   GetTextExtentExPointW
   GetTextExtentPoint32A
@@ -87,7 +122,13 @@ EXPORTS
   GetTextFaceW
   GetTextMetricsA
   GetTextMetricsW
+  GetTransform
+  GetViewportExtEx
+  GetViewportOrgEx
+  GetWindowExtEx
+  GetWindowOrgEx
   GetWinMetaFileBits
+  GetWorldTransform
   LPtoDP
   ModifyWorldTransform
   OffsetViewportOrgEx
@@ -103,14 +144,37 @@ EXPORTS
   RemoveFontResourceExA
   RemoveFontResourceExW
   RemoveFontResourceW
+  ResetDCA
+  ResetDCW
+  RestoreDC
+  SaveDC
   ScaleViewportExtEx
   ScaleWindowExtEx
   SetAbortProc
+  SetArcDirection
+  SetBkColor
+  SetBkMode
+  SetBoundsRect
+  SetColorSpace
+  SetDCBrushColor
+  SetDCPenColor
+  SetDeviceGammaRamp
   SetEnhMetaFileBits
+  SetGraphicsMode
+  SetHookFlags
+  SetICMMode
+  SetLayout
   SetMapMode
   SetMapperFlags
   SetMetaFileBitsEx
+  SetMiterLimit
+  SetPolyFillMode
+  SetRelAbs
+  SetROP2
+  SetStretchBltMode
+  SetTextAlign
   SetTextCharacterExtra
+  SetTextColor
   SetTextJustification
   SetViewportExtEx
   SetViewportOrgEx
