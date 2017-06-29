@@ -32,6 +32,7 @@ EXPORTS
   DeleteDC
   DeleteEnhMetaFile
   DeleteMetaFile
+  DeleteObject
   DPtoLP
   EnableEUDC
   EndDoc
@@ -44,16 +45,22 @@ EXPORTS
   EnumFontsA
   EnumFontsW
   EnumMetaFile
+  EnumObjects
   ExtTextOutA
   ExtTextOutW
   FontIsLinked
+  GdiComment
+  GdiFlush
+  GdiGetBatchLimit
   GdiGetCharDimensions
   GdiGetCodePage
   GdiGetSpoolMessage
+  GdiInitializeLanguagePack
   GdiInitSpool
   GdiIsMetaFileDC
   GdiIsMetaPrintDC
   GdiIsPlayMetafileDC
+  GdiSetBatchLimit
   GetArcDirection
   GetAspectRatioFilterEx
   GetBkColor
@@ -72,7 +79,9 @@ EXPORTS
   GetCharWidthFloatA
   GetCharWidthFloatW
   GetCharWidthI
+  GetColorAdjustment
   GetColorSpace
+  GetCurrentObject
   GetCurrentPositionEx
   GetDCBrushColor
   GetDCOrgEx
@@ -103,11 +112,15 @@ EXPORTS
   GetMetaFileBitsEx
   GetMetaFileW
   GetMiterLimit
+  GetObjectA
+  GetObjectType
+  GetObjectW
   GetOutlineTextMetricsA
   GetOutlineTextMetricsW
   GetPolyFillMode
   GetRelAbs
   GetROP2
+  GetStockObject
   GetStretchBltMode
   GetTextAlign
   GetTextCharacterExtra
@@ -150,11 +163,13 @@ EXPORTS
   SaveDC
   ScaleViewportExtEx
   ScaleWindowExtEx
+  SelectObject
   SetAbortProc
   SetArcDirection
   SetBkColor
   SetBkMode
   SetBoundsRect
+  SetColorAdjustment
   SetColorSpace
   SetDCBrushColor
   SetDCPenColor
@@ -168,6 +183,7 @@ EXPORTS
   SetMapperFlags
   SetMetaFileBitsEx
   SetMiterLimit
+  SetObjectOwner
   SetPolyFillMode
   SetRelAbs
   SetROP2
@@ -189,3 +205,4 @@ EXPORTS
   TextOutA
   TextOutW
   TranslateCharsetInfo
+  UnrealizeObject

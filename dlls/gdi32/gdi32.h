@@ -36,6 +36,7 @@ enum gdi32_calls
     CALL_DELETEDC,
     CALL_DELETEENHMETAFILE,
     CALL_DELETEMETAFILE,
+    CALL_DELETEOBJECT,
     CALL_DPTOLP,
     CALL_ENABLEEUDC,
     CALL_ENDDOC,
@@ -48,16 +49,22 @@ enum gdi32_calls
     CALL_ENUMFONTSA,
     CALL_ENUMFONTSW,
     CALL_ENUMMETAFILE,
+    CALL_ENUMOBJECTS,
     CALL_EXTTEXTOUTA,
     CALL_EXTTEXTOUTW,
     CALL_FONTISLINKED,
+    CALL_GDICOMMENT,
+    CALL_GDIFLUSH,
+    CALL_GDIGETBATCHLIMIT,
     CALL_GDIGETCHARDIMENSIONS,
     CALL_GDIGETCODEPAGE,
     CALL_GDIGETSPOOLMESSAGE,
+    CALL_GDIINITIALIZELANGUAGEPACK,
     CALL_GDIINITSPOOL,
     CALL_GDIISMETAFILEDC,
     CALL_GDIISMETAPRINTDC,
     CALL_GDIISPLAYMETAFILEDC,
+    CALL_GDISETBATCHLIMIT,
     CALL_GETARCDIRECTION,
     CALL_GETASPECTRATIOFILTEREX,
     CALL_GETBKCOLOR,
@@ -76,7 +83,9 @@ enum gdi32_calls
     CALL_GETCHARWIDTHFLOATA,
     CALL_GETCHARWIDTHFLOATW,
     CALL_GETCHARWIDTHI,
+    CALL_GETCOLORADJUSTMENT,
     CALL_GETCOLORSPACE,
+    CALL_GETCURRENTOBJECT,
     CALL_GETCURRENTPOSITIONEX,
     CALL_GETDCBRUSHCOLOR,
     CALL_GETDCORGEX,
@@ -107,11 +116,15 @@ enum gdi32_calls
     CALL_GETMETAFILEBITSEX,
     CALL_GETMETAFILEW,
     CALL_GETMITERLIMIT,
+    CALL_GETOBJECTA,
+    CALL_GETOBJECTTYPE,
+    CALL_GETOBJECTW,
     CALL_GETOUTLINETEXTMETRICSA,
     CALL_GETOUTLINETEXTMETRICSW,
     CALL_GETPOLYFILLMODE,
     CALL_GETRELABS,
     CALL_GETROP2,
+    CALL_GETSTOCKOBJECT,
     CALL_GETSTRETCHBLTMODE,
     CALL_GETTEXTALIGN,
     CALL_GETTEXTCHARACTEREXTRA,
@@ -154,11 +167,13 @@ enum gdi32_calls
     CALL_SAVEDC,
     CALL_SCALEVIEWPORTEXTEX,
     CALL_SCALEWINDOWEXTEX,
+    CALL_SELECTOBJECT,
     CALL_SETABORTPROC,
     CALL_SETARCDIRECTION,
     CALL_SETBKCOLOR,
     CALL_SETBKMODE,
     CALL_SETBOUNDSRECT,
+    CALL_SETCOLORADJUSTMENT,
     CALL_SETCOLORSPACE,
     CALL_SETDCBRUSHCOLOR,
     CALL_SETDCPENCOLOR,
@@ -172,6 +187,7 @@ enum gdi32_calls
     CALL_SETMAPPERFLAGS,
     CALL_SETMETAFILEBITSEX,
     CALL_SETMITERLIMIT,
+    CALL_SETOBJECTOWNER,
     CALL_SETPOLYFILLMODE,
     CALL_SETRELABS,
     CALL_SETROP2,
@@ -193,6 +209,7 @@ enum gdi32_calls
     CALL_TEXTOUTA,
     CALL_TEXTOUTW,
     CALL_TRANSLATECHARSETINFO,
+    CALL_UNREALIZEOBJECT,
 };
 
 #ifndef QEMU_DLL_GUEST
@@ -230,6 +247,7 @@ void qemu_DeleteColorSpace(struct qemu_syscall *call);
 void qemu_DeleteDC(struct qemu_syscall *call);
 void qemu_DeleteEnhMetaFile(struct qemu_syscall *call);
 void qemu_DeleteMetaFile(struct qemu_syscall *call);
+void qemu_DeleteObject(struct qemu_syscall *call);
 void qemu_DPtoLP(struct qemu_syscall *call);
 void qemu_EnableEUDC(struct qemu_syscall *call);
 void qemu_EndDoc(struct qemu_syscall *call);
@@ -242,16 +260,22 @@ void qemu_EnumFontFamiliesW(struct qemu_syscall *call);
 void qemu_EnumFontsA(struct qemu_syscall *call);
 void qemu_EnumFontsW(struct qemu_syscall *call);
 void qemu_EnumMetaFile(struct qemu_syscall *call);
+void qemu_EnumObjects(struct qemu_syscall *call);
 void qemu_ExtTextOutA(struct qemu_syscall *call);
 void qemu_ExtTextOutW(struct qemu_syscall *call);
 void qemu_FontIsLinked(struct qemu_syscall *call);
+void qemu_GdiComment(struct qemu_syscall *call);
+void qemu_GdiFlush(struct qemu_syscall *call);
+void qemu_GdiGetBatchLimit(struct qemu_syscall *call);
 void qemu_GdiGetCharDimensions(struct qemu_syscall *call);
 void qemu_GdiGetCodePage(struct qemu_syscall *call);
 void qemu_GdiGetSpoolMessage(struct qemu_syscall *call);
+void qemu_GdiInitializeLanguagePack(struct qemu_syscall *call);
 void qemu_GdiInitSpool(struct qemu_syscall *call);
 void qemu_GdiIsMetaFileDC(struct qemu_syscall *call);
 void qemu_GdiIsMetaPrintDC(struct qemu_syscall *call);
 void qemu_GdiIsPlayMetafileDC(struct qemu_syscall *call);
+void qemu_GdiSetBatchLimit(struct qemu_syscall *call);
 void qemu_GetArcDirection(struct qemu_syscall *call);
 void qemu_GetAspectRatioFilterEx(struct qemu_syscall *call);
 void qemu_GetBkColor(struct qemu_syscall *call);
@@ -270,7 +294,9 @@ void qemu_GetCharWidth32W(struct qemu_syscall *call);
 void qemu_GetCharWidthFloatA(struct qemu_syscall *call);
 void qemu_GetCharWidthFloatW(struct qemu_syscall *call);
 void qemu_GetCharWidthI(struct qemu_syscall *call);
+void qemu_GetColorAdjustment(struct qemu_syscall *call);
 void qemu_GetColorSpace(struct qemu_syscall *call);
+void qemu_GetCurrentObject(struct qemu_syscall *call);
 void qemu_GetCurrentPositionEx(struct qemu_syscall *call);
 void qemu_GetDCBrushColor(struct qemu_syscall *call);
 void qemu_GetDCOrgEx(struct qemu_syscall *call);
@@ -301,11 +327,15 @@ void qemu_GetMetaFileA(struct qemu_syscall *call);
 void qemu_GetMetaFileBitsEx(struct qemu_syscall *call);
 void qemu_GetMetaFileW(struct qemu_syscall *call);
 void qemu_GetMiterLimit(struct qemu_syscall *call);
+void qemu_GetObjectA(struct qemu_syscall *call);
+void qemu_GetObjectType(struct qemu_syscall *call);
+void qemu_GetObjectW(struct qemu_syscall *call);
 void qemu_GetOutlineTextMetricsA(struct qemu_syscall *call);
 void qemu_GetOutlineTextMetricsW(struct qemu_syscall *call);
 void qemu_GetPolyFillMode(struct qemu_syscall *call);
 void qemu_GetRelAbs(struct qemu_syscall *call);
 void qemu_GetROP2(struct qemu_syscall *call);
+void qemu_GetStockObject(struct qemu_syscall *call);
 void qemu_GetStretchBltMode(struct qemu_syscall *call);
 void qemu_GetTextAlign(struct qemu_syscall *call);
 void qemu_GetTextCharacterExtra(struct qemu_syscall *call);
@@ -348,11 +378,13 @@ void qemu_RestoreDC(struct qemu_syscall *call);
 void qemu_SaveDC(struct qemu_syscall *call);
 void qemu_ScaleViewportExtEx(struct qemu_syscall *call);
 void qemu_ScaleWindowExtEx(struct qemu_syscall *call);
+void qemu_SelectObject(struct qemu_syscall *call);
 void qemu_SetAbortProc(struct qemu_syscall *call);
 void qemu_SetArcDirection(struct qemu_syscall *call);
 void qemu_SetBkColor(struct qemu_syscall *call);
 void qemu_SetBkMode(struct qemu_syscall *call);
 void qemu_SetBoundsRect(struct qemu_syscall *call);
+void qemu_SetColorAdjustment(struct qemu_syscall *call);
 void qemu_SetColorSpace(struct qemu_syscall *call);
 void qemu_SetDCBrushColor(struct qemu_syscall *call);
 void qemu_SetDCPenColor(struct qemu_syscall *call);
@@ -366,6 +398,7 @@ void qemu_SetMapMode(struct qemu_syscall *call);
 void qemu_SetMapperFlags(struct qemu_syscall *call);
 void qemu_SetMetaFileBitsEx(struct qemu_syscall *call);
 void qemu_SetMiterLimit(struct qemu_syscall *call);
+void qemu_SetObjectOwner(struct qemu_syscall *call);
 void qemu_SetPolyFillMode(struct qemu_syscall *call);
 void qemu_SetRelAbs(struct qemu_syscall *call);
 void qemu_SetROP2(struct qemu_syscall *call);
@@ -387,6 +420,7 @@ void qemu_StartPage(struct qemu_syscall *call);
 void qemu_TextOutA(struct qemu_syscall *call);
 void qemu_TextOutW(struct qemu_syscall *call);
 void qemu_TranslateCharsetInfo(struct qemu_syscall *call);
+void qemu_UnrealizeObject(struct qemu_syscall *call);
 
 #endif
 
