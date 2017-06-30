@@ -33,6 +33,7 @@ enum msvcrt_calls
     CALL_RAISE,
     CALL_REALLOC,
     CALL_SIGNAL,
+    CALL_SPRINTF,
     CALL_STRLEN,
     CALL_STRNCMP,
     CALL_WCSCPY,
@@ -111,6 +112,7 @@ int (* CDECL p_memcmp)(const void *ptr1, const void *ptr2, size_t size);
 void *(* CDECL p_memcpy)(void *dst, const void *src, size_t size);
 int (* CDECL p_puts)(const char *str);
 void *(* CDECL p_realloc)(void *ptr, size_t size);
+int (* CDECL p_sprintf)(char *str, const char *format, ...);
 size_t (* CDECL p_strlen)(const char *str);
 int (* CDECL p_strncmp)(const char *str1, const char *str2, size_t len);
 WCHAR (* CDECL p_wcscpy)(WCHAR *dst, const WCHAR *src);
