@@ -31,6 +31,160 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_comdlg32);
 #endif
 
 
+struct qemu_GetOpenFileNameA
+{
+    struct qemu_syscall super;
+    uint64_t ofn;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetOpenFileNameA(OPENFILENAMEA *ofn)
+{
+    struct qemu_GetOpenFileNameA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETOPENFILENAMEA);
+    call.ofn = (uint64_t)ofn;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetOpenFileNameA(struct qemu_syscall *call)
+{
+    struct qemu_GetOpenFileNameA *c = (struct qemu_GetOpenFileNameA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetOpenFileNameA(QEMU_G2H(c->ofn));
+}
+
+#endif
+
+struct qemu_GetOpenFileNameW
+{
+    struct qemu_syscall super;
+    uint64_t ofn;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetOpenFileNameW(OPENFILENAMEW *ofn)
+{
+    struct qemu_GetOpenFileNameW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETOPENFILENAMEW);
+    call.ofn = (uint64_t)ofn;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetOpenFileNameW(struct qemu_syscall *call)
+{
+    struct qemu_GetOpenFileNameW *c = (struct qemu_GetOpenFileNameW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetOpenFileNameW(QEMU_G2H(c->ofn));
+}
+
+#endif
+
+struct qemu_GetSaveFileNameA
+{
+    struct qemu_syscall super;
+    uint64_t ofn;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetSaveFileNameA(OPENFILENAMEA *ofn)
+{
+    struct qemu_GetSaveFileNameA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSAVEFILENAMEA);
+    call.ofn = (uint64_t)ofn;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetSaveFileNameA(struct qemu_syscall *call)
+{
+    struct qemu_GetSaveFileNameA *c = (struct qemu_GetSaveFileNameA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetSaveFileNameA(QEMU_G2H(c->ofn));
+}
+
+#endif
+
+struct qemu_GetSaveFileNameW
+{
+    struct qemu_syscall super;
+    uint64_t ofn;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetSaveFileNameW(LPOPENFILENAMEW ofn)
+{
+    struct qemu_GetSaveFileNameW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSAVEFILENAMEW);
+    call.ofn = (uint64_t)ofn;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetSaveFileNameW(struct qemu_syscall *call)
+{
+    struct qemu_GetSaveFileNameW *c = (struct qemu_GetSaveFileNameW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetSaveFileNameW(QEMU_G2H(c->ofn));
+}
+
+#endif
+
+struct qemu_GetFileTitleA
+{
+    struct qemu_syscall super;
+    uint64_t lpFile;
+    uint64_t lpTitle;
+    uint64_t cbBuf;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI short WINAPI GetFileTitleA(LPCSTR lpFile, LPSTR lpTitle, WORD cbBuf)
+{
+    struct qemu_GetFileTitleA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETFILETITLEA);
+    call.lpFile = (uint64_t)lpFile;
+    call.lpTitle = (uint64_t)lpTitle;
+    call.cbBuf = (uint64_t)cbBuf;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetFileTitleA(struct qemu_syscall *call)
+{
+    struct qemu_GetFileTitleA *c = (struct qemu_GetFileTitleA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetFileTitleA(QEMU_G2H(c->lpFile), QEMU_G2H(c->lpTitle), c->cbBuf);
+}
+
+#endif
+
 struct qemu_GetFileTitleW
 {
     struct qemu_syscall super;

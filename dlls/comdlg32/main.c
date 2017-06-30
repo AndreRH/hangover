@@ -33,7 +33,12 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu_GetFileTitleA,
     qemu_GetFileTitleW,
+    qemu_GetOpenFileNameA,
+    qemu_GetOpenFileNameW,
+    qemu_GetSaveFileNameA,
+    qemu_GetSaveFileNameW,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
