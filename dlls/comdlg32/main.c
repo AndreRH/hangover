@@ -33,6 +33,8 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu_ChooseFontA,
+    qemu_ChooseFontW,
     qemu_FindTextA,
     qemu_FindTextW,
     qemu_GetFileTitleA,

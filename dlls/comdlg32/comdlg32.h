@@ -5,7 +5,9 @@
 
 enum comdlg32_calls
 {
-    CALL_FINDTEXTA = 0,
+    CALL_CHOOSEFONTA = 0,
+    CALL_CHOOSEFONTW,
+    CALL_FINDTEXTA,
     CALL_FINDTEXTW,
     CALL_GETFILETITLEA,
     CALL_GETFILETITLEW,
@@ -27,6 +29,8 @@ enum comdlg32_calls
 
 extern const struct qemu_ops *qemu_ops;
 
+void qemu_ChooseFontA(struct qemu_syscall *call);
+void qemu_ChooseFontW(struct qemu_syscall *call);
 void qemu_FindTextA(struct qemu_syscall *call);
 void qemu_FindTextW(struct qemu_syscall *call);
 void qemu_GetFileTitleA(struct qemu_syscall *call);
