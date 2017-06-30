@@ -41,6 +41,12 @@ static const syscall_handler dll_functions[] =
     qemu_GetOpenFileNameW,
     qemu_GetSaveFileNameA,
     qemu_GetSaveFileNameW,
+    qemu_PageSetupDlgA,
+    qemu_PageSetupDlgW,
+    qemu_PrintDlgA,
+    qemu_PrintDlgExA,
+    qemu_PrintDlgExW,
+    qemu_PrintDlgW,
     qemu_ReplaceTextA,
     qemu_ReplaceTextW,
 };

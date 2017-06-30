@@ -9,5 +9,11 @@ EXPORTS
   GetOpenFileNameW
   GetSaveFileNameA
   GetSaveFileNameW
+  PageSetupDlgA
+  PageSetupDlgW
+  PrintDlgA
+  PrintDlgExA
+  PrintDlgExW
+  PrintDlgW
   ReplaceTextA
   ReplaceTextW
