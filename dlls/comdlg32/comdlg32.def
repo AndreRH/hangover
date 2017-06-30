@@ -1,9 +1,13 @@
 LIBRARY comdlg32.dll BASE=0x50000000
 
 EXPORTS
+  FindTextA
+  FindTextW
   GetFileTitleA
   GetFileTitleW
   GetOpenFileNameA
   GetOpenFileNameW
   GetSaveFileNameA
   GetSaveFileNameW
+  ReplaceTextA
+  ReplaceTextW
