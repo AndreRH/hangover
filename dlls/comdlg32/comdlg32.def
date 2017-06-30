@@ -1,11 +1,4 @@
 LIBRARY comdlg32.dll BASE=0x50000000
 
 EXPORTS
-  ChooseFontW=ntdll.DbgBreakPoint
-  FindTextW=ntdll.DbgBreakPoint
-  GetFileTitleW=ntdll.DbgBreakPoint
-  GetOpenFileNameW=ntdll.DbgBreakPoint
-  GetSaveFileNameW=ntdll.DbgBreakPoint
-  PrintDlgW=ntdll.DbgBreakPoint
-  ReplaceTextW=ntdll.DbgBreakPoint
-
+  GetFileTitleW
