@@ -238,6 +238,42 @@ void qemu_SetEndOfFile(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_SetFilePointer
+{
+    struct qemu_syscall super;
+    uint64_t hFile;
+    uint64_t distance;
+    uint64_t highword;
+    uint64_t method;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI SetFilePointer(HANDLE hFile, LONG distance, LONG *highword, DWORD method)
+{
+    struct qemu_SetFilePointer call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETFILEPOINTER);
+    call.hFile = (uint64_t)hFile;
+    call.distance = (uint64_t)distance;
+    call.highword = (uint64_t)highword;
+    call.method = (uint64_t)method;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_SetFilePointer(struct qemu_syscall *call)
+{
+    struct qemu_SetFilePointer *c = (struct qemu_SetFilePointer *)call;
+    WINE_TRACE("\n");
+    c->super.iret = SetFilePointer(QEMU_G2H(c->hFile), c->distance, QEMU_G2H(c->highword), c->method);
+}
+
+#endif
+
 struct qemu_WriteFile
 {
     struct qemu_syscall super;

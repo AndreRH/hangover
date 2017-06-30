@@ -57,6 +57,8 @@ EXPORTS
   GetVersion
   GetVersionExA
   GetVersionExW
+  GlobalAlloc
+  GlobalFree
   HeapAlloc
   HeapFree
   InitializeCriticalSection
@@ -83,6 +85,7 @@ EXPORTS
   SetDefaultCommConfigA
   SetDefaultCommConfigW
   SetEndOfFile
+  SetFilePointer
   SetLastError
   SetUnhandledExceptionFilter
   SetupComm

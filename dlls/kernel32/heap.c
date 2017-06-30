@@ -52,6 +52,68 @@ void qemu_GetProcessHeap(struct qemu_syscall *c)
 
 #endif
 
+struct qemu_GlobalAlloc
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HGLOBAL WINAPI GlobalAlloc(UINT flags, SIZE_T size)
+{
+    struct qemu_GlobalAlloc call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GLOBALALLOC);
+    call.flags = (uint64_t)flags;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return (HGLOBAL)call.super.iret;
+}
+
+#else
+
+void qemu_GlobalAlloc(struct qemu_syscall *call)
+{
+    struct qemu_GlobalAlloc *c = (struct qemu_GlobalAlloc *)call;
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)GlobalAlloc(c->flags, c->size);
+}
+
+#endif
+
+struct qemu_GlobalFree
+{
+    struct qemu_syscall super;
+    uint64_t hmem;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HGLOBAL WINAPI GlobalFree(HGLOBAL hmem)
+{
+    struct qemu_GlobalFree call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GLOBALFREE);
+    call.hmem = (uint64_t)hmem;
+
+    qemu_syscall(&call.super);
+
+    return (HGLOBAL)call.super.iret;
+}
+
+#else
+
+void qemu_GlobalFree(struct qemu_syscall *call)
+{
+    struct qemu_GlobalFree *c = (struct qemu_GlobalFree *)call;
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)GlobalFree(QEMU_G2H(c->hmem));
+}
+
+#endif
+
 struct qemu_HeapAlloc
 {
     struct qemu_syscall super;

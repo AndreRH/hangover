@@ -56,6 +56,8 @@ enum kernel32_calls
     CALL_GETVERSION,
     CALL_GETVERSIONEXA,
     CALL_GETVERSIONEXW,
+    CALL_GLOBALALLOC,
+    CALL_GLOBALFREE,
     CALL_HEAPALLOC,
     CALL_HEAPFREE,
     CALL_INITIALIZECRITICALSECTION,
@@ -75,6 +77,7 @@ enum kernel32_calls
     CALL_SETDEFAULTCOMMCONFIGA,
     CALL_SETDEFAULTCOMMCONFIGW,
     CALL_SETENDOFFILE,
+    CALL_SETFILEPOINTER,
     CALL_SETLASTERROR,
     CALL_SETUNHANDLEDEXCEPTIONFILTER,
     CALL_SETUPCOMM,
@@ -148,6 +151,8 @@ void qemu_GetTimeFormatW(struct qemu_syscall *call);
 void qemu_GetVersion(struct qemu_syscall *call);
 void qemu_GetVersionExA(struct qemu_syscall *call);
 void qemu_GetVersionExW(struct qemu_syscall *call);
+void qemu_GlobalAlloc(struct qemu_syscall *call);
+void qemu_GlobalFree(struct qemu_syscall *call);
 void qemu_HeapAlloc(struct qemu_syscall *call);
 void qemu_HeapFree(struct qemu_syscall *call);
 void qemu_InitializeCriticalSection(struct qemu_syscall *call);
@@ -167,6 +172,7 @@ void qemu_SetConsoleCtrlHandler(struct qemu_syscall *call);
 void qemu_SetDefaultCommConfigA(struct qemu_syscall *call);
 void qemu_SetDefaultCommConfigW(struct qemu_syscall *call);
 void qemu_SetEndOfFile(struct qemu_syscall *call);
+void qemu_SetFilePointer(struct qemu_syscall *call);
 void qemu_SetLastError(struct qemu_syscall *call);
 void qemu_SetUnhandledExceptionFilter(struct qemu_syscall *call);
 void qemu_SetupComm(struct qemu_syscall *call);
