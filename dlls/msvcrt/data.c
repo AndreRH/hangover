@@ -84,6 +84,50 @@ void qemu___getmainargs(struct qemu_syscall *call)
 
 #endif
 
+struct qemu___wgetmainargs
+{
+    struct qemu_syscall super;
+    uint64_t argc, wargv, wenvp;
+    uint64_t expand_wildcards;
+    uint64_t new_mode;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+void CDECL __wgetmainargs(int *argc, WCHAR** *wargv, WCHAR** *wenvp,
+                          int expand_wildcards, int *new_mode)
+{
+    struct qemu___getmainargs call;
+    call.super.id = QEMU_SYSCALL_ID(CALL___WGETMAINARGS);
+    call.argc = (uint64_t)argc;
+    call.argv = (uint64_t)wargv;
+    call.envp = (uint64_t)wenvp;
+    call.expand_wildcards = expand_wildcards;
+    call.new_mode = (uint64_t)new_mode;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu___wgetmainargs(struct qemu_syscall *call)
+{
+    WCHAR **host_argv, **host_envp;
+
+    struct qemu___wgetmainargs *c = (struct qemu___wgetmainargs *)call;
+    /* This shouldn't forward, because we need to remove qemu and its args from
+     * the arguments we pass to the guest file. Linux-user/main.c has some code
+     * for that that can be used as a reference. */
+    WINE_FIXME("\n");
+    p___wgetmainargs(QEMU_G2H(c->argc), &host_argv, &host_envp,
+            c->expand_wildcards, QEMU_G2H(c->new_mode));
+
+    *(uint64_t *)(QEMU_G2H(c->wargv)) = QEMU_H2G(host_argv);
+    *(uint64_t *)(QEMU_G2H(c->wenvp)) = QEMU_H2G(host_envp);
+}
+
+#endif
+
 struct qemu___set_app_type
 {
     struct qemu_syscall super;

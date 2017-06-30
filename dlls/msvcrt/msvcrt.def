@@ -9,6 +9,7 @@ EXPORTS
   __lconv_init
   __set_app_type=MSVCRT___set_app_type
   __setusermatherr=MSVCRT___setusermatherr
+  __wgetmainargs
   _acmdln=MSVCRT__acmdln
   _amsg_exit
   _cexit=MSVCRT__cexit
