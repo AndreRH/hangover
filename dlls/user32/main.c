@@ -520,10 +520,8 @@ static const syscall_handler dll_functions[] =
     qemu_RealGetWindowClassA,
     qemu_RealGetWindowClassW,
     qemu_RedrawWindow,
-    qemu_RegisterClassA,
-    qemu_RegisterClassExA,
-    qemu_RegisterClassExW,
-    qemu_RegisterClassW,
+    qemu_RegisterClassEx,
+    qemu_RegisterClassEx,
     qemu_RegisterClipboardFormatA,
     qemu_RegisterClipboardFormatW,
     qemu_RegisterDeviceNotificationA,
@@ -678,8 +676,8 @@ static const syscall_handler dll_functions[] =
     qemu_UnionRect,
     qemu_UnloadKeyboardLayout,
     qemu_UnpackDDElParam,
-    qemu_UnregisterClassA,
-    qemu_UnregisterClassW,
+    qemu_UnregisterClass,
+    qemu_UnregisterClass,
     qemu_UnregisterDeviceNotification,
     qemu_UnregisterHotKey,
     qemu_UnregisterPowerSettingNotification,
@@ -703,12 +701,69 @@ static const syscall_handler dll_functions[] =
     qemu_WINNLSGetIMEHotkey,
 };
 
+struct classproc_wrapper *class_wrappers;
+unsigned int class_wrapper_count;
+uint64_t guest_wndproc_wrapper;
+
+LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam, struct classproc_wrapper *wrapper)
+{
+    struct wndproc_call call;
+    call.wndproc = wrapper->guest_proc;
+    call.win = (uint64_t)win;
+    call.msg = msg;
+    call.wparam = wparam;
+    call.lparam = lparam;
+    WINE_TRACE("Calling guest wndproc 0x%lx(%p, %x, %lx, %lx)\n", wrapper->guest_proc, win, msg, wparam, lparam);
+    return qemu_ops->qemu_execute(QEMU_G2H(guest_wndproc_wrapper), QEMU_H2G(&call));
+}
+
+void init_classproc(struct classproc_wrapper *wrapper)
+{
+    size_t offset;
+
+    offset = offsetof(struct classproc_wrapper, selfptr) - offsetof(struct classproc_wrapper, ldrx4);
+    /* The load offset is stored in bits 5-24. The stored offset is left-shifted by 2 to generate the 21
+     * bit real offset. So to place it in the right place we need our offset (multiple of 4, unless the
+     * compiler screwed up terribly) shifted by another 3 bits. */
+    wrapper->ldrx4 = 0x58000004 | (offset << 3); /* ldr x4, offset */
+
+    offset = offsetof(struct classproc_wrapper, host_proc) - offsetof(struct classproc_wrapper, ldrx5);
+    wrapper->ldrx5 = 0x58000005 | (offset << 3);   /* ldr x5, offset */
+
+    wrapper->br = 0xd61f00a0; /* br x5 */
+
+    wrapper->selfptr = wrapper;
+    wrapper->host_proc = wndproc_wrapper;
+
+    wrapper->guest_proc = 0;
+    wrapper->atom = 0;
+
+    __clear_cache(&wrapper->ldrx4, &wrapper->br + 1);
+}
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
+    unsigned int i;
+    LRESULT ret;
+
     WINE_TRACE("Loading host-side user32 wrapper.\n");
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
+
+    /* Fill two pages for now. See RegisterClassExW on complications with growing this
+     * on demand. */
+    class_wrapper_count = 2 * 4096 / sizeof(*class_wrappers);
+    class_wrappers = VirtualAlloc(NULL, sizeof(*class_wrappers) * class_wrapper_count,
+            MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+    if (!class_wrappers)
+    {
+        WINE_ERR("Failed to allocate memory for class wndproc wrappers.\n");
+        return NULL;
+    }
+
+    for (i = 0; i < class_wrapper_count; ++i)
+        init_classproc(&class_wrappers[i]);
 
     return dll_functions;
 }

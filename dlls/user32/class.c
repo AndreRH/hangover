@@ -30,110 +30,94 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 #endif
 
-
-struct qemu_RegisterClassA
+struct qemu_RegisterClass
 {
     struct qemu_syscall super;
     uint64_t wc;
+    uint64_t wndproc_wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINUSERAPI ATOM WINAPI RegisterClassA(const WNDCLASSA* wc)
+LRESULT wndproc_wrapper(const struct wndproc_call *call)
 {
-    struct qemu_RegisterClassA call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERCLASSA);
-    call.wc = (uint64_t)wc;
+    WNDPROC proc = (WNDPROC)call->wndproc;
+
+    return proc((HWND)call->win, call->msg, call->wparam, call->lparam);
+}
+
+WINUSERAPI ATOM WINAPI RegisterClassA(const WNDCLASSA *wc)
+{
+    struct qemu_RegisterClass call;
+    WNDCLASSEXA wcex;
+
+    wcex.cbSize        = sizeof(wcex);
+    wcex.style         = wc->style;
+    wcex.lpfnWndProc   = wc->lpfnWndProc;
+    wcex.cbClsExtra    = wc->cbClsExtra;
+    wcex.cbWndExtra    = wc->cbWndExtra;
+    wcex.hInstance     = wc->hInstance;
+    wcex.hIcon         = wc->hIcon;
+    wcex.hCursor       = wc->hCursor;
+    wcex.hbrBackground = wc->hbrBackground;
+    wcex.lpszMenuName  = wc->lpszMenuName;
+    wcex.lpszClassName = wc->lpszClassName;
+    wcex.hIconSm       = 0;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERCLASSEXA);
+    call.wc = (uint64_t)&wcex;
+    call.wndproc_wrapper = (uint64_t)wndproc_wrapper;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_RegisterClassA(struct qemu_syscall *call)
+WINUSERAPI ATOM WINAPI RegisterClassW(const WNDCLASSW *wc)
 {
-    struct qemu_RegisterClassA *c = (struct qemu_RegisterClassA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RegisterClassA(QEMU_G2H(c->wc));
-}
+    WNDCLASSEXW wcex;
+    struct qemu_RegisterClass call;
 
-#endif
+    wcex.cbSize        = sizeof(wcex);
+    wcex.style         = wc->style;
+    wcex.lpfnWndProc   = wc->lpfnWndProc;
+    wcex.cbClsExtra    = wc->cbClsExtra;
+    wcex.cbWndExtra    = wc->cbWndExtra;
+    wcex.hInstance     = wc->hInstance;
+    wcex.hIcon         = wc->hIcon;
+    wcex.hCursor       = wc->hCursor;
+    wcex.hbrBackground = wc->hbrBackground;
+    wcex.lpszMenuName  = wc->lpszMenuName;
+    wcex.lpszClassName = wc->lpszClassName;
+    wcex.hIconSm       = 0;
 
-struct qemu_RegisterClassW
-{
-    struct qemu_syscall super;
-    uint64_t wc;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINUSERAPI ATOM WINAPI RegisterClassW(const WNDCLASSW* wc)
-{
-    struct qemu_RegisterClassW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERCLASSW);
-    call.wc = (uint64_t)wc;
+    call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERCLASSEXW);
+    call.wc = (uint64_t)&wcex;
+    call.wndproc_wrapper = (uint64_t)wndproc_wrapper;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
-
-#else
-
-void qemu_RegisterClassW(struct qemu_syscall *call)
-{
-    struct qemu_RegisterClassW *c = (struct qemu_RegisterClassW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RegisterClassW(QEMU_G2H(c->wc));
-}
-
-#endif
-
-struct qemu_RegisterClassExA
-{
-    struct qemu_syscall super;
-    uint64_t wc;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 WINUSERAPI ATOM WINAPI RegisterClassExA(const WNDCLASSEXA* wc)
 {
-    struct qemu_RegisterClassExA call;
+    struct qemu_RegisterClass call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERCLASSEXA);
     call.wc = (uint64_t)wc;
+    call.wndproc_wrapper = (uint64_t)wndproc_wrapper;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
-
-#else
-
-void qemu_RegisterClassExA(struct qemu_syscall *call)
-{
-    struct qemu_RegisterClassExA *c = (struct qemu_RegisterClassExA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RegisterClassExA(QEMU_G2H(c->wc));
-}
-
-#endif
-
-struct qemu_RegisterClassExW
-{
-    struct qemu_syscall super;
-    uint64_t wc;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 WINUSERAPI ATOM WINAPI RegisterClassExW(const WNDCLASSEXW* wc)
 {
-    struct qemu_RegisterClassExW call;
+    struct qemu_RegisterClass call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERCLASSEXW);
     call.wc = (uint64_t)wc;
+    call.wndproc_wrapper = (uint64_t)wndproc_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -142,16 +126,56 @@ WINUSERAPI ATOM WINAPI RegisterClassExW(const WNDCLASSEXW* wc)
 
 #else
 
-void qemu_RegisterClassExW(struct qemu_syscall *call)
+void qemu_RegisterClassEx(struct qemu_syscall *call)
 {
-    struct qemu_RegisterClassExW *c = (struct qemu_RegisterClassExW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RegisterClassExW(QEMU_G2H(c->wc));
+    unsigned int i;
+    struct qemu_RegisterClass *c = (struct qemu_RegisterClass *)call;
+    uint64_t guest_proc;
+
+    WINE_TRACE("\n");
+
+    guest_wndproc_wrapper = c->wndproc_wrapper;
+
+    for (i = 0; i < class_wrapper_count; ++i)
+    {
+        if (!class_wrappers[i].atom)
+            break;
+    }
+    if (i == class_wrapper_count)
+    {
+        /* Growing the array requires updating all WNDPROCs for the existing classes
+         * to the new location. It is doable, but requires more code than a simple
+         * new allocation. */
+        WINE_FIXME("All class wrappers are in use\n");
+        c->super.iret = 0;
+        return;
+    }
+
+    if (c->super.id == CALL_REGISTERCLASSEXW)
+    {
+        WNDCLASSEXW exw = *(WNDCLASSEXW *)QEMU_G2H(c->wc);
+        guest_proc = (uint64_t)exw.lpfnWndProc;
+        exw.lpfnWndProc = (WNDPROC)&class_wrappers[i];
+        c->super.iret = RegisterClassExW(&exw);
+    }
+    else
+    {
+        WNDCLASSEXA exa = *(WNDCLASSEXA *)QEMU_G2H(c->wc);
+        guest_proc = (uint64_t)exa.lpfnWndProc;
+        exa.lpfnWndProc = (WNDPROC)&class_wrappers[i];
+        c->super.iret = RegisterClassExA(&exa);
+    }
+
+    if (c->super.iret)
+    {
+        class_wrappers[i].atom = c->super.iret;
+        class_wrappers[i].guest_proc = guest_proc;
+    }
 }
 
 #endif
 
-struct qemu_UnregisterClassA
+struct qemu_UnregisterClass
 {
     struct qemu_syscall super;
     uint64_t className;
@@ -160,9 +184,9 @@ struct qemu_UnregisterClassA
 
 #ifdef QEMU_DLL_GUEST
 
-WINUSERAPI BOOL WINAPI UnregisterClassA(LPCSTR className, HINSTANCE hInstance)
+WINUSERAPI BOOL WINAPI UnregisterClassA(const char *className, HINSTANCE hInstance)
 {
-    struct qemu_UnregisterClassA call;
+    struct qemu_UnregisterClass call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNREGISTERCLASSA);
     call.className = (uint64_t)className;
     call.hInstance = (uint64_t)hInstance;
@@ -172,29 +196,9 @@ WINUSERAPI BOOL WINAPI UnregisterClassA(LPCSTR className, HINSTANCE hInstance)
     return call.super.iret;
 }
 
-#else
-
-void qemu_UnregisterClassA(struct qemu_syscall *call)
+WINUSERAPI BOOL WINAPI UnregisterClassW(const WCHAR *className, HINSTANCE hInstance)
 {
-    struct qemu_UnregisterClassA *c = (struct qemu_UnregisterClassA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = UnregisterClassA(QEMU_G2H(c->className), QEMU_G2H(c->hInstance));
-}
-
-#endif
-
-struct qemu_UnregisterClassW
-{
-    struct qemu_syscall super;
-    uint64_t className;
-    uint64_t hInstance;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINUSERAPI BOOL WINAPI UnregisterClassW(LPCWSTR className, HINSTANCE hInstance)
-{
-    struct qemu_UnregisterClassW call;
+    struct qemu_UnregisterClass call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNREGISTERCLASSW);
     call.className = (uint64_t)className;
     call.hInstance = (uint64_t)hInstance;
@@ -206,11 +210,39 @@ WINUSERAPI BOOL WINAPI UnregisterClassW(LPCWSTR className, HINSTANCE hInstance)
 
 #else
 
-void qemu_UnregisterClassW(struct qemu_syscall *call)
+void qemu_UnregisterClass(struct qemu_syscall *call)
 {
-    struct qemu_UnregisterClassW *c = (struct qemu_UnregisterClassW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = UnregisterClassW(QEMU_G2H(c->className), QEMU_G2H(c->hInstance));
+    struct qemu_UnregisterClass *c = (struct qemu_UnregisterClass *)call;
+    ATOM atom;
+    unsigned int i;
+    WINE_TRACE("\n");
+
+    if (c->super.id == CALL_UNREGISTERCLASSA)
+    {
+        WNDCLASSEXA info;
+        atom = GetClassInfoExA(QEMU_G2H(c->hInstance), QEMU_G2H(c->className), &info);
+        c->super.iret = UnregisterClassA(QEMU_G2H(c->className), QEMU_G2H(c->hInstance));
+    }
+    else
+    {
+        WNDCLASSEXW info;
+        atom = GetClassInfoExW(QEMU_G2H(c->hInstance), QEMU_G2H(c->className), &info);
+        c->super.iret = UnregisterClassW(QEMU_G2H(c->className), QEMU_G2H(c->hInstance));
+    }
+
+    if (c->super.iret)
+    {
+        for (i = 0; i < class_wrapper_count; ++i)
+        {
+            if (!class_wrappers[i].atom == atom)
+            {
+                class_wrappers[i].atom = 0;
+                class_wrappers[i].guest_proc = 0;
+                return;
+            }
+        }
+        WINE_ERR("Could not find atom %x in class table\n", atom);
+    }
 }
 
 #endif

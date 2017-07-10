@@ -492,10 +492,8 @@ enum user32_calls
     CALL_REALGETWINDOWCLASSA,
     CALL_REALGETWINDOWCLASSW,
     CALL_REDRAWWINDOW,
-    CALL_REGISTERCLASSA,
     CALL_REGISTERCLASSEXA,
     CALL_REGISTERCLASSEXW,
-    CALL_REGISTERCLASSW,
     CALL_REGISTERCLIPBOARDFORMATA,
     CALL_REGISTERCLIPBOARDFORMATW,
     CALL_REGISTERDEVICENOTIFICATIONA,
@@ -673,6 +671,12 @@ enum user32_calls
     CALL_WINNLSENABLEIME,
     CALL_WINNLSGETENABLESTATUS,
     CALL_WINNLSGETIMEHOTKEY,
+};
+
+struct wndproc_call
+{
+    uint64_t wndproc;
+    uint64_t win, msg, wparam, lparam;
 };
 
 #ifndef QEMU_DLL_GUEST
@@ -1166,10 +1170,7 @@ void qemu_PrivateExtractIconsW(struct qemu_syscall *call);
 void qemu_RealGetWindowClassA(struct qemu_syscall *call);
 void qemu_RealGetWindowClassW(struct qemu_syscall *call);
 void qemu_RedrawWindow(struct qemu_syscall *call);
-void qemu_RegisterClassA(struct qemu_syscall *call);
-void qemu_RegisterClassExA(struct qemu_syscall *call);
-void qemu_RegisterClassExW(struct qemu_syscall *call);
-void qemu_RegisterClassW(struct qemu_syscall *call);
+void qemu_RegisterClassEx(struct qemu_syscall *call);
 void qemu_RegisterClipboardFormatA(struct qemu_syscall *call);
 void qemu_RegisterClipboardFormatW(struct qemu_syscall *call);
 void qemu_RegisterDeviceNotificationA(struct qemu_syscall *call);
@@ -1324,8 +1325,8 @@ void qemu_UnhookWinEvent(struct qemu_syscall *call);
 void qemu_UnionRect(struct qemu_syscall *call);
 void qemu_UnloadKeyboardLayout(struct qemu_syscall *call);
 void qemu_UnpackDDElParam(struct qemu_syscall *call);
-void qemu_UnregisterClassA(struct qemu_syscall *call);
-void qemu_UnregisterClassW(struct qemu_syscall *call);
+void qemu_UnregisterClass(struct qemu_syscall *call);
+void qemu_UnregisterClass(struct qemu_syscall *call);
 void qemu_UnregisterDeviceNotification(struct qemu_syscall *call);
 void qemu_UnregisterHotKey(struct qemu_syscall *call);
 void qemu_UnregisterPowerSettingNotification(struct qemu_syscall *call);
@@ -1347,6 +1348,22 @@ void qemu_WinHelpW(struct qemu_syscall *call);
 void qemu_WINNLSEnableIME(struct qemu_syscall *call);
 void qemu_WINNLSGetEnableStatus(struct qemu_syscall *call);
 void qemu_WINNLSGetIMEHotkey(struct qemu_syscall *call);
+
+struct classproc_wrapper
+{
+    int32_t ldrx4;
+    int32_t ldrx5;
+    int32_t br;
+    void *selfptr;
+    void *host_proc;
+
+    uint64_t guest_proc;
+    ATOM atom;
+};
+
+extern struct classproc_wrapper *class_wrappers;
+extern unsigned int class_wrapper_count;
+extern uint64_t guest_wndproc_wrapper;
 
 #endif
 
