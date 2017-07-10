@@ -28,6 +28,8 @@ int main(int argc, char *argv[])
 
     wc.lpfnWndProc = my_wndproc;
     wc.lpszClassName = "my_test_wc";
+    wc.hCursor = LoadCursorA(NULL, IDC_ARROW);
+    wc.hbrBackground = GetStockObject(GRAY_BRUSH);
     a = RegisterClassA(&wc);
     printf("Got class atom %x, wndproc %p\n", a, my_wndproc);
 
