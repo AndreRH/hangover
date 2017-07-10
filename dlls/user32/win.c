@@ -171,7 +171,7 @@ WINUSERAPI BOOL WINAPI DestroyWindow(HWND hwnd)
 void qemu_DestroyWindow(struct qemu_syscall *call)
 {
     struct qemu_DestroyWindow *c = (struct qemu_DestroyWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DestroyWindow(QEMU_G2H(c->hwnd));
 }
 

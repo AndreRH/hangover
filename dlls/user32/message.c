@@ -595,7 +595,7 @@ WINUSERAPI void WINAPI PostQuitMessage(INT exit_code)
 void qemu_PostQuitMessage(struct qemu_syscall *call)
 {
     struct qemu_PostQuitMessage *c = (struct qemu_PostQuitMessage *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     PostQuitMessage(c->exit_code);
 }
 
@@ -707,8 +707,8 @@ WINUSERAPI BOOL WINAPI GetMessageW(MSG *msg, HWND hwnd, UINT first, UINT last)
 void qemu_GetMessageW(struct qemu_syscall *call)
 {
     struct qemu_GetMessageW *c = (struct qemu_GetMessageW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetMessageW(QEMU_G2H(c->msg), QEMU_G2H(c->hwnd), c->first, c->last);
+    WINE_TRACE("\n");
+    c->super.iret = GetMessageW(QEMU_G2H(c->msg), (HWND)c->hwnd, c->first, c->last);
 }
 
 #endif
@@ -743,8 +743,8 @@ WINUSERAPI BOOL WINAPI GetMessageA(MSG *msg, HWND hwnd, UINT first, UINT last)
 void qemu_GetMessageA(struct qemu_syscall *call)
 {
     struct qemu_GetMessageA *c = (struct qemu_GetMessageA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetMessageA(QEMU_G2H(c->msg), QEMU_G2H(c->hwnd), c->first, c->last);
+    WINE_TRACE("\n");
+    c->super.iret = GetMessageA(QEMU_G2H(c->msg), (HWND)c->hwnd, c->first, c->last);
 }
 
 #endif
@@ -805,7 +805,7 @@ WINUSERAPI BOOL WINAPI TranslateMessage(const MSG *msg)
 void qemu_TranslateMessage(struct qemu_syscall *call)
 {
     struct qemu_TranslateMessage *c = (struct qemu_TranslateMessage *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = TranslateMessage(QEMU_G2H(c->msg));
 }
 
@@ -835,7 +835,7 @@ WINUSERAPI LRESULT WINAPI DispatchMessageA(const MSG* msg)
 void qemu_DispatchMessageA(struct qemu_syscall *call)
 {
     struct qemu_DispatchMessageA *c = (struct qemu_DispatchMessageA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DispatchMessageA(QEMU_G2H(c->msg));
 }
 
@@ -865,7 +865,7 @@ WINUSERAPI LRESULT WINAPI DispatchMessageW(const MSG* msg)
 void qemu_DispatchMessageW(struct qemu_syscall *call)
 {
     struct qemu_DispatchMessageW *c = (struct qemu_DispatchMessageW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DispatchMessageW(QEMU_G2H(c->msg));
 }
 

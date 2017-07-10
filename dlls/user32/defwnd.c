@@ -61,8 +61,8 @@ WINUSERAPI LRESULT WINAPI DefWindowProcA(HWND hwnd, UINT msg, WPARAM wParam, LPA
 void qemu_DefWindowProcA(struct qemu_syscall *call)
 {
     struct qemu_DefWindowProcA *c = (struct qemu_DefWindowProcA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DefWindowProcA(QEMU_G2H(c->hwnd), c->msg, c->wParam, c->lParam);
+    WINE_TRACE("\n");
+    c->super.iret = DefWindowProcA((HWND)c->hwnd, c->msg, c->wParam, c->lParam);
 }
 
 #endif
@@ -97,8 +97,8 @@ WINUSERAPI LRESULT WINAPI DefWindowProcW(HWND hwnd, UINT msg, WPARAM wParam, LPA
 void qemu_DefWindowProcW(struct qemu_syscall *call)
 {
     struct qemu_DefWindowProcW *c = (struct qemu_DefWindowProcW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DefWindowProcW(QEMU_G2H(c->hwnd), c->msg, c->wParam, c->lParam);
+    WINE_TRACE("\n");
+    c->super.iret = DefWindowProcW((HWND)c->hwnd, c->msg, c->wParam, c->lParam);
 }
 
 #endif
