@@ -77,8 +77,14 @@ WINUSERAPI HWND WINAPI CreateWindowExA(DWORD exStyle, LPCSTR className, LPCSTR w
 void qemu_CreateWindowExA(struct qemu_syscall *call)
 {
     struct qemu_CreateWindowExA *c = (struct qemu_CreateWindowExA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateWindowExA(c->exStyle, QEMU_G2H(c->className), QEMU_G2H(c->windowName), c->style, c->x, c->y, c->width, c->height, QEMU_G2H(c->parent), QEMU_G2H(c->menu), QEMU_G2H(c->instance), QEMU_G2H(c->data));
+    HINSTANCE inst;
+    WINE_TRACE("\n");
+
+    inst = (HINSTANCE)c->instance;
+    if (!inst)
+        inst = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = (uint64_t)CreateWindowExA(c->exStyle, QEMU_G2H(c->className), QEMU_G2H(c->windowName), c->style, c->x, c->y, c->width, c->height, QEMU_G2H(c->parent), QEMU_G2H(c->menu), inst, QEMU_G2H(c->data));
 }
 
 #endif
@@ -129,8 +135,14 @@ WINUSERAPI HWND WINAPI CreateWindowExW(DWORD exStyle, LPCWSTR className, LPCWSTR
 void qemu_CreateWindowExW(struct qemu_syscall *call)
 {
     struct qemu_CreateWindowExW *c = (struct qemu_CreateWindowExW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateWindowExW(c->exStyle, QEMU_G2H(c->className), QEMU_G2H(c->windowName), c->style, c->x, c->y, c->width, c->height, QEMU_G2H(c->parent), QEMU_G2H(c->menu), QEMU_G2H(c->instance), QEMU_G2H(c->data));
+    HINSTANCE inst;
+    WINE_TRACE("\n");
+
+    inst = (HINSTANCE)c->instance;
+    if (!inst)
+        inst = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = (uint64_t)CreateWindowExW(c->exStyle, QEMU_G2H(c->className), QEMU_G2H(c->windowName), c->style, c->x, c->y, c->width, c->height, QEMU_G2H(c->parent), QEMU_G2H(c->menu), inst, QEMU_G2H(c->data));
 }
 
 #endif

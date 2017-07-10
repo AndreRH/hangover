@@ -154,15 +154,23 @@ void qemu_RegisterClassEx(struct qemu_syscall *call)
     if (c->super.id == CALL_REGISTERCLASSEXW)
     {
         WNDCLASSEXW exw = *(WNDCLASSEXW *)QEMU_G2H(c->wc);
+
         guest_proc = (uint64_t)exw.lpfnWndProc;
         exw.lpfnWndProc = (WNDPROC)&class_wrappers[i];
+        if (!exw.hInstance)
+            exw.hInstance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
         c->super.iret = RegisterClassExW(&exw);
     }
     else
     {
         WNDCLASSEXA exa = *(WNDCLASSEXA *)QEMU_G2H(c->wc);
+
         guest_proc = (uint64_t)exa.lpfnWndProc;
         exa.lpfnWndProc = (WNDPROC)&class_wrappers[i];
+        if (!exa.hInstance)
+            exa.hInstance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
         c->super.iret = RegisterClassExA(&exa);
     }
 
@@ -215,19 +223,24 @@ void qemu_UnregisterClass(struct qemu_syscall *call)
     struct qemu_UnregisterClass *c = (struct qemu_UnregisterClass *)call;
     ATOM atom;
     unsigned int i;
+    HINSTANCE inst;
     WINE_TRACE("\n");
+
+    inst = (HINSTANCE)c->hInstance;
+    if (!inst)
+        inst = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
 
     if (c->super.id == CALL_UNREGISTERCLASSA)
     {
         WNDCLASSEXA info;
         atom = GetClassInfoExA(QEMU_G2H(c->hInstance), QEMU_G2H(c->className), &info);
-        c->super.iret = UnregisterClassA(QEMU_G2H(c->className), QEMU_G2H(c->hInstance));
+        c->super.iret = UnregisterClassA(QEMU_G2H(c->className), inst);
     }
     else
     {
         WNDCLASSEXW info;
         atom = GetClassInfoExW(QEMU_G2H(c->hInstance), QEMU_G2H(c->className), &info);
-        c->super.iret = UnregisterClassW(QEMU_G2H(c->className), QEMU_G2H(c->hInstance));
+        c->super.iret = UnregisterClassW(QEMU_G2H(c->className), inst);
     }
 
     if (c->super.iret)
