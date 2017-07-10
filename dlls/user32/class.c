@@ -151,7 +151,7 @@ void qemu_RegisterClassEx(struct qemu_syscall *call)
         return;
     }
 
-    if (c->super.id == CALL_REGISTERCLASSEXW)
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_REGISTERCLASSEXW))
     {
         WNDCLASSEXW exw = *(WNDCLASSEXW *)QEMU_G2H(c->wc);
 
@@ -230,7 +230,7 @@ void qemu_UnregisterClass(struct qemu_syscall *call)
     if (!inst)
         inst = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
 
-    if (c->super.id == CALL_UNREGISTERCLASSA)
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_UNREGISTERCLASSA))
     {
         WNDCLASSEXA info;
         atom = GetClassInfoExA(QEMU_G2H(c->hInstance), QEMU_G2H(c->className), &info);
