@@ -287,8 +287,14 @@ WINUSERAPI INT WINAPI LoadStringW(HINSTANCE instance, UINT resource_id, LPWSTR b
 void qemu_LoadStringW(struct qemu_syscall *call)
 {
     struct qemu_LoadStringW *c = (struct qemu_LoadStringW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LoadStringW(QEMU_G2H(c->instance), c->resource_id, QEMU_G2H(c->buffer), c->buflen);
+    HINSTANCE instance;
+    WINE_TRACE("\n");
+
+    instance = (HINSTANCE)c->instance;
+    if (!instance)
+        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = LoadStringW(instance, c->resource_id, QEMU_G2H(c->buffer), c->buflen);
 }
 
 #endif
@@ -323,8 +329,14 @@ WINUSERAPI INT WINAPI LoadStringA(HINSTANCE instance, UINT resource_id, LPSTR bu
 void qemu_LoadStringA(struct qemu_syscall *call)
 {
     struct qemu_LoadStringA *c = (struct qemu_LoadStringA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LoadStringA(QEMU_G2H(c->instance), c->resource_id, QEMU_G2H(c->buffer), c->buflen);
+    HINSTANCE instance;
+    WINE_TRACE("\n");
+
+    instance = (HINSTANCE)c->instance;
+    if (!instance)
+        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = LoadStringA(instance, c->resource_id, QEMU_G2H(c->buffer), c->buflen);
 }
 
 #endif

@@ -475,8 +475,14 @@ WINUSERAPI HCURSOR WINAPI LoadCursorW(HINSTANCE hInstance, LPCWSTR name)
 void qemu_LoadCursorW(struct qemu_syscall *call)
 {
     struct qemu_LoadCursorW *c = (struct qemu_LoadCursorW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LoadCursorW(QEMU_G2H(c->hInstance), QEMU_G2H(c->name));
+    HINSTANCE instance;
+    WINE_TRACE("\n");
+
+    instance = (HINSTANCE)c->hInstance;
+    if (!instance)
+        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = (uint64_t)LoadCursorW(instance, QEMU_G2H(c->name));
 }
 
 #endif
@@ -507,8 +513,14 @@ WINUSERAPI HCURSOR WINAPI LoadCursorA(HINSTANCE hInstance, LPCSTR name)
 void qemu_LoadCursorA(struct qemu_syscall *call)
 {
     struct qemu_LoadCursorA *c = (struct qemu_LoadCursorA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LoadCursorA(QEMU_G2H(c->hInstance), QEMU_G2H(c->name));
+    HINSTANCE instance;
+    WINE_TRACE("\n");
+
+    instance = (HINSTANCE)c->hInstance;
+    if (!instance)
+        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = (uint64_t)LoadCursorA(instance, QEMU_G2H(c->name));
 }
 
 #endif
@@ -599,8 +611,14 @@ WINUSERAPI HICON WINAPI LoadIconW(HINSTANCE hInstance, LPCWSTR name)
 void qemu_LoadIconW(struct qemu_syscall *call)
 {
     struct qemu_LoadIconW *c = (struct qemu_LoadIconW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LoadIconW(QEMU_G2H(c->hInstance), QEMU_G2H(c->name));
+    HINSTANCE instance;
+    WINE_TRACE("\n");
+
+    instance = (HINSTANCE)c->hInstance;
+    if (!instance)
+        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = (uint64_t)LoadIconW(instance, QEMU_G2H(c->name));
 }
 
 #endif
@@ -631,8 +649,14 @@ WINUSERAPI HICON WINAPI LoadIconA(HINSTANCE hInstance, LPCSTR name)
 void qemu_LoadIconA(struct qemu_syscall *call)
 {
     struct qemu_LoadIconA *c = (struct qemu_LoadIconA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LoadIconA(QEMU_G2H(c->hInstance), QEMU_G2H(c->name));
+    HINSTANCE instance;
+    WINE_TRACE("\n");
+
+    instance = (HINSTANCE)c->hInstance;
+    if (!instance)
+        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = (uint64_t)LoadIconA(instance, QEMU_G2H(c->name));
 }
 
 #endif
@@ -817,8 +841,14 @@ WINUSERAPI HANDLE WINAPI LoadImageA(HINSTANCE hinst, LPCSTR name, UINT type, INT
 void qemu_LoadImageA(struct qemu_syscall *call)
 {
     struct qemu_LoadImageA *c = (struct qemu_LoadImageA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LoadImageA(QEMU_G2H(c->hinst), QEMU_G2H(c->name), c->type, c->desiredx, c->desiredy, c->loadflags);
+    HINSTANCE instance;
+    WINE_TRACE("\n");
+
+    instance = (HINSTANCE)c->hinst;
+    if (!instance)
+        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = (uint64_t)LoadImageA(instance, QEMU_G2H(c->name), c->type, c->desiredx, c->desiredy, c->loadflags);
 }
 
 #endif
@@ -857,8 +887,14 @@ WINUSERAPI HANDLE WINAPI LoadImageW(HINSTANCE hinst, LPCWSTR name, UINT type, IN
 void qemu_LoadImageW(struct qemu_syscall *call)
 {
     struct qemu_LoadImageW *c = (struct qemu_LoadImageW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LoadImageW(QEMU_G2H(c->hinst), QEMU_G2H(c->name), c->type, c->desiredx, c->desiredy, c->loadflags);
+    HINSTANCE instance;
+    WINE_TRACE("\n");
+
+    instance = (HINSTANCE)c->hinst;
+    if (!instance)
+        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = (uint64_t)LoadImageW(instance, QEMU_G2H(c->name), c->type, c->desiredx, c->desiredy, c->loadflags);
 }
 
 #endif
