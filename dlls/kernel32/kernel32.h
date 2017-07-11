@@ -42,8 +42,8 @@ enum kernel32_calls
     CALL_GETMODULEFILENAMEA,
     CALL_GETMODULEFILENAMEW,
     CALL_GETMODULEHANDLEA,
-    CALL_GETMODULEHANDLEW,
     CALL_GETMODULEHANDLEEXA,
+    CALL_GETMODULEHANDLEW,
     CALL_GETPROCADDRESS,
     CALL_GETPROCESSHEAP,
     CALL_GETSTARTUPINFOA,
@@ -134,8 +134,8 @@ void qemu_GetLocalTime(struct qemu_syscall *call);
 void qemu_GetModuleFileNameA(struct qemu_syscall *call);
 void qemu_GetModuleFileNameW(struct qemu_syscall *call);
 void qemu_GetModuleHandleA(struct qemu_syscall *call);
-void qemu_GetModuleHandleW(struct qemu_syscall *call);
 void qemu_GetModuleHandleExA(struct qemu_syscall *call);
+void qemu_GetModuleHandleW(struct qemu_syscall *call);
 void qemu_GetProcAddress(struct qemu_syscall *call);
 void qemu_GetProcessHeap(struct qemu_syscall *call);
 void qemu_GetStartupInfoA(struct qemu_syscall *call);
