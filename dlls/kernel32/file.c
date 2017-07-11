@@ -212,10 +212,6 @@ struct qemu_SetEndOfFile
 {
     struct qemu_syscall super;
     uint64_t file;
-    uint64_t buffer;
-    uint64_t to_read;
-    uint64_t read;
-    uint64_t ovl;
 };
 
 #ifdef QEMU_DLL_GUEST
