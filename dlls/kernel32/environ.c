@@ -31,66 +31,6 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI CHAR WINAPI *GetCommandLineA(void)
-{
-    struct qemu_syscall call;
-    call.id = QEMU_SYSCALL_ID(CALL_GETCOMMANDLINEA);
-
-    qemu_syscall(&call);
-
-    return (CHAR *)call.iret;
-}
-
-#else
-
-void qemu_GetCommandLineA(struct qemu_syscall *c)
-{
-    const TEB *teb;
-    static char *cmdlineA;
-    WINE_TRACE("\n");
-
-    if (!cmdlineA) /* make an ansi version if we don't have it. Take from Wine. */
-    {
-        ANSI_STRING     ansi;
-
-        teb = qemu_ops->qemu_getTEB();
-        cmdlineA = !RtlUnicodeStringToAnsiString(&ansi, &teb->Peb->ProcessParameters->CommandLine, TRUE) ?
-            ansi.Buffer : NULL;
-    }
-
-    c->iret = QEMU_H2G(cmdlineA);
-}
-
-#endif
-
-#ifdef QEMU_DLL_GUEST
-
-/* This just reads the PEB, so we should be able to do it without calling
- * the host, but Mingw's headers don't properly declare the PEB. So for now
- * call out of the VM to have access to Wine's winternl.h. */
-WINBASEAPI WCHAR WINAPI *GetCommandLineW(void)
-{
-    struct qemu_syscall call;
-    call.id = QEMU_SYSCALL_ID(CALL_GETCOMMANDLINEW);
-
-    qemu_syscall(&call);
-
-    return (WCHAR *)call.iret;
-}
-
-#else
-
-void qemu_GetCommandLineW(struct qemu_syscall *c)
-{
-    const TEB *teb = qemu_ops->qemu_getTEB();
-    WINE_TRACE("\n");
-    c->iret = QEMU_H2G(teb->Peb->ProcessParameters->CommandLine.Buffer);
-}
-
-#endif
-
 
 struct qemu_GetStartupInfo
 {
