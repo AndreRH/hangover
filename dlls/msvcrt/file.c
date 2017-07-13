@@ -23,6 +23,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
+#include "va_helper.h"
 #include "msvcrt.h"
 
 #ifndef QEMU_DLL_GUEST
@@ -61,11 +62,7 @@ struct qemu_fprintf
     uint64_t file;
     uint64_t format;
     uint64_t MSVCRT_FILE_size;
-    struct _args
-    {
-        uint64_t is_float;
-        uint64_t arg;
-    } args[1];
+    struct va_array args[1];
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -342,103 +339,37 @@ int CDECL MSVCRT_wprintf(const WCHAR *format, ...)
 
 #else
 
-#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.type " #name suffix ",@function\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc\n\t.previous");
-#define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
-extern int CDECL call_fprintf( FILE *file, const char *format, void *func, int nb_args, int nb_onstack, const void *args );
-__ASM_GLOBAL_FUNC( call_fprintf,
-                   "stp x29, x30, [SP,#-16]!\n\t"           /* push FP & LR */
-                   "stp x19, x20, [SP,#-16]!\n\t"           /* push some regs we'll use */
-                   "add x9, x5, x3, lsl #4\n\t"             /* end=args+nb_args*sizeof(args[0]) */
-                   "mov x10, x2\n\t"                        /* remember func */
-                   "mov x11, x5\n\t"                        /* remember args */
-                   "mov x12, #0\n\t"                        /* init arg counter */
-                   "mov x13, #0\n\t"                        /* init float arg counter */
-                   "mov x19, #0\n\t"                        /* init align */
-                   "mov x20, #0\n\t"                        /* init stack arg counter */
-                   "cbz x4, 1f\n\t"                         /* if nb_onstack == 0 goto 1 */
-                   "lsl x4, x4, #3\n\t"                     /* nb_onstack *= 8 */
-                   "add x4, x4, #0x16\n\t"                  /* align helper */
-                   "and x4, x4, #0xfffffffffffffff0\n\t"    /* align */
-                   "sub SP, SP, x4\n\t"                     /* allocate space on stack for later */
-                   "mov x19, x4\n\t"                        /* remember align */
-                   "1: cbz x3, 11f\n\t"                     /* if nb_args == 0 goto 4 */
-                   /* init  done */
-                   "2: ldr x14, [x11]\n\t"                  /* is_float */
-                   "cbz x14, 6f\n\t"                        /* if !is_float goto 97 */
-                   "cmp x13, #8\n\t"                        /* if floats exceed 8, */
-                   "b.eq 5f\n\t"                            /* they need to continue on the stack */
-                   /* floats -> regs */
-                   "adr x14, 3f\n\t"                        /* different reg per arg nubmer */
-                   "add x14, x14, x13, lsl #3\n\t"          /* some kind of switch statement */
-                   "br x14\n\t"
-                   "3: ldr d0, [x11,#8]\n\t"
-                   "b 4f\n\t"
-                   "ldr d1, [x11,#8]\n\t"
-                   "b 4f\n\t"
-                   "ldr d2, [x11,#8]\n\t"
-                   "b 4f\n\t"
-                   "ldr d3, [x11,#8]\n\t"
-                   "b 4f\n\t"
-                   "ldr d4, [x11,#8]\n\t"
-                   "b 4f\n\t"
-                   "ldr d5, [x11,#8]\n\t"
-                   "b 4f\n\t"
-                   "ldr d6, [x11,#8]\n\t"
-                   "b 4f\n\t"
-                   "ldr d7, [x11,#8]\n\t"
-                   "4: add x13, x13, #1\n\t"                /* increment the float arg counter */
-                   "b 10f\n\t"                              /* next */
-                   /* floats -> stack */
-                   "5: add x17, sp, x20, lsl #3\n\t"        /* pos = 8 * stack arg count + SP */
-                   "ldr x16, [x11,#8]\n\t"                  /* load the value */
-                   "str x16, [x17]\n\t"                     /* store it at the calculated position */
-                   "add x20, x20, #1\n\t"                   /* increment the stack arg counter */
-                   "b 10f\n\t"                              /* next */
-                   "6: cmp x12, #6\n\t"                     /* if args exceed file+fmt+6, */
-                   "b.eq 9f\n\t"                            /* they need to continue on the stack */
-                   /* ints -> reg */
-                   "adr x14, 7f\n\t"                        /* different reg per arg nubmer */
-                   "add x14, x14, x12, lsl #3\n\t"          /* some kind of switch statement */
-                   "br x14\n\t"
-                   "7: ldr x2, [x11,#8]\n\t"
-                   "b 8f\n\t"
-                   "ldr x3, [x11,#8]\n\t"
-                   "b 8f\n\t"
-                   "ldr x4, [x11,#8]\n\t"
-                   "b 8f\n\t"
-                   "ldr x5, [x11,#8]\n\t"
-                   "b 8f\n\t"
-                   "ldr x6, [x11,#8]\n\t"
-                   "b 8f\n\t"
-                   "ldr x7, [x11,#8]\n\t"
-                   "8: add x12, x12, #1\n\t"                /* increment the arg counter */
-                   "b 10f\n\t"                              /* next */
-                   /* ints -> stack */
-                   "9: add x17, sp, x20, lsl #3\n\t"        /* pos = 8 * stack arg count + SP */
-                   "ldr x16, [x11,#8]\n\t"                  /* load the value */
-                   "str x16, [x17]\n\t"                     /* store it at the calculated position */
-                   "add x20, x20, #1\n\t"                   /* increment the stack arg counter */
-                   "10: add x11, x11, #0x10\n\t"            /* next in args */
-                   "cmp	x11, x9\n\t"                        /* end? */
-                   "b.ne 2b\n\t"                            /* if not, loop */
-                   "11: blr x10\n\t"                        /* call func */
-                   "add SP, SP, x19\n\t"                    /* restore stack */
-                   "ldp x19, x20, [SP], #16\n\t"            /* pop local regs */
-                   "ldp x29, x30, [SP], #16\n\t"            /* pop FP & LR */
-                   "ret\n\t" )
+struct printf_data
+{
+    void *file;
+    void *fmt; 
+    BOOL unicode;
+};
+
+static uint64_t printf_wrapper(void *ctx, void *dummy, ...)
+{
+    va_list list;
+    const struct printf_data *data = ctx;
+    int ret;
+
+    va_start(list, dummy);
+    if (data->unicode)
+        ret = p_vfwprintf(data->file, data->fmt, list);
+    else
+        ret = p_vfprintf(data->file, data->fmt, list);
+    va_end(list);
+
+    return ret;
+}
 
 void qemu_fprintf(struct qemu_syscall *call)
 {
     struct qemu_fprintf *c = (struct qemu_fprintf *)call;
-    int ret, onstack = 0;
-    void *file, *func;
+    int ret;
+    void *file;
+    struct printf_data data;
 
-    if (c->argcount - c->argcount_float > 6)
-        onstack = c->argcount - c->argcount_float - 6;
-    if (c->argcount_float > 8)
-        onstack += c->argcount_float - 8;
-
-    WINE_TRACE("(%lu floats/%lu args, onstack %i, format \"%s\"\n", c->argcount_float, c->argcount, onstack, (char *)QEMU_G2H(c->format));
+    WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", c->argcount_float, c->argcount, (char *)QEMU_G2H(c->format));
 
     switch (c->super.id)
     {
@@ -447,30 +378,31 @@ void qemu_fprintf(struct qemu_syscall *call)
              * Plus, the size of FILE is different between Linux and Windows, and I
              * haven't found a nice way to get MSVCRT_FILE from Wine, other than
              * copypasting it, so grab the proper offset from the VM. */
-            file = (BYTE *)p___iob_func() + c->MSVCRT_FILE_size;
-            func = p_fprintf;
+            data.file = (BYTE *)p___iob_func() + c->MSVCRT_FILE_size;
+            data.unicode = FALSE;
             break;
 
         case QEMU_SYSCALL_ID(CALL_FPRINTF):
-            file = QEMU_G2H(c->file);
-            func = p_fprintf;
+            data.file = QEMU_G2H(c->file);
+            data.unicode = FALSE;
             break;
 
         case QEMU_SYSCALL_ID(CALL_WPRINTF):
-            file = (BYTE *)p___iob_func() + c->MSVCRT_FILE_size;
-            func = p_fwprintf;
+            data.file = (BYTE *)p___iob_func() + c->MSVCRT_FILE_size;
+            data.unicode = TRUE;
             break;
 
         case QEMU_SYSCALL_ID(CALL_FWPRINTF):
-            file = QEMU_G2H(c->file);
-            func = p_fwprintf;
+            data.file = QEMU_G2H(c->file);
+            data.unicode = TRUE;
             break;
 
         default:
             WINE_ERR("Unexpected op %lx\n", c->super.id);
     }
+    data.fmt = QEMU_G2H(c->format);
 
-    ret = call_fprintf(file, QEMU_G2H(c->format), func, c->argcount, onstack, c->args);
+    ret = call_va(printf_wrapper, &data, c->argcount, c->argcount_float, c->args);
 
     c->super.iret = ret;
 }

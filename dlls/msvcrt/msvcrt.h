@@ -108,8 +108,6 @@ void (* CDECL p__unlock)(int locknum);
 void (* CDECL p_abort)(void);
 void *(* CDECL p_calloc)(size_t item_count,size_t size);
 void (* CDECL p_exit)(int code);
-int (* CDECL p_fprintf)(FILE *file, const char *format, ...);
-int (* CDECL p_fwprintf)(FILE *file, const WCHAR *format, ...);
 void (* CDECL p_free)(void *ptr);
 size_t (* CDECL p_fwrite)(const void *str, size_t size, size_t count, FILE *file);
 void *(* CDECL p_malloc)(size_t size);
@@ -121,6 +119,8 @@ void *(* CDECL p_realloc)(void *ptr, size_t size);
 int (* CDECL p_sprintf)(char *str, const char *format, ...);
 size_t (* CDECL p_strlen)(const char *str);
 int (* CDECL p_strncmp)(const char *str1, const char *str2, size_t len);
+int (* CDECL p_vfprintf)(FILE *file,const char *format, va_list args);
+int (* CDECL p_vfwprintf)(FILE *file, const WCHAR *format, va_list args);
 WCHAR (* CDECL p_wcscpy)(WCHAR *dst, const WCHAR *src);
 
 #endif

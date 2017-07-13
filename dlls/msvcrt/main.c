@@ -38,6 +38,7 @@
 #include "msvcrt.h"
 
 #ifndef QEMU_DLL_GUEST
+#include "va_helper_impl.h"
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 
@@ -110,8 +111,6 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_abort = (void *)GetProcAddress(msvcrt, "abort");
     p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
     p_exit = (void *)GetProcAddress(msvcrt, "exit");
-    p_fprintf = (void *)GetProcAddress(msvcrt, "fprintf");
-    p_fwprintf = (void *)GetProcAddress(msvcrt, "fwprintf");
     p_free = (void *)GetProcAddress(msvcrt, "free");
     p_fwrite = (void *)GetProcAddress(msvcrt, "fwrite");
     p_malloc = (void *)GetProcAddress(msvcrt, "malloc");
@@ -123,6 +122,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_sprintf = (void *)GetProcAddress(msvcrt, "sprintf");
     p_strlen = (void *)GetProcAddress(msvcrt, "strlen");
     p_strncmp = (void *)GetProcAddress(msvcrt, "strncmp");
+    p_vfprintf = (void *)GetProcAddress(msvcrt, "vfprintf");
+    p_vfwprintf = (void *)GetProcAddress(msvcrt, "vfwprintf");
     p_wcscpy = (void *)GetProcAddress(msvcrt, "wcscpy");
 
     return dll_functions;
