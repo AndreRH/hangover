@@ -11,9 +11,128 @@ enum shlwapi_calls
     CALL_DOESSTRINGROUNDTRIPW,
     CALL_ISCHARSPACEA,
     CALL_ISCHARSPACEW,
+    CALL_PATHADDBACKSLASHA,
+    CALL_PATHADDBACKSLASHW,
+    CALL_PATHADDEXTENSIONA,
+    CALL_PATHADDEXTENSIONW,
+    CALL_PATHAPPENDA,
+    CALL_PATHAPPENDW,
+    CALL_PATHBUILDROOTA,
+    CALL_PATHBUILDROOTW,
+    CALL_PATHCANONICALIZEA,
+    CALL_PATHCANONICALIZEW,
+    CALL_PATHCOMBINEA,
+    CALL_PATHCOMBINEW,
+    CALL_PATHCOMMONPREFIXA,
+    CALL_PATHCOMMONPREFIXW,
+    CALL_PATHCOMPACTPATHA,
+    CALL_PATHCOMPACTPATHEXA,
+    CALL_PATHCOMPACTPATHEXW,
+    CALL_PATHCOMPACTPATHW,
+    CALL_PATHCREATEFROMURLA,
+    CALL_PATHCREATEFROMURLALLOC,
+    CALL_PATHCREATEFROMURLW,
+    CALL_PATHFILEEXISTSA,
+    CALL_PATHFILEEXISTSANDATTRIBUTESA,
+    CALL_PATHFILEEXISTSANDATTRIBUTESW,
+    CALL_PATHFILEEXISTSDEFEXTA,
+    CALL_PATHFILEEXISTSDEFEXTW,
+    CALL_PATHFILEEXISTSW,
+    CALL_PATHFINDEXTENSIONA,
+    CALL_PATHFINDEXTENSIONW,
+    CALL_PATHFINDFILENAMEA,
+    CALL_PATHFINDFILENAMEW,
+    CALL_PATHFINDNEXTCOMPONENTA,
+    CALL_PATHFINDNEXTCOMPONENTW,
+    CALL_PATHFINDONPATHA,
+    CALL_PATHFINDONPATHEXA,
+    CALL_PATHFINDONPATHEXW,
+    CALL_PATHFINDONPATHW,
+    CALL_PATHFINDSUFFIXARRAYA,
+    CALL_PATHFINDSUFFIXARRAYW,
+    CALL_PATHGETARGSA,
+    CALL_PATHGETARGSW,
+    CALL_PATHGETCHARTYPEA,
+    CALL_PATHGETCHARTYPEW,
+    CALL_PATHGETDRIVENUMBERA,
+    CALL_PATHGETDRIVENUMBERW,
+    CALL_PATHISCONTENTTYPEA,
+    CALL_PATHISCONTENTTYPEW,
+    CALL_PATHISDIRECTORYA,
+    CALL_PATHISDIRECTORYEMPTYA,
+    CALL_PATHISDIRECTORYEMPTYW,
+    CALL_PATHISDIRECTORYW,
+    CALL_PATHISFILESPECA,
+    CALL_PATHISFILESPECW,
+    CALL_PATHISLFNFILESPECA,
+    CALL_PATHISLFNFILESPECW,
+    CALL_PATHISNETWORKPATHA,
+    CALL_PATHISNETWORKPATHW,
+    CALL_PATHISPREFIXA,
+    CALL_PATHISPREFIXW,
+    CALL_PATHISRELATIVEA,
+    CALL_PATHISRELATIVEW,
+    CALL_PATHISROOTA,
+    CALL_PATHISROOTW,
+    CALL_PATHISSAMEROOTA,
+    CALL_PATHISSAMEROOTW,
+    CALL_PATHISSYSTEMFOLDERA,
+    CALL_PATHISSYSTEMFOLDERW,
+    CALL_PATHISUNCA,
+    CALL_PATHISUNCSERVERA,
+    CALL_PATHISUNCSERVERSHAREA,
+    CALL_PATHISUNCSERVERSHAREW,
+    CALL_PATHISUNCSERVERW,
+    CALL_PATHISUNCW,
+    CALL_PATHISVALIDCHARA,
+    CALL_PATHISVALIDCHARW,
+    CALL_PATHMAKEPRETTYA,
+    CALL_PATHMAKEPRETTYW,
+    CALL_PATHMAKESYSTEMFOLDERA,
+    CALL_PATHMAKESYSTEMFOLDERW,
+    CALL_PATHMATCHSPECA,
+    CALL_PATHMATCHSPECW,
+    CALL_PATHPARSEICONLOCATIONA,
+    CALL_PATHPARSEICONLOCATIONW,
+    CALL_PATHQUOTESPACESA,
+    CALL_PATHQUOTESPACESW,
+    CALL_PATHRELATIVEPATHTOA,
+    CALL_PATHRELATIVEPATHTOW,
+    CALL_PATHREMOVEARGSA,
+    CALL_PATHREMOVEARGSW,
+    CALL_PATHREMOVEBACKSLASHA,
+    CALL_PATHREMOVEBACKSLASHW,
+    CALL_PATHREMOVEBLANKSA,
+    CALL_PATHREMOVEBLANKSW,
+    CALL_PATHREMOVEEXTENSIONA,
+    CALL_PATHREMOVEEXTENSIONW,
+    CALL_PATHREMOVEFILESPECA,
+    CALL_PATHREMOVEFILESPECW,
+    CALL_PATHRENAMEEXTENSIONA,
+    CALL_PATHRENAMEEXTENSIONW,
+    CALL_PATHSEARCHANDQUALIFYA,
+    CALL_PATHSEARCHANDQUALIFYW,
+    CALL_PATHSETDLGITEMPATHA,
+    CALL_PATHSETDLGITEMPATHW,
+    CALL_PATHSKIPROOTA,
+    CALL_PATHSKIPROOTW,
+    CALL_PATHSTRIPPATHA,
+    CALL_PATHSTRIPPATHW,
+    CALL_PATHSTRIPTOROOTA,
+    CALL_PATHSTRIPTOROOTW,
+    CALL_PATHUNDECORATEA,
+    CALL_PATHUNDECORATEW,
+    CALL_PATHUNEXPANDENVSTRINGSA,
+    CALL_PATHUNEXPANDENVSTRINGSW,
+    CALL_PATHUNMAKESYSTEMFOLDERA,
+    CALL_PATHUNMAKESYSTEMFOLDERW,
+    CALL_PATHUNQUOTESPACESA,
+    CALL_PATHUNQUOTESPACESW,
     CALL_SHANSITOANSI,
     CALL_SHANSITOUNICODE,
     CALL_SHANSITOUNICODECP,
+    CALL_SHGETWEBFOLDERFILEPATHA,
+    CALL_SHGETWEBFOLDERFILEPATHW,
     CALL_SHLOADINDIRECTSTRING,
     CALL_SHSTRDUPA,
     CALL_SHSTRDUPW,
@@ -101,9 +220,128 @@ void qemu_DoesStringRoundTripA(struct qemu_syscall *call);
 void qemu_DoesStringRoundTripW(struct qemu_syscall *call);
 void qemu_IsCharSpaceA(struct qemu_syscall *call);
 void qemu_IsCharSpaceW(struct qemu_syscall *call);
+void qemu_PathAddBackslashA(struct qemu_syscall *call);
+void qemu_PathAddBackslashW(struct qemu_syscall *call);
+void qemu_PathAddExtensionA(struct qemu_syscall *call);
+void qemu_PathAddExtensionW(struct qemu_syscall *call);
+void qemu_PathAppendA(struct qemu_syscall *call);
+void qemu_PathAppendW(struct qemu_syscall *call);
+void qemu_PathBuildRootA(struct qemu_syscall *call);
+void qemu_PathBuildRootW(struct qemu_syscall *call);
+void qemu_PathCanonicalizeA(struct qemu_syscall *call);
+void qemu_PathCanonicalizeW(struct qemu_syscall *call);
+void qemu_PathCombineA(struct qemu_syscall *call);
+void qemu_PathCombineW(struct qemu_syscall *call);
+void qemu_PathCommonPrefixA(struct qemu_syscall *call);
+void qemu_PathCommonPrefixW(struct qemu_syscall *call);
+void qemu_PathCompactPathA(struct qemu_syscall *call);
+void qemu_PathCompactPathExA(struct qemu_syscall *call);
+void qemu_PathCompactPathExW(struct qemu_syscall *call);
+void qemu_PathCompactPathW(struct qemu_syscall *call);
+void qemu_PathCreateFromUrlA(struct qemu_syscall *call);
+void qemu_PathCreateFromUrlAlloc(struct qemu_syscall *call);
+void qemu_PathCreateFromUrlW(struct qemu_syscall *call);
+void qemu_PathFileExistsA(struct qemu_syscall *call);
+void qemu_PathFileExistsAndAttributesA(struct qemu_syscall *call);
+void qemu_PathFileExistsAndAttributesW(struct qemu_syscall *call);
+void qemu_PathFileExistsDefExtA(struct qemu_syscall *call);
+void qemu_PathFileExistsDefExtW(struct qemu_syscall *call);
+void qemu_PathFileExistsW(struct qemu_syscall *call);
+void qemu_PathFindExtensionA(struct qemu_syscall *call);
+void qemu_PathFindExtensionW(struct qemu_syscall *call);
+void qemu_PathFindFileNameA(struct qemu_syscall *call);
+void qemu_PathFindFileNameW(struct qemu_syscall *call);
+void qemu_PathFindNextComponentA(struct qemu_syscall *call);
+void qemu_PathFindNextComponentW(struct qemu_syscall *call);
+void qemu_PathFindOnPathA(struct qemu_syscall *call);
+void qemu_PathFindOnPathExA(struct qemu_syscall *call);
+void qemu_PathFindOnPathExW(struct qemu_syscall *call);
+void qemu_PathFindOnPathW(struct qemu_syscall *call);
+void qemu_PathFindSuffixArrayA(struct qemu_syscall *call);
+void qemu_PathFindSuffixArrayW(struct qemu_syscall *call);
+void qemu_PathGetArgsA(struct qemu_syscall *call);
+void qemu_PathGetArgsW(struct qemu_syscall *call);
+void qemu_PathGetCharTypeA(struct qemu_syscall *call);
+void qemu_PathGetCharTypeW(struct qemu_syscall *call);
+void qemu_PathGetDriveNumberA(struct qemu_syscall *call);
+void qemu_PathGetDriveNumberW(struct qemu_syscall *call);
+void qemu_PathIsContentTypeA(struct qemu_syscall *call);
+void qemu_PathIsContentTypeW(struct qemu_syscall *call);
+void qemu_PathIsDirectoryA(struct qemu_syscall *call);
+void qemu_PathIsDirectoryEmptyA(struct qemu_syscall *call);
+void qemu_PathIsDirectoryEmptyW(struct qemu_syscall *call);
+void qemu_PathIsDirectoryW(struct qemu_syscall *call);
+void qemu_PathIsFileSpecA(struct qemu_syscall *call);
+void qemu_PathIsFileSpecW(struct qemu_syscall *call);
+void qemu_PathIsLFNFileSpecA(struct qemu_syscall *call);
+void qemu_PathIsLFNFileSpecW(struct qemu_syscall *call);
+void qemu_PathIsNetworkPathA(struct qemu_syscall *call);
+void qemu_PathIsNetworkPathW(struct qemu_syscall *call);
+void qemu_PathIsPrefixA(struct qemu_syscall *call);
+void qemu_PathIsPrefixW(struct qemu_syscall *call);
+void qemu_PathIsRelativeA(struct qemu_syscall *call);
+void qemu_PathIsRelativeW(struct qemu_syscall *call);
+void qemu_PathIsRootA(struct qemu_syscall *call);
+void qemu_PathIsRootW(struct qemu_syscall *call);
+void qemu_PathIsSameRootA(struct qemu_syscall *call);
+void qemu_PathIsSameRootW(struct qemu_syscall *call);
+void qemu_PathIsSystemFolderA(struct qemu_syscall *call);
+void qemu_PathIsSystemFolderW(struct qemu_syscall *call);
+void qemu_PathIsUNCA(struct qemu_syscall *call);
+void qemu_PathIsUNCServerA(struct qemu_syscall *call);
+void qemu_PathIsUNCServerShareA(struct qemu_syscall *call);
+void qemu_PathIsUNCServerShareW(struct qemu_syscall *call);
+void qemu_PathIsUNCServerW(struct qemu_syscall *call);
+void qemu_PathIsUNCW(struct qemu_syscall *call);
+void qemu_PathIsValidCharA(struct qemu_syscall *call);
+void qemu_PathIsValidCharW(struct qemu_syscall *call);
+void qemu_PathMakePrettyA(struct qemu_syscall *call);
+void qemu_PathMakePrettyW(struct qemu_syscall *call);
+void qemu_PathMakeSystemFolderA(struct qemu_syscall *call);
+void qemu_PathMakeSystemFolderW(struct qemu_syscall *call);
+void qemu_PathMatchSpecA(struct qemu_syscall *call);
+void qemu_PathMatchSpecW(struct qemu_syscall *call);
+void qemu_PathParseIconLocationA(struct qemu_syscall *call);
+void qemu_PathParseIconLocationW(struct qemu_syscall *call);
+void qemu_PathQuoteSpacesA(struct qemu_syscall *call);
+void qemu_PathQuoteSpacesW(struct qemu_syscall *call);
+void qemu_PathRelativePathToA(struct qemu_syscall *call);
+void qemu_PathRelativePathToW(struct qemu_syscall *call);
+void qemu_PathRemoveArgsA(struct qemu_syscall *call);
+void qemu_PathRemoveArgsW(struct qemu_syscall *call);
+void qemu_PathRemoveBackslashA(struct qemu_syscall *call);
+void qemu_PathRemoveBackslashW(struct qemu_syscall *call);
+void qemu_PathRemoveBlanksA(struct qemu_syscall *call);
+void qemu_PathRemoveBlanksW(struct qemu_syscall *call);
+void qemu_PathRemoveExtensionA(struct qemu_syscall *call);
+void qemu_PathRemoveExtensionW(struct qemu_syscall *call);
+void qemu_PathRemoveFileSpecA(struct qemu_syscall *call);
+void qemu_PathRemoveFileSpecW(struct qemu_syscall *call);
+void qemu_PathRenameExtensionA(struct qemu_syscall *call);
+void qemu_PathRenameExtensionW(struct qemu_syscall *call);
+void qemu_PathSearchAndQualifyA(struct qemu_syscall *call);
+void qemu_PathSearchAndQualifyW(struct qemu_syscall *call);
+void qemu_PathSetDlgItemPathA(struct qemu_syscall *call);
+void qemu_PathSetDlgItemPathW(struct qemu_syscall *call);
+void qemu_PathSkipRootA(struct qemu_syscall *call);
+void qemu_PathSkipRootW(struct qemu_syscall *call);
+void qemu_PathStripPathA(struct qemu_syscall *call);
+void qemu_PathStripPathW(struct qemu_syscall *call);
+void qemu_PathStripToRootA(struct qemu_syscall *call);
+void qemu_PathStripToRootW(struct qemu_syscall *call);
+void qemu_PathUndecorateA(struct qemu_syscall *call);
+void qemu_PathUndecorateW(struct qemu_syscall *call);
+void qemu_PathUnExpandEnvStringsA(struct qemu_syscall *call);
+void qemu_PathUnExpandEnvStringsW(struct qemu_syscall *call);
+void qemu_PathUnmakeSystemFolderA(struct qemu_syscall *call);
+void qemu_PathUnmakeSystemFolderW(struct qemu_syscall *call);
+void qemu_PathUnquoteSpacesA(struct qemu_syscall *call);
+void qemu_PathUnquoteSpacesW(struct qemu_syscall *call);
 void qemu_SHAnsiToAnsi(struct qemu_syscall *call);
 void qemu_SHAnsiToUnicode(struct qemu_syscall *call);
 void qemu_SHAnsiToUnicodeCP(struct qemu_syscall *call);
+void qemu_SHGetWebFolderFilePathA(struct qemu_syscall *call);
+void qemu_SHGetWebFolderFilePathW(struct qemu_syscall *call);
 void qemu_SHLoadIndirectString(struct qemu_syscall *call);
 void qemu_SHStrDupA(struct qemu_syscall *call);
 void qemu_SHStrDupW(struct qemu_syscall *call);
