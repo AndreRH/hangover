@@ -669,3 +669,7 @@ EXPORTS
   WINNLSEnableIME
   WINNLSGetEnableStatus
   WINNLSGetIMEHotkey
+  wsprintfA
+  wsprintfW
+  wvsprintfA
+  wvsprintfW
