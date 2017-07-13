@@ -8,5 +8,6 @@
 #define DLL_COMDLG32    5ULL
 #define DLL_GDI32       6ULL
 #define DLL_USER32      7ULL
+#define DLL_SHELL32     8ULL
 
 #endif
