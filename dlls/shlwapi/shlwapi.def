@@ -204,4 +204,7 @@ EXPORTS
   StrToIntW
   StrTrimA
   StrTrimW
+  wnsprintfA
   wnsprintfW
+  wvnsprintfA
+  wvnsprintfW

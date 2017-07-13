@@ -208,7 +208,6 @@ enum shlwapi_calls
     CALL_STRTOINTW,
     CALL_STRTRIMA,
     CALL_STRTRIMW,
-    CALL_WNSPRINTFW,
 };
 
 #ifndef QEMU_DLL_GUEST
@@ -418,7 +417,6 @@ void qemu_StrToIntExW(struct qemu_syscall *call);
 void qemu_StrToIntW(struct qemu_syscall *call);
 void qemu_StrTrimA(struct qemu_syscall *call);
 void qemu_StrTrimW(struct qemu_syscall *call);
-void qemu_wnsprintfW(struct qemu_syscall *call);
 
 #endif
 
