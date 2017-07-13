@@ -17,3 +17,8 @@ EXPORTS
   SHPropStgCreate
   SHPropStgReadMultiple
   SHPropStgWriteMultiple
+  StrCmpNIW=shlwapi.StrCmpNIW
+  StrCmpNW=shlwapi.StrCmpNW
+  StrRStrIW=shlwapi.StrRStrIW
+  StrStrIW=shlwapi.StrStrIW
+  StrStrW=shlwapi.StrStrW
