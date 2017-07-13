@@ -55,8 +55,14 @@ WINBASEAPI BOOL WINAPI ChooseFontW(LPCHOOSEFONTW lpChFont)
 void qemu_ChooseFontW(struct qemu_syscall *call)
 {
     struct qemu_ChooseFontW *c = (struct qemu_ChooseFontW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ChooseFontW(QEMU_G2H(c->lpChFont));
+    CHOOSEFONTW cf;
+    WINE_TRACE("\n");
+
+    cf = *(CHOOSEFONTW *)QEMU_G2H(c->lpChFont);
+    if (cf.Flags & (CF_ENABLETEMPLATEHANDLE | CF_ENABLETEMPLATE) == CF_ENABLETEMPLATE && !cf.hInstance)
+        cf.hInstance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = ChooseFontW(QEMU_G2H(&cf));
 }
 
 #endif
@@ -85,8 +91,14 @@ WINBASEAPI BOOL WINAPI ChooseFontA(LPCHOOSEFONTA lpChFont)
 void qemu_ChooseFontA(struct qemu_syscall *call)
 {
     struct qemu_ChooseFontA *c = (struct qemu_ChooseFontA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ChooseFontA(QEMU_G2H(c->lpChFont));
+    CHOOSEFONTA cf;
+    WINE_TRACE("\n");
+
+    cf = *(CHOOSEFONTA *)QEMU_G2H(c->lpChFont);
+    if (cf.Flags & (CF_ENABLETEMPLATEHANDLE | CF_ENABLETEMPLATE) == CF_ENABLETEMPLATE && !cf.hInstance)
+        cf.hInstance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = ChooseFontA(&cf);
 }
 
 #endif
