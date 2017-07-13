@@ -55,7 +55,7 @@ WINBASEAPI HWND WINAPI FindTextA(LPFINDREPLACEA pfr)
 void qemu_FindTextA(struct qemu_syscall *call)
 {
     struct qemu_FindTextA *c = (struct qemu_FindTextA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)FindTextA(QEMU_G2H(c->pfr));
 }
 
@@ -85,7 +85,7 @@ WINBASEAPI HWND WINAPI ReplaceTextA(LPFINDREPLACEA pfr)
 void qemu_ReplaceTextA(struct qemu_syscall *call)
 {
     struct qemu_ReplaceTextA *c = (struct qemu_ReplaceTextA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)ReplaceTextA(QEMU_G2H(c->pfr));
 }
 
@@ -115,7 +115,7 @@ WINBASEAPI HWND WINAPI FindTextW(LPFINDREPLACEW pfr)
 void qemu_FindTextW(struct qemu_syscall *call)
 {
     struct qemu_FindTextW *c = (struct qemu_FindTextW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)FindTextW(QEMU_G2H(c->pfr));
 }
 
@@ -145,7 +145,7 @@ WINBASEAPI HWND WINAPI ReplaceTextW(LPFINDREPLACEW pfr)
 void qemu_ReplaceTextW(struct qemu_syscall *call)
 {
     struct qemu_ReplaceTextW *c = (struct qemu_ReplaceTextW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)ReplaceTextW(QEMU_G2H(c->pfr));
 }
 

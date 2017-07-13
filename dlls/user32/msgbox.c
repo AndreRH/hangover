@@ -61,7 +61,7 @@ WINUSERAPI INT WINAPI MessageBoxA(HWND hWnd, LPCSTR text, LPCSTR title, UINT typ
 void qemu_MessageBoxA(struct qemu_syscall *call)
 {
     struct qemu_MessageBoxA *c = (struct qemu_MessageBoxA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = MessageBoxA(QEMU_G2H(c->hWnd), QEMU_G2H(c->text), QEMU_G2H(c->title), c->type);
 }
 
@@ -97,7 +97,7 @@ WINUSERAPI INT WINAPI MessageBoxW(HWND hwnd, LPCWSTR text, LPCWSTR title, UINT t
 void qemu_MessageBoxW(struct qemu_syscall *call)
 {
     struct qemu_MessageBoxW *c = (struct qemu_MessageBoxW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = MessageBoxW(QEMU_G2H(c->hwnd), QEMU_G2H(c->text), QEMU_G2H(c->title), c->type);
 }
 

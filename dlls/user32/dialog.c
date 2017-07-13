@@ -477,7 +477,7 @@ WINUSERAPI BOOL WINAPI IsDialogMessageW(HWND hwndDlg, LPMSG msg)
 void qemu_IsDialogMessageW(struct qemu_syscall *call)
 {
     struct qemu_IsDialogMessageW *c = (struct qemu_IsDialogMessageW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsDialogMessageW(QEMU_G2H(c->hwndDlg), QEMU_G2H(c->msg));
 }
 

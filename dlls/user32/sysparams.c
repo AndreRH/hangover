@@ -127,7 +127,7 @@ WINUSERAPI INT WINAPI GetSystemMetrics(INT index)
 void qemu_GetSystemMetrics(struct qemu_syscall *call)
 {
     struct qemu_GetSystemMetrics *c = (struct qemu_GetSystemMetrics *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetSystemMetrics(c->index);
 }
 

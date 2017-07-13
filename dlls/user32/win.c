@@ -719,7 +719,7 @@ WINUSERAPI INT WINAPI GetWindowTextA(HWND hwnd, LPSTR lpString, INT nMaxCount)
 void qemu_GetWindowTextA(struct qemu_syscall *call)
 {
     struct qemu_GetWindowTextA *c = (struct qemu_GetWindowTextA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWindowTextA(QEMU_G2H(c->hwnd), QEMU_G2H(c->lpString), c->nMaxCount);
 }
 
@@ -787,7 +787,7 @@ WINUSERAPI INT WINAPI GetWindowTextW(HWND hwnd, LPWSTR lpString, INT nMaxCount)
 void qemu_GetWindowTextW(struct qemu_syscall *call)
 {
     struct qemu_GetWindowTextW *c = (struct qemu_GetWindowTextW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWindowTextW(QEMU_G2H(c->hwnd), QEMU_G2H(c->lpString), c->nMaxCount);
 }
 
@@ -819,7 +819,7 @@ WINUSERAPI BOOL WINAPI SetWindowTextA(HWND hwnd, LPCSTR lpString)
 void qemu_SetWindowTextA(struct qemu_syscall *call)
 {
     struct qemu_SetWindowTextA *c = (struct qemu_SetWindowTextA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetWindowTextA(QEMU_G2H(c->hwnd), QEMU_G2H(c->lpString));
 }
 
@@ -851,7 +851,7 @@ WINUSERAPI BOOL WINAPI SetWindowTextW(HWND hwnd, LPCWSTR lpString)
 void qemu_SetWindowTextW(struct qemu_syscall *call)
 {
     struct qemu_SetWindowTextW *c = (struct qemu_SetWindowTextW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetWindowTextW(QEMU_G2H(c->hwnd), QEMU_G2H(c->lpString));
 }
 
@@ -881,7 +881,7 @@ WINUSERAPI INT WINAPI GetWindowTextLengthA(HWND hwnd)
 void qemu_GetWindowTextLengthA(struct qemu_syscall *call)
 {
     struct qemu_GetWindowTextLengthA *c = (struct qemu_GetWindowTextLengthA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWindowTextLengthA(QEMU_G2H(c->hwnd));
 }
 
@@ -911,7 +911,7 @@ WINUSERAPI INT WINAPI GetWindowTextLengthW(HWND hwnd)
 void qemu_GetWindowTextLengthW(struct qemu_syscall *call)
 {
     struct qemu_GetWindowTextLengthW *c = (struct qemu_GetWindowTextLengthW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWindowTextLengthW(QEMU_G2H(c->hwnd));
 }
 

@@ -369,7 +369,7 @@ WINUSERAPI HMONITOR WINAPI MonitorFromRect(LPCRECT lprc,DWORD dwFlags)
 void qemu_MonitorFromRect(struct qemu_syscall *call)
 {
     struct qemu_MonitorFromRect *c = (struct qemu_MonitorFromRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)MonitorFromRect(QEMU_G2H(c->lprc), c->dwFlags);
 }
 
@@ -433,7 +433,7 @@ WINUSERAPI BOOL WINAPI GetMonitorInfoA(HMONITOR hMonitor, LPMONITORINFO lpMonito
 void qemu_GetMonitorInfoA(struct qemu_syscall *call)
 {
     struct qemu_GetMonitorInfoA *c = (struct qemu_GetMonitorInfoA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetMonitorInfoA(QEMU_G2H(c->hMonitor), QEMU_G2H(c->lpMonitorInfo));
 }
 
@@ -465,7 +465,7 @@ WINUSERAPI BOOL WINAPI GetMonitorInfoW(HMONITOR hMonitor, LPMONITORINFO lpMonito
 void qemu_GetMonitorInfoW(struct qemu_syscall *call)
 {
     struct qemu_GetMonitorInfoW *c = (struct qemu_GetMonitorInfoW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetMonitorInfoW(QEMU_G2H(c->hMonitor), QEMU_G2H(c->lpMonitorInfo));
 }
 

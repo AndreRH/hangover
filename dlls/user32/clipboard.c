@@ -505,7 +505,7 @@ WINUSERAPI BOOL WINAPI IsClipboardFormatAvailable(UINT format)
 void qemu_IsClipboardFormatAvailable(struct qemu_syscall *call)
 {
     struct qemu_IsClipboardFormatAvailable *c = (struct qemu_IsClipboardFormatAvailable *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsClipboardFormatAvailable(c->format);
 }
 

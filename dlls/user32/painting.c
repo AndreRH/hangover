@@ -341,7 +341,7 @@ WINUSERAPI BOOL WINAPI UpdateWindow(HWND hwnd)
 void qemu_UpdateWindow(struct qemu_syscall *call)
 {
     struct qemu_UpdateWindow *c = (struct qemu_UpdateWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = UpdateWindow(QEMU_G2H(c->hwnd));
 }
 
@@ -409,7 +409,7 @@ WINUSERAPI BOOL WINAPI InvalidateRect(HWND hwnd, const RECT *rect, BOOL erase)
 void qemu_InvalidateRect(struct qemu_syscall *call)
 {
     struct qemu_InvalidateRect *c = (struct qemu_InvalidateRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = InvalidateRect(QEMU_G2H(c->hwnd), QEMU_G2H(c->rect), c->erase);
 }
 

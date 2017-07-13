@@ -145,7 +145,7 @@ WINGDIAPI HFONT WINAPI CreateFontIndirectA(const LOGFONTA *plfA)
 void qemu_CreateFontIndirectA(struct qemu_syscall *call)
 {
     struct qemu_CreateFontIndirectA *c = (struct qemu_CreateFontIndirectA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateFontIndirectA(QEMU_G2H(c->plfA));
 }
 
@@ -175,7 +175,7 @@ WINGDIAPI HFONT WINAPI CreateFontIndirectW(const LOGFONTW *plf)
 void qemu_CreateFontIndirectW(struct qemu_syscall *call)
 {
     struct qemu_CreateFontIndirectW *c = (struct qemu_CreateFontIndirectW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateFontIndirectW(QEMU_G2H(c->plf));
 }
 

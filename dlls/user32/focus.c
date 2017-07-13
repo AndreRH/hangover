@@ -85,7 +85,7 @@ WINUSERAPI HWND WINAPI SetFocus(HWND hwnd)
 void qemu_SetFocus(struct qemu_syscall *call)
 {
     struct qemu_SetFocus *c = (struct qemu_SetFocus *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)SetFocus(QEMU_G2H(c->hwnd));
 }
 

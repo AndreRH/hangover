@@ -179,7 +179,7 @@ WINBASEAPI short WINAPI GetFileTitleA(LPCSTR lpFile, LPSTR lpTitle, WORD cbBuf)
 void qemu_GetFileTitleA(struct qemu_syscall *call)
 {
     struct qemu_GetFileTitleA *c = (struct qemu_GetFileTitleA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetFileTitleA(QEMU_G2H(c->lpFile), QEMU_G2H(c->lpTitle), c->cbBuf);
 }
 
@@ -213,7 +213,7 @@ WINBASEAPI short WINAPI GetFileTitleW(LPCWSTR lpFile, LPWSTR lpTitle, WORD cbBuf
 void qemu_GetFileTitleW(struct qemu_syscall *call)
 {
     struct qemu_GetFileTitleW *c = (struct qemu_GetFileTitleW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetFileTitleW(QEMU_G2H(c->lpFile), QEMU_G2H(c->lpTitle), c->cbBuf);
 }
 

@@ -217,7 +217,7 @@ WINUSERAPI DWORD WINAPI CheckMenuItem(HMENU hMenu, UINT id, UINT flags)
 void qemu_CheckMenuItem(struct qemu_syscall *call)
 {
     struct qemu_CheckMenuItem *c = (struct qemu_CheckMenuItem *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CheckMenuItem(QEMU_G2H(c->hMenu), c->id, c->flags);
 }
 
@@ -251,7 +251,7 @@ WINUSERAPI BOOL WINAPI EnableMenuItem(HMENU hMenu, UINT wItemID, UINT wFlags)
 void qemu_EnableMenuItem(struct qemu_syscall *call)
 {
     struct qemu_EnableMenuItem *c = (struct qemu_EnableMenuItem *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EnableMenuItem(QEMU_G2H(c->hMenu), c->wItemID, c->wFlags);
 }
 
@@ -969,7 +969,7 @@ WINUSERAPI HMENU WINAPI GetMenu(HWND hWnd)
 void qemu_GetMenu(struct qemu_syscall *call)
 {
     struct qemu_GetMenu *c = (struct qemu_GetMenu *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetMenu(QEMU_G2H(c->hWnd));
 }
 
@@ -1839,7 +1839,7 @@ WINUSERAPI INT WINAPI TranslateAcceleratorA(HWND hWnd, HACCEL hAccel, LPMSG msg)
 void qemu_TranslateAcceleratorA(struct qemu_syscall *call)
 {
     struct qemu_TranslateAcceleratorA *c = (struct qemu_TranslateAcceleratorA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = TranslateAcceleratorA(QEMU_G2H(c->hWnd), QEMU_G2H(c->hAccel), QEMU_G2H(c->msg));
 }
 
@@ -1873,7 +1873,7 @@ WINUSERAPI INT WINAPI TranslateAcceleratorW(HWND hWnd, HACCEL hAccel, LPMSG msg)
 void qemu_TranslateAcceleratorW(struct qemu_syscall *call)
 {
     struct qemu_TranslateAcceleratorW *c = (struct qemu_TranslateAcceleratorW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = TranslateAcceleratorW(QEMU_G2H(c->hWnd), QEMU_G2H(c->hAccel), QEMU_G2H(c->msg));
 }
 

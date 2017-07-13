@@ -145,7 +145,7 @@ WINUSERAPI LRESULT WINAPI SendMessageW(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 void qemu_SendMessageW(struct qemu_syscall *call)
 {
     struct qemu_SendMessageW *c = (struct qemu_SendMessageW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SendMessageW(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam);
 }
 
@@ -181,7 +181,7 @@ WINUSERAPI LRESULT WINAPI SendMessageA(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 void qemu_SendMessageA(struct qemu_syscall *call)
 {
     struct qemu_SendMessageA *c = (struct qemu_SendMessageA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SendMessageA(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam);
 }
 
@@ -457,7 +457,7 @@ WINUSERAPI BOOL WINAPI PostMessageA(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 void qemu_PostMessageA(struct qemu_syscall *call)
 {
     struct qemu_PostMessageA *c = (struct qemu_PostMessageA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PostMessageA(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam);
 }
 
@@ -493,7 +493,7 @@ WINUSERAPI BOOL WINAPI PostMessageW(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 void qemu_PostMessageW(struct qemu_syscall *call)
 {
     struct qemu_PostMessageW *c = (struct qemu_PostMessageW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PostMessageW(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam);
 }
 
@@ -775,7 +775,7 @@ WINUSERAPI BOOL WINAPI IsDialogMessageA(HWND hwndDlg, LPMSG pmsg)
 void qemu_IsDialogMessageA(struct qemu_syscall *call)
 {
     struct qemu_IsDialogMessageA *c = (struct qemu_IsDialogMessageA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsDialogMessageA(QEMU_G2H(c->hwndDlg), QEMU_G2H(c->pmsg));
 }
 
@@ -1175,7 +1175,7 @@ WINUSERAPI UINT WINAPI RegisterWindowMessageW(LPCWSTR str)
 void qemu_RegisterWindowMessageW(struct qemu_syscall *call)
 {
     struct qemu_RegisterWindowMessageW *c = (struct qemu_RegisterWindowMessageW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RegisterWindowMessageW(QEMU_G2H(c->str));
 }
 

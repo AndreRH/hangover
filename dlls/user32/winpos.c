@@ -221,7 +221,7 @@ WINUSERAPI BOOL WINAPI GetClientRect(HWND hwnd, LPRECT rect)
 void qemu_GetClientRect(struct qemu_syscall *call)
 {
     struct qemu_GetClientRect *c = (struct qemu_GetClientRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetClientRect(QEMU_G2H(c->hwnd), QEMU_G2H(c->rect));
 }
 
@@ -575,7 +575,7 @@ WINUSERAPI BOOL WINAPI ShowWindow(HWND hwnd, INT cmd)
 void qemu_ShowWindow(struct qemu_syscall *call)
 {
     struct qemu_ShowWindow *c = (struct qemu_ShowWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ShowWindow(QEMU_G2H(c->hwnd), c->cmd);
 }
 
@@ -641,7 +641,7 @@ WINUSERAPI BOOL WINAPI GetWindowPlacement(HWND hwnd, WINDOWPLACEMENT *wndpl)
 void qemu_GetWindowPlacement(struct qemu_syscall *call)
 {
     struct qemu_GetWindowPlacement *c = (struct qemu_GetWindowPlacement *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWindowPlacement(QEMU_G2H(c->hwnd), QEMU_G2H(c->wndpl));
 }
 
@@ -785,7 +785,7 @@ WINUSERAPI BOOL WINAPI SetWindowPos(HWND hwnd, HWND hwndInsertAfter, INT x, INT 
 void qemu_SetWindowPos(struct qemu_syscall *call)
 {
     struct qemu_SetWindowPos *c = (struct qemu_SetWindowPos *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetWindowPos(QEMU_G2H(c->hwnd), QEMU_G2H(c->hwndInsertAfter), c->x, c->y, c->cx, c->cy, c->flags);
 }
 
