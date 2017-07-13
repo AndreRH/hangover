@@ -9,5 +9,6 @@
 #define DLL_GDI32       6ULL
 #define DLL_USER32      7ULL
 #define DLL_SHELL32     8ULL
+#define DLL_SHLWAPI     9ULL
 
 #endif

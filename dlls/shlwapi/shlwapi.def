@@ -1,0 +1,3 @@
+LIBRARY shlwapi.dll BASE=0x90000000
+
+EXPORTS
