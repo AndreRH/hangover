@@ -70,18 +70,38 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu_DllGetClassObject,
+    qemu_DragAcceptFiles,
+    qemu_DragFinish,
+    qemu_DragQueryFileA,
+    qemu_DragQueryFileW,
+    qemu_DragQueryPoint,
+    qemu_SHAlloc,
+    qemu_SHCLSIDFromString,
+    qemu_SHCoCreateInstance,
+    qemu_SHCreateQueryCancelAutoPlayMoniker,
     qemu_ShellAboutW,
+    qemu_SHFree,
+    qemu_SHGetMalloc,
+    qemu_SHPropStgCreate,
+    qemu_SHPropStgReadMultiple,
+    qemu_SHPropStgWriteMultiple,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
-    unsigned int i;
-    LRESULT ret;
+    HMODULE shell32;
 
     WINE_TRACE("Loading host-side shell32 wrapper.\n");
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
+
+    shell32 = LoadLibraryA("shell32.dll");
+    if (!shell32)
+        WINE_ERR("Cannot find shell32.dll\n");
+
+    p_SHCLSIDFromString = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(147));
 
     return dll_functions;
 }

@@ -1,3 +1,19 @@
 LIBRARY shell32.dll BASE=0x80000000
 
 EXPORTS
+  DllGetClassObject,private
+  DragAcceptFiles
+  DragFinish
+  DragQueryFileA
+  DragQueryFileW
+  DragQueryPoint
+  SHAlloc
+  SHCLSIDFromString
+  @147 SHCoCreateInstance
+  SHCreateQueryCancelAutoPlayMoniker
+  ShellAboutW
+  SHFree
+  SHGetMalloc
+  SHPropStgCreate
+  SHPropStgReadMultiple
+  SHPropStgWriteMultiple
