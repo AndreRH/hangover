@@ -19,6 +19,7 @@ EXPORTS
   _lock
   _matherr=MSVCRT__matherr
   _onexit=MSVCRT__onexit
+  _snwprintf=MSVCRT__snwprintf
   _unlock
   _wcmdln=MSVCRT__wcmdln
   abort=MSVCRT_abort

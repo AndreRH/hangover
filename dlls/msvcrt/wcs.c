@@ -60,3 +60,31 @@ void qemu_wcscpy(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu__snwprintf
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+int CDECL MSVCRT__snwprintf(WCHAR *str, unsigned int len, const WCHAR *format, ...)
+{
+    struct qemu_wcscpy call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__SNWPRINTF);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__snwprintf(struct qemu_syscall *call)
+{
+    struct qemu__snwprintf *c = (struct qemu__snwprintf *)call;
+    WINE_FIXME("Stub!\n");
+    c->super.iret = 0;
+}
+
+#endif
