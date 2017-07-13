@@ -39,10 +39,10 @@ static const syscall_handler dll_functions[] =
     qemu_FindTextW,
     qemu_GetFileTitleA,
     qemu_GetFileTitleW,
-    qemu_GetOpenFileNameA,
-    qemu_GetOpenFileNameW,
-    qemu_GetSaveFileNameA,
-    qemu_GetSaveFileNameW,
+    qemu_GetOpenSaveFileName,
+    qemu_GetOpenSaveFileName,
+    qemu_GetOpenSaveFileName,
+    qemu_GetOpenSaveFileName,
     qemu_PageSetupDlgA,
     qemu_PageSetupDlgW,
     qemu_PrintDlgA,
@@ -59,6 +59,10 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
+
+    comdlg32_tls = TlsAlloc();
+    if (comdlg32_tls == TLS_OUT_OF_INDEXES)
+        WINE_ERR("Out of TLS indices\n");
 
     return dll_functions;
 }

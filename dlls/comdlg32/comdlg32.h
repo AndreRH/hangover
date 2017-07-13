@@ -35,10 +35,7 @@ void qemu_FindTextA(struct qemu_syscall *call);
 void qemu_FindTextW(struct qemu_syscall *call);
 void qemu_GetFileTitleA(struct qemu_syscall *call);
 void qemu_GetFileTitleW(struct qemu_syscall *call);
-void qemu_GetOpenFileNameA(struct qemu_syscall *call);
-void qemu_GetOpenFileNameW(struct qemu_syscall *call);
-void qemu_GetSaveFileNameA(struct qemu_syscall *call);
-void qemu_GetSaveFileNameW(struct qemu_syscall *call);
+void qemu_GetOpenSaveFileName(struct qemu_syscall *call);
 void qemu_PageSetupDlgA(struct qemu_syscall *call);
 void qemu_PageSetupDlgW(struct qemu_syscall *call);
 void qemu_PrintDlgA(struct qemu_syscall *call);
@@ -47,6 +44,8 @@ void qemu_PrintDlgExW(struct qemu_syscall *call);
 void qemu_PrintDlgW(struct qemu_syscall *call);
 void qemu_ReplaceTextA(struct qemu_syscall *call);
 void qemu_ReplaceTextW(struct qemu_syscall *call);
+
+DWORD comdlg32_tls;
 
 #endif
 
