@@ -57,8 +57,14 @@ WINUSERAPI HACCEL WINAPI LoadAcceleratorsW(HINSTANCE instance, LPCWSTR name)
 void qemu_LoadAcceleratorsW(struct qemu_syscall *call)
 {
     struct qemu_LoadAcceleratorsW *c = (struct qemu_LoadAcceleratorsW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LoadAcceleratorsW(QEMU_G2H(c->instance), QEMU_G2H(c->name));
+    HINSTANCE instance;
+    WINE_TRACE("\n");
+
+    instance = (HINSTANCE)c->instance;
+    if (!instance)
+        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = (uint64_t)LoadAcceleratorsW(instance, QEMU_G2H(c->name));
 }
 
 #endif
@@ -89,8 +95,14 @@ WINUSERAPI HACCEL WINAPI LoadAcceleratorsA(HINSTANCE instance,LPCSTR lpTableName
 void qemu_LoadAcceleratorsA(struct qemu_syscall *call)
 {
     struct qemu_LoadAcceleratorsA *c = (struct qemu_LoadAcceleratorsA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LoadAcceleratorsA(QEMU_G2H(c->instance), QEMU_G2H(c->lpTableName));
+    HINSTANCE instance;
+    WINE_TRACE("\n");
+
+    instance = (HINSTANCE)c->instance;
+    if (!instance)
+        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = (uint64_t)LoadAcceleratorsA(instance, QEMU_G2H(c->lpTableName));
 }
 
 #endif
