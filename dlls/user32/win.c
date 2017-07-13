@@ -1003,7 +1003,7 @@ WINUSERAPI HWND WINAPI GetParent(HWND hwnd)
 void qemu_GetParent(struct qemu_syscall *call)
 {
     struct qemu_GetParent *c = (struct qemu_GetParent *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetParent(QEMU_G2H(c->hwnd));
 }
 

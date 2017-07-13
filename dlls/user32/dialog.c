@@ -539,7 +539,7 @@ WINUSERAPI HWND WINAPI GetDlgItem(HWND hwndDlg, INT id)
 void qemu_GetDlgItem(struct qemu_syscall *call)
 {
     struct qemu_GetDlgItem *c = (struct qemu_GetDlgItem *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetDlgItem(QEMU_G2H(c->hwndDlg), c->id);
 }
 

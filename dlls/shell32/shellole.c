@@ -256,7 +256,7 @@ WINBASEAPI void WINAPI DragAcceptFiles(HWND hWnd, BOOL b)
 void qemu_DragAcceptFiles(struct qemu_syscall *call)
 {
     struct qemu_DragAcceptFiles *c = (struct qemu_DragAcceptFiles *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     DragAcceptFiles(QEMU_G2H(c->hWnd), c->b);
 }
 
