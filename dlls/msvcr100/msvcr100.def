@@ -28,6 +28,7 @@ EXPORTS
   _snwprintf=MSVCRT__snwprintf
   _unlock
   _wcmdln=MSVCRT__wcmdln
+  _XcptFilter=MSVCRT__XcptFilter
   abort=MSVCRT_abort
   abs=MSVCRT_abs
   calloc=MSVCRT_calloc

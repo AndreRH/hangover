@@ -55,6 +55,27 @@ void qemu___cxxframehandler(struct qemu_syscall *c)
 
 #ifdef QEMU_DLL_GUEST
 
+int __cdecl MSVCRT__XcptFilter(unsigned long exception_num, struct _EXCEPTION_POINTERS *ptr)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL__XCPTFILTER);
+
+    qemu_syscall(&call);
+
+    return 0;
+}
+
+#else
+
+void qemu__xcptfilter(struct qemu_syscall *c)
+{
+    WINE_FIXME("Stub!\n");
+}
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
 __p_sig_fn_t CDECL MSVCRT_signal(int sig, __p_sig_fn_t func)
 {
     struct qemu_syscall call;

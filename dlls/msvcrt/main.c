@@ -63,6 +63,7 @@ static const syscall_handler dll_functions[] =
     qemu__onexit,
     qemu__snwprintf,
     qemu__unlock,
+    qemu__xcptfilter,
     qemu_abort,
     qemu_calloc,
     qemu_exit,
