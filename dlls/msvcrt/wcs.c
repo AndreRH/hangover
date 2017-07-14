@@ -61,6 +61,37 @@ void qemu_wcscpy(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_wcsstr
+{
+    struct qemu_syscall super;
+    uint64_t str, sub;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+const WCHAR * __cdecl MSVCRT_wcsstr(const WCHAR *str, const WCHAR *sub)
+{
+    struct qemu_wcsstr call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WCSSTR);
+    call.str = (uint64_t)str;
+    call.sub = (uint64_t)sub;
+
+    qemu_syscall(&call.super);
+
+    return (const wchar_t *)call.super.iret;
+}
+
+#else
+
+void qemu_wcsstr(struct qemu_syscall *call)
+{
+    struct qemu_wcsstr *c = (struct qemu_wcsstr *)call;
+    WINE_TRACE("\n");
+    c->super.iret = QEMU_H2G(p_wcsstr(QEMU_G2H(c->str), QEMU_G2H(c->sub)));
+}
+
+#endif
+
 struct qemu__snwprintf
 {
     struct qemu_syscall super;
