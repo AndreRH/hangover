@@ -114,6 +114,7 @@ static const syscall_handler dll_functions[] =
     qemu_FormatMessageW,
     qemu_FreeEnvironmentStringsA,
     qemu_FreeEnvironmentStringsW,
+    qemu_FreeLibrary,
     qemu_GetActiveProcessorCount,
     qemu_GetActiveProcessorGroupCount,
     qemu_GetCommandLineA,

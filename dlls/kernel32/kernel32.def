@@ -57,6 +57,7 @@ EXPORTS
   FormatMessageW
   FreeEnvironmentStringsA
   FreeEnvironmentStringsW
+  FreeLibrary
   GetActiveProcessorCount
   GetActiveProcessorGroupCount
   GetCommandLineA

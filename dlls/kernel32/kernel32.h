@@ -54,6 +54,7 @@ enum kernel32_calls
     CALL_FORMATMESSAGEW,
     CALL_FREEENVIRONMENTSTRINGSA,
     CALL_FREEENVIRONMENTSTRINGSW,
+    CALL_FREELIBRARY,
     CALL_GETACTIVEPROCESSORCOUNT,
     CALL_GETACTIVEPROCESSORGROUPCOUNT,
     CALL_GETCOMMANDLINEA,
@@ -264,6 +265,7 @@ void qemu_FlushFileBuffers(struct qemu_syscall *call);
 void qemu_FormatMessageW(struct qemu_syscall *call);
 void qemu_FreeEnvironmentStringsA(struct qemu_syscall *call);
 void qemu_FreeEnvironmentStringsW(struct qemu_syscall *call);
+void qemu_FreeLibrary(struct qemu_syscall *call);
 void qemu_GetActiveProcessorCount(struct qemu_syscall *call);
 void qemu_GetActiveProcessorGroupCount(struct qemu_syscall *call);
 void qemu_GetCommandLineA(struct qemu_syscall *c);

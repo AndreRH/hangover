@@ -28,6 +28,36 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
+struct qemu_FreeLibrary
+{
+    struct qemu_syscall super;
+    uint64_t module;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI WINBOOL WINAPI FreeLibrary(HMODULE module)
+{
+    struct qemu_FreeLibrary call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_FREELIBRARY);
+    call.module = (uint64_t)module;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_FreeLibrary(struct qemu_syscall *call)
+{
+    struct qemu_FreeLibrary *c = (struct qemu_FreeLibrary *)call;
+    WINE_TRACE("\n");
+    c->super.iret = qemu_ops->qemu_FreeLibrary((HMODULE)c->module);
+}
+
+#endif
+
 struct qemu_ModuleFileName
 {
     struct qemu_syscall super;
@@ -216,6 +246,7 @@ struct qemu_GetProcAddress
     struct qemu_syscall super;
     uint64_t module, name;
 };
+
 #ifdef QEMU_DLL_GUEST
 
 WINBASEAPI FARPROC WINAPI GetProcAddress(HMODULE module, const char *name)
