@@ -11,13 +11,20 @@ EXPORTS
   _lread
   _lwrite
   AreFileApisANSI
+  AssignProcessToJobObject
+  BindIoCompletionCallback
   BuildCommDCBA
   BuildCommDCBAndTimeoutsA
   BuildCommDCBAndTimeoutsW
   BuildCommDCBW
+  CallNamedPipeA
+  CallNamedPipeW
   CancelIo
   CancelIoEx
   CancelSynchronousIo
+  CancelTimerQueueTimer
+  CancelWaitableTimer
+  ChangeTimerQueueTimer
   CheckRemoteDebuggerPresent
   ClearCommBreak
   ClearCommError
@@ -25,11 +32,38 @@ EXPORTS
   CommConfigDialogA
   CommConfigDialogW
   CompareStringW
+  ConnectNamedPipe
   ContinueDebugEvent
+  CreateEventA
+  CreateEventExA
+  CreateEventExW
   CreateEventW
   CreateFile2
   CreateFileA
   CreateFileW
+  CreateIoCompletionPort
+  CreateJobObjectA
+  CreateJobObjectW
+  CreateMailslotA
+  CreateMailslotW
+  CreateMemoryResourceNotification
+  CreateMutexA
+  CreateMutexExA
+  CreateMutexExW
+  CreateMutexW
+  CreateNamedPipeA
+  CreateNamedPipeW
+  CreatePipe
+  CreateSemaphoreA
+  CreateSemaphoreExA
+  CreateSemaphoreExW
+  CreateSemaphoreW
+  CreateTimerQueue
+  CreateTimerQueueTimer
+  CreateWaitableTimerA
+  CreateWaitableTimerExA
+  CreateWaitableTimerExW
+  CreateWaitableTimerW
   DebugActiveProcess
   DebugActiveProcessStop
   DebugBreak
@@ -39,7 +73,11 @@ EXPORTS
   DeleteCriticalSection=ntdll.RtlDeleteCriticalSection
   DeleteFileA
   DeleteFileW
+  DeleteTimerQueue
+  DeleteTimerQueueEx
+  DeleteTimerQueueTimer
   DeviceIoControl
+  DisconnectNamedPipe
   EncodePointer=ntdll.RtlEncodePointer
   EnterCriticalSection=ntdll.RtlEnterCriticalSection
   EscapeCommFunction
@@ -100,15 +138,20 @@ EXPORTS
   GetLargePageMinimum
   GetLastError
   GetLocalTime
+  GetMailslotInfo
   GetModuleFileNameA
   GetModuleFileNameW
   GetModuleHandleA
   GetModuleHandleExA
   GetModuleHandleW
+  GetNamedPipeHandleStateA
+  GetNamedPipeHandleStateW
+  GetNamedPipeInfo
   GetNativeSystemInfo
   GetOverlappedResult
   GetProcAddress
   GetProcessHeap
+  GetQueuedCompletionStatus
   GetStartupInfoA
   GetStartupInfoW
   GetStdHandle
@@ -126,8 +169,13 @@ EXPORTS
   HeapAlloc
   HeapFree
   InitializeCriticalSection
+  InitializeCriticalSectionAndSpinCount
   InitializeCriticalSectionEx
+  InitOnceBeginInitialize
+  InitOnceComplete
+  InitOnceExecuteOnce
   IsDebuggerPresent
+  IsProcessInJob
   IsProcessorFeaturePresent
   IsSystemResumeAutomatic
   K32EnumDeviceDrivers
@@ -151,25 +199,47 @@ EXPORTS
   lstrcpyW
   lstrlenA
   lstrlenW
+  MakeCriticalSectionGlobal
   MulDiv
   MultiByteToWideChar
+  OpenEventA
+  OpenEventW
   OpenFile
   OpenFileById
+  OpenJobObjectA
+  OpenJobObjectW
+  OpenMutexA
+  OpenMutexW
+  OpenSemaphoreA
+  OpenSemaphoreW
   OpenVxDHandle
+  OpenWaitableTimerA
+  OpenWaitableTimerW
   OutputDebugStringA
   OutputDebugStringW
+  PeekNamedPipe
+  PostQueuedCompletionStatus
   PowerClearRequest
   PowerCreateRequest
   PowerSetRequest
+  PulseEvent
   PurgeComm
+  QueryInformationJobObject
+  QueryMemoryResourceNotification
   QueryPerformanceCounter
   QueryPerformanceFrequency
   ReadFile
   ReadFileEx
   ReadFileScatter
+  RegisterWaitForSingleObject
+  RegisterWaitForSingleObjectEx
+  ReinitializeCriticalSection
+  ReleaseMutex
+  ReleaseSemaphore
   ReplaceFileA
   ReplaceFileW
   RequestWakeupLatency
+  ResetEvent
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   RtlCaptureContext=ntdll.RtlCaptureContext
   RtlLookupFunctionEntry=ntdll.RtlLookupFunctionEntry
@@ -185,6 +255,7 @@ EXPORTS
   SetEndOfFile
   SetEnvironmentVariableA
   SetEnvironmentVariableW
+  SetEvent
   SetFileApisToANSI
   SetFileApisToOEM
   SetFileAttributesA
@@ -196,25 +267,46 @@ EXPORTS
   SetFileTime
   SetFileValidData
   SetHandleCount
+  SetInformationJobObject
   SetLastError
+  SetMailslotInfo
+  SetNamedPipeHandleState
   SetStdHandle
   SetSystemPowerState
   SetThreadExecutionState
   SetUnhandledExceptionFilter
   SetupComm
+  SetWaitableTimer
+  SetWaitableTimerEx
+  SignalObjectAndWait
   Sleep
+  SleepConditionVariableCS
+  SleepConditionVariableSRW
+  SleepEx
+  SwitchToThread
+  TerminateJobObject
   TerminateProcess
   TlsGetValue
+  TransactNamedPipe
   TransmitCommChar
   UnhandledExceptionFilter
+  UninitializeCriticalSection
   UnlockFile
   UnlockFileEx
+  UnregisterWait
+  UnregisterWaitEx
   VerifyVersionInfoA
   VerifyVersionInfoW
   VirtualProtect
   VirtualQuery
   WaitCommEvent
   WaitForDebugEvent
+  WaitForMultipleObjects
+  WaitForMultipleObjectsEx
+  WaitForSingleObject
+  WaitForSingleObjectEx
+  WaitNamedPipeA
+  WaitNamedPipeW
   WideCharToMultiByte
   WriteFile
   WriteFileEx
