@@ -256,6 +256,17 @@ WINBASEAPI HMODULE WINAPI LoadLibraryA(const char *name)
     return (HMODULE)call.super.iret;
 }
 
+WINBASEAPI HMODULE WINAPI LoadLibraryW(const WCHAR *name)
+{
+    struct qemu_ModuleOpW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LOADLIBRARYW);
+    call.name = (uint64_t)name;
+
+    qemu_syscall(&call.super);
+
+    return (HMODULE)call.super.iret;
+}
+
 #else
 
 void qemu_LoadLibraryA(struct qemu_syscall *call)
@@ -275,6 +286,17 @@ void qemu_LoadLibraryA(struct qemu_syscall *call)
     c->super.iret = (uint64_t)qemu_ops->qemu_LoadLibrary(nameW);
 
     HeapFree(GetProcessHeap(), 0, nameW);
+
+    WINE_TRACE("Returning %p\n", (void *)c->super.iret);
+}
+
+void qemu_LoadLibraryW(struct qemu_syscall *call)
+{
+    struct qemu_ModuleOpW *c = (struct qemu_ModuleOpW *)call;
+    int size;
+    WINE_TRACE("\n");
+
+    c->super.iret = (uint64_t)qemu_ops->qemu_LoadLibrary(QEMU_G2H(c->name));
 
     WINE_TRACE("Returning %p\n", (void *)c->super.iret);
 }

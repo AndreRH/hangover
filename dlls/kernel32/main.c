@@ -192,6 +192,7 @@ static const syscall_handler dll_functions[] =
     qemu_K32GetDeviceDriverFileNameW,
     qemu_K32GetPerformanceInfo,
     qemu_LoadLibraryA,
+    qemu_LoadLibraryW,
     qemu_LocalFree,
     qemu_LockFile,
     qemu_LockFileEx,

@@ -132,6 +132,7 @@ enum kernel32_calls
     CALL_K32GETDEVICEDRIVERFILENAMEW,
     CALL_K32GETPERFORMANCEINFO,
     CALL_LOADLIBRARYA,
+    CALL_LOADLIBRARYW,
     CALL_LOCALFREE,
     CALL_LOCKFILE,
     CALL_LOCKFILEEX,
@@ -343,6 +344,7 @@ void qemu_K32GetDeviceDriverFileNameA(struct qemu_syscall *call);
 void qemu_K32GetDeviceDriverFileNameW(struct qemu_syscall *call);
 void qemu_K32GetPerformanceInfo(struct qemu_syscall *call);
 void qemu_LoadLibraryA(struct qemu_syscall *call);
+void qemu_LoadLibraryW(struct qemu_syscall *call);
 void qemu_LocalFree(struct qemu_syscall *call);
 void qemu_LockFile(struct qemu_syscall *call);
 void qemu_LockFileEx(struct qemu_syscall *call);
