@@ -30,6 +30,7 @@ EXPORTS
   _snwprintf=MSVCRT__snwprintf
   _stricmp=MSVCRT__stricmp
   _unlock
+  _wcsnicmp=MSVCRT__wcsnicmp
   _wcmdln=MSVCRT__wcmdln
   _XcptFilter=MSVCRT__XcptFilter
   abort=MSVCRT_abort

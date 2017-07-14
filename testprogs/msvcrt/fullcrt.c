@@ -22,6 +22,8 @@ int WinMain()
 
     printf("wcsncmp(\"12345\", \"12367\", 3)=%d\n", wcsncmp(L"12345", L"12367", 3));
     printf("wcsncmp(\"12345\", \"12367\", 4)=%d\n", wcsncmp(L"12345", L"12367", 4));
+    printf("_wcsnicmp(\"ABCDEF\", \"abcdef\", 7)=%d\n", _wcsnicmp(L"ABCDEF", L"abcdef", 7));
+    printf("_wcsnicmp(\"ABCDEF\", \"abXdef\", 7)=%d\n", _wcsnicmp(L"ABCDEF", L"abXdef", 7));
 
     db = wcstod(L"123.456", NULL);
     printf("wcstod(123.456)=%f\n", db);
