@@ -2,6 +2,7 @@ LIBRARY msvcrt.dll BASE=0x30000000
 
 EXPORTS
   __C_specific_handler=ntdll.__C_specific_handler
+  __CxxFrameHandler3=__CxxFrameHandler
   __dllonexit
   __getmainargs
   __initenv=MSVCRT___initenv

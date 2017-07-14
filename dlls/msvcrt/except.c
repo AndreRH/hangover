@@ -33,6 +33,28 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 
 #ifdef QEMU_DLL_GUEST
 
+EXCEPTION_DISPOSITION CDECL __CxxFrameHandler(EXCEPTION_RECORD *rec, ULONG64 frame,
+        CONTEXT *context, DISPATCHER_CONTEXT *dispatch)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL___CXXFRAMEHANDLER);
+
+    qemu_syscall(&call);
+
+    return 0;
+}
+
+#else
+
+void qemu___cxxframehandler(struct qemu_syscall *c)
+{
+    WINE_FIXME("Stub!\n");
+}
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
 __p_sig_fn_t CDECL MSVCRT_signal(int sig, __p_sig_fn_t func)
 {
     struct qemu_syscall call;

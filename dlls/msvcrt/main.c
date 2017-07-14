@@ -46,8 +46,9 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
-    qemu___crt_debugger_hook,
     qemu___getmainargs,
+    qemu___crt_debugger_hook,
+    qemu___cxxframehandler,
     qemu___iob_func,
     qemu___lconv_init,
     qemu___set_app_type,

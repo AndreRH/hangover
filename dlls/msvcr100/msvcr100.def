@@ -4,6 +4,7 @@ EXPORTS
   ?terminate@@YAXXZ=MSVCRT_terminate
   __C_specific_handler=ntdll.__C_specific_handler
   __crt_debugger_hook=MSVCRT___crt_debugger_hook
+  __CxxFrameHandler3=__CxxFrameHandler
   __dllonexit
   __getmainargs
   __initenv=MSVCRT___initenv

@@ -5,8 +5,9 @@
 
 enum msvcrt_calls
 {
-    CALL___CRT_DEBUGGER_HOOK = 0,
-    CALL___GETMAINARGS,
+    CALL___GETMAINARGS = 0,
+    CALL___CRT_DEBUGGER_HOOK,
+    CALL___CXXFRAMEHANDLER,
     CALL___IOB_FUNC,
     CALL___LCONV_INIT,
     CALL___SET_APP_TYPE,
@@ -60,8 +61,9 @@ void * CDECL MSVCRT_realloc(void *ptr, size_t size);
 
 extern const struct qemu_ops *qemu_ops;
 
-void qemu___crt_debugger_hook(struct qemu_syscall *call);
 void qemu___getmainargs(struct qemu_syscall *call);
+void qemu___crt_debugger_hook(struct qemu_syscall *call);
+void qemu___cxxframehandler(struct qemu_syscall *call);
 void qemu___iob_func(struct qemu_syscall *call);
 void qemu___lconv_init(struct qemu_syscall *call);
 void qemu___set_app_type(struct qemu_syscall *call);
