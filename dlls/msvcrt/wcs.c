@@ -30,6 +30,40 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 #endif
 
+struct qemu_wcscat_s
+{
+    struct qemu_syscall super;
+    uint64_t dst;
+    uint64_t count;
+    uint64_t src;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+INT CDECL MSVCRT_wcscat_s(WCHAR *dst, size_t count, const WCHAR *src)
+{
+    struct qemu_wcscat_s call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WCSCAT_S);
+    call.dst = (uint64_t)dst;
+    call.count = count;
+    call.src = (uint64_t)src;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_wcscat_s(struct qemu_syscall *call)
+{
+    struct qemu_wcscat_s *c = (struct qemu_wcscat_s *)call;
+    WINE_TRACE("\n");
+    c->super.iret = p_wcscat_s(QEMU_G2H(c->dst), c->count, QEMU_G2H(c->src));
+}
+
+#endif
+
 struct qemu_wcscpy
 {
     struct qemu_syscall super;

@@ -55,6 +55,7 @@ EXPORTS
   strncmp=MSVCRT_strncmp
   vfprintf=MSVCRT_vfprintf
   vfwprintf=MSVCRT_vfwprintf
+  wcscat_s=MSVCRT_wcscat_s
   wcscpy=MSVCRT_wcscpy
   wcscpy_s=MSVCRT_wcscpy_s
   wcsncmp=MSVCRT_wcsncmp

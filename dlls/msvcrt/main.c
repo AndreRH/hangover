@@ -88,6 +88,7 @@ static const syscall_handler dll_functions[] =
     qemu_strlen,
     qemu_strncmp,
     qemu_terminate,
+    qemu_wcscat_s,
     qemu_wcscpy,
     qemu_wcscpy_s,
     qemu_wcsncmp,
@@ -149,6 +150,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_vfprintf = (void *)GetProcAddress(msvcrt, "vfprintf");
     p_vfwprintf = (void *)GetProcAddress(msvcrt, "vfwprintf");
     p_vsprintf = (void *)GetProcAddress(msvcrt, "vsprintf");
+    p_wcscat_s = (void *)GetProcAddress(msvcrt, "wcscat_s");
     p_wcscpy = (void *)GetProcAddress(msvcrt, "wcscpy");
     p_wcscpy_s = (void *)GetProcAddress(msvcrt, "wcscpy_s");
     p_wcsncmp = (void *)GetProcAddress(msvcrt, "wcsncmp");
