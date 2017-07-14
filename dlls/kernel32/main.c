@@ -56,6 +56,7 @@ WINBASEAPI INT WINAPI MulDiv( INT nMultiplicand, INT nMultiplier, INT nDivisor)
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include "va_helper_impl.h"
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 
 const struct qemu_ops *qemu_ops;

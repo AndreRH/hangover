@@ -24,6 +24,7 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "kernel32.h"
+#include "va_helper.h"
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
@@ -50,7 +51,7 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
 {
     struct qemu_FormatMessage call;
     const WCHAR *local_string = src;
-    DWORD_PTR array[100];
+    struct va_array array[100];
     char highest = 0;
     unsigned int i;
 
@@ -99,7 +100,10 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
 
         /* Note that this function does not support floats. */
         for (i = 0; i < highest; i++)
-            array[i] = va_arg(*args, uint64_t);
+        {
+            array[i].arg = va_arg(*args, uint64_t);
+            array[i].is_float = FALSE;
+        }
         call.array_size = highest;
 
         if (!(flags & FORMAT_MESSAGE_FROM_STRING))
@@ -122,14 +126,23 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
 
 #else
 
-static DWORD call_FormatMessageW_va_list(DWORD flags, const void *src, DWORD msg_id, DWORD lang_id,
-        WCHAR *buffer, DWORD size, ...)
+struct format_message_data
 {
-    DWORD ret;
+    DWORD flags;
+    const void *src;
+    DWORD msg_id, lang_id;
+    WCHAR *buffer;
+    DWORD size;
+};
+
+static uint64_t call_FormatMessageW_va_list(void *data, ...)
+{
+    const struct format_message_data *d = data;
+    uint64_t ret;
     va_list list;
 
-    va_start(list, size);
-    ret = FormatMessageW(flags, src, msg_id, lang_id, buffer, size, &list);
+    va_start(list, data);
+    ret = FormatMessageW(d->flags, d->src, d->msg_id, d->lang_id, d->buffer, d->size, &list);
     va_end(list);
 
     return ret;
@@ -167,7 +180,9 @@ void qemu_FormatMessageW(struct qemu_syscall *call)
     }
     else
     {
-        uint64_t *array = QEMU_G2H(c->array);
+        struct va_array *array = QEMU_G2H(c->array);
+        struct format_message_data data = {c->flags, src, c->msg_id,
+                c->lang_id, buffer_arg, c->size};
 
         WINE_TRACE("Calling va_arg version, %lu args\n", c->array_size);
         /* You'd think we can just add FORMAT_MESSAGE_ARGUMENT_ARRAY and pass the array,
@@ -177,41 +192,7 @@ void qemu_FormatMessageW(struct qemu_syscall *call)
          * I opted for the va_args version because of the hypothetical issue of 64 bit
          * ints in Win32 and because the extra offset that is added for arrays may
          * push a message with 99 inserts beyond the 99 limit. */
-        switch(c->array_size)
-        {
-            case 0:
-                c->super.iret = call_FormatMessageW_va_list(c->flags, src, c->msg_id,
-                        c->lang_id, buffer_arg, c->size);
-                break;
-            case 1:
-                c->super.iret = call_FormatMessageW_va_list(c->flags, src, c->msg_id,
-                        c->lang_id, buffer_arg, c->size, array[0]);
-                break;
-
-            case 2:
-                c->super.iret = call_FormatMessageW_va_list(c->flags, src, c->msg_id,
-                        c->lang_id, buffer_arg, c->size, array[0], array[1]);
-                break;
-
-            case 3:
-                c->super.iret = call_FormatMessageW_va_list(c->flags, src, c->msg_id,
-                        c->lang_id, buffer_arg, c->size, array[0], array[1], array[2]);
-                break;
-
-            case 4:
-                c->super.iret = call_FormatMessageW_va_list(c->flags, src, c->msg_id,
-                        c->lang_id, buffer_arg, c->size, array[0], array[1], array[2],
-                        array[3]);
-                break;
-
-            default:
-                WINE_FIXME("Handle arbitrary number of arguments\n");
-            case 5:
-                c->super.iret = call_FormatMessageW_va_list(c->flags, src, c->msg_id,
-                        c->lang_id, buffer_arg, c->size, array[0], array[1], array[2],
-                        array[3], array[4]);
-                break;
-        }
+        c->super.iret = call_va(call_FormatMessageW_va_list, &data, c->array_size, 0, array);
     }
 
     if (c->flags & FORMAT_MESSAGE_ALLOCATE_BUFFER)
