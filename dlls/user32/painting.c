@@ -57,7 +57,7 @@ WINUSERAPI HDC WINAPI BeginPaint(HWND hwnd, PAINTSTRUCT *lps)
 void qemu_BeginPaint(struct qemu_syscall *call)
 {
     struct qemu_BeginPaint *c = (struct qemu_BeginPaint *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)BeginPaint(QEMU_G2H(c->hwnd), QEMU_G2H(c->lps));
 }
 
@@ -89,7 +89,7 @@ WINUSERAPI BOOL WINAPI EndPaint(HWND hwnd, const PAINTSTRUCT *lps)
 void qemu_EndPaint(struct qemu_syscall *call)
 {
     struct qemu_EndPaint *c = (struct qemu_EndPaint *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EndPaint(QEMU_G2H(c->hwnd), QEMU_G2H(c->lps));
 }
 
@@ -153,7 +153,7 @@ WINUSERAPI HDC WINAPI GetDC(HWND hwnd)
 void qemu_GetDC(struct qemu_syscall *call)
 {
     struct qemu_GetDC *c = (struct qemu_GetDC *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetDC(QEMU_G2H(c->hwnd));
 }
 
@@ -215,7 +215,7 @@ WINUSERAPI INT WINAPI ReleaseDC(HWND hwnd, HDC hdc)
 void qemu_ReleaseDC(struct qemu_syscall *call)
 {
     struct qemu_ReleaseDC *c = (struct qemu_ReleaseDC *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ReleaseDC(QEMU_G2H(c->hwnd), QEMU_G2H(c->hdc));
 }
 

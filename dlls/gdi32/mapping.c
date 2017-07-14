@@ -125,7 +125,7 @@ WINGDIAPI INT WINAPI SetMapMode(HDC hdc, INT mode)
 void qemu_SetMapMode(struct qemu_syscall *call)
 {
     struct qemu_SetMapMode *c = (struct qemu_SetMapMode *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetMapMode(QEMU_G2H(c->hdc), c->mode);
 }
 
@@ -161,7 +161,7 @@ WINGDIAPI BOOL WINAPI SetViewportExtEx(HDC hdc, INT x, INT y, LPSIZE size)
 void qemu_SetViewportExtEx(struct qemu_syscall *call)
 {
     struct qemu_SetViewportExtEx *c = (struct qemu_SetViewportExtEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetViewportExtEx(QEMU_G2H(c->hdc), c->x, c->y, QEMU_G2H(c->size));
 }
 
@@ -197,7 +197,7 @@ WINGDIAPI BOOL WINAPI SetViewportOrgEx(HDC hdc, INT x, INT y, LPPOINT pt)
 void qemu_SetViewportOrgEx(struct qemu_syscall *call)
 {
     struct qemu_SetViewportOrgEx *c = (struct qemu_SetViewportOrgEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetViewportOrgEx(QEMU_G2H(c->hdc), c->x, c->y, QEMU_G2H(c->pt));
 }
 
@@ -233,7 +233,7 @@ WINGDIAPI BOOL WINAPI SetWindowExtEx(HDC hdc, INT x, INT y, LPSIZE size)
 void qemu_SetWindowExtEx(struct qemu_syscall *call)
 {
     struct qemu_SetWindowExtEx *c = (struct qemu_SetWindowExtEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetWindowExtEx(QEMU_G2H(c->hdc), c->x, c->y, QEMU_G2H(c->size));
 }
 
