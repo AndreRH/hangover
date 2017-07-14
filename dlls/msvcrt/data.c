@@ -35,6 +35,7 @@ char **MSVCRT___initenv = NULL;
 char *MSVCRT__acmdln = NULL;
 WCHAR *MSVCRT__wcmdln = NULL;
 
+unsigned int MSVCRT__commode = 0;
 unsigned int MSVCRT__fmode = 0;
 
 #endif
