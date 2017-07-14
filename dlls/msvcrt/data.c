@@ -176,4 +176,21 @@ void CDECL _initterm(_INITTERMFUN *start,_INITTERMFUN *end)
         current++;
     }
 }
+
+typedef int (CDECL *_INITTERM_E_FN)(void);
+int CDECL _initterm_e(_INITTERM_E_FN *table, _INITTERM_E_FN *end)
+{
+    int res = 0;
+
+    while (!res && table < end)
+    {
+        if (*table)
+        {
+            res = (**table)();
+        }
+        table++;
+    }
+    return res;
+}
+
 #endif
