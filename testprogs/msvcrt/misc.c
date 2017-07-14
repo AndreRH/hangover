@@ -48,6 +48,7 @@ void __stdcall WinMainCRTStartup()
     int (* CDECL p_memcmp)(const void *ptr1, const void *ptr2, size_t size);
     void *(CDECL *p_memcpy)(void *dst, const void *src, size_t size);
     void *(CDECL *p_memset)(void *ptr, int val, size_t size);
+    void (* CDECL p_operator_delete)(void *ptr);
     void *(* CDECL p_operator_new)(size_t size);
     int (CDECL *p_puts)(const char *str);
     void (* CDECL p_qsort)(void *base, size_t nmemb, size_t size,
@@ -85,6 +86,7 @@ void __stdcall WinMainCRTStartup()
     p_memcmp = (void *)GetProcAddress(msvcrt, "memcmp");
     p_memcpy = (void *)GetProcAddress(msvcrt, "memcpy");
     p_memset = (void *)GetProcAddress(msvcrt, "memset");
+    p_operator_delete = (void *)GetProcAddress(msvcrt, "??3@YAXPEAX@Z");
     p_operator_new = (void *)GetProcAddress(msvcrt, "??2@YAPEAX_K@Z");
     p_puts = (void *)GetProcAddress(msvcrt, "puts");
     p_qsort = (void *)GetProcAddress(msvcrt, "qsort");
@@ -182,6 +184,7 @@ void __stdcall WinMainCRTStartup()
 
     void *foo = p_operator_new(16);
     p_fprintf(iob + 1, "New: %p\n", foo);
+    p_operator_delete(foo);
 
     WriteFile(hstdout, buffer, sizeof(buffer), &written, NULL);
     p_exit(123);

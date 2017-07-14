@@ -119,6 +119,35 @@ void qemu_malloc(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_operator_delete
+{
+    struct qemu_syscall super;
+    uint64_t mem;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+void CDECL MSVCRT_operator_delete(void *mem)
+{
+    struct qemu_operator_delete call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_OPERATOR_DELETE);
+    call.mem = (uint64_t)mem;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_operator_delete(struct qemu_syscall *call)
+{
+    struct qemu_operator_delete *c = (struct qemu_operator_delete *)call;
+    WINE_TRACE("\n");
+
+    p_operator_delete(QEMU_G2H(c->mem));
+}
+
+#endif
+
 struct qemu_operator_new
 {
     struct qemu_syscall super;
