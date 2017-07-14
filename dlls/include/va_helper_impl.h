@@ -22,24 +22,24 @@
 
 #define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.type " #name suffix ",@function\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc\n\t.previous");
 #define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
-extern int CDECL call_va_asm( void *ctx, void *dummy, void *func, int nb_args, int nb_onstack, const void *args );
+extern int CDECL call_va_asm( void *ctx, void *func, int nb_args, int nb_onstack, const void *args );
 __ASM_GLOBAL_FUNC( call_va_asm,
                    "stp x29, x30, [SP,#-16]!\n\t"           /* push FP & LR */
                    "stp x19, x20, [SP,#-16]!\n\t"           /* push some regs we'll use */
-                   "add x9, x5, x3, lsl #4\n\t"             /* end=args+nb_args*sizeof(args[0]) */
-                   "mov x10, x2\n\t"                        /* remember func */
-                   "mov x11, x5\n\t"                        /* remember args */
+                   "add x9, x4, x2, lsl #4\n\t"             /* end=args+nb_args*sizeof(args[0]) */
+                   "mov x10, x1\n\t"                        /* remember func */
+                   "mov x11, x4\n\t"                        /* remember args */
                    "mov x12, #0\n\t"                        /* init arg counter */
                    "mov x13, #0\n\t"                        /* init float arg counter */
                    "mov x19, #0\n\t"                        /* init align */
                    "mov x20, #0\n\t"                        /* init stack arg counter */
-                   "cbz x4, 1f\n\t"                         /* if nb_onstack == 0 goto 1 */
-                   "lsl x4, x4, #3\n\t"                     /* nb_onstack *= 8 */
-                   "add x4, x4, #0x16\n\t"                  /* align helper */
-                   "and x4, x4, #0xfffffffffffffff0\n\t"    /* align */
-                   "sub SP, SP, x4\n\t"                     /* allocate space on stack for later */
-                   "mov x19, x4\n\t"                        /* remember align */
-                   "1: cbz x3, 11f\n\t"                     /* if nb_args == 0 goto 4 */
+                   "cbz x3, 1f\n\t"                         /* if nb_onstack == 0 goto 1 */
+                   "lsl x3, x3, #3\n\t"                     /* nb_onstack *= 8 */
+                   "add x3, x3, #0x16\n\t"                  /* align helper */
+                   "and x3, x3, #0xfffffffffffffff0\n\t"    /* align */
+                   "sub SP, SP, x3\n\t"                     /* allocate space on stack for later */
+                   "mov x19, x3\n\t"                        /* remember align */
+                   "1: cbz x2, 11f\n\t"                     /* if nb_args == 0 goto 4 */
                    /* init  done */
                    "2: ldr x14, [x11]\n\t"                  /* is_float */
                    "cbz x14, 6f\n\t"                        /* if !is_float goto 97 */
@@ -72,13 +72,15 @@ __ASM_GLOBAL_FUNC( call_va_asm,
                    "str x16, [x17]\n\t"                     /* store it at the calculated position */
                    "add x20, x20, #1\n\t"                   /* increment the stack arg counter */
                    "b 10f\n\t"                              /* next */
-                   "6: cmp x12, #6\n\t"                     /* if args exceed file+fmt+6, */
+                   "6: cmp x12, #7\n\t"                     /* if args exceed ctx+7, */
                    "b.eq 9f\n\t"                            /* they need to continue on the stack */
                    /* ints -> reg */
                    "adr x14, 7f\n\t"                        /* different reg per arg nubmer */
                    "add x14, x14, x12, lsl #3\n\t"          /* some kind of switch statement */
                    "br x14\n\t"
-                   "7: ldr x2, [x11,#8]\n\t"
+                   "7: ldr x1, [x11,#8]\n\t"
+                   "b 8f\n\t"
+                   "ldr x2, [x11,#8]\n\t"
                    "b 8f\n\t"
                    "ldr x3, [x11,#8]\n\t"
                    "b 8f\n\t"
@@ -105,15 +107,15 @@ __ASM_GLOBAL_FUNC( call_va_asm,
                    "ldp x29, x30, [SP], #16\n\t"            /* pop FP & LR */
                    "ret\n\t" )
 
-uint64_t call_va(uint64_t (*func)(void *ctx, void *dummy, ...), void *ctx, unsigned int icount,
+uint64_t call_va(uint64_t (*func)(void *ctx, ...), void *ctx, unsigned int icount,
         unsigned int fcount, const struct va_array *array)
 {
     int onstack = 0;
 
-    if (icount - fcount > 6)
-        onstack = icount - fcount - 6;
+    if (icount - fcount > 7)
+        onstack = icount - fcount - 7;
     if (fcount > 8)
         onstack += fcount - 8;
 
-    return call_va_asm(ctx, NULL, func, icount, onstack, array);
+    return call_va_asm(ctx, func, icount, onstack, array);
 }

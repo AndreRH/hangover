@@ -346,13 +346,13 @@ struct printf_data
     BOOL unicode;
 };
 
-static uint64_t printf_wrapper(void *ctx, void *dummy, ...)
+static uint64_t printf_wrapper(void *ctx, ...)
 {
     va_list list;
     const struct printf_data *data = ctx;
     int ret;
 
-    va_start(list, dummy);
+    va_start(list, ctx);
     if (data->unicode)
         ret = p_vfwprintf(data->file, data->fmt, list);
     else
