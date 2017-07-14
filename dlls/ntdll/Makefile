@@ -5,10 +5,10 @@ WINEGCC=$(DESTDIR)/build/wine-host/tools/winegcc/winegcc -B$(DESTDIR)/build/wine
 
 all: ntdll.dll qemu_ntdll.dll.so
 
-ntdll.dll: ntdll.def main_g.o critsection_g.o signal_g.o
+ntdll.dll: critsection_g.o main_g.o ntdll.def rtl_g.o signal_g.o
 	x86_64-w64-mingw32-ld -shared ntdll.def *_g.o -o ntdll.dll -nostdlib
 
-qemu_ntdll.dll.so: main_h.o critsection_h.o signal_h.o qemu_ntdll.spec
+qemu_ntdll.dll.so: critsection_h.o main_h.o qemu_ntdll.spec rtl_h.o signal_h.o
 	$(WINEGCC) -shared qemu_ntdll.spec *_h.o -o qemu_ntdll.dll.so
 
 %_g.o: %.c ntdll.h Makefile

@@ -14,7 +14,9 @@ EXPORTS
   CompareStringW
   CreateEventW
   CreateFileW
+  DecodePointer=ntdll.RtlDecodePointer
   DeleteCriticalSection=ntdll.RtlDeleteCriticalSection
+  EncodePointer=ntdll.RtlEncodePointer
   EnterCriticalSection=ntdll.RtlEnterCriticalSection
   EscapeCommFunction
   ExitProcess

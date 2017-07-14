@@ -5,7 +5,9 @@ EXPORTS
   DbgBreakPoint
   RtlAddFunctionTable
   RtlCaptureContext
+  RtlDecodePointer
   RtlDeleteCriticalSection
+  RtlEncodePointer
   RtlEnterCriticalSection
   RtlInitializeCriticalSectionEx
   RtlLeaveCriticalSection
