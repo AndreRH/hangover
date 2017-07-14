@@ -31,6 +31,35 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
+struct qemu_GetEnvironmentStringsA
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+/* The headers have a #define that maps GetEnvironmentStringsA to GetEnvironmentStrings. */
+LPSTR WINAPI qemu_GetEnvironmentStringsA(void)
+{
+    struct qemu_GetEnvironmentStringsA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETENVIRONMENTSTRINGSA);
+
+    qemu_syscall(&call.super);
+
+    return (LPSTR)call.super.iret;
+}
+
+#else
+
+void qemu_GetEnvironmentStringsA(struct qemu_syscall *call)
+{
+    struct qemu_GetEnvironmentStringsA *c = (struct qemu_GetEnvironmentStringsA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = (uint64_t)GetEnvironmentStringsA();
+}
+
+#endif
+
 #ifdef QEMU_DLL_GUEST
 
 WINBASEAPI CHAR WINAPI *GetCommandLineA(void)

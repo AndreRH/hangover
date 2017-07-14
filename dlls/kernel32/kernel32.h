@@ -17,9 +17,13 @@ enum kernel32_calls
     CALL_CREATEFILEW,
     CALL_ESCAPECOMMFUNCTION,
     CALL_EXITPROCESS,
+    CALL_EXPANDENVIRONMENTSTRINGSA,
+    CALL_EXPANDENVIRONMENTSTRINGSW,
     CALL_FINDCLOSE,
     CALL_FINDFIRSTFILEW,
     CALL_FORMATMESSAGEW,
+    CALL_FREEENVIRONMENTSTRINGSA,
+    CALL_FREEENVIRONMENTSTRINGSW,
     CALL_GETCOMMANDLINEA,
     CALL_GETCOMMANDLINEW,
     CALL_GETCOMMCONFIG,
@@ -36,7 +40,13 @@ enum kernel32_calls
     CALL_GETDATEFORMATW,
     CALL_GETDEFAULTCOMMCONFIGA,
     CALL_GETDEFAULTCOMMCONFIGW,
+    CALL_GETENVIRONMENTSTRINGSA,
+    CALL_GETENVIRONMENTSTRINGSW,
+    CALL_GETENVIRONMENTVARIABLEA,
+    CALL_GETENVIRONMENTVARIABLEW,
     CALL_GETFILESIZE,
+    CALL_GETFIRMWAREENVIRONMENTVARIABLEA,
+    CALL_GETFIRMWAREENVIRONMENTVARIABLEW,
     CALL_GETLASTERROR,
     CALL_GETLOCALTIME,
     CALL_GETMODULEFILENAMEA,
@@ -77,8 +87,11 @@ enum kernel32_calls
     CALL_SETDEFAULTCOMMCONFIGA,
     CALL_SETDEFAULTCOMMCONFIGW,
     CALL_SETENDOFFILE,
+    CALL_SETENVIRONMENTVARIABLEA,
+    CALL_SETENVIRONMENTVARIABLEW,
     CALL_SETFILEPOINTER,
     CALL_SETLASTERROR,
+    CALL_SETSTDHANDLE,
     CALL_SETUNHANDLEDEXCEPTIONFILTER,
     CALL_SETUPCOMM,
     CALL_SLEEP,
@@ -112,11 +125,17 @@ void qemu_CreateEventW(struct qemu_syscall *call);
 void qemu_CreateFileW(struct qemu_syscall *call);
 void qemu_EscapeCommFunction(struct qemu_syscall *call);
 void qemu_ExitProcess(struct qemu_syscall *call);
+void qemu_ExpandEnvironmentStringsA(struct qemu_syscall *call);
+void qemu_ExpandEnvironmentStringsW(struct qemu_syscall *call);
 void qemu_FindClose(struct qemu_syscall *call);
 void qemu_FindFirstFileW(struct qemu_syscall *call);
 void qemu_FormatMessageW(struct qemu_syscall *call);
+void qemu_FreeEnvironmentStringsA(struct qemu_syscall *call);
+void qemu_FreeEnvironmentStringsW(struct qemu_syscall *call);
 void qemu_GetCommandLineA(struct qemu_syscall *c);
+void qemu_GetCommandLineA(struct qemu_syscall *call);
 void qemu_GetCommandLineW(struct qemu_syscall *c);
+void qemu_GetCommandLineW(struct qemu_syscall *call);
 void qemu_GetCommConfig(struct qemu_syscall *call);
 void qemu_GetCommMask(struct qemu_syscall *call);
 void qemu_GetCommModemStatus(struct qemu_syscall *call);
@@ -131,7 +150,13 @@ void qemu_GetDateFormatA(struct qemu_syscall *call);
 void qemu_GetDateFormatW(struct qemu_syscall *call);
 void qemu_GetDefaultCommConfigA(struct qemu_syscall *call);
 void qemu_GetDefaultCommConfigW(struct qemu_syscall *call);
+void qemu_GetEnvironmentStringsA(struct qemu_syscall *call);
+void qemu_GetEnvironmentStringsW(struct qemu_syscall *call);
+void qemu_GetEnvironmentVariableA(struct qemu_syscall *call);
+void qemu_GetEnvironmentVariableW(struct qemu_syscall *call);
 void qemu_GetFileSize(struct qemu_syscall *call);
+void qemu_GetFirmwareEnvironmentVariableA(struct qemu_syscall *call);
+void qemu_GetFirmwareEnvironmentVariableW(struct qemu_syscall *call);
 void qemu_GetLastError(struct qemu_syscall *call);
 void qemu_GetLocalTime(struct qemu_syscall *call);
 void qemu_GetModuleFileNameA(struct qemu_syscall *call);
@@ -172,8 +197,11 @@ void qemu_SetConsoleCtrlHandler(struct qemu_syscall *call);
 void qemu_SetDefaultCommConfigA(struct qemu_syscall *call);
 void qemu_SetDefaultCommConfigW(struct qemu_syscall *call);
 void qemu_SetEndOfFile(struct qemu_syscall *call);
+void qemu_SetEnvironmentVariableA(struct qemu_syscall *call);
+void qemu_SetEnvironmentVariableW(struct qemu_syscall *call);
 void qemu_SetFilePointer(struct qemu_syscall *call);
 void qemu_SetLastError(struct qemu_syscall *call);
+void qemu_SetStdHandle(struct qemu_syscall *call);
 void qemu_SetUnhandledExceptionFilter(struct qemu_syscall *call);
 void qemu_SetupComm(struct qemu_syscall *call);
 void qemu_Sleep(struct qemu_syscall *call);

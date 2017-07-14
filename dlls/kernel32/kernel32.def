@@ -18,9 +18,13 @@ EXPORTS
   EnterCriticalSection=ntdll.RtlEnterCriticalSection
   EscapeCommFunction
   ExitProcess
+  ExpandEnvironmentStringsA
+  ExpandEnvironmentStringsW
   FindClose
   FindFirstFileW
   FormatMessageW
+  FreeEnvironmentStringsA
+  FreeEnvironmentStringsW
   GetCommandLineA
   GetCommandLineW
   GetCommConfig
@@ -37,7 +41,13 @@ EXPORTS
   GetDateFormatW
   GetDefaultCommConfigA
   GetDefaultCommConfigW
+  GetEnvironmentStringsA=qemu_GetEnvironmentStringsA
+  GetEnvironmentStringsW
+  GetEnvironmentVariableA
+  GetEnvironmentVariableW
   GetFileSize
+  GetFirmwareEnvironmentVariableA
+  GetFirmwareEnvironmentVariableW
   GetLastError
   GetLocalTime
   GetModuleFileNameA
@@ -85,8 +95,11 @@ EXPORTS
   SetDefaultCommConfigA
   SetDefaultCommConfigW
   SetEndOfFile
+  SetEnvironmentVariableA
+  SetEnvironmentVariableW
   SetFilePointer
   SetLastError
+  SetStdHandle
   SetUnhandledExceptionFilter
   SetupComm
   Sleep
