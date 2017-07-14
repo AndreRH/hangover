@@ -7,14 +7,21 @@ enum kernel32_calls
     CALL_BUILDCOMMDCBANDTIMEOUTSA,
     CALL_BUILDCOMMDCBANDTIMEOUTSW,
     CALL_BUILDCOMMDCBW,
+    CALL_CHECKREMOTEDEBUGGERPRESENT,
     CALL_CLEARCOMMBREAK,
     CALL_CLEARCOMMERROR,
     CALL_CLOSEHANDLE,
     CALL_COMMCONFIGDIALOGA,
     CALL_COMMCONFIGDIALOGW,
     CALL_COMPARESTRINGW,
+    CALL_CONTINUEDEBUGEVENT,
     CALL_CREATEEVENTW,
     CALL_CREATEFILEW,
+    CALL_DEBUGACTIVEPROCESS,
+    CALL_DEBUGACTIVEPROCESSSTOP,
+    CALL_DEBUGBREAK,
+    CALL_DEBUGBREAKPROCESS,
+    CALL_DEBUGSETPROCESSKILLONEXIT,
     CALL_ESCAPECOMMFUNCTION,
     CALL_EXITPROCESS,
     CALL_EXPANDENVIRONMENTSTRINGSA,
@@ -76,6 +83,7 @@ enum kernel32_calls
     CALL_HEAPALLOC,
     CALL_HEAPFREE,
     CALL_INITIALIZECRITICALSECTION,
+    CALL_ISDEBUGGERPRESENT,
     CALL_ISPROCESSORFEATUREPRESENT,
     CALL_K32GETPERFORMANCEINFO,
     CALL_LOADLIBRARYA,
@@ -90,6 +98,8 @@ enum kernel32_calls
     CALL_LSTRLENA,
     CALL_LSTRLENW,
     CALL_MULTIBYTETOWIDECHAR,
+    CALL_OUTPUTDEBUGSTRINGA,
+    CALL_OUTPUTDEBUGSTRINGW,
     CALL_PURGECOMM,
     CALL_QUERYPERFORMANCECOUNTER,
     CALL_QUERYPERFORMANCEFREQUENCY,
@@ -120,6 +130,7 @@ enum kernel32_calls
     CALL_VIRTUALPROTECT,
     CALL_VIRTUALQUERY,
     CALL_WAITCOMMEVENT,
+    CALL_WAITFORDEBUGEVENT,
     CALL_WIDECHARTOMULTIBYTE,
     CALL_WRITEFILE,
 };
@@ -131,14 +142,21 @@ void qemu_BuildCommDCBA(struct qemu_syscall *call);
 void qemu_BuildCommDCBAndTimeoutsA(struct qemu_syscall *call);
 void qemu_BuildCommDCBAndTimeoutsW(struct qemu_syscall *call);
 void qemu_BuildCommDCBW(struct qemu_syscall *call);
+void qemu_CheckRemoteDebuggerPresent(struct qemu_syscall *call);
 void qemu_ClearCommBreak(struct qemu_syscall *call);
 void qemu_ClearCommError(struct qemu_syscall *call);
 void qemu_CloseHandle(struct qemu_syscall *call);
 void qemu_CommConfigDialogA(struct qemu_syscall *call);
 void qemu_CommConfigDialogW(struct qemu_syscall *call);
 void qemu_CompareStringW(struct qemu_syscall *call);
+void qemu_ContinueDebugEvent(struct qemu_syscall *call);
 void qemu_CreateEventW(struct qemu_syscall *call);
 void qemu_CreateFileW(struct qemu_syscall *call);
+void qemu_DebugActiveProcess(struct qemu_syscall *call);
+void qemu_DebugActiveProcessStop(struct qemu_syscall *call);
+void qemu_DebugBreak(struct qemu_syscall *call);
+void qemu_DebugBreakProcess(struct qemu_syscall *call);
+void qemu_DebugSetProcessKillOnExit(struct qemu_syscall *call);
 void qemu_EscapeCommFunction(struct qemu_syscall *call);
 void qemu_ExitProcess(struct qemu_syscall *call);
 void qemu_ExpandEnvironmentStringsA(struct qemu_syscall *call);
@@ -202,6 +220,7 @@ void qemu_GlobalFree(struct qemu_syscall *call);
 void qemu_HeapAlloc(struct qemu_syscall *call);
 void qemu_HeapFree(struct qemu_syscall *call);
 void qemu_InitializeCriticalSection(struct qemu_syscall *call);
+void qemu_IsDebuggerPresent(struct qemu_syscall *call);
 void qemu_IsProcessorFeaturePresent(struct qemu_syscall *call);
 void qemu_K32GetPerformanceInfo(struct qemu_syscall *call);
 void qemu_LoadLibraryA(struct qemu_syscall *call);
@@ -216,6 +235,8 @@ void qemu_lstrcpyW(struct qemu_syscall *call);
 void qemu_lstrlenA(struct qemu_syscall *call);
 void qemu_lstrlenW(struct qemu_syscall *call);
 void qemu_MultiByteToWideChar(struct qemu_syscall *call);
+void qemu_OutputDebugStringA(struct qemu_syscall *call);
+void qemu_OutputDebugStringW(struct qemu_syscall *call);
 void qemu_PurgeComm(struct qemu_syscall *call);
 void qemu_QueryPerformanceCounter(struct qemu_syscall *call);
 void qemu_QueryPerformanceFrequency(struct qemu_syscall *call);
@@ -246,6 +267,7 @@ void qemu_VerifyVersionInfoW(struct qemu_syscall *call);
 void qemu_VirtualProtect(struct qemu_syscall *call);
 void qemu_VirtualQuery(struct qemu_syscall *call);
 void qemu_WaitCommEvent(struct qemu_syscall *call);
+void qemu_WaitForDebugEvent(struct qemu_syscall *call);
 void qemu_WideCharToMultiByte(struct qemu_syscall *call);
 void qemu_WriteFile(struct qemu_syscall *call);
 

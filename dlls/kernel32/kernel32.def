@@ -6,14 +6,21 @@ EXPORTS
   BuildCommDCBAndTimeoutsA
   BuildCommDCBAndTimeoutsW
   BuildCommDCBW
+  CheckRemoteDebuggerPresent
   ClearCommBreak
   ClearCommError
   CloseHandle
   CommConfigDialogA
   CommConfigDialogW
   CompareStringW
+  ContinueDebugEvent
   CreateEventW
   CreateFileW
+  DebugActiveProcess
+  DebugActiveProcessStop
+  DebugBreak
+  DebugBreakProcess
+  DebugSetProcessKillOnExit
   DecodePointer=ntdll.RtlDecodePointer
   DeleteCriticalSection=ntdll.RtlDeleteCriticalSection
   EncodePointer=ntdll.RtlEncodePointer
@@ -80,6 +87,7 @@ EXPORTS
   HeapFree
   InitializeCriticalSection
   InitializeCriticalSectionEx
+  IsDebuggerPresent
   IsProcessorFeaturePresent
   K32GetPerformanceInfo
   LeaveCriticalSection=ntdll.RtlLeaveCriticalSection
@@ -96,6 +104,8 @@ EXPORTS
   lstrlenW
   MulDiv
   MultiByteToWideChar
+  OutputDebugStringA
+  OutputDebugStringW
   PurgeComm
   QueryPerformanceCounter
   QueryPerformanceFrequency
@@ -130,5 +140,6 @@ EXPORTS
   VirtualProtect
   VirtualQuery
   WaitCommEvent
+  WaitForDebugEvent
   WideCharToMultiByte
   WriteFile
