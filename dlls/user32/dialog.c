@@ -225,7 +225,7 @@ void qemu_CreateDialogIndirectParamW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_DialogBoxParamA
+struct qemu_DialogBoxParam
 {
     struct qemu_syscall super;
     uint64_t hInst;
@@ -233,57 +233,49 @@ struct qemu_DialogBoxParamA
     uint64_t owner;
     uint64_t dlgProc;
     uint64_t param;
+    uint64_t guest_wrapper;
+};
+
+struct qemu_dlgproc_cb
+{
+    uint64_t guest_proc;
+    uint64_t dlg, msg, wp, lp;
 };
 
 #ifdef QEMU_DLL_GUEST
 
+static uint64_t guest_wrapper(const struct qemu_dlgproc_cb *cb)
+{
+    DLGPROC guest_proc = (DLGPROC)cb->guest_proc;
+    return guest_proc((HWND)cb->dlg, cb->msg, cb->wp, cb->lp);
+}
+
 WINUSERAPI INT_PTR WINAPI DialogBoxParamA(HINSTANCE hInst, LPCSTR name, HWND owner, DLGPROC dlgProc, LPARAM param)
 {
-    struct qemu_DialogBoxParamA call;
+    struct qemu_DialogBoxParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DIALOGBOXPARAMA);
     call.hInst = (uint64_t)hInst;
     call.name = (uint64_t)name;
     call.owner = (uint64_t)owner;
     call.dlgProc = (uint64_t)dlgProc;
     call.param = (uint64_t)param;
+    call.guest_wrapper = (uint64_t)guest_wrapper;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_DialogBoxParamA(struct qemu_syscall *call)
-{
-    struct qemu_DialogBoxParamA *c = (struct qemu_DialogBoxParamA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DialogBoxParamA(QEMU_G2H(c->hInst), QEMU_G2H(c->name), QEMU_G2H(c->owner), QEMU_G2H(c->dlgProc), c->param);
-}
-
-#endif
-
-struct qemu_DialogBoxParamW
-{
-    struct qemu_syscall super;
-    uint64_t hInst;
-    uint64_t name;
-    uint64_t owner;
-    uint64_t dlgProc;
-    uint64_t param;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINUSERAPI INT_PTR WINAPI DialogBoxParamW(HINSTANCE hInst, LPCWSTR name, HWND owner, DLGPROC dlgProc, LPARAM param)
 {
-    struct qemu_DialogBoxParamW call;
+    struct qemu_DialogBoxParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DIALOGBOXPARAMW);
     call.hInst = (uint64_t)hInst;
     call.name = (uint64_t)name;
     call.owner = (uint64_t)owner;
     call.dlgProc = (uint64_t)dlgProc;
     call.param = (uint64_t)param;
+    call.guest_wrapper = (uint64_t)guest_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -292,11 +284,51 @@ WINUSERAPI INT_PTR WINAPI DialogBoxParamW(HINSTANCE hInst, LPCWSTR name, HWND ow
 
 #else
 
-void qemu_DialogBoxParamW(struct qemu_syscall *call)
+static uint64_t guest_wrapper;
+
+static INT_PTR WINAPI dlgproc_wrapper(HWND dlg, UINT msg, WPARAM wp, LPARAM lp)
 {
-    struct qemu_DialogBoxParamW *c = (struct qemu_DialogBoxParamW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DialogBoxParamW(QEMU_G2H(c->hInst), QEMU_G2H(c->name), QEMU_G2H(c->owner), QEMU_G2H(c->dlgProc), c->param);
+    uint64_t *dlgproc = TlsGetValue(user32_tls);
+    uint64_t ret;
+    struct qemu_dlgproc_cb call = {*dlgproc, (uint64_t)dlg, msg, wp, lp};
+
+    WINE_TRACE("Calling guest proc 0x%lx(%p, %u, %lu, %lu).\n", *dlgproc, dlg, msg, wp, lp);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(guest_wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest proc returned %lu\n", ret);
+
+    return ret;
+}
+
+void qemu_DialogBoxParam(struct qemu_syscall *call)
+{
+    struct qemu_DialogBoxParam *c = (struct qemu_DialogBoxParam *)call;
+    HINSTANCE instance;
+    uint64_t dlgproc;
+    WINE_TRACE("\n");
+
+    instance = (HINSTANCE)c->hInst;
+    if (!instance)
+        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    dlgproc = c->dlgProc;
+    guest_wrapper = c->guest_wrapper;
+    TlsSetValue(user32_tls, &dlgproc);
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_DIALOGBOXPARAMA):
+            c->super.iret = DialogBoxParamA(instance, QEMU_G2H(c->name), QEMU_G2H(c->owner),
+                    dlgproc_wrapper, c->param);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DIALOGBOXPARAMW):
+            c->super.iret = DialogBoxParamW(instance, QEMU_G2H(c->name), QEMU_G2H(c->owner),
+                    dlgproc_wrapper, c->param);
+            break;
+
+        default:
+            WINE_ERR("Unreachable code, id %16lx.\n", c->super.id);
+    }
 }
 
 #endif

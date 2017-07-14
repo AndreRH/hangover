@@ -827,8 +827,8 @@ void qemu_DestroyWindow(struct qemu_syscall *call);
 void qemu_DialogBoxIndirectParamA(struct qemu_syscall *call);
 void qemu_DialogBoxIndirectParamAorW(struct qemu_syscall *call);
 void qemu_DialogBoxIndirectParamW(struct qemu_syscall *call);
-void qemu_DialogBoxParamA(struct qemu_syscall *call);
-void qemu_DialogBoxParamW(struct qemu_syscall *call);
+void qemu_DialogBoxParam(struct qemu_syscall *call);
+void qemu_DialogBoxParam(struct qemu_syscall *call);
 void qemu_DisableProcessWindowsGhosting(struct qemu_syscall *call);
 void qemu_DispatchMessageA(struct qemu_syscall *call);
 void qemu_DispatchMessageW(struct qemu_syscall *call);
@@ -1364,6 +1364,8 @@ struct classproc_wrapper
 extern struct classproc_wrapper *class_wrappers;
 extern unsigned int class_wrapper_count;
 extern uint64_t guest_wndproc_wrapper;
+
+DWORD user32_tls;
 
 #endif
 
