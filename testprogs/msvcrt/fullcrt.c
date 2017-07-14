@@ -3,6 +3,7 @@
 
 int wcscpy_s(wchar_t *, size_t, const wchar_t *);
 int wcscat_s(wchar_t *, size_t, const wchar_t *);
+int swprintf_s(wchar_t *str, size_t count, const wchar_t *format, ...);
 
 int WinMain()
 {
@@ -27,6 +28,9 @@ int WinMain()
 
     db = wcstod(L"123.456", NULL);
     printf("wcstod(123.456)=%f\n", db);
+
+    swprintf_s(bufferW, 128, L"This is a %s test", L"sprintf_s");
+    printf("Hello swprintf_s %p \"%ls\"\n", bufferW, bufferW);
 
     return 123;
 }

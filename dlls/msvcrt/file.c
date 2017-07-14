@@ -414,13 +414,14 @@ struct qemu_sprintf
     struct qemu_syscall super;
     uint64_t argcount, argcount_float;
     uint64_t str;
+    uint64_t charcount;
     uint64_t format;
     struct va_array args[1];
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static int CDECL vsprintf_helper(uint64_t op, char *str, const char *format, va_list args)
+static int CDECL vsprintf_helper(uint64_t op, char *str, size_t charcount, const char *format, va_list args)
 {
     struct qemu_sprintf *call;
     int ret;
@@ -435,7 +436,61 @@ static int CDECL vsprintf_helper(uint64_t op, char *str, const char *format, va_
     call = MSVCRT_malloc(offsetof(struct qemu_sprintf, args[count]));
     call->super.id = op;
     call->argcount = count;
+    call->charcount = charcount;
     call->str = (uint64_t)str;
+    call->format = (uint64_t)format;
+    call->argcount_float = 0;
+
+    for (i = 0; i < count; ++i)
+    {
+        switch (fmts[i])
+        {
+            case 'A':
+            case 'a':
+            case 'E':
+            case 'e':
+            case 'F':
+            case 'f':
+            case 'G':
+            case 'g':
+                conv.d = va_arg(args, double);
+                call->args[i].is_float = TRUE;
+                call->args[i].arg = conv.i;
+                call->argcount_float++;
+                break;
+
+            default:
+                call->args[i].is_float = FALSE;
+                call->args[i].arg = va_arg(args, uint64_t);
+                break;
+        }
+    }
+
+    qemu_syscall(&call->super);
+    ret = call->super.iret;
+
+    MSVCRT_free(call);
+
+    return ret;
+}
+
+static int CDECL vswprintf_helper(uint64_t op, WCHAR *str, size_t charcount, const WCHAR *format, va_list args)
+{
+    struct qemu_sprintf *call;
+    int ret;
+    WCHAR fmts[256] = {0};
+    unsigned int count = count_printf_argsW(format, fmts), i, arg = 0;
+    union
+    {
+        double d;
+        uint64_t i;
+    } conv;
+
+    call = MSVCRT_malloc(offsetof(struct qemu_sprintf, args[count]));
+    call->super.id = op;
+    call->argcount = count;
+    call->str = (uint64_t)str;
+    call->charcount = charcount;
     call->format = (uint64_t)format;
     call->argcount_float = 0;
 
@@ -478,7 +533,20 @@ int CDECL MSVCRT_sprintf(char *str, const char *format, ...)
     va_list list;
 
     va_start(list, format);
-    ret = vsprintf_helper(QEMU_SYSCALL_ID(CALL_SPRINTF), str, format, list);
+    ret = vsprintf_helper(QEMU_SYSCALL_ID(CALL_SPRINTF), str, 0, format, list);
+    va_end(list);
+
+    return ret;
+}
+
+int CDECL MSVCRT_swprintf_s(WCHAR *str, size_t count,
+        const WCHAR *format, ...)
+{
+    int ret;
+    va_list list;
+
+    va_start(list, format);
+    ret = vswprintf_helper(QEMU_SYSCALL_ID(CALL_SWPRINTF_S), str, count, format, list);
     va_end(list);
 
     return ret;
@@ -488,6 +556,8 @@ int CDECL MSVCRT_sprintf(char *str, const char *format, ...)
 
 struct sprintf_data
 {
+    uint64_t op;
+    size_t charcount;
     void *dst;
     void *fmt;
 };
@@ -499,7 +569,16 @@ static uint64_t sprintf_wrapper(void *ctx, ...)
     int ret;
 
     va_start(list, ctx);
-    ret = p_vsprintf(data->dst, data->fmt, list);
+    switch (data->op)
+    {
+        case QEMU_SYSCALL_ID(CALL_SPRINTF):
+            ret = p_vsprintf(data->dst, data->fmt, list);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_SWPRINTF_S):
+            ret = p_vswprintf_s(data->dst, data->charcount, data->fmt, list);
+            break;
+    }
     va_end(list);
 
     return ret;
@@ -513,6 +592,8 @@ void qemu_sprintf(struct qemu_syscall *call)
 
     WINE_FIXME("(%lu floats/%lu args, format \"%s\"\n", c->argcount_float, c->argcount, (char *)QEMU_G2H(c->format));
 
+    data.op = c->super.id;
+    data.charcount = c->charcount;
     data.dst = QEMU_G2H(c->str);
     data.fmt = QEMU_G2H(c->format);
     ret = call_va(sprintf_wrapper, &data, c->argcount, c->argcount_float, c->args);
