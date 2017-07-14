@@ -25,6 +25,8 @@ EXPORTS
   FormatMessageW
   FreeEnvironmentStringsA
   FreeEnvironmentStringsW
+  GetActiveProcessorCount
+  GetActiveProcessorGroupCount
   GetCommandLineA
   GetCommandLineW
   GetCommConfig
@@ -48,6 +50,7 @@ EXPORTS
   GetFileSize
   GetFirmwareEnvironmentVariableA
   GetFirmwareEnvironmentVariableW
+  GetLargePageMinimum
   GetLastError
   GetLocalTime
   GetModuleFileNameA
@@ -55,11 +58,13 @@ EXPORTS
   GetModuleHandleA
   GetModuleHandleExA
   GetModuleHandleW
+  GetNativeSystemInfo
   GetProcAddress
   GetProcessHeap
   GetStartupInfoA
   GetStartupInfoW
   GetStdHandle
+  GetSystemInfo
   GetSystemTimeAsFileTime
   GetTickCount
   GetTimeFormatA
@@ -73,6 +78,8 @@ EXPORTS
   HeapFree
   InitializeCriticalSection
   InitializeCriticalSectionEx
+  IsProcessorFeaturePresent
+  K32GetPerformanceInfo
   LeaveCriticalSection=ntdll.RtlLeaveCriticalSection
   LoadLibraryA
   LocalFree
@@ -81,6 +88,7 @@ EXPORTS
   MultiByteToWideChar
   PurgeComm
   QueryPerformanceCounter
+  QueryPerformanceFrequency
   ReadFile
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   RtlCaptureContext=ntdll.RtlCaptureContext

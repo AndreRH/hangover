@@ -24,6 +24,8 @@ enum kernel32_calls
     CALL_FORMATMESSAGEW,
     CALL_FREEENVIRONMENTSTRINGSA,
     CALL_FREEENVIRONMENTSTRINGSW,
+    CALL_GETACTIVEPROCESSORCOUNT,
+    CALL_GETACTIVEPROCESSORGROUPCOUNT,
     CALL_GETCOMMANDLINEA,
     CALL_GETCOMMANDLINEW,
     CALL_GETCOMMCONFIG,
@@ -47,6 +49,7 @@ enum kernel32_calls
     CALL_GETFILESIZE,
     CALL_GETFIRMWAREENVIRONMENTVARIABLEA,
     CALL_GETFIRMWAREENVIRONMENTVARIABLEW,
+    CALL_GETLARGEPAGEMINIMUM,
     CALL_GETLASTERROR,
     CALL_GETLOCALTIME,
     CALL_GETMODULEFILENAMEA,
@@ -54,11 +57,13 @@ enum kernel32_calls
     CALL_GETMODULEHANDLEA,
     CALL_GETMODULEHANDLEEXA,
     CALL_GETMODULEHANDLEW,
+    CALL_GETNATIVESYSTEMINFO,
     CALL_GETPROCADDRESS,
     CALL_GETPROCESSHEAP,
     CALL_GETSTARTUPINFOA,
     CALL_GETSTARTUPINFOW,
     CALL_GETSTDHANDLE,
+    CALL_GETSYSTEMINFO,
     CALL_GETSYSTEMTIMEASFILETIME,
     CALL_GETTICKCOUNT,
     CALL_GETTIMEFORMATA,
@@ -71,12 +76,15 @@ enum kernel32_calls
     CALL_HEAPALLOC,
     CALL_HEAPFREE,
     CALL_INITIALIZECRITICALSECTION,
+    CALL_ISPROCESSORFEATUREPRESENT,
+    CALL_K32GETPERFORMANCEINFO,
     CALL_LOADLIBRARYA,
     CALL_LOCALFREE,
     CALL_LSTRCMPW,
     CALL_MULTIBYTETOWIDECHAR,
     CALL_PURGECOMM,
     CALL_QUERYPERFORMANCECOUNTER,
+    CALL_QUERYPERFORMANCEFREQUENCY,
     CALL_READFILE,
     CALL_SETCOMMBREAK,
     CALL_SETCOMMCONFIG,
@@ -132,6 +140,8 @@ void qemu_FindFirstFileW(struct qemu_syscall *call);
 void qemu_FormatMessageW(struct qemu_syscall *call);
 void qemu_FreeEnvironmentStringsA(struct qemu_syscall *call);
 void qemu_FreeEnvironmentStringsW(struct qemu_syscall *call);
+void qemu_GetActiveProcessorCount(struct qemu_syscall *call);
+void qemu_GetActiveProcessorGroupCount(struct qemu_syscall *call);
 void qemu_GetCommandLineA(struct qemu_syscall *c);
 void qemu_GetCommandLineA(struct qemu_syscall *call);
 void qemu_GetCommandLineW(struct qemu_syscall *c);
@@ -157,6 +167,7 @@ void qemu_GetEnvironmentVariableW(struct qemu_syscall *call);
 void qemu_GetFileSize(struct qemu_syscall *call);
 void qemu_GetFirmwareEnvironmentVariableA(struct qemu_syscall *call);
 void qemu_GetFirmwareEnvironmentVariableW(struct qemu_syscall *call);
+void qemu_GetLargePageMinimum(struct qemu_syscall *call);
 void qemu_GetLastError(struct qemu_syscall *call);
 void qemu_GetLocalTime(struct qemu_syscall *call);
 void qemu_GetModuleFileNameA(struct qemu_syscall *call);
@@ -164,11 +175,13 @@ void qemu_GetModuleFileNameW(struct qemu_syscall *call);
 void qemu_GetModuleHandleA(struct qemu_syscall *call);
 void qemu_GetModuleHandleExA(struct qemu_syscall *call);
 void qemu_GetModuleHandleW(struct qemu_syscall *call);
+void qemu_GetNativeSystemInfo(struct qemu_syscall *call);
 void qemu_GetProcAddress(struct qemu_syscall *call);
 void qemu_GetProcessHeap(struct qemu_syscall *call);
 void qemu_GetStartupInfoA(struct qemu_syscall *call);
 void qemu_GetStartupInfoW(struct qemu_syscall *call);
 void qemu_GetStdHandle(struct qemu_syscall *call);
+void qemu_GetSystemInfo(struct qemu_syscall *call);
 void qemu_GetSystemTimeAsFileTime(struct qemu_syscall *call);
 void qemu_GetTickCount(struct qemu_syscall *call);
 void qemu_GetTimeFormatA(struct qemu_syscall *call);
@@ -181,12 +194,15 @@ void qemu_GlobalFree(struct qemu_syscall *call);
 void qemu_HeapAlloc(struct qemu_syscall *call);
 void qemu_HeapFree(struct qemu_syscall *call);
 void qemu_InitializeCriticalSection(struct qemu_syscall *call);
+void qemu_IsProcessorFeaturePresent(struct qemu_syscall *call);
+void qemu_K32GetPerformanceInfo(struct qemu_syscall *call);
 void qemu_LoadLibraryA(struct qemu_syscall *call);
 void qemu_LocalFree(struct qemu_syscall *call);
 void qemu_lstrcmpW(struct qemu_syscall *call);
 void qemu_MultiByteToWideChar(struct qemu_syscall *call);
 void qemu_PurgeComm(struct qemu_syscall *call);
 void qemu_QueryPerformanceCounter(struct qemu_syscall *call);
+void qemu_QueryPerformanceFrequency(struct qemu_syscall *call);
 void qemu_ReadFile(struct qemu_syscall *call);
 void qemu_SetCommBreak(struct qemu_syscall *call);
 void qemu_SetCommConfig(struct qemu_syscall *call);

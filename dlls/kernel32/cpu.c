@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Stefan Dösinger for CodeWeavers
+ * Copyright 2017 André Hentschel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <psapi.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -30,20 +31,23 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
+
 struct qemu_QueryPerformanceCounter
 {
     struct qemu_syscall super;
-    uint64_t count;
+    uint64_t counter;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI QueryPerformanceCounter(LARGE_INTEGER *count)
+WINBASEAPI BOOL WINAPI QueryPerformanceCounter(PLARGE_INTEGER counter)
 {
     struct qemu_QueryPerformanceCounter call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYPERFORMANCECOUNTER);
-    call.count = (uint64_t)count;
+    call.counter = (uint64_t)counter;
+
     qemu_syscall(&call.super);
+
     return call.super.iret;
 }
 
@@ -53,7 +57,250 @@ void qemu_QueryPerformanceCounter(struct qemu_syscall *call)
 {
     struct qemu_QueryPerformanceCounter *c = (struct qemu_QueryPerformanceCounter *)call;
     WINE_TRACE("\n");
-    c->super.iret = QueryPerformanceCounter(QEMU_G2H(c->count));
+    c->super.iret = QueryPerformanceCounter(QEMU_G2H(c->counter));
 }
 
 #endif
+
+struct qemu_QueryPerformanceFrequency
+{
+    struct qemu_syscall super;
+    uint64_t frequency;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI QueryPerformanceFrequency(PLARGE_INTEGER frequency)
+{
+    struct qemu_QueryPerformanceFrequency call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_QUERYPERFORMANCEFREQUENCY);
+    call.frequency = (uint64_t)frequency;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_QueryPerformanceFrequency(struct qemu_syscall *call)
+{
+    struct qemu_QueryPerformanceFrequency *c = (struct qemu_QueryPerformanceFrequency *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QueryPerformanceFrequency(QEMU_G2H(c->frequency));
+}
+
+#endif
+
+struct qemu_GetSystemInfo
+{
+    struct qemu_syscall super;
+    uint64_t si;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI VOID WINAPI GetSystemInfo(LPSYSTEM_INFO si)
+{
+    struct qemu_GetSystemInfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMINFO);
+    call.si = (uint64_t)si;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_GetSystemInfo(struct qemu_syscall *call)
+{
+    struct qemu_GetSystemInfo *c = (struct qemu_GetSystemInfo *)call;
+    WINE_FIXME("Unverified!\n");
+    GetSystemInfo(QEMU_G2H(c->si));
+}
+
+#endif
+
+struct qemu_GetNativeSystemInfo
+{
+    struct qemu_syscall super;
+    uint64_t si;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI VOID WINAPI GetNativeSystemInfo(LPSYSTEM_INFO si)
+{
+    struct qemu_GetNativeSystemInfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETNATIVESYSTEMINFO);
+    call.si = (uint64_t)si;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_GetNativeSystemInfo(struct qemu_syscall *call)
+{
+    struct qemu_GetNativeSystemInfo *c = (struct qemu_GetNativeSystemInfo *)call;
+    WINE_FIXME("Unverified!\n");
+    GetNativeSystemInfo(QEMU_G2H(c->si));
+}
+
+#endif
+
+struct qemu_IsProcessorFeaturePresent
+{
+    struct qemu_syscall super;
+    uint64_t feature;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI IsProcessorFeaturePresent (DWORD feature)
+{
+    struct qemu_IsProcessorFeaturePresent call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ISPROCESSORFEATUREPRESENT);
+    call.feature = (uint64_t)feature;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_IsProcessorFeaturePresent(struct qemu_syscall *call)
+{
+    struct qemu_IsProcessorFeaturePresent *c = (struct qemu_IsProcessorFeaturePresent *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = IsProcessorFeaturePresent(c->feature);
+}
+
+#endif
+
+struct qemu_K32GetPerformanceInfo
+{
+    struct qemu_syscall super;
+    uint64_t info;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI K32GetPerformanceInfo(PPERFORMANCE_INFORMATION info, DWORD size)
+{
+    struct qemu_K32GetPerformanceInfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_K32GETPERFORMANCEINFO);
+    call.info = (uint64_t)info;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add K32GetPerformanceInfo to Wine headers? */
+extern BOOL WINAPI K32GetPerformanceInfo(PPERFORMANCE_INFORMATION info, DWORD size);
+void qemu_K32GetPerformanceInfo(struct qemu_syscall *call)
+{
+    struct qemu_K32GetPerformanceInfo *c = (struct qemu_K32GetPerformanceInfo *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = K32GetPerformanceInfo(QEMU_G2H(c->info), c->size);
+}
+
+#endif
+
+struct qemu_GetLargePageMinimum
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI SIZE_T WINAPI GetLargePageMinimum(void)
+{
+    struct qemu_GetLargePageMinimum call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETLARGEPAGEMINIMUM);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add GetLargePageMinimum to Wine headers? */
+extern SIZE_T WINAPI GetLargePageMinimum(void);
+void qemu_GetLargePageMinimum(struct qemu_syscall *call)
+{
+    struct qemu_GetLargePageMinimum *c = (struct qemu_GetLargePageMinimum *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetLargePageMinimum();
+}
+
+#endif
+
+struct qemu_GetActiveProcessorGroupCount
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI WORD WINAPI GetActiveProcessorGroupCount(void)
+{
+    struct qemu_GetActiveProcessorGroupCount call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETACTIVEPROCESSORGROUPCOUNT);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add GetActiveProcessorGroupCount to Wine headers? */
+extern WORD WINAPI GetActiveProcessorGroupCount(void);
+void qemu_GetActiveProcessorGroupCount(struct qemu_syscall *call)
+{
+    struct qemu_GetActiveProcessorGroupCount *c = (struct qemu_GetActiveProcessorGroupCount *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetActiveProcessorGroupCount();
+}
+
+#endif
+
+struct qemu_GetActiveProcessorCount
+{
+    struct qemu_syscall super;
+    uint64_t group;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI GetActiveProcessorCount(WORD group)
+{
+    struct qemu_GetActiveProcessorCount call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETACTIVEPROCESSORCOUNT);
+    call.group = (uint64_t)group;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add GetActiveProcessorCount to Wine headers? */
+extern DWORD WINAPI GetActiveProcessorCount(WORD group);
+void qemu_GetActiveProcessorCount(struct qemu_syscall *call)
+{
+    struct qemu_GetActiveProcessorCount *c = (struct qemu_GetActiveProcessorCount *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetActiveProcessorCount(c->group);
+}
+
+#endif
+
