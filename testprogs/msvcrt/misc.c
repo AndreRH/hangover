@@ -15,6 +15,7 @@ static FILE *iob;
 
 void call_vfprintf(const char *fmt, ...);
 void call_vfwprintf(const WCHAR *fmt, ...);
+int qsort_compare(const void *p1, const void *p2);
 
 void __stdcall WinMainCRTStartup()
 {
@@ -28,11 +29,13 @@ void __stdcall WinMainCRTStartup()
     char **argv, **envp;
     int new_mode;
 
+    int (CDECL *p___crt_debugger_hook)(int reserved);
     FILE *(CDECL *p___iob_func)(void);
     void (CDECL *p___lconv_init)(void);
     void (CDECL *p___set_app_type)(int type);
     void (CDECL *p___setusermatherr)(void *func);
     int (CDECL *p__cexit)(void);
+    int (CDECL *p__configthreadlocale)(int type);
     void (CDECL *p__lock)(int num);
     int (CDECL *p__matherr)(void *exception);
     void (CDECL *p__unlock)(int num);
@@ -45,7 +48,10 @@ void __stdcall WinMainCRTStartup()
     int (* CDECL p_memcmp)(const void *ptr1, const void *ptr2, size_t size);
     void *(CDECL *p_memcpy)(void *dst, const void *src, size_t size);
     void *(CDECL *p_memset)(void *ptr, int val, size_t size);
+    void *(* CDECL p_operator_new)(size_t size);
     int (CDECL *p_puts)(const char *str);
+    void (* CDECL p_qsort)(void *base, size_t nmemb, size_t size,
+            int (CDECL *compar)(const void*, const void*));
     void *(CDECL *p_realloc)(void *ptr, size_t size);
     __p_sig_fn_t (CDECL *p_signal)(int sig, __p_sig_fn_t func);
     size_t (CDECL *p_strlen)(const char *str);
@@ -55,14 +61,16 @@ void __stdcall WinMainCRTStartup()
     int (* CDECL p_wprintf)(const WCHAR *format, ...);
 
     HANDLE hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    HANDLE msvcrt = LoadLibraryA("msvcrt.dll");
+    HANDLE msvcrt = LoadLibraryA("msvcr100.dll");
 
+    p___crt_debugger_hook = (void *)GetProcAddress(msvcrt, "__crt_debugger_hook");
     p___getmainargs = (void *)GetProcAddress(msvcrt, "__getmainargs");
     p___iob_func = (void *)GetProcAddress(msvcrt, "__iob_func");
     p___lconv_init = (void *)GetProcAddress(msvcrt, "__lconv_init");
     p___set_app_type = (void *)GetProcAddress(msvcrt, "__set_app_type");
     p___setusermatherr = (void *)GetProcAddress(msvcrt, "__setusermatherr");
     p__cexit = (void *)GetProcAddress(msvcrt, "_cexit");
+    p__configthreadlocale = (void *)GetProcAddress(msvcrt, "_configthreadlocale");
     p__lock = (void *)GetProcAddress(msvcrt, "_lock");
     p__matherr = (void *)GetProcAddress(msvcrt, "_matherr");
     p__unlock = (void *)GetProcAddress(msvcrt, "_unlock");
@@ -77,7 +85,9 @@ void __stdcall WinMainCRTStartup()
     p_memcmp = (void *)GetProcAddress(msvcrt, "memcmp");
     p_memcpy = (void *)GetProcAddress(msvcrt, "memcpy");
     p_memset = (void *)GetProcAddress(msvcrt, "memset");
+    p_operator_new = (void *)GetProcAddress(msvcrt, "??2@YAPEAX_K@Z");
     p_puts = (void *)GetProcAddress(msvcrt, "puts");
+    p_qsort = (void *)GetProcAddress(msvcrt, "qsort");
     p_realloc = (void *)GetProcAddress(msvcrt, "realloc");
     p_signal = (void *)GetProcAddress(msvcrt, "signal");
     p_strlen = (void *)GetProcAddress(msvcrt, "strlen");
@@ -107,9 +117,11 @@ void __stdcall WinMainCRTStartup()
     p_fprintf(iob + 1, "Test \\ int=%05d %% str=\"%s\" %% ptr=%p %% float=%f\n",
             -5, "HelloString", WinMainCRTStartup, 123.5f);
 
+    /*
     p_fprintf(iob + 1, "Test \\ hex=%04x %% HEX=%X %% long=%li%n\n",
             0xdead, 0xBEEF, 1073741824, &n);
     p_fprintf(iob + 1, "Test \\ n=%i\n", n);
+    */
 
     p_fprintf(iob + 1, "Test \\ e=%e %% f=%f %% g=%g %% a=%a\n",
             1.23, 2.34, 3.45, 4.56);
@@ -131,7 +143,7 @@ void __stdcall WinMainCRTStartup()
 
     p___setusermatherr(matherr_callback);
     p_fprintf(iob + 1, "Calling matherr\n");
-    n = p__matherr(NULL);
+//     n = p__matherr(NULL);
     p_fprintf(iob + 1, "Got %x from matherr\n", n);
 
     p__lock(0);
@@ -157,6 +169,19 @@ void __stdcall WinMainCRTStartup()
     p_wprintf(L"This is from wprintf: %d\n", 1234);
     p_fwprintf(iob + 1, L"This is from fwprintf: %d\n", 5678);
     call_vfwprintf(L"Hello vfwprintf(i1=%d, f=%f)\n", 1, 123.45);
+
+    p___crt_debugger_hook(123);
+    p__configthreadlocale(0);
+
+    {
+        int arr[] = {9, 8, 0, 7, 3, 5, 4, 6, 1, 2};
+        p_qsort(arr, 10, sizeof(*arr), qsort_compare);
+        p_fprintf(iob + 1, "qsort: %d %d %d %d %d %d %d %d %d %d\n",
+                arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7], arr[8], arr[9]);
+    }
+
+    void *foo = p_operator_new(16);
+    p_fprintf(iob + 1, "New: %p\n", foo);
 
     WriteFile(hstdout, buffer, sizeof(buffer), &written, NULL);
     p_exit(123);
@@ -184,4 +209,14 @@ void call_vfwprintf(const WCHAR *fmt, ...)
     va_start(list, fmt);
     p_vfwprintf(iob + 1, fmt, list);
     va_end(list);
+}
+
+int qsort_compare(const void *p1, const void *p2)
+{
+    const int *i1 = p1;
+    const int *i2 = p2;
+
+    if (*i1 < *i2) return -1;
+    if (*i1 == *i2) return 0;
+    else return 1;
 }
