@@ -86,14 +86,20 @@ static const syscall_handler dll_functions[] =
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     HMODULE msvcrt;
+    const char *dll_name;
     WINE_TRACE("Loading host-side msvcrt wrapper.\n");
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
 
-    msvcrt = LoadLibraryA("msvcrt.dll");
+    if (QEMU_CURRENT_DLL == DLL_MSVCR100)
+        dll_name = "msvcr100.dll";
+    else
+        dll_name = "msvcrt.dll";
+
+    msvcrt = LoadLibraryA(dll_name);
     if (!msvcrt)
-        WINE_ERR("Cannot find msvcrt.dll\n");
+        WINE_ERR("Cannot find %s.\n", dll_name);
 
     p___getmainargs = (void *)GetProcAddress(msvcrt, "__getmainargs");
     p___iob_func = (void *)GetProcAddress(msvcrt, "__iob_func");

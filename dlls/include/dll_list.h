@@ -1,14 +1,15 @@
 #ifndef DLL_LIST_H
 #define DLL_LIST_H
 
-#define DLL_NTDLL       1ULL
-#define DLL_KERNEL32    2ULL
-#define DLL_MSVCRT      3ULL
-#define DLL_ADVAPI32    4ULL
-#define DLL_COMDLG32    5ULL
-#define DLL_GDI32       6ULL
-#define DLL_USER32      7ULL
-#define DLL_SHELL32     8ULL
-#define DLL_SHLWAPI     9ULL
+#define DLL_NTDLL       0x1LL
+#define DLL_KERNEL32    0x2LL
+#define DLL_MSVCRT      0x3LL
+#define DLL_ADVAPI32    0x4LL
+#define DLL_COMDLG32    0x5LL
+#define DLL_GDI32       0x6LL
+#define DLL_USER32      0x7LL
+#define DLL_SHELL32     0x8LL
+#define DLL_SHLWAPI     0x9LL
+#define DLL_MSVCR100    0xaLL
 
 #endif
