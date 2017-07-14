@@ -85,6 +85,7 @@ void qemu_puts(struct qemu_syscall *call);
 void qemu_raise(struct qemu_syscall *call);
 void qemu_realloc(struct qemu_syscall *call);
 void qemu_signal(struct qemu_syscall *call);
+void qemu_sprintf(struct qemu_syscall *call);
 void qemu_strlen(struct qemu_syscall *call);
 void qemu_strncmp(struct qemu_syscall *call);
 void qemu_wcscpy(struct qemu_syscall *call);
@@ -116,11 +117,11 @@ int (* CDECL p_memcmp)(const void *ptr1, const void *ptr2, size_t size);
 void *(* CDECL p_memcpy)(void *dst, const void *src, size_t size);
 int (* CDECL p_puts)(const char *str);
 void *(* CDECL p_realloc)(void *ptr, size_t size);
-int (* CDECL p_sprintf)(char *str, const char *format, ...);
 size_t (* CDECL p_strlen)(const char *str);
 int (* CDECL p_strncmp)(const char *str1, const char *str2, size_t len);
 int (* CDECL p_vfprintf)(FILE *file,const char *format, va_list args);
 int (* CDECL p_vfwprintf)(FILE *file, const WCHAR *format, va_list args);
+int (* CDECL p_vsprintf)(char *str, const char *format, va_list args);
 WCHAR (* CDECL p_wcscpy)(WCHAR *dst, const WCHAR *src);
 
 #endif
