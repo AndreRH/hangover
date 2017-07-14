@@ -16,5 +16,8 @@ int WinMain()
     wcscpy_s(bufferW, 128, L"Test wcscpy !!!");
     printf("%ls\n", bufferW);
 
+    printf("wcsncmp(\"12345\", \"12367\", 3)=%d\n", wcsncmp(L"12345", L"12367", 3));
+    printf("wcsncmp(\"12345\", \"12367\", 4)=%d\n", wcsncmp(L"12345", L"12367", 4));
+
     return 123;
 }
