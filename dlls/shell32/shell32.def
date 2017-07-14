@@ -17,12 +17,17 @@ EXPORTS
   ExtractIconA
   ExtractIconW
   ExtractVersionResource16W
+  FindExecutableA
+  FindExecutableW
   FreeIconList
   GetCurrentProcessExplicitAppUserModelID
   InitNetworkAddressControl
+  OpenAs_RunDLLA
+  OpenAs_RunDLLW
   Printer_LoadIconsW
   Printers_RegisterWindowW
   Printers_UnregisterWindow
+  RegenerateUserEnvironment
   SetCurrentProcessExplicitAppUserModelID
   SHAlloc
   SHCLSIDFromString
@@ -31,6 +36,10 @@ EXPORTS
   SHCreateQueryCancelAutoPlayMoniker
   ShellAboutA
   ShellAboutW
+  ShellExecuteA
+  ShellExecuteExA
+  ShellExecuteExW
+  ShellExecuteW
   SHEnumerateUnreadMailAccountsW
   SHFree
   SHGetFileInfoA
@@ -52,3 +61,4 @@ EXPORTS
   StrRStrIW=shlwapi.StrRStrIW
   StrStrIW=shlwapi.StrStrIW
   StrStrW=shlwapi.StrStrW
+  WOWShellExecute
