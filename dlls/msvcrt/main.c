@@ -93,6 +93,7 @@ static const syscall_handler dll_functions[] =
     qemu_wcscpy_s,
     qemu_wcsncmp,
     qemu_wcsstr,
+    qemu_wcstod,
     qemu_fprintf,
 };
 
@@ -155,6 +156,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_wcscpy_s = (void *)GetProcAddress(msvcrt, "wcscpy_s");
     p_wcsncmp = (void *)GetProcAddress(msvcrt, "wcsncmp");
     p_wcsstr = (void *)GetProcAddress(msvcrt, "wcsstr");
+    p_wcstod = (void *)GetProcAddress(msvcrt, "wcstod");
 
     msvcrt_tls = TlsAlloc();
     if (msvcrt_tls == TLS_OUT_OF_INDEXES)

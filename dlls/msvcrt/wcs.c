@@ -194,6 +194,41 @@ void qemu_wcsstr(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_wcstod
+{
+    struct qemu_syscall super;
+    uint64_t str, end;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+double CDECL MSVCRT_wcstod(const WCHAR *str, WCHAR **end)
+{
+    struct qemu_wcstod call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WCSTOD);
+    call.str = (uint64_t)str;
+    call.end = (uint64_t)end;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_wcstod(struct qemu_syscall *call)
+{
+    struct qemu_wcstod *c = (struct qemu_wcstod *)call;
+    WCHAR *end;
+    WINE_TRACE("\n");
+
+    c->super.dret = p_wcstod(QEMU_G2H(c->str), c->end ? &end : NULL);
+
+    if (c->end)
+        *(uint64_t *)QEMU_G2H(c->end) = QEMU_H2G(end);
+}
+
+#endif
 struct qemu__snwprintf
 {
     struct qemu_syscall super;

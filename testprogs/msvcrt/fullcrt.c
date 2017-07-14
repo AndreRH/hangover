@@ -8,6 +8,8 @@ int WinMain()
 {
     char buffer[128];
     wchar_t bufferW[128];
+    double db;
+
     fprintf(stdout, "Hello world!\n");
     sprintf(buffer, "Hello sprintf, main@%p, float=%f", WinMain, 123.456);
     printf("%s\n", buffer);
@@ -20,6 +22,9 @@ int WinMain()
 
     printf("wcsncmp(\"12345\", \"12367\", 3)=%d\n", wcsncmp(L"12345", L"12367", 3));
     printf("wcsncmp(\"12345\", \"12367\", 4)=%d\n", wcsncmp(L"12345", L"12367", 4));
+
+    db = wcstod(L"123.456", NULL);
+    printf("wcstod(123.456)=%f\n", db);
 
     return 123;
 }
