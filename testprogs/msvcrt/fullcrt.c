@@ -5,11 +5,16 @@ int wcscpy_s(wchar_t *, size_t, const wchar_t *);
 int wcscat_s(wchar_t *, size_t, const wchar_t *);
 int swprintf_s(wchar_t *str, size_t count, const wchar_t *format, ...);
 
+extern void __cdecl __wgetmainargs(int *argc, wchar_t** *wargv, wchar_t** *wenvp,
+                          int expand_wildcards, int *new_mode);
+
 int WinMain()
 {
     char buffer[128];
     wchar_t bufferW[128];
     double db;
+    wchar_t **argv, **envp;
+    int argc, i;
 
     fprintf(stdout, "Hello world!\n");
     sprintf(buffer, "Hello sprintf, main@%p, float=%f", WinMain, 123.456);
@@ -33,6 +38,18 @@ int WinMain()
     printf("Hello swprintf_s %p \"%ls\"\n", bufferW, bufferW);
 
     printf("_wtoi(L\"-123\")=%d\n", _wtoi(L"-123"));
+
+    i = 0;
+    __wgetmainargs(&argc, &argv, &envp, 0, &i);
+    printf("Got %d args, new_mode %d\n", argc, i);
+    for (i = 0; i < argc; i++)
+    {
+        printf("\t%d: %ls\n", i, argv[i]);
+    }
+    for (i = 0; envp[i]; i++)
+    {
+        printf("\tEnv %d: %ls\n", i, envp[i]);
+    }
 
     return 123;
 }
