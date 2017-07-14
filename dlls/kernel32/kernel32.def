@@ -83,7 +83,15 @@ EXPORTS
   LeaveCriticalSection=ntdll.RtlLeaveCriticalSection
   LoadLibraryA
   LocalFree
+  lstrcatA
+  lstrcatW
   lstrcmpW
+  lstrcpyA
+  lstrcpynA
+  lstrcpynW
+  lstrcpyW
+  lstrlenA
+  lstrlenW
   MulDiv
   MultiByteToWideChar
   PurgeComm

@@ -80,7 +80,15 @@ enum kernel32_calls
     CALL_K32GETPERFORMANCEINFO,
     CALL_LOADLIBRARYA,
     CALL_LOCALFREE,
+    CALL_LSTRCATA,
+    CALL_LSTRCATW,
     CALL_LSTRCMPW,
+    CALL_LSTRCPYA,
+    CALL_LSTRCPYNA,
+    CALL_LSTRCPYNW,
+    CALL_LSTRCPYW,
+    CALL_LSTRLENA,
+    CALL_LSTRLENW,
     CALL_MULTIBYTETOWIDECHAR,
     CALL_PURGECOMM,
     CALL_QUERYPERFORMANCECOUNTER,
@@ -198,7 +206,15 @@ void qemu_IsProcessorFeaturePresent(struct qemu_syscall *call);
 void qemu_K32GetPerformanceInfo(struct qemu_syscall *call);
 void qemu_LoadLibraryA(struct qemu_syscall *call);
 void qemu_LocalFree(struct qemu_syscall *call);
+void qemu_lstrcatA(struct qemu_syscall *call);
+void qemu_lstrcatW(struct qemu_syscall *call);
 void qemu_lstrcmpW(struct qemu_syscall *call);
+void qemu_lstrcpyA(struct qemu_syscall *call);
+void qemu_lstrcpynA(struct qemu_syscall *call);
+void qemu_lstrcpynW(struct qemu_syscall *call);
+void qemu_lstrcpyW(struct qemu_syscall *call);
+void qemu_lstrlenA(struct qemu_syscall *call);
+void qemu_lstrlenW(struct qemu_syscall *call);
 void qemu_MultiByteToWideChar(struct qemu_syscall *call);
 void qemu_PurgeComm(struct qemu_syscall *call);
 void qemu_QueryPerformanceCounter(struct qemu_syscall *call);
