@@ -2,5 +2,11 @@ build
 *_h.o
 *_g.o
 *.dll
+*.exe
+*.o
+*.rc
+*.res
+*.bin
+testprogs/kernel32/format_msg.h
 qemu_*.dll.so
 testprogs/*.exe
