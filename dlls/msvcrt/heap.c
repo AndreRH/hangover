@@ -119,6 +119,38 @@ void qemu_malloc(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_operator_new
+{
+    struct qemu_syscall super;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+void * CDECL MSVCRT_operator_new(size_t size)
+{
+    struct qemu_operator_new call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_OPERATOR_NEW);
+    call.size = size;
+
+    qemu_syscall(&call.super);
+
+    return (void *)call.super.iret;
+}
+
+#else
+
+void qemu_operator_new(struct qemu_syscall *call)
+{
+    struct qemu_operator_new *c = (struct qemu_operator_new *)call;
+    WINE_TRACE("\n");
+
+    /* This is only half the fun as long as we don't implement the new handler setter. */
+    c->super.iret = QEMU_H2G(p_operator_new(c->size));
+}
+
+#endif
+
 struct qemu_realloc
 {
     struct qemu_syscall super;

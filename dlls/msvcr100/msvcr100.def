@@ -1,6 +1,7 @@
 LIBRARY msvcr100.dll BASE=0xa0000000
 
 EXPORTS
+  ??2@YAPEAX_K@Z=MSVCRT_operator_new
   ?terminate@@YAXXZ=MSVCRT_terminate
   __C_specific_handler=ntdll.__C_specific_handler
   __crt_debugger_hook=MSVCRT___crt_debugger_hook

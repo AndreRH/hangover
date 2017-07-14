@@ -1,6 +1,7 @@
 LIBRARY msvcrt.dll BASE=0x30000000
 
 EXPORTS
+  ??2@YAPEAX_K@Z=MSVCRT_operator_new
   __C_specific_handler=ntdll.__C_specific_handler
   __CxxFrameHandler3=__CxxFrameHandler
   __dllonexit
