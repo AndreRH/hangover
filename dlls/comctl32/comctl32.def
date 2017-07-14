@@ -16,6 +16,6 @@ EXPORTS
   LBItemFromPt=ntdll.DbgBreakPoint @14
   DrawInsert=ntdll.DbgBreakPoint @15
   CreateUpDownControl=ntdll.DbgBreakPoint @16
-  InitCommonControls=ntdll.DbgBreakPoint @17
+  InitCommonControls @17
   dummy=ntdll.DbgBreakPoint @18
   dummy2=ntdll.DbgBreakPoint @19

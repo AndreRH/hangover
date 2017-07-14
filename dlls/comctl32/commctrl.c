@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Stefan Dösinger for CodeWeavers
+ * Copyright 2017 André Hentschel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <commctrl.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -28,22 +29,30 @@
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_comctl32);
+#endif
 
-const struct qemu_ops *qemu_ops;
-
-static const syscall_handler dll_functions[] =
+struct qemu_InitCommonControls
 {
-    qemu_InitCommonControls,
+    struct qemu_syscall super;
 };
 
-const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI VOID WINAPI InitCommonControls (void)
 {
-    WINE_TRACE("Loading host-side comctl32 wrapper.\n");
+    struct qemu_InitCommonControls call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_INITCOMMONCONTROLS);
 
-    qemu_ops = ops;
-    *dll_num = QEMU_CURRENT_DLL;
+    qemu_syscall(&call.super);
+}
 
-    return dll_functions;
+#else
+
+void qemu_InitCommonControls(struct qemu_syscall *call)
+{
+    struct qemu_InitCommonControls *c = (struct qemu_InitCommonControls *)call;
+    WINE_TRACE("\n");
+    InitCommonControls();
 }
 
 #endif
