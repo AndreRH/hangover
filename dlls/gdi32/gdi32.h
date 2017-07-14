@@ -22,6 +22,8 @@ enum gdi32_calls
     CALL_CREATECOMPATIBLEDC,
     CALL_CREATEDCA,
     CALL_CREATEDCW,
+    CALL_CREATEDIBITMAP,
+    CALL_CREATEDIBSECTION,
     CALL_CREATEFONTA,
     CALL_CREATEFONTINDIRECTA,
     CALL_CREATEFONTINDIRECTEXA,
@@ -32,6 +34,8 @@ enum gdi32_calls
     CALL_CREATEICW,
     CALL_CREATESCALABLEFONTRESOURCEA,
     CALL_CREATESCALABLEFONTRESOURCEW,
+    CALL_D3DKMTCREATEDCFROMMEMORY,
+    CALL_D3DKMTDESTROYDCFROMMEMORY,
     CALL_DELETECOLORSPACE,
     CALL_DELETEDC,
     CALL_DELETEENHMETAFILE,
@@ -92,6 +96,8 @@ enum gdi32_calls
     CALL_GETDCPENCOLOR,
     CALL_GETDEVICECAPS,
     CALL_GETDEVICEGAMMARAMP,
+    CALL_GETDIBCOLORTABLE,
+    CALL_GETDIBITS,
     CALL_GETENHMETAFILEA,
     CALL_GETENHMETAFILEBITS,
     CALL_GETENHMETAFILEDESCRIPTIONA,
@@ -178,6 +184,9 @@ enum gdi32_calls
     CALL_SETDCBRUSHCOLOR,
     CALL_SETDCPENCOLOR,
     CALL_SETDEVICEGAMMARAMP,
+    CALL_SETDIBCOLORTABLE,
+    CALL_SETDIBITS,
+    CALL_SETDIBITSTODEVICE,
     CALL_SETENHMETAFILEBITS,
     CALL_SETGRAPHICSMODE,
     CALL_SETHOOKFLAGS,
@@ -206,6 +215,7 @@ enum gdi32_calls
     CALL_STARTDOCA,
     CALL_STARTDOCW,
     CALL_STARTPAGE,
+    CALL_STRETCHDIBITS,
     CALL_TEXTOUTA,
     CALL_TEXTOUTW,
     CALL_TRANSLATECHARSETINFO,
@@ -233,6 +243,8 @@ void qemu_CreateColorSpaceW(struct qemu_syscall *call);
 void qemu_CreateCompatibleDC(struct qemu_syscall *call);
 void qemu_CreateDCA(struct qemu_syscall *call);
 void qemu_CreateDCW(struct qemu_syscall *call);
+void qemu_CreateDIBitmap(struct qemu_syscall *call);
+void qemu_CreateDIBSection(struct qemu_syscall *call);
 void qemu_CreateFontA(struct qemu_syscall *call);
 void qemu_CreateFontIndirectA(struct qemu_syscall *call);
 void qemu_CreateFontIndirectExA(struct qemu_syscall *call);
@@ -243,6 +255,8 @@ void qemu_CreateICA(struct qemu_syscall *call);
 void qemu_CreateICW(struct qemu_syscall *call);
 void qemu_CreateScalableFontResourceA(struct qemu_syscall *call);
 void qemu_CreateScalableFontResourceW(struct qemu_syscall *call);
+void qemu_D3DKMTCreateDCFromMemory(struct qemu_syscall *call);
+void qemu_D3DKMTDestroyDCFromMemory(struct qemu_syscall *call);
 void qemu_DeleteColorSpace(struct qemu_syscall *call);
 void qemu_DeleteDC(struct qemu_syscall *call);
 void qemu_DeleteEnhMetaFile(struct qemu_syscall *call);
@@ -303,6 +317,8 @@ void qemu_GetDCOrgEx(struct qemu_syscall *call);
 void qemu_GetDCPenColor(struct qemu_syscall *call);
 void qemu_GetDeviceCaps(struct qemu_syscall *call);
 void qemu_GetDeviceGammaRamp(struct qemu_syscall *call);
+void qemu_GetDIBColorTable(struct qemu_syscall *call);
+void qemu_GetDIBits(struct qemu_syscall *call);
 void qemu_GetEnhMetaFileA(struct qemu_syscall *call);
 void qemu_GetEnhMetaFileBits(struct qemu_syscall *call);
 void qemu_GetEnhMetaFileDescriptionA(struct qemu_syscall *call);
@@ -389,6 +405,9 @@ void qemu_SetColorSpace(struct qemu_syscall *call);
 void qemu_SetDCBrushColor(struct qemu_syscall *call);
 void qemu_SetDCPenColor(struct qemu_syscall *call);
 void qemu_SetDeviceGammaRamp(struct qemu_syscall *call);
+void qemu_SetDIBColorTable(struct qemu_syscall *call);
+void qemu_SetDIBits(struct qemu_syscall *call);
+void qemu_SetDIBitsToDevice(struct qemu_syscall *call);
 void qemu_SetEnhMetaFileBits(struct qemu_syscall *call);
 void qemu_SetGraphicsMode(struct qemu_syscall *call);
 void qemu_SetHookFlags(struct qemu_syscall *call);
@@ -417,6 +436,7 @@ void qemu_SetWorldTransform(struct qemu_syscall *call);
 void qemu_StartDocA(struct qemu_syscall *call);
 void qemu_StartDocW(struct qemu_syscall *call);
 void qemu_StartPage(struct qemu_syscall *call);
+void qemu_StretchDIBits(struct qemu_syscall *call);
 void qemu_TextOutA(struct qemu_syscall *call);
 void qemu_TextOutW(struct qemu_syscall *call);
 void qemu_TranslateCharsetInfo(struct qemu_syscall *call);

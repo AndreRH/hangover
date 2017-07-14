@@ -18,6 +18,8 @@ EXPORTS
   CreateCompatibleDC
   CreateDCA
   CreateDCW
+  CreateDIBitmap
+  CreateDIBSection
   CreateFontA
   CreateFontIndirectA
   CreateFontIndirectExA
@@ -28,6 +30,8 @@ EXPORTS
   CreateICW
   CreateScalableFontResourceA
   CreateScalableFontResourceW
+  D3DKMTCreateDCFromMemory
+  D3DKMTDestroyDCFromMemory
   DeleteColorSpace
   DeleteDC
   DeleteEnhMetaFile
@@ -88,6 +92,8 @@ EXPORTS
   GetDCPenColor
   GetDeviceCaps
   GetDeviceGammaRamp
+  GetDIBColorTable
+  GetDIBits
   GetEnhMetaFileA
   GetEnhMetaFileBits
   GetEnhMetaFileDescriptionA
@@ -174,6 +180,9 @@ EXPORTS
   SetDCBrushColor
   SetDCPenColor
   SetDeviceGammaRamp
+  SetDIBColorTable
+  SetDIBits
+  SetDIBitsToDevice
   SetEnhMetaFileBits
   SetGraphicsMode
   SetHookFlags
@@ -202,6 +211,7 @@ EXPORTS
   StartDocA
   StartDocW
   StartPage
+  StretchDIBits
   TextOutA
   TextOutW
   TranslateCharsetInfo
