@@ -387,7 +387,7 @@ WINGDIAPI INT WINAPI GetDeviceCaps(HDC hdc, INT cap)
 void qemu_GetDeviceCaps(struct qemu_syscall *call)
 {
     struct qemu_GetDeviceCaps *c = (struct qemu_GetDeviceCaps *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDeviceCaps(QEMU_G2H(c->hdc), c->cap);
 }
 
