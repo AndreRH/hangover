@@ -21,6 +21,7 @@ enum msvcrt_calls
     CALL__MATHERR,
     CALL__ONEXIT,
     CALL__SNWPRINTF,
+    CALL__STRICMP,
     CALL__UNLOCK,
     CALL__XCPTFILTER,
     CALL_ABORT,
@@ -79,6 +80,7 @@ void qemu__lock(struct qemu_syscall *call);
 void qemu__matherr(struct qemu_syscall *call);
 void qemu__onexit(struct qemu_syscall *call);
 void qemu__snwprintf(struct qemu_syscall *call);
+void qemu__stricmp(struct qemu_syscall *call);
 void qemu__unlock(struct qemu_syscall *call);
 void qemu__xcptfilter(struct qemu_syscall *c);
 void qemu_abort(struct qemu_syscall *call);
@@ -119,6 +121,7 @@ void (* CDECL p__exit)(int code);
 void (* CDECL p__lock)(int locknum);
 int (* CDECL p__matherr)(void *exception);
 MSVCRT__onexit_t (* CDECL p__onexit)(MSVCRT__onexit_t func);
+int (* CDECL p__stricmp)(const char *s1, const char *s2);
 void (* CDECL p__unlock)(int locknum);
 void (* CDECL p_abort)(void);
 void *(* CDECL p_calloc)(size_t item_count,size_t size);

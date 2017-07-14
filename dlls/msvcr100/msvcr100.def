@@ -26,6 +26,7 @@ EXPORTS
   _matherr=MSVCRT__matherr
   _onexit=MSVCRT__onexit
   _snwprintf=MSVCRT__snwprintf
+  _stricmp=MSVCRT__stricmp
   _unlock
   _wcmdln=MSVCRT__wcmdln
   _XcptFilter=MSVCRT__XcptFilter

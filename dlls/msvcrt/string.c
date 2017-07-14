@@ -30,6 +30,38 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 #endif
 
+/* FIXME: Calling out of the vm for _stricmp is probably a waste of time. */
+struct qemu__stricmp
+{
+    struct qemu_syscall super;
+    uint64_t s1, s2;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+int __cdecl MSVCRT__stricmp(const char *s1, const char *s2)
+{
+    struct qemu__stricmp call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__STRICMP);
+    call.s1 = (uint64_t)s1;
+    call.s2 = (uint64_t)s2;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__stricmp(struct qemu_syscall *call)
+{
+    struct qemu__stricmp *c = (struct qemu__stricmp *)call;
+    WINE_TRACE("\n");
+    c->super.iret = p__stricmp(QEMU_G2H(c->s1), QEMU_G2H(c->s2));
+}
+
+#endif
+
 /* FIXME: Calling out of the vm for memcmp is probably a waste of time. */
 struct qemu_memcmp
 {
