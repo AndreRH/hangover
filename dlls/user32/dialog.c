@@ -477,7 +477,7 @@ WINUSERAPI BOOL WINAPI EndDialog(HWND hwnd, INT_PTR retval)
 void qemu_EndDialog(struct qemu_syscall *call)
 {
     struct qemu_EndDialog *c = (struct qemu_EndDialog *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EndDialog(QEMU_G2H(c->hwnd), c->retval);
 }
 
@@ -715,7 +715,7 @@ WINUSERAPI BOOL WINAPI SetDlgItemTextW(HWND hwnd, INT id, LPCWSTR lpString)
 void qemu_SetDlgItemTextW(struct qemu_syscall *call)
 {
     struct qemu_SetDlgItemTextW *c = (struct qemu_SetDlgItemTextW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetDlgItemTextW(QEMU_G2H(c->hwnd), c->id, QEMU_G2H(c->lpString));
 }
 
@@ -823,7 +823,7 @@ WINUSERAPI BOOL WINAPI SetDlgItemInt(HWND hwnd, INT id, UINT value, BOOL fSigned
 void qemu_SetDlgItemInt(struct qemu_syscall *call)
 {
     struct qemu_SetDlgItemInt *c = (struct qemu_SetDlgItemInt *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetDlgItemInt(QEMU_G2H(c->hwnd), c->id, c->value, c->fSigned);
 }
 
