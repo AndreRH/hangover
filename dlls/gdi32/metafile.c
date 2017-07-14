@@ -211,7 +211,12 @@ WINGDIAPI BOOL WINAPI PlayMetaFile(HDC hdc, HMETAFILE hmf)
 void qemu_PlayMetaFile(struct qemu_syscall *call)
 {
     struct qemu_PlayMetaFile *c = (struct qemu_PlayMetaFile *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* There are GDI commands that set callbacks. Once upon a time there was a
+     * security issue caused by executing callback bytecode from a metafile. I
+     * assume if such a file is run crashing is the correct course of action. */
+
     c->super.iret = PlayMetaFile(QEMU_G2H(c->hdc), QEMU_G2H(c->hmf));
 }
 
