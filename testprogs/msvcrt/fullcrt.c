@@ -32,5 +32,7 @@ int WinMain()
     swprintf_s(bufferW, 128, L"This is a %s test", L"sprintf_s");
     printf("Hello swprintf_s %p \"%ls\"\n", bufferW, bufferW);
 
+    printf("_wtoi(L\"-123\")=%d\n", _wtoi(L"-123"));
+
     return 123;
 }

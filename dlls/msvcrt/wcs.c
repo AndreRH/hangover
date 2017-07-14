@@ -64,6 +64,37 @@ void qemu__wcsnicmp(struct qemu_syscall *call)
 
 #endif
 
+struct qemu__wtoi
+{
+    struct qemu_syscall super;
+    uint64_t str;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+int CDECL MSVCRT__wtoi(const WCHAR *str)
+{
+    struct qemu__wtoi call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__WTOI);
+    call.str = (uint64_t)str;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__wtoi(struct qemu_syscall *call)
+{
+    struct qemu__wtoi *c = (struct qemu__wtoi *)call;
+    WINE_TRACE("\n");
+
+    c->super.iret = p__wtoi(QEMU_G2H(c->str));
+}
+
+#endif
+
 struct qemu_wcscat_s
 {
     struct qemu_syscall super;
@@ -263,6 +294,7 @@ void qemu_wcstod(struct qemu_syscall *call)
 }
 
 #endif
+
 struct qemu__snwprintf
 {
     struct qemu_syscall super;

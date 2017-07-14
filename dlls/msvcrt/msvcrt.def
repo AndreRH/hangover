@@ -29,6 +29,7 @@ EXPORTS
   _unlock
   _wcsnicmp=MSVCRT__wcsnicmp
   _wcmdln=MSVCRT__wcmdln
+  _wtoi=MSVCRT__wtoi
   _XcptFilter=MSVCRT__XcptFilter
   abort=MSVCRT_abort
   abs=MSVCRT_abs
