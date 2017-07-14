@@ -77,6 +77,7 @@ EXPORTS
   GetDateFormatW
   GetDefaultCommConfigA
   GetDefaultCommConfigW
+  GetDevicePowerState
   GetEnvironmentStringsA=qemu_GetEnvironmentStringsA
   GetEnvironmentStringsW
   GetEnvironmentVariableA
@@ -111,6 +112,7 @@ EXPORTS
   GetStartupInfoW
   GetStdHandle
   GetSystemInfo
+  GetSystemPowerStatus
   GetSystemTimeAsFileTime
   GetTickCount
   GetTimeFormatA
@@ -126,6 +128,7 @@ EXPORTS
   InitializeCriticalSectionEx
   IsDebuggerPresent
   IsProcessorFeaturePresent
+  IsSystemResumeAutomatic
   K32EnumDeviceDrivers
   K32GetDeviceDriverBaseNameA
   K32GetDeviceDriverBaseNameW
@@ -153,6 +156,9 @@ EXPORTS
   OpenVxDHandle
   OutputDebugStringA
   OutputDebugStringW
+  PowerClearRequest
+  PowerCreateRequest
+  PowerSetRequest
   PurgeComm
   QueryPerformanceCounter
   QueryPerformanceFrequency
@@ -161,6 +167,7 @@ EXPORTS
   ReadFileScatter
   ReplaceFileA
   ReplaceFileW
+  RequestWakeupLatency
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   RtlCaptureContext=ntdll.RtlCaptureContext
   RtlLookupFunctionEntry=ntdll.RtlLookupFunctionEntry
@@ -189,6 +196,8 @@ EXPORTS
   SetHandleCount
   SetLastError
   SetStdHandle
+  SetSystemPowerState
+  SetThreadExecutionState
   SetUnhandledExceptionFilter
   SetupComm
   Sleep

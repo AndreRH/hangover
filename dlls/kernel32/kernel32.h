@@ -74,6 +74,7 @@ enum kernel32_calls
     CALL_GETDATEFORMATW,
     CALL_GETDEFAULTCOMMCONFIGA,
     CALL_GETDEFAULTCOMMCONFIGW,
+    CALL_GETDEVICEPOWERSTATE,
     CALL_GETENVIRONMENTSTRINGSA,
     CALL_GETENVIRONMENTSTRINGSW,
     CALL_GETENVIRONMENTVARIABLEA,
@@ -108,6 +109,7 @@ enum kernel32_calls
     CALL_GETSTARTUPINFOW,
     CALL_GETSTDHANDLE,
     CALL_GETSYSTEMINFO,
+    CALL_GETSYSTEMPOWERSTATUS,
     CALL_GETSYSTEMTIMEASFILETIME,
     CALL_GETTICKCOUNT,
     CALL_GETTIMEFORMATA,
@@ -122,6 +124,7 @@ enum kernel32_calls
     CALL_INITIALIZECRITICALSECTION,
     CALL_ISDEBUGGERPRESENT,
     CALL_ISPROCESSORFEATUREPRESENT,
+    CALL_ISSYSTEMRESUMEAUTOMATIC,
     CALL_K32ENUMDEVICEDRIVERS,
     CALL_K32GETDEVICEDRIVERBASENAMEA,
     CALL_K32GETDEVICEDRIVERBASENAMEW,
@@ -147,6 +150,9 @@ enum kernel32_calls
     CALL_OPENVXDHANDLE,
     CALL_OUTPUTDEBUGSTRINGA,
     CALL_OUTPUTDEBUGSTRINGW,
+    CALL_POWERCLEARREQUEST,
+    CALL_POWERCREATEREQUEST,
+    CALL_POWERSETREQUEST,
     CALL_PURGECOMM,
     CALL_QUERYPERFORMANCECOUNTER,
     CALL_QUERYPERFORMANCEFREQUENCY,
@@ -155,6 +161,7 @@ enum kernel32_calls
     CALL_READFILESCATTER,
     CALL_REPLACEFILEA,
     CALL_REPLACEFILEW,
+    CALL_REQUESTWAKEUPLATENCY,
     CALL_SETCOMMBREAK,
     CALL_SETCOMMCONFIG,
     CALL_SETCOMMMASK,
@@ -179,6 +186,8 @@ enum kernel32_calls
     CALL_SETHANDLECOUNT,
     CALL_SETLASTERROR,
     CALL_SETSTDHANDLE,
+    CALL_SETSYSTEMPOWERSTATE,
+    CALL_SETTHREADEXECUTIONSTATE,
     CALL_SETUNHANDLEDEXCEPTIONFILTER,
     CALL_SETUPCOMM,
     CALL_SLEEP,
@@ -276,6 +285,7 @@ void qemu_GetDateFormatA(struct qemu_syscall *call);
 void qemu_GetDateFormatW(struct qemu_syscall *call);
 void qemu_GetDefaultCommConfigA(struct qemu_syscall *call);
 void qemu_GetDefaultCommConfigW(struct qemu_syscall *call);
+void qemu_GetDevicePowerState(struct qemu_syscall *call);
 void qemu_GetEnvironmentStringsA(struct qemu_syscall *call);
 void qemu_GetEnvironmentStringsW(struct qemu_syscall *call);
 void qemu_GetEnvironmentVariableA(struct qemu_syscall *call);
@@ -310,6 +320,7 @@ void qemu_GetStartupInfoA(struct qemu_syscall *call);
 void qemu_GetStartupInfoW(struct qemu_syscall *call);
 void qemu_GetStdHandle(struct qemu_syscall *call);
 void qemu_GetSystemInfo(struct qemu_syscall *call);
+void qemu_GetSystemPowerStatus(struct qemu_syscall *call);
 void qemu_GetSystemTimeAsFileTime(struct qemu_syscall *call);
 void qemu_GetTickCount(struct qemu_syscall *call);
 void qemu_GetTimeFormatA(struct qemu_syscall *call);
@@ -324,6 +335,7 @@ void qemu_HeapFree(struct qemu_syscall *call);
 void qemu_InitializeCriticalSection(struct qemu_syscall *call);
 void qemu_IsDebuggerPresent(struct qemu_syscall *call);
 void qemu_IsProcessorFeaturePresent(struct qemu_syscall *call);
+void qemu_IsSystemResumeAutomatic(struct qemu_syscall *call);
 void qemu_K32EnumDeviceDrivers(struct qemu_syscall *call);
 void qemu_K32GetDeviceDriverBaseNameA(struct qemu_syscall *call);
 void qemu_K32GetDeviceDriverBaseNameW(struct qemu_syscall *call);
@@ -349,6 +361,9 @@ void qemu_OpenFileById(struct qemu_syscall *call);
 void qemu_OpenVxDHandle(struct qemu_syscall *call);
 void qemu_OutputDebugStringA(struct qemu_syscall *call);
 void qemu_OutputDebugStringW(struct qemu_syscall *call);
+void qemu_PowerClearRequest(struct qemu_syscall *call);
+void qemu_PowerCreateRequest(struct qemu_syscall *call);
+void qemu_PowerSetRequest(struct qemu_syscall *call);
 void qemu_PurgeComm(struct qemu_syscall *call);
 void qemu_QueryPerformanceCounter(struct qemu_syscall *call);
 void qemu_QueryPerformanceFrequency(struct qemu_syscall *call);
@@ -357,6 +372,7 @@ void qemu_ReadFileEx(struct qemu_syscall *call);
 void qemu_ReadFileScatter(struct qemu_syscall *call);
 void qemu_ReplaceFileA(struct qemu_syscall *call);
 void qemu_ReplaceFileW(struct qemu_syscall *call);
+void qemu_RequestWakeupLatency(struct qemu_syscall *call);
 void qemu_SetCommBreak(struct qemu_syscall *call);
 void qemu_SetCommConfig(struct qemu_syscall *call);
 void qemu_SetCommMask(struct qemu_syscall *call);
@@ -381,6 +397,8 @@ void qemu_SetFileValidData(struct qemu_syscall *call);
 void qemu_SetHandleCount(struct qemu_syscall *call);
 void qemu_SetLastError(struct qemu_syscall *call);
 void qemu_SetStdHandle(struct qemu_syscall *call);
+void qemu_SetSystemPowerState(struct qemu_syscall *call);
+void qemu_SetThreadExecutionState(struct qemu_syscall *call);
 void qemu_SetUnhandledExceptionFilter(struct qemu_syscall *call);
 void qemu_SetupComm(struct qemu_syscall *call);
 void qemu_Sleep(struct qemu_syscall *call);
