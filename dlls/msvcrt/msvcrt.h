@@ -5,7 +5,8 @@
 
 enum msvcrt_calls
 {
-    CALL___GETMAINARGS = 0,
+    CALL___CRT_DEBUGGER_HOOK = 0,
+    CALL___GETMAINARGS,
     CALL___IOB_FUNC,
     CALL___LCONV_INIT,
     CALL___SET_APP_TYPE,
@@ -57,6 +58,7 @@ void * CDECL MSVCRT_realloc(void *ptr, size_t size);
 
 extern const struct qemu_ops *qemu_ops;
 
+void qemu___crt_debugger_hook(struct qemu_syscall *call);
 void qemu___getmainargs(struct qemu_syscall *call);
 void qemu___iob_func(struct qemu_syscall *call);
 void qemu___lconv_init(struct qemu_syscall *call);
@@ -91,6 +93,7 @@ void qemu_strncmp(struct qemu_syscall *call);
 void qemu_wcscpy(struct qemu_syscall *call);
 
 /* Be careful not to call the Linux libc! */
+void (* CDECL p___crt_debugger_hook)(int reserved);
 void (* CDECL p___getmainargs)(int *argc, char** *argv, char** *envp,
         int expand_wildcards, int *new_mode);
 FILE *(* CDECL p___iob_func)();

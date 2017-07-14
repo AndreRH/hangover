@@ -46,6 +46,7 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu___crt_debugger_hook,
     qemu___getmainargs,
     qemu___iob_func,
     qemu___lconv_init,
@@ -101,6 +102,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (!msvcrt)
         WINE_ERR("Cannot find %s.\n", dll_name);
 
+    p___crt_debugger_hook = (void *)GetProcAddress(msvcrt, "__crt_debugger_hook");
     p___getmainargs = (void *)GetProcAddress(msvcrt, "__getmainargs");
     p___iob_func = (void *)GetProcAddress(msvcrt, "__iob_func");
     p___lconv_init = (void *)GetProcAddress(msvcrt, "__lconv_init");
