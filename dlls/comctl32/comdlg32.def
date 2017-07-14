@@ -1,0 +1,21 @@
+LIBRARY comdlg32.dll BASE=0x50000000
+
+EXPORTS
+  ChooseFontA
+  ChooseFontW
+  FindTextA
+  FindTextW
+  GetFileTitleA
+  GetFileTitleW
+  GetOpenFileNameA
+  GetOpenFileNameW
+  GetSaveFileNameA
+  GetSaveFileNameW
+  PageSetupDlgA
+  PageSetupDlgW
+  PrintDlgA
+  PrintDlgExA
+  PrintDlgExW
+  PrintDlgW
+  ReplaceTextA
+  ReplaceTextW

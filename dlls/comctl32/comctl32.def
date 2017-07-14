@@ -1,0 +1,21 @@
+LIBRARY comctl32.dll BASE=0xb0000000
+
+EXPORTS
+  MenuHelp=ntdll.DbgBreakPoint @2
+  ShowHideMenuCtl=ntdll.DbgBreakPoint @3
+  GetEffectiveClientRect=ntdll.DbgBreakPoint @4
+  DrawStatusTextA=ntdll.DbgBreakPoint @5
+  CreateStatusWindowA=ntdll.DbgBreakPoint @6
+  CreateToolbar=ntdll.DbgBreakPoint @7
+  CreateMappedBitmap=ntdll.DbgBreakPoint @8
+  DPA_LoadStream=ntdll.DbgBreakPoint @9 NONAME
+  DPA_SaveStream=ntdll.DbgBreakPoint @10 NONAME
+  DPA_Merge=ntdll.DbgBreakPoint @11 NONAME
+  Cctl1632_ThunkData32=ntdll.DbgBreakPoint @12 NONAME
+  MakeDragList=ntdll.DbgBreakPoint @13
+  LBItemFromPt=ntdll.DbgBreakPoint @14
+  DrawInsert=ntdll.DbgBreakPoint @15
+  CreateUpDownControl=ntdll.DbgBreakPoint @16
+  InitCommonControls=ntdll.DbgBreakPoint @17
+  dummy=ntdll.DbgBreakPoint @18
+  dummy2=ntdll.DbgBreakPoint @19

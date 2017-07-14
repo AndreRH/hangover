@@ -74,6 +74,16 @@ make -j4
 ln -sf $PWD/shlwapi.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
 ln -sf $PWD/qemu_shlwapi.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
 
+cd $DESTDIR/dlls/msvcr100
+make -j4
+ln -sf $PWD/msvcr100.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
+ln -sf $PWD/qemu_msvcr100.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+
+cd $DESTDIR/dlls/comctl32
+make -j4
+ln -sf $PWD/comctl32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
+ln -sf $PWD/qemu_comctl32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+
 # Build the test progs. FIXME: automate this better.
 cd $DESTDIR/testprogs/advapi32
 make -j4
