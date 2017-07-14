@@ -43,6 +43,7 @@ EXPORTS
   memset=MSVCRT_memset
   printf=MSVCRT_printf
   puts=MSVCRT_puts
+  qsort=MSVCRT_qsort
   raise=MSVCRT_raise
   realloc=MSVCRT_realloc
   signal=MSVCRT_signal

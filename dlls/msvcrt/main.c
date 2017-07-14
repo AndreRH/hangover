@@ -77,6 +77,7 @@ static const syscall_handler dll_functions[] =
     qemu_memset,
     qemu_fprintf,
     qemu_puts,
+    qemu_qsort,
     qemu_raise,
     qemu_realloc,
     qemu_signal,
@@ -131,6 +132,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_memcpy = (void *)GetProcAddress(msvcrt, "memcpy");
     p_memset = (void *)GetProcAddress(msvcrt, "memset");
     p_puts = (void *)GetProcAddress(msvcrt, "puts");
+    p_qsort = (void *)GetProcAddress(msvcrt, "qsort");
     p_realloc = (void *)GetProcAddress(msvcrt, "realloc");
     p_strlen = (void *)GetProcAddress(msvcrt, "strlen");
     p_strncmp = (void *)GetProcAddress(msvcrt, "strncmp");
@@ -139,6 +141,10 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_vfwprintf = (void *)GetProcAddress(msvcrt, "vfwprintf");
     p_vsprintf = (void *)GetProcAddress(msvcrt, "vsprintf");
     p_wcscpy = (void *)GetProcAddress(msvcrt, "wcscpy");
+
+    msvcrt_tls = TlsAlloc();
+    if (msvcrt_tls == TLS_OUT_OF_INDEXES)
+        WINE_ERR("Out of TLS indices\n");
 
     return dll_functions;
 }

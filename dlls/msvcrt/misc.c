@@ -58,3 +58,73 @@ void qemu___crt_debugger_hook(struct qemu_syscall *call)
 }
 
 #endif
+
+/* FIXME: The context switch cost of this thing is most likely horrible. */
+struct qemu_qsort
+{
+    struct qemu_syscall super;
+    uint64_t base;
+    uint64_t elem_count;
+    uint64_t elem_size;
+    uint64_t compare;
+    uint64_t wrapper;
+};
+
+struct qemu_qsort_cb
+{
+    uint64_t func;
+    uint64_t ptr1, ptr2;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static uint64_t qsort_guest_wrapper(void *data)
+{
+    const struct qemu_qsort_cb *cb = data;
+    int (__cdecl *compare)(const void *,const void *) = (void *)cb->func;
+
+    return compare((void *)cb->ptr1, (void *)cb->ptr2);
+}
+
+void __cdecl MSVCRT_qsort(void *base, size_t elem_count, size_t elem_size,
+        int (__cdecl *compare)(const void *,const void *))
+{
+    struct qemu_qsort call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_QSORT);
+    call.base = (uint64_t)base;
+    call.elem_count = elem_count;
+    call.elem_size = elem_size;
+    call.compare = (uint64_t)compare;
+    call.wrapper = (uint64_t)qsort_guest_wrapper;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+static uint64_t qsort_guest_wrapper;
+
+int qsort_wrapper(const void *ptr1, const void *ptr2)
+{
+    uint64_t *guest_proc = TlsGetValue(msvcrt_tls);
+    struct qemu_qsort_cb call = {*guest_proc, QEMU_H2G(ptr1), QEMU_H2G(ptr2)};
+    int ret;
+
+    WINE_TRACE("Calling guest proc 0x%lx(%p, %p).\n", *guest_proc, ptr1, ptr2);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(qsort_guest_wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest proc returned %d.\n", ret);
+
+    return ret;
+}
+
+void qemu_qsort(struct qemu_syscall *call)
+{
+    struct qemu_qsort *c = (struct qemu_qsort *)call;
+    WINE_TRACE("\n");
+
+    qsort_guest_wrapper = c->wrapper;
+    TlsSetValue(msvcrt_tls, &c->compare);
+    p_qsort(QEMU_G2H(c->base), c->elem_count, c->elem_size, qsort_wrapper);
+}
+
+#endif
