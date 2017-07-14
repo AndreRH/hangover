@@ -320,7 +320,7 @@ WINGDIAPI HMETAFILE WINAPI SetMetaFileBitsEx(UINT size, const BYTE *lpData)
 void qemu_SetMetaFileBitsEx(struct qemu_syscall *call)
 {
     struct qemu_SetMetaFileBitsEx *c = (struct qemu_SetMetaFileBitsEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)SetMetaFileBitsEx(c->size, QEMU_G2H(c->lpData));
 }
 
