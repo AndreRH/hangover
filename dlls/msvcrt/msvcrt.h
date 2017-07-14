@@ -48,6 +48,7 @@ enum msvcrt_calls
     CALL_STRNCMP,
     CALL_TERMINATE,
     CALL_WCSCPY,
+    CALL_WCSCPY_S,
     CALL_WCSSTR,
     CALL_WPRINTF,
 };
@@ -108,6 +109,7 @@ void qemu_strlen(struct qemu_syscall *call);
 void qemu_strncmp(struct qemu_syscall *call);
 void qemu_terminate(struct qemu_syscall *c);
 void qemu_wcscpy(struct qemu_syscall *call);
+void qemu_wcscpy_s(struct qemu_syscall *call);
 void qemu_wcsstr(struct qemu_syscall *call);
 
 /* Be careful not to call the Linux libc! */
@@ -151,6 +153,7 @@ int (* CDECL p_vfprintf)(FILE *file,const char *format, va_list args);
 int (* CDECL p_vfwprintf)(FILE *file, const WCHAR *format, va_list args);
 int (* CDECL p_vsprintf)(char *str, const char *format, va_list args);
 WCHAR (* CDECL p_wcscpy)(WCHAR *dst, const WCHAR *src);
+int (* CDECL p_wcscpy_s)(WCHAR *dst, size_t size, const WCHAR *src);
 const WCHAR (* CDECL p_wcsstr)(const WCHAR *str, const WCHAR *sub);
 
 DWORD msvcrt_tls;

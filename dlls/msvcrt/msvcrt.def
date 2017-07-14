@@ -53,5 +53,6 @@ EXPORTS
   vfprintf=MSVCRT_vfprintf
   vfwprintf=MSVCRT_vfwprintf
   wcscpy=MSVCRT_wcscpy
+  wcscpy_s=MSVCRT_wcscpy_s
   wcsstr=MSVCRT_wcsstr
   wprintf=MSVCRT_wprintf
