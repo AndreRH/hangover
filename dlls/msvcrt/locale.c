@@ -54,3 +54,33 @@ void qemu___lconv_init(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu__configthreadlocale
+{
+    struct qemu_syscall super;
+    uint64_t type;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+int CDECL _configthreadlocale(int type)
+{
+    struct qemu__configthreadlocale call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__CONFIGTHREADLOCALE);
+    call.type = type;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__configthreadlocale(struct qemu_syscall *call)
+{
+    struct qemu__configthreadlocale *c = (struct qemu__configthreadlocale *)call;
+    WINE_TRACE("\n");
+    c->super.iret = p__configthreadlocale(c->type);
+}
+
+#endif

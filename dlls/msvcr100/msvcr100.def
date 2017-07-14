@@ -15,6 +15,7 @@ EXPORTS
   _acmdln=MSVCRT__acmdln
   _amsg_exit
   _cexit=MSVCRT__cexit
+  _configthreadlocale
   _commode=MSVCRT__commode
   _exit=MSVCRT__exit
   _fmode=MSVCRT__fmode

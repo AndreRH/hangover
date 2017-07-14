@@ -55,6 +55,7 @@ static const syscall_handler dll_functions[] =
     qemu___wgetmainargs,
     qemu__amsg_exit,
     qemu__cexit,
+    qemu__configthreadlocale,
     qemu__exit,
     qemu__lock,
     qemu__matherr,
@@ -112,6 +113,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p___wgetmainargs = (void *)GetProcAddress(msvcrt, "__wgetmainargs");
     p__amsg_exit = (void *)GetProcAddress(msvcrt, "_amsg_exit");
     p__cexit = (void *)GetProcAddress(msvcrt, "_cexit");
+    p__configthreadlocale = (void *)GetProcAddress(msvcrt, "_configthreadlocale");
     p__exit = (void *)GetProcAddress(msvcrt, "_exit");
     p__lock = (void *)GetProcAddress(msvcrt, "_lock");
     p__matherr = (void *)GetProcAddress(msvcrt, "_matherr");
