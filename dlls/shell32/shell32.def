@@ -1,22 +1,52 @@
 LIBRARY shell32.dll BASE=0x80000000
 
 EXPORTS
+  CommandLineToArgvW
+  DllCanUnloadNow
   DllGetClassObject PRIVATE
+  DllGetVersion
+  DllInstall
+  DllRegisterServer
+  DllUnregisterServer
   DragAcceptFiles
   DragFinish
   DragQueryFileA
   DragQueryFileW
   DragQueryPoint
+  DuplicateIcon
+  ExtractIconA
+  ExtractIconW
+  ExtractVersionResource16W
+  FreeIconList
+  GetCurrentProcessExplicitAppUserModelID
+  InitNetworkAddressControl
+  Printer_LoadIconsW
+  Printers_RegisterWindowW
+  Printers_UnregisterWindow
+  SetCurrentProcessExplicitAppUserModelID
   SHAlloc
   SHCLSIDFromString
   SHCoCreateInstance
+  SHCreateFileExtractIconW
   SHCreateQueryCancelAutoPlayMoniker
+  ShellAboutA
   ShellAboutW
+  SHEnumerateUnreadMailAccountsW
   SHFree
+  SHGetFileInfoA
+  SHGetFileInfoW
+  SHGetLocalizedName
   SHGetMalloc
+  SHGetPropertyStoreForWindow
+  SHHelpShortcuts_RunDLLA
+  SHHelpShortcuts_RunDLLW
+  SHLoadInProc
+  SHLoadNonloadedIconOverlayIdentifiers
   SHPropStgCreate
   SHPropStgReadMultiple
   SHPropStgWriteMultiple
+  SHQueryUserNotificationState
+  SHSetUnreadMailCountW
   StrCmpNIW=shlwapi.StrCmpNIW
   StrCmpNW=shlwapi.StrCmpNW
   StrRStrIW=shlwapi.StrRStrIW

@@ -30,62 +30,57 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_shell32);
 #endif
 
-struct qemu_ShellAboutW
-{
-    struct qemu_syscall super;
-    uint64_t win;
-    uint64_t app, other;
-    uint64_t icon;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI BOOL WINAPI ShellAboutW(HWND win, const WCHAR *app, const WCHAR *other, HICON icon)
-{
-    struct qemu_ShellAboutW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_SHELLABOUTW);
-    call.win = (uint64_t)win;
-    call.app = (uint64_t)app;
-    call.other = (uint64_t)other;
-    call.icon = (uint64_t)icon;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_ShellAboutW(struct qemu_syscall *call)
-{
-    struct qemu_ShellAboutW *c = (struct qemu_ShellAboutW *)call;
-    WINE_TRACE("\n");
-    c->super.iret = ShellAboutW((HANDLE)c->win, QEMU_G2H(c->app), QEMU_G2H(c->other), (HANDLE)c->icon);
-}
-
-#endif
-
 #ifndef QEMU_DLL_GUEST
 const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu_CommandLineToArgvW,
+    qemu_DllCanUnloadNow,
     qemu_DllGetClassObject,
+    qemu_DllGetVersion,
+    qemu_DllInstall,
+    qemu_DllRegisterServer,
+    qemu_DllUnregisterServer,
     qemu_DragAcceptFiles,
     qemu_DragFinish,
     qemu_DragQueryFileA,
     qemu_DragQueryFileW,
     qemu_DragQueryPoint,
+    qemu_DuplicateIcon,
+    qemu_ExtractIconA,
+    qemu_ExtractIconW,
+    qemu_ExtractVersionResource16W,
+    qemu_FreeIconList,
+    qemu_GetCurrentProcessExplicitAppUserModelID,
+    qemu_InitNetworkAddressControl,
+    qemu_Printer_LoadIconsW,
+    qemu_Printers_RegisterWindowW,
+    qemu_Printers_UnregisterWindow,
+    qemu_SetCurrentProcessExplicitAppUserModelID,
     qemu_SHAlloc,
     qemu_SHCLSIDFromString,
     qemu_SHCoCreateInstance,
+    qemu_SHCreateFileExtractIconW,
     qemu_SHCreateQueryCancelAutoPlayMoniker,
+    qemu_ShellAboutA,
     qemu_ShellAboutW,
+    qemu_SHEnumerateUnreadMailAccountsW,
     qemu_SHFree,
+    qemu_SHGetFileInfoA,
+    qemu_SHGetFileInfoW,
+    qemu_SHGetLocalizedName,
     qemu_SHGetMalloc,
+    qemu_SHGetPropertyStoreForWindow,
+    qemu_SHHelpShortcuts_RunDLLA,
+    qemu_SHHelpShortcuts_RunDLLW,
+    qemu_SHLoadInProc,
+    qemu_SHLoadNonloadedIconOverlayIdentifiers,
     qemu_SHPropStgCreate,
     qemu_SHPropStgReadMultiple,
     qemu_SHPropStgWriteMultiple,
+    qemu_SHQueryUserNotificationState,
+    qemu_SHSetUnreadMailCountW,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
