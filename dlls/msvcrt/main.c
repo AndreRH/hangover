@@ -39,12 +39,24 @@
 
 #ifdef QEMU_DLL_GUEST
 
+/* INTERNAL: Create a wide string from an ascii string */
+static WCHAR *msvcrt_wstrdupa(const char *str)
+{
+    const unsigned int len = MSVCRT_strlen(str) + 1 ;
+    WCHAR *wstr = MSVCRT_malloc(len * sizeof(*wstr));
+    if (!wstr)
+        return NULL;
+    MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str, len, wstr, len);
+    return wstr;
+}
+
 BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
     switch (reason)
     {
         case DLL_PROCESS_ATTACH:
             MSVCRT__acmdln = MSVCRT__strdup(GetCommandLineA());
+            MSVCRT__wcmdln = msvcrt_wstrdupa(MSVCRT__acmdln);
             return TRUE;
 
         default:

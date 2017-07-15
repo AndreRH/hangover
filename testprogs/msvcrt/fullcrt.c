@@ -8,6 +8,7 @@ int swprintf_s(wchar_t *str, size_t count, const wchar_t *format, ...);
 extern void __cdecl __wgetmainargs(int *argc, wchar_t** *wargv, wchar_t** *wenvp,
                           int expand_wildcards, int *new_mode);
 extern char *_acmdln;
+extern wchar_t *_wcmdln;
 
 int WinMain()
 {
@@ -55,6 +56,7 @@ int WinMain()
     */
 
     printf("_acmdln: %s\n", _acmdln);
+    printf("_wcmdln: %ls\n", _wcmdln);
 
     return 123;
 }

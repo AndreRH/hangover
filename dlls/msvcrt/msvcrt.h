@@ -65,6 +65,7 @@ typedef int (__cdecl *MSVCRT__onexit_t)(void);
 #ifdef QEMU_DLL_GUEST
 
 extern char *MSVCRT__acmdln;
+extern WCHAR *MSVCRT__wcmdln;
 char * CDECL MSVCRT__strdup(const char *str);
 void * CDECL MSVCRT_calloc(size_t item_count,size_t size);
 CDECL DECLSPEC_NORETURN void __MINGW_NOTHROW MSVCRT_exit(int code);
@@ -72,6 +73,7 @@ void CDECL MSVCRT_free(void *ptr);
 void * CDECL MSVCRT_malloc(size_t size);
 void * CDECL MSVCRT_memcpy(void *dst, const void *src, size_t size);
 void * CDECL MSVCRT_realloc(void *ptr, size_t size);
+size_t CDECL MSVCRT_strlen(const char *str);
 
 #else
 
