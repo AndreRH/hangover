@@ -653,7 +653,7 @@ WINUSERAPI BOOL WINAPI SetProcessDPIAware(void)
 void qemu_SetProcessDPIAware(struct qemu_syscall *call)
 {
     struct qemu_SetProcessDPIAware *c = (struct qemu_SetProcessDPIAware *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetProcessDPIAware();
 }
 
