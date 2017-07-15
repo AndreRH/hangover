@@ -40,6 +40,9 @@ struct qemu_QueryPerformanceCounter
 
 #ifdef QEMU_DLL_GUEST
 
+/* Implementing this with a call out of the VM is probably way too expensive.
+ * It probably needs the automatic update by wineserver that was discussed
+ * on wine-devel at some point. */
 WINBASEAPI BOOL WINAPI QueryPerformanceCounter(PLARGE_INTEGER counter)
 {
     struct qemu_QueryPerformanceCounter call;
@@ -86,7 +89,7 @@ WINBASEAPI BOOL WINAPI QueryPerformanceFrequency(PLARGE_INTEGER frequency)
 void qemu_QueryPerformanceFrequency(struct qemu_syscall *call)
 {
     struct qemu_QueryPerformanceFrequency *c = (struct qemu_QueryPerformanceFrequency *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     c->super.iret = QueryPerformanceFrequency(QEMU_G2H(c->frequency));
 }
 
