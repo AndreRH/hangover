@@ -25,9 +25,18 @@
 #include "dll_list.h"
 #include "shell32.h"
 
-#ifndef QEMU_DLL_GUEST
+#ifdef QEMU_DLL_GUEST
+
+BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
+{
+    return TRUE;
+}
+
+#else
+
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_shell32);
+
 #endif
 
 #ifndef QEMU_DLL_GUEST

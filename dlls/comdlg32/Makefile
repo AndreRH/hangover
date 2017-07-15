@@ -6,7 +6,7 @@ WINEGCC=$(DESTDIR)/build/wine-host/tools/winegcc/winegcc -B$(DESTDIR)/build/wine
 all: comdlg32.dll qemu_comdlg32.dll.so
 
 comdlg32.dll: comdlg32.def filedlg_g.o finddlg_g.o fontdlg_g.o main_g.o printdlg_g.o
-	x86_64-w64-mingw32-ld -shared comdlg32.def *_g.o -o comdlg32.dll -nostdlib
+	x86_64-w64-mingw32-ld -shared comdlg32.def *_g.o -o comdlg32.dll -nostdlib -e DllMain
 
 qemu_comdlg32.dll.so: filedlg_h.o finddlg_h.o fontdlg_h.o main_h.o printdlg_h.o qemu_comdlg32.spec
 	$(WINEGCC) -shared qemu_comdlg32.spec *_h.o -o qemu_comdlg32.dll.so -lcomdlg32

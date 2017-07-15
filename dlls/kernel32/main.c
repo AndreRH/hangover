@@ -27,6 +27,11 @@
 
 #ifdef QEMU_DLL_GUEST
 
+BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
+{
+    return TRUE;
+}
+
 /* Copypyasted from Wine. */
 WINBASEAPI INT WINAPI MulDiv( INT nMultiplicand, INT nMultiplier, INT nDivisor)
 {

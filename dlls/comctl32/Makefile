@@ -6,7 +6,7 @@ WINEGCC=$(DESTDIR)/build/wine-host/tools/winegcc/winegcc -B$(DESTDIR)/build/wine
 all: comctl32.dll qemu_comctl32.dll.so
 
 comctl32.dll: comctl32.def commctrl_g.o main_g.o
-	x86_64-w64-mingw32-ld -shared comctl32.def *_g.o -o comctl32.dll -nostdlib
+	x86_64-w64-mingw32-ld -shared comctl32.def *_g.o -o comctl32.dll -nostdlib -e DllMain
 
 qemu_comctl32.dll.so: commctrl_h.o main_h.o qemu_comctl32.spec
 	$(WINEGCC) -shared qemu_comctl32.spec *_h.o -o qemu_comctl32.dll.so -lcomctl32

@@ -6,7 +6,7 @@ WINEGCC=$(DESTDIR)/build/wine-host/tools/winegcc/winegcc -B$(DESTDIR)/build/wine
 all: advapi32.dll qemu_advapi32.dll.so
 
 advapi32.dll: advapi32.def main_g.o advapi_g.o registry_g.o
-	x86_64-w64-mingw32-ld -shared advapi32.def *_g.o -o advapi32.dll -nostdlib
+	x86_64-w64-mingw32-ld -shared advapi32.def *_g.o -o advapi32.dll -nostdlib -e DllMain
 
 qemu_advapi32.dll.so: main_h.o qemu_advapi32.spec advapi_h.o registry_h.o
 	$(WINEGCC) -shared qemu_advapi32.spec *_h.o -o qemu_advapi32.dll.so -ladvapi32

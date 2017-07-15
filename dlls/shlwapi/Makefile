@@ -6,7 +6,7 @@ WINEGCC=$(DESTDIR)/build/wine-host/tools/winegcc/winegcc -B$(DESTDIR)/build/wine
 all: shlwapi.dll qemu_shlwapi.dll.so
 
 shlwapi.dll: main_g.o path_g.o shlwapi.def string_g.o wsprintf_g.o
-	x86_64-w64-mingw32-ld -shared shlwapi.def *_g.o -o shlwapi.dll -nostdlib
+	x86_64-w64-mingw32-ld -shared shlwapi.def *_g.o -o shlwapi.dll -nostdlib -e DllMain
 
 qemu_shlwapi.dll.so: main_h.o path_h.o qemu_shlwapi.spec string_h.o wsprintf_h.o
 	$(WINEGCC) -shared qemu_shlwapi.spec *_h.o -o qemu_shlwapi.dll.so -lshlwapi

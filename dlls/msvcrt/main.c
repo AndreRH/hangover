@@ -37,7 +37,15 @@
 #include "dll_list.h"
 #include "msvcrt.h"
 
-#ifndef QEMU_DLL_GUEST
+#ifdef QEMU_DLL_GUEST
+
+BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
+{
+    return TRUE;
+}
+
+#else
+
 #include "va_helper_impl.h"
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
