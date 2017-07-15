@@ -72,10 +72,9 @@ void qemu___getmainargs(struct qemu_syscall *call)
     char **host_argv, **host_envp;
 
     struct qemu___getmainargs *c = (struct qemu___getmainargs *)call;
-    /* This shouldn't forward, because we need to remove qemu and its args from
-     * the arguments we pass to the guest file. Linux-user/main.c has some code
-     * for that that can be used as a reference. */
-    WINE_FIXME("\n");
+    /* QEMU hacks up argc and argv after kernel32 consumes it but before
+     * msvcrt does, so this *should* work. */
+    WINE_TRACE("\n");
     p___getmainargs(QEMU_G2H(c->argc), &host_argv, &host_envp,
             c->expand_wildcards, QEMU_G2H(c->new_mode));
 
@@ -116,10 +115,9 @@ void qemu___wgetmainargs(struct qemu_syscall *call)
     WCHAR **host_argv, **host_envp;
 
     struct qemu___wgetmainargs *c = (struct qemu___wgetmainargs *)call;
-    /* This shouldn't forward, because we need to remove qemu and its args from
-     * the arguments we pass to the guest file. Linux-user/main.c has some code
-     * for that that can be used as a reference. */
-    WINE_FIXME("\n");
+    /* QEMU hacks up argc and argv after kernel32 consumes it but before
+     * msvcrt does, so this *should* work. */
+    WINE_TRACE("\n");
     p___wgetmainargs(QEMU_G2H(c->argc), &host_argv, &host_envp,
             c->expand_wildcards, QEMU_G2H(c->new_mode));
 
