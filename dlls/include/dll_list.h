@@ -12,5 +12,6 @@
 #define DLL_SHLWAPI     0x9LL
 #define DLL_MSVCR100    0xaLL
 #define DLL_COMCTL32    0xbLL
+#define DLL_D3D9        0xcLL
 
 #endif
