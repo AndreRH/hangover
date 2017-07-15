@@ -41,7 +41,15 @@
 
 BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
-    return TRUE;
+    switch (reason)
+    {
+        case DLL_PROCESS_ATTACH:
+            MSVCRT__acmdln = MSVCRT__strdup(GetCommandLineA());
+            return TRUE;
+
+        default:
+            return TRUE;
+    }
 }
 
 #else
@@ -69,8 +77,9 @@ static const syscall_handler dll_functions[] =
     qemu__lock,
     qemu__matherr,
     qemu__onexit,
-    qemu__stricmp,
     qemu__snwprintf,
+    qemu__strdup,
+    qemu__stricmp,
     qemu__unlock,
     qemu__wcsnicmp,
     qemu__wtoi,
@@ -140,6 +149,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__lock = (void *)GetProcAddress(msvcrt, "_lock");
     p__matherr = (void *)GetProcAddress(msvcrt, "_matherr");
     p__onexit = (void *)GetProcAddress(msvcrt, "_onexit");
+    p__strdup = (void *)GetProcAddress(msvcrt, "_strdup");
     p__stricmp = (void *)GetProcAddress(msvcrt, "_stricmp");
     p__unlock = (void *)GetProcAddress(msvcrt, "_unlock");
     p__wcsnicmp = (void *)GetProcAddress(msvcrt, "_wcsnicmp");

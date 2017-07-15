@@ -21,6 +21,7 @@ enum msvcrt_calls
     CALL__MATHERR,
     CALL__ONEXIT,
     CALL__SNWPRINTF,
+    CALL__STRDUP,
     CALL__STRICMP,
     CALL__UNLOCK,
     CALL__WCSNICMP,
@@ -63,6 +64,8 @@ typedef int (__cdecl *MSVCRT__onexit_t)(void);
 
 #ifdef QEMU_DLL_GUEST
 
+extern char *MSVCRT__acmdln;
+char * CDECL MSVCRT__strdup(const char *str);
 void * CDECL MSVCRT_calloc(size_t item_count,size_t size);
 CDECL DECLSPEC_NORETURN void __MINGW_NOTHROW MSVCRT_exit(int code);
 void CDECL MSVCRT_free(void *ptr);
@@ -90,6 +93,7 @@ void qemu__lock(struct qemu_syscall *call);
 void qemu__matherr(struct qemu_syscall *call);
 void qemu__onexit(struct qemu_syscall *call);
 void qemu__snwprintf(struct qemu_syscall *call);
+void qemu__strdup(struct qemu_syscall *call);
 void qemu__stricmp(struct qemu_syscall *call);
 void qemu__unlock(struct qemu_syscall *call);
 void qemu__wcsnicmp(struct qemu_syscall *call);
@@ -140,6 +144,7 @@ void (* CDECL p__exit)(int code);
 void (* CDECL p__lock)(int locknum);
 int (* CDECL p__matherr)(void *exception);
 MSVCRT__onexit_t (* CDECL p__onexit)(MSVCRT__onexit_t func);
+char * (* CDECL p__strdup)(const char* str);
 int (* CDECL p__stricmp)(const char *s1, const char *s2);
 void (* CDECL p__unlock)(int locknum);
 int (* CDECL p__wcsnicmp)(const WCHAR *str1, const WCHAR *str2, int count);

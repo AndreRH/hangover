@@ -7,6 +7,7 @@ int swprintf_s(wchar_t *str, size_t count, const wchar_t *format, ...);
 
 extern void __cdecl __wgetmainargs(int *argc, wchar_t** *wargv, wchar_t** *wenvp,
                           int expand_wildcards, int *new_mode);
+extern char *_acmdln;
 
 int WinMain()
 {
@@ -46,10 +47,14 @@ int WinMain()
     {
         printf("\t%d: %ls\n", i, argv[i]);
     }
+    /* This spams quite a lot
     for (i = 0; envp[i]; i++)
     {
         printf("\tEnv %d: %ls\n", i, envp[i]);
     }
+    */
+
+    printf("_acmdln: %s\n", _acmdln);
 
     return 123;
 }

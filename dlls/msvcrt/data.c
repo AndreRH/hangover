@@ -33,8 +33,7 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 /* FIXME: This needs DllMain support to grab the pointer from the host. */
 char **MSVCRT___initenv = NULL;
 char *MSVCRT__acmdln = NULL;
-static WCHAR cmdln[] = {'d','u','m','m','y',0};
-WCHAR *MSVCRT__wcmdln = cmdln;
+WCHAR *MSVCRT__wcmdln = NULL;
 
 unsigned int MSVCRT__commode = 0;
 unsigned int MSVCRT__fmode = 0;
