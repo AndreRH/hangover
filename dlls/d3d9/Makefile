@@ -8,7 +8,7 @@ all: d3d9.dll qemu_d3d9.dll.so
 d3d9.dll: d3d9.def d3d9_main_g.o main_g.o
 	x86_64-w64-mingw32-ld -shared d3d9.def *_g.o -o d3d9.dll -nostdlib -e DllMain
 
-qemu_d3d9.dll.so: main_h.o d3d9_main_h.o qemu_d3d9.spec
+qemu_d3d9.dll.so: d3d9_main_h.o main_h.o qemu_d3d9.spec
 	$(WINEGCC) -shared qemu_d3d9.spec *_h.o -o qemu_d3d9.dll.so -ld3d9
 
 %_g.o: %.c qemu_d3d9.h Makefile

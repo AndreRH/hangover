@@ -41,7 +41,17 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu_D3DPERF_BeginEvent,
+    qemu_D3DPERF_EndEvent,
+    qemu_D3DPERF_GetStatus,
+    qemu_D3DPERF_QueryRepeatFrame,
+    qemu_D3DPERF_SetMarker,
+    qemu_D3DPERF_SetOptions,
+    qemu_D3DPERF_SetRegion,
+    qemu_DebugSetMute,
     qemu_Direct3DCreate9,
+    qemu_Direct3DCreate9Ex,
+    qemu_Direct3DShaderValidatorCreate9,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)

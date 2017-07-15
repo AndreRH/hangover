@@ -1,12 +1,15 @@
 LIBRARY d3d9.dll BASE=0xc0000000
 
 EXPORTS
-  Direct3DCreate9=ntdll.DbgBreakPoint
-  D3DPERF_BeginEvent=ntdll.DbgBreakPoint
-  D3DPERF_EndEvent=ntdll.DbgBreakPoint
-  D3DPERF_SetMarker=ntdll.DbgBreakPoint
-  D3DPERF_SetRegion=ntdll.DbgBreakPoint
-  D3DPERF_QueryRepeatFrame=ntdll.DbgBreakPoint
-  D3DPERF_SetOptions=ntdll.DbgBreakPoint
-  D3DPERF_GetStatus=ntdll.DbgBreakPoint
 
+  D3DPERF_BeginEvent
+  D3DPERF_EndEvent
+  D3DPERF_GetStatus
+  D3DPERF_QueryRepeatFrame
+  D3DPERF_SetMarker
+  D3DPERF_SetOptions
+  D3DPERF_SetRegion
+  DebugSetMute
+  Direct3DCreate9
+  Direct3DCreate9Ex
+  Direct3DShaderValidatorCreate9
