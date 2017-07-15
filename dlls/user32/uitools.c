@@ -135,7 +135,7 @@ WINUSERAPI BOOL WINAPI SetRect(LPRECT rect, INT left, INT top, INT right, INT bo
 void qemu_SetRect(struct qemu_syscall *call)
 {
     struct qemu_SetRect *c = (struct qemu_SetRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetRect(QEMU_G2H(c->rect), c->left, c->top, c->right, c->bottom);
 }
 
