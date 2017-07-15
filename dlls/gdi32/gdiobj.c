@@ -85,7 +85,7 @@ WINGDIAPI HGDIOBJ WINAPI GetStockObject(INT obj)
 void qemu_GetStockObject(struct qemu_syscall *call)
 {
     struct qemu_GetStockObject *c = (struct qemu_GetStockObject *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetStockObject(c->obj);
 }
 
