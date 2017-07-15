@@ -61,7 +61,7 @@ WINUSERAPI BOOL WINAPI SystemParametersInfoW(UINT uiAction, UINT uiParam, PVOID 
 void qemu_SystemParametersInfoW(struct qemu_syscall *call)
 {
     struct qemu_SystemParametersInfoW *c = (struct qemu_SystemParametersInfoW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SystemParametersInfoW(c->uiAction, c->uiParam, QEMU_G2H(c->pvParam), c->fWinIni);
 }
 
@@ -97,7 +97,7 @@ WINUSERAPI BOOL WINAPI SystemParametersInfoA(UINT uiAction, UINT uiParam, PVOID 
 void qemu_SystemParametersInfoA(struct qemu_syscall *call)
 {
     struct qemu_SystemParametersInfoA *c = (struct qemu_SystemParametersInfoA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SystemParametersInfoA(c->uiAction, c->uiParam, QEMU_G2H(c->pvParam), c->fuWinIni);
 }
 
