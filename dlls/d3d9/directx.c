@@ -718,6 +718,8 @@ static HRESULT WINAPI d3d9_CreateDevice(IDirect3D9Ex *iface, UINT adapter, D3DDE
 {
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_CreateDevice call;
+    struct qemu_d3d9_device_impl *ret;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_CREATEDEVICE);
     call.iface = (uint64_t)d3d9;
     call.adapter = (uint64_t)adapter;
@@ -725,9 +727,19 @@ static HRESULT WINAPI d3d9_CreateDevice(IDirect3D9Ex *iface, UINT adapter, D3DDE
     call.focus_window = (uint64_t)focus_window;
     call.flags = (uint64_t)flags;
     call.parameters = (uint64_t)parameters;
-    call.device = (uint64_t)device;
+    call.device = (uint64_t)&ret;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+    {
+        *device = NULL;
+        return call.super.iret;
+    }
+
+    ret->IDirect3DDevice9Ex_iface.lpVtbl = &d3d9_device_vtbl;
+    *device = (IDirect3DDevice9 *)&ret->IDirect3DDevice9Ex_iface;
+
+    /*  FIXME: Assign vtables of the implicit swapchain and its surfaces. */
 
     return call.super.iret;
 }
@@ -738,11 +750,35 @@ void qemu_d3d9_CreateDevice(struct qemu_syscall *call)
 {
     struct qemu_d3d9_CreateDevice *c = (struct qemu_d3d9_CreateDevice *)call;
     struct qemu_d3d9_impl *d3d9;
+    struct qemu_d3d9_device_impl *device_impl;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_FIXME("Unfinished!\n");
     d3d9 = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3D9_CreateDevice(d3d9->host, c->adapter, c->device_type, QEMU_G2H(c->focus_window), c->flags, QEMU_G2H(c->parameters), QEMU_G2H(c->device));
+    device_impl = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*device_impl));
+    if (!device_impl)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        goto error;
+    }
+
+    c->super.iret = IDirect3D9_CreateDevice(d3d9->host, c->adapter, c->device_type,
+            QEMU_G2H(c->focus_window), c->flags, QEMU_G2H(c->parameters),
+            (IDirect3DDevice9 **)&device_impl->host);
+    if (FAILED(c->super.iret))
+        goto error;
+
+    /* The host library takes care of refcounting here. */
+    device_impl->d3d9 = d3d9;
+    *(uint64_t *)QEMU_G2H(c->device) = QEMU_H2G(device_impl);
+
+    /* FIXME: Take care of creating wrappers for the implicit swapchain and its surfaces. */
+
+    return;
+
+error:
+    HeapFree(GetProcessHeap(), 0, device_impl);
+    return;
 }
 
 #endif

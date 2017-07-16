@@ -179,6 +179,7 @@ enum d3d9_calls
 #ifdef QEMU_DLL_GUEST
 
 extern const struct IDirect3D9ExVtbl d3d9_vtbl;
+extern const struct IDirect3DDevice9ExVtbl d3d9_device_vtbl;
 
 #else
 
@@ -355,6 +356,8 @@ void qemu_Direct3DShaderValidatorCreate9(struct qemu_syscall *call);
 /* Called internally to make sure our wrapper does the final release. */
 ULONG d3d9_wrapper_addref(struct qemu_d3d9_impl *d3d9);
 ULONG d3d9_wrapper_release(struct qemu_d3d9_impl *d3d9);
+ULONG d3d9_device_wrapper_addref(struct qemu_d3d9_device_impl *device);
+ULONG d3d9_device_wrapper_release(struct qemu_d3d9_device_impl *device);
 
 #endif
 

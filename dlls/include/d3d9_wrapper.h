@@ -37,6 +37,7 @@ struct qemu_d3d9_device_impl
 {
     IDirect3DDevice9Ex IDirect3DDevice9Ex_iface;
     IDirect3DDevice9Ex *host;
+    struct qemu_d3d9_impl *d3d9;
 };
 
 #endif

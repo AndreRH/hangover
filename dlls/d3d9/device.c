@@ -98,6 +98,11 @@ static ULONG WINAPI d3d9_device_AddRef(IDirect3DDevice9Ex *iface)
 
 #else
 
+ULONG d3d9_device_wrapper_addref(struct qemu_d3d9_device_impl *device)
+{
+    return IDirect3DDevice9Ex_AddRef(device->host);
+}
+
 void qemu_d3d9_device_AddRef(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_AddRef *c = (struct qemu_d3d9_device_AddRef *)call;
@@ -106,7 +111,7 @@ void qemu_d3d9_device_AddRef(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_AddRef(device->host);
+    c->super.iret = d3d9_device_wrapper_addref(device);
 }
 
 #endif
@@ -133,15 +138,36 @@ static ULONG WINAPI d3d9_device_Release(IDirect3DDevice9Ex *iface)
 
 #else
 
+ULONG d3d9_device_wrapper_release(struct qemu_d3d9_device_impl *device)
+{
+    struct qemu_d3d9_impl *d3d9 = device->d3d9;
+    ULONG ref;
+
+    /* The device might hold the last reference to our IDirect3D9 parent.
+     * Make sure the last IDirect3D9 ref is released through our code,
+     * otherwise the wrapper class will not be released correctly.
+     *
+     * Why not permanently hold a ref between device create and release?
+     * Mostly because it changes the outside observable refcount. */
+    d3d9_wrapper_addref(d3d9);
+    ref = IDirect3DDevice9Ex_Release(device->host);
+    d3d9_wrapper_release(d3d9);
+
+    if (!ref)
+        HeapFree(GetProcessHeap(), 0, device);
+
+    return ref;
+}
+
 void qemu_d3d9_device_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_Release *c = (struct qemu_d3d9_device_Release *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_Release(device->host);
+    c->super.iret = d3d9_device_wrapper_release(device);
 }
 
 #endif
@@ -5393,3 +5419,147 @@ void qemu_d3d9_device_GetDisplayModeEx(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+const struct IDirect3DDevice9ExVtbl d3d9_device_vtbl =
+{
+    /* IUnknown */
+    d3d9_device_QueryInterface,
+    d3d9_device_AddRef,
+    d3d9_device_Release,
+    /* IDirect3DDevice9 */
+    d3d9_device_TestCooperativeLevel,
+    d3d9_device_GetAvailableTextureMem,
+    d3d9_device_EvictManagedResources,
+    d3d9_device_GetDirect3D,
+    d3d9_device_GetDeviceCaps,
+    d3d9_device_GetDisplayMode,
+    d3d9_device_GetCreationParameters,
+    d3d9_device_SetCursorProperties,
+    d3d9_device_SetCursorPosition,
+    d3d9_device_ShowCursor,
+    d3d9_device_CreateAdditionalSwapChain,
+    d3d9_device_GetSwapChain,
+    d3d9_device_GetNumberOfSwapChains,
+    d3d9_device_Reset,
+    d3d9_device_Present,
+    d3d9_device_GetBackBuffer,
+    d3d9_device_GetRasterStatus,
+    d3d9_device_SetDialogBoxMode,
+    d3d9_device_SetGammaRamp,
+    d3d9_device_GetGammaRamp,
+    d3d9_device_CreateTexture,
+    d3d9_device_CreateVolumeTexture,
+    d3d9_device_CreateCubeTexture,
+    d3d9_device_CreateVertexBuffer,
+    d3d9_device_CreateIndexBuffer,
+    d3d9_device_CreateRenderTarget,
+    d3d9_device_CreateDepthStencilSurface,
+    d3d9_device_UpdateSurface,
+    d3d9_device_UpdateTexture,
+    d3d9_device_GetRenderTargetData,
+    d3d9_device_GetFrontBufferData,
+    d3d9_device_StretchRect,
+    d3d9_device_ColorFill,
+    d3d9_device_CreateOffscreenPlainSurface,
+    d3d9_device_SetRenderTarget,
+    d3d9_device_GetRenderTarget,
+    d3d9_device_SetDepthStencilSurface,
+    d3d9_device_GetDepthStencilSurface,
+    d3d9_device_BeginScene,
+    d3d9_device_EndScene,
+    d3d9_device_Clear,
+    d3d9_device_SetTransform,
+    d3d9_device_GetTransform,
+    d3d9_device_MultiplyTransform,
+    d3d9_device_SetViewport,
+    d3d9_device_GetViewport,
+    d3d9_device_SetMaterial,
+    d3d9_device_GetMaterial,
+    d3d9_device_SetLight,
+    d3d9_device_GetLight,
+    d3d9_device_LightEnable,
+    d3d9_device_GetLightEnable,
+    d3d9_device_SetClipPlane,
+    d3d9_device_GetClipPlane,
+    d3d9_device_SetRenderState,
+    d3d9_device_GetRenderState,
+    d3d9_device_CreateStateBlock,
+    d3d9_device_BeginStateBlock,
+    d3d9_device_EndStateBlock,
+    d3d9_device_SetClipStatus,
+    d3d9_device_GetClipStatus,
+    d3d9_device_GetTexture,
+    d3d9_device_SetTexture,
+    d3d9_device_GetTextureStageState,
+    d3d9_device_SetTextureStageState,
+    d3d9_device_GetSamplerState,
+    d3d9_device_SetSamplerState,
+    d3d9_device_ValidateDevice,
+    d3d9_device_SetPaletteEntries,
+    d3d9_device_GetPaletteEntries,
+    d3d9_device_SetCurrentTexturePalette,
+    d3d9_device_GetCurrentTexturePalette,
+    d3d9_device_SetScissorRect,
+    d3d9_device_GetScissorRect,
+    d3d9_device_SetSoftwareVertexProcessing,
+    d3d9_device_GetSoftwareVertexProcessing,
+    d3d9_device_SetNPatchMode,
+    d3d9_device_GetNPatchMode,
+    d3d9_device_DrawPrimitive,
+    d3d9_device_DrawIndexedPrimitive,
+    d3d9_device_DrawPrimitiveUP,
+    d3d9_device_DrawIndexedPrimitiveUP,
+    d3d9_device_ProcessVertices,
+    d3d9_device_CreateVertexDeclaration,
+    d3d9_device_SetVertexDeclaration,
+    d3d9_device_GetVertexDeclaration,
+    d3d9_device_SetFVF,
+    d3d9_device_GetFVF,
+    d3d9_device_CreateVertexShader,
+    d3d9_device_SetVertexShader,
+    d3d9_device_GetVertexShader,
+    d3d9_device_SetVertexShaderConstantF,
+    d3d9_device_GetVertexShaderConstantF,
+    d3d9_device_SetVertexShaderConstantI,
+    d3d9_device_GetVertexShaderConstantI,
+    d3d9_device_SetVertexShaderConstantB,
+    d3d9_device_GetVertexShaderConstantB,
+    d3d9_device_SetStreamSource,
+    d3d9_device_GetStreamSource,
+    d3d9_device_SetStreamSourceFreq,
+    d3d9_device_GetStreamSourceFreq,
+    d3d9_device_SetIndices,
+    d3d9_device_GetIndices,
+    d3d9_device_CreatePixelShader,
+    d3d9_device_SetPixelShader,
+    d3d9_device_GetPixelShader,
+    d3d9_device_SetPixelShaderConstantF,
+    d3d9_device_GetPixelShaderConstantF,
+    d3d9_device_SetPixelShaderConstantI,
+    d3d9_device_GetPixelShaderConstantI,
+    d3d9_device_SetPixelShaderConstantB,
+    d3d9_device_GetPixelShaderConstantB,
+    d3d9_device_DrawRectPatch,
+    d3d9_device_DrawTriPatch,
+    d3d9_device_DeletePatch,
+    d3d9_device_CreateQuery,
+    /* IDirect3DDevice9Ex */
+    d3d9_device_SetConvolutionMonoKernel,
+    d3d9_device_ComposeRects,
+    d3d9_device_PresentEx,
+    d3d9_device_GetGPUThreadPriority,
+    d3d9_device_SetGPUThreadPriority,
+    d3d9_device_WaitForVBlank,
+    d3d9_device_CheckResourceResidency,
+    d3d9_device_SetMaximumFrameLatency,
+    d3d9_device_GetMaximumFrameLatency,
+    d3d9_device_CheckDeviceState,
+    d3d9_device_CreateRenderTargetEx,
+    d3d9_device_CreateOffscreenPlainSurfaceEx,
+    d3d9_device_CreateDepthStencilSurfaceEx,
+    d3d9_device_ResetEx,
+    d3d9_device_GetDisplayModeEx,
+};
+
+#endif
