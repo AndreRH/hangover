@@ -753,7 +753,7 @@ void qemu_d3d9_device_Present(struct qemu_syscall *call)
     struct qemu_d3d9_device_Present *c = (struct qemu_d3d9_device_Present *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_Present(device->host, QEMU_G2H(c->src_rect), QEMU_G2H(c->dst_rect), QEMU_G2H(c->dst_window_override), QEMU_G2H(c->dirty_region));
@@ -1793,7 +1793,7 @@ void qemu_d3d9_device_BeginScene(struct qemu_syscall *call)
     struct qemu_d3d9_device_BeginScene *c = (struct qemu_d3d9_device_BeginScene *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_BeginScene(device->host);
@@ -1828,7 +1828,7 @@ void qemu_d3d9_device_EndScene(struct qemu_syscall *call)
     struct qemu_d3d9_device_EndScene *c = (struct qemu_d3d9_device_EndScene *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_EndScene(device->host);
@@ -1875,7 +1875,7 @@ void qemu_d3d9_device_Clear(struct qemu_syscall *call)
     struct qemu_d3d9_device_Clear *c = (struct qemu_d3d9_device_Clear *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_Clear(device->host, c->rect_count, QEMU_G2H(c->rects), c->flags, c->color, c->z, c->stencil);
