@@ -633,7 +633,7 @@ WINUSERAPI BOOL WINAPI PeekMessageW(MSG *msg_out, HWND hwnd, UINT first, UINT la
 void qemu_PeekMessageW(struct qemu_syscall *call)
 {
     struct qemu_PeekMessageW *c = (struct qemu_PeekMessageW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PeekMessageW(QEMU_G2H(c->msg_out), QEMU_G2H(c->hwnd), c->first, c->last, c->flags);
 }
 
@@ -671,7 +671,7 @@ WINUSERAPI BOOL WINAPI PeekMessageA(MSG *msg, HWND hwnd, UINT first, UINT last, 
 void qemu_PeekMessageA(struct qemu_syscall *call)
 {
     struct qemu_PeekMessageA *c = (struct qemu_PeekMessageA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PeekMessageA(QEMU_G2H(c->msg), QEMU_G2H(c->hwnd), c->first, c->last, c->flags);
 }
 
