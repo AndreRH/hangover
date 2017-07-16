@@ -26,6 +26,8 @@ enum kernel32_calls
     CALL_CANCELTIMERQUEUETIMER,
     CALL_CANCELWAITABLETIMER,
     CALL_CHANGETIMERQUEUETIMER,
+    CALL_CHECKNAMELEGALDOS8DOT3A,
+    CALL_CHECKNAMELEGALDOS8DOT3W,
     CALL_CHECKREMOTEDEBUGGERPRESENT,
     CALL_CLEARCOMMBREAK,
     CALL_CLEARCOMMERROR,
@@ -35,6 +37,14 @@ enum kernel32_calls
     CALL_COMPARESTRINGW,
     CALL_CONNECTNAMEDPIPE,
     CALL_CONTINUEDEBUGEVENT,
+    CALL_COPYFILEA,
+    CALL_COPYFILEEXA,
+    CALL_COPYFILEEXW,
+    CALL_COPYFILEW,
+    CALL_CREATEDIRECTORYA,
+    CALL_CREATEDIRECTORYEXA,
+    CALL_CREATEDIRECTORYEXW,
+    CALL_CREATEDIRECTORYW,
     CALL_CREATEEVENTA,
     CALL_CREATEEVENTEXA,
     CALL_CREATEEVENTEXW,
@@ -42,6 +52,10 @@ enum kernel32_calls
     CALL_CREATEFILE2,
     CALL_CREATEFILEA,
     CALL_CREATEFILEW,
+    CALL_CREATEHARDLINKA,
+    CALL_CREATEHARDLINKTRANSACTEDA,
+    CALL_CREATEHARDLINKTRANSACTEDW,
+    CALL_CREATEHARDLINKW,
     CALL_CREATEIOCOMPLETIONPORT,
     CALL_CREATEJOBOBJECTA,
     CALL_CREATEJOBOBJECTW,
@@ -59,6 +73,8 @@ enum kernel32_calls
     CALL_CREATESEMAPHOREEXA,
     CALL_CREATESEMAPHOREEXW,
     CALL_CREATESEMAPHOREW,
+    CALL_CREATESYMBOLICLINKA,
+    CALL_CREATESYMBOLICLINKW,
     CALL_CREATETIMERQUEUE,
     CALL_CREATETIMERQUEUETIMER,
     CALL_CREATEWAITABLETIMERA,
@@ -106,6 +122,8 @@ enum kernel32_calls
     CALL_GETCOMPRESSEDFILESIZEA,
     CALL_GETCOMPRESSEDFILESIZEW,
     CALL_GETCPINFOEXW,
+    CALL_GETCURRENTDIRECTORYA,
+    CALL_GETCURRENTDIRECTORYW,
     CALL_GETCURRENTPROCESS,
     CALL_GETCURRENTPROCESSID,
     CALL_GETCURRENTTHREADID,
@@ -132,9 +150,13 @@ enum kernel32_calls
     CALL_GETFINALPATHNAMEBYHANDLEW,
     CALL_GETFIRMWAREENVIRONMENTVARIABLEA,
     CALL_GETFIRMWAREENVIRONMENTVARIABLEW,
+    CALL_GETFULLPATHNAMEA,
+    CALL_GETFULLPATHNAMEW,
     CALL_GETLARGEPAGEMINIMUM,
     CALL_GETLASTERROR,
     CALL_GETLOCALTIME,
+    CALL_GETLONGPATHNAMEA,
+    CALL_GETLONGPATHNAMEW,
     CALL_GETMAILSLOTINFO,
     CALL_GETMODULEFILENAMEA,
     CALL_GETMODULEFILENAMEW,
@@ -149,18 +171,32 @@ enum kernel32_calls
     CALL_GETPROCADDRESS,
     CALL_GETPROCESSHEAP,
     CALL_GETQUEUEDCOMPLETIONSTATUS,
+    CALL_GETSHORTPATHNAMEA,
+    CALL_GETSHORTPATHNAMEW,
     CALL_GETSTARTUPINFOA,
     CALL_GETSTARTUPINFOW,
     CALL_GETSTDHANDLE,
+    CALL_GETSYSTEMDIRECTORYA,
+    CALL_GETSYSTEMDIRECTORYW,
     CALL_GETSYSTEMINFO,
     CALL_GETSYSTEMPOWERSTATUS,
     CALL_GETSYSTEMTIMEASFILETIME,
+    CALL_GETSYSTEMWINDOWSDIRECTORYA,
+    CALL_GETSYSTEMWINDOWSDIRECTORYW,
+    CALL_GETSYSTEMWOW64DIRECTORYA,
+    CALL_GETSYSTEMWOW64DIRECTORYW,
+    CALL_GETTEMPFILENAMEA,
+    CALL_GETTEMPFILENAMEW,
+    CALL_GETTEMPPATHA,
+    CALL_GETTEMPPATHW,
     CALL_GETTICKCOUNT,
     CALL_GETTIMEFORMATA,
     CALL_GETTIMEFORMATW,
     CALL_GETVERSION,
     CALL_GETVERSIONEXA,
     CALL_GETVERSIONEXW,
+    CALL_GETWINDOWSDIRECTORYA,
+    CALL_GETWINDOWSDIRECTORYW,
     CALL_GLOBALALLOC,
     CALL_GLOBALFREE,
     CALL_HEAPALLOC,
@@ -195,7 +231,15 @@ enum kernel32_calls
     CALL_LSTRLENA,
     CALL_LSTRLENW,
     CALL_MAKECRITICALSECTIONGLOBAL,
+    CALL_MOVEFILEA,
+    CALL_MOVEFILEEXA,
+    CALL_MOVEFILEEXW,
+    CALL_MOVEFILEW,
+    CALL_MOVEFILEWITHPROGRESSA,
+    CALL_MOVEFILEWITHPROGRESSW,
     CALL_MULTIBYTETOWIDECHAR,
+    CALL_NEEDCURRENTDIRECTORYFOREXEPATHA,
+    CALL_NEEDCURRENTDIRECTORYFOREXEPATHW,
     CALL_OPENEVENTA,
     CALL_OPENEVENTW,
     CALL_OPENFILE,
@@ -230,18 +274,25 @@ enum kernel32_calls
     CALL_REINITIALIZECRITICALSECTION,
     CALL_RELEASEMUTEX,
     CALL_RELEASESEMAPHORE,
+    CALL_REMOVEDIRECTORYA,
+    CALL_REMOVEDIRECTORYW,
     CALL_REPLACEFILEA,
     CALL_REPLACEFILEW,
     CALL_REQUESTWAKEUPLATENCY,
     CALL_RESETEVENT,
+    CALL_SEARCHPATHA,
+    CALL_SEARCHPATHW,
     CALL_SETCOMMBREAK,
     CALL_SETCOMMCONFIG,
     CALL_SETCOMMMASK,
     CALL_SETCOMMSTATE,
     CALL_SETCOMMTIMEOUTS,
     CALL_SETCONSOLECTRLHANDLER,
+    CALL_SETCURRENTDIRECTORYA,
+    CALL_SETCURRENTDIRECTORYW,
     CALL_SETDEFAULTCOMMCONFIGA,
     CALL_SETDEFAULTCOMMCONFIGW,
+    CALL_SETDEFAULTDLLDIRECTORIES,
     CALL_SETENDOFFILE,
     CALL_SETENVIRONMENTVARIABLEA,
     CALL_SETENVIRONMENTVARIABLEW,
@@ -261,6 +312,7 @@ enum kernel32_calls
     CALL_SETLASTERROR,
     CALL_SETMAILSLOTINFO,
     CALL_SETNAMEDPIPEHANDLESTATE,
+    CALL_SETSEARCHPATHMODE,
     CALL_SETSTDHANDLE,
     CALL_SETSYSTEMPOWERSTATE,
     CALL_SETTHREADEXECUTIONSTATE,
@@ -298,6 +350,9 @@ enum kernel32_calls
     CALL_WAITNAMEDPIPEA,
     CALL_WAITNAMEDPIPEW,
     CALL_WIDECHARTOMULTIBYTE,
+    CALL_WOW64DISABLEWOW64FSREDIRECTION,
+    CALL_WOW64ENABLEWOW64FSREDIRECTION,
+    CALL_WOW64REVERTWOW64FSREDIRECTION,
     CALL_WRITEFILE,
     CALL_WRITEFILEEX,
     CALL_WRITEFILEGATHER,
@@ -329,6 +384,8 @@ void qemu_CancelSynchronousIo(struct qemu_syscall *call);
 void qemu_CancelTimerQueueTimer(struct qemu_syscall *call);
 void qemu_CancelWaitableTimer(struct qemu_syscall *call);
 void qemu_ChangeTimerQueueTimer(struct qemu_syscall *call);
+void qemu_CheckNameLegalDOS8Dot3A(struct qemu_syscall *call);
+void qemu_CheckNameLegalDOS8Dot3W(struct qemu_syscall *call);
 void qemu_CheckRemoteDebuggerPresent(struct qemu_syscall *call);
 void qemu_ClearCommBreak(struct qemu_syscall *call);
 void qemu_ClearCommError(struct qemu_syscall *call);
@@ -338,6 +395,14 @@ void qemu_CommConfigDialogW(struct qemu_syscall *call);
 void qemu_CompareStringW(struct qemu_syscall *call);
 void qemu_ConnectNamedPipe(struct qemu_syscall *call);
 void qemu_ContinueDebugEvent(struct qemu_syscall *call);
+void qemu_CopyFileA(struct qemu_syscall *call);
+void qemu_CopyFileExA(struct qemu_syscall *call);
+void qemu_CopyFileExW(struct qemu_syscall *call);
+void qemu_CopyFileW(struct qemu_syscall *call);
+void qemu_CreateDirectoryA(struct qemu_syscall *call);
+void qemu_CreateDirectoryExA(struct qemu_syscall *call);
+void qemu_CreateDirectoryExW(struct qemu_syscall *call);
+void qemu_CreateDirectoryW(struct qemu_syscall *call);
 void qemu_CreateEventA(struct qemu_syscall *call);
 void qemu_CreateEventExA(struct qemu_syscall *call);
 void qemu_CreateEventExW(struct qemu_syscall *call);
@@ -345,6 +410,10 @@ void qemu_CreateEventW(struct qemu_syscall *call);
 void qemu_CreateFile2(struct qemu_syscall *call);
 void qemu_CreateFileA(struct qemu_syscall *call);
 void qemu_CreateFileW(struct qemu_syscall *call);
+void qemu_CreateHardLinkA(struct qemu_syscall *call);
+void qemu_CreateHardLinkTransactedA(struct qemu_syscall *call);
+void qemu_CreateHardLinkTransactedW(struct qemu_syscall *call);
+void qemu_CreateHardLinkW(struct qemu_syscall *call);
 void qemu_CreateIoCompletionPort(struct qemu_syscall *call);
 void qemu_CreateJobObjectA(struct qemu_syscall *call);
 void qemu_CreateJobObjectW(struct qemu_syscall *call);
@@ -362,6 +431,8 @@ void qemu_CreateSemaphoreA(struct qemu_syscall *call);
 void qemu_CreateSemaphoreExA(struct qemu_syscall *call);
 void qemu_CreateSemaphoreExW(struct qemu_syscall *call);
 void qemu_CreateSemaphoreW(struct qemu_syscall *call);
+void qemu_CreateSymbolicLinkA(struct qemu_syscall *call);
+void qemu_CreateSymbolicLinkW(struct qemu_syscall *call);
 void qemu_CreateTimerQueue(struct qemu_syscall *call);
 void qemu_CreateTimerQueueTimer(struct qemu_syscall *call);
 void qemu_CreateWaitableTimerA(struct qemu_syscall *call);
@@ -411,6 +482,8 @@ void qemu_GetCommTimeouts(struct qemu_syscall *call);
 void qemu_GetCompressedFileSizeA(struct qemu_syscall *call);
 void qemu_GetCompressedFileSizeW(struct qemu_syscall *call);
 void qemu_GetCPInfoExW(struct qemu_syscall *call);
+void qemu_GetCurrentDirectoryA(struct qemu_syscall *call);
+void qemu_GetCurrentDirectoryW(struct qemu_syscall *call);
 void qemu_GetCurrentProcess(struct qemu_syscall *call);
 void qemu_GetCurrentProcessId(struct qemu_syscall *call);
 void qemu_GetCurrentThreadId(struct qemu_syscall *call);
@@ -437,9 +510,13 @@ void qemu_GetFinalPathNameByHandleA(struct qemu_syscall *call);
 void qemu_GetFinalPathNameByHandleW(struct qemu_syscall *call);
 void qemu_GetFirmwareEnvironmentVariableA(struct qemu_syscall *call);
 void qemu_GetFirmwareEnvironmentVariableW(struct qemu_syscall *call);
+void qemu_GetFullPathNameA(struct qemu_syscall *call);
+void qemu_GetFullPathNameW(struct qemu_syscall *call);
 void qemu_GetLargePageMinimum(struct qemu_syscall *call);
 void qemu_GetLastError(struct qemu_syscall *call);
 void qemu_GetLocalTime(struct qemu_syscall *call);
+void qemu_GetLongPathNameA(struct qemu_syscall *call);
+void qemu_GetLongPathNameW(struct qemu_syscall *call);
 void qemu_GetMailslotInfo(struct qemu_syscall *call);
 void qemu_GetModuleFileNameA(struct qemu_syscall *call);
 void qemu_GetModuleFileNameW(struct qemu_syscall *call);
@@ -454,18 +531,32 @@ void qemu_GetOverlappedResult(struct qemu_syscall *call);
 void qemu_GetProcAddress(struct qemu_syscall *call);
 void qemu_GetProcessHeap(struct qemu_syscall *call);
 void qemu_GetQueuedCompletionStatus(struct qemu_syscall *call);
+void qemu_GetShortPathNameA(struct qemu_syscall *call);
+void qemu_GetShortPathNameW(struct qemu_syscall *call);
 void qemu_GetStartupInfoA(struct qemu_syscall *call);
 void qemu_GetStartupInfoW(struct qemu_syscall *call);
 void qemu_GetStdHandle(struct qemu_syscall *call);
+void qemu_GetSystemDirectoryA(struct qemu_syscall *call);
+void qemu_GetSystemDirectoryW(struct qemu_syscall *call);
 void qemu_GetSystemInfo(struct qemu_syscall *call);
 void qemu_GetSystemPowerStatus(struct qemu_syscall *call);
 void qemu_GetSystemTimeAsFileTime(struct qemu_syscall *call);
+void qemu_GetSystemWindowsDirectoryA(struct qemu_syscall *call);
+void qemu_GetSystemWindowsDirectoryW(struct qemu_syscall *call);
+void qemu_GetSystemWow64DirectoryA(struct qemu_syscall *call);
+void qemu_GetSystemWow64DirectoryW(struct qemu_syscall *call);
+void qemu_GetTempFileNameA(struct qemu_syscall *call);
+void qemu_GetTempFileNameW(struct qemu_syscall *call);
+void qemu_GetTempPathA(struct qemu_syscall *call);
+void qemu_GetTempPathW(struct qemu_syscall *call);
 void qemu_GetTickCount(struct qemu_syscall *call);
 void qemu_GetTimeFormatA(struct qemu_syscall *call);
 void qemu_GetTimeFormatW(struct qemu_syscall *call);
 void qemu_GetVersion(struct qemu_syscall *call);
 void qemu_GetVersionExA(struct qemu_syscall *call);
 void qemu_GetVersionExW(struct qemu_syscall *call);
+void qemu_GetWindowsDirectoryA(struct qemu_syscall *call);
+void qemu_GetWindowsDirectoryW(struct qemu_syscall *call);
 void qemu_GlobalAlloc(struct qemu_syscall *call);
 void qemu_GlobalFree(struct qemu_syscall *call);
 void qemu_HeapAlloc(struct qemu_syscall *call);
@@ -500,7 +591,15 @@ void qemu_lstrcpyW(struct qemu_syscall *call);
 void qemu_lstrlenA(struct qemu_syscall *call);
 void qemu_lstrlenW(struct qemu_syscall *call);
 void qemu_MakeCriticalSectionGlobal(struct qemu_syscall *call);
+void qemu_MoveFileA(struct qemu_syscall *call);
+void qemu_MoveFileExA(struct qemu_syscall *call);
+void qemu_MoveFileExW(struct qemu_syscall *call);
+void qemu_MoveFileW(struct qemu_syscall *call);
+void qemu_MoveFileWithProgressA(struct qemu_syscall *call);
+void qemu_MoveFileWithProgressW(struct qemu_syscall *call);
 void qemu_MultiByteToWideChar(struct qemu_syscall *call);
+void qemu_NeedCurrentDirectoryForExePathA(struct qemu_syscall *call);
+void qemu_NeedCurrentDirectoryForExePathW(struct qemu_syscall *call);
 void qemu_OpenEventA(struct qemu_syscall *call);
 void qemu_OpenEventW(struct qemu_syscall *call);
 void qemu_OpenFile(struct qemu_syscall *call);
@@ -535,18 +634,25 @@ void qemu_RegisterWaitForSingleObjectEx(struct qemu_syscall *call);
 void qemu_ReinitializeCriticalSection(struct qemu_syscall *call);
 void qemu_ReleaseMutex(struct qemu_syscall *call);
 void qemu_ReleaseSemaphore(struct qemu_syscall *call);
+void qemu_RemoveDirectoryA(struct qemu_syscall *call);
+void qemu_RemoveDirectoryW(struct qemu_syscall *call);
 void qemu_ReplaceFileA(struct qemu_syscall *call);
 void qemu_ReplaceFileW(struct qemu_syscall *call);
 void qemu_RequestWakeupLatency(struct qemu_syscall *call);
 void qemu_ResetEvent(struct qemu_syscall *call);
+void qemu_SearchPathA(struct qemu_syscall *call);
+void qemu_SearchPathW(struct qemu_syscall *call);
 void qemu_SetCommBreak(struct qemu_syscall *call);
 void qemu_SetCommConfig(struct qemu_syscall *call);
 void qemu_SetCommMask(struct qemu_syscall *call);
 void qemu_SetCommState(struct qemu_syscall *call);
 void qemu_SetCommTimeouts(struct qemu_syscall *call);
 void qemu_SetConsoleCtrlHandler(struct qemu_syscall *call);
+void qemu_SetCurrentDirectoryA(struct qemu_syscall *call);
+void qemu_SetCurrentDirectoryW(struct qemu_syscall *call);
 void qemu_SetDefaultCommConfigA(struct qemu_syscall *call);
 void qemu_SetDefaultCommConfigW(struct qemu_syscall *call);
+void qemu_SetDefaultDllDirectories(struct qemu_syscall *call);
 void qemu_SetEndOfFile(struct qemu_syscall *call);
 void qemu_SetEnvironmentVariableA(struct qemu_syscall *call);
 void qemu_SetEnvironmentVariableW(struct qemu_syscall *call);
@@ -566,6 +672,7 @@ void qemu_SetInformationJobObject(struct qemu_syscall *call);
 void qemu_SetLastError(struct qemu_syscall *call);
 void qemu_SetMailslotInfo(struct qemu_syscall *call);
 void qemu_SetNamedPipeHandleState(struct qemu_syscall *call);
+void qemu_SetSearchPathMode(struct qemu_syscall *call);
 void qemu_SetStdHandle(struct qemu_syscall *call);
 void qemu_SetSystemPowerState(struct qemu_syscall *call);
 void qemu_SetThreadExecutionState(struct qemu_syscall *call);
@@ -603,6 +710,9 @@ void qemu_WaitForSingleObjectEx(struct qemu_syscall *call);
 void qemu_WaitNamedPipeA(struct qemu_syscall *call);
 void qemu_WaitNamedPipeW(struct qemu_syscall *call);
 void qemu_WideCharToMultiByte(struct qemu_syscall *call);
+void qemu_Wow64DisableWow64FsRedirection(struct qemu_syscall *call);
+void qemu_Wow64EnableWow64FsRedirection(struct qemu_syscall *call);
+void qemu_Wow64RevertWow64FsRedirection(struct qemu_syscall *call);
 void qemu_WriteFile(struct qemu_syscall *call);
 void qemu_WriteFileEx(struct qemu_syscall *call);
 void qemu_WriteFileGather(struct qemu_syscall *call);

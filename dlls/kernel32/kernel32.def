@@ -25,6 +25,8 @@ EXPORTS
   CancelTimerQueueTimer
   CancelWaitableTimer
   ChangeTimerQueueTimer
+  CheckNameLegalDOS8Dot3A
+  CheckNameLegalDOS8Dot3W
   CheckRemoteDebuggerPresent
   ClearCommBreak
   ClearCommError
@@ -34,6 +36,14 @@ EXPORTS
   CompareStringW
   ConnectNamedPipe
   ContinueDebugEvent
+  CopyFileA
+  CopyFileExA
+  CopyFileExW
+  CopyFileW
+  CreateDirectoryA
+  CreateDirectoryExA
+  CreateDirectoryExW
+  CreateDirectoryW
   CreateEventA
   CreateEventExA
   CreateEventExW
@@ -41,6 +51,10 @@ EXPORTS
   CreateFile2
   CreateFileA
   CreateFileW
+  CreateHardLinkA
+  CreateHardLinkTransactedA
+  CreateHardLinkTransactedW
+  CreateHardLinkW
   CreateIoCompletionPort
   CreateJobObjectA
   CreateJobObjectW
@@ -58,6 +72,8 @@ EXPORTS
   CreateSemaphoreExA
   CreateSemaphoreExW
   CreateSemaphoreW
+  CreateSymbolicLinkA
+  CreateSymbolicLinkW
   CreateTimerQueue
   CreateTimerQueueTimer
   CreateWaitableTimerA
@@ -109,6 +125,8 @@ EXPORTS
   GetCompressedFileSizeA
   GetCompressedFileSizeW
   GetCPInfoExW
+  GetCurrentDirectoryA
+  GetCurrentDirectoryW
   GetCurrentProcess
   GetCurrentProcessId
   GetCurrentThreadId
@@ -135,9 +153,13 @@ EXPORTS
   GetFinalPathNameByHandleW
   GetFirmwareEnvironmentVariableA
   GetFirmwareEnvironmentVariableW
+  GetFullPathNameA
+  GetFullPathNameW
   GetLargePageMinimum
   GetLastError
   GetLocalTime
+  GetLongPathNameA
+  GetLongPathNameW
   GetMailslotInfo
   GetModuleFileNameA
   GetModuleFileNameW
@@ -152,18 +174,32 @@ EXPORTS
   GetProcAddress
   GetProcessHeap
   GetQueuedCompletionStatus
+  GetShortPathNameA
+  GetShortPathNameW
   GetStartupInfoA
   GetStartupInfoW
   GetStdHandle
+  GetSystemDirectoryA
+  GetSystemDirectoryW
   GetSystemInfo
   GetSystemPowerStatus
   GetSystemTimeAsFileTime
+  GetSystemWindowsDirectoryA
+  GetSystemWindowsDirectoryW
+  GetSystemWow64DirectoryA
+  GetSystemWow64DirectoryW
+  GetTempFileNameA
+  GetTempFileNameW
+  GetTempPathA
+  GetTempPathW
   GetTickCount
   GetTimeFormatA
   GetTimeFormatW
   GetVersion
   GetVersionExA
   GetVersionExW
+  GetWindowsDirectoryA
+  GetWindowsDirectoryW
   GlobalAlloc
   GlobalFree
   HeapAlloc
@@ -200,8 +236,16 @@ EXPORTS
   lstrlenA
   lstrlenW
   MakeCriticalSectionGlobal
+  MoveFileA
+  MoveFileExA
+  MoveFileExW
+  MoveFileW
+  MoveFileWithProgressA
+  MoveFileWithProgressW
   MulDiv
   MultiByteToWideChar
+  NeedCurrentDirectoryForExePathA
+  NeedCurrentDirectoryForExePathW
   OpenEventA
   OpenEventW
   OpenFile
@@ -236,6 +280,8 @@ EXPORTS
   ReinitializeCriticalSection
   ReleaseMutex
   ReleaseSemaphore
+  RemoveDirectoryA
+  RemoveDirectoryW
   ReplaceFileA
   ReplaceFileW
   RequestWakeupLatency
@@ -244,14 +290,19 @@ EXPORTS
   RtlCaptureContext=ntdll.RtlCaptureContext
   RtlLookupFunctionEntry=ntdll.RtlLookupFunctionEntry
   RtlVirtualUnwind=ntdll.RtlVirtualUnwind
+  SearchPathA
+  SearchPathW
   SetCommBreak
   SetCommConfig
   SetCommMask
   SetCommState
   SetCommTimeouts
   SetConsoleCtrlHandler
+  SetCurrentDirectoryA
+  SetCurrentDirectoryW
   SetDefaultCommConfigA
   SetDefaultCommConfigW
+  SetDefaultDllDirectories
   SetEndOfFile
   SetEnvironmentVariableA
   SetEnvironmentVariableW
@@ -271,6 +322,7 @@ EXPORTS
   SetLastError
   SetMailslotInfo
   SetNamedPipeHandleState
+  SetSearchPathMode
   SetStdHandle
   SetSystemPowerState
   SetThreadExecutionState
@@ -308,6 +360,9 @@ EXPORTS
   WaitNamedPipeA
   WaitNamedPipeW
   WideCharToMultiByte
+  Wow64DisableWow64FsRedirection
+  Wow64EnableWow64FsRedirection
+  Wow64RevertWow64FsRedirection
   WriteFile
   WriteFileEx
   WriteFileGather
