@@ -84,6 +84,10 @@ void qemu_Direct3DCreate9(struct qemu_syscall *call);
 void qemu_Direct3DCreate9Ex(struct qemu_syscall *call);
 void qemu_Direct3DShaderValidatorCreate9(struct qemu_syscall *call);
 
+/* Called internally to make sure our wrapper does the final release. */
+ULONG d3d9_wrapper_addref(struct qemu_d3d9_impl *d3d9);
+ULONG d3d9_wrapper_release(struct qemu_d3d9_impl *d3d9);
+
 #endif
 
 #endif

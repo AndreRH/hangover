@@ -31,7 +31,6 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_d3d9);
 #endif
 
-
 struct qemu_DebugSetMute
 {
     struct qemu_syscall super;
@@ -70,12 +69,18 @@ struct qemu_Direct3DCreate9
 WINBASEAPI IDirect3D9 * WINAPI Direct3DCreate9(UINT sdk_version)
 {
     struct qemu_Direct3DCreate9 call;
+    struct qemu_d3d9_impl *d3d9;
     call.super.id = QEMU_SYSCALL_ID(CALL_DIRECT3DCREATE9);
     call.sdk_version = (uint64_t)sdk_version;
 
     qemu_syscall(&call.super);
 
-    return (IDirect3D9 *)call.super.iret;
+    d3d9 = (struct qemu_d3d9_impl *)call.super.iret;
+    if (!d3d9)
+        return NULL;
+
+    d3d9->IDirect3D9Ex_iface.lpVtbl = &d3d9_vtbl;
+    return (IDirect3D9 *)&d3d9->IDirect3D9Ex_iface;
 }
 
 #else
@@ -83,8 +88,24 @@ WINBASEAPI IDirect3D9 * WINAPI Direct3DCreate9(UINT sdk_version)
 void qemu_Direct3DCreate9(struct qemu_syscall *call)
 {
     struct qemu_Direct3DCreate9 *c = (struct qemu_Direct3DCreate9 *)call;
-    WINE_FIXME("This aint gonna work!\n");
-    c->super.iret = QEMU_H2G(Direct3DCreate9(c->sdk_version));
+    struct qemu_d3d9_impl *impl;
+    WINE_TRACE("\n");
+
+    impl = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*impl));
+    if (!impl)
+        goto error;
+
+    impl->host = (IDirect3D9Ex *)Direct3DCreate9(c->sdk_version);
+    if (!impl->host)
+        goto error;
+
+    c->super.iret = QEMU_H2G(impl);
+    return;
+
+error:
+    HeapFree(GetProcessHeap(), 0, impl);
+    c->super.iret = 0;
+    return;
 }
 
 #endif

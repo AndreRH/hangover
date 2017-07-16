@@ -97,6 +97,11 @@ static ULONG WINAPI d3d9_AddRef(IDirect3D9Ex *iface)
 
 #else
 
+ULONG d3d9_wrapper_addref(struct qemu_d3d9_impl *d3d9)
+{
+    return IDirect3D9Ex_AddRef(d3d9->host);
+}
+
 void qemu_d3d9_AddRef(struct qemu_syscall *call)
 {
     struct qemu_d3d9_AddRef *c = (struct qemu_d3d9_AddRef *)call;
@@ -132,6 +137,16 @@ static ULONG WINAPI d3d9_Release(IDirect3D9Ex *iface)
 
 #else
 
+ULONG d3d9_wrapper_release(struct qemu_d3d9_impl *d3d9)
+{
+    ULONG ref = IDirect3D9Ex_Release(d3d9->host);
+
+    if (!ref)
+        HeapFree(GetProcessHeap(), 0, d3d9);
+
+    return ref;
+}
+
 void qemu_d3d9_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d9_Release *c = (struct qemu_d3d9_Release *)call;
@@ -140,7 +155,7 @@ void qemu_d3d9_Release(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     d3d9 = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3D9_Release(d3d9->host);
+    c->super.iret = d3d9_wrapper_release(d3d9);
 }
 
 #endif
