@@ -24,9 +24,10 @@
 #ifndef QEMU_D3D9_WRAPPER_H
 #define QEMU_D3D9_WRAPPER_H
 
-/* This structure is accessed by both guest and host, including the guest
+/* These structures are accessed by both guest and host, including the guest
  * application code. This may need extra care for 32<->64 mapping because
  * we can't just make everything an uint64_t. */
+
 struct qemu_d3d9_impl
 {
     IDirect3D9Ex IDirect3D9Ex_iface;
@@ -38,6 +39,16 @@ struct qemu_d3d9_device_impl
     IDirect3DDevice9Ex IDirect3DDevice9Ex_iface;
     IDirect3DDevice9Ex *host;
     struct qemu_d3d9_impl *d3d9;
+};
+
+struct qemu_d3d9_swapchain_impl
+{
+    IDirect3DSwapChain9Ex IDirect3DSwapChain9Ex_iface;
+    IDirect3DSwapChain9Ex *host;
+
+    struct qemu_d3d9_device_impl *device;
+
+    /* TODO: Surface array. */
 };
 
 #endif

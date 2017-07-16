@@ -163,6 +163,19 @@ enum d3d9_calls
     CALL_D3D9_QUERYINTERFACE,
     CALL_D3D9_REGISTERSOFTWAREDEVICE,
     CALL_D3D9_RELEASE,
+    CALL_D3D9_SWAPCHAIN_ADDREF,
+    CALL_D3D9_SWAPCHAIN_GETBACKBUFFER,
+    CALL_D3D9_SWAPCHAIN_GETDEVICE,
+    CALL_D3D9_SWAPCHAIN_GETDISPLAYMODE,
+    CALL_D3D9_SWAPCHAIN_GETDISPLAYMODEEX,
+    CALL_D3D9_SWAPCHAIN_GETFRONTBUFFERDATA,
+    CALL_D3D9_SWAPCHAIN_GETLASTPRESENTCOUNT,
+    CALL_D3D9_SWAPCHAIN_GETPRESENTPARAMETERS,
+    CALL_D3D9_SWAPCHAIN_GETPRESENTSTATISTICS,
+    CALL_D3D9_SWAPCHAIN_GETRASTERSTATUS,
+    CALL_D3D9_SWAPCHAIN_PRESENT,
+    CALL_D3D9_SWAPCHAIN_QUERYINTERFACE,
+    CALL_D3D9_SWAPCHAIN_RELEASE,
     CALL_D3DPERF_BEGINEVENT,
     CALL_D3DPERF_ENDEVENT,
     CALL_D3DPERF_GETSTATUS,
@@ -348,6 +361,19 @@ void qemu_D3DPERF_QueryRepeatFrame(struct qemu_syscall *call);
 void qemu_D3DPERF_SetMarker(struct qemu_syscall *call);
 void qemu_D3DPERF_SetOptions(struct qemu_syscall *call);
 void qemu_D3DPERF_SetRegion(struct qemu_syscall *call);
+void qemu_d3d9_swapchain_AddRef(struct qemu_syscall *call);
+void qemu_d3d9_swapchain_GetBackBuffer(struct qemu_syscall *call);
+void qemu_d3d9_swapchain_GetDevice(struct qemu_syscall *call);
+void qemu_d3d9_swapchain_GetDisplayMode(struct qemu_syscall *call);
+void qemu_d3d9_swapchain_GetDisplayModeEx(struct qemu_syscall *call);
+void qemu_d3d9_swapchain_GetFrontBufferData(struct qemu_syscall *call);
+void qemu_d3d9_swapchain_GetLastPresentCount(struct qemu_syscall *call);
+void qemu_d3d9_swapchain_GetPresentParameters(struct qemu_syscall *call);
+void qemu_d3d9_swapchain_GetPresentStatistics(struct qemu_syscall *call);
+void qemu_d3d9_swapchain_GetRasterStatus(struct qemu_syscall *call);
+void qemu_d3d9_swapchain_Present(struct qemu_syscall *call);
+void qemu_d3d9_swapchain_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d9_swapchain_Release(struct qemu_syscall *call);
 void qemu_DebugSetMute(struct qemu_syscall *call);
 void qemu_Direct3DCreate9(struct qemu_syscall *call);
 void qemu_Direct3DCreate9Ex(struct qemu_syscall *call);
