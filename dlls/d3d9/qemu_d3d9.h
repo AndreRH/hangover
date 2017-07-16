@@ -211,8 +211,10 @@ enum d3d9_calls
 extern const struct IDirect3D9ExVtbl d3d9_vtbl;
 extern const struct IDirect3DDevice9ExVtbl d3d9_device_vtbl;
 extern const struct IDirect3DSwapChain9ExVtbl d3d9_swapchain_vtbl;
+extern const struct IDirect3DSurface9Vtbl d3d9_surface_vtbl;
 
 void d3d9_device_set_swapchain_ifaces(IDirect3DDevice9Ex *device);
+void d3d9_swapchain_set_surfaces_ifaces(IDirect3DSwapChain9Ex *swapchain);
 
 #else
 
@@ -427,6 +429,8 @@ ULONG d3d9_device_wrapper_release(struct qemu_d3d9_device_impl *device);
 struct qemu_d3d9_swapchain_impl *swapchain_impl_from_IUnknown(IUnknown *iface);
 void d3d9_swapchain_init(struct qemu_d3d9_swapchain_impl *swapchain, IDirect3DSwapChain9Ex *host_swapchain,
         struct qemu_d3d9_device_impl *device);
+
+void d3d9_surface_init(struct qemu_d3d9_surface_impl *surface, IDirect3DSurface9 *host_surface);
 
 extern const GUID qemu_d3d9_swapchain_guid;
 extern const GUID qemu_d3d9_surface_guid;

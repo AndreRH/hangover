@@ -753,7 +753,7 @@ void qemu_d3d9_CreateDevice(struct qemu_syscall *call)
     struct qemu_d3d9_impl *d3d9;
     struct qemu_d3d9_device_impl *device_impl;
 
-    WINE_FIXME("Unfinished!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     device_impl = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*device_impl));

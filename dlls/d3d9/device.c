@@ -5598,6 +5598,7 @@ void d3d9_device_set_swapchain_ifaces(IDirect3DDevice9Ex *device)
     {
         IDirect3DDevice9Ex_GetSwapChain(device, i, (IDirect3DSwapChain9 **)&swapchain);
         swapchain->lpVtbl = &d3d9_swapchain_vtbl;
+        d3d9_swapchain_set_surfaces_ifaces(swapchain);
         IDirect3DSwapChain9Ex_Release(swapchain);
     }
 }

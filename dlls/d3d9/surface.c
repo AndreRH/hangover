@@ -137,7 +137,7 @@ void qemu_d3d9_surface_Release(struct qemu_syscall *call)
     struct qemu_d3d9_surface_Release *c = (struct qemu_d3d9_surface_Release *)call;
     struct qemu_d3d9_surface_impl *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DSurface9_Release(surface->host);
@@ -669,3 +669,39 @@ void qemu_d3d9_surface_ReleaseDC(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+const struct IDirect3DSurface9Vtbl d3d9_surface_vtbl =
+{
+    /* IUnknown */
+    d3d9_surface_QueryInterface,
+    d3d9_surface_AddRef,
+    d3d9_surface_Release,
+    /* IDirect3DResource9 */
+    d3d9_surface_GetDevice,
+    d3d9_surface_SetPrivateData,
+    d3d9_surface_GetPrivateData,
+    d3d9_surface_FreePrivateData,
+    d3d9_surface_SetPriority,
+    d3d9_surface_GetPriority,
+    d3d9_surface_PreLoad,
+    d3d9_surface_GetType,
+    /* IDirect3DSurface9 */
+    d3d9_surface_GetContainer,
+    d3d9_surface_GetDesc,
+    d3d9_surface_LockRect,
+    d3d9_surface_UnlockRect,
+    d3d9_surface_GetDC,
+    d3d9_surface_ReleaseDC,
+};
+
+#else
+
+void d3d9_surface_init(struct qemu_d3d9_surface_impl *surface, IDirect3DSurface9 *host_surface)
+{
+    WINE_TRACE("Init surface %p, host %p.\n", surface, host_surface);
+    surface->host = host_surface;
+    IDirect3DSurface9_SetPrivateData(host_surface, &qemu_d3d9_surface_guid, &surface, sizeof(surface), 0);
+}
+
+#endif

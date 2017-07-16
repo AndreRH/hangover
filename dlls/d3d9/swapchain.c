@@ -246,13 +246,23 @@ static HRESULT WINAPI d3d9_swapchain_GetBackBuffer(IDirect3DSwapChain9Ex *iface,
 {
     struct qemu_d3d9_swapchain_impl *swapchain = impl_from_IDirect3DSwapChain9Ex(iface);
     struct qemu_d3d9_swapchain_GetBackBuffer call;
+    struct qemu_d3d9_surface_impl *surface_impl;
+
+    if (!backbuffer)
+        return D3DERR_INVALIDCALL;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SWAPCHAIN_GETBACKBUFFER);
     call.iface = (uint64_t)swapchain;
     call.backbuffer_idx = (uint64_t)backbuffer_idx;
     call.backbuffer_type = (uint64_t)backbuffer_type;
-    call.backbuffer = (uint64_t)backbuffer;
+    call.backbuffer = (uint64_t)&surface_impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+        *backbuffer = &surface_impl->IDirect3DSurface9_iface;
+    else
+        *backbuffer = NULL;
 
     return call.super.iret;
 }
@@ -263,11 +273,20 @@ void qemu_d3d9_swapchain_GetBackBuffer(struct qemu_syscall *call)
 {
     struct qemu_d3d9_swapchain_GetBackBuffer *c = (struct qemu_d3d9_swapchain_GetBackBuffer *)call;
     struct qemu_d3d9_swapchain_impl *swapchain;
+    IDirect3DSurface9 *host;
+    struct qemu_d3d9_surface_impl *surface_impl;
+    DWORD size = sizeof(surface_impl);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DSwapChain9_GetBackBuffer(swapchain->host, c->backbuffer_idx, c->backbuffer_type, QEMU_G2H(c->backbuffer));
+    c->super.iret = IDirect3DSwapChain9_GetBackBuffer(swapchain->host, c->backbuffer_idx, c->backbuffer_type, &host);
+    if (FAILED(c->super.iret))
+        return;
+
+    IDirect3DSurface9_GetPrivateData(host, &qemu_d3d9_surface_guid, &surface_impl, &size);
+    WINE_TRACE("Got surface %p from private data from host surface %p.\n", surface_impl, host);
+    *(uint64_t *)QEMU_G2H(c->backbuffer) = QEMU_H2G(surface_impl);
 }
 
 #endif
@@ -412,7 +431,7 @@ void qemu_d3d9_swapchain_GetPresentParameters(struct qemu_syscall *call)
     struct qemu_d3d9_swapchain_GetPresentParameters *c = (struct qemu_d3d9_swapchain_GetPresentParameters *)call;
     struct qemu_d3d9_swapchain_impl *swapchain;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DSwapChain9_GetPresentParameters(swapchain->host, QEMU_G2H(c->parameters));
@@ -555,6 +574,23 @@ const struct IDirect3DSwapChain9ExVtbl d3d9_swapchain_vtbl =
     d3d9_swapchain_GetDisplayModeEx
 };
 
+void d3d9_swapchain_set_surfaces_ifaces(IDirect3DSwapChain9Ex *swapchain)
+{
+    D3DPRESENT_PARAMETERS pp;
+    IDirect3DSurface9 *surface;
+    UINT i;
+
+    /* This code merrily relies on the fact that the GetBackBuffer AddRef call
+     * happens on the host side and doesn't need the guest vtable. */
+    IDirect3DSwapChain9Ex_GetPresentParameters(swapchain, &pp);
+    for (i = 0; i < pp.BackBufferCount; ++i)
+    {
+        IDirect3DSwapChain9_GetBackBuffer(swapchain, i, D3DBACKBUFFER_TYPE_MONO, &surface);
+        surface->lpVtbl = &d3d9_surface_vtbl;
+        IDirect3DSurface9_Release(surface);
+    }
+}
+
 #else
 
 struct qemu_d3d9_swapchain_impl *swapchain_impl_from_IUnknown(IUnknown *iface)
@@ -606,7 +642,6 @@ void d3d9_swapchain_init(struct qemu_d3d9_swapchain_impl *swapchain, IDirect3DSw
 {
     IDirect3DSurface9 *surface;
     UINT i;
-    struct qemu_d3d9_surface_impl *ptr;
     D3DPRESENT_PARAMETERS pp;
 
     swapchain->host = host_swapchain;
@@ -618,8 +653,7 @@ void d3d9_swapchain_init(struct qemu_d3d9_swapchain_impl *swapchain, IDirect3DSw
     IDirect3DSurface9_SetPrivateData(surface, &qemu_d3d9_swapchain_guid, &swapchain->private_data,
             sizeof(IUnknown *), D3DSPD_IUNKNOWN);
 
-    ptr = &swapchain->backbuffers[0];
-    IDirect3DSurface9_SetPrivateData(surface, &qemu_d3d9_surface_guid, &ptr, sizeof(*ptr), 0);
+    d3d9_surface_init(&swapchain->backbuffers[0], surface);
 
     IDirect3DSurface9_Release(surface);
 
@@ -627,10 +661,7 @@ void d3d9_swapchain_init(struct qemu_d3d9_swapchain_impl *swapchain, IDirect3DSw
     for (i = 1; i < pp.BackBufferCount; ++i)
     {
         IDirect3DSwapChain9_GetBackBuffer(swapchain->host, i, D3DBACKBUFFER_TYPE_MONO, &surface);
-
-        ptr = &swapchain->backbuffers[i];
-        IDirect3DSurface9_SetPrivateData(surface, &qemu_d3d9_surface_guid, &ptr, sizeof(*ptr), 0);
-
+        d3d9_surface_init(&swapchain->backbuffers[i], surface);
         IDirect3DSurface9_Release(surface);
     }
 }
