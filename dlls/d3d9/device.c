@@ -777,14 +777,21 @@ static HRESULT WINAPI d3d9_device_GetBackBuffer(IDirect3DDevice9Ex *iface, UINT 
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
     struct qemu_d3d9_device_GetBackBuffer call;
+    struct qemu_d3d9_surface_impl *surface_impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETBACKBUFFER);
     call.iface = (uint64_t)device;
     call.swapchain = (uint64_t)swapchain;
     call.backbuffer_idx = (uint64_t)backbuffer_idx;
     call.backbuffer_type = (uint64_t)backbuffer_type;
-    call.backbuffer = (uint64_t)backbuffer;
+    call.backbuffer = (uint64_t)&surface_impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+        *backbuffer = &surface_impl->IDirect3DSurface9_iface;
+    else
+        *backbuffer = NULL;
 
     return call.super.iret;
 }
@@ -795,11 +802,20 @@ void qemu_d3d9_device_GetBackBuffer(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_GetBackBuffer *c = (struct qemu_d3d9_device_GetBackBuffer *)call;
     struct qemu_d3d9_device_impl *device;
+    IDirect3DSurface9 *host;
+    struct qemu_d3d9_surface_impl *surface_impl;
+    DWORD size = sizeof(surface_impl);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_GetBackBuffer(device->host, c->swapchain, c->backbuffer_idx, c->backbuffer_type, QEMU_G2H(c->backbuffer));
+    c->super.iret = IDirect3DDevice9Ex_GetBackBuffer(device->host, c->swapchain, c->backbuffer_idx, c->backbuffer_type, &host);
+    if (FAILED(c->super.iret))
+        return;
+
+    IDirect3DSurface9_GetPrivateData(host, &qemu_d3d9_surface_guid, &surface_impl, &size);
+    WINE_TRACE("Got surface %p from private data from host surface %p.\n", surface_impl, host);
+    *(uint64_t *)QEMU_G2H(c->backbuffer) = QEMU_H2G(surface_impl);
 }
 
 #endif
