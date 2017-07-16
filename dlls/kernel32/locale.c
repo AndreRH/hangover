@@ -31,6 +31,1724 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
 
+struct qemu_GetUserDefaultLangID
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LANGID WINAPI GetUserDefaultLangID(void)
+{
+    struct qemu_GetUserDefaultLangID call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETUSERDEFAULTLANGID);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetUserDefaultLangID(struct qemu_syscall *call)
+{
+    struct qemu_GetUserDefaultLangID *c = (struct qemu_GetUserDefaultLangID *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetUserDefaultLangID();
+}
+
+#endif
+
+struct qemu_GetSystemDefaultLangID
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LANGID WINAPI GetSystemDefaultLangID(void)
+{
+    struct qemu_GetSystemDefaultLangID call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMDEFAULTLANGID);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetSystemDefaultLangID(struct qemu_syscall *call)
+{
+    struct qemu_GetSystemDefaultLangID *c = (struct qemu_GetSystemDefaultLangID *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetSystemDefaultLangID();
+}
+
+#endif
+
+struct qemu_GetUserDefaultLCID
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LCID WINAPI GetUserDefaultLCID(void)
+{
+    struct qemu_GetUserDefaultLCID call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETUSERDEFAULTLCID);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetUserDefaultLCID(struct qemu_syscall *call)
+{
+    struct qemu_GetUserDefaultLCID *c = (struct qemu_GetUserDefaultLCID *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetUserDefaultLCID();
+}
+
+#endif
+
+struct qemu_GetSystemDefaultLCID
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LCID WINAPI GetSystemDefaultLCID(void)
+{
+    struct qemu_GetSystemDefaultLCID call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMDEFAULTLCID);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetSystemDefaultLCID(struct qemu_syscall *call)
+{
+    struct qemu_GetSystemDefaultLCID *c = (struct qemu_GetSystemDefaultLCID *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetSystemDefaultLCID();
+}
+
+#endif
+
+struct qemu_GetSystemDefaultLocaleName
+{
+    struct qemu_syscall super;
+    uint64_t localename;
+    uint64_t len;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI GetSystemDefaultLocaleName(LPWSTR localename, INT len)
+{
+    struct qemu_GetSystemDefaultLocaleName call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMDEFAULTLOCALENAME);
+    call.localename = (uint64_t)localename;
+    call.len = (uint64_t)len;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetSystemDefaultLocaleName(struct qemu_syscall *call)
+{
+    struct qemu_GetSystemDefaultLocaleName *c = (struct qemu_GetSystemDefaultLocaleName *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetSystemDefaultLocaleName(QEMU_G2H(c->localename), c->len);
+}
+
+#endif
+
+struct qemu_GetSystemPreferredUILanguages
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+    uint64_t count;
+    uint64_t buffer;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetSystemPreferredUILanguages(DWORD flags, ULONG* count, WCHAR* buffer, ULONG* size)
+{
+    struct qemu_GetSystemPreferredUILanguages call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMPREFERREDUILANGUAGES);
+    call.flags = (uint64_t)flags;
+    call.count = (uint64_t)count;
+    call.buffer = (uint64_t)buffer;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetSystemPreferredUILanguages(struct qemu_syscall *call)
+{
+    struct qemu_GetSystemPreferredUILanguages *c = (struct qemu_GetSystemPreferredUILanguages *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetSystemPreferredUILanguages(c->flags, QEMU_G2H(c->count), QEMU_G2H(c->buffer), QEMU_G2H(c->size));
+}
+
+#endif
+
+struct qemu_SetThreadPreferredUILanguages
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+    uint64_t buffer;
+    uint64_t count;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI SetThreadPreferredUILanguages(DWORD flags, PCZZWSTR buffer, PULONG count)
+{
+    struct qemu_SetThreadPreferredUILanguages call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADPREFERREDUILANGUAGES);
+    call.flags = (uint64_t)flags;
+    call.buffer = (uint64_t)buffer;
+    call.count = (uint64_t)count;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add SetThreadPreferredUILanguages to Wine headers? */
+extern BOOL WINAPI SetThreadPreferredUILanguages(DWORD flags, PCZZWSTR buffer, PULONG count);
+void qemu_SetThreadPreferredUILanguages(struct qemu_syscall *call)
+{
+    struct qemu_SetThreadPreferredUILanguages *c = (struct qemu_SetThreadPreferredUILanguages *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SetThreadPreferredUILanguages(c->flags, QEMU_G2H(c->buffer), QEMU_G2H(c->count));
+}
+
+#endif
+
+struct qemu_GetThreadPreferredUILanguages
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+    uint64_t count;
+    uint64_t buf;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetThreadPreferredUILanguages(DWORD flags, ULONG *count, WCHAR *buf, ULONG *size)
+{
+    struct qemu_GetThreadPreferredUILanguages call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETTHREADPREFERREDUILANGUAGES);
+    call.flags = (uint64_t)flags;
+    call.count = (uint64_t)count;
+    call.buf = (uint64_t)buf;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetThreadPreferredUILanguages(struct qemu_syscall *call)
+{
+    struct qemu_GetThreadPreferredUILanguages *c = (struct qemu_GetThreadPreferredUILanguages *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetThreadPreferredUILanguages(c->flags, QEMU_G2H(c->count), QEMU_G2H(c->buf), QEMU_G2H(c->size));
+}
+
+#endif
+
+struct qemu_GetUserPreferredUILanguages
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+    uint64_t count;
+    uint64_t buffer;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetUserPreferredUILanguages(DWORD flags, ULONG *count, WCHAR *buffer, ULONG *size)
+{
+    struct qemu_GetUserPreferredUILanguages call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETUSERPREFERREDUILANGUAGES);
+    call.flags = (uint64_t)flags;
+    call.count = (uint64_t)count;
+    call.buffer = (uint64_t)buffer;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add GetUserPreferredUILanguages to Wine headers? */
+extern BOOL WINAPI GetUserPreferredUILanguages(DWORD flags, ULONG *count, WCHAR *buffer, ULONG *size);
+void qemu_GetUserPreferredUILanguages(struct qemu_syscall *call)
+{
+    struct qemu_GetUserPreferredUILanguages *c = (struct qemu_GetUserPreferredUILanguages *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetUserPreferredUILanguages(c->flags, QEMU_G2H(c->count), QEMU_G2H(c->buffer), QEMU_G2H(c->size));
+}
+
+#endif
+
+struct qemu_GetUserDefaultUILanguage
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LANGID WINAPI GetUserDefaultUILanguage(void)
+{
+    struct qemu_GetUserDefaultUILanguage call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETUSERDEFAULTUILANGUAGE);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetUserDefaultUILanguage(struct qemu_syscall *call)
+{
+    struct qemu_GetUserDefaultUILanguage *c = (struct qemu_GetUserDefaultUILanguage *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetUserDefaultUILanguage();
+}
+
+#endif
+
+struct qemu_GetSystemDefaultUILanguage
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LANGID WINAPI GetSystemDefaultUILanguage(void)
+{
+    struct qemu_GetSystemDefaultUILanguage call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMDEFAULTUILANGUAGE);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetSystemDefaultUILanguage(struct qemu_syscall *call)
+{
+    struct qemu_GetSystemDefaultUILanguage *c = (struct qemu_GetSystemDefaultUILanguage *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetSystemDefaultUILanguage();
+}
+
+#endif
+
+struct qemu_LocaleNameToLCID
+{
+    struct qemu_syscall super;
+    uint64_t name;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LCID WINAPI LocaleNameToLCID(LPCWSTR name, DWORD flags)
+{
+    struct qemu_LocaleNameToLCID call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LOCALENAMETOLCID);
+    call.name = (uint64_t)name;
+    call.flags = (uint64_t)flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_LocaleNameToLCID(struct qemu_syscall *call)
+{
+    struct qemu_LocaleNameToLCID *c = (struct qemu_LocaleNameToLCID *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = LocaleNameToLCID(QEMU_G2H(c->name), c->flags);
+}
+
+#endif
+
+struct qemu_LCIDToLocaleName
+{
+    struct qemu_syscall super;
+    uint64_t lcid;
+    uint64_t name;
+    uint64_t count;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI LCIDToLocaleName(LCID lcid, LPWSTR name, INT count, DWORD flags)
+{
+    struct qemu_LCIDToLocaleName call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LCIDTOLOCALENAME);
+    call.lcid = (uint64_t)lcid;
+    call.name = (uint64_t)name;
+    call.count = (uint64_t)count;
+    call.flags = (uint64_t)flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_LCIDToLocaleName(struct qemu_syscall *call)
+{
+    struct qemu_LCIDToLocaleName *c = (struct qemu_LCIDToLocaleName *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = LCIDToLocaleName(c->lcid, QEMU_G2H(c->name), c->count, c->flags);
+}
+
+#endif
+
+struct qemu_GetLocaleInfoA
+{
+    struct qemu_syscall super;
+    uint64_t lcid;
+    uint64_t lctype;
+    uint64_t buffer;
+    uint64_t len;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI GetLocaleInfoA(LCID lcid, LCTYPE lctype, LPSTR buffer, INT len)
+{
+    struct qemu_GetLocaleInfoA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETLOCALEINFOA);
+    call.lcid = (uint64_t)lcid;
+    call.lctype = (uint64_t)lctype;
+    call.buffer = (uint64_t)buffer;
+    call.len = (uint64_t)len;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetLocaleInfoA(struct qemu_syscall *call)
+{
+    struct qemu_GetLocaleInfoA *c = (struct qemu_GetLocaleInfoA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetLocaleInfoA(c->lcid, c->lctype, QEMU_G2H(c->buffer), c->len);
+}
+
+#endif
+
+struct qemu_GetLocaleInfoW
+{
+    struct qemu_syscall super;
+    uint64_t lcid;
+    uint64_t lctype;
+    uint64_t buffer;
+    uint64_t len;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI GetLocaleInfoW(LCID lcid, LCTYPE lctype, LPWSTR buffer, INT len)
+{
+    struct qemu_GetLocaleInfoW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETLOCALEINFOW);
+    call.lcid = (uint64_t)lcid;
+    call.lctype = (uint64_t)lctype;
+    call.buffer = (uint64_t)buffer;
+    call.len = (uint64_t)len;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetLocaleInfoW(struct qemu_syscall *call)
+{
+    struct qemu_GetLocaleInfoW *c = (struct qemu_GetLocaleInfoW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetLocaleInfoW(c->lcid, c->lctype, QEMU_G2H(c->buffer), c->len);
+}
+
+#endif
+
+struct qemu_GetLocaleInfoEx
+{
+    struct qemu_syscall super;
+    uint64_t locale;
+    uint64_t info;
+    uint64_t buffer;
+    uint64_t len;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI GetLocaleInfoEx(LPCWSTR locale, LCTYPE info, LPWSTR buffer, INT len)
+{
+    struct qemu_GetLocaleInfoEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETLOCALEINFOEX);
+    call.locale = (uint64_t)locale;
+    call.info = (uint64_t)info;
+    call.buffer = (uint64_t)buffer;
+    call.len = (uint64_t)len;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetLocaleInfoEx(struct qemu_syscall *call)
+{
+    struct qemu_GetLocaleInfoEx *c = (struct qemu_GetLocaleInfoEx *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetLocaleInfoEx(QEMU_G2H(c->locale), c->info, QEMU_G2H(c->buffer), c->len);
+}
+
+#endif
+
+struct qemu_SetLocaleInfoA
+{
+    struct qemu_syscall super;
+    uint64_t lcid;
+    uint64_t lctype;
+    uint64_t data;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI SetLocaleInfoA(LCID lcid, LCTYPE lctype, LPCSTR data)
+{
+    struct qemu_SetLocaleInfoA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETLOCALEINFOA);
+    call.lcid = (uint64_t)lcid;
+    call.lctype = (uint64_t)lctype;
+    call.data = (uint64_t)data;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_SetLocaleInfoA(struct qemu_syscall *call)
+{
+    struct qemu_SetLocaleInfoA *c = (struct qemu_SetLocaleInfoA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SetLocaleInfoA(c->lcid, c->lctype, QEMU_G2H(c->data));
+}
+
+#endif
+
+struct qemu_SetLocaleInfoW
+{
+    struct qemu_syscall super;
+    uint64_t lcid;
+    uint64_t lctype;
+    uint64_t data;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI SetLocaleInfoW(LCID lcid, LCTYPE lctype, LPCWSTR data)
+{
+    struct qemu_SetLocaleInfoW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETLOCALEINFOW);
+    call.lcid = (uint64_t)lcid;
+    call.lctype = (uint64_t)lctype;
+    call.data = (uint64_t)data;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_SetLocaleInfoW(struct qemu_syscall *call)
+{
+    struct qemu_SetLocaleInfoW *c = (struct qemu_SetLocaleInfoW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SetLocaleInfoW(c->lcid, c->lctype, QEMU_G2H(c->data));
+}
+
+#endif
+
+struct qemu_GetACP
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI UINT WINAPI GetACP(void)
+{
+    struct qemu_GetACP call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETACP);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetACP(struct qemu_syscall *call)
+{
+    struct qemu_GetACP *c = (struct qemu_GetACP *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetACP();
+}
+
+#endif
+
+struct qemu_SetCPGlobal
+{
+    struct qemu_syscall super;
+    uint64_t acp;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI UINT WINAPI SetCPGlobal(UINT acp)
+{
+    struct qemu_SetCPGlobal call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETCPGLOBAL);
+    call.acp = (uint64_t)acp;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add SetCPGlobal to Wine headers? */
+extern UINT WINAPI SetCPGlobal(UINT acp);
+void qemu_SetCPGlobal(struct qemu_syscall *call)
+{
+    struct qemu_SetCPGlobal *c = (struct qemu_SetCPGlobal *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SetCPGlobal(c->acp);
+}
+
+#endif
+
+struct qemu_GetOEMCP
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI UINT WINAPI GetOEMCP(void)
+{
+    struct qemu_GetOEMCP call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETOEMCP);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetOEMCP(struct qemu_syscall *call)
+{
+    struct qemu_GetOEMCP *c = (struct qemu_GetOEMCP *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetOEMCP();
+}
+
+#endif
+
+struct qemu_IsValidCodePage
+{
+    struct qemu_syscall super;
+    uint64_t codepage;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI IsValidCodePage(UINT codepage)
+{
+    struct qemu_IsValidCodePage call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ISVALIDCODEPAGE);
+    call.codepage = (uint64_t)codepage;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_IsValidCodePage(struct qemu_syscall *call)
+{
+    struct qemu_IsValidCodePage *c = (struct qemu_IsValidCodePage *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = IsValidCodePage(c->codepage);
+}
+
+#endif
+
+struct qemu_IsDBCSLeadByteEx
+{
+    struct qemu_syscall super;
+    uint64_t codepage;
+    uint64_t testchar;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI IsDBCSLeadByteEx(UINT codepage, BYTE testchar)
+{
+    struct qemu_IsDBCSLeadByteEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ISDBCSLEADBYTEEX);
+    call.codepage = (uint64_t)codepage;
+    call.testchar = (uint64_t)testchar;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_IsDBCSLeadByteEx(struct qemu_syscall *call)
+{
+    struct qemu_IsDBCSLeadByteEx *c = (struct qemu_IsDBCSLeadByteEx *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = IsDBCSLeadByteEx(c->codepage, c->testchar);
+}
+
+#endif
+
+struct qemu_IsDBCSLeadByte
+{
+    struct qemu_syscall super;
+    uint64_t testchar;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI IsDBCSLeadByte(BYTE testchar)
+{
+    struct qemu_IsDBCSLeadByte call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ISDBCSLEADBYTE);
+    call.testchar = (uint64_t)testchar;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_IsDBCSLeadByte(struct qemu_syscall *call)
+{
+    struct qemu_IsDBCSLeadByte *c = (struct qemu_IsDBCSLeadByte *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = IsDBCSLeadByte(c->testchar);
+}
+
+#endif
+
+struct qemu_GetCPInfo
+{
+    struct qemu_syscall super;
+    uint64_t codepage;
+    uint64_t cpinfo;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetCPInfo(UINT codepage, LPCPINFO cpinfo)
+{
+    struct qemu_GetCPInfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETCPINFO);
+    call.codepage = (uint64_t)codepage;
+    call.cpinfo = (uint64_t)cpinfo;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetCPInfo(struct qemu_syscall *call)
+{
+    struct qemu_GetCPInfo *c = (struct qemu_GetCPInfo *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetCPInfo(c->codepage, QEMU_G2H(c->cpinfo));
+}
+
+#endif
+
+struct qemu_GetCPInfoExA
+{
+    struct qemu_syscall super;
+    uint64_t codepage;
+    uint64_t dwFlags;
+    uint64_t cpinfo;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetCPInfoExA(UINT codepage, DWORD dwFlags, LPCPINFOEXA cpinfo)
+{
+    struct qemu_GetCPInfoExA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETCPINFOEXA);
+    call.codepage = (uint64_t)codepage;
+    call.dwFlags = (uint64_t)dwFlags;
+    call.cpinfo = (uint64_t)cpinfo;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetCPInfoExA(struct qemu_syscall *call)
+{
+    struct qemu_GetCPInfoExA *c = (struct qemu_GetCPInfoExA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetCPInfoExA(c->codepage, c->dwFlags, QEMU_G2H(c->cpinfo));
+}
+
+#endif
+
+struct qemu_GetCPInfoExW
+{
+    struct qemu_syscall super;
+    uint64_t codepage;
+    uint64_t dwFlags;
+    uint64_t cpinfo;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetCPInfoExW(UINT codepage, DWORD dwFlags, LPCPINFOEXW cpinfo)
+{
+    struct qemu_GetCPInfoExW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETCPINFOEXW);
+    call.codepage = (uint64_t)codepage;
+    call.dwFlags = (uint64_t)dwFlags;
+    call.cpinfo = (uint64_t)cpinfo;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetCPInfoExW(struct qemu_syscall *call)
+{
+    struct qemu_GetCPInfoExW *c = (struct qemu_GetCPInfoExW *)call;
+    WINE_TRACE("\n");
+    c->super.iret = GetCPInfoExW(c->codepage, c->dwFlags, QEMU_G2H(c->cpinfo));
+}
+
+#endif
+
+struct qemu_EnumSystemCodePagesA
+{
+    struct qemu_syscall super;
+    uint64_t lpfnCodePageEnum;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI EnumSystemCodePagesA(CODEPAGE_ENUMPROCA lpfnCodePageEnum, DWORD flags)
+{
+    struct qemu_EnumSystemCodePagesA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ENUMSYSTEMCODEPAGESA);
+    call.lpfnCodePageEnum = (uint64_t)lpfnCodePageEnum;
+    call.flags = (uint64_t)flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_EnumSystemCodePagesA(struct qemu_syscall *call)
+{
+    struct qemu_EnumSystemCodePagesA *c = (struct qemu_EnumSystemCodePagesA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EnumSystemCodePagesA(QEMU_G2H(c->lpfnCodePageEnum), c->flags);
+}
+
+#endif
+
+struct qemu_EnumSystemCodePagesW
+{
+    struct qemu_syscall super;
+    uint64_t lpfnCodePageEnum;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI EnumSystemCodePagesW(CODEPAGE_ENUMPROCW lpfnCodePageEnum, DWORD flags)
+{
+    struct qemu_EnumSystemCodePagesW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ENUMSYSTEMCODEPAGESW);
+    call.lpfnCodePageEnum = (uint64_t)lpfnCodePageEnum;
+    call.flags = (uint64_t)flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_EnumSystemCodePagesW(struct qemu_syscall *call)
+{
+    struct qemu_EnumSystemCodePagesW *c = (struct qemu_EnumSystemCodePagesW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EnumSystemCodePagesW(QEMU_G2H(c->lpfnCodePageEnum), c->flags);
+}
+
+#endif
+
+struct qemu_MultiByteToWideChar
+{
+    struct qemu_syscall super;
+    uint64_t page;
+    uint64_t flags;
+    uint64_t src;
+    uint64_t srclen;
+    uint64_t dst;
+    uint64_t dstlen;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI MultiByteToWideChar(UINT page, DWORD flags, LPCSTR src, INT srclen, LPWSTR dst, INT dstlen)
+{
+    struct qemu_MultiByteToWideChar call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_MULTIBYTETOWIDECHAR);
+    call.page = (uint64_t)page;
+    call.flags = (uint64_t)flags;
+    call.src = (uint64_t)src;
+    call.srclen = (uint64_t)srclen;
+    call.dst = (uint64_t)dst;
+    call.dstlen = (uint64_t)dstlen;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_MultiByteToWideChar(struct qemu_syscall *call)
+{
+    struct qemu_MultiByteToWideChar *c = (struct qemu_MultiByteToWideChar *)call;
+    WINE_TRACE("\n");
+    c->super.iret = MultiByteToWideChar(c->page, c->flags, QEMU_G2H(c->src), c->srclen, QEMU_G2H(c->dst), c->dstlen);
+}
+
+#endif
+
+struct qemu_WideCharToMultiByte
+{
+    struct qemu_syscall super;
+    uint64_t page;
+    uint64_t flags;
+    uint64_t src;
+    uint64_t srclen;
+    uint64_t dst;
+    uint64_t dstlen;
+    uint64_t defchar;
+    uint64_t used;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI WideCharToMultiByte(UINT page, DWORD flags, LPCWSTR src, INT srclen, LPSTR dst, INT dstlen, LPCSTR defchar, BOOL *used)
+{
+    struct qemu_WideCharToMultiByte call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WIDECHARTOMULTIBYTE);
+    call.page = (uint64_t)page;
+    call.flags = (uint64_t)flags;
+    call.src = (uint64_t)src;
+    call.srclen = (uint64_t)srclen;
+    call.dst = (uint64_t)dst;
+    call.dstlen = (uint64_t)dstlen;
+    call.defchar = (uint64_t)defchar;
+    call.used = (uint64_t)used;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WideCharToMultiByte(struct qemu_syscall *call)
+{
+    struct qemu_WideCharToMultiByte *c = (struct qemu_WideCharToMultiByte *)call;
+    WINE_TRACE("\n");
+    c->super.iret = WideCharToMultiByte(c->page, c->flags, QEMU_G2H(c->src), c->srclen, QEMU_G2H(c->dst), c->dstlen, QEMU_G2H(c->defchar), QEMU_G2H(c->used));
+}
+
+#endif
+
+struct qemu_GetThreadLocale
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LCID WINAPI GetThreadLocale(void)
+{
+    struct qemu_GetThreadLocale call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETTHREADLOCALE);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetThreadLocale(struct qemu_syscall *call)
+{
+    struct qemu_GetThreadLocale *c = (struct qemu_GetThreadLocale *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetThreadLocale();
+}
+
+#endif
+
+struct qemu_SetThreadLocale
+{
+    struct qemu_syscall super;
+    uint64_t lcid;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI SetThreadLocale(LCID lcid)
+{
+    struct qemu_SetThreadLocale call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADLOCALE);
+    call.lcid = (uint64_t)lcid;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_SetThreadLocale(struct qemu_syscall *call)
+{
+    struct qemu_SetThreadLocale *c = (struct qemu_SetThreadLocale *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SetThreadLocale(c->lcid);
+}
+
+#endif
+
+struct qemu_SetThreadUILanguage
+{
+    struct qemu_syscall super;
+    uint64_t langid;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LANGID WINAPI SetThreadUILanguage(LANGID langid)
+{
+    struct qemu_SetThreadUILanguage call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADUILANGUAGE);
+    call.langid = (uint64_t)langid;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_SetThreadUILanguage(struct qemu_syscall *call)
+{
+    struct qemu_SetThreadUILanguage *c = (struct qemu_SetThreadUILanguage *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SetThreadUILanguage(c->langid);
+}
+
+#endif
+
+struct qemu_ConvertDefaultLocale
+{
+    struct qemu_syscall super;
+    uint64_t lcid;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LCID WINAPI ConvertDefaultLocale(LCID lcid)
+{
+    struct qemu_ConvertDefaultLocale call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTDEFAULTLOCALE);
+    call.lcid = (uint64_t)lcid;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_ConvertDefaultLocale(struct qemu_syscall *call)
+{
+    struct qemu_ConvertDefaultLocale *c = (struct qemu_ConvertDefaultLocale *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = ConvertDefaultLocale(c->lcid);
+}
+
+#endif
+
+struct qemu_IsValidLocale
+{
+    struct qemu_syscall super;
+    uint64_t lcid;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI IsValidLocale(LCID lcid, DWORD flags)
+{
+    struct qemu_IsValidLocale call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ISVALIDLOCALE);
+    call.lcid = (uint64_t)lcid;
+    call.flags = (uint64_t)flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_IsValidLocale(struct qemu_syscall *call)
+{
+    struct qemu_IsValidLocale *c = (struct qemu_IsValidLocale *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = IsValidLocale(c->lcid, c->flags);
+}
+
+#endif
+
+struct qemu_IsValidLocaleName
+{
+    struct qemu_syscall super;
+    uint64_t locale;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI IsValidLocaleName(LPCWSTR locale)
+{
+    struct qemu_IsValidLocaleName call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ISVALIDLOCALENAME);
+    call.locale = (uint64_t)locale;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_IsValidLocaleName(struct qemu_syscall *call)
+{
+    struct qemu_IsValidLocaleName *c = (struct qemu_IsValidLocaleName *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = IsValidLocaleName(QEMU_G2H(c->locale));
+}
+
+#endif
+
+struct qemu_EnumSystemLocalesA
+{
+    struct qemu_syscall super;
+    uint64_t lpfnLocaleEnum;
+    uint64_t dwFlags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI EnumSystemLocalesA(LOCALE_ENUMPROCA lpfnLocaleEnum, DWORD dwFlags)
+{
+    struct qemu_EnumSystemLocalesA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ENUMSYSTEMLOCALESA);
+    call.lpfnLocaleEnum = (uint64_t)lpfnLocaleEnum;
+    call.dwFlags = (uint64_t)dwFlags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_EnumSystemLocalesA(struct qemu_syscall *call)
+{
+    struct qemu_EnumSystemLocalesA *c = (struct qemu_EnumSystemLocalesA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EnumSystemLocalesA(QEMU_G2H(c->lpfnLocaleEnum), c->dwFlags);
+}
+
+#endif
+
+struct qemu_EnumSystemLocalesW
+{
+    struct qemu_syscall super;
+    uint64_t lpfnLocaleEnum;
+    uint64_t dwFlags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI EnumSystemLocalesW(LOCALE_ENUMPROCW lpfnLocaleEnum, DWORD dwFlags)
+{
+    struct qemu_EnumSystemLocalesW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ENUMSYSTEMLOCALESW);
+    call.lpfnLocaleEnum = (uint64_t)lpfnLocaleEnum;
+    call.dwFlags = (uint64_t)dwFlags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_EnumSystemLocalesW(struct qemu_syscall *call)
+{
+    struct qemu_EnumSystemLocalesW *c = (struct qemu_EnumSystemLocalesW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EnumSystemLocalesW(QEMU_G2H(c->lpfnLocaleEnum), c->dwFlags);
+}
+
+#endif
+
+struct qemu_EnumSystemLocalesEx
+{
+    struct qemu_syscall super;
+    uint64_t proc;
+    uint64_t flags;
+    uint64_t lparam;
+    uint64_t reserved;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI EnumSystemLocalesEx(LOCALE_ENUMPROCEX proc, DWORD flags, LPARAM lparam, LPVOID reserved)
+{
+    struct qemu_EnumSystemLocalesEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ENUMSYSTEMLOCALESEX);
+    call.proc = (uint64_t)proc;
+    call.flags = (uint64_t)flags;
+    call.lparam = (uint64_t)lparam;
+    call.reserved = (uint64_t)reserved;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_EnumSystemLocalesEx(struct qemu_syscall *call)
+{
+    struct qemu_EnumSystemLocalesEx *c = (struct qemu_EnumSystemLocalesEx *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EnumSystemLocalesEx(QEMU_G2H(c->proc), c->flags, c->lparam, QEMU_G2H(c->reserved));
+}
+
+#endif
+
+struct qemu_VerLanguageNameA
+{
+    struct qemu_syscall super;
+    uint64_t wLang;
+    uint64_t szLang;
+    uint64_t nSize;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI VerLanguageNameA(DWORD wLang, LPSTR szLang, DWORD nSize)
+{
+    struct qemu_VerLanguageNameA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_VERLANGUAGENAMEA);
+    call.wLang = (uint64_t)wLang;
+    call.szLang = (uint64_t)szLang;
+    call.nSize = (uint64_t)nSize;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_VerLanguageNameA(struct qemu_syscall *call)
+{
+    struct qemu_VerLanguageNameA *c = (struct qemu_VerLanguageNameA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = VerLanguageNameA(c->wLang, QEMU_G2H(c->szLang), c->nSize);
+}
+
+#endif
+
+struct qemu_VerLanguageNameW
+{
+    struct qemu_syscall super;
+    uint64_t wLang;
+    uint64_t szLang;
+    uint64_t nSize;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI VerLanguageNameW(DWORD wLang, LPWSTR szLang, DWORD nSize)
+{
+    struct qemu_VerLanguageNameW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_VERLANGUAGENAMEW);
+    call.wLang = (uint64_t)wLang;
+    call.szLang = (uint64_t)szLang;
+    call.nSize = (uint64_t)nSize;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_VerLanguageNameW(struct qemu_syscall *call)
+{
+    struct qemu_VerLanguageNameW *c = (struct qemu_VerLanguageNameW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = VerLanguageNameW(c->wLang, QEMU_G2H(c->szLang), c->nSize);
+}
+
+#endif
+
+struct qemu_GetStringTypeW
+{
+    struct qemu_syscall super;
+    uint64_t type;
+    uint64_t src;
+    uint64_t count;
+    uint64_t chartype;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetStringTypeW(DWORD type, LPCWSTR src, INT count, LPWORD chartype)
+{
+    struct qemu_GetStringTypeW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSTRINGTYPEW);
+    call.type = (uint64_t)type;
+    call.src = (uint64_t)src;
+    call.count = (uint64_t)count;
+    call.chartype = (uint64_t)chartype;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetStringTypeW(struct qemu_syscall *call)
+{
+    struct qemu_GetStringTypeW *c = (struct qemu_GetStringTypeW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetStringTypeW(c->type, QEMU_G2H(c->src), c->count, QEMU_G2H(c->chartype));
+}
+
+#endif
+
+struct qemu_GetStringTypeExW
+{
+    struct qemu_syscall super;
+    uint64_t locale;
+    uint64_t type;
+    uint64_t src;
+    uint64_t count;
+    uint64_t chartype;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetStringTypeExW(LCID locale, DWORD type, LPCWSTR src, INT count, LPWORD chartype)
+{
+    struct qemu_GetStringTypeExW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSTRINGTYPEEXW);
+    call.locale = (uint64_t)locale;
+    call.type = (uint64_t)type;
+    call.src = (uint64_t)src;
+    call.count = (uint64_t)count;
+    call.chartype = (uint64_t)chartype;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetStringTypeExW(struct qemu_syscall *call)
+{
+    struct qemu_GetStringTypeExW *c = (struct qemu_GetStringTypeExW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetStringTypeExW(c->locale, c->type, QEMU_G2H(c->src), c->count, QEMU_G2H(c->chartype));
+}
+
+#endif
+
+struct qemu_GetStringTypeA
+{
+    struct qemu_syscall super;
+    uint64_t locale;
+    uint64_t type;
+    uint64_t src;
+    uint64_t count;
+    uint64_t chartype;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetStringTypeA(LCID locale, DWORD type, LPCSTR src, INT count, LPWORD chartype)
+{
+    struct qemu_GetStringTypeA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSTRINGTYPEA);
+    call.locale = (uint64_t)locale;
+    call.type = (uint64_t)type;
+    call.src = (uint64_t)src;
+    call.count = (uint64_t)count;
+    call.chartype = (uint64_t)chartype;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetStringTypeA(struct qemu_syscall *call)
+{
+    struct qemu_GetStringTypeA *c = (struct qemu_GetStringTypeA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetStringTypeA(c->locale, c->type, QEMU_G2H(c->src), c->count, QEMU_G2H(c->chartype));
+}
+
+#endif
+
+struct qemu_GetStringTypeExA
+{
+    struct qemu_syscall super;
+    uint64_t locale;
+    uint64_t type;
+    uint64_t src;
+    uint64_t count;
+    uint64_t chartype;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetStringTypeExA(LCID locale, DWORD type, LPCSTR src, INT count, LPWORD chartype)
+{
+    struct qemu_GetStringTypeExA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSTRINGTYPEEXA);
+    call.locale = (uint64_t)locale;
+    call.type = (uint64_t)type;
+    call.src = (uint64_t)src;
+    call.count = (uint64_t)count;
+    call.chartype = (uint64_t)chartype;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetStringTypeExA(struct qemu_syscall *call)
+{
+    struct qemu_GetStringTypeExA *c = (struct qemu_GetStringTypeExA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetStringTypeExA(c->locale, c->type, QEMU_G2H(c->src), c->count, QEMU_G2H(c->chartype));
+}
+
+#endif
+
+struct qemu_LCMapStringEx
+{
+    struct qemu_syscall super;
+    uint64_t name;
+    uint64_t flags;
+    uint64_t src;
+    uint64_t srclen;
+    uint64_t dst;
+    uint64_t dstlen;
+    uint64_t version;
+    uint64_t reserved;
+    uint64_t lparam;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI LCMapStringEx(LPCWSTR name, DWORD flags, LPCWSTR src, INT srclen, LPWSTR dst, INT dstlen, LPNLSVERSIONINFO version, LPVOID reserved, LPARAM lparam)
+{
+    struct qemu_LCMapStringEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LCMAPSTRINGEX);
+    call.name = (uint64_t)name;
+    call.flags = (uint64_t)flags;
+    call.src = (uint64_t)src;
+    call.srclen = (uint64_t)srclen;
+    call.dst = (uint64_t)dst;
+    call.dstlen = (uint64_t)dstlen;
+    call.version = (uint64_t)version;
+    call.reserved = (uint64_t)reserved;
+    call.lparam = (uint64_t)lparam;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_LCMapStringEx(struct qemu_syscall *call)
+{
+    struct qemu_LCMapStringEx *c = (struct qemu_LCMapStringEx *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = LCMapStringEx(QEMU_G2H(c->name), c->flags, QEMU_G2H(c->src), c->srclen, QEMU_G2H(c->dst), c->dstlen, QEMU_G2H(c->version), QEMU_G2H(c->reserved), c->lparam);
+}
+
+#endif
+
+struct qemu_LCMapStringW
+{
+    struct qemu_syscall super;
+    uint64_t lcid;
+    uint64_t flags;
+    uint64_t src;
+    uint64_t srclen;
+    uint64_t dst;
+    uint64_t dstlen;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI LCMapStringW(LCID lcid, DWORD flags, LPCWSTR src, INT srclen, LPWSTR dst, INT dstlen)
+{
+    struct qemu_LCMapStringW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LCMAPSTRINGW);
+    call.lcid = (uint64_t)lcid;
+    call.flags = (uint64_t)flags;
+    call.src = (uint64_t)src;
+    call.srclen = (uint64_t)srclen;
+    call.dst = (uint64_t)dst;
+    call.dstlen = (uint64_t)dstlen;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_LCMapStringW(struct qemu_syscall *call)
+{
+    struct qemu_LCMapStringW *c = (struct qemu_LCMapStringW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = LCMapStringW(c->lcid, c->flags, QEMU_G2H(c->src), c->srclen, QEMU_G2H(c->dst), c->dstlen);
+}
+
+#endif
+
+struct qemu_LCMapStringA
+{
+    struct qemu_syscall super;
+    uint64_t lcid;
+    uint64_t flags;
+    uint64_t src;
+    uint64_t srclen;
+    uint64_t dst;
+    uint64_t dstlen;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI LCMapStringA(LCID lcid, DWORD flags, LPCSTR src, INT srclen, LPSTR dst, INT dstlen)
+{
+    struct qemu_LCMapStringA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LCMAPSTRINGA);
+    call.lcid = (uint64_t)lcid;
+    call.flags = (uint64_t)flags;
+    call.src = (uint64_t)src;
+    call.srclen = (uint64_t)srclen;
+    call.dst = (uint64_t)dst;
+    call.dstlen = (uint64_t)dstlen;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_LCMapStringA(struct qemu_syscall *call)
+{
+    struct qemu_LCMapStringA *c = (struct qemu_LCMapStringA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = LCMapStringA(c->lcid, c->flags, QEMU_G2H(c->src), c->srclen, QEMU_G2H(c->dst), c->dstlen);
+}
+
+#endif
+
+struct qemu_FoldStringA
+{
+    struct qemu_syscall super;
+    uint64_t dwFlags;
+    uint64_t src;
+    uint64_t srclen;
+    uint64_t dst;
+    uint64_t dstlen;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI FoldStringA(DWORD dwFlags, LPCSTR src, INT srclen, LPSTR dst, INT dstlen)
+{
+    struct qemu_FoldStringA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_FOLDSTRINGA);
+    call.dwFlags = (uint64_t)dwFlags;
+    call.src = (uint64_t)src;
+    call.srclen = (uint64_t)srclen;
+    call.dst = (uint64_t)dst;
+    call.dstlen = (uint64_t)dstlen;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_FoldStringA(struct qemu_syscall *call)
+{
+    struct qemu_FoldStringA *c = (struct qemu_FoldStringA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = FoldStringA(c->dwFlags, QEMU_G2H(c->src), c->srclen, QEMU_G2H(c->dst), c->dstlen);
+}
+
+#endif
+
+struct qemu_FoldStringW
+{
+    struct qemu_syscall super;
+    uint64_t dwFlags;
+    uint64_t src;
+    uint64_t srclen;
+    uint64_t dst;
+    uint64_t dstlen;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI FoldStringW(DWORD dwFlags, LPCWSTR src, INT srclen, LPWSTR dst, INT dstlen)
+{
+    struct qemu_FoldStringW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_FOLDSTRINGW);
+    call.dwFlags = (uint64_t)dwFlags;
+    call.src = (uint64_t)src;
+    call.srclen = (uint64_t)srclen;
+    call.dst = (uint64_t)dst;
+    call.dstlen = (uint64_t)dstlen;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_FoldStringW(struct qemu_syscall *call)
+{
+    struct qemu_FoldStringW *c = (struct qemu_FoldStringW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = FoldStringW(c->dwFlags, QEMU_G2H(c->src), c->srclen, QEMU_G2H(c->dst), c->dstlen);
+}
+
+#endif
+
 struct qemu_CompareStringW
 {
     struct qemu_syscall super;
@@ -71,23 +1789,35 @@ void qemu_CompareStringW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_GetCPInfoExW
+struct qemu_CompareStringEx
 {
     struct qemu_syscall super;
-    uint64_t codepage;
+    uint64_t locale;
     uint64_t flags;
-    uint64_t info;
+    uint64_t str1;
+    uint64_t len1;
+    uint64_t str2;
+    uint64_t len2;
+    uint64_t version;
+    uint64_t reserved;
+    uint64_t lParam;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI WINBOOL WINAPI GetCPInfoExW(UINT codepage, DWORD flags, CPINFOEXW *info)
+WINBASEAPI INT WINAPI CompareStringEx(LPCWSTR locale, DWORD flags, LPCWSTR str1, INT len1, LPCWSTR str2, INT len2, LPNLSVERSIONINFO version, LPVOID reserved, LPARAM lParam)
 {
-    struct qemu_GetCPInfoExW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_GETCPINFOEXW);
-    call.codepage = codepage;
-    call.flags = flags;
-    call.info = (uint64_t)info;
+    struct qemu_CompareStringEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_COMPARESTRINGEX);
+    call.locale = (uint64_t)locale;
+    call.flags = (uint64_t)flags;
+    call.str1 = (uint64_t)str1;
+    call.len1 = (uint64_t)len1;
+    call.str2 = (uint64_t)str2;
+    call.len2 = (uint64_t)len2;
+    call.version = (uint64_t)version;
+    call.reserved = (uint64_t)reserved;
+    call.lParam = (uint64_t)lParam;
 
     qemu_syscall(&call.super);
 
@@ -96,11 +1826,153 @@ WINBASEAPI WINBOOL WINAPI GetCPInfoExW(UINT codepage, DWORD flags, CPINFOEXW *in
 
 #else
 
-void qemu_GetCPInfoExW(struct qemu_syscall *call)
+void qemu_CompareStringEx(struct qemu_syscall *call)
 {
-    struct qemu_GetCPInfoExW *c = (struct qemu_GetCPInfoExW *)call;
-    WINE_TRACE("\n");
-    c->super.iret = GetCPInfoExW(c->codepage, c->flags, QEMU_G2H(c->info));
+    struct qemu_CompareStringEx *c = (struct qemu_CompareStringEx *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = CompareStringEx(QEMU_G2H(c->locale), c->flags, QEMU_G2H(c->str1), c->len1, QEMU_G2H(c->str2), c->len2, QEMU_G2H(c->version), QEMU_G2H(c->reserved), c->lParam);
+}
+
+#endif
+
+struct qemu_CompareStringA
+{
+    struct qemu_syscall super;
+    uint64_t lcid;
+    uint64_t flags;
+    uint64_t str1;
+    uint64_t len1;
+    uint64_t str2;
+    uint64_t len2;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI CompareStringA(LCID lcid, DWORD flags, LPCSTR str1, INT len1, LPCSTR str2, INT len2)
+{
+    struct qemu_CompareStringA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_COMPARESTRINGA);
+    call.lcid = (uint64_t)lcid;
+    call.flags = (uint64_t)flags;
+    call.str1 = (uint64_t)str1;
+    call.len1 = (uint64_t)len1;
+    call.str2 = (uint64_t)str2;
+    call.len2 = (uint64_t)len2;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_CompareStringA(struct qemu_syscall *call)
+{
+    struct qemu_CompareStringA *c = (struct qemu_CompareStringA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = CompareStringA(c->lcid, c->flags, QEMU_G2H(c->str1), c->len1, QEMU_G2H(c->str2), c->len2);
+}
+
+#endif
+
+struct qemu_CompareStringOrdinal
+{
+    struct qemu_syscall super;
+    uint64_t str1;
+    uint64_t len1;
+    uint64_t str2;
+    uint64_t len2;
+    uint64_t ignore_case;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI CompareStringOrdinal(const WCHAR *str1, INT len1, const WCHAR *str2, INT len2, BOOL ignore_case)
+{
+    struct qemu_CompareStringOrdinal call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_COMPARESTRINGORDINAL);
+    call.str1 = (uint64_t)str1;
+    call.len1 = (uint64_t)len1;
+    call.str2 = (uint64_t)str2;
+    call.len2 = (uint64_t)len2;
+    call.ignore_case = (uint64_t)ignore_case;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_CompareStringOrdinal(struct qemu_syscall *call)
+{
+    struct qemu_CompareStringOrdinal *c = (struct qemu_CompareStringOrdinal *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = CompareStringOrdinal(QEMU_G2H(c->str1), c->len1, QEMU_G2H(c->str2), c->len2, c->ignore_case);
+}
+
+#endif
+
+struct qemu_lstrcmpA
+{
+    struct qemu_syscall super;
+    uint64_t str1;
+    uint64_t str2;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int WINAPI lstrcmpA(LPCSTR str1, LPCSTR str2)
+{
+    struct qemu_lstrcmpA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LSTRCMPA);
+    call.str1 = (uint64_t)str1;
+    call.str2 = (uint64_t)str2;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_lstrcmpA(struct qemu_syscall *call)
+{
+    struct qemu_lstrcmpA *c = (struct qemu_lstrcmpA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = lstrcmpA(QEMU_G2H(c->str1), QEMU_G2H(c->str2));
+}
+
+#endif
+
+struct qemu_lstrcmpiA
+{
+    struct qemu_syscall super;
+    uint64_t str1;
+    uint64_t str2;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int WINAPI lstrcmpiA(LPCSTR str1, LPCSTR str2)
+{
+    struct qemu_lstrcmpiA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LSTRCMPIA);
+    call.str1 = (uint64_t)str1;
+    call.str2 = (uint64_t)str2;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_lstrcmpiA(struct qemu_syscall *call)
+{
+    struct qemu_lstrcmpiA *c = (struct qemu_lstrcmpiA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = lstrcmpiA(QEMU_G2H(c->str1), QEMU_G2H(c->str2));
 }
 
 #endif
@@ -114,7 +1986,7 @@ struct qemu_lstrcmpW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI int WINAPI lstrcmpW(const WCHAR *str1, const WCHAR *str2)
+WINBASEAPI int WINAPI lstrcmpW(LPCWSTR str1, LPCWSTR str2)
 {
     struct qemu_lstrcmpW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LSTRCMPW);
@@ -131,34 +2003,27 @@ WINBASEAPI int WINAPI lstrcmpW(const WCHAR *str1, const WCHAR *str2)
 void qemu_lstrcmpW(struct qemu_syscall *call)
 {
     struct qemu_lstrcmpW *c = (struct qemu_lstrcmpW *)call;
+    WINE_TRACE("\n");
     c->super.iret = lstrcmpW(QEMU_G2H(c->str1), QEMU_G2H(c->str2));
 }
 
 #endif
 
-struct qemu_MultiByteToWideChar
+struct qemu_lstrcmpiW
 {
     struct qemu_syscall super;
-    uint64_t codepage;
-    uint64_t flags;
-    uint64_t mbstr;
-    uint64_t mblen;
-    uint64_t wstr;
-    uint64_t wlen;
+    uint64_t str1;
+    uint64_t str2;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI int WINAPI MultiByteToWideChar(UINT codepage, DWORD flags, LPCCH mbstr, int mblen, WCHAR *wstr, int wlen)
+WINBASEAPI int WINAPI lstrcmpiW(LPCWSTR str1, LPCWSTR str2)
 {
-    struct qemu_MultiByteToWideChar call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_MULTIBYTETOWIDECHAR);
-    call.codepage = codepage;
-    call.flags = flags;
-    call.mbstr = (uint64_t)mbstr;
-    call.mblen = mblen;
-    call.wstr = (uint64_t)wstr;
-    call.wlen = wlen;
+    struct qemu_lstrcmpiW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LSTRCMPIW);
+    call.str1 = (uint64_t)str1;
+    call.str2 = (uint64_t)str2;
 
     qemu_syscall(&call.super);
 
@@ -167,44 +2032,32 @@ WINBASEAPI int WINAPI MultiByteToWideChar(UINT codepage, DWORD flags, LPCCH mbst
 
 #else
 
-void qemu_MultiByteToWideChar(struct qemu_syscall *call)
+void qemu_lstrcmpiW(struct qemu_syscall *call)
 {
-    struct qemu_MultiByteToWideChar *c = (struct qemu_MultiByteToWideChar *)call;
-    WINE_TRACE("\n");
-    c->super.iret = MultiByteToWideChar(c->codepage, c->flags, QEMU_G2H(c->mbstr), c->mblen, QEMU_G2H(c->wstr), c->wlen);
+    struct qemu_lstrcmpiW *c = (struct qemu_lstrcmpiW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = lstrcmpiW(QEMU_G2H(c->str1), QEMU_G2H(c->str2));
 }
-
 
 #endif
 
-struct qemu_WideCharToMultiByte
+struct qemu_EnumSystemLanguageGroupsA
 {
     struct qemu_syscall super;
-    uint64_t codepage;
-    uint64_t flags;
-    uint64_t wstr;
-    uint64_t wlen;
-    uint64_t mbstr;
-    uint64_t mblen;
-    uint64_t default_char;
-    uint64_t used_default;
+    uint64_t pLangGrpEnumProc;
+    uint64_t dwFlags;
+    uint64_t lParam;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI int WINAPI WideCharToMultiByte(UINT codepage, DWORD flags, LPCWCH wstr, int wlen, CHAR *mbstr, int mblen,
-        LPCCH default_char, BOOL *used_default)
+WINBASEAPI BOOL WINAPI EnumSystemLanguageGroupsA(LANGUAGEGROUP_ENUMPROCA pLangGrpEnumProc, DWORD dwFlags, LONG_PTR lParam)
 {
-    struct qemu_WideCharToMultiByte call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_WIDECHARTOMULTIBYTE);
-    call.codepage = codepage;
-    call.flags = flags;
-    call.wstr = (uint64_t)wstr;
-    call.wlen = wlen;
-    call.mbstr = (uint64_t)mbstr;
-    call.mblen = mblen;
-    call.default_char = (uint64_t)default_char;
-    call.used_default = (uint64_t)used_default;
+    struct qemu_EnumSystemLanguageGroupsA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ENUMSYSTEMLANGUAGEGROUPSA);
+    call.pLangGrpEnumProc = (uint64_t)pLangGrpEnumProc;
+    call.dwFlags = (uint64_t)dwFlags;
+    call.lParam = (uint64_t)lParam;
 
     qemu_syscall(&call.super);
 
@@ -213,12 +2066,714 @@ WINBASEAPI int WINAPI WideCharToMultiByte(UINT codepage, DWORD flags, LPCWCH wst
 
 #else
 
-void qemu_WideCharToMultiByte(struct qemu_syscall *call)
+void qemu_EnumSystemLanguageGroupsA(struct qemu_syscall *call)
 {
-    struct qemu_WideCharToMultiByte *c = (struct qemu_WideCharToMultiByte *)call;
-    WINE_TRACE("\n");
-    c->super.iret = WideCharToMultiByte(c->codepage, c->flags, QEMU_G2H(c->wstr), c->wlen, QEMU_G2H(c->mbstr), c->mblen,
-            QEMU_G2H(c->default_char), QEMU_G2H(c->used_default));
+    struct qemu_EnumSystemLanguageGroupsA *c = (struct qemu_EnumSystemLanguageGroupsA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EnumSystemLanguageGroupsA(QEMU_G2H(c->pLangGrpEnumProc), c->dwFlags, c->lParam);
 }
 
 #endif
+
+struct qemu_EnumSystemLanguageGroupsW
+{
+    struct qemu_syscall super;
+    uint64_t pLangGrpEnumProc;
+    uint64_t dwFlags;
+    uint64_t lParam;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI EnumSystemLanguageGroupsW(LANGUAGEGROUP_ENUMPROCW pLangGrpEnumProc, DWORD dwFlags, LONG_PTR lParam)
+{
+    struct qemu_EnumSystemLanguageGroupsW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ENUMSYSTEMLANGUAGEGROUPSW);
+    call.pLangGrpEnumProc = (uint64_t)pLangGrpEnumProc;
+    call.dwFlags = (uint64_t)dwFlags;
+    call.lParam = (uint64_t)lParam;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_EnumSystemLanguageGroupsW(struct qemu_syscall *call)
+{
+    struct qemu_EnumSystemLanguageGroupsW *c = (struct qemu_EnumSystemLanguageGroupsW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EnumSystemLanguageGroupsW(QEMU_G2H(c->pLangGrpEnumProc), c->dwFlags, c->lParam);
+}
+
+#endif
+
+struct qemu_IsValidLanguageGroup
+{
+    struct qemu_syscall super;
+    uint64_t lgrpid;
+    uint64_t dwFlags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI IsValidLanguageGroup(LGRPID lgrpid, DWORD dwFlags)
+{
+    struct qemu_IsValidLanguageGroup call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ISVALIDLANGUAGEGROUP);
+    call.lgrpid = (uint64_t)lgrpid;
+    call.dwFlags = (uint64_t)dwFlags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_IsValidLanguageGroup(struct qemu_syscall *call)
+{
+    struct qemu_IsValidLanguageGroup *c = (struct qemu_IsValidLanguageGroup *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = IsValidLanguageGroup(c->lgrpid, c->dwFlags);
+}
+
+#endif
+
+struct qemu_EnumLanguageGroupLocalesA
+{
+    struct qemu_syscall super;
+    uint64_t pLangGrpLcEnumProc;
+    uint64_t lgrpid;
+    uint64_t dwFlags;
+    uint64_t lParam;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI EnumLanguageGroupLocalesA(LANGGROUPLOCALE_ENUMPROCA pLangGrpLcEnumProc, LGRPID lgrpid, DWORD dwFlags, LONG_PTR lParam)
+{
+    struct qemu_EnumLanguageGroupLocalesA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ENUMLANGUAGEGROUPLOCALESA);
+    call.pLangGrpLcEnumProc = (uint64_t)pLangGrpLcEnumProc;
+    call.lgrpid = (uint64_t)lgrpid;
+    call.dwFlags = (uint64_t)dwFlags;
+    call.lParam = (uint64_t)lParam;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_EnumLanguageGroupLocalesA(struct qemu_syscall *call)
+{
+    struct qemu_EnumLanguageGroupLocalesA *c = (struct qemu_EnumLanguageGroupLocalesA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EnumLanguageGroupLocalesA(QEMU_G2H(c->pLangGrpLcEnumProc), c->lgrpid, c->dwFlags, c->lParam);
+}
+
+#endif
+
+struct qemu_EnumLanguageGroupLocalesW
+{
+    struct qemu_syscall super;
+    uint64_t pLangGrpLcEnumProc;
+    uint64_t lgrpid;
+    uint64_t dwFlags;
+    uint64_t lParam;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI EnumLanguageGroupLocalesW(LANGGROUPLOCALE_ENUMPROCW pLangGrpLcEnumProc, LGRPID lgrpid, DWORD dwFlags, LONG_PTR lParam)
+{
+    struct qemu_EnumLanguageGroupLocalesW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ENUMLANGUAGEGROUPLOCALESW);
+    call.pLangGrpLcEnumProc = (uint64_t)pLangGrpLcEnumProc;
+    call.lgrpid = (uint64_t)lgrpid;
+    call.dwFlags = (uint64_t)dwFlags;
+    call.lParam = (uint64_t)lParam;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_EnumLanguageGroupLocalesW(struct qemu_syscall *call)
+{
+    struct qemu_EnumLanguageGroupLocalesW *c = (struct qemu_EnumLanguageGroupLocalesW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EnumLanguageGroupLocalesW(QEMU_G2H(c->pLangGrpLcEnumProc), c->lgrpid, c->dwFlags, c->lParam);
+}
+
+#endif
+
+struct qemu_InvalidateNLSCache
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI InvalidateNLSCache(void)
+{
+    struct qemu_InvalidateNLSCache call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_INVALIDATENLSCACHE);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add InvalidateNLSCache to Wine headers? */
+extern BOOL WINAPI InvalidateNLSCache(void);
+void qemu_InvalidateNLSCache(struct qemu_syscall *call)
+{
+    struct qemu_InvalidateNLSCache *c = (struct qemu_InvalidateNLSCache *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = InvalidateNLSCache();
+}
+
+#endif
+
+struct qemu_GetUserGeoID
+{
+    struct qemu_syscall super;
+    uint64_t GeoClass;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI GEOID WINAPI GetUserGeoID(GEOCLASS GeoClass)
+{
+    struct qemu_GetUserGeoID call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETUSERGEOID);
+    call.GeoClass = (uint64_t)GeoClass;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetUserGeoID(struct qemu_syscall *call)
+{
+    struct qemu_GetUserGeoID *c = (struct qemu_GetUserGeoID *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetUserGeoID(c->GeoClass);
+}
+
+#endif
+
+struct qemu_SetUserGeoID
+{
+    struct qemu_syscall super;
+    uint64_t GeoID;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI SetUserGeoID(GEOID GeoID)
+{
+    struct qemu_SetUserGeoID call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETUSERGEOID);
+    call.GeoID = (uint64_t)GeoID;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_SetUserGeoID(struct qemu_syscall *call)
+{
+    struct qemu_SetUserGeoID *c = (struct qemu_SetUserGeoID *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SetUserGeoID(c->GeoID);
+}
+
+#endif
+
+struct qemu_EnumUILanguagesA
+{
+    struct qemu_syscall super;
+    uint64_t pUILangEnumProc;
+    uint64_t dwFlags;
+    uint64_t lParam;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI EnumUILanguagesA(UILANGUAGE_ENUMPROCA pUILangEnumProc, DWORD dwFlags, LONG_PTR lParam)
+{
+    struct qemu_EnumUILanguagesA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ENUMUILANGUAGESA);
+    call.pUILangEnumProc = (uint64_t)pUILangEnumProc;
+    call.dwFlags = (uint64_t)dwFlags;
+    call.lParam = (uint64_t)lParam;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_EnumUILanguagesA(struct qemu_syscall *call)
+{
+    struct qemu_EnumUILanguagesA *c = (struct qemu_EnumUILanguagesA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EnumUILanguagesA(QEMU_G2H(c->pUILangEnumProc), c->dwFlags, c->lParam);
+}
+
+#endif
+
+struct qemu_EnumUILanguagesW
+{
+    struct qemu_syscall super;
+    uint64_t pUILangEnumProc;
+    uint64_t dwFlags;
+    uint64_t lParam;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI EnumUILanguagesW(UILANGUAGE_ENUMPROCW pUILangEnumProc, DWORD dwFlags, LONG_PTR lParam)
+{
+    struct qemu_EnumUILanguagesW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ENUMUILANGUAGESW);
+    call.pUILangEnumProc = (uint64_t)pUILangEnumProc;
+    call.dwFlags = (uint64_t)dwFlags;
+    call.lParam = (uint64_t)lParam;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_EnumUILanguagesW(struct qemu_syscall *call)
+{
+    struct qemu_EnumUILanguagesW *c = (struct qemu_EnumUILanguagesW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EnumUILanguagesW(QEMU_G2H(c->pUILangEnumProc), c->dwFlags, c->lParam);
+}
+
+#endif
+
+struct qemu_GetGeoInfoW
+{
+    struct qemu_syscall super;
+    uint64_t geoid;
+    uint64_t geotype;
+    uint64_t data;
+    uint64_t data_len;
+    uint64_t lang;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI GetGeoInfoW(GEOID geoid, GEOTYPE geotype, LPWSTR data, int data_len, LANGID lang)
+{
+    struct qemu_GetGeoInfoW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETGEOINFOW);
+    call.geoid = (uint64_t)geoid;
+    call.geotype = (uint64_t)geotype;
+    call.data = (uint64_t)data;
+    call.data_len = (uint64_t)data_len;
+    call.lang = (uint64_t)lang;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetGeoInfoW(struct qemu_syscall *call)
+{
+    struct qemu_GetGeoInfoW *c = (struct qemu_GetGeoInfoW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetGeoInfoW(c->geoid, c->geotype, QEMU_G2H(c->data), c->data_len, c->lang);
+}
+
+#endif
+
+struct qemu_GetGeoInfoA
+{
+    struct qemu_syscall super;
+    uint64_t geoid;
+    uint64_t geotype;
+    uint64_t data;
+    uint64_t data_len;
+    uint64_t lang;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI GetGeoInfoA(GEOID geoid, GEOTYPE geotype, LPSTR data, int data_len, LANGID lang)
+{
+    struct qemu_GetGeoInfoA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETGEOINFOA);
+    call.geoid = (uint64_t)geoid;
+    call.geotype = (uint64_t)geotype;
+    call.data = (uint64_t)data;
+    call.data_len = (uint64_t)data_len;
+    call.lang = (uint64_t)lang;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetGeoInfoA(struct qemu_syscall *call)
+{
+    struct qemu_GetGeoInfoA *c = (struct qemu_GetGeoInfoA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetGeoInfoA(c->geoid, c->geotype, QEMU_G2H(c->data), c->data_len, c->lang);
+}
+
+#endif
+
+struct qemu_EnumSystemGeoID
+{
+    struct qemu_syscall super;
+    uint64_t geoclass;
+    uint64_t parent;
+    uint64_t enumproc;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI EnumSystemGeoID(GEOCLASS geoclass, GEOID parent, GEO_ENUMPROC enumproc)
+{
+    struct qemu_EnumSystemGeoID call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ENUMSYSTEMGEOID);
+    call.geoclass = (uint64_t)geoclass;
+    call.parent = (uint64_t)parent;
+    call.enumproc = (uint64_t)enumproc;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_EnumSystemGeoID(struct qemu_syscall *call)
+{
+    struct qemu_EnumSystemGeoID *c = (struct qemu_EnumSystemGeoID *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EnumSystemGeoID(c->geoclass, c->parent, QEMU_G2H(c->enumproc));
+}
+
+#endif
+
+struct qemu_GetUserDefaultLocaleName
+{
+    struct qemu_syscall super;
+    uint64_t localename;
+    uint64_t buffersize;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI GetUserDefaultLocaleName(LPWSTR localename, int buffersize)
+{
+    struct qemu_GetUserDefaultLocaleName call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETUSERDEFAULTLOCALENAME);
+    call.localename = (uint64_t)localename;
+    call.buffersize = (uint64_t)buffersize;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetUserDefaultLocaleName(struct qemu_syscall *call)
+{
+    struct qemu_GetUserDefaultLocaleName *c = (struct qemu_GetUserDefaultLocaleName *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetUserDefaultLocaleName(QEMU_G2H(c->localename), c->buffersize);
+}
+
+#endif
+
+struct qemu_NormalizeString
+{
+    struct qemu_syscall super;
+    uint64_t NormForm;
+    uint64_t lpSrcString;
+    uint64_t cwSrcLength;
+    uint64_t lpDstString;
+    uint64_t cwDstLength;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI NormalizeString(NORM_FORM NormForm, LPCWSTR lpSrcString, INT cwSrcLength, LPWSTR lpDstString, INT cwDstLength)
+{
+    struct qemu_NormalizeString call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_NORMALIZESTRING);
+    call.NormForm = (uint64_t)NormForm;
+    call.lpSrcString = (uint64_t)lpSrcString;
+    call.cwSrcLength = (uint64_t)cwSrcLength;
+    call.lpDstString = (uint64_t)lpDstString;
+    call.cwDstLength = (uint64_t)cwDstLength;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_NormalizeString(struct qemu_syscall *call)
+{
+    struct qemu_NormalizeString *c = (struct qemu_NormalizeString *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = NormalizeString(c->NormForm, QEMU_G2H(c->lpSrcString), c->cwSrcLength, QEMU_G2H(c->lpDstString), c->cwDstLength);
+}
+
+#endif
+
+struct qemu_IsNormalizedString
+{
+    struct qemu_syscall super;
+    uint64_t NormForm;
+    uint64_t lpString;
+    uint64_t cwLength;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI IsNormalizedString(NORM_FORM NormForm, LPCWSTR lpString, INT cwLength)
+{
+    struct qemu_IsNormalizedString call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ISNORMALIZEDSTRING);
+    call.NormForm = (uint64_t)NormForm;
+    call.lpString = (uint64_t)lpString;
+    call.cwLength = (uint64_t)cwLength;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_IsNormalizedString(struct qemu_syscall *call)
+{
+    struct qemu_IsNormalizedString *c = (struct qemu_IsNormalizedString *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = IsNormalizedString(c->NormForm, QEMU_G2H(c->lpString), c->cwLength);
+}
+
+#endif
+
+struct qemu_IdnToAscii
+{
+    struct qemu_syscall super;
+    uint64_t dwFlags;
+    uint64_t lpUnicodeCharStr;
+    uint64_t cchUnicodeChar;
+    uint64_t lpASCIICharStr;
+    uint64_t cchASCIIChar;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI IdnToAscii(DWORD dwFlags, LPCWSTR lpUnicodeCharStr, INT cchUnicodeChar, LPWSTR lpASCIICharStr, INT cchASCIIChar)
+{
+    struct qemu_IdnToAscii call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_IDNTOASCII);
+    call.dwFlags = (uint64_t)dwFlags;
+    call.lpUnicodeCharStr = (uint64_t)lpUnicodeCharStr;
+    call.cchUnicodeChar = (uint64_t)cchUnicodeChar;
+    call.lpASCIICharStr = (uint64_t)lpASCIICharStr;
+    call.cchASCIIChar = (uint64_t)cchASCIIChar;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_IdnToAscii(struct qemu_syscall *call)
+{
+    struct qemu_IdnToAscii *c = (struct qemu_IdnToAscii *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = IdnToAscii(c->dwFlags, QEMU_G2H(c->lpUnicodeCharStr), c->cchUnicodeChar, QEMU_G2H(c->lpASCIICharStr), c->cchASCIIChar);
+}
+
+#endif
+
+struct qemu_IdnToNameprepUnicode
+{
+    struct qemu_syscall super;
+    uint64_t dwFlags;
+    uint64_t lpUnicodeCharStr;
+    uint64_t cchUnicodeChar;
+    uint64_t lpNameprepCharStr;
+    uint64_t cchNameprepChar;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI IdnToNameprepUnicode(DWORD dwFlags, LPCWSTR lpUnicodeCharStr, INT cchUnicodeChar, LPWSTR lpNameprepCharStr, INT cchNameprepChar)
+{
+    struct qemu_IdnToNameprepUnicode call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_IDNTONAMEPREPUNICODE);
+    call.dwFlags = (uint64_t)dwFlags;
+    call.lpUnicodeCharStr = (uint64_t)lpUnicodeCharStr;
+    call.cchUnicodeChar = (uint64_t)cchUnicodeChar;
+    call.lpNameprepCharStr = (uint64_t)lpNameprepCharStr;
+    call.cchNameprepChar = (uint64_t)cchNameprepChar;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_IdnToNameprepUnicode(struct qemu_syscall *call)
+{
+    struct qemu_IdnToNameprepUnicode *c = (struct qemu_IdnToNameprepUnicode *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = IdnToNameprepUnicode(c->dwFlags, QEMU_G2H(c->lpUnicodeCharStr), c->cchUnicodeChar, QEMU_G2H(c->lpNameprepCharStr), c->cchNameprepChar);
+}
+
+#endif
+
+struct qemu_IdnToUnicode
+{
+    struct qemu_syscall super;
+    uint64_t dwFlags;
+    uint64_t lpASCIICharStr;
+    uint64_t cchASCIIChar;
+    uint64_t lpUnicodeCharStr;
+    uint64_t cchUnicodeChar;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI IdnToUnicode(DWORD dwFlags, LPCWSTR lpASCIICharStr, INT cchASCIIChar, LPWSTR lpUnicodeCharStr, INT cchUnicodeChar)
+{
+    struct qemu_IdnToUnicode call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_IDNTOUNICODE);
+    call.dwFlags = (uint64_t)dwFlags;
+    call.lpASCIICharStr = (uint64_t)lpASCIICharStr;
+    call.cchASCIIChar = (uint64_t)cchASCIIChar;
+    call.lpUnicodeCharStr = (uint64_t)lpUnicodeCharStr;
+    call.cchUnicodeChar = (uint64_t)cchUnicodeChar;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_IdnToUnicode(struct qemu_syscall *call)
+{
+    struct qemu_IdnToUnicode *c = (struct qemu_IdnToUnicode *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = IdnToUnicode(c->dwFlags, QEMU_G2H(c->lpASCIICharStr), c->cchASCIIChar, QEMU_G2H(c->lpUnicodeCharStr), c->cchUnicodeChar);
+}
+
+#endif
+
+struct qemu_GetFileMUIPath
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+    uint64_t filepath;
+    uint64_t language;
+    uint64_t languagelen;
+    uint64_t muipath;
+    uint64_t muipathlen;
+    uint64_t enumerator;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetFileMUIPath(DWORD flags, PCWSTR filepath, PWSTR language, PULONG languagelen, PWSTR muipath, PULONG muipathlen, PULONGLONG enumerator)
+{
+    struct qemu_GetFileMUIPath call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETFILEMUIPATH);
+    call.flags = (uint64_t)flags;
+    call.filepath = (uint64_t)filepath;
+    call.language = (uint64_t)language;
+    call.languagelen = (uint64_t)languagelen;
+    call.muipath = (uint64_t)muipath;
+    call.muipathlen = (uint64_t)muipathlen;
+    call.enumerator = (uint64_t)enumerator;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetFileMUIPath(struct qemu_syscall *call)
+{
+    struct qemu_GetFileMUIPath *c = (struct qemu_GetFileMUIPath *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetFileMUIPath(c->flags, QEMU_G2H(c->filepath), QEMU_G2H(c->language), QEMU_G2H(c->languagelen), QEMU_G2H(c->muipath), QEMU_G2H(c->muipathlen), QEMU_G2H(c->enumerator));
+}
+
+#endif
+
+struct qemu_GetFileMUIInfo
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+    uint64_t path;
+    uint64_t info;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetFileMUIInfo(DWORD flags, PCWSTR path, FILEMUIINFO *info, DWORD *size)
+{
+    struct qemu_GetFileMUIInfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETFILEMUIINFO);
+    call.flags = (uint64_t)flags;
+    call.path = (uint64_t)path;
+    call.info = (uint64_t)info;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetFileMUIInfo(struct qemu_syscall *call)
+{
+    struct qemu_GetFileMUIInfo *c = (struct qemu_GetFileMUIInfo *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetFileMUIInfo(c->flags, QEMU_G2H(c->path), QEMU_G2H(c->info), QEMU_G2H(c->size));
+}
+
+#endif
+

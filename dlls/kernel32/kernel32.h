@@ -35,9 +35,13 @@ enum kernel32_calls
     CALL_CLOSEHANDLE,
     CALL_COMMCONFIGDIALOGA,
     CALL_COMMCONFIGDIALOGW,
+    CALL_COMPARESTRINGA,
+    CALL_COMPARESTRINGEX,
+    CALL_COMPARESTRINGORDINAL,
     CALL_COMPARESTRINGW,
     CALL_CONNECTNAMEDPIPE,
     CALL_CONTINUEDEBUGEVENT,
+    CALL_CONVERTDEFAULTLOCALE,
     CALL_COPYFILEA,
     CALL_COPYFILEEXA,
     CALL_COPYFILEEXW,
@@ -94,6 +98,18 @@ enum kernel32_calls
     CALL_DELETETIMERQUEUETIMER,
     CALL_DEVICEIOCONTROL,
     CALL_DISCONNECTNAMEDPIPE,
+    CALL_ENUMLANGUAGEGROUPLOCALESA,
+    CALL_ENUMLANGUAGEGROUPLOCALESW,
+    CALL_ENUMSYSTEMCODEPAGESA,
+    CALL_ENUMSYSTEMCODEPAGESW,
+    CALL_ENUMSYSTEMGEOID,
+    CALL_ENUMSYSTEMLANGUAGEGROUPSA,
+    CALL_ENUMSYSTEMLANGUAGEGROUPSW,
+    CALL_ENUMSYSTEMLOCALESA,
+    CALL_ENUMSYSTEMLOCALESEX,
+    CALL_ENUMSYSTEMLOCALESW,
+    CALL_ENUMUILANGUAGESA,
+    CALL_ENUMUILANGUAGESW,
     CALL_ESCAPECOMMFUNCTION,
     CALL_EXITPROCESS,
     CALL_EXPANDENVIRONMENTSTRINGSA,
@@ -106,11 +122,14 @@ enum kernel32_calls
     CALL_FINDNEXTFILEA,
     CALL_FINDNEXTFILEW,
     CALL_FLUSHFILEBUFFERS,
+    CALL_FOLDSTRINGA,
+    CALL_FOLDSTRINGW,
     CALL_FORMATMESSAGEW,
     CALL_FREEENVIRONMENTSTRINGSA,
     CALL_FREEENVIRONMENTSTRINGSW,
     CALL_FREELIBRARY,
     CALL_FREEUSERPHYSICALPAGES,
+    CALL_GETACP,
     CALL_GETACTIVEPROCESSORCOUNT,
     CALL_GETACTIVEPROCESSORGROUPCOUNT,
     CALL_GETCOMMANDLINEA,
@@ -123,6 +142,8 @@ enum kernel32_calls
     CALL_GETCOMMTIMEOUTS,
     CALL_GETCOMPRESSEDFILESIZEA,
     CALL_GETCOMPRESSEDFILESIZEW,
+    CALL_GETCPINFO,
+    CALL_GETCPINFOEXA,
     CALL_GETCPINFOEXW,
     CALL_GETCURRENTDIRECTORYA,
     CALL_GETCURRENTDIRECTORYW,
@@ -144,6 +165,8 @@ enum kernel32_calls
     CALL_GETFILEATTRIBUTESW,
     CALL_GETFILEINFORMATIONBYHANDLE,
     CALL_GETFILEINFORMATIONBYHANDLEEX,
+    CALL_GETFILEMUIINFO,
+    CALL_GETFILEMUIPATH,
     CALL_GETFILESIZE,
     CALL_GETFILESIZEEX,
     CALL_GETFILETIME,
@@ -154,8 +177,13 @@ enum kernel32_calls
     CALL_GETFIRMWAREENVIRONMENTVARIABLEW,
     CALL_GETFULLPATHNAMEA,
     CALL_GETFULLPATHNAMEW,
+    CALL_GETGEOINFOA,
+    CALL_GETGEOINFOW,
     CALL_GETLARGEPAGEMINIMUM,
     CALL_GETLASTERROR,
+    CALL_GETLOCALEINFOA,
+    CALL_GETLOCALEINFOEX,
+    CALL_GETLOCALEINFOW,
     CALL_GETLOCALTIME,
     CALL_GETLONGPATHNAMEA,
     CALL_GETLONGPATHNAMEW,
@@ -169,6 +197,7 @@ enum kernel32_calls
     CALL_GETNAMEDPIPEHANDLESTATEW,
     CALL_GETNAMEDPIPEINFO,
     CALL_GETNATIVESYSTEMINFO,
+    CALL_GETOEMCP,
     CALL_GETOVERLAPPEDRESULT,
     CALL_GETPHYSICALLYINSTALLEDSYSTEMMEMORY,
     CALL_GETPROCADDRESS,
@@ -180,11 +209,20 @@ enum kernel32_calls
     CALL_GETSTARTUPINFOA,
     CALL_GETSTARTUPINFOW,
     CALL_GETSTDHANDLE,
+    CALL_GETSTRINGTYPEA,
+    CALL_GETSTRINGTYPEEXA,
+    CALL_GETSTRINGTYPEEXW,
+    CALL_GETSTRINGTYPEW,
+    CALL_GETSYSTEMDEFAULTLANGID,
+    CALL_GETSYSTEMDEFAULTLCID,
+    CALL_GETSYSTEMDEFAULTLOCALENAME,
+    CALL_GETSYSTEMDEFAULTUILANGUAGE,
     CALL_GETSYSTEMDIRECTORYA,
     CALL_GETSYSTEMDIRECTORYW,
     CALL_GETSYSTEMFILECACHESIZE,
     CALL_GETSYSTEMINFO,
     CALL_GETSYSTEMPOWERSTATUS,
+    CALL_GETSYSTEMPREFERREDUILANGUAGES,
     CALL_GETSYSTEMTIMEASFILETIME,
     CALL_GETSYSTEMWINDOWSDIRECTORYA,
     CALL_GETSYSTEMWINDOWSDIRECTORYW,
@@ -194,9 +232,17 @@ enum kernel32_calls
     CALL_GETTEMPFILENAMEW,
     CALL_GETTEMPPATHA,
     CALL_GETTEMPPATHW,
+    CALL_GETTHREADLOCALE,
+    CALL_GETTHREADPREFERREDUILANGUAGES,
     CALL_GETTICKCOUNT,
     CALL_GETTIMEFORMATA,
     CALL_GETTIMEFORMATW,
+    CALL_GETUSERDEFAULTLANGID,
+    CALL_GETUSERDEFAULTLCID,
+    CALL_GETUSERDEFAULTLOCALENAME,
+    CALL_GETUSERDEFAULTUILANGUAGE,
+    CALL_GETUSERGEOID,
+    CALL_GETUSERPREFERREDUILANGUAGES,
     CALL_GETVERSION,
     CALL_GETVERSIONEXA,
     CALL_GETVERSIONEXW,
@@ -230,25 +276,41 @@ enum kernel32_calls
     CALL_HEAPUNLOCK,
     CALL_HEAPVALIDATE,
     CALL_HEAPWALK,
+    CALL_IDNTOASCII,
+    CALL_IDNTONAMEPREPUNICODE,
+    CALL_IDNTOUNICODE,
     CALL_INITIALIZECRITICALSECTION,
     CALL_INITIALIZECRITICALSECTIONANDSPINCOUNT,
     CALL_INITONCEBEGININITIALIZE,
     CALL_INITONCECOMPLETE,
     CALL_INITONCEEXECUTEONCE,
+    CALL_INVALIDATENLSCACHE,
+    CALL_ISDBCSLEADBYTE,
+    CALL_ISDBCSLEADBYTEEX,
     CALL_ISDEBUGGERPRESENT,
+    CALL_ISNORMALIZEDSTRING,
     CALL_ISPROCESSINJOB,
     CALL_ISPROCESSORFEATUREPRESENT,
     CALL_ISSYSTEMRESUMEAUTOMATIC,
+    CALL_ISVALIDCODEPAGE,
+    CALL_ISVALIDLANGUAGEGROUP,
+    CALL_ISVALIDLOCALE,
+    CALL_ISVALIDLOCALENAME,
     CALL_K32ENUMDEVICEDRIVERS,
     CALL_K32GETDEVICEDRIVERBASENAMEA,
     CALL_K32GETDEVICEDRIVERBASENAMEW,
     CALL_K32GETDEVICEDRIVERFILENAMEA,
     CALL_K32GETDEVICEDRIVERFILENAMEW,
     CALL_K32GETPERFORMANCEINFO,
+    CALL_LCIDTOLOCALENAME,
+    CALL_LCMAPSTRINGA,
+    CALL_LCMAPSTRINGEX,
+    CALL_LCMAPSTRINGW,
     CALL_LOADLIBRARYA,
     CALL_LOADLIBRARYW,
     CALL_LOCALALLOC,
     CALL_LOCALCOMPACT,
+    CALL_LOCALENAMETOLCID,
     CALL_LOCALFLAGS,
     CALL_LOCALFREE,
     CALL_LOCALHANDLE,
@@ -261,6 +323,9 @@ enum kernel32_calls
     CALL_LOCKFILEEX,
     CALL_LSTRCATA,
     CALL_LSTRCATW,
+    CALL_LSTRCMPA,
+    CALL_LSTRCMPIA,
+    CALL_LSTRCMPIW,
     CALL_LSTRCMPW,
     CALL_LSTRCPYA,
     CALL_LSTRCPYNA,
@@ -278,6 +343,7 @@ enum kernel32_calls
     CALL_MULTIBYTETOWIDECHAR,
     CALL_NEEDCURRENTDIRECTORYFOREXEPATHA,
     CALL_NEEDCURRENTDIRECTORYFOREXEPATHW,
+    CALL_NORMALIZESTRING,
     CALL_OPENEVENTA,
     CALL_OPENEVENTW,
     CALL_OPENFILE,
@@ -326,6 +392,7 @@ enum kernel32_calls
     CALL_SETCOMMSTATE,
     CALL_SETCOMMTIMEOUTS,
     CALL_SETCONSOLECTRLHANDLER,
+    CALL_SETCPGLOBAL,
     CALL_SETCURRENTDIRECTORYA,
     CALL_SETCURRENTDIRECTORYW,
     CALL_SETDEFAULTCOMMCONFIGA,
@@ -348,6 +415,8 @@ enum kernel32_calls
     CALL_SETHANDLECOUNT,
     CALL_SETINFORMATIONJOBOBJECT,
     CALL_SETLASTERROR,
+    CALL_SETLOCALEINFOA,
+    CALL_SETLOCALEINFOW,
     CALL_SETMAILSLOTINFO,
     CALL_SETNAMEDPIPEHANDLESTATE,
     CALL_SETSEARCHPATHMODE,
@@ -355,8 +424,12 @@ enum kernel32_calls
     CALL_SETSYSTEMFILECACHESIZE,
     CALL_SETSYSTEMPOWERSTATE,
     CALL_SETTHREADEXECUTIONSTATE,
+    CALL_SETTHREADLOCALE,
+    CALL_SETTHREADPREFERREDUILANGUAGES,
+    CALL_SETTHREADUILANGUAGE,
     CALL_SETUNHANDLEDEXCEPTIONFILTER,
     CALL_SETUPCOMM,
+    CALL_SETUSERGEOID,
     CALL_SETWAITABLETIMER,
     CALL_SETWAITABLETIMEREX,
     CALL_SIGNALOBJECTANDWAIT,
@@ -378,6 +451,8 @@ enum kernel32_calls
     CALL_UNREGISTERWAITEX,
     CALL_VERIFYVERSIONINFOA,
     CALL_VERIFYVERSIONINFOW,
+    CALL_VERLANGUAGENAMEA,
+    CALL_VERLANGUAGENAMEW,
     CALL_VIRTUALPROTECT,
     CALL_VIRTUALQUERY,
     CALL_WAITCOMMEVENT,
@@ -432,9 +507,13 @@ void qemu_ClearCommError(struct qemu_syscall *call);
 void qemu_CloseHandle(struct qemu_syscall *call);
 void qemu_CommConfigDialogA(struct qemu_syscall *call);
 void qemu_CommConfigDialogW(struct qemu_syscall *call);
+void qemu_CompareStringA(struct qemu_syscall *call);
+void qemu_CompareStringEx(struct qemu_syscall *call);
+void qemu_CompareStringOrdinal(struct qemu_syscall *call);
 void qemu_CompareStringW(struct qemu_syscall *call);
 void qemu_ConnectNamedPipe(struct qemu_syscall *call);
 void qemu_ContinueDebugEvent(struct qemu_syscall *call);
+void qemu_ConvertDefaultLocale(struct qemu_syscall *call);
 void qemu_CopyFileA(struct qemu_syscall *call);
 void qemu_CopyFileExA(struct qemu_syscall *call);
 void qemu_CopyFileExW(struct qemu_syscall *call);
@@ -491,6 +570,18 @@ void qemu_DeleteTimerQueueEx(struct qemu_syscall *call);
 void qemu_DeleteTimerQueueTimer(struct qemu_syscall *call);
 void qemu_DeviceIoControl(struct qemu_syscall *call);
 void qemu_DisconnectNamedPipe(struct qemu_syscall *call);
+void qemu_EnumLanguageGroupLocalesA(struct qemu_syscall *call);
+void qemu_EnumLanguageGroupLocalesW(struct qemu_syscall *call);
+void qemu_EnumSystemCodePagesA(struct qemu_syscall *call);
+void qemu_EnumSystemCodePagesW(struct qemu_syscall *call);
+void qemu_EnumSystemGeoID(struct qemu_syscall *call);
+void qemu_EnumSystemLanguageGroupsA(struct qemu_syscall *call);
+void qemu_EnumSystemLanguageGroupsW(struct qemu_syscall *call);
+void qemu_EnumSystemLocalesA(struct qemu_syscall *call);
+void qemu_EnumSystemLocalesEx(struct qemu_syscall *call);
+void qemu_EnumSystemLocalesW(struct qemu_syscall *call);
+void qemu_EnumUILanguagesA(struct qemu_syscall *call);
+void qemu_EnumUILanguagesW(struct qemu_syscall *call);
 void qemu_EscapeCommFunction(struct qemu_syscall *call);
 void qemu_ExitProcess(struct qemu_syscall *call);
 void qemu_ExpandEnvironmentStringsA(struct qemu_syscall *call);
@@ -503,11 +594,14 @@ void qemu_FindFirstFileW(struct qemu_syscall *call);
 void qemu_FindNextFileA(struct qemu_syscall *call);
 void qemu_FindNextFileW(struct qemu_syscall *call);
 void qemu_FlushFileBuffers(struct qemu_syscall *call);
+void qemu_FoldStringA(struct qemu_syscall *call);
+void qemu_FoldStringW(struct qemu_syscall *call);
 void qemu_FormatMessageW(struct qemu_syscall *call);
 void qemu_FreeEnvironmentStringsA(struct qemu_syscall *call);
 void qemu_FreeEnvironmentStringsW(struct qemu_syscall *call);
 void qemu_FreeLibrary(struct qemu_syscall *call);
 void qemu_FreeUserPhysicalPages(struct qemu_syscall *call);
+void qemu_GetACP(struct qemu_syscall *call);
 void qemu_GetActiveProcessorCount(struct qemu_syscall *call);
 void qemu_GetActiveProcessorGroupCount(struct qemu_syscall *call);
 void qemu_GetCommandLineA(struct qemu_syscall *c);
@@ -522,6 +616,8 @@ void qemu_GetCommState(struct qemu_syscall *call);
 void qemu_GetCommTimeouts(struct qemu_syscall *call);
 void qemu_GetCompressedFileSizeA(struct qemu_syscall *call);
 void qemu_GetCompressedFileSizeW(struct qemu_syscall *call);
+void qemu_GetCPInfo(struct qemu_syscall *call);
+void qemu_GetCPInfoExA(struct qemu_syscall *call);
 void qemu_GetCPInfoExW(struct qemu_syscall *call);
 void qemu_GetCurrentDirectoryA(struct qemu_syscall *call);
 void qemu_GetCurrentDirectoryW(struct qemu_syscall *call);
@@ -543,6 +639,8 @@ void qemu_GetFileAttributesExW(struct qemu_syscall *call);
 void qemu_GetFileAttributesW(struct qemu_syscall *call);
 void qemu_GetFileInformationByHandle(struct qemu_syscall *call);
 void qemu_GetFileInformationByHandleEx(struct qemu_syscall *call);
+void qemu_GetFileMUIInfo(struct qemu_syscall *call);
+void qemu_GetFileMUIPath(struct qemu_syscall *call);
 void qemu_GetFileSize(struct qemu_syscall *call);
 void qemu_GetFileSizeEx(struct qemu_syscall *call);
 void qemu_GetFileTime(struct qemu_syscall *call);
@@ -553,8 +651,13 @@ void qemu_GetFirmwareEnvironmentVariableA(struct qemu_syscall *call);
 void qemu_GetFirmwareEnvironmentVariableW(struct qemu_syscall *call);
 void qemu_GetFullPathNameA(struct qemu_syscall *call);
 void qemu_GetFullPathNameW(struct qemu_syscall *call);
+void qemu_GetGeoInfoA(struct qemu_syscall *call);
+void qemu_GetGeoInfoW(struct qemu_syscall *call);
 void qemu_GetLargePageMinimum(struct qemu_syscall *call);
 void qemu_GetLastError(struct qemu_syscall *call);
+void qemu_GetLocaleInfoA(struct qemu_syscall *call);
+void qemu_GetLocaleInfoEx(struct qemu_syscall *call);
+void qemu_GetLocaleInfoW(struct qemu_syscall *call);
 void qemu_GetLocalTime(struct qemu_syscall *call);
 void qemu_GetLongPathNameA(struct qemu_syscall *call);
 void qemu_GetLongPathNameW(struct qemu_syscall *call);
@@ -568,6 +671,7 @@ void qemu_GetNamedPipeHandleStateA(struct qemu_syscall *call);
 void qemu_GetNamedPipeHandleStateW(struct qemu_syscall *call);
 void qemu_GetNamedPipeInfo(struct qemu_syscall *call);
 void qemu_GetNativeSystemInfo(struct qemu_syscall *call);
+void qemu_GetOEMCP(struct qemu_syscall *call);
 void qemu_GetOverlappedResult(struct qemu_syscall *call);
 void qemu_GetPhysicallyInstalledSystemMemory(struct qemu_syscall *call);
 void qemu_GetProcAddress(struct qemu_syscall *call);
@@ -579,11 +683,20 @@ void qemu_GetShortPathNameW(struct qemu_syscall *call);
 void qemu_GetStartupInfoA(struct qemu_syscall *call);
 void qemu_GetStartupInfoW(struct qemu_syscall *call);
 void qemu_GetStdHandle(struct qemu_syscall *call);
+void qemu_GetStringTypeA(struct qemu_syscall *call);
+void qemu_GetStringTypeExA(struct qemu_syscall *call);
+void qemu_GetStringTypeExW(struct qemu_syscall *call);
+void qemu_GetStringTypeW(struct qemu_syscall *call);
+void qemu_GetSystemDefaultLangID(struct qemu_syscall *call);
+void qemu_GetSystemDefaultLCID(struct qemu_syscall *call);
+void qemu_GetSystemDefaultLocaleName(struct qemu_syscall *call);
+void qemu_GetSystemDefaultUILanguage(struct qemu_syscall *call);
 void qemu_GetSystemDirectoryA(struct qemu_syscall *call);
 void qemu_GetSystemDirectoryW(struct qemu_syscall *call);
 void qemu_GetSystemFileCacheSize(struct qemu_syscall *call);
 void qemu_GetSystemInfo(struct qemu_syscall *call);
 void qemu_GetSystemPowerStatus(struct qemu_syscall *call);
+void qemu_GetSystemPreferredUILanguages(struct qemu_syscall *call);
 void qemu_GetSystemTimeAsFileTime(struct qemu_syscall *call);
 void qemu_GetSystemWindowsDirectoryA(struct qemu_syscall *call);
 void qemu_GetSystemWindowsDirectoryW(struct qemu_syscall *call);
@@ -593,9 +706,17 @@ void qemu_GetTempFileNameA(struct qemu_syscall *call);
 void qemu_GetTempFileNameW(struct qemu_syscall *call);
 void qemu_GetTempPathA(struct qemu_syscall *call);
 void qemu_GetTempPathW(struct qemu_syscall *call);
+void qemu_GetThreadLocale(struct qemu_syscall *call);
+void qemu_GetThreadPreferredUILanguages(struct qemu_syscall *call);
 void qemu_GetTickCount(struct qemu_syscall *call);
 void qemu_GetTimeFormatA(struct qemu_syscall *call);
 void qemu_GetTimeFormatW(struct qemu_syscall *call);
+void qemu_GetUserDefaultLangID(struct qemu_syscall *call);
+void qemu_GetUserDefaultLCID(struct qemu_syscall *call);
+void qemu_GetUserDefaultLocaleName(struct qemu_syscall *call);
+void qemu_GetUserDefaultUILanguage(struct qemu_syscall *call);
+void qemu_GetUserGeoID(struct qemu_syscall *call);
+void qemu_GetUserPreferredUILanguages(struct qemu_syscall *call);
 void qemu_GetVersion(struct qemu_syscall *call);
 void qemu_GetVersionExA(struct qemu_syscall *call);
 void qemu_GetVersionExW(struct qemu_syscall *call);
@@ -629,25 +750,41 @@ void qemu_HeapSize(struct qemu_syscall *call);
 void qemu_HeapUnlock(struct qemu_syscall *call);
 void qemu_HeapValidate(struct qemu_syscall *call);
 void qemu_HeapWalk(struct qemu_syscall *call);
+void qemu_IdnToAscii(struct qemu_syscall *call);
+void qemu_IdnToNameprepUnicode(struct qemu_syscall *call);
+void qemu_IdnToUnicode(struct qemu_syscall *call);
 void qemu_InitializeCriticalSection(struct qemu_syscall *call);
 void qemu_InitializeCriticalSectionAndSpinCount(struct qemu_syscall *call);
 void qemu_InitOnceBeginInitialize(struct qemu_syscall *call);
 void qemu_InitOnceComplete(struct qemu_syscall *call);
 void qemu_InitOnceExecuteOnce(struct qemu_syscall *call);
+void qemu_InvalidateNLSCache(struct qemu_syscall *call);
+void qemu_IsDBCSLeadByte(struct qemu_syscall *call);
+void qemu_IsDBCSLeadByteEx(struct qemu_syscall *call);
 void qemu_IsDebuggerPresent(struct qemu_syscall *call);
+void qemu_IsNormalizedString(struct qemu_syscall *call);
 void qemu_IsProcessInJob(struct qemu_syscall *call);
 void qemu_IsProcessorFeaturePresent(struct qemu_syscall *call);
 void qemu_IsSystemResumeAutomatic(struct qemu_syscall *call);
+void qemu_IsValidCodePage(struct qemu_syscall *call);
+void qemu_IsValidLanguageGroup(struct qemu_syscall *call);
+void qemu_IsValidLocale(struct qemu_syscall *call);
+void qemu_IsValidLocaleName(struct qemu_syscall *call);
 void qemu_K32EnumDeviceDrivers(struct qemu_syscall *call);
 void qemu_K32GetDeviceDriverBaseNameA(struct qemu_syscall *call);
 void qemu_K32GetDeviceDriverBaseNameW(struct qemu_syscall *call);
 void qemu_K32GetDeviceDriverFileNameA(struct qemu_syscall *call);
 void qemu_K32GetDeviceDriverFileNameW(struct qemu_syscall *call);
 void qemu_K32GetPerformanceInfo(struct qemu_syscall *call);
+void qemu_LCIDToLocaleName(struct qemu_syscall *call);
+void qemu_LCMapStringA(struct qemu_syscall *call);
+void qemu_LCMapStringEx(struct qemu_syscall *call);
+void qemu_LCMapStringW(struct qemu_syscall *call);
 void qemu_LoadLibraryA(struct qemu_syscall *call);
 void qemu_LoadLibraryW(struct qemu_syscall *call);
 void qemu_LocalAlloc(struct qemu_syscall *call);
 void qemu_LocalCompact(struct qemu_syscall *call);
+void qemu_LocaleNameToLCID(struct qemu_syscall *call);
 void qemu_LocalFlags(struct qemu_syscall *call);
 void qemu_LocalFree(struct qemu_syscall *call);
 void qemu_LocalHandle(struct qemu_syscall *call);
@@ -660,6 +797,9 @@ void qemu_LockFile(struct qemu_syscall *call);
 void qemu_LockFileEx(struct qemu_syscall *call);
 void qemu_lstrcatA(struct qemu_syscall *call);
 void qemu_lstrcatW(struct qemu_syscall *call);
+void qemu_lstrcmpA(struct qemu_syscall *call);
+void qemu_lstrcmpiA(struct qemu_syscall *call);
+void qemu_lstrcmpiW(struct qemu_syscall *call);
 void qemu_lstrcmpW(struct qemu_syscall *call);
 void qemu_lstrcpyA(struct qemu_syscall *call);
 void qemu_lstrcpynA(struct qemu_syscall *call);
@@ -677,6 +817,7 @@ void qemu_MoveFileWithProgressW(struct qemu_syscall *call);
 void qemu_MultiByteToWideChar(struct qemu_syscall *call);
 void qemu_NeedCurrentDirectoryForExePathA(struct qemu_syscall *call);
 void qemu_NeedCurrentDirectoryForExePathW(struct qemu_syscall *call);
+void qemu_NormalizeString(struct qemu_syscall *call);
 void qemu_OpenEventA(struct qemu_syscall *call);
 void qemu_OpenEventW(struct qemu_syscall *call);
 void qemu_OpenFile(struct qemu_syscall *call);
@@ -725,6 +866,7 @@ void qemu_SetCommMask(struct qemu_syscall *call);
 void qemu_SetCommState(struct qemu_syscall *call);
 void qemu_SetCommTimeouts(struct qemu_syscall *call);
 void qemu_SetConsoleCtrlHandler(struct qemu_syscall *call);
+void qemu_SetCPGlobal(struct qemu_syscall *call);
 void qemu_SetCurrentDirectoryA(struct qemu_syscall *call);
 void qemu_SetCurrentDirectoryW(struct qemu_syscall *call);
 void qemu_SetDefaultCommConfigA(struct qemu_syscall *call);
@@ -747,6 +889,8 @@ void qemu_SetFileValidData(struct qemu_syscall *call);
 void qemu_SetHandleCount(struct qemu_syscall *call);
 void qemu_SetInformationJobObject(struct qemu_syscall *call);
 void qemu_SetLastError(struct qemu_syscall *call);
+void qemu_SetLocaleInfoA(struct qemu_syscall *call);
+void qemu_SetLocaleInfoW(struct qemu_syscall *call);
 void qemu_SetMailslotInfo(struct qemu_syscall *call);
 void qemu_SetNamedPipeHandleState(struct qemu_syscall *call);
 void qemu_SetSearchPathMode(struct qemu_syscall *call);
@@ -754,8 +898,12 @@ void qemu_SetStdHandle(struct qemu_syscall *call);
 void qemu_SetSystemFileCacheSize(struct qemu_syscall *call);
 void qemu_SetSystemPowerState(struct qemu_syscall *call);
 void qemu_SetThreadExecutionState(struct qemu_syscall *call);
+void qemu_SetThreadLocale(struct qemu_syscall *call);
+void qemu_SetThreadPreferredUILanguages(struct qemu_syscall *call);
+void qemu_SetThreadUILanguage(struct qemu_syscall *call);
 void qemu_SetUnhandledExceptionFilter(struct qemu_syscall *call);
 void qemu_SetupComm(struct qemu_syscall *call);
+void qemu_SetUserGeoID(struct qemu_syscall *call);
 void qemu_SetWaitableTimer(struct qemu_syscall *call);
 void qemu_SetWaitableTimerEx(struct qemu_syscall *call);
 void qemu_SignalObjectAndWait(struct qemu_syscall *call);
@@ -777,6 +925,8 @@ void qemu_UnregisterWait(struct qemu_syscall *call);
 void qemu_UnregisterWaitEx(struct qemu_syscall *call);
 void qemu_VerifyVersionInfoA(struct qemu_syscall *call);
 void qemu_VerifyVersionInfoW(struct qemu_syscall *call);
+void qemu_VerLanguageNameA(struct qemu_syscall *call);
+void qemu_VerLanguageNameW(struct qemu_syscall *call);
 void qemu_VirtualProtect(struct qemu_syscall *call);
 void qemu_VirtualQuery(struct qemu_syscall *call);
 void qemu_WaitCommEvent(struct qemu_syscall *call);

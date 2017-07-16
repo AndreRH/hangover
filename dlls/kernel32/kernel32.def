@@ -34,9 +34,13 @@ EXPORTS
   CloseHandle
   CommConfigDialogA
   CommConfigDialogW
+  CompareStringA
+  CompareStringEx
+  CompareStringOrdinal
   CompareStringW
   ConnectNamedPipe
   ContinueDebugEvent
+  ConvertDefaultLocale
   CopyFileA
   CopyFileExA
   CopyFileExW
@@ -97,6 +101,18 @@ EXPORTS
   DisconnectNamedPipe
   EncodePointer=ntdll.RtlEncodePointer
   EnterCriticalSection=ntdll.RtlEnterCriticalSection
+  EnumLanguageGroupLocalesA
+  EnumLanguageGroupLocalesW
+  EnumSystemCodePagesA
+  EnumSystemCodePagesW
+  EnumSystemGeoID
+  EnumSystemLanguageGroupsA
+  EnumSystemLanguageGroupsW
+  EnumSystemLocalesA
+  EnumSystemLocalesEx
+  EnumSystemLocalesW
+  EnumUILanguagesA
+  EnumUILanguagesW
   EscapeCommFunction
   ExitProcess
   ExpandEnvironmentStringsA
@@ -109,11 +125,14 @@ EXPORTS
   FindNextFileA
   FindNextFileW
   FlushFileBuffers
+  FoldStringA
+  FoldStringW
   FormatMessageW
   FreeEnvironmentStringsA
   FreeEnvironmentStringsW
   FreeLibrary
   FreeUserPhysicalPages
+  GetACP
   GetActiveProcessorCount
   GetActiveProcessorGroupCount
   GetCommandLineA
@@ -126,6 +145,8 @@ EXPORTS
   GetCommTimeouts
   GetCompressedFileSizeA
   GetCompressedFileSizeW
+  GetCPInfo
+  GetCPInfoExA
   GetCPInfoExW
   GetCurrentDirectoryA
   GetCurrentDirectoryW
@@ -147,6 +168,8 @@ EXPORTS
   GetFileAttributesW
   GetFileInformationByHandle
   GetFileInformationByHandleEx
+  GetFileMUIInfo
+  GetFileMUIPath
   GetFileSize
   GetFileSizeEx
   GetFileTime
@@ -157,8 +180,13 @@ EXPORTS
   GetFirmwareEnvironmentVariableW
   GetFullPathNameA
   GetFullPathNameW
+  GetGeoInfoA
+  GetGeoInfoW
   GetLargePageMinimum
   GetLastError
+  GetLocaleInfoA
+  GetLocaleInfoEx
+  GetLocaleInfoW
   GetLocalTime
   GetLongPathNameA
   GetLongPathNameW
@@ -172,6 +200,7 @@ EXPORTS
   GetNamedPipeHandleStateW
   GetNamedPipeInfo
   GetNativeSystemInfo
+  GetOEMCP
   GetOverlappedResult
   GetPhysicallyInstalledSystemMemory
   GetProcAddress
@@ -183,11 +212,20 @@ EXPORTS
   GetStartupInfoA
   GetStartupInfoW
   GetStdHandle
+  GetStringTypeA
+  GetStringTypeExA
+  GetStringTypeExW
+  GetStringTypeW
+  GetSystemDefaultLangID
+  GetSystemDefaultLCID
+  GetSystemDefaultLocaleName
+  GetSystemDefaultUILanguage
   GetSystemDirectoryA
   GetSystemDirectoryW
   GetSystemFileCacheSize
   GetSystemInfo
   GetSystemPowerStatus
+  GetSystemPreferredUILanguages
   GetSystemTimeAsFileTime
   GetSystemWindowsDirectoryA
   GetSystemWindowsDirectoryW
@@ -197,9 +235,17 @@ EXPORTS
   GetTempFileNameW
   GetTempPathA
   GetTempPathW
+  GetThreadLocale
+  GetThreadPreferredUILanguages
   GetTickCount
   GetTimeFormatA
   GetTimeFormatW
+  GetUserDefaultLangID
+  GetUserDefaultLCID
+  GetUserDefaultLocaleName
+  GetUserDefaultUILanguage
+  GetUserGeoID
+  GetUserPreferredUILanguages
   GetVersion
   GetVersionExA
   GetVersionExW
@@ -233,27 +279,43 @@ EXPORTS
   HeapUnlock
   HeapValidate
   HeapWalk
+  IdnToAscii
+  IdnToNameprepUnicode
+  IdnToUnicode
   InitializeCriticalSection
   InitializeCriticalSectionAndSpinCount
   InitializeCriticalSectionEx
   InitOnceBeginInitialize
   InitOnceComplete
   InitOnceExecuteOnce
+  InvalidateNLSCache
+  IsDBCSLeadByte
+  IsDBCSLeadByteEx
   IsDebuggerPresent
+  IsNormalizedString
   IsProcessInJob
   IsProcessorFeaturePresent
   IsSystemResumeAutomatic
+  IsValidCodePage
+  IsValidLanguageGroup
+  IsValidLocale
+  IsValidLocaleName
   K32EnumDeviceDrivers
   K32GetDeviceDriverBaseNameA
   K32GetDeviceDriverBaseNameW
   K32GetDeviceDriverFileNameA
   K32GetDeviceDriverFileNameW
   K32GetPerformanceInfo
+  LCIDToLocaleName
+  LCMapStringA
+  LCMapStringEx
+  LCMapStringW
   LeaveCriticalSection=ntdll.RtlLeaveCriticalSection
   LoadLibraryA
   LoadLibraryW
   LocalAlloc
   LocalCompact
+  LocaleNameToLCID
   LocalFlags
   LocalFree
   LocalHandle
@@ -266,6 +328,9 @@ EXPORTS
   LockFileEx
   lstrcatA
   lstrcatW
+  lstrcmpA
+  lstrcmpiA
+  lstrcmpiW
   lstrcmpW
   lstrcpyA
   lstrcpynA
@@ -284,6 +349,7 @@ EXPORTS
   MultiByteToWideChar
   NeedCurrentDirectoryForExePathA
   NeedCurrentDirectoryForExePathW
+  NormalizeString
   OpenEventA
   OpenEventW
   OpenFile
@@ -336,6 +402,7 @@ EXPORTS
   SetCommState
   SetCommTimeouts
   SetConsoleCtrlHandler
+  SetCPGlobal
   SetCurrentDirectoryA
   SetCurrentDirectoryW
   SetDefaultCommConfigA
@@ -358,6 +425,8 @@ EXPORTS
   SetHandleCount
   SetInformationJobObject
   SetLastError
+  SetLocaleInfoA
+  SetLocaleInfoW
   SetMailslotInfo
   SetNamedPipeHandleState
   SetSearchPathMode
@@ -365,8 +434,12 @@ EXPORTS
   SetSystemFileCacheSize
   SetSystemPowerState
   SetThreadExecutionState
+  SetThreadLocale
+  SetThreadPreferredUILanguages
+  SetThreadUILanguage
   SetUnhandledExceptionFilter
   SetupComm
+  SetUserGeoID
   SetWaitableTimer
   SetWaitableTimerEx
   SignalObjectAndWait
@@ -388,6 +461,8 @@ EXPORTS
   UnregisterWaitEx
   VerifyVersionInfoA
   VerifyVersionInfoW
+  VerLanguageNameA
+  VerLanguageNameW
   VirtualProtect
   VirtualQuery
   WaitCommEvent
