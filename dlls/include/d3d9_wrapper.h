@@ -41,6 +41,12 @@ struct qemu_d3d9_device_impl
     struct qemu_d3d9_impl *d3d9;
 };
 
+struct qemu_d3d9_surface_impl
+{
+    IDirect3DSurface9 IDirect3DSurface9_iface;
+    IDirect3DSurface9 *host;
+};
+
 struct qemu_d3d9_swapchain_impl
 {
     IDirect3DSwapChain9Ex IDirect3DSwapChain9Ex_iface;
@@ -48,7 +54,7 @@ struct qemu_d3d9_swapchain_impl
 
     struct qemu_d3d9_device_impl *device;
 
-    /* TODO: Surface array. */
+    struct qemu_d3d9_surface_impl backbuffers[1];
 };
 
 #endif

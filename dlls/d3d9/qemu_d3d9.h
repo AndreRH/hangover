@@ -163,6 +163,23 @@ enum d3d9_calls
     CALL_D3D9_QUERYINTERFACE,
     CALL_D3D9_REGISTERSOFTWAREDEVICE,
     CALL_D3D9_RELEASE,
+    CALL_D3D9_SURFACE_ADDREF,
+    CALL_D3D9_SURFACE_FREEPRIVATEDATA,
+    CALL_D3D9_SURFACE_GETCONTAINER,
+    CALL_D3D9_SURFACE_GETDC,
+    CALL_D3D9_SURFACE_GETDESC,
+    CALL_D3D9_SURFACE_GETDEVICE,
+    CALL_D3D9_SURFACE_GETPRIORITY,
+    CALL_D3D9_SURFACE_GETPRIVATEDATA,
+    CALL_D3D9_SURFACE_GETTYPE,
+    CALL_D3D9_SURFACE_LOCKRECT,
+    CALL_D3D9_SURFACE_PRELOAD,
+    CALL_D3D9_SURFACE_QUERYINTERFACE,
+    CALL_D3D9_SURFACE_RELEASE,
+    CALL_D3D9_SURFACE_RELEASEDC,
+    CALL_D3D9_SURFACE_SETPRIORITY,
+    CALL_D3D9_SURFACE_SETPRIVATEDATA,
+    CALL_D3D9_SURFACE_UNLOCKRECT,
     CALL_D3D9_SWAPCHAIN_ADDREF,
     CALL_D3D9_SWAPCHAIN_GETBACKBUFFER,
     CALL_D3D9_SWAPCHAIN_GETDEVICE,
@@ -354,13 +371,23 @@ void qemu_d3d9_GetDeviceCaps(struct qemu_syscall *call);
 void qemu_d3d9_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d9_RegisterSoftwareDevice(struct qemu_syscall *call);
 void qemu_d3d9_Release(struct qemu_syscall *call);
-void qemu_D3DPERF_BeginEvent(struct qemu_syscall *call);
-void qemu_D3DPERF_EndEvent(struct qemu_syscall *call);
-void qemu_D3DPERF_GetStatus(struct qemu_syscall *call);
-void qemu_D3DPERF_QueryRepeatFrame(struct qemu_syscall *call);
-void qemu_D3DPERF_SetMarker(struct qemu_syscall *call);
-void qemu_D3DPERF_SetOptions(struct qemu_syscall *call);
-void qemu_D3DPERF_SetRegion(struct qemu_syscall *call);
+void qemu_d3d9_surface_AddRef(struct qemu_syscall *call);
+void qemu_d3d9_surface_FreePrivateData(struct qemu_syscall *call);
+void qemu_d3d9_surface_GetContainer(struct qemu_syscall *call);
+void qemu_d3d9_surface_GetDC(struct qemu_syscall *call);
+void qemu_d3d9_surface_GetDesc(struct qemu_syscall *call);
+void qemu_d3d9_surface_GetDevice(struct qemu_syscall *call);
+void qemu_d3d9_surface_GetPriority(struct qemu_syscall *call);
+void qemu_d3d9_surface_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d9_surface_GetType(struct qemu_syscall *call);
+void qemu_d3d9_surface_LockRect(struct qemu_syscall *call);
+void qemu_d3d9_surface_PreLoad(struct qemu_syscall *call);
+void qemu_d3d9_surface_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d9_surface_Release(struct qemu_syscall *call);
+void qemu_d3d9_surface_ReleaseDC(struct qemu_syscall *call);
+void qemu_d3d9_surface_SetPriority(struct qemu_syscall *call);
+void qemu_d3d9_surface_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d9_surface_UnlockRect(struct qemu_syscall *call);
 void qemu_d3d9_swapchain_AddRef(struct qemu_syscall *call);
 void qemu_d3d9_swapchain_GetBackBuffer(struct qemu_syscall *call);
 void qemu_d3d9_swapchain_GetDevice(struct qemu_syscall *call);
@@ -374,6 +401,13 @@ void qemu_d3d9_swapchain_GetRasterStatus(struct qemu_syscall *call);
 void qemu_d3d9_swapchain_Present(struct qemu_syscall *call);
 void qemu_d3d9_swapchain_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d9_swapchain_Release(struct qemu_syscall *call);
+void qemu_D3DPERF_BeginEvent(struct qemu_syscall *call);
+void qemu_D3DPERF_EndEvent(struct qemu_syscall *call);
+void qemu_D3DPERF_GetStatus(struct qemu_syscall *call);
+void qemu_D3DPERF_QueryRepeatFrame(struct qemu_syscall *call);
+void qemu_D3DPERF_SetMarker(struct qemu_syscall *call);
+void qemu_D3DPERF_SetOptions(struct qemu_syscall *call);
+void qemu_D3DPERF_SetRegion(struct qemu_syscall *call);
 void qemu_DebugSetMute(struct qemu_syscall *call);
 void qemu_Direct3DCreate9(struct qemu_syscall *call);
 void qemu_Direct3DCreate9Ex(struct qemu_syscall *call);
