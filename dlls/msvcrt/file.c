@@ -590,7 +590,7 @@ void qemu_sprintf(struct qemu_syscall *call)
     struct sprintf_data data;
     int ret;
 
-    WINE_FIXME("(%lu floats/%lu args, format \"%s\"\n", c->argcount_float, c->argcount, (char *)QEMU_G2H(c->format));
+    WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", c->argcount_float, c->argcount, (char *)QEMU_G2H(c->format));
 
     data.op = c->super.id;
     data.charcount = c->charcount;
