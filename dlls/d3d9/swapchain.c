@@ -137,10 +137,14 @@ void qemu_d3d9_swapchain_Release(struct qemu_syscall *call)
     struct qemu_d3d9_swapchain_Release *c = (struct qemu_d3d9_swapchain_Release *)call;
     struct qemu_d3d9_swapchain_impl *swapchain;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
 
+    /* Make sure the last Release call happens through our wrapper to make sure the
+     * qemu_d3d9_device_impl structure is correctly released. */
+    d3d9_device_wrapper_addref(swapchain->device);
     c->super.iret = IDirect3DSwapChain9_Release(swapchain->host);
+    d3d9_device_wrapper_release(swapchain->device);
 }
 
 #endif
@@ -529,3 +533,106 @@ void qemu_d3d9_swapchain_GetDisplayModeEx(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+const struct IDirect3DSwapChain9ExVtbl d3d9_swapchain_vtbl =
+{
+    /* IUnknown */
+    d3d9_swapchain_QueryInterface,
+    d3d9_swapchain_AddRef,
+    d3d9_swapchain_Release,
+    /* IDirect3DSwapChain9 */
+    d3d9_swapchain_Present,
+    d3d9_swapchain_GetFrontBufferData,
+    d3d9_swapchain_GetBackBuffer,
+    d3d9_swapchain_GetRasterStatus,
+    d3d9_swapchain_GetDisplayMode,
+    d3d9_swapchain_GetDevice,
+    d3d9_swapchain_GetPresentParameters,
+    /* IDirect3DSwapChain9Ex */
+    d3d9_swapchain_GetLastPresentCount,
+    d3d9_swapchain_GetPresentStatistics,
+    d3d9_swapchain_GetDisplayModeEx
+};
+
+#else
+
+struct qemu_d3d9_swapchain_impl *swapchain_impl_from_IUnknown(IUnknown *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_swapchain_impl, private_data);
+}
+
+static HRESULT WINAPI d3d9_swapchain_priv_QueryInterface(IUnknown *iface, REFIID riid, void **out)
+{
+    WINE_ERR("Unexpected call\n");
+    return E_NOINTERFACE;
+}
+
+static ULONG WINAPI d3d9_swapchain_priv_AddRef(IUnknown *iface)
+{
+    struct qemu_d3d9_swapchain_impl *swapchain = swapchain_impl_from_IUnknown(iface);
+    ULONG refcount = InterlockedIncrement(&swapchain->private_data_ref);
+
+    WINE_TRACE("%p increasing refcount to %u.\n", swapchain, refcount);
+    return refcount;
+}
+
+static ULONG WINAPI d3d9_swapchain_priv_Release(IUnknown *iface)
+{
+    struct qemu_d3d9_swapchain_impl *swapchain = swapchain_impl_from_IUnknown(iface);
+    ULONG refcount = InterlockedDecrement(&swapchain->private_data_ref);
+
+    WINE_TRACE("%p decreasing refcount to %u.\n", swapchain, refcount);
+    if (!refcount)
+    {
+        /* This means the private data has been released, which only happens
+         * when the real interface has been destroyed. */
+        HeapFree(GetProcessHeap(), 0, swapchain);
+    }
+
+    return refcount;
+}
+
+static const struct IUnknownVtbl swapchain_priv_vtbl =
+{
+    /* IUnknown */
+    d3d9_swapchain_priv_QueryInterface,
+    d3d9_swapchain_priv_AddRef,
+    d3d9_swapchain_priv_Release,
+};
+
+void d3d9_swapchain_init(struct qemu_d3d9_swapchain_impl *swapchain, IDirect3DSwapChain9Ex *host_swapchain,
+        struct qemu_d3d9_device_impl *device)
+{
+    IDirect3DSurface9 *surface;
+    UINT i;
+    struct qemu_d3d9_surface_impl *ptr;
+    D3DPRESENT_PARAMETERS pp;
+
+    swapchain->host = host_swapchain;
+    swapchain->device = device;
+    IDirect3DSwapChain9_GetBackBuffer(swapchain->host, 0, D3DBACKBUFFER_TYPE_MONO, &surface);
+
+    swapchain->private_data.lpVtbl = &swapchain_priv_vtbl;
+    swapchain->private_data_ref = 0;
+    IDirect3DSurface9_SetPrivateData(surface, &qemu_d3d9_swapchain_guid, &swapchain->private_data,
+            sizeof(IUnknown *), D3DSPD_IUNKNOWN);
+
+    ptr = &swapchain->backbuffers[0];
+    IDirect3DSurface9_SetPrivateData(surface, &qemu_d3d9_surface_guid, &ptr, sizeof(*ptr), 0);
+
+    IDirect3DSurface9_Release(surface);
+
+    IDirect3DSwapChain9_GetPresentParameters(swapchain->host, &pp);
+    for (i = 1; i < pp.BackBufferCount; ++i)
+    {
+        IDirect3DSwapChain9_GetBackBuffer(swapchain->host, i, D3DBACKBUFFER_TYPE_MONO, &surface);
+
+        ptr = &swapchain->backbuffers[i];
+        IDirect3DSurface9_SetPrivateData(surface, &qemu_d3d9_surface_guid, &ptr, sizeof(*ptr), 0);
+
+        IDirect3DSurface9_Release(surface);
+    }
+}
+
+#endif

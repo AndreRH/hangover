@@ -597,12 +597,18 @@ static HRESULT WINAPI d3d9_device_GetSwapChain(IDirect3DDevice9Ex *iface, UINT s
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
     struct qemu_d3d9_device_GetSwapChain call;
+    struct qemu_d3d9_swapchain_impl *swapchain_impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETSWAPCHAIN);
     call.iface = (uint64_t)device;
     call.swapchain_idx = (uint64_t)swapchain_idx;
-    call.swapchain = (uint64_t)swapchain;
+    call.swapchain = (uint64_t)&swapchain_impl;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+        *swapchain = (IDirect3DSwapChain9 *)&swapchain_impl->IDirect3DSwapChain9Ex_iface;
+    else
+        *swapchain = NULL;
 
     return call.super.iret;
 }
@@ -613,11 +619,29 @@ void qemu_d3d9_device_GetSwapChain(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_GetSwapChain *c = (struct qemu_d3d9_device_GetSwapChain *)call;
     struct qemu_d3d9_device_impl *device;
+    IDirect3DSwapChain9 *swapchain;
+    IDirect3DSurface9 *backbuffer;
+    IUnknown *priv_data;
+    DWORD size = sizeof(priv_data);
+    struct qemu_d3d9_swapchain_impl *swapchain_impl;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("TRACE!\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_GetSwapChain(device->host, c->swapchain_idx, QEMU_G2H(c->swapchain));
+    c->super.iret = IDirect3DDevice9Ex_GetSwapChain(device->host, c->swapchain_idx, &swapchain);
+    if (FAILED(c->super.iret))
+        return;
+
+    IDirect3DSwapChain9_GetBackBuffer(swapchain, 0, D3DBACKBUFFER_TYPE_MONO, &backbuffer);
+    IDirect3DSurface9_GetPrivateData(backbuffer, &qemu_d3d9_swapchain_guid, &priv_data, &size);
+    IDirect3DSurface9_Release(backbuffer);
+
+    swapchain_impl = swapchain_impl_from_IUnknown(priv_data);
+    WINE_TRACE("Retrieved swapchain wrapper %p from private data\n", swapchain_impl);
+
+    priv_data->lpVtbl->Release(priv_data);
+
+    *(uint64_t *)QEMU_G2H(c->swapchain) = QEMU_H2G(swapchain_impl);
 }
 
 #endif
@@ -649,7 +673,7 @@ void qemu_d3d9_device_GetNumberOfSwapChains(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetNumberOfSwapChains *c = (struct qemu_d3d9_device_GetNumberOfSwapChains *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetNumberOfSwapChains(device->host);
@@ -5561,5 +5585,56 @@ const struct IDirect3DDevice9ExVtbl d3d9_device_vtbl =
     d3d9_device_ResetEx,
     d3d9_device_GetDisplayModeEx,
 };
+
+void d3d9_device_set_swapchain_ifaces(IDirect3DDevice9Ex *device)
+{
+    UINT swapchain_count, i;
+    IDirect3DSwapChain9Ex *swapchain;
+
+    /* This code merrily relies on the fact that the GetSwapChain AddRef call
+     * happens on the host side and doesn't need the guest vtable. */
+    swapchain_count = IDirect3DDevice9Ex_GetNumberOfSwapChains(device);
+    for (i = 0; i < swapchain_count; ++i)
+    {
+        IDirect3DDevice9Ex_GetSwapChain(device, i, (IDirect3DSwapChain9 **)&swapchain);
+        swapchain->lpVtbl = &d3d9_swapchain_vtbl;
+        IDirect3DSwapChain9Ex_Release(swapchain);
+    }
+}
+
+#else
+
+BOOL d3d9_device_wrap_implicit_swapchain(struct qemu_d3d9_device_impl *device)
+{
+    UINT swapchain_count, i;
+    struct qemu_d3d9_swapchain_impl *swapchain;
+    IDirect3DSwapChain9Ex *host_swapchain;
+    D3DPRESENT_PARAMETERS pp;
+
+    swapchain_count = IDirect3DDevice9_GetNumberOfSwapChains(device->host);
+    for (i = 0; i < swapchain_count; ++i)
+    {
+        IDirect3DDevice9_GetSwapChain(device->host, i, (IDirect3DSwapChain9 **)&host_swapchain);
+        IDirect3DSwapChain9_GetPresentParameters(host_swapchain, &pp);
+
+        swapchain = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
+                offsetof(struct qemu_d3d9_swapchain_impl, backbuffers[pp.BackBufferCount]));
+        WINE_TRACE("Allocated swapchain wrapper %p.\n", swapchain);
+        if (!swapchain)
+        {
+            IDirect3DSwapChain9_Release(host_swapchain);
+            WINE_ERR("Out of memory\n");
+            goto error;
+        }
+        d3d9_swapchain_init(swapchain, host_swapchain, device);
+        IDirect3DSwapChain9_Release(host_swapchain);
+    }
+
+    return TRUE;
+
+error:
+    /* TODO: Free stuff */
+    return FALSE;
+}
 
 #endif

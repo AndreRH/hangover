@@ -52,8 +52,9 @@ struct qemu_d3d9_swapchain_impl
     IDirect3DSwapChain9Ex IDirect3DSwapChain9Ex_iface;
     IDirect3DSwapChain9Ex *host;
 
+    IUnknown private_data;
+    ULONG private_data_ref; /* NOT the externally visible ref! */
     struct qemu_d3d9_device_impl *device;
-
     struct qemu_d3d9_surface_impl backbuffers[1];
 };
 

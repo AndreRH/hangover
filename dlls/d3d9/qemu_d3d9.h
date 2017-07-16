@@ -210,6 +210,9 @@ enum d3d9_calls
 
 extern const struct IDirect3D9ExVtbl d3d9_vtbl;
 extern const struct IDirect3DDevice9ExVtbl d3d9_device_vtbl;
+extern const struct IDirect3DSwapChain9ExVtbl d3d9_swapchain_vtbl;
+
+void d3d9_device_set_swapchain_ifaces(IDirect3DDevice9Ex *device);
 
 #else
 
@@ -416,8 +419,17 @@ void qemu_Direct3DShaderValidatorCreate9(struct qemu_syscall *call);
 /* Called internally to make sure our wrapper does the final release. */
 ULONG d3d9_wrapper_addref(struct qemu_d3d9_impl *d3d9);
 ULONG d3d9_wrapper_release(struct qemu_d3d9_impl *d3d9);
+
+BOOL d3d9_device_wrap_implicit_swapchain(struct qemu_d3d9_device_impl *device);
 ULONG d3d9_device_wrapper_addref(struct qemu_d3d9_device_impl *device);
 ULONG d3d9_device_wrapper_release(struct qemu_d3d9_device_impl *device);
+
+struct qemu_d3d9_swapchain_impl *swapchain_impl_from_IUnknown(IUnknown *iface);
+void d3d9_swapchain_init(struct qemu_d3d9_swapchain_impl *swapchain, IDirect3DSwapChain9Ex *host_swapchain,
+        struct qemu_d3d9_device_impl *device);
+
+extern const GUID qemu_d3d9_swapchain_guid;
+extern const GUID qemu_d3d9_surface_guid;
 
 #endif
 

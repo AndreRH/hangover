@@ -738,6 +738,7 @@ static HRESULT WINAPI d3d9_CreateDevice(IDirect3D9Ex *iface, UINT adapter, D3DDE
 
     ret->IDirect3DDevice9Ex_iface.lpVtbl = &d3d9_device_vtbl;
     *device = (IDirect3DDevice9 *)&ret->IDirect3DDevice9Ex_iface;
+    d3d9_device_set_swapchain_ifaces(&ret->IDirect3DDevice9Ex_iface);
 
     /*  FIXME: Assign vtables of the implicit swapchain and its surfaces. */
 
@@ -770,13 +771,19 @@ void qemu_d3d9_CreateDevice(struct qemu_syscall *call)
 
     /* The host library takes care of refcounting here. */
     device_impl->d3d9 = d3d9;
-    *(uint64_t *)QEMU_G2H(c->device) = QEMU_H2G(device_impl);
+    if (!d3d9_device_wrap_implicit_swapchain(device_impl))
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        goto error;
+    }
 
-    /* FIXME: Take care of creating wrappers for the implicit swapchain and its surfaces. */
+    *(uint64_t *)QEMU_G2H(c->device) = QEMU_H2G(device_impl);
 
     return;
 
 error:
+    if (device_impl->host)
+        IDirect3DDevice9Ex_Release(device_impl->host);
     HeapFree(GetProcessHeap(), 0, device_impl);
     return;
 }
