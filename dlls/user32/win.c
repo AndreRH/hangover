@@ -1129,7 +1129,7 @@ WINUSERAPI BOOL WINAPI IsWindowVisible(HWND hwnd)
 void qemu_IsWindowVisible(struct qemu_syscall *call)
 {
     struct qemu_IsWindowVisible *c = (struct qemu_IsWindowVisible *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsWindowVisible(QEMU_G2H(c->hwnd));
 }
 

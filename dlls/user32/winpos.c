@@ -89,7 +89,7 @@ WINUSERAPI BOOL WINAPI GetWindowRect(HWND hwnd, LPRECT rect)
 void qemu_GetWindowRect(struct qemu_syscall *call)
 {
     struct qemu_GetWindowRect *c = (struct qemu_GetWindowRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWindowRect(QEMU_G2H(c->hwnd), QEMU_G2H(c->rect));
 }
 
@@ -351,7 +351,7 @@ WINUSERAPI BOOL WINAPI IsIconic(HWND hWnd)
 void qemu_IsIconic(struct qemu_syscall *call)
 {
     struct qemu_IsIconic *c = (struct qemu_IsIconic *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsIconic(QEMU_G2H(c->hWnd));
 }
 

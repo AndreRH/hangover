@@ -401,7 +401,7 @@ WINUSERAPI HMONITOR WINAPI MonitorFromWindow(HWND hWnd, DWORD dwFlags)
 void qemu_MonitorFromWindow(struct qemu_syscall *call)
 {
     struct qemu_MonitorFromWindow *c = (struct qemu_MonitorFromWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)MonitorFromWindow(QEMU_G2H(c->hWnd), c->dwFlags);
 }
 

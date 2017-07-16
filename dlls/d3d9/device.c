@@ -343,7 +343,7 @@ void qemu_d3d9_device_GetDeviceCaps(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetDeviceCaps *c = (struct qemu_d3d9_device_GetDeviceCaps *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetDeviceCaps(device->host, QEMU_G2H(c->caps));

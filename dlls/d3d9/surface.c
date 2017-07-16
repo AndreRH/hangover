@@ -511,7 +511,7 @@ void qemu_d3d9_surface_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d9_surface_GetDesc *c = (struct qemu_d3d9_surface_GetDesc *)call;
     struct qemu_d3d9_surface_impl *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DSurface9_GetDesc(surface->host, QEMU_G2H(c->desc));

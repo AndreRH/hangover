@@ -199,7 +199,7 @@ WINBASEAPI int WINAPI D3DPERF_BeginEvent(D3DCOLOR color, const WCHAR *name)
 void qemu_D3DPERF_BeginEvent(struct qemu_syscall *call)
 {
     struct qemu_D3DPERF_BeginEvent *c = (struct qemu_D3DPERF_BeginEvent *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = D3DPERF_BeginEvent(c->color, QEMU_G2H(c->name));
 }
 
@@ -227,7 +227,7 @@ WINBASEAPI int WINAPI D3DPERF_EndEvent(void)
 void qemu_D3DPERF_EndEvent(struct qemu_syscall *call)
 {
     struct qemu_D3DPERF_EndEvent *c = (struct qemu_D3DPERF_EndEvent *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = D3DPERF_EndEvent();
 }
 
