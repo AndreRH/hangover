@@ -10,6 +10,7 @@ EXPORTS
   _lopen
   _lread
   _lwrite
+  AllocateUserPhysicalPages
   AreFileApisANSI
   AssignProcessToJobObject
   BindIoCompletionCallback
@@ -112,6 +113,7 @@ EXPORTS
   FreeEnvironmentStringsA
   FreeEnvironmentStringsW
   FreeLibrary
+  FreeUserPhysicalPages
   GetActiveProcessorCount
   GetActiveProcessorGroupCount
   GetCommandLineA
@@ -171,8 +173,10 @@ EXPORTS
   GetNamedPipeInfo
   GetNativeSystemInfo
   GetOverlappedResult
+  GetPhysicallyInstalledSystemMemory
   GetProcAddress
   GetProcessHeap
+  GetProcessHeaps
   GetQueuedCompletionStatus
   GetShortPathNameA
   GetShortPathNameW
@@ -181,6 +185,7 @@ EXPORTS
   GetStdHandle
   GetSystemDirectoryA
   GetSystemDirectoryW
+  GetSystemFileCacheSize
   GetSystemInfo
   GetSystemPowerStatus
   GetSystemTimeAsFileTime
@@ -201,9 +206,33 @@ EXPORTS
   GetWindowsDirectoryA
   GetWindowsDirectoryW
   GlobalAlloc
+  GlobalCompact
+  GlobalFix
+  GlobalFlags
   GlobalFree
+  GlobalHandle
+  GlobalLock
+  GlobalMemoryStatus
+  GlobalMemoryStatusEx
+  GlobalReAlloc
+  GlobalSize
+  GlobalUnfix
+  GlobalUnlock
+  GlobalUnWire
+  GlobalWire
   HeapAlloc
+  HeapCompact
+  HeapCreate
+  HeapDestroy
   HeapFree
+  HeapLock
+  HeapQueryInformation
+  HeapReAlloc
+  HeapSetInformation
+  HeapSize
+  HeapUnlock
+  HeapValidate
+  HeapWalk
   InitializeCriticalSection
   InitializeCriticalSectionAndSpinCount
   InitializeCriticalSectionEx
@@ -223,7 +252,16 @@ EXPORTS
   LeaveCriticalSection=ntdll.RtlLeaveCriticalSection
   LoadLibraryA
   LoadLibraryW
+  LocalAlloc
+  LocalCompact
+  LocalFlags
   LocalFree
+  LocalHandle
+  LocalLock
+  LocalReAlloc
+  LocalShrink
+  LocalSize
+  LocalUnlock
   LockFile
   LockFileEx
   lstrcatA
@@ -324,6 +362,7 @@ EXPORTS
   SetNamedPipeHandleState
   SetSearchPathMode
   SetStdHandle
+  SetSystemFileCacheSize
   SetSystemPowerState
   SetThreadExecutionState
   SetUnhandledExceptionFilter

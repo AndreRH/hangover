@@ -119,3 +119,25 @@ void qemu_GetCommandLineW(struct qemu_syscall *c)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HANDLE WINAPI GetProcessHeap()
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL_GETPROCESSHEAP);
+
+    qemu_syscall(&call);
+
+    return (HANDLE)call.iret;
+}
+
+#else
+
+void qemu_GetProcessHeap(struct qemu_syscall *c)
+{
+    WINE_TRACE("\n");
+    c->iret = (uint64_t)GetProcessHeap();
+}
+
+#endif
