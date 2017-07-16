@@ -67,7 +67,7 @@ void qemu_d3d9_QueryInterface(struct qemu_syscall *call)
     struct qemu_d3d9_QueryInterface *c = (struct qemu_d3d9_QueryInterface *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_FIXME("Stub!\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9_QueryInterface(d3d9->host, QEMU_G2H(c->riid), QEMU_G2H(c->out));
@@ -107,7 +107,7 @@ void qemu_d3d9_AddRef(struct qemu_syscall *call)
     struct qemu_d3d9_AddRef *c = (struct qemu_d3d9_AddRef *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9_AddRef(d3d9->host);
@@ -152,7 +152,7 @@ void qemu_d3d9_Release(struct qemu_syscall *call)
     struct qemu_d3d9_Release *c = (struct qemu_d3d9_Release *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = d3d9_wrapper_release(d3d9);
@@ -189,7 +189,7 @@ void qemu_d3d9_RegisterSoftwareDevice(struct qemu_syscall *call)
     struct qemu_d3d9_RegisterSoftwareDevice *c = (struct qemu_d3d9_RegisterSoftwareDevice *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_FIXME("Unverified\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9_RegisterSoftwareDevice(d3d9->host, QEMU_G2H(c->init_function));
@@ -224,7 +224,7 @@ void qemu_d3d9_GetAdapterCount(struct qemu_syscall *call)
     struct qemu_d3d9_GetAdapterCount *c = (struct qemu_d3d9_GetAdapterCount *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9_GetAdapterCount(d3d9->host);
@@ -265,7 +265,7 @@ void qemu_d3d9_GetAdapterIdentifier(struct qemu_syscall *call)
     struct qemu_d3d9_GetAdapterIdentifier *c = (struct qemu_d3d9_GetAdapterIdentifier *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9_GetAdapterIdentifier(d3d9->host, c->adapter, c->flags, QEMU_G2H(c->identifier));
@@ -304,7 +304,7 @@ void qemu_d3d9_GetAdapterModeCount(struct qemu_syscall *call)
     struct qemu_d3d9_GetAdapterModeCount *c = (struct qemu_d3d9_GetAdapterModeCount *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9_GetAdapterModeCount(d3d9->host, c->adapter, c->format);
@@ -347,7 +347,7 @@ void qemu_d3d9_EnumAdapterModes(struct qemu_syscall *call)
     struct qemu_d3d9_EnumAdapterModes *c = (struct qemu_d3d9_EnumAdapterModes *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9_EnumAdapterModes(d3d9->host, c->adapter, c->format, c->mode_idx, QEMU_G2H(c->mode));
@@ -386,7 +386,7 @@ void qemu_d3d9_GetAdapterDisplayMode(struct qemu_syscall *call)
     struct qemu_d3d9_GetAdapterDisplayMode *c = (struct qemu_d3d9_GetAdapterDisplayMode *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9_GetAdapterDisplayMode(d3d9->host, c->adapter, QEMU_G2H(c->mode));
@@ -431,7 +431,7 @@ void qemu_d3d9_CheckDeviceType(struct qemu_syscall *call)
     struct qemu_d3d9_CheckDeviceType *c = (struct qemu_d3d9_CheckDeviceType *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9_CheckDeviceType(d3d9->host, c->adapter, c->device_type, c->display_format, c->backbuffer_format, c->windowed);
@@ -478,7 +478,7 @@ void qemu_d3d9_CheckDeviceFormat(struct qemu_syscall *call)
     struct qemu_d3d9_CheckDeviceFormat *c = (struct qemu_d3d9_CheckDeviceFormat *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9_CheckDeviceFormat(d3d9->host, c->adapter, c->device_type, c->adapter_format, c->usage, c->resource_type, c->format);
@@ -525,7 +525,7 @@ void qemu_d3d9_CheckDeviceMultiSampleType(struct qemu_syscall *call)
     struct qemu_d3d9_CheckDeviceMultiSampleType *c = (struct qemu_d3d9_CheckDeviceMultiSampleType *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9_CheckDeviceMultiSampleType(d3d9->host, c->adapter, c->device_type, c->format, c->windowed, c->multisample_type, QEMU_G2H(c->levels));
@@ -570,7 +570,7 @@ void qemu_d3d9_CheckDepthStencilMatch(struct qemu_syscall *call)
     struct qemu_d3d9_CheckDepthStencilMatch *c = (struct qemu_d3d9_CheckDepthStencilMatch *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9_CheckDepthStencilMatch(d3d9->host, c->adapter, c->device_type, c->adapter_format, c->rt_format, c->ds_format);
@@ -613,7 +613,7 @@ void qemu_d3d9_CheckDeviceFormatConversion(struct qemu_syscall *call)
     struct qemu_d3d9_CheckDeviceFormatConversion *c = (struct qemu_d3d9_CheckDeviceFormatConversion *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9_CheckDeviceFormatConversion(d3d9->host, c->adapter, c->device_type, c->src_format, c->dst_format);
@@ -654,7 +654,7 @@ void qemu_d3d9_GetDeviceCaps(struct qemu_syscall *call)
     struct qemu_d3d9_GetDeviceCaps *c = (struct qemu_d3d9_GetDeviceCaps *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9_GetDeviceCaps(d3d9->host, c->adapter, c->device_type, QEMU_G2H(c->caps));
@@ -691,7 +691,7 @@ void qemu_d3d9_GetAdapterMonitor(struct qemu_syscall *call)
     struct qemu_d3d9_GetAdapterMonitor *c = (struct qemu_d3d9_GetAdapterMonitor *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = (uint64_t)IDirect3D9_GetAdapterMonitor(d3d9->host, c->adapter);
@@ -777,7 +777,7 @@ void qemu_d3d9_GetAdapterModeCountEx(struct qemu_syscall *call)
     struct qemu_d3d9_GetAdapterModeCountEx *c = (struct qemu_d3d9_GetAdapterModeCountEx *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9Ex_GetAdapterModeCountEx(d3d9->host, c->adapter, QEMU_G2H(c->filter));
@@ -820,7 +820,7 @@ void qemu_d3d9_EnumAdapterModesEx(struct qemu_syscall *call)
     struct qemu_d3d9_EnumAdapterModesEx *c = (struct qemu_d3d9_EnumAdapterModesEx *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9Ex_EnumAdapterModesEx(d3d9->host, c->adapter, QEMU_G2H(c->filter), c->mode_idx, QEMU_G2H(c->mode));
@@ -861,7 +861,7 @@ void qemu_d3d9_GetAdapterDisplayModeEx(struct qemu_syscall *call)
     struct qemu_d3d9_GetAdapterDisplayModeEx *c = (struct qemu_d3d9_GetAdapterDisplayModeEx *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9Ex_GetAdapterDisplayModeEx(d3d9->host, c->adapter, QEMU_G2H(c->mode), QEMU_G2H(c->rotation));
@@ -949,7 +949,7 @@ void qemu_d3d9_GetAdapterLUID(struct qemu_syscall *call)
     struct qemu_d3d9_GetAdapterLUID *c = (struct qemu_d3d9_GetAdapterLUID *)call;
     struct qemu_d3d9_impl *d3d9;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D9Ex_GetAdapterLUID(d3d9->host, c->adapter, QEMU_G2H(c->luid));
