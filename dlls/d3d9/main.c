@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <d3d9.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -41,6 +42,28 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu_d3d9_AddRef,
+    qemu_d3d9_CheckDepthStencilMatch,
+    qemu_d3d9_CheckDeviceFormat,
+    qemu_d3d9_CheckDeviceFormatConversion,
+    qemu_d3d9_CheckDeviceMultiSampleType,
+    qemu_d3d9_CheckDeviceType,
+    qemu_d3d9_CreateDevice,
+    qemu_d3d9_CreateDeviceEx,
+    qemu_d3d9_EnumAdapterModes,
+    qemu_d3d9_EnumAdapterModesEx,
+    qemu_d3d9_GetAdapterCount,
+    qemu_d3d9_GetAdapterDisplayMode,
+    qemu_d3d9_GetAdapterDisplayModeEx,
+    qemu_d3d9_GetAdapterIdentifier,
+    qemu_d3d9_GetAdapterLUID,
+    qemu_d3d9_GetAdapterModeCount,
+    qemu_d3d9_GetAdapterModeCountEx,
+    qemu_d3d9_GetAdapterMonitor,
+    qemu_d3d9_GetDeviceCaps,
+    qemu_d3d9_QueryInterface,
+    qemu_d3d9_RegisterSoftwareDevice,
+    qemu_d3d9_Release,
     qemu_D3DPERF_BeginEvent,
     qemu_D3DPERF_EndEvent,
     qemu_D3DPERF_GetStatus,
