@@ -7,7 +7,7 @@ DESTDIR=`pwd`
 
 mkdir -p $DESTDIR/build
 mkdir -p $DESTDIR/build/wine-host
-#mkdir -p $DESTDIR/build/wine-guest
+mkdir -p $DESTDIR/build/wine-guest
 mkdir -p $DESTDIR/build/qemu
 
 # Build the Host (e.g. arm64) wine
@@ -17,9 +17,9 @@ make -j 4
 
 # Cross-Compile Wine for the guest platform to copy higher level DLLs from. Disabled for now.
 # Unfortunately this won't work for msvcrt because our msvcrt imports symbols from Linux libc.
-#cd ../wine-guest
-#$SRCDIR/wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-host --without-freetype --enable-msvcrt
-#make -j 4
+cd ../wine-guest
+$SRCDIR/wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-host --without-freetype
+make -j 4
 
 # Build qemu
 cd $DESTDIR/build/qemu
