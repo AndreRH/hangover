@@ -3,7 +3,72 @@ LIBRARY advapi32.dll BASE=0x40000000
 EXPORTS
   IsTextUnicode
   RegCloseKey
+  RegConnectRegistryA
+  RegConnectRegistryW
+  RegCopyTreeA
+  RegCopyTreeW
+  RegCreateKeyA
+  RegCreateKeyExA
   RegCreateKeyExW
+  RegCreateKeyTransactedA
+  RegCreateKeyTransactedW
+  RegCreateKeyW
+  RegDeleteKeyA
+  RegDeleteKeyExA
+  RegDeleteKeyExW
+  RegDeleteKeyValueA
+  RegDeleteKeyValueW
+  RegDeleteKeyW
+  RegDeleteTreeA
+  RegDeleteTreeW
+  RegDeleteValueA
+  RegDeleteValueW
+  RegDisablePredefinedCache
+  RegDisableReflectionKey
+  RegEnumKeyA
+  RegEnumKeyExA
+  RegEnumKeyExW
+  RegEnumKeyW
+  RegEnumValueA
+  RegEnumValueW
+  RegFlushKey
+  RegGetKeySecurity
+  RegGetValueA
+  RegGetValueW
+  RegLoadKeyA
+  RegLoadKeyW
+  RegLoadMUIStringA
+  RegLoadMUIStringW
+  RegNotifyChangeKeyValue
+  RegOpenCurrentUser
+  RegOpenKeyA
+  RegOpenKeyExA
+  RegOpenKeyExW
   RegOpenKeyW
+  RegOpenUserClassesRoot
+  RegOverridePredefKey
+  RegQueryInfoKeyA
+  RegQueryInfoKeyW
+  RegQueryMultipleValuesA
+  RegQueryMultipleValuesW
+  RegQueryValueA
+  RegQueryValueExA
   RegQueryValueExW
+  RegQueryValueW
+  RegReplaceKeyA
+  RegReplaceKeyW
+  RegRestoreKeyA
+  RegRestoreKeyW
+  RegSaveKeyA
+  RegSaveKeyExA
+  RegSaveKeyExW
+  RegSaveKeyW
+  RegSetKeySecurity
+  RegSetKeyValueA
+  RegSetKeyValueW
+  RegSetValueA
+  RegSetValueExA
   RegSetValueExW
+  RegSetValueW
+  RegUnLoadKeyA
+  RegUnLoadKeyW
