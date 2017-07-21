@@ -145,6 +145,7 @@ EXPORTS
   _ultoa=ntdll._ultoa
   _unlock
   _vsnprintf=MSVCRT__vsnprintf
+  _vsnwprintf=MSVCRT__vsnwprintf
   _wcmdln=MSVCRT__wcmdln
   _wcsnicmp=MSVCRT__wcsnicmp
   _wtoi=MSVCRT__wtoi

@@ -216,6 +216,7 @@ static const syscall_handler dll_functions[] =
     qemu__toupper_l,
     qemu__unlock,
     qemu_sprintf,
+    qemu_sprintf,
     qemu__wcsnicmp,
     qemu__wtoi,
     qemu__xcptfilter,
@@ -556,6 +557,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__toupper_l = (void *)GetProcAddress(msvcrt, "_toupper_l");
     p__unlock = (void *)GetProcAddress(msvcrt, "_unlock");
     p__vsnprintf = (void *)GetProcAddress(msvcrt, "_vsnprintf");
+    p__vsnwprintf = (void *)GetProcAddress(msvcrt, "_vsnwprintf");
     p__wcsnicmp = (void *)GetProcAddress(msvcrt, "_wcsnicmp");
     p__wtoi = (void *)GetProcAddress(msvcrt, "_wtoi");
     p__y0 = (void *)GetProcAddress(msvcrt, "_y0");

@@ -147,6 +147,7 @@ enum msvcrt_calls
     CALL__TOUPPER_L,
     CALL__UNLOCK,
     CALL__VSNPRINTF,
+    CALL__VSNWPRINTF,
     CALL__WCSNICMP,
     CALL__WTOI,
     CALL__XCPTFILTER,
@@ -1016,6 +1017,7 @@ size_t (* CDECL p_wcstombs)(char *mbstr, const WCHAR *wcstr, size_t count);
 char * (* CDECL p_setlocale)(int category, const char *locale);
 int (* CDECL p__isatty)(int fd);
 int (* CDECL p__vsnprintf)(char *str, size_t len, const char *format, va_list valist);
+int (* CDECL p__vsnwprintf)(WCHAR *str, size_t len, const WCHAR *format, va_list valist);
 
 DWORD msvcrt_tls;
 
