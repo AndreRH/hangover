@@ -12,6 +12,9 @@ enum msvcrt_calls
     CALL___FPECODE,
     CALL___GETMAINARGS,
     CALL___IOB_FUNC,
+    CALL___ISASCII,
+    CALL___ISCSYM,
+    CALL___ISCSYMF,
     CALL___LCONV_INIT,
     CALL___LIBM_SSE2_ACOS,
     CALL___LIBM_SSE2_ACOSF,
@@ -35,8 +38,11 @@ enum msvcrt_calls
     CALL___LIBM_SSE2_SQRT_PRECISE,
     CALL___LIBM_SSE2_TAN,
     CALL___LIBM_SSE2_TANF,
+    CALL___P__PCTYPE,
+    CALL___PCTYPE_FUNC,
     CALL___SET_APP_TYPE,
     CALL___SETUSERMATHERR,
+    CALL___TOASCII,
     CALL___WGETMAINARGS,
     CALL__ABS64,
     CALL__AMSG_EXIT,
@@ -89,8 +95,22 @@ enum msvcrt_calls
     CALL__GCVT_S,
     CALL__HYPOT,
     CALL__HYPOTF,
+    CALL__ISALNUM_L,
+    CALL__ISALPHA_L,
+    CALL__ISBLANK_L,
+    CALL__ISCNTRL_L,
+    CALL__ISCTYPE,
+    CALL__ISCTYPE_L,
+    CALL__ISDIGIT_L,
+    CALL__ISGRAPH_L,
+    CALL__ISLEADBYTE_L,
+    CALL__ISLOWER_L,
     CALL__ISNAN,
     CALL__ISNANF,
+    CALL__ISPRINT_L,
+    CALL__ISSPACE_L,
+    CALL__ISUPPER_L,
+    CALL__ISXDIGIT_L,
     CALL__J0,
     CALL__J1,
     CALL__JN,
@@ -120,6 +140,10 @@ enum msvcrt_calls
     CALL__STATUSFP2,
     CALL__STRDUP,
     CALL__STRICMP,
+    CALL__TOLOWER,
+    CALL__TOLOWER_L,
+    CALL__TOUPPER,
+    CALL__TOUPPER_L,
     CALL__UNLOCK,
     CALL__WCSNICMP,
     CALL__WTOI,
@@ -192,6 +216,20 @@ enum msvcrt_calls
     CALL_FREXPF,
     CALL_FWPRINTF,
     CALL_FWRITE,
+    CALL_ISALNUM,
+    CALL_ISALPHA,
+    CALL_ISBLANK,
+    CALL_ISCNTRL,
+    CALL_ISDIGIT,
+    CALL_ISGRAPH,
+    CALL_ISLEADBYTE,
+    CALL_ISLOWER,
+    CALL_ISPRINT,
+    CALL_ISPUNCT,
+    CALL_ISSPACE,
+    CALL_ISUPPER,
+    CALL_ISWASCII,
+    CALL_ISXDIGIT,
     CALL_LABS,
     CALL_LDEXP,
     CALL_LDIV,
@@ -269,6 +307,8 @@ enum msvcrt_calls
     CALL_TANH,
     CALL_TANHF,
     CALL_TERMINATE,
+    CALL_TOLOWER,
+    CALL_TOUPPER,
     CALL_TRUNC,
     CALL_TRUNCF,
     CALL_TRUNCL,
@@ -295,6 +335,8 @@ typedef struct
     unsigned int status;
 } MSVCRT_fenv_t;
 
+typedef void *MSVCRT__locale_t;
+
 #ifdef QEMU_DLL_GUEST
 
 extern char *MSVCRT__acmdln;
@@ -312,169 +354,14 @@ size_t CDECL MSVCRT_strlen(const char *str);
 
 extern const struct qemu_ops *qemu_ops;
 
-void qemu___getmainargs(struct qemu_syscall *call);
+void qemu___control87_2(struct qemu_syscall *call);
 void qemu___crt_debugger_hook(struct qemu_syscall *call);
 void qemu___cxxframehandler(struct qemu_syscall *call);
-void qemu___iob_func(struct qemu_syscall *call);
-void qemu___lconv_init(struct qemu_syscall *call);
-void qemu___set_app_type(struct qemu_syscall *call);
-void qemu___wgetmainargs(struct qemu_syscall *call);
-void qemu__amsg_exit(struct qemu_syscall *call);
-void qemu__cexit(struct qemu_syscall *call);
-void qemu__configthreadlocale(struct qemu_syscall *call);
-void qemu__exit(struct qemu_syscall *call);
-void qemu__lock(struct qemu_syscall *call);
-void qemu__onexit(struct qemu_syscall *call);
-void qemu__purecall(struct qemu_syscall *call);
-void qemu__snwprintf(struct qemu_syscall *call);
-void qemu__strdup(struct qemu_syscall *call);
-void qemu__stricmp(struct qemu_syscall *call);
-void qemu__unlock(struct qemu_syscall *call);
-void qemu__wcsnicmp(struct qemu_syscall *call);
-void qemu__wtoi(struct qemu_syscall *call);
-void qemu__xcptfilter(struct qemu_syscall *c);
-void qemu_abort(struct qemu_syscall *call);
-void qemu_atan2f(struct qemu_syscall *call);
-void qemu_calloc(struct qemu_syscall *call);
-void qemu_cosf(struct qemu_syscall *call);
-void qemu_exit(struct qemu_syscall *call);
-void qemu_fprintf(struct qemu_syscall *call);
-void qemu_free(struct qemu_syscall *call);
-void qemu_fwrite(struct qemu_syscall *call);
-void qemu_malloc(struct qemu_syscall *call);
-void qemu_memcmp(struct qemu_syscall *call);
-void qemu_memcpy(struct qemu_syscall *call);
-void qemu_memmove(struct qemu_syscall *call);
-void qemu_memset(struct qemu_syscall *call);
-void qemu_operator_delete(struct qemu_syscall *call);
-void qemu_operator_new(struct qemu_syscall *call);
-void qemu_powf(struct qemu_syscall *call);
-void qemu_puts(struct qemu_syscall *call);
-void qemu_qsort(struct qemu_syscall *call);
-void qemu_raise(struct qemu_syscall *call);
-void qemu_realloc(struct qemu_syscall *call);
-void qemu_signal(struct qemu_syscall *call);
-void qemu_sinf(struct qemu_syscall *call);
-void qemu_sprintf(struct qemu_syscall *call);
-void qemu_sqrtf(struct qemu_syscall *call);
-void qemu_strcat_s(struct qemu_syscall *call);
-void qemu_strcpy_s(struct qemu_syscall *call);
-void qemu_strlen(struct qemu_syscall *call);
-void qemu_strncmp(struct qemu_syscall *call);
-void qemu_terminate(struct qemu_syscall *c);
-void qemu_wcscat_s(struct qemu_syscall *call);
-void qemu_wcscpy(struct qemu_syscall *call);
-void qemu_wcscpy_s(struct qemu_syscall *call);
-void qemu_wcsncmp(struct qemu_syscall *call);
-void qemu_wcsstr(struct qemu_syscall *call);
-void qemu_wcstod(struct qemu_syscall *call);
-void qemu___control87_2(struct qemu_syscall *call);
 void qemu___fpe_flt_rounds(struct qemu_syscall *call);
 void qemu___fpecode(struct qemu_syscall *call);
-void qemu__abs64(struct qemu_syscall *call);
-void qemu__CIacos(struct qemu_syscall *call);
-void qemu__CIasin(struct qemu_syscall *call);
-void qemu__CIatan(struct qemu_syscall *call);
-void qemu__CIatan2(struct qemu_syscall *call);
-void qemu__CIcos(struct qemu_syscall *call);
-void qemu__CIcosh(struct qemu_syscall *call);
-void qemu__CIexp(struct qemu_syscall *call);
-void qemu__CIfmod(struct qemu_syscall *call);
-void qemu__CIlog(struct qemu_syscall *call);
-void qemu__CIlog10(struct qemu_syscall *call);
-void qemu__CIpow(struct qemu_syscall *call);
-void qemu__CIsin(struct qemu_syscall *call);
-void qemu__CIsinh(struct qemu_syscall *call);
-void qemu__CIsqrt(struct qemu_syscall *call);
-void qemu__CItan(struct qemu_syscall *call);
-void qemu__CItanh(struct qemu_syscall *call);
-void qemu__clearfp(struct qemu_syscall *call);
-void qemu__control87(struct qemu_syscall *call);
-void qemu__controlfp(struct qemu_syscall *call);
-void qemu__controlfp_s(struct qemu_syscall *call);
-void qemu__fpreset(struct qemu_syscall *call);
-void qemu__hypot(struct qemu_syscall *call);
-void qemu__rotl(struct qemu_syscall *call);
-void qemu__rotl64(struct qemu_syscall *call);
-void qemu__rotr(struct qemu_syscall *call);
-void qemu__rotr64(struct qemu_syscall *call);
-void qemu__set_controlfp(struct qemu_syscall *call);
-void qemu__statusfp(struct qemu_syscall *call);
-void qemu__statusfp2(struct qemu_syscall *call);
-void qemu__dclass(struct qemu_syscall *call);
-void qemu__dpcomp(struct qemu_syscall *call);
-void qemu__dsign(struct qemu_syscall *call);
-void qemu__dtest(struct qemu_syscall *call);
-void qemu__fdclass(struct qemu_syscall *call);
-void qemu__fdpcomp(struct qemu_syscall *call);
-void qemu__fdsign(struct qemu_syscall *call);
-void qemu__fdtest(struct qemu_syscall *call);
-void qemu__ldclass(struct qemu_syscall *call);
-void qemu__ldtest(struct qemu_syscall *call);
-void qemu_acosh(struct qemu_syscall *call);
-void qemu_acoshf(struct qemu_syscall *call);
-void qemu_acoshl(struct qemu_syscall *call);
-void qemu_asinh(struct qemu_syscall *call);
-void qemu_asinhf(struct qemu_syscall *call);
-void qemu_asinhl(struct qemu_syscall *call);
-void qemu_atanh(struct qemu_syscall *call);
-void qemu_atanhf(struct qemu_syscall *call);
-void qemu_atanhl(struct qemu_syscall *call);
-void qemu_cbrt(struct qemu_syscall *call);
-void qemu_cbrtf(struct qemu_syscall *call);
-void qemu_cbrtl(struct qemu_syscall *call);
-void qemu_erf(struct qemu_syscall *call);
-void qemu_erfc(struct qemu_syscall *call);
-void qemu_erfcf(struct qemu_syscall *call);
-void qemu_erfcl(struct qemu_syscall *call);
-void qemu_erff(struct qemu_syscall *call);
-void qemu_erfl(struct qemu_syscall *call);
-void qemu_exp2(struct qemu_syscall *call);
-void qemu_exp2f(struct qemu_syscall *call);
-void qemu_exp2l(struct qemu_syscall *call);
-void qemu_expm1(struct qemu_syscall *call);
-void qemu_expm1f(struct qemu_syscall *call);
-void qemu_expm1l(struct qemu_syscall *call);
-void qemu_fmax(struct qemu_syscall *call);
-void qemu_fmaxf(struct qemu_syscall *call);
-void qemu_fmin(struct qemu_syscall *call);
-void qemu_fminf(struct qemu_syscall *call);
-void qemu_lgamma(struct qemu_syscall *call);
-void qemu_lgammaf(struct qemu_syscall *call);
-void qemu_lgammal(struct qemu_syscall *call);
-void qemu_llrint(struct qemu_syscall *call);
-void qemu_llrintf(struct qemu_syscall *call);
-void qemu_llrintl(struct qemu_syscall *call);
-void qemu_llround(struct qemu_syscall *call);
-void qemu_llroundf(struct qemu_syscall *call);
-void qemu_llroundl(struct qemu_syscall *call);
-void qemu_log1p(struct qemu_syscall *call);
-void qemu_log1pf(struct qemu_syscall *call);
-void qemu_log1pl(struct qemu_syscall *call);
-void qemu_log2(struct qemu_syscall *call);
-void qemu_log2f(struct qemu_syscall *call);
-void qemu_log2l(struct qemu_syscall *call);
-void qemu_lrint(struct qemu_syscall *call);
-void qemu_lrintf(struct qemu_syscall *call);
-void qemu_lrintl(struct qemu_syscall *call);
-void qemu_lround(struct qemu_syscall *call);
-void qemu_lroundf(struct qemu_syscall *call);
-void qemu_lroundl(struct qemu_syscall *call);
-void qemu_nan(struct qemu_syscall *call);
-void qemu_nanf(struct qemu_syscall *call);
-void qemu_remainder(struct qemu_syscall *call);
-void qemu_remainderf(struct qemu_syscall *call);
-void qemu_remainderl(struct qemu_syscall *call);
-void qemu_rint(struct qemu_syscall *call);
-void qemu_rintf(struct qemu_syscall *call);
-void qemu_rintl(struct qemu_syscall *call);
-void qemu_round(struct qemu_syscall *call);
-void qemu_roundf(struct qemu_syscall *call);
-void qemu_roundl(struct qemu_syscall *call);
-void qemu_scalbnl(struct qemu_syscall *call);
-void qemu_trunc(struct qemu_syscall *call);
-void qemu_truncf(struct qemu_syscall *call);
-void qemu_truncl(struct qemu_syscall *call);
+void qemu___getmainargs(struct qemu_syscall *call);
+void qemu___iob_func(struct qemu_syscall *call);
+void qemu___lconv_init(struct qemu_syscall *call);
 void qemu___libm_sse2_acos(struct qemu_syscall *call);
 void qemu___libm_sse2_acosf(struct qemu_syscall *call);
 void qemu___libm_sse2_asin(struct qemu_syscall *call);
@@ -497,28 +384,68 @@ void qemu___libm_sse2_sinf(struct qemu_syscall *call);
 void qemu___libm_sse2_sqrt_precise(struct qemu_syscall *call);
 void qemu___libm_sse2_tan(struct qemu_syscall *call);
 void qemu___libm_sse2_tanf(struct qemu_syscall *call);
+void qemu___set_app_type(struct qemu_syscall *call);
 void qemu___setusermatherr(struct qemu_syscall *call);
+void qemu___wgetmainargs(struct qemu_syscall *call);
+void qemu__abs64(struct qemu_syscall *call);
+void qemu__amsg_exit(struct qemu_syscall *call);
 void qemu__cabs(struct qemu_syscall *call);
+void qemu__cexit(struct qemu_syscall *call);
 void qemu__chgsign(struct qemu_syscall *call);
 void qemu__chgsignf(struct qemu_syscall *call);
+void qemu__CIacos(struct qemu_syscall *call);
+void qemu__CIasin(struct qemu_syscall *call);
+void qemu__CIatan(struct qemu_syscall *call);
+void qemu__CIatan2(struct qemu_syscall *call);
+void qemu__CIcos(struct qemu_syscall *call);
+void qemu__CIcosh(struct qemu_syscall *call);
+void qemu__CIexp(struct qemu_syscall *call);
+void qemu__CIfmod(struct qemu_syscall *call);
+void qemu__CIlog(struct qemu_syscall *call);
+void qemu__CIlog10(struct qemu_syscall *call);
+void qemu__CIpow(struct qemu_syscall *call);
+void qemu__CIsin(struct qemu_syscall *call);
+void qemu__CIsinh(struct qemu_syscall *call);
+void qemu__CIsqrt(struct qemu_syscall *call);
+void qemu__CItan(struct qemu_syscall *call);
+void qemu__CItanh(struct qemu_syscall *call);
+void qemu__clearfp(struct qemu_syscall *call);
+void qemu__configthreadlocale(struct qemu_syscall *call);
+void qemu__control87(struct qemu_syscall *call);
+void qemu__controlfp(struct qemu_syscall *call);
+void qemu__controlfp_s(struct qemu_syscall *call);
 void qemu__copysign(struct qemu_syscall *call);
 void qemu__copysignf(struct qemu_syscall *call);
+void qemu__dclass(struct qemu_syscall *call);
+void qemu__dpcomp(struct qemu_syscall *call);
+void qemu__dsign(struct qemu_syscall *call);
+void qemu__dtest(struct qemu_syscall *call);
 void qemu__ecvt(struct qemu_syscall *call);
 void qemu__ecvt_s(struct qemu_syscall *call);
+void qemu__exit(struct qemu_syscall *call);
 void qemu__fcvt(struct qemu_syscall *call);
 void qemu__fcvt_s(struct qemu_syscall *call);
+void qemu__fdclass(struct qemu_syscall *call);
+void qemu__fdpcomp(struct qemu_syscall *call);
+void qemu__fdsign(struct qemu_syscall *call);
+void qemu__fdtest(struct qemu_syscall *call);
 void qemu__finite(struct qemu_syscall *call);
 void qemu__finitef(struct qemu_syscall *call);
 void qemu__fpclass(struct qemu_syscall *call);
+void qemu__fpreset(struct qemu_syscall *call);
 void qemu__ftol(struct qemu_syscall *call);
 void qemu__gcvt(struct qemu_syscall *call);
 void qemu__gcvt_s(struct qemu_syscall *call);
+void qemu__hypot(struct qemu_syscall *call);
 void qemu__hypotf(struct qemu_syscall *call);
 void qemu__isnan(struct qemu_syscall *call);
 void qemu__isnanf(struct qemu_syscall *call);
 void qemu__j0(struct qemu_syscall *call);
 void qemu__j1(struct qemu_syscall *call);
 void qemu__jn(struct qemu_syscall *call);
+void qemu__ldclass(struct qemu_syscall *call);
+void qemu__ldtest(struct qemu_syscall *call);
+void qemu__lock(struct qemu_syscall *call);
 void qemu__logb(struct qemu_syscall *call);
 void qemu__logbf(struct qemu_syscall *call);
 void qemu__lrotl(struct qemu_syscall *call);
@@ -526,31 +453,76 @@ void qemu__lrotr(struct qemu_syscall *call);
 void qemu__matherr(struct qemu_syscall *call);
 void qemu__nextafter(struct qemu_syscall *call);
 void qemu__nextafterf(struct qemu_syscall *call);
+void qemu__onexit(struct qemu_syscall *call);
+void qemu__purecall(struct qemu_syscall *call);
+void qemu__rotl(struct qemu_syscall *call);
+void qemu__rotl64(struct qemu_syscall *call);
+void qemu__rotr(struct qemu_syscall *call);
+void qemu__rotr64(struct qemu_syscall *call);
 void qemu__scalb(struct qemu_syscall *call);
 void qemu__scalbf(struct qemu_syscall *call);
+void qemu__set_controlfp(struct qemu_syscall *call);
 void qemu__set_FMA3_enable(struct qemu_syscall *call);
 void qemu__set_SSE2_enable(struct qemu_syscall *call);
+void qemu__snwprintf(struct qemu_syscall *call);
+void qemu__statusfp(struct qemu_syscall *call);
+void qemu__statusfp2(struct qemu_syscall *call);
+void qemu__strdup(struct qemu_syscall *call);
+void qemu__stricmp(struct qemu_syscall *call);
+void qemu__unlock(struct qemu_syscall *call);
+void qemu__wcsnicmp(struct qemu_syscall *call);
+void qemu__wtoi(struct qemu_syscall *call);
+void qemu__xcptfilter(struct qemu_syscall *c);
 void qemu__y0(struct qemu_syscall *call);
 void qemu__y1(struct qemu_syscall *call);
 void qemu__yn(struct qemu_syscall *call);
+void qemu_abort(struct qemu_syscall *call);
 void qemu_abs(struct qemu_syscall *call);
 void qemu_acos(struct qemu_syscall *call);
 void qemu_acosf(struct qemu_syscall *call);
+void qemu_acosh(struct qemu_syscall *call);
+void qemu_acoshf(struct qemu_syscall *call);
+void qemu_acoshl(struct qemu_syscall *call);
 void qemu_asin(struct qemu_syscall *call);
 void qemu_asinf(struct qemu_syscall *call);
+void qemu_asinh(struct qemu_syscall *call);
+void qemu_asinhf(struct qemu_syscall *call);
+void qemu_asinhl(struct qemu_syscall *call);
 void qemu_atan(struct qemu_syscall *call);
 void qemu_atan2(struct qemu_syscall *call);
 void qemu_atan2f(struct qemu_syscall *call);
+void qemu_atan2f(struct qemu_syscall *call);
 void qemu_atanf(struct qemu_syscall *call);
+void qemu_atanh(struct qemu_syscall *call);
+void qemu_atanhf(struct qemu_syscall *call);
+void qemu_atanhl(struct qemu_syscall *call);
+void qemu_calloc(struct qemu_syscall *call);
+void qemu_cbrt(struct qemu_syscall *call);
+void qemu_cbrtf(struct qemu_syscall *call);
+void qemu_cbrtl(struct qemu_syscall *call);
 void qemu_ceil(struct qemu_syscall *call);
 void qemu_ceilf(struct qemu_syscall *call);
 void qemu_cos(struct qemu_syscall *call);
 void qemu_cosf(struct qemu_syscall *call);
+void qemu_cosf(struct qemu_syscall *call);
 void qemu_cosh(struct qemu_syscall *call);
 void qemu_coshf(struct qemu_syscall *call);
 void qemu_div(struct qemu_syscall *call);
+void qemu_erf(struct qemu_syscall *call);
+void qemu_erfc(struct qemu_syscall *call);
+void qemu_erfcf(struct qemu_syscall *call);
+void qemu_erfcl(struct qemu_syscall *call);
+void qemu_erff(struct qemu_syscall *call);
+void qemu_erfl(struct qemu_syscall *call);
+void qemu_exit(struct qemu_syscall *call);
 void qemu_exp(struct qemu_syscall *call);
+void qemu_exp2(struct qemu_syscall *call);
+void qemu_exp2f(struct qemu_syscall *call);
+void qemu_exp2l(struct qemu_syscall *call);
 void qemu_expf(struct qemu_syscall *call);
+void qemu_expm1(struct qemu_syscall *call);
+void qemu_expm1f(struct qemu_syscall *call);
+void qemu_expm1l(struct qemu_syscall *call);
 void qemu_fabs(struct qemu_syscall *call);
 void qemu_fabsf(struct qemu_syscall *call);
 void qemu_fegetenv(struct qemu_syscall *call);
@@ -559,34 +531,144 @@ void qemu_fesetenv(struct qemu_syscall *call);
 void qemu_fesetround(struct qemu_syscall *call);
 void qemu_floor(struct qemu_syscall *call);
 void qemu_floorf(struct qemu_syscall *call);
+void qemu_fmax(struct qemu_syscall *call);
+void qemu_fmaxf(struct qemu_syscall *call);
+void qemu_fmin(struct qemu_syscall *call);
+void qemu_fminf(struct qemu_syscall *call);
 void qemu_fmod(struct qemu_syscall *call);
 void qemu_fmodf(struct qemu_syscall *call);
+void qemu_fprintf(struct qemu_syscall *call);
+void qemu_free(struct qemu_syscall *call);
 void qemu_frexp(struct qemu_syscall *call);
 void qemu_frexpf(struct qemu_syscall *call);
+void qemu_fwrite(struct qemu_syscall *call);
 void qemu_labs(struct qemu_syscall *call);
 void qemu_ldexp(struct qemu_syscall *call);
 void qemu_ldiv(struct qemu_syscall *call);
+void qemu_lgamma(struct qemu_syscall *call);
+void qemu_lgammaf(struct qemu_syscall *call);
+void qemu_lgammal(struct qemu_syscall *call);
 void qemu_llabs(struct qemu_syscall *call);
+void qemu_llrint(struct qemu_syscall *call);
+void qemu_llrintf(struct qemu_syscall *call);
+void qemu_llrintl(struct qemu_syscall *call);
+void qemu_llround(struct qemu_syscall *call);
+void qemu_llroundf(struct qemu_syscall *call);
+void qemu_llroundl(struct qemu_syscall *call);
 void qemu_log(struct qemu_syscall *call);
 void qemu_log10(struct qemu_syscall *call);
 void qemu_log10f(struct qemu_syscall *call);
+void qemu_log1p(struct qemu_syscall *call);
+void qemu_log1pf(struct qemu_syscall *call);
+void qemu_log1pl(struct qemu_syscall *call);
+void qemu_log2(struct qemu_syscall *call);
+void qemu_log2f(struct qemu_syscall *call);
+void qemu_log2l(struct qemu_syscall *call);
 void qemu_logf(struct qemu_syscall *call);
+void qemu_lrint(struct qemu_syscall *call);
+void qemu_lrintf(struct qemu_syscall *call);
+void qemu_lrintl(struct qemu_syscall *call);
+void qemu_lround(struct qemu_syscall *call);
+void qemu_lroundf(struct qemu_syscall *call);
+void qemu_lroundl(struct qemu_syscall *call);
+void qemu_malloc(struct qemu_syscall *call);
+void qemu_memcmp(struct qemu_syscall *call);
+void qemu_memcpy(struct qemu_syscall *call);
+void qemu_memmove(struct qemu_syscall *call);
+void qemu_memset(struct qemu_syscall *call);
 void qemu_modf(struct qemu_syscall *call);
 void qemu_modff(struct qemu_syscall *call);
+void qemu_nan(struct qemu_syscall *call);
+void qemu_nanf(struct qemu_syscall *call);
 void qemu_nearbyint(struct qemu_syscall *call);
 void qemu_nearbyintf(struct qemu_syscall *call);
+void qemu_operator_delete(struct qemu_syscall *call);
+void qemu_operator_new(struct qemu_syscall *call);
 void qemu_pow(struct qemu_syscall *call);
 void qemu_powf(struct qemu_syscall *call);
+void qemu_powf(struct qemu_syscall *call);
+void qemu_puts(struct qemu_syscall *call);
+void qemu_qsort(struct qemu_syscall *call);
+void qemu_raise(struct qemu_syscall *call);
+void qemu_realloc(struct qemu_syscall *call);
+void qemu_remainder(struct qemu_syscall *call);
+void qemu_remainderf(struct qemu_syscall *call);
+void qemu_remainderl(struct qemu_syscall *call);
+void qemu_rint(struct qemu_syscall *call);
+void qemu_rintf(struct qemu_syscall *call);
+void qemu_rintl(struct qemu_syscall *call);
+void qemu_round(struct qemu_syscall *call);
+void qemu_roundf(struct qemu_syscall *call);
+void qemu_roundl(struct qemu_syscall *call);
+void qemu_scalbnl(struct qemu_syscall *call);
+void qemu_signal(struct qemu_syscall *call);
 void qemu_sin(struct qemu_syscall *call);
+void qemu_sinf(struct qemu_syscall *call);
 void qemu_sinf(struct qemu_syscall *call);
 void qemu_sinh(struct qemu_syscall *call);
 void qemu_sinhf(struct qemu_syscall *call);
+void qemu_sprintf(struct qemu_syscall *call);
 void qemu_sqrt(struct qemu_syscall *call);
 void qemu_sqrtf(struct qemu_syscall *call);
+void qemu_sqrtf(struct qemu_syscall *call);
+void qemu_strcat_s(struct qemu_syscall *call);
+void qemu_strcpy_s(struct qemu_syscall *call);
+void qemu_strlen(struct qemu_syscall *call);
+void qemu_strncmp(struct qemu_syscall *call);
 void qemu_tan(struct qemu_syscall *call);
 void qemu_tanf(struct qemu_syscall *call);
 void qemu_tanh(struct qemu_syscall *call);
 void qemu_tanhf(struct qemu_syscall *call);
+void qemu_terminate(struct qemu_syscall *c);
+void qemu_trunc(struct qemu_syscall *call);
+void qemu_truncf(struct qemu_syscall *call);
+void qemu_truncl(struct qemu_syscall *call);
+void qemu_wcscat_s(struct qemu_syscall *call);
+void qemu_wcscpy(struct qemu_syscall *call);
+void qemu_wcscpy_s(struct qemu_syscall *call);
+void qemu_wcsncmp(struct qemu_syscall *call);
+void qemu_wcsstr(struct qemu_syscall *call);
+void qemu_wcstod(struct qemu_syscall *call);void qemu___isascii(struct qemu_syscall *call);
+void qemu___iscsym(struct qemu_syscall *call);
+void qemu___iscsymf(struct qemu_syscall *call);
+void qemu___p__pctype(struct qemu_syscall *call);
+void qemu___pctype_func(struct qemu_syscall *call);
+void qemu___toascii(struct qemu_syscall *call);
+void qemu__isalnum_l(struct qemu_syscall *call);
+void qemu__isalpha_l(struct qemu_syscall *call);
+void qemu__isblank_l(struct qemu_syscall *call);
+void qemu__iscntrl_l(struct qemu_syscall *call);
+void qemu__isctype(struct qemu_syscall *call);
+void qemu__isctype_l(struct qemu_syscall *call);
+void qemu__isdigit_l(struct qemu_syscall *call);
+void qemu__isgraph_l(struct qemu_syscall *call);
+void qemu__isleadbyte_l(struct qemu_syscall *call);
+void qemu__islower_l(struct qemu_syscall *call);
+void qemu__isprint_l(struct qemu_syscall *call);
+void qemu__isspace_l(struct qemu_syscall *call);
+void qemu__isupper_l(struct qemu_syscall *call);
+void qemu__isxdigit_l(struct qemu_syscall *call);
+void qemu__tolower(struct qemu_syscall *call);
+void qemu__tolower_l(struct qemu_syscall *call);
+void qemu__toupper(struct qemu_syscall *call);
+void qemu__toupper_l(struct qemu_syscall *call);
+void qemu_isalnum(struct qemu_syscall *call);
+void qemu_isalpha(struct qemu_syscall *call);
+void qemu_isblank(struct qemu_syscall *call);
+void qemu_iscntrl(struct qemu_syscall *call);
+void qemu_isdigit(struct qemu_syscall *call);
+void qemu_isgraph(struct qemu_syscall *call);
+void qemu_isleadbyte(struct qemu_syscall *call);
+void qemu_islower(struct qemu_syscall *call);
+void qemu_isprint(struct qemu_syscall *call);
+void qemu_ispunct(struct qemu_syscall *call);
+void qemu_isspace(struct qemu_syscall *call);
+void qemu_isupper(struct qemu_syscall *call);
+void qemu_iswascii(struct qemu_syscall *call);
+void qemu_isxdigit(struct qemu_syscall *call);
+void qemu_tolower(struct qemu_syscall *call);
+void qemu_toupper(struct qemu_syscall *call);
+
 
 /* Be careful not to call the Linux libc! */
 void (* CDECL p___crt_debugger_hook)(int reserved);
@@ -866,6 +948,47 @@ float (* CDECL p_lgammaf)(float x);
 double (* CDECL p_lgammal)(double x);
 double (* CDECL p_nan)(const char *tagp);
 float (* CDECL p_nanf)(const char *tagp);
+
+unsigned short** (* CDECL p___p__pctype)(void);
+const unsigned short* (* CDECL p___pctype_func)(void);
+int (* CDECL p__isctype_l)(int c, int type, MSVCRT__locale_t locale);
+int (* CDECL p__isctype)(int c, int type);
+int (* CDECL p__isalnum_l)(int c, MSVCRT__locale_t locale);
+int (* CDECL p__isalpha_l)(int c, MSVCRT__locale_t locale);
+int (* CDECL p__iscntrl_l)(int c, MSVCRT__locale_t locale);
+int (* CDECL p__isdigit_l)(int c, MSVCRT__locale_t locale);
+int (* CDECL p__isgraph_l)(int c, MSVCRT__locale_t locale);
+int (* CDECL p__isleadbyte_l)(int c, MSVCRT__locale_t locale);
+int (* CDECL p_isleadbyte)(int c);
+int (* CDECL p__islower_l)(int c, MSVCRT__locale_t locale);
+int (* CDECL p__isprint_l)(int c, MSVCRT__locale_t locale);
+int (* CDECL p__isspace_l)(int c, MSVCRT__locale_t locale);
+int (* CDECL p__isupper_l)(int c, MSVCRT__locale_t locale);
+int (* CDECL p__isxdigit_l)(int c, MSVCRT__locale_t locale);
+int (* CDECL p__isblank_l)(int c, MSVCRT__locale_t locale);
+int (* CDECL p_iswascii)(wchar_t c);
+int (* CDECL p___iscsym)(int c);
+int (* CDECL p___iscsymf)(int c);
+int (* CDECL p__toupper_l)(int c, MSVCRT__locale_t locale);
+int (* CDECL p__tolower_l)(int c, MSVCRT__locale_t locale);
+int (* CDECL p_isalnum)(int c);
+int (* CDECL p_isalpha)(int c);
+int (* CDECL p_iscntrl)(int c);
+int (* CDECL p_isdigit)(int c);
+int (* CDECL p_isgraph)(int c);
+int (* CDECL p_islower)(int c);
+int (* CDECL p_isprint)(int c);
+int (* CDECL p_ispunct)(int c);
+int (* CDECL p_isspace)(int c);
+int (* CDECL p_isupper)(int c);
+int (* CDECL p_isxdigit)(int c);
+int (* CDECL p_isblank)(int c);
+int (* CDECL p___isascii)(int c);
+int (* CDECL p___toascii)(int c);
+int (* CDECL p_toupper)(int c);
+int (* CDECL p__toupper)(int c);
+int (* CDECL p_tolower)(int c);
+int (* CDECL p__tolower)(int c);
 
 DWORD msvcrt_tls;
 
