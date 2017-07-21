@@ -89,6 +89,11 @@ make -j4
 ln -sf $PWD/d3d9.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
 ln -sf $PWD/qemu_d3d9.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
 
+cd $DESTDIR/dlls/d3dx9_43
+make -j4
+ln -sf $PWD/d3dx9_43.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
+ln -sf $PWD/qemu_d3dx9_43.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+
 # Build the test progs. FIXME: automate this better.
 cd $DESTDIR/testprogs/advapi32
 make -j4

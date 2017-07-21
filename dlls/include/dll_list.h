@@ -13,5 +13,6 @@
 #define DLL_MSVCR100    0xaLL
 #define DLL_COMCTL32    0xbLL
 #define DLL_D3D9        0xcLL
+#define DLL_D3DX9_43    0xdLL
 
 #endif
