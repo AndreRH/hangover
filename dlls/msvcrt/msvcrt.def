@@ -150,6 +150,7 @@ EXPORTS
   _vsnwprintf=MSVCRT__vsnwprintf
   _wcmdln=MSVCRT__wcmdln
   _wcsnicmp=MSVCRT__wcsnicmp
+  _write=MSVCRT__write
   _wtoi=MSVCRT__wtoi
   _XcptFilter=MSVCRT__XcptFilter
   _y0=MSVCRT__y0

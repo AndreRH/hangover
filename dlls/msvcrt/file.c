@@ -120,6 +120,40 @@ void qemu__isatty(struct qemu_syscall *call)
 
 #endif
 
+struct qemu__write
+{
+    struct qemu_syscall super;
+    uint64_t fd;
+    uint64_t buf;
+    uint64_t count;
+};
+
+
+#ifdef QEMU_DLL_GUEST
+
+int CDECL MSVCRT__write(int fd, const void *buf, unsigned int count)
+{
+    struct qemu__write call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__WRITE);
+    call.fd = fd;
+    call.buf = (uint64_t)buf;
+    call.count = count;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__write(struct qemu_syscall *call)
+{
+    struct qemu__write *c = (struct qemu__write *)call;
+    WINE_TRACE("\n");
+    c->super.iret = p__write(c->fd, QEMU_G2H(c->buf), c->count);
+}
+
+#endif
 struct qemu_fprintf
 {
     struct qemu_syscall super;
