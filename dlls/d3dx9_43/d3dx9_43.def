@@ -1,3 +1,4 @@
 LIBRARY d3dx9_43.dll BASE=0xd0000000
 
 EXPORTS
+  D3DXVec3TransformCoord

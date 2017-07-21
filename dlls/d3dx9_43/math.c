@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Stefan Dösinger for CodeWeavers
+ * Copyright 2017 Stefan Dösinger
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,39 +20,47 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include <d3d9.h>
+#include <d3dx9.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "d3dx9_43.h"
 
+#ifndef QEMU_DLL_GUEST
+#include <wine/debug.h>
+WINE_DEFAULT_DEBUG_CHANNEL(qemu_d3dx9);
+#endif
+
+struct qemu_D3DXVec3TransformCoord
+{
+    struct qemu_syscall super;
+    uint64_t pout;
+    uint64_t pv;
+    uint64_t pm;
+};
+
 #ifdef QEMU_DLL_GUEST
 
-BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
+D3DXVECTOR3* WINAPI D3DXVec3TransformCoord(D3DXVECTOR3 *pout, const D3DXVECTOR3 *pv, const D3DXMATRIX *pm)
 {
-    return TRUE;
+    struct qemu_D3DXVec3TransformCoord call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_D3DXVEC3TRANSFORMCOORD);
+    call.pout = (uint64_t)pout;
+    call.pv = (uint64_t)pv;
+    call.pm = (uint64_t)pm;
+
+    qemu_syscall(&call.super);
+
+    return (D3DXVECTOR3 *)call.super.iret;
 }
 
 #else
 
-#include <wine/debug.h>
-WINE_DEFAULT_DEBUG_CHANNEL(qemu_d3dx9);
-
-const struct qemu_ops *qemu_ops;
-
-static const syscall_handler dll_functions[] =
+void qemu_D3DXVec3TransformCoord(struct qemu_syscall *call)
 {
-    qemu_D3DXVec3TransformCoord,
-};
-
-const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
-{
-    WINE_TRACE("Loading host-side d3dx9 wrapper.\n");
-
-    qemu_ops = ops;
-    *dll_num = QEMU_CURRENT_DLL;
-
-    return dll_functions;
+    struct qemu_D3DXVec3TransformCoord *c = (struct qemu_D3DXVec3TransformCoord *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(D3DXVec3TransformCoord(QEMU_G2H(c->pout), QEMU_G2H(c->pv), QEMU_G2H(c->pm)));
 }
 
 #endif
