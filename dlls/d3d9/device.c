@@ -58,6 +58,11 @@ static HRESULT WINAPI d3d9_device_QueryInterface(IDirect3DDevice9Ex *iface, REFI
 
     qemu_syscall(&call.super);
 
+    /* This call either returns IDirect3DDevice9 or IDirect3DDevice9Ex, but no other
+     * interface. */
+    if (SUCCEEDED(call.super.iret))
+        *out = &device->IDirect3DDevice9Ex_iface;
+
     return call.super.iret;
 }
 
@@ -67,11 +72,16 @@ void qemu_d3d9_device_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_QueryInterface *c = (struct qemu_d3d9_device_QueryInterface *)call;
     struct qemu_d3d9_device_impl *device;
+    GUID *iid;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    iid = QEMU_G2H(c->riid);
 
-    c->super.iret = IDirect3DDevice9Ex_QueryInterface(device->host, QEMU_G2H(c->riid), QEMU_G2H(c->out));
+    if (!IsEqualGUID(iid, &IID_IDirect3DDevice9) && !IsEqualGUID(iid, &IID_IDirect3DDevice9Ex))
+        WINE_FIXME("Unexpected GUID %s.\n", wine_dbgstr_guid(iid));
+
+    c->super.iret = IDirect3DDevice9Ex_QueryInterface(device->host, iid, QEMU_G2H(c->out));
 }
 
 #endif

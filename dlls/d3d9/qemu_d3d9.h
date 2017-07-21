@@ -435,6 +435,9 @@ void d3d9_surface_init(struct qemu_d3d9_surface_impl *surface, IDirect3DSurface9
 extern const GUID qemu_d3d9_swapchain_guid;
 extern const GUID qemu_d3d9_surface_guid;
 
+const GUID *pIID_IDirect3DDevice9;
+const GUID *pIID_IDirect3DDevice9Ex;
+
 #endif
 
 #endif

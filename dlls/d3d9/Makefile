@@ -9,7 +9,7 @@ d3d9.dll: d3d9.def d3d9_main_g.o device_g.o directx_g.o main_g.o surface_g.o swa
 	x86_64-w64-mingw32-ld -shared d3d9.def *_g.o -o d3d9.dll -nostdlib -e DllMain
 
 qemu_d3d9.dll.so: d3d9_main_h.o device_h.o directx_h.o main_h.o qemu_d3d9.spec surface_h.o swapchain_h.o
-	$(WINEGCC) -shared qemu_d3d9.spec *_h.o -o qemu_d3d9.dll.so -ld3d9
+	$(WINEGCC) -shared qemu_d3d9.spec *_h.o -o qemu_d3d9.dll.so -ld3d9 -ldxguid
 
 %_g.o: %.c qemu_d3d9.h Makefile
 	x86_64-w64-mingw32-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
