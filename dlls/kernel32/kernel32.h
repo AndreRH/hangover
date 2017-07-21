@@ -145,6 +145,7 @@ enum kernel32_calls
     CALL_FLUSHVIEWOFFILE,
     CALL_FOLDSTRINGA,
     CALL_FOLDSTRINGW,
+    CALL_FORMATMESSAGEA,
     CALL_FORMATMESSAGEW,
     CALL_FREEENVIRONMENTSTRINGSA,
     CALL_FREEENVIRONMENTSTRINGSW,
@@ -687,7 +688,7 @@ void qemu_FlushFileBuffers(struct qemu_syscall *call);
 void qemu_FlushViewOfFile(struct qemu_syscall *call);
 void qemu_FoldStringA(struct qemu_syscall *call);
 void qemu_FoldStringW(struct qemu_syscall *call);
-void qemu_FormatMessageW(struct qemu_syscall *call);
+void qemu_FormatMessage(struct qemu_syscall *call);
 void qemu_FreeEnvironmentStringsA(struct qemu_syscall *call);
 void qemu_FreeEnvironmentStringsW(struct qemu_syscall *call);
 void qemu_FreeLibrary(struct qemu_syscall *call);

@@ -148,6 +148,7 @@ EXPORTS
   FlushViewOfFile
   FoldStringA
   FoldStringW
+  FormatMessageA
   FormatMessageW
   FreeEnvironmentStringsA
   FreeEnvironmentStringsW
