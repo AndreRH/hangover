@@ -55,6 +55,37 @@ void qemu___iob_func(struct qemu_syscall *c)
 
 #endif
 
+struct qemu__isatty
+{
+    struct qemu_syscall super;
+    uint64_t fd;
+};
+
+
+#ifdef QEMU_DLL_GUEST
+
+int CDECL MSVCRT__isatty(int fd)
+{
+    struct qemu__isatty call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__ISATTY);
+    call.fd = (uint64_t)fd;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__isatty(struct qemu_syscall *call)
+{
+    struct qemu__isatty *c = (struct qemu__isatty *)call;
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)p__isatty(c->fd);
+}
+
+#endif
+
 struct qemu_fprintf
 {
     struct qemu_syscall super;

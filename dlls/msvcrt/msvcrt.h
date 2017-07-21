@@ -97,6 +97,7 @@ enum msvcrt_calls
     CALL__HYPOTF,
     CALL__ISALNUM_L,
     CALL__ISALPHA_L,
+    CALL__ISATTY,
     CALL__ISBLANK_L,
     CALL__ISCNTRL_L,
     CALL__ISCTYPE,
@@ -453,6 +454,7 @@ void qemu__hypot(struct qemu_syscall *call);
 void qemu__hypotf(struct qemu_syscall *call);
 void qemu__isalnum_l(struct qemu_syscall *call);
 void qemu__isalpha_l(struct qemu_syscall *call);
+void qemu__isatty(struct qemu_syscall *call);
 void qemu__isblank_l(struct qemu_syscall *call);
 void qemu__iscntrl_l(struct qemu_syscall *call);
 void qemu__isctype(struct qemu_syscall *call);
@@ -1011,6 +1013,7 @@ INT (* CDECL p_wctomb)(char *dst, WCHAR ch);
 size_t (* CDECL p_wcstombs)(char *mbstr, const WCHAR *wcstr, size_t count);
 
 char * (* CDECL p_setlocale)(int category, const char *locale);
+int (* CDECL p__isatty)(int fd);
 
 DWORD msvcrt_tls;
 

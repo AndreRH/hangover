@@ -166,6 +166,7 @@ static const syscall_handler dll_functions[] =
     qemu__hypotf,
     qemu__isalnum_l,
     qemu__isalpha_l,
+    qemu__isatty,
     qemu__isblank_l,
     qemu__iscntrl_l,
     qemu__isctype,
@@ -505,6 +506,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__hypotf = (void *)GetProcAddress(msvcrt, "_hypotf");
     p__isalnum_l = (void *)GetProcAddress(msvcrt, "_isalnum_l");
     p__isalpha_l = (void *)GetProcAddress(msvcrt, "_isalpha_l");
+    p__isatty = (void *)GetProcAddress(msvcrt, "_isatty");
     p__isblank_l = (void *)GetProcAddress(msvcrt, "_isblank_l");
     p__iscntrl_l = (void *)GetProcAddress(msvcrt, "_iscntrl_l");
     p__isctype = (void *)GetProcAddress(msvcrt, "_isctype");

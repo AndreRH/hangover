@@ -94,6 +94,7 @@ EXPORTS
   _initterm_e
   _isalnum_l=MSVCRT__isalnum_l
   _isalpha_l=MSVCRT__isalpha_l
+  _isatty=MSVCRT__isatty
   _isblank_l=MSVCRT__isblank_l
   _iscntrl_l=MSVCRT__iscntrl_l
   _isctype=MSVCRT__isctype
