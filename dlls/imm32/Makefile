@@ -5,10 +5,10 @@ WINEGCC=$(DESTDIR)/build/wine-host/tools/winegcc/winegcc -B$(DESTDIR)/build/wine
 
 all: imm32.dll qemu_imm32.dll.so
 
-imm32.dll: imm32.def main_g.o
+imm32.dll: imm32.def imm_g.o main_g.o
 	x86_64-w64-mingw32-ld -shared imm32.def *_g.o -o imm32.dll -nostdlib -e DllMain
 
-qemu_imm32.dll.so: main_h.o
+qemu_imm32.dll.so: imm_h.o main_h.o
 	$(WINEGCC) -shared qemu_imm32.spec *_h.o -o qemu_imm32.dll.so -limm32
 
 %_g.o: %.c imm32.h Makefile
