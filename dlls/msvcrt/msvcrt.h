@@ -29,6 +29,7 @@ enum msvcrt_calls
     CALL__XCPTFILTER,
     CALL_ABORT,
     CALL_CALLOC,
+    CALL_COSF,
     CALL_EXIT,
     CALL_FPRINTF,
     CALL_FWPRINTF,
@@ -104,6 +105,7 @@ void qemu__wtoi(struct qemu_syscall *call);
 void qemu__xcptfilter(struct qemu_syscall *c);
 void qemu_abort(struct qemu_syscall *call);
 void qemu_calloc(struct qemu_syscall *call);
+void qemu_cosf(struct qemu_syscall *call);
 void qemu_exit(struct qemu_syscall *call);
 void qemu_fprintf(struct qemu_syscall *call);
 void qemu_free(struct qemu_syscall *call);
@@ -155,6 +157,7 @@ int (* CDECL p__wcsnicmp)(const WCHAR *str1, const WCHAR *str2, int count);
 int (* CDECL p__wtoi)(const WCHAR *str1);
 void (* CDECL p_abort)(void);
 void *(* CDECL p_calloc)(size_t item_count,size_t size);
+float (* CDECL p_cosf)(float x);
 void (* CDECL p_exit)(int code);
 void (* CDECL p_free)(void *ptr);
 size_t (* CDECL p_fwrite)(const void *str, size_t size, size_t count, FILE *file);

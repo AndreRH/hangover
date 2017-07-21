@@ -129,6 +129,37 @@ int CDECL MSVCRT_abs(int n)
 
 #endif
 
+struct qemu_cosf
+{
+    struct qemu_syscall super;
+    double x;
+};
+
+
+#ifdef QEMU_DLL_GUEST
+
+float CDECL MSVCRT_cosf(float x)
+{
+    struct qemu_cosf call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_COSF);
+    call.x = x;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_cosf(struct qemu_syscall *call)
+{
+    struct qemu_cosf *c = (struct qemu_cosf *)call;
+    WINE_TRACE("\n");
+    c->super.dret = p_cosf(c->x);
+}
+
+#endif
+
 struct qemu_sinf
 {
     struct qemu_syscall super;

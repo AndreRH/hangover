@@ -98,6 +98,7 @@ static const syscall_handler dll_functions[] =
     qemu__xcptfilter,
     qemu_abort,
     qemu_calloc,
+    qemu_cosf,
     qemu_exit,
     qemu_fprintf,
     qemu_fprintf,
@@ -169,6 +170,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__wtoi = (void *)GetProcAddress(msvcrt, "_wtoi");
     p_abort = (void *)GetProcAddress(msvcrt, "abort");
     p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
+    p_cosf = (void *)GetProcAddress(msvcrt, "cosf");
     p_exit = (void *)GetProcAddress(msvcrt, "exit");
     p_free = (void *)GetProcAddress(msvcrt, "free");
     p_fwrite = (void *)GetProcAddress(msvcrt, "fwrite");

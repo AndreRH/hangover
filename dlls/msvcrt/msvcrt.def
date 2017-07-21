@@ -35,6 +35,7 @@ EXPORTS
   abort=MSVCRT_abort
   abs=MSVCRT_abs
   calloc=MSVCRT_calloc
+  cosf=MSVCRT_cosf
   exit=MSVCRT_exit
   fprintf=MSVCRT_fprintf
   fwprintf=MSVCRT_fwprintf
