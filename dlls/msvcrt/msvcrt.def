@@ -212,7 +212,11 @@ EXPORTS
   ispunct=MSVCRT_ispunct
   isspace=MSVCRT_isspace
   isupper=MSVCRT_isupper
+  iswalpha=MSVCRT_iswalpha
   iswascii=MSVCRT_iswascii
+  iswdigit=MSVCRT_iswdigit
+  iswpunct=MSVCRT_iswpunct
+  iswspace=MSVCRT_iswspace
   isxdigit=MSVCRT_isxdigit
   labs=MSVCRT_labs
   ldexp=MSVCRT_ldexp
@@ -229,12 +233,8 @@ EXPORTS
   memset=MSVCRT_memset
   modf=MSVCRT_modf
   modff=MSVCRT_modff
-  iswalpha=MSVCRT_iswalpha
-  iswdigit=MSVCRT_iswdigit
-  iswpunct=MSVCRT_iswpunct
-  iswspace=MSVCRT_iswspace
-  wcstombs=MSVCRT_wcstombs
-  wctomb=MSVCRT_wctomb
+  rand=MSVCRT_rand
+  srand=MSVCRT_srand
   nearbyint=MSVCRT_nearbyint
   nearbyintf=MSVCRT_nearbyintf
   pow=MSVCRT_pow
@@ -275,4 +275,6 @@ EXPORTS
   wcsrchr=ntdll.wcsrchr
   wcsstr=MSVCRT_wcsstr
   wcstod=MSVCRT_wcstod
+  wcstombs=MSVCRT_wcstombs
+  wctomb=MSVCRT_wctomb
   wprintf=MSVCRT_wprintf

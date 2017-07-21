@@ -128,3 +128,53 @@ void qemu_qsort(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+int CDECL MSVCRT_rand(void)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL_RAND);
+
+    qemu_syscall(&call);
+
+    return call.iret;
+}
+
+#else
+
+void qemu_rand(struct qemu_syscall *c)
+{
+    WINE_TRACE("\n");
+    c->iret = p_rand();
+}
+
+#endif
+
+struct qemu_srand
+{
+    struct qemu_syscall super;
+    uint64_t seed;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+void CDECL MSVCRT_srand(unsigned int seed)
+{
+    struct qemu_srand call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SRAND);
+    call.seed = seed;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_srand(struct qemu_syscall *call)
+{
+    struct qemu_srand *c = (struct qemu_srand *)call;
+    WINE_TRACE("\n");
+    p_srand(c->seed);
+}
+
+#endif

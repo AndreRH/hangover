@@ -289,6 +289,7 @@ enum msvcrt_calls
     CALL_PUTS,
     CALL_QSORT,
     CALL_RAISE,
+    CALL_RAND,
     CALL_REALLOC,
     CALL_REMAINDER,
     CALL_REMAINDERF,
@@ -309,6 +310,7 @@ enum msvcrt_calls
     CALL_SPRINTF,
     CALL_SQRT,
     CALL_SQRTF,
+    CALL_SRAND,
     CALL_STRCAT_S,
     CALL_STRCPY_S,
     CALL_STRLEN,
@@ -651,6 +653,7 @@ void qemu_powf(struct qemu_syscall *call);
 void qemu_puts(struct qemu_syscall *call);
 void qemu_qsort(struct qemu_syscall *call);
 void qemu_raise(struct qemu_syscall *call);
+void qemu_rand(struct qemu_syscall *call);
 void qemu_realloc(struct qemu_syscall *call);
 void qemu_remainder(struct qemu_syscall *call);
 void qemu_remainderf(struct qemu_syscall *call);
@@ -672,7 +675,7 @@ void qemu_sinhf(struct qemu_syscall *call);
 void qemu_sprintf(struct qemu_syscall *call);
 void qemu_sqrt(struct qemu_syscall *call);
 void qemu_sqrtf(struct qemu_syscall *call);
-void qemu_sqrtf(struct qemu_syscall *call);
+void qemu_srand(struct qemu_syscall *call);
 void qemu_strcat_s(struct qemu_syscall *call);
 void qemu_strcpy_s(struct qemu_syscall *call);
 void qemu_strlen(struct qemu_syscall *call);
@@ -1030,6 +1033,8 @@ int (* CDECL p__fileno)(FILE *f);
 int (* CDECL p__write)(int fd, const void *buf, unsigned int count);
 double (* CDECL p_atof)(const char *str);
 size_t (* CDECL p_fread)(void *ptr, size_t size, size_t nmemb, FILE *file);
+int (*CDECL p_rand)(void);
+int (*CDECL p_srand)(int seed);
 
 DWORD msvcrt_tls;
 

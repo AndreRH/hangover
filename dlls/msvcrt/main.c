@@ -358,6 +358,7 @@ static const syscall_handler dll_functions[] =
     qemu_puts,
     qemu_qsort,
     qemu_raise,
+    qemu_rand,
     qemu_realloc,
     qemu_remainder,
     qemu_remainderf,
@@ -378,6 +379,7 @@ static const syscall_handler dll_functions[] =
     qemu_sprintf,
     qemu_sqrt,
     qemu_sqrtf,
+    qemu_srand,
     qemu_strcat_s,
     qemu_strcpy_s,
     qemu_strlen,
@@ -697,6 +699,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_powf = (void *)GetProcAddress(msvcrt, "powf");
     p_puts = (void *)GetProcAddress(msvcrt, "puts");
     p_qsort = (void *)GetProcAddress(msvcrt, "qsort");
+    p_rand = (void *)GetProcAddress(msvcrt, "rand");
     p_realloc = (void *)GetProcAddress(msvcrt, "realloc");
     p_remainder = (void *)GetProcAddress(msvcrt, "remainder");
     p_remainderf = (void *)GetProcAddress(msvcrt, "remainderf");
@@ -715,6 +718,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_sinhf = (void *)GetProcAddress(msvcrt, "sinhf");
     p_sqrt = (void *)GetProcAddress(msvcrt, "sqrt");
     p_sqrtf = (void *)GetProcAddress(msvcrt, "sqrtf");
+    p_srand = (void *)GetProcAddress(msvcrt, "srand");
     p_strcat_s = (void *)GetProcAddress(msvcrt, "strcat_s");
     p_strcpy_s = (void *)GetProcAddress(msvcrt, "strcpy_s");
     p_strlen = (void *)GetProcAddress(msvcrt, "strlen");
