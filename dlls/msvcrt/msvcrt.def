@@ -120,6 +120,8 @@ EXPORTS
   _logbf=MSVCRT__logbf
   _lrotl=MSVCRT__lrotl
   _lrotr=MSVCRT__lrotr
+  _lseek=MSVCRT__lseek
+  _lseeki64=MSVCRT__lseeki64
   _matherr=MSVCRT__matherr
   _nextafter=MSVCRT__nextafter
   _nextafterf=MSVCRT__nextafterf
@@ -140,6 +142,7 @@ EXPORTS
   _statusfp2
   _strdup = MSVCRT__strdup
   _stricmp=MSVCRT__stricmp
+  _tempnam=MSVCRT__tempnam
   _tolower=MSVCRT__tolower
   _tolower_l=MSVCRT__tolower_l
   _toupper=MSVCRT__toupper
@@ -189,6 +192,7 @@ EXPORTS
   fegetround=MSVCRT_fegetround
   fesetenv=MSVCRT_fesetenv
   fesetround=MSVCRT_fesetround
+  fflush=MSVCRT_fflush
   floor=MSVCRT_floor
   floorf=MSVCRT_floorf
   fmod=MSVCRT_fmod
@@ -233,10 +237,8 @@ EXPORTS
   memset=MSVCRT_memset
   modf=MSVCRT_modf
   modff=MSVCRT_modff
-  _lseek=MSVCRT__lseek
-  _lseeki64=MSVCRT__lseeki64
-  _tempnam=MSVCRT__tempnam
-  fflush=MSVCRT_fflush
+  _strdate=MSVCRT__strdate
+  _strtime=MSVCRT__strtime
   nearbyint=MSVCRT_nearbyint
   nearbyintf=MSVCRT_nearbyintf
   pow=MSVCRT_pow

@@ -211,8 +211,10 @@ static const syscall_handler dll_functions[] =
     qemu__snwprintf,
     qemu__statusfp,
     qemu__statusfp2,
+    qemu__strdate,
     qemu__strdup,
     qemu__stricmp,
+    qemu__strtime,
     qemu__tempnam,
     qemu__tolower,
     qemu__tolower_l,
@@ -562,8 +564,10 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__set_SSE2_enable = (void *)GetProcAddress(msvcrt, "_set_SSE2_enable");
     p__statusfp = (void *)GetProcAddress(msvcrt, "_statusfp");
     p__statusfp2 = (void *)GetProcAddress(msvcrt, "_statusfp2");
+    p__strdate = (void *)GetProcAddress(msvcrt, "_strdate");
     p__strdup = (void *)GetProcAddress(msvcrt, "_strdup");
     p__stricmp = (void *)GetProcAddress(msvcrt, "_stricmp");
+    p__strtime = (void *)GetProcAddress(msvcrt, "_strtime");
     p__tempnam = (void *)GetProcAddress(msvcrt, "_tempnam");
     p__tolower = (void *)GetProcAddress(msvcrt, "_tolower");
     p__tolower_l = (void *)GetProcAddress(msvcrt, "_tolower_l");

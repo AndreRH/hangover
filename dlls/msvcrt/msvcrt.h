@@ -142,8 +142,10 @@ enum msvcrt_calls
     CALL__SNWPRINTF,
     CALL__STATUSFP,
     CALL__STATUSFP2,
+    CALL__STRDATE,
     CALL__STRDUP,
     CALL__STRICMP,
+    CALL__STRTIME,
     CALL__TEMPNAM,
     CALL__TOLOWER,
     CALL__TOLOWER_L,
@@ -512,8 +514,10 @@ void qemu__set_SSE2_enable(struct qemu_syscall *call);
 void qemu__snwprintf(struct qemu_syscall *call);
 void qemu__statusfp(struct qemu_syscall *call);
 void qemu__statusfp2(struct qemu_syscall *call);
+void qemu__strdate(struct qemu_syscall *call);
 void qemu__strdup(struct qemu_syscall *call);
 void qemu__stricmp(struct qemu_syscall *call);
+void qemu__strtime(struct qemu_syscall *call);
 void qemu__tempnam(struct qemu_syscall *call);
 void qemu__tolower(struct qemu_syscall *call);
 void qemu__tolower_l(struct qemu_syscall *call);
@@ -1050,6 +1054,8 @@ LONG (* CDECL p__lseek)(int fd, LONG offset, int whence);
 __int64 (* CDECL p__lseeki64)(int fd, __int64 offset, int whence);
 char * (* CDECL p__tempnam)(const char *dir, const char *prefix);
 double (* CDECL p_strtod)(const char *str, char **end);
+char * (* CDECL p__strtime)(char *time);
+char * (* CDECL p__strdate)(char *date);
 
 DWORD msvcrt_tls;
 
