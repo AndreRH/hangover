@@ -15,5 +15,6 @@
 #define DLL_D3D9        0xcLL
 #define DLL_D3DX9_43    0xdLL
 #define DLL_IMM32       0xeLL
+#define DLL_OLE32       0xfLL
 
 #endif
