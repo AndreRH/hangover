@@ -489,6 +489,7 @@ enum user32_calls
     CALL_PRIVATEEXTRACTICONEXW,
     CALL_PRIVATEEXTRACTICONSA,
     CALL_PRIVATEEXTRACTICONSW,
+    CALL_PTINRECT,
     CALL_REALGETWINDOWCLASSA,
     CALL_REALGETWINDOWCLASSW,
     CALL_REDRAWWINDOW,
@@ -1167,6 +1168,7 @@ void qemu_PrivateExtractIconExA(struct qemu_syscall *call);
 void qemu_PrivateExtractIconExW(struct qemu_syscall *call);
 void qemu_PrivateExtractIconsA(struct qemu_syscall *call);
 void qemu_PrivateExtractIconsW(struct qemu_syscall *call);
+void qemu_PtInRect(struct qemu_syscall *call);
 void qemu_RealGetWindowClassA(struct qemu_syscall *call);
 void qemu_RealGetWindowClassW(struct qemu_syscall *call);
 void qemu_RedrawWindow(struct qemu_syscall *call);

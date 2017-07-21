@@ -525,6 +525,7 @@ static const syscall_handler dll_functions[] =
     qemu_PrivateExtractIconExW,
     qemu_PrivateExtractIconsA,
     qemu_PrivateExtractIconsW,
+    qemu_PtInRect,
     qemu_RealGetWindowClassA,
     qemu_RealGetWindowClassW,
     qemu_RedrawWindow,

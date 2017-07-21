@@ -485,6 +485,7 @@ EXPORTS
   PrivateExtractIconExW
   PrivateExtractIconsA
   PrivateExtractIconsW
+  PtInRect
   RealGetWindowClassA
   RealGetWindowClassW
   RedrawWindow

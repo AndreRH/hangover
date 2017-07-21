@@ -267,6 +267,43 @@ void qemu_OffsetRect(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_PtInRect
+{
+    struct qemu_syscall super;
+    uint64_t rect;
+    uint64_t ptx;
+    uint64_t pty;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI PtInRect(const RECT *rect, POINT pt)
+{
+    struct qemu_PtInRect call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_PTINRECT);
+    call.rect = (uint64_t)rect;
+    call.ptx = pt.x;
+    call.pty = pt.y;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_PtInRect(struct qemu_syscall *call)
+{
+    struct qemu_PtInRect *c = (struct qemu_PtInRect *)call;
+    POINT pt;
+    WINE_FIXME("Unverified!\n");
+    pt.x = c->ptx;
+    pt.y = c->pty;
+    c->super.iret = PtInRect(QEMU_G2H(c->rect), pt);
+}
+
+#endif
+
 struct qemu_InflateRect
 {
     struct qemu_syscall super;
