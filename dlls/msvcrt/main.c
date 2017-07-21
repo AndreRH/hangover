@@ -362,6 +362,7 @@ static const syscall_handler dll_functions[] =
     qemu_roundf,
     qemu_roundl,
     qemu_scalbnl,
+    qemu_setlocale,
     qemu_signal,
     qemu_sin,
     qemu_sinf,
@@ -694,6 +695,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_roundf = (void *)GetProcAddress(msvcrt, "roundf");
     p_roundl = (void *)GetProcAddress(msvcrt, "roundl");
     p_scalbnl = (void *)GetProcAddress(msvcrt, "scalbnl");
+    p_setlocale = (void *)GetProcAddress(msvcrt, "setlocale");
     p_sin = (void *)GetProcAddress(msvcrt, "sin");
     p_sinf = (void *)GetProcAddress(msvcrt, "sinf");
     p_sinh = (void *)GetProcAddress(msvcrt, "sinh");

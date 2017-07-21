@@ -235,6 +235,7 @@ EXPORTS
   qsort=MSVCRT_qsort
   raise=MSVCRT_raise
   realloc=MSVCRT_realloc
+  setlocale=MSVCRT_setlocale
   signal=MSVCRT_signal
   sin=MSVCRT_sin
   sinf=MSVCRT_sinf

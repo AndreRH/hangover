@@ -84,3 +84,35 @@ void qemu__configthreadlocale(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_setlocale
+{
+    struct qemu_syscall super;
+    uint64_t category;
+    uint64_t locale;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+char * CDECL MSVCRT_setlocale(int category, const char *locale)
+{
+    struct qemu_setlocale call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETLOCALE);
+    call.category = category;
+    call.locale = (uint64_t)locale;
+
+    qemu_syscall(&call.super);
+
+    return (char *)call.super.iret;
+}
+
+#else
+
+void qemu_setlocale(struct qemu_syscall *call)
+{
+    struct qemu_setlocale *c = (struct qemu_setlocale *)call;
+    WINE_TRACE("\n");
+    c->super.iret = QEMU_H2G(p_setlocale(c->category, QEMU_G2H(c->locale)));
+}
+
+#endif

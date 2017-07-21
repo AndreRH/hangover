@@ -293,6 +293,7 @@ enum msvcrt_calls
     CALL_ROUNDF,
     CALL_ROUNDL,
     CALL_SCALBNL,
+    CALL_SETLOCALE,
     CALL_SIGNAL,
     CALL_SIN,
     CALL_SINF,
@@ -649,6 +650,7 @@ void qemu_round(struct qemu_syscall *call);
 void qemu_roundf(struct qemu_syscall *call);
 void qemu_roundl(struct qemu_syscall *call);
 void qemu_scalbnl(struct qemu_syscall *call);
+void qemu_setlocale(struct qemu_syscall *call);
 void qemu_signal(struct qemu_syscall *call);
 void qemu_sin(struct qemu_syscall *call);
 void qemu_sinf(struct qemu_syscall *call);
@@ -1007,6 +1009,8 @@ INT (* CDECL p_iswalpha)(WCHAR wc);
 INT (* CDECL p_iswspace)(WCHAR wc);
 INT (* CDECL p_wctomb)(char *dst, WCHAR ch);
 size_t (* CDECL p_wcstombs)(char *mbstr, const WCHAR *wcstr, size_t count);
+
+char * (* CDECL p_setlocale)(int category, const char *locale);
 
 DWORD msvcrt_tls;
 
