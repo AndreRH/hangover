@@ -46,6 +46,7 @@ enum msvcrt_calls
     CALL_RAISE,
     CALL_REALLOC,
     CALL_SIGNAL,
+    CALL_SINF,
     CALL_SPRINTF,
     CALL_STRLEN,
     CALL_STRNCMP,
@@ -118,6 +119,7 @@ void qemu_qsort(struct qemu_syscall *call);
 void qemu_raise(struct qemu_syscall *call);
 void qemu_realloc(struct qemu_syscall *call);
 void qemu_signal(struct qemu_syscall *call);
+void qemu_sinf(struct qemu_syscall *call);
 void qemu_sprintf(struct qemu_syscall *call);
 void qemu_strlen(struct qemu_syscall *call);
 void qemu_strncmp(struct qemu_syscall *call);
@@ -166,6 +168,7 @@ int (* CDECL p_puts)(const char *str);
 void (* CDECL p_qsort)(void *base, size_t nmemb, size_t size,
         int (CDECL *compar)(const void*, const void*));
 void *(* CDECL p_realloc)(void *ptr, size_t size);
+float (* CDECL p_sinf)(float x);
 size_t (* CDECL p_strlen)(const char *str);
 int (* CDECL p_strncmp)(const char *str1, const char *str2, size_t len);
 void (* CDECL p_terminate)(void);

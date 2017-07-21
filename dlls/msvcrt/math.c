@@ -128,3 +128,34 @@ int CDECL MSVCRT_abs(int n)
 }
 
 #endif
+
+struct qemu_sinf
+{
+    struct qemu_syscall super;
+    double x;
+};
+
+
+#ifdef QEMU_DLL_GUEST
+
+float CDECL MSVCRT_sinf(float x)
+{
+    struct qemu_sinf call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SINF);
+    call.x = x;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_sinf(struct qemu_syscall *call)
+{
+    struct qemu_sinf *c = (struct qemu_sinf *)call;
+    WINE_TRACE("\n");
+    c->super.dret = p_sinf(c->x);
+}
+
+#endif

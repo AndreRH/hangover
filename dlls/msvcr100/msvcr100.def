@@ -53,6 +53,7 @@ EXPORTS
   raise=MSVCRT_raise
   realloc=MSVCRT_realloc
   signal=MSVCRT_signal
+  sinf=MSVCRT_sinf
   sprintf=MSVCRT_sprintf
   strlen=MSVCRT_strlen
   strncmp=MSVCRT_strncmp
