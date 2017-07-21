@@ -89,6 +89,7 @@ static const syscall_handler dll_functions[] =
     qemu__lock,
     qemu__matherr,
     qemu__onexit,
+    qemu__purecall,
     qemu__snwprintf,
     qemu__strdup,
     qemu__stricmp,
@@ -168,6 +169,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__lock = (void *)GetProcAddress(msvcrt, "_lock");
     p__matherr = (void *)GetProcAddress(msvcrt, "_matherr");
     p__onexit = (void *)GetProcAddress(msvcrt, "_onexit");
+    p__purecall = (void *)GetProcAddress(msvcrt, "_purecall");
     p__strdup = (void *)GetProcAddress(msvcrt, "_strdup");
     p__stricmp = (void *)GetProcAddress(msvcrt, "_stricmp");
     p__unlock = (void *)GetProcAddress(msvcrt, "_unlock");

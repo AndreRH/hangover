@@ -268,3 +268,23 @@ void qemu__cexit(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+CDECL void _purecall(void)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL__PURECALL);
+
+    qemu_syscall(&call);
+}
+
+#else
+
+void qemu__purecall(struct qemu_syscall *c)
+{
+    WINE_TRACE("\n");
+    p__purecall();
+}
+
+#endif
