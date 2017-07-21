@@ -5,10 +5,10 @@ WINEGCC=$(DESTDIR)/build/wine-host/tools/winegcc/winegcc -B$(DESTDIR)/build/wine
 
 all: oleaut32.dll qemu_oleaut32.dll.so
 
-oleaut32.dll: main_g.o oleaut32.def variant_g.o
+oleaut32.dll: main_g.o oleaut32.def oleaut_g.o variant_g.o
 	x86_64-w64-mingw32-ld -shared oleaut32.def *_g.o -o oleaut32.dll -nostdlib -e DllMain
 
-qemu_oleaut32.dll.so: main_h.o qemu_oleaut32.spec variant_h.o
+qemu_oleaut32.dll.so: main_h.o oleaut_h.o qemu_oleaut32.spec variant_h.o
 	$(WINEGCC) -shared qemu_oleaut32.spec *_h.o -o qemu_oleaut32.dll.so -loleaut32
 
 %_g.o: %.c oleaut32.h Makefile
