@@ -7,7 +7,11 @@ EXPORTS
   AddFontResourceExA
   AddFontResourceExW
   AddFontResourceW
+  AngleArc
+  Arc
+  ArcTo
   CancelDC
+  Chord
   CombineTransform
   CopyEnhMetaFileA
   CopyEnhMetaFileW
@@ -38,6 +42,7 @@ EXPORTS
   DeleteMetaFile
   DeleteObject
   DPtoLP
+  Ellipse
   EnableEUDC
   EndDoc
   EndPage
@@ -50,21 +55,30 @@ EXPORTS
   EnumFontsW
   EnumMetaFile
   EnumObjects
+  ExtFloodFill
   ExtTextOutA
   ExtTextOutW
+  FillRgn
+  FloodFill
   FontIsLinked
+  FrameRgn
   GdiComment
+  GdiDescribePixelFormat
+  GdiDrawStream
   GdiFlush
   GdiGetBatchLimit
   GdiGetCharDimensions
   GdiGetCodePage
   GdiGetSpoolMessage
+  GdiGradientFill
   GdiInitializeLanguagePack
   GdiInitSpool
   GdiIsMetaFileDC
   GdiIsMetaPrintDC
   GdiIsPlayMetafileDC
   GdiSetBatchLimit
+  GdiSetPixelFormat
+  GdiSwapBuffers
   GetArcDirection
   GetAspectRatioFilterEx
   GetBkColor
@@ -123,6 +137,7 @@ EXPORTS
   GetObjectW
   GetOutlineTextMetricsA
   GetOutlineTextMetricsW
+  GetPixel
   GetPolyFillMode
   GetRelAbs
   GetROP2
@@ -148,16 +163,31 @@ EXPORTS
   GetWindowOrgEx
   GetWinMetaFileBits
   GetWorldTransform
+  InvertRgn
+  LineDDA
+  LineTo
   LPtoDP
   ModifyWorldTransform
+  MoveToEx
   OffsetViewportOrgEx
   OffsetWindowOrgEx
+  PaintRgn
+  Pie
   PlayEnhMetaFile
   PlayEnhMetaFileRecord
   PlayMetaFile
   PlayMetaFileRecord
+  PolyBezier
+  PolyBezierTo
+  PolyDraw
+  Polygon
+  Polyline
+  PolylineTo
+  PolyPolygon
+  PolyPolyline
   PolyTextOutA
   PolyTextOutW
+  Rectangle
   RemoveFontMemResourceEx
   RemoveFontResourceA
   RemoveFontResourceExA
@@ -166,6 +196,7 @@ EXPORTS
   ResetDCA
   ResetDCW
   RestoreDC
+  RoundRect
   SaveDC
   ScaleViewportExtEx
   ScaleWindowExtEx
@@ -193,6 +224,8 @@ EXPORTS
   SetMetaFileBitsEx
   SetMiterLimit
   SetObjectOwner
+  SetPixel
+  SetPixelV
   SetPolyFillMode
   SetRelAbs
   SetROP2
