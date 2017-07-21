@@ -1,0 +1,17 @@
+LIBRARY version.dll BASE=0x100000000
+
+EXPORTS
+  GetFileVersionInfoA
+  GetFileVersionInfoExA
+  GetFileVersionInfoExW
+  GetFileVersionInfoSizeA
+  GetFileVersionInfoSizeExA
+  GetFileVersionInfoSizeExW
+  GetFileVersionInfoSizeW
+  GetFileVersionInfoW
+  VerFindFileA
+  VerFindFileW
+  VerInstallFileA
+  VerInstallFileW
+  VerQueryValueA
+  VerQueryValueW

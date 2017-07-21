@@ -1,20 +1,21 @@
 #ifndef DLL_LIST_H
 #define DLL_LIST_H
 
-#define DLL_NTDLL       0x1LL
-#define DLL_KERNEL32    0x2LL
-#define DLL_MSVCRT      0x3LL
-#define DLL_ADVAPI32    0x4LL
-#define DLL_COMDLG32    0x5LL
-#define DLL_GDI32       0x6LL
-#define DLL_USER32      0x7LL
-#define DLL_SHELL32     0x8LL
-#define DLL_SHLWAPI     0x9LL
-#define DLL_MSVCR100    0xaLL
-#define DLL_COMCTL32    0xbLL
-#define DLL_D3D9        0xcLL
-#define DLL_D3DX9_43    0xdLL
-#define DLL_IMM32       0xeLL
-#define DLL_OLE32       0xfLL
+#define DLL_NTDLL       0x01LL
+#define DLL_KERNEL32    0x02LL
+#define DLL_MSVCRT      0x03LL
+#define DLL_ADVAPI32    0x04LL
+#define DLL_COMDLG32    0x05LL
+#define DLL_GDI32       0x06LL
+#define DLL_USER32      0x07LL
+#define DLL_SHELL32     0x08LL
+#define DLL_SHLWAPI     0x09LL
+#define DLL_MSVCR100    0x0aLL
+#define DLL_COMCTL32    0x0bLL
+#define DLL_D3D9        0x0cLL
+#define DLL_D3DX9_43    0x0dLL
+#define DLL_IMM32       0x0eLL
+#define DLL_OLE32       0x0fLL
+#define DLL_VERSION     0x10LL
 
 #endif
