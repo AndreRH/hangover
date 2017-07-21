@@ -60,6 +60,7 @@ EXPORTS
   sprintf=MSVCRT_sprintf
   sqrtf=MSVCRT_sqrtf
   strcat_s=MSVCRT_strcat_s
+  strcpy_s=MSVCRT_strcpy_s
   strlen=MSVCRT_strlen
   strncmp=MSVCRT_strncmp
   swprintf_s=MSVCRT_swprintf_s
