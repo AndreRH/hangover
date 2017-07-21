@@ -181,8 +181,8 @@ WINBASEAPI BOOL WINAPI DisableThreadLibraryCalls(HMODULE hModule)
 void qemu_DisableThreadLibraryCalls(struct qemu_syscall *call)
 {
     struct qemu_DisableThreadLibraryCalls *c = (struct qemu_DisableThreadLibraryCalls *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DisableThreadLibraryCalls(QEMU_G2H(c->hModule));
+    WINE_FIXME("Stub!\n");
+    c->super.iret = TRUE;
 }
 
 #endif
