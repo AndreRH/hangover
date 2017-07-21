@@ -57,6 +57,8 @@ EXPORTS
   CreateEventW
   CreateFile2
   CreateFileA
+  CreateFileMappingA
+  CreateFileMappingW
   CreateFileW
   CreateHardLinkA
   CreateHardLinkTransactedA
@@ -141,6 +143,7 @@ EXPORTS
   FindResourceExW
   FindResourceW
   FlushFileBuffers
+  FlushViewOfFile
   FoldStringA
   FoldStringW
   FormatMessageW
@@ -268,6 +271,7 @@ EXPORTS
   GetVersionExW
   GetWindowsDirectoryA
   GetWindowsDirectoryW
+  GetWriteWatch
   GlobalAlloc
   GlobalCompact
   GlobalFix
@@ -306,6 +310,13 @@ EXPORTS
   InitOnceComplete
   InitOnceExecuteOnce
   InvalidateNLSCache
+  IsBadCodePtr
+  IsBadHugeReadPtr
+  IsBadHugeWritePtr
+  IsBadReadPtr
+  IsBadStringPtrA
+  IsBadStringPtrW
+  IsBadWritePtr
   IsDBCSLeadByte
   IsDBCSLeadByteEx
   IsDebuggerPresent
@@ -318,11 +329,17 @@ EXPORTS
   IsValidLocale
   IsValidLocaleName
   K32EnumDeviceDrivers
+  K32EnumPageFilesA
+  K32EnumPageFilesW
   K32GetDeviceDriverBaseNameA
   K32GetDeviceDriverBaseNameW
   K32GetDeviceDriverFileNameA
   K32GetDeviceDriverFileNameW
+  K32GetMappedFileNameA
+  K32GetMappedFileNameW
   K32GetPerformanceInfo
+  K32GetWsChanges
+  K32InitializeProcessForWsWatch
   LCIDToLocaleName
   LCMapStringA
   LCMapStringEx
@@ -358,6 +375,8 @@ EXPORTS
   lstrlenA
   lstrlenW
   MakeCriticalSectionGlobal
+  MapViewOfFile
+  MapViewOfFileEx
   MoveFileA
   MoveFileExA
   MoveFileExW
@@ -373,6 +392,8 @@ EXPORTS
   OpenEventW
   OpenFile
   OpenFileById
+  OpenFileMappingA
+  OpenFileMappingW
   OpenJobObjectA
   OpenJobObjectW
   OpenMutexA
@@ -409,6 +430,7 @@ EXPORTS
   ReplaceFileW
   RequestWakeupLatency
   ResetEvent
+  ResetWriteWatch
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   RtlCaptureContext=ntdll.RtlCaptureContext
   RtlLookupFunctionEntry=ntdll.RtlLookupFunctionEntry
@@ -477,6 +499,7 @@ EXPORTS
   UninitializeCriticalSection
   UnlockFile
   UnlockFileEx
+  UnmapViewOfFile
   UnregisterWait
   UnregisterWaitEx
   UpdateResourceA
@@ -485,8 +508,16 @@ EXPORTS
   VerifyVersionInfoW
   VerLanguageNameA
   VerLanguageNameW
+  VirtualAlloc
+  VirtualAllocEx
+  VirtualFree
+  VirtualFreeEx
+  VirtualLock
   VirtualProtect
+  VirtualProtectEx
   VirtualQuery
+  VirtualQueryEx
+  VirtualUnlock
   WaitCommEvent
   WaitForDebugEvent
   WaitForMultipleObjects

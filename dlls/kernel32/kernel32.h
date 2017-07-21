@@ -58,6 +58,8 @@ enum kernel32_calls
     CALL_CREATEEVENTW,
     CALL_CREATEFILE2,
     CALL_CREATEFILEA,
+    CALL_CREATEFILEMAPPINGA,
+    CALL_CREATEFILEMAPPINGW,
     CALL_CREATEFILEW,
     CALL_CREATEHARDLINKA,
     CALL_CREATEHARDLINKTRANSACTEDA,
@@ -138,6 +140,7 @@ enum kernel32_calls
     CALL_FINDRESOURCEEXW,
     CALL_FINDRESOURCEW,
     CALL_FLUSHFILEBUFFERS,
+    CALL_FLUSHVIEWOFFILE,
     CALL_FOLDSTRINGA,
     CALL_FOLDSTRINGW,
     CALL_FORMATMESSAGEW,
@@ -265,6 +268,7 @@ enum kernel32_calls
     CALL_GETVERSIONEXW,
     CALL_GETWINDOWSDIRECTORYA,
     CALL_GETWINDOWSDIRECTORYW,
+    CALL_GETWRITEWATCH,
     CALL_GLOBALALLOC,
     CALL_GLOBALCOMPACT,
     CALL_GLOBALFIX,
@@ -302,6 +306,13 @@ enum kernel32_calls
     CALL_INITONCECOMPLETE,
     CALL_INITONCEEXECUTEONCE,
     CALL_INVALIDATENLSCACHE,
+    CALL_ISBADCODEPTR,
+    CALL_ISBADHUGEREADPTR,
+    CALL_ISBADHUGEWRITEPTR,
+    CALL_ISBADREADPTR,
+    CALL_ISBADSTRINGPTRA,
+    CALL_ISBADSTRINGPTRW,
+    CALL_ISBADWRITEPTR,
     CALL_ISDBCSLEADBYTE,
     CALL_ISDBCSLEADBYTEEX,
     CALL_ISDEBUGGERPRESENT,
@@ -314,11 +325,17 @@ enum kernel32_calls
     CALL_ISVALIDLOCALE,
     CALL_ISVALIDLOCALENAME,
     CALL_K32ENUMDEVICEDRIVERS,
+    CALL_K32ENUMPAGEFILESA,
+    CALL_K32ENUMPAGEFILESW,
     CALL_K32GETDEVICEDRIVERBASENAMEA,
     CALL_K32GETDEVICEDRIVERBASENAMEW,
     CALL_K32GETDEVICEDRIVERFILENAMEA,
     CALL_K32GETDEVICEDRIVERFILENAMEW,
+    CALL_K32GETMAPPEDFILENAMEA,
+    CALL_K32GETMAPPEDFILENAMEW,
     CALL_K32GETPERFORMANCEINFO,
+    CALL_K32GETWSCHANGES,
+    CALL_K32INITIALIZEPROCESSFORWSWATCH,
     CALL_LCIDTOLOCALENAME,
     CALL_LCMAPSTRINGA,
     CALL_LCMAPSTRINGEX,
@@ -353,6 +370,8 @@ enum kernel32_calls
     CALL_LSTRLENA,
     CALL_LSTRLENW,
     CALL_MAKECRITICALSECTIONGLOBAL,
+    CALL_MAPVIEWOFFILE,
+    CALL_MAPVIEWOFFILEEX,
     CALL_MOVEFILEA,
     CALL_MOVEFILEEXA,
     CALL_MOVEFILEEXW,
@@ -367,6 +386,8 @@ enum kernel32_calls
     CALL_OPENEVENTW,
     CALL_OPENFILE,
     CALL_OPENFILEBYID,
+    CALL_OPENFILEMAPPINGA,
+    CALL_OPENFILEMAPPINGW,
     CALL_OPENJOBOBJECTA,
     CALL_OPENJOBOBJECTW,
     CALL_OPENMUTEXA,
@@ -403,6 +424,7 @@ enum kernel32_calls
     CALL_REPLACEFILEW,
     CALL_REQUESTWAKEUPLATENCY,
     CALL_RESETEVENT,
+    CALL_RESETWRITEWATCH,
     CALL_SEARCHPATHA,
     CALL_SEARCHPATHW,
     CALL_SETCOMMBREAK,
@@ -467,6 +489,7 @@ enum kernel32_calls
     CALL_UNINITIALIZECRITICALSECTION,
     CALL_UNLOCKFILE,
     CALL_UNLOCKFILEEX,
+    CALL_UNMAPVIEWOFFILE,
     CALL_UNREGISTERWAIT,
     CALL_UNREGISTERWAITEX,
     CALL_UPDATERESOURCEA,
@@ -475,8 +498,16 @@ enum kernel32_calls
     CALL_VERIFYVERSIONINFOW,
     CALL_VERLANGUAGENAMEA,
     CALL_VERLANGUAGENAMEW,
+    CALL_VIRTUALALLOC,
+    CALL_VIRTUALALLOCEX,
+    CALL_VIRTUALFREE,
+    CALL_VIRTUALFREEEX,
+    CALL_VIRTUALLOCK,
     CALL_VIRTUALPROTECT,
+    CALL_VIRTUALPROTECTEX,
     CALL_VIRTUALQUERY,
+    CALL_VIRTUALQUERYEX,
+    CALL_VIRTUALUNLOCK,
     CALL_WAITCOMMEVENT,
     CALL_WAITFORDEBUGEVENT,
     CALL_WAITFORMULTIPLEOBJECTS,
@@ -552,6 +583,8 @@ void qemu_CreateEventExW(struct qemu_syscall *call);
 void qemu_CreateEventW(struct qemu_syscall *call);
 void qemu_CreateFile2(struct qemu_syscall *call);
 void qemu_CreateFileA(struct qemu_syscall *call);
+void qemu_CreateFileMappingA(struct qemu_syscall *call);
+void qemu_CreateFileMappingW(struct qemu_syscall *call);
 void qemu_CreateFileW(struct qemu_syscall *call);
 void qemu_CreateHardLinkA(struct qemu_syscall *call);
 void qemu_CreateHardLinkTransactedA(struct qemu_syscall *call);
@@ -632,6 +665,7 @@ void qemu_FindResourceExA(struct qemu_syscall *call);
 void qemu_FindResourceExW(struct qemu_syscall *call);
 void qemu_FindResourceW(struct qemu_syscall *call);
 void qemu_FlushFileBuffers(struct qemu_syscall *call);
+void qemu_FlushViewOfFile(struct qemu_syscall *call);
 void qemu_FoldStringA(struct qemu_syscall *call);
 void qemu_FoldStringW(struct qemu_syscall *call);
 void qemu_FormatMessageW(struct qemu_syscall *call);
@@ -761,6 +795,7 @@ void qemu_GetVersionExA(struct qemu_syscall *call);
 void qemu_GetVersionExW(struct qemu_syscall *call);
 void qemu_GetWindowsDirectoryA(struct qemu_syscall *call);
 void qemu_GetWindowsDirectoryW(struct qemu_syscall *call);
+void qemu_GetWriteWatch(struct qemu_syscall *call);
 void qemu_GlobalAlloc(struct qemu_syscall *call);
 void qemu_GlobalCompact(struct qemu_syscall *call);
 void qemu_GlobalFix(struct qemu_syscall *call);
@@ -798,6 +833,13 @@ void qemu_InitOnceBeginInitialize(struct qemu_syscall *call);
 void qemu_InitOnceComplete(struct qemu_syscall *call);
 void qemu_InitOnceExecuteOnce(struct qemu_syscall *call);
 void qemu_InvalidateNLSCache(struct qemu_syscall *call);
+void qemu_IsBadCodePtr(struct qemu_syscall *call);
+void qemu_IsBadHugeReadPtr(struct qemu_syscall *call);
+void qemu_IsBadHugeWritePtr(struct qemu_syscall *call);
+void qemu_IsBadReadPtr(struct qemu_syscall *call);
+void qemu_IsBadStringPtrA(struct qemu_syscall *call);
+void qemu_IsBadStringPtrW(struct qemu_syscall *call);
+void qemu_IsBadWritePtr(struct qemu_syscall *call);
 void qemu_IsDBCSLeadByte(struct qemu_syscall *call);
 void qemu_IsDBCSLeadByteEx(struct qemu_syscall *call);
 void qemu_IsDebuggerPresent(struct qemu_syscall *call);
@@ -810,11 +852,17 @@ void qemu_IsValidLanguageGroup(struct qemu_syscall *call);
 void qemu_IsValidLocale(struct qemu_syscall *call);
 void qemu_IsValidLocaleName(struct qemu_syscall *call);
 void qemu_K32EnumDeviceDrivers(struct qemu_syscall *call);
+void qemu_K32EnumPageFilesA(struct qemu_syscall *call);
+void qemu_K32EnumPageFilesW(struct qemu_syscall *call);
 void qemu_K32GetDeviceDriverBaseNameA(struct qemu_syscall *call);
 void qemu_K32GetDeviceDriverBaseNameW(struct qemu_syscall *call);
 void qemu_K32GetDeviceDriverFileNameA(struct qemu_syscall *call);
 void qemu_K32GetDeviceDriverFileNameW(struct qemu_syscall *call);
+void qemu_K32GetMappedFileNameA(struct qemu_syscall *call);
+void qemu_K32GetMappedFileNameW(struct qemu_syscall *call);
 void qemu_K32GetPerformanceInfo(struct qemu_syscall *call);
+void qemu_K32GetWsChanges(struct qemu_syscall *call);
+void qemu_K32InitializeProcessForWsWatch(struct qemu_syscall *call);
 void qemu_LCIDToLocaleName(struct qemu_syscall *call);
 void qemu_LCMapStringA(struct qemu_syscall *call);
 void qemu_LCMapStringEx(struct qemu_syscall *call);
@@ -849,6 +897,8 @@ void qemu_lstrcpyW(struct qemu_syscall *call);
 void qemu_lstrlenA(struct qemu_syscall *call);
 void qemu_lstrlenW(struct qemu_syscall *call);
 void qemu_MakeCriticalSectionGlobal(struct qemu_syscall *call);
+void qemu_MapViewOfFile(struct qemu_syscall *call);
+void qemu_MapViewOfFileEx(struct qemu_syscall *call);
 void qemu_MoveFileA(struct qemu_syscall *call);
 void qemu_MoveFileExA(struct qemu_syscall *call);
 void qemu_MoveFileExW(struct qemu_syscall *call);
@@ -863,6 +913,8 @@ void qemu_OpenEventA(struct qemu_syscall *call);
 void qemu_OpenEventW(struct qemu_syscall *call);
 void qemu_OpenFile(struct qemu_syscall *call);
 void qemu_OpenFileById(struct qemu_syscall *call);
+void qemu_OpenFileMappingA(struct qemu_syscall *call);
+void qemu_OpenFileMappingW(struct qemu_syscall *call);
 void qemu_OpenJobObjectA(struct qemu_syscall *call);
 void qemu_OpenJobObjectW(struct qemu_syscall *call);
 void qemu_OpenMutexA(struct qemu_syscall *call);
@@ -899,6 +951,7 @@ void qemu_ReplaceFileA(struct qemu_syscall *call);
 void qemu_ReplaceFileW(struct qemu_syscall *call);
 void qemu_RequestWakeupLatency(struct qemu_syscall *call);
 void qemu_ResetEvent(struct qemu_syscall *call);
+void qemu_ResetWriteWatch(struct qemu_syscall *call);
 void qemu_SearchPathA(struct qemu_syscall *call);
 void qemu_SearchPathW(struct qemu_syscall *call);
 void qemu_SetCommBreak(struct qemu_syscall *call);
@@ -963,6 +1016,7 @@ void qemu_UnhandledExceptionFilter(struct qemu_syscall *call);
 void qemu_UninitializeCriticalSection(struct qemu_syscall *call);
 void qemu_UnlockFile(struct qemu_syscall *call);
 void qemu_UnlockFileEx(struct qemu_syscall *call);
+void qemu_UnmapViewOfFile(struct qemu_syscall *call);
 void qemu_UnregisterWait(struct qemu_syscall *call);
 void qemu_UnregisterWaitEx(struct qemu_syscall *call);
 void qemu_UpdateResourceA(struct qemu_syscall *call);
@@ -971,8 +1025,16 @@ void qemu_VerifyVersionInfoA(struct qemu_syscall *call);
 void qemu_VerifyVersionInfoW(struct qemu_syscall *call);
 void qemu_VerLanguageNameA(struct qemu_syscall *call);
 void qemu_VerLanguageNameW(struct qemu_syscall *call);
+void qemu_VirtualAlloc(struct qemu_syscall *call);
+void qemu_VirtualAllocEx(struct qemu_syscall *call);
+void qemu_VirtualFree(struct qemu_syscall *call);
+void qemu_VirtualFreeEx(struct qemu_syscall *call);
+void qemu_VirtualLock(struct qemu_syscall *call);
 void qemu_VirtualProtect(struct qemu_syscall *call);
+void qemu_VirtualProtectEx(struct qemu_syscall *call);
 void qemu_VirtualQuery(struct qemu_syscall *call);
+void qemu_VirtualQueryEx(struct qemu_syscall *call);
+void qemu_VirtualUnlock(struct qemu_syscall *call);
 void qemu_WaitCommEvent(struct qemu_syscall *call);
 void qemu_WaitForDebugEvent(struct qemu_syscall *call);
 void qemu_WaitForMultipleObjects(struct qemu_syscall *call);
