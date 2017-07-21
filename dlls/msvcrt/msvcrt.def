@@ -233,8 +233,10 @@ EXPORTS
   memset=MSVCRT_memset
   modf=MSVCRT_modf
   modff=MSVCRT_modff
-  rand=MSVCRT_rand
-  srand=MSVCRT_srand
+  _lseek=MSVCRT__lseek
+  _lseeki64=MSVCRT__lseeki64
+  _tempnam=MSVCRT__tempnam
+  fflush=MSVCRT_fflush
   nearbyint=MSVCRT_nearbyint
   nearbyintf=MSVCRT_nearbyintf
   pow=MSVCRT_pow
@@ -243,6 +245,7 @@ EXPORTS
   puts=MSVCRT_puts
   qsort=MSVCRT_qsort
   raise=MSVCRT_raise
+  rand=MSVCRT_rand
   realloc=MSVCRT_realloc
   setlocale=MSVCRT_setlocale
   signal=MSVCRT_signal
@@ -255,6 +258,7 @@ EXPORTS
   sqrt=MSVCRT_sqrt
   sqrtf=MSVCRT_sqrtf
   sqrtf=MSVCRT_sqrtf
+  srand=MSVCRT_srand
   strcat_s=MSVCRT_strcat_s
   strcpy_s=MSVCRT_strcpy_s
   strlen=MSVCRT_strlen

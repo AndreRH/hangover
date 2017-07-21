@@ -123,6 +123,8 @@ enum msvcrt_calls
     CALL__LOGBF,
     CALL__LROTL,
     CALL__LROTR,
+    CALL__LSEEK,
+    CALL__LSEEKI64,
     CALL__MATHERR,
     CALL__NEXTAFTER,
     CALL__NEXTAFTERF,
@@ -142,6 +144,7 @@ enum msvcrt_calls
     CALL__STATUSFP2,
     CALL__STRDUP,
     CALL__STRICMP,
+    CALL__TEMPNAM,
     CALL__TOLOWER,
     CALL__TOLOWER_L,
     CALL__TOUPPER,
@@ -208,6 +211,7 @@ enum msvcrt_calls
     CALL_FEGETROUND,
     CALL_FESETENV,
     CALL_FESETROUND,
+    CALL_FFLUSH,
     CALL_FLOOR,
     CALL_FLOORF,
     CALL_FMAX,
@@ -488,6 +492,8 @@ void qemu__logb(struct qemu_syscall *call);
 void qemu__logbf(struct qemu_syscall *call);
 void qemu__lrotl(struct qemu_syscall *call);
 void qemu__lrotr(struct qemu_syscall *call);
+void qemu__lseek(struct qemu_syscall *call);
+void qemu__lseeki64(struct qemu_syscall *call);
 void qemu__matherr(struct qemu_syscall *call);
 void qemu__nextafter(struct qemu_syscall *call);
 void qemu__nextafterf(struct qemu_syscall *call);
@@ -507,6 +513,7 @@ void qemu__statusfp(struct qemu_syscall *call);
 void qemu__statusfp2(struct qemu_syscall *call);
 void qemu__strdup(struct qemu_syscall *call);
 void qemu__stricmp(struct qemu_syscall *call);
+void qemu__tempnam(struct qemu_syscall *call);
 void qemu__tolower(struct qemu_syscall *call);
 void qemu__tolower_l(struct qemu_syscall *call);
 void qemu__toupper(struct qemu_syscall *call);
@@ -573,6 +580,7 @@ void qemu_fegetenv(struct qemu_syscall *call);
 void qemu_fegetround(struct qemu_syscall *call);
 void qemu_fesetenv(struct qemu_syscall *call);
 void qemu_fesetround(struct qemu_syscall *call);
+void qemu_fflush(struct qemu_syscall *call);
 void qemu_floor(struct qemu_syscall *call);
 void qemu_floorf(struct qemu_syscall *call);
 void qemu_fmax(struct qemu_syscall *call);
@@ -1035,6 +1043,10 @@ double (* CDECL p_atof)(const char *str);
 size_t (* CDECL p_fread)(void *ptr, size_t size, size_t nmemb, FILE *file);
 int (*CDECL p_rand)(void);
 int (*CDECL p_srand)(int seed);
+int (* CDECL p_fflush)(FILE *file);
+LONG (* CDECL p__lseek)(int fd, LONG offset, int whence);
+__int64 (* CDECL p__lseeki64)(int fd, __int64 offset, int whence);
+char * (* CDECL p__tempnam)(const char *dir, const char *prefix);
 
 DWORD msvcrt_tls;
 

@@ -120,6 +120,136 @@ void qemu__isatty(struct qemu_syscall *call)
 
 #endif
 
+struct qemu__lseek
+{
+    struct qemu_syscall super;
+    uint64_t fd;
+    uint64_t offset;
+    uint64_t whence;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+LONG CDECL MSVCRT__lseek(int fd, LONG offset, int whence)
+{
+    struct qemu__lseek call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__LSEEK);
+    call.fd = fd;
+    call.offset = offset;
+    call.whence = whence;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__lseek(struct qemu_syscall *call)
+{
+    struct qemu__lseek *c = (struct qemu__lseek *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p__lseek(c->fd, c->offset, c->whence);
+}
+
+#endif
+
+struct qemu__lseeki64
+{
+    struct qemu_syscall super;
+    uint64_t fd;
+    uint64_t offset;
+    uint64_t whence;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+__int64 CDECL MSVCRT__lseeki64(int fd, __int64 offset, int whence)
+{
+    struct qemu__lseeki64 call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__LSEEKI64);
+    call.fd = fd;
+    call.offset = offset;
+    call.whence = whence;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__lseeki64(struct qemu_syscall *call)
+{
+    struct qemu__lseeki64 *c = (struct qemu__lseeki64 *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p__lseeki64(c->fd, c->offset, c->whence);
+}
+
+#endif
+
+struct qemu__tempnam
+{
+    struct qemu_syscall super;
+    uint64_t dir;
+    uint64_t prefix;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+char * CDECL MSVCRT__tempnam(const char *dir, const char *prefix)
+{
+    struct qemu__tempnam call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__TEMPNAM);
+    call.dir = (uint64_t)dir;
+    call.prefix = (uint64_t)prefix;
+
+    qemu_syscall(&call.super);
+
+    return (char *)call.super.iret;
+}
+
+#else
+
+void qemu__tempnam(struct qemu_syscall *call)
+{
+    struct qemu__tempnam *c = (struct qemu__tempnam *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(p__tempnam(QEMU_G2H(c->dir), QEMU_G2H(c->prefix)));
+}
+
+#endif
+
+struct qemu_fflush
+{
+    struct qemu_syscall super;
+    uint64_t file;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+int CDECL MSVCRT_fflush(FILE *file)
+{
+    struct qemu_fflush call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_FFLUSH);
+    call.file = (uint64_t)file;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_fflush(struct qemu_syscall *call)
+{
+    struct qemu_fflush *c = (struct qemu_fflush *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p_fflush(QEMU_G2H(c->file));
+}
+
+#endif
+
 struct qemu__write
 {
     struct qemu_syscall super;

@@ -192,6 +192,8 @@ static const syscall_handler dll_functions[] =
     qemu__logbf,
     qemu__lrotl,
     qemu__lrotr,
+    qemu__lseek,
+    qemu__lseeki64,
     qemu__matherr,
     qemu__nextafter,
     qemu__nextafterf,
@@ -211,6 +213,7 @@ static const syscall_handler dll_functions[] =
     qemu__statusfp2,
     qemu__strdup,
     qemu__stricmp,
+    qemu__tempnam,
     qemu__tolower,
     qemu__tolower_l,
     qemu__toupper,
@@ -277,6 +280,7 @@ static const syscall_handler dll_functions[] =
     qemu_fegetround,
     qemu_fesetenv,
     qemu_fesetround,
+    qemu_fflush,
     qemu_floor,
     qemu_floorf,
     qemu_fmax,
@@ -539,6 +543,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__logbf = (void *)GetProcAddress(msvcrt, "_logbf");
     p__lrotl = (void *)GetProcAddress(msvcrt, "_lrotl");
     p__lrotr = (void *)GetProcAddress(msvcrt, "_lrotr");
+    p__lseek = (void *)GetProcAddress(msvcrt, "_lseek");
+    p__lseeki64 = (void *)GetProcAddress(msvcrt, "_lseeki64");
     p__matherr = (void *)GetProcAddress(msvcrt, "_matherr");
     p__nextafter = (void *)GetProcAddress(msvcrt, "_nextafter");
     p__nextafterf = (void *)GetProcAddress(msvcrt, "_nextafterf");
@@ -557,6 +563,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__statusfp2 = (void *)GetProcAddress(msvcrt, "_statusfp2");
     p__strdup = (void *)GetProcAddress(msvcrt, "_strdup");
     p__stricmp = (void *)GetProcAddress(msvcrt, "_stricmp");
+    p__tempnam = (void *)GetProcAddress(msvcrt, "_tempnam");
     p__tolower = (void *)GetProcAddress(msvcrt, "_tolower");
     p__tolower_l = (void *)GetProcAddress(msvcrt, "_tolower_l");
     p__toupper = (void *)GetProcAddress(msvcrt, "_toupper");
@@ -622,6 +629,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_fegetround = (void *)GetProcAddress(msvcrt, "fegetround");
     p_fesetenv = (void *)GetProcAddress(msvcrt, "fesetenv");
     p_fesetround = (void *)GetProcAddress(msvcrt, "fesetround");
+    p_fflush = (void *)GetProcAddress(msvcrt, "fflush");
     p_floor = (void *)GetProcAddress(msvcrt, "floor");
     p_floorf = (void *)GetProcAddress(msvcrt, "floorf");
     p_fmax = (void *)GetProcAddress(msvcrt, "fmax");
