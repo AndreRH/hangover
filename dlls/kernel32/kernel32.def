@@ -13,6 +13,8 @@ EXPORTS
   AllocateUserPhysicalPages
   AreFileApisANSI
   AssignProcessToJobObject
+  BeginUpdateResourceA
+  BeginUpdateResourceW
   BindIoCompletionCallback
   BuildCommDCBA
   BuildCommDCBAndTimeoutsA
@@ -100,9 +102,19 @@ EXPORTS
   DeviceIoControl
   DisconnectNamedPipe
   EncodePointer=ntdll.RtlEncodePointer
+  EndUpdateResourceA
+  EndUpdateResourceW
   EnterCriticalSection=ntdll.RtlEnterCriticalSection
   EnumLanguageGroupLocalesA
   EnumLanguageGroupLocalesW
+  EnumResourceLanguagesA
+  EnumResourceLanguagesExA
+  EnumResourceLanguagesExW
+  EnumResourceLanguagesW
+  EnumResourceNamesA
+  EnumResourceNamesW
+  EnumResourceTypesA
+  EnumResourceTypesW
   EnumSystemCodePagesA
   EnumSystemCodePagesW
   EnumSystemGeoID
@@ -124,6 +136,10 @@ EXPORTS
   FindFirstFileW
   FindNextFileA
   FindNextFileW
+  FindResourceA
+  FindResourceExA
+  FindResourceExW
+  FindResourceW
   FlushFileBuffers
   FoldStringA
   FoldStringW
@@ -131,6 +147,7 @@ EXPORTS
   FreeEnvironmentStringsA
   FreeEnvironmentStringsW
   FreeLibrary
+  FreeResource
   FreeUserPhysicalPages
   GetACP
   GetActiveProcessorCount
@@ -313,6 +330,7 @@ EXPORTS
   LeaveCriticalSection=ntdll.RtlLeaveCriticalSection
   LoadLibraryA
   LoadLibraryW
+  LoadResource
   LocalAlloc
   LocalCompact
   LocaleNameToLCID
@@ -326,6 +344,7 @@ EXPORTS
   LocalUnlock
   LockFile
   LockFileEx
+  LockResource
   lstrcatA
   lstrcatW
   lstrcmpA
@@ -443,6 +462,7 @@ EXPORTS
   SetWaitableTimer
   SetWaitableTimerEx
   SignalObjectAndWait
+  SizeofResource
   Sleep
   SleepConditionVariableCS
   SleepConditionVariableSRW
@@ -459,6 +479,8 @@ EXPORTS
   UnlockFileEx
   UnregisterWait
   UnregisterWaitEx
+  UpdateResourceA
+  UpdateResourceW
   VerifyVersionInfoA
   VerifyVersionInfoW
   VerLanguageNameA
