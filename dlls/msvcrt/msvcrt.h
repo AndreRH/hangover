@@ -86,6 +86,7 @@ enum msvcrt_calls
     CALL__FDPCOMP,
     CALL__FDSIGN,
     CALL__FDTEST,
+    CALL__FILENO,
     CALL__FINITE,
     CALL__FINITEF,
     CALL__FPCLASS,
@@ -445,6 +446,7 @@ void qemu__fdclass(struct qemu_syscall *call);
 void qemu__fdpcomp(struct qemu_syscall *call);
 void qemu__fdsign(struct qemu_syscall *call);
 void qemu__fdtest(struct qemu_syscall *call);
+void qemu__fileno(struct qemu_syscall *call);
 void qemu__finite(struct qemu_syscall *call);
 void qemu__finitef(struct qemu_syscall *call);
 void qemu__fpclass(struct qemu_syscall *call);
@@ -1018,6 +1020,7 @@ char * (* CDECL p_setlocale)(int category, const char *locale);
 int (* CDECL p__isatty)(int fd);
 int (* CDECL p__vsnprintf)(char *str, size_t len, const char *format, va_list valist);
 int (* CDECL p__vsnwprintf)(WCHAR *str, size_t len, const WCHAR *format, va_list valist);
+int (* CDECL p__fileno)(FILE *f);
 
 DWORD msvcrt_tls;
 

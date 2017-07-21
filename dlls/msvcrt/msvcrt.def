@@ -80,6 +80,7 @@ EXPORTS
   _exit=MSVCRT__exit
   _fcvt=MSVCRT__fcvt
   _fcvt=MSVCRT__fcvt
+  _fileno=MSVCRT__fileno
   _finite=MSVCRT__finite
   _finitef=MSVCRT__finitef
   _fmode=MSVCRT__fmode

@@ -58,6 +58,37 @@ void qemu___iob_func(struct qemu_syscall *c)
 
 #endif
 
+struct qemu__fileno
+{
+    struct qemu_syscall super;
+    uint64_t f;
+};
+
+
+#ifdef QEMU_DLL_GUEST
+
+int CDECL MSVCRT__fileno(FILE *f)
+{
+    struct qemu__fileno call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__FILENO);
+    call.f = (uint64_t)f;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__fileno(struct qemu_syscall *call)
+{
+    struct qemu__fileno *c = (struct qemu__fileno *)call;
+    WINE_TRACE("\n");
+    c->super.iret = p__fileno(QEMU_G2H(c->f));
+}
+
+#endif
+
 struct qemu__isatty
 {
     struct qemu_syscall super;
@@ -71,7 +102,7 @@ int CDECL MSVCRT__isatty(int fd)
 {
     struct qemu__isatty call;
     call.super.id = QEMU_SYSCALL_ID(CALL__ISATTY);
-    call.fd = (uint64_t)fd;
+    call.fd = fd;
 
     qemu_syscall(&call.super);
 
@@ -84,7 +115,7 @@ void qemu__isatty(struct qemu_syscall *call)
 {
     struct qemu__isatty *c = (struct qemu__isatty *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)p__isatty(c->fd);
+    c->super.iret = p__isatty(c->fd);
 }
 
 #endif

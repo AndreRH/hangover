@@ -155,6 +155,7 @@ static const syscall_handler dll_functions[] =
     qemu__fdpcomp,
     qemu__fdsign,
     qemu__fdtest,
+    qemu__fileno,
     qemu__finite,
     qemu__finitef,
     qemu__fpclass,
