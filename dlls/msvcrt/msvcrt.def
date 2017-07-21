@@ -143,6 +143,7 @@ EXPORTS
   _toupper_l=MSVCRT__toupper_l
   _ultoa=ntdll._ultoa
   _unlock
+  _vsnprintf=MSVCRT__vsnprintf
   _wcmdln=MSVCRT__wcmdln
   _wcsnicmp=MSVCRT__wcsnicmp
   _wtoi=MSVCRT__wtoi

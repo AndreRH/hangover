@@ -570,6 +570,11 @@ int CDECL MSVCRT_sprintf(char *str, const char *format, ...)
     return ret;
 }
 
+int CDECL MSVCRT__vsnprintf(char *str, size_t len, const char *format, va_list valist)
+{
+    return vsprintf_helper(QEMU_SYSCALL_ID(CALL__VSNPRINTF), str, len, format, valist);
+}
+
 int CDECL MSVCRT_swprintf_s(WCHAR *str, size_t count,
         const WCHAR *format, ...)
 {
@@ -604,6 +609,10 @@ static uint64_t sprintf_wrapper(void *ctx, ...)
     {
         case QEMU_SYSCALL_ID(CALL_SPRINTF):
             ret = p_vsprintf(data->dst, data->fmt, list);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL__VSNPRINTF):
+            ret = p__vsnprintf(data->dst, data->charcount, data->fmt, list);
             break;
 
         case QEMU_SYSCALL_ID(CALL_SWPRINTF_S):
