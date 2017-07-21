@@ -216,6 +216,12 @@ EXPORTS
   memset=MSVCRT_memset
   modf=MSVCRT_modf
   modff=MSVCRT_modff
+  iswalpha=MSVCRT_iswalpha
+  iswdigit=MSVCRT_iswdigit
+  iswpunct=MSVCRT_iswpunct
+  iswspace=MSVCRT_iswspace
+  wcstombs=MSVCRT_wcstombs
+  wctomb=MSVCRT_wctomb
   nearbyint=MSVCRT_nearbyint
   nearbyintf=MSVCRT_nearbyintf
   pow=MSVCRT_pow

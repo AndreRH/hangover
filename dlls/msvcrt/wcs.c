@@ -322,3 +322,189 @@ void qemu__snwprintf(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_iswpunct
+{
+    struct qemu_syscall super;
+    uint64_t wc;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT CDECL MSVCRT_iswpunct(WCHAR wc)
+{
+    struct qemu_iswpunct call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ISWPUNCT);
+    call.wc = (uint64_t)wc;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_iswpunct(struct qemu_syscall *call)
+{
+    struct qemu_iswpunct *c = (struct qemu_iswpunct *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p_iswpunct(c->wc);
+}
+
+#endif
+
+struct qemu_iswdigit
+{
+    struct qemu_syscall super;
+    uint64_t wc;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT CDECL MSVCRT_iswdigit(WCHAR wc)
+{
+    struct qemu_iswdigit call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ISWDIGIT);
+    call.wc = (uint64_t)wc;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_iswdigit(struct qemu_syscall *call)
+{
+    struct qemu_iswdigit *c = (struct qemu_iswdigit *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p_iswdigit(c->wc);
+}
+
+#endif
+
+struct qemu_iswalpha
+{
+    struct qemu_syscall super;
+    uint64_t wc;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT CDECL MSVCRT_iswalpha(WCHAR wc)
+{
+    struct qemu_iswalpha call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ISWALPHA);
+    call.wc = (uint64_t)wc;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_iswalpha(struct qemu_syscall *call)
+{
+    struct qemu_iswalpha *c = (struct qemu_iswalpha *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p_iswalpha(c->wc);
+}
+
+#endif
+
+struct qemu_iswspace
+{
+    struct qemu_syscall super;
+    uint64_t wc;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT CDECL MSVCRT_iswspace(WCHAR wc)
+{
+    struct qemu_iswspace call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ISWSPACE);
+    call.wc = (uint64_t)wc;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_iswspace(struct qemu_syscall *call)
+{
+    struct qemu_iswspace *c = (struct qemu_iswspace *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p_iswspace(c->wc);
+}
+
+#endif
+
+struct qemu_wctomb
+{
+    struct qemu_syscall super;
+    uint64_t dst;
+    uint64_t ch;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT CDECL MSVCRT_wctomb(char *dst, WCHAR ch)
+{
+    struct qemu_wctomb call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WCTOMB);
+    call.dst = (uint64_t)dst;
+    call.ch = (uint64_t)ch;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_wctomb(struct qemu_syscall *call)
+{
+    struct qemu_wctomb *c = (struct qemu_wctomb *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p_wctomb(QEMU_G2H(c->dst), c->ch);
+}
+
+#endif
+
+struct qemu_wcstombs
+{
+    struct qemu_syscall super;
+    uint64_t mbstr;
+    uint64_t wcstr;
+    uint64_t count;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI size_t CDECL MSVCRT_wcstombs(char *mbstr, const WCHAR *wcstr, size_t count)
+{
+    struct qemu_wcstombs call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WCSTOMBS);
+    call.mbstr = (uint64_t)mbstr;
+    call.wcstr = (uint64_t)wcstr;
+    call.count = (uint64_t)count;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_wcstombs(struct qemu_syscall *call)
+{
+    struct qemu_wcstombs *c = (struct qemu_wcstombs *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p_wcstombs(QEMU_G2H(c->mbstr), QEMU_G2H(c->wcstr), c->count);
+}
+
+#endif
