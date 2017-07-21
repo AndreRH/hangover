@@ -108,6 +108,7 @@ EXPORTS
   _isspace_l=MSVCRT__isspace_l
   _isupper_l=MSVCRT__isupper_l
   _isxdigit_l=MSVCRT__isxdigit_l
+  _itoa=ntdll._itoa
   _j0=MSVCRT__j0
   _j1=MSVCRT__j1
   _jn=MSVCRT__jn
@@ -160,6 +161,7 @@ EXPORTS
   atan2f=MSVCRT_atan2f
   atan=MSVCRT_atan
   atanf=MSVCRT_atanf
+  atoi=ntdll.atoi
   atol=ntdll.atol
   calloc=MSVCRT_calloc
   ceil=MSVCRT_ceil
