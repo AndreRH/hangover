@@ -26,8 +26,11 @@ enum shell32_calls
     CALL_FREEICONLIST,
     CALL_GETCURRENTPROCESSEXPLICITAPPUSERMODELID,
     CALL_INITNETWORKADDRESSCONTROL,
+    CALL_ISLFNDRIVEA,
+    CALL_ISLFNDRIVEW,
     CALL_OPENAS_RUNDLLA,
     CALL_OPENAS_RUNDLLW,
+    CALL_PATHYETANOTHERMAKEUNIQUENAME,
     CALL_PRINTER_LOADICONSW,
     CALL_PRINTERS_REGISTERWINDOWW,
     CALL_PRINTERS_UNREGISTERWINDOW,
@@ -48,9 +51,21 @@ enum shell32_calls
     CALL_SHFREE,
     CALL_SHGETFILEINFOA,
     CALL_SHGETFILEINFOW,
+    CALL_SHGETFOLDERLOCATION,
+    CALL_SHGETFOLDERPATHA,
+    CALL_SHGETFOLDERPATHANDSUBDIRA,
+    CALL_SHGETFOLDERPATHANDSUBDIRW,
+    CALL_SHGETFOLDERPATHEX,
+    CALL_SHGETFOLDERPATHW,
+    CALL_SHGETKNOWNFOLDERIDLIST,
+    CALL_SHGETKNOWNFOLDERITEM,
+    CALL_SHGETKNOWNFOLDERPATH,
     CALL_SHGETLOCALIZEDNAME,
     CALL_SHGETMALLOC,
     CALL_SHGETPROPERTYSTOREFORWINDOW,
+    CALL_SHGETSPECIALFOLDERLOCATION,
+    CALL_SHGETSPECIALFOLDERPATHA,
+    CALL_SHGETSPECIALFOLDERPATHW,
     CALL_SHHELPSHORTCUTS_RUNDLLA,
     CALL_SHHELPSHORTCUTS_RUNDLLW,
     CALL_SHLOADINPROC,
@@ -88,8 +103,11 @@ void qemu_FindExecutableW(struct qemu_syscall *call);
 void qemu_FreeIconList(struct qemu_syscall *call);
 void qemu_GetCurrentProcessExplicitAppUserModelID(struct qemu_syscall *call);
 void qemu_InitNetworkAddressControl(struct qemu_syscall *call);
+void qemu_IsLFNDriveA(struct qemu_syscall *call);
+void qemu_IsLFNDriveW(struct qemu_syscall *call);
 void qemu_OpenAs_RunDLLA(struct qemu_syscall *call);
 void qemu_OpenAs_RunDLLW(struct qemu_syscall *call);
+void qemu_PathYetAnotherMakeUniqueName(struct qemu_syscall *call);
 void qemu_Printer_LoadIconsW(struct qemu_syscall *call);
 void qemu_Printers_RegisterWindowW(struct qemu_syscall *call);
 void qemu_Printers_UnregisterWindow(struct qemu_syscall *call);
@@ -110,9 +128,22 @@ void qemu_SHEnumerateUnreadMailAccountsW(struct qemu_syscall *call);
 void qemu_SHFree(struct qemu_syscall *call);
 void qemu_SHGetFileInfoA(struct qemu_syscall *call);
 void qemu_SHGetFileInfoW(struct qemu_syscall *call);
+void qemu_SHGetFolderLocation(struct qemu_syscall *call);
+void qemu_SHGetFolderPathA(struct qemu_syscall *call);
+void qemu_SHGetFolderPathAndSubDirA(struct qemu_syscall *call);
+void qemu_SHGetFolderPathAndSubDirW(struct qemu_syscall *call);
+void qemu_SHGetFolderPathEx(struct qemu_syscall *call);
+void qemu_SHGetFolderPathW(struct qemu_syscall *call);
+void qemu_SHGetKnownFolderIDList(struct qemu_syscall *call);
+void qemu_SHGetKnownFolderItem(struct qemu_syscall *call);
+void qemu_SHGetKnownFolderPath(struct qemu_syscall *call);
 void qemu_SHGetLocalizedName(struct qemu_syscall *call);
 void qemu_SHGetMalloc(struct qemu_syscall *call);
 void qemu_SHGetPropertyStoreForWindow(struct qemu_syscall *call);
+void qemu_SHGetSpecialFolderLocation(struct qemu_syscall *call);
+void qemu_SHGetSpecialFolderPathA(struct qemu_syscall *call);
+void qemu_SHGetSpecialFolderPathAW(struct qemu_syscall *call);
+void qemu_SHGetSpecialFolderPathW(struct qemu_syscall *call);
 void qemu_SHHelpShortcuts_RunDLLA(struct qemu_syscall *call);
 void qemu_SHHelpShortcuts_RunDLLW(struct qemu_syscall *call);
 void qemu_SHLoadInProc(struct qemu_syscall *call);

@@ -22,8 +22,11 @@ EXPORTS
   FreeIconList
   GetCurrentProcessExplicitAppUserModelID
   InitNetworkAddressControl
+  IsLFNDriveA
+  IsLFNDriveW
   OpenAs_RunDLLA
   OpenAs_RunDLLW
+  PathYetAnotherMakeUniqueName
   Printer_LoadIconsW
   Printers_RegisterWindowW
   Printers_UnregisterWindow
@@ -44,9 +47,21 @@ EXPORTS
   SHFree
   SHGetFileInfoA
   SHGetFileInfoW
+  SHGetFolderLocation
+  SHGetFolderPathA
+  SHGetFolderPathAndSubDirA
+  SHGetFolderPathAndSubDirW
+  SHGetFolderPathEx
+  SHGetFolderPathW
+  SHGetKnownFolderIDList
+  SHGetKnownFolderItem
+  SHGetKnownFolderPath
   SHGetLocalizedName
   SHGetMalloc
   SHGetPropertyStoreForWindow
+  SHGetSpecialFolderLocation
+  SHGetSpecialFolderPathA
+  SHGetSpecialFolderPathW
   SHHelpShortcuts_RunDLLA
   SHHelpShortcuts_RunDLLW
   SHLoadInProc

@@ -1059,7 +1059,7 @@ struct qemu_SHQueryUserNotificationState
 #ifdef QEMU_DLL_GUEST
 
 /* FIXME: Include shellapi.h and figure out the right defines. */
-WINBASEAPI HRESULT WINAPI SHQueryUserNotificationState(void *state)
+WINBASEAPI HRESULT WINAPI SHQueryUserNotificationState(QUERY_USER_NOTIFICATION_STATE *state)
 {
     struct qemu_SHQueryUserNotificationState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHQUERYUSERNOTIFICATIONSTATE);
