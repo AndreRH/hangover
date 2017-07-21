@@ -217,6 +217,7 @@ enum msvcrt_calls
     CALL_FMOD,
     CALL_FMODF,
     CALL_FPRINTF,
+    CALL_FREAD,
     CALL_FREE,
     CALL_FREXP,
     CALL_FREXPF,
@@ -579,6 +580,7 @@ void qemu_fminf(struct qemu_syscall *call);
 void qemu_fmod(struct qemu_syscall *call);
 void qemu_fmodf(struct qemu_syscall *call);
 void qemu_fprintf(struct qemu_syscall *call);
+void qemu_fread(struct qemu_syscall *call);
 void qemu_free(struct qemu_syscall *call);
 void qemu_frexp(struct qemu_syscall *call);
 void qemu_frexpf(struct qemu_syscall *call);
@@ -1027,6 +1029,7 @@ int (* CDECL p__vsnwprintf)(WCHAR *str, size_t len, const WCHAR *format, va_list
 int (* CDECL p__fileno)(FILE *f);
 int (* CDECL p__write)(int fd, const void *buf, unsigned int count);
 double (* CDECL p_atof)(const char *str);
+size_t (* CDECL p_fread)(void *ptr, size_t size, size_t nmemb, FILE *file);
 
 DWORD msvcrt_tls;
 

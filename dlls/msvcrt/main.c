@@ -286,6 +286,7 @@ static const syscall_handler dll_functions[] =
     qemu_fmod,
     qemu_fmodf,
     qemu_fprintf,
+    qemu_fread,
     qemu_free,
     qemu_frexp,
     qemu_frexpf,
@@ -627,6 +628,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_fminf = (void *)GetProcAddress(msvcrt, "fminf");
     p_fmod = (void *)GetProcAddress(msvcrt, "fmod");
     p_fmodf = (void *)GetProcAddress(msvcrt, "fmodf");
+    p_fread = (void *)GetProcAddress(msvcrt, "fread");
     p_free = (void *)GetProcAddress(msvcrt, "free");
     p_frexp = (void *)GetProcAddress(msvcrt, "frexp");
     p_frexpf = (void *)GetProcAddress(msvcrt, "frexpf");

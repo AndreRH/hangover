@@ -732,6 +732,42 @@ void qemu_sprintf(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_fread
+{
+    struct qemu_syscall super;
+    uint64_t str;
+    uint64_t size, count;
+    uint64_t file;
+};
+
+
+#ifdef QEMU_DLL_GUEST
+
+size_t CDECL MSVCRT_fread(const void *str, size_t size, size_t count, FILE *file)
+{
+    struct qemu_fread call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_FREAD);
+    call.str = (uint64_t)str;
+    call.size = size;
+    call.count = count;
+    call.file = (uint64_t)file;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_fread(struct qemu_syscall *call)
+{
+    struct qemu_fread *c = (struct qemu_fread *)call;
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)p_fread(QEMU_G2H(c->str), c->size, c->count, QEMU_G2H(c->file));
+}
+
+#endif
+
 struct qemu_fwrite
 {
     struct qemu_syscall super;
@@ -748,8 +784,8 @@ size_t CDECL MSVCRT_fwrite(const void *str, size_t size, size_t count, FILE *fil
     struct qemu_fwrite call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FWRITE);
     call.str = (uint64_t)str;
-    call.size = (uint64_t)size;
-    call.count = (uint64_t)count;
+    call.size = size;
+    call.count = count;
     call.file = (uint64_t)file;
 
     qemu_syscall(&call.super);

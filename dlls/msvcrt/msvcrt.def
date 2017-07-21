@@ -194,6 +194,7 @@ EXPORTS
   fmod=MSVCRT_fmod
   fmodf=MSVCRT_fmodf
   fprintf=MSVCRT_fprintf
+  fread=MSVCRT_fread
   free=MSVCRT_free
   frexp=MSVCRT_frexp
   frexpf=MSVCRT_frexpf
