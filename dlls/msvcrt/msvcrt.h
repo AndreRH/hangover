@@ -175,6 +175,7 @@ enum msvcrt_calls
     CALL_ATANH,
     CALL_ATANHF,
     CALL_ATANHL,
+    CALL_ATOF,
     CALL_CALLOC,
     CALL_CBRT,
     CALL_CBRTF,
@@ -535,6 +536,7 @@ void qemu_atanf(struct qemu_syscall *call);
 void qemu_atanh(struct qemu_syscall *call);
 void qemu_atanhf(struct qemu_syscall *call);
 void qemu_atanhl(struct qemu_syscall *call);
+void qemu_atof(struct qemu_syscall *call);
 void qemu_calloc(struct qemu_syscall *call);
 void qemu_cbrt(struct qemu_syscall *call);
 void qemu_cbrtf(struct qemu_syscall *call);
@@ -1024,6 +1026,7 @@ int (* CDECL p__vsnprintf)(char *str, size_t len, const char *format, va_list va
 int (* CDECL p__vsnwprintf)(WCHAR *str, size_t len, const WCHAR *format, va_list valist);
 int (* CDECL p__fileno)(FILE *f);
 int (* CDECL p__write)(int fd, const void *buf, unsigned int count);
+double (* CDECL p_atof)(const char *str);
 
 DWORD msvcrt_tls;
 

@@ -168,6 +168,7 @@ EXPORTS
   atan2f=MSVCRT_atan2f
   atan=MSVCRT_atan
   atanf=MSVCRT_atanf
+  atof=MSVCRT_atof
   atoi=ntdll.atoi
   atol=ntdll.atol
   calloc=MSVCRT_calloc

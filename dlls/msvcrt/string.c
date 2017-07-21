@@ -92,6 +92,36 @@ void qemu__stricmp(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_atof
+{
+    struct qemu_syscall super;
+    uint64_t str;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+double CDECL MSVCRT_atof(const char *str)
+{
+    struct qemu_atof call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ATOF);
+    call.str = (uint64_t)str;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_atof(struct qemu_syscall *call)
+{
+    struct qemu_atof *c = (struct qemu_atof *)call;
+    WINE_TRACE("\n");
+    c->super.dret = p_atof(QEMU_G2H(c->str));
+}
+
+#endif
+
 /* FIXME: Calling out of the vm for memcmp is probably a waste of time. */
 struct qemu_memcmp
 {
