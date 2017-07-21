@@ -319,6 +319,7 @@ enum msvcrt_calls
     CALL_STRCPY_S,
     CALL_STRLEN,
     CALL_STRNCMP,
+    CALL_STRTOD,
     CALL_SWPRINTF_S,
     CALL_TAN,
     CALL_TANF,
@@ -688,6 +689,7 @@ void qemu_strcat_s(struct qemu_syscall *call);
 void qemu_strcpy_s(struct qemu_syscall *call);
 void qemu_strlen(struct qemu_syscall *call);
 void qemu_strncmp(struct qemu_syscall *call);
+void qemu_strtod(struct qemu_syscall *call);
 void qemu_tan(struct qemu_syscall *call);
 void qemu_tanf(struct qemu_syscall *call);
 void qemu_tanh(struct qemu_syscall *call);
@@ -1047,6 +1049,7 @@ int (* CDECL p_fflush)(FILE *file);
 LONG (* CDECL p__lseek)(int fd, LONG offset, int whence);
 __int64 (* CDECL p__lseeki64)(int fd, __int64 offset, int whence);
 char * (* CDECL p__tempnam)(const char *dir, const char *prefix);
+double (* CDECL p_strtod)(const char *str, char **end);
 
 DWORD msvcrt_tls;
 
