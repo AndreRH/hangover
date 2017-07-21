@@ -132,6 +132,7 @@ EXPORTS
   _set_controlfp
   _set_FMA3_enable=MSVCRT__set_FMA3_enable
   _set_SSE2_enable=MSVCRT__set_SSE2_enable
+  _snprintf=MSVCRT__snprintf
   _snwprintf=MSVCRT__snwprintf
   _statusfp
   _statusfp2
