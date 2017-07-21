@@ -71,6 +71,7 @@ EXPORTS
   wcscpy=MSVCRT_wcscpy
   wcscpy_s=MSVCRT_wcscpy_s
   wcsncmp=MSVCRT_wcsncmp
+  wcsrchr=ntdll.wcsrchr
   wcsstr=MSVCRT_wcsstr
   wcstod=MSVCRT_wcstod
   wprintf=MSVCRT_wprintf
