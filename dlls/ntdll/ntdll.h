@@ -4,6 +4,43 @@
 enum ntdll_calls
 {
     CALL___C_SPECIFIC_HANDLER = 0,
+    CALL___ISASCII,
+    CALL___ISCSYM,
+    CALL___ISCSYMF,
+    CALL___TOASCII,
+    CALL__ATOI64,
+    CALL__I64TOA,
+    CALL__ITOA,
+    CALL__LTOA,
+    CALL__MEMCCPY,
+    CALL__MEMICMP,
+    CALL__SPLITPATH,
+    CALL__STRICMP,
+    CALL__STRLWR,
+    CALL__STRNICMP,
+    CALL__STRUPR,
+    CALL__TOLOWER,
+    CALL__TOUPPER,
+    CALL__UI64TOA,
+    CALL__ULTOA,
+    CALL_ATOI,
+    CALL_ATOL,
+    CALL_ISALNUM,
+    CALL_ISALPHA,
+    CALL_ISCNTRL,
+    CALL_ISDIGIT,
+    CALL_ISGRAPH,
+    CALL_ISLOWER,
+    CALL_ISPRINT,
+    CALL_ISPUNCT,
+    CALL_ISSPACE,
+    CALL_ISUPPER,
+    CALL_ISXDIGIT,
+    CALL_MEMCHR,
+    CALL_MEMCMP,
+    CALL_MEMCPY,
+    CALL_MEMMOVE,
+    CALL_MEMSET,
     CALL_RTLADDFUNCTIONTABLE,
     CALL_RTLCAPTURECONTEXT,
     CALL_RTLDECODEPOINTER,
@@ -14,6 +51,23 @@ enum ntdll_calls
     CALL_RTLLEAVECRITICALSECTION,
     CALL_RTLLOOKUPFUNCTIONENTRY,
     CALL_RTLVIRTUALUNWIND,
+    CALL_STRCAT,
+    CALL_STRCHR,
+    CALL_STRCMP,
+    CALL_STRCPY,
+    CALL_STRCSPN,
+    CALL_STRLEN,
+    CALL_STRNCAT,
+    CALL_STRNCMP,
+    CALL_STRNCPY,
+    CALL_STRPBRK,
+    CALL_STRRCHR,
+    CALL_STRSPN,
+    CALL_STRSTR,
+    CALL_STRTOL,
+    CALL_STRTOUL,
+    CALL_TOLOWER,
+    CALL_TOUPPER,
     CALL_WCSRCHR
 };
 
@@ -21,6 +75,43 @@ enum ntdll_calls
 extern const struct qemu_ops *qemu_ops;
 
 void qemu___C_specific_handler(struct qemu_syscall *call);
+void qemu___isascii(struct qemu_syscall *call);
+void qemu___iscsym(struct qemu_syscall *call);
+void qemu___iscsymf(struct qemu_syscall *call);
+void qemu___toascii(struct qemu_syscall *call);
+void qemu__atoi64(struct qemu_syscall *call);
+void qemu__i64toa(struct qemu_syscall *call);
+void qemu__itoa(struct qemu_syscall *call);
+void qemu__ltoa(struct qemu_syscall *call);
+void qemu__memccpy(struct qemu_syscall *call);
+void qemu__memicmp(struct qemu_syscall *call);
+void qemu__splitpath(struct qemu_syscall *call);
+void qemu__stricmp(struct qemu_syscall *call);
+void qemu__strlwr(struct qemu_syscall *call);
+void qemu__strnicmp(struct qemu_syscall *call);
+void qemu__strupr(struct qemu_syscall *call);
+void qemu__tolower(struct qemu_syscall *call);
+void qemu__toupper(struct qemu_syscall *call);
+void qemu__ui64toa(struct qemu_syscall *call);
+void qemu__ultoa(struct qemu_syscall *call);
+void qemu_atoi(struct qemu_syscall *call);
+void qemu_atol(struct qemu_syscall *call);
+void qemu_isalnum(struct qemu_syscall *call);
+void qemu_isalpha(struct qemu_syscall *call);
+void qemu_iscntrl(struct qemu_syscall *call);
+void qemu_isdigit(struct qemu_syscall *call);
+void qemu_isgraph(struct qemu_syscall *call);
+void qemu_islower(struct qemu_syscall *call);
+void qemu_isprint(struct qemu_syscall *call);
+void qemu_ispunct(struct qemu_syscall *call);
+void qemu_isspace(struct qemu_syscall *call);
+void qemu_isupper(struct qemu_syscall *call);
+void qemu_isxdigit(struct qemu_syscall *call);
+void qemu_memchr(struct qemu_syscall *call);
+void qemu_memcmp(struct qemu_syscall *call);
+void qemu_memcpy(struct qemu_syscall *call);
+void qemu_memmove(struct qemu_syscall *call);
+void qemu_memset(struct qemu_syscall *call);
 void qemu_RtlAddFunctionTable(struct qemu_syscall *call);
 void qemu_RtlCaptureContext(struct qemu_syscall *call);
 void qemu_RtlDecodePointer(struct qemu_syscall *call);
@@ -31,9 +122,81 @@ void qemu_RtlInitializeCriticalSectionEx(struct qemu_syscall *call);
 void qemu_RtlLeaveCriticalSection(struct qemu_syscall *call);
 void qemu_RtlLookupFunctionEntry(struct qemu_syscall *call);
 void qemu_RtlVirtualUnwind(struct qemu_syscall *call);
+void qemu_strcat(struct qemu_syscall *call);
+void qemu_strchr(struct qemu_syscall *call);
+void qemu_strcmp(struct qemu_syscall *call);
+void qemu_strcpy(struct qemu_syscall *call);
+void qemu_strcspn(struct qemu_syscall *call);
+void qemu_strlen(struct qemu_syscall *call);
+void qemu_strncat(struct qemu_syscall *call);
+void qemu_strncmp(struct qemu_syscall *call);
+void qemu_strncpy(struct qemu_syscall *call);
+void qemu_strpbrk(struct qemu_syscall *call);
+void qemu_strrchr(struct qemu_syscall *call);
+void qemu_strspn(struct qemu_syscall *call);
+void qemu_strstr(struct qemu_syscall *call);
+void qemu_strtol(struct qemu_syscall *call);
+void qemu_strtoul(struct qemu_syscall *call);
+void qemu_tolower(struct qemu_syscall *call);
+void qemu_toupper(struct qemu_syscall *call);
 void qemu_wcsrchr(struct qemu_syscall *call);
 
 WCHAR *(* CDECL p_wcsrchr)(WCHAR *str, WCHAR ch);
+void * (* CDECL p_memchr)(const void *ptr, int c, size_t n);
+int (* CDECL p_memcmp)(const void *ptr1, const void *ptr2, size_t n);
+void * (* CDECL p_memcpy)(void *dst, const void *src, size_t n);
+void * (* CDECL p_memmove)(void *dst, const void *src, size_t n);
+void * (* CDECL p_memset)(void *dst, int c, size_t n);
+char * (* CDECL p_strcat)(char *dst, const char *src);
+char * (* CDECL p_strchr)(const char *str, int c);
+int (* CDECL p_strcmp)(const char *str1, const char *str2);
+char * (* CDECL p_strcpy)(char *dst, const char *src);
+size_t (* CDECL p_strcspn)(const char *str, const char *reject);
+size_t (* CDECL p_strlen)(const char *str);
+char * (* CDECL p_strncat)(char *dst, const char *src, size_t len);
+int (* CDECL p_strncmp)(const char *str1, const char *str2, size_t len);
+char * (* CDECL p_strncpy)(char *dst, const char *src, size_t len);
+char * (* CDECL p_strpbrk)(const char *str, const char *accept);
+char * (* CDECL p_strrchr)(const char *str, int c);
+size_t (* CDECL p_strspn)(const char *str, const char *accept);
+char * (* CDECL p_strstr)(const char *haystack, const char *needle);
+void * (* CDECL p__memccpy)(void *dst, const void *src, int c, size_t n);
+INT (* CDECL p__memicmp)(LPCSTR s1, LPCSTR s2, DWORD len);
+int (* CDECL p__stricmp)(LPCSTR str1, LPCSTR str2);
+int (* CDECL p__strnicmp)(LPCSTR str1, LPCSTR str2, size_t n);
+LPSTR (* CDECL p__strupr)(LPSTR str);
+LPSTR (* CDECL p__strlwr)(LPSTR str);
+int (* CDECL p_tolower)(int c);
+int (* CDECL p_toupper)(int c);
+int (* CDECL p_isalnum)(int c);
+int (* CDECL p_isalpha)(int c);
+int (* CDECL p_iscntrl)(int c);
+int (* CDECL p_isdigit)(int c);
+int (* CDECL p_isgraph)(int c);
+int (* CDECL p_islower)(int c);
+int (* CDECL p_isprint)(int c);
+int (* CDECL p_ispunct)(int c);
+int (* CDECL p_isspace)(int c);
+int (* CDECL p_isupper)(int c);
+int (* CDECL p_isxdigit)(int c);
+int (* CDECL p___isascii)(int c);
+int (* CDECL p___toascii)(int c);
+int (* CDECL p___iscsym)(int c);
+int (* CDECL p___iscsymf)(int c);
+int (* CDECL p__toupper)(int c);
+int (* CDECL p__tolower)(int c);
+LONG (* CDECL p_strtol)(const char *nptr, char **endptr, int base);
+ULONG (* CDECL p_strtoul)(const char *nptr, char **endptr, int base);
+char * (* CDECL p__ultoa)(ULONG value, char *str, int radix);
+char * (* CDECL p__ltoa)(LONG value, char *str, int radix);
+char * (* CDECL p__itoa)(int value, char *str, int radix);
+char * (* CDECL p__ui64toa)(ULONGLONG value, char *str, int radix);
+char * (* CDECL p__i64toa)(LONGLONG value, char *str, int radix);
+LONGLONG (* CDECL p__atoi64)(const char *str);
+int (* CDECL p_atoi)(const char *nptr);
+LONG (* CDECL p_atol)(const char *nptr);
+void (* CDECL p__splitpath)(const char* inpath, char * drv, char * dir, char* fname, char * ext);
+
 #endif
 
 #endif

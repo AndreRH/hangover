@@ -2,7 +2,44 @@ LIBRARY ntdll.dll BASE=0x10000000
 
 EXPORTS
   __C_specific_handler
+  __isascii=NTDLL___isascii
+  __iscsym=NTDLL___iscsym
+  __iscsymf=NTDLL___iscsymf
+  __toascii=NTDLL___toascii
+  _atoi64
+  _i64toa
+  _itoa
+  _ltoa
+  _memccpy
+  _memicmp=NTDLL__memicmp
+  _splitpath
+  _stricmp
+  _strlwr
+  _strnicmp
+  _strupr
+  _tolower=NTDLL__tolower
+  _toupper=NTDLL__toupper
+  _ui64toa
+  _ultoa
+  atoi=NTDLL_atoi
+  atol=NTDLL_atol
   DbgBreakPoint
+  isalnum=NTDLL_isalnum
+  isalpha=NTDLL_isalpha
+  iscntrl=NTDLL_iscntrl
+  isdigit=NTDLL_isdigit
+  isgraph=NTDLL_isgraph
+  islower=NTDLL_islower
+  isprint=NTDLL_isprint
+  ispunct=NTDLL_ispunct
+  isspace=NTDLL_isspace
+  isupper=NTDLL_isupper
+  isxdigit=NTDLL_isxdigit
+  memchr=NTDLL_memchr
+  memcmp=NTDLL_memcmp
+  memcpy=NTDLL_memcpy
+  memmove=NTDLL_memmove
+  memset=NTDLL_memset
   RtlAddFunctionTable
   RtlCaptureContext
   RtlDecodePointer
@@ -13,4 +50,21 @@ EXPORTS
   RtlLeaveCriticalSection
   RtlLookupFunctionEntry
   RtlVirtualUnwind
+  strcat=NTDLL_strcat
+  strchr=NTDLL_strchr
+  strcmp=NTDLL_strcmp
+  strcpy=NTDLL_strcpy
+  strcspn=NTDLL_strcspn
+  strlen=NTDLL_strlen
+  strncat=NTDLL_strncat
+  strncmp=NTDLL_strncmp
+  strncpy=NTDLL_strncpy
+  strpbrk=NTDLL_strpbrk
+  strrchr=NTDLL_strrchr
+  strspn=NTDLL_strspn
+  strstr=NTDLL_strstr
+  strtol=NTDLL_strtol
+  strtoul=NTDLL_strtoul
+  tolower=NTDLL_tolower
+  toupper=NTDLL_toupper
   wcsrchr=NTDLL_wcsrchr
