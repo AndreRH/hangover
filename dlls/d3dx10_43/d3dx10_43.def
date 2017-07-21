@@ -1,0 +1,4 @@
+LIBRARY d3dx10_43.dll
+
+EXPORTS
+  D3DX10CreateFontW=ntdll.DbgBreakPoint
