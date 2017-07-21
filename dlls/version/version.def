@@ -1,4 +1,4 @@
-LIBRARY version.dll BASE=0x100000000
+LIBRARY version.dll BASE=0x101000000
 
 EXPORTS
   GetFileVersionInfoA
