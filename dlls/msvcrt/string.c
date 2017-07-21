@@ -162,7 +162,7 @@ void qemu_memset(struct qemu_syscall *call)
 
 #endif
 
-/* FIXME: Calling out of the vm for memcpy is probably a waste of time. */
+/* FIXME: Calling out of the vm for memcpy and memmove is probably a waste of time. */
 struct qemu_memcpy
 {
     struct qemu_syscall super;
@@ -170,7 +170,6 @@ struct qemu_memcpy
     uint64_t src;
     uint64_t size;
 };
-
 
 #ifdef QEMU_DLL_GUEST
 
@@ -187,7 +186,27 @@ void * CDECL MSVCRT_memcpy(void *dst, const void *src, size_t size)
     return (void *)call.super.iret;
 }
 
+void * CDECL MSVCRT_memmove(void *dst, const void *src, size_t size)
+{
+    struct qemu_memcpy call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_MEMMOVE);
+    call.dst = (uint64_t)dst;
+    call.src = (uint64_t)src;
+    call.size = size;
+
+    qemu_syscall(&call.super);
+
+    return (void *)call.super.iret;
+}
+
 #else
+
+void qemu_memmove(struct qemu_syscall *call)
+{
+    struct qemu_memcpy *c = (struct qemu_memcpy *)call;
+    WINE_TRACE("\n");
+    c->super.iret = QEMU_H2G(p_memmove(QEMU_G2H(c->dst), QEMU_G2H(c->src), c->size));
+}
 
 void qemu_memcpy(struct qemu_syscall *call)
 {

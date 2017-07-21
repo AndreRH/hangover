@@ -49,6 +49,7 @@ EXPORTS
   malloc=MSVCRT_malloc
   memcmp=MSVCRT_memcmp
   memcpy=MSVCRT_memcpy
+  memmove=MSVCRT_memmove
   memset=MSVCRT_memset
   powf=MSVCRT_powf
   printf=MSVCRT_printf
