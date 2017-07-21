@@ -290,11 +290,15 @@ static HRESULT WINAPI d3d9_device_GetDirect3D(IDirect3DDevice9Ex *iface, IDirect
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
     struct qemu_d3d9_device_GetDirect3D call;
+    struct qemu_d3d9_impl *d3d;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETDIRECT3D);
     call.iface = (uint64_t)device;
-    call.d3d9 = (uint64_t)d3d9;
+    call.d3d9 = (uint64_t)&d3d;
 
     qemu_syscall(&call.super);
+
+    *d3d9 = (IDirect3D9 *)&d3d->IDirect3D9Ex_iface;
+    IDirect3D9_AddRef(*d3d9);
 
     return call.super.iret;
 }
@@ -306,10 +310,12 @@ void qemu_d3d9_device_GetDirect3D(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetDirect3D *c = (struct qemu_d3d9_device_GetDirect3D *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_GetDirect3D(device->host, QEMU_G2H(c->d3d9));
+    *(uint64_t *)QEMU_G2H(c->d3d9) = QEMU_H2G(device->d3d9);
+
+    c->super.iret = D3D_OK;
 }
 
 #endif
