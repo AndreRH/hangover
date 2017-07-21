@@ -204,8 +204,6 @@ WINBASEAPI BOOL WINAPI K32GetPerformanceInfo(PPERFORMANCE_INFORMATION info, DWOR
 
 #else
 
-/* TODO: Add K32GetPerformanceInfo to Wine headers? */
-extern BOOL WINAPI K32GetPerformanceInfo(PPERFORMANCE_INFORMATION info, DWORD size);
 void qemu_K32GetPerformanceInfo(struct qemu_syscall *call)
 {
     struct qemu_K32GetPerformanceInfo *c = (struct qemu_K32GetPerformanceInfo *)call;
