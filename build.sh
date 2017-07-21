@@ -109,6 +109,11 @@ make -j4
 ln -sf $PWD/version.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
 ln -sf $PWD/qemu_version.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
 
+cd $DESTDIR/dlls/oleaut32
+make -j4
+ln -sf $PWD/oleaut32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
+ln -sf $PWD/qemu_oleaut32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+
 # Build the test progs. FIXME: automate this better.
 cd $DESTDIR/testprogs/advapi32
 make -j4

@@ -1,0 +1,44 @@
+LIBRARY oleaut32.dll BASE=0x110000000
+
+EXPORTS
+  SysAllocString=ntdll.DbgBreakPoint @2
+  SysReAllocString=ntdll.DbgBreakPoint @3
+  SysAllocStringLen=ntdll.DbgBreakPoint @4
+  SysReAllocStringLen=ntdll.DbgBreakPoint @5
+  SysFreeString=ntdll.DbgBreakPoint @6
+  SysStringLen=ntdll.DbgBreakPoint @7
+  VariantInit @8
+  VariantClear @9
+  DosDateTimeToVariantTime
+  SystemTimeToVariantTime
+  VarAbs
+  VarAdd
+  VarAnd
+  VarCat
+  VarCmp
+  VarDateFromUdate
+  VarDateFromUdateEx
+  VarDiv
+  VarEqv
+  VarFix
+  VariantChangeType
+  VariantChangeTypeEx
+  VariantCopy
+  VariantCopyInd
+  VariantTimeToDosDateTime
+  VariantTimeToSystemTime
+  VarIdiv
+  VarImp
+  VarInt
+  VarMod
+  VarMul
+  VarNeg
+  VarNot
+  VarNumFromParseNum
+  VarOr
+  VarParseNumFromStr
+  VarPow
+  VarRound
+  VarSub
+  VarUdateFromDate
+  VarXor

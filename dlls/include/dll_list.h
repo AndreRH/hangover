@@ -17,5 +17,6 @@
 #define DLL_IMM32       0x0eLL
 #define DLL_OLE32       0x0fLL
 #define DLL_VERSION     0x10LL
+#define DLL_OLEAUT32    0x11LL
 
 #endif
