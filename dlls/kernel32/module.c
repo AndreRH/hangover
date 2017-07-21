@@ -1,5 +1,6 @@
 /*
  * Copyright 2017 Stefan Dösinger for CodeWeavers
+ * Copyright 2017 André Hentschel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,8 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
+/* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
+
 #include <windows.h>
 #include <stdio.h>
+#include <psapi.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -28,19 +32,22 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
-struct qemu_FreeLibrary
+
+struct qemu_GetDllDirectoryA
 {
     struct qemu_syscall super;
-    uint64_t module;
+    uint64_t buf_len;
+    uint64_t buffer;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI WINBOOL WINAPI FreeLibrary(HMODULE module)
+WINBASEAPI DWORD WINAPI GetDllDirectoryA(DWORD buf_len, LPSTR buffer)
 {
-    struct qemu_FreeLibrary call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_FREELIBRARY);
-    call.module = (uint64_t)module;
+    struct qemu_GetDllDirectoryA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETDLLDIRECTORYA);
+    call.buf_len = (uint64_t)buf_len;
+    call.buffer = (uint64_t)buffer;
 
     qemu_syscall(&call.super);
 
@@ -49,45 +56,30 @@ WINBASEAPI WINBOOL WINAPI FreeLibrary(HMODULE module)
 
 #else
 
-void qemu_FreeLibrary(struct qemu_syscall *call)
+void qemu_GetDllDirectoryA(struct qemu_syscall *call)
 {
-    struct qemu_FreeLibrary *c = (struct qemu_FreeLibrary *)call;
-    WINE_TRACE("\n");
-    c->super.iret = qemu_ops->qemu_FreeLibrary((HMODULE)c->module);
+    struct qemu_GetDllDirectoryA *c = (struct qemu_GetDllDirectoryA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetDllDirectoryA(c->buf_len, QEMU_G2H(c->buffer));
 }
 
 #endif
 
-struct qemu_ModuleFileName
+struct qemu_GetDllDirectoryW
 {
     struct qemu_syscall super;
-    uint64_t module;
-    uint64_t name;
-    uint64_t size;
+    uint64_t buf_len;
+    uint64_t buffer;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI GetModuleFileNameA(HMODULE module, CHAR *name, DWORD size)
+WINBASEAPI DWORD WINAPI GetDllDirectoryW(DWORD buf_len, LPWSTR buffer)
 {
-    struct qemu_ModuleFileName call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEFILENAMEA);
-    call.module = (uint64_t)module;
-    call.name = (uint64_t)name;
-    call.size = (uint64_t)size;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-WINBASEAPI DWORD WINAPI GetModuleFileNameW(HMODULE module, WCHAR *name, DWORD size)
-{
-    struct qemu_ModuleFileName call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEFILENAMEW);
-    call.module = (uint64_t)module;
-    call.name = (uint64_t)name;
-    call.size = (uint64_t)size;
+    struct qemu_GetDllDirectoryW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETDLLDIRECTORYW);
+    call.buf_len = (uint64_t)buf_len;
+    call.buffer = (uint64_t)buffer;
 
     qemu_syscall(&call.super);
 
@@ -96,46 +88,186 @@ WINBASEAPI DWORD WINAPI GetModuleFileNameW(HMODULE module, WCHAR *name, DWORD si
 
 #else
 
-void qemu_GetModuleFileNameA(struct qemu_syscall *call)
+void qemu_GetDllDirectoryW(struct qemu_syscall *call)
 {
-    struct qemu_ModuleFileName *c = (struct qemu_ModuleFileName *)call;
-    WCHAR *wbuf;
-    WINE_TRACE("\n");
-
-    wbuf = HeapAlloc(GetProcessHeap(), 0, (c->size + 1) * sizeof(*wbuf));
-
-    /* Allocate one more to make sure WideCharToMultiByte triggers an error, if there is an error. */
-    qemu_ops->qemu_GetModuleFileName((HANDLE)c->module, wbuf, c->size ? c->size + 1 : 0);
-
-    c->super.iret = WideCharToMultiByte(CP_ACP, 0, wbuf, -1, QEMU_G2H(c->name), c->size, NULL, NULL);
-    if (!c->super.iret)
-        c->super.iret = WideCharToMultiByte(CP_ACP, 0, wbuf, c->size, QEMU_G2H(c->name), c->size, NULL, NULL);
-
-    HeapFree(GetProcessHeap(), 0, wbuf);
-}
-
-void qemu_GetModuleFileNameW(struct qemu_syscall *call)
-{
-    struct qemu_ModuleFileName *c = (struct qemu_ModuleFileName *)call;
-    WINE_TRACE("\n");
-    c->super.iret = qemu_ops->qemu_GetModuleFileName((HANDLE)c->module, QEMU_G2H(c->name), c->size);
+    struct qemu_GetDllDirectoryW *c = (struct qemu_GetDllDirectoryW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetDllDirectoryW(c->buf_len, QEMU_G2H(c->buffer));
 }
 
 #endif
 
-struct qemu_ModuleOpA
+struct qemu_SetDllDirectoryA
 {
     struct qemu_syscall super;
-    uint64_t name;
+    uint64_t dir;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HMODULE WINAPI GetModuleHandleA(const char *name)
+WINBASEAPI BOOL WINAPI SetDllDirectoryA(LPCSTR dir)
 {
-    struct qemu_ModuleOpA call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEHANDLEA);
-    call.name = (uint64_t)name;
+    struct qemu_SetDllDirectoryA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETDLLDIRECTORYA);
+    call.dir = (uint64_t)dir;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_SetDllDirectoryA(struct qemu_syscall *call)
+{
+    struct qemu_SetDllDirectoryA *c = (struct qemu_SetDllDirectoryA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SetDllDirectoryA(QEMU_G2H(c->dir));
+}
+
+#endif
+
+struct qemu_SetDllDirectoryW
+{
+    struct qemu_syscall super;
+    uint64_t dir;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI SetDllDirectoryW(LPCWSTR dir)
+{
+    struct qemu_SetDllDirectoryW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETDLLDIRECTORYW);
+    call.dir = (uint64_t)dir;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_SetDllDirectoryW(struct qemu_syscall *call)
+{
+    struct qemu_SetDllDirectoryW *c = (struct qemu_SetDllDirectoryW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SetDllDirectoryW(QEMU_G2H(c->dir));
+}
+
+#endif
+
+struct qemu_DisableThreadLibraryCalls
+{
+    struct qemu_syscall super;
+    uint64_t hModule;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI DisableThreadLibraryCalls(HMODULE hModule)
+{
+    struct qemu_DisableThreadLibraryCalls call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DISABLETHREADLIBRARYCALLS);
+    call.hModule = (uint64_t)hModule;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_DisableThreadLibraryCalls(struct qemu_syscall *call)
+{
+    struct qemu_DisableThreadLibraryCalls *c = (struct qemu_DisableThreadLibraryCalls *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = DisableThreadLibraryCalls(QEMU_G2H(c->hModule));
+}
+
+#endif
+
+struct qemu_GetBinaryTypeW
+{
+    struct qemu_syscall super;
+    uint64_t lpApplicationName;
+    uint64_t lpBinaryType;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetBinaryTypeW(LPCWSTR lpApplicationName, LPDWORD lpBinaryType)
+{
+    struct qemu_GetBinaryTypeW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETBINARYTYPEW);
+    call.lpApplicationName = (uint64_t)lpApplicationName;
+    call.lpBinaryType = (uint64_t)lpBinaryType;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetBinaryTypeW(struct qemu_syscall *call)
+{
+    struct qemu_GetBinaryTypeW *c = (struct qemu_GetBinaryTypeW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetBinaryTypeW(QEMU_G2H(c->lpApplicationName), QEMU_G2H(c->lpBinaryType));
+}
+
+#endif
+
+struct qemu_GetBinaryTypeA
+{
+    struct qemu_syscall super;
+    uint64_t lpApplicationName;
+    uint64_t lpBinaryType;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetBinaryTypeA(LPCSTR lpApplicationName, LPDWORD lpBinaryType)
+{
+    struct qemu_GetBinaryTypeA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETBINARYTYPEA);
+    call.lpApplicationName = (uint64_t)lpApplicationName;
+    call.lpBinaryType = (uint64_t)lpBinaryType;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetBinaryTypeA(struct qemu_syscall *call)
+{
+    struct qemu_GetBinaryTypeA *c = (struct qemu_GetBinaryTypeA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetBinaryTypeA(QEMU_G2H(c->lpApplicationName), QEMU_G2H(c->lpBinaryType));
+}
+
+#endif
+
+struct qemu_LoadLibraryExA
+{
+    struct qemu_syscall super;
+    uint64_t libname;
+    uint64_t hfile;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HMODULE WINAPI LoadLibraryExA(LPCSTR libname, HANDLE hfile, DWORD flags)
+{
+    struct qemu_LoadLibraryExA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LOADLIBRARYEXA);
+    call.libname = (uint64_t)libname;
+    call.hfile = (uint64_t)hfile;
+    call.flags = (uint64_t)flags;
 
     qemu_syscall(&call.super);
 
@@ -144,80 +276,32 @@ WINBASEAPI HMODULE WINAPI GetModuleHandleA(const char *name)
 
 #else
 
-void qemu_GetModuleHandleA(struct qemu_syscall *call)
+void qemu_LoadLibraryExA(struct qemu_syscall *call)
 {
-    struct qemu_ModuleOpA *c = (struct qemu_ModuleOpA *)call;
-    WCHAR *nameW = NULL;
-    int size;
-
-    WINE_TRACE("(\"%s\")\n", (char *)QEMU_G2H(c->name));
-
-    if (c->name)
-    {
-        size = MultiByteToWideChar(CP_ACP, 0, QEMU_G2H(c->name), -1, NULL, 0);
-        nameW = HeapAlloc(GetProcessHeap(), 0, size * sizeof(*nameW));
-        MultiByteToWideChar(CP_ACP, 0, QEMU_G2H(c->name), -1, nameW, size);
-    }
-
-    c->super.iret = (uint64_t)qemu_ops->qemu_GetModuleHandleEx(
-            GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, nameW);
-
-    HeapFree(GetProcessHeap(), 0, nameW);
-    WINE_TRACE("Returning %p\n", (void *)c->super.iret);
+    struct qemu_LoadLibraryExA *c = (struct qemu_LoadLibraryExA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = (uint64_t)LoadLibraryExA(QEMU_G2H(c->libname), QEMU_G2H(c->hfile), c->flags);
 }
 
 #endif
 
-struct qemu_GetModuleHandleExA
+struct qemu_LoadLibraryExW
 {
     struct qemu_syscall super;
-    DWORD flags;
-    uint64_t name, module;
-};
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI WINBOOL WINAPI GetModuleHandleExA(DWORD flags, const char *name, HMODULE *module)
-{
-    struct qemu_GetModuleHandleExA call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEHANDLEEXA);
-    call.flags = flags;
-    call.name = (uint64_t)name;
-
-    qemu_syscall(&call.super);
-
-    *module = (HMODULE)call.module;
-    return call.super.iret;
-}
-
-#else
-
-void qemu_GetModuleHandleExA(struct qemu_syscall *call)
-{
-    struct qemu_GetModuleHandleExA *c = (struct qemu_GetModuleHandleExA *)call;
-    HANDLE m;
-    WINE_TRACE("\n");
-
-    m = qemu_ops->qemu_GetModuleHandleEx(c->flags, QEMU_G2H(c->name));
-
-    c->super.iret = !!m;
-    c->module = (uint64_t)m;
-}
-
-#endif
-
-struct qemu_ModuleOpW
-{
-    struct qemu_syscall super;
-    uint64_t name;
+    uint64_t libnameW;
+    uint64_t hfile;
+    uint64_t flags;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HMODULE WINAPI GetModuleHandleW(const WCHAR *name)
+WINBASEAPI HMODULE WINAPI LoadLibraryExW(LPCWSTR libnameW, HANDLE hfile, DWORD flags)
 {
-    struct qemu_ModuleOpW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEHANDLEW);
-    call.name = (uint64_t)name;
+    struct qemu_LoadLibraryExW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LOADLIBRARYEXW);
+    call.libnameW = (uint64_t)libnameW;
+    call.hfile = (uint64_t)hfile;
+    call.flags = (uint64_t)flags;
 
     qemu_syscall(&call.super);
 
@@ -226,35 +310,30 @@ WINBASEAPI HMODULE WINAPI GetModuleHandleW(const WCHAR *name)
 
 #else
 
-void qemu_GetModuleHandleW(struct qemu_syscall *call)
+void qemu_LoadLibraryExW(struct qemu_syscall *call)
 {
-    struct qemu_ModuleOpW *c = (struct qemu_ModuleOpW *)call;
-    int size;
-
-    WINE_TRACE("(\"%s\")\n", (char *)QEMU_G2H(c->name));
-
-    c->super.iret = (uint64_t)qemu_ops->qemu_GetModuleHandleEx(
-            GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, QEMU_G2H(c->name));
-
-    WINE_TRACE("Returning %p\n", (void *)c->super.iret);
+    struct qemu_LoadLibraryExW *c = (struct qemu_LoadLibraryExW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = (uint64_t)LoadLibraryExW(QEMU_G2H(c->libnameW), QEMU_G2H(c->hfile), c->flags);
 }
 
 #endif
 
-struct qemu_GetProcAddress
+struct qemu_DelayLoadFailureHook
 {
     struct qemu_syscall super;
-    uint64_t module, name;
+    uint64_t name;
+    uint64_t function;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI FARPROC WINAPI GetProcAddress(HMODULE module, const char *name)
+WINBASEAPI FARPROC WINAPI DelayLoadFailureHook(LPCSTR name, LPCSTR function)
 {
-    struct qemu_GetProcAddress call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCADDRESS);
-    call.module = (uint64_t)module;
+    struct qemu_DelayLoadFailureHook call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DELAYLOADFAILUREHOOK);
     call.name = (uint64_t)name;
+    call.function = (uint64_t)function;
 
     qemu_syscall(&call.super);
 
@@ -263,73 +342,282 @@ WINBASEAPI FARPROC WINAPI GetProcAddress(HMODULE module, const char *name)
 
 #else
 
-void qemu_GetProcAddress(struct qemu_syscall *call)
+/* TODO: Add DelayLoadFailureHook to Wine headers? */
+extern FARPROC WINAPI DelayLoadFailureHook(LPCSTR name, LPCSTR function);
+void qemu_DelayLoadFailureHook(struct qemu_syscall *call)
 {
-    struct qemu_GetProcAddress *c = (struct qemu_GetProcAddress *)call;
-    WINE_TRACE("\n");
-
-    c->super.iret = QEMU_H2G(qemu_ops->qemu_GetProcAddress((HMODULE)c->module,
-            QEMU_G2H(c->name)));
+    struct qemu_DelayLoadFailureHook *c = (struct qemu_DelayLoadFailureHook *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = (uint64_t)DelayLoadFailureHook(QEMU_G2H(c->name), QEMU_G2H(c->function));
 }
 
 #endif
 
+struct qemu_K32EnumProcessModules
+{
+    struct qemu_syscall super;
+    uint64_t process;
+    uint64_t lphModule;
+    uint64_t cb;
+    uint64_t needed;
+};
+
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HMODULE WINAPI LoadLibraryA(const char *name)
+WINBASEAPI BOOL WINAPI K32EnumProcessModules(HANDLE process, HMODULE *lphModule, DWORD cb, DWORD *needed)
 {
-    struct qemu_ModuleOpA call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_LOADLIBRARYA);
-    call.name = (uint64_t)name;
+    struct qemu_K32EnumProcessModules call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_K32ENUMPROCESSMODULES);
+    call.process = (uint64_t)process;
+    call.lphModule = (uint64_t)lphModule;
+    call.cb = (uint64_t)cb;
+    call.needed = (uint64_t)needed;
 
     qemu_syscall(&call.super);
 
-    return (HMODULE)call.super.iret;
-}
-
-WINBASEAPI HMODULE WINAPI LoadLibraryW(const WCHAR *name)
-{
-    struct qemu_ModuleOpW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_LOADLIBRARYW);
-    call.name = (uint64_t)name;
-
-    qemu_syscall(&call.super);
-
-    return (HMODULE)call.super.iret;
+    return call.super.iret;
 }
 
 #else
 
-void qemu_LoadLibraryA(struct qemu_syscall *call)
+/* TODO: Add K32EnumProcessModules to Wine headers? */
+extern BOOL WINAPI K32EnumProcessModules(HANDLE process, HMODULE *lphModule, DWORD cb, DWORD *needed);
+void qemu_K32EnumProcessModules(struct qemu_syscall *call)
 {
-    struct qemu_ModuleOpA *c = (struct qemu_ModuleOpA *)call;
-    WCHAR *nameW = NULL;
-    int size;
-    WINE_TRACE("(\"%s\")\n", (char *)QEMU_G2H(c->name));
-
-    if (c->name)
-    {
-        size = MultiByteToWideChar(CP_ACP, 0, QEMU_G2H(c->name), -1, NULL, 0);
-        nameW = HeapAlloc(GetProcessHeap(), 0, size * sizeof(*nameW));
-        MultiByteToWideChar(CP_ACP, 0, QEMU_G2H(c->name), -1, nameW, size);
-    }
-
-    c->super.iret = (uint64_t)qemu_ops->qemu_LoadLibrary(nameW);
-
-    HeapFree(GetProcessHeap(), 0, nameW);
-
-    WINE_TRACE("Returning %p\n", (void *)c->super.iret);
-}
-
-void qemu_LoadLibraryW(struct qemu_syscall *call)
-{
-    struct qemu_ModuleOpW *c = (struct qemu_ModuleOpW *)call;
-    int size;
-    WINE_TRACE("\n");
-
-    c->super.iret = (uint64_t)qemu_ops->qemu_LoadLibrary(QEMU_G2H(c->name));
-
-    WINE_TRACE("Returning %p\n", (void *)c->super.iret);
+    struct qemu_K32EnumProcessModules *c = (struct qemu_K32EnumProcessModules *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = K32EnumProcessModules(QEMU_G2H(c->process), QEMU_G2H(c->lphModule), c->cb, QEMU_G2H(c->needed));
 }
 
 #endif
+
+struct qemu_K32EnumProcessModulesEx
+{
+    struct qemu_syscall super;
+    uint64_t process;
+    uint64_t lphModule;
+    uint64_t cb;
+    uint64_t needed;
+    uint64_t filter;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI K32EnumProcessModulesEx(HANDLE process, HMODULE *lphModule, DWORD cb, DWORD *needed, DWORD filter)
+{
+    struct qemu_K32EnumProcessModulesEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_K32ENUMPROCESSMODULESEX);
+    call.process = (uint64_t)process;
+    call.lphModule = (uint64_t)lphModule;
+    call.cb = (uint64_t)cb;
+    call.needed = (uint64_t)needed;
+    call.filter = (uint64_t)filter;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add K32EnumProcessModulesEx to Wine headers? */
+extern BOOL WINAPI K32EnumProcessModulesEx(HANDLE process, HMODULE *lphModule, DWORD cb, DWORD *needed, DWORD filter);
+void qemu_K32EnumProcessModulesEx(struct qemu_syscall *call)
+{
+    struct qemu_K32EnumProcessModulesEx *c = (struct qemu_K32EnumProcessModulesEx *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = K32EnumProcessModulesEx(QEMU_G2H(c->process), QEMU_G2H(c->lphModule), c->cb, QEMU_G2H(c->needed), c->filter);
+}
+
+#endif
+
+struct qemu_K32GetModuleBaseNameW
+{
+    struct qemu_syscall super;
+    uint64_t process;
+    uint64_t module;
+    uint64_t base_name;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI K32GetModuleBaseNameW(HANDLE process, HMODULE module, LPWSTR base_name, DWORD size)
+{
+    struct qemu_K32GetModuleBaseNameW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_K32GETMODULEBASENAMEW);
+    call.process = (uint64_t)process;
+    call.module = (uint64_t)module;
+    call.base_name = (uint64_t)base_name;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add K32GetModuleBaseNameW to Wine headers? */
+extern DWORD WINAPI K32GetModuleBaseNameW(HANDLE process, HMODULE module, LPWSTR base_name, DWORD size);
+void qemu_K32GetModuleBaseNameW(struct qemu_syscall *call)
+{
+    struct qemu_K32GetModuleBaseNameW *c = (struct qemu_K32GetModuleBaseNameW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = K32GetModuleBaseNameW(QEMU_G2H(c->process), QEMU_G2H(c->module), QEMU_G2H(c->base_name), c->size);
+}
+
+#endif
+
+struct qemu_K32GetModuleBaseNameA
+{
+    struct qemu_syscall super;
+    uint64_t process;
+    uint64_t module;
+    uint64_t base_name;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI K32GetModuleBaseNameA(HANDLE process, HMODULE module, LPSTR base_name, DWORD size)
+{
+    struct qemu_K32GetModuleBaseNameA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_K32GETMODULEBASENAMEA);
+    call.process = (uint64_t)process;
+    call.module = (uint64_t)module;
+    call.base_name = (uint64_t)base_name;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add K32GetModuleBaseNameA to Wine headers? */
+extern DWORD WINAPI K32GetModuleBaseNameA(HANDLE process, HMODULE module, LPSTR base_name, DWORD size);
+void qemu_K32GetModuleBaseNameA(struct qemu_syscall *call)
+{
+    struct qemu_K32GetModuleBaseNameA *c = (struct qemu_K32GetModuleBaseNameA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = K32GetModuleBaseNameA(QEMU_G2H(c->process), QEMU_G2H(c->module), QEMU_G2H(c->base_name), c->size);
+}
+
+#endif
+
+struct qemu_K32GetModuleFileNameExW
+{
+    struct qemu_syscall super;
+    uint64_t process;
+    uint64_t module;
+    uint64_t file_name;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI K32GetModuleFileNameExW(HANDLE process, HMODULE module, LPWSTR file_name, DWORD size)
+{
+    struct qemu_K32GetModuleFileNameExW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_K32GETMODULEFILENAMEEXW);
+    call.process = (uint64_t)process;
+    call.module = (uint64_t)module;
+    call.file_name = (uint64_t)file_name;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add K32GetModuleFileNameExW to Wine headers? */
+extern DWORD WINAPI K32GetModuleFileNameExW(HANDLE process, HMODULE module, LPWSTR file_name, DWORD size);
+void qemu_K32GetModuleFileNameExW(struct qemu_syscall *call)
+{
+    struct qemu_K32GetModuleFileNameExW *c = (struct qemu_K32GetModuleFileNameExW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = K32GetModuleFileNameExW(QEMU_G2H(c->process), QEMU_G2H(c->module), QEMU_G2H(c->file_name), c->size);
+}
+
+#endif
+
+struct qemu_K32GetModuleFileNameExA
+{
+    struct qemu_syscall super;
+    uint64_t process;
+    uint64_t module;
+    uint64_t file_name;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI K32GetModuleFileNameExA(HANDLE process, HMODULE module, LPSTR file_name, DWORD size)
+{
+    struct qemu_K32GetModuleFileNameExA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_K32GETMODULEFILENAMEEXA);
+    call.process = (uint64_t)process;
+    call.module = (uint64_t)module;
+    call.file_name = (uint64_t)file_name;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add K32GetModuleFileNameExA to Wine headers? */
+extern DWORD WINAPI K32GetModuleFileNameExA(HANDLE process, HMODULE module, LPSTR file_name, DWORD size);
+void qemu_K32GetModuleFileNameExA(struct qemu_syscall *call)
+{
+    struct qemu_K32GetModuleFileNameExA *c = (struct qemu_K32GetModuleFileNameExA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = K32GetModuleFileNameExA(QEMU_G2H(c->process), QEMU_G2H(c->module), QEMU_G2H(c->file_name), c->size);
+}
+
+#endif
+
+struct qemu_K32GetModuleInformation
+{
+    struct qemu_syscall super;
+    uint64_t process;
+    uint64_t module;
+    uint64_t modinfo;
+    uint64_t cb;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI K32GetModuleInformation(HANDLE process, HMODULE module, MODULEINFO *modinfo, DWORD cb)
+{
+    struct qemu_K32GetModuleInformation call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_K32GETMODULEINFORMATION);
+    call.process = (uint64_t)process;
+    call.module = (uint64_t)module;
+    call.modinfo = (uint64_t)modinfo;
+    call.cb = (uint64_t)cb;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add K32GetModuleInformation to Wine headers? */
+extern BOOL WINAPI K32GetModuleInformation(HANDLE process, HMODULE module, MODULEINFO *modinfo, DWORD cb);
+void qemu_K32GetModuleInformation(struct qemu_syscall *call)
+{
+    struct qemu_K32GetModuleInformation *c = (struct qemu_K32GetModuleInformation *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = K32GetModuleInformation(QEMU_G2H(c->process), QEMU_G2H(c->module), QEMU_G2H(c->modinfo), c->cb);
+}
+
+#endif
+

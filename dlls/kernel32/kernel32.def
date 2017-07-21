@@ -95,6 +95,7 @@ EXPORTS
   DebugBreakProcess
   DebugSetProcessKillOnExit
   DecodePointer=ntdll.RtlDecodePointer
+  DelayLoadFailureHook
   DeleteCriticalSection=ntdll.RtlDeleteCriticalSection
   DeleteFileA
   DeleteFileW
@@ -102,6 +103,7 @@ EXPORTS
   DeleteTimerQueueEx
   DeleteTimerQueueTimer
   DeviceIoControl
+  DisableThreadLibraryCalls
   DisconnectNamedPipe
   EncodePointer=ntdll.RtlEncodePointer
   EndUpdateResourceA
@@ -155,6 +157,8 @@ EXPORTS
   GetACP
   GetActiveProcessorCount
   GetActiveProcessorGroupCount
+  GetBinaryTypeA
+  GetBinaryTypeW
   GetCommandLineA
   GetCommandLineW
   GetCommConfig
@@ -178,6 +182,8 @@ EXPORTS
   GetDefaultCommConfigA
   GetDefaultCommConfigW
   GetDevicePowerState
+  GetDllDirectoryA
+  GetDllDirectoryW
   GetEnvironmentStringsA=qemu_GetEnvironmentStringsA
   GetEnvironmentStringsW
   GetEnvironmentVariableA
@@ -331,12 +337,19 @@ EXPORTS
   K32EnumDeviceDrivers
   K32EnumPageFilesA
   K32EnumPageFilesW
+  K32EnumProcessModules
+  K32EnumProcessModulesEx
   K32GetDeviceDriverBaseNameA
   K32GetDeviceDriverBaseNameW
   K32GetDeviceDriverFileNameA
   K32GetDeviceDriverFileNameW
   K32GetMappedFileNameA
   K32GetMappedFileNameW
+  K32GetModuleBaseNameA
+  K32GetModuleBaseNameW
+  K32GetModuleFileNameExA
+  K32GetModuleFileNameExW
+  K32GetModuleInformation
   K32GetPerformanceInfo
   K32GetWsChanges
   K32InitializeProcessForWsWatch
@@ -346,6 +359,8 @@ EXPORTS
   LCMapStringW
   LeaveCriticalSection=ntdll.RtlLeaveCriticalSection
   LoadLibraryA
+  LoadLibraryExA
+  LoadLibraryExW
   LoadLibraryW
   LoadResource
   LocalAlloc
@@ -449,6 +464,8 @@ EXPORTS
   SetDefaultCommConfigA
   SetDefaultCommConfigW
   SetDefaultDllDirectories
+  SetDllDirectoryA
+  SetDllDirectoryW
   SetEndOfFile
   SetEnvironmentVariableA
   SetEnvironmentVariableW
