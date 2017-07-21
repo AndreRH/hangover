@@ -129,6 +129,38 @@ int CDECL MSVCRT_abs(int n)
 
 #endif
 
+struct qemu_atan2f
+{
+    struct qemu_syscall super;
+    double x, y;
+};
+
+
+#ifdef QEMU_DLL_GUEST
+
+float CDECL MSVCRT_atan2f(float x, float y)
+{
+    struct qemu_atan2f call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ATAN2F);
+    call.x = x;
+    call.y = y;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_atan2f(struct qemu_syscall *call)
+{
+    struct qemu_atan2f *c = (struct qemu_atan2f *)call;
+    WINE_TRACE("\n");
+    c->super.dret = p_atan2f(c->x, c->y);
+}
+
+#endif
+
 struct qemu_cosf
 {
     struct qemu_syscall super;

@@ -34,6 +34,7 @@ EXPORTS
   _XcptFilter=MSVCRT__XcptFilter
   abort=MSVCRT_abort
   abs=MSVCRT_abs
+  atan2f=MSVCRT_atan2f
   calloc=MSVCRT_calloc
   cosf=MSVCRT_cosf
   exit=MSVCRT_exit

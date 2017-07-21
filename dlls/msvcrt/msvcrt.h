@@ -28,6 +28,7 @@ enum msvcrt_calls
     CALL__WTOI,
     CALL__XCPTFILTER,
     CALL_ABORT,
+    CALL_ATAN2F,
     CALL_CALLOC,
     CALL_COSF,
     CALL_EXIT,
@@ -106,6 +107,7 @@ void qemu__wcsnicmp(struct qemu_syscall *call);
 void qemu__wtoi(struct qemu_syscall *call);
 void qemu__xcptfilter(struct qemu_syscall *c);
 void qemu_abort(struct qemu_syscall *call);
+void qemu_atan2f(struct qemu_syscall *call);
 void qemu_calloc(struct qemu_syscall *call);
 void qemu_cosf(struct qemu_syscall *call);
 void qemu_exit(struct qemu_syscall *call);
@@ -160,6 +162,7 @@ void (* CDECL p__unlock)(int locknum);
 int (* CDECL p__wcsnicmp)(const WCHAR *str1, const WCHAR *str2, int count);
 int (* CDECL p__wtoi)(const WCHAR *str1);
 void (* CDECL p_abort)(void);
+float (* CDECL p_atan2f)(float x, float y);
 void *(* CDECL p_calloc)(size_t item_count,size_t size);
 float (* CDECL p_cosf)(float x);
 void (* CDECL p_exit)(int code);
