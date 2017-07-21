@@ -142,7 +142,7 @@ static uint64_t call_FormatMessageW_va_list(void *data, ...)
     va_list list;
 
     va_start(list, data);
-    ret = FormatMessageW(d->flags, d->src, d->msg_id, d->lang_id, d->buffer, d->size, &list);
+    ret = FormatMessageW(d->flags, d->src, d->msg_id, d->lang_id, d->buffer, d->size, (void*)&list);
     va_end(list);
 
     return ret;
