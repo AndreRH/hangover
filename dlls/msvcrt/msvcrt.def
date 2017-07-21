@@ -92,6 +92,7 @@ EXPORTS
   _hypotf=MSVCRT__hypotf
   _initterm
   _initterm_e
+  _iob=MSVCRT__bad_iob
   _isalnum_l=MSVCRT__isalnum_l
   _isalpha_l=MSVCRT__isalpha_l
   _isatty=MSVCRT__isatty

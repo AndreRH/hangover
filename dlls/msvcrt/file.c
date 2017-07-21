@@ -33,6 +33,9 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 
 #ifdef QEMU_DLL_GUEST
 
+/* Trouble if this is accessed... */
+char MSVCRT__bad_iob[1024];
+
 /* FIXME: Passing the IOB and FILE pointers like this only works when they have the same size
  * in guest and host. */
 FILE * CDECL MSVCRT___iob_func(void)
