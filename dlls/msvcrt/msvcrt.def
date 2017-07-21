@@ -53,6 +53,7 @@ EXPORTS
   signal=MSVCRT_signal
   sinf=MSVCRT_sinf
   sprintf=MSVCRT_sprintf
+  sqrtf=MSVCRT_sqrtf
   strlen=MSVCRT_strlen
   strncmp=MSVCRT_strncmp
   swprintf_s=MSVCRT_swprintf_s

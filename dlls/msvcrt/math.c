@@ -190,3 +190,34 @@ void qemu_sinf(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_sqrtf
+{
+    struct qemu_syscall super;
+    double x;
+};
+
+
+#ifdef QEMU_DLL_GUEST
+
+float CDECL MSVCRT_sqrtf(float x)
+{
+    struct qemu_sqrtf call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SQRTF);
+    call.x = x;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_sqrtf(struct qemu_syscall *call)
+{
+    struct qemu_sqrtf *c = (struct qemu_sqrtf *)call;
+    WINE_TRACE("\n");
+    c->super.dret = p_sqrtf(c->x);
+}
+
+#endif
