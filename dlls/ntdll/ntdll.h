@@ -14,6 +14,7 @@ enum ntdll_calls
     CALL_RTLLEAVECRITICALSECTION,
     CALL_RTLLOOKUPFUNCTIONENTRY,
     CALL_RTLVIRTUALUNWIND,
+    CALL_WCSRCHR
 };
 
 #ifndef QEMU_DLL_GUEST
@@ -30,6 +31,9 @@ void qemu_RtlInitializeCriticalSectionEx(struct qemu_syscall *call);
 void qemu_RtlLeaveCriticalSection(struct qemu_syscall *call);
 void qemu_RtlLookupFunctionEntry(struct qemu_syscall *call);
 void qemu_RtlVirtualUnwind(struct qemu_syscall *call);
+void qemu_wcsrchr(struct qemu_syscall *call);
+
+WCHAR *(* CDECL p_wcsrchr)(WCHAR *str, WCHAR ch);
 #endif
 
 #endif

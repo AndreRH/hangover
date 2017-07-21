@@ -25,52 +25,41 @@
 #include "dll_list.h"
 #include "ntdll.h"
 
+#ifndef QEMU_DLL_GUEST
+#include <wine/debug.h>
+WINE_DEFAULT_DEBUG_CHANNEL(qemu_ntdll);
+#endif
+
+/* FIXME: Calling out of the vm for wcsrchr is probably a waste of time. */
+struct qemu_wcsrchr
+{
+    struct qemu_syscall super;
+    uint64_t str;
+    uint64_t ch;
+};
+
+
 #ifdef QEMU_DLL_GUEST
 
-BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
+WCHAR * CDECL NTDLL_wcsrchr(WCHAR *str, WCHAR ch)
 {
-    return TRUE;
+    struct qemu_wcsrchr call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WCSRCHR);
+    call.str = (uint64_t)str;
+    call.ch = ch;
+
+    qemu_syscall(&call.super);
+
+    return (WCHAR *)call.super.iret;
 }
 
 #else
 
-#include <wine/debug.h>
-WINE_DEFAULT_DEBUG_CHANNEL(qemu_ntdll);
-
-const struct qemu_ops *qemu_ops;
-
-static const syscall_handler dll_functions[] =
+void qemu_wcsrchr(struct qemu_syscall *call)
 {
-    qemu___C_specific_handler,
-    qemu_RtlAddFunctionTable,
-    qemu_RtlCaptureContext,
-    qemu_RtlDecodePointer,
-    qemu_RtlDeleteCriticalSection,
-    qemu_RtlEncodePointer,
-    qemu_RtlEnterCriticalSection,
-    qemu_RtlInitializeCriticalSectionEx,
-    qemu_RtlLeaveCriticalSection,
-    qemu_RtlLookupFunctionEntry,
-    qemu_RtlVirtualUnwind,
-    qemu_wcsrchr,
-};
-
-const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
-{
-    HMODULE ntdll;
-
-    WINE_TRACE("Loading host-side ntdll wrapper.\n");
-
-    ntdll = GetModuleHandleA("ntdll.dll");
-    if (!ntdll)
-        WINE_ERR("ntdll.dll not loaded\n");
-
-    p_wcsrchr = (void *)GetProcAddress(ntdll, "wcsrchr");
-
-    qemu_ops = ops;
-    *dll_num = QEMU_CURRENT_DLL;
-
-    return dll_functions;
+    struct qemu_wcsrchr *c = (struct qemu_wcsrchr *)call;
+    WINE_TRACE("\n");
+    c->super.iret = QEMU_H2G(p_wcsrchr(QEMU_G2H(c->str), c->ch));
 }
 
 #endif

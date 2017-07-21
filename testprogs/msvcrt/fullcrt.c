@@ -58,5 +58,7 @@ int WinMain()
     printf("_acmdln: %s\n", _acmdln);
     printf("_wcmdln: %ls\n", _wcmdln);
 
+    wcscpy(bufferW, L"1234");
+    wprintf(L"wcsrchr(L\"1234\", '3')=%s\n", wcsrchr(bufferW, '3'));
     return 123;
 }

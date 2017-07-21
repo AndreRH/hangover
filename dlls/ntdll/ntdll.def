@@ -13,3 +13,4 @@ EXPORTS
   RtlLeaveCriticalSection
   RtlLookupFunctionEntry
   RtlVirtualUnwind
+  wcsrchr=NTDLL_wcsrchr
