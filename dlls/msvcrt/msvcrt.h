@@ -41,6 +41,7 @@ enum msvcrt_calls
     CALL_MEMSET,
     CALL_OPERATOR_DELETE,
     CALL_OPERATOR_NEW,
+    CALL_POWF,
     CALL_PRINTF,
     CALL_PUTS,
     CALL_QSORT,
@@ -117,6 +118,7 @@ void qemu_memcpy(struct qemu_syscall *call);
 void qemu_memset(struct qemu_syscall *call);
 void qemu_operator_delete(struct qemu_syscall *call);
 void qemu_operator_new(struct qemu_syscall *call);
+void qemu_powf(struct qemu_syscall *call);
 void qemu_puts(struct qemu_syscall *call);
 void qemu_qsort(struct qemu_syscall *call);
 void qemu_raise(struct qemu_syscall *call);
@@ -169,6 +171,7 @@ void (* CDECL p_operator_delete)(void *mem);
 void *(* CDECL p_operator_new)(size_t size);
 int (* CDECL p_memcmp)(const void *ptr1, const void *ptr2, size_t size);
 void *(* CDECL p_memcpy)(void *dst, const void *src, size_t size);
+float (* CDECL p_powf)(float base, float exp);
 int (* CDECL p_puts)(const char *str);
 void (* CDECL p_qsort)(void *base, size_t nmemb, size_t size,
         int (CDECL *compar)(const void*, const void*));

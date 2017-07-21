@@ -48,6 +48,7 @@ EXPORTS
   memcmp=MSVCRT_memcmp
   memcpy=MSVCRT_memcpy
   memset=MSVCRT_memset
+  powf=MSVCRT_powf
   printf=MSVCRT_printf
   puts=MSVCRT_puts
   qsort=MSVCRT_qsort

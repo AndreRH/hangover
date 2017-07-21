@@ -160,6 +160,38 @@ void qemu_cosf(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_powf
+{
+    struct qemu_syscall super;
+    double base, exp;
+};
+
+
+#ifdef QEMU_DLL_GUEST
+
+float CDECL MSVCRT_powf(float base, float exp)
+{
+    struct qemu_powf call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_POWF);
+    call.base = base;
+    call.exp = exp;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_powf(struct qemu_syscall *call)
+{
+    struct qemu_powf *c = (struct qemu_powf *)call;
+    WINE_TRACE("\n");
+    c->super.dret = p_powf(c->base, c->exp);
+}
+
+#endif
+
 struct qemu_sinf
 {
     struct qemu_syscall super;
