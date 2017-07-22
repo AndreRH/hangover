@@ -8,6 +8,8 @@ EXPORTS
   __C_specific_handler=ntdll.__C_specific_handler
   __crt_debugger_hook=MSVCRT___crt_debugger_hook
   __control87_2
+  __CxxFrameHandler=__CxxFrameHandler
+  __CxxFrameHandler2=__CxxFrameHandler
   __CxxFrameHandler3=__CxxFrameHandler
   __dllonexit
   __fpe_flt_rounds

@@ -7,6 +7,8 @@ EXPORTS
   __badioinfo=msvcr100.__qemu_native_data__
   __C_specific_handler=ntdll.__C_specific_handler
   __control87_2
+  __CxxFrameHandler=__CxxFrameHandler
+  __CxxFrameHandler2=__CxxFrameHandler
   __CxxFrameHandler3=__CxxFrameHandler
   __dllonexit
   __fpe_flt_rounds
