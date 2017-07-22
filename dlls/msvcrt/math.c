@@ -1968,7 +1968,7 @@ void qemu__ftol(struct qemu_syscall *call)
 struct qemu__fpclass
 {
     struct qemu_syscall super;
-    uint64_t num;
+    double num;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1977,7 +1977,7 @@ WINBASEAPI int CDECL MSVCRT__fpclass(double num)
 {
     struct qemu__fpclass call;
     call.super.id = QEMU_SYSCALL_ID(CALL__FPCLASS);
-    call.num = (uint64_t)num;
+    call.num = num;
 
     qemu_syscall(&call.super);
 
@@ -1989,7 +1989,7 @@ WINBASEAPI int CDECL MSVCRT__fpclass(double num)
 void qemu__fpclass(struct qemu_syscall *call)
 {
     struct qemu__fpclass *c = (struct qemu__fpclass *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     c->super.iret = p__fpclass(c->num);
 }
 
