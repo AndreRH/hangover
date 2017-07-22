@@ -174,6 +174,11 @@ enum d3d9_calls
     CALL_D3D9_INDEXBUFFER_SETPRIORITY,
     CALL_D3D9_INDEXBUFFER_SETPRIVATEDATA,
     CALL_D3D9_INDEXBUFFER_UNLOCK,
+    CALL_D3D9_PIXELSHADER_ADDREF,
+    CALL_D3D9_PIXELSHADER_GETDEVICE,
+    CALL_D3D9_PIXELSHADER_GETFUNCTION,
+    CALL_D3D9_PIXELSHADER_QUERYINTERFACE,
+    CALL_D3D9_PIXELSHADER_RELEASE,
     CALL_D3D9_QUERY_ADDREF,
     CALL_D3D9_QUERY_GETDATA,
     CALL_D3D9_QUERY_GETDATASIZE,
@@ -300,6 +305,11 @@ enum d3d9_calls
     CALL_D3D9_VERTEXBUFFER_SETPRIORITY,
     CALL_D3D9_VERTEXBUFFER_SETPRIVATEDATA,
     CALL_D3D9_VERTEXBUFFER_UNLOCK,
+    CALL_D3D9_VERTEXSHADER_ADDREF,
+    CALL_D3D9_VERTEXSHADER_GETDEVICE,
+    CALL_D3D9_VERTEXSHADER_GETFUNCTION,
+    CALL_D3D9_VERTEXSHADER_QUERYINTERFACE,
+    CALL_D3D9_VERTEXSHADER_RELEASE,
     CALL_D3DPERF_BEGINEVENT,
     CALL_D3DPERF_ENDEVENT,
     CALL_D3DPERF_GETSTATUS,
@@ -326,6 +336,8 @@ extern const struct IDirect3DVertexDeclaration9Vtbl d3d9_vertex_declaration_vtbl
 extern const struct IDirect3DVertexBuffer9Vtbl d3d9_vertexbuffer_vtbl;
 extern const struct IDirect3DIndexBuffer9Vtbl d3d9_indexbuffer_vtbl;
 extern const struct IDirect3DQuery9Vtbl d3d9_query_vtbl;
+extern const struct IDirect3DVertexShader9Vtbl d3d9_vertexshader_vtbl;
+extern const struct IDirect3DPixelShader9Vtbl d3d9_pixelshader_vtbl;
 
 void d3d9_device_set_swapchain_ifaces(IDirect3DDevice9Ex *device);
 void d3d9_swapchain_set_surfaces_ifaces(IDirect3DSwapChain9Ex *swapchain);
@@ -502,6 +514,11 @@ void qemu_d3d9_indexbuffer_Release(struct qemu_syscall *call);
 void qemu_d3d9_indexbuffer_SetPriority(struct qemu_syscall *call);
 void qemu_d3d9_indexbuffer_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d9_indexbuffer_Unlock(struct qemu_syscall *call);
+void qemu_d3d9_pixelshader_AddRef(struct qemu_syscall *call);
+void qemu_d3d9_pixelshader_GetDevice(struct qemu_syscall *call);
+void qemu_d3d9_pixelshader_GetFunction(struct qemu_syscall *call);
+void qemu_d3d9_pixelshader_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d9_pixelshader_Release(struct qemu_syscall *call);
 void qemu_d3d9_query_AddRef(struct qemu_syscall *call);
 void qemu_d3d9_query_GetData(struct qemu_syscall *call);
 void qemu_d3d9_query_GetDataSize(struct qemu_syscall *call);
@@ -628,6 +645,11 @@ void qemu_d3d9_vertexbuffer_Release(struct qemu_syscall *call);
 void qemu_d3d9_vertexbuffer_SetPriority(struct qemu_syscall *call);
 void qemu_d3d9_vertexbuffer_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d9_vertexbuffer_Unlock(struct qemu_syscall *call);
+void qemu_d3d9_vertexshader_AddRef(struct qemu_syscall *call);
+void qemu_d3d9_vertexshader_GetDevice(struct qemu_syscall *call);
+void qemu_d3d9_vertexshader_GetFunction(struct qemu_syscall *call);
+void qemu_d3d9_vertexshader_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d9_vertexshader_Release(struct qemu_syscall *call);
 void qemu_D3DPERF_BeginEvent(struct qemu_syscall *call);
 void qemu_D3DPERF_EndEvent(struct qemu_syscall *call);
 void qemu_D3DPERF_GetStatus(struct qemu_syscall *call);

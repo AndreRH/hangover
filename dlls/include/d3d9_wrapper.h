@@ -147,4 +147,30 @@ static inline struct qemu_d3d9_query_impl *impl_from_IDirect3DQuery9(IDirect3DQu
     return CONTAINING_RECORD(iface, struct qemu_d3d9_query_impl, IDirect3DQuery9_iface);
 }
 
+struct qemu_d3d9_shader_impl
+{
+    union
+    {
+        IDirect3DVertexShader9 IDirect3DVertexShader9_iface;
+        IDirect3DPixelShader9 IDirect3DPixelShader9_iface;
+    };
+    union
+    {
+        IDirect3DVertexShader9 *hostvs;
+        IDirect3DPixelShader9 *hostps;
+    };
+
+    struct qemu_d3d9_device_impl *device;
+};
+
+static inline struct qemu_d3d9_shader_impl *impl_from_IDirect3DVertexShader9(IDirect3DVertexShader9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_shader_impl, IDirect3DVertexShader9_iface);
+}
+
+static inline struct qemu_d3d9_shader_impl *impl_from_IDirect3DPixelShader9(IDirect3DPixelShader9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_shader_impl, IDirect3DPixelShader9_iface);
+}
+
 #endif
