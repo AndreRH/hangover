@@ -30,7 +30,6 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
-
 struct qemu_GetFullPathNameW
 {
     struct qemu_syscall super;
@@ -47,7 +46,7 @@ WINBASEAPI DWORD WINAPI GetFullPathNameW(LPCWSTR name, DWORD len, LPWSTR buffer,
     struct qemu_GetFullPathNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFULLPATHNAMEW);
     call.name = (uint64_t)name;
-    call.len = (uint64_t)len;
+    call.len = len;
     call.buffer = (uint64_t)buffer;
     call.lastpart = (uint64_t)lastpart;
 
@@ -61,7 +60,7 @@ WINBASEAPI DWORD WINAPI GetFullPathNameW(LPCWSTR name, DWORD len, LPWSTR buffer,
 void qemu_GetFullPathNameW(struct qemu_syscall *call)
 {
     struct qemu_GetFullPathNameW *c = (struct qemu_GetFullPathNameW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetFullPathNameW(QEMU_G2H(c->name), c->len, QEMU_G2H(c->buffer), QEMU_G2H(c->lastpart));
 }
 
@@ -83,7 +82,7 @@ WINBASEAPI DWORD WINAPI GetFullPathNameA(LPCSTR name, DWORD len, LPSTR buffer, L
     struct qemu_GetFullPathNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFULLPATHNAMEA);
     call.name = (uint64_t)name;
-    call.len = (uint64_t)len;
+    call.len = len;
     call.buffer = (uint64_t)buffer;
     call.lastpart = (uint64_t)lastpart;
 
@@ -97,7 +96,7 @@ WINBASEAPI DWORD WINAPI GetFullPathNameA(LPCSTR name, DWORD len, LPSTR buffer, L
 void qemu_GetFullPathNameA(struct qemu_syscall *call)
 {
     struct qemu_GetFullPathNameA *c = (struct qemu_GetFullPathNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetFullPathNameA(QEMU_G2H(c->name), c->len, QEMU_G2H(c->buffer), QEMU_G2H(c->lastpart));
 }
 
