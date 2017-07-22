@@ -84,6 +84,7 @@ EXPORTS
   _copysignf=MSVCRT__copysignf
   _ecvt=MSVCRT__ecvt
   _ecvt_s=MSVCRT__ecvt_s
+  _errno=MSVCRT__errno
   _exit=MSVCRT__exit
   _fcvt=MSVCRT__fcvt
   _fcvt=MSVCRT__fcvt

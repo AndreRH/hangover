@@ -148,6 +148,7 @@ static const syscall_handler dll_functions[] =
     qemu__dtest,
     qemu__ecvt,
     qemu__ecvt_s,
+    qemu__errno,
     qemu__exit,
     qemu__fcvt,
     qemu__fcvt_s,
@@ -507,6 +508,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__dtest = (void *)GetProcAddress(msvcrt, "_dtest");
     p__ecvt = (void *)GetProcAddress(msvcrt, "_ecvt");
     p__ecvt_s = (void *)GetProcAddress(msvcrt, "_ecvt_s");
+    p__errno = (void *)GetProcAddress(msvcrt, "_errno");
     p__exit = (void *)GetProcAddress(msvcrt, "_exit");
     p__fcvt = (void *)GetProcAddress(msvcrt, "_fcvt");
     p__fcvt_s = (void *)GetProcAddress(msvcrt, "_fcvt_s");

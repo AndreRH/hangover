@@ -79,6 +79,7 @@ enum msvcrt_calls
     CALL__DTEST,
     CALL__ECVT,
     CALL__ECVT_S,
+    CALL__ERRNO,
     CALL__EXIT,
     CALL__FCVT,
     CALL__FCVT_S,
@@ -455,6 +456,7 @@ void qemu__dsign(struct qemu_syscall *call);
 void qemu__dtest(struct qemu_syscall *call);
 void qemu__ecvt(struct qemu_syscall *call);
 void qemu__ecvt_s(struct qemu_syscall *call);
+void qemu__errno(struct qemu_syscall *call);
 void qemu__exit(struct qemu_syscall *call);
 void qemu__fcvt(struct qemu_syscall *call);
 void qemu__fcvt_s(struct qemu_syscall *call);
@@ -733,6 +735,7 @@ void (* CDECL p___wgetmainargs)(int *argc, WCHAR** *wargv, WCHAR** *wenvp,
 void (* CDECL p__amsg_exit)(int errnum);
 void (* CDECL p__cexit)(void);
 int (* CDECL p__configthreadlocale)(int type);
+int * (* CDECL p__errno)(void);
 void (* CDECL p__exit)(int code);
 void (* CDECL p__lock)(int locknum);
 int (* CDECL p__matherr)(void *exception);
