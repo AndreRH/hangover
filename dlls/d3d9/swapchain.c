@@ -246,7 +246,7 @@ static HRESULT WINAPI d3d9_swapchain_GetBackBuffer(IDirect3DSwapChain9Ex *iface,
 {
     struct qemu_d3d9_swapchain_impl *swapchain = impl_from_IDirect3DSwapChain9Ex(iface);
     struct qemu_d3d9_swapchain_GetBackBuffer call;
-    struct qemu_d3d9_surface_impl *surface_impl;
+    struct qemu_d3d9_subresource_impl *surface_impl;
 
     if (!backbuffer)
         return D3DERR_INVALIDCALL;
@@ -274,7 +274,7 @@ void qemu_d3d9_swapchain_GetBackBuffer(struct qemu_syscall *call)
     struct qemu_d3d9_swapchain_GetBackBuffer *c = (struct qemu_d3d9_swapchain_GetBackBuffer *)call;
     struct qemu_d3d9_swapchain_impl *swapchain;
     IDirect3DSurface9 *host;
-    struct qemu_d3d9_surface_impl *surface_impl;
+    struct qemu_d3d9_subresource_impl *surface_impl;
     DWORD size = sizeof(surface_impl);
 
     WINE_TRACE("\n");

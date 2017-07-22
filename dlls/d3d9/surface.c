@@ -41,14 +41,14 @@ struct qemu_d3d9_surface_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
-static inline struct qemu_d3d9_surface_impl *impl_from_IDirect3DSurface(IDirect3DSurface9 *iface)
+static inline struct qemu_d3d9_subresource_impl *impl_from_IDirect3DSurface(IDirect3DSurface9 *iface)
 {
-    return CONTAINING_RECORD(iface, struct qemu_d3d9_surface_impl, IDirect3DSurface9_iface);
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_subresource_impl, IDirect3DSurface9_iface);
 }
 
 static HRESULT WINAPI d3d9_surface_QueryInterface(IDirect3DSurface9 *iface, REFIID riid, void **out)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_QueryInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_QUERYINTERFACE);
     call.iface = (uint64_t)surface;
@@ -65,7 +65,7 @@ static HRESULT WINAPI d3d9_surface_QueryInterface(IDirect3DSurface9 *iface, REFI
 void qemu_d3d9_surface_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_QueryInterface *c = (struct qemu_d3d9_surface_QueryInterface *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
@@ -85,7 +85,7 @@ struct qemu_d3d9_surface_AddRef
 
 static ULONG WINAPI d3d9_surface_AddRef(IDirect3DSurface9 *iface)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_AddRef call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_ADDREF);
     call.iface = (uint64_t)surface;
@@ -100,7 +100,7 @@ static ULONG WINAPI d3d9_surface_AddRef(IDirect3DSurface9 *iface)
 void qemu_d3d9_surface_AddRef(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_AddRef *c = (struct qemu_d3d9_surface_AddRef *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
@@ -120,7 +120,7 @@ struct qemu_d3d9_surface_Release
 
 static ULONG WINAPI d3d9_surface_Release(IDirect3DSurface9 *iface)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_Release call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_RELEASE);
     call.iface = (uint64_t)surface;
@@ -135,7 +135,7 @@ static ULONG WINAPI d3d9_surface_Release(IDirect3DSurface9 *iface)
 void qemu_d3d9_surface_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_Release *c = (struct qemu_d3d9_surface_Release *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
@@ -156,7 +156,7 @@ struct qemu_d3d9_surface_GetDevice
 
 static HRESULT WINAPI d3d9_surface_GetDevice(IDirect3DSurface9 *iface, IDirect3DDevice9 **device)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_GetDevice call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETDEVICE);
     call.iface = (uint64_t)surface;
@@ -172,7 +172,7 @@ static HRESULT WINAPI d3d9_surface_GetDevice(IDirect3DSurface9 *iface, IDirect3D
 void qemu_d3d9_surface_GetDevice(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_GetDevice *c = (struct qemu_d3d9_surface_GetDevice *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
@@ -196,7 +196,7 @@ struct qemu_d3d9_surface_SetPrivateData
 
 static HRESULT WINAPI d3d9_surface_SetPrivateData(IDirect3DSurface9 *iface, REFGUID guid, const void *data, DWORD data_size, DWORD flags)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_SetPrivateData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_SETPRIVATEDATA);
     call.iface = (uint64_t)surface;
@@ -215,7 +215,7 @@ static HRESULT WINAPI d3d9_surface_SetPrivateData(IDirect3DSurface9 *iface, REFG
 void qemu_d3d9_surface_SetPrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_SetPrivateData *c = (struct qemu_d3d9_surface_SetPrivateData *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
@@ -238,7 +238,7 @@ struct qemu_d3d9_surface_GetPrivateData
 
 static HRESULT WINAPI d3d9_surface_GetPrivateData(IDirect3DSurface9 *iface, REFGUID guid, void *data, DWORD *data_size)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_GetPrivateData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETPRIVATEDATA);
     call.iface = (uint64_t)surface;
@@ -256,7 +256,7 @@ static HRESULT WINAPI d3d9_surface_GetPrivateData(IDirect3DSurface9 *iface, REFG
 void qemu_d3d9_surface_GetPrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_GetPrivateData *c = (struct qemu_d3d9_surface_GetPrivateData *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
@@ -277,7 +277,7 @@ struct qemu_d3d9_surface_FreePrivateData
 
 static HRESULT WINAPI d3d9_surface_FreePrivateData(IDirect3DSurface9 *iface, REFGUID guid)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_FreePrivateData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_FREEPRIVATEDATA);
     call.iface = (uint64_t)surface;
@@ -293,7 +293,7 @@ static HRESULT WINAPI d3d9_surface_FreePrivateData(IDirect3DSurface9 *iface, REF
 void qemu_d3d9_surface_FreePrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_FreePrivateData *c = (struct qemu_d3d9_surface_FreePrivateData *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
@@ -314,7 +314,7 @@ struct qemu_d3d9_surface_SetPriority
 
 static DWORD WINAPI d3d9_surface_SetPriority(IDirect3DSurface9 *iface, DWORD priority)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_SetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_SETPRIORITY);
     call.iface = (uint64_t)surface;
@@ -330,7 +330,7 @@ static DWORD WINAPI d3d9_surface_SetPriority(IDirect3DSurface9 *iface, DWORD pri
 void qemu_d3d9_surface_SetPriority(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_SetPriority *c = (struct qemu_d3d9_surface_SetPriority *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
@@ -350,7 +350,7 @@ struct qemu_d3d9_surface_GetPriority
 
 static DWORD WINAPI d3d9_surface_GetPriority(IDirect3DSurface9 *iface)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_GetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETPRIORITY);
     call.iface = (uint64_t)surface;
@@ -365,7 +365,7 @@ static DWORD WINAPI d3d9_surface_GetPriority(IDirect3DSurface9 *iface)
 void qemu_d3d9_surface_GetPriority(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_GetPriority *c = (struct qemu_d3d9_surface_GetPriority *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
@@ -385,7 +385,7 @@ struct qemu_d3d9_surface_PreLoad
 
 static void WINAPI d3d9_surface_PreLoad(IDirect3DSurface9 *iface)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_PreLoad call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_PRELOAD);
     call.iface = (uint64_t)surface;
@@ -398,7 +398,7 @@ static void WINAPI d3d9_surface_PreLoad(IDirect3DSurface9 *iface)
 void qemu_d3d9_surface_PreLoad(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_PreLoad *c = (struct qemu_d3d9_surface_PreLoad *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
@@ -418,7 +418,7 @@ struct qemu_d3d9_surface_GetType
 
 static D3DRESOURCETYPE WINAPI d3d9_surface_GetType(IDirect3DSurface9 *iface)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_GetType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETTYPE);
     call.iface = (uint64_t)surface;
@@ -433,7 +433,7 @@ static D3DRESOURCETYPE WINAPI d3d9_surface_GetType(IDirect3DSurface9 *iface)
 void qemu_d3d9_surface_GetType(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_GetType *c = (struct qemu_d3d9_surface_GetType *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
@@ -455,7 +455,7 @@ struct qemu_d3d9_surface_GetContainer
 
 static HRESULT WINAPI d3d9_surface_GetContainer(IDirect3DSurface9 *iface, REFIID riid, void **container)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_GetContainer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETCONTAINER);
     call.iface = (uint64_t)surface;
@@ -472,7 +472,7 @@ static HRESULT WINAPI d3d9_surface_GetContainer(IDirect3DSurface9 *iface, REFIID
 void qemu_d3d9_surface_GetContainer(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_GetContainer *c = (struct qemu_d3d9_surface_GetContainer *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
@@ -493,7 +493,7 @@ struct qemu_d3d9_surface_GetDesc
 
 static HRESULT WINAPI d3d9_surface_GetDesc(IDirect3DSurface9 *iface, D3DSURFACE_DESC *desc)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_GetDesc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETDESC);
     call.iface = (uint64_t)surface;
@@ -509,7 +509,7 @@ static HRESULT WINAPI d3d9_surface_GetDesc(IDirect3DSurface9 *iface, D3DSURFACE_
 void qemu_d3d9_surface_GetDesc(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_GetDesc *c = (struct qemu_d3d9_surface_GetDesc *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
@@ -532,7 +532,7 @@ struct qemu_d3d9_surface_LockRect
 
 static HRESULT WINAPI d3d9_surface_LockRect(IDirect3DSurface9 *iface, D3DLOCKED_RECT *locked_rect, const RECT *rect, DWORD flags)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_LockRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_LOCKRECT);
     call.iface = (uint64_t)surface;
@@ -550,7 +550,7 @@ static HRESULT WINAPI d3d9_surface_LockRect(IDirect3DSurface9 *iface, D3DLOCKED_
 void qemu_d3d9_surface_LockRect(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_LockRect *c = (struct qemu_d3d9_surface_LockRect *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
@@ -570,7 +570,7 @@ struct qemu_d3d9_surface_UnlockRect
 
 static HRESULT WINAPI d3d9_surface_UnlockRect(IDirect3DSurface9 *iface)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_UnlockRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_UNLOCKRECT);
     call.iface = (uint64_t)surface;
@@ -585,7 +585,7 @@ static HRESULT WINAPI d3d9_surface_UnlockRect(IDirect3DSurface9 *iface)
 void qemu_d3d9_surface_UnlockRect(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_UnlockRect *c = (struct qemu_d3d9_surface_UnlockRect *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
@@ -606,7 +606,7 @@ struct qemu_d3d9_surface_GetDC
 
 static HRESULT WINAPI d3d9_surface_GetDC(IDirect3DSurface9 *iface, HDC *dc)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_GetDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETDC);
     call.iface = (uint64_t)surface;
@@ -622,7 +622,7 @@ static HRESULT WINAPI d3d9_surface_GetDC(IDirect3DSurface9 *iface, HDC *dc)
 void qemu_d3d9_surface_GetDC(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_GetDC *c = (struct qemu_d3d9_surface_GetDC *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
@@ -643,7 +643,7 @@ struct qemu_d3d9_surface_ReleaseDC
 
 static HRESULT WINAPI d3d9_surface_ReleaseDC(IDirect3DSurface9 *iface, HDC dc)
 {
-    struct qemu_d3d9_surface_impl *surface = impl_from_IDirect3DSurface(iface);
+    struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_ReleaseDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_RELEASEDC);
     call.iface = (uint64_t)surface;
@@ -659,7 +659,7 @@ static HRESULT WINAPI d3d9_surface_ReleaseDC(IDirect3DSurface9 *iface, HDC dc)
 void qemu_d3d9_surface_ReleaseDC(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_ReleaseDC *c = (struct qemu_d3d9_surface_ReleaseDC *)call;
-    struct qemu_d3d9_surface_impl *surface;
+    struct qemu_d3d9_subresource_impl *surface;
 
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
@@ -697,7 +697,7 @@ const struct IDirect3DSurface9Vtbl d3d9_surface_vtbl =
 
 #else
 
-void d3d9_surface_init(struct qemu_d3d9_surface_impl *surface, IDirect3DSurface9 *host_surface)
+void d3d9_surface_init(struct qemu_d3d9_subresource_impl *surface, IDirect3DSurface9 *host_surface)
 {
     WINE_TRACE("Init surface %p, host %p.\n", surface, host_surface);
     surface->host = host_surface;
