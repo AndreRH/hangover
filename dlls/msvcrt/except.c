@@ -21,6 +21,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <signal.h>
+#include <setjmp.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -55,6 +56,25 @@ void qemu___cxxframehandler(struct qemu_syscall *c)
 
 #ifdef QEMU_DLL_GUEST
 
+void __cdecl MSVCRT__setjmp(jmp_buf buf, void *ctx)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL__SETJMP);
+
+    qemu_syscall(&call);
+}
+
+#else
+
+void qemu__setjmp(struct qemu_syscall *c)
+{
+    WINE_FIXME("Stub!\n");
+}
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
 int __cdecl MSVCRT__XcptFilter(unsigned long exception_num, struct _EXCEPTION_POINTERS *ptr)
 {
     struct qemu_syscall call;
@@ -68,6 +88,25 @@ int __cdecl MSVCRT__XcptFilter(unsigned long exception_num, struct _EXCEPTION_PO
 #else
 
 void qemu__xcptfilter(struct qemu_syscall *c)
+{
+    WINE_FIXME("Stub!\n");
+}
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
+void __cdecl MSVCRT_longjmp(jmp_buf jmp, int retval)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL_LONGJMP);
+
+    qemu_syscall(&call);
+}
+
+#else
+
+void qemu_longjmp(struct qemu_syscall *c)
 {
     WINE_FIXME("Stub!\n");
 }

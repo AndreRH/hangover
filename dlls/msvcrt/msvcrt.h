@@ -139,6 +139,7 @@ enum msvcrt_calls
     CALL__SET_CONTROLFP,
     CALL__SET_FMA3_ENABLE,
     CALL__SET_SSE2_ENABLE,
+    CALL__SETJMP,
     CALL__SNWPRINTF,
     CALL__STATUSFP,
     CALL__STATUSFP2,
@@ -271,6 +272,7 @@ enum msvcrt_calls
     CALL_LOG2F,
     CALL_LOG2L,
     CALL_LOGF,
+    CALL_LONGJMP,
     CALL_LRINT,
     CALL_LRINTF,
     CALL_LRINTL,
@@ -513,6 +515,7 @@ void qemu__scalbf(struct qemu_syscall *call);
 void qemu__set_controlfp(struct qemu_syscall *call);
 void qemu__set_FMA3_enable(struct qemu_syscall *call);
 void qemu__set_SSE2_enable(struct qemu_syscall *call);
+void qemu__setjmp(struct qemu_syscall *call);
 void qemu__snwprintf(struct qemu_syscall *call);
 void qemu__statusfp(struct qemu_syscall *call);
 void qemu__statusfp2(struct qemu_syscall *call);
@@ -644,6 +647,7 @@ void qemu_log2(struct qemu_syscall *call);
 void qemu_log2f(struct qemu_syscall *call);
 void qemu_log2l(struct qemu_syscall *call);
 void qemu_logf(struct qemu_syscall *call);
+void qemu_longjmp(struct qemu_syscall *call);
 void qemu_lrint(struct qemu_syscall *call);
 void qemu_lrintf(struct qemu_syscall *call);
 void qemu_lrintl(struct qemu_syscall *call);

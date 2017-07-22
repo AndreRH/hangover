@@ -143,6 +143,7 @@ EXPORTS
   _set_controlfp
   _set_FMA3_enable=MSVCRT__set_FMA3_enable
   _set_SSE2_enable=MSVCRT__set_SSE2_enable
+  _setjmp=MSVCRT__setjmp
   _snprintf=MSVCRT__snprintf
   _snwprintf=MSVCRT__snwprintf
   _statusfp
@@ -238,6 +239,7 @@ EXPORTS
   log10f=MSVCRT_log10f
   log=MSVCRT_log
   logf=MSVCRT_logf
+  longjmp=MSVCRT_longjmp
   malloc=MSVCRT_malloc
   memcmp=MSVCRT_memcmp
   memcpy=MSVCRT_memcpy
