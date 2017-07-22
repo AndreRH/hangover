@@ -98,7 +98,7 @@ void qemu_d3d9_vertexbuffer_AddRef(struct qemu_syscall *call)
     struct qemu_d3d9_vertexbuffer_AddRef *c = (struct qemu_d3d9_vertexbuffer_AddRef *)call;
     struct qemu_d3d9_buffer_impl *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVertexBuffer9_AddRef(buffer->hostvb);
@@ -133,7 +133,7 @@ void qemu_d3d9_vertexbuffer_Release(struct qemu_syscall *call)
     struct qemu_d3d9_vertexbuffer_Release *c = (struct qemu_d3d9_vertexbuffer_Release *)call;
     struct qemu_d3d9_buffer_impl *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     d3d9_device_wrapper_addref(buffer->device);
@@ -459,10 +459,10 @@ static HRESULT WINAPI d3d9_vertexbuffer_Lock(IDirect3DVertexBuffer9 *iface, UINT
     struct qemu_d3d9_vertexbuffer_Lock call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXBUFFER_LOCK);
     call.iface = (uint64_t)iface;
-    call.offset = (uint64_t)offset;
-    call.size = (uint64_t)size;
+    call.offset = offset;
+    call.size = size;
     call.data = (uint64_t)data;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -476,7 +476,7 @@ void qemu_d3d9_vertexbuffer_Lock(struct qemu_syscall *call)
     struct qemu_d3d9_vertexbuffer_Lock *c = (struct qemu_d3d9_vertexbuffer_Lock *)call;
     struct qemu_d3d9_buffer_impl *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVertexBuffer9_Lock(buffer->hostvb, c->offset, c->size, QEMU_G2H(c->data), c->flags);
@@ -511,7 +511,7 @@ void qemu_d3d9_vertexbuffer_Unlock(struct qemu_syscall *call)
     struct qemu_d3d9_vertexbuffer_Unlock *c = (struct qemu_d3d9_vertexbuffer_Unlock *)call;
     struct qemu_d3d9_buffer_impl *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVertexBuffer9_Unlock(buffer->hostvb);
@@ -983,10 +983,10 @@ static HRESULT WINAPI d3d9_indexbuffer_Lock(IDirect3DIndexBuffer9 *iface, UINT o
     struct qemu_d3d9_indexbuffer_Lock call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_INDEXBUFFER_LOCK);
     call.iface = (uint64_t)iface;
-    call.offset = (uint64_t)offset;
-    call.size = (uint64_t)size;
+    call.offset = offset;
+    call.size = size;
     call.data = (uint64_t)data;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -1000,7 +1000,7 @@ void qemu_d3d9_indexbuffer_Lock(struct qemu_syscall *call)
     struct qemu_d3d9_indexbuffer_Lock *c = (struct qemu_d3d9_indexbuffer_Lock *)call;
     struct qemu_d3d9_buffer_impl *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DIndexBuffer9_Lock(buffer->hostib, c->offset, c->size, QEMU_G2H(c->data), c->flags);
@@ -1035,7 +1035,7 @@ void qemu_d3d9_indexbuffer_Unlock(struct qemu_syscall *call)
     struct qemu_d3d9_indexbuffer_Unlock *c = (struct qemu_d3d9_indexbuffer_Unlock *)call;
     struct qemu_d3d9_buffer_impl *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DIndexBuffer9_Unlock(buffer->hostib);
