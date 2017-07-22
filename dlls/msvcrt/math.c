@@ -693,7 +693,7 @@ WINBASEAPI float CDECL MSVCRT_powf(float x, float y)
 void qemu_powf(struct qemu_syscall *call)
 {
     struct qemu_powf *c = (struct qemu_powf *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_powf(c->x, c->y);
 }
 
@@ -783,7 +783,7 @@ WINBASEAPI float CDECL MSVCRT_sqrtf(float x)
 void qemu_sqrtf(struct qemu_syscall *call)
 {
     struct qemu_sqrtf *c = (struct qemu_sqrtf *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_sqrtf(c->x);
 }
 
@@ -1066,7 +1066,7 @@ void qemu_asin(struct qemu_syscall *call)
 struct qemu_atan
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1075,7 +1075,7 @@ WINBASEAPI double CDECL MSVCRT_atan(double x)
 {
     struct qemu_atan call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ATAN);
-    call.x = (uint64_t)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -1087,7 +1087,7 @@ WINBASEAPI double CDECL MSVCRT_atan(double x)
 void qemu_atan(struct qemu_syscall *call)
 {
     struct qemu_atan *c = (struct qemu_atan *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_atan(c->x);
 }
 
@@ -1423,7 +1423,7 @@ WINBASEAPI double CDECL MSVCRT_sqrt(double x)
 void qemu_sqrt(struct qemu_syscall *call)
 {
     struct qemu_sqrt *c = (struct qemu_sqrt *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_sqrt(c->x);
 }
 
