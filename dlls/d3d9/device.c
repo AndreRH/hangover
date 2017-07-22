@@ -4920,12 +4920,22 @@ static HRESULT WINAPI d3d9_device_CreateQuery(IDirect3DDevice9Ex *iface, D3DQUER
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
     struct qemu_d3d9_device_CreateQuery call;
+    struct qemu_d3d9_query_impl *impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_CREATEQUERY);
     call.iface = (uint64_t)device;
-    call.type = (uint64_t)type;
-    call.query = (uint64_t)query;
+    call.type = type;
+    call.query = (uint64_t)&impl;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+    {
+        impl->IDirect3DQuery9_iface.lpVtbl = &d3d9_query_vtbl;
+        if (query)
+            *query = &impl->IDirect3DQuery9_iface;
+        else
+            IDirect3DQuery9_Release(&impl->IDirect3DQuery9_iface);
+    }
 
     return call.super.iret;
 }
@@ -4936,11 +4946,30 @@ void qemu_d3d9_device_CreateQuery(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_CreateQuery *c = (struct qemu_d3d9_device_CreateQuery *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_query_impl *query;
+    IDirect3DQuery9 *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_CreateQuery(device->host, c->type, QEMU_G2H(c->query));
+    query = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*query));
+    if (!query)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = IDirect3DDevice9Ex_CreateQuery(device->host, c->type, &host);
+    if (FAILED(c->super.iret))
+    {
+        c->query = QEMU_H2G(NULL);
+        HeapFree(GetProcessHeap(), 0, query);
+        return;
+    }
+
+    query->host = host;
+    query->device = device;
+    c->query = QEMU_H2G(query);
 }
 
 #endif

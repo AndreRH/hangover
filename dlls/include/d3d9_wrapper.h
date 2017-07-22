@@ -134,4 +134,17 @@ static inline struct qemu_d3d9_buffer_impl *impl_from_IDirect3DIndexBuffer9(IDir
     return CONTAINING_RECORD(iface, struct qemu_d3d9_buffer_impl, IDirect3DIndexBuffer9_iface);
 }
 
+struct qemu_d3d9_query_impl
+{
+    IDirect3DQuery9 IDirect3DQuery9_iface;
+    IDirect3DQuery9 *host;
+
+    struct qemu_d3d9_device_impl *device;
+};
+
+static inline struct qemu_d3d9_query_impl *impl_from_IDirect3DQuery9(IDirect3DQuery9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_query_impl, IDirect3DQuery9_iface);
+}
+
 #endif
