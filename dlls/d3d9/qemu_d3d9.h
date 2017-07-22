@@ -193,6 +193,72 @@ enum d3d9_calls
     CALL_D3D9_SWAPCHAIN_PRESENT,
     CALL_D3D9_SWAPCHAIN_QUERYINTERFACE,
     CALL_D3D9_SWAPCHAIN_RELEASE,
+    CALL_D3D9_TEXTURE_2D_ADDDIRTYRECT,
+    CALL_D3D9_TEXTURE_2D_ADDREF,
+    CALL_D3D9_TEXTURE_2D_FREEPRIVATEDATA,
+    CALL_D3D9_TEXTURE_2D_GENERATEMIPSUBLEVELS,
+    CALL_D3D9_TEXTURE_2D_GETAUTOGENFILTERTYPE,
+    CALL_D3D9_TEXTURE_2D_GETDEVICE,
+    CALL_D3D9_TEXTURE_2D_GETLEVELCOUNT,
+    CALL_D3D9_TEXTURE_2D_GETLEVELDESC,
+    CALL_D3D9_TEXTURE_2D_GETLOD,
+    CALL_D3D9_TEXTURE_2D_GETPRIORITY,
+    CALL_D3D9_TEXTURE_2D_GETPRIVATEDATA,
+    CALL_D3D9_TEXTURE_2D_GETSURFACELEVEL,
+    CALL_D3D9_TEXTURE_2D_GETTYPE,
+    CALL_D3D9_TEXTURE_2D_LOCKRECT,
+    CALL_D3D9_TEXTURE_2D_PRELOAD,
+    CALL_D3D9_TEXTURE_2D_QUERYINTERFACE,
+    CALL_D3D9_TEXTURE_2D_RELEASE,
+    CALL_D3D9_TEXTURE_2D_SETAUTOGENFILTERTYPE,
+    CALL_D3D9_TEXTURE_2D_SETLOD,
+    CALL_D3D9_TEXTURE_2D_SETPRIORITY,
+    CALL_D3D9_TEXTURE_2D_SETPRIVATEDATA,
+    CALL_D3D9_TEXTURE_2D_UNLOCKRECT,
+    CALL_D3D9_TEXTURE_3D_ADDDIRTYBOX,
+    CALL_D3D9_TEXTURE_3D_ADDREF,
+    CALL_D3D9_TEXTURE_3D_FREEPRIVATEDATA,
+    CALL_D3D9_TEXTURE_3D_GENERATEMIPSUBLEVELS,
+    CALL_D3D9_TEXTURE_3D_GETAUTOGENFILTERTYPE,
+    CALL_D3D9_TEXTURE_3D_GETDEVICE,
+    CALL_D3D9_TEXTURE_3D_GETLEVELCOUNT,
+    CALL_D3D9_TEXTURE_3D_GETLEVELDESC,
+    CALL_D3D9_TEXTURE_3D_GETLOD,
+    CALL_D3D9_TEXTURE_3D_GETPRIORITY,
+    CALL_D3D9_TEXTURE_3D_GETPRIVATEDATA,
+    CALL_D3D9_TEXTURE_3D_GETTYPE,
+    CALL_D3D9_TEXTURE_3D_GETVOLUMELEVEL,
+    CALL_D3D9_TEXTURE_3D_LOCKBOX,
+    CALL_D3D9_TEXTURE_3D_PRELOAD,
+    CALL_D3D9_TEXTURE_3D_QUERYINTERFACE,
+    CALL_D3D9_TEXTURE_3D_RELEASE,
+    CALL_D3D9_TEXTURE_3D_SETAUTOGENFILTERTYPE,
+    CALL_D3D9_TEXTURE_3D_SETLOD,
+    CALL_D3D9_TEXTURE_3D_SETPRIORITY,
+    CALL_D3D9_TEXTURE_3D_SETPRIVATEDATA,
+    CALL_D3D9_TEXTURE_3D_UNLOCKBOX,
+    CALL_D3D9_TEXTURE_CUBE_ADDDIRTYRECT,
+    CALL_D3D9_TEXTURE_CUBE_ADDREF,
+    CALL_D3D9_TEXTURE_CUBE_FREEPRIVATEDATA,
+    CALL_D3D9_TEXTURE_CUBE_GENERATEMIPSUBLEVELS,
+    CALL_D3D9_TEXTURE_CUBE_GETAUTOGENFILTERTYPE,
+    CALL_D3D9_TEXTURE_CUBE_GETCUBEMAPSURFACE,
+    CALL_D3D9_TEXTURE_CUBE_GETDEVICE,
+    CALL_D3D9_TEXTURE_CUBE_GETLEVELCOUNT,
+    CALL_D3D9_TEXTURE_CUBE_GETLEVELDESC,
+    CALL_D3D9_TEXTURE_CUBE_GETLOD,
+    CALL_D3D9_TEXTURE_CUBE_GETPRIORITY,
+    CALL_D3D9_TEXTURE_CUBE_GETPRIVATEDATA,
+    CALL_D3D9_TEXTURE_CUBE_GETTYPE,
+    CALL_D3D9_TEXTURE_CUBE_LOCKRECT,
+    CALL_D3D9_TEXTURE_CUBE_PRELOAD,
+    CALL_D3D9_TEXTURE_CUBE_QUERYINTERFACE,
+    CALL_D3D9_TEXTURE_CUBE_RELEASE,
+    CALL_D3D9_TEXTURE_CUBE_SETAUTOGENFILTERTYPE,
+    CALL_D3D9_TEXTURE_CUBE_SETLOD,
+    CALL_D3D9_TEXTURE_CUBE_SETPRIORITY,
+    CALL_D3D9_TEXTURE_CUBE_SETPRIVATEDATA,
+    CALL_D3D9_TEXTURE_CUBE_UNLOCKRECT,
     CALL_D3DPERF_BEGINEVENT,
     CALL_D3DPERF_ENDEVENT,
     CALL_D3DPERF_GETSTATUS,
@@ -212,6 +278,9 @@ extern const struct IDirect3D9ExVtbl d3d9_vtbl;
 extern const struct IDirect3DDevice9ExVtbl d3d9_device_vtbl;
 extern const struct IDirect3DSwapChain9ExVtbl d3d9_swapchain_vtbl;
 extern const struct IDirect3DSurface9Vtbl d3d9_surface_vtbl;
+extern const struct IDirect3DTexture9Vtbl d3d9_texture_2d_vtbl;
+extern const struct IDirect3DCubeTexture9Vtbl d3d9_texture_cube_vtbl;
+extern const struct IDirect3DVolumeTexture9Vtbl d3d9_texture_3d_vtbl;
 
 void d3d9_device_set_swapchain_ifaces(IDirect3DDevice9Ex *device);
 void d3d9_swapchain_set_surfaces_ifaces(IDirect3DSwapChain9Ex *swapchain);
@@ -406,6 +475,72 @@ void qemu_d3d9_swapchain_GetRasterStatus(struct qemu_syscall *call);
 void qemu_d3d9_swapchain_Present(struct qemu_syscall *call);
 void qemu_d3d9_swapchain_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d9_swapchain_Release(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_AddDirtyRect(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_AddRef(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_FreePrivateData(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_GenerateMipSubLevels(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_GetAutoGenFilterType(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_GetDevice(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_GetLevelCount(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_GetLevelDesc(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_GetLOD(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_GetPriority(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_GetSurfaceLevel(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_GetType(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_LockRect(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_PreLoad(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_Release(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_SetAutoGenFilterType(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_SetLOD(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_SetPriority(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d9_texture_2d_UnlockRect(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_AddDirtyBox(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_AddRef(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_FreePrivateData(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_GenerateMipSubLevels(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_GetAutoGenFilterType(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_GetDevice(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_GetLevelCount(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_GetLevelDesc(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_GetLOD(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_GetPriority(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_GetType(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_GetVolumeLevel(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_LockBox(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_PreLoad(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_Release(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_SetAutoGenFilterType(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_SetLOD(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_SetPriority(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d9_texture_3d_UnlockBox(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_AddDirtyRect(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_AddRef(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_FreePrivateData(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_GenerateMipSubLevels(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_GetAutoGenFilterType(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_GetCubeMapSurface(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_GetDevice(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_GetLevelCount(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_GetLevelDesc(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_GetLOD(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_GetPriority(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_GetType(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_LockRect(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_PreLoad(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_Release(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_SetAutoGenFilterType(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_SetLOD(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_SetPriority(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d9_texture_cube_UnlockRect(struct qemu_syscall *call);
 void qemu_D3DPERF_BeginEvent(struct qemu_syscall *call);
 void qemu_D3DPERF_EndEvent(struct qemu_syscall *call);
 void qemu_D3DPERF_GetStatus(struct qemu_syscall *call);

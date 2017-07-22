@@ -58,4 +58,30 @@ struct qemu_d3d9_swapchain_impl
     struct qemu_d3d9_surface_impl backbuffers[1];
 };
 
+struct qemu_d3d9_texture_impl
+{
+    IDirect3DBaseTexture9 IDirect3DBaseTexture9_iface;
+    IDirect3DBaseTexture9 *host;
+
+    IUnknown private_data;
+    ULONG private_data_ref; /* NOT the externally visible ref! */
+    struct qemu_d3d9_device_impl *device;
+    /* TODO: Surfaces / Volumes */
+};
+
+static inline struct qemu_d3d9_texture_impl *impl_from_IDirect3DTexture9(IDirect3DTexture9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_texture_impl, IDirect3DBaseTexture9_iface);
+}
+
+static inline struct qemu_d3d9_texture_impl *impl_from_IDirect3DCubeTexture9(IDirect3DCubeTexture9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_texture_impl, IDirect3DBaseTexture9_iface);
+}
+
+static inline struct qemu_d3d9_texture_impl *impl_from_IDirect3DVolumeTexture9(IDirect3DVolumeTexture9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_texture_impl, IDirect3DBaseTexture9_iface);
+}
+
 #endif
