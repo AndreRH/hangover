@@ -45,9 +45,9 @@ WINBASEAPI HANDLE WINAPI HeapCreate(DWORD flags, SIZE_T initialSize, SIZE_T maxS
 {
     struct qemu_HeapCreate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAPCREATE);
-    call.flags = (uint64_t)flags;
-    call.initialSize = (uint64_t)initialSize;
-    call.maxSize = (uint64_t)maxSize;
+    call.flags = flags;
+    call.initialSize = initialSize;
+    call.maxSize = maxSize;
 
     qemu_syscall(&call.super);
 
@@ -59,7 +59,7 @@ WINBASEAPI HANDLE WINAPI HeapCreate(DWORD flags, SIZE_T initialSize, SIZE_T maxS
 void qemu_HeapCreate(struct qemu_syscall *call)
 {
     struct qemu_HeapCreate *c = (struct qemu_HeapCreate *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)HeapCreate(c->flags, c->initialSize, c->maxSize);
 }
 
@@ -89,8 +89,8 @@ WINBASEAPI BOOL WINAPI HeapDestroy(HANDLE heap)
 void qemu_HeapDestroy(struct qemu_syscall *call)
 {
     struct qemu_HeapDestroy *c = (struct qemu_HeapDestroy *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = HeapDestroy(QEMU_G2H(c->heap));
+    WINE_TRACE("\n");
+    c->super.iret = HeapDestroy((HANDLE)c->heap);
 }
 
 #endif
