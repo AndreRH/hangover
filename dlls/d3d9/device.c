@@ -1008,18 +1008,28 @@ static HRESULT WINAPI d3d9_device_CreateTexture(IDirect3DDevice9Ex *iface, UINT 
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
     struct qemu_d3d9_device_CreateTexture call;
+    struct qemu_d3d9_texture_impl *impl;
+
+    *texture = NULL;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_CREATETEXTURE);
     call.iface = (uint64_t)device;
-    call.width = (uint64_t)width;
-    call.height = (uint64_t)height;
-    call.levels = (uint64_t)levels;
-    call.usage = (uint64_t)usage;
-    call.format = (uint64_t)format;
-    call.pool = (uint64_t)pool;
-    call.texture = (uint64_t)texture;
+    call.width = width;
+    call.height = height;
+    call.levels = levels;
+    call.usage = usage;
+    call.format = format;
+    call.pool = pool;
+    call.texture = (uint64_t)&impl;
     call.shared_handle = (uint64_t)shared_handle;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        impl->IDirect3DBaseTexture9_iface.lpVtbl = (IDirect3DBaseTexture9Vtbl *)&d3d9_texture_2d_vtbl;
+        *texture = (IDirect3DTexture9 *)&impl->IDirect3DBaseTexture9_iface;
+    }
 
     return call.super.iret;
 }
@@ -1030,11 +1040,32 @@ void qemu_d3d9_device_CreateTexture(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_CreateTexture *c = (struct qemu_d3d9_device_CreateTexture *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_FIXME("Unfinished!\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_CreateTexture(device->host, c->width, c->height, c->levels, c->usage, c->format, c->pool, QEMU_G2H(c->texture), QEMU_G2H(c->shared_handle));
+    texture = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*texture));
+    if (!texture)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = IDirect3DDevice9Ex_CreateTexture(device->host, c->width, c->height, c->levels, c->usage,
+            c->format, c->pool, (IDirect3DTexture9 **)&texture->host, (HANDLE)c->shared_handle);
+
+    if (SUCCEEDED(c->super.iret))
+    {
+        d3d9_texture_init(texture, device);
+        *(uint64_t *)QEMU_G2H(c->texture) = QEMU_H2G(texture);
+    }
+    else
+    {
+        HeapFree(GetProcessHeap(), 0, texture);
+        *(uint64_t *)QEMU_G2H(c->texture) = QEMU_H2G(NULL);
+    }
+
 }
 
 #endif

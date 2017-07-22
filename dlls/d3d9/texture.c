@@ -136,7 +136,9 @@ void qemu_d3d9_texture_2d_Release(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
+    d3d9_device_wrapper_addref(texture->device);
     c->super.iret = IDirect3DTexture9_Release(texture->host);
+    d3d9_device_wrapper_release(texture->device);
 }
 
 #endif
@@ -950,7 +952,9 @@ void qemu_d3d9_texture_cube_Release(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DCubeTexture9_Release(texture->host);
+    IDirect3DDevice9_AddRef(texture->device->host);
+    c->super.iret = IDirect3DTexture9_Release(texture->host);
+    IDirect3DDevice9_Release(texture->device->host);
 }
 
 #endif
@@ -1772,7 +1776,9 @@ void qemu_d3d9_texture_3d_Release(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DVolumeTexture9_Release(texture->host);
+    IDirect3DDevice9_AddRef(texture->device->host);
+    c->super.iret = IDirect3DTexture9_Release(texture->host);
+    IDirect3DDevice9_Release(texture->device->host);
 }
 
 #endif
@@ -2575,5 +2581,59 @@ const IDirect3DVolumeTexture9Vtbl d3d9_texture_3d_vtbl =
 };
 
 #else
+
+struct qemu_d3d9_texture_impl *texture_impl_from_IUnknown(IUnknown *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_texture_impl, private_data);
+}
+
+static HRESULT WINAPI d3d9_texture_priv_QueryInterface(IUnknown *iface, REFIID riid, void **out)
+{
+    WINE_ERR("Unexpected call\n");
+    return E_NOINTERFACE;
+}
+
+static ULONG WINAPI d3d9_texture_priv_AddRef(IUnknown *iface)
+{
+    struct qemu_d3d9_texture_impl *texture = texture_impl_from_IUnknown(iface);
+    ULONG refcount = InterlockedIncrement(&texture->private_data_ref);
+
+    WINE_TRACE("%p increasing refcount to %u.\n", texture, refcount);
+    return refcount;
+}
+
+static ULONG WINAPI d3d9_texture_priv_Release(IUnknown *iface)
+{
+    struct qemu_d3d9_texture_impl *texture = texture_impl_from_IUnknown(iface);
+    ULONG refcount = InterlockedDecrement(&texture->private_data_ref);
+
+    WINE_TRACE("%p decreasing refcount to %u.\n", texture, refcount);
+    if (!refcount)
+    {
+        /* This means the private data has been released, which only happens
+         * when the real interface has been destroyed. */
+        HeapFree(GetProcessHeap(), 0, texture);
+    }
+
+    return refcount;
+}
+
+static const struct IUnknownVtbl texture_priv_vtbl =
+{
+    /* IUnknown */
+    d3d9_texture_priv_QueryInterface,
+    d3d9_texture_priv_AddRef,
+    d3d9_texture_priv_Release,
+};
+
+void d3d9_texture_init(struct qemu_d3d9_texture_impl *texture, struct qemu_d3d9_device_impl *device)
+{
+    texture->private_data.lpVtbl = &texture_priv_vtbl;
+    texture->private_data_ref = 0;
+    IDirect3DTexture9_SetPrivateData(texture->host, &qemu_d3d9_texture_guid, &texture->private_data,
+            sizeof(IUnknown *), D3DSPD_IUNKNOWN);
+
+    /* TODO: Set surface / volume private data. */
+}
 
 #endif

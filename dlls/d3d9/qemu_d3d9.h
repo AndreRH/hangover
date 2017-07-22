@@ -567,8 +567,12 @@ void d3d9_swapchain_init(struct qemu_d3d9_swapchain_impl *swapchain, IDirect3DSw
 
 void d3d9_surface_init(struct qemu_d3d9_surface_impl *surface, IDirect3DSurface9 *host_surface);
 
+struct qemu_d3d9_texture_impl *texture_impl_from_IUnknown(IUnknown *iface);
+void d3d9_texture_init(struct qemu_d3d9_texture_impl *texture, struct qemu_d3d9_device_impl *device);
+
 extern const GUID qemu_d3d9_swapchain_guid;
 extern const GUID qemu_d3d9_surface_guid;
+extern const GUID qemu_d3d9_texture_guid;
 
 const GUID *pIID_IDirect3DDevice9;
 const GUID *pIID_IDirect3DDevice9Ex;
