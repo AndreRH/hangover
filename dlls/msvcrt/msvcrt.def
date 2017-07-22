@@ -3,6 +3,7 @@ LIBRARY msvcrt.dll BASE=0x30000000
 EXPORTS
   ??2@YAPEAX_K@Z=MSVCRT_operator_new
   ??3@YAXPEAX@Z=MSVCRT_operator_delete
+  ?terminate@@YAXXZ=MSVCRT_terminate
   __badioinfo=msvcr100.__qemu_native_data__
   __C_specific_handler=ntdll.__C_specific_handler
   __control87_2
