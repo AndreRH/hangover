@@ -4,6 +4,7 @@ EXPORTS
   ??2@YAPEAX_K@Z=MSVCRT_operator_new
   ??3@YAXPEAX@Z=MSVCRT_operator_delete
   ?terminate@@YAXXZ=MSVCRT_terminate
+  __badioinfo=msvcr100.__qemu_native_data__
   __C_specific_handler=ntdll.__C_specific_handler
   __crt_debugger_hook=MSVCRT___crt_debugger_hook
   __control87_2
@@ -42,6 +43,7 @@ EXPORTS
   __libm_sse2_tanf=MSVCRT___libm_sse2_tanf
   __p__pctype=MSVCRT___p__pctype
   __pctype_func=MSVCRT___pctype_func
+  __pioinfo=msvcr100.__qemu_native_data__
   __set_app_type=MSVCRT___set_app_type
   __setusermatherr=MSVCRT___setusermatherr
   __setusermatherr=MSVCRT___setusermatherr
