@@ -208,7 +208,7 @@ WINBASEAPI int CDECL MSVCRT_isalnum(int c)
 void qemu_isalnum(struct qemu_syscall *call)
 {
     struct qemu_isalnum *c = (struct qemu_isalnum *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_isalnum(c->c);
 }
 
@@ -270,7 +270,7 @@ WINBASEAPI int CDECL MSVCRT_isalpha(int c)
 void qemu_isalpha(struct qemu_syscall *call)
 {
     struct qemu_isalpha *c = (struct qemu_isalpha *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_isalpha(c->c);
 }
 
@@ -734,7 +734,7 @@ WINBASEAPI int CDECL MSVCRT_isspace(int c)
 void qemu_isspace(struct qemu_syscall *call)
 {
     struct qemu_isspace *c = (struct qemu_isspace *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_isspace(c->c);
 }
 
@@ -858,7 +858,7 @@ WINBASEAPI int CDECL MSVCRT_isxdigit(int c)
 void qemu_isxdigit(struct qemu_syscall *call)
 {
     struct qemu_isxdigit *c = (struct qemu_isxdigit *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_isxdigit(c->c);
 }
 

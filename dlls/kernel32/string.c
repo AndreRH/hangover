@@ -251,7 +251,7 @@ WINBASEAPI INT WINAPI lstrlenA(LPCSTR str)
 void qemu_lstrlenA(struct qemu_syscall *call)
 {
     struct qemu_lstrlenA *c = (struct qemu_lstrlenA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = lstrlenA(QEMU_G2H(c->str));
 }
 

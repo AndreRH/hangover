@@ -1881,7 +1881,7 @@ WINBASEAPI BOOL WINAPI FindNextFileA(HANDLE handle, WIN32_FIND_DATAA *data)
 void qemu_FindNextFileA(struct qemu_syscall *call)
 {
     struct qemu_FindNextFileA *c = (struct qemu_FindNextFileA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_FIXME("\n");
     c->super.iret = FindNextFileA(QEMU_G2H(c->handle), QEMU_G2H(c->data));
 }
 
@@ -1911,7 +1911,7 @@ WINBASEAPI DWORD WINAPI GetFileAttributesW(LPCWSTR name)
 void qemu_GetFileAttributesW(struct qemu_syscall *call)
 {
     struct qemu_GetFileAttributesW *c = (struct qemu_GetFileAttributesW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetFileAttributesW(QEMU_G2H(c->name));
 }
 
@@ -1941,7 +1941,7 @@ WINBASEAPI DWORD WINAPI GetFileAttributesA(LPCSTR name)
 void qemu_GetFileAttributesA(struct qemu_syscall *call)
 {
     struct qemu_GetFileAttributesA *c = (struct qemu_GetFileAttributesA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     c->super.iret = GetFileAttributesA(QEMU_G2H(c->name));
 }
 

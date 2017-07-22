@@ -1869,7 +1869,7 @@ WINBASEAPI INT WINAPI CompareStringA(LCID lcid, DWORD flags, LPCSTR str1, INT le
 void qemu_CompareStringA(struct qemu_syscall *call)
 {
     struct qemu_CompareStringA *c = (struct qemu_CompareStringA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CompareStringA(c->lcid, c->flags, QEMU_G2H(c->str1), c->len1, QEMU_G2H(c->str2), c->len2);
 }
 
