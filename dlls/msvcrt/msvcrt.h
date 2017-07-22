@@ -5,7 +5,9 @@
 
 enum msvcrt_calls
 {
-    CALL___CONTROL87_2 = 0,
+    CALL____MB_CUR_MAX_FUNC = 0,
+    CALL____MB_CUR_MAX_L_FUNC,
+    CALL___CONTROL87_2,
     CALL___CRT_DEBUGGER_HOOK,
     CALL___CXXFRAMEHANDLER,
     CALL___FPE_FLT_ROUNDS,
@@ -38,6 +40,8 @@ enum msvcrt_calls
     CALL___LIBM_SSE2_SQRT_PRECISE,
     CALL___LIBM_SSE2_TAN,
     CALL___LIBM_SSE2_TANF,
+    CALL___P___MB_CUR_MAX,
+    CALL___P__MBCTYPE,
     CALL___P__PCTYPE,
     CALL___PCTYPE_FUNC,
     CALL___SET_APP_TYPE,
@@ -95,6 +99,7 @@ enum msvcrt_calls
     CALL__FTOL,
     CALL__GCVT,
     CALL__GCVT_S,
+    CALL__GETMBCP,
     CALL__HYPOT,
     CALL__HYPOTF,
     CALL__ISALNUM_L,
@@ -108,6 +113,25 @@ enum msvcrt_calls
     CALL__ISGRAPH_L,
     CALL__ISLEADBYTE_L,
     CALL__ISLOWER_L,
+    CALL__ISMBBKANA,
+    CALL__ISMBBLEAD,
+    CALL__ISMBBLEAD_L,
+    CALL__ISMBBTRAIL,
+    CALL__ISMBCALNUM,
+    CALL__ISMBCALPHA,
+    CALL__ISMBCDIGIT,
+    CALL__ISMBCGRAPH,
+    CALL__ISMBCHIRA,
+    CALL__ISMBCKATA,
+    CALL__ISMBCLEGAL,
+    CALL__ISMBCLOWER,
+    CALL__ISMBCPRINT,
+    CALL__ISMBCPUNCT,
+    CALL__ISMBCSPACE,
+    CALL__ISMBCSYMBOL,
+    CALL__ISMBCUPPER,
+    CALL__ISMBSLEAD,
+    CALL__ISMBSTRAIL,
     CALL__ISNAN,
     CALL__ISNANF,
     CALL__ISPRINT_L,
@@ -127,6 +151,76 @@ enum msvcrt_calls
     CALL__LSEEK,
     CALL__LSEEKI64,
     CALL__MATHERR,
+    CALL__MBBTOMBC,
+    CALL__MBBTYPE,
+    CALL__MBCCPY,
+    CALL__MBCJISTOJMS,
+    CALL__MBCJMSTOJIS,
+    CALL__MBCLEN,
+    CALL__MBCTOHIRA,
+    CALL__MBCTOKATA,
+    CALL__MBCTOLOWER,
+    CALL__MBCTOMBB,
+    CALL__MBCTOUPPER,
+    CALL__MBSBTYPE,
+    CALL__MBSCAT,
+    CALL__MBSCAT_S,
+    CALL__MBSCAT_S_L,
+    CALL__MBSCHR,
+    CALL__MBSCMP,
+    CALL__MBSCOLL,
+    CALL__MBSCOLL_L,
+    CALL__MBSCPY,
+    CALL__MBSCPY_S,
+    CALL__MBSCPY_S_L,
+    CALL__MBSCSPN,
+    CALL__MBSDEC,
+    CALL__MBSICMP,
+    CALL__MBSICOLL,
+    CALL__MBSICOLL_L,
+    CALL__MBSINC,
+    CALL__MBSLEN,
+    CALL__MBSLWR,
+    CALL__MBSLWR_S,
+    CALL__MBSNBCAT,
+    CALL__MBSNBCAT_S,
+    CALL__MBSNBCMP,
+    CALL__MBSNBCNT,
+    CALL__MBSNBCOLL,
+    CALL__MBSNBCOLL_L,
+    CALL__MBSNBCPY,
+    CALL__MBSNBCPY_S,
+    CALL__MBSNBCPY_S_L,
+    CALL__MBSNBICMP,
+    CALL__MBSNBICOLL,
+    CALL__MBSNBICOLL_L,
+    CALL__MBSNBSET,
+    CALL__MBSNCAT,
+    CALL__MBSNCCNT,
+    CALL__MBSNCMP,
+    CALL__MBSNCPY,
+    CALL__MBSNEXTC,
+    CALL__MBSNICMP,
+    CALL__MBSNINC,
+    CALL__MBSNSET,
+    CALL__MBSPBRK,
+    CALL__MBSRCHR,
+    CALL__MBSREV,
+    CALL__MBSSET,
+    CALL__MBSSPN,
+    CALL__MBSSPNP,
+    CALL__MBSSTR,
+    CALL__MBSTOK,
+    CALL__MBSTOK_L,
+    CALL__MBSTOK_S,
+    CALL__MBSTOK_S_L,
+    CALL__MBSTOWCS_L,
+    CALL__MBSTOWCS_S,
+    CALL__MBSTOWCS_S_L,
+    CALL__MBSTRLEN,
+    CALL__MBSTRLEN_L,
+    CALL__MBSUPR,
+    CALL__MBSUPR_S,
     CALL__NEXTAFTER,
     CALL__NEXTAFTERF,
     CALL__ONEXIT,
@@ -141,6 +235,7 @@ enum msvcrt_calls
     CALL__SET_FMA3_ENABLE,
     CALL__SET_SSE2_ENABLE,
     CALL__SETJMP,
+    CALL__SETMBCP,
     CALL__SNWPRINTF,
     CALL__STATUSFP,
     CALL__STATUSFP2,
@@ -281,6 +376,14 @@ enum msvcrt_calls
     CALL_LROUNDF,
     CALL_LROUNDL,
     CALL_MALLOC,
+    CALL_MBLEN,
+    CALL_MBRLEN,
+    CALL_MBRTOWC,
+    CALL_MBSRTOWCS,
+    CALL_MBSRTOWCS_S,
+    CALL_MBSTOWCS,
+    CALL_MBTOWC,
+    CALL_MBTOWC_L,
     CALL_MEMCMP,
     CALL_MEMCPY,
     CALL_MEMMOVE,
@@ -384,6 +487,8 @@ unsigned int count_printf_argsA(const char *format, char *fmts);
 
 extern const struct qemu_ops *qemu_ops;
 
+void qemu____mb_cur_max_func(struct qemu_syscall *call);
+void qemu____mb_cur_max_l_func(struct qemu_syscall *call);
 void qemu___control87_2(struct qemu_syscall *call);
 void qemu___crt_debugger_hook(struct qemu_syscall *call);
 void qemu___cxxframehandler(struct qemu_syscall *call);
@@ -417,6 +522,8 @@ void qemu___libm_sse2_sinf(struct qemu_syscall *call);
 void qemu___libm_sse2_sqrt_precise(struct qemu_syscall *call);
 void qemu___libm_sse2_tan(struct qemu_syscall *call);
 void qemu___libm_sse2_tanf(struct qemu_syscall *call);
+void qemu___p___mb_cur_max(struct qemu_syscall *call);
+void qemu___p__mbctype(struct qemu_syscall *call);
 void qemu___p__pctype(struct qemu_syscall *call);
 void qemu___pctype_func(struct qemu_syscall *call);
 void qemu___set_app_type(struct qemu_syscall *call);
@@ -474,6 +581,7 @@ void qemu__fpreset(struct qemu_syscall *call);
 void qemu__ftol(struct qemu_syscall *call);
 void qemu__gcvt(struct qemu_syscall *call);
 void qemu__gcvt_s(struct qemu_syscall *call);
+void qemu__getmbcp(struct qemu_syscall *call);
 void qemu__hypot(struct qemu_syscall *call);
 void qemu__hypotf(struct qemu_syscall *call);
 void qemu__isalnum_l(struct qemu_syscall *call);
@@ -487,6 +595,25 @@ void qemu__isdigit_l(struct qemu_syscall *call);
 void qemu__isgraph_l(struct qemu_syscall *call);
 void qemu__isleadbyte_l(struct qemu_syscall *call);
 void qemu__islower_l(struct qemu_syscall *call);
+void qemu__ismbbkana(struct qemu_syscall *call);
+void qemu__ismbblead(struct qemu_syscall *call);
+void qemu__ismbblead_l(struct qemu_syscall *call);
+void qemu__ismbbtrail(struct qemu_syscall *call);
+void qemu__ismbcalnum(struct qemu_syscall *call);
+void qemu__ismbcalpha(struct qemu_syscall *call);
+void qemu__ismbcdigit(struct qemu_syscall *call);
+void qemu__ismbcgraph(struct qemu_syscall *call);
+void qemu__ismbchira(struct qemu_syscall *call);
+void qemu__ismbckata(struct qemu_syscall *call);
+void qemu__ismbclegal(struct qemu_syscall *call);
+void qemu__ismbclower(struct qemu_syscall *call);
+void qemu__ismbcprint(struct qemu_syscall *call);
+void qemu__ismbcpunct(struct qemu_syscall *call);
+void qemu__ismbcspace(struct qemu_syscall *call);
+void qemu__ismbcsymbol(struct qemu_syscall *call);
+void qemu__ismbcupper(struct qemu_syscall *call);
+void qemu__ismbslead(struct qemu_syscall *call);
+void qemu__ismbstrail(struct qemu_syscall *call);
 void qemu__isnan(struct qemu_syscall *call);
 void qemu__isnanf(struct qemu_syscall *call);
 void qemu__isprint_l(struct qemu_syscall *call);
@@ -506,6 +633,76 @@ void qemu__lrotr(struct qemu_syscall *call);
 void qemu__lseek(struct qemu_syscall *call);
 void qemu__lseeki64(struct qemu_syscall *call);
 void qemu__matherr(struct qemu_syscall *call);
+void qemu__mbbtombc(struct qemu_syscall *call);
+void qemu__mbbtype(struct qemu_syscall *call);
+void qemu__mbccpy(struct qemu_syscall *call);
+void qemu__mbcjistojms(struct qemu_syscall *call);
+void qemu__mbcjmstojis(struct qemu_syscall *call);
+void qemu__mbclen(struct qemu_syscall *call);
+void qemu__mbctohira(struct qemu_syscall *call);
+void qemu__mbctokata(struct qemu_syscall *call);
+void qemu__mbctolower(struct qemu_syscall *call);
+void qemu__mbctombb(struct qemu_syscall *call);
+void qemu__mbctoupper(struct qemu_syscall *call);
+void qemu__mbsbtype(struct qemu_syscall *call);
+void qemu__mbscat(struct qemu_syscall *call);
+void qemu__mbscat_s(struct qemu_syscall *call);
+void qemu__mbscat_s_l(struct qemu_syscall *call);
+void qemu__mbschr(struct qemu_syscall *call);
+void qemu__mbscmp(struct qemu_syscall *call);
+void qemu__mbscoll(struct qemu_syscall *call);
+void qemu__mbscoll_l(struct qemu_syscall *call);
+void qemu__mbscpy(struct qemu_syscall *call);
+void qemu__mbscpy_s(struct qemu_syscall *call);
+void qemu__mbscpy_s_l(struct qemu_syscall *call);
+void qemu__mbscspn(struct qemu_syscall *call);
+void qemu__mbsdec(struct qemu_syscall *call);
+void qemu__mbsicmp(struct qemu_syscall *call);
+void qemu__mbsicoll(struct qemu_syscall *call);
+void qemu__mbsicoll_l(struct qemu_syscall *call);
+void qemu__mbsinc(struct qemu_syscall *call);
+void qemu__mbslen(struct qemu_syscall *call);
+void qemu__mbslwr(struct qemu_syscall *call);
+void qemu__mbslwr_s(struct qemu_syscall *call);
+void qemu__mbsnbcat(struct qemu_syscall *call);
+void qemu__mbsnbcat_s(struct qemu_syscall *call);
+void qemu__mbsnbcmp(struct qemu_syscall *call);
+void qemu__mbsnbcnt(struct qemu_syscall *call);
+void qemu__mbsnbcoll(struct qemu_syscall *call);
+void qemu__mbsnbcoll_l(struct qemu_syscall *call);
+void qemu__mbsnbcpy(struct qemu_syscall *call);
+void qemu__mbsnbcpy_s(struct qemu_syscall *call);
+void qemu__mbsnbcpy_s_l(struct qemu_syscall *call);
+void qemu__mbsnbicmp(struct qemu_syscall *call);
+void qemu__mbsnbicoll(struct qemu_syscall *call);
+void qemu__mbsnbicoll_l(struct qemu_syscall *call);
+void qemu__mbsnbset(struct qemu_syscall *call);
+void qemu__mbsncat(struct qemu_syscall *call);
+void qemu__mbsnccnt(struct qemu_syscall *call);
+void qemu__mbsncmp(struct qemu_syscall *call);
+void qemu__mbsncpy(struct qemu_syscall *call);
+void qemu__mbsnextc(struct qemu_syscall *call);
+void qemu__mbsnicmp(struct qemu_syscall *call);
+void qemu__mbsninc(struct qemu_syscall *call);
+void qemu__mbsnset(struct qemu_syscall *call);
+void qemu__mbspbrk(struct qemu_syscall *call);
+void qemu__mbsrchr(struct qemu_syscall *call);
+void qemu__mbsrev(struct qemu_syscall *call);
+void qemu__mbsset(struct qemu_syscall *call);
+void qemu__mbsspn(struct qemu_syscall *call);
+void qemu__mbsspnp(struct qemu_syscall *call);
+void qemu__mbsstr(struct qemu_syscall *call);
+void qemu__mbstok(struct qemu_syscall *call);
+void qemu__mbstok_l(struct qemu_syscall *call);
+void qemu__mbstok_s(struct qemu_syscall *call);
+void qemu__mbstok_s_l(struct qemu_syscall *call);
+void qemu__mbstowcs_l(struct qemu_syscall *call);
+void qemu__mbstowcs_s(struct qemu_syscall *call);
+void qemu__mbstowcs_s_l(struct qemu_syscall *call);
+void qemu__mbstrlen(struct qemu_syscall *call);
+void qemu__mbstrlen_l(struct qemu_syscall *call);
+void qemu__mbsupr(struct qemu_syscall *call);
+void qemu__mbsupr_s(struct qemu_syscall *call);
 void qemu__nextafter(struct qemu_syscall *call);
 void qemu__nextafterf(struct qemu_syscall *call);
 void qemu__onexit(struct qemu_syscall *call);
@@ -520,6 +717,7 @@ void qemu__set_controlfp(struct qemu_syscall *call);
 void qemu__set_FMA3_enable(struct qemu_syscall *call);
 void qemu__set_SSE2_enable(struct qemu_syscall *call);
 void qemu__setjmp(struct qemu_syscall *call);
+void qemu__setmbcp(struct qemu_syscall *call);
 void qemu__snwprintf(struct qemu_syscall *call);
 void qemu__statusfp(struct qemu_syscall *call);
 void qemu__statusfp2(struct qemu_syscall *call);
@@ -659,6 +857,14 @@ void qemu_lround(struct qemu_syscall *call);
 void qemu_lroundf(struct qemu_syscall *call);
 void qemu_lroundl(struct qemu_syscall *call);
 void qemu_malloc(struct qemu_syscall *call);
+void qemu_mblen(struct qemu_syscall *call);
+void qemu_mbrlen(struct qemu_syscall *call);
+void qemu_mbrtowc(struct qemu_syscall *call);
+void qemu_mbsrtowcs(struct qemu_syscall *call);
+void qemu_mbsrtowcs_s(struct qemu_syscall *call);
+void qemu_mbstowcs(struct qemu_syscall *call);
+void qemu_mbtowc(struct qemu_syscall *call);
+void qemu_mbtowc_l(struct qemu_syscall *call);
 void qemu_memcmp(struct qemu_syscall *call);
 void qemu_memcpy(struct qemu_syscall *call);
 void qemu_memmove(struct qemu_syscall *call);
@@ -688,8 +894,8 @@ void qemu_rintl(struct qemu_syscall *call);
 void qemu_round(struct qemu_syscall *call);
 void qemu_roundf(struct qemu_syscall *call);
 void qemu_roundl(struct qemu_syscall *call);
-void qemu_scanf(struct qemu_syscall *call);
 void qemu_scalbnl(struct qemu_syscall *call);
+void qemu_scanf(struct qemu_syscall *call);
 void qemu_setlocale(struct qemu_syscall *call);
 void qemu_signal(struct qemu_syscall *call);
 void qemu_sin(struct qemu_syscall *call);
@@ -1070,6 +1276,110 @@ char * (* CDECL p__tempnam)(const char *dir, const char *prefix);
 double (* CDECL p_strtod)(const char *str, char **end);
 char * (* CDECL p__strtime)(char *time);
 char * (* CDECL p__strdate)(char *date);
+
+unsigned char* (* CDECL p___p__mbctype)(void);
+int* (* CDECL p___p___mb_cur_max)(void);
+int (* CDECL p____mb_cur_max_func)(void);
+int* (* CDECL p____mb_cur_max_l_func)(MSVCRT__locale_t locale);
+int (* CDECL p__setmbcp)(int cp);
+int (* CDECL p__getmbcp)(void);
+unsigned int (* CDECL p__mbsnextc)(const unsigned char* str);
+unsigned int (* CDECL p__mbctolower)(unsigned int c);
+unsigned int (* CDECL p__mbctoupper)(unsigned int c);
+unsigned int (* CDECL p__mbctombb)(unsigned int c);
+unsigned int (* CDECL p__mbcjistojms)(unsigned int c);
+unsigned int (* CDECL p__mbcjmstojis)(unsigned int c);
+unsigned char* (* CDECL p__mbsdec)(const unsigned char* start, const unsigned char* cur);
+unsigned int (* CDECL p__mbclen)(const unsigned char* str);
+unsigned char* (* CDECL p__mbsinc)(const unsigned char* str);
+unsigned char* (* CDECL p__mbsninc)(const unsigned char* str, size_t num);
+size_t (* CDECL p__mbslen)(const unsigned char* str);
+void (* CDECL p__mbccpy)(unsigned char* dest, const unsigned char* src);
+unsigned char* (* CDECL p__mbsncpy)(unsigned char* dst, const unsigned char* src, size_t n);
+int (* CDECL p__mbsnbcpy_s_l)(unsigned char* dst, size_t size, const unsigned char* src, size_t n, MSVCRT__locale_t locale);
+int (* CDECL p__mbsnbcpy_s)(unsigned char* dst, size_t size, const unsigned char* src, size_t n);
+int (* CDECL p__mbscpy_s_l)(unsigned char *dst, size_t size, const unsigned char *src, MSVCRT__locale_t locale);
+int (* CDECL p__mbscpy_s)(unsigned char *dst, size_t size, const unsigned char *src);
+unsigned char* (* CDECL p__mbsnbcpy)(unsigned char* dst, const unsigned char* src, size_t n);
+int (* CDECL p__mbscmp)(const unsigned char* str, const unsigned char* cmp);
+int (* CDECL p__mbsnbicoll_l)(const unsigned char *str1, const unsigned char *str2, size_t len, MSVCRT__locale_t locale);
+int (* CDECL p__mbsicoll_l)(const unsigned char *str1, const unsigned char *str2, MSVCRT__locale_t locale);
+int (* CDECL p__mbsnbicoll)(const unsigned char *str1, const unsigned char *str2, size_t len);
+int (* CDECL p__mbsicoll)(const unsigned char* str, const unsigned char* cmp);
+int (* CDECL p__mbsnbcoll_l)(const unsigned char *str1, const unsigned char *str2, size_t len, MSVCRT__locale_t locale);
+int (* CDECL p__mbscoll_l)(const unsigned char *str1, const unsigned char *str2, MSVCRT__locale_t locale);
+int (* CDECL p__mbsnbcoll)(const unsigned char *str1, const unsigned char *str2, size_t len);
+int (* CDECL p__mbscoll)(const unsigned char* str, const unsigned char* cmp);
+int (* CDECL p__mbsicmp)(const unsigned char* str, const unsigned char* cmp);
+int (* CDECL p__mbsncmp)(const unsigned char* str, const unsigned char* cmp, size_t len);
+int (* CDECL p__mbsnbcmp)(const unsigned char* str, const unsigned char* cmp, size_t len);
+int (* CDECL p__mbsnicmp)(const unsigned char* str, const unsigned char* cmp, size_t len);
+int (* CDECL p__mbsnbicmp)(const unsigned char* str, const unsigned char* cmp, size_t len);
+unsigned char * (* CDECL p__mbscat)(unsigned char *dst, const unsigned char *src);
+int (* CDECL p__mbscat_s_l)(unsigned char *dst, size_t size, const unsigned char *src, MSVCRT__locale_t locale);
+int (* CDECL p__mbscat_s)(unsigned char *dst, size_t size, const unsigned char *src);
+unsigned char* (* CDECL p__mbscpy)(unsigned char *dst, const unsigned char *src);
+unsigned char * (* CDECL p__mbsstr)(const unsigned char *haystack, const unsigned char *needle);
+unsigned char* (* CDECL p__mbschr)(const unsigned char* s, unsigned int x);
+unsigned char* (* CDECL p__mbsrchr)(const unsigned char* s, unsigned int x);
+unsigned char* (* CDECL p__mbstok_s_l)(unsigned char *str, const unsigned char *delim, unsigned char **ctx, MSVCRT__locale_t locale);
+unsigned char* (* CDECL p__mbstok_s)(unsigned char *str, const unsigned char *delim, unsigned char **ctx);
+unsigned char* (* CDECL p__mbstok_l)(unsigned char *str, const unsigned char *delim, MSVCRT__locale_t locale);
+unsigned char* (* CDECL p__mbstok)(unsigned char *str, const unsigned char *delim);
+unsigned int (* CDECL p__mbbtombc)(unsigned int c);
+int (* CDECL p__mbbtype)(unsigned char c, int type);
+int (* CDECL p__ismbbkana)(unsigned int c);
+int (* CDECL p__ismbcdigit)(unsigned int ch);
+int (* CDECL p__ismbcgraph)(unsigned int ch);
+int (* CDECL p__ismbcalpha)(unsigned int ch);
+int (* CDECL p__ismbclower)(unsigned int ch);
+int (* CDECL p__ismbcupper)(unsigned int ch);
+int (* CDECL p__ismbcsymbol)(unsigned int ch);
+int (* CDECL p__ismbcalnum)(unsigned int ch);
+int (* CDECL p__ismbcspace)(unsigned int ch);
+int (* CDECL p__ismbcprint)(unsigned int ch);
+int (* CDECL p__ismbcpunct)(unsigned int ch);
+int (* CDECL p__ismbchira)(unsigned int c);
+int (* CDECL p__ismbckata)(unsigned int c);
+int (* CDECL p__ismbblead_l)(unsigned int c, MSVCRT__locale_t locale);
+int (* CDECL p__ismbblead)(unsigned int c);
+int (* CDECL p__ismbbtrail)(unsigned int c);
+int (* CDECL p__ismbclegal)(unsigned int c);
+int (* CDECL p__ismbslead)(const unsigned char* start, const unsigned char* str);
+int (* CDECL p__ismbstrail)(const unsigned char* start, const unsigned char* str);
+int (* CDECL p__mbsbtype)(const unsigned char *str, size_t count);
+unsigned char* (* CDECL p__mbsset)(unsigned char* str, unsigned int c);
+unsigned char* (* CDECL p__mbsnbset)(unsigned char *str, unsigned int c, size_t len);
+unsigned char* (* CDECL p__mbsnset)(unsigned char* str, unsigned int c, size_t len);
+size_t (* CDECL p__mbsnccnt)(const unsigned char* str, size_t len);
+size_t (* CDECL p__mbsnbcnt)(const unsigned char* str, size_t len);
+unsigned char* (* CDECL p__mbsnbcat)(unsigned char* dst, const unsigned char* src, size_t len);
+int (* CDECL p__mbsnbcat_s)(unsigned char *dst, size_t size, const unsigned char *src, size_t len);
+unsigned char* (* CDECL p__mbsncat)(unsigned char* dst, const unsigned char* src, size_t len);
+unsigned char* (* CDECL p__mbslwr)(unsigned char* s);
+int (* CDECL p__mbslwr_s)(unsigned char* s, size_t len);
+unsigned char* (* CDECL p__mbsupr)(unsigned char* s);
+int (* CDECL p__mbsupr_s)(unsigned char* s, size_t len);
+size_t (* CDECL p__mbsspn)(const unsigned char* string, const unsigned char* set);
+unsigned char* (* CDECL p__mbsspnp)(const unsigned char* string, const unsigned char* set);
+size_t (* CDECL p__mbscspn)(const unsigned char* str, const unsigned char* cmp);
+unsigned char* (* CDECL p__mbsrev)(unsigned char* str);
+unsigned char* (* CDECL p__mbspbrk)(const unsigned char* str, const unsigned char* accept);
+int (* CDECL p_mblen)(const char* str, size_t size);
+size_t (* CDECL p_mbrlen)(const char *str, size_t len, void *state);
+size_t (* CDECL p__mbstrlen_l)(const char* str, MSVCRT__locale_t locale);
+size_t (* CDECL p__mbstrlen)(const char* str);
+int (* CDECL p_mbtowc_l)(WCHAR *dst, const char* str, size_t n, MSVCRT__locale_t locale);
+int (* CDECL p_mbtowc)(WCHAR *dst, const char* str, size_t n);
+size_t (* CDECL p_mbrtowc)(WCHAR *dst, const char *str, size_t n, void *state);
+size_t (* CDECL p__mbstowcs_l)(WCHAR *wcstr, const char *mbstr, size_t count, MSVCRT__locale_t locale);
+size_t (* CDECL p_mbstowcs)(WCHAR *wcstr, const char *mbstr, size_t count);
+int (* CDECL p__mbstowcs_s_l)(size_t *ret, WCHAR *wcstr, size_t size, const char *mbstr, size_t count, MSVCRT__locale_t locale);
+int (* CDECL p__mbstowcs_s)(size_t *ret, WCHAR *wcstr, size_t size, const char *mbstr, size_t count);
+size_t (* CDECL p_mbsrtowcs)(WCHAR *wcstr, const char **pmbstr, size_t count, void *state);
+int (* CDECL p_mbsrtowcs_s)(size_t *ret, WCHAR *wcstr, size_t len, const char **mbstr, size_t count, void *state);
+unsigned int (* CDECL p__mbctohira)(unsigned int c);
+unsigned int (* CDECL p__mbctokata)(unsigned int c);
 
 DWORD msvcrt_tls;
 

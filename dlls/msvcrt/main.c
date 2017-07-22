@@ -74,6 +74,8 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu____mb_cur_max_func,
+    qemu____mb_cur_max_l_func,
     qemu___control87_2,
     qemu___crt_debugger_hook,
     qemu___cxxframehandler,
@@ -107,6 +109,8 @@ static const syscall_handler dll_functions[] =
     qemu___libm_sse2_sqrt_precise,
     qemu___libm_sse2_tan,
     qemu___libm_sse2_tanf,
+    qemu___p___mb_cur_max,
+    qemu___p__mbctype,
     qemu___p__pctype,
     qemu___pctype_func,
     qemu___set_app_type,
@@ -164,6 +168,7 @@ static const syscall_handler dll_functions[] =
     qemu__ftol,
     qemu__gcvt,
     qemu__gcvt_s,
+    qemu__getmbcp,
     qemu__hypot,
     qemu__hypotf,
     qemu__isalnum_l,
@@ -177,6 +182,25 @@ static const syscall_handler dll_functions[] =
     qemu__isgraph_l,
     qemu__isleadbyte_l,
     qemu__islower_l,
+    qemu__ismbbkana,
+    qemu__ismbblead,
+    qemu__ismbblead_l,
+    qemu__ismbbtrail,
+    qemu__ismbcalnum,
+    qemu__ismbcalpha,
+    qemu__ismbcdigit,
+    qemu__ismbcgraph,
+    qemu__ismbchira,
+    qemu__ismbckata,
+    qemu__ismbclegal,
+    qemu__ismbclower,
+    qemu__ismbcprint,
+    qemu__ismbcpunct,
+    qemu__ismbcspace,
+    qemu__ismbcsymbol,
+    qemu__ismbcupper,
+    qemu__ismbslead,
+    qemu__ismbstrail,
     qemu__isnan,
     qemu__isnanf,
     qemu__isprint_l,
@@ -196,6 +220,76 @@ static const syscall_handler dll_functions[] =
     qemu__lseek,
     qemu__lseeki64,
     qemu__matherr,
+    qemu__mbbtombc,
+    qemu__mbbtype,
+    qemu__mbccpy,
+    qemu__mbcjistojms,
+    qemu__mbcjmstojis,
+    qemu__mbclen,
+    qemu__mbctohira,
+    qemu__mbctokata,
+    qemu__mbctolower,
+    qemu__mbctombb,
+    qemu__mbctoupper,
+    qemu__mbsbtype,
+    qemu__mbscat,
+    qemu__mbscat_s,
+    qemu__mbscat_s_l,
+    qemu__mbschr,
+    qemu__mbscmp,
+    qemu__mbscoll,
+    qemu__mbscoll_l,
+    qemu__mbscpy,
+    qemu__mbscpy_s,
+    qemu__mbscpy_s_l,
+    qemu__mbscspn,
+    qemu__mbsdec,
+    qemu__mbsicmp,
+    qemu__mbsicoll,
+    qemu__mbsicoll_l,
+    qemu__mbsinc,
+    qemu__mbslen,
+    qemu__mbslwr,
+    qemu__mbslwr_s,
+    qemu__mbsnbcat,
+    qemu__mbsnbcat_s,
+    qemu__mbsnbcmp,
+    qemu__mbsnbcnt,
+    qemu__mbsnbcoll,
+    qemu__mbsnbcoll_l,
+    qemu__mbsnbcpy,
+    qemu__mbsnbcpy_s,
+    qemu__mbsnbcpy_s_l,
+    qemu__mbsnbicmp,
+    qemu__mbsnbicoll,
+    qemu__mbsnbicoll_l,
+    qemu__mbsnbset,
+    qemu__mbsncat,
+    qemu__mbsnccnt,
+    qemu__mbsncmp,
+    qemu__mbsncpy,
+    qemu__mbsnextc,
+    qemu__mbsnicmp,
+    qemu__mbsninc,
+    qemu__mbsnset,
+    qemu__mbspbrk,
+    qemu__mbsrchr,
+    qemu__mbsrev,
+    qemu__mbsset,
+    qemu__mbsspn,
+    qemu__mbsspnp,
+    qemu__mbsstr,
+    qemu__mbstok,
+    qemu__mbstok_l,
+    qemu__mbstok_s,
+    qemu__mbstok_s_l,
+    qemu__mbstowcs_l,
+    qemu__mbstowcs_s,
+    qemu__mbstowcs_s_l,
+    qemu__mbstrlen,
+    qemu__mbstrlen_l,
+    qemu__mbsupr,
+    qemu__mbsupr_s,
     qemu__nextafter,
     qemu__nextafterf,
     qemu__onexit,
@@ -210,6 +304,7 @@ static const syscall_handler dll_functions[] =
     qemu__set_FMA3_enable,
     qemu__set_SSE2_enable,
     qemu__setjmp,
+    qemu__setmbcp,
     qemu__snwprintf,
     qemu__statusfp,
     qemu__statusfp2,
@@ -350,6 +445,14 @@ static const syscall_handler dll_functions[] =
     qemu_lroundf,
     qemu_lroundl,
     qemu_malloc,
+    qemu_mblen,
+    qemu_mbrlen,
+    qemu_mbrtowc,
+    qemu_mbsrtowcs,
+    qemu_mbsrtowcs_s,
+    qemu_mbstowcs,
+    qemu_mbtowc,
+    qemu_mbtowc_l,
     qemu_memcmp,
     qemu_memcpy,
     qemu_memmove,
@@ -436,6 +539,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (!msvcrt)
         WINE_ERR("Cannot find %s.\n", dll_name);
 
+    p____mb_cur_max_func = (void *)GetProcAddress(msvcrt, "___mb_cur_max_func");
+    p____mb_cur_max_l_func = (void *)GetProcAddress(msvcrt, "___mb_cur_max_l_func");
     p___control87_2 = (void *)GetProcAddress(msvcrt, "__control87_2");
     p___crt_debugger_hook = (void *)GetProcAddress(msvcrt, "__crt_debugger_hook");
     p___fpe_flt_rounds = (void *)GetProcAddress(msvcrt, "__fpe_flt_rounds");
@@ -468,6 +573,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p___libm_sse2_sqrt_precise = (void *)GetProcAddress(msvcrt, "__libm_sse2_sqrt_precise");
     p___libm_sse2_tan = (void *)GetProcAddress(msvcrt, "__libm_sse2_tan");
     p___libm_sse2_tanf = (void *)GetProcAddress(msvcrt, "__libm_sse2_tanf");
+    p___p___mb_cur_max = (void *)GetProcAddress(msvcrt, "__p___mb_cur_max");
+    p___p__mbctype = (void *)GetProcAddress(msvcrt, "__p__mbctype");
     p___p__pctype = (void *)GetProcAddress(msvcrt, "__p__pctype");
     p___pctype_func = (void *)GetProcAddress(msvcrt, "__pctype_func");
     p___set_app_type = (void *)GetProcAddress(msvcrt, "__set_app_type");
@@ -523,6 +630,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__ftol = (void *)GetProcAddress(msvcrt, "_ftol");
     p__gcvt = (void *)GetProcAddress(msvcrt, "_gcvt");
     p__gcvt_s = (void *)GetProcAddress(msvcrt, "_gcvt_s");
+    p__getmbcp = (void *)GetProcAddress(msvcrt, "_getmbcp");
     p__hypot = (void *)GetProcAddress(msvcrt, "_hypot");
     p__hypotf = (void *)GetProcAddress(msvcrt, "_hypotf");
     p__isalnum_l = (void *)GetProcAddress(msvcrt, "_isalnum_l");
@@ -536,6 +644,25 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__isgraph_l = (void *)GetProcAddress(msvcrt, "_isgraph_l");
     p__isleadbyte_l = (void *)GetProcAddress(msvcrt, "_isleadbyte_l");
     p__islower_l = (void *)GetProcAddress(msvcrt, "_islower_l");
+    p__ismbbkana = (void *)GetProcAddress(msvcrt, "_ismbbkana");
+    p__ismbblead = (void *)GetProcAddress(msvcrt, "_ismbblead");
+    p__ismbblead_l = (void *)GetProcAddress(msvcrt, "_ismbblead_l");
+    p__ismbbtrail = (void *)GetProcAddress(msvcrt, "_ismbbtrail");
+    p__ismbcalnum = (void *)GetProcAddress(msvcrt, "_ismbcalnum");
+    p__ismbcalpha = (void *)GetProcAddress(msvcrt, "_ismbcalpha");
+    p__ismbcdigit = (void *)GetProcAddress(msvcrt, "_ismbcdigit");
+    p__ismbcgraph = (void *)GetProcAddress(msvcrt, "_ismbcgraph");
+    p__ismbchira = (void *)GetProcAddress(msvcrt, "_ismbchira");
+    p__ismbckata = (void *)GetProcAddress(msvcrt, "_ismbckata");
+    p__ismbclegal = (void *)GetProcAddress(msvcrt, "_ismbclegal");
+    p__ismbclower = (void *)GetProcAddress(msvcrt, "_ismbclower");
+    p__ismbcprint = (void *)GetProcAddress(msvcrt, "_ismbcprint");
+    p__ismbcpunct = (void *)GetProcAddress(msvcrt, "_ismbcpunct");
+    p__ismbcspace = (void *)GetProcAddress(msvcrt, "_ismbcspace");
+    p__ismbcsymbol = (void *)GetProcAddress(msvcrt, "_ismbcsymbol");
+    p__ismbcupper = (void *)GetProcAddress(msvcrt, "_ismbcupper");
+    p__ismbslead = (void *)GetProcAddress(msvcrt, "_ismbslead");
+    p__ismbstrail = (void *)GetProcAddress(msvcrt, "_ismbstrail");
     p__isnan = (void *)GetProcAddress(msvcrt, "_isnan");
     p__isnanf = (void *)GetProcAddress(msvcrt, "_isnanf");
     p__isprint_l = (void *)GetProcAddress(msvcrt, "_isprint_l");
@@ -555,6 +682,76 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__lseek = (void *)GetProcAddress(msvcrt, "_lseek");
     p__lseeki64 = (void *)GetProcAddress(msvcrt, "_lseeki64");
     p__matherr = (void *)GetProcAddress(msvcrt, "_matherr");
+    p__mbbtombc = (void *)GetProcAddress(msvcrt, "_mbbtombc");
+    p__mbbtype = (void *)GetProcAddress(msvcrt, "_mbbtype");
+    p__mbccpy = (void *)GetProcAddress(msvcrt, "_mbccpy");
+    p__mbcjistojms = (void *)GetProcAddress(msvcrt, "_mbcjistojms");
+    p__mbcjmstojis = (void *)GetProcAddress(msvcrt, "_mbcjmstojis");
+    p__mbclen = (void *)GetProcAddress(msvcrt, "_mbclen");
+    p__mbctohira = (void *)GetProcAddress(msvcrt, "_mbctohira");
+    p__mbctokata = (void *)GetProcAddress(msvcrt, "_mbctokata");
+    p__mbctolower = (void *)GetProcAddress(msvcrt, "_mbctolower");
+    p__mbctombb = (void *)GetProcAddress(msvcrt, "_mbctombb");
+    p__mbctoupper = (void *)GetProcAddress(msvcrt, "_mbctoupper");
+    p__mbsbtype = (void *)GetProcAddress(msvcrt, "_mbsbtype");
+    p__mbscat = (void *)GetProcAddress(msvcrt, "_mbscat");
+    p__mbscat_s = (void *)GetProcAddress(msvcrt, "_mbscat_s");
+    p__mbscat_s_l = (void *)GetProcAddress(msvcrt, "_mbscat_s_l");
+    p__mbschr = (void *)GetProcAddress(msvcrt, "_mbschr");
+    p__mbscmp = (void *)GetProcAddress(msvcrt, "_mbscmp");
+    p__mbscoll = (void *)GetProcAddress(msvcrt, "_mbscoll");
+    p__mbscoll_l = (void *)GetProcAddress(msvcrt, "_mbscoll_l");
+    p__mbscpy = (void *)GetProcAddress(msvcrt, "_mbscpy");
+    p__mbscpy_s = (void *)GetProcAddress(msvcrt, "_mbscpy_s");
+    p__mbscpy_s_l = (void *)GetProcAddress(msvcrt, "_mbscpy_s_l");
+    p__mbscspn = (void *)GetProcAddress(msvcrt, "_mbscspn");
+    p__mbsdec = (void *)GetProcAddress(msvcrt, "_mbsdec");
+    p__mbsicmp = (void *)GetProcAddress(msvcrt, "_mbsicmp");
+    p__mbsicoll = (void *)GetProcAddress(msvcrt, "_mbsicoll");
+    p__mbsicoll_l = (void *)GetProcAddress(msvcrt, "_mbsicoll_l");
+    p__mbsinc = (void *)GetProcAddress(msvcrt, "_mbsinc");
+    p__mbslen = (void *)GetProcAddress(msvcrt, "_mbslen");
+    p__mbslwr = (void *)GetProcAddress(msvcrt, "_mbslwr");
+    p__mbslwr_s = (void *)GetProcAddress(msvcrt, "_mbslwr_s");
+    p__mbsnbcat = (void *)GetProcAddress(msvcrt, "_mbsnbcat");
+    p__mbsnbcat_s = (void *)GetProcAddress(msvcrt, "_mbsnbcat_s");
+    p__mbsnbcmp = (void *)GetProcAddress(msvcrt, "_mbsnbcmp");
+    p__mbsnbcnt = (void *)GetProcAddress(msvcrt, "_mbsnbcnt");
+    p__mbsnbcoll = (void *)GetProcAddress(msvcrt, "_mbsnbcoll");
+    p__mbsnbcoll_l = (void *)GetProcAddress(msvcrt, "_mbsnbcoll_l");
+    p__mbsnbcpy = (void *)GetProcAddress(msvcrt, "_mbsnbcpy");
+    p__mbsnbcpy_s = (void *)GetProcAddress(msvcrt, "_mbsnbcpy_s");
+    p__mbsnbcpy_s_l = (void *)GetProcAddress(msvcrt, "_mbsnbcpy_s_l");
+    p__mbsnbicmp = (void *)GetProcAddress(msvcrt, "_mbsnbicmp");
+    p__mbsnbicoll = (void *)GetProcAddress(msvcrt, "_mbsnbicoll");
+    p__mbsnbicoll_l = (void *)GetProcAddress(msvcrt, "_mbsnbicoll_l");
+    p__mbsnbset = (void *)GetProcAddress(msvcrt, "_mbsnbset");
+    p__mbsncat = (void *)GetProcAddress(msvcrt, "_mbsncat");
+    p__mbsnccnt = (void *)GetProcAddress(msvcrt, "_mbsnccnt");
+    p__mbsncmp = (void *)GetProcAddress(msvcrt, "_mbsncmp");
+    p__mbsncpy = (void *)GetProcAddress(msvcrt, "_mbsncpy");
+    p__mbsnextc = (void *)GetProcAddress(msvcrt, "_mbsnextc");
+    p__mbsnicmp = (void *)GetProcAddress(msvcrt, "_mbsnicmp");
+    p__mbsninc = (void *)GetProcAddress(msvcrt, "_mbsninc");
+    p__mbsnset = (void *)GetProcAddress(msvcrt, "_mbsnset");
+    p__mbspbrk = (void *)GetProcAddress(msvcrt, "_mbspbrk");
+    p__mbsrchr = (void *)GetProcAddress(msvcrt, "_mbsrchr");
+    p__mbsrev = (void *)GetProcAddress(msvcrt, "_mbsrev");
+    p__mbsset = (void *)GetProcAddress(msvcrt, "_mbsset");
+    p__mbsspn = (void *)GetProcAddress(msvcrt, "_mbsspn");
+    p__mbsspnp = (void *)GetProcAddress(msvcrt, "_mbsspnp");
+    p__mbsstr = (void *)GetProcAddress(msvcrt, "_mbsstr");
+    p__mbstok = (void *)GetProcAddress(msvcrt, "_mbstok");
+    p__mbstok_l = (void *)GetProcAddress(msvcrt, "_mbstok_l");
+    p__mbstok_s = (void *)GetProcAddress(msvcrt, "_mbstok_s");
+    p__mbstok_s_l = (void *)GetProcAddress(msvcrt, "_mbstok_s_l");
+    p__mbstowcs_l = (void *)GetProcAddress(msvcrt, "_mbstowcs_l");
+    p__mbstowcs_s = (void *)GetProcAddress(msvcrt, "_mbstowcs_s");
+    p__mbstowcs_s_l = (void *)GetProcAddress(msvcrt, "_mbstowcs_s_l");
+    p__mbstrlen = (void *)GetProcAddress(msvcrt, "_mbstrlen");
+    p__mbstrlen_l = (void *)GetProcAddress(msvcrt, "_mbstrlen_l");
+    p__mbsupr = (void *)GetProcAddress(msvcrt, "_mbsupr");
+    p__mbsupr_s = (void *)GetProcAddress(msvcrt, "_mbsupr_s");
     p__nextafter = (void *)GetProcAddress(msvcrt, "_nextafter");
     p__nextafterf = (void *)GetProcAddress(msvcrt, "_nextafterf");
     p__onexit = (void *)GetProcAddress(msvcrt, "_onexit");
@@ -568,6 +765,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__set_controlfp = (void *)GetProcAddress(msvcrt, "_set_controlfp");
     p__set_FMA3_enable = (void *)GetProcAddress(msvcrt, "_set_FMA3_enable");
     p__set_SSE2_enable = (void *)GetProcAddress(msvcrt, "_set_SSE2_enable");
+    p__setmbcp = (void *)GetProcAddress(msvcrt, "_setmbcp");
     p__statusfp = (void *)GetProcAddress(msvcrt, "_statusfp");
     p__statusfp2 = (void *)GetProcAddress(msvcrt, "_statusfp2");
     p__strdate = (void *)GetProcAddress(msvcrt, "_strdate");
@@ -703,6 +901,14 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_lroundf = (void *)GetProcAddress(msvcrt, "lroundf");
     p_lroundl = (void *)GetProcAddress(msvcrt, "lroundl");
     p_malloc = (void *)GetProcAddress(msvcrt, "malloc");
+    p_mblen = (void *)GetProcAddress(msvcrt, "mblen");
+    p_mbrlen = (void *)GetProcAddress(msvcrt, "mbrlen");
+    p_mbrtowc = (void *)GetProcAddress(msvcrt, "mbrtowc");
+    p_mbsrtowcs = (void *)GetProcAddress(msvcrt, "mbsrtowcs");
+    p_mbsrtowcs_s = (void *)GetProcAddress(msvcrt, "mbsrtowcs_s");
+    p_mbstowcs = (void *)GetProcAddress(msvcrt, "mbstowcs");
+    p_mbtowc = (void *)GetProcAddress(msvcrt, "mbtowc");
+    p_mbtowc_l = (void *)GetProcAddress(msvcrt, "mbtowc_l");
     p_memcmp = (void *)GetProcAddress(msvcrt, "memcmp");
     p_memcpy = (void *)GetProcAddress(msvcrt, "memcpy");
     p_memmove = (void *)GetProcAddress(msvcrt, "memmove");

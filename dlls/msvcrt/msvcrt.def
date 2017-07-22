@@ -4,12 +4,13 @@ EXPORTS
   ??2@YAPEAX_K@Z=MSVCRT_operator_new
   ??3@YAXPEAX@Z=MSVCRT_operator_delete
   ?terminate@@YAXXZ=MSVCRT_terminate
+  ___mb_cur_max_l_func
   __badioinfo=msvcr100.__qemu_native_data__
   __C_specific_handler=ntdll.__C_specific_handler
   __control87_2
-  __CxxFrameHandler=__CxxFrameHandler
   __CxxFrameHandler2=__CxxFrameHandler
   __CxxFrameHandler3=__CxxFrameHandler
+  __CxxFrameHandler=__CxxFrameHandler
   __dllonexit
   __fpe_flt_rounds
   __fpecode
@@ -42,6 +43,8 @@ EXPORTS
   __libm_sse2_sqrt_precise=MSVCRT___libm_sse2_sqrt_precise
   __libm_sse2_tan=MSVCRT___libm_sse2_tan
   __libm_sse2_tanf=MSVCRT___libm_sse2_tanf
+  __p___mb_cur_max
+  __p__mbctype
   __p__pctype=MSVCRT___p__pctype
   __pctype_func=MSVCRT___pctype_func
   __pioinfo=msvcrt.__qemu_native_data__
@@ -95,6 +98,7 @@ EXPORTS
   _ftol=MSVCRT__ftol
   _gcvt=MSVCRT__gcvt
   _gcvt_s=MSVCRT__gcvt_s
+  _getmbcp
   _hypot
   _hypotf=MSVCRT__hypotf
   _initterm
@@ -111,6 +115,25 @@ EXPORTS
   _isgraph_l=MSVCRT__isgraph_l
   _isleadbyte_l=MSVCRT__isleadbyte_l
   _islower_l=MSVCRT__islower_l
+  _ismbbkana
+  _ismbblead
+  _ismbblead_l
+  _ismbbtrail
+  _ismbcalnum
+  _ismbcalpha
+  _ismbcdigit
+  _ismbcgraph
+  _ismbchira
+  _ismbckata
+  _ismbclegal
+  _ismbclower
+  _ismbcprint
+  _ismbcpunct
+  _ismbcspace
+  _ismbcsymbol
+  _ismbcupper
+  _ismbslead
+  _ismbstrail
   _isnan=MSVCRT__isnan
   _isnanf=MSVCRT__isnanf
   _isprint_l=MSVCRT__isprint_l
@@ -129,6 +152,73 @@ EXPORTS
   _lseek=MSVCRT__lseek
   _lseeki64=MSVCRT__lseeki64
   _matherr=MSVCRT__matherr
+  _mbbtombc
+  _mbbtype
+  _mbccpy
+  _mbcjistojms
+  _mbcjmstojis
+  _mbclen
+  _mbctohira
+  _mbctokata
+  _mbctolower
+  _mbctombb
+  _mbctoupper
+  _mbsbtype
+  _mbscat
+  _mbscat_s
+  _mbscat_s_l
+  _mbschr
+  _mbscmp
+  _mbscoll
+  _mbscoll_l
+  _mbscpy
+  _mbscpy_s
+  _mbscpy_s_l
+  _mbscspn
+  _mbsdec
+  _mbsicmp
+  _mbsicoll
+  _mbsicoll_l
+  _mbsinc
+  _mbslen
+  _mbslwr
+  _mbslwr_s
+  _mbsnbcat
+  _mbsnbcat_s
+  _mbsnbcmp
+  _mbsnbcnt
+  _mbsnbcoll
+  _mbsnbcoll_l
+  _mbsnbcpy
+  _mbsnbcpy_s
+  _mbsnbcpy_s_l
+  _mbsnbicmp
+  _mbsnbicoll
+  _mbsnbicoll_l
+  _mbsnbset
+  _mbsncat
+  _mbsnccnt
+  _mbsncmp
+  _mbsncpy
+  _mbsnextc
+  _mbsnicmp
+  _mbsninc
+  _mbsnset
+  _mbspbrk
+  _mbsrchr
+  _mbsrev
+  _mbsset
+  _mbsspn
+  _mbsspnp
+  _mbsstr
+  _mbstok
+  _mbstok_l
+  _mbstok_s
+  _mbstok_s_l
+  _mbstrlen=MSVCRT__mbstrlen
+  _mbstrlen_l=MSVCRT__mbstrlen_l
+  _mbsupr
+  _mbsupr_s
   _nextafter=MSVCRT__nextafter
   _nextafterf=MSVCRT__nextafterf
   _onexit=MSVCRT__onexit
@@ -143,12 +233,15 @@ EXPORTS
   _set_FMA3_enable=MSVCRT__set_FMA3_enable
   _set_SSE2_enable=MSVCRT__set_SSE2_enable
   _setjmp=MSVCRT__setjmp
+  _setmbcp
   _snprintf=MSVCRT__snprintf
   _snwprintf=MSVCRT__snwprintf
   _statusfp
   _statusfp2
+  _strdate=MSVCRT__strdate
   _strdup = MSVCRT__strdup
   _stricmp=MSVCRT__stricmp
+  _strtime=MSVCRT__strtime
   _tempnam=MSVCRT__tempnam
   _tolower=MSVCRT__tolower
   _tolower_l=MSVCRT__tolower_l
@@ -246,8 +339,18 @@ EXPORTS
   memset=MSVCRT_memset
   modf=MSVCRT_modf
   modff=MSVCRT_modff
-  _strdate=MSVCRT__strdate
-  _strtime=MSVCRT__strtime
+  MSVCRT____mb_cur_max_func
+  _mbstowcs_l=MSVCRT__mbstowcs_l
+  _mbstowcs_s=MSVCRT__mbstowcs_s
+  _mbstowcs_s_l=MSVCRT__mbstowcs_s_l
+  mblen=MSVCRT_mblen
+  mbrlen=MSVCRT_mbrlen
+  mbrtowc=MSVCRT_mbrtowc
+  mbsrtowcs=MSVCRT_mbsrtowcs
+  mbsrtowcs_s=MSVCRT_mbsrtowcs_s
+  mbstowcs=MSVCRT_mbstowcs
+  mbtowc=MSVCRT_mbtowc
+  mbtowc_l=MSVCRT_mbtowc_l
   nearbyint=MSVCRT_nearbyint
   nearbyintf=MSVCRT_nearbyintf
   pow=MSVCRT_pow
