@@ -447,3 +447,43 @@ void qemu_FreeLibrary(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI GetCurrentProcessId(void)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL_GETCURRENTPROCESSID);
+    qemu_syscall(&call);
+    return call.iret;
+}
+
+#else
+
+void qemu_GetCurrentProcessId(struct qemu_syscall *call)
+{
+    WINE_TRACE("\n");
+    call->iret = GetCurrentProcessId();
+}
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI GetCurrentThreadId(void)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL_GETCURRENTTHREADID);
+    qemu_syscall(&call);
+    return call.iret;
+}
+
+#else
+
+void qemu_GetCurrentThreadId(struct qemu_syscall *call)
+{
+    WINE_TRACE("\n");
+    call->iret = GetCurrentThreadId();
+}
+
+#endif

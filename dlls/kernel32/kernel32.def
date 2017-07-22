@@ -11,8 +11,11 @@ EXPORTS
   _lread
   _lwrite
   AllocateUserPhysicalPages
+  ApplicationRecoveryFinished
+  ApplicationRecoveryInProgress
   AreFileApisANSI
   AssignProcessToJobObject
+  BaseFlushAppcompatCache
   BeginUpdateResourceA
   BeginUpdateResourceW
   BindIoCompletionCallback
@@ -34,6 +37,7 @@ EXPORTS
   ClearCommBreak
   ClearCommError
   CloseHandle
+  CmdBatNotification
   CommConfigDialogA
   CommConfigDialogW
   CompareStringA
@@ -43,6 +47,7 @@ EXPORTS
   ConnectNamedPipe
   ContinueDebugEvent
   ConvertDefaultLocale
+  ConvertToGlobalHandle
   CopyFileA
   CopyFileExA
   CopyFileExW
@@ -77,10 +82,13 @@ EXPORTS
   CreateNamedPipeA
   CreateNamedPipeW
   CreatePipe
+  CreateProcessA
+  CreateProcessW
   CreateSemaphoreA
   CreateSemaphoreExA
   CreateSemaphoreExW
   CreateSemaphoreW
+  CreateSocketHandle
   CreateSymbolicLinkA
   CreateSymbolicLinkW
   CreateTimerQueue
@@ -99,12 +107,14 @@ EXPORTS
   DeleteCriticalSection=ntdll.RtlDeleteCriticalSection
   DeleteFileA
   DeleteFileW
+  DeleteProcThreadAttributeList
   DeleteTimerQueue
   DeleteTimerQueueEx
   DeleteTimerQueueTimer
   DeviceIoControl
   DisableThreadLibraryCalls
   DisconnectNamedPipe
+  DuplicateHandle
   EncodePointer=ntdll.RtlEncodePointer
   EndUpdateResourceA
   EndUpdateResourceW
@@ -145,6 +155,8 @@ EXPORTS
   FindResourceExW
   FindResourceW
   FlushFileBuffers
+  FlushInstructionCache
+  FlushProcessWriteBuffers
   FlushViewOfFile
   FoldStringA
   FoldStringW
@@ -189,6 +201,8 @@ EXPORTS
   GetEnvironmentStringsW
   GetEnvironmentVariableA
   GetEnvironmentVariableW
+  GetErrorMode
+  GetExitCodeProcess
   GetFileAttributesA
   GetFileAttributesExA
   GetFileAttributesExW
@@ -209,12 +223,16 @@ EXPORTS
   GetFullPathNameW
   GetGeoInfoA
   GetGeoInfoW
+  GetHandleContext
+  GetHandleInformation
   GetLargePageMinimum
   GetLastError
   GetLocaleInfoA
   GetLocaleInfoEx
   GetLocaleInfoW
   GetLocalTime
+  GetLogicalProcessorInformation
+  GetLogicalProcessorInformationEx
   GetLongPathNameA
   GetLongPathNameW
   GetMailslotInfo
@@ -227,12 +245,27 @@ EXPORTS
   GetNamedPipeHandleStateW
   GetNamedPipeInfo
   GetNativeSystemInfo
+  GetNumaAvailableMemoryNode
+  GetNumaHighestNodeNumber
+  GetNumaNodeProcessorMask
+  GetNumaProcessorNode
   GetOEMCP
   GetOverlappedResult
   GetPhysicallyInstalledSystemMemory
+  GetPriorityClass
   GetProcAddress
+  GetProcessAffinityMask
+  GetProcessDEPPolicy
+  GetProcessFlags
+  GetProcessHandleCount
   GetProcessHeap
   GetProcessHeaps
+  GetProcessId
+  GetProcessIoCounters
+  GetProcessPriorityBoost
+  GetProcessShutdownParameters
+  GetProcessVersion
+  GetProcessWorkingSetSize
   GetQueuedCompletionStatus
   GetShortPathNameA
   GetShortPathNameW
@@ -247,9 +280,11 @@ EXPORTS
   GetSystemDefaultLCID
   GetSystemDefaultLocaleName
   GetSystemDefaultUILanguage
+  GetSystemDEPPolicy
   GetSystemDirectoryA
   GetSystemDirectoryW
   GetSystemFileCacheSize
+  GetSystemFirmwareTable
   GetSystemInfo
   GetSystemPowerStatus
   GetSystemPreferredUILanguages
@@ -313,6 +348,7 @@ EXPORTS
   InitializeCriticalSection
   InitializeCriticalSectionAndSpinCount
   InitializeCriticalSectionEx
+  InitializeProcThreadAttributeList
   InitOnceBeginInitialize
   InitOnceComplete
   InitOnceExecuteOnce
@@ -335,9 +371,12 @@ EXPORTS
   IsValidLanguageGroup
   IsValidLocale
   IsValidLocaleName
+  IsWow64Process
+  K32EmptyWorkingSet
   K32EnumDeviceDrivers
   K32EnumPageFilesA
   K32EnumPageFilesW
+  K32EnumProcesses
   K32EnumProcessModules
   K32EnumProcessModulesEx
   K32GetDeviceDriverBaseNameA
@@ -352,8 +391,13 @@ EXPORTS
   K32GetModuleFileNameExW
   K32GetModuleInformation
   K32GetPerformanceInfo
+  K32GetProcessImageFileNameA
+  K32GetProcessImageFileNameW
+  K32GetProcessMemoryInfo
   K32GetWsChanges
   K32InitializeProcessForWsWatch
+  K32QueryWorkingSet
+  K32QueryWorkingSetEx
   LCIDToLocaleName
   LCMapStringA
   LCMapStringEx
@@ -363,6 +407,7 @@ EXPORTS
   LoadLibraryExA
   LoadLibraryExW
   LoadLibraryW
+  LoadModule
   LoadResource
   LocalAlloc
   LocalCompact
@@ -414,6 +459,7 @@ EXPORTS
   OpenJobObjectW
   OpenMutexA
   OpenMutexW
+  OpenProcess
   OpenSemaphoreA
   OpenSemaphoreW
   OpenVxDHandle
@@ -426,8 +472,11 @@ EXPORTS
   PowerClearRequest
   PowerCreateRequest
   PowerSetRequest
+  ProcessIdToSessionId
   PulseEvent
   PurgeComm
+  QueryFullProcessImageNameA
+  QueryFullProcessImageNameW
   QueryInformationJobObject
   QueryMemoryResourceNotification
   QueryPerformanceCounter
@@ -435,6 +484,10 @@ EXPORTS
   ReadFile
   ReadFileEx
   ReadFileScatter
+  ReadProcessMemory
+  RegisterApplicationRecoveryCallback
+  RegisterApplicationRestart
+  RegisterServiceProcess
   RegisterWaitForSingleObject
   RegisterWaitForSingleObjectEx
   ReinitializeCriticalSection
@@ -470,6 +523,7 @@ EXPORTS
   SetEndOfFile
   SetEnvironmentVariableA
   SetEnvironmentVariableW
+  SetErrorMode
   SetEvent
   SetFileApisToANSI
   SetFileApisToOEM
@@ -481,13 +535,21 @@ EXPORTS
   SetFilePointerEx
   SetFileTime
   SetFileValidData
+  SetHandleContext
   SetHandleCount
+  SetHandleInformation
   SetInformationJobObject
   SetLastError
   SetLocaleInfoA
   SetLocaleInfoW
   SetMailslotInfo
   SetNamedPipeHandleState
+  SetPriorityClass
+  SetProcessAffinityMask
+  SetProcessDEPPolicy
+  SetProcessPriorityBoost
+  SetProcessShutdownParameters
+  SetProcessWorkingSetSize
   SetSearchPathMode
   SetStdHandle
   SetSystemFileCacheSize
@@ -510,7 +572,10 @@ EXPORTS
   SwitchToThread
   TerminateJobObject
   TerminateProcess
+  TlsAlloc
+  TlsFree
   TlsGetValue
+  TlsSetValue
   TransactNamedPipe
   TransmitCommChar
   UnhandledExceptionFilter
@@ -518,8 +583,10 @@ EXPORTS
   UnlockFile
   UnlockFileEx
   UnmapViewOfFile
+  UnregisterApplicationRestart
   UnregisterWait
   UnregisterWaitEx
+  UpdateProcThreadAttribute
   UpdateResourceA
   UpdateResourceW
   VerifyVersionInfoA
@@ -545,9 +612,12 @@ EXPORTS
   WaitNamedPipeA
   WaitNamedPipeW
   WideCharToMultiByte
+  WinExec
   Wow64DisableWow64FsRedirection
   Wow64EnableWow64FsRedirection
   Wow64RevertWow64FsRedirection
   WriteFile
   WriteFileEx
   WriteFileGather
+  WriteProcessMemory
+  WTSGetActiveConsoleSessionId
