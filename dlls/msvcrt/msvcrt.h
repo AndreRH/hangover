@@ -243,6 +243,7 @@ enum msvcrt_calls
     CALL__STRDATE,
     CALL__STRDUP,
     CALL__STRICMP,
+    CALL__STRNICMP,
     CALL__STRTIME,
     CALL__STRTOUI64,
     CALL__TEMPNAM,
@@ -729,6 +730,7 @@ void qemu__statusfp2(struct qemu_syscall *call);
 void qemu__strdate(struct qemu_syscall *call);
 void qemu__strdup(struct qemu_syscall *call);
 void qemu__stricmp(struct qemu_syscall *call);
+void qemu__strnicmp(struct qemu_syscall *call);
 void qemu__strtime(struct qemu_syscall *call);
 void qemu__strtoui64(struct qemu_syscall *call);
 void qemu__tempnam(struct qemu_syscall *call);
@@ -959,6 +961,7 @@ MSVCRT__onexit_t (* CDECL p__onexit)(MSVCRT__onexit_t func);
 void (* CDECL p__purecall)(void);
 char * (* CDECL p__strdup)(const char* str);
 int (* CDECL p__stricmp)(const char *s1, const char *s2);
+int (* CDECL p__strnicmp)(const char *s1, const char *s2, size_t count);
 void (* CDECL p__unlock)(int locknum);
 int (* CDECL p__wcsnicmp)(const WCHAR *str1, const WCHAR *str2, int count);
 double (* CDECL p__wtof)(const WCHAR *str1);
