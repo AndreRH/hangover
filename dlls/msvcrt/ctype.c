@@ -394,7 +394,7 @@ WINBASEAPI int CDECL MSVCRT_isdigit(int c)
 void qemu_isdigit(struct qemu_syscall *call)
 {
     struct qemu_isdigit *c = (struct qemu_isdigit *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_isdigit(c->c);
 }
 
