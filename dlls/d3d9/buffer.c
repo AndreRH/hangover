@@ -136,7 +136,9 @@ void qemu_d3d9_vertexbuffer_Release(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     buffer = QEMU_G2H(c->iface);
 
+    d3d9_device_wrapper_addref(buffer->device);
     c->super.iret = IDirect3DVertexBuffer9_Release(buffer->hostvb);
+    d3d9_device_wrapper_release(buffer->device);
 }
 
 #endif
@@ -658,7 +660,9 @@ void qemu_d3d9_indexbuffer_Release(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     buffer = QEMU_G2H(c->iface);
 
+    d3d9_device_wrapper_addref(buffer->device);
     c->super.iret = IDirect3DIndexBuffer9_Release(buffer->hostib);
+    d3d9_device_wrapper_release(buffer->device);
 }
 
 #endif
@@ -1121,5 +1125,73 @@ const IDirect3DIndexBuffer9Vtbl d3d9_indexbuffer_vtbl =
 };
 
 #else
+
+struct qemu_d3d9_buffer_impl *buffer_impl_from_IUnknown(IUnknown *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_buffer_impl, private_data);
+}
+
+static HRESULT WINAPI d3d9_buffer_priv_QueryInterface(IUnknown *iface, REFIID riid, void **out)
+{
+    WINE_ERR("Unexpected call\n");
+    return E_NOINTERFACE;
+}
+
+static ULONG WINAPI d3d9_buffer_priv_AddRef(IUnknown *iface)
+{
+    struct qemu_d3d9_buffer_impl *buffer = buffer_impl_from_IUnknown(iface);
+    ULONG refcount = InterlockedIncrement(&buffer->private_data_ref);
+
+    WINE_TRACE("%p increasing refcount to %u.\n", buffer, refcount);
+    return refcount;
+}
+
+static ULONG WINAPI d3d9_buffer_priv_Release(IUnknown *iface)
+{
+    struct qemu_d3d9_buffer_impl *buffer = buffer_impl_from_IUnknown(iface);
+    ULONG refcount = InterlockedDecrement(&buffer->private_data_ref);
+
+    WINE_TRACE("%p decreasing refcount to %u.\n", buffer, refcount);
+    if (!refcount)
+    {
+        /* This means the private data has been released, which only happens
+         * when the real interface has been destroyed. */
+        HeapFree(GetProcessHeap(), 0, buffer);
+    }
+
+    return refcount;
+}
+
+static const struct IUnknownVtbl buffer_priv_vtbl =
+{
+    /* IUnknown */
+    d3d9_buffer_priv_QueryInterface,
+    d3d9_buffer_priv_AddRef,
+    d3d9_buffer_priv_Release,
+};
+
+void d3d9_buffer_init(struct qemu_d3d9_buffer_impl *buffer, IDirect3DResource9 *host, struct qemu_d3d9_device_impl *device)
+{
+    DWORD i, level_count;
+    IDirect3DSurface9 *surface;
+    D3DRESOURCETYPE rtype;
+
+    buffer->private_data.lpVtbl = &buffer_priv_vtbl;
+    buffer->private_data_ref = 0;
+    buffer->device = device;
+    switch (IDirect3DResource9_GetType(host))
+    {
+        case D3DRTYPE_VERTEXBUFFER:
+            buffer->hostvb = (IDirect3DVertexBuffer9 *)host;
+            break;
+
+        case D3DRTYPE_INDEXBUFFER:
+            buffer->hostib = (IDirect3DIndexBuffer9 *)host;
+            break;
+    }
+
+    IDirect3DResource9_SetPrivateData(host, &qemu_d3d9_buffer_guid, &buffer->private_data,
+            sizeof(IUnknown *), D3DSPD_IUNKNOWN);
+}
 
 #endif

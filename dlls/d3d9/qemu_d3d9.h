@@ -315,8 +315,8 @@ extern const struct IDirect3DTexture9Vtbl d3d9_texture_2d_vtbl;
 extern const struct IDirect3DCubeTexture9Vtbl d3d9_texture_cube_vtbl;
 extern const struct IDirect3DVolumeTexture9Vtbl d3d9_texture_3d_vtbl;
 extern const struct IDirect3DVertexDeclaration9Vtbl d3d9_vertex_declaration_vtbl;
-extern const IDirect3DVertexBuffer9Vtbl d3d9_vertexbuffer_vtbl;
-extern const IDirect3DIndexBuffer9Vtbl d3d9_indexbuffer_vtbl;
+extern const struct IDirect3DVertexBuffer9Vtbl d3d9_vertexbuffer_vtbl;
+extern const struct IDirect3DIndexBuffer9Vtbl d3d9_indexbuffer_vtbl;
 
 void d3d9_device_set_swapchain_ifaces(IDirect3DDevice9Ex *device);
 void d3d9_swapchain_set_surfaces_ifaces(IDirect3DSwapChain9Ex *swapchain);
@@ -640,9 +640,13 @@ void d3d9_surface_init(struct qemu_d3d9_subresource_impl *surface, IDirect3DSurf
 struct qemu_d3d9_texture_impl *texture_impl_from_IUnknown(IUnknown *iface);
 void d3d9_texture_init(struct qemu_d3d9_texture_impl *texture, IDirect3DBaseTexture9 *host, struct qemu_d3d9_device_impl *device);
 
+struct qemu_d3d9_buffer_impl *buffer_impl_from_IUnknown(IUnknown *iface);
+void d3d9_buffer_init(struct qemu_d3d9_buffer_impl *buffer, IDirect3DResource9 *host, struct qemu_d3d9_device_impl *device);
+
 extern const GUID qemu_d3d9_swapchain_guid;
 extern const GUID qemu_d3d9_surface_guid;
 extern const GUID qemu_d3d9_texture_guid;
+extern const GUID qemu_d3d9_buffer_guid;
 
 const GUID *pIID_IDirect3DDevice9;
 const GUID *pIID_IDirect3DDevice9Ex;

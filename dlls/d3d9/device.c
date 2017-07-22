@@ -1189,16 +1189,24 @@ static HRESULT WINAPI d3d9_device_CreateVertexBuffer(IDirect3DDevice9Ex *iface, 
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
     struct qemu_d3d9_device_CreateVertexBuffer call;
+    struct qemu_d3d9_buffer_impl *impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_CREATEVERTEXBUFFER);
     call.iface = (uint64_t)device;
-    call.size = (uint64_t)size;
-    call.usage = (uint64_t)usage;
-    call.fvf = (uint64_t)fvf;
-    call.pool = (uint64_t)pool;
-    call.buffer = (uint64_t)buffer;
+    call.size = size;
+    call.usage = usage;
+    call.fvf = fvf;
+    call.pool = pool;
+    call.buffer = (uint64_t)&impl;
     call.shared_handle = (uint64_t)shared_handle;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        impl->IDirect3DVertexBuffer9_iface.lpVtbl = &d3d9_vertexbuffer_vtbl;
+        *buffer = &impl->IDirect3DVertexBuffer9_iface;
+    }
 
     return call.super.iret;
 }
@@ -1209,11 +1217,28 @@ void qemu_d3d9_device_CreateVertexBuffer(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_CreateVertexBuffer *c = (struct qemu_d3d9_device_CreateVertexBuffer *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_buffer_impl *buffer;
+    IDirect3DVertexBuffer9 *host_buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_CreateVertexBuffer(device->host, c->size, c->usage, c->fvf, c->pool, QEMU_G2H(c->buffer), QEMU_G2H(c->shared_handle));
+    buffer = HeapAlloc(GetProcessHeap(), 0, sizeof(*buffer));
+    if (!buffer)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = IDirect3DDevice9Ex_CreateVertexBuffer(device->host, c->size, c->usage, c->fvf, c->pool, &host_buffer, (HANDLE)c->shared_handle);
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, buffer);
+        return;
+    }
+
+    d3d9_buffer_init(buffer, (IDirect3DResource9 *)host_buffer, device);
+    *(uint64_t *)QEMU_G2H(c->buffer) = QEMU_H2G(buffer);
 }
 
 #endif
