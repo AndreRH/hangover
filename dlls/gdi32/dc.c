@@ -261,8 +261,8 @@ WINGDIAPI HDC WINAPI CreateCompatibleDC(HDC hdc)
 void qemu_CreateCompatibleDC(struct qemu_syscall *call)
 {
     struct qemu_CreateCompatibleDC *c = (struct qemu_CreateCompatibleDC *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateCompatibleDC(QEMU_G2H(c->hdc));
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)CreateCompatibleDC((HDC)c->hdc);
 }
 
 #endif
@@ -437,7 +437,7 @@ WINGDIAPI COLORREF WINAPI SetBkColor(HDC hdc, COLORREF color)
     struct qemu_SetBkColor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETBKCOLOR);
     call.hdc = (uint64_t)hdc;
-    call.color = (uint64_t)color;
+    call.color = color;
 
     qemu_syscall(&call.super);
 
@@ -449,8 +449,8 @@ WINGDIAPI COLORREF WINAPI SetBkColor(HDC hdc, COLORREF color)
 void qemu_SetBkColor(struct qemu_syscall *call)
 {
     struct qemu_SetBkColor *c = (struct qemu_SetBkColor *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetBkColor(QEMU_G2H(c->hdc), c->color);
+    WINE_TRACE("\n");
+    c->super.iret = SetBkColor((HDC)c->hdc, c->color);
 }
 
 #endif
@@ -499,7 +499,7 @@ WINGDIAPI COLORREF WINAPI SetTextColor(HDC hdc, COLORREF color)
     struct qemu_SetTextColor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTEXTCOLOR);
     call.hdc = (uint64_t)hdc;
-    call.color = (uint64_t)color;
+    call.color = color;
 
     qemu_syscall(&call.super);
 
@@ -511,8 +511,8 @@ WINGDIAPI COLORREF WINAPI SetTextColor(HDC hdc, COLORREF color)
 void qemu_SetTextColor(struct qemu_syscall *call)
 {
     struct qemu_SetTextColor *c = (struct qemu_SetTextColor *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetTextColor(QEMU_G2H(c->hdc), c->color);
+    WINE_TRACE("\n");
+    c->super.iret = SetTextColor((HDC)c->hdc, c->color);
 }
 
 #endif
@@ -1273,8 +1273,8 @@ WINGDIAPI INT WINAPI SetBkMode(HDC hdc, INT mode)
 void qemu_SetBkMode(struct qemu_syscall *call)
 {
     struct qemu_SetBkMode *c = (struct qemu_SetBkMode *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetBkMode(QEMU_G2H(c->hdc), c->mode);
+    WINE_TRACE("\n");
+    c->super.iret = SetBkMode((HDC)c->hdc, c->mode);
 }
 
 #endif

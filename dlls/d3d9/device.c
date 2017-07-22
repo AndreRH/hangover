@@ -118,7 +118,7 @@ void qemu_d3d9_device_AddRef(struct qemu_syscall *call)
     struct qemu_d3d9_device_AddRef *c = (struct qemu_d3d9_device_AddRef *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = d3d9_device_wrapper_addref(device);
@@ -383,7 +383,7 @@ static HRESULT WINAPI d3d9_device_GetDisplayMode(IDirect3DDevice9Ex *iface, UINT
     struct qemu_d3d9_device_GetDisplayMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETDISPLAYMODE);
     call.iface = (uint64_t)device;
-    call.swapchain = (uint64_t)swapchain;
+    call.swapchain = swapchain;
     call.mode = (uint64_t)mode;
 
     qemu_syscall(&call.super);
@@ -398,7 +398,7 @@ void qemu_d3d9_device_GetDisplayMode(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetDisplayMode *c = (struct qemu_d3d9_device_GetDisplayMode *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetDisplayMode(device->host, c->swapchain, QEMU_G2H(c->mode));

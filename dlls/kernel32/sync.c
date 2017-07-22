@@ -485,7 +485,7 @@ WINBASEAPI BOOL WINAPI InitializeCriticalSectionAndSpinCount(CRITICAL_SECTION *c
     struct qemu_InitializeCriticalSectionAndSpinCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INITIALIZECRITICALSECTIONANDSPINCOUNT);
     call.crit = (uint64_t)crit;
-    call.spincount = (uint64_t)spincount;
+    call.spincount = spincount;
 
     qemu_syscall(&call.super);
 
@@ -497,7 +497,7 @@ WINBASEAPI BOOL WINAPI InitializeCriticalSectionAndSpinCount(CRITICAL_SECTION *c
 void qemu_InitializeCriticalSectionAndSpinCount(struct qemu_syscall *call)
 {
     struct qemu_InitializeCriticalSectionAndSpinCount *c = (struct qemu_InitializeCriticalSectionAndSpinCount *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = InitializeCriticalSectionAndSpinCount(QEMU_G2H(c->crit), c->spincount);
 }
 

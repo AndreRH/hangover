@@ -465,8 +465,8 @@ WINBASEAPI LSTATUS WINAPI RegOpenKeyA(HKEY hkey, LPCSTR name, PHKEY retkey)
 void qemu_RegOpenKeyA(struct qemu_syscall *call)
 {
     struct qemu_RegOpenKeyA *c = (struct qemu_RegOpenKeyA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RegOpenKeyA(QEMU_G2H(c->hkey), QEMU_G2H(c->name), QEMU_G2H(c->retkey));
+    WINE_TRACE("\n");
+    c->super.iret = RegOpenKeyA((HKEY)c->hkey, QEMU_G2H(c->name), QEMU_G2H(c->retkey));
 }
 
 #endif

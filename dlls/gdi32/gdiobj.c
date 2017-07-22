@@ -247,8 +247,8 @@ WINGDIAPI HGDIOBJ WINAPI SelectObject(HDC hdc, HGDIOBJ hObj)
 void qemu_SelectObject(struct qemu_syscall *call)
 {
     struct qemu_SelectObject *c = (struct qemu_SelectObject *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)SelectObject(QEMU_G2H(c->hdc), QEMU_G2H(c->hObj));
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)SelectObject((HDC)c->hdc, (HGDIOBJ)c->hObj);
 }
 
 #endif

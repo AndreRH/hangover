@@ -963,8 +963,8 @@ WINGDIAPI BOOL WINAPI GetTextMetricsW(HDC hdc, TEXTMETRICW *metrics)
 void qemu_GetTextMetricsW(struct qemu_syscall *call)
 {
     struct qemu_GetTextMetricsW *c = (struct qemu_GetTextMetricsW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetTextMetricsW(QEMU_G2H(c->hdc), QEMU_G2H(c->metrics));
+    WINE_TRACE("\n");
+    c->super.iret = GetTextMetricsW((HDC)c->hdc, QEMU_G2H(c->metrics));
 }
 
 #endif
@@ -1797,8 +1797,8 @@ WINGDIAPI DWORD WINAPI GetFontLanguageInfo(HDC hdc)
 void qemu_GetFontLanguageInfo(struct qemu_syscall *call)
 {
     struct qemu_GetFontLanguageInfo *c = (struct qemu_GetFontLanguageInfo *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetFontLanguageInfo(QEMU_G2H(c->hdc));
+    WINE_TRACE("\n");
+    c->super.iret = GetFontLanguageInfo((HDC)c->hdc);
 }
 
 #endif
@@ -1976,10 +1976,10 @@ WINGDIAPI DWORD WINAPI GetCharacterPlacementW(HDC hdc, LPCWSTR lpString, INT uCo
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCHARACTERPLACEMENTW);
     call.hdc = (uint64_t)hdc;
     call.lpString = (uint64_t)lpString;
-    call.uCount = (uint64_t)uCount;
-    call.nMaxExtent = (uint64_t)nMaxExtent;
+    call.uCount = uCount;
+    call.nMaxExtent = nMaxExtent;
     call.lpResults = (uint64_t)lpResults;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.dwFlags = dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1991,8 +1991,8 @@ WINGDIAPI DWORD WINAPI GetCharacterPlacementW(HDC hdc, LPCWSTR lpString, INT uCo
 void qemu_GetCharacterPlacementW(struct qemu_syscall *call)
 {
     struct qemu_GetCharacterPlacementW *c = (struct qemu_GetCharacterPlacementW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetCharacterPlacementW(QEMU_G2H(c->hdc), QEMU_G2H(c->lpString), c->uCount, c->nMaxExtent, QEMU_G2H(c->lpResults), c->dwFlags);
+    WINE_TRACE("\n");
+    c->super.iret = GetCharacterPlacementW((HDC)c->hdc, QEMU_G2H(c->lpString), c->uCount, c->nMaxExtent, QEMU_G2H(c->lpResults), c->dwFlags);
 }
 
 #endif

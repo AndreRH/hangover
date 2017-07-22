@@ -52,7 +52,7 @@ extern void WINAPI DebugSetMute(void);
 void qemu_DebugSetMute(struct qemu_syscall *call)
 {
     struct qemu_DebugSetMute *c = (struct qemu_DebugSetMute *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     DebugSetMute();
 }
 

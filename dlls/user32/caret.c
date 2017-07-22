@@ -269,7 +269,7 @@ WINUSERAPI UINT WINAPI GetCaretBlinkTime(void)
 void qemu_GetCaretBlinkTime(struct qemu_syscall *call)
 {
     struct qemu_GetCaretBlinkTime *c = (struct qemu_GetCaretBlinkTime *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCaretBlinkTime();
 }
 

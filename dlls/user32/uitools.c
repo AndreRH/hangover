@@ -248,8 +248,8 @@ WINUSERAPI BOOL WINAPI OffsetRect(LPRECT rect, INT x, INT y)
     struct qemu_OffsetRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OFFSETRECT);
     call.rect = (uint64_t)rect;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = x;
+    call.y = y;
 
     qemu_syscall(&call.super);
 
@@ -261,7 +261,7 @@ WINUSERAPI BOOL WINAPI OffsetRect(LPRECT rect, INT x, INT y)
 void qemu_OffsetRect(struct qemu_syscall *call)
 {
     struct qemu_OffsetRect *c = (struct qemu_OffsetRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = OffsetRect(QEMU_G2H(c->rect), c->x, c->y);
 }
 
@@ -319,8 +319,8 @@ WINUSERAPI BOOL WINAPI InflateRect(LPRECT rect, INT x, INT y)
     struct qemu_InflateRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INFLATERECT);
     call.rect = (uint64_t)rect;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = x;
+    call.y = y;
 
     qemu_syscall(&call.super);
 
@@ -332,7 +332,7 @@ WINUSERAPI BOOL WINAPI InflateRect(LPRECT rect, INT x, INT y)
 void qemu_InflateRect(struct qemu_syscall *call)
 {
     struct qemu_InflateRect *c = (struct qemu_InflateRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = InflateRect(QEMU_G2H(c->rect), c->x, c->y);
 }
 
