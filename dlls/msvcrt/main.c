@@ -403,6 +403,7 @@ static const syscall_handler dll_functions[] =
     qemu_trunc,
     qemu_truncf,
     qemu_truncl,
+    qemu_scanf,
     qemu_wcscat_s,
     qemu_wcscpy,
     qemu_wcscpy_s,

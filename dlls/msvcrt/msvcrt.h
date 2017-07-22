@@ -334,6 +334,7 @@ enum msvcrt_calls
     CALL_TRUNC,
     CALL_TRUNCF,
     CALL_TRUNCL,
+    CALL_VSSCANF,
     CALL_WCSCAT_S,
     CALL_WCSCPY,
     CALL_WCSCPY_S,
@@ -679,6 +680,7 @@ void qemu_rintl(struct qemu_syscall *call);
 void qemu_round(struct qemu_syscall *call);
 void qemu_roundf(struct qemu_syscall *call);
 void qemu_roundl(struct qemu_syscall *call);
+void qemu_scanf(struct qemu_syscall *call);
 void qemu_scalbnl(struct qemu_syscall *call);
 void qemu_setlocale(struct qemu_syscall *call);
 void qemu_signal(struct qemu_syscall *call);

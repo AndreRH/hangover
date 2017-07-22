@@ -265,6 +265,7 @@ EXPORTS
   sqrtf=MSVCRT_sqrtf
   sqrtf=MSVCRT_sqrtf
   srand=MSVCRT_srand
+  sscanf=MSVCRT_sscanf
   strcat_s=MSVCRT_strcat_s
   strcpy_s=MSVCRT_strcpy_s
   strlen=MSVCRT_strlen
@@ -279,6 +280,7 @@ EXPORTS
   toupper=MSVCRT_toupper
   vfprintf=MSVCRT_vfprintf
   vfwprintf=MSVCRT_vfwprintf
+  vsscanf_l=MSVCRT_vsscanf_l
   wcscat_s=MSVCRT_wcscat_s
   wcscpy=MSVCRT_wcscpy
   wcscpy_s=MSVCRT_wcscpy_s
