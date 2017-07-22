@@ -92,6 +92,40 @@ void qemu__stricmp(struct qemu_syscall *call)
 
 #endif
 
+/* FIXME: Calling out of the vm for _strtoui64 is probably a waste of time. */
+struct qemu__strtoui64
+{
+    struct qemu_syscall super;
+    uint64_t nptr, endptr;
+    uint64_t base;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+int CDECL MSVCRT__strtoui64(const char *nptr, char **endptr, int base)
+{
+    struct qemu__strtoui64 call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__STRTOUI64);
+    call.nptr = (uint64_t)nptr;
+    call.endptr = (uint64_t)endptr;
+    call.base = base;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__strtoui64(struct qemu_syscall *call)
+{
+    struct qemu__strtoui64 *c = (struct qemu__strtoui64 *)call;
+    WINE_TRACE("\n");
+    c->super.iret = p__strtoui64(QEMU_G2H(c->nptr), QEMU_G2H(c->endptr), c->base);
+}
+
+#endif
+
 struct qemu_atof
 {
     struct qemu_syscall super;

@@ -244,6 +244,7 @@ enum msvcrt_calls
     CALL__STRDUP,
     CALL__STRICMP,
     CALL__STRTIME,
+    CALL__STRTOUI64,
     CALL__TEMPNAM,
     CALL__TOLOWER,
     CALL__TOLOWER_L,
@@ -728,6 +729,7 @@ void qemu__strdate(struct qemu_syscall *call);
 void qemu__strdup(struct qemu_syscall *call);
 void qemu__stricmp(struct qemu_syscall *call);
 void qemu__strtime(struct qemu_syscall *call);
+void qemu__strtoui64(struct qemu_syscall *call);
 void qemu__tempnam(struct qemu_syscall *call);
 void qemu__tolower(struct qemu_syscall *call);
 void qemu__tolower_l(struct qemu_syscall *call);
@@ -1385,6 +1387,7 @@ int (* CDECL p_mbsrtowcs_s)(size_t *ret, WCHAR *wcstr, size_t len, const char **
 unsigned int (* CDECL p__mbctohira)(unsigned int c);
 unsigned int (* CDECL p__mbctokata)(unsigned int c);
 void (* CDECL p_type_info_dtor)(void *_this); /* __thiscall */
+int (* CDECL p__strtoui64)(const char *nptr, char **endptr, int base);
 
 DWORD msvcrt_tls;
 

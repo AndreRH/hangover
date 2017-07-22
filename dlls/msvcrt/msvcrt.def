@@ -244,6 +244,7 @@ EXPORTS
   _strdup = MSVCRT__strdup
   _stricmp=MSVCRT__stricmp
   _strtime=MSVCRT__strtime
+  _strtoui64=MSVCRT__strtoui64
   _tempnam=MSVCRT__tempnam
   _tolower=MSVCRT__tolower
   _tolower_l=MSVCRT__tolower_l
