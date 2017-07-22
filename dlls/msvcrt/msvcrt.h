@@ -82,6 +82,7 @@ enum msvcrt_calls
     CALL__DPCOMP,
     CALL__DSIGN,
     CALL__DTEST,
+    CALL__DUPENV_S,
     CALL__ECVT,
     CALL__ECVT_S,
     CALL__ERRNO,
@@ -226,6 +227,8 @@ enum msvcrt_calls
     CALL__NEXTAFTERF,
     CALL__ONEXIT,
     CALL__PURECALL,
+    CALL__PUTENV,
+    CALL__PUTENV_S,
     CALL__ROTL,
     CALL__ROTL64,
     CALL__ROTR,
@@ -255,6 +258,11 @@ enum msvcrt_calls
     CALL__VSNPRINTF,
     CALL__VSNWPRINTF,
     CALL__WCSNICMP,
+    CALL__WDUPENV_S,
+    CALL__WGETENV,
+    CALL__WGETENV_S,
+    CALL__WPUTENV,
+    CALL__WPUTENV_S,
     CALL__WRITE,
     CALL__WTOF,
     CALL__WTOI,
@@ -330,6 +338,8 @@ enum msvcrt_calls
     CALL_FREXPF,
     CALL_FWPRINTF,
     CALL_FWRITE,
+    CALL_GETENV,
+    CALL_GETENV_S,
     CALL_ISALNUM,
     CALL_ISALPHA,
     CALL_ISBLANK,
@@ -571,6 +581,7 @@ void qemu__dclass(struct qemu_syscall *call);
 void qemu__dpcomp(struct qemu_syscall *call);
 void qemu__dsign(struct qemu_syscall *call);
 void qemu__dtest(struct qemu_syscall *call);
+void qemu__dupenv_s(struct qemu_syscall *call);
 void qemu__ecvt(struct qemu_syscall *call);
 void qemu__ecvt_s(struct qemu_syscall *call);
 void qemu__errno(struct qemu_syscall *call);
@@ -715,6 +726,8 @@ void qemu__nextafter(struct qemu_syscall *call);
 void qemu__nextafterf(struct qemu_syscall *call);
 void qemu__onexit(struct qemu_syscall *call);
 void qemu__purecall(struct qemu_syscall *call);
+void qemu__putenv(struct qemu_syscall *call);
+void qemu__putenv_s(struct qemu_syscall *call);
 void qemu__rotl(struct qemu_syscall *call);
 void qemu__rotl64(struct qemu_syscall *call);
 void qemu__rotr(struct qemu_syscall *call);
@@ -742,6 +755,11 @@ void qemu__toupper(struct qemu_syscall *call);
 void qemu__toupper_l(struct qemu_syscall *call);
 void qemu__unlock(struct qemu_syscall *call);
 void qemu__wcsnicmp(struct qemu_syscall *call);
+void qemu__wdupenv_s(struct qemu_syscall *call);
+void qemu__wgetenv(struct qemu_syscall *call);
+void qemu__wgetenv_s(struct qemu_syscall *call);
+void qemu__wputenv(struct qemu_syscall *call);
+void qemu__wputenv_s(struct qemu_syscall *call);
 void qemu__write(struct qemu_syscall *call);
 void qemu__wtof(struct qemu_syscall *call);
 void qemu__wtoi(struct qemu_syscall *call);
@@ -818,6 +836,8 @@ void qemu_free(struct qemu_syscall *call);
 void qemu_frexp(struct qemu_syscall *call);
 void qemu_frexpf(struct qemu_syscall *call);
 void qemu_fwrite(struct qemu_syscall *call);
+void qemu_getenv(struct qemu_syscall *call);
+void qemu_getenv_s(struct qemu_syscall *call);
 void qemu_isalnum(struct qemu_syscall *call);
 void qemu_isalpha(struct qemu_syscall *call);
 void qemu_isblank(struct qemu_syscall *call);
@@ -944,6 +964,7 @@ void qemu_wcsstr(struct qemu_syscall *call);
 void qemu_wcstod(struct qemu_syscall *call);
 void qemu_wcstombs(struct qemu_syscall *call);
 void qemu_wctomb(struct qemu_syscall *call);
+
 /* Be careful not to call the Linux libc! */
 void (* CDECL p___crt_debugger_hook)(int reserved);
 void (* CDECL p___getmainargs)(int *argc, char** *argv, char** *envp,
@@ -1400,6 +1421,17 @@ unsigned int (* CDECL p__mbctohira)(unsigned int c);
 unsigned int (* CDECL p__mbctokata)(unsigned int c);
 void (* CDECL p_type_info_dtor)(void *_this); /* __thiscall */
 int (* CDECL p__strtoui64)(const char *nptr, char **endptr, int base);
+
+char * (* CDECL p_getenv)(const char *name);
+WCHAR * (* CDECL p__wgetenv)(const WCHAR *name);
+int (* CDECL p__putenv)(const char *str);
+int (* CDECL p__wputenv)(const WCHAR *str);
+int (* CDECL p__putenv_s)(const char *name, const char *value);
+int (* CDECL p__wputenv_s)(const WCHAR *name, const WCHAR *value);
+int (* CDECL p__dupenv_s)(char **buffer, size_t *numberOfElements, const char *varname);
+int (* CDECL p__wdupenv_s)(WCHAR **buffer, size_t *numberOfElements, const WCHAR *varname);
+int (* CDECL p_getenv_s)(size_t *pReturnValue, char* buffer, size_t numberOfElements, const char *varname);
+int (* CDECL p__wgetenv_s)(size_t *pReturnValue, WCHAR *buffer, size_t numberOfElements, const WCHAR *varname);
 
 DWORD msvcrt_tls;
 

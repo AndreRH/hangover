@@ -87,6 +87,7 @@ EXPORTS
   _copysign=MSVCRT__copysign
   _copysignf=MSVCRT__copysignf
   _CxxThrowException=MSVCRT__CxxThrowException
+  _dupenv_s
   _ecvt=MSVCRT__ecvt
   _ecvt_s=MSVCRT__ecvt_s
   _errno=MSVCRT__errno
@@ -219,6 +220,9 @@ EXPORTS
   _mbstok_l
   _mbstok_s
   _mbstok_s_l
+  _mbstowcs_l=MSVCRT__mbstowcs_l
+  _mbstowcs_s=MSVCRT__mbstowcs_s
+  _mbstowcs_s_l=MSVCRT__mbstowcs_s_l
   _mbstrlen=MSVCRT__mbstrlen
   _mbstrlen_l=MSVCRT__mbstrlen_l
   _mbsupr
@@ -227,6 +231,8 @@ EXPORTS
   _nextafterf=MSVCRT__nextafterf
   _onexit=MSVCRT__onexit
   _purecall
+  _putenv=MSVCRT__putenv
+  _putenv_s
   _rotl64
   _rotl=MSVCRT__rotl
   _rotr64
@@ -259,6 +265,10 @@ EXPORTS
   _vsnwprintf=MSVCRT__vsnwprintf
   _wcmdln=MSVCRT__wcmdln
   _wcsnicmp=MSVCRT__wcsnicmp
+  _wdupenv_s
+  _wgetenv_s
+  _wputenv=MSVCRT__wputenv
+  _wputenv_s
   _write=MSVCRT__write
   _wtof=MSVCRT__wtof
   _wtoi=MSVCRT__wtoi
@@ -311,6 +321,7 @@ EXPORTS
   frexpf=MSVCRT_frexpf
   fwprintf=MSVCRT_fwprintf
   fwrite=MSVCRT_fwrite
+  getenv_s
   isalnum=MSVCRT_isalnum
   isalpha=MSVCRT_isalpha
   isblank=MSVCRT_isblank
@@ -339,16 +350,6 @@ EXPORTS
   logf=MSVCRT_logf
   longjmp=MSVCRT_longjmp
   malloc=MSVCRT_malloc
-  memcmp=MSVCRT_memcmp
-  memcpy=MSVCRT_memcpy
-  memmove=MSVCRT_memmove
-  memset=MSVCRT_memset
-  modf=MSVCRT_modf
-  modff=MSVCRT_modff
-  MSVCRT____mb_cur_max_func
-  _mbstowcs_l=MSVCRT__mbstowcs_l
-  _mbstowcs_s=MSVCRT__mbstowcs_s
-  _mbstowcs_s_l=MSVCRT__mbstowcs_s_l
   mblen=MSVCRT_mblen
   mbrlen=MSVCRT_mbrlen
   mbrtowc=MSVCRT_mbrtowc
@@ -357,6 +358,15 @@ EXPORTS
   mbstowcs=MSVCRT_mbstowcs
   mbtowc=MSVCRT_mbtowc
   mbtowc_l=MSVCRT_mbtowc_l
+  memcmp=MSVCRT_memcmp
+  memcpy=MSVCRT_memcpy
+  memmove=MSVCRT_memmove
+  memset=MSVCRT_memset
+  modf=MSVCRT_modf
+  modff=MSVCRT_modff
+  ___mb_cur_max_func=MSVCRT____mb_cur_max_func
+  _wgetenv=MSVCRT__wgetenv
+  getenv=MSVCRT_getenv
   nearbyint=MSVCRT_nearbyint
   nearbyintf=MSVCRT_nearbyintf
   pow=MSVCRT_pow

@@ -151,6 +151,7 @@ static const syscall_handler dll_functions[] =
     qemu__dpcomp,
     qemu__dsign,
     qemu__dtest,
+    qemu__dupenv_s,
     qemu__ecvt,
     qemu__ecvt_s,
     qemu__errno,
@@ -295,6 +296,8 @@ static const syscall_handler dll_functions[] =
     qemu__nextafterf,
     qemu__onexit,
     qemu__purecall,
+    qemu__putenv,
+    qemu__putenv_s,
     qemu__rotl,
     qemu__rotl64,
     qemu__rotr,
@@ -324,6 +327,11 @@ static const syscall_handler dll_functions[] =
     qemu_sprintf,
     qemu_sprintf,
     qemu__wcsnicmp,
+    qemu__wdupenv_s,
+    qemu__wgetenv,
+    qemu__wgetenv_s,
+    qemu__wputenv,
+    qemu__wputenv_s,
     qemu__write,
     qemu__wtof,
     qemu__wtoi,
@@ -399,6 +407,8 @@ static const syscall_handler dll_functions[] =
     qemu_frexpf,
     qemu_fprintf,
     qemu_fwrite,
+    qemu_getenv,
+    qemu_getenv_s,
     qemu_isalnum,
     qemu_isalpha,
     qemu_isblank,
@@ -620,6 +630,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__dpcomp = (void *)GetProcAddress(msvcrt, "_dpcomp");
     p__dsign = (void *)GetProcAddress(msvcrt, "_dsign");
     p__dtest = (void *)GetProcAddress(msvcrt, "_dtest");
+    p__dupenv_s = (void *)GetProcAddress(msvcrt, "_dupenv_s");
     p__ecvt = (void *)GetProcAddress(msvcrt, "_ecvt");
     p__ecvt_s = (void *)GetProcAddress(msvcrt, "_ecvt_s");
     p__errno = (void *)GetProcAddress(msvcrt, "_errno");
@@ -763,6 +774,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__nextafterf = (void *)GetProcAddress(msvcrt, "_nextafterf");
     p__onexit = (void *)GetProcAddress(msvcrt, "_onexit");
     p__purecall = (void *)GetProcAddress(msvcrt, "_purecall");
+    p__putenv = (void *)GetProcAddress(msvcrt, "_putenv");
+    p__putenv_s = (void *)GetProcAddress(msvcrt, "_putenv_s");
     p__rotl = (void *)GetProcAddress(msvcrt, "_rotl");
     p__rotl64 = (void *)GetProcAddress(msvcrt, "_rotl64");
     p__rotr = (void *)GetProcAddress(msvcrt, "_rotr");
@@ -790,6 +803,11 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__vsnprintf = (void *)GetProcAddress(msvcrt, "_vsnprintf");
     p__vsnwprintf = (void *)GetProcAddress(msvcrt, "_vsnwprintf");
     p__wcsnicmp = (void *)GetProcAddress(msvcrt, "_wcsnicmp");
+    p__wdupenv_s = (void *)GetProcAddress(msvcrt, "_wdupenv_s");
+    p__wgetenv = (void *)GetProcAddress(msvcrt, "__wgetenv");
+    p__wgetenv_s = (void *)GetProcAddress(msvcrt, "_wgetenv_s");
+    p__wputenv = (void *)GetProcAddress(msvcrt, "_wputenv");
+    p__wputenv_s = (void *)GetProcAddress(msvcrt, "_wputenv_s");
     p__write = (void *)GetProcAddress(msvcrt, "_write");
     p__wtof = (void *)GetProcAddress(msvcrt, "_wtof");
     p__wtoi = (void *)GetProcAddress(msvcrt, "_wtoi");
@@ -862,6 +880,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_frexp = (void *)GetProcAddress(msvcrt, "frexp");
     p_frexpf = (void *)GetProcAddress(msvcrt, "frexpf");
     p_fwrite = (void *)GetProcAddress(msvcrt, "fwrite");
+    p_getenv = (void *)GetProcAddress(msvcrt, "getenv");
+    p_getenv_s = (void *)GetProcAddress(msvcrt, "getenv_s");
     p_isalnum = (void *)GetProcAddress(msvcrt, "isalnum");
     p_isalpha = (void *)GetProcAddress(msvcrt, "isalpha");
     p_isblank = (void *)GetProcAddress(msvcrt, "isblank");
