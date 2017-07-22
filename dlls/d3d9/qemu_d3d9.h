@@ -259,6 +259,11 @@ enum d3d9_calls
     CALL_D3D9_TEXTURE_CUBE_SETPRIORITY,
     CALL_D3D9_TEXTURE_CUBE_SETPRIVATEDATA,
     CALL_D3D9_TEXTURE_CUBE_UNLOCKRECT,
+    CALL_D3D9_VERTEX_DECLARATION_ADDREF,
+    CALL_D3D9_VERTEX_DECLARATION_GETDECLARATION,
+    CALL_D3D9_VERTEX_DECLARATION_GETDEVICE,
+    CALL_D3D9_VERTEX_DECLARATION_QUERYINTERFACE,
+    CALL_D3D9_VERTEX_DECLARATION_RELEASE,
     CALL_D3DPERF_BEGINEVENT,
     CALL_D3DPERF_ENDEVENT,
     CALL_D3DPERF_GETSTATUS,
@@ -281,6 +286,7 @@ extern const struct IDirect3DSurface9Vtbl d3d9_surface_vtbl;
 extern const struct IDirect3DTexture9Vtbl d3d9_texture_2d_vtbl;
 extern const struct IDirect3DCubeTexture9Vtbl d3d9_texture_cube_vtbl;
 extern const struct IDirect3DVolumeTexture9Vtbl d3d9_texture_3d_vtbl;
+extern const struct IDirect3DVertexDeclaration9Vtbl d3d9_vertex_declaration_vtbl;
 
 void d3d9_device_set_swapchain_ifaces(IDirect3DDevice9Ex *device);
 void d3d9_swapchain_set_surfaces_ifaces(IDirect3DSwapChain9Ex *swapchain);
@@ -542,6 +548,11 @@ void qemu_d3d9_texture_cube_SetLOD(struct qemu_syscall *call);
 void qemu_d3d9_texture_cube_SetPriority(struct qemu_syscall *call);
 void qemu_d3d9_texture_cube_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d9_texture_cube_UnlockRect(struct qemu_syscall *call);
+void qemu_d3d9_vertex_declaration_AddRef(struct qemu_syscall *call);
+void qemu_d3d9_vertex_declaration_GetDeclaration(struct qemu_syscall *call);
+void qemu_d3d9_vertex_declaration_GetDevice(struct qemu_syscall *call);
+void qemu_d3d9_vertex_declaration_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d9_vertex_declaration_Release(struct qemu_syscall *call);
 void qemu_D3DPERF_BeginEvent(struct qemu_syscall *call);
 void qemu_D3DPERF_EndEvent(struct qemu_syscall *call);
 void qemu_D3DPERF_GetStatus(struct qemu_syscall *call);

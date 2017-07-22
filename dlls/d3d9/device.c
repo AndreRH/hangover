@@ -3606,12 +3606,21 @@ static HRESULT WINAPI d3d9_device_CreateVertexDeclaration(IDirect3DDevice9Ex *if
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
     struct qemu_d3d9_device_CreateVertexDeclaration call;
+    struct qemu_d3d9_vertex_declaration_impl *decl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_CREATEVERTEXDECLARATION);
     call.iface = (uint64_t)device;
     call.elements = (uint64_t)elements;
-    call.declaration = (uint64_t)declaration;
+    call.declaration = (uint64_t)&decl;
 
+    *declaration = NULL;
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        decl->IDirect3DVertexDeclaration9_iface.lpVtbl = &d3d9_vertex_declaration_vtbl;
+        *declaration = &decl->IDirect3DVertexDeclaration9_iface;
+    }
 
     return call.super.iret;
 }
@@ -3622,11 +3631,29 @@ void qemu_d3d9_device_CreateVertexDeclaration(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_CreateVertexDeclaration *c = (struct qemu_d3d9_device_CreateVertexDeclaration *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_vertex_declaration_impl *decl;
+    IDirect3DVertexDeclaration9 *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_CreateVertexDeclaration(device->host, QEMU_G2H(c->elements), QEMU_G2H(c->declaration));
+    decl = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*decl));
+    if (!decl)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = IDirect3DDevice9Ex_CreateVertexDeclaration(device->host, QEMU_G2H(c->elements), &host);
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, decl);
+        return;
+    }
+
+    decl->host = host;
+    decl->device = device;
+    *(uint64_t *)QEMU_G2H(c->declaration) = QEMU_H2G(decl);
 }
 
 #endif

@@ -93,4 +93,17 @@ static inline struct qemu_d3d9_texture_impl *impl_from_IDirect3DVolumeTexture9(I
     return CONTAINING_RECORD(iface, struct qemu_d3d9_texture_impl, IDirect3DBaseTexture9_iface);
 }
 
+struct qemu_d3d9_vertex_declaration_impl
+{
+    IDirect3DVertexDeclaration9 IDirect3DVertexDeclaration9_iface;
+    IDirect3DVertexDeclaration9 *host;
+
+    struct qemu_d3d9_device_impl *device;
+};
+
+static inline struct qemu_d3d9_vertex_declaration_impl *impl_from_IDirect3DVertexDeclaration9(IDirect3DVertexDeclaration9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_vertex_declaration_impl, IDirect3DVertexDeclaration9_iface);
+}
+
 #endif
