@@ -163,7 +163,7 @@ WINUSERAPI BOOL WINAPI GetCursorPos(POINT *pt)
 void qemu_GetCursorPos(struct qemu_syscall *call)
 {
     struct qemu_GetCursorPos *c = (struct qemu_GetCursorPos *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCursorPos(QEMU_G2H(c->pt));
 }
 

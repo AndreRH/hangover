@@ -479,7 +479,7 @@ WINBASEAPI float CDECL MSVCRT_atan2f(float x, float y)
 void qemu_atan2f(struct qemu_syscall *call)
 {
     struct qemu_atan2f *c = (struct qemu_atan2f *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_atan2f(c->x, c->y);
 }
 
@@ -509,7 +509,7 @@ WINBASEAPI float CDECL MSVCRT_cosf(float x)
 void qemu_cosf(struct qemu_syscall *call)
 {
     struct qemu_cosf *c = (struct qemu_cosf *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_cosf(c->x);
 }
 
@@ -723,7 +723,7 @@ WINBASEAPI float CDECL MSVCRT_sinf(float x)
 void qemu_sinf(struct qemu_syscall *call)
 {
     struct qemu_sinf *c = (struct qemu_sinf *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_sinf(c->x);
 }
 
@@ -1128,7 +1128,7 @@ void qemu_atan2(struct qemu_syscall *call)
 struct qemu_cos
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1137,7 +1137,7 @@ WINBASEAPI double CDECL MSVCRT_cos(double x)
 {
     struct qemu_cos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COS);
-    call.x = (uint64_t)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -1149,7 +1149,7 @@ WINBASEAPI double CDECL MSVCRT_cos(double x)
 void qemu_cos(struct qemu_syscall *call)
 {
     struct qemu_cos *c = (struct qemu_cos *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_cos(c->x);
 }
 
@@ -1218,8 +1218,8 @@ void qemu_exp(struct qemu_syscall *call)
 struct qemu_fmod
 {
     struct qemu_syscall super;
-    uint64_t x;
-    uint64_t y;
+    double x;
+    double y;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1228,8 +1228,8 @@ WINBASEAPI double CDECL MSVCRT_fmod(double x, double y)
 {
     struct qemu_fmod call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FMOD);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = x;
+    call.y = y;
 
     qemu_syscall(&call.super);
 
@@ -1241,7 +1241,7 @@ WINBASEAPI double CDECL MSVCRT_fmod(double x, double y)
 void qemu_fmod(struct qemu_syscall *call)
 {
     struct qemu_fmod *c = (struct qemu_fmod *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_fmod(c->x, c->y);
 }
 
@@ -1342,7 +1342,7 @@ void qemu_pow(struct qemu_syscall *call)
 struct qemu_sin
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1351,7 +1351,7 @@ WINBASEAPI double CDECL MSVCRT_sin(double x)
 {
     struct qemu_sin call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SIN);
-    call.x = (uint64_t)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -1363,7 +1363,7 @@ WINBASEAPI double CDECL MSVCRT_sin(double x)
 void qemu_sin(struct qemu_syscall *call)
 {
     struct qemu_sin *c = (struct qemu_sin *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     c->super.dret = p_sin(c->x);
 }
 

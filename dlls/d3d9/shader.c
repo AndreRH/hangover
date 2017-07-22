@@ -219,7 +219,7 @@ void qemu_d3d9_vertexshader_GetFunction(struct qemu_syscall *call)
     struct qemu_d3d9_vertexshader_GetFunction *c = (struct qemu_d3d9_vertexshader_GetFunction *)call;
     struct qemu_d3d9_shader_impl *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVertexShader9_GetFunction(shader->hostvs, QEMU_G2H(c->data), QEMU_G2H(c->data_size));
@@ -415,7 +415,7 @@ void qemu_d3d9_pixelshader_GetFunction(struct qemu_syscall *call)
     struct qemu_d3d9_pixelshader_GetFunction *c = (struct qemu_d3d9_pixelshader_GetFunction *)call;
     struct qemu_d3d9_shader_impl *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DPixelShader9_GetFunction(shader->hostps, QEMU_G2H(c->data), QEMU_G2H(c->data_size));

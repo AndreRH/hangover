@@ -199,7 +199,7 @@ WINUSERAPI HWND WINAPI GetForegroundWindow(void)
 void qemu_GetForegroundWindow(struct qemu_syscall *call)
 {
     struct qemu_GetForegroundWindow *c = (struct qemu_GetForegroundWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetForegroundWindow();
 }
 

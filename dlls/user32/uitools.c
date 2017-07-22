@@ -296,7 +296,7 @@ void qemu_PtInRect(struct qemu_syscall *call)
 {
     struct qemu_PtInRect *c = (struct qemu_PtInRect *)call;
     POINT pt;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     pt.x = c->ptx;
     pt.y = c->pty;
     c->super.iret = PtInRect(QEMU_G2H(c->rect), pt);
