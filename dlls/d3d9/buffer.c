@@ -622,7 +622,7 @@ void qemu_d3d9_indexbuffer_AddRef(struct qemu_syscall *call)
     struct qemu_d3d9_indexbuffer_AddRef *c = (struct qemu_d3d9_indexbuffer_AddRef *)call;
     struct qemu_d3d9_buffer_impl *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DIndexBuffer9_AddRef(buffer->hostib);
@@ -657,7 +657,7 @@ void qemu_d3d9_indexbuffer_Release(struct qemu_syscall *call)
     struct qemu_d3d9_indexbuffer_Release *c = (struct qemu_d3d9_indexbuffer_Release *)call;
     struct qemu_d3d9_buffer_impl *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     d3d9_device_wrapper_addref(buffer->device);
