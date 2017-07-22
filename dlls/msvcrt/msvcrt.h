@@ -430,6 +430,7 @@ enum msvcrt_calls
     CALL_STRCPY_S,
     CALL_STRLEN,
     CALL_STRNCMP,
+    CALL_STRRCHR,
     CALL_STRTOD,
     CALL_SWPRINTF_S,
     CALL_TAN,
@@ -916,6 +917,7 @@ void qemu_strcat_s(struct qemu_syscall *call);
 void qemu_strcpy_s(struct qemu_syscall *call);
 void qemu_strlen(struct qemu_syscall *call);
 void qemu_strncmp(struct qemu_syscall *call);
+void qemu_strrchr(struct qemu_syscall *call);
 void qemu_strtod(struct qemu_syscall *call);
 void qemu_tan(struct qemu_syscall *call);
 void qemu_tanf(struct qemu_syscall *call);
@@ -986,6 +988,7 @@ int (* CDECL p_strcpy_s)(char *dst, size_t elem, const char *src);
 int (* CDECL p_strcat_s)(char *dst, size_t elem, const char *src);
 size_t (* CDECL p_strlen)(const char *str);
 int (* CDECL p_strncmp)(const char *str1, const char *str2, size_t len);
+int (* CDECL p_strrchr)(const char *str, int c);
 void (* CDECL p_terminate)(void);
 int (* CDECL p_vfprintf)(FILE *file,const char *format, va_list args);
 int (* CDECL p_vfwprintf)(FILE *file, const WCHAR *format, va_list args);

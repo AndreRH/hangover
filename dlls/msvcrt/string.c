@@ -420,6 +420,39 @@ void qemu_strncmp(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_strrchr
+{
+    struct qemu_syscall super;
+    uint64_t str;
+    uint64_t c;
+};
+
+
+#ifdef QEMU_DLL_GUEST
+
+int CDECL MSVCRT_strrchr(const char *str, int c)
+{
+    struct qemu_strrchr call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_STRRCHR);
+    call.str = (uint64_t)str;
+    call.c = c;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_strrchr(struct qemu_syscall *call)
+{
+    struct qemu_strrchr *c = (struct qemu_strrchr *)call;
+    WINE_TRACE("\n");
+    c->super.iret = p_strrchr(QEMU_G2H(c->str), c->c);
+}
+
+#endif
+
 struct qemu_strtod
 {
     struct qemu_syscall super;

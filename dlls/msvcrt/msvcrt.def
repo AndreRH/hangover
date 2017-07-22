@@ -381,6 +381,7 @@ EXPORTS
   strcpy_s=MSVCRT_strcpy_s
   strlen=MSVCRT_strlen
   strncmp=MSVCRT_strncmp
+  strrchr=MSVCRT_strrchr
   strtod=MSVCRT_strtod
   swprintf_s=MSVCRT_swprintf_s
   tan=MSVCRT_tan
