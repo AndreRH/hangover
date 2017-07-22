@@ -121,8 +121,8 @@ WINBASEAPI BOOL WINAPI VirtualFree(LPVOID addr, SIZE_T size, DWORD type)
     struct qemu_VirtualFree call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VIRTUALFREE);
     call.addr = (uint64_t)addr;
-    call.size = (uint64_t)size;
-    call.type = (uint64_t)type;
+    call.size = size;
+    call.type = type;
 
     qemu_syscall(&call.super);
 
@@ -134,7 +134,7 @@ WINBASEAPI BOOL WINAPI VirtualFree(LPVOID addr, SIZE_T size, DWORD type)
 void qemu_VirtualFree(struct qemu_syscall *call)
 {
     struct qemu_VirtualFree *c = (struct qemu_VirtualFree *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = VirtualFree(QEMU_G2H(c->addr), c->size, c->type);
 }
 
