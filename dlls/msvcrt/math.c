@@ -2795,8 +2795,8 @@ WINBASEAPI int CDECL __control87_2(unsigned int newval, unsigned int mask, unsig
 void qemu___control87_2(struct qemu_syscall *call)
 {
     struct qemu___control87_2 *c = (struct qemu___control87_2 *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p___control87_2(c->newval, c->mask, QEMU_G2H(c->x86_cw), QEMU_G2H(c->sse2_cw));
+    WINE_WARN("Stub!\n");
+    c->super.iret = 0;
 }
 
 #endif
@@ -2827,8 +2827,8 @@ WINBASEAPI unsigned int CDECL _control87(unsigned int newval, unsigned int mask)
 void qemu__control87(struct qemu_syscall *call)
 {
     struct qemu__control87 *c = (struct qemu__control87 *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p__control87(c->newval, c->mask);
+    WINE_WARN("Stub\n");
+    c->super.iret = 0;
 }
 
 #endif
