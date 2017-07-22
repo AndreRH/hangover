@@ -48,9 +48,9 @@ WINBASEAPI LPVOID WINAPI VirtualAlloc(void *addr, SIZE_T size, DWORD type, DWORD
     struct qemu_VirtualAlloc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VIRTUALALLOC);
     call.addr = (uint64_t)addr;
-    call.size = (uint64_t)size;
-    call.type = (uint64_t)type;
-    call.protect = (uint64_t)protect;
+    call.size = size;
+    call.type = type;
+    call.protect = protect;
 
     qemu_syscall(&call.super);
 
@@ -62,7 +62,7 @@ WINBASEAPI LPVOID WINAPI VirtualAlloc(void *addr, SIZE_T size, DWORD type, DWORD
 void qemu_VirtualAlloc(struct qemu_syscall *call)
 {
     struct qemu_VirtualAlloc *c = (struct qemu_VirtualAlloc *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)VirtualAlloc(QEMU_G2H(c->addr), c->size, c->type, c->protect);
 }
 
