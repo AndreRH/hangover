@@ -159,11 +159,14 @@ static HRESULT WINAPI d3d9_vertexshader_GetDevice(IDirect3DVertexShader9 *iface,
 {
     struct qemu_d3d9_shader_impl *shader = impl_from_IDirect3DVertexShader9(iface);
     struct qemu_d3d9_vertexshader_GetDevice call;
+    struct qemu_d3d9_device_impl *impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXSHADER_GETDEVICE);
     call.iface = (uint64_t)shader;
-    call.device = (uint64_t)device;
+    call.device = (uint64_t)&impl;
 
     qemu_syscall(&call.super);
+    *device = (IDirect3DDevice9 *)&impl->IDirect3DDevice9Ex_iface;
 
     return call.super.iret;
 }
@@ -175,10 +178,12 @@ void qemu_d3d9_vertexshader_GetDevice(struct qemu_syscall *call)
     struct qemu_d3d9_vertexshader_GetDevice *c = (struct qemu_d3d9_vertexshader_GetDevice *)call;
     struct qemu_d3d9_shader_impl *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DVertexShader9_GetDevice(shader->hostvs, QEMU_G2H(c->device));
+    c->super.iret = D3D_OK;
+    d3d9_device_wrapper_addref(shader->device);
+    *(uint64_t *)QEMU_G2H(c->device) = QEMU_H2G(shader->device);
 }
 
 #endif
@@ -349,13 +354,17 @@ static HRESULT WINAPI d3d9_pixelshader_GetDevice(IDirect3DPixelShader9 *iface, I
 {
     struct qemu_d3d9_shader_impl *shader = impl_from_IDirect3DPixelShader9(iface);
     struct qemu_d3d9_pixelshader_GetDevice call;
+    struct qemu_d3d9_device_impl *impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_PIXELSHADER_GETDEVICE);
     call.iface = (uint64_t)shader;
-    call.device = (uint64_t)device;
+    call.device = (uint64_t)&impl;
 
     qemu_syscall(&call.super);
+    *device = (IDirect3DDevice9 *)&impl->IDirect3DDevice9Ex_iface;
 
     return call.super.iret;
+
 }
 
 #else
@@ -365,10 +374,12 @@ void qemu_d3d9_pixelshader_GetDevice(struct qemu_syscall *call)
     struct qemu_d3d9_pixelshader_GetDevice *c = (struct qemu_d3d9_pixelshader_GetDevice *)call;
     struct qemu_d3d9_shader_impl *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DPixelShader9_GetDevice(shader->hostps, QEMU_G2H(c->device));
+    c->super.iret = D3D_OK;
+    d3d9_device_wrapper_addref(shader->device);
+    *(uint64_t *)QEMU_G2H(c->device) = QEMU_H2G(shader->device);
 }
 
 #endif
