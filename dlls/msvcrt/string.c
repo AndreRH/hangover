@@ -486,6 +486,38 @@ void qemu_strrchr(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_strstr
+{
+    struct qemu_syscall super;
+    uint64_t haystack, needle;
+};
+
+
+#ifdef QEMU_DLL_GUEST
+
+char * CDECL MSVCRT_strstr(const char *haystack, const char *needle)
+{
+    struct qemu_strstr call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_STRSTR);
+    call.haystack = (uint64_t)haystack;
+    call.needle = (uint64_t)needle;
+
+    qemu_syscall(&call.super);
+
+    return (char *)call.super.iret;
+}
+
+#else
+
+void qemu_strstr(struct qemu_syscall *call)
+{
+    struct qemu_strstr *c = (struct qemu_strstr *)call;
+    WINE_TRACE("\n");
+    c->super.iret = QEMU_H2G(p_strstr(QEMU_G2H(c->haystack), QEMU_G2H(c->needle)));
+}
+
+#endif
+
 struct qemu_strtod
 {
     struct qemu_syscall super;
