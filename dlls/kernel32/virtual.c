@@ -420,7 +420,7 @@ WINBASEAPI HANDLE WINAPI CreateFileMappingA(HANDLE hFile, SECURITY_ATTRIBUTES *s
 void qemu_CreateFileMappingA(struct qemu_syscall *call)
 {
     struct qemu_CreateFileMappingA *c = (struct qemu_CreateFileMappingA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateFileMappingA(QEMU_G2H(c->hFile), QEMU_G2H(c->sa), c->protect, c->size_high, c->size_low, QEMU_G2H(c->name));
 }
 
@@ -460,7 +460,7 @@ WINBASEAPI HANDLE WINAPI CreateFileMappingW(HANDLE hFile, LPSECURITY_ATTRIBUTES 
 void qemu_CreateFileMappingW(struct qemu_syscall *call)
 {
     struct qemu_CreateFileMappingW *c = (struct qemu_CreateFileMappingW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateFileMappingW(QEMU_G2H(c->hFile), QEMU_G2H(c->sa), c->protect, c->size_high, c->size_low, QEMU_G2H(c->name));
 }
 
@@ -566,7 +566,7 @@ WINBASEAPI LPVOID WINAPI MapViewOfFile(HANDLE mapping, DWORD access, DWORD offse
 void qemu_MapViewOfFile(struct qemu_syscall *call)
 {
     struct qemu_MapViewOfFile *c = (struct qemu_MapViewOfFile *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)MapViewOfFile(QEMU_G2H(c->mapping), c->access, c->offset_high, c->offset_low, c->count);
 }
 
@@ -590,10 +590,10 @@ WINBASEAPI LPVOID WINAPI MapViewOfFileEx(HANDLE handle, DWORD access, DWORD offs
     struct qemu_MapViewOfFileEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MAPVIEWOFFILEEX);
     call.handle = (uint64_t)handle;
-    call.access = (uint64_t)access;
-    call.offset_high = (uint64_t)offset_high;
-    call.offset_low = (uint64_t)offset_low;
-    call.count = (uint64_t)count;
+    call.access = access;
+    call.offset_high = offset_high;
+    call.offset_low = offset_low;
+    call.count = count;
     call.addr = (uint64_t)addr;
 
     qemu_syscall(&call.super);
@@ -607,7 +607,7 @@ void qemu_MapViewOfFileEx(struct qemu_syscall *call)
 {
     struct qemu_MapViewOfFileEx *c = (struct qemu_MapViewOfFileEx *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)MapViewOfFileEx(QEMU_G2H(c->handle), c->access, c->offset_high, c->offset_low, c->count, QEMU_G2H(c->addr));
+    c->super.iret = (uint64_t)MapViewOfFileEx((HANDLE)c->handle, c->access, c->offset_high, c->offset_low, c->count, QEMU_G2H(c->addr));
 }
 
 #endif
@@ -636,7 +636,7 @@ WINBASEAPI BOOL WINAPI UnmapViewOfFile(LPCVOID addr)
 void qemu_UnmapViewOfFile(struct qemu_syscall *call)
 {
     struct qemu_UnmapViewOfFile *c = (struct qemu_UnmapViewOfFile *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = UnmapViewOfFile(QEMU_G2H(c->addr));
 }
 
