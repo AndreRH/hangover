@@ -4493,12 +4493,19 @@ static HRESULT WINAPI d3d9_device_CreatePixelShader(IDirect3DDevice9Ex *iface, c
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
     struct qemu_d3d9_device_CreatePixelShader call;
+    struct qemu_d3d9_shader_impl *impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_CREATEPIXELSHADER);
     call.iface = (uint64_t)device;
     call.byte_code = (uint64_t)byte_code;
-    call.shader = (uint64_t)shader;
+    call.shader = (uint64_t)&impl;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+    {
+        impl->IDirect3DPixelShader9_iface.lpVtbl = &d3d9_pixelshader_vtbl;
+        *shader = &impl->IDirect3DPixelShader9_iface;
+    }
 
     return call.super.iret;
 }
@@ -4509,11 +4516,29 @@ void qemu_d3d9_device_CreatePixelShader(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_CreatePixelShader *c = (struct qemu_d3d9_device_CreatePixelShader *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_shader_impl *shader;
+    IDirect3DPixelShader9 *host_shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_CreatePixelShader(device->host, QEMU_G2H(c->byte_code), QEMU_G2H(c->shader));
+    shader = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*shader));
+    if (!shader)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = IDirect3DDevice9Ex_CreatePixelShader(device->host, QEMU_G2H(c->byte_code), &host_shader);
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, shader);
+        return;
+    }
+
+    shader->hostps = host_shader;
+    shader->device = device;
+    *(uint64_t *)QEMU_G2H(c->shader) = QEMU_H2G(shader);
 }
 
 #endif

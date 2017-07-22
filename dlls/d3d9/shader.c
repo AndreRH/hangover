@@ -326,7 +326,12 @@ void qemu_d3d9_pixelshader_Release(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     shader = QEMU_G2H(c->iface);
 
+    d3d9_device_wrapper_addref(shader->device);
     c->super.iret = IDirect3DPixelShader9_Release(shader->hostps);
+    d3d9_device_wrapper_release(shader->device);
+
+    if (!c->super.iret)
+        HeapFree(GetProcessHeap(), 0, shader);
 }
 
 #endif
