@@ -98,7 +98,7 @@ void qemu_d3d9_vertexshader_AddRef(struct qemu_syscall *call)
     struct qemu_d3d9_vertexshader_AddRef *c = (struct qemu_d3d9_vertexshader_AddRef *)call;
     struct qemu_d3d9_shader_impl *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVertexShader9_AddRef(shader->hostvs);
@@ -133,10 +133,15 @@ void qemu_d3d9_vertexshader_Release(struct qemu_syscall *call)
     struct qemu_d3d9_vertexshader_Release *c = (struct qemu_d3d9_vertexshader_Release *)call;
     struct qemu_d3d9_shader_impl *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
+    d3d9_device_wrapper_addref(shader->device);
     c->super.iret = IDirect3DVertexShader9_Release(shader->hostvs);
+    d3d9_device_wrapper_release(shader->device);
+
+    if (!c->super.iret)
+        HeapFree(GetProcessHeap(), 0, shader);
 }
 
 #endif
