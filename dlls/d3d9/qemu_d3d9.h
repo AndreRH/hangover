@@ -160,6 +160,20 @@ enum d3d9_calls
     CALL_D3D9_GETADAPTERMODECOUNTEX,
     CALL_D3D9_GETADAPTERMONITOR,
     CALL_D3D9_GETDEVICECAPS,
+    CALL_D3D9_INDEXBUFFER_ADDREF,
+    CALL_D3D9_INDEXBUFFER_FREEPRIVATEDATA,
+    CALL_D3D9_INDEXBUFFER_GETDESC,
+    CALL_D3D9_INDEXBUFFER_GETDEVICE,
+    CALL_D3D9_INDEXBUFFER_GETPRIORITY,
+    CALL_D3D9_INDEXBUFFER_GETPRIVATEDATA,
+    CALL_D3D9_INDEXBUFFER_GETTYPE,
+    CALL_D3D9_INDEXBUFFER_LOCK,
+    CALL_D3D9_INDEXBUFFER_PRELOAD,
+    CALL_D3D9_INDEXBUFFER_QUERYINTERFACE,
+    CALL_D3D9_INDEXBUFFER_RELEASE,
+    CALL_D3D9_INDEXBUFFER_SETPRIORITY,
+    CALL_D3D9_INDEXBUFFER_SETPRIVATEDATA,
+    CALL_D3D9_INDEXBUFFER_UNLOCK,
     CALL_D3D9_QUERYINTERFACE,
     CALL_D3D9_REGISTERSOFTWAREDEVICE,
     CALL_D3D9_RELEASE,
@@ -264,6 +278,20 @@ enum d3d9_calls
     CALL_D3D9_VERTEX_DECLARATION_GETDEVICE,
     CALL_D3D9_VERTEX_DECLARATION_QUERYINTERFACE,
     CALL_D3D9_VERTEX_DECLARATION_RELEASE,
+    CALL_D3D9_VERTEXBUFFER_ADDREF,
+    CALL_D3D9_VERTEXBUFFER_FREEPRIVATEDATA,
+    CALL_D3D9_VERTEXBUFFER_GETDESC,
+    CALL_D3D9_VERTEXBUFFER_GETDEVICE,
+    CALL_D3D9_VERTEXBUFFER_GETPRIORITY,
+    CALL_D3D9_VERTEXBUFFER_GETPRIVATEDATA,
+    CALL_D3D9_VERTEXBUFFER_GETTYPE,
+    CALL_D3D9_VERTEXBUFFER_LOCK,
+    CALL_D3D9_VERTEXBUFFER_PRELOAD,
+    CALL_D3D9_VERTEXBUFFER_QUERYINTERFACE,
+    CALL_D3D9_VERTEXBUFFER_RELEASE,
+    CALL_D3D9_VERTEXBUFFER_SETPRIORITY,
+    CALL_D3D9_VERTEXBUFFER_SETPRIVATEDATA,
+    CALL_D3D9_VERTEXBUFFER_UNLOCK,
     CALL_D3DPERF_BEGINEVENT,
     CALL_D3DPERF_ENDEVENT,
     CALL_D3DPERF_GETSTATUS,
@@ -287,6 +315,8 @@ extern const struct IDirect3DTexture9Vtbl d3d9_texture_2d_vtbl;
 extern const struct IDirect3DCubeTexture9Vtbl d3d9_texture_cube_vtbl;
 extern const struct IDirect3DVolumeTexture9Vtbl d3d9_texture_3d_vtbl;
 extern const struct IDirect3DVertexDeclaration9Vtbl d3d9_vertex_declaration_vtbl;
+extern const IDirect3DVertexBuffer9Vtbl d3d9_vertexbuffer_vtbl;
+extern const IDirect3DIndexBuffer9Vtbl d3d9_indexbuffer_vtbl;
 
 void d3d9_device_set_swapchain_ifaces(IDirect3DDevice9Ex *device);
 void d3d9_swapchain_set_surfaces_ifaces(IDirect3DSwapChain9Ex *swapchain);
@@ -449,6 +479,20 @@ void qemu_d3d9_GetAdapterModeCount(struct qemu_syscall *call);
 void qemu_d3d9_GetAdapterModeCountEx(struct qemu_syscall *call);
 void qemu_d3d9_GetAdapterMonitor(struct qemu_syscall *call);
 void qemu_d3d9_GetDeviceCaps(struct qemu_syscall *call);
+void qemu_d3d9_indexbuffer_AddRef(struct qemu_syscall *call);
+void qemu_d3d9_indexbuffer_FreePrivateData(struct qemu_syscall *call);
+void qemu_d3d9_indexbuffer_GetDesc(struct qemu_syscall *call);
+void qemu_d3d9_indexbuffer_GetDevice(struct qemu_syscall *call);
+void qemu_d3d9_indexbuffer_GetPriority(struct qemu_syscall *call);
+void qemu_d3d9_indexbuffer_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d9_indexbuffer_GetType(struct qemu_syscall *call);
+void qemu_d3d9_indexbuffer_Lock(struct qemu_syscall *call);
+void qemu_d3d9_indexbuffer_PreLoad(struct qemu_syscall *call);
+void qemu_d3d9_indexbuffer_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d9_indexbuffer_Release(struct qemu_syscall *call);
+void qemu_d3d9_indexbuffer_SetPriority(struct qemu_syscall *call);
+void qemu_d3d9_indexbuffer_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d9_indexbuffer_Unlock(struct qemu_syscall *call);
 void qemu_d3d9_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d9_RegisterSoftwareDevice(struct qemu_syscall *call);
 void qemu_d3d9_Release(struct qemu_syscall *call);
@@ -553,6 +597,20 @@ void qemu_d3d9_vertex_declaration_GetDeclaration(struct qemu_syscall *call);
 void qemu_d3d9_vertex_declaration_GetDevice(struct qemu_syscall *call);
 void qemu_d3d9_vertex_declaration_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d9_vertex_declaration_Release(struct qemu_syscall *call);
+void qemu_d3d9_vertexbuffer_AddRef(struct qemu_syscall *call);
+void qemu_d3d9_vertexbuffer_FreePrivateData(struct qemu_syscall *call);
+void qemu_d3d9_vertexbuffer_GetDesc(struct qemu_syscall *call);
+void qemu_d3d9_vertexbuffer_GetDevice(struct qemu_syscall *call);
+void qemu_d3d9_vertexbuffer_GetPriority(struct qemu_syscall *call);
+void qemu_d3d9_vertexbuffer_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d9_vertexbuffer_GetType(struct qemu_syscall *call);
+void qemu_d3d9_vertexbuffer_Lock(struct qemu_syscall *call);
+void qemu_d3d9_vertexbuffer_PreLoad(struct qemu_syscall *call);
+void qemu_d3d9_vertexbuffer_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d9_vertexbuffer_Release(struct qemu_syscall *call);
+void qemu_d3d9_vertexbuffer_SetPriority(struct qemu_syscall *call);
+void qemu_d3d9_vertexbuffer_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d9_vertexbuffer_Unlock(struct qemu_syscall *call);
 void qemu_D3DPERF_BeginEvent(struct qemu_syscall *call);
 void qemu_D3DPERF_EndEvent(struct qemu_syscall *call);
 void qemu_D3DPERF_GetStatus(struct qemu_syscall *call);

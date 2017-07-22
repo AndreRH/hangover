@@ -106,4 +106,32 @@ static inline struct qemu_d3d9_vertex_declaration_impl *impl_from_IDirect3DVerte
     return CONTAINING_RECORD(iface, struct qemu_d3d9_vertex_declaration_impl, IDirect3DVertexDeclaration9_iface);
 }
 
+struct qemu_d3d9_buffer_impl
+{
+    union
+    {
+        IDirect3DVertexBuffer9 IDirect3DVertexBuffer9_iface;
+        IDirect3DIndexBuffer9 IDirect3DIndexBuffer9_iface;
+    };
+    union
+    {
+        IDirect3DVertexBuffer9 *hostvb;
+        IDirect3DIndexBuffer9 *hostib;
+    };
+
+    IUnknown private_data;
+    ULONG private_data_ref; /* NOT the externally visible ref! */
+    struct qemu_d3d9_device_impl *device;
+};
+
+static inline struct qemu_d3d9_buffer_impl *impl_from_IDirect3DVertexBuffer9(IDirect3DVertexBuffer9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_buffer_impl, IDirect3DVertexBuffer9_iface);
+}
+
+static inline struct qemu_d3d9_buffer_impl *impl_from_IDirect3DIndexBuffer9(IDirect3DIndexBuffer9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_buffer_impl, IDirect3DIndexBuffer9_iface);
+}
+
 #endif
