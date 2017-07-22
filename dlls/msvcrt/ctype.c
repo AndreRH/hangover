@@ -1224,7 +1224,7 @@ WINBASEAPI int CDECL MSVCRT_tolower(int c)
 void qemu_tolower(struct qemu_syscall *call)
 {
     struct qemu_tolower *c = (struct qemu_tolower *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_tolower(c->c);
 }
 
