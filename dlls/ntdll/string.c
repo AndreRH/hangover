@@ -1709,7 +1709,7 @@ WINBASEAPI LONG CDECL NTDLL_atol(const char *nptr)
 void qemu_atol(struct qemu_syscall *call)
 {
     struct qemu_atol *c = (struct qemu_atol *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_atol(QEMU_G2H(c->nptr));
 }
 
