@@ -1679,7 +1679,7 @@ WINBASEAPI int CDECL NTDLL_atoi(const char *nptr)
 void qemu_atoi(struct qemu_syscall *call)
 {
     struct qemu_atoi *c = (struct qemu_atoi *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_atoi(QEMU_G2H(c->nptr));
 }
 

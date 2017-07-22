@@ -2455,7 +2455,7 @@ WINBASEAPI double CDECL MSVCRT_floor(double x)
 void qemu_floor(struct qemu_syscall *call)
 {
     struct qemu_floor *c = (struct qemu_floor *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_floor(c->x);
 }
 
@@ -3101,7 +3101,7 @@ WINBASEAPI int CDECL MSVCRT__finite(double num)
 void qemu__finite(struct qemu_syscall *call)
 {
     struct qemu__finite *c = (struct qemu__finite *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__finite(c->num);
 }
 
