@@ -379,6 +379,7 @@ EXPORTS
   srand=MSVCRT_srand
   sscanf=MSVCRT_sscanf
   strcat_s=MSVCRT_strcat_s
+  strchr=MSVCRT_strchr
   strcpy_s=MSVCRT_strcpy_s
   strlen=MSVCRT_strlen
   strncmp=MSVCRT_strncmp

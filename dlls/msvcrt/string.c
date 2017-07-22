@@ -350,6 +350,39 @@ void qemu_strcat_s(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_strchr
+{
+    struct qemu_syscall super;
+    uint64_t str;
+    uint64_t c;
+};
+
+
+#ifdef QEMU_DLL_GUEST
+
+char * CDECL MSVCRT_strchr(const char *str, int c)
+{
+    struct qemu_strchr call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_STRCHR);
+    call.str = (uint64_t)str;
+    call.c = c;
+
+    qemu_syscall(&call.super);
+
+    return (char *)call.super.iret;
+}
+
+#else
+
+void qemu_strchr(struct qemu_syscall *call)
+{
+    struct qemu_strchr *c = (struct qemu_strchr *)call;
+    WINE_TRACE("\n");
+    c->super.iret = QEMU_H2G(p_strchr(QEMU_G2H(c->str), c->c));
+}
+
+#endif
+
 /* FIXME: Calling out of the vm for strcpy_s is probably a waste of time. */
 struct qemu_strcpy_s
 {

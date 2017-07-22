@@ -428,6 +428,7 @@ enum msvcrt_calls
     CALL_SQRTF,
     CALL_SRAND,
     CALL_STRCAT_S,
+    CALL_STRCHR,
     CALL_STRCPY_S,
     CALL_STRLEN,
     CALL_STRNCMP,
@@ -917,6 +918,7 @@ void qemu_sqrt(struct qemu_syscall *call);
 void qemu_sqrtf(struct qemu_syscall *call);
 void qemu_srand(struct qemu_syscall *call);
 void qemu_strcat_s(struct qemu_syscall *call);
+void qemu_strchr(struct qemu_syscall *call);
 void qemu_strcpy_s(struct qemu_syscall *call);
 void qemu_strlen(struct qemu_syscall *call);
 void qemu_strncmp(struct qemu_syscall *call);
@@ -991,6 +993,7 @@ float (* CDECL p_sinf)(float x);
 float (* CDECL p_sqrtf)(float x);
 int (* CDECL p_strcpy_s)(char *dst, size_t elem, const char *src);
 int (* CDECL p_strcat_s)(char *dst, size_t elem, const char *src);
+char * (* CDECL p_strchr)(const char *str, int c);
 size_t (* CDECL p_strlen)(const char *str);
 int (* CDECL p_strncmp)(const char *str1, const char *str2, size_t len);
 int (* CDECL p_strrchr)(const char *str, int c);
