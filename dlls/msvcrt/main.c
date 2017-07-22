@@ -146,6 +146,7 @@ static const syscall_handler dll_functions[] =
     qemu__controlfp_s,
     qemu__copysign,
     qemu__copysignf,
+    qemu__CxxThrowException,
     qemu__dclass,
     qemu__dpcomp,
     qemu__dsign,

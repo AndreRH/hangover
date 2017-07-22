@@ -32,6 +32,25 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 
 #ifdef QEMU_DLL_GUEST
 
+void CDECL MSVCRT__CxxThrowException(void *object, const void *type)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL__CXXTHROWEXCEPTION);
+
+    qemu_syscall(&call);
+}
+
+#else
+
+void qemu__CxxThrowException(struct qemu_syscall *c)
+{
+    WINE_FIXME("Stub!\n");
+}
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
 void CDECL MSVCRT_terminate(void)
 {
     struct qemu_syscall call;

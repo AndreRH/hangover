@@ -84,6 +84,7 @@ EXPORTS
   _controlfp_s
   _copysign=MSVCRT__copysign
   _copysignf=MSVCRT__copysignf
+  _CxxThrowException=MSVCRT__CxxThrowException
   _ecvt=MSVCRT__ecvt
   _ecvt_s=MSVCRT__ecvt_s
   _errno=MSVCRT__errno

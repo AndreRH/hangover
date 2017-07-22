@@ -77,6 +77,7 @@ enum msvcrt_calls
     CALL__CONTROLFP_S,
     CALL__COPYSIGN,
     CALL__COPYSIGNF,
+    CALL__CXXTHROWEXCEPTION,
     CALL__DCLASS,
     CALL__DPCOMP,
     CALL__DSIGN,
@@ -560,6 +561,7 @@ void qemu__controlfp(struct qemu_syscall *call);
 void qemu__controlfp_s(struct qemu_syscall *call);
 void qemu__copysign(struct qemu_syscall *call);
 void qemu__copysignf(struct qemu_syscall *call);
+void qemu__CxxThrowException(struct qemu_syscall *c);
 void qemu__dclass(struct qemu_syscall *call);
 void qemu__dpcomp(struct qemu_syscall *call);
 void qemu__dsign(struct qemu_syscall *call);
