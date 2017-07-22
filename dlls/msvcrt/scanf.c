@@ -34,23 +34,49 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 struct qemu_scanf
 {
     struct qemu_syscall super;
+    uint64_t argcount, argcount_float;
     uint64_t str;
     uint64_t fmt;
+    uint64_t locale;
+    struct va_array args[1];
 };
 
 
 #ifdef QEMU_DLL_GUEST
 
+static int scanf_helper(const char *str, const char *fmt, MSVCRT__locale_t locale, va_list args)
+{
+    struct qemu_scanf *call;
+    int ret;
+    unsigned int count = count_printf_argsA(fmt, NULL), i;
+
+    call = MSVCRT_malloc(offsetof(struct qemu_scanf, args[count]));
+
+    call->super.id = QEMU_SYSCALL_ID(CALL_VSSCANF);
+    call->str = (uint64_t)str;
+    call->fmt = (uint64_t)fmt;
+    call->locale = (uint64_t)locale;
+    call->argcount_float = 0;
+    call->argcount = count;
+
+    for (i = 0; i < count; ++i)
+    {
+        call->args[i].is_float = FALSE;
+        call->args[i].arg = va_arg(args, uint64_t);
+    }
+
+    qemu_syscall(&call->super);
+    ret = call->super.iret;
+
+    MSVCRT_free(call);
+
+    return ret;
+}
+
 int CDECL MSVCRT_vsscanf_l(const char *str, const char *fmt, MSVCRT__locale_t locale, va_list list)
 {
-    struct qemu_scanf call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_VSSCANF);
-    call.str = (uint64_t)str;
-    call.fmt = (uint64_t)fmt;
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return scanf_helper(str, fmt, locale, list);
 }
 
 int CDECL MSVCRT_sscanf(const char *str, const char *fmt, ...)
@@ -67,11 +93,40 @@ int CDECL MSVCRT_sscanf(const char *str, const char *fmt, ...)
 
 #else
 
+struct scanf_data
+{
+    void *str;
+    void *fmt;
+    MSVCRT__locale_t locale;
+};
+
+static uint64_t scanf_wrapper(void *data, ...)
+{
+    struct scanf_data *d = data;
+    va_list args;
+    int ret;
+
+    va_start(args, data);
+    /* Deliberately call Linux here, there is no va_list version of sscanf in msvcrt.dll.
+     * It exists in msvcr120+, but Wine's implementation is a stub. */
+    ret = vsscanf(d->str, d->fmt, args);
+    va_end(args);
+
+    return ret;
+}
+
 void qemu_scanf(struct qemu_syscall *call)
 {
     struct qemu_scanf *c = (struct qemu_scanf *)call;
-    WINE_FIXME("Stub!\n");
-    c->super.iret = -1;
+    struct scanf_data d;
+
+    WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", c->argcount_float, c->argcount, (char *)QEMU_G2H(c->fmt));
+
+    d.str = QEMU_G2H(c->str);
+    d.fmt = QEMU_G2H(c->fmt);
+    d.locale = QEMU_G2H(c->locale);
+
+    c->super.iret = call_va(scanf_wrapper, &d, c->argcount, c->argcount_float, c->args);
 }
 
 #endif

@@ -293,7 +293,7 @@ struct qemu_fprintf
 
 #ifdef QEMU_DLL_GUEST
 
-static unsigned int count_printf_argsA(const char *format, char *fmts)
+unsigned int count_printf_argsA(const char *format, char *fmts)
 {
     unsigned int i, count = 0;
     BOOL fmt_start = FALSE;
@@ -330,9 +330,13 @@ static unsigned int count_printf_argsA(const char *format, char *fmts)
             case 'u':
             case 'X':
             case 'x':
-                fmts[count++] = format[i];
-                if (count == 256)
-                    MSVCRT_exit(255);
+                if (fmts)
+                {
+                    fmts[count] = format[i];
+                    if (count == 256)
+                        MSVCRT_exit(255);
+                }
+                count++;
                 fmt_start = FALSE;
                 break;
 

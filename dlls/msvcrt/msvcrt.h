@@ -378,6 +378,8 @@ void * CDECL MSVCRT_memcpy(void *dst, const void *src, size_t size);
 void * CDECL MSVCRT_realloc(void *ptr, size_t size);
 size_t CDECL MSVCRT_strlen(const char *str);
 
+unsigned int count_printf_argsA(const char *format, char *fmts);
+
 #else
 
 extern const struct qemu_ops *qemu_ops;

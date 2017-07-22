@@ -60,5 +60,15 @@ int WinMain()
 
     wcscpy(bufferW, L"1234");
     wprintf(L"wcsrchr(L\"1234\", '3')=%s\n", wcsrchr(bufferW, '3'));
+
+    {
+        int i1, i2, i3, i4, i5, i6;
+        float f1, f2, f3;
+        const char *fmt = "hallo %d %d %d %f %f %d %d %d gagag %f xxx\n";
+        const char *str = "hallo 12 13 -0014 5.5 27.3 0 1 2 gagag 123.45 xxx";
+
+        sscanf(str, fmt, &i1, &i2, &i3, &f1, &f2, &i4, &i5, &i6, &f3);
+        printf(fmt, i1, i2, i3, f1, f2, i4, i5, i6, f3);
+    }
     return 123;
 }
