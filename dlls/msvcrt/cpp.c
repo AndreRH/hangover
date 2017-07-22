@@ -49,3 +49,31 @@ void qemu_terminate(struct qemu_syscall *c)
 }
 
 #endif
+
+struct qemu_type_info_dtor
+{
+    struct qemu_syscall super;
+    uint64_t this;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+void __thiscall MSVCRT_type_info_dtor(void * _this)
+{
+    struct qemu_type_info_dtor call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_TYPE_INFO_DTOR);
+    call.this = (uint64_t)_this;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_type_info_dtor(struct qemu_syscall *call)
+{
+    struct qemu_type_info_dtor *c = (struct qemu_type_info_dtor *)call;
+    WINE_FIXME("Unverified!\n");
+    p_type_info_dtor(QEMU_G2H(c->this));
+}
+
+#endif

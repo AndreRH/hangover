@@ -509,6 +509,7 @@ static const syscall_handler dll_functions[] =
     qemu_trunc,
     qemu_truncf,
     qemu_truncl,
+    qemu_type_info_dtor,
     qemu_scanf,
     qemu_wcscat_s,
     qemu_wcscpy,
@@ -960,6 +961,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_trunc = (void *)GetProcAddress(msvcrt, "trunc");
     p_truncf = (void *)GetProcAddress(msvcrt, "truncf");
     p_truncl = (void *)GetProcAddress(msvcrt, "truncl");
+    p_type_info_dtor = (void *)GetProcAddress(msvcrt, "??1type_info@@UAA@XZ");
     p_vfprintf = (void *)GetProcAddress(msvcrt, "vfprintf");
     p_vfwprintf = (void *)GetProcAddress(msvcrt, "vfwprintf");
     p_vsprintf = (void *)GetProcAddress(msvcrt, "vsprintf");

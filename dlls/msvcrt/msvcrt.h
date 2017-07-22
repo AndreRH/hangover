@@ -440,6 +440,7 @@ enum msvcrt_calls
     CALL_TRUNC,
     CALL_TRUNCF,
     CALL_TRUNCL,
+    CALL_TYPE_INFO_DTOR,
     CALL_VSSCANF,
     CALL_WCSCAT_S,
     CALL_WCSCPY,
@@ -922,6 +923,7 @@ void qemu_toupper(struct qemu_syscall *call);
 void qemu_trunc(struct qemu_syscall *call);
 void qemu_truncf(struct qemu_syscall *call);
 void qemu_truncl(struct qemu_syscall *call);
+void qemu_type_info_dtor(struct qemu_syscall *call);
 void qemu_wcscat_s(struct qemu_syscall *call);
 void qemu_wcscpy(struct qemu_syscall *call);
 void qemu_wcscpy_s(struct qemu_syscall *call);
@@ -1380,6 +1382,7 @@ size_t (* CDECL p_mbsrtowcs)(WCHAR *wcstr, const char **pmbstr, size_t count, vo
 int (* CDECL p_mbsrtowcs_s)(size_t *ret, WCHAR *wcstr, size_t len, const char **mbstr, size_t count, void *state);
 unsigned int (* CDECL p__mbctohira)(unsigned int c);
 unsigned int (* CDECL p__mbctokata)(unsigned int c);
+void (* CDECL p_type_info_dtor)(void *_this); /* __thiscall */
 
 DWORD msvcrt_tls;
 
