@@ -156,6 +156,7 @@ enum msvcrt_calls
     CALL__VSNWPRINTF,
     CALL__WCSNICMP,
     CALL__WRITE,
+    CALL__WTOF,
     CALL__WTOI,
     CALL__XCPTFILTER,
     CALL__Y0,
@@ -526,6 +527,7 @@ void qemu__toupper_l(struct qemu_syscall *call);
 void qemu__unlock(struct qemu_syscall *call);
 void qemu__wcsnicmp(struct qemu_syscall *call);
 void qemu__write(struct qemu_syscall *call);
+void qemu__wtof(struct qemu_syscall *call);
 void qemu__wtoi(struct qemu_syscall *call);
 void qemu__xcptfilter(struct qemu_syscall *c);
 void qemu__y0(struct qemu_syscall *call);
@@ -734,6 +736,7 @@ char * (* CDECL p__strdup)(const char* str);
 int (* CDECL p__stricmp)(const char *s1, const char *s2);
 void (* CDECL p__unlock)(int locknum);
 int (* CDECL p__wcsnicmp)(const WCHAR *str1, const WCHAR *str2, int count);
+double (* CDECL p__wtof)(const WCHAR *str1);
 int (* CDECL p__wtoi)(const WCHAR *str1);
 void (* CDECL p_abort)(void);
 float (* CDECL p_atan2f)(float x, float y);
