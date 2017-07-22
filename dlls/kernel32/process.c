@@ -356,6 +356,7 @@ WINBASEAPI DWORD WINAPI TlsAlloc(void)
     struct qemu_TlsAlloc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TLSALLOC);
 
+    /* This should be done on the guest side using the guest TEB. */
     qemu_syscall(&call.super);
 
     return call.super.iret;
@@ -366,7 +367,7 @@ WINBASEAPI DWORD WINAPI TlsAlloc(void)
 void qemu_TlsAlloc(struct qemu_syscall *call)
 {
     struct qemu_TlsAlloc *c = (struct qemu_TlsAlloc *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = TlsAlloc();
 }
 
@@ -416,6 +417,7 @@ WINBASEAPI LPVOID WINAPI TlsGetValue(DWORD index)
     call.super.id = QEMU_SYSCALL_ID(CALL_TLSGETVALUE);
     call.index = (uint64_t)index;
 
+    /* This should be done on the guest side using the guest TEB. */
     qemu_syscall(&call.super);
 
     return (LPVOID)call.super.iret;
@@ -426,7 +428,7 @@ WINBASEAPI LPVOID WINAPI TlsGetValue(DWORD index)
 void qemu_TlsGetValue(struct qemu_syscall *call)
 {
     struct qemu_TlsGetValue *c = (struct qemu_TlsGetValue *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)TlsGetValue(c->index);
 }
 
@@ -448,6 +450,7 @@ WINBASEAPI BOOL WINAPI TlsSetValue(DWORD index, LPVOID value)
     call.index = (uint64_t)index;
     call.value = (uint64_t)value;
 
+    /* This should be done on the guest side using the guest TEB. */
     qemu_syscall(&call.super);
 
     return call.super.iret;
@@ -458,7 +461,7 @@ WINBASEAPI BOOL WINAPI TlsSetValue(DWORD index, LPVOID value)
 void qemu_TlsSetValue(struct qemu_syscall *call)
 {
     struct qemu_TlsSetValue *c = (struct qemu_TlsSetValue *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = TlsSetValue(c->index, QEMU_G2H(c->value));
 }
 
