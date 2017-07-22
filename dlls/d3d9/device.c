@@ -435,7 +435,7 @@ void qemu_d3d9_device_GetCreationParameters(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetCreationParameters *c = (struct qemu_d3d9_device_GetCreationParameters *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetCreationParameters(device->host, QEMU_G2H(c->parameters));
@@ -1712,13 +1712,20 @@ struct qemu_d3d9_device_GetRenderTarget
 static HRESULT WINAPI d3d9_device_GetRenderTarget(IDirect3DDevice9Ex *iface, DWORD idx, IDirect3DSurface9 **surface)
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
+    struct qemu_d3d9_subresource_impl *surface_impl;
     struct qemu_d3d9_device_GetRenderTarget call;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETRENDERTARGET);
     call.iface = (uint64_t)device;
-    call.idx = (uint64_t)idx;
-    call.surface = (uint64_t)surface;
+    call.idx = idx;
+    call.surface = (uint64_t)&surface_impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret) && surface_impl)
+        *surface = &surface_impl->IDirect3DSurface9_iface;
+    else
+        *surface = NULL;
 
     return call.super.iret;
 }
@@ -1729,11 +1736,27 @@ void qemu_d3d9_device_GetRenderTarget(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_GetRenderTarget *c = (struct qemu_d3d9_device_GetRenderTarget *)call;
     struct qemu_d3d9_device_impl *device;
+    IDirect3DSurface9 *host;
+    struct qemu_d3d9_subresource_impl *surface_impl;
+    DWORD size = sizeof(surface_impl);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_GetRenderTarget(device->host, c->idx, QEMU_G2H(c->surface));
+    c->super.iret = IDirect3DDevice9Ex_GetRenderTarget(device->host, c->idx, &host);
+    if (FAILED(c->super.iret))
+        return;
+
+    if (host)
+    {
+        IDirect3DSurface9_GetPrivateData(host, &qemu_d3d9_surface_guid, &surface_impl, &size);
+        WINE_TRACE("Got surface %p from private data from host surface %p.\n", surface_impl, host);
+        *(uint64_t *)QEMU_G2H(c->surface) = QEMU_H2G(surface_impl);
+    }
+    else
+    {
+        *(uint64_t *)QEMU_G2H(c->surface) = QEMU_H2G(NULL);
+    }
 }
 
 #endif

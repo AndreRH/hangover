@@ -102,7 +102,7 @@ void qemu_d3d9_surface_AddRef(struct qemu_syscall *call)
     struct qemu_d3d9_surface_AddRef *c = (struct qemu_d3d9_surface_AddRef *)call;
     struct qemu_d3d9_subresource_impl *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DSurface9_AddRef(surface->host);
@@ -538,7 +538,7 @@ static HRESULT WINAPI d3d9_surface_LockRect(IDirect3DSurface9 *iface, D3DLOCKED_
     call.iface = (uint64_t)surface;
     call.locked_rect = (uint64_t)locked_rect;
     call.rect = (uint64_t)rect;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -552,7 +552,7 @@ void qemu_d3d9_surface_LockRect(struct qemu_syscall *call)
     struct qemu_d3d9_surface_LockRect *c = (struct qemu_d3d9_surface_LockRect *)call;
     struct qemu_d3d9_subresource_impl *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DSurface9_LockRect(surface->host, QEMU_G2H(c->locked_rect), QEMU_G2H(c->rect), c->flags);
@@ -587,7 +587,7 @@ void qemu_d3d9_surface_UnlockRect(struct qemu_syscall *call)
     struct qemu_d3d9_surface_UnlockRect *c = (struct qemu_d3d9_surface_UnlockRect *)call;
     struct qemu_d3d9_subresource_impl *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DSurface9_UnlockRect(surface->host);

@@ -200,8 +200,8 @@ static HRESULT WINAPI d3d9_texture_2d_SetPrivateData(IDirect3DTexture9 *iface, R
     call.iface = (uint64_t)texture;
     call.guid = (uint64_t)guid;
     call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
-    call.flags = (uint64_t)flags;
+    call.data_size = data_size;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -215,8 +215,11 @@ void qemu_d3d9_texture_2d_SetPrivateData(struct qemu_syscall *call)
     struct qemu_d3d9_texture_2d_SetPrivateData *c = (struct qemu_d3d9_texture_2d_SetPrivateData *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
+
+    if (c->flags & D3DSPD_IUNKNOWN)
+        WINE_FIXME("Implement an IUnknown wrapper or handle this on the guest side\n");
 
     c->super.iret = IDirect3DTexture9_SetPrivateData(texture->host, QEMU_G2H(c->guid), QEMU_G2H(c->data), c->data_size, c->flags);
 }
