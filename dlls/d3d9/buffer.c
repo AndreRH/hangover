@@ -31,7 +31,6 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_d3d9);
 #endif
 
-
 struct qemu_d3d9_vertexbuffer_QueryInterface
 {
     struct qemu_syscall super;
@@ -41,6 +40,11 @@ struct qemu_d3d9_vertexbuffer_QueryInterface
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static inline struct qemu_d3d9_buffer_impl *impl_from_IDirect3DVertexBuffer9(IDirect3DVertexBuffer9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_buffer_impl, IDirect3DVertexBuffer9_iface);
+}
 
 static HRESULT WINAPI d3d9_vertexbuffer_QueryInterface(IDirect3DVertexBuffer9 *iface, REFIID riid, void **out)
 {

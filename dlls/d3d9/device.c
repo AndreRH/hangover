@@ -4384,13 +4384,15 @@ struct qemu_d3d9_device_SetStreamSource
 static HRESULT WINAPI d3d9_device_SetStreamSource(IDirect3DDevice9Ex *iface, UINT stream_idx, IDirect3DVertexBuffer9 *buffer, UINT offset, UINT stride)
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
+    struct qemu_d3d9_buffer_impl *buffer_impl = unsafe_impl_from_IDirect3DVertexBuffer9(buffer);
     struct qemu_d3d9_device_SetStreamSource call;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SETSTREAMSOURCE);
     call.iface = (uint64_t)device;
-    call.stream_idx = (uint64_t)stream_idx;
-    call.buffer = (uint64_t)buffer;
-    call.offset = (uint64_t)offset;
-    call.stride = (uint64_t)stride;
+    call.stream_idx = stream_idx;
+    call.buffer = (uint64_t)buffer_impl;
+    call.offset = offset;
+    call.stride = stride;
 
     qemu_syscall(&call.super);
 
@@ -4403,11 +4405,13 @@ void qemu_d3d9_device_SetStreamSource(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_SetStreamSource *c = (struct qemu_d3d9_device_SetStreamSource *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_buffer_impl *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    buffer = QEMU_G2H(c->buffer);
 
-    c->super.iret = IDirect3DDevice9Ex_SetStreamSource(device->host, c->stream_idx, QEMU_G2H(c->buffer), c->offset, c->stride);
+    c->super.iret = IDirect3DDevice9Ex_SetStreamSource(device->host, c->stream_idx, buffer ? buffer->hostvb : NULL, c->offset, c->stride);
 }
 
 #endif

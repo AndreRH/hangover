@@ -146,8 +146,11 @@ struct qemu_d3d9_buffer_impl
     struct qemu_d3d9_device_impl *device;
 };
 
-static inline struct qemu_d3d9_buffer_impl *impl_from_IDirect3DVertexBuffer9(IDirect3DVertexBuffer9 *iface)
+static inline struct qemu_d3d9_buffer_impl *unsafe_impl_from_IDirect3DVertexBuffer9(IDirect3DVertexBuffer9 *iface)
 {
+    if (!iface)
+        return NULL;
+    /* FIXME: assert(iface->lpVtbl == &d3d9_vertexbuffer_vtbl); */
     return CONTAINING_RECORD(iface, struct qemu_d3d9_buffer_impl, IDirect3DVertexBuffer9_iface);
 }
 
