@@ -127,6 +127,15 @@ static ULONG WINAPI d3d9_stateblock_Release(IDirect3DStateBlock9 *iface)
 
 #else
 
+void qemu_d3d9_stateblock_destroy(struct qemu_d3d9_stateblock_impl *stateblock)
+{
+    WINE_TRACE("Destroying stateblock wrapper %p\n", stateblock);
+
+    if (stateblock->state.vdecl)
+        d3d9_vdecl_internal_release(stateblock->state.vdecl);
+    HeapFree(GetProcessHeap(), 0, stateblock);
+}
+
 void qemu_d3d9_stateblock_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d9_stateblock_Release *c = (struct qemu_d3d9_stateblock_Release *)call;
@@ -140,9 +149,7 @@ void qemu_d3d9_stateblock_Release(struct qemu_syscall *call)
     d3d9_device_wrapper_release(stateblock->device);
 
     if (!c->super.iret)
-    {
-        HeapFree(GetProcessHeap(), 0, stateblock);
-    }
+        qemu_d3d9_stateblock_destroy(stateblock);
 }
 
 #endif

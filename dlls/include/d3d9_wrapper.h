@@ -117,6 +117,7 @@ struct qemu_d3d9_vertex_declaration_impl
     IDirect3DVertexDeclaration9 *host;
 
     struct qemu_d3d9_device_impl *device;
+    ULONG internal_ref;
 };
 
 static inline struct qemu_d3d9_vertex_declaration_impl *impl_from_IDirect3DVertexDeclaration9(IDirect3DVertexDeclaration9 *iface)

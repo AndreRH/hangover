@@ -695,6 +695,11 @@ void d3d9_texture_init(struct qemu_d3d9_texture_impl *texture, IDirect3DBaseText
 struct qemu_d3d9_buffer_impl *buffer_impl_from_IUnknown(IUnknown *iface);
 void d3d9_buffer_init(struct qemu_d3d9_buffer_impl *buffer, IDirect3DResource9 *host, struct qemu_d3d9_device_impl *device);
 
+ULONG d3d9_vdecl_internal_addref(struct qemu_d3d9_vertex_declaration_impl *decl);
+ULONG d3d9_vdecl_internal_release(struct qemu_d3d9_vertex_declaration_impl *decl);
+
+void qemu_d3d9_stateblock_destroy(struct qemu_d3d9_stateblock_impl *stateblock);
+
 extern const GUID qemu_d3d9_swapchain_guid;
 extern const GUID qemu_d3d9_surface_guid;
 extern const GUID qemu_d3d9_texture_guid;

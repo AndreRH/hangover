@@ -2660,6 +2660,10 @@ void qemu_d3d9_device_CreateStateBlock(struct qemu_syscall *call)
             stateblock->state.vdecl = device->dev_state.vdecl;
             break;
     }
+
+    if (stateblock->state.vdecl)
+        d3d9_vdecl_internal_addref(stateblock->state.vdecl);
+
     *(uint64_t *)QEMU_G2H(c->stateblock) = QEMU_H2G(stateblock);
 }
 
@@ -2766,7 +2770,7 @@ void qemu_d3d9_device_EndStateBlock(struct qemu_syscall *call)
 
     if (FAILED(c->super.iret))
     {
-        HeapFree(GetProcessHeap(), 0, stateblock);
+        qemu_d3d9_stateblock_destroy(stateblock);
         return;
     }
 
@@ -3790,6 +3794,7 @@ void qemu_d3d9_device_CreateVertexDeclaration(struct qemu_syscall *call)
 
     decl->host = host;
     decl->device = device;
+    decl->internal_ref = 1;
     *(uint64_t *)QEMU_G2H(c->declaration) = QEMU_H2G(decl);
 }
 

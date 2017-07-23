@@ -93,6 +93,13 @@ static ULONG WINAPI d3d9_vertex_declaration_AddRef(IDirect3DVertexDeclaration9 *
 
 #else
 
+ULONG d3d9_vdecl_internal_addref(struct qemu_d3d9_vertex_declaration_impl *decl)
+{
+    ULONG ref = InterlockedIncrement(&decl->internal_ref);
+    WINE_TRACE("%p increasing internal refcount to %u.\n", decl, ref);
+    return ref;
+}
+
 void qemu_d3d9_vertex_declaration_AddRef(struct qemu_syscall *call)
 {
     struct qemu_d3d9_vertex_declaration_AddRef *c = (struct qemu_d3d9_vertex_declaration_AddRef *)call;
@@ -102,6 +109,9 @@ void qemu_d3d9_vertex_declaration_AddRef(struct qemu_syscall *call)
     decl = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVertexDeclaration9_AddRef(decl->host);
+
+    if (c->super.iret == 1)
+        d3d9_vdecl_internal_addref(decl);
 }
 
 #endif
@@ -128,6 +138,19 @@ static ULONG WINAPI d3d9_vertex_declaration_Release(IDirect3DVertexDeclaration9 
 
 #else
 
+
+ULONG d3d9_vdecl_internal_release(struct qemu_d3d9_vertex_declaration_impl *decl)
+{
+    ULONG ref = InterlockedDecrement(&decl->internal_ref);
+    WINE_TRACE("%p decreasing internal refcount to %u.\n", decl, ref);
+
+    if (!ref)
+        HeapFree(GetProcessHeap(), 0, decl);
+
+    return ref;
+}
+
+
 void qemu_d3d9_vertex_declaration_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d9_vertex_declaration_Release *c = (struct qemu_d3d9_vertex_declaration_Release *)call;
@@ -136,14 +159,12 @@ void qemu_d3d9_vertex_declaration_Release(struct qemu_syscall *call)
     WINE_TRACE("\n");
     decl = QEMU_G2H(c->iface);
 
-    /* Fixme: This needs a second layer of hidden refcounts to track when this declaration is part of
-     * a stateblock. */
     d3d9_device_wrapper_addref(decl->device);
     c->super.iret = IDirect3DVertexDeclaration9_Release(decl->host);
     d3d9_device_wrapper_release(decl->device);
 
     if (!c->super.iret)
-        HeapFree(GetProcessHeap(), 0, decl);
+        d3d9_vdecl_internal_release(decl);
 }
 
 #endif
