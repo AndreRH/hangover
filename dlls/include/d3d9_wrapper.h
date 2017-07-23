@@ -90,6 +90,7 @@ struct qemu_d3d9_swapchain_impl
     IUnknown private_data;
     ULONG private_data_ref; /* NOT the externally visible ref! */
     struct qemu_d3d9_device_impl *device;
+    DWORD back_buffer_count;
     struct qemu_d3d9_subresource_impl backbuffers[1];
 };
 

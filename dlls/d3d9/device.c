@@ -716,6 +716,9 @@ static HRESULT WINAPI d3d9_device_Reset(IDirect3DDevice9Ex *iface, D3DPRESENT_PA
 
     qemu_syscall(&call.super);
 
+    if (SUCCEEDED(call.super.iret))
+        d3d9_device_set_implicit_ifaces(iface);
+
     return call.super.iret;
 }
 
@@ -726,10 +729,16 @@ void qemu_d3d9_device_Reset(struct qemu_syscall *call)
     struct qemu_d3d9_device_Reset *c = (struct qemu_d3d9_device_Reset *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_Reset(device->host, QEMU_G2H(c->present_parameters));
+
+    if (SUCCEEDED(c->super.iret) && !d3d9_device_wrap_implicit_resources(device))
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
 }
 
 #endif
@@ -5868,6 +5877,9 @@ static HRESULT WINAPI d3d9_device_ResetEx(IDirect3DDevice9Ex *iface, D3DPRESENT_
 
     qemu_syscall(&call.super);
 
+    if (SUCCEEDED(call.super.iret))
+        d3d9_device_set_implicit_ifaces(iface);
+
     return call.super.iret;
 }
 
@@ -5882,6 +5894,12 @@ void qemu_d3d9_device_ResetEx(struct qemu_syscall *call)
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_ResetEx(device->host, QEMU_G2H(c->present_parameters), QEMU_G2H(c->mode));
+
+    if (SUCCEEDED(c->super.iret) && !d3d9_device_wrap_implicit_resources(device))
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
 }
 
 #endif
@@ -6103,8 +6121,12 @@ BOOL d3d9_device_wrap_implicit_resources(struct qemu_d3d9_device_impl *device)
     struct qemu_d3d9_swapchain_impl *swapchain;
     IDirect3DSwapChain9Ex *host_swapchain;
     D3DPRESENT_PARAMETERS pp;
-    IDirect3DSurface9 *ds;
+    IDirect3DSurface9 *surface;
     struct qemu_d3d9_surface_impl *ds_impl;
+    struct qemu_d3d9_subresource_impl *subresource_impl;
+    IUnknown *priv_data;
+    DWORD size;
+    HRESULT hr;
 
     swapchain_count = IDirect3DDevice9_GetNumberOfSwapChains(device->host);
     for (i = 0; i < swapchain_count; ++i)
@@ -6112,30 +6134,66 @@ BOOL d3d9_device_wrap_implicit_resources(struct qemu_d3d9_device_impl *device)
         IDirect3DDevice9_GetSwapChain(device->host, i, (IDirect3DSwapChain9 **)&host_swapchain);
         IDirect3DSwapChain9_GetPresentParameters(host_swapchain, &pp);
 
-        swapchain = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
-                offsetof(struct qemu_d3d9_swapchain_impl, backbuffers[pp.BackBufferCount]));
-        WINE_TRACE("Allocated swapchain wrapper %p.\n", swapchain);
-        if (!swapchain)
+        /* Take care in case of calls from _Reset(), we might already have our private data. */
+        IDirect3DSwapChain9_GetBackBuffer(host_swapchain, 0, D3DBACKBUFFER_TYPE_MONO, &surface);
+        size = sizeof(priv_data);
+        hr = IDirect3DSurface9_GetPrivateData(surface, &qemu_d3d9_swapchain_guid, &priv_data, &size);
+        IDirect3DSurface9_Release(surface);
+
+        if (SUCCEEDED(hr))
         {
-            IDirect3DSwapChain9_Release(host_swapchain);
-            WINE_ERR("Out of memory\n");
-            goto error;
+            swapchain = swapchain_impl_from_IUnknown(priv_data);
+            if (swapchain->back_buffer_count != pp.BackBufferCount)
+            {
+                /* Not as easy as re-allocating the wrapper because the external
+                 * pointer should probably remain the same, just as the host pointer
+                 * did. May need a separate allocation for the backbuffer array. But
+                 * maybe if we grow from 2 backbuffers to 4 backbuffers 0 and 1 should
+                 * remain in place too. Needs tests. */
+                WINE_FIXME("Backbuffer count changed from %u to %u.\n",
+                        swapchain->back_buffer_count, pp.BackBufferCount);
+            }
+            priv_data->lpVtbl->Release(priv_data);
         }
-        d3d9_swapchain_init(swapchain, host_swapchain, device);
+        else
+        {
+            swapchain = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
+                    offsetof(struct qemu_d3d9_swapchain_impl, backbuffers[pp.BackBufferCount]));
+            WINE_TRACE("Allocated swapchain wrapper %p.\n", swapchain);
+            if (!swapchain)
+            {
+                IDirect3DSwapChain9_Release(host_swapchain);
+                goto error;
+            }
+            swapchain->back_buffer_count = pp.BackBufferCount;
+            d3d9_swapchain_init(swapchain, host_swapchain, device);
+        }
         IDirect3DSwapChain9_Release(host_swapchain);
     }
 
-    IDirect3DDevice9Ex_GetDepthStencilSurface(device->host, &ds);
-    if (ds)
+    IDirect3DDevice9Ex_GetDepthStencilSurface(device->host, &surface);
+    if (surface)
     {
-        ds_impl = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ds_impl));
-        d3d9_standalone_surface_init(ds_impl, ds, device);
-        IDirect3DSurface9_Release(ds);
+        /* Take care in case of calls from _Reset(), we might already have our private data. */
+        size = sizeof(subresource_impl);
+        hr = IDirect3DSurface9_GetPrivateData(surface, &qemu_d3d9_surface_guid, &subresource_impl, &size);
+        if (FAILED(hr))
+        {
+            ds_impl = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ds_impl));
+            if (!ds_impl)
+            {
+                IDirect3DSurface9_Release(surface);
+                goto error;
+            }
+            d3d9_standalone_surface_init(ds_impl, surface, device);
+        }
+        IDirect3DSurface9_Release(surface);
     }
 
     return TRUE;
 
 error:
+    WINE_ERR("Something went wrong when setting up wrapper interfaces.\n");
     /* TODO: Free stuff */
     return FALSE;
 }
