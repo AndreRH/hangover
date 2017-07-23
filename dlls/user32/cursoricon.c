@@ -475,14 +475,10 @@ WINUSERAPI HCURSOR WINAPI LoadCursorW(HINSTANCE hInstance, LPCWSTR name)
 void qemu_LoadCursorW(struct qemu_syscall *call)
 {
     struct qemu_LoadCursorW *c = (struct qemu_LoadCursorW *)call;
-    HINSTANCE instance;
     WINE_TRACE("\n");
-
-    instance = (HINSTANCE)c->hInstance;
-    if (!instance)
-        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
-
-    c->super.iret = (uint64_t)LoadCursorW(instance, QEMU_G2H(c->name));
+    /* Do not replace c->hInstance here. A NULL instance means loading the
+     * cursor from user32, not the current .exe. */
+    c->super.iret = (uint64_t)LoadCursorW((HINSTANCE)c->hInstance, QEMU_G2H(c->name));
 }
 
 #endif
@@ -513,14 +509,10 @@ WINUSERAPI HCURSOR WINAPI LoadCursorA(HINSTANCE hInstance, LPCSTR name)
 void qemu_LoadCursorA(struct qemu_syscall *call)
 {
     struct qemu_LoadCursorA *c = (struct qemu_LoadCursorA *)call;
-    HINSTANCE instance;
     WINE_TRACE("\n");
-
-    instance = (HINSTANCE)c->hInstance;
-    if (!instance)
-        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
-
-    c->super.iret = (uint64_t)LoadCursorA(instance, QEMU_G2H(c->name));
+    /* Do not replace c->hInstance here. A NULL instance means loading the
+     * cursor from user32, not the current .exe. */
+    c->super.iret = (uint64_t)LoadCursorA((HINSTANCE)c->hInstance, QEMU_G2H(c->name));
 }
 
 #endif
