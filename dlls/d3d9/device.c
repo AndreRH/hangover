@@ -2308,7 +2308,7 @@ void qemu_d3d9_device_SetMaterial(struct qemu_syscall *call)
     struct qemu_d3d9_device_SetMaterial *c = (struct qemu_d3d9_device_SetMaterial *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_SetMaterial(device->host, QEMU_G2H(c->material));
@@ -4564,8 +4564,8 @@ static HRESULT WINAPI d3d9_device_SetStreamSourceFreq(IDirect3DDevice9Ex *iface,
     struct qemu_d3d9_device_SetStreamSourceFreq call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SETSTREAMSOURCEFREQ);
     call.iface = (uint64_t)device;
-    call.stream_idx = (uint64_t)stream_idx;
-    call.freq = (uint64_t)freq;
+    call.stream_idx = stream_idx;
+    call.freq = freq;
 
     qemu_syscall(&call.super);
 
@@ -4579,7 +4579,7 @@ void qemu_d3d9_device_SetStreamSourceFreq(struct qemu_syscall *call)
     struct qemu_d3d9_device_SetStreamSourceFreq *c = (struct qemu_d3d9_device_SetStreamSourceFreq *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_SetStreamSourceFreq(device->host, c->stream_idx, c->freq);

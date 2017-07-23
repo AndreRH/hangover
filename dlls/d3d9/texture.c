@@ -1400,7 +1400,7 @@ void qemu_d3d9_texture_cube_GetLevelCount(struct qemu_syscall *call)
     struct qemu_d3d9_texture_cube_GetLevelCount *c = (struct qemu_d3d9_texture_cube_GetLevelCount *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DCubeTexture9_GetLevelCount(texture->host);
@@ -1544,7 +1544,7 @@ void qemu_d3d9_texture_cube_GetLevelDesc(struct qemu_syscall *call)
     struct qemu_d3d9_texture_cube_GetLevelDesc *c = (struct qemu_d3d9_texture_cube_GetLevelDesc *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DCubeTexture9_GetLevelDesc((IDirect3DCubeTexture9 *)texture->host, c->level, QEMU_G2H(c->desc));

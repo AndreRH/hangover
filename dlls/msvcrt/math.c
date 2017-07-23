@@ -601,7 +601,7 @@ WINBASEAPI float CDECL MSVCRT_fmodf(float x, float y)
 void qemu_fmodf(struct qemu_syscall *call)
 {
     struct qemu_fmodf *c = (struct qemu_fmodf *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_fmodf(c->x, c->y);
 }
 
