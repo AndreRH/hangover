@@ -324,7 +324,7 @@ void qemu_d3d9_pixelshader_AddRef(struct qemu_syscall *call)
     struct qemu_d3d9_pixelshader_AddRef *c = (struct qemu_d3d9_pixelshader_AddRef *)call;
     struct qemu_d3d9_shader_impl *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DPixelShader9_AddRef(shader->hostps);
@@ -359,7 +359,7 @@ void qemu_d3d9_pixelshader_Release(struct qemu_syscall *call)
     struct qemu_d3d9_pixelshader_Release *c = (struct qemu_d3d9_pixelshader_Release *)call;
     struct qemu_d3d9_shader_impl *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     d3d9_device_wrapper_addref(shader->device);

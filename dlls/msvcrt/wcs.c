@@ -377,7 +377,7 @@ WINBASEAPI INT CDECL MSVCRT_iswpunct(WCHAR wc)
 void qemu_iswpunct(struct qemu_syscall *call)
 {
     struct qemu_iswpunct *c = (struct qemu_iswpunct *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_iswpunct(c->wc);
 }
 
@@ -407,7 +407,7 @@ WINBASEAPI INT CDECL MSVCRT_iswdigit(WCHAR wc)
 void qemu_iswdigit(struct qemu_syscall *call)
 {
     struct qemu_iswdigit *c = (struct qemu_iswdigit *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_iswdigit(c->wc);
 }
 
@@ -437,7 +437,7 @@ WINBASEAPI INT CDECL MSVCRT_iswalpha(WCHAR wc)
 void qemu_iswalpha(struct qemu_syscall *call)
 {
     struct qemu_iswalpha *c = (struct qemu_iswalpha *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_iswalpha(c->wc);
 }
 

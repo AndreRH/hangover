@@ -291,8 +291,8 @@ WINGDIAPI BOOL WINAPI DeleteDC(HDC hdc)
 void qemu_DeleteDC(struct qemu_syscall *call)
 {
     struct qemu_DeleteDC *c = (struct qemu_DeleteDC *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DeleteDC(QEMU_G2H(c->hdc));
+    WINE_TRACE("\n");
+    c->super.iret = DeleteDC((HDC)c->hdc);
 }
 
 #endif

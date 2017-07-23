@@ -103,7 +103,7 @@ void qemu_d3d9_texture_2d_AddRef(struct qemu_syscall *call)
     struct qemu_d3d9_texture_2d_AddRef *c = (struct qemu_d3d9_texture_2d_AddRef *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DTexture9_AddRef(texture->host);
@@ -694,7 +694,7 @@ void qemu_d3d9_texture_2d_GetLevelDesc(struct qemu_syscall *call)
     struct qemu_d3d9_texture_2d_GetLevelDesc *c = (struct qemu_d3d9_texture_2d_GetLevelDesc *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DTexture9_GetLevelDesc((IDirect3DTexture9 *)texture->host, c->level, QEMU_G2H(c->desc));
@@ -774,10 +774,10 @@ static HRESULT WINAPI d3d9_texture_2d_LockRect(IDirect3DTexture9 *iface, UINT le
     struct qemu_d3d9_texture_2d_LockRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_LOCKRECT);
     call.iface = (uint64_t)texture;
-    call.level = (uint64_t)level;
+    call.level = level;
     call.locked_rect = (uint64_t)locked_rect;
     call.rect = (uint64_t)rect;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -791,7 +791,7 @@ void qemu_d3d9_texture_2d_LockRect(struct qemu_syscall *call)
     struct qemu_d3d9_texture_2d_LockRect *c = (struct qemu_d3d9_texture_2d_LockRect *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DTexture9_LockRect((IDirect3DTexture9 *)texture->host, c->level, QEMU_G2H(c->locked_rect), QEMU_G2H(c->rect), c->flags);
@@ -814,7 +814,7 @@ static HRESULT WINAPI d3d9_texture_2d_UnlockRect(IDirect3DTexture9 *iface, UINT 
     struct qemu_d3d9_texture_2d_UnlockRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_UNLOCKRECT);
     call.iface = (uint64_t)texture;
-    call.level = (uint64_t)level;
+    call.level = level;
 
     qemu_syscall(&call.super);
 
@@ -828,7 +828,7 @@ void qemu_d3d9_texture_2d_UnlockRect(struct qemu_syscall *call)
     struct qemu_d3d9_texture_2d_UnlockRect *c = (struct qemu_d3d9_texture_2d_UnlockRect *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DTexture9_UnlockRect((IDirect3DTexture9 *)texture->host, c->level);

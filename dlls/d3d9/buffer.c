@@ -669,7 +669,7 @@ void qemu_d3d9_indexbuffer_Release(struct qemu_syscall *call)
     struct qemu_d3d9_buffer_impl *buffer;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_ERR("\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
     device = buffer->device;
 

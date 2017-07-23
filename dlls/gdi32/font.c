@@ -1173,12 +1173,12 @@ WINGDIAPI BOOL WINAPI ExtTextOutW(HDC hdc, INT x, INT y, UINT flags, const RECT 
     struct qemu_ExtTextOutW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXTTEXTOUTW);
     call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.flags = (uint64_t)flags;
+    call.x = x;
+    call.y = y;
+    call.flags = flags;
     call.lprect = (uint64_t)lprect;
     call.str = (uint64_t)str;
-    call.count = (uint64_t)count;
+    call.count = count;
     call.lpDx = (uint64_t)lpDx;
 
     qemu_syscall(&call.super);
@@ -1191,7 +1191,7 @@ WINGDIAPI BOOL WINAPI ExtTextOutW(HDC hdc, INT x, INT y, UINT flags, const RECT 
 void qemu_ExtTextOutW(struct qemu_syscall *call)
 {
     struct qemu_ExtTextOutW *c = (struct qemu_ExtTextOutW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     c->super.iret = ExtTextOutW(QEMU_G2H(c->hdc), c->x, c->y, c->flags, QEMU_G2H(c->lprect), QEMU_G2H(c->str), c->count, QEMU_G2H(c->lpDx));
 }
 
@@ -1494,8 +1494,8 @@ WINGDIAPI BOOL WINAPI GetCharABCWidthsI(HDC hdc, UINT firstChar, UINT count, LPW
     struct qemu_GetCharABCWidthsI call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCHARABCWIDTHSI);
     call.hdc = (uint64_t)hdc;
-    call.firstChar = (uint64_t)firstChar;
-    call.count = (uint64_t)count;
+    call.firstChar = firstChar;
+    call.count = count;
     call.pgi = (uint64_t)pgi;
     call.abc = (uint64_t)abc;
 
@@ -1509,7 +1509,7 @@ WINGDIAPI BOOL WINAPI GetCharABCWidthsI(HDC hdc, UINT firstChar, UINT count, LPW
 void qemu_GetCharABCWidthsI(struct qemu_syscall *call)
 {
     struct qemu_GetCharABCWidthsI *c = (struct qemu_GetCharABCWidthsI *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCharABCWidthsI(QEMU_G2H(c->hdc), c->firstChar, c->count, QEMU_G2H(c->pgi), QEMU_G2H(c->abc));
 }
 

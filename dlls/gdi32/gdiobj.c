@@ -55,8 +55,8 @@ WINGDIAPI BOOL WINAPI DeleteObject(HGDIOBJ obj)
 void qemu_DeleteObject(struct qemu_syscall *call)
 {
     struct qemu_DeleteObject *c = (struct qemu_DeleteObject *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DeleteObject(QEMU_G2H(c->obj));
+    WINE_TRACE("\n");
+    c->super.iret = DeleteObject((HGDIOBJ)c->obj);
 }
 
 #endif
