@@ -570,6 +570,11 @@ struct qemu_d3d9_indexbuffer_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
+static inline struct qemu_d3d9_buffer_impl *impl_from_IDirect3DIndexBuffer9(IDirect3DIndexBuffer9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_buffer_impl, IDirect3DIndexBuffer9_iface);
+}
+
 static HRESULT WINAPI d3d9_indexbuffer_QueryInterface(IDirect3DIndexBuffer9 *iface, REFIID riid, void **out)
 {
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DIndexBuffer9(iface);

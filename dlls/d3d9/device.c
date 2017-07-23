@@ -4549,10 +4549,12 @@ struct qemu_d3d9_device_SetIndices
 static HRESULT WINAPI d3d9_device_SetIndices(IDirect3DDevice9Ex *iface, IDirect3DIndexBuffer9 *buffer)
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
+    struct qemu_d3d9_buffer_impl *buffer_impl = unsafe_impl_from_IDirect3DIndexBuffer9(buffer);
     struct qemu_d3d9_device_SetIndices call;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SETINDICES);
     call.iface = (uint64_t)device;
-    call.buffer = (uint64_t)buffer;
+    call.buffer = (uint64_t)buffer_impl;
 
     qemu_syscall(&call.super);
 
@@ -4565,11 +4567,13 @@ void qemu_d3d9_device_SetIndices(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_SetIndices *c = (struct qemu_d3d9_device_SetIndices *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_buffer_impl *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     device = QEMU_G2H(c->iface);
+    buffer = QEMU_G2H(c->buffer);
 
-    c->super.iret = IDirect3DDevice9Ex_SetIndices(device->host, QEMU_G2H(c->buffer));
+    c->super.iret = IDirect3DDevice9Ex_SetIndices(device->host, buffer ? buffer->hostib : NULL);
 }
 
 #endif
