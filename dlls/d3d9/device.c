@@ -4684,10 +4684,12 @@ struct qemu_d3d9_device_SetPixelShader
 static HRESULT WINAPI d3d9_device_SetPixelShader(IDirect3DDevice9Ex *iface, IDirect3DPixelShader9 *shader)
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
+    struct qemu_d3d9_shader_impl *shader_impl = unsafe_impl_from_IDirect3DPixelShader9(shader);
     struct qemu_d3d9_device_SetPixelShader call;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SETPIXELSHADER);
     call.iface = (uint64_t)device;
-    call.shader = (uint64_t)shader;
+    call.shader = (uint64_t)shader_impl;
 
     qemu_syscall(&call.super);
 
@@ -4700,11 +4702,25 @@ void qemu_d3d9_device_SetPixelShader(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_SetPixelShader *c = (struct qemu_d3d9_device_SetPixelShader *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_shader_impl *shader, *old;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     device = QEMU_G2H(c->iface);
+    old = device->state->ps;
+    shader = QEMU_G2H(c->shader);
 
-    c->super.iret = IDirect3DDevice9Ex_SetPixelShader(device->host, QEMU_G2H(c->shader));
+    c->super.iret = IDirect3DDevice9Ex_SetPixelShader(device->host, shader ? shader->hostps : NULL);
+
+    if (SUCCEEDED(c->super.iret) && shader != old)
+    {
+        device->state->ps = shader;
+        device->state->flags |= QEMU_D3D_STATE_HAS_PS;
+
+        if (shader)
+            d3d9_shader_internal_addref(shader);
+        if (old)
+            d3d9_shader_internal_release(old);
+    }
 }
 
 #endif

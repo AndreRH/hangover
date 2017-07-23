@@ -253,6 +253,11 @@ void qemu_d3d9_vertexshader_GetFunction(struct qemu_syscall *call)
 
 #endif
 
+static inline struct qemu_d3d9_shader_impl *impl_from_IDirect3DPixelShader9(IDirect3DPixelShader9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_shader_impl, IDirect3DPixelShader9_iface);
+}
+
 struct qemu_d3d9_pixelshader_QueryInterface
 {
     struct qemu_syscall super;
