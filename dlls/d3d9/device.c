@@ -4046,10 +4046,11 @@ struct qemu_d3d9_device_SetVertexShader
 static HRESULT WINAPI d3d9_device_SetVertexShader(IDirect3DDevice9Ex *iface, IDirect3DVertexShader9 *shader)
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
+    struct qemu_d3d9_shader_impl *shader_impl = unsafe_impl_from_IDirect3DVertexShader9(shader);
     struct qemu_d3d9_device_SetVertexShader call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SETVERTEXSHADER);
     call.iface = (uint64_t)device;
-    call.shader = (uint64_t)shader;
+    call.shader = (uint64_t)shader_impl;
 
     qemu_syscall(&call.super);
 
@@ -4062,11 +4063,25 @@ void qemu_d3d9_device_SetVertexShader(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_SetVertexShader *c = (struct qemu_d3d9_device_SetVertexShader *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_shader_impl *shader, *old;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    old = device->state->vs;
+    shader = QEMU_G2H(c->shader);
 
-    c->super.iret = IDirect3DDevice9Ex_SetVertexShader(device->host, QEMU_G2H(c->shader));
+    c->super.iret = IDirect3DDevice9Ex_SetVertexShader(device->host, shader ? shader->hostvs : NULL);
+
+    if (SUCCEEDED(c->super.iret) && shader != old)
+    {
+        device->state->vs = shader;
+        device->state->flags |= QEMU_D3D_STATE_HAS_VS;
+
+        if (shader)
+            d3d9_shader_internal_addref(shader);
+        if (old)
+            d3d9_shader_internal_release(old);
+    }
 }
 
 #endif

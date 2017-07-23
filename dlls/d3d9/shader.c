@@ -42,6 +42,11 @@ struct qemu_d3d9_vertexshader_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
+static inline struct qemu_d3d9_shader_impl *impl_from_IDirect3DVertexShader9(IDirect3DVertexShader9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_shader_impl, IDirect3DVertexShader9_iface);
+}
+
 static HRESULT WINAPI d3d9_vertexshader_QueryInterface(IDirect3DVertexShader9 *iface, REFIID riid, void **out)
 {
     struct qemu_d3d9_shader_impl *shader = impl_from_IDirect3DVertexShader9(iface);

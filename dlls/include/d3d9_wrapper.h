@@ -186,8 +186,11 @@ struct qemu_d3d9_shader_impl
     ULONG internal_ref;
 };
 
-static inline struct qemu_d3d9_shader_impl *impl_from_IDirect3DVertexShader9(IDirect3DVertexShader9 *iface)
+static inline struct qemu_d3d9_shader_impl *unsafe_impl_from_IDirect3DVertexShader9(IDirect3DVertexShader9 *iface)
 {
+    if (!iface)
+        return NULL;
+    /* FIXME: assert(iface->lpVtbl == &d3d9_vertexshader_vtbl); */
     return CONTAINING_RECORD(iface, struct qemu_d3d9_shader_impl, IDirect3DVertexShader9_iface);
 }
 
