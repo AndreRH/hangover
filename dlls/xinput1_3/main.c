@@ -23,6 +23,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
+#include "xinput1_3.h"
 
 #ifdef QEMU_DLL_GUEST
 
@@ -40,7 +41,14 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
-    NULL
+    qemu_XInputEnable,
+    qemu_XInputGetBatteryInformation,
+    qemu_XInputGetCapabilities,
+    qemu_XInputGetDSoundAudioDeviceGuids,
+    qemu_XInputGetKeystroke,
+    qemu_XInputGetState,
+    qemu_XInputGetStateEx,
+    qemu_XInputSetState,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)

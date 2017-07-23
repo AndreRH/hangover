@@ -2,3 +2,11 @@ LIBRARY xinput1_3.dll BASE=0x130000000
 
 EXPORTS
   D3DX10CreateFontW=ntdll.DbgBreakPoint
+  XInputEnable
+  XInputGetBatteryInformation
+  XInputGetCapabilities
+  XInputGetDSoundAudioDeviceGuids
+  XInputGetKeystroke
+  XInputGetState
+  XInputGetStateEx
+  XInputSetState
