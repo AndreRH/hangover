@@ -34,11 +34,27 @@ struct qemu_d3d9_impl
     IDirect3D9Ex *host;
 };
 
+#define QEMU_D3D_STATE_HAS_VS       0x1
+#define QEMU_D3D_STATE_HAS_PS       0x2
+#define QEMU_D3D_STATE_HAS_VDECL    0x4
+
+/* Shaders and vertex declarations do not have the private data API, so we
+ * have to keep track of them ourselves in the device and stateblocks and
+ * replicate the hidden refcounting. */
+struct qemu_d3d9_state
+{
+    struct qemu_d3d9_shader_impl *vs, *ps;
+    struct qemu_d3d9_vertex_declaration_impl *vdecl;
+    DWORD flags;
+};
+
 struct qemu_d3d9_device_impl
 {
     IDirect3DDevice9Ex IDirect3DDevice9Ex_iface;
     IDirect3DDevice9Ex *host;
     struct qemu_d3d9_impl *d3d9;
+    struct qemu_d3d9_state dev_state;
+    struct qemu_d3d9_state *state;
 };
 
 struct qemu_d3d9_subresource_impl
@@ -171,6 +187,20 @@ static inline struct qemu_d3d9_shader_impl *impl_from_IDirect3DVertexShader9(IDi
 static inline struct qemu_d3d9_shader_impl *impl_from_IDirect3DPixelShader9(IDirect3DPixelShader9 *iface)
 {
     return CONTAINING_RECORD(iface, struct qemu_d3d9_shader_impl, IDirect3DPixelShader9_iface);
+}
+
+struct qemu_d3d9_stateblock_impl
+{
+    IDirect3DStateBlock9 IDirect3DStateBlock9_iface;
+    IDirect3DStateBlock9 *host;
+
+    struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_state state;
+};
+
+static inline struct qemu_d3d9_stateblock_impl *impl_from_IDirect3DStateBlock9(IDirect3DStateBlock9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_stateblock_impl, IDirect3DStateBlock9_iface);
 }
 
 #endif

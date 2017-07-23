@@ -190,6 +190,12 @@ enum d3d9_calls
     CALL_D3D9_QUERYINTERFACE,
     CALL_D3D9_REGISTERSOFTWAREDEVICE,
     CALL_D3D9_RELEASE,
+    CALL_D3D9_STATEBLOCK_ADDREF,
+    CALL_D3D9_STATEBLOCK_APPLY,
+    CALL_D3D9_STATEBLOCK_CAPTURE,
+    CALL_D3D9_STATEBLOCK_GETDEVICE,
+    CALL_D3D9_STATEBLOCK_QUERYINTERFACE,
+    CALL_D3D9_STATEBLOCK_RELEASE,
     CALL_D3D9_SURFACE_ADDREF,
     CALL_D3D9_SURFACE_FREEPRIVATEDATA,
     CALL_D3D9_SURFACE_GETCONTAINER,
@@ -338,6 +344,7 @@ extern const struct IDirect3DIndexBuffer9Vtbl d3d9_indexbuffer_vtbl;
 extern const struct IDirect3DQuery9Vtbl d3d9_query_vtbl;
 extern const struct IDirect3DVertexShader9Vtbl d3d9_vertexshader_vtbl;
 extern const struct IDirect3DPixelShader9Vtbl d3d9_pixelshader_vtbl;
+extern const struct IDirect3DStateBlock9Vtbl d3d9_stateblock_vtbl;
 
 void d3d9_device_set_swapchain_ifaces(IDirect3DDevice9Ex *device);
 void d3d9_swapchain_set_surfaces_ifaces(IDirect3DSwapChain9Ex *swapchain);
@@ -530,6 +537,12 @@ void qemu_d3d9_query_Release(struct qemu_syscall *call);
 void qemu_d3d9_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d9_RegisterSoftwareDevice(struct qemu_syscall *call);
 void qemu_d3d9_Release(struct qemu_syscall *call);
+void qemu_d3d9_stateblock_AddRef(struct qemu_syscall *call);
+void qemu_d3d9_stateblock_Apply(struct qemu_syscall *call);
+void qemu_d3d9_stateblock_Capture(struct qemu_syscall *call);
+void qemu_d3d9_stateblock_GetDevice(struct qemu_syscall *call);
+void qemu_d3d9_stateblock_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d9_stateblock_Release(struct qemu_syscall *call);
 void qemu_d3d9_surface_AddRef(struct qemu_syscall *call);
 void qemu_d3d9_surface_FreePrivateData(struct qemu_syscall *call);
 void qemu_d3d9_surface_GetContainer(struct qemu_syscall *call);
