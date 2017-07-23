@@ -771,6 +771,7 @@ void qemu_d3d9_CreateDevice(struct qemu_syscall *call)
 
     /* The host library takes care of refcounting here. */
     device_impl->d3d9 = d3d9;
+    device_impl->state = &device_impl->dev_state;
     if (!d3d9_device_wrap_implicit_swapchain(device_impl))
     {
         c->super.iret = E_OUTOFMEMORY;

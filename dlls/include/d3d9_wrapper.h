@@ -52,9 +52,11 @@ struct qemu_d3d9_device_impl
 {
     IDirect3DDevice9Ex IDirect3DDevice9Ex_iface;
     IDirect3DDevice9Ex *host;
+
     struct qemu_d3d9_impl *d3d9;
     struct qemu_d3d9_state dev_state;
     struct qemu_d3d9_state *state;
+    struct qemu_d3d9_stateblock_impl *record_stateblock;
 };
 
 struct qemu_d3d9_subresource_impl

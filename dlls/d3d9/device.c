@@ -2691,11 +2691,27 @@ void qemu_d3d9_device_BeginStateBlock(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_BeginStateBlock *c = (struct qemu_d3d9_device_BeginStateBlock *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_stateblock_impl *stateblock;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
+    stateblock = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof (*stateblock));
+    if (!stateblock)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
     c->super.iret = IDirect3DDevice9Ex_BeginStateBlock(device->host);
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, stateblock);
+        return;
+    }
+
+    device->record_stateblock = stateblock;
+    device->state = &device->record_stateblock->state;
 }
 
 #endif
@@ -2713,11 +2729,19 @@ static HRESULT WINAPI d3d9_device_EndStateBlock(IDirect3DDevice9Ex *iface, IDire
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
     struct qemu_d3d9_device_EndStateBlock call;
+    struct qemu_d3d9_stateblock_impl *impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_ENDSTATEBLOCK);
     call.iface = (uint64_t)device;
-    call.stateblock = (uint64_t)stateblock;
+    call.stateblock = (uint64_t)&impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        impl->IDirect3DStateBlock9_iface.lpVtbl = &d3d9_stateblock_vtbl;
+        *stateblock = &impl->IDirect3DStateBlock9_iface;
+    }
 
     return call.super.iret;
 }
@@ -2728,11 +2752,27 @@ void qemu_d3d9_device_EndStateBlock(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_EndStateBlock *c = (struct qemu_d3d9_device_EndStateBlock *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_stateblock_impl *stateblock;
+    IDirect3DStateBlock9 *host_stateblock;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    stateblock = device->record_stateblock;
 
-    c->super.iret = IDirect3DDevice9Ex_EndStateBlock(device->host, QEMU_G2H(c->stateblock));
+    c->super.iret = IDirect3DDevice9Ex_EndStateBlock(device->host, &host_stateblock);
+
+    device->record_stateblock = NULL;
+    device->state = &device->dev_state;
+
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, stateblock);
+        return;
+    }
+
+    stateblock->device = device;
+    stateblock->host = host_stateblock;
+    *(uint64_t *)QEMU_G2H(c->stateblock) = QEMU_H2G(stateblock);
 }
 
 #endif
