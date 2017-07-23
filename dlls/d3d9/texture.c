@@ -138,7 +138,7 @@ void qemu_d3d9_texture_2d_Release(struct qemu_syscall *call)
     struct qemu_d3d9_texture_2d_Release *c = (struct qemu_d3d9_texture_2d_Release *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     d3d9_device_wrapper_addref(texture->device);
@@ -2687,6 +2687,7 @@ void d3d9_texture_init(struct qemu_d3d9_texture_impl *texture, IDirect3DBaseText
     texture->private_data.lpVtbl = &texture_priv_vtbl;
     texture->private_data_ref = 0;
     texture->host = host;
+    texture->device = device;
     IDirect3DTexture9_SetPrivateData(host, &qemu_d3d9_texture_guid, &texture->private_data,
             sizeof(IUnknown *), D3DSPD_IUNKNOWN);
 
