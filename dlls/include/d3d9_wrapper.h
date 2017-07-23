@@ -71,6 +71,7 @@ struct qemu_d3d9_subresource_impl
         IDirect3DSurface9 *host;
         IDirect3DVolume9 *host_volume;
     };
+    struct qemu_d3d9_device_impl *device;
 };
 
 struct qemu_d3d9_swapchain_impl

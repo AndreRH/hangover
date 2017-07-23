@@ -687,7 +687,18 @@ struct qemu_d3d9_swapchain_impl *swapchain_impl_from_IUnknown(IUnknown *iface);
 void d3d9_swapchain_init(struct qemu_d3d9_swapchain_impl *swapchain, IDirect3DSwapChain9Ex *host_swapchain,
         struct qemu_d3d9_device_impl *device);
 
-void d3d9_surface_init(struct qemu_d3d9_subresource_impl *surface, IDirect3DSurface9 *host_surface);
+void d3d9_surface_init(struct qemu_d3d9_subresource_impl *surface, IDirect3DSurface9 *host,
+        struct qemu_d3d9_device_impl *device);
+
+struct qemu_d3d9_surface_impl
+{
+    struct qemu_d3d9_subresource_impl sub_resource;
+    IUnknown private_data;
+    ULONG private_data_ref; /* NOT the externally visible ref! */
+};
+
+void d3d9_standalone_surface_init(struct qemu_d3d9_surface_impl *surface, IDirect3DSurface9 *host,
+        struct qemu_d3d9_device_impl *device);
 
 struct qemu_d3d9_texture_impl *texture_impl_from_IUnknown(IUnknown *iface);
 void d3d9_texture_init(struct qemu_d3d9_texture_impl *texture, IDirect3DBaseTexture9 *host, struct qemu_d3d9_device_impl *device);
@@ -707,6 +718,7 @@ extern const GUID qemu_d3d9_swapchain_guid;
 extern const GUID qemu_d3d9_surface_guid;
 extern const GUID qemu_d3d9_texture_guid;
 extern const GUID qemu_d3d9_buffer_guid;
+extern const GUID qemu_d3d9_standalone_surface_guid;
 
 const GUID *pIID_IDirect3DDevice9;
 const GUID *pIID_IDirect3DDevice9Ex;

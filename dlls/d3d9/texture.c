@@ -2715,7 +2715,7 @@ void d3d9_texture_init(struct qemu_d3d9_texture_impl *texture, IDirect3DBaseText
             for (i = 0; i < level_count; ++i)
             {
                 IDirect3DTexture9_GetSurfaceLevel((IDirect3DTexture9 *)host, i, &surface);
-                d3d9_surface_init(&texture->subs[i], surface);
+                d3d9_surface_init(&texture->subs[i], surface, device);
                 IDirect3DSurface9_Release(surface);
             }
     }

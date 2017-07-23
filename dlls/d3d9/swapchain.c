@@ -655,7 +655,7 @@ void d3d9_swapchain_init(struct qemu_d3d9_swapchain_impl *swapchain, IDirect3DSw
     IDirect3DSurface9_SetPrivateData(surface, &qemu_d3d9_swapchain_guid, &swapchain->private_data,
             sizeof(IUnknown *), D3DSPD_IUNKNOWN);
 
-    d3d9_surface_init(&swapchain->backbuffers[0], surface);
+    d3d9_surface_init(&swapchain->backbuffers[0], surface, device);
 
     IDirect3DSurface9_Release(surface);
 
@@ -663,7 +663,7 @@ void d3d9_swapchain_init(struct qemu_d3d9_swapchain_impl *swapchain, IDirect3DSw
     for (i = 1; i < pp.BackBufferCount; ++i)
     {
         IDirect3DSwapChain9_GetBackBuffer(swapchain->host, i, D3DBACKBUFFER_TYPE_MONO, &surface);
-        d3d9_surface_init(&swapchain->backbuffers[i], surface);
+        d3d9_surface_init(&swapchain->backbuffers[i], surface, device);
         IDirect3DSurface9_Release(surface);
     }
 }

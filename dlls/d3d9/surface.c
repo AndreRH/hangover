@@ -136,11 +136,17 @@ void qemu_d3d9_surface_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_Release *c = (struct qemu_d3d9_surface_Release *)call;
     struct qemu_d3d9_subresource_impl *surface;
+    struct qemu_d3d9_device_impl *device;
 
     WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    device = surface->device;
 
+    /* In case of stand-alone surfaces, or that the app releases the last reference
+     * it holds to a texture through IDirect3DSurface9. */
+    d3d9_device_wrapper_addref(device);
     c->super.iret = IDirect3DSurface9_Release(surface->host);
+    d3d9_device_wrapper_release(device);
 }
 
 #endif
@@ -697,11 +703,68 @@ const struct IDirect3DSurface9Vtbl d3d9_surface_vtbl =
 
 #else
 
-void d3d9_surface_init(struct qemu_d3d9_subresource_impl *surface, IDirect3DSurface9 *host_surface)
+struct qemu_d3d9_surface_impl *surface_impl_from_IUnknown(IUnknown *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_surface_impl, private_data);
+}
+
+static HRESULT WINAPI d3d9_surface_priv_QueryInterface(IUnknown *iface, REFIID riid, void **out)
+{
+    WINE_ERR("Unexpected call\n");
+    return E_NOINTERFACE;
+}
+
+static ULONG WINAPI d3d9_surface_priv_AddRef(IUnknown *iface)
+{
+    struct qemu_d3d9_surface_impl *surface = surface_impl_from_IUnknown(iface);
+    ULONG refcount = InterlockedIncrement(&surface->private_data_ref);
+
+    WINE_TRACE("%p increasing refcount to %u.\n", surface, refcount);
+    return refcount;
+}
+
+static ULONG WINAPI d3d9_surface_priv_Release(IUnknown *iface)
+{
+    struct qemu_d3d9_surface_impl *surface = surface_impl_from_IUnknown(iface);
+    ULONG refcount = InterlockedDecrement(&surface->private_data_ref);
+
+    WINE_TRACE("%p decreasing refcount to %u.\n", surface, refcount);
+    if (!refcount)
+    {
+        /* This means the private data has been released, which only happens
+         * when the real interface has been destroyed. */
+        HeapFree(GetProcessHeap(), 0, surface);
+    }
+
+    return refcount;
+}
+
+static const struct IUnknownVtbl surface_priv_vtbl =
+{
+    /* IUnknown */
+    d3d9_surface_priv_QueryInterface,
+    d3d9_surface_priv_AddRef,
+    d3d9_surface_priv_Release,
+};
+
+void d3d9_surface_init(struct qemu_d3d9_subresource_impl *surface, IDirect3DSurface9 *host_surface,
+        struct qemu_d3d9_device_impl *device)
 {
     WINE_TRACE("Init surface %p, host %p.\n", surface, host_surface);
     surface->host = host_surface;
+    surface->device = device;
     IDirect3DSurface9_SetPrivateData(host_surface, &qemu_d3d9_surface_guid, &surface, sizeof(surface), 0);
+}
+
+void d3d9_standalone_surface_init(struct qemu_d3d9_surface_impl *surface, IDirect3DSurface9 *host,
+        struct qemu_d3d9_device_impl *device)
+{
+    surface->private_data.lpVtbl = &surface_priv_vtbl;
+    surface->private_data_ref = 0;
+    IDirect3DSurface9_SetPrivateData(host, &qemu_d3d9_standalone_surface_guid, &surface->private_data,
+            sizeof(IUnknown *), D3DSPD_IUNKNOWN);
+
+    d3d9_surface_init(&surface->sub_resource, host, device);
 }
 
 #endif
