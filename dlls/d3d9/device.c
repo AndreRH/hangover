@@ -6041,10 +6041,11 @@ const struct IDirect3DDevice9ExVtbl d3d9_device_vtbl =
     d3d9_device_GetDisplayModeEx,
 };
 
-void d3d9_device_set_swapchain_ifaces(IDirect3DDevice9Ex *device)
+void d3d9_device_set_implicit_ifaces(IDirect3DDevice9Ex *device)
 {
     UINT swapchain_count, i;
     IDirect3DSwapChain9Ex *swapchain;
+    IDirect3DSurface9 *ds = NULL;
 
     /* This code merrily relies on the fact that the GetSwapChain AddRef call
      * happens on the host side and doesn't need the guest vtable. */
@@ -6056,16 +6057,25 @@ void d3d9_device_set_swapchain_ifaces(IDirect3DDevice9Ex *device)
         d3d9_swapchain_set_surfaces_ifaces(swapchain);
         IDirect3DSwapChain9Ex_Release(swapchain);
     }
+
+    IDirect3DDevice9Ex_GetDepthStencilSurface(device, &ds);
+    if (ds)
+    {
+        ds->lpVtbl = &d3d9_surface_vtbl;
+        IDirect3DSurface9_Release(ds);
+    }
 }
 
 #else
 
-BOOL d3d9_device_wrap_implicit_swapchain(struct qemu_d3d9_device_impl *device)
+BOOL d3d9_device_wrap_implicit_resources(struct qemu_d3d9_device_impl *device)
 {
     UINT swapchain_count, i;
     struct qemu_d3d9_swapchain_impl *swapchain;
     IDirect3DSwapChain9Ex *host_swapchain;
     D3DPRESENT_PARAMETERS pp;
+    IDirect3DSurface9 *ds;
+    struct qemu_d3d9_surface_impl *ds_impl;
 
     swapchain_count = IDirect3DDevice9_GetNumberOfSwapChains(device->host);
     for (i = 0; i < swapchain_count; ++i)
@@ -6084,6 +6094,14 @@ BOOL d3d9_device_wrap_implicit_swapchain(struct qemu_d3d9_device_impl *device)
         }
         d3d9_swapchain_init(swapchain, host_swapchain, device);
         IDirect3DSwapChain9_Release(host_swapchain);
+    }
+
+    IDirect3DDevice9Ex_GetDepthStencilSurface(device->host, &ds);
+    if (ds)
+    {
+        ds_impl = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ds_impl));
+        d3d9_standalone_surface_init(ds_impl, ds, device);
+        IDirect3DSurface9_Release(ds);
     }
 
     return TRUE;
