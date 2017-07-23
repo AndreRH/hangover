@@ -136,15 +136,17 @@ void qemu_d3d9_swapchain_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d9_swapchain_Release *c = (struct qemu_d3d9_swapchain_Release *)call;
     struct qemu_d3d9_swapchain_impl *swapchain;
+    struct qemu_d3d9_device_impl *device;
 
     WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
+    device = swapchain->device;
 
     /* Make sure the last Release call happens through our wrapper to make sure the
      * qemu_d3d9_device_impl structure is correctly released. */
-    d3d9_device_wrapper_addref(swapchain->device);
+    d3d9_device_wrapper_addref(device);
     c->super.iret = IDirect3DSwapChain9_Release(swapchain->host);
-    d3d9_device_wrapper_release(swapchain->device);
+    d3d9_device_wrapper_release(device);
 }
 
 #endif

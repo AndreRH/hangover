@@ -136,13 +136,15 @@ void qemu_d3d9_vertexbuffer_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d9_vertexbuffer_Release *c = (struct qemu_d3d9_vertexbuffer_Release *)call;
     struct qemu_d3d9_buffer_impl *buffer;
+    struct qemu_d3d9_device_impl *device;
 
     WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
+    device = buffer->device;
 
-    d3d9_device_wrapper_addref(buffer->device);
+    d3d9_device_wrapper_addref(device);
     c->super.iret = IDirect3DVertexBuffer9_Release(buffer->hostvb);
-    d3d9_device_wrapper_release(buffer->device);
+    d3d9_device_wrapper_release(device);
 }
 
 #endif
@@ -665,13 +667,15 @@ void qemu_d3d9_indexbuffer_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d9_indexbuffer_Release *c = (struct qemu_d3d9_indexbuffer_Release *)call;
     struct qemu_d3d9_buffer_impl *buffer;
+    struct qemu_d3d9_device_impl *device;
 
-    WINE_TRACE("\n");
+    WINE_ERR("\n");
     buffer = QEMU_G2H(c->iface);
+    device = buffer->device;
 
-    d3d9_device_wrapper_addref(buffer->device);
+    d3d9_device_wrapper_addref(device);
     c->super.iret = IDirect3DIndexBuffer9_Release(buffer->hostib);
-    d3d9_device_wrapper_release(buffer->device);
+    d3d9_device_wrapper_release(device);
 }
 
 #endif

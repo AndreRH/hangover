@@ -137,13 +137,15 @@ void qemu_d3d9_texture_2d_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d9_texture_2d_Release *c = (struct qemu_d3d9_texture_2d_Release *)call;
     struct qemu_d3d9_texture_impl *texture;
+    struct qemu_d3d9_device_impl *device;
 
     WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
+    device = texture->device;
 
-    d3d9_device_wrapper_addref(texture->device);
+    d3d9_device_wrapper_addref(device);
     c->super.iret = IDirect3DTexture9_Release(texture->host);
-    d3d9_device_wrapper_release(texture->device);
+    d3d9_device_wrapper_release(device);
 }
 
 #endif
@@ -976,13 +978,15 @@ void qemu_d3d9_texture_cube_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d9_texture_cube_Release *c = (struct qemu_d3d9_texture_cube_Release *)call;
     struct qemu_d3d9_texture_impl *texture;
+    struct qemu_d3d9_device_impl *device;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
+    device = texture->device;
 
-    IDirect3DDevice9_AddRef(texture->device->host);
-    c->super.iret = IDirect3DTexture9_Release(texture->host);
-    IDirect3DDevice9_Release(texture->device->host);
+    d3d9_device_wrapper_addref(device);
+    c->super.iret = IDirect3DCubeTexture9_Release(texture->host);
+    d3d9_device_wrapper_release(device);
 }
 
 #endif
@@ -1805,13 +1809,15 @@ void qemu_d3d9_texture_3d_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d9_texture_3d_Release *c = (struct qemu_d3d9_texture_3d_Release *)call;
     struct qemu_d3d9_texture_impl *texture;
+    struct qemu_d3d9_device_impl *device;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
+    device = texture->device;
 
-    IDirect3DDevice9_AddRef(texture->device->host);
-    c->super.iret = IDirect3DTexture9_Release(texture->host);
-    IDirect3DDevice9_Release(texture->device->host);
+    d3d9_device_wrapper_addref(device);
+    c->super.iret = IDirect3DVolumeTexture9_Release(texture->host);
+    d3d9_device_wrapper_release(device);
 }
 
 #endif
