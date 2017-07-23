@@ -2205,7 +2205,7 @@ void qemu_d3d9_device_SetViewport(struct qemu_syscall *call)
     struct qemu_d3d9_device_SetViewport *c = (struct qemu_d3d9_device_SetViewport *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_SetViewport(device->host, QEMU_G2H(c->viewport));
@@ -3674,10 +3674,10 @@ static HRESULT WINAPI d3d9_device_DrawPrimitiveUP(IDirect3DDevice9Ex *iface, D3D
     struct qemu_d3d9_device_DrawPrimitiveUP call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_DRAWPRIMITIVEUP);
     call.iface = (uint64_t)device;
-    call.primitive_type = (uint64_t)primitive_type;
-    call.primitive_count = (uint64_t)primitive_count;
+    call.primitive_type = primitive_type;
+    call.primitive_count = primitive_count;
     call.data = (uint64_t)data;
-    call.stride = (uint64_t)stride;
+    call.stride = stride;
 
     qemu_syscall(&call.super);
 
@@ -3691,7 +3691,7 @@ void qemu_d3d9_device_DrawPrimitiveUP(struct qemu_syscall *call)
     struct qemu_d3d9_device_DrawPrimitiveUP *c = (struct qemu_d3d9_device_DrawPrimitiveUP *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_DrawPrimitiveUP(device->host, c->primitive_type, c->primitive_count, QEMU_G2H(c->data), c->stride);
@@ -4847,9 +4847,9 @@ static HRESULT WINAPI d3d9_device_SetPixelShaderConstantF(IDirect3DDevice9Ex *if
     struct qemu_d3d9_device_SetPixelShaderConstantF call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SETPIXELSHADERCONSTANTF);
     call.iface = (uint64_t)device;
-    call.reg_idx = (uint64_t)reg_idx;
+    call.reg_idx = reg_idx;
     call.data = (uint64_t)data;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -4863,7 +4863,7 @@ void qemu_d3d9_device_SetPixelShaderConstantF(struct qemu_syscall *call)
     struct qemu_d3d9_device_SetPixelShaderConstantF *c = (struct qemu_d3d9_device_SetPixelShaderConstantF *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_SetPixelShaderConstantF(device->host, c->reg_idx, QEMU_G2H(c->data), c->count);

@@ -1085,7 +1085,7 @@ void qemu_d3d9_indexbuffer_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d9_indexbuffer_GetDesc *c = (struct qemu_d3d9_indexbuffer_GetDesc *)call;
     struct qemu_d3d9_buffer_impl *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DIndexBuffer9_GetDesc(buffer->hostib, QEMU_G2H(c->desc));

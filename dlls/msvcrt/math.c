@@ -387,7 +387,7 @@ WINBASEAPI float CDECL MSVCRT_acosf(float x)
 void qemu_acosf(struct qemu_syscall *call)
 {
     struct qemu_acosf *c = (struct qemu_acosf *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_acosf(c->x);
 }
 
