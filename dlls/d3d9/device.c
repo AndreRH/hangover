@@ -2911,11 +2911,13 @@ struct qemu_d3d9_device_SetTexture
 static HRESULT WINAPI d3d9_device_SetTexture(IDirect3DDevice9Ex *iface, DWORD stage, IDirect3DBaseTexture9 *texture)
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
+    struct qemu_d3d9_texture_impl *texture_impl = unsafe_impl_from_IDirect3DBaseTexture9(texture);
     struct qemu_d3d9_device_SetTexture call;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SETTEXTURE);
     call.iface = (uint64_t)device;
-    call.stage = (uint64_t)stage;
-    call.texture = (uint64_t)texture;
+    call.stage = stage;
+    call.texture = (uint64_t)texture_impl;
 
     qemu_syscall(&call.super);
 
@@ -2928,11 +2930,13 @@ void qemu_d3d9_device_SetTexture(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_SetTexture *c = (struct qemu_d3d9_device_SetTexture *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    texture = QEMU_G2H(c->texture);
 
-    c->super.iret = IDirect3DDevice9Ex_SetTexture(device->host, c->stage, QEMU_G2H(c->texture));
+    c->super.iret = IDirect3DDevice9Ex_SetTexture(device->host, c->stage, texture ? texture->host : NULL);
 }
 
 #endif

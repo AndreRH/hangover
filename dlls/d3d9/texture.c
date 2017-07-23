@@ -42,6 +42,11 @@ struct qemu_d3d9_texture_2d_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
+static inline struct qemu_d3d9_texture_impl *impl_from_IDirect3DTexture9(IDirect3DTexture9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_texture_impl, IDirect3DBaseTexture9_iface);
+}
+
 static HRESULT WINAPI d3d9_texture_2d_QueryInterface(IDirect3DTexture9 *iface, REFIID riid, void **out)
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
@@ -876,6 +881,11 @@ struct qemu_d3d9_texture_cube_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
+static inline struct qemu_d3d9_texture_impl *impl_from_IDirect3DCubeTexture9(IDirect3DCubeTexture9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_texture_impl, IDirect3DBaseTexture9_iface);
+}
+
 static HRESULT WINAPI d3d9_texture_cube_QueryInterface(IDirect3DCubeTexture9 *iface, REFIID riid, void **out)
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
@@ -1699,6 +1709,11 @@ struct qemu_d3d9_texture_3d_QueryInterface
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static inline struct qemu_d3d9_texture_impl *impl_from_IDirect3DVolumeTexture9(IDirect3DVolumeTexture9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_texture_impl, IDirect3DBaseTexture9_iface);
+}
 
 static HRESULT WINAPI d3d9_texture_3d_QueryInterface(IDirect3DVolumeTexture9 *iface, REFIID riid, void **out)
 {

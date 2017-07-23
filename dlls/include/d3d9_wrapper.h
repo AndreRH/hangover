@@ -96,18 +96,12 @@ struct qemu_d3d9_texture_impl
     struct qemu_d3d9_subresource_impl subs[1];
 };
 
-static inline struct qemu_d3d9_texture_impl *impl_from_IDirect3DTexture9(IDirect3DTexture9 *iface)
+static inline struct qemu_d3d9_texture_impl *unsafe_impl_from_IDirect3DBaseTexture9(IDirect3DBaseTexture9 *iface)
 {
-    return CONTAINING_RECORD(iface, struct qemu_d3d9_texture_impl, IDirect3DBaseTexture9_iface);
-}
-
-static inline struct qemu_d3d9_texture_impl *impl_from_IDirect3DCubeTexture9(IDirect3DCubeTexture9 *iface)
-{
-    return CONTAINING_RECORD(iface, struct qemu_d3d9_texture_impl, IDirect3DBaseTexture9_iface);
-}
-
-static inline struct qemu_d3d9_texture_impl *impl_from_IDirect3DVolumeTexture9(IDirect3DVolumeTexture9 *iface)
-{
+    if (!iface)
+        return NULL;
+    /* FIXME: assert(iface->lpVtbl == &d3d9_texture_2d_vtbl || iface->lpVtbl == &d3d9_texture_cube_vtbl
+     *         || iface->lpVtbl == &d3d9_texture_3d_vtbl); */
     return CONTAINING_RECORD(iface, struct qemu_d3d9_texture_impl, IDirect3DBaseTexture9_iface);
 }
 
