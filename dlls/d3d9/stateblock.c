@@ -97,7 +97,7 @@ void qemu_d3d9_stateblock_AddRef(struct qemu_syscall *call)
     struct qemu_d3d9_stateblock_AddRef *c = (struct qemu_d3d9_stateblock_AddRef *)call;
     struct qemu_d3d9_stateblock_impl *stateblock;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     stateblock = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DStateBlock9_AddRef(stateblock->host);
@@ -132,10 +132,17 @@ void qemu_d3d9_stateblock_Release(struct qemu_syscall *call)
     struct qemu_d3d9_stateblock_Release *c = (struct qemu_d3d9_stateblock_Release *)call;
     struct qemu_d3d9_stateblock_impl *stateblock;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     stateblock = QEMU_G2H(c->iface);
 
+    d3d9_device_wrapper_addref(stateblock->device);
     c->super.iret = IDirect3DStateBlock9_Release(stateblock->host);
+    d3d9_device_wrapper_release(stateblock->device);
+
+    if (!c->super.iret)
+    {
+        HeapFree(GetProcessHeap(), 0, stateblock);
+    }
 }
 
 #endif

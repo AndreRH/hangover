@@ -2594,12 +2594,20 @@ static HRESULT WINAPI d3d9_device_CreateStateBlock(IDirect3DDevice9Ex *iface, D3
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
     struct qemu_d3d9_device_CreateStateBlock call;
+    struct qemu_d3d9_stateblock_impl *impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_CREATESTATEBLOCK);
     call.iface = (uint64_t)device;
-    call.type = (uint64_t)type;
-    call.stateblock = (uint64_t)stateblock;
+    call.type = type;
+    call.stateblock = (uint64_t)&impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        impl->IDirect3DStateBlock9_iface.lpVtbl = &d3d9_stateblock_vtbl;
+        *stateblock = &impl->IDirect3DStateBlock9_iface;
+    }
 
     return call.super.iret;
 }
@@ -2610,11 +2618,49 @@ void qemu_d3d9_device_CreateStateBlock(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_CreateStateBlock *c = (struct qemu_d3d9_device_CreateStateBlock *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_stateblock_impl *stateblock;
+    IDirect3DStateBlock9 *host_stateblock;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_CreateStateBlock(device->host, c->type, QEMU_G2H(c->stateblock));
+    stateblock = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*stateblock));
+    if (!stateblock)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = IDirect3DDevice9Ex_CreateStateBlock(device->host, c->type, &host_stateblock);
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, stateblock);
+        return;
+    }
+
+    stateblock->host = host_stateblock;
+    stateblock->device = device;
+    switch (c->type)
+    {
+        case D3DSBT_VERTEXSTATE:
+            stateblock->state.flags = QEMU_D3D_STATE_HAS_VS | QEMU_D3D_STATE_HAS_VDECL;
+            stateblock->state.vs = device->dev_state.vs;
+            stateblock->state.vdecl = device->dev_state.vdecl;
+            break;
+
+        case D3DSBT_PIXELSTATE:
+            stateblock->state.flags = QEMU_D3D_STATE_HAS_PS;
+            stateblock->state.ps = device->dev_state.ps;
+            break;
+
+        case D3DSBT_ALL:
+            stateblock->state.flags = QEMU_D3D_STATE_HAS_VS | QEMU_D3D_STATE_HAS_PS | QEMU_D3D_STATE_HAS_VDECL;
+            stateblock->state.vs = device->dev_state.vs;
+            stateblock->state.ps = device->dev_state.ps;
+            stateblock->state.vdecl = device->dev_state.vdecl;
+            break;
+    }
+    *(uint64_t *)QEMU_G2H(c->stateblock) = QEMU_H2G(stateblock);
 }
 
 #endif
