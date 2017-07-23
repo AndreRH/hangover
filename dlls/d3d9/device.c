@@ -1894,12 +1894,19 @@ struct qemu_d3d9_device_GetDepthStencilSurface
 static HRESULT WINAPI d3d9_device_GetDepthStencilSurface(IDirect3DDevice9Ex *iface, IDirect3DSurface9 **depth_stencil)
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
+    struct qemu_d3d9_subresource_impl *surface_impl;
     struct qemu_d3d9_device_GetDepthStencilSurface call;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETDEPTHSTENCILSURFACE);
     call.iface = (uint64_t)device;
-    call.depth_stencil = (uint64_t)depth_stencil;
+    call.depth_stencil = (uint64_t)&surface_impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret) && surface_impl)
+        *depth_stencil = &surface_impl->IDirect3DSurface9_iface;
+    else
+        *depth_stencil = NULL;
 
     return call.super.iret;
 }
@@ -1910,11 +1917,27 @@ void qemu_d3d9_device_GetDepthStencilSurface(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_GetDepthStencilSurface *c = (struct qemu_d3d9_device_GetDepthStencilSurface *)call;
     struct qemu_d3d9_device_impl *device;
+    IDirect3DSurface9 *host;
+    struct qemu_d3d9_subresource_impl *surface_impl;
+    DWORD size = sizeof(surface_impl);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_GetDepthStencilSurface(device->host, QEMU_G2H(c->depth_stencil));
+    c->super.iret = IDirect3DDevice9Ex_GetDepthStencilSurface(device->host, &host);
+    if (FAILED(c->super.iret))
+        return;
+
+    if (host)
+    {
+        IDirect3DSurface9_GetPrivateData(host, &qemu_d3d9_surface_guid, &surface_impl, &size);
+        WINE_TRACE("Got surface %p from private data from host surface %p.\n", surface_impl, host);
+        *(uint64_t *)QEMU_G2H(c->depth_stencil) = QEMU_H2G(surface_impl);
+    }
+    else
+    {
+        *(uint64_t *)QEMU_G2H(c->depth_stencil) = QEMU_H2G(NULL);
+    }
 }
 
 #endif
