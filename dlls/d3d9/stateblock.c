@@ -133,6 +133,10 @@ void qemu_d3d9_stateblock_destroy(struct qemu_d3d9_stateblock_impl *stateblock)
 
     if (stateblock->state.vdecl)
         d3d9_vdecl_internal_release(stateblock->state.vdecl);
+    if (stateblock->state.vs)
+        d3d9_shader_internal_release(stateblock->state.vs);
+    if (stateblock->state.ps)
+        d3d9_shader_internal_release(stateblock->state.ps);
     HeapFree(GetProcessHeap(), 0, stateblock);
 }
 

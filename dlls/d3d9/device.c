@@ -2663,6 +2663,10 @@ void qemu_d3d9_device_CreateStateBlock(struct qemu_syscall *call)
 
     if (stateblock->state.vdecl)
         d3d9_vdecl_internal_addref(stateblock->state.vdecl);
+    if (stateblock->state.vs)
+        d3d9_shader_internal_addref(stateblock->state.vs);
+    if (stateblock->state.ps)
+        d3d9_shader_internal_addref(stateblock->state.ps);
 
     *(uint64_t *)QEMU_G2H(c->stateblock) = QEMU_H2G(stateblock);
 }
@@ -4007,6 +4011,7 @@ void qemu_d3d9_device_CreateVertexShader(struct qemu_syscall *call)
 
     shader->hostvs = host_shader;
     shader->device = device;
+    shader->internal_ref = 1;
     *(uint64_t *)QEMU_G2H(c->shader) = QEMU_H2G(shader);
 }
 
@@ -4629,6 +4634,7 @@ void qemu_d3d9_device_CreatePixelShader(struct qemu_syscall *call)
 
     shader->hostps = host_shader;
     shader->device = device;
+    shader->internal_ref = 1;
     *(uint64_t *)QEMU_G2H(c->shader) = QEMU_H2G(shader);
 }
 

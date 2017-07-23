@@ -180,6 +180,7 @@ struct qemu_d3d9_shader_impl
     };
 
     struct qemu_d3d9_device_impl *device;
+    ULONG internal_ref;
 };
 
 static inline struct qemu_d3d9_shader_impl *impl_from_IDirect3DVertexShader9(IDirect3DVertexShader9 *iface)

@@ -698,6 +698,9 @@ void d3d9_buffer_init(struct qemu_d3d9_buffer_impl *buffer, IDirect3DResource9 *
 ULONG d3d9_vdecl_internal_addref(struct qemu_d3d9_vertex_declaration_impl *decl);
 ULONG d3d9_vdecl_internal_release(struct qemu_d3d9_vertex_declaration_impl *decl);
 
+ULONG d3d9_shader_internal_addref(struct qemu_d3d9_shader_impl *decl);
+ULONG d3d9_shader_internal_release(struct qemu_d3d9_shader_impl *decl);
+
 void qemu_d3d9_stateblock_destroy(struct qemu_d3d9_stateblock_impl *stateblock);
 
 extern const GUID qemu_d3d9_swapchain_guid;

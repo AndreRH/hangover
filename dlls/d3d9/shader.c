@@ -93,6 +93,13 @@ static ULONG WINAPI d3d9_vertexshader_AddRef(IDirect3DVertexShader9 *iface)
 
 #else
 
+ULONG d3d9_shader_internal_addref(struct qemu_d3d9_shader_impl *shader)
+{
+    ULONG ref = InterlockedIncrement(&shader->internal_ref);
+    WINE_TRACE("%p increasing internal refcount to %u.\n", shader, ref);
+    return ref;
+}
+
 void qemu_d3d9_vertexshader_AddRef(struct qemu_syscall *call)
 {
     struct qemu_d3d9_vertexshader_AddRef *c = (struct qemu_d3d9_vertexshader_AddRef *)call;
@@ -102,6 +109,9 @@ void qemu_d3d9_vertexshader_AddRef(struct qemu_syscall *call)
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVertexShader9_AddRef(shader->hostvs);
+
+    if (c->super.iret == 1)
+        d3d9_shader_internal_addref(shader);
 }
 
 #endif
@@ -128,6 +138,17 @@ static ULONG WINAPI d3d9_vertexshader_Release(IDirect3DVertexShader9 *iface)
 
 #else
 
+ULONG d3d9_shader_internal_release(struct qemu_d3d9_shader_impl *shader)
+{
+    ULONG ref = InterlockedDecrement(&shader->internal_ref);
+    WINE_TRACE("%p decreasing internal refcount to %u.\n", shader, ref);
+
+    if (!ref)
+        HeapFree(GetProcessHeap(), 0, shader);
+
+    return ref;
+}
+
 void qemu_d3d9_vertexshader_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d9_vertexshader_Release *c = (struct qemu_d3d9_vertexshader_Release *)call;
@@ -141,7 +162,7 @@ void qemu_d3d9_vertexshader_Release(struct qemu_syscall *call)
     d3d9_device_wrapper_release(shader->device);
 
     if (!c->super.iret)
-        HeapFree(GetProcessHeap(), 0, shader);
+        d3d9_shader_internal_release(shader);
 }
 
 #endif
