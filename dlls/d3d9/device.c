@@ -2378,7 +2378,7 @@ static HRESULT WINAPI d3d9_device_SetLight(IDirect3DDevice9Ex *iface, DWORD inde
     struct qemu_d3d9_device_SetLight call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SETLIGHT);
     call.iface = (uint64_t)device;
-    call.index = (uint64_t)index;
+    call.index = index;
     call.light = (uint64_t)light;
 
     qemu_syscall(&call.super);
@@ -2393,7 +2393,7 @@ void qemu_d3d9_device_SetLight(struct qemu_syscall *call)
     struct qemu_d3d9_device_SetLight *c = (struct qemu_d3d9_device_SetLight *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_SetLight(device->host, c->index, QEMU_G2H(c->light));
@@ -2456,8 +2456,8 @@ static HRESULT WINAPI d3d9_device_LightEnable(IDirect3DDevice9Ex *iface, DWORD i
     struct qemu_d3d9_device_LightEnable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_LIGHTENABLE);
     call.iface = (uint64_t)device;
-    call.index = (uint64_t)index;
-    call.enable = (uint64_t)enable;
+    call.index = index;
+    call.enable = enable;
 
     qemu_syscall(&call.super);
 
@@ -2471,7 +2471,7 @@ void qemu_d3d9_device_LightEnable(struct qemu_syscall *call)
     struct qemu_d3d9_device_LightEnable *c = (struct qemu_d3d9_device_LightEnable *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_LightEnable(device->host, c->index, c->enable);
