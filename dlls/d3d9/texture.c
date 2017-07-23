@@ -728,9 +728,10 @@ static HRESULT WINAPI d3d9_texture_2d_GetSurfaceLevel(IDirect3DTexture9 *iface, 
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_subresource_impl *surface_impl;
     struct qemu_d3d9_texture_2d_GetSurfaceLevel call;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_GETSURFACELEVEL);
     call.iface = (uint64_t)texture;
-    call.level = (uint64_t)level;
+    call.level = level;
     call.surface = (uint64_t)&surface_impl;
 
     qemu_syscall(&call.super);
@@ -1565,14 +1566,21 @@ struct qemu_d3d9_texture_cube_GetCubeMapSurface
 static HRESULT WINAPI d3d9_texture_cube_GetCubeMapSurface(IDirect3DCubeTexture9 *iface, D3DCUBEMAP_FACES face, UINT level, IDirect3DSurface9 **surface)
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
+    struct qemu_d3d9_subresource_impl *surface_impl;
     struct qemu_d3d9_texture_cube_GetCubeMapSurface call;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_GETCUBEMAPSURFACE);
     call.iface = (uint64_t)texture;
-    call.face = (uint64_t)face;
-    call.level = (uint64_t)level;
-    call.surface = (uint64_t)surface;
+    call.face = face;
+    call.level = level;
+    call.surface = (uint64_t)&surface_impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+        *surface = &surface_impl->IDirect3DSurface9_iface;
+    else
+        *surface = NULL;
 
     return call.super.iret;
 }
@@ -1583,11 +1591,21 @@ void qemu_d3d9_texture_cube_GetCubeMapSurface(struct qemu_syscall *call)
 {
     struct qemu_d3d9_texture_cube_GetCubeMapSurface *c = (struct qemu_d3d9_texture_cube_GetCubeMapSurface *)call;
     struct qemu_d3d9_texture_impl *texture;
+    IDirect3DSurface9 *host;
+    struct qemu_d3d9_subresource_impl *surface_impl;
+    DWORD size = sizeof(surface_impl);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DCubeTexture9_GetCubeMapSurface((IDirect3DCubeTexture9 *)texture->host, c->face, c->level, QEMU_G2H(c->surface));
+    c->super.iret = IDirect3DCubeTexture9_GetCubeMapSurface((IDirect3DCubeTexture9 *)texture->host, c->face,
+            c->level, &host);
+    if (FAILED(c->super.iret))
+        return;
+
+    IDirect3DSurface9_GetPrivateData(host, &qemu_d3d9_surface_guid, &surface_impl, &size);
+    WINE_TRACE("Got surface %p from private data from host surface %p.\n", surface_impl, host);
+    *(uint64_t *)QEMU_G2H(c->surface) = QEMU_H2G(surface_impl);
 }
 
 #endif
@@ -2633,7 +2651,7 @@ const IDirect3DVolumeTexture9Vtbl d3d9_texture_3d_vtbl =
 void d3d9_texture_set_surfaces_ifaces(IDirect3DBaseTexture9 *texture)
 {
     IDirect3DSurface9 *surface;
-    DWORD i, level_count = IDirect3DBaseTexture9_GetLevelCount(texture);
+    DWORD i, face, level_count = IDirect3DBaseTexture9_GetLevelCount(texture);
 
     /* This code merrily relies on the fact that the GetSurfaceLevel AddRef call
      * happens on the host side and doesn't need the guest vtable. */
@@ -2646,6 +2664,19 @@ void d3d9_texture_set_surfaces_ifaces(IDirect3DBaseTexture9 *texture)
                 surface->lpVtbl = &d3d9_surface_vtbl;
                 IDirect3DSurface9_Release(surface);
             }
+            break;
+
+        case D3DRTYPE_CUBETEXTURE:
+            for (i = 0; i < level_count; ++i)
+            {
+                for (face = 0; face < 6; ++face)
+                {
+                    IDirect3DCubeTexture9_GetCubeMapSurface((IDirect3DCubeTexture9 *)texture, face, i, &surface);
+                    surface->lpVtbl = &d3d9_surface_vtbl;
+                    IDirect3DSurface9_Release(surface);
+                }
+            }
+            break;
     }
 }
 
@@ -2697,7 +2728,7 @@ static const struct IUnknownVtbl texture_priv_vtbl =
 
 void d3d9_texture_init(struct qemu_d3d9_texture_impl *texture, IDirect3DBaseTexture9 *host, struct qemu_d3d9_device_impl *device)
 {
-    DWORD i, level_count;
+    DWORD i, face, level_count;
     IDirect3DSurface9 *surface;
     D3DRESOURCETYPE rtype;
 
@@ -2718,6 +2749,20 @@ void d3d9_texture_init(struct qemu_d3d9_texture_impl *texture, IDirect3DBaseText
                 d3d9_surface_init(&texture->subs[i], surface, device);
                 IDirect3DSurface9_Release(surface);
             }
+            break;
+
+        case D3DRTYPE_CUBETEXTURE:
+            level_count = IDirect3DCubeTexture9_GetLevelCount((IDirect3DCubeTexture9 *)host);
+            for (i = 0; i < level_count; ++i)
+            {
+                for (face = 0; face < 6; ++face)
+                {
+                    IDirect3DCubeTexture9_GetCubeMapSurface((IDirect3DCubeTexture9 *)host, face, i, &surface);
+                    d3d9_surface_init(&texture->subs[i * 6 + face], surface, device);
+                    IDirect3DSurface9_Release(surface);
+                }
+            }
+            break;
     }
 }
 
