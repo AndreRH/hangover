@@ -74,6 +74,14 @@ struct qemu_d3d9_subresource_impl
     struct qemu_d3d9_device_impl *device;
 };
 
+static inline struct qemu_d3d9_subresource_impl *unsafe_impl_from_IDirect3DSurface9(IDirect3DSurface9 *iface)
+{
+    if (!iface)
+        return NULL;
+    /* FIXME: assert(iface->lpVtbl == &d3d9_surface_vtbl); */
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_subresource_impl, IDirect3DSurface9_iface);
+}
+
 struct qemu_d3d9_swapchain_impl
 {
     IDirect3DSwapChain9Ex IDirect3DSwapChain9Ex_iface;

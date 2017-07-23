@@ -1749,11 +1749,13 @@ struct qemu_d3d9_device_SetRenderTarget
 static HRESULT WINAPI d3d9_device_SetRenderTarget(IDirect3DDevice9Ex *iface, DWORD idx, IDirect3DSurface9 *surface)
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
+    struct qemu_d3d9_subresource_impl *surface_impl = unsafe_impl_from_IDirect3DSurface9(surface);
     struct qemu_d3d9_device_SetRenderTarget call;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SETRENDERTARGET);
     call.iface = (uint64_t)device;
-    call.idx = (uint64_t)idx;
-    call.surface = (uint64_t)surface;
+    call.idx = idx;
+    call.surface = (uint64_t)surface_impl;
 
     qemu_syscall(&call.super);
 
@@ -1766,11 +1768,13 @@ void qemu_d3d9_device_SetRenderTarget(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_SetRenderTarget *c = (struct qemu_d3d9_device_SetRenderTarget *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_subresource_impl *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    surface = QEMU_G2H(c->surface);
 
-    c->super.iret = IDirect3DDevice9Ex_SetRenderTarget(device->host, c->idx, QEMU_G2H(c->surface));
+    c->super.iret = IDirect3DDevice9Ex_SetRenderTarget(device->host, c->idx, surface ? surface->host : NULL);
 }
 
 #endif
