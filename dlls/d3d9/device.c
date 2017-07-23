@@ -5296,7 +5296,7 @@ void qemu_d3d9_device_CreateQuery(struct qemu_syscall *call)
 
     query->host = host;
     query->device = device;
-    c->query = QEMU_H2G(query);
+    *(uint64_t *)QEMU_G2H(c->query) = QEMU_H2G(query);
 }
 
 #endif
