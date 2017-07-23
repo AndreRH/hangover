@@ -42,6 +42,11 @@ struct qemu_d3d9_vertex_declaration_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
+static inline struct qemu_d3d9_vertex_declaration_impl *impl_from_IDirect3DVertexDeclaration9(IDirect3DVertexDeclaration9 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d9_vertex_declaration_impl, IDirect3DVertexDeclaration9_iface);
+}
+
 static HRESULT WINAPI d3d9_vertex_declaration_QueryInterface(IDirect3DVertexDeclaration9 *iface, REFIID riid, void **out)
 {
     struct qemu_d3d9_vertex_declaration_impl *decl = impl_from_IDirect3DVertexDeclaration9(iface);

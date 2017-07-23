@@ -3816,10 +3816,12 @@ struct qemu_d3d9_device_SetVertexDeclaration
 static HRESULT WINAPI d3d9_device_SetVertexDeclaration(IDirect3DDevice9Ex *iface, IDirect3DVertexDeclaration9 *declaration)
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
+    struct qemu_d3d9_vertex_declaration_impl *decl_impl = unsafe_impl_from_IDirect3DVertexDeclaration9(declaration);
     struct qemu_d3d9_device_SetVertexDeclaration call;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SETVERTEXDECLARATION);
     call.iface = (uint64_t)device;
-    call.declaration = (uint64_t)declaration;
+    call.declaration = (uint64_t)decl_impl;
 
     qemu_syscall(&call.super);
 
@@ -3832,11 +3834,26 @@ void qemu_d3d9_device_SetVertexDeclaration(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_SetVertexDeclaration *c = (struct qemu_d3d9_device_SetVertexDeclaration *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_vertex_declaration_impl *decl;
+    struct qemu_d3d9_vertex_declaration_impl *old;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    old = device->state->vdecl;
+    decl = QEMU_G2H(c->declaration);
 
-    c->super.iret = IDirect3DDevice9Ex_SetVertexDeclaration(device->host, QEMU_G2H(c->declaration));
+    c->super.iret = IDirect3DDevice9Ex_SetVertexDeclaration(device->host, decl ? decl->host : NULL);
+
+    if (SUCCEEDED(c->super.iret) && decl != old)
+    {
+        device->state->vdecl = decl;
+        device->state->flags |= QEMU_D3D_STATE_HAS_VDECL;
+
+        if (decl)
+            d3d9_vdecl_internal_addref(decl);
+        if (old)
+            d3d9_vdecl_internal_release(old);
+    }
 }
 
 #endif

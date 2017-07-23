@@ -120,8 +120,11 @@ struct qemu_d3d9_vertex_declaration_impl
     ULONG internal_ref;
 };
 
-static inline struct qemu_d3d9_vertex_declaration_impl *impl_from_IDirect3DVertexDeclaration9(IDirect3DVertexDeclaration9 *iface)
+static inline struct qemu_d3d9_vertex_declaration_impl *unsafe_impl_from_IDirect3DVertexDeclaration9(IDirect3DVertexDeclaration9 *iface)
 {
+    if (!iface)
+        return NULL;
+    /* FIXME: assert(iface->lpVtbl == &d3d9_vertex_declaration_vtbl); */
     return CONTAINING_RECORD(iface, struct qemu_d3d9_vertex_declaration_impl, IDirect3DVertexDeclaration9_iface);
 }
 
