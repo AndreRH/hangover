@@ -12,7 +12,7 @@ mkdir -p $DESTDIR/build/qemu
 
 # Build the Host (e.g. arm64) wine
 cd $DESTDIR/build/wine-host
-$SRCDIR/wine/configure --prefix=$DESTDIR/build/install
+$SRCDIR/wine/configure --prefix=$DESTDIR/build/install --disable-tests
 make -j 4
 
 # Cross-Compile Wine for the guest platform to copy higher level DLLs from. Disabled for now.
