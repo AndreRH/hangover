@@ -433,6 +433,11 @@ int CDECL MSVCRT_printf(const char *format, ...)
     return ret;
 }
 
+int CDECL MSVCRT_vprintf(const char *format, va_list list)
+{
+    return vfprintf_helper(QEMU_SYSCALL_ID(CALL_PRINTF), NULL, format, list);
+}
+
 static unsigned int count_printf_argsW(const WCHAR *format, WCHAR *fmts)
 {
     unsigned int i, count = 0;

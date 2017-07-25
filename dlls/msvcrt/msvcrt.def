@@ -405,6 +405,7 @@ EXPORTS
   toupper=MSVCRT_toupper
   vfprintf=MSVCRT_vfprintf
   vfwprintf=MSVCRT_vfwprintf
+  vprintf=MSVCRT_vprintf
   vsscanf_l=MSVCRT_vsscanf_l
   vswprintf_s=MSVCRT_vswprintf_s
   wcscat_s=MSVCRT_wcscat_s
