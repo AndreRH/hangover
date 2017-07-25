@@ -974,3 +974,39 @@ void qemu_puts(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_setvbuf
+{
+    struct qemu_syscall super;
+    uint64_t file;
+    uint64_t buf;
+    uint64_t mode;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+int CDECL MSVCRT_setvbuf(FILE *file, char *buf, int mode, size_t size)
+{
+    struct qemu_setvbuf call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETVBUF);
+    call.file = (uint64_t)file;
+    call.buf = (uint64_t)buf;
+    call.mode = mode;
+    call.size = size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_setvbuf(struct qemu_syscall *call)
+{
+    struct qemu_setvbuf *c = (struct qemu_setvbuf *)call;
+    WINE_TRACE("\n");
+    c->super.iret = p_setvbuf(QEMU_G2H(c->file), QEMU_G2H(c->buf), c->mode, c->size);
+}
+
+#endif

@@ -428,6 +428,7 @@ enum msvcrt_calls
     CALL_ROUNDL,
     CALL_SCALBNL,
     CALL_SETLOCALE,
+    CALL_SETVBUF,
     CALL_SIGNAL,
     CALL_SIN,
     CALL_SINF,
@@ -439,6 +440,7 @@ enum msvcrt_calls
     CALL_SRAND,
     CALL_STRCAT_S,
     CALL_STRCHR,
+    CALL_STRCMP,
     CALL_STRCPY_S,
     CALL_STRLEN,
     CALL_STRNCMP,
@@ -927,6 +929,7 @@ void qemu_roundl(struct qemu_syscall *call);
 void qemu_scalbnl(struct qemu_syscall *call);
 void qemu_scanf(struct qemu_syscall *call);
 void qemu_setlocale(struct qemu_syscall *call);
+void qemu_setvbuf(struct qemu_syscall *call);
 void qemu_signal(struct qemu_syscall *call);
 void qemu_sin(struct qemu_syscall *call);
 void qemu_sinf(struct qemu_syscall *call);
@@ -939,6 +942,7 @@ void qemu_sqrtf(struct qemu_syscall *call);
 void qemu_srand(struct qemu_syscall *call);
 void qemu_strcat_s(struct qemu_syscall *call);
 void qemu_strchr(struct qemu_syscall *call);
+void qemu_strcmp(struct qemu_syscall *call);
 void qemu_strcpy_s(struct qemu_syscall *call);
 void qemu_strlen(struct qemu_syscall *call);
 void qemu_strncmp(struct qemu_syscall *call);
@@ -1015,6 +1019,7 @@ float (* CDECL p_sqrtf)(float x);
 int (* CDECL p_strcpy_s)(char *dst, size_t elem, const char *src);
 int (* CDECL p_strcat_s)(char *dst, size_t elem, const char *src);
 char * (* CDECL p_strchr)(const char *str, int c);
+char * (* CDECL p_strcmp)(const char *str1, const char *str2);
 size_t (* CDECL p_strlen)(const char *str);
 int (* CDECL p_strncmp)(const char *str1, const char *str2, size_t len);
 int (* CDECL p_strrchr)(const char *str, int c);
@@ -1432,6 +1437,7 @@ int (* CDECL p__dupenv_s)(char **buffer, size_t *numberOfElements, const char *v
 int (* CDECL p__wdupenv_s)(WCHAR **buffer, size_t *numberOfElements, const WCHAR *varname);
 int (* CDECL p_getenv_s)(size_t *pReturnValue, char* buffer, size_t numberOfElements, const char *varname);
 int (* CDECL p__wgetenv_s)(size_t *pReturnValue, WCHAR *buffer, size_t numberOfElements, const WCHAR *varname);
+int (* CDECL p_setvbuf)(FILE *file, char *buf, int mode, size_t size);
 
 DWORD msvcrt_tls;
 

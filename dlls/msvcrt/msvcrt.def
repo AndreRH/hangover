@@ -376,6 +376,7 @@ EXPORTS
   rand=MSVCRT_rand
   realloc=MSVCRT_realloc
   setlocale=MSVCRT_setlocale
+  setvbuf=MSVCRT_setvbuf
   signal=MSVCRT_signal
   sin=MSVCRT_sin
   sinf=MSVCRT_sinf
@@ -390,6 +391,7 @@ EXPORTS
   sscanf=MSVCRT_sscanf
   strcat_s=MSVCRT_strcat_s
   strchr=MSVCRT_strchr
+  strcmp=MSVCRT_strcmp
   strcpy_s=MSVCRT_strcpy_s
   strlen=MSVCRT_strlen
   strncmp=MSVCRT_strncmp
