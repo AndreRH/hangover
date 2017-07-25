@@ -10,6 +10,7 @@ EXPORTS
   AngleArc
   Arc
   ArcTo
+  BitBlt
   CancelDC
   Chord
   CombineTransform
@@ -62,6 +63,7 @@ EXPORTS
   FloodFill
   FontIsLinked
   FrameRgn
+  GdiAlphaBlend
   GdiComment
   GdiDescribePixelFormat
   GdiDrawStream
@@ -79,6 +81,7 @@ EXPORTS
   GdiSetBatchLimit
   GdiSetPixelFormat
   GdiSwapBuffers
+  GdiTransparentBlt
   GetArcDirection
   GetAspectRatioFilterEx
   GetBkColor
@@ -167,16 +170,19 @@ EXPORTS
   LineDDA
   LineTo
   LPtoDP
+  MaskBlt
   ModifyWorldTransform
   MoveToEx
   OffsetViewportOrgEx
   OffsetWindowOrgEx
   PaintRgn
+  PatBlt
   Pie
   PlayEnhMetaFile
   PlayEnhMetaFileRecord
   PlayMetaFile
   PlayMetaFileRecord
+  PlgBlt
   PolyBezier
   PolyBezierTo
   PolyDraw
@@ -244,6 +250,7 @@ EXPORTS
   StartDocA
   StartDocW
   StartPage
+  StretchBlt
   StretchDIBits
   TextOutA
   TextOutW
