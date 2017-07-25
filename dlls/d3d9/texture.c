@@ -477,7 +477,7 @@ static DWORD WINAPI d3d9_texture_2d_SetLOD(IDirect3DTexture9 *iface, DWORD lod)
     struct qemu_d3d9_texture_2d_SetLOD call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_SETLOD);
     call.iface = (uint64_t)texture;
-    call.lod = (uint64_t)lod;
+    call.lod = lod;
 
     qemu_syscall(&call.super);
 
@@ -491,7 +491,7 @@ void qemu_d3d9_texture_2d_SetLOD(struct qemu_syscall *call)
     struct qemu_d3d9_texture_2d_SetLOD *c = (struct qemu_d3d9_texture_2d_SetLOD *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DTexture9_SetLOD(texture->host, c->lod);
@@ -1316,7 +1316,7 @@ static DWORD WINAPI d3d9_texture_cube_SetLOD(IDirect3DCubeTexture9 *iface, DWORD
     struct qemu_d3d9_texture_cube_SetLOD call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_SETLOD);
     call.iface = (uint64_t)texture;
-    call.lod = (uint64_t)lod;
+    call.lod = lod;
 
     qemu_syscall(&call.super);
 
@@ -1330,7 +1330,7 @@ void qemu_d3d9_texture_cube_SetLOD(struct qemu_syscall *call)
     struct qemu_d3d9_texture_cube_SetLOD *c = (struct qemu_d3d9_texture_cube_SetLOD *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DCubeTexture9_SetLOD(texture->host, c->lod);
@@ -2164,7 +2164,7 @@ static DWORD WINAPI d3d9_texture_3d_SetLOD(IDirect3DVolumeTexture9 *iface, DWORD
     struct qemu_d3d9_texture_3d_SetLOD call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_SETLOD);
     call.iface = (uint64_t)texture;
-    call.lod = (uint64_t)lod;
+    call.lod = lod;
 
     qemu_syscall(&call.super);
 
@@ -2178,7 +2178,7 @@ void qemu_d3d9_texture_3d_SetLOD(struct qemu_syscall *call)
     struct qemu_d3d9_texture_3d_SetLOD *c = (struct qemu_d3d9_texture_3d_SetLOD *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVolumeTexture9_SetLOD(texture->host, c->lod);

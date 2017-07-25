@@ -3136,8 +3136,8 @@ static HRESULT WINAPI d3d9_device_GetTextureStageState(IDirect3DDevice9Ex *iface
     struct qemu_d3d9_device_GetTextureStageState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETTEXTURESTAGESTATE);
     call.iface = (uint64_t)device;
-    call.stage = (uint64_t)stage;
-    call.state = (uint64_t)state;
+    call.stage = stage;
+    call.state = state;
     call.value = (uint64_t)value;
 
     qemu_syscall(&call.super);
@@ -3152,7 +3152,7 @@ void qemu_d3d9_device_GetTextureStageState(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetTextureStageState *c = (struct qemu_d3d9_device_GetTextureStageState *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetTextureStageState(device->host, c->stage, c->state, QEMU_G2H(c->value));
@@ -3312,7 +3312,7 @@ void qemu_d3d9_device_ValidateDevice(struct qemu_syscall *call)
     struct qemu_d3d9_device_ValidateDevice *c = (struct qemu_d3d9_device_ValidateDevice *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_ValidateDevice(device->host, QEMU_G2H(c->pass_count));
@@ -3707,9 +3707,9 @@ static HRESULT WINAPI d3d9_device_DrawPrimitive(IDirect3DDevice9Ex *iface, D3DPR
     struct qemu_d3d9_device_DrawPrimitive call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_DRAWPRIMITIVE);
     call.iface = (uint64_t)device;
-    call.primitive_type = (uint64_t)primitive_type;
-    call.start_vertex = (uint64_t)start_vertex;
-    call.primitive_count = (uint64_t)primitive_count;
+    call.primitive_type = primitive_type;
+    call.start_vertex = start_vertex;
+    call.primitive_count = primitive_count;
 
     qemu_syscall(&call.super);
 
@@ -3723,7 +3723,7 @@ void qemu_d3d9_device_DrawPrimitive(struct qemu_syscall *call)
     struct qemu_d3d9_device_DrawPrimitive *c = (struct qemu_d3d9_device_DrawPrimitive *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_DrawPrimitive(device->host, c->primitive_type, c->start_vertex, c->primitive_count);
