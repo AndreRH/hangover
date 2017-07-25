@@ -2730,7 +2730,7 @@ static HRESULT WINAPI d3d9_device_GetRenderState(IDirect3DDevice9Ex *iface, D3DR
     struct qemu_d3d9_device_GetRenderState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETRENDERSTATE);
     call.iface = (uint64_t)device;
-    call.state = (uint64_t)state;
+    call.state = state;
     call.value = (uint64_t)value;
 
     qemu_syscall(&call.super);
@@ -2745,7 +2745,7 @@ void qemu_d3d9_device_GetRenderState(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetRenderState *c = (struct qemu_d3d9_device_GetRenderState *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetRenderState(device->host, c->state, QEMU_G2H(c->value));
@@ -3496,7 +3496,7 @@ void qemu_d3d9_device_SetScissorRect(struct qemu_syscall *call)
     struct qemu_d3d9_device_SetScissorRect *c = (struct qemu_d3d9_device_SetScissorRect *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_SetScissorRect(device->host, QEMU_G2H(c->rect));
@@ -3838,14 +3838,14 @@ static HRESULT WINAPI d3d9_device_DrawIndexedPrimitiveUP(IDirect3DDevice9Ex *ifa
     struct qemu_d3d9_device_DrawIndexedPrimitiveUP call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_DRAWINDEXEDPRIMITIVEUP);
     call.iface = (uint64_t)device;
-    call.primitive_type = (uint64_t)primitive_type;
-    call.min_vertex_idx = (uint64_t)min_vertex_idx;
-    call.vertex_count = (uint64_t)vertex_count;
-    call.primitive_count = (uint64_t)primitive_count;
+    call.primitive_type = primitive_type;
+    call.min_vertex_idx = min_vertex_idx;
+    call.vertex_count = vertex_count;
+    call.primitive_count = primitive_count;
     call.index_data = (uint64_t)index_data;
-    call.index_format = (uint64_t)index_format;
+    call.index_format = index_format;
     call.vertex_data = (uint64_t)vertex_data;
-    call.vertex_stride = (uint64_t)vertex_stride;
+    call.vertex_stride = vertex_stride;
 
     qemu_syscall(&call.super);
 
@@ -3859,7 +3859,7 @@ void qemu_d3d9_device_DrawIndexedPrimitiveUP(struct qemu_syscall *call)
     struct qemu_d3d9_device_DrawIndexedPrimitiveUP *c = (struct qemu_d3d9_device_DrawIndexedPrimitiveUP *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_DrawIndexedPrimitiveUP(device->host, c->primitive_type, c->min_vertex_idx, c->vertex_count, c->primitive_count, QEMU_G2H(c->index_data), c->index_format, QEMU_G2H(c->vertex_data), c->vertex_stride);
