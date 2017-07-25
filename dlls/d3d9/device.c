@@ -1754,12 +1754,14 @@ struct qemu_d3d9_device_ColorFill
 static HRESULT WINAPI d3d9_device_ColorFill(IDirect3DDevice9Ex *iface, IDirect3DSurface9 *surface, const RECT *rect, D3DCOLOR color)
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
+    struct qemu_d3d9_subresource_impl *surface_impl = unsafe_impl_from_IDirect3DSurface9(surface);
     struct qemu_d3d9_device_ColorFill call;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_COLORFILL);
     call.iface = (uint64_t)device;
-    call.surface = (uint64_t)surface;
+    call.surface = (uint64_t)surface_impl;
     call.rect = (uint64_t)rect;
-    call.color = (uint64_t)color;
+    call.color = color;
 
     qemu_syscall(&call.super);
 
@@ -1772,11 +1774,14 @@ void qemu_d3d9_device_ColorFill(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_ColorFill *c = (struct qemu_d3d9_device_ColorFill *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_subresource_impl *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    surface = QEMU_G2H(c->surface);
 
-    c->super.iret = IDirect3DDevice9Ex_ColorFill(device->host, QEMU_G2H(c->surface), QEMU_G2H(c->rect), c->color);
+    c->super.iret = IDirect3DDevice9Ex_ColorFill(device->host, surface ? surface->host : NULL,
+            QEMU_G2H(c->rect), c->color);
 }
 
 #endif
