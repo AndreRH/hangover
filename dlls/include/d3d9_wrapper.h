@@ -57,6 +57,8 @@ struct qemu_d3d9_device_impl
     struct qemu_d3d9_state dev_state;
     struct qemu_d3d9_state *state;
     struct qemu_d3d9_stateblock_impl *record_stateblock;
+    struct qemu_d3d9_vertex_declaration_impl **fvf_decls;
+    unsigned int fvf_decl_count, fvf_decl_size;
 };
 
 struct qemu_d3d9_subresource_impl
@@ -122,6 +124,7 @@ struct qemu_d3d9_vertex_declaration_impl
 
     struct qemu_d3d9_device_impl *device;
     ULONG internal_ref;
+    DWORD fvf;
 };
 
 static inline struct qemu_d3d9_vertex_declaration_impl *unsafe_impl_from_IDirect3DVertexDeclaration9(IDirect3DVertexDeclaration9 *iface)

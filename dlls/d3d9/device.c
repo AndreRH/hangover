@@ -164,7 +164,15 @@ ULONG d3d9_device_wrapper_release(struct qemu_d3d9_device_impl *device)
     d3d9_wrapper_release(d3d9);
 
     if (!ref)
+    {
+        unsigned int i;
+
+        for (i = 0; i < device->fvf_decl_count; ++i)
+            d3d9_vdecl_internal_release(device->fvf_decls[i]);
+        HeapFree(GetProcessHeap(), 0, device->fvf_decls);
+
         HeapFree(GetProcessHeap(), 0, device);
+    }
 
     return ref;
 }
@@ -3928,21 +3936,15 @@ static HRESULT WINAPI d3d9_device_SetVertexDeclaration(IDirect3DDevice9Ex *iface
 
 #else
 
-void qemu_d3d9_device_SetVertexDeclaration(struct qemu_syscall *call)
+static HRESULT qemu_d3d9_device_SetVertexDeclaration_helper(struct qemu_d3d9_device_impl *device,
+        struct qemu_d3d9_vertex_declaration_impl *decl)
 {
-    struct qemu_d3d9_device_SetVertexDeclaration *c = (struct qemu_d3d9_device_SetVertexDeclaration *)call;
-    struct qemu_d3d9_device_impl *device;
-    struct qemu_d3d9_vertex_declaration_impl *decl;
-    struct qemu_d3d9_vertex_declaration_impl *old;
+    HRESULT hr;
+    struct qemu_d3d9_vertex_declaration_impl *old = device->state->vdecl;;
 
-    WINE_TRACE("\n");
-    device = QEMU_G2H(c->iface);
-    old = device->state->vdecl;
-    decl = QEMU_G2H(c->declaration);
+    hr = IDirect3DDevice9Ex_SetVertexDeclaration(device->host, decl ? decl->host : NULL);
 
-    c->super.iret = IDirect3DDevice9Ex_SetVertexDeclaration(device->host, decl ? decl->host : NULL);
-
-    if (SUCCEEDED(c->super.iret) && decl != old)
+    if (SUCCEEDED(hr) && decl != old)
     {
         device->state->vdecl = decl;
         device->state->flags |= QEMU_D3D_STATE_HAS_VDECL;
@@ -3952,6 +3954,21 @@ void qemu_d3d9_device_SetVertexDeclaration(struct qemu_syscall *call)
         if (old)
             d3d9_vdecl_internal_release(old);
     }
+
+    return hr;
+}
+
+void qemu_d3d9_device_SetVertexDeclaration(struct qemu_syscall *call)
+{
+    struct qemu_d3d9_device_SetVertexDeclaration *c = (struct qemu_d3d9_device_SetVertexDeclaration *)call;
+    struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_vertex_declaration_impl *decl;
+
+    WINE_TRACE("\n");
+    device = QEMU_G2H(c->iface);
+    decl = QEMU_G2H(c->declaration);
+
+    c->super.iret = qemu_d3d9_device_SetVertexDeclaration_helper(device, decl);
 }
 
 #endif
@@ -3998,6 +4015,7 @@ struct qemu_d3d9_device_SetFVF
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t fvf;
+    uint64_t init_decl;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -4005,27 +4023,124 @@ struct qemu_d3d9_device_SetFVF
 static HRESULT WINAPI d3d9_device_SetFVF(IDirect3DDevice9Ex *iface, DWORD fvf)
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
+    struct qemu_d3d9_vertex_declaration_impl *init_decl = NULL;
     struct qemu_d3d9_device_SetFVF call;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SETFVF);
     call.iface = (uint64_t)device;
     call.fvf = (uint64_t)fvf;
+    call.init_decl = (uint64_t)&init_decl;
 
     qemu_syscall(&call.super);
+
+    if (init_decl)
+        init_decl->IDirect3DVertexDeclaration9_iface.lpVtbl = &d3d9_vertex_declaration_vtbl;
 
     return call.super.iret;
 }
 
 #else
 
+/* Copypasted from Wine and adapted. The main difference is that we don't need to translate
+ * FVFs to a declaration array. All we have to do is set the FVF, get the d3d9 declaration
+ * and manage the wrapper around it. */
+static struct qemu_d3d9_vertex_declaration_impl *device_get_fvf_declaration(
+        struct qemu_d3d9_device_impl *device, DWORD fvf, BOOL *init)
+{
+    struct qemu_d3d9_vertex_declaration_impl *ret;
+    struct qemu_d3d9_vertex_declaration_impl **fvf_decls = device->fvf_decls;
+    struct IDirect3DVertexDeclaration9 *host_decl;
+    int p, low, high; /* deliberately signed */
+    HRESULT hr;
+
+    WINE_TRACE("Searching for declaration for fvf %08x... ", fvf);
+
+    low = 0;
+    high = device->fvf_decl_count - 1;
+    *init = FALSE;
+    while (low <= high)
+    {
+        p = (low + high) >> 1;
+        WINE_TRACE("%d ", p);
+
+        if (fvf_decls[p]->fvf == fvf)
+        {
+            WINE_TRACE("found %p.\n", fvf_decls[p]);
+            return fvf_decls[p];
+        }
+
+        if (fvf_decls[p]->fvf < fvf)
+            low = p + 1;
+        else
+            high = p - 1;
+    }
+    WINE_TRACE("not found. Creating and inserting at position %d.\n", low);
+
+    if (FAILED(IDirect3DDevice9_SetFVF(device->host, fvf)))
+        return NULL;
+    if (FAILED(IDirect3DDevice9_GetVertexDeclaration(device->host, &host_decl)))
+        return NULL;
+
+    /* This kind of implicit declaration is perfectly healthy at ref = 0. It has
+     * the lifetime of the device. If it has a ref != 0 it will hold a reference
+     * on the device, so we can't keep a reference to it. */
+    IDirect3DVertexDeclaration9_Release(host_decl);
+
+    if (device->fvf_decl_size == device->fvf_decl_count)
+    {
+        UINT grow = max(device->fvf_decl_size / 2, 8);
+
+        if (!fvf_decls)
+            fvf_decls = HeapAlloc(GetProcessHeap(), 0, sizeof(*fvf_decls) * grow);
+        else
+            fvf_decls = HeapReAlloc(GetProcessHeap(), 0, fvf_decls, sizeof(*fvf_decls) * (device->fvf_decl_size + grow));
+        if (!fvf_decls)
+            return NULL;
+        device->fvf_decls = fvf_decls;
+        device->fvf_decl_size += grow;
+    }
+
+    ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+    if (!ret)
+        return NULL;
+
+
+    ret->host = host_decl;
+    ret->device = device;
+    ret->internal_ref = 1;
+    ret->fvf = fvf;
+
+    memmove(fvf_decls + low + 1, fvf_decls + low, sizeof(*fvf_decls) * (device->fvf_decl_count - low));
+    fvf_decls[low] = ret;
+    ++device->fvf_decl_count;
+
+    WINE_TRACE("Returning %p. %u declarations in array.\n", ret, device->fvf_decl_count);
+
+    *init = TRUE;
+    return ret;
+}
+
 void qemu_d3d9_device_SetFVF(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_SetFVF *c = (struct qemu_d3d9_device_SetFVF *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_vertex_declaration_impl *decl;
+    BOOL init;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    decl = device_get_fvf_declaration(device, c->fvf, &init);
 
-    c->super.iret = IDirect3DDevice9Ex_SetFVF(device->host, c->fvf);
+    if (!decl)
+    {
+        c->super.iret = D3DERR_INVALIDCALL;
+        return;
+    }
+
+    if (init)
+        *(uint64_t *)QEMU_G2H(c->init_decl) = QEMU_H2G(decl);
+
+    c->super.iret = qemu_d3d9_device_SetVertexDeclaration_helper(device, decl);
 }
 
 #endif
@@ -4059,10 +4174,15 @@ void qemu_d3d9_device_GetFVF(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetFVF *c = (struct qemu_d3d9_device_GetFVF *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_GetFVF(device->host, QEMU_G2H(c->fvf));
+    if (!device->state->vdecl)
+        *(DWORD *)QEMU_G2H(c->fvf) = 0;
+    else
+        *(DWORD *)QEMU_G2H(c->fvf) = device->state->vdecl->fvf;
+
+    c->super.iret = D3D_OK;
 }
 
 #endif
