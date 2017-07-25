@@ -1529,12 +1529,15 @@ struct qemu_d3d9_device_UpdateSurface
 static HRESULT WINAPI d3d9_device_UpdateSurface(IDirect3DDevice9Ex *iface, IDirect3DSurface9 *src_surface, const RECT *src_rect, IDirect3DSurface9 *dst_surface, const POINT *dst_point)
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
+    struct qemu_d3d9_subresource_impl *src_impl = unsafe_impl_from_IDirect3DSurface9(src_surface);
+    struct qemu_d3d9_subresource_impl *dst_impl = unsafe_impl_from_IDirect3DSurface9(dst_surface);
     struct qemu_d3d9_device_UpdateSurface call;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_UPDATESURFACE);
     call.iface = (uint64_t)device;
-    call.src_surface = (uint64_t)src_surface;
+    call.src_surface = (uint64_t)src_impl;
     call.src_rect = (uint64_t)src_rect;
-    call.dst_surface = (uint64_t)dst_surface;
+    call.dst_surface = (uint64_t)dst_impl;
     call.dst_point = (uint64_t)dst_point;
 
     qemu_syscall(&call.super);
@@ -1548,11 +1551,15 @@ void qemu_d3d9_device_UpdateSurface(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_UpdateSurface *c = (struct qemu_d3d9_device_UpdateSurface *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_subresource_impl *src, *dst;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    src = QEMU_G2H(c->src_surface);
+    dst = QEMU_G2H(c->dst_surface);
 
-    c->super.iret = IDirect3DDevice9Ex_UpdateSurface(device->host, QEMU_G2H(c->src_surface), QEMU_G2H(c->src_rect), QEMU_G2H(c->dst_surface), QEMU_G2H(c->dst_point));
+    c->super.iret = IDirect3DDevice9Ex_UpdateSurface(device->host, src ? src->host : NULL,
+            QEMU_G2H(c->src_rect), dst ? dst->host : NULL, QEMU_G2H(c->dst_point));
 }
 
 #endif
