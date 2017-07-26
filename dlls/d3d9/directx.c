@@ -58,6 +58,11 @@ static HRESULT WINAPI d3d9_QueryInterface(IDirect3D9Ex *iface, REFIID riid, void
 
     qemu_syscall(&call.super);
 
+    /* This call either returns IDirect3D9 or IDirect3D9Ex, but no other
+     * interface. */
+    if (SUCCEEDED(call.super.iret))
+        *out = iface;
+
     return call.super.iret;
 }
 
@@ -67,11 +72,17 @@ void qemu_d3d9_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d9_QueryInterface *c = (struct qemu_d3d9_QueryInterface *)call;
     struct qemu_d3d9_impl *d3d9;
+    GUID *iid;
 
-    WINE_FIXME("Stub!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
+    iid = QEMU_G2H(c->riid);
 
-    c->super.iret = IDirect3D9_QueryInterface(d3d9->host, QEMU_G2H(c->riid), QEMU_G2H(c->out));
+    c->super.iret = IDirect3D9_QueryInterface(d3d9->host, iid, QEMU_G2H(c->out));
+
+    if (SUCCEEDED(c->super.iret) && !IsEqualGUID(iid, &IID_IDirect3D9)
+            && !IsEqualGUID(iid, &IID_IDirect3D9Ex) && !IsEqualGUID(iid, &IID_IUnknown))
+        WINE_FIXME("Unexpected GUID %s.\n", wine_dbgstr_guid(iid));
 }
 
 #endif
