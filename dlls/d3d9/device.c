@@ -1247,6 +1247,10 @@ static HRESULT WINAPI d3d9_device_CreateCubeTexture(IDirect3DDevice9Ex *iface, U
         d3d9_texture_set_surfaces_ifaces(&impl->IDirect3DBaseTexture9_iface);
         *texture = (IDirect3DCubeTexture9 *)&impl->IDirect3DBaseTexture9_iface;
     }
+    else
+    {
+        *texture = NULL;
+    }
 
     return call.super.iret;
 }
