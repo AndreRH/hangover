@@ -261,10 +261,9 @@ static HRESULT WINAPI d3d9_swapchain_GetBackBuffer(IDirect3DSwapChain9Ex *iface,
 
     qemu_syscall(&call.super);
 
+    /* Do not set *backbuffer in case of failure, see tests/device.c, test_swapchain(). */
     if (SUCCEEDED(call.super.iret))
         *backbuffer = &surface_impl->IDirect3DSurface9_iface;
-    else
-        *backbuffer = NULL;
 
     return call.super.iret;
 }
