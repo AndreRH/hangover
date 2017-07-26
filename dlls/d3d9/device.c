@@ -3045,7 +3045,9 @@ void qemu_d3d9_device_EndStateBlock(struct qemu_syscall *call)
 
     if (FAILED(c->super.iret))
     {
-        qemu_d3d9_stateblock_destroy(stateblock);
+        /* Could be a redundant EndStateBlock call. */
+        if (stateblock)
+            qemu_d3d9_stateblock_destroy(stateblock);
         return;
     }
 
