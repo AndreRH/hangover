@@ -122,11 +122,23 @@ struct qemu_Direct3DCreate9Ex
 WINBASEAPI HRESULT WINAPI Direct3DCreate9Ex(UINT sdk_version, IDirect3D9Ex **d3d9ex)
 {
     struct qemu_Direct3DCreate9Ex call;
+    struct qemu_d3d9_impl *impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DIRECT3DCREATE9EX);
     call.sdk_version = (uint64_t)sdk_version;
-    call.d3d9ex = (uint64_t)d3d9ex;
+    call.d3d9ex = (uint64_t)&impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        impl->IDirect3D9Ex_iface.lpVtbl = &d3d9_vtbl;
+        *d3d9ex = &impl->IDirect3D9Ex_iface;
+    }
+    else
+    {
+        *d3d9ex = NULL;
+    }
 
     return call.super.iret;
 }
@@ -136,10 +148,27 @@ WINBASEAPI HRESULT WINAPI Direct3DCreate9Ex(UINT sdk_version, IDirect3D9Ex **d3d
 void qemu_Direct3DCreate9Ex(struct qemu_syscall *call)
 {
     struct qemu_Direct3DCreate9Ex *c = (struct qemu_Direct3DCreate9Ex *)call;
-    IDirect3D9Ex *d3d9;
-    WINE_FIXME("This aint gonna work!\n");
-    c->super.iret = Direct3DCreate9Ex(c->sdk_version, &d3d9);
-    *(uint64_t *)QEMU_G2H(c->d3d9ex) = QEMU_H2G(d3d9);
+    struct qemu_d3d9_impl *impl;
+
+    WINE_TRACE("\n");
+
+    impl = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*impl));
+    if (!impl)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        goto error;
+    }
+
+    c->super.iret = Direct3DCreate9Ex(c->sdk_version, &impl->host);
+    if (FAILED(c->super.iret))
+        goto error;
+
+    *(uint64_t *)QEMU_G2H(c->d3d9ex) = QEMU_H2G(impl);
+    return;
+
+error:
+    HeapFree(GetProcessHeap(), 0, impl);
+    return;
 }
 
 #endif
