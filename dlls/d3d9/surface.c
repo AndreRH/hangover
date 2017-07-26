@@ -460,7 +460,9 @@ struct qemu_d3d9_surface_GetContainer
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t riid;
-    uint64_t container;
+    uint64_t texture;
+    uint64_t swapchain;
+    uint64_t device;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -469,12 +471,27 @@ static HRESULT WINAPI d3d9_surface_GetContainer(IDirect3DSurface9 *iface, REFIID
 {
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_GetContainer call;
+    struct qemu_d3d9_texture_impl *texture = NULL;
+    struct qemu_d3d9_swapchain_impl *swapchain = NULL;
+    struct qemu_d3d9_device_impl *device = NULL;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETCONTAINER);
     call.iface = (uint64_t)surface;
     call.riid = (uint64_t)riid;
-    call.container = (uint64_t)container;
+    call.texture = (uint64_t)&texture;
+    call.swapchain = (uint64_t)&swapchain;
+    call.device = (uint64_t)&device;
 
     qemu_syscall(&call.super);
+
+    if (texture)
+        *container = &texture->IDirect3DBaseTexture9_iface;
+    else if (swapchain)
+        *container = &swapchain->IDirect3DSwapChain9Ex_iface;
+    else if (device)
+        *container = &device->IDirect3DDevice9Ex_iface;
+    else
+        *container = NULL;
 
     return call.super.iret;
 }
@@ -485,11 +502,58 @@ void qemu_d3d9_surface_GetContainer(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_GetContainer *c = (struct qemu_d3d9_surface_GetContainer *)call;
     struct qemu_d3d9_subresource_impl *surface;
+    void *container;
+    GUID *iid;
+    struct qemu_d3d9_texture_impl *texture;
+    struct qemu_d3d9_swapchain_impl *swapchain;
+    IDirect3DSurface9 *backbuffer;
+    IUnknown *priv_data;
+    DWORD size = sizeof(priv_data);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    iid = QEMU_G2H(c->riid);
 
-    c->super.iret = IDirect3DSurface9_GetContainer(surface->host, QEMU_G2H(c->riid), QEMU_G2H(c->container));
+    c->super.iret = IDirect3DSurface9_GetContainer(surface->host, iid, &container);
+    if (FAILED(c->super.iret))
+        return;
+
+    if (IsEqualGUID(iid, &IID_IDirect3DSwapChain9) || IsEqualGUID(iid, &IID_IDirect3DSwapChain9Ex))
+    {
+        IDirect3DSwapChain9_GetBackBuffer((IDirect3DSwapChain9 *)container, 0, D3DBACKBUFFER_TYPE_MONO, &backbuffer);
+        IDirect3DSurface9_GetPrivateData(backbuffer, &qemu_d3d9_swapchain_guid, &priv_data, &size);
+        IDirect3DSurface9_Release(backbuffer);
+
+        swapchain = swapchain_impl_from_IUnknown(priv_data);
+        WINE_TRACE("Retrieved swapchain wrapper %p from private data.\n", swapchain);
+        priv_data->lpVtbl->Release(priv_data);
+
+        *(uint64_t *)QEMU_G2H(c->swapchain) = QEMU_H2G(swapchain);
+    }
+    else if (IsEqualGUID(iid, &IID_IDirect3DTexture9) || IsEqualGUID(iid, &IID_IDirect3DCubeTexture9)
+            || IsEqualGUID(iid, &IID_IDirect3DBaseTexture9) || IsEqualGUID(iid, &IID_IDirect3DResource9)
+            || IsEqualGUID(iid, &IID_IUnknown))
+    {
+        IDirect3DBaseTexture9_GetPrivateData((IDirect3DBaseTexture9 *)container,
+                &qemu_d3d9_texture_guid, &priv_data, &size);
+        texture = texture_impl_from_IUnknown(priv_data);
+        WINE_TRACE("Retrieved texture wrapper %p from private data.\n", texture);
+        priv_data->lpVtbl->Release(priv_data);
+
+        *(uint64_t *)QEMU_G2H(c->texture) = QEMU_H2G(texture);
+    }
+    else if (IsEqualGUID(iid, &IID_IDirect3DDevice9))
+    {
+        /* Do not release the container returned by GetContainer, we pass the reference on! */
+        *(uint64_t *)QEMU_G2H(c->device) = QEMU_H2G(surface->device);
+    }
+    else
+    {
+        WINE_FIXME("Unexpected GUID %s.\n", wine_dbgstr_guid(iid));
+        c->super.iret = E_FAIL;
+        ((IUnknown *)container)->lpVtbl->Release(container);
+
+    }
 }
 
 #endif
