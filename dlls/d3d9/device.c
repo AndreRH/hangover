@@ -4809,14 +4809,21 @@ static HRESULT WINAPI d3d9_device_GetStreamSource(IDirect3DDevice9Ex *iface, UIN
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
     struct qemu_d3d9_device_GetStreamSource call;
+    struct qemu_d3d9_buffer_impl *impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETSTREAMSOURCE);
     call.iface = (uint64_t)device;
     call.stream_idx = (uint64_t)stream_idx;
-    call.buffer = (uint64_t)buffer;
+    call.buffer = (uint64_t)&impl;
     call.offset = (uint64_t)offset;
     call.stride = (uint64_t)stride;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret) && impl)
+        *buffer = &impl->IDirect3DVertexBuffer9_iface;
+    else
+        *buffer = NULL;
 
     return call.super.iret;
 }
@@ -4827,11 +4834,30 @@ void qemu_d3d9_device_GetStreamSource(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_GetStreamSource *c = (struct qemu_d3d9_device_GetStreamSource *)call;
     struct qemu_d3d9_device_impl *device;
+    struct IDirect3DVertexBuffer9 *host;
+    struct qemu_d3d9_buffer_impl *buffer;
+    IUnknown *priv_data;
+    DWORD size = sizeof(priv_data);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_GetStreamSource(device->host, c->stream_idx, QEMU_G2H(c->buffer), QEMU_G2H(c->offset), QEMU_G2H(c->stride));
+    c->super.iret = IDirect3DDevice9Ex_GetStreamSource(device->host, c->stream_idx, &host,
+            QEMU_G2H(c->offset), QEMU_G2H(c->stride));
+    if (FAILED(c->super.iret) || !host)
+    {
+        *(uint64_t *)QEMU_G2H(c->buffer) = QEMU_H2G(NULL);
+        return;
+    }
+
+    IDirect3DVertexBuffer9_GetPrivateData(host, &qemu_d3d9_buffer_guid, &priv_data, &size);
+
+    buffer = buffer_impl_from_IUnknown(priv_data);
+    WINE_TRACE("Retrieved buffer wrapper %p from private data.\n", buffer);
+
+    priv_data->lpVtbl->Release(priv_data);
+
+    *(uint64_t *)QEMU_G2H(c->buffer) = QEMU_H2G(buffer);
 }
 
 #endif
