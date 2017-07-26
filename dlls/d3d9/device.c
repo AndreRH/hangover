@@ -6235,19 +6235,36 @@ static HRESULT WINAPI d3d9_device_CreateDepthStencilSurfaceEx(IDirect3DDevice9Ex
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
     struct qemu_d3d9_device_CreateDepthStencilSurfaceEx call;
+    struct qemu_d3d9_subresource_impl *impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_CREATEDEPTHSTENCILSURFACEEX);
     call.iface = (uint64_t)device;
-    call.width = (uint64_t)width;
-    call.height = (uint64_t)height;
-    call.format = (uint64_t)format;
-    call.multisample_type = (uint64_t)multisample_type;
-    call.multisample_quality = (uint64_t)multisample_quality;
-    call.discard = (uint64_t)discard;
-    call.surface = (uint64_t)surface;
+    call.width = width;
+    call.height = height;
+    call.format = format;
+    call.multisample_type = multisample_type;
+    call.multisample_quality = multisample_quality;
+    call.discard = discard;
+    call.surface = (uint64_t)&impl;
     call.shared_handle = (uint64_t)shared_handle;
-    call.usage = (uint64_t)usage;
+    call.usage = usage;
+
+    /* This is a special case in this function because it doesn't set *surface = NULL.
+     * Any other error condition will set it. */
+    if (usage & D3DUSAGE_DEPTHSTENCIL)
+        return D3DERR_INVALIDCALL;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        impl->IDirect3DSurface9_iface.lpVtbl = &d3d9_surface_vtbl;
+        *surface = &impl->IDirect3DSurface9_iface;
+    }
+    else
+    {
+        *surface = NULL;
+    }
 
     return call.super.iret;
 }
@@ -6258,11 +6275,30 @@ void qemu_d3d9_device_CreateDepthStencilSurfaceEx(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_CreateDepthStencilSurfaceEx *c = (struct qemu_d3d9_device_CreateDepthStencilSurfaceEx *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_surface_impl *surface;
+    IDirect3DSurface9 *host_surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_CreateDepthStencilSurfaceEx(device->host, c->width, c->height, c->format, c->multisample_type, c->multisample_quality, c->discard, QEMU_G2H(c->surface), QEMU_G2H(c->shared_handle), c->usage);
+    surface = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*surface));
+    if (!surface)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = IDirect3DDevice9Ex_CreateDepthStencilSurfaceEx(device->host, c->width, c->height,
+            c->format, c->multisample_type, c->multisample_quality, c->discard, &host_surface,
+            (HANDLE)c->shared_handle, c->usage);
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, surface);
+        return;
+    }
+
+    d3d9_standalone_surface_init(surface, host_surface, device);
+    *(uint64_t *)QEMU_G2H(c->surface) = QEMU_H2G(&surface->sub_resource);
 }
 
 #endif
