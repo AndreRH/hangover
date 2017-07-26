@@ -136,7 +136,7 @@ WINBASEAPI DWORD WINAPI GetEnvironmentVariableA(LPCSTR name, LPSTR value, DWORD 
     call.super.id = QEMU_SYSCALL_ID(CALL_GETENVIRONMENTVARIABLEA);
     call.name = (uint64_t)name;
     call.value = (uint64_t)value;
-    call.size = (uint64_t)size;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -148,7 +148,7 @@ WINBASEAPI DWORD WINAPI GetEnvironmentVariableA(LPCSTR name, LPSTR value, DWORD 
 void qemu_GetEnvironmentVariableA(struct qemu_syscall *call)
 {
     struct qemu_GetEnvironmentVariableA *c = (struct qemu_GetEnvironmentVariableA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetEnvironmentVariableA(QEMU_G2H(c->name), QEMU_G2H(c->value), c->size);
 }
 
