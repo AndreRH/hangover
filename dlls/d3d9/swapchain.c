@@ -57,6 +57,11 @@ static HRESULT WINAPI d3d9_swapchain_QueryInterface(IDirect3DSwapChain9Ex *iface
 
     qemu_syscall(&call.super);
 
+    /* This call either returns IDirect3DSwapChain9 or IDirect3DSwapChain9Ex, but no other
+     * interface. */
+    if (SUCCEEDED(call.super.iret))
+        *out = iface;
+
     return call.super.iret;
 }
 
@@ -66,11 +71,17 @@ void qemu_d3d9_swapchain_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d9_swapchain_QueryInterface *c = (struct qemu_d3d9_swapchain_QueryInterface *)call;
     struct qemu_d3d9_swapchain_impl *swapchain;
+    GUID *iid;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
+    iid = QEMU_G2H(c->riid);
 
     c->super.iret = IDirect3DSwapChain9_QueryInterface(swapchain->host, QEMU_G2H(c->riid), QEMU_G2H(c->out));
+
+    if (SUCCEEDED(c->super.iret) && !IsEqualGUID(iid, &IID_IDirect3DSwapChain9Ex)
+            && !IsEqualGUID(iid, &IID_IDirect3DSwapChain9) && !IsEqualGUID(iid, &IID_IUnknown))
+        WINE_FIXME("Unexpected GUID %s.\n", wine_dbgstr_guid(iid));
 }
 
 #endif
