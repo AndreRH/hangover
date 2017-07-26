@@ -2414,12 +2414,19 @@ static HRESULT WINAPI d3d9_texture_3d_GetVolumeLevel(IDirect3DVolumeTexture9 *if
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_GetVolumeLevel call;
+    struct qemu_d3d9_subresource_impl *volume_impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_GETVOLUMELEVEL);
     call.iface = (uint64_t)texture;
-    call.level = (uint64_t)level;
-    call.volume = (uint64_t)volume;
+    call.level = level;
+    call.volume = (uint64_t)&volume_impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+        *volume = &volume_impl->IDirect3DVolume9_iface;
+    else
+        *volume = NULL;
 
     return call.super.iret;
 }
@@ -2430,11 +2437,20 @@ void qemu_d3d9_texture_3d_GetVolumeLevel(struct qemu_syscall *call)
 {
     struct qemu_d3d9_texture_3d_GetVolumeLevel *c = (struct qemu_d3d9_texture_3d_GetVolumeLevel *)call;
     struct qemu_d3d9_texture_impl *texture;
+    IDirect3DVolume9 *host;
+    struct qemu_d3d9_subresource_impl *volume_impl;
+    DWORD size = sizeof(volume_impl);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DVolumeTexture9_GetVolumeLevel((IDirect3DVolumeTexture9 *)texture->host, c->level, QEMU_G2H(c->volume));
+    c->super.iret = IDirect3DVolumeTexture9_GetVolumeLevel((IDirect3DVolumeTexture9 *)texture->host, c->level, &host);
+    if (FAILED(c->super.iret))
+        return;
+
+    IDirect3DVolume9_GetPrivateData(host, &qemu_d3d9_volume_guid, &volume_impl, &size);
+    WINE_TRACE("Got volume %p from private data from host volume %p.\n", volume_impl, host);
+    *(uint64_t *)QEMU_G2H(c->volume) = QEMU_H2G(volume_impl);
 }
 
 #endif
