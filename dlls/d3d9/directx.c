@@ -751,8 +751,6 @@ static HRESULT WINAPI d3d9_CreateDevice(IDirect3D9Ex *iface, UINT adapter, D3DDE
     *device = (IDirect3DDevice9 *)&ret->IDirect3DDevice9Ex_iface;
     d3d9_device_set_implicit_ifaces(&ret->IDirect3DDevice9Ex_iface);
 
-    /*  FIXME: Assign vtables of the implicit swapchain and its surfaces. */
-
     return call.super.iret;
 }
 
@@ -797,7 +795,6 @@ error:
     if (device_impl->host)
         IDirect3DDevice9Ex_Release(device_impl->host);
     HeapFree(GetProcessHeap(), 0, device_impl);
-    return;
 }
 
 #endif
@@ -943,18 +940,29 @@ struct qemu_d3d9_CreateDeviceEx
 static HRESULT WINAPI d3d9_CreateDeviceEx(IDirect3D9Ex *iface, UINT adapter, D3DDEVTYPE device_type, HWND focus_window, DWORD flags, D3DPRESENT_PARAMETERS *parameters, D3DDISPLAYMODEEX *mode, IDirect3DDevice9Ex **device)
 {
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
+    struct qemu_d3d9_device_impl *ret;
     struct qemu_d3d9_CreateDeviceEx call;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_CREATEDEVICEEX);
     call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
-    call.device_type = (uint64_t)device_type;
+    call.adapter = adapter;
+    call.device_type = device_type;
     call.focus_window = (uint64_t)focus_window;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
     call.parameters = (uint64_t)parameters;
     call.mode = (uint64_t)mode;
-    call.device = (uint64_t)device;
+    call.device = (uint64_t)&ret;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+    {
+        *device = NULL;
+        return call.super.iret;
+    }
+
+    ret->IDirect3DDevice9Ex_iface.lpVtbl = &d3d9_device_vtbl;
+    *device = &ret->IDirect3DDevice9Ex_iface;
+    d3d9_device_set_implicit_ifaces(&ret->IDirect3DDevice9Ex_iface);
 
     return call.super.iret;
 }
@@ -965,11 +973,40 @@ void qemu_d3d9_CreateDeviceEx(struct qemu_syscall *call)
 {
     struct qemu_d3d9_CreateDeviceEx *c = (struct qemu_d3d9_CreateDeviceEx *)call;
     struct qemu_d3d9_impl *d3d9;
+    struct qemu_d3d9_device_impl *device_impl;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3D9Ex_CreateDeviceEx(d3d9->host, c->adapter, c->device_type, QEMU_G2H(c->focus_window), c->flags, QEMU_G2H(c->parameters), QEMU_G2H(c->mode), QEMU_G2H(c->device));
+    device_impl = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*device_impl));
+    if (!device_impl)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        goto error;
+    }
+
+    c->super.iret = IDirect3D9Ex_CreateDeviceEx(d3d9->host, c->adapter, c->device_type, QEMU_G2H(c->focus_window),
+            c->flags, QEMU_G2H(c->parameters), QEMU_G2H(c->mode), &device_impl->host);
+    if (FAILED(c->super.iret))
+        goto error;
+
+    /* The host library takes care of refcounting here. */
+    device_impl->d3d9 = d3d9;
+    device_impl->state = &device_impl->dev_state;
+    if (!d3d9_device_wrap_implicit_resources(device_impl))
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        goto error;
+    }
+
+    *(uint64_t *)QEMU_G2H(c->device) = QEMU_H2G(device_impl);
+
+    return;
+
+error:
+    if (device_impl->host)
+        IDirect3DDevice9Ex_Release(device_impl->host);
+    HeapFree(GetProcessHeap(), 0, device_impl);
 }
 
 #endif
