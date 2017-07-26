@@ -4186,9 +4186,9 @@ void qemu_d3d9_device_GetVertexDeclaration(struct qemu_syscall *call)
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    *(uint64_t *)QEMU_G2H(c->declaration) = QEMU_H2G(device->state->vdecl);
-    if (device->state->vdecl)
-        IDirect3DVertexDeclaration9_AddRef(device->state->vdecl->host);
+    *(uint64_t *)QEMU_G2H(c->declaration) = QEMU_H2G(device->dev_state.vdecl);
+    if (device->dev_state.vdecl)
+        IDirect3DVertexDeclaration9_AddRef(device->dev_state.vdecl->host);
 
     c->super.iret = D3D_OK;
 }
@@ -4362,10 +4362,10 @@ void qemu_d3d9_device_GetFVF(struct qemu_syscall *call)
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    if (!device->state->vdecl)
+    if (!device->dev_state.vdecl)
         *(DWORD *)QEMU_G2H(c->fvf) = 0;
     else
-        *(DWORD *)QEMU_G2H(c->fvf) = device->state->vdecl->fvf;
+        *(DWORD *)QEMU_G2H(c->fvf) = device->dev_state.vdecl->fvf;
 
     c->super.iret = D3D_OK;
 }
@@ -4528,9 +4528,9 @@ void qemu_d3d9_device_GetVertexShader(struct qemu_syscall *call)
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    *(uint64_t *)QEMU_G2H(c->shader) = QEMU_H2G(device->state->vs);
-    if (device->state->vs)
-        IDirect3DVertexShader9_AddRef(device->state->vs->hostvs);
+    *(uint64_t *)QEMU_G2H(c->shader) = QEMU_H2G(device->dev_state.vs);
+    if (device->dev_state.vs)
+        IDirect3DVertexShader9_AddRef(device->dev_state.vs->hostvs);
 
     c->super.iret = D3D_OK;
 }
@@ -5237,9 +5237,9 @@ void qemu_d3d9_device_GetPixelShader(struct qemu_syscall *call)
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    *(uint64_t *)QEMU_G2H(c->shader) = QEMU_H2G(device->state->ps);
-    if (device->state->ps)
-        IDirect3DPixelShader9_AddRef(device->state->ps->hostps);
+    *(uint64_t *)QEMU_G2H(c->shader) = QEMU_H2G(device->dev_state.ps);
+    if (device->dev_state.ps)
+        IDirect3DPixelShader9_AddRef(device->dev_state.ps->hostps);
 
     c->super.iret = D3D_OK;
 }
