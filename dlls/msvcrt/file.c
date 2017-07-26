@@ -327,6 +327,7 @@ unsigned int count_printf_argsA(const char *format, char *fmts)
             case 'o':
             case 'p':
             case 's':
+            case 'S':
             case 'u':
             case 'X':
             case 'x':
@@ -472,6 +473,7 @@ static unsigned int count_printf_argsW(const WCHAR *format, WCHAR *fmts)
             case 'o':
             case 'p':
             case 's':
+            case 'S':
             case 'u':
             case 'X':
             case 'x':
