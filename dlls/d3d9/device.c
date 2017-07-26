@@ -1556,6 +1556,10 @@ static HRESULT WINAPI d3d9_device_CreateDepthStencilSurface(IDirect3DDevice9Ex *
         impl->IDirect3DSurface9_iface.lpVtbl = &d3d9_surface_vtbl;
         *surface = &impl->IDirect3DSurface9_iface;
     }
+    else
+    {
+        *surface = NULL;
+    }
 
     return call.super.iret;
 }
