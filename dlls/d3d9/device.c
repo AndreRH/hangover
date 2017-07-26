@@ -5123,11 +5123,18 @@ static HRESULT WINAPI d3d9_device_GetPixelShader(IDirect3DDevice9Ex *iface, IDir
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
     struct qemu_d3d9_device_GetPixelShader call;
+    struct qemu_d3d9_shader_impl *impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETPIXELSHADER);
     call.iface = (uint64_t)device;
     call.shader = (uint64_t)shader;
 
     qemu_syscall(&call.super);
+
+    if (impl)
+        *shader = &impl->IDirect3DPixelShader9_iface;
+    else
+        *shader = NULL;
 
     return call.super.iret;
 }
@@ -5139,10 +5146,14 @@ void qemu_d3d9_device_GetPixelShader(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetPixelShader *c = (struct qemu_d3d9_device_GetPixelShader *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_GetPixelShader(device->host, QEMU_G2H(c->shader));
+    *(uint64_t *)QEMU_G2H(c->shader) = QEMU_H2G(device->state->ps);
+    if (device->state->ps)
+        IDirect3DPixelShader9_AddRef(device->state->ps->hostps);
+
+    c->super.iret = D3D_OK;
 }
 
 #endif
