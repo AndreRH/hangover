@@ -1107,19 +1107,30 @@ static HRESULT WINAPI d3d9_device_CreateVolumeTexture(IDirect3DDevice9Ex *iface,
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
     struct qemu_d3d9_device_CreateVolumeTexture call;
+    struct qemu_d3d9_texture_impl *impl;
+
+    *texture = NULL;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_CREATEVOLUMETEXTURE);
     call.iface = (uint64_t)device;
-    call.width = (uint64_t)width;
-    call.height = (uint64_t)height;
-    call.depth = (uint64_t)depth;
-    call.levels = (uint64_t)levels;
-    call.usage = (uint64_t)usage;
-    call.format = (uint64_t)format;
-    call.pool = (uint64_t)pool;
-    call.texture = (uint64_t)texture;
+    call.width = width;
+    call.height = height;
+    call.depth = depth;
+    call.levels = levels;
+    call.usage = usage;
+    call.format = format;
+    call.pool = pool;
+    call.texture = (uint64_t)&impl;
     call.shared_handle = (uint64_t)shared_handle;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        impl->IDirect3DBaseTexture9_iface.lpVtbl = (IDirect3DBaseTexture9Vtbl *)&d3d9_texture_3d_vtbl;
+        d3d9_texture_set_surfaces_ifaces(&impl->IDirect3DBaseTexture9_iface);
+        *texture = (IDirect3DVolumeTexture9 *)&impl->IDirect3DBaseTexture9_iface;
+    }
 
     return call.super.iret;
 }
@@ -1130,11 +1141,28 @@ void qemu_d3d9_device_CreateVolumeTexture(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_CreateVolumeTexture *c = (struct qemu_d3d9_device_CreateVolumeTexture *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_texture_impl *texture;
+    IDirect3DVolumeTexture9 *host_texture;
+    DWORD sub_resource_count;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_CreateVolumeTexture(device->host, c->width, c->height, c->depth, c->levels, c->usage, c->format, c->pool, QEMU_G2H(c->texture), QEMU_G2H(c->shared_handle));
+    c->super.iret = IDirect3DDevice9Ex_CreateVolumeTexture(device->host, c->width, c->height, c->depth, c->levels,
+            c->usage, c->format, c->pool, &host_texture, (HANDLE)c->shared_handle);
+
+    sub_resource_count = IDirect3DVolumeTexture9_GetLevelCount(host_texture);
+
+    texture = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, offsetof(struct qemu_d3d9_texture_impl, subs[sub_resource_count]));
+    if (!texture)
+    {
+        IDirect3DVolumeTexture9_Release(host_texture);
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    d3d9_texture_init(texture, (IDirect3DBaseTexture9 *)host_texture, device);
+    *(uint64_t *)QEMU_G2H(c->texture) = QEMU_H2G(texture);
 }
 
 #endif

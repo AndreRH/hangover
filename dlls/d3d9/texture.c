@@ -2651,6 +2651,7 @@ const IDirect3DVolumeTexture9Vtbl d3d9_texture_3d_vtbl =
 void d3d9_texture_set_surfaces_ifaces(IDirect3DBaseTexture9 *texture)
 {
     IDirect3DSurface9 *surface;
+    IDirect3DVolume9 *volume;
     DWORD i, face, level_count = IDirect3DBaseTexture9_GetLevelCount(texture);
 
     /* This code merrily relies on the fact that the GetSurfaceLevel AddRef call
@@ -2675,6 +2676,15 @@ void d3d9_texture_set_surfaces_ifaces(IDirect3DBaseTexture9 *texture)
                     surface->lpVtbl = &d3d9_surface_vtbl;
                     IDirect3DSurface9_Release(surface);
                 }
+            }
+            break;
+
+        case D3DRTYPE_VOLUMETEXTURE:
+            for (i = 0; i < level_count; ++i)
+            {
+                IDirect3DVolumeTexture9_GetVolumeLevel((IDirect3DVolumeTexture9 *)texture, i, &volume);
+                volume->lpVtbl = &d3d9_volume_vtbl;
+                IDirect3DVolume9_Release(volume);
             }
             break;
     }
@@ -2730,6 +2740,7 @@ void d3d9_texture_init(struct qemu_d3d9_texture_impl *texture, IDirect3DBaseText
 {
     DWORD i, face, level_count;
     IDirect3DSurface9 *surface;
+    IDirect3DVolume9 *volume;
     D3DRESOURCETYPE rtype;
 
     texture->private_data.lpVtbl = &texture_priv_vtbl;
@@ -2763,6 +2774,17 @@ void d3d9_texture_init(struct qemu_d3d9_texture_impl *texture, IDirect3DBaseText
                 }
             }
             break;
+
+        case D3DRTYPE_VOLUMETEXTURE:
+            level_count = IDirect3DVolumeTexture9_GetLevelCount((IDirect3DVolumeTexture9 *)host);
+            for (i = 0; i < level_count; ++i)
+            {
+                IDirect3DVolumeTexture9_GetVolumeLevel((IDirect3DVolumeTexture9 *)host, i, &volume);
+                qemu_d3d9_volume_init(&texture->subs[i], volume, device);
+                IDirect3DVolume9_Release(volume);
+            }
+            break;
+
     }
 }
 

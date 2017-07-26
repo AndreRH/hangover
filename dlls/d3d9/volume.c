@@ -137,11 +137,17 @@ void qemu_d3d9_volume_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d9_volume_Release *c = (struct qemu_d3d9_volume_Release *)call;
     struct qemu_d3d9_subresource_impl *volume;
+    struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     volume = QEMU_G2H(c->iface);
+    device = volume->device;
 
+    /* In case that the app releases the last reference
+     * it holds to a texture through IDirect3DVolume9. */
+    d3d9_device_wrapper_addref(device);
     c->super.iret = IDirect3DVolume9_Release(volume->host_volume);
+    d3d9_device_wrapper_release(device);
 }
 
 #endif
@@ -456,3 +462,34 @@ void qemu_d3d9_volume_UnlockBox(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+const struct IDirect3DVolume9Vtbl d3d9_volume_vtbl =
+{
+    /* IUnknown */
+    d3d9_volume_QueryInterface,
+    d3d9_volume_AddRef,
+    d3d9_volume_Release,
+    /* IDirect3DVolume9 */
+    d3d9_volume_GetDevice,
+    d3d9_volume_SetPrivateData,
+    d3d9_volume_GetPrivateData,
+    d3d9_volume_FreePrivateData,
+    d3d9_volume_GetContainer,
+    d3d9_volume_GetDesc,
+    d3d9_volume_LockBox,
+    d3d9_volume_UnlockBox,
+};
+
+#else
+
+void qemu_d3d9_volume_init(struct qemu_d3d9_subresource_impl *volume, IDirect3DVolume9 *host_volume,
+        struct qemu_d3d9_device_impl *device)
+{
+    WINE_TRACE("Init volume %p, host %p.\n", volume, host_volume);
+    volume->host_volume = host_volume;
+    volume->device = device;
+    IDirect3DVolume9_SetPrivateData(host_volume, &qemu_d3d9_volume_guid, &volume, sizeof(volume), 0);
+}
+
+#endif
