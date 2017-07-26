@@ -114,10 +114,15 @@ make -j4
 ln -sf $PWD/oleaut32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
 ln -sf $PWD/qemu_oleaut32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
 
+cd $DESTDIR/dlls/d3dx10_43
+make -j4
+ln -sf $PWD/d3dx10_43.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
+ln -sf $PWD/qemu_d3dx10_43.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+
 cd $DESTDIR/dlls/xinput1_3
 make -j4
 ln -sf $PWD/xinput1_3.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/xinput1_3.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+ln -sf $PWD/qemu_xinput1_3.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
 
 # Build the test progs. FIXME: automate this better.
 cd $DESTDIR/testprogs/advapi32
