@@ -3079,12 +3079,19 @@ static HRESULT WINAPI d3d9_device_GetTexture(IDirect3DDevice9Ex *iface, DWORD st
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
     struct qemu_d3d9_device_GetTexture call;
+    struct qemu_d3d9_texture_impl *texture_impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETTEXTURE);
     call.iface = (uint64_t)device;
-    call.stage = (uint64_t)stage;
-    call.texture = (uint64_t)texture;
+    call.stage = stage;
+    call.texture = (uint64_t)&texture_impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret) && texture_impl)
+        *texture = &texture_impl->IDirect3DBaseTexture9_iface;
+    else
+        *texture = NULL;
 
     return call.super.iret;
 }
@@ -3095,11 +3102,31 @@ void qemu_d3d9_device_GetTexture(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_GetTexture *c = (struct qemu_d3d9_device_GetTexture *)call;
     struct qemu_d3d9_device_impl *device;
+    IDirect3DBaseTexture9 *host;
+    struct qemu_d3d9_texture_impl *texture;
+    IUnknown *priv_data;
+    DWORD size = sizeof(priv_data);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_GetTexture(device->host, c->stage, QEMU_G2H(c->texture));
+    c->super.iret = IDirect3DDevice9Ex_GetTexture(device->host, c->stage, &host);
+    if (FAILED(c->super.iret))
+        return;
+    if (!host)
+    {
+        *(uint64_t *)QEMU_G2H(c->texture) = QEMU_H2G(NULL);
+        return;
+    }
+
+    IDirect3DBaseTexture9_GetPrivateData(host, &qemu_d3d9_texture_guid, &priv_data, &size);
+
+    texture = texture_impl_from_IUnknown(priv_data);
+    WINE_TRACE("Retrieved texture wrapper %p from private data\n", texture);
+
+    priv_data->lpVtbl->Release(priv_data);
+
+    *(uint64_t *)QEMU_G2H(c->texture) = QEMU_H2G(texture);
 }
 
 #endif
