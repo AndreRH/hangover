@@ -19,6 +19,7 @@
 
 /* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
 
+#define COBJMACROS
 #include <windows.h>
 #include <stdio.h>
 #include <d3d9.h>
@@ -704,7 +705,7 @@ void qemu_d3d9_device_GetSwapChain(struct qemu_syscall *call)
     swapchain_impl = swapchain_impl_from_IUnknown(priv_data);
     WINE_TRACE("Retrieved swapchain wrapper %p from private data\n", swapchain_impl);
 
-    priv_data->lpVtbl->Release(priv_data);
+    IUnknown_Release(priv_data);
 
     *(uint64_t *)QEMU_G2H(c->swapchain) = QEMU_H2G(swapchain_impl);
 }
@@ -3192,7 +3193,7 @@ void qemu_d3d9_device_GetTexture(struct qemu_syscall *call)
     texture = texture_impl_from_IUnknown(priv_data);
     WINE_TRACE("Retrieved texture wrapper %p from private data\n", texture);
 
-    priv_data->lpVtbl->Release(priv_data);
+    IUnknown_Release(priv_data);
 
     *(uint64_t *)QEMU_G2H(c->texture) = QEMU_H2G(texture);
 }
@@ -4925,7 +4926,7 @@ void qemu_d3d9_device_GetStreamSource(struct qemu_syscall *call)
     buffer = buffer_impl_from_IUnknown(priv_data);
     WINE_TRACE("Retrieved buffer wrapper %p from private data.\n", buffer);
 
-    priv_data->lpVtbl->Release(priv_data);
+    IUnknown_Release(priv_data);
 
     *(uint64_t *)QEMU_G2H(c->buffer) = QEMU_H2G(buffer);
 }
@@ -5106,7 +5107,7 @@ void qemu_d3d9_device_GetIndices(struct qemu_syscall *call)
     buffer = buffer_impl_from_IUnknown(priv_data);
     WINE_TRACE("Retrieved buffer wrapper %p from private data.\n", buffer);
 
-    priv_data->lpVtbl->Release(priv_data);
+    IUnknown_Release(priv_data);
 
     *(uint64_t *)QEMU_G2H(c->buffer) = QEMU_H2G(buffer);
 }
@@ -6601,7 +6602,7 @@ BOOL d3d9_device_wrap_implicit_resources(struct qemu_d3d9_device_impl *device)
                 WINE_FIXME("Backbuffer count changed from %u to %u.\n",
                         swapchain->back_buffer_count, pp.BackBufferCount);
             }
-            priv_data->lpVtbl->Release(priv_data);
+            IUnknown_Release(priv_data);
         }
         else
         {
