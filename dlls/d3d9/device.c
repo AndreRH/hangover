@@ -465,12 +465,14 @@ struct qemu_d3d9_device_SetCursorProperties
 static HRESULT WINAPI d3d9_device_SetCursorProperties(IDirect3DDevice9Ex *iface, UINT hotspot_x, UINT hotspot_y, IDirect3DSurface9 *bitmap)
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
+    struct qemu_d3d9_subresource_impl *bitmap_impl = unsafe_impl_from_IDirect3DSurface9(bitmap);
     struct qemu_d3d9_device_SetCursorProperties call;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SETCURSORPROPERTIES);
     call.iface = (uint64_t)device;
-    call.hotspot_x = (uint64_t)hotspot_x;
-    call.hotspot_y = (uint64_t)hotspot_y;
-    call.bitmap = (uint64_t)bitmap;
+    call.hotspot_x = hotspot_x;
+    call.hotspot_y = hotspot_y;
+    call.bitmap = (uint64_t)bitmap_impl;
 
     qemu_syscall(&call.super);
 
@@ -483,11 +485,14 @@ void qemu_d3d9_device_SetCursorProperties(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_SetCursorProperties *c = (struct qemu_d3d9_device_SetCursorProperties *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_subresource_impl *bitmap;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    bitmap = QEMU_G2H(c->bitmap);
 
-    c->super.iret = IDirect3DDevice9Ex_SetCursorProperties(device->host, c->hotspot_x, c->hotspot_y, QEMU_G2H(c->bitmap));
+    c->super.iret = IDirect3DDevice9Ex_SetCursorProperties(device->host, c->hotspot_x, c->hotspot_y,
+            bitmap ? bitmap->host : NULL);
 }
 
 #endif
@@ -509,8 +514,8 @@ static void WINAPI d3d9_device_SetCursorPosition(IDirect3DDevice9Ex *iface, int 
     struct qemu_d3d9_device_SetCursorPosition call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SETCURSORPOSITION);
     call.iface = (uint64_t)device;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = x;
+    call.y = y;
     call.flags = (uint64_t)flags;
 
     qemu_syscall(&call.super);
@@ -523,7 +528,7 @@ void qemu_d3d9_device_SetCursorPosition(struct qemu_syscall *call)
     struct qemu_d3d9_device_SetCursorPosition *c = (struct qemu_d3d9_device_SetCursorPosition *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     IDirect3DDevice9Ex_SetCursorPosition(device->host, c->x, c->y, c->flags);
@@ -546,7 +551,7 @@ static BOOL WINAPI d3d9_device_ShowCursor(IDirect3DDevice9Ex *iface, BOOL show)
     struct qemu_d3d9_device_ShowCursor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SHOWCURSOR);
     call.iface = (uint64_t)device;
-    call.show = (uint64_t)show;
+    call.show = show;
 
     qemu_syscall(&call.super);
 
@@ -560,7 +565,7 @@ void qemu_d3d9_device_ShowCursor(struct qemu_syscall *call)
     struct qemu_d3d9_device_ShowCursor *c = (struct qemu_d3d9_device_ShowCursor *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_ShowCursor(device->host, c->show);
