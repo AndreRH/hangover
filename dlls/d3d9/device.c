@@ -2306,7 +2306,7 @@ static HRESULT WINAPI d3d9_device_GetTransform(IDirect3DDevice9Ex *iface, D3DTRA
     struct qemu_d3d9_device_GetTransform call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETTRANSFORM);
     call.iface = (uint64_t)device;
-    call.state = (uint64_t)state;
+    call.state = state;
     call.matrix = (uint64_t)matrix;
 
     qemu_syscall(&call.super);
@@ -2321,7 +2321,7 @@ void qemu_d3d9_device_GetTransform(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetTransform *c = (struct qemu_d3d9_device_GetTransform *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetTransform(device->host, c->state, QEMU_G2H(c->matrix));
@@ -2571,7 +2571,7 @@ static HRESULT WINAPI d3d9_device_GetLight(IDirect3DDevice9Ex *iface, DWORD inde
     struct qemu_d3d9_device_GetLight call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETLIGHT);
     call.iface = (uint64_t)device;
-    call.index = (uint64_t)index;
+    call.index = index;
     call.light = (uint64_t)light;
 
     qemu_syscall(&call.super);
@@ -2586,7 +2586,7 @@ void qemu_d3d9_device_GetLight(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetLight *c = (struct qemu_d3d9_device_GetLight *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetLight(device->host, c->index, QEMU_G2H(c->light));
@@ -2649,7 +2649,7 @@ static HRESULT WINAPI d3d9_device_GetLightEnable(IDirect3DDevice9Ex *iface, DWOR
     struct qemu_d3d9_device_GetLightEnable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETLIGHTENABLE);
     call.iface = (uint64_t)device;
-    call.index = (uint64_t)index;
+    call.index = index;
     call.enable = (uint64_t)enable;
 
     qemu_syscall(&call.super);
@@ -2664,7 +2664,7 @@ void qemu_d3d9_device_GetLightEnable(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetLightEnable *c = (struct qemu_d3d9_device_GetLightEnable *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetLightEnable(device->host, c->index, QEMU_G2H(c->enable));
@@ -4595,9 +4595,9 @@ static HRESULT WINAPI d3d9_device_GetVertexShaderConstantF(IDirect3DDevice9Ex *i
     struct qemu_d3d9_device_GetVertexShaderConstantF call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETVERTEXSHADERCONSTANTF);
     call.iface = (uint64_t)device;
-    call.reg_idx = (uint64_t)reg_idx;
+    call.reg_idx = reg_idx;
     call.data = (uint64_t)data;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -4611,7 +4611,7 @@ void qemu_d3d9_device_GetVertexShaderConstantF(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetVertexShaderConstantF *c = (struct qemu_d3d9_device_GetVertexShaderConstantF *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetVertexShaderConstantF(device->host, c->reg_idx, QEMU_G2H(c->data), c->count);
@@ -4677,9 +4677,9 @@ static HRESULT WINAPI d3d9_device_GetVertexShaderConstantI(IDirect3DDevice9Ex *i
     struct qemu_d3d9_device_GetVertexShaderConstantI call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETVERTEXSHADERCONSTANTI);
     call.iface = (uint64_t)device;
-    call.reg_idx = (uint64_t)reg_idx;
+    call.reg_idx = reg_idx;
     call.data = (uint64_t)data;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -4693,7 +4693,7 @@ void qemu_d3d9_device_GetVertexShaderConstantI(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetVertexShaderConstantI *c = (struct qemu_d3d9_device_GetVertexShaderConstantI *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetVertexShaderConstantI(device->host, c->reg_idx, QEMU_G2H(c->data), c->count);
@@ -4718,9 +4718,9 @@ static HRESULT WINAPI d3d9_device_SetVertexShaderConstantB(IDirect3DDevice9Ex *i
     struct qemu_d3d9_device_SetVertexShaderConstantB call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SETVERTEXSHADERCONSTANTB);
     call.iface = (uint64_t)device;
-    call.reg_idx = (uint64_t)reg_idx;
+    call.reg_idx = reg_idx;
     call.data = (uint64_t)data;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -4734,7 +4734,7 @@ void qemu_d3d9_device_SetVertexShaderConstantB(struct qemu_syscall *call)
     struct qemu_d3d9_device_SetVertexShaderConstantB *c = (struct qemu_d3d9_device_SetVertexShaderConstantB *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_SetVertexShaderConstantB(device->host, c->reg_idx, QEMU_G2H(c->data), c->count);
@@ -4759,9 +4759,9 @@ static HRESULT WINAPI d3d9_device_GetVertexShaderConstantB(IDirect3DDevice9Ex *i
     struct qemu_d3d9_device_GetVertexShaderConstantB call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETVERTEXSHADERCONSTANTB);
     call.iface = (uint64_t)device;
-    call.reg_idx = (uint64_t)reg_idx;
+    call.reg_idx = reg_idx;
     call.data = (uint64_t)data;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -4775,7 +4775,7 @@ void qemu_d3d9_device_GetVertexShaderConstantB(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetVertexShaderConstantB *c = (struct qemu_d3d9_device_GetVertexShaderConstantB *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetVertexShaderConstantB(device->host, c->reg_idx, QEMU_G2H(c->data), c->count);
@@ -5304,9 +5304,9 @@ static HRESULT WINAPI d3d9_device_GetPixelShaderConstantF(IDirect3DDevice9Ex *if
     struct qemu_d3d9_device_GetPixelShaderConstantF call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETPIXELSHADERCONSTANTF);
     call.iface = (uint64_t)device;
-    call.reg_idx = (uint64_t)reg_idx;
+    call.reg_idx = reg_idx;
     call.data = (uint64_t)data;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -5320,7 +5320,7 @@ void qemu_d3d9_device_GetPixelShaderConstantF(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetPixelShaderConstantF *c = (struct qemu_d3d9_device_GetPixelShaderConstantF *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetPixelShaderConstantF(device->host, c->reg_idx, QEMU_G2H(c->data), c->count);
@@ -5345,9 +5345,9 @@ static HRESULT WINAPI d3d9_device_SetPixelShaderConstantI(IDirect3DDevice9Ex *if
     struct qemu_d3d9_device_SetPixelShaderConstantI call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SETPIXELSHADERCONSTANTI);
     call.iface = (uint64_t)device;
-    call.reg_idx = (uint64_t)reg_idx;
+    call.reg_idx = reg_idx;
     call.data = (uint64_t)data;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -5361,7 +5361,7 @@ void qemu_d3d9_device_SetPixelShaderConstantI(struct qemu_syscall *call)
     struct qemu_d3d9_device_SetPixelShaderConstantI *c = (struct qemu_d3d9_device_SetPixelShaderConstantI *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_SetPixelShaderConstantI(device->host, c->reg_idx, QEMU_G2H(c->data), c->count);
@@ -5386,9 +5386,9 @@ static HRESULT WINAPI d3d9_device_GetPixelShaderConstantI(IDirect3DDevice9Ex *if
     struct qemu_d3d9_device_GetPixelShaderConstantI call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETPIXELSHADERCONSTANTI);
     call.iface = (uint64_t)device;
-    call.reg_idx = (uint64_t)reg_idx;
+    call.reg_idx = reg_idx;
     call.data = (uint64_t)data;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -5402,7 +5402,7 @@ void qemu_d3d9_device_GetPixelShaderConstantI(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetPixelShaderConstantI *c = (struct qemu_d3d9_device_GetPixelShaderConstantI *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetPixelShaderConstantI(device->host, c->reg_idx, QEMU_G2H(c->data), c->count);
@@ -5443,7 +5443,7 @@ void qemu_d3d9_device_SetPixelShaderConstantB(struct qemu_syscall *call)
     struct qemu_d3d9_device_SetPixelShaderConstantB *c = (struct qemu_d3d9_device_SetPixelShaderConstantB *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_SetPixelShaderConstantB(device->host, c->reg_idx, QEMU_G2H(c->data), c->count);
@@ -5468,9 +5468,9 @@ static HRESULT WINAPI d3d9_device_GetPixelShaderConstantB(IDirect3DDevice9Ex *if
     struct qemu_d3d9_device_GetPixelShaderConstantB call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETPIXELSHADERCONSTANTB);
     call.iface = (uint64_t)device;
-    call.reg_idx = (uint64_t)reg_idx;
+    call.reg_idx = reg_idx;
     call.data = (uint64_t)data;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -5484,7 +5484,7 @@ void qemu_d3d9_device_GetPixelShaderConstantB(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetPixelShaderConstantB *c = (struct qemu_d3d9_device_GetPixelShaderConstantB *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetPixelShaderConstantB(device->host, c->reg_idx, QEMU_G2H(c->data), c->count);
