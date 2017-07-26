@@ -599,7 +599,7 @@ void d3d9_swapchain_set_surfaces_ifaces(IDirect3DSwapChain9Ex *swapchain)
     for (i = 0; i < pp.BackBufferCount; ++i)
     {
         IDirect3DSwapChain9_GetBackBuffer(swapchain, i, D3DBACKBUFFER_TYPE_MONO, &surface);
-        surface->lpVtbl = &d3d9_surface_vtbl;
+        qemu_d3d9_surface_init_guest(surface);
         IDirect3DSurface9_Release(surface);
     }
 }
@@ -634,8 +634,16 @@ static ULONG WINAPI d3d9_swapchain_priv_Release(IUnknown *iface)
     WINE_TRACE("%p decreasing refcount to %u.\n", swapchain, refcount);
     if (!refcount)
     {
+        UINT i;
+
         /* This means the private data has been released, which only happens
          * when the real interface has been destroyed. */
+        for (i = 0; i < swapchain->back_buffer_count; ++i)
+        {
+            qemu_ops->qemu_execute(QEMU_G2H(qemu_d3d9_subresource_destroyed),
+                    QEMU_H2G(&swapchain->backbuffers[i]));
+        }
+
         HeapFree(GetProcessHeap(), 0, swapchain);
     }
 

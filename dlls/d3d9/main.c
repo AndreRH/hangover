@@ -27,10 +27,29 @@
 #include "dll_list.h"
 #include "qemu_d3d9.h"
 
+struct qemu_d3d9_set_callbacks
+{
+    struct qemu_syscall super;
+    uint64_t buffer_destroyed;
+    uint64_t texture_destroyed;
+    uint64_t subresource_destroyed;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
+    struct qemu_d3d9_set_callbacks call;
+    switch (reason)
+    {
+        case DLL_PROCESS_ATTACH:
+            call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SET_CALLBACKS);
+            call.buffer_destroyed = (uint64_t)qemu_d3d9_texture_destroyed;
+            call.texture_destroyed = (uint64_t)qemu_d3d9_texture_destroyed;
+            call.subresource_destroyed = (uint64_t)qemu_d3d9_buffer_destroyed;
+            qemu_syscall(&call.super);
+            break;
+    }
     return TRUE;
 }
 
@@ -38,6 +57,17 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_d3d9);
+
+uint64_t qemu_d3d9_buffer_destroyed;
+uint64_t qemu_d3d9_texture_destroyed;
+uint64_t qemu_d3d9_subresource_destroyed;
+
+static void qemu_d3d9_set_callbacks(struct qemu_syscall *call)
+{
+    struct qemu_d3d9_set_callbacks *c = (struct qemu_d3d9_set_callbacks *)call;
+    qemu_d3d9_texture_destroyed = c->texture_destroyed;
+    qemu_d3d9_subresource_destroyed = c->subresource_destroyed;
+}
 
 const struct qemu_ops *qemu_ops;
 
@@ -226,6 +256,7 @@ static const syscall_handler dll_functions[] =
     qemu_d3d9_QueryInterface,
     qemu_d3d9_RegisterSoftwareDevice,
     qemu_d3d9_Release,
+    qemu_d3d9_set_callbacks,
     qemu_d3d9_stateblock_AddRef,
     qemu_d3d9_stateblock_Apply,
     qemu_d3d9_stateblock_Capture,

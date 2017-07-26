@@ -131,6 +131,11 @@ struct qemu_d3d9_texture_2d_Release
 
 #ifdef QEMU_DLL_GUEST
 
+void WINAPI qemu_d3d9_texture_destroyed(struct qemu_d3d9_texture_impl *texture)
+{
+    wined3d_private_store_cleanup(&texture->private_store);
+}
+
 static ULONG WINAPI d3d9_texture_2d_Release(IDirect3DTexture9 *iface)
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
@@ -199,126 +204,50 @@ void qemu_d3d9_texture_2d_GetDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d9_texture_2d_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-    uint64_t data_size;
-    uint64_t flags;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d9_texture_2d_SetPrivateData(IDirect3DTexture9 *iface, REFGUID guid, const void *data, DWORD data_size, DWORD flags)
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
-    struct qemu_d3d9_texture_2d_SetPrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_SETPRIVATEDATA);
-    call.iface = (uint64_t)texture;
-    call.guid = (uint64_t)guid;
-    call.data = (uint64_t)data;
-    call.data_size = data_size;
-    call.flags = flags;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_set_private_data(&texture->private_store, guid, data, data_size, flags);;
 }
 
 #else
 
 void qemu_d3d9_texture_2d_SetPrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_texture_2d_SetPrivateData *c = (struct qemu_d3d9_texture_2d_SetPrivateData *)call;
-    struct qemu_d3d9_texture_impl *texture;
-
-    WINE_TRACE("\n");
-    texture = QEMU_G2H(c->iface);
-
-    if (c->flags & D3DSPD_IUNKNOWN)
-        WINE_FIXME("Implement an IUnknown wrapper or handle this on the guest side\n");
-
-    c->super.iret = IDirect3DTexture9_SetPrivateData(texture->host, QEMU_G2H(c->guid), QEMU_G2H(c->data), c->data_size, c->flags);
 }
 
 #endif
-
-struct qemu_d3d9_texture_2d_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-    uint64_t data_size;
-};
 
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d9_texture_2d_GetPrivateData(IDirect3DTexture9 *iface, REFGUID guid, void *data, DWORD *data_size)
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
-    struct qemu_d3d9_texture_2d_GetPrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_GETPRIVATEDATA);
-    call.iface = (uint64_t)texture;
-    call.guid = (uint64_t)guid;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_get_private_data(&texture->private_store, guid, data, data_size);
 }
 
 #else
 
 void qemu_d3d9_texture_2d_GetPrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_texture_2d_GetPrivateData *c = (struct qemu_d3d9_texture_2d_GetPrivateData *)call;
-    struct qemu_d3d9_texture_impl *texture;
-
-    WINE_FIXME("Unverified!\n");
-    texture = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DTexture9_GetPrivateData(texture->host, QEMU_G2H(c->guid), QEMU_G2H(c->data), QEMU_G2H(c->data_size));
 }
 
 #endif
-
-struct qemu_d3d9_texture_2d_FreePrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-};
 
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d9_texture_2d_FreePrivateData(IDirect3DTexture9 *iface, REFGUID guid)
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
-    struct qemu_d3d9_texture_2d_FreePrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_FREEPRIVATEDATA);
-    call.iface = (uint64_t)texture;
-    call.guid = (uint64_t)guid;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_free_private_data(&texture->private_store, guid);
 }
 
 #else
 
 void qemu_d3d9_texture_2d_FreePrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_texture_2d_FreePrivateData *c = (struct qemu_d3d9_texture_2d_FreePrivateData *)call;
-    struct qemu_d3d9_texture_impl *texture;
-
-    WINE_FIXME("Unverified!\n");
-    texture = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DTexture9_FreePrivateData(texture->host, QEMU_G2H(c->guid));
 }
 
 #endif
@@ -1041,123 +970,51 @@ void qemu_d3d9_texture_cube_GetDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d9_texture_cube_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-    uint64_t data_size;
-    uint64_t flags;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d9_texture_cube_SetPrivateData(IDirect3DCubeTexture9 *iface, REFGUID guid, const void *data, DWORD data_size, DWORD flags)
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
-    struct qemu_d3d9_texture_cube_SetPrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_SETPRIVATEDATA);
-    call.iface = (uint64_t)texture;
-    call.guid = (uint64_t)guid;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
-    call.flags = (uint64_t)flags;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_set_private_data(&texture->private_store, guid, data, data_size, flags);;
 }
 
 #else
 
 void qemu_d3d9_texture_cube_SetPrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_texture_cube_SetPrivateData *c = (struct qemu_d3d9_texture_cube_SetPrivateData *)call;
-    struct qemu_d3d9_texture_impl *texture;
-
-    WINE_FIXME("Unverified!\n");
-    texture = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DCubeTexture9_SetPrivateData(texture->host, QEMU_G2H(c->guid), QEMU_G2H(c->data), c->data_size, c->flags);
 }
 
 #endif
-
-struct qemu_d3d9_texture_cube_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-    uint64_t data_size;
-};
 
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d9_texture_cube_GetPrivateData(IDirect3DCubeTexture9 *iface, REFGUID guid, void *data, DWORD *data_size)
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
-    struct qemu_d3d9_texture_cube_GetPrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_GETPRIVATEDATA);
-    call.iface = (uint64_t)texture;
-    call.guid = (uint64_t)guid;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_get_private_data(&texture->private_store, guid, data, data_size);
 }
 
 #else
 
 void qemu_d3d9_texture_cube_GetPrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_texture_cube_GetPrivateData *c = (struct qemu_d3d9_texture_cube_GetPrivateData *)call;
-    struct qemu_d3d9_texture_impl *texture;
-
-    WINE_FIXME("Unverified!\n");
-    texture = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DCubeTexture9_GetPrivateData(texture->host, QEMU_G2H(c->guid), QEMU_G2H(c->data), QEMU_G2H(c->data_size));
 }
 
 #endif
 
-struct qemu_d3d9_texture_cube_FreePrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-};
 
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d9_texture_cube_FreePrivateData(IDirect3DCubeTexture9 *iface, REFGUID guid)
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
-    struct qemu_d3d9_texture_cube_FreePrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_FREEPRIVATEDATA);
-    call.iface = (uint64_t)texture;
-    call.guid = (uint64_t)guid;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_free_private_data(&texture->private_store, guid);
 }
 
 #else
 
 void qemu_d3d9_texture_cube_FreePrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_texture_cube_FreePrivateData *c = (struct qemu_d3d9_texture_cube_FreePrivateData *)call;
-    struct qemu_d3d9_texture_impl *texture;
-
-    WINE_FIXME("Unverified!\n");
-    texture = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DCubeTexture9_FreePrivateData(texture->host, QEMU_G2H(c->guid));
 }
 
 #endif
@@ -1889,45 +1746,18 @@ void qemu_d3d9_texture_3d_GetDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d9_texture_3d_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-    uint64_t data_size;
-    uint64_t flags;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d9_texture_3d_SetPrivateData(IDirect3DVolumeTexture9 *iface, REFGUID guid, const void *data, DWORD data_size, DWORD flags)
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
-    struct qemu_d3d9_texture_3d_SetPrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_SETPRIVATEDATA);
-    call.iface = (uint64_t)texture;
-    call.guid = (uint64_t)guid;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
-    call.flags = (uint64_t)flags;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_set_private_data(&texture->private_store, guid, data, data_size, flags);;
 }
 
 #else
 
 void qemu_d3d9_texture_3d_SetPrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_texture_3d_SetPrivateData *c = (struct qemu_d3d9_texture_3d_SetPrivateData *)call;
-    struct qemu_d3d9_texture_impl *texture;
-
-    WINE_FIXME("Unverified!\n");
-    texture = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DVolumeTexture9_SetPrivateData(texture->host, QEMU_G2H(c->guid), QEMU_G2H(c->data), c->data_size, c->flags);
 }
 
 #endif
@@ -1946,66 +1776,29 @@ struct qemu_d3d9_texture_3d_GetPrivateData
 static HRESULT WINAPI d3d9_texture_3d_GetPrivateData(IDirect3DVolumeTexture9 *iface, REFGUID guid, void *data, DWORD *data_size)
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
-    struct qemu_d3d9_texture_3d_GetPrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_GETPRIVATEDATA);
-    call.iface = (uint64_t)texture;
-    call.guid = (uint64_t)guid;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_get_private_data(&texture->private_store, guid, data, data_size);
 }
 
 #else
 
 void qemu_d3d9_texture_3d_GetPrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_texture_3d_GetPrivateData *c = (struct qemu_d3d9_texture_3d_GetPrivateData *)call;
-    struct qemu_d3d9_texture_impl *texture;
-
-    WINE_FIXME("Unverified!\n");
-    texture = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DVolumeTexture9_GetPrivateData(texture->host, QEMU_G2H(c->guid), QEMU_G2H(c->data), QEMU_G2H(c->data_size));
 }
 
 #endif
-
-struct qemu_d3d9_texture_3d_FreePrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-};
 
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d9_texture_3d_FreePrivateData(IDirect3DVolumeTexture9 *iface, REFGUID guid)
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
-    struct qemu_d3d9_texture_3d_FreePrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_FREEPRIVATEDATA);
-    call.iface = (uint64_t)texture;
-    call.guid = (uint64_t)guid;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_free_private_data(&texture->private_store, guid);
 }
 
 #else
 
 void qemu_d3d9_texture_3d_FreePrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_texture_3d_FreePrivateData *c = (struct qemu_d3d9_texture_3d_FreePrivateData *)call;
-    struct qemu_d3d9_texture_impl *texture;
-
-    WINE_FIXME("Unverified!\n");
-    texture = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DVolumeTexture9_FreePrivateData(texture->host, QEMU_G2H(c->guid));
 }
 
 #endif
@@ -2665,21 +2458,26 @@ const IDirect3DVolumeTexture9Vtbl d3d9_texture_3d_vtbl =
     d3d9_texture_3d_AddDirtyBox,
 };
 
-void d3d9_texture_set_surfaces_ifaces(IDirect3DBaseTexture9 *texture)
+void d3d9_texture_set_surfaces_ifaces(struct qemu_d3d9_texture_impl *texture)
 {
     IDirect3DSurface9 *surface;
     IDirect3DVolume9 *volume;
-    DWORD i, face, level_count = IDirect3DBaseTexture9_GetLevelCount(texture);
+    DWORD i, face, level_count;
+
+    wined3d_private_store_init(&texture->private_store);
+
+    level_count = IDirect3DBaseTexture9_GetLevelCount(&texture->IDirect3DBaseTexture9_iface);
 
     /* This code merrily relies on the fact that the GetSurfaceLevel AddRef call
      * happens on the host side and doesn't need the guest vtable. */
-    switch (IDirect3DBaseTexture9_GetType(texture))
+    switch (IDirect3DBaseTexture9_GetType(&texture->IDirect3DBaseTexture9_iface))
     {
         case D3DRTYPE_TEXTURE:
             for (i = 0; i < level_count; ++i)
             {
-                IDirect3DTexture9_GetSurfaceLevel((IDirect3DTexture9 *)texture, i, &surface);
-                surface->lpVtbl = &d3d9_surface_vtbl;
+                IDirect3DTexture9_GetSurfaceLevel(
+                        (IDirect3DTexture9 *)&texture->IDirect3DBaseTexture9_iface, i, &surface);
+                qemu_d3d9_surface_init_guest(surface);
                 IDirect3DSurface9_Release(surface);
             }
             break;
@@ -2689,8 +2487,9 @@ void d3d9_texture_set_surfaces_ifaces(IDirect3DBaseTexture9 *texture)
             {
                 for (face = 0; face < 6; ++face)
                 {
-                    IDirect3DCubeTexture9_GetCubeMapSurface((IDirect3DCubeTexture9 *)texture, face, i, &surface);
-                    surface->lpVtbl = &d3d9_surface_vtbl;
+                    IDirect3DCubeTexture9_GetCubeMapSurface(
+                            (IDirect3DCubeTexture9 *)&texture->IDirect3DBaseTexture9_iface, face, i, &surface);
+                    qemu_d3d9_surface_init_guest(surface);
                     IDirect3DSurface9_Release(surface);
                 }
             }
@@ -2699,8 +2498,9 @@ void d3d9_texture_set_surfaces_ifaces(IDirect3DBaseTexture9 *texture)
         case D3DRTYPE_VOLUMETEXTURE:
             for (i = 0; i < level_count; ++i)
             {
-                IDirect3DVolumeTexture9_GetVolumeLevel((IDirect3DVolumeTexture9 *)texture, i, &volume);
-                volume->lpVtbl = &d3d9_volume_vtbl;
+                IDirect3DVolumeTexture9_GetVolumeLevel(
+                        (IDirect3DVolumeTexture9 *)&texture->IDirect3DBaseTexture9_iface, i, &volume);
+                qemu_d3d9_volume_init_guest(volume);
                 IDirect3DVolume9_Release(volume);
             }
             break;
@@ -2737,8 +2537,17 @@ static ULONG WINAPI d3d9_texture_priv_Release(IUnknown *iface)
     WINE_TRACE("%p decreasing refcount to %u.\n", texture, refcount);
     if (!refcount)
     {
+        UINT i;
+
         /* This means the private data has been released, which only happens
          * when the real interface has been destroyed. */
+        for (i = 0; i < texture->sub_resource_count; ++i)
+        {
+            qemu_ops->qemu_execute(QEMU_G2H(qemu_d3d9_subresource_destroyed),
+                    QEMU_H2G(&texture->subs[i]));
+        }
+
+        qemu_ops->qemu_execute(QEMU_G2H(qemu_d3d9_texture_destroyed), QEMU_H2G(texture));
         HeapFree(GetProcessHeap(), 0, texture);
     }
 
@@ -2777,6 +2586,7 @@ void d3d9_texture_init(struct qemu_d3d9_texture_impl *texture, IDirect3DBaseText
                 d3d9_surface_init(&texture->subs[i], surface, device);
                 IDirect3DSurface9_Release(surface);
             }
+            texture->sub_resource_count = level_count;
             break;
 
         case D3DRTYPE_CUBETEXTURE:
@@ -2790,6 +2600,7 @@ void d3d9_texture_init(struct qemu_d3d9_texture_impl *texture, IDirect3DBaseText
                     IDirect3DSurface9_Release(surface);
                 }
             }
+            texture->sub_resource_count = level_count * 6;
             break;
 
         case D3DRTYPE_VOLUMETEXTURE:
@@ -2800,6 +2611,7 @@ void d3d9_texture_init(struct qemu_d3d9_texture_impl *texture, IDirect3DBaseText
                 qemu_d3d9_volume_init(&texture->subs[i], volume, device);
                 IDirect3DVolume9_Release(volume);
             }
+            texture->sub_resource_count = level_count;
             break;
 
     }

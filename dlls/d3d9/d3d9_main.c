@@ -409,3 +409,77 @@ void qemu_D3DPERF_SetRegion(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+/* FIXME */
+void wined3d_mutex_lock() {};
+void wined3d_mutex_unlock() {};
+
+HRESULT qemu_d3d9_free_private_data(struct wined3d_private_store *store, const GUID *guid)
+{
+    struct wined3d_private_data *entry;
+
+    wined3d_mutex_lock();
+    entry = wined3d_private_store_get_private_data(store, guid);
+    if (!entry)
+    {
+        wined3d_mutex_unlock();
+        return D3DERR_NOTFOUND;
+    }
+
+    wined3d_private_store_free_private_data(store, entry);
+    wined3d_mutex_unlock();
+
+    return D3D_OK;
+}
+
+HRESULT qemu_d3d9_get_private_data(struct wined3d_private_store *store, const GUID *guid,
+        void *data, DWORD *data_size)
+{
+    const struct wined3d_private_data *stored_data;
+    DWORD size_in;
+    HRESULT hr;
+
+    wined3d_mutex_lock();
+    stored_data = wined3d_private_store_get_private_data(store, guid);
+    if (!stored_data)
+    {
+        hr = D3DERR_NOTFOUND;
+        goto done;
+    }
+
+    size_in = *data_size;
+    *data_size = stored_data->size;
+    if (!data)
+    {
+        hr = D3D_OK;
+        goto done;
+    }
+    if (size_in < stored_data->size)
+    {
+        hr = D3DERR_MOREDATA;
+        goto done;
+    }
+
+    if (stored_data->flags & WINED3DSPD_IUNKNOWN)
+        IUnknown_AddRef(stored_data->content.object);
+    memcpy(data, stored_data->content.data, stored_data->size);
+    hr = D3D_OK;
+
+done:
+    wined3d_mutex_unlock();
+    return hr;
+}
+
+HRESULT qemu_d3d9_set_private_data(struct wined3d_private_store *store, const GUID *guid,
+        const void *data, DWORD data_size, DWORD flags)
+{
+    HRESULT hr;
+
+    wined3d_mutex_lock();
+    hr = wined3d_private_store_set_private_data(store, guid, data, data_size, flags);
+    wined3d_mutex_unlock();
+    return hr;
+}
+
+#endif

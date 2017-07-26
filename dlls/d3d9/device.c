@@ -1087,7 +1087,7 @@ static HRESULT WINAPI d3d9_device_CreateTexture(IDirect3DDevice9Ex *iface, UINT 
     if (SUCCEEDED(call.super.iret))
     {
         impl->IDirect3DBaseTexture9_iface.lpVtbl = (IDirect3DBaseTexture9Vtbl *)&d3d9_texture_2d_vtbl;
-        d3d9_texture_set_surfaces_ifaces(&impl->IDirect3DBaseTexture9_iface);
+        d3d9_texture_set_surfaces_ifaces(impl);
         *texture = (IDirect3DTexture9 *)&impl->IDirect3DBaseTexture9_iface;
     }
 
@@ -1170,7 +1170,7 @@ static HRESULT WINAPI d3d9_device_CreateVolumeTexture(IDirect3DDevice9Ex *iface,
     if (SUCCEEDED(call.super.iret))
     {
         impl->IDirect3DBaseTexture9_iface.lpVtbl = (IDirect3DBaseTexture9Vtbl *)&d3d9_texture_3d_vtbl;
-        d3d9_texture_set_surfaces_ifaces(&impl->IDirect3DBaseTexture9_iface);
+        d3d9_texture_set_surfaces_ifaces(impl);
         *texture = (IDirect3DVolumeTexture9 *)&impl->IDirect3DBaseTexture9_iface;
     }
 
@@ -1247,7 +1247,7 @@ static HRESULT WINAPI d3d9_device_CreateCubeTexture(IDirect3DDevice9Ex *iface, U
     if (SUCCEEDED(call.super.iret))
     {
         impl->IDirect3DBaseTexture9_iface.lpVtbl = (IDirect3DBaseTexture9Vtbl *)&d3d9_texture_cube_vtbl;
-        d3d9_texture_set_surfaces_ifaces(&impl->IDirect3DBaseTexture9_iface);
+        d3d9_texture_set_surfaces_ifaces(impl);
         *texture = (IDirect3DCubeTexture9 *)&impl->IDirect3DBaseTexture9_iface;
     }
     else
@@ -1327,6 +1327,7 @@ static HRESULT WINAPI d3d9_device_CreateVertexBuffer(IDirect3DDevice9Ex *iface, 
     if (SUCCEEDED(call.super.iret))
     {
         impl->IDirect3DVertexBuffer9_iface.lpVtbl = &d3d9_vertexbuffer_vtbl;
+        wined3d_private_store_init(&impl->private_store);
         *buffer = &impl->IDirect3DVertexBuffer9_iface;
     }
 
@@ -1399,6 +1400,7 @@ static HRESULT WINAPI d3d9_device_CreateIndexBuffer(IDirect3DDevice9Ex *iface, U
     if (SUCCEEDED(call.super.iret))
     {
         impl->IDirect3DIndexBuffer9_iface.lpVtbl = &d3d9_indexbuffer_vtbl;
+        wined3d_private_store_init(&impl->private_store);
         *buffer = &impl->IDirect3DIndexBuffer9_iface;
     }
 
@@ -1474,7 +1476,7 @@ static HRESULT WINAPI d3d9_device_CreateRenderTarget(IDirect3DDevice9Ex *iface, 
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
     {
-        impl->IDirect3DSurface9_iface.lpVtbl = &d3d9_surface_vtbl;
+        qemu_d3d9_surface_init_guest(&impl->IDirect3DSurface9_iface);
         *surface = &impl->IDirect3DSurface9_iface;
     }
     else
@@ -1554,7 +1556,7 @@ static HRESULT WINAPI d3d9_device_CreateDepthStencilSurface(IDirect3DDevice9Ex *
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
     {
-        impl->IDirect3DSurface9_iface.lpVtbl = &d3d9_surface_vtbl;
+        qemu_d3d9_surface_init_guest(&impl->IDirect3DSurface9_iface);
         *surface = &impl->IDirect3DSurface9_iface;
     }
     else
@@ -1908,7 +1910,7 @@ static HRESULT WINAPI d3d9_device_CreateOffscreenPlainSurface(IDirect3DDevice9Ex
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
     {
-        impl->IDirect3DSurface9_iface.lpVtbl = &d3d9_surface_vtbl;
+        qemu_d3d9_surface_init_guest(&impl->IDirect3DSurface9_iface);
         *surface = &impl->IDirect3DSurface9_iface;
     }
     else
@@ -6260,7 +6262,7 @@ static HRESULT WINAPI d3d9_device_CreateDepthStencilSurfaceEx(IDirect3DDevice9Ex
 
     if (SUCCEEDED(call.super.iret))
     {
-        impl->IDirect3DSurface9_iface.lpVtbl = &d3d9_surface_vtbl;
+        qemu_d3d9_surface_init_guest(&impl->IDirect3DSurface9_iface);
         *surface = &impl->IDirect3DSurface9_iface;
     }
     else
@@ -6557,7 +6559,7 @@ void d3d9_device_set_implicit_ifaces(IDirect3DDevice9Ex *device)
     IDirect3DDevice9Ex_GetDepthStencilSurface(device, &ds);
     if (ds)
     {
-        ds->lpVtbl = &d3d9_surface_vtbl;
+        qemu_d3d9_surface_init_guest(ds);
         IDirect3DSurface9_Release(ds);
     }
 }

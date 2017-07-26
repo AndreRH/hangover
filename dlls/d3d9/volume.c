@@ -523,7 +523,7 @@ void qemu_d3d9_volume_UnlockBox(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-const struct IDirect3DVolume9Vtbl d3d9_volume_vtbl =
+static const struct IDirect3DVolume9Vtbl d3d9_volume_vtbl =
 {
     /* IUnknown */
     d3d9_volume_QueryInterface,
@@ -539,6 +539,13 @@ const struct IDirect3DVolume9Vtbl d3d9_volume_vtbl =
     d3d9_volume_LockBox,
     d3d9_volume_UnlockBox,
 };
+
+void qemu_d3d9_volume_init_guest(IDirect3DVolume9 *volume)
+{
+    struct qemu_d3d9_subresource_impl *impl = impl_from_IDirect3DVolume9(volume);
+    impl->IDirect3DVolume9_iface.lpVtbl = &d3d9_volume_vtbl;
+    wined3d_private_store_init(&impl->private_store);
+}
 
 #else
 

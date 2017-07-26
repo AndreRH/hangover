@@ -119,6 +119,11 @@ struct qemu_d3d9_vertexbuffer_Release
 
 #ifdef QEMU_DLL_GUEST
 
+void WINAPI qemu_d3d9_buffer_destroyed(struct qemu_d3d9_buffer_impl *buffer)
+{
+    wined3d_private_store_cleanup(&buffer->private_store);
+}
+
 static ULONG WINAPI d3d9_vertexbuffer_Release(IDirect3DVertexBuffer9 *iface)
 {
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DVertexBuffer9(iface);
@@ -187,123 +192,50 @@ void qemu_d3d9_vertexbuffer_GetDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d9_vertexbuffer_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-    uint64_t data_size;
-    uint64_t flags;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d9_vertexbuffer_SetPrivateData(IDirect3DVertexBuffer9 *iface, REFGUID guid, const void *data, DWORD data_size, DWORD flags)
 {
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DVertexBuffer9(iface);
-    struct qemu_d3d9_vertexbuffer_SetPrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXBUFFER_SETPRIVATEDATA);
-    call.iface = (uint64_t)iface;
-    call.guid = (uint64_t)guid;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
-    call.flags = (uint64_t)flags;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_set_private_data(&buffer->private_store, guid, data, data_size, flags);;
 }
 
 #else
 
 void qemu_d3d9_vertexbuffer_SetPrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_vertexbuffer_SetPrivateData *c = (struct qemu_d3d9_vertexbuffer_SetPrivateData *)call;
-    struct qemu_d3d9_buffer_impl *buffer;
-
-    WINE_FIXME("Unverified!\n");
-    buffer = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DVertexBuffer9_SetPrivateData(buffer->hostvb, QEMU_G2H(c->guid), QEMU_G2H(c->data), c->data_size, c->flags);
 }
 
 #endif
-
-struct qemu_d3d9_vertexbuffer_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-    uint64_t data_size;
-};
 
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d9_vertexbuffer_GetPrivateData(IDirect3DVertexBuffer9 *iface, REFGUID guid, void *data, DWORD *data_size)
 {
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DVertexBuffer9(iface);
-    struct qemu_d3d9_vertexbuffer_GetPrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXBUFFER_GETPRIVATEDATA);
-    call.iface = (uint64_t)iface;
-    call.guid = (uint64_t)guid;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_get_private_data(&buffer->private_store, guid, data, data_size);
 }
 
 #else
 
 void qemu_d3d9_vertexbuffer_GetPrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_vertexbuffer_GetPrivateData *c = (struct qemu_d3d9_vertexbuffer_GetPrivateData *)call;
-    struct qemu_d3d9_buffer_impl *buffer;
-
-    WINE_FIXME("Unverified!\n");
-    buffer = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DVertexBuffer9_GetPrivateData(buffer->hostvb, QEMU_G2H(c->guid), QEMU_G2H(c->data), QEMU_G2H(c->data_size));
 }
 
 #endif
-
-struct qemu_d3d9_vertexbuffer_FreePrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-};
 
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d9_vertexbuffer_FreePrivateData(IDirect3DVertexBuffer9 *iface, REFGUID guid)
 {
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DVertexBuffer9(iface);
-    struct qemu_d3d9_vertexbuffer_FreePrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXBUFFER_FREEPRIVATEDATA);
-    call.iface = (uint64_t)iface;
-    call.guid = (uint64_t)guid;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_free_private_data(&buffer->private_store, guid);
 }
 
 #else
 
 void qemu_d3d9_vertexbuffer_FreePrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_vertexbuffer_FreePrivateData *c = (struct qemu_d3d9_vertexbuffer_FreePrivateData *)call;
-    struct qemu_d3d9_buffer_impl *buffer;
-
-    WINE_FIXME("Unverified!\n");
-    buffer = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DVertexBuffer9_FreePrivateData(buffer->hostvb, QEMU_G2H(c->guid));
 }
 
 #endif
@@ -718,86 +650,34 @@ void qemu_d3d9_indexbuffer_GetDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d9_indexbuffer_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-    uint64_t data_size;
-    uint64_t flags;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d9_indexbuffer_SetPrivateData(IDirect3DIndexBuffer9 *iface, REFGUID guid, const void *data, DWORD data_size, DWORD flags)
 {
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DIndexBuffer9(iface);
-    struct qemu_d3d9_indexbuffer_SetPrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_INDEXBUFFER_SETPRIVATEDATA);
-    call.iface = (uint64_t)iface;
-    call.guid = (uint64_t)guid;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
-    call.flags = (uint64_t)flags;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_set_private_data(&buffer->private_store, guid, data, data_size, flags);;
 }
 
 #else
 
 void qemu_d3d9_indexbuffer_SetPrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_indexbuffer_SetPrivateData *c = (struct qemu_d3d9_indexbuffer_SetPrivateData *)call;
-    struct qemu_d3d9_buffer_impl *buffer;
-
-    WINE_FIXME("Unverified!\n");
-    buffer = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DIndexBuffer9_SetPrivateData(buffer->hostib, QEMU_G2H(c->guid), QEMU_G2H(c->data), c->data_size, c->flags);
 }
 
 #endif
-
-struct qemu_d3d9_indexbuffer_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-    uint64_t data_size;
-};
 
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d9_indexbuffer_GetPrivateData(IDirect3DIndexBuffer9 *iface, REFGUID guid, void *data, DWORD *data_size)
 {
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DIndexBuffer9(iface);
-    struct qemu_d3d9_indexbuffer_GetPrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_INDEXBUFFER_GETPRIVATEDATA);
-    call.iface = (uint64_t)iface;
-    call.guid = (uint64_t)guid;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_get_private_data(&buffer->private_store, guid, data, data_size);
 }
 
 #else
 
 void qemu_d3d9_indexbuffer_GetPrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_indexbuffer_GetPrivateData *c = (struct qemu_d3d9_indexbuffer_GetPrivateData *)call;
-    struct qemu_d3d9_buffer_impl *buffer;
-
-    WINE_FIXME("Unverified!\n");
-    buffer = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DIndexBuffer9_GetPrivateData(buffer->hostib, QEMU_G2H(c->guid), QEMU_G2H(c->data), QEMU_G2H(c->data_size));
 }
 
 #endif
@@ -814,27 +694,13 @@ struct qemu_d3d9_indexbuffer_FreePrivateData
 static HRESULT WINAPI d3d9_indexbuffer_FreePrivateData(IDirect3DIndexBuffer9 *iface, REFGUID guid)
 {
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DIndexBuffer9(iface);
-    struct qemu_d3d9_indexbuffer_FreePrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_INDEXBUFFER_FREEPRIVATEDATA);
-    call.iface = (uint64_t)iface;
-    call.guid = (uint64_t)guid;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_free_private_data(&buffer->private_store, guid);
 }
 
 #else
 
 void qemu_d3d9_indexbuffer_FreePrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_indexbuffer_FreePrivateData *c = (struct qemu_d3d9_indexbuffer_FreePrivateData *)call;
-    struct qemu_d3d9_buffer_impl *buffer;
-
-    WINE_FIXME("Unverified!\n");
-    buffer = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DIndexBuffer9_FreePrivateData(buffer->hostib, QEMU_G2H(c->guid));
 }
 
 #endif
@@ -1170,6 +1036,7 @@ static ULONG WINAPI d3d9_buffer_priv_Release(IUnknown *iface)
     {
         /* This means the private data has been released, which only happens
          * when the real interface has been destroyed. */
+        qemu_ops->qemu_execute(QEMU_G2H(qemu_d3d9_buffer_destroyed), QEMU_H2G(buffer));
         HeapFree(GetProcessHeap(), 0, buffer);
     }
 

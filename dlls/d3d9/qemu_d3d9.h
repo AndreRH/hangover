@@ -190,6 +190,7 @@ enum d3d9_calls
     CALL_D3D9_QUERYINTERFACE,
     CALL_D3D9_REGISTERSOFTWAREDEVICE,
     CALL_D3D9_RELEASE,
+    CALL_D3D9_SET_CALLBACKS,
     CALL_D3D9_STATEBLOCK_ADDREF,
     CALL_D3D9_STATEBLOCK_APPLY,
     CALL_D3D9_STATEBLOCK_CAPTURE,
@@ -345,7 +346,6 @@ enum d3d9_calls
 extern const struct IDirect3D9ExVtbl d3d9_vtbl;
 extern const struct IDirect3DDevice9ExVtbl d3d9_device_vtbl;
 extern const struct IDirect3DSwapChain9ExVtbl d3d9_swapchain_vtbl;
-extern const struct IDirect3DSurface9Vtbl d3d9_surface_vtbl;
 extern const struct IDirect3DTexture9Vtbl d3d9_texture_2d_vtbl;
 extern const struct IDirect3DCubeTexture9Vtbl d3d9_texture_cube_vtbl;
 extern const struct IDirect3DVolumeTexture9Vtbl d3d9_texture_3d_vtbl;
@@ -356,11 +356,22 @@ extern const struct IDirect3DQuery9Vtbl d3d9_query_vtbl;
 extern const struct IDirect3DVertexShader9Vtbl d3d9_vertexshader_vtbl;
 extern const struct IDirect3DPixelShader9Vtbl d3d9_pixelshader_vtbl;
 extern const struct IDirect3DStateBlock9Vtbl d3d9_stateblock_vtbl;
-extern const struct IDirect3DVolume9Vtbl d3d9_volume_vtbl;
 
 void d3d9_device_set_implicit_ifaces(IDirect3DDevice9Ex *device);
 void d3d9_swapchain_set_surfaces_ifaces(IDirect3DSwapChain9Ex *swapchain);
-void d3d9_texture_set_surfaces_ifaces(IDirect3DBaseTexture9 *texture);
+void d3d9_texture_set_surfaces_ifaces(struct qemu_d3d9_texture_impl *texture);
+void qemu_d3d9_surface_init_guest(IDirect3DSurface9 *surface);
+void qemu_d3d9_volume_init_guest(IDirect3DVolume9 *volume);
+
+void WINAPI qemu_d3d9_buffer_destroyed(struct qemu_d3d9_buffer_impl *buffer);
+void WINAPI qemu_d3d9_texture_destroyed(struct qemu_d3d9_texture_impl *texture);
+void WINAPI qemu_d3d9_subresource_destroyed(struct qemu_d3d9_subresource_impl *texture);
+
+HRESULT qemu_d3d9_free_private_data(struct wined3d_private_store *store, const GUID *guid);
+HRESULT qemu_d3d9_get_private_data(struct wined3d_private_store *store, const GUID *guid,
+        void *data, DWORD *data_size);
+HRESULT qemu_d3d9_set_private_data(struct wined3d_private_store *store, const GUID *guid,
+        const void *data, DWORD data_size, DWORD flags);
 
 #else
 
@@ -748,6 +759,10 @@ extern const GUID qemu_d3d9_volume_guid;
 
 const GUID *pIID_IDirect3DDevice9;
 const GUID *pIID_IDirect3DDevice9Ex;
+
+extern uint64_t qemu_d3d9_buffer_destroyed;
+extern uint64_t qemu_d3d9_texture_destroyed;
+extern uint64_t qemu_d3d9_subresource_destroyed;
 
 #endif
 

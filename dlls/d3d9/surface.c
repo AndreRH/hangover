@@ -119,6 +119,11 @@ struct qemu_d3d9_surface_Release
 
 #ifdef QEMU_DLL_GUEST
 
+void WINAPI qemu_d3d9_subresource_destroyed(struct qemu_d3d9_subresource_impl *res)
+{
+    wined3d_private_store_cleanup(&res->private_store);
+}
+
 static ULONG WINAPI d3d9_surface_Release(IDirect3DSurface9 *iface)
 {
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
@@ -195,86 +200,34 @@ void qemu_d3d9_surface_GetDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d9_surface_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-    uint64_t data_size;
-    uint64_t flags;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d9_surface_SetPrivateData(IDirect3DSurface9 *iface, REFGUID guid, const void *data, DWORD data_size, DWORD flags)
 {
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
-    struct qemu_d3d9_surface_SetPrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_SETPRIVATEDATA);
-    call.iface = (uint64_t)surface;
-    call.guid = (uint64_t)guid;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
-    call.flags = (uint64_t)flags;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_set_private_data(&surface->private_store, guid, data, data_size, flags);;
 }
 
 #else
 
 void qemu_d3d9_surface_SetPrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_surface_SetPrivateData *c = (struct qemu_d3d9_surface_SetPrivateData *)call;
-    struct qemu_d3d9_subresource_impl *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DSurface9_SetPrivateData(surface->host, QEMU_G2H(c->guid), QEMU_G2H(c->data), c->data_size, c->flags);
 }
 
 #endif
-
-struct qemu_d3d9_surface_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-    uint64_t data_size;
-};
 
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d9_surface_GetPrivateData(IDirect3DSurface9 *iface, REFGUID guid, void *data, DWORD *data_size)
 {
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
-    struct qemu_d3d9_surface_GetPrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETPRIVATEDATA);
-    call.iface = (uint64_t)surface;
-    call.guid = (uint64_t)guid;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_get_private_data(&surface->private_store, guid, data, data_size);
 }
 
 #else
 
 void qemu_d3d9_surface_GetPrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_surface_GetPrivateData *c = (struct qemu_d3d9_surface_GetPrivateData *)call;
-    struct qemu_d3d9_subresource_impl *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DSurface9_GetPrivateData(surface->host, QEMU_G2H(c->guid), QEMU_G2H(c->data), QEMU_G2H(c->data_size));
 }
 
 #endif
@@ -291,27 +244,13 @@ struct qemu_d3d9_surface_FreePrivateData
 static HRESULT WINAPI d3d9_surface_FreePrivateData(IDirect3DSurface9 *iface, REFGUID guid)
 {
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
-    struct qemu_d3d9_surface_FreePrivateData call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_FREEPRIVATEDATA);
-    call.iface = (uint64_t)surface;
-    call.guid = (uint64_t)guid;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_d3d9_free_private_data(&surface->private_store, guid);
 }
 
 #else
 
 void qemu_d3d9_surface_FreePrivateData(struct qemu_syscall *call)
 {
-    struct qemu_d3d9_surface_FreePrivateData *c = (struct qemu_d3d9_surface_FreePrivateData *)call;
-    struct qemu_d3d9_subresource_impl *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DSurface9_FreePrivateData(surface->host, QEMU_G2H(c->guid));
 }
 
 #endif
@@ -748,7 +687,7 @@ void qemu_d3d9_surface_ReleaseDC(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-const struct IDirect3DSurface9Vtbl d3d9_surface_vtbl =
+static const struct IDirect3DSurface9Vtbl d3d9_surface_vtbl =
 {
     /* IUnknown */
     d3d9_surface_QueryInterface,
@@ -771,6 +710,17 @@ const struct IDirect3DSurface9Vtbl d3d9_surface_vtbl =
     d3d9_surface_GetDC,
     d3d9_surface_ReleaseDC,
 };
+
+void qemu_d3d9_surface_init_guest(IDirect3DSurface9 *surface)
+{
+    struct qemu_d3d9_subresource_impl *impl = impl_from_IDirect3DSurface(surface);
+    if (!impl->initialized)
+    {
+        impl->IDirect3DSurface9_iface.lpVtbl = &d3d9_surface_vtbl;
+        wined3d_private_store_init(&impl->private_store);
+        impl->initialized = TRUE;
+    }
+}
 
 #else
 
@@ -804,6 +754,8 @@ static ULONG WINAPI d3d9_surface_priv_Release(IUnknown *iface)
     {
         /* This means the private data has been released, which only happens
          * when the real interface has been destroyed. */
+        qemu_ops->qemu_execute(QEMU_G2H(qemu_d3d9_subresource_destroyed),
+                QEMU_H2G(&surface->sub_resource));
         HeapFree(GetProcessHeap(), 0, surface);
     }
 

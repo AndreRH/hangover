@@ -24,6 +24,8 @@
 #ifndef QEMU_D3D9_WRAPPER_H
 #define QEMU_D3D9_WRAPPER_H
 
+#include "private_data.h"
+
 /* These structures are accessed by both guest and host, including the guest
  * application code. This may need extra care for 32<->64 mapping because
  * we can't just make everything an uint64_t. */
@@ -69,6 +71,9 @@ struct qemu_d3d9_subresource_impl
         IDirect3DSurface9 IDirect3DSurface9_iface;
         IDirect3DVolume9 IDirect3DVolume9_iface;
     };
+    struct wined3d_private_store private_store;
+    BOOL initialized;
+
     union
     {
         IDirect3DSurface9 *host;
@@ -108,12 +113,15 @@ static inline struct qemu_d3d9_swapchain_impl *unsafe_impl_from_IDirect3DSwapCha
 struct qemu_d3d9_texture_impl
 {
     IDirect3DBaseTexture9 IDirect3DBaseTexture9_iface;
+    struct wined3d_private_store private_store;
+
     IDirect3DBaseTexture9 *host;
 
     IUnknown private_data;
     ULONG private_data_ref; /* NOT the externally visible ref! */
     struct qemu_d3d9_device_impl *device;
 
+    UINT sub_resource_count;
     struct qemu_d3d9_subresource_impl subs[1];
 };
 
@@ -151,6 +159,8 @@ struct qemu_d3d9_buffer_impl
         IDirect3DVertexBuffer9 IDirect3DVertexBuffer9_iface;
         IDirect3DIndexBuffer9 IDirect3DIndexBuffer9_iface;
     };
+    struct wined3d_private_store private_store;
+
     union
     {
         IDirect3DVertexBuffer9 *hostvb;
