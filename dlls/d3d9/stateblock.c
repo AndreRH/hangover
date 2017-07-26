@@ -230,7 +230,7 @@ void qemu_d3d9_stateblock_Capture(struct qemu_syscall *call)
     c->super.iret = IDirect3DStateBlock9_Capture(stateblock->host);
     if (SUCCEEDED(c->super.iret))
     {
-        if (stateblock->state.flags & QEMU_D3D_STATE_HAS_VDECL);
+        if (stateblock->state.flags & QEMU_D3D_STATE_HAS_VDECL)
         {
             if (device->state->vdecl)
                 d3d9_vdecl_internal_addref(device->state->vdecl);
@@ -238,7 +238,7 @@ void qemu_d3d9_stateblock_Capture(struct qemu_syscall *call)
                 d3d9_vdecl_internal_release(stateblock->state.vdecl);
             stateblock->state.vdecl = device->state->vdecl;
         }
-        if (stateblock->state.flags & QEMU_D3D_STATE_HAS_VS);
+        if (stateblock->state.flags & QEMU_D3D_STATE_HAS_VS)
         {
             if (device->state->vs)
                 d3d9_shader_internal_addref(device->state->vs);
@@ -246,7 +246,7 @@ void qemu_d3d9_stateblock_Capture(struct qemu_syscall *call)
                 d3d9_shader_internal_release(stateblock->state.vs);
             stateblock->state.vs = device->state->vs;
         }
-        if (stateblock->state.flags & QEMU_D3D_STATE_HAS_PS);
+        if (stateblock->state.flags & QEMU_D3D_STATE_HAS_PS)
         {
             if (device->state->ps)
                 d3d9_shader_internal_addref(device->state->ps);
@@ -295,7 +295,7 @@ void qemu_d3d9_stateblock_Apply(struct qemu_syscall *call)
 
     if (SUCCEEDED(c->super.iret))
     {
-        if (stateblock->state.flags & QEMU_D3D_STATE_HAS_VDECL);
+        if (stateblock->state.flags & QEMU_D3D_STATE_HAS_VDECL)
         {
             if (stateblock->state.vdecl)
                 d3d9_vdecl_internal_addref(stateblock->state.vdecl);
@@ -303,7 +303,7 @@ void qemu_d3d9_stateblock_Apply(struct qemu_syscall *call)
                 d3d9_vdecl_internal_release(device->state->vdecl);
             device->state->vdecl = stateblock->state.vdecl;
         }
-        if (stateblock->state.flags & QEMU_D3D_STATE_HAS_VS);
+        if (stateblock->state.flags & QEMU_D3D_STATE_HAS_VS)
         {
             if (stateblock->state.vs)
                 d3d9_shader_internal_addref(stateblock->state.vs);
@@ -311,7 +311,7 @@ void qemu_d3d9_stateblock_Apply(struct qemu_syscall *call)
                 d3d9_shader_internal_release(device->state->vs);
             device->state->vs = stateblock->state.vs;
         }
-        if (stateblock->state.flags & QEMU_D3D_STATE_HAS_PS);
+        if (stateblock->state.flags & QEMU_D3D_STATE_HAS_PS)
         {
             if (stateblock->state.ps)
                 d3d9_shader_internal_addref(stateblock->state.ps);
