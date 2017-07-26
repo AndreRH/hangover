@@ -106,7 +106,7 @@ WINGDIAPI INT WINAPI GetObjectA(HGDIOBJ handle, INT count, LPVOID buffer)
     struct qemu_GetObjectA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETOBJECTA);
     call.handle = (uint64_t)handle;
-    call.count = (uint64_t)count;
+    call.count = count;
     call.buffer = (uint64_t)buffer;
 
     qemu_syscall(&call.super);
@@ -119,8 +119,8 @@ WINGDIAPI INT WINAPI GetObjectA(HGDIOBJ handle, INT count, LPVOID buffer)
 void qemu_GetObjectA(struct qemu_syscall *call)
 {
     struct qemu_GetObjectA *c = (struct qemu_GetObjectA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetObjectA(QEMU_G2H(c->handle), c->count, QEMU_G2H(c->buffer));
+    WINE_TRACE("\n");
+    c->super.iret = GetObjectA((HGDIOBJ)c->handle, c->count, QEMU_G2H(c->buffer));
 }
 
 #endif
@@ -183,8 +183,8 @@ WINGDIAPI DWORD WINAPI GetObjectType(HGDIOBJ handle)
 void qemu_GetObjectType(struct qemu_syscall *call)
 {
     struct qemu_GetObjectType *c = (struct qemu_GetObjectType *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetObjectType(QEMU_G2H(c->handle));
+    WINE_TRACE("\n");
+    c->super.iret = GetObjectType((HGDIOBJ)c->handle);
 }
 
 #endif
@@ -215,8 +215,8 @@ WINGDIAPI HGDIOBJ WINAPI GetCurrentObject(HDC hdc,UINT type)
 void qemu_GetCurrentObject(struct qemu_syscall *call)
 {
     struct qemu_GetCurrentObject *c = (struct qemu_GetCurrentObject *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GetCurrentObject(QEMU_G2H(c->hdc), c->type);
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)GetCurrentObject((HANDLE)c->hdc, c->type);
 }
 
 #endif
