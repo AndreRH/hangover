@@ -1191,6 +1191,8 @@ void qemu_d3d9_device_CreateVolumeTexture(struct qemu_syscall *call)
 
     c->super.iret = IDirect3DDevice9Ex_CreateVolumeTexture(device->host, c->width, c->height, c->depth, c->levels,
             c->usage, c->format, c->pool, &host_texture, (HANDLE)c->shared_handle);
+    if (FAILED(c->super.iret))
+        return;
 
     sub_resource_count = IDirect3DVolumeTexture9_GetLevelCount(host_texture);
 
