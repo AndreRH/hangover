@@ -365,7 +365,7 @@ WINUSERAPI LONG WINAPI ChangeDisplaySettingsA(LPDEVMODEA devmode, DWORD flags)
     struct qemu_ChangeDisplaySettingsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGEDISPLAYSETTINGSA);
     call.devmode = (uint64_t)devmode;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -377,7 +377,7 @@ WINUSERAPI LONG WINAPI ChangeDisplaySettingsA(LPDEVMODEA devmode, DWORD flags)
 void qemu_ChangeDisplaySettingsA(struct qemu_syscall *call)
 {
     struct qemu_ChangeDisplaySettingsA *c = (struct qemu_ChangeDisplaySettingsA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ChangeDisplaySettingsA(QEMU_G2H(c->devmode), c->flags);
 }
 
@@ -397,7 +397,7 @@ WINUSERAPI LONG WINAPI ChangeDisplaySettingsW(LPDEVMODEW devmode, DWORD flags)
     struct qemu_ChangeDisplaySettingsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGEDISPLAYSETTINGSW);
     call.devmode = (uint64_t)devmode;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -409,7 +409,7 @@ WINUSERAPI LONG WINAPI ChangeDisplaySettingsW(LPDEVMODEW devmode, DWORD flags)
 void qemu_ChangeDisplaySettingsW(struct qemu_syscall *call)
 {
     struct qemu_ChangeDisplaySettingsW *c = (struct qemu_ChangeDisplaySettingsW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ChangeDisplaySettingsW(QEMU_G2H(c->devmode), c->flags);
 }
 
@@ -506,7 +506,7 @@ WINUSERAPI BOOL WINAPI EnumDisplaySettingsW(LPCWSTR name, DWORD n, LPDEVMODEW de
     struct qemu_EnumDisplaySettingsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMDISPLAYSETTINGSW);
     call.name = (uint64_t)name;
-    call.n = (uint64_t)n;
+    call.n = n;
     call.devmode = (uint64_t)devmode;
 
     qemu_syscall(&call.super);
@@ -519,7 +519,7 @@ WINUSERAPI BOOL WINAPI EnumDisplaySettingsW(LPCWSTR name, DWORD n, LPDEVMODEW de
 void qemu_EnumDisplaySettingsW(struct qemu_syscall *call)
 {
     struct qemu_EnumDisplaySettingsW *c = (struct qemu_EnumDisplaySettingsW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EnumDisplaySettingsW(QEMU_G2H(c->name), c->n, QEMU_G2H(c->devmode));
 }
 

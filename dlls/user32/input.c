@@ -193,7 +193,7 @@ WINUSERAPI BOOL WINAPI GetCursorInfo(PCURSORINFO pci)
 void qemu_GetCursorInfo(struct qemu_syscall *call)
 {
     struct qemu_GetCursorInfo *c = (struct qemu_GetCursorInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCursorInfo(QEMU_G2H(c->pci));
 }
 
@@ -244,8 +244,8 @@ WINUSERAPI BOOL WINAPI SetCursorPos(INT x, INT y)
 {
     struct qemu_SetCursorPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCURSORPOS);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = x;
+    call.y = y;
 
     qemu_syscall(&call.super);
 
@@ -257,7 +257,7 @@ WINUSERAPI BOOL WINAPI SetCursorPos(INT x, INT y)
 void qemu_SetCursorPos(struct qemu_syscall *call)
 {
     struct qemu_SetCursorPos *c = (struct qemu_SetCursorPos *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetCursorPos(c->x, c->y);
 }
 

@@ -289,8 +289,8 @@ WINUSERAPI BOOL WINAPI ClientToScreen(HWND hwnd, LPPOINT lppnt)
 void qemu_ClientToScreen(struct qemu_syscall *call)
 {
     struct qemu_ClientToScreen *c = (struct qemu_ClientToScreen *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ClientToScreen(QEMU_G2H(c->hwnd), QEMU_G2H(c->lppnt));
+    WINE_TRACE("\n");
+    c->super.iret = ClientToScreen((HWND)c->hwnd, QEMU_G2H(c->lppnt));
 }
 
 #endif

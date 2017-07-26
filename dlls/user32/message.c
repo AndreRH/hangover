@@ -1029,11 +1029,11 @@ WINUSERAPI DWORD WINAPI MsgWaitForMultipleObjectsEx(DWORD count, const HANDLE *p
 {
     struct qemu_MsgWaitForMultipleObjectsEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MSGWAITFORMULTIPLEOBJECTSEX);
-    call.count = (uint64_t)count;
+    call.count = count;
     call.pHandles = (uint64_t)pHandles;
-    call.timeout = (uint64_t)timeout;
-    call.mask = (uint64_t)mask;
-    call.flags = (uint64_t)flags;
+    call.timeout = timeout;
+    call.mask = mask;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -1083,7 +1083,7 @@ WINUSERAPI DWORD WINAPI MsgWaitForMultipleObjects(DWORD count, const HANDLE *han
 void qemu_MsgWaitForMultipleObjects(struct qemu_syscall *call)
 {
     struct qemu_MsgWaitForMultipleObjects *c = (struct qemu_MsgWaitForMultipleObjects *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = MsgWaitForMultipleObjects(c->count, QEMU_G2H(c->handles), c->wait_all, c->timeout, c->mask);
 }
 

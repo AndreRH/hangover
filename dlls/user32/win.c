@@ -395,7 +395,7 @@ WINUSERAPI HWND WINAPI GetDesktopWindow(void)
 void qemu_GetDesktopWindow(struct qemu_syscall *call)
 {
     struct qemu_GetDesktopWindow *c = (struct qemu_GetDesktopWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetDesktopWindow();
 }
 

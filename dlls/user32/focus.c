@@ -115,7 +115,7 @@ WINUSERAPI BOOL WINAPI SetForegroundWindow(HWND hwnd)
 void qemu_SetForegroundWindow(struct qemu_syscall *call)
 {
     struct qemu_SetForegroundWindow *c = (struct qemu_SetForegroundWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetForegroundWindow(QEMU_G2H(c->hwnd));
 }
 
