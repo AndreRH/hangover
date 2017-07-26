@@ -330,7 +330,7 @@ static DWORD WINAPI d3d9_surface_SetPriority(IDirect3DSurface9 *iface, DWORD pri
     struct qemu_d3d9_surface_SetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_SETPRIORITY);
     call.iface = (uint64_t)surface;
-    call.priority = (uint64_t)priority;
+    call.priority = priority;
 
     qemu_syscall(&call.super);
 
@@ -344,7 +344,7 @@ void qemu_d3d9_surface_SetPriority(struct qemu_syscall *call)
     struct qemu_d3d9_surface_SetPriority *c = (struct qemu_d3d9_surface_SetPriority *)call;
     struct qemu_d3d9_subresource_impl *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DSurface9_SetPriority(surface->host, c->priority);
@@ -379,7 +379,7 @@ void qemu_d3d9_surface_GetPriority(struct qemu_syscall *call)
     struct qemu_d3d9_surface_GetPriority *c = (struct qemu_d3d9_surface_GetPriority *)call;
     struct qemu_d3d9_subresource_impl *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DSurface9_GetPriority(surface->host);
@@ -447,7 +447,7 @@ void qemu_d3d9_surface_GetType(struct qemu_syscall *call)
     struct qemu_d3d9_surface_GetType *c = (struct qemu_d3d9_surface_GetType *)call;
     struct qemu_d3d9_subresource_impl *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DSurface9_GetType(surface->host);
@@ -700,7 +700,7 @@ void qemu_d3d9_surface_GetDC(struct qemu_syscall *call)
     struct qemu_d3d9_surface_GetDC *c = (struct qemu_d3d9_surface_GetDC *)call;
     struct qemu_d3d9_subresource_impl *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DSurface9_GetDC(surface->host, QEMU_G2H(c->dc));
@@ -737,10 +737,10 @@ void qemu_d3d9_surface_ReleaseDC(struct qemu_syscall *call)
     struct qemu_d3d9_surface_ReleaseDC *c = (struct qemu_d3d9_surface_ReleaseDC *)call;
     struct qemu_d3d9_subresource_impl *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DSurface9_ReleaseDC(surface->host, QEMU_G2H(c->dc));
+    c->super.iret = IDirect3DSurface9_ReleaseDC(surface->host, (HDC)c->dc);
 }
 
 #endif

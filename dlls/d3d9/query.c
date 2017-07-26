@@ -99,7 +99,7 @@ void qemu_d3d9_query_AddRef(struct qemu_syscall *call)
     struct qemu_d3d9_query_AddRef *c = (struct qemu_d3d9_query_AddRef *)call;
     struct qemu_d3d9_query_impl *query;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     query = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DQuery9_AddRef(query->host);
@@ -134,7 +134,7 @@ void qemu_d3d9_query_Release(struct qemu_syscall *call)
     struct qemu_d3d9_query_Release *c = (struct qemu_d3d9_query_Release *)call;
     struct qemu_d3d9_query_impl *query;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     query = QEMU_G2H(c->iface);
 
     d3d9_device_wrapper_addref(query->device);
@@ -246,7 +246,7 @@ void qemu_d3d9_query_GetDataSize(struct qemu_syscall *call)
     struct qemu_d3d9_query_GetDataSize *c = (struct qemu_d3d9_query_GetDataSize *)call;
     struct qemu_d3d9_query_impl *query;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     query = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DQuery9_GetDataSize(query->host);
@@ -269,7 +269,7 @@ static HRESULT WINAPI d3d9_query_Issue(IDirect3DQuery9 *iface, DWORD flags)
     struct qemu_d3d9_query_Issue call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_QUERY_ISSUE);
     call.iface = (uint64_t)query;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -283,7 +283,7 @@ void qemu_d3d9_query_Issue(struct qemu_syscall *call)
     struct qemu_d3d9_query_Issue *c = (struct qemu_d3d9_query_Issue *)call;
     struct qemu_d3d9_query_impl *query;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     query = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DQuery9_Issue(query->host, c->flags);
@@ -309,8 +309,8 @@ static HRESULT WINAPI d3d9_query_GetData(IDirect3DQuery9 *iface, void *data, DWO
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_QUERY_GETDATA);
     call.iface = (uint64_t)query;
     call.data = (uint64_t)data;
-    call.size = (uint64_t)size;
-    call.flags = (uint64_t)flags;
+    call.size = size;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -324,7 +324,7 @@ void qemu_d3d9_query_GetData(struct qemu_syscall *call)
     struct qemu_d3d9_query_GetData *c = (struct qemu_d3d9_query_GetData *)call;
     struct qemu_d3d9_query_impl *query;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     query = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DQuery9_GetData(query->host, QEMU_G2H(c->data), c->size, c->flags);

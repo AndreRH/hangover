@@ -114,7 +114,7 @@ void qemu_d3d9_texture_2d_AddRef(struct qemu_syscall *call)
     struct qemu_d3d9_texture_2d_AddRef *c = (struct qemu_d3d9_texture_2d_AddRef *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_TRACE("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DTexture9_AddRef(texture->host);
@@ -337,7 +337,7 @@ static DWORD WINAPI d3d9_texture_2d_SetPriority(IDirect3DTexture9 *iface, DWORD 
     struct qemu_d3d9_texture_2d_SetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_SETPRIORITY);
     call.iface = (uint64_t)texture;
-    call.priority = (uint64_t)priority;
+    call.priority = priority;
 
     qemu_syscall(&call.super);
 
@@ -351,7 +351,7 @@ void qemu_d3d9_texture_2d_SetPriority(struct qemu_syscall *call)
     struct qemu_d3d9_texture_2d_SetPriority *c = (struct qemu_d3d9_texture_2d_SetPriority *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DTexture9_SetPriority(texture->host, c->priority);
@@ -386,7 +386,7 @@ void qemu_d3d9_texture_2d_GetPriority(struct qemu_syscall *call)
     struct qemu_d3d9_texture_2d_GetPriority *c = (struct qemu_d3d9_texture_2d_GetPriority *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DTexture9_GetPriority(texture->host);
@@ -526,7 +526,7 @@ void qemu_d3d9_texture_2d_GetLOD(struct qemu_syscall *call)
     struct qemu_d3d9_texture_2d_GetLOD *c = (struct qemu_d3d9_texture_2d_GetLOD *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DTexture9_GetLOD(texture->host);
@@ -584,7 +584,7 @@ static HRESULT WINAPI d3d9_texture_2d_SetAutoGenFilterType(IDirect3DTexture9 *if
     struct qemu_d3d9_texture_2d_SetAutoGenFilterType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_SETAUTOGENFILTERTYPE);
     call.iface = (uint64_t)texture;
-    call.filter_type = (uint64_t)filter_type;
+    call.filter_type = filter_type;
 
     qemu_syscall(&call.super);
 
@@ -598,7 +598,7 @@ void qemu_d3d9_texture_2d_SetAutoGenFilterType(struct qemu_syscall *call)
     struct qemu_d3d9_texture_2d_SetAutoGenFilterType *c = (struct qemu_d3d9_texture_2d_SetAutoGenFilterType *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DTexture9_SetAutoGenFilterType(texture->host, c->filter_type);
@@ -633,7 +633,7 @@ void qemu_d3d9_texture_2d_GetAutoGenFilterType(struct qemu_syscall *call)
     struct qemu_d3d9_texture_2d_GetAutoGenFilterType *c = (struct qemu_d3d9_texture_2d_GetAutoGenFilterType *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DTexture9_GetAutoGenFilterType(texture->host);
@@ -956,7 +956,7 @@ void qemu_d3d9_texture_cube_AddRef(struct qemu_syscall *call)
     struct qemu_d3d9_texture_cube_AddRef *c = (struct qemu_d3d9_texture_cube_AddRef *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DCubeTexture9_AddRef(texture->host);
@@ -1176,7 +1176,7 @@ static DWORD WINAPI d3d9_texture_cube_SetPriority(IDirect3DCubeTexture9 *iface, 
     struct qemu_d3d9_texture_cube_SetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_SETPRIORITY);
     call.iface = (uint64_t)texture;
-    call.priority = (uint64_t)priority;
+    call.priority = priority;
 
     qemu_syscall(&call.super);
 
@@ -1190,7 +1190,7 @@ void qemu_d3d9_texture_cube_SetPriority(struct qemu_syscall *call)
     struct qemu_d3d9_texture_cube_SetPriority *c = (struct qemu_d3d9_texture_cube_SetPriority *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DCubeTexture9_SetPriority(texture->host, c->priority);
@@ -1225,7 +1225,7 @@ void qemu_d3d9_texture_cube_GetPriority(struct qemu_syscall *call)
     struct qemu_d3d9_texture_cube_GetPriority *c = (struct qemu_d3d9_texture_cube_GetPriority *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DCubeTexture9_GetPriority(texture->host);
@@ -1365,7 +1365,7 @@ void qemu_d3d9_texture_cube_GetLOD(struct qemu_syscall *call)
     struct qemu_d3d9_texture_cube_GetLOD *c = (struct qemu_d3d9_texture_cube_GetLOD *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DCubeTexture9_GetLOD(texture->host);
@@ -1423,7 +1423,7 @@ static HRESULT WINAPI d3d9_texture_cube_SetAutoGenFilterType(IDirect3DCubeTextur
     struct qemu_d3d9_texture_cube_SetAutoGenFilterType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_SETAUTOGENFILTERTYPE);
     call.iface = (uint64_t)texture;
-    call.filter_type = (uint64_t)filter_type;
+    call.filter_type = filter_type;
 
     qemu_syscall(&call.super);
 
@@ -1437,7 +1437,7 @@ void qemu_d3d9_texture_cube_SetAutoGenFilterType(struct qemu_syscall *call)
     struct qemu_d3d9_texture_cube_SetAutoGenFilterType *c = (struct qemu_d3d9_texture_cube_SetAutoGenFilterType *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DCubeTexture9_SetAutoGenFilterType(texture->host, c->filter_type);
@@ -1472,7 +1472,7 @@ void qemu_d3d9_texture_cube_GetAutoGenFilterType(struct qemu_syscall *call)
     struct qemu_d3d9_texture_cube_GetAutoGenFilterType *c = (struct qemu_d3d9_texture_cube_GetAutoGenFilterType *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DCubeTexture9_GetAutoGenFilterType(texture->host);
@@ -1529,7 +1529,7 @@ static HRESULT WINAPI d3d9_texture_cube_GetLevelDesc(IDirect3DCubeTexture9 *ifac
     struct qemu_d3d9_texture_cube_GetLevelDesc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_GETLEVELDESC);
     call.iface = (uint64_t)texture;
-    call.level = (uint64_t)level;
+    call.level = level;
     call.desc = (uint64_t)desc;
 
     qemu_syscall(&call.super);
@@ -1804,7 +1804,7 @@ void qemu_d3d9_texture_3d_AddRef(struct qemu_syscall *call)
     struct qemu_d3d9_texture_3d_AddRef *c = (struct qemu_d3d9_texture_3d_AddRef *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVolumeTexture9_AddRef(texture->host);
@@ -2024,7 +2024,7 @@ static DWORD WINAPI d3d9_texture_3d_SetPriority(IDirect3DVolumeTexture9 *iface, 
     struct qemu_d3d9_texture_3d_SetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_SETPRIORITY);
     call.iface = (uint64_t)texture;
-    call.priority = (uint64_t)priority;
+    call.priority = priority;
 
     qemu_syscall(&call.super);
 
@@ -2038,7 +2038,7 @@ void qemu_d3d9_texture_3d_SetPriority(struct qemu_syscall *call)
     struct qemu_d3d9_texture_3d_SetPriority *c = (struct qemu_d3d9_texture_3d_SetPriority *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVolumeTexture9_SetPriority(texture->host, c->priority);
@@ -2073,7 +2073,7 @@ void qemu_d3d9_texture_3d_GetPriority(struct qemu_syscall *call)
     struct qemu_d3d9_texture_3d_GetPriority *c = (struct qemu_d3d9_texture_3d_GetPriority *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVolumeTexture9_GetPriority(texture->host);
@@ -2213,7 +2213,7 @@ void qemu_d3d9_texture_3d_GetLOD(struct qemu_syscall *call)
     struct qemu_d3d9_texture_3d_GetLOD *c = (struct qemu_d3d9_texture_3d_GetLOD *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVolumeTexture9_GetLOD(texture->host);
@@ -2271,7 +2271,7 @@ static HRESULT WINAPI d3d9_texture_3d_SetAutoGenFilterType(IDirect3DVolumeTextur
     struct qemu_d3d9_texture_3d_SetAutoGenFilterType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_SETAUTOGENFILTERTYPE);
     call.iface = (uint64_t)texture;
-    call.filter_type = (uint64_t)filter_type;
+    call.filter_type = filter_type;
 
     qemu_syscall(&call.super);
 
@@ -2285,7 +2285,7 @@ void qemu_d3d9_texture_3d_SetAutoGenFilterType(struct qemu_syscall *call)
     struct qemu_d3d9_texture_3d_SetAutoGenFilterType *c = (struct qemu_d3d9_texture_3d_SetAutoGenFilterType *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVolumeTexture9_SetAutoGenFilterType(texture->host, c->filter_type);
@@ -2320,7 +2320,7 @@ void qemu_d3d9_texture_3d_GetAutoGenFilterType(struct qemu_syscall *call)
     struct qemu_d3d9_texture_3d_GetAutoGenFilterType *c = (struct qemu_d3d9_texture_3d_GetAutoGenFilterType *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVolumeTexture9_GetAutoGenFilterType(texture->host);
@@ -2377,7 +2377,7 @@ static HRESULT WINAPI d3d9_texture_3d_GetLevelDesc(IDirect3DVolumeTexture9 *ifac
     struct qemu_d3d9_texture_3d_GetLevelDesc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_GETLEVELDESC);
     call.iface = (uint64_t)texture;
-    call.level = (uint64_t)level;
+    call.level = level;
     call.desc = (uint64_t)desc;
 
     qemu_syscall(&call.super);
@@ -2392,7 +2392,7 @@ void qemu_d3d9_texture_3d_GetLevelDesc(struct qemu_syscall *call)
     struct qemu_d3d9_texture_3d_GetLevelDesc *c = (struct qemu_d3d9_texture_3d_GetLevelDesc *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVolumeTexture9_GetLevelDesc((IDirect3DVolumeTexture9 *)texture->host, c->level, QEMU_G2H(c->desc));

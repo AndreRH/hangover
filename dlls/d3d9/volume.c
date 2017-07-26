@@ -58,6 +58,10 @@ static HRESULT WINAPI d3d9_volume_QueryInterface(IDirect3DVolume9 *iface, REFIID
 
     qemu_syscall(&call.super);
 
+    /* This call only returns IDirect3DVolume9 and no other interface. */
+    if (SUCCEEDED(call.super.iret))
+        *out = iface;
+
     return call.super.iret;
 }
 
@@ -67,11 +71,19 @@ void qemu_d3d9_volume_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d9_volume_QueryInterface *c = (struct qemu_d3d9_volume_QueryInterface *)call;
     struct qemu_d3d9_subresource_impl *volume;
+    GUID *iid;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     volume = QEMU_G2H(c->iface);
+    iid = QEMU_G2H(c->riid);
 
-    c->super.iret = IDirect3DVolume9_QueryInterface(volume->host_volume, QEMU_G2H(c->riid), QEMU_G2H(c->out));
+    c->super.iret = IDirect3DVolume9_QueryInterface(volume->host_volume, iid, QEMU_G2H(c->out));
+
+    /* Note that IDirect3DVolume9 does not inherit or implement IDirect3DResource9. */
+    if (SUCCEEDED(c->super.iret) && !IsEqualGUID(iid, &IID_IDirect3DVolume9)
+            && !IsEqualGUID(iid, &IID_IUnknown))
+        WINE_FIXME("Unexpected GUID %s.\n", wine_dbgstr_guid(iid));
+
 }
 
 #endif
@@ -103,7 +115,7 @@ void qemu_d3d9_volume_AddRef(struct qemu_syscall *call)
     struct qemu_d3d9_volume_AddRef *c = (struct qemu_d3d9_volume_AddRef *)call;
     struct qemu_d3d9_subresource_impl *volume;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     volume = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVolume9_AddRef(volume->host_volume);
@@ -424,7 +436,7 @@ void qemu_d3d9_volume_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d9_volume_GetDesc *c = (struct qemu_d3d9_volume_GetDesc *)call;
     struct qemu_d3d9_subresource_impl *volume;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     volume = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVolume9_GetDesc(volume->host_volume, QEMU_G2H(c->desc));

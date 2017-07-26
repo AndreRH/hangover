@@ -322,7 +322,7 @@ static DWORD WINAPI d3d9_vertexbuffer_SetPriority(IDirect3DVertexBuffer9 *iface,
     struct qemu_d3d9_vertexbuffer_SetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXBUFFER_SETPRIORITY);
     call.iface = (uint64_t)iface;
-    call.priority = (uint64_t)priority;
+    call.priority = priority;
 
     qemu_syscall(&call.super);
 
@@ -336,7 +336,7 @@ void qemu_d3d9_vertexbuffer_SetPriority(struct qemu_syscall *call)
     struct qemu_d3d9_vertexbuffer_SetPriority *c = (struct qemu_d3d9_vertexbuffer_SetPriority *)call;
     struct qemu_d3d9_buffer_impl *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVertexBuffer9_SetPriority(buffer->hostvb, c->priority);
@@ -371,7 +371,7 @@ void qemu_d3d9_vertexbuffer_GetPriority(struct qemu_syscall *call)
     struct qemu_d3d9_vertexbuffer_GetPriority *c = (struct qemu_d3d9_vertexbuffer_GetPriority *)call;
     struct qemu_d3d9_buffer_impl *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVertexBuffer9_GetPriority(buffer->hostvb);
@@ -554,7 +554,7 @@ void qemu_d3d9_vertexbuffer_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d9_vertexbuffer_GetDesc *c = (struct qemu_d3d9_vertexbuffer_GetDesc *)call;
     struct qemu_d3d9_buffer_impl *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVertexBuffer9_GetDesc(buffer->hostvb, QEMU_G2H(c->desc));
@@ -853,7 +853,7 @@ static DWORD WINAPI d3d9_indexbuffer_SetPriority(IDirect3DIndexBuffer9 *iface, D
     struct qemu_d3d9_indexbuffer_SetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_INDEXBUFFER_SETPRIORITY);
     call.iface = (uint64_t)iface;
-    call.priority = (uint64_t)priority;
+    call.priority = priority;
 
     qemu_syscall(&call.super);
 
@@ -867,7 +867,7 @@ void qemu_d3d9_indexbuffer_SetPriority(struct qemu_syscall *call)
     struct qemu_d3d9_indexbuffer_SetPriority *c = (struct qemu_d3d9_indexbuffer_SetPriority *)call;
     struct qemu_d3d9_buffer_impl *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DIndexBuffer9_SetPriority(buffer->hostib, c->priority);
@@ -902,7 +902,7 @@ void qemu_d3d9_indexbuffer_GetPriority(struct qemu_syscall *call)
     struct qemu_d3d9_indexbuffer_GetPriority *c = (struct qemu_d3d9_indexbuffer_GetPriority *)call;
     struct qemu_d3d9_buffer_impl *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DIndexBuffer9_GetPriority(buffer->hostib);

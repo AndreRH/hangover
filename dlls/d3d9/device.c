@@ -217,7 +217,7 @@ void qemu_d3d9_device_TestCooperativeLevel(struct qemu_syscall *call)
     struct qemu_d3d9_device_TestCooperativeLevel *c = (struct qemu_d3d9_device_TestCooperativeLevel *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_TestCooperativeLevel(device->host);
@@ -252,7 +252,7 @@ void qemu_d3d9_device_GetAvailableTextureMem(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetAvailableTextureMem *c = (struct qemu_d3d9_device_GetAvailableTextureMem *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetAvailableTextureMem(device->host);
@@ -620,7 +620,7 @@ void qemu_d3d9_device_CreateAdditionalSwapChain(struct qemu_syscall *call)
     IDirect3DSwapChain9 *host;
     D3DPRESENT_PARAMETERS pp;
 
-    WINE_TRACE("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_CreateAdditionalSwapChain(device->host, QEMU_G2H(c->present_parameters),
@@ -3459,7 +3459,7 @@ static HRESULT WINAPI d3d9_device_SetPaletteEntries(IDirect3DDevice9Ex *iface, U
     struct qemu_d3d9_device_SetPaletteEntries call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_SETPALETTEENTRIES);
     call.iface = (uint64_t)device;
-    call.palette_idx = (uint64_t)palette_idx;
+    call.palette_idx = palette_idx;
     call.entries = (uint64_t)entries;
 
     qemu_syscall(&call.super);
@@ -3474,7 +3474,7 @@ void qemu_d3d9_device_SetPaletteEntries(struct qemu_syscall *call)
     struct qemu_d3d9_device_SetPaletteEntries *c = (struct qemu_d3d9_device_SetPaletteEntries *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_SetPaletteEntries(device->host, c->palette_idx, QEMU_G2H(c->entries));
@@ -3498,7 +3498,7 @@ static HRESULT WINAPI d3d9_device_GetPaletteEntries(IDirect3DDevice9Ex *iface, U
     struct qemu_d3d9_device_GetPaletteEntries call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETPALETTEENTRIES);
     call.iface = (uint64_t)device;
-    call.palette_idx = (uint64_t)palette_idx;
+    call.palette_idx = palette_idx;
     call.entries = (uint64_t)entries;
 
     qemu_syscall(&call.super);
@@ -3513,7 +3513,7 @@ void qemu_d3d9_device_GetPaletteEntries(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetPaletteEntries *c = (struct qemu_d3d9_device_GetPaletteEntries *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetPaletteEntries(device->host, c->palette_idx, QEMU_G2H(c->entries));
@@ -3661,7 +3661,7 @@ void qemu_d3d9_device_GetScissorRect(struct qemu_syscall *call)
     struct qemu_d3d9_device_GetScissorRect *c = (struct qemu_d3d9_device_GetScissorRect *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetScissorRect(device->host, QEMU_G2H(c->rect));
