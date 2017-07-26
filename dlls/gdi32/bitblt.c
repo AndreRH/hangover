@@ -92,14 +92,14 @@ WINBASEAPI BOOL WINAPI BitBlt(HDC hdcDst, INT xDst, INT yDst, INT width, INT hei
     struct qemu_BitBlt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BITBLT);
     call.hdcDst = (uint64_t)hdcDst;
-    call.xDst = (uint64_t)xDst;
-    call.yDst = (uint64_t)yDst;
-    call.width = (uint64_t)width;
-    call.height = (uint64_t)height;
-    call.hdcSrc = (uint64_t)hdcSrc;
-    call.xSrc = (uint64_t)xSrc;
-    call.ySrc = (uint64_t)ySrc;
-    call.rop = (uint64_t)rop;
+    call.xDst = xDst;
+    call.yDst = yDst;
+    call.width = width;
+    call.height = height;
+    call.hdcSrc = hdcSrc;
+    call.xSrc = xSrc;
+    call.ySrc = ySrc;
+    call.rop = rop;
 
     qemu_syscall(&call.super);
 
@@ -111,7 +111,7 @@ WINBASEAPI BOOL WINAPI BitBlt(HDC hdcDst, INT xDst, INT yDst, INT width, INT hei
 void qemu_BitBlt(struct qemu_syscall *call)
 {
     struct qemu_BitBlt *c = (struct qemu_BitBlt *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = BitBlt(QEMU_G2H(c->hdcDst), c->xDst, c->yDst, c->width, c->height, QEMU_G2H(c->hdcSrc), c->xSrc, c->ySrc, c->rop);
 }
 
