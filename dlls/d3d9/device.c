@@ -2990,6 +2990,7 @@ void qemu_d3d9_device_EndStateBlock(struct qemu_syscall *call)
         return;
     }
 
+    stateblock->state.flags |= QEMU_D3D_STATE_RECORDED;
     stateblock->device = device;
     stateblock->host = host_stateblock;
     *(uint64_t *)QEMU_G2H(c->stateblock) = QEMU_H2G(stateblock);

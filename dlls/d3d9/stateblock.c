@@ -230,7 +230,10 @@ void qemu_d3d9_stateblock_Capture(struct qemu_syscall *call)
     c->super.iret = IDirect3DStateBlock9_Capture(stateblock->host);
     if (SUCCEEDED(c->super.iret))
     {
-        if (stateblock->state.flags & QEMU_D3D_STATE_HAS_VDECL)
+        /* Apparently recorded stateblocks record and apply vertex declarations,
+         * but don't capture them */
+        if ((stateblock->state.flags & (QEMU_D3D_STATE_HAS_VDECL | QEMU_D3D_STATE_RECORDED))
+                == QEMU_D3D_STATE_HAS_VDECL)
         {
             if (device->state->vdecl)
                 d3d9_vdecl_internal_addref(device->state->vdecl);

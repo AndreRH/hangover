@@ -37,6 +37,7 @@ struct qemu_d3d9_impl
 #define QEMU_D3D_STATE_HAS_VS       0x1
 #define QEMU_D3D_STATE_HAS_PS       0x2
 #define QEMU_D3D_STATE_HAS_VDECL    0x4
+#define QEMU_D3D_STATE_RECORDED     0x8
 
 /* Shaders and vertex declarations do not have the private data API, so we
  * have to keep track of them ourselves in the device and stateblocks and
