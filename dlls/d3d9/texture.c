@@ -877,7 +877,7 @@ void qemu_d3d9_texture_2d_AddDirtyRect(struct qemu_syscall *call)
     struct qemu_d3d9_texture_2d_AddDirtyRect *c = (struct qemu_d3d9_texture_2d_AddDirtyRect *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DTexture9_AddDirtyRect((IDirect3DTexture9 *)texture->host, QEMU_G2H(c->dirty_rect));
@@ -992,7 +992,7 @@ void qemu_d3d9_texture_cube_Release(struct qemu_syscall *call)
     struct qemu_d3d9_texture_impl *texture;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
     device = texture->device;
 
@@ -1293,7 +1293,7 @@ void qemu_d3d9_texture_cube_GetType(struct qemu_syscall *call)
     struct qemu_d3d9_texture_cube_GetType *c = (struct qemu_d3d9_texture_cube_GetType *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DCubeTexture9_GetType(texture->host);
@@ -1629,11 +1629,11 @@ static HRESULT WINAPI d3d9_texture_cube_LockRect(IDirect3DCubeTexture9 *iface, D
     struct qemu_d3d9_texture_cube_LockRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_LOCKRECT);
     call.iface = (uint64_t)texture;
-    call.face = (uint64_t)face;
-    call.level = (uint64_t)level;
+    call.face = face;
+    call.level = level;
     call.locked_rect = (uint64_t)locked_rect;
     call.rect = (uint64_t)rect;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -1647,7 +1647,7 @@ void qemu_d3d9_texture_cube_LockRect(struct qemu_syscall *call)
     struct qemu_d3d9_texture_cube_LockRect *c = (struct qemu_d3d9_texture_cube_LockRect *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DCubeTexture9_LockRect((IDirect3DCubeTexture9 *)texture->host, c->face, c->level, QEMU_G2H(c->locked_rect), QEMU_G2H(c->rect), c->flags);
@@ -1671,8 +1671,8 @@ static HRESULT WINAPI d3d9_texture_cube_UnlockRect(IDirect3DCubeTexture9 *iface,
     struct qemu_d3d9_texture_cube_UnlockRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_UNLOCKRECT);
     call.iface = (uint64_t)texture;
-    call.face = (uint64_t)face;
-    call.level = (uint64_t)level;
+    call.face = face;
+    call.level = level;
 
     qemu_syscall(&call.super);
 
@@ -1686,7 +1686,7 @@ void qemu_d3d9_texture_cube_UnlockRect(struct qemu_syscall *call)
     struct qemu_d3d9_texture_cube_UnlockRect *c = (struct qemu_d3d9_texture_cube_UnlockRect *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DCubeTexture9_UnlockRect((IDirect3DCubeTexture9 *)texture->host, c->face, c->level);
@@ -1725,7 +1725,7 @@ void qemu_d3d9_texture_cube_AddDirtyRect(struct qemu_syscall *call)
     struct qemu_d3d9_texture_cube_AddDirtyRect *c = (struct qemu_d3d9_texture_cube_AddDirtyRect *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DCubeTexture9_AddDirtyRect((IDirect3DCubeTexture9 *)texture->host, c->face, QEMU_G2H(c->dirty_rect));
@@ -1840,7 +1840,7 @@ void qemu_d3d9_texture_3d_Release(struct qemu_syscall *call)
     struct qemu_d3d9_texture_impl *texture;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
     device = texture->device;
 
@@ -2141,7 +2141,7 @@ void qemu_d3d9_texture_3d_GetType(struct qemu_syscall *call)
     struct qemu_d3d9_texture_3d_GetType *c = (struct qemu_d3d9_texture_3d_GetType *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVolumeTexture9_GetType(texture->host);
@@ -2248,7 +2248,7 @@ void qemu_d3d9_texture_3d_GetLevelCount(struct qemu_syscall *call)
     struct qemu_d3d9_texture_3d_GetLevelCount *c = (struct qemu_d3d9_texture_3d_GetLevelCount *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVolumeTexture9_GetLevelCount(texture->host);
@@ -2473,10 +2473,10 @@ static HRESULT WINAPI d3d9_texture_3d_LockBox(IDirect3DVolumeTexture9 *iface, UI
     struct qemu_d3d9_texture_3d_LockBox call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_LOCKBOX);
     call.iface = (uint64_t)texture;
-    call.level = (uint64_t)level;
+    call.level = level;
     call.locked_box = (uint64_t)locked_box;
     call.box = (uint64_t)box;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -2490,7 +2490,7 @@ void qemu_d3d9_texture_3d_LockBox(struct qemu_syscall *call)
     struct qemu_d3d9_texture_3d_LockBox *c = (struct qemu_d3d9_texture_3d_LockBox *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVolumeTexture9_LockBox((IDirect3DVolumeTexture9 *)texture->host, c->level, QEMU_G2H(c->locked_box), QEMU_G2H(c->box), c->flags);
@@ -2513,7 +2513,7 @@ static HRESULT WINAPI d3d9_texture_3d_UnlockBox(IDirect3DVolumeTexture9 *iface, 
     struct qemu_d3d9_texture_3d_UnlockBox call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_UNLOCKBOX);
     call.iface = (uint64_t)texture;
-    call.level = (uint64_t)level;
+    call.level = level;
 
     qemu_syscall(&call.super);
 
@@ -2527,7 +2527,7 @@ void qemu_d3d9_texture_3d_UnlockBox(struct qemu_syscall *call)
     struct qemu_d3d9_texture_3d_UnlockBox *c = (struct qemu_d3d9_texture_3d_UnlockBox *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVolumeTexture9_UnlockBox((IDirect3DVolumeTexture9 *)texture->host, c->level);
@@ -2564,7 +2564,7 @@ void qemu_d3d9_texture_3d_AddDirtyBox(struct qemu_syscall *call)
     struct qemu_d3d9_texture_3d_AddDirtyBox *c = (struct qemu_d3d9_texture_3d_AddDirtyBox *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVolumeTexture9_AddDirtyBox((IDirect3DVolumeTexture9 *)texture->host, QEMU_G2H(c->dirty_box));
