@@ -316,6 +316,17 @@ enum d3d9_calls
     CALL_D3D9_VERTEXSHADER_GETFUNCTION,
     CALL_D3D9_VERTEXSHADER_QUERYINTERFACE,
     CALL_D3D9_VERTEXSHADER_RELEASE,
+    CALL_D3D9_VOLUME_ADDREF,
+    CALL_D3D9_VOLUME_FREEPRIVATEDATA,
+    CALL_D3D9_VOLUME_GETCONTAINER,
+    CALL_D3D9_VOLUME_GETDESC,
+    CALL_D3D9_VOLUME_GETDEVICE,
+    CALL_D3D9_VOLUME_GETPRIVATEDATA,
+    CALL_D3D9_VOLUME_LOCKBOX,
+    CALL_D3D9_VOLUME_QUERYINTERFACE,
+    CALL_D3D9_VOLUME_RELEASE,
+    CALL_D3D9_VOLUME_SETPRIVATEDATA,
+    CALL_D3D9_VOLUME_UNLOCKBOX,
     CALL_D3DPERF_BEGINEVENT,
     CALL_D3DPERF_ENDEVENT,
     CALL_D3DPERF_GETSTATUS,
@@ -663,6 +674,17 @@ void qemu_d3d9_vertexshader_GetDevice(struct qemu_syscall *call);
 void qemu_d3d9_vertexshader_GetFunction(struct qemu_syscall *call);
 void qemu_d3d9_vertexshader_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d9_vertexshader_Release(struct qemu_syscall *call);
+void qemu_d3d9_volume_AddRef(struct qemu_syscall *call);
+void qemu_d3d9_volume_FreePrivateData(struct qemu_syscall *call);
+void qemu_d3d9_volume_GetContainer(struct qemu_syscall *call);
+void qemu_d3d9_volume_GetDesc(struct qemu_syscall *call);
+void qemu_d3d9_volume_GetDevice(struct qemu_syscall *call);
+void qemu_d3d9_volume_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d9_volume_LockBox(struct qemu_syscall *call);
+void qemu_d3d9_volume_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d9_volume_Release(struct qemu_syscall *call);
+void qemu_d3d9_volume_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d9_volume_UnlockBox(struct qemu_syscall *call);
 void qemu_D3DPERF_BeginEvent(struct qemu_syscall *call);
 void qemu_D3DPERF_EndEvent(struct qemu_syscall *call);
 void qemu_D3DPERF_GetStatus(struct qemu_syscall *call);
