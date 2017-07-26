@@ -102,7 +102,7 @@ void qemu_d3d9_swapchain_AddRef(struct qemu_syscall *call)
     struct qemu_d3d9_swapchain_AddRef *c = (struct qemu_d3d9_swapchain_AddRef *)call;
     struct qemu_d3d9_swapchain_impl *swapchain;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DSwapChain9_AddRef(swapchain->host);
