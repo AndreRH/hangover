@@ -435,6 +435,7 @@ enum msvcrt_calls
     CALL_SINH,
     CALL_SINHF,
     CALL_SPRINTF,
+    CALL_SPRINTF_S,
     CALL_SQRT,
     CALL_SQRTF,
     CALL_SRAND,
@@ -1027,6 +1028,7 @@ void (* CDECL p_terminate)(void);
 int (* CDECL p_vfprintf)(FILE *file,const char *format, va_list args);
 int (* CDECL p_vfwprintf)(FILE *file, const WCHAR *format, va_list args);
 int (* CDECL p_vsprintf)(char *str, const char *format, va_list args);
+int (* CDECL p_vsprintf_s)(char *str, size_t num, const char *format, va_list args);
 int (* CDECL p_vswprintf_s)(WCHAR *dst, size_t charcount,
         const WCHAR *fmt, va_list args);
 int (* CDECL p_wcscat_s)(WCHAR *dst, size_t count, const WCHAR *src);

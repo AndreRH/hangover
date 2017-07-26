@@ -384,6 +384,7 @@ EXPORTS
   sinh=MSVCRT_sinh
   sinhf=MSVCRT_sinhf
   sprintf=MSVCRT_sprintf
+  sprintf_s=MSVCRT_sprintf_s
   sqrt=MSVCRT_sqrt
   sqrtf=MSVCRT_sqrtf
   sqrtf=MSVCRT_sqrtf

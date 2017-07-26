@@ -504,6 +504,7 @@ static const syscall_handler dll_functions[] =
     qemu_sinh,
     qemu_sinhf,
     qemu_sprintf,
+    qemu_sprintf,
     qemu_sqrt,
     qemu_sqrtf,
     qemu_srand,
@@ -1000,6 +1001,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_vfprintf = (void *)GetProcAddress(msvcrt, "vfprintf");
     p_vfwprintf = (void *)GetProcAddress(msvcrt, "vfwprintf");
     p_vsprintf = (void *)GetProcAddress(msvcrt, "vsprintf");
+    p_vsprintf_s = (void *)GetProcAddress(msvcrt, "vsprintf_s");
     p_vswprintf_s = (void *)GetProcAddress(msvcrt, "vswprintf_s");
     p_wcscat_s = (void *)GetProcAddress(msvcrt, "wcscat_s");
     p_wcscpy = (void *)GetProcAddress(msvcrt, "wcscpy");
