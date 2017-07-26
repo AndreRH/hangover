@@ -4314,6 +4314,14 @@ void qemu_d3d9_device_SetFVF(struct qemu_syscall *call)
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+
+    if (!c->fvf)
+    {
+        WINE_WARN("Ignoring FVF %#lx.\n", c->fvf);
+        c->super.iret = D3D_OK;
+        return;
+    }
+
     decl = device_get_fvf_declaration(device, c->fvf, &init);
 
     if (!decl)
