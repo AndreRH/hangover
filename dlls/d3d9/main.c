@@ -44,7 +44,7 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
     {
         case DLL_PROCESS_ATTACH:
             call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SET_CALLBACKS);
-            call.buffer_destroyed = (uint64_t)qemu_d3d9_texture_destroyed;
+            call.buffer_destroyed = (uint64_t)qemu_d3d9_buffer_destroyed;
             call.texture_destroyed = (uint64_t)qemu_d3d9_texture_destroyed;
             call.subresource_destroyed = (uint64_t)qemu_d3d9_buffer_destroyed;
             qemu_syscall(&call.super);
@@ -65,6 +65,7 @@ uint64_t qemu_d3d9_subresource_destroyed;
 static void qemu_d3d9_set_callbacks(struct qemu_syscall *call)
 {
     struct qemu_d3d9_set_callbacks *c = (struct qemu_d3d9_set_callbacks *)call;
+    qemu_d3d9_buffer_destroyed = c->buffer_destroyed;
     qemu_d3d9_texture_destroyed = c->texture_destroyed;
     qemu_d3d9_subresource_destroyed = c->subresource_destroyed;
 }
