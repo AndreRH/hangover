@@ -5829,7 +5829,7 @@ static HRESULT WINAPI d3d9_device_PresentEx(IDirect3DDevice9Ex *iface, const REC
     call.dst_rect = (uint64_t)dst_rect;
     call.dst_window_override = (uint64_t)dst_window_override;
     call.dirty_region = (uint64_t)dirty_region;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -5843,10 +5843,11 @@ void qemu_d3d9_device_PresentEx(struct qemu_syscall *call)
     struct qemu_d3d9_device_PresentEx *c = (struct qemu_d3d9_device_PresentEx *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_PresentEx(device->host, QEMU_G2H(c->src_rect), QEMU_G2H(c->dst_rect), QEMU_G2H(c->dst_window_override), QEMU_G2H(c->dirty_region), c->flags);
+    c->super.iret = IDirect3DDevice9Ex_PresentEx(device->host, QEMU_G2H(c->src_rect), QEMU_G2H(c->dst_rect),
+            (HWND)c->dst_window_override, QEMU_G2H(c->dirty_region), c->flags);
 }
 
 #endif
@@ -6104,10 +6105,10 @@ void qemu_d3d9_device_CheckDeviceState(struct qemu_syscall *call)
     struct qemu_d3d9_device_CheckDeviceState *c = (struct qemu_d3d9_device_CheckDeviceState *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_CheckDeviceState(device->host, QEMU_G2H(c->dst_window));
+    c->super.iret = IDirect3DDevice9Ex_CheckDeviceState(device->host, (HWND)c->dst_window);
 }
 
 #endif
@@ -6337,7 +6338,7 @@ void qemu_d3d9_device_ResetEx(struct qemu_syscall *call)
     struct qemu_d3d9_device_ResetEx *c = (struct qemu_d3d9_device_ResetEx *)call;
     struct qemu_d3d9_device_impl *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_ResetEx(device->host, QEMU_G2H(c->present_parameters), QEMU_G2H(c->mode));
