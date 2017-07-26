@@ -328,6 +328,9 @@ void qemu_d3d9_pixelshader_AddRef(struct qemu_syscall *call)
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DPixelShader9_AddRef(shader->hostps);
+
+    if (c->super.iret == 1)
+        d3d9_shader_internal_addref(shader);
 }
 
 #endif
@@ -367,7 +370,7 @@ void qemu_d3d9_pixelshader_Release(struct qemu_syscall *call)
     d3d9_device_wrapper_release(shader->device);
 
     if (!c->super.iret)
-        HeapFree(GetProcessHeap(), 0, shader);
+        d3d9_shader_internal_release(shader);
 }
 
 #endif
