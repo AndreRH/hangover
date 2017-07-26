@@ -582,12 +582,25 @@ static HRESULT WINAPI d3d9_device_CreateAdditionalSwapChain(IDirect3DDevice9Ex *
 {
     struct qemu_d3d9_device_impl *device = impl_from_IDirect3DDevice9Ex(iface);
     struct qemu_d3d9_device_CreateAdditionalSwapChain call;
+    struct qemu_d3d9_swapchain_impl *impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_CREATEADDITIONALSWAPCHAIN);
     call.iface = (uint64_t)device;
     call.present_parameters = (uint64_t)present_parameters;
-    call.swapchain = (uint64_t)swapchain;
+    call.swapchain = (uint64_t)&impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        impl->IDirect3DSwapChain9Ex_iface.lpVtbl = &d3d9_swapchain_vtbl;
+        d3d9_swapchain_set_surfaces_ifaces(&impl->IDirect3DSwapChain9Ex_iface);
+        *swapchain = (IDirect3DSwapChain9 *)&impl->IDirect3DSwapChain9Ex_iface;
+    }
+    else
+    {
+        *swapchain = NULL;
+    }
 
     return call.super.iret;
 }
@@ -598,11 +611,34 @@ void qemu_d3d9_device_CreateAdditionalSwapChain(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_CreateAdditionalSwapChain *c = (struct qemu_d3d9_device_CreateAdditionalSwapChain *)call;
     struct qemu_d3d9_device_impl *device;
+    struct qemu_d3d9_swapchain_impl *swapchain;
+    IDirect3DSwapChain9 *host;
+    D3DPRESENT_PARAMETERS pp;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_CreateAdditionalSwapChain(device->host, QEMU_G2H(c->present_parameters), QEMU_G2H(c->swapchain));
+    c->super.iret = IDirect3DDevice9Ex_CreateAdditionalSwapChain(device->host, QEMU_G2H(c->present_parameters),
+            &host);
+    if (FAILED(c->super.iret))
+        return;
+
+    IDirect3DSwapChain9_GetPresentParameters(host, &pp);
+
+    swapchain = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
+            offsetof(struct qemu_d3d9_swapchain_impl, backbuffers[pp.BackBufferCount]));
+    WINE_TRACE("Allocated swapchain wrapper %p.\n", swapchain);
+    if (!swapchain)
+    {
+        IDirect3DSwapChain9_Release(host);
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    swapchain->back_buffer_count = pp.BackBufferCount;
+    d3d9_swapchain_init(swapchain, (IDirect3DSwapChain9Ex *)host, device);
+
+    *(uint64_t *)QEMU_G2H(c->swapchain) = QEMU_H2G(swapchain);
 }
 
 #endif
