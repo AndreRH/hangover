@@ -28,101 +28,18 @@ make -j 4
 mkdir -p $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
 mkdir -p $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
 
-# Build the wrapper DLLs. FIXME: automate this better.
-cd $DESTDIR/dlls/ntdll
-make -j4
-ln -sf $PWD/ntdll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_ntdll.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+# Build the wrapper DLLs.
+# TODO: Figure out dependencies between them better.
+declare -a dlls=("ntdll" "kernel32" "msvcrt" "advapi32" "comctl32" "comdlg32" "d3d9" "d3dx10_43" "d3dx9_43" "gdi32" "imm32"
+        "msvcr100" "ole32" "oleaut32" "shell32" "shlwapi" "user32" "version" "xinput1_3")
 
-cd $DESTDIR/dlls/kernel32
-make -j4
-ln -sf $PWD/kernel32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_kernel32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/msvcrt
-make -j4
-ln -sf $PWD/msvcrt.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_msvcrt.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/advapi32
-make -j4
-ln -sf $PWD/advapi32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_advapi32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/comdlg32
-make -j4
-ln -sf $PWD/comdlg32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_comdlg32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/gdi32
-make -j4
-ln -sf $PWD/gdi32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_gdi32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/user32
-make -j4
-ln -sf $PWD/user32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_user32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/shell32
-make -j4
-ln -sf $PWD/shell32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_shell32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/shlwapi
-make -j4
-ln -sf $PWD/shlwapi.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_shlwapi.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/msvcr100
-make -j4
-ln -sf $PWD/msvcr100.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_msvcr100.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/comctl32
-make -j4
-ln -sf $PWD/comctl32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_comctl32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/d3d9
-make -j4
-ln -sf $PWD/d3d9.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_d3d9.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/d3dx9_43
-make -j4
-ln -sf $PWD/d3dx9_43.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_d3dx9_43.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/imm32
-make -j4
-ln -sf $PWD/imm32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_imm32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/ole32
-make -j4
-ln -sf $PWD/ole32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_ole32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/version
-make -j4
-ln -sf $PWD/version.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_version.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/oleaut32
-make -j4
-ln -sf $PWD/oleaut32.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_oleaut32.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/d3dx10_43
-make -j4
-ln -sf $PWD/d3dx10_43.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_d3dx10_43.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
-
-cd $DESTDIR/dlls/xinput1_3
-make -j4
-ln -sf $PWD/xinput1_3.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-ln -sf $PWD/qemu_xinput1_3.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+for dll in "${dlls[@]}"
+do
+    cd $DESTDIR/dlls/$dll
+    make -j4
+    ln -sf $PWD/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
+    ln -sf $PWD/qemu_$dll.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+done
 
 # Build the test progs. FIXME: automate this better.
 cd $DESTDIR/testprogs/advapi32
