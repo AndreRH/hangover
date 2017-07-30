@@ -1369,11 +1369,22 @@ struct classproc_wrapper
     void *host_proc;
 
     uint64_t guest_proc;
-    ATOM atom;
+    union
+    {
+        ATOM atom;
+        HWND win;
+    };
 };
 
+/* Class-global wrappers. */
 extern struct classproc_wrapper *class_wrappers;
 extern unsigned int class_wrapper_count;
+
+/* Per window wndprocs. */
+extern struct classproc_wrapper *win_wrappers;
+extern unsigned int win_wrapper_count;
+
+/* Reverse wrapper for Wine's wndprocs. */
 extern uint64_t guest_wndproc_wrapper;
 
 struct reverse_classproc_wrapper

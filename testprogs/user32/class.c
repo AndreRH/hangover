@@ -86,6 +86,7 @@ int main(int argc, char *argv[])
             0, 0, 640, 480, NULL, NULL, NULL, NULL);
     printf("Got Window %p\n", label);
 
+#if 0
     wndproc = GetClassLongPtrW(label, GCLP_WNDPROC);
     label_wndproc = (WNDPROC)GetWindowLongPtrW(label, GWLP_WNDPROC);
     if ((WNDPROC)wndproc != label_wndproc)
@@ -113,6 +114,9 @@ int main(int argc, char *argv[])
     wndproc = GetWindowLongPtrW(label, GWLP_WNDPROC);
     if ((WNDPROC)wndproc != label_wrapper)
         printf("Got wrong window function.\n");
+#else
+    label_wndproc = (WNDPROC)SetWindowLongPtrW(label, GWLP_WNDPROC, (LONG_PTR)label_wrapper);
+#endif
 
     while (ret = GetMessageA(&msg, NULL, 0, 0))
     {

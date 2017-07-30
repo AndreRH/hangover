@@ -738,6 +738,8 @@ static const syscall_handler dll_functions[] =
 
 struct classproc_wrapper *class_wrappers;
 unsigned int class_wrapper_count;
+struct classproc_wrapper *win_wrappers;
+unsigned int win_wrapper_count;
 uint64_t guest_wndproc_wrapper;
 
 LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam, struct classproc_wrapper *wrapper)
@@ -834,6 +836,18 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
 
     for (i = 0; i < class_wrapper_count; ++i)
         init_classproc(&class_wrappers[i]);
+
+    win_wrapper_count = 2 * 4096 / sizeof(*win_wrappers);
+    win_wrappers = VirtualAlloc(NULL, sizeof(*win_wrappers) * win_wrapper_count,
+            MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+    if (!win_wrappers)
+    {
+        WINE_ERR("Failed to allocate memory for class wndproc wrappers.\n");
+        return NULL;
+    }
+
+    for (i = 0; i < win_wrapper_count; ++i)
+        init_classproc(&win_wrappers[i]);
 
     for (i = 0; i < REVERSE_CLASSPROC_WRAPPER_COUNT; ++i)
         init_reverse_classproc(&reverse_classproc_wrappers[i]);

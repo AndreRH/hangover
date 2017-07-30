@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -29,7 +30,6 @@
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 #endif
-
 
 struct qemu_CreateWindowExA
 {
@@ -171,8 +171,25 @@ WINUSERAPI BOOL WINAPI DestroyWindow(HWND hwnd)
 void qemu_DestroyWindow(struct qemu_syscall *call)
 {
     struct qemu_DestroyWindow *c = (struct qemu_DestroyWindow *)call;
+    unsigned int i;
+    HWND win;
+
     WINE_TRACE("\n");
-    c->super.iret = DestroyWindow(QEMU_G2H(c->hwnd));
+    win = (HWND)c->hwnd;
+    c->super.iret = DestroyWindow(win);
+
+    if (!c->super.iret)
+        return;
+
+    for (i = 0; i < win_wrapper_count; ++i)
+    {
+        if (win_wrappers[i].win == win)
+        {
+            WINE_TRACE("Freeing wndproc wrapper for window %p.\n", win);
+            win_wrappers[i].win = NULL;
+            win_wrappers[i].guest_proc = 0;
+        }
+    }
 }
 
 #endif
@@ -1919,15 +1936,14 @@ LONG_PTR get_wndproc(HWND window, BOOL wide)
     else
         proc = GetWindowLongPtrA(window, GWLP_WNDPROC);
 
-    /* Per class wrappers. */
-    if (proc >= (ULONG_PTR)&class_wrappers[0] && proc <= (ULONG_PTR)&class_wrappers[class_wrapper_count])
+    /* Per class and per window wrappers. */
+    if ((proc >= (ULONG_PTR)&class_wrappers[0] && proc <= (ULONG_PTR)&class_wrappers[class_wrapper_count])
+            || (proc >= (ULONG_PTR)&win_wrappers[0] && proc <= (ULONG_PTR)&win_wrappers[win_wrapper_count]))
     {
         wrapper = (const struct classproc_wrapper *)proc;
         WINE_TRACE("Host wndproc is a wrapper function. Returning guest wndproc 0x%lx\n", wrapper->guest_proc);
         return wrapper->guest_proc;
     }
-
-    /* TODO: Per window wrappers. */
 
     /* Wine builtin class. Return a reverse wrapper. */
     reverse_wrapper = find_reverse_wndproc_wrapper((void *)proc);
@@ -2028,11 +2044,103 @@ WINUSERAPI LONG_PTR WINAPI SetWindowLongPtrW(HWND hwnd, INT offset, LONG_PTR new
 
 #else
 
+static struct classproc_wrapper *find_free_wndproc_wrapper(void)
+{
+    unsigned int i;
+
+    /* Find a forward wrapper to call the new guest proc. */
+    for (i = 0; i < win_wrapper_count; ++i)
+    {
+        if (!win_wrappers[i].atom)
+            return &win_wrappers[i];
+    }
+    WINE_FIXME("All per-window wrappers are in use\n");
+    return NULL;
+}
+
+static LONG_PTR set_wndproc(HWND win, uint64_t newval, BOOL wide)
+{
+    uint64_t ret = get_wndproc(win, wide);
+    LONG_PTR host_proc;
+    struct classproc_wrapper *wrapper;
+    struct reverse_classproc_wrapper *reverse_wrapper;
+
+    if (wide)
+        host_proc = GetWindowLongPtrW(win, GWLP_WNDPROC);
+    else
+        host_proc = GetWindowLongPtrA(win, GWLP_WNDPROC);
+
+    if (newval >= (LONG_PTR)&reverse_classproc_wrappers[0]
+            && newval <= (LONG_PTR)&reverse_classproc_wrappers[REVERSE_CLASSPROC_WRAPPER_COUNT])
+    {
+        reverse_wrapper = (struct reverse_classproc_wrapper *)newval;
+        WINE_TRACE("Restoring native window function %p\n", reverse_wrapper->host_func);
+        if (wide)
+            SetWindowLongPtrW(win, GWLP_WNDPROC, (LONG_PTR)reverse_wrapper->host_func);
+        else
+            SetWindowLongPtrA(win, GWLP_WNDPROC, (LONG_PTR)reverse_wrapper->host_func);
+
+        newval = 0;
+    }
+
+    if (host_proc >= (ULONG_PTR)&win_wrappers[0] && host_proc <= (ULONG_PTR)&win_wrappers[win_wrapper_count])
+    {
+        WINE_TRACE("Old host proc is a per-window wrapper.\n");
+
+        wrapper = (struct classproc_wrapper *)host_proc;
+        if (wrapper->win != win)
+            WINE_ERR("Expected window %p, got %p.\n", wrapper->win, win);
+
+        wrapper->guest_proc = newval;
+        wrapper->win = newval ? win : NULL;
+        return ret;
+    }
+
+    if (!newval)
+        WINE_ERR("Did not expect to get here.\n");
+
+    wrapper = find_free_wndproc_wrapper();
+    assert(wrapper);
+
+    /* FIXME: Similarly to the case in set_class_wndproc, we won't be able to
+     * free up slots in win_wrappers if the application is overwriting the
+     * WNDPROC of one of Wine's windows because we do not see the DestroyWindow
+     * call. Unlike UnregisterClass this is an actual issue here because we can
+     * expect windows to be destroyed and recreated a lot more than classes and
+     * there is no upper bound on the number of builtin windows that can be
+     * created. */
+    WINE_TRACE("Setting new forward wndproc wrapper %p for function 0x%lx.\n",
+            wrapper, newval);
+    if (wide)
+        host_proc = SetWindowLongPtrW(win, GWLP_WNDPROC, (LONG_PTR)wrapper);
+    else
+        host_proc = SetWindowLongPtrA(win, GWLP_WNDPROC, (LONG_PTR)wrapper);
+    WINE_TRACE("SetWindowLongPtr returned 0x%lx.\n", host_proc);
+
+    wrapper->win = win;
+    wrapper->guest_proc = newval;
+
+    return ret;
+}
+
 void qemu_SetWindowLongPtrW(struct qemu_syscall *call)
 {
     struct qemu_SetWindowLongPtrW *c = (struct qemu_SetWindowLongPtrW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetWindowLongPtrW(QEMU_G2H(c->hwnd), c->offset, c->newval);
+    HWND win;
+
+    WINE_TRACE("\n");
+    win = (HWND)c->hwnd;
+
+    switch (c->offset)
+    {
+        case GWLP_WNDPROC:
+            c->super.iret = set_wndproc(win, c->newval, TRUE);
+            break;
+
+        default:
+            c->super.iret = SetWindowLongPtrW(QEMU_G2H(c->hwnd), c->offset, c->newval);
+            break;
+    }
 }
 
 #endif
@@ -2065,8 +2173,21 @@ WINUSERAPI LONG_PTR WINAPI SetWindowLongPtrA(HWND hwnd, INT offset, LONG_PTR new
 void qemu_SetWindowLongPtrA(struct qemu_syscall *call)
 {
     struct qemu_SetWindowLongPtrA *c = (struct qemu_SetWindowLongPtrA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetWindowLongPtrA(QEMU_G2H(c->hwnd), c->offset, c->newval);
+    HWND win;
+
+    WINE_TRACE("\n");
+    win = (HWND)c->hwnd;
+
+    switch (c->offset)
+    {
+        case GWLP_WNDPROC:
+            c->super.iret = set_wndproc(win, c->newval, FALSE);
+            break;
+
+        default:
+            c->super.iret = SetWindowLongPtrA(QEMU_G2H(c->hwnd), c->offset, c->newval);
+            break;
+    }
 }
 
 #endif

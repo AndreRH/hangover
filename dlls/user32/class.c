@@ -851,7 +851,7 @@ void qemu_call_wndproc(struct qemu_syscall *call)
 
     WINE_TRACE("\n");
     wrapper = QEMU_G2H(c->data);
-    WINE_TRACE("Calling function %p from wrapper %p.\n", wrapper->host_func, wrapper);
+    WINE_TRACE("Calling function %p from reverse wrapper %p.\n", wrapper->host_func, wrapper);
 
     c->super.iret = CallWindowProcW(wrapper->host_func, (HWND)c->win, c->msg, c->wp, c->lp);
 
