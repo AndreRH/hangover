@@ -19,6 +19,7 @@
 #define DLL_VERSION     0x10LL
 #define DLL_OLEAUT32    0x11LL
 #define DLL_D3DX10_43   0x12LL
-#define DLL_XINPUT1_3  0x13LL
+#define DLL_XINPUT1_3   0x13LL
+#define DLL_OPENGL32    0x14LL
 
 #endif

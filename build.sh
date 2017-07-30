@@ -31,7 +31,7 @@ mkdir -p $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
 # Build the wrapper DLLs.
 # TODO: Figure out dependencies between them better.
 declare -a dlls=("ntdll" "kernel32" "msvcrt" "advapi32" "comctl32" "comdlg32" "d3d9" "d3dx10_43" "d3dx9_43" "gdi32" "imm32"
-        "msvcr100" "ole32" "oleaut32" "shell32" "shlwapi" "user32" "version" "xinput1_3")
+        "msvcr100" "ole32" "oleaut32" "opengl32" "shell32" "shlwapi" "user32" "version" "xinput1_3")
 
 for dll in "${dlls[@]}"
 do
