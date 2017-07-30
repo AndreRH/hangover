@@ -753,11 +753,43 @@ WINUSERAPI ULONG_PTR WINAPI GetClassLongPtrA(HWND hwnd, INT offset)
 
 #else
 
+static ULONG_PTR get_class_wndproc(HWND win, BOOL wide)
+{
+    ULONG_PTR host_proc;
+    const struct classproc_wrapper *wrapper;
+
+    if (wide)
+        host_proc = GetClassLongPtrW(win, GCLP_WNDPROC);
+    else
+        host_proc = GetClassLongPtrA(win, GCLP_WNDPROC);
+
+    if (host_proc >= (ULONG_PTR)&class_wrappers[0] && host_proc <= (ULONG_PTR)&class_wrappers[class_wrapper_count])
+    {
+        wrapper = (const struct classproc_wrapper *)host_proc;
+        WINE_TRACE("Host wndproc is a wrapper function. Returning guest wndproc 0x%lx\n", wrapper->guest_proc);
+        return wrapper->guest_proc;
+    }
+
+    WINE_FIXME("Host wndproc 0x%lx is not controlled by us!\n", host_proc);
+    return 0;
+}
+
 void qemu_GetClassLongPtrA(struct qemu_syscall *call)
 {
     struct qemu_GetClassLongPtrA *c = (struct qemu_GetClassLongPtrA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetClassLongPtrA(QEMU_G2H(c->hwnd), c->offset);
+    HWND win;
+    WINE_TRACE("\n");
+    win = (HWND)c->hwnd;
+
+    switch (c->offset)
+    {
+        case GCLP_WNDPROC:
+            c->super.iret = get_class_wndproc(win, FALSE);
+            break;
+
+        default:
+            c->super.iret = GetClassLongPtrA(win, c->offset);
+    }
 }
 
 #endif
@@ -788,8 +820,19 @@ WINUSERAPI ULONG_PTR WINAPI GetClassLongPtrW(HWND hwnd, INT offset)
 void qemu_GetClassLongPtrW(struct qemu_syscall *call)
 {
     struct qemu_GetClassLongPtrW *c = (struct qemu_GetClassLongPtrW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetClassLongPtrW(QEMU_G2H(c->hwnd), c->offset);
+    HWND win;
+    WINE_TRACE("\n");
+    win = (HWND)c->hwnd;
+
+    switch (c->offset)
+    {
+        case GCLP_WNDPROC:
+            c->super.iret = get_class_wndproc(win, TRUE);
+            break;
+
+        default:
+            c->super.iret = GetClassLongPtrW(win, c->offset);
+    }
 }
 
 #endif

@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
     MSG msg;
     HWND window;
     BOOL ret;
+    ULONG_PTR wndproc;
 
     wc.lpfnWndProc = my_wndproc;
     wc.lpszClassName = "my_test_wc";
@@ -36,6 +37,12 @@ int main(int argc, char *argv[])
     window = CreateWindowA("my_test_wc", "huhu test window!", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
             0, 0, 640, 480, NULL, NULL, NULL, NULL);
     printf("Got Window %p\n", window);
+
+    wndproc = GetClassLongPtrA(window, GCLP_WNDPROC);
+    if (wndproc != (ULONG_PTR)my_wndproc)
+        printf("Got class pointer %p, expected %p.\n", (void *)wndproc, my_wndproc);
+    else
+        printf("Class pointer matches.\n");
 
     while (ret = GetMessageA(&msg, NULL, 0, 0))
     {
