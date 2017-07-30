@@ -2,7 +2,9 @@
 #include <windowsx.h>
 #include <stdio.h>
 
-LRESULT WINAPI my_wndproc(HWND win, UINT msg, WPARAM wparam, LPARAM lparam)
+static BOOL swapped;
+
+static LRESULT WINAPI my_wndproc(HWND win, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     switch (msg)
     {
@@ -18,6 +20,16 @@ LRESULT WINAPI my_wndproc(HWND win, UINT msg, WPARAM wparam, LPARAM lparam)
     }
 }
 
+static LRESULT WINAPI my_wndproc2(HWND win, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+    if (swapped)
+    {
+        printf("Wrong wndproc called!\n");
+        exit(1);
+    }
+    my_wndproc(win, msg, wparam, lparam);
+}
+
 int main(int argc, char *argv[])
 {
     WNDCLASSA wc = {0};
@@ -27,7 +39,7 @@ int main(int argc, char *argv[])
     BOOL ret;
     ULONG_PTR wndproc;
 
-    wc.lpfnWndProc = my_wndproc;
+    wc.lpfnWndProc = my_wndproc2;
     wc.lpszClassName = "my_test_wc";
     wc.hCursor = LoadCursorA(NULL, IDC_ARROW);
     wc.hbrBackground = GetStockObject(GRAY_BRUSH);
@@ -39,10 +51,17 @@ int main(int argc, char *argv[])
     printf("Got Window %p\n", window);
 
     wndproc = GetClassLongPtrA(window, GCLP_WNDPROC);
+    if (wndproc != (ULONG_PTR)my_wndproc2)
+        printf("Got class pointer %p, expected %p.\n", (void *)wndproc, my_wndproc2);
+
+    swapped = TRUE;
+    wndproc = SetClassLongPtrA(window, GCLP_WNDPROC, (LONG_PTR)my_wndproc);
+    if (wndproc != (ULONG_PTR)my_wndproc2)
+        printf("Got class pointer %p, expected %p.\n", (void *)wndproc, my_wndproc2);
+
+    wndproc = GetClassLongPtrA(window, GCLP_WNDPROC);
     if (wndproc != (ULONG_PTR)my_wndproc)
         printf("Got class pointer %p, expected %p.\n", (void *)wndproc, my_wndproc);
-    else
-        printf("Class pointer matches.\n");
 
     while (ret = GetMessageA(&msg, NULL, 0, 0))
     {

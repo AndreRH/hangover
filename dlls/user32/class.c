@@ -862,11 +862,55 @@ WINUSERAPI ULONG_PTR WINAPI SetClassLongPtrW(HWND hwnd, INT offset, LONG_PTR new
 
 #else
 
+ULONG_PTR set_class_wndproc(HWND win, BOOL wide, LONG_PTR newval)
+{
+    LONG_PTR ret;
+    ATOM atom;
+    struct classproc_wrapper *wrapper;
+
+    if (wide)
+    {
+        ret = GetClassLongPtrW(win, GCLP_WNDPROC);
+        atom = GetClassLongW(win, GCW_ATOM);
+    }
+    else
+    {
+        ret = GetClassLongPtrA(win, GCLP_WNDPROC);
+        atom = GetClassLongA(win, GCW_ATOM);
+    }
+
+    if (ret >= (ULONG_PTR)&class_wrappers[0] && ret <= (ULONG_PTR)&class_wrappers[class_wrapper_count])
+    {
+        WINE_TRACE("Old host proc is our wrapper.\n");
+
+        wrapper = (struct classproc_wrapper *)ret;
+        if (wrapper->atom != atom)
+            WINE_ERR("Expected atom %x, got %x.\n", wrapper->atom, atom);
+
+        ret = wrapper->guest_proc;
+        wrapper->guest_proc = newval;
+        return ret;
+    }
+}
+
 void qemu_SetClassLongPtrW(struct qemu_syscall *call)
 {
     struct qemu_SetClassLongPtrW *c = (struct qemu_SetClassLongPtrW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetClassLongPtrW(QEMU_G2H(c->hwnd), c->offset, c->newval);
+    HWND win;
+
+    WINE_TRACE("Unverified!\n");
+    win = (HWND)c->hwnd;
+
+    switch (c->offset)
+    {
+        case GCLP_WNDPROC:
+            c->super.iret = set_class_wndproc(win, TRUE, c->newval);
+            break;
+
+        default:
+            c->super.iret = SetClassLongPtrW(win, c->offset, c->newval);
+            break;
+    }
 }
 
 #endif
@@ -898,9 +942,22 @@ WINUSERAPI ULONG_PTR WINAPI SetClassLongPtrA(HWND hwnd, INT offset, LONG_PTR new
 
 void qemu_SetClassLongPtrA(struct qemu_syscall *call)
 {
-    struct qemu_SetClassLongPtrA *c = (struct qemu_SetClassLongPtrA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetClassLongPtrA(QEMU_G2H(c->hwnd), c->offset, c->newval);
+    struct qemu_SetClassLongPtrW *c = (struct qemu_SetClassLongPtrW *)call;
+    HWND win;
+
+    WINE_TRACE("Unverified!\n");
+    win = (HWND)c->hwnd;
+
+    switch (c->offset)
+    {
+        case GCLP_WNDPROC:
+            c->super.iret = set_class_wndproc(win, FALSE, c->newval);
+            break;
+
+        default:
+            c->super.iret = SetClassLongPtrA(win, c->offset, c->newval);
+            break;
+    }
 }
 
 #endif
