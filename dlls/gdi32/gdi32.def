@@ -12,6 +12,7 @@ EXPORTS
   ArcTo
   BitBlt
   CancelDC
+  ChoosePixelFormat
   Chord
   CombineTransform
   CopyEnhMetaFileA
@@ -42,6 +43,7 @@ EXPORTS
   DeleteEnhMetaFile
   DeleteMetaFile
   DeleteObject
+  DescribePixelFormat
   DPtoLP
   Ellipse
   EnableEUDC
@@ -141,6 +143,7 @@ EXPORTS
   GetOutlineTextMetricsA
   GetOutlineTextMetricsW
   GetPixel
+  GetPixelFormat
   GetPolyFillMode
   GetRelAbs
   GetROP2
@@ -231,6 +234,7 @@ EXPORTS
   SetMiterLimit
   SetObjectOwner
   SetPixel
+  SetPixelFormat
   SetPixelV
   SetPolyFillMode
   SetRelAbs
@@ -252,6 +256,7 @@ EXPORTS
   StartPage
   StretchBlt
   StretchDIBits
+  SwapBuffers
   TextOutA
   TextOutW
   TranslateCharsetInfo
