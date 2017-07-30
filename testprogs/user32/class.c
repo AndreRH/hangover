@@ -30,6 +30,20 @@ static LRESULT WINAPI my_wndproc2(HWND win, UINT msg, WPARAM wparam, LPARAM lpar
     my_wndproc(win, msg, wparam, lparam);
 }
 
+static WNDPROC label_wndproc;
+
+static LRESULT WINAPI label_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+    switch (msg)
+    {
+        case WM_CHAR:
+            printf("Label: WM_CHAR\n");
+            /* Drop through */
+        default:
+            return label_wndproc(win, msg, wparam, lparam);
+    }
+}
+
 int main(int argc, char *argv[])
 {
     WNDCLASSA wc = {0};
@@ -38,7 +52,6 @@ int main(int argc, char *argv[])
     HWND window, label;
     BOOL ret;
     ULONG_PTR wndproc;
-    WNDPROC wndproc2;
     LRESULT lresult;
 
     wc.lpfnWndProc = my_wndproc2;
@@ -69,16 +82,21 @@ int main(int argc, char *argv[])
             0, 0, 640, 480, NULL, NULL, NULL, NULL);
     printf("Got Window %p\n", label);
 
-    wndproc = GetClassLongPtrA(label, GCLP_WNDPROC);
-    wndproc2 = (WNDPROC)GetClassLongPtrA(label, GCLP_WNDPROC);
-    printf("Got static wndproc %p.\n", wndproc2);
-    if ((WNDPROC)wndproc != wndproc2)
+    wndproc = GetClassLongPtrW(label, GCLP_WNDPROC);
+    label_wndproc = (WNDPROC)SetClassLongPtrW(label, GCLP_WNDPROC, (LONG_PTR)label_wrapper);
+    printf("Got static wndproc %p.\n", label_wndproc);
+    if ((WNDPROC)wndproc != label_wndproc)
         printf("Got two different functions.\n");
 
     /* A simple test call. Should return 1.
      * Yeah, I should use CallWindowProc, but callWindowProc is nasty to implement. */
-    lresult = wndproc2(label, WM_ERASEBKGND, 0, 0);
+    lresult = label_wndproc(label, WM_ERASEBKGND, 0, 0);
     printf("Called wndproc, got %lx\n", (long unsigned int)lresult);
+
+    DestroyWindow(label);
+    label = CreateWindowA("static", "huhu static window!", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+            0, 0, 640, 480, NULL, NULL, NULL, NULL);
+    printf("Got Window %p\n", label);
 
     while (ret = GetMessageA(&msg, NULL, 0, 0))
     {

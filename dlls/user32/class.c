@@ -934,12 +934,26 @@ WINUSERAPI ULONG_PTR WINAPI SetClassLongPtrW(HWND hwnd, INT offset, LONG_PTR new
 
 #else
 
-ULONG_PTR set_class_wndproc(HWND win, BOOL wide, LONG_PTR newval)
+static struct classproc_wrapper *find_free_classproc_wrapper(void)
 {
-    LONG_PTR ret;
+    unsigned int i;
+
+    /* Find a forward wrapper to call the new guest proc. */
+    for (i = 0; i < class_wrapper_count; ++i)
+    {
+        if (!class_wrappers[i].atom)
+            return &class_wrappers[i];
+    }
+    WINE_FIXME("All class wrappers are in use\n");
+    return NULL;
+}
+
+ULONG_PTR set_class_wndproc(HWND win, BOOL wide, LONG_PTR newval, uint64_t rev_func)
+{
+    LONG_PTR ret, ret2;
     ATOM atom;
     struct classproc_wrapper *wrapper;
-    struct reverse_classproc_wrapper *rev_wrapper;
+    struct reverse_classproc_wrapper *reverse_wrapper;
     BOOL restore = FALSE;
 
     if (wide)
@@ -956,12 +970,12 @@ ULONG_PTR set_class_wndproc(HWND win, BOOL wide, LONG_PTR newval)
     if (newval >= (LONG_PTR)&reverse_classproc_wrappers[0]
             && newval <= (LONG_PTR)&reverse_classproc_wrappers[REVERSE_CLASSPROC_WRAPPER_COUNT])
     {
-        rev_wrapper = (struct reverse_classproc_wrapper *)newval;
-        WINE_TRACE("Restoring native class function %p\n", rev_wrapper->host_func);
+        reverse_wrapper = (struct reverse_classproc_wrapper *)newval;
+        WINE_TRACE("Restoring native class function %p\n", reverse_wrapper->host_func);
         if (wide)
-            SetClassLongPtrW(win, GCLP_WNDPROC, (LONG_PTR)rev_wrapper->host_func);
+            SetClassLongPtrW(win, GCLP_WNDPROC, (LONG_PTR)reverse_wrapper->host_func);
         else
-            SetClassLongPtrA(win, GCLP_WNDPROC, (LONG_PTR)rev_wrapper->host_func);
+            SetClassLongPtrA(win, GCLP_WNDPROC, (LONG_PTR)reverse_wrapper->host_func);
 
         restore = TRUE;
     }
@@ -974,6 +988,9 @@ ULONG_PTR set_class_wndproc(HWND win, BOOL wide, LONG_PTR newval)
         if (wrapper->atom != atom)
             WINE_ERR("Expected atom %x, got %x.\n", wrapper->atom, atom);
 
+        /* FIXME: The behavior of Wine's SetClassLongPtr suggests that this should not affect
+         * windows that already exist. That would require overwriting the WNDPROC with something
+         * window specific whenever a new window is created. */
         ret = wrapper->guest_proc;
         wrapper->guest_proc = newval;
         return ret;
@@ -981,6 +998,28 @@ ULONG_PTR set_class_wndproc(HWND win, BOOL wide, LONG_PTR newval)
 
     if (restore)
         WINE_ERR("Did not expect to get here.\n");
+
+    /* Find / Create a reverse wrapper for the old function. */
+    reverse_wrapper = find_reverse_wrapper((void *)ret);
+    reverse_wrapper->guest_func = rev_func;
+    WINE_TRACE("Returning reverse wrapper %p for host function 0x%lx\n", reverse_wrapper, ret);
+    ret = (ULONG_PTR)reverse_wrapper;
+
+    wrapper = find_free_classproc_wrapper();
+    assert(wrapper);
+
+    WINE_TRACE("Setting new forward wndproc wrapper %p for function 0x%lx.\n",
+            wrapper, newval);
+    if (wide)
+        ret2 = SetClassLongPtrW(win, GCLP_WNDPROC, (LONG_PTR)wrapper);
+    else
+        ret2 = SetClassLongPtrA(win, GCLP_WNDPROC, (LONG_PTR)wrapper);
+    WINE_TRACE("SetClassLongPtr returned 0x%lx.\n", ret2);
+
+    wrapper->atom = atom;
+    wrapper->guest_proc = newval;
+
+    return ret;
 }
 
 void qemu_SetClassLongPtrW(struct qemu_syscall *call)
@@ -988,13 +1027,13 @@ void qemu_SetClassLongPtrW(struct qemu_syscall *call)
     struct qemu_SetClassLongPtrW *c = (struct qemu_SetClassLongPtrW *)call;
     HWND win;
 
-    WINE_TRACE("Unverified!\n");
+    WINE_TRACE("\n");
     win = (HWND)c->hwnd;
 
     switch (c->offset)
     {
         case GCLP_WNDPROC:
-            c->super.iret = set_class_wndproc(win, TRUE, c->newval);
+            c->super.iret = set_class_wndproc(win, TRUE, c->newval, c->reverse_wrapper);
             break;
 
         default:
@@ -1037,13 +1076,13 @@ void qemu_SetClassLongPtrA(struct qemu_syscall *call)
     struct qemu_SetClassLongPtrW *c = (struct qemu_SetClassLongPtrW *)call;
     HWND win;
 
-    WINE_TRACE("Unverified!\n");
+    WINE_TRACE("\n");
     win = (HWND)c->hwnd;
 
     switch (c->offset)
     {
         case GCLP_WNDPROC:
-            c->super.iret = set_class_wndproc(win, FALSE, c->newval);
+            c->super.iret = set_class_wndproc(win, FALSE, c->newval, c->reverse_wrapper);
             break;
 
         default:
