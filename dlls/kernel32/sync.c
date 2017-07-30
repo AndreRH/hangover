@@ -133,7 +133,7 @@ WINBASEAPI DWORD WINAPI WaitForSingleObject(HANDLE handle, DWORD timeout)
     struct qemu_WaitForSingleObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WAITFORSINGLEOBJECT);
     call.handle = (uint64_t)handle;
-    call.timeout = (uint64_t)timeout;
+    call.timeout = timeout;
 
     qemu_syscall(&call.super);
 
@@ -145,8 +145,8 @@ WINBASEAPI DWORD WINAPI WaitForSingleObject(HANDLE handle, DWORD timeout)
 void qemu_WaitForSingleObject(struct qemu_syscall *call)
 {
     struct qemu_WaitForSingleObject *c = (struct qemu_WaitForSingleObject *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = WaitForSingleObject(QEMU_G2H(c->handle), c->timeout);
+    WINE_TRACE("\n");
+    c->super.iret = WaitForSingleObject((HANDLE)c->handle, c->timeout);
 }
 
 #endif
