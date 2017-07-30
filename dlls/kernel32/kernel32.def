@@ -23,6 +23,7 @@ EXPORTS
   BuildCommDCBAndTimeoutsA
   BuildCommDCBAndTimeoutsW
   BuildCommDCBW
+  CallbackMayRunLong
   CallNamedPipeA
   CallNamedPipeW
   CancelIo
@@ -84,6 +85,7 @@ EXPORTS
   CreatePipe
   CreateProcessA
   CreateProcessW
+  CreateRemoteThread
   CreateSemaphoreA
   CreateSemaphoreExA
   CreateSemaphoreExW
@@ -91,6 +93,12 @@ EXPORTS
   CreateSocketHandle
   CreateSymbolicLinkA
   CreateSymbolicLinkW
+  CreateThread
+  CreateThreadpool
+  CreateThreadpoolCleanupGroup
+  CreateThreadpoolTimer
+  CreateThreadpoolWait
+  CreateThreadpoolWork
   CreateTimerQueue
   CreateTimerQueueTimer
   CreateWaitableTimerA
@@ -141,6 +149,7 @@ EXPORTS
   EnumUILanguagesW
   EscapeCommFunction
   ExitProcess
+  ExitThread
   ExpandEnvironmentStringsA
   ExpandEnvironmentStringsW
   FindClose
@@ -165,6 +174,7 @@ EXPORTS
   FreeEnvironmentStringsA
   FreeEnvironmentStringsW
   FreeLibrary
+  FreeLibraryAndExitThread
   FreeResource
   FreeUserPhysicalPages
   GetACP
@@ -189,6 +199,7 @@ EXPORTS
   GetCurrentDirectoryW
   GetCurrentProcess
   GetCurrentProcessId
+  GetCurrentThread
   GetCurrentThreadId
   GetDateFormatA
   GetDateFormatW
@@ -203,6 +214,7 @@ EXPORTS
   GetEnvironmentVariableW
   GetErrorMode
   GetExitCodeProcess
+  GetExitCodeThread
   GetFileAttributesA
   GetFileAttributesExA
   GetFileAttributesExW
@@ -261,6 +273,7 @@ EXPORTS
   GetProcessHeap
   GetProcessHeaps
   GetProcessId
+  GetProcessIdOfThread
   GetProcessIoCounters
   GetProcessPriorityBoost
   GetProcessShutdownParameters
@@ -297,8 +310,18 @@ EXPORTS
   GetTempFileNameW
   GetTempPathA
   GetTempPathW
+  GetThreadContext
+  GetThreadErrorMode
+  GetThreadGroupAffinity
+  GetThreadId
+  GetThreadIOPendingFlag
   GetThreadLocale
   GetThreadPreferredUILanguages
+  GetThreadPriority
+  GetThreadPriorityBoost
+  GetThreadSelectorEntry
+  GetThreadTimes
+  GetThreadUILanguage
   GetTickCount
   GetTimeFormatA
   GetTimeFormatW
@@ -462,6 +485,7 @@ EXPORTS
   OpenProcess
   OpenSemaphoreA
   OpenSemaphoreW
+  OpenThread
   OpenVxDHandle
   OpenWaitableTimerA
   OpenWaitableTimerW
@@ -481,6 +505,8 @@ EXPORTS
   QueryMemoryResourceNotification
   QueryPerformanceCounter
   QueryPerformanceFrequency
+  QueueUserAPC
+  QueueUserWorkItem
   ReadFile
   ReadFileEx
   ReadFileScatter
@@ -500,6 +526,7 @@ EXPORTS
   RequestWakeupLatency
   ResetEvent
   ResetWriteWatch
+  ResumeThread
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   RtlCaptureContext=ntdll.RtlCaptureContext
   RtlLookupFunctionEntry=ntdll.RtlLookupFunctionEntry
@@ -554,9 +581,20 @@ EXPORTS
   SetStdHandle
   SetSystemFileCacheSize
   SetSystemPowerState
+  SetThreadAffinityMask
+  SetThreadContext
+  SetThreadErrorMode
   SetThreadExecutionState
+  SetThreadGroupAffinity
+  SetThreadIdealProcessor
+  SetThreadIdealProcessorEx
   SetThreadLocale
+  SetThreadpoolTimer
+  SetThreadpoolWait
   SetThreadPreferredUILanguages
+  SetThreadPriority
+  SetThreadPriorityBoost
+  SetThreadStackGuarantee
   SetThreadUILanguage
   SetUnhandledExceptionFilter
   SetupComm
@@ -569,15 +607,18 @@ EXPORTS
   SleepConditionVariableCS
   SleepConditionVariableSRW
   SleepEx
+  SuspendThread
   SwitchToThread
   TerminateJobObject
   TerminateProcess
+  TerminateThread
   TlsAlloc
   TlsFree
   TlsGetValue
   TlsSetValue
   TransactNamedPipe
   TransmitCommChar
+  TrySubmitThreadpoolCallback
   UnhandledExceptionFilter
   UninitializeCriticalSection
   UnlockFile
