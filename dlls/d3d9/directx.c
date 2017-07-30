@@ -748,9 +748,8 @@ static HRESULT WINAPI d3d9_CreateDevice(IDirect3D9Ex *iface, UINT adapter, D3DDE
         return call.super.iret;
     }
 
-    ret->IDirect3DDevice9Ex_iface.lpVtbl = &d3d9_device_vtbl;
+    qemu_d3d9_device_setup_guest(ret, TRUE);
     *device = (IDirect3DDevice9 *)&ret->IDirect3DDevice9Ex_iface;
-    d3d9_device_set_implicit_ifaces(&ret->IDirect3DDevice9Ex_iface);
 
     return call.super.iret;
 }
@@ -961,9 +960,8 @@ static HRESULT WINAPI d3d9_CreateDeviceEx(IDirect3D9Ex *iface, UINT adapter, D3D
         return call.super.iret;
     }
 
-    ret->IDirect3DDevice9Ex_iface.lpVtbl = &d3d9_device_vtbl;
+    qemu_d3d9_device_setup_guest(ret, TRUE);
     *device = &ret->IDirect3DDevice9Ex_iface;
-    d3d9_device_set_implicit_ifaces(&ret->IDirect3DDevice9Ex_iface);
 
     return call.super.iret;
 }

@@ -357,7 +357,7 @@ extern const struct IDirect3DVertexShader9Vtbl d3d9_vertexshader_vtbl;
 extern const struct IDirect3DPixelShader9Vtbl d3d9_pixelshader_vtbl;
 extern const struct IDirect3DStateBlock9Vtbl d3d9_stateblock_vtbl;
 
-void d3d9_device_set_implicit_ifaces(IDirect3DDevice9Ex *device);
+void qemu_d3d9_device_setup_guest(struct qemu_d3d9_device_impl *device, BOOL init);
 void d3d9_swapchain_set_surfaces_ifaces(IDirect3DSwapChain9Ex *swapchain);
 void d3d9_texture_set_surfaces_ifaces(struct qemu_d3d9_texture_impl *texture);
 void qemu_d3d9_surface_init_guest(IDirect3DSurface9 *surface);

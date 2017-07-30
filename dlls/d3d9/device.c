@@ -767,7 +767,7 @@ static HRESULT WINAPI d3d9_device_Reset(IDirect3DDevice9Ex *iface, D3DPRESENT_PA
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
-        d3d9_device_set_implicit_ifaces(iface);
+        qemu_d3d9_device_setup_guest(device, FALSE);
 
     return call.super.iret;
 }
@@ -6329,7 +6329,7 @@ static HRESULT WINAPI d3d9_device_ResetEx(IDirect3DDevice9Ex *iface, D3DPRESENT_
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
-        d3d9_device_set_implicit_ifaces(iface);
+        qemu_d3d9_device_setup_guest(device, FALSE);
 
     return call.super.iret;
 }
@@ -6539,24 +6539,51 @@ const struct IDirect3DDevice9ExVtbl d3d9_device_vtbl =
     d3d9_device_GetDisplayModeEx,
 };
 
-void d3d9_device_set_implicit_ifaces(IDirect3DDevice9Ex *device)
+static void setup_fpu(void)
+{
+#if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+    WORD cw;
+    __asm__ volatile ("fnstcw %0" : "=m" (cw));
+    cw = (cw & ~0xf3f) | 0x3f;
+    __asm__ volatile ("fldcw %0" : : "m" (cw));
+#elif defined(__i386__) && defined(_MSC_VER)
+    WORD cw;
+    __asm fnstcw cw;
+    cw = (cw & ~0xf3f) | 0x3f;
+    __asm fldcw cw;
+#else
+    FIXME("FPU setup not implemented for this platform.\n");
+#endif
+}
+
+void qemu_d3d9_device_setup_guest(struct qemu_d3d9_device_impl *device, BOOL init)
 {
     UINT swapchain_count, i;
     IDirect3DSwapChain9Ex *swapchain;
     IDirect3DSurface9 *ds = NULL;
+    D3DDEVICE_CREATION_PARAMETERS create_params;
+
+    if (init)
+    {
+        device->IDirect3DDevice9Ex_iface.lpVtbl = &d3d9_device_vtbl;
+        IDirect3DDevice9Ex_GetCreationParameters(&device->IDirect3DDevice9Ex_iface, &create_params);
+        if (!(create_params.BehaviorFlags & D3DCREATE_FPU_PRESERVE))
+            setup_fpu();
+    }
 
     /* This code merrily relies on the fact that the GetSwapChain AddRef call
      * happens on the host side and doesn't need the guest vtable. */
-    swapchain_count = IDirect3DDevice9Ex_GetNumberOfSwapChains(device);
+    swapchain_count = IDirect3DDevice9Ex_GetNumberOfSwapChains(&device->IDirect3DDevice9Ex_iface);
     for (i = 0; i < swapchain_count; ++i)
     {
-        IDirect3DDevice9Ex_GetSwapChain(device, i, (IDirect3DSwapChain9 **)&swapchain);
+        IDirect3DDevice9Ex_GetSwapChain(&device->IDirect3DDevice9Ex_iface, i,
+                (IDirect3DSwapChain9 **)&swapchain);
         swapchain->lpVtbl = &d3d9_swapchain_vtbl;
         d3d9_swapchain_set_surfaces_ifaces(swapchain);
         IDirect3DSwapChain9Ex_Release(swapchain);
     }
 
-    IDirect3DDevice9Ex_GetDepthStencilSurface(device, &ds);
+    IDirect3DDevice9Ex_GetDepthStencilSurface(&device->IDirect3DDevice9Ex_iface, &ds);
     if (ds)
     {
         qemu_d3d9_surface_init_guest(ds);
