@@ -1,5 +1,6 @@
 /*
  * Copyright 2017 André Hentschel
+ * Copyright 2017 Stefan Dösinger for CodeWeavers
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,9 +40,24 @@ struct qemu_CreateThread
     uint64_t param;
     uint64_t flags;
     uint64_t id;
+    uint64_t wrapper;
+};
+
+struct qemu_CreateThread_cb
+{
+    uint64_t context;
+    uint64_t proc;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+/* Not strictly necessary, but seems like a good idea for future extensions. */
+static DWORD WINAPI qemu_CreateThread_guest_wrapper(void *ctx)
+{
+    struct qemu_CreateThread_cb *cb = ctx;
+    LPTHREAD_START_ROUTINE proc = (LPTHREAD_START_ROUTINE)cb->proc;
+    return proc((void *)cb->context);
+}
 
 WINBASEAPI HANDLE WINAPI CreateThread(SECURITY_ATTRIBUTES *sa, SIZE_T stack, LPTHREAD_START_ROUTINE start, LPVOID param, DWORD flags, LPDWORD id)
 {
@@ -53,6 +69,7 @@ WINBASEAPI HANDLE WINAPI CreateThread(SECURITY_ATTRIBUTES *sa, SIZE_T stack, LPT
     call.param = (uint64_t)param;
     call.flags = (uint64_t)flags;
     call.id = (uint64_t)id;
+    call.wrapper = (uint64_t)qemu_CreateThread_guest_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -61,11 +78,51 @@ WINBASEAPI HANDLE WINAPI CreateThread(SECURITY_ATTRIBUTES *sa, SIZE_T stack, LPT
 
 #else
 
+struct qemu_CreateThread_context
+{
+    uint64_t app_param;
+    uint64_t app_func;
+    uint64_t guest_wrapper;
+};
+
+static DWORD WINAPI qemu_CreateThread_wrapper(void *context)
+{
+    struct qemu_CreateThread_context *ctx = context;
+    struct qemu_CreateThread_cb cb;
+    uint64_t wrapper;
+    DWORD ret;
+
+    cb.proc = ctx->app_func;
+    cb.context = ctx->app_param;
+    wrapper = ctx->guest_wrapper;
+    HeapFree(GetProcessHeap(), 0, ctx);
+
+    WINE_TRACE("Calling thread function 0x%lx(0x%lx).\n", cb.proc, cb.context);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(wrapper), QEMU_H2G(&cb));
+    WINE_TRACE("Thread function 0x%lx returned %x.\n", cb.proc, ret);
+    return ret;
+}
+
 void qemu_CreateThread(struct qemu_syscall *call)
 {
     struct qemu_CreateThread *c = (struct qemu_CreateThread *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateThread(QEMU_G2H(c->sa), c->stack, QEMU_G2H(c->start), QEMU_G2H(c->param), c->flags, QEMU_G2H(c->id));
+    struct qemu_CreateThread_context *context;
+
+    WINE_TRACE("func %lx, ctx %lx\n", c->start, c->param);
+
+    context = HeapAlloc(GetProcessHeap(), 0, sizeof(*context));
+    if (!context)
+    {
+        c->super.iret = 0;
+        return;
+    }
+
+    context->app_param = c->param;
+    context->app_func = c->start;
+    context->guest_wrapper = c->wrapper;
+
+    c->super.iret = (uint64_t)CreateThread(QEMU_G2H(c->sa), c->stack, qemu_CreateThread_wrapper,
+            context, c->flags, QEMU_G2H(c->id));
 }
 
 #endif
@@ -1144,6 +1201,8 @@ WINBASEAPI BOOL WINAPI CallbackMayRunLong(TP_CALLBACK_INSTANCE *instance)
 
 #else
 
+/* TODO: Add CallbackMayRunLong to Wine headers? */
+extern BOOL WINAPI CallbackMayRunLong(TP_CALLBACK_INSTANCE *instance);
 void qemu_CallbackMayRunLong(struct qemu_syscall *call)
 {
     struct qemu_CallbackMayRunLong *c = (struct qemu_CallbackMayRunLong *)call;
