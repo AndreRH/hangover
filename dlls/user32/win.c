@@ -1908,11 +1908,52 @@ WINUSERAPI LONG_PTR WINAPI GetWindowLongPtrW(HWND hwnd, INT offset)
 
 #else
 
+LONG_PTR get_wndproc(HWND window, BOOL wide)
+{
+    LONG_PTR proc;
+    const struct classproc_wrapper *wrapper;
+    struct reverse_classproc_wrapper *reverse_wrapper;
+
+    if (wide)
+        proc = GetWindowLongPtrW(window, GWLP_WNDPROC);
+    else
+        proc = GetWindowLongPtrA(window, GWLP_WNDPROC);
+
+    /* Per class wrappers. */
+    if (proc >= (ULONG_PTR)&class_wrappers[0] && proc <= (ULONG_PTR)&class_wrappers[class_wrapper_count])
+    {
+        wrapper = (const struct classproc_wrapper *)proc;
+        WINE_TRACE("Host wndproc is a wrapper function. Returning guest wndproc 0x%lx\n", wrapper->guest_proc);
+        return wrapper->guest_proc;
+    }
+
+    /* TODO: Per window wrappers. */
+
+    /* Wine builtin class. Return a reverse wrapper. */
+    reverse_wrapper = find_reverse_wndproc_wrapper((void *)proc);
+    reverse_wrapper->guest_func = reverse_classproc_func;
+    WINE_TRACE("Returning reverse wrapper %p for host function 0x%lx\n", reverse_wrapper, proc);
+    return (ULONG_PTR)reverse_wrapper;
+}
+
 void qemu_GetWindowLongPtrW(struct qemu_syscall *call)
 {
     struct qemu_GetWindowLongPtrW *c = (struct qemu_GetWindowLongPtrW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetWindowLongPtrW(QEMU_G2H(c->hwnd), c->offset);
+    HWND win;
+
+    WINE_TRACE("\n");
+    win = (HWND)c->hwnd;
+
+    switch (c->offset)
+    {
+        case GWLP_WNDPROC:
+            c->super.iret = get_wndproc(win, TRUE);
+            break;
+
+        default:
+            c->super.iret = GetWindowLongPtrW(win, c->offset);
+            break;
+    }
 }
 
 #endif
@@ -1943,8 +1984,21 @@ WINUSERAPI LONG_PTR WINAPI GetWindowLongPtrA(HWND hwnd, INT offset)
 void qemu_GetWindowLongPtrA(struct qemu_syscall *call)
 {
     struct qemu_GetWindowLongPtrA *c = (struct qemu_GetWindowLongPtrA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetWindowLongPtrA(QEMU_G2H(c->hwnd), c->offset);
+    HWND win;
+
+    WINE_TRACE("\n");
+    win = (HWND)c->hwnd;
+
+    switch (c->offset)
+    {
+        case GWLP_WNDPROC:
+            c->super.iret = get_wndproc(win, FALSE);
+            break;
+
+        default:
+            c->super.iret = GetWindowLongPtrA(win, c->offset);
+            break;
+    }
 }
 
 #endif

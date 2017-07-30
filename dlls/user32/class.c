@@ -739,7 +739,6 @@ struct qemu_GetClassLongPtrA
     struct qemu_syscall super;
     uint64_t hwnd;
     uint64_t offset;
-    uint64_t reverse_wrapper;
 };
 
 struct qemu_call_wndproc
@@ -754,7 +753,7 @@ struct qemu_call_wndproc
 
 #ifdef QEMU_DLL_GUEST
 
-static LRESULT CALLBACK reverse_classproc_func(HWND win, UINT msg, WPARAM wp, LPARAM lp, void *data)
+LRESULT CALLBACK reverse_classproc_func(HWND win, UINT msg, WPARAM wp, LPARAM lp, void *data)
 {
     struct qemu_call_wndproc call;
 
@@ -776,7 +775,6 @@ WINUSERAPI ULONG_PTR WINAPI GetClassLongPtrA(HWND hwnd, INT offset)
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCLASSLONGPTRA);
     call.hwnd = (uint64_t)hwnd;
     call.offset = (uint64_t)offset;
-    call.reverse_wrapper = (uint64_t)reverse_classproc_func;
 
     qemu_syscall(&call.super);
 
@@ -785,7 +783,7 @@ WINUSERAPI ULONG_PTR WINAPI GetClassLongPtrA(HWND hwnd, INT offset)
 
 #else
 
-static struct reverse_classproc_wrapper *find_reverse_wrapper(void *host_func)
+struct reverse_classproc_wrapper *find_reverse_wndproc_wrapper(void *host_func)
 {
     unsigned int i;
 
@@ -804,7 +802,7 @@ static struct reverse_classproc_wrapper *find_reverse_wrapper(void *host_func)
     assert(0);
 }
 
-static ULONG_PTR get_class_wndproc(HWND win, BOOL wide, uint64_t rev_func)
+static ULONG_PTR get_class_wndproc(HWND win, BOOL wide)
 {
     ULONG_PTR host_proc;
     const struct classproc_wrapper *wrapper;
@@ -822,8 +820,8 @@ static ULONG_PTR get_class_wndproc(HWND win, BOOL wide, uint64_t rev_func)
         return wrapper->guest_proc;
     }
 
-    reverse_wrapper = find_reverse_wrapper((void *)host_proc);
-    reverse_wrapper->guest_func = rev_func;
+    reverse_wrapper = find_reverse_wndproc_wrapper((void *)host_proc);
+    reverse_wrapper->guest_func = reverse_classproc_func;
     WINE_TRACE("Returning reverse wrapper %p for host function 0x%lx\n", reverse_wrapper, host_proc);
     return (ULONG_PTR)reverse_wrapper;
 }
@@ -838,7 +836,7 @@ void qemu_GetClassLongPtrA(struct qemu_syscall *call)
     switch (c->offset)
     {
         case GCLP_WNDPROC:
-            c->super.iret = get_class_wndproc(win, FALSE, c->reverse_wrapper);
+            c->super.iret = get_class_wndproc(win, FALSE);
             break;
 
         default:
@@ -867,7 +865,6 @@ struct qemu_GetClassLongPtrW
     struct qemu_syscall super;
     uint64_t hwnd;
     uint64_t offset;
-    uint64_t reverse_wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -878,7 +875,6 @@ WINUSERAPI ULONG_PTR WINAPI GetClassLongPtrW(HWND hwnd, INT offset)
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCLASSLONGPTRW);
     call.hwnd = (uint64_t)hwnd;
     call.offset = (uint64_t)offset;
-    call.reverse_wrapper = (uint64_t)reverse_classproc_func;
 
     qemu_syscall(&call.super);
 
@@ -897,7 +893,7 @@ void qemu_GetClassLongPtrW(struct qemu_syscall *call)
     switch (c->offset)
     {
         case GCLP_WNDPROC:
-            c->super.iret = get_class_wndproc(win, TRUE, c->reverse_wrapper);
+            c->super.iret = get_class_wndproc(win, TRUE);
             break;
 
         default:
@@ -913,7 +909,6 @@ struct qemu_SetClassLongPtrW
     uint64_t hwnd;
     uint64_t offset;
     uint64_t newval;
-    uint64_t reverse_wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -925,7 +920,6 @@ WINUSERAPI ULONG_PTR WINAPI SetClassLongPtrW(HWND hwnd, INT offset, LONG_PTR new
     call.hwnd = (uint64_t)hwnd;
     call.offset = (uint64_t)offset;
     call.newval = (uint64_t)newval;
-    call.reverse_wrapper = (uint64_t)reverse_classproc_func;
 
     qemu_syscall(&call.super);
 
@@ -948,7 +942,7 @@ static struct classproc_wrapper *find_free_classproc_wrapper(void)
     return NULL;
 }
 
-ULONG_PTR set_class_wndproc(HWND win, BOOL wide, LONG_PTR newval, uint64_t rev_func)
+ULONG_PTR set_class_wndproc(HWND win, BOOL wide, LONG_PTR newval)
 {
     LONG_PTR ret, ret2;
     ATOM atom;
@@ -1000,14 +994,18 @@ ULONG_PTR set_class_wndproc(HWND win, BOOL wide, LONG_PTR newval, uint64_t rev_f
         WINE_ERR("Did not expect to get here.\n");
 
     /* Find / Create a reverse wrapper for the old function. */
-    reverse_wrapper = find_reverse_wrapper((void *)ret);
-    reverse_wrapper->guest_func = rev_func;
+    reverse_wrapper = find_reverse_wndproc_wrapper((void *)ret);
+    reverse_wrapper->guest_func = reverse_classproc_func;
     WINE_TRACE("Returning reverse wrapper %p for host function 0x%lx\n", reverse_wrapper, ret);
     ret = (ULONG_PTR)reverse_wrapper;
 
     wrapper = find_free_classproc_wrapper();
     assert(wrapper);
 
+    /* NOTE: We don't have a way to free the forward wrapper slot because the app didn't
+     * register the class and we will not see the UnregisterClass call if the Wine DLL ever
+     * unregisters its classes. This is acceptable for classes because I don't expect the
+     * builtin classes to be unregistered in practise. */
     WINE_TRACE("Setting new forward wndproc wrapper %p for function 0x%lx.\n",
             wrapper, newval);
     if (wide)
@@ -1033,7 +1031,7 @@ void qemu_SetClassLongPtrW(struct qemu_syscall *call)
     switch (c->offset)
     {
         case GCLP_WNDPROC:
-            c->super.iret = set_class_wndproc(win, TRUE, c->newval, c->reverse_wrapper);
+            c->super.iret = set_class_wndproc(win, TRUE, c->newval);
             break;
 
         default:
@@ -1062,7 +1060,6 @@ WINUSERAPI ULONG_PTR WINAPI SetClassLongPtrA(HWND hwnd, INT offset, LONG_PTR new
     call.hwnd = (uint64_t)hwnd;
     call.offset = (uint64_t)offset;
     call.newval = (uint64_t)newval;
-    call.reverse_wrapper = (uint64_t)reverse_classproc_func;
 
     qemu_syscall(&call.super);
 
@@ -1082,7 +1079,7 @@ void qemu_SetClassLongPtrA(struct qemu_syscall *call)
     switch (c->offset)
     {
         case GCLP_WNDPROC:
-            c->super.iret = set_class_wndproc(win, FALSE, c->newval, c->reverse_wrapper);
+            c->super.iret = set_class_wndproc(win, FALSE, c->newval);
             break;
 
         default:

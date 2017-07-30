@@ -69,6 +69,10 @@ int main(int argc, char *argv[])
     if (wndproc != (ULONG_PTR)my_wndproc2)
         printf("Got class pointer %p, expected %p.\n", (void *)wndproc, my_wndproc2);
 
+    wndproc = GetWindowLongPtrA(window, GWLP_WNDPROC);
+    if (wndproc != (ULONG_PTR)my_wndproc2)
+        printf("Got class pointer %p, expected %p.\n", (void *)wndproc, my_wndproc2);
+
     swapped = TRUE;
     wndproc = SetClassLongPtrA(window, GCLP_WNDPROC, (LONG_PTR)my_wndproc);
     if (wndproc != (ULONG_PTR)my_wndproc2)
@@ -83,10 +87,18 @@ int main(int argc, char *argv[])
     printf("Got Window %p\n", label);
 
     wndproc = GetClassLongPtrW(label, GCLP_WNDPROC);
+    label_wndproc = (WNDPROC)GetWindowLongPtrW(label, GWLP_WNDPROC);
+    if ((WNDPROC)wndproc != label_wndproc)
+        printf("Got two different functions.\n");
+
     label_wndproc = (WNDPROC)SetClassLongPtrW(label, GCLP_WNDPROC, (LONG_PTR)label_wrapper);
     printf("Got static wndproc %p.\n", label_wndproc);
     if ((WNDPROC)wndproc != label_wndproc)
         printf("Got two different functions.\n");
+
+    wndproc = GetClassLongPtrW(label, GCLP_WNDPROC);
+    if ((WNDPROC)wndproc != label_wrapper)
+        printf("Got wrong class function.\n");
 
     /* A simple test call. Should return 1.
      * Yeah, I should use CallWindowProc, but callWindowProc is nasty to implement. */
@@ -97,6 +109,10 @@ int main(int argc, char *argv[])
     label = CreateWindowA("static", "huhu static window!", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
             0, 0, 640, 480, NULL, NULL, NULL, NULL);
     printf("Got Window %p\n", label);
+
+    wndproc = GetWindowLongPtrW(label, GWLP_WNDPROC);
+    if ((WNDPROC)wndproc != label_wrapper)
+        printf("Got wrong window function.\n");
 
     while (ret = GetMessageA(&msg, NULL, 0, 0))
     {

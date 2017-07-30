@@ -536,6 +536,7 @@ enum user32_calls
     CALL_SENDMESSAGEW,
     CALL_SENDNOTIFYMESSAGEA,
     CALL_SENDNOTIFYMESSAGEW,
+    CALL_SET_CALLBACKS,
     CALL_SETACTIVEWINDOW,
     CALL_SETCAPTURE,
     CALL_SETCARETBLINKTIME,
@@ -681,7 +682,11 @@ struct wndproc_call
     uint64_t win, msg, wparam, lparam;
 };
 
-#ifndef QEMU_DLL_GUEST
+#ifdef QEMU_DLL_GUEST
+
+LRESULT CALLBACK reverse_classproc_func(HWND win, UINT msg, WPARAM wp, LPARAM lp, void *data);
+
+#else
 
 extern const struct qemu_ops *qemu_ops;
 
@@ -1353,6 +1358,8 @@ void qemu_WINNLSEnableIME(struct qemu_syscall *call);
 void qemu_WINNLSGetEnableStatus(struct qemu_syscall *call);
 void qemu_WINNLSGetIMEHotkey(struct qemu_syscall *call);
 
+extern uint64_t reverse_classproc_func;
+
 struct classproc_wrapper
 {
     int32_t ldrx4;
@@ -1379,6 +1386,8 @@ struct reverse_classproc_wrapper
 #define REVERSE_CLASSPROC_WRAPPER_COUNT 128
 extern struct reverse_classproc_wrapper
         reverse_classproc_wrappers[REVERSE_CLASSPROC_WRAPPER_COUNT];
+
+struct reverse_classproc_wrapper *find_reverse_wndproc_wrapper(void *host_func);
 
 DWORD user32_tls;
 

@@ -25,10 +25,26 @@
 #include "dll_list.h"
 #include "user32.h"
 
+struct qemu_set_callbacks
+{
+    struct qemu_syscall super;
+    uint64_t rev_wndproc_wrapper;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
+    struct qemu_set_callbacks call;
+
+    switch (reason)
+    {
+        case DLL_PROCESS_ATTACH:
+            call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
+            call.rev_wndproc_wrapper = (uint64_t)reverse_classproc_func;
+            qemu_syscall(&call.super);
+            break;
+    }
     return TRUE;
 }
 
@@ -36,6 +52,14 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
+
+uint64_t reverse_classproc_func;
+
+static void qemu_set_callbacks(struct qemu_syscall *call)
+{
+    struct qemu_set_callbacks *c = (struct qemu_set_callbacks *)call;
+    reverse_classproc_func = c->rev_wndproc_wrapper;
+}
 
 const struct qemu_ops *qemu_ops;
 
@@ -572,6 +596,7 @@ static const syscall_handler dll_functions[] =
     qemu_SendMessageW,
     qemu_SendNotifyMessageA,
     qemu_SendNotifyMessageW,
+    qemu_set_callbacks,
     qemu_SetActiveWindow,
     qemu_SetCapture,
     qemu_SetCaretBlinkTime,
