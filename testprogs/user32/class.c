@@ -35,9 +35,11 @@ int main(int argc, char *argv[])
     WNDCLASSA wc = {0};
     ATOM a;
     MSG msg;
-    HWND window;
+    HWND window, label;
     BOOL ret;
     ULONG_PTR wndproc;
+    WNDPROC wndproc2;
+    LRESULT lresult;
 
     wc.lpfnWndProc = my_wndproc2;
     wc.lpszClassName = "my_test_wc";
@@ -62,6 +64,21 @@ int main(int argc, char *argv[])
     wndproc = GetClassLongPtrA(window, GCLP_WNDPROC);
     if (wndproc != (ULONG_PTR)my_wndproc)
         printf("Got class pointer %p, expected %p.\n", (void *)wndproc, my_wndproc);
+
+    label = CreateWindowA("static", "huhu static window!", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+            0, 0, 640, 480, NULL, NULL, NULL, NULL);
+    printf("Got Window %p\n", label);
+
+    wndproc = GetClassLongPtrA(label, GCLP_WNDPROC);
+    wndproc2 = (WNDPROC)GetClassLongPtrA(label, GCLP_WNDPROC);
+    printf("Got static wndproc %p.\n", wndproc2);
+    if ((WNDPROC)wndproc != wndproc2)
+        printf("Got two different functions.\n");
+
+    /* A simple test call. Should return 1.
+     * Yeah, I should use CallWindowProc, but callWindowProc is nasty to implement. */
+    lresult = wndproc2(label, WM_ERASEBKGND, 0, 0);
+    printf("Called wndproc, got %lx\n", (long unsigned int)lresult);
 
     while (ret = GetMessageA(&msg, NULL, 0, 0))
     {

@@ -62,6 +62,7 @@ static const syscall_handler dll_functions[] =
     qemu_BroadcastSystemMessageExW,
     qemu_BroadcastSystemMessageW,
     qemu_CalcChildScroll,
+    qemu_call_wndproc,
     qemu_CallMsgFilterA,
     qemu_CallMsgFilterW,
     qemu_CallNextHookEx,
@@ -750,6 +751,41 @@ void init_classproc(struct classproc_wrapper *wrapper)
     __clear_cache(&wrapper->ldrx4, &wrapper->br + 1);
 }
 
+/* This array cannot be grown dynamically because we pass pointers to it to the
+ * application. The number we need should be limited by the amount of classes
+ * registered by Wine's DLLs. */
+struct reverse_classproc_wrapper
+        reverse_classproc_wrappers[REVERSE_CLASSPROC_WRAPPER_COUNT];
+
+void init_reverse_classproc(struct reverse_classproc_wrapper *wrapper)
+{
+    /* This is a bit more complicated than the arm counterpart because we do not
+     * have a spare argument in register to put our self pointer in. This means we
+     * have to shuffle push the argument on the stack and do an actual call on top
+     * of it, and then clean up the stack on return.
+     *
+     * The code is generated from this C code:
+     * LRESULT WINAPI wndproc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+     * {
+     *     LRESULT (* WINAPI wndproc2)(HWND wnd, UINT msg, WPARAM wp, LPARAM lp, void *extra);
+     *     wndproc2 = *(void **)((ULONG_PTR)wndproc + 0x28);
+     *     return wndproc2(wnd, msg, wp, lp, wndproc);
+     * }
+     **/
+    static const char wrapper_code[] =
+    {
+        0x48, 0x83, 0xec, 0x38,                     /* sub    $0x38,%rsp        - Reserve stack space   */
+        0x48, 0x8d, 0x05, 0xf5, 0xff, 0xff, 0xff,   /* lea    -0xb(%rip),%rax   - Get self ptr          */
+        0x48, 0x89, 0x44, 0x24, 0x20,               /* mov    %rax,0x20(%rsp)   - push self ptr         */
+        0xff, 0x15, 0x0a, 0x00, 0x00, 0x00,         /* callq  *0xa(%rip)        - Call guest func       */
+        0x48, 0x83, 0xc4, 0x38,                     /* add    $0x38,%rsp        - Clean up stack        */
+        0xc3,                                       /* retq                     - return                */
+    };
+
+    memset(wrapper->code, 0xcc, sizeof(wrapper->code));
+    memcpy(wrapper->code, wrapper_code, sizeof(wrapper_code));
+}
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     unsigned int i;
@@ -773,6 +809,9 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
 
     for (i = 0; i < class_wrapper_count; ++i)
         init_classproc(&class_wrappers[i]);
+
+    for (i = 0; i < REVERSE_CLASSPROC_WRAPPER_COUNT; ++i)
+        init_reverse_classproc(&reverse_classproc_wrappers[i]);
 
     user32_tls = TlsAlloc();
     if (user32_tls == TLS_OUT_OF_INDEXES)

@@ -26,6 +26,7 @@ enum user32_calls
     CALL_BROADCASTSYSTEMMESSAGEEXW,
     CALL_BROADCASTSYSTEMMESSAGEW,
     CALL_CALCCHILDSCROLL,
+    CALL_CALL_WNDPROC,
     CALL_CALLMSGFILTERA,
     CALL_CALLMSGFILTERW,
     CALL_CALLNEXTHOOKEX,
@@ -705,6 +706,7 @@ void qemu_BroadcastSystemMessageExA(struct qemu_syscall *call);
 void qemu_BroadcastSystemMessageExW(struct qemu_syscall *call);
 void qemu_BroadcastSystemMessageW(struct qemu_syscall *call);
 void qemu_CalcChildScroll(struct qemu_syscall *call);
+void qemu_call_wndproc(struct qemu_syscall *call);
 void qemu_CallMsgFilterA(struct qemu_syscall *call);
 void qemu_CallMsgFilterW(struct qemu_syscall *call);
 void qemu_CallNextHookEx(struct qemu_syscall *call);
@@ -1366,6 +1368,17 @@ struct classproc_wrapper
 extern struct classproc_wrapper *class_wrappers;
 extern unsigned int class_wrapper_count;
 extern uint64_t guest_wndproc_wrapper;
+
+struct reverse_classproc_wrapper
+{
+    char code[0x20];
+    uint64_t guest_func;
+    void *host_func;
+};
+
+#define REVERSE_CLASSPROC_WRAPPER_COUNT 128
+extern struct reverse_classproc_wrapper
+        reverse_classproc_wrappers[REVERSE_CLASSPROC_WRAPPER_COUNT];
 
 DWORD user32_tls;
 
