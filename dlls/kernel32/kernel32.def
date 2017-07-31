@@ -19,6 +19,9 @@ EXPORTS
   ApplicationRecoveryInProgress
   AreFileApisANSI
   AssignProcessToJobObject
+  BackupRead
+  BackupSeek
+  BackupWrite
   BaseFlushAppcompatCache
   BeginUpdateResourceA
   BeginUpdateResourceW
@@ -105,6 +108,7 @@ EXPORTS
   CreateSocketHandle
   CreateSymbolicLinkA
   CreateSymbolicLinkW
+  CreateTapePartition
   CreateThread
   CreateThreadpool
   CreateThreadpoolCleanupGroup
@@ -164,6 +168,7 @@ EXPORTS
   EnumSystemLocalesW
   EnumUILanguagesA
   EnumUILanguagesW
+  EraseTape
   EscapeCommFunction
   ExitProcess
   ExitThread
@@ -359,6 +364,9 @@ EXPORTS
   GetSystemWindowsDirectoryW
   GetSystemWow64DirectoryA
   GetSystemWow64DirectoryW
+  GetTapeParameters
+  GetTapePosition
+  GetTapeStatus
   GetTempFileNameA
   GetTempFileNameW
   GetTempPathA
@@ -559,6 +567,7 @@ EXPORTS
   PowerClearRequest
   PowerCreateRequest
   PowerSetRequest
+  PrepareTape
   ProcessIdToSessionId
   PulseEvent
   PurgeComm
@@ -651,6 +660,8 @@ EXPORTS
   SetStdHandle
   SetSystemFileCacheSize
   SetSystemPowerState
+  SetTapeParameters
+  SetTapePosition
   SetThreadAffinityMask
   SetThreadContext
   SetThreadErrorMode
@@ -742,5 +753,6 @@ EXPORTS
   WriteProfileSectionW
   WriteProfileStringA
   WriteProfileStringW
+  WriteTapemark
   WTSGetActiveConsoleSessionId
   ZombifyActCtx

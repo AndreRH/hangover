@@ -20,6 +20,9 @@ enum kernel32_calls
     CALL_APPLICATIONRECOVERYINPROGRESS,
     CALL_AREFILEAPISANSI,
     CALL_ASSIGNPROCESSTOJOBOBJECT,
+    CALL_BACKUPREAD,
+    CALL_BACKUPSEEK,
+    CALL_BACKUPWRITE,
     CALL_BASEFLUSHAPPCOMPATCACHE,
     CALL_BEGINUPDATERESOURCEA,
     CALL_BEGINUPDATERESOURCEW,
@@ -106,6 +109,7 @@ enum kernel32_calls
     CALL_CREATESOCKETHANDLE,
     CALL_CREATESYMBOLICLINKA,
     CALL_CREATESYMBOLICLINKW,
+    CALL_CREATETAPEPARTITION,
     CALL_CREATETHREAD,
     CALL_CREATETHREADPOOL,
     CALL_CREATETHREADPOOLCLEANUPGROUP,
@@ -161,6 +165,7 @@ enum kernel32_calls
     CALL_ENUMSYSTEMLOCALESW,
     CALL_ENUMUILANGUAGESA,
     CALL_ENUMUILANGUAGESW,
+    CALL_ERASETAPE,
     CALL_ESCAPECOMMFUNCTION,
     CALL_EXITPROCESS,
     CALL_EXITTHREAD,
@@ -356,6 +361,9 @@ enum kernel32_calls
     CALL_GETSYSTEMWINDOWSDIRECTORYW,
     CALL_GETSYSTEMWOW64DIRECTORYA,
     CALL_GETSYSTEMWOW64DIRECTORYW,
+    CALL_GETTAPEPARAMETERS,
+    CALL_GETTAPEPOSITION,
+    CALL_GETTAPESTATUS,
     CALL_GETTEMPFILENAMEA,
     CALL_GETTEMPFILENAMEW,
     CALL_GETTEMPPATHA,
@@ -553,6 +561,7 @@ enum kernel32_calls
     CALL_POWERCLEARREQUEST,
     CALL_POWERCREATEREQUEST,
     CALL_POWERSETREQUEST,
+    CALL_PREPARETAPE,
     CALL_PROCESSIDTOSESSIONID,
     CALL_PULSEEVENT,
     CALL_PURGECOMM,
@@ -641,6 +650,8 @@ enum kernel32_calls
     CALL_SETSTDHANDLE,
     CALL_SETSYSTEMFILECACHESIZE,
     CALL_SETSYSTEMPOWERSTATE,
+    CALL_SETTAPEPARAMETERS,
+    CALL_SETTAPEPOSITION,
     CALL_SETTHREADAFFINITYMASK,
     CALL_SETTHREADCONTEXT,
     CALL_SETTHREADERRORMODE,
@@ -732,6 +743,7 @@ enum kernel32_calls
     CALL_WRITEPROFILESECTIONW,
     CALL_WRITEPROFILESTRINGA,
     CALL_WRITEPROFILESTRINGW,
+    CALL_WRITETAPEMARK,
     CALL_WTSGETACTIVECONSOLESESSIONID,
     CALL_ZOMBIFYACTCTX,
 };
@@ -756,6 +768,9 @@ void qemu_ApplicationRecoveryFinished(struct qemu_syscall *call);
 void qemu_ApplicationRecoveryInProgress(struct qemu_syscall *call);
 void qemu_AreFileApisANSI(struct qemu_syscall *call);
 void qemu_AssignProcessToJobObject(struct qemu_syscall *call);
+void qemu_BackupRead(struct qemu_syscall *call);
+void qemu_BackupSeek(struct qemu_syscall *call);
+void qemu_BackupWrite(struct qemu_syscall *call);
 void qemu_BaseFlushAppcompatCache(struct qemu_syscall *call);
 void qemu_BeginUpdateResourceA(struct qemu_syscall *call);
 void qemu_BeginUpdateResourceW(struct qemu_syscall *call);
@@ -842,6 +857,7 @@ void qemu_CreateSemaphoreW(struct qemu_syscall *call);
 void qemu_CreateSocketHandle(struct qemu_syscall *call);
 void qemu_CreateSymbolicLinkA(struct qemu_syscall *call);
 void qemu_CreateSymbolicLinkW(struct qemu_syscall *call);
+void qemu_CreateTapePartition(struct qemu_syscall *call);
 void qemu_CreateThread(struct qemu_syscall *call);
 void qemu_CreateThreadpool(struct qemu_syscall *call);
 void qemu_CreateThreadpoolCleanupGroup(struct qemu_syscall *call);
@@ -897,6 +913,7 @@ void qemu_EnumSystemLocalesEx(struct qemu_syscall *call);
 void qemu_EnumSystemLocalesW(struct qemu_syscall *call);
 void qemu_EnumUILanguagesA(struct qemu_syscall *call);
 void qemu_EnumUILanguagesW(struct qemu_syscall *call);
+void qemu_EraseTape(struct qemu_syscall *call);
 void qemu_EscapeCommFunction(struct qemu_syscall *call);
 void qemu_ExitProcess(struct qemu_syscall *call);
 void qemu_ExitThread(struct qemu_syscall *call);
@@ -1094,6 +1111,9 @@ void qemu_GetSystemWindowsDirectoryA(struct qemu_syscall *call);
 void qemu_GetSystemWindowsDirectoryW(struct qemu_syscall *call);
 void qemu_GetSystemWow64DirectoryA(struct qemu_syscall *call);
 void qemu_GetSystemWow64DirectoryW(struct qemu_syscall *call);
+void qemu_GetTapeParameters(struct qemu_syscall *call);
+void qemu_GetTapePosition(struct qemu_syscall *call);
+void qemu_GetTapeStatus(struct qemu_syscall *call);
 void qemu_GetTempFileNameA(struct qemu_syscall *call);
 void qemu_GetTempFileNameW(struct qemu_syscall *call);
 void qemu_GetTempPathA(struct qemu_syscall *call);
@@ -1291,6 +1311,7 @@ void qemu_PostQueuedCompletionStatus(struct qemu_syscall *call);
 void qemu_PowerClearRequest(struct qemu_syscall *call);
 void qemu_PowerCreateRequest(struct qemu_syscall *call);
 void qemu_PowerSetRequest(struct qemu_syscall *call);
+void qemu_PrepareTape(struct qemu_syscall *call);
 void qemu_ProcessIdToSessionId(struct qemu_syscall *call);
 void qemu_PulseEvent(struct qemu_syscall *call);
 void qemu_PurgeComm(struct qemu_syscall *call);
@@ -1379,6 +1400,8 @@ void qemu_SetSearchPathMode(struct qemu_syscall *call);
 void qemu_SetStdHandle(struct qemu_syscall *call);
 void qemu_SetSystemFileCacheSize(struct qemu_syscall *call);
 void qemu_SetSystemPowerState(struct qemu_syscall *call);
+void qemu_SetTapeParameters(struct qemu_syscall *call);
+void qemu_SetTapePosition(struct qemu_syscall *call);
 void qemu_SetThreadAffinityMask(struct qemu_syscall *call);
 void qemu_SetThreadContext(struct qemu_syscall *call);
 void qemu_SetThreadErrorMode(struct qemu_syscall *call);
@@ -1470,6 +1493,7 @@ void qemu_WriteProfileSectionA(struct qemu_syscall *call);
 void qemu_WriteProfileSectionW(struct qemu_syscall *call);
 void qemu_WriteProfileStringA(struct qemu_syscall *call);
 void qemu_WriteProfileStringW(struct qemu_syscall *call);
+void qemu_WriteTapemark(struct qemu_syscall *call);
 void qemu_WTSGetActiveConsoleSessionId(struct qemu_syscall *call);
 void qemu_ZombifyActCtx(struct qemu_syscall *call);
 
