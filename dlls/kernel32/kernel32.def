@@ -10,6 +10,8 @@ EXPORTS
   _lopen
   _lread
   _lwrite
+  ActivateActCtx
+  AddRefActCtx
   AllocateUserPhysicalPages
   ApplicationRecoveryFinished
   ApplicationRecoveryInProgress
@@ -53,6 +55,8 @@ EXPORTS
   CopyFileExA
   CopyFileExW
   CopyFileW
+  CreateActCtxA
+  CreateActCtxW
   CreateDirectoryA
   CreateDirectoryExA
   CreateDirectoryExW
@@ -105,6 +109,7 @@ EXPORTS
   CreateWaitableTimerExA
   CreateWaitableTimerExW
   CreateWaitableTimerW
+  DeactivateActCtx
   DebugActiveProcess
   DebugActiveProcessStop
   DebugBreak
@@ -152,6 +157,9 @@ EXPORTS
   ExitThread
   ExpandEnvironmentStringsA
   ExpandEnvironmentStringsW
+  FindActCtxSectionGuid
+  FindActCtxSectionStringA
+  FindActCtxSectionStringW
   FindClose
   FindFirstFileA
   FindFirstFileExA
@@ -195,6 +203,7 @@ EXPORTS
   GetCPInfo
   GetCPInfoExA
   GetCPInfoExW
+  GetCurrentActCtx
   GetCurrentDirectoryA
   GetCurrentDirectoryW
   GetCurrentProcess
@@ -499,6 +508,7 @@ EXPORTS
   ProcessIdToSessionId
   PulseEvent
   PurgeComm
+  QueryActCtxW
   QueryFullProcessImageNameA
   QueryFullProcessImageNameW
   QueryInformationJobObject
@@ -517,6 +527,7 @@ EXPORTS
   RegisterWaitForSingleObject
   RegisterWaitForSingleObjectEx
   ReinitializeCriticalSection
+  ReleaseActCtx
   ReleaseMutex
   ReleaseSemaphore
   RemoveDirectoryA
@@ -662,3 +673,4 @@ EXPORTS
   WriteFileGather
   WriteProcessMemory
   WTSGetActiveConsoleSessionId
+  ZombifyActCtx
