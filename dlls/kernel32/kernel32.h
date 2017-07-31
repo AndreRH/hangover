@@ -163,10 +163,14 @@ enum kernel32_calls
     CALL_FINDATOMA,
     CALL_FINDATOMW,
     CALL_FINDCLOSE,
+    CALL_FINDCLOSECHANGENOTIFICATION,
+    CALL_FINDFIRSTCHANGENOTIFICATIONA,
+    CALL_FINDFIRSTCHANGENOTIFICATIONW,
     CALL_FINDFIRSTFILEA,
     CALL_FINDFIRSTFILEEXA,
     CALL_FINDFIRSTFILEEXW,
     CALL_FINDFIRSTFILEW,
+    CALL_FINDNEXTCHANGENOTIFICATION,
     CALL_FINDNEXTFILEA,
     CALL_FINDNEXTFILEW,
     CALL_FINDRESOURCEA,
@@ -526,6 +530,7 @@ enum kernel32_calls
     CALL_QUERYPERFORMANCEFREQUENCY,
     CALL_QUEUEUSERAPC,
     CALL_QUEUEUSERWORKITEM,
+    CALL_READDIRECTORYCHANGESW,
     CALL_READFILE,
     CALL_READFILEEX,
     CALL_READFILESCATTER,
@@ -844,10 +849,14 @@ void qemu_FindActCtxSectionStringW(struct qemu_syscall *call);
 void qemu_FindAtomA(struct qemu_syscall *call);
 void qemu_FindAtomW(struct qemu_syscall *call);
 void qemu_FindClose(struct qemu_syscall *call);
+void qemu_FindCloseChangeNotification(struct qemu_syscall *call);
+void qemu_FindFirstChangeNotificationA(struct qemu_syscall *call);
+void qemu_FindFirstChangeNotificationW(struct qemu_syscall *call);
 void qemu_FindFirstFileA(struct qemu_syscall *call);
 void qemu_FindFirstFileExA(struct qemu_syscall *call);
 void qemu_FindFirstFileExW(struct qemu_syscall *call);
 void qemu_FindFirstFileW(struct qemu_syscall *call);
+void qemu_FindNextChangeNotification(struct qemu_syscall *call);
 void qemu_FindNextFileA(struct qemu_syscall *call);
 void qemu_FindNextFileW(struct qemu_syscall *call);
 void qemu_FindResourceA(struct qemu_syscall *call);
@@ -1209,6 +1218,7 @@ void qemu_QueryPerformanceCounter(struct qemu_syscall *call);
 void qemu_QueryPerformanceFrequency(struct qemu_syscall *call);
 void qemu_QueueUserAPC(struct qemu_syscall *call);
 void qemu_QueueUserWorkItem(struct qemu_syscall *call);
+void qemu_ReadDirectoryChangesW(struct qemu_syscall *call);
 void qemu_ReadFile(struct qemu_syscall *call);
 void qemu_ReadFileEx(struct qemu_syscall *call);
 void qemu_ReadFileScatter(struct qemu_syscall *call);

@@ -166,10 +166,14 @@ EXPORTS
   FindAtomA
   FindAtomW
   FindClose
+  FindCloseChangeNotification
+  FindFirstChangeNotificationA
+  FindFirstChangeNotificationW
   FindFirstFileA
   FindFirstFileExA
   FindFirstFileExW
   FindFirstFileW
+  FindNextChangeNotification
   FindNextFileA
   FindNextFileW
   FindResourceA
@@ -532,6 +536,7 @@ EXPORTS
   QueryPerformanceFrequency
   QueueUserAPC
   QueueUserWorkItem
+  ReadDirectoryChangesW
   ReadFile
   ReadFileEx
   ReadFileScatter
