@@ -42,6 +42,7 @@ EXPORTS
   ClearCommBreak
   ClearCommError
   CloseHandle
+  CloseProfileUserMapping
   CmdBatNotification
   CommConfigDialogA
   CommConfigDialogW
@@ -301,6 +302,16 @@ EXPORTS
   GetOverlappedResult
   GetPhysicallyInstalledSystemMemory
   GetPriorityClass
+  GetPrivateProfileIntA
+  GetPrivateProfileIntW
+  GetPrivateProfileSectionA
+  GetPrivateProfileSectionNamesA
+  GetPrivateProfileSectionNamesW
+  GetPrivateProfileSectionW
+  GetPrivateProfileStringA
+  GetPrivateProfileStringW
+  GetPrivateProfileStructA
+  GetPrivateProfileStructW
   GetProcAddress
   GetProcessAffinityMask
   GetProcessDEPPolicy
@@ -315,6 +326,12 @@ EXPORTS
   GetProcessShutdownParameters
   GetProcessVersion
   GetProcessWorkingSetSize
+  GetProfileIntA
+  GetProfileIntW
+  GetProfileSectionA
+  GetProfileSectionW
+  GetProfileStringA
+  GetProfileStringW
   GetQueuedCompletionStatus
   GetShortPathNameA
   GetShortPathNameW
@@ -528,6 +545,7 @@ EXPORTS
   OpenMutexA
   OpenMutexW
   OpenProcess
+  OpenProfileUserMapping
   OpenSemaphoreA
   OpenSemaphoreW
   OpenThread
@@ -713,6 +731,16 @@ EXPORTS
   WriteFile
   WriteFileEx
   WriteFileGather
+  WritePrivateProfileSectionA
+  WritePrivateProfileSectionW
+  WritePrivateProfileStringA
+  WritePrivateProfileStringW
+  WritePrivateProfileStructA
+  WritePrivateProfileStructW
   WriteProcessMemory
+  WriteProfileSectionA
+  WriteProfileSectionW
+  WriteProfileStringA
+  WriteProfileStringW
   WTSGetActiveConsoleSessionId
   ZombifyActCtx

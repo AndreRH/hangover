@@ -43,6 +43,7 @@ enum kernel32_calls
     CALL_CLEARCOMMBREAK,
     CALL_CLEARCOMMERROR,
     CALL_CLOSEHANDLE,
+    CALL_CLOSEPROFILEUSERMAPPING,
     CALL_CMDBATNOTIFICATION,
     CALL_COMMCONFIGDIALOGA,
     CALL_COMMCONFIGDIALOGW,
@@ -298,6 +299,16 @@ enum kernel32_calls
     CALL_GETOVERLAPPEDRESULT,
     CALL_GETPHYSICALLYINSTALLEDSYSTEMMEMORY,
     CALL_GETPRIORITYCLASS,
+    CALL_GETPRIVATEPROFILEINTA,
+    CALL_GETPRIVATEPROFILEINTW,
+    CALL_GETPRIVATEPROFILESECTIONA,
+    CALL_GETPRIVATEPROFILESECTIONNAMESA,
+    CALL_GETPRIVATEPROFILESECTIONNAMESW,
+    CALL_GETPRIVATEPROFILESECTIONW,
+    CALL_GETPRIVATEPROFILESTRINGA,
+    CALL_GETPRIVATEPROFILESTRINGW,
+    CALL_GETPRIVATEPROFILESTRUCTA,
+    CALL_GETPRIVATEPROFILESTRUCTW,
     CALL_GETPROCADDRESS,
     CALL_GETPROCESSAFFINITYMASK,
     CALL_GETPROCESSDEPPOLICY,
@@ -312,6 +323,12 @@ enum kernel32_calls
     CALL_GETPROCESSSHUTDOWNPARAMETERS,
     CALL_GETPROCESSVERSION,
     CALL_GETPROCESSWORKINGSETSIZE,
+    CALL_GETPROFILEINTA,
+    CALL_GETPROFILEINTW,
+    CALL_GETPROFILESECTIONA,
+    CALL_GETPROFILESECTIONW,
+    CALL_GETPROFILESTRINGA,
+    CALL_GETPROFILESTRINGW,
     CALL_GETQUEUEDCOMPLETIONSTATUS,
     CALL_GETSHORTPATHNAMEA,
     CALL_GETSHORTPATHNAMEW,
@@ -522,6 +539,7 @@ enum kernel32_calls
     CALL_OPENMUTEXA,
     CALL_OPENMUTEXW,
     CALL_OPENPROCESS,
+    CALL_OPENPROFILEUSERMAPPING,
     CALL_OPENSEMAPHOREA,
     CALL_OPENSEMAPHOREW,
     CALL_OPENTHREAD,
@@ -703,7 +721,17 @@ enum kernel32_calls
     CALL_WRITEFILE,
     CALL_WRITEFILEEX,
     CALL_WRITEFILEGATHER,
+    CALL_WRITEPRIVATEPROFILESECTIONA,
+    CALL_WRITEPRIVATEPROFILESECTIONW,
+    CALL_WRITEPRIVATEPROFILESTRINGA,
+    CALL_WRITEPRIVATEPROFILESTRINGW,
+    CALL_WRITEPRIVATEPROFILESTRUCTA,
+    CALL_WRITEPRIVATEPROFILESTRUCTW,
     CALL_WRITEPROCESSMEMORY,
+    CALL_WRITEPROFILESECTIONA,
+    CALL_WRITEPROFILESECTIONW,
+    CALL_WRITEPROFILESTRINGA,
+    CALL_WRITEPROFILESTRINGW,
     CALL_WTSGETACTIVECONSOLESESSIONID,
     CALL_ZOMBIFYACTCTX,
 };
@@ -751,6 +779,7 @@ void qemu_CheckRemoteDebuggerPresent(struct qemu_syscall *call);
 void qemu_ClearCommBreak(struct qemu_syscall *call);
 void qemu_ClearCommError(struct qemu_syscall *call);
 void qemu_CloseHandle(struct qemu_syscall *call);
+void qemu_CloseProfileUserMapping(struct qemu_syscall *call);
 void qemu_CmdBatNotification(struct qemu_syscall *call);
 void qemu_CommConfigDialogA(struct qemu_syscall *call);
 void qemu_CommConfigDialogW(struct qemu_syscall *call);
@@ -1008,6 +1037,16 @@ void qemu_GetOEMCP(struct qemu_syscall *call);
 void qemu_GetOverlappedResult(struct qemu_syscall *call);
 void qemu_GetPhysicallyInstalledSystemMemory(struct qemu_syscall *call);
 void qemu_GetPriorityClass(struct qemu_syscall *call);
+void qemu_GetPrivateProfileIntA(struct qemu_syscall *call);
+void qemu_GetPrivateProfileIntW(struct qemu_syscall *call);
+void qemu_GetPrivateProfileSectionA(struct qemu_syscall *call);
+void qemu_GetPrivateProfileSectionNamesA(struct qemu_syscall *call);
+void qemu_GetPrivateProfileSectionNamesW(struct qemu_syscall *call);
+void qemu_GetPrivateProfileSectionW(struct qemu_syscall *call);
+void qemu_GetPrivateProfileStringA(struct qemu_syscall *call);
+void qemu_GetPrivateProfileStringW(struct qemu_syscall *call);
+void qemu_GetPrivateProfileStructA(struct qemu_syscall *call);
+void qemu_GetPrivateProfileStructW(struct qemu_syscall *call);
 void qemu_GetProcAddress(struct qemu_syscall *call);
 void qemu_GetProcessAffinityMask(struct qemu_syscall *call);
 void qemu_GetProcessDEPPolicy(struct qemu_syscall *call);
@@ -1022,6 +1061,12 @@ void qemu_GetProcessPriorityBoost(struct qemu_syscall *call);
 void qemu_GetProcessShutdownParameters(struct qemu_syscall *call);
 void qemu_GetProcessVersion(struct qemu_syscall *call);
 void qemu_GetProcessWorkingSetSize(struct qemu_syscall *call);
+void qemu_GetProfileIntA(struct qemu_syscall *call);
+void qemu_GetProfileIntW(struct qemu_syscall *call);
+void qemu_GetProfileSectionA(struct qemu_syscall *call);
+void qemu_GetProfileSectionW(struct qemu_syscall *call);
+void qemu_GetProfileStringA(struct qemu_syscall *call);
+void qemu_GetProfileStringW(struct qemu_syscall *call);
 void qemu_GetQueuedCompletionStatus(struct qemu_syscall *call);
 void qemu_GetShortPathNameA(struct qemu_syscall *call);
 void qemu_GetShortPathNameW(struct qemu_syscall *call);
@@ -1232,6 +1277,7 @@ void qemu_OpenJobObjectW(struct qemu_syscall *call);
 void qemu_OpenMutexA(struct qemu_syscall *call);
 void qemu_OpenMutexW(struct qemu_syscall *call);
 void qemu_OpenProcess(struct qemu_syscall *call);
+void qemu_OpenProfileUserMapping(struct qemu_syscall *call);
 void qemu_OpenSemaphoreA(struct qemu_syscall *call);
 void qemu_OpenSemaphoreW(struct qemu_syscall *call);
 void qemu_OpenThread(struct qemu_syscall *call);
@@ -1413,7 +1459,17 @@ void qemu_Wow64RevertWow64FsRedirection(struct qemu_syscall *call);
 void qemu_WriteFile(struct qemu_syscall *call);
 void qemu_WriteFileEx(struct qemu_syscall *call);
 void qemu_WriteFileGather(struct qemu_syscall *call);
+void qemu_WritePrivateProfileSectionA(struct qemu_syscall *call);
+void qemu_WritePrivateProfileSectionW(struct qemu_syscall *call);
+void qemu_WritePrivateProfileStringA(struct qemu_syscall *call);
+void qemu_WritePrivateProfileStringW(struct qemu_syscall *call);
+void qemu_WritePrivateProfileStructA(struct qemu_syscall *call);
+void qemu_WritePrivateProfileStructW(struct qemu_syscall *call);
 void qemu_WriteProcessMemory(struct qemu_syscall *call);
+void qemu_WriteProfileSectionA(struct qemu_syscall *call);
+void qemu_WriteProfileSectionW(struct qemu_syscall *call);
+void qemu_WriteProfileStringA(struct qemu_syscall *call);
+void qemu_WriteProfileStringW(struct qemu_syscall *call);
 void qemu_WTSGetActiveConsoleSessionId(struct qemu_syscall *call);
 void qemu_ZombifyActCtx(struct qemu_syscall *call);
 
