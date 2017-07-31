@@ -273,6 +273,8 @@ enum kernel32_calls
     CALL_GETERRORMODE,
     CALL_GETEXITCODEPROCESS,
     CALL_GETEXITCODETHREAD,
+    CALL_GETEXPANDEDNAMEA,
+    CALL_GETEXPANDEDNAMEW,
     CALL_GETFILEATTRIBUTESA,
     CALL_GETFILEATTRIBUTESEXA,
     CALL_GETFILEATTRIBUTESEXW,
@@ -555,6 +557,15 @@ enum kernel32_calls
     CALL_LSTRCPYW,
     CALL_LSTRLENA,
     CALL_LSTRLENW,
+    CALL_LZCLOSE,
+    CALL_LZCOPY,
+    CALL_LZDONE,
+    CALL_LZINIT,
+    CALL_LZOPENFILEA,
+    CALL_LZOPENFILEW,
+    CALL_LZREAD,
+    CALL_LZSEEK,
+    CALL_LZSTART,
     CALL_MAKECRITICALSECTIONGLOBAL,
     CALL_MAPVIEWOFFILE,
     CALL_MAPVIEWOFFILEEX,
@@ -1076,6 +1087,8 @@ void qemu_GetEnvironmentVariableW(struct qemu_syscall *call);
 void qemu_GetErrorMode(struct qemu_syscall *call);
 void qemu_GetExitCodeProcess(struct qemu_syscall *call);
 void qemu_GetExitCodeThread(struct qemu_syscall *call);
+void qemu_GetExpandedNameA(struct qemu_syscall *call);
+void qemu_GetExpandedNameW(struct qemu_syscall *call);
 void qemu_GetFileAttributesA(struct qemu_syscall *call);
 void qemu_GetFileAttributesExA(struct qemu_syscall *call);
 void qemu_GetFileAttributesExW(struct qemu_syscall *call);
@@ -1359,6 +1372,15 @@ void qemu_lstrcpynW(struct qemu_syscall *call);
 void qemu_lstrcpyW(struct qemu_syscall *call);
 void qemu_lstrlenA(struct qemu_syscall *call);
 void qemu_lstrlenW(struct qemu_syscall *call);
+void qemu_LZClose(struct qemu_syscall *call);
+void qemu_LZCopy(struct qemu_syscall *call);
+void qemu_LZDone(struct qemu_syscall *call);
+void qemu_LZInit(struct qemu_syscall *call);
+void qemu_LZOpenFileA(struct qemu_syscall *call);
+void qemu_LZOpenFileW(struct qemu_syscall *call);
+void qemu_LZRead(struct qemu_syscall *call);
+void qemu_LZSeek(struct qemu_syscall *call);
+void qemu_LZStart(struct qemu_syscall *call);
 void qemu_MakeCriticalSectionGlobal(struct qemu_syscall *call);
 void qemu_MapViewOfFile(struct qemu_syscall *call);
 void qemu_MapViewOfFileEx(struct qemu_syscall *call);

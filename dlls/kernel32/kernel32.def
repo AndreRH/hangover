@@ -276,6 +276,8 @@ EXPORTS
   GetErrorMode
   GetExitCodeProcess
   GetExitCodeThread
+  GetExpandedNameA
+  GetExpandedNameW
   GetFileAttributesA
   GetFileAttributesExA
   GetFileAttributesExW
@@ -560,6 +562,15 @@ EXPORTS
   lstrcpyW
   lstrlenA
   lstrlenW
+  LZClose
+  LZCopy
+  LZDone
+  LZInit
+  LZOpenFileA
+  LZOpenFileW
+  LZRead
+  LZSeek
+  LZStart
   MakeCriticalSectionGlobal
   MapViewOfFile
   MapViewOfFileEx
