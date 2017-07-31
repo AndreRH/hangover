@@ -49,6 +49,7 @@ EXPORTS
   CmdBatNotification
   CommConfigDialogA
   CommConfigDialogW
+  CompareFileTime
   CompareStringA
   CompareStringEx
   CompareStringOrdinal
@@ -148,6 +149,7 @@ EXPORTS
   DisconnectNamedPipe
   DnsHostnameToComputerNameA
   DnsHostnameToComputerNameW
+  DosDateTimeToFileTime
   DuplicateHandle
   EncodePointer=ntdll.RtlEncodePointer
   EndUpdateResourceA
@@ -179,6 +181,9 @@ EXPORTS
   ExitThread
   ExpandEnvironmentStringsA
   ExpandEnvironmentStringsW
+  FileTimeToDosDateTime
+  FileTimeToLocalFileTime
+  FileTimeToSystemTime
   FindActCtxSectionGuid
   FindActCtxSectionStringA
   FindActCtxSectionStringW
@@ -232,6 +237,9 @@ EXPORTS
   GetAtomNameW
   GetBinaryTypeA
   GetBinaryTypeW
+  GetCalendarInfoA
+  GetCalendarInfoEx
+  GetCalendarInfoW
   GetCommandLineA
   GetCommandLineW
   GetCommConfig
@@ -258,6 +266,7 @@ EXPORTS
   GetCurrentThreadId
   GetDateFormatA
   GetDateFormatW
+  GetDaylightFlag
   GetDefaultCommConfigA
   GetDefaultCommConfigW
   GetDevicePowerState
@@ -269,6 +278,7 @@ EXPORTS
   GetDllDirectoryW
   GetDriveTypeA
   GetDriveTypeW
+  GetDynamicTimeZoneInformation
   GetEnvironmentStringsA=qemu_GetEnvironmentStringsA
   GetEnvironmentStringsW
   GetEnvironmentVariableA
@@ -353,6 +363,7 @@ EXPORTS
   GetProcessIoCounters
   GetProcessPriorityBoost
   GetProcessShutdownParameters
+  GetProcessTimes
   GetProcessVersion
   GetProcessWorkingSetSize
   GetProfileIntA
@@ -383,7 +394,11 @@ EXPORTS
   GetSystemInfo
   GetSystemPowerStatus
   GetSystemPreferredUILanguages
+  GetSystemTime
+  GetSystemTimeAdjustment
   GetSystemTimeAsFileTime
+  GetSystemTimePreciseAsFileTime
+  GetSystemTimes
   GetSystemWindowsDirectoryA
   GetSystemWindowsDirectoryW
   GetSystemWow64DirectoryA
@@ -410,6 +425,8 @@ EXPORTS
   GetTickCount
   GetTimeFormatA
   GetTimeFormatW
+  GetTimeZoneInformation
+  GetTimeZoneInformationForYear
   GetUserDefaultLangID
   GetUserDefaultLCID
   GetUserDefaultLocaleName
@@ -539,6 +556,7 @@ EXPORTS
   LocalAlloc
   LocalCompact
   LocaleNameToLCID
+  LocalFileTimeToFileTime
   LocalFlags
   LocalFree
   LocalHandle
@@ -631,6 +649,8 @@ EXPORTS
   QueryMemoryResourceNotification
   QueryPerformanceCounter
   QueryPerformanceFrequency
+  QueryThreadCycleTime
+  QueryUnbiasedInterruptTime
   QueueUserAPC
   QueueUserWorkItem
   ReadDirectoryChangesW
@@ -661,6 +681,8 @@ EXPORTS
   RtlVirtualUnwind=ntdll.RtlVirtualUnwind
   SearchPathA
   SearchPathW
+  SetCalendarInfoA
+  SetCalendarInfoW
   SetCommBreak
   SetCommConfig
   SetCommMask
@@ -701,6 +723,7 @@ EXPORTS
   SetLastError
   SetLocaleInfoA
   SetLocaleInfoW
+  SetLocalTime
   SetMailslotInfo
   SetNamedPipeHandleState
   SetPriorityClass
@@ -713,6 +736,8 @@ EXPORTS
   SetStdHandle
   SetSystemFileCacheSize
   SetSystemPowerState
+  SetSystemTime
+  SetSystemTimeAdjustment
   SetTapeParameters
   SetTapePosition
   SetThreadAffinityMask
@@ -730,6 +755,7 @@ EXPORTS
   SetThreadPriorityBoost
   SetThreadStackGuarantee
   SetThreadUILanguage
+  SetTimeZoneInformation
   SetUnhandledExceptionFilter
   SetupComm
   SetUserGeoID
@@ -748,6 +774,8 @@ EXPORTS
   SuspendThread
   SwitchToFiber
   SwitchToThread
+  SystemTimeToFileTime
+  SystemTimeToTzSpecificLocalTime
   TerminateJobObject
   TerminateProcess
   TerminateThread
@@ -761,6 +789,7 @@ EXPORTS
   TransactNamedPipe
   TransmitCommChar
   TrySubmitThreadpoolCallback
+  TzSpecificLocalTimeToSystemTime
   UnhandledExceptionFilter
   UninitializeCriticalSection
   UnlockFile
