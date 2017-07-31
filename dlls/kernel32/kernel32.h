@@ -53,6 +53,9 @@ enum kernel32_calls
     CALL_CONNECTNAMEDPIPE,
     CALL_CONTINUEDEBUGEVENT,
     CALL_CONVERTDEFAULTLOCALE,
+    CALL_CONVERTFIBERTOTHREAD,
+    CALL_CONVERTTHREADTOFIBER,
+    CALL_CONVERTTHREADTOFIBEREX,
     CALL_CONVERTTOGLOBALHANDLE,
     CALL_COPYFILEA,
     CALL_COPYFILEEXA,
@@ -68,6 +71,8 @@ enum kernel32_calls
     CALL_CREATEEVENTEXA,
     CALL_CREATEEVENTEXW,
     CALL_CREATEEVENTW,
+    CALL_CREATEFIBER,
+    CALL_CREATEFIBEREX,
     CALL_CREATEFILE2,
     CALL_CREATEFILEA,
     CALL_CREATEFILEMAPPINGA,
@@ -120,6 +125,7 @@ enum kernel32_calls
     CALL_DEBUGSETPROCESSKILLONEXIT,
     CALL_DELAYLOADFAILUREHOOK,
     CALL_DELETEATOM,
+    CALL_DELETEFIBER,
     CALL_DELETEFILEA,
     CALL_DELETEFILEW,
     CALL_DELETEPROCTHREADATTRIBUTELIST,
@@ -179,6 +185,10 @@ enum kernel32_calls
     CALL_FINDRESOURCEEXA,
     CALL_FINDRESOURCEEXW,
     CALL_FINDRESOURCEW,
+    CALL_FLSALLOC,
+    CALL_FLSFREE,
+    CALL_FLSGETVALUE,
+    CALL_FLSSETVALUE,
     CALL_FLUSHFILEBUFFERS,
     CALL_FLUSHINSTRUCTIONCACHE,
     CALL_FLUSHPROCESSWRITEBUFFERS,
@@ -420,6 +430,7 @@ enum kernel32_calls
     CALL_ISPROCESSINJOB,
     CALL_ISPROCESSORFEATUREPRESENT,
     CALL_ISSYSTEMRESUMEAUTOMATIC,
+    CALL_ISTHREADAFIBER,
     CALL_ISVALIDCODEPAGE,
     CALL_ISVALIDLANGUAGEGROUP,
     CALL_ISVALIDLOCALE,
@@ -639,6 +650,7 @@ enum kernel32_calls
     CALL_SLEEPCONDITIONVARIABLESRW,
     CALL_SLEEPEX,
     CALL_SUSPENDTHREAD,
+    CALL_SWITCHTOFIBER,
     CALL_SWITCHTOTHREAD,
     CALL_TERMINATEJOBOBJECT,
     CALL_TERMINATEPROCESS,
@@ -749,6 +761,9 @@ void qemu_CompareStringW(struct qemu_syscall *call);
 void qemu_ConnectNamedPipe(struct qemu_syscall *call);
 void qemu_ContinueDebugEvent(struct qemu_syscall *call);
 void qemu_ConvertDefaultLocale(struct qemu_syscall *call);
+void qemu_ConvertFiberToThread(struct qemu_syscall *call);
+void qemu_ConvertThreadToFiber(struct qemu_syscall *call);
+void qemu_ConvertThreadToFiberEx(struct qemu_syscall *call);
 void qemu_ConvertToGlobalHandle(struct qemu_syscall *call);
 void qemu_CopyFileA(struct qemu_syscall *call);
 void qemu_CopyFileExA(struct qemu_syscall *call);
@@ -764,6 +779,8 @@ void qemu_CreateEventA(struct qemu_syscall *call);
 void qemu_CreateEventExA(struct qemu_syscall *call);
 void qemu_CreateEventExW(struct qemu_syscall *call);
 void qemu_CreateEventW(struct qemu_syscall *call);
+void qemu_CreateFiber(struct qemu_syscall *call);
+void qemu_CreateFiberEx(struct qemu_syscall *call);
 void qemu_CreateFile2(struct qemu_syscall *call);
 void qemu_CreateFileA(struct qemu_syscall *call);
 void qemu_CreateFileMappingA(struct qemu_syscall *call);
@@ -816,6 +833,7 @@ void qemu_DebugBreakProcess(struct qemu_syscall *call);
 void qemu_DebugSetProcessKillOnExit(struct qemu_syscall *call);
 void qemu_DelayLoadFailureHook(struct qemu_syscall *call);
 void qemu_DeleteAtom(struct qemu_syscall *call);
+void qemu_DeleteFiber(struct qemu_syscall *call);
 void qemu_DeleteFileA(struct qemu_syscall *call);
 void qemu_DeleteFileW(struct qemu_syscall *call);
 void qemu_DeleteProcThreadAttributeList(struct qemu_syscall *call);
@@ -875,6 +893,10 @@ void qemu_FindResourceA(struct qemu_syscall *call);
 void qemu_FindResourceExA(struct qemu_syscall *call);
 void qemu_FindResourceExW(struct qemu_syscall *call);
 void qemu_FindResourceW(struct qemu_syscall *call);
+void qemu_FlsAlloc(struct qemu_syscall *call);
+void qemu_FlsFree(struct qemu_syscall *call);
+void qemu_FlsGetValue(struct qemu_syscall *call);
+void qemu_FlsSetValue(struct qemu_syscall *call);
 void qemu_FlushFileBuffers(struct qemu_syscall *call);
 void qemu_FlushInstructionCache(struct qemu_syscall *call);
 void qemu_FlushProcessWriteBuffers(struct qemu_syscall *call);
@@ -1118,6 +1140,7 @@ void qemu_IsNormalizedString(struct qemu_syscall *call);
 void qemu_IsProcessInJob(struct qemu_syscall *call);
 void qemu_IsProcessorFeaturePresent(struct qemu_syscall *call);
 void qemu_IsSystemResumeAutomatic(struct qemu_syscall *call);
+void qemu_IsThreadAFiber(struct qemu_syscall *call);
 void qemu_IsValidCodePage(struct qemu_syscall *call);
 void qemu_IsValidLanguageGroup(struct qemu_syscall *call);
 void qemu_IsValidLocale(struct qemu_syscall *call);
@@ -1337,6 +1360,7 @@ void qemu_SleepConditionVariableCS(struct qemu_syscall *call);
 void qemu_SleepConditionVariableSRW(struct qemu_syscall *call);
 void qemu_SleepEx(struct qemu_syscall *call);
 void qemu_SuspendThread(struct qemu_syscall *call);
+void qemu_SwitchToFiber(struct qemu_syscall *call);
 void qemu_SwitchToThread(struct qemu_syscall *call);
 void qemu_TerminateJobObject(struct qemu_syscall *call);
 void qemu_TerminateProcess(struct qemu_syscall *call);

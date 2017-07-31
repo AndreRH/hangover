@@ -52,6 +52,9 @@ EXPORTS
   ConnectNamedPipe
   ContinueDebugEvent
   ConvertDefaultLocale
+  ConvertFiberToThread
+  ConvertThreadToFiber
+  ConvertThreadToFiberEx
   ConvertToGlobalHandle
   CopyFileA
   CopyFileExA
@@ -67,6 +70,8 @@ EXPORTS
   CreateEventExA
   CreateEventExW
   CreateEventW
+  CreateFiber
+  CreateFiberEx
   CreateFile2
   CreateFileA
   CreateFileMappingA
@@ -121,6 +126,7 @@ EXPORTS
   DelayLoadFailureHook
   DeleteAtom
   DeleteCriticalSection=ntdll.RtlDeleteCriticalSection
+  DeleteFiber
   DeleteFileA
   DeleteFileW
   DeleteProcThreadAttributeList
@@ -182,6 +188,10 @@ EXPORTS
   FindResourceExA
   FindResourceExW
   FindResourceW
+  FlsAlloc
+  FlsFree
+  FlsGetValue
+  FlsSetValue
   FlushFileBuffers
   FlushInstructionCache
   FlushProcessWriteBuffers
@@ -424,6 +434,7 @@ EXPORTS
   IsProcessInJob
   IsProcessorFeaturePresent
   IsSystemResumeAutomatic
+  IsThreadAFiber
   IsValidCodePage
   IsValidLanguageGroup
   IsValidLocale
@@ -649,6 +660,7 @@ EXPORTS
   SleepConditionVariableSRW
   SleepEx
   SuspendThread
+  SwitchToFiber
   SwitchToThread
   TerminateJobObject
   TerminateProcess
