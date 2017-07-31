@@ -13,16 +13,21 @@ EXPORTS
   ActivateActCtx
   AddAtomA
   AddAtomW
+  AddConsoleAliasA
+  AddConsoleAliasW
   AddRefActCtx
   AllocateUserPhysicalPages
+  AllocConsole
   ApplicationRecoveryFinished
   ApplicationRecoveryInProgress
   AreFileApisANSI
   AssignProcessToJobObject
+  AttachConsole
   BackupRead
   BackupSeek
   BackupWrite
   BaseFlushAppcompatCache
+  Beep
   BeginUpdateResourceA
   BeginUpdateResourceW
   BindIoCompletionCallback
@@ -44,6 +49,7 @@ EXPORTS
   CheckRemoteDebuggerPresent
   ClearCommBreak
   ClearCommError
+  CloseConsoleHandle
   CloseHandle
   CloseProfileUserMapping
   CmdBatNotification
@@ -67,6 +73,7 @@ EXPORTS
   CopyFileW
   CreateActCtxA
   CreateActCtxW
+  CreateConsoleScreenBuffer
   CreateDirectoryA
   CreateDirectoryExA
   CreateDirectoryExW
@@ -150,6 +157,7 @@ EXPORTS
   DnsHostnameToComputerNameA
   DnsHostnameToComputerNameW
   DosDateTimeToFileTime
+  DuplicateConsoleHandle
   DuplicateHandle
   EncodePointer=ntdll.RtlEncodePointer
   EndUpdateResourceA
@@ -181,9 +189,14 @@ EXPORTS
   ExitThread
   ExpandEnvironmentStringsA
   ExpandEnvironmentStringsW
+  ExpungeConsoleCommandHistoryA
+  ExpungeConsoleCommandHistoryW
   FileTimeToDosDateTime
   FileTimeToLocalFileTime
   FileTimeToSystemTime
+  FillConsoleOutputAttribute
+  FillConsoleOutputCharacterA
+  FillConsoleOutputCharacterW
   FindActCtxSectionGuid
   FindActCtxSectionStringA
   FindActCtxSectionStringW
@@ -216,6 +229,7 @@ EXPORTS
   FlsFree
   FlsGetValue
   FlsSetValue
+  FlushConsoleInputBuffer
   FlushFileBuffers
   FlushInstructionCache
   FlushProcessWriteBuffers
@@ -224,12 +238,14 @@ EXPORTS
   FoldStringW
   FormatMessageA
   FormatMessageW
+  FreeConsole
   FreeEnvironmentStringsA
   FreeEnvironmentStringsW
   FreeLibrary
   FreeLibraryAndExitThread
   FreeResource
   FreeUserPhysicalPages
+  GenerateConsoleCtrlEvent
   GetACP
   GetActiveProcessorCount
   GetActiveProcessorGroupCount
@@ -254,10 +270,38 @@ EXPORTS
   GetComputerNameExA
   GetComputerNameExW
   GetComputerNameW
+  GetConsoleAliasesLengthA
+  GetConsoleAliasesLengthW
+  GetConsoleAliasExesLengthA
+  GetConsoleAliasExesLengthW
+  GetConsoleAliasW
+  GetConsoleCommandHistoryA
+  GetConsoleCommandHistoryLengthA
+  GetConsoleCommandHistoryLengthW
+  GetConsoleCommandHistoryW
+  GetConsoleCP
+  GetConsoleCursorInfo
+  GetConsoleDisplayMode
+  GetConsoleFontInfo
+  GetConsoleFontSize
+  GetConsoleInputExeNameA
+  GetConsoleInputExeNameW
+  GetConsoleInputWaitHandle
+  GetConsoleKeyboardLayoutNameA
+  GetConsoleKeyboardLayoutNameW
+  GetConsoleMode
+  GetConsoleOutputCP
+  GetConsoleProcessList
+  GetConsoleScreenBufferInfo
+  GetConsoleScreenBufferInfoEx
+  GetConsoleTitleA
+  GetConsoleTitleW
+  GetConsoleWindow
   GetCPInfo
   GetCPInfoExA
   GetCPInfoExW
   GetCurrentActCtx
+  GetCurrentConsoleFont
   GetCurrentDirectoryA
   GetCurrentDirectoryW
   GetCurrentProcess
@@ -311,6 +355,7 @@ EXPORTS
   GetHandleContext
   GetHandleInformation
   GetLargePageMinimum
+  GetLargestConsoleWindowSize
   GetLastError
   GetLocaleInfoA
   GetLocaleInfoEx
@@ -337,6 +382,9 @@ EXPORTS
   GetNumaHighestNodeNumber
   GetNumaNodeProcessorMask
   GetNumaProcessorNode
+  GetNumberOfConsoleFonts
+  GetNumberOfConsoleInputEvents
+  GetNumberOfConsoleMouseButtons
   GetOEMCP
   GetOverlappedResult
   GetPhysicallyInstalledSystemMemory
@@ -607,6 +655,7 @@ EXPORTS
   NeedCurrentDirectoryForExePathA
   NeedCurrentDirectoryForExePathW
   NormalizeString
+  OpenConsoleW
   OpenEventA
   OpenEventW
   OpenFile
@@ -627,6 +676,8 @@ EXPORTS
   OpenWaitableTimerW
   OutputDebugStringA
   OutputDebugStringW
+  PeekConsoleInputA
+  PeekConsoleInputW
   PeekNamedPipe
   PostQueuedCompletionStatus
   PowerClearRequest
@@ -653,6 +704,15 @@ EXPORTS
   QueryUnbiasedInterruptTime
   QueueUserAPC
   QueueUserWorkItem
+  ReadConsoleA
+  ReadConsoleInputA
+  ReadConsoleInputW
+  ReadConsoleOutputA
+  ReadConsoleOutputAttribute
+  ReadConsoleOutputCharacterA
+  ReadConsoleOutputCharacterW
+  ReadConsoleOutputW
+  ReadConsoleW
   ReadDirectoryChangesW
   ReadFile
   ReadFileEx
@@ -679,6 +739,8 @@ EXPORTS
   RtlCaptureContext=ntdll.RtlCaptureContext
   RtlLookupFunctionEntry=ntdll.RtlLookupFunctionEntry
   RtlVirtualUnwind=ntdll.RtlVirtualUnwind
+  ScrollConsoleScreenBufferA
+  ScrollConsoleScreenBufferW
   SearchPathA
   SearchPathW
   SetCalendarInfoA
@@ -692,8 +754,27 @@ EXPORTS
   SetComputerNameExA
   SetComputerNameExW
   SetComputerNameW
+  SetConsoleActiveScreenBuffer
+  SetConsoleCP
   SetConsoleCtrlHandler
+  SetConsoleCursorInfo
+  SetConsoleCursorPosition
+  SetConsoleDisplayMode
+  SetConsoleFont
+  SetConsoleIcon
+  SetConsoleInputExeNameA
+  SetConsoleInputExeNameW
+  SetConsoleKeyShortcuts
+  SetConsoleMode
+  SetConsoleOutputCP
+  SetConsoleScreenBufferInfoEx
+  SetConsoleScreenBufferSize
+  SetConsoleTextAttribute
+  SetConsoleTitleA
+  SetConsoleTitleW
+  SetConsoleWindowInfo
   SetCPGlobal
+  SetCurrentConsoleFontEx
   SetCurrentDirectoryA
   SetCurrentDirectoryW
   SetDefaultCommConfigA
@@ -801,6 +882,7 @@ EXPORTS
   UpdateProcThreadAttribute
   UpdateResourceA
   UpdateResourceW
+  VerifyConsoleIoHandle
   VerifyVersionInfoA
   VerifyVersionInfoW
   VerLanguageNameA
@@ -833,6 +915,15 @@ EXPORTS
   Wow64DisableWow64FsRedirection
   Wow64EnableWow64FsRedirection
   Wow64RevertWow64FsRedirection
+  WriteConsoleA
+  WriteConsoleInputA
+  WriteConsoleInputW
+  WriteConsoleOutputA
+  WriteConsoleOutputAttribute
+  WriteConsoleOutputCharacterA
+  WriteConsoleOutputCharacterW
+  WriteConsoleOutputW
+  WriteConsoleW
   WriteFile
   WriteFileEx
   WriteFileGather

@@ -14,16 +14,21 @@ enum kernel32_calls
     CALL_ACTIVATEACTCTX,
     CALL_ADDATOMA,
     CALL_ADDATOMW,
+    CALL_ADDCONSOLEALIASA,
+    CALL_ADDCONSOLEALIASW,
     CALL_ADDREFACTCTX,
     CALL_ALLOCATEUSERPHYSICALPAGES,
+    CALL_ALLOCCONSOLE,
     CALL_APPLICATIONRECOVERYFINISHED,
     CALL_APPLICATIONRECOVERYINPROGRESS,
     CALL_AREFILEAPISANSI,
     CALL_ASSIGNPROCESSTOJOBOBJECT,
+    CALL_ATTACHCONSOLE,
     CALL_BACKUPREAD,
     CALL_BACKUPSEEK,
     CALL_BACKUPWRITE,
     CALL_BASEFLUSHAPPCOMPATCACHE,
+    CALL_BEEP,
     CALL_BEGINUPDATERESOURCEA,
     CALL_BEGINUPDATERESOURCEW,
     CALL_BINDIOCOMPLETIONCALLBACK,
@@ -45,6 +50,7 @@ enum kernel32_calls
     CALL_CHECKREMOTEDEBUGGERPRESENT,
     CALL_CLEARCOMMBREAK,
     CALL_CLEARCOMMERROR,
+    CALL_CLOSECONSOLEHANDLE,
     CALL_CLOSEHANDLE,
     CALL_CLOSEPROFILEUSERMAPPING,
     CALL_CMDBATNOTIFICATION,
@@ -68,6 +74,7 @@ enum kernel32_calls
     CALL_COPYFILEW,
     CALL_CREATEACTCTXA,
     CALL_CREATEACTCTXW,
+    CALL_CREATECONSOLESCREENBUFFER,
     CALL_CREATEDIRECTORYA,
     CALL_CREATEDIRECTORYEXA,
     CALL_CREATEDIRECTORYEXW,
@@ -149,6 +156,7 @@ enum kernel32_calls
     CALL_DNSHOSTNAMETOCOMPUTERNAMEA,
     CALL_DNSHOSTNAMETOCOMPUTERNAMEW,
     CALL_DOSDATETIMETOFILETIME,
+    CALL_DUPLICATECONSOLEHANDLE,
     CALL_DUPLICATEHANDLE,
     CALL_ENDUPDATERESOURCEA,
     CALL_ENDUPDATERESOURCEW,
@@ -178,9 +186,14 @@ enum kernel32_calls
     CALL_EXITTHREAD,
     CALL_EXPANDENVIRONMENTSTRINGSA,
     CALL_EXPANDENVIRONMENTSTRINGSW,
+    CALL_EXPUNGECONSOLECOMMANDHISTORYA,
+    CALL_EXPUNGECONSOLECOMMANDHISTORYW,
     CALL_FILETIMETODOSDATETIME,
     CALL_FILETIMETOLOCALFILETIME,
     CALL_FILETIMETOSYSTEMTIME,
+    CALL_FILLCONSOLEOUTPUTATTRIBUTE,
+    CALL_FILLCONSOLEOUTPUTCHARACTERA,
+    CALL_FILLCONSOLEOUTPUTCHARACTERW,
     CALL_FINDACTCTXSECTIONGUID,
     CALL_FINDACTCTXSECTIONSTRINGA,
     CALL_FINDACTCTXSECTIONSTRINGW,
@@ -213,6 +226,7 @@ enum kernel32_calls
     CALL_FLSFREE,
     CALL_FLSGETVALUE,
     CALL_FLSSETVALUE,
+    CALL_FLUSHCONSOLEINPUTBUFFER,
     CALL_FLUSHFILEBUFFERS,
     CALL_FLUSHINSTRUCTIONCACHE,
     CALL_FLUSHPROCESSWRITEBUFFERS,
@@ -221,12 +235,14 @@ enum kernel32_calls
     CALL_FOLDSTRINGW,
     CALL_FORMATMESSAGEA,
     CALL_FORMATMESSAGEW,
+    CALL_FREECONSOLE,
     CALL_FREEENVIRONMENTSTRINGSA,
     CALL_FREEENVIRONMENTSTRINGSW,
     CALL_FREELIBRARY,
     CALL_FREELIBRARYANDEXITTHREAD,
     CALL_FREERESOURCE,
     CALL_FREEUSERPHYSICALPAGES,
+    CALL_GENERATECONSOLECTRLEVENT,
     CALL_GETACP,
     CALL_GETACTIVEPROCESSORCOUNT,
     CALL_GETACTIVEPROCESSORGROUPCOUNT,
@@ -251,10 +267,38 @@ enum kernel32_calls
     CALL_GETCOMPUTERNAMEEXA,
     CALL_GETCOMPUTERNAMEEXW,
     CALL_GETCOMPUTERNAMEW,
+    CALL_GETCONSOLEALIASESLENGTHA,
+    CALL_GETCONSOLEALIASESLENGTHW,
+    CALL_GETCONSOLEALIASEXESLENGTHA,
+    CALL_GETCONSOLEALIASEXESLENGTHW,
+    CALL_GETCONSOLEALIASW,
+    CALL_GETCONSOLECOMMANDHISTORYA,
+    CALL_GETCONSOLECOMMANDHISTORYLENGTHA,
+    CALL_GETCONSOLECOMMANDHISTORYLENGTHW,
+    CALL_GETCONSOLECOMMANDHISTORYW,
+    CALL_GETCONSOLECP,
+    CALL_GETCONSOLECURSORINFO,
+    CALL_GETCONSOLEDISPLAYMODE,
+    CALL_GETCONSOLEFONTINFO,
+    CALL_GETCONSOLEFONTSIZE,
+    CALL_GETCONSOLEINPUTEXENAMEA,
+    CALL_GETCONSOLEINPUTEXENAMEW,
+    CALL_GETCONSOLEINPUTWAITHANDLE,
+    CALL_GETCONSOLEKEYBOARDLAYOUTNAMEA,
+    CALL_GETCONSOLEKEYBOARDLAYOUTNAMEW,
+    CALL_GETCONSOLEMODE,
+    CALL_GETCONSOLEOUTPUTCP,
+    CALL_GETCONSOLEPROCESSLIST,
+    CALL_GETCONSOLESCREENBUFFERINFO,
+    CALL_GETCONSOLESCREENBUFFERINFOEX,
+    CALL_GETCONSOLETITLEA,
+    CALL_GETCONSOLETITLEW,
+    CALL_GETCONSOLEWINDOW,
     CALL_GETCPINFO,
     CALL_GETCPINFOEXA,
     CALL_GETCPINFOEXW,
     CALL_GETCURRENTACTCTX,
+    CALL_GETCURRENTCONSOLEFONT,
     CALL_GETCURRENTDIRECTORYA,
     CALL_GETCURRENTDIRECTORYW,
     CALL_GETCURRENTPROCESS,
@@ -308,6 +352,7 @@ enum kernel32_calls
     CALL_GETHANDLECONTEXT,
     CALL_GETHANDLEINFORMATION,
     CALL_GETLARGEPAGEMINIMUM,
+    CALL_GETLARGESTCONSOLEWINDOWSIZE,
     CALL_GETLASTERROR,
     CALL_GETLOCALEINFOA,
     CALL_GETLOCALEINFOEX,
@@ -334,6 +379,9 @@ enum kernel32_calls
     CALL_GETNUMAHIGHESTNODENUMBER,
     CALL_GETNUMANODEPROCESSORMASK,
     CALL_GETNUMAPROCESSORNODE,
+    CALL_GETNUMBEROFCONSOLEFONTS,
+    CALL_GETNUMBEROFCONSOLEINPUTEVENTS,
+    CALL_GETNUMBEROFCONSOLEMOUSEBUTTONS,
     CALL_GETOEMCP,
     CALL_GETOVERLAPPEDRESULT,
     CALL_GETPHYSICALLYINSTALLEDSYSTEMMEMORY,
@@ -601,6 +649,7 @@ enum kernel32_calls
     CALL_NEEDCURRENTDIRECTORYFOREXEPATHA,
     CALL_NEEDCURRENTDIRECTORYFOREXEPATHW,
     CALL_NORMALIZESTRING,
+    CALL_OPENCONSOLEW,
     CALL_OPENEVENTA,
     CALL_OPENEVENTW,
     CALL_OPENFILE,
@@ -621,6 +670,8 @@ enum kernel32_calls
     CALL_OPENWAITABLETIMERW,
     CALL_OUTPUTDEBUGSTRINGA,
     CALL_OUTPUTDEBUGSTRINGW,
+    CALL_PEEKCONSOLEINPUTA,
+    CALL_PEEKCONSOLEINPUTW,
     CALL_PEEKNAMEDPIPE,
     CALL_POSTQUEUEDCOMPLETIONSTATUS,
     CALL_POWERCLEARREQUEST,
@@ -647,6 +698,15 @@ enum kernel32_calls
     CALL_QUERYUNBIASEDINTERRUPTTIME,
     CALL_QUEUEUSERAPC,
     CALL_QUEUEUSERWORKITEM,
+    CALL_READCONSOLEA,
+    CALL_READCONSOLEINPUTA,
+    CALL_READCONSOLEINPUTW,
+    CALL_READCONSOLEOUTPUTA,
+    CALL_READCONSOLEOUTPUTATTRIBUTE,
+    CALL_READCONSOLEOUTPUTCHARACTERA,
+    CALL_READCONSOLEOUTPUTCHARACTERW,
+    CALL_READCONSOLEOUTPUTW,
+    CALL_READCONSOLEW,
     CALL_READDIRECTORYCHANGESW,
     CALL_READFILE,
     CALL_READFILEEX,
@@ -669,6 +729,8 @@ enum kernel32_calls
     CALL_RESETEVENT,
     CALL_RESETWRITEWATCH,
     CALL_RESUMETHREAD,
+    CALL_SCROLLCONSOLESCREENBUFFERA,
+    CALL_SCROLLCONSOLESCREENBUFFERW,
     CALL_SEARCHPATHA,
     CALL_SEARCHPATHW,
     CALL_SETCALENDARINFOA,
@@ -682,8 +744,27 @@ enum kernel32_calls
     CALL_SETCOMPUTERNAMEEXA,
     CALL_SETCOMPUTERNAMEEXW,
     CALL_SETCOMPUTERNAMEW,
+    CALL_SETCONSOLEACTIVESCREENBUFFER,
+    CALL_SETCONSOLECP,
     CALL_SETCONSOLECTRLHANDLER,
+    CALL_SETCONSOLECURSORINFO,
+    CALL_SETCONSOLECURSORPOSITION,
+    CALL_SETCONSOLEDISPLAYMODE,
+    CALL_SETCONSOLEFONT,
+    CALL_SETCONSOLEICON,
+    CALL_SETCONSOLEINPUTEXENAMEA,
+    CALL_SETCONSOLEINPUTEXENAMEW,
+    CALL_SETCONSOLEKEYSHORTCUTS,
+    CALL_SETCONSOLEMODE,
+    CALL_SETCONSOLEOUTPUTCP,
+    CALL_SETCONSOLESCREENBUFFERINFOEX,
+    CALL_SETCONSOLESCREENBUFFERSIZE,
+    CALL_SETCONSOLETEXTATTRIBUTE,
+    CALL_SETCONSOLETITLEA,
+    CALL_SETCONSOLETITLEW,
+    CALL_SETCONSOLEWINDOWINFO,
     CALL_SETCPGLOBAL,
+    CALL_SETCURRENTCONSOLEFONTEX,
     CALL_SETCURRENTDIRECTORYA,
     CALL_SETCURRENTDIRECTORYW,
     CALL_SETDEFAULTCOMMCONFIGA,
@@ -791,6 +872,7 @@ enum kernel32_calls
     CALL_UPDATEPROCTHREADATTRIBUTE,
     CALL_UPDATERESOURCEA,
     CALL_UPDATERESOURCEW,
+    CALL_VERIFYCONSOLEIOHANDLE,
     CALL_VERIFYVERSIONINFOA,
     CALL_VERIFYVERSIONINFOW,
     CALL_VERLANGUAGENAMEA,
@@ -823,6 +905,15 @@ enum kernel32_calls
     CALL_WOW64DISABLEWOW64FSREDIRECTION,
     CALL_WOW64ENABLEWOW64FSREDIRECTION,
     CALL_WOW64REVERTWOW64FSREDIRECTION,
+    CALL_WRITECONSOLEA,
+    CALL_WRITECONSOLEINPUTA,
+    CALL_WRITECONSOLEINPUTW,
+    CALL_WRITECONSOLEOUTPUTA,
+    CALL_WRITECONSOLEOUTPUTATTRIBUTE,
+    CALL_WRITECONSOLEOUTPUTCHARACTERA,
+    CALL_WRITECONSOLEOUTPUTCHARACTERW,
+    CALL_WRITECONSOLEOUTPUTW,
+    CALL_WRITECONSOLEW,
     CALL_WRITEFILE,
     CALL_WRITEFILEEX,
     CALL_WRITEFILEGATHER,
@@ -856,16 +947,21 @@ void qemu__lwrite(struct qemu_syscall *call);
 void qemu_ActivateActCtx(struct qemu_syscall *call);
 void qemu_AddAtomA(struct qemu_syscall *call);
 void qemu_AddAtomW(struct qemu_syscall *call);
+void qemu_AddConsoleAliasA(struct qemu_syscall *call);
+void qemu_AddConsoleAliasW(struct qemu_syscall *call);
 void qemu_AddRefActCtx(struct qemu_syscall *call);
 void qemu_AllocateUserPhysicalPages(struct qemu_syscall *call);
+void qemu_AllocConsole(struct qemu_syscall *call);
 void qemu_ApplicationRecoveryFinished(struct qemu_syscall *call);
 void qemu_ApplicationRecoveryInProgress(struct qemu_syscall *call);
 void qemu_AreFileApisANSI(struct qemu_syscall *call);
 void qemu_AssignProcessToJobObject(struct qemu_syscall *call);
+void qemu_AttachConsole(struct qemu_syscall *call);
 void qemu_BackupRead(struct qemu_syscall *call);
 void qemu_BackupSeek(struct qemu_syscall *call);
 void qemu_BackupWrite(struct qemu_syscall *call);
 void qemu_BaseFlushAppcompatCache(struct qemu_syscall *call);
+void qemu_Beep(struct qemu_syscall *call);
 void qemu_BeginUpdateResourceA(struct qemu_syscall *call);
 void qemu_BeginUpdateResourceW(struct qemu_syscall *call);
 void qemu_BindIoCompletionCallback(struct qemu_syscall *call);
@@ -887,6 +983,7 @@ void qemu_CheckNameLegalDOS8Dot3W(struct qemu_syscall *call);
 void qemu_CheckRemoteDebuggerPresent(struct qemu_syscall *call);
 void qemu_ClearCommBreak(struct qemu_syscall *call);
 void qemu_ClearCommError(struct qemu_syscall *call);
+void qemu_CloseConsoleHandle(struct qemu_syscall *call);
 void qemu_CloseHandle(struct qemu_syscall *call);
 void qemu_CloseProfileUserMapping(struct qemu_syscall *call);
 void qemu_CmdBatNotification(struct qemu_syscall *call);
@@ -910,6 +1007,7 @@ void qemu_CopyFileExW(struct qemu_syscall *call);
 void qemu_CopyFileW(struct qemu_syscall *call);
 void qemu_CreateActCtxA(struct qemu_syscall *call);
 void qemu_CreateActCtxW(struct qemu_syscall *call);
+void qemu_CreateConsoleScreenBuffer(struct qemu_syscall *call);
 void qemu_CreateDirectoryA(struct qemu_syscall *call);
 void qemu_CreateDirectoryExA(struct qemu_syscall *call);
 void qemu_CreateDirectoryExW(struct qemu_syscall *call);
@@ -991,6 +1089,7 @@ void qemu_DisconnectNamedPipe(struct qemu_syscall *call);
 void qemu_DnsHostnameToComputerNameA(struct qemu_syscall *call);
 void qemu_DnsHostnameToComputerNameW(struct qemu_syscall *call);
 void qemu_DosDateTimeToFileTime(struct qemu_syscall *call);
+void qemu_DuplicateConsoleHandle(struct qemu_syscall *call);
 void qemu_DuplicateHandle(struct qemu_syscall *call);
 void qemu_EndUpdateResourceA(struct qemu_syscall *call);
 void qemu_EndUpdateResourceW(struct qemu_syscall *call);
@@ -1020,9 +1119,14 @@ void qemu_ExitProcess(struct qemu_syscall *call);
 void qemu_ExitThread(struct qemu_syscall *call);
 void qemu_ExpandEnvironmentStringsA(struct qemu_syscall *call);
 void qemu_ExpandEnvironmentStringsW(struct qemu_syscall *call);
+void qemu_ExpungeConsoleCommandHistoryA(struct qemu_syscall *call);
+void qemu_ExpungeConsoleCommandHistoryW(struct qemu_syscall *call);
 void qemu_FileTimeToDosDateTime(struct qemu_syscall *call);
 void qemu_FileTimeToLocalFileTime(struct qemu_syscall *call);
 void qemu_FileTimeToSystemTime(struct qemu_syscall *call);
+void qemu_FillConsoleOutputAttribute(struct qemu_syscall *call);
+void qemu_FillConsoleOutputCharacterA(struct qemu_syscall *call);
+void qemu_FillConsoleOutputCharacterW(struct qemu_syscall *call);
 void qemu_FindActCtxSectionGuid(struct qemu_syscall *call);
 void qemu_FindActCtxSectionStringA(struct qemu_syscall *call);
 void qemu_FindActCtxSectionStringW(struct qemu_syscall *call);
@@ -1055,6 +1159,7 @@ void qemu_FlsAlloc(struct qemu_syscall *call);
 void qemu_FlsFree(struct qemu_syscall *call);
 void qemu_FlsGetValue(struct qemu_syscall *call);
 void qemu_FlsSetValue(struct qemu_syscall *call);
+void qemu_FlushConsoleInputBuffer(struct qemu_syscall *call);
 void qemu_FlushFileBuffers(struct qemu_syscall *call);
 void qemu_FlushInstructionCache(struct qemu_syscall *call);
 void qemu_FlushProcessWriteBuffers(struct qemu_syscall *call);
@@ -1062,12 +1167,14 @@ void qemu_FlushViewOfFile(struct qemu_syscall *call);
 void qemu_FoldStringA(struct qemu_syscall *call);
 void qemu_FoldStringW(struct qemu_syscall *call);
 void qemu_FormatMessage(struct qemu_syscall *call);
+void qemu_FreeConsole(struct qemu_syscall *call);
 void qemu_FreeEnvironmentStringsA(struct qemu_syscall *call);
 void qemu_FreeEnvironmentStringsW(struct qemu_syscall *call);
 void qemu_FreeLibrary(struct qemu_syscall *call);
 void qemu_FreeLibraryAndExitThread(struct qemu_syscall *call);
 void qemu_FreeResource(struct qemu_syscall *call);
 void qemu_FreeUserPhysicalPages(struct qemu_syscall *call);
+void qemu_GenerateConsoleCtrlEvent(struct qemu_syscall *call);
 void qemu_GetACP(struct qemu_syscall *call);
 void qemu_GetActiveProcessorCount(struct qemu_syscall *call);
 void qemu_GetActiveProcessorGroupCount(struct qemu_syscall *call);
@@ -1094,10 +1201,38 @@ void qemu_GetComputerNameA(struct qemu_syscall *call);
 void qemu_GetComputerNameExA(struct qemu_syscall *call);
 void qemu_GetComputerNameExW(struct qemu_syscall *call);
 void qemu_GetComputerNameW(struct qemu_syscall *call);
+void qemu_GetConsoleAliasesLengthA(struct qemu_syscall *call);
+void qemu_GetConsoleAliasesLengthW(struct qemu_syscall *call);
+void qemu_GetConsoleAliasExesLengthA(struct qemu_syscall *call);
+void qemu_GetConsoleAliasExesLengthW(struct qemu_syscall *call);
+void qemu_GetConsoleAliasW(struct qemu_syscall *call);
+void qemu_GetConsoleCommandHistoryA(struct qemu_syscall *call);
+void qemu_GetConsoleCommandHistoryLengthA(struct qemu_syscall *call);
+void qemu_GetConsoleCommandHistoryLengthW(struct qemu_syscall *call);
+void qemu_GetConsoleCommandHistoryW(struct qemu_syscall *call);
+void qemu_GetConsoleCP(struct qemu_syscall *call);
+void qemu_GetConsoleCursorInfo(struct qemu_syscall *call);
+void qemu_GetConsoleDisplayMode(struct qemu_syscall *call);
+void qemu_GetConsoleFontInfo(struct qemu_syscall *call);
+void qemu_GetConsoleFontSize(struct qemu_syscall *call);
+void qemu_GetConsoleInputExeNameA(struct qemu_syscall *call);
+void qemu_GetConsoleInputExeNameW(struct qemu_syscall *call);
+void qemu_GetConsoleInputWaitHandle(struct qemu_syscall *call);
+void qemu_GetConsoleKeyboardLayoutNameA(struct qemu_syscall *call);
+void qemu_GetConsoleKeyboardLayoutNameW(struct qemu_syscall *call);
+void qemu_GetConsoleMode(struct qemu_syscall *call);
+void qemu_GetConsoleOutputCP(struct qemu_syscall *call);
+void qemu_GetConsoleProcessList(struct qemu_syscall *call);
+void qemu_GetConsoleScreenBufferInfo(struct qemu_syscall *call);
+void qemu_GetConsoleScreenBufferInfoEx(struct qemu_syscall *call);
+void qemu_GetConsoleTitleA(struct qemu_syscall *call);
+void qemu_GetConsoleTitleW(struct qemu_syscall *call);
+void qemu_GetConsoleWindow(struct qemu_syscall *call);
 void qemu_GetCPInfo(struct qemu_syscall *call);
 void qemu_GetCPInfoExA(struct qemu_syscall *call);
 void qemu_GetCPInfoExW(struct qemu_syscall *call);
 void qemu_GetCurrentActCtx(struct qemu_syscall *call);
+void qemu_GetCurrentConsoleFont(struct qemu_syscall *call);
 void qemu_GetCurrentDirectoryA(struct qemu_syscall *call);
 void qemu_GetCurrentDirectoryW(struct qemu_syscall *call);
 void qemu_GetCurrentProcess(struct qemu_syscall *call);
@@ -1151,6 +1286,7 @@ void qemu_GetGeoInfoW(struct qemu_syscall *call);
 void qemu_GetHandleContext(struct qemu_syscall *call);
 void qemu_GetHandleInformation(struct qemu_syscall *call);
 void qemu_GetLargePageMinimum(struct qemu_syscall *call);
+void qemu_GetLargestConsoleWindowSize(struct qemu_syscall *call);
 void qemu_GetLastError(struct qemu_syscall *call);
 void qemu_GetLocaleInfoA(struct qemu_syscall *call);
 void qemu_GetLocaleInfoEx(struct qemu_syscall *call);
@@ -1178,6 +1314,9 @@ void qemu_GetNumaAvailableMemoryNode(struct qemu_syscall *call);
 void qemu_GetNumaHighestNodeNumber(struct qemu_syscall *call);
 void qemu_GetNumaNodeProcessorMask(struct qemu_syscall *call);
 void qemu_GetNumaProcessorNode(struct qemu_syscall *call);
+void qemu_GetNumberOfConsoleFonts(struct qemu_syscall *call);
+void qemu_GetNumberOfConsoleInputEvents(struct qemu_syscall *call);
+void qemu_GetNumberOfConsoleMouseButtons(struct qemu_syscall *call);
 void qemu_GetOEMCP(struct qemu_syscall *call);
 void qemu_GetOverlappedResult(struct qemu_syscall *call);
 void qemu_GetPhysicallyInstalledSystemMemory(struct qemu_syscall *call);
@@ -1445,6 +1584,7 @@ void qemu_MultiByteToWideChar(struct qemu_syscall *call);
 void qemu_NeedCurrentDirectoryForExePathA(struct qemu_syscall *call);
 void qemu_NeedCurrentDirectoryForExePathW(struct qemu_syscall *call);
 void qemu_NormalizeString(struct qemu_syscall *call);
+void qemu_OpenConsoleW(struct qemu_syscall *call);
 void qemu_OpenEventA(struct qemu_syscall *call);
 void qemu_OpenEventW(struct qemu_syscall *call);
 void qemu_OpenFile(struct qemu_syscall *call);
@@ -1465,6 +1605,8 @@ void qemu_OpenWaitableTimerA(struct qemu_syscall *call);
 void qemu_OpenWaitableTimerW(struct qemu_syscall *call);
 void qemu_OutputDebugStringA(struct qemu_syscall *call);
 void qemu_OutputDebugStringW(struct qemu_syscall *call);
+void qemu_PeekConsoleInputA(struct qemu_syscall *call);
+void qemu_PeekConsoleInputW(struct qemu_syscall *call);
 void qemu_PeekNamedPipe(struct qemu_syscall *call);
 void qemu_PostQueuedCompletionStatus(struct qemu_syscall *call);
 void qemu_PowerClearRequest(struct qemu_syscall *call);
@@ -1491,6 +1633,15 @@ void qemu_QueryThreadCycleTime(struct qemu_syscall *call);
 void qemu_QueryUnbiasedInterruptTime(struct qemu_syscall *call);
 void qemu_QueueUserAPC(struct qemu_syscall *call);
 void qemu_QueueUserWorkItem(struct qemu_syscall *call);
+void qemu_ReadConsoleA(struct qemu_syscall *call);
+void qemu_ReadConsoleInputA(struct qemu_syscall *call);
+void qemu_ReadConsoleInputW(struct qemu_syscall *call);
+void qemu_ReadConsoleOutputA(struct qemu_syscall *call);
+void qemu_ReadConsoleOutputAttribute(struct qemu_syscall *call);
+void qemu_ReadConsoleOutputCharacterA(struct qemu_syscall *call);
+void qemu_ReadConsoleOutputCharacterW(struct qemu_syscall *call);
+void qemu_ReadConsoleOutputW(struct qemu_syscall *call);
+void qemu_ReadConsoleW(struct qemu_syscall *call);
 void qemu_ReadDirectoryChangesW(struct qemu_syscall *call);
 void qemu_ReadFile(struct qemu_syscall *call);
 void qemu_ReadFileEx(struct qemu_syscall *call);
@@ -1513,6 +1664,8 @@ void qemu_RequestWakeupLatency(struct qemu_syscall *call);
 void qemu_ResetEvent(struct qemu_syscall *call);
 void qemu_ResetWriteWatch(struct qemu_syscall *call);
 void qemu_ResumeThread(struct qemu_syscall *call);
+void qemu_ScrollConsoleScreenBufferA(struct qemu_syscall *call);
+void qemu_ScrollConsoleScreenBufferW(struct qemu_syscall *call);
 void qemu_SearchPathA(struct qemu_syscall *call);
 void qemu_SearchPathW(struct qemu_syscall *call);
 void qemu_SetCalendarInfoA(struct qemu_syscall *call);
@@ -1526,8 +1679,27 @@ void qemu_SetComputerNameA(struct qemu_syscall *call);
 void qemu_SetComputerNameExA(struct qemu_syscall *call);
 void qemu_SetComputerNameExW(struct qemu_syscall *call);
 void qemu_SetComputerNameW(struct qemu_syscall *call);
+void qemu_SetConsoleActiveScreenBuffer(struct qemu_syscall *call);
+void qemu_SetConsoleCP(struct qemu_syscall *call);
 void qemu_SetConsoleCtrlHandler(struct qemu_syscall *call);
+void qemu_SetConsoleCursorInfo(struct qemu_syscall *call);
+void qemu_SetConsoleCursorPosition(struct qemu_syscall *call);
+void qemu_SetConsoleDisplayMode(struct qemu_syscall *call);
+void qemu_SetConsoleFont(struct qemu_syscall *call);
+void qemu_SetConsoleIcon(struct qemu_syscall *call);
+void qemu_SetConsoleInputExeNameA(struct qemu_syscall *call);
+void qemu_SetConsoleInputExeNameW(struct qemu_syscall *call);
+void qemu_SetConsoleKeyShortcuts(struct qemu_syscall *call);
+void qemu_SetConsoleMode(struct qemu_syscall *call);
+void qemu_SetConsoleOutputCP(struct qemu_syscall *call);
+void qemu_SetConsoleScreenBufferInfoEx(struct qemu_syscall *call);
+void qemu_SetConsoleScreenBufferSize(struct qemu_syscall *call);
+void qemu_SetConsoleTextAttribute(struct qemu_syscall *call);
+void qemu_SetConsoleTitleA(struct qemu_syscall *call);
+void qemu_SetConsoleTitleW(struct qemu_syscall *call);
+void qemu_SetConsoleWindowInfo(struct qemu_syscall *call);
 void qemu_SetCPGlobal(struct qemu_syscall *call);
+void qemu_SetCurrentConsoleFontEx(struct qemu_syscall *call);
 void qemu_SetCurrentDirectoryA(struct qemu_syscall *call);
 void qemu_SetCurrentDirectoryW(struct qemu_syscall *call);
 void qemu_SetDefaultCommConfigA(struct qemu_syscall *call);
@@ -1635,6 +1807,7 @@ void qemu_UnregisterWaitEx(struct qemu_syscall *call);
 void qemu_UpdateProcThreadAttribute(struct qemu_syscall *call);
 void qemu_UpdateResourceA(struct qemu_syscall *call);
 void qemu_UpdateResourceW(struct qemu_syscall *call);
+void qemu_VerifyConsoleIoHandle(struct qemu_syscall *call);
 void qemu_VerifyVersionInfoA(struct qemu_syscall *call);
 void qemu_VerifyVersionInfoW(struct qemu_syscall *call);
 void qemu_VerLanguageNameA(struct qemu_syscall *call);
@@ -1667,6 +1840,15 @@ void qemu_WinExec(struct qemu_syscall *call);
 void qemu_Wow64DisableWow64FsRedirection(struct qemu_syscall *call);
 void qemu_Wow64EnableWow64FsRedirection(struct qemu_syscall *call);
 void qemu_Wow64RevertWow64FsRedirection(struct qemu_syscall *call);
+void qemu_WriteConsoleA(struct qemu_syscall *call);
+void qemu_WriteConsoleInputA(struct qemu_syscall *call);
+void qemu_WriteConsoleInputW(struct qemu_syscall *call);
+void qemu_WriteConsoleOutputA(struct qemu_syscall *call);
+void qemu_WriteConsoleOutputAttribute(struct qemu_syscall *call);
+void qemu_WriteConsoleOutputCharacterA(struct qemu_syscall *call);
+void qemu_WriteConsoleOutputCharacterW(struct qemu_syscall *call);
+void qemu_WriteConsoleOutputW(struct qemu_syscall *call);
+void qemu_WriteConsoleW(struct qemu_syscall *call);
 void qemu_WriteFile(struct qemu_syscall *call);
 void qemu_WriteFileEx(struct qemu_syscall *call);
 void qemu_WriteFileGather(struct qemu_syscall *call);
