@@ -130,6 +130,8 @@ EXPORTS
   DeviceIoControl
   DisableThreadLibraryCalls
   DisconnectNamedPipe
+  DnsHostnameToComputerNameA
+  DnsHostnameToComputerNameW
   DuplicateHandle
   EncodePointer=ntdll.RtlEncodePointer
   EndUpdateResourceA
@@ -211,6 +213,10 @@ EXPORTS
   GetCommTimeouts
   GetCompressedFileSizeA
   GetCompressedFileSizeW
+  GetComputerNameA
+  GetComputerNameExA
+  GetComputerNameExW
+  GetComputerNameW
   GetCPInfo
   GetCPInfoExA
   GetCPInfoExW
@@ -569,6 +575,10 @@ EXPORTS
   SetCommMask
   SetCommState
   SetCommTimeouts
+  SetComputerNameA
+  SetComputerNameExA
+  SetComputerNameExW
+  SetComputerNameW
   SetConsoleCtrlHandler
   SetCPGlobal
   SetCurrentDirectoryA

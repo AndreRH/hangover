@@ -129,6 +129,8 @@ enum kernel32_calls
     CALL_DEVICEIOCONTROL,
     CALL_DISABLETHREADLIBRARYCALLS,
     CALL_DISCONNECTNAMEDPIPE,
+    CALL_DNSHOSTNAMETOCOMPUTERNAMEA,
+    CALL_DNSHOSTNAMETOCOMPUTERNAMEW,
     CALL_DUPLICATEHANDLE,
     CALL_ENDUPDATERESOURCEA,
     CALL_ENDUPDATERESOURCEW,
@@ -208,6 +210,10 @@ enum kernel32_calls
     CALL_GETCOMMTIMEOUTS,
     CALL_GETCOMPRESSEDFILESIZEA,
     CALL_GETCOMPRESSEDFILESIZEW,
+    CALL_GETCOMPUTERNAMEA,
+    CALL_GETCOMPUTERNAMEEXA,
+    CALL_GETCOMPUTERNAMEEXW,
+    CALL_GETCOMPUTERNAMEW,
     CALL_GETCPINFO,
     CALL_GETCPINFOEXA,
     CALL_GETCPINFOEXW,
@@ -559,6 +565,10 @@ enum kernel32_calls
     CALL_SETCOMMMASK,
     CALL_SETCOMMSTATE,
     CALL_SETCOMMTIMEOUTS,
+    CALL_SETCOMPUTERNAMEA,
+    CALL_SETCOMPUTERNAMEEXA,
+    CALL_SETCOMPUTERNAMEEXW,
+    CALL_SETCOMPUTERNAMEW,
     CALL_SETCONSOLECTRLHANDLER,
     CALL_SETCPGLOBAL,
     CALL_SETCURRENTDIRECTORYA,
@@ -815,6 +825,8 @@ void qemu_DeleteTimerQueueTimer(struct qemu_syscall *call);
 void qemu_DeviceIoControl(struct qemu_syscall *call);
 void qemu_DisableThreadLibraryCalls(struct qemu_syscall *call);
 void qemu_DisconnectNamedPipe(struct qemu_syscall *call);
+void qemu_DnsHostnameToComputerNameA(struct qemu_syscall *call);
+void qemu_DnsHostnameToComputerNameW(struct qemu_syscall *call);
 void qemu_DuplicateHandle(struct qemu_syscall *call);
 void qemu_EndUpdateResourceA(struct qemu_syscall *call);
 void qemu_EndUpdateResourceW(struct qemu_syscall *call);
@@ -895,6 +907,10 @@ void qemu_GetCommState(struct qemu_syscall *call);
 void qemu_GetCommTimeouts(struct qemu_syscall *call);
 void qemu_GetCompressedFileSizeA(struct qemu_syscall *call);
 void qemu_GetCompressedFileSizeW(struct qemu_syscall *call);
+void qemu_GetComputerNameA(struct qemu_syscall *call);
+void qemu_GetComputerNameExA(struct qemu_syscall *call);
+void qemu_GetComputerNameExW(struct qemu_syscall *call);
+void qemu_GetComputerNameW(struct qemu_syscall *call);
 void qemu_GetCPInfo(struct qemu_syscall *call);
 void qemu_GetCPInfoExA(struct qemu_syscall *call);
 void qemu_GetCPInfoExW(struct qemu_syscall *call);
@@ -1247,6 +1263,10 @@ void qemu_SetCommConfig(struct qemu_syscall *call);
 void qemu_SetCommMask(struct qemu_syscall *call);
 void qemu_SetCommState(struct qemu_syscall *call);
 void qemu_SetCommTimeouts(struct qemu_syscall *call);
+void qemu_SetComputerNameA(struct qemu_syscall *call);
+void qemu_SetComputerNameExA(struct qemu_syscall *call);
+void qemu_SetComputerNameExW(struct qemu_syscall *call);
+void qemu_SetComputerNameW(struct qemu_syscall *call);
 void qemu_SetConsoleCtrlHandler(struct qemu_syscall *call);
 void qemu_SetCPGlobal(struct qemu_syscall *call);
 void qemu_SetCurrentDirectoryA(struct qemu_syscall *call);
