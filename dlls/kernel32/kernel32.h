@@ -12,6 +12,8 @@ enum kernel32_calls
     CALL__LREAD,
     CALL__LWRITE,
     CALL_ACTIVATEACTCTX,
+    CALL_ADDATOMA,
+    CALL_ADDATOMW,
     CALL_ADDREFACTCTX,
     CALL_ALLOCATEUSERPHYSICALPAGES,
     CALL_APPLICATIONRECOVERYFINISHED,
@@ -117,6 +119,7 @@ enum kernel32_calls
     CALL_DEBUGBREAKPROCESS,
     CALL_DEBUGSETPROCESSKILLONEXIT,
     CALL_DELAYLOADFAILUREHOOK,
+    CALL_DELETEATOM,
     CALL_DELETEFILEA,
     CALL_DELETEFILEW,
     CALL_DELETEPROCTHREADATTRIBUTELIST,
@@ -157,6 +160,8 @@ enum kernel32_calls
     CALL_FINDACTCTXSECTIONGUID,
     CALL_FINDACTCTXSECTIONSTRINGA,
     CALL_FINDACTCTXSECTIONSTRINGW,
+    CALL_FINDATOMA,
+    CALL_FINDATOMW,
     CALL_FINDCLOSE,
     CALL_FINDFIRSTFILEA,
     CALL_FINDFIRSTFILEEXA,
@@ -185,6 +190,8 @@ enum kernel32_calls
     CALL_GETACP,
     CALL_GETACTIVEPROCESSORCOUNT,
     CALL_GETACTIVEPROCESSORGROUPCOUNT,
+    CALL_GETATOMNAMEA,
+    CALL_GETATOMNAMEW,
     CALL_GETBINARYTYPEA,
     CALL_GETBINARYTYPEW,
     CALL_GETCOMMANDLINEA,
@@ -343,11 +350,18 @@ enum kernel32_calls
     CALL_GETWINDOWSDIRECTORYA,
     CALL_GETWINDOWSDIRECTORYW,
     CALL_GETWRITEWATCH,
+    CALL_GLOBALADDATOMA,
+    CALL_GLOBALADDATOMW,
     CALL_GLOBALALLOC,
     CALL_GLOBALCOMPACT,
+    CALL_GLOBALDELETEATOM,
+    CALL_GLOBALFINDATOMA,
+    CALL_GLOBALFINDATOMW,
     CALL_GLOBALFIX,
     CALL_GLOBALFLAGS,
     CALL_GLOBALFREE,
+    CALL_GLOBALGETATOMNAMEA,
+    CALL_GLOBALGETATOMNAMEW,
     CALL_GLOBALHANDLE,
     CALL_GLOBALLOCK,
     CALL_GLOBALMEMORYSTATUS,
@@ -374,6 +388,7 @@ enum kernel32_calls
     CALL_IDNTOASCII,
     CALL_IDNTONAMEPREPUNICODE,
     CALL_IDNTOUNICODE,
+    CALL_INITATOMTABLE,
     CALL_INITIALIZECRITICALSECTION,
     CALL_INITIALIZECRITICALSECTIONANDSPINCOUNT,
     CALL_INITIALIZEPROCTHREADATTRIBUTELIST,
@@ -678,6 +693,8 @@ void qemu__lopen(struct qemu_syscall *call);
 void qemu__lread(struct qemu_syscall *call);
 void qemu__lwrite(struct qemu_syscall *call);
 void qemu_ActivateActCtx(struct qemu_syscall *call);
+void qemu_AddAtomA(struct qemu_syscall *call);
+void qemu_AddAtomW(struct qemu_syscall *call);
 void qemu_AddRefActCtx(struct qemu_syscall *call);
 void qemu_AllocateUserPhysicalPages(struct qemu_syscall *call);
 void qemu_ApplicationRecoveryFinished(struct qemu_syscall *call);
@@ -783,6 +800,7 @@ void qemu_DebugBreak(struct qemu_syscall *call);
 void qemu_DebugBreakProcess(struct qemu_syscall *call);
 void qemu_DebugSetProcessKillOnExit(struct qemu_syscall *call);
 void qemu_DelayLoadFailureHook(struct qemu_syscall *call);
+void qemu_DeleteAtom(struct qemu_syscall *call);
 void qemu_DeleteFileA(struct qemu_syscall *call);
 void qemu_DeleteFileW(struct qemu_syscall *call);
 void qemu_DeleteProcThreadAttributeList(struct qemu_syscall *call);
@@ -823,6 +841,8 @@ void qemu_ExpandEnvironmentStringsW(struct qemu_syscall *call);
 void qemu_FindActCtxSectionGuid(struct qemu_syscall *call);
 void qemu_FindActCtxSectionStringA(struct qemu_syscall *call);
 void qemu_FindActCtxSectionStringW(struct qemu_syscall *call);
+void qemu_FindAtomA(struct qemu_syscall *call);
+void qemu_FindAtomW(struct qemu_syscall *call);
 void qemu_FindClose(struct qemu_syscall *call);
 void qemu_FindFirstFileA(struct qemu_syscall *call);
 void qemu_FindFirstFileExA(struct qemu_syscall *call);
@@ -850,6 +870,8 @@ void qemu_FreeUserPhysicalPages(struct qemu_syscall *call);
 void qemu_GetACP(struct qemu_syscall *call);
 void qemu_GetActiveProcessorCount(struct qemu_syscall *call);
 void qemu_GetActiveProcessorGroupCount(struct qemu_syscall *call);
+void qemu_GetAtomNameA(struct qemu_syscall *call);
+void qemu_GetAtomNameW(struct qemu_syscall *call);
 void qemu_GetBinaryTypeA(struct qemu_syscall *call);
 void qemu_GetBinaryTypeW(struct qemu_syscall *call);
 void qemu_GetCommandLineA(struct qemu_syscall *c);
@@ -1011,11 +1033,18 @@ void qemu_GetVersionExW(struct qemu_syscall *call);
 void qemu_GetWindowsDirectoryA(struct qemu_syscall *call);
 void qemu_GetWindowsDirectoryW(struct qemu_syscall *call);
 void qemu_GetWriteWatch(struct qemu_syscall *call);
+void qemu_GlobalAddAtomA(struct qemu_syscall *call);
+void qemu_GlobalAddAtomW(struct qemu_syscall *call);
 void qemu_GlobalAlloc(struct qemu_syscall *call);
 void qemu_GlobalCompact(struct qemu_syscall *call);
+void qemu_GlobalDeleteAtom(struct qemu_syscall *call);
+void qemu_GlobalFindAtomA(struct qemu_syscall *call);
+void qemu_GlobalFindAtomW(struct qemu_syscall *call);
 void qemu_GlobalFix(struct qemu_syscall *call);
 void qemu_GlobalFlags(struct qemu_syscall *call);
 void qemu_GlobalFree(struct qemu_syscall *call);
+void qemu_GlobalGetAtomNameA(struct qemu_syscall *call);
+void qemu_GlobalGetAtomNameW(struct qemu_syscall *call);
 void qemu_GlobalHandle(struct qemu_syscall *call);
 void qemu_GlobalLock(struct qemu_syscall *call);
 void qemu_GlobalMemoryStatus(struct qemu_syscall *call);
@@ -1042,6 +1071,7 @@ void qemu_HeapWalk(struct qemu_syscall *call);
 void qemu_IdnToAscii(struct qemu_syscall *call);
 void qemu_IdnToNameprepUnicode(struct qemu_syscall *call);
 void qemu_IdnToUnicode(struct qemu_syscall *call);
+void qemu_InitAtomTable(struct qemu_syscall *call);
 void qemu_InitializeCriticalSection(struct qemu_syscall *call);
 void qemu_InitializeCriticalSectionAndSpinCount(struct qemu_syscall *call);
 void qemu_InitializeProcThreadAttributeList(struct qemu_syscall *call);

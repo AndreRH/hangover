@@ -11,6 +11,8 @@ EXPORTS
   _lread
   _lwrite
   ActivateActCtx
+  AddAtomA
+  AddAtomW
   AddRefActCtx
   AllocateUserPhysicalPages
   ApplicationRecoveryFinished
@@ -117,6 +119,7 @@ EXPORTS
   DebugSetProcessKillOnExit
   DecodePointer=ntdll.RtlDecodePointer
   DelayLoadFailureHook
+  DeleteAtom
   DeleteCriticalSection=ntdll.RtlDeleteCriticalSection
   DeleteFileA
   DeleteFileW
@@ -160,6 +163,8 @@ EXPORTS
   FindActCtxSectionGuid
   FindActCtxSectionStringA
   FindActCtxSectionStringW
+  FindAtomA
+  FindAtomW
   FindClose
   FindFirstFileA
   FindFirstFileExA
@@ -188,6 +193,8 @@ EXPORTS
   GetACP
   GetActiveProcessorCount
   GetActiveProcessorGroupCount
+  GetAtomNameA
+  GetAtomNameW
   GetBinaryTypeA
   GetBinaryTypeW
   GetCommandLineA
@@ -346,11 +353,18 @@ EXPORTS
   GetWindowsDirectoryA
   GetWindowsDirectoryW
   GetWriteWatch
+  GlobalAddAtomA
+  GlobalAddAtomW
   GlobalAlloc
   GlobalCompact
+  GlobalDeleteAtom
+  GlobalFindAtomA
+  GlobalFindAtomW
   GlobalFix
   GlobalFlags
   GlobalFree
+  GlobalGetAtomNameA
+  GlobalGetAtomNameW
   GlobalHandle
   GlobalLock
   GlobalMemoryStatus
@@ -377,6 +391,7 @@ EXPORTS
   IdnToAscii
   IdnToNameprepUnicode
   IdnToUnicode
+  InitAtomTable
   InitializeCriticalSection
   InitializeCriticalSectionAndSpinCount
   InitializeCriticalSectionEx
