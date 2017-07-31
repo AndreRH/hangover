@@ -129,6 +129,8 @@ enum kernel32_calls
     CALL_DEBUGBREAK,
     CALL_DEBUGBREAKPROCESS,
     CALL_DEBUGSETPROCESSKILLONEXIT,
+    CALL_DEFINEDOSDEVICEA,
+    CALL_DEFINEDOSDEVICEW,
     CALL_DELAYLOADFAILUREHOOK,
     CALL_DELETEATOM,
     CALL_DELETEFIBER,
@@ -138,6 +140,8 @@ enum kernel32_calls
     CALL_DELETETIMERQUEUE,
     CALL_DELETETIMERQUEUEEX,
     CALL_DELETETIMERQUEUETIMER,
+    CALL_DELETEVOLUMEMOUNTPOINTA,
+    CALL_DELETEVOLUMEMOUNTPOINTW,
     CALL_DEVICEIOCONTROL,
     CALL_DISABLETHREADLIBRARYCALLS,
     CALL_DISCONNECTNAMEDPIPE,
@@ -185,13 +189,21 @@ enum kernel32_calls
     CALL_FINDFIRSTFILEEXA,
     CALL_FINDFIRSTFILEEXW,
     CALL_FINDFIRSTFILEW,
+    CALL_FINDFIRSTVOLUMEA,
+    CALL_FINDFIRSTVOLUMEMOUNTPOINTA,
+    CALL_FINDFIRSTVOLUMEMOUNTPOINTW,
+    CALL_FINDFIRSTVOLUMEW,
     CALL_FINDNEXTCHANGENOTIFICATION,
     CALL_FINDNEXTFILEA,
     CALL_FINDNEXTFILEW,
+    CALL_FINDNEXTVOLUMEA,
+    CALL_FINDNEXTVOLUMEW,
     CALL_FINDRESOURCEA,
     CALL_FINDRESOURCEEXA,
     CALL_FINDRESOURCEEXW,
     CALL_FINDRESOURCEW,
+    CALL_FINDVOLUMECLOSE,
+    CALL_FINDVOLUMEMOUNTPOINTCLOSE,
     CALL_FLSALLOC,
     CALL_FLSFREE,
     CALL_FLSGETVALUE,
@@ -246,8 +258,14 @@ enum kernel32_calls
     CALL_GETDEFAULTCOMMCONFIGA,
     CALL_GETDEFAULTCOMMCONFIGW,
     CALL_GETDEVICEPOWERSTATE,
+    CALL_GETDISKFREESPACEA,
+    CALL_GETDISKFREESPACEEXA,
+    CALL_GETDISKFREESPACEEXW,
+    CALL_GETDISKFREESPACEW,
     CALL_GETDLLDIRECTORYA,
     CALL_GETDLLDIRECTORYW,
+    CALL_GETDRIVETYPEA,
+    CALL_GETDRIVETYPEW,
     CALL_GETENVIRONMENTSTRINGSA,
     CALL_GETENVIRONMENTSTRINGSW,
     CALL_GETENVIRONMENTVARIABLEA,
@@ -283,6 +301,9 @@ enum kernel32_calls
     CALL_GETLOCALEINFOEX,
     CALL_GETLOCALEINFOW,
     CALL_GETLOCALTIME,
+    CALL_GETLOGICALDRIVES,
+    CALL_GETLOGICALDRIVESTRINGSA,
+    CALL_GETLOGICALDRIVESTRINGSW,
     CALL_GETLOGICALPROCESSORINFORMATION,
     CALL_GETLOGICALPROCESSORINFORMATIONEX,
     CALL_GETLONGPATHNAMEA,
@@ -393,6 +414,15 @@ enum kernel32_calls
     CALL_GETVERSION,
     CALL_GETVERSIONEXA,
     CALL_GETVERSIONEXW,
+    CALL_GETVOLUMEINFORMATIONA,
+    CALL_GETVOLUMEINFORMATIONBYHANDLEW,
+    CALL_GETVOLUMEINFORMATIONW,
+    CALL_GETVOLUMENAMEFORVOLUMEMOUNTPOINTA,
+    CALL_GETVOLUMENAMEFORVOLUMEMOUNTPOINTW,
+    CALL_GETVOLUMEPATHNAMEA,
+    CALL_GETVOLUMEPATHNAMESFORVOLUMENAMEA,
+    CALL_GETVOLUMEPATHNAMESFORVOLUMENAMEW,
+    CALL_GETVOLUMEPATHNAMEW,
     CALL_GETWINDOWSDIRECTORYA,
     CALL_GETWINDOWSDIRECTORYW,
     CALL_GETWRITEWATCH,
@@ -576,6 +606,8 @@ enum kernel32_calls
     CALL_PULSEEVENT,
     CALL_PURGECOMM,
     CALL_QUERYACTCTXW,
+    CALL_QUERYDOSDEVICEA,
+    CALL_QUERYDOSDEVICEW,
     CALL_QUERYFULLPROCESSIMAGENAMEA,
     CALL_QUERYFULLPROCESSIMAGENAMEW,
     CALL_QUERYINFORMATIONJOBOBJECT,
@@ -680,6 +712,10 @@ enum kernel32_calls
     CALL_SETUNHANDLEDEXCEPTIONFILTER,
     CALL_SETUPCOMM,
     CALL_SETUSERGEOID,
+    CALL_SETVOLUMELABELA,
+    CALL_SETVOLUMELABELW,
+    CALL_SETVOLUMEMOUNTPOINTA,
+    CALL_SETVOLUMEMOUNTPOINTW,
     CALL_SETWAITABLETIMER,
     CALL_SETWAITABLETIMEREX,
     CALL_SIGNALOBJECTANDWAIT,
@@ -890,6 +926,8 @@ void qemu_DebugActiveProcessStop(struct qemu_syscall *call);
 void qemu_DebugBreak(struct qemu_syscall *call);
 void qemu_DebugBreakProcess(struct qemu_syscall *call);
 void qemu_DebugSetProcessKillOnExit(struct qemu_syscall *call);
+void qemu_DefineDosDeviceA(struct qemu_syscall *call);
+void qemu_DefineDosDeviceW(struct qemu_syscall *call);
 void qemu_DelayLoadFailureHook(struct qemu_syscall *call);
 void qemu_DeleteAtom(struct qemu_syscall *call);
 void qemu_DeleteFiber(struct qemu_syscall *call);
@@ -899,6 +937,8 @@ void qemu_DeleteProcThreadAttributeList(struct qemu_syscall *call);
 void qemu_DeleteTimerQueue(struct qemu_syscall *call);
 void qemu_DeleteTimerQueueEx(struct qemu_syscall *call);
 void qemu_DeleteTimerQueueTimer(struct qemu_syscall *call);
+void qemu_DeleteVolumeMountPointA(struct qemu_syscall *call);
+void qemu_DeleteVolumeMountPointW(struct qemu_syscall *call);
 void qemu_DeviceIoControl(struct qemu_syscall *call);
 void qemu_DisableThreadLibraryCalls(struct qemu_syscall *call);
 void qemu_DisconnectNamedPipe(struct qemu_syscall *call);
@@ -946,13 +986,21 @@ void qemu_FindFirstFileA(struct qemu_syscall *call);
 void qemu_FindFirstFileExA(struct qemu_syscall *call);
 void qemu_FindFirstFileExW(struct qemu_syscall *call);
 void qemu_FindFirstFileW(struct qemu_syscall *call);
+void qemu_FindFirstVolumeA(struct qemu_syscall *call);
+void qemu_FindFirstVolumeMountPointA(struct qemu_syscall *call);
+void qemu_FindFirstVolumeMountPointW(struct qemu_syscall *call);
+void qemu_FindFirstVolumeW(struct qemu_syscall *call);
 void qemu_FindNextChangeNotification(struct qemu_syscall *call);
 void qemu_FindNextFileA(struct qemu_syscall *call);
 void qemu_FindNextFileW(struct qemu_syscall *call);
+void qemu_FindNextVolumeA(struct qemu_syscall *call);
+void qemu_FindNextVolumeW(struct qemu_syscall *call);
 void qemu_FindResourceA(struct qemu_syscall *call);
 void qemu_FindResourceExA(struct qemu_syscall *call);
 void qemu_FindResourceExW(struct qemu_syscall *call);
 void qemu_FindResourceW(struct qemu_syscall *call);
+void qemu_FindVolumeClose(struct qemu_syscall *call);
+void qemu_FindVolumeMountPointClose(struct qemu_syscall *call);
 void qemu_FlsAlloc(struct qemu_syscall *call);
 void qemu_FlsFree(struct qemu_syscall *call);
 void qemu_FlsGetValue(struct qemu_syscall *call);
@@ -1008,8 +1056,14 @@ void qemu_GetDateFormatW(struct qemu_syscall *call);
 void qemu_GetDefaultCommConfigA(struct qemu_syscall *call);
 void qemu_GetDefaultCommConfigW(struct qemu_syscall *call);
 void qemu_GetDevicePowerState(struct qemu_syscall *call);
+void qemu_GetDiskFreeSpaceA(struct qemu_syscall *call);
+void qemu_GetDiskFreeSpaceExA(struct qemu_syscall *call);
+void qemu_GetDiskFreeSpaceExW(struct qemu_syscall *call);
+void qemu_GetDiskFreeSpaceW(struct qemu_syscall *call);
 void qemu_GetDllDirectoryA(struct qemu_syscall *call);
 void qemu_GetDllDirectoryW(struct qemu_syscall *call);
+void qemu_GetDriveTypeA(struct qemu_syscall *call);
+void qemu_GetDriveTypeW(struct qemu_syscall *call);
 void qemu_GetEnvironmentStringsA(struct qemu_syscall *call);
 void qemu_GetEnvironmentStringsW(struct qemu_syscall *call);
 void qemu_GetEnvironmentVariableA(struct qemu_syscall *call);
@@ -1045,6 +1099,9 @@ void qemu_GetLocaleInfoA(struct qemu_syscall *call);
 void qemu_GetLocaleInfoEx(struct qemu_syscall *call);
 void qemu_GetLocaleInfoW(struct qemu_syscall *call);
 void qemu_GetLocalTime(struct qemu_syscall *call);
+void qemu_GetLogicalDrives(struct qemu_syscall *call);
+void qemu_GetLogicalDriveStringsA(struct qemu_syscall *call);
+void qemu_GetLogicalDriveStringsW(struct qemu_syscall *call);
 void qemu_GetLogicalProcessorInformation(struct qemu_syscall *call);
 void qemu_GetLogicalProcessorInformationEx(struct qemu_syscall *call);
 void qemu_GetLongPathNameA(struct qemu_syscall *call);
@@ -1156,6 +1213,15 @@ void qemu_GetUserPreferredUILanguages(struct qemu_syscall *call);
 void qemu_GetVersion(struct qemu_syscall *call);
 void qemu_GetVersionExA(struct qemu_syscall *call);
 void qemu_GetVersionExW(struct qemu_syscall *call);
+void qemu_GetVolumeInformationA(struct qemu_syscall *call);
+void qemu_GetVolumeInformationByHandleW(struct qemu_syscall *call);
+void qemu_GetVolumeInformationW(struct qemu_syscall *call);
+void qemu_GetVolumeNameForVolumeMountPointA(struct qemu_syscall *call);
+void qemu_GetVolumeNameForVolumeMountPointW(struct qemu_syscall *call);
+void qemu_GetVolumePathNameA(struct qemu_syscall *call);
+void qemu_GetVolumePathNamesForVolumeNameA(struct qemu_syscall *call);
+void qemu_GetVolumePathNamesForVolumeNameW(struct qemu_syscall *call);
+void qemu_GetVolumePathNameW(struct qemu_syscall *call);
 void qemu_GetWindowsDirectoryA(struct qemu_syscall *call);
 void qemu_GetWindowsDirectoryW(struct qemu_syscall *call);
 void qemu_GetWriteWatch(struct qemu_syscall *call);
@@ -1339,6 +1405,8 @@ void qemu_ProcessIdToSessionId(struct qemu_syscall *call);
 void qemu_PulseEvent(struct qemu_syscall *call);
 void qemu_PurgeComm(struct qemu_syscall *call);
 void qemu_QueryActCtxW(struct qemu_syscall *call);
+void qemu_QueryDosDeviceA(struct qemu_syscall *call);
+void qemu_QueryDosDeviceW(struct qemu_syscall *call);
 void qemu_QueryFullProcessImageNameA(struct qemu_syscall *call);
 void qemu_QueryFullProcessImageNameW(struct qemu_syscall *call);
 void qemu_QueryInformationJobObject(struct qemu_syscall *call);
@@ -1443,6 +1511,10 @@ void qemu_SetThreadUILanguage(struct qemu_syscall *call);
 void qemu_SetUnhandledExceptionFilter(struct qemu_syscall *call);
 void qemu_SetupComm(struct qemu_syscall *call);
 void qemu_SetUserGeoID(struct qemu_syscall *call);
+void qemu_SetVolumeLabelA(struct qemu_syscall *call);
+void qemu_SetVolumeLabelW(struct qemu_syscall *call);
+void qemu_SetVolumeMountPointA(struct qemu_syscall *call);
+void qemu_SetVolumeMountPointW(struct qemu_syscall *call);
 void qemu_SetWaitableTimer(struct qemu_syscall *call);
 void qemu_SetWaitableTimerEx(struct qemu_syscall *call);
 void qemu_SignalObjectAndWait(struct qemu_syscall *call);

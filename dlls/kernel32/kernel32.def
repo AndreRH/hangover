@@ -129,6 +129,8 @@ EXPORTS
   DebugBreakProcess
   DebugSetProcessKillOnExit
   DecodePointer=ntdll.RtlDecodePointer
+  DefineDosDeviceA
+  DefineDosDeviceW
   DelayLoadFailureHook
   DeleteAtom
   DeleteCriticalSection=ntdll.RtlDeleteCriticalSection
@@ -139,6 +141,8 @@ EXPORTS
   DeleteTimerQueue
   DeleteTimerQueueEx
   DeleteTimerQueueTimer
+  DeleteVolumeMountPointA
+  DeleteVolumeMountPointW
   DeviceIoControl
   DisableThreadLibraryCalls
   DisconnectNamedPipe
@@ -188,13 +192,21 @@ EXPORTS
   FindFirstFileExA
   FindFirstFileExW
   FindFirstFileW
+  FindFirstVolumeA
+  FindFirstVolumeMountPointA
+  FindFirstVolumeMountPointW
+  FindFirstVolumeW
   FindNextChangeNotification
   FindNextFileA
   FindNextFileW
+  FindNextVolumeA
+  FindNextVolumeW
   FindResourceA
   FindResourceExA
   FindResourceExW
   FindResourceW
+  FindVolumeClose
+  FindVolumeMountPointClose
   FlsAlloc
   FlsFree
   FlsGetValue
@@ -249,8 +261,14 @@ EXPORTS
   GetDefaultCommConfigA
   GetDefaultCommConfigW
   GetDevicePowerState
+  GetDiskFreeSpaceA
+  GetDiskFreeSpaceExA
+  GetDiskFreeSpaceExW
+  GetDiskFreeSpaceW
   GetDllDirectoryA
   GetDllDirectoryW
+  GetDriveTypeA
+  GetDriveTypeW
   GetEnvironmentStringsA=qemu_GetEnvironmentStringsA
   GetEnvironmentStringsW
   GetEnvironmentVariableA
@@ -286,6 +304,9 @@ EXPORTS
   GetLocaleInfoEx
   GetLocaleInfoW
   GetLocalTime
+  GetLogicalDrives
+  GetLogicalDriveStringsA
+  GetLogicalDriveStringsW
   GetLogicalProcessorInformation
   GetLogicalProcessorInformationEx
   GetLongPathNameA
@@ -396,6 +417,15 @@ EXPORTS
   GetVersion
   GetVersionExA
   GetVersionExW
+  GetVolumeInformationA
+  GetVolumeInformationByHandleW
+  GetVolumeInformationW
+  GetVolumeNameForVolumeMountPointA
+  GetVolumeNameForVolumeMountPointW
+  GetVolumePathNameA
+  GetVolumePathNamesForVolumeNameA
+  GetVolumePathNamesForVolumeNameW
+  GetVolumePathNameW
   GetWindowsDirectoryA
   GetWindowsDirectoryW
   GetWriteWatch
@@ -582,6 +612,8 @@ EXPORTS
   PulseEvent
   PurgeComm
   QueryActCtxW
+  QueryDosDeviceA
+  QueryDosDeviceW
   QueryFullProcessImageNameA
   QueryFullProcessImageNameW
   QueryInformationJobObject
@@ -690,6 +722,10 @@ EXPORTS
   SetUnhandledExceptionFilter
   SetupComm
   SetUserGeoID
+  SetVolumeLabelA
+  SetVolumeLabelW
+  SetVolumeMountPointA
+  SetVolumeMountPointW
   SetWaitableTimer
   SetWaitableTimerEx
   SignalObjectAndWait
