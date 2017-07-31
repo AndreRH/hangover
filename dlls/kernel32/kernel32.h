@@ -773,6 +773,11 @@ enum kernel32_calls
     CALL_WAITFORSINGLEOBJECTEX,
     CALL_WAITNAMEDPIPEA,
     CALL_WAITNAMEDPIPEW,
+    CALL_WERREGISTERFILE,
+    CALL_WERREGISTERMEMORYBLOCK,
+    CALL_WERREGISTERRUNTIMEEXCEPTIONMODULE,
+    CALL_WERSETFLAGS,
+    CALL_WERUNREGISTERMEMORYBLOCK,
     CALL_WIDECHARTOMULTIBYTE,
     CALL_WINEXEC,
     CALL_WOW64DISABLEWOW64FSREDIRECTION,
@@ -1572,6 +1577,11 @@ void qemu_WaitForSingleObject(struct qemu_syscall *call);
 void qemu_WaitForSingleObjectEx(struct qemu_syscall *call);
 void qemu_WaitNamedPipeA(struct qemu_syscall *call);
 void qemu_WaitNamedPipeW(struct qemu_syscall *call);
+void qemu_WerRegisterFile(struct qemu_syscall *call);
+void qemu_WerRegisterMemoryBlock(struct qemu_syscall *call);
+void qemu_WerRegisterRuntimeExceptionModule(struct qemu_syscall *call);
+void qemu_WerSetFlags(struct qemu_syscall *call);
+void qemu_WerUnregisterMemoryBlock(struct qemu_syscall *call);
 void qemu_WideCharToMultiByte(struct qemu_syscall *call);
 void qemu_WinExec(struct qemu_syscall *call);
 void qemu_Wow64DisableWow64FsRedirection(struct qemu_syscall *call);

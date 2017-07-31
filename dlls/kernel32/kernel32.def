@@ -783,6 +783,11 @@ EXPORTS
   WaitForSingleObjectEx
   WaitNamedPipeA
   WaitNamedPipeW
+  WerRegisterFile
+  WerRegisterMemoryBlock
+  WerRegisterRuntimeExceptionModule
+  WerSetFlags
+  WerUnregisterMemoryBlock
   WideCharToMultiByte
   WinExec
   Wow64DisableWow64FsRedirection
