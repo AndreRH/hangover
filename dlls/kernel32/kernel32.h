@@ -118,6 +118,7 @@ enum kernel32_calls
     CALL_CREATETHREADPOOLWORK,
     CALL_CREATETIMERQUEUE,
     CALL_CREATETIMERQUEUETIMER,
+    CALL_CREATETOOLHELP32SNAPSHOT,
     CALL_CREATEWAITABLETIMERA,
     CALL_CREATEWAITABLETIMEREXA,
     CALL_CREATEWAITABLETIMEREXW,
@@ -417,6 +418,7 @@ enum kernel32_calls
     CALL_GLOBALUNLOCK,
     CALL_GLOBALUNWIRE,
     CALL_GLOBALWIRE,
+    CALL_HEAP32LISTFIRST,
     CALL_HEAPALLOC,
     CALL_HEAPCOMPACT,
     CALL_HEAPCREATE,
@@ -526,6 +528,10 @@ enum kernel32_calls
     CALL_MAKECRITICALSECTIONGLOBAL,
     CALL_MAPVIEWOFFILE,
     CALL_MAPVIEWOFFILEEX,
+    CALL_MODULE32FIRST,
+    CALL_MODULE32FIRSTW,
+    CALL_MODULE32NEXT,
+    CALL_MODULE32NEXTW,
     CALL_MOVEFILEA,
     CALL_MOVEFILEEXA,
     CALL_MOVEFILEEXW,
@@ -562,6 +568,10 @@ enum kernel32_calls
     CALL_POWERCREATEREQUEST,
     CALL_POWERSETREQUEST,
     CALL_PREPARETAPE,
+    CALL_PROCESS32FIRST,
+    CALL_PROCESS32FIRSTW,
+    CALL_PROCESS32NEXT,
+    CALL_PROCESS32NEXTW,
     CALL_PROCESSIDTOSESSIONID,
     CALL_PULSEEVENT,
     CALL_PURGECOMM,
@@ -684,10 +694,13 @@ enum kernel32_calls
     CALL_TERMINATEJOBOBJECT,
     CALL_TERMINATEPROCESS,
     CALL_TERMINATETHREAD,
+    CALL_THREAD32FIRST,
+    CALL_THREAD32NEXT,
     CALL_TLSALLOC,
     CALL_TLSFREE,
     CALL_TLSGETVALUE,
     CALL_TLSSETVALUE,
+    CALL_TOOLHELP32READPROCESSMEMORY,
     CALL_TRANSACTNAMEDPIPE,
     CALL_TRANSMITCOMMCHAR,
     CALL_TRYSUBMITTHREADPOOLCALLBACK,
@@ -866,6 +879,7 @@ void qemu_CreateThreadpoolWait(struct qemu_syscall *call);
 void qemu_CreateThreadpoolWork(struct qemu_syscall *call);
 void qemu_CreateTimerQueue(struct qemu_syscall *call);
 void qemu_CreateTimerQueueTimer(struct qemu_syscall *call);
+void qemu_CreateToolhelp32Snapshot(struct qemu_syscall *call);
 void qemu_CreateWaitableTimerA(struct qemu_syscall *call);
 void qemu_CreateWaitableTimerExA(struct qemu_syscall *call);
 void qemu_CreateWaitableTimerExW(struct qemu_syscall *call);
@@ -1167,6 +1181,7 @@ void qemu_GlobalUnfix(struct qemu_syscall *call);
 void qemu_GlobalUnlock(struct qemu_syscall *call);
 void qemu_GlobalUnWire(struct qemu_syscall *call);
 void qemu_GlobalWire(struct qemu_syscall *call);
+void qemu_Heap32ListFirst(struct qemu_syscall *call);
 void qemu_HeapAlloc(struct qemu_syscall *call);
 void qemu_HeapCompact(struct qemu_syscall *call);
 void qemu_HeapCreate(struct qemu_syscall *call);
@@ -1276,6 +1291,10 @@ void qemu_lstrlenW(struct qemu_syscall *call);
 void qemu_MakeCriticalSectionGlobal(struct qemu_syscall *call);
 void qemu_MapViewOfFile(struct qemu_syscall *call);
 void qemu_MapViewOfFileEx(struct qemu_syscall *call);
+void qemu_Module32First(struct qemu_syscall *call);
+void qemu_Module32FirstW(struct qemu_syscall *call);
+void qemu_Module32Next(struct qemu_syscall *call);
+void qemu_Module32NextW(struct qemu_syscall *call);
 void qemu_MoveFileA(struct qemu_syscall *call);
 void qemu_MoveFileExA(struct qemu_syscall *call);
 void qemu_MoveFileExW(struct qemu_syscall *call);
@@ -1312,6 +1331,10 @@ void qemu_PowerClearRequest(struct qemu_syscall *call);
 void qemu_PowerCreateRequest(struct qemu_syscall *call);
 void qemu_PowerSetRequest(struct qemu_syscall *call);
 void qemu_PrepareTape(struct qemu_syscall *call);
+void qemu_Process32First(struct qemu_syscall *call);
+void qemu_Process32FirstW(struct qemu_syscall *call);
+void qemu_Process32Next(struct qemu_syscall *call);
+void qemu_Process32NextW(struct qemu_syscall *call);
 void qemu_ProcessIdToSessionId(struct qemu_syscall *call);
 void qemu_PulseEvent(struct qemu_syscall *call);
 void qemu_PurgeComm(struct qemu_syscall *call);
@@ -1434,10 +1457,13 @@ void qemu_SwitchToThread(struct qemu_syscall *call);
 void qemu_TerminateJobObject(struct qemu_syscall *call);
 void qemu_TerminateProcess(struct qemu_syscall *call);
 void qemu_TerminateThread(struct qemu_syscall *call);
+void qemu_Thread32First(struct qemu_syscall *call);
+void qemu_Thread32Next(struct qemu_syscall *call);
 void qemu_TlsAlloc(struct qemu_syscall *call);
 void qemu_TlsFree(struct qemu_syscall *call);
 void qemu_TlsGetValue(struct qemu_syscall *call);
 void qemu_TlsSetValue(struct qemu_syscall *call);
+void qemu_Toolhelp32ReadProcessMemory(struct qemu_syscall *call);
 void qemu_TransactNamedPipe(struct qemu_syscall *call);
 void qemu_TransmitCommChar(struct qemu_syscall *call);
 void qemu_TrySubmitThreadpoolCallback(struct qemu_syscall *call);
