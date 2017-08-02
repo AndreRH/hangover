@@ -965,3 +965,8 @@ EXPORTS
   WriteTapemark
   WTSGetActiveConsoleSessionId
   ZombifyActCtx
+  QueryDepthSList=ntdll.RtlQueryDepthSList
+  InterlockedPushEntrySList=ntdll.RtlInterlockedPushEntrySList
+  InterlockedPopEntrySList=ntdll.RtlInterlockedPopEntrySList
+  InterlockedFlushSList=ntdll.RtlInterlockedFlushSList
+  InitializeSListHead=ntdll.RtlInitializeSListHead
