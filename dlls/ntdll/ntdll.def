@@ -40,28 +40,60 @@ EXPORTS
   memcpy=NTDLL_memcpy
   memmove=NTDLL_memmove
   memset=NTDLL_memset
+  NtAcceptConnectPort
+  NtAccessCheckAndAuditAlarm
+  NtAdjustGroupsToken
+  NtAdjustPrivilegesToken
+  NtAllocateLocallyUniqueId
   NtCancelIoFile
   NtCancelIoFileEx
+  NtCompleteConnectPort
+  NtConnectPort
   NtCreateFile
   NtCreateMailslotFile
   NtCreateNamedPipeFile
+  NtCreatePagingFile
+  NtCreatePort
   NtDeleteFile
   NtDeviceIoControlFile
+  NtDisplayString
+  NtDuplicateToken
   NtFlushBuffersFile
   NtFsControlFile
+  NtInitiatePowerAction
+  NtListenPort
   NtLockFile
   NtNotifyChangeDirectoryFile
   NtOpenFile
+  NtOpenProcessToken
+  NtOpenProcessTokenEx
+  NtOpenThreadToken
+  NtOpenThreadTokenEx
+  NtPowerInformation
+  NtPrivilegeCheck
   NtQueryAttributesFile
   NtQueryEaFile
   NtQueryFullAttributesFile
   NtQueryInformationFile
+  NtQueryInformationToken
+  NtQuerySystemInformation
+  NtQuerySystemInformationEx
   NtQueryVolumeInformationFile
   NtReadFile
   NtReadFileScatter
+  NtRegisterThreadTerminatePort
+  NtReplyWaitReceivePort
+  NtRequestWaitReplyPort
+  NtSecureConnectPort
   NtSetEaFile
   NtSetInformationFile
+  NtSetInformationToken
+  NtSetIntervalProfile
+  NtSetLdtEntries
+  NtSetSystemInformation
   NtSetVolumeInformationFile
+  NtShutdownSystem
+  NtSystemDebugControl
   NtUnlockFile
   NtWriteFile
   NtWriteFileGather
@@ -145,4 +177,5 @@ EXPORTS
   strtoul=NTDLL_strtoul
   tolower=NTDLL_tolower
   toupper=NTDLL_toupper
+  VerSetConditionMask
   wcsrchr=NTDLL_wcsrchr
