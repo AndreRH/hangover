@@ -160,6 +160,16 @@ enum kernel32_calls
     CALL_DUPLICATEHANDLE,
     CALL_ENDUPDATERESOURCEA,
     CALL_ENDUPDATERESOURCEW,
+    CALL_ENUMCALENDARINFOA,
+    CALL_ENUMCALENDARINFOEXA,
+    CALL_ENUMCALENDARINFOEXEX,
+    CALL_ENUMCALENDARINFOEXW,
+    CALL_ENUMCALENDARINFOW,
+    CALL_ENUMDATEFORMATSA,
+    CALL_ENUMDATEFORMATSEXA,
+    CALL_ENUMDATEFORMATSEXEX,
+    CALL_ENUMDATEFORMATSEXW,
+    CALL_ENUMDATEFORMATSW,
     CALL_ENUMLANGUAGEGROUPLOCALESA,
     CALL_ENUMLANGUAGEGROUPLOCALESW,
     CALL_ENUMRESOURCELANGUAGESA,
@@ -178,6 +188,9 @@ enum kernel32_calls
     CALL_ENUMSYSTEMLOCALESA,
     CALL_ENUMSYSTEMLOCALESEX,
     CALL_ENUMSYSTEMLOCALESW,
+    CALL_ENUMTIMEFORMATSA,
+    CALL_ENUMTIMEFORMATSEX,
+    CALL_ENUMTIMEFORMATSW,
     CALL_ENUMUILANGUAGESA,
     CALL_ENUMUILANGUAGESW,
     CALL_ERASETAPE,
@@ -297,6 +310,8 @@ enum kernel32_calls
     CALL_GETCPINFO,
     CALL_GETCPINFOEXA,
     CALL_GETCPINFOEXW,
+    CALL_GETCURRENCYFORMATA,
+    CALL_GETCURRENCYFORMATW,
     CALL_GETCURRENTACTCTX,
     CALL_GETCURRENTCONSOLEFONT,
     CALL_GETCURRENTDIRECTORYA,
@@ -306,6 +321,7 @@ enum kernel32_calls
     CALL_GETCURRENTTHREAD,
     CALL_GETCURRENTTHREADID,
     CALL_GETDATEFORMATA,
+    CALL_GETDATEFORMATEX,
     CALL_GETDATEFORMATW,
     CALL_GETDAYLIGHTFLAG,
     CALL_GETDEFAULTCOMMCONFIGA,
@@ -379,6 +395,9 @@ enum kernel32_calls
     CALL_GETNUMAHIGHESTNODENUMBER,
     CALL_GETNUMANODEPROCESSORMASK,
     CALL_GETNUMAPROCESSORNODE,
+    CALL_GETNUMBERFORMATA,
+    CALL_GETNUMBERFORMATEX,
+    CALL_GETNUMBERFORMATW,
     CALL_GETNUMBEROFCONSOLEFONTS,
     CALL_GETNUMBEROFCONSOLEINPUTEVENTS,
     CALL_GETNUMBEROFCONSOLEMOUSEBUTTONS,
@@ -469,6 +488,7 @@ enum kernel32_calls
     CALL_GETTHREADUILANGUAGE,
     CALL_GETTICKCOUNT,
     CALL_GETTIMEFORMATA,
+    CALL_GETTIMEFORMATEX,
     CALL_GETTIMEFORMATW,
     CALL_GETTIMEZONEINFORMATION,
     CALL_GETTIMEZONEINFORMATIONFORYEAR,
@@ -1093,6 +1113,16 @@ void qemu_DuplicateConsoleHandle(struct qemu_syscall *call);
 void qemu_DuplicateHandle(struct qemu_syscall *call);
 void qemu_EndUpdateResourceA(struct qemu_syscall *call);
 void qemu_EndUpdateResourceW(struct qemu_syscall *call);
+void qemu_EnumCalendarInfoA(struct qemu_syscall *call);
+void qemu_EnumCalendarInfoExA(struct qemu_syscall *call);
+void qemu_EnumCalendarInfoExEx(struct qemu_syscall *call);
+void qemu_EnumCalendarInfoExW(struct qemu_syscall *call);
+void qemu_EnumCalendarInfoW(struct qemu_syscall *call);
+void qemu_EnumDateFormatsA(struct qemu_syscall *call);
+void qemu_EnumDateFormatsExA(struct qemu_syscall *call);
+void qemu_EnumDateFormatsExEx(struct qemu_syscall *call);
+void qemu_EnumDateFormatsExW(struct qemu_syscall *call);
+void qemu_EnumDateFormatsW(struct qemu_syscall *call);
 void qemu_EnumLanguageGroupLocalesA(struct qemu_syscall *call);
 void qemu_EnumLanguageGroupLocalesW(struct qemu_syscall *call);
 void qemu_EnumResourceLanguagesA(struct qemu_syscall *call);
@@ -1111,6 +1141,9 @@ void qemu_EnumSystemLanguageGroupsW(struct qemu_syscall *call);
 void qemu_EnumSystemLocalesA(struct qemu_syscall *call);
 void qemu_EnumSystemLocalesEx(struct qemu_syscall *call);
 void qemu_EnumSystemLocalesW(struct qemu_syscall *call);
+void qemu_EnumTimeFormatsA(struct qemu_syscall *call);
+void qemu_EnumTimeFormatsEx(struct qemu_syscall *call);
+void qemu_EnumTimeFormatsW(struct qemu_syscall *call);
 void qemu_EnumUILanguagesA(struct qemu_syscall *call);
 void qemu_EnumUILanguagesW(struct qemu_syscall *call);
 void qemu_EraseTape(struct qemu_syscall *call);
@@ -1231,6 +1264,8 @@ void qemu_GetConsoleWindow(struct qemu_syscall *call);
 void qemu_GetCPInfo(struct qemu_syscall *call);
 void qemu_GetCPInfoExA(struct qemu_syscall *call);
 void qemu_GetCPInfoExW(struct qemu_syscall *call);
+void qemu_GetCurrencyFormatA(struct qemu_syscall *call);
+void qemu_GetCurrencyFormatW(struct qemu_syscall *call);
 void qemu_GetCurrentActCtx(struct qemu_syscall *call);
 void qemu_GetCurrentConsoleFont(struct qemu_syscall *call);
 void qemu_GetCurrentDirectoryA(struct qemu_syscall *call);
@@ -1240,6 +1275,7 @@ void qemu_GetCurrentProcessId(struct qemu_syscall *call);
 void qemu_GetCurrentThread(struct qemu_syscall *call);
 void qemu_GetCurrentThreadId(struct qemu_syscall *call);
 void qemu_GetDateFormatA(struct qemu_syscall *call);
+void qemu_GetDateFormatEx(struct qemu_syscall *call);
 void qemu_GetDateFormatW(struct qemu_syscall *call);
 void qemu_GetDaylightFlag(struct qemu_syscall *call);
 void qemu_GetDefaultCommConfigA(struct qemu_syscall *call);
@@ -1314,6 +1350,9 @@ void qemu_GetNumaAvailableMemoryNode(struct qemu_syscall *call);
 void qemu_GetNumaHighestNodeNumber(struct qemu_syscall *call);
 void qemu_GetNumaNodeProcessorMask(struct qemu_syscall *call);
 void qemu_GetNumaProcessorNode(struct qemu_syscall *call);
+void qemu_GetNumberFormatA(struct qemu_syscall *call);
+void qemu_GetNumberFormatEx(struct qemu_syscall *call);
+void qemu_GetNumberFormatW(struct qemu_syscall *call);
 void qemu_GetNumberOfConsoleFonts(struct qemu_syscall *call);
 void qemu_GetNumberOfConsoleInputEvents(struct qemu_syscall *call);
 void qemu_GetNumberOfConsoleMouseButtons(struct qemu_syscall *call);
@@ -1404,6 +1443,7 @@ void qemu_GetThreadTimes(struct qemu_syscall *call);
 void qemu_GetThreadUILanguage(struct qemu_syscall *call);
 void qemu_GetTickCount(struct qemu_syscall *call);
 void qemu_GetTimeFormatA(struct qemu_syscall *call);
+void qemu_GetTimeFormatEx(struct qemu_syscall *call);
 void qemu_GetTimeFormatW(struct qemu_syscall *call);
 void qemu_GetTimeZoneInformation(struct qemu_syscall *call);
 void qemu_GetTimeZoneInformationForYear(struct qemu_syscall *call);

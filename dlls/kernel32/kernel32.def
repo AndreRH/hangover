@@ -163,6 +163,16 @@ EXPORTS
   EndUpdateResourceA
   EndUpdateResourceW
   EnterCriticalSection=ntdll.RtlEnterCriticalSection
+  EnumCalendarInfoA
+  EnumCalendarInfoExA
+  EnumCalendarInfoExEx
+  EnumCalendarInfoExW
+  EnumCalendarInfoW
+  EnumDateFormatsA
+  EnumDateFormatsExA
+  EnumDateFormatsExEx
+  EnumDateFormatsExW
+  EnumDateFormatsW
   EnumLanguageGroupLocalesA
   EnumLanguageGroupLocalesW
   EnumResourceLanguagesA
@@ -181,6 +191,9 @@ EXPORTS
   EnumSystemLocalesA
   EnumSystemLocalesEx
   EnumSystemLocalesW
+  EnumTimeFormatsA
+  EnumTimeFormatsEx
+  EnumTimeFormatsW
   EnumUILanguagesA
   EnumUILanguagesW
   EraseTape
@@ -300,6 +313,8 @@ EXPORTS
   GetCPInfo
   GetCPInfoExA
   GetCPInfoExW
+  GetCurrencyFormatA
+  GetCurrencyFormatW
   GetCurrentActCtx
   GetCurrentConsoleFont
   GetCurrentDirectoryA
@@ -309,6 +324,7 @@ EXPORTS
   GetCurrentThread
   GetCurrentThreadId
   GetDateFormatA
+  GetDateFormatEx
   GetDateFormatW
   GetDaylightFlag
   GetDefaultCommConfigA
@@ -382,6 +398,9 @@ EXPORTS
   GetNumaHighestNodeNumber
   GetNumaNodeProcessorMask
   GetNumaProcessorNode
+  GetNumberFormatA
+  GetNumberFormatEx
+  GetNumberFormatW
   GetNumberOfConsoleFonts
   GetNumberOfConsoleInputEvents
   GetNumberOfConsoleMouseButtons
@@ -472,6 +491,7 @@ EXPORTS
   GetThreadUILanguage
   GetTickCount
   GetTimeFormatA
+  GetTimeFormatEx
   GetTimeFormatW
   GetTimeZoneInformation
   GetTimeZoneInformationForYear
