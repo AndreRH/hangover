@@ -255,6 +255,7 @@ EXPORTS
   _strtime=MSVCRT__strtime
   _strtoui64=MSVCRT__strtoui64
   _tempnam=MSVCRT__tempnam
+  _time64=MSVCRT__time64
   _tolower=MSVCRT__tolower
   _tolower_l=MSVCRT__tolower_l
   _toupper=MSVCRT__toupper

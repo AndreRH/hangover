@@ -89,3 +89,33 @@ void qemu__strdate(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu__time64
+{
+    struct qemu_syscall super;
+    uint64_t buf;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+__time64_t CDECL MSVCRT__time64(__time64_t *buf)
+{
+    struct qemu__time64 call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__TIME64);
+    call.buf = (uint64_t)buf;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__time64(struct qemu_syscall *call)
+{
+    struct qemu__time64 *c = (struct qemu__time64 *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p__time64(QEMU_G2H(c->buf));
+}
+
+#endif

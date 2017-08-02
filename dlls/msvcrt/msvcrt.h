@@ -2,6 +2,8 @@
 #define MSVCRT_H
 
 #include <stdlib.h>
+#include <sys/types.h>
+#include <time.h>
 
 enum msvcrt_calls
 {
@@ -250,6 +252,7 @@ enum msvcrt_calls
     CALL__STRTIME,
     CALL__STRTOUI64,
     CALL__TEMPNAM,
+    CALL__TIME64,
     CALL__TOLOWER,
     CALL__TOLOWER_L,
     CALL__TOUPPER,
@@ -752,6 +755,7 @@ void qemu__strnicmp(struct qemu_syscall *call);
 void qemu__strtime(struct qemu_syscall *call);
 void qemu__strtoui64(struct qemu_syscall *call);
 void qemu__tempnam(struct qemu_syscall *call);
+void qemu__time64(struct qemu_syscall *call);
 void qemu__tolower(struct qemu_syscall *call);
 void qemu__tolower_l(struct qemu_syscall *call);
 void qemu__toupper(struct qemu_syscall *call);
@@ -1440,6 +1444,8 @@ int (* CDECL p__wdupenv_s)(WCHAR **buffer, size_t *numberOfElements, const WCHAR
 int (* CDECL p_getenv_s)(size_t *pReturnValue, char* buffer, size_t numberOfElements, const char *varname);
 int (* CDECL p__wgetenv_s)(size_t *pReturnValue, WCHAR *buffer, size_t numberOfElements, const WCHAR *varname);
 int (* CDECL p_setvbuf)(FILE *file, char *buf, int mode, size_t size);
+/* FIXME: Should use __time64_t, but somehow it isn't defined. */
+__int64 (* CDECL p__time64)(__int64 *buf);
 
 DWORD msvcrt_tls;
 
