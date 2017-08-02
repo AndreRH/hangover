@@ -101,17 +101,32 @@ EXPORTS
   RtlAcquireResourceExclusive
   RtlAcquireResourceShared
   RtlAddFunctionTable
+  RtlAnsiCharToUnicodeChar
+  RtlAnsiStringToUnicodeSize
+  RtlAnsiStringToUnicodeString
+  RtlAppendAsciizToString
+  RtlAppendStringToString
+  RtlAppendUnicodeStringToString
+  RtlAppendUnicodeToString
   RtlAreAllAccessesGranted
   RtlAreAnyAccessesGranted
   RtlAssert
   RtlCaptureContext
+  RtlCharToInteger
   RtlCompareMemory=
   RtlCompareMemoryUlong
+  RtlCompareString
+  RtlCompareUnicodeString
+  RtlCompareUnicodeStrings
   RtlCompressBuffer
   RtlComputeCrc32
   RtlCopyLuid
   RtlCopyLuidAndAttributesArray
   RtlCopyMemory=ntdll_RtlCopyMemory
+  RtlCopyString
+  RtlCopyUnicodeString
+  RtlCreateUnicodeString
+  RtlCreateUnicodeStringFromAsciiz
   RtlCreateUserProcess
   RtlDecodePointer
   RtlDecompressBuffer
@@ -119,23 +134,44 @@ EXPORTS
   RtlDeleteCriticalSection
   RtlDeleteResource
   RtlDeleteSecurityObject
+  RtlDowncaseUnicodeChar
+  RtlDowncaseUnicodeString
   RtlDumpResource
+  RtlDuplicateUnicodeString
   RtlEncodePointer
   RtlEnterCriticalSection
+  RtlEqualComputerName
+  RtlEqualDomainName
   RtlEqualLuid
+  RtlEqualString
+  RtlEqualUnicodeString
+  RtlEraseUnicodeString
   RtlFillMemory=ntdll_RtlFillMemory
   RtlFillMemoryUlong
+  RtlFindCharInUnicodeString
   RtlFirstEntrySList
+  RtlFreeAnsiString
+  RtlFreeOemString
+  RtlFreeUnicodeString
   RtlGetCompressionWorkSpaceSize
   RtlGetCurrentProcessorNumberEx
   RtlGetCurrentTransaction
   RtlGetThreadErrorMode
+  RtlGUIDFromString
+  RtlHashUnicodeString
+  RtlInitAnsiString
+  RtlInitAnsiStringEx
   RtlInitializeCriticalSectionEx
   RtlInitializeGenericTable
   RtlInitializeGenericTableAvl
   RtlInitializeResource
   RtlInitializeSListHead
+  RtlInitString
+  RtlInitUnicodeString
+  RtlInitUnicodeStringEx
   RtlInsertElementGenericTableAvl
+  RtlIntegerToChar
+  RtlIntegerToUnicodeString
   RtlInterlockedFlushSList
   RtlInterlockedPopEntrySList
   RtlInterlockedPushEntrySList
@@ -146,18 +182,44 @@ EXPORTS
   RtlIpv4AddressToStringExW
   RtlIpv4AddressToStringW
   RtlIpv4StringToAddressExW
+  RtlIsTextUnicode
   RtlLeaveCriticalSection
   RtlLookupFunctionEntry
   RtlMapGenericMask
   RtlMoveMemory=ntdll_RtlMoveMemory
+  RtlMultiByteToUnicodeN
+  RtlMultiByteToUnicodeSize
   RtlNewSecurityObject
+  RtlOemStringToUnicodeSize
+  RtlOemStringToUnicodeString
+  RtlOemToUnicodeN
+  RtlPrefixString
+  RtlPrefixUnicodeString
   RtlQueryDepthSList
   RtlRandom
   RtlReleasePebLock
   RtlReleaseResource
   RtlSetCurrentTransaction
   RtlSetThreadErrorMode
+  RtlStringFromGUID
+  RtlUnicodeStringToAnsiSize
+  RtlUnicodeStringToAnsiString
+  RtlUnicodeStringToInteger
+  RtlUnicodeStringToOemSize
+  RtlUnicodeStringToOemString
+  RtlUnicodeToMultiByteN
+  RtlUnicodeToMultiByteSize
+  RtlUnicodeToOemN
   RtlUniform
+  RtlUpcaseUnicodeChar
+  RtlUpcaseUnicodeString
+  RtlUpcaseUnicodeStringToAnsiString
+  RtlUpcaseUnicodeStringToCountedOemString
+  RtlUpcaseUnicodeStringToOemString
+  RtlUpcaseUnicodeToMultiByteN
+  RtlUpcaseUnicodeToOemN
+  RtlUpperChar
+  RtlUpperString
   RtlVirtualUnwind
   RtlZeroMemory=ntdll_RtlZeroMemory
   strcat=NTDLL_strcat
