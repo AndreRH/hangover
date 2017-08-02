@@ -403,6 +403,8 @@ EXPORTS
   strrchr=MSVCRT_strrchr
   strstr=MSVCRT_strstr
   strtod=MSVCRT_strtod
+  strtol=ntdll.strtol
+  strtoul=ntdll.strtoul
   swprintf_s=MSVCRT_swprintf_s
   tan=MSVCRT_tan
   tanf=MSVCRT_tanf
