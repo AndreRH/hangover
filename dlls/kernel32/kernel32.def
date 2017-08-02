@@ -204,6 +204,9 @@ EXPORTS
   ExpandEnvironmentStringsW
   ExpungeConsoleCommandHistoryA
   ExpungeConsoleCommandHistoryW
+  FatalAppExitA
+  FatalAppExitW
+  FatalExit
   FileTimeToDosDateTime
   FileTimeToLocalFileTime
   FileTimeToSystemTime
@@ -724,6 +727,7 @@ EXPORTS
   QueryUnbiasedInterruptTime
   QueueUserAPC
   QueueUserWorkItem
+  RaiseException
   ReadConsoleA
   ReadConsoleInputA
   ReadConsoleInputW

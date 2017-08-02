@@ -201,6 +201,9 @@ enum kernel32_calls
     CALL_EXPANDENVIRONMENTSTRINGSW,
     CALL_EXPUNGECONSOLECOMMANDHISTORYA,
     CALL_EXPUNGECONSOLECOMMANDHISTORYW,
+    CALL_FATALAPPEXITA,
+    CALL_FATALAPPEXITW,
+    CALL_FATALEXIT,
     CALL_FILETIMETODOSDATETIME,
     CALL_FILETIMETOLOCALFILETIME,
     CALL_FILETIMETOSYSTEMTIME,
@@ -718,6 +721,7 @@ enum kernel32_calls
     CALL_QUERYUNBIASEDINTERRUPTTIME,
     CALL_QUEUEUSERAPC,
     CALL_QUEUEUSERWORKITEM,
+    CALL_RAISEEXCEPTION,
     CALL_READCONSOLEA,
     CALL_READCONSOLEINPUTA,
     CALL_READCONSOLEINPUTW,
@@ -1154,6 +1158,9 @@ void qemu_ExpandEnvironmentStringsA(struct qemu_syscall *call);
 void qemu_ExpandEnvironmentStringsW(struct qemu_syscall *call);
 void qemu_ExpungeConsoleCommandHistoryA(struct qemu_syscall *call);
 void qemu_ExpungeConsoleCommandHistoryW(struct qemu_syscall *call);
+void qemu_FatalAppExitA(struct qemu_syscall *call);
+void qemu_FatalAppExitW(struct qemu_syscall *call);
+void qemu_FatalExit(struct qemu_syscall *call);
 void qemu_FileTimeToDosDateTime(struct qemu_syscall *call);
 void qemu_FileTimeToLocalFileTime(struct qemu_syscall *call);
 void qemu_FileTimeToSystemTime(struct qemu_syscall *call);
@@ -1673,6 +1680,7 @@ void qemu_QueryThreadCycleTime(struct qemu_syscall *call);
 void qemu_QueryUnbiasedInterruptTime(struct qemu_syscall *call);
 void qemu_QueueUserAPC(struct qemu_syscall *call);
 void qemu_QueueUserWorkItem(struct qemu_syscall *call);
+void qemu_RaiseException(struct qemu_syscall *call);
 void qemu_ReadConsoleA(struct qemu_syscall *call);
 void qemu_ReadConsoleInputA(struct qemu_syscall *call);
 void qemu_ReadConsoleInputW(struct qemu_syscall *call);
