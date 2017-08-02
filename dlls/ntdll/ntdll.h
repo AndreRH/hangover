@@ -41,6 +41,31 @@ enum ntdll_calls
     CALL_MEMCPY,
     CALL_MEMMOVE,
     CALL_MEMSET,
+    CALL_NTCANCELIOFILE,
+    CALL_NTCANCELIOFILEEX,
+    CALL_NTCREATEFILE,
+    CALL_NTCREATEMAILSLOTFILE,
+    CALL_NTCREATENAMEDPIPEFILE,
+    CALL_NTDELETEFILE,
+    CALL_NTDEVICEIOCONTROLFILE,
+    CALL_NTFLUSHBUFFERSFILE,
+    CALL_NTFSCONTROLFILE,
+    CALL_NTLOCKFILE,
+    CALL_NTNOTIFYCHANGEDIRECTORYFILE,
+    CALL_NTOPENFILE,
+    CALL_NTQUERYATTRIBUTESFILE,
+    CALL_NTQUERYEAFILE,
+    CALL_NTQUERYFULLATTRIBUTESFILE,
+    CALL_NTQUERYINFORMATIONFILE,
+    CALL_NTQUERYVOLUMEINFORMATIONFILE,
+    CALL_NTREADFILE,
+    CALL_NTREADFILESCATTER,
+    CALL_NTSETEAFILE,
+    CALL_NTSETINFORMATIONFILE,
+    CALL_NTSETVOLUMEINFORMATIONFILE,
+    CALL_NTUNLOCKFILE,
+    CALL_NTWRITEFILE,
+    CALL_NTWRITEFILEGATHER,
     CALL_RTLACQUIREPEBLOCK,
     CALL_RTLACQUIRERESOURCEEXCLUSIVE,
     CALL_RTLACQUIRERESOURCESHARED,
@@ -165,6 +190,31 @@ void qemu_memcmp(struct qemu_syscall *call);
 void qemu_memcpy(struct qemu_syscall *call);
 void qemu_memmove(struct qemu_syscall *call);
 void qemu_memset(struct qemu_syscall *call);
+void qemu_NtCancelIoFile(struct qemu_syscall *call);
+void qemu_NtCancelIoFileEx(struct qemu_syscall *call);
+void qemu_NtCreateFile(struct qemu_syscall *call);
+void qemu_NtCreateMailslotFile(struct qemu_syscall *call);
+void qemu_NtCreateNamedPipeFile(struct qemu_syscall *call);
+void qemu_NtDeleteFile(struct qemu_syscall *call);
+void qemu_NtDeviceIoControlFile(struct qemu_syscall *call);
+void qemu_NtFlushBuffersFile(struct qemu_syscall *call);
+void qemu_NtFsControlFile(struct qemu_syscall *call);
+void qemu_NtLockFile(struct qemu_syscall *call);
+void qemu_NtNotifyChangeDirectoryFile(struct qemu_syscall *call);
+void qemu_NtOpenFile(struct qemu_syscall *call);
+void qemu_NtQueryAttributesFile(struct qemu_syscall *call);
+void qemu_NtQueryEaFile(struct qemu_syscall *call);
+void qemu_NtQueryFullAttributesFile(struct qemu_syscall *call);
+void qemu_NtQueryInformationFile(struct qemu_syscall *call);
+void qemu_NtQueryVolumeInformationFile(struct qemu_syscall *call);
+void qemu_NtReadFile(struct qemu_syscall *call);
+void qemu_NtReadFileScatter(struct qemu_syscall *call);
+void qemu_NtSetEaFile(struct qemu_syscall *call);
+void qemu_NtSetInformationFile(struct qemu_syscall *call);
+void qemu_NtSetVolumeInformationFile(struct qemu_syscall *call);
+void qemu_NtUnlockFile(struct qemu_syscall *call);
+void qemu_NtWriteFile(struct qemu_syscall *call);
+void qemu_NtWriteFileGather(struct qemu_syscall *call);
 void qemu_RtlAcquirePebLock(struct qemu_syscall *call);
 void qemu_RtlAcquireResourceExclusive(struct qemu_syscall *call);
 void qemu_RtlAcquireResourceShared(struct qemu_syscall *call);

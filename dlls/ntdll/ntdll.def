@@ -40,6 +40,31 @@ EXPORTS
   memcpy=NTDLL_memcpy
   memmove=NTDLL_memmove
   memset=NTDLL_memset
+  NtCancelIoFile
+  NtCancelIoFileEx
+  NtCreateFile
+  NtCreateMailslotFile
+  NtCreateNamedPipeFile
+  NtDeleteFile
+  NtDeviceIoControlFile
+  NtFlushBuffersFile
+  NtFsControlFile
+  NtLockFile
+  NtNotifyChangeDirectoryFile
+  NtOpenFile
+  NtQueryAttributesFile
+  NtQueryEaFile
+  NtQueryFullAttributesFile
+  NtQueryInformationFile
+  NtQueryVolumeInformationFile
+  NtReadFile
+  NtReadFileScatter
+  NtSetEaFile
+  NtSetInformationFile
+  NtSetVolumeInformationFile
+  NtUnlockFile
+  NtWriteFile
+  NtWriteFileGather
   RtlAcquirePebLock
   RtlAcquireResourceExclusive
   RtlAcquireResourceShared
