@@ -392,9 +392,11 @@ EXPORTS
   sqrtf=MSVCRT_sqrtf
   srand=MSVCRT_srand
   sscanf=MSVCRT_sscanf
+  strcat=ntdll.strcat
   strcat_s=MSVCRT_strcat_s
   strchr=MSVCRT_strchr
   strcmp=MSVCRT_strcmp
+  strcpy=ntdll.strcpy
   strcpy_s=MSVCRT_strcpy_s
   strlen=MSVCRT_strlen
   strncmp=MSVCRT_strncmp
