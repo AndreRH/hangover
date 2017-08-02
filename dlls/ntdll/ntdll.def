@@ -40,16 +40,69 @@ EXPORTS
   memcpy=NTDLL_memcpy
   memmove=NTDLL_memmove
   memset=NTDLL_memset
+  RtlAcquirePebLock
+  RtlAcquireResourceExclusive
+  RtlAcquireResourceShared
   RtlAddFunctionTable
+  RtlAreAllAccessesGranted
+  RtlAreAnyAccessesGranted
+  RtlAssert
   RtlCaptureContext
+  RtlCompareMemory=
+  RtlCompareMemoryUlong
+  RtlCompressBuffer
+  RtlComputeCrc32
+  RtlCopyLuid
+  RtlCopyLuidAndAttributesArray
+  RtlCopyMemory=ntdll_RtlCopyMemory
+  RtlCreateUserProcess
   RtlDecodePointer
+  RtlDecompressBuffer
+  RtlDecompressFragment
   RtlDeleteCriticalSection
+  RtlDeleteResource
+  RtlDeleteSecurityObject
+  RtlDumpResource
   RtlEncodePointer
   RtlEnterCriticalSection
+  RtlEqualLuid
+  RtlFillMemory=ntdll_RtlFillMemory
+  RtlFillMemoryUlong
+  RtlFirstEntrySList
+  RtlGetCompressionWorkSpaceSize
+  RtlGetCurrentProcessorNumberEx
+  RtlGetCurrentTransaction
+  RtlGetThreadErrorMode
   RtlInitializeCriticalSectionEx
+  RtlInitializeGenericTable
+  RtlInitializeGenericTableAvl
+  RtlInitializeResource
+  RtlInitializeSListHead
+  RtlInsertElementGenericTableAvl
+  RtlInterlockedFlushSList
+  RtlInterlockedPopEntrySList
+  RtlInterlockedPushEntrySList
+  RtlInterlockedPushListSList
+  RtlInterlockedPushListSListEx
+  RtlIpv4AddressToStringA
+  RtlIpv4AddressToStringExA
+  RtlIpv4AddressToStringExW
+  RtlIpv4AddressToStringW
+  RtlIpv4StringToAddressExW
   RtlLeaveCriticalSection
   RtlLookupFunctionEntry
+  RtlMapGenericMask
+  RtlMoveMemory=ntdll_RtlMoveMemory
+  RtlNewSecurityObject
+  RtlQueryDepthSList
+  RtlRandom
+  RtlReleasePebLock
+  RtlReleaseResource
+  RtlSetCurrentTransaction
+  RtlSetThreadErrorMode
+  RtlUniform
   RtlVirtualUnwind
+  RtlZeroMemory=ntdll_RtlZeroMemory
   strcat=NTDLL_strcat
   strchr=NTDLL_strchr
   strcmp=NTDLL_strcmp
