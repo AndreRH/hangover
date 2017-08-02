@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-enum msvcrt_calls
+enum advapi32_calls
 {
     CALL_ISTEXTUNICODE = 0,
     CALL_REGCLOSEKEY,
