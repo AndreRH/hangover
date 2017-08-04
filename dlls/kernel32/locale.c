@@ -1300,9 +1300,25 @@ struct qemu_EnumSystemLocalesEx
     uint64_t flags;
     uint64_t lparam;
     uint64_t reserved;
+    uint64_t wrapper;
+};
+
+struct qemu_EnumSystemLocalesEx_cb_data
+{
+    uint64_t proc;
+    uint64_t name;
+    uint64_t flags;
+    uint64_t param;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static uint64_t CALLBACK qemu_EnumSystemLocalesEx_guest_cb(struct qemu_EnumSystemLocalesEx_cb_data *data)
+{
+    LOCALE_ENUMPROCEX proc = (LOCALE_ENUMPROCEX)data->proc;
+
+    return proc((WCHAR *)data->name, data->flags, data->param);
+}
 
 WINBASEAPI BOOL WINAPI EnumSystemLocalesEx(LOCALE_ENUMPROCEX proc, DWORD flags, LPARAM lparam, LPVOID reserved)
 {
@@ -1312,6 +1328,7 @@ WINBASEAPI BOOL WINAPI EnumSystemLocalesEx(LOCALE_ENUMPROCEX proc, DWORD flags, 
     call.flags = (uint64_t)flags;
     call.lparam = (uint64_t)lparam;
     call.reserved = (uint64_t)reserved;
+    call.wrapper = (uint64_t)qemu_EnumSystemLocalesEx_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -1320,11 +1337,38 @@ WINBASEAPI BOOL WINAPI EnumSystemLocalesEx(LOCALE_ENUMPROCEX proc, DWORD flags, 
 
 #else
 
+struct param_wrapper
+{
+    uint64_t wrapper;
+    uint64_t guest_cb;
+    uint64_t guest_param;
+};
+
+static BOOL CALLBACK qemu_EnumSystemLocalesEx_host_cb(WCHAR *name, DWORD flags, LPARAM param)
+{
+    struct param_wrapper *data = (struct param_wrapper *)param;
+    struct qemu_EnumSystemLocalesEx_cb_data guest_data = {data->guest_cb, QEMU_H2G(name), flags, data->guest_param};
+    BOOL ret;
+
+    WINE_TRACE("Calling guest proc 0x%lx(%s, 0x%08x, 0x%lx).\n", data->guest_cb,
+            wine_dbgstr_w(name), flags, data->guest_param);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&guest_data));
+    WINE_TRACE("Guest proc returned %u.\n", ret);
+    return ret;
+}
+
 void qemu_EnumSystemLocalesEx(struct qemu_syscall *call)
 {
     struct qemu_EnumSystemLocalesEx *c = (struct qemu_EnumSystemLocalesEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumSystemLocalesEx(QEMU_G2H(c->proc), c->flags, c->lparam, QEMU_G2H(c->reserved));
+    struct param_wrapper data;
+
+    WINE_TRACE("\n");
+    data.wrapper = c->wrapper;
+    data.guest_cb = c->proc;
+    data.guest_param = c->lparam;
+
+    c->super.iret = EnumSystemLocalesEx(c->proc ? qemu_EnumSystemLocalesEx_host_cb : NULL,
+            c->flags, (LPARAM)&data, QEMU_G2H(c->reserved));
 }
 
 #endif
@@ -2085,17 +2129,10 @@ WINBASEAPI BOOL WINAPI EnumSystemLanguageGroupsA(LANGUAGEGROUP_ENUMPROCA pLangGr
 
 #else
 
-struct EnumSystemLanguageGroups_cb_data
-{
-    uint64_t wrapper;
-    uint64_t guest_cb;
-    uint64_t guest_param;
-};
-
 static BOOL CALLBACK qemu_EnumSystemLanguageGroupsA_cb(LGRPID lgrpid, char *num, char *name,
         DWORD flags, LONG_PTR param)
 {
-    struct EnumSystemLanguageGroups_cb_data *data = (struct EnumSystemLanguageGroups_cb_data *)param;
+    struct param_wrapper *data = (struct param_wrapper *)param;
     struct qemu_EnumSystemLanguageGroups_cb_data guest_data = {lgrpid, QEMU_H2G(num), QEMU_H2G(name),
             flags, data->guest_param, data->guest_cb};
     BOOL ret;
@@ -2110,7 +2147,7 @@ static BOOL CALLBACK qemu_EnumSystemLanguageGroupsA_cb(LGRPID lgrpid, char *num,
 void qemu_EnumSystemLanguageGroupsA(struct qemu_syscall *call)
 {
     struct qemu_EnumSystemLanguageGroupsA *c = (struct qemu_EnumSystemLanguageGroupsA *)call;
-    struct EnumSystemLanguageGroups_cb_data data;
+    struct param_wrapper data;
 
     WINE_TRACE("\n");
     data.wrapper = c->wrapper;
@@ -2160,7 +2197,7 @@ WINBASEAPI BOOL WINAPI EnumSystemLanguageGroupsW(LANGUAGEGROUP_ENUMPROCW pLangGr
 static BOOL CALLBACK qemu_EnumSystemLanguageGroupsW_cb(LGRPID lgrpid, WCHAR *num, WCHAR *name,
         DWORD flags, LONG_PTR param)
 {
-    struct EnumSystemLanguageGroups_cb_data *data = (struct EnumSystemLanguageGroups_cb_data *)param;
+    struct param_wrapper *data = (struct param_wrapper *)param;
     struct qemu_EnumSystemLanguageGroups_cb_data guest_data = {lgrpid, QEMU_H2G(num), QEMU_H2G(name),
             flags, data->guest_param, data->guest_cb};
     BOOL ret;
@@ -2175,7 +2212,7 @@ static BOOL CALLBACK qemu_EnumSystemLanguageGroupsW_cb(LGRPID lgrpid, WCHAR *num
 void qemu_EnumSystemLanguageGroupsW(struct qemu_syscall *call)
 {
     struct qemu_EnumSystemLanguageGroupsW *c = (struct qemu_EnumSystemLanguageGroupsW *)call;
-    struct EnumSystemLanguageGroups_cb_data data;
+    struct param_wrapper data;
 
     /* Wrote this based on A, but the tests don't call W, so this is untested. */
     WINE_FIXME("Unverified!\n");
