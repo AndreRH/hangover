@@ -100,7 +100,9 @@ EXPORTS
   RtlAcquirePebLock
   RtlAcquireResourceExclusive
   RtlAcquireResourceShared
+  RtlActivateActivationContext
   RtlAddFunctionTable
+  RtlAddRefActivationContext
   RtlAnsiCharToUnicodeChar
   RtlAnsiStringToUnicodeSize
   RtlAnsiStringToUnicodeString
@@ -125,9 +127,11 @@ EXPORTS
   RtlCopyMemory=ntdll_RtlCopyMemory
   RtlCopyString
   RtlCopyUnicodeString
+  RtlCreateActivationContext
   RtlCreateUnicodeString
   RtlCreateUnicodeStringFromAsciiz
   RtlCreateUserProcess
+  RtlDeactivateActivationContext
   RtlDecodePointer
   RtlDecompressBuffer
   RtlDecompressFragment
@@ -148,11 +152,15 @@ EXPORTS
   RtlEraseUnicodeString
   RtlFillMemory=ntdll_RtlFillMemory
   RtlFillMemoryUlong
+  RtlFindActivationContextSectionGuid
+  RtlFindActivationContextSectionString
   RtlFindCharInUnicodeString
   RtlFirstEntrySList
   RtlFreeAnsiString
   RtlFreeOemString
+  RtlFreeThreadActivationContextStack
   RtlFreeUnicodeString
+  RtlGetActiveActivationContext
   RtlGetCompressionWorkSpaceSize
   RtlGetCurrentProcessorNumberEx
   RtlGetCurrentTransaction
@@ -182,6 +190,7 @@ EXPORTS
   RtlIpv4AddressToStringExW
   RtlIpv4AddressToStringW
   RtlIpv4StringToAddressExW
+  RtlIsActivationContextActive
   RtlIsTextUnicode
   RtlLeaveCriticalSection
   RtlLookupFunctionEntry
@@ -196,7 +205,9 @@ EXPORTS
   RtlPrefixString
   RtlPrefixUnicodeString
   RtlQueryDepthSList
+  RtlQueryInformationActivationContext
   RtlRandom
+  RtlReleaseActivationContext
   RtlReleasePebLock
   RtlReleaseResource
   RtlSetCurrentTransaction
@@ -222,6 +233,7 @@ EXPORTS
   RtlUpperString
   RtlVirtualUnwind
   RtlZeroMemory=ntdll_RtlZeroMemory
+  RtlZombifyActivationContext
   strcat=NTDLL_strcat
   strchr=NTDLL_strchr
   strcmp=NTDLL_strcmp
