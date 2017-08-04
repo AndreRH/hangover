@@ -232,7 +232,7 @@ struct qemu_ExitProcess
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DECLSPEC_NORETURN void WINAPI ExitProcess(UINT exitcode)
+DECLSPEC_NORETURN void WINAPI kernel32_ExitProcess(UINT exitcode)
 {
     struct qemu_ExitProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXITPROCESS);

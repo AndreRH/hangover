@@ -968,6 +968,8 @@ enum kernel32_calls
 #ifdef QEMU_DLL_GUEST
 
 void WINAPI qemu_exception_handler(EXCEPTION_POINTERS *except);
+DECLSPEC_NORETURN void WINAPI kernel32_ExitProcess(UINT exitcode);
+DWORD WINAPI kernel32_GetLastError();
 
 #else
 

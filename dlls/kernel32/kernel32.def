@@ -198,7 +198,7 @@ EXPORTS
   EnumUILanguagesW
   EraseTape
   EscapeCommFunction
-  ExitProcess
+  ExitProcess=kernel32_ExitProcess
   ExitThread
   ExpandEnvironmentStringsA
   ExpandEnvironmentStringsW
@@ -378,7 +378,7 @@ EXPORTS
   GetHandleInformation
   GetLargePageMinimum
   GetLargestConsoleWindowSize
-  GetLastError
+  GetLastError=kernel32_GetLastError
   GetLocaleInfoA
   GetLocaleInfoEx
   GetLocaleInfoW

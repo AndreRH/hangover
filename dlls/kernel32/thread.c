@@ -1038,7 +1038,7 @@ void qemu_SetLastError(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI GetLastError()
+DWORD WINAPI kernel32_GetLastError()
 {
     struct qemu_syscall call;
     call.id = QEMU_SYSCALL_ID(CALL_GETLASTERROR);
