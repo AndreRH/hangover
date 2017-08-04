@@ -1313,7 +1313,7 @@ struct qemu_EnumSystemLocalesEx_cb_data
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t CALLBACK qemu_EnumSystemLocalesEx_guest_cb(struct qemu_EnumSystemLocalesEx_cb_data *data)
+static uint64_t CALLBACK qemu_EnumSystemLocalesEx_cb(struct qemu_EnumSystemLocalesEx_cb_data *data)
 {
     LOCALE_ENUMPROCEX proc = (LOCALE_ENUMPROCEX)data->proc;
 
@@ -1328,7 +1328,7 @@ WINBASEAPI BOOL WINAPI EnumSystemLocalesEx(LOCALE_ENUMPROCEX proc, DWORD flags, 
     call.flags = (uint64_t)flags;
     call.lparam = (uint64_t)lparam;
     call.reserved = (uint64_t)reserved;
-    call.wrapper = (uint64_t)qemu_EnumSystemLocalesEx_guest_cb;
+    call.wrapper = (uint64_t)qemu_EnumSystemLocalesEx_cb;
 
     qemu_syscall(&call.super);
 
@@ -2265,18 +2265,36 @@ struct qemu_EnumLanguageGroupLocalesA
     uint64_t lgrpid;
     uint64_t dwFlags;
     uint64_t lParam;
+    uint64_t wrapper;
+};
+
+struct qemu_EnumLanguageGroupLocalesA_cb_data
+{
+    uint64_t proc;
+    uint64_t lgrpid;
+    uint64_t lcid;
+    uint64_t num;
+    uint64_t param;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static uint64_t WINAPI qemu_EnumLanguageGroupLocalesA_host_cb(struct qemu_EnumLanguageGroupLocalesA_cb_data *data)
+{
+    LANGGROUPLOCALE_ENUMPROCA proc = (LANGGROUPLOCALE_ENUMPROCA)data->proc;
+
+    return proc(data->lgrpid, data->lcid, (char *)data->num, data->param);
+}
 
 WINBASEAPI BOOL WINAPI EnumLanguageGroupLocalesA(LANGGROUPLOCALE_ENUMPROCA pLangGrpLcEnumProc, LGRPID lgrpid, DWORD dwFlags, LONG_PTR lParam)
 {
     struct qemu_EnumLanguageGroupLocalesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMLANGUAGEGROUPLOCALESA);
     call.pLangGrpLcEnumProc = (uint64_t)pLangGrpLcEnumProc;
-    call.lgrpid = (uint64_t)lgrpid;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lParam = (uint64_t)lParam;
+    call.lgrpid = lgrpid;
+    call.dwFlags = dwFlags;
+    call.lParam = lParam;
+    call.wrapper = (uint64_t)qemu_EnumLanguageGroupLocalesA_host_cb;
 
     qemu_syscall(&call.super);
 
@@ -2285,11 +2303,33 @@ WINBASEAPI BOOL WINAPI EnumLanguageGroupLocalesA(LANGGROUPLOCALE_ENUMPROCA pLang
 
 #else
 
+static BOOL CALLBACK qemu_EnumLanguageGroupLocalesA_host_cb(LGRPID lgrpid, LCID lcid, char *num,
+        LONG_PTR param)
+{
+    struct param_wrapper *data = (struct param_wrapper *)param;
+    struct qemu_EnumLanguageGroupLocalesA_cb_data guest_data = {data->guest_cb, lgrpid, lcid, QEMU_H2G(num),
+            data->guest_param};
+    BOOL ret;
+
+    WINE_TRACE("Calling guest proc 0x%lx(0x%x, 0x%x, %s, 0x%lx).\n", data->guest_cb,
+            lgrpid, lcid, num, data->guest_param);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&guest_data));
+    WINE_TRACE("Guest proc returned %u.\n", ret);
+    return ret;
+}
+
 void qemu_EnumLanguageGroupLocalesA(struct qemu_syscall *call)
 {
     struct qemu_EnumLanguageGroupLocalesA *c = (struct qemu_EnumLanguageGroupLocalesA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumLanguageGroupLocalesA(QEMU_G2H(c->pLangGrpLcEnumProc), c->lgrpid, c->dwFlags, c->lParam);
+    struct param_wrapper data;
+
+    WINE_TRACE("\n");
+    data.wrapper = c->wrapper;
+    data.guest_cb = c->pLangGrpLcEnumProc;
+    data.guest_param = c->lParam;
+
+    c->super.iret = EnumLanguageGroupLocalesA(c->pLangGrpLcEnumProc ? qemu_EnumLanguageGroupLocalesA_host_cb : NULL,
+            c->lgrpid, c->dwFlags, (LONG_PTR)&data);
 }
 
 #endif
