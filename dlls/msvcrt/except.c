@@ -56,7 +56,7 @@ void qemu___cxxframehandler(struct qemu_syscall *c)
 
 #ifdef QEMU_DLL_GUEST
 
-void __cdecl MSVCRT__setjmp(jmp_buf buf, void *ctx)
+void CDECL MSVCRT__setjmp_log()
 {
     struct qemu_syscall call;
     call.id = QEMU_SYSCALL_ID(CALL__SETJMP);
@@ -64,11 +64,51 @@ void __cdecl MSVCRT__setjmp(jmp_buf buf, void *ctx)
     qemu_syscall(&call);
 }
 
+#define __ASM_NAME(name) name
+#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.def " #name suffix "; .scl 2; .type 32; .endef\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc");
+#define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
+
+__ASM_GLOBAL_FUNC( MSVCRT__setjmp,
+                   "jmp " __ASM_NAME("MSVCRT__setjmpex") );
+
+__ASM_GLOBAL_FUNC( MSVCRT__setjmpex,
+                   "subq $0x28,%rsp\n\t"
+                   "movq %rcx,0x20(%rsp)\n\t"
+                   "call " __ASM_NAME("MSVCRT__setjmp_log") "\n\t"
+                   "movq 0x20(%rsp),%rcx\n\t"
+                   "addq $0x28,%rsp\n\t"
+                   "movq %rdx,(%rcx)\n\t"          /* jmp_buf->Frame */
+                   "movq %rbx,0x8(%rcx)\n\t"       /* jmp_buf->Rbx */
+                   "leaq 0x8(%rsp),%rax\n\t"
+                   "movq %rax,0x10(%rcx)\n\t"      /* jmp_buf->Rsp */
+                   "movq %rbp,0x18(%rcx)\n\t"      /* jmp_buf->Rbp */
+                   "movq %rsi,0x20(%rcx)\n\t"      /* jmp_buf->Rsi */
+                   "movq %rdi,0x28(%rcx)\n\t"      /* jmp_buf->Rdi */
+                   "movq %r12,0x30(%rcx)\n\t"      /* jmp_buf->R12 */
+                   "movq %r13,0x38(%rcx)\n\t"      /* jmp_buf->R13 */
+                   "movq %r14,0x40(%rcx)\n\t"      /* jmp_buf->R14 */
+                   "movq %r15,0x48(%rcx)\n\t"      /* jmp_buf->R15 */
+                   "movq (%rsp),%rax\n\t"
+                   "movq %rax,0x50(%rcx)\n\t"      /* jmp_buf->Rip */
+                   "movdqa %xmm6,0x60(%rcx)\n\t"   /* jmp_buf->Xmm6 */
+                   "movdqa %xmm7,0x70(%rcx)\n\t"   /* jmp_buf->Xmm7 */
+                   "movdqa %xmm8,0x80(%rcx)\n\t"   /* jmp_buf->Xmm8 */
+                   "movdqa %xmm9,0x90(%rcx)\n\t"   /* jmp_buf->Xmm9 */
+                   "movdqa %xmm10,0xa0(%rcx)\n\t"  /* jmp_buf->Xmm10 */
+                   "movdqa %xmm11,0xb0(%rcx)\n\t"  /* jmp_buf->Xmm11 */
+                   "movdqa %xmm12,0xc0(%rcx)\n\t"  /* jmp_buf->Xmm12 */
+                   "movdqa %xmm13,0xd0(%rcx)\n\t"  /* jmp_buf->Xmm13 */
+                   "movdqa %xmm14,0xe0(%rcx)\n\t"  /* jmp_buf->Xmm14 */
+                   "movdqa %xmm15,0xf0(%rcx)\n\t"  /* jmp_buf->Xmm15 */
+                   "xorq %rax,%rax\n\t"
+                   "retq" );
+
 #else
 
 void qemu__setjmp(struct qemu_syscall *c)
 {
-    WINE_FIXME("Stub!\n");
+    /* Only called for the purpose of writing something in the trace. */
+    WINE_FIXME("\n");
 }
 
 #endif
@@ -108,7 +148,8 @@ void __cdecl MSVCRT_longjmp(jmp_buf jmp, int retval)
 
 void qemu_longjmp(struct qemu_syscall *c)
 {
-    WINE_FIXME("Stub!\n");
+    /* Only called for the purpose of writing something in the trace. */
+    WINE_FIXME("\n");
 }
 
 #endif
