@@ -1,7 +1,10 @@
-all: consolehandler.exe critsection.exe helloworld.exe lasterror.exe library.exe process.exe startupinfo.exe time.exe virtual.exe version.exe fileops.exe format_msg.exe misc.exe
+all: consolehandler.exe critsection.exe helloworld.exe lasterror.exe library.exe process.exe startupinfo.exe time.exe virtual.exe version.exe fileops.exe format_msg.exe misc.exe except.exe
 
 format_msg.exe: format_msg.o format_msg.res Makefile
 	x86_64-w64-mingw32-gcc format_msg.o format_msg.res -o $@ -Wl,-eWinMainCRTStartup
+
+except.exe: except.o Makefile
+	x86_64-w64-mingw32-gcc except.o -o $@ -Wl,-eWinMainCRTStartup
 
 misc.exe: misc.o Makefile
 	x86_64-w64-mingw32-gcc misc.o -o $@ -Wl,-eWinMainCRTStartup
