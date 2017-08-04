@@ -209,8 +209,12 @@ enum ntdll_calls
     CALL_RTLGETFULLPATHNAME_U,
     CALL_RTLGETLONGESTNTPATHLENGTH,
     CALL_RTLGETNTGLOBALFLAGS,
+    CALL_RTLGETNTPRODUCTTYPE,
+    CALL_RTLGETNTVERSIONNUMBERS,
     CALL_RTLGETPROCESSHEAPS,
+    CALL_RTLGETPRODUCTINFO,
     CALL_RTLGETTHREADERRORMODE,
+    CALL_RTLGETVERSION,
     CALL_RTLGUIDFROMSTRING,
     CALL_RTLHASHUNICODESTRING,
     CALL_RTLINITANSISTRING,
@@ -287,6 +291,7 @@ enum ntdll_calls
     CALL_RTLUPPERCHAR,
     CALL_RTLUPPERSTRING,
     CALL_RTLVALIDATEHEAP,
+    CALL_RTLVERIFYVERSIONINFO,
     CALL_RTLVIRTUALUNWIND,
     CALL_RTLWALKHEAP,
     CALL_RTLZEROMEMORY,
@@ -521,8 +526,12 @@ void qemu_RtlGetCurrentTransaction(struct qemu_syscall *call);
 void qemu_RtlGetFullPathName_U(struct qemu_syscall *call);
 void qemu_RtlGetLongestNtPathLength(struct qemu_syscall *call);
 void qemu_RtlGetNtGlobalFlags(struct qemu_syscall *call);
+void qemu_RtlGetNtProductType(struct qemu_syscall *call);
+void qemu_RtlGetNtVersionNumbers(struct qemu_syscall *call);
 void qemu_RtlGetProcessHeaps(struct qemu_syscall *call);
+void qemu_RtlGetProductInfo(struct qemu_syscall *call);
 void qemu_RtlGetThreadErrorMode(struct qemu_syscall *call);
+void qemu_RtlGetVersion(struct qemu_syscall *call);
 void qemu_RtlGUIDFromString(struct qemu_syscall *call);
 void qemu_RtlHashUnicodeString(struct qemu_syscall *call);
 void qemu_RtlInitAnsiString(struct qemu_syscall *call);
@@ -599,6 +608,7 @@ void qemu_RtlUpcaseUnicodeToOemN(struct qemu_syscall *call);
 void qemu_RtlUpperChar(struct qemu_syscall *call);
 void qemu_RtlUpperString(struct qemu_syscall *call);
 void qemu_RtlValidateHeap(struct qemu_syscall *call);
+void qemu_RtlVerifyVersionInfo(struct qemu_syscall *call);
 void qemu_RtlVirtualUnwind(struct qemu_syscall *call);
 void qemu_RtlWalkHeap(struct qemu_syscall *call);
 void qemu_RtlZeroMemory(struct qemu_syscall *call);

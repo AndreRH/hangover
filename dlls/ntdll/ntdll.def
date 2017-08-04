@@ -208,8 +208,12 @@ EXPORTS
   RtlGetFullPathName_U
   RtlGetLongestNtPathLength
   RtlGetNtGlobalFlags
+  RtlGetNtProductType
+  RtlGetNtVersionNumbers
   RtlGetProcessHeaps
+  RtlGetProductInfo
   RtlGetThreadErrorMode
+  RtlGetVersion
   RtlGUIDFromString
   RtlHashUnicodeString
   RtlInitAnsiString
@@ -286,6 +290,7 @@ EXPORTS
   RtlUpperChar
   RtlUpperString
   RtlValidateHeap
+  RtlVerifyVersionInfo
   RtlVirtualUnwind
   RtlWalkHeap
   RtlZeroMemory=ntdll_RtlZeroMemory
