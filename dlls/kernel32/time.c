@@ -182,7 +182,7 @@ WINBASEAPI DWORD WINAPI GetTimeZoneInformation(LPTIME_ZONE_INFORMATION tzinfo)
 void qemu_GetTimeZoneInformation(struct qemu_syscall *call)
 {
     struct qemu_GetTimeZoneInformation *c = (struct qemu_GetTimeZoneInformation *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTimeZoneInformation(QEMU_G2H(c->tzinfo));
 }
 
@@ -218,7 +218,7 @@ extern BOOL WINAPI GetTimeZoneInformationForYear(USHORT wYear, PDYNAMIC_TIME_ZON
 void qemu_GetTimeZoneInformationForYear(struct qemu_syscall *call)
 {
     struct qemu_GetTimeZoneInformationForYear *c = (struct qemu_GetTimeZoneInformationForYear *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTimeZoneInformationForYear(c->wYear, QEMU_G2H(c->pdtzi), QEMU_G2H(c->ptzi));
 }
 
@@ -282,7 +282,7 @@ WINBASEAPI BOOL WINAPI SystemTimeToTzSpecificLocalTime(const TIME_ZONE_INFORMATI
 void qemu_SystemTimeToTzSpecificLocalTime(struct qemu_syscall *call)
 {
     struct qemu_SystemTimeToTzSpecificLocalTime *c = (struct qemu_SystemTimeToTzSpecificLocalTime *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SystemTimeToTzSpecificLocalTime(QEMU_G2H(c->lpTimeZoneInformation), QEMU_G2H(c->lpUniversalTime), QEMU_G2H(c->lpLocalTime));
 }
 
@@ -316,7 +316,7 @@ WINBASEAPI BOOL WINAPI TzSpecificLocalTimeToSystemTime(const TIME_ZONE_INFORMATI
 void qemu_TzSpecificLocalTimeToSystemTime(struct qemu_syscall *call)
 {
     struct qemu_TzSpecificLocalTimeToSystemTime *c = (struct qemu_TzSpecificLocalTimeToSystemTime *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = TzSpecificLocalTimeToSystemTime(QEMU_G2H(c->lpTimeZoneInformation), QEMU_G2H(c->lpLocalTime), QEMU_G2H(c->lpUniversalTime));
 }
 
@@ -372,7 +372,7 @@ WINBASEAPI VOID WINAPI GetSystemTimePreciseAsFileTime(LPFILETIME time)
 void qemu_GetSystemTimePreciseAsFileTime(struct qemu_syscall *call)
 {
     struct qemu_GetSystemTimePreciseAsFileTime *c = (struct qemu_GetSystemTimePreciseAsFileTime *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     GetSystemTimePreciseAsFileTime(QEMU_G2H(c->time));
 }
 
@@ -433,11 +433,11 @@ WINBASEAPI int WINAPI GetCalendarInfoA(LCID lcid, CALID Calendar, CALTYPE CalTyp
 {
     struct qemu_GetCalendarInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCALENDARINFOA);
-    call.lcid = (uint64_t)lcid;
-    call.Calendar = (uint64_t)Calendar;
-    call.CalType = (uint64_t)CalType;
+    call.lcid = lcid;
+    call.Calendar = Calendar;
+    call.CalType = CalType;
     call.lpCalData = (uint64_t)lpCalData;
-    call.cchData = (uint64_t)cchData;
+    call.cchData = cchData;
     call.lpValue = (uint64_t)lpValue;
 
     qemu_syscall(&call.super);
@@ -450,7 +450,7 @@ WINBASEAPI int WINAPI GetCalendarInfoA(LCID lcid, CALID Calendar, CALTYPE CalTyp
 void qemu_GetCalendarInfoA(struct qemu_syscall *call)
 {
     struct qemu_GetCalendarInfoA *c = (struct qemu_GetCalendarInfoA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCalendarInfoA(c->lcid, c->Calendar, c->CalType, QEMU_G2H(c->lpCalData), c->cchData, QEMU_G2H(c->lpValue));
 }
 
@@ -473,11 +473,11 @@ WINBASEAPI int WINAPI GetCalendarInfoW(LCID Locale, CALID Calendar, CALTYPE CalT
 {
     struct qemu_GetCalendarInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCALENDARINFOW);
-    call.Locale = (uint64_t)Locale;
-    call.Calendar = (uint64_t)Calendar;
-    call.CalType = (uint64_t)CalType;
+    call.Locale = Locale;
+    call.Calendar = Calendar;
+    call.CalType = CalType;
     call.lpCalData = (uint64_t)lpCalData;
-    call.cchData = (uint64_t)cchData;
+    call.cchData = cchData;
     call.lpValue = (uint64_t)lpValue;
 
     qemu_syscall(&call.super);
@@ -490,7 +490,7 @@ WINBASEAPI int WINAPI GetCalendarInfoW(LCID Locale, CALID Calendar, CALTYPE CalT
 void qemu_GetCalendarInfoW(struct qemu_syscall *call)
 {
     struct qemu_GetCalendarInfoW *c = (struct qemu_GetCalendarInfoW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCalendarInfoW(c->Locale, c->Calendar, c->CalType, QEMU_G2H(c->lpCalData), c->cchData, QEMU_G2H(c->lpValue));
 }
 
@@ -670,7 +670,7 @@ WINBASEAPI BOOL WINAPI FileTimeToLocalFileTime(const FILETIME *utcft, LPFILETIME
 void qemu_FileTimeToLocalFileTime(struct qemu_syscall *call)
 {
     struct qemu_FileTimeToLocalFileTime *c = (struct qemu_FileTimeToLocalFileTime *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FileTimeToLocalFileTime(QEMU_G2H(c->utcft), QEMU_G2H(c->localft));
 }
 
@@ -702,7 +702,7 @@ WINBASEAPI BOOL WINAPI FileTimeToSystemTime(const FILETIME *ft, LPSYSTEMTIME sys
 void qemu_FileTimeToSystemTime(struct qemu_syscall *call)
 {
     struct qemu_FileTimeToSystemTime *c = (struct qemu_FileTimeToSystemTime *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FileTimeToSystemTime(QEMU_G2H(c->ft), QEMU_G2H(c->syst));
 }
 
@@ -734,7 +734,7 @@ WINBASEAPI BOOL WINAPI SystemTimeToFileTime(const SYSTEMTIME *syst, LPFILETIME f
 void qemu_SystemTimeToFileTime(struct qemu_syscall *call)
 {
     struct qemu_SystemTimeToFileTime *c = (struct qemu_SystemTimeToFileTime *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     c->super.iret = SystemTimeToFileTime(QEMU_G2H(c->syst), QEMU_G2H(c->ft));
 }
 
@@ -822,7 +822,7 @@ WINBASEAPI VOID WINAPI GetSystemTime(LPSYSTEMTIME systime)
 void qemu_GetSystemTime(struct qemu_syscall *call)
 {
     struct qemu_GetSystemTime *c = (struct qemu_GetSystemTime *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     GetSystemTime(QEMU_G2H(c->systime));
 }
 
@@ -886,7 +886,7 @@ WINBASEAPI BOOL WINAPI DosDateTimeToFileTime(WORD fatdate, WORD fattime, LPFILET
 void qemu_DosDateTimeToFileTime(struct qemu_syscall *call)
 {
     struct qemu_DosDateTimeToFileTime *c = (struct qemu_DosDateTimeToFileTime *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     c->super.iret = DosDateTimeToFileTime(c->fatdate, c->fattime, QEMU_G2H(c->ft));
 }
 
@@ -920,7 +920,7 @@ WINBASEAPI BOOL WINAPI FileTimeToDosDateTime(const FILETIME *ft, LPWORD fatdate,
 void qemu_FileTimeToDosDateTime(struct qemu_syscall *call)
 {
     struct qemu_FileTimeToDosDateTime *c = (struct qemu_FileTimeToDosDateTime *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FileTimeToDosDateTime(QEMU_G2H(c->ft), QEMU_G2H(c->fatdate), QEMU_G2H(c->fattime));
 }
 
@@ -956,7 +956,7 @@ extern BOOL WINAPI GetSystemTimes(LPFILETIME lpIdleTime, LPFILETIME lpKernelTime
 void qemu_GetSystemTimes(struct qemu_syscall *call)
 {
     struct qemu_GetSystemTimes *c = (struct qemu_GetSystemTimes *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetSystemTimes(QEMU_G2H(c->lpIdleTime), QEMU_G2H(c->lpKernelTime), QEMU_G2H(c->lpUserTime));
 }
 
@@ -986,7 +986,7 @@ WINBASEAPI DWORD WINAPI GetDynamicTimeZoneInformation(DYNAMIC_TIME_ZONE_INFORMAT
 void qemu_GetDynamicTimeZoneInformation(struct qemu_syscall *call)
 {
     struct qemu_GetDynamicTimeZoneInformation *c = (struct qemu_GetDynamicTimeZoneInformation *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDynamicTimeZoneInformation(QEMU_G2H(c->tzinfo));
 }
 
