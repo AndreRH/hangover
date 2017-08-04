@@ -117,6 +117,7 @@ enum ntdll_calls
     CALL_RTLACTIVATEACTIVATIONCONTEXT,
     CALL_RTLADDFUNCTIONTABLE,
     CALL_RTLADDREFACTIVATIONCONTEXT,
+    CALL_RTLALLOCATEHEAP,
     CALL_RTLANSICHARTOUNICODECHAR,
     CALL_RTLANSISTRINGTOUNICODESIZE,
     CALL_RTLANSISTRINGTOUNICODESTRING,
@@ -129,6 +130,7 @@ enum ntdll_calls
     CALL_RTLASSERT,
     CALL_RTLCAPTURECONTEXT,
     CALL_RTLCHARTOINTEGER,
+    CALL_RTLCOMPACTHEAP,
     CALL_RTLCOMPAREMEMORY,
     CALL_RTLCOMPAREMEMORYULONG,
     CALL_RTLCOMPARESTRING,
@@ -142,6 +144,7 @@ enum ntdll_calls
     CALL_RTLCOPYSTRING,
     CALL_RTLCOPYUNICODESTRING,
     CALL_RTLCREATEACTIVATIONCONTEXT,
+    CALL_RTLCREATEHEAP,
     CALL_RTLCREATEUNICODESTRING,
     CALL_RTLCREATEUNICODESTRINGFROMASCIIZ,
     CALL_RTLCREATEUSERPROCESS,
@@ -152,6 +155,7 @@ enum ntdll_calls
     CALL_RTLDELETECRITICALSECTION,
     CALL_RTLDELETERESOURCE,
     CALL_RTLDELETESECURITYOBJECT,
+    CALL_RTLDESTROYHEAP,
     CALL_RTLDETERMINEDOSPATHNAMETYPE_U,
     CALL_RTLDOSPATHNAMETONTPATHNAME_U,
     CALL_RTLDOSSEARCHPATH_U,
@@ -174,6 +178,7 @@ enum ntdll_calls
     CALL_RTLFINDCHARINUNICODESTRING,
     CALL_RTLFIRSTENTRYSLIST,
     CALL_RTLFREEANSISTRING,
+    CALL_RTLFREEHEAP,
     CALL_RTLFREEOEMSTRING,
     CALL_RTLFREETHREADACTIVATIONCONTEXTSTACK,
     CALL_RTLFREEUNICODESTRING,
@@ -184,6 +189,7 @@ enum ntdll_calls
     CALL_RTLGETCURRENTTRANSACTION,
     CALL_RTLGETFULLPATHNAME_U,
     CALL_RTLGETLONGESTNTPATHLENGTH,
+    CALL_RTLGETPROCESSHEAPS,
     CALL_RTLGETTHREADERRORMODE,
     CALL_RTLGUIDFROMSTRING,
     CALL_RTLHASHUNICODESTRING,
@@ -215,6 +221,7 @@ enum ntdll_calls
     CALL_RTLISNAMELEGALDOS8DOT3,
     CALL_RTLISTEXTUNICODE,
     CALL_RTLLEAVECRITICALSECTION,
+    CALL_RTLLOCKHEAP,
     CALL_RTLLOOKUPFUNCTIONENTRY,
     CALL_RTLMAPGENERICMASK,
     CALL_RTLMOVEMEMORY,
@@ -227,14 +234,18 @@ enum ntdll_calls
     CALL_RTLPREFIXSTRING,
     CALL_RTLPREFIXUNICODESTRING,
     CALL_RTLQUERYDEPTHSLIST,
+    CALL_RTLQUERYHEAPINFORMATION,
     CALL_RTLQUERYINFORMATIONACTIVATIONCONTEXT,
     CALL_RTLRANDOM,
+    CALL_RTLREALLOCATEHEAP,
     CALL_RTLRELEASEACTIVATIONCONTEXT,
     CALL_RTLRELEASEPEBLOCK,
     CALL_RTLRELEASERESOURCE,
     CALL_RTLSETCURRENTDIRECTORY_U,
     CALL_RTLSETCURRENTTRANSACTION,
+    CALL_RTLSETHEAPINFORMATION,
     CALL_RTLSETTHREADERRORMODE,
+    CALL_RTLSIZEHEAP,
     CALL_RTLSTRINGFROMGUID,
     CALL_RTLUNICODESTRINGTOANSISIZE,
     CALL_RTLUNICODESTRINGTOANSISTRING,
@@ -245,6 +256,7 @@ enum ntdll_calls
     CALL_RTLUNICODETOMULTIBYTESIZE,
     CALL_RTLUNICODETOOEMN,
     CALL_RTLUNIFORM,
+    CALL_RTLUNLOCKHEAP,
     CALL_RTLUPCASEUNICODECHAR,
     CALL_RTLUPCASEUNICODESTRING,
     CALL_RTLUPCASEUNICODESTRINGTOANSISTRING,
@@ -254,7 +266,9 @@ enum ntdll_calls
     CALL_RTLUPCASEUNICODETOOEMN,
     CALL_RTLUPPERCHAR,
     CALL_RTLUPPERSTRING,
+    CALL_RTLVALIDATEHEAP,
     CALL_RTLVIRTUALUNWIND,
+    CALL_RTLWALKHEAP,
     CALL_RTLZEROMEMORY,
     CALL_RTLZOMBIFYACTIVATIONCONTEXT,
     CALL_STRCAT,
@@ -395,6 +409,7 @@ void qemu_RtlAcquireResourceShared(struct qemu_syscall *call);
 void qemu_RtlActivateActivationContext(struct qemu_syscall *call);
 void qemu_RtlAddFunctionTable(struct qemu_syscall *call);
 void qemu_RtlAddRefActivationContext(struct qemu_syscall *call);
+void qemu_RtlAllocateHeap(struct qemu_syscall *call);
 void qemu_RtlAnsiCharToUnicodeChar(struct qemu_syscall *call);
 void qemu_RtlAnsiStringToUnicodeSize(struct qemu_syscall *call);
 void qemu_RtlAnsiStringToUnicodeString(struct qemu_syscall *call);
@@ -407,6 +422,7 @@ void qemu_RtlAreAnyAccessesGranted(struct qemu_syscall *call);
 void qemu_RtlAssert(struct qemu_syscall *call);
 void qemu_RtlCaptureContext(struct qemu_syscall *call);
 void qemu_RtlCharToInteger(struct qemu_syscall *call);
+void qemu_RtlCompactHeap(struct qemu_syscall *call);
 void qemu_RtlCompareMemory(struct qemu_syscall *call);
 void qemu_RtlCompareMemoryUlong(struct qemu_syscall *call);
 void qemu_RtlCompareString(struct qemu_syscall *call);
@@ -420,6 +436,7 @@ void qemu_RtlCopyMemory(struct qemu_syscall *call);
 void qemu_RtlCopyString(struct qemu_syscall *call);
 void qemu_RtlCopyUnicodeString(struct qemu_syscall *call);
 void qemu_RtlCreateActivationContext(struct qemu_syscall *call);
+void qemu_RtlCreateHeap(struct qemu_syscall *call);
 void qemu_RtlCreateUnicodeString(struct qemu_syscall *call);
 void qemu_RtlCreateUnicodeStringFromAsciiz(struct qemu_syscall *call);
 void qemu_RtlCreateUserProcess(struct qemu_syscall *call);
@@ -430,6 +447,7 @@ void qemu_RtlDecompressFragment(struct qemu_syscall *call);
 void qemu_RtlDeleteCriticalSection(struct qemu_syscall *call);
 void qemu_RtlDeleteResource(struct qemu_syscall *call);
 void qemu_RtlDeleteSecurityObject(struct qemu_syscall *call);
+void qemu_RtlDestroyHeap(struct qemu_syscall *call);
 void qemu_RtlDetermineDosPathNameType_U(struct qemu_syscall *call);
 void qemu_RtlDosPathNameToNtPathName_U(struct qemu_syscall *call);
 void qemu_RtlDosSearchPath_U(struct qemu_syscall *call);
@@ -452,6 +470,7 @@ void qemu_RtlFindActivationContextSectionString(struct qemu_syscall *call);
 void qemu_RtlFindCharInUnicodeString(struct qemu_syscall *call);
 void qemu_RtlFirstEntrySList(struct qemu_syscall *call);
 void qemu_RtlFreeAnsiString(struct qemu_syscall *call);
+void qemu_RtlFreeHeap(struct qemu_syscall *call);
 void qemu_RtlFreeOemString(struct qemu_syscall *call);
 void qemu_RtlFreeThreadActivationContextStack(struct qemu_syscall *call);
 void qemu_RtlFreeUnicodeString(struct qemu_syscall *call);
@@ -462,6 +481,7 @@ void qemu_RtlGetCurrentProcessorNumberEx(struct qemu_syscall *call);
 void qemu_RtlGetCurrentTransaction(struct qemu_syscall *call);
 void qemu_RtlGetFullPathName_U(struct qemu_syscall *call);
 void qemu_RtlGetLongestNtPathLength(struct qemu_syscall *call);
+void qemu_RtlGetProcessHeaps(struct qemu_syscall *call);
 void qemu_RtlGetThreadErrorMode(struct qemu_syscall *call);
 void qemu_RtlGUIDFromString(struct qemu_syscall *call);
 void qemu_RtlHashUnicodeString(struct qemu_syscall *call);
@@ -493,6 +513,7 @@ void qemu_RtlIsDosDeviceName_U(struct qemu_syscall *call);
 void qemu_RtlIsNameLegalDOS8Dot3(struct qemu_syscall *call);
 void qemu_RtlIsTextUnicode(struct qemu_syscall *call);
 void qemu_RtlLeaveCriticalSection(struct qemu_syscall *call);
+void qemu_RtlLockHeap(struct qemu_syscall *call);
 void qemu_RtlLookupFunctionEntry(struct qemu_syscall *call);
 void qemu_RtlMapGenericMask(struct qemu_syscall *call);
 void qemu_RtlMoveMemory(struct qemu_syscall *call);
@@ -505,14 +526,18 @@ void qemu_RtlOemToUnicodeN(struct qemu_syscall *call);
 void qemu_RtlPrefixString(struct qemu_syscall *call);
 void qemu_RtlPrefixUnicodeString(struct qemu_syscall *call);
 void qemu_RtlQueryDepthSList(struct qemu_syscall *call);
+void qemu_RtlQueryHeapInformation(struct qemu_syscall *call);
 void qemu_RtlQueryInformationActivationContext(struct qemu_syscall *call);
 void qemu_RtlRandom(struct qemu_syscall *call);
+void qemu_RtlReAllocateHeap(struct qemu_syscall *call);
 void qemu_RtlReleaseActivationContext(struct qemu_syscall *call);
 void qemu_RtlReleasePebLock(struct qemu_syscall *call);
 void qemu_RtlReleaseResource(struct qemu_syscall *call);
 void qemu_RtlSetCurrentDirectory_U(struct qemu_syscall *call);
 void qemu_RtlSetCurrentTransaction(struct qemu_syscall *call);
+void qemu_RtlSetHeapInformation(struct qemu_syscall *call);
 void qemu_RtlSetThreadErrorMode(struct qemu_syscall *call);
+void qemu_RtlSizeHeap(struct qemu_syscall *call);
 void qemu_RtlStringFromGUID(struct qemu_syscall *call);
 void qemu_RtlUnicodeStringToAnsiSize(struct qemu_syscall *call);
 void qemu_RtlUnicodeStringToAnsiString(struct qemu_syscall *call);
@@ -523,6 +548,7 @@ void qemu_RtlUnicodeToMultiByteN(struct qemu_syscall *call);
 void qemu_RtlUnicodeToMultiByteSize(struct qemu_syscall *call);
 void qemu_RtlUnicodeToOemN(struct qemu_syscall *call);
 void qemu_RtlUniform(struct qemu_syscall *call);
+void qemu_RtlUnlockHeap(struct qemu_syscall *call);
 void qemu_RtlUpcaseUnicodeChar(struct qemu_syscall *call);
 void qemu_RtlUpcaseUnicodeString(struct qemu_syscall *call);
 void qemu_RtlUpcaseUnicodeStringToAnsiString(struct qemu_syscall *call);
@@ -532,7 +558,9 @@ void qemu_RtlUpcaseUnicodeToMultiByteN(struct qemu_syscall *call);
 void qemu_RtlUpcaseUnicodeToOemN(struct qemu_syscall *call);
 void qemu_RtlUpperChar(struct qemu_syscall *call);
 void qemu_RtlUpperString(struct qemu_syscall *call);
+void qemu_RtlValidateHeap(struct qemu_syscall *call);
 void qemu_RtlVirtualUnwind(struct qemu_syscall *call);
+void qemu_RtlWalkHeap(struct qemu_syscall *call);
 void qemu_RtlZeroMemory(struct qemu_syscall *call);
 void qemu_RtlZombifyActivationContext(struct qemu_syscall *call);
 void qemu_strcat(struct qemu_syscall *call);

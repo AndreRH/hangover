@@ -116,6 +116,7 @@ EXPORTS
   RtlActivateActivationContext
   RtlAddFunctionTable
   RtlAddRefActivationContext
+  RtlAllocateHeap
   RtlAnsiCharToUnicodeChar
   RtlAnsiStringToUnicodeSize
   RtlAnsiStringToUnicodeString
@@ -128,6 +129,7 @@ EXPORTS
   RtlAssert
   RtlCaptureContext
   RtlCharToInteger
+  RtlCompactHeap
   RtlCompareMemory=
   RtlCompareMemoryUlong
   RtlCompareString
@@ -141,6 +143,7 @@ EXPORTS
   RtlCopyString
   RtlCopyUnicodeString
   RtlCreateActivationContext
+  RtlCreateHeap
   RtlCreateUnicodeString
   RtlCreateUnicodeStringFromAsciiz
   RtlCreateUserProcess
@@ -151,6 +154,7 @@ EXPORTS
   RtlDeleteCriticalSection
   RtlDeleteResource
   RtlDeleteSecurityObject
+  RtlDestroyHeap
   RtlDetermineDosPathNameType_U
   RtlDosPathNameToNtPathName_U
   RtlDosSearchPath_U
@@ -173,6 +177,7 @@ EXPORTS
   RtlFindCharInUnicodeString
   RtlFirstEntrySList
   RtlFreeAnsiString
+  RtlFreeHeap
   RtlFreeOemString
   RtlFreeThreadActivationContextStack
   RtlFreeUnicodeString
@@ -183,6 +188,7 @@ EXPORTS
   RtlGetCurrentTransaction
   RtlGetFullPathName_U
   RtlGetLongestNtPathLength
+  RtlGetProcessHeaps
   RtlGetThreadErrorMode
   RtlGUIDFromString
   RtlHashUnicodeString
@@ -214,6 +220,7 @@ EXPORTS
   RtlIsNameLegalDOS8Dot3
   RtlIsTextUnicode
   RtlLeaveCriticalSection
+  RtlLockHeap
   RtlLookupFunctionEntry
   RtlMapGenericMask
   RtlMoveMemory=ntdll_RtlMoveMemory
@@ -226,14 +233,18 @@ EXPORTS
   RtlPrefixString
   RtlPrefixUnicodeString
   RtlQueryDepthSList
+  RtlQueryHeapInformation
   RtlQueryInformationActivationContext
   RtlRandom
+  RtlReAllocateHeap
   RtlReleaseActivationContext
   RtlReleasePebLock
   RtlReleaseResource
   RtlSetCurrentDirectory_U
   RtlSetCurrentTransaction
+  RtlSetHeapInformation
   RtlSetThreadErrorMode
+  RtlSizeHeap
   RtlStringFromGUID
   RtlUnicodeStringToAnsiSize
   RtlUnicodeStringToAnsiString
@@ -244,6 +255,7 @@ EXPORTS
   RtlUnicodeToMultiByteSize
   RtlUnicodeToOemN
   RtlUniform
+  RtlUnlockHeap
   RtlUpcaseUnicodeChar
   RtlUpcaseUnicodeString
   RtlUpcaseUnicodeStringToAnsiString
@@ -253,7 +265,9 @@ EXPORTS
   RtlUpcaseUnicodeToOemN
   RtlUpperChar
   RtlUpperString
+  RtlValidateHeap
   RtlVirtualUnwind
+  RtlWalkHeap
   RtlZeroMemory=ntdll_RtlZeroMemory
   RtlZombifyActivationContext
   strcat=NTDLL_strcat
