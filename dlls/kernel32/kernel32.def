@@ -322,6 +322,9 @@ EXPORTS
   GetCurrentConsoleFont
   GetCurrentDirectoryA
   GetCurrentDirectoryW
+  GetCurrentPackageFamilyName
+  GetCurrentPackageFullName
+  GetCurrentPackageId
   GetCurrentProcess
   GetCurrentProcessId
   GetCurrentThread
@@ -409,6 +412,7 @@ EXPORTS
   GetNumberOfConsoleMouseButtons
   GetOEMCP
   GetOverlappedResult
+  GetPackageFullName
   GetPhysicallyInstalledSystemMemory
   GetPriorityClass
   GetPrivateProfileIntA
@@ -436,6 +440,7 @@ EXPORTS
   GetProcessTimes
   GetProcessVersion
   GetProcessWorkingSetSize
+  GetProductInfo
   GetProfileIntA
   GetProfileIntW
   GetProfileSectionA
@@ -563,9 +568,13 @@ EXPORTS
   InitializeCriticalSectionAndSpinCount
   InitializeCriticalSectionEx
   InitializeProcThreadAttributeList
+  InitializeSListHead=ntdll.RtlInitializeSListHead
   InitOnceBeginInitialize
   InitOnceComplete
   InitOnceExecuteOnce
+  InterlockedFlushSList=ntdll.RtlInterlockedFlushSList
+  InterlockedPopEntrySList=ntdll.RtlInterlockedPopEntrySList
+  InterlockedPushEntrySList=ntdll.RtlInterlockedPushEntrySList
   InvalidateNLSCache
   IsBadCodePtr
   IsBadHugeReadPtr
@@ -715,6 +724,7 @@ EXPORTS
   PulseEvent
   PurgeComm
   QueryActCtxW
+  QueryDepthSList=ntdll.RtlQueryDepthSList
   QueryDosDeviceA
   QueryDosDeviceW
   QueryFullProcessImageNameA
@@ -845,6 +855,7 @@ EXPORTS
   SetSystemTimeAdjustment
   SetTapeParameters
   SetTapePosition
+  SetTermsrvAppInstallMode
   SetThreadAffinityMask
   SetThreadContext
   SetThreadErrorMode
@@ -884,6 +895,7 @@ EXPORTS
   TerminateJobObject
   TerminateProcess
   TerminateThread
+  TermsrvAppInstallMode
   Thread32First
   Thread32Next
   TlsAlloc
@@ -965,8 +977,3 @@ EXPORTS
   WriteTapemark
   WTSGetActiveConsoleSessionId
   ZombifyActCtx
-  QueryDepthSList=ntdll.RtlQueryDepthSList
-  InterlockedPushEntrySList=ntdll.RtlInterlockedPushEntrySList
-  InterlockedPopEntrySList=ntdll.RtlInterlockedPopEntrySList
-  InterlockedFlushSList=ntdll.RtlInterlockedFlushSList
-  InitializeSListHead=ntdll.RtlInitializeSListHead

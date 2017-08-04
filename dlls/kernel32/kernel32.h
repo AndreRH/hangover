@@ -319,6 +319,9 @@ enum kernel32_calls
     CALL_GETCURRENTCONSOLEFONT,
     CALL_GETCURRENTDIRECTORYA,
     CALL_GETCURRENTDIRECTORYW,
+    CALL_GETCURRENTPACKAGEFAMILYNAME,
+    CALL_GETCURRENTPACKAGEFULLNAME,
+    CALL_GETCURRENTPACKAGEID,
     CALL_GETCURRENTPROCESS,
     CALL_GETCURRENTPROCESSID,
     CALL_GETCURRENTTHREAD,
@@ -406,6 +409,7 @@ enum kernel32_calls
     CALL_GETNUMBEROFCONSOLEMOUSEBUTTONS,
     CALL_GETOEMCP,
     CALL_GETOVERLAPPEDRESULT,
+    CALL_GETPACKAGEFULLNAME,
     CALL_GETPHYSICALLYINSTALLEDSYSTEMMEMORY,
     CALL_GETPRIORITYCLASS,
     CALL_GETPRIVATEPROFILEINTA,
@@ -433,6 +437,7 @@ enum kernel32_calls
     CALL_GETPROCESSTIMES,
     CALL_GETPROCESSVERSION,
     CALL_GETPROCESSWORKINGSETSIZE,
+    CALL_GETPRODUCTINFO,
     CALL_GETPROFILEINTA,
     CALL_GETPROFILEINTW,
     CALL_GETPROFILESECTIONA,
@@ -835,6 +840,7 @@ enum kernel32_calls
     CALL_SETSYSTEMTIMEADJUSTMENT,
     CALL_SETTAPEPARAMETERS,
     CALL_SETTAPEPOSITION,
+    CALL_SETTERMSRVAPPINSTALLMODE,
     CALL_SETTHREADAFFINITYMASK,
     CALL_SETTHREADCONTEXT,
     CALL_SETTHREADERRORMODE,
@@ -874,6 +880,7 @@ enum kernel32_calls
     CALL_TERMINATEJOBOBJECT,
     CALL_TERMINATEPROCESS,
     CALL_TERMINATETHREAD,
+    CALL_TERMSRVAPPINSTALLMODE,
     CALL_THREAD32FIRST,
     CALL_THREAD32NEXT,
     CALL_TLSALLOC,
@@ -1277,6 +1284,9 @@ void qemu_GetCurrentActCtx(struct qemu_syscall *call);
 void qemu_GetCurrentConsoleFont(struct qemu_syscall *call);
 void qemu_GetCurrentDirectoryA(struct qemu_syscall *call);
 void qemu_GetCurrentDirectoryW(struct qemu_syscall *call);
+void qemu_GetCurrentPackageFamilyName(struct qemu_syscall *call);
+void qemu_GetCurrentPackageFullName(struct qemu_syscall *call);
+void qemu_GetCurrentPackageId(struct qemu_syscall *call);
 void qemu_GetCurrentProcess(struct qemu_syscall *call);
 void qemu_GetCurrentProcessId(struct qemu_syscall *call);
 void qemu_GetCurrentThread(struct qemu_syscall *call);
@@ -1365,6 +1375,7 @@ void qemu_GetNumberOfConsoleInputEvents(struct qemu_syscall *call);
 void qemu_GetNumberOfConsoleMouseButtons(struct qemu_syscall *call);
 void qemu_GetOEMCP(struct qemu_syscall *call);
 void qemu_GetOverlappedResult(struct qemu_syscall *call);
+void qemu_GetPackageFullName(struct qemu_syscall *call);
 void qemu_GetPhysicallyInstalledSystemMemory(struct qemu_syscall *call);
 void qemu_GetPriorityClass(struct qemu_syscall *call);
 void qemu_GetPrivateProfileIntA(struct qemu_syscall *call);
@@ -1392,6 +1403,7 @@ void qemu_GetProcessShutdownParameters(struct qemu_syscall *call);
 void qemu_GetProcessTimes(struct qemu_syscall *call);
 void qemu_GetProcessVersion(struct qemu_syscall *call);
 void qemu_GetProcessWorkingSetSize(struct qemu_syscall *call);
+void qemu_GetProductInfo(struct qemu_syscall *call);
 void qemu_GetProfileIntA(struct qemu_syscall *call);
 void qemu_GetProfileIntW(struct qemu_syscall *call);
 void qemu_GetProfileSectionA(struct qemu_syscall *call);
@@ -1794,6 +1806,7 @@ void qemu_SetSystemTime(struct qemu_syscall *call);
 void qemu_SetSystemTimeAdjustment(struct qemu_syscall *call);
 void qemu_SetTapeParameters(struct qemu_syscall *call);
 void qemu_SetTapePosition(struct qemu_syscall *call);
+void qemu_SetTermsrvAppInstallMode(struct qemu_syscall *call);
 void qemu_SetThreadAffinityMask(struct qemu_syscall *call);
 void qemu_SetThreadContext(struct qemu_syscall *call);
 void qemu_SetThreadErrorMode(struct qemu_syscall *call);
@@ -1833,6 +1846,7 @@ void qemu_SystemTimeToTzSpecificLocalTime(struct qemu_syscall *call);
 void qemu_TerminateJobObject(struct qemu_syscall *call);
 void qemu_TerminateProcess(struct qemu_syscall *call);
 void qemu_TerminateThread(struct qemu_syscall *call);
+void qemu_TermsrvAppInstallMode(struct qemu_syscall *call);
 void qemu_Thread32First(struct qemu_syscall *call);
 void qemu_Thread32Next(struct qemu_syscall *call);
 void qemu_TlsAlloc(struct qemu_syscall *call);

@@ -30,7 +30,6 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
-
 #ifdef QEMU_DLL_GUEST
 
 WINBASEAPI DWORD WINAPI GetVersion(void)
@@ -173,6 +172,244 @@ void qemu_VerifyVersionInfoW(struct qemu_syscall *call)
     struct qemu_VerifyVersionInfoW *c = (struct qemu_VerifyVersionInfoW *)call;
     WINE_TRACE("\n");
     c->super.iret = VerifyVersionInfoW(QEMU_G2H(c->info), c->type_mask, c->condition_mask);
+}
+
+#endif
+
+struct qemu_TermsrvAppInstallMode
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI TermsrvAppInstallMode(void)
+{
+    struct qemu_TermsrvAppInstallMode call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_TERMSRVAPPINSTALLMODE);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add TermsrvAppInstallMode to Wine headers? */
+extern BOOL WINAPI TermsrvAppInstallMode(void);
+void qemu_TermsrvAppInstallMode(struct qemu_syscall *call)
+{
+    struct qemu_TermsrvAppInstallMode *c = (struct qemu_TermsrvAppInstallMode *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = TermsrvAppInstallMode();
+}
+
+#endif
+
+struct qemu_SetTermsrvAppInstallMode
+{
+    struct qemu_syscall super;
+    uint64_t bInstallMode;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI SetTermsrvAppInstallMode(BOOL bInstallMode)
+{
+    struct qemu_SetTermsrvAppInstallMode call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETTERMSRVAPPINSTALLMODE);
+    call.bInstallMode = (uint64_t)bInstallMode;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add SetTermsrvAppInstallMode to Wine headers? */
+extern DWORD WINAPI SetTermsrvAppInstallMode(BOOL bInstallMode);
+void qemu_SetTermsrvAppInstallMode(struct qemu_syscall *call)
+{
+    struct qemu_SetTermsrvAppInstallMode *c = (struct qemu_SetTermsrvAppInstallMode *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SetTermsrvAppInstallMode(c->bInstallMode);
+}
+
+#endif
+
+struct qemu_GetProductInfo
+{
+    struct qemu_syscall super;
+    uint64_t dwOSMajorVersion;
+    uint64_t dwOSMinorVersion;
+    uint64_t dwSpMajorVersion;
+    uint64_t dwSpMinorVersion;
+    uint64_t pdwReturnedProductType;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetProductInfo(DWORD dwOSMajorVersion, DWORD dwOSMinorVersion, DWORD dwSpMajorVersion, DWORD dwSpMinorVersion, PDWORD pdwReturnedProductType)
+{
+    struct qemu_GetProductInfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETPRODUCTINFO);
+    call.dwOSMajorVersion = (uint64_t)dwOSMajorVersion;
+    call.dwOSMinorVersion = (uint64_t)dwOSMinorVersion;
+    call.dwSpMajorVersion = (uint64_t)dwSpMajorVersion;
+    call.dwSpMinorVersion = (uint64_t)dwSpMinorVersion;
+    call.pdwReturnedProductType = (uint64_t)pdwReturnedProductType;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetProductInfo(struct qemu_syscall *call)
+{
+    struct qemu_GetProductInfo *c = (struct qemu_GetProductInfo *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetProductInfo(c->dwOSMajorVersion, c->dwOSMinorVersion, c->dwSpMajorVersion, c->dwSpMinorVersion, QEMU_G2H(c->pdwReturnedProductType));
+}
+
+#endif
+
+struct qemu_GetCurrentPackageId
+{
+    struct qemu_syscall super;
+    uint64_t len;
+    uint64_t buffer;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LONG WINAPI GetCurrentPackageId(UINT32 *len, BYTE *buffer)
+{
+    struct qemu_GetCurrentPackageId call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTPACKAGEID);
+    call.len = (uint64_t)len;
+    call.buffer = (uint64_t)buffer;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add GetCurrentPackageId to Wine headers? */
+extern LONG WINAPI GetCurrentPackageId(UINT32 *len, BYTE *buffer);
+void qemu_GetCurrentPackageId(struct qemu_syscall *call)
+{
+    struct qemu_GetCurrentPackageId *c = (struct qemu_GetCurrentPackageId *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetCurrentPackageId(QEMU_G2H(c->len), QEMU_G2H(c->buffer));
+}
+
+#endif
+
+struct qemu_GetCurrentPackageFamilyName
+{
+    struct qemu_syscall super;
+    uint64_t length;
+    uint64_t name;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LONG WINAPI GetCurrentPackageFamilyName(UINT32 *length, PWSTR name)
+{
+    struct qemu_GetCurrentPackageFamilyName call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTPACKAGEFAMILYNAME);
+    call.length = (uint64_t)length;
+    call.name = (uint64_t)name;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add GetCurrentPackageFamilyName to Wine headers? */
+extern LONG WINAPI GetCurrentPackageFamilyName(UINT32 *length, PWSTR name);
+void qemu_GetCurrentPackageFamilyName(struct qemu_syscall *call)
+{
+    struct qemu_GetCurrentPackageFamilyName *c = (struct qemu_GetCurrentPackageFamilyName *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetCurrentPackageFamilyName(QEMU_G2H(c->length), QEMU_G2H(c->name));
+}
+
+#endif
+
+struct qemu_GetCurrentPackageFullName
+{
+    struct qemu_syscall super;
+    uint64_t length;
+    uint64_t name;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LONG WINAPI GetCurrentPackageFullName(UINT32 *length, PWSTR name)
+{
+    struct qemu_GetCurrentPackageFullName call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTPACKAGEFULLNAME);
+    call.length = (uint64_t)length;
+    call.name = (uint64_t)name;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add GetCurrentPackageFullName to Wine headers? */
+extern LONG WINAPI GetCurrentPackageFullName(UINT32 *length, PWSTR name);
+void qemu_GetCurrentPackageFullName(struct qemu_syscall *call)
+{
+    struct qemu_GetCurrentPackageFullName *c = (struct qemu_GetCurrentPackageFullName *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetCurrentPackageFullName(QEMU_G2H(c->length), QEMU_G2H(c->name));
+}
+
+#endif
+
+struct qemu_GetPackageFullName
+{
+    struct qemu_syscall super;
+    uint64_t process;
+    uint64_t length;
+    uint64_t name;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LONG WINAPI GetPackageFullName(HANDLE process, UINT32 *length, PWSTR name)
+{
+    struct qemu_GetPackageFullName call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETPACKAGEFULLNAME);
+    call.process = (uint64_t)process;
+    call.length = (uint64_t)length;
+    call.name = (uint64_t)name;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add GetPackageFullName to Wine headers? */
+extern LONG WINAPI GetPackageFullName(HANDLE process, UINT32 *length, PWSTR name);
+void qemu_GetPackageFullName(struct qemu_syscall *call)
+{
+    struct qemu_GetPackageFullName *c = (struct qemu_GetPackageFullName *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetPackageFullName(QEMU_G2H(c->process), QEMU_G2H(c->length), QEMU_G2H(c->name));
 }
 
 #endif
