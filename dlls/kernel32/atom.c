@@ -85,7 +85,7 @@ WINBASEAPI ATOM WINAPI GlobalAddAtomA(LPCSTR str)
 void qemu_GlobalAddAtomA(struct qemu_syscall *call)
 {
     struct qemu_GlobalAddAtomA *c = (struct qemu_GlobalAddAtomA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GlobalAddAtomA(QEMU_G2H(c->str));
 }
 
@@ -115,7 +115,7 @@ WINBASEAPI ATOM WINAPI AddAtomA(LPCSTR str)
 void qemu_AddAtomA(struct qemu_syscall *call)
 {
     struct qemu_AddAtomA *c = (struct qemu_AddAtomA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AddAtomA(QEMU_G2H(c->str));
 }
 
@@ -145,7 +145,7 @@ WINBASEAPI ATOM WINAPI GlobalAddAtomW(LPCWSTR str)
 void qemu_GlobalAddAtomW(struct qemu_syscall *call)
 {
     struct qemu_GlobalAddAtomW *c = (struct qemu_GlobalAddAtomW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GlobalAddAtomW(QEMU_G2H(c->str));
 }
 
@@ -175,7 +175,7 @@ WINBASEAPI ATOM WINAPI AddAtomW(LPCWSTR str)
 void qemu_AddAtomW(struct qemu_syscall *call)
 {
     struct qemu_AddAtomW *c = (struct qemu_AddAtomW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AddAtomW(QEMU_G2H(c->str));
 }
 
@@ -265,7 +265,7 @@ WINBASEAPI ATOM WINAPI GlobalFindAtomA(LPCSTR str)
 void qemu_GlobalFindAtomA(struct qemu_syscall *call)
 {
     struct qemu_GlobalFindAtomA *c = (struct qemu_GlobalFindAtomA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GlobalFindAtomA(QEMU_G2H(c->str));
 }
 
@@ -295,7 +295,7 @@ WINBASEAPI ATOM WINAPI FindAtomA(LPCSTR str)
 void qemu_FindAtomA(struct qemu_syscall *call)
 {
     struct qemu_FindAtomA *c = (struct qemu_FindAtomA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FindAtomA(QEMU_G2H(c->str));
 }
 
@@ -325,7 +325,7 @@ WINBASEAPI ATOM WINAPI GlobalFindAtomW(LPCWSTR str)
 void qemu_GlobalFindAtomW(struct qemu_syscall *call)
 {
     struct qemu_GlobalFindAtomW *c = (struct qemu_GlobalFindAtomW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GlobalFindAtomW(QEMU_G2H(c->str));
 }
 
@@ -355,7 +355,7 @@ WINBASEAPI ATOM WINAPI FindAtomW(LPCWSTR str)
 void qemu_FindAtomW(struct qemu_syscall *call)
 {
     struct qemu_FindAtomW *c = (struct qemu_FindAtomW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FindAtomW(QEMU_G2H(c->str));
 }
 
@@ -375,9 +375,9 @@ WINBASEAPI UINT WINAPI GlobalGetAtomNameA(ATOM atom, LPSTR buffer, INT count)
 {
     struct qemu_GlobalGetAtomNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GLOBALGETATOMNAMEA);
-    call.atom = (uint64_t)atom;
+    call.atom = atom;
     call.buffer = (uint64_t)buffer;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -389,7 +389,7 @@ WINBASEAPI UINT WINAPI GlobalGetAtomNameA(ATOM atom, LPSTR buffer, INT count)
 void qemu_GlobalGetAtomNameA(struct qemu_syscall *call)
 {
     struct qemu_GlobalGetAtomNameA *c = (struct qemu_GlobalGetAtomNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GlobalGetAtomNameA(c->atom, QEMU_G2H(c->buffer), c->count);
 }
 
@@ -409,9 +409,9 @@ WINBASEAPI UINT WINAPI GetAtomNameA(ATOM atom, LPSTR buffer, INT count)
 {
     struct qemu_GetAtomNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETATOMNAMEA);
-    call.atom = (uint64_t)atom;
+    call.atom = atom;
     call.buffer = (uint64_t)buffer;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -423,7 +423,7 @@ WINBASEAPI UINT WINAPI GetAtomNameA(ATOM atom, LPSTR buffer, INT count)
 void qemu_GetAtomNameA(struct qemu_syscall *call)
 {
     struct qemu_GetAtomNameA *c = (struct qemu_GetAtomNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetAtomNameA(c->atom, QEMU_G2H(c->buffer), c->count);
 }
 
@@ -443,9 +443,9 @@ WINBASEAPI UINT WINAPI GlobalGetAtomNameW(ATOM atom, LPWSTR buffer, INT count)
 {
     struct qemu_GlobalGetAtomNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GLOBALGETATOMNAMEW);
-    call.atom = (uint64_t)atom;
+    call.atom = atom;
     call.buffer = (uint64_t)buffer;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -457,7 +457,7 @@ WINBASEAPI UINT WINAPI GlobalGetAtomNameW(ATOM atom, LPWSTR buffer, INT count)
 void qemu_GlobalGetAtomNameW(struct qemu_syscall *call)
 {
     struct qemu_GlobalGetAtomNameW *c = (struct qemu_GlobalGetAtomNameW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GlobalGetAtomNameW(c->atom, QEMU_G2H(c->buffer), c->count);
 }
 
@@ -477,9 +477,9 @@ WINBASEAPI UINT WINAPI GetAtomNameW(ATOM atom, LPWSTR buffer, INT count)
 {
     struct qemu_GetAtomNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETATOMNAMEW);
-    call.atom = (uint64_t)atom;
+    call.atom = atom;
     call.buffer = (uint64_t)buffer;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -491,7 +491,7 @@ WINBASEAPI UINT WINAPI GetAtomNameW(ATOM atom, LPWSTR buffer, INT count)
 void qemu_GetAtomNameW(struct qemu_syscall *call)
 {
     struct qemu_GetAtomNameW *c = (struct qemu_GetAtomNameW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetAtomNameW(c->atom, QEMU_G2H(c->buffer), c->count);
 }
 
