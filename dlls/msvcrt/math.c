@@ -813,7 +813,7 @@ WINBASEAPI float CDECL MSVCRT_tanf(float x)
 void qemu_tanf(struct qemu_syscall *call)
 {
     struct qemu_tanf *c = (struct qemu_tanf *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     c->super.dret = p_tanf(c->x);
 }
 
