@@ -66,6 +66,7 @@ EXPORTS
   NtDuplicateObject
   NtDuplicateToken
   NtFlushBuffersFile
+  NtFlushInstructionCache
   NtFsControlFile
   NtGetCurrentProcessorNumber
   NtInitiatePowerAction
@@ -75,6 +76,7 @@ EXPORTS
   NtNotifyChangeDirectoryFile
   NtOpenDirectoryObject
   NtOpenFile
+  NtOpenProcess
   NtOpenProcessToken
   NtOpenProcessTokenEx
   NtOpenSymbolicLinkObject
@@ -88,6 +90,7 @@ EXPORTS
   NtQueryEaFile
   NtQueryFullAttributesFile
   NtQueryInformationFile
+  NtQueryInformationProcess
   NtQueryInformationThread
   NtQueryInformationToken
   NtQueryObject
@@ -102,11 +105,13 @@ EXPORTS
   NtRegisterThreadTerminatePort
   NtReplyWaitReceivePort
   NtRequestWaitReplyPort
+  NtResumeProcess
   NtResumeThread
   NtSecureConnectPort
   NtSetEaFile
   NtSetInformationFile
   NtSetInformationObject
+  NtSetInformationProcess
   NtSetInformationThread
   NtSetInformationToken
   NtSetIntervalProfile
@@ -114,8 +119,10 @@ EXPORTS
   NtSetSystemInformation
   NtSetVolumeInformationFile
   NtShutdownSystem
+  NtSuspendProcess
   NtSuspendThread
   NtSystemDebugControl
+  NtTerminateProcess
   NtTerminateThread
   NtUnlockFile
   NtWriteFile
@@ -195,6 +202,7 @@ EXPORTS
   RtlGetActiveActivationContext
   RtlGetCompressionWorkSpaceSize
   RtlGetCurrentDirectory_U
+  RtlGetCurrentPeb
   RtlGetCurrentProcessorNumberEx
   RtlGetCurrentTransaction
   RtlGetFullPathName_U

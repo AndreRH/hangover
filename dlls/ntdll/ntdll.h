@@ -67,6 +67,7 @@ enum ntdll_calls
     CALL_NTDUPLICATEOBJECT,
     CALL_NTDUPLICATETOKEN,
     CALL_NTFLUSHBUFFERSFILE,
+    CALL_NTFLUSHINSTRUCTIONCACHE,
     CALL_NTFSCONTROLFILE,
     CALL_NTGETCURRENTPROCESSORNUMBER,
     CALL_NTINITIATEPOWERACTION,
@@ -76,6 +77,7 @@ enum ntdll_calls
     CALL_NTNOTIFYCHANGEDIRECTORYFILE,
     CALL_NTOPENDIRECTORYOBJECT,
     CALL_NTOPENFILE,
+    CALL_NTOPENPROCESS,
     CALL_NTOPENPROCESSTOKEN,
     CALL_NTOPENPROCESSTOKENEX,
     CALL_NTOPENSYMBOLICLINKOBJECT,
@@ -89,6 +91,7 @@ enum ntdll_calls
     CALL_NTQUERYEAFILE,
     CALL_NTQUERYFULLATTRIBUTESFILE,
     CALL_NTQUERYINFORMATIONFILE,
+    CALL_NTQUERYINFORMATIONPROCESS,
     CALL_NTQUERYINFORMATIONTHREAD,
     CALL_NTQUERYINFORMATIONTOKEN,
     CALL_NTQUERYOBJECT,
@@ -103,11 +106,13 @@ enum ntdll_calls
     CALL_NTREGISTERTHREADTERMINATEPORT,
     CALL_NTREPLYWAITRECEIVEPORT,
     CALL_NTREQUESTWAITREPLYPORT,
+    CALL_NTRESUMEPROCESS,
     CALL_NTRESUMETHREAD,
     CALL_NTSECURECONNECTPORT,
     CALL_NTSETEAFILE,
     CALL_NTSETINFORMATIONFILE,
     CALL_NTSETINFORMATIONOBJECT,
+    CALL_NTSETINFORMATIONPROCESS,
     CALL_NTSETINFORMATIONTHREAD,
     CALL_NTSETINFORMATIONTOKEN,
     CALL_NTSETINTERVALPROFILE,
@@ -115,8 +120,10 @@ enum ntdll_calls
     CALL_NTSETSYSTEMINFORMATION,
     CALL_NTSETVOLUMEINFORMATIONFILE,
     CALL_NTSHUTDOWNSYSTEM,
+    CALL_NTSUSPENDPROCESS,
     CALL_NTSUSPENDTHREAD,
     CALL_NTSYSTEMDEBUGCONTROL,
+    CALL_NTTERMINATEPROCESS,
     CALL_NTTERMINATETHREAD,
     CALL_NTUNLOCKFILE,
     CALL_NTWRITEFILE,
@@ -196,6 +203,7 @@ enum ntdll_calls
     CALL_RTLGETACTIVEACTIVATIONCONTEXT,
     CALL_RTLGETCOMPRESSIONWORKSPACESIZE,
     CALL_RTLGETCURRENTDIRECTORY_U,
+    CALL_RTLGETCURRENTPEB,
     CALL_RTLGETCURRENTPROCESSORNUMBEREX,
     CALL_RTLGETCURRENTTRANSACTION,
     CALL_RTLGETFULLPATHNAME_U,
@@ -371,6 +379,7 @@ void qemu_NtDisplayString(struct qemu_syscall *call);
 void qemu_NtDuplicateObject(struct qemu_syscall *call);
 void qemu_NtDuplicateToken(struct qemu_syscall *call);
 void qemu_NtFlushBuffersFile(struct qemu_syscall *call);
+void qemu_NtFlushInstructionCache(struct qemu_syscall *call);
 void qemu_NtFsControlFile(struct qemu_syscall *call);
 void qemu_NtGetCurrentProcessorNumber(struct qemu_syscall *call);
 void qemu_NtInitiatePowerAction(struct qemu_syscall *call);
@@ -380,6 +389,7 @@ void qemu_NtMakeTemporaryObject(struct qemu_syscall *call);
 void qemu_NtNotifyChangeDirectoryFile(struct qemu_syscall *call);
 void qemu_NtOpenDirectoryObject(struct qemu_syscall *call);
 void qemu_NtOpenFile(struct qemu_syscall *call);
+void qemu_NtOpenProcess(struct qemu_syscall *call);
 void qemu_NtOpenProcessToken(struct qemu_syscall *call);
 void qemu_NtOpenProcessTokenEx(struct qemu_syscall *call);
 void qemu_NtOpenSymbolicLinkObject(struct qemu_syscall *call);
@@ -393,6 +403,7 @@ void qemu_NtQueryDirectoryObject(struct qemu_syscall *call);
 void qemu_NtQueryEaFile(struct qemu_syscall *call);
 void qemu_NtQueryFullAttributesFile(struct qemu_syscall *call);
 void qemu_NtQueryInformationFile(struct qemu_syscall *call);
+void qemu_NtQueryInformationProcess(struct qemu_syscall *call);
 void qemu_NtQueryInformationThread(struct qemu_syscall *call);
 void qemu_NtQueryInformationToken(struct qemu_syscall *call);
 void qemu_NtQueryObject(struct qemu_syscall *call);
@@ -407,11 +418,13 @@ void qemu_NtReadFileScatter(struct qemu_syscall *call);
 void qemu_NtRegisterThreadTerminatePort(struct qemu_syscall *call);
 void qemu_NtReplyWaitReceivePort(struct qemu_syscall *call);
 void qemu_NtRequestWaitReplyPort(struct qemu_syscall *call);
+void qemu_NtResumeProcess(struct qemu_syscall *call);
 void qemu_NtResumeThread(struct qemu_syscall *call);
 void qemu_NtSecureConnectPort(struct qemu_syscall *call);
 void qemu_NtSetEaFile(struct qemu_syscall *call);
 void qemu_NtSetInformationFile(struct qemu_syscall *call);
 void qemu_NtSetInformationObject(struct qemu_syscall *call);
+void qemu_NtSetInformationProcess(struct qemu_syscall *call);
 void qemu_NtSetInformationThread(struct qemu_syscall *call);
 void qemu_NtSetInformationToken(struct qemu_syscall *call);
 void qemu_NtSetIntervalProfile(struct qemu_syscall *call);
@@ -419,8 +432,10 @@ void qemu_NtSetLdtEntries(struct qemu_syscall *call);
 void qemu_NtSetSystemInformation(struct qemu_syscall *call);
 void qemu_NtSetVolumeInformationFile(struct qemu_syscall *call);
 void qemu_NtShutdownSystem(struct qemu_syscall *call);
+void qemu_NtSuspendProcess(struct qemu_syscall *call);
 void qemu_NtSuspendThread(struct qemu_syscall *call);
 void qemu_NtSystemDebugControl(struct qemu_syscall *call);
+void qemu_NtTerminateProcess(struct qemu_syscall *call);
 void qemu_NtTerminateThread(struct qemu_syscall *call);
 void qemu_NtUnlockFile(struct qemu_syscall *call);
 void qemu_NtWriteFile(struct qemu_syscall *call);
@@ -500,6 +515,7 @@ void qemu_RtlFreeUnicodeString(struct qemu_syscall *call);
 void qemu_RtlGetActiveActivationContext(struct qemu_syscall *call);
 void qemu_RtlGetCompressionWorkSpaceSize(struct qemu_syscall *call);
 void qemu_RtlGetCurrentDirectory_U(struct qemu_syscall *call);
+void qemu_RtlGetCurrentPeb(struct qemu_syscall *call);
 void qemu_RtlGetCurrentProcessorNumberEx(struct qemu_syscall *call);
 void qemu_RtlGetCurrentTransaction(struct qemu_syscall *call);
 void qemu_RtlGetFullPathName_U(struct qemu_syscall *call);
