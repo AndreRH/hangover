@@ -46,37 +46,49 @@ enum ntdll_calls
     CALL_NTADJUSTGROUPSTOKEN,
     CALL_NTADJUSTPRIVILEGESTOKEN,
     CALL_NTALLOCATELOCALLYUNIQUEID,
+    CALL_NTALLOCATEUUIDS,
     CALL_NTCANCELIOFILE,
     CALL_NTCANCELIOFILEEX,
+    CALL_NTCLOSE,
     CALL_NTCOMPLETECONNECTPORT,
     CALL_NTCONNECTPORT,
+    CALL_NTCREATEDIRECTORYOBJECT,
     CALL_NTCREATEFILE,
     CALL_NTCREATEMAILSLOTFILE,
     CALL_NTCREATENAMEDPIPEFILE,
     CALL_NTCREATEPAGINGFILE,
     CALL_NTCREATEPORT,
+    CALL_NTCREATESYMBOLICLINKOBJECT,
     CALL_NTDELETEFILE,
     CALL_NTDEVICEIOCONTROLFILE,
     CALL_NTDISPLAYSTRING,
+    CALL_NTDUPLICATEOBJECT,
     CALL_NTDUPLICATETOKEN,
     CALL_NTFLUSHBUFFERSFILE,
     CALL_NTFSCONTROLFILE,
     CALL_NTINITIATEPOWERACTION,
     CALL_NTLISTENPORT,
     CALL_NTLOCKFILE,
+    CALL_NTMAKETEMPORARYOBJECT,
     CALL_NTNOTIFYCHANGEDIRECTORYFILE,
+    CALL_NTOPENDIRECTORYOBJECT,
     CALL_NTOPENFILE,
     CALL_NTOPENPROCESSTOKEN,
     CALL_NTOPENPROCESSTOKENEX,
+    CALL_NTOPENSYMBOLICLINKOBJECT,
     CALL_NTOPENTHREADTOKEN,
     CALL_NTOPENTHREADTOKENEX,
     CALL_NTPOWERINFORMATION,
     CALL_NTPRIVILEGECHECK,
     CALL_NTQUERYATTRIBUTESFILE,
+    CALL_NTQUERYDIRECTORYOBJECT,
     CALL_NTQUERYEAFILE,
     CALL_NTQUERYFULLATTRIBUTESFILE,
     CALL_NTQUERYINFORMATIONFILE,
     CALL_NTQUERYINFORMATIONTOKEN,
+    CALL_NTQUERYOBJECT,
+    CALL_NTQUERYSECURITYOBJECT,
+    CALL_NTQUERYSYMBOLICLINKOBJECT,
     CALL_NTQUERYSYSTEMINFORMATION,
     CALL_NTQUERYSYSTEMINFORMATIONEX,
     CALL_NTQUERYVOLUMEINFORMATIONFILE,
@@ -88,6 +100,7 @@ enum ntdll_calls
     CALL_NTSECURECONNECTPORT,
     CALL_NTSETEAFILE,
     CALL_NTSETINFORMATIONFILE,
+    CALL_NTSETINFORMATIONOBJECT,
     CALL_NTSETINFORMATIONTOKEN,
     CALL_NTSETINTERVALPROFILE,
     CALL_NTSETLDTENTRIES,
@@ -302,37 +315,49 @@ void qemu_NtAccessCheckAndAuditAlarm(struct qemu_syscall *call);
 void qemu_NtAdjustGroupsToken(struct qemu_syscall *call);
 void qemu_NtAdjustPrivilegesToken(struct qemu_syscall *call);
 void qemu_NtAllocateLocallyUniqueId(struct qemu_syscall *call);
+void qemu_NtAllocateUuids(struct qemu_syscall *call);
 void qemu_NtCancelIoFile(struct qemu_syscall *call);
 void qemu_NtCancelIoFileEx(struct qemu_syscall *call);
+void qemu_NtClose(struct qemu_syscall *call);
 void qemu_NtCompleteConnectPort(struct qemu_syscall *call);
 void qemu_NtConnectPort(struct qemu_syscall *call);
+void qemu_NtCreateDirectoryObject(struct qemu_syscall *call);
 void qemu_NtCreateFile(struct qemu_syscall *call);
 void qemu_NtCreateMailslotFile(struct qemu_syscall *call);
 void qemu_NtCreateNamedPipeFile(struct qemu_syscall *call);
 void qemu_NtCreatePagingFile(struct qemu_syscall *call);
 void qemu_NtCreatePort(struct qemu_syscall *call);
+void qemu_NtCreateSymbolicLinkObject(struct qemu_syscall *call);
 void qemu_NtDeleteFile(struct qemu_syscall *call);
 void qemu_NtDeviceIoControlFile(struct qemu_syscall *call);
 void qemu_NtDisplayString(struct qemu_syscall *call);
+void qemu_NtDuplicateObject(struct qemu_syscall *call);
 void qemu_NtDuplicateToken(struct qemu_syscall *call);
 void qemu_NtFlushBuffersFile(struct qemu_syscall *call);
 void qemu_NtFsControlFile(struct qemu_syscall *call);
 void qemu_NtInitiatePowerAction(struct qemu_syscall *call);
 void qemu_NtListenPort(struct qemu_syscall *call);
 void qemu_NtLockFile(struct qemu_syscall *call);
+void qemu_NtMakeTemporaryObject(struct qemu_syscall *call);
 void qemu_NtNotifyChangeDirectoryFile(struct qemu_syscall *call);
+void qemu_NtOpenDirectoryObject(struct qemu_syscall *call);
 void qemu_NtOpenFile(struct qemu_syscall *call);
 void qemu_NtOpenProcessToken(struct qemu_syscall *call);
 void qemu_NtOpenProcessTokenEx(struct qemu_syscall *call);
+void qemu_NtOpenSymbolicLinkObject(struct qemu_syscall *call);
 void qemu_NtOpenThreadToken(struct qemu_syscall *call);
 void qemu_NtOpenThreadTokenEx(struct qemu_syscall *call);
 void qemu_NtPowerInformation(struct qemu_syscall *call);
 void qemu_NtPrivilegeCheck(struct qemu_syscall *call);
 void qemu_NtQueryAttributesFile(struct qemu_syscall *call);
+void qemu_NtQueryDirectoryObject(struct qemu_syscall *call);
 void qemu_NtQueryEaFile(struct qemu_syscall *call);
 void qemu_NtQueryFullAttributesFile(struct qemu_syscall *call);
 void qemu_NtQueryInformationFile(struct qemu_syscall *call);
 void qemu_NtQueryInformationToken(struct qemu_syscall *call);
+void qemu_NtQueryObject(struct qemu_syscall *call);
+void qemu_NtQuerySecurityObject(struct qemu_syscall *call);
+void qemu_NtQuerySymbolicLinkObject(struct qemu_syscall *call);
 void qemu_NtQuerySystemInformation(struct qemu_syscall *call);
 void qemu_NtQuerySystemInformationEx(struct qemu_syscall *call);
 void qemu_NtQueryVolumeInformationFile(struct qemu_syscall *call);
@@ -344,6 +369,7 @@ void qemu_NtRequestWaitReplyPort(struct qemu_syscall *call);
 void qemu_NtSecureConnectPort(struct qemu_syscall *call);
 void qemu_NtSetEaFile(struct qemu_syscall *call);
 void qemu_NtSetInformationFile(struct qemu_syscall *call);
+void qemu_NtSetInformationObject(struct qemu_syscall *call);
 void qemu_NtSetInformationToken(struct qemu_syscall *call);
 void qemu_NtSetIntervalProfile(struct qemu_syscall *call);
 void qemu_NtSetLdtEntries(struct qemu_syscall *call);

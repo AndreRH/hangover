@@ -45,37 +45,49 @@ EXPORTS
   NtAdjustGroupsToken
   NtAdjustPrivilegesToken
   NtAllocateLocallyUniqueId
+  NtAllocateUuids
   NtCancelIoFile
   NtCancelIoFileEx
+  NtClose
   NtCompleteConnectPort
   NtConnectPort
+  NtCreateDirectoryObject
   NtCreateFile
   NtCreateMailslotFile
   NtCreateNamedPipeFile
   NtCreatePagingFile
   NtCreatePort
+  NtCreateSymbolicLinkObject
   NtDeleteFile
   NtDeviceIoControlFile
   NtDisplayString
+  NtDuplicateObject
   NtDuplicateToken
   NtFlushBuffersFile
   NtFsControlFile
   NtInitiatePowerAction
   NtListenPort
   NtLockFile
+  NtMakeTemporaryObject
   NtNotifyChangeDirectoryFile
+  NtOpenDirectoryObject
   NtOpenFile
   NtOpenProcessToken
   NtOpenProcessTokenEx
+  NtOpenSymbolicLinkObject
   NtOpenThreadToken
   NtOpenThreadTokenEx
   NtPowerInformation
   NtPrivilegeCheck
   NtQueryAttributesFile
+  NtQueryDirectoryObject
   NtQueryEaFile
   NtQueryFullAttributesFile
   NtQueryInformationFile
   NtQueryInformationToken
+  NtQueryObject
+  NtQuerySecurityObject
+  NtQuerySymbolicLinkObject
   NtQuerySystemInformation
   NtQuerySystemInformationEx
   NtQueryVolumeInformationFile
@@ -87,6 +99,7 @@ EXPORTS
   NtSecureConnectPort
   NtSetEaFile
   NtSetInformationFile
+  NtSetInformationObject
   NtSetInformationToken
   NtSetIntervalProfile
   NtSetLdtEntries
