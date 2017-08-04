@@ -1103,9 +1103,9 @@ WINBASEAPI ULONGLONG WINAPI VerSetConditionMask(ULONGLONG dwlConditionMask, DWOR
 {
     struct qemu_VerSetConditionMask call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VERSETCONDITIONMASK);
-    call.dwlConditionMask = (uint64_t)dwlConditionMask;
-    call.dwTypeBitMask = (uint64_t)dwTypeBitMask;
-    call.dwConditionMask = (uint64_t)dwConditionMask;
+    call.dwlConditionMask = dwlConditionMask;
+    call.dwTypeBitMask = dwTypeBitMask;
+    call.dwConditionMask = dwConditionMask;
 
     qemu_syscall(&call.super);
 
@@ -1117,7 +1117,7 @@ WINBASEAPI ULONGLONG WINAPI VerSetConditionMask(ULONGLONG dwlConditionMask, DWOR
 void qemu_VerSetConditionMask(struct qemu_syscall *call)
 {
     struct qemu_VerSetConditionMask *c = (struct qemu_VerSetConditionMask *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = VerSetConditionMask(c->dwlConditionMask, c->dwTypeBitMask, c->dwConditionMask);
 }
 

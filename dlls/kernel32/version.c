@@ -254,10 +254,10 @@ WINBASEAPI BOOL WINAPI GetProductInfo(DWORD dwOSMajorVersion, DWORD dwOSMinorVer
 {
     struct qemu_GetProductInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRODUCTINFO);
-    call.dwOSMajorVersion = (uint64_t)dwOSMajorVersion;
-    call.dwOSMinorVersion = (uint64_t)dwOSMinorVersion;
-    call.dwSpMajorVersion = (uint64_t)dwSpMajorVersion;
-    call.dwSpMinorVersion = (uint64_t)dwSpMinorVersion;
+    call.dwOSMajorVersion = dwOSMajorVersion;
+    call.dwOSMinorVersion = dwOSMinorVersion;
+    call.dwSpMajorVersion = dwSpMajorVersion;
+    call.dwSpMinorVersion = dwSpMinorVersion;
     call.pdwReturnedProductType = (uint64_t)pdwReturnedProductType;
 
     qemu_syscall(&call.super);
@@ -270,7 +270,7 @@ WINBASEAPI BOOL WINAPI GetProductInfo(DWORD dwOSMajorVersion, DWORD dwOSMinorVer
 void qemu_GetProductInfo(struct qemu_syscall *call)
 {
     struct qemu_GetProductInfo *c = (struct qemu_GetProductInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetProductInfo(c->dwOSMajorVersion, c->dwOSMinorVersion, c->dwSpMajorVersion, c->dwSpMinorVersion, QEMU_G2H(c->pdwReturnedProductType));
 }
 
