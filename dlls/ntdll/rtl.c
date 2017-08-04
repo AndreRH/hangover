@@ -1139,7 +1139,7 @@ WINBASEAPI PVOID WINAPI RtlEncodePointer(PVOID ptr)
 void qemu_RtlEncodePointer(struct qemu_syscall *call)
 {
     struct qemu_RtlEncodePointer *c = (struct qemu_RtlEncodePointer *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)RtlEncodePointer(QEMU_G2H(c->ptr));
 }
 
@@ -1169,7 +1169,7 @@ WINBASEAPI PVOID WINAPI RtlDecodePointer(PVOID ptr)
 void qemu_RtlDecodePointer(struct qemu_syscall *call)
 {
     struct qemu_RtlDecodePointer *c = (struct qemu_RtlDecodePointer *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)RtlDecodePointer(QEMU_G2H(c->ptr));
 }
 
