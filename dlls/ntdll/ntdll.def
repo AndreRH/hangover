@@ -151,6 +151,9 @@ EXPORTS
   RtlDeleteCriticalSection
   RtlDeleteResource
   RtlDeleteSecurityObject
+  RtlDetermineDosPathNameType_U
+  RtlDosPathNameToNtPathName_U
+  RtlDosSearchPath_U
   RtlDowncaseUnicodeChar
   RtlDowncaseUnicodeString
   RtlDumpResource
@@ -175,8 +178,11 @@ EXPORTS
   RtlFreeUnicodeString
   RtlGetActiveActivationContext
   RtlGetCompressionWorkSpaceSize
+  RtlGetCurrentDirectory_U
   RtlGetCurrentProcessorNumberEx
   RtlGetCurrentTransaction
+  RtlGetFullPathName_U
+  RtlGetLongestNtPathLength
   RtlGetThreadErrorMode
   RtlGUIDFromString
   RtlHashUnicodeString
@@ -204,6 +210,8 @@ EXPORTS
   RtlIpv4AddressToStringW
   RtlIpv4StringToAddressExW
   RtlIsActivationContextActive
+  RtlIsDosDeviceName_U
+  RtlIsNameLegalDOS8Dot3
   RtlIsTextUnicode
   RtlLeaveCriticalSection
   RtlLookupFunctionEntry
@@ -223,6 +231,7 @@ EXPORTS
   RtlReleaseActivationContext
   RtlReleasePebLock
   RtlReleaseResource
+  RtlSetCurrentDirectory_U
   RtlSetCurrentTransaction
   RtlSetThreadErrorMode
   RtlStringFromGUID
