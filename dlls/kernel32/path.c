@@ -251,7 +251,7 @@ WINBASEAPI DWORD WINAPI GetTempPathA(DWORD count, LPSTR path)
 {
     struct qemu_GetTempPathA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEMPPATHA);
-    call.count = (uint64_t)count;
+    call.count = count;
     call.path = (uint64_t)path;
 
     qemu_syscall(&call.super);
@@ -264,7 +264,7 @@ WINBASEAPI DWORD WINAPI GetTempPathA(DWORD count, LPSTR path)
 void qemu_GetTempPathA(struct qemu_syscall *call)
 {
     struct qemu_GetTempPathA *c = (struct qemu_GetTempPathA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTempPathA(c->count, QEMU_G2H(c->path));
 }
 
@@ -1115,7 +1115,7 @@ WINBASEAPI DWORD WINAPI GetCurrentDirectoryA(DWORD buflen, LPSTR buf)
 {
     struct qemu_GetCurrentDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTDIRECTORYA);
-    call.buflen = (uint64_t)buflen;
+    call.buflen = buflen;
     call.buf = (uint64_t)buf;
 
     qemu_syscall(&call.super);
@@ -1128,7 +1128,7 @@ WINBASEAPI DWORD WINAPI GetCurrentDirectoryA(DWORD buflen, LPSTR buf)
 void qemu_GetCurrentDirectoryA(struct qemu_syscall *call)
 {
     struct qemu_GetCurrentDirectoryA *c = (struct qemu_GetCurrentDirectoryA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCurrentDirectoryA(c->buflen, QEMU_G2H(c->buf));
 }
 
@@ -1188,7 +1188,7 @@ WINBASEAPI BOOL WINAPI SetCurrentDirectoryA(LPCSTR dir)
 void qemu_SetCurrentDirectoryA(struct qemu_syscall *call)
 {
     struct qemu_SetCurrentDirectoryA *c = (struct qemu_SetCurrentDirectoryA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetCurrentDirectoryA(QEMU_G2H(c->dir));
 }
 
@@ -1240,7 +1240,7 @@ WINBASEAPI UINT WINAPI GetWindowsDirectoryA(LPSTR path, UINT count)
     struct qemu_GetWindowsDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETWINDOWSDIRECTORYA);
     call.path = (uint64_t)path;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -1252,7 +1252,7 @@ WINBASEAPI UINT WINAPI GetWindowsDirectoryA(LPSTR path, UINT count)
 void qemu_GetWindowsDirectoryA(struct qemu_syscall *call)
 {
     struct qemu_GetWindowsDirectoryA *c = (struct qemu_GetWindowsDirectoryA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWindowsDirectoryA(QEMU_G2H(c->path), c->count);
 }
 

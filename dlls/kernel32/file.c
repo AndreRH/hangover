@@ -1448,11 +1448,11 @@ WINBASEAPI HANDLE WINAPI CreateFileA(LPCSTR filename, DWORD access, DWORD sharin
     struct qemu_CreateFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEFILEA);
     call.filename = (uint64_t)filename;
-    call.access = (uint64_t)access;
-    call.sharing = (uint64_t)sharing;
+    call.access = access;
+    call.sharing = sharing;
     call.sa = (uint64_t)sa;
-    call.creation = (uint64_t)creation;
-    call.attributes = (uint64_t)attributes;
+    call.creation = creation;
+    call.attributes = attributes;
     call.template = (uint64_t)template;
 
     qemu_syscall(&call.super);
@@ -1465,8 +1465,9 @@ WINBASEAPI HANDLE WINAPI CreateFileA(LPCSTR filename, DWORD access, DWORD sharin
 void qemu_CreateFileA(struct qemu_syscall *call)
 {
     struct qemu_CreateFileA *c = (struct qemu_CreateFileA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateFileA(QEMU_G2H(c->filename), c->access, c->sharing, QEMU_G2H(c->sa), c->creation, c->attributes, QEMU_G2H(c->template));
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)CreateFileA(QEMU_G2H(c->filename), c->access, c->sharing, QEMU_G2H(c->sa),
+            c->creation, c->attributes, (HANDLE)c->template);
 }
 
 #endif
@@ -2193,11 +2194,11 @@ WINBASEAPI BOOL WINAPI DeviceIoControl(HANDLE hDevice, DWORD dwIoControlCode, LP
     struct qemu_DeviceIoControl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEVICEIOCONTROL);
     call.hDevice = (uint64_t)hDevice;
-    call.dwIoControlCode = (uint64_t)dwIoControlCode;
+    call.dwIoControlCode = dwIoControlCode;
     call.lpvInBuffer = (uint64_t)lpvInBuffer;
-    call.cbInBuffer = (uint64_t)cbInBuffer;
+    call.cbInBuffer = cbInBuffer;
     call.lpvOutBuffer = (uint64_t)lpvOutBuffer;
-    call.cbOutBuffer = (uint64_t)cbOutBuffer;
+    call.cbOutBuffer = cbOutBuffer;
     call.lpcbBytesReturned = (uint64_t)lpcbBytesReturned;
     call.lpOverlapped = (uint64_t)lpOverlapped;
 
@@ -2211,8 +2212,10 @@ WINBASEAPI BOOL WINAPI DeviceIoControl(HANDLE hDevice, DWORD dwIoControlCode, LP
 void qemu_DeviceIoControl(struct qemu_syscall *call)
 {
     struct qemu_DeviceIoControl *c = (struct qemu_DeviceIoControl *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DeviceIoControl(QEMU_G2H(c->hDevice), c->dwIoControlCode, QEMU_G2H(c->lpvInBuffer), c->cbInBuffer, QEMU_G2H(c->lpvOutBuffer), c->cbOutBuffer, QEMU_G2H(c->lpcbBytesReturned), QEMU_G2H(c->lpOverlapped));
+    WINE_TRACE("Unverified!\n");
+    c->super.iret = DeviceIoControl((HANDLE)c->hDevice, c->dwIoControlCode, QEMU_G2H(c->lpvInBuffer),
+            c->cbInBuffer, QEMU_G2H(c->lpvOutBuffer), c->cbOutBuffer, QEMU_G2H(c->lpcbBytesReturned),
+            QEMU_G2H(c->lpOverlapped));
 }
 
 #endif

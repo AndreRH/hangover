@@ -96,12 +96,12 @@ WINBASEAPI BOOL WINAPI GetVolumeInformationA(LPCSTR root, LPSTR label, DWORD lab
     call.super.id = QEMU_SYSCALL_ID(CALL_GETVOLUMEINFORMATIONA);
     call.root = (uint64_t)root;
     call.label = (uint64_t)label;
-    call.label_len = (uint64_t)label_len;
+    call.label_len = label_len;
     call.serial = (uint64_t)serial;
     call.filename_len = (uint64_t)filename_len;
     call.flags = (uint64_t)flags;
     call.fsname = (uint64_t)fsname;
-    call.fsname_len = (uint64_t)fsname_len;
+    call.fsname_len = fsname_len;
 
     qemu_syscall(&call.super);
 
@@ -113,7 +113,7 @@ WINBASEAPI BOOL WINAPI GetVolumeInformationA(LPCSTR root, LPSTR label, DWORD lab
 void qemu_GetVolumeInformationA(struct qemu_syscall *call)
 {
     struct qemu_GetVolumeInformationA *c = (struct qemu_GetVolumeInformationA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetVolumeInformationA(QEMU_G2H(c->root), QEMU_G2H(c->label), c->label_len, QEMU_G2H(c->serial), QEMU_G2H(c->filename_len), QEMU_G2H(c->flags), QEMU_G2H(c->fsname), c->fsname_len);
 }
 
@@ -199,7 +199,7 @@ WINBASEAPI BOOL WINAPI GetVolumeNameForVolumeMountPointA(LPCSTR path, LPSTR volu
     call.super.id = QEMU_SYSCALL_ID(CALL_GETVOLUMENAMEFORVOLUMEMOUNTPOINTA);
     call.path = (uint64_t)path;
     call.volume = (uint64_t)volume;
-    call.size = (uint64_t)size;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -211,7 +211,7 @@ WINBASEAPI BOOL WINAPI GetVolumeNameForVolumeMountPointA(LPCSTR path, LPSTR volu
 void qemu_GetVolumeNameForVolumeMountPointA(struct qemu_syscall *call)
 {
     struct qemu_GetVolumeNameForVolumeMountPointA *c = (struct qemu_GetVolumeNameForVolumeMountPointA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetVolumeNameForVolumeMountPointA(QEMU_G2H(c->path), QEMU_G2H(c->volume), c->size);
 }
 
@@ -233,7 +233,7 @@ WINBASEAPI BOOL WINAPI GetVolumeNameForVolumeMountPointW(LPCWSTR path, LPWSTR vo
     call.super.id = QEMU_SYSCALL_ID(CALL_GETVOLUMENAMEFORVOLUMEMOUNTPOINTW);
     call.path = (uint64_t)path;
     call.volume = (uint64_t)volume;
-    call.size = (uint64_t)size;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -245,7 +245,7 @@ WINBASEAPI BOOL WINAPI GetVolumeNameForVolumeMountPointW(LPCWSTR path, LPWSTR vo
 void qemu_GetVolumeNameForVolumeMountPointW(struct qemu_syscall *call)
 {
     struct qemu_GetVolumeNameForVolumeMountPointW *c = (struct qemu_GetVolumeNameForVolumeMountPointW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetVolumeNameForVolumeMountPointW(QEMU_G2H(c->path), QEMU_G2H(c->volume), c->size);
 }
 
@@ -299,7 +299,7 @@ WINBASEAPI BOOL WINAPI DefineDosDeviceA(DWORD flags, LPCSTR devname, LPCSTR targ
 {
     struct qemu_DefineDosDeviceA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEFINEDOSDEVICEA);
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
     call.devname = (uint64_t)devname;
     call.targetpath = (uint64_t)targetpath;
 
@@ -313,7 +313,7 @@ WINBASEAPI BOOL WINAPI DefineDosDeviceA(DWORD flags, LPCSTR devname, LPCSTR targ
 void qemu_DefineDosDeviceA(struct qemu_syscall *call)
 {
     struct qemu_DefineDosDeviceA *c = (struct qemu_DefineDosDeviceA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DefineDosDeviceA(c->flags, QEMU_G2H(c->devname), QEMU_G2H(c->targetpath));
 }
 
@@ -369,7 +369,7 @@ WINBASEAPI DWORD WINAPI QueryDosDeviceA(LPCSTR devname, LPSTR target, DWORD bufs
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYDOSDEVICEA);
     call.devname = (uint64_t)devname;
     call.target = (uint64_t)target;
-    call.bufsize = (uint64_t)bufsize;
+    call.bufsize = bufsize;
 
     qemu_syscall(&call.super);
 
@@ -381,7 +381,7 @@ WINBASEAPI DWORD WINAPI QueryDosDeviceA(LPCSTR devname, LPSTR target, DWORD bufs
 void qemu_QueryDosDeviceA(struct qemu_syscall *call)
 {
     struct qemu_QueryDosDeviceA *c = (struct qemu_QueryDosDeviceA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QueryDosDeviceA(QEMU_G2H(c->devname), QEMU_G2H(c->target), c->bufsize);
 }
 
@@ -409,7 +409,7 @@ WINBASEAPI DWORD WINAPI GetLogicalDrives(void)
 void qemu_GetLogicalDrives(struct qemu_syscall *call)
 {
     struct qemu_GetLogicalDrives *c = (struct qemu_GetLogicalDrives *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetLogicalDrives();
 }
 
@@ -428,7 +428,7 @@ WINBASEAPI DWORD WINAPI GetLogicalDriveStringsA(DWORD len, LPSTR buffer)
 {
     struct qemu_GetLogicalDriveStringsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETLOGICALDRIVESTRINGSA);
-    call.len = (uint64_t)len;
+    call.len = len;
     call.buffer = (uint64_t)buffer;
 
     qemu_syscall(&call.super);
@@ -441,7 +441,7 @@ WINBASEAPI DWORD WINAPI GetLogicalDriveStringsA(DWORD len, LPSTR buffer)
 void qemu_GetLogicalDriveStringsA(struct qemu_syscall *call)
 {
     struct qemu_GetLogicalDriveStringsA *c = (struct qemu_GetLogicalDriveStringsA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetLogicalDriveStringsA(c->len, QEMU_G2H(c->buffer));
 }
 
@@ -460,7 +460,7 @@ WINBASEAPI DWORD WINAPI GetLogicalDriveStringsW(DWORD len, LPWSTR buffer)
 {
     struct qemu_GetLogicalDriveStringsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETLOGICALDRIVESTRINGSW);
-    call.len = (uint64_t)len;
+    call.len = len;
     call.buffer = (uint64_t)buffer;
 
     qemu_syscall(&call.super);
@@ -473,7 +473,7 @@ WINBASEAPI DWORD WINAPI GetLogicalDriveStringsW(DWORD len, LPWSTR buffer)
 void qemu_GetLogicalDriveStringsW(struct qemu_syscall *call)
 {
     struct qemu_GetLogicalDriveStringsW *c = (struct qemu_GetLogicalDriveStringsW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetLogicalDriveStringsW(c->len, QEMU_G2H(c->buffer));
 }
 
@@ -533,7 +533,7 @@ WINBASEAPI UINT WINAPI GetDriveTypeA(LPCSTR root)
 void qemu_GetDriveTypeA(struct qemu_syscall *call)
 {
     struct qemu_GetDriveTypeA *c = (struct qemu_GetDriveTypeA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDriveTypeA(QEMU_G2H(c->root));
 }
 
@@ -703,7 +703,7 @@ WINBASEAPI BOOL WINAPI GetVolumePathNameA(LPCSTR filename, LPSTR volumepathname,
     call.super.id = QEMU_SYSCALL_ID(CALL_GETVOLUMEPATHNAMEA);
     call.filename = (uint64_t)filename;
     call.volumepathname = (uint64_t)volumepathname;
-    call.buflen = (uint64_t)buflen;
+    call.buflen = buflen;
 
     qemu_syscall(&call.super);
 
@@ -715,7 +715,7 @@ WINBASEAPI BOOL WINAPI GetVolumePathNameA(LPCSTR filename, LPSTR volumepathname,
 void qemu_GetVolumePathNameA(struct qemu_syscall *call)
 {
     struct qemu_GetVolumePathNameA *c = (struct qemu_GetVolumePathNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetVolumePathNameA(QEMU_G2H(c->filename), QEMU_G2H(c->volumepathname), c->buflen);
 }
 
@@ -737,7 +737,7 @@ WINBASEAPI BOOL WINAPI GetVolumePathNameW(LPCWSTR filename, LPWSTR volumepathnam
     call.super.id = QEMU_SYSCALL_ID(CALL_GETVOLUMEPATHNAMEW);
     call.filename = (uint64_t)filename;
     call.volumepathname = (uint64_t)volumepathname;
-    call.buflen = (uint64_t)buflen;
+    call.buflen = buflen;
 
     qemu_syscall(&call.super);
 
@@ -749,7 +749,7 @@ WINBASEAPI BOOL WINAPI GetVolumePathNameW(LPCWSTR filename, LPWSTR volumepathnam
 void qemu_GetVolumePathNameW(struct qemu_syscall *call)
 {
     struct qemu_GetVolumePathNameW *c = (struct qemu_GetVolumePathNameW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetVolumePathNameW(QEMU_G2H(c->filename), QEMU_G2H(c->volumepathname), c->buflen);
 }
 
@@ -772,7 +772,7 @@ WINBASEAPI BOOL WINAPI GetVolumePathNamesForVolumeNameA(LPCSTR volumename, LPSTR
     call.super.id = QEMU_SYSCALL_ID(CALL_GETVOLUMEPATHNAMESFORVOLUMENAMEA);
     call.volumename = (uint64_t)volumename;
     call.volumepathname = (uint64_t)volumepathname;
-    call.buflen = (uint64_t)buflen;
+    call.buflen = buflen;
     call.returnlen = (uint64_t)returnlen;
 
     qemu_syscall(&call.super);
@@ -785,7 +785,7 @@ WINBASEAPI BOOL WINAPI GetVolumePathNamesForVolumeNameA(LPCSTR volumename, LPSTR
 void qemu_GetVolumePathNamesForVolumeNameA(struct qemu_syscall *call)
 {
     struct qemu_GetVolumePathNamesForVolumeNameA *c = (struct qemu_GetVolumePathNamesForVolumeNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetVolumePathNamesForVolumeNameA(QEMU_G2H(c->volumename), QEMU_G2H(c->volumepathname), c->buflen, QEMU_G2H(c->returnlen));
 }
 
@@ -808,7 +808,7 @@ WINBASEAPI BOOL WINAPI GetVolumePathNamesForVolumeNameW(LPCWSTR volumename, LPWS
     call.super.id = QEMU_SYSCALL_ID(CALL_GETVOLUMEPATHNAMESFORVOLUMENAMEW);
     call.volumename = (uint64_t)volumename;
     call.volumepathname = (uint64_t)volumepathname;
-    call.buflen = (uint64_t)buflen;
+    call.buflen = buflen;
     call.returnlen = (uint64_t)returnlen;
 
     qemu_syscall(&call.super);
@@ -821,7 +821,7 @@ WINBASEAPI BOOL WINAPI GetVolumePathNamesForVolumeNameW(LPCWSTR volumename, LPWS
 void qemu_GetVolumePathNamesForVolumeNameW(struct qemu_syscall *call)
 {
     struct qemu_GetVolumePathNamesForVolumeNameW *c = (struct qemu_GetVolumePathNamesForVolumeNameW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetVolumePathNamesForVolumeNameW(QEMU_G2H(c->volumename), QEMU_G2H(c->volumepathname), c->buflen, QEMU_G2H(c->returnlen));
 }
 
@@ -841,7 +841,7 @@ WINBASEAPI HANDLE WINAPI FindFirstVolumeA(LPSTR volume, DWORD len)
     struct qemu_FindFirstVolumeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDFIRSTVOLUMEA);
     call.volume = (uint64_t)volume;
-    call.len = (uint64_t)len;
+    call.len = len;
 
     qemu_syscall(&call.super);
 
@@ -853,7 +853,7 @@ WINBASEAPI HANDLE WINAPI FindFirstVolumeA(LPSTR volume, DWORD len)
 void qemu_FindFirstVolumeA(struct qemu_syscall *call)
 {
     struct qemu_FindFirstVolumeA *c = (struct qemu_FindFirstVolumeA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)FindFirstVolumeA(QEMU_G2H(c->volume), c->len);
 }
 
@@ -907,7 +907,7 @@ WINBASEAPI BOOL WINAPI FindNextVolumeA(HANDLE handle, LPSTR volume, DWORD len)
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDNEXTVOLUMEA);
     call.handle = (uint64_t)handle;
     call.volume = (uint64_t)volume;
-    call.len = (uint64_t)len;
+    call.len = len;
 
     qemu_syscall(&call.super);
 
@@ -919,8 +919,8 @@ WINBASEAPI BOOL WINAPI FindNextVolumeA(HANDLE handle, LPSTR volume, DWORD len)
 void qemu_FindNextVolumeA(struct qemu_syscall *call)
 {
     struct qemu_FindNextVolumeA *c = (struct qemu_FindNextVolumeA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = FindNextVolumeA(QEMU_G2H(c->handle), QEMU_G2H(c->volume), c->len);
+    WINE_TRACE("\n");
+    c->super.iret = FindNextVolumeA((HANDLE)c->handle, QEMU_G2H(c->volume), c->len);
 }
 
 #endif
@@ -983,8 +983,8 @@ WINBASEAPI BOOL WINAPI FindVolumeClose(HANDLE handle)
 void qemu_FindVolumeClose(struct qemu_syscall *call)
 {
     struct qemu_FindVolumeClose *c = (struct qemu_FindVolumeClose *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = FindVolumeClose(QEMU_G2H(c->handle));
+    WINE_TRACE("\n");
+    c->super.iret = FindVolumeClose((HANDLE)c->handle);
 }
 
 #endif

@@ -1120,7 +1120,7 @@ WINBASEAPI int CDECL MSVCRT_toupper(int c)
 {
     struct qemu_toupper call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TOUPPER);
-    call.c = (uint64_t)c;
+    call.c = c;
 
     qemu_syscall(&call.super);
 
@@ -1132,7 +1132,7 @@ WINBASEAPI int CDECL MSVCRT_toupper(int c)
 void qemu_toupper(struct qemu_syscall *call)
 {
     struct qemu_toupper *c = (struct qemu_toupper *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_toupper(c->c);
 }
 

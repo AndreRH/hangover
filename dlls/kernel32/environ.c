@@ -214,7 +214,7 @@ WINBASEAPI BOOL WINAPI SetEnvironmentVariableA(LPCSTR name, LPCSTR value)
 void qemu_SetEnvironmentVariableA(struct qemu_syscall *call)
 {
     struct qemu_SetEnvironmentVariableA *c = (struct qemu_SetEnvironmentVariableA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetEnvironmentVariableA(QEMU_G2H(c->name), QEMU_G2H(c->value));
 }
 
@@ -268,7 +268,7 @@ WINBASEAPI DWORD WINAPI ExpandEnvironmentStringsA(LPCSTR src, LPSTR dst, DWORD c
     call.super.id = QEMU_SYSCALL_ID(CALL_EXPANDENVIRONMENTSTRINGSA);
     call.src = (uint64_t)src;
     call.dst = (uint64_t)dst;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -280,7 +280,7 @@ WINBASEAPI DWORD WINAPI ExpandEnvironmentStringsA(LPCSTR src, LPSTR dst, DWORD c
 void qemu_ExpandEnvironmentStringsA(struct qemu_syscall *call)
 {
     struct qemu_ExpandEnvironmentStringsA *c = (struct qemu_ExpandEnvironmentStringsA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ExpandEnvironmentStringsA(QEMU_G2H(c->src), QEMU_G2H(c->dst), c->count);
 }
 
