@@ -1162,7 +1162,7 @@ WINBASEAPI WCHAR WINAPI RtlUpcaseUnicodeChar(WCHAR wch)
 {
     struct qemu_RtlUpcaseUnicodeChar call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLUPCASEUNICODECHAR);
-    call.wch = (uint64_t)wch;
+    call.wch = wch;
 
     qemu_syscall(&call.super);
 
@@ -1174,7 +1174,7 @@ WINBASEAPI WCHAR WINAPI RtlUpcaseUnicodeChar(WCHAR wch)
 void qemu_RtlUpcaseUnicodeChar(struct qemu_syscall *call)
 {
     struct qemu_RtlUpcaseUnicodeChar *c = (struct qemu_RtlUpcaseUnicodeChar *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RtlUpcaseUnicodeChar(c->wch);
 }
 

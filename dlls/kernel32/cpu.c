@@ -117,7 +117,7 @@ WINBASEAPI VOID WINAPI GetSystemInfo(LPSYSTEM_INFO si)
 void qemu_GetSystemInfo(struct qemu_syscall *call)
 {
     struct qemu_GetSystemInfo *c = (struct qemu_GetSystemInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     GetSystemInfo(QEMU_G2H(c->si));
 }
 

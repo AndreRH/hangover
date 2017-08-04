@@ -108,7 +108,7 @@ WINBASEAPI INT WINAPI GetDateFormatEx(LPCWSTR localename, DWORD flags, const SYS
 void qemu_GetDateFormatEx(struct qemu_syscall *call)
 {
     struct qemu_GetDateFormatEx *c = (struct qemu_GetDateFormatEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDateFormatEx(QEMU_G2H(c->localename), c->flags, QEMU_G2H(c->date), QEMU_G2H(c->format), QEMU_G2H(c->outbuf), c->bufsize, QEMU_G2H(c->calendar));
 }
 
@@ -212,11 +212,11 @@ WINBASEAPI INT WINAPI GetTimeFormatEx(LPCWSTR localename, DWORD flags, const SYS
     struct qemu_GetTimeFormatEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTIMEFORMATEX);
     call.localename = (uint64_t)localename;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
     call.time = (uint64_t)time;
     call.format = (uint64_t)format;
     call.outbuf = (uint64_t)outbuf;
-    call.bufsize = (uint64_t)bufsize;
+    call.bufsize = bufsize;
 
     qemu_syscall(&call.super);
 
@@ -228,7 +228,7 @@ WINBASEAPI INT WINAPI GetTimeFormatEx(LPCWSTR localename, DWORD flags, const SYS
 void qemu_GetTimeFormatEx(struct qemu_syscall *call)
 {
     struct qemu_GetTimeFormatEx *c = (struct qemu_GetTimeFormatEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTimeFormatEx(QEMU_G2H(c->localename), c->flags, QEMU_G2H(c->time), QEMU_G2H(c->format), QEMU_G2H(c->outbuf), c->bufsize);
 }
 
@@ -291,12 +291,12 @@ WINBASEAPI INT WINAPI GetNumberFormatA(LCID lcid, DWORD dwFlags, LPCSTR lpszValu
 {
     struct qemu_GetNumberFormatA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNUMBERFORMATA);
-    call.lcid = (uint64_t)lcid;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.lcid = lcid;
+    call.dwFlags = dwFlags;
     call.lpszValue = (uint64_t)lpszValue;
     call.lpFormat = (uint64_t)lpFormat;
     call.lpNumberStr = (uint64_t)lpNumberStr;
-    call.cchOut = (uint64_t)cchOut;
+    call.cchOut = cchOut;
 
     qemu_syscall(&call.super);
 
@@ -308,7 +308,7 @@ WINBASEAPI INT WINAPI GetNumberFormatA(LCID lcid, DWORD dwFlags, LPCSTR lpszValu
 void qemu_GetNumberFormatA(struct qemu_syscall *call)
 {
     struct qemu_GetNumberFormatA *c = (struct qemu_GetNumberFormatA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetNumberFormatA(c->lcid, c->dwFlags, QEMU_G2H(c->lpszValue), QEMU_G2H(c->lpFormat), QEMU_G2H(c->lpNumberStr), c->cchOut);
 }
 
@@ -372,11 +372,11 @@ WINBASEAPI INT WINAPI GetNumberFormatEx(LPCWSTR name, DWORD flags, LPCWSTR value
     struct qemu_GetNumberFormatEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNUMBERFORMATEX);
     call.name = (uint64_t)name;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
     call.value = (uint64_t)value;
     call.format = (uint64_t)format;
     call.number = (uint64_t)number;
-    call.numout = (uint64_t)numout;
+    call.numout = numout;
 
     qemu_syscall(&call.super);
 
@@ -390,7 +390,7 @@ extern INT WINAPI GetNumberFormatEx(LPCWSTR name, DWORD flags, LPCWSTR value, co
 void qemu_GetNumberFormatEx(struct qemu_syscall *call)
 {
     struct qemu_GetNumberFormatEx *c = (struct qemu_GetNumberFormatEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetNumberFormatEx(QEMU_G2H(c->name), c->flags, QEMU_G2H(c->value), QEMU_G2H(c->format), QEMU_G2H(c->number), c->numout);
 }
 
@@ -413,12 +413,12 @@ WINBASEAPI INT WINAPI GetCurrencyFormatA(LCID lcid, DWORD dwFlags, LPCSTR lpszVa
 {
     struct qemu_GetCurrencyFormatA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENCYFORMATA);
-    call.lcid = (uint64_t)lcid;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.lcid = lcid;
+    call.dwFlags = dwFlags;
     call.lpszValue = (uint64_t)lpszValue;
     call.lpFormat = (uint64_t)lpFormat;
     call.lpCurrencyStr = (uint64_t)lpCurrencyStr;
-    call.cchOut = (uint64_t)cchOut;
+    call.cchOut = cchOut;
 
     qemu_syscall(&call.super);
 
@@ -430,7 +430,7 @@ WINBASEAPI INT WINAPI GetCurrencyFormatA(LCID lcid, DWORD dwFlags, LPCSTR lpszVa
 void qemu_GetCurrencyFormatA(struct qemu_syscall *call)
 {
     struct qemu_GetCurrencyFormatA *c = (struct qemu_GetCurrencyFormatA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCurrencyFormatA(c->lcid, c->dwFlags, QEMU_G2H(c->lpszValue), QEMU_G2H(c->lpFormat), QEMU_G2H(c->lpCurrencyStr), c->cchOut);
 }
 
