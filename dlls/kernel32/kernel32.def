@@ -923,6 +923,7 @@ EXPORTS
   VerifyVersionInfoW
   VerLanguageNameA
   VerLanguageNameW
+  VerSetConditionMask=ntdll.VerSetConditionMask
   VirtualAlloc
   VirtualAllocEx
   VirtualFree
