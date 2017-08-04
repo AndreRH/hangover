@@ -44,6 +44,8 @@ EXPORTS
   NtAccessCheckAndAuditAlarm
   NtAdjustGroupsToken
   NtAdjustPrivilegesToken
+  NtAlertResumeThread
+  NtAlertThread
   NtAllocateLocallyUniqueId
   NtAllocateUuids
   NtCancelIoFile
@@ -65,6 +67,7 @@ EXPORTS
   NtDuplicateToken
   NtFlushBuffersFile
   NtFsControlFile
+  NtGetCurrentProcessorNumber
   NtInitiatePowerAction
   NtListenPort
   NtLockFile
@@ -75,6 +78,7 @@ EXPORTS
   NtOpenProcessToken
   NtOpenProcessTokenEx
   NtOpenSymbolicLinkObject
+  NtOpenThread
   NtOpenThreadToken
   NtOpenThreadTokenEx
   NtPowerInformation
@@ -84,6 +88,7 @@ EXPORTS
   NtQueryEaFile
   NtQueryFullAttributesFile
   NtQueryInformationFile
+  NtQueryInformationThread
   NtQueryInformationToken
   NtQueryObject
   NtQuerySecurityObject
@@ -91,22 +96,27 @@ EXPORTS
   NtQuerySystemInformation
   NtQuerySystemInformationEx
   NtQueryVolumeInformationFile
+  NtQueueApcThread
   NtReadFile
   NtReadFileScatter
   NtRegisterThreadTerminatePort
   NtReplyWaitReceivePort
   NtRequestWaitReplyPort
+  NtResumeThread
   NtSecureConnectPort
   NtSetEaFile
   NtSetInformationFile
   NtSetInformationObject
+  NtSetInformationThread
   NtSetInformationToken
   NtSetIntervalProfile
   NtSetLdtEntries
   NtSetSystemInformation
   NtSetVolumeInformationFile
   NtShutdownSystem
+  NtSuspendThread
   NtSystemDebugControl
+  NtTerminateThread
   NtUnlockFile
   NtWriteFile
   NtWriteFileGather
@@ -147,6 +157,7 @@ EXPORTS
   RtlCreateUnicodeString
   RtlCreateUnicodeStringFromAsciiz
   RtlCreateUserProcess
+  RtlCreateUserThread
   RtlDeactivateActivationContext
   RtlDecodePointer
   RtlDecompressBuffer
@@ -188,6 +199,7 @@ EXPORTS
   RtlGetCurrentTransaction
   RtlGetFullPathName_U
   RtlGetLongestNtPathLength
+  RtlGetNtGlobalFlags
   RtlGetProcessHeaps
   RtlGetThreadErrorMode
   RtlGUIDFromString
