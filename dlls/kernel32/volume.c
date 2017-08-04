@@ -503,7 +503,7 @@ WINBASEAPI UINT WINAPI GetDriveTypeW(LPCWSTR root)
 void qemu_GetDriveTypeW(struct qemu_syscall *call)
 {
     struct qemu_GetDriveTypeW *c = (struct qemu_GetDriveTypeW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDriveTypeW(QEMU_G2H(c->root));
 }
 
@@ -605,7 +605,7 @@ WINBASEAPI BOOL WINAPI GetDiskFreeSpaceExA(LPCSTR root, PULARGE_INTEGER avail, P
 void qemu_GetDiskFreeSpaceExA(struct qemu_syscall *call)
 {
     struct qemu_GetDiskFreeSpaceExA *c = (struct qemu_GetDiskFreeSpaceExA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDiskFreeSpaceExA(QEMU_G2H(c->root), QEMU_G2H(c->avail), QEMU_G2H(c->total), QEMU_G2H(c->totalfree));
 }
 
@@ -643,7 +643,7 @@ WINBASEAPI BOOL WINAPI GetDiskFreeSpaceW(LPCWSTR root, LPDWORD cluster_sectors, 
 void qemu_GetDiskFreeSpaceW(struct qemu_syscall *call)
 {
     struct qemu_GetDiskFreeSpaceW *c = (struct qemu_GetDiskFreeSpaceW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDiskFreeSpaceW(QEMU_G2H(c->root), QEMU_G2H(c->cluster_sectors), QEMU_G2H(c->sector_bytes), QEMU_G2H(c->free_clusters), QEMU_G2H(c->total_clusters));
 }
 
@@ -681,7 +681,7 @@ WINBASEAPI BOOL WINAPI GetDiskFreeSpaceA(LPCSTR root, LPDWORD cluster_sectors, L
 void qemu_GetDiskFreeSpaceA(struct qemu_syscall *call)
 {
     struct qemu_GetDiskFreeSpaceA *c = (struct qemu_GetDiskFreeSpaceA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDiskFreeSpaceA(QEMU_G2H(c->root), QEMU_G2H(c->cluster_sectors), QEMU_G2H(c->sector_bytes), QEMU_G2H(c->free_clusters), QEMU_G2H(c->total_clusters));
 }
 
