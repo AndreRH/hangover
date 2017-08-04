@@ -298,7 +298,7 @@ WINBASEAPI UINT WINAPI SetErrorMode(UINT mode)
 {
     struct qemu_SetErrorMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETERRORMODE);
-    call.mode = (uint64_t)mode;
+    call.mode = mode;
 
     qemu_syscall(&call.super);
 
@@ -310,7 +310,7 @@ WINBASEAPI UINT WINAPI SetErrorMode(UINT mode)
 void qemu_SetErrorMode(struct qemu_syscall *call)
 {
     struct qemu_SetErrorMode *c = (struct qemu_SetErrorMode *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_WARN("Need integration with guest-side error handlers.\n");
     c->super.iret = SetErrorMode(c->mode);
 }
 
