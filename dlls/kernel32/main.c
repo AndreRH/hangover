@@ -25,10 +25,25 @@
 #include "dll_list.h"
 #include "kernel32.h"
 
+struct qemu_set_callbacks
+{
+    struct qemu_syscall super;
+    uint64_t exception_handler;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
+    struct qemu_set_callbacks call;
+    switch (reason)
+    {
+        case DLL_PROCESS_ATTACH:
+            call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
+            call.exception_handler = (uint64_t)qemu_exception_handler;
+            qemu_syscall(&call.super);
+            break;
+    }
     return TRUE;
 }
 
@@ -60,11 +75,19 @@ WINBASEAPI INT WINAPI MulDiv( INT nMultiplicand, INT nMultiplier, INT nDivisor)
 #endif
 
 #ifndef QEMU_DLL_GUEST
+
 #include <wine/debug.h>
 #include "va_helper_impl.h"
+
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 
 const struct qemu_ops *qemu_ops;
+
+static void qemu_set_callbacks(struct qemu_syscall *call)
+{
+    struct qemu_set_callbacks *c = (struct qemu_set_callbacks *)call;
+    qemu_ops->qemu_set_except_handler(c->exception_handler);
+}
 
 static const syscall_handler dll_functions[] =
 {
@@ -827,6 +850,7 @@ static const syscall_handler dll_functions[] =
     qemu_ScrollConsoleScreenBufferW,
     qemu_SearchPathA,
     qemu_SearchPathW,
+    qemu_set_callbacks,
     qemu_SetCalendarInfoA,
     qemu_SetCalendarInfoW,
     qemu_SetCommBreak,

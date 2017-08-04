@@ -762,6 +762,7 @@ enum kernel32_calls
     CALL_SCROLLCONSOLESCREENBUFFERW,
     CALL_SEARCHPATHA,
     CALL_SEARCHPATHW,
+    CALL_SET_CALLBACKS,
     CALL_SETCALENDARINFOA,
     CALL_SETCALENDARINFOW,
     CALL_SETCOMMBREAK,
@@ -964,7 +965,12 @@ enum kernel32_calls
     CALL_ZOMBIFYACTCTX,
 };
 
-#ifndef QEMU_DLL_GUEST
+#ifdef QEMU_DLL_GUEST
+
+void WINAPI qemu_exception_handler(EXCEPTION_POINTERS *except);
+
+#else
+
 extern const struct qemu_ops *qemu_ops;
 
 void qemu__hread(struct qemu_syscall *call);

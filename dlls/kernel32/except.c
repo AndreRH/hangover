@@ -1,5 +1,6 @@
 /*
  * Copyright 2017 André Hentschel
+ * Copyright 2017 Stefan Dösinger for CodeWeavers
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -213,3 +214,21 @@ void qemu_FatalExit(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+struct qemu_ExitProcess
+{
+    struct qemu_syscall super;
+    uint64_t exitcode;
+};
+
+void WINAPI qemu_exception_handler(EXCEPTION_POINTERS *except)
+{
+    struct qemu_ExitProcess call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_EXITPROCESS);
+    call.exitcode = 234;
+
+    qemu_syscall(&call.super);
+}
+
+#endif
