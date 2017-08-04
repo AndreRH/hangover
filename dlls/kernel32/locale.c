@@ -2654,8 +2654,8 @@ WINBASEAPI BOOL WINAPI EnumSystemGeoID(GEOCLASS geoclass, GEOID parent, GEO_ENUM
 {
     struct qemu_EnumSystemGeoID call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMSYSTEMGEOID);
-    call.geoclass = (uint64_t)geoclass;
-    call.parent = (uint64_t)parent;
+    call.geoclass = geoclass;
+    call.parent = parent;
     call.enumproc = (uint64_t)enumproc;
 
     qemu_syscall(&call.super);
@@ -2665,11 +2665,30 @@ WINBASEAPI BOOL WINAPI EnumSystemGeoID(GEOCLASS geoclass, GEOID parent, GEO_ENUM
 
 #else
 
+static BOOL CALLBACK qemu_EnumSystemGeoID_host_cb(GEOID id)
+{
+    uint64_t *guest_proc = TlsGetValue(kernel32_tls);
+    BOOL ret;
+
+    WINE_TRACE("Calling guest proc 0x%lx(%x).\n", *guest_proc, id);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(*guest_proc), id);
+    WINE_TRACE("Guest proc returned %u\n", ret);
+    return ret;
+};
+
 void qemu_EnumSystemGeoID(struct qemu_syscall *call)
 {
     struct qemu_EnumSystemGeoID *c = (struct qemu_EnumSystemGeoID *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumSystemGeoID(c->geoclass, c->parent, QEMU_G2H(c->enumproc));
+    uint64_t *old_tls;
+
+    WINE_TRACE("\n");
+    old_tls = TlsGetValue(kernel32_tls);
+    TlsSetValue(kernel32_tls, &c->enumproc);
+
+    c->super.iret = EnumSystemGeoID(c->geoclass, c->parent,
+            c->enumproc ? qemu_EnumSystemGeoID_host_cb : NULL);
+
+    TlsSetValue(kernel32_tls, old_tls);
 }
 
 #endif
