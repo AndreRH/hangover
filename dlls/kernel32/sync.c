@@ -1713,7 +1713,7 @@ WINBASEAPI HANDLE WINAPI CreateWaitableTimerA(SECURITY_ATTRIBUTES *sa, BOOL manu
     struct qemu_CreateWaitableTimerA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEWAITABLETIMERA);
     call.sa = (uint64_t)sa;
-    call.manual = (uint64_t)manual;
+    call.manual = manual;
     call.name = (uint64_t)name;
 
     qemu_syscall(&call.super);
@@ -1726,7 +1726,7 @@ WINBASEAPI HANDLE WINAPI CreateWaitableTimerA(SECURITY_ATTRIBUTES *sa, BOOL manu
 void qemu_CreateWaitableTimerA(struct qemu_syscall *call)
 {
     struct qemu_CreateWaitableTimerA *c = (struct qemu_CreateWaitableTimerA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateWaitableTimerA(QEMU_G2H(c->sa), c->manual, QEMU_G2H(c->name));
 }
 
@@ -1925,10 +1925,10 @@ WINBASEAPI BOOL WINAPI SetWaitableTimer(HANDLE handle, const LARGE_INTEGER *when
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWAITABLETIMER);
     call.handle = (uint64_t)handle;
     call.when = (uint64_t)when;
-    call.period = (uint64_t)period;
+    call.period = period;
     call.callback = (uint64_t)callback;
     call.arg = (uint64_t)arg;
-    call.resume = (uint64_t)resume;
+    call.resume = resume;
 
     qemu_syscall(&call.super);
 
@@ -1940,7 +1940,9 @@ WINBASEAPI BOOL WINAPI SetWaitableTimer(HANDLE handle, const LARGE_INTEGER *when
 void qemu_SetWaitableTimer(struct qemu_syscall *call)
 {
     struct qemu_SetWaitableTimer *c = (struct qemu_SetWaitableTimer *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+    if (c->callback)
+        WINE_FIXME("Wrap non-NULL callback.\n");
     c->super.iret = SetWaitableTimer(QEMU_G2H(c->handle), QEMU_G2H(c->when), c->period, QEMU_G2H(c->callback), QEMU_G2H(c->arg), c->resume);
 }
 
