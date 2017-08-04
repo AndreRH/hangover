@@ -569,11 +569,29 @@ WINBASEAPI BOOL WINAPI EnumDateFormatsA(DATEFMT_ENUMPROCA proc, LCID lcid, DWORD
 
 #else
 
+static BOOL CALLBACK qemu_EnumTimeDateFormatsA_cb(char *fmt)
+{
+    uint64_t *guest_proc = TlsGetValue(kernel32_tls);
+    BOOL ret;
+
+    WINE_TRACE("Calling guest proc 0x%lx(%s).\n", *guest_proc, fmt);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(*guest_proc), QEMU_H2G(fmt));
+    WINE_TRACE("Guest proc returned %u\n", ret);
+    return ret;
+}
+
 void qemu_EnumDateFormatsA(struct qemu_syscall *call)
 {
     struct qemu_EnumDateFormatsA *c = (struct qemu_EnumDateFormatsA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumDateFormatsA(QEMU_G2H(c->proc), c->lcid, c->flags);
+    uint64_t *old_tls;
+
+    WINE_TRACE("\n");
+    old_tls = TlsGetValue(kernel32_tls);
+    TlsSetValue(kernel32_tls, &c->proc);
+
+    c->super.iret = EnumDateFormatsA(c->proc ? qemu_EnumTimeDateFormatsA_cb : NULL, c->lcid, c->flags);
+
+    TlsSetValue(kernel32_tls, old_tls);
 }
 
 #endif
@@ -603,11 +621,29 @@ WINBASEAPI BOOL WINAPI EnumDateFormatsW(DATEFMT_ENUMPROCW proc, LCID lcid, DWORD
 
 #else
 
+static BOOL CALLBACK qemu_EnumTimeDateFormatsW_cb(WCHAR *fmt)
+{
+    uint64_t *guest_proc = TlsGetValue(kernel32_tls);
+    BOOL ret;
+
+    WINE_TRACE("Calling guest proc 0x%lx(%s).\n", *guest_proc, wine_dbgstr_w(fmt));
+    ret = qemu_ops->qemu_execute(QEMU_G2H(*guest_proc), QEMU_H2G(fmt));
+    WINE_TRACE("Guest proc returned %u\n", ret);
+    return ret;
+}
+
 void qemu_EnumDateFormatsW(struct qemu_syscall *call)
 {
     struct qemu_EnumDateFormatsW *c = (struct qemu_EnumDateFormatsW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumDateFormatsW(QEMU_G2H(c->proc), c->lcid, c->flags);
+    uint64_t *old_tls;
+
+    WINE_TRACE("\n");
+    old_tls = TlsGetValue(kernel32_tls);
+    TlsSetValue(kernel32_tls, &c->proc);
+
+    c->super.iret = EnumDateFormatsW(c->proc ? qemu_EnumTimeDateFormatsW_cb : NULL, c->lcid, c->flags);
+
+    TlsSetValue(kernel32_tls, old_tls);
 }
 
 #endif
@@ -663,8 +699,8 @@ WINBASEAPI BOOL WINAPI EnumTimeFormatsA(TIMEFMT_ENUMPROCA proc, LCID lcid, DWORD
     struct qemu_EnumTimeFormatsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMTIMEFORMATSA);
     call.proc = (uint64_t)proc;
-    call.lcid = (uint64_t)lcid;
-    call.flags = (uint64_t)flags;
+    call.lcid = lcid;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -676,8 +712,15 @@ WINBASEAPI BOOL WINAPI EnumTimeFormatsA(TIMEFMT_ENUMPROCA proc, LCID lcid, DWORD
 void qemu_EnumTimeFormatsA(struct qemu_syscall *call)
 {
     struct qemu_EnumTimeFormatsA *c = (struct qemu_EnumTimeFormatsA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumTimeFormatsA(QEMU_G2H(c->proc), c->lcid, c->flags);
+    uint64_t *old_tls;
+
+    WINE_TRACE("\n");
+    old_tls = TlsGetValue(kernel32_tls);
+    TlsSetValue(kernel32_tls, &c->proc);
+
+    c->super.iret = EnumTimeFormatsA(c->proc ? qemu_EnumTimeDateFormatsA_cb : NULL, c->lcid, c->flags);
+
+    TlsSetValue(kernel32_tls, old_tls);
 }
 
 #endif
@@ -697,8 +740,8 @@ WINBASEAPI BOOL WINAPI EnumTimeFormatsW(TIMEFMT_ENUMPROCW proc, LCID lcid, DWORD
     struct qemu_EnumTimeFormatsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMTIMEFORMATSW);
     call.proc = (uint64_t)proc;
-    call.lcid = (uint64_t)lcid;
-    call.flags = (uint64_t)flags;
+    call.lcid = lcid;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -710,8 +753,15 @@ WINBASEAPI BOOL WINAPI EnumTimeFormatsW(TIMEFMT_ENUMPROCW proc, LCID lcid, DWORD
 void qemu_EnumTimeFormatsW(struct qemu_syscall *call)
 {
     struct qemu_EnumTimeFormatsW *c = (struct qemu_EnumTimeFormatsW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumTimeFormatsW(QEMU_G2H(c->proc), c->lcid, c->flags);
+    uint64_t *old_tls;
+
+    WINE_TRACE("\n");
+    old_tls = TlsGetValue(kernel32_tls);
+    TlsSetValue(kernel32_tls, &c->proc);
+
+    c->super.iret = EnumTimeFormatsW(c->proc ? qemu_EnumTimeDateFormatsW_cb : NULL, c->lcid, c->flags);
+
+    TlsSetValue(kernel32_tls, old_tls);
 }
 
 #endif

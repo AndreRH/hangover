@@ -1028,6 +1028,10 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
 
+    kernel32_tls = TlsAlloc();
+    if (kernel32_tls == TLS_OUT_OF_INDEXES)
+        WINE_ERR("Out of TLS indices\n");
+
     return dll_functions;
 }
 

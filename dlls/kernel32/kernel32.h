@@ -1915,6 +1915,8 @@ void qemu_WriteTapemark(struct qemu_syscall *call);
 void qemu_WTSGetActiveConsoleSessionId(struct qemu_syscall *call);
 void qemu_ZombifyActCtx(struct qemu_syscall *call);
 
+DWORD kernel32_tls;
+
 #endif
 
 #endif
