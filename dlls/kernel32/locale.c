@@ -2466,17 +2466,33 @@ struct qemu_EnumUILanguagesA
     uint64_t pUILangEnumProc;
     uint64_t dwFlags;
     uint64_t lParam;
+    uint64_t wrapper;
+};
+
+struct qemu_EnumUILanguagesA_cb
+{
+    uint64_t proc;
+    uint64_t value;
+    uint64_t param;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static uint64_t WINAPI qemu_EnumUILanguagesA_cb(struct qemu_EnumUILanguagesA_cb *data)
+{
+    UILANGUAGE_ENUMPROCA proc = (UILANGUAGE_ENUMPROCA)data->proc;
+
+    return proc((char *)data->value, data->param);
+}
 
 WINBASEAPI BOOL WINAPI EnumUILanguagesA(UILANGUAGE_ENUMPROCA pUILangEnumProc, DWORD dwFlags, LONG_PTR lParam)
 {
     struct qemu_EnumUILanguagesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMUILANGUAGESA);
     call.pUILangEnumProc = (uint64_t)pUILangEnumProc;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lParam = (uint64_t)lParam;
+    call.dwFlags = dwFlags;
+    call.lParam = lParam;
+    call.wrapper = (uint64_t)qemu_EnumUILanguagesA_cb;
 
     qemu_syscall(&call.super);
 
@@ -2485,11 +2501,31 @@ WINBASEAPI BOOL WINAPI EnumUILanguagesA(UILANGUAGE_ENUMPROCA pUILangEnumProc, DW
 
 #else
 
+static BOOL CALLBACK qemu_EnumUILanguagesA_host_cb(char *value, LONG_PTR param)
+{
+    struct param_wrapper *data = (struct param_wrapper *)param;
+    struct qemu_EnumUILanguagesA_cb guest_data = {data->guest_cb, QEMU_H2G(value), data->guest_param};
+    BOOL ret;
+
+    WINE_TRACE("Calling guest proc 0x%lx(%s, 0x%lx).\n", data->guest_cb,
+            value, data->guest_param);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&guest_data));
+    WINE_TRACE("Guest proc returned %u.\n", ret);
+    return ret;
+}
+
 void qemu_EnumUILanguagesA(struct qemu_syscall *call)
 {
     struct qemu_EnumUILanguagesA *c = (struct qemu_EnumUILanguagesA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumUILanguagesA(QEMU_G2H(c->pUILangEnumProc), c->dwFlags, c->lParam);
+    struct param_wrapper data;
+
+    WINE_TRACE("Unverified!\n");
+    data.wrapper = c->wrapper;
+    data.guest_cb = c->pUILangEnumProc;
+    data.guest_param = c->lParam;
+
+    c->super.iret = EnumUILanguagesA(c->pUILangEnumProc ? qemu_EnumUILanguagesA_host_cb : NULL, c->dwFlags,
+            (LONG_PTR)&data);
 }
 
 #endif
