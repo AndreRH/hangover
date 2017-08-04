@@ -912,7 +912,7 @@ void qemu_fabsf(struct qemu_syscall *call)
 struct qemu_floorf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -921,7 +921,7 @@ WINBASEAPI float CDECL MSVCRT_floorf(float x)
 {
     struct qemu_floorf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FLOORF);
-    call.x = (uint64_t)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -933,7 +933,7 @@ WINBASEAPI float CDECL MSVCRT_floorf(float x)
 void qemu_floorf(struct qemu_syscall *call)
 {
     struct qemu_floorf *c = (struct qemu_floorf *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_floorf(c->x);
 }
 
