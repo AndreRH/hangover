@@ -241,7 +241,7 @@ int CDECL MSVCRT_fflush(FILE *file)
 void qemu_fflush(struct qemu_syscall *call)
 {
     struct qemu_fflush *c = (struct qemu_fflush *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_fflush(QEMU_G2H(c->file));
 }
 
