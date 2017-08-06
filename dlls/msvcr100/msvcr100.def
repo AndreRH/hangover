@@ -409,6 +409,7 @@ EXPORTS
   strtol=ntdll.strtol
   strtoul=ntdll.strtoul
   swprintf_s=MSVCRT_swprintf_s
+  swscanf_s=MSVCRT_swscanf_s
   tan=MSVCRT_tan
   tanf=MSVCRT_tanf
   tanh=MSVCRT_tanh

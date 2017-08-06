@@ -452,6 +452,7 @@ enum msvcrt_calls
     CALL_STRSTR,
     CALL_STRTOD,
     CALL_SWPRINTF_S,
+    CALL_SWSCANF_S,
     CALL_TAN,
     CALL_TANF,
     CALL_TANH,
@@ -505,6 +506,7 @@ void * CDECL MSVCRT_realloc(void *ptr, size_t size);
 size_t CDECL MSVCRT_strlen(const char *str);
 
 unsigned int count_printf_argsA(const char *format, char *fmts);
+unsigned int count_printf_argsW(const WCHAR *format, WCHAR *fmts);
 
 #else
 
@@ -954,6 +956,7 @@ void qemu_strncmp(struct qemu_syscall *call);
 void qemu_strrchr(struct qemu_syscall *call);
 void qemu_strstr(struct qemu_syscall *call);
 void qemu_strtod(struct qemu_syscall *call);
+void qemu_swscanf_s(struct qemu_syscall *call);
 void qemu_tan(struct qemu_syscall *call);
 void qemu_tanf(struct qemu_syscall *call);
 void qemu_tanh(struct qemu_syscall *call);
@@ -1446,6 +1449,7 @@ int (* CDECL p__wgetenv_s)(size_t *pReturnValue, WCHAR *buffer, size_t numberOfE
 int (* CDECL p_setvbuf)(FILE *file, char *buf, int mode, size_t size);
 /* FIXME: Should use __time64_t, but somehow it isn't defined. */
 __int64 (* CDECL p__time64)(__int64 *buf);
+int (* CDECL p_swscanf_s)(const WCHAR *str, const WCHAR *format, ...);
 
 DWORD msvcrt_tls;
 

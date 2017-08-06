@@ -439,7 +439,7 @@ int CDECL MSVCRT_vprintf(const char *format, va_list list)
     return vfprintf_helper(QEMU_SYSCALL_ID(CALL_PRINTF), NULL, format, list);
 }
 
-static unsigned int count_printf_argsW(const WCHAR *format, WCHAR *fmts)
+unsigned int count_printf_argsW(const WCHAR *format, WCHAR *fmts)
 {
     unsigned int i, count = 0;
     BOOL fmt_start = FALSE;
@@ -477,9 +477,12 @@ static unsigned int count_printf_argsW(const WCHAR *format, WCHAR *fmts)
             case 'u':
             case 'X':
             case 'x':
-                fmts[count++] = format[i];
-                if (count == 256)
-                    MSVCRT_exit(255);
+                if (fmts)
+                {
+                    fmts[count++] = format[i];
+                    if (count == 256)
+                        MSVCRT_exit(255);
+                }
                 fmt_start = FALSE;
                 break;
 
