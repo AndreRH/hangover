@@ -1,6 +1,8 @@
 LIBRARY msvcr100.dll BASE=0xa0000000
 
 EXPORTS
+  ??_U@YAPEAX_K@Z=MSVCRT_operator_new
+  ??_V@YAXPEAX@Z=MSVCRT_operator_delete
   ??1type_info@@UEAA@XZ=MSVCRT_type_info_dtor
   ??2@YAPEAX_K@Z=MSVCRT_operator_new
   ??3@YAXPEAX@Z=MSVCRT_operator_delete
