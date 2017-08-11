@@ -70,30 +70,38 @@ struct qemu_UnhandledExceptionFilter
 {
     struct qemu_syscall super;
     uint64_t epointers;
+    uint64_t filter;
 };
 
 #ifdef QEMU_DLL_GUEST
 
+static PTOP_LEVEL_EXCEPTION_FILTER top_filter;
+
 LONG WINAPI kernel32_UnhandledExceptionFilter(PEXCEPTION_POINTERS epointers)
 {
     struct qemu_UnhandledExceptionFilter call;
+
+    /* For logging. */
     call.super.id = QEMU_SYSCALL_ID(CALL_UNHANDLEDEXCEPTIONFILTER);
     call.epointers = (uint64_t)epointers;
-
+    call.filter = (uint64_t)top_filter;
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    if (top_filter)
+    {
+        LONG ret = top_filter(epointers);
+        if (ret != EXCEPTION_CONTINUE_SEARCH) return ret;
+    }
+
+    return EXCEPTION_CONTINUE_SEARCH;
 }
 
 #else
 
 void qemu_UnhandledExceptionFilter(struct qemu_syscall *call)
 {
-    WINE_FIXME("Stub!\n");
-
-    /* Don't forward this to native because this would notify qemu that there
-     * has been an exception, restarting the exception handling cycle! */
-    ExitProcess(1);
+    struct qemu_UnhandledExceptionFilter *c = (struct qemu_UnhandledExceptionFilter *)call;
+    WINE_TRACE("Application filter %p.\n", QEMU_G2H(c->filter));
 }
 
 #endif
@@ -102,6 +110,7 @@ struct qemu_SetUnhandledExceptionFilter
 {
     struct qemu_syscall super;
     uint64_t filter;
+    uint64_t old;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -109,19 +118,25 @@ struct qemu_SetUnhandledExceptionFilter
 WINBASEAPI LPTOP_LEVEL_EXCEPTION_FILTER WINAPI SetUnhandledExceptionFilter(LPTOP_LEVEL_EXCEPTION_FILTER filter)
 {
     struct qemu_SetUnhandledExceptionFilter call;
+    LPTOP_LEVEL_EXCEPTION_FILTER old = top_filter;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_SETUNHANDLEDEXCEPTIONFILTER);
     call.filter = (uint64_t)filter;
+    call.old = (uint64_t)old;
 
+    /* For logging. */
     qemu_syscall(&call.super);
 
-    return (LPTOP_LEVEL_EXCEPTION_FILTER)call.super.iret;
+    top_filter = filter;
+    return old;
 }
 
 #else
 
 void qemu_SetUnhandledExceptionFilter(struct qemu_syscall *call)
 {
-    WINE_FIXME("Stub!\n");
+    struct qemu_SetUnhandledExceptionFilter *c = (struct qemu_SetUnhandledExceptionFilter *)call;
+    WINE_TRACE("Setting filter %p, old %p.\n", QEMU_G2H(c->filter), QEMU_G2H(c->old));
 }
 
 #endif
