@@ -1201,3 +1201,12 @@ void qemu_NtRaiseException(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+void WINAPI qemu_exception_handler(EXCEPTION_POINTERS *except)
+{
+    ntdll_NtTerminateProcess(NtCurrentProcess(), 234);
+}
+
+#endif

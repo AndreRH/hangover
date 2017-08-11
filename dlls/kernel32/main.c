@@ -28,7 +28,6 @@
 struct qemu_set_callbacks
 {
     struct qemu_syscall super;
-    uint64_t exception_handler;
     uint64_t call_entry;
 };
 
@@ -47,7 +46,6 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
     {
         case DLL_PROCESS_ATTACH:
             call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
-            call.exception_handler = (uint64_t)qemu_exception_handler;
             call.call_entry = (uint64_t)kernel32_call_process_main;
             qemu_syscall(&call.super);
             break;
@@ -94,7 +92,6 @@ const struct qemu_ops *qemu_ops;
 static void qemu_set_callbacks(struct qemu_syscall *call)
 {
     struct qemu_set_callbacks *c = (struct qemu_set_callbacks *)call;
-    qemu_ops->qemu_set_except_handler(c->exception_handler);
     qemu_ops->qemu_set_call_entry(c->call_entry);
 }
 

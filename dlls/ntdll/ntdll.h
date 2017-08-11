@@ -298,6 +298,7 @@ enum ntdll_calls
     CALL_RTLWALKHEAP,
     CALL_RTLZEROMEMORY,
     CALL_RTLZOMBIFYACTIVATIONCONTEXT,
+    CALL_SET_CALLBACKS,
     CALL_STRCAT,
     CALL_STRCHR,
     CALL_STRCMP,
@@ -329,6 +330,8 @@ PEXCEPTION_ROUTINE WINAPI ntdll_RtlVirtualUnwind(DWORD type, DWORD64 base, DWORD
         PRUNTIME_FUNCTION function, PCONTEXT context, PVOID *data, PDWORD64 frame_ret,
         PKNONVOLATILE_CONTEXT_POINTERS ctx_ptr);
 NTSTATUS WINAPI ntdll_NtTerminateProcess(HANDLE handle, LONG exit_code);
+
+void WINAPI qemu_exception_handler(EXCEPTION_POINTERS *except);
 
 #else
 

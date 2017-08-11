@@ -213,22 +213,3 @@ void qemu_FatalExit(struct qemu_syscall *call)
 }
 
 #endif
-
-#ifdef QEMU_DLL_GUEST
-
-struct qemu_ExitProcess
-{
-    struct qemu_syscall super;
-    uint64_t exitcode;
-};
-
-void WINAPI qemu_exception_handler(EXCEPTION_POINTERS *except)
-{
-    struct qemu_ExitProcess call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_EXITPROCESS);
-    call.exitcode = 234;
-
-    qemu_syscall(&call.super);
-}
-
-#endif
