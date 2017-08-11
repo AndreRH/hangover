@@ -1206,7 +1206,11 @@ void qemu_NtRaiseException(struct qemu_syscall *call)
 
 void WINAPI qemu_exception_handler(EXCEPTION_POINTERS *except)
 {
-    ntdll_NtTerminateProcess(NtCurrentProcess(), 234);
+    /* Create a copy of the exception info on the stack. */
+    EXCEPTION_RECORD rec = *except->ExceptionRecord;
+    CONTEXT ctx = *except->ContextRecord;
+
+    ntdll_NtRaiseException(&rec, &ctx, TRUE);
 }
 
 #endif
