@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <windows.h>
+#include <excpt.h>
 
 #include "format_msg.h"
 
@@ -7,6 +8,18 @@
 
 /* Not quite right, HMODULE != LDR_MODULE */
 static NTSTATUS (* WINAPI pLdrFindEntryForAddress)(void *addr, HMODULE *mod);
+
+static long CALLBACK test_handler(EXCEPTION_POINTERS *pointers)
+{
+    printf("test_handler executed\n");
+    switch (pointers->ExceptionRecord->ExceptionCode)
+    {
+        case EXCEPTION_STACK_OVERFLOW:
+            return EXCEPTION_EXECUTE_HANDLER;
+        default:
+            return EXCEPTION_CONTINUE_SEARCH;
+    }
+}
 
 int main()
 {
@@ -84,6 +97,30 @@ somelabel:
     printf("Got module %p for label in my code.\n", test_mod);
     pLdrFindEntryForAddress(HeapAlloc, &test_mod);
     printf("Got module %p for HeapAlloc.\n", test_mod);
+
+    /* Inspired by some stackoverflow discussion. */
+    __try1(test_handler)
+    {
+        RUNTIME_FUNCTION *func;
+
+        exceptlabel:
+        printf("Dummy printf inside a try block\n");
+
+        func = RtlLookupFunctionEntry((DWORD64)&&exceptlabel, (ULONG64 *)&test_mod, NULL);
+
+        printf("Found function table entry %p.\n", func);
+        if (func->BeginAddress + (ULONG64)test_mod == (ULONG64)main)
+            printf("Begin matches this function. Begin %lx, main %p, base %p\n", func->BeginAddress, main, test_mod);
+        else
+            printf("Seems like I found an incorrect function entry. Begin %lx, main %p, base %p\n", func->BeginAddress, main, test_mod);
+
+        __asm__ goto ( "jmp %l[stupid_manual_jump]\n" :::: stupid_manual_jump);
+    }
+    __except1
+    {
+        printf("Dummy printf inside an except block\n");
+    }
+stupid_manual_jump:
 
     return 0;
 }

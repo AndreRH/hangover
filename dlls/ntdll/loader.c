@@ -33,8 +33,6 @@
 
 /* I can't make mingw's ddk headers work :-( . */
 
-typedef void LDR_MODULE;
-
 #else
 
 #include <ddk/ntddk.h>
@@ -84,6 +82,97 @@ void qemu_LdrFindEntryForAddress(struct qemu_syscall *call)
         c->super.iret = STATUS_NO_MORE_ENTRIES;
 
     *(uint64_t *)QEMU_G2H(c->mod) = (uint64_t)mod;
+}
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
+/* Copypasted from Wine with exception handling removed for now. */
+PIMAGE_NT_HEADERS WINAPI ntdll_RtlImageNtHeader(HMODULE hModule)
+{
+    IMAGE_NT_HEADERS *ret;
+
+    IMAGE_DOS_HEADER *dos = (IMAGE_DOS_HEADER *)hModule;
+
+    ret = NULL;
+    if (dos->e_magic == IMAGE_DOS_SIGNATURE)
+    {
+        ret = (IMAGE_NT_HEADERS *)((char *)dos + dos->e_lfanew);
+        if (ret->Signature != IMAGE_NT_SIGNATURE) ret = NULL;
+    }
+    return ret;
+}
+
+/* Copypasted from Wine. */
+PIMAGE_SECTION_HEADER WINAPI ntdll_RtlImageRvaToSection( const IMAGE_NT_HEADERS *nt,
+                                                   HMODULE module, DWORD rva )
+{
+    int i;
+    const IMAGE_SECTION_HEADER *sec;
+
+    sec = (const IMAGE_SECTION_HEADER*)((const char*)&nt->OptionalHeader +
+                                        nt->FileHeader.SizeOfOptionalHeader);
+    for (i = 0; i < nt->FileHeader.NumberOfSections; i++, sec++)
+    {
+        if ((sec->VirtualAddress <= rva) && (sec->VirtualAddress + sec->SizeOfRawData > rva))
+            return (PIMAGE_SECTION_HEADER)sec;
+    }
+    return NULL;
+}
+
+/* Copypasted from Wine. */
+PVOID WINAPI ntdll_RtlImageRvaToVa( const IMAGE_NT_HEADERS *nt, HMODULE module,
+                              DWORD rva, IMAGE_SECTION_HEADER **section )
+{
+    IMAGE_SECTION_HEADER *sec;
+
+    if (section && *section)  /* try this section first */
+    {
+        sec = *section;
+        if ((sec->VirtualAddress <= rva) && (sec->VirtualAddress + sec->SizeOfRawData > rva))
+            goto found;
+    }
+    if (!(sec = ntdll_RtlImageRvaToSection( nt, module, rva ))) return NULL;
+ found:
+    if (section) *section = sec;
+    return (char *)module + sec->PointerToRawData + (rva - sec->VirtualAddress);
+}
+
+/* Copypasted from Wine. */
+PVOID WINAPI ntdll_RtlImageDirectoryEntryToData( HMODULE module, BOOL image, WORD dir, ULONG *size )
+{
+    const IMAGE_NT_HEADERS *nt;
+    DWORD addr;
+
+    if ((ULONG_PTR)module & 1)  /* mapped as data file */
+    {
+        module = (HMODULE)((ULONG_PTR)module & ~1);
+        image = FALSE;
+    }
+    if (!(nt = ntdll_RtlImageNtHeader( module ))) return NULL;
+    if (nt->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC)
+    {
+        const IMAGE_NT_HEADERS64 *nt64 = (const IMAGE_NT_HEADERS64 *)nt;
+
+        if (dir >= nt64->OptionalHeader.NumberOfRvaAndSizes) return NULL;
+        if (!(addr = nt64->OptionalHeader.DataDirectory[dir].VirtualAddress)) return NULL;
+        *size = nt64->OptionalHeader.DataDirectory[dir].Size;
+        if (image || addr < nt64->OptionalHeader.SizeOfHeaders) return (char *)module + addr;
+    }
+    else if (nt->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
+    {
+        const IMAGE_NT_HEADERS32 *nt32 = (const IMAGE_NT_HEADERS32 *)nt;
+
+        if (dir >= nt32->OptionalHeader.NumberOfRvaAndSizes) return NULL;
+        if (!(addr = nt32->OptionalHeader.DataDirectory[dir].VirtualAddress)) return NULL;
+        *size = nt32->OptionalHeader.DataDirectory[dir].Size;
+        if (image || addr < nt32->OptionalHeader.SizeOfHeaders) return (char *)module + addr;
+    }
+    else return NULL;
+
+    /* not mapped as image, need to find the section containing the virtual address */
+    return ntdll_RtlImageRvaToVa( nt, module, addr, NULL );
 }
 
 #endif

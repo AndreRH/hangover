@@ -7,7 +7,7 @@ except.exe: except.o Makefile
 	x86_64-w64-mingw32-gcc except.o -o $@ -Wl,-eWinMainCRTStartup
 
 misc.exe: misc.o Makefile
-	x86_64-w64-mingw32-gcc misc.o -o $@ -Wl,-eWinMainCRTStartup
+	x86_64-w64-mingw32-gcc misc.o -o $@ -Wl,-eWinMainCRTStartup -fexceptions
 
 format_msg.res: format_msg.rc Makefile
 	x86_64-w64-mingw32-windres $< -O coff -o $@
@@ -22,7 +22,7 @@ format_msg.o: format_msg.c format_msg.rc Makefile
 	x86_64-w64-mingw32-gcc $< -c
 
 %.o: %.c Makefile
-	x86_64-w64-mingw32-gcc $< -c
+	x86_64-w64-mingw32-gcc $< -c -fexceptions
 
 clean:
 	rm -rf *.exe *.o format_msg.rc *.bin format_msg.h format_msg.res

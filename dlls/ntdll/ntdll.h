@@ -318,7 +318,15 @@ enum ntdll_calls
     CALL_WCSRCHR
 };
 
-#ifndef QEMU_DLL_GUEST
+#ifdef QEMU_DLL_GUEST
+
+typedef void LDR_MODULE;
+NTSTATUS WINAPI ntdll_LdrFindEntryForAddress(const void *addr, LDR_MODULE **mod);
+PVOID WINAPI ntdll_RtlImageDirectoryEntryToData( HMODULE module, BOOL image, WORD dir, ULONG *size );
+NTSYSAPI PRUNTIME_FUNCTION NTAPI ntdll_RtlLookupFunctionEntry(DWORD64 pc, DWORD64 *base, UNWIND_HISTORY_TABLE *history);
+
+#else
+
 extern const struct qemu_ops *qemu_ops;
 
 void qemu___C_specific_handler(struct qemu_syscall *call);

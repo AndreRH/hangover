@@ -121,22 +121,63 @@ void qemu_RtlCaptureContext(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-/* This will probably have to cooperate with the qemu PE loader. */
-NTSYSAPI PRUNTIME_FUNCTION NTAPI RtlLookupFunctionEntry(DWORD64 pc, DWORD64 *base, UNWIND_HISTORY_TABLE *history)
+static RUNTIME_FUNCTION *find_function_info( ULONG64 pc, HMODULE module,
+                                             RUNTIME_FUNCTION *func, ULONG size )
+{
+    int min = 0;
+    int max = size/sizeof(*func) - 1;
+
+    while (min <= max)
+    {
+        int pos = (min + max) / 2;
+        if ((char *)pc < (char *)module + func[pos].BeginAddress) max = pos - 1;
+        else if ((char *)pc >= (char *)module + func[pos].EndAddress) min = pos + 1;
+        else
+        {
+            func += pos;
+            while (func->UnwindData & 1)  /* follow chained entry */
+                func = (RUNTIME_FUNCTION *)((char *)module + (func->UnwindData & ~1));
+            return func;
+        }
+    }
+    return NULL;
+}
+
+NTSYSAPI PRUNTIME_FUNCTION NTAPI ntdll_RtlLookupFunctionEntry(DWORD64 pc, DWORD64 *base, UNWIND_HISTORY_TABLE *history)
 {
     struct qemu_syscall call;
+    LDR_MODULE *module;
+    ULONG size;
+    RUNTIME_FUNCTION *func = NULL;
+
+    /* For tracing. */
     call.id = QEMU_SYSCALL_ID(CALL_RTLLOOKUPFUNCTIONENTRY);
 
     qemu_syscall(&call);
 
-    return NULL;
+    if (!ntdll_LdrFindEntryForAddress( (void *)pc, &module))
+    {
+        *base = (DWORD64)module;
+        if ((func = ntdll_RtlImageDirectoryEntryToData(module, TRUE,
+                IMAGE_DIRECTORY_ENTRY_EXCEPTION, &size)))
+        {
+            /* lookup in function table */
+            func = find_function_info(pc, module, func, size);
+        }
+    }
+    else
+    {
+        /* No support for dynamic call tables yet. */
+    }
+
+    return func;
 }
 
 #else
 
 void qemu_RtlLookupFunctionEntry(struct qemu_syscall *call)
 {
-    WINE_FIXME("Stub!\n");
+    WINE_TRACE("\n");
 }
 
 #endif

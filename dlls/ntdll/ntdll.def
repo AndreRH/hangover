@@ -217,6 +217,10 @@ EXPORTS
   RtlGetVersion
   RtlGUIDFromString
   RtlHashUnicodeString
+  RtlImageDirectoryEntryToData=ntdll_RtlImageDirectoryEntryToData
+  RtlImageNtHeader=ntdll_RtlImageNtHeader
+  RtlImageRvaToSection=ntdll_RtlImageRvaToSection
+  RtlImageRvaToVa=ntdll_RtlImageRvaToVa
   RtlInitAnsiString
   RtlInitAnsiStringEx
   RtlInitializeCriticalSectionEx
@@ -246,7 +250,7 @@ EXPORTS
   RtlIsTextUnicode
   RtlLeaveCriticalSection
   RtlLockHeap
-  RtlLookupFunctionEntry
+  RtlLookupFunctionEntry=ntdll_RtlLookupFunctionEntry
   RtlMapGenericMask
   RtlMoveMemory=ntdll_RtlMoveMemory
   RtlMultiByteToUnicodeN
