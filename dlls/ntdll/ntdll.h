@@ -36,6 +36,7 @@ enum ntdll_calls
     CALL_ISSPACE,
     CALL_ISUPPER,
     CALL_ISXDIGIT,
+    CALL_LDRFINDENTRYFORADDRESS,
     CALL_MEMCHR,
     CALL_MEMCMP,
     CALL_MEMCPY,
@@ -353,6 +354,7 @@ void qemu_ispunct(struct qemu_syscall *call);
 void qemu_isspace(struct qemu_syscall *call);
 void qemu_isupper(struct qemu_syscall *call);
 void qemu_isxdigit(struct qemu_syscall *call);
+void qemu_LdrFindEntryForAddress(struct qemu_syscall *call);
 void qemu_memchr(struct qemu_syscall *call);
 void qemu_memcmp(struct qemu_syscall *call);
 void qemu_memcpy(struct qemu_syscall *call);

@@ -74,6 +74,7 @@ static const syscall_handler dll_functions[] =
     qemu_isspace,
     qemu_isupper,
     qemu_isxdigit,
+    qemu_LdrFindEntryForAddress,
     qemu_memchr,
     qemu_memcmp,
     qemu_memcpy,

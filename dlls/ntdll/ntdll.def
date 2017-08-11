@@ -35,6 +35,7 @@ EXPORTS
   isspace=NTDLL_isspace
   isupper=NTDLL_isupper
   isxdigit=NTDLL_isxdigit
+  LdrFindEntryForAddress=ntdll_LdrFindEntryForAddress
   memchr=NTDLL_memchr
   memcmp=NTDLL_memcmp
   memcpy=NTDLL_memcpy

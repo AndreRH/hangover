@@ -5,6 +5,9 @@
 
 #define COUNTOF(x) (sizeof(x)/sizeof(x)[0])
 
+/* Not quite right, HMODULE != LDR_MODULE */
+static NTSTATUS (* WINAPI pLdrFindEntryForAddress)(void *addr, HMODULE *mod);
+
 int main()
 {
     CPINFOEXW cpinfo;
@@ -12,8 +15,11 @@ int main()
     LCID lcid = MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
     CHAR bufferA[128], inputA[128];
     WCHAR bufferW[128], inputW[128];
-    HMODULE k32;
+    HMODULE k32, test_mod, ntdll;
     char *heaptest;
+
+    ntdll = GetModuleHandleA("ntdll");
+    pLdrFindEntryForAddress = (void *)GetProcAddress(ntdll, "LdrFindEntryForAddress");
 
     GetCPInfoExW(CP_UTF8, 0, &cpinfo);
     printf("%ls\n", cpinfo.CodePageName);
@@ -72,6 +78,12 @@ int main()
     printf("lstrcmpW(abc123, abc456)=%d\n", lstrcmpW(L"abc123", L"abc456"));
     printf("lstrcmpW(abc123, abc123)=%d\n", lstrcmpW(L"abc123", L"abc123"));
     printf("lstrcmpW(abc456, abc123)=%d\n", lstrcmpW(L"abc456", L"abc123"));
+
+somelabel:
+    pLdrFindEntryForAddress(&&somelabel, &test_mod);
+    printf("Got module %p for label in my code.\n", test_mod);
+    pLdrFindEntryForAddress(HeapAlloc, &test_mod);
+    printf("Got module %p for HeapAlloc.\n", test_mod);
 
     return 0;
 }
