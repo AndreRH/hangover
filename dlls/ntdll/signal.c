@@ -29,10 +29,16 @@
 #include "dll_list.h"
 #include "ntdll.h"
 
-#ifndef QEMU_DLL_GUEST
+#ifdef QEMU_DLL_GUEST
+
+#define NtCurrentProcess() ( (HANDLE)(LONG_PTR) -1 )
+
+#else
+
 #include <wine/debug.h>
 #include <winternl.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_ntdll);
+
 #endif
 
 #ifdef QEMU_DLL_GUEST
@@ -171,8 +177,13 @@ static inline BOOL is_inside_signal_stack( void *ptr )
             (char *)ptr < (char *)get_signal_stack() + signal_stack_size);
 }
 
+/* FIXME: The Wine function I copypasted follows the Unix calling convention, with the first
+ * parameter in %rdi. This is Win64 code, so the first parameter is in %rcx. I added a simple
+ * mov, but it would be nicer to re-write this thing to properly source %rcx, but be careful
+ * with the line that sets %rcx. */
 extern void set_full_cpu_context( const CONTEXT *context );
 __ASM_GLOBAL_FUNC( set_full_cpu_context,
+                   "movq %rcx, %rdi\n\t"
                    "subq $40,%rsp\n\t"
                    __ASM_CFI(".cfi_adjust_cfa_offset 40\n\t")
                    "ldmxcsr 0x34(%rdi)\n\t"         /* context->MxCsr */
@@ -336,6 +347,12 @@ struct MSVCRT_JUMP_BUFFER
 
 void WINAPI ntdll_RtlRestoreContext( CONTEXT *context, EXCEPTION_RECORD *rec )
 {
+    struct qemu_syscall call;
+
+    /* For logging. */
+    call.id = QEMU_SYSCALL_ID(CALL_RTLRESTORECONTEXT);
+    qemu_syscall(&call);
+
     if (rec && rec->ExceptionCode == STATUS_LONGJUMP && rec->NumberParameters >= 1)
     {
         struct MSVCRT_JUMP_BUFFER *jmp = (struct MSVCRT_JUMP_BUFFER *)rec->ExceptionInformation[0];
@@ -500,11 +517,6 @@ NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec
     ULONG i;
     struct qemu_syscall call;
 
-    /* For logging. */
-    call.id = QEMU_SYSCALL_ID(CALL___C_SPECIFIC_HANDLER);
-    qemu_syscall(&call);
-
-
     /*TRACE( "%p %lx %p %p\n", rec, frame, context, dispatch );
     if (TRACE_ON(seh)) dump_scope_table( dispatch->ImageBase, table );*/
 
@@ -571,9 +583,14 @@ NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec
 
 #else
 
+void qemu_RtlRestoreContext(struct qemu_syscall *call)
+{
+    WINE_TRACE("\n");
+}
+
 void qemu___C_specific_handler(struct qemu_syscall *call)
 {
-    WINE_FIXME("\n");
+    WINE_TRACE("\n");
 }
 
 #endif
@@ -1002,7 +1019,185 @@ PEXCEPTION_ROUTINE WINAPI ntdll_RtlVirtualUnwind(DWORD type, DWORD64 base, DWORD
 
 void qemu_RtlVirtualUnwind(struct qemu_syscall *call)
 {
-    WINE_FIXME("Stub!\n");
+    WINE_TRACE("Stub!\n");
+}
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
+static DWORD call_handler( EXCEPTION_RECORD *rec, CONTEXT *context, DISPATCHER_CONTEXT *dispatch )
+{
+    DWORD res;
+
+    /* FIXME: Catch nested exceptions. */
+    res = dispatch->LanguageHandler( rec, (void *)dispatch->EstablisherFrame, context, dispatch );
+
+    return res;
+}
+
+/* Copypasted from Wine. */
+static NTSTATUS call_stack_handlers( EXCEPTION_RECORD *rec, CONTEXT *orig_context )
+{
+    UNWIND_HISTORY_TABLE table;
+    DISPATCHER_CONTEXT dispatch;
+    CONTEXT context;
+    LDR_MODULE *module;
+    NTSTATUS status;
+
+    context = *orig_context;
+    dispatch.TargetIp      = 0;
+    dispatch.ContextRecord = &context;
+    dispatch.HistoryTable  = &table;
+    for (;;)
+    {
+        /* FIXME: should use the history table to make things faster */
+
+        dispatch.ImageBase = 0;
+        dispatch.ControlPc = context.Rip;
+        dispatch.ScopeIndex = 0;
+
+        /* first look for PE exception information */
+
+        if ((dispatch.FunctionEntry = ntdll_RtlLookupFunctionEntry( dispatch.ControlPc, &dispatch.ImageBase, NULL )))
+        {
+            dispatch.LanguageHandler = ntdll_RtlVirtualUnwind( UNW_FLAG_EHANDLER, dispatch.ImageBase,
+                                                         dispatch.ControlPc, dispatch.FunctionEntry,
+                                                         &context, &dispatch.HandlerData,
+                                                         &dispatch.EstablisherFrame, NULL );
+            goto unwind_done;
+        }
+
+        context.Rip = *(ULONG64 *)context.Rsp;
+        context.Rsp = context.Rsp + sizeof(ULONG64);
+        dispatch.EstablisherFrame = context.Rsp;
+        dispatch.LanguageHandler = NULL;
+
+    unwind_done:
+        if (!dispatch.EstablisherFrame) break;
+
+        if ((dispatch.EstablisherFrame & 7) ||
+            dispatch.EstablisherFrame < (ULONG64)((NT_TIB *)NtCurrentTeb())->StackLimit ||
+            dispatch.EstablisherFrame > (ULONG64)((NT_TIB *)NtCurrentTeb())->StackBase)
+        {
+            /*ERR( "invalid frame %lx (%p-%p)\n", dispatch.EstablisherFrame,
+                 NtCurrentTeb()->Tib.StackLimit, NtCurrentTeb()->Tib.StackBase );*/
+            rec->ExceptionFlags |= EH_STACK_INVALID;
+            break;
+        }
+
+        if (dispatch.LanguageHandler)
+        {
+            switch (call_handler( rec, orig_context, &dispatch ))
+            {
+            case ExceptionContinueExecution:
+                if (rec->ExceptionFlags & EH_NONCONTINUABLE) return STATUS_NONCONTINUABLE_EXCEPTION;
+                return STATUS_SUCCESS;
+            case ExceptionContinueSearch:
+                break;
+            case ExceptionNestedException:
+                /*FIXME( "nested exception\n" );*/
+                break;
+            case ExceptionCollidedUnwind: {
+                ULONG64 frame;
+
+                context = *dispatch.ContextRecord;
+                dispatch.ContextRecord = &context;
+                ntdll_RtlVirtualUnwind( UNW_FLAG_NHANDLER, dispatch.ImageBase,
+                        dispatch.ControlPc, dispatch.FunctionEntry,
+                        &context, NULL, &frame, NULL );
+                goto unwind_done;
+            }
+            default:
+                return STATUS_INVALID_DISPOSITION;
+            }
+        }
+
+        if (context.Rsp == (ULONG64)((NT_TIB *)NtCurrentTeb())->StackBase) break;
+    }
+    return STATUS_UNHANDLED_EXCEPTION;
+}
+
+/* Copypasted from Wine. */
+NTSTATUS WINAPI ntdll_NtRaiseException( EXCEPTION_RECORD *rec, CONTEXT *context, BOOL first_chance )
+{
+    NTSTATUS status;
+    struct qemu_syscall call;
+
+    call.id = QEMU_SYSCALL_ID(CALL_NTRAISEEXCEPTION);
+    qemu_syscall(&call);
+
+    if (first_chance)
+    {
+        DWORD c;
+
+        /*TRACE( "code=%x flags=%x addr=%p ip=%lx tid=%04x\n",
+               rec->ExceptionCode, rec->ExceptionFlags, rec->ExceptionAddress,
+               context->Rip, GetCurrentThreadId() );
+        for (c = 0; c < min( EXCEPTION_MAXIMUM_PARAMETERS, rec->NumberParameters ); c++)
+            TRACE( " info[%d]=%016lx\n", c, rec->ExceptionInformation[c] );
+        if (rec->ExceptionCode == EXCEPTION_WINE_STUB)
+        {
+            if (rec->ExceptionInformation[1] >> 16)
+                MESSAGE( "wine: Call from %p to unimplemented function %s.%s, aborting\n",
+                         rec->ExceptionAddress,
+                         (char*)rec->ExceptionInformation[0], (char*)rec->ExceptionInformation[1] );
+            else
+                MESSAGE( "wine: Call from %p to unimplemented function %s.%ld, aborting\n",
+                         rec->ExceptionAddress,
+                         (char*)rec->ExceptionInformation[0], rec->ExceptionInformation[1] );
+        }
+        else
+        {
+            TRACE(" rax=%016lx rbx=%016lx rcx=%016lx rdx=%016lx\n",
+                  context->Rax, context->Rbx, context->Rcx, context->Rdx );
+            TRACE(" rsi=%016lx rdi=%016lx rbp=%016lx rsp=%016lx\n",
+                  context->Rsi, context->Rdi, context->Rbp, context->Rsp );
+            TRACE("  r8=%016lx  r9=%016lx r10=%016lx r11=%016lx\n",
+                  context->R8, context->R9, context->R10, context->R11 );
+            TRACE(" r12=%016lx r13=%016lx r14=%016lx r15=%016lx\n",
+                  context->R12, context->R13, context->R14, context->R15 );
+        }*/
+        /*status = send_debug_event( rec, TRUE, context );
+        if (status == DBG_CONTINUE || status == DBG_EXCEPTION_HANDLED) goto done;*/
+
+        /* fix up instruction pointer in context for EXCEPTION_BREAKPOINT */
+        if (rec->ExceptionCode == EXCEPTION_BREAKPOINT) context->Rip--;
+
+        /* TODO: Vectored exception handling
+        if (call_vectored_handlers( rec, context ) == EXCEPTION_CONTINUE_EXECUTION) goto done; */
+
+        if ((status = call_stack_handlers( rec, context )) == STATUS_SUCCESS) goto done;
+        if (status != STATUS_UNHANDLED_EXCEPTION) return status;
+    }
+
+    /* last chance exception */
+
+    /* TODO: Debugger...
+    status = send_debug_event( rec, FALSE, context );
+    */
+    if (/*status != DBG_CONTINUE*/1)
+    {
+        /*if (rec->ExceptionFlags & EH_STACK_INVALID)
+            ERR("Exception frame is not in stack limits => unable to dispatch exception.\n");
+        else if (rec->ExceptionCode == STATUS_NONCONTINUABLE_EXCEPTION)
+            ERR("Process attempted to continue execution after noncontinuable exception.\n");
+        else
+            ERR("Unhandled exception code %x flags %x addr %p\n",
+                rec->ExceptionCode, rec->ExceptionFlags, rec->ExceptionAddress );*/
+        ntdll_NtTerminateProcess( NtCurrentProcess(), rec->ExceptionCode );
+    }
+
+done:
+    set_cpu_context(context);
+    return STATUS_SUCCESS;
+}
+
+#else
+
+void qemu_NtRaiseException(struct qemu_syscall *call)
+{
+    WINE_TRACE("\n");
 }
 
 #endif

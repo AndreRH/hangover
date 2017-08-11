@@ -8,17 +8,12 @@
 
 /* Not quite right, HMODULE != LDR_MODULE */
 static NTSTATUS (* WINAPI pLdrFindEntryForAddress)(void *addr, HMODULE *mod);
+static NTSTATUS (* WINAPI pNtRaiseException)(EXCEPTION_RECORD *rec, CONTEXT *context, BOOL first_chance);
 
 static long CALLBACK test_handler(EXCEPTION_POINTERS *pointers)
 {
     printf("test_handler executed\n");
-    switch (pointers->ExceptionRecord->ExceptionCode)
-    {
-        case EXCEPTION_STACK_OVERFLOW:
-            return EXCEPTION_EXECUTE_HANDLER;
-        default:
-            return EXCEPTION_CONTINUE_SEARCH;
-    }
+    return EXCEPTION_EXECUTE_HANDLER;
 }
 
 int main()
@@ -34,6 +29,7 @@ int main()
 
     ntdll = GetModuleHandleA("ntdll");
     pLdrFindEntryForAddress = (void *)GetProcAddress(ntdll, "LdrFindEntryForAddress");
+    pNtRaiseException = (void *)GetProcAddress(ntdll, "NtRaiseException");
 
     GetCPInfoExW(CP_UTF8, 0, &cpinfo);
     printf("%ls\n", cpinfo.CodePageName);
@@ -103,10 +99,10 @@ somelabel:
     __try1(test_handler)
     {
         RUNTIME_FUNCTION *func;
-        CONTEXT context = {0};
+        CONTEXT context = {0}, context2;
         ULONG64 frame;
         void *handler_data;
-        long dummy;
+        EXCEPTION_RECORD rec;
 
         exceptlabel:
         printf("Dummy printf inside a try block\n");
@@ -121,9 +117,18 @@ somelabel:
 
         RtlCaptureContext(&context);
         printf("Got rsp %p, rbp %p.\n", (void *)context.Rsp, (void *)context.Rbp);
+        context2 = context;
 
         handler = RtlVirtualUnwind(UNW_FLAG_EHANDLER, (DWORD64)test_mod, context.Rip, func, &context, &handler_data, &frame, NULL);
         printf("Got language handler %p\n", handler);
+
+        memset(&rec, 0, sizeof(rec));
+        rec.ExceptionCode = EXCEPTION_ACCESS_VIOLATION;
+        rec.ExceptionFlags = 0; /*EXCEPTION_CONTINUABLE*/
+        rec.ExceptionRecord = NULL;
+        rec.ExceptionAddress = (void *)context.Rip;
+        rec.NumberParameters = 0;
+        pNtRaiseException(&rec, &context2, TRUE);
 
         __asm__ goto ( "jmp %l[stupid_manual_jump]\n" :::: stupid_manual_jump);
     }

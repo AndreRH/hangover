@@ -101,6 +101,7 @@ EXPORTS
   NtQuerySystemInformationEx
   NtQueryVolumeInformationFile
   NtQueueApcThread
+  NtRaiseException=ntdll_NtRaiseException
   NtReadFile
   NtReadFileScatter
   NtRegisterThreadTerminatePort
@@ -123,7 +124,7 @@ EXPORTS
   NtSuspendProcess
   NtSuspendThread
   NtSystemDebugControl
-  NtTerminateProcess
+  NtTerminateProcess=ntdll_NtTerminateProcess
   NtTerminateThread
   NtUnlockFile
   NtWriteFile

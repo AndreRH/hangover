@@ -102,6 +102,7 @@ enum ntdll_calls
     CALL_NTQUERYSYSTEMINFORMATIONEX,
     CALL_NTQUERYVOLUMEINFORMATIONFILE,
     CALL_NTQUEUEAPCTHREAD,
+    CALL_NTRAISEEXCEPTION,
     CALL_NTREADFILE,
     CALL_NTREADFILESCATTER,
     CALL_NTREGISTERTHREADTERMINATEPORT,
@@ -265,6 +266,7 @@ enum ntdll_calls
     CALL_RTLRELEASEACTIVATIONCONTEXT,
     CALL_RTLRELEASEPEBLOCK,
     CALL_RTLRELEASERESOURCE,
+    CALL_RTLRESTORECONTEXT,
     CALL_RTLSETCURRENTDIRECTORY_U,
     CALL_RTLSETCURRENTTRANSACTION,
     CALL_RTLSETHEAPINFORMATION,
@@ -326,6 +328,7 @@ PRUNTIME_FUNCTION NTAPI ntdll_RtlLookupFunctionEntry(DWORD64 pc, DWORD64 *base, 
 PEXCEPTION_ROUTINE WINAPI ntdll_RtlVirtualUnwind(DWORD type, DWORD64 base, DWORD64 pc,
         PRUNTIME_FUNCTION function, PCONTEXT context, PVOID *data, PDWORD64 frame_ret,
         PKNONVOLATILE_CONTEXT_POINTERS ctx_ptr);
+NTSTATUS WINAPI ntdll_NtTerminateProcess(HANDLE handle, LONG exit_code);
 
 #else
 
@@ -430,6 +433,7 @@ void qemu_NtQuerySystemInformation(struct qemu_syscall *call);
 void qemu_NtQuerySystemInformationEx(struct qemu_syscall *call);
 void qemu_NtQueryVolumeInformationFile(struct qemu_syscall *call);
 void qemu_NtQueueApcThread(struct qemu_syscall *call);
+void qemu_NtRaiseException(struct qemu_syscall *call);
 void qemu_NtReadFile(struct qemu_syscall *call);
 void qemu_NtReadFileScatter(struct qemu_syscall *call);
 void qemu_NtRegisterThreadTerminatePort(struct qemu_syscall *call);
@@ -593,6 +597,7 @@ void qemu_RtlReAllocateHeap(struct qemu_syscall *call);
 void qemu_RtlReleaseActivationContext(struct qemu_syscall *call);
 void qemu_RtlReleasePebLock(struct qemu_syscall *call);
 void qemu_RtlReleaseResource(struct qemu_syscall *call);
+void qemu_RtlRestoreContext(struct qemu_syscall *call);
 void qemu_RtlSetCurrentDirectory_U(struct qemu_syscall *call);
 void qemu_RtlSetCurrentTransaction(struct qemu_syscall *call);
 void qemu_RtlSetHeapInformation(struct qemu_syscall *call);

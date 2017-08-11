@@ -51,7 +51,7 @@ struct qemu_NtTerminateProcess
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI NtTerminateProcess(HANDLE handle, LONG exit_code)
+NTSTATUS WINAPI ntdll_NtTerminateProcess(HANDLE handle, LONG exit_code)
 {
     struct qemu_NtTerminateProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTTERMINATEPROCESS);
