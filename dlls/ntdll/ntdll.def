@@ -145,7 +145,7 @@ EXPORTS
   RtlAreAllAccessesGranted
   RtlAreAnyAccessesGranted
   RtlAssert
-  RtlCaptureContext
+  RtlCaptureContext=ntdll_RtlCaptureContext
   RtlCharToInteger
   RtlCompactHeap
   RtlCompareMemory=
@@ -296,7 +296,7 @@ EXPORTS
   RtlUpperString
   RtlValidateHeap
   RtlVerifyVersionInfo
-  RtlVirtualUnwind
+  RtlVirtualUnwind=ntdll_RtlVirtualUnwind
   RtlWalkHeap
   RtlZeroMemory=ntdll_RtlZeroMemory
   RtlZombifyActivationContext
