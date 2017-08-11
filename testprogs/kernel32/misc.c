@@ -30,6 +30,7 @@ int main()
     WCHAR bufferW[128], inputW[128];
     HMODULE k32, test_mod, ntdll;
     char *heaptest;
+    void *handler;
 
     ntdll = GetModuleHandleA("ntdll");
     pLdrFindEntryForAddress = (void *)GetProcAddress(ntdll, "LdrFindEntryForAddress");
@@ -102,6 +103,10 @@ somelabel:
     __try1(test_handler)
     {
         RUNTIME_FUNCTION *func;
+        CONTEXT context = {0};
+        ULONG64 frame;
+        void *handler_data;
+        long dummy;
 
         exceptlabel:
         printf("Dummy printf inside a try block\n");
@@ -113,6 +118,12 @@ somelabel:
             printf("Begin matches this function. Begin %lx, main %p, base %p\n", func->BeginAddress, main, test_mod);
         else
             printf("Seems like I found an incorrect function entry. Begin %lx, main %p, base %p\n", func->BeginAddress, main, test_mod);
+
+        RtlCaptureContext(&context);
+        printf("Got rsp %p, rbp %p.\n", (void *)context.Rsp, (void *)context.Rbp);
+
+        handler = RtlVirtualUnwind(UNW_FLAG_EHANDLER, (DWORD64)test_mod, context.Rip, func, &context, &handler_data, &frame, NULL);
+        printf("Got language handler %p\n", handler);
 
         __asm__ goto ( "jmp %l[stupid_manual_jump]\n" :::: stupid_manual_jump);
     }
