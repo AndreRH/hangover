@@ -907,7 +907,7 @@ EXPORTS
   TransmitCommChar
   TrySubmitThreadpoolCallback
   TzSpecificLocalTimeToSystemTime
-  UnhandledExceptionFilter
+  UnhandledExceptionFilter=kernel32_UnhandledExceptionFilter
   UninitializeCriticalSection
   UnlockFile
   UnlockFileEx

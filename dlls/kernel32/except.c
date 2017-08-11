@@ -74,7 +74,7 @@ struct qemu_UnhandledExceptionFilter
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI LONG WINAPI UnhandledExceptionFilter(PEXCEPTION_POINTERS epointers)
+LONG WINAPI kernel32_UnhandledExceptionFilter(PEXCEPTION_POINTERS epointers)
 {
     struct qemu_UnhandledExceptionFilter call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNHANDLEDEXCEPTIONFILTER);

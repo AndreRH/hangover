@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <excpt.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -35,7 +36,13 @@ struct qemu_set_callbacks
 
 static void WINAPI kernel32_call_process_main(LPTHREAD_START_ROUTINE entry)
 {
-    entry(NULL);
+    __try1(kernel32_UnhandledExceptionFilter)
+    {
+        entry(NULL);
+    }
+    __except1
+    {
+    }
     kernel32_ExitProcess(kernel32_GetLastError());
 }
 
