@@ -1030,7 +1030,7 @@ char * (* CDECL p_strchr)(const char *str, int c);
 char * (* CDECL p_strcmp)(const char *str1, const char *str2);
 size_t (* CDECL p_strlen)(const char *str);
 int (* CDECL p_strncmp)(const char *str1, const char *str2, size_t len);
-int (* CDECL p_strrchr)(const char *str, int c);
+char * (* CDECL p_strrchr)(const char *str, int c);
 void (* CDECL p_terminate)(void);
 int (* CDECL p_vfprintf)(FILE *file,const char *format, va_list args);
 int (* CDECL p_vfwprintf)(FILE *file, const WCHAR *format, va_list args);

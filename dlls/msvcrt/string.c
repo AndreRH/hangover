@@ -529,7 +529,7 @@ struct qemu_strrchr
 
 #ifdef QEMU_DLL_GUEST
 
-int CDECL MSVCRT_strrchr(const char *str, int c)
+char * CDECL MSVCRT_strrchr(const char *str, int c)
 {
     struct qemu_strrchr call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRRCHR);
@@ -538,7 +538,7 @@ int CDECL MSVCRT_strrchr(const char *str, int c)
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    return (char *)call.super.iret;
 }
 
 #else
@@ -547,7 +547,7 @@ void qemu_strrchr(struct qemu_syscall *call)
 {
     struct qemu_strrchr *c = (struct qemu_strrchr *)call;
     WINE_TRACE("\n");
-    c->super.iret = p_strrchr(QEMU_G2H(c->str), c->c);
+    c->super.iret = (uint64_t)p_strrchr(QEMU_G2H(c->str), c->c);
 }
 
 #endif
