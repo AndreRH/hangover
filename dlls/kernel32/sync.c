@@ -24,6 +24,7 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "kernel32.h"
+#include "ntdll_wrapper.h"
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
@@ -268,9 +269,23 @@ struct qemu_RegisterWaitForSingleObject
     uint64_t Context;
     uint64_t dwMilliseconds;
     uint64_t dwFlags;
+    uint64_t wrapper;
+};
+
+struct qemu_wait_callback
+{
+    uint64_t func;
+    uint64_t context;
+    uint64_t timeout;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static void CALLBACK host_wait_callback(struct qemu_wait_callback *data)
+{
+    WAITORTIMERCALLBACK cb = (WAITORTIMERCALLBACK)data->func;
+    cb((void *)data->context, data->timeout);
+}
 
 WINBASEAPI BOOL WINAPI RegisterWaitForSingleObject(PHANDLE phNewWaitObject, HANDLE hObject, WAITORTIMERCALLBACK Callback, PVOID Context, ULONG dwMilliseconds, ULONG dwFlags)
 {
@@ -280,8 +295,9 @@ WINBASEAPI BOOL WINAPI RegisterWaitForSingleObject(PHANDLE phNewWaitObject, HAND
     call.hObject = (uint64_t)hObject;
     call.Callback = (uint64_t)Callback;
     call.Context = (uint64_t)Context;
-    call.dwMilliseconds = (uint64_t)dwMilliseconds;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.dwMilliseconds = dwMilliseconds;
+    call.dwFlags = dwFlags;
+    call.wrapper = (uint64_t)host_wait_callback;
 
     qemu_syscall(&call.super);
 
@@ -290,11 +306,49 @@ WINBASEAPI BOOL WINAPI RegisterWaitForSingleObject(PHANDLE phNewWaitObject, HAND
 
 #else
 
+static void CALLBACK guest_wait_callback(void *p, BOOLEAN timeout)
+{
+    struct qemu_ntdll_wait_work_item *item = p;
+    struct qemu_wait_callback call;
+
+    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, %u).\n", item->guest_cb, item->context, timeout);
+
+    call.func = item->guest_cb;
+    call.context = item->context;
+    call.timeout = timeout;
+
+    qemu_ops->qemu_execute(QEMU_G2H(item->wrapper), QEMU_H2G(&call));
+
+    WINE_TRACE("Callback returned.\n");
+}
+
 void qemu_RegisterWaitForSingleObject(struct qemu_syscall *call)
 {
     struct qemu_RegisterWaitForSingleObject *c = (struct qemu_RegisterWaitForSingleObject *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RegisterWaitForSingleObject(QEMU_G2H(c->phNewWaitObject), QEMU_G2H(c->hObject), QEMU_G2H(c->Callback), QEMU_G2H(c->Context), c->dwMilliseconds, c->dwFlags);
+    struct qemu_ntdll_wait_work_item *item;
+
+    WINE_TRACE("Unverified!\n");
+
+    item = HeapAlloc(GetProcessHeap(), 0, sizeof(*item));
+    if (!item)
+    {
+        c->super.iret = FALSE;
+        SetLastError(ERROR_NOT_ENOUGH_MEMORY);
+        return;
+    }
+    item->context = c->Context;
+    item->guest_cb = c->Callback;
+    item->wrapper = c->wrapper;
+
+    c->super.iret = RegisterWaitForSingleObject(&item->host_handle, (HANDLE)c->hObject, guest_wait_callback,
+            item, c->dwMilliseconds, c->dwFlags);
+    if (!c->super.iret)
+    {
+        HeapFree(GetProcessHeap(), 0, item);
+        return;
+    }
+
+    *(uint64_t *)QEMU_G2H(c->phNewWaitObject) = QEMU_H2G(item);
 }
 
 #endif
@@ -361,8 +415,13 @@ WINBASEAPI BOOL WINAPI UnregisterWait(HANDLE WaitHandle)
 void qemu_UnregisterWait(struct qemu_syscall *call)
 {
     struct qemu_UnregisterWait *c = (struct qemu_UnregisterWait *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = UnregisterWait(QEMU_G2H(c->WaitHandle));
+    struct qemu_ntdll_wait_work_item *item;
+
+    WINE_TRACE("\n");
+    item = QEMU_G2H(c->WaitHandle);
+
+    c->super.iret = UnregisterWait(item ? item->host_handle : NULL);
+    HeapFree(GetProcessHeap(), 0, item);
 }
 
 #endif
