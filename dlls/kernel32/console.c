@@ -1379,6 +1379,7 @@ struct qemu_GetLargestConsoleWindowSize
 {
     struct qemu_syscall super;
     uint64_t hConsoleOutput;
+    uint64_t retY;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1392,8 +1393,8 @@ WINBASEAPI COORD WINAPI GetLargestConsoleWindowSize(HANDLE hConsoleOutput)
 
     qemu_syscall(&call.super);
 
-    ret.X = 0;
-    ret.Y = 0;
+    ret.X = call.super.iret;
+    ret.Y = call.retY;
     return ret;
 }
 
@@ -1402,8 +1403,13 @@ WINBASEAPI COORD WINAPI GetLargestConsoleWindowSize(HANDLE hConsoleOutput)
 void qemu_GetLargestConsoleWindowSize(struct qemu_syscall *call)
 {
     struct qemu_GetLargestConsoleWindowSize *c = (struct qemu_GetLargestConsoleWindowSize *)call;
-    WINE_FIXME("Unverified!\n");
-    GetLargestConsoleWindowSize(QEMU_G2H(c->hConsoleOutput));
+    COORD ret;
+
+    WINE_TRACE("\n");
+    ret = GetLargestConsoleWindowSize(QEMU_G2H(c->hConsoleOutput));
+
+    c->super.iret = ret.X;
+    c->retY = ret.Y;
 }
 
 #endif
