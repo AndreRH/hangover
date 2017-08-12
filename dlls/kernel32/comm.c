@@ -57,7 +57,7 @@ WINBASEAPI BOOL WINAPI BuildCommDCBA(LPCSTR device, LPDCB lpdcb)
 void qemu_BuildCommDCBA(struct qemu_syscall *call)
 {
     struct qemu_BuildCommDCBA *c = (struct qemu_BuildCommDCBA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = BuildCommDCBA(QEMU_G2H(c->device), QEMU_G2H(c->lpdcb));
 }
 
@@ -91,7 +91,7 @@ WINBASEAPI BOOL WINAPI BuildCommDCBAndTimeoutsA(LPCSTR device, LPDCB lpdcb, LPCO
 void qemu_BuildCommDCBAndTimeoutsA(struct qemu_syscall *call)
 {
     struct qemu_BuildCommDCBAndTimeoutsA *c = (struct qemu_BuildCommDCBAndTimeoutsA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = BuildCommDCBAndTimeoutsA(QEMU_G2H(c->device), QEMU_G2H(c->lpdcb), QEMU_G2H(c->lptimeouts));
 }
 
@@ -125,7 +125,7 @@ WINBASEAPI BOOL WINAPI BuildCommDCBAndTimeoutsW(LPCWSTR devid, LPDCB lpdcb, LPCO
 void qemu_BuildCommDCBAndTimeoutsW(struct qemu_syscall *call)
 {
     struct qemu_BuildCommDCBAndTimeoutsW *c = (struct qemu_BuildCommDCBAndTimeoutsW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = BuildCommDCBAndTimeoutsW(QEMU_G2H(c->devid), QEMU_G2H(c->lpdcb), QEMU_G2H(c->lptimeouts));
 }
 
@@ -157,7 +157,7 @@ WINBASEAPI BOOL WINAPI BuildCommDCBW(LPCWSTR devid, LPDCB lpdcb)
 void qemu_BuildCommDCBW(struct qemu_syscall *call)
 {
     struct qemu_BuildCommDCBW *c = (struct qemu_BuildCommDCBW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = BuildCommDCBW(QEMU_G2H(c->devid), QEMU_G2H(c->lpdcb));
 }
 
@@ -477,7 +477,7 @@ WINBASEAPI BOOL WINAPI GetCommState(HANDLE handle, LPDCB lpdcb)
 void qemu_GetCommState(struct qemu_syscall *call)
 {
     struct qemu_GetCommState *c = (struct qemu_GetCommState *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCommState(QEMU_G2H(c->handle), QEMU_G2H(c->lpdcb));
 }
 
@@ -943,7 +943,7 @@ WINBASEAPI BOOL WINAPI GetDefaultCommConfigA(LPCSTR lpszName, LPCOMMCONFIG lpCC,
 void qemu_GetDefaultCommConfigA(struct qemu_syscall *call)
 {
     struct qemu_GetDefaultCommConfigA *c = (struct qemu_GetDefaultCommConfigA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDefaultCommConfigA(QEMU_G2H(c->lpszName), QEMU_G2H(c->lpCC), QEMU_G2H(c->lpdwSize));
 }
 
