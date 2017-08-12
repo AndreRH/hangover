@@ -1325,7 +1325,7 @@ int (* CDECL p_fflush)(FILE *file);
 LONG (* CDECL p__lseek)(int fd, LONG offset, int whence);
 __int64 (* CDECL p__lseeki64)(int fd, __int64 offset, int whence);
 char * (* CDECL p__tempnam)(const char *dir, const char *prefix);
-int (* CDECL p_strstr)(const char *haystack, char *needle);
+char * (* CDECL p_strstr)(const char *haystack, char *needle);
 double (* CDECL p_strtod)(const char *str, char **end);
 char * (* CDECL p__strtime)(char *time);
 char * (* CDECL p__strdate)(char *date);
