@@ -383,8 +383,8 @@ WINBASEAPI LSTATUS WINAPI RegOpenKeyExA(HKEY hkey, LPCSTR name, DWORD options, R
     call.super.id = QEMU_SYSCALL_ID(CALL_REGOPENKEYEXA);
     call.hkey = (uint64_t)hkey;
     call.name = (uint64_t)name;
-    call.options = (uint64_t)options;
-    call.access = (uint64_t)access;
+    call.options = options;
+    call.access = access;
     call.retkey = (uint64_t)retkey;
 
     qemu_syscall(&call.super);
@@ -397,7 +397,7 @@ WINBASEAPI LSTATUS WINAPI RegOpenKeyExA(HKEY hkey, LPCSTR name, DWORD options, R
 void qemu_RegOpenKeyExA(struct qemu_syscall *call)
 {
     struct qemu_RegOpenKeyExA *c = (struct qemu_RegOpenKeyExA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RegOpenKeyExA(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->options, c->access, QEMU_G2H(c->retkey));
 }
 
@@ -1068,10 +1068,10 @@ WINBASEAPI LSTATUS WINAPI RegSetValueExA(HKEY hkey, LPCSTR name, DWORD reserved,
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSETVALUEEXA);
     call.hkey = (uint64_t)hkey;
     call.name = (uint64_t)name;
-    call.reserved = (uint64_t)reserved;
-    call.type = (uint64_t)type;
+    call.reserved = reserved;
+    call.type = type;
     call.data = (uint64_t)data;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -1083,8 +1083,9 @@ WINBASEAPI LSTATUS WINAPI RegSetValueExA(HKEY hkey, LPCSTR name, DWORD reserved,
 void qemu_RegSetValueExA(struct qemu_syscall *call)
 {
     struct qemu_RegSetValueExA *c = (struct qemu_RegSetValueExA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RegSetValueExA(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->reserved, c->type, QEMU_G2H(c->data), c->count);
+    WINE_TRACE("\n");
+    c->super.iret = RegSetValueExA(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->reserved, c->type, QEMU_G2H(c->data),
+            c->count);
 }
 
 #endif
@@ -1319,8 +1320,9 @@ WINBASEAPI LSTATUS WINAPI RegQueryValueExA(HKEY hkey, LPCSTR name, LPDWORD reser
 void qemu_RegQueryValueExA(struct qemu_syscall *call)
 {
     struct qemu_RegQueryValueExA *c = (struct qemu_RegQueryValueExA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RegQueryValueExA(QEMU_G2H(c->hkey), QEMU_G2H(c->name), QEMU_G2H(c->reserved), QEMU_G2H(c->type), QEMU_G2H(c->data), QEMU_G2H(c->count));
+    WINE_TRACE("\n");
+    c->super.iret = RegQueryValueExA(QEMU_G2H(c->hkey), QEMU_G2H(c->name), QEMU_G2H(c->reserved), QEMU_G2H(c->type),
+            QEMU_G2H(c->data), QEMU_G2H(c->count));
 }
 
 #endif

@@ -55,7 +55,7 @@ WINBASEAPI HWND WINAPI GetConsoleWindow(VOID)
 void qemu_GetConsoleWindow(struct qemu_syscall *call)
 {
     struct qemu_GetConsoleWindow *c = (struct qemu_GetConsoleWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetConsoleWindow();
 }
 
@@ -141,7 +141,7 @@ WINBASEAPI UINT WINAPI GetConsoleOutputCP(VOID)
 void qemu_GetConsoleOutputCP(struct qemu_syscall *call)
 {
     struct qemu_GetConsoleOutputCP *c = (struct qemu_GetConsoleOutputCP *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetConsoleOutputCP();
 }
 
@@ -159,7 +159,7 @@ WINBASEAPI BOOL WINAPI SetConsoleOutputCP(UINT cp)
 {
     struct qemu_SetConsoleOutputCP call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCONSOLEOUTPUTCP);
-    call.cp = (uint64_t)cp;
+    call.cp = cp;
 
     qemu_syscall(&call.super);
 
@@ -171,7 +171,7 @@ WINBASEAPI BOOL WINAPI SetConsoleOutputCP(UINT cp)
 void qemu_SetConsoleOutputCP(struct qemu_syscall *call)
 {
     struct qemu_SetConsoleOutputCP *c = (struct qemu_SetConsoleOutputCP *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetConsoleOutputCP(c->cp);
 }
 
@@ -225,9 +225,9 @@ WINBASEAPI HANDLE WINAPI OpenConsoleW(LPCWSTR name, DWORD access, BOOL inherit, 
     struct qemu_OpenConsoleW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENCONSOLEW);
     call.name = (uint64_t)name;
-    call.access = (uint64_t)access;
-    call.inherit = (uint64_t)inherit;
-    call.creation = (uint64_t)creation;
+    call.access = access;
+    call.inherit = inherit;
+    call.creation = creation;
 
     qemu_syscall(&call.super);
 
@@ -241,7 +241,7 @@ extern HANDLE WINAPI OpenConsoleW(LPCWSTR name, DWORD access, BOOL inherit, DWOR
 void qemu_OpenConsoleW(struct qemu_syscall *call)
 {
     struct qemu_OpenConsoleW *c = (struct qemu_OpenConsoleW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)OpenConsoleW(QEMU_G2H(c->name), c->access, c->inherit, c->creation);
 }
 
@@ -273,7 +273,7 @@ extern BOOL WINAPI VerifyConsoleIoHandle(HANDLE handle);
 void qemu_VerifyConsoleIoHandle(struct qemu_syscall *call)
 {
     struct qemu_VerifyConsoleIoHandle *c = (struct qemu_VerifyConsoleIoHandle *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = VerifyConsoleIoHandle(QEMU_G2H(c->handle));
 }
 
@@ -396,7 +396,7 @@ WINBASEAPI BOOL WINAPI WriteConsoleInputA(HANDLE handle, const INPUT_RECORD *buf
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITECONSOLEINPUTA);
     call.handle = (uint64_t)handle;
     call.buffer = (uint64_t)buffer;
-    call.count = (uint64_t)count;
+    call.count = count;
     call.written = (uint64_t)written;
 
     qemu_syscall(&call.super);
@@ -409,7 +409,7 @@ WINBASEAPI BOOL WINAPI WriteConsoleInputA(HANDLE handle, const INPUT_RECORD *buf
 void qemu_WriteConsoleInputA(struct qemu_syscall *call)
 {
     struct qemu_WriteConsoleInputA *c = (struct qemu_WriteConsoleInputA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WriteConsoleInputA(QEMU_G2H(c->handle), QEMU_G2H(c->buffer), c->count, QEMU_G2H(c->written));
 }
 
@@ -432,7 +432,7 @@ WINBASEAPI BOOL WINAPI WriteConsoleInputW(HANDLE handle, const INPUT_RECORD *buf
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITECONSOLEINPUTW);
     call.handle = (uint64_t)handle;
     call.buffer = (uint64_t)buffer;
-    call.count = (uint64_t)count;
+    call.count = count;
     call.written = (uint64_t)written;
 
     qemu_syscall(&call.super);
@@ -445,7 +445,7 @@ WINBASEAPI BOOL WINAPI WriteConsoleInputW(HANDLE handle, const INPUT_RECORD *buf
 void qemu_WriteConsoleInputW(struct qemu_syscall *call)
 {
     struct qemu_WriteConsoleInputW *c = (struct qemu_WriteConsoleInputW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WriteConsoleInputW(QEMU_G2H(c->handle), QEMU_G2H(c->buffer), c->count, QEMU_G2H(c->written));
 }
 
@@ -493,7 +493,7 @@ void qemu_WriteConsoleOutputA(struct qemu_syscall *call)
     size.Y = c->sizeY;
     coord.X = c->coordX;
     coord.Y = c->coordY;
-    c->super.iret = WriteConsoleOutputA(QEMU_G2H(c->hConsoleOutput), QEMU_G2H(c->lpBuffer), size, coord, QEMU_G2H(c->region));
+    c->super.iret = WriteConsoleOutputA((HANDLE)c->hConsoleOutput, QEMU_G2H(c->lpBuffer), size, coord, QEMU_G2H(c->region));
 }
 
 #endif
@@ -540,7 +540,7 @@ void qemu_WriteConsoleOutputW(struct qemu_syscall *call)
     size.Y = c->sizeY;
     coord.X = c->coordX;
     coord.Y = c->coordY;
-    c->super.iret = WriteConsoleOutputW(QEMU_G2H(c->hConsoleOutput), QEMU_G2H(c->lpBuffer), size, coord, QEMU_G2H(c->region));
+    c->super.iret = WriteConsoleOutputW((HANDLE)c->hConsoleOutput, QEMU_G2H(c->lpBuffer), size, coord, QEMU_G2H(c->region));
 }
 
 #endif
@@ -564,7 +564,7 @@ WINBASEAPI BOOL WINAPI WriteConsoleOutputCharacterA(HANDLE hConsoleOutput, LPCST
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITECONSOLEOUTPUTCHARACTERA);
     call.hConsoleOutput = (uint64_t)hConsoleOutput;
     call.str = (uint64_t)str;
-    call.length = (uint64_t)length;
+    call.length = length;
     call.coordX = coord.X;
     call.coordY = coord.Y;
     call.lpNumCharsWritten = (uint64_t)lpNumCharsWritten;
@@ -580,10 +580,12 @@ void qemu_WriteConsoleOutputCharacterA(struct qemu_syscall *call)
 {
     struct qemu_WriteConsoleOutputCharacterA *c = (struct qemu_WriteConsoleOutputCharacterA *)call;
     COORD coord;
-    WINE_FIXME("Unverified!\n");
+
+    WINE_TRACE("\n");
     coord.X = c->coordX;
     coord.Y = c->coordY;
-    c->super.iret = WriteConsoleOutputCharacterA(QEMU_G2H(c->hConsoleOutput), QEMU_G2H(c->str), c->length, coord, QEMU_G2H(c->lpNumCharsWritten));
+    c->super.iret = WriteConsoleOutputCharacterA((HANDLE)c->hConsoleOutput, QEMU_G2H(c->str),
+            c->length, coord, QEMU_G2H(c->lpNumCharsWritten));
 }
 
 #endif
@@ -607,7 +609,7 @@ WINBASEAPI BOOL WINAPI WriteConsoleOutputAttribute(HANDLE hConsoleOutput, const 
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITECONSOLEOUTPUTATTRIBUTE);
     call.hConsoleOutput = (uint64_t)hConsoleOutput;
     call.attr = (uint64_t)attr;
-    call.length = (uint64_t)length;
+    call.length = length;
     call.coordX = coord.X;
     call.coordY = coord.Y;
     call.lpNumAttrsWritten = (uint64_t)lpNumAttrsWritten;
@@ -623,10 +625,12 @@ void qemu_WriteConsoleOutputAttribute(struct qemu_syscall *call)
 {
     struct qemu_WriteConsoleOutputAttribute *c = (struct qemu_WriteConsoleOutputAttribute *)call;
     COORD coord;
-    WINE_FIXME("Unverified!\n");
+
+    WINE_TRACE("Unverified!\n");
     coord.X = c->coordX;
     coord.Y = c->coordY;
-    c->super.iret = WriteConsoleOutputAttribute(QEMU_G2H(c->hConsoleOutput), QEMU_G2H(c->attr), c->length, coord, QEMU_G2H(c->lpNumAttrsWritten));
+    c->super.iret = WriteConsoleOutputAttribute((HANDLE)c->hConsoleOutput, QEMU_G2H(c->attr),
+            c->length, coord, QEMU_G2H(c->lpNumAttrsWritten));
 }
 
 #endif
@@ -649,8 +653,8 @@ WINBASEAPI BOOL WINAPI FillConsoleOutputCharacterA(HANDLE hConsoleOutput, CHAR c
     struct qemu_FillConsoleOutputCharacterA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILLCONSOLEOUTPUTCHARACTERA);
     call.hConsoleOutput = (uint64_t)hConsoleOutput;
-    call.ch = (uint64_t)ch;
-    call.length = (uint64_t)length;
+    call.ch = ch;
+    call.length = length;
     call.coordX = coord.X;
     call.coordY = coord.Y;
     call.lpNumCharsWritten = (uint64_t)lpNumCharsWritten;
@@ -666,10 +670,11 @@ void qemu_FillConsoleOutputCharacterA(struct qemu_syscall *call)
 {
     struct qemu_FillConsoleOutputCharacterA *c = (struct qemu_FillConsoleOutputCharacterA *)call;
     COORD coord;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     coord.X = c->coordX;
     coord.Y = c->coordY;
-    c->super.iret = FillConsoleOutputCharacterA(QEMU_G2H(c->hConsoleOutput), c->ch, c->length, coord, QEMU_G2H(c->lpNumCharsWritten));
+    c->super.iret = FillConsoleOutputCharacterA((HANDLE)c->hConsoleOutput, c->ch, c->length, coord,
+            QEMU_G2H(c->lpNumCharsWritten));
 }
 
 #endif
@@ -692,8 +697,8 @@ WINBASEAPI BOOL WINAPI FillConsoleOutputCharacterW(HANDLE hConsoleOutput, WCHAR 
     struct qemu_FillConsoleOutputCharacterW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILLCONSOLEOUTPUTCHARACTERW);
     call.hConsoleOutput = (uint64_t)hConsoleOutput;
-    call.ch = (uint64_t)ch;
-    call.length = (uint64_t)length;
+    call.ch = ch;
+    call.length = length;
     call.coordX = coord.X;
     call.coordY = coord.Y;
     call.lpNumCharsWritten = (uint64_t)lpNumCharsWritten;
@@ -709,10 +714,11 @@ void qemu_FillConsoleOutputCharacterW(struct qemu_syscall *call)
 {
     struct qemu_FillConsoleOutputCharacterW *c = (struct qemu_FillConsoleOutputCharacterW *)call;
     COORD coord;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     coord.X = c->coordX;
     coord.Y = c->coordY;
-    c->super.iret = FillConsoleOutputCharacterW(QEMU_G2H(c->hConsoleOutput), c->ch, c->length, coord, QEMU_G2H(c->lpNumCharsWritten));
+    c->super.iret = FillConsoleOutputCharacterW((HANDLE)c->hConsoleOutput, c->ch, c->length, coord,
+            QEMU_G2H(c->lpNumCharsWritten));
 }
 
 #endif
@@ -735,8 +741,8 @@ WINBASEAPI BOOL WINAPI FillConsoleOutputAttribute(HANDLE hConsoleOutput, WORD at
     struct qemu_FillConsoleOutputAttribute call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILLCONSOLEOUTPUTATTRIBUTE);
     call.hConsoleOutput = (uint64_t)hConsoleOutput;
-    call.attr = (uint64_t)attr;
-    call.length = (uint64_t)length;
+    call.attr = attr;
+    call.length = length;
     call.coordX = coord.X;
     call.coordY = coord.Y;
     call.lpNumAttrsWritten = (uint64_t)lpNumAttrsWritten;
@@ -752,10 +758,11 @@ void qemu_FillConsoleOutputAttribute(struct qemu_syscall *call)
 {
     struct qemu_FillConsoleOutputAttribute *c = (struct qemu_FillConsoleOutputAttribute *)call;
     COORD coord;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     coord.X = c->coordX;
     coord.Y = c->coordY;
-    c->super.iret = FillConsoleOutputAttribute(QEMU_G2H(c->hConsoleOutput), c->attr, c->length, coord, QEMU_G2H(c->lpNumAttrsWritten));
+    c->super.iret = FillConsoleOutputAttribute((HANDLE)c->hConsoleOutput, c->attr, c->length, coord,
+            QEMU_G2H(c->lpNumAttrsWritten));
 }
 
 #endif
@@ -779,7 +786,7 @@ WINBASEAPI BOOL WINAPI ReadConsoleOutputCharacterA(HANDLE hConsoleOutput, LPSTR 
     call.super.id = QEMU_SYSCALL_ID(CALL_READCONSOLEOUTPUTCHARACTERA);
     call.hConsoleOutput = (uint64_t)hConsoleOutput;
     call.lpstr = (uint64_t)lpstr;
-    call.count = (uint64_t)count;
+    call.count = count;
     call.coordX = coord.X;
     call.coordY = coord.Y;
     call.read_count = (uint64_t)read_count;
@@ -795,10 +802,12 @@ void qemu_ReadConsoleOutputCharacterA(struct qemu_syscall *call)
 {
     struct qemu_ReadConsoleOutputCharacterA *c = (struct qemu_ReadConsoleOutputCharacterA *)call;
     COORD coord;
-    WINE_FIXME("Unverified!\n");
+
+    WINE_TRACE("\n");
     coord.X = c->coordX;
     coord.Y = c->coordY;
-    c->super.iret = ReadConsoleOutputCharacterA(QEMU_G2H(c->hConsoleOutput), QEMU_G2H(c->lpstr), c->count, coord, QEMU_G2H(c->read_count));
+    c->super.iret = ReadConsoleOutputCharacterA((HANDLE)c->hConsoleOutput, QEMU_G2H(c->lpstr),
+            c->count, coord, QEMU_G2H(c->read_count));
 }
 
 #endif
@@ -822,7 +831,7 @@ WINBASEAPI BOOL WINAPI ReadConsoleOutputCharacterW(HANDLE hConsoleOutput, LPWSTR
     call.super.id = QEMU_SYSCALL_ID(CALL_READCONSOLEOUTPUTCHARACTERW);
     call.hConsoleOutput = (uint64_t)hConsoleOutput;
     call.buffer = (uint64_t)buffer;
-    call.count = (uint64_t)count;
+    call.count = count;
     call.coordX = coord.X;
     call.coordY = coord.Y;
     call.read_count = (uint64_t)read_count;
@@ -838,10 +847,11 @@ void qemu_ReadConsoleOutputCharacterW(struct qemu_syscall *call)
 {
     struct qemu_ReadConsoleOutputCharacterW *c = (struct qemu_ReadConsoleOutputCharacterW *)call;
     COORD coord;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     coord.X = c->coordX;
     coord.Y = c->coordY;
-    c->super.iret = ReadConsoleOutputCharacterW(QEMU_G2H(c->hConsoleOutput), QEMU_G2H(c->buffer), c->count, coord, QEMU_G2H(c->read_count));
+    c->super.iret = ReadConsoleOutputCharacterW((HANDLE)c->hConsoleOutput, QEMU_G2H(c->buffer), c->count, coord,
+            QEMU_G2H(c->read_count));
 }
 
 #endif
@@ -865,7 +875,7 @@ WINBASEAPI BOOL WINAPI ReadConsoleOutputAttribute(HANDLE hConsoleOutput, LPWORD 
     call.super.id = QEMU_SYSCALL_ID(CALL_READCONSOLEOUTPUTATTRIBUTE);
     call.hConsoleOutput = (uint64_t)hConsoleOutput;
     call.lpAttribute = (uint64_t)lpAttribute;
-    call.length = (uint64_t)length;
+    call.length = length;
     call.coordX = coord.X;
     call.coordY = coord.Y;
     call.read_count = (uint64_t)read_count;
@@ -881,10 +891,12 @@ void qemu_ReadConsoleOutputAttribute(struct qemu_syscall *call)
 {
     struct qemu_ReadConsoleOutputAttribute *c = (struct qemu_ReadConsoleOutputAttribute *)call;
     COORD coord;
-    WINE_FIXME("Unverified!\n");
+
+    WINE_TRACE("\n");
     coord.X = c->coordX;
     coord.Y = c->coordY;
-    c->super.iret = ReadConsoleOutputAttribute(QEMU_G2H(c->hConsoleOutput), QEMU_G2H(c->lpAttribute), c->length, coord, QEMU_G2H(c->read_count));
+    c->super.iret = ReadConsoleOutputAttribute((HANDLE)c->hConsoleOutput, QEMU_G2H(c->lpAttribute),
+            c->length, coord, QEMU_G2H(c->read_count));
 }
 
 #endif
@@ -931,7 +943,7 @@ void qemu_ReadConsoleOutputA(struct qemu_syscall *call)
     size.Y = c->sizeY;
     coord.X = c->coordX;
     coord.Y = c->coordY;
-    c->super.iret = ReadConsoleOutputA(QEMU_G2H(c->hConsoleOutput), QEMU_G2H(c->lpBuffer), size, coord, QEMU_G2H(c->region));
+    c->super.iret = ReadConsoleOutputA((HANDLE)c->hConsoleOutput, QEMU_G2H(c->lpBuffer), size, coord, QEMU_G2H(c->region));
 }
 
 #endif
@@ -978,7 +990,7 @@ void qemu_ReadConsoleOutputW(struct qemu_syscall *call)
     size.Y = c->sizeY;
     coord.X = c->coordX;
     coord.Y = c->coordY;
-    c->super.iret = ReadConsoleOutputW(QEMU_G2H(c->hConsoleOutput), QEMU_G2H(c->lpBuffer), size, coord, QEMU_G2H(c->region));
+    c->super.iret = ReadConsoleOutputW((HANDLE)c->hConsoleOutput, QEMU_G2H(c->lpBuffer), size, coord, QEMU_G2H(c->region));
 }
 
 #endif
@@ -1117,7 +1129,7 @@ WINBASEAPI BOOL WINAPI GetNumberOfConsoleInputEvents(HANDLE handle, LPDWORD nrof
 void qemu_GetNumberOfConsoleInputEvents(struct qemu_syscall *call)
 {
     struct qemu_GetNumberOfConsoleInputEvents *c = (struct qemu_GetNumberOfConsoleInputEvents *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetNumberOfConsoleInputEvents(QEMU_G2H(c->handle), QEMU_G2H(c->nrofevents));
 }
 
@@ -1147,7 +1159,7 @@ WINBASEAPI BOOL WINAPI FlushConsoleInputBuffer(HANDLE handle)
 void qemu_FlushConsoleInputBuffer(struct qemu_syscall *call)
 {
     struct qemu_FlushConsoleInputBuffer *c = (struct qemu_FlushConsoleInputBuffer *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FlushConsoleInputBuffer(QEMU_G2H(c->handle));
 }
 
@@ -1305,7 +1317,7 @@ WINBASEAPI BOOL WINAPI GetConsoleInputExeNameA(DWORD buflen, LPSTR buffer)
 void qemu_GetConsoleInputExeNameA(struct qemu_syscall *call)
 {
     struct qemu_GetConsoleInputExeNameA *c = (struct qemu_GetConsoleInputExeNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetConsoleInputExeNameA(c->buflen, QEMU_G2H(c->buffer));
 }
 
@@ -1406,7 +1418,7 @@ void qemu_GetLargestConsoleWindowSize(struct qemu_syscall *call)
     COORD ret;
 
     WINE_TRACE("\n");
-    ret = GetLargestConsoleWindowSize(QEMU_G2H(c->hConsoleOutput));
+    ret = GetLargestConsoleWindowSize((HANDLE)c->hConsoleOutput);
 
     c->super.iret = ret.X;
     c->retY = ret.Y;
@@ -1436,7 +1448,7 @@ WINBASEAPI BOOL WINAPI FreeConsole(VOID)
 void qemu_FreeConsole(struct qemu_syscall *call)
 {
     struct qemu_FreeConsole *c = (struct qemu_FreeConsole *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FreeConsole();
 }
 
@@ -1464,7 +1476,7 @@ WINBASEAPI BOOL WINAPI AllocConsole(void)
 void qemu_AllocConsole(struct qemu_syscall *call)
 {
     struct qemu_AllocConsole *c = (struct qemu_AllocConsole *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AllocConsole();
 }
 
@@ -1488,7 +1500,7 @@ WINBASEAPI BOOL WINAPI ReadConsoleA(HANDLE hConsoleInput, LPVOID lpBuffer, DWORD
     call.super.id = QEMU_SYSCALL_ID(CALL_READCONSOLEA);
     call.hConsoleInput = (uint64_t)hConsoleInput;
     call.lpBuffer = (uint64_t)lpBuffer;
-    call.nNumberOfCharsToRead = (uint64_t)nNumberOfCharsToRead;
+    call.nNumberOfCharsToRead = nNumberOfCharsToRead;
     call.lpNumberOfCharsRead = (uint64_t)lpNumberOfCharsRead;
     call.lpReserved = (uint64_t)lpReserved;
 
@@ -1502,8 +1514,9 @@ WINBASEAPI BOOL WINAPI ReadConsoleA(HANDLE hConsoleInput, LPVOID lpBuffer, DWORD
 void qemu_ReadConsoleA(struct qemu_syscall *call)
 {
     struct qemu_ReadConsoleA *c = (struct qemu_ReadConsoleA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ReadConsoleA(QEMU_G2H(c->hConsoleInput), QEMU_G2H(c->lpBuffer), c->nNumberOfCharsToRead, QEMU_G2H(c->lpNumberOfCharsRead), QEMU_G2H(c->lpReserved));
+    WINE_TRACE("\n");
+    c->super.iret = ReadConsoleA((HANDLE)c->hConsoleInput, QEMU_G2H(c->lpBuffer), c->nNumberOfCharsToRead,
+            QEMU_G2H(c->lpNumberOfCharsRead), QEMU_G2H(c->lpReserved));
 }
 
 #endif
@@ -1526,7 +1539,7 @@ WINBASEAPI BOOL WINAPI ReadConsoleW(HANDLE hConsoleInput, LPVOID lpBuffer, DWORD
     call.super.id = QEMU_SYSCALL_ID(CALL_READCONSOLEW);
     call.hConsoleInput = (uint64_t)hConsoleInput;
     call.lpBuffer = (uint64_t)lpBuffer;
-    call.nNumberOfCharsToRead = (uint64_t)nNumberOfCharsToRead;
+    call.nNumberOfCharsToRead = nNumberOfCharsToRead;
     call.lpNumberOfCharsRead = (uint64_t)lpNumberOfCharsRead;
     call.lpReserved = (uint64_t)lpReserved;
 
@@ -1540,8 +1553,9 @@ WINBASEAPI BOOL WINAPI ReadConsoleW(HANDLE hConsoleInput, LPVOID lpBuffer, DWORD
 void qemu_ReadConsoleW(struct qemu_syscall *call)
 {
     struct qemu_ReadConsoleW *c = (struct qemu_ReadConsoleW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ReadConsoleW(QEMU_G2H(c->hConsoleInput), QEMU_G2H(c->lpBuffer), c->nNumberOfCharsToRead, QEMU_G2H(c->lpNumberOfCharsRead), QEMU_G2H(c->lpReserved));
+    WINE_TRACE("\n");
+    c->super.iret = ReadConsoleW((HANDLE)c->hConsoleInput, QEMU_G2H(c->lpBuffer), c->nNumberOfCharsToRead,
+            QEMU_G2H(c->lpNumberOfCharsRead), QEMU_G2H(c->lpReserved));
 }
 
 #endif
@@ -1601,7 +1615,7 @@ WINBASEAPI BOOL WINAPI WriteConsoleOutputCharacterW(HANDLE hConsoleOutput, LPCWS
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITECONSOLEOUTPUTCHARACTERW);
     call.hConsoleOutput = (uint64_t)hConsoleOutput;
     call.str = (uint64_t)str;
-    call.length = (uint64_t)length;
+    call.length = length;
     call.coordX = coord.X;
     call.coordY = coord.Y;
     call.lpNumCharsWritten = (uint64_t)lpNumCharsWritten;
@@ -1617,10 +1631,11 @@ void qemu_WriteConsoleOutputCharacterW(struct qemu_syscall *call)
 {
     struct qemu_WriteConsoleOutputCharacterW *c = (struct qemu_WriteConsoleOutputCharacterW *)call;
     COORD coord;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     coord.X = c->coordX;
     coord.Y = c->coordY;
-    c->super.iret = WriteConsoleOutputCharacterW(QEMU_G2H(c->hConsoleOutput), QEMU_G2H(c->str), c->length, coord, QEMU_G2H(c->lpNumCharsWritten));
+    c->super.iret = WriteConsoleOutputCharacterW((HANDLE)c->hConsoleOutput, QEMU_G2H(c->str), c->length, coord,
+            QEMU_G2H(c->lpNumCharsWritten));
 }
 
 #endif
@@ -1743,7 +1758,7 @@ extern BOOL WINAPI SetConsoleInputExeNameA(LPCSTR name);
 void qemu_SetConsoleInputExeNameA(struct qemu_syscall *call)
 {
     struct qemu_SetConsoleInputExeNameA *c = (struct qemu_SetConsoleInputExeNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetConsoleInputExeNameA(QEMU_G2H(c->name));
 }
 
@@ -1861,10 +1876,10 @@ WINBASEAPI HANDLE WINAPI CreateConsoleScreenBuffer(DWORD dwDesiredAccess, DWORD 
 {
     struct qemu_CreateConsoleScreenBuffer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATECONSOLESCREENBUFFER);
-    call.dwDesiredAccess = (uint64_t)dwDesiredAccess;
-    call.dwShareMode = (uint64_t)dwShareMode;
+    call.dwDesiredAccess = dwDesiredAccess;
+    call.dwShareMode = dwShareMode;
     call.sa = (uint64_t)sa;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.dwFlags = dwFlags;
     call.lpScreenBufferData = (uint64_t)lpScreenBufferData;
 
     qemu_syscall(&call.super);
@@ -1877,8 +1892,9 @@ WINBASEAPI HANDLE WINAPI CreateConsoleScreenBuffer(DWORD dwDesiredAccess, DWORD 
 void qemu_CreateConsoleScreenBuffer(struct qemu_syscall *call)
 {
     struct qemu_CreateConsoleScreenBuffer *c = (struct qemu_CreateConsoleScreenBuffer *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateConsoleScreenBuffer(c->dwDesiredAccess, c->dwShareMode, QEMU_G2H(c->sa), c->dwFlags, QEMU_G2H(c->lpScreenBufferData));
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)CreateConsoleScreenBuffer(c->dwDesiredAccess, c->dwShareMode,
+            QEMU_G2H(c->sa), c->dwFlags, QEMU_G2H(c->lpScreenBufferData));
 }
 
 #endif
@@ -1909,8 +1925,8 @@ WINBASEAPI BOOL WINAPI GetConsoleScreenBufferInfo(HANDLE hConsoleOutput, CONSOLE
 void qemu_GetConsoleScreenBufferInfo(struct qemu_syscall *call)
 {
     struct qemu_GetConsoleScreenBufferInfo *c = (struct qemu_GetConsoleScreenBufferInfo *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetConsoleScreenBufferInfo(QEMU_G2H(c->hConsoleOutput), QEMU_G2H(c->csbi));
+    WINE_TRACE("\n");
+    c->super.iret = GetConsoleScreenBufferInfo((HANDLE)c->hConsoleOutput, QEMU_G2H(c->csbi));
 }
 
 #endif
@@ -1939,8 +1955,8 @@ WINBASEAPI BOOL WINAPI SetConsoleActiveScreenBuffer(HANDLE hConsoleOutput)
 void qemu_SetConsoleActiveScreenBuffer(struct qemu_syscall *call)
 {
     struct qemu_SetConsoleActiveScreenBuffer *c = (struct qemu_SetConsoleActiveScreenBuffer *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetConsoleActiveScreenBuffer(QEMU_G2H(c->hConsoleOutput));
+    WINE_TRACE("\n");
+    c->super.iret = SetConsoleActiveScreenBuffer((HANDLE)c->hConsoleOutput);
 }
 
 #endif
@@ -1971,8 +1987,8 @@ WINBASEAPI BOOL WINAPI GetConsoleMode(HANDLE hcon, LPDWORD mode)
 void qemu_GetConsoleMode(struct qemu_syscall *call)
 {
     struct qemu_GetConsoleMode *c = (struct qemu_GetConsoleMode *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetConsoleMode(QEMU_G2H(c->hcon), QEMU_G2H(c->mode));
+    WINE_TRACE("\n");
+    c->super.iret = GetConsoleMode((HANDLE)c->hcon, QEMU_G2H(c->mode));
 }
 
 #endif
@@ -1991,7 +2007,7 @@ WINBASEAPI BOOL WINAPI SetConsoleMode(HANDLE hcon, DWORD mode)
     struct qemu_SetConsoleMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCONSOLEMODE);
     call.hcon = (uint64_t)hcon;
-    call.mode = (uint64_t)mode;
+    call.mode = mode;
 
     qemu_syscall(&call.super);
 
@@ -2003,8 +2019,8 @@ WINBASEAPI BOOL WINAPI SetConsoleMode(HANDLE hcon, DWORD mode)
 void qemu_SetConsoleMode(struct qemu_syscall *call)
 {
     struct qemu_SetConsoleMode *c = (struct qemu_SetConsoleMode *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetConsoleMode(QEMU_G2H(c->hcon), c->mode);
+    WINE_TRACE("\n");
+    c->super.iret = SetConsoleMode((HANDLE)c->hcon, c->mode);
 }
 
 #endif
@@ -2042,7 +2058,7 @@ void qemu_WriteConsoleW(struct qemu_syscall *call)
 {
     struct qemu_WriteConsoleW *c = (struct qemu_WriteConsoleW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = WriteConsoleW(QEMU_G2H(c->hConsoleOutput), QEMU_G2H(c->lpBuffer), c->nNumberOfCharsToWrite, QEMU_G2H(c->lpNumberOfCharsWritten), QEMU_G2H(c->lpReserved));
+    c->super.iret = WriteConsoleW((HANDLE)c->hConsoleOutput, QEMU_G2H(c->lpBuffer), c->nNumberOfCharsToWrite, QEMU_G2H(c->lpNumberOfCharsWritten), QEMU_G2H(c->lpReserved));
 }
 
 #endif
@@ -2065,7 +2081,7 @@ WINBASEAPI BOOL WINAPI WriteConsoleA(HANDLE hConsoleOutput, LPCVOID lpBuffer, DW
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITECONSOLEA);
     call.hConsoleOutput = (uint64_t)hConsoleOutput;
     call.lpBuffer = (uint64_t)lpBuffer;
-    call.nNumberOfCharsToWrite = (uint64_t)nNumberOfCharsToWrite;
+    call.nNumberOfCharsToWrite = nNumberOfCharsToWrite;
     call.lpNumberOfCharsWritten = (uint64_t)lpNumberOfCharsWritten;
     call.lpReserved = (uint64_t)lpReserved;
 
@@ -2079,8 +2095,9 @@ WINBASEAPI BOOL WINAPI WriteConsoleA(HANDLE hConsoleOutput, LPCVOID lpBuffer, DW
 void qemu_WriteConsoleA(struct qemu_syscall *call)
 {
     struct qemu_WriteConsoleA *c = (struct qemu_WriteConsoleA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = WriteConsoleA(QEMU_G2H(c->hConsoleOutput), QEMU_G2H(c->lpBuffer), c->nNumberOfCharsToWrite, QEMU_G2H(c->lpNumberOfCharsWritten), QEMU_G2H(c->lpReserved));
+    WINE_TRACE("\n");
+    c->super.iret = WriteConsoleA((HANDLE)c->hConsoleOutput, QEMU_G2H(c->lpBuffer), c->nNumberOfCharsToWrite,
+            QEMU_G2H(c->lpNumberOfCharsWritten), QEMU_G2H(c->lpReserved));
 }
 
 #endif
@@ -2114,10 +2131,10 @@ void qemu_SetConsoleCursorPosition(struct qemu_syscall *call)
 {
     struct qemu_SetConsoleCursorPosition *c = (struct qemu_SetConsoleCursorPosition *)call;
     COORD pos;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     pos.X = c->posX;
     pos.Y = c->posY;
-    c->super.iret = SetConsoleCursorPosition(QEMU_G2H(c->hcon), pos);
+    c->super.iret = SetConsoleCursorPosition((HANDLE)c->hcon, pos);
 }
 
 #endif
@@ -2148,8 +2165,8 @@ WINBASEAPI BOOL WINAPI GetConsoleCursorInfo(HANDLE hCon, CONSOLE_CURSOR_INFO *ci
 void qemu_GetConsoleCursorInfo(struct qemu_syscall *call)
 {
     struct qemu_GetConsoleCursorInfo *c = (struct qemu_GetConsoleCursorInfo *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetConsoleCursorInfo(QEMU_G2H(c->hCon), QEMU_G2H(c->cinfo));
+    WINE_TRACE("\n");
+    c->super.iret = GetConsoleCursorInfo((HANDLE)c->hCon, QEMU_G2H(c->cinfo));
 }
 
 #endif
@@ -2181,7 +2198,7 @@ void qemu_SetConsoleCursorInfo(struct qemu_syscall *call)
 {
     struct qemu_SetConsoleCursorInfo *c = (struct qemu_SetConsoleCursorInfo *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetConsoleCursorInfo(QEMU_G2H(c->hCon), QEMU_G2H(c->cinfo));
+    c->super.iret = SetConsoleCursorInfo((HANDLE)c->hCon, QEMU_G2H(c->cinfo));
 }
 
 #endif
@@ -2215,7 +2232,7 @@ void qemu_SetConsoleWindowInfo(struct qemu_syscall *call)
 {
     struct qemu_SetConsoleWindowInfo *c = (struct qemu_SetConsoleWindowInfo *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetConsoleWindowInfo(QEMU_G2H(c->hCon), c->bAbsolute, QEMU_G2H(c->window));
+    c->super.iret = SetConsoleWindowInfo((HANDLE)c->hCon, c->bAbsolute, QEMU_G2H(c->window));
 }
 
 #endif
@@ -2234,7 +2251,7 @@ WINBASEAPI BOOL WINAPI SetConsoleTextAttribute(HANDLE hConsoleOutput, WORD wAttr
     struct qemu_SetConsoleTextAttribute call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCONSOLETEXTATTRIBUTE);
     call.hConsoleOutput = (uint64_t)hConsoleOutput;
-    call.wAttr = (uint64_t)wAttr;
+    call.wAttr = wAttr;
 
     qemu_syscall(&call.super);
 
@@ -2246,8 +2263,8 @@ WINBASEAPI BOOL WINAPI SetConsoleTextAttribute(HANDLE hConsoleOutput, WORD wAttr
 void qemu_SetConsoleTextAttribute(struct qemu_syscall *call)
 {
     struct qemu_SetConsoleTextAttribute *c = (struct qemu_SetConsoleTextAttribute *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetConsoleTextAttribute(QEMU_G2H(c->hConsoleOutput), c->wAttr);
+    WINE_TRACE("\n");
+    c->super.iret = SetConsoleTextAttribute((HANDLE)c->hConsoleOutput, c->wAttr);
 }
 
 #endif
@@ -2281,10 +2298,10 @@ void qemu_SetConsoleScreenBufferSize(struct qemu_syscall *call)
 {
     struct qemu_SetConsoleScreenBufferSize *c = (struct qemu_SetConsoleScreenBufferSize *)call;
     COORD size;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     size.X = c->dwSizeX;
     size.Y = c->dwSizeY;
-    c->super.iret = SetConsoleScreenBufferSize(QEMU_G2H(c->hConsoleOutput), size);
+    c->super.iret = SetConsoleScreenBufferSize((HANDLE)c->hConsoleOutput, size);
 }
 
 #endif
@@ -2324,10 +2341,11 @@ void qemu_ScrollConsoleScreenBufferA(struct qemu_syscall *call)
 {
     struct qemu_ScrollConsoleScreenBufferA *c = (struct qemu_ScrollConsoleScreenBufferA *)call;
     COORD dwDestOrigin;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     dwDestOrigin.X = c->dwDestOriginX;
     dwDestOrigin.Y = c->dwDestOriginY;
-    c->super.iret = ScrollConsoleScreenBufferA(QEMU_G2H(c->hConsoleOutput), QEMU_G2H(c->lpScrollRect), QEMU_G2H(c->lpClipRect), dwDestOrigin, QEMU_G2H(c->lpFill));
+    c->super.iret = ScrollConsoleScreenBufferA((HANDLE)c->hConsoleOutput, QEMU_G2H(c->lpScrollRect),
+            QEMU_G2H(c->lpClipRect), dwDestOrigin, QEMU_G2H(c->lpFill));
 }
 
 #endif
@@ -2370,7 +2388,7 @@ void qemu_ScrollConsoleScreenBufferW(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     dwDestOrigin.X = c->dwDestOriginX;
     dwDestOrigin.Y = c->dwDestOriginY;
-    c->super.iret = ScrollConsoleScreenBufferW(QEMU_G2H(c->hConsoleOutput), QEMU_G2H(c->lpScrollRect), QEMU_G2H(c->lpClipRect), dwDestOrigin, QEMU_G2H(c->lpFill));
+    c->super.iret = ScrollConsoleScreenBufferW((HANDLE)c->hConsoleOutput, QEMU_G2H(c->lpScrollRect), QEMU_G2H(c->lpClipRect), dwDestOrigin, QEMU_G2H(c->lpFill));
 }
 
 #endif
@@ -2464,7 +2482,7 @@ void qemu_SetConsoleDisplayMode(struct qemu_syscall *call)
 {
     struct qemu_SetConsoleDisplayMode *c = (struct qemu_SetConsoleDisplayMode *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetConsoleDisplayMode(QEMU_G2H(c->hConsoleOutput), c->dwFlags, QEMU_G2H(c->lpNewScreenBufferDimensions));
+    c->super.iret = SetConsoleDisplayMode((HANDLE)c->hConsoleOutput, c->dwFlags, QEMU_G2H(c->lpNewScreenBufferDimensions));
 }
 
 #endif
@@ -2519,7 +2537,7 @@ WINBASEAPI DWORD WINAPI GetConsoleProcessList(LPDWORD processlist, DWORD process
     struct qemu_GetConsoleProcessList call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCONSOLEPROCESSLIST);
     call.processlist = (uint64_t)processlist;
-    call.processcount = (uint64_t)processcount;
+    call.processcount = processcount;
 
     qemu_syscall(&call.super);
 
@@ -2531,7 +2549,7 @@ WINBASEAPI DWORD WINAPI GetConsoleProcessList(LPDWORD processlist, DWORD process
 void qemu_GetConsoleProcessList(struct qemu_syscall *call)
 {
     struct qemu_GetConsoleProcessList *c = (struct qemu_GetConsoleProcessList *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetConsoleProcessList(QEMU_G2H(c->processlist), c->processcount);
 }
 
@@ -2973,7 +2991,7 @@ extern DWORD WINAPI GetNumberOfConsoleFonts(void);
 void qemu_GetNumberOfConsoleFonts(struct qemu_syscall *call)
 {
     struct qemu_GetNumberOfConsoleFonts *c = (struct qemu_GetNumberOfConsoleFonts *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetNumberOfConsoleFonts();
 }
 
@@ -2993,7 +3011,7 @@ WINBASEAPI BOOL WINAPI SetConsoleFont(HANDLE hConsole, DWORD index)
     struct qemu_SetConsoleFont call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCONSOLEFONT);
     call.hConsole = (uint64_t)hConsole;
-    call.index = (uint64_t)index;
+    call.index = index;
 
     qemu_syscall(&call.super);
 
@@ -3007,8 +3025,8 @@ extern BOOL WINAPI SetConsoleFont(HANDLE hConsole, DWORD index);
 void qemu_SetConsoleFont(struct qemu_syscall *call)
 {
     struct qemu_SetConsoleFont *c = (struct qemu_SetConsoleFont *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetConsoleFont(QEMU_G2H(c->hConsole), c->index);
+    WINE_TRACE("\n");
+    c->super.iret = SetConsoleFont((HANDLE)c->hConsole, c->index);
 }
 
 #endif
@@ -3066,7 +3084,7 @@ WINBASEAPI BOOL WINAPI GetCurrentConsoleFont(HANDLE hConsole, BOOL maxwindow, CO
     struct qemu_GetCurrentConsoleFont call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTCONSOLEFONT);
     call.hConsole = (uint64_t)hConsole;
-    call.maxwindow = (uint64_t)maxwindow;
+    call.maxwindow = maxwindow;
     call.fontinfo = (uint64_t)fontinfo;
 
     qemu_syscall(&call.super);
@@ -3079,8 +3097,8 @@ WINBASEAPI BOOL WINAPI GetCurrentConsoleFont(HANDLE hConsole, BOOL maxwindow, CO
 void qemu_GetCurrentConsoleFont(struct qemu_syscall *call)
 {
     struct qemu_GetCurrentConsoleFont *c = (struct qemu_GetCurrentConsoleFont *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetCurrentConsoleFont(QEMU_G2H(c->hConsole), c->maxwindow, QEMU_G2H(c->fontinfo));
+    WINE_TRACE("\n");
+    c->super.iret = GetCurrentConsoleFont((HANDLE)c->hConsole, c->maxwindow, QEMU_G2H(c->fontinfo));
 }
 
 #endif
@@ -3119,7 +3137,7 @@ void qemu_GetConsoleFontSize(struct qemu_syscall *call)
 
     WINE_TRACE("\n");
 
-    ret = GetConsoleFontSize(QEMU_G2H(c->hConsole), c->index);
+    ret = GetConsoleFontSize((HANDLE)c->hConsole, c->index);
     c->super.iret = ret.X;
     c->retY = ret.Y;
 }
@@ -3142,8 +3160,8 @@ WINBASEAPI BOOL WINAPI GetConsoleFontInfo(HANDLE hConsole, BOOL maximize, DWORD 
     struct qemu_GetConsoleFontInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCONSOLEFONTINFO);
     call.hConsole = (uint64_t)hConsole;
-    call.maximize = (uint64_t)maximize;
-    call.numfonts = (uint64_t)numfonts;
+    call.maximize = maximize;
+    call.numfonts = numfonts;
     call.info = (uint64_t)info;
 
     qemu_syscall(&call.super);
@@ -3158,8 +3176,8 @@ extern BOOL WINAPI GetConsoleFontInfo(HANDLE hConsole, BOOL maximize, DWORD numf
 void qemu_GetConsoleFontInfo(struct qemu_syscall *call)
 {
     struct qemu_GetConsoleFontInfo *c = (struct qemu_GetConsoleFontInfo *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetConsoleFontInfo(QEMU_G2H(c->hConsole), c->maximize, c->numfonts, QEMU_G2H(c->info));
+    WINE_TRACE("\n");
+    c->super.iret = GetConsoleFontInfo((HANDLE)c->hConsole, c->maximize, c->numfonts, QEMU_G2H(c->info));
 }
 
 #endif
@@ -3190,8 +3208,8 @@ WINBASEAPI BOOL WINAPI GetConsoleScreenBufferInfoEx(HANDLE hConsole, CONSOLE_SCR
 void qemu_GetConsoleScreenBufferInfoEx(struct qemu_syscall *call)
 {
     struct qemu_GetConsoleScreenBufferInfoEx *c = (struct qemu_GetConsoleScreenBufferInfoEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetConsoleScreenBufferInfoEx(QEMU_G2H(c->hConsole), QEMU_G2H(c->csbix));
+    WINE_TRACE("\n");
+    c->super.iret = GetConsoleScreenBufferInfoEx((HANDLE)c->hConsole, QEMU_G2H(c->csbix));
 }
 
 #endif
@@ -3223,7 +3241,7 @@ void qemu_SetConsoleScreenBufferInfoEx(struct qemu_syscall *call)
 {
     struct qemu_SetConsoleScreenBufferInfoEx *c = (struct qemu_SetConsoleScreenBufferInfoEx *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetConsoleScreenBufferInfoEx(QEMU_G2H(c->hConsole), QEMU_G2H(c->csbix));
+    c->super.iret = SetConsoleScreenBufferInfoEx((HANDLE)c->hConsole, QEMU_G2H(c->csbix));
 }
 
 #endif
@@ -3257,7 +3275,7 @@ void qemu_SetCurrentConsoleFontEx(struct qemu_syscall *call)
 {
     struct qemu_SetCurrentConsoleFontEx *c = (struct qemu_SetCurrentConsoleFontEx *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetCurrentConsoleFontEx(QEMU_G2H(c->hConsole), c->maxwindow, QEMU_G2H(c->cfix));
+    c->super.iret = SetCurrentConsoleFontEx((HANDLE)c->hConsole, c->maxwindow, QEMU_G2H(c->cfix));
 }
 
 #endif
