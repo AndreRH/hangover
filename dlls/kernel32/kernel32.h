@@ -965,12 +965,15 @@ enum kernel32_calls
     CALL_ZOMBIFYACTCTX,
 };
 
+struct qemu_completion_cb;
+
 #ifdef QEMU_DLL_GUEST
 
 void WINAPI qemu_exception_handler(EXCEPTION_POINTERS *except);
 DECLSPEC_NORETURN void WINAPI kernel32_ExitProcess(UINT exitcode);
 DWORD WINAPI kernel32_GetLastError();
 LONG WINAPI kernel32_UnhandledExceptionFilter(PEXCEPTION_POINTERS epointers);
+uint64_t WINAPI guest_complection_cb(struct qemu_completion_cb *data);
 
 #else
 
@@ -1939,6 +1942,16 @@ void qemu_WTSGetActiveConsoleSessionId(struct qemu_syscall *call);
 void qemu_ZombifyActCtx(struct qemu_syscall *call);
 
 DWORD kernel32_tls;
+
+struct OVERLAPPED_wrapper
+{
+    OVERLAPPED ov;
+    OVERLAPPED *guest_ov;
+    uint64_t guest_cb;
+    uint64_t guest_wrapper;
+};
+
+void CALLBACK host_completion_cb(DWORD error, DWORD len, OVERLAPPED *ov);
 
 #endif
 

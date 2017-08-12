@@ -32,6 +32,13 @@ struct qemu_set_callbacks
     uint64_t call_entry;
 };
 
+struct qemu_completion_cb
+{
+    uint64_t error, len;
+    uint64_t ov;
+    uint64_t func;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 static void WINAPI kernel32_call_process_main(LPTHREAD_START_ROUTINE entry)
@@ -85,9 +92,14 @@ WINBASEAPI INT WINAPI MulDiv( INT nMultiplicand, INT nMultiplier, INT nDivisor)
     return ret;
 }
 
-#endif
+uint64_t WINAPI guest_complection_cb(struct qemu_completion_cb *data)
+{
+    LPOVERLAPPED_COMPLETION_ROUTINE completion = (LPOVERLAPPED_COMPLETION_ROUTINE)data->func;
+    completion(data->error, data->len, (OVERLAPPED *)data->ov);
+    return 0;
+}
 
-#ifndef QEMU_DLL_GUEST
+#else
 
 #include <wine/debug.h>
 #include "va_helper_impl.h"
@@ -100,6 +112,24 @@ static void qemu_set_callbacks(struct qemu_syscall *call)
 {
     struct qemu_set_callbacks *c = (struct qemu_set_callbacks *)call;
     qemu_ops->qemu_set_call_entry(c->call_entry);
+}
+
+void CALLBACK host_completion_cb(DWORD error, DWORD len, OVERLAPPED *ov)
+{
+    struct qemu_completion_cb call;
+    struct OVERLAPPED_wrapper *data = (struct OVERLAPPED_wrapper *)ov;
+    uint64_t wrapper = data->guest_wrapper;
+
+    call.func = data->guest_cb;
+    call.error = error;
+    call.len = len;
+    *data->guest_ov = data->ov;
+    call.ov = QEMU_H2G(data->guest_ov);
+
+    HeapFree(GetProcessHeap(), 0, data);
+    WINE_TRACE("Calling guest callback 0x%lx(%x, %u, 0x%lx).\n", call.func, error, len, call.ov);
+    qemu_ops->qemu_execute(QEMU_G2H(wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned.\n");
 }
 
 static const syscall_handler dll_functions[] =
