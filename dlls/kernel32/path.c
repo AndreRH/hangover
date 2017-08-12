@@ -283,7 +283,7 @@ WINBASEAPI DWORD WINAPI GetTempPathW(DWORD count, LPWSTR path)
 {
     struct qemu_GetTempPathW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEMPPATHW);
-    call.count = (uint64_t)count;
+    call.count = count;
     call.path = (uint64_t)path;
 
     qemu_syscall(&call.super);
@@ -296,7 +296,7 @@ WINBASEAPI DWORD WINAPI GetTempPathW(DWORD count, LPWSTR path)
 void qemu_GetTempPathW(struct qemu_syscall *call)
 {
     struct qemu_GetTempPathW *c = (struct qemu_GetTempPathW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTempPathW(c->count, QEMU_G2H(c->path));
 }
 
@@ -319,7 +319,7 @@ WINBASEAPI UINT WINAPI GetTempFileNameA(LPCSTR path, LPCSTR prefix, UINT unique,
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEMPFILENAMEA);
     call.path = (uint64_t)path;
     call.prefix = (uint64_t)prefix;
-    call.unique = (uint64_t)unique;
+    call.unique = unique;
     call.buffer = (uint64_t)buffer;
 
     qemu_syscall(&call.super);
@@ -332,7 +332,7 @@ WINBASEAPI UINT WINAPI GetTempFileNameA(LPCSTR path, LPCSTR prefix, UINT unique,
 void qemu_GetTempFileNameA(struct qemu_syscall *call)
 {
     struct qemu_GetTempFileNameA *c = (struct qemu_GetTempFileNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTempFileNameA(QEMU_G2H(c->path), QEMU_G2H(c->prefix), c->unique, QEMU_G2H(c->buffer));
 }
 
@@ -772,7 +772,7 @@ WINBASEAPI BOOL WINAPI MoveFileW(LPCWSTR source, LPCWSTR dest)
 void qemu_MoveFileW(struct qemu_syscall *call)
 {
     struct qemu_MoveFileW *c = (struct qemu_MoveFileW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = MoveFileW(QEMU_G2H(c->source), QEMU_G2H(c->dest));
 }
 
@@ -804,7 +804,7 @@ WINBASEAPI BOOL WINAPI MoveFileA(LPCSTR source, LPCSTR dest)
 void qemu_MoveFileA(struct qemu_syscall *call)
 {
     struct qemu_MoveFileA *c = (struct qemu_MoveFileA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = MoveFileA(QEMU_G2H(c->source), QEMU_G2H(c->dest));
 }
 
@@ -904,7 +904,7 @@ WINBASEAPI BOOL WINAPI CreateDirectoryW(LPCWSTR path, LPSECURITY_ATTRIBUTES sa)
 void qemu_CreateDirectoryW(struct qemu_syscall *call)
 {
     struct qemu_CreateDirectoryW *c = (struct qemu_CreateDirectoryW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CreateDirectoryW(QEMU_G2H(c->path), QEMU_G2H(c->sa));
 }
 
@@ -936,7 +936,7 @@ WINBASEAPI BOOL WINAPI CreateDirectoryA(LPCSTR path, LPSECURITY_ATTRIBUTES sa)
 void qemu_CreateDirectoryA(struct qemu_syscall *call)
 {
     struct qemu_CreateDirectoryA *c = (struct qemu_CreateDirectoryA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CreateDirectoryA(QEMU_G2H(c->path), QEMU_G2H(c->sa));
 }
 
@@ -1034,7 +1034,7 @@ WINBASEAPI BOOL WINAPI RemoveDirectoryW(LPCWSTR path)
 void qemu_RemoveDirectoryW(struct qemu_syscall *call)
 {
     struct qemu_RemoveDirectoryW *c = (struct qemu_RemoveDirectoryW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RemoveDirectoryW(QEMU_G2H(c->path));
 }
 
@@ -1064,7 +1064,7 @@ WINBASEAPI BOOL WINAPI RemoveDirectoryA(LPCSTR path)
 void qemu_RemoveDirectoryA(struct qemu_syscall *call)
 {
     struct qemu_RemoveDirectoryA *c = (struct qemu_RemoveDirectoryA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RemoveDirectoryA(QEMU_G2H(c->path));
 }
 

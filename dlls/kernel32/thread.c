@@ -215,7 +215,7 @@ WINBASEAPI void WINAPI ExitThread(DWORD code)
 {
     struct qemu_ExitThread call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXITTHREAD);
-    call.code = (uint64_t)code;
+    call.code = code;
 
     qemu_syscall(&call.super);
 
@@ -227,7 +227,7 @@ WINBASEAPI void WINAPI ExitThread(DWORD code)
 void qemu_ExitThread(struct qemu_syscall *call)
 {
     struct qemu_ExitThread *c = (struct qemu_ExitThread *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ExitThread(c->code);
 }
 
@@ -323,8 +323,8 @@ WINBASEAPI BOOL WINAPI GetExitCodeThread(HANDLE hthread, LPDWORD exitcode)
 void qemu_GetExitCodeThread(struct qemu_syscall *call)
 {
     struct qemu_GetExitCodeThread *c = (struct qemu_GetExitCodeThread *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetExitCodeThread(QEMU_G2H(c->hthread), QEMU_G2H(c->exitcode));
+    WINE_TRACE("\n");
+    c->super.iret = GetExitCodeThread((HANDLE)c->hthread, QEMU_G2H(c->exitcode));
 }
 
 #endif

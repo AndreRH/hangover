@@ -46,8 +46,8 @@ WINBASEAPI HANDLE WINAPI FindFirstChangeNotificationA(LPCSTR lpPathName, BOOL bW
     struct qemu_FindFirstChangeNotificationA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDFIRSTCHANGENOTIFICATIONA);
     call.lpPathName = (uint64_t)lpPathName;
-    call.bWatchSubtree = (uint64_t)bWatchSubtree;
-    call.dwNotifyFilter = (uint64_t)dwNotifyFilter;
+    call.bWatchSubtree = bWatchSubtree;
+    call.dwNotifyFilter = dwNotifyFilter;
 
     qemu_syscall(&call.super);
 
@@ -59,7 +59,7 @@ WINBASEAPI HANDLE WINAPI FindFirstChangeNotificationA(LPCSTR lpPathName, BOOL bW
 void qemu_FindFirstChangeNotificationA(struct qemu_syscall *call)
 {
     struct qemu_FindFirstChangeNotificationA *c = (struct qemu_FindFirstChangeNotificationA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)FindFirstChangeNotificationA(QEMU_G2H(c->lpPathName), c->bWatchSubtree, c->dwNotifyFilter);
 }
 
@@ -80,8 +80,8 @@ WINBASEAPI HANDLE WINAPI FindFirstChangeNotificationW(LPCWSTR lpPathName, BOOL b
     struct qemu_FindFirstChangeNotificationW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDFIRSTCHANGENOTIFICATIONW);
     call.lpPathName = (uint64_t)lpPathName;
-    call.bWatchSubtree = (uint64_t)bWatchSubtree;
-    call.dwNotifyFilter = (uint64_t)dwNotifyFilter;
+    call.bWatchSubtree = bWatchSubtree;
+    call.dwNotifyFilter = dwNotifyFilter;
 
     qemu_syscall(&call.super);
 
@@ -93,7 +93,7 @@ WINBASEAPI HANDLE WINAPI FindFirstChangeNotificationW(LPCWSTR lpPathName, BOOL b
 void qemu_FindFirstChangeNotificationW(struct qemu_syscall *call)
 {
     struct qemu_FindFirstChangeNotificationW *c = (struct qemu_FindFirstChangeNotificationW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)FindFirstChangeNotificationW(QEMU_G2H(c->lpPathName), c->bWatchSubtree, c->dwNotifyFilter);
 }
 
@@ -123,7 +123,7 @@ WINBASEAPI BOOL WINAPI FindNextChangeNotification(HANDLE handle)
 void qemu_FindNextChangeNotification(struct qemu_syscall *call)
 {
     struct qemu_FindNextChangeNotification *c = (struct qemu_FindNextChangeNotification *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FindNextChangeNotification(QEMU_G2H(c->handle));
 }
 
@@ -153,7 +153,7 @@ WINBASEAPI BOOL WINAPI FindCloseChangeNotification(HANDLE handle)
 void qemu_FindCloseChangeNotification(struct qemu_syscall *call)
 {
     struct qemu_FindCloseChangeNotification *c = (struct qemu_FindCloseChangeNotification *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FindCloseChangeNotification(QEMU_G2H(c->handle));
 }
 

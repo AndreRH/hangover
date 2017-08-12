@@ -358,7 +358,7 @@ WINBASEAPI BOOL WINAPI GetOverlappedResult(HANDLE hFile, LPOVERLAPPED lpOverlapp
     call.hFile = (uint64_t)hFile;
     call.lpOverlapped = (uint64_t)lpOverlapped;
     call.lpTransferred = (uint64_t)lpTransferred;
-    call.bWait = (uint64_t)bWait;
+    call.bWait = bWait;
 
     qemu_syscall(&call.super);
 
@@ -370,7 +370,7 @@ WINBASEAPI BOOL WINAPI GetOverlappedResult(HANDLE hFile, LPOVERLAPPED lpOverlapp
 void qemu_GetOverlappedResult(struct qemu_syscall *call)
 {
     struct qemu_GetOverlappedResult *c = (struct qemu_GetOverlappedResult *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetOverlappedResult(QEMU_G2H(c->hFile), QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpTransferred), c->bWait);
 }
 
@@ -1534,7 +1534,7 @@ WINBASEAPI BOOL WINAPI DeleteFileW(LPCWSTR path)
 void qemu_DeleteFileW(struct qemu_syscall *call)
 {
     struct qemu_DeleteFileW *c = (struct qemu_DeleteFileW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DeleteFileW(QEMU_G2H(c->path));
 }
 
@@ -1564,7 +1564,7 @@ WINBASEAPI BOOL WINAPI DeleteFileA(LPCSTR path)
 void qemu_DeleteFileA(struct qemu_syscall *call)
 {
     struct qemu_DeleteFileA *c = (struct qemu_DeleteFileA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DeleteFileA(QEMU_G2H(c->path));
 }
 
@@ -1994,7 +1994,7 @@ WINBASEAPI BOOL WINAPI SetFileAttributesA(LPCSTR name, DWORD attributes)
     struct qemu_SetFileAttributesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFILEATTRIBUTESA);
     call.name = (uint64_t)name;
-    call.attributes = (uint64_t)attributes;
+    call.attributes = attributes;
 
     qemu_syscall(&call.super);
 
@@ -2006,7 +2006,7 @@ WINBASEAPI BOOL WINAPI SetFileAttributesA(LPCSTR name, DWORD attributes)
 void qemu_SetFileAttributesA(struct qemu_syscall *call)
 {
     struct qemu_SetFileAttributesA *c = (struct qemu_SetFileAttributesA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetFileAttributesA(QEMU_G2H(c->name), c->attributes);
 }
 

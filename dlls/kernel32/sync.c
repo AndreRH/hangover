@@ -72,8 +72,8 @@ WINBASEAPI DWORD WINAPI SleepEx(DWORD timeout, BOOL alertable)
 {
     struct qemu_SleepEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SLEEPEX);
-    call.timeout = (uint64_t)timeout;
-    call.alertable = (uint64_t)alertable;
+    call.timeout = timeout;
+    call.alertable = alertable;
 
     qemu_syscall(&call.super);
 
@@ -85,7 +85,7 @@ WINBASEAPI DWORD WINAPI SleepEx(DWORD timeout, BOOL alertable)
 void qemu_SleepEx(struct qemu_syscall *call)
 {
     struct qemu_SleepEx *c = (struct qemu_SleepEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SleepEx(c->timeout, c->alertable);
 }
 
@@ -200,10 +200,10 @@ WINBASEAPI DWORD WINAPI WaitForMultipleObjects(DWORD count, const HANDLE *handle
 {
     struct qemu_WaitForMultipleObjects call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WAITFORMULTIPLEOBJECTS);
-    call.count = (uint64_t)count;
+    call.count = count;
     call.handles = (uint64_t)handles;
-    call.wait_all = (uint64_t)wait_all;
-    call.timeout = (uint64_t)timeout;
+    call.wait_all = wait_all;
+    call.timeout = timeout;
 
     qemu_syscall(&call.super);
 
@@ -215,7 +215,7 @@ WINBASEAPI DWORD WINAPI WaitForMultipleObjects(DWORD count, const HANDLE *handle
 void qemu_WaitForMultipleObjects(struct qemu_syscall *call)
 {
     struct qemu_WaitForMultipleObjects *c = (struct qemu_WaitForMultipleObjects *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WaitForMultipleObjects(c->count, QEMU_G2H(c->handles), c->wait_all, c->timeout);
 }
 
@@ -866,8 +866,8 @@ WINBASEAPI BOOL WINAPI SetEvent(HANDLE handle)
 void qemu_SetEvent(struct qemu_syscall *call)
 {
     struct qemu_SetEvent *c = (struct qemu_SetEvent *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetEvent(QEMU_G2H(c->handle));
+    WINE_TRACE("\n");
+    c->super.iret = SetEvent((HANDLE)c->handle);
 }
 
 #endif
@@ -896,8 +896,8 @@ WINBASEAPI BOOL WINAPI ResetEvent(HANDLE handle)
 void qemu_ResetEvent(struct qemu_syscall *call)
 {
     struct qemu_ResetEvent *c = (struct qemu_ResetEvent *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ResetEvent(QEMU_G2H(c->handle));
+    WINE_TRACE("\n");
+    c->super.iret = ResetEvent((HANDLE)c->handle);
 }
 
 #endif
