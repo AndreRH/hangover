@@ -721,7 +721,7 @@ WINBASEAPI BOOL WINAPI IsValidCodePage(UINT codepage)
 {
     struct qemu_IsValidCodePage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISVALIDCODEPAGE);
-    call.codepage = (uint64_t)codepage;
+    call.codepage = codepage;
 
     qemu_syscall(&call.super);
 
@@ -733,7 +733,7 @@ WINBASEAPI BOOL WINAPI IsValidCodePage(UINT codepage)
 void qemu_IsValidCodePage(struct qemu_syscall *call)
 {
     struct qemu_IsValidCodePage *c = (struct qemu_IsValidCodePage *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsValidCodePage(c->codepage);
 }
 
@@ -752,8 +752,8 @@ WINBASEAPI BOOL WINAPI IsDBCSLeadByteEx(UINT codepage, BYTE testchar)
 {
     struct qemu_IsDBCSLeadByteEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISDBCSLEADBYTEEX);
-    call.codepage = (uint64_t)codepage;
-    call.testchar = (uint64_t)testchar;
+    call.codepage = codepage;
+    call.testchar = testchar;
 
     qemu_syscall(&call.super);
 
@@ -765,7 +765,7 @@ WINBASEAPI BOOL WINAPI IsDBCSLeadByteEx(UINT codepage, BYTE testchar)
 void qemu_IsDBCSLeadByteEx(struct qemu_syscall *call)
 {
     struct qemu_IsDBCSLeadByteEx *c = (struct qemu_IsDBCSLeadByteEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsDBCSLeadByteEx(c->codepage, c->testchar);
 }
 
@@ -847,8 +847,8 @@ WINBASEAPI BOOL WINAPI GetCPInfoExA(UINT codepage, DWORD dwFlags, LPCPINFOEXA cp
 {
     struct qemu_GetCPInfoExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCPINFOEXA);
-    call.codepage = (uint64_t)codepage;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.codepage = codepage;
+    call.dwFlags = dwFlags;
     call.cpinfo = (uint64_t)cpinfo;
 
     qemu_syscall(&call.super);
@@ -861,7 +861,7 @@ WINBASEAPI BOOL WINAPI GetCPInfoExA(UINT codepage, DWORD dwFlags, LPCPINFOEXA cp
 void qemu_GetCPInfoExA(struct qemu_syscall *call)
 {
     struct qemu_GetCPInfoExA *c = (struct qemu_GetCPInfoExA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCPInfoExA(c->codepage, c->dwFlags, QEMU_G2H(c->cpinfo));
 }
 
@@ -1089,7 +1089,7 @@ WINBASEAPI BOOL WINAPI SetThreadLocale(LCID lcid)
 {
     struct qemu_SetThreadLocale call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADLOCALE);
-    call.lcid = (uint64_t)lcid;
+    call.lcid = lcid;
 
     qemu_syscall(&call.super);
 
@@ -1101,7 +1101,7 @@ WINBASEAPI BOOL WINAPI SetThreadLocale(LCID lcid)
 void qemu_SetThreadLocale(struct qemu_syscall *call)
 {
     struct qemu_SetThreadLocale *c = (struct qemu_SetThreadLocale *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetThreadLocale(c->lcid);
 }
 
