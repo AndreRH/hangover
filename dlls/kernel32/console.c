@@ -3084,13 +3084,14 @@ struct qemu_GetConsoleFontSize
     struct qemu_syscall super;
     uint64_t hConsole;
     uint64_t index;
+    uint64_t retY;
 };
 
 #ifdef QEMU_DLL_GUEST
 
 WINBASEAPI COORD WINAPI GetConsoleFontSize(HANDLE hConsole, DWORD index)
 {
-    COORD ret = {0, 0};
+    COORD ret;
     struct qemu_GetConsoleFontSize call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCONSOLEFONTSIZE);
     call.hConsole = (uint64_t)hConsole;
@@ -3098,6 +3099,8 @@ WINBASEAPI COORD WINAPI GetConsoleFontSize(HANDLE hConsole, DWORD index)
 
     qemu_syscall(&call.super);
 
+    ret.X = call.super.iret;
+    ret.Y = call.retY;
     return ret;
 }
 
@@ -3106,8 +3109,13 @@ WINBASEAPI COORD WINAPI GetConsoleFontSize(HANDLE hConsole, DWORD index)
 void qemu_GetConsoleFontSize(struct qemu_syscall *call)
 {
     struct qemu_GetConsoleFontSize *c = (struct qemu_GetConsoleFontSize *)call;
-    WINE_FIXME("Unverified!\n");
-    GetConsoleFontSize(QEMU_G2H(c->hConsole), c->index);
+    COORD ret;
+
+    WINE_TRACE("\n");
+
+    ret = GetConsoleFontSize(QEMU_G2H(c->hConsole), c->index);
+    c->super.iret = ret.X;
+    c->retY = ret.Y;
 }
 
 #endif
