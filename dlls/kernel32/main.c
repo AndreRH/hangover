@@ -40,6 +40,13 @@ struct qemu_completion_cb
     uint64_t func;
 };
 
+struct qemu_GetSystemRegistryQuota
+{
+    struct qemu_syscall super;
+    uint64_t pdwQuotaAllowed;
+    uint64_t pdwQuotaUsed;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 static uint64_t WINAPI guest_completion_cb(struct qemu_completion_cb *data)
@@ -99,6 +106,19 @@ WINBASEAPI INT WINAPI MulDiv( INT nMultiplicand, INT nMultiplier, INT nDivisor)
 
     if ((ret > 2147483647) || (ret < -2147483647)) return -1;
     return ret;
+}
+
+WINBASEAPI BOOL WINAPI GetSystemRegistryQuota(PDWORD pdwQuotaAllowed, PDWORD pdwQuotaUsed)
+{
+    struct qemu_GetSystemRegistryQuota call;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMREGISTRYQUOTA);
+    call.pdwQuotaAllowed = (uint64_t)pdwQuotaAllowed;
+    call.pdwQuotaUsed = (uint64_t)pdwQuotaUsed;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
 }
 
 #else
@@ -180,6 +200,13 @@ struct OVERLAPPED_wrapper *alloc_completion_wrapper(uint64_t guest_cb)
     wrapper->guest_cb = guest_cb;
 
     return wrapper;
+}
+
+static void qemu_GetSystemRegistryQuota(struct qemu_syscall *call)
+{
+    struct qemu_GetSystemRegistryQuota *c = (struct qemu_GetSystemRegistryQuota *)call;
+    WINE_TRACE("\n");
+    c->super.iret = GetSystemRegistryQuota(QEMU_G2H(c->pdwQuotaAllowed), QEMU_G2H(c->pdwQuotaUsed));
 }
 
 static const syscall_handler dll_functions[] =
@@ -647,6 +674,7 @@ static const syscall_handler dll_functions[] =
     qemu_GetSystemInfo,
     qemu_GetSystemPowerStatus,
     qemu_GetSystemPreferredUILanguages,
+    qemu_GetSystemRegistryQuota,
     qemu_GetSystemTime,
     qemu_GetSystemTimeAdjustment,
     qemu_GetSystemTimeAsFileTime,

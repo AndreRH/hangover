@@ -469,6 +469,7 @@ EXPORTS
   GetSystemInfo
   GetSystemPowerStatus
   GetSystemPreferredUILanguages
+  GetSystemRegistryQuota
   GetSystemTime
   GetSystemTimeAdjustment
   GetSystemTimeAsFileTime
