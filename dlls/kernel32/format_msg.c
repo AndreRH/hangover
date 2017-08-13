@@ -87,6 +87,8 @@ WINBASEAPI DWORD WINAPI FormatMessageA(DWORD flags, const void *src, DWORD msg_i
             call.size = 0;
             call.array = 0;
             qemu_syscall(&call.super);
+            if (!call.super.iret)
+                return call.super.iret;
         }
 
         for (i = 0; local_string[i]; ++i)
@@ -179,6 +181,8 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
             call.size = 0;
             call.array = 0;
             qemu_syscall(&call.super);
+            if (!call.super.iret)
+                return call.super.iret;
         }
 
         for (i = 0; local_string[i]; ++i)
