@@ -284,8 +284,32 @@ WINBASEAPI BOOL WINAPI WriteFileEx(HANDLE hFile, LPCVOID buffer, DWORD bytesToWr
 void qemu_WriteFileEx(struct qemu_syscall *call)
 {
     struct qemu_WriteFileEx *c = (struct qemu_WriteFileEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = WriteFileEx(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToWrite, QEMU_G2H(c->overlapped), QEMU_G2H(c->lpCompletionRoutine));
+    uint64_t guest_completion;
+    OVERLAPPED *guest_ov;
+    struct OVERLAPPED_wrapper *wrapper = NULL;
+
+    WINE_TRACE("\n");
+    guest_completion = c->lpCompletionRoutine;
+    guest_ov = QEMU_G2H(c->overlapped);
+
+    if (guest_completion && guest_ov)
+    {
+        wrapper = alloc_completion_wrapper(guest_completion);
+        if (!wrapper)
+        {
+            SetLastError(ERROR_NOT_ENOUGH_MEMORY);
+            c->super.iret = FALSE;
+            return;
+        }
+    }
+
+    c->super.iret = WriteFileEx(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToWrite, guest_ov,
+            (LPOVERLAPPED_COMPLETION_ROUTINE)wrapper);
+    if (wrapper && !c->super.iret)
+    {
+        WINE_TRACE("Synchronous return, freeing wrapper structure.\n");
+        free_completion_wrapper(wrapper);
+    }
 }
 
 #endif
