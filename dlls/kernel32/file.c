@@ -484,7 +484,7 @@ WINBASEAPI BOOL WINAPI CancelIo(HANDLE handle)
 void qemu_CancelIo(struct qemu_syscall *call)
 {
     struct qemu_CancelIo *c = (struct qemu_CancelIo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CancelIo(QEMU_G2H(c->handle));
 }
 
@@ -808,7 +808,7 @@ WINBASEAPI BOOL WINAPI FlushFileBuffers(HANDLE hFile)
 void qemu_FlushFileBuffers(struct qemu_syscall *call)
 {
     struct qemu_FlushFileBuffers *c = (struct qemu_FlushFileBuffers *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FlushFileBuffers(QEMU_G2H(c->hFile));
 }
 

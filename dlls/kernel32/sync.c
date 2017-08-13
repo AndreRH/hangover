@@ -675,8 +675,8 @@ WINBASEAPI HANDLE WINAPI CreateEventA(SECURITY_ATTRIBUTES *sa, BOOL manual_reset
     struct qemu_CreateEventA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEEVENTA);
     call.sa = (uint64_t)sa;
-    call.manual_reset = (uint64_t)manual_reset;
-    call.initial_state = (uint64_t)initial_state;
+    call.manual_reset = manual_reset;
+    call.initial_state = initial_state;
     call.name = (uint64_t)name;
 
     qemu_syscall(&call.super);
@@ -689,7 +689,7 @@ WINBASEAPI HANDLE WINAPI CreateEventA(SECURITY_ATTRIBUTES *sa, BOOL manual_reset
 void qemu_CreateEventA(struct qemu_syscall *call)
 {
     struct qemu_CreateEventA *c = (struct qemu_CreateEventA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateEventA(QEMU_G2H(c->sa), c->manual_reset, c->initial_state, QEMU_G2H(c->name));
 }
 
@@ -2328,17 +2328,18 @@ struct qemu_CreateNamedPipeA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HANDLE WINAPI CreateNamedPipeA(LPCSTR name, DWORD dwOpenMode, DWORD dwPipeMode, DWORD nMaxInstances, DWORD nOutBufferSize, DWORD nInBufferSize, DWORD nDefaultTimeOut, LPSECURITY_ATTRIBUTES attr)
+WINBASEAPI HANDLE WINAPI CreateNamedPipeA(LPCSTR name, DWORD dwOpenMode, DWORD dwPipeMode, DWORD nMaxInstances,
+        DWORD nOutBufferSize, DWORD nInBufferSize, DWORD nDefaultTimeOut, LPSECURITY_ATTRIBUTES attr)
 {
     struct qemu_CreateNamedPipeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATENAMEDPIPEA);
     call.name = (uint64_t)name;
-    call.dwOpenMode = (uint64_t)dwOpenMode;
-    call.dwPipeMode = (uint64_t)dwPipeMode;
-    call.nMaxInstances = (uint64_t)nMaxInstances;
-    call.nOutBufferSize = (uint64_t)nOutBufferSize;
-    call.nInBufferSize = (uint64_t)nInBufferSize;
-    call.nDefaultTimeOut = (uint64_t)nDefaultTimeOut;
+    call.dwOpenMode = dwOpenMode;
+    call.dwPipeMode = dwPipeMode;
+    call.nMaxInstances = nMaxInstances;
+    call.nOutBufferSize = nOutBufferSize;
+    call.nInBufferSize = nInBufferSize;
+    call.nDefaultTimeOut = nDefaultTimeOut;
     call.attr = (uint64_t)attr;
 
     qemu_syscall(&call.super);
@@ -2351,8 +2352,9 @@ WINBASEAPI HANDLE WINAPI CreateNamedPipeA(LPCSTR name, DWORD dwOpenMode, DWORD d
 void qemu_CreateNamedPipeA(struct qemu_syscall *call)
 {
     struct qemu_CreateNamedPipeA *c = (struct qemu_CreateNamedPipeA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateNamedPipeA(QEMU_G2H(c->name), c->dwOpenMode, c->dwPipeMode, c->nMaxInstances, c->nOutBufferSize, c->nInBufferSize, c->nDefaultTimeOut, QEMU_G2H(c->attr));
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)CreateNamedPipeA(QEMU_G2H(c->name), c->dwOpenMode, c->dwPipeMode, c->nMaxInstances,
+            c->nOutBufferSize, c->nInBufferSize, c->nDefaultTimeOut, QEMU_G2H(c->attr));
 }
 
 #endif
@@ -2420,7 +2422,7 @@ WINBASEAPI BOOL WINAPI PeekNamedPipe(HANDLE hPipe, LPVOID lpvBuffer, DWORD cbBuf
     call.super.id = QEMU_SYSCALL_ID(CALL_PEEKNAMEDPIPE);
     call.hPipe = (uint64_t)hPipe;
     call.lpvBuffer = (uint64_t)lpvBuffer;
-    call.cbBuffer = (uint64_t)cbBuffer;
+    call.cbBuffer = cbBuffer;
     call.lpcbRead = (uint64_t)lpcbRead;
     call.lpcbAvail = (uint64_t)lpcbAvail;
     call.lpcbMessage = (uint64_t)lpcbMessage;
@@ -2435,8 +2437,9 @@ WINBASEAPI BOOL WINAPI PeekNamedPipe(HANDLE hPipe, LPVOID lpvBuffer, DWORD cbBuf
 void qemu_PeekNamedPipe(struct qemu_syscall *call)
 {
     struct qemu_PeekNamedPipe *c = (struct qemu_PeekNamedPipe *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = PeekNamedPipe(QEMU_G2H(c->hPipe), QEMU_G2H(c->lpvBuffer), c->cbBuffer, QEMU_G2H(c->lpcbRead), QEMU_G2H(c->lpcbAvail), QEMU_G2H(c->lpcbMessage));
+    WINE_TRACE("\n");
+    c->super.iret = PeekNamedPipe(QEMU_G2H(c->hPipe), QEMU_G2H(c->lpvBuffer), c->cbBuffer, QEMU_G2H(c->lpcbRead),
+            QEMU_G2H(c->lpcbAvail), QEMU_G2H(c->lpcbMessage));
 }
 
 #endif
@@ -2455,7 +2458,7 @@ WINBASEAPI BOOL WINAPI WaitNamedPipeA (LPCSTR name, DWORD nTimeOut)
     struct qemu_WaitNamedPipeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WAITNAMEDPIPEA);
     call.name = (uint64_t)name;
-    call.nTimeOut = (uint64_t)nTimeOut;
+    call.nTimeOut = nTimeOut;
 
     qemu_syscall(&call.super);
 
@@ -2467,7 +2470,7 @@ WINBASEAPI BOOL WINAPI WaitNamedPipeA (LPCSTR name, DWORD nTimeOut)
 void qemu_WaitNamedPipeA(struct qemu_syscall *call)
 {
     struct qemu_WaitNamedPipeA *c = (struct qemu_WaitNamedPipeA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WaitNamedPipeA(QEMU_G2H(c->name), c->nTimeOut);
 }
 
@@ -2531,7 +2534,7 @@ WINBASEAPI BOOL WINAPI ConnectNamedPipe(HANDLE hPipe, LPOVERLAPPED overlapped)
 void qemu_ConnectNamedPipe(struct qemu_syscall *call)
 {
     struct qemu_ConnectNamedPipe *c = (struct qemu_ConnectNamedPipe *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ConnectNamedPipe(QEMU_G2H(c->hPipe), QEMU_G2H(c->overlapped));
 }
 
@@ -2561,7 +2564,7 @@ WINBASEAPI BOOL WINAPI DisconnectNamedPipe(HANDLE hPipe)
 void qemu_DisconnectNamedPipe(struct qemu_syscall *call)
 {
     struct qemu_DisconnectNamedPipe *c = (struct qemu_DisconnectNamedPipe *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DisconnectNamedPipe(QEMU_G2H(c->hPipe));
 }
 
@@ -2641,8 +2644,9 @@ WINBASEAPI BOOL WINAPI GetNamedPipeInfo(HANDLE hNamedPipe, LPDWORD lpFlags, LPDW
 void qemu_GetNamedPipeInfo(struct qemu_syscall *call)
 {
     struct qemu_GetNamedPipeInfo *c = (struct qemu_GetNamedPipeInfo *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetNamedPipeInfo(QEMU_G2H(c->hNamedPipe), QEMU_G2H(c->lpFlags), QEMU_G2H(c->lpOutputBufferSize), QEMU_G2H(c->lpInputBufferSize), QEMU_G2H(c->lpMaxInstances));
+    WINE_TRACE("\n");
+    c->super.iret = GetNamedPipeInfo(QEMU_G2H(c->hNamedPipe), QEMU_G2H(c->lpFlags), QEMU_G2H(c->lpOutputBufferSize),
+            QEMU_G2H(c->lpInputBufferSize), QEMU_G2H(c->lpMaxInstances));
 }
 
 #endif
@@ -2671,7 +2675,7 @@ WINBASEAPI BOOL WINAPI GetNamedPipeHandleStateA(HANDLE hNamedPipe, LPDWORD lpSta
     call.lpMaxCollectionCount = (uint64_t)lpMaxCollectionCount;
     call.lpCollectDataTimeout = (uint64_t)lpCollectDataTimeout;
     call.lpUsername = (uint64_t)lpUsername;
-    call.nUsernameMaxSize = (uint64_t)nUsernameMaxSize;
+    call.nUsernameMaxSize = nUsernameMaxSize;
 
     qemu_syscall(&call.super);
 
@@ -2683,8 +2687,10 @@ WINBASEAPI BOOL WINAPI GetNamedPipeHandleStateA(HANDLE hNamedPipe, LPDWORD lpSta
 void qemu_GetNamedPipeHandleStateA(struct qemu_syscall *call)
 {
     struct qemu_GetNamedPipeHandleStateA *c = (struct qemu_GetNamedPipeHandleStateA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetNamedPipeHandleStateA(QEMU_G2H(c->hNamedPipe), QEMU_G2H(c->lpState), QEMU_G2H(c->lpCurInstances), QEMU_G2H(c->lpMaxCollectionCount), QEMU_G2H(c->lpCollectDataTimeout), QEMU_G2H(c->lpUsername), c->nUsernameMaxSize);
+    WINE_TRACE("\n");
+    c->super.iret = GetNamedPipeHandleStateA(QEMU_G2H(c->hNamedPipe), QEMU_G2H(c->lpState), QEMU_G2H(c->lpCurInstances),
+            QEMU_G2H(c->lpMaxCollectionCount), QEMU_G2H(c->lpCollectDataTimeout), QEMU_G2H(c->lpUsername),
+            c->nUsernameMaxSize);
 }
 
 #endif
@@ -2742,7 +2748,8 @@ struct qemu_SetNamedPipeHandleState
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI SetNamedPipeHandleState(HANDLE hNamedPipe, LPDWORD lpMode, LPDWORD lpMaxCollectionCount, LPDWORD lpCollectDataTimeout)
+WINBASEAPI BOOL WINAPI SetNamedPipeHandleState(HANDLE hNamedPipe, LPDWORD lpMode, LPDWORD lpMaxCollectionCount,
+        LPDWORD lpCollectDataTimeout)
 {
     struct qemu_SetNamedPipeHandleState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETNAMEDPIPEHANDLESTATE);
@@ -2761,8 +2768,9 @@ WINBASEAPI BOOL WINAPI SetNamedPipeHandleState(HANDLE hNamedPipe, LPDWORD lpMode
 void qemu_SetNamedPipeHandleState(struct qemu_syscall *call)
 {
     struct qemu_SetNamedPipeHandleState *c = (struct qemu_SetNamedPipeHandleState *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetNamedPipeHandleState(QEMU_G2H(c->hNamedPipe), QEMU_G2H(c->lpMode), QEMU_G2H(c->lpMaxCollectionCount), QEMU_G2H(c->lpCollectDataTimeout));
+    WINE_TRACE("\n");
+    c->super.iret = SetNamedPipeHandleState(QEMU_G2H(c->hNamedPipe), QEMU_G2H(c->lpMode),
+            QEMU_G2H(c->lpMaxCollectionCount), QEMU_G2H(c->lpCollectDataTimeout));
 }
 
 #endif
@@ -2869,7 +2877,7 @@ WINBASEAPI BOOL WINAPI CreatePipe(PHANDLE hReadPipe, PHANDLE hWritePipe, LPSECUR
     call.hReadPipe = (uint64_t)hReadPipe;
     call.hWritePipe = (uint64_t)hWritePipe;
     call.sa = (uint64_t)sa;
-    call.size = (uint64_t)size;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -2881,7 +2889,7 @@ WINBASEAPI BOOL WINAPI CreatePipe(PHANDLE hReadPipe, PHANDLE hWritePipe, LPSECUR
 void qemu_CreatePipe(struct qemu_syscall *call)
 {
     struct qemu_CreatePipe *c = (struct qemu_CreatePipe *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CreatePipe(QEMU_G2H(c->hReadPipe), QEMU_G2H(c->hWritePipe), QEMU_G2H(c->sa), c->size);
 }
 

@@ -84,8 +84,8 @@ WINBASEAPI BOOL WINAPI OpenThreadToken(HANDLE ThreadHandle, DWORD DesiredAccess,
     struct qemu_OpenThreadToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENTHREADTOKEN);
     call.ThreadHandle = (uint64_t)ThreadHandle;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
-    call.OpenAsSelf = (uint64_t)OpenAsSelf;
+    call.DesiredAccess = DesiredAccess;
+    call.OpenAsSelf = OpenAsSelf;
     call.TokenHandle = (uint64_t)TokenHandle;
 
     qemu_syscall(&call.super);
@@ -98,7 +98,7 @@ WINBASEAPI BOOL WINAPI OpenThreadToken(HANDLE ThreadHandle, DWORD DesiredAccess,
 void qemu_OpenThreadToken(struct qemu_syscall *call)
 {
     struct qemu_OpenThreadToken *c = (struct qemu_OpenThreadToken *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = OpenThreadToken(QEMU_G2H(c->ThreadHandle), c->DesiredAccess, c->OpenAsSelf, QEMU_G2H(c->TokenHandle));
 }
 
@@ -236,9 +236,9 @@ WINBASEAPI BOOL WINAPI GetTokenInformation(HANDLE token, TOKEN_INFORMATION_CLASS
     struct qemu_GetTokenInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTOKENINFORMATION);
     call.token = (uint64_t)token;
-    call.tokeninfoclass = (uint64_t)tokeninfoclass;
+    call.tokeninfoclass = tokeninfoclass;
     call.tokeninfo = (uint64_t)tokeninfo;
-    call.tokeninfolength = (uint64_t)tokeninfolength;
+    call.tokeninfolength = tokeninfolength;
     call.retlen = (uint64_t)retlen;
 
     qemu_syscall(&call.super);
@@ -251,8 +251,9 @@ WINBASEAPI BOOL WINAPI GetTokenInformation(HANDLE token, TOKEN_INFORMATION_CLASS
 void qemu_GetTokenInformation(struct qemu_syscall *call)
 {
     struct qemu_GetTokenInformation *c = (struct qemu_GetTokenInformation *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetTokenInformation(QEMU_G2H(c->token), c->tokeninfoclass, QEMU_G2H(c->tokeninfo), c->tokeninfolength, QEMU_G2H(c->retlen));
+    WINE_TRACE("\n");
+    c->super.iret = GetTokenInformation(QEMU_G2H(c->token), c->tokeninfoclass, QEMU_G2H(c->tokeninfo),
+            c->tokeninfolength, QEMU_G2H(c->retlen));
 }
 
 #endif
@@ -319,7 +320,7 @@ WINBASEAPI BOOL WINAPI SetThreadToken(PHANDLE thread, HANDLE token)
 void qemu_SetThreadToken(struct qemu_syscall *call)
 {
     struct qemu_SetThreadToken *c = (struct qemu_SetThreadToken *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetThreadToken(QEMU_G2H(c->thread), QEMU_G2H(c->token));
 }
 
@@ -1717,7 +1718,7 @@ WINBASEAPI BOOL WINAPI ImpersonateNamedPipeClient(HANDLE hNamedPipe)
 void qemu_ImpersonateNamedPipeClient(struct qemu_syscall *call)
 {
     struct qemu_ImpersonateNamedPipeClient *c = (struct qemu_ImpersonateNamedPipeClient *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ImpersonateNamedPipeClient(QEMU_G2H(c->hNamedPipe));
 }
 
@@ -2795,7 +2796,7 @@ WINBASEAPI BOOL WINAPI RevertToSelf(void)
 void qemu_RevertToSelf(struct qemu_syscall *call)
 {
     struct qemu_RevertToSelf *c = (struct qemu_RevertToSelf *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RevertToSelf();
 }
 
@@ -5563,10 +5564,10 @@ WINBASEAPI BOOL WINAPI DuplicateTokenEx(HANDLE ExistingTokenHandle, DWORD dwDesi
     struct qemu_DuplicateTokenEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DUPLICATETOKENEX);
     call.ExistingTokenHandle = (uint64_t)ExistingTokenHandle;
-    call.dwDesiredAccess = (uint64_t)dwDesiredAccess;
+    call.dwDesiredAccess = dwDesiredAccess;
     call.lpTokenAttributes = (uint64_t)lpTokenAttributes;
-    call.ImpersonationLevel = (uint64_t)ImpersonationLevel;
-    call.TokenType = (uint64_t)TokenType;
+    call.ImpersonationLevel = ImpersonationLevel;
+    call.TokenType = TokenType;
     call.DuplicateTokenHandle = (uint64_t)DuplicateTokenHandle;
 
     qemu_syscall(&call.super);
@@ -5579,8 +5580,9 @@ WINBASEAPI BOOL WINAPI DuplicateTokenEx(HANDLE ExistingTokenHandle, DWORD dwDesi
 void qemu_DuplicateTokenEx(struct qemu_syscall *call)
 {
     struct qemu_DuplicateTokenEx *c = (struct qemu_DuplicateTokenEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DuplicateTokenEx(QEMU_G2H(c->ExistingTokenHandle), c->dwDesiredAccess, QEMU_G2H(c->lpTokenAttributes), c->ImpersonationLevel, c->TokenType, QEMU_G2H(c->DuplicateTokenHandle));
+    WINE_TRACE("\n");
+    c->super.iret = DuplicateTokenEx(QEMU_G2H(c->ExistingTokenHandle), c->dwDesiredAccess,
+            QEMU_G2H(c->lpTokenAttributes), c->ImpersonationLevel, c->TokenType, QEMU_G2H(c->DuplicateTokenHandle));
 }
 
 #endif
