@@ -298,7 +298,7 @@ void qemu_FormatMessage(struct qemu_syscall *call)
     }
 
     if (c->flags & FORMAT_MESSAGE_ALLOCATE_BUFFER)
-        buffer_arg = &local_buffer;
+        buffer_arg = c->buffer ? &local_buffer : NULL;
     else
         buffer_arg = QEMU_G2H(c->buffer);
 
@@ -329,7 +329,7 @@ void qemu_FormatMessage(struct qemu_syscall *call)
         c->super.iret = call_va(call_FormatMessage_va_list, &data, c->array_size, 0, array);
     }
 
-    if (c->flags & FORMAT_MESSAGE_ALLOCATE_BUFFER)
+    if (c->flags & FORMAT_MESSAGE_ALLOCATE_BUFFER && c->buffer)
         *((uint64_t *)(QEMU_G2H(c->buffer))) = QEMU_H2G(local_buffer);
 
     if (c->free)
