@@ -46,13 +46,26 @@ struct qemu_FormatMessage
 
 #ifdef QEMU_DLL_GUEST
 
+/* Duplicate the logic from the real implementation to count how often va_list is actually
+ * read. I tried to simplify it, but just banged my head against the wall. */
+static void get_arg(int nr, unsigned int *last, unsigned int *read)
+{
+    if (nr == -1) nr = *last + 1;
+    while (nr > *last)
+    {
+        (*last)++;
+        (*read)++;
+    }
+    if (nr > *last) *last = nr;
+}
+
 WINBASEAPI DWORD WINAPI FormatMessageA(DWORD flags, const void *src, DWORD msg_id, DWORD lang_id,
         char *buffer, DWORD size, va_list *args)
 {
     struct qemu_FormatMessage call;
     const char *local_string = src;
     struct va_array array[100];
-    char highest = 0;
+    unsigned int last = 0, read = 0;
     unsigned int i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_FORMATMESSAGEA);
@@ -80,7 +93,7 @@ WINBASEAPI DWORD WINAPI FormatMessageA(DWORD flags, const void *src, DWORD msg_i
         {
             if (local_string[i] == '%' && local_string[i + 1] >= '0' && local_string[i + 1] <= '9')
             {
-                char cur;
+                int cur = 0;
                 i++;
 
                 cur = local_string[i] - '0';
@@ -91,20 +104,34 @@ WINBASEAPI DWORD WINAPI FormatMessageA(DWORD flags, const void *src, DWORD msg_i
                     cur += local_string[i] - '0';
                 }
 
-                /* TODO: Parse * that might require extra args. */
-
-                if (cur > highest)
-                    highest = cur;
+                if (local_string[i + 1] == '!')
+                {
+                    unsigned int args_found = 0;
+                    i++;
+                    while (local_string[i + 1] != '!')
+                    {
+                        if (local_string[i + 1] == '*')
+                        {
+                            get_arg(cur, &last, &read);
+                            cur = -1;
+                        }
+                        i++;
+                    }
+                }
+                /* replicate MS bug: drop an argument when using va_list with width/precision */
+                if (cur == -1)
+                    last--;
+                get_arg(cur, &last, &read);
             }
         }
 
         /* Note that this function does not support floats. */
-        for (i = 0; i < highest; i++)
+        for (i = 0; i < read; i++)
         {
             array[i].arg = va_arg(*args, uint64_t);
             array[i].is_float = FALSE;
         }
-        call.array_size = highest;
+        call.array_size = read;
 
         if (!(flags & FORMAT_MESSAGE_FROM_STRING))
             call.free = (uint64_t)local_string;
@@ -130,7 +157,7 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
     struct qemu_FormatMessage call;
     const WCHAR *local_string = src;
     struct va_array array[100];
-    char highest = 0;
+    unsigned int last = 0, read = 0;
     unsigned int i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_FORMATMESSAGEW);
@@ -158,7 +185,7 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
         {
             if (local_string[i] == '%' && local_string[i + 1] >= '0' && local_string[i + 1] <= '9')
             {
-                char cur;
+                int cur = 0;
                 i++;
 
                 cur = local_string[i] - '0';
@@ -169,20 +196,34 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
                     cur += local_string[i] - '0';
                 }
 
-                /* TODO: Parse * that might require extra args. */
-
-                if (cur > highest)
-                    highest = cur;
+                if (local_string[i + 1] == '!')
+                {
+                    unsigned int args_found = 0;
+                    i++;
+                    while (local_string[i + 1] != '!')
+                    {
+                        if (local_string[i + 1] == '*')
+                        {
+                            get_arg(cur, &last, &read);
+                            cur = -1;
+                        }
+                        i++;
+                    }
+                }
+                /* replicate MS bug: drop an argument when using va_list with width/precision */
+                if (cur == -1)
+                    last--;
+                get_arg(cur, &last, &read);
             }
         }
 
         /* Note that this function does not support floats. */
-        for (i = 0; i < highest; i++)
+        for (i = 0; i < read; i++)
         {
             array[i].arg = va_arg(*args, uint64_t);
             array[i].is_float = FALSE;
         }
-        call.array_size = highest;
+        call.array_size = read;
 
         if (!(flags & FORMAT_MESSAGE_FROM_STRING))
             call.free = (uint64_t)local_string;
