@@ -398,11 +398,42 @@ WINBASEAPI void WINAPI GetStartupInfoA(STARTUPINFOA *info)
 
 #else
 
+static WCHAR *titleW;
+static char *titleA;
+
+static void init_titleW()
+{
+    RTL_USER_PROCESS_PARAMETERS *rupp;
+    rupp = ((struct _TEB *)qemu_ops->qemu_getTEB())->Peb->ProcessParameters;
+    titleW = rupp->WindowTitle.Buffer;
+}
+
+static void init_titleA()
+{
+    unsigned int len;
+    if (!titleW)
+        init_titleW();
+
+    /* FIXME: This is not thread safe, may allocate twice. */
+    len = WideCharToMultiByte(CP_ACP, 0, titleW, -1, NULL, 0, NULL, NULL);
+    titleA = HeapAlloc(GetProcessHeap(), 0, len);
+    WideCharToMultiByte(CP_ACP, 0, titleW, -1, titleA, len, NULL, NULL);
+}
+
 void qemu_GetStartupInfoA(struct qemu_syscall *call)
 {
     struct qemu_GetStartupInfo *c = (struct qemu_GetStartupInfo *)call;
+    STARTUPINFOA *a;
+
     WINE_TRACE("\n");
-    GetStartupInfoA(QEMU_G2H(c->info));
+    a = QEMU_G2H(c->info);
+    GetStartupInfoA(a);
+
+    if (!titleA)
+        init_titleA();
+
+    WINE_ERR("Got window title %s\n", titleA);
+    a->lpTitle = titleA;
 }
 
 #endif
@@ -428,8 +459,16 @@ WINBASEAPI void WINAPI GetStartupInfoW(STARTUPINFOW *info)
 void qemu_GetStartupInfoW(struct qemu_syscall *call)
 {
     struct qemu_GetStartupInfoW *c = (struct qemu_GetStartupInfoW *)call;
+    STARTUPINFOW *w;
+
     WINE_TRACE("\n");
-    GetStartupInfoW(QEMU_G2H(c->info));
+    w = QEMU_G2H(c->info);
+    GetStartupInfoW(w);
+
+    if (!titleW)
+        init_titleW();
+
+    w->lpTitle = titleW;
 }
 
 #endif
