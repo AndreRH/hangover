@@ -27,6 +27,7 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <wine/unicode.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
@@ -55,8 +56,53 @@ WINBASEAPI HANDLE WINAPI CreateActCtxA(PCACTCTXA pActCtx)
 void qemu_CreateActCtxA(struct qemu_syscall *call)
 {
     struct qemu_CreateActCtxA *c = (struct qemu_CreateActCtxA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateActCtxA(QEMU_G2H(c->pActCtx));
+    ACTCTXA *copy = NULL, *orig;
+    WCHAR *appname, *p;
+    char *appnameA = NULL;
+
+    WINE_TRACE("\n");
+    orig = QEMU_G2H(c->pActCtx);
+
+    if (!orig || orig->cbSize != sizeof(*orig))
+    {
+        c->super.iret = (uint64_t)CreateActCtxA(orig);
+        return;
+    }
+
+    copy = HeapAlloc(GetProcessHeap(), 0, sizeof(*copy));
+    if (!copy)
+    {
+        c->super.iret = 0;
+        return;
+    }
+
+    *copy = *orig;
+    if (!(copy->dwFlags & ACTCTX_FLAG_APPLICATION_NAME_VALID))
+    {
+        HMODULE mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+        DWORD len;
+
+        /* FIXME: How do I allocate this right? */
+        appname = HeapAlloc(GetProcessHeap(), 0, MAX_PATH * sizeof(*appname));
+        len = qemu_ops->qemu_GetModuleFileName(copy->hModule, appname, MAX_PATH);
+
+        /* Yay, if there's an app name passed in, the getter later returns the app name.
+         * If there is nothing, it returns the path. So pass in the path... */
+        if ((p = strrchrW(appname, '\\' ))) p[1] = 0;
+
+        appnameA = HeapAlloc(GetProcessHeap(), 0, p - appname + 2);
+        WideCharToMultiByte(CP_ACP, 0, appname, -1, appnameA, p - appname + 2, NULL, NULL);
+        HeapFree(GetProcessHeap(), 0, appname);
+
+        copy->lpApplicationName = appnameA;
+        copy->dwFlags |= ACTCTX_FLAG_APPLICATION_NAME_VALID;
+    }
+
+    c->super.iret = (uint64_t)CreateActCtxA(copy);
+    WINE_ERR("Last errror %u\n", GetLastError());
+
+    HeapFree(GetProcessHeap(), 0, copy);
+    HeapFree(GetProcessHeap(), 0, appnameA);
 }
 
 #endif
@@ -85,8 +131,46 @@ WINBASEAPI HANDLE WINAPI CreateActCtxW(PCACTCTXW pActCtx)
 void qemu_CreateActCtxW(struct qemu_syscall *call)
 {
     struct qemu_CreateActCtxW *c = (struct qemu_CreateActCtxW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateActCtxW(QEMU_G2H(c->pActCtx));
+    ACTCTXW *copy = NULL, *orig;
+    WCHAR *appname = NULL, *p;
+
+    WINE_TRACE("\n");
+    orig = QEMU_G2H(c->pActCtx);
+
+    if (!orig || orig->cbSize != sizeof(*orig))
+    {
+        c->super.iret = (uint64_t)CreateActCtxW(orig);
+        return;
+    }
+
+    copy = HeapAlloc(GetProcessHeap(), 0, sizeof(*copy));
+    if (!copy)
+    {
+        c->super.iret = 0;
+        return;
+    }
+
+    *copy = *orig;
+    if (!(copy->dwFlags & ACTCTX_FLAG_APPLICATION_NAME_VALID))
+    {
+        HMODULE mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+        DWORD len;
+
+        /* FIXME: How do I allocate this right? */
+        appname = HeapAlloc(GetProcessHeap(), 0, MAX_PATH * sizeof(*appname));
+        len = qemu_ops->qemu_GetModuleFileName(copy->hModule, appname, MAX_PATH);
+
+        /* Yay, if there's an app name passed in, the getter later returns the app name.
+         * If there is nothing, it returns the path. So pass in the path... */
+        if ((p = strrchrW(appname, '\\' ))) p[1] = 0;
+        copy->lpApplicationName = appname;
+        copy->dwFlags |= ACTCTX_FLAG_APPLICATION_NAME_VALID;
+    }
+
+    c->super.iret = (uint64_t)CreateActCtxW(copy);
+
+    HeapFree(GetProcessHeap(), 0, copy);
+    HeapFree(GetProcessHeap(), 0, appname);
 }
 
 #endif
