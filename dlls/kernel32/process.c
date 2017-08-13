@@ -74,8 +74,72 @@ WINBASEAPI BOOL WINAPI CreateProcessA(LPCSTR app_name, LPSTR cmd_line, LPSECURIT
 void qemu_CreateProcessA(struct qemu_syscall *call)
 {
     struct qemu_CreateProcessA *c = (struct qemu_CreateProcessA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CreateProcessA(QEMU_G2H(c->app_name), QEMU_G2H(c->cmd_line), QEMU_G2H(c->process_attr), QEMU_G2H(c->thread_attr), c->inherit, c->flags, QEMU_G2H(c->env), QEMU_G2H(c->cur_dir), QEMU_G2H(c->startup_info), QEMU_G2H(c->info));
+    char *app_name, *cmd_line, *qemu = NULL, *combined = NULL;
+    size_t len;
+
+    WINE_TRACE("\n");
+    app_name = QEMU_G2H(c->app_name);
+    cmd_line = QEMU_G2H(c->cmd_line);
+
+    c->super.iret = CreateProcessA(app_name, cmd_line, QEMU_G2H(c->process_attr), QEMU_G2H(c->thread_attr),
+            c->inherit, c->flags, QEMU_G2H(c->env), QEMU_G2H(c->cur_dir), QEMU_G2H(c->startup_info),
+            QEMU_G2H(c->info));
+    if (!c->super.iret && GetLastError() == ERROR_BAD_EXE_FORMAT)
+    {
+        /* Try to run via qemu. */
+        len = MAX_PATH;
+        do
+        {
+            HeapFree(GetProcessHeap(), 0, qemu);
+            len *= 2;
+            qemu = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*qemu) + 3);
+            SetLastError(0);
+            GetModuleFileNameA(NULL, qemu, len);
+        } while(GetLastError());
+
+        strcat(qemu, ".so");
+
+        if (app_name)
+        {
+            if (cmd_line)
+            {
+                WINE_FIXME("Both app name and cmdline given\n");
+                /* This is probably wrong. what the app is passing is
+                 * CreateProcess(executable, argv0, argv1, argv2, ...). What we're making
+                 * here is CreateProcess(qemu, executable, argv0, argv1, ...), but we want
+                 * CreateProcess(qemu, argv0, executable, argv1, argv2, ...) */
+                len = strlen(app_name) + strlen(cmd_line) + 5;
+                combined = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*combined));
+                sprintf(combined, "\"%s\" %s", app_name, cmd_line);
+                cmd_line = combined;
+            }
+            else
+            {
+                /* Add a dummy argv[0] for qemu. */
+                len = strlen(app_name) + 5;
+                combined = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*combined));
+                sprintf(combined, "qemu %s", app_name);
+                cmd_line = combined;
+            }
+        }
+        else
+        {
+            /* The first parameter is argv[0], so if we want qemu to execute the file
+             * we pass as first argument in cmdline we have to add an argv[0] to the
+             * command line. */
+            len = strlen(cmd_line) + 5;
+            combined = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*combined));
+            sprintf(combined, "qemu %s", cmd_line);
+            cmd_line = combined;
+        }
+
+        c->super.iret = CreateProcessA(qemu, cmd_line, QEMU_G2H(c->process_attr), QEMU_G2H(c->thread_attr),
+                c->inherit, c->flags, QEMU_G2H(c->env), QEMU_G2H(c->cur_dir), QEMU_G2H(c->startup_info),
+                QEMU_G2H(c->info));
+
+        HeapFree(GetProcessHeap(), 0, combined);
+        HeapFree(GetProcessHeap(), 0, qemu);
+    }
 }
 
 #endif
