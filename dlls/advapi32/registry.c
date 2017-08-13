@@ -217,7 +217,7 @@ WINBASEAPI LSTATUS WINAPI RegCreateKeyA(HKEY hkey, LPCSTR lpSubKey, PHKEY phkRes
 void qemu_RegCreateKeyA(struct qemu_syscall *call)
 {
     struct qemu_RegCreateKeyA *c = (struct qemu_RegCreateKeyA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RegCreateKeyA(QEMU_G2H(c->hkey), QEMU_G2H(c->lpSubKey), QEMU_G2H(c->phkResult));
 }
 
@@ -1003,7 +1003,7 @@ WINBASEAPI LSTATUS WINAPI RegDeleteKeyA(HKEY hkey, LPCSTR name)
 void qemu_RegDeleteKeyA(struct qemu_syscall *call)
 {
     struct qemu_RegDeleteKeyA *c = (struct qemu_RegDeleteKeyA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RegDeleteKeyA(QEMU_G2H(c->hkey), QEMU_G2H(c->name));
 }
 
@@ -1629,7 +1629,7 @@ WINBASEAPI LSTATUS WINAPI RegDeleteValueA(HKEY hkey, LPCSTR name)
 void qemu_RegDeleteValueA(struct qemu_syscall *call)
 {
     struct qemu_RegDeleteValueA *c = (struct qemu_RegDeleteValueA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RegDeleteValueA(QEMU_G2H(c->hkey), QEMU_G2H(c->name));
 }
 

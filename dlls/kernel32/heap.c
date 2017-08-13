@@ -369,9 +369,9 @@ WINBASEAPI LPVOID WINAPI HeapReAlloc(HANDLE heap, DWORD flags, LPVOID ptr, SIZE_
     struct qemu_HeapReAlloc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAPREALLOC);
     call.heap = (uint64_t)heap;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
     call.ptr = (uint64_t)ptr;
-    call.size = (uint64_t)size;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -383,7 +383,7 @@ WINBASEAPI LPVOID WINAPI HeapReAlloc(HANDLE heap, DWORD flags, LPVOID ptr, SIZE_
 void qemu_HeapReAlloc(struct qemu_syscall *call)
 {
     struct qemu_HeapReAlloc *c = (struct qemu_HeapReAlloc *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)HeapReAlloc(QEMU_G2H(c->heap), c->flags, QEMU_G2H(c->ptr), c->size);
 }
 
@@ -404,7 +404,7 @@ WINBASEAPI SIZE_T WINAPI HeapSize(HANDLE heap, DWORD flags, LPCVOID ptr)
     struct qemu_HeapSize call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAPSIZE);
     call.heap = (uint64_t)heap;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
     call.ptr = (uint64_t)ptr;
 
     qemu_syscall(&call.super);
@@ -417,7 +417,7 @@ WINBASEAPI SIZE_T WINAPI HeapSize(HANDLE heap, DWORD flags, LPCVOID ptr)
 void qemu_HeapSize(struct qemu_syscall *call)
 {
     struct qemu_HeapSize *c = (struct qemu_HeapSize *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = HeapSize(QEMU_G2H(c->heap), c->flags, QEMU_G2H(c->ptr));
 }
 
@@ -440,9 +440,9 @@ WINBASEAPI BOOL WINAPI HeapQueryInformation(HANDLE heap, HEAP_INFORMATION_CLASS 
     struct qemu_HeapQueryInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAPQUERYINFORMATION);
     call.heap = (uint64_t)heap;
-    call.info_class = (uint64_t)info_class;
+    call.info_class = info_class;
     call.info = (uint64_t)info;
-    call.size_in = (uint64_t)size_in;
+    call.size_in = size_in;
     call.size_out = (uint64_t)size_out;
 
     qemu_syscall(&call.super);
@@ -455,7 +455,7 @@ WINBASEAPI BOOL WINAPI HeapQueryInformation(HANDLE heap, HEAP_INFORMATION_CLASS 
 void qemu_HeapQueryInformation(struct qemu_syscall *call)
 {
     struct qemu_HeapQueryInformation *c = (struct qemu_HeapQueryInformation *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = HeapQueryInformation(QEMU_G2H(c->heap), c->info_class, QEMU_G2H(c->info), c->size_in, QEMU_G2H(c->size_out));
 }
 
@@ -553,7 +553,7 @@ WINBASEAPI LPVOID WINAPI GlobalLock(HGLOBAL hmem)
 void qemu_GlobalLock(struct qemu_syscall *call)
 {
     struct qemu_GlobalLock *c = (struct qemu_GlobalLock *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GlobalLock(QEMU_G2H(c->hmem));
 }
 
@@ -583,7 +583,7 @@ WINBASEAPI BOOL WINAPI GlobalUnlock(HGLOBAL hmem)
 void qemu_GlobalUnlock(struct qemu_syscall *call)
 {
     struct qemu_GlobalUnlock *c = (struct qemu_GlobalUnlock *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GlobalUnlock(QEMU_G2H(c->hmem));
 }
 
@@ -613,7 +613,7 @@ WINBASEAPI HGLOBAL WINAPI GlobalHandle(LPCVOID pmem)
 void qemu_GlobalHandle(struct qemu_syscall *call)
 {
     struct qemu_GlobalHandle *c = (struct qemu_GlobalHandle *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GlobalHandle(QEMU_G2H(c->pmem));
 }
 
@@ -634,8 +634,8 @@ WINBASEAPI HGLOBAL WINAPI GlobalReAlloc(HGLOBAL hmem, SIZE_T size, UINT flags)
     struct qemu_GlobalReAlloc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GLOBALREALLOC);
     call.hmem = (uint64_t)hmem;
-    call.size = (uint64_t)size;
-    call.flags = (uint64_t)flags;
+    call.size = size;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -647,7 +647,7 @@ WINBASEAPI HGLOBAL WINAPI GlobalReAlloc(HGLOBAL hmem, SIZE_T size, UINT flags)
 void qemu_GlobalReAlloc(struct qemu_syscall *call)
 {
     struct qemu_GlobalReAlloc *c = (struct qemu_GlobalReAlloc *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GlobalReAlloc(QEMU_G2H(c->hmem), c->size, c->flags);
 }
 
@@ -707,7 +707,7 @@ WINBASEAPI SIZE_T WINAPI GlobalSize(HGLOBAL hmem)
 void qemu_GlobalSize(struct qemu_syscall *call)
 {
     struct qemu_GlobalSize *c = (struct qemu_GlobalSize *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GlobalSize(QEMU_G2H(c->hmem));
 }
 
@@ -853,7 +853,7 @@ WINBASEAPI UINT WINAPI GlobalFlags(HGLOBAL hmem)
 void qemu_GlobalFlags(struct qemu_syscall *call)
 {
     struct qemu_GlobalFlags *c = (struct qemu_GlobalFlags *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GlobalFlags(QEMU_G2H(c->hmem));
 }
 
@@ -975,7 +975,7 @@ WINBASEAPI UINT WINAPI LocalFlags(HLOCAL handle)
 void qemu_LocalFlags(struct qemu_syscall *call)
 {
     struct qemu_LocalFlags *c = (struct qemu_LocalFlags *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LocalFlags(QEMU_G2H(c->handle));
 }
 
@@ -1035,7 +1035,7 @@ WINBASEAPI HLOCAL WINAPI LocalHandle(LPCVOID ptr)
 void qemu_LocalHandle(struct qemu_syscall *call)
 {
     struct qemu_LocalHandle *c = (struct qemu_LocalHandle *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)LocalHandle(QEMU_G2H(c->ptr));
 }
 
@@ -1086,8 +1086,8 @@ WINBASEAPI HLOCAL WINAPI LocalReAlloc(HLOCAL handle, SIZE_T size, UINT flags)
     struct qemu_LocalReAlloc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOCALREALLOC);
     call.handle = (uint64_t)handle;
-    call.size = (uint64_t)size;
-    call.flags = (uint64_t)flags;
+    call.size = size;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -1099,7 +1099,7 @@ WINBASEAPI HLOCAL WINAPI LocalReAlloc(HLOCAL handle, SIZE_T size, UINT flags)
 void qemu_LocalReAlloc(struct qemu_syscall *call)
 {
     struct qemu_LocalReAlloc *c = (struct qemu_LocalReAlloc *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)LocalReAlloc(QEMU_G2H(c->handle), c->size, c->flags);
 }
 
@@ -1161,7 +1161,7 @@ WINBASEAPI SIZE_T WINAPI LocalSize(HLOCAL handle)
 void qemu_LocalSize(struct qemu_syscall *call)
 {
     struct qemu_LocalSize *c = (struct qemu_LocalSize *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LocalSize(QEMU_G2H(c->handle));
 }
 
@@ -1191,7 +1191,7 @@ WINBASEAPI BOOL WINAPI LocalUnlock(HLOCAL handle)
 void qemu_LocalUnlock(struct qemu_syscall *call)
 {
     struct qemu_LocalUnlock *c = (struct qemu_LocalUnlock *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LocalUnlock(QEMU_G2H(c->handle));
 }
 
@@ -1221,7 +1221,7 @@ WINBASEAPI BOOL WINAPI GlobalMemoryStatusEx(LPMEMORYSTATUSEX lpmemex)
 void qemu_GlobalMemoryStatusEx(struct qemu_syscall *call)
 {
     struct qemu_GlobalMemoryStatusEx *c = (struct qemu_GlobalMemoryStatusEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GlobalMemoryStatusEx(QEMU_G2H(c->lpmemex));
 }
 
@@ -1281,7 +1281,7 @@ extern BOOL WINAPI GetPhysicallyInstalledSystemMemory(ULONGLONG *total_memory);
 void qemu_GetPhysicallyInstalledSystemMemory(struct qemu_syscall *call)
 {
     struct qemu_GetPhysicallyInstalledSystemMemory *c = (struct qemu_GetPhysicallyInstalledSystemMemory *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetPhysicallyInstalledSystemMemory(QEMU_G2H(c->total_memory));
 }
 
