@@ -170,7 +170,6 @@ struct qemu_ReadDirectoryChangesW
     uint64_t returned;
     uint64_t overlapped;
     uint64_t completion;
-    uint64_t wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -187,7 +186,6 @@ WINBASEAPI BOOL WINAPI ReadDirectoryChangesW(HANDLE handle, LPVOID buffer, DWORD
     call.returned = (uint64_t)returned;
     call.overlapped = (uint64_t)overlapped;
     call.completion = (uint64_t)completion;
-    call.wrapper = (uint64_t)guest_complection_cb;
 
     qemu_syscall(&call.super);
 
@@ -200,32 +198,32 @@ void qemu_ReadDirectoryChangesW(struct qemu_syscall *call)
 {
     struct qemu_ReadDirectoryChangesW *c = (struct qemu_ReadDirectoryChangesW *)call;
     uint64_t guest_completion;
-    OVERLAPPED *guest_ov, *ov;
+    OVERLAPPED *guest_ov;
     struct OVERLAPPED_wrapper *wrapper = NULL;
 
     WINE_TRACE("\n");
     guest_completion = c->completion;
     guest_ov = QEMU_G2H(c->overlapped);
-    ov = guest_ov;
 
     /* FIXME: Is there a guarantee that the overlapped routine is called exactly once? */
     if (guest_completion && guest_ov)
     {
-        wrapper = HeapAlloc(GetProcessHeap(), 0, sizeof(*wrapper));
-        wrapper->ov = *guest_ov;
-        wrapper->guest_ov = guest_ov;
-        wrapper->guest_cb = guest_completion;
-        wrapper->guest_wrapper = c->wrapper;
-        ov = &wrapper->ov;
+        wrapper = alloc_completion_wrapper(guest_completion);
+        if (!wrapper)
+        {
+            SetLastError(ERROR_NOT_ENOUGH_MEMORY);
+            c->super.iret = FALSE;
+            return;
+        }
     }
 
     c->super.iret = ReadDirectoryChangesW(QEMU_G2H(c->handle), QEMU_G2H(c->buffer), c->len, c->subtree,
-            c->filter, QEMU_G2H(c->returned), ov, guest_completion ? host_completion_cb : NULL);
+            c->filter, QEMU_G2H(c->returned), guest_ov, (LPOVERLAPPED_COMPLETION_ROUTINE)wrapper);
 
     if (wrapper && !c->super.iret)
     {
         WINE_TRACE("Synchronous return, freeing wrapper structure.\n");
-        HeapFree(GetProcessHeap(), 0, wrapper);
+        free_completion_wrapper(wrapper);
     }
 }
 

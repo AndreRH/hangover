@@ -30,6 +30,7 @@ struct qemu_set_callbacks
 {
     struct qemu_syscall super;
     uint64_t call_entry;
+    uint64_t guest_completion_cb;
 };
 
 struct qemu_completion_cb
@@ -40,6 +41,13 @@ struct qemu_completion_cb
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static uint64_t WINAPI guest_completion_cb(struct qemu_completion_cb *data)
+{
+    LPOVERLAPPED_COMPLETION_ROUTINE completion = (LPOVERLAPPED_COMPLETION_ROUTINE)data->func;
+    completion(data->error, data->len, (OVERLAPPED *)data->ov);
+    return 0;
+}
 
 static void WINAPI kernel32_call_process_main(LPTHREAD_START_ROUTINE entry)
 {
@@ -61,6 +69,7 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
         case DLL_PROCESS_ATTACH:
             call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
             call.call_entry = (uint64_t)kernel32_call_process_main;
+            call.guest_completion_cb = (uint64_t)guest_completion_cb;
             qemu_syscall(&call.super);
             break;
     }
@@ -92,13 +101,6 @@ WINBASEAPI INT WINAPI MulDiv( INT nMultiplicand, INT nMultiplier, INT nDivisor)
     return ret;
 }
 
-uint64_t WINAPI guest_complection_cb(struct qemu_completion_cb *data)
-{
-    LPOVERLAPPED_COMPLETION_ROUTINE completion = (LPOVERLAPPED_COMPLETION_ROUTINE)data->func;
-    completion(data->error, data->len, (OVERLAPPED *)data->ov);
-    return 0;
-}
-
 #else
 
 #include <wine/debug.h>
@@ -106,30 +108,78 @@ uint64_t WINAPI guest_complection_cb(struct qemu_completion_cb *data)
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 
+struct OVERLAPPED_wrapper
+{
+    int32_t ldrx3;
+    int32_t ldrx4;
+    int32_t br;
+    void *selfptr;
+    void *host_proc;
+    uint64_t guest_cb;
+};
+
 const struct qemu_ops *qemu_ops;
+
+static uint64_t guest_completion_cb;
 
 static void qemu_set_callbacks(struct qemu_syscall *call)
 {
     struct qemu_set_callbacks *c = (struct qemu_set_callbacks *)call;
     qemu_ops->qemu_set_call_entry(c->call_entry);
+    guest_completion_cb = c->guest_completion_cb;
 }
 
-void CALLBACK host_completion_cb(DWORD error, DWORD len, OVERLAPPED *ov)
+void free_completion_wrapper(struct OVERLAPPED_wrapper *wrapper)
+{
+    VirtualFree(wrapper, 0, MEM_RELEASE);
+}
+
+/* We cannot use the OVERLAPPED structure as a context pointer to add our data because it is passed to
+ * other functions too, so we'd have to modify it in the same way all the time. The lifetime of the
+ * OVERLAPPED structure is more complicated than the lifetime of the callback.
+ *
+ * This wrapper setup is similar to the WNDPROC wrapper used in user32. */
+static void CALLBACK host_completion_cb(DWORD error, DWORD len, OVERLAPPED *ov, struct OVERLAPPED_wrapper *wrapper)
 {
     struct qemu_completion_cb call;
-    struct OVERLAPPED_wrapper *data = (struct OVERLAPPED_wrapper *)ov;
-    uint64_t wrapper = data->guest_wrapper;
 
-    call.func = data->guest_cb;
+    call.func = wrapper->guest_cb;
     call.error = error;
     call.len = len;
-    *data->guest_ov = data->ov;
-    call.ov = QEMU_H2G(data->guest_ov);
+    call.ov = QEMU_H2G(ov);
 
-    HeapFree(GetProcessHeap(), 0, data);
+    free_completion_wrapper(wrapper);
     WINE_TRACE("Calling guest callback 0x%lx(%x, %u, 0x%lx).\n", call.func, error, len, call.ov);
-    qemu_ops->qemu_execute(QEMU_G2H(wrapper), QEMU_H2G(&call));
+    qemu_ops->qemu_execute(QEMU_G2H(guest_completion_cb), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned.\n");
+}
+
+struct OVERLAPPED_wrapper *alloc_completion_wrapper(uint64_t guest_cb)
+{
+    struct OVERLAPPED_wrapper *wrapper;
+    size_t offset;
+
+    wrapper = VirtualAlloc(NULL, sizeof(*wrapper), MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+    if (!wrapper)
+        return NULL;
+
+    offset = offsetof(struct OVERLAPPED_wrapper, selfptr) - offsetof(struct OVERLAPPED_wrapper, ldrx3);
+    /* The load offset is stored in bits 5-24. The stored offset is left-shifted by 2 to generate the 21
+     * bit real offset. So to place it in the right place we need our offset (multiple of 4, unless the
+     * compiler screwed up terribly) shifted by another 3 bits. */
+    wrapper->ldrx3 = 0x58000003 | (offset << 3); /* ldr x3, offset */
+
+    offset = offsetof(struct OVERLAPPED_wrapper, host_proc) - offsetof(struct OVERLAPPED_wrapper, ldrx4);
+    wrapper->ldrx4 = 0x58000004 | (offset << 3);   /* ldr x4, offset */
+
+    wrapper->br = 0xd61f0080; /* br x4 */
+    __clear_cache(&wrapper->ldrx3, &wrapper->br + 1);
+
+    wrapper->selfptr = wrapper;
+    wrapper->host_proc = host_completion_cb;
+    wrapper->guest_cb = guest_cb;
+
+    return wrapper;
 }
 
 static const syscall_handler dll_functions[] =
