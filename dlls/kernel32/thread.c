@@ -840,11 +840,52 @@ WINBASEAPI DWORD WINAPI QueueUserAPC(PAPCFUNC func, HANDLE hthread, ULONG_PTR da
 
 #else
 
+struct apc_data
+{
+    uint64_t guest_data;
+    uint64_t func;
+};
+
+static void CALLBACK host_user_apc_cb(ULONG_PTR param)
+{
+    struct apc_data *data = (struct apc_data *)param;
+    uint64_t func = data->func;
+    uint64_t guest_data = data->guest_data;
+
+    HeapFree(GetProcessHeap(), 0, data);
+    WINE_TRACE("Executing user APC callback 0x%lx(0x%lx).\n", func, guest_data);
+    qemu_ops->qemu_execute(QEMU_G2H(func), guest_data);
+    WINE_TRACE("User callback returned.\n");
+}
+
 void qemu_QueueUserAPC(struct qemu_syscall *call)
 {
     struct qemu_QueueUserAPC *c = (struct qemu_QueueUserAPC *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QueueUserAPC(QEMU_G2H(c->func), QEMU_G2H(c->hthread), c->data);
+    struct apc_data *data;
+
+    WINE_TRACE("\n");
+
+    /* Note that this will fail spectacularly if the thread is in a different process. Fixing
+     * this not only requires allocating the wrapper structure in the foreign process, but
+     * also figuring out the address of host_user_apc_cb (which presumably is at an identical
+     * offset from qemu_dll_register as it is in this process).
+     *
+     * And that's not even talking about host-native processes like explorer.exe which don't
+     * even have QEMU loaded. */
+    data = HeapAlloc(GetProcessHeap(), 0, sizeof(*data));
+    if (!data)
+    {
+        c->super.iret = 0;
+        SetLastError(ERROR_NOT_ENOUGH_MEMORY);
+        return;
+    }
+
+    data->guest_data = c->data;
+    data->func = c->func;
+
+    c->super.iret = QueueUserAPC(host_user_apc_cb, (HANDLE)c->hthread, (ULONG_PTR)data);
+    if (!c->super.iret)
+        HeapFree(GetProcessHeap(), 0, data);
 }
 
 #endif
