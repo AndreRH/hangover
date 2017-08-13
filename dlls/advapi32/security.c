@@ -49,7 +49,7 @@ WINBASEAPI BOOL WINAPI OpenProcessToken(HANDLE ProcessHandle, DWORD DesiredAcces
     struct qemu_OpenProcessToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENPROCESSTOKEN);
     call.ProcessHandle = (uint64_t)ProcessHandle;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
+    call.DesiredAccess = DesiredAccess;
     call.TokenHandle = (uint64_t)TokenHandle;
 
     qemu_syscall(&call.super);
@@ -62,7 +62,7 @@ WINBASEAPI BOOL WINAPI OpenProcessToken(HANDLE ProcessHandle, DWORD DesiredAcces
 void qemu_OpenProcessToken(struct qemu_syscall *call)
 {
     struct qemu_OpenProcessToken *c = (struct qemu_OpenProcessToken *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = OpenProcessToken(QEMU_G2H(c->ProcessHandle), c->DesiredAccess, QEMU_G2H(c->TokenHandle));
 }
 
@@ -162,9 +162,9 @@ WINBASEAPI BOOL WINAPI AdjustTokenPrivileges(HANDLE TokenHandle, BOOL DisableAll
     struct qemu_AdjustTokenPrivileges call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADJUSTTOKENPRIVILEGES);
     call.TokenHandle = (uint64_t)TokenHandle;
-    call.DisableAllPrivileges = (uint64_t)DisableAllPrivileges;
+    call.DisableAllPrivileges = DisableAllPrivileges;
     call.NewState = (uint64_t)NewState;
-    call.BufferLength = (uint64_t)BufferLength;
+    call.BufferLength = BufferLength;
     call.PreviousState = (uint64_t)PreviousState;
     call.ReturnLength = (uint64_t)ReturnLength;
 
@@ -178,8 +178,9 @@ WINBASEAPI BOOL WINAPI AdjustTokenPrivileges(HANDLE TokenHandle, BOOL DisableAll
 void qemu_AdjustTokenPrivileges(struct qemu_syscall *call)
 {
     struct qemu_AdjustTokenPrivileges *c = (struct qemu_AdjustTokenPrivileges *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AdjustTokenPrivileges(QEMU_G2H(c->TokenHandle), c->DisableAllPrivileges, QEMU_G2H(c->NewState), c->BufferLength, QEMU_G2H(c->PreviousState), QEMU_G2H(c->ReturnLength));
+    WINE_TRACE("\n");
+    c->super.iret = AdjustTokenPrivileges(QEMU_G2H(c->TokenHandle), c->DisableAllPrivileges, QEMU_G2H(c->NewState),
+            c->BufferLength, QEMU_G2H(c->PreviousState), QEMU_G2H(c->ReturnLength));
 }
 
 #endif
@@ -2290,7 +2291,7 @@ WINBASEAPI BOOL WINAPI LookupPrivilegeValueA(LPCSTR lpSystemName, LPCSTR lpName,
 void qemu_LookupPrivilegeValueA(struct qemu_syscall *call)
 {
     struct qemu_LookupPrivilegeValueA *c = (struct qemu_LookupPrivilegeValueA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LookupPrivilegeValueA(QEMU_G2H(c->lpSystemName), QEMU_G2H(c->lpName), QEMU_G2H(c->lpLuid));
 }
 

@@ -167,8 +167,8 @@ WINBASEAPI DWORD WINAPI WaitForSingleObjectEx(HANDLE handle, DWORD timeout, BOOL
     struct qemu_WaitForSingleObjectEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WAITFORSINGLEOBJECTEX);
     call.handle = (uint64_t)handle;
-    call.timeout = (uint64_t)timeout;
-    call.alertable = (uint64_t)alertable;
+    call.timeout = timeout;
+    call.alertable = alertable;
 
     qemu_syscall(&call.super);
 
@@ -180,7 +180,7 @@ WINBASEAPI DWORD WINAPI WaitForSingleObjectEx(HANDLE handle, DWORD timeout, BOOL
 void qemu_WaitForSingleObjectEx(struct qemu_syscall *call)
 {
     struct qemu_WaitForSingleObjectEx *c = (struct qemu_WaitForSingleObjectEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WaitForSingleObjectEx(QEMU_G2H(c->handle), c->timeout, c->alertable);
 }
 
@@ -1251,8 +1251,8 @@ WINBASEAPI HANDLE WINAPI CreateSemaphoreW(SECURITY_ATTRIBUTES *sa, LONG initial,
     struct qemu_CreateSemaphoreW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATESEMAPHOREW);
     call.sa = (uint64_t)sa;
-    call.initial = (uint64_t)initial;
-    call.max = (uint64_t)max;
+    call.initial = initial;
+    call.max = max;
     call.name = (uint64_t)name;
 
     qemu_syscall(&call.super);
@@ -1265,7 +1265,7 @@ WINBASEAPI HANDLE WINAPI CreateSemaphoreW(SECURITY_ATTRIBUTES *sa, LONG initial,
 void qemu_CreateSemaphoreW(struct qemu_syscall *call)
 {
     struct qemu_CreateSemaphoreW *c = (struct qemu_CreateSemaphoreW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateSemaphoreW(QEMU_G2H(c->sa), c->initial, c->max, QEMU_G2H(c->name));
 }
 
@@ -1434,7 +1434,7 @@ WINBASEAPI BOOL WINAPI ReleaseSemaphore(HANDLE handle, LONG count, LONG *previou
     struct qemu_ReleaseSemaphore call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RELEASESEMAPHORE);
     call.handle = (uint64_t)handle;
-    call.count = (uint64_t)count;
+    call.count = count;
     call.previous = (uint64_t)previous;
 
     qemu_syscall(&call.super);
@@ -1447,7 +1447,7 @@ WINBASEAPI BOOL WINAPI ReleaseSemaphore(HANDLE handle, LONG count, LONG *previou
 void qemu_ReleaseSemaphore(struct qemu_syscall *call)
 {
     struct qemu_ReleaseSemaphore *c = (struct qemu_ReleaseSemaphore *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ReleaseSemaphore(QEMU_G2H(c->handle), c->count, QEMU_G2H(c->previous));
 }
 
@@ -3046,8 +3046,8 @@ WINBASEAPI HANDLE WINAPI CreateIoCompletionPort(HANDLE hFileHandle, HANDLE hExis
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEIOCOMPLETIONPORT);
     call.hFileHandle = (uint64_t)hFileHandle;
     call.hExistingCompletionPort = (uint64_t)hExistingCompletionPort;
-    call.CompletionKey = (uint64_t)CompletionKey;
-    call.dwNumberOfConcurrentThreads = (uint64_t)dwNumberOfConcurrentThreads;
+    call.CompletionKey = CompletionKey;
+    call.dwNumberOfConcurrentThreads = dwNumberOfConcurrentThreads;
 
     qemu_syscall(&call.super);
 
@@ -3059,8 +3059,9 @@ WINBASEAPI HANDLE WINAPI CreateIoCompletionPort(HANDLE hFileHandle, HANDLE hExis
 void qemu_CreateIoCompletionPort(struct qemu_syscall *call)
 {
     struct qemu_CreateIoCompletionPort *c = (struct qemu_CreateIoCompletionPort *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateIoCompletionPort(QEMU_G2H(c->hFileHandle), QEMU_G2H(c->hExistingCompletionPort), c->CompletionKey, c->dwNumberOfConcurrentThreads);
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)CreateIoCompletionPort(QEMU_G2H(c->hFileHandle), QEMU_G2H(c->hExistingCompletionPort),
+            c->CompletionKey, c->dwNumberOfConcurrentThreads);
 }
 
 #endif
@@ -3077,7 +3078,8 @@ struct qemu_GetQueuedCompletionStatus
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetQueuedCompletionStatus(HANDLE CompletionPort, LPDWORD lpNumberOfBytesTransferred, PULONG_PTR pCompletionKey, LPOVERLAPPED *lpOverlapped, DWORD dwMilliseconds)
+WINBASEAPI BOOL WINAPI GetQueuedCompletionStatus(HANDLE CompletionPort, LPDWORD lpNumberOfBytesTransferred,
+        PULONG_PTR pCompletionKey, LPOVERLAPPED *lpOverlapped, DWORD dwMilliseconds)
 {
     struct qemu_GetQueuedCompletionStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETQUEUEDCOMPLETIONSTATUS);
@@ -3085,7 +3087,7 @@ WINBASEAPI BOOL WINAPI GetQueuedCompletionStatus(HANDLE CompletionPort, LPDWORD 
     call.lpNumberOfBytesTransferred = (uint64_t)lpNumberOfBytesTransferred;
     call.pCompletionKey = (uint64_t)pCompletionKey;
     call.lpOverlapped = (uint64_t)lpOverlapped;
-    call.dwMilliseconds = (uint64_t)dwMilliseconds;
+    call.dwMilliseconds = dwMilliseconds;
 
     qemu_syscall(&call.super);
 
@@ -3097,8 +3099,9 @@ WINBASEAPI BOOL WINAPI GetQueuedCompletionStatus(HANDLE CompletionPort, LPDWORD 
 void qemu_GetQueuedCompletionStatus(struct qemu_syscall *call)
 {
     struct qemu_GetQueuedCompletionStatus *c = (struct qemu_GetQueuedCompletionStatus *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetQueuedCompletionStatus(QEMU_G2H(c->CompletionPort), QEMU_G2H(c->lpNumberOfBytesTransferred), QEMU_G2H(c->pCompletionKey), QEMU_G2H(c->lpOverlapped), c->dwMilliseconds);
+    WINE_TRACE("\n");
+    c->super.iret = GetQueuedCompletionStatus(QEMU_G2H(c->CompletionPort), QEMU_G2H(c->lpNumberOfBytesTransferred),
+            QEMU_G2H(c->pCompletionKey), QEMU_G2H(c->lpOverlapped), c->dwMilliseconds);
 }
 
 #endif

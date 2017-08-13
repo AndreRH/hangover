@@ -681,9 +681,9 @@ WINBASEAPI BOOL WINAPI DuplicateHandle(HANDLE source_process, HANDLE source, HAN
     call.source = (uint64_t)source;
     call.dest_process = (uint64_t)dest_process;
     call.dest = (uint64_t)dest;
-    call.access = (uint64_t)access;
-    call.inherit = (uint64_t)inherit;
-    call.options = (uint64_t)options;
+    call.access = access;
+    call.inherit = inherit;
+    call.options = options;
 
     qemu_syscall(&call.super);
 
@@ -695,7 +695,7 @@ WINBASEAPI BOOL WINAPI DuplicateHandle(HANDLE source_process, HANDLE source, HAN
 void qemu_DuplicateHandle(struct qemu_syscall *call)
 {
     struct qemu_DuplicateHandle *c = (struct qemu_DuplicateHandle *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DuplicateHandle(QEMU_G2H(c->source_process), QEMU_G2H(c->source), QEMU_G2H(c->dest_process), QEMU_G2H(c->dest), c->access, c->inherit, c->options);
 }
 

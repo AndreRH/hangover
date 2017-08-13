@@ -66,7 +66,7 @@ WINBASEAPI void WINAPI RtlInitAnsiString(PANSI_STRING target, PCSZ source)
 void qemu_RtlInitAnsiString(struct qemu_syscall *call)
 {
     struct qemu_RtlInitAnsiString *c = (struct qemu_RtlInitAnsiString *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     RtlInitAnsiString(QEMU_G2H(c->target), QEMU_G2H(c->source));
 }
 
@@ -368,7 +368,7 @@ WINBASEAPI void WINAPI RtlFreeUnicodeString(PUNICODE_STRING str)
 void qemu_RtlFreeUnicodeString(struct qemu_syscall *call)
 {
     struct qemu_RtlFreeUnicodeString *c = (struct qemu_RtlFreeUnicodeString *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     RtlFreeUnicodeString(QEMU_G2H(c->str));
 }
 
@@ -818,7 +818,7 @@ WINBASEAPI NTSTATUS WINAPI RtlAnsiStringToUnicodeString(PUNICODE_STRING uni, PCA
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLANSISTRINGTOUNICODESTRING);
     call.uni = (uint64_t)uni;
     call.ansi = (uint64_t)ansi;
-    call.doalloc = (uint64_t)doalloc;
+    call.doalloc = doalloc;
 
     qemu_syscall(&call.super);
 
@@ -830,7 +830,7 @@ WINBASEAPI NTSTATUS WINAPI RtlAnsiStringToUnicodeString(PUNICODE_STRING uni, PCA
 void qemu_RtlAnsiStringToUnicodeString(struct qemu_syscall *call)
 {
     struct qemu_RtlAnsiStringToUnicodeString *c = (struct qemu_RtlAnsiStringToUnicodeString *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RtlAnsiStringToUnicodeString(QEMU_G2H(c->uni), QEMU_G2H(c->ansi), c->doalloc);
 }
 

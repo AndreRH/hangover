@@ -118,7 +118,7 @@ WINBASEAPI DWORD WINAPI GetLongPathNameW(LPCWSTR shortpath, LPWSTR longpath, DWO
     call.super.id = QEMU_SYSCALL_ID(CALL_GETLONGPATHNAMEW);
     call.shortpath = (uint64_t)shortpath;
     call.longpath = (uint64_t)longpath;
-    call.longlen = (uint64_t)longlen;
+    call.longlen = longlen;
 
     qemu_syscall(&call.super);
 
@@ -130,7 +130,7 @@ WINBASEAPI DWORD WINAPI GetLongPathNameW(LPCWSTR shortpath, LPWSTR longpath, DWO
 void qemu_GetLongPathNameW(struct qemu_syscall *call)
 {
     struct qemu_GetLongPathNameW *c = (struct qemu_GetLongPathNameW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetLongPathNameW(QEMU_G2H(c->shortpath), QEMU_G2H(c->longpath), c->longlen);
 }
 
@@ -152,7 +152,7 @@ WINBASEAPI DWORD WINAPI GetLongPathNameA(LPCSTR shortpath, LPSTR longpath, DWORD
     call.super.id = QEMU_SYSCALL_ID(CALL_GETLONGPATHNAMEA);
     call.shortpath = (uint64_t)shortpath;
     call.longpath = (uint64_t)longpath;
-    call.longlen = (uint64_t)longlen;
+    call.longlen = longlen;
 
     qemu_syscall(&call.super);
 
@@ -164,7 +164,7 @@ WINBASEAPI DWORD WINAPI GetLongPathNameA(LPCSTR shortpath, LPSTR longpath, DWORD
 void qemu_GetLongPathNameA(struct qemu_syscall *call)
 {
     struct qemu_GetLongPathNameA *c = (struct qemu_GetLongPathNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetLongPathNameA(QEMU_G2H(c->shortpath), QEMU_G2H(c->longpath), c->longlen);
 }
 
@@ -355,7 +355,7 @@ WINBASEAPI UINT WINAPI GetTempFileNameW(LPCWSTR path, LPCWSTR prefix, UINT uniqu
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEMPFILENAMEW);
     call.path = (uint64_t)path;
     call.prefix = (uint64_t)prefix;
-    call.unique = (uint64_t)unique;
+    call.unique = unique;
     call.buffer = (uint64_t)buffer;
 
     qemu_syscall(&call.super);
@@ -368,7 +368,7 @@ WINBASEAPI UINT WINAPI GetTempFileNameW(LPCWSTR path, LPCWSTR prefix, UINT uniqu
 void qemu_GetTempFileNameW(struct qemu_syscall *call)
 {
     struct qemu_GetTempFileNameW *c = (struct qemu_GetTempFileNameW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTempFileNameW(QEMU_G2H(c->path), QEMU_G2H(c->prefix), c->unique, QEMU_G2H(c->buffer));
 }
 
@@ -470,7 +470,7 @@ WINBASEAPI BOOL WINAPI CopyFileW(LPCWSTR source, LPCWSTR dest, BOOL fail_if_exis
     call.super.id = QEMU_SYSCALL_ID(CALL_COPYFILEW);
     call.source = (uint64_t)source;
     call.dest = (uint64_t)dest;
-    call.fail_if_exists = (uint64_t)fail_if_exists;
+    call.fail_if_exists = fail_if_exists;
 
     qemu_syscall(&call.super);
 
@@ -482,7 +482,7 @@ WINBASEAPI BOOL WINAPI CopyFileW(LPCWSTR source, LPCWSTR dest, BOOL fail_if_exis
 void qemu_CopyFileW(struct qemu_syscall *call)
 {
     struct qemu_CopyFileW *c = (struct qemu_CopyFileW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CopyFileW(QEMU_G2H(c->source), QEMU_G2H(c->dest), c->fail_if_exists);
 }
 
@@ -504,7 +504,7 @@ WINBASEAPI BOOL WINAPI CopyFileA(LPCSTR source, LPCSTR dest, BOOL fail_if_exists
     call.super.id = QEMU_SYSCALL_ID(CALL_COPYFILEA);
     call.source = (uint64_t)source;
     call.dest = (uint64_t)dest;
-    call.fail_if_exists = (uint64_t)fail_if_exists;
+    call.fail_if_exists = fail_if_exists;
 
     qemu_syscall(&call.super);
 
@@ -516,7 +516,7 @@ WINBASEAPI BOOL WINAPI CopyFileA(LPCSTR source, LPCSTR dest, BOOL fail_if_exists
 void qemu_CopyFileA(struct qemu_syscall *call)
 {
     struct qemu_CopyFileA *c = (struct qemu_CopyFileA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CopyFileA(QEMU_G2H(c->source), QEMU_G2H(c->dest), c->fail_if_exists);
 }
 
@@ -584,7 +584,7 @@ WINBASEAPI BOOL WINAPI CopyFileExA(LPCSTR sourceFilename, LPCSTR destFilename, L
     call.progressRoutine = (uint64_t)progressRoutine;
     call.appData = (uint64_t)appData;
     call.cancelFlagPointer = (uint64_t)cancelFlagPointer;
-    call.copyFlags = (uint64_t)copyFlags;
+    call.copyFlags = copyFlags;
 
     qemu_syscall(&call.super);
 
@@ -596,8 +596,11 @@ WINBASEAPI BOOL WINAPI CopyFileExA(LPCSTR sourceFilename, LPCSTR destFilename, L
 void qemu_CopyFileExA(struct qemu_syscall *call)
 {
     struct qemu_CopyFileExA *c = (struct qemu_CopyFileExA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CopyFileExA(QEMU_G2H(c->sourceFilename), QEMU_G2H(c->destFilename), QEMU_G2H(c->progressRoutine), QEMU_G2H(c->appData), QEMU_G2H(c->cancelFlagPointer), c->copyFlags);
+    WINE_TRACE("\n");
+    if (c->progressRoutine)
+        WINE_FIXME("I probably have to do something about progressRoutine.\n");
+    c->super.iret = CopyFileExA(QEMU_G2H(c->sourceFilename), QEMU_G2H(c->destFilename),
+            QEMU_G2H(c->progressRoutine), QEMU_G2H(c->appData), QEMU_G2H(c->cancelFlagPointer), c->copyFlags);
 }
 
 #endif
@@ -1083,7 +1086,7 @@ WINBASEAPI DWORD WINAPI GetCurrentDirectoryW(DWORD buflen, LPWSTR buf)
 {
     struct qemu_GetCurrentDirectoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTDIRECTORYW);
-    call.buflen = (uint64_t)buflen;
+    call.buflen = buflen;
     call.buf = (uint64_t)buf;
 
     qemu_syscall(&call.super);
@@ -1096,7 +1099,7 @@ WINBASEAPI DWORD WINAPI GetCurrentDirectoryW(DWORD buflen, LPWSTR buf)
 void qemu_GetCurrentDirectoryW(struct qemu_syscall *call)
 {
     struct qemu_GetCurrentDirectoryW *c = (struct qemu_GetCurrentDirectoryW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCurrentDirectoryW(c->buflen, QEMU_G2H(c->buf));
 }
 
@@ -1158,7 +1161,7 @@ WINBASEAPI BOOL WINAPI SetCurrentDirectoryW(LPCWSTR dir)
 void qemu_SetCurrentDirectoryW(struct qemu_syscall *call)
 {
     struct qemu_SetCurrentDirectoryW *c = (struct qemu_SetCurrentDirectoryW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetCurrentDirectoryW(QEMU_G2H(c->dir));
 }
 
@@ -1272,7 +1275,7 @@ WINBASEAPI UINT WINAPI GetSystemWindowsDirectoryA(LPSTR path, UINT count)
     struct qemu_GetSystemWindowsDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMWINDOWSDIRECTORYA);
     call.path = (uint64_t)path;
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -1284,7 +1287,7 @@ WINBASEAPI UINT WINAPI GetSystemWindowsDirectoryA(LPSTR path, UINT count)
 void qemu_GetSystemWindowsDirectoryA(struct qemu_syscall *call)
 {
     struct qemu_GetSystemWindowsDirectoryA *c = (struct qemu_GetSystemWindowsDirectoryA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetSystemWindowsDirectoryA(QEMU_G2H(c->path), c->count);
 }
 

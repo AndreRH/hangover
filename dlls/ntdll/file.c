@@ -100,19 +100,21 @@ struct qemu_NtCreateFile
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI NtCreateFile(PHANDLE handle, ACCESS_MASK access, POBJECT_ATTRIBUTES attr, PIO_STATUS_BLOCK io, PLARGE_INTEGER alloc_size, ULONG attributes, ULONG sharing, ULONG disposition, ULONG options, PVOID ea_buffer, ULONG ea_length)
+WINBASEAPI NTSTATUS WINAPI NtCreateFile(PHANDLE handle, ACCESS_MASK access, POBJECT_ATTRIBUTES attr, PIO_STATUS_BLOCK io,
+        PLARGE_INTEGER alloc_size, ULONG attributes, ULONG sharing, ULONG disposition, ULONG options, PVOID ea_buffer,
+        ULONG ea_length)
 {
     struct qemu_NtCreateFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCREATEFILE);
     call.handle = (uint64_t)handle;
-    call.access = (uint64_t)access;
+    call.access = access;
     call.attr = (uint64_t)attr;
     call.io = (uint64_t)io;
     call.alloc_size = (uint64_t)alloc_size;
-    call.attributes = (uint64_t)attributes;
-    call.sharing = (uint64_t)sharing;
-    call.disposition = (uint64_t)disposition;
-    call.options = (uint64_t)options;
+    call.attributes = attributes;
+    call.sharing = sharing;
+    call.disposition = disposition;
+    call.options = options;
     call.ea_buffer = (uint64_t)ea_buffer;
     call.ea_length = (uint64_t)ea_length;
 
@@ -126,8 +128,10 @@ WINBASEAPI NTSTATUS WINAPI NtCreateFile(PHANDLE handle, ACCESS_MASK access, POBJ
 void qemu_NtCreateFile(struct qemu_syscall *call)
 {
     struct qemu_NtCreateFile *c = (struct qemu_NtCreateFile *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NtCreateFile(QEMU_G2H(c->handle), c->access, QEMU_G2H(c->attr), QEMU_G2H(c->io), QEMU_G2H(c->alloc_size), c->attributes, c->sharing, c->disposition, c->options, QEMU_G2H(c->ea_buffer), c->ea_length);
+    WINE_TRACE("\n");
+    c->super.iret = NtCreateFile(QEMU_G2H(c->handle), c->access, QEMU_G2H(c->attr), QEMU_G2H(c->io),
+            QEMU_G2H(c->alloc_size), c->attributes, c->sharing, c->disposition, c->options,
+            QEMU_G2H(c->ea_buffer), c->ea_length);
 }
 
 #endif

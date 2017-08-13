@@ -335,7 +335,7 @@ WINBASEAPI DWORD WINAPI QueryDosDeviceW(LPCWSTR devname, LPWSTR target, DWORD bu
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYDOSDEVICEW);
     call.devname = (uint64_t)devname;
     call.target = (uint64_t)target;
-    call.bufsize = (uint64_t)bufsize;
+    call.bufsize = bufsize;
 
     qemu_syscall(&call.super);
 
@@ -347,7 +347,7 @@ WINBASEAPI DWORD WINAPI QueryDosDeviceW(LPCWSTR devname, LPWSTR target, DWORD bu
 void qemu_QueryDosDeviceW(struct qemu_syscall *call)
 {
     struct qemu_QueryDosDeviceW *c = (struct qemu_QueryDosDeviceW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QueryDosDeviceW(QEMU_G2H(c->devname), QEMU_G2H(c->target), c->bufsize);
 }
 

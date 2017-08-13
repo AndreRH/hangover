@@ -114,7 +114,7 @@ __time64_t CDECL MSVCRT__time64(__time64_t *buf)
 void qemu__time64(struct qemu_syscall *call)
 {
     struct qemu__time64 *c = (struct qemu__time64 *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__time64(QEMU_G2H(c->buf));
 }
 

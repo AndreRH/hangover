@@ -2079,7 +2079,7 @@ WINBASEAPI int WINAPI lstrcmpiW(LPCWSTR str1, LPCWSTR str2)
 void qemu_lstrcmpiW(struct qemu_syscall *call)
 {
     struct qemu_lstrcmpiW *c = (struct qemu_lstrcmpiW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = lstrcmpiW(QEMU_G2H(c->str1), QEMU_G2H(c->str2));
 }
 

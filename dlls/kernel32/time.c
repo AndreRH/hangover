@@ -766,7 +766,7 @@ WINBASEAPI LONG WINAPI CompareFileTime(const FILETIME *x, const FILETIME *y)
 void qemu_CompareFileTime(struct qemu_syscall *call)
 {
     struct qemu_CompareFileTime *c = (struct qemu_CompareFileTime *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CompareFileTime(QEMU_G2H(c->x), QEMU_G2H(c->y));
 }
 

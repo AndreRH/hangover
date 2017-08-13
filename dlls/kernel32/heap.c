@@ -902,8 +902,8 @@ WINBASEAPI HLOCAL WINAPI LocalAlloc(UINT flags, SIZE_T size)
 {
     struct qemu_LocalAlloc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOCALALLOC);
-    call.flags = (uint64_t)flags;
-    call.size = (uint64_t)size;
+    call.flags = flags;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -915,7 +915,7 @@ WINBASEAPI HLOCAL WINAPI LocalAlloc(UINT flags, SIZE_T size)
 void qemu_LocalAlloc(struct qemu_syscall *call)
 {
     struct qemu_LocalAlloc *c = (struct qemu_LocalAlloc *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)LocalAlloc(c->flags, c->size);
 }
 
@@ -1065,8 +1065,8 @@ WINBASEAPI LPVOID WINAPI LocalLock(HLOCAL handle)
 void qemu_LocalLock(struct qemu_syscall *call)
 {
     struct qemu_LocalLock *c = (struct qemu_LocalLock *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LocalLock(QEMU_G2H(c->handle));
+    WINE_TRACE("\n");
+    c->super.iret = (uint64_t)LocalLock((HLOCAL)c->handle);
 }
 
 #endif

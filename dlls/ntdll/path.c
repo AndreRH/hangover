@@ -143,8 +143,9 @@ WINBASEAPI BOOL WINAPI RtlDosPathNameToNtPathName_U(PCWSTR dos_path, PUNICODE_ST
 void qemu_RtlDosPathNameToNtPathName_U(struct qemu_syscall *call)
 {
     struct qemu_RtlDosPathNameToNtPathName_U *c = (struct qemu_RtlDosPathNameToNtPathName_U *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlDosPathNameToNtPathName_U(QEMU_G2H(c->dos_path), QEMU_G2H(c->ntpath), QEMU_G2H(c->file_part), QEMU_G2H(c->cd));
+    WINE_TRACE("\n");
+    c->super.iret = RtlDosPathNameToNtPathName_U(QEMU_G2H(c->dos_path), QEMU_G2H(c->ntpath),
+            QEMU_G2H(c->file_part), QEMU_G2H(c->cd));
 }
 
 #endif
