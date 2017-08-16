@@ -162,16 +162,30 @@ void qemu_GetModuleFileNameA(struct qemu_syscall *call)
 {
     struct qemu_ModuleFileName *c = (struct qemu_ModuleFileName *)call;
     WCHAR *wbuf;
+    char *out;
+
     WINE_TRACE("\n");
+    out = QEMU_G2H(c->name);
 
-    wbuf = HeapAlloc(GetProcessHeap(), 0, (c->size + 1) * sizeof(*wbuf));
+    wbuf = HeapAlloc(GetProcessHeap(), 0, c->size * sizeof(*wbuf));
+    if (!wbuf)
+    {
+        SetLastError( ERROR_NOT_ENOUGH_MEMORY );
+        c->super.iret = 0;
+        return;
+    }
 
-    /* Allocate one more to make sure WideCharToMultiByte triggers an error, if there is an error. */
-    qemu_ops->qemu_GetModuleFileName((HANDLE)c->module, wbuf, c->size ? c->size + 1 : 0);
+    c->super.iret = qemu_ops->qemu_GetModuleFileName((HANDLE)c->module, wbuf, c->size);
 
-    c->super.iret = WideCharToMultiByte(CP_ACP, 0, wbuf, -1, QEMU_G2H(c->name), c->size, NULL, NULL);
-    if (!c->super.iret)
-        c->super.iret = WideCharToMultiByte(CP_ACP, 0, wbuf, c->size, QEMU_G2H(c->name), c->size, NULL, NULL);
+    if (c->super.iret)
+    {
+        c->super.iret = WideCharToMultiByte(CP_ACP, 0, wbuf, c->super.iret,
+                out, c->size, NULL, NULL);
+        if (c->super.iret < c->size)
+            out[c->super.iret] = '\0';
+        else
+            SetLastError( ERROR_INSUFFICIENT_BUFFER );
+    }
 
     HeapFree(GetProcessHeap(), 0, wbuf);
 }
