@@ -432,7 +432,6 @@ void qemu_GetStartupInfoA(struct qemu_syscall *call)
     if (!titleA)
         init_titleA();
 
-    WINE_ERR("Got window title %s\n", titleA);
     a->lpTitle = titleA;
 }
 
