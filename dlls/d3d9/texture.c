@@ -841,6 +841,10 @@ static HRESULT WINAPI d3d9_texture_cube_QueryInterface(IDirect3DCubeTexture9 *if
 
     qemu_syscall(&call.super);
 
+    /* This call returns only the texture interfaces. */
+    if (SUCCEEDED(call.super.iret))
+        *out = &texture->IDirect3DBaseTexture9_iface;
+
     return call.super.iret;
 }
 
@@ -850,11 +854,18 @@ void qemu_d3d9_texture_cube_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d9_texture_cube_QueryInterface *c = (struct qemu_d3d9_texture_cube_QueryInterface *)call;
     struct qemu_d3d9_texture_impl *texture;
+    GUID *iid;
+    void *out;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
+    iid = QEMU_G2H(c->riid);
 
-    c->super.iret = IDirect3DCubeTexture9_QueryInterface(texture->host, QEMU_G2H(c->riid), QEMU_G2H(c->out));
+    c->super.iret = IDirect3DCubeTexture9_QueryInterface(texture->host, iid, &out);
+
+    *(uint64_t *)QEMU_G2H(c->out) = QEMU_H2G(out);
+    if (SUCCEEDED(c->super.iret) && out != texture->host)
+        WINE_FIXME("Unexpected interface %p, GUID %s.\n", out, wine_dbgstr_guid(iid));
 }
 
 #endif
