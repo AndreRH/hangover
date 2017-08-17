@@ -566,6 +566,7 @@ EXPORTS
   IdnToNameprepUnicode
   IdnToUnicode
   InitAtomTable
+  InitializeConditionVariable=ntdll.RtlInitializeConditionVariable
   InitializeCriticalSection
   InitializeCriticalSectionAndSpinCount
   InitializeCriticalSectionEx
@@ -945,6 +946,8 @@ EXPORTS
   WaitForSingleObjectEx
   WaitNamedPipeA
   WaitNamedPipeW
+  WakeAllConditionVariable=ntdll.RtlWakeAllConditionVariable
+  WakeConditionVariable=ntdll.RtlWakeConditionVariable
   WerRegisterFile
   WerRegisterMemoryBlock
   WerRegisterRuntimeExceptionModule
