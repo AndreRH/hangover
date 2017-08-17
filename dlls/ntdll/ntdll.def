@@ -270,6 +270,8 @@ EXPORTS
   RtlInitAnsiString
   RtlInitAnsiStringEx
   RtlInitializeConditionVariable
+  RtlInitializeCriticalSection
+  RtlInitializeCriticalSectionAndSpinCount
   RtlInitializeCriticalSectionEx
   RtlInitializeGenericTable
   RtlInitializeGenericTableAvl
@@ -293,6 +295,8 @@ EXPORTS
   RtlIpv4AddressToStringW
   RtlIpv4StringToAddressExW
   RtlIsActivationContextActive
+  RtlIsCriticalSectionLocked
+  RtlIsCriticalSectionLockedByThread
   RtlIsDosDeviceName_U
   RtlIsNameLegalDOS8Dot3
   RtlIsTextUnicode
@@ -309,6 +313,8 @@ EXPORTS
   RtlOemToUnicodeN
   RtlPrefixString
   RtlPrefixUnicodeString
+  RtlpUnWaitCriticalSection
+  RtlpWaitForCriticalSection
   RtlQueryDepthSList
   RtlQueryHeapInformation
   RtlQueryInformationActivationContext
@@ -323,6 +329,7 @@ EXPORTS
   RtlRunOnceComplete
   RtlRunOnceExecuteOnce
   RtlRunOnceInitialize
+  RtlSetCriticalSectionSpinCount
   RtlSetCurrentDirectory_U
   RtlSetCurrentTransaction
   RtlSetHeapInformation
@@ -333,6 +340,7 @@ EXPORTS
   RtlStringFromGUID
   RtlTryAcquireSRWLockExclusive
   RtlTryAcquireSRWLockShared
+  RtlTryEnterCriticalSection
   RtlUnicodeStringToAnsiSize
   RtlUnicodeStringToAnsiString
   RtlUnicodeStringToInteger

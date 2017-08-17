@@ -266,6 +266,8 @@ enum ntdll_calls
     CALL_RTLINITANSISTRING,
     CALL_RTLINITANSISTRINGEX,
     CALL_RTLINITIALIZECONDITIONVARIABLE,
+    CALL_RTLINITIALIZECRITICALSECTION,
+    CALL_RTLINITIALIZECRITICALSECTIONANDSPINCOUNT,
     CALL_RTLINITIALIZECRITICALSECTIONEX,
     CALL_RTLINITIALIZEGENERICTABLE,
     CALL_RTLINITIALIZEGENERICTABLEAVL,
@@ -289,6 +291,8 @@ enum ntdll_calls
     CALL_RTLIPV4ADDRESSTOSTRINGW,
     CALL_RTLIPV4STRINGTOADDRESSEXW,
     CALL_RTLISACTIVATIONCONTEXTACTIVE,
+    CALL_RTLISCRITICALSECTIONLOCKED,
+    CALL_RTLISCRITICALSECTIONLOCKEDBYTHREAD,
     CALL_RTLISDOSDEVICENAME_U,
     CALL_RTLISNAMELEGALDOS8DOT3,
     CALL_RTLISTEXTUNICODE,
@@ -305,6 +309,8 @@ enum ntdll_calls
     CALL_RTLOEMTOUNICODEN,
     CALL_RTLPREFIXSTRING,
     CALL_RTLPREFIXUNICODESTRING,
+    CALL_RTLPUNWAITCRITICALSECTION,
+    CALL_RTLPWAITFORCRITICALSECTION,
     CALL_RTLQUERYDEPTHSLIST,
     CALL_RTLQUERYHEAPINFORMATION,
     CALL_RTLQUERYINFORMATIONACTIVATIONCONTEXT,
@@ -320,6 +326,7 @@ enum ntdll_calls
     CALL_RTLRUNONCECOMPLETE,
     CALL_RTLRUNONCEEXECUTEONCE,
     CALL_RTLRUNONCEINITIALIZE,
+    CALL_RTLSETCRITICALSECTIONSPINCOUNT,
     CALL_RTLSETCURRENTDIRECTORY_U,
     CALL_RTLSETCURRENTTRANSACTION,
     CALL_RTLSETHEAPINFORMATION,
@@ -330,6 +337,7 @@ enum ntdll_calls
     CALL_RTLSTRINGFROMGUID,
     CALL_RTLTRYACQUIRESRWLOCKEXCLUSIVE,
     CALL_RTLTRYACQUIRESRWLOCKSHARED,
+    CALL_RTLTRYENTERCRITICALSECTION,
     CALL_RTLUNICODESTRINGTOANSISIZE,
     CALL_RTLUNICODESTRINGTOANSISTRING,
     CALL_RTLUNICODESTRINGTOINTEGER,
@@ -659,6 +667,8 @@ void qemu_RtlHashUnicodeString(struct qemu_syscall *call);
 void qemu_RtlInitAnsiString(struct qemu_syscall *call);
 void qemu_RtlInitAnsiStringEx(struct qemu_syscall *call);
 void qemu_RtlInitializeConditionVariable(struct qemu_syscall *call);
+void qemu_RtlInitializeCriticalSection(struct qemu_syscall *call);
+void qemu_RtlInitializeCriticalSectionAndSpinCount(struct qemu_syscall *call);
 void qemu_RtlInitializeCriticalSectionEx(struct qemu_syscall *call);
 void qemu_RtlInitializeGenericTable(struct qemu_syscall *call);
 void qemu_RtlInitializeGenericTableAvl(struct qemu_syscall *call);
@@ -682,6 +692,8 @@ void qemu_RtlIpv4AddressToStringExW(struct qemu_syscall *call);
 void qemu_RtlIpv4AddressToStringW(struct qemu_syscall *call);
 void qemu_RtlIpv4StringToAddressExW(struct qemu_syscall *call);
 void qemu_RtlIsActivationContextActive(struct qemu_syscall *call);
+void qemu_RtlIsCriticalSectionLocked(struct qemu_syscall *call);
+void qemu_RtlIsCriticalSectionLockedByThread(struct qemu_syscall *call);
 void qemu_RtlIsDosDeviceName_U(struct qemu_syscall *call);
 void qemu_RtlIsNameLegalDOS8Dot3(struct qemu_syscall *call);
 void qemu_RtlIsTextUnicode(struct qemu_syscall *call);
@@ -698,6 +710,8 @@ void qemu_RtlOemStringToUnicodeString(struct qemu_syscall *call);
 void qemu_RtlOemToUnicodeN(struct qemu_syscall *call);
 void qemu_RtlPrefixString(struct qemu_syscall *call);
 void qemu_RtlPrefixUnicodeString(struct qemu_syscall *call);
+void qemu_RtlpUnWaitCriticalSection(struct qemu_syscall *call);
+void qemu_RtlpWaitForCriticalSection(struct qemu_syscall *call);
 void qemu_RtlQueryDepthSList(struct qemu_syscall *call);
 void qemu_RtlQueryHeapInformation(struct qemu_syscall *call);
 void qemu_RtlQueryInformationActivationContext(struct qemu_syscall *call);
@@ -713,6 +727,7 @@ void qemu_RtlRunOnceBeginInitialize(struct qemu_syscall *call);
 void qemu_RtlRunOnceComplete(struct qemu_syscall *call);
 void qemu_RtlRunOnceExecuteOnce(struct qemu_syscall *call);
 void qemu_RtlRunOnceInitialize(struct qemu_syscall *call);
+void qemu_RtlSetCriticalSectionSpinCount(struct qemu_syscall *call);
 void qemu_RtlSetCurrentDirectory_U(struct qemu_syscall *call);
 void qemu_RtlSetCurrentTransaction(struct qemu_syscall *call);
 void qemu_RtlSetHeapInformation(struct qemu_syscall *call);
@@ -723,6 +738,7 @@ void qemu_RtlSleepConditionVariableSRW(struct qemu_syscall *call);
 void qemu_RtlStringFromGUID(struct qemu_syscall *call);
 void qemu_RtlTryAcquireSRWLockExclusive(struct qemu_syscall *call);
 void qemu_RtlTryAcquireSRWLockShared(struct qemu_syscall *call);
+void qemu_RtlTryEnterCriticalSection(struct qemu_syscall *call);
 void qemu_RtlUnicodeStringToAnsiSize(struct qemu_syscall *call);
 void qemu_RtlUnicodeStringToAnsiString(struct qemu_syscall *call);
 void qemu_RtlUnicodeStringToInteger(struct qemu_syscall *call);
@@ -769,6 +785,7 @@ void qemu_tolower(struct qemu_syscall *call);
 void qemu_toupper(struct qemu_syscall *call);
 void qemu_VerSetConditionMask(struct qemu_syscall *call);
 void qemu_wcsrchr(struct qemu_syscall *call);
+
 WCHAR *(* CDECL p_wcsrchr)(WCHAR *str, WCHAR ch);
 void * (* CDECL p_memchr)(const void *ptr, int c, size_t n);
 int (* CDECL p_memcmp)(const void *ptr1, const void *ptr2, size_t n);

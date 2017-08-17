@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Stefan Dösinger for CodeWeavers
+ * Copyright 2017 André Hentschel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,71 +18,88 @@
 
 /* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
 
+#include <ntstatus.h>
+#define WIN32_NO_STATUS
 #include <windows.h>
 #include <stdio.h>
+#include <winternl.h>
+#include <ntdef.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "ntdll.h"
 
-#ifndef QEMU_DLL_GUEST
+#ifdef QEMU_DLL_GUEST
+
+/* I can't make mingw's ddk headers work :-( . */
+
+#else
+
+#include <ddk/ntddk.h>
 #include <wine/debug.h>
-#include <winternl.h>
+
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_ntdll);
+
 #endif
 
-/* Critical section already destroy the hope of 32 bit emulation in a 64 bit emulator
- * and 64 bit libs. The structure is allocated by the guest app and contains pointers,
- * so it will have a different size in 32 and 64 bit.
- *
- * There are a few options around this for this particular data structure. The best seems
- * to reimplement them ourselves instead of calling Wine and using the LockSemaphore
- * entry to store a pointer or handle to a Win64 sync object. Because we need to limit
- * the address space anyway we can fit this pointer into the 32 bit HANDLE. */
-struct qemu_RtlCriticalSectionOp
+struct qemu_RtlInitializeCriticalSection
 {
     struct qemu_syscall super;
-    uint64_t section;
+    uint64_t crit;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI void WINAPI RtlDeleteCriticalSection(CRITICAL_SECTION *section)
+WINBASEAPI NTSTATUS WINAPI RtlInitializeCriticalSection(RTL_CRITICAL_SECTION *crit)
 {
-    struct qemu_RtlCriticalSectionOp call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_RTLDELETECRITICALSECTION);
-    call.section = (uint64_t)section;
+    struct qemu_RtlInitializeCriticalSection call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLINITIALIZECRITICALSECTION);
+    call.crit = (uint64_t)crit;
+
     qemu_syscall(&call.super);
+
+    return call.super.iret;
 }
 
 #else
 
-void qemu_RtlDeleteCriticalSection(struct qemu_syscall *call)
+void qemu_RtlInitializeCriticalSection(struct qemu_syscall *call)
 {
-    struct qemu_RtlCriticalSectionOp *c = (struct qemu_RtlCriticalSectionOp *)call;
+    struct qemu_RtlInitializeCriticalSection *c = (struct qemu_RtlInitializeCriticalSection *)call;
     WINE_TRACE("\n");
-    RtlDeleteCriticalSection(QEMU_G2H(c->section));
+    c->super.iret = RtlInitializeCriticalSection(QEMU_G2H(c->crit));
 }
 
 #endif
 
+struct qemu_RtlInitializeCriticalSectionAndSpinCount
+{
+    struct qemu_syscall super;
+    uint64_t crit;
+    uint64_t spincount;
+};
+
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI void WINAPI RtlEnterCriticalSection(CRITICAL_SECTION *section)
+WINBASEAPI NTSTATUS WINAPI RtlInitializeCriticalSectionAndSpinCount(RTL_CRITICAL_SECTION *crit, ULONG spincount)
 {
-    struct qemu_RtlCriticalSectionOp call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_RTLENTERCRITICALSECTION);
-    call.section = (uint64_t)section;
+    struct qemu_RtlInitializeCriticalSectionAndSpinCount call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLINITIALIZECRITICALSECTIONANDSPINCOUNT);
+    call.crit = (uint64_t)crit;
+    call.spincount = (uint64_t)spincount;
+
     qemu_syscall(&call.super);
+
+    return call.super.iret;
 }
 
 #else
 
-void qemu_RtlEnterCriticalSection(struct qemu_syscall *call)
+void qemu_RtlInitializeCriticalSectionAndSpinCount(struct qemu_syscall *call)
 {
-    struct qemu_RtlCriticalSectionOp *c = (struct qemu_RtlCriticalSectionOp *)call;
-    WINE_TRACE("\n");
-    RtlEnterCriticalSection(QEMU_G2H(c->section));
+    struct qemu_RtlInitializeCriticalSectionAndSpinCount *c = (struct qemu_RtlInitializeCriticalSectionAndSpinCount *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlInitializeCriticalSectionAndSpinCount(QEMU_G2H(c->crit), c->spincount);
 }
 
 #endif
@@ -90,18 +107,18 @@ void qemu_RtlEnterCriticalSection(struct qemu_syscall *call)
 struct qemu_RtlInitializeCriticalSectionEx
 {
     struct qemu_syscall super;
-    uint64_t section;
-    uint64_t spincount, flags;
+    uint64_t crit;
+    uint64_t spincount;
+    uint64_t flags;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-NTSYSAPI NTSTATUS WINAPI RtlInitializeCriticalSectionEx(RTL_CRITICAL_SECTION *section,
-        ULONG spincount, ULONG flags)
+WINBASEAPI NTSTATUS WINAPI RtlInitializeCriticalSectionEx(RTL_CRITICAL_SECTION *crit, ULONG spincount, ULONG flags)
 {
     struct qemu_RtlInitializeCriticalSectionEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLINITIALIZECRITICALSECTIONEX);
-    call.section = (uint64_t)section;
+    call.crit = (uint64_t)crit;
     call.spincount = (uint64_t)spincount;
     call.flags = (uint64_t)flags;
 
@@ -116,28 +133,280 @@ void qemu_RtlInitializeCriticalSectionEx(struct qemu_syscall *call)
 {
     struct qemu_RtlInitializeCriticalSectionEx *c = (struct qemu_RtlInitializeCriticalSectionEx *)call;
     WINE_TRACE("\n");
-    c->super.iret = RtlInitializeCriticalSectionEx(QEMU_G2H(c->section), c->spincount, c->flags);
+    c->super.iret = RtlInitializeCriticalSectionEx(QEMU_G2H(c->crit), c->spincount, c->flags);
 }
 
 #endif
 
+struct qemu_RtlSetCriticalSectionSpinCount
+{
+    struct qemu_syscall super;
+    uint64_t crit;
+    uint64_t spincount;
+};
+
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI void WINAPI RtlLeaveCriticalSection(CRITICAL_SECTION *section)
+WINBASEAPI ULONG WINAPI RtlSetCriticalSectionSpinCount(RTL_CRITICAL_SECTION *crit, ULONG spincount)
 {
-    struct qemu_RtlCriticalSectionOp call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_RTLLEAVECRITICALSECTION);
-    call.section = (uint64_t)section;
+    struct qemu_RtlSetCriticalSectionSpinCount call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLSETCRITICALSECTIONSPINCOUNT);
+    call.crit = (uint64_t)crit;
+    call.spincount = (uint64_t)spincount;
+
     qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlSetCriticalSectionSpinCount(struct qemu_syscall *call)
+{
+    struct qemu_RtlSetCriticalSectionSpinCount *c = (struct qemu_RtlSetCriticalSectionSpinCount *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlSetCriticalSectionSpinCount(QEMU_G2H(c->crit), c->spincount);
+}
+
+#endif
+
+struct qemu_RtlDeleteCriticalSection
+{
+    struct qemu_syscall super;
+    uint64_t crit;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlDeleteCriticalSection(RTL_CRITICAL_SECTION *crit)
+{
+    struct qemu_RtlDeleteCriticalSection call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLDELETECRITICALSECTION);
+    call.crit = (uint64_t)crit;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlDeleteCriticalSection(struct qemu_syscall *call)
+{
+    struct qemu_RtlDeleteCriticalSection *c = (struct qemu_RtlDeleteCriticalSection *)call;
+    WINE_TRACE("\n");
+    c->super.iret = RtlDeleteCriticalSection(QEMU_G2H(c->crit));
+}
+
+#endif
+
+struct qemu_RtlpWaitForCriticalSection
+{
+    struct qemu_syscall super;
+    uint64_t crit;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlpWaitForCriticalSection(RTL_CRITICAL_SECTION *crit)
+{
+    struct qemu_RtlpWaitForCriticalSection call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLPWAITFORCRITICALSECTION);
+    call.crit = (uint64_t)crit;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlpWaitForCriticalSection(struct qemu_syscall *call)
+{
+    struct qemu_RtlpWaitForCriticalSection *c = (struct qemu_RtlpWaitForCriticalSection *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlpWaitForCriticalSection(QEMU_G2H(c->crit));
+}
+
+#endif
+
+struct qemu_RtlpUnWaitCriticalSection
+{
+    struct qemu_syscall super;
+    uint64_t crit;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlpUnWaitCriticalSection(RTL_CRITICAL_SECTION *crit)
+{
+    struct qemu_RtlpUnWaitCriticalSection call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLPUNWAITCRITICALSECTION);
+    call.crit = (uint64_t)crit;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlpUnWaitCriticalSection(struct qemu_syscall *call)
+{
+    struct qemu_RtlpUnWaitCriticalSection *c = (struct qemu_RtlpUnWaitCriticalSection *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlpUnWaitCriticalSection(QEMU_G2H(c->crit));
+}
+
+#endif
+
+struct qemu_RtlEnterCriticalSection
+{
+    struct qemu_syscall super;
+    uint64_t crit;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlEnterCriticalSection(RTL_CRITICAL_SECTION *crit)
+{
+    struct qemu_RtlEnterCriticalSection call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLENTERCRITICALSECTION);
+    call.crit = (uint64_t)crit;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlEnterCriticalSection(struct qemu_syscall *call)
+{
+    struct qemu_RtlEnterCriticalSection *c = (struct qemu_RtlEnterCriticalSection *)call;
+    WINE_TRACE("\n");
+    c->super.iret = RtlEnterCriticalSection(QEMU_G2H(c->crit));
+}
+
+#endif
+
+struct qemu_RtlTryEnterCriticalSection
+{
+    struct qemu_syscall super;
+    uint64_t crit;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI RtlTryEnterCriticalSection(RTL_CRITICAL_SECTION *crit)
+{
+    struct qemu_RtlTryEnterCriticalSection call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLTRYENTERCRITICALSECTION);
+    call.crit = (uint64_t)crit;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlTryEnterCriticalSection(struct qemu_syscall *call)
+{
+    struct qemu_RtlTryEnterCriticalSection *c = (struct qemu_RtlTryEnterCriticalSection *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlTryEnterCriticalSection(QEMU_G2H(c->crit));
+}
+
+#endif
+
+struct qemu_RtlIsCriticalSectionLocked
+{
+    struct qemu_syscall super;
+    uint64_t crit;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI RtlIsCriticalSectionLocked(RTL_CRITICAL_SECTION *crit)
+{
+    struct qemu_RtlIsCriticalSectionLocked call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLISCRITICALSECTIONLOCKED);
+    call.crit = (uint64_t)crit;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlIsCriticalSectionLocked(struct qemu_syscall *call)
+{
+    struct qemu_RtlIsCriticalSectionLocked *c = (struct qemu_RtlIsCriticalSectionLocked *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlIsCriticalSectionLocked(QEMU_G2H(c->crit));
+}
+
+#endif
+
+struct qemu_RtlIsCriticalSectionLockedByThread
+{
+    struct qemu_syscall super;
+    uint64_t crit;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI RtlIsCriticalSectionLockedByThread(RTL_CRITICAL_SECTION *crit)
+{
+    struct qemu_RtlIsCriticalSectionLockedByThread call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLISCRITICALSECTIONLOCKEDBYTHREAD);
+    call.crit = (uint64_t)crit;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlIsCriticalSectionLockedByThread(struct qemu_syscall *call)
+{
+    struct qemu_RtlIsCriticalSectionLockedByThread *c = (struct qemu_RtlIsCriticalSectionLockedByThread *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlIsCriticalSectionLockedByThread(QEMU_G2H(c->crit));
+}
+
+#endif
+
+struct qemu_RtlLeaveCriticalSection
+{
+    struct qemu_syscall super;
+    uint64_t crit;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlLeaveCriticalSection(RTL_CRITICAL_SECTION *crit)
+{
+    struct qemu_RtlLeaveCriticalSection call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLLEAVECRITICALSECTION);
+    call.crit = (uint64_t)crit;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
 }
 
 #else
 
 void qemu_RtlLeaveCriticalSection(struct qemu_syscall *call)
 {
-    struct qemu_RtlCriticalSectionOp *c = (struct qemu_RtlCriticalSectionOp *)call;
-    WINE_TRACE("\n");
-    RtlLeaveCriticalSection(QEMU_G2H(c->section));
+    struct qemu_RtlLeaveCriticalSection *c = (struct qemu_RtlLeaveCriticalSection *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlLeaveCriticalSection(QEMU_G2H(c->crit));
 }
 
 #endif
+
