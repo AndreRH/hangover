@@ -61,6 +61,40 @@ void qemu_GdiGetCodePage(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_GetTextCharsetInfo
+{
+    struct qemu_syscall super;
+    uint64_t hdc;
+    uint64_t fs;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINGDIAPI int WINAPI GetTextCharsetInfo(HDC hdc, FONTSIGNATURE *fs, DWORD flags)
+{
+    struct qemu_GetTextCharsetInfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTCHARSETINFO);
+    call.hdc = (uint64_t)hdc;
+    call.fs = (uint64_t)fs;
+    call.flags = (uint64_t)flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetTextCharsetInfo(struct qemu_syscall *call)
+{
+    struct qemu_GetTextCharsetInfo *c = (struct qemu_GetTextCharsetInfo *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetTextCharsetInfo(QEMU_G2H(c->hdc), QEMU_G2H(c->fs), c->flags);
+}
+
+#endif
+
 struct qemu_CreateFontIndirectExA
 {
     struct qemu_syscall super;
@@ -745,6 +779,84 @@ void qemu_GetTextExtentPoint32W(struct qemu_syscall *call)
     struct qemu_GetTextExtentPoint32W *c = (struct qemu_GetTextExtentPoint32W *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = GetTextExtentPoint32W(QEMU_G2H(c->hdc), QEMU_G2H(c->str), c->count, QEMU_G2H(c->size));
+}
+
+#endif
+
+struct qemu_GetTextExtentExPointI
+{
+    struct qemu_syscall super;
+    uint64_t hdc;
+    uint64_t indices;
+    uint64_t count;
+    uint64_t max_ext;
+    uint64_t nfit;
+    uint64_t dxs;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINGDIAPI WINBOOL WINAPI GetTextExtentExPointI(HDC hdc, WORD *indices, int count, int max_ext, LPINT nfit, LPINT dxs, LPSIZE size)
+{
+    struct qemu_GetTextExtentExPointI call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTEXTENTEXPOINTI);
+    call.hdc = (uint64_t)hdc;
+    call.indices = (uint64_t)indices;
+    call.count = (uint64_t)count;
+    call.max_ext = (uint64_t)max_ext;
+    call.nfit = (uint64_t)nfit;
+    call.dxs = (uint64_t)dxs;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetTextExtentExPointI(struct qemu_syscall *call)
+{
+    struct qemu_GetTextExtentExPointI *c = (struct qemu_GetTextExtentExPointI *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetTextExtentExPointI(QEMU_G2H(c->hdc), QEMU_G2H(c->indices), c->count, c->max_ext, QEMU_G2H(c->nfit), QEMU_G2H(c->dxs), QEMU_G2H(c->size));
+}
+
+#endif
+
+struct qemu_GetTextExtentPointI
+{
+    struct qemu_syscall super;
+    uint64_t hdc;
+    uint64_t indices;
+    uint64_t count;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINGDIAPI WINBOOL WINAPI GetTextExtentPointI(HDC hdc, WORD *indices, int count, LPSIZE size)
+{
+    struct qemu_GetTextExtentPointI call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTEXTENTPOINTI);
+    call.hdc = (uint64_t)hdc;
+    call.indices = (uint64_t)indices;
+    call.count = (uint64_t)count;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetTextExtentPointI(struct qemu_syscall *call)
+{
+    struct qemu_GetTextExtentPointI *c = (struct qemu_GetTextExtentPointI *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetTextExtentPointI(QEMU_G2H(c->hdc), QEMU_G2H(c->indices), c->count, QEMU_G2H(c->size));
 }
 
 #endif
@@ -2501,6 +2613,36 @@ void qemu_GetFontResourceInfoW(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_GetTextCharset
+{
+    struct qemu_syscall super;
+    uint64_t hdc;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINGDIAPI int WINAPI GetTextCharset(HDC hdc)
+{
+    struct qemu_GetTextCharset call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTCHARSET);
+    call.hdc = (uint64_t)hdc;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetTextCharset(struct qemu_syscall *call)
+{
+    struct qemu_GetTextCharset *c = (struct qemu_GetTextCharset *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetTextCharset(QEMU_G2H(c->hdc));
+}
+
+#endif
+
 struct qemu_GdiGetCharDimensions
 {
     struct qemu_syscall super;
@@ -2665,6 +2807,74 @@ void qemu_FontIsLinked(struct qemu_syscall *call)
     struct qemu_FontIsLinked *c = (struct qemu_FontIsLinked *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = FontIsLinked(QEMU_G2H(c->hdc));
+}
+
+#endif
+
+struct qemu_GetFontRealizationInfo
+{
+    struct qemu_syscall super;
+    uint64_t hdc;
+    uint64_t info;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINGDIAPI BOOL WINAPI GetFontRealizationInfo(HDC hdc, void *info)
+{
+    struct qemu_GetFontRealizationInfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETFONTREALIZATIONINFO);
+    call.hdc = (uint64_t)hdc;
+    call.info = (uint64_t)info;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add GetFontRealizationInfo to Wine headers? */
+extern BOOL WINAPI GetFontRealizationInfo(HDC hdc, void *info);
+void qemu_GetFontRealizationInfo(struct qemu_syscall *call)
+{
+    struct qemu_GetFontRealizationInfo *c = (struct qemu_GetFontRealizationInfo *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetFontRealizationInfo(QEMU_G2H(c->hdc), QEMU_G2H(c->info));
+}
+
+#endif
+
+struct qemu_GdiRealizationInfo
+{
+    struct qemu_syscall super;
+    uint64_t hdc;
+    uint64_t info;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINGDIAPI BOOL WINAPI GdiRealizationInfo(HDC hdc, void *info)
+{
+    struct qemu_GdiRealizationInfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GDIREALIZATIONINFO);
+    call.hdc = (uint64_t)hdc;
+    call.info = (uint64_t)info;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add GdiRealizationInfo to Wine headers? */
+extern BOOL WINAPI GdiRealizationInfo(HDC hdc, void *info);
+void qemu_GdiRealizationInfo(struct qemu_syscall *call)
+{
+    struct qemu_GdiRealizationInfo *c = (struct qemu_GdiRealizationInfo *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GdiRealizationInfo(QEMU_G2H(c->hdc), QEMU_G2H(c->info));
 }
 
 #endif

@@ -129,6 +129,7 @@ EXPORTS
   GdiIsMetaFileDC
   GdiIsMetaPrintDC
   GdiIsPlayMetafileDC
+  GdiRealizationInfo
   GdiSetBatchLimit
   GdiSetPixelFormat
   GdiSwapBuffers
@@ -175,6 +176,7 @@ EXPORTS
   GetEnhMetaFileW
   GetFontData
   GetFontLanguageInfo
+  GetFontRealizationInfo
   GetFontResourceInfoW
   GetFontUnicodeRanges
   GetGlyphIndicesA
@@ -218,12 +220,16 @@ EXPORTS
   GetSystemPaletteUse
   GetTextAlign
   GetTextCharacterExtra
+  GetTextCharset
+  GetTextCharsetInfo
   GetTextColor
   GetTextExtentExPointA
+  GetTextExtentExPointI
   GetTextExtentExPointW
   GetTextExtentPoint32A
   GetTextExtentPoint32W
   GetTextExtentPointA
+  GetTextExtentPointI
   GetTextExtentPointW
   GetTextFaceA
   GetTextFaceW

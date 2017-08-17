@@ -133,6 +133,7 @@ enum gdi32_calls
     CALL_GDIISMETAFILEDC,
     CALL_GDIISMETAPRINTDC,
     CALL_GDIISPLAYMETAFILEDC,
+    CALL_GDIREALIZATIONINFO,
     CALL_GDISETBATCHLIMIT,
     CALL_GDISETPIXELFORMAT,
     CALL_GDISWAPBUFFERS,
@@ -179,6 +180,7 @@ enum gdi32_calls
     CALL_GETENHMETAFILEW,
     CALL_GETFONTDATA,
     CALL_GETFONTLANGUAGEINFO,
+    CALL_GETFONTREALIZATIONINFO,
     CALL_GETFONTRESOURCEINFOW,
     CALL_GETFONTUNICODERANGES,
     CALL_GETGLYPHINDICESA,
@@ -222,12 +224,16 @@ enum gdi32_calls
     CALL_GETSYSTEMPALETTEUSE,
     CALL_GETTEXTALIGN,
     CALL_GETTEXTCHARACTEREXTRA,
+    CALL_GETTEXTCHARSET,
+    CALL_GETTEXTCHARSETINFO,
     CALL_GETTEXTCOLOR,
     CALL_GETTEXTEXTENTEXPOINTA,
+    CALL_GETTEXTEXTENTEXPOINTI,
     CALL_GETTEXTEXTENTEXPOINTW,
     CALL_GETTEXTEXTENTPOINT32A,
     CALL_GETTEXTEXTENTPOINT32W,
     CALL_GETTEXTEXTENTPOINTA,
+    CALL_GETTEXTEXTENTPOINTI,
     CALL_GETTEXTEXTENTPOINTW,
     CALL_GETTEXTFACEA,
     CALL_GETTEXTFACEW,
@@ -497,6 +503,7 @@ void qemu_GdiInitSpool(struct qemu_syscall *call);
 void qemu_GdiIsMetaFileDC(struct qemu_syscall *call);
 void qemu_GdiIsMetaPrintDC(struct qemu_syscall *call);
 void qemu_GdiIsPlayMetafileDC(struct qemu_syscall *call);
+void qemu_GdiRealizationInfo(struct qemu_syscall *call);
 void qemu_GdiSetBatchLimit(struct qemu_syscall *call);
 void qemu_GdiSetPixelFormat(struct qemu_syscall *call);
 void qemu_GdiSwapBuffers(struct qemu_syscall *call);
@@ -543,6 +550,7 @@ void qemu_GetEnhMetaFilePaletteEntries(struct qemu_syscall *call);
 void qemu_GetEnhMetaFileW(struct qemu_syscall *call);
 void qemu_GetFontData(struct qemu_syscall *call);
 void qemu_GetFontLanguageInfo(struct qemu_syscall *call);
+void qemu_GetFontRealizationInfo(struct qemu_syscall *call);
 void qemu_GetFontResourceInfoW(struct qemu_syscall *call);
 void qemu_GetFontUnicodeRanges(struct qemu_syscall *call);
 void qemu_GetGlyphIndicesA(struct qemu_syscall *call);
@@ -586,12 +594,16 @@ void qemu_GetSystemPaletteEntries(struct qemu_syscall *call);
 void qemu_GetSystemPaletteUse(struct qemu_syscall *call);
 void qemu_GetTextAlign(struct qemu_syscall *call);
 void qemu_GetTextCharacterExtra(struct qemu_syscall *call);
+void qemu_GetTextCharset(struct qemu_syscall *call);
+void qemu_GetTextCharsetInfo(struct qemu_syscall *call);
 void qemu_GetTextColor(struct qemu_syscall *call);
 void qemu_GetTextExtentExPointA(struct qemu_syscall *call);
+void qemu_GetTextExtentExPointI(struct qemu_syscall *call);
 void qemu_GetTextExtentExPointW(struct qemu_syscall *call);
 void qemu_GetTextExtentPoint32A(struct qemu_syscall *call);
 void qemu_GetTextExtentPoint32W(struct qemu_syscall *call);
 void qemu_GetTextExtentPointA(struct qemu_syscall *call);
+void qemu_GetTextExtentPointI(struct qemu_syscall *call);
 void qemu_GetTextExtentPointW(struct qemu_syscall *call);
 void qemu_GetTextFaceA(struct qemu_syscall *call);
 void qemu_GetTextFaceW(struct qemu_syscall *call);
