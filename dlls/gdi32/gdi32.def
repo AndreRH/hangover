@@ -8,6 +8,7 @@ EXPORTS
   AddFontResourceExW
   AddFontResourceW
   AngleArc
+  AnimatePalette
   Arc
   ArcTo
   BitBlt
@@ -39,9 +40,11 @@ EXPORTS
   CreateFontIndirectExW
   CreateFontIndirectW
   CreateFontW
+  CreateHalftonePalette
   CreateHatchBrush
   CreateICA
   CreateICW
+  CreatePalette
   CreatePatternBrush
   CreateScalableFontResourceA
   CreateScalableFontResourceW
@@ -167,11 +170,14 @@ EXPORTS
   GetMetaFileW
   GetMetaRgn
   GetMiterLimit
+  GetNearestColor
+  GetNearestPaletteIndex
   GetObjectA
   GetObjectType
   GetObjectW
   GetOutlineTextMetricsA
   GetOutlineTextMetricsW
+  GetPaletteEntries
   GetPixel
   GetPixelFormat
   GetPolyFillMode
@@ -180,6 +186,8 @@ EXPORTS
   GetROP2
   GetStockObject
   GetStretchBltMode
+  GetSystemPaletteEntries
+  GetSystemPaletteUse
   GetTextAlign
   GetTextCharacterExtra
   GetTextColor
@@ -231,6 +239,7 @@ EXPORTS
   PolyTextOutA
   PolyTextOutW
   PtVisible
+  RealizePalette
   Rectangle
   RectVisible
   RemoveFontMemResourceEx
@@ -240,6 +249,7 @@ EXPORTS
   RemoveFontResourceW
   ResetDCA
   ResetDCW
+  ResizePalette
   RestoreDC
   RoundRect
   SaveDC
@@ -247,6 +257,7 @@ EXPORTS
   ScaleWindowExtEx
   SelectClipRgn
   SelectObject
+  SelectPalette
   SetAbortProc
   SetArcDirection
   SetBitmapBits
@@ -270,12 +281,14 @@ EXPORTS
   SetICMProfileA
   SetICMProfileW
   SetLayout
+  SetMagicColors
   SetMapMode
   SetMapperFlags
   SetMetaFileBitsEx
   SetMetaRgn
   SetMiterLimit
   SetObjectOwner
+  SetPaletteEntries
   SetPixel
   SetPixelFormat
   SetPixelV
@@ -283,6 +296,7 @@ EXPORTS
   SetRelAbs
   SetROP2
   SetStretchBltMode
+  SetSystemPaletteUse
   SetTextAlign
   SetTextCharacterExtra
   SetTextColor
@@ -304,5 +318,6 @@ EXPORTS
   TextOutW
   TranslateCharsetInfo
   UnrealizeObject
+  UpdateColors
   UpdateICMRegKeyA
   UpdateICMRegKeyW
