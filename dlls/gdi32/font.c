@@ -410,9 +410,25 @@ struct qemu_EnumFontFamiliesA
     uint64_t lpFamily;
     uint64_t efproc;
     uint64_t lpData;
+    uint64_t wrapper;
+};
+
+struct qemu_EnumFontFamilies_cb
+{
+    uint64_t proc;
+    uint64_t font;
+    uint64_t metric;
+    uint64_t type;
+    uint64_t param;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static uint64_t EnumFontFamiliesA_guest_cb(struct qemu_EnumFontFamilies_cb *data)
+{
+    FONTENUMPROCA proc = (FONTENUMPROCA)data->proc;
+    return proc((const LOGFONTA *)data->font, (const TEXTMETRICA *)data->metric, data->type, data->param);
+}
 
 WINGDIAPI INT WINAPI EnumFontFamiliesA(HDC hDC, LPCSTR lpFamily, FONTENUMPROCA efproc, LPARAM lpData)
 {
@@ -422,6 +438,7 @@ WINGDIAPI INT WINAPI EnumFontFamiliesA(HDC hDC, LPCSTR lpFamily, FONTENUMPROCA e
     call.lpFamily = (uint64_t)lpFamily;
     call.efproc = (uint64_t)efproc;
     call.lpData = (uint64_t)lpData;
+    call.wrapper = (uint64_t)EnumFontFamiliesA_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -430,11 +447,43 @@ WINGDIAPI INT WINAPI EnumFontFamiliesA(HDC hDC, LPCSTR lpFamily, FONTENUMPROCA e
 
 #else
 
+struct qemu_EnumFontFamilies_host_data
+{
+    uint64_t wrapper, guest_func;
+    uint64_t guest_data;
+};
+
+static INT CALLBACK qemu_EnumFontFamiliesA_host_proc(const LOGFONTA *font, const TEXTMETRICA *metric, DWORD type, LPARAM param)
+{
+    struct qemu_EnumFontFamilies_host_data *data = (struct qemu_EnumFontFamilies_host_data *)param;
+    struct qemu_EnumFontFamilies_cb call;
+    INT ret;
+
+    WINE_TRACE("Calling guest callback 0x%lx(%p, %p, %u, 0x%lx).\n", data->guest_func, font, metric, type, data->guest_data);
+    call.proc = data->guest_func;
+    call.font = QEMU_H2G(font);
+    call.metric = QEMU_H2G(metric);
+    call.type = type;
+    call.param = data->guest_data;
+
+    ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&call));
+
+    WINE_TRACE("Callback returned %u.\n", ret);
+    return ret;
+}
+
 void qemu_EnumFontFamiliesA(struct qemu_syscall *call)
 {
     struct qemu_EnumFontFamiliesA *c = (struct qemu_EnumFontFamiliesA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumFontFamiliesA(QEMU_G2H(c->hDC), QEMU_G2H(c->lpFamily), QEMU_G2H(c->efproc), c->lpData);
+    struct qemu_EnumFontFamilies_host_data data;
+
+    WINE_TRACE("\n");
+    data.wrapper = c->wrapper;
+    data.guest_func = c->efproc;
+    data.guest_data = c->lpData;
+
+    c->super.iret = EnumFontFamiliesA(QEMU_G2H(c->hDC), QEMU_G2H(c->lpFamily),
+            c->efproc ? qemu_EnumFontFamiliesA_host_proc : NULL, (LPARAM)&data);
 }
 
 #endif
@@ -446,9 +495,16 @@ struct qemu_EnumFontFamiliesW
     uint64_t lpFamily;
     uint64_t efproc;
     uint64_t lpData;
+    uint64_t wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static uint64_t EnumFontFamiliesW_guest_cb(struct qemu_EnumFontFamilies_cb *data)
+{
+    FONTENUMPROCW proc = (FONTENUMPROCW)data->proc;
+    return proc((const LOGFONTW *)data->font, (const TEXTMETRICW *)data->metric, data->type, data->param);
+}
 
 WINGDIAPI INT WINAPI EnumFontFamiliesW(HDC hDC, LPCWSTR lpFamily, FONTENUMPROCW efproc, LPARAM lpData)
 {
@@ -458,6 +514,7 @@ WINGDIAPI INT WINAPI EnumFontFamiliesW(HDC hDC, LPCWSTR lpFamily, FONTENUMPROCW 
     call.lpFamily = (uint64_t)lpFamily;
     call.efproc = (uint64_t)efproc;
     call.lpData = (uint64_t)lpData;
+    call.wrapper = (uint64_t)EnumFontFamiliesW_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -466,11 +523,37 @@ WINGDIAPI INT WINAPI EnumFontFamiliesW(HDC hDC, LPCWSTR lpFamily, FONTENUMPROCW 
 
 #else
 
+static INT CALLBACK qemu_EnumFontFamiliesW_host_proc(const LOGFONTW *font, const TEXTMETRICW *metric, DWORD type, LPARAM param)
+{
+    struct qemu_EnumFontFamilies_host_data *data = (struct qemu_EnumFontFamilies_host_data *)param;
+    struct qemu_EnumFontFamilies_cb call;
+    INT ret;
+
+    WINE_TRACE("Calling guest callback 0x%lx(%p, %p, %u, 0x%lx).\n", data->guest_func, font, metric, type, data->guest_data);
+    call.proc = data->guest_func;
+    call.font = QEMU_H2G(font);
+    call.metric = QEMU_H2G(metric);
+    call.type = type;
+    call.param = data->guest_data;
+
+    ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&call));
+
+    WINE_TRACE("Callback returned %u.\n", ret);
+    return ret;
+}
+
 void qemu_EnumFontFamiliesW(struct qemu_syscall *call)
 {
     struct qemu_EnumFontFamiliesW *c = (struct qemu_EnumFontFamiliesW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumFontFamiliesW(QEMU_G2H(c->hDC), QEMU_G2H(c->lpFamily), QEMU_G2H(c->efproc), c->lpData);
+    struct qemu_EnumFontFamilies_host_data data;
+
+    WINE_TRACE("\n");
+    data.wrapper = c->wrapper;
+    data.guest_func = c->efproc;
+    data.guest_data = c->lpData;
+
+    c->super.iret = EnumFontFamiliesW(QEMU_G2H(c->hDC), QEMU_G2H(c->lpFamily),
+            c->efproc ? qemu_EnumFontFamiliesW_host_proc : NULL, (LPARAM)&data);
 }
 
 #endif
