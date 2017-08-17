@@ -229,9 +229,26 @@ struct qemu_EnumMetaFile
     uint64_t hmf;
     uint64_t lpEnumFunc;
     uint64_t lpData;
+    uint64_t wrapper;
+};
+
+struct qemu_EnumMetaFile_cb
+{
+    uint64_t proc;
+    uint64_t dc;
+    uint64_t handle_table;
+    uint64_t emr;
+    uint64_t n_objs;
+    uint64_t param;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static uint64_t EnumMetaFile_guest_cb(struct qemu_EnumMetaFile_cb *data)
+{
+    MFENUMPROC proc = (MFENUMPROC)data->proc;
+    return proc((HDC)data->dc, (HANDLETABLE *)data->handle_table, (METARECORD *)data->emr, data->n_objs, data->param);
+}
 
 WINGDIAPI BOOL WINAPI EnumMetaFile(HDC hdc, HMETAFILE hmf, MFENUMPROC lpEnumFunc, LPARAM lpData)
 {
@@ -241,6 +258,7 @@ WINGDIAPI BOOL WINAPI EnumMetaFile(HDC hdc, HMETAFILE hmf, MFENUMPROC lpEnumFunc
     call.hmf = (uint64_t)hmf;
     call.lpEnumFunc = (uint64_t)lpEnumFunc;
     call.lpData = (uint64_t)lpData;
+    call.wrapper = (uint64_t)EnumMetaFile_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -249,11 +267,45 @@ WINGDIAPI BOOL WINAPI EnumMetaFile(HDC hdc, HMETAFILE hmf, MFENUMPROC lpEnumFunc
 
 #else
 
+struct qemu_EnumMetaFile_host_data
+{
+    uint64_t wrapper, guest_func;
+    uint64_t guest_data;
+};
+
+static int CALLBACK qemu_EnumEnhMetaFile_host_cb(HDC hdc, HANDLETABLE *handle_table,
+        METARECORD *emr, int n_objs, LPARAM param)
+{
+    struct qemu_EnumMetaFile_host_data *data = (struct qemu_EnumMetaFile_host_data *)param;
+    struct qemu_EnumMetaFile_cb call;
+    int ret;
+
+    WINE_TRACE("Calling guest callback 0x%lx(%p, %p, %p, %d, 0x%lx).\n", data->guest_func, hdc,
+            handle_table, emr, n_objs, data->guest_data);
+    call.proc = data->guest_func;
+    call.dc = (uint64_t)hdc;
+    call.handle_table = QEMU_H2G(handle_table);
+    call.emr = QEMU_H2G(emr);
+    call.n_objs = n_objs;
+    call.param = data->guest_data;
+
+    ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&call));
+
+    WINE_TRACE("Callback returned %d.\n", ret);
+    return ret;
+}
+
 void qemu_EnumMetaFile(struct qemu_syscall *call)
 {
     struct qemu_EnumMetaFile *c = (struct qemu_EnumMetaFile *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumMetaFile(QEMU_G2H(c->hdc), QEMU_G2H(c->hmf), QEMU_G2H(c->lpEnumFunc), c->lpData);
+    struct qemu_EnumMetaFile_host_data data;
+
+    WINE_TRACE("\n");
+    data.wrapper = c->wrapper;
+    data.guest_func = c->lpEnumFunc;
+    data.guest_data = c->lpData;
+    c->super.iret = EnumMetaFile((HDC)c->hdc, QEMU_G2H(c->hmf),
+            c->lpEnumFunc ? qemu_EnumEnhMetaFile_host_cb : NULL, (LPARAM)&data);
 }
 
 #endif
