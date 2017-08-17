@@ -509,6 +509,12 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
     ntdll_RtlRestoreContext(context, rec);
 }
 
+void WINAPI ntdll_RtlUnwind( void *frame, void *target_ip, EXCEPTION_RECORD *rec, void *retval )
+{
+    CONTEXT context;
+    ntdll_RtlUnwindEx( frame, target_ip, rec, retval, &context, NULL );
+}
+
 /* Copypasted from Wine. */
 NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec,
         ULONG64 frame, CONTEXT *context, struct _DISPATCHER_CONTEXT *dispatch)

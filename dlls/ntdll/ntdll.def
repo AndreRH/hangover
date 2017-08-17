@@ -351,6 +351,8 @@ EXPORTS
   RtlUnicodeToOemN
   RtlUniform
   RtlUnlockHeap
+  RtlUnwind=ntdll_RtlUnwind
+  RtlUnwindEx=ntdll_RtlUnwindEx
   RtlUpcaseUnicodeChar
   RtlUpcaseUnicodeString
   RtlUpcaseUnicodeStringToAnsiString

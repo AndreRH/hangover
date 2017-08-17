@@ -775,6 +775,8 @@ EXPORTS
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   RtlCaptureContext=ntdll.RtlCaptureContext
   RtlLookupFunctionEntry=ntdll.RtlLookupFunctionEntry
+  RtlUnwind=ntdll.RtlUnwind
+  RtlUnwindEx=ntdll.RtlUnwindEx
   RtlVirtualUnwind=ntdll.RtlVirtualUnwind
   ScrollConsoleScreenBufferA
   ScrollConsoleScreenBufferW
