@@ -68,7 +68,9 @@ EXPORTS
   EnumFontsW
   EnumMetaFile
   EnumObjects
+  ExcludeClipRect
   ExtFloodFill
+  ExtSelectClipRgn
   ExtTextOutA
   ExtTextOutW
   FillRgn
@@ -115,6 +117,8 @@ EXPORTS
   GetCharWidthFloatA
   GetCharWidthFloatW
   GetCharWidthI
+  GetClipBox
+  GetClipRgn
   GetColorAdjustment
   GetColorSpace
   GetCurrentObject
@@ -149,6 +153,7 @@ EXPORTS
   GetMetaFileA
   GetMetaFileBitsEx
   GetMetaFileW
+  GetMetaRgn
   GetMiterLimit
   GetObjectA
   GetObjectType
@@ -158,6 +163,7 @@ EXPORTS
   GetPixel
   GetPixelFormat
   GetPolyFillMode
+  GetRandomRgn
   GetRelAbs
   GetROP2
   GetStockObject
@@ -182,6 +188,7 @@ EXPORTS
   GetWindowOrgEx
   GetWinMetaFileBits
   GetWorldTransform
+  IntersectClipRect
   InvertRgn
   LineDDA
   LineTo
@@ -189,6 +196,7 @@ EXPORTS
   MaskBlt
   ModifyWorldTransform
   MoveToEx
+  OffsetClipRgn
   OffsetViewportOrgEx
   OffsetWindowOrgEx
   PaintRgn
@@ -209,7 +217,9 @@ EXPORTS
   PolyPolyline
   PolyTextOutA
   PolyTextOutW
+  PtVisible
   Rectangle
+  RectVisible
   RemoveFontMemResourceEx
   RemoveFontResourceA
   RemoveFontResourceExA
@@ -222,6 +232,7 @@ EXPORTS
   SaveDC
   ScaleViewportExtEx
   ScaleWindowExtEx
+  SelectClipRgn
   SelectObject
   SetAbortProc
   SetArcDirection
@@ -247,6 +258,7 @@ EXPORTS
   SetMapMode
   SetMapperFlags
   SetMetaFileBitsEx
+  SetMetaRgn
   SetMiterLimit
   SetObjectOwner
   SetPixel

@@ -72,7 +72,9 @@ enum gdi32_calls
     CALL_ENUMFONTSW,
     CALL_ENUMMETAFILE,
     CALL_ENUMOBJECTS,
+    CALL_EXCLUDECLIPRECT,
     CALL_EXTFLOODFILL,
+    CALL_EXTSELECTCLIPRGN,
     CALL_EXTTEXTOUTA,
     CALL_EXTTEXTOUTW,
     CALL_FILLRGN,
@@ -119,6 +121,8 @@ enum gdi32_calls
     CALL_GETCHARWIDTHFLOATA,
     CALL_GETCHARWIDTHFLOATW,
     CALL_GETCHARWIDTHI,
+    CALL_GETCLIPBOX,
+    CALL_GETCLIPRGN,
     CALL_GETCOLORADJUSTMENT,
     CALL_GETCOLORSPACE,
     CALL_GETCURRENTOBJECT,
@@ -153,6 +157,7 @@ enum gdi32_calls
     CALL_GETMETAFILEA,
     CALL_GETMETAFILEBITSEX,
     CALL_GETMETAFILEW,
+    CALL_GETMETARGN,
     CALL_GETMITERLIMIT,
     CALL_GETOBJECTA,
     CALL_GETOBJECTTYPE,
@@ -162,6 +167,7 @@ enum gdi32_calls
     CALL_GETPIXEL,
     CALL_GETPIXELFORMAT,
     CALL_GETPOLYFILLMODE,
+    CALL_GETRANDOMRGN,
     CALL_GETRELABS,
     CALL_GETROP2,
     CALL_GETSTOCKOBJECT,
@@ -186,6 +192,7 @@ enum gdi32_calls
     CALL_GETWINDOWORGEX,
     CALL_GETWINMETAFILEBITS,
     CALL_GETWORLDTRANSFORM,
+    CALL_INTERSECTCLIPRECT,
     CALL_INVERTRGN,
     CALL_LINEDDA,
     CALL_LINETO,
@@ -193,6 +200,7 @@ enum gdi32_calls
     CALL_MASKBLT,
     CALL_MODIFYWORLDTRANSFORM,
     CALL_MOVETOEX,
+    CALL_OFFSETCLIPRGN,
     CALL_OFFSETVIEWPORTORGEX,
     CALL_OFFSETWINDOWORGEX,
     CALL_PAINTRGN,
@@ -213,7 +221,9 @@ enum gdi32_calls
     CALL_POLYPOLYLINE,
     CALL_POLYTEXTOUTA,
     CALL_POLYTEXTOUTW,
+    CALL_PTVISIBLE,
     CALL_RECTANGLE,
+    CALL_RECTVISIBLE,
     CALL_REMOVEFONTMEMRESOURCEEX,
     CALL_REMOVEFONTRESOURCEA,
     CALL_REMOVEFONTRESOURCEEXA,
@@ -226,6 +236,7 @@ enum gdi32_calls
     CALL_SAVEDC,
     CALL_SCALEVIEWPORTEXTEX,
     CALL_SCALEWINDOWEXTEX,
+    CALL_SELECTCLIPRGN,
     CALL_SELECTOBJECT,
     CALL_SETABORTPROC,
     CALL_SETARCDIRECTION,
@@ -251,6 +262,7 @@ enum gdi32_calls
     CALL_SETMAPMODE,
     CALL_SETMAPPERFLAGS,
     CALL_SETMETAFILEBITSEX,
+    CALL_SETMETARGN,
     CALL_SETMITERLIMIT,
     CALL_SETOBJECTOWNER,
     CALL_SETPIXEL,
@@ -354,7 +366,9 @@ void qemu_EnumFontsA(struct qemu_syscall *call);
 void qemu_EnumFontsW(struct qemu_syscall *call);
 void qemu_EnumMetaFile(struct qemu_syscall *call);
 void qemu_EnumObjects(struct qemu_syscall *call);
+void qemu_ExcludeClipRect(struct qemu_syscall *call);
 void qemu_ExtFloodFill(struct qemu_syscall *call);
+void qemu_ExtSelectClipRgn(struct qemu_syscall *call);
 void qemu_ExtTextOutA(struct qemu_syscall *call);
 void qemu_ExtTextOutW(struct qemu_syscall *call);
 void qemu_FillRgn(struct qemu_syscall *call);
@@ -401,6 +415,8 @@ void qemu_GetCharWidth32W(struct qemu_syscall *call);
 void qemu_GetCharWidthFloatA(struct qemu_syscall *call);
 void qemu_GetCharWidthFloatW(struct qemu_syscall *call);
 void qemu_GetCharWidthI(struct qemu_syscall *call);
+void qemu_GetClipBox(struct qemu_syscall *call);
+void qemu_GetClipRgn(struct qemu_syscall *call);
 void qemu_GetColorAdjustment(struct qemu_syscall *call);
 void qemu_GetColorSpace(struct qemu_syscall *call);
 void qemu_GetCurrentObject(struct qemu_syscall *call);
@@ -435,6 +451,7 @@ void qemu_GetMapMode(struct qemu_syscall *call);
 void qemu_GetMetaFileA(struct qemu_syscall *call);
 void qemu_GetMetaFileBitsEx(struct qemu_syscall *call);
 void qemu_GetMetaFileW(struct qemu_syscall *call);
+void qemu_GetMetaRgn(struct qemu_syscall *call);
 void qemu_GetMiterLimit(struct qemu_syscall *call);
 void qemu_GetObjectA(struct qemu_syscall *call);
 void qemu_GetObjectType(struct qemu_syscall *call);
@@ -444,6 +461,7 @@ void qemu_GetOutlineTextMetricsW(struct qemu_syscall *call);
 void qemu_GetPixel(struct qemu_syscall *call);
 void qemu_GetPixelFormat(struct qemu_syscall *call);
 void qemu_GetPolyFillMode(struct qemu_syscall *call);
+void qemu_GetRandomRgn(struct qemu_syscall *call);
 void qemu_GetRelAbs(struct qemu_syscall *call);
 void qemu_GetROP2(struct qemu_syscall *call);
 void qemu_GetStockObject(struct qemu_syscall *call);
@@ -468,6 +486,7 @@ void qemu_GetWindowExtEx(struct qemu_syscall *call);
 void qemu_GetWindowOrgEx(struct qemu_syscall *call);
 void qemu_GetWinMetaFileBits(struct qemu_syscall *call);
 void qemu_GetWorldTransform(struct qemu_syscall *call);
+void qemu_IntersectClipRect(struct qemu_syscall *call);
 void qemu_InvertRgn(struct qemu_syscall *call);
 void qemu_LineDDA(struct qemu_syscall *call);
 void qemu_LineTo(struct qemu_syscall *call);
@@ -475,6 +494,7 @@ void qemu_LPtoDP(struct qemu_syscall *call);
 void qemu_MaskBlt(struct qemu_syscall *call);
 void qemu_ModifyWorldTransform(struct qemu_syscall *call);
 void qemu_MoveToEx(struct qemu_syscall *call);
+void qemu_OffsetClipRgn(struct qemu_syscall *call);
 void qemu_OffsetViewportOrgEx(struct qemu_syscall *call);
 void qemu_OffsetWindowOrgEx(struct qemu_syscall *call);
 void qemu_PaintRgn(struct qemu_syscall *call);
@@ -495,7 +515,9 @@ void qemu_PolyPolygon(struct qemu_syscall *call);
 void qemu_PolyPolyline(struct qemu_syscall *call);
 void qemu_PolyTextOutA(struct qemu_syscall *call);
 void qemu_PolyTextOutW(struct qemu_syscall *call);
+void qemu_PtVisible(struct qemu_syscall *call);
 void qemu_Rectangle(struct qemu_syscall *call);
+void qemu_RectVisible(struct qemu_syscall *call);
 void qemu_RemoveFontMemResourceEx(struct qemu_syscall *call);
 void qemu_RemoveFontResourceA(struct qemu_syscall *call);
 void qemu_RemoveFontResourceExA(struct qemu_syscall *call);
@@ -508,6 +530,7 @@ void qemu_RoundRect(struct qemu_syscall *call);
 void qemu_SaveDC(struct qemu_syscall *call);
 void qemu_ScaleViewportExtEx(struct qemu_syscall *call);
 void qemu_ScaleWindowExtEx(struct qemu_syscall *call);
+void qemu_SelectClipRgn(struct qemu_syscall *call);
 void qemu_SelectObject(struct qemu_syscall *call);
 void qemu_SetAbortProc(struct qemu_syscall *call);
 void qemu_SetArcDirection(struct qemu_syscall *call);
@@ -533,6 +556,7 @@ void qemu_SetLayout(struct qemu_syscall *call);
 void qemu_SetMapMode(struct qemu_syscall *call);
 void qemu_SetMapperFlags(struct qemu_syscall *call);
 void qemu_SetMetaFileBitsEx(struct qemu_syscall *call);
+void qemu_SetMetaRgn(struct qemu_syscall *call);
 void qemu_SetMiterLimit(struct qemu_syscall *call);
 void qemu_SetObjectOwner(struct qemu_syscall *call);
 void qemu_SetPixel(struct qemu_syscall *call);
