@@ -21,6 +21,7 @@ enum gdi32_calls
     CALL_CANCELDC,
     CALL_CHOOSEPIXELFORMAT,
     CALL_CHORD,
+    CALL_CLOSEENHMETAFILE,
     CALL_CLOSEFIGURE,
     CALL_COMBINERGN,
     CALL_COMBINETRANSFORM,
@@ -44,6 +45,8 @@ enum gdi32_calls
     CALL_CREATEDISCARDABLEBITMAP,
     CALL_CREATEELLIPTICRGN,
     CALL_CREATEELLIPTICRGNINDIRECT,
+    CALL_CREATEENHMETAFILEA,
+    CALL_CREATEENHMETAFILEW,
     CALL_CREATEFONTA,
     CALL_CREATEFONTINDIRECTA,
     CALL_CREATEFONTINDIRECTEXA,
@@ -379,6 +382,7 @@ void qemu_BitBlt(struct qemu_syscall *call);
 void qemu_CancelDC(struct qemu_syscall *call);
 void qemu_ChoosePixelFormat(struct qemu_syscall *call);
 void qemu_Chord(struct qemu_syscall *call);
+void qemu_CloseEnhMetaFile(struct qemu_syscall *call);
 void qemu_CloseFigure(struct qemu_syscall *call);
 void qemu_CombineRgn(struct qemu_syscall *call);
 void qemu_CombineTransform(struct qemu_syscall *call);
@@ -402,6 +406,8 @@ void qemu_CreateDIBSection(struct qemu_syscall *call);
 void qemu_CreateDiscardableBitmap(struct qemu_syscall *call);
 void qemu_CreateEllipticRgn(struct qemu_syscall *call);
 void qemu_CreateEllipticRgnIndirect(struct qemu_syscall *call);
+void qemu_CreateEnhMetaFileA(struct qemu_syscall *call);
+void qemu_CreateEnhMetaFileW(struct qemu_syscall *call);
 void qemu_CreateFontA(struct qemu_syscall *call);
 void qemu_CreateFontIndirectA(struct qemu_syscall *call);
 void qemu_CreateFontIndirectExA(struct qemu_syscall *call);

@@ -17,6 +17,7 @@ EXPORTS
   CancelDC
   ChoosePixelFormat
   Chord
+  CloseEnhMetaFile
   CloseFigure
   CombineRgn
   CombineTransform
@@ -40,6 +41,8 @@ EXPORTS
   CreateDiscardableBitmap
   CreateEllipticRgn
   CreateEllipticRgnIndirect
+  CreateEnhMetaFileA
+  CreateEnhMetaFileW
   CreateFontA
   CreateFontIndirectA
   CreateFontIndirectExA
