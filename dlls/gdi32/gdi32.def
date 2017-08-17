@@ -21,6 +21,7 @@ EXPORTS
   CopyMetaFileW
   CreateBitmap
   CreateBitmapIndirect
+  CreateBrushIndirect
   CreateColorSpaceA
   CreateColorSpaceW
   CreateCompatibleBitmap
@@ -28,6 +29,8 @@ EXPORTS
   CreateDCA
   CreateDCW
   CreateDIBitmap
+  CreateDIBPatternBrush
+  CreateDIBPatternBrushPt
   CreateDIBSection
   CreateDiscardableBitmap
   CreateFontA
@@ -36,10 +39,13 @@ EXPORTS
   CreateFontIndirectExW
   CreateFontIndirectW
   CreateFontW
+  CreateHatchBrush
   CreateICA
   CreateICW
+  CreatePatternBrush
   CreateScalableFontResourceA
   CreateScalableFontResourceW
+  CreateSolidBrush
   D3DKMTCreateDCFromMemory
   D3DKMTDestroyDCFromMemory
   DeleteColorSpace
@@ -66,6 +72,7 @@ EXPORTS
   ExtTextOutA
   ExtTextOutW
   FillRgn
+  FixBrushOrgEx
   FloodFill
   FontIsLinked
   FrameRgn
@@ -223,6 +230,7 @@ EXPORTS
   SetBkColor
   SetBkMode
   SetBoundsRect
+  SetBrushOrgEx
   SetColorAdjustment
   SetColorSpace
   SetDCBrushColor

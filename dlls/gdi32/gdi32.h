@@ -25,6 +25,7 @@ enum gdi32_calls
     CALL_COPYMETAFILEW,
     CALL_CREATEBITMAP,
     CALL_CREATEBITMAPINDIRECT,
+    CALL_CREATEBRUSHINDIRECT,
     CALL_CREATECOLORSPACEA,
     CALL_CREATECOLORSPACEW,
     CALL_CREATECOMPATIBLEBITMAP,
@@ -32,6 +33,8 @@ enum gdi32_calls
     CALL_CREATEDCA,
     CALL_CREATEDCW,
     CALL_CREATEDIBITMAP,
+    CALL_CREATEDIBPATTERNBRUSH,
+    CALL_CREATEDIBPATTERNBRUSHPT,
     CALL_CREATEDIBSECTION,
     CALL_CREATEDISCARDABLEBITMAP,
     CALL_CREATEFONTA,
@@ -40,10 +43,13 @@ enum gdi32_calls
     CALL_CREATEFONTINDIRECTEXW,
     CALL_CREATEFONTINDIRECTW,
     CALL_CREATEFONTW,
+    CALL_CREATEHATCHBRUSH,
     CALL_CREATEICA,
     CALL_CREATEICW,
+    CALL_CREATEPATTERNBRUSH,
     CALL_CREATESCALABLEFONTRESOURCEA,
     CALL_CREATESCALABLEFONTRESOURCEW,
+    CALL_CREATESOLIDBRUSH,
     CALL_D3DKMTCREATEDCFROMMEMORY,
     CALL_D3DKMTDESTROYDCFROMMEMORY,
     CALL_DELETECOLORSPACE,
@@ -70,6 +76,7 @@ enum gdi32_calls
     CALL_EXTTEXTOUTA,
     CALL_EXTTEXTOUTW,
     CALL_FILLRGN,
+    CALL_FIXBRUSHORGEX,
     CALL_FLOODFILL,
     CALL_FONTISLINKED,
     CALL_FRAMERGN,
@@ -227,6 +234,7 @@ enum gdi32_calls
     CALL_SETBKCOLOR,
     CALL_SETBKMODE,
     CALL_SETBOUNDSRECT,
+    CALL_SETBRUSHORGEX,
     CALL_SETCOLORADJUSTMENT,
     CALL_SETCOLORSPACE,
     CALL_SETDCBRUSHCOLOR,
@@ -299,6 +307,7 @@ void qemu_CopyMetaFileA(struct qemu_syscall *call);
 void qemu_CopyMetaFileW(struct qemu_syscall *call);
 void qemu_CreateBitmap(struct qemu_syscall *call);
 void qemu_CreateBitmapIndirect(struct qemu_syscall *call);
+void qemu_CreateBrushIndirect(struct qemu_syscall *call);
 void qemu_CreateColorSpaceA(struct qemu_syscall *call);
 void qemu_CreateColorSpaceW(struct qemu_syscall *call);
 void qemu_CreateCompatibleBitmap(struct qemu_syscall *call);
@@ -306,6 +315,8 @@ void qemu_CreateCompatibleDC(struct qemu_syscall *call);
 void qemu_CreateDCA(struct qemu_syscall *call);
 void qemu_CreateDCW(struct qemu_syscall *call);
 void qemu_CreateDIBitmap(struct qemu_syscall *call);
+void qemu_CreateDIBPatternBrush(struct qemu_syscall *call);
+void qemu_CreateDIBPatternBrushPt(struct qemu_syscall *call);
 void qemu_CreateDIBSection(struct qemu_syscall *call);
 void qemu_CreateDiscardableBitmap(struct qemu_syscall *call);
 void qemu_CreateFontA(struct qemu_syscall *call);
@@ -314,10 +325,13 @@ void qemu_CreateFontIndirectExA(struct qemu_syscall *call);
 void qemu_CreateFontIndirectExW(struct qemu_syscall *call);
 void qemu_CreateFontIndirectW(struct qemu_syscall *call);
 void qemu_CreateFontW(struct qemu_syscall *call);
+void qemu_CreateHatchBrush(struct qemu_syscall *call);
 void qemu_CreateICA(struct qemu_syscall *call);
 void qemu_CreateICW(struct qemu_syscall *call);
+void qemu_CreatePatternBrush(struct qemu_syscall *call);
 void qemu_CreateScalableFontResourceA(struct qemu_syscall *call);
 void qemu_CreateScalableFontResourceW(struct qemu_syscall *call);
+void qemu_CreateSolidBrush(struct qemu_syscall *call);
 void qemu_D3DKMTCreateDCFromMemory(struct qemu_syscall *call);
 void qemu_D3DKMTDestroyDCFromMemory(struct qemu_syscall *call);
 void qemu_DeleteColorSpace(struct qemu_syscall *call);
@@ -344,6 +358,7 @@ void qemu_ExtFloodFill(struct qemu_syscall *call);
 void qemu_ExtTextOutA(struct qemu_syscall *call);
 void qemu_ExtTextOutW(struct qemu_syscall *call);
 void qemu_FillRgn(struct qemu_syscall *call);
+void qemu_FixBrushOrgEx(struct qemu_syscall *call);
 void qemu_FloodFill(struct qemu_syscall *call);
 void qemu_FontIsLinked(struct qemu_syscall *call);
 void qemu_FrameRgn(struct qemu_syscall *call);
@@ -501,6 +516,7 @@ void qemu_SetBitmapDimensionEx(struct qemu_syscall *call);
 void qemu_SetBkColor(struct qemu_syscall *call);
 void qemu_SetBkMode(struct qemu_syscall *call);
 void qemu_SetBoundsRect(struct qemu_syscall *call);
+void qemu_SetBrushOrgEx(struct qemu_syscall *call);
 void qemu_SetColorAdjustment(struct qemu_syscall *call);
 void qemu_SetColorSpace(struct qemu_syscall *call);
 void qemu_SetDCBrushColor(struct qemu_syscall *call);

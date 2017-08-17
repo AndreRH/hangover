@@ -96,7 +96,7 @@ WINBASEAPI BOOL WINAPI BitBlt(HDC hdcDst, INT xDst, INT yDst, INT width, INT hei
     call.yDst = yDst;
     call.width = width;
     call.height = height;
-    call.hdcSrc = hdcSrc;
+    call.hdcSrc = (uint64_t)hdcSrc;
     call.xSrc = xSrc;
     call.ySrc = ySrc;
     call.rop = rop;
