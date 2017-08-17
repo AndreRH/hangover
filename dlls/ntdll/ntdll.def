@@ -49,18 +49,29 @@ EXPORTS
   NtAlertThread
   NtAllocateLocallyUniqueId
   NtAllocateUuids
+  NtAssignProcessToJobObject
   NtCancelIoFile
   NtCancelIoFileEx
+  NtCancelTimer
+  NtClearEvent
   NtClose
   NtCompleteConnectPort
   NtConnectPort
   NtCreateDirectoryObject
+  NtCreateEvent
   NtCreateFile
+  NtCreateIoCompletion
+  NtCreateJobObject
+  NtCreateKeyedEvent
   NtCreateMailslotFile
+  NtCreateMutant
   NtCreateNamedPipeFile
   NtCreatePagingFile
   NtCreatePort
+  NtCreateSemaphore
   NtCreateSymbolicLinkObject
+  NtCreateTimer
+  NtDelayExecution
   NtDeleteFile
   NtDeviceIoControlFile
   NtDisplayString
@@ -71,67 +82,101 @@ EXPORTS
   NtFsControlFile
   NtGetCurrentProcessorNumber
   NtInitiatePowerAction
+  NtIsProcessInJob
   NtListenPort
   NtLockFile
   NtMakeTemporaryObject
   NtNotifyChangeDirectoryFile
   NtOpenDirectoryObject
+  NtOpenEvent
   NtOpenFile
+  NtOpenIoCompletion
+  NtOpenJobObject
+  NtOpenKeyedEvent
+  NtOpenMutant
   NtOpenProcess
   NtOpenProcessToken
   NtOpenProcessTokenEx
+  NtOpenSemaphore
   NtOpenSymbolicLinkObject
   NtOpenThread
   NtOpenThreadToken
   NtOpenThreadTokenEx
+  NtOpenTimer
   NtPowerInformation
   NtPrivilegeCheck
+  NtPulseEvent
   NtQueryAttributesFile
   NtQueryDirectoryObject
   NtQueryEaFile
+  NtQueryEvent
   NtQueryFullAttributesFile
   NtQueryInformationFile
+  NtQueryInformationJobObject
   NtQueryInformationProcess
   NtQueryInformationThread
   NtQueryInformationToken
+  NtQueryIoCompletion
+  NtQueryMutant
   NtQueryObject
   NtQuerySecurityObject
+  NtQuerySemaphore
   NtQuerySymbolicLinkObject
   NtQuerySystemInformation
   NtQuerySystemInformationEx
+  NtQueryTimer
+  NtQueryTimerResolution
   NtQueryVolumeInformationFile
   NtQueueApcThread
   NtRaiseException=ntdll_NtRaiseException
   NtReadFile
   NtReadFileScatter
   NtRegisterThreadTerminatePort
+  NtReleaseKeyedEvent
+  NtReleaseMutant
+  NtReleaseSemaphore
+  NtRemoveIoCompletion
   NtReplyWaitReceivePort
   NtRequestWaitReplyPort
+  NtResetEvent
   NtResumeProcess
   NtResumeThread
   NtSecureConnectPort
   NtSetEaFile
+  NtSetEvent
   NtSetInformationFile
+  NtSetInformationJobObject
   NtSetInformationObject
   NtSetInformationProcess
   NtSetInformationThread
   NtSetInformationToken
   NtSetIntervalProfile
+  NtSetIoCompletion
   NtSetLdtEntries
   NtSetSystemInformation
+  NtSetTimer
+  NtSetTimerResolution
   NtSetVolumeInformationFile
   NtShutdownSystem
+  NtSignalAndWaitForSingleObject
   NtSuspendProcess
   NtSuspendThread
   NtSystemDebugControl
+  NtTerminateJobObject
   NtTerminateProcess=ntdll_NtTerminateProcess
   NtTerminateThread
   NtUnlockFile
+  NtWaitForKeyedEvent
+  NtWaitForMultipleObjects
+  NtWaitForSingleObject
   NtWriteFile
   NtWriteFileGather
+  NtYieldExecution
   RtlAcquirePebLock
   RtlAcquireResourceExclusive
   RtlAcquireResourceShared
+  RtlAcquireSRWLockExclusive
+  RtlAcquireSRWLockShared
   RtlActivateActivationContext
   RtlAddFunctionTable
   RtlAddRefActivationContext
@@ -224,11 +269,13 @@ EXPORTS
   RtlImageRvaToVa=ntdll_RtlImageRvaToVa
   RtlInitAnsiString
   RtlInitAnsiStringEx
+  RtlInitializeConditionVariable
   RtlInitializeCriticalSectionEx
   RtlInitializeGenericTable
   RtlInitializeGenericTableAvl
   RtlInitializeResource
   RtlInitializeSListHead
+  RtlInitializeSRWLock
   RtlInitString
   RtlInitUnicodeString
   RtlInitUnicodeStringEx
@@ -270,12 +317,22 @@ EXPORTS
   RtlReleaseActivationContext
   RtlReleasePebLock
   RtlReleaseResource
+  RtlReleaseSRWLockExclusive
+  RtlReleaseSRWLockShared
+  RtlRunOnceBeginInitialize
+  RtlRunOnceComplete
+  RtlRunOnceExecuteOnce
+  RtlRunOnceInitialize
   RtlSetCurrentDirectory_U
   RtlSetCurrentTransaction
   RtlSetHeapInformation
   RtlSetThreadErrorMode
   RtlSizeHeap
+  RtlSleepConditionVariableCS
+  RtlSleepConditionVariableSRW
   RtlStringFromGUID
+  RtlTryAcquireSRWLockExclusive
+  RtlTryAcquireSRWLockShared
   RtlUnicodeStringToAnsiSize
   RtlUnicodeStringToAnsiString
   RtlUnicodeStringToInteger
@@ -298,6 +355,8 @@ EXPORTS
   RtlValidateHeap
   RtlVerifyVersionInfo
   RtlVirtualUnwind=ntdll_RtlVirtualUnwind
+  RtlWakeAllConditionVariable
+  RtlWakeConditionVariable
   RtlWalkHeap
   RtlZeroMemory=ntdll_RtlZeroMemory
   RtlZombifyActivationContext
