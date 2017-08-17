@@ -2,6 +2,7 @@ LIBRARY gdi32.dll BASE=0x60000000
 
 EXPORTS
   AbortDoc
+  AbortPath
   AddFontMemResourceEx
   AddFontResourceA
   AddFontResourceExA
@@ -11,10 +12,12 @@ EXPORTS
   AnimatePalette
   Arc
   ArcTo
+  BeginPath
   BitBlt
   CancelDC
   ChoosePixelFormat
   Chord
+  CloseFigure
   CombineTransform
   CopyEnhMetaFileA
   CopyEnhMetaFileW
@@ -65,6 +68,7 @@ EXPORTS
   EnableEUDC
   EndDoc
   EndPage
+  EndPath
   EnumEnhMetaFile
   EnumFontFamiliesA
   EnumFontFamiliesExA
@@ -83,8 +87,10 @@ EXPORTS
   ExtSelectClipRgn
   ExtTextOutA
   ExtTextOutW
+  FillPath
   FillRgn
   FixBrushOrgEx
+  FlattenPath
   FloodFill
   FontIsLinked
   FrameRgn
@@ -178,6 +184,7 @@ EXPORTS
   GetOutlineTextMetricsA
   GetOutlineTextMetricsW
   GetPaletteEntries
+  GetPath
   GetPixel
   GetPixelFormat
   GetPolyFillMode
@@ -222,6 +229,7 @@ EXPORTS
   OffsetWindowOrgEx
   PaintRgn
   PatBlt
+  PathToRegion
   Pie
   PlayEnhMetaFile
   PlayEnhMetaFileRecord
@@ -255,6 +263,7 @@ EXPORTS
   SaveDC
   ScaleViewportExtEx
   ScaleWindowExtEx
+  SelectClipPath
   SelectClipRgn
   SelectObject
   SelectPalette
@@ -313,6 +322,8 @@ EXPORTS
   StartPage
   StretchBlt
   StretchDIBits
+  StrokeAndFillPath
+  StrokePath
   SwapBuffers
   TextOutA
   TextOutW
@@ -321,3 +332,4 @@ EXPORTS
   UpdateColors
   UpdateICMRegKeyA
   UpdateICMRegKeyW
+  WidenPath

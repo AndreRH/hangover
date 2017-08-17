@@ -6,6 +6,7 @@
 enum gdi32_calls
 {
     CALL_ABORTDOC = 0,
+    CALL_ABORTPATH,
     CALL_ADDFONTMEMRESOURCEEX,
     CALL_ADDFONTRESOURCEA,
     CALL_ADDFONTRESOURCEEXA,
@@ -15,10 +16,12 @@ enum gdi32_calls
     CALL_ANIMATEPALETTE,
     CALL_ARC,
     CALL_ARCTO,
+    CALL_BEGINPATH,
     CALL_BITBLT,
     CALL_CANCELDC,
     CALL_CHOOSEPIXELFORMAT,
     CALL_CHORD,
+    CALL_CLOSEFIGURE,
     CALL_COMBINETRANSFORM,
     CALL_COPYENHMETAFILEA,
     CALL_COPYENHMETAFILEW,
@@ -69,6 +72,7 @@ enum gdi32_calls
     CALL_ENABLEEUDC,
     CALL_ENDDOC,
     CALL_ENDPAGE,
+    CALL_ENDPATH,
     CALL_ENUMENHMETAFILE,
     CALL_ENUMFONTFAMILIESA,
     CALL_ENUMFONTFAMILIESEXA,
@@ -87,8 +91,10 @@ enum gdi32_calls
     CALL_EXTSELECTCLIPRGN,
     CALL_EXTTEXTOUTA,
     CALL_EXTTEXTOUTW,
+    CALL_FILLPATH,
     CALL_FILLRGN,
     CALL_FIXBRUSHORGEX,
+    CALL_FLATTENPATH,
     CALL_FLOODFILL,
     CALL_FONTISLINKED,
     CALL_FRAMERGN,
@@ -182,6 +188,7 @@ enum gdi32_calls
     CALL_GETOUTLINETEXTMETRICSA,
     CALL_GETOUTLINETEXTMETRICSW,
     CALL_GETPALETTEENTRIES,
+    CALL_GETPATH,
     CALL_GETPIXEL,
     CALL_GETPIXELFORMAT,
     CALL_GETPOLYFILLMODE,
@@ -226,6 +233,7 @@ enum gdi32_calls
     CALL_OFFSETWINDOWORGEX,
     CALL_PAINTRGN,
     CALL_PATBLT,
+    CALL_PATHTOREGION,
     CALL_PIE,
     CALL_PLAYENHMETAFILE,
     CALL_PLAYENHMETAFILERECORD,
@@ -259,6 +267,7 @@ enum gdi32_calls
     CALL_SAVEDC,
     CALL_SCALEVIEWPORTEXTEX,
     CALL_SCALEWINDOWEXTEX,
+    CALL_SELECTCLIPPATH,
     CALL_SELECTCLIPRGN,
     CALL_SELECTOBJECT,
     CALL_SELECTPALETTE,
@@ -317,6 +326,8 @@ enum gdi32_calls
     CALL_STARTPAGE,
     CALL_STRETCHBLT,
     CALL_STRETCHDIBITS,
+    CALL_STROKEANDFILLPATH,
+    CALL_STROKEPATH,
     CALL_SWAPBUFFERS,
     CALL_TEXTOUTA,
     CALL_TEXTOUTW,
@@ -325,6 +336,7 @@ enum gdi32_calls
     CALL_UPDATECOLORS,
     CALL_UPDATEICMREGKEYA,
     CALL_UPDATEICMREGKEYW,
+    CALL_WIDENPATH,
 };
 
 #ifndef QEMU_DLL_GUEST
@@ -332,6 +344,7 @@ enum gdi32_calls
 extern const struct qemu_ops *qemu_ops;
 
 void qemu_AbortDoc(struct qemu_syscall *call);
+void qemu_AbortPath(struct qemu_syscall *call);
 void qemu_AddFontMemResourceEx(struct qemu_syscall *call);
 void qemu_AddFontResourceA(struct qemu_syscall *call);
 void qemu_AddFontResourceExA(struct qemu_syscall *call);
@@ -341,10 +354,12 @@ void qemu_AngleArc(struct qemu_syscall *call);
 void qemu_AnimatePalette(struct qemu_syscall *call);
 void qemu_Arc(struct qemu_syscall *call);
 void qemu_ArcTo(struct qemu_syscall *call);
+void qemu_BeginPath(struct qemu_syscall *call);
 void qemu_BitBlt(struct qemu_syscall *call);
 void qemu_CancelDC(struct qemu_syscall *call);
 void qemu_ChoosePixelFormat(struct qemu_syscall *call);
 void qemu_Chord(struct qemu_syscall *call);
+void qemu_CloseFigure(struct qemu_syscall *call);
 void qemu_CombineTransform(struct qemu_syscall *call);
 void qemu_CopyEnhMetaFileA(struct qemu_syscall *call);
 void qemu_CopyEnhMetaFileW(struct qemu_syscall *call);
@@ -395,6 +410,7 @@ void qemu_Ellipse(struct qemu_syscall *call);
 void qemu_EnableEUDC(struct qemu_syscall *call);
 void qemu_EndDoc(struct qemu_syscall *call);
 void qemu_EndPage(struct qemu_syscall *call);
+void qemu_EndPath(struct qemu_syscall *call);
 void qemu_EnumEnhMetaFile(struct qemu_syscall *call);
 void qemu_EnumFontFamiliesA(struct qemu_syscall *call);
 void qemu_EnumFontFamiliesExA(struct qemu_syscall *call);
@@ -413,8 +429,10 @@ void qemu_ExtFloodFill(struct qemu_syscall *call);
 void qemu_ExtSelectClipRgn(struct qemu_syscall *call);
 void qemu_ExtTextOutA(struct qemu_syscall *call);
 void qemu_ExtTextOutW(struct qemu_syscall *call);
+void qemu_FillPath(struct qemu_syscall *call);
 void qemu_FillRgn(struct qemu_syscall *call);
 void qemu_FixBrushOrgEx(struct qemu_syscall *call);
+void qemu_FlattenPath(struct qemu_syscall *call);
 void qemu_FloodFill(struct qemu_syscall *call);
 void qemu_FontIsLinked(struct qemu_syscall *call);
 void qemu_FrameRgn(struct qemu_syscall *call);
@@ -508,6 +526,7 @@ void qemu_GetObjectW(struct qemu_syscall *call);
 void qemu_GetOutlineTextMetricsA(struct qemu_syscall *call);
 void qemu_GetOutlineTextMetricsW(struct qemu_syscall *call);
 void qemu_GetPaletteEntries(struct qemu_syscall *call);
+void qemu_GetPath(struct qemu_syscall *call);
 void qemu_GetPixel(struct qemu_syscall *call);
 void qemu_GetPixelFormat(struct qemu_syscall *call);
 void qemu_GetPolyFillMode(struct qemu_syscall *call);
@@ -552,6 +571,7 @@ void qemu_OffsetViewportOrgEx(struct qemu_syscall *call);
 void qemu_OffsetWindowOrgEx(struct qemu_syscall *call);
 void qemu_PaintRgn(struct qemu_syscall *call);
 void qemu_PatBlt(struct qemu_syscall *call);
+void qemu_PathToRegion(struct qemu_syscall *call);
 void qemu_Pie(struct qemu_syscall *call);
 void qemu_PlayEnhMetaFile(struct qemu_syscall *call);
 void qemu_PlayEnhMetaFileRecord(struct qemu_syscall *call);
@@ -585,6 +605,7 @@ void qemu_RoundRect(struct qemu_syscall *call);
 void qemu_SaveDC(struct qemu_syscall *call);
 void qemu_ScaleViewportExtEx(struct qemu_syscall *call);
 void qemu_ScaleWindowExtEx(struct qemu_syscall *call);
+void qemu_SelectClipPath(struct qemu_syscall *call);
 void qemu_SelectClipRgn(struct qemu_syscall *call);
 void qemu_SelectObject(struct qemu_syscall *call);
 void qemu_SelectPalette(struct qemu_syscall *call);
@@ -643,6 +664,8 @@ void qemu_StartDocW(struct qemu_syscall *call);
 void qemu_StartPage(struct qemu_syscall *call);
 void qemu_StretchBlt(struct qemu_syscall *call);
 void qemu_StretchDIBits(struct qemu_syscall *call);
+void qemu_StrokeAndFillPath(struct qemu_syscall *call);
+void qemu_StrokePath(struct qemu_syscall *call);
 void qemu_SwapBuffers(struct qemu_syscall *call);
 void qemu_TextOutA(struct qemu_syscall *call);
 void qemu_TextOutW(struct qemu_syscall *call);
@@ -651,6 +674,7 @@ void qemu_UnrealizeObject(struct qemu_syscall *call);
 void qemu_UpdateColors(struct qemu_syscall *call);
 void qemu_UpdateICMRegKeyA(struct qemu_syscall *call);
 void qemu_UpdateICMRegKeyW(struct qemu_syscall *call);
+void qemu_WidenPath(struct qemu_syscall *call);
 
 #endif
 
