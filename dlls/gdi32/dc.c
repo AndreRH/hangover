@@ -1973,7 +1973,7 @@ struct qemu_SetMiterLimit
 {
     struct qemu_syscall super;
     uint64_t hdc;
-    uint64_t eNewLimit;
+    double eNewLimit;
     uint64_t peOldLimit;
 };
 
@@ -1984,7 +1984,7 @@ WINGDIAPI BOOL WINAPI SetMiterLimit(HDC hdc, FLOAT eNewLimit, PFLOAT peOldLimit)
     struct qemu_SetMiterLimit call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMITERLIMIT);
     call.hdc = (uint64_t)hdc;
-    call.eNewLimit = (uint64_t)eNewLimit;
+    call.eNewLimit = eNewLimit;
     call.peOldLimit = (uint64_t)peOldLimit;
 
     qemu_syscall(&call.super);
