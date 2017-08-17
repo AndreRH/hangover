@@ -179,6 +179,7 @@ enum gdi32_calls
     CALL_GETENHMETAFILEPALETTEENTRIES,
     CALL_GETENHMETAFILEW,
     CALL_GETFONTDATA,
+    CALL_GETFONTFILEINFO,
     CALL_GETFONTLANGUAGEINFO,
     CALL_GETFONTREALIZATIONINFO,
     CALL_GETFONTRESOURCEINFOW,
@@ -214,6 +215,7 @@ enum gdi32_calls
     CALL_GETPIXELFORMAT,
     CALL_GETPOLYFILLMODE,
     CALL_GETRANDOMRGN,
+    CALL_GETRASTERIZERCAPS,
     CALL_GETREGIONDATA,
     CALL_GETRELABS,
     CALL_GETRGNBOX,
@@ -549,6 +551,7 @@ void qemu_GetEnhMetaFileHeader(struct qemu_syscall *call);
 void qemu_GetEnhMetaFilePaletteEntries(struct qemu_syscall *call);
 void qemu_GetEnhMetaFileW(struct qemu_syscall *call);
 void qemu_GetFontData(struct qemu_syscall *call);
+void qemu_GetFontFileInfo(struct qemu_syscall *call);
 void qemu_GetFontLanguageInfo(struct qemu_syscall *call);
 void qemu_GetFontRealizationInfo(struct qemu_syscall *call);
 void qemu_GetFontResourceInfoW(struct qemu_syscall *call);
@@ -584,6 +587,7 @@ void qemu_GetPixel(struct qemu_syscall *call);
 void qemu_GetPixelFormat(struct qemu_syscall *call);
 void qemu_GetPolyFillMode(struct qemu_syscall *call);
 void qemu_GetRandomRgn(struct qemu_syscall *call);
+void qemu_GetRasterizerCaps(struct qemu_syscall *call);
 void qemu_GetRegionData(struct qemu_syscall *call);
 void qemu_GetRelAbs(struct qemu_syscall *call);
 void qemu_GetRgnBox(struct qemu_syscall *call);

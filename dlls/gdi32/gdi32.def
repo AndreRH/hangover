@@ -176,6 +176,7 @@ EXPORTS
   GetEnhMetaFilePaletteEntries
   GetEnhMetaFileW
   GetFontData
+  GetFontFileInfo
   GetFontLanguageInfo
   GetFontRealizationInfo
   GetFontResourceInfoW
@@ -211,6 +212,7 @@ EXPORTS
   GetPixelFormat
   GetPolyFillMode
   GetRandomRgn
+  GetRasterizerCaps
   GetRegionData
   GetRelAbs
   GetRgnBox
