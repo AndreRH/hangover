@@ -1152,20 +1152,35 @@ struct qemu_LineDDA
     uint64_t nYEnd;
     uint64_t callback;
     uint64_t lParam;
+    uint64_t wrapper;
+};
+
+struct qemu_LineDDA_cb
+{
+    uint64_t proc;
+    uint64_t x, y;
+    uint64_t param;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static uint64_t LineDDA_guest_cb(struct qemu_LineDDA_cb *data)
+{
+    LINEDDAPROC proc = (LINEDDAPROC)data->proc;
+    proc(data->x, data->y, data->param);
+}
 
 WINBASEAPI BOOL WINAPI LineDDA(INT nXStart, INT nYStart, INT nXEnd, INT nYEnd, LINEDDAPROC callback, LPARAM lParam)
 {
     struct qemu_LineDDA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LINEDDA);
-    call.nXStart = (uint64_t)nXStart;
-    call.nYStart = (uint64_t)nYStart;
-    call.nXEnd = (uint64_t)nXEnd;
-    call.nYEnd = (uint64_t)nYEnd;
+    call.nXStart = nXStart;
+    call.nYStart = nYStart;
+    call.nXEnd = nXEnd;
+    call.nYEnd = nYEnd;
     call.callback = (uint64_t)callback;
-    call.lParam = (uint64_t)lParam;
+    call.lParam = lParam;
+    call.wrapper = (uint64_t)LineDDA_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -1174,11 +1189,40 @@ WINBASEAPI BOOL WINAPI LineDDA(INT nXStart, INT nYStart, INT nXEnd, INT nYEnd, L
 
 #else
 
+struct qemu_LineDDA_host_data
+{
+    uint64_t wrapper, guest_func;
+    uint64_t guest_data;
+};
+
+static void WINAPI qemu_LineDDA_host_proc(INT x, INT y, LPARAM param)
+{
+    struct qemu_LineDDA_host_data *data = (struct qemu_LineDDA_host_data *)param;
+    struct qemu_LineDDA_cb call;
+
+    WINE_TRACE("Calling guest callback 0x%lx(%d, %d 0x%lx).\n", data->guest_func, x, y, data->guest_data);
+    call.proc = data->guest_func;
+    call.x = x;
+    call.y = y;
+    call.param = data->guest_data;
+
+    qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&call));
+
+    WINE_TRACE("Callback returned.\n");
+}
+
 void qemu_LineDDA(struct qemu_syscall *call)
 {
     struct qemu_LineDDA *c = (struct qemu_LineDDA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LineDDA(c->nXStart, c->nYStart, c->nXEnd, c->nYEnd, QEMU_G2H(c->callback), c->lParam);
+    struct qemu_LineDDA_host_data data;
+
+    WINE_TRACE("\n");
+    data.wrapper = c->wrapper;
+    data.guest_func = c->callback;
+    data.guest_data = c->lParam;
+
+    c->super.iret = LineDDA(c->nXStart, c->nYStart, c->nXEnd, c->nYEnd,
+            c->callback ? qemu_LineDDA_host_proc : NULL, (LPARAM)&data);
 }
 
 #endif
