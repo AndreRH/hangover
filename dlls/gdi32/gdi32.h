@@ -73,6 +73,8 @@ enum gdi32_calls
     CALL_ENUMFONTFAMILIESW,
     CALL_ENUMFONTSA,
     CALL_ENUMFONTSW,
+    CALL_ENUMICMPROFILESA,
+    CALL_ENUMICMPROFILESW,
     CALL_ENUMMETAFILE,
     CALL_ENUMOBJECTS,
     CALL_ESCAPE,
@@ -156,9 +158,13 @@ enum gdi32_calls
     CALL_GETGLYPHOUTLINEA,
     CALL_GETGLYPHOUTLINEW,
     CALL_GETGRAPHICSMODE,
+    CALL_GETICMPROFILEA,
+    CALL_GETICMPROFILEW,
     CALL_GETKERNINGPAIRSA,
     CALL_GETKERNINGPAIRSW,
     CALL_GETLAYOUT,
+    CALL_GETLOGCOLORSPACEA,
+    CALL_GETLOGCOLORSPACEW,
     CALL_GETMAPMODE,
     CALL_GETMETAFILEA,
     CALL_GETMETAFILEBITSEX,
@@ -265,6 +271,8 @@ enum gdi32_calls
     CALL_SETGRAPHICSMODE,
     CALL_SETHOOKFLAGS,
     CALL_SETICMMODE,
+    CALL_SETICMPROFILEA,
+    CALL_SETICMPROFILEW,
     CALL_SETLAYOUT,
     CALL_SETMAPMODE,
     CALL_SETMAPPERFLAGS,
@@ -300,6 +308,8 @@ enum gdi32_calls
     CALL_TEXTOUTW,
     CALL_TRANSLATECHARSETINFO,
     CALL_UNREALIZEOBJECT,
+    CALL_UPDATEICMREGKEYA,
+    CALL_UPDATEICMREGKEYW,
 };
 
 #ifndef QEMU_DLL_GUEST
@@ -374,6 +384,8 @@ void qemu_EnumFontFamiliesExW(struct qemu_syscall *call);
 void qemu_EnumFontFamiliesW(struct qemu_syscall *call);
 void qemu_EnumFontsA(struct qemu_syscall *call);
 void qemu_EnumFontsW(struct qemu_syscall *call);
+void qemu_EnumICMProfilesA(struct qemu_syscall *call);
+void qemu_EnumICMProfilesW(struct qemu_syscall *call);
 void qemu_EnumMetaFile(struct qemu_syscall *call);
 void qemu_EnumObjects(struct qemu_syscall *call);
 void qemu_Escape(struct qemu_syscall *call);
@@ -457,9 +469,13 @@ void qemu_GetGlyphIndicesW(struct qemu_syscall *call);
 void qemu_GetGlyphOutlineA(struct qemu_syscall *call);
 void qemu_GetGlyphOutlineW(struct qemu_syscall *call);
 void qemu_GetGraphicsMode(struct qemu_syscall *call);
+void qemu_GetICMProfileA(struct qemu_syscall *call);
+void qemu_GetICMProfileW(struct qemu_syscall *call);
 void qemu_GetKerningPairsA(struct qemu_syscall *call);
 void qemu_GetKerningPairsW(struct qemu_syscall *call);
 void qemu_GetLayout(struct qemu_syscall *call);
+void qemu_GetLogColorSpaceA(struct qemu_syscall *call);
+void qemu_GetLogColorSpaceW(struct qemu_syscall *call);
 void qemu_GetMapMode(struct qemu_syscall *call);
 void qemu_GetMetaFileA(struct qemu_syscall *call);
 void qemu_GetMetaFileBitsEx(struct qemu_syscall *call);
@@ -566,6 +582,8 @@ void qemu_SetEnhMetaFileBits(struct qemu_syscall *call);
 void qemu_SetGraphicsMode(struct qemu_syscall *call);
 void qemu_SetHookFlags(struct qemu_syscall *call);
 void qemu_SetICMMode(struct qemu_syscall *call);
+void qemu_SetICMProfileA(struct qemu_syscall *call);
+void qemu_SetICMProfileW(struct qemu_syscall *call);
 void qemu_SetLayout(struct qemu_syscall *call);
 void qemu_SetMapMode(struct qemu_syscall *call);
 void qemu_SetMapperFlags(struct qemu_syscall *call);
@@ -601,6 +619,8 @@ void qemu_TextOutA(struct qemu_syscall *call);
 void qemu_TextOutW(struct qemu_syscall *call);
 void qemu_TranslateCharsetInfo(struct qemu_syscall *call);
 void qemu_UnrealizeObject(struct qemu_syscall *call);
+void qemu_UpdateICMRegKeyA(struct qemu_syscall *call);
+void qemu_UpdateICMRegKeyW(struct qemu_syscall *call);
 
 #endif
 

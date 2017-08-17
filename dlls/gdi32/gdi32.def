@@ -69,6 +69,8 @@ EXPORTS
   EnumFontFamiliesW
   EnumFontsA
   EnumFontsW
+  EnumICMProfilesA
+  EnumICMProfilesW
   EnumMetaFile
   EnumObjects
   Escape
@@ -152,9 +154,13 @@ EXPORTS
   GetGlyphOutlineA
   GetGlyphOutlineW
   GetGraphicsMode
+  GetICMProfileA
+  GetICMProfileW
   GetKerningPairsA
   GetKerningPairsW
   GetLayout
+  GetLogColorSpaceA
+  GetLogColorSpaceW
   GetMapMode
   GetMetaFileA
   GetMetaFileBitsEx
@@ -261,6 +267,8 @@ EXPORTS
   SetGraphicsMode
   SetHookFlags
   SetICMMode
+  SetICMProfileA
+  SetICMProfileW
   SetLayout
   SetMapMode
   SetMapperFlags
@@ -296,3 +304,5 @@ EXPORTS
   TextOutW
   TranslateCharsetInfo
   UnrealizeObject
+  UpdateICMRegKeyA
+  UpdateICMRegKeyW
