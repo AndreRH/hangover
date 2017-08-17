@@ -49,6 +49,8 @@ EXPORTS
   CreateICW
   CreatePalette
   CreatePatternBrush
+  CreatePen
+  CreatePenIndirect
   CreateScalableFontResourceA
   CreateScalableFontResourceW
   CreateSolidBrush
@@ -82,6 +84,7 @@ EXPORTS
   EnumObjects
   Escape
   ExcludeClipRect
+  ExtCreatePen
   ExtEscape
   ExtFloodFill
   ExtSelectClipRgn

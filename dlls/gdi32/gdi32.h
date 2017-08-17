@@ -53,6 +53,8 @@ enum gdi32_calls
     CALL_CREATEICW,
     CALL_CREATEPALETTE,
     CALL_CREATEPATTERNBRUSH,
+    CALL_CREATEPEN,
+    CALL_CREATEPENINDIRECT,
     CALL_CREATESCALABLEFONTRESOURCEA,
     CALL_CREATESCALABLEFONTRESOURCEW,
     CALL_CREATESOLIDBRUSH,
@@ -86,6 +88,7 @@ enum gdi32_calls
     CALL_ENUMOBJECTS,
     CALL_ESCAPE,
     CALL_EXCLUDECLIPRECT,
+    CALL_EXTCREATEPEN,
     CALL_EXTESCAPE,
     CALL_EXTFLOODFILL,
     CALL_EXTSELECTCLIPRGN,
@@ -391,6 +394,8 @@ void qemu_CreateICA(struct qemu_syscall *call);
 void qemu_CreateICW(struct qemu_syscall *call);
 void qemu_CreatePalette(struct qemu_syscall *call);
 void qemu_CreatePatternBrush(struct qemu_syscall *call);
+void qemu_CreatePen(struct qemu_syscall *call);
+void qemu_CreatePenIndirect(struct qemu_syscall *call);
 void qemu_CreateScalableFontResourceA(struct qemu_syscall *call);
 void qemu_CreateScalableFontResourceW(struct qemu_syscall *call);
 void qemu_CreateSolidBrush(struct qemu_syscall *call);
@@ -424,6 +429,7 @@ void qemu_EnumMetaFile(struct qemu_syscall *call);
 void qemu_EnumObjects(struct qemu_syscall *call);
 void qemu_Escape(struct qemu_syscall *call);
 void qemu_ExcludeClipRect(struct qemu_syscall *call);
+void qemu_ExtCreatePen(struct qemu_syscall *call);
 void qemu_ExtEscape(struct qemu_syscall *call);
 void qemu_ExtFloodFill(struct qemu_syscall *call);
 void qemu_ExtSelectClipRgn(struct qemu_syscall *call);
