@@ -395,6 +395,7 @@ EXPORTS
   GetModuleFileNameW
   GetModuleHandleA
   GetModuleHandleExA
+  GetModuleHandleExW
   GetModuleHandleW
   GetNamedPipeHandleStateA
   GetNamedPipeHandleStateW

@@ -600,6 +600,7 @@ static const syscall_handler dll_functions[] =
     qemu_GetModuleFileNameW,
     qemu_GetModuleHandleA,
     qemu_GetModuleHandleExA,
+    qemu_GetModuleHandleExW,
     qemu_GetModuleHandleW,
     qemu_GetNamedPipeHandleStateA,
     qemu_GetNamedPipeHandleStateW,

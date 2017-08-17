@@ -266,24 +266,38 @@ void qemu_GetModuleHandleA(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_GetModuleHandleExA
+struct qemu_GetModuleHandleEx
 {
     struct qemu_syscall super;
     DWORD flags;
     uint64_t name, module;
 };
+
 #ifdef QEMU_DLL_GUEST
 
 WINBASEAPI WINBOOL WINAPI GetModuleHandleExA(DWORD flags, const char *name, HMODULE *module)
 {
-    struct qemu_GetModuleHandleExA call;
+    struct qemu_GetModuleHandleEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEHANDLEEXA);
     call.flags = flags;
     call.name = (uint64_t)name;
+    call.module = (uint64_t)module;
 
     qemu_syscall(&call.super);
 
-    *module = (HMODULE)call.module;
+    return call.super.iret;
+}
+
+WINBASEAPI WINBOOL WINAPI GetModuleHandleExW(DWORD flags, const WCHAR *name, HMODULE *module)
+{
+    struct qemu_GetModuleHandleEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEHANDLEEXW);
+    call.flags = flags;
+    call.name = (uint64_t)name;
+    call.module = (uint64_t)module;
+
+    qemu_syscall(&call.super);
+
     return call.super.iret;
 }
 
@@ -291,14 +305,81 @@ WINBASEAPI WINBOOL WINAPI GetModuleHandleExA(DWORD flags, const char *name, HMOD
 
 void qemu_GetModuleHandleExA(struct qemu_syscall *call)
 {
-    struct qemu_GetModuleHandleExA *c = (struct qemu_GetModuleHandleExA *)call;
-    HANDLE m;
-    WINE_TRACE("\n");
+    struct qemu_GetModuleHandleEx *c = (struct qemu_GetModuleHandleEx *)call;
+    HMODULE m;
+    WCHAR *wstr;
+    DWORD len;
+    char *name;
 
-    m = qemu_ops->qemu_GetModuleHandleEx(c->flags, QEMU_G2H(c->name));
+    WINE_TRACE("\n");
+    name = QEMU_G2H(c->name);
+
+    if (!c->module)
+    {
+        SetLastError(ERROR_INVALID_PARAMETER);
+        c->super.iret = FALSE;
+        return;
+    }
+
+    if (!name)
+    {
+        const TEB *teb = qemu_ops->qemu_getTEB();
+        m = teb->Peb->ImageBaseAddress;
+    }
+    if (c->flags & GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS)
+    {
+        m = NULL;
+        c->super.iret = qemu_ops->qemu_FindEntryForAddress(name, &m);
+        if (!m)
+            SetLastError(ERROR_MOD_NOT_FOUND);
+    }
+    else
+    {
+        len = MultiByteToWideChar(CP_ACP, 0, name, -1, NULL, 0);
+        wstr = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*wstr));
+        MultiByteToWideChar(CP_ACP, 0, name, -1, wstr, len);
+
+        m = qemu_ops->qemu_GetModuleHandleEx(c->flags, wstr);
+
+        HeapFree(GetProcessHeap(), 0, wstr);
+    }
 
     c->super.iret = !!m;
-    c->module = (uint64_t)m;
+    *(uint64_t *)QEMU_H2G(c->module) = (uint64_t)m;
+}
+
+void qemu_GetModuleHandleExW(struct qemu_syscall *call)
+{
+    struct qemu_GetModuleHandleEx *c = (struct qemu_GetModuleHandleEx *)call;
+    HMODULE m;
+    WINE_TRACE("\n");
+
+    if (!c->module)
+    {
+        SetLastError(ERROR_INVALID_PARAMETER);
+        c->super.iret = FALSE;
+        return;
+    }
+
+    if (!c->name)
+    {
+        const TEB *teb = qemu_ops->qemu_getTEB();
+        m = teb->Peb->ImageBaseAddress;
+    }
+    if (c->flags & GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS)
+    {
+        m = NULL;
+        c->super.iret = qemu_ops->qemu_FindEntryForAddress(QEMU_G2H(c->name), &m);
+        if (!m)
+            SetLastError(ERROR_MOD_NOT_FOUND);
+    }
+    else
+    {
+        m = qemu_ops->qemu_GetModuleHandleEx(c->flags, QEMU_G2H(c->name));
+    }
+
+    c->super.iret = !!m;
+    *(uint64_t *)QEMU_H2G(c->module) = (uint64_t)m;
 }
 
 #endif
