@@ -48,6 +48,8 @@ EXPORTS
   CreateSolidBrush
   D3DKMTCreateDCFromMemory
   D3DKMTDestroyDCFromMemory
+  D3DKMTEscape
+  D3DKMTOpenAdapterFromHdc
   DeleteColorSpace
   DeleteDC
   DeleteEnhMetaFile
@@ -55,6 +57,7 @@ EXPORTS
   DeleteObject
   DescribePixelFormat
   DPtoLP
+  DrawEscape
   Ellipse
   EnableEUDC
   EndDoc
@@ -68,7 +71,9 @@ EXPORTS
   EnumFontsW
   EnumMetaFile
   EnumObjects
+  Escape
   ExcludeClipRect
+  ExtEscape
   ExtFloodFill
   ExtSelectClipRgn
   ExtTextOutA
@@ -80,6 +85,7 @@ EXPORTS
   FrameRgn
   GdiAlphaBlend
   GdiComment
+  GdiConvertToDevmodeW
   GdiDescribePixelFormat
   GdiDrawStream
   GdiFlush
@@ -196,6 +202,7 @@ EXPORTS
   MaskBlt
   ModifyWorldTransform
   MoveToEx
+  NamedEscape
   OffsetClipRgn
   OffsetViewportOrgEx
   OffsetWindowOrgEx
