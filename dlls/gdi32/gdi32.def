@@ -19,6 +19,7 @@ EXPORTS
   Chord
   CloseEnhMetaFile
   CloseFigure
+  CloseMetaFile
   CombineRgn
   CombineTransform
   CopyEnhMetaFileA
@@ -53,6 +54,8 @@ EXPORTS
   CreateHatchBrush
   CreateICA
   CreateICW
+  CreateMetaFileA
+  CreateMetaFileW
   CreatePalette
   CreatePatternBrush
   CreatePen

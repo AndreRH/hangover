@@ -23,6 +23,7 @@ enum gdi32_calls
     CALL_CHORD,
     CALL_CLOSEENHMETAFILE,
     CALL_CLOSEFIGURE,
+    CALL_CLOSEMETAFILE,
     CALL_COMBINERGN,
     CALL_COMBINETRANSFORM,
     CALL_COPYENHMETAFILEA,
@@ -57,6 +58,8 @@ enum gdi32_calls
     CALL_CREATEHATCHBRUSH,
     CALL_CREATEICA,
     CALL_CREATEICW,
+    CALL_CREATEMETAFILEA,
+    CALL_CREATEMETAFILEW,
     CALL_CREATEPALETTE,
     CALL_CREATEPATTERNBRUSH,
     CALL_CREATEPEN,
@@ -384,6 +387,7 @@ void qemu_ChoosePixelFormat(struct qemu_syscall *call);
 void qemu_Chord(struct qemu_syscall *call);
 void qemu_CloseEnhMetaFile(struct qemu_syscall *call);
 void qemu_CloseFigure(struct qemu_syscall *call);
+void qemu_CloseMetaFile(struct qemu_syscall *call);
 void qemu_CombineRgn(struct qemu_syscall *call);
 void qemu_CombineTransform(struct qemu_syscall *call);
 void qemu_CopyEnhMetaFileA(struct qemu_syscall *call);
@@ -418,6 +422,8 @@ void qemu_CreateHalftonePalette(struct qemu_syscall *call);
 void qemu_CreateHatchBrush(struct qemu_syscall *call);
 void qemu_CreateICA(struct qemu_syscall *call);
 void qemu_CreateICW(struct qemu_syscall *call);
+void qemu_CreateMetaFileA(struct qemu_syscall *call);
+void qemu_CreateMetaFileW(struct qemu_syscall *call);
 void qemu_CreatePalette(struct qemu_syscall *call);
 void qemu_CreatePatternBrush(struct qemu_syscall *call);
 void qemu_CreatePen(struct qemu_syscall *call);
