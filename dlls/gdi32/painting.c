@@ -1074,8 +1074,8 @@ struct qemu_AngleArc
     uint64_t x;
     uint64_t y;
     uint64_t dwRadius;
-    uint64_t eStartAngle;
-    uint64_t eSweepAngle;
+    double eStartAngle;
+    double eSweepAngle;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1085,11 +1085,11 @@ WINBASEAPI BOOL WINAPI AngleArc(HDC hdc, INT x, INT y, DWORD dwRadius, FLOAT eSt
     struct qemu_AngleArc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ANGLEARC);
     call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.dwRadius = (uint64_t)dwRadius;
-    call.eStartAngle = (uint64_t)eStartAngle;
-    call.eSweepAngle = (uint64_t)eSweepAngle;
+    call.x = x;
+    call.y = y;
+    call.dwRadius = dwRadius;
+    call.eStartAngle = eStartAngle;
+    call.eSweepAngle = eSweepAngle;
 
     qemu_syscall(&call.super);
 
@@ -1101,8 +1101,8 @@ WINBASEAPI BOOL WINAPI AngleArc(HDC hdc, INT x, INT y, DWORD dwRadius, FLOAT eSt
 void qemu_AngleArc(struct qemu_syscall *call)
 {
     struct qemu_AngleArc *c = (struct qemu_AngleArc *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AngleArc(QEMU_G2H(c->hdc), c->x, c->y, c->dwRadius, c->eStartAngle, c->eSweepAngle);
+    WINE_TRACE("\n");
+    c->super.iret = AngleArc((HDC)c->hdc, c->x, c->y, c->dwRadius, c->eStartAngle, c->eSweepAngle);
 }
 
 #endif
