@@ -4,3 +4,6 @@
 [submodule "qemu"]
 	path = qemu
 	url = ssh://stefandoesinger.ddns.net/~git/hangover/qemu
+[submodule "glib"]
+	path = glib
+	url = ssh://stefandoesinger.ddns.net/~git/hangover/glib
