@@ -23,13 +23,17 @@ enum gdi32_calls
     CALL_COPYENHMETAFILEW,
     CALL_COPYMETAFILEA,
     CALL_COPYMETAFILEW,
+    CALL_CREATEBITMAP,
+    CALL_CREATEBITMAPINDIRECT,
     CALL_CREATECOLORSPACEA,
     CALL_CREATECOLORSPACEW,
+    CALL_CREATECOMPATIBLEBITMAP,
     CALL_CREATECOMPATIBLEDC,
     CALL_CREATEDCA,
     CALL_CREATEDCW,
     CALL_CREATEDIBITMAP,
     CALL_CREATEDIBSECTION,
+    CALL_CREATEDISCARDABLEBITMAP,
     CALL_CREATEFONTA,
     CALL_CREATEFONTINDIRECTA,
     CALL_CREATEFONTINDIRECTEXA,
@@ -90,6 +94,8 @@ enum gdi32_calls
     CALL_GDITRANSPARENTBLT,
     CALL_GETARCDIRECTION,
     CALL_GETASPECTRATIOFILTEREX,
+    CALL_GETBITMAPBITS,
+    CALL_GETBITMAPDIMENSIONEX,
     CALL_GETBKCOLOR,
     CALL_GETBKMODE,
     CALL_GETBOUNDSRECT,
@@ -216,6 +222,8 @@ enum gdi32_calls
     CALL_SELECTOBJECT,
     CALL_SETABORTPROC,
     CALL_SETARCDIRECTION,
+    CALL_SETBITMAPBITS,
+    CALL_SETBITMAPDIMENSIONEX,
     CALL_SETBKCOLOR,
     CALL_SETBKMODE,
     CALL_SETBOUNDSRECT,
@@ -289,13 +297,17 @@ void qemu_CopyEnhMetaFileA(struct qemu_syscall *call);
 void qemu_CopyEnhMetaFileW(struct qemu_syscall *call);
 void qemu_CopyMetaFileA(struct qemu_syscall *call);
 void qemu_CopyMetaFileW(struct qemu_syscall *call);
+void qemu_CreateBitmap(struct qemu_syscall *call);
+void qemu_CreateBitmapIndirect(struct qemu_syscall *call);
 void qemu_CreateColorSpaceA(struct qemu_syscall *call);
 void qemu_CreateColorSpaceW(struct qemu_syscall *call);
+void qemu_CreateCompatibleBitmap(struct qemu_syscall *call);
 void qemu_CreateCompatibleDC(struct qemu_syscall *call);
 void qemu_CreateDCA(struct qemu_syscall *call);
 void qemu_CreateDCW(struct qemu_syscall *call);
 void qemu_CreateDIBitmap(struct qemu_syscall *call);
 void qemu_CreateDIBSection(struct qemu_syscall *call);
+void qemu_CreateDiscardableBitmap(struct qemu_syscall *call);
 void qemu_CreateFontA(struct qemu_syscall *call);
 void qemu_CreateFontIndirectA(struct qemu_syscall *call);
 void qemu_CreateFontIndirectExA(struct qemu_syscall *call);
@@ -356,6 +368,8 @@ void qemu_GdiSwapBuffers(struct qemu_syscall *call);
 void qemu_GdiTransparentBlt(struct qemu_syscall *call);
 void qemu_GetArcDirection(struct qemu_syscall *call);
 void qemu_GetAspectRatioFilterEx(struct qemu_syscall *call);
+void qemu_GetBitmapBits(struct qemu_syscall *call);
+void qemu_GetBitmapDimensionEx(struct qemu_syscall *call);
 void qemu_GetBkColor(struct qemu_syscall *call);
 void qemu_GetBkMode(struct qemu_syscall *call);
 void qemu_GetBoundsRect(struct qemu_syscall *call);
@@ -482,6 +496,8 @@ void qemu_ScaleWindowExtEx(struct qemu_syscall *call);
 void qemu_SelectObject(struct qemu_syscall *call);
 void qemu_SetAbortProc(struct qemu_syscall *call);
 void qemu_SetArcDirection(struct qemu_syscall *call);
+void qemu_SetBitmapBits(struct qemu_syscall *call);
+void qemu_SetBitmapDimensionEx(struct qemu_syscall *call);
 void qemu_SetBkColor(struct qemu_syscall *call);
 void qemu_SetBkMode(struct qemu_syscall *call);
 void qemu_SetBoundsRect(struct qemu_syscall *call);

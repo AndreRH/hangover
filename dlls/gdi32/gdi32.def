@@ -19,13 +19,17 @@ EXPORTS
   CopyEnhMetaFileW
   CopyMetaFileA
   CopyMetaFileW
+  CreateBitmap
+  CreateBitmapIndirect
   CreateColorSpaceA
   CreateColorSpaceW
+  CreateCompatibleBitmap
   CreateCompatibleDC
   CreateDCA
   CreateDCW
   CreateDIBitmap
   CreateDIBSection
+  CreateDiscardableBitmap
   CreateFontA
   CreateFontIndirectA
   CreateFontIndirectExA
@@ -86,6 +90,8 @@ EXPORTS
   GdiTransparentBlt
   GetArcDirection
   GetAspectRatioFilterEx
+  GetBitmapBits
+  GetBitmapDimensionEx
   GetBkColor
   GetBkMode
   GetBoundsRect
@@ -212,6 +218,8 @@ EXPORTS
   SelectObject
   SetAbortProc
   SetArcDirection
+  SetBitmapBits
+  SetBitmapDimensionEx
   SetBkColor
   SetBkMode
   SetBoundsRect
