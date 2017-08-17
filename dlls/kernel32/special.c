@@ -493,7 +493,7 @@ void qemu_LoadLibraryA(struct qemu_syscall *call)
         MultiByteToWideChar(CP_ACP, 0, QEMU_G2H(c->name), -1, nameW, size);
     }
 
-    c->super.iret = (uint64_t)qemu_ops->qemu_LoadLibrary(nameW);
+    c->super.iret = (uint64_t)qemu_ops->qemu_LoadLibrary(nameW, 0);
 
     HeapFree(GetProcessHeap(), 0, nameW);
 
@@ -506,7 +506,7 @@ void qemu_LoadLibraryW(struct qemu_syscall *call)
     int size;
     WINE_TRACE("\n");
 
-    c->super.iret = (uint64_t)qemu_ops->qemu_LoadLibrary(QEMU_G2H(c->name));
+    c->super.iret = (uint64_t)qemu_ops->qemu_LoadLibrary(QEMU_G2H(c->name), 0);
 
     WINE_TRACE("Returning %p\n", (void *)c->super.iret);
 }

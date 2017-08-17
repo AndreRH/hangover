@@ -22,6 +22,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <psapi.h>
+#include <winternl.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -267,7 +268,7 @@ WINBASEAPI HMODULE WINAPI LoadLibraryExA(LPCSTR libname, HANDLE hfile, DWORD fla
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADLIBRARYEXA);
     call.libname = (uint64_t)libname;
     call.hfile = (uint64_t)hfile;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -279,8 +280,22 @@ WINBASEAPI HMODULE WINAPI LoadLibraryExA(LPCSTR libname, HANDLE hfile, DWORD fla
 void qemu_LoadLibraryExA(struct qemu_syscall *call)
 {
     struct qemu_LoadLibraryExA *c = (struct qemu_LoadLibraryExA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LoadLibraryExA(QEMU_G2H(c->libname), QEMU_G2H(c->hfile), c->flags);
+    WCHAR *nameW = NULL;
+    int size;
+
+    WINE_TRACE("\n");
+    if (c->hfile)
+        WINE_FIXME("Loading from file handle not implemented\n");
+
+    if (c->libname)
+    {
+        size = MultiByteToWideChar(CP_ACP, 0, QEMU_G2H(c->libname), -1, NULL, 0);
+        nameW = HeapAlloc(GetProcessHeap(), 0, size * sizeof(*nameW));
+        MultiByteToWideChar(CP_ACP, 0, QEMU_G2H(c->libname), -1, nameW, size);
+    }
+
+    c->super.iret = (uint64_t)qemu_ops->qemu_LoadLibrary(nameW, c->flags);
+    HeapFree(GetProcessHeap(), 0, nameW);
 }
 
 #endif
@@ -301,7 +316,7 @@ WINBASEAPI HMODULE WINAPI LoadLibraryExW(LPCWSTR libnameW, HANDLE hfile, DWORD f
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADLIBRARYEXW);
     call.libnameW = (uint64_t)libnameW;
     call.hfile = (uint64_t)hfile;
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -313,8 +328,12 @@ WINBASEAPI HMODULE WINAPI LoadLibraryExW(LPCWSTR libnameW, HANDLE hfile, DWORD f
 void qemu_LoadLibraryExW(struct qemu_syscall *call)
 {
     struct qemu_LoadLibraryExW *c = (struct qemu_LoadLibraryExW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LoadLibraryExW(QEMU_G2H(c->libnameW), QEMU_G2H(c->hfile), c->flags);
+
+    WINE_TRACE("\n");
+    if (c->hfile)
+        WINE_FIXME("Loading from file handle not implemented\n");
+
+    c->super.iret = (uint64_t)qemu_ops->qemu_LoadLibrary(QEMU_G2H(c->libnameW), c->flags);
 }
 
 #endif
@@ -601,7 +620,7 @@ WINBASEAPI BOOL WINAPI K32GetModuleInformation(HANDLE process, HMODULE module, M
     call.process = (uint64_t)process;
     call.module = (uint64_t)module;
     call.modinfo = (uint64_t)modinfo;
-    call.cb = (uint64_t)cb;
+    call.cb = cb;
 
     qemu_syscall(&call.super);
 
@@ -610,13 +629,35 @@ WINBASEAPI BOOL WINAPI K32GetModuleInformation(HANDLE process, HMODULE module, M
 
 #else
 
-/* TODO: Add K32GetModuleInformation to Wine headers? */
-extern BOOL WINAPI K32GetModuleInformation(HANDLE process, HMODULE module, MODULEINFO *modinfo, DWORD cb);
 void qemu_K32GetModuleInformation(struct qemu_syscall *call)
 {
     struct qemu_K32GetModuleInformation *c = (struct qemu_K32GetModuleInformation *)call;
+    LDR_MODULE *ldr_module;
+    MODULEINFO *modinfo;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = K32GetModuleInformation(QEMU_G2H(c->process), QEMU_G2H(c->module), QEMU_G2H(c->modinfo), c->cb);
+
+    if (c->cb < sizeof(*modinfo))
+    {
+        SetLastError(ERROR_INSUFFICIENT_BUFFER);
+        c->super.iret = FALSE;
+        return;
+    }
+
+    modinfo = QEMU_G2H(c->modinfo);
+
+    if (!qemu_ops->qemu_get_ldr_module((HANDLE)c->process, (HANDLE)c->module,
+            (void **)&ldr_module))
+    {
+        c->super.iret = FALSE;
+        return;
+    }
+
+    modinfo->lpBaseOfDll = ldr_module->BaseAddress;
+    modinfo->SizeOfImage = ldr_module->SizeOfImage;
+    modinfo->EntryPoint  = ldr_module->EntryPoint;
+
+    c->super.iret = TRUE;
 }
 
 #endif
