@@ -907,6 +907,7 @@ EXPORTS
   Toolhelp32ReadProcessMemory
   TransactNamedPipe
   TransmitCommChar
+  TryEnterCriticalSection=ntdll.RtlTryEnterCriticalSection
   TrySubmitThreadpoolCallback
   TzSpecificLocalTimeToSystemTime
   UnhandledExceptionFilter=kernel32_UnhandledExceptionFilter
