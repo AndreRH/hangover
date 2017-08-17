@@ -18,6 +18,7 @@ EXPORTS
   ChoosePixelFormat
   Chord
   CloseFigure
+  CombineRgn
   CombineTransform
   CopyEnhMetaFileA
   CopyEnhMetaFileW
@@ -37,6 +38,8 @@ EXPORTS
   CreateDIBPatternBrushPt
   CreateDIBSection
   CreateDiscardableBitmap
+  CreateEllipticRgn
+  CreateEllipticRgnIndirect
   CreateFontA
   CreateFontIndirectA
   CreateFontIndirectExA
@@ -51,6 +54,11 @@ EXPORTS
   CreatePatternBrush
   CreatePen
   CreatePenIndirect
+  CreatePolygonRgn
+  CreatePolyPolygonRgn
+  CreateRectRgn
+  CreateRectRgnIndirect
+  CreateRoundRectRgn
   CreateScalableFontResourceA
   CreateScalableFontResourceW
   CreateSolidBrush
@@ -82,9 +90,11 @@ EXPORTS
   EnumICMProfilesW
   EnumMetaFile
   EnumObjects
+  EqualRgn
   Escape
   ExcludeClipRect
   ExtCreatePen
+  ExtCreateRegion
   ExtEscape
   ExtFloodFill
   ExtSelectClipRgn
@@ -192,7 +202,9 @@ EXPORTS
   GetPixelFormat
   GetPolyFillMode
   GetRandomRgn
+  GetRegionData
   GetRelAbs
+  GetRgnBox
   GetROP2
   GetStockObject
   GetStretchBltMode
@@ -224,10 +236,12 @@ EXPORTS
   LineTo
   LPtoDP
   MaskBlt
+  MirrorRgn
   ModifyWorldTransform
   MoveToEx
   NamedEscape
   OffsetClipRgn
+  OffsetRgn
   OffsetViewportOrgEx
   OffsetWindowOrgEx
   PaintRgn
@@ -249,9 +263,11 @@ EXPORTS
   PolyPolyline
   PolyTextOutA
   PolyTextOutW
+  PtInRegion
   PtVisible
   RealizePalette
   Rectangle
+  RectInRegion
   RectVisible
   RemoveFontMemResourceEx
   RemoveFontResourceA
@@ -305,6 +321,7 @@ EXPORTS
   SetPixelFormat
   SetPixelV
   SetPolyFillMode
+  SetRectRgn
   SetRelAbs
   SetROP2
   SetStretchBltMode
