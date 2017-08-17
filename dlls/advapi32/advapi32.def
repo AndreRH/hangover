@@ -35,6 +35,7 @@ EXPORTS
   BuildTrusteeWithSidA
   BuildTrusteeWithSidW
   CheckTokenMembership
+  CloseEncryptedFileRaw
   ConvertSecurityDescriptorToStringSecurityDescriptorA
   ConvertSecurityDescriptorToStringSecurityDescriptorW
   ConvertSidToStringSidA
@@ -54,6 +55,45 @@ EXPORTS
   CreateProcessWithTokenW
   CreateRestrictedToken
   CreateWellKnownSid
+  CryptAcquireContextA
+  CryptAcquireContextW
+  CryptContextAddRef
+  CryptCreateHash
+  CryptDecrypt
+  CryptDeriveKey
+  CryptDestroyHash
+  CryptDestroyKey
+  CryptDuplicateHash
+  CryptDuplicateKey
+  CryptEncrypt
+  CryptEnumProvidersA
+  CryptEnumProvidersW
+  CryptEnumProviderTypesA
+  CryptEnumProviderTypesW
+  CryptExportKey
+  CryptGenKey
+  CryptGenRandom
+  CryptGetDefaultProviderA
+  CryptGetDefaultProviderW
+  CryptGetHashParam
+  CryptGetKeyParam
+  CryptGetProvParam
+  CryptGetUserKey
+  CryptHashData
+  CryptHashSessionKey
+  CryptImportKey
+  CryptReleaseContext
+  CryptSetHashParam
+  CryptSetKeyParam
+  CryptSetProviderA
+  CryptSetProviderExA
+  CryptSetProviderExW
+  CryptSetProviderW
+  CryptSetProvParam
+  CryptSignHashA
+  CryptSignHashW
+  CryptVerifySignatureA
+  CryptVerifySignatureW
   DecryptFileA
   DecryptFileW
   DeleteAce
@@ -142,12 +182,15 @@ EXPORTS
   ObjectOpenAuditAlarmW
   ObjectPrivilegeAuditAlarmA
   ObjectPrivilegeAuditAlarmW
+  OpenEncryptedFileRawA
+  OpenEncryptedFileRawW
   OpenProcessToken
   OpenThreadToken
   PrivilegeCheck
   PrivilegedServiceAuditAlarmA
   PrivilegedServiceAuditAlarmW
   QueryWindows31FilesMigration
+  ReadEncryptedFileRaw
   RegCloseKey
   RegConnectRegistryA
   RegConnectRegistryW
@@ -243,3 +286,4 @@ EXPORTS
   SetTokenInformation
   SynchronizeWindows31FilesAndWindowsNTRegistry
   TreeResetNamedSecurityInfoW
+  WriteEncryptedFileRaw

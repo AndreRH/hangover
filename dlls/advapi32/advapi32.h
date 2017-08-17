@@ -39,6 +39,7 @@ enum advapi32_calls
     CALL_BUILDTRUSTEEWITHSIDA,
     CALL_BUILDTRUSTEEWITHSIDW,
     CALL_CHECKTOKENMEMBERSHIP,
+    CALL_CLOSEENCRYPTEDFILERAW,
     CALL_CONVERTSECURITYDESCRIPTORTOSTRINGSECURITYDESCRIPTORA,
     CALL_CONVERTSECURITYDESCRIPTORTOSTRINGSECURITYDESCRIPTORW,
     CALL_CONVERTSIDTOSTRINGSIDA,
@@ -58,6 +59,45 @@ enum advapi32_calls
     CALL_CREATEPROCESSWITHTOKENW,
     CALL_CREATERESTRICTEDTOKEN,
     CALL_CREATEWELLKNOWNSID,
+    CALL_CRYPTACQUIRECONTEXTA,
+    CALL_CRYPTACQUIRECONTEXTW,
+    CALL_CRYPTCONTEXTADDREF,
+    CALL_CRYPTCREATEHASH,
+    CALL_CRYPTDECRYPT,
+    CALL_CRYPTDERIVEKEY,
+    CALL_CRYPTDESTROYHASH,
+    CALL_CRYPTDESTROYKEY,
+    CALL_CRYPTDUPLICATEHASH,
+    CALL_CRYPTDUPLICATEKEY,
+    CALL_CRYPTENCRYPT,
+    CALL_CRYPTENUMPROVIDERSA,
+    CALL_CRYPTENUMPROVIDERSW,
+    CALL_CRYPTENUMPROVIDERTYPESA,
+    CALL_CRYPTENUMPROVIDERTYPESW,
+    CALL_CRYPTEXPORTKEY,
+    CALL_CRYPTGENKEY,
+    CALL_CRYPTGENRANDOM,
+    CALL_CRYPTGETDEFAULTPROVIDERA,
+    CALL_CRYPTGETDEFAULTPROVIDERW,
+    CALL_CRYPTGETHASHPARAM,
+    CALL_CRYPTGETKEYPARAM,
+    CALL_CRYPTGETPROVPARAM,
+    CALL_CRYPTGETUSERKEY,
+    CALL_CRYPTHASHDATA,
+    CALL_CRYPTHASHSESSIONKEY,
+    CALL_CRYPTIMPORTKEY,
+    CALL_CRYPTRELEASECONTEXT,
+    CALL_CRYPTSETHASHPARAM,
+    CALL_CRYPTSETKEYPARAM,
+    CALL_CRYPTSETPROVIDERA,
+    CALL_CRYPTSETPROVIDEREXA,
+    CALL_CRYPTSETPROVIDEREXW,
+    CALL_CRYPTSETPROVIDERW,
+    CALL_CRYPTSETPROVPARAM,
+    CALL_CRYPTSIGNHASHA,
+    CALL_CRYPTSIGNHASHW,
+    CALL_CRYPTVERIFYSIGNATUREA,
+    CALL_CRYPTVERIFYSIGNATUREW,
     CALL_DECRYPTFILEA,
     CALL_DECRYPTFILEW,
     CALL_DELETEACE,
@@ -146,12 +186,15 @@ enum advapi32_calls
     CALL_OBJECTOPENAUDITALARMW,
     CALL_OBJECTPRIVILEGEAUDITALARMA,
     CALL_OBJECTPRIVILEGEAUDITALARMW,
+    CALL_OPENENCRYPTEDFILERAWA,
+    CALL_OPENENCRYPTEDFILERAWW,
     CALL_OPENPROCESSTOKEN,
     CALL_OPENTHREADTOKEN,
     CALL_PRIVILEGECHECK,
     CALL_PRIVILEGEDSERVICEAUDITALARMA,
     CALL_PRIVILEGEDSERVICEAUDITALARMW,
     CALL_QUERYWINDOWS31FILESMIGRATION,
+    CALL_READENCRYPTEDFILERAW,
     CALL_REGCLOSEKEY,
     CALL_REGCONNECTREGISTRYA,
     CALL_REGCONNECTREGISTRYW,
@@ -247,6 +290,7 @@ enum advapi32_calls
     CALL_SETTOKENINFORMATION,
     CALL_SYNCHRONIZEWINDOWS31FILESANDWINDOWSNTREGISTRY,
     CALL_TREERESETNAMEDSECURITYINFOW,
+    CALL_WRITEENCRYPTEDFILERAW,
 };
 
 #ifndef QEMU_DLL_GUEST
@@ -287,6 +331,7 @@ void qemu_BuildTrusteeWithObjectsAndSidW(struct qemu_syscall *call);
 void qemu_BuildTrusteeWithSidA(struct qemu_syscall *call);
 void qemu_BuildTrusteeWithSidW(struct qemu_syscall *call);
 void qemu_CheckTokenMembership(struct qemu_syscall *call);
+void qemu_CloseEncryptedFileRaw(struct qemu_syscall *call);
 void qemu_ConvertSecurityDescriptorToStringSecurityDescriptorA(struct qemu_syscall *call);
 void qemu_ConvertSecurityDescriptorToStringSecurityDescriptorW(struct qemu_syscall *call);
 void qemu_ConvertSidToStringSidA(struct qemu_syscall *call);
@@ -306,6 +351,45 @@ void qemu_CreateProcessWithLogonW(struct qemu_syscall *call);
 void qemu_CreateProcessWithTokenW(struct qemu_syscall *call);
 void qemu_CreateRestrictedToken(struct qemu_syscall *call);
 void qemu_CreateWellKnownSid(struct qemu_syscall *call);
+void qemu_CryptAcquireContextA(struct qemu_syscall *call);
+void qemu_CryptAcquireContextW(struct qemu_syscall *call);
+void qemu_CryptContextAddRef(struct qemu_syscall *call);
+void qemu_CryptCreateHash(struct qemu_syscall *call);
+void qemu_CryptDecrypt(struct qemu_syscall *call);
+void qemu_CryptDeriveKey(struct qemu_syscall *call);
+void qemu_CryptDestroyHash(struct qemu_syscall *call);
+void qemu_CryptDestroyKey(struct qemu_syscall *call);
+void qemu_CryptDuplicateHash(struct qemu_syscall *call);
+void qemu_CryptDuplicateKey(struct qemu_syscall *call);
+void qemu_CryptEncrypt(struct qemu_syscall *call);
+void qemu_CryptEnumProvidersA(struct qemu_syscall *call);
+void qemu_CryptEnumProvidersW(struct qemu_syscall *call);
+void qemu_CryptEnumProviderTypesA(struct qemu_syscall *call);
+void qemu_CryptEnumProviderTypesW(struct qemu_syscall *call);
+void qemu_CryptExportKey(struct qemu_syscall *call);
+void qemu_CryptGenKey(struct qemu_syscall *call);
+void qemu_CryptGenRandom(struct qemu_syscall *call);
+void qemu_CryptGetDefaultProviderA(struct qemu_syscall *call);
+void qemu_CryptGetDefaultProviderW(struct qemu_syscall *call);
+void qemu_CryptGetHashParam(struct qemu_syscall *call);
+void qemu_CryptGetKeyParam(struct qemu_syscall *call);
+void qemu_CryptGetProvParam(struct qemu_syscall *call);
+void qemu_CryptGetUserKey(struct qemu_syscall *call);
+void qemu_CryptHashData(struct qemu_syscall *call);
+void qemu_CryptHashSessionKey(struct qemu_syscall *call);
+void qemu_CryptImportKey(struct qemu_syscall *call);
+void qemu_CryptReleaseContext(struct qemu_syscall *call);
+void qemu_CryptSetHashParam(struct qemu_syscall *call);
+void qemu_CryptSetKeyParam(struct qemu_syscall *call);
+void qemu_CryptSetProviderA(struct qemu_syscall *call);
+void qemu_CryptSetProviderExA(struct qemu_syscall *call);
+void qemu_CryptSetProviderExW(struct qemu_syscall *call);
+void qemu_CryptSetProviderW(struct qemu_syscall *call);
+void qemu_CryptSetProvParam(struct qemu_syscall *call);
+void qemu_CryptSignHashA(struct qemu_syscall *call);
+void qemu_CryptSignHashW(struct qemu_syscall *call);
+void qemu_CryptVerifySignatureA(struct qemu_syscall *call);
+void qemu_CryptVerifySignatureW(struct qemu_syscall *call);
 void qemu_DecryptFileA(struct qemu_syscall *call);
 void qemu_DecryptFileW(struct qemu_syscall *call);
 void qemu_DeleteAce(struct qemu_syscall *call);
@@ -394,12 +478,15 @@ void qemu_ObjectOpenAuditAlarmA(struct qemu_syscall *call);
 void qemu_ObjectOpenAuditAlarmW(struct qemu_syscall *call);
 void qemu_ObjectPrivilegeAuditAlarmA(struct qemu_syscall *call);
 void qemu_ObjectPrivilegeAuditAlarmW(struct qemu_syscall *call);
+void qemu_OpenEncryptedFileRawA(struct qemu_syscall *call);
+void qemu_OpenEncryptedFileRawW(struct qemu_syscall *call);
 void qemu_OpenProcessToken(struct qemu_syscall *call);
 void qemu_OpenThreadToken(struct qemu_syscall *call);
 void qemu_PrivilegeCheck(struct qemu_syscall *call);
 void qemu_PrivilegedServiceAuditAlarmA(struct qemu_syscall *call);
 void qemu_PrivilegedServiceAuditAlarmW(struct qemu_syscall *call);
 void qemu_QueryWindows31FilesMigration(struct qemu_syscall *call);
+void qemu_ReadEncryptedFileRaw(struct qemu_syscall *call);
 void qemu_RegCloseKey(struct qemu_syscall *call);
 void qemu_RegConnectRegistryA(struct qemu_syscall *call);
 void qemu_RegConnectRegistryW(struct qemu_syscall *call);
@@ -495,6 +582,7 @@ void qemu_SetThreadToken(struct qemu_syscall *call);
 void qemu_SetTokenInformation(struct qemu_syscall *call);
 void qemu_SynchronizeWindows31FilesAndWindowsNTRegistry(struct qemu_syscall *call);
 void qemu_TreeResetNamedSecurityInfoW(struct qemu_syscall *call);
+void qemu_WriteEncryptedFileRaw(struct qemu_syscall *call);
 
 #endif
 
