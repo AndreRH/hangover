@@ -326,6 +326,7 @@ enum msvcrt_calls
     CALL__NEXTAFTER,
     CALL__NEXTAFTERF,
     CALL__ONEXIT,
+    CALL__OPEN,
     CALL__OPEN_OSFHANDLE,
     CALL__PCLOSE,
     CALL__PIPE,
@@ -1101,6 +1102,7 @@ void qemu__mktemp_s(struct qemu_syscall *c);
 void qemu__nextafter(struct qemu_syscall *call);
 void qemu__nextafterf(struct qemu_syscall *call);
 void qemu__onexit(struct qemu_syscall *call);
+void qemu__open(struct qemu_syscall *call);
 void qemu__open_osfhandle(struct qemu_syscall *c);
 void qemu__pclose(struct qemu_syscall *call);
 void qemu__pipe(struct qemu_syscall *c);
@@ -2220,6 +2222,7 @@ int (* CDECL p__unloaddll)(intptr_t dll);
 void * (* CDECL p__getdllprocaddr)(intptr_t dll, const char *name, int ordinal);
 int (* CDECL p__getpid)(void);
 int (* CDECL p__crtTerminateProcess)(UINT exit_code);
+int (* CDECL p__open)(const char *path, int flags, ...);
 
 DWORD msvcrt_tls;
 

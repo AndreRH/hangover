@@ -393,6 +393,7 @@ static const syscall_handler dll_functions[] =
     qemu__nextafter,
     qemu__nextafterf,
     qemu__onexit,
+    qemu__open,
     qemu__open_osfhandle,
     qemu__pclose,
     qemu__pipe,
@@ -1118,6 +1119,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__nextafter = (void *)GetProcAddress(msvcrt, "_nextafter");
     p__nextafterf = (void *)GetProcAddress(msvcrt, "_nextafterf");
     p__onexit = (void *)GetProcAddress(msvcrt, "_onexit");
+    p__open = (void *)GetProcAddress(msvcrt, "_open");
     p__open_osfhandle = (void *)GetProcAddress(msvcrt, "_open_osfhandle");
     p__pclose = (void *)GetProcAddress(msvcrt, "_pclose");
     p__pipe = (void *)GetProcAddress(msvcrt, "_pipe");

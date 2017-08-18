@@ -21,6 +21,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -5784,6 +5785,56 @@ void qemu__get_stream_buffer_pointers(struct qemu_syscall *call)
     struct qemu__get_stream_buffer_pointers *c = (struct qemu__get_stream_buffer_pointers *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__get_stream_buffer_pointers(QEMU_G2H(c->file), QEMU_G2H(c->base), QEMU_G2H(c->ptr), QEMU_G2H(c->count));
+}
+
+#endif
+
+struct qemu__open
+{
+    struct qemu_syscall super;
+    uint64_t path;
+    uint64_t flags;
+    uint64_t mode;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+int CDECL MSVCRT__open(const char *path, int flags, ...)
+{
+    struct qemu__open call;
+    va_list list;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL__OPEN);
+    call.path = (uint64_t)path;
+    call.flags = flags;
+    if (flags & _O_CREAT)
+    {
+        va_start(list, flags);
+        call.mode = va_arg(list, int);
+        va_end(list);
+    }
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+#define MSVCRT__O_CREAT       0x0100
+void qemu__open(struct qemu_syscall *call)
+{
+    struct qemu__open *c = (struct qemu__open *)call;
+
+    WINE_FIXME("Unverified!\n");
+    if (c->flags & MSVCRT__O_CREAT)
+    {
+        c->super.iret = p__open(QEMU_G2H(c->path), c->flags, c->mode);
+    }
+    else
+    {
+        c->super.iret = p__open(QEMU_G2H(c->path), c->flags);
+    }
 }
 
 #endif

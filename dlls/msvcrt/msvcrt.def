@@ -332,6 +332,7 @@ EXPORTS
   _nextafter=MSVCRT__nextafter
   _nextafterf=MSVCRT__nextafterf
   _onexit=MSVCRT__onexit
+  _open=MSVCRT__open
   _open_osfhandle=MSVCRT__open_osfhandle
   _pipe=MSVCRT__pipe
   _purecall
