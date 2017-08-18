@@ -192,6 +192,7 @@ enum ntdll_calls
     CALL_RTLAREALLACCESSESGRANTED,
     CALL_RTLAREANYACCESSESGRANTED,
     CALL_RTLASSERT,
+    CALL_RTLCAPTURESTACKBACKTRACE,
     CALL_RTLCHARTOINTEGER,
     CALL_RTLCOMPACTHEAP,
     CALL_RTLCOMPAREMEMORY,
@@ -594,6 +595,7 @@ void qemu_RtlAppendUnicodeToString(struct qemu_syscall *call);
 void qemu_RtlAreAllAccessesGranted(struct qemu_syscall *call);
 void qemu_RtlAreAnyAccessesGranted(struct qemu_syscall *call);
 void qemu_RtlAssert(struct qemu_syscall *call);
+void qemu_RtlCaptureStackBackTrace(struct qemu_syscall *call);
 void qemu_RtlCharToInteger(struct qemu_syscall *call);
 void qemu_RtlCompactHeap(struct qemu_syscall *call);
 void qemu_RtlCompareMemory(struct qemu_syscall *call);

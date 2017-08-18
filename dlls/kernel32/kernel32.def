@@ -774,6 +774,7 @@ EXPORTS
   ResumeThread
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   RtlCaptureContext=ntdll.RtlCaptureContext
+  RtlCaptureStackBackTrace=ntdll.RtlCaptureStackBackTrace
   RtlLookupFunctionEntry=ntdll.RtlLookupFunctionEntry
   RtlPcToFileHeader=ntdll.RtlPcToFileHeader
   RtlUnwind=ntdll.RtlUnwind

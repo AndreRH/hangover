@@ -1220,3 +1220,31 @@ void WINAPI qemu_exception_handler(EXCEPTION_POINTERS *except)
 }
 
 #endif
+
+struct qemu_RtlCaptureStackBackTrace
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI USHORT WINAPI RtlCaptureStackBackTrace( ULONG skip, ULONG count, PVOID *buffer, ULONG *hash )
+{
+    struct qemu_RtlCaptureStackBackTrace call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLCAPTURESTACKBACKTRACE);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlCaptureStackBackTrace(struct qemu_syscall *call)
+{
+    struct qemu_RtlCaptureStackBackTrace *c = (struct qemu_RtlCaptureStackBackTrace *)call;
+    WINE_FIXME("Stub!\n");
+    c->super.iret = 0;
+}
+
+#endif

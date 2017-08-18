@@ -251,6 +251,7 @@ static const syscall_handler dll_functions[] =
     qemu_RtlAreAllAccessesGranted,
     qemu_RtlAreAnyAccessesGranted,
     qemu_RtlAssert,
+    qemu_RtlCaptureStackBackTrace,
     qemu_RtlCharToInteger,
     qemu_RtlCompactHeap,
     qemu_RtlCompareMemory,

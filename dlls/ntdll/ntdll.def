@@ -192,6 +192,7 @@ EXPORTS
   RtlAreAnyAccessesGranted
   RtlAssert
   RtlCaptureContext=ntdll_RtlCaptureContext
+  RtlCaptureStackBackTrace
   RtlCharToInteger
   RtlCompactHeap
   RtlCompareMemory=
