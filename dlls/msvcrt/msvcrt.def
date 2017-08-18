@@ -625,6 +625,7 @@ EXPORTS
   strcmp=MSVCRT_strcmp
   strcpy=ntdll.strcpy
   strcpy_s=MSVCRT_strcpy_s
+  strcspn=ntdll.strcspn
   strerror=MSVCRT_strerror
   strerror_s=MSVCRT_strerror_s
   strlen=MSVCRT_strlen
