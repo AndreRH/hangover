@@ -18,6 +18,7 @@ EXPORTS
   __CxxFrameHandler3=__CxxFrameHandler
   __CxxFrameHandler=__CxxFrameHandler
   __dllonexit
+  __doserrno=MSVCRT___doserrno
   __fpe_flt_rounds
   __fpecode
   __getmainargs
@@ -60,6 +61,8 @@ EXPORTS
   __sys_errlist
   __sys_nerr
   __toascii=MSVCRT___toascii
+  __wcserror=MSVCRT___wcserror
+  __wcserror_s=MSVCRT___wcserror_s
   __wgetmainargs
   _abs64
   _access=MSVCRT__access
@@ -69,6 +72,8 @@ EXPORTS
   _cabs=MSVCRT__cabs
   _cexit=MSVCRT__cexit
   _configthreadlocale
+  _chdir=MSVCRT__chdir
+  _chdrive=MSVCRT__chdrive
   _chgsign=MSVCRT__chgsign
   _chgsignf=MSVCRT__chgsignf
   _chmod=MSVCRT__chmod
@@ -100,6 +105,7 @@ EXPORTS
   _copysign=MSVCRT__copysign
   _copysignf=MSVCRT__copysignf
   _creat=MSVCRT__creat
+  _cwait
   _CxxThrowException=MSVCRT__CxxThrowException
   _dup2=MSVCRT__dup2
   _dup=MSVCRT__dup
@@ -109,6 +115,9 @@ EXPORTS
   _environ=msvcr100.__qemu_native_data__
   _eof=MSVCRT__eof
   _errno=MSVCRT__errno
+  _execv
+  _execvp
+  _execvpe
   _exit=MSVCRT__exit
   _fclose_nolock=MSVCRT__fclose_nolock
   _fcloseall=MSVCRT__fcloseall
@@ -125,6 +134,17 @@ EXPORTS
   _filelengthi64=MSVCRT__filelengthi64
   _fileno=MSVCRT__fileno
   _fileno=MSVCRT__fileno
+  _findclose=MSVCRT__findclose
+  _findfirst32=MSVCRT__findfirst32
+  _findfirst64=MSVCRT__findfirst64
+  _findfirst64i32=MSVCRT__findfirst64i32
+  _findfirst=MSVCRT__findfirst
+  _findfirsti64=MSVCRT__findfirsti64
+  _findnext32=MSVCRT__findnext32
+  _findnext64=MSVCRT__findnext64
+  _findnext64i32=MSVCRT__findnext64i32
+  _findnext=MSVCRT__findnext
+  _findnexti64=MSVCRT__findnexti64
   _finite=MSVCRT__finite
   _finitef=MSVCRT__finitef
   _flsbuf=MSVCRT__flsbuf
@@ -152,6 +172,7 @@ EXPORTS
   _ftelli64=MSVCRT__ftelli64
   _ftelli64_nolock=MSVCRT__ftelli64_nolock
   _ftol=MSVCRT__ftol
+  _fullpath=MSVCRT__fullpath
   _futime32=MSVCRT__futime32
   _futime64=MSVCRT__futime64
   _futime=MSVCRT__futime
@@ -164,8 +185,14 @@ EXPORTS
   _get_osfhandle=MSVCRT__get_osfhandle
   _get_stream_buffer_pointers=MSVCRT__get_stream_buffer_pointers
   _get_thread_local_invalid_parameter_handler
+  _getcwd=MSVCRT__getcwd
+  _getdcwd=MSVCRT__getdcwd
+  _getdiskfree=MSVCRT__getdiskfree
+  _getdllprocaddr=MSVCRT__getdllprocaddr
+  _getdrive=MSVCRT__getdrive
   _getmaxstdio=MSVCRT__getmaxstdio
   _getmbcp
+  _getpid
   _getw=MSVCRT__getw
   _getws=MSVCRT__getws
   _hypot
@@ -216,6 +243,7 @@ EXPORTS
   _j0=MSVCRT__j0
   _j1=MSVCRT__j1
   _jn=MSVCRT__jn
+  _loaddll
   _lock
   _lock_file=MSVCRT__lock_file
   _locking=MSVCRT__locking
@@ -227,6 +255,8 @@ EXPORTS
   _lseek=MSVCRT__lseek
   _lseeki64=MSVCRT__lseeki64
   _lseeki64=MSVCRT__lseeki64
+  _makepath=MSVCRT__makepath
+  _makepath_s=MSVCRT__makepath_s
   _matherr=MSVCRT__matherr
   _mbbtombc
   _mbbtype
@@ -298,11 +328,13 @@ EXPORTS
   _mbstrlen_l=MSVCRT__mbstrlen_l
   _mbsupr
   _mbsupr_s
+  _mkdir=MSVCRT__mkdir
   _mktemp=MSVCRT__mktemp
   _mktemp_s=MSVCRT__mktemp_s
   _nextafter=MSVCRT__nextafter
   _nextafterf=MSVCRT__nextafterf
   _onexit=MSVCRT__onexit
+  _open=MSVCRT__open
   _open_osfhandle=MSVCRT__open_osfhandle
   _pipe=MSVCRT__pipe
   _purecall
@@ -311,6 +343,7 @@ EXPORTS
   _putw=MSVCRT__putw
   _putws=MSVCRT__putws
   _read=MSVCRT__read
+  _rmdir=MSVCRT__rmdir
   _rmtmp=MSVCRT__rmtmp
   _rotl64
   _rotl=MSVCRT__rotl
@@ -318,6 +351,8 @@ EXPORTS
   _rotr=MSVCRT__rotr
   _scalb=MSVCRT__scalb
   _scalbf=MSVCRT__scalbf
+  _searchenv=MSVCRT__searchenv
+  _searchenv_s=MSVCRT__searchenv_s
   _set_controlfp
   _set_doserrno=MSVCRT__set_doserrno
   _set_errno
@@ -334,6 +369,10 @@ EXPORTS
   _snwprintf=MSVCRT__snwprintf
   _sopen_dispatch=MSVCRT__sopen_dispatch
   _sopen_s=MSVCRT__sopen_s
+  _spawnv=MSVCRT__spawnv
+  _spawnvp=MSVCRT__spawnvp
+  _splitpath=MSVCRT__splitpath
+  _splitpath_s=MSVCRT__splitpath_s
   _stat32=MSVCRT__stat32
   _stat32i64=MSVCRT__stat32i64
   _stat64=MSVCRT__stat64
@@ -342,6 +381,7 @@ EXPORTS
   _statusfp2
   _strdate=MSVCRT__strdate
   _strdup = MSVCRT__strdup
+  _strerror=MSVCRT__strerror
   _stricmp=MSVCRT__stricmp
   _strnicmp=MSVCRT__strnicmp
   _strtime=MSVCRT__strtime
@@ -360,6 +400,7 @@ EXPORTS
   _ungetc_nolock=MSVCRT__ungetc_nolock
   _ungetwc_nolock=MSVCRT__ungetwc_nolock
   _unlink=MSVCRT__unlink
+  _unloaddll
   _unlock
   _unlock_file=MSVCRT__unlock_file
   _utime32=MSVCRT__utime32
@@ -369,35 +410,67 @@ EXPORTS
   _vsnwprintf=MSVCRT__vsnwprintf
   _waccess=MSVCRT__waccess
   _waccess_s=MSVCRT__waccess_s
+  _wchdir=MSVCRT__wchdir
   _wchmod=MSVCRT__wchmod
   _wcmdln=MSVCRT__wcmdln
   _wcreat=MSVCRT__wcreat
+  _wcserror=MSVCRT__wcserror
+  _wcserror_s=MSVCRT__wcserror_s
   _wcsnicmp=MSVCRT__wcsnicmp
   _wdupenv_s
+  _wexecv
+  _wexecve
+  _wexecvp
+  _wexecvpe
   _wfdopen=MSVCRT__wfdopen
+  _wfindfirst32=MSVCRT__wfindfirst32
+  _wfindfirst64=MSVCRT__wfindfirst64
+  _wfindfirst64i32=MSVCRT__wfindfirst64i32
+  _wfindfirst=MSVCRT__wfindfirst
+  _wfindfirsti64=MSVCRT__wfindfirsti64
+  _wfindnext32=MSVCRT__wfindnext32
+  _wfindnext64=MSVCRT__wfindnext64
+  _wfindnext64i32=MSVCRT__wfindnext64i32
+  _wfindnext=MSVCRT__wfindnext
+  _wfindnexti64=MSVCRT__wfindnexti64
   _wfopen=MSVCRT__wfopen
   _wfopen_s=MSVCRT__wfopen_s
   _wfreopen=MSVCRT__wfreopen
   _wfreopen_s=MSVCRT__wfreopen_s
   _wfsopen=MSVCRT__wfsopen
+  _wfullpath=MSVCRT__wfullpath
+  _wgetcwd=MSVCRT__wgetcwd
+  _wgetdcwd=MSVCRT__wgetdcwd
   _wgetenv=MSVCRT__wgetenv
   _wgetenv_s
+  _wmakepath=MSVCRT__wmakepath
+  _wmakepath_s=MSVCRT__wmakepath_s
+  _wmkdir=MSVCRT__wmkdir
   _wmktemp=MSVCRT__wmktemp
   _wmktemp_s=MSVCRT__wmktemp_s
+  _wperror=MSVCRT__wperror
   _wputenv=MSVCRT__wputenv
   _wputenv_s
   _wremove=MSVCRT__wremove
   _wrename=MSVCRT__wrename
   _write=MSVCRT__write
   _write=MSVCRT__write
+  _wrmdir=MSVCRT__wrmdir
+  _wsearchenv=MSVCRT__wsearchenv
+  _wsearchenv_s=MSVCRT__wsearchenv_s
   _wsopen_dispatch=MSVCRT__wsopen_dispatch
   _wsopen_s=MSVCRT__wsopen_s
+  _wspawnv=MSVCRT__wspawnv
+  _wspawnvp=MSVCRT__wspawnvp
+  _wsplitpath=MSVCRT__wsplitpath
+  _wsplitpath_s=MSVCRT__wsplitpath_s
   _wstat32=MSVCRT__wstat32
   _wstat32i64=MSVCRT__wstat32i64
   _wstat64=MSVCRT__wstat64
   _wstat64i32=MSVCRT__wstat64i32
   _wstat=MSVCRT__wstat
   _wstati64=MSVCRT__wstati64
+  _wsystem=MSVCRT__wsystem
   _wtempnam=MSVCRT__wtempnam
   _wtmpnam=MSVCRT__wtmpnam
   _wtmpnam_s=MSVCRT__wtmpnam_s
@@ -424,9 +497,9 @@ EXPORTS
   atan=MSVCRT_atan
   atanf=MSVCRT_atanf
   atof=MSVCRT_atof
-  bsearch=MSVCRT_bsearch
   atoi=ntdll.atoi
   atol=ntdll.atol
+  bsearch=MSVCRT_bsearch
   calloc=MSVCRT_calloc
   ceil=MSVCRT_ceil
   ceilf=MSVCRT_ceilf
@@ -530,18 +603,19 @@ EXPORTS
   memset=MSVCRT_memset
   modf=MSVCRT_modf
   modff=MSVCRT_modff
-  __doserrno=MSVCRT___doserrno
-  __wcserror=MSVCRT___wcserror
-  __wcserror_s=MSVCRT___wcserror_s
-  _strerror=MSVCRT__strerror
-  _wcserror=MSVCRT__wcserror
-  _wcserror_s=MSVCRT__wcserror_s
-  _wperror=MSVCRT__wperror
-  perror=MSVCRT_perror
-  strerror=MSVCRT_strerror
-  strerror_s=MSVCRT_strerror_s
+  MSVCR110__crtTerminateProcess
+  _execve=MSVCRT__execve
+  _pclose=MSVCRT__pclose
+  _popen=MSVCRT__popen
+  _spawnve=MSVCRT__spawnve
+  _spawnvpe=MSVCRT__spawnvpe
+  _wpopen=MSVCRT__wpopen
+  _wspawnve=MSVCRT__wspawnve
+  _wspawnvpe=MSVCRT__wspawnvpe
+  system=MSVCRT_system
   nearbyint=MSVCRT_nearbyint
   nearbyintf=MSVCRT_nearbyintf
+  perror=MSVCRT_perror
   pow=MSVCRT_pow
   powf=MSVCRT_powf
   printf=MSVCRT_printf
@@ -581,6 +655,9 @@ EXPORTS
   strcmp=MSVCRT_strcmp
   strcpy=ntdll.strcpy
   strcpy_s=MSVCRT_strcpy_s
+  strcspn=ntdll.strcspn
+  strerror=MSVCRT_strerror
+  strerror_s=MSVCRT_strerror_s
   strlen=MSVCRT_strlen
   strncmp=MSVCRT_strncmp
   strrchr=MSVCRT_strrchr
