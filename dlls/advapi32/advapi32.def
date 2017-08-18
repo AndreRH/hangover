@@ -285,5 +285,10 @@ EXPORTS
   SetThreadToken
   SetTokenInformation
   SynchronizeWindows31FilesAndWindowsNTRegistry
+  SystemFunction030
+  SystemFunction035
+  SystemFunction036
+  SystemFunction040
+  SystemFunction041
   TreeResetNamedSecurityInfoW
   WriteEncryptedFileRaw

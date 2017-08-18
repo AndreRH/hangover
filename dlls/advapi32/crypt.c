@@ -1601,6 +1601,178 @@ void qemu_ReadEncryptedFileRaw(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_SystemFunction030
+{
+    struct qemu_syscall super;
+    uint64_t b1;
+    uint64_t b2;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI SystemFunction030(LPCVOID b1, LPCVOID b2)
+{
+    struct qemu_SystemFunction030 call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMFUNCTION030);
+    call.b1 = (uint64_t)b1;
+    call.b2 = (uint64_t)b2;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add SystemFunction030 to Wine headers? */
+extern BOOL WINAPI SystemFunction030(LPCVOID b1, LPCVOID b2);
+void qemu_SystemFunction030(struct qemu_syscall *call)
+{
+    struct qemu_SystemFunction030 *c = (struct qemu_SystemFunction030 *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SystemFunction030(QEMU_G2H(c->b1), QEMU_G2H(c->b2));
+}
+
+#endif
+
+struct qemu_SystemFunction035
+{
+    struct qemu_syscall super;
+    uint64_t lpszDllFilePath;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI SystemFunction035(LPCSTR lpszDllFilePath)
+{
+    struct qemu_SystemFunction035 call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMFUNCTION035);
+    call.lpszDllFilePath = (uint64_t)lpszDllFilePath;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add SystemFunction035 to Wine headers? */
+extern BOOL WINAPI SystemFunction035(LPCSTR lpszDllFilePath);
+void qemu_SystemFunction035(struct qemu_syscall *call)
+{
+    struct qemu_SystemFunction035 *c = (struct qemu_SystemFunction035 *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SystemFunction035(QEMU_G2H(c->lpszDllFilePath));
+}
+
+#endif
+
+struct qemu_SystemFunction036
+{
+    struct qemu_syscall super;
+    uint64_t pbBuffer;
+    uint64_t dwLen;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOLEAN WINAPI SystemFunction036(PVOID pbBuffer, ULONG dwLen)
+{
+    struct qemu_SystemFunction036 call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMFUNCTION036);
+    call.pbBuffer = (uint64_t)pbBuffer;
+    call.dwLen = (uint64_t)dwLen;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add SystemFunction036 to Wine headers? */
+extern BOOLEAN WINAPI SystemFunction036(PVOID pbBuffer, ULONG dwLen);
+void qemu_SystemFunction036(struct qemu_syscall *call)
+{
+    struct qemu_SystemFunction036 *c = (struct qemu_SystemFunction036 *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SystemFunction036(QEMU_G2H(c->pbBuffer), c->dwLen);
+}
+
+#endif
+
+struct qemu_SystemFunction040
+{
+    struct qemu_syscall super;
+    uint64_t memory;
+    uint64_t length;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI SystemFunction040(PVOID memory, ULONG length, ULONG flags)
+{
+    struct qemu_SystemFunction040 call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMFUNCTION040);
+    call.memory = (uint64_t)memory;
+    call.length = (uint64_t)length;
+    call.flags = (uint64_t)flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add SystemFunction040 to Wine headers? */
+extern NTSTATUS WINAPI SystemFunction040(PVOID memory, ULONG length, ULONG flags);
+void qemu_SystemFunction040(struct qemu_syscall *call)
+{
+    struct qemu_SystemFunction040 *c = (struct qemu_SystemFunction040 *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SystemFunction040(QEMU_G2H(c->memory), c->length, c->flags);
+}
+
+#endif
+
+struct qemu_SystemFunction041
+{
+    struct qemu_syscall super;
+    uint64_t memory;
+    uint64_t length;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI SystemFunction041(PVOID memory, ULONG length, ULONG flags)
+{
+    struct qemu_SystemFunction041 call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMFUNCTION041);
+    call.memory = (uint64_t)memory;
+    call.length = (uint64_t)length;
+    call.flags = (uint64_t)flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add SystemFunction041 to Wine headers? */
+extern NTSTATUS WINAPI SystemFunction041(PVOID memory, ULONG length, ULONG flags);
+void qemu_SystemFunction041(struct qemu_syscall *call)
+{
+    struct qemu_SystemFunction041 *c = (struct qemu_SystemFunction041 *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SystemFunction041(QEMU_G2H(c->memory), c->length, c->flags);
+}
+
+#endif
+
 struct qemu_WriteEncryptedFileRaw
 {
     struct qemu_syscall super;

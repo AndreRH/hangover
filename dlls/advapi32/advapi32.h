@@ -289,6 +289,11 @@ enum advapi32_calls
     CALL_SETTHREADTOKEN,
     CALL_SETTOKENINFORMATION,
     CALL_SYNCHRONIZEWINDOWS31FILESANDWINDOWSNTREGISTRY,
+    CALL_SYSTEMFUNCTION030,
+    CALL_SYSTEMFUNCTION035,
+    CALL_SYSTEMFUNCTION036,
+    CALL_SYSTEMFUNCTION040,
+    CALL_SYSTEMFUNCTION041,
     CALL_TREERESETNAMEDSECURITYINFOW,
     CALL_WRITEENCRYPTEDFILERAW,
 };
@@ -581,6 +586,11 @@ void qemu_SetSecurityInfo(struct qemu_syscall *call);
 void qemu_SetThreadToken(struct qemu_syscall *call);
 void qemu_SetTokenInformation(struct qemu_syscall *call);
 void qemu_SynchronizeWindows31FilesAndWindowsNTRegistry(struct qemu_syscall *call);
+void qemu_SystemFunction030(struct qemu_syscall *call);
+void qemu_SystemFunction035(struct qemu_syscall *call);
+void qemu_SystemFunction036(struct qemu_syscall *call);
+void qemu_SystemFunction040(struct qemu_syscall *call);
+void qemu_SystemFunction041(struct qemu_syscall *call);
 void qemu_TreeResetNamedSecurityInfoW(struct qemu_syscall *call);
 void qemu_WriteEncryptedFileRaw(struct qemu_syscall *call);
 

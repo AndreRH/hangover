@@ -325,6 +325,11 @@ static const syscall_handler dll_functions[] =
     qemu_SetThreadToken,
     qemu_SetTokenInformation,
     qemu_SynchronizeWindows31FilesAndWindowsNTRegistry,
+    qemu_SystemFunction030,
+    qemu_SystemFunction035,
+    qemu_SystemFunction036,
+    qemu_SystemFunction040,
+    qemu_SystemFunction041,
     qemu_TreeResetNamedSecurityInfoW,
     qemu_WriteEncryptedFileRaw,
 };
