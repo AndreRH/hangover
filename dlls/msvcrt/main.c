@@ -129,6 +129,8 @@ static const syscall_handler dll_functions[] =
     qemu__amsg_exit,
     qemu__cabs,
     qemu__cexit,
+    qemu__chdir,
+    qemu__chdrive,
     qemu__chgsign,
     qemu__chgsignf,
     qemu__chmod,
@@ -191,6 +193,17 @@ static const syscall_handler dll_functions[] =
     qemu__filelength,
     qemu__filelengthi64,
     qemu__fileno,
+    qemu__findclose,
+    qemu__findfirst,
+    qemu__findfirst32,
+    qemu__findfirst64,
+    qemu__findfirst64i32,
+    qemu__findfirsti64,
+    qemu__findnext,
+    qemu__findnext32,
+    qemu__findnext64,
+    qemu__findnext64i32,
+    qemu__findnexti64,
     qemu__finite,
     qemu__finitef,
     qemu__flsbuf,
@@ -217,6 +230,7 @@ static const syscall_handler dll_functions[] =
     qemu__ftelli64,
     qemu__ftelli64_nolock,
     qemu__ftol,
+    qemu__fullpath,
     qemu__futime,
     qemu__futime32,
     qemu__futime64,
@@ -229,6 +243,10 @@ static const syscall_handler dll_functions[] =
     qemu__get_osfhandle,
     qemu__get_stream_buffer_pointers,
     qemu__get_thread_local_invalid_parameter_handler,
+    qemu__getcwd,
+    qemu__getdcwd,
+    qemu__getdiskfree,
+    qemu__getdrive,
     qemu__getmaxstdio,
     qemu__getmbcp,
     qemu__getw,
@@ -287,6 +305,8 @@ static const syscall_handler dll_functions[] =
     qemu__lrotr,
     qemu__lseek,
     qemu__lseeki64,
+    qemu__makepath,
+    qemu__makepath_s,
     qemu__matherr,
     qemu__mbbtombc,
     qemu__mbbtype,
@@ -358,6 +378,7 @@ static const syscall_handler dll_functions[] =
     qemu__mbstrlen_l,
     qemu__mbsupr,
     qemu__mbsupr_s,
+    qemu__mkdir,
     qemu__mktemp,
     qemu__mktemp_s,
     qemu__nextafter,
@@ -371,6 +392,7 @@ static const syscall_handler dll_functions[] =
     qemu__putw,
     qemu__putws,
     qemu__read,
+    qemu__rmdir,
     qemu__rmtmp,
     qemu__rotl,
     qemu__rotl64,
@@ -378,6 +400,8 @@ static const syscall_handler dll_functions[] =
     qemu__rotr64,
     qemu__scalb,
     qemu__scalbf,
+    qemu__searchenv,
+    qemu__searchenv_s,
     qemu__set_controlfp,
     qemu__set_doserrno,
     qemu__set_errno,
@@ -393,6 +417,8 @@ static const syscall_handler dll_functions[] =
     qemu__snwprintf,
     qemu__sopen_dispatch,
     qemu__sopen_s,
+    qemu__splitpath,
+    qemu__splitpath_s,
     qemu__stat32,
     qemu__stat32i64,
     qemu__stat64,
@@ -427,6 +453,7 @@ static const syscall_handler dll_functions[] =
     qemu_sprintf,
     qemu__waccess,
     qemu__waccess_s,
+    qemu__wchdir,
     qemu__wchmod,
     qemu__wcreat,
     qemu__wcserror,
@@ -434,13 +461,29 @@ static const syscall_handler dll_functions[] =
     qemu__wcsnicmp,
     qemu__wdupenv_s,
     qemu__wfdopen,
+    qemu__wfindfirst,
+    qemu__wfindfirst32,
+    qemu__wfindfirst64,
+    qemu__wfindfirst64i32,
+    qemu__wfindfirsti64,
+    qemu__wfindnext,
+    qemu__wfindnext32,
+    qemu__wfindnext64,
+    qemu__wfindnext64i32,
+    qemu__wfindnexti64,
     qemu__wfopen,
     qemu__wfopen_s,
     qemu__wfreopen,
     qemu__wfreopen_s,
     qemu__wfsopen,
+    qemu__wfullpath,
+    qemu__wgetcwd,
+    qemu__wgetdcwd,
     qemu__wgetenv,
     qemu__wgetenv_s,
+    qemu__wmakepath,
+    qemu__wmakepath_s,
+    qemu__wmkdir,
     qemu__wmktemp,
     qemu__wmktemp_s,
     qemu__wperror,
@@ -449,8 +492,13 @@ static const syscall_handler dll_functions[] =
     qemu__wremove,
     qemu__wrename,
     qemu__write,
+    qemu__wrmdir,
+    qemu__wsearchenv,
+    qemu__wsearchenv_s,
     qemu__wsopen_dispatch,
     qemu__wsopen_s,
+    qemu__wsplitpath,
+    qemu__wsplitpath_s,
     qemu__wstat,
     qemu__wstat32,
     qemu__wstat32i64,
@@ -786,6 +834,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__amsg_exit = (void *)GetProcAddress(msvcrt, "_amsg_exit");
     p__cabs = (void *)GetProcAddress(msvcrt, "_cabs");
     p__cexit = (void *)GetProcAddress(msvcrt, "_cexit");
+    p__chdir = (void *)GetProcAddress(msvcrt, "_chdir");
+    p__chdrive = (void *)GetProcAddress(msvcrt, "_chdrive");
     p__chgsign = (void *)GetProcAddress(msvcrt, "_chgsign");
     p__chgsignf = (void *)GetProcAddress(msvcrt, "_chgsignf");
     p__CIacos = (void *)GetProcAddress(msvcrt, "_CIacos");
@@ -841,6 +891,17 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__filelength = (void *)GetProcAddress(msvcrt, "_filelength");
     p__filelengthi64 = (void *)GetProcAddress(msvcrt, "_filelengthi64");
     p__fileno = (void *)GetProcAddress(msvcrt, "_fileno");
+    p__findclose = (void *)GetProcAddress(msvcrt, "_findclose");
+    p__findfirst = (void *)GetProcAddress(msvcrt, "_findfirst");
+    p__findfirst32 = (void *)GetProcAddress(msvcrt, "_findfirst32");
+    p__findfirst64 = (void *)GetProcAddress(msvcrt, "_findfirst64");
+    p__findfirst64i32 = (void *)GetProcAddress(msvcrt, "_findfirst64i32");
+    p__findfirsti64 = (void *)GetProcAddress(msvcrt, "_findfirsti64");
+    p__findnext = (void *)GetProcAddress(msvcrt, "_findnext");
+    p__findnext32 = (void *)GetProcAddress(msvcrt, "_findnext32");
+    p__findnext64 = (void *)GetProcAddress(msvcrt, "_findnext64");
+    p__findnext64i32 = (void *)GetProcAddress(msvcrt, "_findnext64i32");
+    p__findnexti64 = (void *)GetProcAddress(msvcrt, "_findnexti64");
     p__finite = (void *)GetProcAddress(msvcrt, "_finite");
     p__finitef = (void *)GetProcAddress(msvcrt, "_finitef");
     p__flsbuf = (void *)GetProcAddress(msvcrt, "_flsbuf");
@@ -867,6 +928,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__ftelli64 = (void *)GetProcAddress(msvcrt, "_ftelli64");
     p__ftelli64_nolock = (void *)GetProcAddress(msvcrt, "_ftelli64_nolock");
     p__ftol = (void *)GetProcAddress(msvcrt, "_ftol");
+    p__fullpath = (void *)GetProcAddress(msvcrt, "_fullpath");
     p__fwrite_nolock = (void *)GetProcAddress(msvcrt, "_fwrite_nolock");
     p__gcvt = (void *)GetProcAddress(msvcrt, "_gcvt");
     p__gcvt_s = (void *)GetProcAddress(msvcrt, "_gcvt_s");
@@ -876,6 +938,10 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__get_osfhandle = (void *)GetProcAddress(msvcrt, "_get_osfhandle");
     p__get_stream_buffer_pointers = (void *)GetProcAddress(msvcrt, "_get_stream_buffer_pointers");
     p__get_thread_local_invalid_parameter_handler = (void *)GetProcAddress(msvcrt, "_get_thread_local_invalid_parameter_handler");
+    p__getcwd = (void *)GetProcAddress(msvcrt, "_getcwd");
+    p__getdcwd = (void *)GetProcAddress(msvcrt, "_getdcwd");
+    p__getdiskfree = (void *)GetProcAddress(msvcrt, "_getdiskfree");
+    p__getdrive = (void *)GetProcAddress(msvcrt, "_getdrive");
     p__getmaxstdio = (void *)GetProcAddress(msvcrt, "_getmaxstdio");
     p__getmbcp = (void *)GetProcAddress(msvcrt, "_getmbcp");
     p__getw = (void *)GetProcAddress(msvcrt, "_getw");
@@ -937,6 +1003,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__lseek = (void *)GetProcAddress(msvcrt, "_lseek");
     p__lseeki64 = (void *)GetProcAddress(msvcrt, "_lseeki64");
     p__lseeki64 = (void *)GetProcAddress(msvcrt, "_lseeki64");
+    p__makepath = (void *)GetProcAddress(msvcrt, "_makepath");
+    p__makepath_s = (void *)GetProcAddress(msvcrt, "_makepath_s");
     p__matherr = (void *)GetProcAddress(msvcrt, "_matherr");
     p__mbbtombc = (void *)GetProcAddress(msvcrt, "_mbbtombc");
     p__mbbtype = (void *)GetProcAddress(msvcrt, "_mbbtype");
@@ -1008,6 +1076,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__mbstrlen_l = (void *)GetProcAddress(msvcrt, "_mbstrlen_l");
     p__mbsupr = (void *)GetProcAddress(msvcrt, "_mbsupr");
     p__mbsupr_s = (void *)GetProcAddress(msvcrt, "_mbsupr_s");
+    p__mkdir = (void *)GetProcAddress(msvcrt, "_mkdir");
     p__mktemp = (void *)GetProcAddress(msvcrt, "_mktemp");
     p__mktemp_s = (void *)GetProcAddress(msvcrt, "_mktemp_s");
     p__nextafter = (void *)GetProcAddress(msvcrt, "_nextafter");
@@ -1021,6 +1090,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__putw = (void *)GetProcAddress(msvcrt, "_putw");
     p__putws = (void *)GetProcAddress(msvcrt, "_putws");
     p__read = (void *)GetProcAddress(msvcrt, "_read");
+    p__rmdir = (void *)GetProcAddress(msvcrt, "_rmdir");
     p__rmtmp = (void *)GetProcAddress(msvcrt, "_rmtmp");
     p__rotl = (void *)GetProcAddress(msvcrt, "_rotl");
     p__rotl64 = (void *)GetProcAddress(msvcrt, "_rotl64");
@@ -1028,6 +1098,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__rotr64 = (void *)GetProcAddress(msvcrt, "_rotr64");
     p__scalb = (void *)GetProcAddress(msvcrt, "_scalb");
     p__scalbf = (void *)GetProcAddress(msvcrt, "_scalbf");
+    p__searchenv = (void *)GetProcAddress(msvcrt, "_searchenv");
+    p__searchenv_s = (void *)GetProcAddress(msvcrt, "_searchenv_s");
     p__set_controlfp = (void *)GetProcAddress(msvcrt, "_set_controlfp");
     p__set_doserrno = (void *)GetProcAddress(msvcrt, "_set_doserrno");
     p__set_errno = (void *)GetProcAddress(msvcrt, "_set_errno");
@@ -1041,6 +1113,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__setmode = (void *)GetProcAddress(msvcrt, "_setmode");
     p__sopen_dispatch = (void *)GetProcAddress(msvcrt, "_sopen_dispatch");
     p__sopen_s = (void *)GetProcAddress(msvcrt, "_sopen_s");
+    p__splitpath = (void *)GetProcAddress(msvcrt, "_splitpath");
+    p__splitpath_s = (void *)GetProcAddress(msvcrt, "_splitpath_s");
     p__stat32 = (void *)GetProcAddress(msvcrt, "_stat32");
     p__stat32i64 = (void *)GetProcAddress(msvcrt, "_stat32i64");
     p__stat64 = (void *)GetProcAddress(msvcrt, "_stat64");
@@ -1072,6 +1146,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__vsnwprintf = (void *)GetProcAddress(msvcrt, "_vsnwprintf");
     p__waccess = (void *)GetProcAddress(msvcrt, "_waccess");
     p__waccess_s = (void *)GetProcAddress(msvcrt, "_waccess_s");
+    p__wchdir = (void *)GetProcAddress(msvcrt, "_wchdir");
     p__wchmod = (void *)GetProcAddress(msvcrt, "_wchmod");
     p__wcreat = (void *)GetProcAddress(msvcrt, "_wcreat");
     p__wcserror = (void *)GetProcAddress(msvcrt, "_wcserror");
@@ -1079,13 +1154,29 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__wcsnicmp = (void *)GetProcAddress(msvcrt, "_wcsnicmp");
     p__wdupenv_s = (void *)GetProcAddress(msvcrt, "_wdupenv_s");
     p__wfdopen = (void *)GetProcAddress(msvcrt, "_wfdopen");
+    p__wfindfirst = (void *)GetProcAddress(msvcrt, "_wfindfirst");
+    p__wfindfirst32 = (void *)GetProcAddress(msvcrt, "_wfindfirst32");
+    p__wfindfirst64 = (void *)GetProcAddress(msvcrt, "_wfindfirst64");
+    p__wfindfirst64i32 = (void *)GetProcAddress(msvcrt, "_wfindfirst64i32");
+    p__wfindfirsti64 = (void *)GetProcAddress(msvcrt, "_wfindfirsti64");
+    p__wfindnext = (void *)GetProcAddress(msvcrt, "_wfindnext");
+    p__wfindnext32 = (void *)GetProcAddress(msvcrt, "_wfindnext32");
+    p__wfindnext64 = (void *)GetProcAddress(msvcrt, "_wfindnext64");
+    p__wfindnext64i32 = (void *)GetProcAddress(msvcrt, "_wfindnext64i32");
+    p__wfindnexti64 = (void *)GetProcAddress(msvcrt, "_wfindnexti64");
     p__wfopen = (void *)GetProcAddress(msvcrt, "_wfopen");
     p__wfopen_s = (void *)GetProcAddress(msvcrt, "_wfopen_s");
     p__wfreopen = (void *)GetProcAddress(msvcrt, "_wfreopen");
     p__wfreopen_s = (void *)GetProcAddress(msvcrt, "_wfreopen_s");
     p__wfsopen = (void *)GetProcAddress(msvcrt, "_wfsopen");
+    p__wfullpath = (void *)GetProcAddress(msvcrt, "_wfullpath");
+    p__wgetcwd = (void *)GetProcAddress(msvcrt, "_wgetcwd");
+    p__wgetdcwd = (void *)GetProcAddress(msvcrt, "_wgetdcwd");
     p__wgetenv = (void *)GetProcAddress(msvcrt, "__wgetenv");
     p__wgetenv_s = (void *)GetProcAddress(msvcrt, "_wgetenv_s");
+    p__wmakepath = (void *)GetProcAddress(msvcrt, "_wmakepath");
+    p__wmakepath_s = (void *)GetProcAddress(msvcrt, "_wmakepath_s");
+    p__wmkdir = (void *)GetProcAddress(msvcrt, "_wmkdir");
     p__wmktemp = (void *)GetProcAddress(msvcrt, "_wmktemp");
     p__wmktemp_s = (void *)GetProcAddress(msvcrt, "_wmktemp_s");
     p__wperror = (void *)GetProcAddress(msvcrt, "_wperror");
@@ -1095,8 +1186,13 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__wrename = (void *)GetProcAddress(msvcrt, "_wrename");
     p__write = (void *)GetProcAddress(msvcrt, "_write");
     p__write = (void *)GetProcAddress(msvcrt, "_write");
+    p__wrmdir = (void *)GetProcAddress(msvcrt, "_wrmdir");
+    p__wsearchenv = (void *)GetProcAddress(msvcrt, "_wsearchenv");
+    p__wsearchenv_s = (void *)GetProcAddress(msvcrt, "_wsearchenv_s");
     p__wsopen_dispatch = (void *)GetProcAddress(msvcrt, "_wsopen_dispatch");
     p__wsopen_s = (void *)GetProcAddress(msvcrt, "_wsopen_s");
+    p__wsplitpath = (void *)GetProcAddress(msvcrt, "_wsplitpath");
+    p__wsplitpath_s = (void *)GetProcAddress(msvcrt, "_wsplitpath_s");
     p__wstat = (void *)GetProcAddress(msvcrt, "_wstat");
     p__wstat32 = (void *)GetProcAddress(msvcrt, "_wstat32");
     p__wstat32i64 = (void *)GetProcAddress(msvcrt, "_wstat32i64");

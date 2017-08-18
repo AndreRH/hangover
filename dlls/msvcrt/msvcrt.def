@@ -17,6 +17,7 @@ EXPORTS
   __CxxFrameHandler3=__CxxFrameHandler
   __CxxFrameHandler=__CxxFrameHandler
   __dllonexit
+  __doserrno=MSVCRT___doserrno
   __fpe_flt_rounds
   __fpecode
   __getmainargs
@@ -59,6 +60,8 @@ EXPORTS
   __sys_errlist
   __sys_nerr
   __toascii=MSVCRT___toascii
+  __wcserror=MSVCRT___wcserror
+  __wcserror_s=MSVCRT___wcserror_s
   __wgetmainargs
   _abs64
   _access=MSVCRT__access
@@ -340,6 +343,7 @@ EXPORTS
   _statusfp2
   _strdate=MSVCRT__strdate
   _strdup = MSVCRT__strdup
+  _strerror=MSVCRT__strerror
   _stricmp=MSVCRT__stricmp
   _strnicmp=MSVCRT__strnicmp
   _strtime=MSVCRT__strtime
@@ -370,6 +374,8 @@ EXPORTS
   _wchmod=MSVCRT__wchmod
   _wcmdln=MSVCRT__wcmdln
   _wcreat=MSVCRT__wcreat
+  _wcserror=MSVCRT__wcserror
+  _wcserror_s=MSVCRT__wcserror_s
   _wcsnicmp=MSVCRT__wcsnicmp
   _wdupenv_s
   _wfdopen=MSVCRT__wfdopen
@@ -382,6 +388,7 @@ EXPORTS
   _wgetenv_s
   _wmktemp=MSVCRT__wmktemp
   _wmktemp_s=MSVCRT__wmktemp_s
+  _wperror=MSVCRT__wperror
   _wputenv=MSVCRT__wputenv
   _wputenv_s
   _wremove=MSVCRT__wremove
@@ -528,18 +535,57 @@ EXPORTS
   memset=MSVCRT_memset
   modf=MSVCRT_modf
   modff=MSVCRT_modff
-  __doserrno=MSVCRT___doserrno
-  __wcserror=MSVCRT___wcserror
-  __wcserror_s=MSVCRT___wcserror_s
-  _strerror=MSVCRT__strerror
-  _wcserror=MSVCRT__wcserror
-  _wcserror_s=MSVCRT__wcserror_s
-  _wperror=MSVCRT__wperror
-  perror=MSVCRT_perror
-  strerror=MSVCRT_strerror
-  strerror_s=MSVCRT_strerror_s
+  _chdir=MSVCRT__chdir
+  _chdrive=MSVCRT__chdrive
+  _findclose=MSVCRT__findclose
+  _findfirst=MSVCRT__findfirst
+  _findfirst32=MSVCRT__findfirst32
+  _findfirst64=MSVCRT__findfirst64
+  _findfirst64i32=MSVCRT__findfirst64i32
+  _findfirsti64=MSVCRT__findfirsti64
+  _findnext=MSVCRT__findnext
+  _findnext32=MSVCRT__findnext32
+  _findnext64=MSVCRT__findnext64
+  _findnext64i32=MSVCRT__findnext64i32
+  _findnexti64=MSVCRT__findnexti64
+  _fullpath=MSVCRT__fullpath
+  _getcwd=MSVCRT__getcwd
+  _getdcwd=MSVCRT__getdcwd
+  _getdiskfree=MSVCRT__getdiskfree
+  _getdrive=MSVCRT__getdrive
+  _makepath=MSVCRT__makepath
+  _makepath_s=MSVCRT__makepath_s
+  _mkdir=MSVCRT__mkdir
+  _rmdir=MSVCRT__rmdir
+  _searchenv=MSVCRT__searchenv
+  _searchenv_s=MSVCRT__searchenv_s
+  _splitpath=MSVCRT__splitpath
+  _splitpath_s=MSVCRT__splitpath_s
+  _wchdir=MSVCRT__wchdir
+  _wfindfirst=MSVCRT__wfindfirst
+  _wfindfirst32=MSVCRT__wfindfirst32
+  _wfindfirst64=MSVCRT__wfindfirst64
+  _wfindfirst64i32=MSVCRT__wfindfirst64i32
+  _wfindfirsti64=MSVCRT__wfindfirsti64
+  _wfindnext=MSVCRT__wfindnext
+  _wfindnext32=MSVCRT__wfindnext32
+  _wfindnext64=MSVCRT__wfindnext64
+  _wfindnext64i32=MSVCRT__wfindnext64i32
+  _wfindnexti64=MSVCRT__wfindnexti64
+  _wfullpath=MSVCRT__wfullpath
+  _wgetcwd=MSVCRT__wgetcwd
+  _wgetdcwd=MSVCRT__wgetdcwd
+  _wmakepath=MSVCRT__wmakepath
+  _wmakepath_s=MSVCRT__wmakepath_s
+  _wmkdir=MSVCRT__wmkdir
+  _wrmdir=MSVCRT__wrmdir
+  _wsearchenv=MSVCRT__wsearchenv
+  _wsearchenv_s=MSVCRT__wsearchenv_s
+  _wsplitpath=MSVCRT__wsplitpath
+  _wsplitpath_s=MSVCRT__wsplitpath_s
   nearbyint=MSVCRT_nearbyint
   nearbyintf=MSVCRT_nearbyintf
+  perror=MSVCRT_perror
   pow=MSVCRT_pow
   powf=MSVCRT_powf
   printf=MSVCRT_printf
@@ -579,6 +625,8 @@ EXPORTS
   strcmp=MSVCRT_strcmp
   strcpy=ntdll.strcpy
   strcpy_s=MSVCRT_strcpy_s
+  strerror=MSVCRT_strerror
+  strerror_s=MSVCRT_strerror_s
   strlen=MSVCRT_strlen
   strncmp=MSVCRT_strncmp
   strrchr=MSVCRT_strrchr

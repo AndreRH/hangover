@@ -62,6 +62,8 @@ enum msvcrt_calls
     CALL__AMSG_EXIT,
     CALL__CABS,
     CALL__CEXIT,
+    CALL__CHDIR,
+    CALL__CHDRIVE,
     CALL__CHGSIGN,
     CALL__CHGSIGNF,
     CALL__CHMOD,
@@ -124,6 +126,17 @@ enum msvcrt_calls
     CALL__FILELENGTH,
     CALL__FILELENGTHI64,
     CALL__FILENO,
+    CALL__FINDCLOSE,
+    CALL__FINDFIRST,
+    CALL__FINDFIRST32,
+    CALL__FINDFIRST64,
+    CALL__FINDFIRST64I32,
+    CALL__FINDFIRSTI64,
+    CALL__FINDNEXT,
+    CALL__FINDNEXT32,
+    CALL__FINDNEXT64,
+    CALL__FINDNEXT64I32,
+    CALL__FINDNEXTI64,
     CALL__FINITE,
     CALL__FINITEF,
     CALL__FLSBUF,
@@ -150,6 +163,7 @@ enum msvcrt_calls
     CALL__FTELLI64,
     CALL__FTELLI64_NOLOCK,
     CALL__FTOL,
+    CALL__FULLPATH,
     CALL__FUTIME,
     CALL__FUTIME32,
     CALL__FUTIME64,
@@ -162,6 +176,10 @@ enum msvcrt_calls
     CALL__GET_OSFHANDLE,
     CALL__GET_STREAM_BUFFER_POINTERS,
     CALL__GET_THREAD_LOCAL_INVALID_PARAMETER_HANDLER,
+    CALL__GETCWD,
+    CALL__GETDCWD,
+    CALL__GETDISKFREE,
+    CALL__GETDRIVE,
     CALL__GETMAXSTDIO,
     CALL__GETMBCP,
     CALL__GETW,
@@ -220,6 +238,8 @@ enum msvcrt_calls
     CALL__LROTR,
     CALL__LSEEK,
     CALL__LSEEKI64,
+    CALL__MAKEPATH,
+    CALL__MAKEPATH_S,
     CALL__MATHERR,
     CALL__MBBTOMBC,
     CALL__MBBTYPE,
@@ -291,6 +311,7 @@ enum msvcrt_calls
     CALL__MBSTRLEN_L,
     CALL__MBSUPR,
     CALL__MBSUPR_S,
+    CALL__MKDIR,
     CALL__MKTEMP,
     CALL__MKTEMP_S,
     CALL__NEXTAFTER,
@@ -304,6 +325,7 @@ enum msvcrt_calls
     CALL__PUTW,
     CALL__PUTWS,
     CALL__READ,
+    CALL__RMDIR,
     CALL__RMTMP,
     CALL__ROTL,
     CALL__ROTL64,
@@ -311,6 +333,8 @@ enum msvcrt_calls
     CALL__ROTR64,
     CALL__SCALB,
     CALL__SCALBF,
+    CALL__SEARCHENV,
+    CALL__SEARCHENV_S,
     CALL__SET_CONTROLFP,
     CALL__SET_DOSERRNO,
     CALL__SET_ERRNO,
@@ -326,6 +350,8 @@ enum msvcrt_calls
     CALL__SNWPRINTF,
     CALL__SOPEN_DISPATCH,
     CALL__SOPEN_S,
+    CALL__SPLITPATH,
+    CALL__SPLITPATH_S,
     CALL__STAT32,
     CALL__STAT32I64,
     CALL__STAT64,
@@ -360,6 +386,7 @@ enum msvcrt_calls
     CALL__VSNWPRINTF,
     CALL__WACCESS,
     CALL__WACCESS_S,
+    CALL__WCHDIR,
     CALL__WCHMOD,
     CALL__WCREAT,
     CALL__WCSERROR,
@@ -367,13 +394,29 @@ enum msvcrt_calls
     CALL__WCSNICMP,
     CALL__WDUPENV_S,
     CALL__WFDOPEN,
+    CALL__WFINDFIRST,
+    CALL__WFINDFIRST32,
+    CALL__WFINDFIRST64,
+    CALL__WFINDFIRST64I32,
+    CALL__WFINDFIRSTI64,
+    CALL__WFINDNEXT,
+    CALL__WFINDNEXT32,
+    CALL__WFINDNEXT64,
+    CALL__WFINDNEXT64I32,
+    CALL__WFINDNEXTI64,
     CALL__WFOPEN,
     CALL__WFOPEN_S,
     CALL__WFREOPEN,
     CALL__WFREOPEN_S,
     CALL__WFSOPEN,
+    CALL__WFULLPATH,
+    CALL__WGETCWD,
+    CALL__WGETDCWD,
     CALL__WGETENV,
     CALL__WGETENV_S,
+    CALL__WMAKEPATH,
+    CALL__WMAKEPATH_S,
+    CALL__WMKDIR,
     CALL__WMKTEMP,
     CALL__WMKTEMP_S,
     CALL__WPERROR,
@@ -382,8 +425,13 @@ enum msvcrt_calls
     CALL__WREMOVE,
     CALL__WRENAME,
     CALL__WRITE,
+    CALL__WRMDIR,
+    CALL__WSEARCHENV,
+    CALL__WSEARCHENV_S,
     CALL__WSOPEN_DISPATCH,
     CALL__WSOPEN_S,
+    CALL__WSPLITPATH,
+    CALL__WSPLITPATH_S,
     CALL__WSTAT,
     CALL__WSTAT32,
     CALL__WSTAT32I64,
@@ -673,6 +721,17 @@ struct MSVCRT__stat;
 struct MSVCRT__stati64;
 struct MSVCRT__utimbuf64;
 struct MSVCRT__utimbuf32;
+struct MSVCRT__finddata_t;
+struct MSVCRT__finddata32_t;
+struct MSVCRT__wfinddata_t;
+struct MSVCRT__wfinddata32_t;
+struct MSVCRT__finddatai64_t;
+struct MSVCRT___finddata64_t;
+struct MSVCRT__wfinddata64_t;
+struct MSVCRT__finddata64i32_t;
+struct MSVCRT__wfinddata64i32_t;
+struct MSVCRT__wfinddatai64_t;
+struct MSVCRT__diskfree_t;
 typedef unsigned short MSVCRT_wint_t;
 typedef void *MSVCRT_invalid_parameter_handler;
 
@@ -751,6 +810,8 @@ void qemu__access_s(struct qemu_syscall *c);
 void qemu__amsg_exit(struct qemu_syscall *call);
 void qemu__cabs(struct qemu_syscall *call);
 void qemu__cexit(struct qemu_syscall *call);
+void qemu__chdir(struct qemu_syscall *call);
+void qemu__chdrive(struct qemu_syscall *call);
 void qemu__chgsign(struct qemu_syscall *call);
 void qemu__chgsignf(struct qemu_syscall *call);
 void qemu__chmod(struct qemu_syscall *c);
@@ -813,6 +874,17 @@ void qemu__filbuf(struct qemu_syscall *c);
 void qemu__filelength(struct qemu_syscall *c);
 void qemu__filelengthi64(struct qemu_syscall *c);
 void qemu__fileno(struct qemu_syscall *call);
+void qemu__findclose(struct qemu_syscall *call);
+void qemu__findfirst(struct qemu_syscall *call);
+void qemu__findfirst32(struct qemu_syscall *call);
+void qemu__findfirst64(struct qemu_syscall *call);
+void qemu__findfirst64i32(struct qemu_syscall *call);
+void qemu__findfirsti64(struct qemu_syscall *call);
+void qemu__findnext(struct qemu_syscall *call);
+void qemu__findnext32(struct qemu_syscall *call);
+void qemu__findnext64(struct qemu_syscall *call);
+void qemu__findnext64i32(struct qemu_syscall *call);
+void qemu__findnexti64(struct qemu_syscall *call);
 void qemu__finite(struct qemu_syscall *call);
 void qemu__finitef(struct qemu_syscall *call);
 void qemu__flsbuf(struct qemu_syscall *c);
@@ -839,6 +911,7 @@ void qemu__ftell_nolock(struct qemu_syscall *c);
 void qemu__ftelli64(struct qemu_syscall *c);
 void qemu__ftelli64_nolock(struct qemu_syscall *c);
 void qemu__ftol(struct qemu_syscall *call);
+void qemu__fullpath(struct qemu_syscall *call);
 void qemu__futime(struct qemu_syscall *c);
 void qemu__futime32(struct qemu_syscall *c);
 void qemu__futime64(struct qemu_syscall *c);
@@ -851,6 +924,10 @@ void qemu__get_invalid_parameter_handler(struct qemu_syscall *call);
 void qemu__get_osfhandle(struct qemu_syscall *c);
 void qemu__get_stream_buffer_pointers(struct qemu_syscall *c);
 void qemu__get_thread_local_invalid_parameter_handler(struct qemu_syscall *call);
+void qemu__getcwd(struct qemu_syscall *call);
+void qemu__getdcwd(struct qemu_syscall *call);
+void qemu__getdiskfree(struct qemu_syscall *call);
+void qemu__getdrive(struct qemu_syscall *call);
 void qemu__getmaxstdio(struct qemu_syscall *c);
 void qemu__getmbcp(struct qemu_syscall *call);
 void qemu__getw(struct qemu_syscall *c);
@@ -909,6 +986,8 @@ void qemu__lrotl(struct qemu_syscall *call);
 void qemu__lrotr(struct qemu_syscall *call);
 void qemu__lseek(struct qemu_syscall *call);
 void qemu__lseeki64(struct qemu_syscall *call);
+void qemu__makepath(struct qemu_syscall *call);
+void qemu__makepath_s(struct qemu_syscall *call);
 void qemu__matherr(struct qemu_syscall *call);
 void qemu__mbbtombc(struct qemu_syscall *call);
 void qemu__mbbtype(struct qemu_syscall *call);
@@ -980,6 +1059,7 @@ void qemu__mbstrlen(struct qemu_syscall *call);
 void qemu__mbstrlen_l(struct qemu_syscall *call);
 void qemu__mbsupr(struct qemu_syscall *call);
 void qemu__mbsupr_s(struct qemu_syscall *call);
+void qemu__mkdir(struct qemu_syscall *call);
 void qemu__mktemp(struct qemu_syscall *c);
 void qemu__mktemp_s(struct qemu_syscall *c);
 void qemu__nextafter(struct qemu_syscall *call);
@@ -993,6 +1073,7 @@ void qemu__putenv_s(struct qemu_syscall *call);
 void qemu__putw(struct qemu_syscall *c);
 void qemu__putws(struct qemu_syscall *c);
 void qemu__read(struct qemu_syscall *c);
+void qemu__rmdir(struct qemu_syscall *call);
 void qemu__rmtmp(struct qemu_syscall *c);
 void qemu__rotl(struct qemu_syscall *call);
 void qemu__rotl64(struct qemu_syscall *call);
@@ -1000,6 +1081,8 @@ void qemu__rotr(struct qemu_syscall *call);
 void qemu__rotr64(struct qemu_syscall *call);
 void qemu__scalb(struct qemu_syscall *call);
 void qemu__scalbf(struct qemu_syscall *call);
+void qemu__searchenv(struct qemu_syscall *call);
+void qemu__searchenv_s(struct qemu_syscall *call);
 void qemu__set_controlfp(struct qemu_syscall *call);
 void qemu__set_doserrno(struct qemu_syscall *call);
 void qemu__set_errno(struct qemu_syscall *call);
@@ -1015,6 +1098,8 @@ void qemu__setmode(struct qemu_syscall *c);
 void qemu__snwprintf(struct qemu_syscall *call);
 void qemu__sopen_dispatch(struct qemu_syscall *c);
 void qemu__sopen_s(struct qemu_syscall *c);
+void qemu__splitpath(struct qemu_syscall *call);
+void qemu__splitpath_s(struct qemu_syscall *call);
 void qemu__stat32(struct qemu_syscall *c);
 void qemu__stat32i64(struct qemu_syscall *c);
 void qemu__stat64(struct qemu_syscall *c);
@@ -1047,6 +1132,7 @@ void qemu__utime32(struct qemu_syscall *c);
 void qemu__utime64(struct qemu_syscall *c);
 void qemu__waccess(struct qemu_syscall *c);
 void qemu__waccess_s(struct qemu_syscall *c);
+void qemu__wchdir(struct qemu_syscall *call);
 void qemu__wchmod(struct qemu_syscall *c);
 void qemu__wcreat(struct qemu_syscall *c);
 void qemu__wcserror(struct qemu_syscall *call);
@@ -1054,13 +1140,29 @@ void qemu__wcserror_s(struct qemu_syscall *call);
 void qemu__wcsnicmp(struct qemu_syscall *call);
 void qemu__wdupenv_s(struct qemu_syscall *call);
 void qemu__wfdopen(struct qemu_syscall *c);
+void qemu__wfindfirst(struct qemu_syscall *call);
+void qemu__wfindfirst32(struct qemu_syscall *call);
+void qemu__wfindfirst64(struct qemu_syscall *call);
+void qemu__wfindfirst64i32(struct qemu_syscall *call);
+void qemu__wfindfirsti64(struct qemu_syscall *call);
+void qemu__wfindnext(struct qemu_syscall *call);
+void qemu__wfindnext32(struct qemu_syscall *call);
+void qemu__wfindnext64(struct qemu_syscall *call);
+void qemu__wfindnext64i32(struct qemu_syscall *call);
+void qemu__wfindnexti64(struct qemu_syscall *call);
 void qemu__wfopen(struct qemu_syscall *c);
 void qemu__wfopen_s(struct qemu_syscall *c);
 void qemu__wfreopen(struct qemu_syscall *c);
 void qemu__wfreopen_s(struct qemu_syscall *c);
 void qemu__wfsopen(struct qemu_syscall *c);
+void qemu__wfullpath(struct qemu_syscall *call);
+void qemu__wgetcwd(struct qemu_syscall *call);
+void qemu__wgetdcwd(struct qemu_syscall *call);
 void qemu__wgetenv(struct qemu_syscall *call);
 void qemu__wgetenv_s(struct qemu_syscall *call);
+void qemu__wmakepath(struct qemu_syscall *call);
+void qemu__wmakepath_s(struct qemu_syscall *call);
+void qemu__wmkdir(struct qemu_syscall *call);
 void qemu__wmktemp(struct qemu_syscall *c);
 void qemu__wmktemp_s(struct qemu_syscall *c);
 void qemu__wperror(struct qemu_syscall *call);
@@ -1069,8 +1171,13 @@ void qemu__wputenv_s(struct qemu_syscall *call);
 void qemu__wremove(struct qemu_syscall *c);
 void qemu__wrename(struct qemu_syscall *c);
 void qemu__write(struct qemu_syscall *call);
+void qemu__wrmdir(struct qemu_syscall *call);
+void qemu__wsearchenv(struct qemu_syscall *call);
+void qemu__wsearchenv_s(struct qemu_syscall *call);
 void qemu__wsopen_dispatch(struct qemu_syscall *c);
 void qemu__wsopen_s(struct qemu_syscall *c);
+void qemu__wsplitpath(struct qemu_syscall *call);
+void qemu__wsplitpath_s(struct qemu_syscall *call);
 void qemu__wstat(struct qemu_syscall *c);
 void qemu__wstat32(struct qemu_syscall *c);
 void qemu__wstat32i64(struct qemu_syscall *c);
@@ -1984,6 +2091,54 @@ MSVCRT_invalid_parameter_handler (* CDECL p__get_thread_local_invalid_parameter_
 MSVCRT_invalid_parameter_handler (* CDECL p__set_thread_local_invalid_parameter_handler)(MSVCRT_invalid_parameter_handler handler);
 int (* CDECL p_bsearch)(const void *key, const void *base, size_t nmemb,
         size_t size, int (CDECL *compare)(const void *, const void *));
+int (* CDECL p__chdir)(const char * newdir);
+int (* CDECL p__wchdir)(const WCHAR * newdir);
+int (* CDECL p__chdrive)(int newdrive);
+int (* CDECL p__findclose)(intptr_t hand);
+intptr_t (* CDECL p__findfirst)(const char * fspec, struct MSVCRT__finddata_t* ft);
+intptr_t (* CDECL p__findfirst32)(const char * fspec, struct MSVCRT__finddata32_t* ft);
+intptr_t (* CDECL p__wfindfirst)(const WCHAR * fspec, struct MSVCRT__wfinddata_t* ft);
+intptr_t (* CDECL p__wfindfirst32)(const WCHAR * fspec, struct MSVCRT__wfinddata32_t* ft);
+intptr_t (* CDECL p__findfirsti64)(const char * fspec, struct MSVCRT__finddatai64_t* ft);
+intptr_t (* CDECL p__findfirst64)(const char * fspec, struct MSVCRT___finddata64_t* ft);
+intptr_t (* CDECL p__wfindfirst64)(const WCHAR * fspec, struct MSVCRT__wfinddata64_t* ft);
+intptr_t (* CDECL p__findfirst64i32)(const char * fspec, struct MSVCRT__finddata64i32_t* ft);
+intptr_t (* CDECL p__wfindfirst64i32)(const WCHAR * fspec, struct MSVCRT__wfinddata64i32_t* ft);
+intptr_t (* CDECL p__wfindfirsti64)(const WCHAR * fspec, struct MSVCRT__wfinddatai64_t* ft);
+int (* CDECL p__findnext)(intptr_t hand, struct MSVCRT__finddata_t * ft);
+int (* CDECL p__findnext32)(intptr_t hand, struct MSVCRT__finddata32_t * ft);
+int (* CDECL p__wfindnext32)(intptr_t hand, struct MSVCRT__wfinddata32_t * ft);
+int (* CDECL p__wfindnext)(intptr_t hand, struct MSVCRT__wfinddata_t * ft);
+int (* CDECL p__findnexti64)(intptr_t hand, struct MSVCRT__finddatai64_t * ft);
+int (* CDECL p__findnext64)(intptr_t hand, struct MSVCRT___finddata64_t * ft);
+int (* CDECL p__wfindnext64)(intptr_t hand, struct MSVCRT__wfinddata64_t * ft);
+int (* CDECL p__findnext64i32)(intptr_t hand, struct MSVCRT__finddata64i32_t * ft);
+int (* CDECL p__wfindnexti64)(intptr_t hand, struct MSVCRT__wfinddatai64_t * ft);
+int (* CDECL p__wfindnext64i32)(intptr_t hand, struct MSVCRT__wfinddata64i32_t * ft);
+char* (* CDECL p__getcwd)(char * buf, int size);
+WCHAR* (* CDECL p__wgetcwd)(WCHAR * buf, int size);
+int (* CDECL p__getdrive)(void);
+char* (* CDECL p__getdcwd)(int drive, char * buf, int size);
+WCHAR* (* CDECL p__wgetdcwd)(int drive, WCHAR * buf, int size);
+unsigned int (* CDECL p__getdiskfree)(unsigned int disk, struct MSVCRT__diskfree_t * d);
+int (* CDECL p__mkdir)(const char * newdir);
+int (* CDECL p__wmkdir)(const WCHAR* newdir);
+int (* CDECL p__rmdir)(const char * dir);
+int (* CDECL p__wrmdir)(const WCHAR * dir);
+int (* CDECL p__splitpath_s)(const char* inpath, char* drive, size_t sz_drive, char* dir, size_t sz_dir, char* fname, size_t sz_fname, char* ext, size_t sz_ext);
+void (* CDECL p__splitpath)(const char *inpath, char *drv, char *dir, char *fname, char *ext);
+int (* CDECL p__wsplitpath_s)(const WCHAR* inpath, WCHAR* drive, size_t sz_drive, WCHAR* dir, size_t sz_dir, WCHAR* fname, size_t sz_fname, WCHAR* ext, size_t sz_ext);
+void (* CDECL p__wsplitpath)(const WCHAR *inpath, WCHAR *drv, WCHAR *dir, WCHAR *fname, WCHAR *ext);
+WCHAR * (* CDECL p__wfullpath)(WCHAR * absPath, const WCHAR* relPath, size_t size);
+char * (* CDECL p__fullpath)(char * absPath, const char* relPath, unsigned int size);
+VOID (* CDECL p__makepath)(char * path, const char * drive, const char *directory, const char * filename, const char * extension);
+VOID (* CDECL p__wmakepath)(WCHAR *path, const WCHAR *drive, const WCHAR *directory, const WCHAR *filename, const WCHAR *extension);
+int (* CDECL p__makepath_s)(char *path, size_t size, const char *drive, const char *directory, const char *filename, const char *extension);
+int (* CDECL p__wmakepath_s)(WCHAR *path, size_t size, const WCHAR *drive, const WCHAR *directory, const WCHAR *filename, const WCHAR *extension);
+void (* CDECL p__searchenv)(const char* file, const char* env, char *buf);
+int (* CDECL p__searchenv_s)(const char* file, const char* env, char *buf, size_t count);
+void (* CDECL p__wsearchenv)(const WCHAR* file, const WCHAR* env, WCHAR *buf);
+int (* CDECL p__wsearchenv_s)(const WCHAR* file, const WCHAR* env, WCHAR *buf, size_t count);
 
 DWORD msvcrt_tls;
 
