@@ -65,7 +65,7 @@ WINBASEAPI BOOL WINAPI PatBlt(HDC hdc, INT left, INT top, INT width, INT height,
 void qemu_PatBlt(struct qemu_syscall *call)
 {
     struct qemu_PatBlt *c = (struct qemu_PatBlt *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PatBlt(QEMU_G2H(c->hdc), c->left, c->top, c->width, c->height, c->rop);
 }
 
@@ -161,7 +161,7 @@ WINBASEAPI BOOL WINAPI StretchBlt(HDC hdcDst, INT xDst, INT yDst, INT widthDst, 
 void qemu_StretchBlt(struct qemu_syscall *call)
 {
     struct qemu_StretchBlt *c = (struct qemu_StretchBlt *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = StretchBlt(QEMU_G2H(c->hdcDst), c->xDst, c->yDst, c->widthDst, c->heightDst, QEMU_G2H(c->hdcSrc), c->xSrc, c->ySrc, c->widthSrc, c->heightSrc, c->rop);
 }
 
@@ -321,7 +321,7 @@ void qemu_GdiAlphaBlend(struct qemu_syscall *call)
     struct qemu_GdiAlphaBlend *c = (struct qemu_GdiAlphaBlend *)call;
     BLENDFUNCTION func;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     func.BlendOp = c->blendFunction_op;
     func.BlendFlags = c->blendFunction_flags;
     func.SourceConstantAlpha = c->blendFunction_const;

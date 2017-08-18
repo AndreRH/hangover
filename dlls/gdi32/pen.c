@@ -59,7 +59,7 @@ WINBASEAPI HPEN WINAPI CreatePen(INT style, INT width, COLORREF color)
 void qemu_CreatePen(struct qemu_syscall *call)
 {
     struct qemu_CreatePen *c = (struct qemu_CreatePen *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreatePen(c->style, c->width, c->color);
 }
 
@@ -89,7 +89,7 @@ WINBASEAPI HPEN WINAPI CreatePenIndirect(const LOGPEN * pen)
 void qemu_CreatePenIndirect(struct qemu_syscall *call)
 {
     struct qemu_CreatePenIndirect *c = (struct qemu_CreatePenIndirect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreatePenIndirect(QEMU_G2H(c->pen));
 }
 
@@ -127,7 +127,7 @@ WINBASEAPI HPEN WINAPI ExtCreatePen(DWORD style, DWORD width, const LOGBRUSH * b
 void qemu_ExtCreatePen(struct qemu_syscall *call)
 {
     struct qemu_ExtCreatePen *c = (struct qemu_ExtCreatePen *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)ExtCreatePen(c->style, c->width, QEMU_G2H(c->brush), c->style_count, QEMU_G2H(c->style_bits));
 }
 

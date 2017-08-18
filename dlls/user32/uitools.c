@@ -366,7 +366,7 @@ WINUSERAPI BOOL WINAPI IntersectRect(LPRECT dest, const RECT *src1, const RECT *
 void qemu_IntersectRect(struct qemu_syscall *call)
 {
     struct qemu_IntersectRect *c = (struct qemu_IntersectRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IntersectRect(QEMU_G2H(c->dest), QEMU_G2H(c->src1), QEMU_G2H(c->src2));
 }
 

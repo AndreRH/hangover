@@ -85,7 +85,7 @@ WINBASEAPI HDC WINAPI CreateMetaFileA(LPCSTR filename)
 void qemu_CreateMetaFileA(struct qemu_syscall *call)
 {
     struct qemu_CreateMetaFileA *c = (struct qemu_CreateMetaFileA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateMetaFileA(QEMU_G2H(c->filename));
 }
 
@@ -115,7 +115,7 @@ WINBASEAPI HMETAFILE WINAPI CloseMetaFile(HDC hdc)
 void qemu_CloseMetaFile(struct qemu_syscall *call)
 {
     struct qemu_CloseMetaFile *c = (struct qemu_CloseMetaFile *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CloseMetaFile(QEMU_G2H(c->hdc));
 }
 

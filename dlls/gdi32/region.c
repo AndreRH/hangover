@@ -91,7 +91,7 @@ WINBASEAPI INT WINAPI GetRgnBox(HRGN hrgn, LPRECT rect)
 void qemu_GetRgnBox(struct qemu_syscall *call)
 {
     struct qemu_GetRgnBox *c = (struct qemu_GetRgnBox *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetRgnBox(QEMU_G2H(c->hrgn), QEMU_G2H(c->rect));
 }
 
@@ -127,7 +127,7 @@ WINBASEAPI HRGN WINAPI CreateRectRgn(INT left, INT top, INT right, INT bottom)
 void qemu_CreateRectRgn(struct qemu_syscall *call)
 {
     struct qemu_CreateRectRgn *c = (struct qemu_CreateRectRgn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateRectRgn(c->left, c->top, c->right, c->bottom);
 }
 
@@ -195,7 +195,7 @@ WINBASEAPI BOOL WINAPI SetRectRgn(HRGN hrgn, INT left, INT top, INT right, INT b
 void qemu_SetRectRgn(struct qemu_syscall *call)
 {
     struct qemu_SetRectRgn *c = (struct qemu_SetRectRgn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetRectRgn(QEMU_G2H(c->hrgn), c->left, c->top, c->right, c->bottom);
 }
 
@@ -335,7 +335,7 @@ WINBASEAPI DWORD WINAPI GetRegionData(HRGN hrgn, DWORD count, LPRGNDATA rgndata)
 void qemu_GetRegionData(struct qemu_syscall *call)
 {
     struct qemu_GetRegionData *c = (struct qemu_GetRegionData *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetRegionData(QEMU_G2H(c->hrgn), c->count, QEMU_G2H(c->rgndata));
 }
 
@@ -369,7 +369,7 @@ WINBASEAPI HRGN WINAPI ExtCreateRegion(const XFORM* lpXform, DWORD dwCount, cons
 void qemu_ExtCreateRegion(struct qemu_syscall *call)
 {
     struct qemu_ExtCreateRegion *c = (struct qemu_ExtCreateRegion *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)ExtCreateRegion(QEMU_G2H(c->lpXform), c->dwCount, QEMU_G2H(c->rgndata));
 }
 
@@ -435,7 +435,7 @@ WINBASEAPI BOOL WINAPI RectInRegion(HRGN hrgn, const RECT *rect)
 void qemu_RectInRegion(struct qemu_syscall *call)
 {
     struct qemu_RectInRegion *c = (struct qemu_RectInRegion *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RectInRegion(QEMU_G2H(c->hrgn), QEMU_G2H(c->rect));
 }
 
@@ -467,7 +467,7 @@ WINBASEAPI BOOL WINAPI EqualRgn(HRGN hrgn1, HRGN hrgn2)
 void qemu_EqualRgn(struct qemu_syscall *call)
 {
     struct qemu_EqualRgn *c = (struct qemu_EqualRgn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EqualRgn(QEMU_G2H(c->hrgn1), QEMU_G2H(c->hrgn2));
 }
 
@@ -503,7 +503,7 @@ WINBASEAPI INT WINAPI CombineRgn(HRGN hDest, HRGN hSrc1, HRGN hSrc2, INT mode)
 void qemu_CombineRgn(struct qemu_syscall *call)
 {
     struct qemu_CombineRgn *c = (struct qemu_CombineRgn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CombineRgn(QEMU_G2H(c->hDest), QEMU_G2H(c->hSrc1), QEMU_G2H(c->hSrc2), c->mode);
 }
 

@@ -970,7 +970,7 @@ WINBASEAPI BOOL WINAPI GetFileSizeEx(HANDLE hFile, PLARGE_INTEGER lpFileSize)
 void qemu_GetFileSizeEx(struct qemu_syscall *call)
 {
     struct qemu_GetFileSizeEx *c = (struct qemu_GetFileSizeEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetFileSizeEx(QEMU_G2H(c->hFile), QEMU_G2H(c->lpFileSize));
 }
 

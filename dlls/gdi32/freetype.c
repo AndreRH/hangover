@@ -97,7 +97,7 @@ extern BOOL WINAPI GetFontFileInfo(DWORD instance_id, DWORD unknown, void *info,
 void qemu_GetFontFileInfo(struct qemu_syscall *call)
 {
     struct qemu_GetFontFileInfo *c = (struct qemu_GetFontFileInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetFontFileInfo(c->instance_id, c->unknown, QEMU_G2H(c->info), c->size, QEMU_G2H(c->needed));
 }
 

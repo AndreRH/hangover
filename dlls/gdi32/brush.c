@@ -55,7 +55,7 @@ WINBASEAPI HBRUSH WINAPI CreateBrushIndirect(const LOGBRUSH * brush)
 void qemu_CreateBrushIndirect(struct qemu_syscall *call)
 {
     struct qemu_CreateBrushIndirect *c = (struct qemu_CreateBrushIndirect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateBrushIndirect(QEMU_G2H(c->brush));
 }
 
@@ -87,7 +87,7 @@ WINBASEAPI HBRUSH WINAPI CreateHatchBrush(INT style, COLORREF color)
 void qemu_CreateHatchBrush(struct qemu_syscall *call)
 {
     struct qemu_CreateHatchBrush *c = (struct qemu_CreateHatchBrush *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateHatchBrush(c->style, c->color);
 }
 
@@ -117,7 +117,7 @@ WINBASEAPI HBRUSH WINAPI CreatePatternBrush(HBITMAP hbitmap)
 void qemu_CreatePatternBrush(struct qemu_syscall *call)
 {
     struct qemu_CreatePatternBrush *c = (struct qemu_CreatePatternBrush *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreatePatternBrush(QEMU_G2H(c->hbitmap));
 }
 
@@ -149,7 +149,7 @@ WINBASEAPI HBRUSH WINAPI CreateDIBPatternBrush(HGLOBAL hbitmap, UINT coloruse)
 void qemu_CreateDIBPatternBrush(struct qemu_syscall *call)
 {
     struct qemu_CreateDIBPatternBrush *c = (struct qemu_CreateDIBPatternBrush *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateDIBPatternBrush(QEMU_G2H(c->hbitmap), c->coloruse);
 }
 
@@ -181,7 +181,7 @@ WINBASEAPI HBRUSH WINAPI CreateDIBPatternBrushPt(const void* data, UINT coloruse
 void qemu_CreateDIBPatternBrushPt(struct qemu_syscall *call)
 {
     struct qemu_CreateDIBPatternBrushPt *c = (struct qemu_CreateDIBPatternBrushPt *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateDIBPatternBrushPt(QEMU_G2H(c->data), c->coloruse);
 }
 
@@ -211,7 +211,7 @@ WINBASEAPI HBRUSH WINAPI CreateSolidBrush(COLORREF color)
 void qemu_CreateSolidBrush(struct qemu_syscall *call)
 {
     struct qemu_CreateSolidBrush *c = (struct qemu_CreateSolidBrush *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateSolidBrush(c->color);
 }
 
@@ -247,7 +247,7 @@ WINBASEAPI BOOL WINAPI SetBrushOrgEx(HDC hdc, INT x, INT y, LPPOINT oldorg)
 void qemu_SetBrushOrgEx(struct qemu_syscall *call)
 {
     struct qemu_SetBrushOrgEx *c = (struct qemu_SetBrushOrgEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetBrushOrgEx(QEMU_G2H(c->hdc), c->x, c->y, QEMU_G2H(c->oldorg));
 }
 

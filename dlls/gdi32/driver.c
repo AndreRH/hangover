@@ -55,7 +55,7 @@ WINBASEAPI DEVMODEW * WINAPI GdiConvertToDevmodeW(const DEVMODEA *dmA)
 void qemu_GdiConvertToDevmodeW(struct qemu_syscall *call)
 {
     struct qemu_GdiConvertToDevmodeW *c = (struct qemu_GdiConvertToDevmodeW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(GdiConvertToDevmodeW(QEMU_G2H(c->dmA)));
 }
 

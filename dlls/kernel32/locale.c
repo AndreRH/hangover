@@ -53,7 +53,7 @@ WINBASEAPI LANGID WINAPI GetUserDefaultLangID(void)
 void qemu_GetUserDefaultLangID(struct qemu_syscall *call)
 {
     struct qemu_GetUserDefaultLangID *c = (struct qemu_GetUserDefaultLangID *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetUserDefaultLangID();
 }
 
@@ -81,7 +81,7 @@ WINBASEAPI LANGID WINAPI GetSystemDefaultLangID(void)
 void qemu_GetSystemDefaultLangID(struct qemu_syscall *call)
 {
     struct qemu_GetSystemDefaultLangID *c = (struct qemu_GetSystemDefaultLangID *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetSystemDefaultLangID();
 }
 

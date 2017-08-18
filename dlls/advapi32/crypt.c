@@ -91,7 +91,7 @@ WINBASEAPI BOOL WINAPI CryptAcquireContextW (HCRYPTPROV *phProv, LPCWSTR pszCont
 void qemu_CryptAcquireContextW(struct qemu_syscall *call)
 {
     struct qemu_CryptAcquireContextW *c = (struct qemu_CryptAcquireContextW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CryptAcquireContextW(QEMU_G2H(c->phProv), QEMU_G2H(c->pszContainer), QEMU_G2H(c->pszProvider), c->dwProvType, c->dwFlags);
 }
 
@@ -195,7 +195,7 @@ WINBASEAPI WINBOOL WINAPI CryptReleaseContext (HCRYPTPROV hProv, DWORD dwFlags)
 void qemu_CryptReleaseContext(struct qemu_syscall *call)
 {
     struct qemu_CryptReleaseContext *c = (struct qemu_CryptReleaseContext *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CryptReleaseContext(c->hProv, c->dwFlags);
 }
 
@@ -267,7 +267,7 @@ WINBASEAPI BOOL WINAPI CryptCreateHash (HCRYPTPROV hProv, ALG_ID Algid, HCRYPTKE
 void qemu_CryptCreateHash(struct qemu_syscall *call)
 {
     struct qemu_CryptCreateHash *c = (struct qemu_CryptCreateHash *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CryptCreateHash(c->hProv, c->Algid, c->hKey, c->dwFlags, QEMU_G2H(c->phHash));
 }
 
@@ -375,7 +375,7 @@ WINBASEAPI BOOL WINAPI CryptDestroyHash (HCRYPTHASH hHash)
 void qemu_CryptDestroyHash(struct qemu_syscall *call)
 {
     struct qemu_CryptDestroyHash *c = (struct qemu_CryptDestroyHash *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CryptDestroyHash(c->hHash);
 }
 
@@ -869,7 +869,7 @@ WINBASEAPI BOOL WINAPI CryptGetHashParam (HCRYPTHASH hHash, DWORD dwParam, BYTE 
 void qemu_CryptGetHashParam(struct qemu_syscall *call)
 {
     struct qemu_CryptGetHashParam *c = (struct qemu_CryptGetHashParam *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CryptGetHashParam(c->hHash, c->dwParam, QEMU_G2H(c->pbData), QEMU_G2H(c->pdwDataLen), c->dwFlags);
 }
 
@@ -1015,7 +1015,7 @@ WINBASEAPI BOOL WINAPI CryptHashData (HCRYPTHASH hHash, const BYTE *pbData, DWOR
 void qemu_CryptHashData(struct qemu_syscall *call)
 {
     struct qemu_CryptHashData *c = (struct qemu_CryptHashData *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CryptHashData(c->hHash, QEMU_G2H(c->pbData), c->dwDataLen, c->dwFlags);
 }
 

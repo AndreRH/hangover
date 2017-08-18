@@ -93,7 +93,7 @@ WINBASEAPI INT WINAPI DescribePixelFormat(HDC hdc, INT fmt, UINT size, PIXELFORM
 void qemu_DescribePixelFormat(struct qemu_syscall *call)
 {
     struct qemu_DescribePixelFormat *c = (struct qemu_DescribePixelFormat *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DescribePixelFormat(QEMU_G2H(c->hdc), c->fmt, c->size, QEMU_G2H(c->pfd));
 }
 

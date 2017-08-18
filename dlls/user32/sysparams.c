@@ -553,7 +553,7 @@ WINUSERAPI BOOL WINAPI EnumDisplaySettingsA(LPCSTR name,DWORD n,LPDEVMODEA devmo
 void qemu_EnumDisplaySettingsA(struct qemu_syscall *call)
 {
     struct qemu_EnumDisplaySettingsA *c = (struct qemu_EnumDisplaySettingsA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EnumDisplaySettingsA(QEMU_G2H(c->name), c->n, QEMU_G2H(c->devmode));
 }
 

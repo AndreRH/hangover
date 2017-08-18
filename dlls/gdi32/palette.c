@@ -55,7 +55,7 @@ WINBASEAPI HPALETTE WINAPI CreatePalette(const LOGPALETTE* palette)
 void qemu_CreatePalette(struct qemu_syscall *call)
 {
     struct qemu_CreatePalette *c = (struct qemu_CreatePalette *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreatePalette(QEMU_G2H(c->palette));
 }
 
@@ -85,7 +85,7 @@ WINBASEAPI HPALETTE WINAPI CreateHalftonePalette(HDC hdc)
 void qemu_CreateHalftonePalette(struct qemu_syscall *call)
 {
     struct qemu_CreateHalftonePalette *c = (struct qemu_CreateHalftonePalette *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateHalftonePalette(QEMU_G2H(c->hdc));
 }
 
@@ -121,7 +121,7 @@ WINBASEAPI UINT WINAPI GetPaletteEntries(HPALETTE hpalette, UINT start, UINT cou
 void qemu_GetPaletteEntries(struct qemu_syscall *call)
 {
     struct qemu_GetPaletteEntries *c = (struct qemu_GetPaletteEntries *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetPaletteEntries(QEMU_G2H(c->hpalette), c->start, c->count, QEMU_G2H(c->entries));
 }
 
@@ -157,7 +157,7 @@ WINBASEAPI UINT WINAPI SetPaletteEntries(HPALETTE hpalette, UINT start, UINT cou
 void qemu_SetPaletteEntries(struct qemu_syscall *call)
 {
     struct qemu_SetPaletteEntries *c = (struct qemu_SetPaletteEntries *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetPaletteEntries(QEMU_G2H(c->hpalette), c->start, c->count, QEMU_G2H(c->entries));
 }
 
@@ -323,7 +323,7 @@ WINBASEAPI UINT WINAPI GetSystemPaletteEntries(HDC hdc, UINT start, UINT count, 
 void qemu_GetSystemPaletteEntries(struct qemu_syscall *call)
 {
     struct qemu_GetSystemPaletteEntries *c = (struct qemu_GetSystemPaletteEntries *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetSystemPaletteEntries(QEMU_G2H(c->hdc), c->start, c->count, QEMU_G2H(c->entries));
 }
 
@@ -387,7 +387,7 @@ WINBASEAPI COLORREF WINAPI GetNearestColor(HDC hdc, COLORREF color)
 void qemu_GetNearestColor(struct qemu_syscall *call)
 {
     struct qemu_GetNearestColor *c = (struct qemu_GetNearestColor *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetNearestColor(QEMU_G2H(c->hdc), c->color);
 }
 
@@ -421,7 +421,7 @@ WINBASEAPI HPALETTE WINAPI SelectPalette(HDC hDC, HPALETTE hPal, BOOL bForceBack
 void qemu_SelectPalette(struct qemu_syscall *call)
 {
     struct qemu_SelectPalette *c = (struct qemu_SelectPalette *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)SelectPalette(QEMU_G2H(c->hDC), QEMU_G2H(c->hPal), c->bForceBackground);
 }
 

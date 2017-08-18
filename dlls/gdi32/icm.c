@@ -127,7 +127,7 @@ WINBASEAPI BOOL WINAPI GetICMProfileA(HDC hdc, LPDWORD size, LPSTR filename)
 void qemu_GetICMProfileA(struct qemu_syscall *call)
 {
     struct qemu_GetICMProfileA *c = (struct qemu_GetICMProfileA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetICMProfileA(QEMU_G2H(c->hdc), QEMU_G2H(c->size), QEMU_G2H(c->filename));
 }
 
@@ -161,7 +161,7 @@ WINBASEAPI BOOL WINAPI GetICMProfileW(HDC hdc, LPDWORD size, LPWSTR filename)
 void qemu_GetICMProfileW(struct qemu_syscall *call)
 {
     struct qemu_GetICMProfileW *c = (struct qemu_GetICMProfileW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetICMProfileW(QEMU_G2H(c->hdc), QEMU_G2H(c->size), QEMU_G2H(c->filename));
 }
 
@@ -261,7 +261,7 @@ WINBASEAPI BOOL WINAPI SetICMProfileA(HDC hdc, LPSTR filename)
 void qemu_SetICMProfileA(struct qemu_syscall *call)
 {
     struct qemu_SetICMProfileA *c = (struct qemu_SetICMProfileA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetICMProfileA(QEMU_G2H(c->hdc), QEMU_G2H(c->filename));
 }
 
@@ -293,7 +293,7 @@ WINBASEAPI BOOL WINAPI SetICMProfileW(HDC hdc, LPWSTR filename)
 void qemu_SetICMProfileW(struct qemu_syscall *call)
 {
     struct qemu_SetICMProfileW *c = (struct qemu_SetICMProfileW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetICMProfileW(QEMU_G2H(c->hdc), QEMU_G2H(c->filename));
 }
 

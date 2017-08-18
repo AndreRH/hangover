@@ -59,7 +59,7 @@ WINGDIAPI BOOL WINAPI DPtoLP(HDC hdc, POINT *points, INT count)
 void qemu_DPtoLP(struct qemu_syscall *call)
 {
     struct qemu_DPtoLP *c = (struct qemu_DPtoLP *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DPtoLP(QEMU_G2H(c->hdc), QEMU_G2H(c->points), c->count);
 }
 
@@ -93,7 +93,7 @@ WINGDIAPI BOOL WINAPI LPtoDP(HDC hdc, POINT *points, INT count)
 void qemu_LPtoDP(struct qemu_syscall *call)
 {
     struct qemu_LPtoDP *c = (struct qemu_LPtoDP *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LPtoDP(QEMU_G2H(c->hdc), QEMU_G2H(c->points), c->count);
 }
 
@@ -269,7 +269,7 @@ WINGDIAPI BOOL WINAPI SetWindowOrgEx(HDC hdc, INT x, INT y, LPPOINT pt)
 void qemu_SetWindowOrgEx(struct qemu_syscall *call)
 {
     struct qemu_SetWindowOrgEx *c = (struct qemu_SetWindowOrgEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetWindowOrgEx(QEMU_G2H(c->hdc), c->x, c->y, QEMU_G2H(c->pt));
 }
 
@@ -421,7 +421,7 @@ WINGDIAPI BOOL WINAPI ScaleWindowExtEx(HDC hdc, INT xNum, INT xDenom, INT yNum, 
 void qemu_ScaleWindowExtEx(struct qemu_syscall *call)
 {
     struct qemu_ScaleWindowExtEx *c = (struct qemu_ScaleWindowExtEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ScaleWindowExtEx(QEMU_G2H(c->hdc), c->xNum, c->xDenom, c->yNum, c->yDenom, QEMU_G2H(c->size));
 }
 
@@ -455,7 +455,7 @@ WINGDIAPI BOOL WINAPI ModifyWorldTransform(HDC hdc, const XFORM *xform, DWORD mo
 void qemu_ModifyWorldTransform(struct qemu_syscall *call)
 {
     struct qemu_ModifyWorldTransform *c = (struct qemu_ModifyWorldTransform *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ModifyWorldTransform(QEMU_G2H(c->hdc), QEMU_G2H(c->xform), c->mode);
 }
 
@@ -487,7 +487,7 @@ WINGDIAPI BOOL WINAPI SetWorldTransform(HDC hdc, const XFORM *xform)
 void qemu_SetWorldTransform(struct qemu_syscall *call)
 {
     struct qemu_SetWorldTransform *c = (struct qemu_SetWorldTransform *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetWorldTransform(QEMU_G2H(c->hdc), QEMU_G2H(c->xform));
 }
 
@@ -527,7 +527,7 @@ extern BOOL WINAPI SetVirtualResolution(HDC hdc, DWORD horz_res, DWORD vert_res,
 void qemu_SetVirtualResolution(struct qemu_syscall *call)
 {
     struct qemu_SetVirtualResolution *c = (struct qemu_SetVirtualResolution *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetVirtualResolution(QEMU_G2H(c->hdc), c->horz_res, c->vert_res, c->horz_size, c->vert_size);
 }
 

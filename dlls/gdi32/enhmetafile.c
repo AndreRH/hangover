@@ -444,7 +444,7 @@ WINGDIAPI BOOL WINAPI DeleteEnhMetaFile(HENHMETAFILE hmf)
 void qemu_DeleteEnhMetaFile(struct qemu_syscall *call)
 {
     struct qemu_DeleteEnhMetaFile *c = (struct qemu_DeleteEnhMetaFile *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DeleteEnhMetaFile(QEMU_G2H(c->hmf));
 }
 

@@ -95,7 +95,7 @@ WINBASEAPI HRSRC WINAPI FindResourceA(HMODULE hModule, LPCSTR name, LPCSTR type)
 void qemu_FindResourceA(struct qemu_syscall *call)
 {
     struct qemu_FindResourceA *c = (struct qemu_FindResourceA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)FindResourceA(QEMU_G2H(c->hModule), QEMU_G2H(c->name), QEMU_G2H(c->type));
 }
 
@@ -497,7 +497,7 @@ WINBASEAPI HGLOBAL WINAPI LoadResource(HINSTANCE hModule, HRSRC hRsrc)
 void qemu_LoadResource(struct qemu_syscall *call)
 {
     struct qemu_LoadResource *c = (struct qemu_LoadResource *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)LoadResource(QEMU_G2H(c->hModule), QEMU_G2H(c->hRsrc));
 }
 
@@ -527,7 +527,7 @@ WINBASEAPI LPVOID WINAPI LockResource(HGLOBAL handle)
 void qemu_LockResource(struct qemu_syscall *call)
 {
     struct qemu_LockResource *c = (struct qemu_LockResource *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)LockResource(QEMU_G2H(c->handle));
 }
 
@@ -589,7 +589,7 @@ WINBASEAPI DWORD WINAPI SizeofResource(HINSTANCE hModule, HRSRC hRsrc)
 void qemu_SizeofResource(struct qemu_syscall *call)
 {
     struct qemu_SizeofResource *c = (struct qemu_SizeofResource *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SizeofResource(QEMU_G2H(c->hModule), QEMU_G2H(c->hRsrc));
 }
 

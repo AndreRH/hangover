@@ -153,7 +153,7 @@ WINGDIAPI INT WINAPI GetObjectW(HGDIOBJ handle, INT count, LPVOID buffer)
 void qemu_GetObjectW(struct qemu_syscall *call)
 {
     struct qemu_GetObjectW *c = (struct qemu_GetObjectW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetObjectW(QEMU_G2H(c->handle), c->count, QEMU_G2H(c->buffer));
 }
 
@@ -277,7 +277,7 @@ WINGDIAPI BOOL WINAPI UnrealizeObject(HGDIOBJ obj)
 void qemu_UnrealizeObject(struct qemu_syscall *call)
 {
     struct qemu_UnrealizeObject *c = (struct qemu_UnrealizeObject *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = UnrealizeObject(QEMU_G2H(c->obj));
 }
 

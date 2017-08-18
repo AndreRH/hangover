@@ -55,7 +55,7 @@ WINGDIAPI DWORD WINAPI GdiGetCodePage(HDC hdc)
 void qemu_GdiGetCodePage(struct qemu_syscall *call)
 {
     struct qemu_GdiGetCodePage *c = (struct qemu_GdiGetCodePage *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GdiGetCodePage(QEMU_G2H(c->hdc));
 }
 
@@ -89,7 +89,7 @@ WINGDIAPI int WINAPI GetTextCharsetInfo(HDC hdc, FONTSIGNATURE *fs, DWORD flags)
 void qemu_GetTextCharsetInfo(struct qemu_syscall *call)
 {
     struct qemu_GetTextCharsetInfo *c = (struct qemu_GetTextCharsetInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTextCharsetInfo(QEMU_G2H(c->hdc), QEMU_G2H(c->fs), c->flags);
 }
 
@@ -119,7 +119,7 @@ WINGDIAPI HFONT WINAPI CreateFontIndirectExA(const ENUMLOGFONTEXDVA *penumexA)
 void qemu_CreateFontIndirectExA(struct qemu_syscall *call)
 {
     struct qemu_CreateFontIndirectExA *c = (struct qemu_CreateFontIndirectExA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateFontIndirectExA(QEMU_G2H(c->penumexA));
 }
 
@@ -265,7 +265,7 @@ WINGDIAPI HFONT WINAPI CreateFontA(INT height, INT width, INT esc, INT orient, I
 void qemu_CreateFontA(struct qemu_syscall *call)
 {
     struct qemu_CreateFontA *c = (struct qemu_CreateFontA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateFontA(c->height, c->width, c->esc, c->orient, c->weight, c->italic, c->underline, c->strikeout, c->charset, c->outpres, c->clippres, c->quality, c->pitch, QEMU_G2H(c->name));
 }
 
@@ -672,7 +672,7 @@ WINGDIAPI INT WINAPI GetTextCharacterExtra(HDC hdc)
 void qemu_GetTextCharacterExtra(struct qemu_syscall *call)
 {
     struct qemu_GetTextCharacterExtra *c = (struct qemu_GetTextCharacterExtra *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTextCharacterExtra(QEMU_G2H(c->hdc));
 }
 
@@ -704,7 +704,7 @@ WINGDIAPI INT WINAPI SetTextCharacterExtra(HDC hdc, INT extra)
 void qemu_SetTextCharacterExtra(struct qemu_syscall *call)
 {
     struct qemu_SetTextCharacterExtra *c = (struct qemu_SetTextCharacterExtra *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetTextCharacterExtra(QEMU_G2H(c->hdc), c->extra);
 }
 
@@ -738,7 +738,7 @@ WINGDIAPI BOOL WINAPI SetTextJustification(HDC hdc, INT extra, INT breaks)
 void qemu_SetTextJustification(struct qemu_syscall *call)
 {
     struct qemu_SetTextJustification *c = (struct qemu_SetTextJustification *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetTextJustification(QEMU_G2H(c->hdc), c->extra, c->breaks);
 }
 
@@ -772,7 +772,7 @@ WINGDIAPI INT WINAPI GetTextFaceA(HDC hdc, INT count, LPSTR name)
 void qemu_GetTextFaceA(struct qemu_syscall *call)
 {
     struct qemu_GetTextFaceA *c = (struct qemu_GetTextFaceA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTextFaceA(QEMU_G2H(c->hdc), c->count, QEMU_G2H(c->name));
 }
 
@@ -806,7 +806,7 @@ WINGDIAPI INT WINAPI GetTextFaceW(HDC hdc, INT count, LPWSTR name)
 void qemu_GetTextFaceW(struct qemu_syscall *call)
 {
     struct qemu_GetTextFaceW *c = (struct qemu_GetTextFaceW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTextFaceW(QEMU_G2H(c->hdc), c->count, QEMU_G2H(c->name));
 }
 
@@ -842,7 +842,7 @@ WINGDIAPI BOOL WINAPI GetTextExtentPoint32A(HDC hdc, LPCSTR str, INT count, LPSI
 void qemu_GetTextExtentPoint32A(struct qemu_syscall *call)
 {
     struct qemu_GetTextExtentPoint32A *c = (struct qemu_GetTextExtentPoint32A *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTextExtentPoint32A(QEMU_G2H(c->hdc), QEMU_G2H(c->str), c->count, QEMU_G2H(c->size));
 }
 
@@ -920,7 +920,7 @@ WINGDIAPI WINBOOL WINAPI GetTextExtentExPointI(HDC hdc, WORD *indices, int count
 void qemu_GetTextExtentExPointI(struct qemu_syscall *call)
 {
     struct qemu_GetTextExtentExPointI *c = (struct qemu_GetTextExtentExPointI *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTextExtentExPointI(QEMU_G2H(c->hdc), QEMU_G2H(c->indices), c->count, c->max_ext, QEMU_G2H(c->nfit), QEMU_G2H(c->dxs), QEMU_G2H(c->size));
 }
 
@@ -992,7 +992,7 @@ WINGDIAPI BOOL WINAPI GetTextExtentPointA(HDC hdc, LPCSTR str, INT count, LPSIZE
 void qemu_GetTextExtentPointA(struct qemu_syscall *call)
 {
     struct qemu_GetTextExtentPointA *c = (struct qemu_GetTextExtentPointA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTextExtentPointA(QEMU_G2H(c->hdc), QEMU_G2H(c->str), c->count, QEMU_G2H(c->size));
 }
 
@@ -1028,7 +1028,7 @@ WINGDIAPI BOOL WINAPI GetTextExtentPointW(HDC hdc, LPCWSTR str, INT count, LPSIZ
 void qemu_GetTextExtentPointW(struct qemu_syscall *call)
 {
     struct qemu_GetTextExtentPointW *c = (struct qemu_GetTextExtentPointW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTextExtentPointW(QEMU_G2H(c->hdc), QEMU_G2H(c->str), c->count, QEMU_G2H(c->size));
 }
 
@@ -1070,7 +1070,7 @@ WINGDIAPI BOOL WINAPI GetTextExtentExPointA(HDC hdc, LPCSTR str, INT count, INT 
 void qemu_GetTextExtentExPointA(struct qemu_syscall *call)
 {
     struct qemu_GetTextExtentExPointA *c = (struct qemu_GetTextExtentExPointA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTextExtentExPointA(QEMU_G2H(c->hdc), QEMU_G2H(c->str), c->count, c->maxExt, QEMU_G2H(c->lpnFit), QEMU_G2H(c->alpDx), QEMU_G2H(c->size));
 }
 
@@ -1112,7 +1112,7 @@ WINGDIAPI BOOL WINAPI GetTextExtentExPointW(HDC hdc, LPCWSTR str, INT count, INT
 void qemu_GetTextExtentExPointW(struct qemu_syscall *call)
 {
     struct qemu_GetTextExtentExPointW *c = (struct qemu_GetTextExtentExPointW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTextExtentExPointW(QEMU_G2H(c->hdc), QEMU_G2H(c->str), c->count, c->max_ext, QEMU_G2H(c->nfit), QEMU_G2H(c->dxs), QEMU_G2H(c->size));
 }
 
@@ -1144,7 +1144,7 @@ WINGDIAPI BOOL WINAPI GetTextMetricsA(HDC hdc, TEXTMETRICA *metrics)
 void qemu_GetTextMetricsA(struct qemu_syscall *call)
 {
     struct qemu_GetTextMetricsA *c = (struct qemu_GetTextMetricsA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTextMetricsA(QEMU_G2H(c->hdc), QEMU_G2H(c->metrics));
 }
 
@@ -1210,7 +1210,7 @@ WINGDIAPI UINT WINAPI GetOutlineTextMetricsA(HDC hdc, UINT cbData, LPOUTLINETEXT
 void qemu_GetOutlineTextMetricsA(struct qemu_syscall *call)
 {
     struct qemu_GetOutlineTextMetricsA *c = (struct qemu_GetOutlineTextMetricsA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetOutlineTextMetricsA(QEMU_G2H(c->hdc), c->cbData, QEMU_G2H(c->lpOTM));
 }
 
@@ -1244,7 +1244,7 @@ WINGDIAPI UINT WINAPI GetOutlineTextMetricsW(HDC hdc, UINT cbData, LPOUTLINETEXT
 void qemu_GetOutlineTextMetricsW(struct qemu_syscall *call)
 {
     struct qemu_GetOutlineTextMetricsW *c = (struct qemu_GetOutlineTextMetricsW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetOutlineTextMetricsW(QEMU_G2H(c->hdc), c->cbData, QEMU_G2H(c->lpOTM));
 }
 
@@ -1280,7 +1280,7 @@ WINGDIAPI BOOL WINAPI GetCharWidth32W(HDC hdc, UINT firstChar, UINT lastChar, LP
 void qemu_GetCharWidth32W(struct qemu_syscall *call)
 {
     struct qemu_GetCharWidth32W *c = (struct qemu_GetCharWidth32W *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCharWidth32W(QEMU_G2H(c->hdc), c->firstChar, c->lastChar, QEMU_G2H(c->buffer));
 }
 
@@ -1316,7 +1316,7 @@ WINGDIAPI BOOL WINAPI GetCharWidth32A(HDC hdc, UINT firstChar, UINT lastChar, LP
 void qemu_GetCharWidth32A(struct qemu_syscall *call)
 {
     struct qemu_GetCharWidth32A *c = (struct qemu_GetCharWidth32A *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCharWidth32A(QEMU_G2H(c->hdc), c->firstChar, c->lastChar, QEMU_G2H(c->buffer));
 }
 
@@ -1360,7 +1360,7 @@ WINGDIAPI BOOL WINAPI ExtTextOutA(HDC hdc, INT x, INT y, UINT flags, const RECT 
 void qemu_ExtTextOutA(struct qemu_syscall *call)
 {
     struct qemu_ExtTextOutA *c = (struct qemu_ExtTextOutA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ExtTextOutA(QEMU_G2H(c->hdc), c->x, c->y, c->flags, QEMU_G2H(c->lprect), QEMU_G2H(c->str), c->count, QEMU_G2H(c->lpDx));
 }
 
@@ -1648,7 +1648,7 @@ WINGDIAPI BOOL WINAPI GetCharABCWidthsA(HDC hdc, UINT firstChar, UINT lastChar, 
 void qemu_GetCharABCWidthsA(struct qemu_syscall *call)
 {
     struct qemu_GetCharABCWidthsA *c = (struct qemu_GetCharABCWidthsA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCharABCWidthsA(QEMU_G2H(c->hdc), c->firstChar, c->lastChar, QEMU_G2H(c->abc));
 }
 
@@ -1684,7 +1684,7 @@ WINGDIAPI BOOL WINAPI GetCharABCWidthsW(HDC hdc, UINT firstChar, UINT lastChar, 
 void qemu_GetCharABCWidthsW(struct qemu_syscall *call)
 {
     struct qemu_GetCharABCWidthsW *c = (struct qemu_GetCharABCWidthsW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCharABCWidthsW(QEMU_G2H(c->hdc), c->firstChar, c->lastChar, QEMU_G2H(c->abc));
 }
 
@@ -1764,7 +1764,7 @@ WINGDIAPI DWORD WINAPI GetGlyphOutlineA(HDC hdc, UINT uChar, UINT fuFormat, LPGL
 void qemu_GetGlyphOutlineA(struct qemu_syscall *call)
 {
     struct qemu_GetGlyphOutlineA *c = (struct qemu_GetGlyphOutlineA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetGlyphOutlineA(QEMU_G2H(c->hdc), c->uChar, c->fuFormat, QEMU_G2H(c->lpgm), c->cbBuffer, QEMU_G2H(c->lpBuffer), QEMU_G2H(c->lpmat2));
 }
 
@@ -1806,7 +1806,7 @@ WINGDIAPI DWORD WINAPI GetGlyphOutlineW(HDC hdc, UINT uChar, UINT fuFormat, LPGL
 void qemu_GetGlyphOutlineW(struct qemu_syscall *call)
 {
     struct qemu_GetGlyphOutlineW *c = (struct qemu_GetGlyphOutlineW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetGlyphOutlineW(QEMU_G2H(c->hdc), c->uChar, c->fuFormat, QEMU_G2H(c->lpgm), c->cbBuffer, QEMU_G2H(c->lpBuffer), QEMU_G2H(c->lpmat2));
 }
 
@@ -1842,7 +1842,7 @@ WINGDIAPI BOOL WINAPI CreateScalableFontResourceA(DWORD fHidden, LPCSTR lpszReso
 void qemu_CreateScalableFontResourceA(struct qemu_syscall *call)
 {
     struct qemu_CreateScalableFontResourceA *c = (struct qemu_CreateScalableFontResourceA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CreateScalableFontResourceA(c->fHidden, QEMU_G2H(c->lpszResourceFile), QEMU_G2H(c->lpszFontFile), QEMU_G2H(c->lpszCurrentPath));
 }
 
@@ -1912,7 +1912,7 @@ WINGDIAPI DWORD WINAPI GetKerningPairsA(HDC hDC, DWORD cPairs, LPKERNINGPAIR ker
 void qemu_GetKerningPairsA(struct qemu_syscall *call)
 {
     struct qemu_GetKerningPairsA *c = (struct qemu_GetKerningPairsA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetKerningPairsA(QEMU_G2H(c->hDC), c->cPairs, QEMU_G2H(c->kern_pairA));
 }
 
@@ -1946,7 +1946,7 @@ WINGDIAPI DWORD WINAPI GetKerningPairsW(HDC hDC, DWORD cPairs, LPKERNINGPAIR lpK
 void qemu_GetKerningPairsW(struct qemu_syscall *call)
 {
     struct qemu_GetKerningPairsW *c = (struct qemu_GetKerningPairsW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetKerningPairsW(QEMU_G2H(c->hDC), c->cPairs, QEMU_G2H(c->lpKerningPairs));
 }
 
@@ -1980,7 +1980,7 @@ WINGDIAPI BOOL WINAPI TranslateCharsetInfo(LPDWORD lpSrc, LPCHARSETINFO lpCs, DW
 void qemu_TranslateCharsetInfo(struct qemu_syscall *call)
 {
     struct qemu_TranslateCharsetInfo *c = (struct qemu_TranslateCharsetInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = TranslateCharsetInfo(QEMU_G2H(c->lpSrc), QEMU_G2H(c->lpCs), c->flags);
 }
 
@@ -2048,7 +2048,7 @@ WINGDIAPI DWORD WINAPI GetFontData(HDC hdc, DWORD table, DWORD offset, LPVOID bu
 void qemu_GetFontData(struct qemu_syscall *call)
 {
     struct qemu_GetFontData *c = (struct qemu_GetFontData *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetFontData(QEMU_G2H(c->hdc), c->table, c->offset, QEMU_G2H(c->buffer), c->length);
 }
 
@@ -2086,7 +2086,7 @@ WINGDIAPI DWORD WINAPI GetGlyphIndicesA(HDC hdc, LPCSTR lpstr, INT count, LPWORD
 void qemu_GetGlyphIndicesA(struct qemu_syscall *call)
 {
     struct qemu_GetGlyphIndicesA *c = (struct qemu_GetGlyphIndicesA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetGlyphIndicesA(QEMU_G2H(c->hdc), QEMU_G2H(c->lpstr), c->count, QEMU_G2H(c->pgi), c->flags);
 }
 
@@ -2124,7 +2124,7 @@ WINGDIAPI DWORD WINAPI GetGlyphIndicesW(HDC hdc, LPCWSTR lpstr, INT count, LPWOR
 void qemu_GetGlyphIndicesW(struct qemu_syscall *call)
 {
     struct qemu_GetGlyphIndicesW *c = (struct qemu_GetGlyphIndicesW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetGlyphIndicesW(QEMU_G2H(c->hdc), QEMU_G2H(c->lpstr), c->count, QEMU_G2H(c->pgi), c->flags);
 }
 
@@ -2276,7 +2276,7 @@ WINGDIAPI BOOL WINAPI GetCharABCWidthsFloatW(HDC hdc, UINT first, UINT last, LPA
 void qemu_GetCharABCWidthsFloatW(struct qemu_syscall *call)
 {
     struct qemu_GetCharABCWidthsFloatW *c = (struct qemu_GetCharABCWidthsFloatW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCharABCWidthsFloatW(QEMU_G2H(c->hdc), c->first, c->last, QEMU_G2H(c->abcf));
 }
 
@@ -2378,7 +2378,7 @@ WINGDIAPI INT WINAPI AddFontResourceA(LPCSTR str)
 void qemu_AddFontResourceA(struct qemu_syscall *call)
 {
     struct qemu_AddFontResourceA *c = (struct qemu_AddFontResourceA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AddFontResourceA(QEMU_G2H(c->str));
 }
 
@@ -2442,7 +2442,7 @@ WINGDIAPI INT WINAPI AddFontResourceExA(LPCSTR str, DWORD fl, PVOID pdv)
 void qemu_AddFontResourceExA(struct qemu_syscall *call)
 {
     struct qemu_AddFontResourceExA *c = (struct qemu_AddFontResourceExA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AddFontResourceExA(QEMU_G2H(c->str), c->fl, QEMU_G2H(c->pdv));
 }
 
@@ -2506,7 +2506,7 @@ WINGDIAPI BOOL WINAPI RemoveFontResourceA(LPCSTR str)
 void qemu_RemoveFontResourceA(struct qemu_syscall *call)
 {
     struct qemu_RemoveFontResourceA *c = (struct qemu_RemoveFontResourceA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RemoveFontResourceA(QEMU_G2H(c->str));
 }
 
@@ -2636,7 +2636,7 @@ WINGDIAPI BOOL WINAPI RemoveFontResourceExA(LPCSTR str, DWORD fl, PVOID pdv)
 void qemu_RemoveFontResourceExA(struct qemu_syscall *call)
 {
     struct qemu_RemoveFontResourceExA *c = (struct qemu_RemoveFontResourceExA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RemoveFontResourceExA(QEMU_G2H(c->str), c->fl, QEMU_G2H(c->pdv));
 }
 
@@ -2738,7 +2738,7 @@ WINGDIAPI int WINAPI GetTextCharset(HDC hdc)
 void qemu_GetTextCharset(struct qemu_syscall *call)
 {
     struct qemu_GetTextCharset *c = (struct qemu_GetTextCharset *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTextCharset(QEMU_G2H(c->hdc));
 }
 
@@ -2772,7 +2772,7 @@ WINGDIAPI LONG WINAPI GdiGetCharDimensions(HDC hdc, LPTEXTMETRICW lptm, LONG *he
 void qemu_GdiGetCharDimensions(struct qemu_syscall *call)
 {
     struct qemu_GdiGetCharDimensions *c = (struct qemu_GdiGetCharDimensions *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GdiGetCharDimensions(QEMU_G2H(c->hdc), QEMU_G2H(c->lptm), QEMU_G2H(c->height));
 }
 
@@ -2842,7 +2842,7 @@ WINGDIAPI BOOL WINAPI GetCharWidthI(HDC hdc, UINT first, UINT count, LPWORD glyp
 void qemu_GetCharWidthI(struct qemu_syscall *call)
 {
     struct qemu_GetCharWidthI *c = (struct qemu_GetCharWidthI *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCharWidthI(QEMU_G2H(c->hdc), c->first, c->count, QEMU_G2H(c->glyphs), QEMU_G2H(c->buffer));
 }
 
@@ -2874,7 +2874,7 @@ WINGDIAPI DWORD WINAPI GetFontUnicodeRanges(HDC hdc, LPGLYPHSET lpgs)
 void qemu_GetFontUnicodeRanges(struct qemu_syscall *call)
 {
     struct qemu_GetFontUnicodeRanges *c = (struct qemu_GetFontUnicodeRanges *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetFontUnicodeRanges(QEMU_G2H(c->hdc), QEMU_G2H(c->lpgs));
 }
 
@@ -2940,7 +2940,7 @@ extern BOOL WINAPI GetFontRealizationInfo(HDC hdc, void *info);
 void qemu_GetFontRealizationInfo(struct qemu_syscall *call)
 {
     struct qemu_GetFontRealizationInfo *c = (struct qemu_GetFontRealizationInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetFontRealizationInfo(QEMU_G2H(c->hdc), QEMU_G2H(c->info));
 }
 
@@ -2974,7 +2974,7 @@ extern BOOL WINAPI GdiRealizationInfo(HDC hdc, void *info);
 void qemu_GdiRealizationInfo(struct qemu_syscall *call)
 {
     struct qemu_GdiRealizationInfo *c = (struct qemu_GdiRealizationInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GdiRealizationInfo(QEMU_G2H(c->hdc), QEMU_G2H(c->info));
 }
 

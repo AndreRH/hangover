@@ -55,7 +55,7 @@ WINGDIAPI INT WINAPI SaveDC(HDC hdc)
 void qemu_SaveDC(struct qemu_syscall *call)
 {
     struct qemu_SaveDC *c = (struct qemu_SaveDC *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SaveDC(QEMU_G2H(c->hdc));
 }
 
@@ -87,7 +87,7 @@ WINGDIAPI BOOL WINAPI RestoreDC(HDC hdc, INT level)
 void qemu_RestoreDC(struct qemu_syscall *call)
 {
     struct qemu_RestoreDC *c = (struct qemu_RestoreDC *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RestoreDC(QEMU_G2H(c->hdc), c->level);
 }
 
@@ -123,7 +123,7 @@ WINGDIAPI HDC WINAPI CreateDCW(LPCWSTR driver, LPCWSTR device, LPCWSTR output, c
 void qemu_CreateDCW(struct qemu_syscall *call)
 {
     struct qemu_CreateDCW *c = (struct qemu_CreateDCW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateDCW(QEMU_G2H(c->driver), QEMU_G2H(c->device), QEMU_G2H(c->output), QEMU_G2H(c->initData));
 }
 
@@ -159,7 +159,7 @@ WINGDIAPI HDC WINAPI CreateDCA(LPCSTR driver, LPCSTR device, LPCSTR output, cons
 void qemu_CreateDCA(struct qemu_syscall *call)
 {
     struct qemu_CreateDCA *c = (struct qemu_CreateDCA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateDCA(QEMU_G2H(c->driver), QEMU_G2H(c->device), QEMU_G2H(c->output), QEMU_G2H(c->initData));
 }
 
@@ -195,7 +195,7 @@ WINGDIAPI HDC WINAPI CreateICA(LPCSTR driver, LPCSTR device, LPCSTR output, cons
 void qemu_CreateICA(struct qemu_syscall *call)
 {
     struct qemu_CreateICA *c = (struct qemu_CreateICA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateICA(QEMU_G2H(c->driver), QEMU_G2H(c->device), QEMU_G2H(c->output), QEMU_G2H(c->initData));
 }
 
@@ -355,7 +355,7 @@ WINGDIAPI HDC WINAPI ResetDCA(HDC hdc, const DEVMODEA *devmode)
 void qemu_ResetDCA(struct qemu_syscall *call)
 {
     struct qemu_ResetDCA *c = (struct qemu_ResetDCA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)ResetDCA(QEMU_G2H(c->hdc), QEMU_G2H(c->devmode));
 }
 
@@ -417,7 +417,7 @@ WINGDIAPI COLORREF WINAPI GetBkColor(HDC hdc)
 void qemu_GetBkColor(struct qemu_syscall *call)
 {
     struct qemu_GetBkColor *c = (struct qemu_GetBkColor *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetBkColor(QEMU_G2H(c->hdc));
 }
 
@@ -479,7 +479,7 @@ WINGDIAPI COLORREF WINAPI GetTextColor(HDC hdc)
 void qemu_GetTextColor(struct qemu_syscall *call)
 {
     struct qemu_GetTextColor *c = (struct qemu_GetTextColor *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTextColor(QEMU_G2H(c->hdc));
 }
 
@@ -573,7 +573,7 @@ WINGDIAPI UINT WINAPI SetTextAlign(HDC hdc, UINT align)
 void qemu_SetTextAlign(struct qemu_syscall *call)
 {
     struct qemu_SetTextAlign *c = (struct qemu_SetTextAlign *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetTextAlign(QEMU_G2H(c->hdc), c->align);
 }
 
@@ -605,7 +605,7 @@ WINGDIAPI BOOL WINAPI GetDCOrgEx(HDC hDC, LPPOINT lpp)
 void qemu_GetDCOrgEx(struct qemu_syscall *call)
 {
     struct qemu_GetDCOrgEx *c = (struct qemu_GetDCOrgEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDCOrgEx(QEMU_G2H(c->hDC), QEMU_G2H(c->lpp));
 }
 
@@ -635,7 +635,7 @@ WINGDIAPI INT WINAPI GetGraphicsMode(HDC hdc)
 void qemu_GetGraphicsMode(struct qemu_syscall *call)
 {
     struct qemu_GetGraphicsMode *c = (struct qemu_GetGraphicsMode *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetGraphicsMode(QEMU_G2H(c->hdc));
 }
 
@@ -667,7 +667,7 @@ WINGDIAPI INT WINAPI SetGraphicsMode(HDC hdc, INT mode)
 void qemu_SetGraphicsMode(struct qemu_syscall *call)
 {
     struct qemu_SetGraphicsMode *c = (struct qemu_SetGraphicsMode *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetGraphicsMode(QEMU_G2H(c->hdc), c->mode);
 }
 
@@ -761,7 +761,7 @@ WINGDIAPI BOOL WINAPI GetWorldTransform(HDC hdc, LPXFORM xform)
 void qemu_GetWorldTransform(struct qemu_syscall *call)
 {
     struct qemu_GetWorldTransform *c = (struct qemu_GetWorldTransform *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWorldTransform(QEMU_G2H(c->hdc), QEMU_G2H(c->xform));
 }
 
@@ -795,7 +795,7 @@ WINGDIAPI BOOL WINAPI GetTransform(HDC hdc, DWORD which, XFORM *xform)
 void qemu_GetTransform(struct qemu_syscall *call)
 {
     struct qemu_GetTransform *c = (struct qemu_GetTransform *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTransform(QEMU_G2H(c->hdc), c->which, QEMU_G2H(c->xform));
 }
 
@@ -895,7 +895,7 @@ WINGDIAPI INT WINAPI SetICMMode(HDC hdc, INT iEnableICM)
 void qemu_SetICMMode(struct qemu_syscall *call)
 {
     struct qemu_SetICMMode *c = (struct qemu_SetICMMode *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetICMMode(QEMU_G2H(c->hdc), c->iEnableICM);
 }
 
@@ -927,7 +927,7 @@ WINGDIAPI BOOL WINAPI GetDeviceGammaRamp(HDC hDC, LPVOID ptr)
 void qemu_GetDeviceGammaRamp(struct qemu_syscall *call)
 {
     struct qemu_GetDeviceGammaRamp *c = (struct qemu_GetDeviceGammaRamp *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDeviceGammaRamp(QEMU_G2H(c->hDC), QEMU_G2H(c->ptr));
 }
 
@@ -959,7 +959,7 @@ WINGDIAPI BOOL WINAPI SetDeviceGammaRamp(HDC hDC, LPVOID ptr)
 void qemu_SetDeviceGammaRamp(struct qemu_syscall *call)
 {
     struct qemu_SetDeviceGammaRamp *c = (struct qemu_SetDeviceGammaRamp *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetDeviceGammaRamp(QEMU_G2H(c->hDC), QEMU_G2H(c->ptr));
 }
 
@@ -989,7 +989,7 @@ WINGDIAPI HCOLORSPACE WINAPI GetColorSpace(HDC hdc)
 void qemu_GetColorSpace(struct qemu_syscall *call)
 {
     struct qemu_GetColorSpace *c = (struct qemu_GetColorSpace *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetColorSpace(QEMU_G2H(c->hdc));
 }
 
@@ -1145,7 +1145,7 @@ WINGDIAPI UINT WINAPI GetBoundsRect(HDC hdc, LPRECT rect, UINT flags)
 void qemu_GetBoundsRect(struct qemu_syscall *call)
 {
     struct qemu_GetBoundsRect *c = (struct qemu_GetBoundsRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetBoundsRect(QEMU_G2H(c->hdc), QEMU_G2H(c->rect), c->flags);
 }
 
@@ -1179,7 +1179,7 @@ WINGDIAPI UINT WINAPI SetBoundsRect(HDC hdc, const RECT* rect, UINT flags)
 void qemu_SetBoundsRect(struct qemu_syscall *call)
 {
     struct qemu_SetBoundsRect *c = (struct qemu_SetBoundsRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetBoundsRect(QEMU_G2H(c->hdc), QEMU_G2H(c->rect), c->flags);
 }
 
@@ -1335,7 +1335,7 @@ WINGDIAPI INT WINAPI SetROP2(HDC hdc, INT mode)
 void qemu_SetROP2(struct qemu_syscall *call)
 {
     struct qemu_SetROP2 *c = (struct qemu_SetROP2 *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetROP2(QEMU_G2H(c->hdc), c->mode);
 }
 
@@ -1521,7 +1521,7 @@ WINGDIAPI INT WINAPI GetMapMode(HDC hdc)
 void qemu_GetMapMode(struct qemu_syscall *call)
 {
     struct qemu_GetMapMode *c = (struct qemu_GetMapMode *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetMapMode(QEMU_G2H(c->hdc));
 }
 
@@ -1617,7 +1617,7 @@ WINGDIAPI BOOL WINAPI GetViewportExtEx(HDC hdc, LPSIZE size)
 void qemu_GetViewportExtEx(struct qemu_syscall *call)
 {
     struct qemu_GetViewportExtEx *c = (struct qemu_GetViewportExtEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetViewportExtEx(QEMU_G2H(c->hdc), QEMU_G2H(c->size));
 }
 
@@ -1649,7 +1649,7 @@ WINGDIAPI BOOL WINAPI GetViewportOrgEx(HDC hdc, LPPOINT pt)
 void qemu_GetViewportOrgEx(struct qemu_syscall *call)
 {
     struct qemu_GetViewportOrgEx *c = (struct qemu_GetViewportOrgEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetViewportOrgEx(QEMU_G2H(c->hdc), QEMU_G2H(c->pt));
 }
 
@@ -1681,7 +1681,7 @@ WINGDIAPI BOOL WINAPI GetWindowExtEx(HDC hdc, LPSIZE size)
 void qemu_GetWindowExtEx(struct qemu_syscall *call)
 {
     struct qemu_GetWindowExtEx *c = (struct qemu_GetWindowExtEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWindowExtEx(QEMU_G2H(c->hdc), QEMU_G2H(c->size));
 }
 
@@ -1713,7 +1713,7 @@ WINGDIAPI BOOL WINAPI GetWindowOrgEx(HDC hdc, LPPOINT pt)
 void qemu_GetWindowOrgEx(struct qemu_syscall *call)
 {
     struct qemu_GetWindowOrgEx *c = (struct qemu_GetWindowOrgEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWindowOrgEx(QEMU_G2H(c->hdc), QEMU_G2H(c->pt));
 }
 
@@ -1743,7 +1743,7 @@ WINGDIAPI DWORD WINAPI GetLayout(HDC hdc)
 void qemu_GetLayout(struct qemu_syscall *call)
 {
     struct qemu_GetLayout *c = (struct qemu_GetLayout *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetLayout(QEMU_G2H(c->hdc));
 }
 
@@ -1775,7 +1775,7 @@ WINGDIAPI DWORD WINAPI SetLayout(HDC hdc, DWORD layout)
 void qemu_SetLayout(struct qemu_syscall *call)
 {
     struct qemu_SetLayout *c = (struct qemu_SetLayout *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetLayout(QEMU_G2H(c->hdc), c->layout);
 }
 

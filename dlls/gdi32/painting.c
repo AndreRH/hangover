@@ -59,7 +59,7 @@ WINBASEAPI BOOL WINAPI LineTo(HDC hdc, INT x, INT y)
 void qemu_LineTo(struct qemu_syscall *call)
 {
     struct qemu_LineTo *c = (struct qemu_LineTo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LineTo(QEMU_G2H(c->hdc), c->x, c->y);
 }
 
@@ -95,7 +95,7 @@ WINBASEAPI BOOL WINAPI MoveToEx(HDC hdc, INT x, INT y, LPPOINT pt)
 void qemu_MoveToEx(struct qemu_syscall *call)
 {
     struct qemu_MoveToEx *c = (struct qemu_MoveToEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = MoveToEx(QEMU_G2H(c->hdc), c->x, c->y, QEMU_G2H(c->pt));
 }
 
@@ -355,7 +355,7 @@ WINBASEAPI BOOL WINAPI Rectangle(HDC hdc, INT left, INT top, INT right, INT bott
 void qemu_Rectangle(struct qemu_syscall *call)
 {
     struct qemu_Rectangle *c = (struct qemu_Rectangle *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = Rectangle(QEMU_G2H(c->hdc), c->left, c->top, c->right, c->bottom);
 }
 
@@ -433,7 +433,7 @@ WINBASEAPI COLORREF WINAPI SetPixel(HDC hdc, INT x, INT y, COLORREF color)
 void qemu_SetPixel(struct qemu_syscall *call)
 {
     struct qemu_SetPixel *c = (struct qemu_SetPixel *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetPixel(QEMU_G2H(c->hdc), c->x, c->y, c->color);
 }
 
@@ -469,7 +469,7 @@ WINBASEAPI BOOL WINAPI SetPixelV(HDC hdc, INT x, INT y, COLORREF color)
 void qemu_SetPixelV(struct qemu_syscall *call)
 {
     struct qemu_SetPixelV *c = (struct qemu_SetPixelV *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetPixelV(QEMU_G2H(c->hdc), c->x, c->y, c->color);
 }
 
@@ -503,7 +503,7 @@ WINBASEAPI COLORREF WINAPI GetPixel(HDC hdc, INT x, INT y)
 void qemu_GetPixel(struct qemu_syscall *call)
 {
     struct qemu_GetPixel *c = (struct qemu_GetPixel *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetPixel(QEMU_G2H(c->hdc), c->x, c->y);
 }
 
@@ -641,7 +641,7 @@ WINBASEAPI BOOL WINAPI PaintRgn(HDC hdc, HRGN hrgn)
 void qemu_PaintRgn(struct qemu_syscall *call)
 {
     struct qemu_PaintRgn *c = (struct qemu_PaintRgn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PaintRgn(QEMU_G2H(c->hdc), QEMU_G2H(c->hrgn));
 }
 
@@ -779,7 +779,7 @@ WINBASEAPI BOOL WINAPI Polyline(HDC hdc, const POINT* pt, INT count)
 void qemu_Polyline(struct qemu_syscall *call)
 {
     struct qemu_Polyline *c = (struct qemu_Polyline *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = Polyline(QEMU_G2H(c->hdc), QEMU_G2H(c->pt), c->count);
 }
 
@@ -919,7 +919,7 @@ WINBASEAPI BOOL WINAPI PolyPolyline(HDC hdc, const POINT* pt, const DWORD* count
 void qemu_PolyPolyline(struct qemu_syscall *call)
 {
     struct qemu_PolyPolyline *c = (struct qemu_PolyPolyline *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PolyPolyline(QEMU_G2H(c->hdc), QEMU_G2H(c->pt), QEMU_G2H(c->counts), c->polylines);
 }
 
@@ -957,7 +957,7 @@ WINBASEAPI BOOL WINAPI ExtFloodFill(HDC hdc, INT x, INT y, COLORREF color, UINT 
 void qemu_ExtFloodFill(struct qemu_syscall *call)
 {
     struct qemu_ExtFloodFill *c = (struct qemu_ExtFloodFill *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ExtFloodFill(QEMU_G2H(c->hdc), c->x, c->y, c->color, c->fillType);
 }
 
@@ -1261,7 +1261,7 @@ WINBASEAPI BOOL WINAPI GdiGradientFill(HDC hdc, TRIVERTEX *vert_array, ULONG nve
 void qemu_GdiGradientFill(struct qemu_syscall *call)
 {
     struct qemu_GdiGradientFill *c = (struct qemu_GdiGradientFill *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GdiGradientFill(QEMU_G2H(c->hdc), QEMU_G2H(c->vert_array), c->nvert, QEMU_G2H(c->grad_array), c->ngrad, c->mode);
 }
 

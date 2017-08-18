@@ -57,7 +57,7 @@ WINBASEAPI INT WINAPI SelectClipRgn(HDC hdc, HRGN hrgn)
 void qemu_SelectClipRgn(struct qemu_syscall *call)
 {
     struct qemu_SelectClipRgn *c = (struct qemu_SelectClipRgn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SelectClipRgn(QEMU_G2H(c->hdc), QEMU_G2H(c->hrgn));
 }
 
@@ -91,7 +91,7 @@ WINBASEAPI INT WINAPI ExtSelectClipRgn(HDC hdc, HRGN hrgn, INT fnMode)
 void qemu_ExtSelectClipRgn(struct qemu_syscall *call)
 {
     struct qemu_ExtSelectClipRgn *c = (struct qemu_ExtSelectClipRgn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ExtSelectClipRgn(QEMU_G2H(c->hdc), QEMU_G2H(c->hrgn), c->fnMode);
 }
 
@@ -125,7 +125,7 @@ WINBASEAPI INT WINAPI OffsetClipRgn(HDC hdc, INT x, INT y)
 void qemu_OffsetClipRgn(struct qemu_syscall *call)
 {
     struct qemu_OffsetClipRgn *c = (struct qemu_OffsetClipRgn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = OffsetClipRgn(QEMU_G2H(c->hdc), c->x, c->y);
 }
 
@@ -201,7 +201,7 @@ WINBASEAPI INT WINAPI IntersectClipRect(HDC hdc, INT left, INT top, INT right, I
 void qemu_IntersectClipRect(struct qemu_syscall *call)
 {
     struct qemu_IntersectClipRect *c = (struct qemu_IntersectClipRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IntersectClipRect(QEMU_G2H(c->hdc), c->left, c->top, c->right, c->bottom);
 }
 
@@ -267,7 +267,7 @@ WINBASEAPI BOOL WINAPI RectVisible(HDC hdc, const RECT* rect)
 void qemu_RectVisible(struct qemu_syscall *call)
 {
     struct qemu_RectVisible *c = (struct qemu_RectVisible *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RectVisible(QEMU_G2H(c->hdc), QEMU_G2H(c->rect));
 }
 
@@ -299,7 +299,7 @@ WINBASEAPI INT WINAPI GetClipBox(HDC hdc, LPRECT rect)
 void qemu_GetClipBox(struct qemu_syscall *call)
 {
     struct qemu_GetClipBox *c = (struct qemu_GetClipBox *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetClipBox(QEMU_G2H(c->hdc), QEMU_G2H(c->rect));
 }
 
@@ -331,7 +331,7 @@ WINBASEAPI INT WINAPI GetClipRgn(HDC hdc, HRGN hRgn)
 void qemu_GetClipRgn(struct qemu_syscall *call)
 {
     struct qemu_GetClipRgn *c = (struct qemu_GetClipRgn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetClipRgn(QEMU_G2H(c->hdc), QEMU_G2H(c->hRgn));
 }
 
@@ -397,7 +397,7 @@ WINBASEAPI INT WINAPI GetRandomRgn(HDC hDC, HRGN hRgn, INT iCode)
 void qemu_GetRandomRgn(struct qemu_syscall *call)
 {
     struct qemu_GetRandomRgn *c = (struct qemu_GetRandomRgn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetRandomRgn(QEMU_G2H(c->hDC), QEMU_G2H(c->hRgn), c->iCode);
 }
 
@@ -427,7 +427,7 @@ WINBASEAPI INT WINAPI SetMetaRgn(HDC hdc)
 void qemu_SetMetaRgn(struct qemu_syscall *call)
 {
     struct qemu_SetMetaRgn *c = (struct qemu_SetMetaRgn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetMetaRgn(QEMU_G2H(c->hdc));
 }
 

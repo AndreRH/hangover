@@ -62,7 +62,7 @@ WINBASEAPI HBITMAP WINAPI CreateBitmap(INT width, INT height, UINT planes, UINT 
 void qemu_CreateBitmap(struct qemu_syscall *call)
 {
     struct qemu_CreateBitmap *c = (struct qemu_CreateBitmap *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateBitmap(c->width, c->height, c->planes, c->bpp, QEMU_G2H(c->bits));
 }
 
@@ -96,7 +96,7 @@ WINBASEAPI HBITMAP WINAPI CreateCompatibleBitmap(HDC hdc, INT width, INT height)
 void qemu_CreateCompatibleBitmap(struct qemu_syscall *call)
 {
     struct qemu_CreateCompatibleBitmap *c = (struct qemu_CreateCompatibleBitmap *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateCompatibleBitmap(QEMU_G2H(c->hdc), c->width, c->height);
 }
 
@@ -126,7 +126,7 @@ WINBASEAPI HBITMAP WINAPI CreateBitmapIndirect(const BITMAP *bmp)
 void qemu_CreateBitmapIndirect(struct qemu_syscall *call)
 {
     struct qemu_CreateBitmapIndirect *c = (struct qemu_CreateBitmapIndirect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateBitmapIndirect(QEMU_G2H(c->bmp));
 }
 
@@ -160,7 +160,7 @@ WINBASEAPI LONG WINAPI GetBitmapBits(HBITMAP hbitmap, LONG count, LPVOID bits)
 void qemu_GetBitmapBits(struct qemu_syscall *call)
 {
     struct qemu_GetBitmapBits *c = (struct qemu_GetBitmapBits *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetBitmapBits(QEMU_G2H(c->hbitmap), c->count, QEMU_G2H(c->bits));
 }
 
@@ -194,7 +194,7 @@ WINBASEAPI LONG WINAPI SetBitmapBits(HBITMAP hbitmap, DWORD count, LPCVOID bits)
 void qemu_SetBitmapBits(struct qemu_syscall *call)
 {
     struct qemu_SetBitmapBits *c = (struct qemu_SetBitmapBits *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetBitmapBits(QEMU_G2H(c->hbitmap), c->count, QEMU_G2H(c->bits));
 }
 
@@ -228,7 +228,7 @@ WINBASEAPI HBITMAP WINAPI CreateDiscardableBitmap(HDC hdc, INT width, INT height
 void qemu_CreateDiscardableBitmap(struct qemu_syscall *call)
 {
     struct qemu_CreateDiscardableBitmap *c = (struct qemu_CreateDiscardableBitmap *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateDiscardableBitmap(QEMU_G2H(c->hdc), c->width, c->height);
 }
 

@@ -79,7 +79,7 @@ WINBASEAPI INT WINAPI StretchDIBits(HDC hdc, INT xDst, INT yDst, INT widthDst, I
 void qemu_StretchDIBits(struct qemu_syscall *call)
 {
     struct qemu_StretchDIBits *c = (struct qemu_StretchDIBits *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = StretchDIBits(QEMU_G2H(c->hdc), c->xDst, c->yDst, c->widthDst, c->heightDst, c->xSrc, c->ySrc, c->widthSrc, c->heightSrc, QEMU_G2H(c->bits), QEMU_G2H(c->bmi), c->coloruse, c->rop);
 }
 
@@ -105,11 +105,11 @@ WINBASEAPI INT WINAPI SetDIBits(HDC hdc, HBITMAP hbitmap, UINT startscan, UINT l
     call.super.id = QEMU_SYSCALL_ID(CALL_SETDIBITS);
     call.hdc = (uint64_t)hdc;
     call.hbitmap = (uint64_t)hbitmap;
-    call.startscan = (uint64_t)startscan;
-    call.lines = (uint64_t)lines;
+    call.startscan = startscan;
+    call.lines = lines;
     call.bits = (uint64_t)bits;
     call.info = (uint64_t)info;
-    call.coloruse = (uint64_t)coloruse;
+    call.coloruse = coloruse;
 
     qemu_syscall(&call.super);
 
@@ -121,7 +121,7 @@ WINBASEAPI INT WINAPI SetDIBits(HDC hdc, HBITMAP hbitmap, UINT startscan, UINT l
 void qemu_SetDIBits(struct qemu_syscall *call)
 {
     struct qemu_SetDIBits *c = (struct qemu_SetDIBits *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetDIBits(QEMU_G2H(c->hdc), QEMU_G2H(c->hbitmap), c->startscan, c->lines, QEMU_G2H(c->bits), QEMU_G2H(c->info), c->coloruse);
 }
 
@@ -173,7 +173,7 @@ WINBASEAPI INT WINAPI SetDIBitsToDevice(HDC hdc, INT xDest, INT yDest, DWORD cx,
 void qemu_SetDIBitsToDevice(struct qemu_syscall *call)
 {
     struct qemu_SetDIBitsToDevice *c = (struct qemu_SetDIBitsToDevice *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetDIBitsToDevice(QEMU_G2H(c->hdc), c->xDest, c->yDest, c->cx, c->cy, c->xSrc, c->ySrc, c->startscan, c->lines, QEMU_G2H(c->bits), QEMU_G2H(c->bmi), c->coloruse);
 }
 
@@ -209,7 +209,7 @@ WINBASEAPI UINT WINAPI SetDIBColorTable(HDC hdc, UINT startpos, UINT entries, co
 void qemu_SetDIBColorTable(struct qemu_syscall *call)
 {
     struct qemu_SetDIBColorTable *c = (struct qemu_SetDIBColorTable *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetDIBColorTable(QEMU_G2H(c->hdc), c->startpos, c->entries, QEMU_G2H(c->colors));
 }
 
@@ -245,7 +245,7 @@ WINBASEAPI UINT WINAPI GetDIBColorTable(HDC hdc, UINT startpos, UINT entries, RG
 void qemu_GetDIBColorTable(struct qemu_syscall *call)
 {
     struct qemu_GetDIBColorTable *c = (struct qemu_GetDIBColorTable *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDIBColorTable(QEMU_G2H(c->hdc), c->startpos, c->entries, QEMU_G2H(c->colors));
 }
 
@@ -287,7 +287,7 @@ WINBASEAPI INT WINAPI GetDIBits(HDC hdc, HBITMAP hbitmap, UINT startscan, UINT l
 void qemu_GetDIBits(struct qemu_syscall *call)
 {
     struct qemu_GetDIBits *c = (struct qemu_GetDIBits *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDIBits(QEMU_G2H(c->hdc), QEMU_G2H(c->hbitmap), c->startscan, c->lines, QEMU_G2H(c->bits), QEMU_G2H(c->info), c->coloruse);
 }
 
@@ -327,7 +327,7 @@ WINBASEAPI HBITMAP WINAPI CreateDIBitmap(HDC hdc, const BITMAPINFOHEADER *header
 void qemu_CreateDIBitmap(struct qemu_syscall *call)
 {
     struct qemu_CreateDIBitmap *c = (struct qemu_CreateDIBitmap *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateDIBitmap(QEMU_G2H(c->hdc), QEMU_G2H(c->header), c->init, QEMU_G2H(c->bits), QEMU_G2H(c->data), c->coloruse);
 }
 
@@ -399,7 +399,7 @@ extern NTSTATUS WINAPI D3DKMTCreateDCFromMemory(void *desc);
 void qemu_D3DKMTCreateDCFromMemory(struct qemu_syscall *call)
 {
     struct qemu_D3DKMTCreateDCFromMemory *c = (struct qemu_D3DKMTCreateDCFromMemory *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = D3DKMTCreateDCFromMemory(QEMU_G2H(c->desc));
 }
 
@@ -431,7 +431,7 @@ extern NTSTATUS WINAPI D3DKMTDestroyDCFromMemory(const void *desc);
 void qemu_D3DKMTDestroyDCFromMemory(struct qemu_syscall *call)
 {
     struct qemu_D3DKMTDestroyDCFromMemory *c = (struct qemu_D3DKMTDestroyDCFromMemory *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = D3DKMTDestroyDCFromMemory(QEMU_G2H(c->desc));
 }
 
