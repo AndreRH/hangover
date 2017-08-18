@@ -21,5 +21,6 @@
 #define DLL_D3DX10_43   0x12LL
 #define DLL_XINPUT1_3   0x13LL
 #define DLL_OPENGL32    0x14LL
+#define DLL_WINMM       0x15LL
 
 #endif
