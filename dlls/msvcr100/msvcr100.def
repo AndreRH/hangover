@@ -93,6 +93,7 @@ EXPORTS
   _dupenv_s
   _ecvt=MSVCRT__ecvt
   _ecvt_s=MSVCRT__ecvt_s
+  _environ=msvcr100.__qemu_native_data__
   _errno=MSVCRT__errno
   _exit=MSVCRT__exit
   _fcvt=MSVCRT__fcvt
