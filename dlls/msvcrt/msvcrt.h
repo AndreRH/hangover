@@ -13,6 +13,7 @@ enum msvcrt_calls
     CALL___CONTROL87_2,
     CALL___CRT_DEBUGGER_HOOK,
     CALL___CXXFRAMEHANDLER,
+    CALL___DOSERRNO,
     CALL___FPE_FLT_ROUNDS,
     CALL___FPECODE,
     CALL___GETMAINARGS,
@@ -49,7 +50,11 @@ enum msvcrt_calls
     CALL___PCTYPE_FUNC,
     CALL___SET_APP_TYPE,
     CALL___SETUSERMATHERR,
+    CALL___SYS_ERRLIST,
+    CALL___SYS_NERR,
     CALL___TOASCII,
+    CALL___WCSERROR,
+    CALL___WCSERROR_S,
     CALL___WGETMAINARGS,
     CALL__ABS64,
     CALL__ACCESS,
@@ -151,14 +156,20 @@ enum msvcrt_calls
     CALL__FWRITE_NOLOCK,
     CALL__GCVT,
     CALL__GCVT_S,
+    CALL__GET_DOSERRNO,
+    CALL__GET_ERRNO,
+    CALL__GET_INVALID_PARAMETER_HANDLER,
     CALL__GET_OSFHANDLE,
     CALL__GET_STREAM_BUFFER_POINTERS,
+    CALL__GET_THREAD_LOCAL_INVALID_PARAMETER_HANDLER,
     CALL__GETMAXSTDIO,
     CALL__GETMBCP,
     CALL__GETW,
     CALL__GETWS,
     CALL__HYPOT,
     CALL__HYPOTF,
+    CALL__INVALID_PARAMETER_NOINFO,
+    CALL__INVALID_PARAMETER_NOINFO_NORETURN,
     CALL__ISALNUM_L,
     CALL__ISALPHA_L,
     CALL__ISATTY,
@@ -301,8 +312,13 @@ enum msvcrt_calls
     CALL__SCALB,
     CALL__SCALBF,
     CALL__SET_CONTROLFP,
+    CALL__SET_DOSERRNO,
+    CALL__SET_ERRNO,
     CALL__SET_FMA3_ENABLE,
+    CALL__SET_INVALID_PARAMETER_HANDLER,
     CALL__SET_SSE2_ENABLE,
+    CALL__SET_THREAD_LOCAL_INVALID_PARAMETER_HANDLER,
+    CALL__SETERRORMODE,
     CALL__SETJMP,
     CALL__SETMAXSTDIO,
     CALL__SETMBCP,
@@ -318,6 +334,7 @@ enum msvcrt_calls
     CALL__STATUSFP2,
     CALL__STRDATE,
     CALL__STRDUP,
+    CALL__STRERROR,
     CALL__STRICMP,
     CALL__STRNICMP,
     CALL__STRTIME,
@@ -345,6 +362,8 @@ enum msvcrt_calls
     CALL__WACCESS_S,
     CALL__WCHMOD,
     CALL__WCREAT,
+    CALL__WCSERROR,
+    CALL__WCSERROR_S,
     CALL__WCSNICMP,
     CALL__WDUPENV_S,
     CALL__WFDOPEN,
@@ -357,6 +376,7 @@ enum msvcrt_calls
     CALL__WGETENV_S,
     CALL__WMKTEMP,
     CALL__WMKTEMP_S,
+    CALL__WPERROR,
     CALL__WPUTENV,
     CALL__WPUTENV_S,
     CALL__WREMOVE,
@@ -548,6 +568,7 @@ enum msvcrt_calls
     CALL_NEARBYINTF,
     CALL_OPERATOR_DELETE,
     CALL_OPERATOR_NEW,
+    CALL_PERROR,
     CALL_POW,
     CALL_POWF,
     CALL_PRINTF,
@@ -590,6 +611,8 @@ enum msvcrt_calls
     CALL_STRCHR,
     CALL_STRCMP,
     CALL_STRCPY_S,
+    CALL_STRERROR,
+    CALL_STRERROR_S,
     CALL_STRLEN,
     CALL_STRNCMP,
     CALL_STRRCHR,
@@ -650,6 +673,7 @@ struct MSVCRT__stati64;
 struct MSVCRT__utimbuf64;
 struct MSVCRT__utimbuf32;
 typedef unsigned short MSVCRT_wint_t;
+typedef void *MSVCRT_invalid_parameter_handler;
 
 #ifdef QEMU_DLL_GUEST
 
@@ -671,12 +695,13 @@ unsigned int count_printf_argsW(const WCHAR *format, WCHAR *fmts);
 
 extern const struct qemu_ops *qemu_ops;
 
-void qemu___acrt_iob_func(struct qemu_syscall *c);
 void qemu____mb_cur_max_func(struct qemu_syscall *call);
 void qemu____mb_cur_max_l_func(struct qemu_syscall *call);
+void qemu___acrt_iob_func(struct qemu_syscall *c);
 void qemu___control87_2(struct qemu_syscall *call);
 void qemu___crt_debugger_hook(struct qemu_syscall *call);
 void qemu___cxxframehandler(struct qemu_syscall *call);
+void qemu___doserrno(struct qemu_syscall *call);
 void qemu___fpe_flt_rounds(struct qemu_syscall *call);
 void qemu___fpecode(struct qemu_syscall *call);
 void qemu___getmainargs(struct qemu_syscall *call);
@@ -713,7 +738,11 @@ void qemu___p__pctype(struct qemu_syscall *call);
 void qemu___pctype_func(struct qemu_syscall *call);
 void qemu___set_app_type(struct qemu_syscall *call);
 void qemu___setusermatherr(struct qemu_syscall *call);
+void qemu___sys_errlist(struct qemu_syscall *call);
+void qemu___sys_nerr(struct qemu_syscall *call);
 void qemu___toascii(struct qemu_syscall *call);
+void qemu___wcserror(struct qemu_syscall *call);
+void qemu___wcserror_s(struct qemu_syscall *call);
 void qemu___wgetmainargs(struct qemu_syscall *call);
 void qemu__abs64(struct qemu_syscall *call);
 void qemu__access(struct qemu_syscall *c);
@@ -815,14 +844,20 @@ void qemu__futime64(struct qemu_syscall *c);
 void qemu__fwrite_nolock(struct qemu_syscall *c);
 void qemu__gcvt(struct qemu_syscall *call);
 void qemu__gcvt_s(struct qemu_syscall *call);
+void qemu__get_doserrno(struct qemu_syscall *call);
+void qemu__get_errno(struct qemu_syscall *call);
+void qemu__get_invalid_parameter_handler(struct qemu_syscall *call);
 void qemu__get_osfhandle(struct qemu_syscall *c);
 void qemu__get_stream_buffer_pointers(struct qemu_syscall *c);
+void qemu__get_thread_local_invalid_parameter_handler(struct qemu_syscall *call);
 void qemu__getmaxstdio(struct qemu_syscall *c);
 void qemu__getmbcp(struct qemu_syscall *call);
 void qemu__getw(struct qemu_syscall *c);
 void qemu__getws(struct qemu_syscall *c);
 void qemu__hypot(struct qemu_syscall *call);
 void qemu__hypotf(struct qemu_syscall *call);
+void qemu__invalid_parameter_noinfo(struct qemu_syscall *call);
+void qemu__invalid_parameter_noinfo_noreturn(struct qemu_syscall *call);
 void qemu__isalnum_l(struct qemu_syscall *call);
 void qemu__isalpha_l(struct qemu_syscall *call);
 void qemu__isatty(struct qemu_syscall *call);
@@ -965,8 +1000,13 @@ void qemu__rotr64(struct qemu_syscall *call);
 void qemu__scalb(struct qemu_syscall *call);
 void qemu__scalbf(struct qemu_syscall *call);
 void qemu__set_controlfp(struct qemu_syscall *call);
+void qemu__set_doserrno(struct qemu_syscall *call);
+void qemu__set_errno(struct qemu_syscall *call);
 void qemu__set_FMA3_enable(struct qemu_syscall *call);
+void qemu__set_invalid_parameter_handler(struct qemu_syscall *call);
 void qemu__set_SSE2_enable(struct qemu_syscall *call);
+void qemu__set_thread_local_invalid_parameter_handler(struct qemu_syscall *call);
+void qemu__seterrormode(struct qemu_syscall *call);
 void qemu__setjmp(struct qemu_syscall *call);
 void qemu__setmaxstdio(struct qemu_syscall *c);
 void qemu__setmbcp(struct qemu_syscall *call);
@@ -982,6 +1022,7 @@ void qemu__statusfp(struct qemu_syscall *call);
 void qemu__statusfp2(struct qemu_syscall *call);
 void qemu__strdate(struct qemu_syscall *call);
 void qemu__strdup(struct qemu_syscall *call);
+void qemu__strerror(struct qemu_syscall *call);
 void qemu__stricmp(struct qemu_syscall *call);
 void qemu__strnicmp(struct qemu_syscall *call);
 void qemu__strtime(struct qemu_syscall *call);
@@ -1007,6 +1048,8 @@ void qemu__waccess(struct qemu_syscall *c);
 void qemu__waccess_s(struct qemu_syscall *c);
 void qemu__wchmod(struct qemu_syscall *c);
 void qemu__wcreat(struct qemu_syscall *c);
+void qemu__wcserror(struct qemu_syscall *call);
+void qemu__wcserror_s(struct qemu_syscall *call);
 void qemu__wcsnicmp(struct qemu_syscall *call);
 void qemu__wdupenv_s(struct qemu_syscall *call);
 void qemu__wfdopen(struct qemu_syscall *c);
@@ -1019,6 +1062,7 @@ void qemu__wgetenv(struct qemu_syscall *call);
 void qemu__wgetenv_s(struct qemu_syscall *call);
 void qemu__wmktemp(struct qemu_syscall *c);
 void qemu__wmktemp_s(struct qemu_syscall *c);
+void qemu__wperror(struct qemu_syscall *call);
 void qemu__wputenv(struct qemu_syscall *call);
 void qemu__wputenv_s(struct qemu_syscall *call);
 void qemu__wremove(struct qemu_syscall *c);
@@ -1211,6 +1255,7 @@ void qemu_nearbyint(struct qemu_syscall *call);
 void qemu_nearbyintf(struct qemu_syscall *call);
 void qemu_operator_delete(struct qemu_syscall *call);
 void qemu_operator_new(struct qemu_syscall *call);
+void qemu_perror(struct qemu_syscall *call);
 void qemu_pow(struct qemu_syscall *call);
 void qemu_powf(struct qemu_syscall *call);
 void qemu_powf(struct qemu_syscall *call);
@@ -1254,6 +1299,8 @@ void qemu_strcat_s(struct qemu_syscall *call);
 void qemu_strchr(struct qemu_syscall *call);
 void qemu_strcmp(struct qemu_syscall *call);
 void qemu_strcpy_s(struct qemu_syscall *call);
+void qemu_strerror(struct qemu_syscall *call);
+void qemu_strerror_s(struct qemu_syscall *call);
 void qemu_strlen(struct qemu_syscall *call);
 void qemu_strncmp(struct qemu_syscall *call);
 void qemu_strrchr(struct qemu_syscall *call);
@@ -1285,6 +1332,7 @@ void qemu_wcsstr(struct qemu_syscall *call);
 void qemu_wcstod(struct qemu_syscall *call);
 void qemu_wcstombs(struct qemu_syscall *call);
 void qemu_wctomb(struct qemu_syscall *call);
+
 /* Be careful not to call the Linux libc! */
 void (* CDECL p___crt_debugger_hook)(int reserved);
 void (* CDECL p___getmainargs)(int *argc, char** *argv, char** *envp,
@@ -1908,6 +1956,30 @@ MSVCRT_wint_t (* CDECL p__ungetwc_nolock)(MSVCRT_wint_t wc, FILE * file);
 int (* CDECL p__getmaxstdio)(void);
 int (* CDECL p__setmaxstdio)(int newmax);
 int (* CDECL p__get_stream_buffer_pointers)(FILE *file, char*** base, char*** ptr, int** count);
+int* (* CDECL p___sys_nerr)(void);
+char** (* CDECL p___sys_errlist)(void);
+int* (* CDECL p__errno)(void);
+ULONG* (* CDECL p___doserrno)(void);
+int (* CDECL p__get_errno)(int *pValue);
+int (* CDECL p__get_doserrno)(int *pValue);
+int (* CDECL p__set_errno)(int value);
+int (* CDECL p__set_doserrno)(int value);
+char* (* CDECL p_strerror)(int err);
+int (* CDECL p_strerror_s)(char *buffer, size_t numberOfElements, int errnum);
+char* (* CDECL p__strerror)(const char* str);
+void (* CDECL p_perror)(const char* str);
+void (* CDECL p__wperror)(const WCHAR* str);
+int (* CDECL p__wcserror_s)(WCHAR* buffer, size_t nc, int err);
+WCHAR* (* CDECL p__wcserror)(int err);
+int (* CDECL p___wcserror_s)(WCHAR* buffer, size_t nc, const WCHAR* str);
+WCHAR* (* CDECL p___wcserror)(const WCHAR* str);
+void (* CDECL p__seterrormode)(int mode);
+void (* CDECL p__invalid_parameter_noinfo)(void);
+void (* CDECL p__invalid_parameter_noinfo_noreturn)(void);
+MSVCRT_invalid_parameter_handler (* CDECL p__get_invalid_parameter_handler)(void);
+MSVCRT_invalid_parameter_handler (* CDECL p__set_invalid_parameter_handler)(MSVCRT_invalid_parameter_handler handler);
+MSVCRT_invalid_parameter_handler (* CDECL p__get_thread_local_invalid_parameter_handler)(void);
+MSVCRT_invalid_parameter_handler (* CDECL p__set_thread_local_invalid_parameter_handler)(MSVCRT_invalid_parameter_handler handler);
 
 DWORD msvcrt_tls;
 
