@@ -22,5 +22,6 @@
 #define DLL_XINPUT1_3   0x13LL
 #define DLL_OPENGL32    0x14LL
 #define DLL_WINMM       0x15LL
+#define DLL_WSOCK32     0x16LL
 
 #endif
