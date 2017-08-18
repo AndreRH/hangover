@@ -95,6 +95,8 @@ enum msvcrt_calls
     CALL__COPYSIGN,
     CALL__COPYSIGNF,
     CALL__CREAT,
+    CALL__CRTTERMINATEPROCESS,
+    CALL__CWAIT,
     CALL__CXXTHROWEXCEPTION,
     CALL__DCLASS,
     CALL__DPCOMP,
@@ -107,6 +109,10 @@ enum msvcrt_calls
     CALL__ECVT_S,
     CALL__EOF,
     CALL__ERRNO,
+    CALL__EXECV,
+    CALL__EXECVE,
+    CALL__EXECVP,
+    CALL__EXECVPE,
     CALL__EXIT,
     CALL__FCLOSE_NOLOCK,
     CALL__FCLOSEALL,
@@ -179,9 +185,11 @@ enum msvcrt_calls
     CALL__GETCWD,
     CALL__GETDCWD,
     CALL__GETDISKFREE,
+    CALL__GETDLLPROCADDR,
     CALL__GETDRIVE,
     CALL__GETMAXSTDIO,
     CALL__GETMBCP,
+    CALL__GETPID,
     CALL__GETW,
     CALL__GETWS,
     CALL__HYPOT,
@@ -229,6 +237,7 @@ enum msvcrt_calls
     CALL__JN,
     CALL__LDCLASS,
     CALL__LDTEST,
+    CALL__LOADDLL,
     CALL__LOCK,
     CALL__LOCK_FILE,
     CALL__LOCKING,
@@ -318,7 +327,9 @@ enum msvcrt_calls
     CALL__NEXTAFTERF,
     CALL__ONEXIT,
     CALL__OPEN_OSFHANDLE,
+    CALL__PCLOSE,
     CALL__PIPE,
+    CALL__POPEN,
     CALL__PURECALL,
     CALL__PUTENV,
     CALL__PUTENV_S,
@@ -350,6 +361,10 @@ enum msvcrt_calls
     CALL__SNWPRINTF,
     CALL__SOPEN_DISPATCH,
     CALL__SOPEN_S,
+    CALL__SPAWNV,
+    CALL__SPAWNVE,
+    CALL__SPAWNVP,
+    CALL__SPAWNVPE,
     CALL__SPLITPATH,
     CALL__SPLITPATH_S,
     CALL__STAT32,
@@ -377,6 +392,7 @@ enum msvcrt_calls
     CALL__UNGETC_NOLOCK,
     CALL__UNGETWC_NOLOCK,
     CALL__UNLINK,
+    CALL__UNLOADDLL,
     CALL__UNLOCK,
     CALL__UNLOCK_FILE,
     CALL__UTIME,
@@ -393,6 +409,10 @@ enum msvcrt_calls
     CALL__WCSERROR_S,
     CALL__WCSNICMP,
     CALL__WDUPENV_S,
+    CALL__WEXECV,
+    CALL__WEXECVE,
+    CALL__WEXECVP,
+    CALL__WEXECVPE,
     CALL__WFDOPEN,
     CALL__WFINDFIRST,
     CALL__WFINDFIRST32,
@@ -420,6 +440,7 @@ enum msvcrt_calls
     CALL__WMKTEMP,
     CALL__WMKTEMP_S,
     CALL__WPERROR,
+    CALL__WPOPEN,
     CALL__WPUTENV,
     CALL__WPUTENV_S,
     CALL__WREMOVE,
@@ -430,6 +451,10 @@ enum msvcrt_calls
     CALL__WSEARCHENV_S,
     CALL__WSOPEN_DISPATCH,
     CALL__WSOPEN_S,
+    CALL__WSPAWNV,
+    CALL__WSPAWNVE,
+    CALL__WSPAWNVP,
+    CALL__WSPAWNVPE,
     CALL__WSPLITPATH,
     CALL__WSPLITPATH_S,
     CALL__WSTAT,
@@ -438,6 +463,7 @@ enum msvcrt_calls
     CALL__WSTAT64,
     CALL__WSTAT64I32,
     CALL__WSTATI64,
+    CALL__WSYSTEM,
     CALL__WTEMPNAM,
     CALL__WTMPNAM,
     CALL__WTMPNAM_S,
@@ -669,6 +695,7 @@ enum msvcrt_calls
     CALL_STRTOD,
     CALL_SWPRINTF_S,
     CALL_SWSCANF_S,
+    CALL_SYSTEM,
     CALL_TAN,
     CALL_TANF,
     CALL_TANH,
@@ -843,6 +870,8 @@ void qemu__controlfp_s(struct qemu_syscall *call);
 void qemu__copysign(struct qemu_syscall *call);
 void qemu__copysignf(struct qemu_syscall *call);
 void qemu__creat(struct qemu_syscall *c);
+void qemu__crtTerminateProcess(struct qemu_syscall *call);
+void qemu__cwait(struct qemu_syscall *call);
 void qemu__CxxThrowException(struct qemu_syscall *c);
 void qemu__dclass(struct qemu_syscall *call);
 void qemu__dpcomp(struct qemu_syscall *call);
@@ -855,6 +884,10 @@ void qemu__ecvt(struct qemu_syscall *call);
 void qemu__ecvt_s(struct qemu_syscall *call);
 void qemu__eof(struct qemu_syscall *c);
 void qemu__errno(struct qemu_syscall *call);
+void qemu__execv(struct qemu_syscall *call);
+void qemu__execve(struct qemu_syscall *call);
+void qemu__execvp(struct qemu_syscall *call);
+void qemu__execvpe(struct qemu_syscall *call);
 void qemu__exit(struct qemu_syscall *call);
 void qemu__fclose_nolock(struct qemu_syscall *c);
 void qemu__fcloseall(struct qemu_syscall *c);
@@ -927,9 +960,11 @@ void qemu__get_thread_local_invalid_parameter_handler(struct qemu_syscall *call)
 void qemu__getcwd(struct qemu_syscall *call);
 void qemu__getdcwd(struct qemu_syscall *call);
 void qemu__getdiskfree(struct qemu_syscall *call);
+void qemu__getdllprocaddr(struct qemu_syscall *call);
 void qemu__getdrive(struct qemu_syscall *call);
 void qemu__getmaxstdio(struct qemu_syscall *c);
 void qemu__getmbcp(struct qemu_syscall *call);
+void qemu__getpid(struct qemu_syscall *call);
 void qemu__getw(struct qemu_syscall *c);
 void qemu__getws(struct qemu_syscall *c);
 void qemu__hypot(struct qemu_syscall *call);
@@ -977,6 +1012,7 @@ void qemu__j1(struct qemu_syscall *call);
 void qemu__jn(struct qemu_syscall *call);
 void qemu__ldclass(struct qemu_syscall *call);
 void qemu__ldtest(struct qemu_syscall *call);
+void qemu__loaddll(struct qemu_syscall *call);
 void qemu__lock(struct qemu_syscall *call);
 void qemu__lock_file(struct qemu_syscall *c);
 void qemu__locking(struct qemu_syscall *c);
@@ -1066,7 +1102,9 @@ void qemu__nextafter(struct qemu_syscall *call);
 void qemu__nextafterf(struct qemu_syscall *call);
 void qemu__onexit(struct qemu_syscall *call);
 void qemu__open_osfhandle(struct qemu_syscall *c);
+void qemu__pclose(struct qemu_syscall *call);
 void qemu__pipe(struct qemu_syscall *c);
+void qemu__popen(struct qemu_syscall *call);
 void qemu__purecall(struct qemu_syscall *call);
 void qemu__putenv(struct qemu_syscall *call);
 void qemu__putenv_s(struct qemu_syscall *call);
@@ -1098,6 +1136,10 @@ void qemu__setmode(struct qemu_syscall *c);
 void qemu__snwprintf(struct qemu_syscall *call);
 void qemu__sopen_dispatch(struct qemu_syscall *c);
 void qemu__sopen_s(struct qemu_syscall *c);
+void qemu__spawnv(struct qemu_syscall *call);
+void qemu__spawnve(struct qemu_syscall *call);
+void qemu__spawnvp(struct qemu_syscall *call);
+void qemu__spawnvpe(struct qemu_syscall *call);
 void qemu__splitpath(struct qemu_syscall *call);
 void qemu__splitpath_s(struct qemu_syscall *call);
 void qemu__stat32(struct qemu_syscall *c);
@@ -1125,6 +1167,7 @@ void qemu__umask(struct qemu_syscall *c);
 void qemu__ungetc_nolock(struct qemu_syscall *c);
 void qemu__ungetwc_nolock(struct qemu_syscall *c);
 void qemu__unlink(struct qemu_syscall *c);
+void qemu__unloaddll(struct qemu_syscall *call);
 void qemu__unlock(struct qemu_syscall *call);
 void qemu__unlock_file(struct qemu_syscall *c);
 void qemu__utime(struct qemu_syscall *c);
@@ -1139,6 +1182,10 @@ void qemu__wcserror(struct qemu_syscall *call);
 void qemu__wcserror_s(struct qemu_syscall *call);
 void qemu__wcsnicmp(struct qemu_syscall *call);
 void qemu__wdupenv_s(struct qemu_syscall *call);
+void qemu__wexecv(struct qemu_syscall *call);
+void qemu__wexecve(struct qemu_syscall *call);
+void qemu__wexecvp(struct qemu_syscall *call);
+void qemu__wexecvpe(struct qemu_syscall *call);
 void qemu__wfdopen(struct qemu_syscall *c);
 void qemu__wfindfirst(struct qemu_syscall *call);
 void qemu__wfindfirst32(struct qemu_syscall *call);
@@ -1166,6 +1213,7 @@ void qemu__wmkdir(struct qemu_syscall *call);
 void qemu__wmktemp(struct qemu_syscall *c);
 void qemu__wmktemp_s(struct qemu_syscall *c);
 void qemu__wperror(struct qemu_syscall *call);
+void qemu__wpopen(struct qemu_syscall *call);
 void qemu__wputenv(struct qemu_syscall *call);
 void qemu__wputenv_s(struct qemu_syscall *call);
 void qemu__wremove(struct qemu_syscall *c);
@@ -1176,6 +1224,10 @@ void qemu__wsearchenv(struct qemu_syscall *call);
 void qemu__wsearchenv_s(struct qemu_syscall *call);
 void qemu__wsopen_dispatch(struct qemu_syscall *c);
 void qemu__wsopen_s(struct qemu_syscall *c);
+void qemu__wspawnv(struct qemu_syscall *call);
+void qemu__wspawnve(struct qemu_syscall *call);
+void qemu__wspawnvp(struct qemu_syscall *call);
+void qemu__wspawnvpe(struct qemu_syscall *call);
 void qemu__wsplitpath(struct qemu_syscall *call);
 void qemu__wsplitpath_s(struct qemu_syscall *call);
 void qemu__wstat(struct qemu_syscall *c);
@@ -1184,6 +1236,7 @@ void qemu__wstat32i64(struct qemu_syscall *c);
 void qemu__wstat64(struct qemu_syscall *c);
 void qemu__wstat64i32(struct qemu_syscall *c);
 void qemu__wstati64(struct qemu_syscall *c);
+void qemu__wsystem(struct qemu_syscall *call);
 void qemu__wtempnam(struct qemu_syscall *c);
 void qemu__wtmpnam(struct qemu_syscall *c);
 void qemu__wtmpnam_s(struct qemu_syscall *c);
@@ -1416,6 +1469,7 @@ void qemu_strrchr(struct qemu_syscall *call);
 void qemu_strstr(struct qemu_syscall *call);
 void qemu_strtod(struct qemu_syscall *call);
 void qemu_swscanf_s(struct qemu_syscall *call);
+void qemu_system(struct qemu_syscall *call);
 void qemu_tan(struct qemu_syscall *call);
 void qemu_tanf(struct qemu_syscall *call);
 void qemu_tanh(struct qemu_syscall *call);
@@ -2139,6 +2193,33 @@ void (* CDECL p__searchenv)(const char* file, const char* env, char *buf);
 int (* CDECL p__searchenv_s)(const char* file, const char* env, char *buf, size_t count);
 void (* CDECL p__wsearchenv)(const WCHAR* file, const WCHAR* env, WCHAR *buf);
 int (* CDECL p__wsearchenv_s)(const WCHAR* file, const WCHAR* env, WCHAR *buf, size_t count);
+intptr_t (* CDECL p__cwait)(int *status, intptr_t pid, int action);
+intptr_t (* CDECL p__wexecv)(const WCHAR* name, const WCHAR* const* argv);
+intptr_t (* CDECL p__execv)(const char* name, const char* const* argv);
+intptr_t (* CDECL p__wexecve)(const WCHAR* name, const WCHAR* const* argv, const WCHAR* const* envv);
+intptr_t (* CDECL p__execve)(const char* name, const char* const* argv, const char* const* envv);
+intptr_t (* CDECL p__wexecvpe)(const WCHAR* name, const WCHAR* const* argv, const WCHAR* const* envv);
+intptr_t (* CDECL p__execvpe)(const char* name, const char* const* argv, const char* const* envv);
+intptr_t (* CDECL p__wexecvp)(const WCHAR* name, const WCHAR* const* argv);
+intptr_t (* CDECL p__execvp)(const char* name, const char* const* argv);
+intptr_t (* CDECL p__spawnve)(int flags, const char* name, const char* const* argv, const char* const* envv);
+intptr_t (* CDECL p__wspawnve)(int flags, const WCHAR* name, const WCHAR* const* argv, const WCHAR* const* envv);
+intptr_t (* CDECL p__spawnv)(int flags, const char* name, const char* const* argv);
+intptr_t (* CDECL p__wspawnv)(int flags, const WCHAR* name, const WCHAR* const* argv);
+intptr_t (* CDECL p__spawnvpe)(int flags, const char* name, const char* const* argv, const char* const* envv);
+intptr_t (* CDECL p__wspawnvpe)(int flags, const WCHAR* name, const WCHAR* const* argv, const WCHAR* const* envv);
+intptr_t (* CDECL p__spawnvp)(int flags, const char* name, const char* const* argv);
+intptr_t (* CDECL p__wspawnvp)(int flags, const WCHAR* name, const WCHAR* const* argv);
+FILE* (* CDECL p__wpopen)(const WCHAR* command, const WCHAR* mode);
+FILE* (* CDECL p__popen)(const char* command, const char* mode);
+int (* CDECL p__pclose)(FILE* file);
+int (* CDECL p__wsystem)(const WCHAR* cmd);
+int (* CDECL p_system)(const char* cmd);
+intptr_t (* CDECL p__loaddll)(const char* dllname);
+int (* CDECL p__unloaddll)(intptr_t dll);
+void * (* CDECL p__getdllprocaddr)(intptr_t dll, const char *name, int ordinal);
+int (* CDECL p__getpid)(void);
+int (* CDECL p__crtTerminateProcess)(UINT exit_code);
 
 DWORD msvcrt_tls;
 
