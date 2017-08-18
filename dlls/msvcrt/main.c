@@ -490,6 +490,7 @@ static const syscall_handler dll_functions[] =
     qemu_atanhf,
     qemu_atanhl,
     qemu_atof,
+    qemu_bsearch,
     qemu_calloc,
     qemu_cbrt,
     qemu_cbrtf,
@@ -1131,6 +1132,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_atanhf = (void *)GetProcAddress(msvcrt, "atanhf");
     p_atanhl = (void *)GetProcAddress(msvcrt, "atanhl");
     p_atof = (void *)GetProcAddress(msvcrt, "atof");
+    p_bsearch = (void *)GetProcAddress(msvcrt, "bsearch");
     p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
     p_cbrt = (void *)GetProcAddress(msvcrt, "cbrt");
     p_cbrtf = (void *)GetProcAddress(msvcrt, "cbrtf");

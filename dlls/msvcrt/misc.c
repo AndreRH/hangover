@@ -60,6 +60,80 @@ void qemu___crt_debugger_hook(struct qemu_syscall *call)
 #endif
 
 /* FIXME: The context switch cost of this thing is most likely horrible. */
+struct qemu_bsearch
+{
+    struct qemu_syscall super;
+    uint64_t key;
+    uint64_t base;
+    uint64_t nmemb;
+    uint64_t size;
+    uint64_t compare;
+    uint64_t wrapper;
+};
+
+struct qemu_bsearch_cb
+{
+    uint64_t func;
+    uint64_t ptr1, ptr2;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static uint64_t bsearch_guest_wrapper(const struct qemu_bsearch_cb *cb)
+{
+    int (__cdecl *compare)(const void *,const void *) = (void *)cb->func;
+
+    return compare((void *)cb->ptr1, (void *)cb->ptr2);
+}
+
+void CDECL MSVCRT_bsearch(const void *key, const void *base, size_t nmemb,
+        size_t size, int (__cdecl *compare)(const void *, const void *))
+{
+    struct qemu_bsearch call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_BSEARCH);
+    call.key = (uint64_t)key;
+    call.base = (uint64_t)base;
+    call.nmemb = nmemb;
+    call.size = size;
+    call.compare = (uint64_t)compare;
+    call.wrapper = (uint64_t)bsearch_guest_wrapper;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+static uint64_t bsearch_guest_wrapper;
+
+static int bsearch_wrapper(const void *ptr1, const void *ptr2)
+{
+    uint64_t *guest_proc = TlsGetValue(msvcrt_tls);
+    struct qemu_bsearch_cb call = {*guest_proc, QEMU_H2G(ptr1), QEMU_H2G(ptr2)};
+    int ret;
+
+    WINE_TRACE("Calling guest proc 0x%lx(%p, %p).\n", *guest_proc, ptr1, ptr2);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(bsearch_guest_wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest proc returned %d.\n", ret);
+
+    return ret;
+}
+
+void qemu_bsearch(struct qemu_syscall *call)
+{
+    struct qemu_bsearch *c = (struct qemu_bsearch *)call;
+    uint64_t *old = TlsGetValue(msvcrt_tls);
+    WINE_TRACE("\n");
+
+    bsearch_guest_wrapper = c->wrapper;
+    TlsSetValue(msvcrt_tls, &c->compare);
+    c->super.iret = QEMU_H2G(p_bsearch(QEMU_G2H(c->key), QEMU_G2H(c->base), c->nmemb, c->size, bsearch_wrapper));
+
+    TlsSetValue(msvcrt_tls, old);
+}
+
+#endif
+
+/* FIXME: The context switch cost of this thing is most likely horrible. */
 struct qemu_qsort
 {
     struct qemu_syscall super;

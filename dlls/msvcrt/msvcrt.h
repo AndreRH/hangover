@@ -423,6 +423,7 @@ enum msvcrt_calls
     CALL_ATANHF,
     CALL_ATANHL,
     CALL_ATOF,
+    CALL_BSEARCH,
     CALL_CALLOC,
     CALL_CBRT,
     CALL_CBRTF,
@@ -1110,6 +1111,7 @@ void qemu_atanh(struct qemu_syscall *call);
 void qemu_atanhf(struct qemu_syscall *call);
 void qemu_atanhl(struct qemu_syscall *call);
 void qemu_atof(struct qemu_syscall *call);
+void qemu_bsearch(struct qemu_syscall *call);
 void qemu_calloc(struct qemu_syscall *call);
 void qemu_cbrt(struct qemu_syscall *call);
 void qemu_cbrtf(struct qemu_syscall *call);
@@ -1980,6 +1982,8 @@ MSVCRT_invalid_parameter_handler (* CDECL p__get_invalid_parameter_handler)(void
 MSVCRT_invalid_parameter_handler (* CDECL p__set_invalid_parameter_handler)(MSVCRT_invalid_parameter_handler handler);
 MSVCRT_invalid_parameter_handler (* CDECL p__get_thread_local_invalid_parameter_handler)(void);
 MSVCRT_invalid_parameter_handler (* CDECL p__set_thread_local_invalid_parameter_handler)(MSVCRT_invalid_parameter_handler handler);
+int (* CDECL p_bsearch)(const void *key, const void *base, size_t nmemb,
+        size_t size, int (CDECL *compare)(const void *, const void *));
 
 DWORD msvcrt_tls;
 

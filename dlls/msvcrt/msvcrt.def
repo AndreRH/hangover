@@ -424,6 +424,7 @@ EXPORTS
   atof=MSVCRT_atof
   atoi=ntdll.atoi
   atol=ntdll.atol
+  bsearch=MSVCRT_bsearch
   calloc=MSVCRT_calloc
   ceil=MSVCRT_ceil
   ceilf=MSVCRT_ceilf
