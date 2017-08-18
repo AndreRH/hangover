@@ -2852,7 +2852,7 @@ void qemu__setmode(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_stat64
+struct qemu__stat64
 {
     struct qemu_syscall super;
     uint64_t path;
@@ -2861,10 +2861,10 @@ struct qemu_stat64
 
 #ifdef QEMU_DLL_GUEST
 
-int CDECL MSVCRT_stat64(const char* path, struct __stat64 * buf)
+int CDECL MSVCRT__stat64(const char* path, struct __stat64 * buf)
 {
-    struct qemu_stat64 call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_STAT64);
+    struct qemu__stat64 call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__STAT64);
     call.path = (uint64_t)path;
     call.buf = (uint64_t)buf;
 
@@ -2875,11 +2875,11 @@ int CDECL MSVCRT_stat64(const char* path, struct __stat64 * buf)
 
 #else
 
-void qemu_stat64(struct qemu_syscall *call)
+void qemu__stat64(struct qemu_syscall *call)
 {
-    struct qemu_stat64 *c = (struct qemu_stat64 *)call;
+    struct qemu__stat64 *c = (struct qemu__stat64 *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_stat64(QEMU_G2H(c->path), QEMU_G2H(c->buf));
+    c->super.iret = p__stat64(QEMU_G2H(c->path), QEMU_G2H(c->buf));
 }
 
 #endif

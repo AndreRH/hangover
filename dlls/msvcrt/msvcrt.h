@@ -312,6 +312,7 @@ enum msvcrt_calls
     CALL__SOPEN_S,
     CALL__STAT32,
     CALL__STAT32I64,
+    CALL__STAT64,
     CALL__STAT64I32,
     CALL__STATUSFP,
     CALL__STATUSFP2,
@@ -584,7 +585,6 @@ enum msvcrt_calls
     CALL_SQRTF,
     CALL_SRAND,
     CALL_STAT,
-    CALL_STAT64,
     CALL_STATI64,
     CALL_STRCAT_S,
     CALL_STRCHR,
@@ -976,6 +976,7 @@ void qemu__sopen_dispatch(struct qemu_syscall *c);
 void qemu__sopen_s(struct qemu_syscall *c);
 void qemu__stat32(struct qemu_syscall *c);
 void qemu__stat32i64(struct qemu_syscall *c);
+void qemu__stat64(struct qemu_syscall *c);
 void qemu__stat64i32(struct qemu_syscall *c);
 void qemu__statusfp(struct qemu_syscall *call);
 void qemu__statusfp2(struct qemu_syscall *call);
@@ -1248,7 +1249,6 @@ void qemu_sqrt(struct qemu_syscall *call);
 void qemu_sqrtf(struct qemu_syscall *call);
 void qemu_srand(struct qemu_syscall *call);
 void qemu_stat(struct qemu_syscall *c);
-void qemu_stat64(struct qemu_syscall *c);
 void qemu_stati64(struct qemu_syscall *c);
 void qemu_strcat_s(struct qemu_syscall *call);
 void qemu_strchr(struct qemu_syscall *call);
@@ -1815,7 +1815,7 @@ int (* CDECL p__open_osfhandle)(intptr_t handle, int oflags);
 int (* CDECL p__rmtmp)(void);
 int (* CDECL p__read)(int fd, void *buf, unsigned int count);
 int (* CDECL p__setmode)(int fd,int mode);
-int (* CDECL p_stat64)(const char* path, struct MSVCRT__stat64 * buf);
+int (* CDECL p__stat64)(const char* path, struct MSVCRT__stat64 * buf);
 int (* CDECL p_stati64)(const char* path, struct MSVCRT__stati64 * buf);
 int (* CDECL p_stat)(const char* path, struct MSVCRT__stat * buf);
 int (* CDECL p__stat32)(const char *path, struct MSVCRT__stat32 *buf);

@@ -449,6 +449,7 @@ EXPORTS
   _sopen_s=MSVCRT__sopen_s
   _stat32=MSVCRT__stat32
   _stat32i64=MSVCRT__stat32i64
+  _stat64=MSVCRT__stat64
   _stat64i32=MSVCRT__stat64i32
   _tell=MSVCRT__tell
   _tempnam=MSVCRT__tempnam
@@ -522,7 +523,6 @@ EXPORTS
   setbuf=MSVCRT_setbuf
   setvbuf=MSVCRT_setvbuf
   stat=MSVCRT_stat
-  stat64=MSVCRT_stat64
   stati64=MSVCRT_stati64
   tmpfile=MSVCRT_tmpfile
   tmpfile_s=MSVCRT_tmpfile_s
