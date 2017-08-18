@@ -141,7 +141,7 @@ WINBASEAPI BOOL WINAPI Arc(HDC hdc, INT left, INT top, INT right, INT bottom, IN
 void qemu_Arc(struct qemu_syscall *call)
 {
     struct qemu_Arc *c = (struct qemu_Arc *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = Arc(QEMU_G2H(c->hdc), c->left, c->top, c->right, c->bottom, c->xstart, c->ystart, c->xend, c->yend);
 }
 
@@ -187,7 +187,7 @@ WINBASEAPI BOOL WINAPI ArcTo(HDC hdc, INT left, INT top, INT right, INT bottom, 
 void qemu_ArcTo(struct qemu_syscall *call)
 {
     struct qemu_ArcTo *c = (struct qemu_ArcTo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ArcTo(QEMU_G2H(c->hdc), c->left, c->top, c->right, c->bottom, c->xstart, c->ystart, c->xend, c->yend);
 }
 
@@ -233,7 +233,7 @@ WINBASEAPI BOOL WINAPI Pie(HDC hdc, INT left, INT top, INT right, INT bottom, IN
 void qemu_Pie(struct qemu_syscall *call)
 {
     struct qemu_Pie *c = (struct qemu_Pie *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = Pie(QEMU_G2H(c->hdc), c->left, c->top, c->right, c->bottom, c->xstart, c->ystart, c->xend, c->yend);
 }
 
@@ -279,7 +279,7 @@ WINBASEAPI BOOL WINAPI Chord(HDC hdc, INT left, INT top, INT right, INT bottom, 
 void qemu_Chord(struct qemu_syscall *call)
 {
     struct qemu_Chord *c = (struct qemu_Chord *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = Chord(QEMU_G2H(c->hdc), c->left, c->top, c->right, c->bottom, c->xstart, c->ystart, c->xend, c->yend);
 }
 
@@ -317,7 +317,7 @@ WINBASEAPI BOOL WINAPI Ellipse(HDC hdc, INT left, INT top, INT right, INT bottom
 void qemu_Ellipse(struct qemu_syscall *call)
 {
     struct qemu_Ellipse *c = (struct qemu_Ellipse *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = Ellipse(QEMU_G2H(c->hdc), c->left, c->top, c->right, c->bottom);
 }
 
@@ -397,7 +397,7 @@ WINBASEAPI BOOL WINAPI RoundRect(HDC hdc, INT left, INT top, INT right, INT bott
 void qemu_RoundRect(struct qemu_syscall *call)
 {
     struct qemu_RoundRect *c = (struct qemu_RoundRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RoundRect(QEMU_G2H(c->hdc), c->left, c->top, c->right, c->bottom, c->ell_width, c->ell_height);
 }
 
@@ -813,7 +813,7 @@ WINBASEAPI BOOL WINAPI PolylineTo(HDC hdc, const POINT* pt, DWORD cCount)
 void qemu_PolylineTo(struct qemu_syscall *call)
 {
     struct qemu_PolylineTo *c = (struct qemu_PolylineTo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PolylineTo(QEMU_G2H(c->hdc), QEMU_G2H(c->pt), c->cCount);
 }
 
@@ -847,7 +847,7 @@ WINBASEAPI BOOL WINAPI Polygon(HDC hdc, const POINT* pt, INT count)
 void qemu_Polygon(struct qemu_syscall *call)
 {
     struct qemu_Polygon *c = (struct qemu_Polygon *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = Polygon(QEMU_G2H(c->hdc), QEMU_G2H(c->pt), c->count);
 }
 
@@ -883,7 +883,7 @@ WINBASEAPI BOOL WINAPI PolyPolygon(HDC hdc, const POINT* pt, const INT* counts, 
 void qemu_PolyPolygon(struct qemu_syscall *call)
 {
     struct qemu_PolyPolygon *c = (struct qemu_PolyPolygon *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PolyPolygon((HDC)c->hdc, QEMU_G2H(c->pt), QEMU_G2H(c->counts), c->polygons);
 }
 
@@ -1027,7 +1027,7 @@ WINBASEAPI BOOL WINAPI PolyBezier(HDC hdc, const POINT* lppt, DWORD cPoints)
 void qemu_PolyBezier(struct qemu_syscall *call)
 {
     struct qemu_PolyBezier *c = (struct qemu_PolyBezier *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PolyBezier(QEMU_G2H(c->hdc), QEMU_G2H(c->lppt), c->cPoints);
 }
 
@@ -1061,7 +1061,7 @@ WINBASEAPI BOOL WINAPI PolyBezierTo(HDC hdc, const POINT* lppt, DWORD cPoints)
 void qemu_PolyBezierTo(struct qemu_syscall *call)
 {
     struct qemu_PolyBezierTo *c = (struct qemu_PolyBezierTo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PolyBezierTo(QEMU_G2H(c->hdc), QEMU_G2H(c->lppt), c->cPoints);
 }
 
@@ -1137,7 +1137,7 @@ WINBASEAPI BOOL WINAPI PolyDraw(HDC hdc, const POINT *lppt, const BYTE *lpbTypes
 void qemu_PolyDraw(struct qemu_syscall *call)
 {
     struct qemu_PolyDraw *c = (struct qemu_PolyDraw *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PolyDraw((HDC)c->hdc, QEMU_G2H(c->lppt), QEMU_G2H(c->lpbTypes), c->cCount);
 }
 

@@ -163,7 +163,7 @@ WINBASEAPI INT WINAPI ExcludeClipRect(HDC hdc, INT left, INT top, INT right, INT
 void qemu_ExcludeClipRect(struct qemu_syscall *call)
 {
     struct qemu_ExcludeClipRect *c = (struct qemu_ExcludeClipRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ExcludeClipRect(QEMU_G2H(c->hdc), c->left, c->top, c->right, c->bottom);
 }
 

@@ -97,7 +97,7 @@ WINBASEAPI HDC WINAPI CreateEnhMetaFileW(HDC hdc, LPCWSTR filename, const RECT* 
 void qemu_CreateEnhMetaFileW(struct qemu_syscall *call)
 {
     struct qemu_CreateEnhMetaFileW *c = (struct qemu_CreateEnhMetaFileW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateEnhMetaFileW(QEMU_G2H(c->hdc), QEMU_G2H(c->filename), QEMU_G2H(c->rect), QEMU_G2H(c->description));
 }
 

@@ -500,7 +500,7 @@ WINUSERAPI INT WINAPI FillRect(HDC hdc, const RECT *rect, HBRUSH hbrush)
 void qemu_FillRect(struct qemu_syscall *call)
 {
     struct qemu_FillRect *c = (struct qemu_FillRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FillRect(QEMU_G2H(c->hdc), QEMU_G2H(c->rect), QEMU_G2H(c->hbrush));
 }
 

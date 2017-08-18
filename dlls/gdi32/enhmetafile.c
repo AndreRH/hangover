@@ -119,7 +119,7 @@ WINGDIAPI UINT WINAPI GetEnhMetaFileHeader(HENHMETAFILE hmf, UINT bufsize, LPENH
 void qemu_GetEnhMetaFileHeader(struct qemu_syscall *call)
 {
     struct qemu_GetEnhMetaFileHeader *c = (struct qemu_GetEnhMetaFileHeader *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetEnhMetaFileHeader(QEMU_G2H(c->hmf), c->bufsize, QEMU_G2H(c->buf));
 }
 
@@ -219,7 +219,7 @@ WINGDIAPI HENHMETAFILE WINAPI SetEnhMetaFileBits(UINT bufsize, const BYTE *buf)
 void qemu_SetEnhMetaFileBits(struct qemu_syscall *call)
 {
     struct qemu_SetEnhMetaFileBits *c = (struct qemu_SetEnhMetaFileBits *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)SetEnhMetaFileBits(c->bufsize, QEMU_G2H(c->buf));
 }
 
@@ -253,7 +253,7 @@ WINGDIAPI UINT WINAPI GetEnhMetaFileBits(HENHMETAFILE hmf, UINT bufsize, LPBYTE 
 void qemu_GetEnhMetaFileBits(struct qemu_syscall *call)
 {
     struct qemu_GetEnhMetaFileBits *c = (struct qemu_GetEnhMetaFileBits *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetEnhMetaFileBits(QEMU_G2H(c->hmf), c->bufsize, QEMU_G2H(c->buf));
 }
 
@@ -289,7 +289,7 @@ WINGDIAPI BOOL WINAPI PlayEnhMetaFileRecord(HDC hdc, LPHANDLETABLE handletable, 
 void qemu_PlayEnhMetaFileRecord(struct qemu_syscall *call)
 {
     struct qemu_PlayEnhMetaFileRecord *c = (struct qemu_PlayEnhMetaFileRecord *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PlayEnhMetaFileRecord(QEMU_G2H(c->hdc), QEMU_G2H(c->handletable), QEMU_G2H(c->mr), c->handles);
 }
 
@@ -414,7 +414,7 @@ WINGDIAPI BOOL WINAPI PlayEnhMetaFile(HDC hdc, HENHMETAFILE hmf, const RECT *lpR
 void qemu_PlayEnhMetaFile(struct qemu_syscall *call)
 {
     struct qemu_PlayEnhMetaFile *c = (struct qemu_PlayEnhMetaFile *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PlayEnhMetaFile(QEMU_G2H(c->hdc), QEMU_G2H(c->hmf), QEMU_G2H(c->lpRect));
 }
 
@@ -578,7 +578,7 @@ WINGDIAPI HENHMETAFILE WINAPI SetWinMetaFileBits(UINT cbBuffer, const BYTE *lpbB
 void qemu_SetWinMetaFileBits(struct qemu_syscall *call)
 {
     struct qemu_SetWinMetaFileBits *c = (struct qemu_SetWinMetaFileBits *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)SetWinMetaFileBits(c->cbBuffer, QEMU_G2H(c->lpbBuffer), QEMU_G2H(c->hdcRef), QEMU_G2H(c->lpmfp));
 }
 

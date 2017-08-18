@@ -179,7 +179,7 @@ WINGDIAPI HMETAFILE WINAPI CopyMetaFileA(HMETAFILE hSrcMetaFile, LPCSTR lpFilena
 void qemu_CopyMetaFileA(struct qemu_syscall *call)
 {
     struct qemu_CopyMetaFileA *c = (struct qemu_CopyMetaFileA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CopyMetaFileA(QEMU_G2H(c->hSrcMetaFile), QEMU_G2H(c->lpFilename));
 }
 
@@ -406,7 +406,7 @@ WINGDIAPI UINT WINAPI GetMetaFileBitsEx(HMETAFILE hmf, UINT nSize, LPVOID buf)
 void qemu_GetMetaFileBitsEx(struct qemu_syscall *call)
 {
     struct qemu_GetMetaFileBitsEx *c = (struct qemu_GetMetaFileBitsEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetMetaFileBitsEx(QEMU_G2H(c->hmf), c->nSize, QEMU_G2H(c->buf));
 }
 
@@ -444,7 +444,7 @@ WINGDIAPI UINT WINAPI GetWinMetaFileBits(HENHMETAFILE hemf, UINT cbBuffer, LPBYT
 void qemu_GetWinMetaFileBits(struct qemu_syscall *call)
 {
     struct qemu_GetWinMetaFileBits *c = (struct qemu_GetWinMetaFileBits *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWinMetaFileBits(QEMU_G2H(c->hemf), c->cbBuffer, QEMU_G2H(c->lpbBuffer), c->map_mode, QEMU_G2H(c->hdcRef));
 }
 

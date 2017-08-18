@@ -55,7 +55,7 @@ WINBASEAPI BOOL WINAPI BeginPath(HDC hdc)
 void qemu_BeginPath(struct qemu_syscall *call)
 {
     struct qemu_BeginPath *c = (struct qemu_BeginPath *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = BeginPath(QEMU_G2H(c->hdc));
 }
 
@@ -85,7 +85,7 @@ WINBASEAPI BOOL WINAPI EndPath(HDC hdc)
 void qemu_EndPath(struct qemu_syscall *call)
 {
     struct qemu_EndPath *c = (struct qemu_EndPath *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EndPath(QEMU_G2H(c->hdc));
 }
 
@@ -115,7 +115,7 @@ WINBASEAPI BOOL WINAPI AbortPath(HDC hdc)
 void qemu_AbortPath(struct qemu_syscall *call)
 {
     struct qemu_AbortPath *c = (struct qemu_AbortPath *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AbortPath(QEMU_G2H(c->hdc));
 }
 
@@ -145,7 +145,7 @@ WINBASEAPI BOOL WINAPI CloseFigure(HDC hdc)
 void qemu_CloseFigure(struct qemu_syscall *call)
 {
     struct qemu_CloseFigure *c = (struct qemu_CloseFigure *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CloseFigure(QEMU_G2H(c->hdc));
 }
 
@@ -181,7 +181,7 @@ WINBASEAPI INT WINAPI GetPath(HDC hdc, LPPOINT pPoints, LPBYTE pTypes, INT nSize
 void qemu_GetPath(struct qemu_syscall *call)
 {
     struct qemu_GetPath *c = (struct qemu_GetPath *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetPath(QEMU_G2H(c->hdc), QEMU_G2H(c->pPoints), QEMU_G2H(c->pTypes), c->nSize);
 }
 
@@ -211,7 +211,7 @@ WINBASEAPI HRGN WINAPI PathToRegion(HDC hdc)
 void qemu_PathToRegion(struct qemu_syscall *call)
 {
     struct qemu_PathToRegion *c = (struct qemu_PathToRegion *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)PathToRegion(QEMU_G2H(c->hdc));
 }
 
@@ -241,7 +241,7 @@ WINBASEAPI BOOL WINAPI FillPath(HDC hdc)
 void qemu_FillPath(struct qemu_syscall *call)
 {
     struct qemu_FillPath *c = (struct qemu_FillPath *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FillPath(QEMU_G2H(c->hdc));
 }
 
@@ -273,7 +273,7 @@ WINBASEAPI BOOL WINAPI SelectClipPath(HDC hdc, INT iMode)
 void qemu_SelectClipPath(struct qemu_syscall *call)
 {
     struct qemu_SelectClipPath *c = (struct qemu_SelectClipPath *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SelectClipPath(QEMU_G2H(c->hdc), c->iMode);
 }
 
@@ -303,7 +303,7 @@ WINBASEAPI BOOL WINAPI FlattenPath(HDC hdc)
 void qemu_FlattenPath(struct qemu_syscall *call)
 {
     struct qemu_FlattenPath *c = (struct qemu_FlattenPath *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FlattenPath(QEMU_G2H(c->hdc));
 }
 
@@ -333,7 +333,7 @@ WINBASEAPI BOOL WINAPI StrokeAndFillPath(HDC hdc)
 void qemu_StrokeAndFillPath(struct qemu_syscall *call)
 {
     struct qemu_StrokeAndFillPath *c = (struct qemu_StrokeAndFillPath *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = StrokeAndFillPath(QEMU_G2H(c->hdc));
 }
 
@@ -363,7 +363,7 @@ WINBASEAPI BOOL WINAPI StrokePath(HDC hdc)
 void qemu_StrokePath(struct qemu_syscall *call)
 {
     struct qemu_StrokePath *c = (struct qemu_StrokePath *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = StrokePath(QEMU_G2H(c->hdc));
 }
 
@@ -393,7 +393,7 @@ WINBASEAPI BOOL WINAPI WidenPath(HDC hdc)
 void qemu_WidenPath(struct qemu_syscall *call)
 {
     struct qemu_WidenPath *c = (struct qemu_WidenPath *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WidenPath(QEMU_G2H(c->hdc));
 }
 

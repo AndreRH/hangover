@@ -541,7 +541,7 @@ WINGDIAPI UINT WINAPI GetTextAlign(HDC hdc)
 void qemu_GetTextAlign(struct qemu_syscall *call)
 {
     struct qemu_GetTextAlign *c = (struct qemu_GetTextAlign *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTextAlign(QEMU_G2H(c->hdc));
 }
 
@@ -697,7 +697,7 @@ WINGDIAPI INT WINAPI GetArcDirection(HDC hdc)
 void qemu_GetArcDirection(struct qemu_syscall *call)
 {
     struct qemu_GetArcDirection *c = (struct qemu_GetArcDirection *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetArcDirection(QEMU_G2H(c->hdc));
 }
 
@@ -729,7 +729,7 @@ WINGDIAPI INT WINAPI SetArcDirection(HDC hdc, INT dir)
 void qemu_SetArcDirection(struct qemu_syscall *call)
 {
     struct qemu_SetArcDirection *c = (struct qemu_SetArcDirection *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetArcDirection(QEMU_G2H(c->hdc), c->dir);
 }
 
@@ -1211,7 +1211,7 @@ WINGDIAPI INT WINAPI GetRelAbs(HDC hdc, DWORD dwIgnore)
 void qemu_GetRelAbs(struct qemu_syscall *call)
 {
     struct qemu_GetRelAbs *c = (struct qemu_GetRelAbs *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetRelAbs(QEMU_G2H(c->hdc), c->dwIgnore);
 }
 
@@ -1241,7 +1241,7 @@ WINGDIAPI INT WINAPI GetBkMode(HDC hdc)
 void qemu_GetBkMode(struct qemu_syscall *call)
 {
     struct qemu_GetBkMode *c = (struct qemu_GetBkMode *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetBkMode(QEMU_G2H(c->hdc));
 }
 
@@ -1303,7 +1303,7 @@ WINGDIAPI INT WINAPI GetROP2(HDC hdc)
 void qemu_GetROP2(struct qemu_syscall *call)
 {
     struct qemu_GetROP2 *c = (struct qemu_GetROP2 *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetROP2(QEMU_G2H(c->hdc));
 }
 
@@ -1367,7 +1367,7 @@ WINGDIAPI INT WINAPI SetRelAbs(HDC hdc, INT mode)
 void qemu_SetRelAbs(struct qemu_syscall *call)
 {
     struct qemu_SetRelAbs *c = (struct qemu_SetRelAbs *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetRelAbs(QEMU_G2H(c->hdc), c->mode);
 }
 
@@ -1397,7 +1397,7 @@ WINGDIAPI INT WINAPI GetPolyFillMode(HDC hdc)
 void qemu_GetPolyFillMode(struct qemu_syscall *call)
 {
     struct qemu_GetPolyFillMode *c = (struct qemu_GetPolyFillMode *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetPolyFillMode(QEMU_G2H(c->hdc));
 }
 
@@ -1429,7 +1429,7 @@ WINGDIAPI INT WINAPI SetPolyFillMode(HDC hdc, INT mode)
 void qemu_SetPolyFillMode(struct qemu_syscall *call)
 {
     struct qemu_SetPolyFillMode *c = (struct qemu_SetPolyFillMode *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetPolyFillMode(QEMU_G2H(c->hdc), c->mode);
 }
 
@@ -1459,7 +1459,7 @@ WINGDIAPI INT WINAPI GetStretchBltMode(HDC hdc)
 void qemu_GetStretchBltMode(struct qemu_syscall *call)
 {
     struct qemu_GetStretchBltMode *c = (struct qemu_GetStretchBltMode *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetStretchBltMode(QEMU_G2H(c->hdc));
 }
 
@@ -1491,7 +1491,7 @@ WINGDIAPI INT WINAPI SetStretchBltMode(HDC hdc, INT mode)
 void qemu_SetStretchBltMode(struct qemu_syscall *call)
 {
     struct qemu_SetStretchBltMode *c = (struct qemu_SetStretchBltMode *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetStretchBltMode(QEMU_G2H(c->hdc), c->mode);
 }
 
@@ -1585,7 +1585,7 @@ WINGDIAPI BOOL WINAPI GetCurrentPositionEx(HDC hdc, LPPOINT pt)
 void qemu_GetCurrentPositionEx(struct qemu_syscall *call)
 {
     struct qemu_GetCurrentPositionEx *c = (struct qemu_GetCurrentPositionEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCurrentPositionEx(QEMU_G2H(c->hdc), QEMU_G2H(c->pt));
 }
 
@@ -1837,7 +1837,7 @@ WINGDIAPI COLORREF WINAPI SetDCBrushColor(HDC hdc, COLORREF crColor)
 void qemu_SetDCBrushColor(struct qemu_syscall *call)
 {
     struct qemu_SetDCBrushColor *c = (struct qemu_SetDCBrushColor *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetDCBrushColor(QEMU_G2H(c->hdc), c->crColor);
 }
 
@@ -1899,7 +1899,7 @@ WINGDIAPI COLORREF WINAPI SetDCPenColor(HDC hdc, COLORREF crColor)
 void qemu_SetDCPenColor(struct qemu_syscall *call)
 {
     struct qemu_SetDCPenColor *c = (struct qemu_SetDCPenColor *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetDCPenColor(QEMU_G2H(c->hdc), c->crColor);
 }
 
@@ -2027,7 +2027,7 @@ WINGDIAPI BOOL WINAPI GdiIsMetaPrintDC(HDC hdc)
 void qemu_GdiIsMetaPrintDC(struct qemu_syscall *call)
 {
     struct qemu_GdiIsMetaPrintDC *c = (struct qemu_GdiIsMetaPrintDC *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GdiIsMetaPrintDC(QEMU_G2H(c->hdc));
 }
 
@@ -2057,7 +2057,7 @@ WINGDIAPI BOOL WINAPI GdiIsMetaFileDC(HDC hdc)
 void qemu_GdiIsMetaFileDC(struct qemu_syscall *call)
 {
     struct qemu_GdiIsMetaFileDC *c = (struct qemu_GdiIsMetaFileDC *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GdiIsMetaFileDC(QEMU_G2H(c->hdc));
 }
 
@@ -2087,7 +2087,7 @@ WINGDIAPI BOOL WINAPI GdiIsPlayMetafileDC(HDC hdc)
 void qemu_GdiIsPlayMetafileDC(struct qemu_syscall *call)
 {
     struct qemu_GdiIsPlayMetafileDC *c = (struct qemu_GdiIsPlayMetafileDC *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GdiIsPlayMetafileDC(QEMU_G2H(c->hdc));
 }
 
