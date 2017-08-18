@@ -311,6 +311,7 @@ EXPORTS
   RtlOemStringToUnicodeSize
   RtlOemStringToUnicodeString
   RtlOemToUnicodeN
+  RtlPcToFileHeader
   RtlPrefixString
   RtlPrefixUnicodeString
   RtlpUnWaitCriticalSection

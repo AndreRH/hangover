@@ -775,6 +775,7 @@ EXPORTS
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   RtlCaptureContext=ntdll.RtlCaptureContext
   RtlLookupFunctionEntry=ntdll.RtlLookupFunctionEntry
+  RtlPcToFileHeader=ntdll.RtlPcToFileHeader
   RtlUnwind=ntdll.RtlUnwind
   RtlUnwindEx=ntdll.RtlUnwindEx
   RtlVirtualUnwind=ntdll.RtlVirtualUnwind

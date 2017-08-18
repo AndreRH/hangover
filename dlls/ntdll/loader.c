@@ -176,3 +176,39 @@ PVOID WINAPI ntdll_RtlImageDirectoryEntryToData( HMODULE module, BOOL image, WOR
 }
 
 #endif
+
+struct qemu_RtlPcToFileHeader
+{
+    struct qemu_syscall super;
+    uint64_t pc;
+    uint64_t address;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void * WINAPI RtlPcToFileHeader(void *pc, void **address)
+{
+    struct qemu_RtlPcToFileHeader call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLPCTOFILEHEADER);
+    call.pc = (uint64_t)pc;
+    call.address = (uint64_t)address;
+
+    qemu_syscall(&call.super);
+
+    return (void *)call.super.iret;
+}
+
+#else
+
+void qemu_RtlPcToFileHeader(struct qemu_syscall *call)
+{
+    struct qemu_RtlPcToFileHeader *c = (struct qemu_RtlPcToFileHeader *)call;
+    void *ret = NULL;
+
+    WINE_TRACE("\n");
+    c->super.iret = QEMU_H2G(qemu_ops->qemu_RtlPcToFileHeader(QEMU_G2H(c->pc), c->address ? &ret : NULL));
+    if (c->address)
+        *(uint64_t *)QEMU_G2H(c->address) = QEMU_H2G(ret);
+}
+
+#endif

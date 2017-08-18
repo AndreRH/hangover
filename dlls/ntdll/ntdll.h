@@ -307,6 +307,7 @@ enum ntdll_calls
     CALL_RTLOEMSTRINGTOUNICODESIZE,
     CALL_RTLOEMSTRINGTOUNICODESTRING,
     CALL_RTLOEMTOUNICODEN,
+    CALL_RTLPCTOFILEHEADER,
     CALL_RTLPREFIXSTRING,
     CALL_RTLPREFIXUNICODESTRING,
     CALL_RTLPUNWAITCRITICALSECTION,
@@ -708,6 +709,7 @@ void qemu_RtlNewSecurityObject(struct qemu_syscall *call);
 void qemu_RtlOemStringToUnicodeSize(struct qemu_syscall *call);
 void qemu_RtlOemStringToUnicodeString(struct qemu_syscall *call);
 void qemu_RtlOemToUnicodeN(struct qemu_syscall *call);
+void qemu_RtlPcToFileHeader(struct qemu_syscall *call);
 void qemu_RtlPrefixString(struct qemu_syscall *call);
 void qemu_RtlPrefixUnicodeString(struct qemu_syscall *call);
 void qemu_RtlpUnWaitCriticalSection(struct qemu_syscall *call);
