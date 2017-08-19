@@ -404,7 +404,7 @@ WINBASEAPI NTSTATUS WINAPI RtlLeaveCriticalSection(RTL_CRITICAL_SECTION *crit)
 void qemu_RtlLeaveCriticalSection(struct qemu_syscall *call)
 {
     struct qemu_RtlLeaveCriticalSection *c = (struct qemu_RtlLeaveCriticalSection *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RtlLeaveCriticalSection(QEMU_G2H(c->crit));
 }
 
