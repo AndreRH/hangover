@@ -149,6 +149,7 @@ enum ntdll_calls
     CALL_NTQUERYVOLUMEINFORMATIONFILE,
     CALL_NTQUEUEAPCTHREAD,
     CALL_NTRAISEEXCEPTION,
+    CALL_NTRAISEHARDERROR,
     CALL_NTREADFILE,
     CALL_NTREADFILESCATTER,
     CALL_NTREGISTERTHREADTERMINATEPORT,
@@ -283,6 +284,8 @@ enum ntdll_calls
     CALL_RTLGETCURRENTPROCESSORNUMBEREX,
     CALL_RTLGETCURRENTTRANSACTION,
     CALL_RTLGETFULLPATHNAME_U,
+    CALL_RTLGETLASTNTSTATUS,
+    CALL_RTLGETLASTWIN32ERROR,
     CALL_RTLGETLONGESTNTPATHLENGTH,
     CALL_RTLGETNTGLOBALFLAGS,
     CALL_RTLGETNTPRODUCTTYPE,
@@ -334,6 +337,8 @@ enum ntdll_calls
     CALL_RTLMULTIBYTETOUNICODEN,
     CALL_RTLMULTIBYTETOUNICODESIZE,
     CALL_RTLNEWSECURITYOBJECT,
+    CALL_RTLNTSTATUSTODOSERROR,
+    CALL_RTLNTSTATUSTODOSERRORNOTEB,
     CALL_RTLOEMSTRINGTOUNICODESIZE,
     CALL_RTLOEMSTRINGTOUNICODESTRING,
     CALL_RTLOEMTOUNICODEN,
@@ -369,6 +374,8 @@ enum ntdll_calls
     CALL_RTLSETCURRENTDIRECTORY_U,
     CALL_RTLSETCURRENTTRANSACTION,
     CALL_RTLSETHEAPINFORMATION,
+    CALL_RTLSETLASTWIN32ERROR,
+    CALL_RTLSETLASTWIN32ERRORANDNTSTATUSFROMNTSTATUS,
     CALL_RTLSETTHREADERRORMODE,
     CALL_RTLSIZEHEAP,
     CALL_RTLSLEEPCONDITIONVARIABLECS,
@@ -590,6 +597,7 @@ void qemu_NtQueryValueKey(struct qemu_syscall *call);
 void qemu_NtQueryVolumeInformationFile(struct qemu_syscall *call);
 void qemu_NtQueueApcThread(struct qemu_syscall *call);
 void qemu_NtRaiseException(struct qemu_syscall *call);
+void qemu_NtRaiseHardError(struct qemu_syscall *call);
 void qemu_NtReadFile(struct qemu_syscall *call);
 void qemu_NtReadFileScatter(struct qemu_syscall *call);
 void qemu_NtRegisterThreadTerminatePort(struct qemu_syscall *call);
@@ -724,6 +732,8 @@ void qemu_RtlGetCurrentPeb(struct qemu_syscall *call);
 void qemu_RtlGetCurrentProcessorNumberEx(struct qemu_syscall *call);
 void qemu_RtlGetCurrentTransaction(struct qemu_syscall *call);
 void qemu_RtlGetFullPathName_U(struct qemu_syscall *call);
+void qemu_RtlGetLastNtStatus(struct qemu_syscall *call);
+void qemu_RtlGetLastWin32Error(struct qemu_syscall *call);
 void qemu_RtlGetLongestNtPathLength(struct qemu_syscall *call);
 void qemu_RtlGetNtGlobalFlags(struct qemu_syscall *call);
 void qemu_RtlGetNtProductType(struct qemu_syscall *call);
@@ -775,6 +785,8 @@ void qemu_RtlMoveMemory(struct qemu_syscall *call);
 void qemu_RtlMultiByteToUnicodeN(struct qemu_syscall *call);
 void qemu_RtlMultiByteToUnicodeSize(struct qemu_syscall *call);
 void qemu_RtlNewSecurityObject(struct qemu_syscall *call);
+void qemu_RtlNtStatusToDosError(struct qemu_syscall *call);
+void qemu_RtlNtStatusToDosErrorNoTeb(struct qemu_syscall *call);
 void qemu_RtlOemStringToUnicodeSize(struct qemu_syscall *call);
 void qemu_RtlOemStringToUnicodeString(struct qemu_syscall *call);
 void qemu_RtlOemToUnicodeN(struct qemu_syscall *call);
@@ -810,6 +822,8 @@ void qemu_RtlSetCriticalSectionSpinCount(struct qemu_syscall *call);
 void qemu_RtlSetCurrentDirectory_U(struct qemu_syscall *call);
 void qemu_RtlSetCurrentTransaction(struct qemu_syscall *call);
 void qemu_RtlSetHeapInformation(struct qemu_syscall *call);
+void qemu_RtlSetLastWin32Error(struct qemu_syscall *call);
+void qemu_RtlSetLastWin32ErrorAndNtStatusFromNtStatus(struct qemu_syscall *call);
 void qemu_RtlSetThreadErrorMode(struct qemu_syscall *call);
 void qemu_RtlSizeHeap(struct qemu_syscall *call);
 void qemu_RtlSleepConditionVariableCS(struct qemu_syscall *call);
