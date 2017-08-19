@@ -61,7 +61,7 @@ WINBASEAPI DWORD WINAPI GetIcmpStatistics(PMIB_ICMP stats)
 void qemu_GetIcmpStatistics(struct qemu_syscall *call)
 {
     struct qemu_GetIcmpStatistics *c = (struct qemu_GetIcmpStatistics *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetIcmpStatistics(QEMU_G2H(c->stats));
 }
 
@@ -95,7 +95,7 @@ extern DWORD WINAPI GetIcmpStatisticsEx(PMIB_ICMP_EX stats, DWORD family);
 void qemu_GetIcmpStatisticsEx(struct qemu_syscall *call)
 {
     struct qemu_GetIcmpStatisticsEx *c = (struct qemu_GetIcmpStatisticsEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetIcmpStatisticsEx(QEMU_G2H(c->stats), c->family);
 }
 
@@ -127,7 +127,7 @@ WINBASEAPI DWORD WINAPI GetIpStatisticsEx(PMIB_IPSTATS stats, DWORD family)
 void qemu_GetIpStatisticsEx(struct qemu_syscall *call)
 {
     struct qemu_GetIpStatisticsEx *c = (struct qemu_GetIpStatisticsEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetIpStatisticsEx(QEMU_G2H(c->stats), c->family);
 }
 
@@ -157,7 +157,7 @@ WINBASEAPI DWORD WINAPI GetIpStatistics(PMIB_IPSTATS stats)
 void qemu_GetIpStatistics(struct qemu_syscall *call)
 {
     struct qemu_GetIpStatistics *c = (struct qemu_GetIpStatistics *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetIpStatistics(QEMU_G2H(c->stats));
 }
 
@@ -189,7 +189,7 @@ WINBASEAPI DWORD WINAPI GetTcpStatisticsEx(PMIB_TCPSTATS stats, DWORD family)
 void qemu_GetTcpStatisticsEx(struct qemu_syscall *call)
 {
     struct qemu_GetTcpStatisticsEx *c = (struct qemu_GetTcpStatisticsEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTcpStatisticsEx(QEMU_G2H(c->stats), c->family);
 }
 
@@ -219,7 +219,7 @@ WINBASEAPI DWORD WINAPI GetTcpStatistics(PMIB_TCPSTATS stats)
 void qemu_GetTcpStatistics(struct qemu_syscall *call)
 {
     struct qemu_GetTcpStatistics *c = (struct qemu_GetTcpStatistics *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTcpStatistics(QEMU_G2H(c->stats));
 }
 
@@ -251,7 +251,7 @@ WINBASEAPI DWORD WINAPI GetUdpStatisticsEx(PMIB_UDPSTATS stats, DWORD family)
 void qemu_GetUdpStatisticsEx(struct qemu_syscall *call)
 {
     struct qemu_GetUdpStatisticsEx *c = (struct qemu_GetUdpStatisticsEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetUdpStatisticsEx(QEMU_G2H(c->stats), c->family);
 }
 
@@ -281,7 +281,7 @@ WINBASEAPI DWORD WINAPI GetUdpStatistics(PMIB_UDPSTATS stats)
 void qemu_GetUdpStatistics(struct qemu_syscall *call)
 {
     struct qemu_GetUdpStatistics *c = (struct qemu_GetUdpStatistics *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetUdpStatistics(QEMU_G2H(c->stats));
 }
 

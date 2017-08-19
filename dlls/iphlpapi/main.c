@@ -163,10 +163,10 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
         WINE_ERR("Cannot find iphlpapi.dll.\n");
 
     p_if_nametoindex = (void *)GetProcAddress(iphlpapi, "if_nametoindex");
-    p__PfCreateInterface = (void *)GetProcAddress(iphlpapi, "_PfCreateInterface");
-    p__PfUnBindInterface = (void *)GetProcAddress(iphlpapi, "_PfUnBindInterface");
-    p__PfDeleteInterface = (void *)GetProcAddress(iphlpapi, "_PfDeleteInterface");
-    p__PfBindInterfaceToIPAddress = (void *)GetProcAddress(iphlpapi, "_PfBindInterfaceToIPAddress");
+    p__PfCreateInterface = (void *)GetProcAddress(iphlpapi, "_PfCreateInterface@24");
+    p__PfUnBindInterface = (void *)GetProcAddress(iphlpapi, "_PfUnBindInterface@4");
+    p__PfDeleteInterface = (void *)GetProcAddress(iphlpapi, "_PfDeleteInterface@4");
+    p__PfBindInterfaceToIPAddress = (void *)GetProcAddress(iphlpapi, "_PfBindInterfaceToIPAddress@12");
 
     return dll_functions;
 }
