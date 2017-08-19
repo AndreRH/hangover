@@ -19,3 +19,8 @@ EXPORTS
   InitCommonControls @17
   dummy=ntdll.DbgBreakPoint @18
   dummy2=ntdll.DbgBreakPoint @19
+  CreatePropertySheetPageA
+  CreatePropertySheetPageW
+  DestroyPropertySheetPage
+  PropertySheetA
+  PropertySheetW
