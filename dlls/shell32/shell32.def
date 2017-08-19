@@ -71,6 +71,7 @@ EXPORTS
   SHPropStgWriteMultiple
   SHQueryUserNotificationState
   SHSetUnreadMailCountW
+  StrChrW=shlwapi.StrChrW
   StrCmpNIW=shlwapi.StrCmpNIW
   StrCmpNW=shlwapi.StrCmpNW
   StrRStrIW=shlwapi.StrRStrIW
