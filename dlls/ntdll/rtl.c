@@ -1865,3 +1865,28 @@ void qemu_RtlCreateUserProcess(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+/* These are implemented as __fastcall, so we can't let Winelib apps link with them */
+static inline USHORT RtlUshortByteSwap(USHORT s)
+{
+    return (s >> 8) | (s << 8);
+}
+static inline ULONG RtlUlongByteSwap(ULONG i)
+{
+#if defined(__i386__) && defined(__GNUC__)
+    ULONG ret;
+    __asm__("bswap %0" : "=r" (ret) : "0" (i) );
+    return ret;
+#else
+    return ((ULONG)RtlUshortByteSwap((USHORT)i) << 16) | RtlUshortByteSwap((USHORT)(i >> 16));
+#endif
+}
+
+ULONGLONG __cdecl RtlUlonglongByteSwap(ULONGLONG i)
+{
+    return ((ULONGLONG)RtlUlongByteSwap(i) << 32) | RtlUlongByteSwap(i>>32);
+}
+
+#endif
+

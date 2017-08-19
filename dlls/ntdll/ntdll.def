@@ -387,6 +387,7 @@ EXPORTS
   RtlTryAcquireSRWLockExclusive
   RtlTryAcquireSRWLockShared
   RtlTryEnterCriticalSection
+  RtlUlonglongByteSwap
   RtlUnicodeStringToAnsiSize
   RtlUnicodeStringToAnsiString
   RtlUnicodeStringToInteger
