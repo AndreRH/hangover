@@ -497,6 +497,7 @@ enum kernel32_calls
     CALL_GETTHREADTIMES,
     CALL_GETTHREADUILANGUAGE,
     CALL_GETTICKCOUNT,
+    CALL_GETTICKCOUNT64,
     CALL_GETTIMEFORMATA,
     CALL_GETTIMEFORMATEX,
     CALL_GETTIMEFORMATW,
@@ -1474,6 +1475,7 @@ void qemu_GetThreadSelectorEntry(struct qemu_syscall *call);
 void qemu_GetThreadTimes(struct qemu_syscall *call);
 void qemu_GetThreadUILanguage(struct qemu_syscall *call);
 void qemu_GetTickCount(struct qemu_syscall *call);
+void qemu_GetTickCount64(struct qemu_syscall *call);
 void qemu_GetTimeFormatA(struct qemu_syscall *call);
 void qemu_GetTimeFormatEx(struct qemu_syscall *call);
 void qemu_GetTimeFormatW(struct qemu_syscall *call);

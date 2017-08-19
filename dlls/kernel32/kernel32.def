@@ -500,6 +500,7 @@ EXPORTS
   GetThreadTimes
   GetThreadUILanguage
   GetTickCount
+  GetTickCount64
   GetTimeFormatA
   GetTimeFormatEx
   GetTimeFormatW

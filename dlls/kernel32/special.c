@@ -602,3 +602,23 @@ void qemu_GetTickCount(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI ULONGLONG WINAPI GetTickCount64(void)
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL_GETTICKCOUNT64);
+    qemu_syscall(&call);
+    return call.iret;
+}
+
+#else
+
+void qemu_GetTickCount64(struct qemu_syscall *call)
+{
+    WINE_TRACE("\n");
+    call->iret = GetTickCount64();
+}
+
+#endif
