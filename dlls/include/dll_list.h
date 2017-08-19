@@ -24,5 +24,6 @@
 #define DLL_WINMM       0x15LL
 #define DLL_WSOCK32     0x16LL
 #define DLL_WS2_32      0x17LL
+#define DLL_IPHLPAPI    0x18LL
 
 #endif
