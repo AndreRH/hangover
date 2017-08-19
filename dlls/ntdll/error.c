@@ -117,7 +117,7 @@ WINBASEAPI ULONG WINAPI RtlNtStatusToDosError(NTSTATUS status)
 void qemu_RtlNtStatusToDosError(struct qemu_syscall *call)
 {
     struct qemu_RtlNtStatusToDosError *c = (struct qemu_RtlNtStatusToDosError *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RtlNtStatusToDosError(c->status);
 }
 

@@ -99,7 +99,7 @@ WINBASEAPI NTSTATUS WINAPI NtCreateKey(PHANDLE retkey, ACCESS_MASK access, const
 void qemu_NtCreateKey(struct qemu_syscall *call)
 {
     struct qemu_NtCreateKey *c = (struct qemu_NtCreateKey *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = NtCreateKey(QEMU_G2H(c->retkey), c->access, QEMU_G2H(c->attr), c->TitleIndex, QEMU_G2H(c->class), c->options, QEMU_G2H(c->dispos));
 }
 
@@ -287,7 +287,7 @@ WINBASEAPI NTSTATUS WINAPI NtOpenKey(PHANDLE retkey, ACCESS_MASK access, const O
 void qemu_NtOpenKey(struct qemu_syscall *call)
 {
     struct qemu_NtOpenKey *c = (struct qemu_NtOpenKey *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = NtOpenKey(QEMU_G2H(c->retkey), c->access, QEMU_G2H(c->attr));
 }
 

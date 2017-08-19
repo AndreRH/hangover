@@ -124,8 +124,6 @@ WINBASEAPI BOOL WINAPI PathYetAnotherMakeUniqueName(LPWSTR buffer, LPCWSTR path,
 
 #else
 
-/* TODO: Add PathYetAnotherMakeUniqueName to Wine headers? */
-extern BOOL WINAPI PathYetAnotherMakeUniqueName(LPWSTR buffer, LPCWSTR path, LPCWSTR shortname, LPCWSTR longname);
 void qemu_PathYetAnotherMakeUniqueName(struct qemu_syscall *call)
 {
     struct qemu_PathYetAnotherMakeUniqueName *c = (struct qemu_PathYetAnotherMakeUniqueName *)call;
@@ -164,12 +162,10 @@ WINBASEAPI HRESULT WINAPI SHGetFolderPathW(HWND hwndOwner, int nFolder, HANDLE h
 
 #else
 
-/* TODO: Add SHGetFolderPathW to Wine headers? */
-extern HRESULT WINAPI SHGetFolderPathW(HWND hwndOwner, int nFolder, HANDLE hToken, DWORD dwFlags, LPWSTR pszPath);
 void qemu_SHGetFolderPathW(struct qemu_syscall *call)
 {
     struct qemu_SHGetFolderPathW *c = (struct qemu_SHGetFolderPathW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SHGetFolderPathW(QEMU_G2H(c->hwndOwner), c->nFolder, QEMU_G2H(c->hToken), c->dwFlags, QEMU_G2H(c->pszPath));
 }
 
@@ -206,8 +202,6 @@ WINBASEAPI HRESULT WINAPI SHGetFolderPathAndSubDirA(HWND hwndOwner, int nFolder,
 
 #else
 
-/* TODO: Add SHGetFolderPathAndSubDirA to Wine headers? */
-extern HRESULT WINAPI SHGetFolderPathAndSubDirA(HWND hwndOwner, int nFolder, HANDLE hToken, DWORD dwFlags, LPCSTR pszSubPath, LPSTR pszPath);
 void qemu_SHGetFolderPathAndSubDirA(struct qemu_syscall *call)
 {
     struct qemu_SHGetFolderPathAndSubDirA *c = (struct qemu_SHGetFolderPathAndSubDirA *)call;
@@ -248,8 +242,6 @@ WINBASEAPI HRESULT WINAPI SHGetFolderPathAndSubDirW(HWND hwndOwner, int nFolder,
 
 #else
 
-/* TODO: Add SHGetFolderPathAndSubDirW to Wine headers? */
-extern HRESULT WINAPI SHGetFolderPathAndSubDirW(HWND hwndOwner, int nFolder, HANDLE hToken, DWORD dwFlags, LPCWSTR pszSubPath, LPWSTR pszPath);
 void qemu_SHGetFolderPathAndSubDirW(struct qemu_syscall *call)
 {
     struct qemu_SHGetFolderPathAndSubDirW *c = (struct qemu_SHGetFolderPathAndSubDirW *)call;
@@ -288,8 +280,6 @@ WINBASEAPI HRESULT WINAPI SHGetFolderPathA(HWND hwndOwner, int nFolder, HANDLE h
 
 #else
 
-/* TODO: Add SHGetFolderPathA to Wine headers? */
-extern HRESULT WINAPI SHGetFolderPathA(HWND hwndOwner, int nFolder, HANDLE hToken, DWORD dwFlags, LPSTR pszPath);
 void qemu_SHGetFolderPathA(struct qemu_syscall *call)
 {
     struct qemu_SHGetFolderPathA *c = (struct qemu_SHGetFolderPathA *)call;
@@ -326,8 +316,6 @@ WINBASEAPI BOOL WINAPI SHGetSpecialFolderPathA (HWND hwndOwner, LPSTR szPath, in
 
 #else
 
-/* TODO: Add SHGetSpecialFolderPathA to Wine headers? */
-extern BOOL WINAPI SHGetSpecialFolderPathA (HWND hwndOwner, LPSTR szPath, int nFolder, BOOL bCreate);
 void qemu_SHGetSpecialFolderPathA(struct qemu_syscall *call)
 {
     struct qemu_SHGetSpecialFolderPathA *c = (struct qemu_SHGetSpecialFolderPathA *)call;
@@ -364,8 +352,6 @@ WINBASEAPI BOOL WINAPI SHGetSpecialFolderPathW (HWND hwndOwner, LPWSTR szPath, i
 
 #else
 
-/* TODO: Add SHGetSpecialFolderPathW to Wine headers? */
-extern BOOL WINAPI SHGetSpecialFolderPathW (HWND hwndOwner, LPWSTR szPath, int nFolder, BOOL bCreate);
 void qemu_SHGetSpecialFolderPathW(struct qemu_syscall *call)
 {
     struct qemu_SHGetSpecialFolderPathW *c = (struct qemu_SHGetSpecialFolderPathW *)call;
@@ -438,8 +424,6 @@ WINBASEAPI HRESULT WINAPI SHGetSpecialFolderLocation(HWND hwndOwner, INT nFolder
 
 #else
 
-/* TODO: Add SHGetSpecialFolderLocation to Wine headers? */
-extern HRESULT WINAPI SHGetSpecialFolderLocation(HWND hwndOwner, INT nFolder, LPITEMIDLIST * ppidl);
 void qemu_SHGetSpecialFolderLocation(struct qemu_syscall *call)
 {
     struct qemu_SHGetSpecialFolderLocation *c = (struct qemu_SHGetSpecialFolderLocation *)call;
@@ -476,8 +460,6 @@ WINBASEAPI HRESULT WINAPI SHGetKnownFolderPath(REFKNOWNFOLDERID rfid, DWORD flag
 
 #else
 
-/* TODO: Add SHGetKnownFolderPath to Wine headers? */
-extern HRESULT WINAPI SHGetKnownFolderPath(REFKNOWNFOLDERID rfid, DWORD flags, HANDLE token, WCHAR **ret_path);
 void qemu_SHGetKnownFolderPath(struct qemu_syscall *call)
 {
     struct qemu_SHGetKnownFolderPath *c = (struct qemu_SHGetKnownFolderPath *)call;
@@ -554,8 +536,6 @@ WINBASEAPI HRESULT WINAPI SHGetKnownFolderIDList(REFKNOWNFOLDERID rfid, DWORD fl
 
 #else
 
-/* TODO: Add SHGetKnownFolderIDList to Wine headers? */
-extern HRESULT WINAPI SHGetKnownFolderIDList(REFKNOWNFOLDERID rfid, DWORD flags, HANDLE token, PIDLIST_ABSOLUTE *pidl);
 void qemu_SHGetKnownFolderIDList(struct qemu_syscall *call)
 {
     struct qemu_SHGetKnownFolderIDList *c = (struct qemu_SHGetKnownFolderIDList *)call;
@@ -594,8 +574,6 @@ WINBASEAPI HRESULT WINAPI SHGetKnownFolderItem(REFKNOWNFOLDERID rfid, KNOWN_FOLD
 
 #else
 
-/* TODO: Add SHGetKnownFolderItem to Wine headers? */
-extern HRESULT WINAPI SHGetKnownFolderItem(REFKNOWNFOLDERID rfid, KNOWN_FOLDER_FLAG flags, HANDLE hToken, REFIID riid, void **ppv);
 void qemu_SHGetKnownFolderItem(struct qemu_syscall *call)
 {
     struct qemu_SHGetKnownFolderItem *c = (struct qemu_SHGetKnownFolderItem *)call;

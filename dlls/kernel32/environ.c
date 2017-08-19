@@ -182,7 +182,7 @@ WINBASEAPI DWORD WINAPI GetEnvironmentVariableW(LPCWSTR name, LPWSTR val, DWORD 
 void qemu_GetEnvironmentVariableW(struct qemu_syscall *call)
 {
     struct qemu_GetEnvironmentVariableW *c = (struct qemu_GetEnvironmentVariableW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetEnvironmentVariableW(QEMU_G2H(c->name), QEMU_G2H(c->val), c->size);
 }
 

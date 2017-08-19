@@ -2057,7 +2057,7 @@ int CDECL MSVCRT__fstat64(int fd, struct __stat64* buf)
 void qemu__fstat64(struct qemu_syscall *call)
 {
     struct qemu__fstat64 *c = (struct qemu__fstat64 *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__fstat64(c->fd, QEMU_G2H(c->buf));
 }
 
@@ -2879,7 +2879,7 @@ int CDECL MSVCRT__stat64(const char* path, struct __stat64 * buf)
 void qemu__stat64(struct qemu_syscall *call)
 {
     struct qemu__stat64 *c = (struct qemu__stat64 *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__stat64(QEMU_G2H(c->path), QEMU_G2H(c->buf));
 }
 

@@ -175,7 +175,9 @@ WINBASEAPI BOOL WINAPI IsProcessorFeaturePresent (DWORD feature)
 void qemu_IsProcessorFeaturePresent(struct qemu_syscall *call)
 {
     struct qemu_IsProcessorFeaturePresent *c = (struct qemu_IsProcessorFeaturePresent *)call;
-    WINE_FIXME("Unverified!\n");
+    /* This should probably do some translation and lookup inside qemu, but Wine's implementation
+     * just returns FALSE anyway. */
+    WINE_TRACE("\n");
     c->super.iret = IsProcessorFeaturePresent(c->feature);
 }
 

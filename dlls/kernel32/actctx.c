@@ -463,7 +463,7 @@ WINBASEAPI BOOL WINAPI FindActCtxSectionGuid(DWORD dwFlags, const GUID* lpExtGui
 void qemu_FindActCtxSectionGuid(struct qemu_syscall *call)
 {
     struct qemu_FindActCtxSectionGuid *c = (struct qemu_FindActCtxSectionGuid *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FindActCtxSectionGuid(c->dwFlags, QEMU_G2H(c->lpExtGuid), c->ulId, QEMU_G2H(c->lpSearchGuid), QEMU_G2H(c->pInfo));
 }
 

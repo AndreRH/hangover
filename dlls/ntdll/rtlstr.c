@@ -244,7 +244,7 @@ WINBASEAPI void WINAPI RtlInitUnicodeString(PUNICODE_STRING target, PCWSTR sourc
 void qemu_RtlInitUnicodeString(struct qemu_syscall *call)
 {
     struct qemu_RtlInitUnicodeString *c = (struct qemu_RtlInitUnicodeString *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     RtlInitUnicodeString(QEMU_G2H(c->target), QEMU_G2H(c->source));
 }
 

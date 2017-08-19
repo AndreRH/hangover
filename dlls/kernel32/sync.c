@@ -3389,7 +3389,7 @@ void qemu_InitOnceExecuteOnce(struct qemu_syscall *call)
     struct qemu_InitOnceExecuteOnce *c = (struct qemu_InitOnceExecuteOnce *)call;
     struct qemu_InitOnceExecuteOnce_host_data data;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     data.func = c->func;
     data.wrapper = c->wrapper;
     data.param = c->param;
