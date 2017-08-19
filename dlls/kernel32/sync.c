@@ -3323,9 +3323,24 @@ struct qemu_InitOnceExecuteOnce
     uint64_t func;
     uint64_t param;
     uint64_t context;
+    uint64_t wrapper;
+};
+
+struct qemu_InitOnceExecuteOnce_cb
+{
+    uint64_t func;
+    uint64_t once;
+    uint64_t param;
+    uint64_t context;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static uint64_t InitOnceExecuteOnce_guest_cb(struct qemu_InitOnceExecuteOnce_cb *data)
+{
+    PINIT_ONCE_FN func = (PINIT_ONCE_FN)data->func;
+    return func((INIT_ONCE *)data->once, (void *)data->param, (void **)data->context);
+}
 
 WINBASEAPI BOOL WINAPI InitOnceExecuteOnce(INIT_ONCE *once, PINIT_ONCE_FN func, void *param, void **context)
 {
@@ -3335,6 +3350,7 @@ WINBASEAPI BOOL WINAPI InitOnceExecuteOnce(INIT_ONCE *once, PINIT_ONCE_FN func, 
     call.func = (uint64_t)func;
     call.param = (uint64_t)param;
     call.context = (uint64_t)context;
+    call.wrapper = (uint64_t)InitOnceExecuteOnce_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -3343,11 +3359,43 @@ WINBASEAPI BOOL WINAPI InitOnceExecuteOnce(INIT_ONCE *once, PINIT_ONCE_FN func, 
 
 #else
 
+struct qemu_InitOnceExecuteOnce_host_data
+{
+    uint64_t func;
+    uint64_t wrapper;
+    uint64_t param;
+};
+
+static BOOL WINAPI InitOnceExecuteOnce_host_cb( INIT_ONCE *once, void *param, void **context )
+{
+    struct qemu_InitOnceExecuteOnce_host_data *data = param;
+    struct qemu_InitOnceExecuteOnce_cb call;
+    BOOL ret;
+
+    call.func = data->func;
+    call.once = QEMU_H2G(once);
+    call.param = data->param;
+    call.context = QEMU_H2G(context);
+
+    WINE_TRACE("Calling guest callback 0x%lx(%p, 0x%lx, %p).\n", call.func, once, call.param, context);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned %u.\n", ret);
+
+    return ret;
+}
+
 void qemu_InitOnceExecuteOnce(struct qemu_syscall *call)
 {
     struct qemu_InitOnceExecuteOnce *c = (struct qemu_InitOnceExecuteOnce *)call;
+    struct qemu_InitOnceExecuteOnce_host_data data;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = InitOnceExecuteOnce(QEMU_G2H(c->once), QEMU_G2H(c->func), QEMU_G2H(c->param), QEMU_G2H(c->context));
+    data.func = c->func;
+    data.wrapper = c->wrapper;
+    data.param = c->param;
+
+    c->super.iret = InitOnceExecuteOnce(QEMU_G2H(c->once), c->func ? InitOnceExecuteOnce_host_cb : NULL,
+            &data, QEMU_G2H(c->context));
 }
 
 #endif
