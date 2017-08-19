@@ -34,8 +34,14 @@ EXPORTS
   BuildTrusteeWithObjectsAndSidW
   BuildTrusteeWithSidA
   BuildTrusteeWithSidW
+  ChangeServiceConfig2A
+  ChangeServiceConfig2W
+  ChangeServiceConfigA
+  ChangeServiceConfigW
   CheckTokenMembership
   CloseEncryptedFileRaw
+  CloseServiceHandle
+  ControlService
   ConvertSecurityDescriptorToStringSecurityDescriptorA
   ConvertSecurityDescriptorToStringSecurityDescriptorW
   ConvertSidToStringSidA
@@ -54,6 +60,8 @@ EXPORTS
   CreateProcessWithLogonW
   CreateProcessWithTokenW
   CreateRestrictedToken
+  CreateServiceA
+  CreateServiceW
   CreateWellKnownSid
   CryptAcquireContextA
   CryptAcquireContextW
@@ -97,11 +105,18 @@ EXPORTS
   DecryptFileA
   DecryptFileW
   DeleteAce
+  DeleteService
   DestroyPrivateObjectSecurity
   DuplicateToken
   DuplicateTokenEx
   EncryptFileA
   EncryptFileW
+  EnumDependentServicesA
+  EnumDependentServicesW
+  EnumServicesStatusA
+  EnumServicesStatusExA
+  EnumServicesStatusExW
+  EnumServicesStatusW
   EqualPrefixSid
   EqualSid
   FileEncryptionStatusA
@@ -134,6 +149,10 @@ EXPORTS
   GetSecurityInfo
   GetSecurityInfoExA
   GetSecurityInfoExW
+  GetServiceDisplayNameA
+  GetServiceDisplayNameW
+  GetServiceKeyNameA
+  GetServiceKeyNameW
   GetSidIdentifierAuthority
   GetSidLengthRequired
   GetSidSubAuthority
@@ -159,6 +178,7 @@ EXPORTS
   IsValidSecurityDescriptor
   IsValidSid
   IsWellKnownSid
+  LockServiceDatabase
   LookupAccountNameA
   LookupAccountNameW
   LookupAccountSidA
@@ -175,6 +195,7 @@ EXPORTS
   MakeSelfRelativeSD
   MapGenericMask
   NotifyBootConfigStatus
+  NotifyServiceStatusChangeW
   ObjectCloseAuditAlarmA
   ObjectCloseAuditAlarmW
   ObjectDeleteAuditAlarmW
@@ -185,10 +206,23 @@ EXPORTS
   OpenEncryptedFileRawA
   OpenEncryptedFileRawW
   OpenProcessToken
+  OpenSCManagerA
+  OpenSCManagerW
+  OpenServiceA
+  OpenServiceW
   OpenThreadToken
   PrivilegeCheck
   PrivilegedServiceAuditAlarmA
   PrivilegedServiceAuditAlarmW
+  QueryServiceConfig2A
+  QueryServiceConfig2W
+  QueryServiceConfigA
+  QueryServiceConfigW
+  QueryServiceLockStatusA
+  QueryServiceLockStatusW
+  QueryServiceObjectSecurity
+  QueryServiceStatus
+  QueryServiceStatusEx
   QueryWindows31FilesMigration
   ReadEncryptedFileRaw
   RegCloseKey
@@ -224,6 +258,10 @@ EXPORTS
   RegGetKeySecurity
   RegGetValueA
   RegGetValueW
+  RegisterServiceCtrlHandlerA
+  RegisterServiceCtrlHandlerExA
+  RegisterServiceCtrlHandlerExW
+  RegisterServiceCtrlHandlerW
   RegLoadKeyA
   RegLoadKeyW
   RegLoadMUIStringA
@@ -282,8 +320,15 @@ EXPORTS
   SetSecurityDescriptorOwner
   SetSecurityDescriptorSacl
   SetSecurityInfo
+  SetServiceBits
+  SetServiceObjectSecurity
+  SetServiceStatus
   SetThreadToken
   SetTokenInformation
+  StartServiceA
+  StartServiceCtrlDispatcherA
+  StartServiceCtrlDispatcherW
+  StartServiceW
   SynchronizeWindows31FilesAndWindowsNTRegistry
   SystemFunction030
   SystemFunction035
@@ -291,4 +336,5 @@ EXPORTS
   SystemFunction040
   SystemFunction041
   TreeResetNamedSecurityInfoW
+  UnlockServiceDatabase
   WriteEncryptedFileRaw
