@@ -9,8 +9,14 @@ enum shlwapi_calls
     CALL_CHRCMPIW,
     CALL_DOESSTRINGROUNDTRIPA,
     CALL_DOESSTRINGROUNDTRIPW,
+    CALL_HASHDATA,
     CALL_ISCHARSPACEA,
     CALL_ISCHARSPACEW,
+    CALL_ISINTERNETESCENABLED,
+    CALL_MLBUILDRESURLA,
+    CALL_MLBUILDRESURLW,
+    CALL_PARSEURLA,
+    CALL_PARSEURLW,
     CALL_PATHADDBACKSLASHA,
     CALL_PATHADDBACKSLASHW,
     CALL_PATHADDEXTENSIONA,
@@ -84,6 +90,8 @@ enum shlwapi_calls
     CALL_PATHISUNCSERVERSHAREW,
     CALL_PATHISUNCSERVERW,
     CALL_PATHISUNCW,
+    CALL_PATHISURLA,
+    CALL_PATHISURLW,
     CALL_PATHISVALIDCHARA,
     CALL_PATHISVALIDCHARW,
     CALL_PATHMAKEPRETTYA,
@@ -131,6 +139,7 @@ enum shlwapi_calls
     CALL_SHANSITOANSI,
     CALL_SHANSITOUNICODE,
     CALL_SHANSITOUNICODECP,
+    CALL_SHAUTOCOMPLETE,
     CALL_SHGETWEBFOLDERFILEPATHA,
     CALL_SHGETWEBFOLDERFILEPATHW,
     CALL_SHLOADINDIRECTSTRING,
@@ -208,6 +217,33 @@ enum shlwapi_calls
     CALL_STRTOINTW,
     CALL_STRTRIMA,
     CALL_STRTRIMW,
+    CALL_URLAPPLYSCHEMEA,
+    CALL_URLAPPLYSCHEMEW,
+    CALL_URLCANONICALIZEA,
+    CALL_URLCANONICALIZEW,
+    CALL_URLCOMBINEA,
+    CALL_URLCOMBINEW,
+    CALL_URLCOMPAREA,
+    CALL_URLCOMPAREW,
+    CALL_URLCREATEFROMPATHA,
+    CALL_URLCREATEFROMPATHW,
+    CALL_URLESCAPEA,
+    CALL_URLESCAPEW,
+    CALL_URLFIXUPW,
+    CALL_URLGETLOCATIONA,
+    CALL_URLGETLOCATIONW,
+    CALL_URLGETPARTA,
+    CALL_URLGETPARTW,
+    CALL_URLHASHA,
+    CALL_URLHASHW,
+    CALL_URLISA,
+    CALL_URLISNOHISTORYA,
+    CALL_URLISNOHISTORYW,
+    CALL_URLISOPAQUEA,
+    CALL_URLISOPAQUEW,
+    CALL_URLISW,
+    CALL_URLUNESCAPEA,
+    CALL_URLUNESCAPEW,
 };
 
 #ifndef QEMU_DLL_GUEST
@@ -218,8 +254,14 @@ void qemu_ChrCmpIA(struct qemu_syscall *call);
 void qemu_ChrCmpIW(struct qemu_syscall *call);
 void qemu_DoesStringRoundTripA(struct qemu_syscall *call);
 void qemu_DoesStringRoundTripW(struct qemu_syscall *call);
+void qemu_HashData(struct qemu_syscall *call);
 void qemu_IsCharSpaceA(struct qemu_syscall *call);
 void qemu_IsCharSpaceW(struct qemu_syscall *call);
+void qemu_IsInternetESCEnabled(struct qemu_syscall *call);
+void qemu_MLBuildResURLA(struct qemu_syscall *call);
+void qemu_MLBuildResURLW(struct qemu_syscall *call);
+void qemu_ParseURLA(struct qemu_syscall *call);
+void qemu_ParseURLW(struct qemu_syscall *call);
 void qemu_PathAddBackslashA(struct qemu_syscall *call);
 void qemu_PathAddBackslashW(struct qemu_syscall *call);
 void qemu_PathAddExtensionA(struct qemu_syscall *call);
@@ -293,6 +335,8 @@ void qemu_PathIsUNCServerShareA(struct qemu_syscall *call);
 void qemu_PathIsUNCServerShareW(struct qemu_syscall *call);
 void qemu_PathIsUNCServerW(struct qemu_syscall *call);
 void qemu_PathIsUNCW(struct qemu_syscall *call);
+void qemu_PathIsURLA(struct qemu_syscall *call);
+void qemu_PathIsURLW(struct qemu_syscall *call);
 void qemu_PathIsValidCharA(struct qemu_syscall *call);
 void qemu_PathIsValidCharW(struct qemu_syscall *call);
 void qemu_PathMakePrettyA(struct qemu_syscall *call);
@@ -340,6 +384,7 @@ void qemu_PathUnquoteSpacesW(struct qemu_syscall *call);
 void qemu_SHAnsiToAnsi(struct qemu_syscall *call);
 void qemu_SHAnsiToUnicode(struct qemu_syscall *call);
 void qemu_SHAnsiToUnicodeCP(struct qemu_syscall *call);
+void qemu_SHAutoComplete(struct qemu_syscall *call);
 void qemu_SHGetWebFolderFilePathA(struct qemu_syscall *call);
 void qemu_SHGetWebFolderFilePathW(struct qemu_syscall *call);
 void qemu_SHLoadIndirectString(struct qemu_syscall *call);
@@ -417,6 +462,33 @@ void qemu_StrToIntExW(struct qemu_syscall *call);
 void qemu_StrToIntW(struct qemu_syscall *call);
 void qemu_StrTrimA(struct qemu_syscall *call);
 void qemu_StrTrimW(struct qemu_syscall *call);
+void qemu_UrlApplySchemeA(struct qemu_syscall *call);
+void qemu_UrlApplySchemeW(struct qemu_syscall *call);
+void qemu_UrlCanonicalizeA(struct qemu_syscall *call);
+void qemu_UrlCanonicalizeW(struct qemu_syscall *call);
+void qemu_UrlCombineA(struct qemu_syscall *call);
+void qemu_UrlCombineW(struct qemu_syscall *call);
+void qemu_UrlCompareA(struct qemu_syscall *call);
+void qemu_UrlCompareW(struct qemu_syscall *call);
+void qemu_UrlCreateFromPathA(struct qemu_syscall *call);
+void qemu_UrlCreateFromPathW(struct qemu_syscall *call);
+void qemu_UrlEscapeA(struct qemu_syscall *call);
+void qemu_UrlEscapeW(struct qemu_syscall *call);
+void qemu_UrlFixupW(struct qemu_syscall *call);
+void qemu_UrlGetLocationA(struct qemu_syscall *call);
+void qemu_UrlGetLocationW(struct qemu_syscall *call);
+void qemu_UrlGetPartA(struct qemu_syscall *call);
+void qemu_UrlGetPartW(struct qemu_syscall *call);
+void qemu_UrlHashA(struct qemu_syscall *call);
+void qemu_UrlHashW(struct qemu_syscall *call);
+void qemu_UrlIsA(struct qemu_syscall *call);
+void qemu_UrlIsNoHistoryA(struct qemu_syscall *call);
+void qemu_UrlIsNoHistoryW(struct qemu_syscall *call);
+void qemu_UrlIsOpaqueA(struct qemu_syscall *call);
+void qemu_UrlIsOpaqueW(struct qemu_syscall *call);
+void qemu_UrlIsW(struct qemu_syscall *call);
+void qemu_UrlUnescapeA(struct qemu_syscall *call);
+void qemu_UrlUnescapeW(struct qemu_syscall *call);
 
 #endif
 

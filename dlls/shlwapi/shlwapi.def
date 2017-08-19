@@ -5,8 +5,14 @@ EXPORTS
   ChrCmpIW
   DoesStringRoundTripA
   DoesStringRoundTripW
+  HashData
   IsCharSpaceA
   IsCharSpaceW
+  IsInternetESCEnabled
+  MLBuildResURLA
+  MLBuildResURLW
+  ParseURLA
+  ParseURLW
   PathAddBackslashA
   PathAddBackslashW
   PathAddExtensionA
@@ -80,6 +86,8 @@ EXPORTS
   PathIsUNCServerShareW
   PathIsUNCServerW
   PathIsUNCW
+  PathIsURLA
+  PathIsURLW
   PathIsValidCharA
   PathIsValidCharW
   PathMakePrettyA
@@ -127,6 +135,7 @@ EXPORTS
   SHAnsiToAnsi
   SHAnsiToUnicode
   SHAnsiToUnicodeCP
+  SHAutoComplete
   SHGetWebFolderFilePathA
   SHGetWebFolderFilePathW
   SHLoadIndirectString
@@ -204,6 +213,33 @@ EXPORTS
   StrToIntW
   StrTrimA
   StrTrimW
+  UrlApplySchemeA
+  UrlApplySchemeW
+  UrlCanonicalizeA
+  UrlCanonicalizeW
+  UrlCombineA
+  UrlCombineW
+  UrlCompareA
+  UrlCompareW
+  UrlCreateFromPathA
+  UrlCreateFromPathW
+  UrlEscapeA
+  UrlEscapeW
+  UrlFixupW
+  UrlGetLocationA
+  UrlGetLocationW
+  UrlGetPartA
+  UrlGetPartW
+  UrlHashA
+  UrlHashW
+  UrlIsA
+  UrlIsNoHistoryA
+  UrlIsNoHistoryW
+  UrlIsOpaqueA
+  UrlIsOpaqueW
+  UrlIsW
+  UrlUnescapeA
+  UrlUnescapeW
   wnsprintfA
   wnsprintfW
   wvnsprintfA
