@@ -62,7 +62,9 @@ EXPORTS
   NtCreateFile
   NtCreateIoCompletion
   NtCreateJobObject
+  NtCreateKey
   NtCreateKeyedEvent
+  NtCreateKeyTransacted
   NtCreateMailslotFile
   NtCreateMutant
   NtCreateNamedPipeFile
@@ -73,26 +75,39 @@ EXPORTS
   NtCreateTimer
   NtDelayExecution
   NtDeleteFile
+  NtDeleteKey
+  NtDeleteValueKey
   NtDeviceIoControlFile
   NtDisplayString
   NtDuplicateObject
   NtDuplicateToken
+  NtEnumerateKey
+  NtEnumerateValueKey
   NtFlushBuffersFile
   NtFlushInstructionCache
+  NtFlushKey
   NtFsControlFile
   NtGetCurrentProcessorNumber
   NtInitiatePowerAction
   NtIsProcessInJob
   NtListenPort
+  NtLoadKey
+  NtLoadKey2
   NtLockFile
   NtMakeTemporaryObject
   NtNotifyChangeDirectoryFile
+  NtNotifyChangeKey
+  NtNotifyChangeMultipleKeys
   NtOpenDirectoryObject
   NtOpenEvent
   NtOpenFile
   NtOpenIoCompletion
   NtOpenJobObject
+  NtOpenKey
   NtOpenKeyedEvent
+  NtOpenKeyEx
+  NtOpenKeyTransacted
+  NtOpenKeyTransactedEx
   NtOpenMutant
   NtOpenProcess
   NtOpenProcessToken
@@ -117,6 +132,9 @@ EXPORTS
   NtQueryInformationThread
   NtQueryInformationToken
   NtQueryIoCompletion
+  NtQueryKey
+  NtQueryLicenseValue
+  NtQueryMultipleValueKey
   NtQueryMutant
   NtQueryObject
   NtQuerySecurityObject
@@ -126,6 +144,7 @@ EXPORTS
   NtQuerySystemInformationEx
   NtQueryTimer
   NtQueryTimerResolution
+  NtQueryValueKey
   NtQueryVolumeInformationFile
   NtQueueApcThread
   NtRaiseException=ntdll_NtRaiseException
@@ -136,16 +155,21 @@ EXPORTS
   NtReleaseMutant
   NtReleaseSemaphore
   NtRemoveIoCompletion
+  NtRenameKey
+  NtReplaceKey
   NtReplyWaitReceivePort
   NtRequestWaitReplyPort
   NtResetEvent
+  NtRestoreKey
   NtResumeProcess
   NtResumeThread
+  NtSaveKey
   NtSecureConnectPort
   NtSetEaFile
   NtSetEvent
   NtSetInformationFile
   NtSetInformationJobObject
+  NtSetInformationKey
   NtSetInformationObject
   NtSetInformationProcess
   NtSetInformationThread
@@ -156,6 +180,7 @@ EXPORTS
   NtSetSystemInformation
   NtSetTimer
   NtSetTimerResolution
+  NtSetValueKey
   NtSetVolumeInformationFile
   NtShutdownSystem
   NtSignalAndWaitForSingleObject
@@ -165,6 +190,7 @@ EXPORTS
   NtTerminateJobObject
   NtTerminateProcess=ntdll_NtTerminateProcess
   NtTerminateThread
+  NtUnloadKey
   NtUnlockFile
   NtWaitForKeyedEvent
   NtWaitForMultipleObjects
@@ -194,6 +220,7 @@ EXPORTS
   RtlCaptureContext=ntdll_RtlCaptureContext
   RtlCaptureStackBackTrace
   RtlCharToInteger
+  RtlCheckRegistryKey
   RtlCompactHeap
   RtlCompareMemory=
   RtlCompareMemoryUlong
@@ -218,6 +245,7 @@ EXPORTS
   RtlDecompressBuffer
   RtlDecompressFragment
   RtlDeleteCriticalSection
+  RtlDeleteRegistryValue
   RtlDeleteResource
   RtlDeleteSecurityObject
   RtlDestroyHeap
@@ -242,6 +270,7 @@ EXPORTS
   RtlFindActivationContextSectionString
   RtlFindCharInUnicodeString
   RtlFirstEntrySList
+  RtlFormatCurrentUserKeyPath
   RtlFreeAnsiString
   RtlFreeHeap
   RtlFreeOemString
@@ -312,7 +341,14 @@ EXPORTS
   RtlOemStringToUnicodeSize
   RtlOemStringToUnicodeString
   RtlOemToUnicodeN
+  RtlOpenCurrentUser
   RtlPcToFileHeader
+  RtlpNtCreateKey
+  RtlpNtEnumerateSubKey
+  RtlpNtMakeTemporaryKey
+  RtlpNtOpenKey
+  RtlpNtQueryValueKey
+  RtlpNtSetValueKey
   RtlPrefixString
   RtlPrefixUnicodeString
   RtlpUnWaitCriticalSection
@@ -320,6 +356,7 @@ EXPORTS
   RtlQueryDepthSList
   RtlQueryHeapInformation
   RtlQueryInformationActivationContext
+  RtlQueryRegistryValues
   RtlRandom
   RtlReAllocateHeap
   RtlReleaseActivationContext
@@ -370,6 +407,7 @@ EXPORTS
   RtlWakeAllConditionVariable
   RtlWakeConditionVariable
   RtlWalkHeap
+  RtlWriteRegistryValue
   RtlZeroMemory=ntdll_RtlZeroMemory
   RtlZombifyActivationContext
   strcat=NTDLL_strcat
