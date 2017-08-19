@@ -62,6 +62,15 @@ do
     cp -lf $PWD/qemu_$dll.dll.so $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_host_dll
 done
 
+# Link Wine libraries.
+declare -a wine_dlls=("dbghelp" "rpcrt4")
+ln -sf $DESTDIR/build/wine-guest/libs/wine/libwine.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
+
+for dll in "${wine_dlls[@]}"
+do
+    ln -sf $DESTDIR/build/wine-guest/dlls/$dll/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
+done
+
 set +e
 
 # Resetup the apk with qemu
