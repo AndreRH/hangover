@@ -1,0 +1,40 @@
+LIBRARY usp10.dll BASE=0x1c0000000
+
+EXPORTS
+  ScriptApplyDigitSubstitution
+  ScriptApplyLogicalWidth
+  ScriptBreak
+  ScriptCacheGetHeight
+  ScriptCPtoX
+  ScriptFreeCache
+  ScriptGetCMap
+  ScriptGetFontFeatureTags
+  ScriptGetFontLanguageTags
+  ScriptGetFontProperties
+  ScriptGetFontScriptTags
+  ScriptGetGlyphABCWidth
+  ScriptGetLogicalWidths
+  ScriptGetProperties
+  ScriptIsComplex
+  ScriptItemize
+  ScriptItemizeOpenType
+  ScriptJustify
+  ScriptLayout
+  ScriptPlace
+  ScriptPlaceOpenType
+  ScriptRecordDigitSubstitution
+  ScriptShape
+  ScriptShapeOpenType
+  ScriptString_pcOutChars
+  ScriptString_pLogAttr
+  ScriptString_pSize
+  ScriptStringAnalyse
+  ScriptStringCPtoX
+  ScriptStringFree
+  ScriptStringGetLogicalWidths
+  ScriptStringGetOrder
+  ScriptStringOut
+  ScriptStringValidate
+  ScriptStringXtoCP
+  ScriptTextOut
+  ScriptXtoCP

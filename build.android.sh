@@ -52,7 +52,7 @@ mkdir -p $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_host_dll
 # TODO: Figure out dependencies between them better.
 declare -a dlls=("ntdll" "kernel32" "msvcrt" "advapi32" "comctl32" "comdlg32" "d3d9" "d3dx10_43" "d3dx9_43" "gdi32" "imm32"
         "msvcr100" "shell32" "shlwapi" "user32" "version" "xinput1_3" "winmm" "wsock32" "ws2_32" "iphlpapi"
-        "secur32" "wininet" "advpack")
+        "secur32" "wininet" "advpack" "usp10")
 
 for dll in "${dlls[@]}"
 do
