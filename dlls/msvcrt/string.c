@@ -189,6 +189,40 @@ void qemu_atof(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_memchr
+{
+    struct qemu_syscall super;
+    uint64_t ptr;
+    uint64_t c;
+    uint64_t n;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+void * CDECL MSVCRT_memchr(const void *ptr, int c, size_t n)
+{
+    struct qemu_memchr call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_MEMCHR);
+    call.ptr = (uint64_t)ptr;
+    call.c = c;
+    call.n = n;
+
+    qemu_syscall(&call.super);
+
+    return (void *)call.super.iret;
+}
+
+#else
+
+void qemu_memchr(struct qemu_syscall *call)
+{
+    struct qemu_memchr *c = (struct qemu_memchr *)call;
+    WINE_TRACE("\n");
+    c->super.iret = QEMU_H2G(p_memchr(QEMU_G2H(c->ptr), c->c, c->n));
+}
+
+#endif
+
 /* FIXME: Calling out of the vm for memcmp is probably a waste of time. */
 struct qemu_memcmp
 {

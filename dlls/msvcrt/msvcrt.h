@@ -632,6 +632,7 @@ enum msvcrt_calls
     CALL_MBSTOWCS,
     CALL_MBTOWC,
     CALL_MBTOWC_L,
+    CALL_MEMCHR,
     CALL_MEMCMP,
     CALL_MEMCPY,
     CALL_MEMMOVE,
@@ -1407,6 +1408,7 @@ void qemu_mbsrtowcs_s(struct qemu_syscall *call);
 void qemu_mbstowcs(struct qemu_syscall *call);
 void qemu_mbtowc(struct qemu_syscall *call);
 void qemu_mbtowc_l(struct qemu_syscall *call);
+void qemu_memchr(struct qemu_syscall *call);
 void qemu_memcmp(struct qemu_syscall *call);
 void qemu_memcpy(struct qemu_syscall *call);
 void qemu_memmove(struct qemu_syscall *call);
@@ -1535,6 +1537,7 @@ void *(* CDECL p_malloc)(size_t size);
 void *(* CDECL p_memset)(void *dst, int c, size_t n);
 void (* CDECL p_operator_delete)(void *mem);
 void *(* CDECL p_operator_new)(size_t size);
+void *(* CDECL p_memchr)(const void *ptr, int c, size_t n);
 int (* CDECL p_memcmp)(const void *ptr1, const void *ptr2, size_t size);
 void *(* CDECL p_memcpy)(void *dst, const void *src, size_t size);
 void *(* CDECL p_memmove)(void *dst, const void *src, size_t size);

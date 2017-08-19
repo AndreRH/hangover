@@ -597,6 +597,7 @@ EXPORTS
   mbstowcs=MSVCRT_mbstowcs
   mbtowc=MSVCRT_mbtowc
   mbtowc_l=MSVCRT_mbtowc_l
+  memchr=MSVCRT_memchr
   memcmp=MSVCRT_memcmp
   memcpy=MSVCRT_memcpy
   memmove=MSVCRT_memmove

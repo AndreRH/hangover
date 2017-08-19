@@ -699,6 +699,7 @@ static const syscall_handler dll_functions[] =
     qemu_mbstowcs,
     qemu_mbtowc,
     qemu_mbtowc_l,
+    qemu_memchr,
     qemu_memcmp,
     qemu_memcpy,
     qemu_memmove,
@@ -1417,6 +1418,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_mbstowcs = (void *)GetProcAddress(msvcrt, "mbstowcs");
     p_mbtowc = (void *)GetProcAddress(msvcrt, "mbtowc");
     p_mbtowc_l = (void *)GetProcAddress(msvcrt, "mbtowc_l");
+    p_memchr = (void *)GetProcAddress(msvcrt, "memchr");
     p_memcmp = (void *)GetProcAddress(msvcrt, "memcmp");
     p_memcpy = (void *)GetProcAddress(msvcrt, "memcpy");
     p_memmove = (void *)GetProcAddress(msvcrt, "memmove");
