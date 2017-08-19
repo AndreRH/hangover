@@ -2148,7 +2148,7 @@ MSVCRT_invalid_parameter_handler (* CDECL p__get_invalid_parameter_handler)(void
 MSVCRT_invalid_parameter_handler (* CDECL p__set_invalid_parameter_handler)(MSVCRT_invalid_parameter_handler handler);
 MSVCRT_invalid_parameter_handler (* CDECL p__get_thread_local_invalid_parameter_handler)(void);
 MSVCRT_invalid_parameter_handler (* CDECL p__set_thread_local_invalid_parameter_handler)(MSVCRT_invalid_parameter_handler handler);
-int (* CDECL p_bsearch)(const void *key, const void *base, size_t nmemb,
+void *(* CDECL p_bsearch)(const void *key, const void *base, size_t nmemb,
         size_t size, int (CDECL *compare)(const void *, const void *));
 int (* CDECL p__chdir)(const char * newdir);
 int (* CDECL p__wchdir)(const WCHAR * newdir);

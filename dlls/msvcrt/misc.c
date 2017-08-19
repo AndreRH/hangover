@@ -86,7 +86,7 @@ static uint64_t bsearch_guest_wrapper(const struct qemu_bsearch_cb *cb)
     return compare((void *)cb->ptr1, (void *)cb->ptr2);
 }
 
-void CDECL MSVCRT_bsearch(const void *key, const void *base, size_t nmemb,
+void * CDECL MSVCRT_bsearch(const void *key, const void *base, size_t nmemb,
         size_t size, int (__cdecl *compare)(const void *, const void *))
 {
     struct qemu_bsearch call;
@@ -99,6 +99,8 @@ void CDECL MSVCRT_bsearch(const void *key, const void *base, size_t nmemb,
     call.wrapper = (uint64_t)bsearch_guest_wrapper;
 
     qemu_syscall(&call.super);
+
+    return (void *)call.super.iret;
 }
 
 #else
