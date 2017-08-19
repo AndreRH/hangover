@@ -61,6 +61,8 @@ EXPORTS
   CheckMenuItem
   CheckMenuRadioItem
   CheckRadioButton
+  ChildWindowFromPoint
+  ChildWindowFromPointEx
   ClientToScreen
   ClipCursor
   CloseClipboard
@@ -84,6 +86,9 @@ EXPORTS
   CreateDialogIndirectParamW
   CreateDialogParamA
   CreateDialogParamW
+  CreateIcon
+  CreateIconFromResource
+  CreateIconFromResourceEx
   CreateIconIndirect
   CreateMDIWindowA
   CreateMDIWindowW
@@ -264,6 +269,8 @@ EXPORTS
   GetGuiResources
   GetGUIThreadInfo
   GetIconInfo
+  GetIconInfoExA
+  GetIconInfoExW
   GetInputState
   GetInternalWindowPos
   GetKBCodePage
@@ -486,6 +493,7 @@ EXPORTS
   PrivateExtractIconsA
   PrivateExtractIconsW
   PtInRect
+  RealChildWindowFromPoint
   RealGetWindowClassA
   RealGetWindowClassW
   RedrawWindow
@@ -665,6 +673,7 @@ EXPORTS
   WaitForInputIdle
   WaitMessage
   WindowFromDC
+  WindowFromPoint
   WinHelpA
   WinHelpW
   WINNLSEnableIME

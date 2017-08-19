@@ -31,6 +31,84 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 #endif
 
 
+struct qemu_CreateIconFromResourceEx
+{
+    struct qemu_syscall super;
+    uint64_t bits;
+    uint64_t cbSize;
+    uint64_t bIcon;
+    uint64_t dwVersion;
+    uint64_t width;
+    uint64_t height;
+    uint64_t cFlag;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINUSERAPI HICON WINAPI CreateIconFromResourceEx(LPBYTE bits, DWORD cbSize, WINBOOL bIcon, DWORD dwVersion, int width, int height, UINT cFlag)
+{
+    struct qemu_CreateIconFromResourceEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CREATEICONFROMRESOURCEEX);
+    call.bits = (uint64_t)bits;
+    call.cbSize = (uint64_t)cbSize;
+    call.bIcon = (uint64_t)bIcon;
+    call.dwVersion = (uint64_t)dwVersion;
+    call.width = (uint64_t)width;
+    call.height = (uint64_t)height;
+    call.cFlag = (uint64_t)cFlag;
+
+    qemu_syscall(&call.super);
+
+    return (HICON)call.super.iret;
+}
+
+#else
+
+void qemu_CreateIconFromResourceEx(struct qemu_syscall *call)
+{
+    struct qemu_CreateIconFromResourceEx *c = (struct qemu_CreateIconFromResourceEx *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = (uint64_t)CreateIconFromResourceEx(QEMU_G2H(c->bits), c->cbSize, c->bIcon, c->dwVersion, c->width, c->height, c->cFlag);
+}
+
+#endif
+
+struct qemu_CreateIconFromResource
+{
+    struct qemu_syscall super;
+    uint64_t bits;
+    uint64_t cbSize;
+    uint64_t bIcon;
+    uint64_t dwVersion;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINUSERAPI HICON WINAPI CreateIconFromResource(LPBYTE bits, DWORD cbSize, WINBOOL bIcon, DWORD dwVersion)
+{
+    struct qemu_CreateIconFromResource call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CREATEICONFROMRESOURCE);
+    call.bits = (uint64_t)bits;
+    call.cbSize = (uint64_t)cbSize;
+    call.bIcon = (uint64_t)bIcon;
+    call.dwVersion = (uint64_t)dwVersion;
+
+    qemu_syscall(&call.super);
+
+    return (HICON)call.super.iret;
+}
+
+#else
+
+void qemu_CreateIconFromResource(struct qemu_syscall *call)
+{
+    struct qemu_CreateIconFromResource *c = (struct qemu_CreateIconFromResource *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = (uint64_t)CreateIconFromResource(QEMU_G2H(c->bits), c->cbSize, c->bIcon, c->dwVersion);
+}
+
+#endif
+
 struct qemu_CreateCursor
 {
     struct qemu_syscall super;
@@ -69,6 +147,48 @@ void qemu_CreateCursor(struct qemu_syscall *call)
     struct qemu_CreateCursor *c = (struct qemu_CreateCursor *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = (uint64_t)CreateCursor(QEMU_G2H(c->hInstance), c->xHotSpot, c->yHotSpot, c->nWidth, c->nHeight, QEMU_G2H(c->lpANDbits), QEMU_G2H(c->lpXORbits));
+}
+
+#endif
+
+struct qemu_CreateIcon
+{
+    struct qemu_syscall super;
+    uint64_t hInstance;
+    uint64_t nWidth;
+    uint64_t nHeight;
+    uint64_t bPlanes;
+    uint64_t bBitsPixel;
+    uint64_t lpANDbits;
+    uint64_t lpXORbits;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINUSERAPI HICON WINAPI CreateIcon(HINSTANCE hInstance, int nWidth, int nHeight, BYTE bPlanes, BYTE bBitsPixel, const BYTE *lpANDbits, const BYTE *lpXORbits)
+{
+    struct qemu_CreateIcon call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CREATEICON);
+    call.hInstance = (uint64_t)hInstance;
+    call.nWidth = (uint64_t)nWidth;
+    call.nHeight = (uint64_t)nHeight;
+    call.bPlanes = (uint64_t)bPlanes;
+    call.bBitsPixel = (uint64_t)bBitsPixel;
+    call.lpANDbits = (uint64_t)lpANDbits;
+    call.lpXORbits = (uint64_t)lpXORbits;
+
+    qemu_syscall(&call.super);
+
+    return (HICON)call.super.iret;
+}
+
+#else
+
+void qemu_CreateIcon(struct qemu_syscall *call)
+{
+    struct qemu_CreateIcon *c = (struct qemu_CreateIcon *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = (uint64_t)CreateIcon(QEMU_G2H(c->hInstance), c->nWidth, c->nHeight, c->bPlanes, c->bBitsPixel, QEMU_G2H(c->lpANDbits), QEMU_G2H(c->lpXORbits));
 }
 
 #endif
@@ -719,6 +839,70 @@ void qemu_GetIconInfo(struct qemu_syscall *call)
     struct qemu_GetIconInfo *c = (struct qemu_GetIconInfo *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = GetIconInfo(QEMU_G2H(c->hIcon), QEMU_G2H(c->iconinfo));
+}
+
+#endif
+
+struct qemu_GetIconInfoExA
+{
+    struct qemu_syscall super;
+    uint64_t icon;
+    uint64_t info;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINUSERAPI BOOL WINAPI GetIconInfoExA(HICON icon, ICONINFOEXA *info)
+{
+    struct qemu_GetIconInfoExA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETICONINFOEXA);
+    call.icon = (uint64_t)icon;
+    call.info = (uint64_t)info;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetIconInfoExA(struct qemu_syscall *call)
+{
+    struct qemu_GetIconInfoExA *c = (struct qemu_GetIconInfoExA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetIconInfoExA(QEMU_G2H(c->icon), QEMU_G2H(c->info));
+}
+
+#endif
+
+struct qemu_GetIconInfoExW
+{
+    struct qemu_syscall super;
+    uint64_t icon;
+    uint64_t info;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINUSERAPI BOOL WINAPI GetIconInfoExW(HICON icon, ICONINFOEXW *info)
+{
+    struct qemu_GetIconInfoExW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETICONINFOEXW);
+    call.icon = (uint64_t)icon;
+    call.info = (uint64_t)info;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetIconInfoExW(struct qemu_syscall *call)
+{
+    struct qemu_GetIconInfoExW *c = (struct qemu_GetIconInfoExW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetIconInfoExW(QEMU_G2H(c->icon), QEMU_G2H(c->info));
 }
 
 #endif

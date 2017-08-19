@@ -66,6 +66,8 @@ enum user32_calls
     CALL_CHECKMENUITEM,
     CALL_CHECKMENURADIOITEM,
     CALL_CHECKRADIOBUTTON,
+    CALL_CHILDWINDOWFROMPOINT,
+    CALL_CHILDWINDOWFROMPOINTEX,
     CALL_CLIENTTOSCREEN,
     CALL_CLIPCURSOR,
     CALL_CLOSECLIPBOARD,
@@ -89,6 +91,9 @@ enum user32_calls
     CALL_CREATEDIALOGINDIRECTPARAMW,
     CALL_CREATEDIALOGPARAMA,
     CALL_CREATEDIALOGPARAMW,
+    CALL_CREATEICON,
+    CALL_CREATEICONFROMRESOURCE,
+    CALL_CREATEICONFROMRESOURCEEX,
     CALL_CREATEICONINDIRECT,
     CALL_CREATEMDIWINDOWA,
     CALL_CREATEMDIWINDOWW,
@@ -269,6 +274,8 @@ enum user32_calls
     CALL_GETGUIRESOURCES,
     CALL_GETGUITHREADINFO,
     CALL_GETICONINFO,
+    CALL_GETICONINFOEXA,
+    CALL_GETICONINFOEXW,
     CALL_GETINPUTSTATE,
     CALL_GETINTERNALWINDOWPOS,
     CALL_GETKBCODEPAGE,
@@ -491,6 +498,7 @@ enum user32_calls
     CALL_PRIVATEEXTRACTICONSA,
     CALL_PRIVATEEXTRACTICONSW,
     CALL_PTINRECT,
+    CALL_REALCHILDWINDOWFROMPOINT,
     CALL_REALGETWINDOWCLASSA,
     CALL_REALGETWINDOWCLASSW,
     CALL_REDRAWWINDOW,
@@ -669,6 +677,7 @@ enum user32_calls
     CALL_WAITFORINPUTIDLE,
     CALL_WAITMESSAGE,
     CALL_WINDOWFROMDC,
+    CALL_WINDOWFROMPOINT,
     CALL_WINHELPA,
     CALL_WINHELPW,
     CALL_WINNLSENABLEIME,
@@ -751,6 +760,8 @@ void qemu_CheckDlgButton(struct qemu_syscall *call);
 void qemu_CheckMenuItem(struct qemu_syscall *call);
 void qemu_CheckMenuRadioItem(struct qemu_syscall *call);
 void qemu_CheckRadioButton(struct qemu_syscall *call);
+void qemu_ChildWindowFromPoint(struct qemu_syscall *call);
+void qemu_ChildWindowFromPointEx(struct qemu_syscall *call);
 void qemu_ClientToScreen(struct qemu_syscall *call);
 void qemu_ClipCursor(struct qemu_syscall *call);
 void qemu_CloseClipboard(struct qemu_syscall *call);
@@ -774,6 +785,9 @@ void qemu_CreateDialogIndirectParamAorW(struct qemu_syscall *call);
 void qemu_CreateDialogIndirectParamW(struct qemu_syscall *call);
 void qemu_CreateDialogParamA(struct qemu_syscall *call);
 void qemu_CreateDialogParamW(struct qemu_syscall *call);
+void qemu_CreateIcon(struct qemu_syscall *call);
+void qemu_CreateIconFromResource(struct qemu_syscall *call);
+void qemu_CreateIconFromResourceEx(struct qemu_syscall *call);
 void qemu_CreateIconIndirect(struct qemu_syscall *call);
 void qemu_CreateMDIWindowA(struct qemu_syscall *call);
 void qemu_CreateMDIWindowW(struct qemu_syscall *call);
@@ -954,6 +968,8 @@ void qemu_GetForegroundWindow(struct qemu_syscall *call);
 void qemu_GetGuiResources(struct qemu_syscall *call);
 void qemu_GetGUIThreadInfo(struct qemu_syscall *call);
 void qemu_GetIconInfo(struct qemu_syscall *call);
+void qemu_GetIconInfoExA(struct qemu_syscall *call);
+void qemu_GetIconInfoExW(struct qemu_syscall *call);
 void qemu_GetInputState(struct qemu_syscall *call);
 void qemu_GetInternalWindowPos(struct qemu_syscall *call);
 void qemu_GetKBCodePage(struct qemu_syscall *call);
@@ -1176,6 +1192,7 @@ void qemu_PrivateExtractIconExW(struct qemu_syscall *call);
 void qemu_PrivateExtractIconsA(struct qemu_syscall *call);
 void qemu_PrivateExtractIconsW(struct qemu_syscall *call);
 void qemu_PtInRect(struct qemu_syscall *call);
+void qemu_RealChildWindowFromPoint(struct qemu_syscall *call);
 void qemu_RealGetWindowClassA(struct qemu_syscall *call);
 void qemu_RealGetWindowClassW(struct qemu_syscall *call);
 void qemu_RedrawWindow(struct qemu_syscall *call);
@@ -1352,6 +1369,7 @@ void qemu_VkKeyScanW(struct qemu_syscall *call);
 void qemu_WaitForInputIdle(struct qemu_syscall *call);
 void qemu_WaitMessage(struct qemu_syscall *call);
 void qemu_WindowFromDC(struct qemu_syscall *call);
+void qemu_WindowFromPoint(struct qemu_syscall *call);
 void qemu_WinHelpA(struct qemu_syscall *call);
 void qemu_WinHelpW(struct qemu_syscall *call);
 void qemu_WINNLSEnableIME(struct qemu_syscall *call);

@@ -48,8 +48,6 @@ WINUSERAPI void WINAPI SwitchToThisWindow(HWND hwnd, BOOL alt_tab)
     call.alt_tab = (uint64_t)alt_tab;
 
     qemu_syscall(&call.super);
-
-    return;
 }
 
 #else
@@ -150,8 +148,6 @@ WINUSERAPI int WINAPI GetWindowRgnBox(HWND hwnd, LPRECT prect)
 
 #else
 
-/* TODO: Add GetWindowRgnBox to Wine headers? */
-extern int WINAPI GetWindowRgnBox(HWND hwnd, LPRECT prect);
 void qemu_GetWindowRgnBox(struct qemu_syscall *call)
 {
     struct qemu_GetWindowRgnBox *c = (struct qemu_GetWindowRgnBox *)call;
@@ -223,6 +219,158 @@ void qemu_GetClientRect(struct qemu_syscall *call)
     struct qemu_GetClientRect *c = (struct qemu_GetClientRect *)call;
     WINE_TRACE("\n");
     c->super.iret = GetClientRect(QEMU_G2H(c->hwnd), QEMU_G2H(c->rect));
+}
+
+#endif
+
+struct qemu_WindowFromPoint
+{
+    struct qemu_syscall super;
+    uint64_t ptX;
+    uint64_t ptY;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINUSERAPI HWND WINAPI WindowFromPoint(POINT pt)
+{
+    struct qemu_WindowFromPoint call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WINDOWFROMPOINT);
+    call.ptX = pt.x;
+    call.ptY = pt.y;
+
+    qemu_syscall(&call.super);
+
+    return (HWND)call.super.iret;
+}
+
+#else
+
+void qemu_WindowFromPoint(struct qemu_syscall *call)
+{
+    struct qemu_WindowFromPoint *c = (struct qemu_WindowFromPoint *)call;
+    POINT pt;
+
+    WINE_FIXME("Unverified!\n");
+    pt.x = c->ptX;
+    pt.y = c->ptY;
+    c->super.iret = (uint64_t)WindowFromPoint(pt);
+}
+
+#endif
+
+struct qemu_ChildWindowFromPoint
+{
+    struct qemu_syscall super;
+    uint64_t hwndParent;
+    uint64_t ptX;
+    uint64_t ptY;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINUSERAPI HWND WINAPI ChildWindowFromPoint(HWND hwndParent, POINT pt)
+{
+    struct qemu_ChildWindowFromPoint call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CHILDWINDOWFROMPOINT);
+    call.hwndParent = (uint64_t)hwndParent;
+    call.ptX = pt.x;
+    call.ptY = pt.y;
+
+    qemu_syscall(&call.super);
+
+    return (HWND)call.super.iret;
+}
+
+#else
+
+void qemu_ChildWindowFromPoint(struct qemu_syscall *call)
+{
+    struct qemu_ChildWindowFromPoint *c = (struct qemu_ChildWindowFromPoint *)call;
+    POINT pt;
+
+    WINE_FIXME("Unverified!\n");
+    pt.x = c->ptX;
+    pt.y = c->ptY;
+    c->super.iret = (uint64_t)ChildWindowFromPoint(QEMU_G2H(c->hwndParent), pt);
+}
+
+#endif
+
+struct qemu_RealChildWindowFromPoint
+{
+    struct qemu_syscall super;
+    uint64_t hwndParent;
+    uint64_t ptX;
+    uint64_t ptY;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINUSERAPI HWND WINAPI RealChildWindowFromPoint(HWND hwndParent, POINT pt)
+{
+    struct qemu_RealChildWindowFromPoint call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_REALCHILDWINDOWFROMPOINT);
+    call.hwndParent = (uint64_t)hwndParent;
+    call.ptX = pt.x;
+    call.ptY = pt.y;
+
+    qemu_syscall(&call.super);
+
+    return (HWND)call.super.iret;
+}
+
+#else
+
+void qemu_RealChildWindowFromPoint(struct qemu_syscall *call)
+{
+    struct qemu_RealChildWindowFromPoint *c = (struct qemu_RealChildWindowFromPoint *)call;
+    POINT pt;
+
+    WINE_FIXME("Unverified!\n");
+    pt.x = c->ptX;
+    pt.y = c->ptY;
+    c->super.iret = (uint64_t)RealChildWindowFromPoint(QEMU_G2H(c->hwndParent), pt);
+}
+
+#endif
+
+struct qemu_ChildWindowFromPointEx
+{
+    struct qemu_syscall super;
+    uint64_t hwndParent;
+    uint64_t ptX;
+    uint64_t ptY;
+    uint64_t uFlags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINUSERAPI HWND WINAPI ChildWindowFromPointEx(HWND hwndParent, POINT pt, UINT uFlags)
+{
+    struct qemu_ChildWindowFromPointEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CHILDWINDOWFROMPOINTEX);
+    call.hwndParent = (uint64_t)hwndParent;
+    call.ptX = pt.x;
+    call.ptY = pt.y;
+    call.uFlags = (uint64_t)uFlags;
+
+    qemu_syscall(&call.super);
+
+    return (HWND)call.super.iret;
+}
+
+#else
+
+void qemu_ChildWindowFromPointEx(struct qemu_syscall *call)
+{
+    struct qemu_ChildWindowFromPointEx *c = (struct qemu_ChildWindowFromPointEx *)call;
+    POINT pt;
+
+    WINE_FIXME("Unverified!\n");
+    pt.x = c->ptX;
+    pt.y = c->ptY;
+    c->super.iret = (uint64_t)ChildWindowFromPointEx(QEMU_G2H(c->hwndParent), pt, c->uFlags);
 }
 
 #endif
@@ -734,8 +882,6 @@ WINUSERAPI void WINAPI SetInternalWindowPos(HWND hwnd, UINT showCmd, LPRECT rect
     call.pt = (uint64_t)pt;
 
     qemu_syscall(&call.super);
-
-    return;
 }
 
 #else
@@ -948,8 +1094,6 @@ WINUSERAPI BOOL WINAPI LogicalToPhysicalPoint(HWND hwnd, POINT *point)
 
 #else
 
-/* TODO: Add LogicalToPhysicalPoint to Wine headers? */
-extern BOOL WINAPI LogicalToPhysicalPoint(HWND hwnd, POINT *point);
 void qemu_LogicalToPhysicalPoint(struct qemu_syscall *call)
 {
     struct qemu_LogicalToPhysicalPoint *c = (struct qemu_LogicalToPhysicalPoint *)call;
@@ -982,8 +1126,6 @@ WINUSERAPI BOOL WINAPI PhysicalToLogicalPoint(HWND hwnd, POINT *point)
 
 #else
 
-/* TODO: Add PhysicalToLogicalPoint to Wine headers? */
-extern BOOL WINAPI PhysicalToLogicalPoint(HWND hwnd, POINT *point);
 void qemu_PhysicalToLogicalPoint(struct qemu_syscall *call)
 {
     struct qemu_PhysicalToLogicalPoint *c = (struct qemu_PhysicalToLogicalPoint *)call;
