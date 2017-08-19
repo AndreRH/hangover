@@ -26,5 +26,6 @@
 #define DLL_WS2_32      0x17LL
 #define DLL_IPHLPAPI    0x18LL
 #define DLL_SECUR32     0x19LL
+#define DLL_WININET     0x1aLL
 
 #endif
