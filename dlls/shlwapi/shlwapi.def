@@ -9,6 +9,8 @@ EXPORTS
   IsCharSpaceA
   IsCharSpaceW
   IsInternetESCEnabled
+  IStream_Reset
+  IStream_Size
   MLBuildResURLA
   MLBuildResURLW
   ParseURLA
@@ -136,8 +138,14 @@ EXPORTS
   SHAnsiToUnicode
   SHAnsiToUnicodeCP
   SHAutoComplete
+  SHCreateStreamOnFileA
+  SHCreateStreamOnFileEx
+  SHCreateStreamOnFileW
   SHGetWebFolderFilePathA
   SHGetWebFolderFilePathW
+  SHIsEmptyStream
+  SHIStream_Read
+  SHIStream_Write
   SHLoadIndirectString
   SHStrDupA
   SHStrDupW

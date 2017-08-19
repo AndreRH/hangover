@@ -13,6 +13,8 @@ enum shlwapi_calls
     CALL_ISCHARSPACEA,
     CALL_ISCHARSPACEW,
     CALL_ISINTERNETESCENABLED,
+    CALL_ISTREAM_RESET,
+    CALL_ISTREAM_SIZE,
     CALL_MLBUILDRESURLA,
     CALL_MLBUILDRESURLW,
     CALL_PARSEURLA,
@@ -140,8 +142,14 @@ enum shlwapi_calls
     CALL_SHANSITOUNICODE,
     CALL_SHANSITOUNICODECP,
     CALL_SHAUTOCOMPLETE,
+    CALL_SHCREATESTREAMONFILEA,
+    CALL_SHCREATESTREAMONFILEEX,
+    CALL_SHCREATESTREAMONFILEW,
     CALL_SHGETWEBFOLDERFILEPATHA,
     CALL_SHGETWEBFOLDERFILEPATHW,
+    CALL_SHISEMPTYSTREAM,
+    CALL_SHISTREAM_READ,
+    CALL_SHISTREAM_WRITE,
     CALL_SHLOADINDIRECTSTRING,
     CALL_SHSTRDUPA,
     CALL_SHSTRDUPW,
@@ -258,6 +266,8 @@ void qemu_HashData(struct qemu_syscall *call);
 void qemu_IsCharSpaceA(struct qemu_syscall *call);
 void qemu_IsCharSpaceW(struct qemu_syscall *call);
 void qemu_IsInternetESCEnabled(struct qemu_syscall *call);
+void qemu_IStream_Reset(struct qemu_syscall *call);
+void qemu_IStream_Size(struct qemu_syscall *call);
 void qemu_MLBuildResURLA(struct qemu_syscall *call);
 void qemu_MLBuildResURLW(struct qemu_syscall *call);
 void qemu_ParseURLA(struct qemu_syscall *call);
@@ -385,8 +395,14 @@ void qemu_SHAnsiToAnsi(struct qemu_syscall *call);
 void qemu_SHAnsiToUnicode(struct qemu_syscall *call);
 void qemu_SHAnsiToUnicodeCP(struct qemu_syscall *call);
 void qemu_SHAutoComplete(struct qemu_syscall *call);
+void qemu_SHCreateStreamOnFileA(struct qemu_syscall *call);
+void qemu_SHCreateStreamOnFileEx(struct qemu_syscall *call);
+void qemu_SHCreateStreamOnFileW(struct qemu_syscall *call);
 void qemu_SHGetWebFolderFilePathA(struct qemu_syscall *call);
 void qemu_SHGetWebFolderFilePathW(struct qemu_syscall *call);
+void qemu_SHIsEmptyStream(struct qemu_syscall *call);
+void qemu_SHIStream_Read(struct qemu_syscall *call);
+void qemu_SHIStream_Write(struct qemu_syscall *call);
 void qemu_SHLoadIndirectString(struct qemu_syscall *call);
 void qemu_SHStrDupA(struct qemu_syscall *call);
 void qemu_SHStrDupW(struct qemu_syscall *call);
