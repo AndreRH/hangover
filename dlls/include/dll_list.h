@@ -23,5 +23,6 @@
 #define DLL_OPENGL32    0x14LL
 #define DLL_WINMM       0x15LL
 #define DLL_WSOCK32     0x16LL
+#define DLL_WS2_32      0x17LL
 
 #endif
