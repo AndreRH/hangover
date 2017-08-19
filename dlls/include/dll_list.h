@@ -27,5 +27,6 @@
 #define DLL_IPHLPAPI    0x18LL
 #define DLL_SECUR32     0x19LL
 #define DLL_WININET     0x1aLL
+#define DLL_ADVPACK     0x1bLL
 
 #endif
