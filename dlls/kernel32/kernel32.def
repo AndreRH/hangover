@@ -345,6 +345,7 @@ EXPORTS
   GetDriveTypeA
   GetDriveTypeW
   GetDynamicTimeZoneInformation
+  GetEnvironmentStrings=qemu_GetEnvironmentStringsA
   GetEnvironmentStringsA=qemu_GetEnvironmentStringsA
   GetEnvironmentStringsW
   GetEnvironmentVariableA
