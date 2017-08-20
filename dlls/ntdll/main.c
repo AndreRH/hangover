@@ -84,6 +84,14 @@ static const syscall_handler dll_functions[] =
     qemu__ultoa,
     qemu_atoi,
     qemu_atol,
+    qemu_EtwEventEnabled,
+    qemu_EtwEventRegister,
+    qemu_EtwEventSetInformation,
+    qemu_EtwEventUnregister,
+    qemu_EtwEventWrite,
+    qemu_EtwRegisterTraceGuidsA,
+    qemu_EtwRegisterTraceGuidsW,
+    qemu_EtwUnregisterTraceGuids,
     qemu_isalnum,
     qemu_isalpha,
     qemu_iscntrl,
@@ -497,6 +505,9 @@ static const syscall_handler dll_functions[] =
     qemu_toupper,
     qemu_VerSetConditionMask,
     qemu_wcsrchr,
+    qemu_WinSqmEndSession,
+    qemu_WinSqmIsOptedIn,
+    qemu_WinSqmStartSession,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)

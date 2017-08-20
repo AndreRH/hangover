@@ -25,6 +25,14 @@ enum ntdll_calls
     CALL__ULTOA,
     CALL_ATOI,
     CALL_ATOL,
+    CALL_ETWEVENTENABLED,
+    CALL_ETWEVENTREGISTER,
+    CALL_ETWEVENTSETINFORMATION,
+    CALL_ETWEVENTUNREGISTER,
+    CALL_ETWEVENTWRITE,
+    CALL_ETWREGISTERTRACEGUIDSA,
+    CALL_ETWREGISTERTRACEGUIDSW,
+    CALL_ETWUNREGISTERTRACEGUIDS,
     CALL_ISALNUM,
     CALL_ISALPHA,
     CALL_ISCNTRL,
@@ -437,7 +445,10 @@ enum ntdll_calls
     CALL_TOLOWER,
     CALL_TOUPPER,
     CALL_VERSETCONDITIONMASK,
-    CALL_WCSRCHR
+    CALL_WCSRCHR,
+    CALL_WINSQMENDSESSION,
+    CALL_WINSQMISOPTEDIN,
+    CALL_WINSQMSTARTSESSION,
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -479,6 +490,14 @@ void qemu__ui64toa(struct qemu_syscall *call);
 void qemu__ultoa(struct qemu_syscall *call);
 void qemu_atoi(struct qemu_syscall *call);
 void qemu_atol(struct qemu_syscall *call);
+void qemu_EtwEventEnabled(struct qemu_syscall *call);
+void qemu_EtwEventRegister(struct qemu_syscall *call);
+void qemu_EtwEventSetInformation(struct qemu_syscall *call);
+void qemu_EtwEventUnregister(struct qemu_syscall *call);
+void qemu_EtwEventWrite(struct qemu_syscall *call);
+void qemu_EtwRegisterTraceGuidsA(struct qemu_syscall *call);
+void qemu_EtwRegisterTraceGuidsW(struct qemu_syscall *call);
+void qemu_EtwUnregisterTraceGuids(struct qemu_syscall *call);
 void qemu_isalnum(struct qemu_syscall *call);
 void qemu_isalpha(struct qemu_syscall *call);
 void qemu_iscntrl(struct qemu_syscall *call);
@@ -891,6 +910,9 @@ void qemu_tolower(struct qemu_syscall *call);
 void qemu_toupper(struct qemu_syscall *call);
 void qemu_VerSetConditionMask(struct qemu_syscall *call);
 void qemu_wcsrchr(struct qemu_syscall *call);
+void qemu_WinSqmEndSession(struct qemu_syscall *call);
+void qemu_WinSqmIsOptedIn(struct qemu_syscall *call);
+void qemu_WinSqmStartSession(struct qemu_syscall *call);
 
 WCHAR *(* CDECL p_wcsrchr)(WCHAR *str, WCHAR ch);
 void * (* CDECL p_memchr)(const void *ptr, int c, size_t n);

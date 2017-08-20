@@ -24,6 +24,14 @@ EXPORTS
   atoi=NTDLL_atoi
   atol=NTDLL_atol
   DbgBreakPoint
+  EtwEventEnabled
+  EtwEventRegister
+  EtwEventSetInformation
+  EtwEventUnregister
+  EtwEventWrite
+  EtwRegisterTraceGuidsA
+  EtwRegisterTraceGuidsW
+  EtwUnregisterTraceGuids
   isalnum=NTDLL_isalnum
   isalpha=NTDLL_isalpha
   iscntrl=NTDLL_iscntrl
@@ -444,3 +452,6 @@ EXPORTS
   toupper=NTDLL_toupper
   VerSetConditionMask
   wcsrchr=NTDLL_wcsrchr
+  WinSqmEndSession
+  WinSqmIsOptedIn
+  WinSqmStartSession
