@@ -208,6 +208,8 @@ enum ntdll_calls
     CALL_RTLACTIVATEACTIVATIONCONTEXT,
     CALL_RTLADDFUNCTIONTABLE,
     CALL_RTLADDREFACTIVATIONCONTEXT,
+    CALL_RTLADDVECTOREDCONTINUEHANDLER,
+    CALL_RTLADDVECTOREDEXCEPTIONHANDLER,
     CALL_RTLALLOCATEHEAP,
     CALL_RTLANSICHARTOUNICODECHAR,
     CALL_RTLANSISTRINGTOUNICODESIZE,
@@ -246,6 +248,7 @@ enum ntdll_calls
     CALL_RTLDECOMPRESSBUFFER,
     CALL_RTLDECOMPRESSFRAGMENT,
     CALL_RTLDELETECRITICALSECTION,
+    CALL_RTLDELETEFUNCTIONTABLE,
     CALL_RTLDELETEREGISTRYVALUE,
     CALL_RTLDELETERESOURCE,
     CALL_RTLDELETESECURITYOBJECT,
@@ -358,6 +361,7 @@ enum ntdll_calls
     CALL_RTLQUERYHEAPINFORMATION,
     CALL_RTLQUERYINFORMATIONACTIVATIONCONTEXT,
     CALL_RTLQUERYREGISTRYVALUES,
+    CALL_RTLRAISESTATUS,
     CALL_RTLRANDOM,
     CALL_RTLREALLOCATEHEAP,
     CALL_RTLRELEASEACTIVATIONCONTEXT,
@@ -365,6 +369,8 @@ enum ntdll_calls
     CALL_RTLRELEASERESOURCE,
     CALL_RTLRELEASESRWLOCKEXCLUSIVE,
     CALL_RTLRELEASESRWLOCKSHARED,
+    CALL_RTLREMOVEVECTOREDCONTINUEHANDLER,
+    CALL_RTLREMOVEVECTOREDEXCEPTIONHANDLER,
     CALL_RTLRESTORECONTEXT,
     CALL_RTLRUNONCEBEGININITIALIZE,
     CALL_RTLRUNONCECOMPLETE,
@@ -656,6 +662,8 @@ void qemu_RtlAcquireSRWLockShared(struct qemu_syscall *call);
 void qemu_RtlActivateActivationContext(struct qemu_syscall *call);
 void qemu_RtlAddFunctionTable(struct qemu_syscall *call);
 void qemu_RtlAddRefActivationContext(struct qemu_syscall *call);
+void qemu_RtlAddVectoredContinueHandler(struct qemu_syscall *call);
+void qemu_RtlAddVectoredExceptionHandler(struct qemu_syscall *call);
 void qemu_RtlAllocateHeap(struct qemu_syscall *call);
 void qemu_RtlAnsiCharToUnicodeChar(struct qemu_syscall *call);
 void qemu_RtlAnsiStringToUnicodeSize(struct qemu_syscall *call);
@@ -694,6 +702,7 @@ void qemu_RtlDecodePointer(struct qemu_syscall *call);
 void qemu_RtlDecompressBuffer(struct qemu_syscall *call);
 void qemu_RtlDecompressFragment(struct qemu_syscall *call);
 void qemu_RtlDeleteCriticalSection(struct qemu_syscall *call);
+void qemu_RtlDeleteFunctionTable(struct qemu_syscall *call);
 void qemu_RtlDeleteRegistryValue(struct qemu_syscall *call);
 void qemu_RtlDeleteResource(struct qemu_syscall *call);
 void qemu_RtlDeleteSecurityObject(struct qemu_syscall *call);
@@ -806,6 +815,7 @@ void qemu_RtlQueryDepthSList(struct qemu_syscall *call);
 void qemu_RtlQueryHeapInformation(struct qemu_syscall *call);
 void qemu_RtlQueryInformationActivationContext(struct qemu_syscall *call);
 void qemu_RtlQueryRegistryValues(struct qemu_syscall *call);
+void qemu_RtlRaiseStatus(struct qemu_syscall *call);
 void qemu_RtlRandom(struct qemu_syscall *call);
 void qemu_RtlReAllocateHeap(struct qemu_syscall *call);
 void qemu_RtlReleaseActivationContext(struct qemu_syscall *call);
@@ -813,6 +823,8 @@ void qemu_RtlReleasePebLock(struct qemu_syscall *call);
 void qemu_RtlReleaseResource(struct qemu_syscall *call);
 void qemu_RtlReleaseSRWLockExclusive(struct qemu_syscall *call);
 void qemu_RtlReleaseSRWLockShared(struct qemu_syscall *call);
+void qemu_RtlRemoveVectoredContinueHandler(struct qemu_syscall *call);
+void qemu_RtlRemoveVectoredExceptionHandler(struct qemu_syscall *call);
 void qemu_RtlRestoreContext(struct qemu_syscall *call);
 void qemu_RtlRunOnceBeginInitialize(struct qemu_syscall *call);
 void qemu_RtlRunOnceComplete(struct qemu_syscall *call);

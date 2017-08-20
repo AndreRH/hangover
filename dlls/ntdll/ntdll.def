@@ -207,6 +207,8 @@ EXPORTS
   RtlActivateActivationContext
   RtlAddFunctionTable
   RtlAddRefActivationContext
+  RtlAddVectoredContinueHandler
+  RtlAddVectoredExceptionHandler
   RtlAllocateHeap
   RtlAnsiCharToUnicodeChar
   RtlAnsiStringToUnicodeSize
@@ -246,6 +248,7 @@ EXPORTS
   RtlDecompressBuffer
   RtlDecompressFragment
   RtlDeleteCriticalSection
+  RtlDeleteFunctionTable
   RtlDeleteRegistryValue
   RtlDeleteResource
   RtlDeleteSecurityObject
@@ -362,6 +365,7 @@ EXPORTS
   RtlQueryHeapInformation
   RtlQueryInformationActivationContext
   RtlQueryRegistryValues
+  RtlRaiseStatus
   RtlRandom
   RtlReAllocateHeap
   RtlReleaseActivationContext
@@ -369,6 +373,8 @@ EXPORTS
   RtlReleaseResource
   RtlReleaseSRWLockExclusive
   RtlReleaseSRWLockShared
+  RtlRemoveVectoredContinueHandler
+  RtlRemoveVectoredExceptionHandler
   RtlRunOnceBeginInitialize
   RtlRunOnceComplete
   RtlRunOnceExecuteOnce
