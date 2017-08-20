@@ -10,12 +10,14 @@ EXPORTS
   _lopen
   _lread
   _lwrite
+  AcquireSRWLockExclusive=ntdll.RtlAcquireSRWLockExclusive
   ActivateActCtx
   AddAtomA
   AddAtomW
   AddConsoleAliasA
   AddConsoleAliasW
   AddRefActCtx
+  AddVectoredExceptionHandler=ntdll.RtlAddVectoredExceptionHandler
   AllocateUserPhysicalPages
   AllocConsole
   ApplicationRecoveryFinished
@@ -766,8 +768,10 @@ EXPORTS
   ReleaseActCtx
   ReleaseMutex
   ReleaseSemaphore
+  ReleaseSRWLockExclusive=ntdll.RtlReleaseSRWLockExclusive
   RemoveDirectoryA
   RemoveDirectoryW
+  RemoveVectoredExceptionHandler=ntdll.RtlRemoveVectoredExceptionHandler
   ReplaceFileA
   ReplaceFileW
   RequestWakeupLatency
@@ -777,6 +781,7 @@ EXPORTS
   RtlAddFunctionTable=ntdll.RtlAddFunctionTable
   RtlCaptureContext=ntdll.RtlCaptureContext
   RtlCaptureStackBackTrace=ntdll.RtlCaptureStackBackTrace
+  RtlDeleteFunctionTable=ntdll.RtlDeleteFunctionTable
   RtlLookupFunctionEntry=ntdll.RtlLookupFunctionEntry
   RtlPcToFileHeader=ntdll.RtlPcToFileHeader
   RtlUnwind=ntdll.RtlUnwind
@@ -817,6 +822,7 @@ EXPORTS
   SetConsoleTitleW
   SetConsoleWindowInfo
   SetCPGlobal
+  SetCriticalSectionSpinCount=ntdll.RtlSetCriticalSectionSpinCount
   SetCurrentConsoleFontEx
   SetCurrentDirectoryA
   SetCurrentDirectoryW
@@ -914,6 +920,7 @@ EXPORTS
   Toolhelp32ReadProcessMemory
   TransactNamedPipe
   TransmitCommChar
+  TryAcquireSRWLockExclusive=ntdll.RtlTryAcquireSRWLockExclusive
   TryEnterCriticalSection=ntdll.RtlTryEnterCriticalSection
   TrySubmitThreadpoolCallback
   TzSpecificLocalTimeToSystemTime
