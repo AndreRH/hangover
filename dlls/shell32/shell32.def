@@ -1,26 +1,40 @@
 LIBRARY shell32.dll BASE=0x80000000
 
 EXPORTS
+  ArrangeWindows
+  CIDLData_CreateFromIDArray
   CommandLineToArgvW
+  DAD_AutoScroll
+  DAD_DragEnter
+  DAD_DragEnterEx
+  DAD_DragLeave
+  DAD_DragMove
+  DAD_SetDragImage
+  DAD_ShowDragImage
   DllCanUnloadNow
   DllGetClassObject PRIVATE
   DllGetVersion
   DllInstall
   DllRegisterServer
   DllUnregisterServer
+  DoEnvironmentSubst=shell32_DoEnvironmentSubst
   DragAcceptFiles
   DragFinish
   DragQueryFileA
   DragQueryFileW
   DragQueryPoint
+  DriveType
   DuplicateIcon
   ExtractIconA
   ExtractIconW
   ExtractVersionResource16W
+  FileIconInit
   FindExecutableA
   FindExecutableW
   FreeIconList
   GetCurrentProcessExplicitAppUserModelID
+  GetFileNameFromBrowse
+  GUIDFromStringW
   ILAppendID
   ILClone
   ILCloneFirst
@@ -42,17 +56,30 @@ EXPORTS
   ILRemoveLastID
   ILSaveToStream
   InitNetworkAddressControl
+  InvalidateDriveType
   IsLFNDriveA
   IsLFNDriveW
+  IsUserAnAdmin
+  LinkWindow_RegisterClass
+  LinkWindow_UnregisterClass
   OpenAs_RunDLLA
   OpenAs_RunDLLW
+  ParseField
   PathYetAnotherMakeUniqueName
   Printer_LoadIconsW
   Printers_RegisterWindowW
   Printers_UnregisterWindow
+  ReadCabinetState
   RegenerateUserEnvironment
+  RegisterShellHook
+  RLBuildListOfPaths
+  SetAppStartingCursor
   SetCurrentProcessExplicitAppUserModelID
+  SHAbortInvokeCommand
+  SHAddFromPropSheetExtArray
+  SHAddToRecentDocs
   SHAlloc
+  SHAllocShared
   SHAppBarMessage
   SHBindToParent
   SHCloneSpecialIDList
@@ -62,12 +89,18 @@ EXPORTS
   SHCreateItemFromIDList
   SHCreateItemFromParsingName
   SHCreateLinks
+  SHCreatePropSheetExtArray
+  SHCreatePropSheetExtArrayEx
   SHCreateQueryCancelAutoPlayMoniker
   SHCreateShellItem
   SHCreateShellItemArray
   SHCreateShellItemArrayFromDataObject
   SHCreateShellItemArrayFromIDLists
   SHCreateShellItemArrayFromShellItem
+  SHCreateStdEnumFmtEtc
+  SHDestroyPropSheetExtArray
+  SHDoDragDrop
+  shell32_243
   ShellAboutA
   ShellAboutW
   ShellExecuteA
@@ -75,7 +108,13 @@ EXPORTS
   ShellExecuteExW
   ShellExecuteW
   SHEnumerateUnreadMailAccountsW
+  SHFindFiles
+  SHFlushClipboard
+  SHFlushSFCache
+  SHFormatDrive
   SHFree
+  SHFreeShared
+  SHFreeUnusedLibraries
   SHGetDataFromIDListA
   SHGetDataFromIDListW
   SHGetFileInfoA
@@ -87,6 +126,8 @@ EXPORTS
   SHGetFolderPathEx
   SHGetFolderPathW
   SHGetIDListFromObject
+  SHGetImageList
+  SHGetInstanceExplorer
   SHGetItemFromDataObject
   SHGetItemFromObject
   SHGetKnownFolderIDList
@@ -95,6 +136,8 @@ EXPORTS
   SHGetLocalizedName
   SHGetMalloc
   SHGetNameFromIDList
+  SHGetNewLinkInfoA
+  SHGetNewLinkInfoW
   SHGetPathFromIDListA
   SHGetPathFromIDListEx
   SHGetPathFromIDListW
@@ -102,9 +145,12 @@ EXPORTS
   SHGetPropertyStoreFromParsingName
   SHGetRealIDL
   SHGetSetFolderCustomSettings
+  SHGetSetSettings
+  SHGetSettings
   SHGetSpecialFolderLocation
   SHGetSpecialFolderPathA
   SHGetSpecialFolderPathW
+  SHHandleUpdateImage
   SHHelpShortcuts_RunDLLA
   SHHelpShortcuts_RunDLLW
   SHILCreateFromPathA=SHILCreateFromPathAW
@@ -112,16 +158,36 @@ EXPORTS
   SHLimitInputEdit
   SHLoadInProc
   SHLoadNonloadedIconOverlayIdentifiers
+  SHLoadOLE
+  SHLockShared
   SHLogILFromFSIL
+  SHObjectProperties
   SHOpenFolderAndSelectItems
+  SHOutOfMemoryMessageBox
   SHParseDisplayName
   SHPropStgCreate
   SHPropStgReadMultiple
   SHPropStgWriteMultiple
   SHQueryUserNotificationState
+  SHRegisterDragDrop
+  SHRemoveLocalizedName
+  SHReplaceFromPropSheetExtArray
+  SHRevokeDragDrop
+  SHRunControlPanel
+  SHSetInstanceExplorer
+  SHSetLocalizedName
   SHSetUnreadMailCountW
+  SHShellFolderView_Message
   SHSimpleIDListFromPathA=SHSimpleIDListFromPathAW
   SHSimpleIDListFromPathW=SHSimpleIDListFromPathAW
+  SHStartNetConnectionDialog=shell32_SHStartNetConnectionDialog
+  SHUnlockShared
+  SHUpdateImageA
+  SHUpdateImageW
+  SHValidateUNC
+  SHWaitForFileToOpen
+  SHWinHelp
+  SignalFileOpen
   StrChrW=shlwapi.StrChrW
   StrCmpNIW=shlwapi.StrCmpNIW
   StrCmpNW=shlwapi.StrCmpNW
@@ -129,3 +195,4 @@ EXPORTS
   StrStrIW=shlwapi.StrStrIW
   StrStrW=shlwapi.StrStrW
   WOWShellExecute
+  WriteCabinetState
