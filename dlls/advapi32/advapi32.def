@@ -314,6 +314,8 @@ EXPORTS
   RegisterServiceCtrlHandlerExA
   RegisterServiceCtrlHandlerExW
   RegisterServiceCtrlHandlerW
+  RegisterTraceGuidsA=ntdll.EtwRegisterTraceGuidsA
+  RegisterTraceGuidsW=ntdll.EtwRegisterTraceGuidsW
   RegisterWaitChainCOMCallback
   RegLoadKeyA
   RegLoadKeyW
@@ -398,4 +400,5 @@ EXPORTS
   TraceMessageVa
   TreeResetNamedSecurityInfoW
   UnlockServiceDatabase
+  UnregisterTraceGuids=ntdll.EtwUnregisterTraceGuids
   WriteEncryptedFileRaw
