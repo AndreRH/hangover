@@ -659,6 +659,7 @@ EXPORTS
   strerror_s=MSVCRT_strerror_s
   strlen=MSVCRT_strlen
   strncmp=MSVCRT_strncmp
+  strncpy=MSVCRT_strncpy
   strrchr=MSVCRT_strrchr
   strstr=MSVCRT_strstr
   strtod=MSVCRT_strtod
