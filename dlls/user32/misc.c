@@ -30,6 +30,43 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 #endif
 
+struct qemu_UserSignalProc
+{
+    struct qemu_syscall super;
+    uint64_t uCode;
+    uint64_t dwThreadOrProcessID;
+    uint64_t dwFlags;
+    uint64_t hModule;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINUSERAPI WORD WINAPI UserSignalProc(UINT uCode, DWORD dwThreadOrProcessID, DWORD dwFlags, void *hModule)
+{
+    struct qemu_UserSignalProc call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_USERSIGNALPROC);
+    call.uCode = (uint64_t)uCode;
+    call.dwThreadOrProcessID = (uint64_t)dwThreadOrProcessID;
+    call.dwFlags = (uint64_t)dwFlags;
+    call.hModule = (uint64_t)hModule;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add UserSignalProc to Wine headers? */
+extern WORD WINAPI UserSignalProc(UINT uCode, DWORD dwThreadOrProcessID, DWORD dwFlags, void *hModule);
+void qemu_UserSignalProc(struct qemu_syscall *call)
+{
+    struct qemu_UserSignalProc *c = (struct qemu_UserSignalProc *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = UserSignalProc(c->uCode, c->dwThreadOrProcessID, c->dwFlags, QEMU_G2H(c->hModule));
+}
+
+#endif
 
 struct qemu_SetLastErrorEx
 {
@@ -375,6 +412,43 @@ void qemu_MonitorFromRect(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_MonitorFromPoint
+{
+    struct qemu_syscall super;
+    uint64_t ptX, ptY;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINUSERAPI HMONITOR WINAPI MonitorFromPoint(POINT pt, DWORD flags)
+{
+    struct qemu_MonitorFromPoint call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_MONITORFROMPOINT);
+    call.ptX = pt.x;
+    call.ptY = pt.y;
+    call.flags = (uint64_t)flags;
+
+    qemu_syscall(&call.super);
+
+    return (HMONITOR)call.super.iret;
+}
+
+#else
+
+void qemu_MonitorFromPoint(struct qemu_syscall *call)
+{
+    struct qemu_MonitorFromPoint *c = (struct qemu_MonitorFromPoint *)call;
+    POINT pt;
+
+    WINE_FIXME("Unverified!\n");
+    pt.x = c->ptX;
+    pt.y = c->ptY;
+    c->super.iret = (uint64_t)MonitorFromPoint(pt, c->flags);
+}
+
+#endif
+
 struct qemu_MonitorFromWindow
 {
     struct qemu_syscall super;
@@ -503,6 +577,48 @@ void qemu_EnumDisplayMonitors(struct qemu_syscall *call)
     struct qemu_EnumDisplayMonitors *c = (struct qemu_EnumDisplayMonitors *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = EnumDisplayMonitors(QEMU_G2H(c->hdc), QEMU_G2H(c->lprcClip), QEMU_G2H(c->lpfnEnum), c->dwData);
+}
+
+#endif
+
+struct qemu_QueryDisplayConfig
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+    uint64_t numpathelements;
+    uint64_t pathinfo;
+    uint64_t numinfoelements;
+    uint64_t modeinfo;
+    uint64_t topologyid;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LONG WINAPI QueryDisplayConfig(UINT32 flags, UINT32 *numpathelements, DISPLAYCONFIG_PATH_INFO *pathinfo, UINT32 *numinfoelements, DISPLAYCONFIG_MODE_INFO *modeinfo, DISPLAYCONFIG_TOPOLOGY_ID *topologyid)
+{
+    struct qemu_QueryDisplayConfig call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_QUERYDISPLAYCONFIG);
+    call.flags = (uint64_t)flags;
+    call.numpathelements = (uint64_t)numpathelements;
+    call.pathinfo = (uint64_t)pathinfo;
+    call.numinfoelements = (uint64_t)numinfoelements;
+    call.modeinfo = (uint64_t)modeinfo;
+    call.topologyid = (uint64_t)topologyid;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add QueryDisplayConfig to Wine headers? */
+extern LONG WINAPI QueryDisplayConfig(UINT32 flags, UINT32 *numpathelements, void *pathinfo, UINT32 *numinfoelements, void *modeinfo, void *topologyid);
+void qemu_QueryDisplayConfig(struct qemu_syscall *call)
+{
+    struct qemu_QueryDisplayConfig *c = (struct qemu_QueryDisplayConfig *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QueryDisplayConfig(c->flags, QEMU_G2H(c->numpathelements), QEMU_G2H(c->pathinfo), QEMU_G2H(c->numinfoelements), QEMU_G2H(c->modeinfo), QEMU_G2H(c->topologyid));
 }
 
 #endif
@@ -1187,6 +1303,84 @@ void qemu_UnregisterPowerSettingNotification(struct qemu_syscall *call)
     struct qemu_UnregisterPowerSettingNotification *c = (struct qemu_UnregisterPowerSettingNotification *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = UnregisterPowerSettingNotification(QEMU_G2H(c->handle));
+}
+
+#endif
+
+struct qemu_GetGestureConfig
+{
+    struct qemu_syscall super;
+    uint64_t hwnd;
+    uint64_t reserved;
+    uint64_t flags;
+    uint64_t count;
+    uint64_t config;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetGestureConfig(HWND hwnd, DWORD reserved, DWORD flags, UINT *count, GESTURECONFIG *config, UINT size)
+{
+    struct qemu_GetGestureConfig call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETGESTURECONFIG);
+    call.hwnd = (uint64_t)hwnd;
+    call.reserved = (uint64_t)reserved;
+    call.flags = (uint64_t)flags;
+    call.count = (uint64_t)count;
+    call.config = (uint64_t)config;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetGestureConfig(struct qemu_syscall *call)
+{
+    struct qemu_GetGestureConfig *c = (struct qemu_GetGestureConfig *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetGestureConfig(QEMU_G2H(c->hwnd), c->reserved, c->flags, QEMU_G2H(c->count), QEMU_G2H(c->config), c->size);
+}
+
+#endif
+
+struct qemu_SetGestureConfig
+{
+    struct qemu_syscall super;
+    uint64_t hwnd;
+    uint64_t reserved;
+    uint64_t id;
+    uint64_t config;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI SetGestureConfig(HWND hwnd, DWORD reserved, UINT id, PGESTURECONFIG config, UINT size)
+{
+    struct qemu_SetGestureConfig call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETGESTURECONFIG);
+    call.hwnd = (uint64_t)hwnd;
+    call.reserved = (uint64_t)reserved;
+    call.id = (uint64_t)id;
+    call.config = (uint64_t)config;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_SetGestureConfig(struct qemu_syscall *call)
+{
+    struct qemu_SetGestureConfig *c = (struct qemu_SetGestureConfig *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SetGestureConfig(QEMU_G2H(c->hwnd), c->reserved, c->id, QEMU_G2H(c->config), c->size);
 }
 
 #endif

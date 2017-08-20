@@ -535,6 +535,40 @@ void qemu_GetRawInputDeviceList(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_RegisterRawInputDevices
+{
+    struct qemu_syscall super;
+    uint64_t devices;
+    uint64_t device_count;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI WINBOOL WINAPI RegisterRawInputDevices(const RAWINPUTDEVICE *devices, UINT device_count, UINT size)
+{
+    struct qemu_RegisterRawInputDevices call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERRAWINPUTDEVICES);
+    call.devices = (uint64_t)devices;
+    call.device_count = (uint64_t)device_count;
+    call.size = (uint64_t)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RegisterRawInputDevices(struct qemu_syscall *call)
+{
+    struct qemu_RegisterRawInputDevices *c = (struct qemu_RegisterRawInputDevices *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RegisterRawInputDevices(QEMU_G2H(c->devices), c->device_count, c->size);
+}
+
+#endif
+
 struct qemu_GetRawInputData
 {
     struct qemu_syscall super;
@@ -927,6 +961,70 @@ void qemu_VkKeyScanW(struct qemu_syscall *call)
     struct qemu_VkKeyScanW *c = (struct qemu_VkKeyScanW *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = VkKeyScanW(c->cChar);
+}
+
+#endif
+
+struct qemu_VkKeyScanExA
+{
+    struct qemu_syscall super;
+    uint64_t cChar;
+    uint64_t dwhkl;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI SHORT WINAPI VkKeyScanExA(CHAR cChar, HKL dwhkl)
+{
+    struct qemu_VkKeyScanExA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_VKKEYSCANEXA);
+    call.cChar = (uint64_t)cChar;
+    call.dwhkl = (uint64_t)dwhkl;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_VkKeyScanExA(struct qemu_syscall *call)
+{
+    struct qemu_VkKeyScanExA *c = (struct qemu_VkKeyScanExA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = VkKeyScanExA(c->cChar, QEMU_G2H(c->dwhkl));
+}
+
+#endif
+
+struct qemu_VkKeyScanExW
+{
+    struct qemu_syscall super;
+    uint64_t cChar;
+    uint64_t dwhkl;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI SHORT WINAPI VkKeyScanExW(WCHAR cChar, HKL dwhkl)
+{
+    struct qemu_VkKeyScanExW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_VKKEYSCANEXW);
+    call.cChar = (uint64_t)cChar;
+    call.dwhkl = (uint64_t)dwhkl;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_VkKeyScanExW(struct qemu_syscall *call)
+{
+    struct qemu_VkKeyScanExW *c = (struct qemu_VkKeyScanExW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = VkKeyScanExW(c->cChar, QEMU_G2H(c->dwhkl));
 }
 
 #endif
@@ -1533,6 +1631,38 @@ void qemu_BlockInput(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_GetKeyboardLayoutList
+{
+    struct qemu_syscall super;
+    uint64_t nBuff;
+    uint64_t layouts;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int WINAPI GetKeyboardLayoutList(INT nBuff, HKL *layouts)
+{
+    struct qemu_GetKeyboardLayoutList call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETKEYBOARDLAYOUTLIST);
+    call.nBuff = (uint64_t)nBuff;
+    call.layouts = (uint64_t)layouts;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetKeyboardLayoutList(struct qemu_syscall *call)
+{
+    struct qemu_GetKeyboardLayoutList *c = (struct qemu_GetKeyboardLayoutList *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetKeyboardLayoutList(c->nBuff, QEMU_G2H(c->layouts));
+}
+
+#endif
+
 struct qemu_RegisterHotKey
 {
     struct qemu_syscall super;
@@ -1725,3 +1855,42 @@ void qemu_TrackMouseEvent(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_GetMouseMovePointsEx
+{
+    struct qemu_syscall super;
+    uint64_t size;
+    uint64_t ptin;
+    uint64_t ptout;
+    uint64_t count;
+    uint64_t res;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int WINAPI GetMouseMovePointsEx(UINT size, LPMOUSEMOVEPOINT ptin, LPMOUSEMOVEPOINT ptout, int count, DWORD res)
+{
+    struct qemu_GetMouseMovePointsEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETMOUSEMOVEPOINTSEX);
+    call.size = (uint64_t)size;
+    call.ptin = (uint64_t)ptin;
+    call.ptout = (uint64_t)ptout;
+    call.count = (uint64_t)count;
+    call.res = (uint64_t)res;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add GetMouseMovePointsEx to Wine headers? */
+extern int WINAPI GetMouseMovePointsEx(UINT size, LPMOUSEMOVEPOINT ptin, LPMOUSEMOVEPOINT ptout, int count, DWORD res);
+void qemu_GetMouseMovePointsEx(struct qemu_syscall *call)
+{
+    struct qemu_GetMouseMovePointsEx *c = (struct qemu_GetMouseMovePointsEx *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetMouseMovePointsEx(c->size, QEMU_G2H(c->ptin), QEMU_G2H(c->ptout), c->count, c->res);
+}
+
+#endif

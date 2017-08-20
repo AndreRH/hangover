@@ -266,6 +266,7 @@ EXPORTS
   GetDoubleClickTime
   GetFocus
   GetForegroundWindow
+  GetGestureConfig
   GetGuiResources
   GetGUIThreadInfo
   GetIconInfo
@@ -275,6 +276,7 @@ EXPORTS
   GetInternalWindowPos
   GetKBCodePage
   GetKeyboardLayout
+  GetKeyboardLayoutList
   GetKeyboardLayoutNameA
   GetKeyboardLayoutNameW
   GetKeyboardState
@@ -306,6 +308,7 @@ EXPORTS
   GetMessageW
   GetMonitorInfoA
   GetMonitorInfoW
+  GetMouseMovePointsEx
   GetNextDlgGroupItem
   GetNextDlgTabItem
   GetOpenClipboardWindow
@@ -457,6 +460,7 @@ EXPORTS
   MessageBoxW
   ModifyMenuA
   ModifyMenuW
+  MonitorFromPoint
   MonitorFromRect
   MonitorFromWindow
   mouse_event
@@ -493,6 +497,7 @@ EXPORTS
   PrivateExtractIconsA
   PrivateExtractIconsW
   PtInRect
+  QueryDisplayConfig
   RealChildWindowFromPoint
   RealGetWindowClassA
   RealGetWindowClassW
@@ -508,6 +513,7 @@ EXPORTS
   RegisterHotKey
   RegisterLogonProcess
   RegisterPowerSettingNotification
+  RegisterRawInputDevices
   RegisterServicesProcess
   RegisterShellHookWindow
   RegisterSystemThread
@@ -563,6 +569,7 @@ EXPORTS
   SetDoubleClickTime
   SetFocus
   SetForegroundWindow
+  SetGestureConfig
   SetInternalWindowPos
   SetKeyboardState
   SetLastErrorEx
@@ -666,9 +673,12 @@ EXPORTS
   User32InitializeImmEntryTable
   UserHandleGrantAccess
   UserRealizePalette
+  UserSignalProc
   ValidateRect
   ValidateRgn
   VkKeyScanA
+  VkKeyScanExA
+  VkKeyScanExW
   VkKeyScanW
   WaitForInputIdle
   WaitMessage

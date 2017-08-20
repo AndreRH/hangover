@@ -271,6 +271,7 @@ enum user32_calls
     CALL_GETDOUBLECLICKTIME,
     CALL_GETFOCUS,
     CALL_GETFOREGROUNDWINDOW,
+    CALL_GETGESTURECONFIG,
     CALL_GETGUIRESOURCES,
     CALL_GETGUITHREADINFO,
     CALL_GETICONINFO,
@@ -280,6 +281,7 @@ enum user32_calls
     CALL_GETINTERNALWINDOWPOS,
     CALL_GETKBCODEPAGE,
     CALL_GETKEYBOARDLAYOUT,
+    CALL_GETKEYBOARDLAYOUTLIST,
     CALL_GETKEYBOARDLAYOUTNAMEA,
     CALL_GETKEYBOARDLAYOUTNAMEW,
     CALL_GETKEYBOARDSTATE,
@@ -311,6 +313,7 @@ enum user32_calls
     CALL_GETMESSAGEW,
     CALL_GETMONITORINFOA,
     CALL_GETMONITORINFOW,
+    CALL_GETMOUSEMOVEPOINTSEX,
     CALL_GETNEXTDLGGROUPITEM,
     CALL_GETNEXTDLGTABITEM,
     CALL_GETOPENCLIPBOARDWINDOW,
@@ -462,6 +465,7 @@ enum user32_calls
     CALL_MESSAGEBOXW,
     CALL_MODIFYMENUA,
     CALL_MODIFYMENUW,
+    CALL_MONITORFROMPOINT,
     CALL_MONITORFROMRECT,
     CALL_MONITORFROMWINDOW,
     CALL_MOUSE_EVENT,
@@ -498,6 +502,7 @@ enum user32_calls
     CALL_PRIVATEEXTRACTICONSA,
     CALL_PRIVATEEXTRACTICONSW,
     CALL_PTINRECT,
+    CALL_QUERYDISPLAYCONFIG,
     CALL_REALCHILDWINDOWFROMPOINT,
     CALL_REALGETWINDOWCLASSA,
     CALL_REALGETWINDOWCLASSW,
@@ -511,6 +516,7 @@ enum user32_calls
     CALL_REGISTERHOTKEY,
     CALL_REGISTERLOGONPROCESS,
     CALL_REGISTERPOWERSETTINGNOTIFICATION,
+    CALL_REGISTERRAWINPUTDEVICES,
     CALL_REGISTERSERVICESPROCESS,
     CALL_REGISTERSHELLHOOKWINDOW,
     CALL_REGISTERSYSTEMTHREAD,
@@ -567,6 +573,7 @@ enum user32_calls
     CALL_SETDOUBLECLICKTIME,
     CALL_SETFOCUS,
     CALL_SETFOREGROUNDWINDOW,
+    CALL_SETGESTURECONFIG,
     CALL_SETINTERNALWINDOWPOS,
     CALL_SETKEYBOARDSTATE,
     CALL_SETLASTERROREX,
@@ -670,9 +677,12 @@ enum user32_calls
     CALL_USER32INITIALIZEIMMENTRYTABLE,
     CALL_USERHANDLEGRANTACCESS,
     CALL_USERREALIZEPALETTE,
+    CALL_USERSIGNALPROC,
     CALL_VALIDATERECT,
     CALL_VALIDATERGN,
     CALL_VKKEYSCANA,
+    CALL_VKKEYSCANEXA,
+    CALL_VKKEYSCANEXW,
     CALL_VKKEYSCANW,
     CALL_WAITFORINPUTIDLE,
     CALL_WAITMESSAGE,
@@ -965,6 +975,7 @@ void qemu_GetDlgItemTextW(struct qemu_syscall *call);
 void qemu_GetDoubleClickTime(struct qemu_syscall *call);
 void qemu_GetFocus(struct qemu_syscall *call);
 void qemu_GetForegroundWindow(struct qemu_syscall *call);
+void qemu_GetGestureConfig(struct qemu_syscall *call);
 void qemu_GetGuiResources(struct qemu_syscall *call);
 void qemu_GetGUIThreadInfo(struct qemu_syscall *call);
 void qemu_GetIconInfo(struct qemu_syscall *call);
@@ -974,6 +985,7 @@ void qemu_GetInputState(struct qemu_syscall *call);
 void qemu_GetInternalWindowPos(struct qemu_syscall *call);
 void qemu_GetKBCodePage(struct qemu_syscall *call);
 void qemu_GetKeyboardLayout(struct qemu_syscall *call);
+void qemu_GetKeyboardLayoutList(struct qemu_syscall *call);
 void qemu_GetKeyboardLayoutNameA(struct qemu_syscall *call);
 void qemu_GetKeyboardLayoutNameW(struct qemu_syscall *call);
 void qemu_GetKeyboardState(struct qemu_syscall *call);
@@ -1005,6 +1017,7 @@ void qemu_GetMessageTime(struct qemu_syscall *call);
 void qemu_GetMessageW(struct qemu_syscall *call);
 void qemu_GetMonitorInfoA(struct qemu_syscall *call);
 void qemu_GetMonitorInfoW(struct qemu_syscall *call);
+void qemu_GetMouseMovePointsEx(struct qemu_syscall *call);
 void qemu_GetNextDlgGroupItem(struct qemu_syscall *call);
 void qemu_GetNextDlgTabItem(struct qemu_syscall *call);
 void qemu_GetOpenClipboardWindow(struct qemu_syscall *call);
@@ -1156,6 +1169,7 @@ void qemu_MessageBoxTimeoutW(struct qemu_syscall *call);
 void qemu_MessageBoxW(struct qemu_syscall *call);
 void qemu_ModifyMenuA(struct qemu_syscall *call);
 void qemu_ModifyMenuW(struct qemu_syscall *call);
+void qemu_MonitorFromPoint(struct qemu_syscall *call);
 void qemu_MonitorFromRect(struct qemu_syscall *call);
 void qemu_MonitorFromWindow(struct qemu_syscall *call);
 void qemu_mouse_event(struct qemu_syscall *call);
@@ -1192,6 +1206,7 @@ void qemu_PrivateExtractIconExW(struct qemu_syscall *call);
 void qemu_PrivateExtractIconsA(struct qemu_syscall *call);
 void qemu_PrivateExtractIconsW(struct qemu_syscall *call);
 void qemu_PtInRect(struct qemu_syscall *call);
+void qemu_QueryDisplayConfig(struct qemu_syscall *call);
 void qemu_RealChildWindowFromPoint(struct qemu_syscall *call);
 void qemu_RealGetWindowClassA(struct qemu_syscall *call);
 void qemu_RealGetWindowClassW(struct qemu_syscall *call);
@@ -1204,6 +1219,7 @@ void qemu_RegisterDeviceNotificationW(struct qemu_syscall *call);
 void qemu_RegisterHotKey(struct qemu_syscall *call);
 void qemu_RegisterLogonProcess(struct qemu_syscall *call);
 void qemu_RegisterPowerSettingNotification(struct qemu_syscall *call);
+void qemu_RegisterRawInputDevices(struct qemu_syscall *call);
 void qemu_RegisterServicesProcess(struct qemu_syscall *call);
 void qemu_RegisterShellHookWindow(struct qemu_syscall *call);
 void qemu_RegisterSystemThread(struct qemu_syscall *call);
@@ -1259,6 +1275,7 @@ void qemu_SetDlgItemTextW(struct qemu_syscall *call);
 void qemu_SetDoubleClickTime(struct qemu_syscall *call);
 void qemu_SetFocus(struct qemu_syscall *call);
 void qemu_SetForegroundWindow(struct qemu_syscall *call);
+void qemu_SetGestureConfig(struct qemu_syscall *call);
 void qemu_SetInternalWindowPos(struct qemu_syscall *call);
 void qemu_SetKeyboardState(struct qemu_syscall *call);
 void qemu_SetLastErrorEx(struct qemu_syscall *call);
@@ -1362,9 +1379,12 @@ void qemu_UpdateWindow(struct qemu_syscall *call);
 void qemu_User32InitializeImmEntryTable(struct qemu_syscall *call);
 void qemu_UserHandleGrantAccess(struct qemu_syscall *call);
 void qemu_UserRealizePalette(struct qemu_syscall *call);
+void qemu_UserSignalProc(struct qemu_syscall *call);
 void qemu_ValidateRect(struct qemu_syscall *call);
 void qemu_ValidateRgn(struct qemu_syscall *call);
 void qemu_VkKeyScanA(struct qemu_syscall *call);
+void qemu_VkKeyScanExA(struct qemu_syscall *call);
+void qemu_VkKeyScanExW(struct qemu_syscall *call);
 void qemu_VkKeyScanW(struct qemu_syscall *call);
 void qemu_WaitForInputIdle(struct qemu_syscall *call);
 void qemu_WaitMessage(struct qemu_syscall *call);
