@@ -333,7 +333,7 @@ WINBASEAPI PVOID WINAPI FlsGetValue(DWORD index)
 void qemu_FlsGetValue(struct qemu_syscall *call)
 {
     struct qemu_FlsGetValue *c = (struct qemu_FlsGetValue *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)FlsGetValue(c->index);
 }
 
@@ -365,7 +365,7 @@ WINBASEAPI BOOL WINAPI FlsSetValue(DWORD index, PVOID data)
 void qemu_FlsSetValue(struct qemu_syscall *call)
 {
     struct qemu_FlsSetValue *c = (struct qemu_FlsSetValue *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FlsSetValue(c->index, QEMU_G2H(c->data));
 }
 
