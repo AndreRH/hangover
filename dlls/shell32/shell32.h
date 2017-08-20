@@ -25,6 +25,26 @@ enum shell32_calls
     CALL_FINDEXECUTABLEW,
     CALL_FREEICONLIST,
     CALL_GETCURRENTPROCESSEXPLICITAPPUSERMODELID,
+    CALL_ILAPPENDID,
+    CALL_ILCLONE,
+    CALL_ILCLONEFIRST,
+    CALL_ILCOMBINE,
+    CALL_ILCREATEFROMPATHA,
+    CALL_ILCREATEFROMPATHW,
+    CALL_ILFINDCHILD,
+    CALL_ILFINDLASTID,
+    CALL_ILFREE,
+    CALL_ILGETDISPLAYNAME,
+    CALL_ILGETDISPLAYNAMEEX,
+    CALL_ILGETNEXT,
+    CALL_ILGETSIZE,
+    CALL_ILGLOBALCLONE,
+    CALL_ILGLOBALFREE,
+    CALL_ILISEQUAL,
+    CALL_ILISPARENT,
+    CALL_ILLOADFROMSTREAM,
+    CALL_ILREMOVELASTID,
+    CALL_ILSAVETOSTREAM,
     CALL_INITNETWORKADDRESSCONTROL,
     CALL_ISLFNDRIVEA,
     CALL_ISLFNDRIVEW,
@@ -37,6 +57,8 @@ enum shell32_calls
     CALL_REGENERATEUSERENVIRONMENT,
     CALL_SETCURRENTPROCESSEXPLICITAPPUSERMODELID,
     CALL_SHALLOC,
+    CALL_SHBINDTOPARENT,
+    CALL_SHCLONESPECIALIDLIST,
     CALL_SHCLSIDFROMSTRING,
     CALL_SHCOCREATEINSTANCE,
     CALL_SHCREATEFILEEXTRACTICONW,
@@ -49,6 +71,8 @@ enum shell32_calls
     CALL_SHELLEXECUTEW,
     CALL_SHENUMERATEUNREADMAILACCOUNTSW,
     CALL_SHFREE,
+    CALL_SHGETDATAFROMIDLISTA,
+    CALL_SHGETDATAFROMIDLISTW,
     CALL_SHGETFILEINFOA,
     CALL_SHGETFILEINFOW,
     CALL_SHGETFOLDERLOCATION,
@@ -57,24 +81,34 @@ enum shell32_calls
     CALL_SHGETFOLDERPATHANDSUBDIRW,
     CALL_SHGETFOLDERPATHEX,
     CALL_SHGETFOLDERPATHW,
+    CALL_SHGETIDLISTFROMOBJECT,
     CALL_SHGETKNOWNFOLDERIDLIST,
     CALL_SHGETKNOWNFOLDERITEM,
     CALL_SHGETKNOWNFOLDERPATH,
     CALL_SHGETLOCALIZEDNAME,
     CALL_SHGETMALLOC,
+    CALL_SHGETNAMEFROMIDLIST,
+    CALL_SHGETPATHFROMIDLISTA,
+    CALL_SHGETPATHFROMIDLISTEX,
+    CALL_SHGETPATHFROMIDLISTW,
     CALL_SHGETPROPERTYSTOREFORWINDOW,
+    CALL_SHGETREALIDL,
     CALL_SHGETSPECIALFOLDERLOCATION,
     CALL_SHGETSPECIALFOLDERPATHA,
     CALL_SHGETSPECIALFOLDERPATHW,
     CALL_SHHELPSHORTCUTS_RUNDLLA,
     CALL_SHHELPSHORTCUTS_RUNDLLW,
+    CALL_SHILCREATEFROMPATHAW,
     CALL_SHLOADINPROC,
     CALL_SHLOADNONLOADEDICONOVERLAYIDENTIFIERS,
+    CALL_SHLOGILFROMFSIL,
+    CALL_SHPARSEDISPLAYNAME,
     CALL_SHPROPSTGCREATE,
     CALL_SHPROPSTGREADMULTIPLE,
     CALL_SHPROPSTGWRITEMULTIPLE,
     CALL_SHQUERYUSERNOTIFICATIONSTATE,
     CALL_SHSETUNREADMAILCOUNTW,
+    CALL_SHSIMPLEIDLISTFROMPATHAW,
     CALL_WOWSHELLEXECUTE,
 };
 
@@ -102,6 +136,26 @@ void qemu_FindExecutableA(struct qemu_syscall *call);
 void qemu_FindExecutableW(struct qemu_syscall *call);
 void qemu_FreeIconList(struct qemu_syscall *call);
 void qemu_GetCurrentProcessExplicitAppUserModelID(struct qemu_syscall *call);
+void qemu_ILAppendID(struct qemu_syscall *call);
+void qemu_ILClone(struct qemu_syscall *call);
+void qemu_ILCloneFirst(struct qemu_syscall *call);
+void qemu_ILCombine(struct qemu_syscall *call);
+void qemu_ILCreateFromPathA(struct qemu_syscall *call);
+void qemu_ILCreateFromPathW(struct qemu_syscall *call);
+void qemu_ILFindChild(struct qemu_syscall *call);
+void qemu_ILFindLastID(struct qemu_syscall *call);
+void qemu_ILFree(struct qemu_syscall *call);
+void qemu_ILGetDisplayName(struct qemu_syscall *call);
+void qemu_ILGetDisplayNameEx(struct qemu_syscall *call);
+void qemu_ILGetNext(struct qemu_syscall *call);
+void qemu_ILGetSize(struct qemu_syscall *call);
+void qemu_ILGlobalClone(struct qemu_syscall *call);
+void qemu_ILGlobalFree(struct qemu_syscall *call);
+void qemu_ILIsEqual(struct qemu_syscall *call);
+void qemu_ILIsParent(struct qemu_syscall *call);
+void qemu_ILLoadFromStream(struct qemu_syscall *call);
+void qemu_ILRemoveLastID(struct qemu_syscall *call);
+void qemu_ILSaveToStream(struct qemu_syscall *call);
 void qemu_InitNetworkAddressControl(struct qemu_syscall *call);
 void qemu_IsLFNDriveA(struct qemu_syscall *call);
 void qemu_IsLFNDriveW(struct qemu_syscall *call);
@@ -114,6 +168,8 @@ void qemu_Printers_UnregisterWindow(struct qemu_syscall *call);
 void qemu_RegenerateUserEnvironment(struct qemu_syscall *call);
 void qemu_SetCurrentProcessExplicitAppUserModelID(struct qemu_syscall *call);
 void qemu_SHAlloc(struct qemu_syscall *call);
+void qemu_SHBindToParent(struct qemu_syscall *call);
+void qemu_SHCloneSpecialIDList(struct qemu_syscall *call);
 void qemu_SHCLSIDFromString(struct qemu_syscall *call);
 void qemu_SHCoCreateInstance(struct qemu_syscall *call);
 void qemu_SHCreateFileExtractIconW(struct qemu_syscall *call);
@@ -126,6 +182,8 @@ void qemu_ShellExecuteExW(struct qemu_syscall *call);
 void qemu_ShellExecuteW(struct qemu_syscall *call);
 void qemu_SHEnumerateUnreadMailAccountsW(struct qemu_syscall *call);
 void qemu_SHFree(struct qemu_syscall *call);
+void qemu_SHGetDataFromIDListA(struct qemu_syscall *call);
+void qemu_SHGetDataFromIDListW(struct qemu_syscall *call);
 void qemu_SHGetFileInfoA(struct qemu_syscall *call);
 void qemu_SHGetFileInfoW(struct qemu_syscall *call);
 void qemu_SHGetFolderLocation(struct qemu_syscall *call);
@@ -134,25 +192,35 @@ void qemu_SHGetFolderPathAndSubDirA(struct qemu_syscall *call);
 void qemu_SHGetFolderPathAndSubDirW(struct qemu_syscall *call);
 void qemu_SHGetFolderPathEx(struct qemu_syscall *call);
 void qemu_SHGetFolderPathW(struct qemu_syscall *call);
+void qemu_SHGetIDListFromObject(struct qemu_syscall *call);
 void qemu_SHGetKnownFolderIDList(struct qemu_syscall *call);
 void qemu_SHGetKnownFolderItem(struct qemu_syscall *call);
 void qemu_SHGetKnownFolderPath(struct qemu_syscall *call);
 void qemu_SHGetLocalizedName(struct qemu_syscall *call);
 void qemu_SHGetMalloc(struct qemu_syscall *call);
+void qemu_SHGetNameFromIDList(struct qemu_syscall *call);
+void qemu_SHGetPathFromIDListA(struct qemu_syscall *call);
+void qemu_SHGetPathFromIDListEx(struct qemu_syscall *call);
+void qemu_SHGetPathFromIDListW(struct qemu_syscall *call);
 void qemu_SHGetPropertyStoreForWindow(struct qemu_syscall *call);
+void qemu_SHGetRealIDL(struct qemu_syscall *call);
 void qemu_SHGetSpecialFolderLocation(struct qemu_syscall *call);
 void qemu_SHGetSpecialFolderPathA(struct qemu_syscall *call);
 void qemu_SHGetSpecialFolderPathAW(struct qemu_syscall *call);
 void qemu_SHGetSpecialFolderPathW(struct qemu_syscall *call);
 void qemu_SHHelpShortcuts_RunDLLA(struct qemu_syscall *call);
 void qemu_SHHelpShortcuts_RunDLLW(struct qemu_syscall *call);
+void qemu_SHILCreateFromPathAW(struct qemu_syscall *call);
 void qemu_SHLoadInProc(struct qemu_syscall *call);
 void qemu_SHLoadNonloadedIconOverlayIdentifiers(struct qemu_syscall *call);
+void qemu_SHLogILFromFSIL(struct qemu_syscall *call);
+void qemu_SHParseDisplayName(struct qemu_syscall *call);
 void qemu_SHPropStgCreate(struct qemu_syscall *call);
 void qemu_SHPropStgReadMultiple(struct qemu_syscall *call);
 void qemu_SHPropStgWriteMultiple(struct qemu_syscall *call);
 void qemu_SHQueryUserNotificationState(struct qemu_syscall *call);
 void qemu_SHSetUnreadMailCountW(struct qemu_syscall *call);
+void qemu_SHSimpleIDListFromPathAW(struct qemu_syscall *call);
 void qemu_WOWShellExecute(struct qemu_syscall *call);
 
 DWORD WINAPI (*p_SHCLSIDFromString)(const void *clsid, CLSID *id);

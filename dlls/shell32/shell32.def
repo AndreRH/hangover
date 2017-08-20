@@ -21,6 +21,26 @@ EXPORTS
   FindExecutableW
   FreeIconList
   GetCurrentProcessExplicitAppUserModelID
+  ILAppendID
+  ILClone
+  ILCloneFirst
+  ILCombine
+  ILCreateFromPathA
+  ILCreateFromPathW
+  ILFindChild
+  ILFindLastID
+  ILFree
+  ILGetDisplayName
+  ILGetDisplayNameEx
+  ILGetNext
+  ILGetSize
+  ILGlobalClone
+  ILGlobalFree
+  ILIsEqual
+  ILIsParent
+  ILLoadFromStream
+  ILRemoveLastID
+  ILSaveToStream
   InitNetworkAddressControl
   IsLFNDriveA
   IsLFNDriveW
@@ -33,6 +53,8 @@ EXPORTS
   RegenerateUserEnvironment
   SetCurrentProcessExplicitAppUserModelID
   SHAlloc
+  SHBindToParent
+  SHCloneSpecialIDList
   SHCLSIDFromString
   SHCoCreateInstance
   SHCreateFileExtractIconW
@@ -45,6 +67,8 @@ EXPORTS
   ShellExecuteW
   SHEnumerateUnreadMailAccountsW
   SHFree
+  SHGetDataFromIDListA
+  SHGetDataFromIDListW
   SHGetFileInfoA
   SHGetFileInfoW
   SHGetFolderLocation
@@ -53,24 +77,36 @@ EXPORTS
   SHGetFolderPathAndSubDirW
   SHGetFolderPathEx
   SHGetFolderPathW
+  SHGetIDListFromObject
   SHGetKnownFolderIDList
   SHGetKnownFolderItem
   SHGetKnownFolderPath
   SHGetLocalizedName
   SHGetMalloc
+  SHGetNameFromIDList
+  SHGetPathFromIDListA
+  SHGetPathFromIDListEx
+  SHGetPathFromIDListW
   SHGetPropertyStoreForWindow
+  SHGetRealIDL
   SHGetSpecialFolderLocation
   SHGetSpecialFolderPathA
   SHGetSpecialFolderPathW
   SHHelpShortcuts_RunDLLA
   SHHelpShortcuts_RunDLLW
+  SHILCreateFromPathA=SHILCreateFromPathAW
+  SHILCreateFromPathW=SHILCreateFromPathAW
   SHLoadInProc
   SHLoadNonloadedIconOverlayIdentifiers
+  SHLogILFromFSIL
+  SHParseDisplayName
   SHPropStgCreate
   SHPropStgReadMultiple
   SHPropStgWriteMultiple
   SHQueryUserNotificationState
   SHSetUnreadMailCountW
+  SHSimpleIDListFromPathA=SHSimpleIDListFromPathAW
+  SHSimpleIDListFromPathW=SHSimpleIDListFromPathAW
   StrChrW=shlwapi.StrChrW
   StrCmpNIW=shlwapi.StrCmpNIW
   StrCmpNW=shlwapi.StrCmpNW
