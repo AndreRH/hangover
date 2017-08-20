@@ -57,6 +57,7 @@ enum shell32_calls
     CALL_REGENERATEUSERENVIRONMENT,
     CALL_SETCURRENTPROCESSEXPLICITAPPUSERMODELID,
     CALL_SHALLOC,
+    CALL_SHAPPBARMESSAGE,
     CALL_SHBINDTOPARENT,
     CALL_SHCLONESPECIALIDLIST,
     CALL_SHCLSIDFROMSTRING,
@@ -182,6 +183,7 @@ void qemu_Printers_UnregisterWindow(struct qemu_syscall *call);
 void qemu_RegenerateUserEnvironment(struct qemu_syscall *call);
 void qemu_SetCurrentProcessExplicitAppUserModelID(struct qemu_syscall *call);
 void qemu_SHAlloc(struct qemu_syscall *call);
+void qemu_SHAppBarMessage(struct qemu_syscall *call);
 void qemu_SHBindToParent(struct qemu_syscall *call);
 void qemu_SHCloneSpecialIDList(struct qemu_syscall *call);
 void qemu_SHCLSIDFromString(struct qemu_syscall *call);

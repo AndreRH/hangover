@@ -96,6 +96,7 @@ static const syscall_handler dll_functions[] =
     qemu_RegenerateUserEnvironment,
     qemu_SetCurrentProcessExplicitAppUserModelID,
     qemu_SHAlloc,
+    qemu_SHAppBarMessage,
     qemu_SHBindToParent,
     qemu_SHCloneSpecialIDList,
     qemu_SHCLSIDFromString,

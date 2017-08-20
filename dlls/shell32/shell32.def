@@ -53,6 +53,7 @@ EXPORTS
   RegenerateUserEnvironment
   SetCurrentProcessExplicitAppUserModelID
   SHAlloc
+  SHAppBarMessage
   SHBindToParent
   SHCloneSpecialIDList
   SHCLSIDFromString
