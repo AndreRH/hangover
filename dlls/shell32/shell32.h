@@ -62,7 +62,14 @@ enum shell32_calls
     CALL_SHCLSIDFROMSTRING,
     CALL_SHCOCREATEINSTANCE,
     CALL_SHCREATEFILEEXTRACTICONW,
+    CALL_SHCREATEITEMFROMIDLIST,
+    CALL_SHCREATEITEMFROMPARSINGNAME,
     CALL_SHCREATEQUERYCANCELAUTOPLAYMONIKER,
+    CALL_SHCREATESHELLITEM,
+    CALL_SHCREATESHELLITEMARRAY,
+    CALL_SHCREATESHELLITEMARRAYFROMDATAOBJECT,
+    CALL_SHCREATESHELLITEMARRAYFROMIDLISTS,
+    CALL_SHCREATESHELLITEMARRAYFROMSHELLITEM,
     CALL_SHELLABOUTA,
     CALL_SHELLABOUTW,
     CALL_SHELLEXECUTEA,
@@ -82,6 +89,8 @@ enum shell32_calls
     CALL_SHGETFOLDERPATHEX,
     CALL_SHGETFOLDERPATHW,
     CALL_SHGETIDLISTFROMOBJECT,
+    CALL_SHGETITEMFROMDATAOBJECT,
+    CALL_SHGETITEMFROMOBJECT,
     CALL_SHGETKNOWNFOLDERIDLIST,
     CALL_SHGETKNOWNFOLDERITEM,
     CALL_SHGETKNOWNFOLDERPATH,
@@ -92,6 +101,7 @@ enum shell32_calls
     CALL_SHGETPATHFROMIDLISTEX,
     CALL_SHGETPATHFROMIDLISTW,
     CALL_SHGETPROPERTYSTOREFORWINDOW,
+    CALL_SHGETPROPERTYSTOREFROMPARSINGNAME,
     CALL_SHGETREALIDL,
     CALL_SHGETSPECIALFOLDERLOCATION,
     CALL_SHGETSPECIALFOLDERPATHA,
@@ -173,7 +183,14 @@ void qemu_SHCloneSpecialIDList(struct qemu_syscall *call);
 void qemu_SHCLSIDFromString(struct qemu_syscall *call);
 void qemu_SHCoCreateInstance(struct qemu_syscall *call);
 void qemu_SHCreateFileExtractIconW(struct qemu_syscall *call);
+void qemu_SHCreateItemFromIDList(struct qemu_syscall *call);
+void qemu_SHCreateItemFromParsingName(struct qemu_syscall *call);
 void qemu_SHCreateQueryCancelAutoPlayMoniker(struct qemu_syscall *call);
+void qemu_SHCreateShellItem(struct qemu_syscall *call);
+void qemu_SHCreateShellItemArray(struct qemu_syscall *call);
+void qemu_SHCreateShellItemArrayFromDataObject(struct qemu_syscall *call);
+void qemu_SHCreateShellItemArrayFromIDLists(struct qemu_syscall *call);
+void qemu_SHCreateShellItemArrayFromShellItem(struct qemu_syscall *call);
 void qemu_ShellAboutA(struct qemu_syscall *call);
 void qemu_ShellAboutW(struct qemu_syscall *call);
 void qemu_ShellExecuteA(struct qemu_syscall *call);
@@ -193,6 +210,8 @@ void qemu_SHGetFolderPathAndSubDirW(struct qemu_syscall *call);
 void qemu_SHGetFolderPathEx(struct qemu_syscall *call);
 void qemu_SHGetFolderPathW(struct qemu_syscall *call);
 void qemu_SHGetIDListFromObject(struct qemu_syscall *call);
+void qemu_SHGetItemFromDataObject(struct qemu_syscall *call);
+void qemu_SHGetItemFromObject(struct qemu_syscall *call);
 void qemu_SHGetKnownFolderIDList(struct qemu_syscall *call);
 void qemu_SHGetKnownFolderItem(struct qemu_syscall *call);
 void qemu_SHGetKnownFolderPath(struct qemu_syscall *call);
@@ -203,6 +222,7 @@ void qemu_SHGetPathFromIDListA(struct qemu_syscall *call);
 void qemu_SHGetPathFromIDListEx(struct qemu_syscall *call);
 void qemu_SHGetPathFromIDListW(struct qemu_syscall *call);
 void qemu_SHGetPropertyStoreForWindow(struct qemu_syscall *call);
+void qemu_SHGetPropertyStoreFromParsingName(struct qemu_syscall *call);
 void qemu_SHGetRealIDL(struct qemu_syscall *call);
 void qemu_SHGetSpecialFolderLocation(struct qemu_syscall *call);
 void qemu_SHGetSpecialFolderPathA(struct qemu_syscall *call);

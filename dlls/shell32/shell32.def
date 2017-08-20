@@ -25,8 +25,8 @@ EXPORTS
   ILClone
   ILCloneFirst
   ILCombine
-  ILCreateFromPathA
-  ILCreateFromPathW
+  ILCreateFromPathA @189
+  ILCreateFromPathW @190
   ILFindChild
   ILFindLastID
   ILFree
@@ -58,7 +58,14 @@ EXPORTS
   SHCLSIDFromString
   SHCoCreateInstance
   SHCreateFileExtractIconW
+  SHCreateItemFromIDList
+  SHCreateItemFromParsingName
   SHCreateQueryCancelAutoPlayMoniker
+  SHCreateShellItem
+  SHCreateShellItemArray
+  SHCreateShellItemArrayFromDataObject
+  SHCreateShellItemArrayFromIDLists
+  SHCreateShellItemArrayFromShellItem
   ShellAboutA
   ShellAboutW
   ShellExecuteA
@@ -78,6 +85,8 @@ EXPORTS
   SHGetFolderPathEx
   SHGetFolderPathW
   SHGetIDListFromObject
+  SHGetItemFromDataObject
+  SHGetItemFromObject
   SHGetKnownFolderIDList
   SHGetKnownFolderItem
   SHGetKnownFolderPath
@@ -88,6 +97,7 @@ EXPORTS
   SHGetPathFromIDListEx
   SHGetPathFromIDListW
   SHGetPropertyStoreForWindow
+  SHGetPropertyStoreFromParsingName
   SHGetRealIDL
   SHGetSpecialFolderLocation
   SHGetSpecialFolderPathA
