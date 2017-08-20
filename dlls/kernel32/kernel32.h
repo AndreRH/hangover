@@ -976,6 +976,10 @@ void WINAPI qemu_exception_handler(EXCEPTION_POINTERS *except);
 DECLSPEC_NORETURN void WINAPI kernel32_ExitProcess(UINT exitcode);
 DWORD WINAPI kernel32_GetLastError();
 LONG WINAPI kernel32_UnhandledExceptionFilter(PEXCEPTION_POINTERS epointers);
+HMODULE WINAPI kernel32_GetModuleHandleW(const WCHAR *name);
+FARPROC WINAPI kernel32_GetProcAddress(HMODULE module, const char *name);
+
+void (* WINAPI pRtlRaiseException)(PEXCEPTION_RECORD);
 
 #else
 

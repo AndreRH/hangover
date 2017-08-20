@@ -26,11 +26,16 @@
 #include "dll_list.h"
 #include "kernel32.h"
 
-#ifndef QEMU_DLL_GUEST
+#ifdef QEMU_DLL_GUEST
+
+#define EH_NONCONTINUABLE   0x01
+
+#else
+
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
-#endif
 
+#endif
 
 struct qemu_RaiseException
 {
@@ -43,16 +48,32 @@ struct qemu_RaiseException
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI void WINAPI RaiseException(DWORD code, DWORD flags, DWORD nbargs, const ULONG_PTR *args)
+void WINAPI kernel32_RaiseException(DWORD code, DWORD flags, DWORD nbargs, const ULONG_PTR *args)
 {
     struct qemu_RaiseException call;
+    EXCEPTION_RECORD record;
     call.super.id = QEMU_SYSCALL_ID(CALL_RAISEEXCEPTION);
     call.code = (uint64_t)code;
     call.flags = (uint64_t)flags;
     call.nbargs = (uint64_t)nbargs;
     call.args = (uint64_t)args;
 
+    /* For logging. */
     qemu_syscall(&call.super);
+
+    record.ExceptionCode    = code;
+    record.ExceptionFlags   = flags & EH_NONCONTINUABLE;
+    record.ExceptionRecord  = NULL;
+    record.ExceptionAddress = kernel32_RaiseException;
+    if (nbargs && args)
+    {
+        if (nbargs > EXCEPTION_MAXIMUM_PARAMETERS) nbargs = EXCEPTION_MAXIMUM_PARAMETERS;
+        record.NumberParameters = nbargs;
+        memcpy( record.ExceptionInformation, args, nbargs * sizeof(*args) );
+    }
+    else record.NumberParameters = 0;
+
+    pRtlRaiseException( &record );
 }
 
 #else
@@ -60,8 +81,7 @@ WINBASEAPI void WINAPI RaiseException(DWORD code, DWORD flags, DWORD nbargs, con
 void qemu_RaiseException(struct qemu_syscall *call)
 {
     struct qemu_RaiseException *c = (struct qemu_RaiseException *)call;
-    WINE_FIXME("Unverified!\n");
-    RaiseException(c->code, c->flags, c->nbargs, QEMU_G2H(c->args));
+    WINE_FIXME("\n");
 }
 
 #endif

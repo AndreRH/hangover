@@ -71,6 +71,9 @@ static void WINAPI kernel32_call_process_main(LPTHREAD_START_ROUTINE entry)
 BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_set_callbacks call;
+    HMODULE ntdll;
+    static const WCHAR ntdllW[] = {'n','t','d','l','l',0};
+
     switch (reason)
     {
         case DLL_PROCESS_ATTACH:
@@ -78,6 +81,9 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
             call.call_entry = (uint64_t)kernel32_call_process_main;
             call.guest_completion_cb = (uint64_t)guest_completion_cb;
             qemu_syscall(&call.super);
+
+            ntdll = kernel32_GetModuleHandleW(ntdllW);
+            pRtlRaiseException = (void *)kernel32_GetProcAddress(ntdll, "RtlRaiseException");
             break;
     }
     return TRUE;

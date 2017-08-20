@@ -399,7 +399,7 @@ EXPORTS
   GetModuleHandleA
   GetModuleHandleExA
   GetModuleHandleExW
-  GetModuleHandleW
+  GetModuleHandleW=kernel32_GetModuleHandleW
   GetNamedPipeHandleStateA
   GetNamedPipeHandleStateW
   GetNamedPipeInfo
@@ -429,7 +429,7 @@ EXPORTS
   GetPrivateProfileStringW
   GetPrivateProfileStructA
   GetPrivateProfileStructW
-  GetProcAddress
+  GetProcAddress=kernel32_GetProcAddress
   GetProcessAffinityMask
   GetProcessDEPPolicy
   GetProcessFlags
@@ -744,7 +744,7 @@ EXPORTS
   QueryUnbiasedInterruptTime
   QueueUserAPC
   QueueUserWorkItem
-  RaiseException
+  RaiseException=kernel32_RaiseException
   ReadConsoleA
   ReadConsoleInputA
   ReadConsoleInputW
@@ -784,6 +784,7 @@ EXPORTS
   RtlDeleteFunctionTable=ntdll.RtlDeleteFunctionTable
   RtlLookupFunctionEntry=ntdll.RtlLookupFunctionEntry
   RtlPcToFileHeader=ntdll.RtlPcToFileHeader
+  RtlRaiseException=ntdll.RtlRaiseException
   RtlUnwind=ntdll.RtlUnwind
   RtlUnwindEx=ntdll.RtlUnwindEx
   RtlVirtualUnwind=ntdll.RtlVirtualUnwind

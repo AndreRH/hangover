@@ -392,7 +392,7 @@ struct qemu_ModuleOpW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HMODULE WINAPI GetModuleHandleW(const WCHAR *name)
+HMODULE WINAPI kernel32_GetModuleHandleW(const WCHAR *name)
 {
     struct qemu_ModuleOpW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEHANDLEW);
@@ -428,7 +428,7 @@ struct qemu_GetProcAddress
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI FARPROC WINAPI GetProcAddress(HMODULE module, const char *name)
+FARPROC WINAPI kernel32_GetProcAddress(HMODULE module, const char *name)
 {
     struct qemu_GetProcAddress call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCADDRESS);
