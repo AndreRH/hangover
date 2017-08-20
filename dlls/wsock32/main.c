@@ -78,13 +78,13 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (!wsock32)
         WINE_ERR("Cannot find wsock32.dll.\n");
 
-    p_EnumProtocolsA = (void *)GetProcAddress(wsock32, "inet_network");
-    p_EnumProtocolsW = (void *)GetProcAddress(wsock32, "inet_network");
-    p_getnetbyname = (void *)GetProcAddress(wsock32, "inet_network");
-    p_getsockopt = (void *)GetProcAddress(wsock32, "inet_network");
+    p_EnumProtocolsA = (void *)GetProcAddress(wsock32, "EnumProtocols");
+    p_EnumProtocolsW = (void *)GetProcAddress(wsock32, "EnumProtocolsW");
+    p_getnetbyname = (void *)GetProcAddress(wsock32, "getnetbyname");
+    p_getsockopt = (void *)GetProcAddress(wsock32, "getsockopt");
     p_inet_network = (void *)GetProcAddress(wsock32, "inet_network");
-    p_setsockopt = (void *)GetProcAddress(wsock32, "inet_network");
-    p_WsControl = (void *)GetProcAddress(wsock32, "inet_network");
+    p_setsockopt = (void *)GetProcAddress(wsock32, "setsockopt");
+    p_WsControl = (void *)GetProcAddress(wsock32, "WsControl");
 
     return dll_functions;
 }
