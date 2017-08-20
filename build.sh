@@ -43,7 +43,7 @@ do
 done
 
 # Link Wine libraries.
-declare -a wine_dlls=("dbghelp" "ole32" "oleaut32" "propsys" "rpcrt4" "urlmon" "windowscodecs")
+declare -a wine_dlls=("dbghelp" "ole32" "oleaut32" "propsys" "rpcrt4" "urlmon" "windowscodecs" "netapi" "dnsapi")
 ln -sf $DESTDIR/build/wine-guest/libs/wine/libwine.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
 
 for dll in "${wine_dlls[@]}"
