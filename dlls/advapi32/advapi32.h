@@ -28,6 +28,8 @@ enum advapi32_calls
     CALL_ALLOCATELOCALLYUNIQUEID,
     CALL_AREALLACCESSESGRANTED,
     CALL_AREANYACCESSESGRANTED,
+    CALL_BACKUPEVENTLOGA,
+    CALL_BACKUPEVENTLOGW,
     CALL_BUILDEXPLICITACCESSWITHNAMEA,
     CALL_BUILDEXPLICITACCESSWITHNAMEW,
     CALL_BUILDSECURITYDESCRIPTORA,
@@ -45,10 +47,16 @@ enum advapi32_calls
     CALL_CHANGESERVICECONFIGA,
     CALL_CHANGESERVICECONFIGW,
     CALL_CHECKTOKENMEMBERSHIP,
+    CALL_CLEAREVENTLOGA,
+    CALL_CLEAREVENTLOGW,
     CALL_CLOSEENCRYPTEDFILERAW,
+    CALL_CLOSEEVENTLOG,
     CALL_CLOSESERVICEHANDLE,
+    CALL_CLOSETRACE,
     CALL_COMMANDLINEFROMMSIDESCRIPTOR,
     CALL_CONTROLSERVICE,
+    CALL_CONTROLTRACEA,
+    CALL_CONTROLTRACEW,
     CALL_CONVERTSECURITYDESCRIPTORTOSTRINGSECURITYDESCRIPTORA,
     CALL_CONVERTSECURITYDESCRIPTORTOSTRINGSECURITYDESCRIPTORW,
     CALL_CONVERTSIDTOSTRINGSIDA,
@@ -113,22 +121,32 @@ enum advapi32_calls
     CALL_DECRYPTFILEW,
     CALL_DELETEACE,
     CALL_DELETESERVICE,
+    CALL_DEREGISTEREVENTSOURCE,
     CALL_DESTROYPRIVATEOBJECTSECURITY,
     CALL_DUPLICATETOKEN,
     CALL_DUPLICATETOKENEX,
+    CALL_ENABLETRACE,
+    CALL_ENABLETRACEEX,
+    CALL_ENABLETRACEEX2,
     CALL_ENCRYPTFILEA,
     CALL_ENCRYPTFILEW,
     CALL_ENUMDEPENDENTSERVICESA,
     CALL_ENUMDEPENDENTSERVICESW,
+    CALL_ENUMERATETRACEGUIDS,
     CALL_ENUMSERVICESSTATUSA,
     CALL_ENUMSERVICESSTATUSEXA,
     CALL_ENUMSERVICESSTATUSEXW,
     CALL_ENUMSERVICESSTATUSW,
     CALL_EQUALPREFIXSID,
     CALL_EQUALSID,
+    CALL_EVENTACTIVITYIDCONTROL,
+    CALL_EVENTPROVIDERENABLED,
+    CALL_EVENTWRITETRANSFER,
     CALL_FILEENCRYPTIONSTATUSA,
     CALL_FILEENCRYPTIONSTATUSW,
     CALL_FINDFIRSTFREEACE,
+    CALL_FLUSHTRACEA,
+    CALL_FLUSHTRACEW,
     CALL_FREESID,
     CALL_GETACE,
     CALL_GETACLINFORMATION,
@@ -138,6 +156,7 @@ enum advapi32_calls
     CALL_GETCURRENTHWPROFILEW,
     CALL_GETEFFECTIVERIGHTSFROMACLA,
     CALL_GETEFFECTIVERIGHTSFROMACLW,
+    CALL_GETEVENTLOGINFORMATION,
     CALL_GETEXPLICITENTRIESFROMACLA,
     CALL_GETEXPLICITENTRIESFROMACLW,
     CALL_GETFILESECURITYA,
@@ -148,6 +167,8 @@ enum advapi32_calls
     CALL_GETNAMEDSECURITYINFOEXA,
     CALL_GETNAMEDSECURITYINFOEXW,
     CALL_GETNAMEDSECURITYINFOW,
+    CALL_GETNUMBEROFEVENTLOGRECORDS,
+    CALL_GETOLDESTEVENTLOGRECORD,
     CALL_GETPRIVATEOBJECTSECURITY,
     CALL_GETSECURITYDESCRIPTORCONTROL,
     CALL_GETSECURITYDESCRIPTORDACL,
@@ -167,6 +188,9 @@ enum advapi32_calls
     CALL_GETSIDSUBAUTHORITY,
     CALL_GETSIDSUBAUTHORITYCOUNT,
     CALL_GETTOKENINFORMATION,
+    CALL_GETTRACEENABLEFLAGS,
+    CALL_GETTRACEENABLELEVEL,
+    CALL_GETTRACELOGGERHANDLE,
     CALL_GETTRUSTEEFORMA,
     CALL_GETTRUSTEEFORMW,
     CALL_GETTRUSTEENAMEA,
@@ -212,6 +236,7 @@ enum advapi32_calls
     CALL_MAKESELFRELATIVESD,
     CALL_MAPGENERICMASK,
     CALL_NOTIFYBOOTCONFIGSTATUS,
+    CALL_NOTIFYCHANGEEVENTLOG,
     CALL_NOTIFYSERVICESTATUSCHANGEW,
     CALL_OBJECTCLOSEAUDITALARMA,
     CALL_OBJECTCLOSEAUDITALARMW,
@@ -220,17 +245,26 @@ enum advapi32_calls
     CALL_OBJECTOPENAUDITALARMW,
     CALL_OBJECTPRIVILEGEAUDITALARMA,
     CALL_OBJECTPRIVILEGEAUDITALARMW,
+    CALL_OPENBACKUPEVENTLOGA,
+    CALL_OPENBACKUPEVENTLOGW,
     CALL_OPENENCRYPTEDFILERAWA,
     CALL_OPENENCRYPTEDFILERAWW,
+    CALL_OPENEVENTLOGA,
+    CALL_OPENEVENTLOGW,
     CALL_OPENPROCESSTOKEN,
     CALL_OPENSCMANAGERA,
     CALL_OPENSCMANAGERW,
     CALL_OPENSERVICEA,
     CALL_OPENSERVICEW,
     CALL_OPENTHREADTOKEN,
+    CALL_OPENTRACEA,
+    CALL_OPENTRACEW,
     CALL_PRIVILEGECHECK,
     CALL_PRIVILEGEDSERVICEAUDITALARMA,
     CALL_PRIVILEGEDSERVICEAUDITALARMW,
+    CALL_PROCESSTRACE,
+    CALL_QUERYALLTRACESA,
+    CALL_QUERYALLTRACESW,
     CALL_QUERYSERVICECONFIG2A,
     CALL_QUERYSERVICECONFIG2W,
     CALL_QUERYSERVICECONFIGA,
@@ -240,8 +274,11 @@ enum advapi32_calls
     CALL_QUERYSERVICEOBJECTSECURITY,
     CALL_QUERYSERVICESTATUS,
     CALL_QUERYSERVICESTATUSEX,
+    CALL_QUERYTRACEW,
     CALL_QUERYWINDOWS31FILESMIGRATION,
     CALL_READENCRYPTEDFILERAW,
+    CALL_READEVENTLOGA,
+    CALL_READEVENTLOGW,
     CALL_REGCLOSEKEY,
     CALL_REGCONNECTREGISTRYA,
     CALL_REGCONNECTREGISTRYW,
@@ -275,6 +312,8 @@ enum advapi32_calls
     CALL_REGGETKEYSECURITY,
     CALL_REGGETVALUEA,
     CALL_REGGETVALUEW,
+    CALL_REGISTEREVENTSOURCEA,
+    CALL_REGISTEREVENTSOURCEW,
     CALL_REGISTERSERVICECTRLHANDLERA,
     CALL_REGISTERSERVICECTRLHANDLEREXA,
     CALL_REGISTERSERVICECTRLHANDLEREXW,
@@ -317,6 +356,8 @@ enum advapi32_calls
     CALL_REGSETVALUEW,
     CALL_REGUNLOADKEYA,
     CALL_REGUNLOADKEYW,
+    CALL_REPORTEVENTA,
+    CALL_REPORTEVENTW,
     CALL_REVERTTOSELF,
     CALL_SAFERCLOSELEVEL,
     CALL_SAFERCOMPUTETOKENFROMLEVEL,
@@ -347,12 +388,18 @@ enum advapi32_calls
     CALL_STARTSERVICECTRLDISPATCHERA,
     CALL_STARTSERVICECTRLDISPATCHERW,
     CALL_STARTSERVICEW,
+    CALL_STARTTRACEA,
+    CALL_STARTTRACEW,
+    CALL_STOPTRACEA,
+    CALL_STOPTRACEW,
     CALL_SYNCHRONIZEWINDOWS31FILESANDWINDOWSNTREGISTRY,
     CALL_SYSTEMFUNCTION030,
     CALL_SYSTEMFUNCTION035,
     CALL_SYSTEMFUNCTION036,
     CALL_SYSTEMFUNCTION040,
     CALL_SYSTEMFUNCTION041,
+    CALL_TRACEEVENT,
+    CALL_TRACEMESSAGEVA,
     CALL_TREERESETNAMEDSECURITYINFOW,
     CALL_UNLOCKSERVICEDATABASE,
     CALL_WRITEENCRYPTEDFILERAW,
@@ -385,6 +432,8 @@ void qemu_AllocateAndInitializeSid(struct qemu_syscall *call);
 void qemu_AllocateLocallyUniqueId(struct qemu_syscall *call);
 void qemu_AreAllAccessesGranted(struct qemu_syscall *call);
 void qemu_AreAnyAccessesGranted(struct qemu_syscall *call);
+void qemu_BackupEventLogA(struct qemu_syscall *call);
+void qemu_BackupEventLogW(struct qemu_syscall *call);
 void qemu_BuildExplicitAccessWithNameA(struct qemu_syscall *call);
 void qemu_BuildExplicitAccessWithNameW(struct qemu_syscall *call);
 void qemu_BuildSecurityDescriptorA(struct qemu_syscall *call);
@@ -402,10 +451,16 @@ void qemu_ChangeServiceConfig2W(struct qemu_syscall *call);
 void qemu_ChangeServiceConfigA(struct qemu_syscall *call);
 void qemu_ChangeServiceConfigW(struct qemu_syscall *call);
 void qemu_CheckTokenMembership(struct qemu_syscall *call);
+void qemu_ClearEventLogA(struct qemu_syscall *call);
+void qemu_ClearEventLogW(struct qemu_syscall *call);
 void qemu_CloseEncryptedFileRaw(struct qemu_syscall *call);
+void qemu_CloseEventLog(struct qemu_syscall *call);
 void qemu_CloseServiceHandle(struct qemu_syscall *call);
+void qemu_CloseTrace(struct qemu_syscall *call);
 void qemu_CommandLineFromMsiDescriptor(struct qemu_syscall *call);
 void qemu_ControlService(struct qemu_syscall *call);
+void qemu_ControlTraceA(struct qemu_syscall *call);
+void qemu_ControlTraceW(struct qemu_syscall *call);
 void qemu_ConvertSecurityDescriptorToStringSecurityDescriptorA(struct qemu_syscall *call);
 void qemu_ConvertSecurityDescriptorToStringSecurityDescriptorW(struct qemu_syscall *call);
 void qemu_ConvertSidToStringSidA(struct qemu_syscall *call);
@@ -470,22 +525,32 @@ void qemu_DecryptFileA(struct qemu_syscall *call);
 void qemu_DecryptFileW(struct qemu_syscall *call);
 void qemu_DeleteAce(struct qemu_syscall *call);
 void qemu_DeleteService(struct qemu_syscall *call);
+void qemu_DeregisterEventSource(struct qemu_syscall *call);
 void qemu_DestroyPrivateObjectSecurity(struct qemu_syscall *call);
 void qemu_DuplicateToken(struct qemu_syscall *call);
 void qemu_DuplicateTokenEx(struct qemu_syscall *call);
+void qemu_EnableTrace(struct qemu_syscall *call);
+void qemu_EnableTraceEx(struct qemu_syscall *call);
+void qemu_EnableTraceEx2(struct qemu_syscall *call);
 void qemu_EncryptFileA(struct qemu_syscall *call);
 void qemu_EncryptFileW(struct qemu_syscall *call);
 void qemu_EnumDependentServicesA(struct qemu_syscall *call);
 void qemu_EnumDependentServicesW(struct qemu_syscall *call);
+void qemu_EnumerateTraceGuids(struct qemu_syscall *call);
 void qemu_EnumServicesStatusA(struct qemu_syscall *call);
 void qemu_EnumServicesStatusExA(struct qemu_syscall *call);
 void qemu_EnumServicesStatusExW(struct qemu_syscall *call);
 void qemu_EnumServicesStatusW(struct qemu_syscall *call);
 void qemu_EqualPrefixSid(struct qemu_syscall *call);
 void qemu_EqualSid(struct qemu_syscall *call);
+void qemu_EventActivityIdControl(struct qemu_syscall *call);
+void qemu_EventProviderEnabled(struct qemu_syscall *call);
+void qemu_EventWriteTransfer(struct qemu_syscall *call);
 void qemu_FileEncryptionStatusA(struct qemu_syscall *call);
 void qemu_FileEncryptionStatusW(struct qemu_syscall *call);
 void qemu_FindFirstFreeAce(struct qemu_syscall *call);
+void qemu_FlushTraceA(struct qemu_syscall *call);
+void qemu_FlushTraceW(struct qemu_syscall *call);
 void qemu_FreeSid(struct qemu_syscall *call);
 void qemu_GetAce(struct qemu_syscall *call);
 void qemu_GetAclInformation(struct qemu_syscall *call);
@@ -495,6 +560,7 @@ void qemu_GetCurrentHwProfileA(struct qemu_syscall *call);
 void qemu_GetCurrentHwProfileW(struct qemu_syscall *call);
 void qemu_GetEffectiveRightsFromAclA(struct qemu_syscall *call);
 void qemu_GetEffectiveRightsFromAclW(struct qemu_syscall *call);
+void qemu_GetEventLogInformation(struct qemu_syscall *call);
 void qemu_GetExplicitEntriesFromAclA(struct qemu_syscall *call);
 void qemu_GetExplicitEntriesFromAclW(struct qemu_syscall *call);
 void qemu_GetFileSecurityA(struct qemu_syscall *call);
@@ -505,6 +571,8 @@ void qemu_GetNamedSecurityInfoA(struct qemu_syscall *call);
 void qemu_GetNamedSecurityInfoExA(struct qemu_syscall *call);
 void qemu_GetNamedSecurityInfoExW(struct qemu_syscall *call);
 void qemu_GetNamedSecurityInfoW(struct qemu_syscall *call);
+void qemu_GetNumberOfEventLogRecords(struct qemu_syscall *call);
+void qemu_GetOldestEventLogRecord(struct qemu_syscall *call);
 void qemu_GetPrivateObjectSecurity(struct qemu_syscall *call);
 void qemu_GetSecurityDescriptorControl(struct qemu_syscall *call);
 void qemu_GetSecurityDescriptorDacl(struct qemu_syscall *call);
@@ -524,6 +592,9 @@ void qemu_GetSidLengthRequired(struct qemu_syscall *call);
 void qemu_GetSidSubAuthority(struct qemu_syscall *call);
 void qemu_GetSidSubAuthorityCount(struct qemu_syscall *call);
 void qemu_GetTokenInformation(struct qemu_syscall *call);
+void qemu_GetTraceEnableFlags(struct qemu_syscall *call);
+void qemu_GetTraceEnableLevel(struct qemu_syscall *call);
+void qemu_GetTraceLoggerHandle(struct qemu_syscall *call);
 void qemu_GetTrusteeFormA(struct qemu_syscall *call);
 void qemu_GetTrusteeFormW(struct qemu_syscall *call);
 void qemu_GetTrusteeNameA(struct qemu_syscall *call);
@@ -569,6 +640,7 @@ void qemu_MakeAbsoluteSD(struct qemu_syscall *call);
 void qemu_MakeSelfRelativeSD(struct qemu_syscall *call);
 void qemu_MapGenericMask(struct qemu_syscall *call);
 void qemu_NotifyBootConfigStatus(struct qemu_syscall *call);
+void qemu_NotifyChangeEventLog(struct qemu_syscall *call);
 void qemu_NotifyServiceStatusChangeW(struct qemu_syscall *call);
 void qemu_ObjectCloseAuditAlarmA(struct qemu_syscall *call);
 void qemu_ObjectCloseAuditAlarmW(struct qemu_syscall *call);
@@ -577,17 +649,26 @@ void qemu_ObjectOpenAuditAlarmA(struct qemu_syscall *call);
 void qemu_ObjectOpenAuditAlarmW(struct qemu_syscall *call);
 void qemu_ObjectPrivilegeAuditAlarmA(struct qemu_syscall *call);
 void qemu_ObjectPrivilegeAuditAlarmW(struct qemu_syscall *call);
+void qemu_OpenBackupEventLogA(struct qemu_syscall *call);
+void qemu_OpenBackupEventLogW(struct qemu_syscall *call);
 void qemu_OpenEncryptedFileRawA(struct qemu_syscall *call);
 void qemu_OpenEncryptedFileRawW(struct qemu_syscall *call);
+void qemu_OpenEventLogA(struct qemu_syscall *call);
+void qemu_OpenEventLogW(struct qemu_syscall *call);
 void qemu_OpenProcessToken(struct qemu_syscall *call);
 void qemu_OpenSCManagerA(struct qemu_syscall *call);
 void qemu_OpenSCManagerW(struct qemu_syscall *call);
 void qemu_OpenServiceA(struct qemu_syscall *call);
 void qemu_OpenServiceW(struct qemu_syscall *call);
 void qemu_OpenThreadToken(struct qemu_syscall *call);
+void qemu_OpenTraceA(struct qemu_syscall *call);
+void qemu_OpenTraceW(struct qemu_syscall *call);
 void qemu_PrivilegeCheck(struct qemu_syscall *call);
 void qemu_PrivilegedServiceAuditAlarmA(struct qemu_syscall *call);
 void qemu_PrivilegedServiceAuditAlarmW(struct qemu_syscall *call);
+void qemu_ProcessTrace(struct qemu_syscall *call);
+void qemu_QueryAllTracesA(struct qemu_syscall *call);
+void qemu_QueryAllTracesW(struct qemu_syscall *call);
 void qemu_QueryServiceConfig2A(struct qemu_syscall *call);
 void qemu_QueryServiceConfig2W(struct qemu_syscall *call);
 void qemu_QueryServiceConfigA(struct qemu_syscall *call);
@@ -597,8 +678,11 @@ void qemu_QueryServiceLockStatusW(struct qemu_syscall *call);
 void qemu_QueryServiceObjectSecurity(struct qemu_syscall *call);
 void qemu_QueryServiceStatus(struct qemu_syscall *call);
 void qemu_QueryServiceStatusEx(struct qemu_syscall *call);
+void qemu_QueryTraceW(struct qemu_syscall *call);
 void qemu_QueryWindows31FilesMigration(struct qemu_syscall *call);
 void qemu_ReadEncryptedFileRaw(struct qemu_syscall *call);
+void qemu_ReadEventLogA(struct qemu_syscall *call);
+void qemu_ReadEventLogW(struct qemu_syscall *call);
 void qemu_RegCloseKey(struct qemu_syscall *call);
 void qemu_RegConnectRegistryA(struct qemu_syscall *call);
 void qemu_RegConnectRegistryW(struct qemu_syscall *call);
@@ -632,6 +716,8 @@ void qemu_RegFlushKey(struct qemu_syscall *call);
 void qemu_RegGetKeySecurity(struct qemu_syscall *call);
 void qemu_RegGetValueA(struct qemu_syscall *call);
 void qemu_RegGetValueW(struct qemu_syscall *call);
+void qemu_RegisterEventSourceA(struct qemu_syscall *call);
+void qemu_RegisterEventSourceW(struct qemu_syscall *call);
 void qemu_RegisterServiceCtrlHandlerA(struct qemu_syscall *call);
 void qemu_RegisterServiceCtrlHandlerExA(struct qemu_syscall *call);
 void qemu_RegisterServiceCtrlHandlerExW(struct qemu_syscall *call);
@@ -674,6 +760,8 @@ void qemu_RegSetValueExW(struct qemu_syscall *call);
 void qemu_RegSetValueW(struct qemu_syscall *call);
 void qemu_RegUnLoadKeyA(struct qemu_syscall *call);
 void qemu_RegUnLoadKeyW(struct qemu_syscall *call);
+void qemu_ReportEventA(struct qemu_syscall *call);
+void qemu_ReportEventW(struct qemu_syscall *call);
 void qemu_RevertToSelf(struct qemu_syscall *call);
 void qemu_SaferCloseLevel(struct qemu_syscall *call);
 void qemu_SaferComputeTokenFromLevel(struct qemu_syscall *call);
@@ -704,12 +792,18 @@ void qemu_StartServiceA(struct qemu_syscall *call);
 void qemu_StartServiceCtrlDispatcherA(struct qemu_syscall *call);
 void qemu_StartServiceCtrlDispatcherW(struct qemu_syscall *call);
 void qemu_StartServiceW(struct qemu_syscall *call);
+void qemu_StartTraceA(struct qemu_syscall *call);
+void qemu_StartTraceW(struct qemu_syscall *call);
+void qemu_StopTraceA(struct qemu_syscall *call);
+void qemu_StopTraceW(struct qemu_syscall *call);
 void qemu_SynchronizeWindows31FilesAndWindowsNTRegistry(struct qemu_syscall *call);
 void qemu_SystemFunction030(struct qemu_syscall *call);
 void qemu_SystemFunction035(struct qemu_syscall *call);
 void qemu_SystemFunction036(struct qemu_syscall *call);
 void qemu_SystemFunction040(struct qemu_syscall *call);
 void qemu_SystemFunction041(struct qemu_syscall *call);
+void qemu_TraceEvent(struct qemu_syscall *call);
+void qemu_TraceMessageVa(struct qemu_syscall *call);
 void qemu_TreeResetNamedSecurityInfoW(struct qemu_syscall *call);
 void qemu_UnlockServiceDatabase(struct qemu_syscall *call);
 void qemu_WriteEncryptedFileRaw(struct qemu_syscall *call);
