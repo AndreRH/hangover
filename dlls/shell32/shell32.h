@@ -64,6 +64,7 @@ enum shell32_calls
     CALL_SHCREATEFILEEXTRACTICONW,
     CALL_SHCREATEITEMFROMIDLIST,
     CALL_SHCREATEITEMFROMPARSINGNAME,
+    CALL_SHCREATELINKS,
     CALL_SHCREATEQUERYCANCELAUTOPLAYMONIKER,
     CALL_SHCREATESHELLITEM,
     CALL_SHCREATESHELLITEMARRAY,
@@ -103,15 +104,18 @@ enum shell32_calls
     CALL_SHGETPROPERTYSTOREFORWINDOW,
     CALL_SHGETPROPERTYSTOREFROMPARSINGNAME,
     CALL_SHGETREALIDL,
+    CALL_SHGETSETFOLDERCUSTOMSETTINGS,
     CALL_SHGETSPECIALFOLDERLOCATION,
     CALL_SHGETSPECIALFOLDERPATHA,
     CALL_SHGETSPECIALFOLDERPATHW,
     CALL_SHHELPSHORTCUTS_RUNDLLA,
     CALL_SHHELPSHORTCUTS_RUNDLLW,
     CALL_SHILCREATEFROMPATHAW,
+    CALL_SHLIMITINPUTEDIT,
     CALL_SHLOADINPROC,
     CALL_SHLOADNONLOADEDICONOVERLAYIDENTIFIERS,
     CALL_SHLOGILFROMFSIL,
+    CALL_SHOPENFOLDERANDSELECTITEMS,
     CALL_SHPARSEDISPLAYNAME,
     CALL_SHPROPSTGCREATE,
     CALL_SHPROPSTGREADMULTIPLE,
@@ -185,6 +189,7 @@ void qemu_SHCoCreateInstance(struct qemu_syscall *call);
 void qemu_SHCreateFileExtractIconW(struct qemu_syscall *call);
 void qemu_SHCreateItemFromIDList(struct qemu_syscall *call);
 void qemu_SHCreateItemFromParsingName(struct qemu_syscall *call);
+void qemu_SHCreateLinks(struct qemu_syscall *call);
 void qemu_SHCreateQueryCancelAutoPlayMoniker(struct qemu_syscall *call);
 void qemu_SHCreateShellItem(struct qemu_syscall *call);
 void qemu_SHCreateShellItemArray(struct qemu_syscall *call);
@@ -224,6 +229,7 @@ void qemu_SHGetPathFromIDListW(struct qemu_syscall *call);
 void qemu_SHGetPropertyStoreForWindow(struct qemu_syscall *call);
 void qemu_SHGetPropertyStoreFromParsingName(struct qemu_syscall *call);
 void qemu_SHGetRealIDL(struct qemu_syscall *call);
+void qemu_SHGetSetFolderCustomSettings(struct qemu_syscall *call);
 void qemu_SHGetSpecialFolderLocation(struct qemu_syscall *call);
 void qemu_SHGetSpecialFolderPathA(struct qemu_syscall *call);
 void qemu_SHGetSpecialFolderPathAW(struct qemu_syscall *call);
@@ -231,9 +237,11 @@ void qemu_SHGetSpecialFolderPathW(struct qemu_syscall *call);
 void qemu_SHHelpShortcuts_RunDLLA(struct qemu_syscall *call);
 void qemu_SHHelpShortcuts_RunDLLW(struct qemu_syscall *call);
 void qemu_SHILCreateFromPathAW(struct qemu_syscall *call);
+void qemu_SHLimitInputEdit(struct qemu_syscall *call);
 void qemu_SHLoadInProc(struct qemu_syscall *call);
 void qemu_SHLoadNonloadedIconOverlayIdentifiers(struct qemu_syscall *call);
 void qemu_SHLogILFromFSIL(struct qemu_syscall *call);
+void qemu_SHOpenFolderAndSelectItems(struct qemu_syscall *call);
 void qemu_SHParseDisplayName(struct qemu_syscall *call);
 void qemu_SHPropStgCreate(struct qemu_syscall *call);
 void qemu_SHPropStgReadMultiple(struct qemu_syscall *call);

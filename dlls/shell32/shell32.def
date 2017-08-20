@@ -60,6 +60,7 @@ EXPORTS
   SHCreateFileExtractIconW
   SHCreateItemFromIDList
   SHCreateItemFromParsingName
+  SHCreateLinks
   SHCreateQueryCancelAutoPlayMoniker
   SHCreateShellItem
   SHCreateShellItemArray
@@ -99,6 +100,7 @@ EXPORTS
   SHGetPropertyStoreForWindow
   SHGetPropertyStoreFromParsingName
   SHGetRealIDL
+  SHGetSetFolderCustomSettings
   SHGetSpecialFolderLocation
   SHGetSpecialFolderPathA
   SHGetSpecialFolderPathW
@@ -106,9 +108,11 @@ EXPORTS
   SHHelpShortcuts_RunDLLW
   SHILCreateFromPathA=SHILCreateFromPathAW
   SHILCreateFromPathW=SHILCreateFromPathAW
+  SHLimitInputEdit
   SHLoadInProc
   SHLoadNonloadedIconOverlayIdentifiers
   SHLogILFromFSIL
+  SHOpenFolderAndSelectItems
   SHParseDisplayName
   SHPropStgCreate
   SHPropStgReadMultiple
