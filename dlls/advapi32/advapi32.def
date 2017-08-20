@@ -1,6 +1,8 @@
 LIBRARY advapi32.dll BASE=0x40000000
 
 EXPORTS
+  AbortSystemShutdownA
+  AbortSystemShutdownW
   AccessCheck
   AccessCheckAndAuditAlarmA
   AccessCheckAndAuditAlarmW
@@ -41,6 +43,7 @@ EXPORTS
   CheckTokenMembership
   CloseEncryptedFileRaw
   CloseServiceHandle
+  CommandLineFromMsiDescriptor
   ControlService
   ConvertSecurityDescriptorToStringSecurityDescriptorA
   ConvertSecurityDescriptorToStringSecurityDescriptorW
@@ -127,6 +130,8 @@ EXPORTS
   GetAclInformation
   GetAuditedPermissionsFromAclA
   GetAuditedPermissionsFromAclW
+  GetCurrentHwProfileA
+  GetCurrentHwProfileW
   GetEffectiveRightsFromAclA
   GetEffectiveRightsFromAclW
   GetExplicitEntriesFromAclA
@@ -164,6 +169,8 @@ EXPORTS
   GetTrusteeNameW
   GetTrusteeTypeA
   GetTrusteeTypeW
+  GetUserNameA
+  GetUserNameW
   GetWindowsAccountDomainSid
   ImpersonateAnonymousToken
   ImpersonateLoggedOnUser
@@ -172,6 +179,10 @@ EXPORTS
   InitializeAcl
   InitializeSecurityDescriptor
   InitializeSid
+  InitiateSystemShutdownA
+  InitiateSystemShutdownExA
+  InitiateSystemShutdownExW
+  InitiateSystemShutdownW
   IsTextUnicode
   IsTokenRestricted
   IsValidAcl
@@ -179,6 +190,8 @@ EXPORTS
   IsValidSid
   IsWellKnownSid
   LockServiceDatabase
+  LogonUserA
+  LogonUserW
   LookupAccountNameA
   LookupAccountNameW
   LookupAccountSidA
@@ -262,6 +275,7 @@ EXPORTS
   RegisterServiceCtrlHandlerExA
   RegisterServiceCtrlHandlerExW
   RegisterServiceCtrlHandlerW
+  RegisterWaitChainCOMCallback
   RegLoadKeyA
   RegLoadKeyW
   RegLoadMUIStringA

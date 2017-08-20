@@ -5,7 +5,9 @@
 
 enum advapi32_calls
 {
-    CALL_ACCESSCHECK = 0,
+    CALL_ABORTSYSTEMSHUTDOWNA = 0,
+    CALL_ABORTSYSTEMSHUTDOWNW,
+    CALL_ACCESSCHECK,
     CALL_ACCESSCHECKANDAUDITALARMA,
     CALL_ACCESSCHECKANDAUDITALARMW,
     CALL_ACCESSCHECKBYTYPE,
@@ -45,6 +47,7 @@ enum advapi32_calls
     CALL_CHECKTOKENMEMBERSHIP,
     CALL_CLOSEENCRYPTEDFILERAW,
     CALL_CLOSESERVICEHANDLE,
+    CALL_COMMANDLINEFROMMSIDESCRIPTOR,
     CALL_CONTROLSERVICE,
     CALL_CONVERTSECURITYDESCRIPTORTOSTRINGSECURITYDESCRIPTORA,
     CALL_CONVERTSECURITYDESCRIPTORTOSTRINGSECURITYDESCRIPTORW,
@@ -131,6 +134,8 @@ enum advapi32_calls
     CALL_GETACLINFORMATION,
     CALL_GETAUDITEDPERMISSIONSFROMACLA,
     CALL_GETAUDITEDPERMISSIONSFROMACLW,
+    CALL_GETCURRENTHWPROFILEA,
+    CALL_GETCURRENTHWPROFILEW,
     CALL_GETEFFECTIVERIGHTSFROMACLA,
     CALL_GETEFFECTIVERIGHTSFROMACLW,
     CALL_GETEXPLICITENTRIESFROMACLA,
@@ -168,6 +173,8 @@ enum advapi32_calls
     CALL_GETTRUSTEENAMEW,
     CALL_GETTRUSTEETYPEA,
     CALL_GETTRUSTEETYPEW,
+    CALL_GETUSERNAMEA,
+    CALL_GETUSERNAMEW,
     CALL_GETWINDOWSACCOUNTDOMAINSID,
     CALL_IMPERSONATEANONYMOUSTOKEN,
     CALL_IMPERSONATELOGGEDONUSER,
@@ -176,6 +183,10 @@ enum advapi32_calls
     CALL_INITIALIZEACL,
     CALL_INITIALIZESECURITYDESCRIPTOR,
     CALL_INITIALIZESID,
+    CALL_INITIATESYSTEMSHUTDOWNA,
+    CALL_INITIATESYSTEMSHUTDOWNEXA,
+    CALL_INITIATESYSTEMSHUTDOWNEXW,
+    CALL_INITIATESYSTEMSHUTDOWNW,
     CALL_ISTEXTUNICODE,
     CALL_ISTOKENRESTRICTED,
     CALL_ISVALIDACL,
@@ -183,6 +194,8 @@ enum advapi32_calls
     CALL_ISVALIDSID,
     CALL_ISWELLKNOWNSID,
     CALL_LOCKSERVICEDATABASE,
+    CALL_LOGONUSERA,
+    CALL_LOGONUSERW,
     CALL_LOOKUPACCOUNTNAMEA,
     CALL_LOOKUPACCOUNTNAMEW,
     CALL_LOOKUPACCOUNTSIDA,
@@ -266,6 +279,7 @@ enum advapi32_calls
     CALL_REGISTERSERVICECTRLHANDLEREXA,
     CALL_REGISTERSERVICECTRLHANDLEREXW,
     CALL_REGISTERSERVICECTRLHANDLERW,
+    CALL_REGISTERWAITCHAINCOMCALLBACK,
     CALL_REGLOADKEYA,
     CALL_REGLOADKEYW,
     CALL_REGLOADMUISTRINGA,
@@ -348,6 +362,8 @@ enum advapi32_calls
 
 extern const struct qemu_ops *qemu_ops;
 
+void qemu_AbortSystemShutdownA(struct qemu_syscall *call);
+void qemu_AbortSystemShutdownW(struct qemu_syscall *call);
 void qemu_AccessCheck(struct qemu_syscall *call);
 void qemu_AccessCheckAndAuditAlarmA(struct qemu_syscall *call);
 void qemu_AccessCheckAndAuditAlarmW(struct qemu_syscall *call);
@@ -388,6 +404,7 @@ void qemu_ChangeServiceConfigW(struct qemu_syscall *call);
 void qemu_CheckTokenMembership(struct qemu_syscall *call);
 void qemu_CloseEncryptedFileRaw(struct qemu_syscall *call);
 void qemu_CloseServiceHandle(struct qemu_syscall *call);
+void qemu_CommandLineFromMsiDescriptor(struct qemu_syscall *call);
 void qemu_ControlService(struct qemu_syscall *call);
 void qemu_ConvertSecurityDescriptorToStringSecurityDescriptorA(struct qemu_syscall *call);
 void qemu_ConvertSecurityDescriptorToStringSecurityDescriptorW(struct qemu_syscall *call);
@@ -474,6 +491,8 @@ void qemu_GetAce(struct qemu_syscall *call);
 void qemu_GetAclInformation(struct qemu_syscall *call);
 void qemu_GetAuditedPermissionsFromAclA(struct qemu_syscall *call);
 void qemu_GetAuditedPermissionsFromAclW(struct qemu_syscall *call);
+void qemu_GetCurrentHwProfileA(struct qemu_syscall *call);
+void qemu_GetCurrentHwProfileW(struct qemu_syscall *call);
 void qemu_GetEffectiveRightsFromAclA(struct qemu_syscall *call);
 void qemu_GetEffectiveRightsFromAclW(struct qemu_syscall *call);
 void qemu_GetExplicitEntriesFromAclA(struct qemu_syscall *call);
@@ -511,6 +530,8 @@ void qemu_GetTrusteeNameA(struct qemu_syscall *call);
 void qemu_GetTrusteeNameW(struct qemu_syscall *call);
 void qemu_GetTrusteeTypeA(struct qemu_syscall *call);
 void qemu_GetTrusteeTypeW(struct qemu_syscall *call);
+void qemu_GetUserNameA(struct qemu_syscall *call);
+void qemu_GetUserNameW(struct qemu_syscall *call);
 void qemu_GetWindowsAccountDomainSid(struct qemu_syscall *call);
 void qemu_ImpersonateAnonymousToken(struct qemu_syscall *call);
 void qemu_ImpersonateLoggedOnUser(struct qemu_syscall *call);
@@ -519,6 +540,10 @@ void qemu_ImpersonateSelf(struct qemu_syscall *call);
 void qemu_InitializeAcl(struct qemu_syscall *call);
 void qemu_InitializeSecurityDescriptor(struct qemu_syscall *call);
 void qemu_InitializeSid(struct qemu_syscall *call);
+void qemu_InitiateSystemShutdownA(struct qemu_syscall *call);
+void qemu_InitiateSystemShutdownExA(struct qemu_syscall *call);
+void qemu_InitiateSystemShutdownExW(struct qemu_syscall *call);
+void qemu_InitiateSystemShutdownW(struct qemu_syscall *call);
 void qemu_IsTextUnicode(struct qemu_syscall *call);
 void qemu_IsTokenRestricted(struct qemu_syscall *call);
 void qemu_IsValidAcl(struct qemu_syscall *call);
@@ -526,6 +551,8 @@ void qemu_IsValidSecurityDescriptor(struct qemu_syscall *call);
 void qemu_IsValidSid(struct qemu_syscall *call);
 void qemu_IsWellKnownSid(struct qemu_syscall *call);
 void qemu_LockServiceDatabase(struct qemu_syscall *call);
+void qemu_LogonUserA(struct qemu_syscall *call);
+void qemu_LogonUserW(struct qemu_syscall *call);
 void qemu_LookupAccountNameA(struct qemu_syscall *call);
 void qemu_LookupAccountNameW(struct qemu_syscall *call);
 void qemu_LookupAccountSidA(struct qemu_syscall *call);
@@ -609,6 +636,7 @@ void qemu_RegisterServiceCtrlHandlerA(struct qemu_syscall *call);
 void qemu_RegisterServiceCtrlHandlerExA(struct qemu_syscall *call);
 void qemu_RegisterServiceCtrlHandlerExW(struct qemu_syscall *call);
 void qemu_RegisterServiceCtrlHandlerW(struct qemu_syscall *call);
+void qemu_RegisterWaitChainCOMCallback(struct qemu_syscall *call);
 void qemu_RegLoadKeyA(struct qemu_syscall *call);
 void qemu_RegLoadKeyW(struct qemu_syscall *call);
 void qemu_RegLoadMUIStringA(struct qemu_syscall *call);
