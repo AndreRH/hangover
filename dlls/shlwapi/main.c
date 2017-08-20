@@ -43,6 +43,15 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu_AssocCreate,
+    qemu_AssocGetPerceivedType,
+    qemu_AssocIsDangerous,
+    qemu_AssocQueryKeyA,
+    qemu_AssocQueryKeyW,
+    qemu_AssocQueryStringA,
+    qemu_AssocQueryStringByKeyA,
+    qemu_AssocQueryStringByKeyW,
+    qemu_AssocQueryStringW,
     qemu_ChrCmpIA,
     qemu_ChrCmpIW,
     qemu_DoesStringRoundTripA,

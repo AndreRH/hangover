@@ -5,7 +5,16 @@
 
 enum shlwapi_calls
 {
-    CALL_CHRCMPIA = 0,
+    CALL_ASSOCCREATE = 0,
+    CALL_ASSOCGETPERCEIVEDTYPE,
+    CALL_ASSOCISDANGEROUS,
+    CALL_ASSOCQUERYKEYA,
+    CALL_ASSOCQUERYKEYW,
+    CALL_ASSOCQUERYSTRINGA,
+    CALL_ASSOCQUERYSTRINGBYKEYA,
+    CALL_ASSOCQUERYSTRINGBYKEYW,
+    CALL_ASSOCQUERYSTRINGW,
+    CALL_CHRCMPIA,
     CALL_CHRCMPIW,
     CALL_DOESSTRINGROUNDTRIPA,
     CALL_DOESSTRINGROUNDTRIPW,
@@ -258,6 +267,15 @@ enum shlwapi_calls
 
 extern const struct qemu_ops *qemu_ops;
 
+void qemu_AssocCreate(struct qemu_syscall *call);
+void qemu_AssocGetPerceivedType(struct qemu_syscall *call);
+void qemu_AssocIsDangerous(struct qemu_syscall *call);
+void qemu_AssocQueryKeyA(struct qemu_syscall *call);
+void qemu_AssocQueryKeyW(struct qemu_syscall *call);
+void qemu_AssocQueryStringA(struct qemu_syscall *call);
+void qemu_AssocQueryStringByKeyA(struct qemu_syscall *call);
+void qemu_AssocQueryStringByKeyW(struct qemu_syscall *call);
+void qemu_AssocQueryStringW(struct qemu_syscall *call);
 void qemu_ChrCmpIA(struct qemu_syscall *call);
 void qemu_ChrCmpIW(struct qemu_syscall *call);
 void qemu_DoesStringRoundTripA(struct qemu_syscall *call);

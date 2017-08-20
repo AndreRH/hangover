@@ -1,6 +1,15 @@
 LIBRARY shlwapi.dll BASE=0x90000000
 
 EXPORTS
+  AssocCreate
+  AssocGetPerceivedType
+  AssocIsDangerous
+  AssocQueryKeyA
+  AssocQueryKeyW
+  AssocQueryStringA
+  AssocQueryStringByKeyA
+  AssocQueryStringByKeyW
+  AssocQueryStringW
   ChrCmpIA
   ChrCmpIW
   DoesStringRoundTripA
