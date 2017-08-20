@@ -241,12 +241,30 @@ def do_functions(dllname, cfile):
     nfile.write("\n")
     nfile.write("/* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */\n")
     nfile.write("\n")
-    nfile.write("#include <windows.h>\n")
-    nfile.write("#include <windows.h>\n")
+
     nfile.write("#include <windows.h>\n")
     nfile.write("#include <stdio.h>\n")
-    nfile.write("#include <winternl.h>\n")
-    nfile.write("#include <ddk/ntddk.h>\n")
+    nfile.write("#include <shlwapi.h>\n")
+    #nfile.write("#include <wmistr.h>\n")
+    #nfile.write("#include <evntrace.h>\n")
+    #nfile.write("#include <evntprov.h>\n")
+
+#ntdll
+#    nfile.write("#include <ntstatus.h>\n")
+#    nfile.write("#define WIN32_NO_STATUS\n")
+#    nfile.write("#include <windows.h>\n")
+#    nfile.write("#include <stdio.h>\n")
+#    nfile.write("#include <winternl.h>\n")
+#    nfile.write("#include <ntdef.h>\n")
+
+#advapi32
+    #nfile.write("#include <windows.h>\n")
+    #nfile.write("#include <stdio.h>\n")
+    #nfile.write("#include <wct.h>\n")
+    #nfile.write("#include <wmistr.h>\n")
+    #nfile.write("#include <evntrace.h>\n")
+    #nfile.write("#include <evntprov.h>\n")
+
     nfile.write("\n")
     nfile.write("#include \"windows-user-services.h\"\n")
     nfile.write("#include \"dll_list.h\"\n")
