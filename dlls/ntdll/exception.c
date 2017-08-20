@@ -44,7 +44,7 @@ struct qemu_RtlRaiseStatus
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI void WINAPI RtlRaiseStatus(NTSTATUS status)
+void WINAPI ntdll_RtlRaiseStatus(NTSTATUS status)
 {
     struct qemu_RtlRaiseStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLRAISESTATUS);

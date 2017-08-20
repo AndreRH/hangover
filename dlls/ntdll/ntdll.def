@@ -365,7 +365,8 @@ EXPORTS
   RtlQueryHeapInformation
   RtlQueryInformationActivationContext
   RtlQueryRegistryValues
-  RtlRaiseStatus
+  RtlRaiseException
+  RtlRaiseStatus=ntdll_RtlRaiseStatus
   RtlRandom
   RtlReAllocateHeap
   RtlReleaseActivationContext

@@ -637,7 +637,7 @@ void qemu_RtlAddFunctionTable(struct qemu_syscall *call)
 {
     struct qemu_RtlAddFunctionTable *c = (struct qemu_RtlAddFunctionTable *)call;
     WINE_FIXME("(%p, %lu, %#lx) Stub!\n", QEMU_G2H(c->func), c->entry_count, c->base);
-    c->super.iret = FALSE;
+    c->super.iret = TRUE;
 }
 
 #endif
@@ -1246,5 +1246,30 @@ void qemu_RtlCaptureStackBackTrace(struct qemu_syscall *call)
     WINE_FIXME("Stub!\n");
     c->super.iret = 0;
 }
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
+void WINAPI ntdll_RtlRaiseStatus(NTSTATUS status);
+
+__ASM_GLOBAL_FUNC( RtlRaiseException,
+                   "movq %rcx,8(%rsp)\n\t"
+                   "sub $0x4f8,%rsp\n\t"
+                   __ASM_CFI(".cfi_adjust_cfa_offset 0x4f8\n\t")
+                   "leaq 0x20(%rsp),%rcx\n\t"
+                   "call " __ASM_NAME("ntdll_RtlCaptureContext") "\n\t"
+                   "leaq 0x20(%rsp),%rdx\n\t"   /* context pointer */
+                   "leaq 0x500(%rsp),%rax\n\t"  /* orig stack pointer */
+                   "movq %rax,0x98(%rdx)\n\t"   /* context->Rsp */
+                   "movq (%rax),%rcx\n\t"       /* original first parameter */
+                   "movq %rcx,0x80(%rdx)\n\t"   /* context->Rcx */
+                   "movq 0x4f8(%rsp),%rax\n\t"  /* return address */
+                   "movq %rax,0xf8(%rdx)\n\t"   /* context->Rip */
+                   "movq %rax,0x10(%rcx)\n\t"   /* rec->ExceptionAddress */
+                   "movl $1,%r8d\n\t"
+                   "call " __ASM_NAME("ntdll_NtRaiseException") "\n\t"
+                   "movq %rax,%rcx\n\t"
+                   "call " __ASM_NAME("ntdll_RtlRaiseStatus") /* does not return */ );
 
 #endif
