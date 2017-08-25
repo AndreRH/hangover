@@ -60,6 +60,24 @@ WINUSERAPI HWND WINAPI CreateDialogParamA(HINSTANCE hInst, LPCSTR name, HWND own
 
 #else
 
+static struct classproc_wrapper *find_dlgproc_wrapper(uint64_t func)
+{
+    unsigned int i;
+
+    for (i = 0; i < dlgproc_wrapper_count; ++i)
+    {
+        if (!dlgproc_wrappers[i].guest_proc || dlgproc_wrappers[i].guest_proc == func)
+        {
+            WINE_TRACE("Returning wrapper %p.\n", &dlgproc_wrappers[i]);
+            dlgproc_wrappers[i].guest_proc = func;
+            return &dlgproc_wrappers[i];
+        }
+    }
+
+    WINE_FIXME("All dialog wrappers are in use.\n");
+    return NULL;
+}
+
 void qemu_CreateDialogParamA(struct qemu_syscall *call)
 {
     struct qemu_CreateDialogParamA *c = (struct qemu_CreateDialogParamA *)call;
@@ -181,8 +199,22 @@ WINUSERAPI HWND WINAPI CreateDialogIndirectParamA(HINSTANCE hInst, LPCDLGTEMPLAT
 void qemu_CreateDialogIndirectParamA(struct qemu_syscall *call)
 {
     struct qemu_CreateDialogIndirectParamA *c = (struct qemu_CreateDialogIndirectParamA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateDialogIndirectParamA(QEMU_G2H(c->hInst), QEMU_G2H(c->dlgTemplate), QEMU_G2H(c->owner), QEMU_G2H(c->dlgProc), c->param);
+    struct classproc_wrapper *wrapper;
+    HWND ret;
+
+    WINE_TRACE("\n");
+
+    /* At the moment the dlgproc wrappers are not freed, let's see when this causes a problem. I am not
+     * sure if we can reliably intercept the dialog destroy call. */
+    wrapper = find_dlgproc_wrapper(c->dlgProc);
+    if (!wrapper)
+    {
+        c->super.iret = 0;
+        return;
+    }
+
+    c->super.iret = (uint64_t)CreateDialogIndirectParamA(QEMU_G2H(c->hInst), QEMU_G2H(c->dlgTemplate),
+            QEMU_G2H(c->owner), (DLGPROC)wrapper, c->param);
 }
 
 #endif
@@ -244,7 +276,7 @@ struct qemu_dlgproc_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t guest_wrapper(const struct qemu_dlgproc_cb *cb)
+static uint64_t dlgproc_guest_wrapper(const struct qemu_dlgproc_cb *cb)
 {
     DLGPROC guest_proc = (DLGPROC)cb->guest_proc;
     return guest_proc((HWND)cb->dlg, cb->msg, cb->wp, cb->lp);
@@ -259,7 +291,7 @@ WINUSERAPI INT_PTR WINAPI DialogBoxParamA(HINSTANCE hInst, LPCSTR name, HWND own
     call.owner = (uint64_t)owner;
     call.dlgProc = (uint64_t)dlgProc;
     call.param = (uint64_t)param;
-    call.guest_wrapper = (uint64_t)guest_wrapper;
+    call.guest_wrapper = (uint64_t)dlgproc_guest_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -275,7 +307,7 @@ WINUSERAPI INT_PTR WINAPI DialogBoxParamW(HINSTANCE hInst, LPCWSTR name, HWND ow
     call.owner = (uint64_t)owner;
     call.dlgProc = (uint64_t)dlgProc;
     call.param = (uint64_t)param;
-    call.guest_wrapper = (uint64_t)guest_wrapper;
+    call.guest_wrapper = (uint64_t)dlgproc_guest_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -304,6 +336,7 @@ void qemu_DialogBoxParam(struct qemu_syscall *call)
     struct qemu_DialogBoxParam *c = (struct qemu_DialogBoxParam *)call;
     HINSTANCE instance;
     uint64_t dlgproc;
+    uint64_t *old = TlsGetValue(user32_tls);
     WINE_TRACE("\n");
 
     instance = (HINSTANCE)c->hInst;
@@ -329,6 +362,8 @@ void qemu_DialogBoxParam(struct qemu_syscall *call)
         default:
             WINE_ERR("Unreachable code, id %16lx.\n", c->super.id);
     }
+
+    TlsSetValue(user32_tls, old);
 }
 
 #endif
@@ -375,7 +410,7 @@ void qemu_DialogBoxIndirectParamAorW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_DialogBoxIndirectParamA
+struct qemu_DialogBoxIndirectParam
 {
     struct qemu_syscall super;
     uint64_t hInstance;
@@ -383,51 +418,30 @@ struct qemu_DialogBoxIndirectParamA
     uint64_t owner;
     uint64_t dlgProc;
     uint64_t param;
+    uint64_t guest_wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
 
 WINUSERAPI INT_PTR WINAPI DialogBoxIndirectParamA(HINSTANCE hInstance, LPCDLGTEMPLATEA template, HWND owner, DLGPROC dlgProc, LPARAM param)
 {
-    struct qemu_DialogBoxIndirectParamA call;
+    struct qemu_DialogBoxIndirectParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DIALOGBOXINDIRECTPARAMA);
     call.hInstance = (uint64_t)hInstance;
     call.template = (uint64_t)template;
     call.owner = (uint64_t)owner;
     call.dlgProc = (uint64_t)dlgProc;
     call.param = (uint64_t)param;
+    call.guest_wrapper = (uint64_t)dlgproc_guest_wrapper;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_DialogBoxIndirectParamA(struct qemu_syscall *call)
-{
-    struct qemu_DialogBoxIndirectParamA *c = (struct qemu_DialogBoxIndirectParamA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DialogBoxIndirectParamA(QEMU_G2H(c->hInstance), QEMU_G2H(c->template), QEMU_G2H(c->owner), QEMU_G2H(c->dlgProc), c->param);
-}
-
-#endif
-
-struct qemu_DialogBoxIndirectParamW
-{
-    struct qemu_syscall super;
-    uint64_t hInstance;
-    uint64_t template;
-    uint64_t owner;
-    uint64_t dlgProc;
-    uint64_t param;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINUSERAPI INT_PTR WINAPI DialogBoxIndirectParamW(HINSTANCE hInstance, LPCDLGTEMPLATEW template, HWND owner, DLGPROC dlgProc, LPARAM param)
 {
-    struct qemu_DialogBoxIndirectParamW call;
+    struct qemu_DialogBoxIndirectParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DIALOGBOXINDIRECTPARAMW);
     call.hInstance = (uint64_t)hInstance;
     call.template = (uint64_t)template;
@@ -442,11 +456,37 @@ WINUSERAPI INT_PTR WINAPI DialogBoxIndirectParamW(HINSTANCE hInstance, LPCDLGTEM
 
 #else
 
-void qemu_DialogBoxIndirectParamW(struct qemu_syscall *call)
+void qemu_DialogBoxIndirectParam(struct qemu_syscall *call)
 {
-    struct qemu_DialogBoxIndirectParamW *c = (struct qemu_DialogBoxIndirectParamW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DialogBoxIndirectParamW(QEMU_G2H(c->hInstance), QEMU_G2H(c->template), QEMU_G2H(c->owner), QEMU_G2H(c->dlgProc), c->param);
+    struct qemu_DialogBoxIndirectParam *c = (struct qemu_DialogBoxIndirectParam *)call;
+    HINSTANCE instance;
+    uint64_t dlgproc;
+    uint64_t *old = TlsGetValue(user32_tls);
+
+    WINE_TRACE("\n");
+    instance = (HINSTANCE)c->hInstance;
+    if (!instance)
+        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    dlgproc = c->dlgProc;
+    guest_wrapper = c->guest_wrapper;
+    TlsSetValue(user32_tls, &dlgproc);
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_DIALOGBOXINDIRECTPARAMA):
+            c->super.iret = DialogBoxIndirectParamA(QEMU_G2H(c->hInstance), QEMU_G2H(c->template), QEMU_G2H(c->owner), dlgproc_wrapper, c->param);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DIALOGBOXINDIRECTPARAMW):
+            c->super.iret = DialogBoxIndirectParamW(QEMU_G2H(c->hInstance), QEMU_G2H(c->template), QEMU_G2H(c->owner), dlgproc_wrapper, c->param);
+            break;
+
+        default:
+            WINE_ERR("Unreachable code, id %16lx.\n", c->super.id);
+    }
+
+    TlsSetValue(user32_tls, old);
 }
 
 #endif

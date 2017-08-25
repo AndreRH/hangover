@@ -851,9 +851,8 @@ void qemu_DestroyCursor(struct qemu_syscall *call);
 void qemu_DestroyIcon(struct qemu_syscall *call);
 void qemu_DestroyMenu(struct qemu_syscall *call);
 void qemu_DestroyWindow(struct qemu_syscall *call);
-void qemu_DialogBoxIndirectParamA(struct qemu_syscall *call);
+void qemu_DialogBoxIndirectParam(struct qemu_syscall *call);
 void qemu_DialogBoxIndirectParamAorW(struct qemu_syscall *call);
-void qemu_DialogBoxIndirectParamW(struct qemu_syscall *call);
 void qemu_DialogBoxParam(struct qemu_syscall *call);
 void qemu_DialogBoxParam(struct qemu_syscall *call);
 void qemu_DisableProcessWindowsGhosting(struct qemu_syscall *call);
@@ -1420,6 +1419,10 @@ extern unsigned int win_wrapper_count;
 
 /* Reverse wrapper for Wine's wndprocs. */
 extern uint64_t guest_wndproc_wrapper;
+
+/* Dialog procs. */
+extern struct classproc_wrapper *dlgproc_wrappers;
+extern unsigned int dlgproc_wrapper_count;
 
 struct reverse_classproc_wrapper
 {
