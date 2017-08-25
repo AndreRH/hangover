@@ -151,14 +151,10 @@ struct qemu_hook_data
 static struct qemu_hook_data *installed_hooks[WH_MAXHOOK + 1];
 static uint64_t hook_guest_wrapper;
 
-LRESULT CALLBACK qemu_CBT_wrapper(int code, WPARAM wp, LPARAM lp)
+static LRESULT CALLBACK qemu_hook_wrapper(int code, WPARAM wp, LPARAM lp, struct qemu_hook_data *data)
 {
-    struct qemu_hook_data *data = installed_hooks[WH_CBT];
     struct qemu_cbt_hook_cb call;
     LRESULT ret;
-
-    if (!data || !data->hook_id)
-        WINE_ERR("CBT hook callback called but no hook is installed.\n");
 
     WINE_TRACE("Calling callback 0x%lx(%u, %lu, %lu).\n", data->client_cb, code, wp, lp);
     call.func = data->client_cb;
@@ -171,6 +167,26 @@ LRESULT CALLBACK qemu_CBT_wrapper(int code, WPARAM wp, LPARAM lp)
 
     WINE_TRACE("Guest function returned %lu.\n", ret);
     return ret;
+}
+
+static LRESULT CALLBACK qemu_CBT_wrapper(int code, WPARAM wp, LPARAM lp)
+{
+    struct qemu_hook_data *data = installed_hooks[WH_CBT];
+
+    if (!data || !data->hook_id)
+        WINE_ERR("CBT hook callback called but no hook is installed.\n");
+
+    return qemu_hook_wrapper(code, wp, lp, data);
+}
+
+static LRESULT CALLBACK qemu_KEYBOARD_LL_wrapper(int code, WPARAM wp, LPARAM lp)
+{
+    struct qemu_hook_data *data = installed_hooks[WH_KEYBOARD_LL];
+
+    if (!data || !data->hook_id)
+        WINE_ERR("KEYBOARD_LL hook callback called but no hook is installed.\n");
+
+    return qemu_hook_wrapper(code, wp, lp, data);
 }
 
 static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, BOOL unicode)
@@ -192,6 +208,10 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
      * and this won't work with VirtualAlloc'ed code. So far this function supports only one hook
      * of a kind. */
 
+    hook_data = HeapAlloc(GetProcessHeap(), 0, sizeof(hook_data));
+    if (!hook_data)
+        return NULL;
+
     EnterCriticalSection(&hook_cs);
 
     switch (id)
@@ -203,18 +223,26 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
             {
                 WINE_FIXME("A WH_CBT hook is already installed.\n");
                 LeaveCriticalSection(&hook_cs);
+                HeapFree(GetProcessHeap(), 0, hook_data);
                 return NULL;
             }
-            hook_data = HeapAlloc(GetProcessHeap(), 0, sizeof(hook_data));
-            if (!hook_data)
+            break;
+
+        case WH_KEYBOARD_LL:
+            real_proc = qemu_KEYBOARD_LL_wrapper;
+            real_mod = 0;
+            if (installed_hooks[WH_KEYBOARD_LL])
             {
+                WINE_FIXME("A WH_KEYBOARD_LL hook is already installed.\n");
                 LeaveCriticalSection(&hook_cs);
+                HeapFree(GetProcessHeap(), 0, hook_data);
                 return NULL;
             }
             break;
 
         default:
             LeaveCriticalSection(&hook_cs);
+            HeapFree(GetProcessHeap(), 0, hook_data);
             WINE_FIXME("Hook %d not implemented.\n", id);
             return NULL;
     }
