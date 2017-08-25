@@ -80,11 +80,8 @@ void qemu_CreateWindowExA(struct qemu_syscall *call)
     HINSTANCE inst;
     WINE_TRACE("\n");
 
-    inst = (HINSTANCE)c->instance;
-    if (!inst)
-        inst = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
-
-    c->super.iret = (uint64_t)CreateWindowExA(c->exStyle, QEMU_G2H(c->className), QEMU_G2H(c->windowName), c->style, c->x, c->y, c->width, c->height, QEMU_G2H(c->parent), QEMU_G2H(c->menu), inst, QEMU_G2H(c->data));
+    /* Do not modify hInstance here, it breaks the tests. Let's see if it is actually necessary. */
+    c->super.iret = (uint64_t)CreateWindowExA(c->exStyle, QEMU_G2H(c->className), QEMU_G2H(c->windowName), c->style, c->x, c->y, c->width, c->height, QEMU_G2H(c->parent), QEMU_G2H(c->menu), (HINSTANCE)c->instance, QEMU_G2H(c->data));
 }
 
 #endif
@@ -138,11 +135,8 @@ void qemu_CreateWindowExW(struct qemu_syscall *call)
     HINSTANCE inst;
     WINE_TRACE("\n");
 
-    inst = (HINSTANCE)c->instance;
-    if (!inst)
-        inst = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
-
-    c->super.iret = (uint64_t)CreateWindowExW(c->exStyle, QEMU_G2H(c->className), QEMU_G2H(c->windowName), c->style, c->x, c->y, c->width, c->height, QEMU_G2H(c->parent), QEMU_G2H(c->menu), inst, QEMU_G2H(c->data));
+    /* Do not modify hInstance here, it breaks the tests. Let's see if it is actually necessary. */
+    c->super.iret = (uint64_t)CreateWindowExW(c->exStyle, QEMU_G2H(c->className), QEMU_G2H(c->windowName), c->style, c->x, c->y, c->width, c->height, QEMU_G2H(c->parent), QEMU_G2H(c->menu), (HINSTANCE)c->instance, QEMU_G2H(c->data));
 }
 
 #endif
