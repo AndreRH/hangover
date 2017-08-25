@@ -682,7 +682,7 @@ WINUSERAPI BOOL WINAPI DrawStateA(HDC hdc, HBRUSH hbr, DRAWSTATEPROC func, LPARA
 void qemu_DrawStateA(struct qemu_syscall *call)
 {
     struct qemu_DrawStateA *c = (struct qemu_DrawStateA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DrawStateA(QEMU_G2H(c->hdc), QEMU_G2H(c->hbr), QEMU_G2H(c->func), c->ldata, c->wdata, c->x, c->y, c->cx, c->cy, c->flags);
 }
 

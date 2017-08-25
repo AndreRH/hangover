@@ -65,7 +65,7 @@ WINUSERAPI INT WINAPI DrawTextExW(HDC hdc, LPWSTR str, INT i_count, LPRECT rect,
 void qemu_DrawTextExW(struct qemu_syscall *call)
 {
     struct qemu_DrawTextExW *c = (struct qemu_DrawTextExW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DrawTextExW(QEMU_G2H(c->hdc), QEMU_G2H(c->str), c->i_count, QEMU_G2H(c->rect), c->flags, QEMU_G2H(c->dtp));
 }
 
@@ -105,7 +105,7 @@ WINUSERAPI INT WINAPI DrawTextExA(HDC hdc, LPSTR str, INT count, LPRECT rect, UI
 void qemu_DrawTextExA(struct qemu_syscall *call)
 {
     struct qemu_DrawTextExA *c = (struct qemu_DrawTextExA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DrawTextExA(QEMU_G2H(c->hdc), QEMU_G2H(c->str), c->count, QEMU_G2H(c->rect), c->flags, QEMU_G2H(c->dtp));
 }
 
@@ -143,7 +143,7 @@ WINUSERAPI INT WINAPI DrawTextW(HDC hdc, LPCWSTR str, INT count, LPRECT rect, UI
 void qemu_DrawTextW(struct qemu_syscall *call)
 {
     struct qemu_DrawTextW *c = (struct qemu_DrawTextW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DrawTextW(QEMU_G2H(c->hdc), QEMU_G2H(c->str), c->count, QEMU_G2H(c->rect), c->flags);
 }
 
@@ -181,7 +181,7 @@ WINUSERAPI INT WINAPI DrawTextA(HDC hdc, LPCSTR str, INT count, LPRECT rect, UIN
 void qemu_DrawTextA(struct qemu_syscall *call)
 {
     struct qemu_DrawTextA *c = (struct qemu_DrawTextA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DrawTextA(QEMU_G2H(c->hdc), QEMU_G2H(c->str), c->count, QEMU_G2H(c->rect), c->flags);
 }
 
@@ -399,7 +399,7 @@ WINUSERAPI DWORD WINAPI GetTabbedTextExtentA(HDC hdc, LPCSTR lpstr, INT count, I
 void qemu_GetTabbedTextExtentA(struct qemu_syscall *call)
 {
     struct qemu_GetTabbedTextExtentA *c = (struct qemu_GetTabbedTextExtentA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTabbedTextExtentA(QEMU_G2H(c->hdc), QEMU_G2H(c->lpstr), c->count, c->cTabStops, QEMU_G2H(c->lpTabPos));
 }
 
@@ -437,7 +437,7 @@ WINUSERAPI DWORD WINAPI GetTabbedTextExtentW(HDC hdc, LPCWSTR lpstr, INT count, 
 void qemu_GetTabbedTextExtentW(struct qemu_syscall *call)
 {
     struct qemu_GetTabbedTextExtentW *c = (struct qemu_GetTabbedTextExtentW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTabbedTextExtentW(QEMU_G2H(c->hdc), QEMU_G2H(c->lpstr), c->count, c->cTabStops, QEMU_G2H(c->lpTabPos));
 }
 

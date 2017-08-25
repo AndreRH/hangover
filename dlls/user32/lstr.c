@@ -325,7 +325,7 @@ WINUSERAPI BOOL WINAPI CharToOemA(LPCSTR s, LPSTR d)
 void qemu_CharToOemA(struct qemu_syscall *call)
 {
     struct qemu_CharToOemA *c = (struct qemu_CharToOemA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CharToOemA(QEMU_G2H(c->s), QEMU_G2H(c->d));
 }
 
@@ -359,7 +359,7 @@ WINUSERAPI BOOL WINAPI CharToOemBuffA(LPCSTR s, LPSTR d, DWORD len)
 void qemu_CharToOemBuffA(struct qemu_syscall *call)
 {
     struct qemu_CharToOemBuffA *c = (struct qemu_CharToOemBuffA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CharToOemBuffA(QEMU_G2H(c->s), QEMU_G2H(c->d), c->len);
 }
 
@@ -393,7 +393,7 @@ WINUSERAPI BOOL WINAPI CharToOemBuffW(LPCWSTR s, LPSTR d, DWORD len)
 void qemu_CharToOemBuffW(struct qemu_syscall *call)
 {
     struct qemu_CharToOemBuffW *c = (struct qemu_CharToOemBuffW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CharToOemBuffW(QEMU_G2H(c->s), QEMU_G2H(c->d), c->len);
 }
 
@@ -425,7 +425,7 @@ WINUSERAPI BOOL WINAPI CharToOemW(LPCWSTR s, LPSTR d)
 void qemu_CharToOemW(struct qemu_syscall *call)
 {
     struct qemu_CharToOemW *c = (struct qemu_CharToOemW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CharToOemW(QEMU_G2H(c->s), QEMU_G2H(c->d));
 }
 
@@ -457,7 +457,7 @@ WINUSERAPI BOOL WINAPI OemToCharA(LPCSTR s, LPSTR d)
 void qemu_OemToCharA(struct qemu_syscall *call)
 {
     struct qemu_OemToCharA *c = (struct qemu_OemToCharA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = OemToCharA(QEMU_G2H(c->s), QEMU_G2H(c->d));
 }
 
@@ -491,7 +491,7 @@ WINUSERAPI BOOL WINAPI OemToCharBuffA(LPCSTR s, LPSTR d, DWORD len)
 void qemu_OemToCharBuffA(struct qemu_syscall *call)
 {
     struct qemu_OemToCharBuffA *c = (struct qemu_OemToCharBuffA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = OemToCharBuffA(QEMU_G2H(c->s), QEMU_G2H(c->d), c->len);
 }
 
@@ -525,7 +525,7 @@ WINUSERAPI BOOL WINAPI OemToCharBuffW(LPCSTR s, LPWSTR d, DWORD len)
 void qemu_OemToCharBuffW(struct qemu_syscall *call)
 {
     struct qemu_OemToCharBuffW *c = (struct qemu_OemToCharBuffW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = OemToCharBuffW(QEMU_G2H(c->s), QEMU_G2H(c->d), c->len);
 }
 
@@ -557,7 +557,7 @@ WINUSERAPI BOOL WINAPI OemToCharW(LPCSTR s, LPWSTR d)
 void qemu_OemToCharW(struct qemu_syscall *call)
 {
     struct qemu_OemToCharW *c = (struct qemu_OemToCharW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = OemToCharW(QEMU_G2H(c->s), QEMU_G2H(c->d));
 }
 
