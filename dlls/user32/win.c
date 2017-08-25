@@ -2176,6 +2176,18 @@ static LONG_PTR set_wndproc(HWND win, uint64_t newval, BOOL wide)
     struct classproc_wrapper *wrapper;
     struct reverse_classproc_wrapper *reverse_wrapper;
 
+    if (!newval)
+    {
+        WINE_WARN("Attempt to set NULL wndproc.\n");
+
+        /* But update the unicode flag. */
+        if (wide)
+            SetWindowLongPtrW(win, GWLP_WNDPROC, 0);
+        else
+            SetWindowLongPtrA(win, GWLP_WNDPROC, 0);
+        return ret;
+    }
+
     if (wide)
         host_proc = GetWindowLongPtrW(win, GWLP_WNDPROC);
     else
@@ -2201,6 +2213,15 @@ static LONG_PTR set_wndproc(HWND win, uint64_t newval, BOOL wide)
         wrapper = (struct classproc_wrapper *)host_proc;
         if (wrapper->win != win)
             WINE_ERR("Expected window %p, got %p.\n", wrapper->win, win);
+
+        if (newval)
+        {
+            /* Update unicode flag. */
+            if (wide)
+                SetWindowLongPtrW(win, GWLP_WNDPROC, (LONG_PTR)wrapper);
+            else
+                SetWindowLongPtrA(win, GWLP_WNDPROC, (LONG_PTR)wrapper);
+        }
 
         wrapper->guest_proc = newval;
         wrapper->win = newval ? win : NULL;
