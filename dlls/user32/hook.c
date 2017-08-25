@@ -95,25 +95,40 @@ void qemu_SetWindowsHookW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_SetWindowsHookExA
+struct qemu_SetWindowsHookEx
 {
     struct qemu_syscall super;
     uint64_t id;
     uint64_t proc;
     uint64_t inst;
     uint64_t tid;
+    uint64_t wrapper;
+};
+
+struct qemu_cbt_hook_cb
+{
+    uint64_t func, inst;
+    uint64_t code;
+    uint64_t wp, lp;
 };
 
 #ifdef QEMU_DLL_GUEST
 
+static uint64_t qemu_hook_guest_cb(struct qemu_cbt_hook_cb *call)
+{
+    HOOKPROC proc = (HOOKPROC)call->func;
+    return proc(call->code, call->wp, call->lp);
+}
+
 WINUSERAPI HHOOK WINAPI SetWindowsHookExA(INT id, HOOKPROC proc, HINSTANCE inst, DWORD tid)
 {
-    struct qemu_SetWindowsHookExA call;
+    struct qemu_SetWindowsHookEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWSHOOKEXA);
     call.id = (uint64_t)id;
     call.proc = (uint64_t)proc;
     call.inst = (uint64_t)inst;
     call.tid = (uint64_t)tid;
+    call.wrapper = (uint64_t)qemu_hook_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -122,34 +137,129 @@ WINUSERAPI HHOOK WINAPI SetWindowsHookExA(INT id, HOOKPROC proc, HINSTANCE inst,
 
 #else
 
+/* So somehow constant strings cannot be computed at compile time, so no debug info.
+ * Presumably there's an issue with position independent code or such. */
+static CRITICAL_SECTION hook_cs = {0, -1, 0, 0, 0, 0};
+
+struct qemu_hook_data
+{
+    HHOOK hook_id;
+    uint64_t client_cb;
+    uint64_t client_inst;
+};
+
+static struct qemu_hook_data *installed_hooks[WH_MAXHOOK + 1];
+static uint64_t hook_guest_wrapper;
+
+LRESULT CALLBACK qemu_CBT_wrapper(int code, WPARAM wp, LPARAM lp)
+{
+    struct qemu_hook_data *data = installed_hooks[WH_CBT];
+    struct qemu_cbt_hook_cb call;
+    LRESULT ret;
+
+    if (!data || !data->hook_id)
+        WINE_ERR("CBT hook callback called but no hook is installed.\n");
+
+    WINE_TRACE("Calling callback 0x%lx(%u, %lu, %lu).\n", data->client_cb, code, wp, lp);
+    call.func = data->client_cb;
+    call.inst = data->client_inst;
+    call.code = code;
+    call.wp = wp;
+    call.lp = lp;
+
+    ret = qemu_ops->qemu_execute(QEMU_G2H(hook_guest_wrapper), QEMU_H2G(&call));
+
+    WINE_TRACE("Guest function returned %lu.\n", ret);
+    return ret;
+}
+
+static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, BOOL unicode)
+{
+    HOOKPROC real_proc;
+    HINSTANCE real_mod;
+    HHOOK ret;
+    struct qemu_hook_data *hook_data;
+
+    WINE_FIXME("(%u, 0x%lx, 0x%lx, %x, %u).\n", id, proc, inst, tid, unicode);
+
+    /* FIXME 1: This will not work well with foreign processes. If they are not running inside
+     * qemu we can't execute the guest callback. If we're running qemu we have to load the guest
+     * HINSTANCE into the foreign process somehow.
+     *
+     * FIXME 2: I can't use the trick I'm using with e.g. WNDPROCs where I store executable code
+     * in a struct and pass the instruction pointer as an extra value to the wrapper function to
+     * find my own data. Wine needs a (host-architecture) module to load into the remote process
+     * and this won't work with VirtualAlloc'ed code. So far this function supports only one hook
+     * of a kind. */
+
+    EnterCriticalSection(&hook_cs);
+
+    switch (id)
+    {
+        case WH_CBT:
+            real_proc = qemu_CBT_wrapper;
+            real_mod = 0;
+            if (installed_hooks[WH_CBT])
+            {
+                WINE_FIXME("A WH_CBT hook is already installed.\n");
+                LeaveCriticalSection(&hook_cs);
+                return NULL;
+            }
+            hook_data = HeapAlloc(GetProcessHeap(), 0, sizeof(hook_data));
+            if (!hook_data)
+            {
+                LeaveCriticalSection(&hook_cs);
+                return NULL;
+            }
+            break;
+
+        default:
+            LeaveCriticalSection(&hook_cs);
+            WINE_FIXME("Hook %d not implemented.\n", id);
+            return NULL;
+    }
+
+    WINE_TRACE("Setting host hook (%d, %p, %p, %x).\n", id, real_proc, real_mod, tid);
+    if (unicode)
+        ret = SetWindowsHookExW(id, real_proc, real_mod, tid);
+    else
+        ret = SetWindowsHookExA(id, real_proc, real_mod, tid);
+    WINE_TRACE("Got host hook %p.\n", ret);
+
+    if (ret)
+    {
+        hook_data->hook_id = ret;
+        hook_data->client_cb = proc;
+        hook_data->client_inst = inst;
+        installed_hooks[id] = hook_data;
+    }
+
+    LeaveCriticalSection(&hook_cs);
+    return ret;
+}
+
 void qemu_SetWindowsHookExA(struct qemu_syscall *call)
 {
-    struct qemu_SetWindowsHookExA *c = (struct qemu_SetWindowsHookExA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)SetWindowsHookExA(c->id, QEMU_G2H(c->proc), QEMU_G2H(c->inst), c->tid);
+    struct qemu_SetWindowsHookEx *c = (struct qemu_SetWindowsHookEx *)call;
+
+    hook_guest_wrapper = c->wrapper;
+
+    c->super.iret = (uint64_t)set_windows_hook(c->id, c->proc, c->inst, c->tid, FALSE);
 }
 
 #endif
-
-struct qemu_SetWindowsHookExW
-{
-    struct qemu_syscall super;
-    uint64_t id;
-    uint64_t proc;
-    uint64_t inst;
-    uint64_t tid;
-};
 
 #ifdef QEMU_DLL_GUEST
 
 WINUSERAPI HHOOK WINAPI SetWindowsHookExW(INT id, HOOKPROC proc, HINSTANCE inst, DWORD tid)
 {
-    struct qemu_SetWindowsHookExW call;
+    struct qemu_SetWindowsHookEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWSHOOKEXW);
     call.id = (uint64_t)id;
     call.proc = (uint64_t)proc;
     call.inst = (uint64_t)inst;
     call.tid = (uint64_t)tid;
+    call.wrapper = (uint64_t)qemu_hook_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -160,9 +270,11 @@ WINUSERAPI HHOOK WINAPI SetWindowsHookExW(INT id, HOOKPROC proc, HINSTANCE inst,
 
 void qemu_SetWindowsHookExW(struct qemu_syscall *call)
 {
-    struct qemu_SetWindowsHookExW *c = (struct qemu_SetWindowsHookExW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)SetWindowsHookExW(c->id, QEMU_G2H(c->proc), QEMU_G2H(c->inst), c->tid);
+    struct qemu_SetWindowsHookEx *c = (struct qemu_SetWindowsHookEx *)call;
+
+    hook_guest_wrapper = c->wrapper;
+
+    c->super.iret = (uint64_t)set_windows_hook(c->id, c->proc, c->inst, c->tid, TRUE);
 }
 
 #endif
@@ -223,8 +335,36 @@ WINUSERAPI BOOL WINAPI UnhookWindowsHookEx(HHOOK hhook)
 void qemu_UnhookWindowsHookEx(struct qemu_syscall *call)
 {
     struct qemu_UnhookWindowsHookEx *c = (struct qemu_UnhookWindowsHookEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = UnhookWindowsHookEx(QEMU_G2H(c->hhook));
+    HHOOK hook;
+
+    WINE_TRACE("\n");
+    hook = QEMU_G2H(c->hhook);
+    c->super.iret = UnhookWindowsHookEx(hook);
+    WINE_TRACE("Unhooked\n");
+
+    if (c->super.iret)
+    {
+        INT i;
+        INT found = -1;
+
+        EnterCriticalSection(&hook_cs);
+        for (i = 0; i < WH_MAXHOOK; ++i)
+        {
+            if (installed_hooks[i] && installed_hooks[i]->hook_id == hook)
+            {
+                if (found != -1)
+                    WINE_ERR("Hook %p found in %d and %d.\n", hook, found, i);
+
+                found = i;
+                HeapFree(GetProcessHeap(), 0, installed_hooks[i]);
+                installed_hooks[i] = NULL;
+            }
+        }
+        LeaveCriticalSection(&hook_cs);
+
+        if (found == -1)
+            WINE_FIXME("Hook %p not found in our hook table.\n", hook);
+    }
 }
 
 #endif
