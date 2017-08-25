@@ -135,6 +135,7 @@ void qemu_RegisterClassEx(struct qemu_syscall *call)
     unsigned int i;
     struct qemu_RegisterClass *c = (struct qemu_RegisterClass *)call;
     uint64_t guest_proc;
+    BOOL wrapper_used = TRUE;
 
     WINE_TRACE("\n");
 
@@ -155,13 +156,28 @@ void qemu_RegisterClassEx(struct qemu_syscall *call)
         return;
     }
 
-    WINE_TRACE("Using wrapper %p for the new class.\n", &class_wrappers[i]);
     if (c->super.id == QEMU_SYSCALL_ID(CALL_REGISTERCLASSEXW))
     {
         WNDCLASSEXW exw = *(WNDCLASSEXW *)QEMU_G2H(c->wc);
 
         guest_proc = (uint64_t)exw.lpfnWndProc;
-        exw.lpfnWndProc = (WNDPROC)&class_wrappers[i];
+
+        if (guest_proc >= (ULONG_PTR)&reverse_classproc_wrappers[0]
+                && guest_proc <= (ULONG_PTR)&reverse_classproc_wrappers[REVERSE_CLASSPROC_WRAPPER_COUNT])
+        {
+            struct reverse_classproc_wrapper *rev_wrapper = (struct reverse_classproc_wrapper *)guest_proc;
+
+            WINE_TRACE("Guest function %p is a reverse wrapper for host function %p.\n",
+                    rev_wrapper, rev_wrapper->host_func);
+            exw.lpfnWndProc = rev_wrapper->host_func;
+            wrapper_used = FALSE;
+        }
+        else
+        {
+            WINE_TRACE("Using wrapper %p for the new class, wndproc 0x%lx.\n", &class_wrappers[i], guest_proc);
+            exw.lpfnWndProc = (WNDPROC)&class_wrappers[i];
+        }
+
         if (!exw.hInstance)
             exw.hInstance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
 
@@ -172,14 +188,30 @@ void qemu_RegisterClassEx(struct qemu_syscall *call)
         WNDCLASSEXA exa = *(WNDCLASSEXA *)QEMU_G2H(c->wc);
 
         guest_proc = (uint64_t)exa.lpfnWndProc;
-        exa.lpfnWndProc = (WNDPROC)&class_wrappers[i];
+
+        if (guest_proc >= (ULONG_PTR)&reverse_classproc_wrappers[0]
+                && guest_proc <= (ULONG_PTR)&reverse_classproc_wrappers[REVERSE_CLASSPROC_WRAPPER_COUNT])
+        {
+            struct reverse_classproc_wrapper *rev_wrapper = (struct reverse_classproc_wrapper *)guest_proc;
+
+            WINE_TRACE("Guest function %p is a reverse wrapper for host function %p.\n",
+                    rev_wrapper, rev_wrapper->host_func);
+            exa.lpfnWndProc = rev_wrapper->host_func;
+            wrapper_used = FALSE;
+        }
+        else
+        {
+            WINE_TRACE("Using wrapper %p for the new class, wndproc 0x%lx.\n", &class_wrappers[i], guest_proc);
+            exa.lpfnWndProc = (WNDPROC)&class_wrappers[i];
+        }
+
         if (!exa.hInstance)
             exa.hInstance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
 
         c->super.iret = RegisterClassExA(&exa);
     }
 
-    if (c->super.iret)
+    if (c->super.iret && wrapper_used)
     {
         class_wrappers[i].atom = c->super.iret;
         class_wrappers[i].guest_proc = guest_proc;
@@ -229,6 +261,7 @@ void qemu_UnregisterClass(struct qemu_syscall *call)
     ATOM atom;
     unsigned int i;
     HINSTANCE inst;
+    ULONG_PTR proc;
     WINE_TRACE("\n");
 
     inst = (HINSTANCE)c->hInstance;
@@ -240,16 +273,26 @@ void qemu_UnregisterClass(struct qemu_syscall *call)
         WNDCLASSEXA info;
         atom = GetClassInfoExA(QEMU_G2H(c->hInstance), QEMU_G2H(c->className), &info);
         c->super.iret = UnregisterClassA(QEMU_G2H(c->className), inst);
+        proc = (ULONG_PTR)info.lpfnWndProc;
     }
     else
     {
         WNDCLASSEXW info;
         atom = GetClassInfoExW(QEMU_G2H(c->hInstance), QEMU_G2H(c->className), &info);
         c->super.iret = UnregisterClassW(QEMU_G2H(c->className), inst);
+        proc = (ULONG_PTR)info.lpfnWndProc;
     }
 
     if (c->super.iret)
     {
+        if ((proc >= (ULONG_PTR)&class_wrappers[0] && proc <= (ULONG_PTR)&class_wrappers[class_wrapper_count])
+                || (proc >= (ULONG_PTR)&win_wrappers[0] && proc <= (ULONG_PTR)&win_wrappers[win_wrapper_count]))
+        {
+            /* This happens when the app passed in a reverse wrapper when registering the class. */
+            WINE_TRACE("Class did not use a wndproc wrapper.\n");
+            return;
+        }
+
         for (i = 0; i < class_wrapper_count; ++i)
         {
             if (!class_wrappers[i].atom == atom)
