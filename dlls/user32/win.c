@@ -1584,8 +1584,46 @@ WINUSERAPI UINT WINAPI GetWindowModuleFileNameA(HWND hwnd, LPSTR module, UINT si
 void qemu_GetWindowModuleFileNameA(struct qemu_syscall *call)
 {
     struct qemu_GetWindowModuleFileNameA *c = (struct qemu_GetWindowModuleFileNameA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetWindowModuleFileNameA(QEMU_G2H(c->hwnd), QEMU_G2H(c->module), c->size);
+    DWORD pid;
+    HWND hwnd;
+    HINSTANCE inst;
+    WCHAR *wbuf;
+    char *out;
+
+    WINE_TRACE("\n");
+    hwnd = (HWND)c->hwnd;
+    out = QEMU_G2H(c->module);
+
+    c->super.iret = 0;
+    if (!GetWindowThreadProcessId(hwnd, &pid))
+        return;
+
+    if (pid != GetCurrentProcessId())
+        return;
+
+    inst = (HINSTANCE)GetWindowLongPtrA(hwnd, GWLP_HINSTANCE);
+
+    wbuf = HeapAlloc(GetProcessHeap(), 0, sizeof(*wbuf) * c->size);
+    if (!wbuf)
+    {
+        SetLastError( ERROR_NOT_ENOUGH_MEMORY );
+        c->super.iret = 0;
+        return;
+    }
+
+    c->super.iret = qemu_ops->qemu_GetModuleFileName(inst, wbuf, c->size);
+
+    if (c->super.iret)
+    {
+        c->super.iret = WideCharToMultiByte(CP_ACP, 0, wbuf, c->super.iret,
+                out, c->size, NULL, NULL);
+        if (c->super.iret < c->size)
+            out[c->super.iret] = '\0';
+        else
+            SetLastError( ERROR_INSUFFICIENT_BUFFER );
+    }
+
+    HeapFree(GetProcessHeap(), 0, wbuf);
 }
 
 #endif
@@ -1618,8 +1656,25 @@ WINUSERAPI UINT WINAPI GetWindowModuleFileNameW(HWND hwnd, LPWSTR module, UINT s
 void qemu_GetWindowModuleFileNameW(struct qemu_syscall *call)
 {
     struct qemu_GetWindowModuleFileNameW *c = (struct qemu_GetWindowModuleFileNameW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetWindowModuleFileNameW(QEMU_G2H(c->hwnd), QEMU_G2H(c->module), c->size);
+    DWORD pid;
+    HWND hwnd;
+    HINSTANCE inst;
+
+    WINE_TRACE("\n");
+    hwnd = (HWND)c->hwnd;
+
+    /* Checking the different error conditions without user32 internals is difficult.
+     * We can't forward it 1:1 because otherwise we'd get an error because the module
+     * entry can't be found in the host's module database. */
+    c->super.iret = 0;
+    if (!GetWindowThreadProcessId(hwnd, &pid))
+        return;
+
+    if (pid != GetCurrentProcessId())
+        return;
+
+    inst = (HINSTANCE)GetWindowLongPtrW(hwnd, GWLP_HINSTANCE);
+    c->super.iret = qemu_ops->qemu_GetModuleFileName(inst, QEMU_G2H(c->module), c->size);
 }
 
 #endif
