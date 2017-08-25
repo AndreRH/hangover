@@ -271,20 +271,23 @@ void qemu_UnregisterClass(struct qemu_syscall *call)
     if (c->super.id == QEMU_SYSCALL_ID(CALL_UNREGISTERCLASSA))
     {
         WNDCLASSEXA info;
-        atom = GetClassInfoExA(QEMU_G2H(c->hInstance), QEMU_G2H(c->className), &info);
+        atom = GetClassInfoExA(inst, QEMU_G2H(c->className), &info);
         c->super.iret = UnregisterClassA(QEMU_G2H(c->className), inst);
         proc = (ULONG_PTR)info.lpfnWndProc;
     }
     else
     {
         WNDCLASSEXW info;
-        atom = GetClassInfoExW(QEMU_G2H(c->hInstance), QEMU_G2H(c->className), &info);
+        atom = GetClassInfoExW(inst, QEMU_G2H(c->className), &info);
         c->super.iret = UnregisterClassW(QEMU_G2H(c->className), inst);
         proc = (ULONG_PTR)info.lpfnWndProc;
     }
 
     if (c->super.iret)
     {
+        if (!atom)
+            WINE_ERR("Atom is 0, but unregistering suceeded.\n");
+
         if ((proc >= (ULONG_PTR)&class_wrappers[0] && proc <= (ULONG_PTR)&class_wrappers[class_wrapper_count])
                 || (proc >= (ULONG_PTR)&win_wrappers[0] && proc <= (ULONG_PTR)&win_wrappers[win_wrapper_count]))
         {
