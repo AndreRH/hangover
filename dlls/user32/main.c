@@ -29,9 +29,23 @@ struct qemu_set_callbacks
 {
     struct qemu_syscall super;
     uint64_t rev_wndproc_wrapper;
+    uint64_t wndproc_wrapper;
+};
+
+struct wndproc_call
+{
+    uint64_t wndproc;
+    uint64_t win, msg, wparam, lparam;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static LRESULT wndproc_wrapper(const struct wndproc_call *call)
+{
+    WNDPROC proc = (WNDPROC)call->wndproc;
+
+    return proc((HWND)call->win, call->msg, call->wparam, call->lparam);
+}
 
 BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
@@ -42,6 +56,7 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
         case DLL_PROCESS_ATTACH:
             call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
             call.rev_wndproc_wrapper = (uint64_t)reverse_classproc_func;
+            call.wndproc_wrapper = (uint64_t)wndproc_wrapper;
             qemu_syscall(&call.super);
             break;
     }
@@ -59,6 +74,7 @@ static void qemu_set_callbacks(struct qemu_syscall *call)
 {
     struct qemu_set_callbacks *c = (struct qemu_set_callbacks *)call;
     reverse_classproc_func = c->rev_wndproc_wrapper;
+    guest_wndproc_wrapper = c->wndproc_wrapper;
 }
 
 const struct qemu_ops *qemu_ops;

@@ -696,12 +696,6 @@ enum user32_calls
     CALL_WINNLSGETIMEHOTKEY,
 };
 
-struct wndproc_call
-{
-    uint64_t wndproc;
-    uint64_t win, msg, wparam, lparam;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 LRESULT CALLBACK reverse_classproc_func(HWND win, UINT msg, WPARAM wp, LPARAM lp, void *data);

@@ -38,17 +38,9 @@ struct qemu_RegisterClass
 {
     struct qemu_syscall super;
     uint64_t wc;
-    uint64_t wndproc_wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
-
-LRESULT wndproc_wrapper(const struct wndproc_call *call)
-{
-    WNDPROC proc = (WNDPROC)call->wndproc;
-
-    return proc((HWND)call->win, call->msg, call->wparam, call->lparam);
-}
 
 WINUSERAPI ATOM WINAPI RegisterClassA(const WNDCLASSA *wc)
 {
@@ -70,7 +62,6 @@ WINUSERAPI ATOM WINAPI RegisterClassA(const WNDCLASSA *wc)
 
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERCLASSEXA);
     call.wc = (uint64_t)&wcex;
-    call.wndproc_wrapper = (uint64_t)wndproc_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -97,7 +88,6 @@ WINUSERAPI ATOM WINAPI RegisterClassW(const WNDCLASSW *wc)
 
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERCLASSEXW);
     call.wc = (uint64_t)&wcex;
-    call.wndproc_wrapper = (uint64_t)wndproc_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -109,7 +99,6 @@ WINUSERAPI ATOM WINAPI RegisterClassExA(const WNDCLASSEXA* wc)
     struct qemu_RegisterClass call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERCLASSEXA);
     call.wc = (uint64_t)wc;
-    call.wndproc_wrapper = (uint64_t)wndproc_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -121,7 +110,6 @@ WINUSERAPI ATOM WINAPI RegisterClassExW(const WNDCLASSEXW* wc)
     struct qemu_RegisterClass call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERCLASSEXW);
     call.wc = (uint64_t)wc;
-    call.wndproc_wrapper = (uint64_t)wndproc_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -138,8 +126,6 @@ void qemu_RegisterClassEx(struct qemu_syscall *call)
     BOOL wrapper_used = TRUE;
 
     WINE_TRACE("\n");
-
-    guest_wndproc_wrapper = c->wndproc_wrapper;
 
     for (i = 0; i < class_wrapper_count; ++i)
     {
