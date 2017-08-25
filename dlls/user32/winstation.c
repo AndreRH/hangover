@@ -61,7 +61,7 @@ WINUSERAPI HWINSTA WINAPI CreateWindowStationA(LPCSTR name, DWORD reserved, ACCE
 void qemu_CreateWindowStationA(struct qemu_syscall *call)
 {
     struct qemu_CreateWindowStationA *c = (struct qemu_CreateWindowStationA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateWindowStationA(QEMU_G2H(c->name), c->reserved, c->access, QEMU_G2H(c->sa));
 }
 
@@ -131,7 +131,7 @@ WINUSERAPI HWINSTA WINAPI OpenWindowStationA(LPCSTR name, BOOL inherit, ACCESS_M
 void qemu_OpenWindowStationA(struct qemu_syscall *call)
 {
     struct qemu_OpenWindowStationA *c = (struct qemu_OpenWindowStationA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)OpenWindowStationA(QEMU_G2H(c->name), c->inherit, c->access);
 }
 
@@ -195,7 +195,7 @@ WINUSERAPI BOOL WINAPI CloseWindowStation(HWINSTA handle)
 void qemu_CloseWindowStation(struct qemu_syscall *call)
 {
     struct qemu_CloseWindowStation *c = (struct qemu_CloseWindowStation *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CloseWindowStation(QEMU_G2H(c->handle));
 }
 
@@ -223,7 +223,7 @@ WINUSERAPI HWINSTA WINAPI GetProcessWindowStation(void)
 void qemu_GetProcessWindowStation(struct qemu_syscall *call)
 {
     struct qemu_GetProcessWindowStation *c = (struct qemu_GetProcessWindowStation *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetProcessWindowStation();
 }
 
@@ -253,7 +253,7 @@ WINUSERAPI BOOL WINAPI SetProcessWindowStation(HWINSTA handle)
 void qemu_SetProcessWindowStation(struct qemu_syscall *call)
 {
     struct qemu_SetProcessWindowStation *c = (struct qemu_SetProcessWindowStation *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetProcessWindowStation(QEMU_G2H(c->handle));
 }
 
@@ -431,7 +431,7 @@ WINUSERAPI HDESK WINAPI CreateDesktopA(LPCSTR name, LPCSTR device, LPDEVMODEA de
 void qemu_CreateDesktopA(struct qemu_syscall *call)
 {
     struct qemu_CreateDesktopA *c = (struct qemu_CreateDesktopA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateDesktopA(QEMU_G2H(c->name), QEMU_G2H(c->device), QEMU_G2H(c->devmode), c->flags, c->access, QEMU_G2H(c->sa));
 }
 
@@ -507,7 +507,7 @@ WINUSERAPI HDESK WINAPI OpenDesktopA(LPCSTR name, DWORD flags, BOOL inherit, ACC
 void qemu_OpenDesktopA(struct qemu_syscall *call)
 {
     struct qemu_OpenDesktopA *c = (struct qemu_OpenDesktopA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)OpenDesktopA(QEMU_G2H(c->name), c->flags, c->inherit, c->access);
 }
 
@@ -573,7 +573,7 @@ WINUSERAPI BOOL WINAPI CloseDesktop(HDESK handle)
 void qemu_CloseDesktop(struct qemu_syscall *call)
 {
     struct qemu_CloseDesktop *c = (struct qemu_CloseDesktop *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CloseDesktop(QEMU_G2H(c->handle));
 }
 
@@ -603,7 +603,7 @@ WINUSERAPI HDESK WINAPI GetThreadDesktop(DWORD thread)
 void qemu_GetThreadDesktop(struct qemu_syscall *call)
 {
     struct qemu_GetThreadDesktop *c = (struct qemu_GetThreadDesktop *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetThreadDesktop(c->thread);
 }
 
@@ -633,7 +633,7 @@ WINUSERAPI BOOL WINAPI SetThreadDesktop(HDESK handle)
 void qemu_SetThreadDesktop(struct qemu_syscall *call)
 {
     struct qemu_SetThreadDesktop *c = (struct qemu_SetThreadDesktop *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetThreadDesktop(QEMU_G2H(c->handle));
 }
 
@@ -810,7 +810,7 @@ WINUSERAPI HDESK WINAPI OpenInputDesktop(DWORD flags, BOOL inherit, ACCESS_MASK 
 void qemu_OpenInputDesktop(struct qemu_syscall *call)
 {
     struct qemu_OpenInputDesktop *c = (struct qemu_OpenInputDesktop *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)OpenInputDesktop(c->flags, c->inherit, c->access);
 }
 
@@ -848,7 +848,7 @@ WINUSERAPI BOOL WINAPI GetUserObjectInformationA(HANDLE handle, INT index, LPVOI
 void qemu_GetUserObjectInformationA(struct qemu_syscall *call)
 {
     struct qemu_GetUserObjectInformationA *c = (struct qemu_GetUserObjectInformationA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetUserObjectInformationA(QEMU_G2H(c->handle), c->index, QEMU_G2H(c->info), c->len, QEMU_G2H(c->needed));
 }
 
@@ -886,7 +886,7 @@ WINUSERAPI BOOL WINAPI GetUserObjectInformationW(HANDLE handle, INT index, LPVOI
 void qemu_GetUserObjectInformationW(struct qemu_syscall *call)
 {
     struct qemu_GetUserObjectInformationW *c = (struct qemu_GetUserObjectInformationW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetUserObjectInformationW(QEMU_G2H(c->handle), c->index, QEMU_G2H(c->info), c->len, QEMU_G2H(c->needed));
 }
 

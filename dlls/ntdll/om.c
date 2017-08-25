@@ -75,7 +75,7 @@ WINBASEAPI NTSTATUS WINAPI NtQueryObject(IN HANDLE handle, IN OBJECT_INFORMATION
 void qemu_NtQueryObject(struct qemu_syscall *call)
 {
     struct qemu_NtQueryObject *c = (struct qemu_NtQueryObject *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = NtQueryObject((HANDLE)c->handle, c->info_class, QEMU_G2H(c->ptr), c->len, QEMU_G2H(c->used_len));
 }
 

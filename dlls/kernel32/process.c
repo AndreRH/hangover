@@ -683,7 +683,7 @@ WINBASEAPI BOOL WINAPI GetHandleInformation(HANDLE handle, LPDWORD flags)
 void qemu_GetHandleInformation(struct qemu_syscall *call)
 {
     struct qemu_GetHandleInformation *c = (struct qemu_GetHandleInformation *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetHandleInformation(QEMU_G2H(c->handle), QEMU_G2H(c->flags));
 }
 

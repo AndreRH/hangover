@@ -30,7 +30,6 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 #endif
 
-
 struct qemu_SendInput
 {
     struct qemu_syscall super;
@@ -59,7 +58,7 @@ WINUSERAPI UINT WINAPI SendInput(UINT count, LPINPUT inputs, int size)
 void qemu_SendInput(struct qemu_syscall *call)
 {
     struct qemu_SendInput *c = (struct qemu_SendInput *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SendInput(c->count, QEMU_G2H(c->inputs), c->size);
 }
 
@@ -809,7 +808,7 @@ WINUSERAPI BOOL WINAPI AttachThreadInput(DWORD from, DWORD to, BOOL attach)
 void qemu_AttachThreadInput(struct qemu_syscall *call)
 {
     struct qemu_AttachThreadInput *c = (struct qemu_AttachThreadInput *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AttachThreadInput(c->from, c->to, c->attach);
 }
 

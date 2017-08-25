@@ -989,7 +989,7 @@ WINBASEAPI HANDLE WINAPI CreateMutexA(SECURITY_ATTRIBUTES *sa, BOOL owner, LPCST
 void qemu_CreateMutexA(struct qemu_syscall *call)
 {
     struct qemu_CreateMutexA *c = (struct qemu_CreateMutexA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateMutexA(QEMU_G2H(c->sa), c->owner, QEMU_G2H(c->name));
 }
 

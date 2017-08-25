@@ -990,7 +990,7 @@ WINUSERAPI DWORD WINAPI GetWindowThreadProcessId(HWND hwnd, LPDWORD process)
 void qemu_GetWindowThreadProcessId(struct qemu_syscall *call)
 {
     struct qemu_GetWindowThreadProcessId *c = (struct qemu_GetWindowThreadProcessId *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWindowThreadProcessId(QEMU_G2H(c->hwnd), QEMU_G2H(c->process));
 }
 
@@ -1686,7 +1686,7 @@ WINUSERAPI BOOL WINAPI SwitchDesktop(HDESK hDesktop)
 void qemu_SwitchDesktop(struct qemu_syscall *call)
 {
     struct qemu_SwitchDesktop *c = (struct qemu_SwitchDesktop *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SwitchDesktop(QEMU_G2H(c->hDesktop));
 }
 
