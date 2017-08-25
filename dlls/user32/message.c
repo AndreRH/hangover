@@ -217,7 +217,7 @@ WINUSERAPI BOOL WINAPI SendNotifyMessageA(HWND hwnd, UINT msg, WPARAM wparam, LP
 void qemu_SendNotifyMessageA(struct qemu_syscall *call)
 {
     struct qemu_SendNotifyMessageA *c = (struct qemu_SendNotifyMessageA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SendNotifyMessageA(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam);
 }
 
@@ -529,7 +529,7 @@ WINUSERAPI BOOL WINAPI PostThreadMessageA(DWORD thread, UINT msg, WPARAM wparam,
 void qemu_PostThreadMessageA(struct qemu_syscall *call)
 {
     struct qemu_PostThreadMessageA *c = (struct qemu_PostThreadMessageA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PostThreadMessageA(c->thread, c->msg, c->wparam, c->lparam);
 }
 
@@ -565,7 +565,7 @@ WINUSERAPI BOOL WINAPI PostThreadMessageW(DWORD thread, UINT msg, WPARAM wparam,
 void qemu_PostThreadMessageW(struct qemu_syscall *call)
 {
     struct qemu_PostThreadMessageW *c = (struct qemu_PostThreadMessageW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PostThreadMessageW(c->thread, c->msg, c->wparam, c->lparam);
 }
 
@@ -893,7 +893,7 @@ WINUSERAPI DWORD WINAPI GetMessagePos(void)
 void qemu_GetMessagePos(struct qemu_syscall *call)
 {
     struct qemu_GetMessagePos *c = (struct qemu_GetMessagePos *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetMessagePos();
 }
 
@@ -1465,7 +1465,11 @@ WINUSERAPI UINT_PTR WINAPI SetTimer(HWND hwnd, UINT_PTR id, UINT timeout, TIMERP
 void qemu_SetTimer(struct qemu_syscall *call)
 {
     struct qemu_SetTimer *c = (struct qemu_SetTimer *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    if (c->proc)
+        WINE_FIXME("Handle TIMERPROC.\n");
+
     c->super.iret = SetTimer(QEMU_G2H(c->hwnd), c->id, c->timeout, QEMU_G2H(c->proc));
 }
 
@@ -1533,7 +1537,7 @@ WINUSERAPI BOOL WINAPI KillTimer(HWND hwnd, UINT_PTR id)
 void qemu_KillTimer(struct qemu_syscall *call)
 {
     struct qemu_KillTimer *c = (struct qemu_KillTimer *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = KillTimer(QEMU_G2H(c->hwnd), c->id);
 }
 
@@ -1627,7 +1631,7 @@ WINUSERAPI BOOL WINAPI GetGUIThreadInfo(DWORD id, GUITHREADINFO *info)
 void qemu_GetGUIThreadInfo(struct qemu_syscall *call)
 {
     struct qemu_GetGUIThreadInfo *c = (struct qemu_GetGUIThreadInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetGUIThreadInfo(c->id, QEMU_G2H(c->info));
 }
 

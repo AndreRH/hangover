@@ -215,7 +215,7 @@ WINUSERAPI BOOL WINAPI AdjustWindowRectEx(LPRECT rect, DWORD style, BOOL menu, D
 void qemu_AdjustWindowRectEx(struct qemu_syscall *call)
 {
     struct qemu_AdjustWindowRectEx *c = (struct qemu_AdjustWindowRectEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AdjustWindowRectEx(QEMU_G2H(c->rect), c->style, c->menu, c->exStyle);
 }
 

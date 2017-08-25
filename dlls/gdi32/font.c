@@ -1442,7 +1442,7 @@ WINGDIAPI BOOL WINAPI TextOutA(HDC hdc, INT x, INT y, LPCSTR str, INT count)
 void qemu_TextOutA(struct qemu_syscall *call)
 {
     struct qemu_TextOutA *c = (struct qemu_TextOutA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = TextOutA(QEMU_G2H(c->hdc), c->x, c->y, QEMU_G2H(c->str), c->count);
 }
 

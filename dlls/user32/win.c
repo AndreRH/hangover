@@ -310,7 +310,7 @@ WINUSERAPI HWND WINAPI FindWindowA(LPCSTR className, LPCSTR title)
 void qemu_FindWindowA(struct qemu_syscall *call)
 {
     struct qemu_FindWindowA *c = (struct qemu_FindWindowA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)FindWindowA(QEMU_G2H(c->className), QEMU_G2H(c->title));
 }
 
@@ -346,7 +346,7 @@ WINUSERAPI HWND WINAPI FindWindowExA(HWND parent, HWND child, LPCSTR className, 
 void qemu_FindWindowExA(struct qemu_syscall *call)
 {
     struct qemu_FindWindowExA *c = (struct qemu_FindWindowExA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)FindWindowExA(QEMU_G2H(c->parent), QEMU_G2H(c->child), QEMU_G2H(c->className), QEMU_G2H(c->title));
 }
 
@@ -438,7 +438,7 @@ WINUSERAPI BOOL WINAPI EnableWindow(HWND hwnd, BOOL enable)
 void qemu_EnableWindow(struct qemu_syscall *call)
 {
     struct qemu_EnableWindow *c = (struct qemu_EnableWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EnableWindow(QEMU_G2H(c->hwnd), c->enable);
 }
 
@@ -468,7 +468,7 @@ WINUSERAPI BOOL WINAPI IsWindowEnabled(HWND hWnd)
 void qemu_IsWindowEnabled(struct qemu_syscall *call)
 {
     struct qemu_IsWindowEnabled *c = (struct qemu_IsWindowEnabled *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsWindowEnabled(QEMU_G2H(c->hWnd));
 }
 
@@ -498,7 +498,7 @@ WINUSERAPI BOOL WINAPI IsWindowUnicode(HWND hwnd)
 void qemu_IsWindowUnicode(struct qemu_syscall *call)
 {
     struct qemu_IsWindowUnicode *c = (struct qemu_IsWindowUnicode *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsWindowUnicode(QEMU_G2H(c->hwnd));
 }
 
@@ -562,7 +562,7 @@ WINUSERAPI LONG WINAPI GetWindowLongA(HWND hwnd, INT offset)
 void qemu_GetWindowLongA(struct qemu_syscall *call)
 {
     struct qemu_GetWindowLongA *c = (struct qemu_GetWindowLongA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWindowLongA(QEMU_G2H(c->hwnd), c->offset);
 }
 
@@ -594,7 +594,7 @@ WINUSERAPI LONG WINAPI GetWindowLongW(HWND hwnd, INT offset)
 void qemu_GetWindowLongW(struct qemu_syscall *call)
 {
     struct qemu_GetWindowLongW *c = (struct qemu_GetWindowLongW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWindowLongW(QEMU_G2H(c->hwnd), c->offset);
 }
 
@@ -662,7 +662,7 @@ WINUSERAPI LONG WINAPI SetWindowLongA(HWND hwnd, INT offset, LONG newval)
 void qemu_SetWindowLongA(struct qemu_syscall *call)
 {
     struct qemu_SetWindowLongA *c = (struct qemu_SetWindowLongA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetWindowLongA(QEMU_G2H(c->hwnd), c->offset, c->newval);
 }
 
@@ -696,7 +696,7 @@ WINUSERAPI LONG WINAPI SetWindowLongW(HWND hwnd, INT offset, LONG newval)
 void qemu_SetWindowLongW(struct qemu_syscall *call)
 {
     struct qemu_SetWindowLongW *c = (struct qemu_SetWindowLongW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetWindowLongW(QEMU_G2H(c->hwnd), c->offset, c->newval);
 }
 
@@ -952,7 +952,7 @@ WINUSERAPI BOOL WINAPI IsWindow(HWND hwnd)
 void qemu_IsWindow(struct qemu_syscall *call)
 {
     struct qemu_IsWindow *c = (struct qemu_IsWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsWindow(QEMU_G2H(c->hwnd));
 }
 
@@ -1046,7 +1046,7 @@ WINUSERAPI HWND WINAPI GetAncestor(HWND hwnd, UINT type)
 void qemu_GetAncestor(struct qemu_syscall *call)
 {
     struct qemu_GetAncestor *c = (struct qemu_GetAncestor *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetAncestor(QEMU_G2H(c->hwnd), c->type);
 }
 
@@ -1078,7 +1078,7 @@ WINUSERAPI HWND WINAPI SetParent(HWND hwnd, HWND parent)
 void qemu_SetParent(struct qemu_syscall *call)
 {
     struct qemu_SetParent *c = (struct qemu_SetParent *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)SetParent(QEMU_G2H(c->hwnd), QEMU_G2H(c->parent));
 }
 
@@ -1110,7 +1110,7 @@ WINUSERAPI BOOL WINAPI IsChild(HWND parent, HWND child)
 void qemu_IsChild(struct qemu_syscall *call)
 {
     struct qemu_IsChild *c = (struct qemu_IsChild *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsChild(QEMU_G2H(c->parent), QEMU_G2H(c->child));
 }
 
@@ -1190,7 +1190,7 @@ WINUSERAPI HWND WINAPI GetWindow(HWND hwnd, UINT rel)
     struct qemu_GetWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETWINDOW);
     call.hwnd = (uint64_t)hwnd;
-    call.rel = (uint64_t)rel;
+    call.rel = rel;
 
     qemu_syscall(&call.super);
 
@@ -1202,7 +1202,7 @@ WINUSERAPI HWND WINAPI GetWindow(HWND hwnd, UINT rel)
 void qemu_GetWindow(struct qemu_syscall *call)
 {
     struct qemu_GetWindow *c = (struct qemu_GetWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetWindow(QEMU_G2H(c->hwnd), c->rel);
 }
 
@@ -1264,7 +1264,7 @@ WINUSERAPI HWND WINAPI GetLastActivePopup(HWND hwnd)
 void qemu_GetLastActivePopup(struct qemu_syscall *call)
 {
     struct qemu_GetLastActivePopup *c = (struct qemu_GetLastActivePopup *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetLastActivePopup(QEMU_G2H(c->hwnd));
 }
 
@@ -1511,7 +1511,7 @@ WINUSERAPI BOOL WINAPI FlashWindow(HWND hWnd, BOOL bInvert)
 void qemu_FlashWindow(struct qemu_syscall *call)
 {
     struct qemu_FlashWindow *c = (struct qemu_FlashWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FlashWindow(QEMU_G2H(c->hWnd), c->bInvert);
 }
 
@@ -1541,7 +1541,7 @@ WINUSERAPI BOOL WINAPI FlashWindowEx(PFLASHWINFO pfinfo)
 void qemu_FlashWindowEx(struct qemu_syscall *call)
 {
     struct qemu_FlashWindowEx *c = (struct qemu_FlashWindowEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FlashWindowEx(QEMU_G2H(c->pfinfo));
 }
 
@@ -1758,7 +1758,7 @@ WINUSERAPI BOOL WINAPI GetWindowInfo(HWND hwnd, PWINDOWINFO pwi)
 void qemu_GetWindowInfo(struct qemu_syscall *call)
 {
     struct qemu_GetWindowInfo *c = (struct qemu_GetWindowInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWindowInfo(QEMU_G2H(c->hwnd), QEMU_G2H(c->pwi));
 }
 
@@ -1824,7 +1824,7 @@ WINUSERAPI BOOL WINAPI SetLayeredWindowAttributes(HWND hwnd, COLORREF key, BYTE 
 void qemu_SetLayeredWindowAttributes(struct qemu_syscall *call)
 {
     struct qemu_SetLayeredWindowAttributes *c = (struct qemu_SetLayeredWindowAttributes *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetLayeredWindowAttributes(QEMU_G2H(c->hwnd), c->key, c->alpha, c->flags);
 }
 
@@ -1860,7 +1860,7 @@ WINUSERAPI BOOL WINAPI GetLayeredWindowAttributes(HWND hwnd, COLORREF *key, BYTE
 void qemu_GetLayeredWindowAttributes(struct qemu_syscall *call)
 {
     struct qemu_GetLayeredWindowAttributes *c = (struct qemu_GetLayeredWindowAttributes *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetLayeredWindowAttributes(QEMU_G2H(c->hwnd), QEMU_G2H(c->key), QEMU_G2H(c->alpha), QEMU_G2H(c->flags));
 }
 
@@ -1892,7 +1892,7 @@ WINUSERAPI BOOL WINAPI UpdateLayeredWindowIndirect(HWND hwnd, const UPDATELAYERE
 void qemu_UpdateLayeredWindowIndirect(struct qemu_syscall *call)
 {
     struct qemu_UpdateLayeredWindowIndirect *c = (struct qemu_UpdateLayeredWindowIndirect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = UpdateLayeredWindowIndirect(QEMU_G2H(c->hwnd), QEMU_G2H(c->info));
 }
 
@@ -1938,7 +1938,7 @@ WINUSERAPI BOOL WINAPI UpdateLayeredWindow(HWND hwnd, HDC hdcDst, POINT *pptDst,
 void qemu_UpdateLayeredWindow(struct qemu_syscall *call)
 {
     struct qemu_UpdateLayeredWindow *c = (struct qemu_UpdateLayeredWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = UpdateLayeredWindow(QEMU_G2H(c->hwnd), QEMU_G2H(c->hdcDst), QEMU_G2H(c->pptDst), QEMU_G2H(c->psize), QEMU_G2H(c->hdcSrc), QEMU_G2H(c->pptSrc), c->crKey, QEMU_G2H(c->pblend), c->flags);
 }
 
@@ -1968,7 +1968,7 @@ WINUSERAPI BOOL WINAPI GetProcessDefaultLayout(DWORD *layout)
 void qemu_GetProcessDefaultLayout(struct qemu_syscall *call)
 {
     struct qemu_GetProcessDefaultLayout *c = (struct qemu_GetProcessDefaultLayout *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetProcessDefaultLayout(QEMU_G2H(c->layout));
 }
 
@@ -1998,7 +1998,7 @@ WINUSERAPI BOOL WINAPI SetProcessDefaultLayout(DWORD layout)
 void qemu_SetProcessDefaultLayout(struct qemu_syscall *call)
 {
     struct qemu_SetProcessDefaultLayout *c = (struct qemu_SetProcessDefaultLayout *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetProcessDefaultLayout(c->layout);
 }
 

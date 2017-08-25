@@ -94,7 +94,7 @@ WINUSERAPI void WINAPI keybd_event(BYTE bVk, BYTE bScan, DWORD dwFlags, ULONG_PT
 void qemu_keybd_event(struct qemu_syscall *call)
 {
     struct qemu_keybd_event *c = (struct qemu_keybd_event *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     keybd_event(c->bVk, c->bScan, c->dwFlags, c->dwExtraInfo);
 }
 
@@ -132,7 +132,7 @@ WINUSERAPI void WINAPI mouse_event(DWORD dwFlags, DWORD dx, DWORD dy, DWORD dwDa
 void qemu_mouse_event(struct qemu_syscall *call)
 {
     struct qemu_mouse_event *c = (struct qemu_mouse_event *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     mouse_event(c->dwFlags, c->dx, c->dy, c->dwData, c->dwExtraInfo);
 }
 
@@ -320,7 +320,7 @@ WINUSERAPI HWND WINAPI SetCapture(HWND hwnd)
 void qemu_SetCapture(struct qemu_syscall *call)
 {
     struct qemu_SetCapture *c = (struct qemu_SetCapture *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)SetCapture(QEMU_G2H(c->hwnd));
 }
 
@@ -348,7 +348,7 @@ WINUSERAPI BOOL WINAPI ReleaseCapture(void)
 void qemu_ReleaseCapture(struct qemu_syscall *call)
 {
     struct qemu_ReleaseCapture *c = (struct qemu_ReleaseCapture *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ReleaseCapture();
 }
 
@@ -376,7 +376,7 @@ WINUSERAPI HWND WINAPI GetCapture(void)
 void qemu_GetCapture(struct qemu_syscall *call)
 {
     struct qemu_GetCapture *c = (struct qemu_GetCapture *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetCapture();
 }
 
@@ -838,7 +838,7 @@ WINUSERAPI SHORT WINAPI GetKeyState(INT vkey)
 void qemu_GetKeyState(struct qemu_syscall *call)
 {
     struct qemu_GetKeyState *c = (struct qemu_GetKeyState *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetKeyState(c->vkey);
 }
 

@@ -63,7 +63,7 @@ WINUSERAPI LRESULT WINAPI DefFrameProcA(HWND hwnd, HWND hwndMDIClient, UINT mess
 void qemu_DefFrameProcA(struct qemu_syscall *call)
 {
     struct qemu_DefFrameProcA *c = (struct qemu_DefFrameProcA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DefFrameProcA(QEMU_G2H(c->hwnd), QEMU_G2H(c->hwndMDIClient), c->message, c->wParam, c->lParam);
 }
 
@@ -137,7 +137,7 @@ WINUSERAPI LRESULT WINAPI DefMDIChildProcA(HWND hwnd, UINT message, WPARAM wPara
 void qemu_DefMDIChildProcA(struct qemu_syscall *call)
 {
     struct qemu_DefMDIChildProcA *c = (struct qemu_DefMDIChildProcA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DefMDIChildProcA(QEMU_G2H(c->hwnd), c->message, c->wParam, c->lParam);
 }
 
@@ -221,7 +221,7 @@ WINUSERAPI HWND WINAPI CreateMDIWindowA(LPCSTR lpClassName, LPCSTR lpWindowName,
 void qemu_CreateMDIWindowA(struct qemu_syscall *call)
 {
     struct qemu_CreateMDIWindowA *c = (struct qemu_CreateMDIWindowA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateMDIWindowA(QEMU_G2H(c->lpClassName), QEMU_G2H(c->lpWindowName), c->dwStyle, c->X, c->Y, c->nWidth, c->nHeight, QEMU_G2H(c->hWndParent), QEMU_G2H(c->hInstance), c->lParam);
 }
 
@@ -269,7 +269,7 @@ WINUSERAPI HWND WINAPI CreateMDIWindowW(LPCWSTR lpClassName, LPCWSTR lpWindowNam
 void qemu_CreateMDIWindowW(struct qemu_syscall *call)
 {
     struct qemu_CreateMDIWindowW *c = (struct qemu_CreateMDIWindowW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateMDIWindowW(QEMU_G2H(c->lpClassName), QEMU_G2H(c->lpWindowName), c->dwStyle, c->X, c->Y, c->nWidth, c->nHeight, QEMU_G2H(c->hWndParent), QEMU_G2H(c->hInstance), c->lParam);
 }
 

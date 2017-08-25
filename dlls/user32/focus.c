@@ -55,7 +55,7 @@ WINUSERAPI HWND WINAPI SetActiveWindow(HWND hwnd)
 void qemu_SetActiveWindow(struct qemu_syscall *call)
 {
     struct qemu_SetActiveWindow *c = (struct qemu_SetActiveWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)SetActiveWindow(QEMU_G2H(c->hwnd));
 }
 
@@ -143,7 +143,7 @@ WINUSERAPI HWND WINAPI GetActiveWindow(void)
 void qemu_GetActiveWindow(struct qemu_syscall *call)
 {
     struct qemu_GetActiveWindow *c = (struct qemu_GetActiveWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetActiveWindow();
 }
 
@@ -171,7 +171,7 @@ WINUSERAPI HWND WINAPI GetFocus(void)
 void qemu_GetFocus(struct qemu_syscall *call)
 {
     struct qemu_GetFocus *c = (struct qemu_GetFocus *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetFocus();
 }
 
@@ -265,7 +265,7 @@ extern BOOL WINAPI SetShellWindow(HWND hwndShell);
 void qemu_SetShellWindow(struct qemu_syscall *call)
 {
     struct qemu_SetShellWindow *c = (struct qemu_SetShellWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetShellWindow(QEMU_G2H(c->hwndShell));
 }
 
@@ -293,7 +293,7 @@ WINUSERAPI HWND WINAPI GetShellWindow(void)
 void qemu_GetShellWindow(struct qemu_syscall *call)
 {
     struct qemu_GetShellWindow *c = (struct qemu_GetShellWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetShellWindow();
 }
 

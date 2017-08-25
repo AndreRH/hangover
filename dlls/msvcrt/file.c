@@ -5195,7 +5195,7 @@ int CDECL MSVCRT_putchar(int c)
 void qemu_putchar(struct qemu_syscall *call)
 {
     struct qemu_putchar *c = (struct qemu_putchar *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_putchar(c->c);
 }
 

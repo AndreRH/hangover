@@ -151,7 +151,7 @@ WINUSERAPI int WINAPI GetWindowRgnBox(HWND hwnd, LPRECT prect)
 void qemu_GetWindowRgnBox(struct qemu_syscall *call)
 {
     struct qemu_GetWindowRgnBox *c = (struct qemu_GetWindowRgnBox *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWindowRgnBox(QEMU_G2H(c->hwnd), QEMU_G2H(c->prect));
 }
 
@@ -185,7 +185,7 @@ WINUSERAPI int WINAPI SetWindowRgn(HWND hwnd, HRGN hrgn, BOOL bRedraw)
 void qemu_SetWindowRgn(struct qemu_syscall *call)
 {
     struct qemu_SetWindowRgn *c = (struct qemu_SetWindowRgn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetWindowRgn(QEMU_G2H(c->hwnd), QEMU_G2H(c->hrgn), c->bRedraw);
 }
 
@@ -251,7 +251,7 @@ void qemu_WindowFromPoint(struct qemu_syscall *call)
     struct qemu_WindowFromPoint *c = (struct qemu_WindowFromPoint *)call;
     POINT pt;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     pt.x = c->ptX;
     pt.y = c->ptY;
     c->super.iret = (uint64_t)WindowFromPoint(pt);
@@ -327,7 +327,7 @@ void qemu_RealChildWindowFromPoint(struct qemu_syscall *call)
     struct qemu_RealChildWindowFromPoint *c = (struct qemu_RealChildWindowFromPoint *)call;
     POINT pt;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     pt.x = c->ptX;
     pt.y = c->ptY;
     c->super.iret = (uint64_t)RealChildWindowFromPoint(QEMU_G2H(c->hwndParent), pt);
@@ -405,7 +405,7 @@ WINUSERAPI INT WINAPI MapWindowPoints(HWND hwndFrom, HWND hwndTo, LPPOINT lppt, 
 void qemu_MapWindowPoints(struct qemu_syscall *call)
 {
     struct qemu_MapWindowPoints *c = (struct qemu_MapWindowPoints *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = MapWindowPoints(QEMU_G2H(c->hwndFrom), QEMU_G2H(c->hwndTo), QEMU_G2H(c->lppt), c->count);
 }
 
@@ -469,7 +469,7 @@ WINUSERAPI BOOL WINAPI ScreenToClient(HWND hwnd, LPPOINT lppnt)
 void qemu_ScreenToClient(struct qemu_syscall *call)
 {
     struct qemu_ScreenToClient *c = (struct qemu_ScreenToClient *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ScreenToClient(QEMU_G2H(c->hwnd), QEMU_G2H(c->lppnt));
 }
 
@@ -659,7 +659,7 @@ WINUSERAPI BOOL WINAPI MoveWindow(HWND hwnd, INT x, INT y, INT cx, INT cy, BOOL 
 void qemu_MoveWindow(struct qemu_syscall *call)
 {
     struct qemu_MoveWindow *c = (struct qemu_MoveWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = MoveWindow(QEMU_G2H(c->hwnd), c->x, c->y, c->cx, c->cy, c->repaint);
 }
 
@@ -961,7 +961,7 @@ WINUSERAPI HDWP WINAPI BeginDeferWindowPos(INT count)
 void qemu_BeginDeferWindowPos(struct qemu_syscall *call)
 {
     struct qemu_BeginDeferWindowPos *c = (struct qemu_BeginDeferWindowPos *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)BeginDeferWindowPos(c->count);
 }
 
@@ -1005,7 +1005,7 @@ WINUSERAPI HDWP WINAPI DeferWindowPos(HDWP hdwp, HWND hwnd, HWND hwndAfter, INT 
 void qemu_DeferWindowPos(struct qemu_syscall *call)
 {
     struct qemu_DeferWindowPos *c = (struct qemu_DeferWindowPos *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)DeferWindowPos(QEMU_G2H(c->hdwp), QEMU_G2H(c->hwnd), QEMU_G2H(c->hwndAfter), c->x, c->y, c->cx, c->cy, c->flags);
 }
 
@@ -1035,7 +1035,7 @@ WINUSERAPI BOOL WINAPI EndDeferWindowPos(HDWP hdwp)
 void qemu_EndDeferWindowPos(struct qemu_syscall *call)
 {
     struct qemu_EndDeferWindowPos *c = (struct qemu_EndDeferWindowPos *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EndDeferWindowPos(QEMU_G2H(c->hdwp));
 }
 

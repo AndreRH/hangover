@@ -123,7 +123,7 @@ WINUSERAPI HDC WINAPI GetDCEx(HWND hwnd, HRGN hrgnClip, DWORD flags)
 void qemu_GetDCEx(struct qemu_syscall *call)
 {
     struct qemu_GetDCEx *c = (struct qemu_GetDCEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetDCEx(QEMU_G2H(c->hwnd), QEMU_G2H(c->hrgnClip), c->flags);
 }
 
@@ -275,7 +275,7 @@ WINUSERAPI BOOL WINAPI LockWindowUpdate(HWND hwnd)
 void qemu_LockWindowUpdate(struct qemu_syscall *call)
 {
     struct qemu_LockWindowUpdate *c = (struct qemu_LockWindowUpdate *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LockWindowUpdate(QEMU_G2H(c->hwnd));
 }
 
@@ -311,7 +311,7 @@ WINUSERAPI BOOL WINAPI RedrawWindow(HWND hwnd, const RECT *rect, HRGN hrgn, UINT
 void qemu_RedrawWindow(struct qemu_syscall *call)
 {
     struct qemu_RedrawWindow *c = (struct qemu_RedrawWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RedrawWindow(QEMU_G2H(c->hwnd), QEMU_G2H(c->rect), QEMU_G2H(c->hrgn), c->flags);
 }
 
@@ -375,7 +375,7 @@ WINUSERAPI BOOL WINAPI InvalidateRgn(HWND hwnd, HRGN hrgn, BOOL erase)
 void qemu_InvalidateRgn(struct qemu_syscall *call)
 {
     struct qemu_InvalidateRgn *c = (struct qemu_InvalidateRgn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = InvalidateRgn(QEMU_G2H(c->hwnd), QEMU_G2H(c->hrgn), c->erase);
 }
 
@@ -441,7 +441,7 @@ WINUSERAPI BOOL WINAPI ValidateRgn(HWND hwnd, HRGN hrgn)
 void qemu_ValidateRgn(struct qemu_syscall *call)
 {
     struct qemu_ValidateRgn *c = (struct qemu_ValidateRgn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ValidateRgn(QEMU_G2H(c->hwnd), QEMU_G2H(c->hrgn));
 }
 
@@ -473,7 +473,7 @@ WINUSERAPI BOOL WINAPI ValidateRect(HWND hwnd, const RECT *rect)
 void qemu_ValidateRect(struct qemu_syscall *call)
 {
     struct qemu_ValidateRect *c = (struct qemu_ValidateRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ValidateRect(QEMU_G2H(c->hwnd), QEMU_G2H(c->rect));
 }
 
@@ -507,7 +507,7 @@ WINUSERAPI INT WINAPI GetUpdateRgn(HWND hwnd, HRGN hrgn, BOOL erase)
 void qemu_GetUpdateRgn(struct qemu_syscall *call)
 {
     struct qemu_GetUpdateRgn *c = (struct qemu_GetUpdateRgn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetUpdateRgn(QEMU_G2H(c->hwnd), QEMU_G2H(c->hrgn), c->erase);
 }
 
@@ -541,7 +541,7 @@ WINUSERAPI BOOL WINAPI GetUpdateRect(HWND hwnd, LPRECT rect, BOOL erase)
 void qemu_GetUpdateRect(struct qemu_syscall *call)
 {
     struct qemu_GetUpdateRect *c = (struct qemu_GetUpdateRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetUpdateRect(QEMU_G2H(c->hwnd), QEMU_G2H(c->rect), c->erase);
 }
 
@@ -617,7 +617,7 @@ WINUSERAPI INT WINAPI ScrollWindowEx(HWND hwnd, INT dx, INT dy, const RECT *rect
 void qemu_ScrollWindowEx(struct qemu_syscall *call)
 {
     struct qemu_ScrollWindowEx *c = (struct qemu_ScrollWindowEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ScrollWindowEx(QEMU_G2H(c->hwnd), c->dx, c->dy, QEMU_G2H(c->rect), QEMU_G2H(c->clipRect), QEMU_G2H(c->hrgnUpdate), QEMU_G2H(c->rcUpdate), c->flags);
 }
 
@@ -697,7 +697,7 @@ WINUSERAPI BOOL WINAPI ScrollDC(HDC hdc, INT dx, INT dy, const RECT *scroll, con
 void qemu_ScrollDC(struct qemu_syscall *call)
 {
     struct qemu_ScrollDC *c = (struct qemu_ScrollDC *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ScrollDC(QEMU_G2H(c->hdc), c->dx, c->dy, QEMU_G2H(c->scroll), QEMU_G2H(c->clip), QEMU_G2H(c->ret_update_rgn), QEMU_G2H(c->update_rect));
 }
 

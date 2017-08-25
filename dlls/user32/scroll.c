@@ -95,7 +95,7 @@ WINUSERAPI BOOL WINAPI GetScrollInfo(HWND hwnd, INT nBar, LPSCROLLINFO info)
 void qemu_GetScrollInfo(struct qemu_syscall *call)
 {
     struct qemu_GetScrollInfo *c = (struct qemu_GetScrollInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetScrollInfo(QEMU_G2H(c->hwnd), c->nBar, QEMU_G2H(c->info));
 }
 
@@ -271,7 +271,7 @@ WINUSERAPI BOOL WINAPI GetScrollRange(HWND hwnd, INT nBar, LPINT lpMin, LPINT lp
 void qemu_GetScrollRange(struct qemu_syscall *call)
 {
     struct qemu_GetScrollRange *c = (struct qemu_GetScrollRange *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetScrollRange(QEMU_G2H(c->hwnd), c->nBar, QEMU_G2H(c->lpMin), QEMU_G2H(c->lpMax));
 }
 

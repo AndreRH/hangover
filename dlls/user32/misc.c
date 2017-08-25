@@ -441,7 +441,7 @@ void qemu_MonitorFromPoint(struct qemu_syscall *call)
     struct qemu_MonitorFromPoint *c = (struct qemu_MonitorFromPoint *)call;
     POINT pt;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     pt.x = c->ptX;
     pt.y = c->ptY;
     c->super.iret = (uint64_t)MonitorFromPoint(pt, c->flags);

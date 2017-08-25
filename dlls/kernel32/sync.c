@@ -831,7 +831,7 @@ WINBASEAPI HANDLE WINAPI OpenEventA(DWORD access, BOOL inherit, LPCSTR name)
 void qemu_OpenEventA(struct qemu_syscall *call)
 {
     struct qemu_OpenEventA *c = (struct qemu_OpenEventA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)OpenEventA(c->access, c->inherit, QEMU_G2H(c->name));
 }
 

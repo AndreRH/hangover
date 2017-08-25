@@ -344,7 +344,7 @@ WINBASEAPI BOOL WINAPI GetExitCodeProcess(HANDLE hProcess, LPDWORD lpExitCode)
 void qemu_GetExitCodeProcess(struct qemu_syscall *call)
 {
     struct qemu_GetExitCodeProcess *c = (struct qemu_GetExitCodeProcess *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetExitCodeProcess(QEMU_G2H(c->hProcess), QEMU_G2H(c->lpExitCode));
 }
 

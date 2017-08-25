@@ -157,7 +157,7 @@ WINBASEAPI HRGN WINAPI CreateRectRgnIndirect(const RECT* rect)
 void qemu_CreateRectRgnIndirect(struct qemu_syscall *call)
 {
     struct qemu_CreateRectRgnIndirect *c = (struct qemu_CreateRectRgnIndirect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateRectRgnIndirect(QEMU_G2H(c->rect));
 }
 
@@ -535,7 +535,7 @@ WINBASEAPI BOOL WINAPI MirrorRgn(HWND hwnd, HRGN hrgn)
 void qemu_MirrorRgn(struct qemu_syscall *call)
 {
     struct qemu_MirrorRgn *c = (struct qemu_MirrorRgn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = MirrorRgn(QEMU_G2H(c->hwnd), QEMU_G2H(c->hrgn));
 }
 

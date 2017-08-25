@@ -399,7 +399,7 @@ WINUSERAPI LRESULT WINAPI CallNextHookEx(HHOOK hhook, INT code, WPARAM wparam, L
 void qemu_CallNextHookEx(struct qemu_syscall *call)
 {
     struct qemu_CallNextHookEx *c = (struct qemu_CallNextHookEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CallNextHookEx(QEMU_G2H(c->hhook), c->code, c->wparam, c->lparam);
 }
 

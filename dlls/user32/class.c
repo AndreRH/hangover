@@ -356,7 +356,7 @@ WINUSERAPI DWORD WINAPI GetClassLongW(HWND hwnd, INT offset)
 void qemu_GetClassLongW(struct qemu_syscall *call)
 {
     struct qemu_GetClassLongW *c = (struct qemu_GetClassLongW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetClassLongW(QEMU_G2H(c->hwnd), c->offset);
 }
 
@@ -388,7 +388,7 @@ WINUSERAPI DWORD WINAPI GetClassLongA(HWND hwnd, INT offset)
 void qemu_GetClassLongA(struct qemu_syscall *call)
 {
     struct qemu_GetClassLongA *c = (struct qemu_GetClassLongA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetClassLongA(QEMU_G2H(c->hwnd), c->offset);
 }
 
@@ -524,7 +524,7 @@ WINUSERAPI INT WINAPI GetClassNameA(HWND hwnd, LPSTR buffer, INT count)
 void qemu_GetClassNameA(struct qemu_syscall *call)
 {
     struct qemu_GetClassNameA *c = (struct qemu_GetClassNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetClassNameA(QEMU_G2H(c->hwnd), QEMU_G2H(c->buffer), c->count);
 }
 
@@ -702,7 +702,7 @@ void qemu_GetClassInfoA(struct qemu_syscall *call)
     struct qemu_GetClassInfoA *c = (struct qemu_GetClassInfoA *)call;
     WNDCLASSA *wc;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     wc = QEMU_G2H(c->wc);
     c->super.iret = GetClassInfoA(QEMU_G2H(c->hInstance), QEMU_G2H(c->name), wc);
 
@@ -742,7 +742,7 @@ void qemu_GetClassInfoW(struct qemu_syscall *call)
     struct qemu_GetClassInfoW *c = (struct qemu_GetClassInfoW *)call;
     WNDCLASSW *wc;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     wc = QEMU_G2H(c->wc);
     c->super.iret = GetClassInfoW(QEMU_G2H(c->hInstance), QEMU_G2H(c->name), wc);
 
