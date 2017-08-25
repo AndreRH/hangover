@@ -43,13 +43,15 @@ do
 done
 
 # Link Wine libraries.
-declare -a wine_dlls=("dbghelp" "ole32" "oleaut32" "propsys" "rpcrt4" "urlmon" "windowscodecs" "netapi" "dnsapi")
+declare -a wine_dlls=("dbghelp" "ole32" "oleaut32" "propsys" "rpcrt4" "urlmon" "windowscodecs" "netapi" "dnsapi" "msimg32"
+        "crypt32" "dwmapi" "uxtheme" "setupapi" "wintrust" "wtsapi32" "pdh" "avrt" "cryptnet" "imagehlp" "cryptui")
 ln -sf $DESTDIR/build/wine-guest/libs/wine/libwine.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
 
 for dll in "${wine_dlls[@]}"
 do
     ln -sf $DESTDIR/build/wine-guest/dlls/$dll/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
 done
+ln -sf $DESTDIR/build/wine-guest/dlls/winspool.drv/winspool.drv $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
 
 # Build the test progs. FIXME: automate this better.
 cd $DESTDIR/testprogs/advapi32
