@@ -582,4 +582,13 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     return dll_functions;
 }
 
+BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
+{
+    WINE_TRACE("Host ntdll DllMain(%p, %u, %p)\n", mod, reason, reserved);
+    if (!qemu_ops)
+        return TRUE;
+
+    return qemu_ops->qemu_DllMain(reason, reserved);
+}
+
 #endif
