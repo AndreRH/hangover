@@ -157,7 +157,7 @@ WINUSERAPI BOOL WINAPI SwapMouseButton(BOOL fSwap)
 void qemu_SwapMouseButton(struct qemu_syscall *call)
 {
     struct qemu_SwapMouseButton *c = (struct qemu_SwapMouseButton *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SwapMouseButton(c->fSwap);
 }
 
@@ -187,7 +187,7 @@ WINUSERAPI BOOL WINAPI SetDoubleClickTime(UINT interval)
 void qemu_SetDoubleClickTime(struct qemu_syscall *call)
 {
     struct qemu_SetDoubleClickTime *c = (struct qemu_SetDoubleClickTime *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetDoubleClickTime(c->interval);
 }
 
@@ -215,7 +215,7 @@ WINUSERAPI UINT WINAPI GetDoubleClickTime(void)
 void qemu_GetDoubleClickTime(struct qemu_syscall *call)
 {
     struct qemu_GetDoubleClickTime *c = (struct qemu_GetDoubleClickTime *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDoubleClickTime();
 }
 
@@ -345,7 +345,7 @@ WINUSERAPI HBRUSH WINAPI GetSysColorBrush(INT index)
 void qemu_GetSysColorBrush(struct qemu_syscall *call)
 {
     struct qemu_GetSysColorBrush *c = (struct qemu_GetSysColorBrush *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetSysColorBrush(c->index);
 }
 
@@ -447,7 +447,7 @@ WINUSERAPI LONG WINAPI ChangeDisplaySettingsExA(LPCSTR devname, LPDEVMODEA devmo
 void qemu_ChangeDisplaySettingsExA(struct qemu_syscall *call)
 {
     struct qemu_ChangeDisplaySettingsExA *c = (struct qemu_ChangeDisplaySettingsExA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ChangeDisplaySettingsExA(QEMU_G2H(c->devname), QEMU_G2H(c->devmode), QEMU_G2H(c->hwnd), c->flags, QEMU_G2H(c->lparam));
 }
 
@@ -681,7 +681,7 @@ WINUSERAPI BOOL WINAPI IsProcessDPIAware(void)
 void qemu_IsProcessDPIAware(struct qemu_syscall *call)
 {
     struct qemu_IsProcessDPIAware *c = (struct qemu_IsProcessDPIAware *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsProcessDPIAware();
 }
 

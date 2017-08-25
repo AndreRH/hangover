@@ -1391,7 +1391,7 @@ WINUSERAPI BOOL WINAPI MessageBeep(UINT i)
 void qemu_MessageBeep(struct qemu_syscall *call)
 {
     struct qemu_MessageBeep *c = (struct qemu_MessageBeep *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = MessageBeep(c->i);
 }
 
