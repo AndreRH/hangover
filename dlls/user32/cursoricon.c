@@ -723,14 +723,10 @@ WINUSERAPI HICON WINAPI LoadIconW(HINSTANCE hInstance, LPCWSTR name)
 void qemu_LoadIconW(struct qemu_syscall *call)
 {
     struct qemu_LoadIconW *c = (struct qemu_LoadIconW *)call;
-    HINSTANCE instance;
     WINE_TRACE("\n");
 
-    instance = (HINSTANCE)c->hInstance;
-    if (!instance)
-        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
-
-    c->super.iret = (uint64_t)LoadIconW(instance, QEMU_G2H(c->name));
+    /* Do not replace hInstance, a NULL instance means user32.dll. */
+    c->super.iret = (uint64_t)LoadIconW((HINSTANCE)c->hInstance, QEMU_G2H(c->name));
 }
 
 #endif
@@ -761,14 +757,10 @@ WINUSERAPI HICON WINAPI LoadIconA(HINSTANCE hInstance, LPCSTR name)
 void qemu_LoadIconA(struct qemu_syscall *call)
 {
     struct qemu_LoadIconA *c = (struct qemu_LoadIconA *)call;
-    HINSTANCE instance;
     WINE_TRACE("\n");
 
-    instance = (HINSTANCE)c->hInstance;
-    if (!instance)
-        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
-
-    c->super.iret = (uint64_t)LoadIconA(instance, QEMU_G2H(c->name));
+    /* Do not replace hInstance, a NULL instance means user32.dll. */
+    c->super.iret = (uint64_t)LoadIconA((HINSTANCE)c->hInstance, QEMU_G2H(c->name));
 }
 
 #endif
@@ -1017,14 +1009,11 @@ WINUSERAPI HANDLE WINAPI LoadImageA(HINSTANCE hinst, LPCSTR name, UINT type, INT
 void qemu_LoadImageA(struct qemu_syscall *call)
 {
     struct qemu_LoadImageA *c = (struct qemu_LoadImageA *)call;
-    HINSTANCE instance;
     WINE_TRACE("\n");
 
-    instance = (HINSTANCE)c->hinst;
-    if (!instance)
-        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
-
-    c->super.iret = (uint64_t)LoadImageA(instance, QEMU_G2H(c->name), c->type, c->desiredx, c->desiredy, c->loadflags);
+    /* Do not replace hInstance, a NULL instance means user32.dll. */
+    c->super.iret = (uint64_t)LoadImageA((HINSTANCE)c->hinst, QEMU_G2H(c->name), c->type, c->desiredx,
+            c->desiredy, c->loadflags);
 }
 
 #endif
@@ -1063,14 +1052,11 @@ WINUSERAPI HANDLE WINAPI LoadImageW(HINSTANCE hinst, LPCWSTR name, UINT type, IN
 void qemu_LoadImageW(struct qemu_syscall *call)
 {
     struct qemu_LoadImageW *c = (struct qemu_LoadImageW *)call;
-    HINSTANCE instance;
     WINE_TRACE("\n");
 
-    instance = (HINSTANCE)c->hinst;
-    if (!instance)
-        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
-
-    c->super.iret = (uint64_t)LoadImageW(instance, QEMU_G2H(c->name), c->type, c->desiredx, c->desiredy, c->loadflags);
+    /* Do not replace hInstance, a NULL instance means user32.dll. */
+    c->super.iret = (uint64_t)LoadImageW((HINSTANCE)c->hinst, QEMU_G2H(c->name), c->type, c->desiredx,
+            c->desiredy, c->loadflags);
 }
 
 #endif
