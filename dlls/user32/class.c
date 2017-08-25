@@ -295,8 +295,9 @@ void qemu_UnregisterClass(struct qemu_syscall *call)
 
         for (i = 0; i < class_wrapper_count; ++i)
         {
-            if (!class_wrappers[i].atom == atom)
+            if (class_wrappers[i].atom == atom)
             {
+                WINE_TRACE("Releasing wndproc wrapper %p.\n", &class_wrappers[i]);
                 class_wrappers[i].atom = 0;
                 class_wrappers[i].guest_proc = 0;
                 return;
@@ -1046,7 +1047,7 @@ ULONG_PTR set_class_wndproc(HWND win, BOOL wide, LONG_PTR newval)
 
     if (ret >= (ULONG_PTR)&class_wrappers[0] && ret <= (ULONG_PTR)&class_wrappers[class_wrapper_count])
     {
-        WINE_TRACE("Old host proc is our wrapper.\n");
+        WINE_TRACE("Old host proc 0x%lx is our wrapper.\n", ret);
 
         wrapper = (struct classproc_wrapper *)ret;
         if (wrapper->atom != atom)
@@ -1055,6 +1056,7 @@ ULONG_PTR set_class_wndproc(HWND win, BOOL wide, LONG_PTR newval)
         /* FIXME: The behavior of Wine's SetClassLongPtr suggests that this should not affect
          * windows that already exist. That would require overwriting the WNDPROC with something
          * window specific whenever a new window is created. */
+        WINE_TRACE("Setting guest proc of wndproc wrapper %p to 0x%lx.\n", wrapper, newval);
         ret = wrapper->guest_proc;
         wrapper->guest_proc = newval;
         return ret;
