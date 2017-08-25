@@ -264,9 +264,23 @@ struct qemu_EnumWindowStationsA
     struct qemu_syscall super;
     uint64_t func;
     uint64_t lparam;
+    uint64_t wrapper;
+};
+
+struct qemu_EnumWindowStations_cb
+{
+    uint64_t func;
+    uint64_t winsta;
+    uint64_t param;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static uint64_t CALLBACK EnumWindowStationsA_guest_cb(struct qemu_EnumWindowStations_cb *call)
+{
+    WINSTAENUMPROCA func = (WINSTAENUMPROCA)call->func;
+    return func((char *)call->winsta, call->param);
+}
 
 WINUSERAPI BOOL WINAPI EnumWindowStationsA(WINSTAENUMPROCA func, LPARAM lparam)
 {
@@ -274,6 +288,7 @@ WINUSERAPI BOOL WINAPI EnumWindowStationsA(WINSTAENUMPROCA func, LPARAM lparam)
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMWINDOWSTATIONSA);
     call.func = (uint64_t)func;
     call.lparam = (uint64_t)lparam;
+    call.wrapper = (uint64_t)EnumWindowStationsA_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -282,11 +297,39 @@ WINUSERAPI BOOL WINAPI EnumWindowStationsA(WINSTAENUMPROCA func, LPARAM lparam)
 
 #else
 
+struct qemu_EnumWindowStations_host_param
+{
+    uint64_t wrapper, guest_cb, guest_param;
+};
+
+static BOOL CALLBACK qemu_EnumWindowStationsA_host_cb(char *winsta, LPARAM lp)
+{
+    struct qemu_EnumWindowStations_host_param *param = (struct qemu_EnumWindowStations_host_param *)lp;
+    struct qemu_EnumWindowStations_cb call;
+    BOOL ret;
+
+    WINE_TRACE("Calling guest func 0x%lx(%s, 0x%lx).\n", param->guest_cb, winsta, param->guest_param);
+    call.func = param->guest_cb;
+    call.winsta = QEMU_H2G(winsta);
+    call.param = param->guest_param;
+
+    ret = qemu_ops->qemu_execute(QEMU_G2H(param->wrapper), QEMU_H2G(&call));
+
+    WINE_TRACE("Callback returned %u.\n", ret);
+    return ret;
+}
+
 void qemu_EnumWindowStationsA(struct qemu_syscall *call)
 {
     struct qemu_EnumWindowStationsA *c = (struct qemu_EnumWindowStationsA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumWindowStationsA(QEMU_G2H(c->func), c->lparam);
+    struct qemu_EnumWindowStations_host_param param;
+
+    WINE_TRACE("\n");
+    param.wrapper = c->wrapper;
+    param.guest_cb = c->func;
+    param.guest_param = c->lparam;
+
+    c->super.iret = EnumWindowStationsA(c->func ? qemu_EnumWindowStationsA_host_cb : NULL, (LPARAM)&param);
 }
 
 #endif
@@ -296,9 +339,16 @@ struct qemu_EnumWindowStationsW
     struct qemu_syscall super;
     uint64_t func;
     uint64_t lparam;
+    uint64_t wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static uint64_t CALLBACK EnumWindowStationsW_guest_cb(struct qemu_EnumWindowStations_cb *call)
+{
+    WINSTAENUMPROCW func = (WINSTAENUMPROCW)call->func;
+    return func((WCHAR *)call->winsta, call->param);
+}
 
 WINUSERAPI BOOL WINAPI EnumWindowStationsW(WINSTAENUMPROCW func, LPARAM lparam)
 {
@@ -306,6 +356,7 @@ WINUSERAPI BOOL WINAPI EnumWindowStationsW(WINSTAENUMPROCW func, LPARAM lparam)
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMWINDOWSTATIONSW);
     call.func = (uint64_t)func;
     call.lparam = (uint64_t)lparam;
+    call.wrapper = (uint64_t)EnumWindowStationsW_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -314,11 +365,34 @@ WINUSERAPI BOOL WINAPI EnumWindowStationsW(WINSTAENUMPROCW func, LPARAM lparam)
 
 #else
 
+static BOOL CALLBACK qemu_EnumWindowStationsW_host_cb(WCHAR *winsta, LPARAM lp)
+{
+    struct qemu_EnumWindowStations_host_param *param = (struct qemu_EnumWindowStations_host_param *)lp;
+    struct qemu_EnumWindowStations_cb call;
+    BOOL ret;
+
+    WINE_TRACE("Calling guest func 0x%lx(%s, 0x%lx).\n", param->guest_cb, wine_dbgstr_w(winsta), param->guest_param);
+    call.func = param->guest_cb;
+    call.winsta = QEMU_H2G(winsta);
+    call.param = param->guest_param;
+
+    ret = qemu_ops->qemu_execute(QEMU_G2H(param->wrapper), QEMU_H2G(&call));
+
+    WINE_TRACE("Callback returned %u.\n", ret);
+    return ret;
+}
+
 void qemu_EnumWindowStationsW(struct qemu_syscall *call)
 {
     struct qemu_EnumWindowStationsW *c = (struct qemu_EnumWindowStationsW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumWindowStationsW(QEMU_G2H(c->func), c->lparam);
+    struct qemu_EnumWindowStations_host_param param;
+
+    WINE_TRACE("\n");
+    param.wrapper = c->wrapper;
+    param.guest_cb = c->func;
+    param.guest_param = c->lparam;
+
+    c->super.iret = EnumWindowStationsW(c->func ? qemu_EnumWindowStationsW_host_cb : NULL, (LPARAM)&param);
 }
 
 #endif
