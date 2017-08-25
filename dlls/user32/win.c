@@ -2052,7 +2052,10 @@ static struct classproc_wrapper *find_free_wndproc_wrapper(void)
     for (i = 0; i < win_wrapper_count; ++i)
     {
         if (!win_wrappers[i].atom)
+        {
+            WINE_TRACE("Returning wrapper %p\n", &win_wrappers[i]);
             return &win_wrappers[i];
+        }
     }
     WINE_FIXME("All per-window wrappers are in use\n");
     return NULL;
@@ -2085,7 +2088,7 @@ static LONG_PTR set_wndproc(HWND win, uint64_t newval, BOOL wide)
 
     if (host_proc >= (ULONG_PTR)&win_wrappers[0] && host_proc <= (ULONG_PTR)&win_wrappers[win_wrapper_count])
     {
-        WINE_TRACE("Old host proc is a per-window wrapper.\n");
+        WINE_TRACE("Old host proc is a per-window wrapper %p.\n", (void *)host_proc);
 
         wrapper = (struct classproc_wrapper *)host_proc;
         if (wrapper->win != win)

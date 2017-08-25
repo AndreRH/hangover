@@ -155,6 +155,7 @@ void qemu_RegisterClassEx(struct qemu_syscall *call)
         return;
     }
 
+    WINE_TRACE("Using wrapper %p for the new class.\n", &class_wrappers[i]);
     if (c->super.id == QEMU_SYSCALL_ID(CALL_REGISTERCLASSEXW))
     {
         WNDCLASSEXW exw = *(WNDCLASSEXW *)QEMU_G2H(c->wc);
@@ -936,7 +937,10 @@ static struct classproc_wrapper *find_free_classproc_wrapper(void)
     for (i = 0; i < class_wrapper_count; ++i)
     {
         if (!class_wrappers[i].atom)
+        {
+            WINE_TRACE("Returning wrapper %p\n", &win_wrappers[i]);
             return &class_wrappers[i];
+        }
     }
     WINE_FIXME("All class wrappers are in use\n");
     return NULL;
