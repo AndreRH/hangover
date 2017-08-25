@@ -1376,9 +1376,23 @@ struct qemu_EnumChildWindows
     uint64_t parent;
     uint64_t func;
     uint64_t lParam;
+    uint64_t wrapper;
+};
+
+struct qemu_EnumChildWindows_cb
+{
+    uint64_t func;
+    uint64_t child;
+    uint64_t lparam;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static uint64_t EnumChildWindows_guest_cb(struct qemu_EnumChildWindows_cb *call)
+{
+    WNDENUMPROC func = (WNDENUMPROC)call->func;
+    return func((HWND)call->child, call->lparam);
+}
 
 WINUSERAPI BOOL WINAPI EnumChildWindows(HWND parent, WNDENUMPROC func, LPARAM lParam)
 {
@@ -1387,6 +1401,7 @@ WINUSERAPI BOOL WINAPI EnumChildWindows(HWND parent, WNDENUMPROC func, LPARAM lP
     call.parent = (uint64_t)parent;
     call.func = (uint64_t)func;
     call.lParam = (uint64_t)lParam;
+    call.wrapper = (uint64_t)EnumChildWindows_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -1395,11 +1410,41 @@ WINUSERAPI BOOL WINAPI EnumChildWindows(HWND parent, WNDENUMPROC func, LPARAM lP
 
 #else
 
+struct qemu_EnumChildWindows_host_param
+{
+    uint64_t wrapper, guest_func;
+    uint64_t guest_param;
+};
+
+static BOOL CALLBACK qemu_EnumChildWindows_host_cb(HWND child, LPARAM lp)
+{
+    struct qemu_EnumChildWindows_host_param *param = (struct qemu_EnumChildWindows_host_param *)lp;
+    struct qemu_EnumChildWindows_cb call;
+    BOOL ret;
+
+    WINE_TRACE("Calling guest proc 0x%lx(%p, 0x%lx).\n", param->guest_func, child, param->guest_param);
+    call.func = param->guest_func;
+    call.lparam = param->guest_param;
+    call.child = (uint64_t)child;
+
+    ret = qemu_ops->qemu_execute(QEMU_G2H(param->wrapper), QEMU_H2G(&call));
+
+    WINE_TRACE("Guest callback returned %u.\n", ret);
+    return ret;
+}
+
 void qemu_EnumChildWindows(struct qemu_syscall *call)
 {
     struct qemu_EnumChildWindows *c = (struct qemu_EnumChildWindows *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumChildWindows(QEMU_G2H(c->parent), QEMU_G2H(c->func), c->lParam);
+    struct qemu_EnumChildWindows_host_param data;
+
+    WINE_TRACE("\n");
+    data.wrapper = c->wrapper;
+    data.guest_func = c->func;
+    data.guest_param = c->lParam;
+
+    c->super.iret = EnumChildWindows(QEMU_G2H(c->parent), c->func ? qemu_EnumChildWindows_host_cb : NULL,
+            (LPARAM)&data);
 }
 
 #endif
