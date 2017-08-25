@@ -571,9 +571,23 @@ struct qemu_EnumDesktopsA
     uint64_t winsta;
     uint64_t func;
     uint64_t lparam;
+    uint64_t wrapper;
+};
+
+struct qemu_EnumDesktops_cb
+{
+    uint64_t func;
+    uint64_t desktop;
+    uint64_t param;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static uint64_t CALLBACK EnumDesktopsA_guest_cb(struct qemu_EnumDesktops_cb *call)
+{
+    DESKTOPENUMPROCA func = (DESKTOPENUMPROCA)call->func;
+    return func((char *)call->desktop, call->param);
+}
 
 WINUSERAPI BOOL WINAPI EnumDesktopsA(HWINSTA winsta, DESKTOPENUMPROCA func, LPARAM lparam)
 {
@@ -582,6 +596,7 @@ WINUSERAPI BOOL WINAPI EnumDesktopsA(HWINSTA winsta, DESKTOPENUMPROCA func, LPAR
     call.winsta = (uint64_t)winsta;
     call.func = (uint64_t)func;
     call.lparam = (uint64_t)lparam;
+    call.wrapper = (uint64_t)EnumDesktopsA_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -590,11 +605,39 @@ WINUSERAPI BOOL WINAPI EnumDesktopsA(HWINSTA winsta, DESKTOPENUMPROCA func, LPAR
 
 #else
 
+struct qemu_EnumDesktops_host_param
+{
+    uint64_t wrapper, guest_cb, guest_param;
+};
+
+static BOOL CALLBACK EnumDesktopsA_host_cb(char *desktop, LPARAM lp)
+{
+    struct qemu_EnumDesktops_host_param *param = (struct qemu_EnumDesktops_host_param *)lp;
+    struct qemu_EnumDesktops_cb call;
+    BOOL ret;
+
+    WINE_TRACE("Calling guest func 0x%lx(%s, 0x%lx).\n", param->guest_cb, desktop, param->guest_param);
+    call.func = param->guest_cb;
+    call.desktop = QEMU_H2G(desktop);
+    call.param = param->guest_param;
+
+    ret = qemu_ops->qemu_execute(QEMU_G2H(param->wrapper), QEMU_H2G(&call));
+
+    WINE_TRACE("Callback returned %u.\n", ret);
+    return ret;
+}
+
 void qemu_EnumDesktopsA(struct qemu_syscall *call)
 {
     struct qemu_EnumDesktopsA *c = (struct qemu_EnumDesktopsA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumDesktopsA(QEMU_G2H(c->winsta), QEMU_G2H(c->func), c->lparam);
+    struct qemu_EnumDesktops_host_param param;
+
+    WINE_TRACE("\n");
+    param.wrapper = c->wrapper;
+    param.guest_cb = c->func;
+    param.guest_param = c->lparam;
+
+    c->super.iret = EnumDesktopsA(QEMU_G2H(c->winsta), c->func ? EnumDesktopsA_host_cb : NULL, (LPARAM)&param);
 }
 
 #endif
@@ -605,9 +648,16 @@ struct qemu_EnumDesktopsW
     uint64_t winsta;
     uint64_t func;
     uint64_t lparam;
+    uint64_t wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static uint64_t CALLBACK EnumDesktopsW_guest_cb(struct qemu_EnumDesktops_cb *call)
+{
+    DESKTOPENUMPROCW func = (DESKTOPENUMPROCW)call->func;
+    return func((WCHAR *)call->desktop, call->param);
+}
 
 WINUSERAPI BOOL WINAPI EnumDesktopsW(HWINSTA winsta, DESKTOPENUMPROCW func, LPARAM lparam)
 {
@@ -616,6 +666,7 @@ WINUSERAPI BOOL WINAPI EnumDesktopsW(HWINSTA winsta, DESKTOPENUMPROCW func, LPAR
     call.winsta = (uint64_t)winsta;
     call.func = (uint64_t)func;
     call.lparam = (uint64_t)lparam;
+    call.wrapper = (uint64_t)EnumDesktopsW_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -624,11 +675,35 @@ WINUSERAPI BOOL WINAPI EnumDesktopsW(HWINSTA winsta, DESKTOPENUMPROCW func, LPAR
 
 #else
 
+static BOOL CALLBACK EnumDesktopsW_host_cb(WCHAR *desktop, LPARAM lp)
+{
+    struct qemu_EnumDesktops_host_param *param = (struct qemu_EnumDesktops_host_param *)lp;
+    struct qemu_EnumDesktops_cb call;
+    BOOL ret;
+
+    WINE_TRACE("Calling guest func 0x%lx(%s, 0x%lx).\n", param->guest_cb, wine_dbgstr_w(desktop),
+            param->guest_param);
+    call.func = param->guest_cb;
+    call.desktop = QEMU_H2G(desktop);
+    call.param = param->guest_param;
+
+    ret = qemu_ops->qemu_execute(QEMU_G2H(param->wrapper), QEMU_H2G(&call));
+
+    WINE_TRACE("Callback returned %u.\n", ret);
+    return ret;
+}
+
 void qemu_EnumDesktopsW(struct qemu_syscall *call)
 {
     struct qemu_EnumDesktopsW *c = (struct qemu_EnumDesktopsW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumDesktopsW(QEMU_G2H(c->winsta), QEMU_G2H(c->func), c->lparam);
+    struct qemu_EnumDesktops_host_param param;
+
+    WINE_TRACE("\n");
+    param.wrapper = c->wrapper;
+    param.guest_cb = c->func;
+    param.guest_param = c->lparam;
+
+    c->super.iret = EnumDesktopsW(QEMU_G2H(c->winsta), c->func ? EnumDesktopsW_host_cb : NULL, (LPARAM)&param);
 }
 
 #endif
