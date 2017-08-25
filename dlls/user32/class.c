@@ -624,11 +624,57 @@ WINUSERAPI BOOL WINAPI GetClassInfoA(HINSTANCE hInstance, LPCSTR name, WNDCLASSA
 
 #else
 
+struct reverse_classproc_wrapper *find_reverse_wndproc_wrapper(void *host_func)
+{
+    unsigned int i;
+
+    for (i = 0; i < REVERSE_CLASSPROC_WRAPPER_COUNT; ++i)
+    {
+        if (reverse_classproc_wrappers[i].host_func == host_func)
+            return &reverse_classproc_wrappers[i];
+        if (!reverse_classproc_wrappers[i].host_func)
+        {
+            reverse_classproc_wrappers[i].host_func = host_func;
+            return &reverse_classproc_wrappers[i];
+        }
+    }
+
+    /* Need to make the array bigger if we ran out of it. Can't grow it dynamically. */
+    assert(0);
+}
+
+static ULONG_PTR qemu_GetClassInfo_wndproc(ULONG_PTR host_proc)
+{
+    struct classproc_wrapper *wrapper;
+    struct reverse_classproc_wrapper *reverse_wrapper;
+
+    if (host_proc >= (ULONG_PTR)&class_wrappers[0]
+            && host_proc <= (ULONG_PTR)&class_wrappers[class_wrapper_count])
+    {
+        wrapper = (struct classproc_wrapper *)host_proc;
+        WINE_TRACE("Host wndproc is a wrapper function. Returning guest wndproc 0x%lx.\n", wrapper->guest_proc);
+        return wrapper->guest_proc;
+    }
+    else
+    {
+        reverse_wrapper = find_reverse_wndproc_wrapper((void *)host_proc);
+        reverse_wrapper->guest_func = reverse_classproc_func;
+        WINE_TRACE("Returning reverse wrapper %p for host function 0x%lx.\n", reverse_wrapper, host_proc);
+        return QEMU_H2G(reverse_wrapper);
+    }
+}
+
 void qemu_GetClassInfoA(struct qemu_syscall *call)
 {
     struct qemu_GetClassInfoA *c = (struct qemu_GetClassInfoA *)call;
+    WNDCLASSA *wc;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = GetClassInfoA(QEMU_G2H(c->hInstance), QEMU_G2H(c->name), QEMU_G2H(c->wc));
+    wc = QEMU_G2H(c->wc);
+    c->super.iret = GetClassInfoA(QEMU_G2H(c->hInstance), QEMU_G2H(c->name), wc);
+
+    if (c->super.iret)
+        wc->lpfnWndProc = (void *)qemu_GetClassInfo_wndproc((ULONG_PTR)wc->lpfnWndProc);
 }
 
 #endif
@@ -661,8 +707,14 @@ WINUSERAPI BOOL WINAPI GetClassInfoW(HINSTANCE hInstance, LPCWSTR name, WNDCLASS
 void qemu_GetClassInfoW(struct qemu_syscall *call)
 {
     struct qemu_GetClassInfoW *c = (struct qemu_GetClassInfoW *)call;
+    WNDCLASSW *wc;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = GetClassInfoW(QEMU_G2H(c->hInstance), QEMU_G2H(c->name), QEMU_G2H(c->wc));
+    wc = QEMU_G2H(c->wc);
+    c->super.iret = GetClassInfoW(QEMU_G2H(c->hInstance), QEMU_G2H(c->name), wc);
+
+    if (c->super.iret)
+        wc->lpfnWndProc = (void *)qemu_GetClassInfo_wndproc((ULONG_PTR)wc->lpfnWndProc);
 }
 
 #endif
@@ -784,25 +836,6 @@ WINUSERAPI ULONG_PTR WINAPI GetClassLongPtrA(HWND hwnd, INT offset)
 
 #else
 
-struct reverse_classproc_wrapper *find_reverse_wndproc_wrapper(void *host_func)
-{
-    unsigned int i;
-
-    for (i = 0; i < REVERSE_CLASSPROC_WRAPPER_COUNT; ++i)
-    {
-        if (reverse_classproc_wrappers[i].host_func == host_func)
-            return &reverse_classproc_wrappers[i];
-        if (!reverse_classproc_wrappers[i].host_func)
-        {
-            reverse_classproc_wrappers[i].host_func = host_func;
-            return &reverse_classproc_wrappers[i];
-        }
-    }
-
-    /* Need to make the array bigger if we ran out of it. Can't grow it dynamically. */
-    assert(0);
-}
-
 static ULONG_PTR get_class_wndproc(HWND win, BOOL wide)
 {
     ULONG_PTR host_proc;
@@ -814,17 +847,7 @@ static ULONG_PTR get_class_wndproc(HWND win, BOOL wide)
     else
         host_proc = GetClassLongPtrA(win, GCLP_WNDPROC);
 
-    if (host_proc >= (ULONG_PTR)&class_wrappers[0] && host_proc <= (ULONG_PTR)&class_wrappers[class_wrapper_count])
-    {
-        wrapper = (const struct classproc_wrapper *)host_proc;
-        WINE_TRACE("Host wndproc is a wrapper function. Returning guest wndproc 0x%lx\n", wrapper->guest_proc);
-        return wrapper->guest_proc;
-    }
-
-    reverse_wrapper = find_reverse_wndproc_wrapper((void *)host_proc);
-    reverse_wrapper->guest_func = reverse_classproc_func;
-    WINE_TRACE("Returning reverse wrapper %p for host function 0x%lx\n", reverse_wrapper, host_proc);
-    return (ULONG_PTR)reverse_wrapper;
+    return qemu_GetClassInfo_wndproc(host_proc);
 }
 
 void qemu_GetClassLongPtrA(struct qemu_syscall *call)
