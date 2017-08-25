@@ -227,7 +227,7 @@ WINUSERAPI BOOL WINAPI IsRectEmpty(const RECT *rect)
 void qemu_IsRectEmpty(struct qemu_syscall *call)
 {
     struct qemu_IsRectEmpty *c = (struct qemu_IsRectEmpty *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsRectEmpty(QEMU_G2H(c->rect));
 }
 
@@ -432,7 +432,7 @@ WINUSERAPI BOOL WINAPI EqualRect(const RECT* rect1, const RECT* rect2)
 void qemu_EqualRect(struct qemu_syscall *call)
 {
     struct qemu_EqualRect *c = (struct qemu_EqualRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EqualRect(QEMU_G2H(c->rect1), QEMU_G2H(c->rect2));
 }
 
@@ -466,7 +466,7 @@ WINUSERAPI BOOL WINAPI SubtractRect(LPRECT dest, const RECT *src1, const RECT *s
 void qemu_SubtractRect(struct qemu_syscall *call)
 {
     struct qemu_SubtractRect *c = (struct qemu_SubtractRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SubtractRect(QEMU_G2H(c->dest), QEMU_G2H(c->src1), QEMU_G2H(c->src2));
 }
 
