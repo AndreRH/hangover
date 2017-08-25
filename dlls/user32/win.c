@@ -1936,6 +1936,12 @@ LONG_PTR get_wndproc(HWND window, BOOL wide)
     else
         proc = GetWindowLongPtrA(window, GWLP_WNDPROC);
 
+    if (!proc)
+    {
+        WINE_WARN("Host wndproc is NULL, returning NULL.\n");
+        return 0;
+    }
+
     /* Per class and per window wrappers. */
     if ((proc >= (ULONG_PTR)&class_wrappers[0] && proc <= (ULONG_PTR)&class_wrappers[class_wrapper_count])
             || (proc >= (ULONG_PTR)&win_wrappers[0] && proc <= (ULONG_PTR)&win_wrappers[win_wrapper_count]))
