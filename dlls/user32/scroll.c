@@ -61,7 +61,7 @@ WINUSERAPI INT WINAPI SetScrollInfo(HWND hwnd, INT nBar, const SCROLLINFO *info,
 void qemu_SetScrollInfo(struct qemu_syscall *call)
 {
     struct qemu_SetScrollInfo *c = (struct qemu_SetScrollInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetScrollInfo(QEMU_G2H(c->hwnd), c->nBar, QEMU_G2H(c->info), c->bRedraw);
 }
 
@@ -129,7 +129,7 @@ WINUSERAPI BOOL WINAPI GetScrollBarInfo(HWND hwnd, LONG idObject, LPSCROLLBARINF
 void qemu_GetScrollBarInfo(struct qemu_syscall *call)
 {
     struct qemu_GetScrollBarInfo *c = (struct qemu_GetScrollBarInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetScrollBarInfo(QEMU_G2H(c->hwnd), c->idObject, QEMU_G2H(c->info));
 }
 
@@ -165,7 +165,7 @@ WINUSERAPI INT WINAPI SetScrollPos(HWND hwnd, INT nBar, INT nPos, BOOL bRedraw)
 void qemu_SetScrollPos(struct qemu_syscall *call)
 {
     struct qemu_SetScrollPos *c = (struct qemu_SetScrollPos *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetScrollPos(QEMU_G2H(c->hwnd), c->nBar, c->nPos, c->bRedraw);
 }
 
@@ -197,7 +197,7 @@ WINUSERAPI INT WINAPI GetScrollPos(HWND hwnd, INT nBar)
 void qemu_GetScrollPos(struct qemu_syscall *call)
 {
     struct qemu_GetScrollPos *c = (struct qemu_GetScrollPos *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetScrollPos(QEMU_G2H(c->hwnd), c->nBar);
 }
 
@@ -235,7 +235,7 @@ WINUSERAPI BOOL WINAPI SetScrollRange(HWND hwnd, INT nBar, INT minVal, INT maxVa
 void qemu_SetScrollRange(struct qemu_syscall *call)
 {
     struct qemu_SetScrollRange *c = (struct qemu_SetScrollRange *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetScrollRange(QEMU_G2H(c->hwnd), c->nBar, c->minVal, c->maxVal, c->bRedraw);
 }
 
@@ -305,7 +305,7 @@ WINUSERAPI BOOL WINAPI ShowScrollBar(HWND hwnd, INT nBar, BOOL fShow)
 void qemu_ShowScrollBar(struct qemu_syscall *call)
 {
     struct qemu_ShowScrollBar *c = (struct qemu_ShowScrollBar *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ShowScrollBar(QEMU_G2H(c->hwnd), c->nBar, c->fShow);
 }
 
@@ -339,7 +339,7 @@ WINUSERAPI BOOL WINAPI EnableScrollBar(HWND hwnd, UINT nBar, UINT flags)
 void qemu_EnableScrollBar(struct qemu_syscall *call)
 {
     struct qemu_EnableScrollBar *c = (struct qemu_EnableScrollBar *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EnableScrollBar(QEMU_G2H(c->hwnd), c->nBar, c->flags);
 }
 

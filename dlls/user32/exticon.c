@@ -113,7 +113,7 @@ WINUSERAPI UINT WINAPI PrivateExtractIconsA (LPCSTR lpstrFile, int nIndex, int s
 void qemu_PrivateExtractIconsA(struct qemu_syscall *call)
 {
     struct qemu_PrivateExtractIconsA *c = (struct qemu_PrivateExtractIconsA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PrivateExtractIconsA(QEMU_G2H(c->lpstrFile), c->nIndex, c->sizeX, c->sizeY, QEMU_G2H(c->phicon), QEMU_G2H(c->piconid), c->nIcons, c->flags);
 }
 

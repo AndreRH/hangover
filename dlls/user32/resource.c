@@ -135,7 +135,7 @@ WINUSERAPI INT WINAPI CopyAcceleratorTableA(HACCEL src, LPACCEL dst, INT count)
 void qemu_CopyAcceleratorTableA(struct qemu_syscall *call)
 {
     struct qemu_CopyAcceleratorTableA *c = (struct qemu_CopyAcceleratorTableA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CopyAcceleratorTableA(QEMU_G2H(c->src), QEMU_G2H(c->dst), c->count);
 }
 
@@ -201,7 +201,7 @@ WINUSERAPI HACCEL WINAPI CreateAcceleratorTableA(LPACCEL lpaccel, INT count)
 void qemu_CreateAcceleratorTableA(struct qemu_syscall *call)
 {
     struct qemu_CreateAcceleratorTableA *c = (struct qemu_CreateAcceleratorTableA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateAcceleratorTableA(QEMU_G2H(c->lpaccel), c->count);
 }
 
@@ -263,7 +263,7 @@ WINUSERAPI BOOL WINAPI DestroyAcceleratorTable(HACCEL handle)
 void qemu_DestroyAcceleratorTable(struct qemu_syscall *call)
 {
     struct qemu_DestroyAcceleratorTable *c = (struct qemu_DestroyAcceleratorTable *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DestroyAcceleratorTable(QEMU_G2H(c->handle));
 }
 

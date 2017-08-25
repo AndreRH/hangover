@@ -247,7 +247,7 @@ WINUSERAPI BOOL WINAPI DestroyIcon(HICON hIcon)
 void qemu_DestroyIcon(struct qemu_syscall *call)
 {
     struct qemu_DestroyIcon *c = (struct qemu_DestroyIcon *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DestroyIcon(QEMU_G2H(c->hIcon));
 }
 
@@ -1157,7 +1157,7 @@ WINUSERAPI HBITMAP WINAPI LoadBitmapA(HINSTANCE instance, LPCSTR name)
 void qemu_LoadBitmapA(struct qemu_syscall *call)
 {
     struct qemu_LoadBitmapA *c = (struct qemu_LoadBitmapA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)LoadBitmapA(QEMU_G2H(c->instance), QEMU_G2H(c->name));
 }
 
