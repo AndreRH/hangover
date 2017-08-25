@@ -257,6 +257,7 @@ EXPORTS
   GetDC
   GetDCEx
   GetDesktopWindow
+  GetDialogBaseUnits
   GetDisplayConfigBufferSizes
   GetDlgCtrlID
   GetDlgItem

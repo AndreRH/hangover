@@ -322,6 +322,7 @@ static const syscall_handler dll_functions[] =
     qemu_GetDC,
     qemu_GetDCEx,
     qemu_GetDesktopWindow,
+    qemu_GetDialogBaseUnits,
     qemu_GetDisplayConfigBufferSizes,
     qemu_GetDlgCtrlID,
     qemu_GetDlgItem,

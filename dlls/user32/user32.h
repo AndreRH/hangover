@@ -262,6 +262,7 @@ enum user32_calls
     CALL_GETDC,
     CALL_GETDCEX,
     CALL_GETDESKTOPWINDOW,
+    CALL_GETDIALOGBASEUNITS,
     CALL_GETDISPLAYCONFIGBUFFERSIZES,
     CALL_GETDLGCTRLID,
     CALL_GETDLGITEM,
@@ -966,6 +967,7 @@ void qemu_GetCursorPos(struct qemu_syscall *call);
 void qemu_GetDC(struct qemu_syscall *call);
 void qemu_GetDCEx(struct qemu_syscall *call);
 void qemu_GetDesktopWindow(struct qemu_syscall *call);
+void qemu_GetDialogBaseUnits(struct qemu_syscall *call);
 void qemu_GetDisplayConfigBufferSizes(struct qemu_syscall *call);
 void qemu_GetDlgCtrlID(struct qemu_syscall *call);
 void qemu_GetDlgItem(struct qemu_syscall *call);

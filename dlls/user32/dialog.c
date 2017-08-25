@@ -967,6 +967,34 @@ void qemu_CheckRadioButton(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_GetDialogBaseUnits
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINUSERAPI __LONG32 WINAPI GetDialogBaseUnits(void)
+{
+    struct qemu_GetDialogBaseUnits call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETDIALOGBASEUNITS);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetDialogBaseUnits(struct qemu_syscall *call)
+{
+    struct qemu_GetDialogBaseUnits *c = (struct qemu_GetDialogBaseUnits *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetDialogBaseUnits();
+}
+
+#endif
+
 struct qemu_MapDialogRect
 {
     struct qemu_syscall super;
