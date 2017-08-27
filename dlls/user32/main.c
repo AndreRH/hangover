@@ -30,6 +30,7 @@ struct qemu_set_callbacks
     struct qemu_syscall super;
     uint64_t rev_wndproc_wrapper;
     uint64_t wndproc_wrapper;
+    uint64_t guest_mod;
 };
 
 struct wndproc_call
@@ -57,6 +58,7 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
             call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
             call.rev_wndproc_wrapper = (uint64_t)reverse_classproc_func;
             call.wndproc_wrapper = (uint64_t)wndproc_wrapper;
+            call.guest_mod = (uint64_t)mod;
             qemu_syscall(&call.super);
             break;
     }
@@ -75,6 +77,7 @@ static void qemu_set_callbacks(struct qemu_syscall *call)
     struct qemu_set_callbacks *c = (struct qemu_set_callbacks *)call;
     reverse_classproc_func = c->rev_wndproc_wrapper;
     guest_wndproc_wrapper = c->wndproc_wrapper;
+    guest_mod = (HMODULE)c->guest_mod;
 }
 
 const struct qemu_ops *qemu_ops;
@@ -908,6 +911,20 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
         WINE_ERR("Out of TLS indices\n");
 
     return dll_functions;
+}
+
+BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
+{
+    switch (reason)
+    {
+        case DLL_PROCESS_ATTACH:
+            wrapper_mod = mod;
+            host_mod = GetModuleHandleA("user32.dll");
+            break;
+
+        default:
+            break;
+    }
 }
 
 #endif

@@ -27,6 +27,7 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <wine/unicode.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 #endif
 
@@ -861,8 +862,25 @@ WINUSERAPI BOOL WINAPI GetIconInfoExA(HICON icon, ICONINFOEXA *info)
 void qemu_GetIconInfoExA(struct qemu_syscall *call)
 {
     struct qemu_GetIconInfoExA *c = (struct qemu_GetIconInfoExA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetIconInfoExA(QEMU_G2H(c->icon), QEMU_G2H(c->info));
+    ICONINFOEXA *info;
+    CHAR host_name[256];
+    WCHAR wbuf[256];
+
+    WINE_TRACE("\n");
+    info = QEMU_G2H(c->info);
+
+    c->super.iret = GetIconInfoExA(QEMU_G2H(c->icon), info);
+
+    if (c->super.iret)
+    {
+        GetModuleFileNameA(host_mod, host_name, sizeof(host_name) / sizeof(*host_name));
+        if (!strcmp(host_name, info->szModName))
+        {
+            qemu_ops->qemu_GetModuleFileName(guest_mod, wbuf, sizeof(wbuf) / sizeof(*wbuf));
+            WideCharToMultiByte(CP_ACP, 0, wbuf, -1, info->szModName,
+                    sizeof(info->szModName) / sizeof(*info->szModName), NULL, NULL);
+        }
+    }
 }
 
 #endif
@@ -893,8 +911,23 @@ WINUSERAPI BOOL WINAPI GetIconInfoExW(HICON icon, ICONINFOEXW *info)
 void qemu_GetIconInfoExW(struct qemu_syscall *call)
 {
     struct qemu_GetIconInfoExW *c = (struct qemu_GetIconInfoExW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetIconInfoExW(QEMU_G2H(c->icon), QEMU_G2H(c->info));
+    ICONINFOEXW *info;
+    WCHAR host_name[256];
+
+    WINE_TRACE("\n");
+    info = QEMU_G2H(c->info);
+
+    c->super.iret = GetIconInfoExW(QEMU_G2H(c->icon), info);
+
+    if (c->super.iret)
+    {
+        GetModuleFileNameW(host_mod, host_name, sizeof(host_name) / sizeof(*host_name));
+        if (!strcmpW(host_name, info->szModName))
+        {
+            qemu_ops->qemu_GetModuleFileName(guest_mod, info->szModName,
+                    sizeof(info->szModName) / sizeof(*info->szModName));
+        }
+    }
 }
 
 #endif

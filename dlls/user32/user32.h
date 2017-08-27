@@ -1439,6 +1439,8 @@ struct reverse_classproc_wrapper *find_reverse_wndproc_wrapper(void *host_func);
 
 DWORD user32_tls;
 
+HMODULE wrapper_mod, host_mod, guest_mod;
+
 #endif
 
 #endif
