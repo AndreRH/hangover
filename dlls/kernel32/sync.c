@@ -895,7 +895,7 @@ WINBASEAPI BOOL WINAPI PulseEvent(HANDLE handle)
 void qemu_PulseEvent(struct qemu_syscall *call)
 {
     struct qemu_PulseEvent *c = (struct qemu_PulseEvent *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PulseEvent(QEMU_G2H(c->handle));
 }
 

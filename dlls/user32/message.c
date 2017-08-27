@@ -1213,7 +1213,7 @@ WINUSERAPI LONG WINAPI BroadcastSystemMessageA(DWORD flags, LPDWORD recipients, 
 void qemu_BroadcastSystemMessageA(struct qemu_syscall *call)
 {
     struct qemu_BroadcastSystemMessageA *c = (struct qemu_BroadcastSystemMessageA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = BroadcastSystemMessageA(c->flags, QEMU_G2H(c->recipients), c->msg, c->wp, c->lp);
 }
 
@@ -1251,7 +1251,7 @@ WINUSERAPI LONG WINAPI BroadcastSystemMessageW(DWORD flags, LPDWORD recipients, 
 void qemu_BroadcastSystemMessageW(struct qemu_syscall *call)
 {
     struct qemu_BroadcastSystemMessageW *c = (struct qemu_BroadcastSystemMessageW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = BroadcastSystemMessageW(c->flags, QEMU_G2H(c->recipients), c->msg, c->wp, c->lp);
 }
 
@@ -1291,7 +1291,7 @@ WINUSERAPI LONG WINAPI BroadcastSystemMessageExA(DWORD flags, LPDWORD recipients
 void qemu_BroadcastSystemMessageExA(struct qemu_syscall *call)
 {
     struct qemu_BroadcastSystemMessageExA *c = (struct qemu_BroadcastSystemMessageExA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = BroadcastSystemMessageExA(c->flags, QEMU_G2H(c->recipients), c->msg, c->wp, c->lp, QEMU_G2H(c->pinfo));
 }
 
@@ -1331,7 +1331,7 @@ WINUSERAPI LONG WINAPI BroadcastSystemMessageExW(DWORD flags, LPDWORD recipients
 void qemu_BroadcastSystemMessageExW(struct qemu_syscall *call)
 {
     struct qemu_BroadcastSystemMessageExW *c = (struct qemu_BroadcastSystemMessageExW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = BroadcastSystemMessageExW(c->flags, QEMU_G2H(c->recipients), c->msg, c->wp, c->lp, QEMU_G2H(c->pinfo));
 }
 
