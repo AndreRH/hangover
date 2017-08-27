@@ -289,7 +289,7 @@ WINUSERAPI INT WINAPI GetMenuStringA(HMENU hMenu, UINT wItemID, LPSTR str, INT n
 void qemu_GetMenuStringA(struct qemu_syscall *call)
 {
     struct qemu_GetMenuStringA *c = (struct qemu_GetMenuStringA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetMenuStringA(QEMU_G2H(c->hMenu), c->wItemID, QEMU_G2H(c->str), c->nMaxSiz, c->wFlags);
 }
 
@@ -327,7 +327,7 @@ WINUSERAPI INT WINAPI GetMenuStringW(HMENU hMenu, UINT wItemID, LPWSTR str, INT 
 void qemu_GetMenuStringW(struct qemu_syscall *call)
 {
     struct qemu_GetMenuStringW *c = (struct qemu_GetMenuStringW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetMenuStringW(QEMU_G2H(c->hMenu), c->wItemID, QEMU_G2H(c->str), c->nMaxSiz, c->wFlags);
 }
 
@@ -363,7 +363,7 @@ WINUSERAPI BOOL WINAPI HiliteMenuItem(HWND hWnd, HMENU hMenu, UINT wItemID, UINT
 void qemu_HiliteMenuItem(struct qemu_syscall *call)
 {
     struct qemu_HiliteMenuItem *c = (struct qemu_HiliteMenuItem *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = HiliteMenuItem(QEMU_G2H(c->hWnd), QEMU_G2H(c->hMenu), c->wItemID, c->wHilite);
 }
 
@@ -397,7 +397,7 @@ WINUSERAPI UINT WINAPI GetMenuState(HMENU hMenu, UINT wItemID, UINT wFlags)
 void qemu_GetMenuState(struct qemu_syscall *call)
 {
     struct qemu_GetMenuState *c = (struct qemu_GetMenuState *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetMenuState(QEMU_G2H(c->hMenu), c->wItemID, c->wFlags);
 }
 
@@ -459,7 +459,7 @@ WINUSERAPI UINT WINAPI GetMenuItemID(HMENU hMenu, INT nPos)
 void qemu_GetMenuItemID(struct qemu_syscall *call)
 {
     struct qemu_GetMenuItemID *c = (struct qemu_GetMenuItemID *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetMenuItemID(QEMU_G2H(c->hMenu), c->nPos);
 }
 
@@ -535,7 +535,7 @@ WINUSERAPI BOOL WINAPI InsertMenuA(HMENU hMenu, UINT pos, UINT flags, UINT_PTR i
 void qemu_InsertMenuA(struct qemu_syscall *call)
 {
     struct qemu_InsertMenuA *c = (struct qemu_InsertMenuA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = InsertMenuA(QEMU_G2H(c->hMenu), c->pos, c->flags, c->id, QEMU_G2H(c->str));
 }
 
@@ -641,7 +641,7 @@ WINUSERAPI BOOL WINAPI RemoveMenu(HMENU hMenu, UINT nPos, UINT wFlags)
 void qemu_RemoveMenu(struct qemu_syscall *call)
 {
     struct qemu_RemoveMenu *c = (struct qemu_RemoveMenu *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RemoveMenu(QEMU_G2H(c->hMenu), c->nPos, c->wFlags);
 }
 
@@ -713,7 +713,7 @@ WINUSERAPI BOOL WINAPI ModifyMenuW(HMENU hMenu, UINT pos, UINT flags, UINT_PTR i
 void qemu_ModifyMenuW(struct qemu_syscall *call)
 {
     struct qemu_ModifyMenuW *c = (struct qemu_ModifyMenuW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ModifyMenuW(QEMU_G2H(c->hMenu), c->pos, c->flags, c->id, QEMU_G2H(c->str));
 }
 
@@ -751,7 +751,7 @@ WINUSERAPI BOOL WINAPI ModifyMenuA(HMENU hMenu, UINT pos, UINT flags, UINT_PTR i
 void qemu_ModifyMenuA(struct qemu_syscall *call)
 {
     struct qemu_ModifyMenuA *c = (struct qemu_ModifyMenuA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ModifyMenuA(QEMU_G2H(c->hMenu), c->pos, c->flags, c->id, QEMU_G2H(c->str));
 }
 
@@ -907,7 +907,7 @@ WINUSERAPI HMENU WINAPI GetSystemMenu(HWND hWnd, BOOL bRevert)
 void qemu_GetSystemMenu(struct qemu_syscall *call)
 {
     struct qemu_GetSystemMenu *c = (struct qemu_GetSystemMenu *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetSystemMenu(QEMU_G2H(c->hWnd), c->bRevert);
 }
 
@@ -1099,7 +1099,7 @@ WINUSERAPI BOOL WINAPI DrawMenuBar(HWND hWnd)
 void qemu_DrawMenuBar(struct qemu_syscall *call)
 {
     struct qemu_DrawMenuBar *c = (struct qemu_DrawMenuBar *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DrawMenuBar(QEMU_G2H(c->hWnd));
 }
 
@@ -1199,7 +1199,7 @@ WINUSERAPI HMENU WINAPI LoadMenuA(HINSTANCE instance, LPCSTR name)
 void qemu_LoadMenuA(struct qemu_syscall *call)
 {
     struct qemu_LoadMenuA *c = (struct qemu_LoadMenuA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)LoadMenuA(QEMU_G2H(c->instance), QEMU_G2H(c->name));
 }
 
@@ -1291,7 +1291,7 @@ WINUSERAPI HMENU WINAPI LoadMenuIndirectA(LPCVOID template)
 void qemu_LoadMenuIndirectA(struct qemu_syscall *call)
 {
     struct qemu_LoadMenuIndirectA *c = (struct qemu_LoadMenuIndirectA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)LoadMenuIndirectA(QEMU_G2H(c->template));
 }
 
@@ -1393,7 +1393,7 @@ WINUSERAPI BOOL WINAPI GetMenuItemInfoW(HMENU hmenu, UINT item, BOOL bypos, LPME
 void qemu_GetMenuItemInfoW(struct qemu_syscall *call)
 {
     struct qemu_GetMenuItemInfoW *c = (struct qemu_GetMenuItemInfoW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetMenuItemInfoW(QEMU_G2H(c->hmenu), c->item, c->bypos, QEMU_G2H(c->lpmii));
 }
 
@@ -1429,7 +1429,7 @@ WINUSERAPI BOOL WINAPI SetMenuItemInfoA(HMENU hmenu, UINT item, BOOL bypos, cons
 void qemu_SetMenuItemInfoA(struct qemu_syscall *call)
 {
     struct qemu_SetMenuItemInfoA *c = (struct qemu_SetMenuItemInfoA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetMenuItemInfoA(QEMU_G2H(c->hmenu), c->item, c->bypos, QEMU_G2H(c->lpmii));
 }
 
@@ -1465,7 +1465,7 @@ WINUSERAPI BOOL WINAPI SetMenuItemInfoW(HMENU hmenu, UINT item, BOOL bypos, cons
 void qemu_SetMenuItemInfoW(struct qemu_syscall *call)
 {
     struct qemu_SetMenuItemInfoW *c = (struct qemu_SetMenuItemInfoW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetMenuItemInfoW(QEMU_G2H(c->hmenu), c->item, c->bypos, QEMU_G2H(c->lpmii));
 }
 
@@ -1569,7 +1569,7 @@ WINUSERAPI BOOL WINAPI InsertMenuItemA(HMENU hMenu, UINT uItem, BOOL bypos, cons
 void qemu_InsertMenuItemA(struct qemu_syscall *call)
 {
     struct qemu_InsertMenuItemA *c = (struct qemu_InsertMenuItemA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = InsertMenuItemA(QEMU_G2H(c->hMenu), c->uItem, c->bypos, QEMU_G2H(c->lpmii));
 }
 
@@ -1605,7 +1605,7 @@ WINUSERAPI BOOL WINAPI InsertMenuItemW(HMENU hMenu, UINT uItem, BOOL bypos, cons
 void qemu_InsertMenuItemW(struct qemu_syscall *call)
 {
     struct qemu_InsertMenuItemW *c = (struct qemu_InsertMenuItemW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = InsertMenuItemW(QEMU_G2H(c->hMenu), c->uItem, c->bypos, QEMU_G2H(c->lpmii));
 }
 
@@ -1643,7 +1643,7 @@ WINUSERAPI BOOL WINAPI CheckMenuRadioItem(HMENU hMenu, UINT first, UINT last, UI
 void qemu_CheckMenuRadioItem(struct qemu_syscall *call)
 {
     struct qemu_CheckMenuRadioItem *c = (struct qemu_CheckMenuRadioItem *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CheckMenuRadioItem(QEMU_G2H(c->hMenu), c->first, c->last, c->check, c->bypos);
 }
 
@@ -1679,7 +1679,7 @@ WINUSERAPI BOOL WINAPI GetMenuItemRect(HWND hwnd, HMENU hMenu, UINT uItem, RECT 
 void qemu_GetMenuItemRect(struct qemu_syscall *call)
 {
     struct qemu_GetMenuItemRect *c = (struct qemu_GetMenuItemRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetMenuItemRect(QEMU_G2H(c->hwnd), QEMU_G2H(c->hMenu), c->uItem, QEMU_G2H(c->rect));
 }
 
@@ -1711,7 +1711,7 @@ WINUSERAPI BOOL WINAPI SetMenuInfo (HMENU hMenu, LPCMENUINFO lpmi)
 void qemu_SetMenuInfo(struct qemu_syscall *call)
 {
     struct qemu_SetMenuInfo *c = (struct qemu_SetMenuInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetMenuInfo(QEMU_G2H(c->hMenu), QEMU_G2H(c->lpmi));
 }
 
@@ -1743,7 +1743,7 @@ WINUSERAPI BOOL WINAPI GetMenuInfo (HMENU hMenu, LPMENUINFO lpmi)
 void qemu_GetMenuInfo(struct qemu_syscall *call)
 {
     struct qemu_GetMenuInfo *c = (struct qemu_GetMenuInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetMenuInfo(QEMU_G2H(c->hMenu), QEMU_G2H(c->lpmi));
 }
 

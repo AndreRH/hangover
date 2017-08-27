@@ -1049,7 +1049,7 @@ WINUSERAPI __LONG32 WINAPI GetDialogBaseUnits(void)
 void qemu_GetDialogBaseUnits(struct qemu_syscall *call)
 {
     struct qemu_GetDialogBaseUnits *c = (struct qemu_GetDialogBaseUnits *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDialogBaseUnits();
 }
 
