@@ -148,7 +148,7 @@ struct qemu_hook_data
     uint64_t client_inst;
 };
 
-static struct qemu_hook_data *installed_hooks[WH_MAXHOOK + 1];
+static struct qemu_hook_data *installed_hooks[WH_MAXHOOK + 1 - WH_MIN];
 static uint64_t hook_guest_wrapper;
 
 static LRESULT CALLBACK qemu_hook_wrapper(int code, WPARAM wp, LPARAM lp, struct qemu_hook_data *data)
@@ -171,7 +171,7 @@ static LRESULT CALLBACK qemu_hook_wrapper(int code, WPARAM wp, LPARAM lp, struct
 
 static LRESULT CALLBACK qemu_CBT_wrapper(int code, WPARAM wp, LPARAM lp)
 {
-    struct qemu_hook_data *data = installed_hooks[WH_CBT];
+    struct qemu_hook_data *data = installed_hooks[WH_CBT - WH_MIN];
 
     if (!data || !data->hook_id)
         WINE_ERR("CBT hook callback called but no hook is installed.\n");
@@ -181,10 +181,20 @@ static LRESULT CALLBACK qemu_CBT_wrapper(int code, WPARAM wp, LPARAM lp)
 
 static LRESULT CALLBACK qemu_KEYBOARD_LL_wrapper(int code, WPARAM wp, LPARAM lp)
 {
-    struct qemu_hook_data *data = installed_hooks[WH_KEYBOARD_LL];
+    struct qemu_hook_data *data = installed_hooks[WH_KEYBOARD_LL - WH_MIN];
 
     if (!data || !data->hook_id)
         WINE_ERR("KEYBOARD_LL hook callback called but no hook is installed.\n");
+
+    return qemu_hook_wrapper(code, wp, lp, data);
+}
+
+static LRESULT CALLBACK qemu_MSGFILTER_wrapper(int code, WPARAM wp, LPARAM lp)
+{
+    struct qemu_hook_data *data = installed_hooks[WH_MSGFILTER - WH_MIN];
+
+    if (!data || !data->hook_id)
+        WINE_ERR("MSGFILTER hook callback called but no hook is installed.\n");
 
     return qemu_hook_wrapper(code, wp, lp, data);
 }
@@ -196,7 +206,7 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
     HHOOK ret;
     struct qemu_hook_data *hook_data;
 
-    WINE_FIXME("(%u, 0x%lx, 0x%lx, %x, %u).\n", id, proc, inst, tid, unicode);
+    WINE_FIXME("(%d, 0x%lx, 0x%lx, %x, %u).\n", id, proc, inst, tid, unicode);
 
     /* FIXME 1: This will not work well with foreign processes. If they are not running inside
      * qemu we can't execute the guest callback. If we're running qemu we have to load the guest
@@ -219,7 +229,7 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
         case WH_CBT:
             real_proc = qemu_CBT_wrapper;
             real_mod = 0;
-            if (installed_hooks[WH_CBT])
+            if (installed_hooks[WH_CBT - WH_MIN])
             {
                 WINE_FIXME("A WH_CBT hook is already installed.\n");
                 LeaveCriticalSection(&hook_cs);
@@ -231,9 +241,21 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
         case WH_KEYBOARD_LL:
             real_proc = qemu_KEYBOARD_LL_wrapper;
             real_mod = 0;
-            if (installed_hooks[WH_KEYBOARD_LL])
+            if (installed_hooks[WH_KEYBOARD_LL - WH_MIN])
             {
                 WINE_FIXME("A WH_KEYBOARD_LL hook is already installed.\n");
+                LeaveCriticalSection(&hook_cs);
+                HeapFree(GetProcessHeap(), 0, hook_data);
+                return NULL;
+            }
+            break;
+
+        case WH_MSGFILTER:
+            real_proc = qemu_MSGFILTER_wrapper;
+            real_mod = 0;
+            if (installed_hooks[WH_MSGFILTER - WH_MIN])
+            {
+                WINE_FIXME("A WH_MSGFILTER hook is already installed.\n");
                 LeaveCriticalSection(&hook_cs);
                 HeapFree(GetProcessHeap(), 0, hook_data);
                 return NULL;
@@ -259,7 +281,7 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
         hook_data->hook_id = ret;
         hook_data->client_cb = proc;
         hook_data->client_inst = inst;
-        installed_hooks[id] = hook_data;
+        installed_hooks[id - WH_MIN] = hook_data;
     }
 
     LeaveCriticalSection(&hook_cs);
@@ -373,24 +395,24 @@ void qemu_UnhookWindowsHookEx(struct qemu_syscall *call)
     if (c->super.iret)
     {
         INT i;
-        INT found = -1;
+        INT found = WH_MIN - 1;
 
         EnterCriticalSection(&hook_cs);
-        for (i = 0; i < WH_MAXHOOK; ++i)
+        for (i = WH_MIN; i < WH_MAXHOOK; ++i)
         {
-            if (installed_hooks[i] && installed_hooks[i]->hook_id == hook)
+            if (installed_hooks[i - WH_MIN] && installed_hooks[i - WH_MIN]->hook_id == hook)
             {
-                if (found != -1)
+                if (found != WH_MIN - 1)
                     WINE_ERR("Hook %p found in %d and %d.\n", hook, found, i);
 
                 found = i;
-                HeapFree(GetProcessHeap(), 0, installed_hooks[i]);
-                installed_hooks[i] = NULL;
+                HeapFree(GetProcessHeap(), 0, installed_hooks[i - WH_MIN]);
+                installed_hooks[i - WH_MIN] = NULL;
             }
         }
         LeaveCriticalSection(&hook_cs);
 
-        if (found == -1)
+        if (found == WH_MIN - 1)
             WINE_FIXME("Hook %p not found in our hook table.\n", hook);
     }
 }
