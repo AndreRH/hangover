@@ -189,6 +189,16 @@ static LRESULT CALLBACK qemu_KEYBOARD_LL_wrapper(int code, WPARAM wp, LPARAM lp)
     return qemu_hook_wrapper(code, wp, lp, data);
 }
 
+static LRESULT CALLBACK qemu_MOUSE_LL_wrapper(int code, WPARAM wp, LPARAM lp)
+{
+    struct qemu_hook_data *data = installed_hooks[WH_MOUSE_LL - WH_MIN];
+
+    if (!data || !data->hook_id)
+        WINE_ERR("MOUSE_LL hook callback called but no hook is installed.\n");
+
+    return qemu_hook_wrapper(code, wp, lp, data);
+}
+
 static LRESULT CALLBACK qemu_MSGFILTER_wrapper(int code, WPARAM wp, LPARAM lp)
 {
     struct qemu_hook_data *data = installed_hooks[WH_MSGFILTER - WH_MIN];
@@ -205,8 +215,6 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
     HINSTANCE real_mod;
     HHOOK ret;
     struct qemu_hook_data *hook_data;
-
-    WINE_FIXME("(%d, 0x%lx, 0x%lx, %x, %u).\n", id, proc, inst, tid, unicode);
 
     /* FIXME 1: This will not work well with foreign processes. If they are not running inside
      * qemu we can't execute the guest callback. If we're running qemu we have to load the guest
@@ -227,6 +235,9 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
     switch (id)
     {
         case WH_CBT:
+            /* This hook can be global. */
+            WINE_FIXME("(WH_CBT, 0x%lx, 0x%lx, %x, %u).\n", proc, inst, tid, unicode);
+
             real_proc = qemu_CBT_wrapper;
             real_mod = 0;
             if (installed_hooks[WH_CBT - WH_MIN])
@@ -239,6 +250,9 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
             break;
 
         case WH_KEYBOARD_LL:
+            /* This is a global hook, but always called on the registering thread. */
+            WINE_TRACE("(WH_KEYBOARD_LL, 0x%lx, 0x%lx, %x, %u).\n", proc, inst, tid, unicode);
+
             real_proc = qemu_KEYBOARD_LL_wrapper;
             real_mod = 0;
             if (installed_hooks[WH_KEYBOARD_LL - WH_MIN])
@@ -250,7 +264,25 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
             }
             break;
 
+        case WH_MOUSE_LL:
+            /* This is a global hook, but always called on the registering thread. */
+            WINE_TRACE("(WH_MOUSE_LL, 0x%lx, 0x%lx, %x, %u).\n", proc, inst, tid, unicode);
+
+            real_proc = qemu_MOUSE_LL_wrapper;
+            real_mod = 0;
+            if (installed_hooks[WH_MOUSE_LL - WH_MIN])
+            {
+                WINE_FIXME("A WH_MOUSE_LL hook is already installed.\n");
+                LeaveCriticalSection(&hook_cs);
+                HeapFree(GetProcessHeap(), 0, hook_data);
+                return NULL;
+            }
+            break;
+
         case WH_MSGFILTER:
+            /* This hook can be global. */
+            WINE_FIXME("(WH_MSGFILTER, 0x%lx, 0x%lx, %x, %u).\n", proc, inst, tid, unicode);
+
             real_proc = qemu_MSGFILTER_wrapper;
             real_mod = 0;
             if (installed_hooks[WH_MSGFILTER - WH_MIN])
@@ -263,6 +295,7 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
             break;
 
         default:
+            WINE_FIXME("(%d, 0x%lx, 0x%lx, %x, %u).\n", id, proc, inst, tid, unicode);
             LeaveCriticalSection(&hook_cs);
             HeapFree(GetProcessHeap(), 0, hook_data);
             WINE_FIXME("Hook %d not implemented.\n", id);
@@ -398,7 +431,7 @@ void qemu_UnhookWindowsHookEx(struct qemu_syscall *call)
         INT found = WH_MIN - 1;
 
         EnterCriticalSection(&hook_cs);
-        for (i = WH_MIN; i < WH_MAXHOOK; ++i)
+        for (i = WH_MIN; i < WH_MAXHOOK + 1; ++i)
         {
             if (installed_hooks[i - WH_MIN] && installed_hooks[i - WH_MIN]->hook_id == hook)
             {
