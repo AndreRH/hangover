@@ -1229,7 +1229,7 @@ WINBASEAPI HANDLE WINAPI CreateSemaphoreA(SECURITY_ATTRIBUTES *sa, LONG initial,
 void qemu_CreateSemaphoreA(struct qemu_syscall *call)
 {
     struct qemu_CreateSemaphoreA *c = (struct qemu_CreateSemaphoreA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateSemaphoreA(QEMU_G2H(c->sa), c->initial, c->max, QEMU_G2H(c->name));
 }
 

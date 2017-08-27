@@ -255,7 +255,7 @@ WINBASEAPI BOOL WINAPI ImmDisableIME(DWORD idThread)
 void qemu_ImmDisableIME(struct qemu_syscall *call)
 {
     struct qemu_ImmDisableIME *c = (struct qemu_ImmDisableIME *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ImmDisableIME(c->idThread);
 }
 

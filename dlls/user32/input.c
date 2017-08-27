@@ -406,7 +406,7 @@ WINUSERAPI SHORT WINAPI GetAsyncKeyState(INT key)
 void qemu_GetAsyncKeyState(struct qemu_syscall *call)
 {
     struct qemu_GetAsyncKeyState *c = (struct qemu_GetAsyncKeyState *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetAsyncKeyState(c->key);
 }
 
@@ -528,7 +528,7 @@ WINUSERAPI UINT WINAPI GetRawInputDeviceList(RAWINPUTDEVICELIST *devices, UINT *
 void qemu_GetRawInputDeviceList(struct qemu_syscall *call)
 {
     struct qemu_GetRawInputDeviceList *c = (struct qemu_GetRawInputDeviceList *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetRawInputDeviceList(QEMU_G2H(c->devices), QEMU_G2H(c->device_count), c->size);
 }
 
@@ -958,7 +958,7 @@ WINUSERAPI SHORT WINAPI VkKeyScanW(WCHAR cChar)
 void qemu_VkKeyScanW(struct qemu_syscall *call)
 {
     struct qemu_VkKeyScanW *c = (struct qemu_VkKeyScanW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = VkKeyScanW(c->cChar);
 }
 
@@ -1052,7 +1052,7 @@ WINUSERAPI DWORD WINAPI OemKeyScan(WORD oem)
 void qemu_OemKeyScan(struct qemu_syscall *call)
 {
     struct qemu_OemKeyScan *c = (struct qemu_OemKeyScan *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = OemKeyScan(c->oem);
 }
 
@@ -1146,7 +1146,7 @@ WINUSERAPI UINT WINAPI MapVirtualKeyW(UINT code, UINT maptype)
 void qemu_MapVirtualKeyW(struct qemu_syscall *call)
 {
     struct qemu_MapVirtualKeyW *c = (struct qemu_MapVirtualKeyW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = MapVirtualKeyW(c->code, c->maptype);
 }
 
@@ -1180,7 +1180,7 @@ WINUSERAPI UINT WINAPI MapVirtualKeyExA(UINT code, UINT maptype, HKL hkl)
 void qemu_MapVirtualKeyExA(struct qemu_syscall *call)
 {
     struct qemu_MapVirtualKeyExA *c = (struct qemu_MapVirtualKeyExA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = MapVirtualKeyExA(c->code, c->maptype, QEMU_G2H(c->hkl));
 }
 
@@ -1272,7 +1272,7 @@ WINUSERAPI HKL WINAPI GetKeyboardLayout(DWORD thread_id)
 void qemu_GetKeyboardLayout(struct qemu_syscall *call)
 {
     struct qemu_GetKeyboardLayout *c = (struct qemu_GetKeyboardLayout *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetKeyboardLayout(c->thread_id);
 }
 
@@ -1332,7 +1332,7 @@ WINUSERAPI BOOL WINAPI GetKeyboardLayoutNameW(LPWSTR pwszKLID)
 void qemu_GetKeyboardLayoutNameW(struct qemu_syscall *call)
 {
     struct qemu_GetKeyboardLayoutNameW *c = (struct qemu_GetKeyboardLayoutNameW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetKeyboardLayoutNameW(QEMU_G2H(c->pwszKLID));
 }
 
@@ -1366,7 +1366,7 @@ WINUSERAPI INT WINAPI GetKeyNameTextA(LONG lParam, LPSTR lpBuffer, INT nSize)
 void qemu_GetKeyNameTextA(struct qemu_syscall *call)
 {
     struct qemu_GetKeyNameTextA *c = (struct qemu_GetKeyNameTextA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetKeyNameTextA(c->lParam, QEMU_G2H(c->lpBuffer), c->nSize);
 }
 
@@ -1400,7 +1400,7 @@ WINUSERAPI INT WINAPI GetKeyNameTextW(LONG lParam, LPWSTR lpBuffer, INT nSize)
 void qemu_GetKeyNameTextW(struct qemu_syscall *call)
 {
     struct qemu_GetKeyNameTextW *c = (struct qemu_GetKeyNameTextW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetKeyNameTextW(c->lParam, QEMU_G2H(c->lpBuffer), c->nSize);
 }
 
@@ -1440,7 +1440,7 @@ WINUSERAPI INT WINAPI ToUnicode(UINT virtKey, UINT scanCode, const BYTE *lpKeySt
 void qemu_ToUnicode(struct qemu_syscall *call)
 {
     struct qemu_ToUnicode *c = (struct qemu_ToUnicode *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ToUnicode(c->virtKey, c->scanCode, QEMU_G2H(c->lpKeyState), QEMU_G2H(c->lpwStr), c->size, c->flags);
 }
 
@@ -1482,7 +1482,7 @@ WINUSERAPI INT WINAPI ToUnicodeEx(UINT virtKey, UINT scanCode, const BYTE *lpKey
 void qemu_ToUnicodeEx(struct qemu_syscall *call)
 {
     struct qemu_ToUnicodeEx *c = (struct qemu_ToUnicodeEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ToUnicodeEx(c->virtKey, c->scanCode, QEMU_G2H(c->lpKeyState), QEMU_G2H(c->lpwStr), c->size, c->flags, QEMU_G2H(c->hkl));
 }
 
@@ -1520,7 +1520,7 @@ WINUSERAPI INT WINAPI ToAscii(UINT virtKey, UINT scanCode, const BYTE *lpKeyStat
 void qemu_ToAscii(struct qemu_syscall *call)
 {
     struct qemu_ToAscii *c = (struct qemu_ToAscii *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ToAscii(c->virtKey, c->scanCode, QEMU_G2H(c->lpKeyState), QEMU_G2H(c->lpChar), c->flags);
 }
 
@@ -1560,7 +1560,7 @@ WINUSERAPI INT WINAPI ToAsciiEx(UINT virtKey, UINT scanCode, const BYTE *lpKeySt
 void qemu_ToAsciiEx(struct qemu_syscall *call)
 {
     struct qemu_ToAsciiEx *c = (struct qemu_ToAsciiEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ToAsciiEx(c->virtKey, c->scanCode, QEMU_G2H(c->lpKeyState), QEMU_G2H(c->lpChar), c->flags, QEMU_G2H(c->dwhkl));
 }
 
@@ -1888,7 +1888,7 @@ extern int WINAPI GetMouseMovePointsEx(UINT size, LPMOUSEMOVEPOINT ptin, LPMOUSE
 void qemu_GetMouseMovePointsEx(struct qemu_syscall *call)
 {
     struct qemu_GetMouseMovePointsEx *c = (struct qemu_GetMouseMovePointsEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetMouseMovePointsEx(c->size, QEMU_G2H(c->ptin), QEMU_G2H(c->ptout), c->count, c->res);
 }
 
