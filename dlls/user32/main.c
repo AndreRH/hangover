@@ -31,6 +31,7 @@ struct qemu_set_callbacks
     uint64_t rev_wndproc_wrapper;
     uint64_t wndproc_wrapper;
     uint64_t guest_mod;
+    uint64_t guest_win_event_wrapper;
 };
 
 struct wndproc_call
@@ -59,6 +60,7 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
             call.rev_wndproc_wrapper = (uint64_t)reverse_classproc_func;
             call.wndproc_wrapper = (uint64_t)wndproc_wrapper;
             call.guest_mod = (uint64_t)mod;
+            call.guest_win_event_wrapper = (uint64_t)guest_win_event_wrapper;
             qemu_syscall(&call.super);
             break;
     }
@@ -78,6 +80,7 @@ static void qemu_set_callbacks(struct qemu_syscall *call)
     reverse_classproc_func = c->rev_wndproc_wrapper;
     guest_wndproc_wrapper = c->wndproc_wrapper;
     guest_mod = (HMODULE)c->guest_mod;
+    guest_win_event_wrapper = c->guest_win_event_wrapper;
 }
 
 const struct qemu_ops *qemu_ops;
@@ -920,6 +923,8 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
         case DLL_PROCESS_ATTACH:
             wrapper_mod = mod;
             host_mod = GetModuleHandleA("user32.dll");
+
+            wine_rb_init(&win_event_tree, win_event_compare);
             break;
 
         default:

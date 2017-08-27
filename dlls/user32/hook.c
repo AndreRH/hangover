@@ -588,7 +588,26 @@ struct qemu_SetWinEventHook
     uint64_t flags;
 };
 
+struct qemu_SetWinEventHook_cb
+{
+    uint64_t func;
+    uint64_t hevent;
+    uint64_t event;
+    uint64_t hwnd;
+    uint64_t object_id;
+    uint64_t child_id;
+    uint64_t thread_id;
+    uint64_t event_time;
+};
+
 #ifdef QEMU_DLL_GUEST
+
+void guest_win_event_wrapper(struct qemu_SetWinEventHook_cb *data)
+{
+    WINEVENTPROC func = (WINEVENTPROC)data->func;
+    func((HWINEVENTHOOK)data->hevent, data->event, (HWND)data->hwnd, data->object_id, data->child_id,
+            data->thread_id, data->event_time);
+}
 
 WINUSERAPI HWINEVENTHOOK WINAPI SetWinEventHook(DWORD event_min, DWORD event_max, HMODULE inst, WINEVENTPROC proc, DWORD pid, DWORD tid, DWORD flags)
 {
@@ -609,11 +628,100 @@ WINUSERAPI HWINEVENTHOOK WINAPI SetWinEventHook(DWORD event_min, DWORD event_max
 
 #else
 
+struct win_event_entry
+{
+    struct wine_rb_entry entry;
+    HWINEVENTHOOK hook;
+    uint64_t guest_func;
+};
+
+struct wine_rb_tree win_event_tree;
+uint64_t guest_win_event_wrapper;
+
+int win_event_compare(const void *key, const struct wine_rb_entry *entry)
+{
+    struct win_event_entry *event_entry;
+
+    event_entry = WINE_RB_ENTRY_VALUE(entry, struct win_event_entry, entry);
+    if ((HWINEVENTHOOK)key < event_entry->hook) return -1;
+    if ((HWINEVENTHOOK)key == event_entry->hook) return 0;
+    return 1;
+}
+
+static void CALLBACK win_event_host_proc(HWINEVENTHOOK hevent, DWORD event, HWND hwnd,
+        LONG object_id, LONG child_id, DWORD thread_id, DWORD event_time)
+{
+    struct win_event_entry *event_entry;
+    struct wine_rb_entry *rb_entry;
+    struct qemu_SetWinEventHook_cb call;
+
+    EnterCriticalSection(&hook_cs);
+
+    rb_entry = wine_rb_get(&win_event_tree, hevent);
+    if (!rb_entry)
+        WINE_ERR("Could not get entry for win event hook %p.\n", hevent);
+
+    event_entry = WINE_RB_ENTRY_VALUE(rb_entry, struct win_event_entry, entry);
+    call.func = event_entry->guest_func;
+
+    LeaveCriticalSection(&hook_cs);
+
+    WINE_TRACE("Calling guest hook function 0x%lx(%p, %x, %p, %x, %x, %x, %x).\n",
+            call.func, hevent, event, hwnd, object_id, child_id, thread_id, event_time);
+    call.hevent = (uint64_t)hevent;
+    call.event = event;
+    call.hwnd = (uint64_t)hwnd;
+    call.object_id = object_id;
+    call.child_id = child_id;
+    call.thread_id = thread_id;
+    call.event_time = event_time;
+
+    qemu_ops->qemu_execute(QEMU_G2H(guest_win_event_wrapper), QEMU_H2G(&call));
+
+    WINE_TRACE("Guest func returned.\n");
+}
+
 void qemu_SetWinEventHook(struct qemu_syscall *call)
 {
     struct qemu_SetWinEventHook *c = (struct qemu_SetWinEventHook *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)SetWinEventHook(c->event_min, c->event_max, QEMU_G2H(c->inst), QEMU_G2H(c->proc), c->pid, c->tid, c->flags);
+    HWINEVENTHOOK hook;
+    struct win_event_entry *entry;
+
+    WINE_TRACE("\n");
+
+    if (c->flags & WINEVENT_INCONTEXT && c->pid != GetCurrentProcessId()
+            && c->tid != GetCurrentThreadId())
+    {
+        WINE_FIXME("INCONTEXT hooks in other processes not supported yet.\n");
+        c->super.iret = 0;
+        return;
+    }
+
+    entry = HeapAlloc(GetProcessHeap(), 0, sizeof(*entry));
+    if (!entry)
+    {
+        c->super.iret = 0;
+        return;
+    }
+
+    EnterCriticalSection(&hook_cs);
+    entry->guest_func = c->proc;
+
+    hook = SetWinEventHook(c->event_min, c->event_max, c->inst ? wrapper_mod : NULL,
+            c->proc ? win_event_host_proc : NULL, c->pid, c->tid, c->flags);
+    c->super.iret = (uint64_t)hook;
+    if (!hook)
+    {
+        HeapFree(GetProcessHeap(), 0, entry);
+        LeaveCriticalSection(&hook_cs);
+        return;
+    }
+
+    entry->hook = hook;
+    if (wine_rb_put(&win_event_tree, entry->hook, &entry->entry))
+        WINE_ERR("Failed to insert hook entry.\n");
+
+    LeaveCriticalSection(&hook_cs);
 }
 
 #endif
@@ -642,8 +750,30 @@ WINUSERAPI BOOL WINAPI UnhookWinEvent(HWINEVENTHOOK hEventHook)
 void qemu_UnhookWinEvent(struct qemu_syscall *call)
 {
     struct qemu_UnhookWinEvent *c = (struct qemu_UnhookWinEvent *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = UnhookWinEvent(QEMU_G2H(c->hEventHook));
+    struct win_event_entry *event_entry;
+    struct wine_rb_entry *rb_entry;
+    HWINEVENTHOOK hook;
+
+    WINE_TRACE("\n");
+    hook = QEMU_G2H(c->hEventHook);
+
+    EnterCriticalSection(&hook_cs);
+    c->super.iret = UnhookWinEvent(hook);
+    if (!c->super.iret)
+    {
+        LeaveCriticalSection(&hook_cs);
+        return;
+    }
+
+    rb_entry = wine_rb_get(&win_event_tree, hook);
+    if (!rb_entry)
+        WINE_ERR("Could not get entry for win event hook %p.\n", hook);
+
+    event_entry = WINE_RB_ENTRY_VALUE(rb_entry, struct win_event_entry, entry);
+    wine_rb_remove(&win_event_tree, &event_entry->entry);
+
+    LeaveCriticalSection(&hook_cs);
+    HeapFree(GetProcessHeap(), 0, event_entry);
 }
 
 #endif

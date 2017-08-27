@@ -696,11 +696,16 @@ enum user32_calls
     CALL_WINNLSGETIMEHOTKEY,
 };
 
+struct qemu_SetWinEventHook_cb;
+
 #ifdef QEMU_DLL_GUEST
 
 LRESULT CALLBACK reverse_classproc_func(HWND win, UINT msg, WPARAM wp, LPARAM lp, void *data);
+void guest_win_event_wrapper(struct qemu_SetWinEventHook_cb *data);
 
 #else
+
+#include <wine/rbtree.h>
 
 extern const struct qemu_ops *qemu_ops;
 
@@ -1440,6 +1445,10 @@ struct reverse_classproc_wrapper *find_reverse_wndproc_wrapper(void *host_func);
 DWORD user32_tls;
 
 HMODULE wrapper_mod, host_mod, guest_mod;
+
+extern struct wine_rb_tree win_event_tree;
+int win_event_compare(const void *key, const struct wine_rb_entry *entry);
+extern uint64_t guest_win_event_wrapper;
 
 #endif
 
