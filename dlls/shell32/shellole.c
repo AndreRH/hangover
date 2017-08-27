@@ -100,8 +100,29 @@ WINBASEAPI HRESULT WINAPI DllGetClassObject(REFCLSID rclsid, REFIID iid, LPVOID 
 void qemu_DllGetClassObject(struct qemu_syscall *call)
 {
     struct qemu_DllGetClassObject *c = (struct qemu_DllGetClassObject *)call;
-    WINE_FIXME("Stub!\n");
-    c->super.iret = 0;
+    HRESULT hr;
+    CLSID *rclsid;
+    IID *iid;
+    IUnknown *unk = NULL;
+
+    WINE_TRACE("\n");
+    rclsid = QEMU_G2H(c->rclsid);
+    iid = QEMU_G2H(c->iid);
+
+    hr = p_DllGetClassObject(rclsid, iid, c->ppv ? (void **)&unk : NULL);
+    if (FAILED(hr))
+    {
+        c->super.iret = hr;
+        if (c->ppv)
+            *(uint64_t *)QEMU_G2H(c->ppv) = QEMU_H2G(unk);
+        return;
+    }
+
+    WINE_FIXME("Implement a wrapper for object %s!\n", wine_dbgstr_guid(QEMU_G2H(c->rclsid)));
+
+    c->super.iret = E_FAIL;
+    *(uint64_t *)QEMU_G2H(c->ppv) = 0;
+    return;
 }
 
 #endif

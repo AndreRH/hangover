@@ -387,7 +387,8 @@ void qemu_SignalFileOpen(struct qemu_syscall *call);
 void qemu_WOWShellExecute(struct qemu_syscall *call);
 void qemu_WriteCabinetState(struct qemu_syscall *call);
 
-DWORD WINAPI (*p_SHCLSIDFromString)(const void *clsid, CLSID *id);
+DWORD (* WINAPI p_SHCLSIDFromString)(const void *clsid, CLSID *id);
+HRESULT (* WINAPI p_DllGetClassObject)(REFCLSID rclsid, REFIID iid, LPVOID *ppv);
 
 #endif
 

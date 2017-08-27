@@ -247,6 +247,9 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
         WINE_ERR("Cannot find shell32.dll\n");
 
     p_SHCLSIDFromString = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(147));
+    p_DllGetClassObject = (void *)GetProcAddress(shell32, "DllGetClassObject");
+    if (!p_DllGetClassObject)
+        WINE_ERR("Failed to load shell32.DllGetClassObject.\n");
 
     return dll_functions;
 }
