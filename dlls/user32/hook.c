@@ -148,7 +148,7 @@ struct qemu_hook_data
     uint64_t client_inst;
 };
 
-static struct qemu_hook_data *installed_hooks[WH_MAXHOOK + 1 - WH_MIN];
+static struct qemu_hook_data *installed_hooks[WH_MAXHOOK + 1 - WH_MIN][2];
 static uint64_t hook_guest_wrapper;
 
 static LRESULT CALLBACK qemu_hook_wrapper(int code, WPARAM wp, LPARAM lp, struct qemu_hook_data *data)
@@ -171,7 +171,7 @@ static LRESULT CALLBACK qemu_hook_wrapper(int code, WPARAM wp, LPARAM lp, struct
 
 static LRESULT CALLBACK qemu_CBT_wrapper(int code, WPARAM wp, LPARAM lp)
 {
-    struct qemu_hook_data *data = installed_hooks[WH_CBT - WH_MIN];
+    struct qemu_hook_data *data = installed_hooks[WH_CBT - WH_MIN][0];
 
     if (!data || !data->hook_id)
         WINE_ERR("CBT hook callback called but no hook is installed.\n");
@@ -181,7 +181,7 @@ static LRESULT CALLBACK qemu_CBT_wrapper(int code, WPARAM wp, LPARAM lp)
 
 static LRESULT CALLBACK qemu_KEYBOARD_LL_wrapper(int code, WPARAM wp, LPARAM lp)
 {
-    struct qemu_hook_data *data = installed_hooks[WH_KEYBOARD_LL - WH_MIN];
+    struct qemu_hook_data *data = installed_hooks[WH_KEYBOARD_LL - WH_MIN][0];
 
     if (!data || !data->hook_id)
         WINE_ERR("KEYBOARD_LL hook callback called but no hook is installed.\n");
@@ -189,19 +189,29 @@ static LRESULT CALLBACK qemu_KEYBOARD_LL_wrapper(int code, WPARAM wp, LPARAM lp)
     return qemu_hook_wrapper(code, wp, lp, data);
 }
 
-static LRESULT CALLBACK qemu_MOUSE_LL_wrapper(int code, WPARAM wp, LPARAM lp)
+static LRESULT CALLBACK qemu_MOUSE_LL_wrapper0(int code, WPARAM wp, LPARAM lp)
 {
-    struct qemu_hook_data *data = installed_hooks[WH_MOUSE_LL - WH_MIN];
+    struct qemu_hook_data *data = installed_hooks[WH_MOUSE_LL - WH_MIN][0];
 
     if (!data || !data->hook_id)
-        WINE_ERR("MOUSE_LL hook callback called but no hook is installed.\n");
+        WINE_ERR("MOUSE_LL hook 0 callback called but no hook is installed.\n");
+
+    return qemu_hook_wrapper(code, wp, lp, data);
+}
+
+static LRESULT CALLBACK qemu_MOUSE_LL_wrapper1(int code, WPARAM wp, LPARAM lp)
+{
+    struct qemu_hook_data *data = installed_hooks[WH_MOUSE_LL - WH_MIN][1];
+
+    if (!data || !data->hook_id)
+        WINE_ERR("MOUSE_LL hook 1 callback called but no hook is installed.\n");
 
     return qemu_hook_wrapper(code, wp, lp, data);
 }
 
 static LRESULT CALLBACK qemu_MSGFILTER_wrapper(int code, WPARAM wp, LPARAM lp)
 {
-    struct qemu_hook_data *data = installed_hooks[WH_MSGFILTER - WH_MIN];
+    struct qemu_hook_data *data = installed_hooks[WH_MSGFILTER - WH_MIN][0];
 
     if (!data || !data->hook_id)
         WINE_ERR("MSGFILTER hook callback called but no hook is installed.\n");
@@ -215,6 +225,7 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
     HINSTANCE real_mod;
     HHOOK ret;
     struct qemu_hook_data *hook_data;
+    unsigned int hook_no = 0;
 
     /* FIXME 1: This will not work well with foreign processes. If they are not running inside
      * qemu we can't execute the guest callback. If we're running qemu we have to load the guest
@@ -223,8 +234,8 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
      * FIXME 2: I can't use the trick I'm using with e.g. WNDPROCs where I store executable code
      * in a struct and pass the instruction pointer as an extra value to the wrapper function to
      * find my own data. Wine needs a (host-architecture) module to load into the remote process
-     * and this won't work with VirtualAlloc'ed code. So far this function supports only one hook
-     * of a kind. */
+     * and this won't work with VirtualAlloc'ed code. So far this function supports only one or
+     * teo hooks of a kind. The arbitrary limit is whatever makes the tests happy. */
 
     hook_data = HeapAlloc(GetProcessHeap(), 0, sizeof(hook_data));
     if (!hook_data)
@@ -240,7 +251,7 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
 
             real_proc = qemu_CBT_wrapper;
             real_mod = 0;
-            if (installed_hooks[WH_CBT - WH_MIN])
+            if (installed_hooks[WH_CBT - WH_MIN][0])
             {
                 WINE_FIXME("A WH_CBT hook is already installed.\n");
                 LeaveCriticalSection(&hook_cs);
@@ -255,7 +266,7 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
 
             real_proc = qemu_KEYBOARD_LL_wrapper;
             real_mod = 0;
-            if (installed_hooks[WH_KEYBOARD_LL - WH_MIN])
+            if (installed_hooks[WH_KEYBOARD_LL - WH_MIN][0])
             {
                 WINE_FIXME("A WH_KEYBOARD_LL hook is already installed.\n");
                 LeaveCriticalSection(&hook_cs);
@@ -268,11 +279,19 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
             /* This is a global hook, but always called on the registering thread. */
             WINE_TRACE("(WH_MOUSE_LL, 0x%lx, 0x%lx, %x, %u).\n", proc, inst, tid, unicode);
 
-            real_proc = qemu_MOUSE_LL_wrapper;
             real_mod = 0;
-            if (installed_hooks[WH_MOUSE_LL - WH_MIN])
+            if (!installed_hooks[WH_MOUSE_LL - WH_MIN][0])
             {
-                WINE_FIXME("A WH_MOUSE_LL hook is already installed.\n");
+                real_proc = qemu_MOUSE_LL_wrapper0;
+            }
+            else if (!installed_hooks[WH_MOUSE_LL - WH_MIN][1])
+            {
+                real_proc = qemu_MOUSE_LL_wrapper1;
+                hook_no = 1;
+            }
+            else
+            {
+                WINE_FIXME("Two WH_MOUSE_LL hooks is already installed.\n");
                 LeaveCriticalSection(&hook_cs);
                 HeapFree(GetProcessHeap(), 0, hook_data);
                 return NULL;
@@ -285,7 +304,7 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
 
             real_proc = qemu_MSGFILTER_wrapper;
             real_mod = 0;
-            if (installed_hooks[WH_MSGFILTER - WH_MIN])
+            if (installed_hooks[WH_MSGFILTER - WH_MIN][0])
             {
                 WINE_FIXME("A WH_MSGFILTER hook is already installed.\n");
                 LeaveCriticalSection(&hook_cs);
@@ -314,7 +333,7 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
         hook_data->hook_id = ret;
         hook_data->client_cb = proc;
         hook_data->client_inst = inst;
-        installed_hooks[id - WH_MIN] = hook_data;
+        installed_hooks[id - WH_MIN][hook_no] = hook_data;
     }
 
     LeaveCriticalSection(&hook_cs);
@@ -419,6 +438,8 @@ void qemu_UnhookWindowsHookEx(struct qemu_syscall *call)
 {
     struct qemu_UnhookWindowsHookEx *c = (struct qemu_UnhookWindowsHookEx *)call;
     HHOOK hook;
+    unsigned int hook_no;
+    const unsigned int max_hooks = sizeof(installed_hooks[0]) / sizeof(installed_hooks[0][0]);
 
     WINE_TRACE("\n");
     hook = QEMU_G2H(c->hhook);
@@ -433,14 +454,17 @@ void qemu_UnhookWindowsHookEx(struct qemu_syscall *call)
         EnterCriticalSection(&hook_cs);
         for (i = WH_MIN; i < WH_MAXHOOK + 1; ++i)
         {
-            if (installed_hooks[i - WH_MIN] && installed_hooks[i - WH_MIN]->hook_id == hook)
+            for (hook_no = 0; hook_no < max_hooks; ++hook_no)
             {
-                if (found != WH_MIN - 1)
-                    WINE_ERR("Hook %p found in %d and %d.\n", hook, found, i);
+                if (installed_hooks[i - WH_MIN][hook_no] && installed_hooks[i - WH_MIN][hook_no]->hook_id == hook)
+                {
+                    if (found != WH_MIN - 1)
+                        WINE_ERR("Hook %p found in %d and %d.\n", hook, found, i);
 
-                found = i;
-                HeapFree(GetProcessHeap(), 0, installed_hooks[i - WH_MIN]);
-                installed_hooks[i - WH_MIN] = NULL;
+                    found = i;
+                    HeapFree(GetProcessHeap(), 0, installed_hooks[i - WH_MIN][hook_no]);
+                    installed_hooks[i - WH_MIN][hook_no] = NULL;
+                }
             }
         }
         LeaveCriticalSection(&hook_cs);
