@@ -61,7 +61,7 @@ WINUSERAPI LRESULT WINAPI DefDlgProcA(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 void qemu_DefDlgProcA(struct qemu_syscall *call)
 {
     struct qemu_DefDlgProcA *c = (struct qemu_DefDlgProcA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DefDlgProcA(QEMU_G2H(c->hwnd), c->msg, c->wParam, c->lParam);
 }
 

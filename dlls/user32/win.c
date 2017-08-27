@@ -1170,7 +1170,7 @@ WINUSERAPI HWND WINAPI GetTopWindow(HWND hwnd)
 void qemu_GetTopWindow(struct qemu_syscall *call)
 {
     struct qemu_GetTopWindow *c = (struct qemu_GetTopWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetTopWindow(QEMU_G2H(c->hwnd));
 }
 

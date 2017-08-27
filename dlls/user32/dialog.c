@@ -669,7 +669,7 @@ WINUSERAPI LRESULT WINAPI SendDlgItemMessageA(HWND hwnd, INT id, UINT msg, WPARA
 void qemu_SendDlgItemMessageA(struct qemu_syscall *call)
 {
     struct qemu_SendDlgItemMessageA *c = (struct qemu_SendDlgItemMessageA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SendDlgItemMessageA(QEMU_G2H(c->hwnd), c->id, c->msg, c->wParam, c->lParam);
 }
 
@@ -707,7 +707,7 @@ WINUSERAPI LRESULT WINAPI SendDlgItemMessageW(HWND hwnd, INT id, UINT msg, WPARA
 void qemu_SendDlgItemMessageW(struct qemu_syscall *call)
 {
     struct qemu_SendDlgItemMessageW *c = (struct qemu_SendDlgItemMessageW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SendDlgItemMessageW(QEMU_G2H(c->hwnd), c->id, c->msg, c->wParam, c->lParam);
 }
 
@@ -811,7 +811,7 @@ WINUSERAPI UINT WINAPI GetDlgItemTextA(HWND hwnd, INT id, LPSTR str, INT len)
 void qemu_GetDlgItemTextA(struct qemu_syscall *call)
 {
     struct qemu_GetDlgItemTextA *c = (struct qemu_GetDlgItemTextA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDlgItemTextA(QEMU_G2H(c->hwnd), c->id, QEMU_G2H(c->str), c->len);
 }
 
@@ -1115,7 +1115,7 @@ WINUSERAPI HWND WINAPI GetNextDlgGroupItem(HWND hwndDlg, HWND hwndCtrl, BOOL fPr
 void qemu_GetNextDlgGroupItem(struct qemu_syscall *call)
 {
     struct qemu_GetNextDlgGroupItem *c = (struct qemu_GetNextDlgGroupItem *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetNextDlgGroupItem(QEMU_G2H(c->hwndDlg), QEMU_G2H(c->hwndCtrl), c->fPrevious);
 }
 
@@ -1149,7 +1149,7 @@ WINUSERAPI HWND WINAPI GetNextDlgTabItem(HWND hwndDlg, HWND hwndCtrl, BOOL fPrev
 void qemu_GetNextDlgTabItem(struct qemu_syscall *call)
 {
     struct qemu_GetNextDlgTabItem *c = (struct qemu_GetNextDlgTabItem *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetNextDlgTabItem(QEMU_G2H(c->hwndDlg), QEMU_G2H(c->hwndCtrl), c->fPrevious);
 }
 
