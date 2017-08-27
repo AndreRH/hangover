@@ -104,7 +104,7 @@ WINUSERAPI HICON WINAPI CreateIconFromResource(LPBYTE bits, DWORD cbSize, WINBOO
 void qemu_CreateIconFromResource(struct qemu_syscall *call)
 {
     struct qemu_CreateIconFromResource *c = (struct qemu_CreateIconFromResource *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateIconFromResource(QEMU_G2H(c->bits), c->cbSize, c->bIcon, c->dwVersion);
 }
 
@@ -188,7 +188,7 @@ WINUSERAPI HICON WINAPI CreateIcon(HINSTANCE hInstance, int nWidth, int nHeight,
 void qemu_CreateIcon(struct qemu_syscall *call)
 {
     struct qemu_CreateIcon *c = (struct qemu_CreateIcon *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateIcon(QEMU_G2H(c->hInstance), c->nWidth, c->nHeight, c->bPlanes, c->bBitsPixel, QEMU_G2H(c->lpANDbits), QEMU_G2H(c->lpXORbits));
 }
 
@@ -218,7 +218,7 @@ WINUSERAPI HICON WINAPI CopyIcon(HICON hIcon)
 void qemu_CopyIcon(struct qemu_syscall *call)
 {
     struct qemu_CopyIcon *c = (struct qemu_CopyIcon *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CopyIcon(QEMU_G2H(c->hIcon));
 }
 
@@ -278,7 +278,7 @@ WINUSERAPI BOOL WINAPI DestroyCursor(HCURSOR hCursor)
 void qemu_DestroyCursor(struct qemu_syscall *call)
 {
     struct qemu_DestroyCursor *c = (struct qemu_DestroyCursor *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DestroyCursor(QEMU_G2H(c->hCursor));
 }
 
@@ -314,7 +314,7 @@ WINUSERAPI BOOL WINAPI DrawIcon(HDC hdc, INT x, INT y, HICON hIcon)
 void qemu_DrawIcon(struct qemu_syscall *call)
 {
     struct qemu_DrawIcon *c = (struct qemu_DrawIcon *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DrawIcon(QEMU_G2H(c->hdc), c->x, c->y, QEMU_G2H(c->hIcon));
 }
 
@@ -344,7 +344,7 @@ WINUSERAPI HCURSOR WINAPI SetCursor(HCURSOR hCursor)
 void qemu_SetCursor(struct qemu_syscall *call)
 {
     struct qemu_SetCursor *c = (struct qemu_SetCursor *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)SetCursor(QEMU_G2H(c->hCursor));
 }
 
@@ -374,7 +374,7 @@ WINUSERAPI INT WINAPI ShowCursor(BOOL bShow)
 void qemu_ShowCursor(struct qemu_syscall *call)
 {
     struct qemu_ShowCursor *c = (struct qemu_ShowCursor *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ShowCursor(c->bShow);
 }
 
@@ -402,7 +402,7 @@ WINUSERAPI HCURSOR WINAPI GetCursor(void)
 void qemu_GetCursor(struct qemu_syscall *call)
 {
     struct qemu_GetCursor *c = (struct qemu_GetCursor *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetCursor();
 }
 
@@ -798,7 +798,7 @@ WINUSERAPI HCURSOR WINAPI GetCursorFrameInfo(HCURSOR hCursor, DWORD reserved, DW
 void qemu_GetCursorFrameInfo(struct qemu_syscall *call)
 {
     struct qemu_GetCursorFrameInfo *c = (struct qemu_GetCursorFrameInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetCursorFrameInfo(QEMU_G2H(c->hCursor), c->reserved, c->istep, QEMU_G2H(c->rate_jiffies), QEMU_G2H(c->num_steps));
 }
 
@@ -830,7 +830,7 @@ WINUSERAPI BOOL WINAPI GetIconInfo(HICON hIcon, PICONINFO iconinfo)
 void qemu_GetIconInfo(struct qemu_syscall *call)
 {
     struct qemu_GetIconInfo *c = (struct qemu_GetIconInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetIconInfo(QEMU_G2H(c->hIcon), QEMU_G2H(c->iconinfo));
 }
 
@@ -956,7 +956,7 @@ WINUSERAPI HICON WINAPI CreateIconIndirect(PICONINFO iconinfo)
 void qemu_CreateIconIndirect(struct qemu_syscall *call)
 {
     struct qemu_CreateIconIndirect *c = (struct qemu_CreateIconIndirect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateIconIndirect(QEMU_G2H(c->iconinfo));
 }
 
@@ -1002,7 +1002,7 @@ WINUSERAPI BOOL WINAPI DrawIconEx(HDC hdc, INT x0, INT y0, HICON hIcon, INT cxWi
 void qemu_DrawIconEx(struct qemu_syscall *call)
 {
     struct qemu_DrawIconEx *c = (struct qemu_DrawIconEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DrawIconEx(QEMU_G2H(c->hdc), c->x0, c->y0, QEMU_G2H(c->hIcon), c->cxWidth, c->cyWidth, c->istep, QEMU_G2H(c->hbr), c->flags);
 }
 
@@ -1126,7 +1126,7 @@ WINUSERAPI HANDLE WINAPI CopyImage(HANDLE hnd, UINT type, INT desiredx, INT desi
 void qemu_CopyImage(struct qemu_syscall *call)
 {
     struct qemu_CopyImage *c = (struct qemu_CopyImage *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CopyImage(QEMU_G2H(c->hnd), c->type, c->desiredx, c->desiredy, c->flags);
 }
 
