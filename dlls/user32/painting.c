@@ -245,7 +245,7 @@ WINUSERAPI HWND WINAPI WindowFromDC(HDC hdc)
 void qemu_WindowFromDC(struct qemu_syscall *call)
 {
     struct qemu_WindowFromDC *c = (struct qemu_WindowFromDC *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)WindowFromDC(QEMU_G2H(c->hdc));
 }
 
