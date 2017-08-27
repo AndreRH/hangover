@@ -199,18 +199,21 @@ WINUSERAPI HWND WINAPI CreateDialogIndirectParamA(HINSTANCE hInst, LPCDLGTEMPLAT
 void qemu_CreateDialogIndirectParamA(struct qemu_syscall *call)
 {
     struct qemu_CreateDialogIndirectParamA *c = (struct qemu_CreateDialogIndirectParamA *)call;
-    struct classproc_wrapper *wrapper;
+    struct classproc_wrapper *wrapper = NULL;
     HWND ret;
 
     WINE_TRACE("\n");
 
-    /* At the moment the dlgproc wrappers are not freed, let's see when this causes a problem. I am not
-     * sure if we can reliably intercept the dialog destroy call. */
-    wrapper = find_dlgproc_wrapper(c->dlgProc);
-    if (!wrapper)
+    if (c->dlgProc)
     {
-        c->super.iret = 0;
-        return;
+        /* At the moment the dlgproc wrappers are not freed, let's see when this causes a problem. I am not
+        * sure if we can reliably intercept the dialog destroy call. */
+        wrapper = find_dlgproc_wrapper(c->dlgProc);
+        if (!wrapper)
+        {
+            c->super.iret = 0;
+            return;
+        }
     }
 
     c->super.iret = (uint64_t)CreateDialogIndirectParamA(QEMU_G2H(c->hInst), QEMU_G2H(c->dlgTemplate),
