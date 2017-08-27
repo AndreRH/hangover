@@ -552,9 +552,22 @@ struct qemu_EnumDisplayMonitors
     uint64_t lprcClip;
     uint64_t lpfnEnum;
     uint64_t dwData;
+    uint64_t wrapper;
+};
+
+struct qemu_EnumDisplayMonitors_cb
+{
+    uint64_t func, param;
+    uint64_t monitor, dc, rect;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static uint64_t EnumDisplayMonitors_cb(struct qemu_EnumDisplayMonitors_cb *call)
+{
+    MONITORENUMPROC func = (MONITORENUMPROC)call->func;
+    return func((HMONITOR)call->monitor, (HDC)call->dc, (RECT *)call->rect, call->param);
+}
 
 WINUSERAPI WINBOOL WINAPI EnumDisplayMonitors(HDC hdc,LPCRECT lprcClip,MONITORENUMPROC lpfnEnum,LPARAM dwData)
 {
@@ -564,6 +577,7 @@ WINUSERAPI WINBOOL WINAPI EnumDisplayMonitors(HDC hdc,LPCRECT lprcClip,MONITOREN
     call.lprcClip = (uint64_t)lprcClip;
     call.lpfnEnum = (uint64_t)lpfnEnum;
     call.dwData = (uint64_t)dwData;
+    call.wrapper = (uint64_t)EnumDisplayMonitors_cb;
 
     qemu_syscall(&call.super);
 
@@ -572,11 +586,42 @@ WINUSERAPI WINBOOL WINAPI EnumDisplayMonitors(HDC hdc,LPCRECT lprcClip,MONITOREN
 
 #else
 
+struct qemu_EnumDisplayMonitors_host_data
+{
+    uint64_t wrapper, guest_func, guest_param;
+};
+
+static BOOL CALLBACK qemu_EnumDisplayMonitors_host_cb(HMONITOR monitor, HDC dc, RECT *rect, LPARAM param)
+{
+    struct qemu_EnumDisplayMonitors_host_data *data = (struct qemu_EnumDisplayMonitors_host_data *)param;
+    BOOL ret;
+    struct qemu_EnumDisplayMonitors_cb call;
+
+    WINE_TRACE("Calling guest callback 0x%lx(%p, %p, %p, 0x%lx).\n", data->guest_func, monitor, dc, rect, data->guest_param);
+    call.func = data->guest_func;
+    call.monitor = QEMU_H2G(monitor);
+    call.dc = QEMU_H2G(dc);
+    call.rect = QEMU_H2G(rect);
+    call.param = data->guest_param;
+
+    ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&call));
+
+    WINE_TRACE("Guest callback returned %u.\n", ret);
+    return ret;
+}
+
 void qemu_EnumDisplayMonitors(struct qemu_syscall *call)
 {
     struct qemu_EnumDisplayMonitors *c = (struct qemu_EnumDisplayMonitors *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumDisplayMonitors(QEMU_G2H(c->hdc), QEMU_G2H(c->lprcClip), QEMU_G2H(c->lpfnEnum), c->dwData);
+    struct qemu_EnumDisplayMonitors_host_data data;
+
+    WINE_TRACE("\n");
+    data.wrapper = c->wrapper;
+    data.guest_func = c->lpfnEnum;
+    data.guest_param = c->dwData;
+
+    c->super.iret = EnumDisplayMonitors(QEMU_G2H(c->hdc), QEMU_G2H(c->lprcClip),
+            c->lpfnEnum ? qemu_EnumDisplayMonitors_host_cb : NULL, (LPARAM)&data);
 }
 
 #endif
