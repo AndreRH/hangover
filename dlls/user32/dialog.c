@@ -1185,7 +1185,7 @@ WINUSERAPI BOOL WINAPI DlgDirSelectExA(HWND hwnd, LPSTR str, INT len, INT id)
 void qemu_DlgDirSelectExA(struct qemu_syscall *call)
 {
     struct qemu_DlgDirSelectExA *c = (struct qemu_DlgDirSelectExA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DlgDirSelectExA(QEMU_G2H(c->hwnd), QEMU_G2H(c->str), c->len, c->id);
 }
 
@@ -1331,7 +1331,7 @@ WINUSERAPI INT WINAPI DlgDirListA(HWND hDlg, LPSTR spec, INT idLBox, INT idStati
 void qemu_DlgDirListA(struct qemu_syscall *call)
 {
     struct qemu_DlgDirListA *c = (struct qemu_DlgDirListA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DlgDirListA(QEMU_G2H(c->hDlg), QEMU_G2H(c->spec), c->idLBox, c->idStatic, c->attrib);
 }
 

@@ -57,7 +57,7 @@ extern DWORD WINAPI GetListBoxInfo(HWND hwnd);
 void qemu_GetListBoxInfo(struct qemu_syscall *call)
 {
     struct qemu_GetListBoxInfo *c = (struct qemu_GetListBoxInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetListBoxInfo(QEMU_G2H(c->hwnd));
 }
 
