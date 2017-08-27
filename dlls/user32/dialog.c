@@ -81,8 +81,31 @@ static struct classproc_wrapper *find_dlgproc_wrapper(uint64_t func)
 void qemu_CreateDialogParamA(struct qemu_syscall *call)
 {
     struct qemu_CreateDialogParamA *c = (struct qemu_CreateDialogParamA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateDialogParamA(QEMU_G2H(c->hInst), QEMU_G2H(c->name), QEMU_G2H(c->owner), QEMU_G2H(c->dlgProc), c->param);
+    struct classproc_wrapper *wrapper = NULL;
+    HWND ret;
+    HINSTANCE inst;
+
+    WINE_TRACE("\n");
+
+    /* test/msg.c wants us to look in the main .exe file if instance = NULL. */
+    inst = QEMU_G2H(c->hInst);
+    if (!inst)
+        inst = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    if (c->dlgProc)
+    {
+        /* At the moment the dlgproc wrappers are not freed, let's see when this causes a problem. I am not
+         * sure if we can reliably intercept the dialog destroy call. */
+        wrapper = find_dlgproc_wrapper(c->dlgProc);
+        if (!wrapper)
+        {
+            c->super.iret = 0;
+            return;
+        }
+    }
+
+    c->super.iret = (uint64_t)CreateDialogParamA(inst, QEMU_G2H(c->name), QEMU_G2H(c->owner),
+            (DLGPROC)wrapper, c->param);
 }
 
 #endif
@@ -207,7 +230,7 @@ void qemu_CreateDialogIndirectParamA(struct qemu_syscall *call)
     if (c->dlgProc)
     {
         /* At the moment the dlgproc wrappers are not freed, let's see when this causes a problem. I am not
-        * sure if we can reliably intercept the dialog destroy call. */
+         * sure if we can reliably intercept the dialog destroy call. */
         wrapper = find_dlgproc_wrapper(c->dlgProc);
         if (!wrapper)
         {
