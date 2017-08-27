@@ -462,7 +462,7 @@ WINUSERAPI BOOL WINAPI GetClipCursor(RECT *rect)
 void qemu_GetClipCursor(struct qemu_syscall *call)
 {
     struct qemu_GetClipCursor *c = (struct qemu_GetClipCursor *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetClipCursor(QEMU_G2H(c->rect));
 }
 

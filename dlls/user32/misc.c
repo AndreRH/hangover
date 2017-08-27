@@ -338,7 +338,7 @@ WINUSERAPI BOOL WINAPI EnumDisplayDevicesA(LPCSTR lpDevice, DWORD i, LPDISPLAY_D
 void qemu_EnumDisplayDevicesA(struct qemu_syscall *call)
 {
     struct qemu_EnumDisplayDevicesA *c = (struct qemu_EnumDisplayDevicesA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EnumDisplayDevicesA(QEMU_G2H(c->lpDevice), c->i, QEMU_G2H(c->lpDispDev), c->dwFlags);
 }
 
@@ -1522,7 +1522,7 @@ WINUSERAPI LONG WINAPI GetDisplayConfigBufferSizes(UINT32 flags, UINT32 *num_pat
 void qemu_GetDisplayConfigBufferSizes(struct qemu_syscall *call)
 {
     struct qemu_GetDisplayConfigBufferSizes *c = (struct qemu_GetDisplayConfigBufferSizes *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDisplayConfigBufferSizes(c->flags, QEMU_G2H(c->num_path_info), QEMU_G2H(c->num_mode_info));
 }
 

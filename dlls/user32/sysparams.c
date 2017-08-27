@@ -485,7 +485,7 @@ WINUSERAPI LONG WINAPI ChangeDisplaySettingsExW(LPCWSTR devname, LPDEVMODEW devm
 void qemu_ChangeDisplaySettingsExW(struct qemu_syscall *call)
 {
     struct qemu_ChangeDisplaySettingsExW *c = (struct qemu_ChangeDisplaySettingsExW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ChangeDisplaySettingsExW(QEMU_G2H(c->devname), QEMU_G2H(c->devmode), QEMU_G2H(c->hwnd), c->flags, QEMU_G2H(c->lparam));
 }
 
