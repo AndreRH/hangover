@@ -57,7 +57,7 @@ WINUSERAPI BOOL WINAPI GetComboBoxInfo(HWND hwndCombo, PCOMBOBOXINFO pcbi)
 void qemu_GetComboBoxInfo(struct qemu_syscall *call)
 {
     struct qemu_GetComboBoxInfo *c = (struct qemu_GetComboBoxInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetComboBoxInfo(QEMU_G2H(c->hwndCombo), QEMU_G2H(c->pcbi));
 }
 
