@@ -169,12 +169,22 @@ static LRESULT CALLBACK qemu_hook_wrapper(int code, WPARAM wp, LPARAM lp, struct
     return ret;
 }
 
-static LRESULT CALLBACK qemu_CBT_wrapper(int code, WPARAM wp, LPARAM lp)
+static LRESULT CALLBACK qemu_CBT_wrapper0(int code, WPARAM wp, LPARAM lp)
 {
     struct qemu_hook_data *data = installed_hooks[WH_CBT - WH_MIN][0];
 
     if (!data || !data->hook_id)
-        WINE_ERR("CBT hook callback called but no hook is installed.\n");
+        WINE_ERR("CBT hook callback 0 called but no hook is installed.\n");
+
+    return qemu_hook_wrapper(code, wp, lp, data);
+}
+
+static LRESULT CALLBACK qemu_CBT_wrapper1(int code, WPARAM wp, LPARAM lp)
+{
+    struct qemu_hook_data *data = installed_hooks[WH_CBT - WH_MIN][1];
+
+    if (!data || !data->hook_id)
+        WINE_ERR("CBT hook callback 1 called but no hook is installed.\n");
 
     return qemu_hook_wrapper(code, wp, lp, data);
 }
@@ -249,11 +259,19 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
             /* This hook can be global. */
             WINE_FIXME("(WH_CBT, 0x%lx, 0x%lx, %x, %u).\n", proc, inst, tid, unicode);
 
-            real_proc = qemu_CBT_wrapper;
             real_mod = 0;
-            if (installed_hooks[WH_CBT - WH_MIN][0])
+            if (!installed_hooks[WH_CBT - WH_MIN][0])
             {
-                WINE_FIXME("A WH_CBT hook is already installed.\n");
+                real_proc = qemu_CBT_wrapper0;
+            }
+            else if (!installed_hooks[WH_CBT - WH_MIN][1])
+            {
+                real_proc = qemu_CBT_wrapper1;
+                hook_no = 1;
+            }
+            else
+            {
+                WINE_FIXME("Two WH_CBT hooks are already installed.\n");
                 LeaveCriticalSection(&hook_cs);
                 HeapFree(GetProcessHeap(), 0, hook_data);
                 return NULL;
@@ -291,7 +309,7 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
             }
             else
             {
-                WINE_FIXME("Two WH_MOUSE_LL hooks is already installed.\n");
+                WINE_FIXME("Two WH_MOUSE_LL hooks are already installed.\n");
                 LeaveCriticalSection(&hook_cs);
                 HeapFree(GetProcessHeap(), 0, hook_data);
                 return NULL;
@@ -323,9 +341,9 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
 
     WINE_TRACE("Setting host hook (%d, %p, %p, %x).\n", id, real_proc, real_mod, tid);
     if (unicode)
-        ret = SetWindowsHookExW(id, real_proc, real_mod, tid);
+        ret = SetWindowsHookExW(id, proc ? real_proc : NULL, real_mod, tid);
     else
-        ret = SetWindowsHookExA(id, real_proc, real_mod, tid);
+        ret = SetWindowsHookExA(id, proc ? real_proc : NULL, real_mod, tid);
     WINE_TRACE("Got host hook %p.\n", ret);
 
     if (ret)
