@@ -421,7 +421,7 @@ WINUSERAPI DWORD WINAPI InSendMessageEx(LPVOID reserved)
 void qemu_InSendMessageEx(struct qemu_syscall *call)
 {
     struct qemu_InSendMessageEx *c = (struct qemu_InSendMessageEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = InSendMessageEx(QEMU_G2H(c->reserved));
 }
 
@@ -1045,7 +1045,7 @@ WINUSERAPI DWORD WINAPI MsgWaitForMultipleObjectsEx(DWORD count, const HANDLE *p
 void qemu_MsgWaitForMultipleObjectsEx(struct qemu_syscall *call)
 {
     struct qemu_MsgWaitForMultipleObjectsEx *c = (struct qemu_MsgWaitForMultipleObjectsEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = MsgWaitForMultipleObjectsEx(c->count, QEMU_G2H(c->pHandles), c->timeout, c->mask, c->flags);
 }
 

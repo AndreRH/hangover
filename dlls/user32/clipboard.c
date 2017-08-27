@@ -85,7 +85,7 @@ WINUSERAPI UINT WINAPI RegisterClipboardFormatA(LPCSTR name)
 void qemu_RegisterClipboardFormatA(struct qemu_syscall *call)
 {
     struct qemu_RegisterClipboardFormatA *c = (struct qemu_RegisterClipboardFormatA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RegisterClipboardFormatA(QEMU_G2H(c->name));
 }
 
@@ -153,7 +153,7 @@ WINUSERAPI INT WINAPI GetClipboardFormatNameA(UINT format, LPSTR buffer, INT max
 void qemu_GetClipboardFormatNameA(struct qemu_syscall *call)
 {
     struct qemu_GetClipboardFormatNameA *c = (struct qemu_GetClipboardFormatNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetClipboardFormatNameA(c->format, QEMU_G2H(c->buffer), c->maxlen);
 }
 
@@ -183,7 +183,7 @@ WINUSERAPI BOOL WINAPI OpenClipboard(HWND hwnd)
 void qemu_OpenClipboard(struct qemu_syscall *call)
 {
     struct qemu_OpenClipboard *c = (struct qemu_OpenClipboard *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = OpenClipboard(QEMU_G2H(c->hwnd));
 }
 
@@ -211,7 +211,7 @@ WINUSERAPI BOOL WINAPI CloseClipboard(void)
 void qemu_CloseClipboard(struct qemu_syscall *call)
 {
     struct qemu_CloseClipboard *c = (struct qemu_CloseClipboard *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CloseClipboard();
 }
 
@@ -239,7 +239,7 @@ WINUSERAPI BOOL WINAPI EmptyClipboard(void)
 void qemu_EmptyClipboard(struct qemu_syscall *call)
 {
     struct qemu_EmptyClipboard *c = (struct qemu_EmptyClipboard *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EmptyClipboard();
 }
 
@@ -267,7 +267,7 @@ WINUSERAPI HWND WINAPI GetClipboardOwner(void)
 void qemu_GetClipboardOwner(struct qemu_syscall *call)
 {
     struct qemu_GetClipboardOwner *c = (struct qemu_GetClipboardOwner *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetClipboardOwner();
 }
 
@@ -295,7 +295,7 @@ WINUSERAPI HWND WINAPI GetOpenClipboardWindow(void)
 void qemu_GetOpenClipboardWindow(struct qemu_syscall *call)
 {
     struct qemu_GetOpenClipboardWindow *c = (struct qemu_GetOpenClipboardWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetOpenClipboardWindow();
 }
 
@@ -325,7 +325,7 @@ WINUSERAPI HWND WINAPI SetClipboardViewer(HWND hwnd)
 void qemu_SetClipboardViewer(struct qemu_syscall *call)
 {
     struct qemu_SetClipboardViewer *c = (struct qemu_SetClipboardViewer *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)SetClipboardViewer(QEMU_G2H(c->hwnd));
 }
 
@@ -353,7 +353,7 @@ WINUSERAPI HWND WINAPI GetClipboardViewer(void)
 void qemu_GetClipboardViewer(struct qemu_syscall *call)
 {
     struct qemu_GetClipboardViewer *c = (struct qemu_GetClipboardViewer *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetClipboardViewer();
 }
 
@@ -385,7 +385,7 @@ WINUSERAPI BOOL WINAPI ChangeClipboardChain(HWND hwnd, HWND next)
 void qemu_ChangeClipboardChain(struct qemu_syscall *call)
 {
     struct qemu_ChangeClipboardChain *c = (struct qemu_ChangeClipboardChain *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ChangeClipboardChain(QEMU_G2H(c->hwnd), QEMU_G2H(c->next));
 }
 
@@ -417,7 +417,7 @@ WINUSERAPI HANDLE WINAPI SetClipboardData(UINT format, HANDLE data)
 void qemu_SetClipboardData(struct qemu_syscall *call)
 {
     struct qemu_SetClipboardData *c = (struct qemu_SetClipboardData *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)SetClipboardData(c->format, QEMU_G2H(c->data));
 }
 
@@ -445,7 +445,7 @@ WINUSERAPI INT WINAPI CountClipboardFormats(void)
 void qemu_CountClipboardFormats(struct qemu_syscall *call)
 {
     struct qemu_CountClipboardFormats *c = (struct qemu_CountClipboardFormats *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CountClipboardFormats();
 }
 
@@ -475,7 +475,7 @@ WINUSERAPI UINT WINAPI EnumClipboardFormats(UINT format)
 void qemu_EnumClipboardFormats(struct qemu_syscall *call)
 {
     struct qemu_EnumClipboardFormats *c = (struct qemu_EnumClipboardFormats *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EnumClipboardFormats(c->format);
 }
 
@@ -539,7 +539,7 @@ WINUSERAPI BOOL WINAPI GetUpdatedClipboardFormats(UINT *formats, UINT size, UINT
 void qemu_GetUpdatedClipboardFormats(struct qemu_syscall *call)
 {
     struct qemu_GetUpdatedClipboardFormats *c = (struct qemu_GetUpdatedClipboardFormats *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetUpdatedClipboardFormats(QEMU_G2H(c->formats), c->size, QEMU_G2H(c->out_size));
 }
 
@@ -569,7 +569,7 @@ WINUSERAPI HANDLE WINAPI GetClipboardData(UINT format)
 void qemu_GetClipboardData(struct qemu_syscall *call)
 {
     struct qemu_GetClipboardData *c = (struct qemu_GetClipboardData *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetClipboardData(c->format);
 }
 
@@ -629,7 +629,7 @@ WINUSERAPI DWORD WINAPI GetClipboardSequenceNumber(VOID)
 void qemu_GetClipboardSequenceNumber(struct qemu_syscall *call)
 {
     struct qemu_GetClipboardSequenceNumber *c = (struct qemu_GetClipboardSequenceNumber *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetClipboardSequenceNumber();
 }
 
@@ -659,7 +659,7 @@ WINUSERAPI BOOL WINAPI AddClipboardFormatListener(HWND hwnd)
 void qemu_AddClipboardFormatListener(struct qemu_syscall *call)
 {
     struct qemu_AddClipboardFormatListener *c = (struct qemu_AddClipboardFormatListener *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AddClipboardFormatListener(QEMU_G2H(c->hwnd));
 }
 
@@ -689,7 +689,7 @@ WINUSERAPI BOOL WINAPI RemoveClipboardFormatListener(HWND hwnd)
 void qemu_RemoveClipboardFormatListener(struct qemu_syscall *call)
 {
     struct qemu_RemoveClipboardFormatListener *c = (struct qemu_RemoveClipboardFormatListener *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RemoveClipboardFormatListener(QEMU_G2H(c->hwnd));
 }
 
