@@ -1005,7 +1005,7 @@ WINUSERAPI BOOL WINAPI GetMenuBarInfo(HWND hwnd, LONG idObject, LONG idItem, PME
 void qemu_GetMenuBarInfo(struct qemu_syscall *call)
 {
     struct qemu_GetMenuBarInfo *c = (struct qemu_GetMenuBarInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetMenuBarInfo(QEMU_G2H(c->hwnd), c->idObject, c->idItem, QEMU_G2H(c->pmbi));
 }
 
@@ -1167,7 +1167,7 @@ WINUSERAPI BOOL WINAPI EndMenu(void)
 void qemu_EndMenu(struct qemu_syscall *call)
 {
     struct qemu_EndMenu *c = (struct qemu_EndMenu *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EndMenu();
 }
 
@@ -1357,7 +1357,7 @@ WINUSERAPI BOOL WINAPI GetMenuItemInfoA(HMENU hmenu, UINT item, BOOL bypos, LPME
 void qemu_GetMenuItemInfoA(struct qemu_syscall *call)
 {
     struct qemu_GetMenuItemInfoA *c = (struct qemu_GetMenuItemInfoA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetMenuItemInfoA(QEMU_G2H(c->hmenu), c->item, c->bypos, QEMU_G2H(c->lpmii));
 }
 

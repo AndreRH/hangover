@@ -121,7 +121,7 @@ WINUSERAPI BOOL WINAPI SetCaretPos(INT x, INT y)
 void qemu_SetCaretPos(struct qemu_syscall *call)
 {
     struct qemu_SetCaretPos *c = (struct qemu_SetCaretPos *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetCaretPos(c->x, c->y);
 }
 
@@ -211,7 +211,7 @@ WINUSERAPI BOOL WINAPI GetCaretPos(LPPOINT pt)
 void qemu_GetCaretPos(struct qemu_syscall *call)
 {
     struct qemu_GetCaretPos *c = (struct qemu_GetCaretPos *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCaretPos(QEMU_G2H(c->pt));
 }
 
