@@ -698,9 +698,18 @@ enum user32_calls
 
 struct qemu_SetWinEventHook_cb;
 
+static inline BOOL wndproc_is_handle(LONG_PTR proc)
+{
+    /* This is not exactly right, Wine's user32 also keeps track of how many
+     * wndprocs it remembered. We don't know for sure as we only see the ones
+     * we pass in and not e.g. those of Wine's controls. */
+#define WINPROC_HANDLE (~0u >> 16)
+    return (proc >> 16 == WINPROC_HANDLE);
+}
+
 #ifdef QEMU_DLL_GUEST
 
-LRESULT CALLBACK reverse_classproc_func(HWND win, UINT msg, WPARAM wp, LPARAM lp, void *data);
+LRESULT CALLBACK reverse_wndproc_func(HWND win, UINT msg, WPARAM wp, LPARAM lp, void *data);
 void guest_win_event_wrapper(struct qemu_SetWinEventHook_cb *data);
 
 #else
@@ -1396,51 +1405,37 @@ void qemu_WINNLSEnableIME(struct qemu_syscall *call);
 void qemu_WINNLSGetEnableStatus(struct qemu_syscall *call);
 void qemu_WINNLSGetIMEHotkey(struct qemu_syscall *call);
 
-extern uint64_t reverse_classproc_func;
+extern uint64_t reverse_wndproc_func;
 
-struct classproc_wrapper
+struct wndproc_wrapper
 {
     int32_t ldrx4;
     int32_t ldrx5;
     int32_t br;
     void *selfptr;
     void *host_proc;
-
     uint64_t guest_proc;
-    union
-    {
-        ATOM atom;
-        HWND win;
-    };
 };
 
-/* Class-global wrappers. */
-extern struct classproc_wrapper *class_wrappers;
-extern unsigned int class_wrapper_count;
-
-/* Per window wndprocs. */
-extern struct classproc_wrapper *win_wrappers;
-extern unsigned int win_wrapper_count;
+extern struct wndproc_wrapper *wndproc_wrappers;
+extern unsigned int wndproc_wrapper_count;
 
 /* Reverse wrapper for Wine's wndprocs. */
 extern uint64_t guest_wndproc_wrapper;
 
-/* Dialog procs. */
-extern struct classproc_wrapper *dlgproc_wrappers;
-extern unsigned int dlgproc_wrapper_count;
-
-struct reverse_classproc_wrapper
+struct reverse_wndproc_wrapper
 {
     char code[0x20];
-    uint64_t guest_func;
-    void *host_func;
+    uint64_t guest_proc;
+    void *host_proc;
 };
 
-#define REVERSE_CLASSPROC_WRAPPER_COUNT 128
-extern struct reverse_classproc_wrapper
-        reverse_classproc_wrappers[REVERSE_CLASSPROC_WRAPPER_COUNT];
+#define REVERSE_WNDPROC_WRAPPER_COUNT 1024
+extern struct reverse_wndproc_wrapper
+        reverse_wndproc_wrappers[REVERSE_WNDPROC_WRAPPER_COUNT];
 
-struct reverse_classproc_wrapper *find_reverse_wndproc_wrapper(void *host_func);
+WNDPROC wndproc_guest_to_host(uint64_t guest_func);
+uint64_t wndproc_host_to_guest(WNDPROC host_func);
 
 DWORD user32_tls;
 

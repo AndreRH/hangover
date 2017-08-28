@@ -57,7 +57,7 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
     {
         case DLL_PROCESS_ATTACH:
             call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
-            call.rev_wndproc_wrapper = (uint64_t)reverse_classproc_func;
+            call.rev_wndproc_wrapper = (uint64_t)reverse_wndproc_func;
             call.wndproc_wrapper = (uint64_t)wndproc_wrapper;
             call.guest_mod = (uint64_t)mod;
             call.guest_win_event_wrapper = (uint64_t)guest_win_event_wrapper;
@@ -70,14 +70,16 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 #else
 
 #include <wine/debug.h>
+#include <assert.h>
+
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 
-uint64_t reverse_classproc_func;
+uint64_t reverse_wndproc_func;
 
 static void qemu_set_callbacks(struct qemu_syscall *call)
 {
     struct qemu_set_callbacks *c = (struct qemu_set_callbacks *)call;
-    reverse_classproc_func = c->rev_wndproc_wrapper;
+    reverse_wndproc_func = c->rev_wndproc_wrapper;
     guest_wndproc_wrapper = c->wndproc_wrapper;
     guest_mod = (HMODULE)c->guest_mod;
     guest_win_event_wrapper = c->guest_win_event_wrapper;
@@ -778,15 +780,11 @@ static const syscall_handler dll_functions[] =
     qemu_WINNLSGetIMEHotkey,
 };
 
-struct classproc_wrapper *class_wrappers;
-unsigned int class_wrapper_count;
-struct classproc_wrapper *win_wrappers;
-unsigned int win_wrapper_count;
-struct classproc_wrapper *dlgproc_wrappers;
-unsigned int dlgproc_wrapper_count;
+struct wndproc_wrapper *wndproc_wrappers;
+unsigned int wndproc_wrapper_count;
 uint64_t guest_wndproc_wrapper;
 
-LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam, struct classproc_wrapper *wrapper)
+LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam, struct wndproc_wrapper *wrapper)
 {
     struct wndproc_call call;
     call.wndproc = wrapper->guest_proc;
@@ -799,39 +797,38 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
     return qemu_ops->qemu_execute(QEMU_G2H(guest_wndproc_wrapper), QEMU_H2G(&call));
 }
 
-void init_classproc(struct classproc_wrapper *wrapper)
+void init_wndproc(struct wndproc_wrapper *wrapper)
 {
     size_t offset;
 
-    offset = offsetof(struct classproc_wrapper, selfptr) - offsetof(struct classproc_wrapper, ldrx4);
+    offset = offsetof(struct wndproc_wrapper, selfptr) - offsetof(struct wndproc_wrapper, ldrx4);
     /* The load offset is stored in bits 5-24. The stored offset is left-shifted by 2 to generate the 21
      * bit real offset. So to place it in the right place we need our offset (multiple of 4, unless the
      * compiler screwed up terribly) shifted by another 3 bits. */
     wrapper->ldrx4 = 0x58000004 | (offset << 3); /* ldr x4, offset */
 
-    offset = offsetof(struct classproc_wrapper, host_proc) - offsetof(struct classproc_wrapper, ldrx5);
+    offset = offsetof(struct wndproc_wrapper, host_proc) - offsetof(struct wndproc_wrapper, ldrx5);
     wrapper->ldrx5 = 0x58000005 | (offset << 3);   /* ldr x5, offset */
 
     wrapper->br = 0xd61f00a0; /* br x5 */
 
     wrapper->selfptr = wrapper;
     wrapper->host_proc = wndproc_wrapper;
-
     wrapper->guest_proc = 0;
-    wrapper->atom = 0;
 
     __clear_cache(&wrapper->ldrx4, &wrapper->br + 1);
 }
 
-/* This array cannot be grown dynamically because we pass pointers to it to the
- * application. The number we need should be limited by the amount of classes
- * registered by Wine's DLLs. */
-struct reverse_classproc_wrapper
-        reverse_classproc_wrappers[REVERSE_CLASSPROC_WRAPPER_COUNT];
+/* This is most likely dead code. It will only be triggered if Wine runs out of WNDPROC handles, 
+ * then a Wine module uses a not-yet-used WNDPROC and the application retrieves this WNDPROC with
+ * GetWindowLongPtr or friends. The code has been used previously when WNDPROCs were handled in a
+ * different way, so it received some testing before becoming a really rare corner case. */
+struct reverse_wndproc_wrapper
+        reverse_wndproc_wrappers[REVERSE_WNDPROC_WRAPPER_COUNT];
 
-void init_reverse_classproc(struct reverse_classproc_wrapper *wrapper)
+void init_reverse_wndproc(struct reverse_wndproc_wrapper *wrapper)
 {
-    /* This is a bit more complicated than the arm counterpart because we do not
+    /* This is a bit more complicated than the ARM counterpart because we do not
      * have a spare argument in register to put our self pointer in. This means we
      * have to shuffle push the argument on the stack and do an actual call on top
      * of it, and then clean up the stack on return.
@@ -868,52 +865,106 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
 
-    /* Fill two pages for now. See RegisterClassExW on complications with growing this
-     * on demand. */
-    class_wrapper_count = 2 * 4096 / sizeof(*class_wrappers);
-    class_wrappers = VirtualAlloc(NULL, sizeof(*class_wrappers) * class_wrapper_count,
+    /* Wine has 16384 WNDPROC slots and if those are full it falls back to calling the
+     * function pointer directly. The tests exercise the fallback code, so allocate more
+     * slots than Wine has handles.
+     *
+     * WNDPROC wrappers are never freed, just as WNDPROC handles are never freed. The
+     * basic idea is that an application may create and destroy many Windows, but it won't
+     * have an infinite supply of code to use as possible WNDPROCs. WNDPROC handles are
+     * expected to be valid after the Window that 'created' them was destroyed.
+     *
+     * This array uses 800 kilobytes of memory :-\ . */
+    wndproc_wrapper_count = 20 * 1024;
+    wndproc_wrappers = VirtualAlloc(NULL, sizeof(*wndproc_wrappers) * wndproc_wrapper_count,
             MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-    if (!class_wrappers)
+    if (!wndproc_wrappers)
     {
         WINE_ERR("Failed to allocate memory for class wndproc wrappers.\n");
         return NULL;
     }
 
-    for (i = 0; i < class_wrapper_count; ++i)
-        init_classproc(&class_wrappers[i]);
+    for (i = 0; i < wndproc_wrapper_count; ++i)
+        init_wndproc(&wndproc_wrappers[i]);
 
-    win_wrapper_count = 2 * 4096 / sizeof(*win_wrappers);
-    win_wrappers = VirtualAlloc(NULL, sizeof(*win_wrappers) * win_wrapper_count,
-            MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-    if (!win_wrappers)
-    {
-        WINE_ERR("Failed to allocate memory for class wndproc wrappers.\n");
-        return NULL;
-    }
-
-    for (i = 0; i < win_wrapper_count; ++i)
-        init_classproc(&win_wrappers[i]);
-
-    dlgproc_wrapper_count = 2 * 4096 / sizeof(*dlgproc_wrappers);
-    dlgproc_wrappers = VirtualAlloc(NULL, sizeof(*dlgproc_wrappers) * dlgproc_wrapper_count,
-            MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-    if (!dlgproc_wrappers)
-    {
-        WINE_ERR("Failed to allocate memory for class wndproc wrappers.\n");
-        return NULL;
-    }
-
-    for (i = 0; i < dlgproc_wrapper_count; ++i)
-        init_classproc(&dlgproc_wrappers[i]);
-
-    for (i = 0; i < REVERSE_CLASSPROC_WRAPPER_COUNT; ++i)
-        init_reverse_classproc(&reverse_classproc_wrappers[i]);
+    for (i = 0; i < REVERSE_WNDPROC_WRAPPER_COUNT; ++i)
+        init_reverse_wndproc(&reverse_wndproc_wrappers[i]);
 
     user32_tls = TlsAlloc();
     if (user32_tls == TLS_OUT_OF_INDEXES)
         WINE_ERR("Out of TLS indices\n");
 
     return dll_functions;
+}
+
+WNDPROC wndproc_guest_to_host(uint64_t guest_proc)
+{
+    unsigned int i;
+
+    if (!guest_proc || wndproc_is_handle(guest_proc))
+        return (WNDPROC)guest_proc;
+
+    if (guest_proc >= (ULONG_PTR)&reverse_wndproc_wrappers[0]
+            && guest_proc <= (ULONG_PTR)&reverse_wndproc_wrappers[REVERSE_WNDPROC_WRAPPER_COUNT])
+    {
+        struct reverse_wndproc_wrapper *rev_wrapper = (struct reverse_wndproc_wrapper *)guest_proc;
+
+        WINE_TRACE("Guest passed in reverse wrapper %p, returning host function %p.\n",
+                rev_wrapper, rev_wrapper->host_proc);
+        return rev_wrapper->host_proc;
+    }
+
+    for (i = 0; i < wndproc_wrapper_count; i++)
+    {
+        if (wndproc_wrappers[i].guest_proc == guest_proc)
+            return (WNDPROC)&wndproc_wrappers[i];
+        if (!wndproc_wrappers[i].guest_proc)
+        {
+            WINE_TRACE("Creating host WNDPROC %p for guest func 0x%lx.\n",
+                    &wndproc_wrappers[i], guest_proc);
+            wndproc_wrappers[i].guest_proc = guest_proc;
+            return (WNDPROC)&wndproc_wrappers[i];
+        }
+    }
+
+    WINE_FIXME("Out of guest -> host WNDPROC wrappers.\n");
+    assert(0);
+}
+
+uint64_t wndproc_host_to_guest(WNDPROC host_proc)
+{
+    unsigned int i;
+
+    if (!host_proc || wndproc_is_handle((LONG_PTR)host_proc))
+        return (uint64_t)host_proc;
+
+    if ((ULONG_PTR)host_proc >= (ULONG_PTR)&wndproc_wrappers[0]
+            && (ULONG_PTR)host_proc <= (ULONG_PTR)&wndproc_wrappers[wndproc_wrapper_count])
+    {
+        struct wndproc_wrapper *wrapper = (struct wndproc_wrapper *)host_proc;
+        WINE_TRACE("Host wndproc %p is a wrapper function. Returning guest wndproc 0x%lx.\n",
+                wrapper, wrapper->guest_proc);
+        return wrapper->guest_proc;
+    }
+
+    for (i = 0; i < REVERSE_WNDPROC_WRAPPER_COUNT; ++i)
+    {
+        if (reverse_wndproc_wrappers[i].host_proc == host_proc)
+        {
+            WINE_TRACE("Allocated reverse WNDPROC wrapper %p for host func %p.\n",
+                    &reverse_wndproc_wrappers[i], host_proc);
+            return QEMU_H2G(&reverse_wndproc_wrappers[i]);
+        }
+        if (!reverse_wndproc_wrappers[i].host_proc)
+        {
+            reverse_wndproc_wrappers[i].host_proc = host_proc;
+            reverse_wndproc_wrappers[i].guest_proc = reverse_wndproc_func;
+            return QEMU_H2G(&reverse_wndproc_wrappers[i]);
+        }
+    }
+
+    /* Out of reverse wrappers. */
+    assert(0);
 }
 
 BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)

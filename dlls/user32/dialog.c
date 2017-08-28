@@ -60,28 +60,10 @@ WINUSERAPI HWND WINAPI CreateDialogParamA(HINSTANCE hInst, LPCSTR name, HWND own
 
 #else
 
-static struct classproc_wrapper *find_dlgproc_wrapper(uint64_t func)
-{
-    unsigned int i;
-
-    for (i = 0; i < dlgproc_wrapper_count; ++i)
-    {
-        if (!dlgproc_wrappers[i].guest_proc || dlgproc_wrappers[i].guest_proc == func)
-        {
-            WINE_TRACE("Returning wrapper %p.\n", &dlgproc_wrappers[i]);
-            dlgproc_wrappers[i].guest_proc = func;
-            return &dlgproc_wrappers[i];
-        }
-    }
-
-    WINE_FIXME("All dialog wrappers are in use.\n");
-    return NULL;
-}
-
 void qemu_CreateDialogParamA(struct qemu_syscall *call)
 {
     struct qemu_CreateDialogParamA *c = (struct qemu_CreateDialogParamA *)call;
-    struct classproc_wrapper *wrapper = NULL;
+    DLGPROC wrapper = NULL;
     HWND ret;
     HINSTANCE inst;
 
@@ -92,20 +74,9 @@ void qemu_CreateDialogParamA(struct qemu_syscall *call)
     if (!inst)
         inst = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
 
-    if (c->dlgProc)
-    {
-        /* At the moment the dlgproc wrappers are not freed, let's see when this causes a problem. I am not
-         * sure if we can reliably intercept the dialog destroy call. */
-        wrapper = find_dlgproc_wrapper(c->dlgProc);
-        if (!wrapper)
-        {
-            c->super.iret = 0;
-            return;
-        }
-    }
-
+    wrapper = wndproc_guest_to_host(c->dlgProc);
     c->super.iret = (uint64_t)CreateDialogParamA(inst, QEMU_G2H(c->name), QEMU_G2H(c->owner),
-            (DLGPROC)wrapper, c->param);
+            wrapper, c->param);
 }
 
 #endif
@@ -222,25 +193,14 @@ WINUSERAPI HWND WINAPI CreateDialogIndirectParamA(HINSTANCE hInst, LPCDLGTEMPLAT
 void qemu_CreateDialogIndirectParamA(struct qemu_syscall *call)
 {
     struct qemu_CreateDialogIndirectParamA *c = (struct qemu_CreateDialogIndirectParamA *)call;
-    struct classproc_wrapper *wrapper = NULL;
+    DLGPROC wrapper = NULL;
     HWND ret;
 
     WINE_TRACE("\n");
 
-    if (c->dlgProc)
-    {
-        /* At the moment the dlgproc wrappers are not freed, let's see when this causes a problem. I am not
-         * sure if we can reliably intercept the dialog destroy call. */
-        wrapper = find_dlgproc_wrapper(c->dlgProc);
-        if (!wrapper)
-        {
-            c->super.iret = 0;
-            return;
-        }
-    }
-
+    wrapper = (DLGPROC)wndproc_guest_to_host(c->dlgProc);
     c->super.iret = (uint64_t)CreateDialogIndirectParamA(QEMU_G2H(c->hInst), QEMU_G2H(c->dlgTemplate),
-            QEMU_G2H(c->owner), (DLGPROC)wrapper, c->param);
+            QEMU_G2H(c->owner), wrapper, c->param);
 }
 
 #endif
@@ -277,25 +237,14 @@ WINUSERAPI HWND WINAPI CreateDialogIndirectParamW(HINSTANCE hInst, LPCDLGTEMPLAT
 void qemu_CreateDialogIndirectParamW(struct qemu_syscall *call)
 {
     struct qemu_CreateDialogIndirectParamW *c = (struct qemu_CreateDialogIndirectParamW *)call;
-    struct classproc_wrapper *wrapper = NULL;
+    DLGPROC wrapper = NULL;
     HWND ret;
 
     WINE_TRACE("\n");
 
-    if (c->dlgProc)
-    {
-        /* At the moment the dlgproc wrappers are not freed, let's see when this causes a problem. I am not
-         * sure if we can reliably intercept the dialog destroy call. */
-        wrapper = find_dlgproc_wrapper(c->dlgProc);
-        if (!wrapper)
-        {
-            c->super.iret = 0;
-            return;
-        }
-    }
-
+    wrapper = (DLGPROC)wndproc_guest_to_host(c->dlgProc);
     c->super.iret = (uint64_t)CreateDialogIndirectParamW(QEMU_G2H(c->hInst), QEMU_G2H(c->dlgTemplate),
-            QEMU_G2H(c->owner), (DLGPROC)wrapper, c->param);
+            QEMU_G2H(c->owner), wrapper, c->param);
 }
 
 #endif

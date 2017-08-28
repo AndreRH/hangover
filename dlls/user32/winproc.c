@@ -48,20 +48,31 @@ struct qemu_CallWindowProcA
 WINUSERAPI LRESULT WINAPI CallWindowProcA(WNDPROC func, HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     struct qemu_CallWindowProcA call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_CALLWINDOWPROCA);
 
-    /* For logging. */
+    if (!func)
+        return 0;
+
+    /* Most of the time we'll deal with a WINDOWPROC handle. Forward it to native, as it
+     * has the lookup table, and we have a stable guest -> host mapping. For everything
+     * that is not a handle just call it.
+     *
+     * TODO: We may be able to improve performance if we keep track of which handles map
+     * to a WNDPROC provided by the guest app and call it here directly instead of going
+     * out of the VM to Wine's CallWindowProc and back in. That will require duplicating
+     * the ASCII <-> Unicode mapping. */
+    if (!wndproc_is_handle((LONG_PTR)func))
+        return func(hwnd, msg, wParam, lParam);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_CALLWINDOWPROCA);
+    call.func = (uint64_t)func;
+    call.hwnd = (uint64_t)hwnd;
+    call.msg = msg;
+    call.wParam = wParam;
+    call.lParam = lParam;
+
     qemu_syscall(&call.super);
 
-    /* My understanding is that this function does two things: It fixes up some CPU registers for apps that
-     * write non-compliant window procs, and it does WOW16 wrapping in a similar fashion to what we're doing
-     * here. The first part is unimplemented and only necessary on 32 bit. It is easy to copypaste later. The
-     * other part won't matter until we have 16 bit in 32 bit support.
-     *
-     * So for now replicate the NULL ptr check and call func. */
-    if (!func) return 0;
-
-    return func(hwnd, msg, wParam, lParam);
+    return call.super.iret;
 }
 
 #else
@@ -70,6 +81,7 @@ void qemu_CallWindowProcA(struct qemu_syscall *call)
 {
     struct qemu_CallWindowProcA *c = (struct qemu_CallWindowProcA *)call;
     WINE_TRACE("\n");
+    c->super.iret = CallWindowProcA(QEMU_G2H(c->func), QEMU_G2H(c->hwnd), c->msg, c->wParam, c->lParam);
 }
 
 #endif
@@ -89,20 +101,22 @@ struct qemu_CallWindowProcW
 WINUSERAPI LRESULT WINAPI CallWindowProcW(WNDPROC func, HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     struct qemu_CallWindowProcW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_CALLWINDOWPROCW);
 
-    /* For logging. */
+    if (!func)
+        return 0;
+    if (!wndproc_is_handle((LONG_PTR)func))
+        return func(hwnd, msg, wParam, lParam);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_CALLWINDOWPROCW);
+    call.func = (uint64_t)func;
+    call.hwnd = (uint64_t)hwnd;
+    call.msg = msg;
+    call.wParam = wParam;
+    call.lParam = lParam;
+
     qemu_syscall(&call.super);
 
-    /* My understanding is that this function does two things: It fixes up some CPU registers for apps that
-     * write non-compliant window procs, and it does WOW16 wrapping in a similar fashion to what we're doing
-     * here. The first part is unimplemented and only necessary on 32 bit. It is easy to copypaste later. The
-     * other part won't matter until we have 16 bit in 32 bit support.
-     *
-     * So for now replicate the NULL ptr check and call func. */
-    if (!func) return 0;
-
-    return func(hwnd, msg, wParam, lParam);
+    return call.super.iret;
 }
 
 #else
@@ -111,6 +125,7 @@ void qemu_CallWindowProcW(struct qemu_syscall *call)
 {
     struct qemu_CallWindowProcW *c = (struct qemu_CallWindowProcW *)call;
     WINE_TRACE("\n");
+    c->super.iret = CallWindowProcW(QEMU_G2H(c->func), QEMU_G2H(c->hwnd), c->msg, c->wParam, c->lParam);
 }
 
 #endif
