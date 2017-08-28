@@ -1429,8 +1429,12 @@ WINUSERAPI UINT_PTR WINAPI SetCoalescableTimer(HWND hwnd, UINT_PTR id, UINT time
 void qemu_SetCoalescableTimer(struct qemu_syscall *call)
 {
     struct qemu_SetCoalescableTimer *c = (struct qemu_SetCoalescableTimer *)call;
+    TIMERPROC proc;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetCoalescableTimer(QEMU_G2H(c->hwnd), c->id, c->timeout, QEMU_G2H(c->proc), c->tolerance);
+    proc = (TIMERPROC)wndproc_guest_to_host(c->proc);
+
+    c->super.iret = SetCoalescableTimer(QEMU_G2H(c->hwnd), c->id, c->timeout, proc, c->tolerance);
 }
 
 #endif
@@ -1465,12 +1469,12 @@ WINUSERAPI UINT_PTR WINAPI SetTimer(HWND hwnd, UINT_PTR id, UINT timeout, TIMERP
 void qemu_SetTimer(struct qemu_syscall *call)
 {
     struct qemu_SetTimer *c = (struct qemu_SetTimer *)call;
+    TIMERPROC proc;
+
     WINE_TRACE("\n");
+    proc = (TIMERPROC)wndproc_guest_to_host(c->proc);
 
-    if (c->proc)
-        WINE_FIXME("Handle TIMERPROC.\n");
-
-    c->super.iret = SetTimer(QEMU_G2H(c->hwnd), c->id, c->timeout, QEMU_G2H(c->proc));
+    c->super.iret = SetTimer(QEMU_G2H(c->hwnd), c->id, c->timeout, proc);
 }
 
 #endif
@@ -1505,8 +1509,12 @@ WINUSERAPI UINT_PTR WINAPI SetSystemTimer(HWND hwnd, UINT_PTR id, UINT timeout, 
 void qemu_SetSystemTimer(struct qemu_syscall *call)
 {
     struct qemu_SetSystemTimer *c = (struct qemu_SetSystemTimer *)call;
+    TIMERPROC proc;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetSystemTimer(QEMU_G2H(c->hwnd), c->id, c->timeout, QEMU_G2H(c->proc));
+    proc = (TIMERPROC)wndproc_guest_to_host(c->proc);
+
+    c->super.iret = SetSystemTimer(QEMU_G2H(c->hwnd), c->id, c->timeout, proc);
 }
 
 #endif
