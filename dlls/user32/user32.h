@@ -707,6 +707,8 @@ static inline BOOL wndproc_is_handle(LONG_PTR proc)
     return (proc >> 16 == WINPROC_HANDLE);
 }
 
+#define WM_SYSTIMER 0x0118
+
 #ifdef QEMU_DLL_GUEST
 
 LRESULT CALLBACK reverse_wndproc_func(HWND win, UINT msg, WPARAM wp, LPARAM lp, void *data);
@@ -1444,6 +1446,9 @@ HMODULE wrapper_mod, host_mod, guest_mod;
 extern struct wine_rb_tree win_event_tree;
 int win_event_compare(const void *key, const struct wine_rb_entry *entry);
 extern uint64_t guest_win_event_wrapper;
+
+void msg_host_to_guest(MSG *msg_out, const MSG *msg_in);
+void msg_guest_to_host(MSG *msg_out, const MSG *msg_in);
 
 #endif
 

@@ -787,11 +787,16 @@ uint64_t guest_wndproc_wrapper;
 LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam, struct wndproc_wrapper *wrapper)
 {
     struct wndproc_call call;
+    MSG msg_struct = {win, msg, wparam, lparam};
+
+    msg_host_to_guest(&msg_struct, &msg_struct);
+
     call.wndproc = wrapper->guest_proc;
-    call.win = (uint64_t)win;
-    call.msg = msg;
-    call.wparam = wparam;
-    call.lparam = lparam;
+    call.win = (uint64_t)msg_struct.hwnd;
+    call.msg = msg_struct.message;
+    call.wparam = msg_struct.wParam;
+    call.lparam = msg_struct.lParam;
+
     WINE_TRACE("Calling guest wndproc 0x%lx(%p, %x, %lx, %lx)\n", wrapper->guest_proc, win, msg, wparam, lparam);
     WINE_TRACE("wrapper at %p\n", wrapper);
     return qemu_ops->qemu_execute(QEMU_G2H(guest_wndproc_wrapper), QEMU_H2G(&call));
@@ -965,6 +970,38 @@ uint64_t wndproc_host_to_guest(WNDPROC host_proc)
 
     /* Out of reverse wrappers. */
     assert(0);
+}
+
+void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
+{
+    memcpy(msg_out, msg_in, sizeof(*msg_out));
+
+    switch (msg_in->message)
+    {
+        case WM_TIMER:
+        case WM_SYSTIMER:
+            msg_out->lParam = (LPARAM)wndproc_guest_to_host(msg_in->lParam);
+            break;
+
+        default:
+            break;
+    }
+}
+
+void msg_host_to_guest(MSG *msg_out, const MSG *msg_in)
+{
+    memcpy(msg_out, msg_in, sizeof(*msg_out));
+
+    switch (msg_in->message)
+    {
+        case WM_TIMER:
+        case WM_SYSTIMER:
+            msg_out->lParam = wndproc_host_to_guest((WNDPROC)msg_in->lParam);
+            break;
+
+        default:
+            break;
+    }
 }
 
 BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)

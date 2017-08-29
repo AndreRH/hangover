@@ -68,6 +68,15 @@ void qemu_SendMessageTimeoutW(struct qemu_syscall *call)
 {
     struct qemu_SendMessageTimeoutW *c = (struct qemu_SendMessageTimeoutW *)call;
     WINE_FIXME("Unverified!\n");
+
+    switch (c->msg)
+    {
+        case WM_TIMER:
+        case WM_SYSTIMER:
+            WINE_FIXME("Do I have to fix up WM_TIMER.lParam here?\n");
+            break;
+    }
+
     c->super.iret = SendMessageTimeoutW(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam, c->flags, c->timeout, QEMU_G2H(c->res_ptr));
 }
 
@@ -110,6 +119,15 @@ void qemu_SendMessageTimeoutA(struct qemu_syscall *call)
 {
     struct qemu_SendMessageTimeoutA *c = (struct qemu_SendMessageTimeoutA *)call;
     WINE_FIXME("Unverified!\n");
+
+    switch (c->msg)
+    {
+        case WM_TIMER:
+        case WM_SYSTIMER:
+            WINE_FIXME("Do I have to fix up WM_TIMER.lParam here?\n");
+            break;
+    }
+
     c->super.iret = SendMessageTimeoutA(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam, c->flags, c->timeout, QEMU_G2H(c->res_ptr));
 }
 
@@ -146,6 +164,15 @@ void qemu_SendMessageW(struct qemu_syscall *call)
 {
     struct qemu_SendMessageW *c = (struct qemu_SendMessageW *)call;
     WINE_TRACE("\n");
+
+    switch (c->msg)
+    {
+        case WM_TIMER:
+        case WM_SYSTIMER:
+            WINE_FIXME("Do I have to fix up WM_TIMER.lParam here?\n");
+            break;
+    }
+
     c->super.iret = SendMessageW(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam);
 }
 
@@ -182,6 +209,15 @@ void qemu_SendMessageA(struct qemu_syscall *call)
 {
     struct qemu_SendMessageA *c = (struct qemu_SendMessageA *)call;
     WINE_TRACE("\n");
+
+    switch (c->msg)
+    {
+        case WM_TIMER:
+        case WM_SYSTIMER:
+            WINE_FIXME("Do I have to fix up WM_TIMER.lParam here?\n");
+            break;
+    }
+
     c->super.iret = SendMessageA(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam);
 }
 
@@ -458,6 +494,15 @@ void qemu_PostMessageA(struct qemu_syscall *call)
 {
     struct qemu_PostMessageA *c = (struct qemu_PostMessageA *)call;
     WINE_TRACE("\n");
+
+    switch (c->msg)
+    {
+        case WM_TIMER:
+        case WM_SYSTIMER:
+            WINE_FIXME("Do I have to fix up WM_TIMER.lParam here?\n");
+            break;
+    }
+
     c->super.iret = PostMessageA(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam);
 }
 
@@ -494,6 +539,15 @@ void qemu_PostMessageW(struct qemu_syscall *call)
 {
     struct qemu_PostMessageW *c = (struct qemu_PostMessageW *)call;
     WINE_TRACE("\n");
+
+    switch (c->msg)
+    {
+        case WM_TIMER:
+        case WM_SYSTIMER:
+            WINE_FIXME("Do I have to fix up WM_TIMER.lParam here?\n");
+            break;
+    }
+
     c->super.iret = PostMessageW(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam);
 }
 
@@ -635,6 +689,8 @@ void qemu_PeekMessageW(struct qemu_syscall *call)
     struct qemu_PeekMessageW *c = (struct qemu_PeekMessageW *)call;
     WINE_TRACE("\n");
     c->super.iret = PeekMessageW(QEMU_G2H(c->msg_out), QEMU_G2H(c->hwnd), c->first, c->last, c->flags);
+
+    /* FIXME: WM_TIMER's lParam? */
 }
 
 #endif
@@ -673,6 +729,8 @@ void qemu_PeekMessageA(struct qemu_syscall *call)
     struct qemu_PeekMessageA *c = (struct qemu_PeekMessageA *)call;
     WINE_TRACE("\n");
     c->super.iret = PeekMessageA(QEMU_G2H(c->msg), QEMU_G2H(c->hwnd), c->first, c->last, c->flags);
+
+    /* FIXME: WM_TIMER's lParam? */
 }
 
 #endif
@@ -709,6 +767,8 @@ void qemu_GetMessageW(struct qemu_syscall *call)
     struct qemu_GetMessageW *c = (struct qemu_GetMessageW *)call;
     WINE_TRACE("\n");
     c->super.iret = GetMessageW(QEMU_G2H(c->msg), (HWND)c->hwnd, c->first, c->last);
+
+    /* FIXME: WM_TIMER's lParam? */
 }
 
 #endif
@@ -745,6 +805,8 @@ void qemu_GetMessageA(struct qemu_syscall *call)
     struct qemu_GetMessageA *c = (struct qemu_GetMessageA *)call;
     WINE_TRACE("\n");
     c->super.iret = GetMessageA(QEMU_G2H(c->msg), (HWND)c->hwnd, c->first, c->last);
+
+    /* FIXME: WM_TIMER's lParam? */
 }
 
 #endif
@@ -835,8 +897,14 @@ WINUSERAPI LRESULT WINAPI DispatchMessageA(const MSG* msg)
 void qemu_DispatchMessageA(struct qemu_syscall *call)
 {
     struct qemu_DispatchMessageA *c = (struct qemu_DispatchMessageA *)call;
+    MSG *msg_in;
+    MSG msg_out;
+
     WINE_TRACE("\n");
-    c->super.iret = DispatchMessageA(QEMU_G2H(c->msg));
+    msg_in = QEMU_G2H(c->msg);
+    msg_guest_to_host(&msg_out, msg_in);
+
+    c->super.iret = DispatchMessageA(&msg_out);
 }
 
 #endif
@@ -865,8 +933,14 @@ WINUSERAPI LRESULT WINAPI DispatchMessageW(const MSG* msg)
 void qemu_DispatchMessageW(struct qemu_syscall *call)
 {
     struct qemu_DispatchMessageW *c = (struct qemu_DispatchMessageW *)call;
+    MSG *msg_in;
+    MSG msg_out;
+
     WINE_TRACE("\n");
-    c->super.iret = DispatchMessageW(QEMU_G2H(c->msg));
+    msg_in = QEMU_G2H(c->msg);
+    msg_guest_to_host(&msg_out, msg_in);
+
+    c->super.iret = DispatchMessageW(&msg_out);
 }
 
 #endif
