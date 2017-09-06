@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <excpt.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -42,11 +43,35 @@ struct wndproc_call
 
 #ifdef QEMU_DLL_GUEST
 
+long CALLBACK wndproc_except_handler(EXCEPTION_POINTERS *pointers, ULONG64 frame)
+{
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+
 static LRESULT wndproc_wrapper(const struct wndproc_call *call)
 {
     WNDPROC proc = (WNDPROC)call->wndproc;
+    LRESULT ret = 0;
 
-    return proc((HWND)call->win, call->msg, call->wparam, call->lparam);
+    /* TODO: It would be nicer to re-throw the exception to the host so Wine can
+     * decide what to do with it. See if the 'frame' parameter can be used to pass
+     * a pointer to store exception info to the handler. */
+    if (call->msg == WM_TIMER || call->msg == WM_SYSTIMER)
+    {
+        __try1(wndproc_except_handler)
+        {
+            ret = proc((HWND)call->win, call->msg, call->wparam, call->lparam);
+        }
+        __except1
+        {
+        }
+    }
+    else
+    {
+        ret = proc((HWND)call->win, call->msg, call->wparam, call->lparam);
+    }
+
+    return ret;
 }
 
 BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
