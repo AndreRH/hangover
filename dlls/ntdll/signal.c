@@ -29,6 +29,14 @@
 #include "dll_list.h"
 #include "ntdll.h"
 
+struct qemu_ExceptDebug
+{
+    struct qemu_syscall super;
+    uint64_t string;
+    uint64_t num_params;
+    uint64_t p1, p2, p3, p4, p5;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 #define NtCurrentProcess() ( (HANDLE)(LONG_PTR) -1 )
@@ -395,6 +403,7 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
     CONTEXT new_context;
     NTSTATUS status;
     DWORD i;
+    struct qemu_ExceptDebug call;
 
     ntdll_RtlCaptureContext( context );
     new_context = *context;
@@ -412,8 +421,16 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
 
     rec->ExceptionFlags |= EH_UNWINDING | (end_frame ? 0 : EH_EXIT_UNWIND);
 
-    /*TRACE( "code=%x flags=%x end_frame=%p target_ip=%p rip=%016lx\n",
-           rec->ExceptionCode, rec->ExceptionFlags, end_frame, target_ip, context->Rip );
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLUNWINDEX);
+    call.string = (uint64_t)"code=%lx flags=%lx end_frame=%p target_ip=%p rip=%016lx\n";
+    call.p1 = rec->ExceptionCode;
+    call.p2 = rec->ExceptionFlags;
+    call.p3 = (uint64_t)end_frame;
+    call.p4 = (uint64_t)target_ip;
+    call.p5 = context->Rip;
+    call.num_params = 5;
+
+    /*
     for (i = 0; i < min( EXCEPTION_MAXIMUM_PARAMETERS, rec->NumberParameters ); i++)
         TRACE( " info[%d]=%016lx\n", i, rec->ExceptionInformation[i] );
     TRACE(" rax=%016lx rbx=%016lx rcx=%016lx rdx=%016lx\n",
@@ -446,6 +463,13 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
                                                          context->Rip, dispatch.FunctionEntry,
                                                          &new_context, &dispatch.HandlerData,
                                                          &dispatch.EstablisherFrame, NULL );
+            call.string = (uint64_t)"Found handler %p in function entry %p (pc %p).\n";
+            call.p1 = (uint64_t)dispatch.LanguageHandler;
+            call.p2 = (uint64_t)dispatch.FunctionEntry;
+            call.p3 = (uint64_t)context->Rip;
+            call.num_params = 3;
+            qemu_syscall(&call.super);
+
             goto unwind_done;
         }
 
@@ -456,13 +480,24 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
         dispatch.EstablisherFrame = new_context.Rsp;
         dispatch.LanguageHandler = NULL;
 
+        call.string = (uint64_t)"Leaf function Rip=%p, Rsp=%p.\n";
+        call.p1 = (uint64_t)new_context.Rip;
+        call.p2 = (uint64_t)new_context.Rsp;
+        call.num_params = 2;
+        qemu_syscall(&call.super);
+
     unwind_done:
         if (!dispatch.EstablisherFrame) break;
 
         if (is_inside_signal_stack( (void *)dispatch.EstablisherFrame ))
         {
-            /*TRACE( "frame %lx is inside signal stack (%p-%p)\n", dispatch.EstablisherFrame,
-                   get_signal_stack(), (char *)get_signal_stack() + signal_stack_size );*/
+            call.string = (uint64_t)"frame %lx is inside signal stack (%p-%p)\n";
+            call.p1 = dispatch.EstablisherFrame;
+            call.p2 = (uint64_t)get_signal_stack();
+            call.p3 = (uint64_t)get_signal_stack() + signal_stack_size;
+            call.num_params = 3;
+            qemu_syscall(&call.super);
+
             *context = new_context;
             continue;
         }
@@ -481,7 +516,12 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
         {
             if (end_frame && (dispatch.EstablisherFrame > (ULONG64)end_frame))
             {
-                /*ERR( "invalid end frame %lx/%p\n", dispatch.EstablisherFrame, end_frame );*/
+                call.string = (uint64_t)"invalid end frame %lx/%p\n";
+                call.p1 = dispatch.EstablisherFrame;
+                call.p2 = (uint64_t)end_frame;
+                call.num_params = 2;
+                qemu_syscall(&call.super);
+
                 /*raise_status( STATUS_INVALID_UNWIND_TARGET, rec );*/
             }
             if (dispatch.EstablisherFrame == (ULONG64)end_frame) rec->ExceptionFlags |= EH_TARGET_UNWIND;
@@ -500,9 +540,20 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
             rec->ExceptionFlags &= ~EH_COLLIDED_UNWIND;
         }
 
+        call.string = (uint64_t)"Current frame %lx, searching for end frame %lx\n";
+        call.p1 = dispatch.EstablisherFrame;
+        call.p2 = (uint64_t)end_frame;
+        call.num_params = 2;
+        qemu_syscall(&call.super);
+
         if (dispatch.EstablisherFrame == (ULONG64)end_frame) break;
         *context = new_context;
     }
+
+    call.string = (uint64_t)"All done, jumping to %p\n";
+    call.p1 = (uint64_t)target_ip;
+    call.num_params = 1;
+    qemu_syscall(&call.super);
 
     context->Rax = (ULONG64)retval;
     context->Rip = (ULONG64)target_ip;
@@ -521,13 +572,23 @@ NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec
 {
     SCOPE_TABLE *table = dispatch->HandlerData;
     ULONG i;
-    struct qemu_syscall call;
+    struct qemu_ExceptDebug call;
 
-    /*TRACE( "%p %lx %p %p\n", rec, frame, context, dispatch );
-    if (TRACE_ON(seh)) dump_scope_table( dispatch->ImageBase, table );*/
+    call.super.id = QEMU_SYSCALL_ID(CALL___C_SPECIFIC_HANDLER);
+    call.string = (uint64_t)"Record %p, frame %p, context %p, dispatch %p.\n";
+    call.p1 = (uint64_t)rec;
+    call.p2 = frame;
+    call.p3 = (uint64_t)context;
+    call.p4 = (uint64_t)dispatch;
+    call.num_params = 4;
+    qemu_syscall(&call.super);
 
     if (rec->ExceptionFlags & (EH_UNWINDING | EH_EXIT_UNWIND))
     {
+        call.string = (uint64_t)"Unwinding.\n";
+        call.num_params = 0;
+        qemu_syscall(&call.super);
+
         for (i = dispatch->ScopeIndex; i < table->Count; i++)
         {
             if (dispatch->ControlPc >= dispatch->ImageBase + table->ScopeRecord[i].BeginAddress &&
@@ -547,7 +608,12 @@ NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec
                 handler = (TERMINATION_HANDLER)(dispatch->ImageBase + table->ScopeRecord[i].HandlerAddress);
                 dispatch->ScopeIndex = i+1;
 
-                /*TRACE( "calling __finally %p frame %lx\n", handler, frame );*/
+                call.string = (uint64_t)"calling __finally %p frame %lx\n";
+                call.p1 = (uint64_t)handler;
+                call.p2 = frame;
+                call.num_params = 2;
+                qemu_syscall(&call.super);
+
                 handler( 1, frame );
             }
         }
@@ -568,18 +634,38 @@ NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec
                 filter = (PC_LANGUAGE_EXCEPTION_HANDLER)(dispatch->ImageBase + table->ScopeRecord[i].HandlerAddress);
                 ptrs.ExceptionRecord = rec;
                 ptrs.ContextRecord = context;
-                /*TRACE( "calling filter %p ptrs %p frame %lx\n", filter, &ptrs, frame );*/
+
+                call.string = (uint64_t)"calling filter %p ptrs %p frame %lx\n";
+                call.p1 = (uint64_t)filter;
+                call.p2 = (uint64_t)&ptrs;
+                call.p3 = frame;
+                call.num_params = 3;
+                qemu_syscall(&call.super);
+
+                call.num_params = 0;
                 switch (filter( &ptrs, frame ))
                 {
                 case EXCEPTION_EXECUTE_HANDLER:
+                    call.string = (uint64_t)"Filter returned EXCEPTION_EXECUTE_HANDLER\n";
+                    qemu_syscall(&call.super);
                     break;
                 case EXCEPTION_CONTINUE_SEARCH:
+                    call.string = (uint64_t)"Filter returned EXCEPTION_CONTINUE_SEARCH\n";
+                    qemu_syscall(&call.super);
                     continue;
                 case EXCEPTION_CONTINUE_EXECUTION:
+                    call.string = (uint64_t)"Filter returned EXCEPTION_CONTINUE_EXECUTION\n";
+                    qemu_syscall(&call.super);
                     return ExceptionContinueExecution;
                 }
             }
-            /*TRACE( "unwinding to target %lx\n", dispatch->ImageBase + table->ScopeRecord[i].JumpTarget );*/
+
+            call.string = (uint64_t)"unwinding to target %lx, end frame %lx\n";
+            call.p1 = dispatch->ImageBase + table->ScopeRecord[i].JumpTarget;
+            call.p2 = frame;
+            call.num_params = 2;
+            qemu_syscall(&call.super);
+
             ntdll_RtlUnwindEx( (void *)frame, (char *)dispatch->ImageBase + table->ScopeRecord[i].JumpTarget,
                          rec, 0, dispatch->ContextRecord, dispatch->HistoryTable );
         }
@@ -594,9 +680,62 @@ void qemu_RtlRestoreContext(struct qemu_syscall *call)
     WINE_TRACE("\n");
 }
 
+void qemu_RtlUnwindEx(struct qemu_syscall *call)
+{
+    struct qemu_ExceptDebug *c = (struct qemu_ExceptDebug *)call;
+
+    switch (c->num_params)
+    {
+        case 5:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1, c->p2, c->p3, c->p4, c->p5);
+            break;
+        case 4:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1, c->p2, c->p3, c->p4);
+            break;
+        case 3:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1, c->p2, c->p3);
+            break;
+        case 2:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1, c->p2);
+            break;
+        case 1:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1);
+            break;
+        case 0:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), 0); /* Hmm, why do I need one arg? */
+            break;
+    }
+
+    c->super.iret = WINE_TRACE_ON(qemu_ntdll);
+}
+
 void qemu___C_specific_handler(struct qemu_syscall *call)
 {
-    WINE_TRACE("\n");
+    struct qemu_ExceptDebug *c = (struct qemu_ExceptDebug *)call;
+
+    switch (c->num_params)
+    {
+        case 5:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1, c->p2, c->p3, c->p4, c->p5);
+            break;
+        case 4:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1, c->p2, c->p3, c->p4);
+            break;
+        case 3:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1, c->p2, c->p3);
+            break;
+        case 2:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1, c->p2);
+            break;
+        case 1:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1);
+            break;
+        case 0:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), 0); /* Hmm, why do I need one arg? */
+            break;
+    }
+
+    c->super.iret = WINE_TRACE_ON(qemu_ntdll);
 }
 
 #endif
@@ -924,11 +1063,14 @@ PEXCEPTION_ROUTINE WINAPI ntdll_RtlVirtualUnwind(DWORD type, DWORD64 base, DWORD
     ULONG64 frame, off;
     struct UNWIND_INFO *info;
     unsigned int i, prolog_offset;
-    struct qemu_syscall call;
+    struct qemu_ExceptDebug call;
 
-    /* For tracing only. */
-    call.id = QEMU_SYSCALL_ID(CALL_RTLVIRTUALUNWIND);
-    qemu_syscall(&call);
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLVIRTUALUNWIND);
+    call.string = (uint64_t)"PC %p, start frame %p\n";
+    call.p1 = (uint64_t)pc;
+    call.p2 = context->Rsp;
+    call.num_params = 2;
+    qemu_syscall(&call.super);
 
     frame = *frame_ret = context->Rsp;
     for (;;)
@@ -938,7 +1080,12 @@ PEXCEPTION_ROUTINE WINAPI ntdll_RtlVirtualUnwind(DWORD type, DWORD64 base, DWORD
 
         if (info->version != 1)
         {
-            /*FIXME( "unknown unwind info version %u at %p\n", info->version, info );*/
+            call.super.id = QEMU_SYSCALL_ID(CALL_RTLVIRTUALUNWIND);
+            call.string = (uint64_t)"unknown unwind info version %u at %p\n";
+            call.p1 = info->version;
+            call.p2 = (uint64_t)info;
+            call.num_params = 2;
+            qemu_syscall(&call.super);
             return NULL;
         }
 
@@ -957,6 +1104,12 @@ PEXCEPTION_ROUTINE WINAPI ntdll_RtlVirtualUnwind(DWORD type, DWORD64 base, DWORD
             {
                 interpret_epilog( (BYTE *)pc, context, ctx_ptr );
                 *frame_ret = frame;
+
+                call.string = (uint64_t)"In epilog? %p\n";
+                call.p1 = (uint64_t)pc;
+                call.num_params = 1;
+                qemu_syscall(&call.super);
+
                 return NULL;
             }
         }
@@ -1014,8 +1167,28 @@ PEXCEPTION_ROUTINE WINAPI ntdll_RtlVirtualUnwind(DWORD type, DWORD64 base, DWORD
     context->Rip = *(ULONG64 *)context->Rsp;
     context->Rsp += sizeof(ULONG64);
 
-    if (!(info->flags & type)) return NULL;  /* no matching handler */
-    if (prolog_offset != ~0) return NULL;  /* inside prolog */
+    if (!(info->flags & type))
+    {
+        call.string = (uint64_t)"No matching handler?\n";
+        call.num_params = 0;
+        qemu_syscall(&call.super);
+
+        return NULL;  /* no matching handler */
+    }
+    if (prolog_offset != ~0)
+    {
+        call.string = (uint64_t)"In prolog?\n";
+        call.num_params = 0;
+        qemu_syscall(&call.super);
+
+        return NULL;  /* inside prolog */
+    }
+
+    call.string = (uint64_t)"Found function %p, EstablisherFrame %p.\n";
+    call.p1 = (uint64_t)((char *)base + handler_data->handler);
+    call.p2 = *frame_ret;
+    call.num_params = 2;
+    qemu_syscall(&call.super);
 
     *data = &handler_data->handler + 1;
     return (EXCEPTION_ROUTINE*)((char *)base + handler_data->handler);
@@ -1025,7 +1198,31 @@ PEXCEPTION_ROUTINE WINAPI ntdll_RtlVirtualUnwind(DWORD type, DWORD64 base, DWORD
 
 void qemu_RtlVirtualUnwind(struct qemu_syscall *call)
 {
-    WINE_TRACE("Stub!\n");
+    struct qemu_ExceptDebug *c = (struct qemu_ExceptDebug *)call;
+
+    switch (c->num_params)
+    {
+        case 5:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1, c->p2, c->p3, c->p4, c->p5);
+            break;
+        case 4:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1, c->p2, c->p3, c->p4);
+            break;
+        case 3:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1, c->p2, c->p3);
+            break;
+        case 2:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1, c->p2);
+            break;
+        case 1:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1);
+            break;
+        case 0:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), 0); /* Hmm, why do I need one arg? */
+            break;
+    }
+
+    c->super.iret = WINE_TRACE_ON(qemu_ntdll);
 }
 
 #endif
@@ -1050,11 +1247,14 @@ static NTSTATUS call_stack_handlers( EXCEPTION_RECORD *rec, CONTEXT *orig_contex
     CONTEXT context;
     LDR_MODULE *module;
     NTSTATUS status;
+    struct qemu_ExceptDebug call;
 
     context = *orig_context;
     dispatch.TargetIp      = 0;
     dispatch.ContextRecord = &context;
     dispatch.HistoryTable  = &table;
+    call.super.id = QEMU_SYSCALL_ID(CALL_NTRAISEEXCEPTION);
+
     for (;;)
     {
         /* FIXME: should use the history table to make things faster */
@@ -1071,6 +1271,15 @@ static NTSTATUS call_stack_handlers( EXCEPTION_RECORD *rec, CONTEXT *orig_contex
                                                          dispatch.ControlPc, dispatch.FunctionEntry,
                                                          &context, &dispatch.HandlerData,
                                                          &dispatch.EstablisherFrame, NULL );
+
+            call.string = (uint64_t)"Found handler %p in function entry %p(pc %p), frame %p.\n";
+            call.p1 = (uint64_t)dispatch.LanguageHandler;
+            call.p2 = (uint64_t)dispatch.FunctionEntry;
+            call.p3 = (uint64_t)dispatch.ControlPc;
+            call.p4 = dispatch.EstablisherFrame;
+            call.num_params = 4;
+            qemu_syscall(&call.super);
+
             goto unwind_done;
         }
 
@@ -1079,6 +1288,12 @@ static NTSTATUS call_stack_handlers( EXCEPTION_RECORD *rec, CONTEXT *orig_contex
         dispatch.EstablisherFrame = context.Rsp;
         dispatch.LanguageHandler = NULL;
 
+        call.string = (uint64_t)"Leaf function Rip=%p, Rsp=%p.\n";
+        call.p1 = (uint64_t)context.Rip;
+        call.p2 = (uint64_t)context.Rsp;
+        call.num_params = 2;
+        qemu_syscall(&call.super);
+
     unwind_done:
         if (!dispatch.EstablisherFrame) break;
 
@@ -1086,15 +1301,34 @@ static NTSTATUS call_stack_handlers( EXCEPTION_RECORD *rec, CONTEXT *orig_contex
             dispatch.EstablisherFrame < (ULONG64)((NT_TIB *)NtCurrentTeb())->StackLimit ||
             dispatch.EstablisherFrame > (ULONG64)((NT_TIB *)NtCurrentTeb())->StackBase)
         {
-            /*ERR( "invalid frame %lx (%p-%p)\n", dispatch.EstablisherFrame,
-                 NtCurrentTeb()->Tib.StackLimit, NtCurrentTeb()->Tib.StackBase );*/
+            call.string = (uint64_t)"invalid frame %lx (%p-%p).\n";
+            call.p1 = dispatch.EstablisherFrame;
+            call.p2 = (uint64_t)((NT_TIB *)NtCurrentTeb())->StackLimit;
+            call.p3 = (uint64_t)((NT_TIB *)NtCurrentTeb())->StackBase;
+            call.num_params = 3;
+            qemu_syscall(&call.super);
+
             rec->ExceptionFlags |= EH_STACK_INVALID;
             break;
         }
 
         if (dispatch.LanguageHandler)
         {
-            switch (call_handler( rec, orig_context, &dispatch ))
+            DWORD ret;
+
+            call.string = (uint64_t)"Calling handler %p.\n";
+            call.p1 = (uint64_t)dispatch.LanguageHandler;
+            call.num_params = 1;
+            qemu_syscall(&call.super);
+
+            ret = call_handler( rec, orig_context, &dispatch );
+
+            call.string = (uint64_t)"Handler returned %lu.\n";
+            call.p1 = ret;
+            call.num_params = 1;
+            qemu_syscall(&call.super);
+
+            switch (ret)
             {
             case ExceptionContinueExecution:
                 if (rec->ExceptionFlags & EH_NONCONTINUABLE) return STATUS_NONCONTINUABLE_EXCEPTION;
@@ -1128,10 +1362,15 @@ static NTSTATUS call_stack_handlers( EXCEPTION_RECORD *rec, CONTEXT *orig_contex
 NTSTATUS WINAPI ntdll_NtRaiseException( EXCEPTION_RECORD *rec, CONTEXT *context, BOOL first_chance )
 {
     NTSTATUS status;
-    struct qemu_syscall call;
+    struct qemu_ExceptDebug call;
 
-    call.id = QEMU_SYSCALL_ID(CALL_NTRAISEEXCEPTION);
-    qemu_syscall(&call);
+    call.super.id = QEMU_SYSCALL_ID(CALL_NTRAISEEXCEPTION);
+    call.string = (uint64_t)"Exception %p, context %p, first chance %lu\n";
+    call.p1 = (uint64_t)rec;
+    call.p2 = (uint64_t)context;
+    call.p3 = first_chance;
+    call.num_params = 3;
+    qemu_syscall(&call.super);
 
     if (first_chance)
     {
@@ -1203,7 +1442,31 @@ done:
 
 void qemu_NtRaiseException(struct qemu_syscall *call)
 {
-    WINE_TRACE("\n");
+    struct qemu_ExceptDebug *c = (struct qemu_ExceptDebug *)call;
+
+    switch (c->num_params)
+    {
+        case 5:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1, c->p2, c->p3, c->p4, c->p5);
+            break;
+        case 4:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1, c->p2, c->p3, c->p4);
+            break;
+        case 3:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1, c->p2, c->p3);
+            break;
+        case 2:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1, c->p2);
+            break;
+        case 1:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), c->p1);
+            break;
+        case 0:
+            WINE_TRACE((const char *)QEMU_G2H(c->string), 0); /* Hmm, why do I need one arg? */
+            break;
+    }
+
+    c->super.iret = WINE_TRACE_ON(qemu_ntdll);
 }
 
 #endif

@@ -408,6 +408,7 @@ enum ntdll_calls
     CALL_RTLUNICODETOOEMN,
     CALL_RTLUNIFORM,
     CALL_RTLUNLOCKHEAP,
+    CALL_RTLUNWINDEX,
     CALL_RTLUPCASEUNICODECHAR,
     CALL_RTLUPCASEUNICODESTRING,
     CALL_RTLUPCASEUNICODESTRINGTOANSISTRING,
@@ -873,6 +874,7 @@ void qemu_RtlUnicodeToMultiByteSize(struct qemu_syscall *call);
 void qemu_RtlUnicodeToOemN(struct qemu_syscall *call);
 void qemu_RtlUniform(struct qemu_syscall *call);
 void qemu_RtlUnlockHeap(struct qemu_syscall *call);
+void qemu_RtlUnwindEx(struct qemu_syscall *call);
 void qemu_RtlUpcaseUnicodeChar(struct qemu_syscall *call);
 void qemu_RtlUpcaseUnicodeString(struct qemu_syscall *call);
 void qemu_RtlUpcaseUnicodeStringToAnsiString(struct qemu_syscall *call);

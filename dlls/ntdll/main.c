@@ -467,6 +467,7 @@ static const syscall_handler dll_functions[] =
     qemu_RtlUnicodeToOemN,
     qemu_RtlUniform,
     qemu_RtlUnlockHeap,
+    qemu_RtlUnwindEx,
     qemu_RtlUpcaseUnicodeChar,
     qemu_RtlUpcaseUnicodeString,
     qemu_RtlUpcaseUnicodeStringToAnsiString,
