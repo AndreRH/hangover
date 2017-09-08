@@ -411,7 +411,7 @@ static int CDECL vfprintf_helper(uint64_t op, FILE *file, const char *format, va
 
 int CDECL MSVCRT_vfprintf(FILE *file, const char *format, va_list args)
 {
-    vfprintf_helper(QEMU_SYSCALL_ID(CALL_FPRINTF), file, format, args);
+    return vfprintf_helper(QEMU_SYSCALL_ID(CALL_FPRINTF), file, format, args);
 }
 
 int CDECL MSVCRT_fprintf(FILE *file, const char *format, ...)
@@ -554,7 +554,7 @@ static int CDECL vfwprintf_helper(uint64_t op, FILE *file, const WCHAR *format, 
 
 int CDECL MSVCRT_vfwprintf(FILE *file, const WCHAR *format, va_list args)
 {
-    vfwprintf_helper(QEMU_SYSCALL_ID(CALL_FWPRINTF), file, format, args);
+    return vfwprintf_helper(QEMU_SYSCALL_ID(CALL_FWPRINTF), file, format, args);
 }
 
 int CDECL MSVCRT_fwprintf(FILE *file, const WCHAR *format, ...)

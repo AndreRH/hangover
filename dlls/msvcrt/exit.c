@@ -89,6 +89,8 @@ static int guest_onexit_callback(void)
         if (MSVCRT_atexit_table[MSVCRT_atexit_registered])
             (*MSVCRT_atexit_table[MSVCRT_atexit_registered])();
     }
+
+    return 0; /* ??* */
 }
 
 MSVCRT__onexit_t CDECL MSVCRT__onexit(MSVCRT__onexit_t func)
