@@ -1793,6 +1793,8 @@ WINBASEAPI BOOL WINAPI SetConsoleCtrlHandler(PHANDLER_ROUTINE routine, BOOL Add)
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCONSOLECTRLHANDLER);
     call.wrapper = (uint64_t)call_ctrl_handler;
     qemu_syscall(&call.super);
+
+    return call.super.iret;
 }
 
 #else
@@ -1817,12 +1819,13 @@ void qemu_SetConsoleCtrlHandler(struct qemu_syscall *call)
 
     if (!console_handler_wrapper)
     {
-        SetConsoleCtrlHandler(qemu_console_handler, TRUE);
+        c->super.iret = SetConsoleCtrlHandler(qemu_console_handler, TRUE);
         console_handler_wrapper = QEMU_G2H(c->wrapper);
     }
     else if (console_handler_wrapper != QEMU_G2H(c->wrapper))
     {
         WINE_ERR("Got different console handler wrappers.\n");
+        c->super.iret = FALSE;
     }
 }
 
