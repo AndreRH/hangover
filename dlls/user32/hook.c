@@ -239,6 +239,16 @@ static LRESULT CALLBACK qemu_GETMESSAGE_wrapper(int code, WPARAM wp, LPARAM lp)
     return qemu_hook_wrapper(code, wp, lp, data);
 }
 
+static LRESULT CALLBACK qemu_CALLWNDPROC_wrapper(int code, WPARAM wp, LPARAM lp)
+{
+    struct qemu_hook_data *data = installed_hooks[WH_CALLWNDPROC - WH_MIN][0];
+
+    if (!data || !data->hook_id)
+        WINE_ERR("CALLWNDPROC hook callback called but no hook is installed.\n");
+
+    return qemu_hook_wrapper(code, wp, lp, data);
+}
+
 static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, BOOL unicode)
 {
     HOOKPROC real_proc;
@@ -350,6 +360,21 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
             if (installed_hooks[WH_GETMESSAGE - WH_MIN][0])
             {
                 WINE_FIXME("A WH_GETMESSAGE hook is already installed.\n");
+                LeaveCriticalSection(&hook_cs);
+                HeapFree(GetProcessHeap(), 0, hook_data);
+                return NULL;
+            }
+            break;
+
+        case WH_CALLWNDPROC:
+            /* This hook can be global. */
+            WINE_FIXME("(WH_CALLWNDPROC, 0x%lx, 0x%lx, %x, %u).\n", proc, inst, tid, unicode);
+
+            real_proc = qemu_CALLWNDPROC_wrapper;
+            real_mod = 0;
+            if (installed_hooks[WH_CALLWNDPROC - WH_MIN][0])
+            {
+                WINE_FIXME("A WH_CALLWNDPROC hook is already installed.\n");
                 LeaveCriticalSection(&hook_cs);
                 HeapFree(GetProcessHeap(), 0, hook_data);
                 return NULL;
