@@ -22,5 +22,48 @@ EXPORTS
   CreatePropertySheetPageA
   CreatePropertySheetPageW
   DestroyPropertySheetPage
+  HIMAGELIST_QueryInterface
+  ImageList_Add
+  ImageList_AddIcon=qemu_ImageList_AddIcon
+  ImageList_AddMasked
+  ImageList_BeginDrag
+  ImageList_CoCreateInstance
+  ImageList_Copy
+  ImageList_Create
+  ImageList_Destroy
+  ImageList_DragEnter
+  ImageList_DragLeave
+  ImageList_DragMove
+  ImageList_DragShowNolock
+  ImageList_Draw
+  ImageList_DrawEx
+  ImageList_DrawIndirect
+  ImageList_Duplicate
+  ImageList_EndDrag
+  ImageList_GetBkColor
+  ImageList_GetDragImage
+  ImageList_GetFlags
+  ImageList_GetIcon
+  ImageList_GetIconSize
+  ImageList_GetImageCount
+  ImageList_GetImageInfo
+  ImageList_GetImageRect
+  ImageList_LoadImage=ImageList_LoadImageA
+  ImageList_LoadImageA
+  ImageList_LoadImageW
+  ImageList_Merge
+  ImageList_Read
+  ImageList_Remove
+  ImageList_Replace
+  ImageList_ReplaceIcon
+  ImageList_SetBkColor
+  ImageList_SetColorTable @390 NONAME
+  ImageList_SetDragCursorImage
+  ImageList_SetFilter
+  ImageList_SetFlags
+  ImageList_SetIconSize
+  ImageList_SetImageCount
+  ImageList_SetOverlayImage
+  ImageList_Write
   PropertySheetA
   PropertySheetW

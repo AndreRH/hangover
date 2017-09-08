@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <commctrl.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -44,6 +45,48 @@ static const syscall_handler dll_functions[] =
     qemu_CreatePropertySheetPageA,
     qemu_CreatePropertySheetPageW,
     qemu_DestroyPropertySheetPage,
+    qemu_HIMAGELIST_QueryInterface,
+    qemu_ImageList_Add,
+    qemu_ImageList_AddIcon,
+    qemu_ImageList_AddMasked,
+    qemu_ImageList_BeginDrag,
+    qemu_ImageList_CoCreateInstance,
+    qemu_ImageList_Copy,
+    qemu_ImageList_Create,
+    qemu_ImageList_Destroy,
+    qemu_ImageList_DragEnter,
+    qemu_ImageList_DragLeave,
+    qemu_ImageList_DragMove,
+    qemu_ImageList_DragShowNolock,
+    qemu_ImageList_Draw,
+    qemu_ImageList_DrawEx,
+    qemu_ImageList_DrawIndirect,
+    qemu_ImageList_Duplicate,
+    qemu_ImageList_EndDrag,
+    qemu_ImageList_GetBkColor,
+    qemu_ImageList_GetDragImage,
+    qemu_ImageList_GetFlags,
+    qemu_ImageList_GetIcon,
+    qemu_ImageList_GetIconSize,
+    qemu_ImageList_GetImageCount,
+    qemu_ImageList_GetImageInfo,
+    qemu_ImageList_GetImageRect,
+    qemu_ImageList_LoadImageA,
+    qemu_ImageList_LoadImageW,
+    qemu_ImageList_Merge,
+    qemu_ImageList_Read,
+    qemu_ImageList_Remove,
+    qemu_ImageList_Replace,
+    qemu_ImageList_ReplaceIcon,
+    qemu_ImageList_SetBkColor,
+    qemu_ImageList_SetColorTable,
+    qemu_ImageList_SetDragCursorImage,
+    qemu_ImageList_SetFilter,
+    qemu_ImageList_SetFlags,
+    qemu_ImageList_SetIconSize,
+    qemu_ImageList_SetImageCount,
+    qemu_ImageList_SetOverlayImage,
+    qemu_ImageList_Write,
     qemu_InitCommonControls,
     qemu_PropertySheetA,
     qemu_PropertySheetW,
@@ -51,10 +94,17 @@ static const syscall_handler dll_functions[] =
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
+    HMODULE comctl32;
+
     WINE_TRACE("Loading host-side comctl32 wrapper.\n");
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
+
+    comctl32 = GetModuleHandleA("comctl32");
+    p_ImageList_SetColorTable = (void *)GetProcAddress(comctl32, MAKEINTRESOURCE(390));
+    if (!p_ImageList_SetColorTable)
+        WINE_ERR("Cannot resolve comctl32.390 (ImageList_SetColorTable).\n");
 
     return dll_functions;
 }

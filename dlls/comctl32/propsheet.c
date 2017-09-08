@@ -20,9 +20,7 @@
 
 #include <winsock2.h>
 #include <windows.h>
-#include <stdio.h>
-#include <ws2tcpip.h>
-#include <ws2spi.h>
+#include <commctrl.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
