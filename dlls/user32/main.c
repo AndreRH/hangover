@@ -1043,6 +1043,8 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
         default:
             break;
     }
+
+    return TRUE;
 }
 
 #endif
