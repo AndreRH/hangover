@@ -421,6 +421,10 @@ void qemu_CreateFileMappingA(struct qemu_syscall *call)
 {
     struct qemu_CreateFileMappingA *c = (struct qemu_CreateFileMappingA *)call;
     WINE_TRACE("\n");
+
+    if (c->protect & SEC_IMAGE)
+        WINE_FIXME("SEC_IMAGE mappings will be rejected by Wine.\n");
+
     c->super.iret = (uint64_t)CreateFileMappingA(QEMU_G2H(c->hFile), QEMU_G2H(c->sa), c->protect, c->size_high, c->size_low, QEMU_G2H(c->name));
 }
 
@@ -461,6 +465,10 @@ void qemu_CreateFileMappingW(struct qemu_syscall *call)
 {
     struct qemu_CreateFileMappingW *c = (struct qemu_CreateFileMappingW *)call;
     WINE_TRACE("\n");
+
+    if (c->protect & SEC_IMAGE)
+        WINE_FIXME("SEC_IMAGE mappings will be rejected by Wine.\n");
+
     c->super.iret = (uint64_t)CreateFileMappingW(QEMU_G2H(c->hFile), QEMU_G2H(c->sa), c->protect, c->size_high, c->size_low, QEMU_G2H(c->name));
 }
 
