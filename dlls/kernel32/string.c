@@ -209,7 +209,7 @@ WINBASEAPI LPWSTR WINAPI lstrcpynW(LPWSTR dst, LPCWSTR src, INT n)
     call.super.id = QEMU_SYSCALL_ID(CALL_LSTRCPYNW);
     call.dst = (uint64_t)dst;
     call.src = (uint64_t)src;
-    call.n = (uint64_t)n;
+    call.n = n;
 
     qemu_syscall(&call.super);
 
@@ -221,7 +221,7 @@ WINBASEAPI LPWSTR WINAPI lstrcpynW(LPWSTR dst, LPCWSTR src, INT n)
 void qemu_lstrcpynW(struct qemu_syscall *call)
 {
     struct qemu_lstrcpynW *c = (struct qemu_lstrcpynW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)lstrcpynW(QEMU_G2H(c->dst), QEMU_G2H(c->src), c->n);
 }
 
