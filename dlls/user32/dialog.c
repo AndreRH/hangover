@@ -113,8 +113,20 @@ WINUSERAPI HWND WINAPI CreateDialogParamW(HINSTANCE hInst, LPCWSTR name, HWND ow
 void qemu_CreateDialogParamW(struct qemu_syscall *call)
 {
     struct qemu_CreateDialogParamW *c = (struct qemu_CreateDialogParamW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateDialogParamW(QEMU_G2H(c->hInst), QEMU_G2H(c->name), QEMU_G2H(c->owner), QEMU_G2H(c->dlgProc), c->param);
+    DLGPROC wrapper = NULL;
+    HWND ret;
+    HINSTANCE inst;
+
+    WINE_TRACE("\n");
+
+    /* test/msg.c wants us to look in the main .exe file if instance = NULL. */
+    inst = QEMU_G2H(c->hInst);
+    if (!inst)
+        inst = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    wrapper = wndproc_guest_to_host(c->dlgProc);
+    c->super.iret = (uint64_t)CreateDialogParamW(inst, QEMU_G2H(c->name), QEMU_G2H(c->owner),
+            wrapper, c->param);
 }
 
 #endif
