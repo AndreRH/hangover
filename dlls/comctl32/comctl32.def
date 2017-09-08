@@ -1,13 +1,13 @@
 LIBRARY comctl32.dll BASE=0xb0000000
 
 EXPORTS
-  MenuHelp=ntdll.DbgBreakPoint @2
-  ShowHideMenuCtl=ntdll.DbgBreakPoint @3
-  GetEffectiveClientRect=ntdll.DbgBreakPoint @4
-  DrawStatusTextA=ntdll.DbgBreakPoint @5
-  CreateStatusWindowA=ntdll.DbgBreakPoint @6
-  CreateToolbar=ntdll.DbgBreakPoint @7
-  CreateMappedBitmap=ntdll.DbgBreakPoint @8
+  MenuHelp @2
+  ShowHideMenuCtl @3
+  GetEffectiveClientRect @4
+  DrawStatusTextA @5
+  CreateStatusWindowA @6
+  CreateToolbar @7
+  CreateMappedBitmap @8
   DPA_LoadStream=ntdll.DbgBreakPoint @9 NONAME
   DPA_SaveStream=ntdll.DbgBreakPoint @10 NONAME
   DPA_Merge=ntdll.DbgBreakPoint @11 NONAME
@@ -15,13 +15,23 @@ EXPORTS
   MakeDragList=ntdll.DbgBreakPoint @13
   LBItemFromPt=ntdll.DbgBreakPoint @14
   DrawInsert=ntdll.DbgBreakPoint @15
-  CreateUpDownControl=ntdll.DbgBreakPoint @16
+  CreateUpDownControl @16
   InitCommonControls @17
   dummy=ntdll.DbgBreakPoint @18
   dummy2=ntdll.DbgBreakPoint @19
+  _TrackMouseEvent
   CreatePropertySheetPageA
   CreatePropertySheetPageW
+  CreateStatusWindowW
+  CreateToolbarEx
+  DefSubclassProc
   DestroyPropertySheetPage
+  DllGetVersion PRIVATE
+  DllInstall PRIVATE
+  DrawShadowText
+  DrawStatusTextW
+  GetMUILanguage
+  GetWindowSubclass
   HIMAGELIST_QueryInterface
   ImageList_Add
   ImageList_AddIcon=qemu_ImageList_AddIcon
@@ -65,5 +75,13 @@ EXPORTS
   ImageList_SetImageCount
   ImageList_SetOverlayImage
   ImageList_Write
+  InitCommonControlsEx
+  InitMUILanguage
+  LoadIconMetric
+  LoadIconWithScaleDown
+  MirrorIcon
   PropertySheetA
   PropertySheetW
+  RemoveWindowSubclass
+  SetPathWordBreakProc
+  SetWindowSubclass

@@ -5,9 +5,25 @@
 
 enum comctl32_calls
 {
-    CALL_CREATEPROPERTYSHEETPAGEA = 0,
+    CALL__TRACKMOUSEEVENT = 0,
+    CALL_CREATEMAPPEDBITMAP,
+    CALL_CREATEPROPERTYSHEETPAGEA,
     CALL_CREATEPROPERTYSHEETPAGEW,
+    CALL_CREATESTATUSWINDOWA,
+    CALL_CREATESTATUSWINDOWW,
+    CALL_CREATETOOLBAR,
+    CALL_CREATETOOLBAREX,
+    CALL_CREATEUPDOWNCONTROL,
+    CALL_DEFSUBCLASSPROC,
     CALL_DESTROYPROPERTYSHEETPAGE,
+    CALL_DLLGETVERSION,
+    CALL_DLLINSTALL,
+    CALL_DRAWSHADOWTEXT,
+    CALL_DRAWSTATUSTEXTA,
+    CALL_DRAWSTATUSTEXTW,
+    CALL_GETEFFECTIVECLIENTRECT,
+    CALL_GETMUILANGUAGE,
+    CALL_GETWINDOWSUBCLASS,
     CALL_HIMAGELIST_QUERYINTERFACE,
     CALL_IMAGELIST_ADD,
     CALL_IMAGELIST_ADDICON,
@@ -51,17 +67,43 @@ enum comctl32_calls
     CALL_IMAGELIST_SETOVERLAYIMAGE,
     CALL_IMAGELIST_WRITE,
     CALL_INITCOMMONCONTROLS,
+    CALL_INITCOMMONCONTROLSEX,
+    CALL_INITMUILANGUAGE,
+    CALL_LOADICONMETRIC,
+    CALL_LOADICONWITHSCALEDOWN,
+    CALL_MENUHELP,
+    CALL_MIRRORICON,
     CALL_PROPERTYSHEETA,
     CALL_PROPERTYSHEETW,
+    CALL_REMOVEWINDOWSUBCLASS,
+    CALL_SETPATHWORDBREAKPROC,
+    CALL_SETWINDOWSUBCLASS,
+    CALL_SHOWHIDEMENUCTL,
 };
 
 #ifndef QEMU_DLL_GUEST
 
 extern const struct qemu_ops *qemu_ops;
 
+void qemu__TrackMouseEvent(struct qemu_syscall *call);
+void qemu_CreateMappedBitmap(struct qemu_syscall *call);
 void qemu_CreatePropertySheetPageA(struct qemu_syscall *call);
 void qemu_CreatePropertySheetPageW(struct qemu_syscall *call);
+void qemu_CreateStatusWindowA(struct qemu_syscall *call);
+void qemu_CreateStatusWindowW(struct qemu_syscall *call);
+void qemu_CreateToolbar(struct qemu_syscall *call);
+void qemu_CreateToolbarEx(struct qemu_syscall *call);
+void qemu_CreateUpDownControl(struct qemu_syscall *call);
+void qemu_DefSubclassProc(struct qemu_syscall *call);
 void qemu_DestroyPropertySheetPage(struct qemu_syscall *call);
+void qemu_DllGetVersion(struct qemu_syscall *call);
+void qemu_DllInstall(struct qemu_syscall *call);
+void qemu_DrawShadowText(struct qemu_syscall *call);
+void qemu_DrawStatusTextA(struct qemu_syscall *call);
+void qemu_DrawStatusTextW(struct qemu_syscall *call);
+void qemu_GetEffectiveClientRect(struct qemu_syscall *call);
+void qemu_GetMUILanguage(struct qemu_syscall *call);
+void qemu_GetWindowSubclass(struct qemu_syscall *call);
 void qemu_HIMAGELIST_QueryInterface(struct qemu_syscall *call);
 void qemu_ImageList_Add(struct qemu_syscall *call);
 void qemu_ImageList_AddIcon(struct qemu_syscall *call);
@@ -105,10 +147,21 @@ void qemu_ImageList_SetImageCount(struct qemu_syscall *call);
 void qemu_ImageList_SetOverlayImage(struct qemu_syscall *call);
 void qemu_ImageList_Write(struct qemu_syscall *call);
 void qemu_InitCommonControls(struct qemu_syscall *call);
+void qemu_InitCommonControlsEx(struct qemu_syscall *call);
+void qemu_InitMUILanguage(struct qemu_syscall *call);
+void qemu_LoadIconMetric(struct qemu_syscall *call);
+void qemu_LoadIconWithScaleDown(struct qemu_syscall *call);
+void qemu_MenuHelp(struct qemu_syscall *call);
+void qemu_MirrorIcon(struct qemu_syscall *call);
 void qemu_PropertySheetA(struct qemu_syscall *call);
 void qemu_PropertySheetW(struct qemu_syscall *call);
+void qemu_RemoveWindowSubclass(struct qemu_syscall *call);
+void qemu_SetPathWordBreakProc(struct qemu_syscall *call);
+void qemu_SetWindowSubclass(struct qemu_syscall *call);
+void qemu_ShowHideMenuCtl(struct qemu_syscall *call);
 
 UINT (* WINAPI p_ImageList_SetColorTable)(HIMAGELIST himl, UINT uStartIndex, UINT cEntries, const RGBQUAD *prgb);
+HRESULT (* WINAPI p_DllGetVersion)(void *pdvi);
 
 #endif
 

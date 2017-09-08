@@ -42,9 +42,25 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu__TrackMouseEvent,
+    qemu_CreateMappedBitmap,
     qemu_CreatePropertySheetPageA,
     qemu_CreatePropertySheetPageW,
+    qemu_CreateStatusWindowA,
+    qemu_CreateStatusWindowW,
+    qemu_CreateToolbar,
+    qemu_CreateToolbarEx,
+    qemu_CreateUpDownControl,
+    qemu_DefSubclassProc,
     qemu_DestroyPropertySheetPage,
+    qemu_DllGetVersion,
+    qemu_DllInstall,
+    qemu_DrawShadowText,
+    qemu_DrawStatusTextA,
+    qemu_DrawStatusTextW,
+    qemu_GetEffectiveClientRect,
+    qemu_GetMUILanguage,
+    qemu_GetWindowSubclass,
     qemu_HIMAGELIST_QueryInterface,
     qemu_ImageList_Add,
     qemu_ImageList_AddIcon,
@@ -88,8 +104,18 @@ static const syscall_handler dll_functions[] =
     qemu_ImageList_SetOverlayImage,
     qemu_ImageList_Write,
     qemu_InitCommonControls,
+    qemu_InitCommonControlsEx,
+    qemu_InitMUILanguage,
+    qemu_LoadIconMetric,
+    qemu_LoadIconWithScaleDown,
+    qemu_MenuHelp,
+    qemu_MirrorIcon,
     qemu_PropertySheetA,
     qemu_PropertySheetW,
+    qemu_RemoveWindowSubclass,
+    qemu_SetPathWordBreakProc,
+    qemu_SetWindowSubclass,
+    qemu_ShowHideMenuCtl,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
@@ -105,6 +131,9 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_ImageList_SetColorTable = (void *)GetProcAddress(comctl32, MAKEINTRESOURCE(390));
     if (!p_ImageList_SetColorTable)
         WINE_ERR("Cannot resolve comctl32.390 (ImageList_SetColorTable).\n");
+    p_DllGetVersion = (void *)GetProcAddress(comctl32, "DllGetVersion");
+    if (!p_DllGetVersion)
+        WINE_ERR("Cannot resolve comctl32.DllGetVersion.\n");
 
     return dll_functions;
 }
