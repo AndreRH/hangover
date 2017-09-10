@@ -1258,6 +1258,7 @@ struct qemu_EnumWindows
     struct qemu_syscall super;
     uint64_t lpEnumFunc;
     uint64_t lParam;
+    uint64_t wrapper;
 };
 
 struct qemu_WndEnum_cb
@@ -1281,6 +1282,7 @@ WINUSERAPI BOOL WINAPI EnumWindows(WNDENUMPROC lpEnumFunc, LPARAM lParam)
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMWINDOWS);
     call.lpEnumFunc = (uint64_t)lpEnumFunc;
     call.lParam = (uint64_t)lParam;
+    call.wrapper = (uint64_t)WndEnum_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -1316,8 +1318,14 @@ static BOOL CALLBACK qemu_WndEnum_host_cb(HWND child, LPARAM lp)
 void qemu_EnumWindows(struct qemu_syscall *call)
 {
     struct qemu_EnumWindows *c = (struct qemu_EnumWindows *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumWindows(QEMU_G2H(c->lpEnumFunc), c->lParam);
+    struct qemu_WndEnum_host_param data;
+
+    WINE_TRACE("\n");
+    data.wrapper = c->wrapper;
+    data.guest_func = c->lpEnumFunc;
+    data.guest_param = c->lParam;
+
+    c->super.iret = EnumWindows(c->lpEnumFunc ? qemu_WndEnum_host_cb : NULL, (LPARAM)&data);
 }
 
 #endif
