@@ -1065,11 +1065,11 @@ struct qemu_SetLastError
 #define __ASM_STDCALL_FUNC(name,args,code) __ASM_DEFINE_FUNC(name,__ASM_STDCALL(args),code)
 
 
-__ASM_STDCALL_FUNC( SetLastError, 8, ".byte 0x65\n\tmovl %ecx,0x68\n\tret" );
+__ASM_STDCALL_FUNC( kernel32_SetLastError, 8, ".byte 0x65\n\tmovl %ecx,0x68\n\tret" );
 
 #else
 
-WINBASEAPI void WINAPI SetLastError(DWORD error)
+void WINAPI kernel32_SetLastError(DWORD error)
 {
     struct qemu_SetLastError call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETLASTERROR);

@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <winternl.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -156,6 +157,7 @@ void qemu_ConvertThreadToFiber(struct qemu_syscall *call)
 {
     struct qemu_ConvertThreadToFiber *c = (struct qemu_ConvertThreadToFiber *)call;
     WINE_FIXME("Unverified!\n");
+    /* FIXME: May need to update FlsSlots */
     c->super.iret = (uint64_t)ConvertThreadToFiber(QEMU_G2H(c->param));
 }
 
@@ -188,6 +190,7 @@ void qemu_ConvertThreadToFiberEx(struct qemu_syscall *call)
 {
     struct qemu_ConvertThreadToFiberEx *c = (struct qemu_ConvertThreadToFiberEx *)call;
     WINE_FIXME("Unverified!\n");
+    /* FIXME: May need to update FlsSlots. */
     c->super.iret = (uint64_t)ConvertThreadToFiberEx(QEMU_G2H(c->param), c->flags);
 }
 
@@ -244,6 +247,7 @@ void qemu_SwitchToFiber(struct qemu_syscall *call)
 {
     struct qemu_SwitchToFiber *c = (struct qemu_SwitchToFiber *)call;
     WINE_FIXME("Unverified!\n");
+    /* FIXME: May need to update FlsSlots. */
     SwitchToFiber(QEMU_G2H(c->fiber));
 }
 
@@ -272,9 +276,13 @@ WINBASEAPI DWORD WINAPI FlsAlloc(PFLS_CALLBACK_FUNCTION callback)
 
 void qemu_FlsAlloc(struct qemu_syscall *call)
 {
+    TEB *guest_teb = qemu_ops->qemu_getTEB(), *host_teb = NtCurrentTeb();
+
     struct qemu_FlsAlloc *c = (struct qemu_FlsAlloc *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = FlsAlloc(QEMU_G2H(c->callback));
+
+    guest_teb->FlsSlots = host_teb->FlsSlots;
 }
 
 #endif
@@ -319,13 +327,16 @@ struct qemu_FlsGetValue
 
 WINBASEAPI PVOID WINAPI FlsGetValue(DWORD index)
 {
-    struct qemu_FlsGetValue call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_FLSGETVALUE);
-    call.index = (uint64_t)index;
+    myTEB *teb = (myTEB *)NtCurrentTeb();
 
-    qemu_syscall(&call.super);
-
-    return (PVOID)call.super.iret;
+    /* Copypasted from Wine. */
+    if (!index || index >= 8 * sizeof(teb->Peb->FlsBitmapBits) || !teb->FlsSlots)
+    {
+        kernel32_SetLastError( ERROR_INVALID_PARAMETER );
+        return NULL;
+    }
+    kernel32_SetLastError( ERROR_SUCCESS );
+    return teb->FlsSlots[index];
 }
 
 #else
@@ -334,7 +345,6 @@ void qemu_FlsGetValue(struct qemu_syscall *call)
 {
     struct qemu_FlsGetValue *c = (struct qemu_FlsGetValue *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)FlsGetValue(c->index);
 }
 
 #endif
@@ -350,23 +360,38 @@ struct qemu_FlsSetValue
 
 WINBASEAPI BOOL WINAPI FlsSetValue(DWORD index, PVOID data)
 {
-    struct qemu_FlsSetValue call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_FLSSETVALUE);
-    call.index = (uint64_t)index;
-    call.data = (uint64_t)data;
+    myTEB *teb = (myTEB *)NtCurrentTeb();
 
-    qemu_syscall(&call.super);
+    if (!index || index >= 8 * sizeof(teb->Peb->FlsBitmapBits))
+    {
+        kernel32_SetLastError( ERROR_INVALID_PARAMETER );
+        return FALSE;
+    }
+    if (!teb->FlsSlots)
+    {
+        struct qemu_FlsSetValue call;
+        call.super.id = QEMU_SYSCALL_ID(CALL_FLSSETVALUE);
+        call.index = (uint64_t)index;
+        call.data = (uint64_t)data;
 
-    return call.super.iret;
+        qemu_syscall(&call.super);
+
+        return call.super.iret;
+    }
+    teb->FlsSlots[index] = data;
+    return TRUE;
 }
 
 #else
 
 void qemu_FlsSetValue(struct qemu_syscall *call)
 {
+    TEB *guest_teb = qemu_ops->qemu_getTEB(), *host_teb = NtCurrentTeb();
     struct qemu_FlsSetValue *c = (struct qemu_FlsSetValue *)call;
     WINE_TRACE("\n");
+
     c->super.iret = FlsSetValue(c->index, QEMU_G2H(c->data));
+    guest_teb->FlsSlots = host_teb->FlsSlots;
 }
 
 #endif

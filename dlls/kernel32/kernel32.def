@@ -851,7 +851,7 @@ EXPORTS
   SetHandleCount
   SetHandleInformation
   SetInformationJobObject
-  SetLastError
+  SetLastError=kernel32_SetLastError
   SetLocaleInfoA
   SetLocaleInfoW
   SetLocalTime
