@@ -1,6 +1,8 @@
 LIBRARY comdlg32.dll BASE=0x50000000
 
 EXPORTS
+  ChooseColorA
+  ChooseColorW
   ChooseFontA
   ChooseFontW
   FindTextA
