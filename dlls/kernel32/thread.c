@@ -1058,6 +1058,17 @@ struct qemu_SetLastError
 
 #ifdef QEMU_DLL_GUEST
 
+#if defined(__x86_64__)
+
+#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.def " #name suffix "; .scl 2; .type 32; .endef\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc")
+#define __ASM_STDCALL(args)
+#define __ASM_STDCALL_FUNC(name,args,code) __ASM_DEFINE_FUNC(name,__ASM_STDCALL(args),code)
+
+
+__ASM_STDCALL_FUNC( SetLastError, 8, ".byte 0x65\n\tmovl %ecx,0x68\n\tret" );
+
+#else
+
 WINBASEAPI void WINAPI SetLastError(DWORD error)
 {
     struct qemu_SetLastError call;
@@ -1065,6 +1076,8 @@ WINBASEAPI void WINAPI SetLastError(DWORD error)
     call.error = error;
     qemu_syscall(&call.super);
 }
+
+#endif
 
 #else
 
@@ -1080,10 +1093,6 @@ void qemu_SetLastError(struct qemu_syscall *call)
 #ifdef QEMU_DLL_GUEST
 
 #if defined(__x86_64__)
-
-#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.def " #name suffix "; .scl 2; .type 32; .endef\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc")
-#define __ASM_STDCALL(args)
-#define __ASM_STDCALL_FUNC(name,args,code) __ASM_DEFINE_FUNC(name,__ASM_STDCALL(args),code)
 
 __ASM_STDCALL_FUNC( kernel32_GetLastError, 0, ".byte 0x65\n\tmovl 0x68,%eax\n\tret" );
 
