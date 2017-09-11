@@ -21,6 +21,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <excpt.h>
+#include <winternl.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -1182,8 +1183,35 @@ static const syscall_handler dll_functions[] =
     qemu_ZombifyActCtx,
 };
 
+__thread TEB *teb;
+
+static void WINAPI hook_SetLastError(DWORD error)
+{
+    TEB *qemu_teb = qemu_ops->qemu_getTEB();
+
+    /* Wine's TEB access is slow because it doesn't store it in a CPU register yet.
+     * Cache it using ELF TLS for now. Yeah, it's ugly. */
+    if (!teb)
+        teb = NtCurrentTeb();
+    teb->LastErrorValue = error;
+
+    /* We may be on a thread that has not run guest code yet. */
+    if (qemu_teb)
+        qemu_teb->LastErrorValue = error;
+}
+
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
+    DWORD old_protect;
+    struct set_last_error
+    {
+        DWORD ldr, br;
+        void *dst;
+    } *set_last_error;
+    size_t offset;
+    HANDLE kernel32;
+
     WINE_TRACE("Loading host-side kernel32 wrapper.\n");
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
@@ -1191,6 +1219,24 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     kernel32_tls = TlsAlloc();
     if (kernel32_tls == TLS_OUT_OF_INDEXES)
         WINE_ERR("Out of TLS indices\n");
+
+    /* The SetLastError pointer provided by the linker points into the IAT, not the actual function. */
+    kernel32 = GetModuleHandleA("kernel32");
+    set_last_error = (void *)GetProcAddress(kernel32, "SetLastError");
+
+    if(!VirtualProtect(set_last_error, sizeof(*set_last_error), PAGE_EXECUTE_READWRITE, &old_protect))
+    {
+        WINE_FIXME("Failed to make SetLastError() writeable.\n");
+        return NULL;
+    }
+
+    offset = offsetof(struct set_last_error, dst) - offsetof(struct set_last_error, ldr);
+    set_last_error->ldr = 0x58000005 | (offset << 3);   /* ldr x5, offset */;
+    set_last_error->br = 0xd61f00a0; /* br x5 */;
+    set_last_error->dst = hook_SetLastError;
+
+    VirtualProtect(set_last_error, sizeof(*set_last_error), old_protect, &old_protect);
+    __clear_cache(set_last_error, (char *)set_last_error + sizeof(*set_last_error));
 
     return dll_functions;
 }

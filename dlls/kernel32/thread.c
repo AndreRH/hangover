@@ -1079,6 +1079,16 @@ void qemu_SetLastError(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
+#if defined(__x86_64__)
+
+#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.def " #name suffix "; .scl 2; .type 32; .endef\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc")
+#define __ASM_STDCALL(args)
+#define __ASM_STDCALL_FUNC(name,args,code) __ASM_DEFINE_FUNC(name,__ASM_STDCALL(args),code)
+
+__ASM_STDCALL_FUNC( kernel32_GetLastError, 0, ".byte 0x65\n\tmovl 0x68,%eax\n\tret" );
+
+#else
+
 DWORD WINAPI kernel32_GetLastError()
 {
     struct qemu_syscall call;
@@ -1087,14 +1097,12 @@ DWORD WINAPI kernel32_GetLastError()
     return call.iret;
 }
 
+#endif
+
 #else
 
 void qemu_GetLastError(struct qemu_syscall *call)
 {
-    /* FIXME: This reads the result from the host-side TEB. Ab application
-     * that manually reads the TEB will read from the client-side TEB and
-     * get a different result. A possible solution is to hook the host-side
-     * SetLastError function and update both TEBs. */
     WINE_TRACE("\n");
     call->iret = GetLastError();
 }
