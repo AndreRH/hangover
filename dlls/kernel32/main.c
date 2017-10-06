@@ -57,8 +57,9 @@ static uint64_t WINAPI guest_completion_cb(struct qemu_completion_cb *data)
     return 0;
 }
 
-static void WINAPI kernel32_call_process_main(LPTHREAD_START_ROUTINE entry)
+static void __fastcall kernel32_call_process_main(LPTHREAD_START_ROUTINE entry)
 {
+#ifdef _WIN64
     __try1(kernel32_UnhandledExceptionFilter)
     {
         entry(NULL);
@@ -67,6 +68,10 @@ static void WINAPI kernel32_call_process_main(LPTHREAD_START_ROUTINE entry)
     {
     }
     kernel32_ExitProcess(kernel32_GetLastError());
+#else
+    entry(NULL);
+    kernel32_ExitProcess(kernel32_GetLastError());
+#endif
 }
 
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)

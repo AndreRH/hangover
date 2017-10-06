@@ -370,11 +370,11 @@ WINBASEAPI BOOL WINAPI WriteFile(HANDLE hFile, LPCVOID buffer, DWORD bytesToWrit
 {
     struct qemu_WriteFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITEFILE);
-    call.hFile = (uint64_t)hFile;
-    call.buffer = (uint64_t)buffer;
-    call.bytesToWrite = (uint64_t)bytesToWrite;
-    call.bytesWritten = (uint64_t)bytesWritten;
-    call.overlapped = (uint64_t)overlapped;
+    call.hFile = (ULONG_PTR)hFile;
+    call.buffer = (ULONG_PTR)buffer;
+    call.bytesToWrite = bytesToWrite;
+    call.bytesWritten = (ULONG_PTR)bytesWritten;
+    call.overlapped = (ULONG_PTR)overlapped;
 
     qemu_syscall(&call.super);
 
@@ -387,6 +387,11 @@ void qemu_WriteFile(struct qemu_syscall *call)
 {
     struct qemu_WriteFile *c = (struct qemu_WriteFile *)call;
     WINE_TRACE("\n");
+
+#if GUEST_BIT != HOST_BIT
+    if (c->overlapped)
+        WINE_FIXME("Overlapped structure not handled in 32 on 64 case.\n");
+#endif
     c->super.iret = WriteFile(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToWrite, QEMU_G2H(c->bytesWritten), QEMU_G2H(c->overlapped));
 }
 
