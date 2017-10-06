@@ -564,7 +564,7 @@ void qemu_InitializeCriticalSectionAndSpinCount(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 /* For now the main purpose of this one is to force this library to import ntdll for the RVA Forwards. */
-NTSYSAPI NTSTATUS WINAPI RtlInitializeCriticalSectionEx(RTL_CRITICAL_SECTION *,ULONG,ULONG);
+extern NTSTATUS WINAPI RtlInitializeCriticalSectionEx(RTL_CRITICAL_SECTION *crit, ULONG spincount, ULONG flags);
 WINBASEAPI BOOL WINAPI InitializeCriticalSectionEx(CRITICAL_SECTION *section, DWORD spincount, DWORD flags)
 {
     return !RtlInitializeCriticalSectionEx(section, spincount, flags);

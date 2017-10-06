@@ -93,6 +93,7 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 /* Copypyasted from Wine. */
 WINBASEAPI INT WINAPI MulDiv( INT nMultiplicand, INT nMultiplier, INT nDivisor)
 {
+#ifdef _WIN64
     LONGLONG ret;
 
     if (!nDivisor) return -1;
@@ -113,6 +114,8 @@ WINBASEAPI INT WINAPI MulDiv( INT nMultiplicand, INT nMultiplier, INT nDivisor)
 
     if ((ret > 2147483647) || (ret < -2147483647)) return -1;
     return ret;
+#endif
+    return 0;
 }
 
 WINBASEAPI BOOL WINAPI GetSystemRegistryQuota(PDWORD pdwQuotaAllowed, PDWORD pdwQuotaUsed)
