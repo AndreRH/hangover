@@ -44,8 +44,8 @@ WINBASEAPI BOOL WINAPI WaitForDebugEvent(LPDEBUG_EVENT event, DWORD timeout)
 {
     struct qemu_WaitForDebugEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WAITFORDEBUGEVENT);
-    call.event = (uint64_t)event;
-    call.timeout = (uint64_t)timeout;
+    call.event = (ULONG_PTR)event;
+    call.timeout = timeout;
 
     qemu_syscall(&call.super);
 
@@ -58,7 +58,7 @@ void qemu_WaitForDebugEvent(struct qemu_syscall *call)
 {
     struct qemu_WaitForDebugEvent *c = (struct qemu_WaitForDebugEvent *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)WaitForDebugEvent(QEMU_G2H(c->event), c->timeout);
+    c->super.iret = QEMU_H2G(WaitForDebugEvent(QEMU_G2H(c->event), c->timeout));
 }
 
 #endif
@@ -77,9 +77,9 @@ WINBASEAPI BOOL WINAPI ContinueDebugEvent(DWORD pid, DWORD tid, DWORD status)
 {
     struct qemu_ContinueDebugEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONTINUEDEBUGEVENT);
-    call.pid = (uint64_t)pid;
-    call.tid = (uint64_t)tid;
-    call.status = (uint64_t)status;
+    call.pid = pid;
+    call.tid = tid;
+    call.status = status;
 
     qemu_syscall(&call.super);
 
@@ -92,7 +92,7 @@ void qemu_ContinueDebugEvent(struct qemu_syscall *call)
 {
     struct qemu_ContinueDebugEvent *c = (struct qemu_ContinueDebugEvent *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ContinueDebugEvent(c->pid, c->tid, c->status);
+    c->super.iret = QEMU_H2G(ContinueDebugEvent(c->pid, c->tid, c->status));
 }
 
 #endif
@@ -109,7 +109,7 @@ WINBASEAPI BOOL WINAPI DebugActiveProcess(DWORD pid)
 {
     struct qemu_DebugActiveProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEBUGACTIVEPROCESS);
-    call.pid = (uint64_t)pid;
+    call.pid = pid;
 
     qemu_syscall(&call.super);
 
@@ -122,7 +122,7 @@ void qemu_DebugActiveProcess(struct qemu_syscall *call)
 {
     struct qemu_DebugActiveProcess *c = (struct qemu_DebugActiveProcess *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DebugActiveProcess(c->pid);
+    c->super.iret = DebugActiveProcess(c->pid);
 }
 
 #endif
@@ -139,7 +139,7 @@ WINBASEAPI BOOL WINAPI DebugActiveProcessStop(DWORD pid)
 {
     struct qemu_DebugActiveProcessStop call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEBUGACTIVEPROCESSSTOP);
-    call.pid = (uint64_t)pid;
+    call.pid = pid;
 
     qemu_syscall(&call.super);
 
@@ -152,7 +152,7 @@ void qemu_DebugActiveProcessStop(struct qemu_syscall *call)
 {
     struct qemu_DebugActiveProcessStop *c = (struct qemu_DebugActiveProcessStop *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DebugActiveProcessStop(c->pid);
+    c->super.iret = DebugActiveProcessStop(c->pid);
 }
 
 #endif
@@ -169,7 +169,7 @@ WINBASEAPI void WINAPI OutputDebugStringA(LPCSTR str)
 {
     struct qemu_OutputDebugStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OUTPUTDEBUGSTRINGA);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 }
@@ -197,7 +197,7 @@ WINBASEAPI void WINAPI OutputDebugStringW(LPCWSTR str)
 {
     struct qemu_OutputDebugStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OUTPUTDEBUGSTRINGW);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 }
@@ -251,7 +251,7 @@ WINBASEAPI BOOL WINAPI DebugBreakProcess(HANDLE hProc)
 {
     struct qemu_DebugBreakProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEBUGBREAKPROCESS);
-    call.hProc = (uint64_t)hProc;
+    call.hProc = (ULONG_PTR)hProc;
 
     qemu_syscall(&call.super);
 
@@ -264,7 +264,7 @@ void qemu_DebugBreakProcess(struct qemu_syscall *call)
 {
     struct qemu_DebugBreakProcess *c = (struct qemu_DebugBreakProcess *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DebugBreakProcess(QEMU_G2H(c->hProc));
+    c->super.iret = DebugBreakProcess(QEMU_G2H(c->hProc));
 }
 
 #endif
@@ -292,7 +292,7 @@ void qemu_IsDebuggerPresent(struct qemu_syscall *call)
 {
     struct qemu_IsDebuggerPresent *c = (struct qemu_IsDebuggerPresent *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)IsDebuggerPresent();
+    c->super.iret = IsDebuggerPresent();
 }
 
 #endif
@@ -310,8 +310,8 @@ WINBASEAPI BOOL WINAPI CheckRemoteDebuggerPresent(HANDLE process, PBOOL Debugger
 {
     struct qemu_CheckRemoteDebuggerPresent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHECKREMOTEDEBUGGERPRESENT);
-    call.process = (uint64_t)process;
-    call.DebuggerPresent = (uint64_t)DebuggerPresent;
+    call.process = (ULONG_PTR)process;
+    call.DebuggerPresent = (ULONG_PTR)DebuggerPresent;
 
     qemu_syscall(&call.super);
 
@@ -324,7 +324,7 @@ void qemu_CheckRemoteDebuggerPresent(struct qemu_syscall *call)
 {
     struct qemu_CheckRemoteDebuggerPresent *c = (struct qemu_CheckRemoteDebuggerPresent *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CheckRemoteDebuggerPresent(QEMU_G2H(c->process), QEMU_G2H(c->DebuggerPresent));
+    c->super.iret = CheckRemoteDebuggerPresent(QEMU_G2H(c->process), QEMU_G2H(c->DebuggerPresent));
 }
 
 #endif
@@ -341,7 +341,7 @@ WINBASEAPI BOOL WINAPI DebugSetProcessKillOnExit(BOOL kill)
 {
     struct qemu_DebugSetProcessKillOnExit call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEBUGSETPROCESSKILLONEXIT);
-    call.kill = (uint64_t)kill;
+    call.kill = kill;
 
     qemu_syscall(&call.super);
 
@@ -354,7 +354,7 @@ void qemu_DebugSetProcessKillOnExit(struct qemu_syscall *call)
 {
     struct qemu_DebugSetProcessKillOnExit *c = (struct qemu_DebugSetProcessKillOnExit *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DebugSetProcessKillOnExit(c->kill);
+    c->super.iret = (ULONG_PTR)DebugSetProcessKillOnExit(c->kill);
 }
 
 #endif
