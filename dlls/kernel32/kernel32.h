@@ -16,6 +16,7 @@ enum kernel32_calls
     CALL_ADDATOMW,
     CALL_ADDCONSOLEALIASA,
     CALL_ADDCONSOLEALIASW,
+    CALL_ADDDLLDIRECTORY,
     CALL_ADDREFACTCTX,
     CALL_ALLOCATEUSERPHYSICALPAGES,
     CALL_ALLOCCONSOLE,
@@ -438,6 +439,7 @@ enum kernel32_calls
     CALL_GETPROCESSTIMES,
     CALL_GETPROCESSVERSION,
     CALL_GETPROCESSWORKINGSETSIZE,
+    CALL_GETPROCESSWORKINGSETSIZEEX,
     CALL_GETPRODUCTINFO,
     CALL_GETPROFILEINTA,
     CALL_GETPROFILEINTW,
@@ -755,11 +757,13 @@ enum kernel32_calls
     CALL_RELEASESEMAPHORE,
     CALL_REMOVEDIRECTORYA,
     CALL_REMOVEDIRECTORYW,
+    CALL_REMOVEDLLDIRECTORY,
     CALL_REPLACEFILEA,
     CALL_REPLACEFILEW,
     CALL_REQUESTWAKEUPLATENCY,
     CALL_RESETEVENT,
     CALL_RESETWRITEWATCH,
+    CALL_RESOLVELOCALENAME,
     CALL_RESUMETHREAD,
     CALL_SCROLLCONSOLESCREENBUFFERA,
     CALL_SCROLLCONSOLESCREENBUFFERW,
@@ -1001,6 +1005,7 @@ void qemu_AddAtomA(struct qemu_syscall *call);
 void qemu_AddAtomW(struct qemu_syscall *call);
 void qemu_AddConsoleAliasA(struct qemu_syscall *call);
 void qemu_AddConsoleAliasW(struct qemu_syscall *call);
+void qemu_AddDllDirectory(struct qemu_syscall *call);
 void qemu_AddRefActCtx(struct qemu_syscall *call);
 void qemu_AllocateUserPhysicalPages(struct qemu_syscall *call);
 void qemu_AllocConsole(struct qemu_syscall *call);
@@ -1424,6 +1429,7 @@ void qemu_GetProcessShutdownParameters(struct qemu_syscall *call);
 void qemu_GetProcessTimes(struct qemu_syscall *call);
 void qemu_GetProcessVersion(struct qemu_syscall *call);
 void qemu_GetProcessWorkingSetSize(struct qemu_syscall *call);
+void qemu_GetProcessWorkingSetSizeEx(struct qemu_syscall *call);
 void qemu_GetProductInfo(struct qemu_syscall *call);
 void qemu_GetProfileIntA(struct qemu_syscall *call);
 void qemu_GetProfileIntW(struct qemu_syscall *call);
@@ -1740,11 +1746,13 @@ void qemu_ReleaseMutex(struct qemu_syscall *call);
 void qemu_ReleaseSemaphore(struct qemu_syscall *call);
 void qemu_RemoveDirectoryA(struct qemu_syscall *call);
 void qemu_RemoveDirectoryW(struct qemu_syscall *call);
+void qemu_RemoveDllDirectory(struct qemu_syscall *call);
 void qemu_ReplaceFileA(struct qemu_syscall *call);
 void qemu_ReplaceFileW(struct qemu_syscall *call);
 void qemu_RequestWakeupLatency(struct qemu_syscall *call);
 void qemu_ResetEvent(struct qemu_syscall *call);
 void qemu_ResetWriteWatch(struct qemu_syscall *call);
+void qemu_ResolveLocaleName(struct qemu_syscall *call);
 void qemu_ResumeThread(struct qemu_syscall *call);
 void qemu_ScrollConsoleScreenBufferA(struct qemu_syscall *call);
 void qemu_ScrollConsoleScreenBufferW(struct qemu_syscall *call);

@@ -2569,3 +2569,40 @@ void qemu_BaseFlushAppcompatCache(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_GetProcessWorkingSetSizeEx
+{
+    struct qemu_syscall super;
+    uint64_t process;
+    uint64_t minset;
+    uint64_t maxset;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetProcessWorkingSetSizeEx(HANDLE process, SIZE_T *minset, SIZE_T *maxset, DWORD *flags)
+{
+    struct qemu_GetProcessWorkingSetSizeEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCESSWORKINGSETSIZEEX);
+    call.process = (uint64_t)process;
+    call.minset = (uint64_t)minset;
+    call.maxset = (uint64_t)maxset;
+    call.flags = (uint64_t)flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add GetProcessWorkingSetSizeEx to Wine headers? */
+extern BOOL WINAPI GetProcessWorkingSetSizeEx(HANDLE process, SIZE_T *minset, SIZE_T *maxset, DWORD *flags);
+void qemu_GetProcessWorkingSetSizeEx(struct qemu_syscall *call)
+{
+    struct qemu_GetProcessWorkingSetSizeEx *c = (struct qemu_GetProcessWorkingSetSizeEx *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetProcessWorkingSetSizeEx(QEMU_G2H(c->process), QEMU_G2H(c->minset), QEMU_G2H(c->maxset), QEMU_G2H(c->flags));
+}
+
+#endif

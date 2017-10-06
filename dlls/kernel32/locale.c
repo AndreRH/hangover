@@ -2989,3 +2989,37 @@ void qemu_GetFileMUIInfo(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_ResolveLocaleName
+{
+    struct qemu_syscall super;
+    uint64_t name;
+    uint64_t localename;
+    uint64_t len;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI ResolveLocaleName(LPCWSTR name, LPWSTR localename, INT len)
+{
+    struct qemu_ResolveLocaleName call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RESOLVELOCALENAME);
+    call.name = (uint64_t)name;
+    call.localename = (uint64_t)localename;
+    call.len = (uint64_t)len;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_ResolveLocaleName(struct qemu_syscall *call)
+{
+    struct qemu_ResolveLocaleName *c = (struct qemu_ResolveLocaleName *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = ResolveLocaleName(QEMU_G2H(c->name), QEMU_G2H(c->localename), c->len);
+}
+
+#endif
+

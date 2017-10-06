@@ -662,3 +662,62 @@ void qemu_K32GetModuleInformation(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_AddDllDirectory
+{
+    struct qemu_syscall super;
+    uint64_t dir;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DLL_DIRECTORY_COOKIE WINAPI AddDllDirectory(const WCHAR *dir)
+{
+    struct qemu_AddDllDirectory call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ADDDLLDIRECTORY);
+    call.dir = (uint64_t)dir;
+
+    qemu_syscall(&call.super);
+
+    return (DLL_DIRECTORY_COOKIE)call.super.iret;
+}
+
+#else
+
+void qemu_AddDllDirectory(struct qemu_syscall *call)
+{
+    struct qemu_AddDllDirectory *c = (struct qemu_AddDllDirectory *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(AddDllDirectory(QEMU_G2H(c->dir)));
+}
+
+#endif
+
+struct qemu_RemoveDllDirectory
+{
+    struct qemu_syscall super;
+    uint64_t cookie;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI RemoveDllDirectory(DLL_DIRECTORY_COOKIE cookie)
+{
+    struct qemu_RemoveDllDirectory call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_REMOVEDLLDIRECTORY);
+    call.cookie = (uint64_t)cookie;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RemoveDllDirectory(struct qemu_syscall *call)
+{
+    struct qemu_RemoveDllDirectory *c = (struct qemu_RemoveDllDirectory *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RemoveDllDirectory(QEMU_G2H(c->cookie));
+}
+
+#endif
