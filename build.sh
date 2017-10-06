@@ -25,8 +25,10 @@ make -j 4
 cd $DESTDIR/build/qemu
 LIBS=-lpthread_nonshared CC="$DESTDIR/build/wine-host/tools/winegcc/winegcc -B$DESTDIR/build/wine-host/tools/winebuild -I$DESTDIR/build/wine-host/include -I$DESTDIR/wine/include -lpthread -lpthread_nonshared -DWINE_NOWINSOCK" CXX="$DESTDIR/build/wine-host/tools/winegcc/wineg++ -B$DESTDIR/build/wine-host/tools/winebuild -I$DESTDIR/build/wine-host/include -I$DESTDIR/wine/include -lpthread -lpthread_nonshared -DWINE_NOWINSOCK" $SRCDIR/qemu/configure --disable-bzip2 --disable-libusb --disable-sdl --disable-snappy --disable-virtfs --disable-opengl --python=/usr/bin/python2.7 --disable-xen --disable-lzo --disable-qom-cast-debug --disable-vnc --disable-seccomp --disable-strip --disable-hax --disable-gnutls --disable-nettle --disable-replication --disable-tpm --disable-gtk --disable-gcrypt --disable-linux-aio --disable-system --disable-tools --disable-linux-user --disable-guest-agent --enable-windows-user
 make -j 4
-mkdir -p $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-mkdir -p $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+mkdir -p $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll64
+mkdir -p $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll64
+mkdir -p $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
+mkdir -p $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll32
 
 # Build the wrapper DLLs.
 # TODO: Figure out dependencies between them better.
@@ -50,8 +52,8 @@ do
     echo "include $SRCDIR/dlls/$dll/Makefile" >> Makefile
 
     make -j4
-    ln -sf $PWD/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-    ln -sf $PWD/qemu_$dll.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+    ln -sf $PWD/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll64
+    ln -sf $PWD/qemu_$dll.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll64
 
     mkdir -p $DESTDIR/build/dlls32/$dll
     cd $DESTDIR/build/dlls32/$dll
@@ -65,8 +67,8 @@ do
     echo "include $SRCDIR/dlls/$dll/Makefile" >> Makefile
 
 #     make -j4
-#     ln -sf $PWD/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
-#     ln -sf $PWD/qemu_$dll.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+#     ln -sf $PWD/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
+#     ln -sf $PWD/qemu_$dll.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll32
 done
 
 # Link Wine libraries.
