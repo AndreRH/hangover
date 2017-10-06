@@ -46,7 +46,7 @@ WINBASEAPI LPWSTR WINAPI GetEnvironmentStringsW(void)
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -55,7 +55,7 @@ void qemu_GetEnvironmentStringsW(struct qemu_syscall *call)
 {
     struct qemu_GetEnvironmentStringsW *c = (struct qemu_GetEnvironmentStringsW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetEnvironmentStringsW();
+    c->super.iret = QEMU_H2G(GetEnvironmentStringsW());
 }
 
 #endif
@@ -72,7 +72,7 @@ WINBASEAPI BOOL WINAPI FreeEnvironmentStringsA(LPSTR ptr)
 {
     struct qemu_FreeEnvironmentStringsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FREEENVIRONMENTSTRINGSA);
-    call.ptr = (uint64_t)ptr;
+    call.ptr = (ULONG_PTR)ptr;
 
     qemu_syscall(&call.super);
 
@@ -102,7 +102,7 @@ WINBASEAPI BOOL WINAPI FreeEnvironmentStringsW(LPWSTR ptr)
 {
     struct qemu_FreeEnvironmentStringsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FREEENVIRONMENTSTRINGSW);
-    call.ptr = (uint64_t)ptr;
+    call.ptr = (ULONG_PTR)ptr;
 
     qemu_syscall(&call.super);
 
@@ -134,8 +134,8 @@ WINBASEAPI DWORD WINAPI GetEnvironmentVariableA(LPCSTR name, LPSTR value, DWORD 
 {
     struct qemu_GetEnvironmentVariableA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETENVIRONMENTVARIABLEA);
-    call.name = (uint64_t)name;
-    call.value = (uint64_t)value;
+    call.name = (ULONG_PTR)name;
+    call.value = (ULONG_PTR)value;
     call.size = size;
 
     qemu_syscall(&call.super);
@@ -168,9 +168,9 @@ WINBASEAPI DWORD WINAPI GetEnvironmentVariableW(LPCWSTR name, LPWSTR val, DWORD 
 {
     struct qemu_GetEnvironmentVariableW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETENVIRONMENTVARIABLEW);
-    call.name = (uint64_t)name;
-    call.val = (uint64_t)val;
-    call.size = (uint64_t)size;
+    call.name = (ULONG_PTR)name;
+    call.val = (ULONG_PTR)val;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -201,8 +201,8 @@ WINBASEAPI BOOL WINAPI SetEnvironmentVariableA(LPCSTR name, LPCSTR value)
 {
     struct qemu_SetEnvironmentVariableA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETENVIRONMENTVARIABLEA);
-    call.name = (uint64_t)name;
-    call.value = (uint64_t)value;
+    call.name = (ULONG_PTR)name;
+    call.value = (ULONG_PTR)value;
 
     qemu_syscall(&call.super);
 
@@ -233,8 +233,8 @@ WINBASEAPI BOOL WINAPI SetEnvironmentVariableW(LPCWSTR name, LPCWSTR value)
 {
     struct qemu_SetEnvironmentVariableW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETENVIRONMENTVARIABLEW);
-    call.name = (uint64_t)name;
-    call.value = (uint64_t)value;
+    call.name = (ULONG_PTR)name;
+    call.value = (ULONG_PTR)value;
 
     qemu_syscall(&call.super);
 
@@ -266,8 +266,8 @@ WINBASEAPI DWORD WINAPI ExpandEnvironmentStringsA(LPCSTR src, LPSTR dst, DWORD c
 {
     struct qemu_ExpandEnvironmentStringsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXPANDENVIRONMENTSTRINGSA);
-    call.src = (uint64_t)src;
-    call.dst = (uint64_t)dst;
+    call.src = (ULONG_PTR)src;
+    call.dst = (ULONG_PTR)dst;
     call.count = count;
 
     qemu_syscall(&call.super);
@@ -300,9 +300,9 @@ WINBASEAPI DWORD WINAPI ExpandEnvironmentStringsW(LPCWSTR src, LPWSTR dst, DWORD
 {
     struct qemu_ExpandEnvironmentStringsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXPANDENVIRONMENTSTRINGSW);
-    call.src = (uint64_t)src;
-    call.dst = (uint64_t)dst;
-    call.len = (uint64_t)len;
+    call.src = (ULONG_PTR)src;
+    call.dst = (ULONG_PTR)dst;
+    call.len = len;
 
     qemu_syscall(&call.super);
 
@@ -334,7 +334,7 @@ WINBASEAPI HANDLE WINAPI GetStdHandle(DWORD std_handle)
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSTDHANDLE);
     call.std_handle = std_handle;
     qemu_syscall(&call.super);
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -343,7 +343,7 @@ void qemu_GetStdHandle(struct qemu_syscall *call)
 {
     struct qemu_GetStdHandle *c = (struct qemu_GetStdHandle *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetStdHandle(c->std_handle);
+    c->super.iret = QEMU_H2G(GetStdHandle(c->std_handle));
 }
 
 #endif
@@ -361,8 +361,8 @@ WINBASEAPI BOOL WINAPI SetStdHandle(DWORD std_handle, HANDLE handle)
 {
     struct qemu_SetStdHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSTDHANDLE);
-    call.std_handle = (uint64_t)std_handle;
-    call.handle = (uint64_t)handle;
+    call.std_handle = std_handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -392,7 +392,7 @@ WINBASEAPI void WINAPI GetStartupInfoA(STARTUPINFOA *info)
 {
     struct qemu_GetStartupInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSTARTUPINFOA);
-    call.info = (uint64_t)info;
+    call.info = (ULONG_PTR)info;
     qemu_syscall(&call.super);
 }
 
@@ -449,7 +449,7 @@ WINBASEAPI void WINAPI GetStartupInfoW(STARTUPINFOW *info)
 {
     struct qemu_GetStartupInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSTARTUPINFOW);
-    call.info = (uint64_t)info;
+    call.info = (ULONG_PTR)info;
     qemu_syscall(&call.super);
 }
 
@@ -487,10 +487,10 @@ WINBASEAPI DWORD WINAPI GetFirmwareEnvironmentVariableA(LPCSTR name, LPCSTR guid
 {
     struct qemu_GetFirmwareEnvironmentVariableA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFIRMWAREENVIRONMENTVARIABLEA);
-    call.name = (uint64_t)name;
-    call.guid = (uint64_t)guid;
-    call.buffer = (uint64_t)buffer;
-    call.size = (uint64_t)size;
+    call.name = (ULONG_PTR)name;
+    call.guid = (ULONG_PTR)guid;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -525,10 +525,10 @@ WINBASEAPI DWORD WINAPI GetFirmwareEnvironmentVariableW(LPCWSTR name, LPCWSTR gu
 {
     struct qemu_GetFirmwareEnvironmentVariableW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFIRMWAREENVIRONMENTVARIABLEW);
-    call.name = (uint64_t)name;
-    call.guid = (uint64_t)guid;
-    call.buffer = (uint64_t)buffer;
-    call.size = (uint64_t)size;
+    call.name = (ULONG_PTR)name;
+    call.guid = (ULONG_PTR)guid;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
