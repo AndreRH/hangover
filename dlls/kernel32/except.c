@@ -53,10 +53,10 @@ void WINAPI kernel32_RaiseException(DWORD code, DWORD flags, DWORD nbargs, const
     struct qemu_RaiseException call;
     EXCEPTION_RECORD record;
     call.super.id = QEMU_SYSCALL_ID(CALL_RAISEEXCEPTION);
-    call.code = (uint64_t)code;
-    call.flags = (uint64_t)flags;
-    call.nbargs = (uint64_t)nbargs;
-    call.args = (uint64_t)args;
+    call.code = code;
+    call.flags = flags;
+    call.nbargs = nbargs;
+    call.args = (ULONG_PTR)args;
 
     /* For logging. */
     qemu_syscall(&call.super);
@@ -103,8 +103,8 @@ LONG WINAPI kernel32_UnhandledExceptionFilter(PEXCEPTION_POINTERS epointers)
 
     /* For logging. */
     call.super.id = QEMU_SYSCALL_ID(CALL_UNHANDLEDEXCEPTIONFILTER);
-    call.epointers = (uint64_t)epointers;
-    call.filter = (uint64_t)top_filter;
+    call.epointers = (ULONG_PTR)epointers;
+    call.filter = (ULONG_PTR)top_filter;
     qemu_syscall(&call.super);
 
     if (top_filter)
@@ -141,8 +141,8 @@ WINBASEAPI LPTOP_LEVEL_EXCEPTION_FILTER WINAPI SetUnhandledExceptionFilter(LPTOP
     LPTOP_LEVEL_EXCEPTION_FILTER old = top_filter;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_SETUNHANDLEDEXCEPTIONFILTER);
-    call.filter = (uint64_t)filter;
-    call.old = (uint64_t)old;
+    call.filter = (ULONG_PTR)filter;
+    call.old = (ULONG_PTR)old;
 
     /* For logging. */
     qemu_syscall(&call.super);
@@ -174,8 +174,8 @@ WINBASEAPI void WINAPI FatalAppExitA(UINT action, LPCSTR str)
 {
     struct qemu_FatalAppExitA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FATALAPPEXITA);
-    call.action = (uint64_t)action;
-    call.str = (uint64_t)str;
+    call.action = action;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 }
@@ -204,8 +204,8 @@ WINBASEAPI void WINAPI FatalAppExitW(UINT action, LPCWSTR str)
 {
     struct qemu_FatalAppExitW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FATALAPPEXITW);
-    call.action = (uint64_t)action;
-    call.str = (uint64_t)str;
+    call.action = action;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 }
@@ -233,7 +233,7 @@ WINBASEAPI void WINAPI FatalExit(int ExitCode)
 {
     struct qemu_FatalExit call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FATALEXIT);
-    call.ExitCode = (uint64_t)ExitCode;
+    call.ExitCode = ExitCode;
 
     qemu_syscall(&call.super);
 }
