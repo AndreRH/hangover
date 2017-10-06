@@ -50,10 +50,10 @@ struct qemu_GetSystemRegistryQuota
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t WINAPI guest_completion_cb(struct qemu_completion_cb *data)
+static uint64_t __fastcall guest_completion_cb(struct qemu_completion_cb *data)
 {
-    LPOVERLAPPED_COMPLETION_ROUTINE completion = (LPOVERLAPPED_COMPLETION_ROUTINE)data->func;
-    completion(data->error, data->len, (OVERLAPPED *)data->ov);
+    LPOVERLAPPED_COMPLETION_ROUTINE completion = (LPOVERLAPPED_COMPLETION_ROUTINE)(ULONG_PTR)data->func;
+    completion(data->error, data->len, (OVERLAPPED *)(ULONG_PTR)data->ov);
     return 0;
 }
 
@@ -84,8 +84,8 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
     {
         case DLL_PROCESS_ATTACH:
             call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
-            call.call_entry = (uint64_t)kernel32_call_process_main;
-            call.guest_completion_cb = (uint64_t)guest_completion_cb;
+            call.call_entry = (ULONG_PTR)kernel32_call_process_main;
+            call.guest_completion_cb = (ULONG_PTR)guest_completion_cb;
             qemu_syscall(&call.super);
 
             ntdll = kernel32_GetModuleHandleW(ntdllW);
@@ -128,8 +128,8 @@ WINBASEAPI BOOL WINAPI GetSystemRegistryQuota(PDWORD pdwQuotaAllowed, PDWORD pdw
     struct qemu_GetSystemRegistryQuota call;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMREGISTRYQUOTA);
-    call.pdwQuotaAllowed = (uint64_t)pdwQuotaAllowed;
-    call.pdwQuotaUsed = (uint64_t)pdwQuotaUsed;
+    call.pdwQuotaAllowed = (ULONG_PTR)pdwQuotaAllowed;
+    call.pdwQuotaUsed = (ULONG_PTR)pdwQuotaUsed;
 
     qemu_syscall(&call.super);
 
