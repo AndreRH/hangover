@@ -34,12 +34,39 @@ declare -a dlls=("ntdll" "kernel32" "msvcrt" "advapi32" "comctl32" "comdlg32" "d
         "msvcr100" "opengl32" "shell32" "shlwapi" "user32" "version" "xinput1_3" "winmm" "wsock32" "ws2_32"
         "iphlpapi" "secur32" "wininet" "advpack" "usp10")
 
+mkdir -p $DESTDIR/build/dlls32
+mkdir -p $DESTDIR/build/dlls64
+
 for dll in "${dlls[@]}"
 do
-    cd $DESTDIR/dlls/$dll
+    mkdir -p $DESTDIR/build/dlls64/$dll
+    cd $DESTDIR/build/dlls64/$dll
+    echo "GUEST_CC=x86_64-w64-mingw32" > Makefile
+    echo "SRCDIR=../../../dlls/$dll" >> Makefile
+    echo "DESTDIR?=../../.." >> Makefile
+    echo "GUEST_BIT=64" >> Makefile
+    echo "HOST_BIT=64" >> Makefile
+    echo >> Makefile
+    echo "include $SRCDIR/dlls/$dll/Makefile" >> Makefile
+
     make -j4
     ln -sf $PWD/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
     ln -sf $PWD/qemu_$dll.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
+
+    mkdir -p $DESTDIR/build/dlls32/$dll
+    cd $DESTDIR/build/dlls32/$dll
+    echo "GUEST_CC=i686-w64-mingw32" > Makefile
+    echo "SRCDIR=../../../dlls/$dll" >> Makefile
+    echo "DESTDIR?=../../.." >> Makefile
+    echo "GUEST_BIT=32" >> Makefile
+    echo "HOST_BIT=64" >> Makefile
+    echo "CFLAGS=-Wno-pointer-to-int-cast -Wno-int-to-pointer-cast" >> Makefile
+    echo >> Makefile
+    echo "include $SRCDIR/dlls/$dll/Makefile" >> Makefile
+
+#     make -j4
+#     ln -sf $PWD/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll
+#     ln -sf $PWD/qemu_$dll.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll
 done
 
 # Link Wine libraries.

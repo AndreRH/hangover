@@ -56,11 +56,34 @@ declare -a dlls=("ntdll" "kernel32" "msvcrt" "advapi32" "comctl32" "comdlg32" "d
 
 for dll in "${dlls[@]}"
 do
-    cd $DESTDIR/dlls/$dll
-    echo $dll
+    mkdir -p $DESTDIR/build/dlls64/$dll
+    cd $DESTDIR/build/dlls64/$dll
+    echo "GUEST_CC=x86_64-w64-mingw32" > Makefile
+    echo "SRCDIR=../../../dlls/$dll" >> Makefile
+    echo "DESTDIR?=../../.." >> Makefile
+    echo "GUEST_BIT=64" >> Makefile
+    echo "HOST_BIT=64" >> Makefile
+    echo >> Makefile
+    echo "include $SRCDIR/dlls/$dll/Makefile" >> Makefile
+
     make -j4 WINEGCC="$DESTDIR/build.android/wine-host/tools/winegcc/winegcc -I$NDK_SYSROOT/usr/include -L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$DESTDIR/build.android/wine-host -b aarch64-linux-android -B$DESTDIR/build.android/wine-host/tools/winebuild -I$DESTDIR/build.android/wine-host/include -I$DESTDIR/wine/include"
-    cp -lf $PWD/$dll.dll $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_guest_dll
-    cp -lf $PWD/qemu_$dll.dll.so $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_host_dll
+    ln -sf $PWD/$dll.dll $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_guest_dll
+    ln -sf $PWD/qemu_$dll.dll.so $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_host_dll
+
+    mkdir -p $DESTDIR/build/dlls32/$dll
+    cd $DESTDIR/build/dlls32/$dll
+    echo "GUEST_CC=i686-w64-mingw32" > Makefile
+    echo "SRCDIR=../../../dlls/$dll" >> Makefile
+    echo "DESTDIR?=../../.." >> Makefile
+    echo "GUEST_BIT=32" >> Makefile
+    echo "HOST_BIT=64" >> Makefile
+    echo "CFLAGS=-Wno-pointer-to-int-cast -Wno-int-to-pointer-cast" >> Makefile
+    echo >> Makefile
+    echo "include $SRCDIR/dlls/$dll/Makefile" >> Makefile
+
+#     make -j4 WINEGCC="$DESTDIR/build.android/wine-host/tools/winegcc/winegcc -I$NDK_SYSROOT/usr/include -L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$DESTDIR/build.android/wine-host -b aarch64-linux-android -B$DESTDIR/build.android/wine-host/tools/winebuild -I$DESTDIR/build.android/wine-host/include -I$DESTDIR/wine/include"
+#     ln -sf $PWD/$dll.dll $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_guest_dll
+#     ln -sf $PWD/qemu_$dll.dll.so $DESTDIR/build.android/qemu/x86_64-windows-user/qemu_host_dll
 done
 
 # Link Wine libraries.
