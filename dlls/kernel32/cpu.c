@@ -47,7 +47,7 @@ WINBASEAPI BOOL WINAPI QueryPerformanceCounter(PLARGE_INTEGER counter)
 {
     struct qemu_QueryPerformanceCounter call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYPERFORMANCECOUNTER);
-    call.counter = (uint64_t)counter;
+    call.counter = (ULONG_PTR)counter;
 
     qemu_syscall(&call.super);
 
@@ -77,7 +77,7 @@ WINBASEAPI BOOL WINAPI QueryPerformanceFrequency(PLARGE_INTEGER frequency)
 {
     struct qemu_QueryPerformanceFrequency call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYPERFORMANCEFREQUENCY);
-    call.frequency = (uint64_t)frequency;
+    call.frequency = (ULONG_PTR)frequency;
 
     qemu_syscall(&call.super);
 
@@ -107,7 +107,7 @@ WINBASEAPI VOID WINAPI GetSystemInfo(LPSYSTEM_INFO si)
 {
     struct qemu_GetSystemInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMINFO);
-    call.si = (uint64_t)si;
+    call.si = (ULONG_PTR)si;
 
     qemu_syscall(&call.super);
 }
@@ -135,7 +135,7 @@ WINBASEAPI VOID WINAPI GetNativeSystemInfo(LPSYSTEM_INFO si)
 {
     struct qemu_GetNativeSystemInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNATIVESYSTEMINFO);
-    call.si = (uint64_t)si;
+    call.si = (ULONG_PTR)si;
 
     qemu_syscall(&call.super);
 }
@@ -163,7 +163,7 @@ WINBASEAPI BOOL WINAPI IsProcessorFeaturePresent (DWORD feature)
 {
     struct qemu_IsProcessorFeaturePresent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISPROCESSORFEATUREPRESENT);
-    call.feature = (uint64_t)feature;
+    call.feature = feature;
 
     qemu_syscall(&call.super);
 
@@ -196,8 +196,8 @@ WINBASEAPI BOOL WINAPI K32GetPerformanceInfo(PPERFORMANCE_INFORMATION info, DWOR
 {
     struct qemu_K32GetPerformanceInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32GETPERFORMANCEINFO);
-    call.info = (uint64_t)info;
-    call.size = (uint64_t)size;
+    call.info = (ULONG_PTR)info;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -287,7 +287,7 @@ WINBASEAPI DWORD WINAPI GetActiveProcessorCount(WORD group)
 {
     struct qemu_GetActiveProcessorCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETACTIVEPROCESSORCOUNT);
-    call.group = (uint64_t)group;
+    call.group = group;
 
     qemu_syscall(&call.super);
 
