@@ -457,11 +457,14 @@ enum ntdll_calls
 typedef void LDR_MODULE;
 NTSTATUS WINAPI ntdll_LdrFindEntryForAddress(const void *addr, LDR_MODULE **mod);
 PVOID WINAPI ntdll_RtlImageDirectoryEntryToData( HMODULE module, BOOL image, WORD dir, ULONG *size );
+NTSTATUS WINAPI ntdll_NtTerminateProcess(HANDLE handle, LONG exit_code);
+
+#ifdef _WIN64
 PRUNTIME_FUNCTION NTAPI ntdll_RtlLookupFunctionEntry(DWORD64 pc, DWORD64 *base, UNWIND_HISTORY_TABLE *history);
 PEXCEPTION_ROUTINE WINAPI ntdll_RtlVirtualUnwind(DWORD type, DWORD64 base, DWORD64 pc,
         PRUNTIME_FUNCTION function, PCONTEXT context, PVOID *data, PDWORD64 frame_ret,
         PKNONVOLATILE_CONTEXT_POINTERS ctx_ptr);
-NTSTATUS WINAPI ntdll_NtTerminateProcess(HANDLE handle, LONG exit_code);
+#endif
 
 void WINAPI qemu_exception_handler(EXCEPTION_POINTERS *except);
 

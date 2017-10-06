@@ -200,6 +200,7 @@ struct qemu_RtlDeleteFunctionTable
 
 #ifdef QEMU_DLL_GUEST
 
+#ifdef _WIN64
 WINBASEAPI BOOLEAN CDECL RtlDeleteFunctionTable(RUNTIME_FUNCTION *table)
 {
     struct qemu_RtlDeleteFunctionTable call;
@@ -210,6 +211,13 @@ WINBASEAPI BOOLEAN CDECL RtlDeleteFunctionTable(RUNTIME_FUNCTION *table)
 
     return call.super.iret;
 }
+#else
+/* Dummy because we can't do arch-specific .spec files yet. */
+WINBASEAPI BOOLEAN CDECL RtlDeleteFunctionTable(void *table)
+{
+    return FALSE;
+}
+#endif
 
 #else
 

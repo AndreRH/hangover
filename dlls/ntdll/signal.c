@@ -82,6 +82,8 @@ typedef LONG (WINAPI *PC_LANGUAGE_EXCEPTION_HANDLER)( EXCEPTION_POINTERS *ptrs, 
 #define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
 #define __ASM_CFI(str) str
 
+#ifdef _WIN64
+
 extern VOID NTAPI ntdll_RtlCaptureContext(PCONTEXT ContextRecord);
 
 __ASM_GLOBAL_FUNC( ntdll_RtlCaptureContext,
@@ -671,7 +673,17 @@ NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec
         }
     }
     return ExceptionContinueSearch;
+
 }
+
+#else
+
+VOID NTAPI ntdll_RtlCaptureContext(PCONTEXT ContextRecord)
+{
+    /* TODO */
+}
+
+#endif /* _WIN64 */
 
 #else
 
@@ -751,12 +763,19 @@ struct qemu_RtlAddFunctionTable
 
 #ifdef QEMU_DLL_GUEST
 
+#ifdef _WIN64
 __ASM_STDCALL_FUNC( DbgBreakPoint, 0, "int $3; ret");
+#else
+void WINAPI DbgBreakPoint(void)
+{
+}
+#endif
 
 #endif
 
 #ifdef QEMU_DLL_GUEST
 
+#ifdef _WIN64
 NTSYSAPI BOOLEAN CDECL RtlAddFunctionTable(PRUNTIME_FUNCTION func, DWORD entry_count, DWORD64 base)
 {
     struct qemu_RtlAddFunctionTable call;
@@ -769,6 +788,7 @@ NTSYSAPI BOOLEAN CDECL RtlAddFunctionTable(PRUNTIME_FUNCTION func, DWORD entry_c
 
     return call.super.iret;
 }
+#endif
 
 #else
 
@@ -783,6 +803,7 @@ void qemu_RtlAddFunctionTable(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
+#ifdef _WIN64
 static RUNTIME_FUNCTION *find_function_info( ULONG64 pc, HMODULE module,
                                              RUNTIME_FUNCTION *func, ULONG size )
 {
@@ -835,6 +856,8 @@ PRUNTIME_FUNCTION NTAPI ntdll_RtlLookupFunctionEntry(DWORD64 pc, DWORD64 *base, 
     return func;
 }
 
+#endif /* _WIN64 */
+
 #else
 
 void qemu_RtlLookupFunctionEntry(struct qemu_syscall *call)
@@ -846,6 +869,7 @@ void qemu_RtlLookupFunctionEntry(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
+#ifdef _WIN64
 union handler_data
 {
     RUNTIME_FUNCTION chain;
@@ -1195,6 +1219,9 @@ PEXCEPTION_ROUTINE WINAPI ntdll_RtlVirtualUnwind(DWORD type, DWORD64 base, DWORD
 }
 
 #else
+#endif /* _WIN64 */
+
+#else
 
 void qemu_RtlVirtualUnwind(struct qemu_syscall *call)
 {
@@ -1229,6 +1256,7 @@ void qemu_RtlVirtualUnwind(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
+#ifdef _WIN64
 static DWORD call_handler( EXCEPTION_RECORD *rec, CONTEXT *context, DISPATCHER_CONTEXT *dispatch )
 {
     DWORD res;
@@ -1440,6 +1468,15 @@ done:
 
 #else
 
+NTSTATUS WINAPI ntdll_NtRaiseException( EXCEPTION_RECORD *rec, CONTEXT *context, BOOL first_chance )
+{
+    return 0;
+}
+
+#endif /* _WIN64 */
+
+#else
+
 void qemu_NtRaiseException(struct qemu_syscall *call)
 {
     struct qemu_ExceptDebug *c = (struct qemu_ExceptDebug *)call;
@@ -1542,6 +1579,7 @@ __ASM_GLOBAL_FUNC( RtlRaiseException,
 #else
 void WINAPI RtlRaiseException( EXCEPTION_RECORD *rec )
 {
+#ifdef _WIN64
     CONTEXT context;
     NTSTATUS status;
 
@@ -1549,6 +1587,7 @@ void WINAPI RtlRaiseException( EXCEPTION_RECORD *rec )
     rec->ExceptionAddress = (LPVOID)context.Rip;
     status = ntdll_NtRaiseException( rec, &context, TRUE );
     if (status) ntdll_RtlRaiseStatus( status );
+#endif
 }
 #endif
 
