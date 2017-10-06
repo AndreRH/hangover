@@ -167,7 +167,10 @@ def gen_guest(curfunc):
     guest = guest + "    call.super.id = QEMU_SYSCALL_ID(CALL_" + fname.upper() + ");\n"
     for x in xrange(func_argc(curfunc)):
         argname = func_argname(curfunc, x)
-        guest = guest + "    call." + argname + " = (uint64_t)" + argname + ";\n"
+        if func_arg_is_ptr(curfunc, x):
+            guest = guest + "    call." + argname + " = (ULONG_PTR)" + argname + ";\n"
+        else:
+            guest = guest + "    call." + argname + " = " + argname + ";\n"
     guest = guest + "\n    qemu_syscall(&call.super);"
     if func_ret_is_ptr(curfunc):
         guest = guest + "\n\n    return (" + func_ret(curfunc) + ")call.super.iret;\n"
@@ -244,7 +247,7 @@ def do_functions(dllname, cfile):
 
     nfile.write("#include <windows.h>\n")
     nfile.write("#include <stdio.h>\n")
-    nfile.write("#include <shlwapi.h>\n")
+    nfile.write("#include <wincon.h>\n")
     #nfile.write("#include <wmistr.h>\n")
     #nfile.write("#include <evntrace.h>\n")
     #nfile.write("#include <evntprov.h>\n")
@@ -268,7 +271,7 @@ def do_functions(dllname, cfile):
     nfile.write("\n")
     nfile.write("#include \"windows-user-services.h\"\n")
     nfile.write("#include \"dll_list.h\"\n")
-    nfile.write("#include \"" + dllname + ".h\"\n")
+    nfile.write("#include \"qemu_" + dllname + ".h\"\n")
     nfile.write("\n")
     nfile.write("#ifndef QEMU_DLL_GUEST\n")
     nfile.write("#include <wine/debug.h>\n")
@@ -299,7 +302,7 @@ def do_functions(dllname, cfile):
 def meta_header_funcs(dllname, names):
     orig = []
     phase = 0
-    hfile = open(dllname + ".h", "r")
+    hfile = open("qemu_" + dllname + ".h", "r")
     for line in hfile:
         if line.startswith("#ifndef QEMU_DLL_GUEST"):
             phase = 1
@@ -321,8 +324,8 @@ def meta_header_funcs(dllname, names):
     modified = sorted(orig, key=lambda o: o.lower())
 
     phase = 0
-    hfile = open(dllname + ".h", "r")
-    nfile = open(dllname + ".h2", "w")
+    hfile = open("qemu_" + dllname + ".h", "r")
+    nfile = open("qemu_" + dllname + ".h2", "w")
     for line in hfile:
         if phase == 0:
             nfile.write(line)
@@ -343,12 +346,12 @@ def meta_header_funcs(dllname, names):
             continue
     nfile.close()
     hfile.close()
-    os.rename(dllname + ".h2", dllname + ".h")
+    os.rename("qemu_" + dllname + ".h2", "qemu_" + dllname + ".h")
 
 def meta_header(dllname, names):
     orig = []
     phase = 0
-    hfile = open(dllname + ".h", "r")
+    hfile = open("qemu_" + dllname + ".h", "r")
     for line in hfile:
         if line.startswith("enum " + dllname + "_calls"):
             phase = 1
@@ -371,8 +374,8 @@ def meta_header(dllname, names):
     modified = sorted(orig, key=lambda o: o.lower())
 
     phase = 0
-    hfile = open(dllname + ".h", "r")
-    nfile = open(dllname + ".h2", "w")
+    hfile = open("qemu_" + dllname + ".h", "r")
+    nfile = open("qemu_" + dllname + ".h2", "w")
     for line in hfile:
         if phase == 0:
             nfile.write(line)
@@ -400,7 +403,7 @@ def meta_header(dllname, names):
             continue
     nfile.close()
     hfile.close()
-    os.rename(dllname + ".h2", dllname + ".h")
+    os.rename("qemu_" + dllname + ".h2", "qemu_" + dllname + ".h")
 
 def meta_def(dllname, names):
     orig = []
