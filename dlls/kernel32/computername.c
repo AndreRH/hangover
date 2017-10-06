@@ -44,8 +44,8 @@ WINBASEAPI BOOL WINAPI GetComputerNameW(LPWSTR name,LPDWORD size)
 {
     struct qemu_GetComputerNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOMPUTERNAMEW);
-    call.name = (uint64_t)name;
-    call.size = (uint64_t)size;
+    call.name = (ULONG_PTR)name;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -76,8 +76,8 @@ WINBASEAPI BOOL WINAPI GetComputerNameA(LPSTR name, LPDWORD size)
 {
     struct qemu_GetComputerNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOMPUTERNAMEA);
-    call.name = (uint64_t)name;
-    call.size = (uint64_t)size;
+    call.name = (ULONG_PTR)name;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -109,9 +109,9 @@ WINBASEAPI BOOL WINAPI GetComputerNameExA(COMPUTER_NAME_FORMAT type, LPSTR name,
 {
     struct qemu_GetComputerNameExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOMPUTERNAMEEXA);
-    call.type = (uint64_t)type;
-    call.name = (uint64_t)name;
-    call.size = (uint64_t)size;
+    call.type = type;
+    call.name = (ULONG_PTR)name;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -143,9 +143,9 @@ WINBASEAPI BOOL WINAPI GetComputerNameExW(COMPUTER_NAME_FORMAT type, LPWSTR name
 {
     struct qemu_GetComputerNameExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOMPUTERNAMEEXW);
-    call.type = (uint64_t)type;
-    call.name = (uint64_t)name;
-    call.size = (uint64_t)size;
+    call.type = type;
+    call.name = (ULONG_PTR)name;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -175,7 +175,7 @@ WINBASEAPI BOOL WINAPI SetComputerNameW(LPCWSTR lpComputerName)
 {
     struct qemu_SetComputerNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCOMPUTERNAMEW);
-    call.lpComputerName = (uint64_t)lpComputerName;
+    call.lpComputerName = (ULONG_PTR)lpComputerName;
 
     qemu_syscall(&call.super);
 
@@ -205,7 +205,7 @@ WINBASEAPI BOOL WINAPI SetComputerNameA(LPCSTR lpComputerName)
 {
     struct qemu_SetComputerNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCOMPUTERNAMEA);
-    call.lpComputerName = (uint64_t)lpComputerName;
+    call.lpComputerName = (ULONG_PTR)lpComputerName;
 
     qemu_syscall(&call.super);
 
@@ -236,8 +236,8 @@ WINBASEAPI BOOL WINAPI SetComputerNameExW(COMPUTER_NAME_FORMAT type, LPCWSTR lpC
 {
     struct qemu_SetComputerNameExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCOMPUTERNAMEEXW);
-    call.type = (uint64_t)type;
-    call.lpComputerName = (uint64_t)lpComputerName;
+    call.type = type;
+    call.lpComputerName = (ULONG_PTR)lpComputerName;
 
     qemu_syscall(&call.super);
 
@@ -268,8 +268,8 @@ WINBASEAPI BOOL WINAPI SetComputerNameExA(COMPUTER_NAME_FORMAT type, LPCSTR lpCo
 {
     struct qemu_SetComputerNameExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCOMPUTERNAMEEXA);
-    call.type = (uint64_t)type;
-    call.lpComputerName = (uint64_t)lpComputerName;
+    call.type = type;
+    call.lpComputerName = (ULONG_PTR)lpComputerName;
 
     qemu_syscall(&call.super);
 
@@ -301,9 +301,9 @@ WINBASEAPI BOOL WINAPI DnsHostnameToComputerNameA(LPCSTR hostname, LPSTR compute
 {
     struct qemu_DnsHostnameToComputerNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DNSHOSTNAMETOCOMPUTERNAMEA);
-    call.hostname = (uint64_t)hostname;
-    call.computername = (uint64_t)computername;
-    call.size = (uint64_t)size;
+    call.hostname = (ULONG_PTR)hostname;
+    call.computername = (ULONG_PTR)computername;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -335,9 +335,9 @@ WINBASEAPI BOOL WINAPI DnsHostnameToComputerNameW(LPCWSTR hostname, LPWSTR compu
 {
     struct qemu_DnsHostnameToComputerNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DNSHOSTNAMETOCOMPUTERNAMEW);
-    call.hostname = (uint64_t)hostname;
-    call.computername = (uint64_t)computername;
-    call.size = (uint64_t)size;
+    call.hostname = (ULONG_PTR)hostname;
+    call.computername = (ULONG_PTR)computername;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
