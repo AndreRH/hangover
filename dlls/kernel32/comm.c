@@ -44,8 +44,8 @@ WINBASEAPI BOOL WINAPI BuildCommDCBA(LPCSTR device, LPDCB lpdcb)
 {
     struct qemu_BuildCommDCBA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDCOMMDCBA);
-    call.device = (uint64_t)device;
-    call.lpdcb = (uint64_t)lpdcb;
+    call.device = (ULONG_PTR)device;
+    call.lpdcb = (ULONG_PTR)lpdcb;
 
     qemu_syscall(&call.super);
 
@@ -77,9 +77,9 @@ WINBASEAPI BOOL WINAPI BuildCommDCBAndTimeoutsA(LPCSTR device, LPDCB lpdcb, LPCO
 {
     struct qemu_BuildCommDCBAndTimeoutsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDCOMMDCBANDTIMEOUTSA);
-    call.device = (uint64_t)device;
-    call.lpdcb = (uint64_t)lpdcb;
-    call.lptimeouts = (uint64_t)lptimeouts;
+    call.device = (ULONG_PTR)device;
+    call.lpdcb = (ULONG_PTR)lpdcb;
+    call.lptimeouts = (ULONG_PTR)lptimeouts;
 
     qemu_syscall(&call.super);
 
@@ -111,9 +111,9 @@ WINBASEAPI BOOL WINAPI BuildCommDCBAndTimeoutsW(LPCWSTR devid, LPDCB lpdcb, LPCO
 {
     struct qemu_BuildCommDCBAndTimeoutsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDCOMMDCBANDTIMEOUTSW);
-    call.devid = (uint64_t)devid;
-    call.lpdcb = (uint64_t)lpdcb;
-    call.lptimeouts = (uint64_t)lptimeouts;
+    call.devid = (ULONG_PTR)devid;
+    call.lpdcb = (ULONG_PTR)lpdcb;
+    call.lptimeouts = (ULONG_PTR)lptimeouts;
 
     qemu_syscall(&call.super);
 
@@ -144,8 +144,8 @@ WINBASEAPI BOOL WINAPI BuildCommDCBW(LPCWSTR devid, LPDCB lpdcb)
 {
     struct qemu_BuildCommDCBW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDCOMMDCBW);
-    call.devid = (uint64_t)devid;
-    call.lpdcb = (uint64_t)lpdcb;
+    call.devid = (ULONG_PTR)devid;
+    call.lpdcb = (ULONG_PTR)lpdcb;
 
     qemu_syscall(&call.super);
 
@@ -175,7 +175,7 @@ WINBASEAPI BOOL WINAPI SetCommBreak(HANDLE handle)
 {
     struct qemu_SetCommBreak call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCOMMBREAK);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -205,7 +205,7 @@ WINBASEAPI BOOL WINAPI ClearCommBreak(HANDLE handle)
 {
     struct qemu_ClearCommBreak call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CLEARCOMMBREAK);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -236,8 +236,8 @@ WINBASEAPI BOOL WINAPI EscapeCommFunction(HANDLE handle, DWORD func)
 {
     struct qemu_EscapeCommFunction call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ESCAPECOMMFUNCTION);
-    call.handle = (uint64_t)handle;
-    call.func = (uint64_t)func;
+    call.handle = (ULONG_PTR)handle;
+    call.func = func;
 
     qemu_syscall(&call.super);
 
@@ -268,8 +268,8 @@ WINBASEAPI BOOL WINAPI PurgeComm(HANDLE handle, DWORD flags)
 {
     struct qemu_PurgeComm call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PURGECOMM);
-    call.handle = (uint64_t)handle;
-    call.flags = (uint64_t)flags;
+    call.handle = (ULONG_PTR)handle;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -301,9 +301,9 @@ WINBASEAPI BOOL WINAPI ClearCommError(HANDLE handle, LPDWORD errors, LPCOMSTAT l
 {
     struct qemu_ClearCommError call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CLEARCOMMERROR);
-    call.handle = (uint64_t)handle;
-    call.errors = (uint64_t)errors;
-    call.lpStat = (uint64_t)lpStat;
+    call.handle = (ULONG_PTR)handle;
+    call.errors = (ULONG_PTR)errors;
+    call.lpStat = (ULONG_PTR)lpStat;
 
     qemu_syscall(&call.super);
 
@@ -335,9 +335,9 @@ WINBASEAPI BOOL WINAPI SetupComm(HANDLE handle, DWORD insize, DWORD outsize)
 {
     struct qemu_SetupComm call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETUPCOMM);
-    call.handle = (uint64_t)handle;
-    call.insize = (uint64_t)insize;
-    call.outsize = (uint64_t)outsize;
+    call.handle = (ULONG_PTR)handle;
+    call.insize = insize;
+    call.outsize = outsize;
 
     qemu_syscall(&call.super);
 
@@ -368,8 +368,8 @@ WINBASEAPI BOOL WINAPI GetCommMask(HANDLE handle, LPDWORD evtmask)
 {
     struct qemu_GetCommMask call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOMMMASK);
-    call.handle = (uint64_t)handle;
-    call.evtmask = (uint64_t)evtmask;
+    call.handle = (ULONG_PTR)handle;
+    call.evtmask = (ULONG_PTR)evtmask;
 
     qemu_syscall(&call.super);
 
@@ -400,8 +400,8 @@ WINBASEAPI BOOL WINAPI SetCommMask(HANDLE handle, DWORD evtmask)
 {
     struct qemu_SetCommMask call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCOMMMASK);
-    call.handle = (uint64_t)handle;
-    call.evtmask = (uint64_t)evtmask;
+    call.handle = (ULONG_PTR)handle;
+    call.evtmask = evtmask;
 
     qemu_syscall(&call.super);
 
@@ -432,8 +432,8 @@ WINBASEAPI BOOL WINAPI SetCommState(HANDLE handle, LPDCB lpdcb)
 {
     struct qemu_SetCommState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCOMMSTATE);
-    call.handle = (uint64_t)handle;
-    call.lpdcb = (uint64_t)lpdcb;
+    call.handle = (ULONG_PTR)handle;
+    call.lpdcb = (ULONG_PTR)lpdcb;
 
     qemu_syscall(&call.super);
 
@@ -464,8 +464,8 @@ WINBASEAPI BOOL WINAPI GetCommState(HANDLE handle, LPDCB lpdcb)
 {
     struct qemu_GetCommState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOMMSTATE);
-    call.handle = (uint64_t)handle;
-    call.lpdcb = (uint64_t)lpdcb;
+    call.handle = (ULONG_PTR)handle;
+    call.lpdcb = (ULONG_PTR)lpdcb;
 
     qemu_syscall(&call.super);
 
@@ -496,8 +496,8 @@ WINBASEAPI BOOL WINAPI TransmitCommChar(HANDLE hComm, CHAR chTransmit)
 {
     struct qemu_TransmitCommChar call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRANSMITCOMMCHAR);
-    call.hComm = (uint64_t)hComm;
-    call.chTransmit = (uint64_t)chTransmit;
+    call.hComm = (ULONG_PTR)hComm;
+    call.chTransmit = chTransmit;
 
     qemu_syscall(&call.super);
 
@@ -528,8 +528,8 @@ WINBASEAPI BOOL WINAPI GetCommTimeouts(HANDLE hComm, LPCOMMTIMEOUTS lptimeouts)
 {
     struct qemu_GetCommTimeouts call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOMMTIMEOUTS);
-    call.hComm = (uint64_t)hComm;
-    call.lptimeouts = (uint64_t)lptimeouts;
+    call.hComm = (ULONG_PTR)hComm;
+    call.lptimeouts = (ULONG_PTR)lptimeouts;
 
     qemu_syscall(&call.super);
 
@@ -560,8 +560,8 @@ WINBASEAPI BOOL WINAPI SetCommTimeouts(HANDLE hComm, LPCOMMTIMEOUTS lptimeouts)
 {
     struct qemu_SetCommTimeouts call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCOMMTIMEOUTS);
-    call.hComm = (uint64_t)hComm;
-    call.lptimeouts = (uint64_t)lptimeouts;
+    call.hComm = (ULONG_PTR)hComm;
+    call.lptimeouts = (ULONG_PTR)lptimeouts;
 
     qemu_syscall(&call.super);
 
@@ -592,8 +592,8 @@ WINBASEAPI BOOL WINAPI GetCommModemStatus(HANDLE hFile, LPDWORD lpModemStat)
 {
     struct qemu_GetCommModemStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOMMMODEMSTATUS);
-    call.hFile = (uint64_t)hFile;
-    call.lpModemStat = (uint64_t)lpModemStat;
+    call.hFile = (ULONG_PTR)hFile;
+    call.lpModemStat = (ULONG_PTR)lpModemStat;
 
     qemu_syscall(&call.super);
 
@@ -625,9 +625,9 @@ WINBASEAPI BOOL WINAPI WaitCommEvent(HANDLE hFile, LPDWORD lpdwEvents, LPOVERLAP
 {
     struct qemu_WaitCommEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WAITCOMMEVENT);
-    call.hFile = (uint64_t)hFile;
-    call.lpdwEvents = (uint64_t)lpdwEvents;
-    call.lpOverlapped = (uint64_t)lpOverlapped;
+    call.hFile = (ULONG_PTR)hFile;
+    call.lpdwEvents = (ULONG_PTR)lpdwEvents;
+    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
 
     qemu_syscall(&call.super);
 
@@ -658,8 +658,8 @@ WINBASEAPI BOOL WINAPI GetCommProperties(HANDLE hFile, LPCOMMPROP lpCommProp)
 {
     struct qemu_GetCommProperties call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOMMPROPERTIES);
-    call.hFile = (uint64_t)hFile;
-    call.lpCommProp = (uint64_t)lpCommProp;
+    call.hFile = (ULONG_PTR)hFile;
+    call.lpCommProp = (ULONG_PTR)lpCommProp;
 
     qemu_syscall(&call.super);
 
@@ -691,9 +691,9 @@ WINBASEAPI BOOL WINAPI CommConfigDialogA(LPCSTR lpszDevice, HWND hWnd, LPCOMMCON
 {
     struct qemu_CommConfigDialogA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COMMCONFIGDIALOGA);
-    call.lpszDevice = (uint64_t)lpszDevice;
-    call.hWnd = (uint64_t)hWnd;
-    call.lpCommConfig = (uint64_t)lpCommConfig;
+    call.lpszDevice = (ULONG_PTR)lpszDevice;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.lpCommConfig = (ULONG_PTR)lpCommConfig;
 
     qemu_syscall(&call.super);
 
@@ -725,9 +725,9 @@ WINBASEAPI BOOL WINAPI CommConfigDialogW(LPCWSTR lpszDevice, HWND hWnd, LPCOMMCO
 {
     struct qemu_CommConfigDialogW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COMMCONFIGDIALOGW);
-    call.lpszDevice = (uint64_t)lpszDevice;
-    call.hWnd = (uint64_t)hWnd;
-    call.lpCommConfig = (uint64_t)lpCommConfig;
+    call.lpszDevice = (ULONG_PTR)lpszDevice;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.lpCommConfig = (ULONG_PTR)lpCommConfig;
 
     qemu_syscall(&call.super);
 
@@ -759,9 +759,9 @@ WINBASEAPI BOOL WINAPI GetCommConfig(HANDLE hFile, LPCOMMCONFIG lpCommConfig, LP
 {
     struct qemu_GetCommConfig call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOMMCONFIG);
-    call.hFile = (uint64_t)hFile;
-    call.lpCommConfig = (uint64_t)lpCommConfig;
-    call.lpdwSize = (uint64_t)lpdwSize;
+    call.hFile = (ULONG_PTR)hFile;
+    call.lpCommConfig = (ULONG_PTR)lpCommConfig;
+    call.lpdwSize = (ULONG_PTR)lpdwSize;
 
     qemu_syscall(&call.super);
 
@@ -793,9 +793,9 @@ WINBASEAPI BOOL WINAPI SetCommConfig(HANDLE hFile, LPCOMMCONFIG lpCommConfig, DW
 {
     struct qemu_SetCommConfig call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCOMMCONFIG);
-    call.hFile = (uint64_t)hFile;
-    call.lpCommConfig = (uint64_t)lpCommConfig;
-    call.dwSize = (uint64_t)dwSize;
+    call.hFile = (ULONG_PTR)hFile;
+    call.lpCommConfig = (ULONG_PTR)lpCommConfig;
+    call.dwSize = dwSize;
 
     qemu_syscall(&call.super);
 
@@ -827,9 +827,9 @@ WINBASEAPI BOOL WINAPI SetDefaultCommConfigW(LPCWSTR lpszDevice, LPCOMMCONFIG lp
 {
     struct qemu_SetDefaultCommConfigW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETDEFAULTCOMMCONFIGW);
-    call.lpszDevice = (uint64_t)lpszDevice;
-    call.lpCommConfig = (uint64_t)lpCommConfig;
-    call.dwSize = (uint64_t)dwSize;
+    call.lpszDevice = (ULONG_PTR)lpszDevice;
+    call.lpCommConfig = (ULONG_PTR)lpCommConfig;
+    call.dwSize = dwSize;
 
     qemu_syscall(&call.super);
 
@@ -861,9 +861,9 @@ WINBASEAPI BOOL WINAPI SetDefaultCommConfigA(LPCSTR lpszDevice, LPCOMMCONFIG lpC
 {
     struct qemu_SetDefaultCommConfigA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETDEFAULTCOMMCONFIGA);
-    call.lpszDevice = (uint64_t)lpszDevice;
-    call.lpCommConfig = (uint64_t)lpCommConfig;
-    call.dwSize = (uint64_t)dwSize;
+    call.lpszDevice = (ULONG_PTR)lpszDevice;
+    call.lpCommConfig = (ULONG_PTR)lpCommConfig;
+    call.dwSize = dwSize;
 
     qemu_syscall(&call.super);
 
@@ -895,9 +895,9 @@ WINBASEAPI BOOL WINAPI GetDefaultCommConfigW(LPCWSTR lpszName, LPCOMMCONFIG lpCC
 {
     struct qemu_GetDefaultCommConfigW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDEFAULTCOMMCONFIGW);
-    call.lpszName = (uint64_t)lpszName;
-    call.lpCC = (uint64_t)lpCC;
-    call.lpdwSize = (uint64_t)lpdwSize;
+    call.lpszName = (ULONG_PTR)lpszName;
+    call.lpCC = (ULONG_PTR)lpCC;
+    call.lpdwSize = (ULONG_PTR)lpdwSize;
 
     qemu_syscall(&call.super);
 
@@ -929,9 +929,9 @@ WINBASEAPI BOOL WINAPI GetDefaultCommConfigA(LPCSTR lpszName, LPCOMMCONFIG lpCC,
 {
     struct qemu_GetDefaultCommConfigA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDEFAULTCOMMCONFIGA);
-    call.lpszName = (uint64_t)lpszName;
-    call.lpCC = (uint64_t)lpCC;
-    call.lpdwSize = (uint64_t)lpdwSize;
+    call.lpszName = (ULONG_PTR)lpszName;
+    call.lpCC = (ULONG_PTR)lpCC;
+    call.lpdwSize = (ULONG_PTR)lpdwSize;
 
     qemu_syscall(&call.super);
 
