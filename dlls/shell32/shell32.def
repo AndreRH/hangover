@@ -101,6 +101,8 @@ EXPORTS
   SHDestroyPropSheetExtArray
   SHDoDragDrop
   shell32_243
+  Shell_NotifyIconA
+  Shell_NotifyIconW
   ShellAboutA
   ShellAboutW
   ShellExecuteA

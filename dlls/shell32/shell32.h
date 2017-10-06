@@ -105,6 +105,8 @@ enum shell32_calls
     CALL_SHDESTROYPROPSHEETEXTARRAY,
     CALL_SHDODRAGDROP,
     CALL_SHELL32_243,
+    CALL_SHELL_NOTIFYICONA,
+    CALL_SHELL_NOTIFYICONW,
     CALL_SHELLABOUTA,
     CALL_SHELLABOUTW,
     CALL_SHELLEXECUTEA,
@@ -298,6 +300,8 @@ void qemu_SHCreateStdEnumFmtEtc(struct qemu_syscall *call);
 void qemu_SHDestroyPropSheetExtArray(struct qemu_syscall *call);
 void qemu_SHDoDragDrop(struct qemu_syscall *call);
 void qemu_shell32_243(struct qemu_syscall *call);
+void qemu_Shell_NotifyIconA(struct qemu_syscall *call);
+void qemu_Shell_NotifyIconW(struct qemu_syscall *call);
 void qemu_ShellAboutA(struct qemu_syscall *call);
 void qemu_ShellAboutW(struct qemu_syscall *call);
 void qemu_ShellExecuteA(struct qemu_syscall *call);
