@@ -1,0 +1,12 @@
+LIBRARY riched20.dll BASE=0x1d0000000
+
+EXPORTS
+  IID_IRichEditOle @2 DATA
+  IID_IRichEditOleCallback @3 DATA
+  CreateTextServices @4
+  IID_ITextServices @5 DATA
+  IID_ITextHost @6 DATA
+  IID_ITextHost2 @7 DATA
+  REExtendedRegisterClass @8
+  RichEdit10ANSIWndProc @9
+  RichEditANSIWndProc @10

@@ -29,5 +29,6 @@
 #define DLL_WININET     0x1aLL
 #define DLL_ADVPACK     0x1bLL
 #define DLL_USP10       0x1cLL
+#define DLL_RICHED20    0x1dLL
 
 #endif
