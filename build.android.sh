@@ -79,7 +79,6 @@ do
     echo "DESTDIR?=../../.." >> Makefile
     echo "GUEST_BIT=32" >> Makefile
     echo "HOST_BIT=64" >> Makefile
-    echo "CFLAGS=-Wno-pointer-to-int-cast -Wno-int-to-pointer-cast" >> Makefile
     echo >> Makefile
     echo "include $SRCDIR/dlls/$dll/Makefile" >> Makefile
 
