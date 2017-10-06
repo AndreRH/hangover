@@ -84,6 +84,8 @@ EXPORTS
   SHAllocShared
   SHAppBarMessage
   SHBindToParent
+  SHBrowseForFolderA
+  SHBrowseForFolderW
   SHCloneSpecialIDList
   SHCLSIDFromString
   SHCoCreateInstance
