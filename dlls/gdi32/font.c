@@ -321,7 +321,7 @@ WINGDIAPI HFONT WINAPI CreateFontW(INT height, INT width, INT esc, INT orient, I
 void qemu_CreateFontW(struct qemu_syscall *call)
 {
     struct qemu_CreateFontW *c = (struct qemu_CreateFontW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateFontW(c->height, c->width, c->esc, c->orient, c->weight, c->italic, c->underline, c->strikeout, c->charset, c->outpres, c->clippres, c->quality, c->pitch, QEMU_G2H(c->name));
 }
 
@@ -878,7 +878,7 @@ WINGDIAPI BOOL WINAPI GetTextExtentPoint32W(HDC hdc, LPCWSTR str, INT count, LPS
 void qemu_GetTextExtentPoint32W(struct qemu_syscall *call)
 {
     struct qemu_GetTextExtentPoint32W *c = (struct qemu_GetTextExtentPoint32W *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTextExtentPoint32W(QEMU_G2H(c->hdc), QEMU_G2H(c->str), c->count, QEMU_G2H(c->size));
 }
 

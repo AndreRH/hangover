@@ -380,7 +380,7 @@ WINBASEAPI BOOL WINAPI InitCommonControlsEx (const INITCOMMONCONTROLSEX *lpInitC
 void qemu_InitCommonControlsEx(struct qemu_syscall *call)
 {
     struct qemu_InitCommonControlsEx *c = (struct qemu_InitCommonControlsEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = InitCommonControlsEx(QEMU_G2H(c->lpInitCtrls));
 }
 

@@ -1143,7 +1143,7 @@ void qemu_SetFilePointerEx(struct qemu_syscall *call)
 {
     struct qemu_SetFilePointerEx *c = (struct qemu_SetFilePointerEx *)call;
     LARGE_INTEGER distance;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     distance.HighPart = c->distance_high;
     distance.LowPart = c->distance_low;
     c->super.iret = SetFilePointerEx(QEMU_G2H(c->hFile), distance, QEMU_G2H(c->newpos), c->method);
@@ -1742,7 +1742,7 @@ WINBASEAPI HANDLE WINAPI FindFirstFileExW(LPCWSTR filename, FINDEX_INFO_LEVELS l
 void qemu_FindFirstFileExW(struct qemu_syscall *call)
 {
     struct qemu_FindFirstFileExW *c = (struct qemu_FindFirstFileExW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)FindFirstFileExW(QEMU_G2H(c->filename), c->level, QEMU_G2H(c->data), c->search_op, QEMU_G2H(c->filter), c->flags);
 }
 
@@ -1774,7 +1774,7 @@ WINBASEAPI BOOL WINAPI FindNextFileW(HANDLE handle, WIN32_FIND_DATAW *data)
 void qemu_FindNextFileW(struct qemu_syscall *call)
 {
     struct qemu_FindNextFileW *c = (struct qemu_FindNextFileW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FindNextFileW(QEMU_G2H(c->handle), QEMU_G2H(c->data));
 }
 

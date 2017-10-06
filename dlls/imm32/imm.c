@@ -775,7 +775,7 @@ WINBASEAPI HIMC WINAPI ImmGetContext(HWND hWnd)
 void qemu_ImmGetContext(struct qemu_syscall *call)
 {
     struct qemu_ImmGetContext *c = (struct qemu_ImmGetContext *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)ImmGetContext(QEMU_G2H(c->hWnd));
 }
 
@@ -1521,7 +1521,7 @@ WINBASEAPI BOOL WINAPI ImmNotifyIME(HIMC hIMC, DWORD dwAction, DWORD dwIndex, DW
 void qemu_ImmNotifyIME(struct qemu_syscall *call)
 {
     struct qemu_ImmNotifyIME *c = (struct qemu_ImmNotifyIME *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ImmNotifyIME(QEMU_G2H(c->hIMC), c->dwAction, c->dwIndex, c->dwValue);
 }
 
@@ -1625,7 +1625,7 @@ WINBASEAPI BOOL WINAPI ImmReleaseContext(HWND hWnd, HIMC hIMC)
 void qemu_ImmReleaseContext(struct qemu_syscall *call)
 {
     struct qemu_ImmReleaseContext *c = (struct qemu_ImmReleaseContext *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ImmReleaseContext(QEMU_G2H(c->hWnd), QEMU_G2H(c->hIMC));
 }
 

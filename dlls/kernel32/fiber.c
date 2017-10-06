@@ -279,7 +279,7 @@ void qemu_FlsAlloc(struct qemu_syscall *call)
     TEB *guest_teb = qemu_ops->qemu_getTEB(), *host_teb = NtCurrentTeb();
 
     struct qemu_FlsAlloc *c = (struct qemu_FlsAlloc *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FlsAlloc(QEMU_G2H(c->callback));
 
     guest_teb->FlsSlots = host_teb->FlsSlots;
@@ -311,7 +311,7 @@ WINBASEAPI BOOL WINAPI FlsFree(DWORD index)
 void qemu_FlsFree(struct qemu_syscall *call)
 {
     struct qemu_FlsFree *c = (struct qemu_FlsFree *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FlsFree(c->index);
 }
 

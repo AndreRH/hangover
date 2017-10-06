@@ -1197,7 +1197,7 @@ WINBASEAPI void WINAPI RtlInitializeSListHead(PSLIST_HEADER list)
 void qemu_RtlInitializeSListHead(struct qemu_syscall *call)
 {
     struct qemu_RtlInitializeSListHead *c = (struct qemu_RtlInitializeSListHead *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     RtlInitializeSListHead(QEMU_G2H(c->list));
 }
 

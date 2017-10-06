@@ -2719,7 +2719,7 @@ WINBASEAPI INT WINAPI GetUserDefaultLocaleName(LPWSTR localename, int buffersize
 void qemu_GetUserDefaultLocaleName(struct qemu_syscall *call)
 {
     struct qemu_GetUserDefaultLocaleName *c = (struct qemu_GetUserDefaultLocaleName *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetUserDefaultLocaleName(QEMU_G2H(c->localename), c->buffersize);
 }
 

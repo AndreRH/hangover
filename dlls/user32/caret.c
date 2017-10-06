@@ -61,7 +61,7 @@ WINUSERAPI BOOL WINAPI CreateCaret(HWND hwnd, HBITMAP bitmap, INT width, INT hei
 void qemu_CreateCaret(struct qemu_syscall *call)
 {
     struct qemu_CreateCaret *c = (struct qemu_CreateCaret *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CreateCaret(QEMU_G2H(c->hwnd), QEMU_G2H(c->bitmap), c->width, c->height);
 }
 
@@ -89,7 +89,7 @@ WINUSERAPI BOOL WINAPI DestroyCaret(void)
 void qemu_DestroyCaret(struct qemu_syscall *call)
 {
     struct qemu_DestroyCaret *c = (struct qemu_DestroyCaret *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DestroyCaret();
 }
 
@@ -151,7 +151,7 @@ WINUSERAPI BOOL WINAPI HideCaret(HWND hwnd)
 void qemu_HideCaret(struct qemu_syscall *call)
 {
     struct qemu_HideCaret *c = (struct qemu_HideCaret *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = HideCaret(QEMU_G2H(c->hwnd));
 }
 
@@ -181,7 +181,7 @@ WINUSERAPI BOOL WINAPI ShowCaret(HWND hwnd)
 void qemu_ShowCaret(struct qemu_syscall *call)
 {
     struct qemu_ShowCaret *c = (struct qemu_ShowCaret *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ShowCaret(QEMU_G2H(c->hwnd));
 }
 

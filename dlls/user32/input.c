@@ -1848,7 +1848,7 @@ WINUSERAPI BOOL WINAPI TrackMouseEvent (TRACKMOUSEEVENT *ptme)
 void qemu_TrackMouseEvent(struct qemu_syscall *call)
 {
     struct qemu_TrackMouseEvent *c = (struct qemu_TrackMouseEvent *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = TrackMouseEvent(QEMU_G2H(c->ptme));
 }
 

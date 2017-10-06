@@ -1695,7 +1695,7 @@ extern BOOLEAN WINAPI SystemFunction036(PVOID pbBuffer, ULONG dwLen);
 void qemu_SystemFunction036(struct qemu_syscall *call)
 {
     struct qemu_SystemFunction036 *c = (struct qemu_SystemFunction036 *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SystemFunction036(QEMU_G2H(c->pbBuffer), c->dwLen);
 }
 

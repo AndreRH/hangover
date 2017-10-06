@@ -245,7 +245,7 @@ WINUSERAPI COLORREF WINAPI GetSysColor(INT nIndex)
 void qemu_GetSysColor(struct qemu_syscall *call)
 {
     struct qemu_GetSysColor *c = (struct qemu_GetSysColor *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetSysColor(c->nIndex);
 }
 

@@ -1158,7 +1158,7 @@ WINUSERAPI HBITMAP WINAPI LoadBitmapW(HINSTANCE instance, LPCWSTR name)
 void qemu_LoadBitmapW(struct qemu_syscall *call)
 {
     struct qemu_LoadBitmapW *c = (struct qemu_LoadBitmapW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)LoadBitmapW(QEMU_G2H(c->instance), QEMU_G2H(c->name));
 }
 

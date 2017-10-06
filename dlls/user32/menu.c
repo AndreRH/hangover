@@ -497,7 +497,7 @@ WINUSERAPI BOOL WINAPI InsertMenuW(HMENU hMenu, UINT pos, UINT flags, UINT_PTR i
 void qemu_InsertMenuW(struct qemu_syscall *call)
 {
     struct qemu_InsertMenuW *c = (struct qemu_InsertMenuW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = InsertMenuW(QEMU_G2H(c->hMenu), c->pos, c->flags, c->id, QEMU_G2H(c->str));
 }
 
@@ -675,7 +675,7 @@ WINUSERAPI BOOL WINAPI DeleteMenu(HMENU hMenu, UINT nPos, UINT wFlags)
 void qemu_DeleteMenu(struct qemu_syscall *call)
 {
     struct qemu_DeleteMenu *c = (struct qemu_DeleteMenu *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DeleteMenu(QEMU_G2H(c->hMenu), c->nPos, c->wFlags);
 }
 
@@ -1069,7 +1069,7 @@ WINUSERAPI HMENU WINAPI GetSubMenu(HMENU hMenu, INT nPos)
 void qemu_GetSubMenu(struct qemu_syscall *call)
 {
     struct qemu_GetSubMenu *c = (struct qemu_GetSubMenu *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetSubMenu(QEMU_G2H(c->hMenu), c->nPos);
 }
 
@@ -1231,7 +1231,7 @@ WINUSERAPI HMENU WINAPI LoadMenuW(HINSTANCE instance, LPCWSTR name)
 void qemu_LoadMenuW(struct qemu_syscall *call)
 {
     struct qemu_LoadMenuW *c = (struct qemu_LoadMenuW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)LoadMenuW(QEMU_G2H(c->instance), QEMU_G2H(c->name));
 }
 

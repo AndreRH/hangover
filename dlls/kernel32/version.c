@@ -304,7 +304,7 @@ extern LONG WINAPI GetCurrentPackageId(UINT32 *len, BYTE *buffer);
 void qemu_GetCurrentPackageId(struct qemu_syscall *call)
 {
     struct qemu_GetCurrentPackageId *c = (struct qemu_GetCurrentPackageId *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetCurrentPackageId(QEMU_G2H(c->len), QEMU_G2H(c->buffer));
 }
 

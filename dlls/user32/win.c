@@ -361,7 +361,7 @@ WINUSERAPI HWND WINAPI FindWindowW(LPCWSTR className, LPCWSTR title)
 void qemu_FindWindowW(struct qemu_syscall *call)
 {
     struct qemu_FindWindowW *c = (struct qemu_FindWindowW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)FindWindowW(QEMU_G2H(c->className), QEMU_G2H(c->title));
 }
 

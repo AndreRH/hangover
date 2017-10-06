@@ -238,7 +238,7 @@ WINBASEAPI HIMAGELIST WINAPI ImageList_Create (INT cx, INT cy, UINT flags, INT c
 void qemu_ImageList_Create(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Create *c = (struct qemu_ImageList_Create *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)ImageList_Create(c->cx, c->cy, c->flags, c->cInitial, c->cGrow);
 }
 
@@ -268,7 +268,7 @@ WINBASEAPI BOOL WINAPI ImageList_Destroy (HIMAGELIST himl)
 void qemu_ImageList_Destroy(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Destroy *c = (struct qemu_ImageList_Destroy *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ImageList_Destroy(QEMU_G2H(c->himl));
 }
 
@@ -434,7 +434,7 @@ WINBASEAPI BOOL WINAPI ImageList_Draw (HIMAGELIST himl, INT i, HDC hdc, INT x, I
 void qemu_ImageList_Draw(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Draw *c = (struct qemu_ImageList_Draw *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ImageList_Draw(QEMU_G2H(c->himl), c->i, QEMU_G2H(c->hdc), c->x, c->y, c->fStyle);
 }
 
@@ -794,7 +794,7 @@ WINBASEAPI BOOL WINAPI ImageList_GetImageInfo (HIMAGELIST himl, INT i, IMAGEINFO
 void qemu_ImageList_GetImageInfo(struct qemu_syscall *call)
 {
     struct qemu_ImageList_GetImageInfo *c = (struct qemu_ImageList_GetImageInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ImageList_GetImageInfo(QEMU_G2H(c->himl), c->i, QEMU_G2H(c->pImageInfo));
 }
 
@@ -1084,7 +1084,7 @@ WINBASEAPI INT WINAPI ImageList_ReplaceIcon (HIMAGELIST himl, INT nIndex, HICON 
 void qemu_ImageList_ReplaceIcon(struct qemu_syscall *call)
 {
     struct qemu_ImageList_ReplaceIcon *c = (struct qemu_ImageList_ReplaceIcon *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ImageList_ReplaceIcon(QEMU_G2H(c->himl), c->nIndex, QEMU_G2H(c->hIcon));
 }
 
@@ -1256,7 +1256,7 @@ WINBASEAPI BOOL WINAPI ImageList_SetIconSize (HIMAGELIST himl, INT cx, INT cy)
 void qemu_ImageList_SetIconSize(struct qemu_syscall *call)
 {
     struct qemu_ImageList_SetIconSize *c = (struct qemu_ImageList_SetIconSize *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ImageList_SetIconSize(QEMU_G2H(c->himl), c->cx, c->cy);
 }
 

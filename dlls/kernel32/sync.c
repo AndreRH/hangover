@@ -254,7 +254,7 @@ WINBASEAPI DWORD WINAPI WaitForMultipleObjectsEx(DWORD count, const HANDLE *hand
 void qemu_WaitForMultipleObjectsEx(struct qemu_syscall *call)
 {
     struct qemu_WaitForMultipleObjectsEx *c = (struct qemu_WaitForMultipleObjectsEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WaitForMultipleObjectsEx(c->count, QEMU_G2H(c->handles), c->wait_all, c->timeout, c->alertable);
 }
 
@@ -865,7 +865,7 @@ WINBASEAPI HANDLE WINAPI OpenEventW(DWORD access, BOOL inherit, LPCWSTR name)
 void qemu_OpenEventW(struct qemu_syscall *call)
 {
     struct qemu_OpenEventW *c = (struct qemu_OpenEventW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)OpenEventW(c->access, c->inherit, QEMU_G2H(c->name));
 }
 
@@ -1023,7 +1023,7 @@ WINBASEAPI HANDLE WINAPI CreateMutexW(SECURITY_ATTRIBUTES *sa, BOOL owner, LPCWS
 void qemu_CreateMutexW(struct qemu_syscall *call)
 {
     struct qemu_CreateMutexW *c = (struct qemu_CreateMutexW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateMutexW(QEMU_G2H(c->sa), c->owner, QEMU_G2H(c->name));
 }
 
@@ -1193,7 +1193,7 @@ WINBASEAPI BOOL WINAPI ReleaseMutex(HANDLE handle)
 void qemu_ReleaseMutex(struct qemu_syscall *call)
 {
     struct qemu_ReleaseMutex *c = (struct qemu_ReleaseMutex *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ReleaseMutex(QEMU_G2H(c->handle));
 }
 

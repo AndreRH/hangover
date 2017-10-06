@@ -427,7 +427,7 @@ WINBASEAPI HRESULT WINAPI SHGetSpecialFolderLocation(HWND hwndOwner, INT nFolder
 void qemu_SHGetSpecialFolderLocation(struct qemu_syscall *call)
 {
     struct qemu_SHGetSpecialFolderLocation *c = (struct qemu_SHGetSpecialFolderLocation *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SHGetSpecialFolderLocation(QEMU_G2H(c->hwndOwner), c->nFolder, QEMU_G2H(c->ppidl));
 }
 

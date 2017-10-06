@@ -108,7 +108,7 @@ __ASM_GLOBAL_FUNC( MSVCRT__setjmpex,
 void qemu__setjmp(struct qemu_syscall *c)
 {
     /* Only called for the purpose of writing something in the trace. */
-    WINE_FIXME("\n");
+    WINE_TRACE("\n");
 }
 
 #endif

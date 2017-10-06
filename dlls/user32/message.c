@@ -995,7 +995,7 @@ WINUSERAPI LONG WINAPI GetMessageTime(void)
 void qemu_GetMessageTime(struct qemu_syscall *call)
 {
     struct qemu_GetMessageTime *c = (struct qemu_GetMessageTime *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetMessageTime();
 }
 
@@ -1505,7 +1505,7 @@ void qemu_SetCoalescableTimer(struct qemu_syscall *call)
     struct qemu_SetCoalescableTimer *c = (struct qemu_SetCoalescableTimer *)call;
     TIMERPROC proc;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     proc = (TIMERPROC)wndproc_guest_to_host(c->proc);
 
     c->super.iret = SetCoalescableTimer(QEMU_G2H(c->hwnd), c->id, c->timeout, proc, c->tolerance);

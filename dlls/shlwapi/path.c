@@ -90,7 +90,7 @@ WINBASEAPI BOOL WINAPI PathAppendW(LPWSTR lpszPath, LPCWSTR lpszAppend)
 void qemu_PathAppendW(struct qemu_syscall *call)
 {
     struct qemu_PathAppendW *c = (struct qemu_PathAppendW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PathAppendW(QEMU_G2H(c->lpszPath), QEMU_G2H(c->lpszAppend));
 }
 
@@ -342,7 +342,7 @@ WINBASEAPI LPWSTR WINAPI PathFindFileNameW(LPCWSTR lpszPath)
 void qemu_PathFindFileNameW(struct qemu_syscall *call)
 {
     struct qemu_PathFindFileNameW *c = (struct qemu_PathFindFileNameW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)PathFindFileNameW(QEMU_G2H(c->lpszPath));
 }
 
@@ -402,7 +402,7 @@ WINBASEAPI LPWSTR WINAPI PathFindExtensionW(LPCWSTR lpszPath)
 void qemu_PathFindExtensionW(struct qemu_syscall *call)
 {
     struct qemu_PathFindExtensionW *c = (struct qemu_PathFindExtensionW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)PathFindExtensionW(QEMU_G2H(c->lpszPath));
 }
 
@@ -582,7 +582,7 @@ WINBASEAPI BOOL WINAPI PathRemoveFileSpecW(LPWSTR lpszPath)
 void qemu_PathRemoveFileSpecW(struct qemu_syscall *call)
 {
     struct qemu_PathRemoveFileSpecW *c = (struct qemu_PathRemoveFileSpecW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PathRemoveFileSpecW(QEMU_G2H(c->lpszPath));
 }
 
@@ -810,7 +810,7 @@ WINBASEAPI void WINAPI PathRemoveExtensionW(LPWSTR lpszPath)
 void qemu_PathRemoveExtensionW(struct qemu_syscall *call)
 {
     struct qemu_PathRemoveExtensionW *c = (struct qemu_PathRemoveExtensionW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     PathRemoveExtensionW(QEMU_G2H(c->lpszPath));
 }
 
@@ -1374,7 +1374,7 @@ WINBASEAPI BOOL WINAPI PathCompactPathExW(LPWSTR lpszDest, LPCWSTR lpszPath, UIN
 void qemu_PathCompactPathExW(struct qemu_syscall *call)
 {
     struct qemu_PathCompactPathExW *c = (struct qemu_PathCompactPathExW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PathCompactPathExW(QEMU_G2H(c->lpszDest), QEMU_G2H(c->lpszPath), c->cchMax, c->dwFlags);
 }
 
@@ -1554,7 +1554,7 @@ WINBASEAPI BOOL WINAPI PathIsDirectoryW(LPCWSTR lpszPath)
 void qemu_PathIsDirectoryW(struct qemu_syscall *call)
 {
     struct qemu_PathIsDirectoryW *c = (struct qemu_PathIsDirectoryW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PathIsDirectoryW(QEMU_G2H(c->lpszPath));
 }
 
@@ -1614,7 +1614,7 @@ WINBASEAPI BOOL WINAPI PathFileExistsW(LPCWSTR lpszPath)
 void qemu_PathFileExistsW(struct qemu_syscall *call)
 {
     struct qemu_PathFileExistsW *c = (struct qemu_PathFileExistsW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PathFileExistsW(QEMU_G2H(c->lpszPath));
 }
 
@@ -1742,7 +1742,7 @@ WINBASEAPI BOOL WINAPI PathMatchSpecW(LPCWSTR lpszPath, LPCWSTR lpszMask)
 void qemu_PathMatchSpecW(struct qemu_syscall *call)
 {
     struct qemu_PathMatchSpecW *c = (struct qemu_PathMatchSpecW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PathMatchSpecW(QEMU_G2H(c->lpszPath), QEMU_G2H(c->lpszMask));
 }
 

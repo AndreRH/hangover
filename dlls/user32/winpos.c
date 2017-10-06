@@ -529,7 +529,7 @@ WINUSERAPI BOOL WINAPI IsZoomed(HWND hWnd)
 void qemu_IsZoomed(struct qemu_syscall *call)
 {
     struct qemu_IsZoomed *c = (struct qemu_IsZoomed *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsZoomed(QEMU_G2H(c->hWnd));
 }
 
@@ -821,7 +821,7 @@ WINUSERAPI BOOL WINAPI SetWindowPlacement(HWND hwnd, const WINDOWPLACEMENT *wpl)
 void qemu_SetWindowPlacement(struct qemu_syscall *call)
 {
     struct qemu_SetWindowPlacement *c = (struct qemu_SetWindowPlacement *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetWindowPlacement(QEMU_G2H(c->hwnd), QEMU_G2H(c->wpl));
 }
 

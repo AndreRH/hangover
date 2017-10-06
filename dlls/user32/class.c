@@ -467,7 +467,7 @@ WINUSERAPI INT WINAPI GetClassNameW(HWND hwnd, LPWSTR buffer, INT count)
 void qemu_GetClassNameW(struct qemu_syscall *call)
 {
     struct qemu_GetClassNameW *c = (struct qemu_GetClassNameW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetClassNameW(QEMU_G2H(c->hwnd), QEMU_G2H(c->buffer), c->count);
 }
 

@@ -55,7 +55,7 @@ WINUSERAPI UINT WINAPI RegisterClipboardFormatW(LPCWSTR name)
 void qemu_RegisterClipboardFormatW(struct qemu_syscall *call)
 {
     struct qemu_RegisterClipboardFormatW *c = (struct qemu_RegisterClipboardFormatW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RegisterClipboardFormatW(QEMU_G2H(c->name));
 }
 

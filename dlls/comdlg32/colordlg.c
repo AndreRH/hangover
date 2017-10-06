@@ -93,7 +93,7 @@ void qemu_ChooseColorW(struct qemu_syscall *call)
     HWND instance;
     CHOOSECOLORW choose;
 
-    WINE_FIXME("Struct size mismatch\n");
+    WINE_TRACE("\n");
     choose = *(CHOOSECOLORW *)QEMU_G2H(c->lpChCol);
     choose.lStructSize = sizeof(choose);
 
@@ -152,7 +152,7 @@ void qemu_ChooseColorA(struct qemu_syscall *call)
     HWND instance;
     CHOOSECOLORA choose;
 
-    WINE_FIXME("Struct size mismatch\n");
+    WINE_TRACE("\n");
     choose = *(CHOOSECOLORA *)QEMU_G2H(c->lpChCol);
     choose.lStructSize = sizeof(choose);
 

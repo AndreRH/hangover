@@ -233,7 +233,7 @@ WINUSERAPI HACCEL WINAPI CreateAcceleratorTableW(LPACCEL lpaccel, INT count)
 void qemu_CreateAcceleratorTableW(struct qemu_syscall *call)
 {
     struct qemu_CreateAcceleratorTableW *c = (struct qemu_CreateAcceleratorTableW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)CreateAcceleratorTableW(QEMU_G2H(c->lpaccel), c->count);
 }
 

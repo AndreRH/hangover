@@ -359,7 +359,7 @@ WINBASEAPI LSTATUS WINAPI RegOpenKeyExW(HKEY hkey, LPCWSTR name, DWORD options, 
 void qemu_RegOpenKeyExW(struct qemu_syscall *call)
 {
     struct qemu_RegOpenKeyExW *c = (struct qemu_RegOpenKeyExW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RegOpenKeyExW(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->options, c->access, QEMU_G2H(c->retkey));
 }
 
@@ -541,7 +541,7 @@ WINBASEAPI LSTATUS WINAPI RegEnumKeyExW(HKEY hkey, DWORD index, LPWSTR name, LPD
 void qemu_RegEnumKeyExW(struct qemu_syscall *call)
 {
     struct qemu_RegEnumKeyExW *c = (struct qemu_RegEnumKeyExW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RegEnumKeyExW(QEMU_G2H(c->hkey), c->index, QEMU_G2H(c->name), QEMU_G2H(c->name_len), QEMU_G2H(c->reserved), QEMU_G2H(c->class), QEMU_G2H(c->class_len), QEMU_G2H(c->ft));
 }
 
@@ -709,7 +709,7 @@ WINBASEAPI LSTATUS WINAPI RegQueryInfoKeyW(HKEY hkey, LPWSTR class, LPDWORD clas
 void qemu_RegQueryInfoKeyW(struct qemu_syscall *call)
 {
     struct qemu_RegQueryInfoKeyW *c = (struct qemu_RegQueryInfoKeyW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RegQueryInfoKeyW(QEMU_G2H(c->hkey), QEMU_G2H(c->class), QEMU_G2H(c->class_len), QEMU_G2H(c->reserved), QEMU_G2H(c->subkeys), QEMU_G2H(c->max_subkey), QEMU_G2H(c->max_class), QEMU_G2H(c->values), QEMU_G2H(c->max_value), QEMU_G2H(c->max_data), QEMU_G2H(c->security), QEMU_G2H(c->modif));
 }
 

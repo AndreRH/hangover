@@ -165,7 +165,7 @@ WINUSERAPI BOOL WINAPI SetRectEmpty(LPRECT rect)
 void qemu_SetRectEmpty(struct qemu_syscall *call)
 {
     struct qemu_SetRectEmpty *c = (struct qemu_SetRectEmpty *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetRectEmpty(QEMU_G2H(c->rect));
 }
 
@@ -566,7 +566,7 @@ WINUSERAPI INT WINAPI FrameRect(HDC hdc, const RECT *rect, HBRUSH hbrush)
 void qemu_FrameRect(struct qemu_syscall *call)
 {
     struct qemu_FrameRect *c = (struct qemu_FrameRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FrameRect(QEMU_G2H(c->hdc), QEMU_G2H(c->rect), QEMU_G2H(c->hbrush));
 }
 
@@ -598,7 +598,7 @@ WINUSERAPI BOOL WINAPI DrawFocusRect(HDC hdc, const RECT* rc)
 void qemu_DrawFocusRect(struct qemu_syscall *call)
 {
     struct qemu_DrawFocusRect *c = (struct qemu_DrawFocusRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DrawFocusRect(QEMU_G2H(c->hdc), QEMU_G2H(c->rc));
 }
 

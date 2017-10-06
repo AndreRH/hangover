@@ -353,7 +353,7 @@ WINBASEAPI UINT WINAPI GetPrivateProfileIntW(LPCWSTR section, LPCWSTR entry, INT
 void qemu_GetPrivateProfileIntW(struct qemu_syscall *call)
 {
     struct qemu_GetPrivateProfileIntW *c = (struct qemu_GetPrivateProfileIntW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetPrivateProfileIntW(QEMU_G2H(c->section), QEMU_G2H(c->entry), c->def_val, QEMU_G2H(c->filename));
 }
 
@@ -767,7 +767,7 @@ WINBASEAPI DWORD WINAPI GetPrivateProfileSectionNamesW(LPWSTR buffer, DWORD size
 void qemu_GetPrivateProfileSectionNamesW(struct qemu_syscall *call)
 {
     struct qemu_GetPrivateProfileSectionNamesW *c = (struct qemu_GetPrivateProfileSectionNamesW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetPrivateProfileSectionNamesW(QEMU_G2H(c->buffer), c->size, QEMU_G2H(c->filename));
 }
 

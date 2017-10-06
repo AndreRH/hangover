@@ -54,7 +54,7 @@ WINBASEAPI LPWSTR WINAPI GetEnvironmentStringsW(void)
 void qemu_GetEnvironmentStringsW(struct qemu_syscall *call)
 {
     struct qemu_GetEnvironmentStringsW *c = (struct qemu_GetEnvironmentStringsW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetEnvironmentStringsW();
 }
 
@@ -114,7 +114,7 @@ WINBASEAPI BOOL WINAPI FreeEnvironmentStringsW(LPWSTR ptr)
 void qemu_FreeEnvironmentStringsW(struct qemu_syscall *call)
 {
     struct qemu_FreeEnvironmentStringsW *c = (struct qemu_FreeEnvironmentStringsW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FreeEnvironmentStringsW(QEMU_G2H(c->ptr));
 }
 
@@ -314,7 +314,7 @@ WINBASEAPI DWORD WINAPI ExpandEnvironmentStringsW(LPCWSTR src, LPWSTR dst, DWORD
 void qemu_ExpandEnvironmentStringsW(struct qemu_syscall *call)
 {
     struct qemu_ExpandEnvironmentStringsW *c = (struct qemu_ExpandEnvironmentStringsW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ExpandEnvironmentStringsW(QEMU_G2H(c->src), QEMU_G2H(c->dst), c->len);
 }
 

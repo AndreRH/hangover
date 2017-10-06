@@ -207,7 +207,7 @@ WINBASEAPI void WINAPI OutputDebugStringW(LPCWSTR str)
 void qemu_OutputDebugStringW(struct qemu_syscall *call)
 {
     struct qemu_OutputDebugStringW *c = (struct qemu_OutputDebugStringW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     OutputDebugStringW(QEMU_G2H(c->str));
 }
 

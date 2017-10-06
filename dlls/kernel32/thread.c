@@ -956,7 +956,7 @@ WINBASEAPI BOOL WINAPI GetThreadTimes(HANDLE thread, LPFILETIME creationtime, LP
 void qemu_GetThreadTimes(struct qemu_syscall *call)
 {
     struct qemu_GetThreadTimes *c = (struct qemu_GetThreadTimes *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetThreadTimes(QEMU_G2H(c->thread), QEMU_G2H(c->creationtime), QEMU_G2H(c->exittime), QEMU_G2H(c->kerneltime), QEMU_G2H(c->usertime));
 }
 
@@ -1044,7 +1044,7 @@ WINBASEAPI HANDLE WINAPI GetCurrentThread(void)
 void qemu_GetCurrentThread(struct qemu_syscall *call)
 {
     struct qemu_GetCurrentThread *c = (struct qemu_GetCurrentThread *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)GetCurrentThread();
 }
 

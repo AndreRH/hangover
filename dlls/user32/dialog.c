@@ -583,7 +583,7 @@ WINUSERAPI INT WINAPI GetDlgCtrlID(HWND hwnd)
 void qemu_GetDlgCtrlID(struct qemu_syscall *call)
 {
     struct qemu_GetDlgCtrlID *c = (struct qemu_GetDlgCtrlID *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDlgCtrlID(QEMU_G2H(c->hwnd));
 }
 
@@ -725,7 +725,7 @@ WINUSERAPI BOOL WINAPI SetDlgItemTextA(HWND hwnd, INT id, LPCSTR lpString)
 void qemu_SetDlgItemTextA(struct qemu_syscall *call)
 {
     struct qemu_SetDlgItemTextA *c = (struct qemu_SetDlgItemTextA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetDlgItemTextA(QEMU_G2H(c->hwnd), c->id, QEMU_G2H(c->lpString));
 }
 
@@ -831,7 +831,7 @@ WINUSERAPI UINT WINAPI GetDlgItemTextW(HWND hwnd, INT id, LPWSTR str, INT len)
 void qemu_GetDlgItemTextW(struct qemu_syscall *call)
 {
     struct qemu_GetDlgItemTextW *c = (struct qemu_GetDlgItemTextW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDlgItemTextW(QEMU_G2H(c->hwnd), c->id, QEMU_G2H(c->str), c->len);
 }
 
@@ -903,7 +903,7 @@ WINUSERAPI UINT WINAPI GetDlgItemInt(HWND hwnd, INT id, BOOL *translated, BOOL f
 void qemu_GetDlgItemInt(struct qemu_syscall *call)
 {
     struct qemu_GetDlgItemInt *c = (struct qemu_GetDlgItemInt *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDlgItemInt(QEMU_G2H(c->hwnd), c->id, QEMU_G2H(c->translated), c->fSigned);
 }
 

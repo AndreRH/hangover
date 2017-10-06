@@ -215,7 +215,7 @@ WINBASEAPI HRESULT WINAPI AssocQueryStringW(ASSOCF cfFlags, ASSOCSTR str, LPCWST
 void qemu_AssocQueryStringW(struct qemu_syscall *call)
 {
     struct qemu_AssocQueryStringW *c = (struct qemu_AssocQueryStringW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AssocQueryStringW(c->cfFlags, c->str, QEMU_G2H(c->pszAssoc), QEMU_G2H(c->pszExtra), QEMU_G2H(c->pszOut), QEMU_G2H(c->pcchOut));
 }
 

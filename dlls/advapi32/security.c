@@ -213,7 +213,7 @@ WINBASEAPI BOOL WINAPI CheckTokenMembership(HANDLE token, PSID sid_to_check, PBO
 void qemu_CheckTokenMembership(struct qemu_syscall *call)
 {
     struct qemu_CheckTokenMembership *c = (struct qemu_CheckTokenMembership *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CheckTokenMembership(QEMU_G2H(c->token), QEMU_G2H(c->sid_to_check), QEMU_G2H(c->is_member));
 }
 
@@ -416,7 +416,7 @@ WINBASEAPI BOOL WINAPI AllocateAndInitializeSid(PSID_IDENTIFIER_AUTHORITY pIdent
 void qemu_AllocateAndInitializeSid(struct qemu_syscall *call)
 {
     struct qemu_AllocateAndInitializeSid *c = (struct qemu_AllocateAndInitializeSid *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AllocateAndInitializeSid(QEMU_G2H(c->pIdentifierAuthority), c->nSubAuthorityCount, c->nSubAuthority0, c->nSubAuthority1, c->nSubAuthority2, c->nSubAuthority3, c->nSubAuthority4, c->nSubAuthority5, c->nSubAuthority6, c->nSubAuthority7, QEMU_G2H(c->pSid));
 }
 
@@ -446,7 +446,7 @@ WINBASEAPI PVOID WINAPI FreeSid(PSID pSid)
 void qemu_FreeSid(struct qemu_syscall *call)
 {
     struct qemu_FreeSid *c = (struct qemu_FreeSid *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)FreeSid(QEMU_G2H(c->pSid));
 }
 
