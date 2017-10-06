@@ -45,13 +45,13 @@ WINBASEAPI HANDLE WINAPI FindFirstChangeNotificationA(LPCSTR lpPathName, BOOL bW
 {
     struct qemu_FindFirstChangeNotificationA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDFIRSTCHANGENOTIFICATIONA);
-    call.lpPathName = (uint64_t)lpPathName;
+    call.lpPathName = (ULONG_PTR)lpPathName;
     call.bWatchSubtree = bWatchSubtree;
     call.dwNotifyFilter = dwNotifyFilter;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -60,7 +60,7 @@ void qemu_FindFirstChangeNotificationA(struct qemu_syscall *call)
 {
     struct qemu_FindFirstChangeNotificationA *c = (struct qemu_FindFirstChangeNotificationA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)FindFirstChangeNotificationA(QEMU_G2H(c->lpPathName), c->bWatchSubtree, c->dwNotifyFilter);
+    c->super.iret = QEMU_H2G(FindFirstChangeNotificationA(QEMU_G2H(c->lpPathName), c->bWatchSubtree, c->dwNotifyFilter));
 }
 
 #endif
@@ -79,13 +79,13 @@ WINBASEAPI HANDLE WINAPI FindFirstChangeNotificationW(LPCWSTR lpPathName, BOOL b
 {
     struct qemu_FindFirstChangeNotificationW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDFIRSTCHANGENOTIFICATIONW);
-    call.lpPathName = (uint64_t)lpPathName;
+    call.lpPathName = (ULONG_PTR)lpPathName;
     call.bWatchSubtree = bWatchSubtree;
     call.dwNotifyFilter = dwNotifyFilter;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -94,7 +94,7 @@ void qemu_FindFirstChangeNotificationW(struct qemu_syscall *call)
 {
     struct qemu_FindFirstChangeNotificationW *c = (struct qemu_FindFirstChangeNotificationW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)FindFirstChangeNotificationW(QEMU_G2H(c->lpPathName), c->bWatchSubtree, c->dwNotifyFilter);
+    c->super.iret = QEMU_H2G(FindFirstChangeNotificationW(QEMU_G2H(c->lpPathName), c->bWatchSubtree, c->dwNotifyFilter));
 }
 
 #endif
@@ -111,7 +111,7 @@ WINBASEAPI BOOL WINAPI FindNextChangeNotification(HANDLE handle)
 {
     struct qemu_FindNextChangeNotification call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDNEXTCHANGENOTIFICATION);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -141,7 +141,7 @@ WINBASEAPI BOOL WINAPI FindCloseChangeNotification(HANDLE handle)
 {
     struct qemu_FindCloseChangeNotification call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDCLOSECHANGENOTIFICATION);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -178,14 +178,14 @@ WINBASEAPI BOOL WINAPI ReadDirectoryChangesW(HANDLE handle, LPVOID buffer, DWORD
 {
     struct qemu_ReadDirectoryChangesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_READDIRECTORYCHANGESW);
-    call.handle = (uint64_t)handle;
-    call.buffer = (uint64_t)buffer;
+    call.handle = (ULONG_PTR)handle;
+    call.buffer = (ULONG_PTR)buffer;
     call.len = len;
     call.subtree = subtree;
     call.filter = filter;
-    call.returned = (uint64_t)returned;
-    call.overlapped = (uint64_t)overlapped;
-    call.completion = (uint64_t)completion;
+    call.returned = (ULONG_PTR)returned;
+    call.overlapped = (ULONG_PTR)overlapped;
+    call.completion = (ULONG_PTR)completion;
 
     qemu_syscall(&call.super);
 
