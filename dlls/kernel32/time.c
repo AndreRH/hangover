@@ -44,7 +44,7 @@ WINBASEAPI BOOL WINAPI SetLocalTime(const SYSTEMTIME *systime)
 {
     struct qemu_SetLocalTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETLOCALTIME);
-    call.systime = (uint64_t)systime;
+    call.systime = (ULONG_PTR)systime;
 
     qemu_syscall(&call.super);
 
@@ -76,9 +76,9 @@ WINBASEAPI BOOL WINAPI GetSystemTimeAdjustment(PDWORD lpTimeAdjustment, PDWORD l
 {
     struct qemu_GetSystemTimeAdjustment call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMTIMEADJUSTMENT);
-    call.lpTimeAdjustment = (uint64_t)lpTimeAdjustment;
-    call.lpTimeIncrement = (uint64_t)lpTimeIncrement;
-    call.lpTimeAdjustmentDisabled = (uint64_t)lpTimeAdjustmentDisabled;
+    call.lpTimeAdjustment = (ULONG_PTR)lpTimeAdjustment;
+    call.lpTimeIncrement = (ULONG_PTR)lpTimeIncrement;
+    call.lpTimeAdjustmentDisabled = (ULONG_PTR)lpTimeAdjustmentDisabled;
 
     qemu_syscall(&call.super);
 
@@ -108,7 +108,7 @@ WINBASEAPI BOOL WINAPI SetSystemTime(const SYSTEMTIME *systime)
 {
     struct qemu_SetSystemTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSYSTEMTIME);
-    call.systime = (uint64_t)systime;
+    call.systime = (ULONG_PTR)systime;
 
     qemu_syscall(&call.super);
 
@@ -139,8 +139,8 @@ WINBASEAPI BOOL WINAPI SetSystemTimeAdjustment(DWORD dwTimeAdjustment, BOOL bTim
 {
     struct qemu_SetSystemTimeAdjustment call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSYSTEMTIMEADJUSTMENT);
-    call.dwTimeAdjustment = (uint64_t)dwTimeAdjustment;
-    call.bTimeAdjustmentDisabled = (uint64_t)bTimeAdjustmentDisabled;
+    call.dwTimeAdjustment = dwTimeAdjustment;
+    call.bTimeAdjustmentDisabled = bTimeAdjustmentDisabled;
 
     qemu_syscall(&call.super);
 
@@ -170,7 +170,7 @@ WINBASEAPI DWORD WINAPI GetTimeZoneInformation(LPTIME_ZONE_INFORMATION tzinfo)
 {
     struct qemu_GetTimeZoneInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTIMEZONEINFORMATION);
-    call.tzinfo = (uint64_t)tzinfo;
+    call.tzinfo = (ULONG_PTR)tzinfo;
 
     qemu_syscall(&call.super);
 
@@ -202,9 +202,9 @@ WINBASEAPI BOOL WINAPI GetTimeZoneInformationForYear(USHORT wYear, PDYNAMIC_TIME
 {
     struct qemu_GetTimeZoneInformationForYear call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTIMEZONEINFORMATIONFORYEAR);
-    call.wYear = (uint64_t)wYear;
-    call.pdtzi = (uint64_t)pdtzi;
-    call.ptzi = (uint64_t)ptzi;
+    call.wYear = wYear;
+    call.pdtzi = (ULONG_PTR)pdtzi;
+    call.ptzi = (ULONG_PTR)ptzi;
 
     qemu_syscall(&call.super);
 
@@ -236,7 +236,7 @@ WINBASEAPI BOOL WINAPI SetTimeZoneInformation(const TIME_ZONE_INFORMATION *tzinf
 {
     struct qemu_SetTimeZoneInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTIMEZONEINFORMATION);
-    call.tzinfo = (uint64_t)tzinfo;
+    call.tzinfo = (ULONG_PTR)tzinfo;
 
     qemu_syscall(&call.super);
 
@@ -268,9 +268,9 @@ WINBASEAPI BOOL WINAPI SystemTimeToTzSpecificLocalTime(const TIME_ZONE_INFORMATI
 {
     struct qemu_SystemTimeToTzSpecificLocalTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMTIMETOTZSPECIFICLOCALTIME);
-    call.lpTimeZoneInformation = (uint64_t)lpTimeZoneInformation;
-    call.lpUniversalTime = (uint64_t)lpUniversalTime;
-    call.lpLocalTime = (uint64_t)lpLocalTime;
+    call.lpTimeZoneInformation = (ULONG_PTR)lpTimeZoneInformation;
+    call.lpUniversalTime = (ULONG_PTR)lpUniversalTime;
+    call.lpLocalTime = (ULONG_PTR)lpLocalTime;
 
     qemu_syscall(&call.super);
 
@@ -302,9 +302,9 @@ WINBASEAPI BOOL WINAPI TzSpecificLocalTimeToSystemTime(const TIME_ZONE_INFORMATI
 {
     struct qemu_TzSpecificLocalTimeToSystemTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TZSPECIFICLOCALTIMETOSYSTEMTIME);
-    call.lpTimeZoneInformation = (uint64_t)lpTimeZoneInformation;
-    call.lpLocalTime = (uint64_t)lpLocalTime;
-    call.lpUniversalTime = (uint64_t)lpUniversalTime;
+    call.lpTimeZoneInformation = (ULONG_PTR)lpTimeZoneInformation;
+    call.lpLocalTime = (ULONG_PTR)lpLocalTime;
+    call.lpUniversalTime = (ULONG_PTR)lpUniversalTime;
 
     qemu_syscall(&call.super);
 
@@ -334,7 +334,7 @@ WINBASEAPI VOID WINAPI GetSystemTimeAsFileTime(LPFILETIME time)
 {
     struct qemu_GetSystemTimeAsFileTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMTIMEASFILETIME);
-    call.time = (uint64_t)time;
+    call.time = (ULONG_PTR)time;
 
     qemu_syscall(&call.super);
 }
@@ -362,7 +362,7 @@ WINBASEAPI VOID WINAPI GetSystemTimePreciseAsFileTime(LPFILETIME time)
 {
     struct qemu_GetSystemTimePreciseAsFileTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMTIMEPRECISEASFILETIME);
-    call.time = (uint64_t)time;
+    call.time = (ULONG_PTR)time;
 
     qemu_syscall(&call.super);
 }
@@ -394,11 +394,11 @@ WINBASEAPI BOOL WINAPI GetProcessTimes(HANDLE hprocess, LPFILETIME lpCreationTim
 {
     struct qemu_GetProcessTimes call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCESSTIMES);
-    call.hprocess = (uint64_t)hprocess;
-    call.lpCreationTime = (uint64_t)lpCreationTime;
-    call.lpExitTime = (uint64_t)lpExitTime;
-    call.lpKernelTime = (uint64_t)lpKernelTime;
-    call.lpUserTime = (uint64_t)lpUserTime;
+    call.hprocess = (ULONG_PTR)hprocess;
+    call.lpCreationTime = (ULONG_PTR)lpCreationTime;
+    call.lpExitTime = (ULONG_PTR)lpExitTime;
+    call.lpKernelTime = (ULONG_PTR)lpKernelTime;
+    call.lpUserTime = (ULONG_PTR)lpUserTime;
 
     qemu_syscall(&call.super);
 
@@ -436,9 +436,9 @@ WINBASEAPI int WINAPI GetCalendarInfoA(LCID lcid, CALID Calendar, CALTYPE CalTyp
     call.lcid = lcid;
     call.Calendar = Calendar;
     call.CalType = CalType;
-    call.lpCalData = (uint64_t)lpCalData;
+    call.lpCalData = (ULONG_PTR)lpCalData;
     call.cchData = cchData;
-    call.lpValue = (uint64_t)lpValue;
+    call.lpValue = (ULONG_PTR)lpValue;
 
     qemu_syscall(&call.super);
 
@@ -476,9 +476,9 @@ WINBASEAPI int WINAPI GetCalendarInfoW(LCID Locale, CALID Calendar, CALTYPE CalT
     call.Locale = Locale;
     call.Calendar = Calendar;
     call.CalType = CalType;
-    call.lpCalData = (uint64_t)lpCalData;
+    call.lpCalData = (ULONG_PTR)lpCalData;
     call.cchData = cchData;
-    call.lpValue = (uint64_t)lpValue;
+    call.lpValue = (ULONG_PTR)lpValue;
 
     qemu_syscall(&call.super);
 
@@ -514,13 +514,13 @@ WINBASEAPI int WINAPI GetCalendarInfoEx(LPCWSTR locale, CALID calendar, LPCWSTR 
 {
     struct qemu_GetCalendarInfoEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCALENDARINFOEX);
-    call.locale = (uint64_t)locale;
-    call.calendar = (uint64_t)calendar;
-    call.lpReserved = (uint64_t)lpReserved;
-    call.caltype = (uint64_t)caltype;
-    call.data = (uint64_t)data;
-    call.len = (uint64_t)len;
-    call.value = (uint64_t)value;
+    call.locale = (ULONG_PTR)locale;
+    call.calendar = calendar;
+    call.lpReserved = (ULONG_PTR)lpReserved;
+    call.caltype = caltype;
+    call.data = (ULONG_PTR)data;
+    call.len = len;
+    call.value = (ULONG_PTR)value;
 
     qemu_syscall(&call.super);
 
@@ -555,10 +555,10 @@ WINBASEAPI int WINAPI SetCalendarInfoA(LCID Locale, CALID Calendar, CALTYPE CalT
 {
     struct qemu_SetCalendarInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCALENDARINFOA);
-    call.Locale = (uint64_t)Locale;
-    call.Calendar = (uint64_t)Calendar;
-    call.CalType = (uint64_t)CalType;
-    call.lpCalData = (uint64_t)lpCalData;
+    call.Locale = Locale;
+    call.Calendar = Calendar;
+    call.CalType = CalType;
+    call.lpCalData = (ULONG_PTR)lpCalData;
 
     qemu_syscall(&call.super);
 
@@ -591,10 +591,10 @@ WINBASEAPI int WINAPI SetCalendarInfoW(LCID Locale, CALID Calendar, CALTYPE CalT
 {
     struct qemu_SetCalendarInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCALENDARINFOW);
-    call.Locale = (uint64_t)Locale;
-    call.Calendar = (uint64_t)Calendar;
-    call.CalType = (uint64_t)CalType;
-    call.lpCalData = (uint64_t)lpCalData;
+    call.Locale = Locale;
+    call.Calendar = Calendar;
+    call.CalType = CalType;
+    call.lpCalData = (ULONG_PTR)lpCalData;
 
     qemu_syscall(&call.super);
 
@@ -625,8 +625,8 @@ WINBASEAPI BOOL WINAPI LocalFileTimeToFileTime(const FILETIME *localft, LPFILETI
 {
     struct qemu_LocalFileTimeToFileTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOCALFILETIMETOFILETIME);
-    call.localft = (uint64_t)localft;
-    call.utcft = (uint64_t)utcft;
+    call.localft = (ULONG_PTR)localft;
+    call.utcft = (ULONG_PTR)utcft;
 
     qemu_syscall(&call.super);
 
@@ -657,8 +657,8 @@ WINBASEAPI BOOL WINAPI FileTimeToLocalFileTime(const FILETIME *utcft, LPFILETIME
 {
     struct qemu_FileTimeToLocalFileTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILETIMETOLOCALFILETIME);
-    call.utcft = (uint64_t)utcft;
-    call.localft = (uint64_t)localft;
+    call.utcft = (ULONG_PTR)utcft;
+    call.localft = (ULONG_PTR)localft;
 
     qemu_syscall(&call.super);
 
@@ -689,8 +689,8 @@ WINBASEAPI BOOL WINAPI FileTimeToSystemTime(const FILETIME *ft, LPSYSTEMTIME sys
 {
     struct qemu_FileTimeToSystemTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILETIMETOSYSTEMTIME);
-    call.ft = (uint64_t)ft;
-    call.syst = (uint64_t)syst;
+    call.ft = (ULONG_PTR)ft;
+    call.syst = (ULONG_PTR)syst;
 
     qemu_syscall(&call.super);
 
@@ -721,8 +721,8 @@ WINBASEAPI BOOL WINAPI SystemTimeToFileTime(const SYSTEMTIME *syst, LPFILETIME f
 {
     struct qemu_SystemTimeToFileTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMTIMETOFILETIME);
-    call.syst = (uint64_t)syst;
-    call.ft = (uint64_t)ft;
+    call.syst = (ULONG_PTR)syst;
+    call.ft = (ULONG_PTR)ft;
 
     qemu_syscall(&call.super);
 
@@ -753,8 +753,8 @@ WINBASEAPI LONG WINAPI CompareFileTime(const FILETIME *x, const FILETIME *y)
 {
     struct qemu_CompareFileTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COMPAREFILETIME);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -784,7 +784,7 @@ WINBASEAPI VOID WINAPI GetLocalTime(LPSYSTEMTIME systime)
 {
     struct qemu_GetLocalTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETLOCALTIME);
-    call.systime = (uint64_t)systime;
+    call.systime = (ULONG_PTR)systime;
 
     qemu_syscall(&call.super);
 }
@@ -812,7 +812,7 @@ WINBASEAPI VOID WINAPI GetSystemTime(LPSYSTEMTIME systime)
 {
     struct qemu_GetSystemTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMTIME);
-    call.systime = (uint64_t)systime;
+    call.systime = (ULONG_PTR)systime;
 
     qemu_syscall(&call.super);
 }
@@ -872,9 +872,9 @@ WINBASEAPI BOOL WINAPI DosDateTimeToFileTime(WORD fatdate, WORD fattime, LPFILET
 {
     struct qemu_DosDateTimeToFileTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DOSDATETIMETOFILETIME);
-    call.fatdate = (uint64_t)fatdate;
-    call.fattime = (uint64_t)fattime;
-    call.ft = (uint64_t)ft;
+    call.fatdate = fatdate;
+    call.fattime = fattime;
+    call.ft = (ULONG_PTR)ft;
 
     qemu_syscall(&call.super);
 
@@ -906,9 +906,9 @@ WINBASEAPI BOOL WINAPI FileTimeToDosDateTime(const FILETIME *ft, LPWORD fatdate,
 {
     struct qemu_FileTimeToDosDateTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILETIMETODOSDATETIME);
-    call.ft = (uint64_t)ft;
-    call.fatdate = (uint64_t)fatdate;
-    call.fattime = (uint64_t)fattime;
+    call.ft = (ULONG_PTR)ft;
+    call.fatdate = (ULONG_PTR)fatdate;
+    call.fattime = (ULONG_PTR)fattime;
 
     qemu_syscall(&call.super);
 
@@ -940,9 +940,9 @@ WINBASEAPI BOOL WINAPI GetSystemTimes(LPFILETIME lpIdleTime, LPFILETIME lpKernel
 {
     struct qemu_GetSystemTimes call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMTIMES);
-    call.lpIdleTime = (uint64_t)lpIdleTime;
-    call.lpKernelTime = (uint64_t)lpKernelTime;
-    call.lpUserTime = (uint64_t)lpUserTime;
+    call.lpIdleTime = (ULONG_PTR)lpIdleTime;
+    call.lpKernelTime = (ULONG_PTR)lpKernelTime;
+    call.lpUserTime = (ULONG_PTR)lpUserTime;
 
     qemu_syscall(&call.super);
 
@@ -974,7 +974,7 @@ WINBASEAPI DWORD WINAPI GetDynamicTimeZoneInformation(DYNAMIC_TIME_ZONE_INFORMAT
 {
     struct qemu_GetDynamicTimeZoneInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDYNAMICTIMEZONEINFORMATION);
-    call.tzinfo = (uint64_t)tzinfo;
+    call.tzinfo = (ULONG_PTR)tzinfo;
 
     qemu_syscall(&call.super);
 
@@ -1005,8 +1005,8 @@ WINBASEAPI BOOL WINAPI QueryThreadCycleTime(HANDLE thread, PULONG64 cycle)
 {
     struct qemu_QueryThreadCycleTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYTHREADCYCLETIME);
-    call.thread = (uint64_t)thread;
-    call.cycle = (uint64_t)cycle;
+    call.thread = (ULONG_PTR)thread;
+    call.cycle = (ULONG_PTR)cycle;
 
     qemu_syscall(&call.super);
 
@@ -1036,7 +1036,7 @@ WINBASEAPI BOOL WINAPI QueryUnbiasedInterruptTime(ULONGLONG *time)
 {
     struct qemu_QueryUnbiasedInterruptTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYUNBIASEDINTERRUPTTIME);
-    call.time = (uint64_t)time;
+    call.time = (ULONG_PTR)time;
 
     qemu_syscall(&call.super);
 
