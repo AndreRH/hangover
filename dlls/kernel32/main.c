@@ -69,7 +69,7 @@ static void WINAPI kernel32_call_process_main(LPTHREAD_START_ROUTINE entry)
     kernel32_ExitProcess(kernel32_GetLastError());
 }
 
-BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
+BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_set_callbacks call;
     HMODULE ntdll;
