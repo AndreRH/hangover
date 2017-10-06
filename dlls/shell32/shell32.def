@@ -59,6 +59,7 @@ EXPORTS
   InvalidateDriveType
   IsLFNDriveA
   IsLFNDriveW
+  IsNetDrive
   IsUserAnAdmin
   LinkWindow_RegisterClass
   LinkWindow_UnregisterClass
@@ -70,6 +71,7 @@ EXPORTS
   Printers_RegisterWindowW
   Printers_UnregisterWindow
   ReadCabinetState
+  RealDriveType
   RegenerateUserEnvironment
   RegisterShellHook
   RLBuildListOfPaths
@@ -85,6 +87,9 @@ EXPORTS
   SHCloneSpecialIDList
   SHCLSIDFromString
   SHCoCreateInstance
+  SHCreateDirectory
+  SHCreateDirectoryExA
+  SHCreateDirectoryExW
   SHCreateFileExtractIconW
   SHCreateItemFromIDList
   SHCreateItemFromParsingName
@@ -100,6 +105,10 @@ EXPORTS
   SHCreateStdEnumFmtEtc
   SHDestroyPropSheetExtArray
   SHDoDragDrop
+  SheChangeDirA
+  SheChangeDirW
+  SheGetDirA
+  SheGetDirW
   shell32_243
   Shell_NotifyIconA
   Shell_NotifyIconW
@@ -110,11 +119,14 @@ EXPORTS
   ShellExecuteExW
   ShellExecuteW
   SHEnumerateUnreadMailAccountsW
+  SHFileOperationA
+  SHFileOperationW
   SHFindFiles
   SHFlushClipboard
   SHFlushSFCache
   SHFormatDrive
   SHFree
+  SHFreeNameMappings
   SHFreeShared
   SHFreeUnusedLibraries
   SHGetDataFromIDListA
@@ -157,6 +169,7 @@ EXPORTS
   SHHelpShortcuts_RunDLLW
   SHILCreateFromPathA=SHILCreateFromPathAW
   SHILCreateFromPathW=SHILCreateFromPathAW
+  SHIsFileAvailableOffline
   SHLimitInputEdit
   SHLoadInProc
   SHLoadNonloadedIconOverlayIdentifiers
@@ -167,6 +180,8 @@ EXPORTS
   SHOpenFolderAndSelectItems
   SHOutOfMemoryMessageBox
   SHParseDisplayName
+  SHPathPrepareForWriteA
+  SHPathPrepareForWriteW
   SHPropStgCreate
   SHPropStgReadMultiple
   SHPropStgWriteMultiple
@@ -196,5 +211,8 @@ EXPORTS
   StrRStrIW=shlwapi.StrRStrIW
   StrStrIW=shlwapi.StrStrIW
   StrStrW=shlwapi.StrStrW
+  Win32CreateDirectory
+  Win32DeleteFile
+  Win32RemoveDirectory
   WOWShellExecute
   WriteCabinetState
