@@ -46,13 +46,13 @@ WINBASEAPI LPVOID WINAPI CreateFiber(SIZE_T stack, LPFIBER_START_ROUTINE start, 
 {
     struct qemu_CreateFiber call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEFIBER);
-    call.stack = (uint64_t)stack;
-    call.start = (uint64_t)start;
-    call.param = (uint64_t)param;
+    call.stack = stack;
+    call.start = (ULONG_PTR)start;
+    call.param = (ULONG_PTR)param;
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -61,7 +61,7 @@ void qemu_CreateFiber(struct qemu_syscall *call)
 {
     struct qemu_CreateFiber *c = (struct qemu_CreateFiber *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateFiber(c->stack, QEMU_G2H(c->start), QEMU_G2H(c->param));
+    c->super.iret = QEMU_H2G(CreateFiber(c->stack, QEMU_G2H(c->start), QEMU_G2H(c->param)));
 }
 
 #endif
@@ -82,15 +82,15 @@ WINBASEAPI LPVOID WINAPI CreateFiberEx(SIZE_T stack_commit, SIZE_T stack_reserve
 {
     struct qemu_CreateFiberEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEFIBEREX);
-    call.stack_commit = (uint64_t)stack_commit;
-    call.stack_reserve = (uint64_t)stack_reserve;
-    call.flags = (uint64_t)flags;
-    call.start = (uint64_t)start;
-    call.param = (uint64_t)param;
+    call.stack_commit = stack_commit;
+    call.stack_reserve = stack_reserve;
+    call.flags = flags;
+    call.start = (ULONG_PTR)start;
+    call.param = (ULONG_PTR)param;
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -99,7 +99,7 @@ void qemu_CreateFiberEx(struct qemu_syscall *call)
 {
     struct qemu_CreateFiberEx *c = (struct qemu_CreateFiberEx *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateFiberEx(c->stack_commit, c->stack_reserve, c->flags, QEMU_G2H(c->start), QEMU_G2H(c->param));
+    c->super.iret = QEMU_H2G(CreateFiberEx(c->stack_commit, c->stack_reserve, c->flags, QEMU_G2H(c->start), QEMU_G2H(c->param)));
 }
 
 #endif
@@ -116,7 +116,7 @@ WINBASEAPI void WINAPI DeleteFiber(LPVOID fiber_ptr)
 {
     struct qemu_DeleteFiber call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETEFIBER);
-    call.fiber_ptr = (uint64_t)fiber_ptr;
+    call.fiber_ptr = (ULONG_PTR)fiber_ptr;
 
     qemu_syscall(&call.super);
 }
@@ -144,11 +144,11 @@ WINBASEAPI LPVOID WINAPI ConvertThreadToFiber(LPVOID param)
 {
     struct qemu_ConvertThreadToFiber call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTTHREADTOFIBER);
-    call.param = (uint64_t)param;
+    call.param = (ULONG_PTR)param;
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -158,7 +158,7 @@ void qemu_ConvertThreadToFiber(struct qemu_syscall *call)
     struct qemu_ConvertThreadToFiber *c = (struct qemu_ConvertThreadToFiber *)call;
     WINE_FIXME("Unverified!\n");
     /* FIXME: May need to update FlsSlots */
-    c->super.iret = (uint64_t)ConvertThreadToFiber(QEMU_G2H(c->param));
+    c->super.iret = QEMU_H2G(ConvertThreadToFiber(QEMU_G2H(c->param)));
 }
 
 #endif
@@ -176,12 +176,12 @@ WINBASEAPI LPVOID WINAPI ConvertThreadToFiberEx(LPVOID param, DWORD flags)
 {
     struct qemu_ConvertThreadToFiberEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTTHREADTOFIBEREX);
-    call.param = (uint64_t)param;
-    call.flags = (uint64_t)flags;
+    call.param = (ULONG_PTR)param;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -191,7 +191,7 @@ void qemu_ConvertThreadToFiberEx(struct qemu_syscall *call)
     struct qemu_ConvertThreadToFiberEx *c = (struct qemu_ConvertThreadToFiberEx *)call;
     WINE_FIXME("Unverified!\n");
     /* FIXME: May need to update FlsSlots. */
-    c->super.iret = (uint64_t)ConvertThreadToFiberEx(QEMU_G2H(c->param), c->flags);
+    c->super.iret = QEMU_H2G(ConvertThreadToFiberEx(QEMU_G2H(c->param), c->flags));
 }
 
 #endif
@@ -236,7 +236,7 @@ WINBASEAPI void WINAPI SwitchToFiber(LPVOID fiber)
 {
     struct qemu_SwitchToFiber call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SWITCHTOFIBER);
-    call.fiber = (uint64_t)fiber;
+    call.fiber = (ULONG_PTR)fiber;
 
     qemu_syscall(&call.super);
 }
@@ -265,7 +265,7 @@ WINBASEAPI DWORD WINAPI FlsAlloc(PFLS_CALLBACK_FUNCTION callback)
 {
     struct qemu_FlsAlloc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FLSALLOC);
-    call.callback = (uint64_t)callback;
+    call.callback = (ULONG_PTR)callback;
 
     qemu_syscall(&call.super);
 
@@ -299,7 +299,7 @@ WINBASEAPI BOOL WINAPI FlsFree(DWORD index)
 {
     struct qemu_FlsFree call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FLSFREE);
-    call.index = (uint64_t)index;
+    call.index = index;
 
     qemu_syscall(&call.super);
 
@@ -371,8 +371,8 @@ WINBASEAPI BOOL WINAPI FlsSetValue(DWORD index, PVOID data)
     {
         struct qemu_FlsSetValue call;
         call.super.id = QEMU_SYSCALL_ID(CALL_FLSSETVALUE);
-        call.index = (uint64_t)index;
-        call.data = (uint64_t)data;
+        call.index = index;
+        call.data = (ULONG_PTR)data;
 
         qemu_syscall(&call.super);
 
