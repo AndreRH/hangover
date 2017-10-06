@@ -128,11 +128,11 @@ WINBASEAPI BOOL WINAPI ReadFileEx(HANDLE hFile, LPVOID buffer, DWORD bytesToRead
 {
     struct qemu_ReadFileEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_READFILEEX);
-    call.hFile = (uint64_t)hFile;
-    call.buffer = (uint64_t)buffer;
-    call.bytesToRead = (uint64_t)bytesToRead;
-    call.overlapped = (uint64_t)overlapped;
-    call.lpCompletionRoutine = (uint64_t)lpCompletionRoutine;
+    call.hFile = (ULONG_PTR)hFile;
+    call.buffer = (ULONG_PTR)buffer;
+    call.bytesToRead = bytesToRead;
+    call.overlapped = (ULONG_PTR)overlapped;
+    call.lpCompletionRoutine = (ULONG_PTR)lpCompletionRoutine;
 
     qemu_syscall(&call.super);
 
@@ -191,11 +191,11 @@ WINBASEAPI BOOL WINAPI ReadFileScatter(HANDLE file, FILE_SEGMENT_ELEMENT *segmen
 {
     struct qemu_ReadFileScatter call;
     call.super.id = QEMU_SYSCALL_ID(CALL_READFILESCATTER);
-    call.file = (uint64_t)file;
-    call.segments = (uint64_t)segments;
+    call.file = (ULONG_PTR)file;
+    call.segments = (ULONG_PTR)segments;
     call.count = count;
-    call.reserved = (uint64_t)reserved;
-    call.overlapped = (uint64_t)overlapped;
+    call.reserved = (ULONG_PTR)reserved;
+    call.overlapped = (ULONG_PTR)overlapped;
 
     qemu_syscall(&call.super);
 
@@ -230,11 +230,11 @@ WINBASEAPI BOOL WINAPI ReadFile(HANDLE hFile, LPVOID buffer, DWORD bytesToRead, 
 {
     struct qemu_ReadFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_READFILE);
-    call.hFile = (uint64_t)hFile;
-    call.buffer = (uint64_t)buffer;
-    call.bytesToRead = (uint64_t)bytesToRead;
-    call.bytesRead = (uint64_t)bytesRead;
-    call.overlapped = (uint64_t)overlapped;
+    call.hFile = (ULONG_PTR)hFile;
+    call.buffer = (ULONG_PTR)buffer;
+    call.bytesToRead = bytesToRead;
+    call.bytesRead = (ULONG_PTR)bytesRead;
+    call.overlapped = (ULONG_PTR)overlapped;
 
     qemu_syscall(&call.super);
 
@@ -268,11 +268,11 @@ WINBASEAPI BOOL WINAPI WriteFileEx(HANDLE hFile, LPCVOID buffer, DWORD bytesToWr
 {
     struct qemu_WriteFileEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITEFILEEX);
-    call.hFile = (uint64_t)hFile;
-    call.buffer = (uint64_t)buffer;
-    call.bytesToWrite = (uint64_t)bytesToWrite;
-    call.overlapped = (uint64_t)overlapped;
-    call.lpCompletionRoutine = (uint64_t)lpCompletionRoutine;
+    call.hFile = (ULONG_PTR)hFile;
+    call.buffer = (ULONG_PTR)buffer;
+    call.bytesToWrite = bytesToWrite;
+    call.overlapped = (ULONG_PTR)overlapped;
+    call.lpCompletionRoutine = (ULONG_PTR)lpCompletionRoutine;
 
     qemu_syscall(&call.super);
 
@@ -331,11 +331,11 @@ WINBASEAPI BOOL WINAPI WriteFileGather(HANDLE file, FILE_SEGMENT_ELEMENT *segmen
 {
     struct qemu_WriteFileGather call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITEFILEGATHER);
-    call.file = (uint64_t)file;
-    call.segments = (uint64_t)segments;
+    call.file = (ULONG_PTR)file;
+    call.segments = (ULONG_PTR)segments;
     call.count = count;
-    call.reserved = (uint64_t)reserved;
-    call.overlapped = (uint64_t)overlapped;
+    call.reserved = (ULONG_PTR)reserved;
+    call.overlapped = (ULONG_PTR)overlapped;
 
     qemu_syscall(&call.super);
 
@@ -412,9 +412,9 @@ WINBASEAPI BOOL WINAPI GetOverlappedResult(HANDLE hFile, LPOVERLAPPED lpOverlapp
 {
     struct qemu_GetOverlappedResult call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETOVERLAPPEDRESULT);
-    call.hFile = (uint64_t)hFile;
-    call.lpOverlapped = (uint64_t)lpOverlapped;
-    call.lpTransferred = (uint64_t)lpTransferred;
+    call.hFile = (ULONG_PTR)hFile;
+    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
+    call.lpTransferred = (ULONG_PTR)lpTransferred;
     call.bWait = bWait;
 
     qemu_syscall(&call.super);
@@ -446,8 +446,8 @@ WINBASEAPI BOOL WINAPI CancelIoEx(HANDLE handle, LPOVERLAPPED lpOverlapped)
 {
     struct qemu_CancelIoEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CANCELIOEX);
-    call.handle = (uint64_t)handle;
-    call.lpOverlapped = (uint64_t)lpOverlapped;
+    call.handle = (ULONG_PTR)handle;
+    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
 
     qemu_syscall(&call.super);
 
@@ -477,7 +477,7 @@ WINBASEAPI BOOL WINAPI CancelIo(HANDLE handle)
 {
     struct qemu_CancelIo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CANCELIO);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -507,7 +507,7 @@ WINBASEAPI BOOL WINAPI CancelSynchronousIo(HANDLE thread)
 {
     struct qemu_CancelSynchronousIo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CANCELSYNCHRONOUSIO);
-    call.thread = (uint64_t)thread;
+    call.thread = (ULONG_PTR)thread;
 
     qemu_syscall(&call.super);
 
@@ -540,7 +540,7 @@ WINBASEAPI LONG WINAPI _hread(HFILE hFile, LPVOID buffer, LONG count)
     struct qemu__hread call;
     call.super.id = QEMU_SYSCALL_ID(CALL__HREAD);
     call.hFile = hFile;
-    call.buffer = (uint64_t)buffer;
+    call.buffer = (ULONG_PTR)buffer;
     call.count = count;
 
     qemu_syscall(&call.super);
@@ -574,7 +574,7 @@ WINBASEAPI LONG WINAPI _hwrite(HFILE handle, LPCSTR buffer, LONG count)
     struct qemu__hwrite call;
     call.super.id = QEMU_SYSCALL_ID(CALL__HWRITE);
     call.handle = handle;
-    call.buffer = (uint64_t)buffer;
+    call.buffer = (ULONG_PTR)buffer;
     call.count = count;
 
     qemu_syscall(&call.super);
@@ -636,7 +636,7 @@ WINBASEAPI HFILE WINAPI _lcreat(LPCSTR path, INT attr)
 {
     struct qemu__lcreat call;
     call.super.id = QEMU_SYSCALL_ID(CALL__LCREAT);
-    call.path = (uint64_t)path;
+    call.path = (ULONG_PTR)path;
     call.attr = attr;
 
     qemu_syscall(&call.super);
@@ -668,7 +668,7 @@ WINBASEAPI HFILE WINAPI _lopen(LPCSTR path, INT mode)
 {
     struct qemu__lopen call;
     call.super.id = QEMU_SYSCALL_ID(CALL__LOPEN);
-    call.path = (uint64_t)path;
+    call.path = (ULONG_PTR)path;
     call.mode = mode;
 
     qemu_syscall(&call.super);
@@ -702,7 +702,7 @@ WINBASEAPI UINT WINAPI _lread(HFILE handle, LPVOID buffer, UINT count)
     struct qemu__lread call;
     call.super.id = QEMU_SYSCALL_ID(CALL__LREAD);
     call.handle = handle;
-    call.buffer = (uint64_t)buffer;
+    call.buffer = (ULONG_PTR)buffer;
     call.count = count;
 
     qemu_syscall(&call.super);
@@ -770,7 +770,7 @@ WINBASEAPI UINT WINAPI _lwrite(HFILE hFile, LPCSTR buffer, UINT count)
     struct qemu__lwrite call;
     call.super.id = QEMU_SYSCALL_ID(CALL__LWRITE);
     call.hFile = hFile;
-    call.buffer = (uint64_t)buffer;
+    call.buffer = (ULONG_PTR)buffer;
     call.count = count;
 
     qemu_syscall(&call.super);
@@ -801,7 +801,7 @@ WINBASEAPI BOOL WINAPI FlushFileBuffers(HANDLE hFile)
 {
     struct qemu_FlushFileBuffers call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FLUSHFILEBUFFERS);
-    call.hFile = (uint64_t)hFile;
+    call.hFile = (ULONG_PTR)hFile;
 
     qemu_syscall(&call.super);
 
@@ -831,7 +831,7 @@ WINBASEAPI DWORD WINAPI GetFileType(HANDLE hFile)
 {
     struct qemu_GetFileType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILETYPE);
-    call.hFile = (uint64_t)hFile;
+    call.hFile = (ULONG_PTR)hFile;
 
     qemu_syscall(&call.super);
 
@@ -862,8 +862,8 @@ WINBASEAPI BOOL WINAPI GetFileInformationByHandle(HANDLE hFile, BY_HANDLE_FILE_I
 {
     struct qemu_GetFileInformationByHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILEINFORMATIONBYHANDLE);
-    call.hFile = (uint64_t)hFile;
-    call.info = (uint64_t)info;
+    call.hFile = (ULONG_PTR)hFile;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -896,9 +896,9 @@ WINBASEAPI BOOL WINAPI GetFileInformationByHandleEx(HANDLE handle, FILE_INFO_BY_
 {
     struct qemu_GetFileInformationByHandleEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILEINFORMATIONBYHANDLEEX);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
     call.class = class;
-    call.info = (uint64_t)info;
+    call.info = (ULONG_PTR)info;
     call.size = size;
 
     qemu_syscall(&call.super);
@@ -930,8 +930,8 @@ WINBASEAPI DWORD WINAPI GetFileSize(HANDLE hFile, LPDWORD filesizehigh)
 {
     struct qemu_GetFileSize call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILESIZE);
-    call.hFile = (uint64_t)hFile;
-    call.filesizehigh = (uint64_t)filesizehigh;
+    call.hFile = (ULONG_PTR)hFile;
+    call.filesizehigh = (ULONG_PTR)filesizehigh;
 
     qemu_syscall(&call.super);
 
@@ -962,8 +962,8 @@ WINBASEAPI BOOL WINAPI GetFileSizeEx(HANDLE hFile, PLARGE_INTEGER lpFileSize)
 {
     struct qemu_GetFileSizeEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILESIZEEX);
-    call.hFile = (uint64_t)hFile;
-    call.lpFileSize = (uint64_t)lpFileSize;
+    call.hFile = (ULONG_PTR)hFile;
+    call.lpFileSize = (ULONG_PTR)lpFileSize;
 
     qemu_syscall(&call.super);
 
@@ -993,7 +993,7 @@ WINBASEAPI BOOL WINAPI SetEndOfFile(HANDLE hFile)
 {
     struct qemu_SetEndOfFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETENDOFFILE);
-    call.hFile = (uint64_t)hFile;
+    call.hFile = (ULONG_PTR)hFile;
 
     qemu_syscall(&call.super);
 
@@ -1024,8 +1024,8 @@ WINBASEAPI BOOL WINAPI SetFileCompletionNotificationModes(HANDLE handle, UCHAR f
 {
     struct qemu_SetFileCompletionNotificationModes call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFILECOMPLETIONNOTIFICATIONMODES);
-    call.handle = (uint64_t)handle;
-    call.flags = (uint64_t)flags;
+    call.handle = (ULONG_PTR)handle;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -1058,9 +1058,9 @@ WINBASEAPI BOOL WINAPI SetFileInformationByHandle(HANDLE file, FILE_INFO_BY_HAND
 {
     struct qemu_SetFileInformationByHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFILEINFORMATIONBYHANDLE);
-    call.file = (uint64_t)file;
+    call.file = (ULONG_PTR)file;
     call.class = class;
-    call.info = (uint64_t)info;
+    call.info = (ULONG_PTR)info;
     call.size = size;
 
     qemu_syscall(&call.super);
@@ -1094,10 +1094,10 @@ WINBASEAPI DWORD WINAPI SetFilePointer(HANDLE hFile, LONG distance, LONG *highwo
 {
     struct qemu_SetFilePointer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFILEPOINTER);
-    call.hFile = (uint64_t)hFile;
-    call.distance = (uint64_t)distance;
-    call.highword = (uint64_t)highword;
-    call.method = (uint64_t)method;
+    call.hFile = (ULONG_PTR)hFile;
+    call.distance = distance;
+    call.highword = (ULONG_PTR)highword;
+    call.method = method;
 
     qemu_syscall(&call.super);
 
@@ -1131,11 +1131,11 @@ WINBASEAPI BOOL WINAPI SetFilePointerEx(HANDLE hFile, LARGE_INTEGER distance, LA
 {
     struct qemu_SetFilePointerEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFILEPOINTEREX);
-    call.hFile = (uint64_t)hFile;
+    call.hFile = (ULONG_PTR)hFile;
     call.distance_high = distance.HighPart;
     call.distance_low = distance.LowPart;
-    call.newpos = (uint64_t)newpos;
-    call.method = (uint64_t)method;
+    call.newpos = (ULONG_PTR)newpos;
+    call.method = method;
 
     qemu_syscall(&call.super);
 
@@ -1169,7 +1169,7 @@ WINBASEAPI BOOL WINAPI SetFileValidData(HANDLE hFile, LONGLONG ValidDataLength)
 {
     struct qemu_SetFileValidData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFILEVALIDDATA);
-    call.hFile = (uint64_t)hFile;
+    call.hFile = (ULONG_PTR)hFile;
     call.ValidDataLength = ValidDataLength;
 
     qemu_syscall(&call.super);
@@ -1204,10 +1204,10 @@ WINBASEAPI BOOL WINAPI GetFileTime(HANDLE hFile, FILETIME *lpCreationTime, FILET
 {
     struct qemu_GetFileTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILETIME);
-    call.hFile = (uint64_t)hFile;
-    call.lpCreationTime = (uint64_t)lpCreationTime;
-    call.lpLastAccessTime = (uint64_t)lpLastAccessTime;
-    call.lpLastWriteTime = (uint64_t)lpLastWriteTime;
+    call.hFile = (ULONG_PTR)hFile;
+    call.lpCreationTime = (ULONG_PTR)lpCreationTime;
+    call.lpLastAccessTime = (ULONG_PTR)lpLastAccessTime;
+    call.lpLastWriteTime = (ULONG_PTR)lpLastWriteTime;
 
     qemu_syscall(&call.super);
 
@@ -1241,10 +1241,10 @@ WINBASEAPI BOOL WINAPI SetFileTime(HANDLE hFile, const FILETIME *ctime, const FI
 {
     struct qemu_SetFileTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFILETIME);
-    call.hFile = (uint64_t)hFile;
-    call.ctime = (uint64_t)ctime;
-    call.atime = (uint64_t)atime;
-    call.mtime = (uint64_t)mtime;
+    call.hFile = (ULONG_PTR)hFile;
+    call.ctime = (ULONG_PTR)ctime;
+    call.atime = (ULONG_PTR)atime;
+    call.mtime = (ULONG_PTR)mtime;
 
     qemu_syscall(&call.super);
 
@@ -1278,7 +1278,7 @@ WINBASEAPI BOOL WINAPI LockFile(HANDLE hFile, DWORD offset_low, DWORD offset_hig
 {
     struct qemu_LockFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOCKFILE);
-    call.hFile = (uint64_t)hFile;
+    call.hFile = (ULONG_PTR)hFile;
     call.offset_low = offset_low;
     call.offset_high = offset_high;
     call.count_low = count_low;
@@ -1317,12 +1317,12 @@ WINBASEAPI BOOL WINAPI LockFileEx(HANDLE hFile, DWORD flags, DWORD reserved, DWO
 {
     struct qemu_LockFileEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOCKFILEEX);
-    call.hFile = (uint64_t)hFile;
+    call.hFile = (ULONG_PTR)hFile;
     call.flags = flags;
     call.reserved = reserved;
     call.count_low = count_low;
     call.count_high = count_high;
-    call.overlapped = (uint64_t)overlapped;
+    call.overlapped = (ULONG_PTR)overlapped;
 
     qemu_syscall(&call.super);
 
@@ -1357,7 +1357,7 @@ WINBASEAPI BOOL WINAPI UnlockFile(HANDLE hFile, DWORD offset_low, DWORD offset_h
 {
     struct qemu_UnlockFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNLOCKFILE);
-    call.hFile = (uint64_t)hFile;
+    call.hFile = (ULONG_PTR)hFile;
     call.offset_low = offset_low;
     call.offset_high = offset_high;
     call.count_low = count_low;
@@ -1395,11 +1395,11 @@ WINBASEAPI BOOL WINAPI UnlockFileEx(HANDLE hFile, DWORD reserved, DWORD count_lo
 {
     struct qemu_UnlockFileEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNLOCKFILEEX);
-    call.hFile = (uint64_t)hFile;
+    call.hFile = (ULONG_PTR)hFile;
     call.reserved = reserved;
     call.count_low = count_low;
     call.count_high = count_high;
-    call.overlapped = (uint64_t)overlapped;
+    call.overlapped = (ULONG_PTR)overlapped;
 
     qemu_syscall(&call.super);
 
@@ -1429,7 +1429,7 @@ WINBASEAPI UINT WINAPI SetHandleCount(UINT count)
 {
     struct qemu_SetHandleCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETHANDLECOUNT);
-    call.count = (uint64_t)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -1465,17 +1465,17 @@ WINBASEAPI HANDLE WINAPI CreateFileW(LPCWSTR filename, DWORD access, DWORD shari
 {
     struct qemu_CreateFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEFILEW);
-    call.filename = (uint64_t)filename;
-    call.access = (uint64_t)access;
-    call.sharing = (uint64_t)sharing;
-    call.sa = (uint64_t)sa;
-    call.creation = (uint64_t)creation;
-    call.attributes = (uint64_t)attributes;
-    call.template = (uint64_t)template;
+    call.filename = (ULONG_PTR)filename;
+    call.access = access;
+    call.sharing = sharing;
+    call.sa = (ULONG_PTR)sa;
+    call.creation = creation;
+    call.attributes = attributes;
+    call.template = (ULONG_PTR)template;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1484,7 +1484,7 @@ void qemu_CreateFileW(struct qemu_syscall *call)
 {
     struct qemu_CreateFileW *c = (struct qemu_CreateFileW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateFileW(QEMU_G2H(c->filename), c->access, c->sharing, QEMU_G2H(c->sa), c->creation, c->attributes, QEMU_G2H(c->template));
+    c->super.iret = QEMU_H2G(CreateFileW(QEMU_G2H(c->filename), c->access, c->sharing, QEMU_G2H(c->sa), c->creation, c->attributes, QEMU_G2H(c->template)));
 }
 
 #endif
@@ -1507,17 +1507,17 @@ WINBASEAPI HANDLE WINAPI CreateFileA(LPCSTR filename, DWORD access, DWORD sharin
 {
     struct qemu_CreateFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEFILEA);
-    call.filename = (uint64_t)filename;
+    call.filename = (ULONG_PTR)filename;
     call.access = access;
     call.sharing = sharing;
-    call.sa = (uint64_t)sa;
+    call.sa = (ULONG_PTR)sa;
     call.creation = creation;
     call.attributes = attributes;
-    call.template = (uint64_t)template;
+    call.template = (ULONG_PTR)template;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1526,8 +1526,8 @@ void qemu_CreateFileA(struct qemu_syscall *call)
 {
     struct qemu_CreateFileA *c = (struct qemu_CreateFileA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateFileA(QEMU_G2H(c->filename), c->access, c->sharing, QEMU_G2H(c->sa),
-            c->creation, c->attributes, (HANDLE)c->template);
+    c->super.iret = QEMU_H2G(CreateFileA(QEMU_G2H(c->filename), c->access, c->sharing, QEMU_G2H(c->sa),
+            c->creation, c->attributes, (HANDLE)c->template));
 }
 
 #endif
@@ -1548,15 +1548,15 @@ WINBASEAPI HANDLE WINAPI CreateFile2(LPCWSTR filename, DWORD access, DWORD shari
 {
     struct qemu_CreateFile2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEFILE2);
-    call.filename = (uint64_t)filename;
+    call.filename = (ULONG_PTR)filename;
     call.access = access;
     call.sharing = sharing;
     call.creation = creation;
-    call.exparams = (uint64_t)exparams;
+    call.exparams = (ULONG_PTR)exparams;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1565,7 +1565,7 @@ void qemu_CreateFile2(struct qemu_syscall *call)
 {
     struct qemu_CreateFile2 *c = (struct qemu_CreateFile2 *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateFile2(QEMU_G2H(c->filename), c->access, c->sharing, c->creation, QEMU_G2H(c->exparams));
+    c->super.iret = QEMU_H2G(CreateFile2(QEMU_G2H(c->filename), c->access, c->sharing, c->creation, QEMU_G2H(c->exparams)));
 }
 
 #endif
@@ -1582,7 +1582,7 @@ WINBASEAPI BOOL WINAPI DeleteFileW(LPCWSTR path)
 {
     struct qemu_DeleteFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETEFILEW);
-    call.path = (uint64_t)path;
+    call.path = (ULONG_PTR)path;
 
     qemu_syscall(&call.super);
 
@@ -1612,7 +1612,7 @@ WINBASEAPI BOOL WINAPI DeleteFileA(LPCSTR path)
 {
     struct qemu_DeleteFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETEFILEA);
-    call.path = (uint64_t)path;
+    call.path = (ULONG_PTR)path;
 
     qemu_syscall(&call.super);
 
@@ -1647,12 +1647,12 @@ WINBASEAPI BOOL WINAPI ReplaceFileW(LPCWSTR lpReplacedFileName, LPCWSTR lpReplac
 {
     struct qemu_ReplaceFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REPLACEFILEW);
-    call.lpReplacedFileName = (uint64_t)lpReplacedFileName;
-    call.lpReplacementFileName = (uint64_t)lpReplacementFileName;
-    call.lpBackupFileName = (uint64_t)lpBackupFileName;
+    call.lpReplacedFileName = (ULONG_PTR)lpReplacedFileName;
+    call.lpReplacementFileName = (ULONG_PTR)lpReplacementFileName;
+    call.lpBackupFileName = (ULONG_PTR)lpBackupFileName;
     call.dwReplaceFlags = dwReplaceFlags;
-    call.lpExclude = (uint64_t)lpExclude;
-    call.lpReserved = (uint64_t)lpReserved;
+    call.lpExclude = (ULONG_PTR)lpExclude;
+    call.lpReserved = (ULONG_PTR)lpReserved;
 
     qemu_syscall(&call.super);
 
@@ -1689,12 +1689,12 @@ WINBASEAPI BOOL WINAPI ReplaceFileA(LPCSTR lpReplacedFileName,LPCSTR lpReplaceme
 {
     struct qemu_ReplaceFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REPLACEFILEA);
-    call.lpReplacedFileName = (uint64_t)lpReplacedFileName;
-    call.lpReplacementFileName = (uint64_t)lpReplacementFileName;
-    call.lpBackupFileName = (uint64_t)lpBackupFileName;
+    call.lpReplacedFileName = (ULONG_PTR)lpReplacedFileName;
+    call.lpReplacementFileName = (ULONG_PTR)lpReplacementFileName;
+    call.lpBackupFileName = (ULONG_PTR)lpBackupFileName;
     call.dwReplaceFlags = dwReplaceFlags;
-    call.lpExclude = (uint64_t)lpExclude;
-    call.lpReserved = (uint64_t)lpReserved;
+    call.lpExclude = (ULONG_PTR)lpExclude;
+    call.lpReserved = (ULONG_PTR)lpReserved;
 
     qemu_syscall(&call.super);
 
@@ -1730,16 +1730,16 @@ WINBASEAPI HANDLE WINAPI FindFirstFileExW(LPCWSTR filename, FINDEX_INFO_LEVELS l
 {
     struct qemu_FindFirstFileExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDFIRSTFILEEXW);
-    call.filename = (uint64_t)filename;
-    call.level = (uint64_t)level;
-    call.data = (uint64_t)data;
-    call.search_op = (uint64_t)search_op;
-    call.filter = (uint64_t)filter;
-    call.flags = (uint64_t)flags;
+    call.filename = (ULONG_PTR)filename;
+    call.level = (ULONG_PTR)level;
+    call.data = (ULONG_PTR)data;
+    call.search_op = (ULONG_PTR)search_op;
+    call.filter = (ULONG_PTR)filter;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1748,7 +1748,7 @@ void qemu_FindFirstFileExW(struct qemu_syscall *call)
 {
     struct qemu_FindFirstFileExW *c = (struct qemu_FindFirstFileExW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)FindFirstFileExW(QEMU_G2H(c->filename), c->level, QEMU_G2H(c->data), c->search_op, QEMU_G2H(c->filter), c->flags);
+    c->super.iret = QEMU_H2G(FindFirstFileExW(QEMU_G2H(c->filename), c->level, QEMU_G2H(c->data), c->search_op, QEMU_G2H(c->filter), c->flags));
 }
 
 #endif
@@ -1766,8 +1766,8 @@ WINBASEAPI BOOL WINAPI FindNextFileW(HANDLE handle, WIN32_FIND_DATAW *data)
 {
     struct qemu_FindNextFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDNEXTFILEW);
-    call.handle = (uint64_t)handle;
-    call.data = (uint64_t)data;
+    call.handle = (ULONG_PTR)handle;
+    call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
 
@@ -1797,7 +1797,7 @@ WINBASEAPI BOOL WINAPI FindClose(HANDLE handle)
 {
     struct qemu_FindClose call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDCLOSE);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -1828,12 +1828,12 @@ WINBASEAPI HANDLE WINAPI FindFirstFileA(LPCSTR lpFileName, WIN32_FIND_DATAA *lpF
 {
     struct qemu_FindFirstFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDFIRSTFILEA);
-    call.lpFileName = (uint64_t)lpFileName;
-    call.lpFindData = (uint64_t)lpFindData;
+    call.lpFileName = (ULONG_PTR)lpFileName;
+    call.lpFindData = (ULONG_PTR)lpFindData;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1842,7 +1842,7 @@ void qemu_FindFirstFileA(struct qemu_syscall *call)
 {
     struct qemu_FindFirstFileA *c = (struct qemu_FindFirstFileA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)FindFirstFileA(QEMU_G2H(c->lpFileName), QEMU_G2H(c->lpFindData));
+    c->super.iret = QEMU_H2G(FindFirstFileA(QEMU_G2H(c->lpFileName), QEMU_G2H(c->lpFindData)));
 }
 
 #endif
@@ -1864,16 +1864,16 @@ WINBASEAPI HANDLE WINAPI FindFirstFileExA(LPCSTR lpFileName, FINDEX_INFO_LEVELS 
 {
     struct qemu_FindFirstFileExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDFIRSTFILEEXA);
-    call.lpFileName = (uint64_t)lpFileName;
+    call.lpFileName = (ULONG_PTR)lpFileName;
     call.fInfoLevelId = fInfoLevelId;
-    call.lpFindFileData = (uint64_t)lpFindFileData;
+    call.lpFindFileData = (ULONG_PTR)lpFindFileData;
     call.fSearchOp = fSearchOp;
-    call.lpSearchFilter = (uint64_t)lpSearchFilter;
+    call.lpSearchFilter = (ULONG_PTR)lpSearchFilter;
     call.dwAdditionalFlags = dwAdditionalFlags;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1882,7 +1882,7 @@ void qemu_FindFirstFileExA(struct qemu_syscall *call)
 {
     struct qemu_FindFirstFileExA *c = (struct qemu_FindFirstFileExA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)FindFirstFileExA(QEMU_G2H(c->lpFileName), c->fInfoLevelId, QEMU_G2H(c->lpFindFileData), c->fSearchOp, QEMU_G2H(c->lpSearchFilter), c->dwAdditionalFlags);
+    c->super.iret = QEMU_H2G(FindFirstFileExA(QEMU_G2H(c->lpFileName), c->fInfoLevelId, QEMU_G2H(c->lpFindFileData), c->fSearchOp, QEMU_G2H(c->lpSearchFilter), c->dwAdditionalFlags));
 }
 
 #endif
@@ -1900,12 +1900,12 @@ WINBASEAPI HANDLE WINAPI FindFirstFileW(LPCWSTR lpFileName, WIN32_FIND_DATAW *lp
 {
     struct qemu_FindFirstFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDFIRSTFILEW);
-    call.lpFileName = (uint64_t)lpFileName;
-    call.lpFindData = (uint64_t)lpFindData;
+    call.lpFileName = (ULONG_PTR)lpFileName;
+    call.lpFindData = (ULONG_PTR)lpFindData;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1914,7 +1914,7 @@ void qemu_FindFirstFileW(struct qemu_syscall *call)
 {
     struct qemu_FindFirstFileW *c = (struct qemu_FindFirstFileW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)FindFirstFileW(QEMU_G2H(c->lpFileName), QEMU_G2H(c->lpFindData));
+    c->super.iret = QEMU_H2G(FindFirstFileW(QEMU_G2H(c->lpFileName), QEMU_G2H(c->lpFindData)));
 }
 
 #endif
@@ -1932,8 +1932,8 @@ WINBASEAPI BOOL WINAPI FindNextFileA(HANDLE handle, WIN32_FIND_DATAA *data)
 {
     struct qemu_FindNextFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDNEXTFILEA);
-    call.handle = (uint64_t)handle;
-    call.data = (uint64_t)data;
+    call.handle = (ULONG_PTR)handle;
+    call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
 
@@ -1963,7 +1963,7 @@ WINBASEAPI DWORD WINAPI GetFileAttributesW(LPCWSTR name)
 {
     struct qemu_GetFileAttributesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILEATTRIBUTESW);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
@@ -1993,7 +1993,7 @@ WINBASEAPI DWORD WINAPI GetFileAttributesA(LPCSTR name)
 {
     struct qemu_GetFileAttributesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILEATTRIBUTESA);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
@@ -2024,7 +2024,7 @@ WINBASEAPI BOOL WINAPI SetFileAttributesW(LPCWSTR name, DWORD attributes)
 {
     struct qemu_SetFileAttributesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFILEATTRIBUTESW);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
     call.attributes = attributes;
 
     qemu_syscall(&call.super);
@@ -2056,7 +2056,7 @@ WINBASEAPI BOOL WINAPI SetFileAttributesA(LPCSTR name, DWORD attributes)
 {
     struct qemu_SetFileAttributesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFILEATTRIBUTESA);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
     call.attributes = attributes;
 
     qemu_syscall(&call.super);
@@ -2089,9 +2089,9 @@ WINBASEAPI BOOL WINAPI GetFileAttributesExW(LPCWSTR name, GET_FILEEX_INFO_LEVELS
 {
     struct qemu_GetFileAttributesExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILEATTRIBUTESEXW);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
     call.level = level;
-    call.ptr = (uint64_t)ptr;
+    call.ptr = (ULONG_PTR)ptr;
 
     qemu_syscall(&call.super);
 
@@ -2123,9 +2123,9 @@ WINBASEAPI BOOL WINAPI GetFileAttributesExA(LPCSTR name, GET_FILEEX_INFO_LEVELS 
 {
     struct qemu_GetFileAttributesExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILEATTRIBUTESEXA);
-    call.name = (uint64_t)name;
-    call.level = (uint64_t)level;
-    call.ptr = (uint64_t)ptr;
+    call.name = (ULONG_PTR)name;
+    call.level = (ULONG_PTR)level;
+    call.ptr = (ULONG_PTR)ptr;
 
     qemu_syscall(&call.super);
 
@@ -2156,8 +2156,8 @@ WINBASEAPI DWORD WINAPI GetCompressedFileSizeW(LPCWSTR name, LPDWORD size_high)
 {
     struct qemu_GetCompressedFileSizeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOMPRESSEDFILESIZEW);
-    call.name = (uint64_t)name;
-    call.size_high = (uint64_t)size_high;
+    call.name = (ULONG_PTR)name;
+    call.size_high = (ULONG_PTR)size_high;
 
     qemu_syscall(&call.super);
 
@@ -2188,8 +2188,8 @@ WINBASEAPI DWORD WINAPI GetCompressedFileSizeA(LPCSTR name, LPDWORD size_high)
 {
     struct qemu_GetCompressedFileSizeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOMPRESSEDFILESIZEA);
-    call.name = (uint64_t)name;
-    call.size_high = (uint64_t)size_high;
+    call.name = (ULONG_PTR)name;
+    call.size_high = (ULONG_PTR)size_high;
 
     qemu_syscall(&call.super);
 
@@ -2219,11 +2219,11 @@ WINBASEAPI HANDLE WINAPI OpenVxDHandle(HANDLE hHandleRing3)
 {
     struct qemu_OpenVxDHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENVXDHANDLE);
-    call.hHandleRing3 = (uint64_t)hHandleRing3;
+    call.hHandleRing3 = (ULONG_PTR)hHandleRing3;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2256,14 +2256,14 @@ WINBASEAPI BOOL WINAPI DeviceIoControl(HANDLE hDevice, DWORD dwIoControlCode, LP
 {
     struct qemu_DeviceIoControl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEVICEIOCONTROL);
-    call.hDevice = (uint64_t)hDevice;
+    call.hDevice = (ULONG_PTR)hDevice;
     call.dwIoControlCode = dwIoControlCode;
-    call.lpvInBuffer = (uint64_t)lpvInBuffer;
+    call.lpvInBuffer = (ULONG_PTR)lpvInBuffer;
     call.cbInBuffer = cbInBuffer;
-    call.lpvOutBuffer = (uint64_t)lpvOutBuffer;
+    call.lpvOutBuffer = (ULONG_PTR)lpvOutBuffer;
     call.cbOutBuffer = cbOutBuffer;
-    call.lpcbBytesReturned = (uint64_t)lpcbBytesReturned;
-    call.lpOverlapped = (uint64_t)lpOverlapped;
+    call.lpcbBytesReturned = (ULONG_PTR)lpcbBytesReturned;
+    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
 
     qemu_syscall(&call.super);
 
@@ -2297,8 +2297,8 @@ WINBASEAPI HFILE WINAPI OpenFile(LPCSTR name, OFSTRUCT *ofs, UINT mode)
 {
     struct qemu_OpenFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENFILE);
-    call.name = (uint64_t)name;
-    call.ofs = (uint64_t)ofs;
+    call.name = (ULONG_PTR)name;
+    call.ofs = (ULONG_PTR)ofs;
     call.mode = mode;
 
     qemu_syscall(&call.super);
@@ -2335,16 +2335,16 @@ WINBASEAPI HANDLE WINAPI OpenFileById(HANDLE handle, LPFILE_ID_DESCRIPTOR id, DW
 {
     struct qemu_OpenFileById call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENFILEBYID);
-    call.handle = (uint64_t)handle;
-    call.id = (uint64_t)id;
+    call.handle = (ULONG_PTR)handle;
+    call.id = (ULONG_PTR)id;
     call.access = access;
     call.share = share;
-    call.sec_attr = (uint64_t)sec_attr;
+    call.sec_attr = (ULONG_PTR)sec_attr;
     call.flags = flags;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2356,8 +2356,8 @@ void qemu_OpenFileById(struct qemu_syscall *call)
 {
     struct qemu_OpenFileById *c = (struct qemu_OpenFileById *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)OpenFileById(QEMU_G2H(c->handle), QEMU_G2H(c->id), c->access, c->share,
-            QEMU_G2H(c->sec_attr), c->flags);
+    c->super.iret = QEMU_H2G(OpenFileById(QEMU_G2H(c->handle), QEMU_G2H(c->id), c->access, c->share,
+            QEMU_G2H(c->sec_attr), c->flags));
 }
 
 #endif
@@ -2376,9 +2376,9 @@ WINBASEAPI BOOL WINAPI K32EnumDeviceDrivers(void **image_base, DWORD cb, DWORD *
 {
     struct qemu_K32EnumDeviceDrivers call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32ENUMDEVICEDRIVERS);
-    call.image_base = (uint64_t)image_base;
-    call.cb = (uint64_t)cb;
-    call.needed = (uint64_t)needed;
+    call.image_base = (ULONG_PTR)image_base;
+    call.cb = (ULONG_PTR)cb;
+    call.needed = (ULONG_PTR)needed;
 
     qemu_syscall(&call.super);
 
@@ -2412,9 +2412,9 @@ WINBASEAPI DWORD WINAPI K32GetDeviceDriverBaseNameA(void *image_base, LPSTR base
 {
     struct qemu_K32GetDeviceDriverBaseNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32GETDEVICEDRIVERBASENAMEA);
-    call.image_base = (uint64_t)image_base;
-    call.base_name = (uint64_t)base_name;
-    call.size = (uint64_t)size;
+    call.image_base = (ULONG_PTR)image_base;
+    call.base_name = (ULONG_PTR)base_name;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -2448,9 +2448,9 @@ WINBASEAPI DWORD WINAPI K32GetDeviceDriverBaseNameW(void *image_base, LPWSTR bas
 {
     struct qemu_K32GetDeviceDriverBaseNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32GETDEVICEDRIVERBASENAMEW);
-    call.image_base = (uint64_t)image_base;
-    call.base_name = (uint64_t)base_name;
-    call.size = (uint64_t)size;
+    call.image_base = (ULONG_PTR)image_base;
+    call.base_name = (ULONG_PTR)base_name;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -2484,9 +2484,9 @@ WINBASEAPI DWORD WINAPI K32GetDeviceDriverFileNameA(void *image_base, LPSTR file
 {
     struct qemu_K32GetDeviceDriverFileNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32GETDEVICEDRIVERFILENAMEA);
-    call.image_base = (uint64_t)image_base;
-    call.file_name = (uint64_t)file_name;
-    call.size = (uint64_t)size;
+    call.image_base = (ULONG_PTR)image_base;
+    call.file_name = (ULONG_PTR)file_name;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -2520,9 +2520,9 @@ WINBASEAPI DWORD WINAPI K32GetDeviceDriverFileNameW(void *image_base, LPWSTR fil
 {
     struct qemu_K32GetDeviceDriverFileNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32GETDEVICEDRIVERFILENAMEW);
-    call.image_base = (uint64_t)image_base;
-    call.file_name = (uint64_t)file_name;
-    call.size = (uint64_t)size;
+    call.image_base = (ULONG_PTR)image_base;
+    call.file_name = (ULONG_PTR)file_name;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -2557,8 +2557,8 @@ WINBASEAPI DWORD WINAPI GetFinalPathNameByHandleW(HANDLE file, LPWSTR path, DWOR
 {
     struct qemu_GetFinalPathNameByHandleW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFINALPATHNAMEBYHANDLEW);
-    call.file = (uint64_t)file;
-    call.path = (uint64_t)path;
+    call.file = (ULONG_PTR)file;
+    call.path = (ULONG_PTR)path;
     call.charcount = charcount;
     call.flags = flags;
 
@@ -2595,8 +2595,8 @@ WINBASEAPI DWORD WINAPI GetFinalPathNameByHandleA(HANDLE file, LPSTR path, DWORD
 {
     struct qemu_GetFinalPathNameByHandleA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFINALPATHNAMEBYHANDLEA);
-    call.file = (uint64_t)file;
-    call.path = (uint64_t)path;
+    call.file = (ULONG_PTR)file;
+    call.path = (ULONG_PTR)path;
     call.charcount = charcount;
     call.flags = flags;
 
