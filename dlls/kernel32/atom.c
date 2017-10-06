@@ -73,7 +73,7 @@ WINBASEAPI ATOM WINAPI GlobalAddAtomA(LPCSTR str)
 {
     struct qemu_GlobalAddAtomA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GLOBALADDATOMA);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -103,7 +103,7 @@ WINBASEAPI ATOM WINAPI AddAtomA(LPCSTR str)
 {
     struct qemu_AddAtomA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDATOMA);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -133,7 +133,7 @@ WINBASEAPI ATOM WINAPI GlobalAddAtomW(LPCWSTR str)
 {
     struct qemu_GlobalAddAtomW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GLOBALADDATOMW);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -163,7 +163,7 @@ WINBASEAPI ATOM WINAPI AddAtomW(LPCWSTR str)
 {
     struct qemu_AddAtomW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDATOMW);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -253,7 +253,7 @@ WINBASEAPI ATOM WINAPI GlobalFindAtomA(LPCSTR str)
 {
     struct qemu_GlobalFindAtomA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GLOBALFINDATOMA);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -283,7 +283,7 @@ WINBASEAPI ATOM WINAPI FindAtomA(LPCSTR str)
 {
     struct qemu_FindAtomA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDATOMA);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -313,7 +313,7 @@ WINBASEAPI ATOM WINAPI GlobalFindAtomW(LPCWSTR str)
 {
     struct qemu_GlobalFindAtomW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GLOBALFINDATOMW);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -343,7 +343,7 @@ WINBASEAPI ATOM WINAPI FindAtomW(LPCWSTR str)
 {
     struct qemu_FindAtomW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDATOMW);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -376,7 +376,7 @@ WINBASEAPI UINT WINAPI GlobalGetAtomNameA(ATOM atom, LPSTR buffer, INT count)
     struct qemu_GlobalGetAtomNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GLOBALGETATOMNAMEA);
     call.atom = atom;
-    call.buffer = (uint64_t)buffer;
+    call.buffer = (ULONG_PTR)buffer;
     call.count = count;
 
     qemu_syscall(&call.super);
@@ -410,7 +410,7 @@ WINBASEAPI UINT WINAPI GetAtomNameA(ATOM atom, LPSTR buffer, INT count)
     struct qemu_GetAtomNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETATOMNAMEA);
     call.atom = atom;
-    call.buffer = (uint64_t)buffer;
+    call.buffer = (ULONG_PTR)buffer;
     call.count = count;
 
     qemu_syscall(&call.super);
@@ -444,7 +444,7 @@ WINBASEAPI UINT WINAPI GlobalGetAtomNameW(ATOM atom, LPWSTR buffer, INT count)
     struct qemu_GlobalGetAtomNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GLOBALGETATOMNAMEW);
     call.atom = atom;
-    call.buffer = (uint64_t)buffer;
+    call.buffer = (ULONG_PTR)buffer;
     call.count = count;
 
     qemu_syscall(&call.super);
@@ -478,7 +478,7 @@ WINBASEAPI UINT WINAPI GetAtomNameW(ATOM atom, LPWSTR buffer, INT count)
     struct qemu_GetAtomNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETATOMNAMEW);
     call.atom = atom;
-    call.buffer = (uint64_t)buffer;
+    call.buffer = (ULONG_PTR)buffer;
     call.count = count;
 
     qemu_syscall(&call.super);
