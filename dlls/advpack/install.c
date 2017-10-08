@@ -52,7 +52,7 @@ WINBASEAPI HRESULT WINAPI DoInfInstall(const SETUPCOMMAND_PARAMS *setup)
 {
     struct qemu_DoInfInstall call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DOINFINSTALL);
-    call.setup = (uint64_t)setup;
+    call.setup = (ULONG_PTR)setup;
 
     qemu_syscall(&call.super);
 
@@ -86,9 +86,9 @@ WINBASEAPI HRESULT WINAPI ExecuteCabA(HWND hwnd, CABINFOA* pCab, LPVOID pReserve
 {
     struct qemu_ExecuteCabA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXECUTECABA);
-    call.hwnd = (uint64_t)hwnd;
-    call.pCab = (uint64_t)pCab;
-    call.pReserved = (uint64_t)pReserved;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.pCab = (ULONG_PTR)pCab;
+    call.pReserved = (ULONG_PTR)pReserved;
 
     qemu_syscall(&call.super);
 
@@ -120,9 +120,9 @@ WINBASEAPI HRESULT WINAPI ExecuteCabW(HWND hwnd, CABINFOW* pCab, LPVOID pReserve
 {
     struct qemu_ExecuteCabW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXECUTECABW);
-    call.hwnd = (uint64_t)hwnd;
-    call.pCab = (uint64_t)pCab;
-    call.pReserved = (uint64_t)pReserved;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.pCab = (ULONG_PTR)pCab;
+    call.pReserved = (ULONG_PTR)pReserved;
 
     qemu_syscall(&call.super);
 
@@ -155,10 +155,10 @@ WINBASEAPI INT WINAPI LaunchINFSectionA(HWND hWnd, HINSTANCE hInst, LPSTR cmdlin
 {
     struct qemu_LaunchINFSectionA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LAUNCHINFSECTIONA);
-    call.hWnd = (uint64_t)hWnd;
-    call.hInst = (uint64_t)hInst;
-    call.cmdline = (uint64_t)cmdline;
-    call.show = (uint64_t)show;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hInst = (ULONG_PTR)hInst;
+    call.cmdline = (ULONG_PTR)cmdline;
+    call.show = (ULONG_PTR)show;
 
     qemu_syscall(&call.super);
 
@@ -191,10 +191,10 @@ WINBASEAPI INT WINAPI LaunchINFSectionW(HWND hWnd, HINSTANCE hInst, LPWSTR cmdli
 {
     struct qemu_LaunchINFSectionW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LAUNCHINFSECTIONW);
-    call.hWnd = (uint64_t)hWnd;
-    call.hInst = (uint64_t)hInst;
-    call.cmdline = (uint64_t)cmdline;
-    call.show = (uint64_t)show;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hInst = (ULONG_PTR)hInst;
+    call.cmdline = (ULONG_PTR)cmdline;
+    call.show = (ULONG_PTR)show;
 
     qemu_syscall(&call.super);
 
@@ -227,10 +227,10 @@ WINBASEAPI HRESULT WINAPI LaunchINFSectionExA(HWND hWnd, HINSTANCE hInst, LPSTR 
 {
     struct qemu_LaunchINFSectionExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LAUNCHINFSECTIONEXA);
-    call.hWnd = (uint64_t)hWnd;
-    call.hInst = (uint64_t)hInst;
-    call.cmdline = (uint64_t)cmdline;
-    call.show = (uint64_t)show;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hInst = (ULONG_PTR)hInst;
+    call.cmdline = (ULONG_PTR)cmdline;
+    call.show = (ULONG_PTR)show;
 
     qemu_syscall(&call.super);
 
@@ -263,10 +263,10 @@ WINBASEAPI HRESULT WINAPI LaunchINFSectionExW(HWND hWnd, HINSTANCE hInst, LPWSTR
 {
     struct qemu_LaunchINFSectionExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LAUNCHINFSECTIONEXW);
-    call.hWnd = (uint64_t)hWnd;
-    call.hInst = (uint64_t)hInst;
-    call.cmdline = (uint64_t)cmdline;
-    call.show = (uint64_t)show;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hInst = (ULONG_PTR)hInst;
+    call.cmdline = (ULONG_PTR)cmdline;
+    call.show = (ULONG_PTR)show;
 
     qemu_syscall(&call.super);
 
@@ -303,14 +303,14 @@ WINBASEAPI HRESULT WINAPI RunSetupCommandA(HWND hWnd, LPCSTR szCmdName, LPCSTR s
 {
     struct qemu_RunSetupCommandA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RUNSETUPCOMMANDA);
-    call.hWnd = (uint64_t)hWnd;
-    call.szCmdName = (uint64_t)szCmdName;
-    call.szInfSection = (uint64_t)szInfSection;
-    call.szDir = (uint64_t)szDir;
-    call.lpszTitle = (uint64_t)lpszTitle;
-    call.phEXE = (uint64_t)phEXE;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pvReserved = (uint64_t)pvReserved;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.szCmdName = (ULONG_PTR)szCmdName;
+    call.szInfSection = (ULONG_PTR)szInfSection;
+    call.szDir = (ULONG_PTR)szDir;
+    call.lpszTitle = (ULONG_PTR)lpszTitle;
+    call.phEXE = (ULONG_PTR)phEXE;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pvReserved = (ULONG_PTR)pvReserved;
 
     qemu_syscall(&call.super);
 
@@ -347,14 +347,14 @@ WINBASEAPI HRESULT WINAPI RunSetupCommandW(HWND hWnd, LPCWSTR szCmdName, LPCWSTR
 {
     struct qemu_RunSetupCommandW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RUNSETUPCOMMANDW);
-    call.hWnd = (uint64_t)hWnd;
-    call.szCmdName = (uint64_t)szCmdName;
-    call.szInfSection = (uint64_t)szInfSection;
-    call.szDir = (uint64_t)szDir;
-    call.lpszTitle = (uint64_t)lpszTitle;
-    call.phEXE = (uint64_t)phEXE;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pvReserved = (uint64_t)pvReserved;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.szCmdName = (ULONG_PTR)szCmdName;
+    call.szInfSection = (ULONG_PTR)szInfSection;
+    call.szDir = (ULONG_PTR)szDir;
+    call.lpszTitle = (ULONG_PTR)lpszTitle;
+    call.phEXE = (ULONG_PTR)phEXE;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pvReserved = (ULONG_PTR)pvReserved;
 
     qemu_syscall(&call.super);
 

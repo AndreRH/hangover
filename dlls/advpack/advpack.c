@@ -52,7 +52,7 @@ WINBASEAPI HRESULT WINAPI CloseINFEngine(HINF hInf)
 {
     struct qemu_CloseINFEngine call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CLOSEINFENGINE);
-    call.hInf = (uint64_t)hInf;
+    call.hInf = (ULONG_PTR)hInf;
 
     qemu_syscall(&call.super);
 
@@ -83,8 +83,8 @@ WINBASEAPI BOOL WINAPI IsNTAdmin(DWORD reserved, LPDWORD pReserved)
 {
     struct qemu_IsNTAdmin call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISNTADMIN);
-    call.reserved = (uint64_t)reserved;
-    call.pReserved = (uint64_t)pReserved;
+    call.reserved = (ULONG_PTR)reserved;
+    call.pReserved = (ULONG_PTR)pReserved;
 
     qemu_syscall(&call.super);
 
@@ -142,7 +142,7 @@ WINBASEAPI BOOL WINAPI NeedReboot(DWORD dwRebootCheck)
 {
     struct qemu_NeedReboot call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NEEDREBOOT);
-    call.dwRebootCheck = (uint64_t)dwRebootCheck;
+    call.dwRebootCheck = (ULONG_PTR)dwRebootCheck;
 
     qemu_syscall(&call.super);
 
@@ -176,11 +176,11 @@ WINBASEAPI HRESULT WINAPI OpenINFEngineA(LPCSTR pszInfFilename, LPCSTR pszInstal
 {
     struct qemu_OpenINFEngineA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENINFENGINEA);
-    call.pszInfFilename = (uint64_t)pszInfFilename;
-    call.pszInstallSection = (uint64_t)pszInstallSection;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.phInf = (uint64_t)phInf;
-    call.pvReserved = (uint64_t)pvReserved;
+    call.pszInfFilename = (ULONG_PTR)pszInfFilename;
+    call.pszInstallSection = (ULONG_PTR)pszInstallSection;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.phInf = (ULONG_PTR)phInf;
+    call.pvReserved = (ULONG_PTR)pvReserved;
 
     qemu_syscall(&call.super);
 
@@ -214,11 +214,11 @@ WINBASEAPI HRESULT WINAPI OpenINFEngineW(LPCWSTR pszInfFilename, LPCWSTR pszInst
 {
     struct qemu_OpenINFEngineW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENINFENGINEW);
-    call.pszInfFilename = (uint64_t)pszInfFilename;
-    call.pszInstallSection = (uint64_t)pszInstallSection;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.phInf = (uint64_t)phInf;
-    call.pvReserved = (uint64_t)pvReserved;
+    call.pszInfFilename = (ULONG_PTR)pszInfFilename;
+    call.pszInstallSection = (ULONG_PTR)pszInstallSection;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.phInf = (ULONG_PTR)phInf;
+    call.pvReserved = (ULONG_PTR)pvReserved;
 
     qemu_syscall(&call.super);
 
@@ -251,10 +251,10 @@ WINBASEAPI HRESULT WINAPI RebootCheckOnInstallA(HWND hWnd, LPCSTR pszINF, LPCSTR
 {
     struct qemu_RebootCheckOnInstallA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REBOOTCHECKONINSTALLA);
-    call.hWnd = (uint64_t)hWnd;
-    call.pszINF = (uint64_t)pszINF;
-    call.pszSec = (uint64_t)pszSec;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.pszINF = (ULONG_PTR)pszINF;
+    call.pszSec = (ULONG_PTR)pszSec;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -287,10 +287,10 @@ WINBASEAPI HRESULT WINAPI RebootCheckOnInstallW(HWND hWnd, LPCWSTR pszINF, LPCWS
 {
     struct qemu_RebootCheckOnInstallW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REBOOTCHECKONINSTALLW);
-    call.hWnd = (uint64_t)hWnd;
-    call.pszINF = (uint64_t)pszINF;
-    call.pszSec = (uint64_t)pszSec;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.pszINF = (ULONG_PTR)pszINF;
+    call.pszSec = (ULONG_PTR)pszSec;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -323,10 +323,10 @@ WINBASEAPI HRESULT WINAPI RegisterOCX(HWND hWnd, HINSTANCE hInst, LPCSTR cmdline
 {
     struct qemu_RegisterOCX call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTEROCX);
-    call.hWnd = (uint64_t)hWnd;
-    call.hInst = (uint64_t)hInst;
-    call.cmdline = (uint64_t)cmdline;
-    call.show = (uint64_t)show;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hInst = (ULONG_PTR)hInst;
+    call.cmdline = (ULONG_PTR)cmdline;
+    call.show = (ULONG_PTR)show;
 
     qemu_syscall(&call.super);
 
@@ -358,7 +358,7 @@ WINBASEAPI HRESULT WINAPI SetPerUserSecValuesA(PERUSERSECTIONA* pPerUser)
 {
     struct qemu_SetPerUserSecValuesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPERUSERSECVALUESA);
-    call.pPerUser = (uint64_t)pPerUser;
+    call.pPerUser = (ULONG_PTR)pPerUser;
 
     qemu_syscall(&call.super);
 
@@ -388,7 +388,7 @@ WINBASEAPI HRESULT WINAPI SetPerUserSecValuesW(PERUSERSECTIONW* pPerUser)
 {
     struct qemu_SetPerUserSecValuesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPERUSERSECVALUESW);
-    call.pPerUser = (uint64_t)pPerUser;
+    call.pPerUser = (ULONG_PTR)pPerUser;
 
     qemu_syscall(&call.super);
 
@@ -425,14 +425,14 @@ WINBASEAPI HRESULT WINAPI TranslateInfStringA(LPCSTR pszInfFilename, LPCSTR pszI
 {
     struct qemu_TranslateInfStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRANSLATEINFSTRINGA);
-    call.pszInfFilename = (uint64_t)pszInfFilename;
-    call.pszInstallSection = (uint64_t)pszInstallSection;
-    call.pszTranslateSection = (uint64_t)pszTranslateSection;
-    call.pszTranslateKey = (uint64_t)pszTranslateKey;
-    call.pszBuffer = (uint64_t)pszBuffer;
-    call.dwBufferSize = (uint64_t)dwBufferSize;
-    call.pdwRequiredSize = (uint64_t)pdwRequiredSize;
-    call.pvReserved = (uint64_t)pvReserved;
+    call.pszInfFilename = (ULONG_PTR)pszInfFilename;
+    call.pszInstallSection = (ULONG_PTR)pszInstallSection;
+    call.pszTranslateSection = (ULONG_PTR)pszTranslateSection;
+    call.pszTranslateKey = (ULONG_PTR)pszTranslateKey;
+    call.pszBuffer = (ULONG_PTR)pszBuffer;
+    call.dwBufferSize = (ULONG_PTR)dwBufferSize;
+    call.pdwRequiredSize = (ULONG_PTR)pdwRequiredSize;
+    call.pvReserved = (ULONG_PTR)pvReserved;
 
     qemu_syscall(&call.super);
 
@@ -469,14 +469,14 @@ WINBASEAPI HRESULT WINAPI TranslateInfStringW(LPCWSTR pszInfFilename, LPCWSTR ps
 {
     struct qemu_TranslateInfStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRANSLATEINFSTRINGW);
-    call.pszInfFilename = (uint64_t)pszInfFilename;
-    call.pszInstallSection = (uint64_t)pszInstallSection;
-    call.pszTranslateSection = (uint64_t)pszTranslateSection;
-    call.pszTranslateKey = (uint64_t)pszTranslateKey;
-    call.pszBuffer = (uint64_t)pszBuffer;
-    call.dwBufferSize = (uint64_t)dwBufferSize;
-    call.pdwRequiredSize = (uint64_t)pdwRequiredSize;
-    call.pvReserved = (uint64_t)pvReserved;
+    call.pszInfFilename = (ULONG_PTR)pszInfFilename;
+    call.pszInstallSection = (ULONG_PTR)pszInstallSection;
+    call.pszTranslateSection = (ULONG_PTR)pszTranslateSection;
+    call.pszTranslateKey = (ULONG_PTR)pszTranslateKey;
+    call.pszBuffer = (ULONG_PTR)pszBuffer;
+    call.dwBufferSize = (ULONG_PTR)dwBufferSize;
+    call.pdwRequiredSize = (ULONG_PTR)pdwRequiredSize;
+    call.pvReserved = (ULONG_PTR)pvReserved;
 
     qemu_syscall(&call.super);
 
@@ -513,14 +513,14 @@ WINBASEAPI HRESULT WINAPI TranslateInfStringExA(HINF hInf, LPCSTR pszInfFilename
 {
     struct qemu_TranslateInfStringExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRANSLATEINFSTRINGEXA);
-    call.hInf = (uint64_t)hInf;
-    call.pszInfFilename = (uint64_t)pszInfFilename;
-    call.pszTranslateSection = (uint64_t)pszTranslateSection;
-    call.pszTranslateKey = (uint64_t)pszTranslateKey;
-    call.pszBuffer = (uint64_t)pszBuffer;
-    call.dwBufferSize = (uint64_t)dwBufferSize;
-    call.pdwRequiredSize = (uint64_t)pdwRequiredSize;
-    call.pvReserved = (uint64_t)pvReserved;
+    call.hInf = (ULONG_PTR)hInf;
+    call.pszInfFilename = (ULONG_PTR)pszInfFilename;
+    call.pszTranslateSection = (ULONG_PTR)pszTranslateSection;
+    call.pszTranslateKey = (ULONG_PTR)pszTranslateKey;
+    call.pszBuffer = (ULONG_PTR)pszBuffer;
+    call.dwBufferSize = (ULONG_PTR)dwBufferSize;
+    call.pdwRequiredSize = (ULONG_PTR)pdwRequiredSize;
+    call.pvReserved = (ULONG_PTR)pvReserved;
 
     qemu_syscall(&call.super);
 
@@ -557,14 +557,14 @@ WINBASEAPI HRESULT WINAPI TranslateInfStringExW(HINF hInf, LPCWSTR pszInfFilenam
 {
     struct qemu_TranslateInfStringExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRANSLATEINFSTRINGEXW);
-    call.hInf = (uint64_t)hInf;
-    call.pszInfFilename = (uint64_t)pszInfFilename;
-    call.pszTranslateSection = (uint64_t)pszTranslateSection;
-    call.pszTranslateKey = (uint64_t)pszTranslateKey;
-    call.pszBuffer = (uint64_t)pszBuffer;
-    call.dwBufferSize = (uint64_t)dwBufferSize;
-    call.pdwRequiredSize = (uint64_t)pdwRequiredSize;
-    call.pvReserved = (uint64_t)pvReserved;
+    call.hInf = (ULONG_PTR)hInf;
+    call.pszInfFilename = (ULONG_PTR)pszInfFilename;
+    call.pszTranslateSection = (ULONG_PTR)pszTranslateSection;
+    call.pszTranslateKey = (ULONG_PTR)pszTranslateKey;
+    call.pszBuffer = (ULONG_PTR)pszBuffer;
+    call.dwBufferSize = (ULONG_PTR)dwBufferSize;
+    call.pdwRequiredSize = (ULONG_PTR)pdwRequiredSize;
+    call.pvReserved = (ULONG_PTR)pvReserved;
 
     qemu_syscall(&call.super);
 
@@ -597,10 +597,10 @@ WINBASEAPI HRESULT WINAPI UserInstStubWrapperA(HWND hWnd, HINSTANCE hInstance, L
 {
     struct qemu_UserInstStubWrapperA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_USERINSTSTUBWRAPPERA);
-    call.hWnd = (uint64_t)hWnd;
-    call.hInstance = (uint64_t)hInstance;
-    call.pszParms = (uint64_t)pszParms;
-    call.nShow = (uint64_t)nShow;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hInstance = (ULONG_PTR)hInstance;
+    call.pszParms = (ULONG_PTR)pszParms;
+    call.nShow = (ULONG_PTR)nShow;
 
     qemu_syscall(&call.super);
 
@@ -633,10 +633,10 @@ WINBASEAPI HRESULT WINAPI UserInstStubWrapperW(HWND hWnd, HINSTANCE hInstance, L
 {
     struct qemu_UserInstStubWrapperW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_USERINSTSTUBWRAPPERW);
-    call.hWnd = (uint64_t)hWnd;
-    call.hInstance = (uint64_t)hInstance;
-    call.pszParms = (uint64_t)pszParms;
-    call.nShow = (uint64_t)nShow;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hInstance = (ULONG_PTR)hInstance;
+    call.pszParms = (ULONG_PTR)pszParms;
+    call.nShow = (ULONG_PTR)nShow;
 
     qemu_syscall(&call.super);
 
@@ -669,10 +669,10 @@ WINBASEAPI HRESULT WINAPI UserUnInstStubWrapperA(HWND hWnd, HINSTANCE hInstance,
 {
     struct qemu_UserUnInstStubWrapperA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_USERUNINSTSTUBWRAPPERA);
-    call.hWnd = (uint64_t)hWnd;
-    call.hInstance = (uint64_t)hInstance;
-    call.pszParms = (uint64_t)pszParms;
-    call.nShow = (uint64_t)nShow;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hInstance = (ULONG_PTR)hInstance;
+    call.pszParms = (ULONG_PTR)pszParms;
+    call.nShow = (ULONG_PTR)nShow;
 
     qemu_syscall(&call.super);
 
@@ -705,10 +705,10 @@ WINBASEAPI HRESULT WINAPI UserUnInstStubWrapperW(HWND hWnd, HINSTANCE hInstance,
 {
     struct qemu_UserUnInstStubWrapperW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_USERUNINSTSTUBWRAPPERW);
-    call.hWnd = (uint64_t)hWnd;
-    call.hInstance = (uint64_t)hInstance;
-    call.pszParms = (uint64_t)pszParms;
-    call.nShow = (uint64_t)nShow;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hInstance = (ULONG_PTR)hInstance;
+    call.pszParms = (ULONG_PTR)pszParms;
+    call.nShow = (ULONG_PTR)nShow;
 
     qemu_syscall(&call.super);
 

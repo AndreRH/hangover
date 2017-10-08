@@ -47,9 +47,9 @@ WINBASEAPI HRESULT WINAPI RegInstallA(HMODULE hm, LPCSTR pszSection, const STRTA
 {
     struct qemu_RegInstallA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGINSTALLA);
-    call.hm = (uint64_t)hm;
-    call.pszSection = (uint64_t)pszSection;
-    call.pstTable = (uint64_t)pstTable;
+    call.hm = (ULONG_PTR)hm;
+    call.pszSection = (ULONG_PTR)pszSection;
+    call.pstTable = (ULONG_PTR)pstTable;
 
     qemu_syscall(&call.super);
 
@@ -81,9 +81,9 @@ WINBASEAPI HRESULT WINAPI RegInstallW(HMODULE hm, LPCWSTR pszSection, const STRT
 {
     struct qemu_RegInstallW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGINSTALLW);
-    call.hm = (uint64_t)hm;
-    call.pszSection = (uint64_t)pszSection;
-    call.pstTable = (uint64_t)pstTable;
+    call.hm = (ULONG_PTR)hm;
+    call.pszSection = (ULONG_PTR)pszSection;
+    call.pstTable = (ULONG_PTR)pstTable;
 
     qemu_syscall(&call.super);
 
@@ -115,9 +115,9 @@ WINBASEAPI HRESULT WINAPI RegRestoreAllA(HWND hWnd, LPSTR pszTitleString, HKEY h
 {
     struct qemu_RegRestoreAllA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGRESTOREALLA);
-    call.hWnd = (uint64_t)hWnd;
-    call.pszTitleString = (uint64_t)pszTitleString;
-    call.hkBackupKey = (uint64_t)hkBackupKey;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.pszTitleString = (ULONG_PTR)pszTitleString;
+    call.hkBackupKey = (ULONG_PTR)hkBackupKey;
 
     qemu_syscall(&call.super);
 
@@ -149,9 +149,9 @@ WINBASEAPI HRESULT WINAPI RegRestoreAllW(HWND hWnd, LPWSTR pszTitleString, HKEY 
 {
     struct qemu_RegRestoreAllW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGRESTOREALLW);
-    call.hWnd = (uint64_t)hWnd;
-    call.pszTitleString = (uint64_t)pszTitleString;
-    call.hkBackupKey = (uint64_t)hkBackupKey;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.pszTitleString = (ULONG_PTR)pszTitleString;
+    call.hkBackupKey = (ULONG_PTR)hkBackupKey;
 
     qemu_syscall(&call.super);
 
@@ -187,13 +187,13 @@ WINBASEAPI HRESULT WINAPI RegSaveRestoreA(HWND hWnd, LPCSTR pszTitleString, HKEY
 {
     struct qemu_RegSaveRestoreA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSAVERESTOREA);
-    call.hWnd = (uint64_t)hWnd;
-    call.pszTitleString = (uint64_t)pszTitleString;
-    call.hkBackupKey = (uint64_t)hkBackupKey;
-    call.pcszRootKey = (uint64_t)pcszRootKey;
-    call.pcszSubKey = (uint64_t)pcszSubKey;
-    call.pcszValueName = (uint64_t)pcszValueName;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.pszTitleString = (ULONG_PTR)pszTitleString;
+    call.hkBackupKey = (ULONG_PTR)hkBackupKey;
+    call.pcszRootKey = (ULONG_PTR)pcszRootKey;
+    call.pcszSubKey = (ULONG_PTR)pcszSubKey;
+    call.pcszValueName = (ULONG_PTR)pcszValueName;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -229,13 +229,13 @@ WINBASEAPI HRESULT WINAPI RegSaveRestoreW(HWND hWnd, LPCWSTR pszTitleString, HKE
 {
     struct qemu_RegSaveRestoreW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSAVERESTOREW);
-    call.hWnd = (uint64_t)hWnd;
-    call.pszTitleString = (uint64_t)pszTitleString;
-    call.hkBackupKey = (uint64_t)hkBackupKey;
-    call.pcszRootKey = (uint64_t)pcszRootKey;
-    call.pcszSubKey = (uint64_t)pcszSubKey;
-    call.pcszValueName = (uint64_t)pcszValueName;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.pszTitleString = (ULONG_PTR)pszTitleString;
+    call.hkBackupKey = (ULONG_PTR)hkBackupKey;
+    call.pcszRootKey = (ULONG_PTR)pcszRootKey;
+    call.pcszSubKey = (ULONG_PTR)pcszSubKey;
+    call.pcszValueName = (ULONG_PTR)pcszValueName;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -271,13 +271,13 @@ WINBASEAPI HRESULT WINAPI RegSaveRestoreOnINFA(HWND hWnd, LPCSTR pszTitle, LPCST
 {
     struct qemu_RegSaveRestoreOnINFA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSAVERESTOREONINFA);
-    call.hWnd = (uint64_t)hWnd;
-    call.pszTitle = (uint64_t)pszTitle;
-    call.pszINF = (uint64_t)pszINF;
-    call.pszSection = (uint64_t)pszSection;
-    call.hHKLMBackKey = (uint64_t)hHKLMBackKey;
-    call.hHKCUBackKey = (uint64_t)hHKCUBackKey;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.pszTitle = (ULONG_PTR)pszTitle;
+    call.pszINF = (ULONG_PTR)pszINF;
+    call.pszSection = (ULONG_PTR)pszSection;
+    call.hHKLMBackKey = (ULONG_PTR)hHKLMBackKey;
+    call.hHKCUBackKey = (ULONG_PTR)hHKCUBackKey;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -313,13 +313,13 @@ WINBASEAPI HRESULT WINAPI RegSaveRestoreOnINFW(HWND hWnd, LPCWSTR pszTitle, LPCW
 {
     struct qemu_RegSaveRestoreOnINFW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSAVERESTOREONINFW);
-    call.hWnd = (uint64_t)hWnd;
-    call.pszTitle = (uint64_t)pszTitle;
-    call.pszINF = (uint64_t)pszINF;
-    call.pszSection = (uint64_t)pszSection;
-    call.hHKLMBackKey = (uint64_t)hHKLMBackKey;
-    call.hHKCUBackKey = (uint64_t)hHKCUBackKey;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.pszTitle = (ULONG_PTR)pszTitle;
+    call.pszINF = (ULONG_PTR)pszINF;
+    call.pszSection = (ULONG_PTR)pszSection;
+    call.hHKLMBackKey = (ULONG_PTR)hHKLMBackKey;
+    call.hHKCUBackKey = (ULONG_PTR)hHKCUBackKey;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 

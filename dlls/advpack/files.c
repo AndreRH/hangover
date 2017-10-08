@@ -48,10 +48,10 @@ WINBASEAPI HRESULT WINAPI AddDelBackupEntryA(LPCSTR lpcszFileList, LPCSTR lpcszB
 {
     struct qemu_AddDelBackupEntryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDDELBACKUPENTRYA);
-    call.lpcszFileList = (uint64_t)lpcszFileList;
-    call.lpcszBackupDir = (uint64_t)lpcszBackupDir;
-    call.lpcszBaseName = (uint64_t)lpcszBaseName;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.lpcszFileList = (ULONG_PTR)lpcszFileList;
+    call.lpcszBackupDir = (ULONG_PTR)lpcszBackupDir;
+    call.lpcszBaseName = (ULONG_PTR)lpcszBaseName;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -84,10 +84,10 @@ WINBASEAPI HRESULT WINAPI AddDelBackupEntryW(LPCWSTR lpcszFileList, LPCWSTR lpcs
 {
     struct qemu_AddDelBackupEntryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDDELBACKUPENTRYW);
-    call.lpcszFileList = (uint64_t)lpcszFileList;
-    call.lpcszBackupDir = (uint64_t)lpcszBackupDir;
-    call.lpcszBaseName = (uint64_t)lpcszBaseName;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.lpcszFileList = (ULONG_PTR)lpcszFileList;
+    call.lpcszBackupDir = (ULONG_PTR)lpcszBackupDir;
+    call.lpcszBaseName = (ULONG_PTR)lpcszBaseName;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -123,13 +123,13 @@ WINBASEAPI HRESULT WINAPI AdvInstallFileA(HWND hwnd, LPCSTR lpszSourceDir, LPCST
 {
     struct qemu_AdvInstallFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADVINSTALLFILEA);
-    call.hwnd = (uint64_t)hwnd;
-    call.lpszSourceDir = (uint64_t)lpszSourceDir;
-    call.lpszSourceFile = (uint64_t)lpszSourceFile;
-    call.lpszDestDir = (uint64_t)lpszDestDir;
-    call.lpszDestFile = (uint64_t)lpszDestFile;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.lpszSourceDir = (ULONG_PTR)lpszSourceDir;
+    call.lpszSourceFile = (ULONG_PTR)lpszSourceFile;
+    call.lpszDestDir = (ULONG_PTR)lpszDestDir;
+    call.lpszDestFile = (ULONG_PTR)lpszDestFile;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -165,13 +165,13 @@ WINBASEAPI HRESULT WINAPI AdvInstallFileW(HWND hwnd, LPCWSTR lpszSourceDir, LPCW
 {
     struct qemu_AdvInstallFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADVINSTALLFILEW);
-    call.hwnd = (uint64_t)hwnd;
-    call.lpszSourceDir = (uint64_t)lpszSourceDir;
-    call.lpszSourceFile = (uint64_t)lpszSourceFile;
-    call.lpszDestDir = (uint64_t)lpszDestDir;
-    call.lpszDestFile = (uint64_t)lpszDestFile;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.lpszSourceDir = (ULONG_PTR)lpszSourceDir;
+    call.lpszSourceFile = (ULONG_PTR)lpszSourceFile;
+    call.lpszDestDir = (ULONG_PTR)lpszDestDir;
+    call.lpszDestFile = (ULONG_PTR)lpszDestFile;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -202,8 +202,8 @@ WINBASEAPI HRESULT WINAPI DelNodeA(LPCSTR pszFileOrDirName, DWORD dwFlags)
 {
     struct qemu_DelNodeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELNODEA);
-    call.pszFileOrDirName = (uint64_t)pszFileOrDirName;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.pszFileOrDirName = (ULONG_PTR)pszFileOrDirName;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -234,8 +234,8 @@ WINBASEAPI HRESULT WINAPI DelNodeW(LPCWSTR pszFileOrDirName, DWORD dwFlags)
 {
     struct qemu_DelNodeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELNODEW);
-    call.pszFileOrDirName = (uint64_t)pszFileOrDirName;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.pszFileOrDirName = (ULONG_PTR)pszFileOrDirName;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -268,10 +268,10 @@ WINBASEAPI HRESULT WINAPI DelNodeRunDLL32A(HWND hWnd, HINSTANCE hInst, LPSTR cmd
 {
     struct qemu_DelNodeRunDLL32A call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELNODERUNDLL32A);
-    call.hWnd = (uint64_t)hWnd;
-    call.hInst = (uint64_t)hInst;
-    call.cmdline = (uint64_t)cmdline;
-    call.show = (uint64_t)show;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hInst = (ULONG_PTR)hInst;
+    call.cmdline = (ULONG_PTR)cmdline;
+    call.show = (ULONG_PTR)show;
 
     qemu_syscall(&call.super);
 
@@ -304,10 +304,10 @@ WINBASEAPI HRESULT WINAPI DelNodeRunDLL32W(HWND hWnd, HINSTANCE hInst, LPWSTR cm
 {
     struct qemu_DelNodeRunDLL32W call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELNODERUNDLL32W);
-    call.hWnd = (uint64_t)hWnd;
-    call.hInst = (uint64_t)hInst;
-    call.cmdline = (uint64_t)cmdline;
-    call.show = (uint64_t)show;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hInst = (ULONG_PTR)hInst;
+    call.cmdline = (ULONG_PTR)cmdline;
+    call.show = (ULONG_PTR)show;
 
     qemu_syscall(&call.super);
 
@@ -342,12 +342,12 @@ WINBASEAPI HRESULT WINAPI ExtractFilesA(LPCSTR CabName, LPCSTR ExpandDir, DWORD 
 {
     struct qemu_ExtractFilesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXTRACTFILESA);
-    call.CabName = (uint64_t)CabName;
-    call.ExpandDir = (uint64_t)ExpandDir;
-    call.Flags = (uint64_t)Flags;
-    call.FileList = (uint64_t)FileList;
-    call.LReserved = (uint64_t)LReserved;
-    call.Reserved = (uint64_t)Reserved;
+    call.CabName = (ULONG_PTR)CabName;
+    call.ExpandDir = (ULONG_PTR)ExpandDir;
+    call.Flags = (ULONG_PTR)Flags;
+    call.FileList = (ULONG_PTR)FileList;
+    call.LReserved = (ULONG_PTR)LReserved;
+    call.Reserved = (ULONG_PTR)Reserved;
 
     qemu_syscall(&call.super);
 
@@ -382,12 +382,12 @@ WINBASEAPI HRESULT WINAPI ExtractFilesW(LPCWSTR CabName, LPCWSTR ExpandDir, DWOR
 {
     struct qemu_ExtractFilesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXTRACTFILESW);
-    call.CabName = (uint64_t)CabName;
-    call.ExpandDir = (uint64_t)ExpandDir;
-    call.Flags = (uint64_t)Flags;
-    call.FileList = (uint64_t)FileList;
-    call.LReserved = (uint64_t)LReserved;
-    call.Reserved = (uint64_t)Reserved;
+    call.CabName = (ULONG_PTR)CabName;
+    call.ExpandDir = (ULONG_PTR)ExpandDir;
+    call.Flags = (ULONG_PTR)Flags;
+    call.FileList = (ULONG_PTR)FileList;
+    call.LReserved = (ULONG_PTR)LReserved;
+    call.Reserved = (ULONG_PTR)Reserved;
 
     qemu_syscall(&call.super);
 
@@ -419,9 +419,9 @@ WINBASEAPI HRESULT WINAPI FileSaveMarkNotExistA(LPSTR pszFileList, LPSTR pszDir,
 {
     struct qemu_FileSaveMarkNotExistA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILESAVEMARKNOTEXISTA);
-    call.pszFileList = (uint64_t)pszFileList;
-    call.pszDir = (uint64_t)pszDir;
-    call.pszBaseName = (uint64_t)pszBaseName;
+    call.pszFileList = (ULONG_PTR)pszFileList;
+    call.pszDir = (ULONG_PTR)pszDir;
+    call.pszBaseName = (ULONG_PTR)pszBaseName;
 
     qemu_syscall(&call.super);
 
@@ -453,9 +453,9 @@ WINBASEAPI HRESULT WINAPI FileSaveMarkNotExistW(LPWSTR pszFileList, LPWSTR pszDi
 {
     struct qemu_FileSaveMarkNotExistW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILESAVEMARKNOTEXISTW);
-    call.pszFileList = (uint64_t)pszFileList;
-    call.pszDir = (uint64_t)pszDir;
-    call.pszBaseName = (uint64_t)pszBaseName;
+    call.pszFileList = (ULONG_PTR)pszFileList;
+    call.pszDir = (ULONG_PTR)pszDir;
+    call.pszBaseName = (ULONG_PTR)pszBaseName;
 
     qemu_syscall(&call.super);
 
@@ -489,11 +489,11 @@ WINBASEAPI HRESULT WINAPI FileSaveRestoreA(HWND hDlg, LPSTR pszFileList, LPSTR p
 {
     struct qemu_FileSaveRestoreA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILESAVERESTOREA);
-    call.hDlg = (uint64_t)hDlg;
-    call.pszFileList = (uint64_t)pszFileList;
-    call.pszDir = (uint64_t)pszDir;
-    call.pszBaseName = (uint64_t)pszBaseName;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hDlg = (ULONG_PTR)hDlg;
+    call.pszFileList = (ULONG_PTR)pszFileList;
+    call.pszDir = (ULONG_PTR)pszDir;
+    call.pszBaseName = (ULONG_PTR)pszBaseName;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -527,11 +527,11 @@ WINBASEAPI HRESULT WINAPI FileSaveRestoreW(HWND hDlg, LPWSTR pszFileList, LPWSTR
 {
     struct qemu_FileSaveRestoreW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILESAVERESTOREW);
-    call.hDlg = (uint64_t)hDlg;
-    call.pszFileList = (uint64_t)pszFileList;
-    call.pszDir = (uint64_t)pszDir;
-    call.pszBaseName = (uint64_t)pszBaseName;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hDlg = (ULONG_PTR)hDlg;
+    call.pszFileList = (ULONG_PTR)pszFileList;
+    call.pszDir = (ULONG_PTR)pszDir;
+    call.pszBaseName = (ULONG_PTR)pszBaseName;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -567,13 +567,13 @@ WINBASEAPI HRESULT WINAPI FileSaveRestoreOnINFA(HWND hWnd, LPCSTR pszTitle, LPCS
 {
     struct qemu_FileSaveRestoreOnINFA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILESAVERESTOREONINFA);
-    call.hWnd = (uint64_t)hWnd;
-    call.pszTitle = (uint64_t)pszTitle;
-    call.pszINF = (uint64_t)pszINF;
-    call.pszSection = (uint64_t)pszSection;
-    call.pszBackupDir = (uint64_t)pszBackupDir;
-    call.pszBaseBackupFile = (uint64_t)pszBaseBackupFile;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.pszTitle = (ULONG_PTR)pszTitle;
+    call.pszINF = (ULONG_PTR)pszINF;
+    call.pszSection = (ULONG_PTR)pszSection;
+    call.pszBackupDir = (ULONG_PTR)pszBackupDir;
+    call.pszBaseBackupFile = (ULONG_PTR)pszBaseBackupFile;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -609,13 +609,13 @@ WINBASEAPI HRESULT WINAPI FileSaveRestoreOnINFW(HWND hWnd, LPCWSTR pszTitle, LPC
 {
     struct qemu_FileSaveRestoreOnINFW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILESAVERESTOREONINFW);
-    call.hWnd = (uint64_t)hWnd;
-    call.pszTitle = (uint64_t)pszTitle;
-    call.pszINF = (uint64_t)pszINF;
-    call.pszSection = (uint64_t)pszSection;
-    call.pszBackupDir = (uint64_t)pszBackupDir;
-    call.pszBaseBackupFile = (uint64_t)pszBaseBackupFile;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.pszTitle = (ULONG_PTR)pszTitle;
+    call.pszINF = (ULONG_PTR)pszINF;
+    call.pszSection = (ULONG_PTR)pszSection;
+    call.pszBackupDir = (ULONG_PTR)pszBackupDir;
+    call.pszBaseBackupFile = (ULONG_PTR)pszBaseBackupFile;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -648,10 +648,10 @@ WINBASEAPI HRESULT WINAPI GetVersionFromFileA(LPCSTR Filename, LPDWORD MajorVer,
 {
     struct qemu_GetVersionFromFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETVERSIONFROMFILEA);
-    call.Filename = (uint64_t)Filename;
-    call.MajorVer = (uint64_t)MajorVer;
-    call.MinorVer = (uint64_t)MinorVer;
-    call.Version = (uint64_t)Version;
+    call.Filename = (ULONG_PTR)Filename;
+    call.MajorVer = (ULONG_PTR)MajorVer;
+    call.MinorVer = (ULONG_PTR)MinorVer;
+    call.Version = (ULONG_PTR)Version;
 
     qemu_syscall(&call.super);
 
@@ -684,10 +684,10 @@ WINBASEAPI HRESULT WINAPI GetVersionFromFileW(LPCWSTR Filename, LPDWORD MajorVer
 {
     struct qemu_GetVersionFromFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETVERSIONFROMFILEW);
-    call.Filename = (uint64_t)Filename;
-    call.MajorVer = (uint64_t)MajorVer;
-    call.MinorVer = (uint64_t)MinorVer;
-    call.Version = (uint64_t)Version;
+    call.Filename = (ULONG_PTR)Filename;
+    call.MajorVer = (ULONG_PTR)MajorVer;
+    call.MinorVer = (ULONG_PTR)MinorVer;
+    call.Version = (ULONG_PTR)Version;
 
     qemu_syscall(&call.super);
 
@@ -720,10 +720,10 @@ WINBASEAPI HRESULT WINAPI GetVersionFromFileExA(LPCSTR lpszFilename, LPDWORD pdw
 {
     struct qemu_GetVersionFromFileExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETVERSIONFROMFILEEXA);
-    call.lpszFilename = (uint64_t)lpszFilename;
-    call.pdwMSVer = (uint64_t)pdwMSVer;
-    call.pdwLSVer = (uint64_t)pdwLSVer;
-    call.bVersion = (uint64_t)bVersion;
+    call.lpszFilename = (ULONG_PTR)lpszFilename;
+    call.pdwMSVer = (ULONG_PTR)pdwMSVer;
+    call.pdwLSVer = (ULONG_PTR)pdwLSVer;
+    call.bVersion = (ULONG_PTR)bVersion;
 
     qemu_syscall(&call.super);
 
@@ -756,10 +756,10 @@ WINBASEAPI HRESULT WINAPI GetVersionFromFileExW(LPCWSTR lpszFilename, LPDWORD pd
 {
     struct qemu_GetVersionFromFileExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETVERSIONFROMFILEEXW);
-    call.lpszFilename = (uint64_t)lpszFilename;
-    call.pdwMSVer = (uint64_t)pdwMSVer;
-    call.pdwLSVer = (uint64_t)pdwLSVer;
-    call.bVersion = (uint64_t)bVersion;
+    call.lpszFilename = (ULONG_PTR)lpszFilename;
+    call.pdwMSVer = (ULONG_PTR)pdwMSVer;
+    call.pdwLSVer = (ULONG_PTR)pdwLSVer;
+    call.bVersion = (ULONG_PTR)bVersion;
 
     qemu_syscall(&call.super);
 
