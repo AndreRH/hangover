@@ -133,6 +133,8 @@ EXPORTS
   InitCommonControlsEx
   InitializeFlatSB
   InitMUILanguage
+  IntlStrEqWorkerA
+  IntlStrEqWorkerW
   LBItemFromPt
   LBItemFromPt=ntdll.DbgBreakPoint @14
   LoadIconMetric
@@ -151,4 +153,32 @@ EXPORTS
   SetWindowSubclass
   ShowHideMenuCtl @3
   SmoothScrollWindow
+  Str_GetPtrA
+  Str_GetPtrW
+  Str_SetPtrA
+  Str_SetPtrW
+  StrChrA
+  StrChrIA
+  StrChrIW
+  StrChrW
+  StrCmpNA
+  StrCmpNIA
+  StrCmpNIW
+  StrCmpNW
+  StrCSpnA
+  StrCSpnIA
+  StrCSpnIW
+  StrCSpnW
+  StrRChrA
+  StrRChrIA
+  StrRChrIW
+  StrRChrW
+  StrRStrIA
+  StrRStrIW
+  StrStrA
+  StrStrIA
+  StrStrIW
+  StrStrW
+  StrToIntA
+  StrToIntW
   UninitializeFlatSB

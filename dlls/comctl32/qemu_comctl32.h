@@ -129,6 +129,8 @@ enum comctl32_calls
     CALL_INITCOMMONCONTROLSEX,
     CALL_INITIALIZEFLATSB,
     CALL_INITMUILANGUAGE,
+    CALL_INTLSTREQWORKERA,
+    CALL_INTLSTREQWORKERW,
     CALL_LBITEMFROMPT,
     CALL_LOADICONMETRIC,
     CALL_LOADICONWITHSCALEDOWN,
@@ -145,6 +147,34 @@ enum comctl32_calls
     CALL_SETWINDOWSUBCLASS,
     CALL_SHOWHIDEMENUCTL,
     CALL_SMOOTHSCROLLWINDOW,
+    CALL_STR_GETPTRA,
+    CALL_STR_GETPTRW,
+    CALL_STR_SETPTRA,
+    CALL_STR_SETPTRW,
+    CALL_STRCHRA,
+    CALL_STRCHRIA,
+    CALL_STRCHRIW,
+    CALL_STRCHRW,
+    CALL_STRCMPNA,
+    CALL_STRCMPNIA,
+    CALL_STRCMPNIW,
+    CALL_STRCMPNW,
+    CALL_STRCSPNA,
+    CALL_STRCSPNIA,
+    CALL_STRCSPNIW,
+    CALL_STRCSPNW,
+    CALL_STRRCHRA,
+    CALL_STRRCHRIA,
+    CALL_STRRCHRIW,
+    CALL_STRRCHRW,
+    CALL_STRRSTRIA,
+    CALL_STRRSTRIW,
+    CALL_STRSTRA,
+    CALL_STRSTRIA,
+    CALL_STRSTRIW,
+    CALL_STRSTRW,
+    CALL_STRTOINTA,
+    CALL_STRTOINTW,
     CALL_UNINITIALIZEFLATSB,
 };
 
@@ -276,6 +306,8 @@ void qemu_InitCommonControls(struct qemu_syscall *call);
 void qemu_InitCommonControlsEx(struct qemu_syscall *call);
 void qemu_InitializeFlatSB(struct qemu_syscall *call);
 void qemu_InitMUILanguage(struct qemu_syscall *call);
+void qemu_IntlStrEqWorkerA(struct qemu_syscall *call);
+void qemu_IntlStrEqWorkerW(struct qemu_syscall *call);
 void qemu_LBItemFromPt(struct qemu_syscall *call);
 void qemu_LoadIconMetric(struct qemu_syscall *call);
 void qemu_LoadIconWithScaleDown(struct qemu_syscall *call);
@@ -292,6 +324,34 @@ void qemu_SetPathWordBreakProc(struct qemu_syscall *call);
 void qemu_SetWindowSubclass(struct qemu_syscall *call);
 void qemu_ShowHideMenuCtl(struct qemu_syscall *call);
 void qemu_SmoothScrollWindow(struct qemu_syscall *call);
+void qemu_Str_GetPtrA(struct qemu_syscall *call);
+void qemu_Str_GetPtrW(struct qemu_syscall *call);
+void qemu_Str_SetPtrA(struct qemu_syscall *call);
+void qemu_Str_SetPtrW(struct qemu_syscall *call);
+void qemu_StrChrA(struct qemu_syscall *call);
+void qemu_StrChrIA(struct qemu_syscall *call);
+void qemu_StrChrIW(struct qemu_syscall *call);
+void qemu_StrChrW(struct qemu_syscall *call);
+void qemu_StrCmpNA(struct qemu_syscall *call);
+void qemu_StrCmpNIA(struct qemu_syscall *call);
+void qemu_StrCmpNIW(struct qemu_syscall *call);
+void qemu_StrCmpNW(struct qemu_syscall *call);
+void qemu_StrCSpnA(struct qemu_syscall *call);
+void qemu_StrCSpnIA(struct qemu_syscall *call);
+void qemu_StrCSpnIW(struct qemu_syscall *call);
+void qemu_StrCSpnW(struct qemu_syscall *call);
+void qemu_StrRChrA(struct qemu_syscall *call);
+void qemu_StrRChrIA(struct qemu_syscall *call);
+void qemu_StrRChrIW(struct qemu_syscall *call);
+void qemu_StrRChrW(struct qemu_syscall *call);
+void qemu_StrRStrIA(struct qemu_syscall *call);
+void qemu_StrRStrIW(struct qemu_syscall *call);
+void qemu_StrStrA(struct qemu_syscall *call);
+void qemu_StrStrIA(struct qemu_syscall *call);
+void qemu_StrStrIW(struct qemu_syscall *call);
+void qemu_StrStrW(struct qemu_syscall *call);
+void qemu_StrToIntA(struct qemu_syscall *call);
+void qemu_StrToIntW(struct qemu_syscall *call);
 void qemu_UninitializeFlatSB(struct qemu_syscall *call);
 
 UINT (* WINAPI p_ImageList_SetColorTable)(HIMAGELIST himl, UINT uStartIndex, UINT cEntries, const RGBQUAD *prgb);
