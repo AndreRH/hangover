@@ -24,9 +24,28 @@ EXPORTS
   DestroyPropertySheetPage
   DllGetVersion PRIVATE
   DllInstall PRIVATE
+  DPA_Clone
+  DPA_Create
+  DPA_CreateEx
+  DPA_DeleteAllPtrs
+  DPA_DeletePtr
+  DPA_Destroy
+  DPA_DestroyCallback
+  DPA_EnumCallback
+  DPA_GetPtr
+  DPA_GetPtrIndex
+  DPA_GetSize
+  DPA_Grow
+  DPA_InsertPtr
+  DPA_LoadStream
   DPA_LoadStream=ntdll.DbgBreakPoint @9 NONAME
+  DPA_Merge
   DPA_Merge=ntdll.DbgBreakPoint @11 NONAME
+  DPA_SaveStream
   DPA_SaveStream=ntdll.DbgBreakPoint @10 NONAME
+  DPA_Search
+  DPA_SetPtr
+  DPA_Sort
   DrawInsert=ntdll.DbgBreakPoint @15
   DrawShadowText
   DrawStatusTextA @5

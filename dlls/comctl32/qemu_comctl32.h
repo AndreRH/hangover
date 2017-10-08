@@ -27,6 +27,25 @@ enum comctl32_calls
     CALL_DESTROYPROPERTYSHEETPAGE,
     CALL_DLLGETVERSION,
     CALL_DLLINSTALL,
+    CALL_DPA_CLONE,
+    CALL_DPA_CREATE,
+    CALL_DPA_CREATEEX,
+    CALL_DPA_DELETEALLPTRS,
+    CALL_DPA_DELETEPTR,
+    CALL_DPA_DESTROY,
+    CALL_DPA_DESTROYCALLBACK,
+    CALL_DPA_ENUMCALLBACK,
+    CALL_DPA_GETPTR,
+    CALL_DPA_GETPTRINDEX,
+    CALL_DPA_GETSIZE,
+    CALL_DPA_GROW,
+    CALL_DPA_INSERTPTR,
+    CALL_DPA_LOADSTREAM,
+    CALL_DPA_MERGE,
+    CALL_DPA_SAVESTREAM,
+    CALL_DPA_SEARCH,
+    CALL_DPA_SETPTR,
+    CALL_DPA_SORT,
     CALL_DRAWSHADOWTEXT,
     CALL_DRAWSTATUSTEXTA,
     CALL_DRAWSTATUSTEXTW,
@@ -127,6 +146,25 @@ void qemu_DelMRUString(struct qemu_syscall *call);
 void qemu_DestroyPropertySheetPage(struct qemu_syscall *call);
 void qemu_DllGetVersion(struct qemu_syscall *call);
 void qemu_DllInstall(struct qemu_syscall *call);
+void qemu_DPA_Clone(struct qemu_syscall *call);
+void qemu_DPA_Create(struct qemu_syscall *call);
+void qemu_DPA_CreateEx(struct qemu_syscall *call);
+void qemu_DPA_DeleteAllPtrs(struct qemu_syscall *call);
+void qemu_DPA_DeletePtr(struct qemu_syscall *call);
+void qemu_DPA_Destroy(struct qemu_syscall *call);
+void qemu_DPA_DestroyCallback(struct qemu_syscall *call);
+void qemu_DPA_EnumCallback(struct qemu_syscall *call);
+void qemu_DPA_GetPtr(struct qemu_syscall *call);
+void qemu_DPA_GetPtrIndex(struct qemu_syscall *call);
+void qemu_DPA_GetSize(struct qemu_syscall *call);
+void qemu_DPA_Grow(struct qemu_syscall *call);
+void qemu_DPA_InsertPtr(struct qemu_syscall *call);
+void qemu_DPA_LoadStream(struct qemu_syscall *call);
+void qemu_DPA_Merge(struct qemu_syscall *call);
+void qemu_DPA_SaveStream(struct qemu_syscall *call);
+void qemu_DPA_Search(struct qemu_syscall *call);
+void qemu_DPA_SetPtr(struct qemu_syscall *call);
+void qemu_DPA_Sort(struct qemu_syscall *call);
 void qemu_DrawShadowText(struct qemu_syscall *call);
 void qemu_DrawStatusTextA(struct qemu_syscall *call);
 void qemu_DrawStatusTextW(struct qemu_syscall *call);
