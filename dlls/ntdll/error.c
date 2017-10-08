@@ -75,7 +75,7 @@ WINBASEAPI ULONG WINAPI RtlNtStatusToDosErrorNoTeb(NTSTATUS status)
 {
     struct qemu_RtlNtStatusToDosErrorNoTeb call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLNTSTATUSTODOSERRORNOTEB);
-    call.status = (uint64_t)status;
+    call.status = (ULONG_PTR)status;
 
     qemu_syscall(&call.super);
 
@@ -105,7 +105,7 @@ WINBASEAPI ULONG WINAPI RtlNtStatusToDosError(NTSTATUS status)
 {
     struct qemu_RtlNtStatusToDosError call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLNTSTATUSTODOSERROR);
-    call.status = (uint64_t)status;
+    call.status = (ULONG_PTR)status;
 
     qemu_syscall(&call.super);
 
@@ -196,12 +196,12 @@ WINBASEAPI NTSTATUS WINAPI NtRaiseHardError(NTSTATUS ErrorStatus, ULONG NumberOf
 {
     struct qemu_NtRaiseHardError call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTRAISEHARDERROR);
-    call.ErrorStatus = (uint64_t)ErrorStatus;
-    call.NumberOfParameters = (uint64_t)NumberOfParameters;
-    call.UnicodeStringParameterMask = (uint64_t)UnicodeStringParameterMask;
-    call.Parameters = (uint64_t)Parameters;
-    call.ResponseOption = (uint64_t)ResponseOption;
-    call.Response = (uint64_t)Response;
+    call.ErrorStatus = (ULONG_PTR)ErrorStatus;
+    call.NumberOfParameters = (ULONG_PTR)NumberOfParameters;
+    call.UnicodeStringParameterMask = (ULONG_PTR)UnicodeStringParameterMask;
+    call.Parameters = (ULONG_PTR)Parameters;
+    call.ResponseOption = (ULONG_PTR)ResponseOption;
+    call.Response = (ULONG_PTR)Response;
 
     qemu_syscall(&call.super);
 
@@ -231,7 +231,7 @@ WINBASEAPI void WINAPI RtlSetLastWin32Error(DWORD err)
 {
     struct qemu_RtlSetLastWin32Error call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLSETLASTWIN32ERROR);
-    call.err = (uint64_t)err;
+    call.err = (ULONG_PTR)err;
 
     qemu_syscall(&call.super);
 }
@@ -259,7 +259,7 @@ WINBASEAPI void WINAPI RtlSetLastWin32ErrorAndNtStatusFromNtStatus(NTSTATUS stat
 {
     struct qemu_RtlSetLastWin32ErrorAndNtStatusFromNtStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLSETLASTWIN32ERRORANDNTSTATUSFROMNTSTATUS);
-    call.status = (uint64_t)status;
+    call.status = (ULONG_PTR)status;
 
     qemu_syscall(&call.super);
 }

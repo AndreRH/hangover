@@ -424,11 +424,11 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
     rec->ExceptionFlags |= EH_UNWINDING | (end_frame ? 0 : EH_EXIT_UNWIND);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLUNWINDEX);
-    call.string = (uint64_t)"code=%lx flags=%lx end_frame=%p target_ip=%p rip=%016lx\n";
+    call.string = (ULONG_PTR)"code=%lx flags=%lx end_frame=%p target_ip=%p rip=%016lx\n";
     call.p1 = rec->ExceptionCode;
     call.p2 = rec->ExceptionFlags;
-    call.p3 = (uint64_t)end_frame;
-    call.p4 = (uint64_t)target_ip;
+    call.p3 = (ULONG_PTR)end_frame;
+    call.p4 = (ULONG_PTR)target_ip;
     call.p5 = context->Rip;
     call.num_params = 5;
 
@@ -465,10 +465,10 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
                                                          context->Rip, dispatch.FunctionEntry,
                                                          &new_context, &dispatch.HandlerData,
                                                          &dispatch.EstablisherFrame, NULL );
-            call.string = (uint64_t)"Found handler %p in function entry %p (pc %p).\n";
-            call.p1 = (uint64_t)dispatch.LanguageHandler;
-            call.p2 = (uint64_t)dispatch.FunctionEntry;
-            call.p3 = (uint64_t)context->Rip;
+            call.string = (ULONG_PTR)"Found handler %p in function entry %p (pc %p).\n";
+            call.p1 = (ULONG_PTR)dispatch.LanguageHandler;
+            call.p2 = (ULONG_PTR)dispatch.FunctionEntry;
+            call.p3 = (ULONG_PTR)context->Rip;
             call.num_params = 3;
             qemu_syscall(&call.super);
 
@@ -482,9 +482,9 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
         dispatch.EstablisherFrame = new_context.Rsp;
         dispatch.LanguageHandler = NULL;
 
-        call.string = (uint64_t)"Leaf function Rip=%p, Rsp=%p.\n";
-        call.p1 = (uint64_t)new_context.Rip;
-        call.p2 = (uint64_t)new_context.Rsp;
+        call.string = (ULONG_PTR)"Leaf function Rip=%p, Rsp=%p.\n";
+        call.p1 = (ULONG_PTR)new_context.Rip;
+        call.p2 = (ULONG_PTR)new_context.Rsp;
         call.num_params = 2;
         qemu_syscall(&call.super);
 
@@ -493,10 +493,10 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
 
         if (is_inside_signal_stack( (void *)dispatch.EstablisherFrame ))
         {
-            call.string = (uint64_t)"frame %lx is inside signal stack (%p-%p)\n";
+            call.string = (ULONG_PTR)"frame %lx is inside signal stack (%p-%p)\n";
             call.p1 = dispatch.EstablisherFrame;
-            call.p2 = (uint64_t)get_signal_stack();
-            call.p3 = (uint64_t)get_signal_stack() + signal_stack_size;
+            call.p2 = (ULONG_PTR)get_signal_stack();
+            call.p3 = (ULONG_PTR)get_signal_stack() + signal_stack_size;
             call.num_params = 3;
             qemu_syscall(&call.super);
 
@@ -518,9 +518,9 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
         {
             if (end_frame && (dispatch.EstablisherFrame > (ULONG64)end_frame))
             {
-                call.string = (uint64_t)"invalid end frame %lx/%p\n";
+                call.string = (ULONG_PTR)"invalid end frame %lx/%p\n";
                 call.p1 = dispatch.EstablisherFrame;
-                call.p2 = (uint64_t)end_frame;
+                call.p2 = (ULONG_PTR)end_frame;
                 call.num_params = 2;
                 qemu_syscall(&call.super);
 
@@ -542,9 +542,9 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
             rec->ExceptionFlags &= ~EH_COLLIDED_UNWIND;
         }
 
-        call.string = (uint64_t)"Current frame %lx, searching for end frame %lx\n";
+        call.string = (ULONG_PTR)"Current frame %lx, searching for end frame %lx\n";
         call.p1 = dispatch.EstablisherFrame;
-        call.p2 = (uint64_t)end_frame;
+        call.p2 = (ULONG_PTR)end_frame;
         call.num_params = 2;
         qemu_syscall(&call.super);
 
@@ -552,8 +552,8 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
         *context = new_context;
     }
 
-    call.string = (uint64_t)"All done, jumping to %p\n";
-    call.p1 = (uint64_t)target_ip;
+    call.string = (ULONG_PTR)"All done, jumping to %p\n";
+    call.p1 = (ULONG_PTR)target_ip;
     call.num_params = 1;
     qemu_syscall(&call.super);
 
@@ -577,17 +577,17 @@ NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec
     struct qemu_ExceptDebug call;
 
     call.super.id = QEMU_SYSCALL_ID(CALL___C_SPECIFIC_HANDLER);
-    call.string = (uint64_t)"Record %p, frame %p, context %p, dispatch %p.\n";
-    call.p1 = (uint64_t)rec;
+    call.string = (ULONG_PTR)"Record %p, frame %p, context %p, dispatch %p.\n";
+    call.p1 = (ULONG_PTR)rec;
     call.p2 = frame;
-    call.p3 = (uint64_t)context;
-    call.p4 = (uint64_t)dispatch;
+    call.p3 = (ULONG_PTR)context;
+    call.p4 = (ULONG_PTR)dispatch;
     call.num_params = 4;
     qemu_syscall(&call.super);
 
     if (rec->ExceptionFlags & (EH_UNWINDING | EH_EXIT_UNWIND))
     {
-        call.string = (uint64_t)"Unwinding.\n";
+        call.string = (ULONG_PTR)"Unwinding.\n";
         call.num_params = 0;
         qemu_syscall(&call.super);
 
@@ -610,8 +610,8 @@ NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec
                 handler = (TERMINATION_HANDLER)(dispatch->ImageBase + table->ScopeRecord[i].HandlerAddress);
                 dispatch->ScopeIndex = i+1;
 
-                call.string = (uint64_t)"calling __finally %p frame %lx\n";
-                call.p1 = (uint64_t)handler;
+                call.string = (ULONG_PTR)"calling __finally %p frame %lx\n";
+                call.p1 = (ULONG_PTR)handler;
                 call.p2 = frame;
                 call.num_params = 2;
                 qemu_syscall(&call.super);
@@ -637,9 +637,9 @@ NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec
                 ptrs.ExceptionRecord = rec;
                 ptrs.ContextRecord = context;
 
-                call.string = (uint64_t)"calling filter %p ptrs %p frame %lx\n";
-                call.p1 = (uint64_t)filter;
-                call.p2 = (uint64_t)&ptrs;
+                call.string = (ULONG_PTR)"calling filter %p ptrs %p frame %lx\n";
+                call.p1 = (ULONG_PTR)filter;
+                call.p2 = (ULONG_PTR)&ptrs;
                 call.p3 = frame;
                 call.num_params = 3;
                 qemu_syscall(&call.super);
@@ -648,21 +648,21 @@ NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec
                 switch (filter( &ptrs, frame ))
                 {
                 case EXCEPTION_EXECUTE_HANDLER:
-                    call.string = (uint64_t)"Filter returned EXCEPTION_EXECUTE_HANDLER\n";
+                    call.string = (ULONG_PTR)"Filter returned EXCEPTION_EXECUTE_HANDLER\n";
                     qemu_syscall(&call.super);
                     break;
                 case EXCEPTION_CONTINUE_SEARCH:
-                    call.string = (uint64_t)"Filter returned EXCEPTION_CONTINUE_SEARCH\n";
+                    call.string = (ULONG_PTR)"Filter returned EXCEPTION_CONTINUE_SEARCH\n";
                     qemu_syscall(&call.super);
                     continue;
                 case EXCEPTION_CONTINUE_EXECUTION:
-                    call.string = (uint64_t)"Filter returned EXCEPTION_CONTINUE_EXECUTION\n";
+                    call.string = (ULONG_PTR)"Filter returned EXCEPTION_CONTINUE_EXECUTION\n";
                     qemu_syscall(&call.super);
                     return ExceptionContinueExecution;
                 }
             }
 
-            call.string = (uint64_t)"unwinding to target %lx, end frame %lx\n";
+            call.string = (ULONG_PTR)"unwinding to target %lx, end frame %lx\n";
             call.p1 = dispatch->ImageBase + table->ScopeRecord[i].JumpTarget;
             call.p2 = frame;
             call.num_params = 2;
@@ -780,7 +780,7 @@ NTSYSAPI BOOLEAN CDECL RtlAddFunctionTable(PRUNTIME_FUNCTION func, DWORD entry_c
 {
     struct qemu_RtlAddFunctionTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLADDFUNCTIONTABLE);
-    call.func = (uint64_t)func;
+    call.func = (ULONG_PTR)func;
     call.entry_count = entry_count;
     call.base = base;
 
@@ -1090,8 +1090,8 @@ PEXCEPTION_ROUTINE WINAPI ntdll_RtlVirtualUnwind(DWORD type, DWORD64 base, DWORD
     struct qemu_ExceptDebug call;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLVIRTUALUNWIND);
-    call.string = (uint64_t)"PC %p, start frame %p\n";
-    call.p1 = (uint64_t)pc;
+    call.string = (ULONG_PTR)"PC %p, start frame %p\n";
+    call.p1 = (ULONG_PTR)pc;
     call.p2 = context->Rsp;
     call.num_params = 2;
     qemu_syscall(&call.super);
@@ -1105,9 +1105,9 @@ PEXCEPTION_ROUTINE WINAPI ntdll_RtlVirtualUnwind(DWORD type, DWORD64 base, DWORD
         if (info->version != 1)
         {
             call.super.id = QEMU_SYSCALL_ID(CALL_RTLVIRTUALUNWIND);
-            call.string = (uint64_t)"unknown unwind info version %u at %p\n";
+            call.string = (ULONG_PTR)"unknown unwind info version %u at %p\n";
             call.p1 = info->version;
-            call.p2 = (uint64_t)info;
+            call.p2 = (ULONG_PTR)info;
             call.num_params = 2;
             qemu_syscall(&call.super);
             return NULL;
@@ -1129,8 +1129,8 @@ PEXCEPTION_ROUTINE WINAPI ntdll_RtlVirtualUnwind(DWORD type, DWORD64 base, DWORD
                 interpret_epilog( (BYTE *)pc, context, ctx_ptr );
                 *frame_ret = frame;
 
-                call.string = (uint64_t)"In epilog? %p\n";
-                call.p1 = (uint64_t)pc;
+                call.string = (ULONG_PTR)"In epilog? %p\n";
+                call.p1 = (ULONG_PTR)pc;
                 call.num_params = 1;
                 qemu_syscall(&call.super);
 
@@ -1193,7 +1193,7 @@ PEXCEPTION_ROUTINE WINAPI ntdll_RtlVirtualUnwind(DWORD type, DWORD64 base, DWORD
 
     if (!(info->flags & type))
     {
-        call.string = (uint64_t)"No matching handler?\n";
+        call.string = (ULONG_PTR)"No matching handler?\n";
         call.num_params = 0;
         qemu_syscall(&call.super);
 
@@ -1201,15 +1201,15 @@ PEXCEPTION_ROUTINE WINAPI ntdll_RtlVirtualUnwind(DWORD type, DWORD64 base, DWORD
     }
     if (prolog_offset != ~0)
     {
-        call.string = (uint64_t)"In prolog?\n";
+        call.string = (ULONG_PTR)"In prolog?\n";
         call.num_params = 0;
         qemu_syscall(&call.super);
 
         return NULL;  /* inside prolog */
     }
 
-    call.string = (uint64_t)"Found function %p, EstablisherFrame %p.\n";
-    call.p1 = (uint64_t)((char *)base + handler_data->handler);
+    call.string = (ULONG_PTR)"Found function %p, EstablisherFrame %p.\n";
+    call.p1 = (ULONG_PTR)((char *)base + handler_data->handler);
     call.p2 = *frame_ret;
     call.num_params = 2;
     qemu_syscall(&call.super);
@@ -1300,10 +1300,10 @@ static NTSTATUS call_stack_handlers( EXCEPTION_RECORD *rec, CONTEXT *orig_contex
                                                          &context, &dispatch.HandlerData,
                                                          &dispatch.EstablisherFrame, NULL );
 
-            call.string = (uint64_t)"Found handler %p in function entry %p(pc %p), frame %p.\n";
-            call.p1 = (uint64_t)dispatch.LanguageHandler;
-            call.p2 = (uint64_t)dispatch.FunctionEntry;
-            call.p3 = (uint64_t)dispatch.ControlPc;
+            call.string = (ULONG_PTR)"Found handler %p in function entry %p(pc %p), frame %p.\n";
+            call.p1 = (ULONG_PTR)dispatch.LanguageHandler;
+            call.p2 = (ULONG_PTR)dispatch.FunctionEntry;
+            call.p3 = (ULONG_PTR)dispatch.ControlPc;
             call.p4 = dispatch.EstablisherFrame;
             call.num_params = 4;
             qemu_syscall(&call.super);
@@ -1316,9 +1316,9 @@ static NTSTATUS call_stack_handlers( EXCEPTION_RECORD *rec, CONTEXT *orig_contex
         dispatch.EstablisherFrame = context.Rsp;
         dispatch.LanguageHandler = NULL;
 
-        call.string = (uint64_t)"Leaf function Rip=%p, Rsp=%p.\n";
-        call.p1 = (uint64_t)context.Rip;
-        call.p2 = (uint64_t)context.Rsp;
+        call.string = (ULONG_PTR)"Leaf function Rip=%p, Rsp=%p.\n";
+        call.p1 = (ULONG_PTR)context.Rip;
+        call.p2 = (ULONG_PTR)context.Rsp;
         call.num_params = 2;
         qemu_syscall(&call.super);
 
@@ -1329,10 +1329,10 @@ static NTSTATUS call_stack_handlers( EXCEPTION_RECORD *rec, CONTEXT *orig_contex
             dispatch.EstablisherFrame < (ULONG64)((NT_TIB *)NtCurrentTeb())->StackLimit ||
             dispatch.EstablisherFrame > (ULONG64)((NT_TIB *)NtCurrentTeb())->StackBase)
         {
-            call.string = (uint64_t)"invalid frame %lx (%p-%p).\n";
+            call.string = (ULONG_PTR)"invalid frame %lx (%p-%p).\n";
             call.p1 = dispatch.EstablisherFrame;
-            call.p2 = (uint64_t)((NT_TIB *)NtCurrentTeb())->StackLimit;
-            call.p3 = (uint64_t)((NT_TIB *)NtCurrentTeb())->StackBase;
+            call.p2 = (ULONG_PTR)((NT_TIB *)NtCurrentTeb())->StackLimit;
+            call.p3 = (ULONG_PTR)((NT_TIB *)NtCurrentTeb())->StackBase;
             call.num_params = 3;
             qemu_syscall(&call.super);
 
@@ -1344,14 +1344,14 @@ static NTSTATUS call_stack_handlers( EXCEPTION_RECORD *rec, CONTEXT *orig_contex
         {
             DWORD ret;
 
-            call.string = (uint64_t)"Calling handler %p.\n";
-            call.p1 = (uint64_t)dispatch.LanguageHandler;
+            call.string = (ULONG_PTR)"Calling handler %p.\n";
+            call.p1 = (ULONG_PTR)dispatch.LanguageHandler;
             call.num_params = 1;
             qemu_syscall(&call.super);
 
             ret = call_handler( rec, orig_context, &dispatch );
 
-            call.string = (uint64_t)"Handler returned %lu.\n";
+            call.string = (ULONG_PTR)"Handler returned %lu.\n";
             call.p1 = ret;
             call.num_params = 1;
             qemu_syscall(&call.super);
@@ -1393,9 +1393,9 @@ NTSTATUS WINAPI ntdll_NtRaiseException( EXCEPTION_RECORD *rec, CONTEXT *context,
     struct qemu_ExceptDebug call;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_NTRAISEEXCEPTION);
-    call.string = (uint64_t)"Exception %p, context %p, first chance %lu\n";
-    call.p1 = (uint64_t)rec;
-    call.p2 = (uint64_t)context;
+    call.string = (ULONG_PTR)"Exception %p, context %p, first chance %lu\n";
+    call.p1 = (ULONG_PTR)rec;
+    call.p2 = (ULONG_PTR)context;
     call.p3 = first_chance;
     call.num_params = 3;
     qemu_syscall(&call.super);

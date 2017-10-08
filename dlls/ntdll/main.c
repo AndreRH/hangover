@@ -40,7 +40,7 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
     {
         case DLL_PROCESS_ATTACH:
             call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
-            call.exception_handler = (uint64_t)qemu_exception_handler;
+            call.exception_handler = (ULONG_PTR)qemu_exception_handler;
             qemu_syscall(&call.super);
             break;
     }

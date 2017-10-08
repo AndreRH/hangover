@@ -59,12 +59,12 @@ WINBASEAPI NTSTATUS WINAPI NtOpenFile(PHANDLE handle, ACCESS_MASK access, POBJEC
 {
     struct qemu_NtOpenFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTOPENFILE);
-    call.handle = (uint64_t)handle;
-    call.access = (uint64_t)access;
-    call.attr = (uint64_t)attr;
-    call.io = (uint64_t)io;
-    call.sharing = (uint64_t)sharing;
-    call.options = (uint64_t)options;
+    call.handle = (ULONG_PTR)handle;
+    call.access = (ULONG_PTR)access;
+    call.attr = (ULONG_PTR)attr;
+    call.io = (ULONG_PTR)io;
+    call.sharing = (ULONG_PTR)sharing;
+    call.options = (ULONG_PTR)options;
 
     qemu_syscall(&call.super);
 
@@ -106,17 +106,17 @@ WINBASEAPI NTSTATUS WINAPI NtCreateFile(PHANDLE handle, ACCESS_MASK access, POBJ
 {
     struct qemu_NtCreateFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCREATEFILE);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
     call.access = access;
-    call.attr = (uint64_t)attr;
-    call.io = (uint64_t)io;
-    call.alloc_size = (uint64_t)alloc_size;
+    call.attr = (ULONG_PTR)attr;
+    call.io = (ULONG_PTR)io;
+    call.alloc_size = (ULONG_PTR)alloc_size;
     call.attributes = attributes;
     call.sharing = sharing;
     call.disposition = disposition;
     call.options = options;
-    call.ea_buffer = (uint64_t)ea_buffer;
-    call.ea_length = (uint64_t)ea_length;
+    call.ea_buffer = (ULONG_PTR)ea_buffer;
+    call.ea_length = (ULONG_PTR)ea_length;
 
     qemu_syscall(&call.super);
 
@@ -156,15 +156,15 @@ WINBASEAPI NTSTATUS WINAPI NtReadFile(HANDLE hFile, HANDLE hEvent, PIO_APC_ROUTI
 {
     struct qemu_NtReadFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTREADFILE);
-    call.hFile = (uint64_t)hFile;
-    call.hEvent = (uint64_t)hEvent;
-    call.apc = (uint64_t)apc;
-    call.apc_user = (uint64_t)apc_user;
-    call.io_status = (uint64_t)io_status;
-    call.buffer = (uint64_t)buffer;
-    call.length = (uint64_t)length;
-    call.offset = (uint64_t)offset;
-    call.key = (uint64_t)key;
+    call.hFile = (ULONG_PTR)hFile;
+    call.hEvent = (ULONG_PTR)hEvent;
+    call.apc = (ULONG_PTR)apc;
+    call.apc_user = (ULONG_PTR)apc_user;
+    call.io_status = (ULONG_PTR)io_status;
+    call.buffer = (ULONG_PTR)buffer;
+    call.length = (ULONG_PTR)length;
+    call.offset = (ULONG_PTR)offset;
+    call.key = (ULONG_PTR)key;
 
     qemu_syscall(&call.super);
 
@@ -202,15 +202,15 @@ WINBASEAPI NTSTATUS WINAPI NtReadFileScatter(HANDLE file, HANDLE event, PIO_APC_
 {
     struct qemu_NtReadFileScatter call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTREADFILESCATTER);
-    call.file = (uint64_t)file;
-    call.event = (uint64_t)event;
-    call.apc = (uint64_t)apc;
-    call.apc_user = (uint64_t)apc_user;
-    call.io_status = (uint64_t)io_status;
-    call.segments = (uint64_t)segments;
-    call.length = (uint64_t)length;
-    call.offset = (uint64_t)offset;
-    call.key = (uint64_t)key;
+    call.file = (ULONG_PTR)file;
+    call.event = (ULONG_PTR)event;
+    call.apc = (ULONG_PTR)apc;
+    call.apc_user = (ULONG_PTR)apc_user;
+    call.io_status = (ULONG_PTR)io_status;
+    call.segments = (ULONG_PTR)segments;
+    call.length = (ULONG_PTR)length;
+    call.offset = (ULONG_PTR)offset;
+    call.key = (ULONG_PTR)key;
 
     qemu_syscall(&call.super);
 
@@ -248,15 +248,15 @@ WINBASEAPI NTSTATUS WINAPI NtWriteFile(HANDLE hFile, HANDLE hEvent, PIO_APC_ROUT
 {
     struct qemu_NtWriteFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTWRITEFILE);
-    call.hFile = (uint64_t)hFile;
-    call.hEvent = (uint64_t)hEvent;
-    call.apc = (uint64_t)apc;
-    call.apc_user = (uint64_t)apc_user;
-    call.io_status = (uint64_t)io_status;
-    call.buffer = (uint64_t)buffer;
-    call.length = (uint64_t)length;
-    call.offset = (uint64_t)offset;
-    call.key = (uint64_t)key;
+    call.hFile = (ULONG_PTR)hFile;
+    call.hEvent = (ULONG_PTR)hEvent;
+    call.apc = (ULONG_PTR)apc;
+    call.apc_user = (ULONG_PTR)apc_user;
+    call.io_status = (ULONG_PTR)io_status;
+    call.buffer = (ULONG_PTR)buffer;
+    call.length = (ULONG_PTR)length;
+    call.offset = (ULONG_PTR)offset;
+    call.key = (ULONG_PTR)key;
 
     qemu_syscall(&call.super);
 
@@ -294,15 +294,15 @@ WINBASEAPI NTSTATUS WINAPI NtWriteFileGather(HANDLE file, HANDLE event, PIO_APC_
 {
     struct qemu_NtWriteFileGather call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTWRITEFILEGATHER);
-    call.file = (uint64_t)file;
-    call.event = (uint64_t)event;
-    call.apc = (uint64_t)apc;
-    call.apc_user = (uint64_t)apc_user;
-    call.io_status = (uint64_t)io_status;
-    call.segments = (uint64_t)segments;
-    call.length = (uint64_t)length;
-    call.offset = (uint64_t)offset;
-    call.key = (uint64_t)key;
+    call.file = (ULONG_PTR)file;
+    call.event = (ULONG_PTR)event;
+    call.apc = (ULONG_PTR)apc;
+    call.apc_user = (ULONG_PTR)apc_user;
+    call.io_status = (ULONG_PTR)io_status;
+    call.segments = (ULONG_PTR)segments;
+    call.length = (ULONG_PTR)length;
+    call.offset = (ULONG_PTR)offset;
+    call.key = (ULONG_PTR)key;
 
     qemu_syscall(&call.super);
 
@@ -341,16 +341,16 @@ WINBASEAPI NTSTATUS WINAPI NtDeviceIoControlFile(HANDLE handle, HANDLE event, PI
 {
     struct qemu_NtDeviceIoControlFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTDEVICEIOCONTROLFILE);
-    call.handle = (uint64_t)handle;
-    call.event = (uint64_t)event;
-    call.apc = (uint64_t)apc;
-    call.apc_context = (uint64_t)apc_context;
-    call.io = (uint64_t)io;
-    call.code = (uint64_t)code;
-    call.in_buffer = (uint64_t)in_buffer;
-    call.in_size = (uint64_t)in_size;
-    call.out_buffer = (uint64_t)out_buffer;
-    call.out_size = (uint64_t)out_size;
+    call.handle = (ULONG_PTR)handle;
+    call.event = (ULONG_PTR)event;
+    call.apc = (ULONG_PTR)apc;
+    call.apc_context = (ULONG_PTR)apc_context;
+    call.io = (ULONG_PTR)io;
+    call.code = (ULONG_PTR)code;
+    call.in_buffer = (ULONG_PTR)in_buffer;
+    call.in_size = (ULONG_PTR)in_size;
+    call.out_buffer = (ULONG_PTR)out_buffer;
+    call.out_size = (ULONG_PTR)out_size;
 
     qemu_syscall(&call.super);
 
@@ -389,16 +389,16 @@ WINBASEAPI NTSTATUS WINAPI NtFsControlFile(HANDLE handle, HANDLE event, PIO_APC_
 {
     struct qemu_NtFsControlFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTFSCONTROLFILE);
-    call.handle = (uint64_t)handle;
-    call.event = (uint64_t)event;
-    call.apc = (uint64_t)apc;
-    call.apc_context = (uint64_t)apc_context;
-    call.io = (uint64_t)io;
-    call.code = (uint64_t)code;
-    call.in_buffer = (uint64_t)in_buffer;
-    call.in_size = (uint64_t)in_size;
-    call.out_buffer = (uint64_t)out_buffer;
-    call.out_size = (uint64_t)out_size;
+    call.handle = (ULONG_PTR)handle;
+    call.event = (ULONG_PTR)event;
+    call.apc = (ULONG_PTR)apc;
+    call.apc_context = (ULONG_PTR)apc_context;
+    call.io = (ULONG_PTR)io;
+    call.code = (ULONG_PTR)code;
+    call.in_buffer = (ULONG_PTR)in_buffer;
+    call.in_size = (ULONG_PTR)in_size;
+    call.out_buffer = (ULONG_PTR)out_buffer;
+    call.out_size = (ULONG_PTR)out_size;
 
     qemu_syscall(&call.super);
 
@@ -439,15 +439,15 @@ WINBASEAPI NTSTATUS WINAPI NtNotifyChangeDirectoryFile(HANDLE handle, HANDLE eve
 {
     struct qemu_NtNotifyChangeDirectoryFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTNOTIFYCHANGEDIRECTORYFILE);
-    call.handle = (uint64_t)handle;
-    call.event = (uint64_t)event;
-    call.apc = (uint64_t)apc;
-    call.apc_context = (uint64_t)apc_context;
-    call.iosb = (uint64_t)iosb;
-    call.buffer = (uint64_t)buffer;
-    call.buffer_size = (uint64_t)buffer_size;
-    call.filter = (uint64_t)filter;
-    call.subtree = (uint64_t)subtree;
+    call.handle = (ULONG_PTR)handle;
+    call.event = (ULONG_PTR)event;
+    call.apc = (ULONG_PTR)apc;
+    call.apc_context = (ULONG_PTR)apc_context;
+    call.iosb = (ULONG_PTR)iosb;
+    call.buffer = (ULONG_PTR)buffer;
+    call.buffer_size = (ULONG_PTR)buffer_size;
+    call.filter = (ULONG_PTR)filter;
+    call.subtree = (ULONG_PTR)subtree;
 
     qemu_syscall(&call.super);
 
@@ -481,11 +481,11 @@ WINBASEAPI NTSTATUS WINAPI NtSetVolumeInformationFile(HANDLE FileHandle, PIO_STA
 {
     struct qemu_NtSetVolumeInformationFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTSETVOLUMEINFORMATIONFILE);
-    call.FileHandle = (uint64_t)FileHandle;
-    call.IoStatusBlock = (uint64_t)IoStatusBlock;
-    call.FsInformation = (uint64_t)FsInformation;
-    call.Length = (uint64_t)Length;
-    call.FsInformationClass = (uint64_t)FsInformationClass;
+    call.FileHandle = (ULONG_PTR)FileHandle;
+    call.IoStatusBlock = (ULONG_PTR)IoStatusBlock;
+    call.FsInformation = (ULONG_PTR)FsInformation;
+    call.Length = (ULONG_PTR)Length;
+    call.FsInformationClass = (ULONG_PTR)FsInformationClass;
 
     qemu_syscall(&call.super);
 
@@ -519,11 +519,11 @@ WINBASEAPI NTSTATUS WINAPI NtQueryInformationFile(HANDLE hFile, PIO_STATUS_BLOCK
 {
     struct qemu_NtQueryInformationFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTQUERYINFORMATIONFILE);
-    call.hFile = (uint64_t)hFile;
-    call.io = (uint64_t)io;
-    call.ptr = (uint64_t)ptr;
-    call.len = (uint64_t)len;
-    call.class = (uint64_t)class;
+    call.hFile = (ULONG_PTR)hFile;
+    call.io = (ULONG_PTR)io;
+    call.ptr = (ULONG_PTR)ptr;
+    call.len = (ULONG_PTR)len;
+    call.class = (ULONG_PTR)class;
 
     qemu_syscall(&call.super);
 
@@ -557,11 +557,11 @@ WINBASEAPI NTSTATUS WINAPI NtSetInformationFile(HANDLE handle, PIO_STATUS_BLOCK 
 {
     struct qemu_NtSetInformationFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTSETINFORMATIONFILE);
-    call.handle = (uint64_t)handle;
-    call.io = (uint64_t)io;
-    call.ptr = (uint64_t)ptr;
-    call.len = (uint64_t)len;
-    call.class = (uint64_t)class;
+    call.handle = (ULONG_PTR)handle;
+    call.io = (ULONG_PTR)io;
+    call.ptr = (ULONG_PTR)ptr;
+    call.len = (ULONG_PTR)len;
+    call.class = (ULONG_PTR)class;
 
     qemu_syscall(&call.super);
 
@@ -592,8 +592,8 @@ WINBASEAPI NTSTATUS WINAPI NtQueryFullAttributesFile(const OBJECT_ATTRIBUTES *at
 {
     struct qemu_NtQueryFullAttributesFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTQUERYFULLATTRIBUTESFILE);
-    call.attr = (uint64_t)attr;
-    call.info = (uint64_t)info;
+    call.attr = (ULONG_PTR)attr;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -624,8 +624,8 @@ WINBASEAPI NTSTATUS WINAPI NtQueryAttributesFile(const OBJECT_ATTRIBUTES *attr, 
 {
     struct qemu_NtQueryAttributesFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTQUERYATTRIBUTESFILE);
-    call.attr = (uint64_t)attr;
-    call.info = (uint64_t)info;
+    call.attr = (ULONG_PTR)attr;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -659,11 +659,11 @@ WINBASEAPI NTSTATUS WINAPI NtQueryVolumeInformationFile(HANDLE handle, PIO_STATU
 {
     struct qemu_NtQueryVolumeInformationFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTQUERYVOLUMEINFORMATIONFILE);
-    call.handle = (uint64_t)handle;
-    call.io = (uint64_t)io;
-    call.buffer = (uint64_t)buffer;
-    call.length = (uint64_t)length;
-    call.info_class = (uint64_t)info_class;
+    call.handle = (ULONG_PTR)handle;
+    call.io = (ULONG_PTR)io;
+    call.buffer = (ULONG_PTR)buffer;
+    call.length = (ULONG_PTR)length;
+    call.info_class = (ULONG_PTR)info_class;
 
     qemu_syscall(&call.super);
 
@@ -701,15 +701,15 @@ WINBASEAPI NTSTATUS WINAPI NtQueryEaFile(HANDLE hFile, PIO_STATUS_BLOCK iosb, PV
 {
     struct qemu_NtQueryEaFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTQUERYEAFILE);
-    call.hFile = (uint64_t)hFile;
-    call.iosb = (uint64_t)iosb;
-    call.buffer = (uint64_t)buffer;
-    call.length = (uint64_t)length;
-    call.single_entry = (uint64_t)single_entry;
-    call.ea_list = (uint64_t)ea_list;
-    call.ea_list_len = (uint64_t)ea_list_len;
-    call.ea_index = (uint64_t)ea_index;
-    call.restart = (uint64_t)restart;
+    call.hFile = (ULONG_PTR)hFile;
+    call.iosb = (ULONG_PTR)iosb;
+    call.buffer = (ULONG_PTR)buffer;
+    call.length = (ULONG_PTR)length;
+    call.single_entry = (ULONG_PTR)single_entry;
+    call.ea_list = (ULONG_PTR)ea_list;
+    call.ea_list_len = (ULONG_PTR)ea_list_len;
+    call.ea_index = (ULONG_PTR)ea_index;
+    call.restart = (ULONG_PTR)restart;
 
     qemu_syscall(&call.super);
 
@@ -742,10 +742,10 @@ WINBASEAPI NTSTATUS WINAPI NtSetEaFile(HANDLE hFile, PIO_STATUS_BLOCK iosb, PVOI
 {
     struct qemu_NtSetEaFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTSETEAFILE);
-    call.hFile = (uint64_t)hFile;
-    call.iosb = (uint64_t)iosb;
-    call.buffer = (uint64_t)buffer;
-    call.length = (uint64_t)length;
+    call.hFile = (ULONG_PTR)hFile;
+    call.iosb = (ULONG_PTR)iosb;
+    call.buffer = (ULONG_PTR)buffer;
+    call.length = (ULONG_PTR)length;
 
     qemu_syscall(&call.super);
 
@@ -776,8 +776,8 @@ WINBASEAPI NTSTATUS WINAPI NtFlushBuffersFile(HANDLE hFile, IO_STATUS_BLOCK* IoS
 {
     struct qemu_NtFlushBuffersFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTFLUSHBUFFERSFILE);
-    call.hFile = (uint64_t)hFile;
-    call.IoStatusBlock = (uint64_t)IoStatusBlock;
+    call.hFile = (ULONG_PTR)hFile;
+    call.IoStatusBlock = (ULONG_PTR)IoStatusBlock;
 
     qemu_syscall(&call.super);
 
@@ -816,16 +816,16 @@ WINBASEAPI NTSTATUS WINAPI NtLockFile(HANDLE hFile, HANDLE lock_granted_event, P
 {
     struct qemu_NtLockFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTLOCKFILE);
-    call.hFile = (uint64_t)hFile;
-    call.lock_granted_event = (uint64_t)lock_granted_event;
-    call.apc = (uint64_t)apc;
-    call.apc_user = (uint64_t)apc_user;
-    call.io_status = (uint64_t)io_status;
-    call.offset = (uint64_t)offset;
-    call.count = (uint64_t)count;
-    call.key = (uint64_t)key;
-    call.dont_wait = (uint64_t)dont_wait;
-    call.exclusive = (uint64_t)exclusive;
+    call.hFile = (ULONG_PTR)hFile;
+    call.lock_granted_event = (ULONG_PTR)lock_granted_event;
+    call.apc = (ULONG_PTR)apc;
+    call.apc_user = (ULONG_PTR)apc_user;
+    call.io_status = (ULONG_PTR)io_status;
+    call.offset = (ULONG_PTR)offset;
+    call.count = (ULONG_PTR)count;
+    call.key = (ULONG_PTR)key;
+    call.dont_wait = (ULONG_PTR)dont_wait;
+    call.exclusive = (ULONG_PTR)exclusive;
 
     qemu_syscall(&call.super);
 
@@ -859,11 +859,11 @@ WINBASEAPI NTSTATUS WINAPI NtUnlockFile(HANDLE hFile, PIO_STATUS_BLOCK io_status
 {
     struct qemu_NtUnlockFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTUNLOCKFILE);
-    call.hFile = (uint64_t)hFile;
-    call.io_status = (uint64_t)io_status;
-    call.offset = (uint64_t)offset;
-    call.count = (uint64_t)count;
-    call.key = (uint64_t)key;
+    call.hFile = (ULONG_PTR)hFile;
+    call.io_status = (ULONG_PTR)io_status;
+    call.offset = (ULONG_PTR)offset;
+    call.count = (ULONG_PTR)count;
+    call.key = (ULONG_PTR)key;
 
     qemu_syscall(&call.super);
 
@@ -906,20 +906,20 @@ WINBASEAPI NTSTATUS WINAPI NtCreateNamedPipeFile(PHANDLE handle, ULONG access, P
 {
     struct qemu_NtCreateNamedPipeFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCREATENAMEDPIPEFILE);
-    call.handle = (uint64_t)handle;
-    call.access = (uint64_t)access;
-    call.attr = (uint64_t)attr;
-    call.iosb = (uint64_t)iosb;
-    call.sharing = (uint64_t)sharing;
-    call.dispo = (uint64_t)dispo;
-    call.options = (uint64_t)options;
-    call.pipe_type = (uint64_t)pipe_type;
-    call.read_mode = (uint64_t)read_mode;
-    call.completion_mode = (uint64_t)completion_mode;
-    call.max_inst = (uint64_t)max_inst;
-    call.inbound_quota = (uint64_t)inbound_quota;
-    call.outbound_quota = (uint64_t)outbound_quota;
-    call.timeout = (uint64_t)timeout;
+    call.handle = (ULONG_PTR)handle;
+    call.access = (ULONG_PTR)access;
+    call.attr = (ULONG_PTR)attr;
+    call.iosb = (ULONG_PTR)iosb;
+    call.sharing = (ULONG_PTR)sharing;
+    call.dispo = (ULONG_PTR)dispo;
+    call.options = (ULONG_PTR)options;
+    call.pipe_type = (ULONG_PTR)pipe_type;
+    call.read_mode = (ULONG_PTR)read_mode;
+    call.completion_mode = (ULONG_PTR)completion_mode;
+    call.max_inst = (ULONG_PTR)max_inst;
+    call.inbound_quota = (ULONG_PTR)inbound_quota;
+    call.outbound_quota = (ULONG_PTR)outbound_quota;
+    call.timeout = (ULONG_PTR)timeout;
 
     qemu_syscall(&call.super);
 
@@ -949,7 +949,7 @@ WINBASEAPI NTSTATUS WINAPI NtDeleteFile(POBJECT_ATTRIBUTES ObjectAttributes)
 {
     struct qemu_NtDeleteFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTDELETEFILE);
-    call.ObjectAttributes = (uint64_t)ObjectAttributes;
+    call.ObjectAttributes = (ULONG_PTR)ObjectAttributes;
 
     qemu_syscall(&call.super);
 
@@ -981,9 +981,9 @@ WINBASEAPI NTSTATUS WINAPI NtCancelIoFileEx(HANDLE hFile, PIO_STATUS_BLOCK iosb,
 {
     struct qemu_NtCancelIoFileEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCANCELIOFILEEX);
-    call.hFile = (uint64_t)hFile;
-    call.iosb = (uint64_t)iosb;
-    call.io_status = (uint64_t)io_status;
+    call.hFile = (ULONG_PTR)hFile;
+    call.iosb = (ULONG_PTR)iosb;
+    call.io_status = (ULONG_PTR)io_status;
 
     qemu_syscall(&call.super);
 
@@ -1014,8 +1014,8 @@ WINBASEAPI NTSTATUS WINAPI NtCancelIoFile(HANDLE hFile, PIO_STATUS_BLOCK io_stat
 {
     struct qemu_NtCancelIoFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCANCELIOFILE);
-    call.hFile = (uint64_t)hFile;
-    call.io_status = (uint64_t)io_status;
+    call.hFile = (ULONG_PTR)hFile;
+    call.io_status = (ULONG_PTR)io_status;
 
     qemu_syscall(&call.super);
 
@@ -1052,14 +1052,14 @@ WINBASEAPI NTSTATUS WINAPI NtCreateMailslotFile(PHANDLE pHandle, ULONG DesiredAc
 {
     struct qemu_NtCreateMailslotFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCREATEMAILSLOTFILE);
-    call.pHandle = (uint64_t)pHandle;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
-    call.attr = (uint64_t)attr;
-    call.IoStatusBlock = (uint64_t)IoStatusBlock;
-    call.CreateOptions = (uint64_t)CreateOptions;
-    call.MailslotQuota = (uint64_t)MailslotQuota;
-    call.MaxMessageSize = (uint64_t)MaxMessageSize;
-    call.TimeOut = (uint64_t)TimeOut;
+    call.pHandle = (ULONG_PTR)pHandle;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
+    call.attr = (ULONG_PTR)attr;
+    call.IoStatusBlock = (ULONG_PTR)IoStatusBlock;
+    call.CreateOptions = (ULONG_PTR)CreateOptions;
+    call.MailslotQuota = (ULONG_PTR)MailslotQuota;
+    call.MaxMessageSize = (ULONG_PTR)MaxMessageSize;
+    call.TimeOut = (ULONG_PTR)TimeOut;
 
     qemu_syscall(&call.super);
 

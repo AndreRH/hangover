@@ -62,12 +62,12 @@ WINBASEAPI NTSTATUS WINAPI NtDuplicateToken(IN HANDLE ExistingToken, IN ACCESS_M
 {
     struct qemu_NtDuplicateToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTDUPLICATETOKEN);
-    call.ExistingToken = (uint64_t)ExistingToken;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
-    call.ObjectAttributes = (uint64_t)ObjectAttributes;
-    call.ImpersonationLevel = (uint64_t)ImpersonationLevel;
-    call.TokenType = (uint64_t)TokenType;
-    call.NewToken = (uint64_t)NewToken;
+    call.ExistingToken = (ULONG_PTR)ExistingToken;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
+    call.ObjectAttributes = (ULONG_PTR)ObjectAttributes;
+    call.ImpersonationLevel = (ULONG_PTR)ImpersonationLevel;
+    call.TokenType = (ULONG_PTR)TokenType;
+    call.NewToken = (ULONG_PTR)NewToken;
 
     qemu_syscall(&call.super);
 
@@ -99,9 +99,9 @@ WINBASEAPI NTSTATUS WINAPI NtOpenProcessToken(HANDLE ProcessHandle, DWORD Desire
 {
     struct qemu_NtOpenProcessToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTOPENPROCESSTOKEN);
-    call.ProcessHandle = (uint64_t)ProcessHandle;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
-    call.TokenHandle = (uint64_t)TokenHandle;
+    call.ProcessHandle = (ULONG_PTR)ProcessHandle;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
+    call.TokenHandle = (ULONG_PTR)TokenHandle;
 
     qemu_syscall(&call.super);
 
@@ -134,10 +134,10 @@ WINBASEAPI NTSTATUS WINAPI NtOpenProcessTokenEx(HANDLE process, DWORD access, DW
 {
     struct qemu_NtOpenProcessTokenEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTOPENPROCESSTOKENEX);
-    call.process = (uint64_t)process;
-    call.access = (uint64_t)access;
-    call.attributes = (uint64_t)attributes;
-    call.handle = (uint64_t)handle;
+    call.process = (ULONG_PTR)process;
+    call.access = (ULONG_PTR)access;
+    call.attributes = (ULONG_PTR)attributes;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -170,10 +170,10 @@ WINBASEAPI NTSTATUS WINAPI NtOpenThreadToken(HANDLE ThreadHandle, DWORD DesiredA
 {
     struct qemu_NtOpenThreadToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTOPENTHREADTOKEN);
-    call.ThreadHandle = (uint64_t)ThreadHandle;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
-    call.OpenAsSelf = (uint64_t)OpenAsSelf;
-    call.TokenHandle = (uint64_t)TokenHandle;
+    call.ThreadHandle = (ULONG_PTR)ThreadHandle;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
+    call.OpenAsSelf = (ULONG_PTR)OpenAsSelf;
+    call.TokenHandle = (ULONG_PTR)TokenHandle;
 
     qemu_syscall(&call.super);
 
@@ -207,11 +207,11 @@ WINBASEAPI NTSTATUS WINAPI NtOpenThreadTokenEx(HANDLE thread, DWORD access, BOOL
 {
     struct qemu_NtOpenThreadTokenEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTOPENTHREADTOKENEX);
-    call.thread = (uint64_t)thread;
-    call.access = (uint64_t)access;
-    call.as_self = (uint64_t)as_self;
-    call.attributes = (uint64_t)attributes;
-    call.handle = (uint64_t)handle;
+    call.thread = (ULONG_PTR)thread;
+    call.access = (ULONG_PTR)access;
+    call.as_self = (ULONG_PTR)as_self;
+    call.attributes = (ULONG_PTR)attributes;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -246,12 +246,12 @@ WINBASEAPI NTSTATUS WINAPI NtAdjustPrivilegesToken(IN HANDLE TokenHandle, IN BOO
 {
     struct qemu_NtAdjustPrivilegesToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTADJUSTPRIVILEGESTOKEN);
-    call.TokenHandle = (uint64_t)TokenHandle;
-    call.DisableAllPrivileges = (uint64_t)DisableAllPrivileges;
-    call.NewState = (uint64_t)NewState;
-    call.BufferLength = (uint64_t)BufferLength;
-    call.PreviousState = (uint64_t)PreviousState;
-    call.ReturnLength = (uint64_t)ReturnLength;
+    call.TokenHandle = (ULONG_PTR)TokenHandle;
+    call.DisableAllPrivileges = (ULONG_PTR)DisableAllPrivileges;
+    call.NewState = (ULONG_PTR)NewState;
+    call.BufferLength = (ULONG_PTR)BufferLength;
+    call.PreviousState = (ULONG_PTR)PreviousState;
+    call.ReturnLength = (ULONG_PTR)ReturnLength;
 
     qemu_syscall(&call.super);
 
@@ -285,11 +285,11 @@ WINBASEAPI NTSTATUS WINAPI NtQueryInformationToken(HANDLE token, TOKEN_INFORMATI
 {
     struct qemu_NtQueryInformationToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTQUERYINFORMATIONTOKEN);
-    call.token = (uint64_t)token;
-    call.tokeninfoclass = (uint64_t)tokeninfoclass;
-    call.tokeninfo = (uint64_t)tokeninfo;
-    call.tokeninfolength = (uint64_t)tokeninfolength;
-    call.retlen = (uint64_t)retlen;
+    call.token = (ULONG_PTR)token;
+    call.tokeninfoclass = (ULONG_PTR)tokeninfoclass;
+    call.tokeninfo = (ULONG_PTR)tokeninfo;
+    call.tokeninfolength = (ULONG_PTR)tokeninfolength;
+    call.retlen = (ULONG_PTR)retlen;
 
     qemu_syscall(&call.super);
 
@@ -322,10 +322,10 @@ WINBASEAPI NTSTATUS WINAPI NtSetInformationToken(HANDLE TokenHandle, TOKEN_INFOR
 {
     struct qemu_NtSetInformationToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTSETINFORMATIONTOKEN);
-    call.TokenHandle = (uint64_t)TokenHandle;
-    call.TokenInformationClass = (uint64_t)TokenInformationClass;
-    call.TokenInformation = (uint64_t)TokenInformation;
-    call.TokenInformationLength = (uint64_t)TokenInformationLength;
+    call.TokenHandle = (ULONG_PTR)TokenHandle;
+    call.TokenInformationClass = (ULONG_PTR)TokenInformationClass;
+    call.TokenInformation = (ULONG_PTR)TokenInformation;
+    call.TokenInformationLength = (ULONG_PTR)TokenInformationLength;
 
     qemu_syscall(&call.super);
 
@@ -360,12 +360,12 @@ WINBASEAPI NTSTATUS WINAPI NtAdjustGroupsToken(HANDLE TokenHandle, BOOLEAN Reset
 {
     struct qemu_NtAdjustGroupsToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTADJUSTGROUPSTOKEN);
-    call.TokenHandle = (uint64_t)TokenHandle;
-    call.ResetToDefault = (uint64_t)ResetToDefault;
-    call.NewState = (uint64_t)NewState;
-    call.BufferLength = (uint64_t)BufferLength;
-    call.PreviousState = (uint64_t)PreviousState;
-    call.ReturnLength = (uint64_t)ReturnLength;
+    call.TokenHandle = (ULONG_PTR)TokenHandle;
+    call.ResetToDefault = (ULONG_PTR)ResetToDefault;
+    call.NewState = (ULONG_PTR)NewState;
+    call.BufferLength = (ULONG_PTR)BufferLength;
+    call.PreviousState = (ULONG_PTR)PreviousState;
+    call.ReturnLength = (ULONG_PTR)ReturnLength;
 
     qemu_syscall(&call.super);
 
@@ -397,9 +397,9 @@ WINBASEAPI NTSTATUS WINAPI NtPrivilegeCheck(HANDLE ClientToken, PPRIVILEGE_SET R
 {
     struct qemu_NtPrivilegeCheck call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTPRIVILEGECHECK);
-    call.ClientToken = (uint64_t)ClientToken;
-    call.RequiredPrivileges = (uint64_t)RequiredPrivileges;
-    call.Result = (uint64_t)Result;
+    call.ClientToken = (ULONG_PTR)ClientToken;
+    call.RequiredPrivileges = (ULONG_PTR)RequiredPrivileges;
+    call.Result = (ULONG_PTR)Result;
 
     qemu_syscall(&call.super);
 
@@ -433,11 +433,11 @@ WINBASEAPI NTSTATUS WINAPI NtCreatePort(PHANDLE PortHandle,POBJECT_ATTRIBUTES Ob
 {
     struct qemu_NtCreatePort call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCREATEPORT);
-    call.PortHandle = (uint64_t)PortHandle;
-    call.ObjectAttributes = (uint64_t)ObjectAttributes;
-    call.MaxConnectInfoLength = (uint64_t)MaxConnectInfoLength;
-    call.MaxDataLength = (uint64_t)MaxDataLength;
-    call.reserved = (uint64_t)reserved;
+    call.PortHandle = (ULONG_PTR)PortHandle;
+    call.ObjectAttributes = (ULONG_PTR)ObjectAttributes;
+    call.MaxConnectInfoLength = (ULONG_PTR)MaxConnectInfoLength;
+    call.MaxDataLength = (ULONG_PTR)MaxDataLength;
+    call.reserved = (ULONG_PTR)reserved;
 
     qemu_syscall(&call.super);
 
@@ -474,14 +474,14 @@ WINBASEAPI NTSTATUS WINAPI NtConnectPort(PHANDLE PortHandle, PUNICODE_STRING Por
 {
     struct qemu_NtConnectPort call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCONNECTPORT);
-    call.PortHandle = (uint64_t)PortHandle;
-    call.PortName = (uint64_t)PortName;
-    call.SecurityQos = (uint64_t)SecurityQos;
-    call.WriteSection = (uint64_t)WriteSection;
-    call.ReadSection = (uint64_t)ReadSection;
-    call.MaximumMessageLength = (uint64_t)MaximumMessageLength;
-    call.ConnectInfo = (uint64_t)ConnectInfo;
-    call.pConnectInfoLength = (uint64_t)pConnectInfoLength;
+    call.PortHandle = (ULONG_PTR)PortHandle;
+    call.PortName = (ULONG_PTR)PortName;
+    call.SecurityQos = (ULONG_PTR)SecurityQos;
+    call.WriteSection = (ULONG_PTR)WriteSection;
+    call.ReadSection = (ULONG_PTR)ReadSection;
+    call.MaximumMessageLength = (ULONG_PTR)MaximumMessageLength;
+    call.ConnectInfo = (ULONG_PTR)ConnectInfo;
+    call.pConnectInfoLength = (ULONG_PTR)pConnectInfoLength;
 
     qemu_syscall(&call.super);
 
@@ -519,15 +519,15 @@ WINBASEAPI NTSTATUS WINAPI NtSecureConnectPort(PHANDLE PortHandle, PUNICODE_STRI
 {
     struct qemu_NtSecureConnectPort call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTSECURECONNECTPORT);
-    call.PortHandle = (uint64_t)PortHandle;
-    call.PortName = (uint64_t)PortName;
-    call.SecurityQos = (uint64_t)SecurityQos;
-    call.WriteSection = (uint64_t)WriteSection;
-    call.pSid = (uint64_t)pSid;
-    call.ReadSection = (uint64_t)ReadSection;
-    call.MaximumMessageLength = (uint64_t)MaximumMessageLength;
-    call.ConnectInfo = (uint64_t)ConnectInfo;
-    call.pConnectInfoLength = (uint64_t)pConnectInfoLength;
+    call.PortHandle = (ULONG_PTR)PortHandle;
+    call.PortName = (ULONG_PTR)PortName;
+    call.SecurityQos = (ULONG_PTR)SecurityQos;
+    call.WriteSection = (ULONG_PTR)WriteSection;
+    call.pSid = (ULONG_PTR)pSid;
+    call.ReadSection = (ULONG_PTR)ReadSection;
+    call.MaximumMessageLength = (ULONG_PTR)MaximumMessageLength;
+    call.ConnectInfo = (ULONG_PTR)ConnectInfo;
+    call.pConnectInfoLength = (ULONG_PTR)pConnectInfoLength;
 
     qemu_syscall(&call.super);
 
@@ -558,8 +558,8 @@ WINBASEAPI NTSTATUS WINAPI NtListenPort(HANDLE PortHandle,PLPC_MESSAGE pLpcMessa
 {
     struct qemu_NtListenPort call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTLISTENPORT);
-    call.PortHandle = (uint64_t)PortHandle;
-    call.pLpcMessage = (uint64_t)pLpcMessage;
+    call.PortHandle = (ULONG_PTR)PortHandle;
+    call.pLpcMessage = (ULONG_PTR)pLpcMessage;
 
     qemu_syscall(&call.super);
 
@@ -594,12 +594,12 @@ WINBASEAPI NTSTATUS WINAPI NtAcceptConnectPort(PHANDLE PortHandle, ULONG PortIde
 {
     struct qemu_NtAcceptConnectPort call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTACCEPTCONNECTPORT);
-    call.PortHandle = (uint64_t)PortHandle;
-    call.PortIdentifier = (uint64_t)PortIdentifier;
-    call.pLpcMessage = (uint64_t)pLpcMessage;
-    call.Accept = (uint64_t)Accept;
-    call.WriteSection = (uint64_t)WriteSection;
-    call.ReadSection = (uint64_t)ReadSection;
+    call.PortHandle = (ULONG_PTR)PortHandle;
+    call.PortIdentifier = (ULONG_PTR)PortIdentifier;
+    call.pLpcMessage = (ULONG_PTR)pLpcMessage;
+    call.Accept = (ULONG_PTR)Accept;
+    call.WriteSection = (ULONG_PTR)WriteSection;
+    call.ReadSection = (ULONG_PTR)ReadSection;
 
     qemu_syscall(&call.super);
 
@@ -629,7 +629,7 @@ WINBASEAPI NTSTATUS WINAPI NtCompleteConnectPort(HANDLE PortHandle)
 {
     struct qemu_NtCompleteConnectPort call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCOMPLETECONNECTPORT);
-    call.PortHandle = (uint64_t)PortHandle;
+    call.PortHandle = (ULONG_PTR)PortHandle;
 
     qemu_syscall(&call.super);
 
@@ -659,7 +659,7 @@ WINBASEAPI NTSTATUS WINAPI NtRegisterThreadTerminatePort(HANDLE PortHandle)
 {
     struct qemu_NtRegisterThreadTerminatePort call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTREGISTERTHREADTERMINATEPORT);
-    call.PortHandle = (uint64_t)PortHandle;
+    call.PortHandle = (ULONG_PTR)PortHandle;
 
     qemu_syscall(&call.super);
 
@@ -691,9 +691,9 @@ WINBASEAPI NTSTATUS WINAPI NtRequestWaitReplyPort(HANDLE PortHandle, PLPC_MESSAG
 {
     struct qemu_NtRequestWaitReplyPort call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTREQUESTWAITREPLYPORT);
-    call.PortHandle = (uint64_t)PortHandle;
-    call.pLpcMessageIn = (uint64_t)pLpcMessageIn;
-    call.pLpcMessageOut = (uint64_t)pLpcMessageOut;
+    call.PortHandle = (ULONG_PTR)PortHandle;
+    call.pLpcMessageIn = (ULONG_PTR)pLpcMessageIn;
+    call.pLpcMessageOut = (ULONG_PTR)pLpcMessageOut;
 
     qemu_syscall(&call.super);
 
@@ -726,10 +726,10 @@ WINBASEAPI NTSTATUS WINAPI NtReplyWaitReceivePort(HANDLE PortHandle, PULONG Port
 {
     struct qemu_NtReplyWaitReceivePort call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTREPLYWAITRECEIVEPORT);
-    call.PortHandle = (uint64_t)PortHandle;
-    call.PortIdentifier = (uint64_t)PortIdentifier;
-    call.ReplyMessage = (uint64_t)ReplyMessage;
-    call.Message = (uint64_t)Message;
+    call.PortHandle = (ULONG_PTR)PortHandle;
+    call.PortIdentifier = (ULONG_PTR)PortIdentifier;
+    call.ReplyMessage = (ULONG_PTR)ReplyMessage;
+    call.Message = (ULONG_PTR)Message;
 
     qemu_syscall(&call.super);
 
@@ -760,8 +760,8 @@ WINBASEAPI NTSTATUS WINAPI NtSetIntervalProfile(ULONG Interval, KPROFILE_SOURCE 
 {
     struct qemu_NtSetIntervalProfile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTSETINTERVALPROFILE);
-    call.Interval = (uint64_t)Interval;
-    call.Source = (uint64_t)Source;
+    call.Interval = (ULONG_PTR)Interval;
+    call.Source = (ULONG_PTR)Source;
 
     qemu_syscall(&call.super);
 
@@ -794,10 +794,10 @@ WINBASEAPI NTSTATUS WINAPI NtQuerySystemInformation(IN SYSTEM_INFORMATION_CLASS 
 {
     struct qemu_NtQuerySystemInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTQUERYSYSTEMINFORMATION);
-    call.SystemInformationClass = (uint64_t)SystemInformationClass;
-    call.SystemInformation = (uint64_t)SystemInformation;
-    call.Length = (uint64_t)Length;
-    call.ResultLength = (uint64_t)ResultLength;
+    call.SystemInformationClass = (ULONG_PTR)SystemInformationClass;
+    call.SystemInformation = (ULONG_PTR)SystemInformation;
+    call.Length = (ULONG_PTR)Length;
+    call.ResultLength = (ULONG_PTR)ResultLength;
 
     qemu_syscall(&call.super);
 
@@ -832,12 +832,12 @@ WINBASEAPI NTSTATUS WINAPI NtQuerySystemInformationEx(SYSTEM_INFORMATION_CLASS S
 {
     struct qemu_NtQuerySystemInformationEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTQUERYSYSTEMINFORMATIONEX);
-    call.SystemInformationClass = (uint64_t)SystemInformationClass;
-    call.Query = (uint64_t)Query;
-    call.QueryLength = (uint64_t)QueryLength;
-    call.SystemInformation = (uint64_t)SystemInformation;
-    call.Length = (uint64_t)Length;
-    call.ResultLength = (uint64_t)ResultLength;
+    call.SystemInformationClass = (ULONG_PTR)SystemInformationClass;
+    call.Query = (ULONG_PTR)Query;
+    call.QueryLength = (ULONG_PTR)QueryLength;
+    call.SystemInformation = (ULONG_PTR)SystemInformation;
+    call.Length = (ULONG_PTR)Length;
+    call.ResultLength = (ULONG_PTR)ResultLength;
 
     qemu_syscall(&call.super);
 
@@ -869,9 +869,9 @@ WINBASEAPI NTSTATUS WINAPI NtSetSystemInformation(SYSTEM_INFORMATION_CLASS Syste
 {
     struct qemu_NtSetSystemInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTSETSYSTEMINFORMATION);
-    call.SystemInformationClass = (uint64_t)SystemInformationClass;
-    call.SystemInformation = (uint64_t)SystemInformation;
-    call.Length = (uint64_t)Length;
+    call.SystemInformationClass = (ULONG_PTR)SystemInformationClass;
+    call.SystemInformation = (ULONG_PTR)SystemInformation;
+    call.Length = (ULONG_PTR)Length;
 
     qemu_syscall(&call.super);
 
@@ -904,10 +904,10 @@ WINBASEAPI NTSTATUS WINAPI NtCreatePagingFile(PUNICODE_STRING PageFileName, PLAR
 {
     struct qemu_NtCreatePagingFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCREATEPAGINGFILE);
-    call.PageFileName = (uint64_t)PageFileName;
-    call.MinimumSize = (uint64_t)MinimumSize;
-    call.MaximumSize = (uint64_t)MaximumSize;
-    call.ActualSize = (uint64_t)ActualSize;
+    call.PageFileName = (ULONG_PTR)PageFileName;
+    call.MinimumSize = (ULONG_PTR)MinimumSize;
+    call.MaximumSize = (ULONG_PTR)MaximumSize;
+    call.ActualSize = (ULONG_PTR)ActualSize;
 
     qemu_syscall(&call.super);
 
@@ -937,7 +937,7 @@ WINBASEAPI NTSTATUS WINAPI NtDisplayString (PUNICODE_STRING string)
 {
     struct qemu_NtDisplayString call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTDISPLAYSTRING);
-    call.string = (uint64_t)string;
+    call.string = (ULONG_PTR)string;
 
     qemu_syscall(&call.super);
 
@@ -970,10 +970,10 @@ WINBASEAPI NTSTATUS WINAPI NtInitiatePowerAction(IN POWER_ACTION SystemAction, I
 {
     struct qemu_NtInitiatePowerAction call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTINITIATEPOWERACTION);
-    call.SystemAction = (uint64_t)SystemAction;
-    call.MinSystemState = (uint64_t)MinSystemState;
-    call.Flags = (uint64_t)Flags;
-    call.Asynchronous = (uint64_t)Asynchronous;
+    call.SystemAction = (ULONG_PTR)SystemAction;
+    call.MinSystemState = (ULONG_PTR)MinSystemState;
+    call.Flags = (ULONG_PTR)Flags;
+    call.Asynchronous = (ULONG_PTR)Asynchronous;
 
     qemu_syscall(&call.super);
 
@@ -1007,11 +1007,11 @@ WINBASEAPI NTSTATUS WINAPI NtPowerInformation(IN POWER_INFORMATION_LEVEL Informa
 {
     struct qemu_NtPowerInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTPOWERINFORMATION);
-    call.InformationLevel = (uint64_t)InformationLevel;
-    call.lpInputBuffer = (uint64_t)lpInputBuffer;
-    call.nInputBufferSize = (uint64_t)nInputBufferSize;
-    call.lpOutputBuffer = (uint64_t)lpOutputBuffer;
-    call.nOutputBufferSize = (uint64_t)nOutputBufferSize;
+    call.InformationLevel = (ULONG_PTR)InformationLevel;
+    call.lpInputBuffer = (ULONG_PTR)lpInputBuffer;
+    call.nInputBufferSize = (ULONG_PTR)nInputBufferSize;
+    call.lpOutputBuffer = (ULONG_PTR)lpOutputBuffer;
+    call.nOutputBufferSize = (ULONG_PTR)nOutputBufferSize;
 
     qemu_syscall(&call.super);
 
@@ -1041,7 +1041,7 @@ WINBASEAPI NTSTATUS WINAPI NtShutdownSystem(SHUTDOWN_ACTION Action)
 {
     struct qemu_NtShutdownSystem call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTSHUTDOWNSYSTEM);
-    call.Action = (uint64_t)Action;
+    call.Action = (ULONG_PTR)Action;
 
     qemu_syscall(&call.super);
 
@@ -1071,7 +1071,7 @@ WINBASEAPI NTSTATUS WINAPI NtAllocateLocallyUniqueId(PLUID Luid)
 {
     struct qemu_NtAllocateLocallyUniqueId call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTALLOCATELOCALLYUNIQUEID);
-    call.Luid = (uint64_t)Luid;
+    call.Luid = (ULONG_PTR)Luid;
 
     qemu_syscall(&call.super);
 
@@ -1145,17 +1145,17 @@ WINBASEAPI NTSTATUS WINAPI NtAccessCheckAndAuditAlarm(PUNICODE_STRING SubsystemN
 {
     struct qemu_NtAccessCheckAndAuditAlarm call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTACCESSCHECKANDAUDITALARM);
-    call.SubsystemName = (uint64_t)SubsystemName;
-    call.HandleId = (uint64_t)HandleId;
-    call.ObjectTypeName = (uint64_t)ObjectTypeName;
-    call.ObjectName = (uint64_t)ObjectName;
-    call.SecurityDescriptor = (uint64_t)SecurityDescriptor;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
-    call.GenericMapping = (uint64_t)GenericMapping;
-    call.ObjectCreation = (uint64_t)ObjectCreation;
-    call.GrantedAccess = (uint64_t)GrantedAccess;
-    call.AccessStatus = (uint64_t)AccessStatus;
-    call.GenerateOnClose = (uint64_t)GenerateOnClose;
+    call.SubsystemName = (ULONG_PTR)SubsystemName;
+    call.HandleId = (ULONG_PTR)HandleId;
+    call.ObjectTypeName = (ULONG_PTR)ObjectTypeName;
+    call.ObjectName = (ULONG_PTR)ObjectName;
+    call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
+    call.GenericMapping = (ULONG_PTR)GenericMapping;
+    call.ObjectCreation = (ULONG_PTR)ObjectCreation;
+    call.GrantedAccess = (ULONG_PTR)GrantedAccess;
+    call.AccessStatus = (ULONG_PTR)AccessStatus;
+    call.GenerateOnClose = (ULONG_PTR)GenerateOnClose;
 
     qemu_syscall(&call.super);
 
@@ -1190,12 +1190,12 @@ WINBASEAPI NTSTATUS WINAPI NtSystemDebugControl(SYSDBG_COMMAND command, PVOID in
 {
     struct qemu_NtSystemDebugControl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTSYSTEMDEBUGCONTROL);
-    call.command = (uint64_t)command;
-    call.inbuffer = (uint64_t)inbuffer;
-    call.inbuflength = (uint64_t)inbuflength;
-    call.outbuffer = (uint64_t)outbuffer;
-    call.outbuflength = (uint64_t)outbuflength;
-    call.retlength = (uint64_t)retlength;
+    call.command = (ULONG_PTR)command;
+    call.inbuffer = (ULONG_PTR)inbuffer;
+    call.inbuflength = (ULONG_PTR)inbuflength;
+    call.outbuffer = (ULONG_PTR)outbuffer;
+    call.outbuflength = (ULONG_PTR)outbuflength;
+    call.retlength = (ULONG_PTR)retlength;
 
     qemu_syscall(&call.super);
 
@@ -1230,12 +1230,12 @@ WINBASEAPI NTSTATUS WINAPI NtSetLdtEntries(ULONG selector1, ULONG entry1_low, UL
 {
     struct qemu_NtSetLdtEntries call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTSETLDTENTRIES);
-    call.selector1 = (uint64_t)selector1;
-    call.entry1_low = (uint64_t)entry1_low;
-    call.entry1_high = (uint64_t)entry1_high;
-    call.selector2 = (uint64_t)selector2;
-    call.entry2_low = (uint64_t)entry2_low;
-    call.entry2_high = (uint64_t)entry2_high;
+    call.selector1 = (ULONG_PTR)selector1;
+    call.entry1_low = (ULONG_PTR)entry1_low;
+    call.entry1_high = (ULONG_PTR)entry1_high;
+    call.selector2 = (ULONG_PTR)selector2;
+    call.entry2_low = (ULONG_PTR)entry2_low;
+    call.entry2_high = (ULONG_PTR)entry2_high;
 
     qemu_syscall(&call.super);
 

@@ -58,11 +58,11 @@ WINBASEAPI BOOLEAN WINAPI RtlGetProductInfo(DWORD dwOSMajorVersion, DWORD dwOSMi
 {
     struct qemu_RtlGetProductInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETPRODUCTINFO);
-    call.dwOSMajorVersion = (uint64_t)dwOSMajorVersion;
-    call.dwOSMinorVersion = (uint64_t)dwOSMinorVersion;
-    call.dwSpMajorVersion = (uint64_t)dwSpMajorVersion;
-    call.dwSpMinorVersion = (uint64_t)dwSpMinorVersion;
-    call.pdwReturnedProductType = (uint64_t)pdwReturnedProductType;
+    call.dwOSMajorVersion = (ULONG_PTR)dwOSMajorVersion;
+    call.dwOSMinorVersion = (ULONG_PTR)dwOSMinorVersion;
+    call.dwSpMajorVersion = (ULONG_PTR)dwSpMajorVersion;
+    call.dwSpMinorVersion = (ULONG_PTR)dwSpMinorVersion;
+    call.pdwReturnedProductType = (ULONG_PTR)pdwReturnedProductType;
 
     qemu_syscall(&call.super);
 
@@ -92,7 +92,7 @@ WINBASEAPI NTSTATUS WINAPI RtlGetVersion(RTL_OSVERSIONINFOEXW *info)
 {
     struct qemu_RtlGetVersion call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETVERSION);
-    call.info = (uint64_t)info;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -124,9 +124,9 @@ WINBASEAPI void WINAPI RtlGetNtVersionNumbers(LPDWORD major, LPDWORD minor, LPDW
 {
     struct qemu_RtlGetNtVersionNumbers call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETNTVERSIONNUMBERS);
-    call.major = (uint64_t)major;
-    call.minor = (uint64_t)minor;
-    call.build = (uint64_t)build;
+    call.major = (ULONG_PTR)major;
+    call.minor = (ULONG_PTR)minor;
+    call.build = (ULONG_PTR)build;
 
     qemu_syscall(&call.super);
 }
@@ -156,7 +156,7 @@ WINBASEAPI BOOLEAN WINAPI RtlGetNtProductType(LPDWORD type)
 {
     struct qemu_RtlGetNtProductType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETNTPRODUCTTYPE);
-    call.type = (uint64_t)type;
+    call.type = (ULONG_PTR)type;
 
     qemu_syscall(&call.super);
 
@@ -188,9 +188,9 @@ WINBASEAPI NTSTATUS WINAPI RtlVerifyVersionInfo(const RTL_OSVERSIONINFOEXW *info
 {
     struct qemu_RtlVerifyVersionInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLVERIFYVERSIONINFO);
-    call.info = (uint64_t)info;
-    call.dwTypeMask = (uint64_t)dwTypeMask;
-    call.dwlConditionMask = (uint64_t)dwlConditionMask;
+    call.info = (ULONG_PTR)info;
+    call.dwTypeMask = (ULONG_PTR)dwTypeMask;
+    call.dwlConditionMask = (ULONG_PTR)dwlConditionMask;
 
     qemu_syscall(&call.super);
 

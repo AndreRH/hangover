@@ -45,12 +45,12 @@ WCHAR * CDECL NTDLL_wcsrchr(WCHAR *str, WCHAR ch)
 {
     struct qemu_wcsrchr call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WCSRCHR);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
     call.ch = ch;
 
     qemu_syscall(&call.super);
 
-    return (WCHAR *)call.super.iret;
+    return (WCHAR *)(ULONG_PTR)call.super.iret;
 }
 
 #else

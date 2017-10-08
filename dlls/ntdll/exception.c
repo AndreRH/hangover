@@ -48,7 +48,7 @@ void WINAPI ntdll_RtlRaiseStatus(NTSTATUS status)
 {
     struct qemu_RtlRaiseStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLRAISESTATUS);
-    call.status = (uint64_t)status;
+    call.status = (ULONG_PTR)status;
 
     qemu_syscall(&call.super);
 }
@@ -77,12 +77,12 @@ WINBASEAPI PVOID WINAPI RtlAddVectoredContinueHandler(ULONG first, PVECTORED_EXC
 {
     struct qemu_RtlAddVectoredContinueHandler call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLADDVECTOREDCONTINUEHANDLER);
-    call.first = (uint64_t)first;
-    call.func = (uint64_t)func;
+    call.first = (ULONG_PTR)first;
+    call.func = (ULONG_PTR)func;
 
     qemu_syscall(&call.super);
 
-    return (PVOID)call.super.iret;
+    return (PVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -93,7 +93,7 @@ void qemu_RtlAddVectoredContinueHandler(struct qemu_syscall *call)
 {
     struct qemu_RtlAddVectoredContinueHandler *c = (struct qemu_RtlAddVectoredContinueHandler *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RtlAddVectoredContinueHandler(c->first, QEMU_G2H(c->func));
+    c->super.iret = (ULONG_PTR)RtlAddVectoredContinueHandler(c->first, QEMU_G2H(c->func));
 }
 
 #endif
@@ -110,7 +110,7 @@ WINBASEAPI ULONG WINAPI RtlRemoveVectoredContinueHandler(PVOID handler)
 {
     struct qemu_RtlRemoveVectoredContinueHandler call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLREMOVEVECTOREDCONTINUEHANDLER);
-    call.handler = (uint64_t)handler;
+    call.handler = (ULONG_PTR)handler;
 
     qemu_syscall(&call.super);
 
@@ -143,12 +143,12 @@ WINBASEAPI PVOID WINAPI RtlAddVectoredExceptionHandler(ULONG first, PVECTORED_EX
 {
     struct qemu_RtlAddVectoredExceptionHandler call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLADDVECTOREDEXCEPTIONHANDLER);
-    call.first = (uint64_t)first;
-    call.func = (uint64_t)func;
+    call.first = (ULONG_PTR)first;
+    call.func = (ULONG_PTR)func;
 
     qemu_syscall(&call.super);
 
-    return (PVOID)call.super.iret;
+    return (PVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -157,7 +157,7 @@ void qemu_RtlAddVectoredExceptionHandler(struct qemu_syscall *call)
 {
     struct qemu_RtlAddVectoredExceptionHandler *c = (struct qemu_RtlAddVectoredExceptionHandler *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RtlAddVectoredExceptionHandler(c->first, QEMU_G2H(c->func));
+    c->super.iret = (ULONG_PTR)RtlAddVectoredExceptionHandler(c->first, QEMU_G2H(c->func));
 }
 
 #endif
@@ -174,7 +174,7 @@ WINBASEAPI ULONG WINAPI RtlRemoveVectoredExceptionHandler(PVOID handler)
 {
     struct qemu_RtlRemoveVectoredExceptionHandler call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLREMOVEVECTOREDEXCEPTIONHANDLER);
-    call.handler = (uint64_t)handler;
+    call.handler = (ULONG_PTR)handler;
 
     qemu_syscall(&call.super);
 
@@ -205,7 +205,7 @@ WINBASEAPI BOOLEAN CDECL RtlDeleteFunctionTable(RUNTIME_FUNCTION *table)
 {
     struct qemu_RtlDeleteFunctionTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLDELETEFUNCTIONTABLE);
-    call.table = (uint64_t)table;
+    call.table = (ULONG_PTR)table;
 
     qemu_syscall(&call.super);
 

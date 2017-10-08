@@ -59,16 +59,16 @@ WINBASEAPI HANDLE WINAPI RtlCreateHeap(ULONG flags, PVOID addr, SIZE_T totalSize
 {
     struct qemu_RtlCreateHeap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLCREATEHEAP);
-    call.flags = (uint64_t)flags;
-    call.addr = (uint64_t)addr;
-    call.totalSize = (uint64_t)totalSize;
-    call.commitSize = (uint64_t)commitSize;
-    call.unknown = (uint64_t)unknown;
-    call.definition = (uint64_t)definition;
+    call.flags = (ULONG_PTR)flags;
+    call.addr = (ULONG_PTR)addr;
+    call.totalSize = (ULONG_PTR)totalSize;
+    call.commitSize = (ULONG_PTR)commitSize;
+    call.unknown = (ULONG_PTR)unknown;
+    call.definition = (ULONG_PTR)definition;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -77,7 +77,7 @@ void qemu_RtlCreateHeap(struct qemu_syscall *call)
 {
     struct qemu_RtlCreateHeap *c = (struct qemu_RtlCreateHeap *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RtlCreateHeap(c->flags, QEMU_G2H(c->addr), c->totalSize, c->commitSize, QEMU_G2H(c->unknown), QEMU_G2H(c->definition));
+    c->super.iret = (ULONG_PTR)RtlCreateHeap(c->flags, QEMU_G2H(c->addr), c->totalSize, c->commitSize, QEMU_G2H(c->unknown), QEMU_G2H(c->definition));
 }
 
 #endif
@@ -94,11 +94,11 @@ WINBASEAPI HANDLE WINAPI RtlDestroyHeap(HANDLE heap)
 {
     struct qemu_RtlDestroyHeap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLDESTROYHEAP);
-    call.heap = (uint64_t)heap;
+    call.heap = (ULONG_PTR)heap;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -107,7 +107,7 @@ void qemu_RtlDestroyHeap(struct qemu_syscall *call)
 {
     struct qemu_RtlDestroyHeap *c = (struct qemu_RtlDestroyHeap *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RtlDestroyHeap(QEMU_G2H(c->heap));
+    c->super.iret = (ULONG_PTR)RtlDestroyHeap(QEMU_G2H(c->heap));
 }
 
 #endif
@@ -126,13 +126,13 @@ WINBASEAPI PVOID WINAPI RtlAllocateHeap(HANDLE heap, ULONG flags, SIZE_T size)
 {
     struct qemu_RtlAllocateHeap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLALLOCATEHEAP);
-    call.heap = (uint64_t)heap;
-    call.flags = (uint64_t)flags;
-    call.size = (uint64_t)size;
+    call.heap = (ULONG_PTR)heap;
+    call.flags = (ULONG_PTR)flags;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
-    return (PVOID)call.super.iret;
+    return (PVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -141,7 +141,7 @@ void qemu_RtlAllocateHeap(struct qemu_syscall *call)
 {
     struct qemu_RtlAllocateHeap *c = (struct qemu_RtlAllocateHeap *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RtlAllocateHeap(QEMU_G2H(c->heap), c->flags, c->size);
+    c->super.iret = (ULONG_PTR)RtlAllocateHeap(QEMU_G2H(c->heap), c->flags, c->size);
 }
 
 #endif
@@ -160,9 +160,9 @@ WINBASEAPI BOOLEAN WINAPI RtlFreeHeap(HANDLE heap, ULONG flags, PVOID ptr)
 {
     struct qemu_RtlFreeHeap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLFREEHEAP);
-    call.heap = (uint64_t)heap;
-    call.flags = (uint64_t)flags;
-    call.ptr = (uint64_t)ptr;
+    call.heap = (ULONG_PTR)heap;
+    call.flags = (ULONG_PTR)flags;
+    call.ptr = (ULONG_PTR)ptr;
 
     qemu_syscall(&call.super);
 
@@ -195,14 +195,14 @@ WINBASEAPI PVOID WINAPI RtlReAllocateHeap(HANDLE heap, ULONG flags, PVOID ptr, S
 {
     struct qemu_RtlReAllocateHeap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLREALLOCATEHEAP);
-    call.heap = (uint64_t)heap;
-    call.flags = (uint64_t)flags;
-    call.ptr = (uint64_t)ptr;
-    call.size = (uint64_t)size;
+    call.heap = (ULONG_PTR)heap;
+    call.flags = (ULONG_PTR)flags;
+    call.ptr = (ULONG_PTR)ptr;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
-    return (PVOID)call.super.iret;
+    return (PVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -211,7 +211,7 @@ void qemu_RtlReAllocateHeap(struct qemu_syscall *call)
 {
     struct qemu_RtlReAllocateHeap *c = (struct qemu_RtlReAllocateHeap *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RtlReAllocateHeap(QEMU_G2H(c->heap), c->flags, QEMU_G2H(c->ptr), c->size);
+    c->super.iret = (ULONG_PTR)RtlReAllocateHeap(QEMU_G2H(c->heap), c->flags, QEMU_G2H(c->ptr), c->size);
 }
 
 #endif
@@ -229,8 +229,8 @@ WINBASEAPI ULONG WINAPI RtlCompactHeap(HANDLE heap, ULONG flags)
 {
     struct qemu_RtlCompactHeap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLCOMPACTHEAP);
-    call.heap = (uint64_t)heap;
-    call.flags = (uint64_t)flags;
+    call.heap = (ULONG_PTR)heap;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -260,7 +260,7 @@ WINBASEAPI BOOLEAN WINAPI RtlLockHeap(HANDLE heap)
 {
     struct qemu_RtlLockHeap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLLOCKHEAP);
-    call.heap = (uint64_t)heap;
+    call.heap = (ULONG_PTR)heap;
 
     qemu_syscall(&call.super);
 
@@ -290,7 +290,7 @@ WINBASEAPI BOOLEAN WINAPI RtlUnlockHeap(HANDLE heap)
 {
     struct qemu_RtlUnlockHeap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLUNLOCKHEAP);
-    call.heap = (uint64_t)heap;
+    call.heap = (ULONG_PTR)heap;
 
     qemu_syscall(&call.super);
 
@@ -322,9 +322,9 @@ WINBASEAPI SIZE_T WINAPI RtlSizeHeap(HANDLE heap, ULONG flags, const void *ptr)
 {
     struct qemu_RtlSizeHeap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLSIZEHEAP);
-    call.heap = (uint64_t)heap;
-    call.flags = (uint64_t)flags;
-    call.ptr = (uint64_t)ptr;
+    call.heap = (ULONG_PTR)heap;
+    call.flags = (ULONG_PTR)flags;
+    call.ptr = (ULONG_PTR)ptr;
 
     qemu_syscall(&call.super);
 
@@ -356,9 +356,9 @@ WINBASEAPI BOOLEAN WINAPI RtlValidateHeap(HANDLE heap, ULONG flags, LPCVOID ptr)
 {
     struct qemu_RtlValidateHeap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLVALIDATEHEAP);
-    call.heap = (uint64_t)heap;
-    call.flags = (uint64_t)flags;
-    call.ptr = (uint64_t)ptr;
+    call.heap = (ULONG_PTR)heap;
+    call.flags = (ULONG_PTR)flags;
+    call.ptr = (ULONG_PTR)ptr;
 
     qemu_syscall(&call.super);
 
@@ -389,8 +389,8 @@ WINBASEAPI NTSTATUS WINAPI RtlWalkHeap(HANDLE heap, PVOID entry_ptr)
 {
     struct qemu_RtlWalkHeap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLWALKHEAP);
-    call.heap = (uint64_t)heap;
-    call.entry_ptr = (uint64_t)entry_ptr;
+    call.heap = (ULONG_PTR)heap;
+    call.entry_ptr = (ULONG_PTR)entry_ptr;
 
     qemu_syscall(&call.super);
 
@@ -421,8 +421,8 @@ WINBASEAPI ULONG WINAPI RtlGetProcessHeaps(ULONG count, HANDLE *heaps)
 {
     struct qemu_RtlGetProcessHeaps call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETPROCESSHEAPS);
-    call.count = (uint64_t)count;
-    call.heaps = (uint64_t)heaps;
+    call.count = (ULONG_PTR)count;
+    call.heaps = (ULONG_PTR)heaps;
 
     qemu_syscall(&call.super);
 
@@ -456,11 +456,11 @@ WINBASEAPI DWORD WINAPI RtlQueryHeapInformation(HANDLE heap, HEAP_INFORMATION_CL
 {
     struct qemu_RtlQueryHeapInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLQUERYHEAPINFORMATION);
-    call.heap = (uint64_t)heap;
-    call.info_class = (uint64_t)info_class;
-    call.info = (uint64_t)info;
-    call.size_in = (uint64_t)size_in;
-    call.size_out = (uint64_t)size_out;
+    call.heap = (ULONG_PTR)heap;
+    call.info_class = (ULONG_PTR)info_class;
+    call.info = (ULONG_PTR)info;
+    call.size_in = (ULONG_PTR)size_in;
+    call.size_out = (ULONG_PTR)size_out;
 
     qemu_syscall(&call.super);
 
@@ -493,10 +493,10 @@ WINBASEAPI DWORD WINAPI RtlSetHeapInformation(void *heap, HEAP_INFORMATION_CLASS
 {
     struct qemu_RtlSetHeapInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLSETHEAPINFORMATION);
-    call.heap = (uint64_t)heap;
-    call.info_class = (uint64_t)info_class;
-    call.info = (uint64_t)info;
-    call.size = (uint64_t)size;
+    call.heap = (ULONG_PTR)heap;
+    call.info_class = (ULONG_PTR)info_class;
+    call.info = (ULONG_PTR)info;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 

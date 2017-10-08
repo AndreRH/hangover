@@ -59,11 +59,11 @@ WINBASEAPI NTSTATUS WINAPI NtQueryObject(IN HANDLE handle, IN OBJECT_INFORMATION
 {
     struct qemu_NtQueryObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTQUERYOBJECT);
-    call.handle = (uint64_t)handle;
-    call.info_class = (uint64_t)info_class;
-    call.ptr = (uint64_t)ptr;
-    call.len = (uint64_t)len;
-    call.used_len = (uint64_t)used_len;
+    call.handle = (ULONG_PTR)handle;
+    call.info_class = (ULONG_PTR)info_class;
+    call.ptr = (ULONG_PTR)ptr;
+    call.len = (ULONG_PTR)len;
+    call.used_len = (ULONG_PTR)used_len;
 
     qemu_syscall(&call.super);
 
@@ -96,10 +96,10 @@ WINBASEAPI NTSTATUS WINAPI NtSetInformationObject(IN HANDLE handle, IN OBJECT_IN
 {
     struct qemu_NtSetInformationObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTSETINFORMATIONOBJECT);
-    call.handle = (uint64_t)handle;
-    call.info_class = (uint64_t)info_class;
-    call.ptr = (uint64_t)ptr;
-    call.len = (uint64_t)len;
+    call.handle = (ULONG_PTR)handle;
+    call.info_class = (ULONG_PTR)info_class;
+    call.ptr = (ULONG_PTR)ptr;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
@@ -133,11 +133,11 @@ WINBASEAPI NTSTATUS WINAPI NtQuerySecurityObject(IN HANDLE Object, IN SECURITY_I
 {
     struct qemu_NtQuerySecurityObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTQUERYSECURITYOBJECT);
-    call.Object = (uint64_t)Object;
-    call.RequestedInformation = (uint64_t)RequestedInformation;
-    call.pSecurityDescriptor = (uint64_t)pSecurityDescriptor;
-    call.Length = (uint64_t)Length;
-    call.ResultLength = (uint64_t)ResultLength;
+    call.Object = (ULONG_PTR)Object;
+    call.RequestedInformation = (ULONG_PTR)RequestedInformation;
+    call.pSecurityDescriptor = (ULONG_PTR)pSecurityDescriptor;
+    call.Length = (ULONG_PTR)Length;
+    call.ResultLength = (ULONG_PTR)ResultLength;
 
     qemu_syscall(&call.super);
 
@@ -173,13 +173,13 @@ WINBASEAPI NTSTATUS WINAPI NtDuplicateObject(HANDLE source_process, HANDLE sourc
 {
     struct qemu_NtDuplicateObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTDUPLICATEOBJECT);
-    call.source_process = (uint64_t)source_process;
-    call.source = (uint64_t)source;
-    call.dest_process = (uint64_t)dest_process;
-    call.dest = (uint64_t)dest;
-    call.access = (uint64_t)access;
-    call.attributes = (uint64_t)attributes;
-    call.options = (uint64_t)options;
+    call.source_process = (ULONG_PTR)source_process;
+    call.source = (ULONG_PTR)source;
+    call.dest_process = (ULONG_PTR)dest_process;
+    call.dest = (ULONG_PTR)dest;
+    call.access = (ULONG_PTR)access;
+    call.attributes = (ULONG_PTR)attributes;
+    call.options = (ULONG_PTR)options;
 
     qemu_syscall(&call.super);
 
@@ -209,7 +209,7 @@ WINBASEAPI NTSTATUS WINAPI NtClose(HANDLE Handle)
 {
     struct qemu_NtClose call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCLOSE);
-    call.Handle = (uint64_t)Handle;
+    call.Handle = (ULONG_PTR)Handle;
 
     qemu_syscall(&call.super);
 
@@ -241,9 +241,9 @@ WINBASEAPI NTSTATUS WINAPI NtOpenDirectoryObject(HANDLE *handle, ACCESS_MASK acc
 {
     struct qemu_NtOpenDirectoryObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTOPENDIRECTORYOBJECT);
-    call.handle = (uint64_t)handle;
-    call.access = (uint64_t)access;
-    call.attr = (uint64_t)attr;
+    call.handle = (ULONG_PTR)handle;
+    call.access = (ULONG_PTR)access;
+    call.attr = (ULONG_PTR)attr;
 
     qemu_syscall(&call.super);
 
@@ -275,9 +275,9 @@ WINBASEAPI NTSTATUS WINAPI NtCreateDirectoryObject(PHANDLE DirectoryHandle, ACCE
 {
     struct qemu_NtCreateDirectoryObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCREATEDIRECTORYOBJECT);
-    call.DirectoryHandle = (uint64_t)DirectoryHandle;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
-    call.attr = (uint64_t)attr;
+    call.DirectoryHandle = (ULONG_PTR)DirectoryHandle;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
+    call.attr = (ULONG_PTR)attr;
 
     qemu_syscall(&call.super);
 
@@ -313,13 +313,13 @@ WINBASEAPI NTSTATUS WINAPI NtQueryDirectoryObject(HANDLE handle, PDIRECTORY_BASI
 {
     struct qemu_NtQueryDirectoryObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTQUERYDIRECTORYOBJECT);
-    call.handle = (uint64_t)handle;
-    call.buffer = (uint64_t)buffer;
-    call.size = (uint64_t)size;
-    call.single_entry = (uint64_t)single_entry;
-    call.restart = (uint64_t)restart;
-    call.context = (uint64_t)context;
-    call.ret_size = (uint64_t)ret_size;
+    call.handle = (ULONG_PTR)handle;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = (ULONG_PTR)size;
+    call.single_entry = (ULONG_PTR)single_entry;
+    call.restart = (ULONG_PTR)restart;
+    call.context = (ULONG_PTR)context;
+    call.ret_size = (ULONG_PTR)ret_size;
 
     qemu_syscall(&call.super);
 
@@ -351,9 +351,9 @@ WINBASEAPI NTSTATUS WINAPI NtOpenSymbolicLinkObject(HANDLE *handle, ACCESS_MASK 
 {
     struct qemu_NtOpenSymbolicLinkObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTOPENSYMBOLICLINKOBJECT);
-    call.handle = (uint64_t)handle;
-    call.access = (uint64_t)access;
-    call.attr = (uint64_t)attr;
+    call.handle = (ULONG_PTR)handle;
+    call.access = (ULONG_PTR)access;
+    call.attr = (ULONG_PTR)attr;
 
     qemu_syscall(&call.super);
 
@@ -386,10 +386,10 @@ WINBASEAPI NTSTATUS WINAPI NtCreateSymbolicLinkObject(OUT PHANDLE SymbolicLinkHa
 {
     struct qemu_NtCreateSymbolicLinkObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCREATESYMBOLICLINKOBJECT);
-    call.SymbolicLinkHandle = (uint64_t)SymbolicLinkHandle;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
-    call.attr = (uint64_t)attr;
-    call.TargetName = (uint64_t)TargetName;
+    call.SymbolicLinkHandle = (ULONG_PTR)SymbolicLinkHandle;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
+    call.attr = (ULONG_PTR)attr;
+    call.TargetName = (ULONG_PTR)TargetName;
 
     qemu_syscall(&call.super);
 
@@ -421,9 +421,9 @@ WINBASEAPI NTSTATUS WINAPI NtQuerySymbolicLinkObject(HANDLE handle, PUNICODE_STR
 {
     struct qemu_NtQuerySymbolicLinkObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTQUERYSYMBOLICLINKOBJECT);
-    call.handle = (uint64_t)handle;
-    call.target = (uint64_t)target;
-    call.length = (uint64_t)length;
+    call.handle = (ULONG_PTR)handle;
+    call.target = (ULONG_PTR)target;
+    call.length = (ULONG_PTR)length;
 
     qemu_syscall(&call.super);
 
@@ -455,9 +455,9 @@ WINBASEAPI NTSTATUS WINAPI NtAllocateUuids(PULARGE_INTEGER Time, PULONG Range, P
 {
     struct qemu_NtAllocateUuids call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTALLOCATEUUIDS);
-    call.Time = (uint64_t)Time;
-    call.Range = (uint64_t)Range;
-    call.Sequence = (uint64_t)Sequence;
+    call.Time = (ULONG_PTR)Time;
+    call.Range = (ULONG_PTR)Range;
+    call.Sequence = (ULONG_PTR)Sequence;
 
     qemu_syscall(&call.super);
 
@@ -487,7 +487,7 @@ WINBASEAPI NTSTATUS WINAPI NtMakeTemporaryObject(HANDLE Handle)
 {
     struct qemu_NtMakeTemporaryObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTMAKETEMPORARYOBJECT);
-    call.Handle = (uint64_t)Handle;
+    call.Handle = (ULONG_PTR)Handle;
 
     qemu_syscall(&call.super);
 

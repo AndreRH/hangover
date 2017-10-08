@@ -45,13 +45,13 @@ WINBASEAPI void * CDECL NTDLL_memchr(const void *ptr, int c, size_t n)
 {
     struct qemu_memchr call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MEMCHR);
-    call.ptr = (uint64_t)ptr;
-    call.c = (uint64_t)c;
-    call.n = (uint64_t)n;
+    call.ptr = (ULONG_PTR)ptr;
+    call.c = (ULONG_PTR)c;
+    call.n = (ULONG_PTR)n;
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -79,9 +79,9 @@ WINBASEAPI int CDECL NTDLL_memcmp(const void *ptr1, const void *ptr2, size_t n)
 {
     struct qemu_memcmp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MEMCMP);
-    call.ptr1 = (uint64_t)ptr1;
-    call.ptr2 = (uint64_t)ptr2;
-    call.n = (uint64_t)n;
+    call.ptr1 = (ULONG_PTR)ptr1;
+    call.ptr2 = (ULONG_PTR)ptr2;
+    call.n = (ULONG_PTR)n;
 
     qemu_syscall(&call.super);
 
@@ -113,13 +113,13 @@ WINBASEAPI void * CDECL NTDLL_memcpy(void *dst, const void *src, size_t n)
 {
     struct qemu_memcpy call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MEMCPY);
-    call.dst = (uint64_t)dst;
-    call.src = (uint64_t)src;
-    call.n = (uint64_t)n;
+    call.dst = (ULONG_PTR)dst;
+    call.src = (ULONG_PTR)src;
+    call.n = (ULONG_PTR)n;
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -147,13 +147,13 @@ WINBASEAPI void * CDECL NTDLL_memmove(void *dst, const void *src, size_t n)
 {
     struct qemu_memmove call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MEMMOVE);
-    call.dst = (uint64_t)dst;
-    call.src = (uint64_t)src;
-    call.n = (uint64_t)n;
+    call.dst = (ULONG_PTR)dst;
+    call.src = (ULONG_PTR)src;
+    call.n = (ULONG_PTR)n;
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -181,13 +181,13 @@ WINBASEAPI void * CDECL NTDLL_memset(void *dst, int c, size_t n)
 {
     struct qemu_memset call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MEMSET);
-    call.dst = (uint64_t)dst;
-    call.c = (uint64_t)c;
-    call.n = (uint64_t)n;
+    call.dst = (ULONG_PTR)dst;
+    call.c = (ULONG_PTR)c;
+    call.n = (ULONG_PTR)n;
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -214,12 +214,12 @@ WINBASEAPI char * CDECL NTDLL_strcat(char *dst, const char *src)
 {
     struct qemu_strcat call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCAT);
-    call.dst = (uint64_t)dst;
-    call.src = (uint64_t)src;
+    call.dst = (ULONG_PTR)dst;
+    call.src = (ULONG_PTR)src;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -246,12 +246,12 @@ WINBASEAPI char * CDECL NTDLL_strchr(const char *str, int c)
 {
     struct qemu_strchr call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCHR);
-    call.str = (uint64_t)str;
-    call.c = (uint64_t)c;
+    call.str = (ULONG_PTR)str;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -278,8 +278,8 @@ WINBASEAPI int CDECL NTDLL_strcmp(const char *str1, const char *str2)
 {
     struct qemu_strcmp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCMP);
-    call.str1 = (uint64_t)str1;
-    call.str2 = (uint64_t)str2;
+    call.str1 = (ULONG_PTR)str1;
+    call.str2 = (ULONG_PTR)str2;
 
     qemu_syscall(&call.super);
 
@@ -310,12 +310,12 @@ WINBASEAPI char * CDECL NTDLL_strcpy(char *dst, const char *src)
 {
     struct qemu_strcpy call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCPY);
-    call.dst = (uint64_t)dst;
-    call.src = (uint64_t)src;
+    call.dst = (ULONG_PTR)dst;
+    call.src = (ULONG_PTR)src;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -342,8 +342,8 @@ WINBASEAPI size_t CDECL NTDLL_strcspn(const char *str, const char *reject)
 {
     struct qemu_strcspn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCSPN);
-    call.str = (uint64_t)str;
-    call.reject = (uint64_t)reject;
+    call.str = (ULONG_PTR)str;
+    call.reject = (ULONG_PTR)reject;
 
     qemu_syscall(&call.super);
 
@@ -373,7 +373,7 @@ WINBASEAPI size_t CDECL NTDLL_strlen(const char *str)
 {
     struct qemu_strlen call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRLEN);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -405,13 +405,13 @@ WINBASEAPI char * CDECL NTDLL_strncat(char *dst, const char *src, size_t len)
 {
     struct qemu_strncat call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRNCAT);
-    call.dst = (uint64_t)dst;
-    call.src = (uint64_t)src;
-    call.len = (uint64_t)len;
+    call.dst = (ULONG_PTR)dst;
+    call.src = (ULONG_PTR)src;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -439,9 +439,9 @@ WINBASEAPI int CDECL NTDLL_strncmp(const char *str1, const char *str2, size_t le
 {
     struct qemu_strncmp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRNCMP);
-    call.str1 = (uint64_t)str1;
-    call.str2 = (uint64_t)str2;
-    call.len = (uint64_t)len;
+    call.str1 = (ULONG_PTR)str1;
+    call.str2 = (ULONG_PTR)str2;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
@@ -473,13 +473,13 @@ WINBASEAPI char * CDECL NTDLL_strncpy(char *dst, const char *src, size_t len)
 {
     struct qemu_strncpy call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRNCPY);
-    call.dst = (uint64_t)dst;
-    call.src = (uint64_t)src;
-    call.len = (uint64_t)len;
+    call.dst = (ULONG_PTR)dst;
+    call.src = (ULONG_PTR)src;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -506,12 +506,12 @@ WINBASEAPI char * CDECL NTDLL_strpbrk(const char *str, const char *accept)
 {
     struct qemu_strpbrk call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRPBRK);
-    call.str = (uint64_t)str;
-    call.accept = (uint64_t)accept;
+    call.str = (ULONG_PTR)str;
+    call.accept = (ULONG_PTR)accept;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -538,12 +538,12 @@ WINBASEAPI char * CDECL NTDLL_strrchr(const char *str, int c)
 {
     struct qemu_strrchr call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRRCHR);
-    call.str = (uint64_t)str;
-    call.c = (uint64_t)c;
+    call.str = (ULONG_PTR)str;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -570,8 +570,8 @@ WINBASEAPI size_t CDECL NTDLL_strspn(const char *str, const char *accept)
 {
     struct qemu_strspn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRSPN);
-    call.str = (uint64_t)str;
-    call.accept = (uint64_t)accept;
+    call.str = (ULONG_PTR)str;
+    call.accept = (ULONG_PTR)accept;
 
     qemu_syscall(&call.super);
 
@@ -602,12 +602,12 @@ WINBASEAPI char * CDECL NTDLL_strstr(const char *haystack, const char *needle)
 {
     struct qemu_strstr call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRSTR);
-    call.haystack = (uint64_t)haystack;
-    call.needle = (uint64_t)needle;
+    call.haystack = (ULONG_PTR)haystack;
+    call.needle = (ULONG_PTR)needle;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -636,14 +636,14 @@ WINBASEAPI void * CDECL _memccpy(void *dst, const void *src, int c, size_t n)
 {
     struct qemu__memccpy call;
     call.super.id = QEMU_SYSCALL_ID(CALL__MEMCCPY);
-    call.dst = (uint64_t)dst;
-    call.src = (uint64_t)src;
-    call.c = (uint64_t)c;
-    call.n = (uint64_t)n;
+    call.dst = (ULONG_PTR)dst;
+    call.src = (ULONG_PTR)src;
+    call.c = (ULONG_PTR)c;
+    call.n = (ULONG_PTR)n;
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -671,9 +671,9 @@ WINBASEAPI INT CDECL NTDLL__memicmp(LPCSTR s1, LPCSTR s2, DWORD len)
 {
     struct qemu__memicmp call;
     call.super.id = QEMU_SYSCALL_ID(CALL__MEMICMP);
-    call.s1 = (uint64_t)s1;
-    call.s2 = (uint64_t)s2;
-    call.len = (uint64_t)len;
+    call.s1 = (ULONG_PTR)s1;
+    call.s2 = (ULONG_PTR)s2;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
@@ -704,8 +704,8 @@ WINBASEAPI int CDECL _stricmp(LPCSTR str1, LPCSTR str2)
 {
     struct qemu__stricmp call;
     call.super.id = QEMU_SYSCALL_ID(CALL__STRICMP);
-    call.str1 = (uint64_t)str1;
-    call.str2 = (uint64_t)str2;
+    call.str1 = (ULONG_PTR)str1;
+    call.str2 = (ULONG_PTR)str2;
 
     qemu_syscall(&call.super);
 
@@ -737,9 +737,9 @@ WINBASEAPI int CDECL _strnicmp(LPCSTR str1, LPCSTR str2, size_t n)
 {
     struct qemu__strnicmp call;
     call.super.id = QEMU_SYSCALL_ID(CALL__STRNICMP);
-    call.str1 = (uint64_t)str1;
-    call.str2 = (uint64_t)str2;
-    call.n = (uint64_t)n;
+    call.str1 = (ULONG_PTR)str1;
+    call.str2 = (ULONG_PTR)str2;
+    call.n = (ULONG_PTR)n;
 
     qemu_syscall(&call.super);
 
@@ -769,11 +769,11 @@ WINBASEAPI LPSTR CDECL _strupr(LPSTR str)
 {
     struct qemu__strupr call;
     call.super.id = QEMU_SYSCALL_ID(CALL__STRUPR);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -799,11 +799,11 @@ WINBASEAPI LPSTR CDECL _strlwr(LPSTR str)
 {
     struct qemu__strlwr call;
     call.super.id = QEMU_SYSCALL_ID(CALL__STRLWR);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -829,7 +829,7 @@ WINBASEAPI int CDECL NTDLL_tolower(int c)
 {
     struct qemu_tolower call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TOLOWER);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -859,7 +859,7 @@ WINBASEAPI int CDECL NTDLL_toupper(int c)
 {
     struct qemu_toupper call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TOUPPER);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -889,7 +889,7 @@ WINBASEAPI int CDECL NTDLL_isalnum(int c)
 {
     struct qemu_isalnum call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISALNUM);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -919,7 +919,7 @@ WINBASEAPI int CDECL NTDLL_isalpha(int c)
 {
     struct qemu_isalpha call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISALPHA);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -949,7 +949,7 @@ WINBASEAPI int CDECL NTDLL_iscntrl(int c)
 {
     struct qemu_iscntrl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISCNTRL);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -979,7 +979,7 @@ WINBASEAPI int CDECL NTDLL_isdigit(int c)
 {
     struct qemu_isdigit call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISDIGIT);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -1009,7 +1009,7 @@ WINBASEAPI int CDECL NTDLL_isgraph(int c)
 {
     struct qemu_isgraph call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISGRAPH);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -1039,7 +1039,7 @@ WINBASEAPI int CDECL NTDLL_islower(int c)
 {
     struct qemu_islower call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISLOWER);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -1069,7 +1069,7 @@ WINBASEAPI int CDECL NTDLL_isprint(int c)
 {
     struct qemu_isprint call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISPRINT);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -1099,7 +1099,7 @@ WINBASEAPI int CDECL NTDLL_ispunct(int c)
 {
     struct qemu_ispunct call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISPUNCT);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -1129,7 +1129,7 @@ WINBASEAPI int CDECL NTDLL_isspace(int c)
 {
     struct qemu_isspace call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISSPACE);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -1159,7 +1159,7 @@ WINBASEAPI int CDECL NTDLL_isupper(int c)
 {
     struct qemu_isupper call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISUPPER);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -1189,7 +1189,7 @@ WINBASEAPI int CDECL NTDLL_isxdigit(int c)
 {
     struct qemu_isxdigit call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISXDIGIT);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -1219,7 +1219,7 @@ WINBASEAPI int CDECL NTDLL___isascii(int c)
 {
     struct qemu___isascii call;
     call.super.id = QEMU_SYSCALL_ID(CALL___ISASCII);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -1249,7 +1249,7 @@ WINBASEAPI int CDECL NTDLL___toascii(int c)
 {
     struct qemu___toascii call;
     call.super.id = QEMU_SYSCALL_ID(CALL___TOASCII);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -1279,7 +1279,7 @@ WINBASEAPI int CDECL NTDLL___iscsym(int c)
 {
     struct qemu___iscsym call;
     call.super.id = QEMU_SYSCALL_ID(CALL___ISCSYM);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -1309,7 +1309,7 @@ WINBASEAPI int CDECL NTDLL___iscsymf(int c)
 {
     struct qemu___iscsymf call;
     call.super.id = QEMU_SYSCALL_ID(CALL___ISCSYMF);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -1339,7 +1339,7 @@ WINBASEAPI int CDECL NTDLL__toupper(int c)
 {
     struct qemu__toupper call;
     call.super.id = QEMU_SYSCALL_ID(CALL__TOUPPER);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -1369,7 +1369,7 @@ WINBASEAPI int CDECL NTDLL__tolower(int c)
 {
     struct qemu__tolower call;
     call.super.id = QEMU_SYSCALL_ID(CALL__TOLOWER);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -1401,9 +1401,9 @@ WINBASEAPI LONG CDECL NTDLL_strtol(const char *nptr, char **endptr, int base)
 {
     struct qemu_strtol call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRTOL);
-    call.nptr = (uint64_t)nptr;
-    call.endptr = (uint64_t)endptr;
-    call.base = (uint64_t)base;
+    call.nptr = (ULONG_PTR)nptr;
+    call.endptr = (ULONG_PTR)endptr;
+    call.base = (ULONG_PTR)base;
 
     qemu_syscall(&call.super);
 
@@ -1435,9 +1435,9 @@ WINBASEAPI ULONG CDECL NTDLL_strtoul(const char *nptr, char **endptr, int base)
 {
     struct qemu_strtoul call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRTOUL);
-    call.nptr = (uint64_t)nptr;
-    call.endptr = (uint64_t)endptr;
-    call.base = (uint64_t)base;
+    call.nptr = (ULONG_PTR)nptr;
+    call.endptr = (ULONG_PTR)endptr;
+    call.base = (ULONG_PTR)base;
 
     qemu_syscall(&call.super);
 
@@ -1469,13 +1469,13 @@ WINBASEAPI char * CDECL _ultoa(ULONG value, char *str, int radix)
 {
     struct qemu__ultoa call;
     call.super.id = QEMU_SYSCALL_ID(CALL__ULTOA);
-    call.value = (uint64_t)value;
-    call.str = (uint64_t)str;
-    call.radix = (uint64_t)radix;
+    call.value = (ULONG_PTR)value;
+    call.str = (ULONG_PTR)str;
+    call.radix = (ULONG_PTR)radix;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1503,13 +1503,13 @@ WINBASEAPI char * CDECL _ltoa(LONG value, char *str, int radix)
 {
     struct qemu__ltoa call;
     call.super.id = QEMU_SYSCALL_ID(CALL__LTOA);
-    call.value = (uint64_t)value;
-    call.str = (uint64_t)str;
-    call.radix = (uint64_t)radix;
+    call.value = (ULONG_PTR)value;
+    call.str = (ULONG_PTR)str;
+    call.radix = (ULONG_PTR)radix;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1537,13 +1537,13 @@ WINBASEAPI char * CDECL _itoa(int value, char *str, int radix)
 {
     struct qemu__itoa call;
     call.super.id = QEMU_SYSCALL_ID(CALL__ITOA);
-    call.value = (uint64_t)value;
-    call.str = (uint64_t)str;
-    call.radix = (uint64_t)radix;
+    call.value = (ULONG_PTR)value;
+    call.str = (ULONG_PTR)str;
+    call.radix = (ULONG_PTR)radix;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1571,13 +1571,13 @@ WINBASEAPI char * CDECL _ui64toa(ULONGLONG value, char *str, int radix)
 {
     struct qemu__ui64toa call;
     call.super.id = QEMU_SYSCALL_ID(CALL__UI64TOA);
-    call.value = (uint64_t)value;
-    call.str = (uint64_t)str;
-    call.radix = (uint64_t)radix;
+    call.value = (ULONG_PTR)value;
+    call.str = (ULONG_PTR)str;
+    call.radix = (ULONG_PTR)radix;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1605,13 +1605,13 @@ WINBASEAPI char * CDECL _i64toa(LONGLONG value, char *str, int radix)
 {
     struct qemu__i64toa call;
     call.super.id = QEMU_SYSCALL_ID(CALL__I64TOA);
-    call.value = (uint64_t)value;
-    call.str = (uint64_t)str;
-    call.radix = (uint64_t)radix;
+    call.value = (ULONG_PTR)value;
+    call.str = (ULONG_PTR)str;
+    call.radix = (ULONG_PTR)radix;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1637,7 +1637,7 @@ WINBASEAPI LONGLONG CDECL _atoi64(const char *str)
 {
     struct qemu__atoi64 call;
     call.super.id = QEMU_SYSCALL_ID(CALL__ATOI64);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -1667,7 +1667,7 @@ WINBASEAPI int CDECL NTDLL_atoi(const char *nptr)
 {
     struct qemu_atoi call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ATOI);
-    call.nptr = (uint64_t)nptr;
+    call.nptr = (ULONG_PTR)nptr;
 
     qemu_syscall(&call.super);
 
@@ -1697,7 +1697,7 @@ WINBASEAPI LONG CDECL NTDLL_atol(const char *nptr)
 {
     struct qemu_atol call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ATOL);
-    call.nptr = (uint64_t)nptr;
+    call.nptr = (ULONG_PTR)nptr;
 
     qemu_syscall(&call.super);
 
@@ -1731,11 +1731,11 @@ WINBASEAPI void CDECL _splitpath(const char* inpath, char * drv, char * dir, cha
 {
     struct qemu__splitpath call;
     call.super.id = QEMU_SYSCALL_ID(CALL__SPLITPATH);
-    call.inpath = (uint64_t)inpath;
-    call.drv = (uint64_t)drv;
-    call.dir = (uint64_t)dir;
-    call.fname = (uint64_t)fname;
-    call.ext = (uint64_t)ext;
+    call.inpath = (ULONG_PTR)inpath;
+    call.drv = (ULONG_PTR)drv;
+    call.dir = (ULONG_PTR)dir;
+    call.fname = (ULONG_PTR)fname;
+    call.ext = (ULONG_PTR)ext;
 
     qemu_syscall(&call.super);
 }

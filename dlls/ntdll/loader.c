@@ -60,8 +60,8 @@ NTSTATUS WINAPI ntdll_LdrFindEntryForAddress(const void *addr, LDR_MODULE **mod)
      * PE loader. */
     struct qemu_LdrFindEntryForAddress call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LDRFINDENTRYFORADDRESS);
-    call.addr = (uint64_t)addr;
-    call.mod = (uint64_t)mod;
+    call.addr = (ULONG_PTR)addr;
+    call.mod = (ULONG_PTR)mod;
 
     qemu_syscall(&call.super);
 
@@ -81,7 +81,7 @@ void qemu_LdrFindEntryForAddress(struct qemu_syscall *call)
     else
         c->super.iret = STATUS_NO_MORE_ENTRIES;
 
-    *(uint64_t *)QEMU_G2H(c->mod) = (uint64_t)mod;
+    *(uint64_t *)QEMU_G2H(c->mod) = (ULONG_PTR)mod;
 }
 
 #endif
@@ -190,12 +190,12 @@ WINBASEAPI void * WINAPI RtlPcToFileHeader(void *pc, void **address)
 {
     struct qemu_RtlPcToFileHeader call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLPCTOFILEHEADER);
-    call.pc = (uint64_t)pc;
-    call.address = (uint64_t)address;
+    call.pc = (ULONG_PTR)pc;
+    call.address = (ULONG_PTR)address;
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else

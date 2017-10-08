@@ -50,7 +50,7 @@ WINBASEAPI NTSTATUS WINAPI WinSqmEndSession(HANDLE session)
 {
     struct qemu_WinSqmEndSession call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WINSQMENDSESSION);
-    call.session = (uint64_t)session;
+    call.session = (ULONG_PTR)session;
 
     qemu_syscall(&call.super);
 
@@ -114,13 +114,13 @@ WINBASEAPI HANDLE WINAPI WinSqmStartSession(GUID *sessionguid, DWORD sessionid, 
 {
     struct qemu_WinSqmStartSession call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WINSQMSTARTSESSION);
-    call.sessionguid = (uint64_t)sessionguid;
-    call.sessionid = (uint64_t)sessionid;
-    call.unknown1 = (uint64_t)unknown1;
+    call.sessionguid = (ULONG_PTR)sessionguid;
+    call.sessionid = (ULONG_PTR)sessionid;
+    call.unknown1 = (ULONG_PTR)unknown1;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -131,7 +131,7 @@ void qemu_WinSqmStartSession(struct qemu_syscall *call)
 {
     struct qemu_WinSqmStartSession *c = (struct qemu_WinSqmStartSession *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)WinSqmStartSession(QEMU_G2H(c->sessionguid), c->sessionid, c->unknown1);
+    c->super.iret = (ULONG_PTR)WinSqmStartSession(QEMU_G2H(c->sessionguid), c->sessionid, c->unknown1);
 }
 
 #endif
@@ -151,10 +151,10 @@ WINBASEAPI ULONG WINAPI EtwEventRegister(LPCGUID provider, PENABLECALLBACK callb
 {
     struct qemu_EtwEventRegister call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ETWEVENTREGISTER);
-    call.provider = (uint64_t)provider;
-    call.callback = (uint64_t)callback;
-    call.context = (uint64_t)context;
-    call.handle = (uint64_t)handle;
+    call.provider = (ULONG_PTR)provider;
+    call.callback = (ULONG_PTR)callback;
+    call.context = (ULONG_PTR)context;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -186,7 +186,7 @@ WINBASEAPI ULONG WINAPI EtwEventUnregister(REGHANDLE handle)
 {
     struct qemu_EtwEventUnregister call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ETWEVENTUNREGISTER);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -221,10 +221,10 @@ WINBASEAPI ULONG WINAPI EtwEventSetInformation(REGHANDLE handle, EVENT_INFO_CLAS
 {
     struct qemu_EtwEventSetInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ETWEVENTSETINFORMATION);
-    call.handle = (uint64_t)handle;
-    call.class = (uint64_t)class;
-    call.info = (uint64_t)info;
-    call.length = (uint64_t)length;
+    call.handle = (ULONG_PTR)handle;
+    call.class = (ULONG_PTR)class;
+    call.info = (ULONG_PTR)info;
+    call.length = (ULONG_PTR)length;
 
     qemu_syscall(&call.super);
 
@@ -263,14 +263,14 @@ WINBASEAPI ULONG WINAPI EtwRegisterTraceGuidsW(WMIDPREQUEST RequestAddress, void
 {
     struct qemu_EtwRegisterTraceGuidsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ETWREGISTERTRACEGUIDSW);
-    call.RequestAddress = (uint64_t)RequestAddress;
-    call.RequestContext = (uint64_t)RequestContext;
-    call.ControlGuid = (uint64_t)ControlGuid;
-    call.GuidCount = (uint64_t)GuidCount;
-    call.TraceGuidReg = (uint64_t)TraceGuidReg;
-    call.MofImagePath = (uint64_t)MofImagePath;
-    call.MofResourceName = (uint64_t)MofResourceName;
-    call.RegistrationHandle = (uint64_t)RegistrationHandle;
+    call.RequestAddress = (ULONG_PTR)RequestAddress;
+    call.RequestContext = (ULONG_PTR)RequestContext;
+    call.ControlGuid = (ULONG_PTR)ControlGuid;
+    call.GuidCount = (ULONG_PTR)GuidCount;
+    call.TraceGuidReg = (ULONG_PTR)TraceGuidReg;
+    call.MofImagePath = (ULONG_PTR)MofImagePath;
+    call.MofResourceName = (ULONG_PTR)MofResourceName;
+    call.RegistrationHandle = (ULONG_PTR)RegistrationHandle;
 
     qemu_syscall(&call.super);
 
@@ -309,14 +309,14 @@ WINBASEAPI ULONG WINAPI EtwRegisterTraceGuidsA(WMIDPREQUEST RequestAddress, void
 {
     struct qemu_EtwRegisterTraceGuidsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ETWREGISTERTRACEGUIDSA);
-    call.RequestAddress = (uint64_t)RequestAddress;
-    call.RequestContext = (uint64_t)RequestContext;
-    call.ControlGuid = (uint64_t)ControlGuid;
-    call.GuidCount = (uint64_t)GuidCount;
-    call.TraceGuidReg = (uint64_t)TraceGuidReg;
-    call.MofImagePath = (uint64_t)MofImagePath;
-    call.MofResourceName = (uint64_t)MofResourceName;
-    call.RegistrationHandle = (uint64_t)RegistrationHandle;
+    call.RequestAddress = (ULONG_PTR)RequestAddress;
+    call.RequestContext = (ULONG_PTR)RequestContext;
+    call.ControlGuid = (ULONG_PTR)ControlGuid;
+    call.GuidCount = (ULONG_PTR)GuidCount;
+    call.TraceGuidReg = (ULONG_PTR)TraceGuidReg;
+    call.MofImagePath = (ULONG_PTR)MofImagePath;
+    call.MofResourceName = (ULONG_PTR)MofResourceName;
+    call.RegistrationHandle = (ULONG_PTR)RegistrationHandle;
 
     qemu_syscall(&call.super);
 
@@ -348,7 +348,7 @@ WINBASEAPI ULONG WINAPI EtwUnregisterTraceGuids(TRACEHANDLE RegistrationHandle)
 {
     struct qemu_EtwUnregisterTraceGuids call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ETWUNREGISTERTRACEGUIDS);
-    call.RegistrationHandle = (uint64_t)RegistrationHandle;
+    call.RegistrationHandle = (ULONG_PTR)RegistrationHandle;
 
     qemu_syscall(&call.super);
 
@@ -381,8 +381,8 @@ WINBASEAPI BOOLEAN WINAPI EtwEventEnabled(REGHANDLE handle, const EVENT_DESCRIPT
 {
     struct qemu_EtwEventEnabled call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ETWEVENTENABLED);
-    call.handle = (uint64_t)handle;
-    call.descriptor = (uint64_t)descriptor;
+    call.handle = (ULONG_PTR)handle;
+    call.descriptor = (ULONG_PTR)descriptor;
 
     qemu_syscall(&call.super);
 
@@ -417,10 +417,10 @@ WINBASEAPI ULONG WINAPI EtwEventWrite(REGHANDLE handle, const EVENT_DESCRIPTOR *
 {
     struct qemu_EtwEventWrite call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ETWEVENTWRITE);
-    call.handle = (uint64_t)handle;
-    call.descriptor = (uint64_t)descriptor;
-    call.count = (uint64_t)count;
-    call.data = (uint64_t)data;
+    call.handle = (ULONG_PTR)handle;
+    call.descriptor = (ULONG_PTR)descriptor;
+    call.count = (ULONG_PTR)count;
+    call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
 

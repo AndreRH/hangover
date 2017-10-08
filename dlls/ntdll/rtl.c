@@ -57,7 +57,7 @@ WINBASEAPI void WINAPI RtlInitializeResource(LPRTL_RWLOCK rwl)
 {
     struct qemu_RtlInitializeResource call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLINITIALIZERESOURCE);
-    call.rwl = (uint64_t)rwl;
+    call.rwl = (ULONG_PTR)rwl;
 
     qemu_syscall(&call.super);
 }
@@ -85,7 +85,7 @@ WINBASEAPI void WINAPI RtlDeleteResource(LPRTL_RWLOCK rwl)
 {
     struct qemu_RtlDeleteResource call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLDELETERESOURCE);
-    call.rwl = (uint64_t)rwl;
+    call.rwl = (ULONG_PTR)rwl;
 
     qemu_syscall(&call.super);
 }
@@ -114,8 +114,8 @@ WINBASEAPI BYTE WINAPI RtlAcquireResourceExclusive(LPRTL_RWLOCK rwl, BYTE fWait)
 {
     struct qemu_RtlAcquireResourceExclusive call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLACQUIRERESOURCEEXCLUSIVE);
-    call.rwl = (uint64_t)rwl;
-    call.fWait = (uint64_t)fWait;
+    call.rwl = (ULONG_PTR)rwl;
+    call.fWait = (ULONG_PTR)fWait;
 
     qemu_syscall(&call.super);
 
@@ -146,8 +146,8 @@ WINBASEAPI BYTE WINAPI RtlAcquireResourceShared(LPRTL_RWLOCK rwl, BYTE fWait)
 {
     struct qemu_RtlAcquireResourceShared call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLACQUIRERESOURCESHARED);
-    call.rwl = (uint64_t)rwl;
-    call.fWait = (uint64_t)fWait;
+    call.rwl = (ULONG_PTR)rwl;
+    call.fWait = (ULONG_PTR)fWait;
 
     qemu_syscall(&call.super);
 
@@ -177,7 +177,7 @@ WINBASEAPI void WINAPI RtlReleaseResource(LPRTL_RWLOCK rwl)
 {
     struct qemu_RtlReleaseResource call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLRELEASERESOURCE);
-    call.rwl = (uint64_t)rwl;
+    call.rwl = (ULONG_PTR)rwl;
 
     qemu_syscall(&call.super);
 }
@@ -205,7 +205,7 @@ WINBASEAPI void WINAPI RtlDumpResource(LPRTL_RWLOCK rwl)
 {
     struct qemu_RtlDumpResource call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLDUMPRESOURCE);
-    call.rwl = (uint64_t)rwl;
+    call.rwl = (ULONG_PTR)rwl;
 
     qemu_syscall(&call.super);
 }
@@ -290,12 +290,12 @@ WINBASEAPI NTSTATUS WINAPI RtlNewSecurityObject(PSECURITY_DESCRIPTOR ParentDescr
 {
     struct qemu_RtlNewSecurityObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLNEWSECURITYOBJECT);
-    call.ParentDescriptor = (uint64_t)ParentDescriptor;
-    call.CreatorDescriptor = (uint64_t)CreatorDescriptor;
-    call.NewDescriptor = (uint64_t)NewDescriptor;
-    call.IsDirectoryObject = (uint64_t)IsDirectoryObject;
-    call.Token = (uint64_t)Token;
-    call.GenericMapping = (uint64_t)GenericMapping;
+    call.ParentDescriptor = (ULONG_PTR)ParentDescriptor;
+    call.CreatorDescriptor = (ULONG_PTR)CreatorDescriptor;
+    call.NewDescriptor = (ULONG_PTR)NewDescriptor;
+    call.IsDirectoryObject = (ULONG_PTR)IsDirectoryObject;
+    call.Token = (ULONG_PTR)Token;
+    call.GenericMapping = (ULONG_PTR)GenericMapping;
 
     qemu_syscall(&call.super);
 
@@ -325,7 +325,7 @@ WINBASEAPI NTSTATUS WINAPI RtlDeleteSecurityObject(PSECURITY_DESCRIPTOR *ObjectD
 {
     struct qemu_RtlDeleteSecurityObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLDELETESECURITYOBJECT);
-    call.ObjectDescriptor = (uint64_t)ObjectDescriptor;
+    call.ObjectDescriptor = (ULONG_PTR)ObjectDescriptor;
 
     qemu_syscall(&call.super);
 
@@ -359,15 +359,15 @@ WINBASEAPI PVOID WINAPI RtlInitializeGenericTable(PVOID pTable, PVOID arg2, PVOI
 {
     struct qemu_RtlInitializeGenericTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLINITIALIZEGENERICTABLE);
-    call.pTable = (uint64_t)pTable;
-    call.arg2 = (uint64_t)arg2;
-    call.arg3 = (uint64_t)arg3;
-    call.arg4 = (uint64_t)arg4;
-    call.arg5 = (uint64_t)arg5;
+    call.pTable = (ULONG_PTR)pTable;
+    call.arg2 = (ULONG_PTR)arg2;
+    call.arg3 = (ULONG_PTR)arg3;
+    call.arg4 = (ULONG_PTR)arg4;
+    call.arg5 = (ULONG_PTR)arg5;
 
     qemu_syscall(&call.super);
 
-    return (PVOID)call.super.iret;
+    return (PVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -378,7 +378,7 @@ void qemu_RtlInitializeGenericTable(struct qemu_syscall *call)
 {
     struct qemu_RtlInitializeGenericTable *c = (struct qemu_RtlInitializeGenericTable *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RtlInitializeGenericTable(QEMU_G2H(c->pTable), QEMU_G2H(c->arg2), QEMU_G2H(c->arg3), QEMU_G2H(c->arg4), QEMU_G2H(c->arg5));
+    c->super.iret = (ULONG_PTR)RtlInitializeGenericTable(QEMU_G2H(c->pTable), QEMU_G2H(c->arg2), QEMU_G2H(c->arg3), QEMU_G2H(c->arg4), QEMU_G2H(c->arg5));
 }
 
 #endif
@@ -396,8 +396,8 @@ WINBASEAPI VOID WINAPI ntdll_RtlZeroMemory(VOID *Destination, SIZE_T Length)
 {
     struct qemu_RtlZeroMemory call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLZEROMEMORY);
-    call.Destination = (uint64_t)Destination;
-    call.Length = (uint64_t)Length;
+    call.Destination = (ULONG_PTR)Destination;
+    call.Length = (ULONG_PTR)Length;
 
     qemu_syscall(&call.super);
 }
@@ -427,9 +427,9 @@ WINBASEAPI VOID WINAPI ntdll_RtlMoveMemory(void *Destination, const void *Source
 {
     struct qemu_RtlMoveMemory call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLMOVEMEMORY);
-    call.Destination = (uint64_t)Destination;
-    call.Source = (uint64_t)Source;
-    call.Length = (uint64_t)Length;
+    call.Destination = (ULONG_PTR)Destination;
+    call.Source = (ULONG_PTR)Source;
+    call.Length = (ULONG_PTR)Length;
 
     qemu_syscall(&call.super);
 }
@@ -459,9 +459,9 @@ WINBASEAPI void WINAPI ntdll_RtlCopyMemory(void *dest, const void *src, SIZE_T l
 {
     struct qemu_RtlCopyMemory call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLCOPYMEMORY);
-    call.dest = (uint64_t)dest;
-    call.src = (uint64_t)src;
-    call.len = (uint64_t)len;
+    call.dest = (ULONG_PTR)dest;
+    call.src = (ULONG_PTR)src;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 }
@@ -491,9 +491,9 @@ void WINAPI ntdll_RtlFillMemory(VOID *Destination, SIZE_T Length, BYTE Fill)
 {
     struct qemu_RtlFillMemory call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLFILLMEMORY);
-    call.Destination = (uint64_t)Destination;
-    call.Length = (uint64_t)Length;
-    call.Fill = (uint64_t)Fill;
+    call.Destination = (ULONG_PTR)Destination;
+    call.Length = (ULONG_PTR)Length;
+    call.Fill = (ULONG_PTR)Fill;
 
     qemu_syscall(&call.super);
 }
@@ -523,9 +523,9 @@ WINBASEAPI SIZE_T WINAPI RtlCompareMemory(const void *Source1, const void *Sourc
 {
     struct qemu_RtlCompareMemory call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLCOMPAREMEMORY);
-    call.Source1 = (uint64_t)Source1;
-    call.Source2 = (uint64_t)Source2;
-    call.Length = (uint64_t)Length;
+    call.Source1 = (ULONG_PTR)Source1;
+    call.Source2 = (ULONG_PTR)Source2;
+    call.Length = (ULONG_PTR)Length;
 
     qemu_syscall(&call.super);
 
@@ -559,9 +559,9 @@ WINBASEAPI SIZE_T WINAPI RtlCompareMemoryUlong(const ULONG *Source1, SIZE_T Leng
 {
     struct qemu_RtlCompareMemoryUlong call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLCOMPAREMEMORYULONG);
-    call.Source1 = (uint64_t)Source1;
-    call.Length = (uint64_t)Length;
-    call.dwVal = (uint64_t)dwVal;
+    call.Source1 = (ULONG_PTR)Source1;
+    call.Length = (ULONG_PTR)Length;
+    call.dwVal = (ULONG_PTR)dwVal;
 
     qemu_syscall(&call.super);
 
@@ -596,10 +596,10 @@ WINBASEAPI void WINAPI RtlAssert(void *assertion, void *filename, ULONG linenumb
 {
     struct qemu_RtlAssert call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLASSERT);
-    call.assertion = (uint64_t)assertion;
-    call.filename = (uint64_t)filename;
-    call.linenumber = (uint64_t)linenumber;
-    call.message = (uint64_t)message;
+    call.assertion = (ULONG_PTR)assertion;
+    call.filename = (ULONG_PTR)filename;
+    call.linenumber = (ULONG_PTR)linenumber;
+    call.message = (ULONG_PTR)message;
 
     qemu_syscall(&call.super);
 }
@@ -631,9 +631,9 @@ WINBASEAPI void WINAPI RtlFillMemoryUlong(ULONG* lpDest, ULONG ulCount, ULONG ul
 {
     struct qemu_RtlFillMemoryUlong call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLFILLMEMORYULONG);
-    call.lpDest = (uint64_t)lpDest;
-    call.ulCount = (uint64_t)ulCount;
-    call.ulValue = (uint64_t)ulValue;
+    call.lpDest = (ULONG_PTR)lpDest;
+    call.ulCount = (ULONG_PTR)ulCount;
+    call.ulValue = (ULONG_PTR)ulValue;
 
     qemu_syscall(&call.super);
 }
@@ -665,9 +665,9 @@ WINBASEAPI DWORD WINAPI RtlComputeCrc32(DWORD dwInitial, const BYTE *pData, INT 
 {
     struct qemu_RtlComputeCrc32 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLCOMPUTECRC32);
-    call.dwInitial = (uint64_t)dwInitial;
-    call.pData = (uint64_t)pData;
-    call.iLen = (uint64_t)iLen;
+    call.dwInitial = (ULONG_PTR)dwInitial;
+    call.pData = (ULONG_PTR)pData;
+    call.iLen = (ULONG_PTR)iLen;
 
     qemu_syscall(&call.super);
 
@@ -697,7 +697,7 @@ WINBASEAPI ULONG WINAPI RtlUniform (PULONG seed)
 {
     struct qemu_RtlUniform call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLUNIFORM);
-    call.seed = (uint64_t)seed;
+    call.seed = (ULONG_PTR)seed;
 
     qemu_syscall(&call.super);
 
@@ -727,7 +727,7 @@ WINBASEAPI ULONG WINAPI RtlRandom (PULONG seed)
 {
     struct qemu_RtlRandom call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLRANDOM);
-    call.seed = (uint64_t)seed;
+    call.seed = (ULONG_PTR)seed;
 
     qemu_syscall(&call.super);
 
@@ -758,8 +758,8 @@ WINBASEAPI BOOLEAN WINAPI RtlAreAllAccessesGranted(ACCESS_MASK GrantedAccess, AC
 {
     struct qemu_RtlAreAllAccessesGranted call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLAREALLACCESSESGRANTED);
-    call.GrantedAccess = (uint64_t)GrantedAccess;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
+    call.GrantedAccess = (ULONG_PTR)GrantedAccess;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
 
     qemu_syscall(&call.super);
 
@@ -790,8 +790,8 @@ WINBASEAPI BOOLEAN WINAPI RtlAreAnyAccessesGranted(ACCESS_MASK GrantedAccess, AC
 {
     struct qemu_RtlAreAnyAccessesGranted call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLAREANYACCESSESGRANTED);
-    call.GrantedAccess = (uint64_t)GrantedAccess;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
+    call.GrantedAccess = (ULONG_PTR)GrantedAccess;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
 
     qemu_syscall(&call.super);
 
@@ -822,8 +822,8 @@ WINBASEAPI void WINAPI RtlMapGenericMask(PACCESS_MASK AccessMask, const GENERIC_
 {
     struct qemu_RtlMapGenericMask call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLMAPGENERICMASK);
-    call.AccessMask = (uint64_t)AccessMask;
-    call.GenericMapping = (uint64_t)GenericMapping;
+    call.AccessMask = (ULONG_PTR)AccessMask;
+    call.GenericMapping = (ULONG_PTR)GenericMapping;
 
     qemu_syscall(&call.super);
 }
@@ -852,8 +852,8 @@ WINBASEAPI void WINAPI RtlCopyLuid (PLUID LuidDest, const LUID *LuidSrc)
 {
     struct qemu_RtlCopyLuid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLCOPYLUID);
-    call.LuidDest = (uint64_t)LuidDest;
-    call.LuidSrc = (uint64_t)LuidSrc;
+    call.LuidDest = (ULONG_PTR)LuidDest;
+    call.LuidSrc = (ULONG_PTR)LuidSrc;
 
     qemu_syscall(&call.super);
 }
@@ -882,8 +882,8 @@ WINBASEAPI BOOLEAN WINAPI RtlEqualLuid (const LUID *Luid1, const LUID *Luid2)
 {
     struct qemu_RtlEqualLuid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLEQUALLUID);
-    call.Luid1 = (uint64_t)Luid1;
-    call.Luid2 = (uint64_t)Luid2;
+    call.Luid1 = (ULONG_PTR)Luid1;
+    call.Luid2 = (ULONG_PTR)Luid2;
 
     qemu_syscall(&call.super);
 
@@ -915,9 +915,9 @@ WINBASEAPI void WINAPI RtlCopyLuidAndAttributesArray(ULONG Count, const LUID_AND
 {
     struct qemu_RtlCopyLuidAndAttributesArray call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLCOPYLUIDANDATTRIBUTESARRAY);
-    call.Count = (uint64_t)Count;
-    call.Src = (uint64_t)Src;
-    call.Dest = (uint64_t)Dest;
+    call.Count = (ULONG_PTR)Count;
+    call.Src = (ULONG_PTR)Src;
+    call.Dest = (ULONG_PTR)Dest;
 
     qemu_syscall(&call.super);
 }
@@ -948,10 +948,10 @@ WINBASEAPI NTSTATUS WINAPI RtlIpv4StringToAddressExW(PULONG IP, PULONG Port, LPC
 {
     struct qemu_RtlIpv4StringToAddressExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLIPV4STRINGTOADDRESSEXW);
-    call.IP = (uint64_t)IP;
-    call.Port = (uint64_t)Port;
-    call.Buffer = (uint64_t)Buffer;
-    call.MaxSize = (uint64_t)MaxSize;
+    call.IP = (ULONG_PTR)IP;
+    call.Port = (ULONG_PTR)Port;
+    call.Buffer = (ULONG_PTR)Buffer;
+    call.MaxSize = (ULONG_PTR)MaxSize;
 
     qemu_syscall(&call.super);
 
@@ -986,10 +986,10 @@ WINBASEAPI NTSTATUS WINAPI RtlIpv4AddressToStringExW(const IN_ADDR *pin, USHORT 
 {
     struct qemu_RtlIpv4AddressToStringExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLIPV4ADDRESSTOSTRINGEXW);
-    call.pin = (uint64_t)pin;
-    call.port = (uint64_t)port;
-    call.buffer = (uint64_t)buffer;
-    call.psize = (uint64_t)psize;
+    call.pin = (ULONG_PTR)pin;
+    call.port = (ULONG_PTR)port;
+    call.buffer = (ULONG_PTR)buffer;
+    call.psize = (ULONG_PTR)psize;
 
     qemu_syscall(&call.super);
 
@@ -1024,10 +1024,10 @@ WINBASEAPI NTSTATUS WINAPI RtlIpv4AddressToStringExA(const IN_ADDR *pin, USHORT 
 {
     struct qemu_RtlIpv4AddressToStringExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLIPV4ADDRESSTOSTRINGEXA);
-    call.pin = (uint64_t)pin;
-    call.port = (uint64_t)port;
-    call.buffer = (uint64_t)buffer;
-    call.psize = (uint64_t)psize;
+    call.pin = (ULONG_PTR)pin;
+    call.port = (ULONG_PTR)port;
+    call.buffer = (ULONG_PTR)buffer;
+    call.psize = (ULONG_PTR)psize;
 
     qemu_syscall(&call.super);
 
@@ -1060,12 +1060,12 @@ WINBASEAPI WCHAR * WINAPI RtlIpv4AddressToStringW(const IN_ADDR *pin, LPWSTR buf
 {
     struct qemu_RtlIpv4AddressToStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLIPV4ADDRESSTOSTRINGW);
-    call.pin = (uint64_t)pin;
-    call.buffer = (uint64_t)buffer;
+    call.pin = (ULONG_PTR)pin;
+    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
 
-    return (WCHAR *)call.super.iret;
+    return (WCHAR *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1094,12 +1094,12 @@ WINBASEAPI CHAR * WINAPI RtlIpv4AddressToStringA(const IN_ADDR *pin, LPSTR buffe
 {
     struct qemu_RtlIpv4AddressToStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLIPV4ADDRESSTOSTRINGA);
-    call.pin = (uint64_t)pin;
-    call.buffer = (uint64_t)buffer;
+    call.pin = (ULONG_PTR)pin;
+    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
 
-    return (CHAR *)call.super.iret;
+    return (CHAR *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1127,11 +1127,11 @@ WINBASEAPI PVOID WINAPI RtlEncodePointer(PVOID ptr)
 {
     struct qemu_RtlEncodePointer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLENCODEPOINTER);
-    call.ptr = (uint64_t)ptr;
+    call.ptr = (ULONG_PTR)ptr;
 
     qemu_syscall(&call.super);
 
-    return (PVOID)call.super.iret;
+    return (PVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1140,7 +1140,7 @@ void qemu_RtlEncodePointer(struct qemu_syscall *call)
 {
     struct qemu_RtlEncodePointer *c = (struct qemu_RtlEncodePointer *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)RtlEncodePointer(QEMU_G2H(c->ptr));
+    c->super.iret = (ULONG_PTR)RtlEncodePointer(QEMU_G2H(c->ptr));
 }
 
 #endif
@@ -1157,11 +1157,11 @@ WINBASEAPI PVOID WINAPI RtlDecodePointer(PVOID ptr)
 {
     struct qemu_RtlDecodePointer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLDECODEPOINTER);
-    call.ptr = (uint64_t)ptr;
+    call.ptr = (ULONG_PTR)ptr;
 
     qemu_syscall(&call.super);
 
-    return (PVOID)call.super.iret;
+    return (PVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1170,7 +1170,7 @@ void qemu_RtlDecodePointer(struct qemu_syscall *call)
 {
     struct qemu_RtlDecodePointer *c = (struct qemu_RtlDecodePointer *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)RtlDecodePointer(QEMU_G2H(c->ptr));
+    c->super.iret = (ULONG_PTR)RtlDecodePointer(QEMU_G2H(c->ptr));
 }
 
 #endif
@@ -1187,7 +1187,7 @@ WINBASEAPI void WINAPI RtlInitializeSListHead(PSLIST_HEADER list)
 {
     struct qemu_RtlInitializeSListHead call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLINITIALIZESLISTHEAD);
-    call.list = (uint64_t)list;
+    call.list = (ULONG_PTR)list;
 
     qemu_syscall(&call.super);
 }
@@ -1215,7 +1215,7 @@ WINBASEAPI WORD WINAPI RtlQueryDepthSList(PSLIST_HEADER list)
 {
     struct qemu_RtlQueryDepthSList call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLQUERYDEPTHSLIST);
-    call.list = (uint64_t)list;
+    call.list = (ULONG_PTR)list;
 
     qemu_syscall(&call.super);
 
@@ -1245,11 +1245,11 @@ WINBASEAPI PSLIST_ENTRY WINAPI RtlFirstEntrySList(const SLIST_HEADER* list)
 {
     struct qemu_RtlFirstEntrySList call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLFIRSTENTRYSLIST);
-    call.list = (uint64_t)list;
+    call.list = (ULONG_PTR)list;
 
     qemu_syscall(&call.super);
 
-    return (PSLIST_ENTRY)call.super.iret;
+    return (PSLIST_ENTRY)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1258,7 +1258,7 @@ void qemu_RtlFirstEntrySList(struct qemu_syscall *call)
 {
     struct qemu_RtlFirstEntrySList *c = (struct qemu_RtlFirstEntrySList *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RtlFirstEntrySList(QEMU_G2H(c->list));
+    c->super.iret = (ULONG_PTR)RtlFirstEntrySList(QEMU_G2H(c->list));
 }
 
 #endif
@@ -1275,11 +1275,11 @@ WINBASEAPI PSLIST_ENTRY WINAPI RtlInterlockedFlushSList(PSLIST_HEADER list)
 {
     struct qemu_RtlInterlockedFlushSList call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLINTERLOCKEDFLUSHSLIST);
-    call.list = (uint64_t)list;
+    call.list = (ULONG_PTR)list;
 
     qemu_syscall(&call.super);
 
-    return (PSLIST_ENTRY)call.super.iret;
+    return (PSLIST_ENTRY)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1288,7 +1288,7 @@ void qemu_RtlInterlockedFlushSList(struct qemu_syscall *call)
 {
     struct qemu_RtlInterlockedFlushSList *c = (struct qemu_RtlInterlockedFlushSList *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RtlInterlockedFlushSList(QEMU_G2H(c->list));
+    c->super.iret = (ULONG_PTR)RtlInterlockedFlushSList(QEMU_G2H(c->list));
 }
 
 #endif
@@ -1306,12 +1306,12 @@ WINBASEAPI PSLIST_ENTRY WINAPI RtlInterlockedPushEntrySList(PSLIST_HEADER list, 
 {
     struct qemu_RtlInterlockedPushEntrySList call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLINTERLOCKEDPUSHENTRYSLIST);
-    call.list = (uint64_t)list;
-    call.entry = (uint64_t)entry;
+    call.list = (ULONG_PTR)list;
+    call.entry = (ULONG_PTR)entry;
 
     qemu_syscall(&call.super);
 
-    return (PSLIST_ENTRY)call.super.iret;
+    return (PSLIST_ENTRY)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1320,7 +1320,7 @@ void qemu_RtlInterlockedPushEntrySList(struct qemu_syscall *call)
 {
     struct qemu_RtlInterlockedPushEntrySList *c = (struct qemu_RtlInterlockedPushEntrySList *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RtlInterlockedPushEntrySList(QEMU_G2H(c->list), QEMU_G2H(c->entry));
+    c->super.iret = (ULONG_PTR)RtlInterlockedPushEntrySList(QEMU_G2H(c->list), QEMU_G2H(c->entry));
 }
 
 #endif
@@ -1337,11 +1337,11 @@ WINBASEAPI PSLIST_ENTRY WINAPI RtlInterlockedPopEntrySList(PSLIST_HEADER list)
 {
     struct qemu_RtlInterlockedPopEntrySList call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLINTERLOCKEDPOPENTRYSLIST);
-    call.list = (uint64_t)list;
+    call.list = (ULONG_PTR)list;
 
     qemu_syscall(&call.super);
 
-    return (PSLIST_ENTRY)call.super.iret;
+    return (PSLIST_ENTRY)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1350,7 +1350,7 @@ void qemu_RtlInterlockedPopEntrySList(struct qemu_syscall *call)
 {
     struct qemu_RtlInterlockedPopEntrySList *c = (struct qemu_RtlInterlockedPopEntrySList *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RtlInterlockedPopEntrySList(QEMU_G2H(c->list));
+    c->super.iret = (ULONG_PTR)RtlInterlockedPopEntrySList(QEMU_G2H(c->list));
 }
 
 #endif
@@ -1370,14 +1370,14 @@ WINBASEAPI PSLIST_ENTRY WINAPI RtlInterlockedPushListSListEx(PSLIST_HEADER list,
 {
     struct qemu_RtlInterlockedPushListSListEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLINTERLOCKEDPUSHLISTSLISTEX);
-    call.list = (uint64_t)list;
-    call.first = (uint64_t)first;
-    call.last = (uint64_t)last;
-    call.count = (uint64_t)count;
+    call.list = (ULONG_PTR)list;
+    call.first = (ULONG_PTR)first;
+    call.last = (ULONG_PTR)last;
+    call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
 
-    return (PSLIST_ENTRY)call.super.iret;
+    return (PSLIST_ENTRY)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1388,7 +1388,7 @@ void qemu_RtlInterlockedPushListSListEx(struct qemu_syscall *call)
 {
     struct qemu_RtlInterlockedPushListSListEx *c = (struct qemu_RtlInterlockedPushListSListEx *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RtlInterlockedPushListSListEx(QEMU_G2H(c->list), QEMU_G2H(c->first), QEMU_G2H(c->last), c->count);
+    c->super.iret = (ULONG_PTR)RtlInterlockedPushListSListEx(QEMU_G2H(c->list), QEMU_G2H(c->first), QEMU_G2H(c->last), c->count);
 }
 
 #endif
@@ -1408,14 +1408,14 @@ WINBASEAPI PSLIST_ENTRY WINAPI RtlInterlockedPushListSList(PSLIST_HEADER list, P
 {
     struct qemu_RtlInterlockedPushListSList call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLINTERLOCKEDPUSHLISTSLIST);
-    call.list = (uint64_t)list;
-    call.first = (uint64_t)first;
-    call.last = (uint64_t)last;
-    call.count = (uint64_t)count;
+    call.list = (ULONG_PTR)list;
+    call.first = (ULONG_PTR)first;
+    call.last = (ULONG_PTR)last;
+    call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
 
-    return (PSLIST_ENTRY)call.super.iret;
+    return (PSLIST_ENTRY)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1426,7 +1426,7 @@ void qemu_RtlInterlockedPushListSList(struct qemu_syscall *call)
 {
     struct qemu_RtlInterlockedPushListSList *c = (struct qemu_RtlInterlockedPushListSList *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RtlInterlockedPushListSList(QEMU_G2H(c->list), QEMU_G2H(c->first), QEMU_G2H(c->last), c->count);
+    c->super.iret = (ULONG_PTR)RtlInterlockedPushListSList(QEMU_G2H(c->list), QEMU_G2H(c->first), QEMU_G2H(c->last), c->count);
 }
 
 #endif
@@ -1445,9 +1445,9 @@ WINBASEAPI NTSTATUS WINAPI RtlGetCompressionWorkSpaceSize(USHORT format, PULONG 
 {
     struct qemu_RtlGetCompressionWorkSpaceSize call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETCOMPRESSIONWORKSPACESIZE);
-    call.format = (uint64_t)format;
-    call.compress_workspace = (uint64_t)compress_workspace;
-    call.decompress_workspace = (uint64_t)decompress_workspace;
+    call.format = (ULONG_PTR)format;
+    call.compress_workspace = (ULONG_PTR)compress_workspace;
+    call.decompress_workspace = (ULONG_PTR)decompress_workspace;
 
     qemu_syscall(&call.super);
 
@@ -1484,14 +1484,14 @@ WINBASEAPI NTSTATUS WINAPI RtlCompressBuffer(USHORT format, PUCHAR uncompressed,
 {
     struct qemu_RtlCompressBuffer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLCOMPRESSBUFFER);
-    call.format = (uint64_t)format;
-    call.uncompressed = (uint64_t)uncompressed;
-    call.uncompressed_size = (uint64_t)uncompressed_size;
-    call.compressed = (uint64_t)compressed;
-    call.compressed_size = (uint64_t)compressed_size;
-    call.chunk_size = (uint64_t)chunk_size;
-    call.final_size = (uint64_t)final_size;
-    call.workspace = (uint64_t)workspace;
+    call.format = (ULONG_PTR)format;
+    call.uncompressed = (ULONG_PTR)uncompressed;
+    call.uncompressed_size = (ULONG_PTR)uncompressed_size;
+    call.compressed = (ULONG_PTR)compressed;
+    call.compressed_size = (ULONG_PTR)compressed_size;
+    call.chunk_size = (ULONG_PTR)chunk_size;
+    call.final_size = (ULONG_PTR)final_size;
+    call.workspace = (ULONG_PTR)workspace;
 
     qemu_syscall(&call.super);
 
@@ -1528,14 +1528,14 @@ WINBASEAPI NTSTATUS WINAPI RtlDecompressFragment(USHORT format, PUCHAR uncompres
 {
     struct qemu_RtlDecompressFragment call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLDECOMPRESSFRAGMENT);
-    call.format = (uint64_t)format;
-    call.uncompressed = (uint64_t)uncompressed;
-    call.uncompressed_size = (uint64_t)uncompressed_size;
-    call.compressed = (uint64_t)compressed;
-    call.compressed_size = (uint64_t)compressed_size;
-    call.offset = (uint64_t)offset;
-    call.final_size = (uint64_t)final_size;
-    call.workspace = (uint64_t)workspace;
+    call.format = (ULONG_PTR)format;
+    call.uncompressed = (ULONG_PTR)uncompressed;
+    call.uncompressed_size = (ULONG_PTR)uncompressed_size;
+    call.compressed = (ULONG_PTR)compressed;
+    call.compressed_size = (ULONG_PTR)compressed_size;
+    call.offset = (ULONG_PTR)offset;
+    call.final_size = (ULONG_PTR)final_size;
+    call.workspace = (ULONG_PTR)workspace;
 
     qemu_syscall(&call.super);
 
@@ -1572,12 +1572,12 @@ WINBASEAPI NTSTATUS WINAPI RtlDecompressBuffer(USHORT format, PUCHAR uncompresse
 {
     struct qemu_RtlDecompressBuffer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLDECOMPRESSBUFFER);
-    call.format = (uint64_t)format;
-    call.uncompressed = (uint64_t)uncompressed;
-    call.uncompressed_size = (uint64_t)uncompressed_size;
-    call.compressed = (uint64_t)compressed;
-    call.compressed_size = (uint64_t)compressed_size;
-    call.final_size = (uint64_t)final_size;
+    call.format = (ULONG_PTR)format;
+    call.uncompressed = (ULONG_PTR)uncompressed;
+    call.uncompressed_size = (ULONG_PTR)uncompressed_size;
+    call.compressed = (ULONG_PTR)compressed;
+    call.compressed_size = (ULONG_PTR)compressed_size;
+    call.final_size = (ULONG_PTR)final_size;
 
     qemu_syscall(&call.super);
 
@@ -1608,8 +1608,8 @@ WINBASEAPI NTSTATUS WINAPI RtlSetThreadErrorMode(DWORD mode, LPDWORD oldmode)
 {
     struct qemu_RtlSetThreadErrorMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLSETTHREADERRORMODE);
-    call.mode = (uint64_t)mode;
-    call.oldmode = (uint64_t)oldmode;
+    call.mode = (ULONG_PTR)mode;
+    call.oldmode = (ULONG_PTR)oldmode;
 
     qemu_syscall(&call.super);
 
@@ -1669,7 +1669,7 @@ WINBASEAPI HANDLE WINAPI RtlGetCurrentTransaction(void)
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1680,7 +1680,7 @@ void qemu_RtlGetCurrentTransaction(struct qemu_syscall *call)
 {
     struct qemu_RtlGetCurrentTransaction *c = (struct qemu_RtlGetCurrentTransaction *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RtlGetCurrentTransaction();
+    c->super.iret = (ULONG_PTR)RtlGetCurrentTransaction();
 }
 
 #endif
@@ -1697,7 +1697,7 @@ WINBASEAPI BOOL WINAPI RtlSetCurrentTransaction(HANDLE new_transaction)
 {
     struct qemu_RtlSetCurrentTransaction call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLSETCURRENTTRANSACTION);
-    call.new_transaction = (uint64_t)new_transaction;
+    call.new_transaction = (ULONG_PTR)new_transaction;
 
     qemu_syscall(&call.super);
 
@@ -1729,7 +1729,7 @@ WINBASEAPI void WINAPI RtlGetCurrentProcessorNumberEx(PROCESSOR_NUMBER *processo
 {
     struct qemu_RtlGetCurrentProcessorNumberEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETCURRENTPROCESSORNUMBEREX);
-    call.processor = (uint64_t)processor;
+    call.processor = (ULONG_PTR)processor;
 
     qemu_syscall(&call.super);
 }
@@ -1763,11 +1763,11 @@ WINBASEAPI void WINAPI RtlInitializeGenericTableAvl(PRTL_AVL_TABLE table, PRTL_A
 {
     struct qemu_RtlInitializeGenericTableAvl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLINITIALIZEGENERICTABLEAVL);
-    call.table = (uint64_t)table;
-    call.compare = (uint64_t)compare;
-    call.allocate = (uint64_t)allocate;
-    call.free = (uint64_t)free;
-    call.context = (uint64_t)context;
+    call.table = (ULONG_PTR)table;
+    call.compare = (ULONG_PTR)compare;
+    call.allocate = (ULONG_PTR)allocate;
+    call.free = (ULONG_PTR)free;
+    call.context = (ULONG_PTR)context;
 
     qemu_syscall(&call.super);
 }
@@ -1798,10 +1798,10 @@ WINBASEAPI void WINAPI RtlInsertElementGenericTableAvl(PRTL_AVL_TABLE table, voi
 {
     struct qemu_RtlInsertElementGenericTableAvl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLINSERTELEMENTGENERICTABLEAVL);
-    call.table = (uint64_t)table;
-    call.buffer = (uint64_t)buffer;
-    call.size = (uint64_t)size;
-    call.element = (uint64_t)element;
+    call.table = (ULONG_PTR)table;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = (ULONG_PTR)size;
+    call.element = (ULONG_PTR)element;
 
     qemu_syscall(&call.super);
 }
@@ -1838,16 +1838,16 @@ WINBASEAPI NTSTATUS WINAPI RtlCreateUserProcess(UNICODE_STRING *path, ULONG attr
 {
     struct qemu_RtlCreateUserProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLCREATEUSERPROCESS);
-    call.path = (uint64_t)path;
-    call.attributes = (uint64_t)attributes;
-    call.parameters = (uint64_t)parameters;
-    call.process_descriptor = (uint64_t)process_descriptor;
-    call.thread_descriptor = (uint64_t)thread_descriptor;
-    call.parent = (uint64_t)parent;
-    call.inherit = (uint64_t)inherit;
-    call.debug = (uint64_t)debug;
-    call.exception = (uint64_t)exception;
-    call.info = (uint64_t)info;
+    call.path = (ULONG_PTR)path;
+    call.attributes = (ULONG_PTR)attributes;
+    call.parameters = (ULONG_PTR)parameters;
+    call.process_descriptor = (ULONG_PTR)process_descriptor;
+    call.thread_descriptor = (ULONG_PTR)thread_descriptor;
+    call.parent = (ULONG_PTR)parent;
+    call.inherit = (ULONG_PTR)inherit;
+    call.debug = (ULONG_PTR)debug;
+    call.exception = (ULONG_PTR)exception;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 

@@ -54,7 +54,7 @@ WINBASEAPI NTSTATUS WINAPI RtlInitializeCriticalSection(RTL_CRITICAL_SECTION *cr
 {
     struct qemu_RtlInitializeCriticalSection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLINITIALIZECRITICALSECTION);
-    call.crit = (uint64_t)crit;
+    call.crit = (ULONG_PTR)crit;
 
     qemu_syscall(&call.super);
 
@@ -85,8 +85,8 @@ WINBASEAPI NTSTATUS WINAPI RtlInitializeCriticalSectionAndSpinCount(RTL_CRITICAL
 {
     struct qemu_RtlInitializeCriticalSectionAndSpinCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLINITIALIZECRITICALSECTIONANDSPINCOUNT);
-    call.crit = (uint64_t)crit;
-    call.spincount = (uint64_t)spincount;
+    call.crit = (ULONG_PTR)crit;
+    call.spincount = (ULONG_PTR)spincount;
 
     qemu_syscall(&call.super);
 
@@ -118,9 +118,9 @@ WINBASEAPI NTSTATUS WINAPI RtlInitializeCriticalSectionEx(RTL_CRITICAL_SECTION *
 {
     struct qemu_RtlInitializeCriticalSectionEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLINITIALIZECRITICALSECTIONEX);
-    call.crit = (uint64_t)crit;
-    call.spincount = (uint64_t)spincount;
-    call.flags = (uint64_t)flags;
+    call.crit = (ULONG_PTR)crit;
+    call.spincount = (ULONG_PTR)spincount;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -151,8 +151,8 @@ WINBASEAPI ULONG WINAPI RtlSetCriticalSectionSpinCount(RTL_CRITICAL_SECTION *cri
 {
     struct qemu_RtlSetCriticalSectionSpinCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLSETCRITICALSECTIONSPINCOUNT);
-    call.crit = (uint64_t)crit;
-    call.spincount = (uint64_t)spincount;
+    call.crit = (ULONG_PTR)crit;
+    call.spincount = (ULONG_PTR)spincount;
 
     qemu_syscall(&call.super);
 
@@ -182,7 +182,7 @@ WINBASEAPI NTSTATUS WINAPI RtlDeleteCriticalSection(RTL_CRITICAL_SECTION *crit)
 {
     struct qemu_RtlDeleteCriticalSection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLDELETECRITICALSECTION);
-    call.crit = (uint64_t)crit;
+    call.crit = (ULONG_PTR)crit;
 
     qemu_syscall(&call.super);
 
@@ -212,7 +212,7 @@ WINBASEAPI NTSTATUS WINAPI RtlpWaitForCriticalSection(RTL_CRITICAL_SECTION *crit
 {
     struct qemu_RtlpWaitForCriticalSection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLPWAITFORCRITICALSECTION);
-    call.crit = (uint64_t)crit;
+    call.crit = (ULONG_PTR)crit;
 
     qemu_syscall(&call.super);
 
@@ -242,7 +242,7 @@ WINBASEAPI NTSTATUS WINAPI RtlpUnWaitCriticalSection(RTL_CRITICAL_SECTION *crit)
 {
     struct qemu_RtlpUnWaitCriticalSection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLPUNWAITCRITICALSECTION);
-    call.crit = (uint64_t)crit;
+    call.crit = (ULONG_PTR)crit;
 
     qemu_syscall(&call.super);
 
@@ -272,7 +272,7 @@ WINBASEAPI NTSTATUS WINAPI RtlEnterCriticalSection(RTL_CRITICAL_SECTION *crit)
 {
     struct qemu_RtlEnterCriticalSection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLENTERCRITICALSECTION);
-    call.crit = (uint64_t)crit;
+    call.crit = (ULONG_PTR)crit;
 
     qemu_syscall(&call.super);
 
@@ -302,7 +302,7 @@ WINBASEAPI BOOL WINAPI RtlTryEnterCriticalSection(RTL_CRITICAL_SECTION *crit)
 {
     struct qemu_RtlTryEnterCriticalSection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLTRYENTERCRITICALSECTION);
-    call.crit = (uint64_t)crit;
+    call.crit = (ULONG_PTR)crit;
 
     qemu_syscall(&call.super);
 
@@ -332,7 +332,7 @@ WINBASEAPI BOOL WINAPI RtlIsCriticalSectionLocked(RTL_CRITICAL_SECTION *crit)
 {
     struct qemu_RtlIsCriticalSectionLocked call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLISCRITICALSECTIONLOCKED);
-    call.crit = (uint64_t)crit;
+    call.crit = (ULONG_PTR)crit;
 
     qemu_syscall(&call.super);
 
@@ -362,7 +362,7 @@ WINBASEAPI BOOL WINAPI RtlIsCriticalSectionLockedByThread(RTL_CRITICAL_SECTION *
 {
     struct qemu_RtlIsCriticalSectionLockedByThread call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLISCRITICALSECTIONLOCKEDBYTHREAD);
-    call.crit = (uint64_t)crit;
+    call.crit = (ULONG_PTR)crit;
 
     qemu_syscall(&call.super);
 
@@ -392,7 +392,7 @@ WINBASEAPI NTSTATUS WINAPI RtlLeaveCriticalSection(RTL_CRITICAL_SECTION *crit)
 {
     struct qemu_RtlLeaveCriticalSection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLLEAVECRITICALSECTION);
-    call.crit = (uint64_t)crit;
+    call.crit = (ULONG_PTR)crit;
 
     qemu_syscall(&call.super);
 

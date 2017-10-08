@@ -65,7 +65,7 @@ WINBASEAPI DOS_PATHNAME_TYPE WINAPI RtlDetermineDosPathNameType_U(PCWSTR path)
 {
     struct qemu_RtlDetermineDosPathNameType_U call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLDETERMINEDOSPATHNAMETYPE_U);
-    call.path = (uint64_t)path;
+    call.path = (ULONG_PTR)path;
 
     qemu_syscall(&call.super);
 
@@ -95,7 +95,7 @@ WINBASEAPI ULONG WINAPI RtlIsDosDeviceName_U(PCWSTR dos_name)
 {
     struct qemu_RtlIsDosDeviceName_U call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLISDOSDEVICENAME_U);
-    call.dos_name = (uint64_t)dos_name;
+    call.dos_name = (ULONG_PTR)dos_name;
 
     qemu_syscall(&call.super);
 
@@ -128,10 +128,10 @@ WINBASEAPI BOOL WINAPI RtlDosPathNameToNtPathName_U(PCWSTR dos_path, PUNICODE_ST
 {
     struct qemu_RtlDosPathNameToNtPathName_U call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLDOSPATHNAMETONTPATHNAME_U);
-    call.dos_path = (uint64_t)dos_path;
-    call.ntpath = (uint64_t)ntpath;
-    call.file_part = (uint64_t)file_part;
-    call.cd = (uint64_t)cd;
+    call.dos_path = (ULONG_PTR)dos_path;
+    call.ntpath = (ULONG_PTR)ntpath;
+    call.file_part = (ULONG_PTR)file_part;
+    call.cd = (ULONG_PTR)cd;
 
     qemu_syscall(&call.super);
 
@@ -167,12 +167,12 @@ WINBASEAPI ULONG WINAPI RtlDosSearchPath_U(LPCWSTR paths, LPCWSTR search, LPCWST
 {
     struct qemu_RtlDosSearchPath_U call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLDOSSEARCHPATH_U);
-    call.paths = (uint64_t)paths;
-    call.search = (uint64_t)search;
-    call.ext = (uint64_t)ext;
-    call.buffer_size = (uint64_t)buffer_size;
-    call.buffer = (uint64_t)buffer;
-    call.file_part = (uint64_t)file_part;
+    call.paths = (ULONG_PTR)paths;
+    call.search = (ULONG_PTR)search;
+    call.ext = (ULONG_PTR)ext;
+    call.buffer_size = (ULONG_PTR)buffer_size;
+    call.buffer = (ULONG_PTR)buffer;
+    call.file_part = (ULONG_PTR)file_part;
 
     qemu_syscall(&call.super);
 
@@ -205,10 +205,10 @@ WINBASEAPI DWORD WINAPI RtlGetFullPathName_U(const WCHAR* name, ULONG size, WCHA
 {
     struct qemu_RtlGetFullPathName_U call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETFULLPATHNAME_U);
-    call.name = (uint64_t)name;
-    call.size = (uint64_t)size;
-    call.buffer = (uint64_t)buffer;
-    call.file_part = (uint64_t)file_part;
+    call.name = (ULONG_PTR)name;
+    call.size = (ULONG_PTR)size;
+    call.buffer = (ULONG_PTR)buffer;
+    call.file_part = (ULONG_PTR)file_part;
 
     qemu_syscall(&call.super);
 
@@ -268,9 +268,9 @@ WINBASEAPI BOOLEAN WINAPI RtlIsNameLegalDOS8Dot3(UNICODE_STRING *unicode, OEM_ST
 {
     struct qemu_RtlIsNameLegalDOS8Dot3 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLISNAMELEGALDOS8DOT3);
-    call.unicode = (uint64_t)unicode;
-    call.oem = (uint64_t)oem;
-    call.spaces = (uint64_t)spaces;
+    call.unicode = (ULONG_PTR)unicode;
+    call.oem = (ULONG_PTR)oem;
+    call.spaces = (ULONG_PTR)spaces;
 
     qemu_syscall(&call.super);
 
@@ -301,8 +301,8 @@ WINBASEAPI NTSTATUS WINAPI RtlGetCurrentDirectory_U(ULONG buflen, LPWSTR buf)
 {
     struct qemu_RtlGetCurrentDirectory_U call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETCURRENTDIRECTORY_U);
-    call.buflen = (uint64_t)buflen;
-    call.buf = (uint64_t)buf;
+    call.buflen = (ULONG_PTR)buflen;
+    call.buf = (ULONG_PTR)buf;
 
     qemu_syscall(&call.super);
 
@@ -332,7 +332,7 @@ WINBASEAPI NTSTATUS WINAPI RtlSetCurrentDirectory_U(const UNICODE_STRING* dir)
 {
     struct qemu_RtlSetCurrentDirectory_U call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLSETCURRENTDIRECTORY_U);
-    call.dir = (uint64_t)dir;
+    call.dir = (ULONG_PTR)dir;
 
     qemu_syscall(&call.super);
 

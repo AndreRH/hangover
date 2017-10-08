@@ -55,8 +55,8 @@ WINBASEAPI NTSTATUS WINAPI RtlCreateActivationContext(HANDLE *handle, const void
 {
     struct qemu_RtlCreateActivationContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLCREATEACTIVATIONCONTEXT);
-    call.handle = (uint64_t)handle;
-    call.ptr = (uint64_t)ptr;
+    call.handle = (ULONG_PTR)handle;
+    call.ptr = (ULONG_PTR)ptr;
 
     qemu_syscall(&call.super);
 
@@ -86,7 +86,7 @@ WINBASEAPI void WINAPI RtlAddRefActivationContext(HANDLE handle)
 {
     struct qemu_RtlAddRefActivationContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLADDREFACTIVATIONCONTEXT);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 }
@@ -114,7 +114,7 @@ WINBASEAPI void WINAPI RtlReleaseActivationContext(HANDLE handle)
 {
     struct qemu_RtlReleaseActivationContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLRELEASEACTIVATIONCONTEXT);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 }
@@ -142,7 +142,7 @@ WINBASEAPI NTSTATUS WINAPI RtlZombifyActivationContext(HANDLE handle)
 {
     struct qemu_RtlZombifyActivationContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLZOMBIFYACTIVATIONCONTEXT);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -174,9 +174,9 @@ WINBASEAPI NTSTATUS WINAPI RtlActivateActivationContext(ULONG unknown, HANDLE ha
 {
     struct qemu_RtlActivateActivationContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLACTIVATEACTIVATIONCONTEXT);
-    call.unknown = (uint64_t)unknown;
-    call.handle = (uint64_t)handle;
-    call.cookie = (uint64_t)cookie;
+    call.unknown = (ULONG_PTR)unknown;
+    call.handle = (ULONG_PTR)handle;
+    call.cookie = (ULONG_PTR)cookie;
 
     qemu_syscall(&call.super);
 
@@ -262,7 +262,7 @@ WINBASEAPI NTSTATUS WINAPI RtlGetActiveActivationContext(HANDLE *handle)
 {
     struct qemu_RtlGetActiveActivationContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETACTIVEACTIVATIONCONTEXT);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -292,7 +292,7 @@ WINBASEAPI BOOLEAN WINAPI RtlIsActivationContextActive(HANDLE handle)
 {
     struct qemu_RtlIsActivationContextActive call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLISACTIVATIONCONTEXTACTIVE);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -328,13 +328,13 @@ WINBASEAPI NTSTATUS WINAPI RtlQueryInformationActivationContext(ULONG flags, HAN
 {
     struct qemu_RtlQueryInformationActivationContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLQUERYINFORMATIONACTIVATIONCONTEXT);
-    call.flags = (uint64_t)flags;
-    call.handle = (uint64_t)handle;
-    call.subinst = (uint64_t)subinst;
-    call.class = (uint64_t)class;
-    call.buffer = (uint64_t)buffer;
-    call.bufsize = (uint64_t)bufsize;
-    call.retlen = (uint64_t)retlen;
+    call.flags = (ULONG_PTR)flags;
+    call.handle = (ULONG_PTR)handle;
+    call.subinst = (ULONG_PTR)subinst;
+    call.class = (ULONG_PTR)class;
+    call.buffer = (ULONG_PTR)buffer;
+    call.bufsize = (ULONG_PTR)bufsize;
+    call.retlen = (ULONG_PTR)retlen;
 
     qemu_syscall(&call.super);
 
@@ -368,11 +368,11 @@ WINBASEAPI NTSTATUS WINAPI RtlFindActivationContextSectionString(ULONG flags, co
 {
     struct qemu_RtlFindActivationContextSectionString call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLFINDACTIVATIONCONTEXTSECTIONSTRING);
-    call.flags = (uint64_t)flags;
-    call.guid = (uint64_t)guid;
-    call.section_kind = (uint64_t)section_kind;
-    call.section_name = (uint64_t)section_name;
-    call.ptr = (uint64_t)ptr;
+    call.flags = (ULONG_PTR)flags;
+    call.guid = (ULONG_PTR)guid;
+    call.section_kind = (ULONG_PTR)section_kind;
+    call.section_name = (ULONG_PTR)section_name;
+    call.ptr = (ULONG_PTR)ptr;
 
     qemu_syscall(&call.super);
 
@@ -406,11 +406,11 @@ WINBASEAPI NTSTATUS WINAPI RtlFindActivationContextSectionGuid(ULONG flags, cons
 {
     struct qemu_RtlFindActivationContextSectionGuid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLFINDACTIVATIONCONTEXTSECTIONGUID);
-    call.flags = (uint64_t)flags;
-    call.extguid = (uint64_t)extguid;
-    call.section_kind = (uint64_t)section_kind;
-    call.guid = (uint64_t)guid;
-    call.ptr = (uint64_t)ptr;
+    call.flags = (ULONG_PTR)flags;
+    call.extguid = (ULONG_PTR)extguid;
+    call.section_kind = (ULONG_PTR)section_kind;
+    call.guid = (ULONG_PTR)guid;
+    call.ptr = (ULONG_PTR)ptr;
 
     qemu_syscall(&call.super);
 
