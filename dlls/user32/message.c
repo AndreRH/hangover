@@ -1781,3 +1781,38 @@ void qemu_ChangeWindowMessageFilter(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_ChangeWindowMessageFilterEx
+{
+    struct qemu_syscall super;
+    uint64_t hwnd;
+    uint64_t message;
+    uint64_t action;
+    uint64_t changefilter;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI ChangeWindowMessageFilterEx(HWND hwnd, UINT message, DWORD action, CHANGEFILTERSTRUCT *changefilter)
+{
+    struct qemu_ChangeWindowMessageFilterEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CHANGEWINDOWMESSAGEFILTEREX);
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.message = message;
+    call.action = action;
+    call.changefilter = (ULONG_PTR)changefilter;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_ChangeWindowMessageFilterEx(struct qemu_syscall *call)
+{
+    struct qemu_ChangeWindowMessageFilterEx *c = (struct qemu_ChangeWindowMessageFilterEx *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = ChangeWindowMessageFilterEx(QEMU_G2H(c->hwnd), c->message, c->action, QEMU_G2H(c->changefilter));
+}
+
+#endif

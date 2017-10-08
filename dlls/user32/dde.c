@@ -1257,3 +1257,36 @@ void qemu_DdeNameService(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_DdeSetUserHandle
+{
+    struct qemu_syscall super;
+    uint64_t hConv;
+    uint64_t id;
+    uint64_t hUser;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+BOOL WINAPI user32_DdeSetUserHandle(HCONV hConv, DWORD id, DWORD hUser)
+{
+    struct qemu_DdeSetUserHandle call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DDESETUSERHANDLE);
+    call.hConv = (ULONG_PTR)hConv;
+    call.id = id;
+    call.hUser = hUser;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_DdeSetUserHandle(struct qemu_syscall *call)
+{
+    struct qemu_DdeSetUserHandle *c = (struct qemu_DdeSetUserHandle *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = DdeSetUserHandle(QEMU_G2H(c->hConv), c->id, c->hUser);
+}
+
+#endif

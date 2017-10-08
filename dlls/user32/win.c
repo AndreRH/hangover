@@ -2246,3 +2246,163 @@ void qemu_RegisterTouchWindow(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_DragDetect
+{
+    struct qemu_syscall super;
+    uint64_t hWnd;
+    uint64_t ptX, ptY;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI DragDetect(HWND hWnd, POINT pt)
+{
+    struct qemu_DragDetect call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DRAGDETECT);
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.ptX = pt.x;
+    call.ptY = pt.y;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_DragDetect(struct qemu_syscall *call)
+{
+    struct qemu_DragDetect *c = (struct qemu_DragDetect *)call;
+    POINT pt;
+    WINE_FIXME("Unverified!\n");
+
+    pt.x = c->ptX;
+    pt.y = c->ptY;
+    c->super.iret = DragDetect(QEMU_G2H(c->hWnd), pt);
+}
+
+#endif
+struct qemu_CloseTouchInputHandle
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI CloseTouchInputHandle(HTOUCHINPUT handle)
+{
+    struct qemu_CloseTouchInputHandle call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CLOSETOUCHINPUTHANDLE);
+    call.handle = (ULONG_PTR)handle;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_CloseTouchInputHandle(struct qemu_syscall *call)
+{
+    struct qemu_CloseTouchInputHandle *c = (struct qemu_CloseTouchInputHandle *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = CloseTouchInputHandle(QEMU_G2H(c->handle));
+}
+
+#endif
+struct qemu_UnregisterTouchWindow
+{
+    struct qemu_syscall super;
+    uint64_t hwnd;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI UnregisterTouchWindow(HWND hwnd)
+{
+    struct qemu_UnregisterTouchWindow call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_UNREGISTERTOUCHWINDOW);
+    call.hwnd = (ULONG_PTR)hwnd;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_UnregisterTouchWindow(struct qemu_syscall *call)
+{
+    struct qemu_UnregisterTouchWindow *c = (struct qemu_UnregisterTouchWindow *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = UnregisterTouchWindow(QEMU_G2H(c->hwnd));
+}
+
+#endif
+struct qemu_GetTouchInputInfo
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t count;
+    uint64_t ptr;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetTouchInputInfo(HTOUCHINPUT handle, UINT count, TOUCHINPUT *ptr, int size)
+{
+    struct qemu_GetTouchInputInfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETTOUCHINPUTINFO);
+    call.handle = (ULONG_PTR)handle;
+    call.count = count;
+    call.ptr = (ULONG_PTR)ptr;
+    call.size = size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetTouchInputInfo(struct qemu_syscall *call)
+{
+    struct qemu_GetTouchInputInfo *c = (struct qemu_GetTouchInputInfo *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetTouchInputInfo(QEMU_G2H(c->handle), c->count, QEMU_G2H(c->ptr), c->size);
+}
+
+#endif
+struct qemu_GetGestureInfo
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t ptr;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetGestureInfo(HGESTUREINFO handle, PGESTUREINFO ptr)
+{
+    struct qemu_GetGestureInfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETGESTUREINFO);
+    call.handle = (ULONG_PTR)handle;
+    call.ptr = (ULONG_PTR)ptr;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetGestureInfo(struct qemu_syscall *call)
+{
+    struct qemu_GetGestureInfo *c = (struct qemu_GetGestureInfo *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetGestureInfo(QEMU_G2H(c->handle), QEMU_G2H(c->ptr));
+}
+
+#endif

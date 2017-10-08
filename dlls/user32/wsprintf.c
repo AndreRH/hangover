@@ -519,7 +519,7 @@ static INT wvsnprintfW( LPWSTR buffer, UINT maxlen, LPCWSTR spec, va_list args )
 /***********************************************************************
  *           wvsprintfA   (USER32.@)
  */
-INT user32_wvsprintfA( LPSTR buffer, LPCSTR spec, va_list args )
+INT WINAPI user32_wvsprintfA( LPSTR buffer, LPCSTR spec, va_list args )
 {
     INT res = wvsnprintfA( buffer, 1024, spec, args );
     return ( res == -1 ) ? 1024 : res;
@@ -529,7 +529,7 @@ INT user32_wvsprintfA( LPSTR buffer, LPCSTR spec, va_list args )
 /***********************************************************************
  *           wvsprintfW   (USER32.@)
  */
-INT user32_wvsprintfW( LPWSTR buffer, LPCWSTR spec, va_list args )
+INT WINAPI user32_wvsprintfW( LPWSTR buffer, LPCWSTR spec, va_list args )
 {
     INT res = wvsnprintfW( buffer, 1024, spec, args );
     return ( res == -1 ) ? 1024 : res;

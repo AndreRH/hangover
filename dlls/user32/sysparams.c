@@ -687,3 +687,90 @@ void qemu_IsProcessDPIAware(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_GetAutoRotationState
+{
+    struct qemu_syscall super;
+    uint64_t state;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetAutoRotationState(AR_STATE *state)
+{
+    struct qemu_GetAutoRotationState call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETAUTOROTATIONSTATE);
+    call.state = (ULONG_PTR)state;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetAutoRotationState(struct qemu_syscall *call)
+{
+    struct qemu_GetAutoRotationState *c = (struct qemu_GetAutoRotationState *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetAutoRotationState(QEMU_G2H(c->state));
+}
+
+#endif
+struct qemu_DisplayConfigGetDeviceInfo
+{
+    struct qemu_syscall super;
+    uint64_t packet;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LONG WINAPI DisplayConfigGetDeviceInfo(DISPLAYCONFIG_DEVICE_INFO_HEADER *packet)
+{
+    struct qemu_DisplayConfigGetDeviceInfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DISPLAYCONFIGGETDEVICEINFO);
+    call.packet = (ULONG_PTR)packet;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_DisplayConfigGetDeviceInfo(struct qemu_syscall *call)
+{
+    struct qemu_DisplayConfigGetDeviceInfo *c = (struct qemu_DisplayConfigGetDeviceInfo *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = DisplayConfigGetDeviceInfo(QEMU_G2H(c->packet));
+}
+
+#endif
+struct qemu_GetDisplayAutoRotationPreferences
+{
+    struct qemu_syscall super;
+    uint64_t orientation;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetDisplayAutoRotationPreferences(ORIENTATION_PREFERENCE *orientation)
+{
+    struct qemu_GetDisplayAutoRotationPreferences call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETDISPLAYAUTOROTATIONPREFERENCES);
+    call.orientation = (ULONG_PTR)orientation;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetDisplayAutoRotationPreferences(struct qemu_syscall *call)
+{
+    struct qemu_GetDisplayAutoRotationPreferences *c = (struct qemu_GetDisplayAutoRotationPreferences *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetDisplayAutoRotationPreferences(QEMU_G2H(c->orientation));
+}
+
+#endif

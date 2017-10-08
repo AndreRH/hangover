@@ -1879,3 +1879,107 @@ void qemu_TranslateAcceleratorW(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_CalcMenuBar
+{
+    struct qemu_syscall super;
+    uint64_t hwnd;
+    uint64_t left;
+    uint64_t right;
+    uint64_t top;
+    uint64_t rect;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI CalcMenuBar(HWND hwnd, DWORD left, DWORD right, DWORD top, RECT *rect)
+{
+    struct qemu_CalcMenuBar call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CALCMENUBAR);
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.left = left;
+    call.right = right;
+    call.top = top;
+    call.rect = (ULONG_PTR)rect;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+extern DWORD WINAPI CalcMenuBar(HWND hwnd, DWORD left, DWORD right, DWORD top, RECT *rect);
+void qemu_CalcMenuBar(struct qemu_syscall *call)
+{
+    struct qemu_CalcMenuBar *c = (struct qemu_CalcMenuBar *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = CalcMenuBar(QEMU_G2H(c->hwnd), c->left, c->right, c->top, QEMU_G2H(c->rect));
+}
+
+#endif
+
+struct qemu_MenuItemFromPoint
+{
+    struct qemu_syscall super;
+    uint64_t hWnd;
+    uint64_t hMenu;
+    uint64_t ptScreenX, ptScreenY;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI MenuItemFromPoint(HWND hWnd, HMENU hMenu, POINT ptScreen)
+{
+    struct qemu_MenuItemFromPoint call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_MENUITEMFROMPOINT);
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.ptScreenX = ptScreen.x;
+    call.ptScreenY = ptScreen.y;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_MenuItemFromPoint(struct qemu_syscall *call)
+{
+    struct qemu_MenuItemFromPoint *c = (struct qemu_MenuItemFromPoint *)call;
+    POINT ptScreen;
+    WINE_FIXME("Unverified!\n");
+
+    ptScreen.x = c->ptScreenX;
+    ptScreen.y = c->ptScreenY;
+    c->super.iret = MenuItemFromPoint(QEMU_G2H(c->hWnd), QEMU_G2H(c->hMenu), ptScreen);
+}
+
+#endif
+struct qemu_GetMenuCheckMarkDimensions
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LONG WINAPI GetMenuCheckMarkDimensions(void)
+{
+    struct qemu_GetMenuCheckMarkDimensions call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETMENUCHECKMARKDIMENSIONS);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetMenuCheckMarkDimensions(struct qemu_syscall *call)
+{
+    struct qemu_GetMenuCheckMarkDimensions *c = (struct qemu_GetMenuCheckMarkDimensions *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetMenuCheckMarkDimensions();
+}
+
+#endif

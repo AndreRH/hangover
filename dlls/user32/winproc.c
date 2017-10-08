@@ -130,3 +130,72 @@ void qemu_CallWindowProcW(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_UserRegisterWowHandlers
+{
+    struct qemu_syscall super;
+    uint64_t new;
+    uint64_t orig;
+};
+
+struct wow_handlers32;
+struct wow_handlers16;
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void WINAPI UserRegisterWowHandlers(const struct wow_handlers16 *new, struct wow_handlers32 *orig)
+{
+    struct qemu_UserRegisterWowHandlers call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_USERREGISTERWOWHANDLERS);
+    call.new = (ULONG_PTR)new;
+    call.orig = (ULONG_PTR)orig;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+extern void WINAPI UserRegisterWowHandlers(const struct wow_handlers16 *new, struct wow_handlers32 *orig);
+void qemu_UserRegisterWowHandlers(struct qemu_syscall *call)
+{
+    struct qemu_UserRegisterWowHandlers *c = (struct qemu_UserRegisterWowHandlers *)call;
+    WINE_FIXME("Unverified!\n");
+    UserRegisterWowHandlers(QEMU_G2H(c->new), QEMU_G2H(c->orig));
+}
+
+#endif
+struct qemu_EditWndProcA
+{
+    struct qemu_syscall super;
+    uint64_t hwnd;
+    uint64_t msg;
+    uint64_t wParam;
+    uint64_t lParam;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LRESULT WINAPI EditWndProcA(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    struct qemu_EditWndProcA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_EDITWNDPROCA);
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.msg = msg;
+    call.wParam = wParam;
+    call.lParam = lParam;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+extern LRESULT WINAPI EditWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+void qemu_EditWndProcA(struct qemu_syscall *call)
+{
+    struct qemu_EditWndProcA *c = (struct qemu_EditWndProcA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EditWndProc(QEMU_G2H(c->hwnd), c->msg, c->wParam, c->lParam);
+}
+
+#endif
