@@ -25,11 +25,35 @@
 #include "dll_list.h"
 #include "gdi32.h"
 
-#ifndef QEMU_DLL_GUEST
+#ifdef QEMU_DLL_GUEST
+
+/* Pointers to USER implementation of SelectPalette/RealizePalette */
+/* FIXME: Wine says "they will be patched by USER on startup". Do I need
+ * this, or are these just Wine internals that are missing the __wine
+ * name prefix? */
+
+extern void DbgBreakPoint(void);
+HPALETTE WINAPI GDISelectPalette( HDC hdc, HPALETTE hpal, WORD wBkg)
+{
+    DbgBreakPoint();
+    return NULL;
+}
+
+UINT WINAPI GDIRealizePalette( HDC hdc )
+{
+    DbgBreakPoint();
+    return 0;
+}
+
+HPALETTE (WINAPI *pfnSelectPalette)(HDC hdc, HPALETTE hpal, WORD bkgnd ) = GDISelectPalette;
+UINT (WINAPI *pfnRealizePalette)(HDC hdc) = GDIRealizePalette;
+
+#else
+
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_gdi32);
-#endif
 
+#endif
 
 struct qemu_CreatePalette
 {
