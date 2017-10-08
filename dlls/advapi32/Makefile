@@ -14,10 +14,10 @@ advapi32.dll: advapi32.def advapi_g.o crypt_g.o eventlog_g.o main_g.o registry_g
 qemu_advapi32.dll.so: advapi_h.o crypt_h.o eventlog_h.o main_h.o qemu_advapi32.spec registry_h.o security_h.o service_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_advapi32.spec *_h.o -o qemu_advapi32.dll.so -ladvapi32
 
-%_g.o: %.c advapi32.h Makefile $(SRCDIR)/Makefile
+%_g.o: %.c qemu_advapi32.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
-%_h.o: %.c advapi32.h Makefile $(SRCDIR)/Makefile
+%_h.o: %.c qemu_advapi32.h Makefile $(SRCDIR)/Makefile
 	$(WINEGCC) $< -c -o $@ $(CFLAGS)
 
 clean:
