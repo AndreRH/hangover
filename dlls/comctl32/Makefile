@@ -14,10 +14,10 @@ comctl32.dll: comctl32.def commctrl_g.o imagelist_g.o main_g.o propsheet_g.o
 qemu_comctl32.dll.so: commctrl_h.o imagelist_h.o main_h.o propsheet_h.o qemu_comctl32.spec
 	$(WINEGCC) -shared $(SRCDIR)/qemu_comctl32.spec *_h.o -o qemu_comctl32.dll.so -lcomctl32
 
-%_g.o: %.c comctl32.h Makefile $(SRCDIR)/Makefile
+%_g.o: %.c qemu_comctl32.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
-%_h.o: %.c comctl32.h Makefile $(SRCDIR)/Makefile
+%_h.o: %.c qemu_comctl32.h Makefile $(SRCDIR)/Makefile
 	$(WINEGCC) $< -c -o $@ $(CFLAGS)
 
 clean:

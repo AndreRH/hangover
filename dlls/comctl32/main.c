@@ -24,7 +24,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "comctl32.h"
+#include "qemu_comctl32.h"
 
 #ifdef QEMU_DLL_GUEST
 
