@@ -14,7 +14,7 @@ void __stdcall WinMainCRTStartup()
     HANDLE stdout = GetStdHandle(STD_OUTPUT_HANDLE);
     MEMORY_BASIC_INFORMATION info;
     DWORD old_protect;
-    
+
     VirtualQuery(WinMainCRTStartup, &info, sizeof(info));
 
     ptr_to_char(buffer + 7, info.BaseAddress);
@@ -37,7 +37,7 @@ void __stdcall WinMainCRTStartup()
     ptr_to_char(buffer3 + 7, (void *)(int64_t)old_protect);
     buffer3[7+16] = '\n';
     WriteFile(stdout, buffer3, sizeof(buffer3), &written, NULL);
-    
+
     /* This would crash again. */
     /* *(DWORD *)WinMainCRTStartup = 1; */
 

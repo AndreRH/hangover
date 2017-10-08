@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <psapi.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "kernel32.h"
@@ -339,13 +341,36 @@ WINBASEAPI SIZE_T WINAPI VirtualQuery(const void *address,
     return call.super.iret;
 }
 
-#else
+#elif GUEST_BIT==HOST_BIT
 
 void qemu_VirtualQuery(struct qemu_syscall *call)
 {
     struct qemu_VirtualQuery *c = (struct qemu_VirtualQuery *)call;
     WINE_TRACE("\n");
     c->super.iret = VirtualQuery(QEMU_G2H(c->address), QEMU_G2H(c->info), c->size);
+}
+
+#else
+
+static void memory_basic_info_h2g(const MEMORY_BASIC_INFORMATION *host,
+        struct qemu_MEMORY_BASIC_INFORMATION *guest)
+{
+    guest->BaseAddress = (ULONG_PTR)host->BaseAddress;
+    guest->AllocationBase = (ULONG_PTR)host->AllocationBase;
+    guest->AllocationProtect = host->AllocationProtect;
+    guest->RegionSize = host->RegionSize;
+    guest->State = host->State;
+    guest->Protect = host->Protect;
+    guest->Type = host->Type;
+}
+
+void qemu_VirtualQuery(struct qemu_syscall *call)
+{
+    struct qemu_VirtualQuery *c = (struct qemu_VirtualQuery *)call;
+    MEMORY_BASIC_INFORMATION info;
+    WINE_TRACE("\n");
+    c->super.iret = VirtualQuery(QEMU_G2H(c->address), &info, c->size);
+    memory_basic_info_h2g(&info, QEMU_G2H(c->info));
 }
 
 #endif
