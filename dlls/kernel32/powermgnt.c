@@ -44,8 +44,8 @@ WINBASEAPI BOOL WINAPI GetDevicePowerState(HANDLE hDevice, BOOL* pfOn)
 {
     struct qemu_GetDevicePowerState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDEVICEPOWERSTATE);
-    call.hDevice = (uint64_t)hDevice;
-    call.pfOn = (uint64_t)pfOn;
+    call.hDevice = (ULONG_PTR)hDevice;
+    call.pfOn = (ULONG_PTR)pfOn;
 
     qemu_syscall(&call.super);
 
@@ -75,7 +75,7 @@ WINBASEAPI BOOL WINAPI GetSystemPowerStatus(LPSYSTEM_POWER_STATUS ps)
 {
     struct qemu_GetSystemPowerStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMPOWERSTATUS);
-    call.ps = (uint64_t)ps;
+    call.ps = (ULONG_PTR)ps;
 
     qemu_syscall(&call.super);
 
@@ -133,7 +133,7 @@ WINBASEAPI BOOL WINAPI RequestWakeupLatency(LATENCY_TIME latency)
 {
     struct qemu_RequestWakeupLatency call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REQUESTWAKEUPLATENCY);
-    call.latency = (uint64_t)latency;
+    call.latency = (ULONG_PTR)latency;
 
     qemu_syscall(&call.super);
 
@@ -164,8 +164,8 @@ WINBASEAPI BOOL WINAPI SetSystemPowerState(BOOL suspend_or_hibernate, BOOL force
 {
     struct qemu_SetSystemPowerState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSYSTEMPOWERSTATE);
-    call.suspend_or_hibernate = (uint64_t)suspend_or_hibernate;
-    call.force_flag = (uint64_t)force_flag;
+    call.suspend_or_hibernate = (ULONG_PTR)suspend_or_hibernate;
+    call.force_flag = force_flag;
 
     qemu_syscall(&call.super);
 
@@ -195,7 +195,7 @@ WINBASEAPI EXECUTION_STATE WINAPI SetThreadExecutionState(EXECUTION_STATE flags)
 {
     struct qemu_SetThreadExecutionState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADEXECUTIONSTATE);
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -225,11 +225,11 @@ WINBASEAPI HANDLE WINAPI PowerCreateRequest(REASON_CONTEXT *context)
 {
     struct qemu_PowerCreateRequest call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POWERCREATEREQUEST);
-    call.context = (uint64_t)context;
+    call.context = (ULONG_PTR)context;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -240,7 +240,7 @@ void qemu_PowerCreateRequest(struct qemu_syscall *call)
 {
     struct qemu_PowerCreateRequest *c = (struct qemu_PowerCreateRequest *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PowerCreateRequest(QEMU_G2H(c->context));
+    c->super.iret = QEMU_H2G(PowerCreateRequest(QEMU_G2H(c->context)));
 }
 
 #endif
@@ -258,8 +258,8 @@ WINBASEAPI BOOL WINAPI PowerSetRequest(HANDLE request, POWER_REQUEST_TYPE type)
 {
     struct qemu_PowerSetRequest call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POWERSETREQUEST);
-    call.request = (uint64_t)request;
-    call.type = (uint64_t)type;
+    call.request = (ULONG_PTR)request;
+    call.type = type;
 
     qemu_syscall(&call.super);
 
@@ -292,8 +292,8 @@ WINBASEAPI BOOL WINAPI PowerClearRequest(HANDLE request, POWER_REQUEST_TYPE type
 {
     struct qemu_PowerClearRequest call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POWERCLEARREQUEST);
-    call.request = (uint64_t)request;
-    call.type = (uint64_t)type;
+    call.request = (ULONG_PTR)request;
+    call.type = type;
 
     qemu_syscall(&call.super);
 
