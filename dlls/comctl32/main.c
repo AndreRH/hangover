@@ -212,6 +212,8 @@ static const syscall_handler dll_functions[] =
     qemu_StrStrW,
     qemu_StrToIntA,
     qemu_StrToIntW,
+    qemu_TaskDialog,
+    qemu_TaskDialogIndirect,
     qemu_UninitializeFlatSB,
 };
 

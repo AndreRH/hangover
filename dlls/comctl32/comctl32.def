@@ -181,4 +181,6 @@ EXPORTS
   StrStrW
   StrToIntA
   StrToIntW
+  TaskDialog
+  TaskDialogIndirect
   UninitializeFlatSB

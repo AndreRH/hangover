@@ -175,6 +175,8 @@ enum comctl32_calls
     CALL_STRSTRW,
     CALL_STRTOINTA,
     CALL_STRTOINTW,
+    CALL_TASKDIALOG,
+    CALL_TASKDIALOGINDIRECT,
     CALL_UNINITIALIZEFLATSB,
 };
 
@@ -352,6 +354,8 @@ void qemu_StrStrIW(struct qemu_syscall *call);
 void qemu_StrStrW(struct qemu_syscall *call);
 void qemu_StrToIntA(struct qemu_syscall *call);
 void qemu_StrToIntW(struct qemu_syscall *call);
+void qemu_TaskDialog(struct qemu_syscall *call);
+void qemu_TaskDialogIndirect(struct qemu_syscall *call);
 void qemu_UninitializeFlatSB(struct qemu_syscall *call);
 
 UINT (* WINAPI p_ImageList_SetColorTable)(HIMAGELIST himl, UINT uStartIndex, UINT cEntries, const RGBQUAD *prgb);
