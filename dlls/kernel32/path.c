@@ -45,10 +45,10 @@ WINBASEAPI DWORD WINAPI GetFullPathNameW(LPCWSTR name, DWORD len, LPWSTR buffer,
 {
     struct qemu_GetFullPathNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFULLPATHNAMEW);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
     call.len = len;
-    call.buffer = (uint64_t)buffer;
-    call.lastpart = (uint64_t)lastpart;
+    call.buffer = (ULONG_PTR)buffer;
+    call.lastpart = (ULONG_PTR)lastpart;
 
     qemu_syscall(&call.super);
 
@@ -81,10 +81,10 @@ WINBASEAPI DWORD WINAPI GetFullPathNameA(LPCSTR name, DWORD len, LPSTR buffer, L
 {
     struct qemu_GetFullPathNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFULLPATHNAMEA);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
     call.len = len;
-    call.buffer = (uint64_t)buffer;
-    call.lastpart = (uint64_t)lastpart;
+    call.buffer = (ULONG_PTR)buffer;
+    call.lastpart = (ULONG_PTR)lastpart;
 
     qemu_syscall(&call.super);
 
@@ -116,8 +116,8 @@ WINBASEAPI DWORD WINAPI GetLongPathNameW(LPCWSTR shortpath, LPWSTR longpath, DWO
 {
     struct qemu_GetLongPathNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETLONGPATHNAMEW);
-    call.shortpath = (uint64_t)shortpath;
-    call.longpath = (uint64_t)longpath;
+    call.shortpath = (ULONG_PTR)shortpath;
+    call.longpath = (ULONG_PTR)longpath;
     call.longlen = longlen;
 
     qemu_syscall(&call.super);
@@ -150,8 +150,8 @@ WINBASEAPI DWORD WINAPI GetLongPathNameA(LPCSTR shortpath, LPSTR longpath, DWORD
 {
     struct qemu_GetLongPathNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETLONGPATHNAMEA);
-    call.shortpath = (uint64_t)shortpath;
-    call.longpath = (uint64_t)longpath;
+    call.shortpath = (ULONG_PTR)shortpath;
+    call.longpath = (ULONG_PTR)longpath;
     call.longlen = longlen;
 
     qemu_syscall(&call.super);
@@ -184,9 +184,9 @@ WINBASEAPI DWORD WINAPI GetShortPathNameW(LPCWSTR longpath, LPWSTR shortpath, DW
 {
     struct qemu_GetShortPathNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSHORTPATHNAMEW);
-    call.longpath = (uint64_t)longpath;
-    call.shortpath = (uint64_t)shortpath;
-    call.shortlen = (uint64_t)shortlen;
+    call.longpath = (ULONG_PTR)longpath;
+    call.shortpath = (ULONG_PTR)shortpath;
+    call.shortlen = shortlen;
 
     qemu_syscall(&call.super);
 
@@ -218,9 +218,9 @@ WINBASEAPI DWORD WINAPI GetShortPathNameA(LPCSTR longpath, LPSTR shortpath, DWOR
 {
     struct qemu_GetShortPathNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSHORTPATHNAMEA);
-    call.longpath = (uint64_t)longpath;
-    call.shortpath = (uint64_t)shortpath;
-    call.shortlen = (uint64_t)shortlen;
+    call.longpath = (ULONG_PTR)longpath;
+    call.shortpath = (ULONG_PTR)shortpath;
+    call.shortlen = shortlen;
 
     qemu_syscall(&call.super);
 
@@ -252,7 +252,7 @@ WINBASEAPI DWORD WINAPI GetTempPathA(DWORD count, LPSTR path)
     struct qemu_GetTempPathA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEMPPATHA);
     call.count = count;
-    call.path = (uint64_t)path;
+    call.path = (ULONG_PTR)path;
 
     qemu_syscall(&call.super);
 
@@ -284,7 +284,7 @@ WINBASEAPI DWORD WINAPI GetTempPathW(DWORD count, LPWSTR path)
     struct qemu_GetTempPathW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEMPPATHW);
     call.count = count;
-    call.path = (uint64_t)path;
+    call.path = (ULONG_PTR)path;
 
     qemu_syscall(&call.super);
 
@@ -317,10 +317,10 @@ WINBASEAPI UINT WINAPI GetTempFileNameA(LPCSTR path, LPCSTR prefix, UINT unique,
 {
     struct qemu_GetTempFileNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEMPFILENAMEA);
-    call.path = (uint64_t)path;
-    call.prefix = (uint64_t)prefix;
+    call.path = (ULONG_PTR)path;
+    call.prefix = (ULONG_PTR)prefix;
     call.unique = unique;
-    call.buffer = (uint64_t)buffer;
+    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
 
@@ -353,10 +353,10 @@ WINBASEAPI UINT WINAPI GetTempFileNameW(LPCWSTR path, LPCWSTR prefix, UINT uniqu
 {
     struct qemu_GetTempFileNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEMPFILENAMEW);
-    call.path = (uint64_t)path;
-    call.prefix = (uint64_t)prefix;
+    call.path = (ULONG_PTR)path;
+    call.prefix = (ULONG_PTR)prefix;
     call.unique = unique;
-    call.buffer = (uint64_t)buffer;
+    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
 
@@ -391,12 +391,12 @@ WINBASEAPI DWORD WINAPI SearchPathW(LPCWSTR path, LPCWSTR name, LPCWSTR ext, DWO
 {
     struct qemu_SearchPathW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SEARCHPATHW);
-    call.path = (uint64_t)path;
-    call.name = (uint64_t)name;
-    call.ext = (uint64_t)ext;
-    call.buflen = (uint64_t)buflen;
-    call.buffer = (uint64_t)buffer;
-    call.lastpart = (uint64_t)lastpart;
+    call.path = (ULONG_PTR)path;
+    call.name = (ULONG_PTR)name;
+    call.ext = (ULONG_PTR)ext;
+    call.buflen = buflen;
+    call.buffer = (ULONG_PTR)buffer;
+    call.lastpart = (ULONG_PTR)lastpart;
 
     qemu_syscall(&call.super);
 
@@ -431,12 +431,12 @@ WINBASEAPI DWORD WINAPI SearchPathA(LPCSTR path, LPCSTR name, LPCSTR ext, DWORD 
 {
     struct qemu_SearchPathA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SEARCHPATHA);
-    call.path = (uint64_t)path;
-    call.name = (uint64_t)name;
-    call.ext = (uint64_t)ext;
-    call.buflen = (uint64_t)buflen;
-    call.buffer = (uint64_t)buffer;
-    call.lastpart = (uint64_t)lastpart;
+    call.path = (ULONG_PTR)path;
+    call.name = (ULONG_PTR)name;
+    call.ext = (ULONG_PTR)ext;
+    call.buflen = buflen;
+    call.buffer = (ULONG_PTR)buffer;
+    call.lastpart = (ULONG_PTR)lastpart;
 
     qemu_syscall(&call.super);
 
@@ -468,8 +468,8 @@ WINBASEAPI BOOL WINAPI CopyFileW(LPCWSTR source, LPCWSTR dest, BOOL fail_if_exis
 {
     struct qemu_CopyFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COPYFILEW);
-    call.source = (uint64_t)source;
-    call.dest = (uint64_t)dest;
+    call.source = (ULONG_PTR)source;
+    call.dest = (ULONG_PTR)dest;
     call.fail_if_exists = fail_if_exists;
 
     qemu_syscall(&call.super);
@@ -502,8 +502,8 @@ WINBASEAPI BOOL WINAPI CopyFileA(LPCSTR source, LPCSTR dest, BOOL fail_if_exists
 {
     struct qemu_CopyFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COPYFILEA);
-    call.source = (uint64_t)source;
-    call.dest = (uint64_t)dest;
+    call.source = (ULONG_PTR)source;
+    call.dest = (ULONG_PTR)dest;
     call.fail_if_exists = fail_if_exists;
 
     qemu_syscall(&call.super);
@@ -539,12 +539,12 @@ WINBASEAPI BOOL WINAPI CopyFileExW(LPCWSTR source, LPCWSTR dest, LPPROGRESS_ROUT
 {
     struct qemu_CopyFileExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COPYFILEEXW);
-    call.source = (uint64_t)source;
-    call.dest = (uint64_t)dest;
-    call.progress = (uint64_t)progress;
-    call.param = (uint64_t)param;
-    call.cancel_ptr = (uint64_t)cancel_ptr;
-    call.flags = (uint64_t)flags;
+    call.source = (ULONG_PTR)source;
+    call.dest = (ULONG_PTR)dest;
+    call.progress = (ULONG_PTR)progress;
+    call.param = (ULONG_PTR)param;
+    call.cancel_ptr = (ULONG_PTR)cancel_ptr;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -579,11 +579,11 @@ WINBASEAPI BOOL WINAPI CopyFileExA(LPCSTR sourceFilename, LPCSTR destFilename, L
 {
     struct qemu_CopyFileExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COPYFILEEXA);
-    call.sourceFilename = (uint64_t)sourceFilename;
-    call.destFilename = (uint64_t)destFilename;
-    call.progressRoutine = (uint64_t)progressRoutine;
-    call.appData = (uint64_t)appData;
-    call.cancelFlagPointer = (uint64_t)cancelFlagPointer;
+    call.sourceFilename = (ULONG_PTR)sourceFilename;
+    call.destFilename = (ULONG_PTR)destFilename;
+    call.progressRoutine = (ULONG_PTR)progressRoutine;
+    call.appData = (ULONG_PTR)appData;
+    call.cancelFlagPointer = (ULONG_PTR)cancelFlagPointer;
     call.copyFlags = copyFlags;
 
     qemu_syscall(&call.super);
@@ -621,11 +621,11 @@ WINBASEAPI BOOL WINAPI MoveFileWithProgressW(LPCWSTR source, LPCWSTR dest, LPPRO
 {
     struct qemu_MoveFileWithProgressW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MOVEFILEWITHPROGRESSW);
-    call.source = (uint64_t)source;
-    call.dest = (uint64_t)dest;
-    call.fnProgress = (uint64_t)fnProgress;
-    call.param = (uint64_t)param;
-    call.flag = (uint64_t)flag;
+    call.source = (ULONG_PTR)source;
+    call.dest = (ULONG_PTR)dest;
+    call.fnProgress = (ULONG_PTR)fnProgress;
+    call.param = (ULONG_PTR)param;
+    call.flag = flag;
 
     qemu_syscall(&call.super);
 
@@ -659,11 +659,11 @@ WINBASEAPI BOOL WINAPI MoveFileWithProgressA(LPCSTR source, LPCSTR dest, LPPROGR
 {
     struct qemu_MoveFileWithProgressA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MOVEFILEWITHPROGRESSA);
-    call.source = (uint64_t)source;
-    call.dest = (uint64_t)dest;
-    call.fnProgress = (uint64_t)fnProgress;
-    call.param = (uint64_t)param;
-    call.flag = (uint64_t)flag;
+    call.source = (ULONG_PTR)source;
+    call.dest = (ULONG_PTR)dest;
+    call.fnProgress = (ULONG_PTR)fnProgress;
+    call.param = (ULONG_PTR)param;
+    call.flag = flag;
 
     qemu_syscall(&call.super);
 
@@ -695,9 +695,9 @@ WINBASEAPI BOOL WINAPI MoveFileExW(LPCWSTR source, LPCWSTR dest, DWORD flag)
 {
     struct qemu_MoveFileExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MOVEFILEEXW);
-    call.source = (uint64_t)source;
-    call.dest = (uint64_t)dest;
-    call.flag = (uint64_t)flag;
+    call.source = (ULONG_PTR)source;
+    call.dest = (ULONG_PTR)dest;
+    call.flag = flag;
 
     qemu_syscall(&call.super);
 
@@ -729,9 +729,9 @@ WINBASEAPI BOOL WINAPI MoveFileExA(LPCSTR source, LPCSTR dest, DWORD flag)
 {
     struct qemu_MoveFileExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MOVEFILEEXA);
-    call.source = (uint64_t)source;
-    call.dest = (uint64_t)dest;
-    call.flag = (uint64_t)flag;
+    call.source = (ULONG_PTR)source;
+    call.dest = (ULONG_PTR)dest;
+    call.flag = flag;
 
     qemu_syscall(&call.super);
 
@@ -762,8 +762,8 @@ WINBASEAPI BOOL WINAPI MoveFileW(LPCWSTR source, LPCWSTR dest)
 {
     struct qemu_MoveFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MOVEFILEW);
-    call.source = (uint64_t)source;
-    call.dest = (uint64_t)dest;
+    call.source = (ULONG_PTR)source;
+    call.dest = (ULONG_PTR)dest;
 
     qemu_syscall(&call.super);
 
@@ -794,8 +794,8 @@ WINBASEAPI BOOL WINAPI MoveFileA(LPCSTR source, LPCSTR dest)
 {
     struct qemu_MoveFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MOVEFILEA);
-    call.source = (uint64_t)source;
-    call.dest = (uint64_t)dest;
+    call.source = (ULONG_PTR)source;
+    call.dest = (ULONG_PTR)dest;
 
     qemu_syscall(&call.super);
 
@@ -827,9 +827,9 @@ WINBASEAPI BOOL WINAPI CreateHardLinkW(LPCWSTR lpFileName, LPCWSTR lpExistingFil
 {
     struct qemu_CreateHardLinkW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEHARDLINKW);
-    call.lpFileName = (uint64_t)lpFileName;
-    call.lpExistingFileName = (uint64_t)lpExistingFileName;
-    call.lpSecurityAttributes = (uint64_t)lpSecurityAttributes;
+    call.lpFileName = (ULONG_PTR)lpFileName;
+    call.lpExistingFileName = (ULONG_PTR)lpExistingFileName;
+    call.lpSecurityAttributes = (ULONG_PTR)lpSecurityAttributes;
 
     qemu_syscall(&call.super);
 
@@ -861,9 +861,9 @@ WINBASEAPI BOOL WINAPI CreateHardLinkA(LPCSTR lpFileName, LPCSTR lpExistingFileN
 {
     struct qemu_CreateHardLinkA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEHARDLINKA);
-    call.lpFileName = (uint64_t)lpFileName;
-    call.lpExistingFileName = (uint64_t)lpExistingFileName;
-    call.lpSecurityAttributes = (uint64_t)lpSecurityAttributes;
+    call.lpFileName = (ULONG_PTR)lpFileName;
+    call.lpExistingFileName = (ULONG_PTR)lpExistingFileName;
+    call.lpSecurityAttributes = (ULONG_PTR)lpSecurityAttributes;
 
     qemu_syscall(&call.super);
 
@@ -894,8 +894,8 @@ WINBASEAPI BOOL WINAPI CreateDirectoryW(LPCWSTR path, LPSECURITY_ATTRIBUTES sa)
 {
     struct qemu_CreateDirectoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDIRECTORYW);
-    call.path = (uint64_t)path;
-    call.sa = (uint64_t)sa;
+    call.path = (ULONG_PTR)path;
+    call.sa = (ULONG_PTR)sa;
 
     qemu_syscall(&call.super);
 
@@ -926,8 +926,8 @@ WINBASEAPI BOOL WINAPI CreateDirectoryA(LPCSTR path, LPSECURITY_ATTRIBUTES sa)
 {
     struct qemu_CreateDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDIRECTORYA);
-    call.path = (uint64_t)path;
-    call.sa = (uint64_t)sa;
+    call.path = (ULONG_PTR)path;
+    call.sa = (ULONG_PTR)sa;
 
     qemu_syscall(&call.super);
 
@@ -959,9 +959,9 @@ WINBASEAPI BOOL WINAPI CreateDirectoryExA(LPCSTR template, LPCSTR path, LPSECURI
 {
     struct qemu_CreateDirectoryExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDIRECTORYEXA);
-    call.template = (uint64_t)template;
-    call.path = (uint64_t)path;
-    call.sa = (uint64_t)sa;
+    call.template = (ULONG_PTR)template;
+    call.path = (ULONG_PTR)path;
+    call.sa = (ULONG_PTR)sa;
 
     qemu_syscall(&call.super);
 
@@ -993,9 +993,9 @@ WINBASEAPI BOOL WINAPI CreateDirectoryExW(LPCWSTR template, LPCWSTR path, LPSECU
 {
     struct qemu_CreateDirectoryExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDIRECTORYEXW);
-    call.template = (uint64_t)template;
-    call.path = (uint64_t)path;
-    call.sa = (uint64_t)sa;
+    call.template = (ULONG_PTR)template;
+    call.path = (ULONG_PTR)path;
+    call.sa = (ULONG_PTR)sa;
 
     qemu_syscall(&call.super);
 
@@ -1025,7 +1025,7 @@ WINBASEAPI BOOL WINAPI RemoveDirectoryW(LPCWSTR path)
 {
     struct qemu_RemoveDirectoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMOVEDIRECTORYW);
-    call.path = (uint64_t)path;
+    call.path = (ULONG_PTR)path;
 
     qemu_syscall(&call.super);
 
@@ -1055,7 +1055,7 @@ WINBASEAPI BOOL WINAPI RemoveDirectoryA(LPCSTR path)
 {
     struct qemu_RemoveDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMOVEDIRECTORYA);
-    call.path = (uint64_t)path;
+    call.path = (ULONG_PTR)path;
 
     qemu_syscall(&call.super);
 
@@ -1087,7 +1087,7 @@ WINBASEAPI DWORD WINAPI GetCurrentDirectoryW(DWORD buflen, LPWSTR buf)
     struct qemu_GetCurrentDirectoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTDIRECTORYW);
     call.buflen = buflen;
-    call.buf = (uint64_t)buf;
+    call.buf = (ULONG_PTR)buf;
 
     qemu_syscall(&call.super);
 
@@ -1119,7 +1119,7 @@ WINBASEAPI DWORD WINAPI GetCurrentDirectoryA(DWORD buflen, LPSTR buf)
     struct qemu_GetCurrentDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTDIRECTORYA);
     call.buflen = buflen;
-    call.buf = (uint64_t)buf;
+    call.buf = (ULONG_PTR)buf;
 
     qemu_syscall(&call.super);
 
@@ -1149,7 +1149,7 @@ WINBASEAPI BOOL WINAPI SetCurrentDirectoryW(LPCWSTR dir)
 {
     struct qemu_SetCurrentDirectoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCURRENTDIRECTORYW);
-    call.dir = (uint64_t)dir;
+    call.dir = (ULONG_PTR)dir;
 
     qemu_syscall(&call.super);
 
@@ -1179,7 +1179,7 @@ WINBASEAPI BOOL WINAPI SetCurrentDirectoryA(LPCSTR dir)
 {
     struct qemu_SetCurrentDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCURRENTDIRECTORYA);
-    call.dir = (uint64_t)dir;
+    call.dir = (ULONG_PTR)dir;
 
     qemu_syscall(&call.super);
 
@@ -1210,8 +1210,8 @@ WINBASEAPI UINT WINAPI GetWindowsDirectoryW(LPWSTR path, UINT count)
 {
     struct qemu_GetWindowsDirectoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETWINDOWSDIRECTORYW);
-    call.path = (uint64_t)path;
-    call.count = (uint64_t)count;
+    call.path = (ULONG_PTR)path;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -1242,7 +1242,7 @@ WINBASEAPI UINT WINAPI GetWindowsDirectoryA(LPSTR path, UINT count)
 {
     struct qemu_GetWindowsDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETWINDOWSDIRECTORYA);
-    call.path = (uint64_t)path;
+    call.path = (ULONG_PTR)path;
     call.count = count;
 
     qemu_syscall(&call.super);
@@ -1274,7 +1274,7 @@ WINBASEAPI UINT WINAPI GetSystemWindowsDirectoryA(LPSTR path, UINT count)
 {
     struct qemu_GetSystemWindowsDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMWINDOWSDIRECTORYA);
-    call.path = (uint64_t)path;
+    call.path = (ULONG_PTR)path;
     call.count = count;
 
     qemu_syscall(&call.super);
@@ -1306,8 +1306,8 @@ WINBASEAPI UINT WINAPI GetSystemWindowsDirectoryW(LPWSTR path, UINT count)
 {
     struct qemu_GetSystemWindowsDirectoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMWINDOWSDIRECTORYW);
-    call.path = (uint64_t)path;
-    call.count = (uint64_t)count;
+    call.path = (ULONG_PTR)path;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -1338,8 +1338,8 @@ WINBASEAPI UINT WINAPI GetSystemDirectoryW(LPWSTR path, UINT count)
 {
     struct qemu_GetSystemDirectoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMDIRECTORYW);
-    call.path = (uint64_t)path;
-    call.count = (uint64_t)count;
+    call.path = (ULONG_PTR)path;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -1370,8 +1370,8 @@ WINBASEAPI UINT WINAPI GetSystemDirectoryA(LPSTR path, UINT count)
 {
     struct qemu_GetSystemDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMDIRECTORYA);
-    call.path = (uint64_t)path;
-    call.count = (uint64_t)count;
+    call.path = (ULONG_PTR)path;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -1402,8 +1402,8 @@ WINBASEAPI UINT WINAPI GetSystemWow64DirectoryW(LPWSTR path, UINT count)
 {
     struct qemu_GetSystemWow64DirectoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMWOW64DIRECTORYW);
-    call.path = (uint64_t)path;
-    call.count = (uint64_t)count;
+    call.path = (ULONG_PTR)path;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -1434,8 +1434,8 @@ WINBASEAPI UINT WINAPI GetSystemWow64DirectoryA(LPSTR path, UINT count)
 {
     struct qemu_GetSystemWow64DirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMWOW64DIRECTORYA);
-    call.path = (uint64_t)path;
-    call.count = (uint64_t)count;
+    call.path = (ULONG_PTR)path;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -1465,7 +1465,7 @@ WINBASEAPI BOOLEAN WINAPI Wow64EnableWow64FsRedirection(BOOLEAN enable)
 {
     struct qemu_Wow64EnableWow64FsRedirection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WOW64ENABLEWOW64FSREDIRECTION);
-    call.enable = (uint64_t)enable;
+    call.enable = enable;
 
     qemu_syscall(&call.super);
 
@@ -1495,7 +1495,7 @@ WINBASEAPI BOOL WINAPI Wow64DisableWow64FsRedirection(PVOID *old_value)
 {
     struct qemu_Wow64DisableWow64FsRedirection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WOW64DISABLEWOW64FSREDIRECTION);
-    call.old_value = (uint64_t)old_value;
+    call.old_value = (ULONG_PTR)old_value;
 
     qemu_syscall(&call.super);
 
@@ -1525,7 +1525,7 @@ WINBASEAPI BOOL WINAPI Wow64RevertWow64FsRedirection(PVOID old_value)
 {
     struct qemu_Wow64RevertWow64FsRedirection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WOW64REVERTWOW64FSREDIRECTION);
-    call.old_value = (uint64_t)old_value;
+    call.old_value = (ULONG_PTR)old_value;
 
     qemu_syscall(&call.super);
 
@@ -1555,7 +1555,7 @@ WINBASEAPI BOOL WINAPI NeedCurrentDirectoryForExePathW(LPCWSTR name)
 {
     struct qemu_NeedCurrentDirectoryForExePathW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NEEDCURRENTDIRECTORYFOREXEPATHW);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
@@ -1585,7 +1585,7 @@ WINBASEAPI BOOL WINAPI NeedCurrentDirectoryForExePathA(LPCSTR name)
 {
     struct qemu_NeedCurrentDirectoryForExePathA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NEEDCURRENTDIRECTORYFOREXEPATHA);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
@@ -1617,9 +1617,9 @@ WINBASEAPI BOOLEAN WINAPI CreateSymbolicLinkW(LPCWSTR link, LPCWSTR target, DWOR
 {
     struct qemu_CreateSymbolicLinkW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATESYMBOLICLINKW);
-    call.link = (uint64_t)link;
-    call.target = (uint64_t)target;
-    call.flags = (uint64_t)flags;
+    call.link = (ULONG_PTR)link;
+    call.target = (ULONG_PTR)target;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -1651,9 +1651,9 @@ WINBASEAPI BOOLEAN WINAPI CreateSymbolicLinkA(LPCSTR link, LPCSTR target, DWORD 
 {
     struct qemu_CreateSymbolicLinkA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATESYMBOLICLINKA);
-    call.link = (uint64_t)link;
-    call.target = (uint64_t)target;
-    call.flags = (uint64_t)flags;
+    call.link = (ULONG_PTR)link;
+    call.target = (ULONG_PTR)target;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -1686,10 +1686,10 @@ WINBASEAPI BOOL WINAPI CreateHardLinkTransactedA(LPCSTR link, LPCSTR target, LPS
 {
     struct qemu_CreateHardLinkTransactedA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEHARDLINKTRANSACTEDA);
-    call.link = (uint64_t)link;
-    call.target = (uint64_t)target;
-    call.sa = (uint64_t)sa;
-    call.transaction = (uint64_t)transaction;
+    call.link = (ULONG_PTR)link;
+    call.target = (ULONG_PTR)target;
+    call.sa = (ULONG_PTR)sa;
+    call.transaction = (ULONG_PTR)transaction;
 
     qemu_syscall(&call.super);
 
@@ -1724,10 +1724,10 @@ WINBASEAPI BOOL WINAPI CreateHardLinkTransactedW(LPCWSTR link, LPCWSTR target, L
 {
     struct qemu_CreateHardLinkTransactedW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEHARDLINKTRANSACTEDW);
-    call.link = (uint64_t)link;
-    call.target = (uint64_t)target;
-    call.sa = (uint64_t)sa;
-    call.transaction = (uint64_t)transaction;
+    call.link = (ULONG_PTR)link;
+    call.target = (ULONG_PTR)target;
+    call.sa = (ULONG_PTR)sa;
+    call.transaction = (ULONG_PTR)transaction;
 
     qemu_syscall(&call.super);
 
@@ -1763,11 +1763,11 @@ WINBASEAPI BOOL WINAPI CheckNameLegalDOS8Dot3A(const char *name, char *oemname, 
 {
     struct qemu_CheckNameLegalDOS8Dot3A call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHECKNAMELEGALDOS8DOT3A);
-    call.name = (uint64_t)name;
-    call.oemname = (uint64_t)oemname;
-    call.oemname_len = (uint64_t)oemname_len;
-    call.contains_spaces = (uint64_t)contains_spaces;
-    call.is_legal = (uint64_t)is_legal;
+    call.name = (ULONG_PTR)name;
+    call.oemname = (ULONG_PTR)oemname;
+    call.oemname_len = oemname_len;
+    call.contains_spaces = (ULONG_PTR)contains_spaces;
+    call.is_legal = (ULONG_PTR)is_legal;
 
     qemu_syscall(&call.super);
 
@@ -1801,11 +1801,11 @@ WINBASEAPI BOOL WINAPI CheckNameLegalDOS8Dot3W(const WCHAR *name, char *oemname,
 {
     struct qemu_CheckNameLegalDOS8Dot3W call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHECKNAMELEGALDOS8DOT3W);
-    call.name = (uint64_t)name;
-    call.oemname = (uint64_t)oemname;
-    call.oemname_len = (uint64_t)oemname_len;
-    call.contains_spaces_ret = (uint64_t)contains_spaces_ret;
-    call.is_legal = (uint64_t)is_legal;
+    call.name = (ULONG_PTR)name;
+    call.oemname = (ULONG_PTR)oemname;
+    call.oemname_len = oemname_len;
+    call.contains_spaces_ret = (ULONG_PTR)contains_spaces_ret;
+    call.is_legal = (ULONG_PTR)is_legal;
 
     qemu_syscall(&call.super);
 
@@ -1835,7 +1835,7 @@ WINBASEAPI BOOL WINAPI SetSearchPathMode(DWORD flags)
 {
     struct qemu_SetSearchPathMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSEARCHPATHMODE);
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -1867,7 +1867,7 @@ WINBASEAPI BOOL WINAPI SetDefaultDllDirectories(DWORD flags)
 {
     struct qemu_SetDefaultDllDirectories call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETDEFAULTDLLDIRECTORIES);
-    call.flags = (uint64_t)flags;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
