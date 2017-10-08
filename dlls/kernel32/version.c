@@ -62,7 +62,7 @@ WINBASEAPI BOOL WINAPI GetVersionExA(OSVERSIONINFOA *v)
 {
     struct qemu_GetVersionExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETVERSIONEXA);
-    call.v = (uint64_t)v;
+    call.v = (ULONG_PTR)v;
     qemu_syscall(&call.super);
     return call.super.iret;
 }
@@ -90,7 +90,7 @@ WINBASEAPI BOOL WINAPI GetVersionExW(OSVERSIONINFOW *v)
 {
     struct qemu_GetVersionExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETVERSIONEXW);
-    call.v = (uint64_t)v;
+    call.v = (ULONG_PTR)v;
     qemu_syscall(&call.super);
     return call.super.iret;
 }
@@ -121,9 +121,9 @@ WINBASEAPI BOOL WINAPI VerifyVersionInfoA(OSVERSIONINFOEXA *info, DWORD type_mas
 {
     struct qemu_VerifyVersionInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VERIFYVERSIONINFOA);
-    call.info = (uint64_t)info;
-    call.type_mask = (uint64_t)type_mask;
-    call.condition_mask = (uint64_t)condition_mask;
+    call.info = (ULONG_PTR)info;
+    call.type_mask = (ULONG_PTR)type_mask;
+    call.condition_mask = (ULONG_PTR)condition_mask;
 
     qemu_syscall(&call.super);
 
@@ -156,9 +156,9 @@ WINBASEAPI BOOL WINAPI VerifyVersionInfoW(LPOSVERSIONINFOEXW info, DWORD type_ma
 {
     struct qemu_VerifyVersionInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VERIFYVERSIONINFOW);
-    call.info = (uint64_t)info;
-    call.type_mask = (uint64_t)type_mask;
-    call.condition_mask = (uint64_t)condition_mask;
+    call.info = (ULONG_PTR)info;
+    call.type_mask = (ULONG_PTR)type_mask;
+    call.condition_mask = (ULONG_PTR)condition_mask;
 
     qemu_syscall(&call.super);
 
@@ -218,7 +218,7 @@ WINBASEAPI DWORD WINAPI SetTermsrvAppInstallMode(BOOL bInstallMode)
 {
     struct qemu_SetTermsrvAppInstallMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTERMSRVAPPINSTALLMODE);
-    call.bInstallMode = (uint64_t)bInstallMode;
+    call.bInstallMode = (ULONG_PTR)bInstallMode;
 
     qemu_syscall(&call.super);
 
@@ -258,7 +258,7 @@ WINBASEAPI BOOL WINAPI GetProductInfo(DWORD dwOSMajorVersion, DWORD dwOSMinorVer
     call.dwOSMinorVersion = dwOSMinorVersion;
     call.dwSpMajorVersion = dwSpMajorVersion;
     call.dwSpMinorVersion = dwSpMinorVersion;
-    call.pdwReturnedProductType = (uint64_t)pdwReturnedProductType;
+    call.pdwReturnedProductType = (ULONG_PTR)pdwReturnedProductType;
 
     qemu_syscall(&call.super);
 
@@ -289,8 +289,8 @@ WINBASEAPI LONG WINAPI GetCurrentPackageId(UINT32 *len, BYTE *buffer)
 {
     struct qemu_GetCurrentPackageId call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTPACKAGEID);
-    call.len = (uint64_t)len;
-    call.buffer = (uint64_t)buffer;
+    call.len = (ULONG_PTR)len;
+    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
 
@@ -323,8 +323,8 @@ WINBASEAPI LONG WINAPI GetCurrentPackageFamilyName(UINT32 *length, PWSTR name)
 {
     struct qemu_GetCurrentPackageFamilyName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTPACKAGEFAMILYNAME);
-    call.length = (uint64_t)length;
-    call.name = (uint64_t)name;
+    call.length = (ULONG_PTR)length;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
@@ -357,8 +357,8 @@ WINBASEAPI LONG WINAPI GetCurrentPackageFullName(UINT32 *length, PWSTR name)
 {
     struct qemu_GetCurrentPackageFullName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTPACKAGEFULLNAME);
-    call.length = (uint64_t)length;
-    call.name = (uint64_t)name;
+    call.length = (ULONG_PTR)length;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
@@ -392,9 +392,9 @@ WINBASEAPI LONG WINAPI GetPackageFullName(HANDLE process, UINT32 *length, PWSTR 
 {
     struct qemu_GetPackageFullName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPACKAGEFULLNAME);
-    call.process = (uint64_t)process;
-    call.length = (uint64_t)length;
-    call.name = (uint64_t)name;
+    call.process = (ULONG_PTR)process;
+    call.length = (ULONG_PTR)length;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 

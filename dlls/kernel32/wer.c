@@ -53,9 +53,9 @@ WINBASEAPI HRESULT WINAPI WerRegisterFile(PCWSTR file, WER_REGISTER_FILE_TYPE re
 {
     struct qemu_WerRegisterFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WERREGISTERFILE);
-    call.file = (uint64_t)file;
-    call.regfiletype = (uint64_t)regfiletype;
-    call.flags = (uint64_t)flags;
+    call.file = (ULONG_PTR)file;
+    call.regfiletype = (ULONG_PTR)regfiletype;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -86,8 +86,8 @@ WINBASEAPI HRESULT WINAPI WerRegisterRuntimeExceptionModule(PCWSTR callbackdll, 
 {
     struct qemu_WerRegisterRuntimeExceptionModule call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WERREGISTERRUNTIMEEXCEPTIONMODULE);
-    call.callbackdll = (uint64_t)callbackdll;
-    call.context = (uint64_t)context;
+    call.callbackdll = (ULONG_PTR)callbackdll;
+    call.context = (ULONG_PTR)context;
 
     qemu_syscall(&call.super);
 
@@ -117,7 +117,7 @@ WINBASEAPI HRESULT WINAPI WerSetFlags(DWORD flags)
 {
     struct qemu_WerSetFlags call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WERSETFLAGS);
-    call.flags = (uint64_t)flags;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -148,8 +148,8 @@ WINBASEAPI HRESULT WINAPI WerRegisterMemoryBlock(void *block, DWORD size)
 {
     struct qemu_WerRegisterMemoryBlock call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WERREGISTERMEMORYBLOCK);
-    call.block = (uint64_t)block;
-    call.size = (uint64_t)size;
+    call.block = (ULONG_PTR)block;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -179,7 +179,7 @@ WINBASEAPI HRESULT WINAPI WerUnregisterMemoryBlock(void *block)
 {
     struct qemu_WerUnregisterMemoryBlock call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WERUNREGISTERMEMORYBLOCK);
-    call.block = (uint64_t)block;
+    call.block = (ULONG_PTR)block;
 
     qemu_syscall(&call.super);
 

@@ -45,9 +45,9 @@ WINBASEAPI UINT WINAPI GetProfileIntA(LPCSTR section, LPCSTR entry, INT def_val)
 {
     struct qemu_GetProfileIntA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROFILEINTA);
-    call.section = (uint64_t)section;
-    call.entry = (uint64_t)entry;
-    call.def_val = (uint64_t)def_val;
+    call.section = (ULONG_PTR)section;
+    call.entry = (ULONG_PTR)entry;
+    call.def_val = (ULONG_PTR)def_val;
 
     qemu_syscall(&call.super);
 
@@ -79,9 +79,9 @@ WINBASEAPI UINT WINAPI GetProfileIntW(LPCWSTR section, LPCWSTR entry, INT def_va
 {
     struct qemu_GetProfileIntW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROFILEINTW);
-    call.section = (uint64_t)section;
-    call.entry = (uint64_t)entry;
-    call.def_val = (uint64_t)def_val;
+    call.section = (ULONG_PTR)section;
+    call.entry = (ULONG_PTR)entry;
+    call.def_val = (ULONG_PTR)def_val;
 
     qemu_syscall(&call.super);
 
@@ -116,12 +116,12 @@ WINBASEAPI DWORD WINAPI GetPrivateProfileStringW(LPCWSTR section, LPCWSTR entry,
 {
     struct qemu_GetPrivateProfileStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRIVATEPROFILESTRINGW);
-    call.section = (uint64_t)section;
-    call.entry = (uint64_t)entry;
-    call.def_val = (uint64_t)def_val;
-    call.buffer = (uint64_t)buffer;
-    call.len = (uint64_t)len;
-    call.filename = (uint64_t)filename;
+    call.section = (ULONG_PTR)section;
+    call.entry = (ULONG_PTR)entry;
+    call.def_val = (ULONG_PTR)def_val;
+    call.buffer = (ULONG_PTR)buffer;
+    call.len = (ULONG_PTR)len;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -156,12 +156,12 @@ WINBASEAPI DWORD WINAPI GetPrivateProfileStringA(LPCSTR section, LPCSTR entry, L
 {
     struct qemu_GetPrivateProfileStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRIVATEPROFILESTRINGA);
-    call.section = (uint64_t)section;
-    call.entry = (uint64_t)entry;
-    call.def_val = (uint64_t)def_val;
-    call.buffer = (uint64_t)buffer;
-    call.len = (uint64_t)len;
-    call.filename = (uint64_t)filename;
+    call.section = (ULONG_PTR)section;
+    call.entry = (ULONG_PTR)entry;
+    call.def_val = (ULONG_PTR)def_val;
+    call.buffer = (ULONG_PTR)buffer;
+    call.len = (ULONG_PTR)len;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -195,11 +195,11 @@ WINBASEAPI DWORD WINAPI GetProfileStringA(LPCSTR section, LPCSTR entry, LPCSTR d
 {
     struct qemu_GetProfileStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROFILESTRINGA);
-    call.section = (uint64_t)section;
-    call.entry = (uint64_t)entry;
-    call.def_val = (uint64_t)def_val;
-    call.buffer = (uint64_t)buffer;
-    call.len = (uint64_t)len;
+    call.section = (ULONG_PTR)section;
+    call.entry = (ULONG_PTR)entry;
+    call.def_val = (ULONG_PTR)def_val;
+    call.buffer = (ULONG_PTR)buffer;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
@@ -233,11 +233,11 @@ WINBASEAPI DWORD WINAPI GetProfileStringW(LPCWSTR section, LPCWSTR entry, LPCWST
 {
     struct qemu_GetProfileStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROFILESTRINGW);
-    call.section = (uint64_t)section;
-    call.entry = (uint64_t)entry;
-    call.def_val = (uint64_t)def_val;
-    call.buffer = (uint64_t)buffer;
-    call.len = (uint64_t)len;
+    call.section = (ULONG_PTR)section;
+    call.entry = (ULONG_PTR)entry;
+    call.def_val = (ULONG_PTR)def_val;
+    call.buffer = (ULONG_PTR)buffer;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
@@ -269,9 +269,9 @@ WINBASEAPI BOOL WINAPI WriteProfileStringA(LPCSTR section, LPCSTR entry, LPCSTR 
 {
     struct qemu_WriteProfileStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITEPROFILESTRINGA);
-    call.section = (uint64_t)section;
-    call.entry = (uint64_t)entry;
-    call.string = (uint64_t)string;
+    call.section = (ULONG_PTR)section;
+    call.entry = (ULONG_PTR)entry;
+    call.string = (ULONG_PTR)string;
 
     qemu_syscall(&call.super);
 
@@ -303,9 +303,9 @@ WINBASEAPI BOOL WINAPI WriteProfileStringW(LPCWSTR section, LPCWSTR entry, LPCWS
 {
     struct qemu_WriteProfileStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITEPROFILESTRINGW);
-    call.section = (uint64_t)section;
-    call.entry = (uint64_t)entry;
-    call.string = (uint64_t)string;
+    call.section = (ULONG_PTR)section;
+    call.entry = (ULONG_PTR)entry;
+    call.string = (ULONG_PTR)string;
 
     qemu_syscall(&call.super);
 
@@ -338,10 +338,10 @@ WINBASEAPI UINT WINAPI GetPrivateProfileIntW(LPCWSTR section, LPCWSTR entry, INT
 {
     struct qemu_GetPrivateProfileIntW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRIVATEPROFILEINTW);
-    call.section = (uint64_t)section;
-    call.entry = (uint64_t)entry;
-    call.def_val = (uint64_t)def_val;
-    call.filename = (uint64_t)filename;
+    call.section = (ULONG_PTR)section;
+    call.entry = (ULONG_PTR)entry;
+    call.def_val = (ULONG_PTR)def_val;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -374,10 +374,10 @@ WINBASEAPI UINT WINAPI GetPrivateProfileIntA(LPCSTR section, LPCSTR entry, INT d
 {
     struct qemu_GetPrivateProfileIntA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRIVATEPROFILEINTA);
-    call.section = (uint64_t)section;
-    call.entry = (uint64_t)entry;
-    call.def_val = (uint64_t)def_val;
-    call.filename = (uint64_t)filename;
+    call.section = (ULONG_PTR)section;
+    call.entry = (ULONG_PTR)entry;
+    call.def_val = (ULONG_PTR)def_val;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -410,10 +410,10 @@ WINBASEAPI DWORD WINAPI GetPrivateProfileSectionW(LPCWSTR section, LPWSTR buffer
 {
     struct qemu_GetPrivateProfileSectionW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRIVATEPROFILESECTIONW);
-    call.section = (uint64_t)section;
-    call.buffer = (uint64_t)buffer;
-    call.len = (uint64_t)len;
-    call.filename = (uint64_t)filename;
+    call.section = (ULONG_PTR)section;
+    call.buffer = (ULONG_PTR)buffer;
+    call.len = (ULONG_PTR)len;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -446,10 +446,10 @@ WINBASEAPI DWORD WINAPI GetPrivateProfileSectionA(LPCSTR section, LPSTR buffer, 
 {
     struct qemu_GetPrivateProfileSectionA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRIVATEPROFILESECTIONA);
-    call.section = (uint64_t)section;
-    call.buffer = (uint64_t)buffer;
-    call.len = (uint64_t)len;
-    call.filename = (uint64_t)filename;
+    call.section = (ULONG_PTR)section;
+    call.buffer = (ULONG_PTR)buffer;
+    call.len = (ULONG_PTR)len;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -481,9 +481,9 @@ WINBASEAPI DWORD WINAPI GetProfileSectionA(LPCSTR section, LPSTR buffer, DWORD l
 {
     struct qemu_GetProfileSectionA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROFILESECTIONA);
-    call.section = (uint64_t)section;
-    call.buffer = (uint64_t)buffer;
-    call.len = (uint64_t)len;
+    call.section = (ULONG_PTR)section;
+    call.buffer = (ULONG_PTR)buffer;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
@@ -515,9 +515,9 @@ WINBASEAPI DWORD WINAPI GetProfileSectionW(LPCWSTR section, LPWSTR buffer, DWORD
 {
     struct qemu_GetProfileSectionW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROFILESECTIONW);
-    call.section = (uint64_t)section;
-    call.buffer = (uint64_t)buffer;
-    call.len = (uint64_t)len;
+    call.section = (ULONG_PTR)section;
+    call.buffer = (ULONG_PTR)buffer;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
@@ -550,10 +550,10 @@ WINBASEAPI BOOL WINAPI WritePrivateProfileStringW(LPCWSTR section, LPCWSTR entry
 {
     struct qemu_WritePrivateProfileStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITEPRIVATEPROFILESTRINGW);
-    call.section = (uint64_t)section;
-    call.entry = (uint64_t)entry;
-    call.string = (uint64_t)string;
-    call.filename = (uint64_t)filename;
+    call.section = (ULONG_PTR)section;
+    call.entry = (ULONG_PTR)entry;
+    call.string = (ULONG_PTR)string;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -586,10 +586,10 @@ WINBASEAPI BOOL WINAPI WritePrivateProfileStringA(LPCSTR section, LPCSTR entry, 
 {
     struct qemu_WritePrivateProfileStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITEPRIVATEPROFILESTRINGA);
-    call.section = (uint64_t)section;
-    call.entry = (uint64_t)entry;
-    call.string = (uint64_t)string;
-    call.filename = (uint64_t)filename;
+    call.section = (ULONG_PTR)section;
+    call.entry = (ULONG_PTR)entry;
+    call.string = (ULONG_PTR)string;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -621,9 +621,9 @@ WINBASEAPI BOOL WINAPI WritePrivateProfileSectionW(LPCWSTR section, LPCWSTR stri
 {
     struct qemu_WritePrivateProfileSectionW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITEPRIVATEPROFILESECTIONW);
-    call.section = (uint64_t)section;
-    call.string = (uint64_t)string;
-    call.filename = (uint64_t)filename;
+    call.section = (ULONG_PTR)section;
+    call.string = (ULONG_PTR)string;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -655,9 +655,9 @@ WINBASEAPI BOOL WINAPI WritePrivateProfileSectionA(LPCSTR section, LPCSTR string
 {
     struct qemu_WritePrivateProfileSectionA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITEPRIVATEPROFILESECTIONA);
-    call.section = (uint64_t)section;
-    call.string = (uint64_t)string;
-    call.filename = (uint64_t)filename;
+    call.section = (ULONG_PTR)section;
+    call.string = (ULONG_PTR)string;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -688,8 +688,8 @@ WINBASEAPI BOOL WINAPI WriteProfileSectionA(LPCSTR section, LPCSTR keys_n_values
 {
     struct qemu_WriteProfileSectionA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITEPROFILESECTIONA);
-    call.section = (uint64_t)section;
-    call.keys_n_values = (uint64_t)keys_n_values;
+    call.section = (ULONG_PTR)section;
+    call.keys_n_values = (ULONG_PTR)keys_n_values;
 
     qemu_syscall(&call.super);
 
@@ -720,8 +720,8 @@ WINBASEAPI BOOL WINAPI WriteProfileSectionW(LPCWSTR section, LPCWSTR keys_n_valu
 {
     struct qemu_WriteProfileSectionW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITEPROFILESECTIONW);
-    call.section = (uint64_t)section;
-    call.keys_n_values = (uint64_t)keys_n_values;
+    call.section = (ULONG_PTR)section;
+    call.keys_n_values = (ULONG_PTR)keys_n_values;
 
     qemu_syscall(&call.super);
 
@@ -753,9 +753,9 @@ WINBASEAPI DWORD WINAPI GetPrivateProfileSectionNamesW(LPWSTR buffer, DWORD size
 {
     struct qemu_GetPrivateProfileSectionNamesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRIVATEPROFILESECTIONNAMESW);
-    call.buffer = (uint64_t)buffer;
-    call.size = (uint64_t)size;
-    call.filename = (uint64_t)filename;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = (ULONG_PTR)size;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -787,9 +787,9 @@ WINBASEAPI DWORD WINAPI GetPrivateProfileSectionNamesA(LPSTR buffer, DWORD size,
 {
     struct qemu_GetPrivateProfileSectionNamesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRIVATEPROFILESECTIONNAMESA);
-    call.buffer = (uint64_t)buffer;
-    call.size = (uint64_t)size;
-    call.filename = (uint64_t)filename;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = (ULONG_PTR)size;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -823,11 +823,11 @@ WINBASEAPI BOOL WINAPI GetPrivateProfileStructW (LPCWSTR section, LPCWSTR key, L
 {
     struct qemu_GetPrivateProfileStructW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRIVATEPROFILESTRUCTW);
-    call.section = (uint64_t)section;
-    call.key = (uint64_t)key;
-    call.buf = (uint64_t)buf;
-    call.len = (uint64_t)len;
-    call.filename = (uint64_t)filename;
+    call.section = (ULONG_PTR)section;
+    call.key = (ULONG_PTR)key;
+    call.buf = (ULONG_PTR)buf;
+    call.len = (ULONG_PTR)len;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -861,11 +861,11 @@ WINBASEAPI BOOL WINAPI GetPrivateProfileStructA (LPCSTR section, LPCSTR key, LPV
 {
     struct qemu_GetPrivateProfileStructA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRIVATEPROFILESTRUCTA);
-    call.section = (uint64_t)section;
-    call.key = (uint64_t)key;
-    call.buffer = (uint64_t)buffer;
-    call.len = (uint64_t)len;
-    call.filename = (uint64_t)filename;
+    call.section = (ULONG_PTR)section;
+    call.key = (ULONG_PTR)key;
+    call.buffer = (ULONG_PTR)buffer;
+    call.len = (ULONG_PTR)len;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -899,11 +899,11 @@ WINBASEAPI BOOL WINAPI WritePrivateProfileStructW (LPCWSTR section, LPCWSTR key,
 {
     struct qemu_WritePrivateProfileStructW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITEPRIVATEPROFILESTRUCTW);
-    call.section = (uint64_t)section;
-    call.key = (uint64_t)key;
-    call.buf = (uint64_t)buf;
-    call.bufsize = (uint64_t)bufsize;
-    call.filename = (uint64_t)filename;
+    call.section = (ULONG_PTR)section;
+    call.key = (ULONG_PTR)key;
+    call.buf = (ULONG_PTR)buf;
+    call.bufsize = (ULONG_PTR)bufsize;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -937,11 +937,11 @@ WINBASEAPI BOOL WINAPI WritePrivateProfileStructA (LPCSTR section, LPCSTR key, L
 {
     struct qemu_WritePrivateProfileStructA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITEPRIVATEPROFILESTRUCTA);
-    call.section = (uint64_t)section;
-    call.key = (uint64_t)key;
-    call.buf = (uint64_t)buf;
-    call.bufsize = (uint64_t)bufsize;
-    call.filename = (uint64_t)filename;
+    call.section = (ULONG_PTR)section;
+    call.key = (ULONG_PTR)key;
+    call.buf = (ULONG_PTR)buf;
+    call.bufsize = (ULONG_PTR)bufsize;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 

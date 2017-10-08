@@ -49,13 +49,13 @@ WINBASEAPI BOOL WINAPI BackupRead(HANDLE file, LPBYTE buffer, DWORD to_read, LPD
 {
     struct qemu_BackupRead call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BACKUPREAD);
-    call.file = (uint64_t)file;
-    call.buffer = (uint64_t)buffer;
-    call.to_read = (uint64_t)to_read;
-    call.read = (uint64_t)read;
-    call.abort = (uint64_t)abort;
-    call.security = (uint64_t)security;
-    call.context = (uint64_t)context;
+    call.file = (ULONG_PTR)file;
+    call.buffer = (ULONG_PTR)buffer;
+    call.to_read = (ULONG_PTR)to_read;
+    call.read = (ULONG_PTR)read;
+    call.abort = (ULONG_PTR)abort;
+    call.security = (ULONG_PTR)security;
+    call.context = (ULONG_PTR)context;
 
     qemu_syscall(&call.super);
 
@@ -90,12 +90,12 @@ WINBASEAPI BOOL WINAPI BackupSeek(HANDLE file, DWORD seek_low, DWORD seek_high, 
 {
     struct qemu_BackupSeek call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BACKUPSEEK);
-    call.file = (uint64_t)file;
-    call.seek_low = (uint64_t)seek_low;
-    call.seek_high = (uint64_t)seek_high;
-    call.seeked_low = (uint64_t)seeked_low;
-    call.seeked_high = (uint64_t)seeked_high;
-    call.context = (uint64_t)context;
+    call.file = (ULONG_PTR)file;
+    call.seek_low = (ULONG_PTR)seek_low;
+    call.seek_high = (ULONG_PTR)seek_high;
+    call.seeked_low = (ULONG_PTR)seeked_low;
+    call.seeked_high = (ULONG_PTR)seeked_high;
+    call.context = (ULONG_PTR)context;
 
     qemu_syscall(&call.super);
 
@@ -131,13 +131,13 @@ WINBASEAPI BOOL WINAPI BackupWrite(HANDLE file, LPBYTE buffer, DWORD to_write, L
 {
     struct qemu_BackupWrite call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BACKUPWRITE);
-    call.file = (uint64_t)file;
-    call.buffer = (uint64_t)buffer;
-    call.to_write = (uint64_t)to_write;
-    call.written = (uint64_t)written;
-    call.abort = (uint64_t)abort;
-    call.security = (uint64_t)security;
-    call.context = (uint64_t)context;
+    call.file = (ULONG_PTR)file;
+    call.buffer = (ULONG_PTR)buffer;
+    call.to_write = (ULONG_PTR)to_write;
+    call.written = (ULONG_PTR)written;
+    call.abort = (ULONG_PTR)abort;
+    call.security = (ULONG_PTR)security;
+    call.context = (ULONG_PTR)context;
 
     qemu_syscall(&call.super);
 
@@ -170,10 +170,10 @@ WINBASEAPI DWORD WINAPI CreateTapePartition(HANDLE device, DWORD method, DWORD c
 {
     struct qemu_CreateTapePartition call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATETAPEPARTITION);
-    call.device = (uint64_t)device;
-    call.method = (uint64_t)method;
-    call.count = (uint64_t)count;
-    call.size = (uint64_t)size;
+    call.device = (ULONG_PTR)device;
+    call.method = (ULONG_PTR)method;
+    call.count = (ULONG_PTR)count;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -205,9 +205,9 @@ WINBASEAPI DWORD WINAPI EraseTape(HANDLE device, DWORD type, BOOL immediate)
 {
     struct qemu_EraseTape call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ERASETAPE);
-    call.device = (uint64_t)device;
-    call.type = (uint64_t)type;
-    call.immediate = (uint64_t)immediate;
+    call.device = (ULONG_PTR)device;
+    call.type = (ULONG_PTR)type;
+    call.immediate = (ULONG_PTR)immediate;
 
     qemu_syscall(&call.super);
 
@@ -240,10 +240,10 @@ WINBASEAPI DWORD WINAPI GetTapeParameters(HANDLE device, DWORD operation, LPDWOR
 {
     struct qemu_GetTapeParameters call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTAPEPARAMETERS);
-    call.device = (uint64_t)device;
-    call.operation = (uint64_t)operation;
-    call.size = (uint64_t)size;
-    call.info = (uint64_t)info;
+    call.device = (ULONG_PTR)device;
+    call.operation = (ULONG_PTR)operation;
+    call.size = (ULONG_PTR)size;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -277,11 +277,11 @@ WINBASEAPI DWORD WINAPI GetTapePosition(HANDLE device, DWORD type, LPDWORD parti
 {
     struct qemu_GetTapePosition call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTAPEPOSITION);
-    call.device = (uint64_t)device;
-    call.type = (uint64_t)type;
-    call.partition = (uint64_t)partition;
-    call.offset_low = (uint64_t)offset_low;
-    call.offset_high = (uint64_t)offset_high;
+    call.device = (ULONG_PTR)device;
+    call.type = (ULONG_PTR)type;
+    call.partition = (ULONG_PTR)partition;
+    call.offset_low = (ULONG_PTR)offset_low;
+    call.offset_high = (ULONG_PTR)offset_high;
 
     qemu_syscall(&call.super);
 
@@ -311,7 +311,7 @@ WINBASEAPI DWORD WINAPI GetTapeStatus(HANDLE device)
 {
     struct qemu_GetTapeStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTAPESTATUS);
-    call.device = (uint64_t)device;
+    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
 
@@ -343,9 +343,9 @@ WINBASEAPI DWORD WINAPI PrepareTape(HANDLE device, DWORD operation, BOOL immedia
 {
     struct qemu_PrepareTape call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PREPARETAPE);
-    call.device = (uint64_t)device;
-    call.operation = (uint64_t)operation;
-    call.immediate = (uint64_t)immediate;
+    call.device = (ULONG_PTR)device;
+    call.operation = (ULONG_PTR)operation;
+    call.immediate = (ULONG_PTR)immediate;
 
     qemu_syscall(&call.super);
 
@@ -377,9 +377,9 @@ WINBASEAPI DWORD WINAPI SetTapeParameters(HANDLE device, DWORD operation, LPVOID
 {
     struct qemu_SetTapeParameters call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTAPEPARAMETERS);
-    call.device = (uint64_t)device;
-    call.operation = (uint64_t)operation;
-    call.info = (uint64_t)info;
+    call.device = (ULONG_PTR)device;
+    call.operation = (ULONG_PTR)operation;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -414,12 +414,12 @@ WINBASEAPI DWORD WINAPI SetTapePosition(HANDLE device, DWORD method, DWORD parti
 {
     struct qemu_SetTapePosition call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTAPEPOSITION);
-    call.device = (uint64_t)device;
-    call.method = (uint64_t)method;
-    call.partition = (uint64_t)partition;
-    call.offset_low = (uint64_t)offset_low;
-    call.offset_high = (uint64_t)offset_high;
-    call.immediate = (uint64_t)immediate;
+    call.device = (ULONG_PTR)device;
+    call.method = (ULONG_PTR)method;
+    call.partition = (ULONG_PTR)partition;
+    call.offset_low = (ULONG_PTR)offset_low;
+    call.offset_high = (ULONG_PTR)offset_high;
+    call.immediate = (ULONG_PTR)immediate;
 
     qemu_syscall(&call.super);
 
@@ -452,10 +452,10 @@ WINBASEAPI DWORD WINAPI WriteTapemark(HANDLE device, DWORD type, DWORD count, BO
 {
     struct qemu_WriteTapemark call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITETAPEMARK);
-    call.device = (uint64_t)device;
-    call.type = (uint64_t)type;
-    call.count = (uint64_t)count;
-    call.immediate = (uint64_t)immediate;
+    call.device = (ULONG_PTR)device;
+    call.type = (ULONG_PTR)type;
+    call.count = (ULONG_PTR)count;
+    call.immediate = (ULONG_PTR)immediate;
 
     qemu_syscall(&call.super);
 

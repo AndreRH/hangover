@@ -46,7 +46,7 @@ LPSTR WINAPI qemu_GetEnvironmentStringsA(void)
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -55,7 +55,7 @@ void qemu_GetEnvironmentStringsA(struct qemu_syscall *call)
 {
     struct qemu_GetEnvironmentStringsA *c = (struct qemu_GetEnvironmentStringsA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GetEnvironmentStringsA();
+    c->super.iret = (ULONG_PTR)GetEnvironmentStringsA();
 }
 
 #endif
@@ -69,7 +69,7 @@ WINBASEAPI CHAR WINAPI *GetCommandLineA(void)
 
     qemu_syscall(&call);
 
-    return (CHAR *)call.iret;
+    return (CHAR *)(ULONG_PTR)call.iret;
 }
 
 #else
@@ -106,7 +106,7 @@ WINBASEAPI WCHAR WINAPI *GetCommandLineW(void)
 
     qemu_syscall(&call);
 
-    return (WCHAR *)call.iret;
+    return (WCHAR *)(ULONG_PTR)call.iret;
 }
 
 #else
@@ -134,9 +134,9 @@ WINBASEAPI DWORD WINAPI GetModuleFileNameA(HMODULE module, CHAR *name, DWORD siz
 {
     struct qemu_ModuleFileName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEFILENAMEA);
-    call.module = (uint64_t)module;
-    call.name = (uint64_t)name;
-    call.size = (uint64_t)size;
+    call.module = (ULONG_PTR)module;
+    call.name = (ULONG_PTR)name;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -147,9 +147,9 @@ WINBASEAPI DWORD WINAPI GetModuleFileNameW(HMODULE module, WCHAR *name, DWORD si
 {
     struct qemu_ModuleFileName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEFILENAMEW);
-    call.module = (uint64_t)module;
-    call.name = (uint64_t)name;
-    call.size = (uint64_t)size;
+    call.module = (ULONG_PTR)module;
+    call.name = (ULONG_PTR)name;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -208,7 +208,7 @@ WINBASEAPI HANDLE WINAPI GetProcessHeap()
 
     qemu_syscall(&call);
 
-    return (HANDLE)call.iret;
+    return (HANDLE)(ULONG_PTR)call.iret;
 }
 
 #else
@@ -216,7 +216,7 @@ WINBASEAPI HANDLE WINAPI GetProcessHeap()
 void qemu_GetProcessHeap(struct qemu_syscall *c)
 {
     WINE_TRACE("\n");
-    c->iret = (uint64_t)GetProcessHeap();
+    c->iret = (ULONG_PTR)GetProcessHeap();
 }
 
 #endif
@@ -233,11 +233,11 @@ WINBASEAPI HMODULE WINAPI GetModuleHandleA(const char *name)
 {
     struct qemu_ModuleOpA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEHANDLEA);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HMODULE)call.super.iret;
+    return (HMODULE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -257,7 +257,7 @@ void qemu_GetModuleHandleA(struct qemu_syscall *call)
         MultiByteToWideChar(CP_ACP, 0, QEMU_G2H(c->name), -1, nameW, size);
     }
 
-    c->super.iret = (uint64_t)qemu_ops->qemu_GetModuleHandleEx(
+    c->super.iret = (ULONG_PTR)qemu_ops->qemu_GetModuleHandleEx(
             GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, nameW);
 
     HeapFree(GetProcessHeap(), 0, nameW);
@@ -280,8 +280,8 @@ WINBASEAPI WINBOOL WINAPI GetModuleHandleExA(DWORD flags, const char *name, HMOD
     struct qemu_GetModuleHandleEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEHANDLEEXA);
     call.flags = flags;
-    call.name = (uint64_t)name;
-    call.module = (uint64_t)module;
+    call.name = (ULONG_PTR)name;
+    call.module = (ULONG_PTR)module;
 
     qemu_syscall(&call.super);
 
@@ -293,8 +293,8 @@ WINBASEAPI WINBOOL WINAPI GetModuleHandleExW(DWORD flags, const WCHAR *name, HMO
     struct qemu_GetModuleHandleEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEHANDLEEXW);
     call.flags = flags;
-    call.name = (uint64_t)name;
-    call.module = (uint64_t)module;
+    call.name = (ULONG_PTR)name;
+    call.module = (ULONG_PTR)module;
 
     qemu_syscall(&call.super);
 
@@ -345,7 +345,7 @@ void qemu_GetModuleHandleExA(struct qemu_syscall *call)
     }
 
     c->super.iret = !!m;
-    *(uint64_t *)QEMU_H2G(c->module) = (uint64_t)m;
+    *(uint64_t *)QEMU_H2G(c->module) = (ULONG_PTR)m;
 }
 
 void qemu_GetModuleHandleExW(struct qemu_syscall *call)
@@ -379,7 +379,7 @@ void qemu_GetModuleHandleExW(struct qemu_syscall *call)
     }
 
     c->super.iret = !!m;
-    *(uint64_t *)QEMU_H2G(c->module) = (uint64_t)m;
+    *(uint64_t *)QEMU_H2G(c->module) = (ULONG_PTR)m;
 }
 
 #endif
@@ -396,11 +396,11 @@ HMODULE WINAPI kernel32_GetModuleHandleW(const WCHAR *name)
 {
     struct qemu_ModuleOpW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMODULEHANDLEW);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HMODULE)call.super.iret;
+    return (HMODULE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -412,7 +412,7 @@ void qemu_GetModuleHandleW(struct qemu_syscall *call)
 
     WINE_TRACE("(\"%s\")\n", (char *)QEMU_G2H(c->name));
 
-    c->super.iret = (uint64_t)qemu_ops->qemu_GetModuleHandleEx(
+    c->super.iret = (ULONG_PTR)qemu_ops->qemu_GetModuleHandleEx(
             GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, QEMU_G2H(c->name));
 
     WINE_TRACE("Returning %p\n", (void *)c->super.iret);
@@ -432,12 +432,12 @@ FARPROC WINAPI kernel32_GetProcAddress(HMODULE module, const char *name)
 {
     struct qemu_GetProcAddress call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCADDRESS);
-    call.module = (uint64_t)module;
-    call.name = (uint64_t)name;
+    call.module = (ULONG_PTR)module;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (FARPROC)call.super.iret;
+    return (FARPROC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -459,22 +459,22 @@ WINBASEAPI HMODULE WINAPI LoadLibraryA(const char *name)
 {
     struct qemu_ModuleOpA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADLIBRARYA);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HMODULE)call.super.iret;
+    return (HMODULE)(ULONG_PTR)call.super.iret;
 }
 
 WINBASEAPI HMODULE WINAPI LoadLibraryW(const WCHAR *name)
 {
     struct qemu_ModuleOpW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADLIBRARYW);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HMODULE)call.super.iret;
+    return (HMODULE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -493,7 +493,7 @@ void qemu_LoadLibraryA(struct qemu_syscall *call)
         MultiByteToWideChar(CP_ACP, 0, QEMU_G2H(c->name), -1, nameW, size);
     }
 
-    c->super.iret = (uint64_t)qemu_ops->qemu_LoadLibrary(nameW, 0);
+    c->super.iret = (ULONG_PTR)qemu_ops->qemu_LoadLibrary(nameW, 0);
 
     HeapFree(GetProcessHeap(), 0, nameW);
 
@@ -506,7 +506,7 @@ void qemu_LoadLibraryW(struct qemu_syscall *call)
     int size;
     WINE_TRACE("\n");
 
-    c->super.iret = (uint64_t)qemu_ops->qemu_LoadLibrary(QEMU_G2H(c->name), 0);
+    c->super.iret = (ULONG_PTR)qemu_ops->qemu_LoadLibrary(QEMU_G2H(c->name), 0);
 
     WINE_TRACE("Returning %p\n", (void *)c->super.iret);
 }
@@ -525,7 +525,7 @@ WINBASEAPI WINBOOL WINAPI FreeLibrary(HMODULE module)
 {
     struct qemu_FreeLibrary call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FREELIBRARY);
-    call.module = (uint64_t)module;
+    call.module = (ULONG_PTR)module;
 
     qemu_syscall(&call.super);
 
