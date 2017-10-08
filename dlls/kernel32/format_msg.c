@@ -69,7 +69,7 @@ WINBASEAPI DWORD WINAPI FormatMessageA(DWORD flags, const void *src, DWORD msg_i
     unsigned int i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_FORMATMESSAGEA);
-    call.src = (uint64_t)src;
+    call.src = (ULONG_PTR)src;
     call.msg_id = msg_id;
     call.lang_id = lang_id;
     call.free = 0;
@@ -83,7 +83,7 @@ WINBASEAPI DWORD WINAPI FormatMessageA(DWORD flags, const void *src, DWORD msg_i
             struct qemu_FormatMessage call2;
             call.flags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS;
             call.flags |= flags & (FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_FROM_SYSTEM);
-            call.buffer = (uint64_t)&local_string;
+            call.buffer = (ULONG_PTR)&local_string;
             call.size = 0;
             call.array = 0;
             qemu_syscall(&call.super);
@@ -136,16 +136,16 @@ WINBASEAPI DWORD WINAPI FormatMessageA(DWORD flags, const void *src, DWORD msg_i
         call.array_size = read;
 
         if (!(flags & FORMAT_MESSAGE_FROM_STRING))
-            call.free = (uint64_t)local_string;
+            call.free = (ULONG_PTR)local_string;
 
-        call.array = (uint64_t)array;
+        call.array = (ULONG_PTR)array;
     }
     else
     {
-        call.array = (uint64_t)args;
+        call.array = (ULONG_PTR)args;
     }
     call.flags = flags;
-    call.buffer = (uint64_t)buffer;
+    call.buffer = (ULONG_PTR)buffer;
     call.size = size;
 
     qemu_syscall(&call.super);
@@ -163,7 +163,7 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
     unsigned int i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_FORMATMESSAGEW);
-    call.src = (uint64_t)src;
+    call.src = (ULONG_PTR)src;
     call.msg_id = msg_id;
     call.lang_id = lang_id;
     call.free = 0;
@@ -177,7 +177,7 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
             struct qemu_FormatMessage call2;
             call.flags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS;
             call.flags |= flags & (FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_FROM_SYSTEM);
-            call.buffer = (uint64_t)&local_string;
+            call.buffer = (ULONG_PTR)&local_string;
             call.size = 0;
             call.array = 0;
             qemu_syscall(&call.super);
@@ -230,16 +230,16 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
         call.array_size = read;
 
         if (!(flags & FORMAT_MESSAGE_FROM_STRING))
-            call.free = (uint64_t)local_string;
+            call.free = (ULONG_PTR)local_string;
 
-        call.array = (uint64_t)array;
+        call.array = (ULONG_PTR)array;
     }
     else
     {
-        call.array = (uint64_t)args;
+        call.array = (ULONG_PTR)args;
     }
     call.flags = flags;
-    call.buffer = (uint64_t)buffer;
+    call.buffer = (ULONG_PTR)buffer;
     call.size = size;
 
     qemu_syscall(&call.super);
