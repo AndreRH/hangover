@@ -8,8 +8,8 @@ VPATH=$(SRCDIR)
 
 all: advpack.dll qemu_advpack.dll.so
 
-advpack.dll: advpack.def advpack_g.o files_g.o install_g.o main_g.o reg_g.o
-	$(GUEST_CC)-ld -shared $(SRCDIR)/advpack.def *_g.o -o advpack.dll -nostdlib -e DllMain
+advpack.dll: advpack.spec advpack_g.o files_g.o install_g.o main_g.o reg_g.o
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/advpack.spec *_g.o -o advpack.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x1b0000000
 
 qemu_advpack.dll.so: advpack_h.o files_h.o install_h.o main_h.o reg_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_advpack.spec *_h.o -o qemu_advpack.dll.so -ladvpack
