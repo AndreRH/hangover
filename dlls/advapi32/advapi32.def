@@ -1,6 +1,9 @@
 LIBRARY advapi32.dll BASE=0x40000000
 
 EXPORTS
+  A_SHAFinal
+  A_SHAInit
+  A_SHAUpdate
   AbortSystemShutdownA
   AbortSystemShutdownW
   AccessCheck
@@ -74,6 +77,24 @@ EXPORTS
   CreateServiceA
   CreateServiceW
   CreateWellKnownSid
+  CredDeleteA
+  CredDeleteW
+  CredEnumerateA
+  CredEnumerateW
+  CredFree
+  CredGetSessionTypes
+  CredIsMarshaledCredentialA
+  CredIsMarshaledCredentialW
+  CredMarshalCredentialA
+  CredMarshalCredentialW
+  CredReadA
+  CredReadDomainCredentialsA
+  CredReadDomainCredentialsW
+  CredReadW
+  CredUnmarshalCredentialA
+  CredUnmarshalCredentialW
+  CredWriteA
+  CredWriteW
   CryptAcquireContextA
   CryptAcquireContextW
   CryptContextAddRef
@@ -228,9 +249,43 @@ EXPORTS
   LookupPrivilegeValueW
   LookupSecurityDescriptorPartsA
   LookupSecurityDescriptorPartsW
+  LsaAddAccountRights
+  LsaClose
+  LsaCreateTrustedDomainEx
+  LsaDeleteTrustedDomain
+  LsaEnumerateAccountRights
+  LsaEnumerateAccountsWithUserRight
+  LsaEnumerateTrustedDomains
+  LsaEnumerateTrustedDomainsEx
+  LsaFreeMemory
+  LsaLookupNames
+  LsaLookupNames2
+  LsaLookupPrivilegeName
+  LsaLookupSids
+  LsaNtStatusToWinError
+  LsaOpenPolicy
+  LsaOpenTrustedDomainByName
+  LsaQueryInformationPolicy
+  LsaQueryTrustedDomainInfo
+  LsaQueryTrustedDomainInfoByName
+  LsaRegisterPolicyChangeNotification
+  LsaRemoveAccountRights
+  LsaRetrievePrivateData
+  LsaSetInformationPolicy
+  LsaSetSecret
+  LsaSetTrustedDomainInfoByName
+  LsaSetTrustedDomainInformation
+  LsaStorePrivateData
+  LsaUnregisterPolicyChangeNotification
   MakeAbsoluteSD
   MakeSelfRelativeSD
   MapGenericMask
+  MD4Final
+  MD4Init
+  MD4Update
+  MD5Final
+  MD5Init
+  MD5Update
   NotifyBootConfigStatus
   NotifyChangeEventLog
   NotifyServiceStatusChangeW
@@ -391,7 +446,22 @@ EXPORTS
   StopTraceA
   StopTraceW
   SynchronizeWindows31FilesAndWindowsNTRegistry
+  SystemFunction001
+  SystemFunction002
+  SystemFunction003
+  SystemFunction004
+  SystemFunction005
+  SystemFunction006
+  SystemFunction007
+  SystemFunction008
+  SystemFunction009
+  SystemFunction010
+  SystemFunction012
+  SystemFunction013
+  SystemFunction024
+  SystemFunction025
   SystemFunction030
+  SystemFunction032
   SystemFunction035
   SystemFunction036
   SystemFunction040
@@ -401,4 +471,19 @@ EXPORTS
   TreeResetNamedSecurityInfoW
   UnlockServiceDatabase
   UnregisterTraceGuids=ntdll.EtwUnregisterTraceGuids
+  WmiExecuteMethodA
+  WmiExecuteMethodW
+  WmiFreeBuffer
+  WmiMofEnumerateResourcesA
+  WmiMofEnumerateResourcesW
+  WmiNotificationRegistrationA
+  WmiNotificationRegistrationW
+  WmiOpenBlock
+  WmiQueryAllDataA
+  WmiQueryAllDataW
+  WmiQueryGuidInformation
+  WmiSetSingleInstanceA
+  WmiSetSingleInstanceW
+  WmiSetSingleItemA
+  WmiSetSingleItemW
   WriteEncryptedFileRaw

@@ -8,10 +8,10 @@ VPATH=$(SRCDIR)
 
 all: advapi32.dll qemu_advapi32.dll.so
 
-advapi32.dll: advapi32.def advapi_g.o crypt_g.o eventlog_g.o main_g.o registry_g.o security_g.o service_g.o
+advapi32.dll: advapi32.def advapi_g.o cred_g.o crypt_arc4_g.o crypt_g.o crypt_lmhash_g.o crypt_md4_g.o crypt_md5_g.o crypt_sha_g.o eventlog_g.o lsa_g.o main_g.o registry_g.o security_g.o service_g.o wmi_g.o
 	$(GUEST_CC)-ld -shared $(SRCDIR)/advapi32.def *_g.o -o advapi32.dll -nostdlib -e DllMain
 
-qemu_advapi32.dll.so: advapi_h.o crypt_h.o eventlog_h.o main_h.o qemu_advapi32.spec registry_h.o security_h.o service_h.o
+qemu_advapi32.dll.so: advapi_h.o cred_h.o crypt_arc4_h.o crypt_h.o crypt_lmhash_h.o crypt_md4_h.o crypt_md5_h.o crypt_sha_h.o eventlog_h.o lsa_h.o main_h.o qemu_advapi32.spec registry_h.o security_h.o service_h.o wmi_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_advapi32.spec *_h.o -o qemu_advapi32.dll.so -ladvapi32
 
 %_g.o: %.c qemu_advapi32.h Makefile $(SRCDIR)/Makefile
