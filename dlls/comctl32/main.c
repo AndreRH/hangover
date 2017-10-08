@@ -181,6 +181,7 @@ static const syscall_handler dll_functions[] =
     qemu_SetPathWordBreakProc,
     qemu_SetWindowSubclass,
     qemu_ShowHideMenuCtl,
+    qemu_SmoothScrollWindow,
     qemu_UninitializeFlatSB,
 };
 

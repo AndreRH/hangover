@@ -150,4 +150,5 @@ EXPORTS
   SetPathWordBreakProc
   SetWindowSubclass
   ShowHideMenuCtl @3
+  SmoothScrollWindow
   UninitializeFlatSB

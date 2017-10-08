@@ -144,6 +144,7 @@ enum comctl32_calls
     CALL_SETPATHWORDBREAKPROC,
     CALL_SETWINDOWSUBCLASS,
     CALL_SHOWHIDEMENUCTL,
+    CALL_SMOOTHSCROLLWINDOW,
     CALL_UNINITIALIZEFLATSB,
 };
 
@@ -290,6 +291,7 @@ void qemu_SendNotifyEx(struct qemu_syscall *call);
 void qemu_SetPathWordBreakProc(struct qemu_syscall *call);
 void qemu_SetWindowSubclass(struct qemu_syscall *call);
 void qemu_ShowHideMenuCtl(struct qemu_syscall *call);
+void qemu_SmoothScrollWindow(struct qemu_syscall *call);
 void qemu_UninitializeFlatSB(struct qemu_syscall *call);
 
 UINT (* WINAPI p_ImageList_SetColorTable)(HIMAGELIST himl, UINT uStartIndex, UINT cEntries, const RGBQUAD *prgb);
