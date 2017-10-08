@@ -51,6 +51,18 @@ EXPORTS
   DrawShadowText
   DrawStatusTextA @5
   DrawStatusTextW
+  DSA_Clone
+  DSA_Create
+  DSA_DeleteAllItems
+  DSA_DeleteItem
+  DSA_Destroy
+  DSA_DestroyCallback
+  DSA_EnumCallback
+  DSA_GetItem
+  DSA_GetItemPtr
+  DSA_GetSize
+  DSA_InsertItem
+  DSA_SetItem
   dummy2=ntdll.DbgBreakPoint @19
   dummy=ntdll.DbgBreakPoint @18
   EnumMRUListA

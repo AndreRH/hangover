@@ -50,6 +50,18 @@ enum comctl32_calls
     CALL_DRAWSHADOWTEXT,
     CALL_DRAWSTATUSTEXTA,
     CALL_DRAWSTATUSTEXTW,
+    CALL_DSA_CLONE,
+    CALL_DSA_CREATE,
+    CALL_DSA_DELETEALLITEMS,
+    CALL_DSA_DELETEITEM,
+    CALL_DSA_DESTROY,
+    CALL_DSA_DESTROYCALLBACK,
+    CALL_DSA_ENUMCALLBACK,
+    CALL_DSA_GETITEM,
+    CALL_DSA_GETITEMPTR,
+    CALL_DSA_GETSIZE,
+    CALL_DSA_INSERTITEM,
+    CALL_DSA_SETITEM,
     CALL_ENUMMRULISTA,
     CALL_ENUMMRULISTW,
     CALL_FINDMRUDATA,
@@ -172,6 +184,18 @@ void qemu_DrawInsert(struct qemu_syscall *call);
 void qemu_DrawShadowText(struct qemu_syscall *call);
 void qemu_DrawStatusTextA(struct qemu_syscall *call);
 void qemu_DrawStatusTextW(struct qemu_syscall *call);
+void qemu_DSA_Clone(struct qemu_syscall *call);
+void qemu_DSA_Create(struct qemu_syscall *call);
+void qemu_DSA_DeleteAllItems(struct qemu_syscall *call);
+void qemu_DSA_DeleteItem(struct qemu_syscall *call);
+void qemu_DSA_Destroy(struct qemu_syscall *call);
+void qemu_DSA_DestroyCallback(struct qemu_syscall *call);
+void qemu_DSA_EnumCallback(struct qemu_syscall *call);
+void qemu_DSA_GetItem(struct qemu_syscall *call);
+void qemu_DSA_GetItemPtr(struct qemu_syscall *call);
+void qemu_DSA_GetSize(struct qemu_syscall *call);
+void qemu_DSA_InsertItem(struct qemu_syscall *call);
+void qemu_DSA_SetItem(struct qemu_syscall *call);
 void qemu_EnumMRUListA(struct qemu_syscall *call);
 void qemu_EnumMRUListW(struct qemu_syscall *call);
 void qemu_FindMRUData(struct qemu_syscall *call);

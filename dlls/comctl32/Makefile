@@ -8,10 +8,10 @@ VPATH=$(SRCDIR)
 
 all: comctl32.dll qemu_comctl32.dll.so
 
-comctl32.dll: comctl32.def comctl32undoc_g.o commctrl_g.o dpa_g.o draglist_g.o imagelist_g.o main_g.o propsheet_g.o
+comctl32.dll: comctl32.def comctl32undoc_g.o commctrl_g.o dpa_g.o draglist_g.o dsa_g.o imagelist_g.o main_g.o propsheet_g.o
 	$(GUEST_CC)-ld -shared $(SRCDIR)/comctl32.def *_g.o -o comctl32.dll -nostdlib -e DllMain
 
-qemu_comctl32.dll.so: comctl32undoc_h.o commctrl_h.o dpa_h.o draglist_h.o imagelist_h.o main_h.o propsheet_h.o qemu_comctl32.spec
+qemu_comctl32.dll.so: comctl32undoc_h.o commctrl_h.o dpa_h.o draglist_h.o dsa_h.o imagelist_h.o main_h.o propsheet_h.o qemu_comctl32.spec
 	$(WINEGCC) -shared $(SRCDIR)/qemu_comctl32.spec *_h.o -o qemu_comctl32.dll.so -lcomctl32
 
 %_g.o: %.c qemu_comctl32.h Makefile $(SRCDIR)/Makefile
