@@ -46,6 +46,7 @@ EXPORTS
   DPA_Search
   DPA_SetPtr
   DPA_Sort
+  DrawInsert
   DrawInsert=ntdll.DbgBreakPoint @15
   DrawShadowText
   DrawStatusTextA @5
@@ -109,9 +110,11 @@ EXPORTS
   InitCommonControls @17
   InitCommonControlsEx
   InitMUILanguage
+  LBItemFromPt
   LBItemFromPt=ntdll.DbgBreakPoint @14
   LoadIconMetric
   LoadIconWithScaleDown
+  MakeDragList
   MakeDragList=ntdll.DbgBreakPoint @13
   MenuHelp @2
   MirrorIcon

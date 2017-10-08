@@ -46,6 +46,7 @@ enum comctl32_calls
     CALL_DPA_SEARCH,
     CALL_DPA_SETPTR,
     CALL_DPA_SORT,
+    CALL_DRAWINSERT,
     CALL_DRAWSHADOWTEXT,
     CALL_DRAWSTATUSTEXTA,
     CALL_DRAWSTATUSTEXTW,
@@ -105,8 +106,10 @@ enum comctl32_calls
     CALL_INITCOMMONCONTROLS,
     CALL_INITCOMMONCONTROLSEX,
     CALL_INITMUILANGUAGE,
+    CALL_LBITEMFROMPT,
     CALL_LOADICONMETRIC,
     CALL_LOADICONWITHSCALEDOWN,
+    CALL_MAKEDRAGLIST,
     CALL_MENUHELP,
     CALL_MIRRORICON,
     CALL_PROPERTYSHEETA,
@@ -165,6 +168,7 @@ void qemu_DPA_SaveStream(struct qemu_syscall *call);
 void qemu_DPA_Search(struct qemu_syscall *call);
 void qemu_DPA_SetPtr(struct qemu_syscall *call);
 void qemu_DPA_Sort(struct qemu_syscall *call);
+void qemu_DrawInsert(struct qemu_syscall *call);
 void qemu_DrawShadowText(struct qemu_syscall *call);
 void qemu_DrawStatusTextA(struct qemu_syscall *call);
 void qemu_DrawStatusTextW(struct qemu_syscall *call);
@@ -224,8 +228,10 @@ void qemu_ImageList_Write(struct qemu_syscall *call);
 void qemu_InitCommonControls(struct qemu_syscall *call);
 void qemu_InitCommonControlsEx(struct qemu_syscall *call);
 void qemu_InitMUILanguage(struct qemu_syscall *call);
+void qemu_LBItemFromPt(struct qemu_syscall *call);
 void qemu_LoadIconMetric(struct qemu_syscall *call);
 void qemu_LoadIconWithScaleDown(struct qemu_syscall *call);
+void qemu_MakeDragList(struct qemu_syscall *call);
 void qemu_MenuHelp(struct qemu_syscall *call);
 void qemu_MirrorIcon(struct qemu_syscall *call);
 void qemu_PropertySheetA(struct qemu_syscall *call);
