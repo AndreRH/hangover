@@ -47,9 +47,9 @@ static HRESULT WINAPI d3d9_stateblock_QueryInterface(IDirect3DStateBlock9 *iface
     struct qemu_d3d9_stateblock_impl *stateblock = impl_from_IDirect3DStateBlock9(iface);
     struct qemu_d3d9_stateblock_QueryInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_STATEBLOCK_QUERYINTERFACE);
-    call.iface = (uint64_t)stateblock;
-    call.riid = (uint64_t)riid;
-    call.out = (uint64_t)out;
+    call.iface = (ULONG_PTR)stateblock;
+    call.riid = (ULONG_PTR)riid;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -84,7 +84,7 @@ static ULONG WINAPI d3d9_stateblock_AddRef(IDirect3DStateBlock9 *iface)
     struct qemu_d3d9_stateblock_impl *stateblock = impl_from_IDirect3DStateBlock9(iface);
     struct qemu_d3d9_stateblock_AddRef call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_STATEBLOCK_ADDREF);
-    call.iface = (uint64_t)stateblock;
+    call.iface = (ULONG_PTR)stateblock;
 
     qemu_syscall(&call.super);
 
@@ -119,7 +119,7 @@ static ULONG WINAPI d3d9_stateblock_Release(IDirect3DStateBlock9 *iface)
     struct qemu_d3d9_stateblock_impl *stateblock = impl_from_IDirect3DStateBlock9(iface);
     struct qemu_d3d9_stateblock_Release call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_STATEBLOCK_RELEASE);
-    call.iface = (uint64_t)stateblock;
+    call.iface = (ULONG_PTR)stateblock;
 
     qemu_syscall(&call.super);
 
@@ -173,8 +173,8 @@ static HRESULT WINAPI d3d9_stateblock_GetDevice(IDirect3DStateBlock9 *iface, IDi
     struct qemu_d3d9_stateblock_impl *stateblock = impl_from_IDirect3DStateBlock9(iface);
     struct qemu_d3d9_stateblock_GetDevice call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_STATEBLOCK_GETDEVICE);
-    call.iface = (uint64_t)stateblock;
-    call.device = (uint64_t)device;
+    call.iface = (ULONG_PTR)stateblock;
+    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
 
@@ -209,7 +209,7 @@ static HRESULT WINAPI d3d9_stateblock_Capture(IDirect3DStateBlock9 *iface)
     struct qemu_d3d9_stateblock_impl *stateblock = impl_from_IDirect3DStateBlock9(iface);
     struct qemu_d3d9_stateblock_Capture call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_STATEBLOCK_CAPTURE);
-    call.iface = (uint64_t)stateblock;
+    call.iface = (ULONG_PTR)stateblock;
 
     qemu_syscall(&call.super);
 
@@ -273,7 +273,7 @@ static HRESULT WINAPI d3d9_stateblock_Apply(IDirect3DStateBlock9 *iface)
     struct qemu_d3d9_stateblock_impl *stateblock = impl_from_IDirect3DStateBlock9(iface);
     struct qemu_d3d9_stateblock_Apply call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_STATEBLOCK_APPLY);
-    call.iface = (uint64_t)stateblock;
+    call.iface = (ULONG_PTR)stateblock;
 
     qemu_syscall(&call.super);
 

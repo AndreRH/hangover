@@ -44,9 +44,9 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
     {
         case DLL_PROCESS_ATTACH:
             call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SET_CALLBACKS);
-            call.buffer_destroyed = (uint64_t)qemu_d3d9_buffer_destroyed;
-            call.texture_destroyed = (uint64_t)qemu_d3d9_texture_destroyed;
-            call.subresource_destroyed = (uint64_t)qemu_d3d9_buffer_destroyed;
+            call.buffer_destroyed = (ULONG_PTR)qemu_d3d9_buffer_destroyed;
+            call.texture_destroyed = (ULONG_PTR)qemu_d3d9_texture_destroyed;
+            call.subresource_destroyed = (ULONG_PTR)qemu_d3d9_buffer_destroyed;
             qemu_syscall(&call.super);
             break;
     }

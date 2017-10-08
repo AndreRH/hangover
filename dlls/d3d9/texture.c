@@ -53,9 +53,9 @@ static HRESULT WINAPI d3d9_texture_2d_QueryInterface(IDirect3DTexture9 *iface, R
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_QueryInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_QUERYINTERFACE);
-    call.iface = (uint64_t)texture;
-    call.riid = (uint64_t)riid;
-    call.out = (uint64_t)out;
+    call.iface = (ULONG_PTR)texture;
+    call.riid = (ULONG_PTR)riid;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -101,7 +101,7 @@ static ULONG WINAPI d3d9_texture_2d_AddRef(IDirect3DTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_AddRef call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_ADDREF);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -141,7 +141,7 @@ static ULONG WINAPI d3d9_texture_2d_Release(IDirect3DTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_Release call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_RELEASE);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -181,8 +181,8 @@ static HRESULT WINAPI d3d9_texture_2d_GetDevice(IDirect3DTexture9 *iface, IDirec
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_GetDevice call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_GETDEVICE);
-    call.iface = (uint64_t)texture;
-    call.device = (uint64_t)device;
+    call.iface = (ULONG_PTR)texture;
+    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
 
@@ -266,7 +266,7 @@ static DWORD WINAPI d3d9_texture_2d_SetPriority(IDirect3DTexture9 *iface, DWORD 
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_SetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_SETPRIORITY);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.priority = priority;
 
     qemu_syscall(&call.super);
@@ -302,7 +302,7 @@ static DWORD WINAPI d3d9_texture_2d_GetPriority(IDirect3DTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_GetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_GETPRIORITY);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -337,7 +337,7 @@ static void WINAPI d3d9_texture_2d_PreLoad(IDirect3DTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_PreLoad call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_PRELOAD);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 }
@@ -370,7 +370,7 @@ static D3DRESOURCETYPE WINAPI d3d9_texture_2d_GetType(IDirect3DTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_GetType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_GETTYPE);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -406,7 +406,7 @@ static DWORD WINAPI d3d9_texture_2d_SetLOD(IDirect3DTexture9 *iface, DWORD lod)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_SetLOD call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_SETLOD);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.lod = lod;
 
     qemu_syscall(&call.super);
@@ -442,7 +442,7 @@ static DWORD WINAPI d3d9_texture_2d_GetLOD(IDirect3DTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_GetLOD call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_GETLOD);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -477,7 +477,7 @@ static DWORD WINAPI d3d9_texture_2d_GetLevelCount(IDirect3DTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_GetLevelCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_GETLEVELCOUNT);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -513,7 +513,7 @@ static HRESULT WINAPI d3d9_texture_2d_SetAutoGenFilterType(IDirect3DTexture9 *if
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_SetAutoGenFilterType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_SETAUTOGENFILTERTYPE);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.filter_type = filter_type;
 
     qemu_syscall(&call.super);
@@ -549,7 +549,7 @@ static D3DTEXTUREFILTERTYPE WINAPI d3d9_texture_2d_GetAutoGenFilterType(IDirect3
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_GetAutoGenFilterType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_GETAUTOGENFILTERTYPE);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -584,7 +584,7 @@ static void WINAPI d3d9_texture_2d_GenerateMipSubLevels(IDirect3DTexture9 *iface
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_GenerateMipSubLevels call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_GENERATEMIPSUBLEVELS);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 }
@@ -619,9 +619,9 @@ static HRESULT WINAPI d3d9_texture_2d_GetLevelDesc(IDirect3DTexture9 *iface, UIN
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_GetLevelDesc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_GETLEVELDESC);
-    call.iface = (uint64_t)texture;
-    call.level = (uint64_t)level;
-    call.desc = (uint64_t)desc;
+    call.iface = (ULONG_PTR)texture;
+    call.level = (ULONG_PTR)level;
+    call.desc = (ULONG_PTR)desc;
 
     qemu_syscall(&call.super);
 
@@ -660,9 +660,9 @@ static HRESULT WINAPI d3d9_texture_2d_GetSurfaceLevel(IDirect3DTexture9 *iface, 
     struct qemu_d3d9_texture_2d_GetSurfaceLevel call;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_GETSURFACELEVEL);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.level = level;
-    call.surface = (uint64_t)&surface_impl;
+    call.surface = (ULONG_PTR)&surface_impl;
 
     qemu_syscall(&call.super);
 
@@ -715,10 +715,10 @@ static HRESULT WINAPI d3d9_texture_2d_LockRect(IDirect3DTexture9 *iface, UINT le
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_LockRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_LOCKRECT);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.level = level;
-    call.locked_rect = (uint64_t)locked_rect;
-    call.rect = (uint64_t)rect;
+    call.locked_rect = (ULONG_PTR)locked_rect;
+    call.rect = (ULONG_PTR)rect;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -755,7 +755,7 @@ static HRESULT WINAPI d3d9_texture_2d_UnlockRect(IDirect3DTexture9 *iface, UINT 
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_UnlockRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_UNLOCKRECT);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.level = level;
 
     qemu_syscall(&call.super);
@@ -792,8 +792,8 @@ static HRESULT WINAPI d3d9_texture_2d_AddDirtyRect(IDirect3DTexture9 *iface, con
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_AddDirtyRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_ADDDIRTYRECT);
-    call.iface = (uint64_t)texture;
-    call.dirty_rect = (uint64_t)dirty_rect;
+    call.iface = (ULONG_PTR)texture;
+    call.dirty_rect = (ULONG_PTR)dirty_rect;
 
     qemu_syscall(&call.super);
 
@@ -835,9 +835,9 @@ static HRESULT WINAPI d3d9_texture_cube_QueryInterface(IDirect3DCubeTexture9 *if
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_QueryInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_QUERYINTERFACE);
-    call.iface = (uint64_t)texture;
-    call.riid = (uint64_t)riid;
-    call.out = (uint64_t)out;
+    call.iface = (ULONG_PTR)texture;
+    call.riid = (ULONG_PTR)riid;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -883,7 +883,7 @@ static ULONG WINAPI d3d9_texture_cube_AddRef(IDirect3DCubeTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_AddRef call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_ADDREF);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -918,7 +918,7 @@ static ULONG WINAPI d3d9_texture_cube_Release(IDirect3DCubeTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_Release call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_RELEASE);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -958,8 +958,8 @@ static HRESULT WINAPI d3d9_texture_cube_GetDevice(IDirect3DCubeTexture9 *iface, 
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_GetDevice call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_GETDEVICE);
-    call.iface = (uint64_t)texture;
-    call.device = (uint64_t)device;
+    call.iface = (ULONG_PTR)texture;
+    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
 
@@ -1044,7 +1044,7 @@ static DWORD WINAPI d3d9_texture_cube_SetPriority(IDirect3DCubeTexture9 *iface, 
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_SetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_SETPRIORITY);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.priority = priority;
 
     qemu_syscall(&call.super);
@@ -1080,7 +1080,7 @@ static DWORD WINAPI d3d9_texture_cube_GetPriority(IDirect3DCubeTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_GetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_GETPRIORITY);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -1115,7 +1115,7 @@ static void WINAPI d3d9_texture_cube_PreLoad(IDirect3DCubeTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_PreLoad call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_PRELOAD);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 }
@@ -1148,7 +1148,7 @@ static D3DRESOURCETYPE WINAPI d3d9_texture_cube_GetType(IDirect3DCubeTexture9 *i
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_GetType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_GETTYPE);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -1184,7 +1184,7 @@ static DWORD WINAPI d3d9_texture_cube_SetLOD(IDirect3DCubeTexture9 *iface, DWORD
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_SetLOD call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_SETLOD);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.lod = lod;
 
     qemu_syscall(&call.super);
@@ -1220,7 +1220,7 @@ static DWORD WINAPI d3d9_texture_cube_GetLOD(IDirect3DCubeTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_GetLOD call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_GETLOD);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -1255,7 +1255,7 @@ static DWORD WINAPI d3d9_texture_cube_GetLevelCount(IDirect3DCubeTexture9 *iface
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_GetLevelCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_GETLEVELCOUNT);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -1291,7 +1291,7 @@ static HRESULT WINAPI d3d9_texture_cube_SetAutoGenFilterType(IDirect3DCubeTextur
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_SetAutoGenFilterType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_SETAUTOGENFILTERTYPE);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.filter_type = filter_type;
 
     qemu_syscall(&call.super);
@@ -1327,7 +1327,7 @@ static D3DTEXTUREFILTERTYPE WINAPI d3d9_texture_cube_GetAutoGenFilterType(IDirec
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_GetAutoGenFilterType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_GETAUTOGENFILTERTYPE);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -1362,7 +1362,7 @@ static void WINAPI d3d9_texture_cube_GenerateMipSubLevels(IDirect3DCubeTexture9 
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_GenerateMipSubLevels call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_GENERATEMIPSUBLEVELS);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 }
@@ -1397,9 +1397,9 @@ static HRESULT WINAPI d3d9_texture_cube_GetLevelDesc(IDirect3DCubeTexture9 *ifac
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_GetLevelDesc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_GETLEVELDESC);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.level = level;
-    call.desc = (uint64_t)desc;
+    call.desc = (ULONG_PTR)desc;
 
     qemu_syscall(&call.super);
 
@@ -1439,10 +1439,10 @@ static HRESULT WINAPI d3d9_texture_cube_GetCubeMapSurface(IDirect3DCubeTexture9 
     struct qemu_d3d9_texture_cube_GetCubeMapSurface call;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_GETCUBEMAPSURFACE);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.face = face;
     call.level = level;
-    call.surface = (uint64_t)&surface_impl;
+    call.surface = (ULONG_PTR)&surface_impl;
 
     qemu_syscall(&call.super);
 
@@ -1497,11 +1497,11 @@ static HRESULT WINAPI d3d9_texture_cube_LockRect(IDirect3DCubeTexture9 *iface, D
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_LockRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_LOCKRECT);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.face = face;
     call.level = level;
-    call.locked_rect = (uint64_t)locked_rect;
-    call.rect = (uint64_t)rect;
+    call.locked_rect = (ULONG_PTR)locked_rect;
+    call.rect = (ULONG_PTR)rect;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -1539,7 +1539,7 @@ static HRESULT WINAPI d3d9_texture_cube_UnlockRect(IDirect3DCubeTexture9 *iface,
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_UnlockRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_UNLOCKRECT);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.face = face;
     call.level = level;
 
@@ -1578,9 +1578,9 @@ static HRESULT WINAPI d3d9_texture_cube_AddDirtyRect(IDirect3DCubeTexture9 *ifac
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_AddDirtyRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_ADDDIRTYRECT);
-    call.iface = (uint64_t)texture;
-    call.face = (uint64_t)face;
-    call.dirty_rect = (uint64_t)dirty_rect;
+    call.iface = (ULONG_PTR)texture;
+    call.face = (ULONG_PTR)face;
+    call.dirty_rect = (ULONG_PTR)dirty_rect;
 
     qemu_syscall(&call.super);
 
@@ -1622,9 +1622,9 @@ static HRESULT WINAPI d3d9_texture_3d_QueryInterface(IDirect3DVolumeTexture9 *if
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_QueryInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_QUERYINTERFACE);
-    call.iface = (uint64_t)texture;
-    call.riid = (uint64_t)riid;
-    call.out = (uint64_t)out;
+    call.iface = (ULONG_PTR)texture;
+    call.riid = (ULONG_PTR)riid;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -1659,7 +1659,7 @@ static ULONG WINAPI d3d9_texture_3d_AddRef(IDirect3DVolumeTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_AddRef call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_ADDREF);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -1694,7 +1694,7 @@ static ULONG WINAPI d3d9_texture_3d_Release(IDirect3DVolumeTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_Release call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_RELEASE);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -1734,8 +1734,8 @@ static HRESULT WINAPI d3d9_texture_3d_GetDevice(IDirect3DVolumeTexture9 *iface, 
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_GetDevice call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_GETDEVICE);
-    call.iface = (uint64_t)texture;
-    call.device = (uint64_t)device;
+    call.iface = (ULONG_PTR)texture;
+    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
 
@@ -1828,7 +1828,7 @@ static DWORD WINAPI d3d9_texture_3d_SetPriority(IDirect3DVolumeTexture9 *iface, 
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_SetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_SETPRIORITY);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.priority = priority;
 
     qemu_syscall(&call.super);
@@ -1864,7 +1864,7 @@ static DWORD WINAPI d3d9_texture_3d_GetPriority(IDirect3DVolumeTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_GetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_GETPRIORITY);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -1899,7 +1899,7 @@ static void WINAPI d3d9_texture_3d_PreLoad(IDirect3DVolumeTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_PreLoad call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_PRELOAD);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 }
@@ -1932,7 +1932,7 @@ static D3DRESOURCETYPE WINAPI d3d9_texture_3d_GetType(IDirect3DVolumeTexture9 *i
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_GetType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_GETTYPE);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -1968,7 +1968,7 @@ static DWORD WINAPI d3d9_texture_3d_SetLOD(IDirect3DVolumeTexture9 *iface, DWORD
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_SetLOD call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_SETLOD);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.lod = lod;
 
     qemu_syscall(&call.super);
@@ -2004,7 +2004,7 @@ static DWORD WINAPI d3d9_texture_3d_GetLOD(IDirect3DVolumeTexture9 *iface)
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_GetLOD call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_GETLOD);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -2039,7 +2039,7 @@ static DWORD WINAPI d3d9_texture_3d_GetLevelCount(IDirect3DVolumeTexture9 *iface
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_GetLevelCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_GETLEVELCOUNT);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -2075,7 +2075,7 @@ static HRESULT WINAPI d3d9_texture_3d_SetAutoGenFilterType(IDirect3DVolumeTextur
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_SetAutoGenFilterType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_SETAUTOGENFILTERTYPE);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.filter_type = filter_type;
 
     qemu_syscall(&call.super);
@@ -2111,7 +2111,7 @@ static D3DTEXTUREFILTERTYPE WINAPI d3d9_texture_3d_GetAutoGenFilterType(IDirect3
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_GetAutoGenFilterType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_GETAUTOGENFILTERTYPE);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 
@@ -2146,7 +2146,7 @@ static void WINAPI d3d9_texture_3d_GenerateMipSubLevels(IDirect3DVolumeTexture9 
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_GenerateMipSubLevels call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_GENERATEMIPSUBLEVELS);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
 }
@@ -2181,9 +2181,9 @@ static HRESULT WINAPI d3d9_texture_3d_GetLevelDesc(IDirect3DVolumeTexture9 *ifac
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_GetLevelDesc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_GETLEVELDESC);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.level = level;
-    call.desc = (uint64_t)desc;
+    call.desc = (ULONG_PTR)desc;
 
     qemu_syscall(&call.super);
 
@@ -2222,9 +2222,9 @@ static HRESULT WINAPI d3d9_texture_3d_GetVolumeLevel(IDirect3DVolumeTexture9 *if
     struct qemu_d3d9_subresource_impl *volume_impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_GETVOLUMELEVEL);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.level = level;
-    call.volume = (uint64_t)&volume_impl;
+    call.volume = (ULONG_PTR)&volume_impl;
 
     qemu_syscall(&call.super);
 
@@ -2277,10 +2277,10 @@ static HRESULT WINAPI d3d9_texture_3d_LockBox(IDirect3DVolumeTexture9 *iface, UI
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_LockBox call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_LOCKBOX);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.level = level;
-    call.locked_box = (uint64_t)locked_box;
-    call.box = (uint64_t)box;
+    call.locked_box = (ULONG_PTR)locked_box;
+    call.box = (ULONG_PTR)box;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -2317,7 +2317,7 @@ static HRESULT WINAPI d3d9_texture_3d_UnlockBox(IDirect3DVolumeTexture9 *iface, 
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_UnlockBox call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_UNLOCKBOX);
-    call.iface = (uint64_t)texture;
+    call.iface = (ULONG_PTR)texture;
     call.level = level;
 
     qemu_syscall(&call.super);
@@ -2354,8 +2354,8 @@ static HRESULT WINAPI d3d9_texture_3d_AddDirtyBox(IDirect3DVolumeTexture9 *iface
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_AddDirtyBox call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_ADDDIRTYBOX);
-    call.iface = (uint64_t)texture;
-    call.dirty_box = (uint64_t)dirty_box;
+    call.iface = (ULONG_PTR)texture;
+    call.dirty_box = (ULONG_PTR)dirty_box;
 
     qemu_syscall(&call.super);
 

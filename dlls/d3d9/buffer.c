@@ -52,9 +52,9 @@ static HRESULT WINAPI d3d9_vertexbuffer_QueryInterface(IDirect3DVertexBuffer9 *i
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DVertexBuffer9(iface);
     struct qemu_d3d9_vertexbuffer_QueryInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXBUFFER_QUERYINTERFACE);
-    call.iface = (uint64_t)iface;
-    call.riid = (uint64_t)riid;
-    call.out = (uint64_t)out;
+    call.iface = (ULONG_PTR)iface;
+    call.riid = (ULONG_PTR)riid;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -89,7 +89,7 @@ static ULONG WINAPI d3d9_vertexbuffer_AddRef(IDirect3DVertexBuffer9 *iface)
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DVertexBuffer9(iface);
     struct qemu_d3d9_vertexbuffer_AddRef call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXBUFFER_ADDREF);
-    call.iface = (uint64_t)iface;
+    call.iface = (ULONG_PTR)iface;
 
     qemu_syscall(&call.super);
 
@@ -129,7 +129,7 @@ static ULONG WINAPI d3d9_vertexbuffer_Release(IDirect3DVertexBuffer9 *iface)
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DVertexBuffer9(iface);
     struct qemu_d3d9_vertexbuffer_Release call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXBUFFER_RELEASE);
-    call.iface = (uint64_t)iface;
+    call.iface = (ULONG_PTR)iface;
 
     qemu_syscall(&call.super);
 
@@ -169,8 +169,8 @@ static HRESULT WINAPI d3d9_vertexbuffer_GetDevice(IDirect3DVertexBuffer9 *iface,
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DVertexBuffer9(iface);
     struct qemu_d3d9_vertexbuffer_GetDevice call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXBUFFER_GETDEVICE);
-    call.iface = (uint64_t)iface;
-    call.device = (uint64_t)device;
+    call.iface = (ULONG_PTR)iface;
+    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
 
@@ -254,7 +254,7 @@ static DWORD WINAPI d3d9_vertexbuffer_SetPriority(IDirect3DVertexBuffer9 *iface,
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DVertexBuffer9(iface);
     struct qemu_d3d9_vertexbuffer_SetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXBUFFER_SETPRIORITY);
-    call.iface = (uint64_t)iface;
+    call.iface = (ULONG_PTR)iface;
     call.priority = priority;
 
     qemu_syscall(&call.super);
@@ -290,7 +290,7 @@ static DWORD WINAPI d3d9_vertexbuffer_GetPriority(IDirect3DVertexBuffer9 *iface)
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DVertexBuffer9(iface);
     struct qemu_d3d9_vertexbuffer_GetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXBUFFER_GETPRIORITY);
-    call.iface = (uint64_t)iface;
+    call.iface = (ULONG_PTR)iface;
 
     qemu_syscall(&call.super);
 
@@ -325,7 +325,7 @@ static void WINAPI d3d9_vertexbuffer_PreLoad(IDirect3DVertexBuffer9 *iface)
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DVertexBuffer9(iface);
     struct qemu_d3d9_vertexbuffer_PreLoad call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXBUFFER_PRELOAD);
-    call.iface = (uint64_t)iface;
+    call.iface = (ULONG_PTR)iface;
 
     qemu_syscall(&call.super);
 }
@@ -358,7 +358,7 @@ static D3DRESOURCETYPE WINAPI d3d9_vertexbuffer_GetType(IDirect3DVertexBuffer9 *
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DVertexBuffer9(iface);
     struct qemu_d3d9_vertexbuffer_GetType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXBUFFER_GETTYPE);
-    call.iface = (uint64_t)iface;
+    call.iface = (ULONG_PTR)iface;
 
     qemu_syscall(&call.super);
 
@@ -397,10 +397,10 @@ static HRESULT WINAPI d3d9_vertexbuffer_Lock(IDirect3DVertexBuffer9 *iface, UINT
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DVertexBuffer9(iface);
     struct qemu_d3d9_vertexbuffer_Lock call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXBUFFER_LOCK);
-    call.iface = (uint64_t)iface;
+    call.iface = (ULONG_PTR)iface;
     call.offset = offset;
     call.size = size;
-    call.data = (uint64_t)data;
+    call.data = (ULONG_PTR)data;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -436,7 +436,7 @@ static HRESULT WINAPI d3d9_vertexbuffer_Unlock(IDirect3DVertexBuffer9 *iface)
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DVertexBuffer9(iface);
     struct qemu_d3d9_vertexbuffer_Unlock call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXBUFFER_UNLOCK);
-    call.iface = (uint64_t)iface;
+    call.iface = (ULONG_PTR)iface;
 
     qemu_syscall(&call.super);
 
@@ -472,8 +472,8 @@ static HRESULT WINAPI d3d9_vertexbuffer_GetDesc(IDirect3DVertexBuffer9 *iface, D
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DVertexBuffer9(iface);
     struct qemu_d3d9_vertexbuffer_GetDesc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXBUFFER_GETDESC);
-    call.iface = (uint64_t)iface;
-    call.desc = (uint64_t)desc;
+    call.iface = (ULONG_PTR)iface;
+    call.desc = (ULONG_PTR)desc;
 
     qemu_syscall(&call.super);
 
@@ -515,9 +515,9 @@ static HRESULT WINAPI d3d9_indexbuffer_QueryInterface(IDirect3DIndexBuffer9 *ifa
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DIndexBuffer9(iface);
     struct qemu_d3d9_indexbuffer_QueryInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_INDEXBUFFER_QUERYINTERFACE);
-    call.iface = (uint64_t)iface;
-    call.riid = (uint64_t)riid;
-    call.out = (uint64_t)out;
+    call.iface = (ULONG_PTR)iface;
+    call.riid = (ULONG_PTR)riid;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -552,7 +552,7 @@ static ULONG WINAPI d3d9_indexbuffer_AddRef(IDirect3DIndexBuffer9 *iface)
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DIndexBuffer9(iface);
     struct qemu_d3d9_indexbuffer_AddRef call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_INDEXBUFFER_ADDREF);
-    call.iface = (uint64_t)iface;
+    call.iface = (ULONG_PTR)iface;
 
     qemu_syscall(&call.super);
 
@@ -587,7 +587,7 @@ static ULONG WINAPI d3d9_indexbuffer_Release(IDirect3DIndexBuffer9 *iface)
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DIndexBuffer9(iface);
     struct qemu_d3d9_indexbuffer_Release call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_INDEXBUFFER_RELEASE);
-    call.iface = (uint64_t)iface;
+    call.iface = (ULONG_PTR)iface;
 
     qemu_syscall(&call.super);
 
@@ -627,8 +627,8 @@ static HRESULT WINAPI d3d9_indexbuffer_GetDevice(IDirect3DIndexBuffer9 *iface, I
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DIndexBuffer9(iface);
     struct qemu_d3d9_indexbuffer_GetDevice call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_INDEXBUFFER_GETDEVICE);
-    call.iface = (uint64_t)iface;
-    call.device = (uint64_t)device;
+    call.iface = (ULONG_PTR)iface;
+    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
 
@@ -719,7 +719,7 @@ static DWORD WINAPI d3d9_indexbuffer_SetPriority(IDirect3DIndexBuffer9 *iface, D
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DIndexBuffer9(iface);
     struct qemu_d3d9_indexbuffer_SetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_INDEXBUFFER_SETPRIORITY);
-    call.iface = (uint64_t)iface;
+    call.iface = (ULONG_PTR)iface;
     call.priority = priority;
 
     qemu_syscall(&call.super);
@@ -755,7 +755,7 @@ static DWORD WINAPI d3d9_indexbuffer_GetPriority(IDirect3DIndexBuffer9 *iface)
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DIndexBuffer9(iface);
     struct qemu_d3d9_indexbuffer_GetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_INDEXBUFFER_GETPRIORITY);
-    call.iface = (uint64_t)iface;
+    call.iface = (ULONG_PTR)iface;
 
     qemu_syscall(&call.super);
 
@@ -790,7 +790,7 @@ static void WINAPI d3d9_indexbuffer_PreLoad(IDirect3DIndexBuffer9 *iface)
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DIndexBuffer9(iface);
     struct qemu_d3d9_indexbuffer_PreLoad call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_INDEXBUFFER_PRELOAD);
-    call.iface = (uint64_t)iface;
+    call.iface = (ULONG_PTR)iface;
 
     qemu_syscall(&call.super);
 }
@@ -823,7 +823,7 @@ static D3DRESOURCETYPE WINAPI d3d9_indexbuffer_GetType(IDirect3DIndexBuffer9 *if
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DIndexBuffer9(iface);
     struct qemu_d3d9_indexbuffer_GetType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_INDEXBUFFER_GETTYPE);
-    call.iface = (uint64_t)iface;
+    call.iface = (ULONG_PTR)iface;
 
     qemu_syscall(&call.super);
 
@@ -862,10 +862,10 @@ static HRESULT WINAPI d3d9_indexbuffer_Lock(IDirect3DIndexBuffer9 *iface, UINT o
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DIndexBuffer9(iface);
     struct qemu_d3d9_indexbuffer_Lock call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_INDEXBUFFER_LOCK);
-    call.iface = (uint64_t)iface;
+    call.iface = (ULONG_PTR)iface;
     call.offset = offset;
     call.size = size;
-    call.data = (uint64_t)data;
+    call.data = (ULONG_PTR)data;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -901,7 +901,7 @@ static HRESULT WINAPI d3d9_indexbuffer_Unlock(IDirect3DIndexBuffer9 *iface)
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DIndexBuffer9(iface);
     struct qemu_d3d9_indexbuffer_Unlock call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_INDEXBUFFER_UNLOCK);
-    call.iface = (uint64_t)iface;
+    call.iface = (ULONG_PTR)iface;
 
     qemu_syscall(&call.super);
 
@@ -937,8 +937,8 @@ static HRESULT WINAPI d3d9_indexbuffer_GetDesc(IDirect3DIndexBuffer9 *iface, D3D
     struct qemu_d3d9_buffer_impl *buffer = impl_from_IDirect3DIndexBuffer9(iface);
     struct qemu_d3d9_indexbuffer_GetDesc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_INDEXBUFFER_GETDESC);
-    call.iface = (uint64_t)iface;
-    call.desc = (uint64_t)desc;
+    call.iface = (ULONG_PTR)iface;
+    call.desc = (ULONG_PTR)desc;
 
     qemu_syscall(&call.super);
 

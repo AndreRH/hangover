@@ -52,9 +52,9 @@ static HRESULT WINAPI d3d9_surface_QueryInterface(IDirect3DSurface9 *iface, REFI
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_QueryInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_QUERYINTERFACE);
-    call.iface = (uint64_t)surface;
-    call.riid = (uint64_t)riid;
-    call.out = (uint64_t)out;
+    call.iface = (ULONG_PTR)surface;
+    call.riid = (ULONG_PTR)riid;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -89,7 +89,7 @@ static ULONG WINAPI d3d9_surface_AddRef(IDirect3DSurface9 *iface)
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_AddRef call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_ADDREF);
-    call.iface = (uint64_t)surface;
+    call.iface = (ULONG_PTR)surface;
 
     qemu_syscall(&call.super);
 
@@ -129,7 +129,7 @@ static ULONG WINAPI d3d9_surface_Release(IDirect3DSurface9 *iface)
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_Release call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_RELEASE);
-    call.iface = (uint64_t)surface;
+    call.iface = (ULONG_PTR)surface;
 
     qemu_syscall(&call.super);
 
@@ -173,8 +173,8 @@ static HRESULT WINAPI d3d9_surface_GetDevice(IDirect3DSurface9 *iface, IDirect3D
 
     struct qemu_d3d9_surface_GetDevice call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETDEVICE);
-    call.iface = (uint64_t)surface;
-    call.device = (uint64_t)&dev_impl;
+    call.iface = (ULONG_PTR)surface;
+    call.device = (ULONG_PTR)&dev_impl;
 
     qemu_syscall(&call.super);
 
@@ -269,7 +269,7 @@ static DWORD WINAPI d3d9_surface_SetPriority(IDirect3DSurface9 *iface, DWORD pri
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_SetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_SETPRIORITY);
-    call.iface = (uint64_t)surface;
+    call.iface = (ULONG_PTR)surface;
     call.priority = priority;
 
     qemu_syscall(&call.super);
@@ -305,7 +305,7 @@ static DWORD WINAPI d3d9_surface_GetPriority(IDirect3DSurface9 *iface)
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_GetPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETPRIORITY);
-    call.iface = (uint64_t)surface;
+    call.iface = (ULONG_PTR)surface;
 
     qemu_syscall(&call.super);
 
@@ -340,7 +340,7 @@ static void WINAPI d3d9_surface_PreLoad(IDirect3DSurface9 *iface)
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_PreLoad call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_PRELOAD);
-    call.iface = (uint64_t)surface;
+    call.iface = (ULONG_PTR)surface;
 
     qemu_syscall(&call.super);
 }
@@ -373,7 +373,7 @@ static D3DRESOURCETYPE WINAPI d3d9_surface_GetType(IDirect3DSurface9 *iface)
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_GetType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETTYPE);
-    call.iface = (uint64_t)surface;
+    call.iface = (ULONG_PTR)surface;
 
     qemu_syscall(&call.super);
 
@@ -416,11 +416,11 @@ static HRESULT WINAPI d3d9_surface_GetContainer(IDirect3DSurface9 *iface, REFIID
     struct qemu_d3d9_device_impl *device = NULL;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETCONTAINER);
-    call.iface = (uint64_t)surface;
-    call.riid = (uint64_t)riid;
-    call.texture = (uint64_t)&texture;
-    call.swapchain = (uint64_t)&swapchain;
-    call.device = (uint64_t)&device;
+    call.iface = (ULONG_PTR)surface;
+    call.riid = (ULONG_PTR)riid;
+    call.texture = (ULONG_PTR)&texture;
+    call.swapchain = (ULONG_PTR)&swapchain;
+    call.device = (ULONG_PTR)&device;
 
     qemu_syscall(&call.super);
 
@@ -512,8 +512,8 @@ static HRESULT WINAPI d3d9_surface_GetDesc(IDirect3DSurface9 *iface, D3DSURFACE_
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_GetDesc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETDESC);
-    call.iface = (uint64_t)surface;
-    call.desc = (uint64_t)desc;
+    call.iface = (ULONG_PTR)surface;
+    call.desc = (ULONG_PTR)desc;
 
     qemu_syscall(&call.super);
 
@@ -551,9 +551,9 @@ static HRESULT WINAPI d3d9_surface_LockRect(IDirect3DSurface9 *iface, D3DLOCKED_
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_LockRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_LOCKRECT);
-    call.iface = (uint64_t)surface;
-    call.locked_rect = (uint64_t)locked_rect;
-    call.rect = (uint64_t)rect;
+    call.iface = (ULONG_PTR)surface;
+    call.locked_rect = (ULONG_PTR)locked_rect;
+    call.rect = (ULONG_PTR)rect;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -589,7 +589,7 @@ static HRESULT WINAPI d3d9_surface_UnlockRect(IDirect3DSurface9 *iface)
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_UnlockRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_UNLOCKRECT);
-    call.iface = (uint64_t)surface;
+    call.iface = (ULONG_PTR)surface;
 
     qemu_syscall(&call.super);
 
@@ -625,8 +625,8 @@ static HRESULT WINAPI d3d9_surface_GetDC(IDirect3DSurface9 *iface, HDC *dc)
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_GetDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETDC);
-    call.iface = (uint64_t)surface;
-    call.dc = (uint64_t)dc;
+    call.iface = (ULONG_PTR)surface;
+    call.dc = (ULONG_PTR)dc;
 
     qemu_syscall(&call.super);
 
@@ -662,8 +662,8 @@ static HRESULT WINAPI d3d9_surface_ReleaseDC(IDirect3DSurface9 *iface, HDC dc)
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_ReleaseDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_RELEASEDC);
-    call.iface = (uint64_t)surface;
-    call.dc = (uint64_t)dc;
+    call.iface = (ULONG_PTR)surface;
+    call.dc = (ULONG_PTR)dc;
 
     qemu_syscall(&call.super);
 

@@ -53,9 +53,9 @@ static HRESULT WINAPI d3d9_volume_QueryInterface(IDirect3DVolume9 *iface, REFIID
     struct qemu_d3d9_subresource_impl *volume = impl_from_IDirect3DVolume9(iface);
     struct qemu_d3d9_volume_QueryInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VOLUME_QUERYINTERFACE);
-    call.iface = (uint64_t)volume;
-    call.riid = (uint64_t)riid;
-    call.out = (uint64_t)out;
+    call.iface = (ULONG_PTR)volume;
+    call.riid = (ULONG_PTR)riid;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -102,7 +102,7 @@ static ULONG WINAPI d3d9_volume_AddRef(IDirect3DVolume9 *iface)
     struct qemu_d3d9_subresource_impl *volume = impl_from_IDirect3DVolume9(iface);
     struct qemu_d3d9_volume_AddRef call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VOLUME_ADDREF);
-    call.iface = (uint64_t)volume;
+    call.iface = (ULONG_PTR)volume;
 
     qemu_syscall(&call.super);
 
@@ -137,7 +137,7 @@ static ULONG WINAPI d3d9_volume_Release(IDirect3DVolume9 *iface)
     struct qemu_d3d9_subresource_impl *volume = impl_from_IDirect3DVolume9(iface);
     struct qemu_d3d9_volume_Release call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VOLUME_RELEASE);
-    call.iface = (uint64_t)volume;
+    call.iface = (ULONG_PTR)volume;
 
     qemu_syscall(&call.super);
 
@@ -179,8 +179,8 @@ static HRESULT WINAPI d3d9_volume_GetDevice(IDirect3DVolume9 *iface, IDirect3DDe
     struct qemu_d3d9_subresource_impl *volume = impl_from_IDirect3DVolume9(iface);
     struct qemu_d3d9_volume_GetDevice call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VOLUME_GETDEVICE);
-    call.iface = (uint64_t)volume;
-    call.device = (uint64_t)device;
+    call.iface = (ULONG_PTR)volume;
+    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
 
@@ -219,11 +219,11 @@ static HRESULT WINAPI d3d9_volume_SetPrivateData(IDirect3DVolume9 *iface, REFGUI
     struct qemu_d3d9_subresource_impl *volume = impl_from_IDirect3DVolume9(iface);
     struct qemu_d3d9_volume_SetPrivateData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VOLUME_SETPRIVATEDATA);
-    call.iface = (uint64_t)volume;
-    call.guid = (uint64_t)guid;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
-    call.flags = (uint64_t)flags;
+    call.iface = (ULONG_PTR)volume;
+    call.guid = (ULONG_PTR)guid;
+    call.data = (ULONG_PTR)data;
+    call.data_size = (ULONG_PTR)data_size;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -261,10 +261,10 @@ static HRESULT WINAPI d3d9_volume_GetPrivateData(IDirect3DVolume9 *iface, REFGUI
     struct qemu_d3d9_subresource_impl *volume = impl_from_IDirect3DVolume9(iface);
     struct qemu_d3d9_volume_GetPrivateData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VOLUME_GETPRIVATEDATA);
-    call.iface = (uint64_t)volume;
-    call.guid = (uint64_t)guid;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
+    call.iface = (ULONG_PTR)volume;
+    call.guid = (ULONG_PTR)guid;
+    call.data = (ULONG_PTR)data;
+    call.data_size = (ULONG_PTR)data_size;
 
     qemu_syscall(&call.super);
 
@@ -300,8 +300,8 @@ static HRESULT WINAPI d3d9_volume_FreePrivateData(IDirect3DVolume9 *iface, REFGU
     struct qemu_d3d9_subresource_impl *volume = impl_from_IDirect3DVolume9(iface);
     struct qemu_d3d9_volume_FreePrivateData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VOLUME_FREEPRIVATEDATA);
-    call.iface = (uint64_t)volume;
-    call.guid = (uint64_t)guid;
+    call.iface = (ULONG_PTR)volume;
+    call.guid = (ULONG_PTR)guid;
 
     qemu_syscall(&call.super);
 
@@ -342,10 +342,10 @@ static HRESULT WINAPI d3d9_volume_GetContainer(IDirect3DVolume9 *iface, REFIID r
     struct qemu_d3d9_device_impl *device = NULL;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VOLUME_GETCONTAINER);
-    call.iface = (uint64_t)volume;
-    call.riid = (uint64_t)riid;
-    call.texture = (uint64_t)&texture;
-    call.device = (uint64_t)&device;
+    call.iface = (ULONG_PTR)volume;
+    call.riid = (ULONG_PTR)riid;
+    call.texture = (ULONG_PTR)&texture;
+    call.device = (ULONG_PTR)&device;
 
     qemu_syscall(&call.super);
 
@@ -422,8 +422,8 @@ static HRESULT WINAPI d3d9_volume_GetDesc(IDirect3DVolume9 *iface, D3DVOLUME_DES
     struct qemu_d3d9_subresource_impl *volume = impl_from_IDirect3DVolume9(iface);
     struct qemu_d3d9_volume_GetDesc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VOLUME_GETDESC);
-    call.iface = (uint64_t)volume;
-    call.desc = (uint64_t)desc;
+    call.iface = (ULONG_PTR)volume;
+    call.desc = (ULONG_PTR)desc;
 
     qemu_syscall(&call.super);
 
@@ -461,10 +461,10 @@ static HRESULT WINAPI d3d9_volume_LockBox(IDirect3DVolume9 *iface, D3DLOCKED_BOX
     struct qemu_d3d9_subresource_impl *volume = impl_from_IDirect3DVolume9(iface);
     struct qemu_d3d9_volume_LockBox call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VOLUME_LOCKBOX);
-    call.iface = (uint64_t)volume;
-    call.locked_box = (uint64_t)locked_box;
-    call.box = (uint64_t)box;
-    call.flags = (uint64_t)flags;
+    call.iface = (ULONG_PTR)volume;
+    call.locked_box = (ULONG_PTR)locked_box;
+    call.box = (ULONG_PTR)box;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -499,7 +499,7 @@ static HRESULT WINAPI d3d9_volume_UnlockBox(IDirect3DVolume9 *iface)
     struct qemu_d3d9_subresource_impl *volume = impl_from_IDirect3DVolume9(iface);
     struct qemu_d3d9_volume_UnlockBox call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VOLUME_UNLOCKBOX);
-    call.iface = (uint64_t)volume;
+    call.iface = (ULONG_PTR)volume;
 
     qemu_syscall(&call.super);
 

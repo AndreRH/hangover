@@ -72,11 +72,11 @@ WINBASEAPI IDirect3D9 * WINAPI Direct3DCreate9(UINT sdk_version)
     struct qemu_Direct3DCreate9 call;
     struct qemu_d3d9_impl *d3d9;
     call.super.id = QEMU_SYSCALL_ID(CALL_DIRECT3DCREATE9);
-    call.sdk_version = (uint64_t)sdk_version;
+    call.sdk_version = (ULONG_PTR)sdk_version;
 
     qemu_syscall(&call.super);
 
-    d3d9 = (struct qemu_d3d9_impl *)call.super.iret;
+    d3d9 = (struct qemu_d3d9_impl *)(ULONG_PTR)call.super.iret;
     if (!d3d9)
         return NULL;
 
@@ -126,8 +126,8 @@ WINBASEAPI HRESULT WINAPI Direct3DCreate9Ex(UINT sdk_version, IDirect3D9Ex **d3d
     struct qemu_d3d9_impl *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DIRECT3DCREATE9EX);
-    call.sdk_version = (uint64_t)sdk_version;
-    call.d3d9ex = (uint64_t)&impl;
+    call.sdk_version = (ULONG_PTR)sdk_version;
+    call.d3d9ex = (ULONG_PTR)&impl;
 
     qemu_syscall(&call.super);
 
@@ -188,7 +188,7 @@ WINBASEAPI void* WINAPI Direct3DShaderValidatorCreate9(void)
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -218,8 +218,8 @@ WINBASEAPI int WINAPI D3DPERF_BeginEvent(D3DCOLOR color, const WCHAR *name)
 {
     struct qemu_D3DPERF_BeginEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3DPERF_BEGINEVENT);
-    call.color = (uint64_t)color;
-    call.name = (uint64_t)name;
+    call.color = (ULONG_PTR)color;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
@@ -305,7 +305,7 @@ WINBASEAPI void WINAPI D3DPERF_SetOptions(DWORD options)
 {
     struct qemu_D3DPERF_SetOptions call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3DPERF_SETOPTIONS);
-    call.options = (uint64_t)options;
+    call.options = (ULONG_PTR)options;
 
     qemu_syscall(&call.super);
 }
@@ -362,8 +362,8 @@ WINBASEAPI void WINAPI D3DPERF_SetMarker(D3DCOLOR color, const WCHAR *name)
 {
     struct qemu_D3DPERF_SetMarker call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3DPERF_SETMARKER);
-    call.color = (uint64_t)color;
-    call.name = (uint64_t)name;
+    call.color = (ULONG_PTR)color;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 }
@@ -392,8 +392,8 @@ WINBASEAPI void WINAPI D3DPERF_SetRegion(D3DCOLOR color, const WCHAR *name)
 {
     struct qemu_D3DPERF_SetRegion call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3DPERF_SETREGION);
-    call.color = (uint64_t)color;
-    call.name = (uint64_t)name;
+    call.color = (ULONG_PTR)color;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 }

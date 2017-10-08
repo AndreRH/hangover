@@ -53,9 +53,9 @@ static HRESULT WINAPI d3d9_QueryInterface(IDirect3D9Ex *iface, REFIID riid, void
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_QueryInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_QUERYINTERFACE);
-    call.iface = (uint64_t)d3d9;
-    call.riid = (uint64_t)riid;
-    call.out = (uint64_t)out;
+    call.iface = (ULONG_PTR)d3d9;
+    call.riid = (ULONG_PTR)riid;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -101,7 +101,7 @@ static ULONG WINAPI d3d9_AddRef(IDirect3D9Ex *iface)
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_AddRef call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_ADDREF);
-    call.iface = (uint64_t)d3d9;
+    call.iface = (ULONG_PTR)d3d9;
 
     qemu_syscall(&call.super);
 
@@ -141,7 +141,7 @@ static ULONG WINAPI d3d9_Release(IDirect3D9Ex *iface)
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_Release call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_RELEASE);
-    call.iface = (uint64_t)d3d9;
+    call.iface = (ULONG_PTR)d3d9;
 
     qemu_syscall(&call.super);
 
@@ -187,8 +187,8 @@ static HRESULT WINAPI d3d9_RegisterSoftwareDevice(IDirect3D9Ex *iface, void *ini
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_RegisterSoftwareDevice call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_REGISTERSOFTWAREDEVICE);
-    call.iface = (uint64_t)d3d9;
-    call.init_function = (uint64_t)init_function;
+    call.iface = (ULONG_PTR)d3d9;
+    call.init_function = (ULONG_PTR)init_function;
 
     qemu_syscall(&call.super);
 
@@ -223,7 +223,7 @@ static UINT WINAPI d3d9_GetAdapterCount(IDirect3D9Ex *iface)
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_GetAdapterCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_GETADAPTERCOUNT);
-    call.iface = (uint64_t)d3d9;
+    call.iface = (ULONG_PTR)d3d9;
 
     qemu_syscall(&call.super);
 
@@ -261,10 +261,10 @@ static HRESULT WINAPI d3d9_GetAdapterIdentifier(IDirect3D9Ex *iface, UINT adapte
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_GetAdapterIdentifier call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_GETADAPTERIDENTIFIER);
-    call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
-    call.flags = (uint64_t)flags;
-    call.identifier = (uint64_t)identifier;
+    call.iface = (ULONG_PTR)d3d9;
+    call.adapter = (ULONG_PTR)adapter;
+    call.flags = (ULONG_PTR)flags;
+    call.identifier = (ULONG_PTR)identifier;
 
     qemu_syscall(&call.super);
 
@@ -301,9 +301,9 @@ static UINT WINAPI d3d9_GetAdapterModeCount(IDirect3D9Ex *iface, UINT adapter, D
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_GetAdapterModeCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_GETADAPTERMODECOUNT);
-    call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
-    call.format = (uint64_t)format;
+    call.iface = (ULONG_PTR)d3d9;
+    call.adapter = (ULONG_PTR)adapter;
+    call.format = (ULONG_PTR)format;
 
     qemu_syscall(&call.super);
 
@@ -342,11 +342,11 @@ static HRESULT WINAPI d3d9_EnumAdapterModes(IDirect3D9Ex *iface, UINT adapter, D
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_EnumAdapterModes call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_ENUMADAPTERMODES);
-    call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
-    call.format = (uint64_t)format;
-    call.mode_idx = (uint64_t)mode_idx;
-    call.mode = (uint64_t)mode;
+    call.iface = (ULONG_PTR)d3d9;
+    call.adapter = (ULONG_PTR)adapter;
+    call.format = (ULONG_PTR)format;
+    call.mode_idx = (ULONG_PTR)mode_idx;
+    call.mode = (ULONG_PTR)mode;
 
     qemu_syscall(&call.super);
 
@@ -383,9 +383,9 @@ static HRESULT WINAPI d3d9_GetAdapterDisplayMode(IDirect3D9Ex *iface, UINT adapt
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_GetAdapterDisplayMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_GETADAPTERDISPLAYMODE);
-    call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
-    call.mode = (uint64_t)mode;
+    call.iface = (ULONG_PTR)d3d9;
+    call.adapter = (ULONG_PTR)adapter;
+    call.mode = (ULONG_PTR)mode;
 
     qemu_syscall(&call.super);
 
@@ -425,12 +425,12 @@ static HRESULT WINAPI d3d9_CheckDeviceType(IDirect3D9Ex *iface, UINT adapter, D3
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_CheckDeviceType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_CHECKDEVICETYPE);
-    call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
-    call.device_type = (uint64_t)device_type;
-    call.display_format = (uint64_t)display_format;
-    call.backbuffer_format = (uint64_t)backbuffer_format;
-    call.windowed = (uint64_t)windowed;
+    call.iface = (ULONG_PTR)d3d9;
+    call.adapter = (ULONG_PTR)adapter;
+    call.device_type = (ULONG_PTR)device_type;
+    call.display_format = (ULONG_PTR)display_format;
+    call.backbuffer_format = (ULONG_PTR)backbuffer_format;
+    call.windowed = (ULONG_PTR)windowed;
 
     qemu_syscall(&call.super);
 
@@ -471,13 +471,13 @@ static HRESULT WINAPI d3d9_CheckDeviceFormat(IDirect3D9Ex *iface, UINT adapter, 
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_CheckDeviceFormat call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_CHECKDEVICEFORMAT);
-    call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
-    call.device_type = (uint64_t)device_type;
-    call.adapter_format = (uint64_t)adapter_format;
-    call.usage = (uint64_t)usage;
-    call.resource_type = (uint64_t)resource_type;
-    call.format = (uint64_t)format;
+    call.iface = (ULONG_PTR)d3d9;
+    call.adapter = (ULONG_PTR)adapter;
+    call.device_type = (ULONG_PTR)device_type;
+    call.adapter_format = (ULONG_PTR)adapter_format;
+    call.usage = (ULONG_PTR)usage;
+    call.resource_type = (ULONG_PTR)resource_type;
+    call.format = (ULONG_PTR)format;
 
     qemu_syscall(&call.super);
 
@@ -518,13 +518,13 @@ static HRESULT WINAPI d3d9_CheckDeviceMultiSampleType(IDirect3D9Ex *iface, UINT 
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_CheckDeviceMultiSampleType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_CHECKDEVICEMULTISAMPLETYPE);
-    call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
-    call.device_type = (uint64_t)device_type;
-    call.format = (uint64_t)format;
-    call.windowed = (uint64_t)windowed;
-    call.multisample_type = (uint64_t)multisample_type;
-    call.levels = (uint64_t)levels;
+    call.iface = (ULONG_PTR)d3d9;
+    call.adapter = (ULONG_PTR)adapter;
+    call.device_type = (ULONG_PTR)device_type;
+    call.format = (ULONG_PTR)format;
+    call.windowed = (ULONG_PTR)windowed;
+    call.multisample_type = (ULONG_PTR)multisample_type;
+    call.levels = (ULONG_PTR)levels;
 
     qemu_syscall(&call.super);
 
@@ -564,12 +564,12 @@ static HRESULT WINAPI d3d9_CheckDepthStencilMatch(IDirect3D9Ex *iface, UINT adap
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_CheckDepthStencilMatch call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_CHECKDEPTHSTENCILMATCH);
-    call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
-    call.device_type = (uint64_t)device_type;
-    call.adapter_format = (uint64_t)adapter_format;
-    call.rt_format = (uint64_t)rt_format;
-    call.ds_format = (uint64_t)ds_format;
+    call.iface = (ULONG_PTR)d3d9;
+    call.adapter = (ULONG_PTR)adapter;
+    call.device_type = (ULONG_PTR)device_type;
+    call.adapter_format = (ULONG_PTR)adapter_format;
+    call.rt_format = (ULONG_PTR)rt_format;
+    call.ds_format = (ULONG_PTR)ds_format;
 
     qemu_syscall(&call.super);
 
@@ -608,11 +608,11 @@ static HRESULT WINAPI d3d9_CheckDeviceFormatConversion(IDirect3D9Ex *iface, UINT
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_CheckDeviceFormatConversion call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_CHECKDEVICEFORMATCONVERSION);
-    call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
-    call.device_type = (uint64_t)device_type;
-    call.src_format = (uint64_t)src_format;
-    call.dst_format = (uint64_t)dst_format;
+    call.iface = (ULONG_PTR)d3d9;
+    call.adapter = (ULONG_PTR)adapter;
+    call.device_type = (ULONG_PTR)device_type;
+    call.src_format = (ULONG_PTR)src_format;
+    call.dst_format = (ULONG_PTR)dst_format;
 
     qemu_syscall(&call.super);
 
@@ -650,10 +650,10 @@ static HRESULT WINAPI d3d9_GetDeviceCaps(IDirect3D9Ex *iface, UINT adapter, D3DD
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_GetDeviceCaps call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_GETDEVICECAPS);
-    call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
-    call.device_type = (uint64_t)device_type;
-    call.caps = (uint64_t)caps;
+    call.iface = (ULONG_PTR)d3d9;
+    call.adapter = (ULONG_PTR)adapter;
+    call.device_type = (ULONG_PTR)device_type;
+    call.caps = (ULONG_PTR)caps;
 
     qemu_syscall(&call.super);
 
@@ -689,12 +689,12 @@ static HMONITOR WINAPI d3d9_GetAdapterMonitor(IDirect3D9Ex *iface, UINT adapter)
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_GetAdapterMonitor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_GETADAPTERMONITOR);
-    call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
+    call.iface = (ULONG_PTR)d3d9;
+    call.adapter = (ULONG_PTR)adapter;
 
     qemu_syscall(&call.super);
 
-    return (HMONITOR)call.super.iret;
+    return (HMONITOR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -707,7 +707,7 @@ void qemu_d3d9_GetAdapterMonitor(struct qemu_syscall *call)
     WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
-    c->super.iret = (uint64_t)IDirect3D9_GetAdapterMonitor(d3d9->host, c->adapter);
+    c->super.iret = (ULONG_PTR)IDirect3D9_GetAdapterMonitor(d3d9->host, c->adapter);
 }
 
 #endif
@@ -733,13 +733,13 @@ static HRESULT WINAPI d3d9_CreateDevice(IDirect3D9Ex *iface, UINT adapter, D3DDE
     struct qemu_d3d9_device_impl *ret;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_CREATEDEVICE);
-    call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
-    call.device_type = (uint64_t)device_type;
-    call.focus_window = (uint64_t)focus_window;
-    call.flags = (uint64_t)flags;
-    call.parameters = (uint64_t)parameters;
-    call.device = (uint64_t)&ret;
+    call.iface = (ULONG_PTR)d3d9;
+    call.adapter = (ULONG_PTR)adapter;
+    call.device_type = (ULONG_PTR)device_type;
+    call.focus_window = (ULONG_PTR)focus_window;
+    call.flags = (ULONG_PTR)flags;
+    call.parameters = (ULONG_PTR)parameters;
+    call.device = (ULONG_PTR)&ret;
 
     qemu_syscall(&call.super);
     if (FAILED(call.super.iret))
@@ -814,9 +814,9 @@ static UINT WINAPI d3d9_GetAdapterModeCountEx(IDirect3D9Ex *iface, UINT adapter,
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_GetAdapterModeCountEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_GETADAPTERMODECOUNTEX);
-    call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
-    call.filter = (uint64_t)filter;
+    call.iface = (ULONG_PTR)d3d9;
+    call.adapter = (ULONG_PTR)adapter;
+    call.filter = (ULONG_PTR)filter;
 
     qemu_syscall(&call.super);
 
@@ -855,11 +855,11 @@ static HRESULT WINAPI d3d9_EnumAdapterModesEx(IDirect3D9Ex *iface, UINT adapter,
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_EnumAdapterModesEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_ENUMADAPTERMODESEX);
-    call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
-    call.filter = (uint64_t)filter;
-    call.mode_idx = (uint64_t)mode_idx;
-    call.mode = (uint64_t)mode;
+    call.iface = (ULONG_PTR)d3d9;
+    call.adapter = (ULONG_PTR)adapter;
+    call.filter = (ULONG_PTR)filter;
+    call.mode_idx = (ULONG_PTR)mode_idx;
+    call.mode = (ULONG_PTR)mode;
 
     qemu_syscall(&call.super);
 
@@ -897,10 +897,10 @@ static HRESULT WINAPI d3d9_GetAdapterDisplayModeEx(IDirect3D9Ex *iface, UINT ada
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_GetAdapterDisplayModeEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_GETADAPTERDISPLAYMODEEX);
-    call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
-    call.mode = (uint64_t)mode;
-    call.rotation = (uint64_t)rotation;
+    call.iface = (ULONG_PTR)d3d9;
+    call.adapter = (ULONG_PTR)adapter;
+    call.mode = (ULONG_PTR)mode;
+    call.rotation = (ULONG_PTR)rotation;
 
     qemu_syscall(&call.super);
 
@@ -944,14 +944,14 @@ static HRESULT WINAPI d3d9_CreateDeviceEx(IDirect3D9Ex *iface, UINT adapter, D3D
     struct qemu_d3d9_CreateDeviceEx call;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_CREATEDEVICEEX);
-    call.iface = (uint64_t)d3d9;
+    call.iface = (ULONG_PTR)d3d9;
     call.adapter = adapter;
     call.device_type = device_type;
-    call.focus_window = (uint64_t)focus_window;
+    call.focus_window = (ULONG_PTR)focus_window;
     call.flags = flags;
-    call.parameters = (uint64_t)parameters;
-    call.mode = (uint64_t)mode;
-    call.device = (uint64_t)&ret;
+    call.parameters = (ULONG_PTR)parameters;
+    call.mode = (ULONG_PTR)mode;
+    call.device = (ULONG_PTR)&ret;
 
     qemu_syscall(&call.super);
     if (FAILED(call.super.iret))
@@ -1025,9 +1025,9 @@ static HRESULT WINAPI d3d9_GetAdapterLUID(IDirect3D9Ex *iface, UINT adapter, LUI
     struct qemu_d3d9_impl *d3d9 = impl_from_IDirect3D9Ex(iface);
     struct qemu_d3d9_GetAdapterLUID call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_GETADAPTERLUID);
-    call.iface = (uint64_t)d3d9;
-    call.adapter = (uint64_t)adapter;
-    call.luid = (uint64_t)luid;
+    call.iface = (ULONG_PTR)d3d9;
+    call.adapter = (ULONG_PTR)adapter;
+    call.luid = (ULONG_PTR)luid;
 
     qemu_syscall(&call.super);
 

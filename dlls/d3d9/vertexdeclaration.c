@@ -53,9 +53,9 @@ static HRESULT WINAPI d3d9_vertex_declaration_QueryInterface(IDirect3DVertexDecl
     struct qemu_d3d9_vertex_declaration_impl *decl = impl_from_IDirect3DVertexDeclaration9(iface);
     struct qemu_d3d9_vertex_declaration_QueryInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEX_DECLARATION_QUERYINTERFACE);
-    call.iface = (uint64_t)decl;
-    call.riid = (uint64_t)riid;
-    call.out = (uint64_t)out;
+    call.iface = (ULONG_PTR)decl;
+    call.riid = (ULONG_PTR)riid;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -90,7 +90,7 @@ static ULONG WINAPI d3d9_vertex_declaration_AddRef(IDirect3DVertexDeclaration9 *
     struct qemu_d3d9_vertex_declaration_impl *decl = impl_from_IDirect3DVertexDeclaration9(iface);
     struct qemu_d3d9_vertex_declaration_AddRef call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEX_DECLARATION_ADDREF);
-    call.iface = (uint64_t)decl;
+    call.iface = (ULONG_PTR)decl;
 
     qemu_syscall(&call.super);
 
@@ -135,7 +135,7 @@ static ULONG WINAPI d3d9_vertex_declaration_Release(IDirect3DVertexDeclaration9 
     struct qemu_d3d9_vertex_declaration_impl *decl = impl_from_IDirect3DVertexDeclaration9(iface);
     struct qemu_d3d9_vertex_declaration_Release call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEX_DECLARATION_RELEASE);
-    call.iface = (uint64_t)decl;
+    call.iface = (ULONG_PTR)decl;
 
     qemu_syscall(&call.super);
 
@@ -189,8 +189,8 @@ static HRESULT WINAPI d3d9_vertex_declaration_GetDevice(IDirect3DVertexDeclarati
     struct qemu_d3d9_vertex_declaration_impl *decl = impl_from_IDirect3DVertexDeclaration9(iface);
     struct qemu_d3d9_vertex_declaration_GetDevice call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEX_DECLARATION_GETDEVICE);
-    call.iface = (uint64_t)decl;
-    call.device = (uint64_t)device;
+    call.iface = (ULONG_PTR)decl;
+    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
 
@@ -227,9 +227,9 @@ static HRESULT WINAPI d3d9_vertex_declaration_GetDeclaration(IDirect3DVertexDecl
     struct qemu_d3d9_vertex_declaration_impl *decl = impl_from_IDirect3DVertexDeclaration9(iface);
     struct qemu_d3d9_vertex_declaration_GetDeclaration call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEX_DECLARATION_GETDECLARATION);
-    call.iface = (uint64_t)decl;
-    call.elements = (uint64_t)elements;
-    call.element_count = (uint64_t)element_count;
+    call.iface = (ULONG_PTR)decl;
+    call.elements = (ULONG_PTR)elements;
+    call.element_count = (ULONG_PTR)element_count;
 
     qemu_syscall(&call.super);
 

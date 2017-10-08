@@ -49,9 +49,9 @@ static HRESULT WINAPI d3d9_query_QueryInterface(IDirect3DQuery9 *iface, REFIID r
     struct qemu_d3d9_query_impl *query = impl_from_IDirect3DQuery9(iface);
     struct qemu_d3d9_query_QueryInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_QUERY_QUERYINTERFACE);
-    call.iface = (uint64_t)query;
-    call.riid = (uint64_t)riid;
-    call.out = (uint64_t)out;
+    call.iface = (ULONG_PTR)query;
+    call.riid = (ULONG_PTR)riid;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -86,7 +86,7 @@ static ULONG WINAPI d3d9_query_AddRef(IDirect3DQuery9 *iface)
     struct qemu_d3d9_query_impl *query = impl_from_IDirect3DQuery9(iface);
     struct qemu_d3d9_query_AddRef call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_QUERY_ADDREF);
-    call.iface = (uint64_t)query;
+    call.iface = (ULONG_PTR)query;
 
     qemu_syscall(&call.super);
 
@@ -121,7 +121,7 @@ static ULONG WINAPI d3d9_query_Release(IDirect3DQuery9 *iface)
     struct qemu_d3d9_query_impl *query = impl_from_IDirect3DQuery9(iface);
     struct qemu_d3d9_query_Release call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_QUERY_RELEASE);
-    call.iface = (uint64_t)query;
+    call.iface = (ULONG_PTR)query;
 
     qemu_syscall(&call.super);
 
@@ -162,8 +162,8 @@ static HRESULT WINAPI d3d9_query_GetDevice(IDirect3DQuery9 *iface, IDirect3DDevi
     struct qemu_d3d9_query_impl *query = impl_from_IDirect3DQuery9(iface);
     struct qemu_d3d9_query_GetDevice call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_QUERY_GETDEVICE);
-    call.iface = (uint64_t)query;
-    call.device = (uint64_t)device;
+    call.iface = (ULONG_PTR)query;
+    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
 
@@ -198,7 +198,7 @@ static D3DQUERYTYPE WINAPI d3d9_query_GetType(IDirect3DQuery9 *iface)
     struct qemu_d3d9_query_impl *query = impl_from_IDirect3DQuery9(iface);
     struct qemu_d3d9_query_GetType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_QUERY_GETTYPE);
-    call.iface = (uint64_t)query;
+    call.iface = (ULONG_PTR)query;
 
     qemu_syscall(&call.super);
 
@@ -233,7 +233,7 @@ static DWORD WINAPI d3d9_query_GetDataSize(IDirect3DQuery9 *iface)
     struct qemu_d3d9_query_impl *query = impl_from_IDirect3DQuery9(iface);
     struct qemu_d3d9_query_GetDataSize call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_QUERY_GETDATASIZE);
-    call.iface = (uint64_t)query;
+    call.iface = (ULONG_PTR)query;
 
     qemu_syscall(&call.super);
 
@@ -269,7 +269,7 @@ static HRESULT WINAPI d3d9_query_Issue(IDirect3DQuery9 *iface, DWORD flags)
     struct qemu_d3d9_query_impl *query = impl_from_IDirect3DQuery9(iface);
     struct qemu_d3d9_query_Issue call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_QUERY_ISSUE);
-    call.iface = (uint64_t)query;
+    call.iface = (ULONG_PTR)query;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -308,8 +308,8 @@ static HRESULT WINAPI d3d9_query_GetData(IDirect3DQuery9 *iface, void *data, DWO
     struct qemu_d3d9_query_impl *query = impl_from_IDirect3DQuery9(iface);
     struct qemu_d3d9_query_GetData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_QUERY_GETDATA);
-    call.iface = (uint64_t)query;
-    call.data = (uint64_t)data;
+    call.iface = (ULONG_PTR)query;
+    call.data = (ULONG_PTR)data;
     call.size = size;
     call.flags = flags;
 

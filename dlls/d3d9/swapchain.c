@@ -52,9 +52,9 @@ static HRESULT WINAPI d3d9_swapchain_QueryInterface(IDirect3DSwapChain9Ex *iface
     struct qemu_d3d9_swapchain_impl *swapchain = impl_from_IDirect3DSwapChain9Ex(iface);
     struct qemu_d3d9_swapchain_QueryInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SWAPCHAIN_QUERYINTERFACE);
-    call.iface = (uint64_t)swapchain;
-    call.riid = (uint64_t)riid;
-    call.out = (uint64_t)out;
+    call.iface = (ULONG_PTR)swapchain;
+    call.riid = (ULONG_PTR)riid;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -100,7 +100,7 @@ static ULONG WINAPI d3d9_swapchain_AddRef(IDirect3DSwapChain9Ex *iface)
     struct qemu_d3d9_swapchain_impl *swapchain = impl_from_IDirect3DSwapChain9Ex(iface);
     struct qemu_d3d9_swapchain_AddRef call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SWAPCHAIN_ADDREF);
-    call.iface = (uint64_t)swapchain;
+    call.iface = (ULONG_PTR)swapchain;
 
     qemu_syscall(&call.super);
 
@@ -135,7 +135,7 @@ static ULONG WINAPI d3d9_swapchain_Release(IDirect3DSwapChain9Ex *iface)
     struct qemu_d3d9_swapchain_impl *swapchain = impl_from_IDirect3DSwapChain9Ex(iface);
     struct qemu_d3d9_swapchain_Release call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SWAPCHAIN_RELEASE);
-    call.iface = (uint64_t)swapchain;
+    call.iface = (ULONG_PTR)swapchain;
 
     qemu_syscall(&call.super);
 
@@ -181,12 +181,12 @@ static HRESULT WINAPI d3d9_swapchain_Present(IDirect3DSwapChain9Ex *iface, const
     struct qemu_d3d9_swapchain_impl *swapchain = impl_from_IDirect3DSwapChain9Ex(iface);
     struct qemu_d3d9_swapchain_Present call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SWAPCHAIN_PRESENT);
-    call.iface = (uint64_t)swapchain;
-    call.src_rect = (uint64_t)src_rect;
-    call.dst_rect = (uint64_t)dst_rect;
-    call.dst_window_override = (uint64_t)dst_window_override;
-    call.dirty_region = (uint64_t)dirty_region;
-    call.flags = (uint64_t)flags;
+    call.iface = (ULONG_PTR)swapchain;
+    call.src_rect = (ULONG_PTR)src_rect;
+    call.dst_rect = (ULONG_PTR)dst_rect;
+    call.dst_window_override = (ULONG_PTR)dst_window_override;
+    call.dirty_region = (ULONG_PTR)dirty_region;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -222,8 +222,8 @@ static HRESULT WINAPI d3d9_swapchain_GetFrontBufferData(IDirect3DSwapChain9Ex *i
     struct qemu_d3d9_swapchain_impl *swapchain = impl_from_IDirect3DSwapChain9Ex(iface);
     struct qemu_d3d9_swapchain_GetFrontBufferData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SWAPCHAIN_GETFRONTBUFFERDATA);
-    call.iface = (uint64_t)swapchain;
-    call.surface = (uint64_t)surface;
+    call.iface = (ULONG_PTR)swapchain;
+    call.surface = (ULONG_PTR)surface;
 
     qemu_syscall(&call.super);
 
@@ -266,10 +266,10 @@ static HRESULT WINAPI d3d9_swapchain_GetBackBuffer(IDirect3DSwapChain9Ex *iface,
         return D3DERR_INVALIDCALL;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SWAPCHAIN_GETBACKBUFFER);
-    call.iface = (uint64_t)swapchain;
-    call.backbuffer_idx = (uint64_t)backbuffer_idx;
-    call.backbuffer_type = (uint64_t)backbuffer_type;
-    call.backbuffer = (uint64_t)&surface_impl;
+    call.iface = (ULONG_PTR)swapchain;
+    call.backbuffer_idx = (ULONG_PTR)backbuffer_idx;
+    call.backbuffer_type = (ULONG_PTR)backbuffer_type;
+    call.backbuffer = (ULONG_PTR)&surface_impl;
 
     qemu_syscall(&call.super);
 
@@ -318,8 +318,8 @@ static HRESULT WINAPI d3d9_swapchain_GetRasterStatus(IDirect3DSwapChain9Ex *ifac
     struct qemu_d3d9_swapchain_impl *swapchain = impl_from_IDirect3DSwapChain9Ex(iface);
     struct qemu_d3d9_swapchain_GetRasterStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SWAPCHAIN_GETRASTERSTATUS);
-    call.iface = (uint64_t)swapchain;
-    call.raster_status = (uint64_t)raster_status;
+    call.iface = (ULONG_PTR)swapchain;
+    call.raster_status = (ULONG_PTR)raster_status;
 
     qemu_syscall(&call.super);
 
@@ -355,8 +355,8 @@ static HRESULT WINAPI d3d9_swapchain_GetDisplayMode(IDirect3DSwapChain9Ex *iface
     struct qemu_d3d9_swapchain_impl *swapchain = impl_from_IDirect3DSwapChain9Ex(iface);
     struct qemu_d3d9_swapchain_GetDisplayMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SWAPCHAIN_GETDISPLAYMODE);
-    call.iface = (uint64_t)swapchain;
-    call.mode = (uint64_t)mode;
+    call.iface = (ULONG_PTR)swapchain;
+    call.mode = (ULONG_PTR)mode;
 
     qemu_syscall(&call.super);
 
@@ -392,8 +392,8 @@ static HRESULT WINAPI d3d9_swapchain_GetDevice(IDirect3DSwapChain9Ex *iface, IDi
     struct qemu_d3d9_swapchain_impl *swapchain = impl_from_IDirect3DSwapChain9Ex(iface);
     struct qemu_d3d9_swapchain_GetDevice call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SWAPCHAIN_GETDEVICE);
-    call.iface = (uint64_t)swapchain;
-    call.device = (uint64_t)device;
+    call.iface = (ULONG_PTR)swapchain;
+    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
 
@@ -429,8 +429,8 @@ static HRESULT WINAPI d3d9_swapchain_GetPresentParameters(IDirect3DSwapChain9Ex 
     struct qemu_d3d9_swapchain_impl *swapchain = impl_from_IDirect3DSwapChain9Ex(iface);
     struct qemu_d3d9_swapchain_GetPresentParameters call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SWAPCHAIN_GETPRESENTPARAMETERS);
-    call.iface = (uint64_t)swapchain;
-    call.parameters = (uint64_t)parameters;
+    call.iface = (ULONG_PTR)swapchain;
+    call.parameters = (ULONG_PTR)parameters;
 
     qemu_syscall(&call.super);
 
@@ -466,8 +466,8 @@ static HRESULT WINAPI d3d9_swapchain_GetLastPresentCount(IDirect3DSwapChain9Ex *
     struct qemu_d3d9_swapchain_impl *swapchain = impl_from_IDirect3DSwapChain9Ex(iface);
     struct qemu_d3d9_swapchain_GetLastPresentCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SWAPCHAIN_GETLASTPRESENTCOUNT);
-    call.iface = (uint64_t)swapchain;
-    call.last_present_count = (uint64_t)last_present_count;
+    call.iface = (ULONG_PTR)swapchain;
+    call.last_present_count = (ULONG_PTR)last_present_count;
 
     qemu_syscall(&call.super);
 
@@ -503,8 +503,8 @@ static HRESULT WINAPI d3d9_swapchain_GetPresentStatistics(IDirect3DSwapChain9Ex 
     struct qemu_d3d9_swapchain_impl *swapchain = impl_from_IDirect3DSwapChain9Ex(iface);
     struct qemu_d3d9_swapchain_GetPresentStatistics call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SWAPCHAIN_GETPRESENTSTATISTICS);
-    call.iface = (uint64_t)swapchain;
-    call.present_stats = (uint64_t)present_stats;
+    call.iface = (ULONG_PTR)swapchain;
+    call.present_stats = (ULONG_PTR)present_stats;
 
     qemu_syscall(&call.super);
 
@@ -541,9 +541,9 @@ static HRESULT WINAPI d3d9_swapchain_GetDisplayModeEx(IDirect3DSwapChain9Ex *ifa
     struct qemu_d3d9_swapchain_impl *swapchain = impl_from_IDirect3DSwapChain9Ex(iface);
     struct qemu_d3d9_swapchain_GetDisplayModeEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SWAPCHAIN_GETDISPLAYMODEEX);
-    call.iface = (uint64_t)swapchain;
-    call.mode = (uint64_t)mode;
-    call.rotation = (uint64_t)rotation;
+    call.iface = (ULONG_PTR)swapchain;
+    call.mode = (ULONG_PTR)mode;
+    call.rotation = (ULONG_PTR)rotation;
 
     qemu_syscall(&call.super);
 

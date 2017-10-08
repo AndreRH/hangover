@@ -53,9 +53,9 @@ static HRESULT WINAPI d3d9_vertexshader_QueryInterface(IDirect3DVertexShader9 *i
     struct qemu_d3d9_shader_impl *shader = impl_from_IDirect3DVertexShader9(iface);
     struct qemu_d3d9_vertexshader_QueryInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXSHADER_QUERYINTERFACE);
-    call.iface = (uint64_t)shader;
-    call.riid = (uint64_t)riid;
-    call.out = (uint64_t)out;
+    call.iface = (ULONG_PTR)shader;
+    call.riid = (ULONG_PTR)riid;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -90,7 +90,7 @@ static ULONG WINAPI d3d9_vertexshader_AddRef(IDirect3DVertexShader9 *iface)
     struct qemu_d3d9_shader_impl *shader = impl_from_IDirect3DVertexShader9(iface);
     struct qemu_d3d9_vertexshader_AddRef call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXSHADER_ADDREF);
-    call.iface = (uint64_t)shader;
+    call.iface = (ULONG_PTR)shader;
 
     qemu_syscall(&call.super);
 
@@ -135,7 +135,7 @@ static ULONG WINAPI d3d9_vertexshader_Release(IDirect3DVertexShader9 *iface)
     struct qemu_d3d9_shader_impl *shader = impl_from_IDirect3DVertexShader9(iface);
     struct qemu_d3d9_vertexshader_Release call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXSHADER_RELEASE);
-    call.iface = (uint64_t)shader;
+    call.iface = (ULONG_PTR)shader;
 
     qemu_syscall(&call.super);
 
@@ -189,8 +189,8 @@ static HRESULT WINAPI d3d9_vertexshader_GetDevice(IDirect3DVertexShader9 *iface,
     struct qemu_d3d9_device_impl *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXSHADER_GETDEVICE);
-    call.iface = (uint64_t)shader;
-    call.device = (uint64_t)&impl;
+    call.iface = (ULONG_PTR)shader;
+    call.device = (ULONG_PTR)&impl;
 
     qemu_syscall(&call.super);
     *device = (IDirect3DDevice9 *)&impl->IDirect3DDevice9Ex_iface;
@@ -230,9 +230,9 @@ static HRESULT WINAPI d3d9_vertexshader_GetFunction(IDirect3DVertexShader9 *ifac
     struct qemu_d3d9_shader_impl *shader = impl_from_IDirect3DVertexShader9(iface);
     struct qemu_d3d9_vertexshader_GetFunction call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXSHADER_GETFUNCTION);
-    call.iface = (uint64_t)shader;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
+    call.iface = (ULONG_PTR)shader;
+    call.data = (ULONG_PTR)data;
+    call.data_size = (ULONG_PTR)data_size;
 
     qemu_syscall(&call.super);
 
@@ -274,9 +274,9 @@ static HRESULT WINAPI d3d9_pixelshader_QueryInterface(IDirect3DPixelShader9 *ifa
     struct qemu_d3d9_shader_impl *shader = impl_from_IDirect3DPixelShader9(iface);
     struct qemu_d3d9_pixelshader_QueryInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_PIXELSHADER_QUERYINTERFACE);
-    call.iface = (uint64_t)shader;
-    call.riid = (uint64_t)riid;
-    call.out = (uint64_t)out;
+    call.iface = (ULONG_PTR)shader;
+    call.riid = (ULONG_PTR)riid;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -311,7 +311,7 @@ static ULONG WINAPI d3d9_pixelshader_AddRef(IDirect3DPixelShader9 *iface)
     struct qemu_d3d9_shader_impl *shader = impl_from_IDirect3DPixelShader9(iface);
     struct qemu_d3d9_pixelshader_AddRef call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_PIXELSHADER_ADDREF);
-    call.iface = (uint64_t)shader;
+    call.iface = (ULONG_PTR)shader;
 
     qemu_syscall(&call.super);
 
@@ -349,7 +349,7 @@ static ULONG WINAPI d3d9_pixelshader_Release(IDirect3DPixelShader9 *iface)
     struct qemu_d3d9_shader_impl *shader = impl_from_IDirect3DPixelShader9(iface);
     struct qemu_d3d9_pixelshader_Release call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_PIXELSHADER_RELEASE);
-    call.iface = (uint64_t)shader;
+    call.iface = (ULONG_PTR)shader;
 
     qemu_syscall(&call.super);
 
@@ -392,8 +392,8 @@ static HRESULT WINAPI d3d9_pixelshader_GetDevice(IDirect3DPixelShader9 *iface, I
     struct qemu_d3d9_device_impl *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_PIXELSHADER_GETDEVICE);
-    call.iface = (uint64_t)shader;
-    call.device = (uint64_t)&impl;
+    call.iface = (ULONG_PTR)shader;
+    call.device = (ULONG_PTR)&impl;
 
     qemu_syscall(&call.super);
     *device = (IDirect3DDevice9 *)&impl->IDirect3DDevice9Ex_iface;
@@ -434,9 +434,9 @@ static HRESULT WINAPI d3d9_pixelshader_GetFunction(IDirect3DPixelShader9 *iface,
     struct qemu_d3d9_shader_impl *shader = impl_from_IDirect3DPixelShader9(iface);
     struct qemu_d3d9_pixelshader_GetFunction call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_PIXELSHADER_GETFUNCTION);
-    call.iface = (uint64_t)shader;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
+    call.iface = (ULONG_PTR)shader;
+    call.data = (ULONG_PTR)data;
+    call.data_size = (ULONG_PTR)data_size;
 
     qemu_syscall(&call.super);
 
