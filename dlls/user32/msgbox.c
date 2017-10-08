@@ -46,10 +46,10 @@ WINUSERAPI INT WINAPI MessageBoxA(HWND hWnd, LPCSTR text, LPCSTR title, UINT typ
 {
     struct qemu_MessageBoxA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MESSAGEBOXA);
-    call.hWnd = (uint64_t)hWnd;
-    call.text = (uint64_t)text;
-    call.title = (uint64_t)title;
-    call.type = (uint64_t)type;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.text = (ULONG_PTR)text;
+    call.title = (ULONG_PTR)title;
+    call.type = (ULONG_PTR)type;
 
     qemu_syscall(&call.super);
 
@@ -82,10 +82,10 @@ WINUSERAPI INT WINAPI MessageBoxW(HWND hwnd, LPCWSTR text, LPCWSTR title, UINT t
 {
     struct qemu_MessageBoxW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MESSAGEBOXW);
-    call.hwnd = (uint64_t)hwnd;
-    call.text = (uint64_t)text;
-    call.title = (uint64_t)title;
-    call.type = (uint64_t)type;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.text = (ULONG_PTR)text;
+    call.title = (ULONG_PTR)title;
+    call.type = (ULONG_PTR)type;
 
     qemu_syscall(&call.super);
 
@@ -119,11 +119,11 @@ WINUSERAPI INT WINAPI MessageBoxExA(HWND hWnd, LPCSTR text, LPCSTR title, UINT t
 {
     struct qemu_MessageBoxExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MESSAGEBOXEXA);
-    call.hWnd = (uint64_t)hWnd;
-    call.text = (uint64_t)text;
-    call.title = (uint64_t)title;
-    call.type = (uint64_t)type;
-    call.langid = (uint64_t)langid;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.text = (ULONG_PTR)text;
+    call.title = (ULONG_PTR)title;
+    call.type = (ULONG_PTR)type;
+    call.langid = (ULONG_PTR)langid;
 
     qemu_syscall(&call.super);
 
@@ -157,11 +157,11 @@ WINUSERAPI INT WINAPI MessageBoxExW(HWND hWnd, LPCWSTR text, LPCWSTR title, UINT
 {
     struct qemu_MessageBoxExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MESSAGEBOXEXW);
-    call.hWnd = (uint64_t)hWnd;
-    call.text = (uint64_t)text;
-    call.title = (uint64_t)title;
-    call.type = (uint64_t)type;
-    call.langid = (uint64_t)langid;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.text = (ULONG_PTR)text;
+    call.title = (ULONG_PTR)title;
+    call.type = (ULONG_PTR)type;
+    call.langid = (ULONG_PTR)langid;
 
     qemu_syscall(&call.super);
 
@@ -196,12 +196,12 @@ WINUSERAPI INT WINAPI MessageBoxTimeoutA(HWND hWnd, LPCSTR text, LPCSTR title, U
 {
     struct qemu_MessageBoxTimeoutA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MESSAGEBOXTIMEOUTA);
-    call.hWnd = (uint64_t)hWnd;
-    call.text = (uint64_t)text;
-    call.title = (uint64_t)title;
-    call.type = (uint64_t)type;
-    call.langid = (uint64_t)langid;
-    call.timeout = (uint64_t)timeout;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.text = (ULONG_PTR)text;
+    call.title = (ULONG_PTR)title;
+    call.type = (ULONG_PTR)type;
+    call.langid = (ULONG_PTR)langid;
+    call.timeout = (ULONG_PTR)timeout;
 
     qemu_syscall(&call.super);
 
@@ -238,12 +238,12 @@ WINUSERAPI INT WINAPI MessageBoxTimeoutW(HWND hWnd, LPCWSTR text, LPCWSTR title,
 {
     struct qemu_MessageBoxTimeoutW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MESSAGEBOXTIMEOUTW);
-    call.hWnd = (uint64_t)hWnd;
-    call.text = (uint64_t)text;
-    call.title = (uint64_t)title;
-    call.type = (uint64_t)type;
-    call.langid = (uint64_t)langid;
-    call.timeout = (uint64_t)timeout;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.text = (ULONG_PTR)text;
+    call.title = (ULONG_PTR)title;
+    call.type = (ULONG_PTR)type;
+    call.langid = (ULONG_PTR)langid;
+    call.timeout = (ULONG_PTR)timeout;
 
     qemu_syscall(&call.super);
 
@@ -275,7 +275,7 @@ WINUSERAPI int WINAPI MessageBoxIndirectA(CONST MSGBOXPARAMSA *lpmbp)
 {
     struct qemu_MessageBoxIndirectA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MESSAGEBOXINDIRECTA);
-    call.lpmbp = (uint64_t)lpmbp;
+    call.lpmbp = (ULONG_PTR)lpmbp;
 
     qemu_syscall(&call.super);
 
@@ -305,7 +305,7 @@ WINUSERAPI int WINAPI MessageBoxIndirectW(CONST MSGBOXPARAMSW *lpmbp)
 {
     struct qemu_MessageBoxIndirectW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MESSAGEBOXINDIRECTW);
-    call.lpmbp = (uint64_t)lpmbp;
+    call.lpmbp = (ULONG_PTR)lpmbp;
 
     qemu_syscall(&call.super);
 

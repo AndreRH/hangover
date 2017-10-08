@@ -234,10 +234,10 @@ EXPORTS
   GetClassInfoExA
   GetClassInfoExW
   GetClassInfoW
-  GetClassLongA
+  GetClassLongA=user32_GetClassLongA
   GetClassLongPtrA
   GetClassLongPtrW
-  GetClassLongW
+  GetClassLongW=user32_GetClassLongW
   GetClassNameA
   GetClassNameW
   GetClassWord
@@ -355,8 +355,8 @@ EXPORTS
   GetWindowDC
   GetWindowInfo
   GetWindowLongA
-  GetWindowLongPtrA
-  GetWindowLongPtrW
+  GetWindowLongPtrA=user32_GetWindowLongPtrA
+  GetWindowLongPtrW=user32_GetWindowLongPtrA
   GetWindowLongW
   GetWindowModuleFileNameA
   GetWindowModuleFileNameW
@@ -552,10 +552,10 @@ EXPORTS
   SetCapture
   SetCaretBlinkTime
   SetCaretPos
-  SetClassLongA
-  SetClassLongPtrA
-  SetClassLongPtrW
-  SetClassLongW
+  SetClassLongA=user32_SetClassLongA
+  SetClassLongPtrA=user32_SetClassLongPtrA
+  SetClassLongPtrW=user32_SetClassLongPtrW
+  SetClassLongW=user32_SetClassLongW
   SetClassWord
   SetClipboardData
   SetClipboardViewer
@@ -613,8 +613,8 @@ EXPORTS
   SetUserObjectSecurity
   SetWindowContextHelpId
   SetWindowLongA
-  SetWindowLongPtrA
-  SetWindowLongPtrW
+  SetWindowLongPtrA=user32_SetWindowLongPtrA
+  SetWindowLongPtrW=user32_SetWindowLongPtrW
   SetWindowLongW
   SetWindowPlacement
   SetWindowPos
@@ -692,5 +692,5 @@ EXPORTS
   WINNLSGetIMEHotkey
   wsprintfA
   wsprintfW
-  wvsprintfA
-  wvsprintfW
+  wvsprintfA=user32_wvsprintfA
+  wvsprintfW=user32_wvsprintfW

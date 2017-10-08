@@ -47,15 +47,15 @@ WINUSERAPI HCONVLIST WINAPI DdeConnectList(DWORD idInst, HSZ hszService, HSZ hsz
 {
     struct qemu_DdeConnectList call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDECONNECTLIST);
-    call.idInst = (uint64_t)idInst;
-    call.hszService = (uint64_t)hszService;
-    call.hszTopic = (uint64_t)hszTopic;
-    call.hConvList = (uint64_t)hConvList;
-    call.pCC = (uint64_t)pCC;
+    call.idInst = (ULONG_PTR)idInst;
+    call.hszService = (ULONG_PTR)hszService;
+    call.hszTopic = (ULONG_PTR)hszTopic;
+    call.hConvList = (ULONG_PTR)hConvList;
+    call.pCC = (ULONG_PTR)pCC;
 
     qemu_syscall(&call.super);
 
-    return (HCONVLIST)call.super.iret;
+    return (HCONVLIST)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -64,7 +64,7 @@ void qemu_DdeConnectList(struct qemu_syscall *call)
 {
     struct qemu_DdeConnectList *c = (struct qemu_DdeConnectList *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DdeConnectList(c->idInst, QEMU_G2H(c->hszService), QEMU_G2H(c->hszTopic), QEMU_G2H(c->hConvList), QEMU_G2H(c->pCC));
+    c->super.iret = (ULONG_PTR)DdeConnectList(c->idInst, QEMU_G2H(c->hszService), QEMU_G2H(c->hszTopic), QEMU_G2H(c->hConvList), QEMU_G2H(c->pCC));
 }
 
 #endif
@@ -82,12 +82,12 @@ WINUSERAPI HCONV WINAPI DdeQueryNextServer(HCONVLIST hConvList, HCONV hConvPrev)
 {
     struct qemu_DdeQueryNextServer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEQUERYNEXTSERVER);
-    call.hConvList = (uint64_t)hConvList;
-    call.hConvPrev = (uint64_t)hConvPrev;
+    call.hConvList = (ULONG_PTR)hConvList;
+    call.hConvPrev = (ULONG_PTR)hConvPrev;
 
     qemu_syscall(&call.super);
 
-    return (HCONV)call.super.iret;
+    return (HCONV)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -96,7 +96,7 @@ void qemu_DdeQueryNextServer(struct qemu_syscall *call)
 {
     struct qemu_DdeQueryNextServer *c = (struct qemu_DdeQueryNextServer *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DdeQueryNextServer(QEMU_G2H(c->hConvList), QEMU_G2H(c->hConvPrev));
+    c->super.iret = (ULONG_PTR)DdeQueryNextServer(QEMU_G2H(c->hConvList), QEMU_G2H(c->hConvPrev));
 }
 
 #endif
@@ -113,7 +113,7 @@ WINUSERAPI BOOL WINAPI DdeDisconnectList(HCONVLIST hConvList)
 {
     struct qemu_DdeDisconnectList call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEDISCONNECTLIST);
-    call.hConvList = (uint64_t)hConvList;
+    call.hConvList = (ULONG_PTR)hConvList;
 
     qemu_syscall(&call.super);
 
@@ -146,14 +146,14 @@ WINUSERAPI HCONV WINAPI DdeConnect(DWORD idInst, HSZ hszService, HSZ hszTopic, P
 {
     struct qemu_DdeConnect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDECONNECT);
-    call.idInst = (uint64_t)idInst;
-    call.hszService = (uint64_t)hszService;
-    call.hszTopic = (uint64_t)hszTopic;
-    call.pCC = (uint64_t)pCC;
+    call.idInst = (ULONG_PTR)idInst;
+    call.hszService = (ULONG_PTR)hszService;
+    call.hszTopic = (ULONG_PTR)hszTopic;
+    call.pCC = (ULONG_PTR)pCC;
 
     qemu_syscall(&call.super);
 
-    return (HCONV)call.super.iret;
+    return (HCONV)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -162,7 +162,7 @@ void qemu_DdeConnect(struct qemu_syscall *call)
 {
     struct qemu_DdeConnect *c = (struct qemu_DdeConnect *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DdeConnect(c->idInst, QEMU_G2H(c->hszService), QEMU_G2H(c->hszTopic), QEMU_G2H(c->pCC));
+    c->super.iret = (ULONG_PTR)DdeConnect(c->idInst, QEMU_G2H(c->hszService), QEMU_G2H(c->hszTopic), QEMU_G2H(c->pCC));
 }
 
 #endif
@@ -179,11 +179,11 @@ WINUSERAPI HCONV WINAPI DdeReconnect(HCONV hConv)
 {
     struct qemu_DdeReconnect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDERECONNECT);
-    call.hConv = (uint64_t)hConv;
+    call.hConv = (ULONG_PTR)hConv;
 
     qemu_syscall(&call.super);
 
-    return (HCONV)call.super.iret;
+    return (HCONV)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -192,7 +192,7 @@ void qemu_DdeReconnect(struct qemu_syscall *call)
 {
     struct qemu_DdeReconnect *c = (struct qemu_DdeReconnect *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DdeReconnect(QEMU_G2H(c->hConv));
+    c->super.iret = (ULONG_PTR)DdeReconnect(QEMU_G2H(c->hConv));
 }
 
 #endif
@@ -216,18 +216,18 @@ WINUSERAPI HDDEDATA WINAPI DdeClientTransaction(LPBYTE pData, DWORD cbData, HCON
 {
     struct qemu_DdeClientTransaction call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDECLIENTTRANSACTION);
-    call.pData = (uint64_t)pData;
-    call.cbData = (uint64_t)cbData;
-    call.hConv = (uint64_t)hConv;
-    call.hszItem = (uint64_t)hszItem;
-    call.wFmt = (uint64_t)wFmt;
-    call.wType = (uint64_t)wType;
-    call.dwTimeout = (uint64_t)dwTimeout;
-    call.pdwResult = (uint64_t)pdwResult;
+    call.pData = (ULONG_PTR)pData;
+    call.cbData = (ULONG_PTR)cbData;
+    call.hConv = (ULONG_PTR)hConv;
+    call.hszItem = (ULONG_PTR)hszItem;
+    call.wFmt = (ULONG_PTR)wFmt;
+    call.wType = (ULONG_PTR)wType;
+    call.dwTimeout = (ULONG_PTR)dwTimeout;
+    call.pdwResult = (ULONG_PTR)pdwResult;
 
     qemu_syscall(&call.super);
 
-    return (HDDEDATA)call.super.iret;
+    return (HDDEDATA)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -236,7 +236,7 @@ void qemu_DdeClientTransaction(struct qemu_syscall *call)
 {
     struct qemu_DdeClientTransaction *c = (struct qemu_DdeClientTransaction *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DdeClientTransaction(QEMU_G2H(c->pData), c->cbData, QEMU_G2H(c->hConv), QEMU_G2H(c->hszItem), c->wFmt, c->wType, c->dwTimeout, QEMU_G2H(c->pdwResult));
+    c->super.iret = (ULONG_PTR)DdeClientTransaction(QEMU_G2H(c->pData), c->cbData, QEMU_G2H(c->hConv), QEMU_G2H(c->hszItem), c->wFmt, c->wType, c->dwTimeout, QEMU_G2H(c->pdwResult));
 }
 
 #endif
@@ -255,9 +255,9 @@ WINUSERAPI BOOL WINAPI DdeAbandonTransaction(DWORD idInst, HCONV hConv, DWORD id
 {
     struct qemu_DdeAbandonTransaction call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEABANDONTRANSACTION);
-    call.idInst = (uint64_t)idInst;
-    call.hConv = (uint64_t)hConv;
-    call.idTransaction = (uint64_t)idTransaction;
+    call.idInst = (ULONG_PTR)idInst;
+    call.hConv = (ULONG_PTR)hConv;
+    call.idTransaction = (ULONG_PTR)idTransaction;
 
     qemu_syscall(&call.super);
 
@@ -287,7 +287,7 @@ WINUSERAPI BOOL WINAPI DdeDisconnect(HCONV hConv)
 {
     struct qemu_DdeDisconnect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEDISCONNECT);
-    call.hConv = (uint64_t)hConv;
+    call.hConv = (ULONG_PTR)hConv;
 
     qemu_syscall(&call.super);
 
@@ -317,7 +317,7 @@ WINUSERAPI BOOL WINAPI DdeImpersonateClient(HCONV hConv)
 {
     struct qemu_DdeImpersonateClient call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEIMPERSONATECLIENT);
-    call.hConv = (uint64_t)hConv;
+    call.hConv = (ULONG_PTR)hConv;
 
     qemu_syscall(&call.super);
 
@@ -349,9 +349,9 @@ WINUSERAPI LPARAM WINAPI PackDDElParam(UINT msg, UINT_PTR uiLo, UINT_PTR uiHi)
 {
     struct qemu_PackDDElParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PACKDDELPARAM);
-    call.msg = (uint64_t)msg;
-    call.uiLo = (uint64_t)uiLo;
-    call.uiHi = (uint64_t)uiHi;
+    call.msg = (ULONG_PTR)msg;
+    call.uiLo = (ULONG_PTR)uiLo;
+    call.uiHi = (ULONG_PTR)uiHi;
 
     qemu_syscall(&call.super);
 
@@ -384,10 +384,10 @@ WINUSERAPI BOOL WINAPI UnpackDDElParam(UINT msg, LPARAM lParam, PUINT_PTR uiLo, 
 {
     struct qemu_UnpackDDElParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNPACKDDELPARAM);
-    call.msg = (uint64_t)msg;
-    call.lParam = (uint64_t)lParam;
-    call.uiLo = (uint64_t)uiLo;
-    call.uiHi = (uint64_t)uiHi;
+    call.msg = (ULONG_PTR)msg;
+    call.lParam = (ULONG_PTR)lParam;
+    call.uiLo = (ULONG_PTR)uiLo;
+    call.uiHi = (ULONG_PTR)uiHi;
 
     qemu_syscall(&call.super);
 
@@ -418,8 +418,8 @@ WINUSERAPI BOOL WINAPI FreeDDElParam(UINT msg, LPARAM lParam)
 {
     struct qemu_FreeDDElParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FREEDDELPARAM);
-    call.msg = (uint64_t)msg;
-    call.lParam = (uint64_t)lParam;
+    call.msg = (ULONG_PTR)msg;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
@@ -453,11 +453,11 @@ WINUSERAPI LPARAM WINAPI ReuseDDElParam(LPARAM lParam, UINT msgIn, UINT msgOut, 
 {
     struct qemu_ReuseDDElParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REUSEDDELPARAM);
-    call.lParam = (uint64_t)lParam;
-    call.msgIn = (uint64_t)msgIn;
-    call.msgOut = (uint64_t)msgOut;
-    call.uiLo = (uint64_t)uiLo;
-    call.uiHi = (uint64_t)uiHi;
+    call.lParam = (ULONG_PTR)lParam;
+    call.msgIn = (ULONG_PTR)msgIn;
+    call.msgOut = (ULONG_PTR)msgOut;
+    call.uiLo = (ULONG_PTR)uiLo;
+    call.uiHi = (ULONG_PTR)uiHi;
 
     qemu_syscall(&call.super);
 
@@ -488,8 +488,8 @@ WINUSERAPI BOOL WINAPI ImpersonateDdeClientWindow(HWND hWndClient, HWND hWndServ
 {
     struct qemu_ImpersonateDdeClientWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMPERSONATEDDECLIENTWINDOW);
-    call.hWndClient = (uint64_t)hWndClient;
-    call.hWndServer = (uint64_t)hWndServer;
+    call.hWndClient = (ULONG_PTR)hWndClient;
+    call.hWndServer = (ULONG_PTR)hWndServer;
 
     qemu_syscall(&call.super);
 
@@ -521,9 +521,9 @@ WINUSERAPI BOOL WINAPI DdeSetQualityOfService(HWND hwndClient, const SECURITY_QU
 {
     struct qemu_DdeSetQualityOfService call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDESETQUALITYOFSERVICE);
-    call.hwndClient = (uint64_t)hwndClient;
-    call.pqosNew = (uint64_t)pqosNew;
-    call.pqosPrev = (uint64_t)pqosPrev;
+    call.hwndClient = (ULONG_PTR)hwndClient;
+    call.pqosNew = (ULONG_PTR)pqosNew;
+    call.pqosPrev = (ULONG_PTR)pqosPrev;
 
     qemu_syscall(&call.super);
 
@@ -553,7 +553,7 @@ WINUSERAPI UINT WINAPI DdeGetLastError(DWORD idInst)
 {
     struct qemu_DdeGetLastError call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEGETLASTERROR);
-    call.idInst = (uint64_t)idInst;
+    call.idInst = (ULONG_PTR)idInst;
 
     qemu_syscall(&call.super);
 
@@ -587,11 +587,11 @@ WINUSERAPI DWORD WINAPI DdeQueryStringA(DWORD idInst, HSZ hsz, LPSTR psz, DWORD 
 {
     struct qemu_DdeQueryStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEQUERYSTRINGA);
-    call.idInst = (uint64_t)idInst;
-    call.hsz = (uint64_t)hsz;
-    call.psz = (uint64_t)psz;
-    call.cchMax = (uint64_t)cchMax;
-    call.iCodePage = (uint64_t)iCodePage;
+    call.idInst = (ULONG_PTR)idInst;
+    call.hsz = (ULONG_PTR)hsz;
+    call.psz = (ULONG_PTR)psz;
+    call.cchMax = (ULONG_PTR)cchMax;
+    call.iCodePage = (ULONG_PTR)iCodePage;
 
     qemu_syscall(&call.super);
 
@@ -625,11 +625,11 @@ WINUSERAPI DWORD WINAPI DdeQueryStringW(DWORD idInst, HSZ hsz, LPWSTR psz, DWORD
 {
     struct qemu_DdeQueryStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEQUERYSTRINGW);
-    call.idInst = (uint64_t)idInst;
-    call.hsz = (uint64_t)hsz;
-    call.psz = (uint64_t)psz;
-    call.cchMax = (uint64_t)cchMax;
-    call.iCodePage = (uint64_t)iCodePage;
+    call.idInst = (ULONG_PTR)idInst;
+    call.hsz = (ULONG_PTR)hsz;
+    call.psz = (ULONG_PTR)psz;
+    call.cchMax = (ULONG_PTR)cchMax;
+    call.iCodePage = (ULONG_PTR)iCodePage;
 
     qemu_syscall(&call.super);
 
@@ -661,13 +661,13 @@ WINUSERAPI HSZ WINAPI DdeCreateStringHandleA(DWORD idInst, LPCSTR psz, INT codep
 {
     struct qemu_DdeCreateStringHandleA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDECREATESTRINGHANDLEA);
-    call.idInst = (uint64_t)idInst;
-    call.psz = (uint64_t)psz;
-    call.codepage = (uint64_t)codepage;
+    call.idInst = (ULONG_PTR)idInst;
+    call.psz = (ULONG_PTR)psz;
+    call.codepage = (ULONG_PTR)codepage;
 
     qemu_syscall(&call.super);
 
-    return (HSZ)call.super.iret;
+    return (HSZ)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -676,7 +676,7 @@ void qemu_DdeCreateStringHandleA(struct qemu_syscall *call)
 {
     struct qemu_DdeCreateStringHandleA *c = (struct qemu_DdeCreateStringHandleA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DdeCreateStringHandleA(c->idInst, QEMU_G2H(c->psz), c->codepage);
+    c->super.iret = (ULONG_PTR)DdeCreateStringHandleA(c->idInst, QEMU_G2H(c->psz), c->codepage);
 }
 
 #endif
@@ -695,13 +695,13 @@ WINUSERAPI HSZ WINAPI DdeCreateStringHandleW(DWORD idInst, LPCWSTR psz, INT code
 {
     struct qemu_DdeCreateStringHandleW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDECREATESTRINGHANDLEW);
-    call.idInst = (uint64_t)idInst;
-    call.psz = (uint64_t)psz;
-    call.codepage = (uint64_t)codepage;
+    call.idInst = (ULONG_PTR)idInst;
+    call.psz = (ULONG_PTR)psz;
+    call.codepage = (ULONG_PTR)codepage;
 
     qemu_syscall(&call.super);
 
-    return (HSZ)call.super.iret;
+    return (HSZ)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -710,7 +710,7 @@ void qemu_DdeCreateStringHandleW(struct qemu_syscall *call)
 {
     struct qemu_DdeCreateStringHandleW *c = (struct qemu_DdeCreateStringHandleW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DdeCreateStringHandleW(c->idInst, QEMU_G2H(c->psz), c->codepage);
+    c->super.iret = (ULONG_PTR)DdeCreateStringHandleW(c->idInst, QEMU_G2H(c->psz), c->codepage);
 }
 
 #endif
@@ -728,8 +728,8 @@ WINUSERAPI BOOL WINAPI DdeFreeStringHandle(DWORD idInst, HSZ hsz)
 {
     struct qemu_DdeFreeStringHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEFREESTRINGHANDLE);
-    call.idInst = (uint64_t)idInst;
-    call.hsz = (uint64_t)hsz;
+    call.idInst = (ULONG_PTR)idInst;
+    call.hsz = (ULONG_PTR)hsz;
 
     qemu_syscall(&call.super);
 
@@ -760,8 +760,8 @@ WINUSERAPI BOOL WINAPI DdeKeepStringHandle(DWORD idInst, HSZ hsz)
 {
     struct qemu_DdeKeepStringHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEKEEPSTRINGHANDLE);
-    call.idInst = (uint64_t)idInst;
-    call.hsz = (uint64_t)hsz;
+    call.idInst = (ULONG_PTR)idInst;
+    call.hsz = (ULONG_PTR)hsz;
 
     qemu_syscall(&call.super);
 
@@ -792,8 +792,8 @@ WINUSERAPI INT WINAPI DdeCmpStringHandles(HSZ hsz1, HSZ hsz2)
 {
     struct qemu_DdeCmpStringHandles call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDECMPSTRINGHANDLES);
-    call.hsz1 = (uint64_t)hsz1;
-    call.hsz2 = (uint64_t)hsz2;
+    call.hsz1 = (ULONG_PTR)hsz1;
+    call.hsz2 = (ULONG_PTR)hsz2;
 
     qemu_syscall(&call.super);
 
@@ -826,10 +826,10 @@ WINUSERAPI UINT WINAPI DdeInitializeA(LPDWORD pidInst, PFNCALLBACK pfnCallback, 
 {
     struct qemu_DdeInitializeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEINITIALIZEA);
-    call.pidInst = (uint64_t)pidInst;
-    call.pfnCallback = (uint64_t)pfnCallback;
-    call.afCmd = (uint64_t)afCmd;
-    call.ulRes = (uint64_t)ulRes;
+    call.pidInst = (ULONG_PTR)pidInst;
+    call.pfnCallback = (ULONG_PTR)pfnCallback;
+    call.afCmd = (ULONG_PTR)afCmd;
+    call.ulRes = (ULONG_PTR)ulRes;
 
     qemu_syscall(&call.super);
 
@@ -862,10 +862,10 @@ WINUSERAPI UINT WINAPI DdeInitializeW(LPDWORD pidInst, PFNCALLBACK pfnCallback, 
 {
     struct qemu_DdeInitializeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEINITIALIZEW);
-    call.pidInst = (uint64_t)pidInst;
-    call.pfnCallback = (uint64_t)pfnCallback;
-    call.afCmd = (uint64_t)afCmd;
-    call.ulRes = (uint64_t)ulRes;
+    call.pidInst = (ULONG_PTR)pidInst;
+    call.pfnCallback = (ULONG_PTR)pfnCallback;
+    call.afCmd = (ULONG_PTR)afCmd;
+    call.ulRes = (ULONG_PTR)ulRes;
 
     qemu_syscall(&call.super);
 
@@ -895,7 +895,7 @@ WINUSERAPI BOOL WINAPI DdeUninitialize(DWORD idInst)
 {
     struct qemu_DdeUninitialize call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEUNINITIALIZE);
-    call.idInst = (uint64_t)idInst;
+    call.idInst = (ULONG_PTR)idInst;
 
     qemu_syscall(&call.super);
 
@@ -931,17 +931,17 @@ WINUSERAPI HDDEDATA WINAPI DdeCreateDataHandle(DWORD idInst, LPBYTE pSrc, DWORD 
 {
     struct qemu_DdeCreateDataHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDECREATEDATAHANDLE);
-    call.idInst = (uint64_t)idInst;
-    call.pSrc = (uint64_t)pSrc;
-    call.cb = (uint64_t)cb;
-    call.cbOff = (uint64_t)cbOff;
-    call.hszItem = (uint64_t)hszItem;
-    call.wFmt = (uint64_t)wFmt;
-    call.afCmd = (uint64_t)afCmd;
+    call.idInst = (ULONG_PTR)idInst;
+    call.pSrc = (ULONG_PTR)pSrc;
+    call.cb = (ULONG_PTR)cb;
+    call.cbOff = (ULONG_PTR)cbOff;
+    call.hszItem = (ULONG_PTR)hszItem;
+    call.wFmt = (ULONG_PTR)wFmt;
+    call.afCmd = (ULONG_PTR)afCmd;
 
     qemu_syscall(&call.super);
 
-    return (HDDEDATA)call.super.iret;
+    return (HDDEDATA)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -950,7 +950,7 @@ void qemu_DdeCreateDataHandle(struct qemu_syscall *call)
 {
     struct qemu_DdeCreateDataHandle *c = (struct qemu_DdeCreateDataHandle *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DdeCreateDataHandle(c->idInst, QEMU_G2H(c->pSrc), c->cb, c->cbOff, QEMU_G2H(c->hszItem), c->wFmt, c->afCmd);
+    c->super.iret = (ULONG_PTR)DdeCreateDataHandle(c->idInst, QEMU_G2H(c->pSrc), c->cb, c->cbOff, QEMU_G2H(c->hszItem), c->wFmt, c->afCmd);
 }
 
 #endif
@@ -970,14 +970,14 @@ WINUSERAPI HDDEDATA WINAPI DdeAddData(HDDEDATA hData, LPBYTE pSrc, DWORD cb, DWO
 {
     struct qemu_DdeAddData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEADDDATA);
-    call.hData = (uint64_t)hData;
-    call.pSrc = (uint64_t)pSrc;
-    call.cb = (uint64_t)cb;
-    call.cbOff = (uint64_t)cbOff;
+    call.hData = (ULONG_PTR)hData;
+    call.pSrc = (ULONG_PTR)pSrc;
+    call.cb = (ULONG_PTR)cb;
+    call.cbOff = (ULONG_PTR)cbOff;
 
     qemu_syscall(&call.super);
 
-    return (HDDEDATA)call.super.iret;
+    return (HDDEDATA)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -986,7 +986,7 @@ void qemu_DdeAddData(struct qemu_syscall *call)
 {
     struct qemu_DdeAddData *c = (struct qemu_DdeAddData *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DdeAddData(QEMU_G2H(c->hData), QEMU_G2H(c->pSrc), c->cb, c->cbOff);
+    c->super.iret = (ULONG_PTR)DdeAddData(QEMU_G2H(c->hData), QEMU_G2H(c->pSrc), c->cb, c->cbOff);
 }
 
 #endif
@@ -1006,10 +1006,10 @@ WINUSERAPI DWORD WINAPI DdeGetData(HDDEDATA hData, LPBYTE pDst, DWORD cbMax, DWO
 {
     struct qemu_DdeGetData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEGETDATA);
-    call.hData = (uint64_t)hData;
-    call.pDst = (uint64_t)pDst;
-    call.cbMax = (uint64_t)cbMax;
-    call.cbOff = (uint64_t)cbOff;
+    call.hData = (ULONG_PTR)hData;
+    call.pDst = (ULONG_PTR)pDst;
+    call.cbMax = (ULONG_PTR)cbMax;
+    call.cbOff = (ULONG_PTR)cbOff;
 
     qemu_syscall(&call.super);
 
@@ -1040,12 +1040,12 @@ WINUSERAPI LPBYTE WINAPI DdeAccessData(HDDEDATA hData, LPDWORD pcbDataSize)
 {
     struct qemu_DdeAccessData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEACCESSDATA);
-    call.hData = (uint64_t)hData;
-    call.pcbDataSize = (uint64_t)pcbDataSize;
+    call.hData = (ULONG_PTR)hData;
+    call.pcbDataSize = (ULONG_PTR)pcbDataSize;
 
     qemu_syscall(&call.super);
 
-    return (LPBYTE)call.super.iret;
+    return (LPBYTE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1054,7 +1054,7 @@ void qemu_DdeAccessData(struct qemu_syscall *call)
 {
     struct qemu_DdeAccessData *c = (struct qemu_DdeAccessData *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DdeAccessData(QEMU_G2H(c->hData), QEMU_G2H(c->pcbDataSize));
+    c->super.iret = (ULONG_PTR)DdeAccessData(QEMU_G2H(c->hData), QEMU_G2H(c->pcbDataSize));
 }
 
 #endif
@@ -1071,7 +1071,7 @@ WINUSERAPI BOOL WINAPI DdeUnaccessData(HDDEDATA hData)
 {
     struct qemu_DdeUnaccessData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEUNACCESSDATA);
-    call.hData = (uint64_t)hData;
+    call.hData = (ULONG_PTR)hData;
 
     qemu_syscall(&call.super);
 
@@ -1101,7 +1101,7 @@ WINUSERAPI BOOL WINAPI DdeFreeDataHandle(HDDEDATA hData)
 {
     struct qemu_DdeFreeDataHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEFREEDATAHANDLE);
-    call.hData = (uint64_t)hData;
+    call.hData = (ULONG_PTR)hData;
 
     qemu_syscall(&call.super);
 
@@ -1133,9 +1133,9 @@ WINUSERAPI BOOL WINAPI DdeEnableCallback(DWORD idInst, HCONV hConv, UINT wCmd)
 {
     struct qemu_DdeEnableCallback call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEENABLECALLBACK);
-    call.idInst = (uint64_t)idInst;
-    call.hConv = (uint64_t)hConv;
-    call.wCmd = (uint64_t)wCmd;
+    call.idInst = (ULONG_PTR)idInst;
+    call.hConv = (ULONG_PTR)hConv;
+    call.wCmd = (ULONG_PTR)wCmd;
 
     qemu_syscall(&call.super);
 
@@ -1167,9 +1167,9 @@ WINUSERAPI UINT WINAPI DdeQueryConvInfo(HCONV hConv, DWORD id, PCONVINFO lpConvI
 {
     struct qemu_DdeQueryConvInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEQUERYCONVINFO);
-    call.hConv = (uint64_t)hConv;
-    call.id = (uint64_t)id;
-    call.lpConvInfo = (uint64_t)lpConvInfo;
+    call.hConv = (ULONG_PTR)hConv;
+    call.id = (ULONG_PTR)id;
+    call.lpConvInfo = (ULONG_PTR)lpConvInfo;
 
     qemu_syscall(&call.super);
 
@@ -1201,9 +1201,9 @@ WINUSERAPI BOOL WINAPI DdePostAdvise(DWORD idInst, HSZ hszTopic, HSZ hszItem)
 {
     struct qemu_DdePostAdvise call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDEPOSTADVISE);
-    call.idInst = (uint64_t)idInst;
-    call.hszTopic = (uint64_t)hszTopic;
-    call.hszItem = (uint64_t)hszItem;
+    call.idInst = (ULONG_PTR)idInst;
+    call.hszTopic = (ULONG_PTR)hszTopic;
+    call.hszItem = (ULONG_PTR)hszItem;
 
     qemu_syscall(&call.super);
 
@@ -1236,14 +1236,14 @@ WINUSERAPI HDDEDATA WINAPI DdeNameService(DWORD idInst, HSZ hsz1, HSZ hsz2, UINT
 {
     struct qemu_DdeNameService call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDENAMESERVICE);
-    call.idInst = (uint64_t)idInst;
-    call.hsz1 = (uint64_t)hsz1;
-    call.hsz2 = (uint64_t)hsz2;
-    call.afCmd = (uint64_t)afCmd;
+    call.idInst = (ULONG_PTR)idInst;
+    call.hsz1 = (ULONG_PTR)hsz1;
+    call.hsz2 = (ULONG_PTR)hsz2;
+    call.afCmd = (ULONG_PTR)afCmd;
 
     qemu_syscall(&call.super);
 
-    return (HDDEDATA)call.super.iret;
+    return (HDDEDATA)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1252,7 +1252,7 @@ void qemu_DdeNameService(struct qemu_syscall *call)
 {
     struct qemu_DdeNameService *c = (struct qemu_DdeNameService *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DdeNameService(c->idInst, QEMU_G2H(c->hsz1), QEMU_G2H(c->hsz2), c->afCmd);
+    c->super.iret = (ULONG_PTR)DdeNameService(c->idInst, QEMU_G2H(c->hsz1), QEMU_G2H(c->hsz2), c->afCmd);
 }
 
 #endif

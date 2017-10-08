@@ -46,10 +46,10 @@ WINUSERAPI INT WINAPI SetScrollInfo(HWND hwnd, INT nBar, const SCROLLINFO *info,
 {
     struct qemu_SetScrollInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSCROLLINFO);
-    call.hwnd = (uint64_t)hwnd;
-    call.nBar = (uint64_t)nBar;
-    call.info = (uint64_t)info;
-    call.bRedraw = (uint64_t)bRedraw;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.nBar = (ULONG_PTR)nBar;
+    call.info = (ULONG_PTR)info;
+    call.bRedraw = (ULONG_PTR)bRedraw;
 
     qemu_syscall(&call.super);
 
@@ -81,9 +81,9 @@ WINUSERAPI BOOL WINAPI GetScrollInfo(HWND hwnd, INT nBar, LPSCROLLINFO info)
 {
     struct qemu_GetScrollInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSCROLLINFO);
-    call.hwnd = (uint64_t)hwnd;
-    call.nBar = (uint64_t)nBar;
-    call.info = (uint64_t)info;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.nBar = (ULONG_PTR)nBar;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -115,9 +115,9 @@ WINUSERAPI BOOL WINAPI GetScrollBarInfo(HWND hwnd, LONG idObject, LPSCROLLBARINF
 {
     struct qemu_GetScrollBarInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSCROLLBARINFO);
-    call.hwnd = (uint64_t)hwnd;
-    call.idObject = (uint64_t)idObject;
-    call.info = (uint64_t)info;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.idObject = (ULONG_PTR)idObject;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -150,10 +150,10 @@ WINUSERAPI INT WINAPI SetScrollPos(HWND hwnd, INT nBar, INT nPos, BOOL bRedraw)
 {
     struct qemu_SetScrollPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSCROLLPOS);
-    call.hwnd = (uint64_t)hwnd;
-    call.nBar = (uint64_t)nBar;
-    call.nPos = (uint64_t)nPos;
-    call.bRedraw = (uint64_t)bRedraw;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.nBar = (ULONG_PTR)nBar;
+    call.nPos = (ULONG_PTR)nPos;
+    call.bRedraw = (ULONG_PTR)bRedraw;
 
     qemu_syscall(&call.super);
 
@@ -184,8 +184,8 @@ WINUSERAPI INT WINAPI GetScrollPos(HWND hwnd, INT nBar)
 {
     struct qemu_GetScrollPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSCROLLPOS);
-    call.hwnd = (uint64_t)hwnd;
-    call.nBar = (uint64_t)nBar;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.nBar = (ULONG_PTR)nBar;
 
     qemu_syscall(&call.super);
 
@@ -219,11 +219,11 @@ WINUSERAPI BOOL WINAPI SetScrollRange(HWND hwnd, INT nBar, INT minVal, INT maxVa
 {
     struct qemu_SetScrollRange call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSCROLLRANGE);
-    call.hwnd = (uint64_t)hwnd;
-    call.nBar = (uint64_t)nBar;
-    call.minVal = (uint64_t)minVal;
-    call.maxVal = (uint64_t)maxVal;
-    call.bRedraw = (uint64_t)bRedraw;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.nBar = (ULONG_PTR)nBar;
+    call.minVal = (ULONG_PTR)minVal;
+    call.maxVal = (ULONG_PTR)maxVal;
+    call.bRedraw = (ULONG_PTR)bRedraw;
 
     qemu_syscall(&call.super);
 
@@ -256,10 +256,10 @@ WINUSERAPI BOOL WINAPI GetScrollRange(HWND hwnd, INT nBar, LPINT lpMin, LPINT lp
 {
     struct qemu_GetScrollRange call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSCROLLRANGE);
-    call.hwnd = (uint64_t)hwnd;
-    call.nBar = (uint64_t)nBar;
-    call.lpMin = (uint64_t)lpMin;
-    call.lpMax = (uint64_t)lpMax;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.nBar = (ULONG_PTR)nBar;
+    call.lpMin = (ULONG_PTR)lpMin;
+    call.lpMax = (ULONG_PTR)lpMax;
 
     qemu_syscall(&call.super);
 
@@ -291,9 +291,9 @@ WINUSERAPI BOOL WINAPI ShowScrollBar(HWND hwnd, INT nBar, BOOL fShow)
 {
     struct qemu_ShowScrollBar call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHOWSCROLLBAR);
-    call.hwnd = (uint64_t)hwnd;
-    call.nBar = (uint64_t)nBar;
-    call.fShow = (uint64_t)fShow;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.nBar = (ULONG_PTR)nBar;
+    call.fShow = (ULONG_PTR)fShow;
 
     qemu_syscall(&call.super);
 
@@ -325,9 +325,9 @@ WINUSERAPI BOOL WINAPI EnableScrollBar(HWND hwnd, UINT nBar, UINT flags)
 {
     struct qemu_EnableScrollBar call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENABLESCROLLBAR);
-    call.hwnd = (uint64_t)hwnd;
-    call.nBar = (uint64_t)nBar;
-    call.flags = (uint64_t)flags;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.nBar = (ULONG_PTR)nBar;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 

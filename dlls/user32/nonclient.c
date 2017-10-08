@@ -46,10 +46,10 @@ WINUSERAPI BOOL WINAPI DrawCaption (HWND hwnd, HDC hdc, const RECT *lpRect, UINT
 {
     struct qemu_DrawCaption call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWCAPTION);
-    call.hwnd = (uint64_t)hwnd;
-    call.hdc = (uint64_t)hdc;
-    call.lpRect = (uint64_t)lpRect;
-    call.uFlags = (uint64_t)uFlags;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.hdc = (ULONG_PTR)hdc;
+    call.lpRect = (ULONG_PTR)lpRect;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -85,13 +85,13 @@ WINUSERAPI BOOL WINAPI DrawCaptionTempA (HWND hwnd, HDC hdc, const RECT *rect, H
 {
     struct qemu_DrawCaptionTempA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWCAPTIONTEMPA);
-    call.hwnd = (uint64_t)hwnd;
-    call.hdc = (uint64_t)hdc;
-    call.rect = (uint64_t)rect;
-    call.hFont = (uint64_t)hFont;
-    call.hIcon = (uint64_t)hIcon;
-    call.str = (uint64_t)str;
-    call.uFlags = (uint64_t)uFlags;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.hdc = (ULONG_PTR)hdc;
+    call.rect = (ULONG_PTR)rect;
+    call.hFont = (ULONG_PTR)hFont;
+    call.hIcon = (ULONG_PTR)hIcon;
+    call.str = (ULONG_PTR)str;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -127,13 +127,13 @@ WINUSERAPI BOOL WINAPI DrawCaptionTempW (HWND hwnd, HDC hdc, const RECT *rect, H
 {
     struct qemu_DrawCaptionTempW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWCAPTIONTEMPW);
-    call.hwnd = (uint64_t)hwnd;
-    call.hdc = (uint64_t)hdc;
-    call.rect = (uint64_t)rect;
-    call.hFont = (uint64_t)hFont;
-    call.hIcon = (uint64_t)hIcon;
-    call.str = (uint64_t)str;
-    call.uFlags = (uint64_t)uFlags;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.hdc = (ULONG_PTR)hdc;
+    call.rect = (ULONG_PTR)rect;
+    call.hFont = (ULONG_PTR)hFont;
+    call.hIcon = (ULONG_PTR)hIcon;
+    call.str = (ULONG_PTR)str;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -165,9 +165,9 @@ WINUSERAPI BOOL WINAPI AdjustWindowRect(LPRECT rect, DWORD style, BOOL menu)
 {
     struct qemu_AdjustWindowRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADJUSTWINDOWRECT);
-    call.rect = (uint64_t)rect;
-    call.style = (uint64_t)style;
-    call.menu = (uint64_t)menu;
+    call.rect = (ULONG_PTR)rect;
+    call.style = (ULONG_PTR)style;
+    call.menu = (ULONG_PTR)menu;
 
     qemu_syscall(&call.super);
 
@@ -200,10 +200,10 @@ WINUSERAPI BOOL WINAPI AdjustWindowRectEx(LPRECT rect, DWORD style, BOOL menu, D
 {
     struct qemu_AdjustWindowRectEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADJUSTWINDOWRECTEX);
-    call.rect = (uint64_t)rect;
-    call.style = (uint64_t)style;
-    call.menu = (uint64_t)menu;
-    call.exStyle = (uint64_t)exStyle;
+    call.rect = (ULONG_PTR)rect;
+    call.style = (ULONG_PTR)style;
+    call.menu = (ULONG_PTR)menu;
+    call.exStyle = (ULONG_PTR)exStyle;
 
     qemu_syscall(&call.super);
 
@@ -234,8 +234,8 @@ WINUSERAPI BOOL WINAPI GetTitleBarInfo(HWND hwnd, PTITLEBARINFO tbi)
 {
     struct qemu_GetTitleBarInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTITLEBARINFO);
-    call.hwnd = (uint64_t)hwnd;
-    call.tbi = (uint64_t)tbi;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.tbi = (ULONG_PTR)tbi;
 
     qemu_syscall(&call.super);
 

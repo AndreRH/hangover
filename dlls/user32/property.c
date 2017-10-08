@@ -44,8 +44,8 @@ WINUSERAPI INT WINAPI EnumPropsA(HWND hwnd, PROPENUMPROCA func)
 {
     struct qemu_EnumPropsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMPROPSA);
-    call.hwnd = (uint64_t)hwnd;
-    call.func = (uint64_t)func;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.func = (ULONG_PTR)func;
 
     qemu_syscall(&call.super);
 
@@ -76,8 +76,8 @@ WINUSERAPI INT WINAPI EnumPropsW(HWND hwnd, PROPENUMPROCW func)
 {
     struct qemu_EnumPropsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMPROPSW);
-    call.hwnd = (uint64_t)hwnd;
-    call.func = (uint64_t)func;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.func = (ULONG_PTR)func;
 
     qemu_syscall(&call.super);
 
@@ -108,12 +108,12 @@ WINUSERAPI HANDLE WINAPI GetPropA(HWND hwnd, LPCSTR str)
 {
     struct qemu_GetPropA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROPA);
-    call.hwnd = (uint64_t)hwnd;
-    call.str = (uint64_t)str;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -122,7 +122,7 @@ void qemu_GetPropA(struct qemu_syscall *call)
 {
     struct qemu_GetPropA *c = (struct qemu_GetPropA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GetPropA(QEMU_G2H(c->hwnd), QEMU_G2H(c->str));
+    c->super.iret = (ULONG_PTR)GetPropA(QEMU_G2H(c->hwnd), QEMU_G2H(c->str));
 }
 
 #endif
@@ -140,12 +140,12 @@ WINUSERAPI HANDLE WINAPI GetPropW(HWND hwnd, LPCWSTR str)
 {
     struct qemu_GetPropW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROPW);
-    call.hwnd = (uint64_t)hwnd;
-    call.str = (uint64_t)str;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -154,7 +154,7 @@ void qemu_GetPropW(struct qemu_syscall *call)
 {
     struct qemu_GetPropW *c = (struct qemu_GetPropW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetPropW(QEMU_G2H(c->hwnd), QEMU_G2H(c->str));
+    c->super.iret = (ULONG_PTR)GetPropW(QEMU_G2H(c->hwnd), QEMU_G2H(c->str));
 }
 
 #endif
@@ -173,9 +173,9 @@ WINUSERAPI BOOL WINAPI SetPropA(HWND hwnd, LPCSTR str, HANDLE handle)
 {
     struct qemu_SetPropA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPROPA);
-    call.hwnd = (uint64_t)hwnd;
-    call.str = (uint64_t)str;
-    call.handle = (uint64_t)handle;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.str = (ULONG_PTR)str;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -207,9 +207,9 @@ WINUSERAPI BOOL WINAPI SetPropW(HWND hwnd, LPCWSTR str, HANDLE handle)
 {
     struct qemu_SetPropW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPROPW);
-    call.hwnd = (uint64_t)hwnd;
-    call.str = (uint64_t)str;
-    call.handle = (uint64_t)handle;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.str = (ULONG_PTR)str;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -240,12 +240,12 @@ WINUSERAPI HANDLE WINAPI RemovePropA(HWND hwnd, LPCSTR str)
 {
     struct qemu_RemovePropA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMOVEPROPA);
-    call.hwnd = (uint64_t)hwnd;
-    call.str = (uint64_t)str;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -254,7 +254,7 @@ void qemu_RemovePropA(struct qemu_syscall *call)
 {
     struct qemu_RemovePropA *c = (struct qemu_RemovePropA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RemovePropA(QEMU_G2H(c->hwnd), QEMU_G2H(c->str));
+    c->super.iret = (ULONG_PTR)RemovePropA(QEMU_G2H(c->hwnd), QEMU_G2H(c->str));
 }
 
 #endif
@@ -272,12 +272,12 @@ WINUSERAPI HANDLE WINAPI RemovePropW(HWND hwnd, LPCWSTR str)
 {
     struct qemu_RemovePropW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMOVEPROPW);
-    call.hwnd = (uint64_t)hwnd;
-    call.str = (uint64_t)str;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -286,7 +286,7 @@ void qemu_RemovePropW(struct qemu_syscall *call)
 {
     struct qemu_RemovePropW *c = (struct qemu_RemovePropW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)RemovePropW(QEMU_G2H(c->hwnd), QEMU_G2H(c->str));
+    c->super.iret = (ULONG_PTR)RemovePropW(QEMU_G2H(c->hwnd), QEMU_G2H(c->str));
 }
 
 #endif
@@ -305,9 +305,9 @@ WINUSERAPI INT WINAPI EnumPropsExA(HWND hwnd, PROPENUMPROCEXA func, LPARAM lPara
 {
     struct qemu_EnumPropsExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMPROPSEXA);
-    call.hwnd = (uint64_t)hwnd;
-    call.func = (uint64_t)func;
-    call.lParam = (uint64_t)lParam;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.func = (ULONG_PTR)func;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
@@ -339,9 +339,9 @@ WINUSERAPI INT WINAPI EnumPropsExW(HWND hwnd, PROPENUMPROCEXW func, LPARAM lPara
 {
     struct qemu_EnumPropsExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMPROPSEXW);
-    call.hwnd = (uint64_t)hwnd;
-    call.func = (uint64_t)func;
-    call.lParam = (uint64_t)lParam;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.func = (ULONG_PTR)func;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 

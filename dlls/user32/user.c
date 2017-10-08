@@ -43,7 +43,7 @@ WINUSERAPI UINT WINAPI UserRealizePalette(HDC hDC)
 {
     struct qemu_UserRealizePalette call;
     call.super.id = QEMU_SYSCALL_ID(CALL_USERREALIZEPALETTE);
-    call.hDC = (uint64_t)hDC;
+    call.hDC = (ULONG_PTR)hDC;
 
     qemu_syscall(&call.super);
 
@@ -74,8 +74,8 @@ WINUSERAPI BOOL WINAPI ExitWindowsEx(UINT flags, DWORD reason)
 {
     struct qemu_ExitWindowsEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXITWINDOWSEX);
-    call.flags = (uint64_t)flags;
-    call.reason = (uint64_t)reason;
+    call.flags = (ULONG_PTR)flags;
+    call.reason = (ULONG_PTR)reason;
 
     qemu_syscall(&call.super);
 
@@ -135,7 +135,7 @@ WINUSERAPI int WINAPI RegisterServicesProcess(DWORD ServicesProcessId)
 {
     struct qemu_RegisterServicesProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERSERVICESPROCESS);
-    call.ServicesProcessId = (uint64_t)ServicesProcessId;
+    call.ServicesProcessId = (ULONG_PTR)ServicesProcessId;
 
     qemu_syscall(&call.super);
 
@@ -168,8 +168,8 @@ WINUSERAPI BOOL WINAPI ShutdownBlockReasonCreate(HWND hwnd, LPCWSTR reason)
 {
     struct qemu_ShutdownBlockReasonCreate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHUTDOWNBLOCKREASONCREATE);
-    call.hwnd = (uint64_t)hwnd;
-    call.reason = (uint64_t)reason;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.reason = (ULONG_PTR)reason;
 
     qemu_syscall(&call.super);
 
@@ -199,7 +199,7 @@ WINUSERAPI BOOL WINAPI ShutdownBlockReasonDestroy(HWND hwnd)
 {
     struct qemu_ShutdownBlockReasonDestroy call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHUTDOWNBLOCKREASONDESTROY);
-    call.hwnd = (uint64_t)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 

@@ -46,10 +46,10 @@ WINUSERAPI BOOL WINAPI DrawEdge(HDC hdc, LPRECT rc, UINT edge, UINT flags)
 {
     struct qemu_DrawEdge call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWEDGE);
-    call.hdc = (uint64_t)hdc;
-    call.rc = (uint64_t)rc;
-    call.edge = (uint64_t)edge;
-    call.flags = (uint64_t)flags;
+    call.hdc = (ULONG_PTR)hdc;
+    call.rc = (ULONG_PTR)rc;
+    call.edge = (ULONG_PTR)edge;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -82,10 +82,10 @@ WINUSERAPI BOOL WINAPI DrawFrameControl(HDC hdc, LPRECT rc, UINT uType, UINT uSt
 {
     struct qemu_DrawFrameControl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWFRAMECONTROL);
-    call.hdc = (uint64_t)hdc;
-    call.rc = (uint64_t)rc;
-    call.uType = (uint64_t)uType;
-    call.uState = (uint64_t)uState;
+    call.hdc = (ULONG_PTR)hdc;
+    call.rc = (ULONG_PTR)rc;
+    call.uType = (ULONG_PTR)uType;
+    call.uState = (ULONG_PTR)uState;
 
     qemu_syscall(&call.super);
 
@@ -119,11 +119,11 @@ WINUSERAPI BOOL WINAPI SetRect(LPRECT rect, INT left, INT top, INT right, INT bo
 {
     struct qemu_SetRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETRECT);
-    call.rect = (uint64_t)rect;
-    call.left = (uint64_t)left;
-    call.top = (uint64_t)top;
-    call.right = (uint64_t)right;
-    call.bottom = (uint64_t)bottom;
+    call.rect = (ULONG_PTR)rect;
+    call.left = (ULONG_PTR)left;
+    call.top = (ULONG_PTR)top;
+    call.right = (ULONG_PTR)right;
+    call.bottom = (ULONG_PTR)bottom;
 
     qemu_syscall(&call.super);
 
@@ -153,7 +153,7 @@ WINUSERAPI BOOL WINAPI SetRectEmpty(LPRECT rect)
 {
     struct qemu_SetRectEmpty call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETRECTEMPTY);
-    call.rect = (uint64_t)rect;
+    call.rect = (ULONG_PTR)rect;
 
     qemu_syscall(&call.super);
 
@@ -184,8 +184,8 @@ WINUSERAPI BOOL WINAPI CopyRect(RECT *dest, const RECT *src)
 {
     struct qemu_CopyRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COPYRECT);
-    call.dest = (uint64_t)dest;
-    call.src = (uint64_t)src;
+    call.dest = (ULONG_PTR)dest;
+    call.src = (ULONG_PTR)src;
 
     qemu_syscall(&call.super);
 
@@ -215,7 +215,7 @@ WINUSERAPI BOOL WINAPI IsRectEmpty(const RECT *rect)
 {
     struct qemu_IsRectEmpty call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISRECTEMPTY);
-    call.rect = (uint64_t)rect;
+    call.rect = (ULONG_PTR)rect;
 
     qemu_syscall(&call.super);
 
@@ -247,7 +247,7 @@ WINUSERAPI BOOL WINAPI OffsetRect(LPRECT rect, INT x, INT y)
 {
     struct qemu_OffsetRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OFFSETRECT);
-    call.rect = (uint64_t)rect;
+    call.rect = (ULONG_PTR)rect;
     call.x = x;
     call.y = y;
 
@@ -281,7 +281,7 @@ WINBASEAPI BOOL WINAPI PtInRect(const RECT *rect, POINT pt)
 {
     struct qemu_PtInRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PTINRECT);
-    call.rect = (uint64_t)rect;
+    call.rect = (ULONG_PTR)rect;
     call.ptx = pt.x;
     call.pty = pt.y;
 
@@ -318,7 +318,7 @@ WINUSERAPI BOOL WINAPI InflateRect(LPRECT rect, INT x, INT y)
 {
     struct qemu_InflateRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INFLATERECT);
-    call.rect = (uint64_t)rect;
+    call.rect = (ULONG_PTR)rect;
     call.x = x;
     call.y = y;
 
@@ -352,9 +352,9 @@ WINUSERAPI BOOL WINAPI IntersectRect(LPRECT dest, const RECT *src1, const RECT *
 {
     struct qemu_IntersectRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERSECTRECT);
-    call.dest = (uint64_t)dest;
-    call.src1 = (uint64_t)src1;
-    call.src2 = (uint64_t)src2;
+    call.dest = (ULONG_PTR)dest;
+    call.src1 = (ULONG_PTR)src1;
+    call.src2 = (ULONG_PTR)src2;
 
     qemu_syscall(&call.super);
 
@@ -386,9 +386,9 @@ WINUSERAPI BOOL WINAPI UnionRect(LPRECT dest, const RECT *src1, const RECT *src2
 {
     struct qemu_UnionRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNIONRECT);
-    call.dest = (uint64_t)dest;
-    call.src1 = (uint64_t)src1;
-    call.src2 = (uint64_t)src2;
+    call.dest = (ULONG_PTR)dest;
+    call.src1 = (ULONG_PTR)src1;
+    call.src2 = (ULONG_PTR)src2;
 
     qemu_syscall(&call.super);
 
@@ -419,8 +419,8 @@ WINUSERAPI BOOL WINAPI EqualRect(const RECT* rect1, const RECT* rect2)
 {
     struct qemu_EqualRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EQUALRECT);
-    call.rect1 = (uint64_t)rect1;
-    call.rect2 = (uint64_t)rect2;
+    call.rect1 = (ULONG_PTR)rect1;
+    call.rect2 = (ULONG_PTR)rect2;
 
     qemu_syscall(&call.super);
 
@@ -452,9 +452,9 @@ WINUSERAPI BOOL WINAPI SubtractRect(LPRECT dest, const RECT *src1, const RECT *s
 {
     struct qemu_SubtractRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SUBTRACTRECT);
-    call.dest = (uint64_t)dest;
-    call.src1 = (uint64_t)src1;
-    call.src2 = (uint64_t)src2;
+    call.dest = (ULONG_PTR)dest;
+    call.src1 = (ULONG_PTR)src1;
+    call.src2 = (ULONG_PTR)src2;
 
     qemu_syscall(&call.super);
 
@@ -486,9 +486,9 @@ WINUSERAPI INT WINAPI FillRect(HDC hdc, const RECT *rect, HBRUSH hbrush)
 {
     struct qemu_FillRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILLRECT);
-    call.hdc = (uint64_t)hdc;
-    call.rect = (uint64_t)rect;
-    call.hbrush = (uint64_t)hbrush;
+    call.hdc = (ULONG_PTR)hdc;
+    call.rect = (ULONG_PTR)rect;
+    call.hbrush = (ULONG_PTR)hbrush;
 
     qemu_syscall(&call.super);
 
@@ -519,8 +519,8 @@ WINUSERAPI BOOL WINAPI InvertRect(HDC hdc, const RECT *rect)
 {
     struct qemu_InvertRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INVERTRECT);
-    call.hdc = (uint64_t)hdc;
-    call.rect = (uint64_t)rect;
+    call.hdc = (ULONG_PTR)hdc;
+    call.rect = (ULONG_PTR)rect;
 
     qemu_syscall(&call.super);
 
@@ -552,9 +552,9 @@ WINUSERAPI INT WINAPI FrameRect(HDC hdc, const RECT *rect, HBRUSH hbrush)
 {
     struct qemu_FrameRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FRAMERECT);
-    call.hdc = (uint64_t)hdc;
-    call.rect = (uint64_t)rect;
-    call.hbrush = (uint64_t)hbrush;
+    call.hdc = (ULONG_PTR)hdc;
+    call.rect = (ULONG_PTR)rect;
+    call.hbrush = (ULONG_PTR)hbrush;
 
     qemu_syscall(&call.super);
 
@@ -585,8 +585,8 @@ WINUSERAPI BOOL WINAPI DrawFocusRect(HDC hdc, const RECT* rc)
 {
     struct qemu_DrawFocusRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWFOCUSRECT);
-    call.hdc = (uint64_t)hdc;
-    call.rc = (uint64_t)rc;
+    call.hdc = (ULONG_PTR)hdc;
+    call.rc = (ULONG_PTR)rc;
 
     qemu_syscall(&call.super);
 
@@ -619,10 +619,10 @@ WINUSERAPI BOOL WINAPI DrawAnimatedRects(HWND hwnd, INT idAni, const RECT* lprcF
 {
     struct qemu_DrawAnimatedRects call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWANIMATEDRECTS);
-    call.hwnd = (uint64_t)hwnd;
-    call.idAni = (uint64_t)idAni;
-    call.lprcFrom = (uint64_t)lprcFrom;
-    call.lprcTo = (uint64_t)lprcTo;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.idAni = (ULONG_PTR)idAni;
+    call.lprcFrom = (ULONG_PTR)lprcFrom;
+    call.lprcTo = (ULONG_PTR)lprcTo;
 
     qemu_syscall(&call.super);
 
@@ -661,16 +661,16 @@ WINUSERAPI BOOL WINAPI DrawStateA(HDC hdc, HBRUSH hbr, DRAWSTATEPROC func, LPARA
 {
     struct qemu_DrawStateA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWSTATEA);
-    call.hdc = (uint64_t)hdc;
-    call.hbr = (uint64_t)hbr;
-    call.func = (uint64_t)func;
-    call.ldata = (uint64_t)ldata;
-    call.wdata = (uint64_t)wdata;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.cx = (uint64_t)cx;
-    call.cy = (uint64_t)cy;
-    call.flags = (uint64_t)flags;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hbr = (ULONG_PTR)hbr;
+    call.func = (ULONG_PTR)func;
+    call.ldata = (ULONG_PTR)ldata;
+    call.wdata = (ULONG_PTR)wdata;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.cx = (ULONG_PTR)cx;
+    call.cy = (ULONG_PTR)cy;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -709,16 +709,16 @@ WINUSERAPI BOOL WINAPI DrawStateW(HDC hdc, HBRUSH hbr, DRAWSTATEPROC func, LPARA
 {
     struct qemu_DrawStateW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWSTATEW);
-    call.hdc = (uint64_t)hdc;
-    call.hbr = (uint64_t)hbr;
-    call.func = (uint64_t)func;
-    call.ldata = (uint64_t)ldata;
-    call.wdata = (uint64_t)wdata;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.cx = (uint64_t)cx;
-    call.cy = (uint64_t)cy;
-    call.flags = (uint64_t)flags;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hbr = (ULONG_PTR)hbr;
+    call.func = (ULONG_PTR)func;
+    call.ldata = (ULONG_PTR)ldata;
+    call.wdata = (ULONG_PTR)wdata;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.cx = (ULONG_PTR)cx;
+    call.cy = (ULONG_PTR)cy;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 

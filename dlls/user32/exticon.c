@@ -50,14 +50,14 @@ WINUSERAPI UINT WINAPI PrivateExtractIconsW (LPCWSTR lpwstrFile, int nIndex, int
 {
     struct qemu_PrivateExtractIconsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRIVATEEXTRACTICONSW);
-    call.lpwstrFile = (uint64_t)lpwstrFile;
-    call.nIndex = (uint64_t)nIndex;
-    call.sizeX = (uint64_t)sizeX;
-    call.sizeY = (uint64_t)sizeY;
-    call.phicon = (uint64_t)phicon;
-    call.pIconId = (uint64_t)pIconId;
-    call.nIcons = (uint64_t)nIcons;
-    call.flags = (uint64_t)flags;
+    call.lpwstrFile = (ULONG_PTR)lpwstrFile;
+    call.nIndex = (ULONG_PTR)nIndex;
+    call.sizeX = (ULONG_PTR)sizeX;
+    call.sizeY = (ULONG_PTR)sizeY;
+    call.phicon = (ULONG_PTR)phicon;
+    call.pIconId = (ULONG_PTR)pIconId;
+    call.nIcons = (ULONG_PTR)nIcons;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -94,14 +94,14 @@ WINUSERAPI UINT WINAPI PrivateExtractIconsA (LPCSTR lpstrFile, int nIndex, int s
 {
     struct qemu_PrivateExtractIconsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRIVATEEXTRACTICONSA);
-    call.lpstrFile = (uint64_t)lpstrFile;
-    call.nIndex = (uint64_t)nIndex;
-    call.sizeX = (uint64_t)sizeX;
-    call.sizeY = (uint64_t)sizeY;
-    call.phicon = (uint64_t)phicon;
-    call.piconid = (uint64_t)piconid;
-    call.nIcons = (uint64_t)nIcons;
-    call.flags = (uint64_t)flags;
+    call.lpstrFile = (ULONG_PTR)lpstrFile;
+    call.nIndex = (ULONG_PTR)nIndex;
+    call.sizeX = (ULONG_PTR)sizeX;
+    call.sizeY = (ULONG_PTR)sizeY;
+    call.phicon = (ULONG_PTR)phicon;
+    call.piconid = (ULONG_PTR)piconid;
+    call.nIcons = (ULONG_PTR)nIcons;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -135,11 +135,11 @@ WINUSERAPI UINT WINAPI PrivateExtractIconExW (LPCWSTR lpwstrFile, int nIndex, HI
 {
     struct qemu_PrivateExtractIconExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRIVATEEXTRACTICONEXW);
-    call.lpwstrFile = (uint64_t)lpwstrFile;
-    call.nIndex = (uint64_t)nIndex;
-    call.phIconLarge = (uint64_t)phIconLarge;
-    call.phIconSmall = (uint64_t)phIconSmall;
-    call.nIcons = (uint64_t)nIcons;
+    call.lpwstrFile = (ULONG_PTR)lpwstrFile;
+    call.nIndex = (ULONG_PTR)nIndex;
+    call.phIconLarge = (ULONG_PTR)phIconLarge;
+    call.phIconSmall = (ULONG_PTR)phIconSmall;
+    call.nIcons = (ULONG_PTR)nIcons;
 
     qemu_syscall(&call.super);
 
@@ -173,11 +173,11 @@ WINUSERAPI UINT WINAPI PrivateExtractIconExA (LPCSTR lpstrFile, int nIndex, HICO
 {
     struct qemu_PrivateExtractIconExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRIVATEEXTRACTICONEXA);
-    call.lpstrFile = (uint64_t)lpstrFile;
-    call.nIndex = (uint64_t)nIndex;
-    call.phIconLarge = (uint64_t)phIconLarge;
-    call.phIconSmall = (uint64_t)phIconSmall;
-    call.nIcons = (uint64_t)nIcons;
+    call.lpstrFile = (ULONG_PTR)lpstrFile;
+    call.nIndex = (ULONG_PTR)nIndex;
+    call.phIconLarge = (ULONG_PTR)phIconLarge;
+    call.phIconSmall = (ULONG_PTR)phIconSmall;
+    call.nIcons = (ULONG_PTR)nIcons;
 
     qemu_syscall(&call.super);
 

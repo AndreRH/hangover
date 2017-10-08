@@ -46,10 +46,10 @@ WINUSERAPI BOOL WINAPI SystemParametersInfoW(UINT uiAction, UINT uiParam, PVOID 
 {
     struct qemu_SystemParametersInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMPARAMETERSINFOW);
-    call.uiAction = (uint64_t)uiAction;
-    call.uiParam = (uint64_t)uiParam;
-    call.pvParam = (uint64_t)pvParam;
-    call.fWinIni = (uint64_t)fWinIni;
+    call.uiAction = (ULONG_PTR)uiAction;
+    call.uiParam = (ULONG_PTR)uiParam;
+    call.pvParam = (ULONG_PTR)pvParam;
+    call.fWinIni = (ULONG_PTR)fWinIni;
 
     qemu_syscall(&call.super);
 
@@ -82,10 +82,10 @@ WINUSERAPI BOOL WINAPI SystemParametersInfoA(UINT uiAction, UINT uiParam, PVOID 
 {
     struct qemu_SystemParametersInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMPARAMETERSINFOA);
-    call.uiAction = (uint64_t)uiAction;
-    call.uiParam = (uint64_t)uiParam;
-    call.pvParam = (uint64_t)pvParam;
-    call.fuWinIni = (uint64_t)fuWinIni;
+    call.uiAction = (ULONG_PTR)uiAction;
+    call.uiParam = (ULONG_PTR)uiParam;
+    call.pvParam = (ULONG_PTR)pvParam;
+    call.fuWinIni = (ULONG_PTR)fuWinIni;
 
     qemu_syscall(&call.super);
 
@@ -115,7 +115,7 @@ WINUSERAPI INT WINAPI GetSystemMetrics(INT index)
 {
     struct qemu_GetSystemMetrics call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMMETRICS);
-    call.index = (uint64_t)index;
+    call.index = (ULONG_PTR)index;
 
     qemu_syscall(&call.super);
 
@@ -145,7 +145,7 @@ WINUSERAPI BOOL WINAPI SwapMouseButton(BOOL fSwap)
 {
     struct qemu_SwapMouseButton call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SWAPMOUSEBUTTON);
-    call.fSwap = (uint64_t)fSwap;
+    call.fSwap = (ULONG_PTR)fSwap;
 
     qemu_syscall(&call.super);
 
@@ -175,7 +175,7 @@ WINUSERAPI BOOL WINAPI SetDoubleClickTime(UINT interval)
 {
     struct qemu_SetDoubleClickTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETDOUBLECLICKTIME);
-    call.interval = (uint64_t)interval;
+    call.interval = (ULONG_PTR)interval;
 
     qemu_syscall(&call.super);
 
@@ -233,7 +233,7 @@ WINUSERAPI COLORREF WINAPI GetSysColor(INT nIndex)
 {
     struct qemu_GetSysColor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSCOLOR);
-    call.nIndex = (uint64_t)nIndex;
+    call.nIndex = (ULONG_PTR)nIndex;
 
     qemu_syscall(&call.super);
 
@@ -265,9 +265,9 @@ WINUSERAPI BOOL WINAPI SetSysColors(INT count, const INT *colors, const COLORREF
 {
     struct qemu_SetSysColors call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSYSCOLORS);
-    call.count = (uint64_t)count;
-    call.colors = (uint64_t)colors;
-    call.values = (uint64_t)values;
+    call.count = (ULONG_PTR)count;
+    call.colors = (ULONG_PTR)colors;
+    call.values = (ULONG_PTR)values;
 
     qemu_syscall(&call.super);
 
@@ -299,9 +299,9 @@ WINUSERAPI DWORD_PTR WINAPI SetSysColorsTemp(const COLORREF *pPens, const HBRUSH
 {
     struct qemu_SetSysColorsTemp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSYSCOLORSTEMP);
-    call.pPens = (uint64_t)pPens;
-    call.pBrushes = (uint64_t)pBrushes;
-    call.n = (uint64_t)n;
+    call.pPens = (ULONG_PTR)pPens;
+    call.pBrushes = (ULONG_PTR)pBrushes;
+    call.n = (ULONG_PTR)n;
 
     qemu_syscall(&call.super);
 
@@ -333,11 +333,11 @@ WINUSERAPI HBRUSH WINAPI GetSysColorBrush(INT index)
 {
     struct qemu_GetSysColorBrush call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSCOLORBRUSH);
-    call.index = (uint64_t)index;
+    call.index = (ULONG_PTR)index;
 
     qemu_syscall(&call.super);
 
-    return (HBRUSH)call.super.iret;
+    return (HBRUSH)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -346,7 +346,7 @@ void qemu_GetSysColorBrush(struct qemu_syscall *call)
 {
     struct qemu_GetSysColorBrush *c = (struct qemu_GetSysColorBrush *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetSysColorBrush(c->index);
+    c->super.iret = (ULONG_PTR)GetSysColorBrush(c->index);
 }
 
 #endif
@@ -364,7 +364,7 @@ WINUSERAPI LONG WINAPI ChangeDisplaySettingsA(LPDEVMODEA devmode, DWORD flags)
 {
     struct qemu_ChangeDisplaySettingsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGEDISPLAYSETTINGSA);
-    call.devmode = (uint64_t)devmode;
+    call.devmode = (ULONG_PTR)devmode;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -396,7 +396,7 @@ WINUSERAPI LONG WINAPI ChangeDisplaySettingsW(LPDEVMODEW devmode, DWORD flags)
 {
     struct qemu_ChangeDisplaySettingsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGEDISPLAYSETTINGSW);
-    call.devmode = (uint64_t)devmode;
+    call.devmode = (ULONG_PTR)devmode;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -431,11 +431,11 @@ WINUSERAPI LONG WINAPI ChangeDisplaySettingsExA(LPCSTR devname, LPDEVMODEA devmo
 {
     struct qemu_ChangeDisplaySettingsExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGEDISPLAYSETTINGSEXA);
-    call.devname = (uint64_t)devname;
-    call.devmode = (uint64_t)devmode;
-    call.hwnd = (uint64_t)hwnd;
-    call.flags = (uint64_t)flags;
-    call.lparam = (uint64_t)lparam;
+    call.devname = (ULONG_PTR)devname;
+    call.devmode = (ULONG_PTR)devmode;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.flags = (ULONG_PTR)flags;
+    call.lparam = (ULONG_PTR)lparam;
 
     qemu_syscall(&call.super);
 
@@ -469,11 +469,11 @@ WINUSERAPI LONG WINAPI ChangeDisplaySettingsExW(LPCWSTR devname, LPDEVMODEW devm
 {
     struct qemu_ChangeDisplaySettingsExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGEDISPLAYSETTINGSEXW);
-    call.devname = (uint64_t)devname;
-    call.devmode = (uint64_t)devmode;
-    call.hwnd = (uint64_t)hwnd;
-    call.flags = (uint64_t)flags;
-    call.lparam = (uint64_t)lparam;
+    call.devname = (ULONG_PTR)devname;
+    call.devmode = (ULONG_PTR)devmode;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.flags = (ULONG_PTR)flags;
+    call.lparam = (ULONG_PTR)lparam;
 
     qemu_syscall(&call.super);
 
@@ -505,9 +505,9 @@ WINUSERAPI BOOL WINAPI EnumDisplaySettingsW(LPCWSTR name, DWORD n, LPDEVMODEW de
 {
     struct qemu_EnumDisplaySettingsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMDISPLAYSETTINGSW);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
     call.n = n;
-    call.devmode = (uint64_t)devmode;
+    call.devmode = (ULONG_PTR)devmode;
 
     qemu_syscall(&call.super);
 
@@ -539,9 +539,9 @@ WINUSERAPI BOOL WINAPI EnumDisplaySettingsA(LPCSTR name,DWORD n,LPDEVMODEA devmo
 {
     struct qemu_EnumDisplaySettingsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMDISPLAYSETTINGSA);
-    call.name = (uint64_t)name;
-    call.n = (uint64_t)n;
-    call.devmode = (uint64_t)devmode;
+    call.name = (ULONG_PTR)name;
+    call.n = (ULONG_PTR)n;
+    call.devmode = (ULONG_PTR)devmode;
 
     qemu_syscall(&call.super);
 
@@ -574,10 +574,10 @@ WINUSERAPI BOOL WINAPI EnumDisplaySettingsExA(LPCSTR lpszDeviceName, DWORD iMode
 {
     struct qemu_EnumDisplaySettingsExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMDISPLAYSETTINGSEXA);
-    call.lpszDeviceName = (uint64_t)lpszDeviceName;
-    call.iModeNum = (uint64_t)iModeNum;
-    call.lpDevMode = (uint64_t)lpDevMode;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.lpszDeviceName = (ULONG_PTR)lpszDeviceName;
+    call.iModeNum = (ULONG_PTR)iModeNum;
+    call.lpDevMode = (ULONG_PTR)lpDevMode;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -610,10 +610,10 @@ WINUSERAPI BOOL WINAPI EnumDisplaySettingsExW(LPCWSTR lpszDeviceName, DWORD iMod
 {
     struct qemu_EnumDisplaySettingsExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMDISPLAYSETTINGSEXW);
-    call.lpszDeviceName = (uint64_t)lpszDeviceName;
-    call.iModeNum = (uint64_t)iModeNum;
-    call.lpDevMode = (uint64_t)lpDevMode;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.lpszDeviceName = (ULONG_PTR)lpszDeviceName;
+    call.iModeNum = (ULONG_PTR)iModeNum;
+    call.lpDevMode = (ULONG_PTR)lpDevMode;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 

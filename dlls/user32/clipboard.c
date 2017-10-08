@@ -43,7 +43,7 @@ WINUSERAPI UINT WINAPI RegisterClipboardFormatW(LPCWSTR name)
 {
     struct qemu_RegisterClipboardFormatW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERCLIPBOARDFORMATW);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
@@ -73,7 +73,7 @@ WINUSERAPI UINT WINAPI RegisterClipboardFormatA(LPCSTR name)
 {
     struct qemu_RegisterClipboardFormatA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERCLIPBOARDFORMATA);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
@@ -105,9 +105,9 @@ WINUSERAPI INT WINAPI GetClipboardFormatNameW(UINT format, LPWSTR buffer, INT ma
 {
     struct qemu_GetClipboardFormatNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCLIPBOARDFORMATNAMEW);
-    call.format = (uint64_t)format;
-    call.buffer = (uint64_t)buffer;
-    call.maxlen = (uint64_t)maxlen;
+    call.format = (ULONG_PTR)format;
+    call.buffer = (ULONG_PTR)buffer;
+    call.maxlen = (ULONG_PTR)maxlen;
 
     qemu_syscall(&call.super);
 
@@ -139,9 +139,9 @@ WINUSERAPI INT WINAPI GetClipboardFormatNameA(UINT format, LPSTR buffer, INT max
 {
     struct qemu_GetClipboardFormatNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCLIPBOARDFORMATNAMEA);
-    call.format = (uint64_t)format;
-    call.buffer = (uint64_t)buffer;
-    call.maxlen = (uint64_t)maxlen;
+    call.format = (ULONG_PTR)format;
+    call.buffer = (ULONG_PTR)buffer;
+    call.maxlen = (ULONG_PTR)maxlen;
 
     qemu_syscall(&call.super);
 
@@ -171,7 +171,7 @@ WINUSERAPI BOOL WINAPI OpenClipboard(HWND hwnd)
 {
     struct qemu_OpenClipboard call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENCLIPBOARD);
-    call.hwnd = (uint64_t)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -259,7 +259,7 @@ WINUSERAPI HWND WINAPI GetClipboardOwner(void)
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -268,7 +268,7 @@ void qemu_GetClipboardOwner(struct qemu_syscall *call)
 {
     struct qemu_GetClipboardOwner *c = (struct qemu_GetClipboardOwner *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetClipboardOwner();
+    c->super.iret = (ULONG_PTR)GetClipboardOwner();
 }
 
 #endif
@@ -287,7 +287,7 @@ WINUSERAPI HWND WINAPI GetOpenClipboardWindow(void)
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -296,7 +296,7 @@ void qemu_GetOpenClipboardWindow(struct qemu_syscall *call)
 {
     struct qemu_GetOpenClipboardWindow *c = (struct qemu_GetOpenClipboardWindow *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetOpenClipboardWindow();
+    c->super.iret = (ULONG_PTR)GetOpenClipboardWindow();
 }
 
 #endif
@@ -313,11 +313,11 @@ WINUSERAPI HWND WINAPI SetClipboardViewer(HWND hwnd)
 {
     struct qemu_SetClipboardViewer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCLIPBOARDVIEWER);
-    call.hwnd = (uint64_t)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -326,7 +326,7 @@ void qemu_SetClipboardViewer(struct qemu_syscall *call)
 {
     struct qemu_SetClipboardViewer *c = (struct qemu_SetClipboardViewer *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)SetClipboardViewer(QEMU_G2H(c->hwnd));
+    c->super.iret = (ULONG_PTR)SetClipboardViewer(QEMU_G2H(c->hwnd));
 }
 
 #endif
@@ -345,7 +345,7 @@ WINUSERAPI HWND WINAPI GetClipboardViewer(void)
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -354,7 +354,7 @@ void qemu_GetClipboardViewer(struct qemu_syscall *call)
 {
     struct qemu_GetClipboardViewer *c = (struct qemu_GetClipboardViewer *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetClipboardViewer();
+    c->super.iret = (ULONG_PTR)GetClipboardViewer();
 }
 
 #endif
@@ -372,8 +372,8 @@ WINUSERAPI BOOL WINAPI ChangeClipboardChain(HWND hwnd, HWND next)
 {
     struct qemu_ChangeClipboardChain call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGECLIPBOARDCHAIN);
-    call.hwnd = (uint64_t)hwnd;
-    call.next = (uint64_t)next;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.next = (ULONG_PTR)next;
 
     qemu_syscall(&call.super);
 
@@ -404,12 +404,12 @@ WINUSERAPI HANDLE WINAPI SetClipboardData(UINT format, HANDLE data)
 {
     struct qemu_SetClipboardData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCLIPBOARDDATA);
-    call.format = (uint64_t)format;
-    call.data = (uint64_t)data;
+    call.format = (ULONG_PTR)format;
+    call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -418,7 +418,7 @@ void qemu_SetClipboardData(struct qemu_syscall *call)
 {
     struct qemu_SetClipboardData *c = (struct qemu_SetClipboardData *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)SetClipboardData(c->format, QEMU_G2H(c->data));
+    c->super.iret = (ULONG_PTR)SetClipboardData(c->format, QEMU_G2H(c->data));
 }
 
 #endif
@@ -463,7 +463,7 @@ WINUSERAPI UINT WINAPI EnumClipboardFormats(UINT format)
 {
     struct qemu_EnumClipboardFormats call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMCLIPBOARDFORMATS);
-    call.format = (uint64_t)format;
+    call.format = (ULONG_PTR)format;
 
     qemu_syscall(&call.super);
 
@@ -493,7 +493,7 @@ WINUSERAPI BOOL WINAPI IsClipboardFormatAvailable(UINT format)
 {
     struct qemu_IsClipboardFormatAvailable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISCLIPBOARDFORMATAVAILABLE);
-    call.format = (uint64_t)format;
+    call.format = (ULONG_PTR)format;
 
     qemu_syscall(&call.super);
 
@@ -525,9 +525,9 @@ WINUSERAPI BOOL WINAPI GetUpdatedClipboardFormats(UINT *formats, UINT size, UINT
 {
     struct qemu_GetUpdatedClipboardFormats call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETUPDATEDCLIPBOARDFORMATS);
-    call.formats = (uint64_t)formats;
-    call.size = (uint64_t)size;
-    call.out_size = (uint64_t)out_size;
+    call.formats = (ULONG_PTR)formats;
+    call.size = (ULONG_PTR)size;
+    call.out_size = (ULONG_PTR)out_size;
 
     qemu_syscall(&call.super);
 
@@ -557,11 +557,11 @@ WINUSERAPI HANDLE WINAPI GetClipboardData(UINT format)
 {
     struct qemu_GetClipboardData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCLIPBOARDDATA);
-    call.format = (uint64_t)format;
+    call.format = (ULONG_PTR)format;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -570,7 +570,7 @@ void qemu_GetClipboardData(struct qemu_syscall *call)
 {
     struct qemu_GetClipboardData *c = (struct qemu_GetClipboardData *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetClipboardData(c->format);
+    c->super.iret = (ULONG_PTR)GetClipboardData(c->format);
 }
 
 #endif
@@ -588,8 +588,8 @@ WINUSERAPI INT WINAPI GetPriorityClipboardFormat(UINT *list, INT nCount)
 {
     struct qemu_GetPriorityClipboardFormat call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRIORITYCLIPBOARDFORMAT);
-    call.list = (uint64_t)list;
-    call.nCount = (uint64_t)nCount;
+    call.list = (ULONG_PTR)list;
+    call.nCount = (ULONG_PTR)nCount;
 
     qemu_syscall(&call.super);
 
@@ -647,7 +647,7 @@ WINUSERAPI BOOL WINAPI AddClipboardFormatListener(HWND hwnd)
 {
     struct qemu_AddClipboardFormatListener call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDCLIPBOARDFORMATLISTENER);
-    call.hwnd = (uint64_t)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -677,7 +677,7 @@ WINUSERAPI BOOL WINAPI RemoveClipboardFormatListener(HWND hwnd)
 {
     struct qemu_RemoveClipboardFormatListener call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMOVECLIPBOARDFORMATLISTENER);
-    call.hwnd = (uint64_t)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 

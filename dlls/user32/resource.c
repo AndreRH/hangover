@@ -44,12 +44,12 @@ WINUSERAPI HACCEL WINAPI LoadAcceleratorsW(HINSTANCE instance, LPCWSTR name)
 {
     struct qemu_LoadAcceleratorsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADACCELERATORSW);
-    call.instance = (uint64_t)instance;
-    call.name = (uint64_t)name;
+    call.instance = (ULONG_PTR)instance;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HACCEL)call.super.iret;
+    return (HACCEL)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -64,7 +64,7 @@ void qemu_LoadAcceleratorsW(struct qemu_syscall *call)
     if (!instance)
         instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
 
-    c->super.iret = (uint64_t)LoadAcceleratorsW(instance, QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)LoadAcceleratorsW(instance, QEMU_G2H(c->name));
 }
 
 #endif
@@ -82,12 +82,12 @@ WINUSERAPI HACCEL WINAPI LoadAcceleratorsA(HINSTANCE instance,LPCSTR lpTableName
 {
     struct qemu_LoadAcceleratorsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADACCELERATORSA);
-    call.instance = (uint64_t)instance;
-    call.lpTableName = (uint64_t)lpTableName;
+    call.instance = (ULONG_PTR)instance;
+    call.lpTableName = (ULONG_PTR)lpTableName;
 
     qemu_syscall(&call.super);
 
-    return (HACCEL)call.super.iret;
+    return (HACCEL)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -102,7 +102,7 @@ void qemu_LoadAcceleratorsA(struct qemu_syscall *call)
     if (!instance)
         instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
 
-    c->super.iret = (uint64_t)LoadAcceleratorsA(instance, QEMU_G2H(c->lpTableName));
+    c->super.iret = (ULONG_PTR)LoadAcceleratorsA(instance, QEMU_G2H(c->lpTableName));
 }
 
 #endif
@@ -121,9 +121,9 @@ WINUSERAPI INT WINAPI CopyAcceleratorTableA(HACCEL src, LPACCEL dst, INT count)
 {
     struct qemu_CopyAcceleratorTableA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COPYACCELERATORTABLEA);
-    call.src = (uint64_t)src;
-    call.dst = (uint64_t)dst;
-    call.count = (uint64_t)count;
+    call.src = (ULONG_PTR)src;
+    call.dst = (ULONG_PTR)dst;
+    call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
 
@@ -155,9 +155,9 @@ WINUSERAPI INT WINAPI CopyAcceleratorTableW(HACCEL src, LPACCEL dst, INT count)
 {
     struct qemu_CopyAcceleratorTableW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COPYACCELERATORTABLEW);
-    call.src = (uint64_t)src;
-    call.dst = (uint64_t)dst;
-    call.count = (uint64_t)count;
+    call.src = (ULONG_PTR)src;
+    call.dst = (ULONG_PTR)dst;
+    call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
 
@@ -188,12 +188,12 @@ WINUSERAPI HACCEL WINAPI CreateAcceleratorTableA(LPACCEL lpaccel, INT count)
 {
     struct qemu_CreateAcceleratorTableA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEACCELERATORTABLEA);
-    call.lpaccel = (uint64_t)lpaccel;
-    call.count = (uint64_t)count;
+    call.lpaccel = (ULONG_PTR)lpaccel;
+    call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
 
-    return (HACCEL)call.super.iret;
+    return (HACCEL)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -202,7 +202,7 @@ void qemu_CreateAcceleratorTableA(struct qemu_syscall *call)
 {
     struct qemu_CreateAcceleratorTableA *c = (struct qemu_CreateAcceleratorTableA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateAcceleratorTableA(QEMU_G2H(c->lpaccel), c->count);
+    c->super.iret = (ULONG_PTR)CreateAcceleratorTableA(QEMU_G2H(c->lpaccel), c->count);
 }
 
 #endif
@@ -220,12 +220,12 @@ WINUSERAPI HACCEL WINAPI CreateAcceleratorTableW(LPACCEL lpaccel, INT count)
 {
     struct qemu_CreateAcceleratorTableW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEACCELERATORTABLEW);
-    call.lpaccel = (uint64_t)lpaccel;
-    call.count = (uint64_t)count;
+    call.lpaccel = (ULONG_PTR)lpaccel;
+    call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
 
-    return (HACCEL)call.super.iret;
+    return (HACCEL)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -234,7 +234,7 @@ void qemu_CreateAcceleratorTableW(struct qemu_syscall *call)
 {
     struct qemu_CreateAcceleratorTableW *c = (struct qemu_CreateAcceleratorTableW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateAcceleratorTableW(QEMU_G2H(c->lpaccel), c->count);
+    c->super.iret = (ULONG_PTR)CreateAcceleratorTableW(QEMU_G2H(c->lpaccel), c->count);
 }
 
 #endif
@@ -251,7 +251,7 @@ WINUSERAPI BOOL WINAPI DestroyAcceleratorTable(HACCEL handle)
 {
     struct qemu_DestroyAcceleratorTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DESTROYACCELERATORTABLE);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -284,10 +284,10 @@ WINUSERAPI INT WINAPI LoadStringW(HINSTANCE instance, UINT resource_id, LPWSTR b
 {
     struct qemu_LoadStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADSTRINGW);
-    call.instance = (uint64_t)instance;
-    call.resource_id = (uint64_t)resource_id;
-    call.buffer = (uint64_t)buffer;
-    call.buflen = (uint64_t)buflen;
+    call.instance = (ULONG_PTR)instance;
+    call.resource_id = (ULONG_PTR)resource_id;
+    call.buffer = (ULONG_PTR)buffer;
+    call.buflen = (ULONG_PTR)buflen;
 
     qemu_syscall(&call.super);
 
@@ -326,10 +326,10 @@ WINUSERAPI INT WINAPI LoadStringA(HINSTANCE instance, UINT resource_id, LPSTR bu
 {
     struct qemu_LoadStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADSTRINGA);
-    call.instance = (uint64_t)instance;
-    call.resource_id = (uint64_t)resource_id;
-    call.buffer = (uint64_t)buffer;
-    call.buflen = (uint64_t)buflen;
+    call.instance = (ULONG_PTR)instance;
+    call.resource_id = (ULONG_PTR)resource_id;
+    call.buffer = (ULONG_PTR)buffer;
+    call.buflen = (ULONG_PTR)buflen;
 
     qemu_syscall(&call.super);
 
@@ -366,8 +366,8 @@ WINUSERAPI DWORD WINAPI GetGuiResources(HANDLE hProcess, DWORD uiFlags)
 {
     struct qemu_GetGuiResources call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETGUIRESOURCES);
-    call.hProcess = (uint64_t)hProcess;
-    call.uiFlags = (uint64_t)uiFlags;
+    call.hProcess = (ULONG_PTR)hProcess;
+    call.uiFlags = (ULONG_PTR)uiFlags;
 
     qemu_syscall(&call.super);
 

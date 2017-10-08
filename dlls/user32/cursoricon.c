@@ -50,17 +50,17 @@ WINUSERAPI HICON WINAPI CreateIconFromResourceEx(LPBYTE bits, DWORD cbSize, WINB
 {
     struct qemu_CreateIconFromResourceEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEICONFROMRESOURCEEX);
-    call.bits = (uint64_t)bits;
-    call.cbSize = (uint64_t)cbSize;
-    call.bIcon = (uint64_t)bIcon;
-    call.dwVersion = (uint64_t)dwVersion;
-    call.width = (uint64_t)width;
-    call.height = (uint64_t)height;
-    call.cFlag = (uint64_t)cFlag;
+    call.bits = (ULONG_PTR)bits;
+    call.cbSize = (ULONG_PTR)cbSize;
+    call.bIcon = (ULONG_PTR)bIcon;
+    call.dwVersion = (ULONG_PTR)dwVersion;
+    call.width = (ULONG_PTR)width;
+    call.height = (ULONG_PTR)height;
+    call.cFlag = (ULONG_PTR)cFlag;
 
     qemu_syscall(&call.super);
 
-    return (HICON)call.super.iret;
+    return (HICON)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -69,7 +69,7 @@ void qemu_CreateIconFromResourceEx(struct qemu_syscall *call)
 {
     struct qemu_CreateIconFromResourceEx *c = (struct qemu_CreateIconFromResourceEx *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateIconFromResourceEx(QEMU_G2H(c->bits), c->cbSize, c->bIcon, c->dwVersion, c->width, c->height, c->cFlag);
+    c->super.iret = (ULONG_PTR)CreateIconFromResourceEx(QEMU_G2H(c->bits), c->cbSize, c->bIcon, c->dwVersion, c->width, c->height, c->cFlag);
 }
 
 #endif
@@ -89,14 +89,14 @@ WINUSERAPI HICON WINAPI CreateIconFromResource(LPBYTE bits, DWORD cbSize, WINBOO
 {
     struct qemu_CreateIconFromResource call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEICONFROMRESOURCE);
-    call.bits = (uint64_t)bits;
-    call.cbSize = (uint64_t)cbSize;
-    call.bIcon = (uint64_t)bIcon;
-    call.dwVersion = (uint64_t)dwVersion;
+    call.bits = (ULONG_PTR)bits;
+    call.cbSize = (ULONG_PTR)cbSize;
+    call.bIcon = (ULONG_PTR)bIcon;
+    call.dwVersion = (ULONG_PTR)dwVersion;
 
     qemu_syscall(&call.super);
 
-    return (HICON)call.super.iret;
+    return (HICON)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -105,7 +105,7 @@ void qemu_CreateIconFromResource(struct qemu_syscall *call)
 {
     struct qemu_CreateIconFromResource *c = (struct qemu_CreateIconFromResource *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateIconFromResource(QEMU_G2H(c->bits), c->cbSize, c->bIcon, c->dwVersion);
+    c->super.iret = (ULONG_PTR)CreateIconFromResource(QEMU_G2H(c->bits), c->cbSize, c->bIcon, c->dwVersion);
 }
 
 #endif
@@ -128,17 +128,17 @@ WINUSERAPI HCURSOR WINAPI CreateCursor(HINSTANCE hInstance, INT xHotSpot, INT yH
 {
     struct qemu_CreateCursor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATECURSOR);
-    call.hInstance = (uint64_t)hInstance;
-    call.xHotSpot = (uint64_t)xHotSpot;
-    call.yHotSpot = (uint64_t)yHotSpot;
-    call.nWidth = (uint64_t)nWidth;
-    call.nHeight = (uint64_t)nHeight;
-    call.lpANDbits = (uint64_t)lpANDbits;
-    call.lpXORbits = (uint64_t)lpXORbits;
+    call.hInstance = (ULONG_PTR)hInstance;
+    call.xHotSpot = (ULONG_PTR)xHotSpot;
+    call.yHotSpot = (ULONG_PTR)yHotSpot;
+    call.nWidth = (ULONG_PTR)nWidth;
+    call.nHeight = (ULONG_PTR)nHeight;
+    call.lpANDbits = (ULONG_PTR)lpANDbits;
+    call.lpXORbits = (ULONG_PTR)lpXORbits;
 
     qemu_syscall(&call.super);
 
-    return (HCURSOR)call.super.iret;
+    return (HCURSOR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -147,7 +147,7 @@ void qemu_CreateCursor(struct qemu_syscall *call)
 {
     struct qemu_CreateCursor *c = (struct qemu_CreateCursor *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateCursor(QEMU_G2H(c->hInstance), c->xHotSpot, c->yHotSpot, c->nWidth, c->nHeight, QEMU_G2H(c->lpANDbits), QEMU_G2H(c->lpXORbits));
+    c->super.iret = (ULONG_PTR)CreateCursor(QEMU_G2H(c->hInstance), c->xHotSpot, c->yHotSpot, c->nWidth, c->nHeight, QEMU_G2H(c->lpANDbits), QEMU_G2H(c->lpXORbits));
 }
 
 #endif
@@ -170,17 +170,17 @@ WINUSERAPI HICON WINAPI CreateIcon(HINSTANCE hInstance, int nWidth, int nHeight,
 {
     struct qemu_CreateIcon call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEICON);
-    call.hInstance = (uint64_t)hInstance;
-    call.nWidth = (uint64_t)nWidth;
-    call.nHeight = (uint64_t)nHeight;
-    call.bPlanes = (uint64_t)bPlanes;
-    call.bBitsPixel = (uint64_t)bBitsPixel;
-    call.lpANDbits = (uint64_t)lpANDbits;
-    call.lpXORbits = (uint64_t)lpXORbits;
+    call.hInstance = (ULONG_PTR)hInstance;
+    call.nWidth = (ULONG_PTR)nWidth;
+    call.nHeight = (ULONG_PTR)nHeight;
+    call.bPlanes = (ULONG_PTR)bPlanes;
+    call.bBitsPixel = (ULONG_PTR)bBitsPixel;
+    call.lpANDbits = (ULONG_PTR)lpANDbits;
+    call.lpXORbits = (ULONG_PTR)lpXORbits;
 
     qemu_syscall(&call.super);
 
-    return (HICON)call.super.iret;
+    return (HICON)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -189,7 +189,7 @@ void qemu_CreateIcon(struct qemu_syscall *call)
 {
     struct qemu_CreateIcon *c = (struct qemu_CreateIcon *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateIcon(QEMU_G2H(c->hInstance), c->nWidth, c->nHeight, c->bPlanes, c->bBitsPixel, QEMU_G2H(c->lpANDbits), QEMU_G2H(c->lpXORbits));
+    c->super.iret = (ULONG_PTR)CreateIcon(QEMU_G2H(c->hInstance), c->nWidth, c->nHeight, c->bPlanes, c->bBitsPixel, QEMU_G2H(c->lpANDbits), QEMU_G2H(c->lpXORbits));
 }
 
 #endif
@@ -206,11 +206,11 @@ WINUSERAPI HICON WINAPI CopyIcon(HICON hIcon)
 {
     struct qemu_CopyIcon call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COPYICON);
-    call.hIcon = (uint64_t)hIcon;
+    call.hIcon = (ULONG_PTR)hIcon;
 
     qemu_syscall(&call.super);
 
-    return (HICON)call.super.iret;
+    return (HICON)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -219,7 +219,7 @@ void qemu_CopyIcon(struct qemu_syscall *call)
 {
     struct qemu_CopyIcon *c = (struct qemu_CopyIcon *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CopyIcon(QEMU_G2H(c->hIcon));
+    c->super.iret = (ULONG_PTR)CopyIcon(QEMU_G2H(c->hIcon));
 }
 
 #endif
@@ -236,7 +236,7 @@ WINUSERAPI BOOL WINAPI DestroyIcon(HICON hIcon)
 {
     struct qemu_DestroyIcon call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DESTROYICON);
-    call.hIcon = (uint64_t)hIcon;
+    call.hIcon = (ULONG_PTR)hIcon;
 
     qemu_syscall(&call.super);
 
@@ -266,7 +266,7 @@ WINUSERAPI BOOL WINAPI DestroyCursor(HCURSOR hCursor)
 {
     struct qemu_DestroyCursor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DESTROYCURSOR);
-    call.hCursor = (uint64_t)hCursor;
+    call.hCursor = (ULONG_PTR)hCursor;
 
     qemu_syscall(&call.super);
 
@@ -299,10 +299,10 @@ WINUSERAPI BOOL WINAPI DrawIcon(HDC hdc, INT x, INT y, HICON hIcon)
 {
     struct qemu_DrawIcon call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWICON);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.hIcon = (uint64_t)hIcon;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.hIcon = (ULONG_PTR)hIcon;
 
     qemu_syscall(&call.super);
 
@@ -332,11 +332,11 @@ WINUSERAPI HCURSOR WINAPI SetCursor(HCURSOR hCursor)
 {
     struct qemu_SetCursor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCURSOR);
-    call.hCursor = (uint64_t)hCursor;
+    call.hCursor = (ULONG_PTR)hCursor;
 
     qemu_syscall(&call.super);
 
-    return (HCURSOR)call.super.iret;
+    return (HCURSOR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -345,7 +345,7 @@ void qemu_SetCursor(struct qemu_syscall *call)
 {
     struct qemu_SetCursor *c = (struct qemu_SetCursor *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)SetCursor(QEMU_G2H(c->hCursor));
+    c->super.iret = (ULONG_PTR)SetCursor(QEMU_G2H(c->hCursor));
 }
 
 #endif
@@ -362,7 +362,7 @@ WINUSERAPI INT WINAPI ShowCursor(BOOL bShow)
 {
     struct qemu_ShowCursor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHOWCURSOR);
-    call.bShow = (uint64_t)bShow;
+    call.bShow = (ULONG_PTR)bShow;
 
     qemu_syscall(&call.super);
 
@@ -394,7 +394,7 @@ WINUSERAPI HCURSOR WINAPI GetCursor(void)
 
     qemu_syscall(&call.super);
 
-    return (HCURSOR)call.super.iret;
+    return (HCURSOR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -403,7 +403,7 @@ void qemu_GetCursor(struct qemu_syscall *call)
 {
     struct qemu_GetCursor *c = (struct qemu_GetCursor *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetCursor();
+    c->super.iret = (ULONG_PTR)GetCursor();
 }
 
 #endif
@@ -420,7 +420,7 @@ WINUSERAPI BOOL WINAPI ClipCursor(const RECT *rect)
 {
     struct qemu_ClipCursor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CLIPCURSOR);
-    call.rect = (uint64_t)rect;
+    call.rect = (ULONG_PTR)rect;
 
     qemu_syscall(&call.super);
 
@@ -450,7 +450,7 @@ WINUSERAPI BOOL WINAPI GetClipCursor(RECT *rect)
 {
     struct qemu_GetClipCursor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCLIPCURSOR);
-    call.rect = (uint64_t)rect;
+    call.rect = (ULONG_PTR)rect;
 
     qemu_syscall(&call.super);
 
@@ -481,8 +481,8 @@ WINUSERAPI BOOL WINAPI SetSystemCursor(HCURSOR hcur, DWORD id)
 {
     struct qemu_SetSystemCursor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSYSTEMCURSOR);
-    call.hcur = (uint64_t)hcur;
-    call.id = (uint64_t)id;
+    call.hcur = (ULONG_PTR)hcur;
+    call.id = (ULONG_PTR)id;
 
     qemu_syscall(&call.super);
 
@@ -516,11 +516,11 @@ WINUSERAPI INT WINAPI LookupIconIdFromDirectoryEx(LPBYTE xdir, BOOL bIcon, INT w
 {
     struct qemu_LookupIconIdFromDirectoryEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPICONIDFROMDIRECTORYEX);
-    call.xdir = (uint64_t)xdir;
-    call.bIcon = (uint64_t)bIcon;
-    call.width = (uint64_t)width;
-    call.height = (uint64_t)height;
-    call.cFlag = (uint64_t)cFlag;
+    call.xdir = (ULONG_PTR)xdir;
+    call.bIcon = (ULONG_PTR)bIcon;
+    call.width = (ULONG_PTR)width;
+    call.height = (ULONG_PTR)height;
+    call.cFlag = (ULONG_PTR)cFlag;
 
     qemu_syscall(&call.super);
 
@@ -551,8 +551,8 @@ WINUSERAPI INT WINAPI LookupIconIdFromDirectory(LPBYTE dir, BOOL bIcon)
 {
     struct qemu_LookupIconIdFromDirectory call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPICONIDFROMDIRECTORY);
-    call.dir = (uint64_t)dir;
-    call.bIcon = (uint64_t)bIcon;
+    call.dir = (ULONG_PTR)dir;
+    call.bIcon = (ULONG_PTR)bIcon;
 
     qemu_syscall(&call.super);
 
@@ -583,12 +583,12 @@ WINUSERAPI HCURSOR WINAPI LoadCursorW(HINSTANCE hInstance, LPCWSTR name)
 {
     struct qemu_LoadCursorW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADCURSORW);
-    call.hInstance = (uint64_t)hInstance;
-    call.name = (uint64_t)name;
+    call.hInstance = (ULONG_PTR)hInstance;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HCURSOR)call.super.iret;
+    return (HCURSOR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -599,7 +599,7 @@ void qemu_LoadCursorW(struct qemu_syscall *call)
     WINE_TRACE("\n");
     /* Do not replace c->hInstance here. A NULL instance means loading the
      * cursor from user32, not the current .exe. */
-    c->super.iret = (uint64_t)LoadCursorW((HINSTANCE)c->hInstance, QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)LoadCursorW((HINSTANCE)c->hInstance, QEMU_G2H(c->name));
 }
 
 #endif
@@ -617,12 +617,12 @@ WINUSERAPI HCURSOR WINAPI LoadCursorA(HINSTANCE hInstance, LPCSTR name)
 {
     struct qemu_LoadCursorA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADCURSORA);
-    call.hInstance = (uint64_t)hInstance;
-    call.name = (uint64_t)name;
+    call.hInstance = (ULONG_PTR)hInstance;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HCURSOR)call.super.iret;
+    return (HCURSOR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -633,7 +633,7 @@ void qemu_LoadCursorA(struct qemu_syscall *call)
     WINE_TRACE("\n");
     /* Do not replace c->hInstance here. A NULL instance means loading the
      * cursor from user32, not the current .exe. */
-    c->super.iret = (uint64_t)LoadCursorA((HINSTANCE)c->hInstance, QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)LoadCursorA((HINSTANCE)c->hInstance, QEMU_G2H(c->name));
 }
 
 #endif
@@ -650,11 +650,11 @@ WINUSERAPI HCURSOR WINAPI LoadCursorFromFileW (LPCWSTR name)
 {
     struct qemu_LoadCursorFromFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADCURSORFROMFILEW);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HCURSOR)call.super.iret;
+    return (HCURSOR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -663,7 +663,7 @@ void qemu_LoadCursorFromFileW(struct qemu_syscall *call)
 {
     struct qemu_LoadCursorFromFileW *c = (struct qemu_LoadCursorFromFileW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LoadCursorFromFileW(QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)LoadCursorFromFileW(QEMU_G2H(c->name));
 }
 
 #endif
@@ -680,11 +680,11 @@ WINUSERAPI HCURSOR WINAPI LoadCursorFromFileA (LPCSTR name)
 {
     struct qemu_LoadCursorFromFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADCURSORFROMFILEA);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HCURSOR)call.super.iret;
+    return (HCURSOR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -693,7 +693,7 @@ void qemu_LoadCursorFromFileA(struct qemu_syscall *call)
 {
     struct qemu_LoadCursorFromFileA *c = (struct qemu_LoadCursorFromFileA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LoadCursorFromFileA(QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)LoadCursorFromFileA(QEMU_G2H(c->name));
 }
 
 #endif
@@ -711,12 +711,12 @@ WINUSERAPI HICON WINAPI LoadIconW(HINSTANCE hInstance, LPCWSTR name)
 {
     struct qemu_LoadIconW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADICONW);
-    call.hInstance = (uint64_t)hInstance;
-    call.name = (uint64_t)name;
+    call.hInstance = (ULONG_PTR)hInstance;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HICON)call.super.iret;
+    return (HICON)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -727,7 +727,7 @@ void qemu_LoadIconW(struct qemu_syscall *call)
     WINE_TRACE("\n");
 
     /* Do not replace hInstance, a NULL instance means user32.dll. */
-    c->super.iret = (uint64_t)LoadIconW((HINSTANCE)c->hInstance, QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)LoadIconW((HINSTANCE)c->hInstance, QEMU_G2H(c->name));
 }
 
 #endif
@@ -745,12 +745,12 @@ WINUSERAPI HICON WINAPI LoadIconA(HINSTANCE hInstance, LPCSTR name)
 {
     struct qemu_LoadIconA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADICONA);
-    call.hInstance = (uint64_t)hInstance;
-    call.name = (uint64_t)name;
+    call.hInstance = (ULONG_PTR)hInstance;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HICON)call.super.iret;
+    return (HICON)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -761,7 +761,7 @@ void qemu_LoadIconA(struct qemu_syscall *call)
     WINE_TRACE("\n");
 
     /* Do not replace hInstance, a NULL instance means user32.dll. */
-    c->super.iret = (uint64_t)LoadIconA((HINSTANCE)c->hInstance, QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)LoadIconA((HINSTANCE)c->hInstance, QEMU_G2H(c->name));
 }
 
 #endif
@@ -782,15 +782,15 @@ WINUSERAPI HCURSOR WINAPI GetCursorFrameInfo(HCURSOR hCursor, DWORD reserved, DW
 {
     struct qemu_GetCursorFrameInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURSORFRAMEINFO);
-    call.hCursor = (uint64_t)hCursor;
-    call.reserved = (uint64_t)reserved;
-    call.istep = (uint64_t)istep;
-    call.rate_jiffies = (uint64_t)rate_jiffies;
-    call.num_steps = (uint64_t)num_steps;
+    call.hCursor = (ULONG_PTR)hCursor;
+    call.reserved = (ULONG_PTR)reserved;
+    call.istep = (ULONG_PTR)istep;
+    call.rate_jiffies = (ULONG_PTR)rate_jiffies;
+    call.num_steps = (ULONG_PTR)num_steps;
 
     qemu_syscall(&call.super);
 
-    return (HCURSOR)call.super.iret;
+    return (HCURSOR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -799,7 +799,7 @@ void qemu_GetCursorFrameInfo(struct qemu_syscall *call)
 {
     struct qemu_GetCursorFrameInfo *c = (struct qemu_GetCursorFrameInfo *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetCursorFrameInfo(QEMU_G2H(c->hCursor), c->reserved, c->istep, QEMU_G2H(c->rate_jiffies), QEMU_G2H(c->num_steps));
+    c->super.iret = (ULONG_PTR)GetCursorFrameInfo(QEMU_G2H(c->hCursor), c->reserved, c->istep, QEMU_G2H(c->rate_jiffies), QEMU_G2H(c->num_steps));
 }
 
 #endif
@@ -817,8 +817,8 @@ WINUSERAPI BOOL WINAPI GetIconInfo(HICON hIcon, PICONINFO iconinfo)
 {
     struct qemu_GetIconInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETICONINFO);
-    call.hIcon = (uint64_t)hIcon;
-    call.iconinfo = (uint64_t)iconinfo;
+    call.hIcon = (ULONG_PTR)hIcon;
+    call.iconinfo = (ULONG_PTR)iconinfo;
 
     qemu_syscall(&call.super);
 
@@ -849,8 +849,8 @@ WINUSERAPI BOOL WINAPI GetIconInfoExA(HICON icon, ICONINFOEXA *info)
 {
     struct qemu_GetIconInfoExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETICONINFOEXA);
-    call.icon = (uint64_t)icon;
-    call.info = (uint64_t)info;
+    call.icon = (ULONG_PTR)icon;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -898,8 +898,8 @@ WINUSERAPI BOOL WINAPI GetIconInfoExW(HICON icon, ICONINFOEXW *info)
 {
     struct qemu_GetIconInfoExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETICONINFOEXW);
-    call.icon = (uint64_t)icon;
-    call.info = (uint64_t)info;
+    call.icon = (ULONG_PTR)icon;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -944,11 +944,11 @@ WINUSERAPI HICON WINAPI CreateIconIndirect(PICONINFO iconinfo)
 {
     struct qemu_CreateIconIndirect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEICONINDIRECT);
-    call.iconinfo = (uint64_t)iconinfo;
+    call.iconinfo = (ULONG_PTR)iconinfo;
 
     qemu_syscall(&call.super);
 
-    return (HICON)call.super.iret;
+    return (HICON)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -957,7 +957,7 @@ void qemu_CreateIconIndirect(struct qemu_syscall *call)
 {
     struct qemu_CreateIconIndirect *c = (struct qemu_CreateIconIndirect *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateIconIndirect(QEMU_G2H(c->iconinfo));
+    c->super.iret = (ULONG_PTR)CreateIconIndirect(QEMU_G2H(c->iconinfo));
 }
 
 #endif
@@ -982,15 +982,15 @@ WINUSERAPI BOOL WINAPI DrawIconEx(HDC hdc, INT x0, INT y0, HICON hIcon, INT cxWi
 {
     struct qemu_DrawIconEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWICONEX);
-    call.hdc = (uint64_t)hdc;
-    call.x0 = (uint64_t)x0;
-    call.y0 = (uint64_t)y0;
-    call.hIcon = (uint64_t)hIcon;
-    call.cxWidth = (uint64_t)cxWidth;
-    call.cyWidth = (uint64_t)cyWidth;
-    call.istep = (uint64_t)istep;
-    call.hbr = (uint64_t)hbr;
-    call.flags = (uint64_t)flags;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x0 = (ULONG_PTR)x0;
+    call.y0 = (ULONG_PTR)y0;
+    call.hIcon = (ULONG_PTR)hIcon;
+    call.cxWidth = (ULONG_PTR)cxWidth;
+    call.cyWidth = (ULONG_PTR)cyWidth;
+    call.istep = (ULONG_PTR)istep;
+    call.hbr = (ULONG_PTR)hbr;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -1025,16 +1025,16 @@ WINUSERAPI HANDLE WINAPI LoadImageA(HINSTANCE hinst, LPCSTR name, UINT type, INT
 {
     struct qemu_LoadImageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADIMAGEA);
-    call.hinst = (uint64_t)hinst;
-    call.name = (uint64_t)name;
-    call.type = (uint64_t)type;
-    call.desiredx = (uint64_t)desiredx;
-    call.desiredy = (uint64_t)desiredy;
-    call.loadflags = (uint64_t)loadflags;
+    call.hinst = (ULONG_PTR)hinst;
+    call.name = (ULONG_PTR)name;
+    call.type = (ULONG_PTR)type;
+    call.desiredx = (ULONG_PTR)desiredx;
+    call.desiredy = (ULONG_PTR)desiredy;
+    call.loadflags = (ULONG_PTR)loadflags;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1045,7 +1045,7 @@ void qemu_LoadImageA(struct qemu_syscall *call)
     WINE_TRACE("\n");
 
     /* Do not replace hInstance, a NULL instance means user32.dll. */
-    c->super.iret = (uint64_t)LoadImageA((HINSTANCE)c->hinst, QEMU_G2H(c->name), c->type, c->desiredx,
+    c->super.iret = (ULONG_PTR)LoadImageA((HINSTANCE)c->hinst, QEMU_G2H(c->name), c->type, c->desiredx,
             c->desiredy, c->loadflags);
 }
 
@@ -1068,16 +1068,16 @@ WINUSERAPI HANDLE WINAPI LoadImageW(HINSTANCE hinst, LPCWSTR name, UINT type, IN
 {
     struct qemu_LoadImageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADIMAGEW);
-    call.hinst = (uint64_t)hinst;
-    call.name = (uint64_t)name;
-    call.type = (uint64_t)type;
-    call.desiredx = (uint64_t)desiredx;
-    call.desiredy = (uint64_t)desiredy;
-    call.loadflags = (uint64_t)loadflags;
+    call.hinst = (ULONG_PTR)hinst;
+    call.name = (ULONG_PTR)name;
+    call.type = (ULONG_PTR)type;
+    call.desiredx = (ULONG_PTR)desiredx;
+    call.desiredy = (ULONG_PTR)desiredy;
+    call.loadflags = (ULONG_PTR)loadflags;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1088,7 +1088,7 @@ void qemu_LoadImageW(struct qemu_syscall *call)
     WINE_TRACE("\n");
 
     /* Do not replace hInstance, a NULL instance means user32.dll. */
-    c->super.iret = (uint64_t)LoadImageW((HINSTANCE)c->hinst, QEMU_G2H(c->name), c->type, c->desiredx,
+    c->super.iret = (ULONG_PTR)LoadImageW((HINSTANCE)c->hinst, QEMU_G2H(c->name), c->type, c->desiredx,
             c->desiredy, c->loadflags);
 }
 
@@ -1110,15 +1110,15 @@ WINUSERAPI HANDLE WINAPI CopyImage(HANDLE hnd, UINT type, INT desiredx, INT desi
 {
     struct qemu_CopyImage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COPYIMAGE);
-    call.hnd = (uint64_t)hnd;
-    call.type = (uint64_t)type;
-    call.desiredx = (uint64_t)desiredx;
-    call.desiredy = (uint64_t)desiredy;
-    call.flags = (uint64_t)flags;
+    call.hnd = (ULONG_PTR)hnd;
+    call.type = (ULONG_PTR)type;
+    call.desiredx = (ULONG_PTR)desiredx;
+    call.desiredy = (ULONG_PTR)desiredy;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1127,7 +1127,7 @@ void qemu_CopyImage(struct qemu_syscall *call)
 {
     struct qemu_CopyImage *c = (struct qemu_CopyImage *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CopyImage(QEMU_G2H(c->hnd), c->type, c->desiredx, c->desiredy, c->flags);
+    c->super.iret = (ULONG_PTR)CopyImage(QEMU_G2H(c->hnd), c->type, c->desiredx, c->desiredy, c->flags);
 }
 
 #endif
@@ -1145,12 +1145,12 @@ WINUSERAPI HBITMAP WINAPI LoadBitmapW(HINSTANCE instance, LPCWSTR name)
 {
     struct qemu_LoadBitmapW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADBITMAPW);
-    call.instance = (uint64_t)instance;
-    call.name = (uint64_t)name;
+    call.instance = (ULONG_PTR)instance;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HBITMAP)call.super.iret;
+    return (HBITMAP)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1159,7 +1159,7 @@ void qemu_LoadBitmapW(struct qemu_syscall *call)
 {
     struct qemu_LoadBitmapW *c = (struct qemu_LoadBitmapW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)LoadBitmapW(QEMU_G2H(c->instance), QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)LoadBitmapW(QEMU_G2H(c->instance), QEMU_G2H(c->name));
 }
 
 #endif
@@ -1177,12 +1177,12 @@ WINUSERAPI HBITMAP WINAPI LoadBitmapA(HINSTANCE instance, LPCSTR name)
 {
     struct qemu_LoadBitmapA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADBITMAPA);
-    call.instance = (uint64_t)instance;
-    call.name = (uint64_t)name;
+    call.instance = (ULONG_PTR)instance;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HBITMAP)call.super.iret;
+    return (HBITMAP)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1191,7 +1191,7 @@ void qemu_LoadBitmapA(struct qemu_syscall *call)
 {
     struct qemu_LoadBitmapA *c = (struct qemu_LoadBitmapA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)LoadBitmapA(QEMU_G2H(c->instance), QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)LoadBitmapA(QEMU_G2H(c->instance), QEMU_G2H(c->name));
 }
 
 #endif

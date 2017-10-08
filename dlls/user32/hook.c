@@ -44,12 +44,12 @@ WINUSERAPI HHOOK WINAPI SetWindowsHookA(INT id, HOOKPROC proc)
 {
     struct qemu_SetWindowsHookA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWSHOOKA);
-    call.id = (uint64_t)id;
-    call.proc = (uint64_t)proc;
+    call.id = (ULONG_PTR)id;
+    call.proc = (ULONG_PTR)proc;
 
     qemu_syscall(&call.super);
 
-    return (HHOOK)call.super.iret;
+    return (HHOOK)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -58,7 +58,7 @@ void qemu_SetWindowsHookA(struct qemu_syscall *call)
 {
     struct qemu_SetWindowsHookA *c = (struct qemu_SetWindowsHookA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)SetWindowsHookA(c->id, QEMU_G2H(c->proc));
+    c->super.iret = (ULONG_PTR)SetWindowsHookA(c->id, QEMU_G2H(c->proc));
 }
 
 #endif
@@ -76,12 +76,12 @@ WINUSERAPI HHOOK WINAPI SetWindowsHookW(INT id, HOOKPROC proc)
 {
     struct qemu_SetWindowsHookW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWSHOOKW);
-    call.id = (uint64_t)id;
-    call.proc = (uint64_t)proc;
+    call.id = (ULONG_PTR)id;
+    call.proc = (ULONG_PTR)proc;
 
     qemu_syscall(&call.super);
 
-    return (HHOOK)call.super.iret;
+    return (HHOOK)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -90,7 +90,7 @@ void qemu_SetWindowsHookW(struct qemu_syscall *call)
 {
     struct qemu_SetWindowsHookW *c = (struct qemu_SetWindowsHookW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)SetWindowsHookW(c->id, QEMU_G2H(c->proc));
+    c->super.iret = (ULONG_PTR)SetWindowsHookW(c->id, QEMU_G2H(c->proc));
 }
 
 #endif
@@ -116,7 +116,7 @@ struct qemu_cbt_hook_cb
 
 static uint64_t qemu_hook_guest_cb(struct qemu_cbt_hook_cb *call)
 {
-    HOOKPROC proc = (HOOKPROC)call->func;
+    HOOKPROC proc = (HOOKPROC)(ULONG_PTR)call->func;
     return proc(call->code, call->wp, call->lp);
 }
 
@@ -124,15 +124,15 @@ WINUSERAPI HHOOK WINAPI SetWindowsHookExA(INT id, HOOKPROC proc, HINSTANCE inst,
 {
     struct qemu_SetWindowsHookEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWSHOOKEXA);
-    call.id = (uint64_t)id;
-    call.proc = (uint64_t)proc;
-    call.inst = (uint64_t)inst;
-    call.tid = (uint64_t)tid;
-    call.wrapper = (uint64_t)qemu_hook_guest_cb;
+    call.id = (ULONG_PTR)id;
+    call.proc = (ULONG_PTR)proc;
+    call.inst = (ULONG_PTR)inst;
+    call.tid = (ULONG_PTR)tid;
+    call.wrapper = (ULONG_PTR)qemu_hook_guest_cb;
 
     qemu_syscall(&call.super);
 
-    return (HHOOK)call.super.iret;
+    return (HHOOK)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -414,7 +414,7 @@ void qemu_SetWindowsHookExA(struct qemu_syscall *call)
 
     hook_guest_wrapper = c->wrapper;
 
-    c->super.iret = (uint64_t)set_windows_hook(c->id, c->proc, c->inst, c->tid, FALSE);
+    c->super.iret = (ULONG_PTR)set_windows_hook(c->id, c->proc, c->inst, c->tid, FALSE);
 }
 
 #endif
@@ -425,15 +425,15 @@ WINUSERAPI HHOOK WINAPI SetWindowsHookExW(INT id, HOOKPROC proc, HINSTANCE inst,
 {
     struct qemu_SetWindowsHookEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWSHOOKEXW);
-    call.id = (uint64_t)id;
-    call.proc = (uint64_t)proc;
-    call.inst = (uint64_t)inst;
-    call.tid = (uint64_t)tid;
-    call.wrapper = (uint64_t)qemu_hook_guest_cb;
+    call.id = (ULONG_PTR)id;
+    call.proc = (ULONG_PTR)proc;
+    call.inst = (ULONG_PTR)inst;
+    call.tid = (ULONG_PTR)tid;
+    call.wrapper = (ULONG_PTR)qemu_hook_guest_cb;
 
     qemu_syscall(&call.super);
 
-    return (HHOOK)call.super.iret;
+    return (HHOOK)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -444,7 +444,7 @@ void qemu_SetWindowsHookExW(struct qemu_syscall *call)
 
     hook_guest_wrapper = c->wrapper;
 
-    c->super.iret = (uint64_t)set_windows_hook(c->id, c->proc, c->inst, c->tid, TRUE);
+    c->super.iret = (ULONG_PTR)set_windows_hook(c->id, c->proc, c->inst, c->tid, TRUE);
 }
 
 #endif
@@ -462,8 +462,8 @@ WINUSERAPI BOOL WINAPI UnhookWindowsHook(INT id, HOOKPROC proc)
 {
     struct qemu_UnhookWindowsHook call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNHOOKWINDOWSHOOK);
-    call.id = (uint64_t)id;
-    call.proc = (uint64_t)proc;
+    call.id = (ULONG_PTR)id;
+    call.proc = (ULONG_PTR)proc;
 
     qemu_syscall(&call.super);
 
@@ -493,7 +493,7 @@ WINUSERAPI BOOL WINAPI UnhookWindowsHookEx(HHOOK hhook)
 {
     struct qemu_UnhookWindowsHookEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNHOOKWINDOWSHOOKEX);
-    call.hhook = (uint64_t)hhook;
+    call.hhook = (ULONG_PTR)hhook;
 
     qemu_syscall(&call.super);
 
@@ -559,10 +559,10 @@ WINUSERAPI LRESULT WINAPI CallNextHookEx(HHOOK hhook, INT code, WPARAM wparam, L
 {
     struct qemu_CallNextHookEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CALLNEXTHOOKEX);
-    call.hhook = (uint64_t)hhook;
-    call.code = (uint64_t)code;
-    call.wparam = (uint64_t)wparam;
-    call.lparam = (uint64_t)lparam;
+    call.hhook = (ULONG_PTR)hhook;
+    call.code = (ULONG_PTR)code;
+    call.wparam = (ULONG_PTR)wparam;
+    call.lparam = (ULONG_PTR)lparam;
 
     qemu_syscall(&call.super);
 
@@ -593,8 +593,8 @@ WINUSERAPI BOOL WINAPI CallMsgFilterA(LPMSG msg, INT code)
 {
     struct qemu_CallMsgFilterA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CALLMSGFILTERA);
-    call.msg = (uint64_t)msg;
-    call.code = (uint64_t)code;
+    call.msg = (ULONG_PTR)msg;
+    call.code = (ULONG_PTR)code;
 
     qemu_syscall(&call.super);
 
@@ -625,8 +625,8 @@ WINUSERAPI BOOL WINAPI CallMsgFilterW(LPMSG msg, INT code)
 {
     struct qemu_CallMsgFilterW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CALLMSGFILTERW);
-    call.msg = (uint64_t)msg;
-    call.code = (uint64_t)code;
+    call.msg = (ULONG_PTR)msg;
+    call.code = (ULONG_PTR)code;
 
     qemu_syscall(&call.super);
 
@@ -672,8 +672,8 @@ struct qemu_SetWinEventHook_cb
 
 void guest_win_event_wrapper(struct qemu_SetWinEventHook_cb *data)
 {
-    WINEVENTPROC func = (WINEVENTPROC)data->func;
-    func((HWINEVENTHOOK)data->hevent, data->event, (HWND)data->hwnd, data->object_id, data->child_id,
+    WINEVENTPROC func = (WINEVENTPROC)(ULONG_PTR)data->func;
+    func((HWINEVENTHOOK)(ULONG_PTR)data->hevent, data->event, (HWND)(ULONG_PTR)data->hwnd, data->object_id, data->child_id,
             data->thread_id, data->event_time);
 }
 
@@ -681,17 +681,17 @@ WINUSERAPI HWINEVENTHOOK WINAPI SetWinEventHook(DWORD event_min, DWORD event_max
 {
     struct qemu_SetWinEventHook call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINEVENTHOOK);
-    call.event_min = (uint64_t)event_min;
-    call.event_max = (uint64_t)event_max;
-    call.inst = (uint64_t)inst;
-    call.proc = (uint64_t)proc;
-    call.pid = (uint64_t)pid;
-    call.tid = (uint64_t)tid;
-    call.flags = (uint64_t)flags;
+    call.event_min = (ULONG_PTR)event_min;
+    call.event_max = (ULONG_PTR)event_max;
+    call.inst = (ULONG_PTR)inst;
+    call.proc = (ULONG_PTR)proc;
+    call.pid = (ULONG_PTR)pid;
+    call.tid = (ULONG_PTR)tid;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
-    return (HWINEVENTHOOK)call.super.iret;
+    return (HWINEVENTHOOK)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -736,9 +736,9 @@ static void CALLBACK win_event_host_proc(HWINEVENTHOOK hevent, DWORD event, HWND
 
     WINE_TRACE("Calling guest hook function 0x%lx(%p, %x, %p, %x, %x, %x, %x).\n",
             call.func, hevent, event, hwnd, object_id, child_id, thread_id, event_time);
-    call.hevent = (uint64_t)hevent;
+    call.hevent = (ULONG_PTR)hevent;
     call.event = event;
-    call.hwnd = (uint64_t)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.object_id = object_id;
     call.child_id = child_id;
     call.thread_id = thread_id;
@@ -777,7 +777,7 @@ void qemu_SetWinEventHook(struct qemu_syscall *call)
 
     hook = SetWinEventHook(c->event_min, c->event_max, c->inst ? wrapper_mod : NULL,
             c->proc ? win_event_host_proc : NULL, c->pid, c->tid, c->flags);
-    c->super.iret = (uint64_t)hook;
+    c->super.iret = (ULONG_PTR)hook;
     if (!hook)
     {
         HeapFree(GetProcessHeap(), 0, entry);
@@ -806,7 +806,7 @@ WINUSERAPI BOOL WINAPI UnhookWinEvent(HWINEVENTHOOK hEventHook)
 {
     struct qemu_UnhookWinEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNHOOKWINEVENT);
-    call.hEventHook = (uint64_t)hEventHook;
+    call.hEventHook = (ULONG_PTR)hEventHook;
 
     qemu_syscall(&call.super);
 
@@ -861,10 +861,10 @@ WINUSERAPI void WINAPI NotifyWinEvent(DWORD event, HWND hwnd, LONG object_id, LO
 {
     struct qemu_NotifyWinEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NOTIFYWINEVENT);
-    call.event = (uint64_t)event;
-    call.hwnd = (uint64_t)hwnd;
-    call.object_id = (uint64_t)object_id;
-    call.child_id = (uint64_t)child_id;
+    call.event = (ULONG_PTR)event;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.object_id = (ULONG_PTR)object_id;
+    call.child_id = (ULONG_PTR)child_id;
 
     qemu_syscall(&call.super);
 
@@ -894,7 +894,7 @@ WINUSERAPI BOOL WINAPI IsWinEventHookInstalled(DWORD dwEvent)
 {
     struct qemu_IsWinEventHookInstalled call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISWINEVENTHOOKINSTALLED);
-    call.dwEvent = (uint64_t)dwEvent;
+    call.dwEvent = (ULONG_PTR)dwEvent;
 
     qemu_syscall(&call.super);
 

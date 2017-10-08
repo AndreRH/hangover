@@ -50,7 +50,7 @@ long CALLBACK wndproc_except_handler(EXCEPTION_POINTERS *pointers, ULONG64 frame
 
 static LRESULT wndproc_wrapper(const struct wndproc_call *call)
 {
-    WNDPROC proc = (WNDPROC)call->wndproc;
+    WNDPROC proc = (WNDPROC)(ULONG_PTR)call->wndproc;
     LRESULT ret = 0;
 
     /* TODO: It would be nicer to re-throw the exception to the host so Wine can
@@ -60,7 +60,7 @@ static LRESULT wndproc_wrapper(const struct wndproc_call *call)
     {
         __try1(wndproc_except_handler)
         {
-            ret = proc((HWND)call->win, call->msg, call->wparam, call->lparam);
+            ret = proc((HWND)(ULONG_PTR)call->win, call->msg, call->wparam, call->lparam);
         }
         __except1
         {
@@ -68,7 +68,7 @@ static LRESULT wndproc_wrapper(const struct wndproc_call *call)
     }
     else
     {
-        ret = proc((HWND)call->win, call->msg, call->wparam, call->lparam);
+        ret = proc((HWND)(ULONG_PTR)call->win, call->msg, call->wparam, call->lparam);
     }
 
     return ret;
@@ -82,10 +82,10 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
     {
         case DLL_PROCESS_ATTACH:
             call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
-            call.rev_wndproc_wrapper = (uint64_t)reverse_wndproc_func;
-            call.wndproc_wrapper = (uint64_t)wndproc_wrapper;
-            call.guest_mod = (uint64_t)mod;
-            call.guest_win_event_wrapper = (uint64_t)guest_win_event_wrapper;
+            call.rev_wndproc_wrapper = (ULONG_PTR)reverse_wndproc_func;
+            call.wndproc_wrapper = (ULONG_PTR)wndproc_wrapper;
+            call.guest_mod = (ULONG_PTR)mod;
+            call.guest_win_event_wrapper = (ULONG_PTR)guest_win_event_wrapper;
             qemu_syscall(&call.super);
             break;
     }
@@ -817,7 +817,7 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
     msg_host_to_guest(&msg_struct, &msg_struct);
 
     call.wndproc = wrapper->guest_proc;
-    call.win = (uint64_t)msg_struct.hwnd;
+    call.win = (ULONG_PTR)msg_struct.hwnd;
     call.msg = msg_struct.message;
     call.wparam = msg_struct.wParam;
     call.lparam = msg_struct.lParam;
@@ -966,7 +966,7 @@ uint64_t wndproc_host_to_guest(WNDPROC host_proc)
     unsigned int i;
 
     if (!host_proc || wndproc_is_handle((LONG_PTR)host_proc))
-        return (uint64_t)host_proc;
+        return (ULONG_PTR)host_proc;
 
     if ((ULONG_PTR)host_proc >= (ULONG_PTR)&wndproc_wrappers[0]
             && (ULONG_PTR)host_proc <= (ULONG_PTR)&wndproc_wrappers[wndproc_wrapper_count])

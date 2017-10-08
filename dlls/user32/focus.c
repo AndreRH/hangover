@@ -43,11 +43,11 @@ WINUSERAPI HWND WINAPI SetActiveWindow(HWND hwnd)
 {
     struct qemu_SetActiveWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETACTIVEWINDOW);
-    call.hwnd = (uint64_t)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -56,7 +56,7 @@ void qemu_SetActiveWindow(struct qemu_syscall *call)
 {
     struct qemu_SetActiveWindow *c = (struct qemu_SetActiveWindow *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)SetActiveWindow(QEMU_G2H(c->hwnd));
+    c->super.iret = (ULONG_PTR)SetActiveWindow(QEMU_G2H(c->hwnd));
 }
 
 #endif
@@ -73,11 +73,11 @@ WINUSERAPI HWND WINAPI SetFocus(HWND hwnd)
 {
     struct qemu_SetFocus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFOCUS);
-    call.hwnd = (uint64_t)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -86,7 +86,7 @@ void qemu_SetFocus(struct qemu_syscall *call)
 {
     struct qemu_SetFocus *c = (struct qemu_SetFocus *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)SetFocus(QEMU_G2H(c->hwnd));
+    c->super.iret = (ULONG_PTR)SetFocus(QEMU_G2H(c->hwnd));
 }
 
 #endif
@@ -103,7 +103,7 @@ WINUSERAPI BOOL WINAPI SetForegroundWindow(HWND hwnd)
 {
     struct qemu_SetForegroundWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFOREGROUNDWINDOW);
-    call.hwnd = (uint64_t)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -135,7 +135,7 @@ WINUSERAPI HWND WINAPI GetActiveWindow(void)
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -144,7 +144,7 @@ void qemu_GetActiveWindow(struct qemu_syscall *call)
 {
     struct qemu_GetActiveWindow *c = (struct qemu_GetActiveWindow *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetActiveWindow();
+    c->super.iret = (ULONG_PTR)GetActiveWindow();
 }
 
 #endif
@@ -163,7 +163,7 @@ WINUSERAPI HWND WINAPI GetFocus(void)
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -172,7 +172,7 @@ void qemu_GetFocus(struct qemu_syscall *call)
 {
     struct qemu_GetFocus *c = (struct qemu_GetFocus *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetFocus();
+    c->super.iret = (ULONG_PTR)GetFocus();
 }
 
 #endif
@@ -191,7 +191,7 @@ WINUSERAPI HWND WINAPI GetForegroundWindow(void)
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -200,7 +200,7 @@ void qemu_GetForegroundWindow(struct qemu_syscall *call)
 {
     struct qemu_GetForegroundWindow *c = (struct qemu_GetForegroundWindow *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetForegroundWindow();
+    c->super.iret = (ULONG_PTR)GetForegroundWindow();
 }
 
 #endif
@@ -218,8 +218,8 @@ WINUSERAPI BOOL WINAPI SetShellWindowEx(HWND hwndShell, HWND hwndListView)
 {
     struct qemu_SetShellWindowEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSHELLWINDOWEX);
-    call.hwndShell = (uint64_t)hwndShell;
-    call.hwndListView = (uint64_t)hwndListView;
+    call.hwndShell = (ULONG_PTR)hwndShell;
+    call.hwndListView = (ULONG_PTR)hwndListView;
 
     qemu_syscall(&call.super);
 
@@ -251,7 +251,7 @@ WINUSERAPI BOOL WINAPI SetShellWindow(HWND hwndShell)
 {
     struct qemu_SetShellWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSHELLWINDOW);
-    call.hwndShell = (uint64_t)hwndShell;
+    call.hwndShell = (ULONG_PTR)hwndShell;
 
     qemu_syscall(&call.super);
 
@@ -285,7 +285,7 @@ WINUSERAPI HWND WINAPI GetShellWindow(void)
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -294,7 +294,7 @@ void qemu_GetShellWindow(struct qemu_syscall *call)
 {
     struct qemu_GetShellWindow *c = (struct qemu_GetShellWindow *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetShellWindow();
+    c->super.iret = (ULONG_PTR)GetShellWindow();
 }
 
 #endif
@@ -311,11 +311,11 @@ WINUSERAPI HWND WINAPI SetProgmanWindow (HWND hwnd)
 {
     struct qemu_SetProgmanWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPROGMANWINDOW);
-    call.hwnd = (uint64_t)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -326,7 +326,7 @@ void qemu_SetProgmanWindow(struct qemu_syscall *call)
 {
     struct qemu_SetProgmanWindow *c = (struct qemu_SetProgmanWindow *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)SetProgmanWindow(QEMU_G2H(c->hwnd));
+    c->super.iret = (ULONG_PTR)SetProgmanWindow(QEMU_G2H(c->hwnd));
 }
 
 #endif
@@ -345,7 +345,7 @@ WINUSERAPI HWND WINAPI GetProgmanWindow(void)
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -356,7 +356,7 @@ void qemu_GetProgmanWindow(struct qemu_syscall *call)
 {
     struct qemu_GetProgmanWindow *c = (struct qemu_GetProgmanWindow *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GetProgmanWindow();
+    c->super.iret = (ULONG_PTR)GetProgmanWindow();
 }
 
 #endif
@@ -373,11 +373,11 @@ WINUSERAPI HWND WINAPI SetTaskmanWindow (HWND hwnd)
 {
     struct qemu_SetTaskmanWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTASKMANWINDOW);
-    call.hwnd = (uint64_t)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -388,7 +388,7 @@ void qemu_SetTaskmanWindow(struct qemu_syscall *call)
 {
     struct qemu_SetTaskmanWindow *c = (struct qemu_SetTaskmanWindow *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)SetTaskmanWindow(QEMU_G2H(c->hwnd));
+    c->super.iret = (ULONG_PTR)SetTaskmanWindow(QEMU_G2H(c->hwnd));
 }
 
 #endif
@@ -407,7 +407,7 @@ WINUSERAPI HWND WINAPI GetTaskmanWindow(void)
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -418,7 +418,7 @@ void qemu_GetTaskmanWindow(struct qemu_syscall *call)
 {
     struct qemu_GetTaskmanWindow *c = (struct qemu_GetTaskmanWindow *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GetTaskmanWindow();
+    c->super.iret = (ULONG_PTR)GetTaskmanWindow();
 }
 
 #endif

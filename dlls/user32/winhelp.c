@@ -46,10 +46,10 @@ WINUSERAPI BOOL WINAPI WinHelpA(HWND hWnd, LPCSTR lpHelpFile, UINT wCommand, ULO
 {
     struct qemu_WinHelpA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WINHELPA);
-    call.hWnd = (uint64_t)hWnd;
-    call.lpHelpFile = (uint64_t)lpHelpFile;
-    call.wCommand = (uint64_t)wCommand;
-    call.dwData = (uint64_t)dwData;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.lpHelpFile = (ULONG_PTR)lpHelpFile;
+    call.wCommand = (ULONG_PTR)wCommand;
+    call.dwData = (ULONG_PTR)dwData;
 
     qemu_syscall(&call.super);
 
@@ -82,10 +82,10 @@ WINUSERAPI BOOL WINAPI WinHelpW(HWND hWnd, LPCWSTR helpFile, UINT command, ULONG
 {
     struct qemu_WinHelpW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WINHELPW);
-    call.hWnd = (uint64_t)hWnd;
-    call.helpFile = (uint64_t)helpFile;
-    call.command = (uint64_t)command;
-    call.dwData = (uint64_t)dwData;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.helpFile = (ULONG_PTR)helpFile;
+    call.command = (ULONG_PTR)command;
+    call.dwData = (ULONG_PTR)dwData;
 
     qemu_syscall(&call.super);
 

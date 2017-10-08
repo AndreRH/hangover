@@ -48,12 +48,12 @@ WINUSERAPI BOOL WINAPI TrackPopupMenuEx(HMENU hMenu, UINT wFlags, INT x, INT y, 
 {
     struct qemu_TrackPopupMenuEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRACKPOPUPMENUEX);
-    call.hMenu = (uint64_t)hMenu;
-    call.wFlags = (uint64_t)wFlags;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.hWnd = (uint64_t)hWnd;
-    call.lpTpm = (uint64_t)lpTpm;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.wFlags = (ULONG_PTR)wFlags;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.lpTpm = (ULONG_PTR)lpTpm;
 
     qemu_syscall(&call.super);
 
@@ -89,13 +89,13 @@ WINUSERAPI BOOL WINAPI TrackPopupMenu(HMENU hMenu, UINT wFlags, INT x, INT y, IN
 {
     struct qemu_TrackPopupMenu call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRACKPOPUPMENU);
-    call.hMenu = (uint64_t)hMenu;
-    call.wFlags = (uint64_t)wFlags;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.nReserved = (uint64_t)nReserved;
-    call.hWnd = (uint64_t)hWnd;
-    call.lpRect = (uint64_t)lpRect;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.wFlags = (ULONG_PTR)wFlags;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.nReserved = (ULONG_PTR)nReserved;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.lpRect = (ULONG_PTR)lpRect;
 
     qemu_syscall(&call.super);
 
@@ -129,11 +129,11 @@ WINUSERAPI BOOL WINAPI ChangeMenuA(HMENU hMenu, UINT pos, LPCSTR data, UINT id, 
 {
     struct qemu_ChangeMenuA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGEMENUA);
-    call.hMenu = (uint64_t)hMenu;
-    call.pos = (uint64_t)pos;
-    call.data = (uint64_t)data;
-    call.id = (uint64_t)id;
-    call.flags = (uint64_t)flags;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.pos = (ULONG_PTR)pos;
+    call.data = (ULONG_PTR)data;
+    call.id = (ULONG_PTR)id;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -167,11 +167,11 @@ WINUSERAPI BOOL WINAPI ChangeMenuW(HMENU hMenu, UINT pos, LPCWSTR data, UINT id,
 {
     struct qemu_ChangeMenuW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGEMENUW);
-    call.hMenu = (uint64_t)hMenu;
-    call.pos = (uint64_t)pos;
-    call.data = (uint64_t)data;
-    call.id = (uint64_t)id;
-    call.flags = (uint64_t)flags;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.pos = (ULONG_PTR)pos;
+    call.data = (ULONG_PTR)data;
+    call.id = (ULONG_PTR)id;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -203,9 +203,9 @@ WINUSERAPI DWORD WINAPI CheckMenuItem(HMENU hMenu, UINT id, UINT flags)
 {
     struct qemu_CheckMenuItem call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHECKMENUITEM);
-    call.hMenu = (uint64_t)hMenu;
-    call.id = (uint64_t)id;
-    call.flags = (uint64_t)flags;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.id = (ULONG_PTR)id;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -237,9 +237,9 @@ WINUSERAPI BOOL WINAPI EnableMenuItem(HMENU hMenu, UINT wItemID, UINT wFlags)
 {
     struct qemu_EnableMenuItem call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENABLEMENUITEM);
-    call.hMenu = (uint64_t)hMenu;
-    call.wItemID = (uint64_t)wItemID;
-    call.wFlags = (uint64_t)wFlags;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.wItemID = (ULONG_PTR)wItemID;
+    call.wFlags = (ULONG_PTR)wFlags;
 
     qemu_syscall(&call.super);
 
@@ -273,11 +273,11 @@ WINUSERAPI INT WINAPI GetMenuStringA(HMENU hMenu, UINT wItemID, LPSTR str, INT n
 {
     struct qemu_GetMenuStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENUSTRINGA);
-    call.hMenu = (uint64_t)hMenu;
-    call.wItemID = (uint64_t)wItemID;
-    call.str = (uint64_t)str;
-    call.nMaxSiz = (uint64_t)nMaxSiz;
-    call.wFlags = (uint64_t)wFlags;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.wItemID = (ULONG_PTR)wItemID;
+    call.str = (ULONG_PTR)str;
+    call.nMaxSiz = (ULONG_PTR)nMaxSiz;
+    call.wFlags = (ULONG_PTR)wFlags;
 
     qemu_syscall(&call.super);
 
@@ -311,11 +311,11 @@ WINUSERAPI INT WINAPI GetMenuStringW(HMENU hMenu, UINT wItemID, LPWSTR str, INT 
 {
     struct qemu_GetMenuStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENUSTRINGW);
-    call.hMenu = (uint64_t)hMenu;
-    call.wItemID = (uint64_t)wItemID;
-    call.str = (uint64_t)str;
-    call.nMaxSiz = (uint64_t)nMaxSiz;
-    call.wFlags = (uint64_t)wFlags;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.wItemID = (ULONG_PTR)wItemID;
+    call.str = (ULONG_PTR)str;
+    call.nMaxSiz = (ULONG_PTR)nMaxSiz;
+    call.wFlags = (ULONG_PTR)wFlags;
 
     qemu_syscall(&call.super);
 
@@ -348,10 +348,10 @@ WINUSERAPI BOOL WINAPI HiliteMenuItem(HWND hWnd, HMENU hMenu, UINT wItemID, UINT
 {
     struct qemu_HiliteMenuItem call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HILITEMENUITEM);
-    call.hWnd = (uint64_t)hWnd;
-    call.hMenu = (uint64_t)hMenu;
-    call.wItemID = (uint64_t)wItemID;
-    call.wHilite = (uint64_t)wHilite;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.wItemID = (ULONG_PTR)wItemID;
+    call.wHilite = (ULONG_PTR)wHilite;
 
     qemu_syscall(&call.super);
 
@@ -383,9 +383,9 @@ WINUSERAPI UINT WINAPI GetMenuState(HMENU hMenu, UINT wItemID, UINT wFlags)
 {
     struct qemu_GetMenuState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENUSTATE);
-    call.hMenu = (uint64_t)hMenu;
-    call.wItemID = (uint64_t)wItemID;
-    call.wFlags = (uint64_t)wFlags;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.wItemID = (ULONG_PTR)wItemID;
+    call.wFlags = (ULONG_PTR)wFlags;
 
     qemu_syscall(&call.super);
 
@@ -415,7 +415,7 @@ WINUSERAPI INT WINAPI GetMenuItemCount(HMENU hMenu)
 {
     struct qemu_GetMenuItemCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENUITEMCOUNT);
-    call.hMenu = (uint64_t)hMenu;
+    call.hMenu = (ULONG_PTR)hMenu;
 
     qemu_syscall(&call.super);
 
@@ -446,8 +446,8 @@ WINUSERAPI UINT WINAPI GetMenuItemID(HMENU hMenu, INT nPos)
 {
     struct qemu_GetMenuItemID call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENUITEMID);
-    call.hMenu = (uint64_t)hMenu;
-    call.nPos = (uint64_t)nPos;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.nPos = (ULONG_PTR)nPos;
 
     qemu_syscall(&call.super);
 
@@ -481,11 +481,11 @@ WINUSERAPI BOOL WINAPI InsertMenuW(HMENU hMenu, UINT pos, UINT flags, UINT_PTR i
 {
     struct qemu_InsertMenuW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INSERTMENUW);
-    call.hMenu = (uint64_t)hMenu;
-    call.pos = (uint64_t)pos;
-    call.flags = (uint64_t)flags;
-    call.id = (uint64_t)id;
-    call.str = (uint64_t)str;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.pos = (ULONG_PTR)pos;
+    call.flags = (ULONG_PTR)flags;
+    call.id = (ULONG_PTR)id;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -519,11 +519,11 @@ WINUSERAPI BOOL WINAPI InsertMenuA(HMENU hMenu, UINT pos, UINT flags, UINT_PTR i
 {
     struct qemu_InsertMenuA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INSERTMENUA);
-    call.hMenu = (uint64_t)hMenu;
-    call.pos = (uint64_t)pos;
-    call.flags = (uint64_t)flags;
-    call.id = (uint64_t)id;
-    call.str = (uint64_t)str;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.pos = (ULONG_PTR)pos;
+    call.flags = (ULONG_PTR)flags;
+    call.id = (ULONG_PTR)id;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -556,10 +556,10 @@ WINUSERAPI BOOL WINAPI AppendMenuA(HMENU hMenu, UINT flags, UINT_PTR id, LPCSTR 
 {
     struct qemu_AppendMenuA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_APPENDMENUA);
-    call.hMenu = (uint64_t)hMenu;
-    call.flags = (uint64_t)flags;
-    call.id = (uint64_t)id;
-    call.data = (uint64_t)data;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.flags = (ULONG_PTR)flags;
+    call.id = (ULONG_PTR)id;
+    call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
 
@@ -592,10 +592,10 @@ WINUSERAPI BOOL WINAPI AppendMenuW(HMENU hMenu, UINT flags, UINT_PTR id, LPCWSTR
 {
     struct qemu_AppendMenuW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_APPENDMENUW);
-    call.hMenu = (uint64_t)hMenu;
-    call.flags = (uint64_t)flags;
-    call.id = (uint64_t)id;
-    call.data = (uint64_t)data;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.flags = (ULONG_PTR)flags;
+    call.id = (ULONG_PTR)id;
+    call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
 
@@ -627,9 +627,9 @@ WINUSERAPI BOOL WINAPI RemoveMenu(HMENU hMenu, UINT nPos, UINT wFlags)
 {
     struct qemu_RemoveMenu call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMOVEMENU);
-    call.hMenu = (uint64_t)hMenu;
-    call.nPos = (uint64_t)nPos;
-    call.wFlags = (uint64_t)wFlags;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.nPos = (ULONG_PTR)nPos;
+    call.wFlags = (ULONG_PTR)wFlags;
 
     qemu_syscall(&call.super);
 
@@ -661,9 +661,9 @@ WINUSERAPI BOOL WINAPI DeleteMenu(HMENU hMenu, UINT nPos, UINT wFlags)
 {
     struct qemu_DeleteMenu call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETEMENU);
-    call.hMenu = (uint64_t)hMenu;
-    call.nPos = (uint64_t)nPos;
-    call.wFlags = (uint64_t)wFlags;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.nPos = (ULONG_PTR)nPos;
+    call.wFlags = (ULONG_PTR)wFlags;
 
     qemu_syscall(&call.super);
 
@@ -697,11 +697,11 @@ WINUSERAPI BOOL WINAPI ModifyMenuW(HMENU hMenu, UINT pos, UINT flags, UINT_PTR i
 {
     struct qemu_ModifyMenuW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MODIFYMENUW);
-    call.hMenu = (uint64_t)hMenu;
-    call.pos = (uint64_t)pos;
-    call.flags = (uint64_t)flags;
-    call.id = (uint64_t)id;
-    call.str = (uint64_t)str;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.pos = (ULONG_PTR)pos;
+    call.flags = (ULONG_PTR)flags;
+    call.id = (ULONG_PTR)id;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -735,11 +735,11 @@ WINUSERAPI BOOL WINAPI ModifyMenuA(HMENU hMenu, UINT pos, UINT flags, UINT_PTR i
 {
     struct qemu_ModifyMenuA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MODIFYMENUA);
-    call.hMenu = (uint64_t)hMenu;
-    call.pos = (uint64_t)pos;
-    call.flags = (uint64_t)flags;
-    call.id = (uint64_t)id;
-    call.str = (uint64_t)str;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.pos = (ULONG_PTR)pos;
+    call.flags = (ULONG_PTR)flags;
+    call.id = (ULONG_PTR)id;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -771,7 +771,7 @@ WINUSERAPI HMENU WINAPI CreatePopupMenu(void)
 
     qemu_syscall(&call.super);
 
-    return (HMENU)call.super.iret;
+    return (HMENU)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -780,7 +780,7 @@ void qemu_CreatePopupMenu(struct qemu_syscall *call)
 {
     struct qemu_CreatePopupMenu *c = (struct qemu_CreatePopupMenu *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreatePopupMenu();
+    c->super.iret = (ULONG_PTR)CreatePopupMenu();
 }
 
 #endif
@@ -801,11 +801,11 @@ WINUSERAPI BOOL WINAPI SetMenuItemBitmaps(HMENU hMenu, UINT nPos, UINT wFlags, H
 {
     struct qemu_SetMenuItemBitmaps call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMENUITEMBITMAPS);
-    call.hMenu = (uint64_t)hMenu;
-    call.nPos = (uint64_t)nPos;
-    call.wFlags = (uint64_t)wFlags;
-    call.hNewUnCheck = (uint64_t)hNewUnCheck;
-    call.hNewCheck = (uint64_t)hNewCheck;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.nPos = (ULONG_PTR)nPos;
+    call.wFlags = (ULONG_PTR)wFlags;
+    call.hNewUnCheck = (ULONG_PTR)hNewUnCheck;
+    call.hNewCheck = (ULONG_PTR)hNewCheck;
 
     qemu_syscall(&call.super);
 
@@ -837,7 +837,7 @@ WINUSERAPI HMENU WINAPI CreateMenu(void)
 
     qemu_syscall(&call.super);
 
-    return (HMENU)call.super.iret;
+    return (HMENU)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -846,7 +846,7 @@ void qemu_CreateMenu(struct qemu_syscall *call)
 {
     struct qemu_CreateMenu *c = (struct qemu_CreateMenu *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateMenu();
+    c->super.iret = (ULONG_PTR)CreateMenu();
 }
 
 #endif
@@ -863,7 +863,7 @@ WINUSERAPI BOOL WINAPI DestroyMenu(HMENU hMenu)
 {
     struct qemu_DestroyMenu call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DESTROYMENU);
-    call.hMenu = (uint64_t)hMenu;
+    call.hMenu = (ULONG_PTR)hMenu;
 
     qemu_syscall(&call.super);
 
@@ -894,12 +894,12 @@ WINUSERAPI HMENU WINAPI GetSystemMenu(HWND hWnd, BOOL bRevert)
 {
     struct qemu_GetSystemMenu call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMMENU);
-    call.hWnd = (uint64_t)hWnd;
-    call.bRevert = (uint64_t)bRevert;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.bRevert = (ULONG_PTR)bRevert;
 
     qemu_syscall(&call.super);
 
-    return (HMENU)call.super.iret;
+    return (HMENU)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -908,7 +908,7 @@ void qemu_GetSystemMenu(struct qemu_syscall *call)
 {
     struct qemu_GetSystemMenu *c = (struct qemu_GetSystemMenu *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetSystemMenu(QEMU_G2H(c->hWnd), c->bRevert);
+    c->super.iret = (ULONG_PTR)GetSystemMenu(QEMU_G2H(c->hWnd), c->bRevert);
 }
 
 #endif
@@ -926,8 +926,8 @@ WINUSERAPI BOOL WINAPI SetSystemMenu(HWND hwnd, HMENU hMenu)
 {
     struct qemu_SetSystemMenu call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSYSTEMMENU);
-    call.hwnd = (uint64_t)hwnd;
-    call.hMenu = (uint64_t)hMenu;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.hMenu = (ULONG_PTR)hMenu;
 
     qemu_syscall(&call.super);
 
@@ -957,11 +957,11 @@ WINUSERAPI HMENU WINAPI GetMenu(HWND hWnd)
 {
     struct qemu_GetMenu call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENU);
-    call.hWnd = (uint64_t)hWnd;
+    call.hWnd = (ULONG_PTR)hWnd;
 
     qemu_syscall(&call.super);
 
-    return (HMENU)call.super.iret;
+    return (HMENU)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -970,7 +970,7 @@ void qemu_GetMenu(struct qemu_syscall *call)
 {
     struct qemu_GetMenu *c = (struct qemu_GetMenu *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetMenu(QEMU_G2H(c->hWnd));
+    c->super.iret = (ULONG_PTR)GetMenu(QEMU_G2H(c->hWnd));
 }
 
 #endif
@@ -990,10 +990,10 @@ WINUSERAPI BOOL WINAPI GetMenuBarInfo(HWND hwnd, LONG idObject, LONG idItem, PME
 {
     struct qemu_GetMenuBarInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENUBARINFO);
-    call.hwnd = (uint64_t)hwnd;
-    call.idObject = (uint64_t)idObject;
-    call.idItem = (uint64_t)idItem;
-    call.pmbi = (uint64_t)pmbi;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.idObject = (ULONG_PTR)idObject;
+    call.idItem = (ULONG_PTR)idItem;
+    call.pmbi = (ULONG_PTR)pmbi;
 
     qemu_syscall(&call.super);
 
@@ -1024,8 +1024,8 @@ WINUSERAPI BOOL WINAPI SetMenu(HWND hWnd, HMENU hMenu)
 {
     struct qemu_SetMenu call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMENU);
-    call.hWnd = (uint64_t)hWnd;
-    call.hMenu = (uint64_t)hMenu;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hMenu = (ULONG_PTR)hMenu;
 
     qemu_syscall(&call.super);
 
@@ -1056,12 +1056,12 @@ WINUSERAPI HMENU WINAPI GetSubMenu(HMENU hMenu, INT nPos)
 {
     struct qemu_GetSubMenu call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSUBMENU);
-    call.hMenu = (uint64_t)hMenu;
-    call.nPos = (uint64_t)nPos;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.nPos = (ULONG_PTR)nPos;
 
     qemu_syscall(&call.super);
 
-    return (HMENU)call.super.iret;
+    return (HMENU)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1070,7 +1070,7 @@ void qemu_GetSubMenu(struct qemu_syscall *call)
 {
     struct qemu_GetSubMenu *c = (struct qemu_GetSubMenu *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetSubMenu(QEMU_G2H(c->hMenu), c->nPos);
+    c->super.iret = (ULONG_PTR)GetSubMenu(QEMU_G2H(c->hMenu), c->nPos);
 }
 
 #endif
@@ -1087,7 +1087,7 @@ WINUSERAPI BOOL WINAPI DrawMenuBar(HWND hWnd)
 {
     struct qemu_DrawMenuBar call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWMENUBAR);
-    call.hWnd = (uint64_t)hWnd;
+    call.hWnd = (ULONG_PTR)hWnd;
 
     qemu_syscall(&call.super);
 
@@ -1121,11 +1121,11 @@ WINUSERAPI DWORD WINAPI DrawMenuBarTemp(HWND hwnd, HDC hDC, LPRECT lprect, HMENU
 {
     struct qemu_DrawMenuBarTemp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWMENUBARTEMP);
-    call.hwnd = (uint64_t)hwnd;
-    call.hDC = (uint64_t)hDC;
-    call.lprect = (uint64_t)lprect;
-    call.hMenu = (uint64_t)hMenu;
-    call.hFont = (uint64_t)hFont;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.hDC = (ULONG_PTR)hDC;
+    call.lprect = (ULONG_PTR)lprect;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.hFont = (ULONG_PTR)hFont;
 
     qemu_syscall(&call.super);
 
@@ -1186,12 +1186,12 @@ WINUSERAPI HMENU WINAPI LoadMenuA(HINSTANCE instance, LPCSTR name)
 {
     struct qemu_LoadMenuA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADMENUA);
-    call.instance = (uint64_t)instance;
-    call.name = (uint64_t)name;
+    call.instance = (ULONG_PTR)instance;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HMENU)call.super.iret;
+    return (HMENU)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1200,7 +1200,7 @@ void qemu_LoadMenuA(struct qemu_syscall *call)
 {
     struct qemu_LoadMenuA *c = (struct qemu_LoadMenuA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)LoadMenuA(QEMU_G2H(c->instance), QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)LoadMenuA(QEMU_G2H(c->instance), QEMU_G2H(c->name));
 }
 
 #endif
@@ -1218,12 +1218,12 @@ WINUSERAPI HMENU WINAPI LoadMenuW(HINSTANCE instance, LPCWSTR name)
 {
     struct qemu_LoadMenuW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADMENUW);
-    call.instance = (uint64_t)instance;
-    call.name = (uint64_t)name;
+    call.instance = (ULONG_PTR)instance;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HMENU)call.super.iret;
+    return (HMENU)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1232,7 +1232,7 @@ void qemu_LoadMenuW(struct qemu_syscall *call)
 {
     struct qemu_LoadMenuW *c = (struct qemu_LoadMenuW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)LoadMenuW(QEMU_G2H(c->instance), QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)LoadMenuW(QEMU_G2H(c->instance), QEMU_G2H(c->name));
 }
 
 #endif
@@ -1249,11 +1249,11 @@ WINUSERAPI HMENU WINAPI LoadMenuIndirectW(LPCVOID template)
 {
     struct qemu_LoadMenuIndirectW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADMENUINDIRECTW);
-    call.template = (uint64_t)template;
+    call.template = (ULONG_PTR)template;
 
     qemu_syscall(&call.super);
 
-    return (HMENU)call.super.iret;
+    return (HMENU)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1262,7 +1262,7 @@ void qemu_LoadMenuIndirectW(struct qemu_syscall *call)
 {
     struct qemu_LoadMenuIndirectW *c = (struct qemu_LoadMenuIndirectW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LoadMenuIndirectW(QEMU_G2H(c->template));
+    c->super.iret = (ULONG_PTR)LoadMenuIndirectW(QEMU_G2H(c->template));
 }
 
 #endif
@@ -1279,11 +1279,11 @@ WINUSERAPI HMENU WINAPI LoadMenuIndirectA(LPCVOID template)
 {
     struct qemu_LoadMenuIndirectA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADMENUINDIRECTA);
-    call.template = (uint64_t)template;
+    call.template = (ULONG_PTR)template;
 
     qemu_syscall(&call.super);
 
-    return (HMENU)call.super.iret;
+    return (HMENU)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1292,7 +1292,7 @@ void qemu_LoadMenuIndirectA(struct qemu_syscall *call)
 {
     struct qemu_LoadMenuIndirectA *c = (struct qemu_LoadMenuIndirectA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)LoadMenuIndirectA(QEMU_G2H(c->template));
+    c->super.iret = (ULONG_PTR)LoadMenuIndirectA(QEMU_G2H(c->template));
 }
 
 #endif
@@ -1309,7 +1309,7 @@ WINUSERAPI BOOL WINAPI IsMenu(HMENU hmenu)
 {
     struct qemu_IsMenu call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISMENU);
-    call.hmenu = (uint64_t)hmenu;
+    call.hmenu = (ULONG_PTR)hmenu;
 
     qemu_syscall(&call.super);
 
@@ -1342,10 +1342,10 @@ WINUSERAPI BOOL WINAPI GetMenuItemInfoA(HMENU hmenu, UINT item, BOOL bypos, LPME
 {
     struct qemu_GetMenuItemInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENUITEMINFOA);
-    call.hmenu = (uint64_t)hmenu;
-    call.item = (uint64_t)item;
-    call.bypos = (uint64_t)bypos;
-    call.lpmii = (uint64_t)lpmii;
+    call.hmenu = (ULONG_PTR)hmenu;
+    call.item = (ULONG_PTR)item;
+    call.bypos = (ULONG_PTR)bypos;
+    call.lpmii = (ULONG_PTR)lpmii;
 
     qemu_syscall(&call.super);
 
@@ -1378,10 +1378,10 @@ WINUSERAPI BOOL WINAPI GetMenuItemInfoW(HMENU hmenu, UINT item, BOOL bypos, LPME
 {
     struct qemu_GetMenuItemInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENUITEMINFOW);
-    call.hmenu = (uint64_t)hmenu;
-    call.item = (uint64_t)item;
-    call.bypos = (uint64_t)bypos;
-    call.lpmii = (uint64_t)lpmii;
+    call.hmenu = (ULONG_PTR)hmenu;
+    call.item = (ULONG_PTR)item;
+    call.bypos = (ULONG_PTR)bypos;
+    call.lpmii = (ULONG_PTR)lpmii;
 
     qemu_syscall(&call.super);
 
@@ -1414,10 +1414,10 @@ WINUSERAPI BOOL WINAPI SetMenuItemInfoA(HMENU hmenu, UINT item, BOOL bypos, cons
 {
     struct qemu_SetMenuItemInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMENUITEMINFOA);
-    call.hmenu = (uint64_t)hmenu;
-    call.item = (uint64_t)item;
-    call.bypos = (uint64_t)bypos;
-    call.lpmii = (uint64_t)lpmii;
+    call.hmenu = (ULONG_PTR)hmenu;
+    call.item = (ULONG_PTR)item;
+    call.bypos = (ULONG_PTR)bypos;
+    call.lpmii = (ULONG_PTR)lpmii;
 
     qemu_syscall(&call.super);
 
@@ -1450,10 +1450,10 @@ WINUSERAPI BOOL WINAPI SetMenuItemInfoW(HMENU hmenu, UINT item, BOOL bypos, cons
 {
     struct qemu_SetMenuItemInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMENUITEMINFOW);
-    call.hmenu = (uint64_t)hmenu;
-    call.item = (uint64_t)item;
-    call.bypos = (uint64_t)bypos;
-    call.lpmii = (uint64_t)lpmii;
+    call.hmenu = (ULONG_PTR)hmenu;
+    call.item = (ULONG_PTR)item;
+    call.bypos = (ULONG_PTR)bypos;
+    call.lpmii = (ULONG_PTR)lpmii;
 
     qemu_syscall(&call.super);
 
@@ -1485,9 +1485,9 @@ WINUSERAPI BOOL WINAPI SetMenuDefaultItem(HMENU hmenu, UINT uItem, UINT bypos)
 {
     struct qemu_SetMenuDefaultItem call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMENUDEFAULTITEM);
-    call.hmenu = (uint64_t)hmenu;
-    call.uItem = (uint64_t)uItem;
-    call.bypos = (uint64_t)bypos;
+    call.hmenu = (ULONG_PTR)hmenu;
+    call.uItem = (ULONG_PTR)uItem;
+    call.bypos = (ULONG_PTR)bypos;
 
     qemu_syscall(&call.super);
 
@@ -1519,9 +1519,9 @@ WINUSERAPI UINT WINAPI GetMenuDefaultItem(HMENU hmenu, UINT bypos, UINT flags)
 {
     struct qemu_GetMenuDefaultItem call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENUDEFAULTITEM);
-    call.hmenu = (uint64_t)hmenu;
-    call.bypos = (uint64_t)bypos;
-    call.flags = (uint64_t)flags;
+    call.hmenu = (ULONG_PTR)hmenu;
+    call.bypos = (ULONG_PTR)bypos;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -1554,10 +1554,10 @@ WINUSERAPI BOOL WINAPI InsertMenuItemA(HMENU hMenu, UINT uItem, BOOL bypos, cons
 {
     struct qemu_InsertMenuItemA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INSERTMENUITEMA);
-    call.hMenu = (uint64_t)hMenu;
-    call.uItem = (uint64_t)uItem;
-    call.bypos = (uint64_t)bypos;
-    call.lpmii = (uint64_t)lpmii;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.uItem = (ULONG_PTR)uItem;
+    call.bypos = (ULONG_PTR)bypos;
+    call.lpmii = (ULONG_PTR)lpmii;
 
     qemu_syscall(&call.super);
 
@@ -1590,10 +1590,10 @@ WINUSERAPI BOOL WINAPI InsertMenuItemW(HMENU hMenu, UINT uItem, BOOL bypos, cons
 {
     struct qemu_InsertMenuItemW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INSERTMENUITEMW);
-    call.hMenu = (uint64_t)hMenu;
-    call.uItem = (uint64_t)uItem;
-    call.bypos = (uint64_t)bypos;
-    call.lpmii = (uint64_t)lpmii;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.uItem = (ULONG_PTR)uItem;
+    call.bypos = (ULONG_PTR)bypos;
+    call.lpmii = (ULONG_PTR)lpmii;
 
     qemu_syscall(&call.super);
 
@@ -1627,11 +1627,11 @@ WINUSERAPI BOOL WINAPI CheckMenuRadioItem(HMENU hMenu, UINT first, UINT last, UI
 {
     struct qemu_CheckMenuRadioItem call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHECKMENURADIOITEM);
-    call.hMenu = (uint64_t)hMenu;
-    call.first = (uint64_t)first;
-    call.last = (uint64_t)last;
-    call.check = (uint64_t)check;
-    call.bypos = (uint64_t)bypos;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.first = (ULONG_PTR)first;
+    call.last = (ULONG_PTR)last;
+    call.check = (ULONG_PTR)check;
+    call.bypos = (ULONG_PTR)bypos;
 
     qemu_syscall(&call.super);
 
@@ -1664,10 +1664,10 @@ WINUSERAPI BOOL WINAPI GetMenuItemRect(HWND hwnd, HMENU hMenu, UINT uItem, RECT 
 {
     struct qemu_GetMenuItemRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENUITEMRECT);
-    call.hwnd = (uint64_t)hwnd;
-    call.hMenu = (uint64_t)hMenu;
-    call.uItem = (uint64_t)uItem;
-    call.rect = (uint64_t)rect;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.uItem = (ULONG_PTR)uItem;
+    call.rect = (ULONG_PTR)rect;
 
     qemu_syscall(&call.super);
 
@@ -1698,8 +1698,8 @@ WINUSERAPI BOOL WINAPI SetMenuInfo (HMENU hMenu, LPCMENUINFO lpmi)
 {
     struct qemu_SetMenuInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMENUINFO);
-    call.hMenu = (uint64_t)hMenu;
-    call.lpmi = (uint64_t)lpmi;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.lpmi = (ULONG_PTR)lpmi;
 
     qemu_syscall(&call.super);
 
@@ -1730,8 +1730,8 @@ WINUSERAPI BOOL WINAPI GetMenuInfo (HMENU hMenu, LPMENUINFO lpmi)
 {
     struct qemu_GetMenuInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENUINFO);
-    call.hMenu = (uint64_t)hMenu;
-    call.lpmi = (uint64_t)lpmi;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.lpmi = (ULONG_PTR)lpmi;
 
     qemu_syscall(&call.super);
 
@@ -1762,8 +1762,8 @@ WINUSERAPI BOOL WINAPI SetMenuContextHelpId(HMENU hMenu, DWORD dwContextHelpID)
 {
     struct qemu_SetMenuContextHelpId call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMENUCONTEXTHELPID);
-    call.hMenu = (uint64_t)hMenu;
-    call.dwContextHelpID = (uint64_t)dwContextHelpID;
+    call.hMenu = (ULONG_PTR)hMenu;
+    call.dwContextHelpID = (ULONG_PTR)dwContextHelpID;
 
     qemu_syscall(&call.super);
 
@@ -1793,7 +1793,7 @@ WINUSERAPI DWORD WINAPI GetMenuContextHelpId(HMENU hMenu)
 {
     struct qemu_GetMenuContextHelpId call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENUCONTEXTHELPID);
-    call.hMenu = (uint64_t)hMenu;
+    call.hMenu = (ULONG_PTR)hMenu;
 
     qemu_syscall(&call.super);
 
@@ -1825,9 +1825,9 @@ WINUSERAPI INT WINAPI TranslateAcceleratorA(HWND hWnd, HACCEL hAccel, LPMSG msg)
 {
     struct qemu_TranslateAcceleratorA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRANSLATEACCELERATORA);
-    call.hWnd = (uint64_t)hWnd;
-    call.hAccel = (uint64_t)hAccel;
-    call.msg = (uint64_t)msg;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hAccel = (ULONG_PTR)hAccel;
+    call.msg = (ULONG_PTR)msg;
 
     qemu_syscall(&call.super);
 
@@ -1859,9 +1859,9 @@ WINUSERAPI INT WINAPI TranslateAcceleratorW(HWND hWnd, HACCEL hAccel, LPMSG msg)
 {
     struct qemu_TranslateAcceleratorW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRANSLATEACCELERATORW);
-    call.hWnd = (uint64_t)hWnd;
-    call.hAccel = (uint64_t)hAccel;
-    call.msg = (uint64_t)msg;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hAccel = (ULONG_PTR)hAccel;
+    call.msg = (ULONG_PTR)msg;
 
     qemu_syscall(&call.super);
 

@@ -46,10 +46,10 @@ WINUSERAPI BOOL WINAPI CreateCaret(HWND hwnd, HBITMAP bitmap, INT width, INT hei
 {
     struct qemu_CreateCaret call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATECARET);
-    call.hwnd = (uint64_t)hwnd;
-    call.bitmap = (uint64_t)bitmap;
-    call.width = (uint64_t)width;
-    call.height = (uint64_t)height;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.bitmap = (ULONG_PTR)bitmap;
+    call.width = (ULONG_PTR)width;
+    call.height = (ULONG_PTR)height;
 
     qemu_syscall(&call.super);
 
@@ -108,8 +108,8 @@ WINUSERAPI BOOL WINAPI SetCaretPos(INT x, INT y)
 {
     struct qemu_SetCaretPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCARETPOS);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -139,7 +139,7 @@ WINUSERAPI BOOL WINAPI HideCaret(HWND hwnd)
 {
     struct qemu_HideCaret call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HIDECARET);
-    call.hwnd = (uint64_t)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -169,7 +169,7 @@ WINUSERAPI BOOL WINAPI ShowCaret(HWND hwnd)
 {
     struct qemu_ShowCaret call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHOWCARET);
-    call.hwnd = (uint64_t)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -199,7 +199,7 @@ WINUSERAPI BOOL WINAPI GetCaretPos(LPPOINT pt)
 {
     struct qemu_GetCaretPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCARETPOS);
-    call.pt = (uint64_t)pt;
+    call.pt = (ULONG_PTR)pt;
 
     qemu_syscall(&call.super);
 
@@ -229,7 +229,7 @@ WINUSERAPI BOOL WINAPI SetCaretBlinkTime(UINT msecs)
 {
     struct qemu_SetCaretBlinkTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCARETBLINKTIME);
-    call.msecs = (uint64_t)msecs;
+    call.msecs = (ULONG_PTR)msecs;
 
     qemu_syscall(&call.super);
 

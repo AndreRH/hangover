@@ -44,9 +44,9 @@ WINUSERAPI UINT WINAPI SendInput(UINT count, LPINPUT inputs, int size)
 {
     struct qemu_SendInput call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDINPUT);
-    call.count = (uint64_t)count;
-    call.inputs = (uint64_t)inputs;
-    call.size = (uint64_t)size;
+    call.count = (ULONG_PTR)count;
+    call.inputs = (ULONG_PTR)inputs;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -79,10 +79,10 @@ WINUSERAPI void WINAPI keybd_event(BYTE bVk, BYTE bScan, DWORD dwFlags, ULONG_PT
 {
     struct qemu_keybd_event call;
     call.super.id = QEMU_SYSCALL_ID(CALL_KEYBD_EVENT);
-    call.bVk = (uint64_t)bVk;
-    call.bScan = (uint64_t)bScan;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwExtraInfo = (uint64_t)dwExtraInfo;
+    call.bVk = (ULONG_PTR)bVk;
+    call.bScan = (ULONG_PTR)bScan;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwExtraInfo = (ULONG_PTR)dwExtraInfo;
 
     qemu_syscall(&call.super);
 
@@ -116,11 +116,11 @@ WINUSERAPI void WINAPI mouse_event(DWORD dwFlags, DWORD dx, DWORD dy, DWORD dwDa
 {
     struct qemu_mouse_event call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MOUSE_EVENT);
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dx = (uint64_t)dx;
-    call.dy = (uint64_t)dy;
-    call.dwData = (uint64_t)dwData;
-    call.dwExtraInfo = (uint64_t)dwExtraInfo;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dx = (ULONG_PTR)dx;
+    call.dy = (ULONG_PTR)dy;
+    call.dwData = (ULONG_PTR)dwData;
+    call.dwExtraInfo = (ULONG_PTR)dwExtraInfo;
 
     qemu_syscall(&call.super);
 
@@ -150,7 +150,7 @@ WINUSERAPI BOOL WINAPI GetCursorPos(POINT *pt)
 {
     struct qemu_GetCursorPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURSORPOS);
-    call.pt = (uint64_t)pt;
+    call.pt = (ULONG_PTR)pt;
 
     qemu_syscall(&call.super);
 
@@ -180,7 +180,7 @@ WINUSERAPI BOOL WINAPI GetCursorInfo(PCURSORINFO pci)
 {
     struct qemu_GetCursorInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURSORINFO);
-    call.pci = (uint64_t)pci;
+    call.pci = (ULONG_PTR)pci;
 
     qemu_syscall(&call.super);
 
@@ -210,7 +210,7 @@ WINUSERAPI BOOL WINAPI GetPhysicalCursorPos(POINT *point)
 {
     struct qemu_GetPhysicalCursorPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPHYSICALCURSORPOS);
-    call.point = (uint64_t)point;
+    call.point = (ULONG_PTR)point;
 
     qemu_syscall(&call.super);
 
@@ -275,8 +275,8 @@ WINUSERAPI BOOL WINAPI SetPhysicalCursorPos(INT x, INT y)
 {
     struct qemu_SetPhysicalCursorPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPHYSICALCURSORPOS);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -308,11 +308,11 @@ WINUSERAPI HWND WINAPI SetCapture(HWND hwnd)
 {
     struct qemu_SetCapture call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCAPTURE);
-    call.hwnd = (uint64_t)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -321,7 +321,7 @@ void qemu_SetCapture(struct qemu_syscall *call)
 {
     struct qemu_SetCapture *c = (struct qemu_SetCapture *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)SetCapture(QEMU_G2H(c->hwnd));
+    c->super.iret = (ULONG_PTR)SetCapture(QEMU_G2H(c->hwnd));
 }
 
 #endif
@@ -368,7 +368,7 @@ WINUSERAPI HWND WINAPI GetCapture(void)
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -377,7 +377,7 @@ void qemu_GetCapture(struct qemu_syscall *call)
 {
     struct qemu_GetCapture *c = (struct qemu_GetCapture *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetCapture();
+    c->super.iret = (ULONG_PTR)GetCapture();
 }
 
 #endif
@@ -394,7 +394,7 @@ WINUSERAPI SHORT WINAPI GetAsyncKeyState(INT key)
 {
     struct qemu_GetAsyncKeyState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETASYNCKEYSTATE);
-    call.key = (uint64_t)key;
+    call.key = (ULONG_PTR)key;
 
     qemu_syscall(&call.super);
 
@@ -424,7 +424,7 @@ WINUSERAPI DWORD WINAPI GetQueueStatus(UINT flags)
 {
     struct qemu_GetQueueStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETQUEUESTATUS);
-    call.flags = (uint64_t)flags;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -482,7 +482,7 @@ WINUSERAPI BOOL WINAPI GetLastInputInfo(PLASTINPUTINFO plii)
 {
     struct qemu_GetLastInputInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETLASTINPUTINFO);
-    call.plii = (uint64_t)plii;
+    call.plii = (ULONG_PTR)plii;
 
     qemu_syscall(&call.super);
 
@@ -514,9 +514,9 @@ WINUSERAPI UINT WINAPI GetRawInputDeviceList(RAWINPUTDEVICELIST *devices, UINT *
 {
     struct qemu_GetRawInputDeviceList call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETRAWINPUTDEVICELIST);
-    call.devices = (uint64_t)devices;
-    call.device_count = (uint64_t)device_count;
-    call.size = (uint64_t)size;
+    call.devices = (ULONG_PTR)devices;
+    call.device_count = (ULONG_PTR)device_count;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -548,9 +548,9 @@ WINBASEAPI WINBOOL WINAPI RegisterRawInputDevices(const RAWINPUTDEVICE *devices,
 {
     struct qemu_RegisterRawInputDevices call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERRAWINPUTDEVICES);
-    call.devices = (uint64_t)devices;
-    call.device_count = (uint64_t)device_count;
-    call.size = (uint64_t)size;
+    call.devices = (ULONG_PTR)devices;
+    call.device_count = (ULONG_PTR)device_count;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -584,11 +584,11 @@ WINUSERAPI UINT WINAPI GetRawInputData(HRAWINPUT rawinput, UINT command, void *d
 {
     struct qemu_GetRawInputData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETRAWINPUTDATA);
-    call.rawinput = (uint64_t)rawinput;
-    call.command = (uint64_t)command;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
-    call.header_size = (uint64_t)header_size;
+    call.rawinput = (ULONG_PTR)rawinput;
+    call.command = (ULONG_PTR)command;
+    call.data = (ULONG_PTR)data;
+    call.data_size = (ULONG_PTR)data_size;
+    call.header_size = (ULONG_PTR)header_size;
 
     qemu_syscall(&call.super);
 
@@ -620,9 +620,9 @@ WINUSERAPI UINT WINAPI GetRawInputBuffer(PRAWINPUT pData, PUINT pcbSize, UINT cb
 {
     struct qemu_GetRawInputBuffer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETRAWINPUTBUFFER);
-    call.pData = (uint64_t)pData;
-    call.pcbSize = (uint64_t)pcbSize;
-    call.cbSizeHeader = (uint64_t)cbSizeHeader;
+    call.pData = (ULONG_PTR)pData;
+    call.pcbSize = (ULONG_PTR)pcbSize;
+    call.cbSizeHeader = (ULONG_PTR)cbSizeHeader;
 
     qemu_syscall(&call.super);
 
@@ -655,10 +655,10 @@ WINUSERAPI UINT WINAPI GetRawInputDeviceInfoA(HANDLE device, UINT command, void 
 {
     struct qemu_GetRawInputDeviceInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETRAWINPUTDEVICEINFOA);
-    call.device = (uint64_t)device;
-    call.command = (uint64_t)command;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
+    call.device = (ULONG_PTR)device;
+    call.command = (ULONG_PTR)command;
+    call.data = (ULONG_PTR)data;
+    call.data_size = (ULONG_PTR)data_size;
 
     qemu_syscall(&call.super);
 
@@ -691,10 +691,10 @@ WINUSERAPI UINT WINAPI GetRawInputDeviceInfoW(HANDLE device, UINT command, void 
 {
     struct qemu_GetRawInputDeviceInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETRAWINPUTDEVICEINFOW);
-    call.device = (uint64_t)device;
-    call.command = (uint64_t)command;
-    call.data = (uint64_t)data;
-    call.data_size = (uint64_t)data_size;
+    call.device = (ULONG_PTR)device;
+    call.command = (ULONG_PTR)command;
+    call.data = (ULONG_PTR)data;
+    call.data_size = (ULONG_PTR)data_size;
 
     qemu_syscall(&call.super);
 
@@ -726,9 +726,9 @@ WINUSERAPI UINT WINAPI GetRegisteredRawInputDevices(PRAWINPUTDEVICE pRawInputDev
 {
     struct qemu_GetRegisteredRawInputDevices call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETREGISTEREDRAWINPUTDEVICES);
-    call.pRawInputDevices = (uint64_t)pRawInputDevices;
-    call.puiNumDevices = (uint64_t)puiNumDevices;
-    call.cbSize = (uint64_t)cbSize;
+    call.pRawInputDevices = (ULONG_PTR)pRawInputDevices;
+    call.puiNumDevices = (ULONG_PTR)puiNumDevices;
+    call.cbSize = (ULONG_PTR)cbSize;
 
     qemu_syscall(&call.super);
 
@@ -760,9 +760,9 @@ WINUSERAPI LRESULT WINAPI DefRawInputProc(PRAWINPUT *paRawInput, INT nInput, UIN
 {
     struct qemu_DefRawInputProc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEFRAWINPUTPROC);
-    call.paRawInput = (uint64_t)paRawInput;
-    call.nInput = (uint64_t)nInput;
-    call.cbSizeHeader = (uint64_t)cbSizeHeader;
+    call.paRawInput = (ULONG_PTR)paRawInput;
+    call.nInput = (ULONG_PTR)nInput;
+    call.cbSizeHeader = (ULONG_PTR)cbSizeHeader;
 
     qemu_syscall(&call.super);
 
@@ -794,9 +794,9 @@ WINUSERAPI BOOL WINAPI AttachThreadInput(DWORD from, DWORD to, BOOL attach)
 {
     struct qemu_AttachThreadInput call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ATTACHTHREADINPUT);
-    call.from = (uint64_t)from;
-    call.to = (uint64_t)to;
-    call.attach = (uint64_t)attach;
+    call.from = (ULONG_PTR)from;
+    call.to = (ULONG_PTR)to;
+    call.attach = (ULONG_PTR)attach;
 
     qemu_syscall(&call.super);
 
@@ -826,7 +826,7 @@ WINUSERAPI SHORT WINAPI GetKeyState(INT vkey)
 {
     struct qemu_GetKeyState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETKEYSTATE);
-    call.vkey = (uint64_t)vkey;
+    call.vkey = (ULONG_PTR)vkey;
 
     qemu_syscall(&call.super);
 
@@ -856,7 +856,7 @@ WINUSERAPI BOOL WINAPI GetKeyboardState(LPBYTE state)
 {
     struct qemu_GetKeyboardState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETKEYBOARDSTATE);
-    call.state = (uint64_t)state;
+    call.state = (ULONG_PTR)state;
 
     qemu_syscall(&call.super);
 
@@ -886,7 +886,7 @@ WINUSERAPI BOOL WINAPI SetKeyboardState(LPBYTE state)
 {
     struct qemu_SetKeyboardState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETKEYBOARDSTATE);
-    call.state = (uint64_t)state;
+    call.state = (ULONG_PTR)state;
 
     qemu_syscall(&call.super);
 
@@ -916,7 +916,7 @@ WINUSERAPI SHORT WINAPI VkKeyScanA(CHAR cChar)
 {
     struct qemu_VkKeyScanA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VKKEYSCANA);
-    call.cChar = (uint64_t)cChar;
+    call.cChar = (ULONG_PTR)cChar;
 
     qemu_syscall(&call.super);
 
@@ -946,7 +946,7 @@ WINUSERAPI SHORT WINAPI VkKeyScanW(WCHAR cChar)
 {
     struct qemu_VkKeyScanW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VKKEYSCANW);
-    call.cChar = (uint64_t)cChar;
+    call.cChar = (ULONG_PTR)cChar;
 
     qemu_syscall(&call.super);
 
@@ -977,8 +977,8 @@ WINBASEAPI SHORT WINAPI VkKeyScanExA(CHAR cChar, HKL dwhkl)
 {
     struct qemu_VkKeyScanExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VKKEYSCANEXA);
-    call.cChar = (uint64_t)cChar;
-    call.dwhkl = (uint64_t)dwhkl;
+    call.cChar = (ULONG_PTR)cChar;
+    call.dwhkl = (ULONG_PTR)dwhkl;
 
     qemu_syscall(&call.super);
 
@@ -1009,8 +1009,8 @@ WINBASEAPI SHORT WINAPI VkKeyScanExW(WCHAR cChar, HKL dwhkl)
 {
     struct qemu_VkKeyScanExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VKKEYSCANEXW);
-    call.cChar = (uint64_t)cChar;
-    call.dwhkl = (uint64_t)dwhkl;
+    call.cChar = (ULONG_PTR)cChar;
+    call.dwhkl = (ULONG_PTR)dwhkl;
 
     qemu_syscall(&call.super);
 
@@ -1040,7 +1040,7 @@ WINUSERAPI DWORD WINAPI OemKeyScan(WORD oem)
 {
     struct qemu_OemKeyScan call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OEMKEYSCAN);
-    call.oem = (uint64_t)oem;
+    call.oem = (ULONG_PTR)oem;
 
     qemu_syscall(&call.super);
 
@@ -1070,7 +1070,7 @@ WINUSERAPI INT WINAPI GetKeyboardType(INT nTypeFlag)
 {
     struct qemu_GetKeyboardType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETKEYBOARDTYPE);
-    call.nTypeFlag = (uint64_t)nTypeFlag;
+    call.nTypeFlag = (ULONG_PTR)nTypeFlag;
 
     qemu_syscall(&call.super);
 
@@ -1101,8 +1101,8 @@ WINUSERAPI UINT WINAPI MapVirtualKeyA(UINT code, UINT maptype)
 {
     struct qemu_MapVirtualKeyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MAPVIRTUALKEYA);
-    call.code = (uint64_t)code;
-    call.maptype = (uint64_t)maptype;
+    call.code = (ULONG_PTR)code;
+    call.maptype = (ULONG_PTR)maptype;
 
     qemu_syscall(&call.super);
 
@@ -1133,8 +1133,8 @@ WINUSERAPI UINT WINAPI MapVirtualKeyW(UINT code, UINT maptype)
 {
     struct qemu_MapVirtualKeyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MAPVIRTUALKEYW);
-    call.code = (uint64_t)code;
-    call.maptype = (uint64_t)maptype;
+    call.code = (ULONG_PTR)code;
+    call.maptype = (ULONG_PTR)maptype;
 
     qemu_syscall(&call.super);
 
@@ -1166,9 +1166,9 @@ WINUSERAPI UINT WINAPI MapVirtualKeyExA(UINT code, UINT maptype, HKL hkl)
 {
     struct qemu_MapVirtualKeyExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MAPVIRTUALKEYEXA);
-    call.code = (uint64_t)code;
-    call.maptype = (uint64_t)maptype;
-    call.hkl = (uint64_t)hkl;
+    call.code = (ULONG_PTR)code;
+    call.maptype = (ULONG_PTR)maptype;
+    call.hkl = (ULONG_PTR)hkl;
 
     qemu_syscall(&call.super);
 
@@ -1200,9 +1200,9 @@ WINUSERAPI UINT WINAPI MapVirtualKeyExW(UINT code, UINT maptype, HKL hkl)
 {
     struct qemu_MapVirtualKeyExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MAPVIRTUALKEYEXW);
-    call.code = (uint64_t)code;
-    call.maptype = (uint64_t)maptype;
-    call.hkl = (uint64_t)hkl;
+    call.code = (ULONG_PTR)code;
+    call.maptype = (ULONG_PTR)maptype;
+    call.hkl = (ULONG_PTR)hkl;
 
     qemu_syscall(&call.super);
 
@@ -1260,11 +1260,11 @@ WINUSERAPI HKL WINAPI GetKeyboardLayout(DWORD thread_id)
 {
     struct qemu_GetKeyboardLayout call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETKEYBOARDLAYOUT);
-    call.thread_id = (uint64_t)thread_id;
+    call.thread_id = (ULONG_PTR)thread_id;
 
     qemu_syscall(&call.super);
 
-    return (HKL)call.super.iret;
+    return (HKL)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1273,7 +1273,7 @@ void qemu_GetKeyboardLayout(struct qemu_syscall *call)
 {
     struct qemu_GetKeyboardLayout *c = (struct qemu_GetKeyboardLayout *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetKeyboardLayout(c->thread_id);
+    c->super.iret = (ULONG_PTR)GetKeyboardLayout(c->thread_id);
 }
 
 #endif
@@ -1290,7 +1290,7 @@ WINUSERAPI BOOL WINAPI GetKeyboardLayoutNameA(LPSTR pszKLID)
 {
     struct qemu_GetKeyboardLayoutNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETKEYBOARDLAYOUTNAMEA);
-    call.pszKLID = (uint64_t)pszKLID;
+    call.pszKLID = (ULONG_PTR)pszKLID;
 
     qemu_syscall(&call.super);
 
@@ -1320,7 +1320,7 @@ WINUSERAPI BOOL WINAPI GetKeyboardLayoutNameW(LPWSTR pwszKLID)
 {
     struct qemu_GetKeyboardLayoutNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETKEYBOARDLAYOUTNAMEW);
-    call.pwszKLID = (uint64_t)pwszKLID;
+    call.pwszKLID = (ULONG_PTR)pwszKLID;
 
     qemu_syscall(&call.super);
 
@@ -1352,9 +1352,9 @@ WINUSERAPI INT WINAPI GetKeyNameTextA(LONG lParam, LPSTR lpBuffer, INT nSize)
 {
     struct qemu_GetKeyNameTextA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETKEYNAMETEXTA);
-    call.lParam = (uint64_t)lParam;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.nSize = (uint64_t)nSize;
+    call.lParam = (ULONG_PTR)lParam;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.nSize = (ULONG_PTR)nSize;
 
     qemu_syscall(&call.super);
 
@@ -1386,9 +1386,9 @@ WINUSERAPI INT WINAPI GetKeyNameTextW(LONG lParam, LPWSTR lpBuffer, INT nSize)
 {
     struct qemu_GetKeyNameTextW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETKEYNAMETEXTW);
-    call.lParam = (uint64_t)lParam;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.nSize = (uint64_t)nSize;
+    call.lParam = (ULONG_PTR)lParam;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.nSize = (ULONG_PTR)nSize;
 
     qemu_syscall(&call.super);
 
@@ -1423,12 +1423,12 @@ WINUSERAPI INT WINAPI ToUnicode(UINT virtKey, UINT scanCode, const BYTE *lpKeySt
 {
     struct qemu_ToUnicode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TOUNICODE);
-    call.virtKey = (uint64_t)virtKey;
-    call.scanCode = (uint64_t)scanCode;
-    call.lpKeyState = (uint64_t)lpKeyState;
-    call.lpwStr = (uint64_t)lpwStr;
-    call.size = (uint64_t)size;
-    call.flags = (uint64_t)flags;
+    call.virtKey = (ULONG_PTR)virtKey;
+    call.scanCode = (ULONG_PTR)scanCode;
+    call.lpKeyState = (ULONG_PTR)lpKeyState;
+    call.lpwStr = (ULONG_PTR)lpwStr;
+    call.size = (ULONG_PTR)size;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -1464,13 +1464,13 @@ WINUSERAPI INT WINAPI ToUnicodeEx(UINT virtKey, UINT scanCode, const BYTE *lpKey
 {
     struct qemu_ToUnicodeEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TOUNICODEEX);
-    call.virtKey = (uint64_t)virtKey;
-    call.scanCode = (uint64_t)scanCode;
-    call.lpKeyState = (uint64_t)lpKeyState;
-    call.lpwStr = (uint64_t)lpwStr;
-    call.size = (uint64_t)size;
-    call.flags = (uint64_t)flags;
-    call.hkl = (uint64_t)hkl;
+    call.virtKey = (ULONG_PTR)virtKey;
+    call.scanCode = (ULONG_PTR)scanCode;
+    call.lpKeyState = (ULONG_PTR)lpKeyState;
+    call.lpwStr = (ULONG_PTR)lpwStr;
+    call.size = (ULONG_PTR)size;
+    call.flags = (ULONG_PTR)flags;
+    call.hkl = (ULONG_PTR)hkl;
 
     qemu_syscall(&call.super);
 
@@ -1504,11 +1504,11 @@ WINUSERAPI INT WINAPI ToAscii(UINT virtKey, UINT scanCode, const BYTE *lpKeyStat
 {
     struct qemu_ToAscii call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TOASCII);
-    call.virtKey = (uint64_t)virtKey;
-    call.scanCode = (uint64_t)scanCode;
-    call.lpKeyState = (uint64_t)lpKeyState;
-    call.lpChar = (uint64_t)lpChar;
-    call.flags = (uint64_t)flags;
+    call.virtKey = (ULONG_PTR)virtKey;
+    call.scanCode = (ULONG_PTR)scanCode;
+    call.lpKeyState = (ULONG_PTR)lpKeyState;
+    call.lpChar = (ULONG_PTR)lpChar;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -1543,12 +1543,12 @@ WINUSERAPI INT WINAPI ToAsciiEx(UINT virtKey, UINT scanCode, const BYTE *lpKeySt
 {
     struct qemu_ToAsciiEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TOASCIIEX);
-    call.virtKey = (uint64_t)virtKey;
-    call.scanCode = (uint64_t)scanCode;
-    call.lpKeyState = (uint64_t)lpKeyState;
-    call.lpChar = (uint64_t)lpChar;
-    call.flags = (uint64_t)flags;
-    call.dwhkl = (uint64_t)dwhkl;
+    call.virtKey = (ULONG_PTR)virtKey;
+    call.scanCode = (ULONG_PTR)scanCode;
+    call.lpKeyState = (ULONG_PTR)lpKeyState;
+    call.lpChar = (ULONG_PTR)lpChar;
+    call.flags = (ULONG_PTR)flags;
+    call.dwhkl = (ULONG_PTR)dwhkl;
 
     qemu_syscall(&call.super);
 
@@ -1579,12 +1579,12 @@ WINUSERAPI HKL WINAPI ActivateKeyboardLayout(HKL hLayout, UINT flags)
 {
     struct qemu_ActivateKeyboardLayout call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACTIVATEKEYBOARDLAYOUT);
-    call.hLayout = (uint64_t)hLayout;
-    call.flags = (uint64_t)flags;
+    call.hLayout = (ULONG_PTR)hLayout;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
-    return (HKL)call.super.iret;
+    return (HKL)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1593,7 +1593,7 @@ void qemu_ActivateKeyboardLayout(struct qemu_syscall *call)
 {
     struct qemu_ActivateKeyboardLayout *c = (struct qemu_ActivateKeyboardLayout *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ActivateKeyboardLayout(QEMU_G2H(c->hLayout), c->flags);
+    c->super.iret = (ULONG_PTR)ActivateKeyboardLayout(QEMU_G2H(c->hLayout), c->flags);
 }
 
 #endif
@@ -1610,7 +1610,7 @@ WINUSERAPI BOOL WINAPI BlockInput(BOOL fBlockIt)
 {
     struct qemu_BlockInput call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BLOCKINPUT);
-    call.fBlockIt = (uint64_t)fBlockIt;
+    call.fBlockIt = (ULONG_PTR)fBlockIt;
 
     qemu_syscall(&call.super);
 
@@ -1643,8 +1643,8 @@ WINBASEAPI int WINAPI GetKeyboardLayoutList(INT nBuff, HKL *layouts)
 {
     struct qemu_GetKeyboardLayoutList call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETKEYBOARDLAYOUTLIST);
-    call.nBuff = (uint64_t)nBuff;
-    call.layouts = (uint64_t)layouts;
+    call.nBuff = (ULONG_PTR)nBuff;
+    call.layouts = (ULONG_PTR)layouts;
 
     qemu_syscall(&call.super);
 
@@ -1677,10 +1677,10 @@ WINUSERAPI BOOL WINAPI RegisterHotKey(HWND hwnd,INT id,UINT modifiers,UINT vk)
 {
     struct qemu_RegisterHotKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERHOTKEY);
-    call.hwnd = (uint64_t)hwnd;
-    call.id = (uint64_t)id;
-    call.modifiers = (uint64_t)modifiers;
-    call.vk = (uint64_t)vk;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.id = (ULONG_PTR)id;
+    call.modifiers = (ULONG_PTR)modifiers;
+    call.vk = (ULONG_PTR)vk;
 
     qemu_syscall(&call.super);
 
@@ -1711,8 +1711,8 @@ WINUSERAPI BOOL WINAPI UnregisterHotKey(HWND hwnd,INT id)
 {
     struct qemu_UnregisterHotKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNREGISTERHOTKEY);
-    call.hwnd = (uint64_t)hwnd;
-    call.id = (uint64_t)id;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.id = (ULONG_PTR)id;
 
     qemu_syscall(&call.super);
 
@@ -1743,12 +1743,12 @@ WINUSERAPI HKL WINAPI LoadKeyboardLayoutW(LPCWSTR pwszKLID, UINT Flags)
 {
     struct qemu_LoadKeyboardLayoutW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADKEYBOARDLAYOUTW);
-    call.pwszKLID = (uint64_t)pwszKLID;
-    call.Flags = (uint64_t)Flags;
+    call.pwszKLID = (ULONG_PTR)pwszKLID;
+    call.Flags = (ULONG_PTR)Flags;
 
     qemu_syscall(&call.super);
 
-    return (HKL)call.super.iret;
+    return (HKL)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1757,7 +1757,7 @@ void qemu_LoadKeyboardLayoutW(struct qemu_syscall *call)
 {
     struct qemu_LoadKeyboardLayoutW *c = (struct qemu_LoadKeyboardLayoutW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LoadKeyboardLayoutW(QEMU_G2H(c->pwszKLID), c->Flags);
+    c->super.iret = (ULONG_PTR)LoadKeyboardLayoutW(QEMU_G2H(c->pwszKLID), c->Flags);
 }
 
 #endif
@@ -1775,12 +1775,12 @@ WINUSERAPI HKL WINAPI LoadKeyboardLayoutA(LPCSTR pwszKLID, UINT Flags)
 {
     struct qemu_LoadKeyboardLayoutA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADKEYBOARDLAYOUTA);
-    call.pwszKLID = (uint64_t)pwszKLID;
-    call.Flags = (uint64_t)Flags;
+    call.pwszKLID = (ULONG_PTR)pwszKLID;
+    call.Flags = (ULONG_PTR)Flags;
 
     qemu_syscall(&call.super);
 
-    return (HKL)call.super.iret;
+    return (HKL)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1789,7 +1789,7 @@ void qemu_LoadKeyboardLayoutA(struct qemu_syscall *call)
 {
     struct qemu_LoadKeyboardLayoutA *c = (struct qemu_LoadKeyboardLayoutA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LoadKeyboardLayoutA(QEMU_G2H(c->pwszKLID), c->Flags);
+    c->super.iret = (ULONG_PTR)LoadKeyboardLayoutA(QEMU_G2H(c->pwszKLID), c->Flags);
 }
 
 #endif
@@ -1806,7 +1806,7 @@ WINUSERAPI BOOL WINAPI UnloadKeyboardLayout(HKL hkl)
 {
     struct qemu_UnloadKeyboardLayout call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNLOADKEYBOARDLAYOUT);
-    call.hkl = (uint64_t)hkl;
+    call.hkl = (ULONG_PTR)hkl;
 
     qemu_syscall(&call.super);
 
@@ -1836,7 +1836,7 @@ WINUSERAPI BOOL WINAPI TrackMouseEvent (TRACKMOUSEEVENT *ptme)
 {
     struct qemu_TrackMouseEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRACKMOUSEEVENT);
-    call.ptme = (uint64_t)ptme;
+    call.ptme = (ULONG_PTR)ptme;
 
     qemu_syscall(&call.super);
 
@@ -1870,11 +1870,11 @@ WINBASEAPI int WINAPI GetMouseMovePointsEx(UINT size, LPMOUSEMOVEPOINT ptin, LPM
 {
     struct qemu_GetMouseMovePointsEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMOUSEMOVEPOINTSEX);
-    call.size = (uint64_t)size;
-    call.ptin = (uint64_t)ptin;
-    call.ptout = (uint64_t)ptout;
-    call.count = (uint64_t)count;
-    call.res = (uint64_t)res;
+    call.size = (ULONG_PTR)size;
+    call.ptin = (ULONG_PTR)ptin;
+    call.ptout = (ULONG_PTR)ptout;
+    call.count = (ULONG_PTR)count;
+    call.res = (ULONG_PTR)res;
 
     qemu_syscall(&call.super);
 

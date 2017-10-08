@@ -48,12 +48,12 @@ WINUSERAPI INT WINAPI DrawTextExW(HDC hdc, LPWSTR str, INT i_count, LPRECT rect,
 {
     struct qemu_DrawTextExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWTEXTEXW);
-    call.hdc = (uint64_t)hdc;
-    call.str = (uint64_t)str;
-    call.i_count = (uint64_t)i_count;
-    call.rect = (uint64_t)rect;
-    call.flags = (uint64_t)flags;
-    call.dtp = (uint64_t)dtp;
+    call.hdc = (ULONG_PTR)hdc;
+    call.str = (ULONG_PTR)str;
+    call.i_count = (ULONG_PTR)i_count;
+    call.rect = (ULONG_PTR)rect;
+    call.flags = (ULONG_PTR)flags;
+    call.dtp = (ULONG_PTR)dtp;
 
     qemu_syscall(&call.super);
 
@@ -88,12 +88,12 @@ WINUSERAPI INT WINAPI DrawTextExA(HDC hdc, LPSTR str, INT count, LPRECT rect, UI
 {
     struct qemu_DrawTextExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWTEXTEXA);
-    call.hdc = (uint64_t)hdc;
-    call.str = (uint64_t)str;
-    call.count = (uint64_t)count;
-    call.rect = (uint64_t)rect;
-    call.flags = (uint64_t)flags;
-    call.dtp = (uint64_t)dtp;
+    call.hdc = (ULONG_PTR)hdc;
+    call.str = (ULONG_PTR)str;
+    call.count = (ULONG_PTR)count;
+    call.rect = (ULONG_PTR)rect;
+    call.flags = (ULONG_PTR)flags;
+    call.dtp = (ULONG_PTR)dtp;
 
     qemu_syscall(&call.super);
 
@@ -127,11 +127,11 @@ WINUSERAPI INT WINAPI DrawTextW(HDC hdc, LPCWSTR str, INT count, LPRECT rect, UI
 {
     struct qemu_DrawTextW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWTEXTW);
-    call.hdc = (uint64_t)hdc;
-    call.str = (uint64_t)str;
-    call.count = (uint64_t)count;
-    call.rect = (uint64_t)rect;
-    call.flags = (uint64_t)flags;
+    call.hdc = (ULONG_PTR)hdc;
+    call.str = (ULONG_PTR)str;
+    call.count = (ULONG_PTR)count;
+    call.rect = (ULONG_PTR)rect;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -165,11 +165,11 @@ WINUSERAPI INT WINAPI DrawTextA(HDC hdc, LPCSTR str, INT count, LPRECT rect, UIN
 {
     struct qemu_DrawTextA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWTEXTA);
-    call.hdc = (uint64_t)hdc;
-    call.str = (uint64_t)str;
-    call.count = (uint64_t)count;
-    call.rect = (uint64_t)rect;
-    call.flags = (uint64_t)flags;
+    call.hdc = (ULONG_PTR)hdc;
+    call.str = (ULONG_PTR)str;
+    call.count = (ULONG_PTR)count;
+    call.rect = (ULONG_PTR)rect;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -207,15 +207,15 @@ WINUSERAPI BOOL WINAPI GrayStringA(HDC hdc, HBRUSH hbr, GRAYSTRINGPROC gsprc, LP
 {
     struct qemu_GrayStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GRAYSTRINGA);
-    call.hdc = (uint64_t)hdc;
-    call.hbr = (uint64_t)hbr;
-    call.gsprc = (uint64_t)gsprc;
-    call.lParam = (uint64_t)lParam;
-    call.cch = (uint64_t)cch;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.cx = (uint64_t)cx;
-    call.cy = (uint64_t)cy;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hbr = (ULONG_PTR)hbr;
+    call.gsprc = (ULONG_PTR)gsprc;
+    call.lParam = (ULONG_PTR)lParam;
+    call.cch = (ULONG_PTR)cch;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.cx = (ULONG_PTR)cx;
+    call.cy = (ULONG_PTR)cy;
 
     qemu_syscall(&call.super);
 
@@ -253,15 +253,15 @@ WINUSERAPI BOOL WINAPI GrayStringW(HDC hdc, HBRUSH hbr, GRAYSTRINGPROC gsprc, LP
 {
     struct qemu_GrayStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GRAYSTRINGW);
-    call.hdc = (uint64_t)hdc;
-    call.hbr = (uint64_t)hbr;
-    call.gsprc = (uint64_t)gsprc;
-    call.lParam = (uint64_t)lParam;
-    call.cch = (uint64_t)cch;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.cx = (uint64_t)cx;
-    call.cy = (uint64_t)cy;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hbr = (ULONG_PTR)hbr;
+    call.gsprc = (ULONG_PTR)gsprc;
+    call.lParam = (ULONG_PTR)lParam;
+    call.cch = (ULONG_PTR)cch;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.cx = (ULONG_PTR)cx;
+    call.cy = (ULONG_PTR)cy;
 
     qemu_syscall(&call.super);
 
@@ -298,14 +298,14 @@ WINUSERAPI LONG WINAPI TabbedTextOutA(HDC hdc, INT x, INT y, LPCSTR lpstr, INT c
 {
     struct qemu_TabbedTextOutA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TABBEDTEXTOUTA);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.lpstr = (uint64_t)lpstr;
-    call.count = (uint64_t)count;
-    call.cTabStops = (uint64_t)cTabStops;
-    call.lpTabPos = (uint64_t)lpTabPos;
-    call.nTabOrg = (uint64_t)nTabOrg;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.lpstr = (ULONG_PTR)lpstr;
+    call.count = (ULONG_PTR)count;
+    call.cTabStops = (ULONG_PTR)cTabStops;
+    call.lpTabPos = (ULONG_PTR)lpTabPos;
+    call.nTabOrg = (ULONG_PTR)nTabOrg;
 
     qemu_syscall(&call.super);
 
@@ -342,14 +342,14 @@ WINUSERAPI LONG WINAPI TabbedTextOutW(HDC hdc, INT x, INT y, LPCWSTR str, INT co
 {
     struct qemu_TabbedTextOutW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TABBEDTEXTOUTW);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.str = (uint64_t)str;
-    call.count = (uint64_t)count;
-    call.cTabStops = (uint64_t)cTabStops;
-    call.lpTabPos = (uint64_t)lpTabPos;
-    call.nTabOrg = (uint64_t)nTabOrg;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.str = (ULONG_PTR)str;
+    call.count = (ULONG_PTR)count;
+    call.cTabStops = (ULONG_PTR)cTabStops;
+    call.lpTabPos = (ULONG_PTR)lpTabPos;
+    call.nTabOrg = (ULONG_PTR)nTabOrg;
 
     qemu_syscall(&call.super);
 
@@ -383,11 +383,11 @@ WINUSERAPI DWORD WINAPI GetTabbedTextExtentA(HDC hdc, LPCSTR lpstr, INT count, I
 {
     struct qemu_GetTabbedTextExtentA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTABBEDTEXTEXTENTA);
-    call.hdc = (uint64_t)hdc;
-    call.lpstr = (uint64_t)lpstr;
-    call.count = (uint64_t)count;
-    call.cTabStops = (uint64_t)cTabStops;
-    call.lpTabPos = (uint64_t)lpTabPos;
+    call.hdc = (ULONG_PTR)hdc;
+    call.lpstr = (ULONG_PTR)lpstr;
+    call.count = (ULONG_PTR)count;
+    call.cTabStops = (ULONG_PTR)cTabStops;
+    call.lpTabPos = (ULONG_PTR)lpTabPos;
 
     qemu_syscall(&call.super);
 
@@ -421,11 +421,11 @@ WINUSERAPI DWORD WINAPI GetTabbedTextExtentW(HDC hdc, LPCWSTR lpstr, INT count, 
 {
     struct qemu_GetTabbedTextExtentW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTABBEDTEXTEXTENTW);
-    call.hdc = (uint64_t)hdc;
-    call.lpstr = (uint64_t)lpstr;
-    call.count = (uint64_t)count;
-    call.cTabStops = (uint64_t)cTabStops;
-    call.lpTabPos = (uint64_t)lpTabPos;
+    call.hdc = (ULONG_PTR)hdc;
+    call.lpstr = (ULONG_PTR)lpstr;
+    call.count = (ULONG_PTR)count;
+    call.cTabStops = (ULONG_PTR)cTabStops;
+    call.lpTabPos = (ULONG_PTR)lpTabPos;
 
     qemu_syscall(&call.super);
 

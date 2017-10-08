@@ -49,13 +49,13 @@ WINUSERAPI LRESULT WINAPI SendMessageTimeoutW(HWND hwnd, UINT msg, WPARAM wparam
 {
     struct qemu_SendMessageTimeoutW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDMESSAGETIMEOUTW);
-    call.hwnd = (uint64_t)hwnd;
-    call.msg = (uint64_t)msg;
-    call.wparam = (uint64_t)wparam;
-    call.lparam = (uint64_t)lparam;
-    call.flags = (uint64_t)flags;
-    call.timeout = (uint64_t)timeout;
-    call.res_ptr = (uint64_t)res_ptr;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.msg = (ULONG_PTR)msg;
+    call.wparam = (ULONG_PTR)wparam;
+    call.lparam = (ULONG_PTR)lparam;
+    call.flags = (ULONG_PTR)flags;
+    call.timeout = (ULONG_PTR)timeout;
+    call.res_ptr = (ULONG_PTR)res_ptr;
 
     qemu_syscall(&call.super);
 
@@ -100,13 +100,13 @@ WINUSERAPI LRESULT WINAPI SendMessageTimeoutA(HWND hwnd, UINT msg, WPARAM wparam
 {
     struct qemu_SendMessageTimeoutA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDMESSAGETIMEOUTA);
-    call.hwnd = (uint64_t)hwnd;
-    call.msg = (uint64_t)msg;
-    call.wparam = (uint64_t)wparam;
-    call.lparam = (uint64_t)lparam;
-    call.flags = (uint64_t)flags;
-    call.timeout = (uint64_t)timeout;
-    call.res_ptr = (uint64_t)res_ptr;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.msg = (ULONG_PTR)msg;
+    call.wparam = (ULONG_PTR)wparam;
+    call.lparam = (ULONG_PTR)lparam;
+    call.flags = (ULONG_PTR)flags;
+    call.timeout = (ULONG_PTR)timeout;
+    call.res_ptr = (ULONG_PTR)res_ptr;
 
     qemu_syscall(&call.super);
 
@@ -148,10 +148,10 @@ WINUSERAPI LRESULT WINAPI SendMessageW(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 {
     struct qemu_SendMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDMESSAGEW);
-    call.hwnd = (uint64_t)hwnd;
-    call.msg = (uint64_t)msg;
-    call.wparam = (uint64_t)wparam;
-    call.lparam = (uint64_t)lparam;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.msg = (ULONG_PTR)msg;
+    call.wparam = (ULONG_PTR)wparam;
+    call.lparam = (ULONG_PTR)lparam;
 
     qemu_syscall(&call.super);
 
@@ -193,10 +193,10 @@ WINUSERAPI LRESULT WINAPI SendMessageA(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 {
     struct qemu_SendMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDMESSAGEA);
-    call.hwnd = (uint64_t)hwnd;
-    call.msg = (uint64_t)msg;
-    call.wparam = (uint64_t)wparam;
-    call.lparam = (uint64_t)lparam;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.msg = (ULONG_PTR)msg;
+    call.wparam = (ULONG_PTR)wparam;
+    call.lparam = (ULONG_PTR)lparam;
 
     qemu_syscall(&call.super);
 
@@ -238,10 +238,10 @@ WINUSERAPI BOOL WINAPI SendNotifyMessageA(HWND hwnd, UINT msg, WPARAM wparam, LP
 {
     struct qemu_SendNotifyMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDNOTIFYMESSAGEA);
-    call.hwnd = (uint64_t)hwnd;
-    call.msg = (uint64_t)msg;
-    call.wparam = (uint64_t)wparam;
-    call.lparam = (uint64_t)lparam;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.msg = (ULONG_PTR)msg;
+    call.wparam = (ULONG_PTR)wparam;
+    call.lparam = (ULONG_PTR)lparam;
 
     qemu_syscall(&call.super);
 
@@ -274,10 +274,10 @@ WINUSERAPI BOOL WINAPI SendNotifyMessageW(HWND hwnd, UINT msg, WPARAM wparam, LP
 {
     struct qemu_SendNotifyMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDNOTIFYMESSAGEW);
-    call.hwnd = (uint64_t)hwnd;
-    call.msg = (uint64_t)msg;
-    call.wparam = (uint64_t)wparam;
-    call.lparam = (uint64_t)lparam;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.msg = (ULONG_PTR)msg;
+    call.wparam = (ULONG_PTR)wparam;
+    call.lparam = (ULONG_PTR)lparam;
 
     qemu_syscall(&call.super);
 
@@ -312,12 +312,12 @@ WINUSERAPI BOOL WINAPI SendMessageCallbackA(HWND hwnd, UINT msg, WPARAM wparam, 
 {
     struct qemu_SendMessageCallbackA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDMESSAGECALLBACKA);
-    call.hwnd = (uint64_t)hwnd;
-    call.msg = (uint64_t)msg;
-    call.wparam = (uint64_t)wparam;
-    call.lparam = (uint64_t)lparam;
-    call.callback = (uint64_t)callback;
-    call.data = (uint64_t)data;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.msg = (ULONG_PTR)msg;
+    call.wparam = (ULONG_PTR)wparam;
+    call.lparam = (ULONG_PTR)lparam;
+    call.callback = (ULONG_PTR)callback;
+    call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
 
@@ -352,12 +352,12 @@ WINUSERAPI BOOL WINAPI SendMessageCallbackW(HWND hwnd, UINT msg, WPARAM wparam, 
 {
     struct qemu_SendMessageCallbackW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDMESSAGECALLBACKW);
-    call.hwnd = (uint64_t)hwnd;
-    call.msg = (uint64_t)msg;
-    call.wparam = (uint64_t)wparam;
-    call.lparam = (uint64_t)lparam;
-    call.callback = (uint64_t)callback;
-    call.data = (uint64_t)data;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.msg = (ULONG_PTR)msg;
+    call.wparam = (ULONG_PTR)wparam;
+    call.lparam = (ULONG_PTR)lparam;
+    call.callback = (ULONG_PTR)callback;
+    call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
 
@@ -387,7 +387,7 @@ WINUSERAPI BOOL WINAPI ReplyMessage(LRESULT result)
 {
     struct qemu_ReplyMessage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REPLYMESSAGE);
-    call.result = (uint64_t)result;
+    call.result = (ULONG_PTR)result;
 
     qemu_syscall(&call.super);
 
@@ -445,7 +445,7 @@ WINUSERAPI DWORD WINAPI InSendMessageEx(LPVOID reserved)
 {
     struct qemu_InSendMessageEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INSENDMESSAGEEX);
-    call.reserved = (uint64_t)reserved;
+    call.reserved = (ULONG_PTR)reserved;
 
     qemu_syscall(&call.super);
 
@@ -478,10 +478,10 @@ WINUSERAPI BOOL WINAPI PostMessageA(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 {
     struct qemu_PostMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POSTMESSAGEA);
-    call.hwnd = (uint64_t)hwnd;
-    call.msg = (uint64_t)msg;
-    call.wparam = (uint64_t)wparam;
-    call.lparam = (uint64_t)lparam;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.msg = (ULONG_PTR)msg;
+    call.wparam = (ULONG_PTR)wparam;
+    call.lparam = (ULONG_PTR)lparam;
 
     qemu_syscall(&call.super);
 
@@ -523,10 +523,10 @@ WINUSERAPI BOOL WINAPI PostMessageW(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 {
     struct qemu_PostMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POSTMESSAGEW);
-    call.hwnd = (uint64_t)hwnd;
-    call.msg = (uint64_t)msg;
-    call.wparam = (uint64_t)wparam;
-    call.lparam = (uint64_t)lparam;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.msg = (ULONG_PTR)msg;
+    call.wparam = (ULONG_PTR)wparam;
+    call.lparam = (ULONG_PTR)lparam;
 
     qemu_syscall(&call.super);
 
@@ -568,10 +568,10 @@ WINUSERAPI BOOL WINAPI PostThreadMessageA(DWORD thread, UINT msg, WPARAM wparam,
 {
     struct qemu_PostThreadMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POSTTHREADMESSAGEA);
-    call.thread = (uint64_t)thread;
-    call.msg = (uint64_t)msg;
-    call.wparam = (uint64_t)wparam;
-    call.lparam = (uint64_t)lparam;
+    call.thread = (ULONG_PTR)thread;
+    call.msg = (ULONG_PTR)msg;
+    call.wparam = (ULONG_PTR)wparam;
+    call.lparam = (ULONG_PTR)lparam;
 
     qemu_syscall(&call.super);
 
@@ -604,10 +604,10 @@ WINUSERAPI BOOL WINAPI PostThreadMessageW(DWORD thread, UINT msg, WPARAM wparam,
 {
     struct qemu_PostThreadMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POSTTHREADMESSAGEW);
-    call.thread = (uint64_t)thread;
-    call.msg = (uint64_t)msg;
-    call.wparam = (uint64_t)wparam;
-    call.lparam = (uint64_t)lparam;
+    call.thread = (ULONG_PTR)thread;
+    call.msg = (ULONG_PTR)msg;
+    call.wparam = (ULONG_PTR)wparam;
+    call.lparam = (ULONG_PTR)lparam;
 
     qemu_syscall(&call.super);
 
@@ -637,7 +637,7 @@ WINUSERAPI void WINAPI PostQuitMessage(INT exit_code)
 {
     struct qemu_PostQuitMessage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POSTQUITMESSAGE);
-    call.exit_code = (uint64_t)exit_code;
+    call.exit_code = (ULONG_PTR)exit_code;
 
     qemu_syscall(&call.super);
 
@@ -671,11 +671,11 @@ WINUSERAPI BOOL WINAPI PeekMessageW(MSG *msg_out, HWND hwnd, UINT first, UINT la
 {
     struct qemu_PeekMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PEEKMESSAGEW);
-    call.msg_out = (uint64_t)msg_out;
-    call.hwnd = (uint64_t)hwnd;
-    call.first = (uint64_t)first;
-    call.last = (uint64_t)last;
-    call.flags = (uint64_t)flags;
+    call.msg_out = (ULONG_PTR)msg_out;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.first = (ULONG_PTR)first;
+    call.last = (ULONG_PTR)last;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -711,11 +711,11 @@ WINUSERAPI BOOL WINAPI PeekMessageA(MSG *msg, HWND hwnd, UINT first, UINT last, 
 {
     struct qemu_PeekMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PEEKMESSAGEA);
-    call.msg = (uint64_t)msg;
-    call.hwnd = (uint64_t)hwnd;
-    call.first = (uint64_t)first;
-    call.last = (uint64_t)last;
-    call.flags = (uint64_t)flags;
+    call.msg = (ULONG_PTR)msg;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.first = (ULONG_PTR)first;
+    call.last = (ULONG_PTR)last;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -750,10 +750,10 @@ WINUSERAPI BOOL WINAPI GetMessageW(MSG *msg, HWND hwnd, UINT first, UINT last)
 {
     struct qemu_GetMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMESSAGEW);
-    call.msg = (uint64_t)msg;
-    call.hwnd = (uint64_t)hwnd;
-    call.first = (uint64_t)first;
-    call.last = (uint64_t)last;
+    call.msg = (ULONG_PTR)msg;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.first = (ULONG_PTR)first;
+    call.last = (ULONG_PTR)last;
 
     qemu_syscall(&call.super);
 
@@ -788,10 +788,10 @@ WINUSERAPI BOOL WINAPI GetMessageA(MSG *msg, HWND hwnd, UINT first, UINT last)
 {
     struct qemu_GetMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMESSAGEA);
-    call.msg = (uint64_t)msg;
-    call.hwnd = (uint64_t)hwnd;
-    call.first = (uint64_t)first;
-    call.last = (uint64_t)last;
+    call.msg = (ULONG_PTR)msg;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.first = (ULONG_PTR)first;
+    call.last = (ULONG_PTR)last;
 
     qemu_syscall(&call.super);
 
@@ -824,8 +824,8 @@ WINUSERAPI BOOL WINAPI IsDialogMessageA(HWND hwndDlg, LPMSG pmsg)
 {
     struct qemu_IsDialogMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISDIALOGMESSAGEA);
-    call.hwndDlg = (uint64_t)hwndDlg;
-    call.pmsg = (uint64_t)pmsg;
+    call.hwndDlg = (ULONG_PTR)hwndDlg;
+    call.pmsg = (ULONG_PTR)pmsg;
 
     qemu_syscall(&call.super);
 
@@ -855,7 +855,7 @@ WINUSERAPI BOOL WINAPI TranslateMessage(const MSG *msg)
 {
     struct qemu_TranslateMessage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRANSLATEMESSAGE);
-    call.msg = (uint64_t)msg;
+    call.msg = (ULONG_PTR)msg;
 
     qemu_syscall(&call.super);
 
@@ -885,7 +885,7 @@ WINUSERAPI LRESULT WINAPI DispatchMessageA(const MSG* msg)
 {
     struct qemu_DispatchMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DISPATCHMESSAGEA);
-    call.msg = (uint64_t)msg;
+    call.msg = (ULONG_PTR)msg;
 
     qemu_syscall(&call.super);
 
@@ -921,7 +921,7 @@ WINUSERAPI LRESULT WINAPI DispatchMessageW(const MSG* msg)
 {
     struct qemu_DispatchMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DISPATCHMESSAGEW);
-    call.msg = (uint64_t)msg;
+    call.msg = (ULONG_PTR)msg;
 
     qemu_syscall(&call.super);
 
@@ -1041,7 +1041,7 @@ WINUSERAPI LPARAM WINAPI SetMessageExtraInfo(LPARAM lParam)
 {
     struct qemu_SetMessageExtraInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMESSAGEEXTRAINFO);
-    call.lParam = (uint64_t)lParam;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
@@ -1104,7 +1104,7 @@ WINUSERAPI DWORD WINAPI MsgWaitForMultipleObjectsEx(DWORD count, const HANDLE *p
     struct qemu_MsgWaitForMultipleObjectsEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MSGWAITFORMULTIPLEOBJECTSEX);
     call.count = count;
-    call.pHandles = (uint64_t)pHandles;
+    call.pHandles = (ULONG_PTR)pHandles;
     call.timeout = timeout;
     call.mask = mask;
     call.flags = flags;
@@ -1141,11 +1141,11 @@ WINUSERAPI DWORD WINAPI MsgWaitForMultipleObjects(DWORD count, const HANDLE *han
 {
     struct qemu_MsgWaitForMultipleObjects call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MSGWAITFORMULTIPLEOBJECTS);
-    call.count = (uint64_t)count;
-    call.handles = (uint64_t)handles;
-    call.wait_all = (uint64_t)wait_all;
-    call.timeout = (uint64_t)timeout;
-    call.mask = (uint64_t)mask;
+    call.count = (ULONG_PTR)count;
+    call.handles = (ULONG_PTR)handles;
+    call.wait_all = (ULONG_PTR)wait_all;
+    call.timeout = (ULONG_PTR)timeout;
+    call.mask = (ULONG_PTR)mask;
 
     qemu_syscall(&call.super);
 
@@ -1176,8 +1176,8 @@ WINUSERAPI DWORD WINAPI WaitForInputIdle(HANDLE hProcess, DWORD dwTimeOut)
 {
     struct qemu_WaitForInputIdle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WAITFORINPUTIDLE);
-    call.hProcess = (uint64_t)hProcess;
-    call.dwTimeOut = (uint64_t)dwTimeOut;
+    call.hProcess = (ULONG_PTR)hProcess;
+    call.dwTimeOut = (ULONG_PTR)dwTimeOut;
 
     qemu_syscall(&call.super);
 
@@ -1207,7 +1207,7 @@ WINUSERAPI UINT WINAPI RegisterWindowMessageA(LPCSTR str)
 {
     struct qemu_RegisterWindowMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERWINDOWMESSAGEA);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -1237,7 +1237,7 @@ WINUSERAPI UINT WINAPI RegisterWindowMessageW(LPCWSTR str)
 {
     struct qemu_RegisterWindowMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERWINDOWMESSAGEW);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -1271,11 +1271,11 @@ WINUSERAPI LONG WINAPI BroadcastSystemMessageA(DWORD flags, LPDWORD recipients, 
 {
     struct qemu_BroadcastSystemMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BROADCASTSYSTEMMESSAGEA);
-    call.flags = (uint64_t)flags;
-    call.recipients = (uint64_t)recipients;
-    call.msg = (uint64_t)msg;
-    call.wp = (uint64_t)wp;
-    call.lp = (uint64_t)lp;
+    call.flags = (ULONG_PTR)flags;
+    call.recipients = (ULONG_PTR)recipients;
+    call.msg = (ULONG_PTR)msg;
+    call.wp = (ULONG_PTR)wp;
+    call.lp = (ULONG_PTR)lp;
 
     qemu_syscall(&call.super);
 
@@ -1309,11 +1309,11 @@ WINUSERAPI LONG WINAPI BroadcastSystemMessageW(DWORD flags, LPDWORD recipients, 
 {
     struct qemu_BroadcastSystemMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BROADCASTSYSTEMMESSAGEW);
-    call.flags = (uint64_t)flags;
-    call.recipients = (uint64_t)recipients;
-    call.msg = (uint64_t)msg;
-    call.wp = (uint64_t)wp;
-    call.lp = (uint64_t)lp;
+    call.flags = (ULONG_PTR)flags;
+    call.recipients = (ULONG_PTR)recipients;
+    call.msg = (ULONG_PTR)msg;
+    call.wp = (ULONG_PTR)wp;
+    call.lp = (ULONG_PTR)lp;
 
     qemu_syscall(&call.super);
 
@@ -1348,12 +1348,12 @@ WINUSERAPI LONG WINAPI BroadcastSystemMessageExA(DWORD flags, LPDWORD recipients
 {
     struct qemu_BroadcastSystemMessageExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BROADCASTSYSTEMMESSAGEEXA);
-    call.flags = (uint64_t)flags;
-    call.recipients = (uint64_t)recipients;
-    call.msg = (uint64_t)msg;
-    call.wp = (uint64_t)wp;
-    call.lp = (uint64_t)lp;
-    call.pinfo = (uint64_t)pinfo;
+    call.flags = (ULONG_PTR)flags;
+    call.recipients = (ULONG_PTR)recipients;
+    call.msg = (ULONG_PTR)msg;
+    call.wp = (ULONG_PTR)wp;
+    call.lp = (ULONG_PTR)lp;
+    call.pinfo = (ULONG_PTR)pinfo;
 
     qemu_syscall(&call.super);
 
@@ -1388,12 +1388,12 @@ WINUSERAPI LONG WINAPI BroadcastSystemMessageExW(DWORD flags, LPDWORD recipients
 {
     struct qemu_BroadcastSystemMessageExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BROADCASTSYSTEMMESSAGEEXW);
-    call.flags = (uint64_t)flags;
-    call.recipients = (uint64_t)recipients;
-    call.msg = (uint64_t)msg;
-    call.wp = (uint64_t)wp;
-    call.lp = (uint64_t)lp;
-    call.pinfo = (uint64_t)pinfo;
+    call.flags = (ULONG_PTR)flags;
+    call.recipients = (ULONG_PTR)recipients;
+    call.msg = (ULONG_PTR)msg;
+    call.wp = (ULONG_PTR)wp;
+    call.lp = (ULONG_PTR)lp;
+    call.pinfo = (ULONG_PTR)pinfo;
 
     qemu_syscall(&call.super);
 
@@ -1423,7 +1423,7 @@ WINUSERAPI BOOL WINAPI SetMessageQueue(INT size)
 {
     struct qemu_SetMessageQueue call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMESSAGEQUEUE);
-    call.size = (uint64_t)size;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -1453,7 +1453,7 @@ WINUSERAPI BOOL WINAPI MessageBeep(UINT i)
 {
     struct qemu_MessageBeep call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MESSAGEBEEP);
-    call.i = (uint64_t)i;
+    call.i = (ULONG_PTR)i;
 
     qemu_syscall(&call.super);
 
@@ -1487,11 +1487,11 @@ WINUSERAPI UINT_PTR WINAPI SetCoalescableTimer(HWND hwnd, UINT_PTR id, UINT time
 {
     struct qemu_SetCoalescableTimer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCOALESCABLETIMER);
-    call.hwnd = (uint64_t)hwnd;
-    call.id = (uint64_t)id;
-    call.timeout = (uint64_t)timeout;
-    call.proc = (uint64_t)proc;
-    call.tolerance = (uint64_t)tolerance;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.id = (ULONG_PTR)id;
+    call.timeout = (ULONG_PTR)timeout;
+    call.proc = (ULONG_PTR)proc;
+    call.tolerance = (ULONG_PTR)tolerance;
 
     qemu_syscall(&call.super);
 
@@ -1528,10 +1528,10 @@ WINUSERAPI UINT_PTR WINAPI SetTimer(HWND hwnd, UINT_PTR id, UINT timeout, TIMERP
 {
     struct qemu_SetTimer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTIMER);
-    call.hwnd = (uint64_t)hwnd;
-    call.id = (uint64_t)id;
-    call.timeout = (uint64_t)timeout;
-    call.proc = (uint64_t)proc;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.id = (ULONG_PTR)id;
+    call.timeout = (ULONG_PTR)timeout;
+    call.proc = (ULONG_PTR)proc;
 
     qemu_syscall(&call.super);
 
@@ -1568,10 +1568,10 @@ WINUSERAPI UINT_PTR WINAPI SetSystemTimer(HWND hwnd, UINT_PTR id, UINT timeout, 
 {
     struct qemu_SetSystemTimer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSYSTEMTIMER);
-    call.hwnd = (uint64_t)hwnd;
-    call.id = (uint64_t)id;
-    call.timeout = (uint64_t)timeout;
-    call.proc = (uint64_t)proc;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.id = (ULONG_PTR)id;
+    call.timeout = (ULONG_PTR)timeout;
+    call.proc = (ULONG_PTR)proc;
 
     qemu_syscall(&call.super);
 
@@ -1606,8 +1606,8 @@ WINUSERAPI BOOL WINAPI KillTimer(HWND hwnd, UINT_PTR id)
 {
     struct qemu_KillTimer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_KILLTIMER);
-    call.hwnd = (uint64_t)hwnd;
-    call.id = (uint64_t)id;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.id = (ULONG_PTR)id;
 
     qemu_syscall(&call.super);
 
@@ -1638,8 +1638,8 @@ WINUSERAPI BOOL WINAPI KillSystemTimer(HWND hwnd, UINT_PTR id)
 {
     struct qemu_KillSystemTimer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_KILLSYSTEMTIMER);
-    call.hwnd = (uint64_t)hwnd;
-    call.id = (uint64_t)id;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.id = (ULONG_PTR)id;
 
     qemu_syscall(&call.super);
 
@@ -1669,7 +1669,7 @@ WINUSERAPI BOOL WINAPI IsGUIThread(BOOL convert)
 {
     struct qemu_IsGUIThread call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISGUITHREAD);
-    call.convert = (uint64_t)convert;
+    call.convert = (ULONG_PTR)convert;
 
     qemu_syscall(&call.super);
 
@@ -1700,8 +1700,8 @@ WINUSERAPI BOOL WINAPI GetGUIThreadInfo(DWORD id, GUITHREADINFO *info)
 {
     struct qemu_GetGUIThreadInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETGUITHREADINFO);
-    call.id = (uint64_t)id;
-    call.info = (uint64_t)info;
+    call.id = (ULONG_PTR)id;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -1731,7 +1731,7 @@ WINUSERAPI BOOL WINAPI IsHungAppWindow(HWND hWnd)
 {
     struct qemu_IsHungAppWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISHUNGAPPWINDOW);
-    call.hWnd = (uint64_t)hWnd;
+    call.hWnd = (ULONG_PTR)hWnd;
 
     qemu_syscall(&call.super);
 
@@ -1762,8 +1762,8 @@ WINUSERAPI BOOL WINAPI ChangeWindowMessageFilter(UINT message, DWORD flag)
 {
     struct qemu_ChangeWindowMessageFilter call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGEWINDOWMESSAGEFILTER);
-    call.message = (uint64_t)message;
-    call.flag = (uint64_t)flag;
+    call.message = (ULONG_PTR)message;
+    call.flag = (ULONG_PTR)flag;
 
     qemu_syscall(&call.super);
 

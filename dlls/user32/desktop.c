@@ -43,7 +43,7 @@ WINUSERAPI BOOL WINAPI PaintDesktop(HDC hdc)
 {
     struct qemu_PaintDesktop call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PAINTDESKTOP);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -73,7 +73,7 @@ WINUSERAPI BOOL WINAPI SetDeskWallPaper(LPCSTR filename)
 {
     struct qemu_SetDeskWallPaper call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETDESKWALLPAPER);
-    call.filename = (uint64_t)filename;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 

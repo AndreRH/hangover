@@ -46,10 +46,10 @@ WINUSERAPI LRESULT WINAPI DefWindowProcA(HWND hwnd, UINT msg, WPARAM wParam, LPA
 {
     struct qemu_DefWindowProcA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEFWINDOWPROCA);
-    call.hwnd = (uint64_t)hwnd;
-    call.msg = (uint64_t)msg;
-    call.wParam = (uint64_t)wParam;
-    call.lParam = (uint64_t)lParam;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.msg = (ULONG_PTR)msg;
+    call.wParam = (ULONG_PTR)wParam;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
@@ -82,10 +82,10 @@ WINUSERAPI LRESULT WINAPI DefWindowProcW(HWND hwnd, UINT msg, WPARAM wParam, LPA
 {
     struct qemu_DefWindowProcW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEFWINDOWPROCW);
-    call.hwnd = (uint64_t)hwnd;
-    call.msg = (uint64_t)msg;
-    call.wParam = (uint64_t)wParam;
-    call.lParam = (uint64_t)lParam;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.msg = (ULONG_PTR)msg;
+    call.wParam = (ULONG_PTR)wParam;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
