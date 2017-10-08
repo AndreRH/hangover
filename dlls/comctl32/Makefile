@@ -8,8 +8,8 @@ VPATH=$(SRCDIR)
 
 all: comctl32.dll qemu_comctl32.dll.so
 
-comctl32.dll: comctl32.def comctl32undoc_g.o commctrl_g.o dpa_g.o draglist_g.o dsa_g.o flatsb_g.o imagelist_g.o main_g.o propsheet_g.o smoothscroll_g.o string_g.o taskdialog_g.o
-	$(GUEST_CC)-ld -shared $(SRCDIR)/comctl32.def *_g.o -o comctl32.dll -nostdlib -e DllMain
+comctl32.dll: comctl32.spec comctl32undoc_g.o commctrl_g.o dpa_g.o draglist_g.o dsa_g.o flatsb_g.o imagelist_g.o main_g.o propsheet_g.o smoothscroll_g.o string_g.o taskdialog_g.o
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/comctl32.spec *_g.o -o comctl32.dll -nodefaultlibs -nostdlib -Wl,--image-base,0xb0000000
 
 qemu_comctl32.dll.so: comctl32undoc_h.o commctrl_h.o dpa_h.o draglist_h.o dsa_h.o flatsb_h.o imagelist_h.o main_h.o propsheet_h.o qemu_comctl32.spec smoothscroll_h.o string_h.o taskdialog_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_comctl32.spec *_h.o -o qemu_comctl32.dll.so -lcomctl32 -lshlwapi
