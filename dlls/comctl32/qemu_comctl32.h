@@ -67,6 +67,16 @@ enum comctl32_calls
     CALL_FINDMRUDATA,
     CALL_FINDMRUSTRINGA,
     CALL_FINDMRUSTRINGW,
+    CALL_FLATSB_ENABLESCROLLBAR,
+    CALL_FLATSB_GETSCROLLINFO,
+    CALL_FLATSB_GETSCROLLPOS,
+    CALL_FLATSB_GETSCROLLPROP,
+    CALL_FLATSB_GETSCROLLRANGE,
+    CALL_FLATSB_SETSCROLLINFO,
+    CALL_FLATSB_SETSCROLLPOS,
+    CALL_FLATSB_SETSCROLLPROP,
+    CALL_FLATSB_SETSCROLLRANGE,
+    CALL_FLATSB_SHOWSCROLLBAR,
     CALL_FREE,
     CALL_FREEMRULIST,
     CALL_GETEFFECTIVECLIENTRECT,
@@ -117,6 +127,7 @@ enum comctl32_calls
     CALL_IMAGELIST_WRITE,
     CALL_INITCOMMONCONTROLS,
     CALL_INITCOMMONCONTROLSEX,
+    CALL_INITIALIZEFLATSB,
     CALL_INITMUILANGUAGE,
     CALL_LBITEMFROMPT,
     CALL_LOADICONMETRIC,
@@ -133,6 +144,7 @@ enum comctl32_calls
     CALL_SETPATHWORDBREAKPROC,
     CALL_SETWINDOWSUBCLASS,
     CALL_SHOWHIDEMENUCTL,
+    CALL_UNINITIALIZEFLATSB,
 };
 
 #ifndef QEMU_DLL_GUEST
@@ -201,6 +213,16 @@ void qemu_EnumMRUListW(struct qemu_syscall *call);
 void qemu_FindMRUData(struct qemu_syscall *call);
 void qemu_FindMRUStringA(struct qemu_syscall *call);
 void qemu_FindMRUStringW(struct qemu_syscall *call);
+void qemu_FlatSB_EnableScrollBar(struct qemu_syscall *call);
+void qemu_FlatSB_GetScrollInfo(struct qemu_syscall *call);
+void qemu_FlatSB_GetScrollPos(struct qemu_syscall *call);
+void qemu_FlatSB_GetScrollProp(struct qemu_syscall *call);
+void qemu_FlatSB_GetScrollRange(struct qemu_syscall *call);
+void qemu_FlatSB_SetScrollInfo(struct qemu_syscall *call);
+void qemu_FlatSB_SetScrollPos(struct qemu_syscall *call);
+void qemu_FlatSB_SetScrollProp(struct qemu_syscall *call);
+void qemu_FlatSB_SetScrollRange(struct qemu_syscall *call);
+void qemu_FlatSB_ShowScrollBar(struct qemu_syscall *call);
 void qemu_Free(struct qemu_syscall *call);
 void qemu_FreeMRUList(struct qemu_syscall *call);
 void qemu_GetEffectiveClientRect(struct qemu_syscall *call);
@@ -251,6 +273,7 @@ void qemu_ImageList_SetOverlayImage(struct qemu_syscall *call);
 void qemu_ImageList_Write(struct qemu_syscall *call);
 void qemu_InitCommonControls(struct qemu_syscall *call);
 void qemu_InitCommonControlsEx(struct qemu_syscall *call);
+void qemu_InitializeFlatSB(struct qemu_syscall *call);
 void qemu_InitMUILanguage(struct qemu_syscall *call);
 void qemu_LBItemFromPt(struct qemu_syscall *call);
 void qemu_LoadIconMetric(struct qemu_syscall *call);
@@ -267,6 +290,7 @@ void qemu_SendNotifyEx(struct qemu_syscall *call);
 void qemu_SetPathWordBreakProc(struct qemu_syscall *call);
 void qemu_SetWindowSubclass(struct qemu_syscall *call);
 void qemu_ShowHideMenuCtl(struct qemu_syscall *call);
+void qemu_UninitializeFlatSB(struct qemu_syscall *call);
 
 UINT (* WINAPI p_ImageList_SetColorTable)(HIMAGELIST himl, UINT uStartIndex, UINT cEntries, const RGBQUAD *prgb);
 HRESULT (* WINAPI p_DllGetVersion)(void *pdvi);

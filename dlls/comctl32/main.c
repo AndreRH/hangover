@@ -104,6 +104,16 @@ static const syscall_handler dll_functions[] =
     qemu_FindMRUData,
     qemu_FindMRUStringA,
     qemu_FindMRUStringW,
+    qemu_FlatSB_EnableScrollBar,
+    qemu_FlatSB_GetScrollInfo,
+    qemu_FlatSB_GetScrollPos,
+    qemu_FlatSB_GetScrollProp,
+    qemu_FlatSB_GetScrollRange,
+    qemu_FlatSB_SetScrollInfo,
+    qemu_FlatSB_SetScrollPos,
+    qemu_FlatSB_SetScrollProp,
+    qemu_FlatSB_SetScrollRange,
+    qemu_FlatSB_ShowScrollBar,
     qemu_Free,
     qemu_FreeMRUList,
     qemu_GetEffectiveClientRect,
@@ -154,6 +164,7 @@ static const syscall_handler dll_functions[] =
     qemu_ImageList_Write,
     qemu_InitCommonControls,
     qemu_InitCommonControlsEx,
+    qemu_InitializeFlatSB,
     qemu_InitMUILanguage,
     qemu_LBItemFromPt,
     qemu_LoadIconMetric,
@@ -170,6 +181,7 @@ static const syscall_handler dll_functions[] =
     qemu_SetPathWordBreakProc,
     qemu_SetWindowSubclass,
     qemu_ShowHideMenuCtl,
+    qemu_UninitializeFlatSB,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)

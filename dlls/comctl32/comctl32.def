@@ -70,6 +70,16 @@ EXPORTS
   FindMRUData
   FindMRUStringA
   FindMRUStringW
+  FlatSB_EnableScrollBar
+  FlatSB_GetScrollInfo
+  FlatSB_GetScrollPos
+  FlatSB_GetScrollProp
+  FlatSB_GetScrollRange
+  FlatSB_SetScrollInfo
+  FlatSB_SetScrollPos
+  FlatSB_SetScrollProp
+  FlatSB_SetScrollRange
+  FlatSB_ShowScrollBar
   Free
   FreeMRUList
   GetEffectiveClientRect @4
@@ -121,6 +131,7 @@ EXPORTS
   ImageList_Write
   InitCommonControls @17
   InitCommonControlsEx
+  InitializeFlatSB
   InitMUILanguage
   LBItemFromPt
   LBItemFromPt=ntdll.DbgBreakPoint @14
@@ -139,3 +150,4 @@ EXPORTS
   SetPathWordBreakProc
   SetWindowSubclass
   ShowHideMenuCtl @3
+  UninitializeFlatSB
