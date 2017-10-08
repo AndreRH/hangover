@@ -1583,7 +1583,7 @@ struct qemu_TraceMessageVa
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI ULONG WINAPI TraceMessageVa(TRACEHANDLE handle, ULONG flags, LPCGUID guid, USHORT number, va_list args)
+ULONG WINAPI TraceMessageVa(TRACEHANDLE handle, ULONG flags, LPCGUID guid, USHORT number, va_list args)
 {
     struct qemu_TraceMessageVa call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRACEMESSAGEVA);
@@ -1595,6 +1595,17 @@ WINBASEAPI ULONG WINAPI TraceMessageVa(TRACEHANDLE handle, ULONG flags, LPCGUID 
     qemu_syscall(&call.super);
 
     return call.super.iret;
+}
+
+ULONG CDECL TraceMessage(TRACEHANDLE handle, ULONG flags, LPCGUID guid, USHORT number, ...)
+{
+    va_list valist;
+    ULONG ret;
+
+    va_start( valist, number );
+    ret = TraceMessageVa( handle, flags, guid, number, valist );
+    va_end( valist );
+    return ret;
 }
 
 #else
