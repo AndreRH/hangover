@@ -49,12 +49,12 @@ WINBASEAPI INT WINAPI GetDateFormatA(LCID lcid, DWORD dwFlags, const SYSTEMTIME*
 {
     struct qemu_GetDateFormatA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDATEFORMATA);
-    call.lcid = (uint64_t)lcid;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpTime = (uint64_t)lpTime;
-    call.lpFormat = (uint64_t)lpFormat;
-    call.lpDateStr = (uint64_t)lpDateStr;
-    call.cchOut = (uint64_t)cchOut;
+    call.lcid = lcid;
+    call.dwFlags = dwFlags;
+    call.lpTime = (ULONG_PTR)lpTime;
+    call.lpFormat = (ULONG_PTR)lpFormat;
+    call.lpDateStr = (ULONG_PTR)lpDateStr;
+    call.cchOut = cchOut;
 
     qemu_syscall(&call.super);
 
@@ -90,13 +90,13 @@ WINBASEAPI INT WINAPI GetDateFormatEx(LPCWSTR localename, DWORD flags, const SYS
 {
     struct qemu_GetDateFormatEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDATEFORMATEX);
-    call.localename = (uint64_t)localename;
-    call.flags = (uint64_t)flags;
-    call.date = (uint64_t)date;
-    call.format = (uint64_t)format;
-    call.outbuf = (uint64_t)outbuf;
-    call.bufsize = (uint64_t)bufsize;
-    call.calendar = (uint64_t)calendar;
+    call.localename = (ULONG_PTR)localename;
+    call.flags = flags;
+    call.date = (ULONG_PTR)date;
+    call.format = (ULONG_PTR)format;
+    call.outbuf = (ULONG_PTR)outbuf;
+    call.bufsize = bufsize;
+    call.calendar = (ULONG_PTR)calendar;
 
     qemu_syscall(&call.super);
 
@@ -131,12 +131,12 @@ WINBASEAPI INT WINAPI GetDateFormatW(LCID lcid, DWORD dwFlags, const SYSTEMTIME*
 {
     struct qemu_GetDateFormatW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDATEFORMATW);
-    call.lcid = (uint64_t)lcid;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpTime = (uint64_t)lpTime;
-    call.lpFormat = (uint64_t)lpFormat;
-    call.lpDateStr = (uint64_t)lpDateStr;
-    call.cchOut = (uint64_t)cchOut;
+    call.lcid = lcid;
+    call.dwFlags = dwFlags;
+    call.lpTime = (ULONG_PTR)lpTime;
+    call.lpFormat = (ULONG_PTR)lpFormat;
+    call.lpDateStr = (ULONG_PTR)lpDateStr;
+    call.cchOut = cchOut;
 
     qemu_syscall(&call.super);
 
@@ -171,12 +171,12 @@ WINBASEAPI INT WINAPI GetTimeFormatA(LCID lcid, DWORD dwFlags, const SYSTEMTIME*
 {
     struct qemu_GetTimeFormatA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTIMEFORMATA);
-    call.lcid = (uint64_t)lcid;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpTime = (uint64_t)lpTime;
-    call.lpFormat = (uint64_t)lpFormat;
-    call.lpTimeStr = (uint64_t)lpTimeStr;
-    call.cchOut = (uint64_t)cchOut;
+    call.lcid = lcid;
+    call.dwFlags = dwFlags;
+    call.lpTime = (ULONG_PTR)lpTime;
+    call.lpFormat = (ULONG_PTR)lpFormat;
+    call.lpTimeStr = (ULONG_PTR)lpTimeStr;
+    call.cchOut = cchOut;
 
     qemu_syscall(&call.super);
 
@@ -211,11 +211,11 @@ WINBASEAPI INT WINAPI GetTimeFormatEx(LPCWSTR localename, DWORD flags, const SYS
 {
     struct qemu_GetTimeFormatEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTIMEFORMATEX);
-    call.localename = (uint64_t)localename;
+    call.localename = (ULONG_PTR)localename;
     call.flags = flags;
-    call.time = (uint64_t)time;
-    call.format = (uint64_t)format;
-    call.outbuf = (uint64_t)outbuf;
+    call.time = (ULONG_PTR)time;
+    call.format = (ULONG_PTR)format;
+    call.outbuf = (ULONG_PTR)outbuf;
     call.bufsize = bufsize;
 
     qemu_syscall(&call.super);
@@ -251,12 +251,12 @@ WINBASEAPI INT WINAPI GetTimeFormatW(LCID lcid, DWORD dwFlags, const SYSTEMTIME*
 {
     struct qemu_GetTimeFormatW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTIMEFORMATW);
-    call.lcid = (uint64_t)lcid;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpTime = (uint64_t)lpTime;
-    call.lpFormat = (uint64_t)lpFormat;
-    call.lpTimeStr = (uint64_t)lpTimeStr;
-    call.cchOut = (uint64_t)cchOut;
+    call.lcid = lcid;
+    call.dwFlags = dwFlags;
+    call.lpTime = (ULONG_PTR)lpTime;
+    call.lpFormat = (ULONG_PTR)lpFormat;
+    call.lpTimeStr = (ULONG_PTR)lpTimeStr;
+    call.cchOut = cchOut;
 
     qemu_syscall(&call.super);
 
@@ -293,9 +293,9 @@ WINBASEAPI INT WINAPI GetNumberFormatA(LCID lcid, DWORD dwFlags, LPCSTR lpszValu
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNUMBERFORMATA);
     call.lcid = lcid;
     call.dwFlags = dwFlags;
-    call.lpszValue = (uint64_t)lpszValue;
-    call.lpFormat = (uint64_t)lpFormat;
-    call.lpNumberStr = (uint64_t)lpNumberStr;
+    call.lpszValue = (ULONG_PTR)lpszValue;
+    call.lpFormat = (ULONG_PTR)lpFormat;
+    call.lpNumberStr = (ULONG_PTR)lpNumberStr;
     call.cchOut = cchOut;
 
     qemu_syscall(&call.super);
@@ -331,12 +331,12 @@ WINBASEAPI INT WINAPI GetNumberFormatW(LCID lcid, DWORD dwFlags, LPCWSTR lpszVal
 {
     struct qemu_GetNumberFormatW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNUMBERFORMATW);
-    call.lcid = (uint64_t)lcid;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpszValue = (uint64_t)lpszValue;
-    call.lpFormat = (uint64_t)lpFormat;
-    call.lpNumberStr = (uint64_t)lpNumberStr;
-    call.cchOut = (uint64_t)cchOut;
+    call.lcid = lcid;
+    call.dwFlags = dwFlags;
+    call.lpszValue = (ULONG_PTR)lpszValue;
+    call.lpFormat = (ULONG_PTR)lpFormat;
+    call.lpNumberStr = (ULONG_PTR)lpNumberStr;
+    call.cchOut = cchOut;
 
     qemu_syscall(&call.super);
 
@@ -371,11 +371,11 @@ WINBASEAPI INT WINAPI GetNumberFormatEx(LPCWSTR name, DWORD flags, LPCWSTR value
 {
     struct qemu_GetNumberFormatEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNUMBERFORMATEX);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
     call.flags = flags;
-    call.value = (uint64_t)value;
-    call.format = (uint64_t)format;
-    call.number = (uint64_t)number;
+    call.value = (ULONG_PTR)value;
+    call.format = (ULONG_PTR)format;
+    call.number = (ULONG_PTR)number;
     call.numout = numout;
 
     qemu_syscall(&call.super);
@@ -415,9 +415,9 @@ WINBASEAPI INT WINAPI GetCurrencyFormatA(LCID lcid, DWORD dwFlags, LPCSTR lpszVa
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENCYFORMATA);
     call.lcid = lcid;
     call.dwFlags = dwFlags;
-    call.lpszValue = (uint64_t)lpszValue;
-    call.lpFormat = (uint64_t)lpFormat;
-    call.lpCurrencyStr = (uint64_t)lpCurrencyStr;
+    call.lpszValue = (ULONG_PTR)lpszValue;
+    call.lpFormat = (ULONG_PTR)lpFormat;
+    call.lpCurrencyStr = (ULONG_PTR)lpCurrencyStr;
     call.cchOut = cchOut;
 
     qemu_syscall(&call.super);
@@ -453,12 +453,12 @@ WINBASEAPI INT WINAPI GetCurrencyFormatW(LCID lcid, DWORD dwFlags, LPCWSTR lpszV
 {
     struct qemu_GetCurrencyFormatW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENCYFORMATW);
-    call.lcid = (uint64_t)lcid;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpszValue = (uint64_t)lpszValue;
-    call.lpFormat = (uint64_t)lpFormat;
-    call.lpCurrencyStr = (uint64_t)lpCurrencyStr;
-    call.cchOut = (uint64_t)cchOut;
+    call.lcid = lcid;
+    call.dwFlags = dwFlags;
+    call.lpszValue = (ULONG_PTR)lpszValue;
+    call.lpFormat = (ULONG_PTR)lpFormat;
+    call.lpCurrencyStr = (ULONG_PTR)lpCurrencyStr;
+    call.cchOut = cchOut;
 
     qemu_syscall(&call.super);
 
@@ -490,9 +490,9 @@ WINBASEAPI BOOL WINAPI EnumDateFormatsExA(DATEFMT_ENUMPROCEXA proc, LCID lcid, D
 {
     struct qemu_EnumDateFormatsExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMDATEFORMATSEXA);
-    call.proc = (uint64_t)proc;
-    call.lcid = (uint64_t)lcid;
-    call.flags = (uint64_t)flags;
+    call.proc = (ULONG_PTR)proc;
+    call.lcid = lcid;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -524,9 +524,9 @@ WINBASEAPI BOOL WINAPI EnumDateFormatsExW(DATEFMT_ENUMPROCEXW proc, LCID lcid, D
 {
     struct qemu_EnumDateFormatsExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMDATEFORMATSEXW);
-    call.proc = (uint64_t)proc;
-    call.lcid = (uint64_t)lcid;
-    call.flags = (uint64_t)flags;
+    call.proc = (ULONG_PTR)proc;
+    call.lcid = lcid;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -558,9 +558,9 @@ WINBASEAPI BOOL WINAPI EnumDateFormatsA(DATEFMT_ENUMPROCA proc, LCID lcid, DWORD
 {
     struct qemu_EnumDateFormatsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMDATEFORMATSA);
-    call.proc = (uint64_t)proc;
-    call.lcid = (uint64_t)lcid;
-    call.flags = (uint64_t)flags;
+    call.proc = (ULONG_PTR)proc;
+    call.lcid = lcid;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -610,9 +610,9 @@ WINBASEAPI BOOL WINAPI EnumDateFormatsW(DATEFMT_ENUMPROCW proc, LCID lcid, DWORD
 {
     struct qemu_EnumDateFormatsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMDATEFORMATSW);
-    call.proc = (uint64_t)proc;
-    call.lcid = (uint64_t)lcid;
-    call.flags = (uint64_t)flags;
+    call.proc = (ULONG_PTR)proc;
+    call.lcid = lcid;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -663,10 +663,10 @@ WINBASEAPI BOOL WINAPI EnumDateFormatsExEx(DATEFMT_ENUMPROCEXEX proc, const WCHA
 {
     struct qemu_EnumDateFormatsExEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMDATEFORMATSEXEX);
-    call.proc = (uint64_t)proc;
-    call.locale = (uint64_t)locale;
-    call.flags = (uint64_t)flags;
-    call.lParam = (uint64_t)lParam;
+    call.proc = (ULONG_PTR)proc;
+    call.locale = (ULONG_PTR)locale;
+    call.flags = flags;
+    call.lParam = lParam;
 
     qemu_syscall(&call.super);
 
@@ -698,7 +698,7 @@ WINBASEAPI BOOL WINAPI EnumTimeFormatsA(TIMEFMT_ENUMPROCA proc, LCID lcid, DWORD
 {
     struct qemu_EnumTimeFormatsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMTIMEFORMATSA);
-    call.proc = (uint64_t)proc;
+    call.proc = (ULONG_PTR)proc;
     call.lcid = lcid;
     call.flags = flags;
 
@@ -739,7 +739,7 @@ WINBASEAPI BOOL WINAPI EnumTimeFormatsW(TIMEFMT_ENUMPROCW proc, LCID lcid, DWORD
 {
     struct qemu_EnumTimeFormatsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMTIMEFORMATSW);
-    call.proc = (uint64_t)proc;
+    call.proc = (ULONG_PTR)proc;
     call.lcid = lcid;
     call.flags = flags;
 
@@ -781,10 +781,10 @@ WINBASEAPI BOOL WINAPI EnumTimeFormatsEx(TIMEFMT_ENUMPROCEX proc, const WCHAR *l
 {
     struct qemu_EnumTimeFormatsEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMTIMEFORMATSEX);
-    call.proc = (uint64_t)proc;
-    call.locale = (uint64_t)locale;
-    call.flags = (uint64_t)flags;
-    call.lParam = (uint64_t)lParam;
+    call.proc = (ULONG_PTR)proc;
+    call.locale = (ULONG_PTR)locale;
+    call.flags = flags;
+    call.lParam = lParam;
 
     qemu_syscall(&call.super);
 
@@ -817,10 +817,10 @@ WINBASEAPI BOOL WINAPI EnumCalendarInfoA(CALINFO_ENUMPROCA calinfoproc,LCID loca
 {
     struct qemu_EnumCalendarInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMCALENDARINFOA);
-    call.calinfoproc = (uint64_t)calinfoproc;
-    call.locale = (uint64_t)locale;
-    call.calendar = (uint64_t)calendar;
-    call.caltype = (uint64_t)caltype;
+    call.calinfoproc = (ULONG_PTR)calinfoproc;
+    call.locale = locale;
+    call.calendar = calendar;
+    call.caltype = caltype;
 
     qemu_syscall(&call.super);
 
@@ -853,10 +853,10 @@ WINBASEAPI BOOL WINAPI EnumCalendarInfoW(CALINFO_ENUMPROCW calinfoproc,LCID loca
 {
     struct qemu_EnumCalendarInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMCALENDARINFOW);
-    call.calinfoproc = (uint64_t)calinfoproc;
-    call.locale = (uint64_t)locale;
-    call.calendar = (uint64_t)calendar;
-    call.caltype = (uint64_t)caltype;
+    call.calinfoproc = (ULONG_PTR)calinfoproc;
+    call.locale = locale;
+    call.calendar = calendar;
+    call.caltype = caltype;
 
     qemu_syscall(&call.super);
 
@@ -889,10 +889,10 @@ WINBASEAPI BOOL WINAPI EnumCalendarInfoExA(CALINFO_ENUMPROCEXA calinfoproc,LCID 
 {
     struct qemu_EnumCalendarInfoExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMCALENDARINFOEXA);
-    call.calinfoproc = (uint64_t)calinfoproc;
-    call.locale = (uint64_t)locale;
-    call.calendar = (uint64_t)calendar;
-    call.caltype = (uint64_t)caltype;
+    call.calinfoproc = (ULONG_PTR)calinfoproc;
+    call.locale = locale;
+    call.calendar = calendar;
+    call.caltype = caltype;
 
     qemu_syscall(&call.super);
 
@@ -925,10 +925,10 @@ WINBASEAPI BOOL WINAPI EnumCalendarInfoExW(CALINFO_ENUMPROCEXW calinfoproc,LCID 
 {
     struct qemu_EnumCalendarInfoExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMCALENDARINFOEXW);
-    call.calinfoproc = (uint64_t)calinfoproc;
-    call.locale = (uint64_t)locale;
-    call.calendar = (uint64_t)calendar;
-    call.caltype = (uint64_t)caltype;
+    call.calinfoproc = (ULONG_PTR)calinfoproc;
+    call.locale = locale;
+    call.calendar = calendar;
+    call.caltype = caltype;
 
     qemu_syscall(&call.super);
 
@@ -963,12 +963,12 @@ WINBASEAPI BOOL WINAPI EnumCalendarInfoExEx(CALINFO_ENUMPROCEXEX calinfoproc, LP
 {
     struct qemu_EnumCalendarInfoExEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMCALENDARINFOEXEX);
-    call.calinfoproc = (uint64_t)calinfoproc;
-    call.locale = (uint64_t)locale;
-    call.calendar = (uint64_t)calendar;
-    call.reserved = (uint64_t)reserved;
-    call.caltype = (uint64_t)caltype;
-    call.lParam = (uint64_t)lParam;
+    call.calinfoproc = (ULONG_PTR)calinfoproc;
+    call.locale = (ULONG_PTR)locale;
+    call.calendar = calendar;
+    call.reserved = (ULONG_PTR)reserved;
+    call.caltype = caltype;
+    call.lParam = lParam;
 
     qemu_syscall(&call.super);
 
