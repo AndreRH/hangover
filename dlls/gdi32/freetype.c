@@ -44,8 +44,8 @@ WINBASEAPI BOOL WINAPI GetRasterizerCaps(LPRASTERIZER_STATUS lprs, UINT cbNumByt
 {
     struct qemu_GetRasterizerCaps call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETRASTERIZERCAPS);
-    call.lprs = (uint64_t)lprs;
-    call.cbNumBytes = (uint64_t)cbNumBytes;
+    call.lprs = (ULONG_PTR)lprs;
+    call.cbNumBytes = (ULONG_PTR)cbNumBytes;
 
     qemu_syscall(&call.super);
 
@@ -79,11 +79,11 @@ WINBASEAPI BOOL WINAPI GetFontFileInfo(DWORD instance_id, DWORD unknown, void *i
 {
     struct qemu_GetFontFileInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFONTFILEINFO);
-    call.instance_id = (uint64_t)instance_id;
-    call.unknown = (uint64_t)unknown;
-    call.info = (uint64_t)info;
-    call.size = (uint64_t)size;
-    call.needed = (uint64_t)needed;
+    call.instance_id = (ULONG_PTR)instance_id;
+    call.unknown = (ULONG_PTR)unknown;
+    call.info = (ULONG_PTR)info;
+    call.size = (ULONG_PTR)size;
+    call.needed = (ULONG_PTR)needed;
 
     qemu_syscall(&call.super);
 

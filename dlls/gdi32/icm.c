@@ -45,9 +45,9 @@ WINBASEAPI INT WINAPI EnumICMProfilesA(HDC hdc, ICMENUMPROCA func, LPARAM lparam
 {
     struct qemu_EnumICMProfilesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMICMPROFILESA);
-    call.hdc = (uint64_t)hdc;
-    call.func = (uint64_t)func;
-    call.lparam = (uint64_t)lparam;
+    call.hdc = (ULONG_PTR)hdc;
+    call.func = (ULONG_PTR)func;
+    call.lparam = (ULONG_PTR)lparam;
 
     qemu_syscall(&call.super);
 
@@ -79,9 +79,9 @@ WINBASEAPI INT WINAPI EnumICMProfilesW(HDC hdc, ICMENUMPROCW func, LPARAM lparam
 {
     struct qemu_EnumICMProfilesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMICMPROFILESW);
-    call.hdc = (uint64_t)hdc;
-    call.func = (uint64_t)func;
-    call.lparam = (uint64_t)lparam;
+    call.hdc = (ULONG_PTR)hdc;
+    call.func = (ULONG_PTR)func;
+    call.lparam = (ULONG_PTR)lparam;
 
     qemu_syscall(&call.super);
 
@@ -113,9 +113,9 @@ WINBASEAPI BOOL WINAPI GetICMProfileA(HDC hdc, LPDWORD size, LPSTR filename)
 {
     struct qemu_GetICMProfileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETICMPROFILEA);
-    call.hdc = (uint64_t)hdc;
-    call.size = (uint64_t)size;
-    call.filename = (uint64_t)filename;
+    call.hdc = (ULONG_PTR)hdc;
+    call.size = (ULONG_PTR)size;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -147,9 +147,9 @@ WINBASEAPI BOOL WINAPI GetICMProfileW(HDC hdc, LPDWORD size, LPWSTR filename)
 {
     struct qemu_GetICMProfileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETICMPROFILEW);
-    call.hdc = (uint64_t)hdc;
-    call.size = (uint64_t)size;
-    call.filename = (uint64_t)filename;
+    call.hdc = (ULONG_PTR)hdc;
+    call.size = (ULONG_PTR)size;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -181,9 +181,9 @@ WINBASEAPI BOOL WINAPI GetLogColorSpaceA(HCOLORSPACE colorspace, LPLOGCOLORSPACE
 {
     struct qemu_GetLogColorSpaceA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETLOGCOLORSPACEA);
-    call.colorspace = (uint64_t)colorspace;
-    call.buffer = (uint64_t)buffer;
-    call.size = (uint64_t)size;
+    call.colorspace = (ULONG_PTR)colorspace;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -215,9 +215,9 @@ WINBASEAPI BOOL WINAPI GetLogColorSpaceW(HCOLORSPACE colorspace, LPLOGCOLORSPACE
 {
     struct qemu_GetLogColorSpaceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETLOGCOLORSPACEW);
-    call.colorspace = (uint64_t)colorspace;
-    call.buffer = (uint64_t)buffer;
-    call.size = (uint64_t)size;
+    call.colorspace = (ULONG_PTR)colorspace;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -248,8 +248,8 @@ WINBASEAPI BOOL WINAPI SetICMProfileA(HDC hdc, LPSTR filename)
 {
     struct qemu_SetICMProfileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETICMPROFILEA);
-    call.hdc = (uint64_t)hdc;
-    call.filename = (uint64_t)filename;
+    call.hdc = (ULONG_PTR)hdc;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -280,8 +280,8 @@ WINBASEAPI BOOL WINAPI SetICMProfileW(HDC hdc, LPWSTR filename)
 {
     struct qemu_SetICMProfileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETICMPROFILEW);
-    call.hdc = (uint64_t)hdc;
-    call.filename = (uint64_t)filename;
+    call.hdc = (ULONG_PTR)hdc;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
@@ -314,10 +314,10 @@ WINBASEAPI BOOL WINAPI UpdateICMRegKeyA(DWORD reserved, LPSTR cmid, LPSTR filena
 {
     struct qemu_UpdateICMRegKeyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UPDATEICMREGKEYA);
-    call.reserved = (uint64_t)reserved;
-    call.cmid = (uint64_t)cmid;
-    call.filename = (uint64_t)filename;
-    call.command = (uint64_t)command;
+    call.reserved = (ULONG_PTR)reserved;
+    call.cmid = (ULONG_PTR)cmid;
+    call.filename = (ULONG_PTR)filename;
+    call.command = (ULONG_PTR)command;
 
     qemu_syscall(&call.super);
 
@@ -350,10 +350,10 @@ WINBASEAPI BOOL WINAPI UpdateICMRegKeyW(DWORD reserved, LPWSTR cmid, LPWSTR file
 {
     struct qemu_UpdateICMRegKeyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UPDATEICMREGKEYW);
-    call.reserved = (uint64_t)reserved;
-    call.cmid = (uint64_t)cmid;
-    call.filename = (uint64_t)filename;
-    call.command = (uint64_t)command;
+    call.reserved = (ULONG_PTR)reserved;
+    call.cmid = (ULONG_PTR)cmid;
+    call.filename = (ULONG_PTR)filename;
+    call.command = (ULONG_PTR)command;
 
     qemu_syscall(&call.super);
 

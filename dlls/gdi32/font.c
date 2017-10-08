@@ -43,7 +43,7 @@ WINGDIAPI DWORD WINAPI GdiGetCodePage(HDC hdc)
 {
     struct qemu_GdiGetCodePage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDIGETCODEPAGE);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -75,9 +75,9 @@ WINGDIAPI int WINAPI GetTextCharsetInfo(HDC hdc, FONTSIGNATURE *fs, DWORD flags)
 {
     struct qemu_GetTextCharsetInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTCHARSETINFO);
-    call.hdc = (uint64_t)hdc;
-    call.fs = (uint64_t)fs;
-    call.flags = (uint64_t)flags;
+    call.hdc = (ULONG_PTR)hdc;
+    call.fs = (ULONG_PTR)fs;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -107,11 +107,11 @@ WINGDIAPI HFONT WINAPI CreateFontIndirectExA(const ENUMLOGFONTEXDVA *penumexA)
 {
     struct qemu_CreateFontIndirectExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEFONTINDIRECTEXA);
-    call.penumexA = (uint64_t)penumexA;
+    call.penumexA = (ULONG_PTR)penumexA;
 
     qemu_syscall(&call.super);
 
-    return (HFONT)call.super.iret;
+    return (HFONT)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -120,7 +120,7 @@ void qemu_CreateFontIndirectExA(struct qemu_syscall *call)
 {
     struct qemu_CreateFontIndirectExA *c = (struct qemu_CreateFontIndirectExA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateFontIndirectExA(QEMU_G2H(c->penumexA));
+    c->super.iret = (ULONG_PTR)CreateFontIndirectExA(QEMU_G2H(c->penumexA));
 }
 
 #endif
@@ -137,11 +137,11 @@ WINGDIAPI HFONT WINAPI CreateFontIndirectExW(const ENUMLOGFONTEXDVW *penumex)
 {
     struct qemu_CreateFontIndirectExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEFONTINDIRECTEXW);
-    call.penumex = (uint64_t)penumex;
+    call.penumex = (ULONG_PTR)penumex;
 
     qemu_syscall(&call.super);
 
-    return (HFONT)call.super.iret;
+    return (HFONT)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -150,7 +150,7 @@ void qemu_CreateFontIndirectExW(struct qemu_syscall *call)
 {
     struct qemu_CreateFontIndirectExW *c = (struct qemu_CreateFontIndirectExW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateFontIndirectExW(QEMU_G2H(c->penumex));
+    c->super.iret = (ULONG_PTR)CreateFontIndirectExW(QEMU_G2H(c->penumex));
 }
 
 #endif
@@ -167,11 +167,11 @@ WINGDIAPI HFONT WINAPI CreateFontIndirectA(const LOGFONTA *plfA)
 {
     struct qemu_CreateFontIndirectA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEFONTINDIRECTA);
-    call.plfA = (uint64_t)plfA;
+    call.plfA = (ULONG_PTR)plfA;
 
     qemu_syscall(&call.super);
 
-    return (HFONT)call.super.iret;
+    return (HFONT)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -180,7 +180,7 @@ void qemu_CreateFontIndirectA(struct qemu_syscall *call)
 {
     struct qemu_CreateFontIndirectA *c = (struct qemu_CreateFontIndirectA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateFontIndirectA(QEMU_G2H(c->plfA));
+    c->super.iret = (ULONG_PTR)CreateFontIndirectA(QEMU_G2H(c->plfA));
 }
 
 #endif
@@ -197,11 +197,11 @@ WINGDIAPI HFONT WINAPI CreateFontIndirectW(const LOGFONTW *plf)
 {
     struct qemu_CreateFontIndirectW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEFONTINDIRECTW);
-    call.plf = (uint64_t)plf;
+    call.plf = (ULONG_PTR)plf;
 
     qemu_syscall(&call.super);
 
-    return (HFONT)call.super.iret;
+    return (HFONT)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -210,7 +210,7 @@ void qemu_CreateFontIndirectW(struct qemu_syscall *call)
 {
     struct qemu_CreateFontIndirectW *c = (struct qemu_CreateFontIndirectW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateFontIndirectW(QEMU_G2H(c->plf));
+    c->super.iret = (ULONG_PTR)CreateFontIndirectW(QEMU_G2H(c->plf));
 }
 
 #endif
@@ -240,24 +240,24 @@ WINGDIAPI HFONT WINAPI CreateFontA(INT height, INT width, INT esc, INT orient, I
 {
     struct qemu_CreateFontA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEFONTA);
-    call.height = (uint64_t)height;
-    call.width = (uint64_t)width;
-    call.esc = (uint64_t)esc;
-    call.orient = (uint64_t)orient;
-    call.weight = (uint64_t)weight;
-    call.italic = (uint64_t)italic;
-    call.underline = (uint64_t)underline;
-    call.strikeout = (uint64_t)strikeout;
-    call.charset = (uint64_t)charset;
-    call.outpres = (uint64_t)outpres;
-    call.clippres = (uint64_t)clippres;
-    call.quality = (uint64_t)quality;
-    call.pitch = (uint64_t)pitch;
-    call.name = (uint64_t)name;
+    call.height = (ULONG_PTR)height;
+    call.width = (ULONG_PTR)width;
+    call.esc = (ULONG_PTR)esc;
+    call.orient = (ULONG_PTR)orient;
+    call.weight = (ULONG_PTR)weight;
+    call.italic = (ULONG_PTR)italic;
+    call.underline = (ULONG_PTR)underline;
+    call.strikeout = (ULONG_PTR)strikeout;
+    call.charset = (ULONG_PTR)charset;
+    call.outpres = (ULONG_PTR)outpres;
+    call.clippres = (ULONG_PTR)clippres;
+    call.quality = (ULONG_PTR)quality;
+    call.pitch = (ULONG_PTR)pitch;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HFONT)call.super.iret;
+    return (HFONT)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -266,7 +266,7 @@ void qemu_CreateFontA(struct qemu_syscall *call)
 {
     struct qemu_CreateFontA *c = (struct qemu_CreateFontA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateFontA(c->height, c->width, c->esc, c->orient, c->weight, c->italic, c->underline, c->strikeout, c->charset, c->outpres, c->clippres, c->quality, c->pitch, QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)CreateFontA(c->height, c->width, c->esc, c->orient, c->weight, c->italic, c->underline, c->strikeout, c->charset, c->outpres, c->clippres, c->quality, c->pitch, QEMU_G2H(c->name));
 }
 
 #endif
@@ -296,24 +296,24 @@ WINGDIAPI HFONT WINAPI CreateFontW(INT height, INT width, INT esc, INT orient, I
 {
     struct qemu_CreateFontW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEFONTW);
-    call.height = (uint64_t)height;
-    call.width = (uint64_t)width;
-    call.esc = (uint64_t)esc;
-    call.orient = (uint64_t)orient;
-    call.weight = (uint64_t)weight;
-    call.italic = (uint64_t)italic;
-    call.underline = (uint64_t)underline;
-    call.strikeout = (uint64_t)strikeout;
-    call.charset = (uint64_t)charset;
-    call.outpres = (uint64_t)outpres;
-    call.clippres = (uint64_t)clippres;
-    call.quality = (uint64_t)quality;
-    call.pitch = (uint64_t)pitch;
-    call.name = (uint64_t)name;
+    call.height = (ULONG_PTR)height;
+    call.width = (ULONG_PTR)width;
+    call.esc = (ULONG_PTR)esc;
+    call.orient = (ULONG_PTR)orient;
+    call.weight = (ULONG_PTR)weight;
+    call.italic = (ULONG_PTR)italic;
+    call.underline = (ULONG_PTR)underline;
+    call.strikeout = (ULONG_PTR)strikeout;
+    call.charset = (ULONG_PTR)charset;
+    call.outpres = (ULONG_PTR)outpres;
+    call.clippres = (ULONG_PTR)clippres;
+    call.quality = (ULONG_PTR)quality;
+    call.pitch = (ULONG_PTR)pitch;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (HFONT)call.super.iret;
+    return (HFONT)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -322,7 +322,7 @@ void qemu_CreateFontW(struct qemu_syscall *call)
 {
     struct qemu_CreateFontW *c = (struct qemu_CreateFontW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateFontW(c->height, c->width, c->esc, c->orient, c->weight, c->italic, c->underline, c->strikeout, c->charset, c->outpres, c->clippres, c->quality, c->pitch, QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)CreateFontW(c->height, c->width, c->esc, c->orient, c->weight, c->italic, c->underline, c->strikeout, c->charset, c->outpres, c->clippres, c->quality, c->pitch, QEMU_G2H(c->name));
 }
 
 #endif
@@ -351,20 +351,20 @@ struct qemu_EnumFontFamilies_cb
 
 static uint64_t EnumFontFamiliesW_guest_cb(struct qemu_EnumFontFamilies_cb *data)
 {
-    FONTENUMPROCW proc = (FONTENUMPROCW)data->proc;
-    return proc((const LOGFONTW *)data->font, (const TEXTMETRICW *)data->metric, data->type, data->param);
+    FONTENUMPROCW proc = (FONTENUMPROCW)(ULONG_PTR)data->proc;
+    return proc((const LOGFONTW *)(ULONG_PTR)data->font, (const TEXTMETRICW *)(ULONG_PTR)data->metric, data->type, data->param);
 }
 
 WINGDIAPI INT WINAPI EnumFontFamiliesExW(HDC hDC, LPLOGFONTW plf, FONTENUMPROCW efproc, LPARAM lParam, DWORD dwFlags)
 {
     struct qemu_EnumFontFamiliesExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMFONTFAMILIESEXW);
-    call.hDC = (uint64_t)hDC;
-    call.plf = (uint64_t)plf;
-    call.efproc = (uint64_t)efproc;
-    call.lParam = (uint64_t)lParam;
+    call.hDC = (ULONG_PTR)hDC;
+    call.plf = (ULONG_PTR)plf;
+    call.efproc = (ULONG_PTR)efproc;
+    call.lParam = (ULONG_PTR)lParam;
     call.dwFlags = dwFlags;
-    call.wrapper = (uint64_t)EnumFontFamiliesW_guest_cb;
+    call.wrapper = (ULONG_PTR)EnumFontFamiliesW_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -429,20 +429,20 @@ struct qemu_EnumFontFamiliesExA
 
 static uint64_t EnumFontFamiliesA_guest_cb(struct qemu_EnumFontFamilies_cb *data)
 {
-    FONTENUMPROCA proc = (FONTENUMPROCA)data->proc;
-    return proc((const LOGFONTA *)data->font, (const TEXTMETRICA *)data->metric, data->type, data->param);
+    FONTENUMPROCA proc = (FONTENUMPROCA)(ULONG_PTR)data->proc;
+    return proc((const LOGFONTA *)(ULONG_PTR)data->font, (const TEXTMETRICA *)(ULONG_PTR)data->metric, data->type, data->param);
 }
 
 WINGDIAPI INT WINAPI EnumFontFamiliesExA(HDC hDC, LPLOGFONTA plf, FONTENUMPROCA efproc, LPARAM lParam, DWORD dwFlags)
 {
     struct qemu_EnumFontFamiliesExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMFONTFAMILIESEXA);
-    call.hDC = (uint64_t)hDC;
-    call.plf = (uint64_t)plf;
-    call.efproc = (uint64_t)efproc;
-    call.lParam = (uint64_t)lParam;
+    call.hDC = (ULONG_PTR)hDC;
+    call.plf = (ULONG_PTR)plf;
+    call.efproc = (ULONG_PTR)efproc;
+    call.lParam = (ULONG_PTR)lParam;
     call.dwFlags = dwFlags;
-    call.wrapper = (uint64_t)EnumFontFamiliesA_guest_cb;
+    call.wrapper = (ULONG_PTR)EnumFontFamiliesA_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -502,11 +502,11 @@ WINGDIAPI INT WINAPI EnumFontFamiliesA(HDC hDC, LPCSTR lpFamily, FONTENUMPROCA e
 {
     struct qemu_EnumFontFamiliesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMFONTFAMILIESA);
-    call.hDC = (uint64_t)hDC;
-    call.lpFamily = (uint64_t)lpFamily;
-    call.efproc = (uint64_t)efproc;
-    call.lpData = (uint64_t)lpData;
-    call.wrapper = (uint64_t)EnumFontFamiliesA_guest_cb;
+    call.hDC = (ULONG_PTR)hDC;
+    call.lpFamily = (ULONG_PTR)lpFamily;
+    call.efproc = (ULONG_PTR)efproc;
+    call.lpData = (ULONG_PTR)lpData;
+    call.wrapper = (ULONG_PTR)EnumFontFamiliesA_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -547,11 +547,11 @@ WINGDIAPI INT WINAPI EnumFontFamiliesW(HDC hDC, LPCWSTR lpFamily, FONTENUMPROCW 
 {
     struct qemu_EnumFontFamiliesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMFONTFAMILIESW);
-    call.hDC = (uint64_t)hDC;
-    call.lpFamily = (uint64_t)lpFamily;
-    call.efproc = (uint64_t)efproc;
-    call.lpData = (uint64_t)lpData;
-    call.wrapper = (uint64_t)EnumFontFamiliesW_guest_cb;
+    call.hDC = (ULONG_PTR)hDC;
+    call.lpFamily = (ULONG_PTR)lpFamily;
+    call.efproc = (ULONG_PTR)efproc;
+    call.lpData = (ULONG_PTR)lpData;
+    call.wrapper = (ULONG_PTR)EnumFontFamiliesW_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -591,10 +591,10 @@ WINGDIAPI INT WINAPI EnumFontsA(HDC hDC, LPCSTR lpName, FONTENUMPROCA efproc, LP
 {
     struct qemu_EnumFontsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMFONTSA);
-    call.hDC = (uint64_t)hDC;
-    call.lpName = (uint64_t)lpName;
-    call.efproc = (uint64_t)efproc;
-    call.lpData = (uint64_t)lpData;
+    call.hDC = (ULONG_PTR)hDC;
+    call.lpName = (ULONG_PTR)lpName;
+    call.efproc = (ULONG_PTR)efproc;
+    call.lpData = (ULONG_PTR)lpData;
 
     qemu_syscall(&call.super);
 
@@ -627,10 +627,10 @@ WINGDIAPI INT WINAPI EnumFontsW(HDC hDC, LPCWSTR lpName, FONTENUMPROCW efproc, L
 {
     struct qemu_EnumFontsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMFONTSW);
-    call.hDC = (uint64_t)hDC;
-    call.lpName = (uint64_t)lpName;
-    call.efproc = (uint64_t)efproc;
-    call.lpData = (uint64_t)lpData;
+    call.hDC = (ULONG_PTR)hDC;
+    call.lpName = (ULONG_PTR)lpName;
+    call.efproc = (ULONG_PTR)efproc;
+    call.lpData = (ULONG_PTR)lpData;
 
     qemu_syscall(&call.super);
 
@@ -660,7 +660,7 @@ WINGDIAPI INT WINAPI GetTextCharacterExtra(HDC hdc)
 {
     struct qemu_GetTextCharacterExtra call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTCHARACTEREXTRA);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -691,8 +691,8 @@ WINGDIAPI INT WINAPI SetTextCharacterExtra(HDC hdc, INT extra)
 {
     struct qemu_SetTextCharacterExtra call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTEXTCHARACTEREXTRA);
-    call.hdc = (uint64_t)hdc;
-    call.extra = (uint64_t)extra;
+    call.hdc = (ULONG_PTR)hdc;
+    call.extra = (ULONG_PTR)extra;
 
     qemu_syscall(&call.super);
 
@@ -724,9 +724,9 @@ WINGDIAPI BOOL WINAPI SetTextJustification(HDC hdc, INT extra, INT breaks)
 {
     struct qemu_SetTextJustification call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTEXTJUSTIFICATION);
-    call.hdc = (uint64_t)hdc;
-    call.extra = (uint64_t)extra;
-    call.breaks = (uint64_t)breaks;
+    call.hdc = (ULONG_PTR)hdc;
+    call.extra = (ULONG_PTR)extra;
+    call.breaks = (ULONG_PTR)breaks;
 
     qemu_syscall(&call.super);
 
@@ -758,9 +758,9 @@ WINGDIAPI INT WINAPI GetTextFaceA(HDC hdc, INT count, LPSTR name)
 {
     struct qemu_GetTextFaceA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTFACEA);
-    call.hdc = (uint64_t)hdc;
-    call.count = (uint64_t)count;
-    call.name = (uint64_t)name;
+    call.hdc = (ULONG_PTR)hdc;
+    call.count = (ULONG_PTR)count;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
@@ -792,9 +792,9 @@ WINGDIAPI INT WINAPI GetTextFaceW(HDC hdc, INT count, LPWSTR name)
 {
     struct qemu_GetTextFaceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTFACEW);
-    call.hdc = (uint64_t)hdc;
-    call.count = (uint64_t)count;
-    call.name = (uint64_t)name;
+    call.hdc = (ULONG_PTR)hdc;
+    call.count = (ULONG_PTR)count;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
@@ -827,10 +827,10 @@ WINGDIAPI BOOL WINAPI GetTextExtentPoint32A(HDC hdc, LPCSTR str, INT count, LPSI
 {
     struct qemu_GetTextExtentPoint32A call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTEXTENTPOINT32A);
-    call.hdc = (uint64_t)hdc;
-    call.str = (uint64_t)str;
-    call.count = (uint64_t)count;
-    call.size = (uint64_t)size;
+    call.hdc = (ULONG_PTR)hdc;
+    call.str = (ULONG_PTR)str;
+    call.count = (ULONG_PTR)count;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -863,10 +863,10 @@ WINGDIAPI BOOL WINAPI GetTextExtentPoint32W(HDC hdc, LPCWSTR str, INT count, LPS
 {
     struct qemu_GetTextExtentPoint32W call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTEXTENTPOINT32W);
-    call.hdc = (uint64_t)hdc;
-    call.str = (uint64_t)str;
-    call.count = (uint64_t)count;
-    call.size = (uint64_t)size;
+    call.hdc = (ULONG_PTR)hdc;
+    call.str = (ULONG_PTR)str;
+    call.count = (ULONG_PTR)count;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -902,13 +902,13 @@ WINGDIAPI WINBOOL WINAPI GetTextExtentExPointI(HDC hdc, WORD *indices, int count
 {
     struct qemu_GetTextExtentExPointI call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTEXTENTEXPOINTI);
-    call.hdc = (uint64_t)hdc;
-    call.indices = (uint64_t)indices;
-    call.count = (uint64_t)count;
-    call.max_ext = (uint64_t)max_ext;
-    call.nfit = (uint64_t)nfit;
-    call.dxs = (uint64_t)dxs;
-    call.size = (uint64_t)size;
+    call.hdc = (ULONG_PTR)hdc;
+    call.indices = (ULONG_PTR)indices;
+    call.count = (ULONG_PTR)count;
+    call.max_ext = (ULONG_PTR)max_ext;
+    call.nfit = (ULONG_PTR)nfit;
+    call.dxs = (ULONG_PTR)dxs;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -941,10 +941,10 @@ WINGDIAPI WINBOOL WINAPI GetTextExtentPointI(HDC hdc, WORD *indices, int count, 
 {
     struct qemu_GetTextExtentPointI call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTEXTENTPOINTI);
-    call.hdc = (uint64_t)hdc;
-    call.indices = (uint64_t)indices;
-    call.count = (uint64_t)count;
-    call.size = (uint64_t)size;
+    call.hdc = (ULONG_PTR)hdc;
+    call.indices = (ULONG_PTR)indices;
+    call.count = (ULONG_PTR)count;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -977,10 +977,10 @@ WINGDIAPI BOOL WINAPI GetTextExtentPointA(HDC hdc, LPCSTR str, INT count, LPSIZE
 {
     struct qemu_GetTextExtentPointA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTEXTENTPOINTA);
-    call.hdc = (uint64_t)hdc;
-    call.str = (uint64_t)str;
-    call.count = (uint64_t)count;
-    call.size = (uint64_t)size;
+    call.hdc = (ULONG_PTR)hdc;
+    call.str = (ULONG_PTR)str;
+    call.count = (ULONG_PTR)count;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -1013,10 +1013,10 @@ WINGDIAPI BOOL WINAPI GetTextExtentPointW(HDC hdc, LPCWSTR str, INT count, LPSIZ
 {
     struct qemu_GetTextExtentPointW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTEXTENTPOINTW);
-    call.hdc = (uint64_t)hdc;
-    call.str = (uint64_t)str;
-    call.count = (uint64_t)count;
-    call.size = (uint64_t)size;
+    call.hdc = (ULONG_PTR)hdc;
+    call.str = (ULONG_PTR)str;
+    call.count = (ULONG_PTR)count;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -1052,13 +1052,13 @@ WINGDIAPI BOOL WINAPI GetTextExtentExPointA(HDC hdc, LPCSTR str, INT count, INT 
 {
     struct qemu_GetTextExtentExPointA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTEXTENTEXPOINTA);
-    call.hdc = (uint64_t)hdc;
-    call.str = (uint64_t)str;
-    call.count = (uint64_t)count;
-    call.maxExt = (uint64_t)maxExt;
-    call.lpnFit = (uint64_t)lpnFit;
-    call.alpDx = (uint64_t)alpDx;
-    call.size = (uint64_t)size;
+    call.hdc = (ULONG_PTR)hdc;
+    call.str = (ULONG_PTR)str;
+    call.count = (ULONG_PTR)count;
+    call.maxExt = (ULONG_PTR)maxExt;
+    call.lpnFit = (ULONG_PTR)lpnFit;
+    call.alpDx = (ULONG_PTR)alpDx;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -1094,13 +1094,13 @@ WINGDIAPI BOOL WINAPI GetTextExtentExPointW(HDC hdc, LPCWSTR str, INT count, INT
 {
     struct qemu_GetTextExtentExPointW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTEXTENTEXPOINTW);
-    call.hdc = (uint64_t)hdc;
-    call.str = (uint64_t)str;
-    call.count = (uint64_t)count;
-    call.max_ext = (uint64_t)max_ext;
-    call.nfit = (uint64_t)nfit;
-    call.dxs = (uint64_t)dxs;
-    call.size = (uint64_t)size;
+    call.hdc = (ULONG_PTR)hdc;
+    call.str = (ULONG_PTR)str;
+    call.count = (ULONG_PTR)count;
+    call.max_ext = (ULONG_PTR)max_ext;
+    call.nfit = (ULONG_PTR)nfit;
+    call.dxs = (ULONG_PTR)dxs;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -1131,8 +1131,8 @@ WINGDIAPI BOOL WINAPI GetTextMetricsA(HDC hdc, TEXTMETRICA *metrics)
 {
     struct qemu_GetTextMetricsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTMETRICSA);
-    call.hdc = (uint64_t)hdc;
-    call.metrics = (uint64_t)metrics;
+    call.hdc = (ULONG_PTR)hdc;
+    call.metrics = (ULONG_PTR)metrics;
 
     qemu_syscall(&call.super);
 
@@ -1163,8 +1163,8 @@ WINGDIAPI BOOL WINAPI GetTextMetricsW(HDC hdc, TEXTMETRICW *metrics)
 {
     struct qemu_GetTextMetricsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTMETRICSW);
-    call.hdc = (uint64_t)hdc;
-    call.metrics = (uint64_t)metrics;
+    call.hdc = (ULONG_PTR)hdc;
+    call.metrics = (ULONG_PTR)metrics;
 
     qemu_syscall(&call.super);
 
@@ -1196,9 +1196,9 @@ WINGDIAPI UINT WINAPI GetOutlineTextMetricsA(HDC hdc, UINT cbData, LPOUTLINETEXT
 {
     struct qemu_GetOutlineTextMetricsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETOUTLINETEXTMETRICSA);
-    call.hdc = (uint64_t)hdc;
-    call.cbData = (uint64_t)cbData;
-    call.lpOTM = (uint64_t)lpOTM;
+    call.hdc = (ULONG_PTR)hdc;
+    call.cbData = (ULONG_PTR)cbData;
+    call.lpOTM = (ULONG_PTR)lpOTM;
 
     qemu_syscall(&call.super);
 
@@ -1230,9 +1230,9 @@ WINGDIAPI UINT WINAPI GetOutlineTextMetricsW(HDC hdc, UINT cbData, LPOUTLINETEXT
 {
     struct qemu_GetOutlineTextMetricsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETOUTLINETEXTMETRICSW);
-    call.hdc = (uint64_t)hdc;
-    call.cbData = (uint64_t)cbData;
-    call.lpOTM = (uint64_t)lpOTM;
+    call.hdc = (ULONG_PTR)hdc;
+    call.cbData = (ULONG_PTR)cbData;
+    call.lpOTM = (ULONG_PTR)lpOTM;
 
     qemu_syscall(&call.super);
 
@@ -1265,10 +1265,10 @@ WINGDIAPI BOOL WINAPI GetCharWidth32W(HDC hdc, UINT firstChar, UINT lastChar, LP
 {
     struct qemu_GetCharWidth32W call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCHARWIDTH32W);
-    call.hdc = (uint64_t)hdc;
-    call.firstChar = (uint64_t)firstChar;
-    call.lastChar = (uint64_t)lastChar;
-    call.buffer = (uint64_t)buffer;
+    call.hdc = (ULONG_PTR)hdc;
+    call.firstChar = (ULONG_PTR)firstChar;
+    call.lastChar = (ULONG_PTR)lastChar;
+    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
 
@@ -1301,10 +1301,10 @@ WINGDIAPI BOOL WINAPI GetCharWidth32A(HDC hdc, UINT firstChar, UINT lastChar, LP
 {
     struct qemu_GetCharWidth32A call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCHARWIDTH32A);
-    call.hdc = (uint64_t)hdc;
-    call.firstChar = (uint64_t)firstChar;
-    call.lastChar = (uint64_t)lastChar;
-    call.buffer = (uint64_t)buffer;
+    call.hdc = (ULONG_PTR)hdc;
+    call.firstChar = (ULONG_PTR)firstChar;
+    call.lastChar = (ULONG_PTR)lastChar;
+    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
 
@@ -1341,14 +1341,14 @@ WINGDIAPI BOOL WINAPI ExtTextOutA(HDC hdc, INT x, INT y, UINT flags, const RECT 
 {
     struct qemu_ExtTextOutA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXTTEXTOUTA);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.flags = (uint64_t)flags;
-    call.lprect = (uint64_t)lprect;
-    call.str = (uint64_t)str;
-    call.count = (uint64_t)count;
-    call.lpDx = (uint64_t)lpDx;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.flags = (ULONG_PTR)flags;
+    call.lprect = (ULONG_PTR)lprect;
+    call.str = (ULONG_PTR)str;
+    call.count = (ULONG_PTR)count;
+    call.lpDx = (ULONG_PTR)lpDx;
 
     qemu_syscall(&call.super);
 
@@ -1385,14 +1385,14 @@ WINGDIAPI BOOL WINAPI ExtTextOutW(HDC hdc, INT x, INT y, UINT flags, const RECT 
 {
     struct qemu_ExtTextOutW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXTTEXTOUTW);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
     call.x = x;
     call.y = y;
     call.flags = flags;
-    call.lprect = (uint64_t)lprect;
-    call.str = (uint64_t)str;
+    call.lprect = (ULONG_PTR)lprect;
+    call.str = (ULONG_PTR)str;
     call.count = count;
-    call.lpDx = (uint64_t)lpDx;
+    call.lpDx = (ULONG_PTR)lpDx;
 
     qemu_syscall(&call.super);
 
@@ -1426,11 +1426,11 @@ WINGDIAPI BOOL WINAPI TextOutA(HDC hdc, INT x, INT y, LPCSTR str, INT count)
 {
     struct qemu_TextOutA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TEXTOUTA);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.str = (uint64_t)str;
-    call.count = (uint64_t)count;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.str = (ULONG_PTR)str;
+    call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
 
@@ -1464,11 +1464,11 @@ WINGDIAPI BOOL WINAPI TextOutW(HDC hdc, INT x, INT y, LPCWSTR str, INT count)
 {
     struct qemu_TextOutW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TEXTOUTW);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.str = (uint64_t)str;
-    call.count = (uint64_t)count;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.str = (ULONG_PTR)str;
+    call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
 
@@ -1500,9 +1500,9 @@ WINGDIAPI BOOL WINAPI PolyTextOutA(HDC hdc, const POLYTEXTA *pptxt, INT cStrings
 {
     struct qemu_PolyTextOutA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POLYTEXTOUTA);
-    call.hdc = (uint64_t)hdc;
-    call.pptxt = (uint64_t)pptxt;
-    call.cStrings = (uint64_t)cStrings;
+    call.hdc = (ULONG_PTR)hdc;
+    call.pptxt = (ULONG_PTR)pptxt;
+    call.cStrings = (ULONG_PTR)cStrings;
 
     qemu_syscall(&call.super);
 
@@ -1534,9 +1534,9 @@ WINGDIAPI BOOL WINAPI PolyTextOutW(HDC hdc, const POLYTEXTW *pptxt, INT cStrings
 {
     struct qemu_PolyTextOutW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POLYTEXTOUTW);
-    call.hdc = (uint64_t)hdc;
-    call.pptxt = (uint64_t)pptxt;
-    call.cStrings = (uint64_t)cStrings;
+    call.hdc = (ULONG_PTR)hdc;
+    call.pptxt = (ULONG_PTR)pptxt;
+    call.cStrings = (ULONG_PTR)cStrings;
 
     qemu_syscall(&call.super);
 
@@ -1567,8 +1567,8 @@ WINGDIAPI DWORD WINAPI SetMapperFlags(HDC hdc, DWORD flags)
 {
     struct qemu_SetMapperFlags call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMAPPERFLAGS);
-    call.hdc = (uint64_t)hdc;
-    call.flags = (uint64_t)flags;
+    call.hdc = (ULONG_PTR)hdc;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -1599,8 +1599,8 @@ WINGDIAPI BOOL WINAPI GetAspectRatioFilterEx(HDC hdc, LPSIZE pAspectRatio)
 {
     struct qemu_GetAspectRatioFilterEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETASPECTRATIOFILTEREX);
-    call.hdc = (uint64_t)hdc;
-    call.pAspectRatio = (uint64_t)pAspectRatio;
+    call.hdc = (ULONG_PTR)hdc;
+    call.pAspectRatio = (ULONG_PTR)pAspectRatio;
 
     qemu_syscall(&call.super);
 
@@ -1633,10 +1633,10 @@ WINGDIAPI BOOL WINAPI GetCharABCWidthsA(HDC hdc, UINT firstChar, UINT lastChar, 
 {
     struct qemu_GetCharABCWidthsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCHARABCWIDTHSA);
-    call.hdc = (uint64_t)hdc;
-    call.firstChar = (uint64_t)firstChar;
-    call.lastChar = (uint64_t)lastChar;
-    call.abc = (uint64_t)abc;
+    call.hdc = (ULONG_PTR)hdc;
+    call.firstChar = (ULONG_PTR)firstChar;
+    call.lastChar = (ULONG_PTR)lastChar;
+    call.abc = (ULONG_PTR)abc;
 
     qemu_syscall(&call.super);
 
@@ -1669,10 +1669,10 @@ WINGDIAPI BOOL WINAPI GetCharABCWidthsW(HDC hdc, UINT firstChar, UINT lastChar, 
 {
     struct qemu_GetCharABCWidthsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCHARABCWIDTHSW);
-    call.hdc = (uint64_t)hdc;
-    call.firstChar = (uint64_t)firstChar;
-    call.lastChar = (uint64_t)lastChar;
-    call.abc = (uint64_t)abc;
+    call.hdc = (ULONG_PTR)hdc;
+    call.firstChar = (ULONG_PTR)firstChar;
+    call.lastChar = (ULONG_PTR)lastChar;
+    call.abc = (ULONG_PTR)abc;
 
     qemu_syscall(&call.super);
 
@@ -1706,11 +1706,11 @@ WINGDIAPI BOOL WINAPI GetCharABCWidthsI(HDC hdc, UINT firstChar, UINT count, LPW
 {
     struct qemu_GetCharABCWidthsI call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCHARABCWIDTHSI);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
     call.firstChar = firstChar;
     call.count = count;
-    call.pgi = (uint64_t)pgi;
-    call.abc = (uint64_t)abc;
+    call.pgi = (ULONG_PTR)pgi;
+    call.abc = (ULONG_PTR)abc;
 
     qemu_syscall(&call.super);
 
@@ -1746,13 +1746,13 @@ WINGDIAPI DWORD WINAPI GetGlyphOutlineA(HDC hdc, UINT uChar, UINT fuFormat, LPGL
 {
     struct qemu_GetGlyphOutlineA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETGLYPHOUTLINEA);
-    call.hdc = (uint64_t)hdc;
-    call.uChar = (uint64_t)uChar;
-    call.fuFormat = (uint64_t)fuFormat;
-    call.lpgm = (uint64_t)lpgm;
-    call.cbBuffer = (uint64_t)cbBuffer;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.lpmat2 = (uint64_t)lpmat2;
+    call.hdc = (ULONG_PTR)hdc;
+    call.uChar = (ULONG_PTR)uChar;
+    call.fuFormat = (ULONG_PTR)fuFormat;
+    call.lpgm = (ULONG_PTR)lpgm;
+    call.cbBuffer = (ULONG_PTR)cbBuffer;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.lpmat2 = (ULONG_PTR)lpmat2;
 
     qemu_syscall(&call.super);
 
@@ -1788,13 +1788,13 @@ WINGDIAPI DWORD WINAPI GetGlyphOutlineW(HDC hdc, UINT uChar, UINT fuFormat, LPGL
 {
     struct qemu_GetGlyphOutlineW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETGLYPHOUTLINEW);
-    call.hdc = (uint64_t)hdc;
-    call.uChar = (uint64_t)uChar;
-    call.fuFormat = (uint64_t)fuFormat;
-    call.lpgm = (uint64_t)lpgm;
-    call.cbBuffer = (uint64_t)cbBuffer;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.lpmat2 = (uint64_t)lpmat2;
+    call.hdc = (ULONG_PTR)hdc;
+    call.uChar = (ULONG_PTR)uChar;
+    call.fuFormat = (ULONG_PTR)fuFormat;
+    call.lpgm = (ULONG_PTR)lpgm;
+    call.cbBuffer = (ULONG_PTR)cbBuffer;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.lpmat2 = (ULONG_PTR)lpmat2;
 
     qemu_syscall(&call.super);
 
@@ -1827,10 +1827,10 @@ WINGDIAPI BOOL WINAPI CreateScalableFontResourceA(DWORD fHidden, LPCSTR lpszReso
 {
     struct qemu_CreateScalableFontResourceA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATESCALABLEFONTRESOURCEA);
-    call.fHidden = (uint64_t)fHidden;
-    call.lpszResourceFile = (uint64_t)lpszResourceFile;
-    call.lpszFontFile = (uint64_t)lpszFontFile;
-    call.lpszCurrentPath = (uint64_t)lpszCurrentPath;
+    call.fHidden = (ULONG_PTR)fHidden;
+    call.lpszResourceFile = (ULONG_PTR)lpszResourceFile;
+    call.lpszFontFile = (ULONG_PTR)lpszFontFile;
+    call.lpszCurrentPath = (ULONG_PTR)lpszCurrentPath;
 
     qemu_syscall(&call.super);
 
@@ -1863,10 +1863,10 @@ WINGDIAPI BOOL WINAPI CreateScalableFontResourceW(DWORD hidden, LPCWSTR resource
 {
     struct qemu_CreateScalableFontResourceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATESCALABLEFONTRESOURCEW);
-    call.hidden = (uint64_t)hidden;
-    call.resource_file = (uint64_t)resource_file;
-    call.font_file = (uint64_t)font_file;
-    call.font_path = (uint64_t)font_path;
+    call.hidden = (ULONG_PTR)hidden;
+    call.resource_file = (ULONG_PTR)resource_file;
+    call.font_file = (ULONG_PTR)font_file;
+    call.font_path = (ULONG_PTR)font_path;
 
     qemu_syscall(&call.super);
 
@@ -1898,9 +1898,9 @@ WINGDIAPI DWORD WINAPI GetKerningPairsA(HDC hDC, DWORD cPairs, LPKERNINGPAIR ker
 {
     struct qemu_GetKerningPairsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETKERNINGPAIRSA);
-    call.hDC = (uint64_t)hDC;
-    call.cPairs = (uint64_t)cPairs;
-    call.kern_pairA = (uint64_t)kern_pairA;
+    call.hDC = (ULONG_PTR)hDC;
+    call.cPairs = (ULONG_PTR)cPairs;
+    call.kern_pairA = (ULONG_PTR)kern_pairA;
 
     qemu_syscall(&call.super);
 
@@ -1932,9 +1932,9 @@ WINGDIAPI DWORD WINAPI GetKerningPairsW(HDC hDC, DWORD cPairs, LPKERNINGPAIR lpK
 {
     struct qemu_GetKerningPairsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETKERNINGPAIRSW);
-    call.hDC = (uint64_t)hDC;
-    call.cPairs = (uint64_t)cPairs;
-    call.lpKerningPairs = (uint64_t)lpKerningPairs;
+    call.hDC = (ULONG_PTR)hDC;
+    call.cPairs = (ULONG_PTR)cPairs;
+    call.lpKerningPairs = (ULONG_PTR)lpKerningPairs;
 
     qemu_syscall(&call.super);
 
@@ -1966,9 +1966,9 @@ WINGDIAPI BOOL WINAPI TranslateCharsetInfo(LPDWORD lpSrc, LPCHARSETINFO lpCs, DW
 {
     struct qemu_TranslateCharsetInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRANSLATECHARSETINFO);
-    call.lpSrc = (uint64_t)lpSrc;
-    call.lpCs = (uint64_t)lpCs;
-    call.flags = (uint64_t)flags;
+    call.lpSrc = (ULONG_PTR)lpSrc;
+    call.lpCs = (ULONG_PTR)lpCs;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -1998,7 +1998,7 @@ WINGDIAPI DWORD WINAPI GetFontLanguageInfo(HDC hdc)
 {
     struct qemu_GetFontLanguageInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFONTLANGUAGEINFO);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -2032,11 +2032,11 @@ WINGDIAPI DWORD WINAPI GetFontData(HDC hdc, DWORD table, DWORD offset, LPVOID bu
 {
     struct qemu_GetFontData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFONTDATA);
-    call.hdc = (uint64_t)hdc;
-    call.table = (uint64_t)table;
-    call.offset = (uint64_t)offset;
-    call.buffer = (uint64_t)buffer;
-    call.length = (uint64_t)length;
+    call.hdc = (ULONG_PTR)hdc;
+    call.table = (ULONG_PTR)table;
+    call.offset = (ULONG_PTR)offset;
+    call.buffer = (ULONG_PTR)buffer;
+    call.length = (ULONG_PTR)length;
 
     qemu_syscall(&call.super);
 
@@ -2070,11 +2070,11 @@ WINGDIAPI DWORD WINAPI GetGlyphIndicesA(HDC hdc, LPCSTR lpstr, INT count, LPWORD
 {
     struct qemu_GetGlyphIndicesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETGLYPHINDICESA);
-    call.hdc = (uint64_t)hdc;
-    call.lpstr = (uint64_t)lpstr;
-    call.count = (uint64_t)count;
-    call.pgi = (uint64_t)pgi;
-    call.flags = (uint64_t)flags;
+    call.hdc = (ULONG_PTR)hdc;
+    call.lpstr = (ULONG_PTR)lpstr;
+    call.count = (ULONG_PTR)count;
+    call.pgi = (ULONG_PTR)pgi;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -2108,11 +2108,11 @@ WINGDIAPI DWORD WINAPI GetGlyphIndicesW(HDC hdc, LPCWSTR lpstr, INT count, LPWOR
 {
     struct qemu_GetGlyphIndicesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETGLYPHINDICESW);
-    call.hdc = (uint64_t)hdc;
-    call.lpstr = (uint64_t)lpstr;
-    call.count = (uint64_t)count;
-    call.pgi = (uint64_t)pgi;
-    call.flags = (uint64_t)flags;
+    call.hdc = (ULONG_PTR)hdc;
+    call.lpstr = (ULONG_PTR)lpstr;
+    call.count = (ULONG_PTR)count;
+    call.pgi = (ULONG_PTR)pgi;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -2147,12 +2147,12 @@ WINGDIAPI DWORD WINAPI GetCharacterPlacementA(HDC hdc, LPCSTR lpString, INT uCou
 {
     struct qemu_GetCharacterPlacementA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCHARACTERPLACEMENTA);
-    call.hdc = (uint64_t)hdc;
-    call.lpString = (uint64_t)lpString;
-    call.uCount = (uint64_t)uCount;
-    call.nMaxExtent = (uint64_t)nMaxExtent;
-    call.lpResults = (uint64_t)lpResults;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hdc = (ULONG_PTR)hdc;
+    call.lpString = (ULONG_PTR)lpString;
+    call.uCount = (ULONG_PTR)uCount;
+    call.nMaxExtent = (ULONG_PTR)nMaxExtent;
+    call.lpResults = (ULONG_PTR)lpResults;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -2187,11 +2187,11 @@ WINGDIAPI DWORD WINAPI GetCharacterPlacementW(HDC hdc, LPCWSTR lpString, INT uCo
 {
     struct qemu_GetCharacterPlacementW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCHARACTERPLACEMENTW);
-    call.hdc = (uint64_t)hdc;
-    call.lpString = (uint64_t)lpString;
+    call.hdc = (ULONG_PTR)hdc;
+    call.lpString = (ULONG_PTR)lpString;
     call.uCount = uCount;
     call.nMaxExtent = nMaxExtent;
-    call.lpResults = (uint64_t)lpResults;
+    call.lpResults = (ULONG_PTR)lpResults;
     call.dwFlags = dwFlags;
 
     qemu_syscall(&call.super);
@@ -2225,10 +2225,10 @@ WINGDIAPI BOOL WINAPI GetCharABCWidthsFloatA(HDC hdc, UINT first, UINT last, LPA
 {
     struct qemu_GetCharABCWidthsFloatA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCHARABCWIDTHSFLOATA);
-    call.hdc = (uint64_t)hdc;
-    call.first = (uint64_t)first;
-    call.last = (uint64_t)last;
-    call.abcf = (uint64_t)abcf;
+    call.hdc = (ULONG_PTR)hdc;
+    call.first = (ULONG_PTR)first;
+    call.last = (ULONG_PTR)last;
+    call.abcf = (ULONG_PTR)abcf;
 
     qemu_syscall(&call.super);
 
@@ -2261,10 +2261,10 @@ WINGDIAPI BOOL WINAPI GetCharABCWidthsFloatW(HDC hdc, UINT first, UINT last, LPA
 {
     struct qemu_GetCharABCWidthsFloatW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCHARABCWIDTHSFLOATW);
-    call.hdc = (uint64_t)hdc;
-    call.first = (uint64_t)first;
-    call.last = (uint64_t)last;
-    call.abcf = (uint64_t)abcf;
+    call.hdc = (ULONG_PTR)hdc;
+    call.first = (ULONG_PTR)first;
+    call.last = (ULONG_PTR)last;
+    call.abcf = (ULONG_PTR)abcf;
 
     qemu_syscall(&call.super);
 
@@ -2297,10 +2297,10 @@ WINGDIAPI BOOL WINAPI GetCharWidthFloatA(HDC hdc, UINT iFirstChar, UINT iLastCha
 {
     struct qemu_GetCharWidthFloatA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCHARWIDTHFLOATA);
-    call.hdc = (uint64_t)hdc;
-    call.iFirstChar = (uint64_t)iFirstChar;
-    call.iLastChar = (uint64_t)iLastChar;
-    call.pxBuffer = (uint64_t)pxBuffer;
+    call.hdc = (ULONG_PTR)hdc;
+    call.iFirstChar = (ULONG_PTR)iFirstChar;
+    call.iLastChar = (ULONG_PTR)iLastChar;
+    call.pxBuffer = (ULONG_PTR)pxBuffer;
 
     qemu_syscall(&call.super);
 
@@ -2333,10 +2333,10 @@ WINGDIAPI BOOL WINAPI GetCharWidthFloatW(HDC hdc, UINT iFirstChar, UINT iLastCha
 {
     struct qemu_GetCharWidthFloatW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCHARWIDTHFLOATW);
-    call.hdc = (uint64_t)hdc;
-    call.iFirstChar = (uint64_t)iFirstChar;
-    call.iLastChar = (uint64_t)iLastChar;
-    call.pxBuffer = (uint64_t)pxBuffer;
+    call.hdc = (ULONG_PTR)hdc;
+    call.iFirstChar = (ULONG_PTR)iFirstChar;
+    call.iLastChar = (ULONG_PTR)iLastChar;
+    call.pxBuffer = (ULONG_PTR)pxBuffer;
 
     qemu_syscall(&call.super);
 
@@ -2366,7 +2366,7 @@ WINGDIAPI INT WINAPI AddFontResourceA(LPCSTR str)
 {
     struct qemu_AddFontResourceA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDFONTRESOURCEA);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -2396,7 +2396,7 @@ WINGDIAPI INT WINAPI AddFontResourceW(LPCWSTR str)
 {
     struct qemu_AddFontResourceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDFONTRESOURCEW);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -2428,9 +2428,9 @@ WINGDIAPI INT WINAPI AddFontResourceExA(LPCSTR str, DWORD fl, PVOID pdv)
 {
     struct qemu_AddFontResourceExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDFONTRESOURCEEXA);
-    call.str = (uint64_t)str;
-    call.fl = (uint64_t)fl;
-    call.pdv = (uint64_t)pdv;
+    call.str = (ULONG_PTR)str;
+    call.fl = (ULONG_PTR)fl;
+    call.pdv = (ULONG_PTR)pdv;
 
     qemu_syscall(&call.super);
 
@@ -2462,9 +2462,9 @@ WINGDIAPI INT WINAPI AddFontResourceExW(LPCWSTR str, DWORD fl, PVOID pdv)
 {
     struct qemu_AddFontResourceExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDFONTRESOURCEEXW);
-    call.str = (uint64_t)str;
-    call.fl = (uint64_t)fl;
-    call.pdv = (uint64_t)pdv;
+    call.str = (ULONG_PTR)str;
+    call.fl = (ULONG_PTR)fl;
+    call.pdv = (ULONG_PTR)pdv;
 
     qemu_syscall(&call.super);
 
@@ -2494,7 +2494,7 @@ WINGDIAPI BOOL WINAPI RemoveFontResourceA(LPCSTR str)
 {
     struct qemu_RemoveFontResourceA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMOVEFONTRESOURCEA);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -2524,7 +2524,7 @@ WINGDIAPI BOOL WINAPI RemoveFontResourceW(LPCWSTR str)
 {
     struct qemu_RemoveFontResourceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMOVEFONTRESOURCEW);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -2557,14 +2557,14 @@ WINGDIAPI HANDLE WINAPI AddFontMemResourceEx(PVOID pbFont, DWORD cbFont, PVOID p
 {
     struct qemu_AddFontMemResourceEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDFONTMEMRESOURCEEX);
-    call.pbFont = (uint64_t)pbFont;
-    call.cbFont = (uint64_t)cbFont;
-    call.pdv = (uint64_t)pdv;
-    call.pcFonts = (uint64_t)pcFonts;
+    call.pbFont = (ULONG_PTR)pbFont;
+    call.cbFont = (ULONG_PTR)cbFont;
+    call.pdv = (ULONG_PTR)pdv;
+    call.pcFonts = (ULONG_PTR)pcFonts;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2573,7 +2573,7 @@ void qemu_AddFontMemResourceEx(struct qemu_syscall *call)
 {
     struct qemu_AddFontMemResourceEx *c = (struct qemu_AddFontMemResourceEx *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)AddFontMemResourceEx(QEMU_G2H(c->pbFont), c->cbFont, QEMU_G2H(c->pdv), QEMU_G2H(c->pcFonts));
+    c->super.iret = (ULONG_PTR)AddFontMemResourceEx(QEMU_G2H(c->pbFont), c->cbFont, QEMU_G2H(c->pdv), QEMU_G2H(c->pcFonts));
 }
 
 #endif
@@ -2590,7 +2590,7 @@ WINGDIAPI BOOL WINAPI RemoveFontMemResourceEx(HANDLE fh)
 {
     struct qemu_RemoveFontMemResourceEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMOVEFONTMEMRESOURCEEX);
-    call.fh = (uint64_t)fh;
+    call.fh = (ULONG_PTR)fh;
 
     qemu_syscall(&call.super);
 
@@ -2622,9 +2622,9 @@ WINGDIAPI BOOL WINAPI RemoveFontResourceExA(LPCSTR str, DWORD fl, PVOID pdv)
 {
     struct qemu_RemoveFontResourceExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMOVEFONTRESOURCEEXA);
-    call.str = (uint64_t)str;
-    call.fl = (uint64_t)fl;
-    call.pdv = (uint64_t)pdv;
+    call.str = (ULONG_PTR)str;
+    call.fl = (ULONG_PTR)fl;
+    call.pdv = (ULONG_PTR)pdv;
 
     qemu_syscall(&call.super);
 
@@ -2656,9 +2656,9 @@ WINGDIAPI BOOL WINAPI RemoveFontResourceExW(LPCWSTR str, DWORD fl, PVOID pdv)
 {
     struct qemu_RemoveFontResourceExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMOVEFONTRESOURCEEXW);
-    call.str = (uint64_t)str;
-    call.fl = (uint64_t)fl;
-    call.pdv = (uint64_t)pdv;
+    call.str = (ULONG_PTR)str;
+    call.fl = (ULONG_PTR)fl;
+    call.pdv = (ULONG_PTR)pdv;
 
     qemu_syscall(&call.super);
 
@@ -2691,10 +2691,10 @@ WINGDIAPI BOOL WINAPI GetFontResourceInfoW(LPCWSTR str, LPDWORD size, PVOID buff
 {
     struct qemu_GetFontResourceInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFONTRESOURCEINFOW);
-    call.str = (uint64_t)str;
-    call.size = (uint64_t)size;
-    call.buffer = (uint64_t)buffer;
-    call.type = (uint64_t)type;
+    call.str = (ULONG_PTR)str;
+    call.size = (ULONG_PTR)size;
+    call.buffer = (ULONG_PTR)buffer;
+    call.type = (ULONG_PTR)type;
 
     qemu_syscall(&call.super);
 
@@ -2726,7 +2726,7 @@ WINGDIAPI int WINAPI GetTextCharset(HDC hdc)
 {
     struct qemu_GetTextCharset call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTCHARSET);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -2758,9 +2758,9 @@ WINGDIAPI LONG WINAPI GdiGetCharDimensions(HDC hdc, LPTEXTMETRICW lptm, LONG *he
 {
     struct qemu_GdiGetCharDimensions call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDIGETCHARDIMENSIONS);
-    call.hdc = (uint64_t)hdc;
-    call.lptm = (uint64_t)lptm;
-    call.height = (uint64_t)height;
+    call.hdc = (ULONG_PTR)hdc;
+    call.lptm = (ULONG_PTR)lptm;
+    call.height = (ULONG_PTR)height;
 
     qemu_syscall(&call.super);
 
@@ -2790,7 +2790,7 @@ WINGDIAPI BOOL WINAPI EnableEUDC(BOOL fEnableEUDC)
 {
     struct qemu_EnableEUDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENABLEEUDC);
-    call.fEnableEUDC = (uint64_t)fEnableEUDC;
+    call.fEnableEUDC = (ULONG_PTR)fEnableEUDC;
 
     qemu_syscall(&call.super);
 
@@ -2826,11 +2826,11 @@ WINGDIAPI BOOL WINAPI GetCharWidthI(HDC hdc, UINT first, UINT count, LPWORD glyp
 {
     struct qemu_GetCharWidthI call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCHARWIDTHI);
-    call.hdc = (uint64_t)hdc;
-    call.first = (uint64_t)first;
-    call.count = (uint64_t)count;
-    call.glyphs = (uint64_t)glyphs;
-    call.buffer = (uint64_t)buffer;
+    call.hdc = (ULONG_PTR)hdc;
+    call.first = (ULONG_PTR)first;
+    call.count = (ULONG_PTR)count;
+    call.glyphs = (ULONG_PTR)glyphs;
+    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
 
@@ -2861,8 +2861,8 @@ WINGDIAPI DWORD WINAPI GetFontUnicodeRanges(HDC hdc, LPGLYPHSET lpgs)
 {
     struct qemu_GetFontUnicodeRanges call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFONTUNICODERANGES);
-    call.hdc = (uint64_t)hdc;
-    call.lpgs = (uint64_t)lpgs;
+    call.hdc = (ULONG_PTR)hdc;
+    call.lpgs = (ULONG_PTR)lpgs;
 
     qemu_syscall(&call.super);
 
@@ -2892,7 +2892,7 @@ WINGDIAPI BOOL WINAPI FontIsLinked(HDC hdc)
 {
     struct qemu_FontIsLinked call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FONTISLINKED);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -2925,8 +2925,8 @@ WINGDIAPI BOOL WINAPI GetFontRealizationInfo(HDC hdc, void *info)
 {
     struct qemu_GetFontRealizationInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFONTREALIZATIONINFO);
-    call.hdc = (uint64_t)hdc;
-    call.info = (uint64_t)info;
+    call.hdc = (ULONG_PTR)hdc;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -2959,8 +2959,8 @@ WINGDIAPI BOOL WINAPI GdiRealizationInfo(HDC hdc, void *info)
 {
     struct qemu_GdiRealizationInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDIREALIZATIONINFO);
-    call.hdc = (uint64_t)hdc;
-    call.info = (uint64_t)info;
+    call.hdc = (ULONG_PTR)hdc;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 

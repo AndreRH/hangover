@@ -44,8 +44,8 @@ WINBASEAPI INT WINAPI SelectClipRgn(HDC hdc, HRGN hrgn)
 {
     struct qemu_SelectClipRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SELECTCLIPRGN);
-    call.hdc = (uint64_t)hdc;
-    call.hrgn = (uint64_t)hrgn;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hrgn = (ULONG_PTR)hrgn;
 
     qemu_syscall(&call.super);
 
@@ -77,9 +77,9 @@ WINBASEAPI INT WINAPI ExtSelectClipRgn(HDC hdc, HRGN hrgn, INT fnMode)
 {
     struct qemu_ExtSelectClipRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXTSELECTCLIPRGN);
-    call.hdc = (uint64_t)hdc;
-    call.hrgn = (uint64_t)hrgn;
-    call.fnMode = (uint64_t)fnMode;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hrgn = (ULONG_PTR)hrgn;
+    call.fnMode = (ULONG_PTR)fnMode;
 
     qemu_syscall(&call.super);
 
@@ -111,9 +111,9 @@ WINBASEAPI INT WINAPI OffsetClipRgn(HDC hdc, INT x, INT y)
 {
     struct qemu_OffsetClipRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OFFSETCLIPRGN);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -147,11 +147,11 @@ WINBASEAPI INT WINAPI ExcludeClipRect(HDC hdc, INT left, INT top, INT right, INT
 {
     struct qemu_ExcludeClipRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXCLUDECLIPRECT);
-    call.hdc = (uint64_t)hdc;
-    call.left = (uint64_t)left;
-    call.top = (uint64_t)top;
-    call.right = (uint64_t)right;
-    call.bottom = (uint64_t)bottom;
+    call.hdc = (ULONG_PTR)hdc;
+    call.left = (ULONG_PTR)left;
+    call.top = (ULONG_PTR)top;
+    call.right = (ULONG_PTR)right;
+    call.bottom = (ULONG_PTR)bottom;
 
     qemu_syscall(&call.super);
 
@@ -185,11 +185,11 @@ WINBASEAPI INT WINAPI IntersectClipRect(HDC hdc, INT left, INT top, INT right, I
 {
     struct qemu_IntersectClipRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERSECTCLIPRECT);
-    call.hdc = (uint64_t)hdc;
-    call.left = (uint64_t)left;
-    call.top = (uint64_t)top;
-    call.right = (uint64_t)right;
-    call.bottom = (uint64_t)bottom;
+    call.hdc = (ULONG_PTR)hdc;
+    call.left = (ULONG_PTR)left;
+    call.top = (ULONG_PTR)top;
+    call.right = (ULONG_PTR)right;
+    call.bottom = (ULONG_PTR)bottom;
 
     qemu_syscall(&call.super);
 
@@ -221,9 +221,9 @@ WINBASEAPI BOOL WINAPI PtVisible(HDC hdc, INT x, INT y)
 {
     struct qemu_PtVisible call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PTVISIBLE);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -254,8 +254,8 @@ WINBASEAPI BOOL WINAPI RectVisible(HDC hdc, const RECT* rect)
 {
     struct qemu_RectVisible call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RECTVISIBLE);
-    call.hdc = (uint64_t)hdc;
-    call.rect = (uint64_t)rect;
+    call.hdc = (ULONG_PTR)hdc;
+    call.rect = (ULONG_PTR)rect;
 
     qemu_syscall(&call.super);
 
@@ -286,8 +286,8 @@ WINBASEAPI INT WINAPI GetClipBox(HDC hdc, LPRECT rect)
 {
     struct qemu_GetClipBox call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCLIPBOX);
-    call.hdc = (uint64_t)hdc;
-    call.rect = (uint64_t)rect;
+    call.hdc = (ULONG_PTR)hdc;
+    call.rect = (ULONG_PTR)rect;
 
     qemu_syscall(&call.super);
 
@@ -318,8 +318,8 @@ WINBASEAPI INT WINAPI GetClipRgn(HDC hdc, HRGN hRgn)
 {
     struct qemu_GetClipRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCLIPRGN);
-    call.hdc = (uint64_t)hdc;
-    call.hRgn = (uint64_t)hRgn;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hRgn = (ULONG_PTR)hRgn;
 
     qemu_syscall(&call.super);
 
@@ -350,8 +350,8 @@ WINBASEAPI INT WINAPI GetMetaRgn(HDC hdc, HRGN hRgn)
 {
     struct qemu_GetMetaRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMETARGN);
-    call.hdc = (uint64_t)hdc;
-    call.hRgn = (uint64_t)hRgn;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hRgn = (ULONG_PTR)hRgn;
 
     qemu_syscall(&call.super);
 
@@ -383,9 +383,9 @@ WINBASEAPI INT WINAPI GetRandomRgn(HDC hDC, HRGN hRgn, INT iCode)
 {
     struct qemu_GetRandomRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETRANDOMRGN);
-    call.hDC = (uint64_t)hDC;
-    call.hRgn = (uint64_t)hRgn;
-    call.iCode = (uint64_t)iCode;
+    call.hDC = (ULONG_PTR)hDC;
+    call.hRgn = (ULONG_PTR)hRgn;
+    call.iCode = (ULONG_PTR)iCode;
 
     qemu_syscall(&call.super);
 
@@ -415,7 +415,7 @@ WINBASEAPI INT WINAPI SetMetaRgn(HDC hdc)
 {
     struct qemu_SetMetaRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMETARGN);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 

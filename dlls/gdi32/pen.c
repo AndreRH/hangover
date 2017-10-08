@@ -45,13 +45,13 @@ WINBASEAPI HPEN WINAPI CreatePen(INT style, INT width, COLORREF color)
 {
     struct qemu_CreatePen call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPEN);
-    call.style = (uint64_t)style;
-    call.width = (uint64_t)width;
-    call.color = (uint64_t)color;
+    call.style = (ULONG_PTR)style;
+    call.width = (ULONG_PTR)width;
+    call.color = (ULONG_PTR)color;
 
     qemu_syscall(&call.super);
 
-    return (HPEN)call.super.iret;
+    return (HPEN)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -60,7 +60,7 @@ void qemu_CreatePen(struct qemu_syscall *call)
 {
     struct qemu_CreatePen *c = (struct qemu_CreatePen *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreatePen(c->style, c->width, c->color);
+    c->super.iret = (ULONG_PTR)CreatePen(c->style, c->width, c->color);
 }
 
 #endif
@@ -77,11 +77,11 @@ WINBASEAPI HPEN WINAPI CreatePenIndirect(const LOGPEN * pen)
 {
     struct qemu_CreatePenIndirect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPENINDIRECT);
-    call.pen = (uint64_t)pen;
+    call.pen = (ULONG_PTR)pen;
 
     qemu_syscall(&call.super);
 
-    return (HPEN)call.super.iret;
+    return (HPEN)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -90,7 +90,7 @@ void qemu_CreatePenIndirect(struct qemu_syscall *call)
 {
     struct qemu_CreatePenIndirect *c = (struct qemu_CreatePenIndirect *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreatePenIndirect(QEMU_G2H(c->pen));
+    c->super.iret = (ULONG_PTR)CreatePenIndirect(QEMU_G2H(c->pen));
 }
 
 #endif
@@ -111,15 +111,15 @@ WINBASEAPI HPEN WINAPI ExtCreatePen(DWORD style, DWORD width, const LOGBRUSH * b
 {
     struct qemu_ExtCreatePen call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXTCREATEPEN);
-    call.style = (uint64_t)style;
-    call.width = (uint64_t)width;
-    call.brush = (uint64_t)brush;
-    call.style_count = (uint64_t)style_count;
-    call.style_bits = (uint64_t)style_bits;
+    call.style = (ULONG_PTR)style;
+    call.width = (ULONG_PTR)width;
+    call.brush = (ULONG_PTR)brush;
+    call.style_count = (ULONG_PTR)style_count;
+    call.style_bits = (ULONG_PTR)style_bits;
 
     qemu_syscall(&call.super);
 
-    return (HPEN)call.super.iret;
+    return (HPEN)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -128,7 +128,7 @@ void qemu_ExtCreatePen(struct qemu_syscall *call)
 {
     struct qemu_ExtCreatePen *c = (struct qemu_ExtCreatePen *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)ExtCreatePen(c->style, c->width, QEMU_G2H(c->brush), c->style_count, QEMU_G2H(c->style_bits));
+    c->super.iret = (ULONG_PTR)ExtCreatePen(c->style, c->width, QEMU_G2H(c->brush), c->style_count, QEMU_G2H(c->style_bits));
 }
 
 #endif

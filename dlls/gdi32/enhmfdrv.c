@@ -46,14 +46,14 @@ WINBASEAPI HDC WINAPI CreateEnhMetaFileA(HDC hdc, LPCSTR filename, const RECT *r
 {
     struct qemu_CreateEnhMetaFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEENHMETAFILEA);
-    call.hdc = (uint64_t)hdc;
-    call.filename = (uint64_t)filename;
-    call.rect = (uint64_t)rect;
-    call.description = (uint64_t)description;
+    call.hdc = (ULONG_PTR)hdc;
+    call.filename = (ULONG_PTR)filename;
+    call.rect = (ULONG_PTR)rect;
+    call.description = (ULONG_PTR)description;
 
     qemu_syscall(&call.super);
 
-    return (HDC)call.super.iret;
+    return (HDC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -62,7 +62,7 @@ void qemu_CreateEnhMetaFileA(struct qemu_syscall *call)
 {
     struct qemu_CreateEnhMetaFileA *c = (struct qemu_CreateEnhMetaFileA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateEnhMetaFileA(QEMU_G2H(c->hdc), QEMU_G2H(c->filename), QEMU_G2H(c->rect), QEMU_G2H(c->description));
+    c->super.iret = (ULONG_PTR)CreateEnhMetaFileA(QEMU_G2H(c->hdc), QEMU_G2H(c->filename), QEMU_G2H(c->rect), QEMU_G2H(c->description));
 }
 
 #endif
@@ -82,14 +82,14 @@ WINBASEAPI HDC WINAPI CreateEnhMetaFileW(HDC hdc, LPCWSTR filename, const RECT* 
 {
     struct qemu_CreateEnhMetaFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEENHMETAFILEW);
-    call.hdc = (uint64_t)hdc;
-    call.filename = (uint64_t)filename;
-    call.rect = (uint64_t)rect;
-    call.description = (uint64_t)description;
+    call.hdc = (ULONG_PTR)hdc;
+    call.filename = (ULONG_PTR)filename;
+    call.rect = (ULONG_PTR)rect;
+    call.description = (ULONG_PTR)description;
 
     qemu_syscall(&call.super);
 
-    return (HDC)call.super.iret;
+    return (HDC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -98,7 +98,7 @@ void qemu_CreateEnhMetaFileW(struct qemu_syscall *call)
 {
     struct qemu_CreateEnhMetaFileW *c = (struct qemu_CreateEnhMetaFileW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateEnhMetaFileW(QEMU_G2H(c->hdc), QEMU_G2H(c->filename), QEMU_G2H(c->rect), QEMU_G2H(c->description));
+    c->super.iret = (ULONG_PTR)CreateEnhMetaFileW(QEMU_G2H(c->hdc), QEMU_G2H(c->filename), QEMU_G2H(c->rect), QEMU_G2H(c->description));
 }
 
 #endif
@@ -115,11 +115,11 @@ WINBASEAPI HENHMETAFILE WINAPI CloseEnhMetaFile(HDC hdc)
 {
     struct qemu_CloseEnhMetaFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CLOSEENHMETAFILE);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
-    return (HENHMETAFILE)call.super.iret;
+    return (HENHMETAFILE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -128,7 +128,7 @@ void qemu_CloseEnhMetaFile(struct qemu_syscall *call)
 {
     struct qemu_CloseEnhMetaFile *c = (struct qemu_CloseEnhMetaFile *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CloseEnhMetaFile(QEMU_G2H(c->hdc));
+    c->super.iret = (ULONG_PTR)CloseEnhMetaFile(QEMU_G2H(c->hdc));
 }
 
 #endif

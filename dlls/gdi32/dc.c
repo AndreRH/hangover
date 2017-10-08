@@ -43,7 +43,7 @@ WINGDIAPI INT WINAPI SaveDC(HDC hdc)
 {
     struct qemu_SaveDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SAVEDC);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -74,8 +74,8 @@ WINGDIAPI BOOL WINAPI RestoreDC(HDC hdc, INT level)
 {
     struct qemu_RestoreDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RESTOREDC);
-    call.hdc = (uint64_t)hdc;
-    call.level = (uint64_t)level;
+    call.hdc = (ULONG_PTR)hdc;
+    call.level = (ULONG_PTR)level;
 
     qemu_syscall(&call.super);
 
@@ -108,14 +108,14 @@ WINGDIAPI HDC WINAPI CreateDCW(LPCWSTR driver, LPCWSTR device, LPCWSTR output, c
 {
     struct qemu_CreateDCW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDCW);
-    call.driver = (uint64_t)driver;
-    call.device = (uint64_t)device;
-    call.output = (uint64_t)output;
-    call.initData = (uint64_t)initData;
+    call.driver = (ULONG_PTR)driver;
+    call.device = (ULONG_PTR)device;
+    call.output = (ULONG_PTR)output;
+    call.initData = (ULONG_PTR)initData;
 
     qemu_syscall(&call.super);
 
-    return (HDC)call.super.iret;
+    return (HDC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -124,7 +124,7 @@ void qemu_CreateDCW(struct qemu_syscall *call)
 {
     struct qemu_CreateDCW *c = (struct qemu_CreateDCW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateDCW(QEMU_G2H(c->driver), QEMU_G2H(c->device), QEMU_G2H(c->output), QEMU_G2H(c->initData));
+    c->super.iret = (ULONG_PTR)CreateDCW(QEMU_G2H(c->driver), QEMU_G2H(c->device), QEMU_G2H(c->output), QEMU_G2H(c->initData));
 }
 
 #endif
@@ -144,14 +144,14 @@ WINGDIAPI HDC WINAPI CreateDCA(LPCSTR driver, LPCSTR device, LPCSTR output, cons
 {
     struct qemu_CreateDCA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDCA);
-    call.driver = (uint64_t)driver;
-    call.device = (uint64_t)device;
-    call.output = (uint64_t)output;
-    call.initData = (uint64_t)initData;
+    call.driver = (ULONG_PTR)driver;
+    call.device = (ULONG_PTR)device;
+    call.output = (ULONG_PTR)output;
+    call.initData = (ULONG_PTR)initData;
 
     qemu_syscall(&call.super);
 
-    return (HDC)call.super.iret;
+    return (HDC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -160,7 +160,7 @@ void qemu_CreateDCA(struct qemu_syscall *call)
 {
     struct qemu_CreateDCA *c = (struct qemu_CreateDCA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateDCA(QEMU_G2H(c->driver), QEMU_G2H(c->device), QEMU_G2H(c->output), QEMU_G2H(c->initData));
+    c->super.iret = (ULONG_PTR)CreateDCA(QEMU_G2H(c->driver), QEMU_G2H(c->device), QEMU_G2H(c->output), QEMU_G2H(c->initData));
 }
 
 #endif
@@ -180,14 +180,14 @@ WINGDIAPI HDC WINAPI CreateICA(LPCSTR driver, LPCSTR device, LPCSTR output, cons
 {
     struct qemu_CreateICA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEICA);
-    call.driver = (uint64_t)driver;
-    call.device = (uint64_t)device;
-    call.output = (uint64_t)output;
-    call.initData = (uint64_t)initData;
+    call.driver = (ULONG_PTR)driver;
+    call.device = (ULONG_PTR)device;
+    call.output = (ULONG_PTR)output;
+    call.initData = (ULONG_PTR)initData;
 
     qemu_syscall(&call.super);
 
-    return (HDC)call.super.iret;
+    return (HDC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -196,7 +196,7 @@ void qemu_CreateICA(struct qemu_syscall *call)
 {
     struct qemu_CreateICA *c = (struct qemu_CreateICA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateICA(QEMU_G2H(c->driver), QEMU_G2H(c->device), QEMU_G2H(c->output), QEMU_G2H(c->initData));
+    c->super.iret = (ULONG_PTR)CreateICA(QEMU_G2H(c->driver), QEMU_G2H(c->device), QEMU_G2H(c->output), QEMU_G2H(c->initData));
 }
 
 #endif
@@ -216,14 +216,14 @@ WINGDIAPI HDC WINAPI CreateICW(LPCWSTR driver, LPCWSTR device, LPCWSTR output, c
 {
     struct qemu_CreateICW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEICW);
-    call.driver = (uint64_t)driver;
-    call.device = (uint64_t)device;
-    call.output = (uint64_t)output;
-    call.initData = (uint64_t)initData;
+    call.driver = (ULONG_PTR)driver;
+    call.device = (ULONG_PTR)device;
+    call.output = (ULONG_PTR)output;
+    call.initData = (ULONG_PTR)initData;
 
     qemu_syscall(&call.super);
 
-    return (HDC)call.super.iret;
+    return (HDC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -232,7 +232,7 @@ void qemu_CreateICW(struct qemu_syscall *call)
 {
     struct qemu_CreateICW *c = (struct qemu_CreateICW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateICW(QEMU_G2H(c->driver), QEMU_G2H(c->device), QEMU_G2H(c->output), QEMU_G2H(c->initData));
+    c->super.iret = (ULONG_PTR)CreateICW(QEMU_G2H(c->driver), QEMU_G2H(c->device), QEMU_G2H(c->output), QEMU_G2H(c->initData));
 }
 
 #endif
@@ -249,11 +249,11 @@ WINGDIAPI HDC WINAPI CreateCompatibleDC(HDC hdc)
 {
     struct qemu_CreateCompatibleDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATECOMPATIBLEDC);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
-    return (HDC)call.super.iret;
+    return (HDC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -262,7 +262,7 @@ void qemu_CreateCompatibleDC(struct qemu_syscall *call)
 {
     struct qemu_CreateCompatibleDC *c = (struct qemu_CreateCompatibleDC *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateCompatibleDC((HDC)c->hdc);
+    c->super.iret = (ULONG_PTR)CreateCompatibleDC((HDC)c->hdc);
 }
 
 #endif
@@ -279,7 +279,7 @@ WINGDIAPI BOOL WINAPI DeleteDC(HDC hdc)
 {
     struct qemu_DeleteDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETEDC);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -310,12 +310,12 @@ WINGDIAPI HDC WINAPI ResetDCW(HDC hdc, const DEVMODEW *devmode)
 {
     struct qemu_ResetDCW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RESETDCW);
-    call.hdc = (uint64_t)hdc;
-    call.devmode = (uint64_t)devmode;
+    call.hdc = (ULONG_PTR)hdc;
+    call.devmode = (ULONG_PTR)devmode;
 
     qemu_syscall(&call.super);
 
-    return (HDC)call.super.iret;
+    return (HDC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -324,7 +324,7 @@ void qemu_ResetDCW(struct qemu_syscall *call)
 {
     struct qemu_ResetDCW *c = (struct qemu_ResetDCW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ResetDCW(QEMU_G2H(c->hdc), QEMU_G2H(c->devmode));
+    c->super.iret = (ULONG_PTR)ResetDCW(QEMU_G2H(c->hdc), QEMU_G2H(c->devmode));
 }
 
 #endif
@@ -342,12 +342,12 @@ WINGDIAPI HDC WINAPI ResetDCA(HDC hdc, const DEVMODEA *devmode)
 {
     struct qemu_ResetDCA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RESETDCA);
-    call.hdc = (uint64_t)hdc;
-    call.devmode = (uint64_t)devmode;
+    call.hdc = (ULONG_PTR)hdc;
+    call.devmode = (ULONG_PTR)devmode;
 
     qemu_syscall(&call.super);
 
-    return (HDC)call.super.iret;
+    return (HDC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -356,7 +356,7 @@ void qemu_ResetDCA(struct qemu_syscall *call)
 {
     struct qemu_ResetDCA *c = (struct qemu_ResetDCA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)ResetDCA(QEMU_G2H(c->hdc), QEMU_G2H(c->devmode));
+    c->super.iret = (ULONG_PTR)ResetDCA(QEMU_G2H(c->hdc), QEMU_G2H(c->devmode));
 }
 
 #endif
@@ -374,8 +374,8 @@ WINGDIAPI INT WINAPI GetDeviceCaps(HDC hdc, INT cap)
 {
     struct qemu_GetDeviceCaps call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDEVICECAPS);
-    call.hdc = (uint64_t)hdc;
-    call.cap = (uint64_t)cap;
+    call.hdc = (ULONG_PTR)hdc;
+    call.cap = (ULONG_PTR)cap;
 
     qemu_syscall(&call.super);
 
@@ -405,7 +405,7 @@ WINGDIAPI COLORREF WINAPI GetBkColor(HDC hdc)
 {
     struct qemu_GetBkColor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETBKCOLOR);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -436,7 +436,7 @@ WINGDIAPI COLORREF WINAPI SetBkColor(HDC hdc, COLORREF color)
 {
     struct qemu_SetBkColor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETBKCOLOR);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
     call.color = color;
 
     qemu_syscall(&call.super);
@@ -467,7 +467,7 @@ WINGDIAPI COLORREF WINAPI GetTextColor(HDC hdc)
 {
     struct qemu_GetTextColor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTCOLOR);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -498,7 +498,7 @@ WINGDIAPI COLORREF WINAPI SetTextColor(HDC hdc, COLORREF color)
 {
     struct qemu_SetTextColor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTEXTCOLOR);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
     call.color = color;
 
     qemu_syscall(&call.super);
@@ -529,7 +529,7 @@ WINGDIAPI UINT WINAPI GetTextAlign(HDC hdc)
 {
     struct qemu_GetTextAlign call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTEXTALIGN);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -560,8 +560,8 @@ WINGDIAPI UINT WINAPI SetTextAlign(HDC hdc, UINT align)
 {
     struct qemu_SetTextAlign call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTEXTALIGN);
-    call.hdc = (uint64_t)hdc;
-    call.align = (uint64_t)align;
+    call.hdc = (ULONG_PTR)hdc;
+    call.align = (ULONG_PTR)align;
 
     qemu_syscall(&call.super);
 
@@ -592,8 +592,8 @@ WINGDIAPI BOOL WINAPI GetDCOrgEx(HDC hDC, LPPOINT lpp)
 {
     struct qemu_GetDCOrgEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDCORGEX);
-    call.hDC = (uint64_t)hDC;
-    call.lpp = (uint64_t)lpp;
+    call.hDC = (ULONG_PTR)hDC;
+    call.lpp = (ULONG_PTR)lpp;
 
     qemu_syscall(&call.super);
 
@@ -623,7 +623,7 @@ WINGDIAPI INT WINAPI GetGraphicsMode(HDC hdc)
 {
     struct qemu_GetGraphicsMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETGRAPHICSMODE);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -654,8 +654,8 @@ WINGDIAPI INT WINAPI SetGraphicsMode(HDC hdc, INT mode)
 {
     struct qemu_SetGraphicsMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETGRAPHICSMODE);
-    call.hdc = (uint64_t)hdc;
-    call.mode = (uint64_t)mode;
+    call.hdc = (ULONG_PTR)hdc;
+    call.mode = (ULONG_PTR)mode;
 
     qemu_syscall(&call.super);
 
@@ -685,7 +685,7 @@ WINGDIAPI INT WINAPI GetArcDirection(HDC hdc)
 {
     struct qemu_GetArcDirection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETARCDIRECTION);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -716,8 +716,8 @@ WINGDIAPI INT WINAPI SetArcDirection(HDC hdc, INT dir)
 {
     struct qemu_SetArcDirection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETARCDIRECTION);
-    call.hdc = (uint64_t)hdc;
-    call.dir = (uint64_t)dir;
+    call.hdc = (ULONG_PTR)hdc;
+    call.dir = (ULONG_PTR)dir;
 
     qemu_syscall(&call.super);
 
@@ -748,8 +748,8 @@ WINGDIAPI BOOL WINAPI GetWorldTransform(HDC hdc, LPXFORM xform)
 {
     struct qemu_GetWorldTransform call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETWORLDTRANSFORM);
-    call.hdc = (uint64_t)hdc;
-    call.xform = (uint64_t)xform;
+    call.hdc = (ULONG_PTR)hdc;
+    call.xform = (ULONG_PTR)xform;
 
     qemu_syscall(&call.super);
 
@@ -781,9 +781,9 @@ WINGDIAPI BOOL WINAPI GetTransform(HDC hdc, DWORD which, XFORM *xform)
 {
     struct qemu_GetTransform call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTRANSFORM);
-    call.hdc = (uint64_t)hdc;
-    call.which = (uint64_t)which;
-    call.xform = (uint64_t)xform;
+    call.hdc = (ULONG_PTR)hdc;
+    call.which = (ULONG_PTR)which;
+    call.xform = (ULONG_PTR)xform;
 
     qemu_syscall(&call.super);
 
@@ -815,9 +815,9 @@ WINGDIAPI BOOL WINAPI CombineTransform(LPXFORM xformResult, const XFORM *xform1,
 {
     struct qemu_CombineTransform call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COMBINETRANSFORM);
-    call.xformResult = (uint64_t)xformResult;
-    call.xform1 = (uint64_t)xform1;
-    call.xform2 = (uint64_t)xform2;
+    call.xformResult = (ULONG_PTR)xformResult;
+    call.xform1 = (ULONG_PTR)xform1;
+    call.xform2 = (ULONG_PTR)xform2;
 
     qemu_syscall(&call.super);
 
@@ -848,8 +848,8 @@ WINGDIAPI WORD WINAPI SetHookFlags(HDC hdc, WORD flags)
 {
     struct qemu_SetHookFlags call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETHOOKFLAGS);
-    call.hdc = (uint64_t)hdc;
-    call.flags = (uint64_t)flags;
+    call.hdc = (ULONG_PTR)hdc;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -882,8 +882,8 @@ WINGDIAPI INT WINAPI SetICMMode(HDC hdc, INT iEnableICM)
 {
     struct qemu_SetICMMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETICMMODE);
-    call.hdc = (uint64_t)hdc;
-    call.iEnableICM = (uint64_t)iEnableICM;
+    call.hdc = (ULONG_PTR)hdc;
+    call.iEnableICM = (ULONG_PTR)iEnableICM;
 
     qemu_syscall(&call.super);
 
@@ -914,8 +914,8 @@ WINGDIAPI BOOL WINAPI GetDeviceGammaRamp(HDC hDC, LPVOID ptr)
 {
     struct qemu_GetDeviceGammaRamp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDEVICEGAMMARAMP);
-    call.hDC = (uint64_t)hDC;
-    call.ptr = (uint64_t)ptr;
+    call.hDC = (ULONG_PTR)hDC;
+    call.ptr = (ULONG_PTR)ptr;
 
     qemu_syscall(&call.super);
 
@@ -946,8 +946,8 @@ WINGDIAPI BOOL WINAPI SetDeviceGammaRamp(HDC hDC, LPVOID ptr)
 {
     struct qemu_SetDeviceGammaRamp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETDEVICEGAMMARAMP);
-    call.hDC = (uint64_t)hDC;
-    call.ptr = (uint64_t)ptr;
+    call.hDC = (ULONG_PTR)hDC;
+    call.ptr = (ULONG_PTR)ptr;
 
     qemu_syscall(&call.super);
 
@@ -977,11 +977,11 @@ WINGDIAPI HCOLORSPACE WINAPI GetColorSpace(HDC hdc)
 {
     struct qemu_GetColorSpace call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOLORSPACE);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
-    return (HCOLORSPACE)call.super.iret;
+    return (HCOLORSPACE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -990,7 +990,7 @@ void qemu_GetColorSpace(struct qemu_syscall *call)
 {
     struct qemu_GetColorSpace *c = (struct qemu_GetColorSpace *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetColorSpace(QEMU_G2H(c->hdc));
+    c->super.iret = (ULONG_PTR)GetColorSpace(QEMU_G2H(c->hdc));
 }
 
 #endif
@@ -1007,11 +1007,11 @@ WINGDIAPI HCOLORSPACE WINAPI CreateColorSpaceA(LPLOGCOLORSPACEA lpLogColorSpace)
 {
     struct qemu_CreateColorSpaceA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATECOLORSPACEA);
-    call.lpLogColorSpace = (uint64_t)lpLogColorSpace;
+    call.lpLogColorSpace = (ULONG_PTR)lpLogColorSpace;
 
     qemu_syscall(&call.super);
 
-    return (HCOLORSPACE)call.super.iret;
+    return (HCOLORSPACE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1020,7 +1020,7 @@ void qemu_CreateColorSpaceA(struct qemu_syscall *call)
 {
     struct qemu_CreateColorSpaceA *c = (struct qemu_CreateColorSpaceA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateColorSpaceA(QEMU_G2H(c->lpLogColorSpace));
+    c->super.iret = (ULONG_PTR)CreateColorSpaceA(QEMU_G2H(c->lpLogColorSpace));
 }
 
 #endif
@@ -1037,11 +1037,11 @@ WINGDIAPI HCOLORSPACE WINAPI CreateColorSpaceW(LPLOGCOLORSPACEW lpLogColorSpace)
 {
     struct qemu_CreateColorSpaceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATECOLORSPACEW);
-    call.lpLogColorSpace = (uint64_t)lpLogColorSpace;
+    call.lpLogColorSpace = (ULONG_PTR)lpLogColorSpace;
 
     qemu_syscall(&call.super);
 
-    return (HCOLORSPACE)call.super.iret;
+    return (HCOLORSPACE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1050,7 +1050,7 @@ void qemu_CreateColorSpaceW(struct qemu_syscall *call)
 {
     struct qemu_CreateColorSpaceW *c = (struct qemu_CreateColorSpaceW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateColorSpaceW(QEMU_G2H(c->lpLogColorSpace));
+    c->super.iret = (ULONG_PTR)CreateColorSpaceW(QEMU_G2H(c->lpLogColorSpace));
 }
 
 #endif
@@ -1067,7 +1067,7 @@ WINGDIAPI BOOL WINAPI DeleteColorSpace(HCOLORSPACE hColorSpace)
 {
     struct qemu_DeleteColorSpace call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETECOLORSPACE);
-    call.hColorSpace = (uint64_t)hColorSpace;
+    call.hColorSpace = (ULONG_PTR)hColorSpace;
 
     qemu_syscall(&call.super);
 
@@ -1098,12 +1098,12 @@ WINGDIAPI HCOLORSPACE WINAPI SetColorSpace(HDC hDC, HCOLORSPACE hColorSpace)
 {
     struct qemu_SetColorSpace call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCOLORSPACE);
-    call.hDC = (uint64_t)hDC;
-    call.hColorSpace = (uint64_t)hColorSpace;
+    call.hDC = (ULONG_PTR)hDC;
+    call.hColorSpace = (ULONG_PTR)hColorSpace;
 
     qemu_syscall(&call.super);
 
-    return (HCOLORSPACE)call.super.iret;
+    return (HCOLORSPACE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1112,7 +1112,7 @@ void qemu_SetColorSpace(struct qemu_syscall *call)
 {
     struct qemu_SetColorSpace *c = (struct qemu_SetColorSpace *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)SetColorSpace(QEMU_G2H(c->hDC), QEMU_G2H(c->hColorSpace));
+    c->super.iret = (ULONG_PTR)SetColorSpace(QEMU_G2H(c->hDC), QEMU_G2H(c->hColorSpace));
 }
 
 #endif
@@ -1131,9 +1131,9 @@ WINGDIAPI UINT WINAPI GetBoundsRect(HDC hdc, LPRECT rect, UINT flags)
 {
     struct qemu_GetBoundsRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETBOUNDSRECT);
-    call.hdc = (uint64_t)hdc;
-    call.rect = (uint64_t)rect;
-    call.flags = (uint64_t)flags;
+    call.hdc = (ULONG_PTR)hdc;
+    call.rect = (ULONG_PTR)rect;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -1165,9 +1165,9 @@ WINGDIAPI UINT WINAPI SetBoundsRect(HDC hdc, const RECT* rect, UINT flags)
 {
     struct qemu_SetBoundsRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETBOUNDSRECT);
-    call.hdc = (uint64_t)hdc;
-    call.rect = (uint64_t)rect;
-    call.flags = (uint64_t)flags;
+    call.hdc = (ULONG_PTR)hdc;
+    call.rect = (ULONG_PTR)rect;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -1198,8 +1198,8 @@ WINGDIAPI INT WINAPI GetRelAbs(HDC hdc, DWORD dwIgnore)
 {
     struct qemu_GetRelAbs call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETRELABS);
-    call.hdc = (uint64_t)hdc;
-    call.dwIgnore = (uint64_t)dwIgnore;
+    call.hdc = (ULONG_PTR)hdc;
+    call.dwIgnore = (ULONG_PTR)dwIgnore;
 
     qemu_syscall(&call.super);
 
@@ -1229,7 +1229,7 @@ WINGDIAPI INT WINAPI GetBkMode(HDC hdc)
 {
     struct qemu_GetBkMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETBKMODE);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -1260,8 +1260,8 @@ WINGDIAPI INT WINAPI SetBkMode(HDC hdc, INT mode)
 {
     struct qemu_SetBkMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETBKMODE);
-    call.hdc = (uint64_t)hdc;
-    call.mode = (uint64_t)mode;
+    call.hdc = (ULONG_PTR)hdc;
+    call.mode = (ULONG_PTR)mode;
 
     qemu_syscall(&call.super);
 
@@ -1291,7 +1291,7 @@ WINGDIAPI INT WINAPI GetROP2(HDC hdc)
 {
     struct qemu_GetROP2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETROP2);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -1322,8 +1322,8 @@ WINGDIAPI INT WINAPI SetROP2(HDC hdc, INT mode)
 {
     struct qemu_SetROP2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETROP2);
-    call.hdc = (uint64_t)hdc;
-    call.mode = (uint64_t)mode;
+    call.hdc = (ULONG_PTR)hdc;
+    call.mode = (ULONG_PTR)mode;
 
     qemu_syscall(&call.super);
 
@@ -1354,8 +1354,8 @@ WINGDIAPI INT WINAPI SetRelAbs(HDC hdc, INT mode)
 {
     struct qemu_SetRelAbs call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETRELABS);
-    call.hdc = (uint64_t)hdc;
-    call.mode = (uint64_t)mode;
+    call.hdc = (ULONG_PTR)hdc;
+    call.mode = (ULONG_PTR)mode;
 
     qemu_syscall(&call.super);
 
@@ -1385,7 +1385,7 @@ WINGDIAPI INT WINAPI GetPolyFillMode(HDC hdc)
 {
     struct qemu_GetPolyFillMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPOLYFILLMODE);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -1416,8 +1416,8 @@ WINGDIAPI INT WINAPI SetPolyFillMode(HDC hdc, INT mode)
 {
     struct qemu_SetPolyFillMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPOLYFILLMODE);
-    call.hdc = (uint64_t)hdc;
-    call.mode = (uint64_t)mode;
+    call.hdc = (ULONG_PTR)hdc;
+    call.mode = (ULONG_PTR)mode;
 
     qemu_syscall(&call.super);
 
@@ -1447,7 +1447,7 @@ WINGDIAPI INT WINAPI GetStretchBltMode(HDC hdc)
 {
     struct qemu_GetStretchBltMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSTRETCHBLTMODE);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -1478,8 +1478,8 @@ WINGDIAPI INT WINAPI SetStretchBltMode(HDC hdc, INT mode)
 {
     struct qemu_SetStretchBltMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSTRETCHBLTMODE);
-    call.hdc = (uint64_t)hdc;
-    call.mode = (uint64_t)mode;
+    call.hdc = (ULONG_PTR)hdc;
+    call.mode = (ULONG_PTR)mode;
 
     qemu_syscall(&call.super);
 
@@ -1509,7 +1509,7 @@ WINGDIAPI INT WINAPI GetMapMode(HDC hdc)
 {
     struct qemu_GetMapMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMAPMODE);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -1540,8 +1540,8 @@ WINGDIAPI BOOL WINAPI GetBrushOrgEx(HDC hdc, LPPOINT pt)
 {
     struct qemu_GetBrushOrgEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETBRUSHORGEX);
-    call.hdc = (uint64_t)hdc;
-    call.pt = (uint64_t)pt;
+    call.hdc = (ULONG_PTR)hdc;
+    call.pt = (ULONG_PTR)pt;
 
     qemu_syscall(&call.super);
 
@@ -1572,8 +1572,8 @@ WINGDIAPI BOOL WINAPI GetCurrentPositionEx(HDC hdc, LPPOINT pt)
 {
     struct qemu_GetCurrentPositionEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTPOSITIONEX);
-    call.hdc = (uint64_t)hdc;
-    call.pt = (uint64_t)pt;
+    call.hdc = (ULONG_PTR)hdc;
+    call.pt = (ULONG_PTR)pt;
 
     qemu_syscall(&call.super);
 
@@ -1604,8 +1604,8 @@ WINGDIAPI BOOL WINAPI GetViewportExtEx(HDC hdc, LPSIZE size)
 {
     struct qemu_GetViewportExtEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETVIEWPORTEXTEX);
-    call.hdc = (uint64_t)hdc;
-    call.size = (uint64_t)size;
+    call.hdc = (ULONG_PTR)hdc;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -1636,8 +1636,8 @@ WINGDIAPI BOOL WINAPI GetViewportOrgEx(HDC hdc, LPPOINT pt)
 {
     struct qemu_GetViewportOrgEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETVIEWPORTORGEX);
-    call.hdc = (uint64_t)hdc;
-    call.pt = (uint64_t)pt;
+    call.hdc = (ULONG_PTR)hdc;
+    call.pt = (ULONG_PTR)pt;
 
     qemu_syscall(&call.super);
 
@@ -1668,8 +1668,8 @@ WINGDIAPI BOOL WINAPI GetWindowExtEx(HDC hdc, LPSIZE size)
 {
     struct qemu_GetWindowExtEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETWINDOWEXTEX);
-    call.hdc = (uint64_t)hdc;
-    call.size = (uint64_t)size;
+    call.hdc = (ULONG_PTR)hdc;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -1700,8 +1700,8 @@ WINGDIAPI BOOL WINAPI GetWindowOrgEx(HDC hdc, LPPOINT pt)
 {
     struct qemu_GetWindowOrgEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETWINDOWORGEX);
-    call.hdc = (uint64_t)hdc;
-    call.pt = (uint64_t)pt;
+    call.hdc = (ULONG_PTR)hdc;
+    call.pt = (ULONG_PTR)pt;
 
     qemu_syscall(&call.super);
 
@@ -1731,7 +1731,7 @@ WINGDIAPI DWORD WINAPI GetLayout(HDC hdc)
 {
     struct qemu_GetLayout call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETLAYOUT);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -1762,8 +1762,8 @@ WINGDIAPI DWORD WINAPI SetLayout(HDC hdc, DWORD layout)
 {
     struct qemu_SetLayout call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETLAYOUT);
-    call.hdc = (uint64_t)hdc;
-    call.layout = (uint64_t)layout;
+    call.hdc = (ULONG_PTR)hdc;
+    call.layout = (ULONG_PTR)layout;
 
     qemu_syscall(&call.super);
 
@@ -1793,7 +1793,7 @@ WINGDIAPI COLORREF WINAPI GetDCBrushColor(HDC hdc)
 {
     struct qemu_GetDCBrushColor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDCBRUSHCOLOR);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -1824,8 +1824,8 @@ WINGDIAPI COLORREF WINAPI SetDCBrushColor(HDC hdc, COLORREF crColor)
 {
     struct qemu_SetDCBrushColor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETDCBRUSHCOLOR);
-    call.hdc = (uint64_t)hdc;
-    call.crColor = (uint64_t)crColor;
+    call.hdc = (ULONG_PTR)hdc;
+    call.crColor = (ULONG_PTR)crColor;
 
     qemu_syscall(&call.super);
 
@@ -1855,7 +1855,7 @@ WINGDIAPI COLORREF WINAPI GetDCPenColor(HDC hdc)
 {
     struct qemu_GetDCPenColor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDCPENCOLOR);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -1886,8 +1886,8 @@ WINGDIAPI COLORREF WINAPI SetDCPenColor(HDC hdc, COLORREF crColor)
 {
     struct qemu_SetDCPenColor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETDCPENCOLOR);
-    call.hdc = (uint64_t)hdc;
-    call.crColor = (uint64_t)crColor;
+    call.hdc = (ULONG_PTR)hdc;
+    call.crColor = (ULONG_PTR)crColor;
 
     qemu_syscall(&call.super);
 
@@ -1917,7 +1917,7 @@ WINGDIAPI BOOL WINAPI CancelDC(HDC hdc)
 {
     struct qemu_CancelDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CANCELDC);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -1950,8 +1950,8 @@ WINGDIAPI BOOL WINAPI GetMiterLimit(HDC hdc, PFLOAT peLimit)
 {
     struct qemu_GetMiterLimit call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMITERLIMIT);
-    call.hdc = (uint64_t)hdc;
-    call.peLimit = (uint64_t)peLimit;
+    call.hdc = (ULONG_PTR)hdc;
+    call.peLimit = (ULONG_PTR)peLimit;
 
     qemu_syscall(&call.super);
 
@@ -1983,9 +1983,9 @@ WINGDIAPI BOOL WINAPI SetMiterLimit(HDC hdc, FLOAT eNewLimit, PFLOAT peOldLimit)
 {
     struct qemu_SetMiterLimit call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMITERLIMIT);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
     call.eNewLimit = eNewLimit;
-    call.peOldLimit = (uint64_t)peOldLimit;
+    call.peOldLimit = (ULONG_PTR)peOldLimit;
 
     qemu_syscall(&call.super);
 
@@ -2015,7 +2015,7 @@ WINGDIAPI BOOL WINAPI GdiIsMetaPrintDC(HDC hdc)
 {
     struct qemu_GdiIsMetaPrintDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDIISMETAPRINTDC);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -2045,7 +2045,7 @@ WINGDIAPI BOOL WINAPI GdiIsMetaFileDC(HDC hdc)
 {
     struct qemu_GdiIsMetaFileDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDIISMETAFILEDC);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -2075,7 +2075,7 @@ WINGDIAPI BOOL WINAPI GdiIsPlayMetafileDC(HDC hdc)
 {
     struct qemu_GdiIsPlayMetafileDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDIISPLAYMETAFILEDC);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 

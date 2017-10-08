@@ -45,9 +45,9 @@ WINGDIAPI BOOL WINAPI DPtoLP(HDC hdc, POINT *points, INT count)
 {
     struct qemu_DPtoLP call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DPTOLP);
-    call.hdc = (uint64_t)hdc;
-    call.points = (uint64_t)points;
-    call.count = (uint64_t)count;
+    call.hdc = (ULONG_PTR)hdc;
+    call.points = (ULONG_PTR)points;
+    call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
 
@@ -79,9 +79,9 @@ WINGDIAPI BOOL WINAPI LPtoDP(HDC hdc, POINT *points, INT count)
 {
     struct qemu_LPtoDP call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LPTODP);
-    call.hdc = (uint64_t)hdc;
-    call.points = (uint64_t)points;
-    call.count = (uint64_t)count;
+    call.hdc = (ULONG_PTR)hdc;
+    call.points = (ULONG_PTR)points;
+    call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
 
@@ -112,8 +112,8 @@ WINGDIAPI INT WINAPI SetMapMode(HDC hdc, INT mode)
 {
     struct qemu_SetMapMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMAPMODE);
-    call.hdc = (uint64_t)hdc;
-    call.mode = (uint64_t)mode;
+    call.hdc = (ULONG_PTR)hdc;
+    call.mode = (ULONG_PTR)mode;
 
     qemu_syscall(&call.super);
 
@@ -146,10 +146,10 @@ WINGDIAPI BOOL WINAPI SetViewportExtEx(HDC hdc, INT x, INT y, LPSIZE size)
 {
     struct qemu_SetViewportExtEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETVIEWPORTEXTEX);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.size = (uint64_t)size;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -182,10 +182,10 @@ WINGDIAPI BOOL WINAPI SetViewportOrgEx(HDC hdc, INT x, INT y, LPPOINT pt)
 {
     struct qemu_SetViewportOrgEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETVIEWPORTORGEX);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.pt = (uint64_t)pt;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.pt = (ULONG_PTR)pt;
 
     qemu_syscall(&call.super);
 
@@ -218,10 +218,10 @@ WINGDIAPI BOOL WINAPI SetWindowExtEx(HDC hdc, INT x, INT y, LPSIZE size)
 {
     struct qemu_SetWindowExtEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWEXTEX);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.size = (uint64_t)size;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -254,10 +254,10 @@ WINGDIAPI BOOL WINAPI SetWindowOrgEx(HDC hdc, INT x, INT y, LPPOINT pt)
 {
     struct qemu_SetWindowOrgEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWORGEX);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.pt = (uint64_t)pt;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.pt = (ULONG_PTR)pt;
 
     qemu_syscall(&call.super);
 
@@ -290,10 +290,10 @@ WINGDIAPI BOOL WINAPI OffsetViewportOrgEx(HDC hdc, INT x, INT y, LPPOINT pt)
 {
     struct qemu_OffsetViewportOrgEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OFFSETVIEWPORTORGEX);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.pt = (uint64_t)pt;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.pt = (ULONG_PTR)pt;
 
     qemu_syscall(&call.super);
 
@@ -326,10 +326,10 @@ WINGDIAPI BOOL WINAPI OffsetWindowOrgEx(HDC hdc, INT x, INT y, LPPOINT pt)
 {
     struct qemu_OffsetWindowOrgEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OFFSETWINDOWORGEX);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.pt = (uint64_t)pt;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.pt = (ULONG_PTR)pt;
 
     qemu_syscall(&call.super);
 
@@ -364,12 +364,12 @@ WINGDIAPI BOOL WINAPI ScaleViewportExtEx(HDC hdc, INT xNum, INT xDenom, INT yNum
 {
     struct qemu_ScaleViewportExtEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCALEVIEWPORTEXTEX);
-    call.hdc = (uint64_t)hdc;
-    call.xNum = (uint64_t)xNum;
-    call.xDenom = (uint64_t)xDenom;
-    call.yNum = (uint64_t)yNum;
-    call.yDenom = (uint64_t)yDenom;
-    call.size = (uint64_t)size;
+    call.hdc = (ULONG_PTR)hdc;
+    call.xNum = (ULONG_PTR)xNum;
+    call.xDenom = (ULONG_PTR)xDenom;
+    call.yNum = (ULONG_PTR)yNum;
+    call.yDenom = (ULONG_PTR)yDenom;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -404,12 +404,12 @@ WINGDIAPI BOOL WINAPI ScaleWindowExtEx(HDC hdc, INT xNum, INT xDenom, INT yNum, 
 {
     struct qemu_ScaleWindowExtEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCALEWINDOWEXTEX);
-    call.hdc = (uint64_t)hdc;
-    call.xNum = (uint64_t)xNum;
-    call.xDenom = (uint64_t)xDenom;
-    call.yNum = (uint64_t)yNum;
-    call.yDenom = (uint64_t)yDenom;
-    call.size = (uint64_t)size;
+    call.hdc = (ULONG_PTR)hdc;
+    call.xNum = (ULONG_PTR)xNum;
+    call.xDenom = (ULONG_PTR)xDenom;
+    call.yNum = (ULONG_PTR)yNum;
+    call.yDenom = (ULONG_PTR)yDenom;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -441,9 +441,9 @@ WINGDIAPI BOOL WINAPI ModifyWorldTransform(HDC hdc, const XFORM *xform, DWORD mo
 {
     struct qemu_ModifyWorldTransform call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MODIFYWORLDTRANSFORM);
-    call.hdc = (uint64_t)hdc;
-    call.xform = (uint64_t)xform;
-    call.mode = (uint64_t)mode;
+    call.hdc = (ULONG_PTR)hdc;
+    call.xform = (ULONG_PTR)xform;
+    call.mode = (ULONG_PTR)mode;
 
     qemu_syscall(&call.super);
 
@@ -474,8 +474,8 @@ WINGDIAPI BOOL WINAPI SetWorldTransform(HDC hdc, const XFORM *xform)
 {
     struct qemu_SetWorldTransform call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWORLDTRANSFORM);
-    call.hdc = (uint64_t)hdc;
-    call.xform = (uint64_t)xform;
+    call.hdc = (ULONG_PTR)hdc;
+    call.xform = (ULONG_PTR)xform;
 
     qemu_syscall(&call.super);
 
@@ -509,11 +509,11 @@ WINGDIAPI BOOL WINAPI SetVirtualResolution(HDC hdc, DWORD horz_res, DWORD vert_r
 {
     struct qemu_SetVirtualResolution call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETVIRTUALRESOLUTION);
-    call.hdc = (uint64_t)hdc;
-    call.horz_res = (uint64_t)horz_res;
-    call.vert_res = (uint64_t)vert_res;
-    call.horz_size = (uint64_t)horz_size;
-    call.vert_size = (uint64_t)vert_size;
+    call.hdc = (ULONG_PTR)hdc;
+    call.horz_res = (ULONG_PTR)horz_res;
+    call.vert_res = (ULONG_PTR)vert_res;
+    call.horz_size = (ULONG_PTR)horz_size;
+    call.vert_size = (ULONG_PTR)vert_size;
 
     qemu_syscall(&call.super);
 

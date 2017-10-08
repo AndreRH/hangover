@@ -46,15 +46,15 @@ WINBASEAPI HBITMAP WINAPI CreateBitmap(INT width, INT height, UINT planes, UINT 
 {
     struct qemu_CreateBitmap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEBITMAP);
-    call.width = (uint64_t)width;
-    call.height = (uint64_t)height;
-    call.planes = (uint64_t)planes;
-    call.bpp = (uint64_t)bpp;
-    call.bits = (uint64_t)bits;
+    call.width = (ULONG_PTR)width;
+    call.height = (ULONG_PTR)height;
+    call.planes = (ULONG_PTR)planes;
+    call.bpp = (ULONG_PTR)bpp;
+    call.bits = (ULONG_PTR)bits;
 
     qemu_syscall(&call.super);
 
-    return (HBITMAP)call.super.iret;
+    return (HBITMAP)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -63,7 +63,7 @@ void qemu_CreateBitmap(struct qemu_syscall *call)
 {
     struct qemu_CreateBitmap *c = (struct qemu_CreateBitmap *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateBitmap(c->width, c->height, c->planes, c->bpp, QEMU_G2H(c->bits));
+    c->super.iret = (ULONG_PTR)CreateBitmap(c->width, c->height, c->planes, c->bpp, QEMU_G2H(c->bits));
 }
 
 #endif
@@ -82,13 +82,13 @@ WINBASEAPI HBITMAP WINAPI CreateCompatibleBitmap(HDC hdc, INT width, INT height)
 {
     struct qemu_CreateCompatibleBitmap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATECOMPATIBLEBITMAP);
-    call.hdc = (uint64_t)hdc;
-    call.width = (uint64_t)width;
-    call.height = (uint64_t)height;
+    call.hdc = (ULONG_PTR)hdc;
+    call.width = (ULONG_PTR)width;
+    call.height = (ULONG_PTR)height;
 
     qemu_syscall(&call.super);
 
-    return (HBITMAP)call.super.iret;
+    return (HBITMAP)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -97,7 +97,7 @@ void qemu_CreateCompatibleBitmap(struct qemu_syscall *call)
 {
     struct qemu_CreateCompatibleBitmap *c = (struct qemu_CreateCompatibleBitmap *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateCompatibleBitmap(QEMU_G2H(c->hdc), c->width, c->height);
+    c->super.iret = (ULONG_PTR)CreateCompatibleBitmap(QEMU_G2H(c->hdc), c->width, c->height);
 }
 
 #endif
@@ -114,11 +114,11 @@ WINBASEAPI HBITMAP WINAPI CreateBitmapIndirect(const BITMAP *bmp)
 {
     struct qemu_CreateBitmapIndirect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEBITMAPINDIRECT);
-    call.bmp = (uint64_t)bmp;
+    call.bmp = (ULONG_PTR)bmp;
 
     qemu_syscall(&call.super);
 
-    return (HBITMAP)call.super.iret;
+    return (HBITMAP)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -127,7 +127,7 @@ void qemu_CreateBitmapIndirect(struct qemu_syscall *call)
 {
     struct qemu_CreateBitmapIndirect *c = (struct qemu_CreateBitmapIndirect *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateBitmapIndirect(QEMU_G2H(c->bmp));
+    c->super.iret = (ULONG_PTR)CreateBitmapIndirect(QEMU_G2H(c->bmp));
 }
 
 #endif
@@ -146,9 +146,9 @@ WINBASEAPI LONG WINAPI GetBitmapBits(HBITMAP hbitmap, LONG count, LPVOID bits)
 {
     struct qemu_GetBitmapBits call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETBITMAPBITS);
-    call.hbitmap = (uint64_t)hbitmap;
-    call.count = (uint64_t)count;
-    call.bits = (uint64_t)bits;
+    call.hbitmap = (ULONG_PTR)hbitmap;
+    call.count = (ULONG_PTR)count;
+    call.bits = (ULONG_PTR)bits;
 
     qemu_syscall(&call.super);
 
@@ -180,9 +180,9 @@ WINBASEAPI LONG WINAPI SetBitmapBits(HBITMAP hbitmap, DWORD count, LPCVOID bits)
 {
     struct qemu_SetBitmapBits call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETBITMAPBITS);
-    call.hbitmap = (uint64_t)hbitmap;
-    call.count = (uint64_t)count;
-    call.bits = (uint64_t)bits;
+    call.hbitmap = (ULONG_PTR)hbitmap;
+    call.count = (ULONG_PTR)count;
+    call.bits = (ULONG_PTR)bits;
 
     qemu_syscall(&call.super);
 
@@ -214,13 +214,13 @@ WINBASEAPI HBITMAP WINAPI CreateDiscardableBitmap(HDC hdc, INT width, INT height
 {
     struct qemu_CreateDiscardableBitmap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDISCARDABLEBITMAP);
-    call.hdc = (uint64_t)hdc;
-    call.width = (uint64_t)width;
-    call.height = (uint64_t)height;
+    call.hdc = (ULONG_PTR)hdc;
+    call.width = (ULONG_PTR)width;
+    call.height = (ULONG_PTR)height;
 
     qemu_syscall(&call.super);
 
-    return (HBITMAP)call.super.iret;
+    return (HBITMAP)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -229,7 +229,7 @@ void qemu_CreateDiscardableBitmap(struct qemu_syscall *call)
 {
     struct qemu_CreateDiscardableBitmap *c = (struct qemu_CreateDiscardableBitmap *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateDiscardableBitmap(QEMU_G2H(c->hdc), c->width, c->height);
+    c->super.iret = (ULONG_PTR)CreateDiscardableBitmap(QEMU_G2H(c->hdc), c->width, c->height);
 }
 
 #endif
@@ -247,8 +247,8 @@ WINBASEAPI BOOL WINAPI GetBitmapDimensionEx(HBITMAP hbitmap, LPSIZE size)
 {
     struct qemu_GetBitmapDimensionEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETBITMAPDIMENSIONEX);
-    call.hbitmap = (uint64_t)hbitmap;
-    call.size = (uint64_t)size;
+    call.hbitmap = (ULONG_PTR)hbitmap;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -281,10 +281,10 @@ WINBASEAPI BOOL WINAPI SetBitmapDimensionEx(HBITMAP hbitmap, INT x, INT y, LPSIZ
 {
     struct qemu_SetBitmapDimensionEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETBITMAPDIMENSIONEX);
-    call.hbitmap = (uint64_t)hbitmap;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.prevSize = (uint64_t)prevSize;
+    call.hbitmap = (ULONG_PTR)hbitmap;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.prevSize = (ULONG_PTR)prevSize;
 
     qemu_syscall(&call.super);
 

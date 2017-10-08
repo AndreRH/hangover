@@ -43,11 +43,11 @@ WINBASEAPI HBRUSH WINAPI CreateBrushIndirect(const LOGBRUSH * brush)
 {
     struct qemu_CreateBrushIndirect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEBRUSHINDIRECT);
-    call.brush = (uint64_t)brush;
+    call.brush = (ULONG_PTR)brush;
 
     qemu_syscall(&call.super);
 
-    return (HBRUSH)call.super.iret;
+    return (HBRUSH)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -56,7 +56,7 @@ void qemu_CreateBrushIndirect(struct qemu_syscall *call)
 {
     struct qemu_CreateBrushIndirect *c = (struct qemu_CreateBrushIndirect *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateBrushIndirect(QEMU_G2H(c->brush));
+    c->super.iret = (ULONG_PTR)CreateBrushIndirect(QEMU_G2H(c->brush));
 }
 
 #endif
@@ -74,12 +74,12 @@ WINBASEAPI HBRUSH WINAPI CreateHatchBrush(INT style, COLORREF color)
 {
     struct qemu_CreateHatchBrush call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEHATCHBRUSH);
-    call.style = (uint64_t)style;
-    call.color = (uint64_t)color;
+    call.style = (ULONG_PTR)style;
+    call.color = (ULONG_PTR)color;
 
     qemu_syscall(&call.super);
 
-    return (HBRUSH)call.super.iret;
+    return (HBRUSH)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -88,7 +88,7 @@ void qemu_CreateHatchBrush(struct qemu_syscall *call)
 {
     struct qemu_CreateHatchBrush *c = (struct qemu_CreateHatchBrush *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateHatchBrush(c->style, c->color);
+    c->super.iret = (ULONG_PTR)CreateHatchBrush(c->style, c->color);
 }
 
 #endif
@@ -105,11 +105,11 @@ WINBASEAPI HBRUSH WINAPI CreatePatternBrush(HBITMAP hbitmap)
 {
     struct qemu_CreatePatternBrush call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPATTERNBRUSH);
-    call.hbitmap = (uint64_t)hbitmap;
+    call.hbitmap = (ULONG_PTR)hbitmap;
 
     qemu_syscall(&call.super);
 
-    return (HBRUSH)call.super.iret;
+    return (HBRUSH)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -118,7 +118,7 @@ void qemu_CreatePatternBrush(struct qemu_syscall *call)
 {
     struct qemu_CreatePatternBrush *c = (struct qemu_CreatePatternBrush *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreatePatternBrush(QEMU_G2H(c->hbitmap));
+    c->super.iret = (ULONG_PTR)CreatePatternBrush(QEMU_G2H(c->hbitmap));
 }
 
 #endif
@@ -136,12 +136,12 @@ WINBASEAPI HBRUSH WINAPI CreateDIBPatternBrush(HGLOBAL hbitmap, UINT coloruse)
 {
     struct qemu_CreateDIBPatternBrush call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDIBPATTERNBRUSH);
-    call.hbitmap = (uint64_t)hbitmap;
-    call.coloruse = (uint64_t)coloruse;
+    call.hbitmap = (ULONG_PTR)hbitmap;
+    call.coloruse = (ULONG_PTR)coloruse;
 
     qemu_syscall(&call.super);
 
-    return (HBRUSH)call.super.iret;
+    return (HBRUSH)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -150,7 +150,7 @@ void qemu_CreateDIBPatternBrush(struct qemu_syscall *call)
 {
     struct qemu_CreateDIBPatternBrush *c = (struct qemu_CreateDIBPatternBrush *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateDIBPatternBrush(QEMU_G2H(c->hbitmap), c->coloruse);
+    c->super.iret = (ULONG_PTR)CreateDIBPatternBrush(QEMU_G2H(c->hbitmap), c->coloruse);
 }
 
 #endif
@@ -168,12 +168,12 @@ WINBASEAPI HBRUSH WINAPI CreateDIBPatternBrushPt(const void* data, UINT coloruse
 {
     struct qemu_CreateDIBPatternBrushPt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDIBPATTERNBRUSHPT);
-    call.data = (uint64_t)data;
-    call.coloruse = (uint64_t)coloruse;
+    call.data = (ULONG_PTR)data;
+    call.coloruse = (ULONG_PTR)coloruse;
 
     qemu_syscall(&call.super);
 
-    return (HBRUSH)call.super.iret;
+    return (HBRUSH)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -182,7 +182,7 @@ void qemu_CreateDIBPatternBrushPt(struct qemu_syscall *call)
 {
     struct qemu_CreateDIBPatternBrushPt *c = (struct qemu_CreateDIBPatternBrushPt *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateDIBPatternBrushPt(QEMU_G2H(c->data), c->coloruse);
+    c->super.iret = (ULONG_PTR)CreateDIBPatternBrushPt(QEMU_G2H(c->data), c->coloruse);
 }
 
 #endif
@@ -199,11 +199,11 @@ WINBASEAPI HBRUSH WINAPI CreateSolidBrush(COLORREF color)
 {
     struct qemu_CreateSolidBrush call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATESOLIDBRUSH);
-    call.color = (uint64_t)color;
+    call.color = (ULONG_PTR)color;
 
     qemu_syscall(&call.super);
 
-    return (HBRUSH)call.super.iret;
+    return (HBRUSH)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -212,7 +212,7 @@ void qemu_CreateSolidBrush(struct qemu_syscall *call)
 {
     struct qemu_CreateSolidBrush *c = (struct qemu_CreateSolidBrush *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateSolidBrush(c->color);
+    c->super.iret = (ULONG_PTR)CreateSolidBrush(c->color);
 }
 
 #endif
@@ -232,10 +232,10 @@ WINBASEAPI BOOL WINAPI SetBrushOrgEx(HDC hdc, INT x, INT y, LPPOINT oldorg)
 {
     struct qemu_SetBrushOrgEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETBRUSHORGEX);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.oldorg = (uint64_t)oldorg;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.oldorg = (ULONG_PTR)oldorg;
 
     qemu_syscall(&call.super);
 
@@ -268,10 +268,10 @@ WINBASEAPI BOOL WINAPI FixBrushOrgEx(HDC hdc, INT x, INT y, LPPOINT oldorg)
 {
     struct qemu_FixBrushOrgEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FIXBRUSHORGEX);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.oldorg = (uint64_t)oldorg;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.oldorg = (ULONG_PTR)oldorg;
 
     qemu_syscall(&call.super);
 

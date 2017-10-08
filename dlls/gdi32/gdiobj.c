@@ -43,7 +43,7 @@ WINGDIAPI BOOL WINAPI DeleteObject(HGDIOBJ obj)
 {
     struct qemu_DeleteObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETEOBJECT);
-    call.obj = (uint64_t)obj;
+    call.obj = (ULONG_PTR)obj;
 
     qemu_syscall(&call.super);
 
@@ -73,11 +73,11 @@ WINGDIAPI HGDIOBJ WINAPI GetStockObject(INT obj)
 {
     struct qemu_GetStockObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSTOCKOBJECT);
-    call.obj = (uint64_t)obj;
+    call.obj = (ULONG_PTR)obj;
 
     qemu_syscall(&call.super);
 
-    return (HGDIOBJ)call.super.iret;
+    return (HGDIOBJ)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -86,7 +86,7 @@ void qemu_GetStockObject(struct qemu_syscall *call)
 {
     struct qemu_GetStockObject *c = (struct qemu_GetStockObject *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetStockObject(c->obj);
+    c->super.iret = (ULONG_PTR)GetStockObject(c->obj);
 }
 
 #endif
@@ -105,9 +105,9 @@ WINGDIAPI INT WINAPI GetObjectA(HGDIOBJ handle, INT count, LPVOID buffer)
 {
     struct qemu_GetObjectA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETOBJECTA);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
     call.count = count;
-    call.buffer = (uint64_t)buffer;
+    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
 
@@ -139,9 +139,9 @@ WINGDIAPI INT WINAPI GetObjectW(HGDIOBJ handle, INT count, LPVOID buffer)
 {
     struct qemu_GetObjectW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETOBJECTW);
-    call.handle = (uint64_t)handle;
-    call.count = (uint64_t)count;
-    call.buffer = (uint64_t)buffer;
+    call.handle = (ULONG_PTR)handle;
+    call.count = (ULONG_PTR)count;
+    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
 
@@ -171,7 +171,7 @@ WINGDIAPI DWORD WINAPI GetObjectType(HGDIOBJ handle)
 {
     struct qemu_GetObjectType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETOBJECTTYPE);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -202,12 +202,12 @@ WINGDIAPI HGDIOBJ WINAPI GetCurrentObject(HDC hdc,UINT type)
 {
     struct qemu_GetCurrentObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTOBJECT);
-    call.hdc = (uint64_t)hdc;
-    call.type = (uint64_t)type;
+    call.hdc = (ULONG_PTR)hdc;
+    call.type = (ULONG_PTR)type;
 
     qemu_syscall(&call.super);
 
-    return (HGDIOBJ)call.super.iret;
+    return (HGDIOBJ)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -216,7 +216,7 @@ void qemu_GetCurrentObject(struct qemu_syscall *call)
 {
     struct qemu_GetCurrentObject *c = (struct qemu_GetCurrentObject *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)GetCurrentObject((HANDLE)c->hdc, c->type);
+    c->super.iret = (ULONG_PTR)GetCurrentObject((HANDLE)c->hdc, c->type);
 }
 
 #endif
@@ -234,12 +234,12 @@ WINGDIAPI HGDIOBJ WINAPI SelectObject(HDC hdc, HGDIOBJ hObj)
 {
     struct qemu_SelectObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SELECTOBJECT);
-    call.hdc = (uint64_t)hdc;
-    call.hObj = (uint64_t)hObj;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hObj = (ULONG_PTR)hObj;
 
     qemu_syscall(&call.super);
 
-    return (HGDIOBJ)call.super.iret;
+    return (HGDIOBJ)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -248,7 +248,7 @@ void qemu_SelectObject(struct qemu_syscall *call)
 {
     struct qemu_SelectObject *c = (struct qemu_SelectObject *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)SelectObject((HDC)c->hdc, (HGDIOBJ)c->hObj);
+    c->super.iret = (ULONG_PTR)SelectObject((HDC)c->hdc, (HGDIOBJ)c->hObj);
 }
 
 #endif
@@ -265,7 +265,7 @@ WINGDIAPI BOOL WINAPI UnrealizeObject(HGDIOBJ obj)
 {
     struct qemu_UnrealizeObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNREALIZEOBJECT);
-    call.obj = (uint64_t)obj;
+    call.obj = (ULONG_PTR)obj;
 
     qemu_syscall(&call.super);
 
@@ -298,10 +298,10 @@ WINGDIAPI INT WINAPI EnumObjects(HDC hdc, INT nObjType, GOBJENUMPROC lpEnumFunc,
 {
     struct qemu_EnumObjects call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMOBJECTS);
-    call.hdc = (uint64_t)hdc;
-    call.nObjType = (uint64_t)nObjType;
-    call.lpEnumFunc = (uint64_t)lpEnumFunc;
-    call.lParam = (uint64_t)lParam;
+    call.hdc = (ULONG_PTR)hdc;
+    call.nObjType = (ULONG_PTR)nObjType;
+    call.lpEnumFunc = (ULONG_PTR)lpEnumFunc;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
@@ -332,8 +332,8 @@ WINGDIAPI void WINAPI SetObjectOwner(HGDIOBJ handle, HANDLE owner)
 {
     struct qemu_SetObjectOwner call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETOBJECTOWNER);
-    call.handle = (uint64_t)handle;
-    call.owner = (uint64_t)owner;
+    call.handle = (ULONG_PTR)handle;
+    call.owner = (ULONG_PTR)owner;
 
     qemu_syscall(&call.super);
 
@@ -365,7 +365,7 @@ WINGDIAPI DWORD WINAPI GdiInitializeLanguagePack(DWORD arg)
 {
     struct qemu_GdiInitializeLanguagePack call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDIINITIALIZELANGUAGEPACK);
-    call.arg = (uint64_t)arg;
+    call.arg = (ULONG_PTR)arg;
 
     qemu_syscall(&call.super);
 
@@ -453,7 +453,7 @@ WINGDIAPI DWORD WINAPI GdiSetBatchLimit(DWORD limit)
 {
     struct qemu_GdiSetBatchLimit call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDISETBATCHLIMIT);
-    call.limit = (uint64_t)limit;
+    call.limit = (ULONG_PTR)limit;
 
     qemu_syscall(&call.super);
 
@@ -484,8 +484,8 @@ WINGDIAPI BOOL WINAPI GetColorAdjustment(HDC hdc, LPCOLORADJUSTMENT lpca)
 {
     struct qemu_GetColorAdjustment call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOLORADJUSTMENT);
-    call.hdc = (uint64_t)hdc;
-    call.lpca = (uint64_t)lpca;
+    call.hdc = (ULONG_PTR)hdc;
+    call.lpca = (ULONG_PTR)lpca;
 
     qemu_syscall(&call.super);
 
@@ -517,9 +517,9 @@ WINGDIAPI BOOL WINAPI GdiComment(HDC hdc, UINT cbSize, const BYTE *lpData)
 {
     struct qemu_GdiComment call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDICOMMENT);
-    call.hdc = (uint64_t)hdc;
-    call.cbSize = (uint64_t)cbSize;
-    call.lpData = (uint64_t)lpData;
+    call.hdc = (ULONG_PTR)hdc;
+    call.cbSize = (ULONG_PTR)cbSize;
+    call.lpData = (ULONG_PTR)lpData;
 
     qemu_syscall(&call.super);
 
@@ -550,8 +550,8 @@ WINGDIAPI BOOL WINAPI SetColorAdjustment(HDC hdc, const COLORADJUSTMENT* lpca)
 {
     struct qemu_SetColorAdjustment call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCOLORADJUSTMENT);
-    call.hdc = (uint64_t)hdc;
-    call.lpca = (uint64_t)lpca;
+    call.hdc = (ULONG_PTR)hdc;
+    call.lpca = (ULONG_PTR)lpca;
 
     qemu_syscall(&call.super);
 

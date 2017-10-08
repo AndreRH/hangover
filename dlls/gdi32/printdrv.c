@@ -46,10 +46,10 @@ WINGDIAPI DWORD WINAPI GdiGetSpoolMessage(LPVOID ptr1, DWORD data2, LPVOID ptr3,
 {
     struct qemu_GdiGetSpoolMessage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDIGETSPOOLMESSAGE);
-    call.ptr1 = (uint64_t)ptr1;
-    call.data2 = (uint64_t)data2;
-    call.ptr3 = (uint64_t)ptr3;
-    call.data4 = (uint64_t)data4;
+    call.ptr1 = (ULONG_PTR)ptr1;
+    call.data2 = (ULONG_PTR)data2;
+    call.ptr3 = (ULONG_PTR)ptr3;
+    call.data4 = (ULONG_PTR)data4;
 
     qemu_syscall(&call.super);
 
@@ -112,8 +112,8 @@ WINGDIAPI INT WINAPI StartDocW(HDC hdc, const DOCINFOW* doc)
 {
     struct qemu_StartDocW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STARTDOCW);
-    call.hdc = (uint64_t)hdc;
-    call.doc = (uint64_t)doc;
+    call.hdc = (ULONG_PTR)hdc;
+    call.doc = (ULONG_PTR)doc;
 
     qemu_syscall(&call.super);
 
@@ -144,8 +144,8 @@ WINGDIAPI INT WINAPI StartDocA(HDC hdc, const DOCINFOA* doc)
 {
     struct qemu_StartDocA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STARTDOCA);
-    call.hdc = (uint64_t)hdc;
-    call.doc = (uint64_t)doc;
+    call.hdc = (ULONG_PTR)hdc;
+    call.doc = (ULONG_PTR)doc;
 
     qemu_syscall(&call.super);
 
@@ -175,7 +175,7 @@ WINGDIAPI INT WINAPI EndDoc(HDC hdc)
 {
     struct qemu_EndDoc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENDDOC);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -205,7 +205,7 @@ WINGDIAPI INT WINAPI StartPage(HDC hdc)
 {
     struct qemu_StartPage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STARTPAGE);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -235,7 +235,7 @@ WINGDIAPI INT WINAPI EndPage(HDC hdc)
 {
     struct qemu_EndPage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENDPAGE);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -265,7 +265,7 @@ WINGDIAPI INT WINAPI AbortDoc(HDC hdc)
 {
     struct qemu_AbortDoc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ABORTDOC);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -296,8 +296,8 @@ WINGDIAPI INT WINAPI SetAbortProc(HDC hdc, ABORTPROC abrtprc)
 {
     struct qemu_SetAbortProc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETABORTPROC);
-    call.hdc = (uint64_t)hdc;
-    call.abrtprc = (uint64_t)abrtprc;
+    call.hdc = (ULONG_PTR)hdc;
+    call.abrtprc = (ULONG_PTR)abrtprc;
 
     qemu_syscall(&call.super);
 

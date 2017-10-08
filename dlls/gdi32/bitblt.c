@@ -48,12 +48,12 @@ WINBASEAPI BOOL WINAPI PatBlt(HDC hdc, INT left, INT top, INT width, INT height,
 {
     struct qemu_PatBlt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATBLT);
-    call.hdc = (uint64_t)hdc;
-    call.left = (uint64_t)left;
-    call.top = (uint64_t)top;
-    call.width = (uint64_t)width;
-    call.height = (uint64_t)height;
-    call.rop = (uint64_t)rop;
+    call.hdc = (ULONG_PTR)hdc;
+    call.left = (ULONG_PTR)left;
+    call.top = (ULONG_PTR)top;
+    call.width = (ULONG_PTR)width;
+    call.height = (ULONG_PTR)height;
+    call.rop = (ULONG_PTR)rop;
 
     qemu_syscall(&call.super);
 
@@ -91,12 +91,12 @@ WINBASEAPI BOOL WINAPI BitBlt(HDC hdcDst, INT xDst, INT yDst, INT width, INT hei
 {
     struct qemu_BitBlt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BITBLT);
-    call.hdcDst = (uint64_t)hdcDst;
+    call.hdcDst = (ULONG_PTR)hdcDst;
     call.xDst = xDst;
     call.yDst = yDst;
     call.width = width;
     call.height = height;
-    call.hdcSrc = (uint64_t)hdcSrc;
+    call.hdcSrc = (ULONG_PTR)hdcSrc;
     call.xSrc = xSrc;
     call.ySrc = ySrc;
     call.rop = rop;
@@ -139,17 +139,17 @@ WINBASEAPI BOOL WINAPI StretchBlt(HDC hdcDst, INT xDst, INT yDst, INT widthDst, 
 {
     struct qemu_StretchBlt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRETCHBLT);
-    call.hdcDst = (uint64_t)hdcDst;
-    call.xDst = (uint64_t)xDst;
-    call.yDst = (uint64_t)yDst;
-    call.widthDst = (uint64_t)widthDst;
-    call.heightDst = (uint64_t)heightDst;
-    call.hdcSrc = (uint64_t)hdcSrc;
-    call.xSrc = (uint64_t)xSrc;
-    call.ySrc = (uint64_t)ySrc;
-    call.widthSrc = (uint64_t)widthSrc;
-    call.heightSrc = (uint64_t)heightSrc;
-    call.rop = (uint64_t)rop;
+    call.hdcDst = (ULONG_PTR)hdcDst;
+    call.xDst = (ULONG_PTR)xDst;
+    call.yDst = (ULONG_PTR)yDst;
+    call.widthDst = (ULONG_PTR)widthDst;
+    call.heightDst = (ULONG_PTR)heightDst;
+    call.hdcSrc = (ULONG_PTR)hdcSrc;
+    call.xSrc = (ULONG_PTR)xSrc;
+    call.ySrc = (ULONG_PTR)ySrc;
+    call.widthSrc = (ULONG_PTR)widthSrc;
+    call.heightSrc = (ULONG_PTR)heightSrc;
+    call.rop = (ULONG_PTR)rop;
 
     qemu_syscall(&call.super);
 
@@ -190,18 +190,18 @@ WINBASEAPI BOOL WINAPI MaskBlt(HDC hdcDest, INT nXDest, INT nYDest, INT nWidth, 
 {
     struct qemu_MaskBlt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MASKBLT);
-    call.hdcDest = (uint64_t)hdcDest;
-    call.nXDest = (uint64_t)nXDest;
-    call.nYDest = (uint64_t)nYDest;
-    call.nWidth = (uint64_t)nWidth;
-    call.nHeight = (uint64_t)nHeight;
-    call.hdcSrc = (uint64_t)hdcSrc;
-    call.nXSrc = (uint64_t)nXSrc;
-    call.nYSrc = (uint64_t)nYSrc;
-    call.hbmMask = (uint64_t)hbmMask;
-    call.xMask = (uint64_t)xMask;
-    call.yMask = (uint64_t)yMask;
-    call.dwRop = (uint64_t)dwRop;
+    call.hdcDest = (ULONG_PTR)hdcDest;
+    call.nXDest = (ULONG_PTR)nXDest;
+    call.nYDest = (ULONG_PTR)nYDest;
+    call.nWidth = (ULONG_PTR)nWidth;
+    call.nHeight = (ULONG_PTR)nHeight;
+    call.hdcSrc = (ULONG_PTR)hdcSrc;
+    call.nXSrc = (ULONG_PTR)nXSrc;
+    call.nYSrc = (ULONG_PTR)nYSrc;
+    call.hbmMask = (ULONG_PTR)hbmMask;
+    call.xMask = (ULONG_PTR)xMask;
+    call.yMask = (ULONG_PTR)yMask;
+    call.dwRop = (ULONG_PTR)dwRop;
 
     qemu_syscall(&call.super);
 
@@ -241,17 +241,17 @@ WINBASEAPI BOOL WINAPI GdiTransparentBlt(HDC hdcDest, int xDest, int yDest, int 
 {
     struct qemu_GdiTransparentBlt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDITRANSPARENTBLT);
-    call.hdcDest = (uint64_t)hdcDest;
-    call.xDest = (uint64_t)xDest;
-    call.yDest = (uint64_t)yDest;
-    call.widthDest = (uint64_t)widthDest;
-    call.heightDest = (uint64_t)heightDest;
-    call.hdcSrc = (uint64_t)hdcSrc;
-    call.xSrc = (uint64_t)xSrc;
-    call.ySrc = (uint64_t)ySrc;
-    call.widthSrc = (uint64_t)widthSrc;
-    call.heightSrc = (uint64_t)heightSrc;
-    call.crTransparent = (uint64_t)crTransparent;
+    call.hdcDest = (ULONG_PTR)hdcDest;
+    call.xDest = (ULONG_PTR)xDest;
+    call.yDest = (ULONG_PTR)yDest;
+    call.widthDest = (ULONG_PTR)widthDest;
+    call.heightDest = (ULONG_PTR)heightDest;
+    call.hdcSrc = (ULONG_PTR)hdcSrc;
+    call.xSrc = (ULONG_PTR)xSrc;
+    call.ySrc = (ULONG_PTR)ySrc;
+    call.widthSrc = (ULONG_PTR)widthSrc;
+    call.heightSrc = (ULONG_PTR)heightSrc;
+    call.crTransparent = (ULONG_PTR)crTransparent;
 
     qemu_syscall(&call.super);
 
@@ -294,20 +294,20 @@ WINBASEAPI BOOL WINAPI GdiAlphaBlend(HDC hdcDst, int xDst, int yDst, int widthDs
 {
     struct qemu_GdiAlphaBlend call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDIALPHABLEND);
-    call.hdcDst = (uint64_t)hdcDst;
-    call.xDst = (uint64_t)xDst;
-    call.yDst = (uint64_t)yDst;
-    call.widthDst = (uint64_t)widthDst;
-    call.heightDst = (uint64_t)heightDst;
-    call.hdcSrc = (uint64_t)hdcSrc;
-    call.xSrc = (uint64_t)xSrc;
-    call.ySrc = (uint64_t)ySrc;
-    call.widthSrc = (uint64_t)widthSrc;
-    call.heightSrc = (uint64_t)heightSrc;
-    call.blendFunction_op = (uint64_t)blendFunction.BlendOp;
-    call.blendFunction_flags = (uint64_t)blendFunction.BlendFlags;
-    call.blendFunction_const = (uint64_t)blendFunction.SourceConstantAlpha;
-    call.blendFunction_fmt = (uint64_t)blendFunction.AlphaFormat;
+    call.hdcDst = (ULONG_PTR)hdcDst;
+    call.xDst = (ULONG_PTR)xDst;
+    call.yDst = (ULONG_PTR)yDst;
+    call.widthDst = (ULONG_PTR)widthDst;
+    call.heightDst = (ULONG_PTR)heightDst;
+    call.hdcSrc = (ULONG_PTR)hdcSrc;
+    call.xSrc = (ULONG_PTR)xSrc;
+    call.ySrc = (ULONG_PTR)ySrc;
+    call.widthSrc = (ULONG_PTR)widthSrc;
+    call.heightSrc = (ULONG_PTR)heightSrc;
+    call.blendFunction_op = (ULONG_PTR)blendFunction.BlendOp;
+    call.blendFunction_flags = (ULONG_PTR)blendFunction.BlendFlags;
+    call.blendFunction_const = (ULONG_PTR)blendFunction.SourceConstantAlpha;
+    call.blendFunction_fmt = (ULONG_PTR)blendFunction.AlphaFormat;
 
     qemu_syscall(&call.super);
 
@@ -353,16 +353,16 @@ WINBASEAPI BOOL WINAPI PlgBlt(HDC hdcDest, const POINT *lpPoint, HDC hdcSrc, INT
 {
     struct qemu_PlgBlt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PLGBLT);
-    call.hdcDest = (uint64_t)hdcDest;
-    call.lpPoint = (uint64_t)lpPoint;
-    call.hdcSrc = (uint64_t)hdcSrc;
-    call.nXSrc = (uint64_t)nXSrc;
-    call.nYSrc = (uint64_t)nYSrc;
-    call.nWidth = (uint64_t)nWidth;
-    call.nHeight = (uint64_t)nHeight;
-    call.hbmMask = (uint64_t)hbmMask;
-    call.xMask = (uint64_t)xMask;
-    call.yMask = (uint64_t)yMask;
+    call.hdcDest = (ULONG_PTR)hdcDest;
+    call.lpPoint = (ULONG_PTR)lpPoint;
+    call.hdcSrc = (ULONG_PTR)hdcSrc;
+    call.nXSrc = (ULONG_PTR)nXSrc;
+    call.nYSrc = (ULONG_PTR)nYSrc;
+    call.nWidth = (ULONG_PTR)nWidth;
+    call.nHeight = (ULONG_PTR)nHeight;
+    call.hbmMask = (ULONG_PTR)hbmMask;
+    call.xMask = (ULONG_PTR)xMask;
+    call.yMask = (ULONG_PTR)yMask;
 
     qemu_syscall(&call.super);
 

@@ -43,11 +43,11 @@ WINBASEAPI HPALETTE WINAPI CreatePalette(const LOGPALETTE* palette)
 {
     struct qemu_CreatePalette call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPALETTE);
-    call.palette = (uint64_t)palette;
+    call.palette = (ULONG_PTR)palette;
 
     qemu_syscall(&call.super);
 
-    return (HPALETTE)call.super.iret;
+    return (HPALETTE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -56,7 +56,7 @@ void qemu_CreatePalette(struct qemu_syscall *call)
 {
     struct qemu_CreatePalette *c = (struct qemu_CreatePalette *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreatePalette(QEMU_G2H(c->palette));
+    c->super.iret = (ULONG_PTR)CreatePalette(QEMU_G2H(c->palette));
 }
 
 #endif
@@ -73,11 +73,11 @@ WINBASEAPI HPALETTE WINAPI CreateHalftonePalette(HDC hdc)
 {
     struct qemu_CreateHalftonePalette call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEHALFTONEPALETTE);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
-    return (HPALETTE)call.super.iret;
+    return (HPALETTE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -86,7 +86,7 @@ void qemu_CreateHalftonePalette(struct qemu_syscall *call)
 {
     struct qemu_CreateHalftonePalette *c = (struct qemu_CreateHalftonePalette *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateHalftonePalette(QEMU_G2H(c->hdc));
+    c->super.iret = (ULONG_PTR)CreateHalftonePalette(QEMU_G2H(c->hdc));
 }
 
 #endif
@@ -106,10 +106,10 @@ WINBASEAPI UINT WINAPI GetPaletteEntries(HPALETTE hpalette, UINT start, UINT cou
 {
     struct qemu_GetPaletteEntries call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPALETTEENTRIES);
-    call.hpalette = (uint64_t)hpalette;
-    call.start = (uint64_t)start;
-    call.count = (uint64_t)count;
-    call.entries = (uint64_t)entries;
+    call.hpalette = (ULONG_PTR)hpalette;
+    call.start = (ULONG_PTR)start;
+    call.count = (ULONG_PTR)count;
+    call.entries = (ULONG_PTR)entries;
 
     qemu_syscall(&call.super);
 
@@ -142,10 +142,10 @@ WINBASEAPI UINT WINAPI SetPaletteEntries(HPALETTE hpalette, UINT start, UINT cou
 {
     struct qemu_SetPaletteEntries call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPALETTEENTRIES);
-    call.hpalette = (uint64_t)hpalette;
-    call.start = (uint64_t)start;
-    call.count = (uint64_t)count;
-    call.entries = (uint64_t)entries;
+    call.hpalette = (ULONG_PTR)hpalette;
+    call.start = (ULONG_PTR)start;
+    call.count = (ULONG_PTR)count;
+    call.entries = (ULONG_PTR)entries;
 
     qemu_syscall(&call.super);
 
@@ -176,8 +176,8 @@ WINBASEAPI BOOL WINAPI ResizePalette(HPALETTE hPal, UINT cEntries)
 {
     struct qemu_ResizePalette call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RESIZEPALETTE);
-    call.hPal = (uint64_t)hPal;
-    call.cEntries = (uint64_t)cEntries;
+    call.hPal = (ULONG_PTR)hPal;
+    call.cEntries = (ULONG_PTR)cEntries;
 
     qemu_syscall(&call.super);
 
@@ -210,10 +210,10 @@ WINBASEAPI BOOL WINAPI AnimatePalette(HPALETTE hPal, UINT StartIndex, UINT NumEn
 {
     struct qemu_AnimatePalette call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ANIMATEPALETTE);
-    call.hPal = (uint64_t)hPal;
-    call.StartIndex = (uint64_t)StartIndex;
-    call.NumEntries = (uint64_t)NumEntries;
-    call.PaletteColors = (uint64_t)PaletteColors;
+    call.hPal = (ULONG_PTR)hPal;
+    call.StartIndex = (ULONG_PTR)StartIndex;
+    call.NumEntries = (ULONG_PTR)NumEntries;
+    call.PaletteColors = (ULONG_PTR)PaletteColors;
 
     qemu_syscall(&call.super);
 
@@ -244,8 +244,8 @@ WINBASEAPI UINT WINAPI SetSystemPaletteUse(HDC hdc, UINT use)
 {
     struct qemu_SetSystemPaletteUse call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSYSTEMPALETTEUSE);
-    call.hdc = (uint64_t)hdc;
-    call.use = (uint64_t)use;
+    call.hdc = (ULONG_PTR)hdc;
+    call.use = (ULONG_PTR)use;
 
     qemu_syscall(&call.super);
 
@@ -275,7 +275,7 @@ WINBASEAPI UINT WINAPI GetSystemPaletteUse(HDC hdc)
 {
     struct qemu_GetSystemPaletteUse call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMPALETTEUSE);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -308,10 +308,10 @@ WINBASEAPI UINT WINAPI GetSystemPaletteEntries(HDC hdc, UINT start, UINT count, 
 {
     struct qemu_GetSystemPaletteEntries call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMPALETTEENTRIES);
-    call.hdc = (uint64_t)hdc;
-    call.start = (uint64_t)start;
-    call.count = (uint64_t)count;
-    call.entries = (uint64_t)entries;
+    call.hdc = (ULONG_PTR)hdc;
+    call.start = (ULONG_PTR)start;
+    call.count = (ULONG_PTR)count;
+    call.entries = (ULONG_PTR)entries;
 
     qemu_syscall(&call.super);
 
@@ -342,8 +342,8 @@ WINBASEAPI UINT WINAPI GetNearestPaletteIndex(HPALETTE hpalette, COLORREF color)
 {
     struct qemu_GetNearestPaletteIndex call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNEARESTPALETTEINDEX);
-    call.hpalette = (uint64_t)hpalette;
-    call.color = (uint64_t)color;
+    call.hpalette = (ULONG_PTR)hpalette;
+    call.color = (ULONG_PTR)color;
 
     qemu_syscall(&call.super);
 
@@ -374,8 +374,8 @@ WINBASEAPI COLORREF WINAPI GetNearestColor(HDC hdc, COLORREF color)
 {
     struct qemu_GetNearestColor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNEARESTCOLOR);
-    call.hdc = (uint64_t)hdc;
-    call.color = (uint64_t)color;
+    call.hdc = (ULONG_PTR)hdc;
+    call.color = (ULONG_PTR)color;
 
     qemu_syscall(&call.super);
 
@@ -407,13 +407,13 @@ WINBASEAPI HPALETTE WINAPI SelectPalette(HDC hDC, HPALETTE hPal, BOOL bForceBack
 {
     struct qemu_SelectPalette call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SELECTPALETTE);
-    call.hDC = (uint64_t)hDC;
-    call.hPal = (uint64_t)hPal;
-    call.bForceBackground = (uint64_t)bForceBackground;
+    call.hDC = (ULONG_PTR)hDC;
+    call.hPal = (ULONG_PTR)hPal;
+    call.bForceBackground = (ULONG_PTR)bForceBackground;
 
     qemu_syscall(&call.super);
 
-    return (HPALETTE)call.super.iret;
+    return (HPALETTE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -422,7 +422,7 @@ void qemu_SelectPalette(struct qemu_syscall *call)
 {
     struct qemu_SelectPalette *c = (struct qemu_SelectPalette *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)SelectPalette(QEMU_G2H(c->hDC), QEMU_G2H(c->hPal), c->bForceBackground);
+    c->super.iret = (ULONG_PTR)SelectPalette(QEMU_G2H(c->hDC), QEMU_G2H(c->hPal), c->bForceBackground);
 }
 
 #endif
@@ -439,7 +439,7 @@ WINBASEAPI UINT WINAPI RealizePalette(HDC hDC)
 {
     struct qemu_RealizePalette call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REALIZEPALETTE);
-    call.hDC = (uint64_t)hDC;
+    call.hDC = (ULONG_PTR)hDC;
 
     qemu_syscall(&call.super);
 
@@ -469,7 +469,7 @@ WINBASEAPI BOOL WINAPI UpdateColors(HDC hDC)
 {
     struct qemu_UpdateColors call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UPDATECOLORS);
-    call.hDC = (uint64_t)hDC;
+    call.hDC = (ULONG_PTR)hDC;
 
     qemu_syscall(&call.super);
 
@@ -501,9 +501,9 @@ WINBASEAPI BOOL WINAPI SetMagicColors(HDC hdc, ULONG u1, ULONG u2)
 {
     struct qemu_SetMagicColors call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMAGICCOLORS);
-    call.hdc = (uint64_t)hdc;
-    call.u1 = (uint64_t)u1;
-    call.u2 = (uint64_t)u2;
+    call.hdc = (ULONG_PTR)hdc;
+    call.u1 = (ULONG_PTR)u1;
+    call.u2 = (ULONG_PTR)u2;
 
     qemu_syscall(&call.super);
 

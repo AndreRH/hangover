@@ -45,9 +45,9 @@ WINBASEAPI BOOL WINAPI LineTo(HDC hdc, INT x, INT y)
 {
     struct qemu_LineTo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LINETO);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -80,10 +80,10 @@ WINBASEAPI BOOL WINAPI MoveToEx(HDC hdc, INT x, INT y, LPPOINT pt)
 {
     struct qemu_MoveToEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MOVETOEX);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.pt = (uint64_t)pt;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.pt = (ULONG_PTR)pt;
 
     qemu_syscall(&call.super);
 
@@ -121,15 +121,15 @@ WINBASEAPI BOOL WINAPI Arc(HDC hdc, INT left, INT top, INT right, INT bottom, IN
 {
     struct qemu_Arc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ARC);
-    call.hdc = (uint64_t)hdc;
-    call.left = (uint64_t)left;
-    call.top = (uint64_t)top;
-    call.right = (uint64_t)right;
-    call.bottom = (uint64_t)bottom;
-    call.xstart = (uint64_t)xstart;
-    call.ystart = (uint64_t)ystart;
-    call.xend = (uint64_t)xend;
-    call.yend = (uint64_t)yend;
+    call.hdc = (ULONG_PTR)hdc;
+    call.left = (ULONG_PTR)left;
+    call.top = (ULONG_PTR)top;
+    call.right = (ULONG_PTR)right;
+    call.bottom = (ULONG_PTR)bottom;
+    call.xstart = (ULONG_PTR)xstart;
+    call.ystart = (ULONG_PTR)ystart;
+    call.xend = (ULONG_PTR)xend;
+    call.yend = (ULONG_PTR)yend;
 
     qemu_syscall(&call.super);
 
@@ -167,15 +167,15 @@ WINBASEAPI BOOL WINAPI ArcTo(HDC hdc, INT left, INT top, INT right, INT bottom, 
 {
     struct qemu_ArcTo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ARCTO);
-    call.hdc = (uint64_t)hdc;
-    call.left = (uint64_t)left;
-    call.top = (uint64_t)top;
-    call.right = (uint64_t)right;
-    call.bottom = (uint64_t)bottom;
-    call.xstart = (uint64_t)xstart;
-    call.ystart = (uint64_t)ystart;
-    call.xend = (uint64_t)xend;
-    call.yend = (uint64_t)yend;
+    call.hdc = (ULONG_PTR)hdc;
+    call.left = (ULONG_PTR)left;
+    call.top = (ULONG_PTR)top;
+    call.right = (ULONG_PTR)right;
+    call.bottom = (ULONG_PTR)bottom;
+    call.xstart = (ULONG_PTR)xstart;
+    call.ystart = (ULONG_PTR)ystart;
+    call.xend = (ULONG_PTR)xend;
+    call.yend = (ULONG_PTR)yend;
 
     qemu_syscall(&call.super);
 
@@ -213,15 +213,15 @@ WINBASEAPI BOOL WINAPI Pie(HDC hdc, INT left, INT top, INT right, INT bottom, IN
 {
     struct qemu_Pie call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PIE);
-    call.hdc = (uint64_t)hdc;
-    call.left = (uint64_t)left;
-    call.top = (uint64_t)top;
-    call.right = (uint64_t)right;
-    call.bottom = (uint64_t)bottom;
-    call.xstart = (uint64_t)xstart;
-    call.ystart = (uint64_t)ystart;
-    call.xend = (uint64_t)xend;
-    call.yend = (uint64_t)yend;
+    call.hdc = (ULONG_PTR)hdc;
+    call.left = (ULONG_PTR)left;
+    call.top = (ULONG_PTR)top;
+    call.right = (ULONG_PTR)right;
+    call.bottom = (ULONG_PTR)bottom;
+    call.xstart = (ULONG_PTR)xstart;
+    call.ystart = (ULONG_PTR)ystart;
+    call.xend = (ULONG_PTR)xend;
+    call.yend = (ULONG_PTR)yend;
 
     qemu_syscall(&call.super);
 
@@ -259,15 +259,15 @@ WINBASEAPI BOOL WINAPI Chord(HDC hdc, INT left, INT top, INT right, INT bottom, 
 {
     struct qemu_Chord call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHORD);
-    call.hdc = (uint64_t)hdc;
-    call.left = (uint64_t)left;
-    call.top = (uint64_t)top;
-    call.right = (uint64_t)right;
-    call.bottom = (uint64_t)bottom;
-    call.xstart = (uint64_t)xstart;
-    call.ystart = (uint64_t)ystart;
-    call.xend = (uint64_t)xend;
-    call.yend = (uint64_t)yend;
+    call.hdc = (ULONG_PTR)hdc;
+    call.left = (ULONG_PTR)left;
+    call.top = (ULONG_PTR)top;
+    call.right = (ULONG_PTR)right;
+    call.bottom = (ULONG_PTR)bottom;
+    call.xstart = (ULONG_PTR)xstart;
+    call.ystart = (ULONG_PTR)ystart;
+    call.xend = (ULONG_PTR)xend;
+    call.yend = (ULONG_PTR)yend;
 
     qemu_syscall(&call.super);
 
@@ -301,11 +301,11 @@ WINBASEAPI BOOL WINAPI Ellipse(HDC hdc, INT left, INT top, INT right, INT bottom
 {
     struct qemu_Ellipse call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ELLIPSE);
-    call.hdc = (uint64_t)hdc;
-    call.left = (uint64_t)left;
-    call.top = (uint64_t)top;
-    call.right = (uint64_t)right;
-    call.bottom = (uint64_t)bottom;
+    call.hdc = (ULONG_PTR)hdc;
+    call.left = (ULONG_PTR)left;
+    call.top = (ULONG_PTR)top;
+    call.right = (ULONG_PTR)right;
+    call.bottom = (ULONG_PTR)bottom;
 
     qemu_syscall(&call.super);
 
@@ -339,11 +339,11 @@ WINBASEAPI BOOL WINAPI Rectangle(HDC hdc, INT left, INT top, INT right, INT bott
 {
     struct qemu_Rectangle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RECTANGLE);
-    call.hdc = (uint64_t)hdc;
-    call.left = (uint64_t)left;
-    call.top = (uint64_t)top;
-    call.right = (uint64_t)right;
-    call.bottom = (uint64_t)bottom;
+    call.hdc = (ULONG_PTR)hdc;
+    call.left = (ULONG_PTR)left;
+    call.top = (ULONG_PTR)top;
+    call.right = (ULONG_PTR)right;
+    call.bottom = (ULONG_PTR)bottom;
 
     qemu_syscall(&call.super);
 
@@ -379,13 +379,13 @@ WINBASEAPI BOOL WINAPI RoundRect(HDC hdc, INT left, INT top, INT right, INT bott
 {
     struct qemu_RoundRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ROUNDRECT);
-    call.hdc = (uint64_t)hdc;
-    call.left = (uint64_t)left;
-    call.top = (uint64_t)top;
-    call.right = (uint64_t)right;
-    call.bottom = (uint64_t)bottom;
-    call.ell_width = (uint64_t)ell_width;
-    call.ell_height = (uint64_t)ell_height;
+    call.hdc = (ULONG_PTR)hdc;
+    call.left = (ULONG_PTR)left;
+    call.top = (ULONG_PTR)top;
+    call.right = (ULONG_PTR)right;
+    call.bottom = (ULONG_PTR)bottom;
+    call.ell_width = (ULONG_PTR)ell_width;
+    call.ell_height = (ULONG_PTR)ell_height;
 
     qemu_syscall(&call.super);
 
@@ -418,10 +418,10 @@ WINBASEAPI COLORREF WINAPI SetPixel(HDC hdc, INT x, INT y, COLORREF color)
 {
     struct qemu_SetPixel call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPIXEL);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.color = (uint64_t)color;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.color = (ULONG_PTR)color;
 
     qemu_syscall(&call.super);
 
@@ -454,10 +454,10 @@ WINBASEAPI BOOL WINAPI SetPixelV(HDC hdc, INT x, INT y, COLORREF color)
 {
     struct qemu_SetPixelV call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPIXELV);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.color = (uint64_t)color;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.color = (ULONG_PTR)color;
 
     qemu_syscall(&call.super);
 
@@ -489,9 +489,9 @@ WINBASEAPI COLORREF WINAPI GetPixel(HDC hdc, INT x, INT y)
 {
     struct qemu_GetPixel call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPIXEL);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -523,9 +523,9 @@ WINBASEAPI BOOL WINAPI GdiSetPixelFormat(HDC hdc, INT format, const PIXELFORMATD
 {
     struct qemu_GdiSetPixelFormat call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDISETPIXELFORMAT);
-    call.hdc = (uint64_t)hdc;
-    call.format = (uint64_t)format;
-    call.descr = (uint64_t)descr;
+    call.hdc = (ULONG_PTR)hdc;
+    call.format = (ULONG_PTR)format;
+    call.descr = (ULONG_PTR)descr;
 
     qemu_syscall(&call.super);
 
@@ -560,10 +560,10 @@ WINBASEAPI INT WINAPI GdiDescribePixelFormat(HDC hdc, INT format, UINT size, PIX
 {
     struct qemu_GdiDescribePixelFormat call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDIDESCRIBEPIXELFORMAT);
-    call.hdc = (uint64_t)hdc;
-    call.format = (uint64_t)format;
-    call.size = (uint64_t)size;
-    call.descr = (uint64_t)descr;
+    call.hdc = (ULONG_PTR)hdc;
+    call.format = (ULONG_PTR)format;
+    call.size = (ULONG_PTR)size;
+    call.descr = (ULONG_PTR)descr;
 
     qemu_syscall(&call.super);
 
@@ -595,7 +595,7 @@ WINBASEAPI BOOL WINAPI GdiSwapBuffers(HDC hdc)
 {
     struct qemu_GdiSwapBuffers call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDISWAPBUFFERS);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -628,8 +628,8 @@ WINBASEAPI BOOL WINAPI PaintRgn(HDC hdc, HRGN hrgn)
 {
     struct qemu_PaintRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PAINTRGN);
-    call.hdc = (uint64_t)hdc;
-    call.hrgn = (uint64_t)hrgn;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hrgn = (ULONG_PTR)hrgn;
 
     qemu_syscall(&call.super);
 
@@ -661,9 +661,9 @@ WINBASEAPI BOOL WINAPI FillRgn(HDC hdc, HRGN hrgn, HBRUSH hbrush)
 {
     struct qemu_FillRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILLRGN);
-    call.hdc = (uint64_t)hdc;
-    call.hrgn = (uint64_t)hrgn;
-    call.hbrush = (uint64_t)hbrush;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hrgn = (ULONG_PTR)hrgn;
+    call.hbrush = (ULONG_PTR)hbrush;
 
     qemu_syscall(&call.super);
 
@@ -697,11 +697,11 @@ WINBASEAPI BOOL WINAPI FrameRgn(HDC hdc, HRGN hrgn, HBRUSH hbrush, INT nWidth, I
 {
     struct qemu_FrameRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FRAMERGN);
-    call.hdc = (uint64_t)hdc;
-    call.hrgn = (uint64_t)hrgn;
-    call.hbrush = (uint64_t)hbrush;
-    call.nWidth = (uint64_t)nWidth;
-    call.nHeight = (uint64_t)nHeight;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hrgn = (ULONG_PTR)hrgn;
+    call.hbrush = (ULONG_PTR)hbrush;
+    call.nWidth = (ULONG_PTR)nWidth;
+    call.nHeight = (ULONG_PTR)nHeight;
 
     qemu_syscall(&call.super);
 
@@ -732,8 +732,8 @@ WINBASEAPI BOOL WINAPI InvertRgn(HDC hdc, HRGN hrgn)
 {
     struct qemu_InvertRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INVERTRGN);
-    call.hdc = (uint64_t)hdc;
-    call.hrgn = (uint64_t)hrgn;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hrgn = (ULONG_PTR)hrgn;
 
     qemu_syscall(&call.super);
 
@@ -765,9 +765,9 @@ WINBASEAPI BOOL WINAPI Polyline(HDC hdc, const POINT* pt, INT count)
 {
     struct qemu_Polyline call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POLYLINE);
-    call.hdc = (uint64_t)hdc;
-    call.pt = (uint64_t)pt;
-    call.count = (uint64_t)count;
+    call.hdc = (ULONG_PTR)hdc;
+    call.pt = (ULONG_PTR)pt;
+    call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
 
@@ -799,9 +799,9 @@ WINBASEAPI BOOL WINAPI PolylineTo(HDC hdc, const POINT* pt, DWORD cCount)
 {
     struct qemu_PolylineTo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POLYLINETO);
-    call.hdc = (uint64_t)hdc;
-    call.pt = (uint64_t)pt;
-    call.cCount = (uint64_t)cCount;
+    call.hdc = (ULONG_PTR)hdc;
+    call.pt = (ULONG_PTR)pt;
+    call.cCount = (ULONG_PTR)cCount;
 
     qemu_syscall(&call.super);
 
@@ -833,9 +833,9 @@ WINBASEAPI BOOL WINAPI Polygon(HDC hdc, const POINT* pt, INT count)
 {
     struct qemu_Polygon call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POLYGON);
-    call.hdc = (uint64_t)hdc;
-    call.pt = (uint64_t)pt;
-    call.count = (uint64_t)count;
+    call.hdc = (ULONG_PTR)hdc;
+    call.pt = (ULONG_PTR)pt;
+    call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
 
@@ -868,9 +868,9 @@ WINBASEAPI BOOL WINAPI PolyPolygon(HDC hdc, const POINT* pt, const INT* counts, 
 {
     struct qemu_PolyPolygon call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POLYPOLYGON);
-    call.hdc = (uint64_t)hdc;
-    call.pt = (uint64_t)pt;
-    call.counts = (uint64_t)counts;
+    call.hdc = (ULONG_PTR)hdc;
+    call.pt = (ULONG_PTR)pt;
+    call.counts = (ULONG_PTR)counts;
     call.polygons = polygons;
 
     qemu_syscall(&call.super);
@@ -904,10 +904,10 @@ WINBASEAPI BOOL WINAPI PolyPolyline(HDC hdc, const POINT* pt, const DWORD* count
 {
     struct qemu_PolyPolyline call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POLYPOLYLINE);
-    call.hdc = (uint64_t)hdc;
-    call.pt = (uint64_t)pt;
-    call.counts = (uint64_t)counts;
-    call.polylines = (uint64_t)polylines;
+    call.hdc = (ULONG_PTR)hdc;
+    call.pt = (ULONG_PTR)pt;
+    call.counts = (ULONG_PTR)counts;
+    call.polylines = (ULONG_PTR)polylines;
 
     qemu_syscall(&call.super);
 
@@ -941,11 +941,11 @@ WINBASEAPI BOOL WINAPI ExtFloodFill(HDC hdc, INT x, INT y, COLORREF color, UINT 
 {
     struct qemu_ExtFloodFill call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXTFLOODFILL);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.color = (uint64_t)color;
-    call.fillType = (uint64_t)fillType;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.color = (ULONG_PTR)color;
+    call.fillType = (ULONG_PTR)fillType;
 
     qemu_syscall(&call.super);
 
@@ -978,10 +978,10 @@ WINBASEAPI BOOL WINAPI FloodFill(HDC hdc, INT x, INT y, COLORREF color)
 {
     struct qemu_FloodFill call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FLOODFILL);
-    call.hdc = (uint64_t)hdc;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.color = (uint64_t)color;
+    call.hdc = (ULONG_PTR)hdc;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.color = (ULONG_PTR)color;
 
     qemu_syscall(&call.super);
 
@@ -1013,9 +1013,9 @@ WINBASEAPI BOOL WINAPI PolyBezier(HDC hdc, const POINT* lppt, DWORD cPoints)
 {
     struct qemu_PolyBezier call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POLYBEZIER);
-    call.hdc = (uint64_t)hdc;
-    call.lppt = (uint64_t)lppt;
-    call.cPoints = (uint64_t)cPoints;
+    call.hdc = (ULONG_PTR)hdc;
+    call.lppt = (ULONG_PTR)lppt;
+    call.cPoints = (ULONG_PTR)cPoints;
 
     qemu_syscall(&call.super);
 
@@ -1047,9 +1047,9 @@ WINBASEAPI BOOL WINAPI PolyBezierTo(HDC hdc, const POINT* lppt, DWORD cPoints)
 {
     struct qemu_PolyBezierTo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POLYBEZIERTO);
-    call.hdc = (uint64_t)hdc;
-    call.lppt = (uint64_t)lppt;
-    call.cPoints = (uint64_t)cPoints;
+    call.hdc = (ULONG_PTR)hdc;
+    call.lppt = (ULONG_PTR)lppt;
+    call.cPoints = (ULONG_PTR)cPoints;
 
     qemu_syscall(&call.super);
 
@@ -1084,7 +1084,7 @@ WINBASEAPI BOOL WINAPI AngleArc(HDC hdc, INT x, INT y, DWORD dwRadius, FLOAT eSt
 {
     struct qemu_AngleArc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ANGLEARC);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
     call.x = x;
     call.y = y;
     call.dwRadius = dwRadius;
@@ -1122,10 +1122,10 @@ WINBASEAPI BOOL WINAPI PolyDraw(HDC hdc, const POINT *lppt, const BYTE *lpbTypes
 {
     struct qemu_PolyDraw call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POLYDRAW);
-    call.hdc = (uint64_t)hdc;
-    call.lppt = (uint64_t)lppt;
-    call.lpbTypes = (uint64_t)lpbTypes;
-    call.cCount = (uint64_t)cCount;
+    call.hdc = (ULONG_PTR)hdc;
+    call.lppt = (ULONG_PTR)lppt;
+    call.lpbTypes = (ULONG_PTR)lpbTypes;
+    call.cCount = (ULONG_PTR)cCount;
 
     qemu_syscall(&call.super);
 
@@ -1166,7 +1166,7 @@ struct qemu_LineDDA_cb
 
 static uint64_t LineDDA_guest_cb(struct qemu_LineDDA_cb *data)
 {
-    LINEDDAPROC proc = (LINEDDAPROC)data->proc;
+    LINEDDAPROC proc = (LINEDDAPROC)(ULONG_PTR)data->proc;
     proc(data->x, data->y, data->param);
 }
 
@@ -1178,9 +1178,9 @@ WINBASEAPI BOOL WINAPI LineDDA(INT nXStart, INT nYStart, INT nXEnd, INT nYEnd, L
     call.nYStart = nYStart;
     call.nXEnd = nXEnd;
     call.nYEnd = nYEnd;
-    call.callback = (uint64_t)callback;
+    call.callback = (ULONG_PTR)callback;
     call.lParam = lParam;
-    call.wrapper = (uint64_t)LineDDA_guest_cb;
+    call.wrapper = (ULONG_PTR)LineDDA_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -1244,12 +1244,12 @@ WINBASEAPI BOOL WINAPI GdiGradientFill(HDC hdc, TRIVERTEX *vert_array, ULONG nve
 {
     struct qemu_GdiGradientFill call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDIGRADIENTFILL);
-    call.hdc = (uint64_t)hdc;
-    call.vert_array = (uint64_t)vert_array;
-    call.nvert = (uint64_t)nvert;
-    call.grad_array = (uint64_t)grad_array;
-    call.ngrad = (uint64_t)ngrad;
-    call.mode = (uint64_t)mode;
+    call.hdc = (ULONG_PTR)hdc;
+    call.vert_array = (ULONG_PTR)vert_array;
+    call.nvert = (ULONG_PTR)nvert;
+    call.grad_array = (ULONG_PTR)grad_array;
+    call.ngrad = (ULONG_PTR)ngrad;
+    call.mode = (ULONG_PTR)mode;
 
     qemu_syscall(&call.super);
 
@@ -1281,9 +1281,9 @@ WINBASEAPI BOOL WINAPI GdiDrawStream(HDC hdc, ULONG in, void * pvin)
 {
     struct qemu_GdiDrawStream call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDIDRAWSTREAM);
-    call.hdc = (uint64_t)hdc;
-    call.in = (uint64_t)in;
-    call.pvin = (uint64_t)pvin;
+    call.hdc = (ULONG_PTR)hdc;
+    call.in = (ULONG_PTR)in;
+    call.pvin = (ULONG_PTR)pvin;
 
     qemu_syscall(&call.super);
 

@@ -55,19 +55,19 @@ WINBASEAPI INT WINAPI StretchDIBits(HDC hdc, INT xDst, INT yDst, INT widthDst, I
 {
     struct qemu_StretchDIBits call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRETCHDIBITS);
-    call.hdc = (uint64_t)hdc;
-    call.xDst = (uint64_t)xDst;
-    call.yDst = (uint64_t)yDst;
-    call.widthDst = (uint64_t)widthDst;
-    call.heightDst = (uint64_t)heightDst;
-    call.xSrc = (uint64_t)xSrc;
-    call.ySrc = (uint64_t)ySrc;
-    call.widthSrc = (uint64_t)widthSrc;
-    call.heightSrc = (uint64_t)heightSrc;
-    call.bits = (uint64_t)bits;
-    call.bmi = (uint64_t)bmi;
-    call.coloruse = (uint64_t)coloruse;
-    call.rop = (uint64_t)rop;
+    call.hdc = (ULONG_PTR)hdc;
+    call.xDst = (ULONG_PTR)xDst;
+    call.yDst = (ULONG_PTR)yDst;
+    call.widthDst = (ULONG_PTR)widthDst;
+    call.heightDst = (ULONG_PTR)heightDst;
+    call.xSrc = (ULONG_PTR)xSrc;
+    call.ySrc = (ULONG_PTR)ySrc;
+    call.widthSrc = (ULONG_PTR)widthSrc;
+    call.heightSrc = (ULONG_PTR)heightSrc;
+    call.bits = (ULONG_PTR)bits;
+    call.bmi = (ULONG_PTR)bmi;
+    call.coloruse = (ULONG_PTR)coloruse;
+    call.rop = (ULONG_PTR)rop;
 
     qemu_syscall(&call.super);
 
@@ -103,12 +103,12 @@ WINBASEAPI INT WINAPI SetDIBits(HDC hdc, HBITMAP hbitmap, UINT startscan, UINT l
 {
     struct qemu_SetDIBits call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETDIBITS);
-    call.hdc = (uint64_t)hdc;
-    call.hbitmap = (uint64_t)hbitmap;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hbitmap = (ULONG_PTR)hbitmap;
     call.startscan = startscan;
     call.lines = lines;
-    call.bits = (uint64_t)bits;
-    call.info = (uint64_t)info;
+    call.bits = (ULONG_PTR)bits;
+    call.info = (ULONG_PTR)info;
     call.coloruse = coloruse;
 
     qemu_syscall(&call.super);
@@ -150,18 +150,18 @@ WINBASEAPI INT WINAPI SetDIBitsToDevice(HDC hdc, INT xDest, INT yDest, DWORD cx,
 {
     struct qemu_SetDIBitsToDevice call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETDIBITSTODEVICE);
-    call.hdc = (uint64_t)hdc;
-    call.xDest = (uint64_t)xDest;
-    call.yDest = (uint64_t)yDest;
-    call.cx = (uint64_t)cx;
-    call.cy = (uint64_t)cy;
-    call.xSrc = (uint64_t)xSrc;
-    call.ySrc = (uint64_t)ySrc;
-    call.startscan = (uint64_t)startscan;
-    call.lines = (uint64_t)lines;
-    call.bits = (uint64_t)bits;
-    call.bmi = (uint64_t)bmi;
-    call.coloruse = (uint64_t)coloruse;
+    call.hdc = (ULONG_PTR)hdc;
+    call.xDest = (ULONG_PTR)xDest;
+    call.yDest = (ULONG_PTR)yDest;
+    call.cx = (ULONG_PTR)cx;
+    call.cy = (ULONG_PTR)cy;
+    call.xSrc = (ULONG_PTR)xSrc;
+    call.ySrc = (ULONG_PTR)ySrc;
+    call.startscan = (ULONG_PTR)startscan;
+    call.lines = (ULONG_PTR)lines;
+    call.bits = (ULONG_PTR)bits;
+    call.bmi = (ULONG_PTR)bmi;
+    call.coloruse = (ULONG_PTR)coloruse;
 
     qemu_syscall(&call.super);
 
@@ -194,10 +194,10 @@ WINBASEAPI UINT WINAPI SetDIBColorTable(HDC hdc, UINT startpos, UINT entries, co
 {
     struct qemu_SetDIBColorTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETDIBCOLORTABLE);
-    call.hdc = (uint64_t)hdc;
-    call.startpos = (uint64_t)startpos;
-    call.entries = (uint64_t)entries;
-    call.colors = (uint64_t)colors;
+    call.hdc = (ULONG_PTR)hdc;
+    call.startpos = (ULONG_PTR)startpos;
+    call.entries = (ULONG_PTR)entries;
+    call.colors = (ULONG_PTR)colors;
 
     qemu_syscall(&call.super);
 
@@ -230,10 +230,10 @@ WINBASEAPI UINT WINAPI GetDIBColorTable(HDC hdc, UINT startpos, UINT entries, RG
 {
     struct qemu_GetDIBColorTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDIBCOLORTABLE);
-    call.hdc = (uint64_t)hdc;
-    call.startpos = (uint64_t)startpos;
-    call.entries = (uint64_t)entries;
-    call.colors = (uint64_t)colors;
+    call.hdc = (ULONG_PTR)hdc;
+    call.startpos = (ULONG_PTR)startpos;
+    call.entries = (ULONG_PTR)entries;
+    call.colors = (ULONG_PTR)colors;
 
     qemu_syscall(&call.super);
 
@@ -269,13 +269,13 @@ WINBASEAPI INT WINAPI GetDIBits(HDC hdc, HBITMAP hbitmap, UINT startscan, UINT l
 {
     struct qemu_GetDIBits call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDIBITS);
-    call.hdc = (uint64_t)hdc;
-    call.hbitmap = (uint64_t)hbitmap;
-    call.startscan = (uint64_t)startscan;
-    call.lines = (uint64_t)lines;
-    call.bits = (uint64_t)bits;
-    call.info = (uint64_t)info;
-    call.coloruse = (uint64_t)coloruse;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hbitmap = (ULONG_PTR)hbitmap;
+    call.startscan = (ULONG_PTR)startscan;
+    call.lines = (ULONG_PTR)lines;
+    call.bits = (ULONG_PTR)bits;
+    call.info = (ULONG_PTR)info;
+    call.coloruse = (ULONG_PTR)coloruse;
 
     qemu_syscall(&call.super);
 
@@ -310,16 +310,16 @@ WINBASEAPI HBITMAP WINAPI CreateDIBitmap(HDC hdc, const BITMAPINFOHEADER *header
 {
     struct qemu_CreateDIBitmap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDIBITMAP);
-    call.hdc = (uint64_t)hdc;
-    call.header = (uint64_t)header;
-    call.init = (uint64_t)init;
-    call.bits = (uint64_t)bits;
-    call.data = (uint64_t)data;
-    call.coloruse = (uint64_t)coloruse;
+    call.hdc = (ULONG_PTR)hdc;
+    call.header = (ULONG_PTR)header;
+    call.init = (ULONG_PTR)init;
+    call.bits = (ULONG_PTR)bits;
+    call.data = (ULONG_PTR)data;
+    call.coloruse = (ULONG_PTR)coloruse;
 
     qemu_syscall(&call.super);
 
-    return (HBITMAP)call.super.iret;
+    return (HBITMAP)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -328,7 +328,7 @@ void qemu_CreateDIBitmap(struct qemu_syscall *call)
 {
     struct qemu_CreateDIBitmap *c = (struct qemu_CreateDIBitmap *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateDIBitmap(QEMU_G2H(c->hdc), QEMU_G2H(c->header), c->init, QEMU_G2H(c->bits), QEMU_G2H(c->data), c->coloruse);
+    c->super.iret = (ULONG_PTR)CreateDIBitmap(QEMU_G2H(c->hdc), QEMU_G2H(c->header), c->init, QEMU_G2H(c->bits), QEMU_G2H(c->data), c->coloruse);
 }
 
 #endif
@@ -350,16 +350,16 @@ WINBASEAPI HBITMAP WINAPI CreateDIBSection(HDC hdc, const BITMAPINFO *bmi, UINT 
 {
     struct qemu_CreateDIBSection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDIBSECTION);
-    call.hdc = (uint64_t)hdc;
-    call.bmi = (uint64_t)bmi;
+    call.hdc = (ULONG_PTR)hdc;
+    call.bmi = (ULONG_PTR)bmi;
     call.usage = usage;
-    call.bits = (uint64_t)bits;
-    call.section = (uint64_t)section;
+    call.bits = (ULONG_PTR)bits;
+    call.section = (ULONG_PTR)section;
     call.offset = offset;
 
     qemu_syscall(&call.super);
 
-    return (HBITMAP)call.super.iret;
+    return (HBITMAP)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -368,7 +368,7 @@ void qemu_CreateDIBSection(struct qemu_syscall *call)
 {
     struct qemu_CreateDIBSection *c = (struct qemu_CreateDIBSection *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateDIBSection((HDC)c->hdc, QEMU_G2H(c->bmi), c->usage, QEMU_G2H(c->bits), (HANDLE)c->section, c->offset);
+    c->super.iret = (ULONG_PTR)CreateDIBSection((HDC)c->hdc, QEMU_G2H(c->bmi), c->usage, QEMU_G2H(c->bits), (HANDLE)c->section, c->offset);
 }
 
 #endif
@@ -385,7 +385,7 @@ WINBASEAPI NTSTATUS WINAPI D3DKMTCreateDCFromMemory(void *desc)
 {
     struct qemu_D3DKMTCreateDCFromMemory call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3DKMTCREATEDCFROMMEMORY);
-    call.desc = (uint64_t)desc;
+    call.desc = (ULONG_PTR)desc;
 
     qemu_syscall(&call.super);
 
@@ -417,7 +417,7 @@ WINBASEAPI NTSTATUS WINAPI D3DKMTDestroyDCFromMemory(const void *desc)
 {
     struct qemu_D3DKMTDestroyDCFromMemory call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3DKMTDESTROYDCFROMMEMORY);
-    call.desc = (uint64_t)desc;
+    call.desc = (ULONG_PTR)desc;
 
     qemu_syscall(&call.super);
 

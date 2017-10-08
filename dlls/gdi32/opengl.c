@@ -44,8 +44,8 @@ WINBASEAPI INT WINAPI ChoosePixelFormat(HDC hdc, const PIXELFORMATDESCRIPTOR *pf
 {
     struct qemu_ChoosePixelFormat call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHOOSEPIXELFORMAT);
-    call.hdc = (uint64_t)hdc;
-    call.pfd = (uint64_t)pfd;
+    call.hdc = (ULONG_PTR)hdc;
+    call.pfd = (ULONG_PTR)pfd;
 
     qemu_syscall(&call.super);
 
@@ -78,10 +78,10 @@ WINBASEAPI INT WINAPI DescribePixelFormat(HDC hdc, INT fmt, UINT size, PIXELFORM
 {
     struct qemu_DescribePixelFormat call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DESCRIBEPIXELFORMAT);
-    call.hdc = (uint64_t)hdc;
-    call.fmt = (uint64_t)fmt;
-    call.size = (uint64_t)size;
-    call.pfd = (uint64_t)pfd;
+    call.hdc = (ULONG_PTR)hdc;
+    call.fmt = (ULONG_PTR)fmt;
+    call.size = (ULONG_PTR)size;
+    call.pfd = (ULONG_PTR)pfd;
 
     qemu_syscall(&call.super);
 
@@ -111,7 +111,7 @@ WINBASEAPI INT WINAPI GetPixelFormat(HDC hdc)
 {
     struct qemu_GetPixelFormat call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPIXELFORMAT);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -143,9 +143,9 @@ WINBASEAPI BOOL WINAPI SetPixelFormat(HDC hdc, INT fmt, const PIXELFORMATDESCRIP
 {
     struct qemu_SetPixelFormat call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPIXELFORMAT);
-    call.hdc = (uint64_t)hdc;
-    call.fmt = (uint64_t)fmt;
-    call.pfd = (uint64_t)pfd;
+    call.hdc = (ULONG_PTR)hdc;
+    call.fmt = (ULONG_PTR)fmt;
+    call.pfd = (ULONG_PTR)pfd;
 
     qemu_syscall(&call.super);
 
@@ -175,7 +175,7 @@ WINBASEAPI BOOL WINAPI SwapBuffers(HDC hdc)
 {
     struct qemu_SwapBuffers call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SWAPBUFFERS);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 

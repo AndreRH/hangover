@@ -43,7 +43,7 @@ WINGDIAPI BOOL WINAPI DeleteMetaFile(HMETAFILE hmf)
 {
     struct qemu_DeleteMetaFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETEMETAFILE);
-    call.hmf = (uint64_t)hmf;
+    call.hmf = (ULONG_PTR)hmf;
 
     qemu_syscall(&call.super);
 
@@ -73,11 +73,11 @@ WINGDIAPI HMETAFILE WINAPI GetMetaFileA(LPCSTR lpFilename)
 {
     struct qemu_GetMetaFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMETAFILEA);
-    call.lpFilename = (uint64_t)lpFilename;
+    call.lpFilename = (ULONG_PTR)lpFilename;
 
     qemu_syscall(&call.super);
 
-    return (HMETAFILE)call.super.iret;
+    return (HMETAFILE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -86,7 +86,7 @@ void qemu_GetMetaFileA(struct qemu_syscall *call)
 {
     struct qemu_GetMetaFileA *c = (struct qemu_GetMetaFileA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GetMetaFileA(QEMU_G2H(c->lpFilename));
+    c->super.iret = (ULONG_PTR)GetMetaFileA(QEMU_G2H(c->lpFilename));
 }
 
 #endif
@@ -103,11 +103,11 @@ WINGDIAPI HMETAFILE WINAPI GetMetaFileW(LPCWSTR lpFilename)
 {
     struct qemu_GetMetaFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMETAFILEW);
-    call.lpFilename = (uint64_t)lpFilename;
+    call.lpFilename = (ULONG_PTR)lpFilename;
 
     qemu_syscall(&call.super);
 
-    return (HMETAFILE)call.super.iret;
+    return (HMETAFILE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -116,7 +116,7 @@ void qemu_GetMetaFileW(struct qemu_syscall *call)
 {
     struct qemu_GetMetaFileW *c = (struct qemu_GetMetaFileW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GetMetaFileW(QEMU_G2H(c->lpFilename));
+    c->super.iret = (ULONG_PTR)GetMetaFileW(QEMU_G2H(c->lpFilename));
 }
 
 #endif
@@ -134,12 +134,12 @@ WINGDIAPI HMETAFILE WINAPI CopyMetaFileW(HMETAFILE hSrcMetaFile, LPCWSTR lpFilen
 {
     struct qemu_CopyMetaFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COPYMETAFILEW);
-    call.hSrcMetaFile = (uint64_t)hSrcMetaFile;
-    call.lpFilename = (uint64_t)lpFilename;
+    call.hSrcMetaFile = (ULONG_PTR)hSrcMetaFile;
+    call.lpFilename = (ULONG_PTR)lpFilename;
 
     qemu_syscall(&call.super);
 
-    return (HMETAFILE)call.super.iret;
+    return (HMETAFILE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -148,7 +148,7 @@ void qemu_CopyMetaFileW(struct qemu_syscall *call)
 {
     struct qemu_CopyMetaFileW *c = (struct qemu_CopyMetaFileW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CopyMetaFileW(QEMU_G2H(c->hSrcMetaFile), QEMU_G2H(c->lpFilename));
+    c->super.iret = (ULONG_PTR)CopyMetaFileW(QEMU_G2H(c->hSrcMetaFile), QEMU_G2H(c->lpFilename));
 }
 
 #endif
@@ -166,12 +166,12 @@ WINGDIAPI HMETAFILE WINAPI CopyMetaFileA(HMETAFILE hSrcMetaFile, LPCSTR lpFilena
 {
     struct qemu_CopyMetaFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COPYMETAFILEA);
-    call.hSrcMetaFile = (uint64_t)hSrcMetaFile;
-    call.lpFilename = (uint64_t)lpFilename;
+    call.hSrcMetaFile = (ULONG_PTR)hSrcMetaFile;
+    call.lpFilename = (ULONG_PTR)lpFilename;
 
     qemu_syscall(&call.super);
 
-    return (HMETAFILE)call.super.iret;
+    return (HMETAFILE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -180,7 +180,7 @@ void qemu_CopyMetaFileA(struct qemu_syscall *call)
 {
     struct qemu_CopyMetaFileA *c = (struct qemu_CopyMetaFileA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CopyMetaFileA(QEMU_G2H(c->hSrcMetaFile), QEMU_G2H(c->lpFilename));
+    c->super.iret = (ULONG_PTR)CopyMetaFileA(QEMU_G2H(c->hSrcMetaFile), QEMU_G2H(c->lpFilename));
 }
 
 #endif
@@ -198,8 +198,8 @@ WINGDIAPI BOOL WINAPI PlayMetaFile(HDC hdc, HMETAFILE hmf)
 {
     struct qemu_PlayMetaFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PLAYMETAFILE);
-    call.hdc = (uint64_t)hdc;
-    call.hmf = (uint64_t)hmf;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hmf = (ULONG_PTR)hmf;
 
     qemu_syscall(&call.super);
 
@@ -246,19 +246,19 @@ struct qemu_EnumMetaFile_cb
 
 static uint64_t EnumMetaFile_guest_cb(struct qemu_EnumMetaFile_cb *data)
 {
-    MFENUMPROC proc = (MFENUMPROC)data->proc;
-    return proc((HDC)data->dc, (HANDLETABLE *)data->handle_table, (METARECORD *)data->emr, data->n_objs, data->param);
+    MFENUMPROC proc = (MFENUMPROC)(ULONG_PTR)data->proc;
+    return proc((HDC)(ULONG_PTR)data->dc, (HANDLETABLE *)(ULONG_PTR)data->handle_table, (METARECORD *)(ULONG_PTR)data->emr, data->n_objs, data->param);
 }
 
 WINGDIAPI BOOL WINAPI EnumMetaFile(HDC hdc, HMETAFILE hmf, MFENUMPROC lpEnumFunc, LPARAM lpData)
 {
     struct qemu_EnumMetaFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMMETAFILE);
-    call.hdc = (uint64_t)hdc;
-    call.hmf = (uint64_t)hmf;
-    call.lpEnumFunc = (uint64_t)lpEnumFunc;
-    call.lpData = (uint64_t)lpData;
-    call.wrapper = (uint64_t)EnumMetaFile_guest_cb;
+    call.hdc = (ULONG_PTR)hdc;
+    call.hmf = (ULONG_PTR)hmf;
+    call.lpEnumFunc = (ULONG_PTR)lpEnumFunc;
+    call.lpData = (ULONG_PTR)lpData;
+    call.wrapper = (ULONG_PTR)EnumMetaFile_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -283,7 +283,7 @@ static int CALLBACK qemu_EnumEnhMetaFile_host_cb(HDC hdc, HANDLETABLE *handle_ta
     WINE_TRACE("Calling guest callback 0x%lx(%p, %p, %p, %d, 0x%lx).\n", data->guest_func, hdc,
             handle_table, emr, n_objs, data->guest_data);
     call.proc = data->guest_func;
-    call.dc = (uint64_t)hdc;
+    call.dc = (ULONG_PTR)hdc;
     call.handle_table = QEMU_H2G(handle_table);
     call.emr = QEMU_H2G(emr);
     call.n_objs = n_objs;
@@ -325,10 +325,10 @@ WINGDIAPI BOOL WINAPI PlayMetaFileRecord(HDC hdc, HANDLETABLE *ht, METARECORD *m
 {
     struct qemu_PlayMetaFileRecord call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PLAYMETAFILERECORD);
-    call.hdc = (uint64_t)hdc;
-    call.ht = (uint64_t)ht;
-    call.mr = (uint64_t)mr;
-    call.handles = (uint64_t)handles;
+    call.hdc = (ULONG_PTR)hdc;
+    call.ht = (ULONG_PTR)ht;
+    call.mr = (ULONG_PTR)mr;
+    call.handles = (ULONG_PTR)handles;
 
     qemu_syscall(&call.super);
 
@@ -359,12 +359,12 @@ WINGDIAPI HMETAFILE WINAPI SetMetaFileBitsEx(UINT size, const BYTE *lpData)
 {
     struct qemu_SetMetaFileBitsEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMETAFILEBITSEX);
-    call.size = (uint64_t)size;
-    call.lpData = (uint64_t)lpData;
+    call.size = (ULONG_PTR)size;
+    call.lpData = (ULONG_PTR)lpData;
 
     qemu_syscall(&call.super);
 
-    return (HMETAFILE)call.super.iret;
+    return (HMETAFILE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -373,7 +373,7 @@ void qemu_SetMetaFileBitsEx(struct qemu_syscall *call)
 {
     struct qemu_SetMetaFileBitsEx *c = (struct qemu_SetMetaFileBitsEx *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)SetMetaFileBitsEx(c->size, QEMU_G2H(c->lpData));
+    c->super.iret = (ULONG_PTR)SetMetaFileBitsEx(c->size, QEMU_G2H(c->lpData));
 }
 
 #endif
@@ -392,9 +392,9 @@ WINGDIAPI UINT WINAPI GetMetaFileBitsEx(HMETAFILE hmf, UINT nSize, LPVOID buf)
 {
     struct qemu_GetMetaFileBitsEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMETAFILEBITSEX);
-    call.hmf = (uint64_t)hmf;
-    call.nSize = (uint64_t)nSize;
-    call.buf = (uint64_t)buf;
+    call.hmf = (ULONG_PTR)hmf;
+    call.nSize = (ULONG_PTR)nSize;
+    call.buf = (ULONG_PTR)buf;
 
     qemu_syscall(&call.super);
 
@@ -428,11 +428,11 @@ WINGDIAPI UINT WINAPI GetWinMetaFileBits(HENHMETAFILE hemf, UINT cbBuffer, LPBYT
 {
     struct qemu_GetWinMetaFileBits call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETWINMETAFILEBITS);
-    call.hemf = (uint64_t)hemf;
-    call.cbBuffer = (uint64_t)cbBuffer;
-    call.lpbBuffer = (uint64_t)lpbBuffer;
-    call.map_mode = (uint64_t)map_mode;
-    call.hdcRef = (uint64_t)hdcRef;
+    call.hemf = (ULONG_PTR)hemf;
+    call.cbBuffer = (ULONG_PTR)cbBuffer;
+    call.lpbBuffer = (ULONG_PTR)lpbBuffer;
+    call.map_mode = (ULONG_PTR)map_mode;
+    call.hdcRef = (ULONG_PTR)hdcRef;
 
     qemu_syscall(&call.super);
 

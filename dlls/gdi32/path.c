@@ -43,7 +43,7 @@ WINBASEAPI BOOL WINAPI BeginPath(HDC hdc)
 {
     struct qemu_BeginPath call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BEGINPATH);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -73,7 +73,7 @@ WINBASEAPI BOOL WINAPI EndPath(HDC hdc)
 {
     struct qemu_EndPath call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENDPATH);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -103,7 +103,7 @@ WINBASEAPI BOOL WINAPI AbortPath(HDC hdc)
 {
     struct qemu_AbortPath call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ABORTPATH);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -133,7 +133,7 @@ WINBASEAPI BOOL WINAPI CloseFigure(HDC hdc)
 {
     struct qemu_CloseFigure call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CLOSEFIGURE);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -166,10 +166,10 @@ WINBASEAPI INT WINAPI GetPath(HDC hdc, LPPOINT pPoints, LPBYTE pTypes, INT nSize
 {
     struct qemu_GetPath call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPATH);
-    call.hdc = (uint64_t)hdc;
-    call.pPoints = (uint64_t)pPoints;
-    call.pTypes = (uint64_t)pTypes;
-    call.nSize = (uint64_t)nSize;
+    call.hdc = (ULONG_PTR)hdc;
+    call.pPoints = (ULONG_PTR)pPoints;
+    call.pTypes = (ULONG_PTR)pTypes;
+    call.nSize = (ULONG_PTR)nSize;
 
     qemu_syscall(&call.super);
 
@@ -199,11 +199,11 @@ WINBASEAPI HRGN WINAPI PathToRegion(HDC hdc)
 {
     struct qemu_PathToRegion call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHTOREGION);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
-    return (HRGN)call.super.iret;
+    return (HRGN)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -212,7 +212,7 @@ void qemu_PathToRegion(struct qemu_syscall *call)
 {
     struct qemu_PathToRegion *c = (struct qemu_PathToRegion *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)PathToRegion(QEMU_G2H(c->hdc));
+    c->super.iret = (ULONG_PTR)PathToRegion(QEMU_G2H(c->hdc));
 }
 
 #endif
@@ -229,7 +229,7 @@ WINBASEAPI BOOL WINAPI FillPath(HDC hdc)
 {
     struct qemu_FillPath call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILLPATH);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -260,8 +260,8 @@ WINBASEAPI BOOL WINAPI SelectClipPath(HDC hdc, INT iMode)
 {
     struct qemu_SelectClipPath call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SELECTCLIPPATH);
-    call.hdc = (uint64_t)hdc;
-    call.iMode = (uint64_t)iMode;
+    call.hdc = (ULONG_PTR)hdc;
+    call.iMode = (ULONG_PTR)iMode;
 
     qemu_syscall(&call.super);
 
@@ -291,7 +291,7 @@ WINBASEAPI BOOL WINAPI FlattenPath(HDC hdc)
 {
     struct qemu_FlattenPath call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FLATTENPATH);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -321,7 +321,7 @@ WINBASEAPI BOOL WINAPI StrokeAndFillPath(HDC hdc)
 {
     struct qemu_StrokeAndFillPath call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STROKEANDFILLPATH);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -351,7 +351,7 @@ WINBASEAPI BOOL WINAPI StrokePath(HDC hdc)
 {
     struct qemu_StrokePath call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STROKEPATH);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
@@ -381,7 +381,7 @@ WINBASEAPI BOOL WINAPI WidenPath(HDC hdc)
 {
     struct qemu_WidenPath call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WIDENPATH);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 

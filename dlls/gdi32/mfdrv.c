@@ -43,11 +43,11 @@ WINBASEAPI HDC WINAPI CreateMetaFileW(LPCWSTR filename)
 {
     struct qemu_CreateMetaFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEMETAFILEW);
-    call.filename = (uint64_t)filename;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
-    return (HDC)call.super.iret;
+    return (HDC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -56,7 +56,7 @@ void qemu_CreateMetaFileW(struct qemu_syscall *call)
 {
     struct qemu_CreateMetaFileW *c = (struct qemu_CreateMetaFileW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateMetaFileW(QEMU_G2H(c->filename));
+    c->super.iret = (ULONG_PTR)CreateMetaFileW(QEMU_G2H(c->filename));
 }
 
 #endif
@@ -73,11 +73,11 @@ WINBASEAPI HDC WINAPI CreateMetaFileA(LPCSTR filename)
 {
     struct qemu_CreateMetaFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEMETAFILEA);
-    call.filename = (uint64_t)filename;
+    call.filename = (ULONG_PTR)filename;
 
     qemu_syscall(&call.super);
 
-    return (HDC)call.super.iret;
+    return (HDC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -86,7 +86,7 @@ void qemu_CreateMetaFileA(struct qemu_syscall *call)
 {
     struct qemu_CreateMetaFileA *c = (struct qemu_CreateMetaFileA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CreateMetaFileA(QEMU_G2H(c->filename));
+    c->super.iret = (ULONG_PTR)CreateMetaFileA(QEMU_G2H(c->filename));
 }
 
 #endif
@@ -103,11 +103,11 @@ WINBASEAPI HMETAFILE WINAPI CloseMetaFile(HDC hdc)
 {
     struct qemu_CloseMetaFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CLOSEMETAFILE);
-    call.hdc = (uint64_t)hdc;
+    call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
 
-    return (HMETAFILE)call.super.iret;
+    return (HMETAFILE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -116,7 +116,7 @@ void qemu_CloseMetaFile(struct qemu_syscall *call)
 {
     struct qemu_CloseMetaFile *c = (struct qemu_CloseMetaFile *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)CloseMetaFile(QEMU_G2H(c->hdc));
+    c->super.iret = (ULONG_PTR)CloseMetaFile(QEMU_G2H(c->hdc));
 }
 
 #endif

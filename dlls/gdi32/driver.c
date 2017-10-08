@@ -43,11 +43,11 @@ WINBASEAPI DEVMODEW * WINAPI GdiConvertToDevmodeW(const DEVMODEA *dmA)
 {
     struct qemu_GdiConvertToDevmodeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GDICONVERTTODEVMODEW);
-    call.dmA = (uint64_t)dmA;
+    call.dmA = (ULONG_PTR)dmA;
 
     qemu_syscall(&call.super);
 
-    return (DEVMODEW *)call.super.iret;
+    return (DEVMODEW *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -77,11 +77,11 @@ WINBASEAPI INT WINAPI Escape(HDC hdc, INT escape, INT in_count, LPCSTR in_data, 
 {
     struct qemu_Escape call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ESCAPE);
-    call.hdc = (uint64_t)hdc;
-    call.escape = (uint64_t)escape;
-    call.in_count = (uint64_t)in_count;
-    call.in_data = (uint64_t)in_data;
-    call.out_data = (uint64_t)out_data;
+    call.hdc = (ULONG_PTR)hdc;
+    call.escape = (ULONG_PTR)escape;
+    call.in_count = (ULONG_PTR)in_count;
+    call.in_data = (ULONG_PTR)in_data;
+    call.out_data = (ULONG_PTR)out_data;
 
     qemu_syscall(&call.super);
 
@@ -116,12 +116,12 @@ WINBASEAPI INT WINAPI ExtEscape(HDC hdc, INT nEscape, INT cbInput, LPCSTR lpszIn
 {
     struct qemu_ExtEscape call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXTESCAPE);
-    call.hdc = (uint64_t)hdc;
-    call.nEscape = (uint64_t)nEscape;
-    call.cbInput = (uint64_t)cbInput;
-    call.lpszInData = (uint64_t)lpszInData;
-    call.cbOutput = (uint64_t)cbOutput;
-    call.lpszOutData = (uint64_t)lpszOutData;
+    call.hdc = (ULONG_PTR)hdc;
+    call.nEscape = (ULONG_PTR)nEscape;
+    call.cbInput = (ULONG_PTR)cbInput;
+    call.lpszInData = (ULONG_PTR)lpszInData;
+    call.cbOutput = (ULONG_PTR)cbOutput;
+    call.lpszOutData = (ULONG_PTR)lpszOutData;
 
     qemu_syscall(&call.super);
 
@@ -154,10 +154,10 @@ WINBASEAPI INT WINAPI DrawEscape(HDC hdc, INT nEscape, INT cbInput, LPCSTR lpszI
 {
     struct qemu_DrawEscape call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWESCAPE);
-    call.hdc = (uint64_t)hdc;
-    call.nEscape = (uint64_t)nEscape;
-    call.cbInput = (uint64_t)cbInput;
-    call.lpszInData = (uint64_t)lpszInData;
+    call.hdc = (ULONG_PTR)hdc;
+    call.nEscape = (ULONG_PTR)nEscape;
+    call.cbInput = (ULONG_PTR)cbInput;
+    call.lpszInData = (ULONG_PTR)lpszInData;
 
     qemu_syscall(&call.super);
 
@@ -193,13 +193,13 @@ WINBASEAPI INT WINAPI NamedEscape(HDC hdc, LPCWSTR pDriver, INT nEscape, INT cbI
 {
     struct qemu_NamedEscape call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NAMEDESCAPE);
-    call.hdc = (uint64_t)hdc;
-    call.pDriver = (uint64_t)pDriver;
-    call.nEscape = (uint64_t)nEscape;
-    call.cbInput = (uint64_t)cbInput;
-    call.lpszInData = (uint64_t)lpszInData;
-    call.cbOutput = (uint64_t)cbOutput;
-    call.lpszOutData = (uint64_t)lpszOutData;
+    call.hdc = (ULONG_PTR)hdc;
+    call.pDriver = (ULONG_PTR)pDriver;
+    call.nEscape = (ULONG_PTR)nEscape;
+    call.cbInput = (ULONG_PTR)cbInput;
+    call.lpszInData = (ULONG_PTR)lpszInData;
+    call.cbOutput = (ULONG_PTR)cbOutput;
+    call.lpszOutData = (ULONG_PTR)lpszOutData;
 
     qemu_syscall(&call.super);
 
@@ -231,7 +231,7 @@ WINBASEAPI NTSTATUS WINAPI D3DKMTOpenAdapterFromHdc(void *pData)
 {
     struct qemu_D3DKMTOpenAdapterFromHdc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3DKMTOPENADAPTERFROMHDC);
-    call.pData = (uint64_t)pData;
+    call.pData = (ULONG_PTR)pData;
 
     qemu_syscall(&call.super);
 
@@ -263,7 +263,7 @@ WINBASEAPI NTSTATUS WINAPI D3DKMTEscape(const void *pData)
 {
     struct qemu_D3DKMTEscape call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3DKMTESCAPE);
-    call.pData = (uint64_t)pData;
+    call.pData = (ULONG_PTR)pData;
 
     qemu_syscall(&call.super);
 
