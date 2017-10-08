@@ -45,7 +45,7 @@ WINBASEAPI BOOL WINAPI StartServiceCtrlDispatcherA(const SERVICE_TABLE_ENTRYA *s
 {
     struct qemu_StartServiceCtrlDispatcherA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STARTSERVICECTRLDISPATCHERA);
-    call.servent = (uint64_t)servent;
+    call.servent = (ULONG_PTR)servent;
 
     qemu_syscall(&call.super);
 
@@ -75,7 +75,7 @@ WINBASEAPI BOOL WINAPI StartServiceCtrlDispatcherW(const SERVICE_TABLE_ENTRYW *s
 {
     struct qemu_StartServiceCtrlDispatcherW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STARTSERVICECTRLDISPATCHERW);
-    call.servent = (uint64_t)servent;
+    call.servent = (ULONG_PTR)servent;
 
     qemu_syscall(&call.super);
 
@@ -105,11 +105,11 @@ WINBASEAPI SC_LOCK WINAPI LockServiceDatabase (SC_HANDLE hSCManager)
 {
     struct qemu_LockServiceDatabase call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOCKSERVICEDATABASE);
-    call.hSCManager = (uint64_t)hSCManager;
+    call.hSCManager = (ULONG_PTR)hSCManager;
 
     qemu_syscall(&call.super);
 
-    return (SC_LOCK)call.super.iret;
+    return (SC_LOCK)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -118,7 +118,7 @@ void qemu_LockServiceDatabase(struct qemu_syscall *call)
 {
     struct qemu_LockServiceDatabase *c = (struct qemu_LockServiceDatabase *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)LockServiceDatabase(QEMU_G2H(c->hSCManager));
+    c->super.iret = (ULONG_PTR)LockServiceDatabase(QEMU_G2H(c->hSCManager));
 }
 
 #endif
@@ -135,7 +135,7 @@ WINBASEAPI BOOL WINAPI UnlockServiceDatabase (SC_LOCK ScLock)
 {
     struct qemu_UnlockServiceDatabase call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNLOCKSERVICEDATABASE);
-    call.ScLock = (uint64_t)ScLock;
+    call.ScLock = (ULONG_PTR)ScLock;
 
     qemu_syscall(&call.super);
 
@@ -166,8 +166,8 @@ WINBASEAPI BOOL WINAPI SetServiceStatus(SERVICE_STATUS_HANDLE hService, LPSERVIC
 {
     struct qemu_SetServiceStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSERVICESTATUS);
-    call.hService = (uint64_t)hService;
-    call.lpStatus = (uint64_t)lpStatus;
+    call.hService = (ULONG_PTR)hService;
+    call.lpStatus = (ULONG_PTR)lpStatus;
 
     qemu_syscall(&call.super);
 
@@ -199,13 +199,13 @@ WINBASEAPI SC_HANDLE WINAPI OpenSCManagerA(LPCSTR lpMachineName, LPCSTR lpDataba
 {
     struct qemu_OpenSCManagerA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENSCMANAGERA);
-    call.lpMachineName = (uint64_t)lpMachineName;
-    call.lpDatabaseName = (uint64_t)lpDatabaseName;
-    call.dwDesiredAccess = (uint64_t)dwDesiredAccess;
+    call.lpMachineName = (ULONG_PTR)lpMachineName;
+    call.lpDatabaseName = (ULONG_PTR)lpDatabaseName;
+    call.dwDesiredAccess = (ULONG_PTR)dwDesiredAccess;
 
     qemu_syscall(&call.super);
 
-    return (SC_HANDLE)call.super.iret;
+    return (SC_HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -214,7 +214,7 @@ void qemu_OpenSCManagerA(struct qemu_syscall *call)
 {
     struct qemu_OpenSCManagerA *c = (struct qemu_OpenSCManagerA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)OpenSCManagerA(QEMU_G2H(c->lpMachineName), QEMU_G2H(c->lpDatabaseName), c->dwDesiredAccess);
+    c->super.iret = (ULONG_PTR)OpenSCManagerA(QEMU_G2H(c->lpMachineName), QEMU_G2H(c->lpDatabaseName), c->dwDesiredAccess);
 }
 
 #endif
@@ -233,13 +233,13 @@ WINBASEAPI SC_HANDLE WINAPI OpenSCManagerW(LPCWSTR lpMachineName, LPCWSTR lpData
 {
     struct qemu_OpenSCManagerW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENSCMANAGERW);
-    call.lpMachineName = (uint64_t)lpMachineName;
-    call.lpDatabaseName = (uint64_t)lpDatabaseName;
-    call.dwDesiredAccess = (uint64_t)dwDesiredAccess;
+    call.lpMachineName = (ULONG_PTR)lpMachineName;
+    call.lpDatabaseName = (ULONG_PTR)lpDatabaseName;
+    call.dwDesiredAccess = (ULONG_PTR)dwDesiredAccess;
 
     qemu_syscall(&call.super);
 
-    return (SC_HANDLE)call.super.iret;
+    return (SC_HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -248,7 +248,7 @@ void qemu_OpenSCManagerW(struct qemu_syscall *call)
 {
     struct qemu_OpenSCManagerW *c = (struct qemu_OpenSCManagerW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)OpenSCManagerW(QEMU_G2H(c->lpMachineName), QEMU_G2H(c->lpDatabaseName), c->dwDesiredAccess);
+    c->super.iret = (ULONG_PTR)OpenSCManagerW(QEMU_G2H(c->lpMachineName), QEMU_G2H(c->lpDatabaseName), c->dwDesiredAccess);
 }
 
 #endif
@@ -267,9 +267,9 @@ WINBASEAPI BOOL WINAPI ControlService(SC_HANDLE hService, DWORD dwControl, LPSER
 {
     struct qemu_ControlService call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONTROLSERVICE);
-    call.hService = (uint64_t)hService;
-    call.dwControl = (uint64_t)dwControl;
-    call.lpServiceStatus = (uint64_t)lpServiceStatus;
+    call.hService = (ULONG_PTR)hService;
+    call.dwControl = (ULONG_PTR)dwControl;
+    call.lpServiceStatus = (ULONG_PTR)lpServiceStatus;
 
     qemu_syscall(&call.super);
 
@@ -299,7 +299,7 @@ WINBASEAPI BOOL WINAPI CloseServiceHandle(SC_HANDLE hSCObject)
 {
     struct qemu_CloseServiceHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CLOSESERVICEHANDLE);
-    call.hSCObject = (uint64_t)hSCObject;
+    call.hSCObject = (ULONG_PTR)hSCObject;
 
     qemu_syscall(&call.super);
 
@@ -331,13 +331,13 @@ WINBASEAPI SC_HANDLE WINAPI OpenServiceA(SC_HANDLE hSCManager, LPCSTR lpServiceN
 {
     struct qemu_OpenServiceA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENSERVICEA);
-    call.hSCManager = (uint64_t)hSCManager;
-    call.lpServiceName = (uint64_t)lpServiceName;
-    call.dwDesiredAccess = (uint64_t)dwDesiredAccess;
+    call.hSCManager = (ULONG_PTR)hSCManager;
+    call.lpServiceName = (ULONG_PTR)lpServiceName;
+    call.dwDesiredAccess = (ULONG_PTR)dwDesiredAccess;
 
     qemu_syscall(&call.super);
 
-    return (SC_HANDLE)call.super.iret;
+    return (SC_HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -346,7 +346,7 @@ void qemu_OpenServiceA(struct qemu_syscall *call)
 {
     struct qemu_OpenServiceA *c = (struct qemu_OpenServiceA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)OpenServiceA(QEMU_G2H(c->hSCManager), QEMU_G2H(c->lpServiceName), c->dwDesiredAccess);
+    c->super.iret = (ULONG_PTR)OpenServiceA(QEMU_G2H(c->hSCManager), QEMU_G2H(c->lpServiceName), c->dwDesiredAccess);
 }
 
 #endif
@@ -365,13 +365,13 @@ WINBASEAPI SC_HANDLE WINAPI OpenServiceW(SC_HANDLE hSCManager, LPCWSTR lpService
 {
     struct qemu_OpenServiceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENSERVICEW);
-    call.hSCManager = (uint64_t)hSCManager;
-    call.lpServiceName = (uint64_t)lpServiceName;
-    call.dwDesiredAccess = (uint64_t)dwDesiredAccess;
+    call.hSCManager = (ULONG_PTR)hSCManager;
+    call.lpServiceName = (ULONG_PTR)lpServiceName;
+    call.dwDesiredAccess = (ULONG_PTR)dwDesiredAccess;
 
     qemu_syscall(&call.super);
 
-    return (SC_HANDLE)call.super.iret;
+    return (SC_HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -380,7 +380,7 @@ void qemu_OpenServiceW(struct qemu_syscall *call)
 {
     struct qemu_OpenServiceW *c = (struct qemu_OpenServiceW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)OpenServiceW(QEMU_G2H(c->hSCManager), QEMU_G2H(c->lpServiceName), c->dwDesiredAccess);
+    c->super.iret = (ULONG_PTR)OpenServiceW(QEMU_G2H(c->hSCManager), QEMU_G2H(c->lpServiceName), c->dwDesiredAccess);
 }
 
 #endif
@@ -409,23 +409,23 @@ WINBASEAPI SC_HANDLE WINAPI CreateServiceW(SC_HANDLE hSCManager, LPCWSTR lpServi
 {
     struct qemu_CreateServiceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATESERVICEW);
-    call.hSCManager = (uint64_t)hSCManager;
-    call.lpServiceName = (uint64_t)lpServiceName;
-    call.lpDisplayName = (uint64_t)lpDisplayName;
-    call.dwDesiredAccess = (uint64_t)dwDesiredAccess;
-    call.dwServiceType = (uint64_t)dwServiceType;
-    call.dwStartType = (uint64_t)dwStartType;
-    call.dwErrorControl = (uint64_t)dwErrorControl;
-    call.lpBinaryPathName = (uint64_t)lpBinaryPathName;
-    call.lpLoadOrderGroup = (uint64_t)lpLoadOrderGroup;
-    call.lpdwTagId = (uint64_t)lpdwTagId;
-    call.lpDependencies = (uint64_t)lpDependencies;
-    call.lpServiceStartName = (uint64_t)lpServiceStartName;
-    call.lpPassword = (uint64_t)lpPassword;
+    call.hSCManager = (ULONG_PTR)hSCManager;
+    call.lpServiceName = (ULONG_PTR)lpServiceName;
+    call.lpDisplayName = (ULONG_PTR)lpDisplayName;
+    call.dwDesiredAccess = (ULONG_PTR)dwDesiredAccess;
+    call.dwServiceType = (ULONG_PTR)dwServiceType;
+    call.dwStartType = (ULONG_PTR)dwStartType;
+    call.dwErrorControl = (ULONG_PTR)dwErrorControl;
+    call.lpBinaryPathName = (ULONG_PTR)lpBinaryPathName;
+    call.lpLoadOrderGroup = (ULONG_PTR)lpLoadOrderGroup;
+    call.lpdwTagId = (ULONG_PTR)lpdwTagId;
+    call.lpDependencies = (ULONG_PTR)lpDependencies;
+    call.lpServiceStartName = (ULONG_PTR)lpServiceStartName;
+    call.lpPassword = (ULONG_PTR)lpPassword;
 
     qemu_syscall(&call.super);
 
-    return (SC_HANDLE)call.super.iret;
+    return (SC_HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -434,7 +434,7 @@ void qemu_CreateServiceW(struct qemu_syscall *call)
 {
     struct qemu_CreateServiceW *c = (struct qemu_CreateServiceW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateServiceW(QEMU_G2H(c->hSCManager), QEMU_G2H(c->lpServiceName), QEMU_G2H(c->lpDisplayName), c->dwDesiredAccess, c->dwServiceType, c->dwStartType, c->dwErrorControl, QEMU_G2H(c->lpBinaryPathName), QEMU_G2H(c->lpLoadOrderGroup), QEMU_G2H(c->lpdwTagId), QEMU_G2H(c->lpDependencies), QEMU_G2H(c->lpServiceStartName), QEMU_G2H(c->lpPassword));
+    c->super.iret = (ULONG_PTR)CreateServiceW(QEMU_G2H(c->hSCManager), QEMU_G2H(c->lpServiceName), QEMU_G2H(c->lpDisplayName), c->dwDesiredAccess, c->dwServiceType, c->dwStartType, c->dwErrorControl, QEMU_G2H(c->lpBinaryPathName), QEMU_G2H(c->lpLoadOrderGroup), QEMU_G2H(c->lpdwTagId), QEMU_G2H(c->lpDependencies), QEMU_G2H(c->lpServiceStartName), QEMU_G2H(c->lpPassword));
 }
 
 #endif
@@ -463,23 +463,23 @@ WINBASEAPI SC_HANDLE WINAPI CreateServiceA(SC_HANDLE hSCManager, LPCSTR lpServic
 {
     struct qemu_CreateServiceA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATESERVICEA);
-    call.hSCManager = (uint64_t)hSCManager;
-    call.lpServiceName = (uint64_t)lpServiceName;
-    call.lpDisplayName = (uint64_t)lpDisplayName;
-    call.dwDesiredAccess = (uint64_t)dwDesiredAccess;
-    call.dwServiceType = (uint64_t)dwServiceType;
-    call.dwStartType = (uint64_t)dwStartType;
-    call.dwErrorControl = (uint64_t)dwErrorControl;
-    call.lpBinaryPathName = (uint64_t)lpBinaryPathName;
-    call.lpLoadOrderGroup = (uint64_t)lpLoadOrderGroup;
-    call.lpdwTagId = (uint64_t)lpdwTagId;
-    call.lpDependencies = (uint64_t)lpDependencies;
-    call.lpServiceStartName = (uint64_t)lpServiceStartName;
-    call.lpPassword = (uint64_t)lpPassword;
+    call.hSCManager = (ULONG_PTR)hSCManager;
+    call.lpServiceName = (ULONG_PTR)lpServiceName;
+    call.lpDisplayName = (ULONG_PTR)lpDisplayName;
+    call.dwDesiredAccess = (ULONG_PTR)dwDesiredAccess;
+    call.dwServiceType = (ULONG_PTR)dwServiceType;
+    call.dwStartType = (ULONG_PTR)dwStartType;
+    call.dwErrorControl = (ULONG_PTR)dwErrorControl;
+    call.lpBinaryPathName = (ULONG_PTR)lpBinaryPathName;
+    call.lpLoadOrderGroup = (ULONG_PTR)lpLoadOrderGroup;
+    call.lpdwTagId = (ULONG_PTR)lpdwTagId;
+    call.lpDependencies = (ULONG_PTR)lpDependencies;
+    call.lpServiceStartName = (ULONG_PTR)lpServiceStartName;
+    call.lpPassword = (ULONG_PTR)lpPassword;
 
     qemu_syscall(&call.super);
 
-    return (SC_HANDLE)call.super.iret;
+    return (SC_HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -488,7 +488,7 @@ void qemu_CreateServiceA(struct qemu_syscall *call)
 {
     struct qemu_CreateServiceA *c = (struct qemu_CreateServiceA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateServiceA(QEMU_G2H(c->hSCManager), QEMU_G2H(c->lpServiceName), QEMU_G2H(c->lpDisplayName), c->dwDesiredAccess, c->dwServiceType, c->dwStartType, c->dwErrorControl, QEMU_G2H(c->lpBinaryPathName), QEMU_G2H(c->lpLoadOrderGroup), QEMU_G2H(c->lpdwTagId), QEMU_G2H(c->lpDependencies), QEMU_G2H(c->lpServiceStartName), QEMU_G2H(c->lpPassword));
+    c->super.iret = (ULONG_PTR)CreateServiceA(QEMU_G2H(c->hSCManager), QEMU_G2H(c->lpServiceName), QEMU_G2H(c->lpDisplayName), c->dwDesiredAccess, c->dwServiceType, c->dwStartType, c->dwErrorControl, QEMU_G2H(c->lpBinaryPathName), QEMU_G2H(c->lpLoadOrderGroup), QEMU_G2H(c->lpdwTagId), QEMU_G2H(c->lpDependencies), QEMU_G2H(c->lpServiceStartName), QEMU_G2H(c->lpPassword));
 }
 
 #endif
@@ -505,7 +505,7 @@ WINBASEAPI BOOL WINAPI DeleteService(SC_HANDLE hService)
 {
     struct qemu_DeleteService call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETESERVICE);
-    call.hService = (uint64_t)hService;
+    call.hService = (ULONG_PTR)hService;
 
     qemu_syscall(&call.super);
 
@@ -537,9 +537,9 @@ WINBASEAPI BOOL WINAPI StartServiceA(SC_HANDLE hService, DWORD dwNumServiceArgs,
 {
     struct qemu_StartServiceA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STARTSERVICEA);
-    call.hService = (uint64_t)hService;
-    call.dwNumServiceArgs = (uint64_t)dwNumServiceArgs;
-    call.lpServiceArgVectors = (uint64_t)lpServiceArgVectors;
+    call.hService = (ULONG_PTR)hService;
+    call.dwNumServiceArgs = (ULONG_PTR)dwNumServiceArgs;
+    call.lpServiceArgVectors = (ULONG_PTR)lpServiceArgVectors;
 
     qemu_syscall(&call.super);
 
@@ -571,9 +571,9 @@ WINBASEAPI BOOL WINAPI StartServiceW(SC_HANDLE hService, DWORD dwNumServiceArgs,
 {
     struct qemu_StartServiceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STARTSERVICEW);
-    call.hService = (uint64_t)hService;
-    call.dwNumServiceArgs = (uint64_t)dwNumServiceArgs;
-    call.lpServiceArgVectors = (uint64_t)lpServiceArgVectors;
+    call.hService = (ULONG_PTR)hService;
+    call.dwNumServiceArgs = (ULONG_PTR)dwNumServiceArgs;
+    call.lpServiceArgVectors = (ULONG_PTR)lpServiceArgVectors;
 
     qemu_syscall(&call.super);
 
@@ -604,8 +604,8 @@ WINBASEAPI BOOL WINAPI QueryServiceStatus(SC_HANDLE hService, LPSERVICE_STATUS l
 {
     struct qemu_QueryServiceStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYSERVICESTATUS);
-    call.hService = (uint64_t)hService;
-    call.lpservicestatus = (uint64_t)lpservicestatus;
+    call.hService = (ULONG_PTR)hService;
+    call.lpservicestatus = (ULONG_PTR)lpservicestatus;
 
     qemu_syscall(&call.super);
 
@@ -639,11 +639,11 @@ WINBASEAPI BOOL WINAPI QueryServiceStatusEx(SC_HANDLE hService, SC_STATUS_TYPE I
 {
     struct qemu_QueryServiceStatusEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYSERVICESTATUSEX);
-    call.hService = (uint64_t)hService;
-    call.InfoLevel = (uint64_t)InfoLevel;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.cbBufSize = (uint64_t)cbBufSize;
-    call.pcbBytesNeeded = (uint64_t)pcbBytesNeeded;
+    call.hService = (ULONG_PTR)hService;
+    call.InfoLevel = (ULONG_PTR)InfoLevel;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.cbBufSize = (ULONG_PTR)cbBufSize;
+    call.pcbBytesNeeded = (ULONG_PTR)pcbBytesNeeded;
 
     qemu_syscall(&call.super);
 
@@ -676,10 +676,10 @@ WINBASEAPI BOOL WINAPI QueryServiceConfigA(SC_HANDLE hService, LPQUERY_SERVICE_C
 {
     struct qemu_QueryServiceConfigA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYSERVICECONFIGA);
-    call.hService = (uint64_t)hService;
-    call.config = (uint64_t)config;
-    call.size = (uint64_t)size;
-    call.needed = (uint64_t)needed;
+    call.hService = (ULONG_PTR)hService;
+    call.config = (ULONG_PTR)config;
+    call.size = (ULONG_PTR)size;
+    call.needed = (ULONG_PTR)needed;
 
     qemu_syscall(&call.super);
 
@@ -712,10 +712,10 @@ WINBASEAPI BOOL WINAPI QueryServiceConfigW(SC_HANDLE hService, LPQUERY_SERVICE_C
 {
     struct qemu_QueryServiceConfigW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYSERVICECONFIGW);
-    call.hService = (uint64_t)hService;
-    call.lpServiceConfig = (uint64_t)lpServiceConfig;
-    call.cbBufSize = (uint64_t)cbBufSize;
-    call.pcbBytesNeeded = (uint64_t)pcbBytesNeeded;
+    call.hService = (ULONG_PTR)hService;
+    call.lpServiceConfig = (ULONG_PTR)lpServiceConfig;
+    call.cbBufSize = (ULONG_PTR)cbBufSize;
+    call.pcbBytesNeeded = (ULONG_PTR)pcbBytesNeeded;
 
     qemu_syscall(&call.super);
 
@@ -749,11 +749,11 @@ WINBASEAPI BOOL WINAPI QueryServiceConfig2A(SC_HANDLE hService, DWORD dwLevel, L
 {
     struct qemu_QueryServiceConfig2A call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYSERVICECONFIG2A);
-    call.hService = (uint64_t)hService;
-    call.dwLevel = (uint64_t)dwLevel;
-    call.buffer = (uint64_t)buffer;
-    call.size = (uint64_t)size;
-    call.needed = (uint64_t)needed;
+    call.hService = (ULONG_PTR)hService;
+    call.dwLevel = (ULONG_PTR)dwLevel;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = (ULONG_PTR)size;
+    call.needed = (ULONG_PTR)needed;
 
     qemu_syscall(&call.super);
 
@@ -787,11 +787,11 @@ WINBASEAPI BOOL WINAPI QueryServiceConfig2W(SC_HANDLE hService, DWORD dwLevel, L
 {
     struct qemu_QueryServiceConfig2W call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYSERVICECONFIG2W);
-    call.hService = (uint64_t)hService;
-    call.dwLevel = (uint64_t)dwLevel;
-    call.buffer = (uint64_t)buffer;
-    call.size = (uint64_t)size;
-    call.needed = (uint64_t)needed;
+    call.hService = (ULONG_PTR)hService;
+    call.dwLevel = (ULONG_PTR)dwLevel;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = (ULONG_PTR)size;
+    call.needed = (ULONG_PTR)needed;
 
     qemu_syscall(&call.super);
 
@@ -828,14 +828,14 @@ WINBASEAPI BOOL WINAPI EnumServicesStatusA(SC_HANDLE hmngr, DWORD type, DWORD st
 {
     struct qemu_EnumServicesStatusA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMSERVICESSTATUSA);
-    call.hmngr = (uint64_t)hmngr;
-    call.type = (uint64_t)type;
-    call.state = (uint64_t)state;
-    call.services = (uint64_t)services;
-    call.size = (uint64_t)size;
-    call.needed = (uint64_t)needed;
-    call.returned = (uint64_t)returned;
-    call.resume_handle = (uint64_t)resume_handle;
+    call.hmngr = (ULONG_PTR)hmngr;
+    call.type = (ULONG_PTR)type;
+    call.state = (ULONG_PTR)state;
+    call.services = (ULONG_PTR)services;
+    call.size = (ULONG_PTR)size;
+    call.needed = (ULONG_PTR)needed;
+    call.returned = (ULONG_PTR)returned;
+    call.resume_handle = (ULONG_PTR)resume_handle;
 
     qemu_syscall(&call.super);
 
@@ -872,14 +872,14 @@ WINBASEAPI BOOL WINAPI EnumServicesStatusW(SC_HANDLE hmngr, DWORD type, DWORD st
 {
     struct qemu_EnumServicesStatusW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMSERVICESSTATUSW);
-    call.hmngr = (uint64_t)hmngr;
-    call.type = (uint64_t)type;
-    call.state = (uint64_t)state;
-    call.services = (uint64_t)services;
-    call.size = (uint64_t)size;
-    call.needed = (uint64_t)needed;
-    call.returned = (uint64_t)returned;
-    call.resume_handle = (uint64_t)resume_handle;
+    call.hmngr = (ULONG_PTR)hmngr;
+    call.type = (ULONG_PTR)type;
+    call.state = (ULONG_PTR)state;
+    call.services = (ULONG_PTR)services;
+    call.size = (ULONG_PTR)size;
+    call.needed = (ULONG_PTR)needed;
+    call.returned = (ULONG_PTR)returned;
+    call.resume_handle = (ULONG_PTR)resume_handle;
 
     qemu_syscall(&call.super);
 
@@ -918,16 +918,16 @@ WINBASEAPI BOOL WINAPI EnumServicesStatusExA(SC_HANDLE hmngr, SC_ENUM_TYPE level
 {
     struct qemu_EnumServicesStatusExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMSERVICESSTATUSEXA);
-    call.hmngr = (uint64_t)hmngr;
-    call.level = (uint64_t)level;
-    call.type = (uint64_t)type;
-    call.state = (uint64_t)state;
-    call.buffer = (uint64_t)buffer;
-    call.size = (uint64_t)size;
-    call.needed = (uint64_t)needed;
-    call.returned = (uint64_t)returned;
-    call.resume_handle = (uint64_t)resume_handle;
-    call.group = (uint64_t)group;
+    call.hmngr = (ULONG_PTR)hmngr;
+    call.level = (ULONG_PTR)level;
+    call.type = (ULONG_PTR)type;
+    call.state = (ULONG_PTR)state;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = (ULONG_PTR)size;
+    call.needed = (ULONG_PTR)needed;
+    call.returned = (ULONG_PTR)returned;
+    call.resume_handle = (ULONG_PTR)resume_handle;
+    call.group = (ULONG_PTR)group;
 
     qemu_syscall(&call.super);
 
@@ -966,16 +966,16 @@ WINBASEAPI BOOL WINAPI EnumServicesStatusExW(SC_HANDLE hmngr, SC_ENUM_TYPE level
 {
     struct qemu_EnumServicesStatusExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMSERVICESSTATUSEXW);
-    call.hmngr = (uint64_t)hmngr;
-    call.level = (uint64_t)level;
-    call.type = (uint64_t)type;
-    call.state = (uint64_t)state;
-    call.buffer = (uint64_t)buffer;
-    call.size = (uint64_t)size;
-    call.needed = (uint64_t)needed;
-    call.returned = (uint64_t)returned;
-    call.resume_handle = (uint64_t)resume_handle;
-    call.group = (uint64_t)group;
+    call.hmngr = (ULONG_PTR)hmngr;
+    call.level = (ULONG_PTR)level;
+    call.type = (ULONG_PTR)type;
+    call.state = (ULONG_PTR)state;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = (ULONG_PTR)size;
+    call.needed = (ULONG_PTR)needed;
+    call.returned = (ULONG_PTR)returned;
+    call.resume_handle = (ULONG_PTR)resume_handle;
+    call.group = (ULONG_PTR)group;
 
     qemu_syscall(&call.super);
 
@@ -1008,10 +1008,10 @@ WINBASEAPI BOOL WINAPI GetServiceKeyNameA(SC_HANDLE hSCManager, LPCSTR lpDisplay
 {
     struct qemu_GetServiceKeyNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSERVICEKEYNAMEA);
-    call.hSCManager = (uint64_t)hSCManager;
-    call.lpDisplayName = (uint64_t)lpDisplayName;
-    call.lpServiceName = (uint64_t)lpServiceName;
-    call.lpcchBuffer = (uint64_t)lpcchBuffer;
+    call.hSCManager = (ULONG_PTR)hSCManager;
+    call.lpDisplayName = (ULONG_PTR)lpDisplayName;
+    call.lpServiceName = (ULONG_PTR)lpServiceName;
+    call.lpcchBuffer = (ULONG_PTR)lpcchBuffer;
 
     qemu_syscall(&call.super);
 
@@ -1044,10 +1044,10 @@ WINBASEAPI BOOL WINAPI GetServiceKeyNameW(SC_HANDLE hSCManager, LPCWSTR lpDispla
 {
     struct qemu_GetServiceKeyNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSERVICEKEYNAMEW);
-    call.hSCManager = (uint64_t)hSCManager;
-    call.lpDisplayName = (uint64_t)lpDisplayName;
-    call.lpServiceName = (uint64_t)lpServiceName;
-    call.lpcchBuffer = (uint64_t)lpcchBuffer;
+    call.hSCManager = (ULONG_PTR)hSCManager;
+    call.lpDisplayName = (ULONG_PTR)lpDisplayName;
+    call.lpServiceName = (ULONG_PTR)lpServiceName;
+    call.lpcchBuffer = (ULONG_PTR)lpcchBuffer;
 
     qemu_syscall(&call.super);
 
@@ -1080,10 +1080,10 @@ WINBASEAPI BOOL WINAPI QueryServiceLockStatusA(SC_HANDLE hSCManager, LPQUERY_SER
 {
     struct qemu_QueryServiceLockStatusA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYSERVICELOCKSTATUSA);
-    call.hSCManager = (uint64_t)hSCManager;
-    call.lpLockStatus = (uint64_t)lpLockStatus;
-    call.cbBufSize = (uint64_t)cbBufSize;
-    call.pcbBytesNeeded = (uint64_t)pcbBytesNeeded;
+    call.hSCManager = (ULONG_PTR)hSCManager;
+    call.lpLockStatus = (ULONG_PTR)lpLockStatus;
+    call.cbBufSize = (ULONG_PTR)cbBufSize;
+    call.pcbBytesNeeded = (ULONG_PTR)pcbBytesNeeded;
 
     qemu_syscall(&call.super);
 
@@ -1116,10 +1116,10 @@ WINBASEAPI BOOL WINAPI QueryServiceLockStatusW(SC_HANDLE hSCManager, LPQUERY_SER
 {
     struct qemu_QueryServiceLockStatusW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYSERVICELOCKSTATUSW);
-    call.hSCManager = (uint64_t)hSCManager;
-    call.lpLockStatus = (uint64_t)lpLockStatus;
-    call.cbBufSize = (uint64_t)cbBufSize;
-    call.pcbBytesNeeded = (uint64_t)pcbBytesNeeded;
+    call.hSCManager = (ULONG_PTR)hSCManager;
+    call.lpLockStatus = (ULONG_PTR)lpLockStatus;
+    call.cbBufSize = (ULONG_PTR)cbBufSize;
+    call.pcbBytesNeeded = (ULONG_PTR)pcbBytesNeeded;
 
     qemu_syscall(&call.super);
 
@@ -1152,10 +1152,10 @@ WINBASEAPI BOOL WINAPI GetServiceDisplayNameA(SC_HANDLE hSCManager, LPCSTR lpSer
 {
     struct qemu_GetServiceDisplayNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSERVICEDISPLAYNAMEA);
-    call.hSCManager = (uint64_t)hSCManager;
-    call.lpServiceName = (uint64_t)lpServiceName;
-    call.lpDisplayName = (uint64_t)lpDisplayName;
-    call.lpcchBuffer = (uint64_t)lpcchBuffer;
+    call.hSCManager = (ULONG_PTR)hSCManager;
+    call.lpServiceName = (ULONG_PTR)lpServiceName;
+    call.lpDisplayName = (ULONG_PTR)lpDisplayName;
+    call.lpcchBuffer = (ULONG_PTR)lpcchBuffer;
 
     qemu_syscall(&call.super);
 
@@ -1188,10 +1188,10 @@ WINBASEAPI BOOL WINAPI GetServiceDisplayNameW(SC_HANDLE hSCManager, LPCWSTR lpSe
 {
     struct qemu_GetServiceDisplayNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSERVICEDISPLAYNAMEW);
-    call.hSCManager = (uint64_t)hSCManager;
-    call.lpServiceName = (uint64_t)lpServiceName;
-    call.lpDisplayName = (uint64_t)lpDisplayName;
-    call.lpcchBuffer = (uint64_t)lpcchBuffer;
+    call.hSCManager = (ULONG_PTR)hSCManager;
+    call.lpServiceName = (ULONG_PTR)lpServiceName;
+    call.lpDisplayName = (ULONG_PTR)lpDisplayName;
+    call.lpcchBuffer = (ULONG_PTR)lpcchBuffer;
 
     qemu_syscall(&call.super);
 
@@ -1231,17 +1231,17 @@ WINBASEAPI BOOL WINAPI ChangeServiceConfigW(SC_HANDLE hService, DWORD dwServiceT
 {
     struct qemu_ChangeServiceConfigW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGESERVICECONFIGW);
-    call.hService = (uint64_t)hService;
-    call.dwServiceType = (uint64_t)dwServiceType;
-    call.dwStartType = (uint64_t)dwStartType;
-    call.dwErrorControl = (uint64_t)dwErrorControl;
-    call.lpBinaryPathName = (uint64_t)lpBinaryPathName;
-    call.lpLoadOrderGroup = (uint64_t)lpLoadOrderGroup;
-    call.lpdwTagId = (uint64_t)lpdwTagId;
-    call.lpDependencies = (uint64_t)lpDependencies;
-    call.lpServiceStartName = (uint64_t)lpServiceStartName;
-    call.lpPassword = (uint64_t)lpPassword;
-    call.lpDisplayName = (uint64_t)lpDisplayName;
+    call.hService = (ULONG_PTR)hService;
+    call.dwServiceType = (ULONG_PTR)dwServiceType;
+    call.dwStartType = (ULONG_PTR)dwStartType;
+    call.dwErrorControl = (ULONG_PTR)dwErrorControl;
+    call.lpBinaryPathName = (ULONG_PTR)lpBinaryPathName;
+    call.lpLoadOrderGroup = (ULONG_PTR)lpLoadOrderGroup;
+    call.lpdwTagId = (ULONG_PTR)lpdwTagId;
+    call.lpDependencies = (ULONG_PTR)lpDependencies;
+    call.lpServiceStartName = (ULONG_PTR)lpServiceStartName;
+    call.lpPassword = (ULONG_PTR)lpPassword;
+    call.lpDisplayName = (ULONG_PTR)lpDisplayName;
 
     qemu_syscall(&call.super);
 
@@ -1281,17 +1281,17 @@ WINBASEAPI BOOL WINAPI ChangeServiceConfigA(SC_HANDLE hService, DWORD dwServiceT
 {
     struct qemu_ChangeServiceConfigA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGESERVICECONFIGA);
-    call.hService = (uint64_t)hService;
-    call.dwServiceType = (uint64_t)dwServiceType;
-    call.dwStartType = (uint64_t)dwStartType;
-    call.dwErrorControl = (uint64_t)dwErrorControl;
-    call.lpBinaryPathName = (uint64_t)lpBinaryPathName;
-    call.lpLoadOrderGroup = (uint64_t)lpLoadOrderGroup;
-    call.lpdwTagId = (uint64_t)lpdwTagId;
-    call.lpDependencies = (uint64_t)lpDependencies;
-    call.lpServiceStartName = (uint64_t)lpServiceStartName;
-    call.lpPassword = (uint64_t)lpPassword;
-    call.lpDisplayName = (uint64_t)lpDisplayName;
+    call.hService = (ULONG_PTR)hService;
+    call.dwServiceType = (ULONG_PTR)dwServiceType;
+    call.dwStartType = (ULONG_PTR)dwStartType;
+    call.dwErrorControl = (ULONG_PTR)dwErrorControl;
+    call.lpBinaryPathName = (ULONG_PTR)lpBinaryPathName;
+    call.lpLoadOrderGroup = (ULONG_PTR)lpLoadOrderGroup;
+    call.lpdwTagId = (ULONG_PTR)lpdwTagId;
+    call.lpDependencies = (ULONG_PTR)lpDependencies;
+    call.lpServiceStartName = (ULONG_PTR)lpServiceStartName;
+    call.lpPassword = (ULONG_PTR)lpPassword;
+    call.lpDisplayName = (ULONG_PTR)lpDisplayName;
 
     qemu_syscall(&call.super);
 
@@ -1323,9 +1323,9 @@ WINBASEAPI BOOL WINAPI ChangeServiceConfig2A(SC_HANDLE hService, DWORD dwInfoLev
 {
     struct qemu_ChangeServiceConfig2A call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGESERVICECONFIG2A);
-    call.hService = (uint64_t)hService;
-    call.dwInfoLevel = (uint64_t)dwInfoLevel;
-    call.lpInfo = (uint64_t)lpInfo;
+    call.hService = (ULONG_PTR)hService;
+    call.dwInfoLevel = (ULONG_PTR)dwInfoLevel;
+    call.lpInfo = (ULONG_PTR)lpInfo;
 
     qemu_syscall(&call.super);
 
@@ -1357,9 +1357,9 @@ WINBASEAPI BOOL WINAPI ChangeServiceConfig2W(SC_HANDLE hService, DWORD dwInfoLev
 {
     struct qemu_ChangeServiceConfig2W call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGESERVICECONFIG2W);
-    call.hService = (uint64_t)hService;
-    call.dwInfoLevel = (uint64_t)dwInfoLevel;
-    call.lpInfo = (uint64_t)lpInfo;
+    call.hService = (ULONG_PTR)hService;
+    call.dwInfoLevel = (ULONG_PTR)dwInfoLevel;
+    call.lpInfo = (ULONG_PTR)lpInfo;
 
     qemu_syscall(&call.super);
 
@@ -1393,11 +1393,11 @@ WINBASEAPI BOOL WINAPI QueryServiceObjectSecurity(SC_HANDLE hService, SECURITY_I
 {
     struct qemu_QueryServiceObjectSecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYSERVICEOBJECTSECURITY);
-    call.hService = (uint64_t)hService;
-    call.dwSecurityInformation = (uint64_t)dwSecurityInformation;
-    call.lpSecurityDescriptor = (uint64_t)lpSecurityDescriptor;
-    call.cbBufSize = (uint64_t)cbBufSize;
-    call.pcbBytesNeeded = (uint64_t)pcbBytesNeeded;
+    call.hService = (ULONG_PTR)hService;
+    call.dwSecurityInformation = (ULONG_PTR)dwSecurityInformation;
+    call.lpSecurityDescriptor = (ULONG_PTR)lpSecurityDescriptor;
+    call.cbBufSize = (ULONG_PTR)cbBufSize;
+    call.pcbBytesNeeded = (ULONG_PTR)pcbBytesNeeded;
 
     qemu_syscall(&call.super);
 
@@ -1429,9 +1429,9 @@ WINBASEAPI BOOL WINAPI SetServiceObjectSecurity(SC_HANDLE hService, SECURITY_INF
 {
     struct qemu_SetServiceObjectSecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSERVICEOBJECTSECURITY);
-    call.hService = (uint64_t)hService;
-    call.dwSecurityInformation = (uint64_t)dwSecurityInformation;
-    call.lpSecurityDescriptor = (uint64_t)lpSecurityDescriptor;
+    call.hService = (ULONG_PTR)hService;
+    call.dwSecurityInformation = (ULONG_PTR)dwSecurityInformation;
+    call.lpSecurityDescriptor = (ULONG_PTR)lpSecurityDescriptor;
 
     qemu_syscall(&call.super);
 
@@ -1464,10 +1464,10 @@ WINBASEAPI BOOL WINAPI SetServiceBits(SERVICE_STATUS_HANDLE hServiceStatus, DWOR
 {
     struct qemu_SetServiceBits call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSERVICEBITS);
-    call.hServiceStatus = (uint64_t)hServiceStatus;
-    call.dwServiceBits = (uint64_t)dwServiceBits;
-    call.bSetBitsOn = (uint64_t)bSetBitsOn;
-    call.bUpdateImmediately = (uint64_t)bUpdateImmediately;
+    call.hServiceStatus = (ULONG_PTR)hServiceStatus;
+    call.dwServiceBits = (ULONG_PTR)dwServiceBits;
+    call.bSetBitsOn = (ULONG_PTR)bSetBitsOn;
+    call.bUpdateImmediately = (ULONG_PTR)bUpdateImmediately;
 
     qemu_syscall(&call.super);
 
@@ -1498,12 +1498,12 @@ WINBASEAPI SERVICE_STATUS_HANDLE WINAPI RegisterServiceCtrlHandlerA(LPCSTR name,
 {
     struct qemu_RegisterServiceCtrlHandlerA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERSERVICECTRLHANDLERA);
-    call.name = (uint64_t)name;
-    call.handler = (uint64_t)handler;
+    call.name = (ULONG_PTR)name;
+    call.handler = (ULONG_PTR)handler;
 
     qemu_syscall(&call.super);
 
-    return (SERVICE_STATUS_HANDLE)call.super.iret;
+    return (SERVICE_STATUS_HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1512,7 +1512,7 @@ void qemu_RegisterServiceCtrlHandlerA(struct qemu_syscall *call)
 {
     struct qemu_RegisterServiceCtrlHandlerA *c = (struct qemu_RegisterServiceCtrlHandlerA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RegisterServiceCtrlHandlerA(QEMU_G2H(c->name), QEMU_G2H(c->handler));
+    c->super.iret = (ULONG_PTR)RegisterServiceCtrlHandlerA(QEMU_G2H(c->name), QEMU_G2H(c->handler));
 }
 
 #endif
@@ -1530,12 +1530,12 @@ WINBASEAPI SERVICE_STATUS_HANDLE WINAPI RegisterServiceCtrlHandlerW(LPCWSTR name
 {
     struct qemu_RegisterServiceCtrlHandlerW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERSERVICECTRLHANDLERW);
-    call.name = (uint64_t)name;
-    call.handler = (uint64_t)handler;
+    call.name = (ULONG_PTR)name;
+    call.handler = (ULONG_PTR)handler;
 
     qemu_syscall(&call.super);
 
-    return (SERVICE_STATUS_HANDLE)call.super.iret;
+    return (SERVICE_STATUS_HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1544,7 +1544,7 @@ void qemu_RegisterServiceCtrlHandlerW(struct qemu_syscall *call)
 {
     struct qemu_RegisterServiceCtrlHandlerW *c = (struct qemu_RegisterServiceCtrlHandlerW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RegisterServiceCtrlHandlerW(QEMU_G2H(c->name), QEMU_G2H(c->handler));
+    c->super.iret = (ULONG_PTR)RegisterServiceCtrlHandlerW(QEMU_G2H(c->name), QEMU_G2H(c->handler));
 }
 
 #endif
@@ -1563,13 +1563,13 @@ WINBASEAPI SERVICE_STATUS_HANDLE WINAPI RegisterServiceCtrlHandlerExA(LPCSTR nam
 {
     struct qemu_RegisterServiceCtrlHandlerExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERSERVICECTRLHANDLEREXA);
-    call.name = (uint64_t)name;
-    call.handler = (uint64_t)handler;
-    call.context = (uint64_t)context;
+    call.name = (ULONG_PTR)name;
+    call.handler = (ULONG_PTR)handler;
+    call.context = (ULONG_PTR)context;
 
     qemu_syscall(&call.super);
 
-    return (SERVICE_STATUS_HANDLE)call.super.iret;
+    return (SERVICE_STATUS_HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1578,7 +1578,7 @@ void qemu_RegisterServiceCtrlHandlerExA(struct qemu_syscall *call)
 {
     struct qemu_RegisterServiceCtrlHandlerExA *c = (struct qemu_RegisterServiceCtrlHandlerExA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RegisterServiceCtrlHandlerExA(QEMU_G2H(c->name), QEMU_G2H(c->handler), QEMU_G2H(c->context));
+    c->super.iret = (ULONG_PTR)RegisterServiceCtrlHandlerExA(QEMU_G2H(c->name), QEMU_G2H(c->handler), QEMU_G2H(c->context));
 }
 
 #endif
@@ -1597,13 +1597,13 @@ WINBASEAPI SERVICE_STATUS_HANDLE WINAPI RegisterServiceCtrlHandlerExW(LPCWSTR lp
 {
     struct qemu_RegisterServiceCtrlHandlerExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERSERVICECTRLHANDLEREXW);
-    call.lpServiceName = (uint64_t)lpServiceName;
-    call.lpHandlerProc = (uint64_t)lpHandlerProc;
-    call.lpContext = (uint64_t)lpContext;
+    call.lpServiceName = (ULONG_PTR)lpServiceName;
+    call.lpHandlerProc = (ULONG_PTR)lpHandlerProc;
+    call.lpContext = (ULONG_PTR)lpContext;
 
     qemu_syscall(&call.super);
 
-    return (SERVICE_STATUS_HANDLE)call.super.iret;
+    return (SERVICE_STATUS_HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1612,7 +1612,7 @@ void qemu_RegisterServiceCtrlHandlerExW(struct qemu_syscall *call)
 {
     struct qemu_RegisterServiceCtrlHandlerExW *c = (struct qemu_RegisterServiceCtrlHandlerExW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)RegisterServiceCtrlHandlerExW(QEMU_G2H(c->lpServiceName), QEMU_G2H(c->lpHandlerProc), QEMU_G2H(c->lpContext));
+    c->super.iret = (ULONG_PTR)RegisterServiceCtrlHandlerExW(QEMU_G2H(c->lpServiceName), QEMU_G2H(c->lpHandlerProc), QEMU_G2H(c->lpContext));
 }
 
 #endif
@@ -1634,12 +1634,12 @@ WINBASEAPI BOOL WINAPI EnumDependentServicesA(SC_HANDLE hService, DWORD dwServic
 {
     struct qemu_EnumDependentServicesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMDEPENDENTSERVICESA);
-    call.hService = (uint64_t)hService;
-    call.dwServiceState = (uint64_t)dwServiceState;
-    call.lpServices = (uint64_t)lpServices;
-    call.cbBufSize = (uint64_t)cbBufSize;
-    call.pcbBytesNeeded = (uint64_t)pcbBytesNeeded;
-    call.lpServicesReturned = (uint64_t)lpServicesReturned;
+    call.hService = (ULONG_PTR)hService;
+    call.dwServiceState = (ULONG_PTR)dwServiceState;
+    call.lpServices = (ULONG_PTR)lpServices;
+    call.cbBufSize = (ULONG_PTR)cbBufSize;
+    call.pcbBytesNeeded = (ULONG_PTR)pcbBytesNeeded;
+    call.lpServicesReturned = (ULONG_PTR)lpServicesReturned;
 
     qemu_syscall(&call.super);
 
@@ -1674,12 +1674,12 @@ WINBASEAPI BOOL WINAPI EnumDependentServicesW(SC_HANDLE hService, DWORD dwServic
 {
     struct qemu_EnumDependentServicesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMDEPENDENTSERVICESW);
-    call.hService = (uint64_t)hService;
-    call.dwServiceState = (uint64_t)dwServiceState;
-    call.lpServices = (uint64_t)lpServices;
-    call.cbBufSize = (uint64_t)cbBufSize;
-    call.pcbBytesNeeded = (uint64_t)pcbBytesNeeded;
-    call.lpServicesReturned = (uint64_t)lpServicesReturned;
+    call.hService = (ULONG_PTR)hService;
+    call.dwServiceState = (ULONG_PTR)dwServiceState;
+    call.lpServices = (ULONG_PTR)lpServices;
+    call.cbBufSize = (ULONG_PTR)cbBufSize;
+    call.pcbBytesNeeded = (ULONG_PTR)pcbBytesNeeded;
+    call.lpServicesReturned = (ULONG_PTR)lpServicesReturned;
 
     qemu_syscall(&call.super);
 
@@ -1711,9 +1711,9 @@ WINBASEAPI DWORD WINAPI NotifyServiceStatusChangeW(SC_HANDLE hService, DWORD dwN
 {
     struct qemu_NotifyServiceStatusChangeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NOTIFYSERVICESTATUSCHANGEW);
-    call.hService = (uint64_t)hService;
-    call.dwNotifyMask = (uint64_t)dwNotifyMask;
-    call.pNotifyBuffer = (uint64_t)pNotifyBuffer;
+    call.hService = (ULONG_PTR)hService;
+    call.dwNotifyMask = (ULONG_PTR)dwNotifyMask;
+    call.pNotifyBuffer = (ULONG_PTR)pNotifyBuffer;
 
     qemu_syscall(&call.super);
 

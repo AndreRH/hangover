@@ -47,8 +47,8 @@ WINBASEAPI BOOL WINAPI GetUserNameA(LPSTR lpszName, LPDWORD lpSize)
 {
     struct qemu_GetUserNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETUSERNAMEA);
-    call.lpszName = (uint64_t)lpszName;
-    call.lpSize = (uint64_t)lpSize;
+    call.lpszName = (ULONG_PTR)lpszName;
+    call.lpSize = (ULONG_PTR)lpSize;
 
     qemu_syscall(&call.super);
 
@@ -79,8 +79,8 @@ WINBASEAPI BOOL WINAPI GetUserNameW(LPWSTR lpszName, LPDWORD lpSize)
 {
     struct qemu_GetUserNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETUSERNAMEW);
-    call.lpszName = (uint64_t)lpszName;
-    call.lpSize = (uint64_t)lpSize;
+    call.lpszName = (ULONG_PTR)lpszName;
+    call.lpSize = (ULONG_PTR)lpSize;
 
     qemu_syscall(&call.super);
 
@@ -110,7 +110,7 @@ WINBASEAPI BOOL WINAPI GetCurrentHwProfileA(LPHW_PROFILE_INFOA pInfo)
 {
     struct qemu_GetCurrentHwProfileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTHWPROFILEA);
-    call.pInfo = (uint64_t)pInfo;
+    call.pInfo = (ULONG_PTR)pInfo;
 
     qemu_syscall(&call.super);
 
@@ -140,7 +140,7 @@ WINBASEAPI BOOL WINAPI GetCurrentHwProfileW(LPHW_PROFILE_INFOW pInfo)
 {
     struct qemu_GetCurrentHwProfileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTHWPROFILEW);
-    call.pInfo = (uint64_t)pInfo;
+    call.pInfo = (ULONG_PTR)pInfo;
 
     qemu_syscall(&call.super);
 
@@ -172,9 +172,9 @@ WINBASEAPI BOOL WINAPI IsTextUnicode(LPCVOID buf, INT len, LPINT flags)
 {
     struct qemu_IsTextUnicode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISTEXTUNICODE);
-    call.buf = (uint64_t)buf;
-    call.len = (uint64_t)len;
-    call.flags = (uint64_t)flags;
+    call.buf = (ULONG_PTR)buf;
+    call.len = (ULONG_PTR)len;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -204,7 +204,7 @@ WINBASEAPI BOOL WINAPI AbortSystemShutdownA(LPSTR lpMachineName)
 {
     struct qemu_AbortSystemShutdownA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ABORTSYSTEMSHUTDOWNA);
-    call.lpMachineName = (uint64_t)lpMachineName;
+    call.lpMachineName = (ULONG_PTR)lpMachineName;
 
     qemu_syscall(&call.super);
 
@@ -234,7 +234,7 @@ WINBASEAPI BOOL WINAPI AbortSystemShutdownW(LPWSTR lpMachineName)
 {
     struct qemu_AbortSystemShutdownW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ABORTSYSTEMSHUTDOWNW);
-    call.lpMachineName = (uint64_t)lpMachineName;
+    call.lpMachineName = (ULONG_PTR)lpMachineName;
 
     qemu_syscall(&call.super);
 
@@ -269,12 +269,12 @@ WINBASEAPI BOOL WINAPI InitiateSystemShutdownExA(LPSTR lpMachineName, LPSTR lpMe
 {
     struct qemu_InitiateSystemShutdownExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INITIATESYSTEMSHUTDOWNEXA);
-    call.lpMachineName = (uint64_t)lpMachineName;
-    call.lpMessage = (uint64_t)lpMessage;
-    call.dwTimeout = (uint64_t)dwTimeout;
-    call.bForceAppsClosed = (uint64_t)bForceAppsClosed;
-    call.bRebootAfterShutdown = (uint64_t)bRebootAfterShutdown;
-    call.dwReason = (uint64_t)dwReason;
+    call.lpMachineName = (ULONG_PTR)lpMachineName;
+    call.lpMessage = (ULONG_PTR)lpMessage;
+    call.dwTimeout = (ULONG_PTR)dwTimeout;
+    call.bForceAppsClosed = (ULONG_PTR)bForceAppsClosed;
+    call.bRebootAfterShutdown = (ULONG_PTR)bRebootAfterShutdown;
+    call.dwReason = (ULONG_PTR)dwReason;
 
     qemu_syscall(&call.super);
 
@@ -309,12 +309,12 @@ WINBASEAPI BOOL WINAPI InitiateSystemShutdownExW(LPWSTR lpMachineName, LPWSTR lp
 {
     struct qemu_InitiateSystemShutdownExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INITIATESYSTEMSHUTDOWNEXW);
-    call.lpMachineName = (uint64_t)lpMachineName;
-    call.lpMessage = (uint64_t)lpMessage;
-    call.dwTimeout = (uint64_t)dwTimeout;
-    call.bForceAppsClosed = (uint64_t)bForceAppsClosed;
-    call.bRebootAfterShutdown = (uint64_t)bRebootAfterShutdown;
-    call.dwReason = (uint64_t)dwReason;
+    call.lpMachineName = (ULONG_PTR)lpMachineName;
+    call.lpMessage = (ULONG_PTR)lpMessage;
+    call.dwTimeout = (ULONG_PTR)dwTimeout;
+    call.bForceAppsClosed = (ULONG_PTR)bForceAppsClosed;
+    call.bRebootAfterShutdown = (ULONG_PTR)bRebootAfterShutdown;
+    call.dwReason = (ULONG_PTR)dwReason;
 
     qemu_syscall(&call.super);
 
@@ -348,11 +348,11 @@ WINBASEAPI BOOL WINAPI InitiateSystemShutdownA(LPSTR lpMachineName, LPSTR lpMess
 {
     struct qemu_InitiateSystemShutdownA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INITIATESYSTEMSHUTDOWNA);
-    call.lpMachineName = (uint64_t)lpMachineName;
-    call.lpMessage = (uint64_t)lpMessage;
-    call.dwTimeout = (uint64_t)dwTimeout;
-    call.bForceAppsClosed = (uint64_t)bForceAppsClosed;
-    call.bRebootAfterShutdown = (uint64_t)bRebootAfterShutdown;
+    call.lpMachineName = (ULONG_PTR)lpMachineName;
+    call.lpMessage = (ULONG_PTR)lpMessage;
+    call.dwTimeout = (ULONG_PTR)dwTimeout;
+    call.bForceAppsClosed = (ULONG_PTR)bForceAppsClosed;
+    call.bRebootAfterShutdown = (ULONG_PTR)bRebootAfterShutdown;
 
     qemu_syscall(&call.super);
 
@@ -386,11 +386,11 @@ WINBASEAPI BOOL WINAPI InitiateSystemShutdownW(LPWSTR lpMachineName, LPWSTR lpMe
 {
     struct qemu_InitiateSystemShutdownW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INITIATESYSTEMSHUTDOWNW);
-    call.lpMachineName = (uint64_t)lpMachineName;
-    call.lpMessage = (uint64_t)lpMessage;
-    call.dwTimeout = (uint64_t)dwTimeout;
-    call.bForceAppsClosed = (uint64_t)bForceAppsClosed;
-    call.bRebootAfterShutdown = (uint64_t)bRebootAfterShutdown;
+    call.lpMachineName = (ULONG_PTR)lpMachineName;
+    call.lpMessage = (ULONG_PTR)lpMessage;
+    call.dwTimeout = (ULONG_PTR)dwTimeout;
+    call.bForceAppsClosed = (ULONG_PTR)bForceAppsClosed;
+    call.bRebootAfterShutdown = (ULONG_PTR)bRebootAfterShutdown;
 
     qemu_syscall(&call.super);
 
@@ -425,12 +425,12 @@ WINBASEAPI BOOL WINAPI LogonUserA(LPCSTR lpszUsername, LPCSTR lpszDomain, LPCSTR
 {
     struct qemu_LogonUserA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOGONUSERA);
-    call.lpszUsername = (uint64_t)lpszUsername;
-    call.lpszDomain = (uint64_t)lpszDomain;
-    call.lpszPassword = (uint64_t)lpszPassword;
-    call.dwLogonType = (uint64_t)dwLogonType;
-    call.dwLogonProvider = (uint64_t)dwLogonProvider;
-    call.phToken = (uint64_t)phToken;
+    call.lpszUsername = (ULONG_PTR)lpszUsername;
+    call.lpszDomain = (ULONG_PTR)lpszDomain;
+    call.lpszPassword = (ULONG_PTR)lpszPassword;
+    call.dwLogonType = (ULONG_PTR)dwLogonType;
+    call.dwLogonProvider = (ULONG_PTR)dwLogonProvider;
+    call.phToken = (ULONG_PTR)phToken;
 
     qemu_syscall(&call.super);
 
@@ -465,12 +465,12 @@ WINBASEAPI BOOL WINAPI LogonUserW(LPCWSTR lpszUsername, LPCWSTR lpszDomain, LPCW
 {
     struct qemu_LogonUserW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOGONUSERW);
-    call.lpszUsername = (uint64_t)lpszUsername;
-    call.lpszDomain = (uint64_t)lpszDomain;
-    call.lpszPassword = (uint64_t)lpszPassword;
-    call.dwLogonType = (uint64_t)dwLogonType;
-    call.dwLogonProvider = (uint64_t)dwLogonProvider;
-    call.phToken = (uint64_t)phToken;
+    call.lpszUsername = (ULONG_PTR)lpszUsername;
+    call.lpszDomain = (ULONG_PTR)lpszDomain;
+    call.lpszPassword = (ULONG_PTR)lpszPassword;
+    call.dwLogonType = (ULONG_PTR)dwLogonType;
+    call.dwLogonProvider = (ULONG_PTR)dwLogonProvider;
+    call.phToken = (ULONG_PTR)phToken;
 
     qemu_syscall(&call.super);
 
@@ -502,9 +502,9 @@ WINBASEAPI DWORD WINAPI CommandLineFromMsiDescriptor(WCHAR *szDescriptor, WCHAR 
 {
     struct qemu_CommandLineFromMsiDescriptor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COMMANDLINEFROMMSIDESCRIPTOR);
-    call.szDescriptor = (uint64_t)szDescriptor;
-    call.szCommandLine = (uint64_t)szCommandLine;
-    call.pcchCommandLine = (uint64_t)pcchCommandLine;
+    call.szDescriptor = (ULONG_PTR)szDescriptor;
+    call.szCommandLine = (ULONG_PTR)szCommandLine;
+    call.pcchCommandLine = (ULONG_PTR)pcchCommandLine;
 
     qemu_syscall(&call.super);
 
@@ -535,8 +535,8 @@ WINBASEAPI void WINAPI RegisterWaitChainCOMCallback(PCOGETCALLSTATE call_state_c
 {
     struct qemu_RegisterWaitChainCOMCallback call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERWAITCHAINCOMCALLBACK);
-    call.call_state_cb = (uint64_t)call_state_cb;
-    call.activation_state_cb = (uint64_t)activation_state_cb;
+    call.call_state_cb = (ULONG_PTR)call_state_cb;
+    call.activation_state_cb = (ULONG_PTR)activation_state_cb;
 
     qemu_syscall(&call.super);
 }

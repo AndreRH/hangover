@@ -48,9 +48,9 @@ WINBASEAPI BOOL WINAPI OpenProcessToken(HANDLE ProcessHandle, DWORD DesiredAcces
 {
     struct qemu_OpenProcessToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENPROCESSTOKEN);
-    call.ProcessHandle = (uint64_t)ProcessHandle;
+    call.ProcessHandle = (ULONG_PTR)ProcessHandle;
     call.DesiredAccess = DesiredAccess;
-    call.TokenHandle = (uint64_t)TokenHandle;
+    call.TokenHandle = (ULONG_PTR)TokenHandle;
 
     qemu_syscall(&call.super);
 
@@ -83,10 +83,10 @@ WINBASEAPI BOOL WINAPI OpenThreadToken(HANDLE ThreadHandle, DWORD DesiredAccess,
 {
     struct qemu_OpenThreadToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENTHREADTOKEN);
-    call.ThreadHandle = (uint64_t)ThreadHandle;
+    call.ThreadHandle = (ULONG_PTR)ThreadHandle;
     call.DesiredAccess = DesiredAccess;
     call.OpenAsSelf = OpenAsSelf;
-    call.TokenHandle = (uint64_t)TokenHandle;
+    call.TokenHandle = (ULONG_PTR)TokenHandle;
 
     qemu_syscall(&call.super);
 
@@ -121,12 +121,12 @@ WINBASEAPI BOOL WINAPI AdjustTokenGroups(HANDLE TokenHandle, BOOL ResetToDefault
 {
     struct qemu_AdjustTokenGroups call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADJUSTTOKENGROUPS);
-    call.TokenHandle = (uint64_t)TokenHandle;
-    call.ResetToDefault = (uint64_t)ResetToDefault;
-    call.NewState = (uint64_t)NewState;
-    call.BufferLength = (uint64_t)BufferLength;
-    call.PreviousState = (uint64_t)PreviousState;
-    call.ReturnLength = (uint64_t)ReturnLength;
+    call.TokenHandle = (ULONG_PTR)TokenHandle;
+    call.ResetToDefault = (ULONG_PTR)ResetToDefault;
+    call.NewState = (ULONG_PTR)NewState;
+    call.BufferLength = (ULONG_PTR)BufferLength;
+    call.PreviousState = (ULONG_PTR)PreviousState;
+    call.ReturnLength = (ULONG_PTR)ReturnLength;
 
     qemu_syscall(&call.super);
 
@@ -161,12 +161,12 @@ WINBASEAPI BOOL WINAPI AdjustTokenPrivileges(HANDLE TokenHandle, BOOL DisableAll
 {
     struct qemu_AdjustTokenPrivileges call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADJUSTTOKENPRIVILEGES);
-    call.TokenHandle = (uint64_t)TokenHandle;
+    call.TokenHandle = (ULONG_PTR)TokenHandle;
     call.DisableAllPrivileges = DisableAllPrivileges;
-    call.NewState = (uint64_t)NewState;
+    call.NewState = (ULONG_PTR)NewState;
     call.BufferLength = BufferLength;
-    call.PreviousState = (uint64_t)PreviousState;
-    call.ReturnLength = (uint64_t)ReturnLength;
+    call.PreviousState = (ULONG_PTR)PreviousState;
+    call.ReturnLength = (ULONG_PTR)ReturnLength;
 
     qemu_syscall(&call.super);
 
@@ -199,9 +199,9 @@ WINBASEAPI BOOL WINAPI CheckTokenMembership(HANDLE token, PSID sid_to_check, PBO
 {
     struct qemu_CheckTokenMembership call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHECKTOKENMEMBERSHIP);
-    call.token = (uint64_t)token;
-    call.sid_to_check = (uint64_t)sid_to_check;
-    call.is_member = (uint64_t)is_member;
+    call.token = (ULONG_PTR)token;
+    call.sid_to_check = (ULONG_PTR)sid_to_check;
+    call.is_member = (ULONG_PTR)is_member;
 
     qemu_syscall(&call.super);
 
@@ -235,11 +235,11 @@ WINBASEAPI BOOL WINAPI GetTokenInformation(HANDLE token, TOKEN_INFORMATION_CLASS
 {
     struct qemu_GetTokenInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTOKENINFORMATION);
-    call.token = (uint64_t)token;
+    call.token = (ULONG_PTR)token;
     call.tokeninfoclass = tokeninfoclass;
-    call.tokeninfo = (uint64_t)tokeninfo;
+    call.tokeninfo = (ULONG_PTR)tokeninfo;
     call.tokeninfolength = tokeninfolength;
-    call.retlen = (uint64_t)retlen;
+    call.retlen = (ULONG_PTR)retlen;
 
     qemu_syscall(&call.super);
 
@@ -273,10 +273,10 @@ WINBASEAPI BOOL WINAPI SetTokenInformation(HANDLE token, TOKEN_INFORMATION_CLASS
 {
     struct qemu_SetTokenInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTOKENINFORMATION);
-    call.token = (uint64_t)token;
-    call.tokeninfoclass = (uint64_t)tokeninfoclass;
-    call.tokeninfo = (uint64_t)tokeninfo;
-    call.tokeninfolength = (uint64_t)tokeninfolength;
+    call.token = (ULONG_PTR)token;
+    call.tokeninfoclass = (ULONG_PTR)tokeninfoclass;
+    call.tokeninfo = (ULONG_PTR)tokeninfo;
+    call.tokeninfolength = (ULONG_PTR)tokeninfolength;
 
     qemu_syscall(&call.super);
 
@@ -307,8 +307,8 @@ WINBASEAPI BOOL WINAPI SetThreadToken(PHANDLE thread, HANDLE token)
 {
     struct qemu_SetThreadToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADTOKEN);
-    call.thread = (uint64_t)thread;
-    call.token = (uint64_t)token;
+    call.thread = (ULONG_PTR)thread;
+    call.token = (ULONG_PTR)token;
 
     qemu_syscall(&call.super);
 
@@ -346,15 +346,15 @@ WINBASEAPI BOOL WINAPI CreateRestrictedToken(HANDLE baseToken, DWORD flags, DWOR
 {
     struct qemu_CreateRestrictedToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATERESTRICTEDTOKEN);
-    call.baseToken = (uint64_t)baseToken;
-    call.flags = (uint64_t)flags;
-    call.nDisableSids = (uint64_t)nDisableSids;
-    call.disableSids = (uint64_t)disableSids;
-    call.nDeletePrivs = (uint64_t)nDeletePrivs;
-    call.deletePrivs = (uint64_t)deletePrivs;
-    call.nRestrictSids = (uint64_t)nRestrictSids;
-    call.restrictSids = (uint64_t)restrictSids;
-    call.newToken = (uint64_t)newToken;
+    call.baseToken = (ULONG_PTR)baseToken;
+    call.flags = (ULONG_PTR)flags;
+    call.nDisableSids = (ULONG_PTR)nDisableSids;
+    call.disableSids = (ULONG_PTR)disableSids;
+    call.nDeletePrivs = (ULONG_PTR)nDeletePrivs;
+    call.deletePrivs = (ULONG_PTR)deletePrivs;
+    call.nRestrictSids = (ULONG_PTR)nRestrictSids;
+    call.restrictSids = (ULONG_PTR)restrictSids;
+    call.newToken = (ULONG_PTR)newToken;
 
     qemu_syscall(&call.super);
 
@@ -394,17 +394,17 @@ WINBASEAPI BOOL WINAPI AllocateAndInitializeSid(PSID_IDENTIFIER_AUTHORITY pIdent
 {
     struct qemu_AllocateAndInitializeSid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ALLOCATEANDINITIALIZESID);
-    call.pIdentifierAuthority = (uint64_t)pIdentifierAuthority;
-    call.nSubAuthorityCount = (uint64_t)nSubAuthorityCount;
-    call.nSubAuthority0 = (uint64_t)nSubAuthority0;
-    call.nSubAuthority1 = (uint64_t)nSubAuthority1;
-    call.nSubAuthority2 = (uint64_t)nSubAuthority2;
-    call.nSubAuthority3 = (uint64_t)nSubAuthority3;
-    call.nSubAuthority4 = (uint64_t)nSubAuthority4;
-    call.nSubAuthority5 = (uint64_t)nSubAuthority5;
-    call.nSubAuthority6 = (uint64_t)nSubAuthority6;
-    call.nSubAuthority7 = (uint64_t)nSubAuthority7;
-    call.pSid = (uint64_t)pSid;
+    call.pIdentifierAuthority = (ULONG_PTR)pIdentifierAuthority;
+    call.nSubAuthorityCount = (ULONG_PTR)nSubAuthorityCount;
+    call.nSubAuthority0 = (ULONG_PTR)nSubAuthority0;
+    call.nSubAuthority1 = (ULONG_PTR)nSubAuthority1;
+    call.nSubAuthority2 = (ULONG_PTR)nSubAuthority2;
+    call.nSubAuthority3 = (ULONG_PTR)nSubAuthority3;
+    call.nSubAuthority4 = (ULONG_PTR)nSubAuthority4;
+    call.nSubAuthority5 = (ULONG_PTR)nSubAuthority5;
+    call.nSubAuthority6 = (ULONG_PTR)nSubAuthority6;
+    call.nSubAuthority7 = (ULONG_PTR)nSubAuthority7;
+    call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
 
@@ -434,11 +434,11 @@ WINBASEAPI PVOID WINAPI FreeSid(PSID pSid)
 {
     struct qemu_FreeSid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FREESID);
-    call.pSid = (uint64_t)pSid;
+    call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
 
-    return (PVOID)call.super.iret;
+    return (PVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -447,7 +447,7 @@ void qemu_FreeSid(struct qemu_syscall *call)
 {
     struct qemu_FreeSid *c = (struct qemu_FreeSid *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)FreeSid(QEMU_G2H(c->pSid));
+    c->super.iret = (ULONG_PTR)FreeSid(QEMU_G2H(c->pSid));
 }
 
 #endif
@@ -466,9 +466,9 @@ WINBASEAPI BOOL WINAPI CopySid(DWORD nDestinationSidLength, PSID pDestinationSid
 {
     struct qemu_CopySid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COPYSID);
-    call.nDestinationSidLength = (uint64_t)nDestinationSidLength;
-    call.pDestinationSid = (uint64_t)pDestinationSid;
-    call.pSourceSid = (uint64_t)pSourceSid;
+    call.nDestinationSidLength = (ULONG_PTR)nDestinationSidLength;
+    call.pDestinationSid = (ULONG_PTR)pDestinationSid;
+    call.pSourceSid = (ULONG_PTR)pSourceSid;
 
     qemu_syscall(&call.super);
 
@@ -501,10 +501,10 @@ WINBASEAPI BOOL WINAPI CreateWellKnownSid(WELL_KNOWN_SID_TYPE WellKnownSidType, 
 {
     struct qemu_CreateWellKnownSid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEWELLKNOWNSID);
-    call.WellKnownSidType = (uint64_t)WellKnownSidType;
-    call.DomainSid = (uint64_t)DomainSid;
-    call.pSid = (uint64_t)pSid;
-    call.cbSid = (uint64_t)cbSid;
+    call.WellKnownSidType = (ULONG_PTR)WellKnownSidType;
+    call.DomainSid = (ULONG_PTR)DomainSid;
+    call.pSid = (ULONG_PTR)pSid;
+    call.cbSid = (ULONG_PTR)cbSid;
 
     qemu_syscall(&call.super);
 
@@ -535,8 +535,8 @@ WINBASEAPI BOOL WINAPI IsWellKnownSid(PSID pSid, WELL_KNOWN_SID_TYPE WellKnownSi
 {
     struct qemu_IsWellKnownSid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISWELLKNOWNSID);
-    call.pSid = (uint64_t)pSid;
-    call.WellKnownSidType = (uint64_t)WellKnownSidType;
+    call.pSid = (ULONG_PTR)pSid;
+    call.WellKnownSidType = (ULONG_PTR)WellKnownSidType;
 
     qemu_syscall(&call.super);
 
@@ -566,7 +566,7 @@ WINBASEAPI BOOL WINAPI IsTokenRestricted(HANDLE TokenHandle)
 {
     struct qemu_IsTokenRestricted call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISTOKENRESTRICTED);
-    call.TokenHandle = (uint64_t)TokenHandle;
+    call.TokenHandle = (ULONG_PTR)TokenHandle;
 
     qemu_syscall(&call.super);
 
@@ -596,7 +596,7 @@ WINBASEAPI BOOL WINAPI IsValidSid(PSID pSid)
 {
     struct qemu_IsValidSid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISVALIDSID);
-    call.pSid = (uint64_t)pSid;
+    call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
 
@@ -627,8 +627,8 @@ WINBASEAPI BOOL WINAPI EqualSid(PSID pSid1, PSID pSid2)
 {
     struct qemu_EqualSid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EQUALSID);
-    call.pSid1 = (uint64_t)pSid1;
-    call.pSid2 = (uint64_t)pSid2;
+    call.pSid1 = (ULONG_PTR)pSid1;
+    call.pSid2 = (ULONG_PTR)pSid2;
 
     qemu_syscall(&call.super);
 
@@ -659,8 +659,8 @@ WINBASEAPI BOOL WINAPI EqualPrefixSid (PSID pSid1, PSID pSid2)
 {
     struct qemu_EqualPrefixSid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EQUALPREFIXSID);
-    call.pSid1 = (uint64_t)pSid1;
-    call.pSid2 = (uint64_t)pSid2;
+    call.pSid1 = (ULONG_PTR)pSid1;
+    call.pSid2 = (ULONG_PTR)pSid2;
 
     qemu_syscall(&call.super);
 
@@ -690,7 +690,7 @@ WINBASEAPI DWORD WINAPI GetSidLengthRequired(BYTE nSubAuthorityCount)
 {
     struct qemu_GetSidLengthRequired call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSIDLENGTHREQUIRED);
-    call.nSubAuthorityCount = (uint64_t)nSubAuthorityCount;
+    call.nSubAuthorityCount = (ULONG_PTR)nSubAuthorityCount;
 
     qemu_syscall(&call.super);
 
@@ -722,9 +722,9 @@ WINBASEAPI BOOL WINAPI InitializeSid (PSID pSid, PSID_IDENTIFIER_AUTHORITY pIden
 {
     struct qemu_InitializeSid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INITIALIZESID);
-    call.pSid = (uint64_t)pSid;
-    call.pIdentifierAuthority = (uint64_t)pIdentifierAuthority;
-    call.nSubAuthorityCount = (uint64_t)nSubAuthorityCount;
+    call.pSid = (ULONG_PTR)pSid;
+    call.pIdentifierAuthority = (ULONG_PTR)pIdentifierAuthority;
+    call.nSubAuthorityCount = (ULONG_PTR)nSubAuthorityCount;
 
     qemu_syscall(&call.super);
 
@@ -756,9 +756,9 @@ WINBASEAPI DWORD WINAPI GetEffectiveRightsFromAclA(PACL pacl, PTRUSTEEA pTrustee
 {
     struct qemu_GetEffectiveRightsFromAclA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETEFFECTIVERIGHTSFROMACLA);
-    call.pacl = (uint64_t)pacl;
-    call.pTrustee = (uint64_t)pTrustee;
-    call.pAccessRights = (uint64_t)pAccessRights;
+    call.pacl = (ULONG_PTR)pacl;
+    call.pTrustee = (ULONG_PTR)pTrustee;
+    call.pAccessRights = (ULONG_PTR)pAccessRights;
 
     qemu_syscall(&call.super);
 
@@ -790,9 +790,9 @@ WINBASEAPI DWORD WINAPI GetEffectiveRightsFromAclW(PACL pacl, PTRUSTEEW pTrustee
 {
     struct qemu_GetEffectiveRightsFromAclW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETEFFECTIVERIGHTSFROMACLW);
-    call.pacl = (uint64_t)pacl;
-    call.pTrustee = (uint64_t)pTrustee;
-    call.pAccessRights = (uint64_t)pAccessRights;
+    call.pacl = (ULONG_PTR)pacl;
+    call.pTrustee = (ULONG_PTR)pTrustee;
+    call.pAccessRights = (ULONG_PTR)pAccessRights;
 
     qemu_syscall(&call.super);
 
@@ -822,11 +822,11 @@ WINBASEAPI PSID_IDENTIFIER_AUTHORITY WINAPI GetSidIdentifierAuthority(PSID pSid)
 {
     struct qemu_GetSidIdentifierAuthority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSIDIDENTIFIERAUTHORITY);
-    call.pSid = (uint64_t)pSid;
+    call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
 
-    return (PSID_IDENTIFIER_AUTHORITY)call.super.iret;
+    return (PSID_IDENTIFIER_AUTHORITY)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -835,7 +835,7 @@ void qemu_GetSidIdentifierAuthority(struct qemu_syscall *call)
 {
     struct qemu_GetSidIdentifierAuthority *c = (struct qemu_GetSidIdentifierAuthority *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GetSidIdentifierAuthority(QEMU_G2H(c->pSid));
+    c->super.iret = (ULONG_PTR)GetSidIdentifierAuthority(QEMU_G2H(c->pSid));
 }
 
 #endif
@@ -853,12 +853,12 @@ WINBASEAPI PDWORD WINAPI GetSidSubAuthority(PSID pSid, DWORD nSubAuthority)
 {
     struct qemu_GetSidSubAuthority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSIDSUBAUTHORITY);
-    call.pSid = (uint64_t)pSid;
-    call.nSubAuthority = (uint64_t)nSubAuthority;
+    call.pSid = (ULONG_PTR)pSid;
+    call.nSubAuthority = (ULONG_PTR)nSubAuthority;
 
     qemu_syscall(&call.super);
 
-    return (PDWORD)call.super.iret;
+    return (PDWORD)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -867,7 +867,7 @@ void qemu_GetSidSubAuthority(struct qemu_syscall *call)
 {
     struct qemu_GetSidSubAuthority *c = (struct qemu_GetSidSubAuthority *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GetSidSubAuthority(QEMU_G2H(c->pSid), c->nSubAuthority);
+    c->super.iret = (ULONG_PTR)GetSidSubAuthority(QEMU_G2H(c->pSid), c->nSubAuthority);
 }
 
 #endif
@@ -884,11 +884,11 @@ WINBASEAPI PUCHAR WINAPI GetSidSubAuthorityCount (PSID pSid)
 {
     struct qemu_GetSidSubAuthorityCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSIDSUBAUTHORITYCOUNT);
-    call.pSid = (uint64_t)pSid;
+    call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
 
-    return (PUCHAR)call.super.iret;
+    return (PUCHAR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -897,7 +897,7 @@ void qemu_GetSidSubAuthorityCount(struct qemu_syscall *call)
 {
     struct qemu_GetSidSubAuthorityCount *c = (struct qemu_GetSidSubAuthorityCount *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GetSidSubAuthorityCount(QEMU_G2H(c->pSid));
+    c->super.iret = (ULONG_PTR)GetSidSubAuthorityCount(QEMU_G2H(c->pSid));
 }
 
 #endif
@@ -914,7 +914,7 @@ WINBASEAPI DWORD WINAPI GetLengthSid (PSID pSid)
 {
     struct qemu_GetLengthSid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETLENGTHSID);
-    call.pSid = (uint64_t)pSid;
+    call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
 
@@ -952,15 +952,15 @@ WINBASEAPI DWORD WINAPI BuildSecurityDescriptorA(IN PTRUSTEEA pOwner, IN PTRUSTE
 {
     struct qemu_BuildSecurityDescriptorA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDSECURITYDESCRIPTORA);
-    call.pOwner = (uint64_t)pOwner;
-    call.pGroup = (uint64_t)pGroup;
-    call.cCountOfAccessEntries = (uint64_t)cCountOfAccessEntries;
-    call.pListOfAccessEntries = (uint64_t)pListOfAccessEntries;
-    call.cCountOfAuditEntries = (uint64_t)cCountOfAuditEntries;
-    call.pListofAuditEntries = (uint64_t)pListofAuditEntries;
-    call.pOldSD = (uint64_t)pOldSD;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
-    call.pNewSD = (uint64_t)pNewSD;
+    call.pOwner = (ULONG_PTR)pOwner;
+    call.pGroup = (ULONG_PTR)pGroup;
+    call.cCountOfAccessEntries = (ULONG_PTR)cCountOfAccessEntries;
+    call.pListOfAccessEntries = (ULONG_PTR)pListOfAccessEntries;
+    call.cCountOfAuditEntries = (ULONG_PTR)cCountOfAuditEntries;
+    call.pListofAuditEntries = (ULONG_PTR)pListofAuditEntries;
+    call.pOldSD = (ULONG_PTR)pOldSD;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
+    call.pNewSD = (ULONG_PTR)pNewSD;
 
     qemu_syscall(&call.super);
 
@@ -998,15 +998,15 @@ WINBASEAPI DWORD WINAPI BuildSecurityDescriptorW(IN PTRUSTEEW pOwner, IN PTRUSTE
 {
     struct qemu_BuildSecurityDescriptorW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDSECURITYDESCRIPTORW);
-    call.pOwner = (uint64_t)pOwner;
-    call.pGroup = (uint64_t)pGroup;
-    call.cCountOfAccessEntries = (uint64_t)cCountOfAccessEntries;
-    call.pListOfAccessEntries = (uint64_t)pListOfAccessEntries;
-    call.cCountOfAuditEntries = (uint64_t)cCountOfAuditEntries;
-    call.pListofAuditEntries = (uint64_t)pListofAuditEntries;
-    call.pOldSD = (uint64_t)pOldSD;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
-    call.pNewSD = (uint64_t)pNewSD;
+    call.pOwner = (ULONG_PTR)pOwner;
+    call.pGroup = (ULONG_PTR)pGroup;
+    call.cCountOfAccessEntries = (ULONG_PTR)cCountOfAccessEntries;
+    call.pListOfAccessEntries = (ULONG_PTR)pListOfAccessEntries;
+    call.cCountOfAuditEntries = (ULONG_PTR)cCountOfAuditEntries;
+    call.pListofAuditEntries = (ULONG_PTR)pListofAuditEntries;
+    call.pOldSD = (ULONG_PTR)pOldSD;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
+    call.pNewSD = (ULONG_PTR)pNewSD;
 
     qemu_syscall(&call.super);
 
@@ -1037,8 +1037,8 @@ WINBASEAPI BOOL WINAPI InitializeSecurityDescriptor(PSECURITY_DESCRIPTOR pDescr,
 {
     struct qemu_InitializeSecurityDescriptor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INITIALIZESECURITYDESCRIPTOR);
-    call.pDescr = (uint64_t)pDescr;
-    call.revision = (uint64_t)revision;
+    call.pDescr = (ULONG_PTR)pDescr;
+    call.revision = (ULONG_PTR)revision;
 
     qemu_syscall(&call.super);
 
@@ -1078,17 +1078,17 @@ WINBASEAPI BOOL WINAPI MakeAbsoluteSD (IN PSECURITY_DESCRIPTOR pSelfRelativeSecu
 {
     struct qemu_MakeAbsoluteSD call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MAKEABSOLUTESD);
-    call.pSelfRelativeSecurityDescriptor = (uint64_t)pSelfRelativeSecurityDescriptor;
-    call.pAbsoluteSecurityDescriptor = (uint64_t)pAbsoluteSecurityDescriptor;
-    call.lpdwAbsoluteSecurityDescriptorSize = (uint64_t)lpdwAbsoluteSecurityDescriptorSize;
-    call.pDacl = (uint64_t)pDacl;
-    call.lpdwDaclSize = (uint64_t)lpdwDaclSize;
-    call.pSacl = (uint64_t)pSacl;
-    call.lpdwSaclSize = (uint64_t)lpdwSaclSize;
-    call.pOwner = (uint64_t)pOwner;
-    call.lpdwOwnerSize = (uint64_t)lpdwOwnerSize;
-    call.pPrimaryGroup = (uint64_t)pPrimaryGroup;
-    call.lpdwPrimaryGroupSize = (uint64_t)lpdwPrimaryGroupSize;
+    call.pSelfRelativeSecurityDescriptor = (ULONG_PTR)pSelfRelativeSecurityDescriptor;
+    call.pAbsoluteSecurityDescriptor = (ULONG_PTR)pAbsoluteSecurityDescriptor;
+    call.lpdwAbsoluteSecurityDescriptorSize = (ULONG_PTR)lpdwAbsoluteSecurityDescriptorSize;
+    call.pDacl = (ULONG_PTR)pDacl;
+    call.lpdwDaclSize = (ULONG_PTR)lpdwDaclSize;
+    call.pSacl = (ULONG_PTR)pSacl;
+    call.lpdwSaclSize = (ULONG_PTR)lpdwSaclSize;
+    call.pOwner = (ULONG_PTR)pOwner;
+    call.lpdwOwnerSize = (ULONG_PTR)lpdwOwnerSize;
+    call.pPrimaryGroup = (ULONG_PTR)pPrimaryGroup;
+    call.lpdwPrimaryGroupSize = (ULONG_PTR)lpdwPrimaryGroupSize;
 
     qemu_syscall(&call.super);
 
@@ -1122,11 +1122,11 @@ WINBASEAPI BOOL WINAPI GetKernelObjectSecurity(HANDLE Handle, SECURITY_INFORMATI
 {
     struct qemu_GetKernelObjectSecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETKERNELOBJECTSECURITY);
-    call.Handle = (uint64_t)Handle;
-    call.RequestedInformation = (uint64_t)RequestedInformation;
-    call.pSecurityDescriptor = (uint64_t)pSecurityDescriptor;
-    call.nLength = (uint64_t)nLength;
-    call.lpnLengthNeeded = (uint64_t)lpnLengthNeeded;
+    call.Handle = (ULONG_PTR)Handle;
+    call.RequestedInformation = (ULONG_PTR)RequestedInformation;
+    call.pSecurityDescriptor = (ULONG_PTR)pSecurityDescriptor;
+    call.nLength = (ULONG_PTR)nLength;
+    call.lpnLengthNeeded = (ULONG_PTR)lpnLengthNeeded;
 
     qemu_syscall(&call.super);
 
@@ -1160,11 +1160,11 @@ WINBASEAPI BOOL WINAPI GetPrivateObjectSecurity(PSECURITY_DESCRIPTOR ObjectDescr
 {
     struct qemu_GetPrivateObjectSecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRIVATEOBJECTSECURITY);
-    call.ObjectDescriptor = (uint64_t)ObjectDescriptor;
-    call.SecurityInformation = (uint64_t)SecurityInformation;
-    call.ResultantDescriptor = (uint64_t)ResultantDescriptor;
-    call.DescriptorLength = (uint64_t)DescriptorLength;
-    call.ReturnLength = (uint64_t)ReturnLength;
+    call.ObjectDescriptor = (ULONG_PTR)ObjectDescriptor;
+    call.SecurityInformation = (ULONG_PTR)SecurityInformation;
+    call.ResultantDescriptor = (ULONG_PTR)ResultantDescriptor;
+    call.DescriptorLength = (ULONG_PTR)DescriptorLength;
+    call.ReturnLength = (ULONG_PTR)ReturnLength;
 
     qemu_syscall(&call.super);
 
@@ -1194,7 +1194,7 @@ WINBASEAPI DWORD WINAPI GetSecurityDescriptorLength(PSECURITY_DESCRIPTOR pDescr)
 {
     struct qemu_GetSecurityDescriptorLength call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSECURITYDESCRIPTORLENGTH);
-    call.pDescr = (uint64_t)pDescr;
+    call.pDescr = (ULONG_PTR)pDescr;
 
     qemu_syscall(&call.super);
 
@@ -1226,9 +1226,9 @@ WINBASEAPI BOOL WINAPI GetSecurityDescriptorOwner(PSECURITY_DESCRIPTOR pDescr, P
 {
     struct qemu_GetSecurityDescriptorOwner call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSECURITYDESCRIPTOROWNER);
-    call.pDescr = (uint64_t)pDescr;
-    call.pOwner = (uint64_t)pOwner;
-    call.lpbOwnerDefaulted = (uint64_t)lpbOwnerDefaulted;
+    call.pDescr = (ULONG_PTR)pDescr;
+    call.pOwner = (ULONG_PTR)pOwner;
+    call.lpbOwnerDefaulted = (ULONG_PTR)lpbOwnerDefaulted;
 
     qemu_syscall(&call.super);
 
@@ -1260,9 +1260,9 @@ WINBASEAPI BOOL WINAPI SetSecurityDescriptorOwner(PSECURITY_DESCRIPTOR pSecurity
 {
     struct qemu_SetSecurityDescriptorOwner call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSECURITYDESCRIPTOROWNER);
-    call.pSecurityDescriptor = (uint64_t)pSecurityDescriptor;
-    call.pOwner = (uint64_t)pOwner;
-    call.bOwnerDefaulted = (uint64_t)bOwnerDefaulted;
+    call.pSecurityDescriptor = (ULONG_PTR)pSecurityDescriptor;
+    call.pOwner = (ULONG_PTR)pOwner;
+    call.bOwnerDefaulted = (ULONG_PTR)bOwnerDefaulted;
 
     qemu_syscall(&call.super);
 
@@ -1294,9 +1294,9 @@ WINBASEAPI BOOL WINAPI GetSecurityDescriptorGroup(PSECURITY_DESCRIPTOR SecurityD
 {
     struct qemu_GetSecurityDescriptorGroup call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSECURITYDESCRIPTORGROUP);
-    call.SecurityDescriptor = (uint64_t)SecurityDescriptor;
-    call.Group = (uint64_t)Group;
-    call.GroupDefaulted = (uint64_t)GroupDefaulted;
+    call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
+    call.Group = (ULONG_PTR)Group;
+    call.GroupDefaulted = (ULONG_PTR)GroupDefaulted;
 
     qemu_syscall(&call.super);
 
@@ -1328,9 +1328,9 @@ WINBASEAPI BOOL WINAPI SetSecurityDescriptorGroup (PSECURITY_DESCRIPTOR Security
 {
     struct qemu_SetSecurityDescriptorGroup call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSECURITYDESCRIPTORGROUP);
-    call.SecurityDescriptor = (uint64_t)SecurityDescriptor;
-    call.Group = (uint64_t)Group;
-    call.GroupDefaulted = (uint64_t)GroupDefaulted;
+    call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
+    call.Group = (ULONG_PTR)Group;
+    call.GroupDefaulted = (ULONG_PTR)GroupDefaulted;
 
     qemu_syscall(&call.super);
 
@@ -1360,7 +1360,7 @@ WINBASEAPI BOOL WINAPI IsValidSecurityDescriptor(PSECURITY_DESCRIPTOR SecurityDe
 {
     struct qemu_IsValidSecurityDescriptor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISVALIDSECURITYDESCRIPTOR);
-    call.SecurityDescriptor = (uint64_t)SecurityDescriptor;
+    call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
 
     qemu_syscall(&call.super);
 
@@ -1393,10 +1393,10 @@ WINBASEAPI BOOL WINAPI GetSecurityDescriptorDacl(IN PSECURITY_DESCRIPTOR pSecuri
 {
     struct qemu_GetSecurityDescriptorDacl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSECURITYDESCRIPTORDACL);
-    call.pSecurityDescriptor = (uint64_t)pSecurityDescriptor;
-    call.lpbDaclPresent = (uint64_t)lpbDaclPresent;
-    call.pDacl = (uint64_t)pDacl;
-    call.lpbDaclDefaulted = (uint64_t)lpbDaclDefaulted;
+    call.pSecurityDescriptor = (ULONG_PTR)pSecurityDescriptor;
+    call.lpbDaclPresent = (ULONG_PTR)lpbDaclPresent;
+    call.pDacl = (ULONG_PTR)pDacl;
+    call.lpbDaclDefaulted = (ULONG_PTR)lpbDaclDefaulted;
 
     qemu_syscall(&call.super);
 
@@ -1429,10 +1429,10 @@ WINBASEAPI BOOL WINAPI SetSecurityDescriptorDacl (PSECURITY_DESCRIPTOR lpsd, BOO
 {
     struct qemu_SetSecurityDescriptorDacl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSECURITYDESCRIPTORDACL);
-    call.lpsd = (uint64_t)lpsd;
-    call.daclpresent = (uint64_t)daclpresent;
-    call.dacl = (uint64_t)dacl;
-    call.dacldefaulted = (uint64_t)dacldefaulted;
+    call.lpsd = (ULONG_PTR)lpsd;
+    call.daclpresent = (ULONG_PTR)daclpresent;
+    call.dacl = (ULONG_PTR)dacl;
+    call.dacldefaulted = (ULONG_PTR)dacldefaulted;
 
     qemu_syscall(&call.super);
 
@@ -1465,10 +1465,10 @@ WINBASEAPI BOOL WINAPI GetSecurityDescriptorSacl(IN PSECURITY_DESCRIPTOR lpsd, O
 {
     struct qemu_GetSecurityDescriptorSacl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSECURITYDESCRIPTORSACL);
-    call.lpsd = (uint64_t)lpsd;
-    call.lpbSaclPresent = (uint64_t)lpbSaclPresent;
-    call.pSacl = (uint64_t)pSacl;
-    call.lpbSaclDefaulted = (uint64_t)lpbSaclDefaulted;
+    call.lpsd = (ULONG_PTR)lpsd;
+    call.lpbSaclPresent = (ULONG_PTR)lpbSaclPresent;
+    call.pSacl = (ULONG_PTR)pSacl;
+    call.lpbSaclDefaulted = (ULONG_PTR)lpbSaclDefaulted;
 
     qemu_syscall(&call.super);
 
@@ -1501,10 +1501,10 @@ WINBASEAPI BOOL WINAPI SetSecurityDescriptorSacl (PSECURITY_DESCRIPTOR lpsd, BOO
 {
     struct qemu_SetSecurityDescriptorSacl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSECURITYDESCRIPTORSACL);
-    call.lpsd = (uint64_t)lpsd;
-    call.saclpresent = (uint64_t)saclpresent;
-    call.lpsacl = (uint64_t)lpsacl;
-    call.sacldefaulted = (uint64_t)sacldefaulted;
+    call.lpsd = (ULONG_PTR)lpsd;
+    call.saclpresent = (ULONG_PTR)saclpresent;
+    call.lpsacl = (ULONG_PTR)lpsacl;
+    call.sacldefaulted = (ULONG_PTR)sacldefaulted;
 
     qemu_syscall(&call.super);
 
@@ -1536,9 +1536,9 @@ WINBASEAPI BOOL WINAPI MakeSelfRelativeSD(IN PSECURITY_DESCRIPTOR pAbsoluteSecur
 {
     struct qemu_MakeSelfRelativeSD call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MAKESELFRELATIVESD);
-    call.pAbsoluteSecurityDescriptor = (uint64_t)pAbsoluteSecurityDescriptor;
-    call.pSelfRelativeSecurityDescriptor = (uint64_t)pSelfRelativeSecurityDescriptor;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
+    call.pAbsoluteSecurityDescriptor = (ULONG_PTR)pAbsoluteSecurityDescriptor;
+    call.pSelfRelativeSecurityDescriptor = (ULONG_PTR)pSelfRelativeSecurityDescriptor;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
 
     qemu_syscall(&call.super);
 
@@ -1570,9 +1570,9 @@ WINBASEAPI BOOL WINAPI GetSecurityDescriptorControl (PSECURITY_DESCRIPTOR pSecur
 {
     struct qemu_GetSecurityDescriptorControl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSECURITYDESCRIPTORCONTROL);
-    call.pSecurityDescriptor = (uint64_t)pSecurityDescriptor;
-    call.pControl = (uint64_t)pControl;
-    call.lpdwRevision = (uint64_t)lpdwRevision;
+    call.pSecurityDescriptor = (ULONG_PTR)pSecurityDescriptor;
+    call.pControl = (ULONG_PTR)pControl;
+    call.lpdwRevision = (ULONG_PTR)lpdwRevision;
 
     qemu_syscall(&call.super);
 
@@ -1604,9 +1604,9 @@ WINBASEAPI BOOL WINAPI SetSecurityDescriptorControl(PSECURITY_DESCRIPTOR pSecuri
 {
     struct qemu_SetSecurityDescriptorControl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSECURITYDESCRIPTORCONTROL);
-    call.pSecurityDescriptor = (uint64_t)pSecurityDescriptor;
-    call.ControlBitsOfInterest = (uint64_t)ControlBitsOfInterest;
-    call.ControlBitsToSet = (uint64_t)ControlBitsToSet;
+    call.pSecurityDescriptor = (ULONG_PTR)pSecurityDescriptor;
+    call.ControlBitsOfInterest = (ULONG_PTR)ControlBitsOfInterest;
+    call.ControlBitsToSet = (ULONG_PTR)ControlBitsToSet;
 
     qemu_syscall(&call.super);
 
@@ -1638,9 +1638,9 @@ WINBASEAPI BOOL WINAPI GetWindowsAccountDomainSid(PSID sid, PSID domain_sid, DWO
 {
     struct qemu_GetWindowsAccountDomainSid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETWINDOWSACCOUNTDOMAINSID);
-    call.sid = (uint64_t)sid;
-    call.domain_sid = (uint64_t)domain_sid;
-    call.size = (uint64_t)size;
+    call.sid = (ULONG_PTR)sid;
+    call.domain_sid = (ULONG_PTR)domain_sid;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -1674,9 +1674,9 @@ WINBASEAPI BOOL WINAPI InitializeAcl(PACL acl, DWORD size, DWORD rev)
 {
     struct qemu_InitializeAcl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INITIALIZEACL);
-    call.acl = (uint64_t)acl;
-    call.size = (uint64_t)size;
-    call.rev = (uint64_t)rev;
+    call.acl = (ULONG_PTR)acl;
+    call.size = (ULONG_PTR)size;
+    call.rev = (ULONG_PTR)rev;
 
     qemu_syscall(&call.super);
 
@@ -1706,7 +1706,7 @@ WINBASEAPI BOOL WINAPI ImpersonateNamedPipeClient(HANDLE hNamedPipe)
 {
     struct qemu_ImpersonateNamedPipeClient call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMPERSONATENAMEDPIPECLIENT);
-    call.hNamedPipe = (uint64_t)hNamedPipe;
+    call.hNamedPipe = (ULONG_PTR)hNamedPipe;
 
     qemu_syscall(&call.super);
 
@@ -1739,10 +1739,10 @@ WINBASEAPI BOOL WINAPI AddAccessAllowedAce(IN OUT PACL pAcl, IN DWORD dwAceRevis
 {
     struct qemu_AddAccessAllowedAce call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDACCESSALLOWEDACE);
-    call.pAcl = (uint64_t)pAcl;
-    call.dwAceRevision = (uint64_t)dwAceRevision;
-    call.AccessMask = (uint64_t)AccessMask;
-    call.pSid = (uint64_t)pSid;
+    call.pAcl = (ULONG_PTR)pAcl;
+    call.dwAceRevision = (ULONG_PTR)dwAceRevision;
+    call.AccessMask = (ULONG_PTR)AccessMask;
+    call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
 
@@ -1776,11 +1776,11 @@ WINBASEAPI BOOL WINAPI AddAccessAllowedAceEx(IN OUT PACL pAcl, IN DWORD dwAceRev
 {
     struct qemu_AddAccessAllowedAceEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDACCESSALLOWEDACEEX);
-    call.pAcl = (uint64_t)pAcl;
-    call.dwAceRevision = (uint64_t)dwAceRevision;
-    call.AceFlags = (uint64_t)AceFlags;
-    call.AccessMask = (uint64_t)AccessMask;
-    call.pSid = (uint64_t)pSid;
+    call.pAcl = (ULONG_PTR)pAcl;
+    call.dwAceRevision = (ULONG_PTR)dwAceRevision;
+    call.AceFlags = (ULONG_PTR)AceFlags;
+    call.AccessMask = (ULONG_PTR)AccessMask;
+    call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
 
@@ -1816,13 +1816,13 @@ WINBASEAPI BOOL WINAPI AddAccessAllowedObjectAce(IN OUT PACL pAcl, IN DWORD dwAc
 {
     struct qemu_AddAccessAllowedObjectAce call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDACCESSALLOWEDOBJECTACE);
-    call.pAcl = (uint64_t)pAcl;
-    call.dwAceRevision = (uint64_t)dwAceRevision;
-    call.dwAceFlags = (uint64_t)dwAceFlags;
-    call.dwAccessMask = (uint64_t)dwAccessMask;
-    call.pObjectTypeGuid = (uint64_t)pObjectTypeGuid;
-    call.pInheritedObjectTypeGuid = (uint64_t)pInheritedObjectTypeGuid;
-    call.pSid = (uint64_t)pSid;
+    call.pAcl = (ULONG_PTR)pAcl;
+    call.dwAceRevision = (ULONG_PTR)dwAceRevision;
+    call.dwAceFlags = (ULONG_PTR)dwAceFlags;
+    call.dwAccessMask = (ULONG_PTR)dwAccessMask;
+    call.pObjectTypeGuid = (ULONG_PTR)pObjectTypeGuid;
+    call.pInheritedObjectTypeGuid = (ULONG_PTR)pInheritedObjectTypeGuid;
+    call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
 
@@ -1857,10 +1857,10 @@ WINBASEAPI BOOL WINAPI AddAccessDeniedAce(IN OUT PACL pAcl, IN DWORD dwAceRevisi
 {
     struct qemu_AddAccessDeniedAce call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDACCESSDENIEDACE);
-    call.pAcl = (uint64_t)pAcl;
-    call.dwAceRevision = (uint64_t)dwAceRevision;
-    call.AccessMask = (uint64_t)AccessMask;
-    call.pSid = (uint64_t)pSid;
+    call.pAcl = (ULONG_PTR)pAcl;
+    call.dwAceRevision = (ULONG_PTR)dwAceRevision;
+    call.AccessMask = (ULONG_PTR)AccessMask;
+    call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
 
@@ -1894,11 +1894,11 @@ WINBASEAPI BOOL WINAPI AddAccessDeniedAceEx(IN OUT PACL pAcl, IN DWORD dwAceRevi
 {
     struct qemu_AddAccessDeniedAceEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDACCESSDENIEDACEEX);
-    call.pAcl = (uint64_t)pAcl;
-    call.dwAceRevision = (uint64_t)dwAceRevision;
-    call.AceFlags = (uint64_t)AceFlags;
-    call.AccessMask = (uint64_t)AccessMask;
-    call.pSid = (uint64_t)pSid;
+    call.pAcl = (ULONG_PTR)pAcl;
+    call.dwAceRevision = (ULONG_PTR)dwAceRevision;
+    call.AceFlags = (ULONG_PTR)AceFlags;
+    call.AccessMask = (ULONG_PTR)AccessMask;
+    call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
 
@@ -1934,13 +1934,13 @@ WINBASEAPI BOOL WINAPI AddAccessDeniedObjectAce(IN OUT PACL pAcl, IN DWORD dwAce
 {
     struct qemu_AddAccessDeniedObjectAce call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDACCESSDENIEDOBJECTACE);
-    call.pAcl = (uint64_t)pAcl;
-    call.dwAceRevision = (uint64_t)dwAceRevision;
-    call.dwAceFlags = (uint64_t)dwAceFlags;
-    call.dwAccessMask = (uint64_t)dwAccessMask;
-    call.pObjectTypeGuid = (uint64_t)pObjectTypeGuid;
-    call.pInheritedObjectTypeGuid = (uint64_t)pInheritedObjectTypeGuid;
-    call.pSid = (uint64_t)pSid;
+    call.pAcl = (ULONG_PTR)pAcl;
+    call.dwAceRevision = (ULONG_PTR)dwAceRevision;
+    call.dwAceFlags = (ULONG_PTR)dwAceFlags;
+    call.dwAccessMask = (ULONG_PTR)dwAccessMask;
+    call.pObjectTypeGuid = (ULONG_PTR)pObjectTypeGuid;
+    call.pInheritedObjectTypeGuid = (ULONG_PTR)pInheritedObjectTypeGuid;
+    call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
 
@@ -1976,11 +1976,11 @@ WINBASEAPI BOOL WINAPI AddAce(IN OUT PACL pAcl, IN DWORD dwAceRevision, IN DWORD
 {
     struct qemu_AddAce call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDACE);
-    call.pAcl = (uint64_t)pAcl;
-    call.dwAceRevision = (uint64_t)dwAceRevision;
-    call.dwStartingAceIndex = (uint64_t)dwStartingAceIndex;
-    call.pAceList = (uint64_t)pAceList;
-    call.nAceListLength = (uint64_t)nAceListLength;
+    call.pAcl = (ULONG_PTR)pAcl;
+    call.dwAceRevision = (ULONG_PTR)dwAceRevision;
+    call.dwStartingAceIndex = (ULONG_PTR)dwStartingAceIndex;
+    call.pAceList = (ULONG_PTR)pAceList;
+    call.nAceListLength = (ULONG_PTR)nAceListLength;
 
     qemu_syscall(&call.super);
 
@@ -2014,11 +2014,11 @@ WINBASEAPI BOOL WINAPI AddMandatoryAce(ACL *acl, DWORD ace_revision, DWORD ace_f
 {
     struct qemu_AddMandatoryAce call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDMANDATORYACE);
-    call.acl = (uint64_t)acl;
-    call.ace_revision = (uint64_t)ace_revision;
-    call.ace_flags = (uint64_t)ace_flags;
-    call.mandatory_policy = (uint64_t)mandatory_policy;
-    call.label_sid = (uint64_t)label_sid;
+    call.acl = (ULONG_PTR)acl;
+    call.ace_revision = (ULONG_PTR)ace_revision;
+    call.ace_flags = (ULONG_PTR)ace_flags;
+    call.mandatory_policy = (ULONG_PTR)mandatory_policy;
+    call.label_sid = (ULONG_PTR)label_sid;
 
     qemu_syscall(&call.super);
 
@@ -2049,8 +2049,8 @@ WINBASEAPI BOOL WINAPI DeleteAce(PACL pAcl, DWORD dwAceIndex)
 {
     struct qemu_DeleteAce call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETEACE);
-    call.pAcl = (uint64_t)pAcl;
-    call.dwAceIndex = (uint64_t)dwAceIndex;
+    call.pAcl = (ULONG_PTR)pAcl;
+    call.dwAceIndex = (ULONG_PTR)dwAceIndex;
 
     qemu_syscall(&call.super);
 
@@ -2081,8 +2081,8 @@ WINBASEAPI BOOL WINAPI FindFirstFreeAce(IN PACL pAcl, LPVOID * pAce)
 {
     struct qemu_FindFirstFreeAce call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDFIRSTFREEACE);
-    call.pAcl = (uint64_t)pAcl;
-    call.pAce = (uint64_t)pAce;
+    call.pAcl = (ULONG_PTR)pAcl;
+    call.pAce = (ULONG_PTR)pAce;
 
     qemu_syscall(&call.super);
 
@@ -2114,9 +2114,9 @@ WINBASEAPI BOOL WINAPI GetAce(PACL pAcl,DWORD dwAceIndex,LPVOID *pAce)
 {
     struct qemu_GetAce call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETACE);
-    call.pAcl = (uint64_t)pAcl;
-    call.dwAceIndex = (uint64_t)dwAceIndex;
-    call.pAce = (uint64_t)pAce;
+    call.pAcl = (ULONG_PTR)pAcl;
+    call.dwAceIndex = (ULONG_PTR)dwAceIndex;
+    call.pAce = (ULONG_PTR)pAce;
 
     qemu_syscall(&call.super);
 
@@ -2149,10 +2149,10 @@ WINBASEAPI BOOL WINAPI GetAclInformation(PACL pAcl, LPVOID pAclInformation, DWOR
 {
     struct qemu_GetAclInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETACLINFORMATION);
-    call.pAcl = (uint64_t)pAcl;
-    call.pAclInformation = (uint64_t)pAclInformation;
-    call.nAclInformationLength = (uint64_t)nAclInformationLength;
-    call.dwAclInformationClass = (uint64_t)dwAclInformationClass;
+    call.pAcl = (ULONG_PTR)pAcl;
+    call.pAclInformation = (ULONG_PTR)pAclInformation;
+    call.nAclInformationLength = (ULONG_PTR)nAclInformationLength;
+    call.dwAclInformationClass = (ULONG_PTR)dwAclInformationClass;
 
     qemu_syscall(&call.super);
 
@@ -2182,7 +2182,7 @@ WINBASEAPI BOOL WINAPI IsValidAcl(IN PACL pAcl)
 {
     struct qemu_IsValidAcl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISVALIDACL);
-    call.pAcl = (uint64_t)pAcl;
+    call.pAcl = (ULONG_PTR)pAcl;
 
     qemu_syscall(&call.super);
 
@@ -2212,7 +2212,7 @@ WINBASEAPI BOOL WINAPI AllocateLocallyUniqueId(PLUID lpLuid)
 {
     struct qemu_AllocateLocallyUniqueId call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ALLOCATELOCALLYUNIQUEID);
-    call.lpLuid = (uint64_t)lpLuid;
+    call.lpLuid = (ULONG_PTR)lpLuid;
 
     qemu_syscall(&call.super);
 
@@ -2244,9 +2244,9 @@ WINBASEAPI BOOL WINAPI LookupPrivilegeValueW(LPCWSTR lpSystemName, LPCWSTR lpNam
 {
     struct qemu_LookupPrivilegeValueW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPPRIVILEGEVALUEW);
-    call.lpSystemName = (uint64_t)lpSystemName;
-    call.lpName = (uint64_t)lpName;
-    call.lpLuid = (uint64_t)lpLuid;
+    call.lpSystemName = (ULONG_PTR)lpSystemName;
+    call.lpName = (ULONG_PTR)lpName;
+    call.lpLuid = (ULONG_PTR)lpLuid;
 
     qemu_syscall(&call.super);
 
@@ -2278,9 +2278,9 @@ WINBASEAPI BOOL WINAPI LookupPrivilegeValueA(LPCSTR lpSystemName, LPCSTR lpName,
 {
     struct qemu_LookupPrivilegeValueA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPPRIVILEGEVALUEA);
-    call.lpSystemName = (uint64_t)lpSystemName;
-    call.lpName = (uint64_t)lpName;
-    call.lpLuid = (uint64_t)lpLuid;
+    call.lpSystemName = (ULONG_PTR)lpSystemName;
+    call.lpName = (ULONG_PTR)lpName;
+    call.lpLuid = (ULONG_PTR)lpLuid;
 
     qemu_syscall(&call.super);
 
@@ -2314,11 +2314,11 @@ WINBASEAPI BOOL WINAPI LookupPrivilegeDisplayNameA(LPCSTR lpSystemName, LPCSTR l
 {
     struct qemu_LookupPrivilegeDisplayNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPPRIVILEGEDISPLAYNAMEA);
-    call.lpSystemName = (uint64_t)lpSystemName;
-    call.lpName = (uint64_t)lpName;
-    call.lpDisplayName = (uint64_t)lpDisplayName;
-    call.cchDisplayName = (uint64_t)cchDisplayName;
-    call.lpLanguageId = (uint64_t)lpLanguageId;
+    call.lpSystemName = (ULONG_PTR)lpSystemName;
+    call.lpName = (ULONG_PTR)lpName;
+    call.lpDisplayName = (ULONG_PTR)lpDisplayName;
+    call.cchDisplayName = (ULONG_PTR)cchDisplayName;
+    call.lpLanguageId = (ULONG_PTR)lpLanguageId;
 
     qemu_syscall(&call.super);
 
@@ -2352,11 +2352,11 @@ WINBASEAPI BOOL WINAPI LookupPrivilegeDisplayNameW(LPCWSTR lpSystemName, LPCWSTR
 {
     struct qemu_LookupPrivilegeDisplayNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPPRIVILEGEDISPLAYNAMEW);
-    call.lpSystemName = (uint64_t)lpSystemName;
-    call.lpName = (uint64_t)lpName;
-    call.lpDisplayName = (uint64_t)lpDisplayName;
-    call.cchDisplayName = (uint64_t)cchDisplayName;
-    call.lpLanguageId = (uint64_t)lpLanguageId;
+    call.lpSystemName = (ULONG_PTR)lpSystemName;
+    call.lpName = (ULONG_PTR)lpName;
+    call.lpDisplayName = (ULONG_PTR)lpDisplayName;
+    call.cchDisplayName = (ULONG_PTR)cchDisplayName;
+    call.lpLanguageId = (ULONG_PTR)lpLanguageId;
 
     qemu_syscall(&call.super);
 
@@ -2389,10 +2389,10 @@ WINBASEAPI BOOL WINAPI LookupPrivilegeNameA(LPCSTR lpSystemName, PLUID lpLuid, L
 {
     struct qemu_LookupPrivilegeNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPPRIVILEGENAMEA);
-    call.lpSystemName = (uint64_t)lpSystemName;
-    call.lpLuid = (uint64_t)lpLuid;
-    call.lpName = (uint64_t)lpName;
-    call.cchName = (uint64_t)cchName;
+    call.lpSystemName = (ULONG_PTR)lpSystemName;
+    call.lpLuid = (ULONG_PTR)lpLuid;
+    call.lpName = (ULONG_PTR)lpName;
+    call.cchName = (ULONG_PTR)cchName;
 
     qemu_syscall(&call.super);
 
@@ -2425,10 +2425,10 @@ WINBASEAPI BOOL WINAPI LookupPrivilegeNameW(LPCWSTR lpSystemName, PLUID lpLuid, 
 {
     struct qemu_LookupPrivilegeNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPPRIVILEGENAMEW);
-    call.lpSystemName = (uint64_t)lpSystemName;
-    call.lpLuid = (uint64_t)lpLuid;
-    call.lpName = (uint64_t)lpName;
-    call.cchName = (uint64_t)cchName;
+    call.lpSystemName = (ULONG_PTR)lpSystemName;
+    call.lpLuid = (ULONG_PTR)lpLuid;
+    call.lpName = (ULONG_PTR)lpName;
+    call.cchName = (ULONG_PTR)cchName;
 
     qemu_syscall(&call.super);
 
@@ -2462,11 +2462,11 @@ WINBASEAPI BOOL WINAPI GetFileSecurityA(LPCSTR lpFileName, SECURITY_INFORMATION 
 {
     struct qemu_GetFileSecurityA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILESECURITYA);
-    call.lpFileName = (uint64_t)lpFileName;
-    call.RequestedInformation = (uint64_t)RequestedInformation;
-    call.pSecurityDescriptor = (uint64_t)pSecurityDescriptor;
-    call.nLength = (uint64_t)nLength;
-    call.lpnLengthNeeded = (uint64_t)lpnLengthNeeded;
+    call.lpFileName = (ULONG_PTR)lpFileName;
+    call.RequestedInformation = (ULONG_PTR)RequestedInformation;
+    call.pSecurityDescriptor = (ULONG_PTR)pSecurityDescriptor;
+    call.nLength = (ULONG_PTR)nLength;
+    call.lpnLengthNeeded = (ULONG_PTR)lpnLengthNeeded;
 
     qemu_syscall(&call.super);
 
@@ -2500,11 +2500,11 @@ WINBASEAPI BOOL WINAPI GetFileSecurityW(LPCWSTR lpFileName, SECURITY_INFORMATION
 {
     struct qemu_GetFileSecurityW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILESECURITYW);
-    call.lpFileName = (uint64_t)lpFileName;
-    call.RequestedInformation = (uint64_t)RequestedInformation;
-    call.pSecurityDescriptor = (uint64_t)pSecurityDescriptor;
-    call.nLength = (uint64_t)nLength;
-    call.lpnLengthNeeded = (uint64_t)lpnLengthNeeded;
+    call.lpFileName = (ULONG_PTR)lpFileName;
+    call.RequestedInformation = (ULONG_PTR)RequestedInformation;
+    call.pSecurityDescriptor = (ULONG_PTR)pSecurityDescriptor;
+    call.nLength = (ULONG_PTR)nLength;
+    call.lpnLengthNeeded = (ULONG_PTR)lpnLengthNeeded;
 
     qemu_syscall(&call.super);
 
@@ -2540,13 +2540,13 @@ WINBASEAPI BOOL WINAPI LookupAccountSidA(IN LPCSTR system, IN PSID sid, OUT LPST
 {
     struct qemu_LookupAccountSidA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPACCOUNTSIDA);
-    call.system = (uint64_t)system;
-    call.sid = (uint64_t)sid;
-    call.account = (uint64_t)account;
-    call.accountSize = (uint64_t)accountSize;
-    call.domain = (uint64_t)domain;
-    call.domainSize = (uint64_t)domainSize;
-    call.name_use = (uint64_t)name_use;
+    call.system = (ULONG_PTR)system;
+    call.sid = (ULONG_PTR)sid;
+    call.account = (ULONG_PTR)account;
+    call.accountSize = (ULONG_PTR)accountSize;
+    call.domain = (ULONG_PTR)domain;
+    call.domainSize = (ULONG_PTR)domainSize;
+    call.name_use = (ULONG_PTR)name_use;
 
     qemu_syscall(&call.super);
 
@@ -2582,13 +2582,13 @@ WINBASEAPI BOOL WINAPI LookupAccountSidW(IN LPCWSTR system, IN PSID sid, OUT LPW
 {
     struct qemu_LookupAccountSidW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPACCOUNTSIDW);
-    call.system = (uint64_t)system;
-    call.sid = (uint64_t)sid;
-    call.account = (uint64_t)account;
-    call.accountSize = (uint64_t)accountSize;
-    call.domain = (uint64_t)domain;
-    call.domainSize = (uint64_t)domainSize;
-    call.name_use = (uint64_t)name_use;
+    call.system = (ULONG_PTR)system;
+    call.sid = (ULONG_PTR)sid;
+    call.account = (ULONG_PTR)account;
+    call.accountSize = (ULONG_PTR)accountSize;
+    call.domain = (ULONG_PTR)domain;
+    call.domainSize = (ULONG_PTR)domainSize;
+    call.name_use = (ULONG_PTR)name_use;
 
     qemu_syscall(&call.super);
 
@@ -2620,9 +2620,9 @@ WINBASEAPI BOOL WINAPI SetFileSecurityA(LPCSTR lpFileName, SECURITY_INFORMATION 
 {
     struct qemu_SetFileSecurityA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFILESECURITYA);
-    call.lpFileName = (uint64_t)lpFileName;
-    call.RequestedInformation = (uint64_t)RequestedInformation;
-    call.pSecurityDescriptor = (uint64_t)pSecurityDescriptor;
+    call.lpFileName = (ULONG_PTR)lpFileName;
+    call.RequestedInformation = (ULONG_PTR)RequestedInformation;
+    call.pSecurityDescriptor = (ULONG_PTR)pSecurityDescriptor;
 
     qemu_syscall(&call.super);
 
@@ -2654,9 +2654,9 @@ WINBASEAPI BOOL WINAPI SetFileSecurityW(LPCWSTR lpFileName, SECURITY_INFORMATION
 {
     struct qemu_SetFileSecurityW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFILESECURITYW);
-    call.lpFileName = (uint64_t)lpFileName;
-    call.RequestedInformation = (uint64_t)RequestedInformation;
-    call.pSecurityDescriptor = (uint64_t)pSecurityDescriptor;
+    call.lpFileName = (ULONG_PTR)lpFileName;
+    call.RequestedInformation = (ULONG_PTR)RequestedInformation;
+    call.pSecurityDescriptor = (ULONG_PTR)pSecurityDescriptor;
 
     qemu_syscall(&call.super);
 
@@ -2686,7 +2686,7 @@ WINBASEAPI BOOL WINAPI QueryWindows31FilesMigration(DWORD x1)
 {
     struct qemu_QueryWindows31FilesMigration call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYWINDOWS31FILESMIGRATION);
-    call.x1 = (uint64_t)x1;
+    call.x1 = (ULONG_PTR)x1;
 
     qemu_syscall(&call.super);
 
@@ -2721,10 +2721,10 @@ WINBASEAPI BOOL WINAPI SynchronizeWindows31FilesAndWindowsNTRegistry(DWORD x1, D
 {
     struct qemu_SynchronizeWindows31FilesAndWindowsNTRegistry call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SYNCHRONIZEWINDOWS31FILESANDWINDOWSNTREGISTRY);
-    call.x1 = (uint64_t)x1;
-    call.x2 = (uint64_t)x2;
-    call.x3 = (uint64_t)x3;
-    call.x4 = (uint64_t)x4;
+    call.x1 = (ULONG_PTR)x1;
+    call.x2 = (ULONG_PTR)x2;
+    call.x3 = (ULONG_PTR)x3;
+    call.x4 = (ULONG_PTR)x4;
 
     qemu_syscall(&call.super);
 
@@ -2756,7 +2756,7 @@ WINBASEAPI BOOL WINAPI NotifyBootConfigStatus(BOOL x1)
 {
     struct qemu_NotifyBootConfigStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NOTIFYBOOTCONFIGSTATUS);
-    call.x1 = (uint64_t)x1;
+    call.x1 = (ULONG_PTR)x1;
 
     qemu_syscall(&call.super);
 
@@ -2814,7 +2814,7 @@ WINBASEAPI BOOL WINAPI ImpersonateSelf(SECURITY_IMPERSONATION_LEVEL Impersonatio
 {
     struct qemu_ImpersonateSelf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMPERSONATESELF);
-    call.ImpersonationLevel = (uint64_t)ImpersonationLevel;
+    call.ImpersonationLevel = (ULONG_PTR)ImpersonationLevel;
 
     qemu_syscall(&call.super);
 
@@ -2844,7 +2844,7 @@ WINBASEAPI BOOL WINAPI ImpersonateLoggedOnUser(HANDLE hToken)
 {
     struct qemu_ImpersonateLoggedOnUser call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMPERSONATELOGGEDONUSER);
-    call.hToken = (uint64_t)hToken;
+    call.hToken = (ULONG_PTR)hToken;
 
     qemu_syscall(&call.super);
 
@@ -2874,7 +2874,7 @@ WINBASEAPI BOOL WINAPI ImpersonateAnonymousToken(HANDLE thread)
 {
     struct qemu_ImpersonateAnonymousToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMPERSONATEANONYMOUSTOKEN);
-    call.thread = (uint64_t)thread;
+    call.thread = (ULONG_PTR)thread;
 
     qemu_syscall(&call.super);
 
@@ -2913,14 +2913,14 @@ WINBASEAPI BOOL WINAPI AccessCheck(PSECURITY_DESCRIPTOR SecurityDescriptor, HAND
 {
     struct qemu_AccessCheck call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACCESSCHECK);
-    call.SecurityDescriptor = (uint64_t)SecurityDescriptor;
-    call.ClientToken = (uint64_t)ClientToken;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
-    call.GenericMapping = (uint64_t)GenericMapping;
-    call.PrivilegeSet = (uint64_t)PrivilegeSet;
-    call.PrivilegeSetLength = (uint64_t)PrivilegeSetLength;
-    call.GrantedAccess = (uint64_t)GrantedAccess;
-    call.AccessStatus = (uint64_t)AccessStatus;
+    call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
+    call.ClientToken = (ULONG_PTR)ClientToken;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
+    call.GenericMapping = (ULONG_PTR)GenericMapping;
+    call.PrivilegeSet = (ULONG_PTR)PrivilegeSet;
+    call.PrivilegeSetLength = (ULONG_PTR)PrivilegeSetLength;
+    call.GrantedAccess = (ULONG_PTR)GrantedAccess;
+    call.AccessStatus = (ULONG_PTR)AccessStatus;
 
     qemu_syscall(&call.super);
 
@@ -2960,17 +2960,17 @@ WINBASEAPI BOOL WINAPI AccessCheckByType(PSECURITY_DESCRIPTOR pSecurityDescripto
 {
     struct qemu_AccessCheckByType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACCESSCHECKBYTYPE);
-    call.pSecurityDescriptor = (uint64_t)pSecurityDescriptor;
-    call.PrincipalSelfSid = (uint64_t)PrincipalSelfSid;
-    call.ClientToken = (uint64_t)ClientToken;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
-    call.ObjectTypeList = (uint64_t)ObjectTypeList;
-    call.ObjectTypeListLength = (uint64_t)ObjectTypeListLength;
-    call.GenericMapping = (uint64_t)GenericMapping;
-    call.PrivilegeSet = (uint64_t)PrivilegeSet;
-    call.PrivilegeSetLength = (uint64_t)PrivilegeSetLength;
-    call.GrantedAccess = (uint64_t)GrantedAccess;
-    call.AccessStatus = (uint64_t)AccessStatus;
+    call.pSecurityDescriptor = (ULONG_PTR)pSecurityDescriptor;
+    call.PrincipalSelfSid = (ULONG_PTR)PrincipalSelfSid;
+    call.ClientToken = (ULONG_PTR)ClientToken;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
+    call.ObjectTypeList = (ULONG_PTR)ObjectTypeList;
+    call.ObjectTypeListLength = (ULONG_PTR)ObjectTypeListLength;
+    call.GenericMapping = (ULONG_PTR)GenericMapping;
+    call.PrivilegeSet = (ULONG_PTR)PrivilegeSet;
+    call.PrivilegeSetLength = (ULONG_PTR)PrivilegeSetLength;
+    call.GrantedAccess = (ULONG_PTR)GrantedAccess;
+    call.AccessStatus = (ULONG_PTR)AccessStatus;
 
     qemu_syscall(&call.super);
 
@@ -3001,8 +3001,8 @@ WINBASEAPI VOID WINAPI MapGenericMask(PDWORD AccessMask, PGENERIC_MAPPING Generi
 {
     struct qemu_MapGenericMask call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MAPGENERICMASK);
-    call.AccessMask = (uint64_t)AccessMask;
-    call.GenericMapping = (uint64_t)GenericMapping;
+    call.AccessMask = (ULONG_PTR)AccessMask;
+    call.GenericMapping = (ULONG_PTR)GenericMapping;
 
     qemu_syscall(&call.super);
 }
@@ -3032,9 +3032,9 @@ WINBASEAPI BOOL WINAPI SetKernelObjectSecurity (IN HANDLE Handle, IN SECURITY_IN
 {
     struct qemu_SetKernelObjectSecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETKERNELOBJECTSECURITY);
-    call.Handle = (uint64_t)Handle;
-    call.SecurityInformation = (uint64_t)SecurityInformation;
-    call.SecurityDescriptor = (uint64_t)SecurityDescriptor;
+    call.Handle = (ULONG_PTR)Handle;
+    call.SecurityInformation = (ULONG_PTR)SecurityInformation;
+    call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
 
     qemu_syscall(&call.super);
 
@@ -3069,12 +3069,12 @@ WINBASEAPI BOOL WINAPI AddAuditAccessAce(IN OUT PACL pAcl, IN DWORD dwAceRevisio
 {
     struct qemu_AddAuditAccessAce call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDAUDITACCESSACE);
-    call.pAcl = (uint64_t)pAcl;
-    call.dwAceRevision = (uint64_t)dwAceRevision;
-    call.dwAccessMask = (uint64_t)dwAccessMask;
-    call.pSid = (uint64_t)pSid;
-    call.bAuditSuccess = (uint64_t)bAuditSuccess;
-    call.bAuditFailure = (uint64_t)bAuditFailure;
+    call.pAcl = (ULONG_PTR)pAcl;
+    call.dwAceRevision = (ULONG_PTR)dwAceRevision;
+    call.dwAccessMask = (ULONG_PTR)dwAccessMask;
+    call.pSid = (ULONG_PTR)pSid;
+    call.bAuditSuccess = (ULONG_PTR)bAuditSuccess;
+    call.bAuditFailure = (ULONG_PTR)bAuditFailure;
 
     qemu_syscall(&call.super);
 
@@ -3110,13 +3110,13 @@ WINBASEAPI BOOL WINAPI AddAuditAccessAceEx(IN OUT PACL pAcl, IN DWORD dwAceRevis
 {
     struct qemu_AddAuditAccessAceEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDAUDITACCESSACEEX);
-    call.pAcl = (uint64_t)pAcl;
-    call.dwAceRevision = (uint64_t)dwAceRevision;
-    call.dwAceFlags = (uint64_t)dwAceFlags;
-    call.dwAccessMask = (uint64_t)dwAccessMask;
-    call.pSid = (uint64_t)pSid;
-    call.bAuditSuccess = (uint64_t)bAuditSuccess;
-    call.bAuditFailure = (uint64_t)bAuditFailure;
+    call.pAcl = (ULONG_PTR)pAcl;
+    call.dwAceRevision = (ULONG_PTR)dwAceRevision;
+    call.dwAceFlags = (ULONG_PTR)dwAceFlags;
+    call.dwAccessMask = (ULONG_PTR)dwAccessMask;
+    call.pSid = (ULONG_PTR)pSid;
+    call.bAuditSuccess = (ULONG_PTR)bAuditSuccess;
+    call.bAuditFailure = (ULONG_PTR)bAuditFailure;
 
     qemu_syscall(&call.super);
 
@@ -3154,15 +3154,15 @@ WINBASEAPI BOOL WINAPI AddAuditAccessObjectAce(IN OUT PACL pAcl, IN DWORD dwAceR
 {
     struct qemu_AddAuditAccessObjectAce call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDAUDITACCESSOBJECTACE);
-    call.pAcl = (uint64_t)pAcl;
-    call.dwAceRevision = (uint64_t)dwAceRevision;
-    call.dwAceFlags = (uint64_t)dwAceFlags;
-    call.dwAccessMask = (uint64_t)dwAccessMask;
-    call.pObjectTypeGuid = (uint64_t)pObjectTypeGuid;
-    call.pInheritedObjectTypeGuid = (uint64_t)pInheritedObjectTypeGuid;
-    call.pSid = (uint64_t)pSid;
-    call.bAuditSuccess = (uint64_t)bAuditSuccess;
-    call.bAuditFailure = (uint64_t)bAuditFailure;
+    call.pAcl = (ULONG_PTR)pAcl;
+    call.dwAceRevision = (ULONG_PTR)dwAceRevision;
+    call.dwAceFlags = (ULONG_PTR)dwAceFlags;
+    call.dwAccessMask = (ULONG_PTR)dwAccessMask;
+    call.pObjectTypeGuid = (ULONG_PTR)pObjectTypeGuid;
+    call.pInheritedObjectTypeGuid = (ULONG_PTR)pInheritedObjectTypeGuid;
+    call.pSid = (ULONG_PTR)pSid;
+    call.bAuditSuccess = (ULONG_PTR)bAuditSuccess;
+    call.bAuditFailure = (ULONG_PTR)bAuditFailure;
 
     qemu_syscall(&call.super);
 
@@ -3200,13 +3200,13 @@ WINBASEAPI BOOL WINAPI LookupAccountNameA(IN LPCSTR system, IN LPCSTR account, O
 {
     struct qemu_LookupAccountNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPACCOUNTNAMEA);
-    call.system = (uint64_t)system;
-    call.account = (uint64_t)account;
-    call.sid = (uint64_t)sid;
-    call.cbSid = (uint64_t)cbSid;
-    call.ReferencedDomainName = (uint64_t)ReferencedDomainName;
-    call.cbReferencedDomainName = (uint64_t)cbReferencedDomainName;
-    call.name_use = (uint64_t)name_use;
+    call.system = (ULONG_PTR)system;
+    call.account = (ULONG_PTR)account;
+    call.sid = (ULONG_PTR)sid;
+    call.cbSid = (ULONG_PTR)cbSid;
+    call.ReferencedDomainName = (ULONG_PTR)ReferencedDomainName;
+    call.cbReferencedDomainName = (ULONG_PTR)cbReferencedDomainName;
+    call.name_use = (ULONG_PTR)name_use;
 
     qemu_syscall(&call.super);
 
@@ -3242,13 +3242,13 @@ WINBASEAPI BOOL WINAPI LookupAccountNameW(LPCWSTR lpSystemName, LPCWSTR lpAccoun
 {
     struct qemu_LookupAccountNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPACCOUNTNAMEW);
-    call.lpSystemName = (uint64_t)lpSystemName;
-    call.lpAccountName = (uint64_t)lpAccountName;
-    call.Sid = (uint64_t)Sid;
-    call.cbSid = (uint64_t)cbSid;
-    call.ReferencedDomainName = (uint64_t)ReferencedDomainName;
-    call.cchReferencedDomainName = (uint64_t)cchReferencedDomainName;
-    call.peUse = (uint64_t)peUse;
+    call.lpSystemName = (ULONG_PTR)lpSystemName;
+    call.lpAccountName = (ULONG_PTR)lpAccountName;
+    call.Sid = (ULONG_PTR)Sid;
+    call.cbSid = (ULONG_PTR)cbSid;
+    call.ReferencedDomainName = (ULONG_PTR)ReferencedDomainName;
+    call.cchReferencedDomainName = (ULONG_PTR)cchReferencedDomainName;
+    call.peUse = (ULONG_PTR)peUse;
 
     qemu_syscall(&call.super);
 
@@ -3280,9 +3280,9 @@ WINBASEAPI BOOL WINAPI PrivilegeCheck(HANDLE ClientToken, PPRIVILEGE_SET Require
 {
     struct qemu_PrivilegeCheck call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRIVILEGECHECK);
-    call.ClientToken = (uint64_t)ClientToken;
-    call.RequiredPrivileges = (uint64_t)RequiredPrivileges;
-    call.pfResult = (uint64_t)pfResult;
+    call.ClientToken = (ULONG_PTR)ClientToken;
+    call.RequiredPrivileges = (ULONG_PTR)RequiredPrivileges;
+    call.pfResult = (ULONG_PTR)pfResult;
 
     qemu_syscall(&call.super);
 
@@ -3322,17 +3322,17 @@ WINBASEAPI BOOL WINAPI AccessCheckAndAuditAlarmA(LPCSTR Subsystem, LPVOID Handle
 {
     struct qemu_AccessCheckAndAuditAlarmA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACCESSCHECKANDAUDITALARMA);
-    call.Subsystem = (uint64_t)Subsystem;
-    call.HandleId = (uint64_t)HandleId;
-    call.ObjectTypeName = (uint64_t)ObjectTypeName;
-    call.ObjectName = (uint64_t)ObjectName;
-    call.SecurityDescriptor = (uint64_t)SecurityDescriptor;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
-    call.GenericMapping = (uint64_t)GenericMapping;
-    call.ObjectCreation = (uint64_t)ObjectCreation;
-    call.GrantedAccess = (uint64_t)GrantedAccess;
-    call.AccessStatus = (uint64_t)AccessStatus;
-    call.pfGenerateOnClose = (uint64_t)pfGenerateOnClose;
+    call.Subsystem = (ULONG_PTR)Subsystem;
+    call.HandleId = (ULONG_PTR)HandleId;
+    call.ObjectTypeName = (ULONG_PTR)ObjectTypeName;
+    call.ObjectName = (ULONG_PTR)ObjectName;
+    call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
+    call.GenericMapping = (ULONG_PTR)GenericMapping;
+    call.ObjectCreation = (ULONG_PTR)ObjectCreation;
+    call.GrantedAccess = (ULONG_PTR)GrantedAccess;
+    call.AccessStatus = (ULONG_PTR)AccessStatus;
+    call.pfGenerateOnClose = (ULONG_PTR)pfGenerateOnClose;
 
     qemu_syscall(&call.super);
 
@@ -3372,17 +3372,17 @@ WINBASEAPI BOOL WINAPI AccessCheckAndAuditAlarmW(LPCWSTR Subsystem, LPVOID Handl
 {
     struct qemu_AccessCheckAndAuditAlarmW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACCESSCHECKANDAUDITALARMW);
-    call.Subsystem = (uint64_t)Subsystem;
-    call.HandleId = (uint64_t)HandleId;
-    call.ObjectTypeName = (uint64_t)ObjectTypeName;
-    call.ObjectName = (uint64_t)ObjectName;
-    call.SecurityDescriptor = (uint64_t)SecurityDescriptor;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
-    call.GenericMapping = (uint64_t)GenericMapping;
-    call.ObjectCreation = (uint64_t)ObjectCreation;
-    call.GrantedAccess = (uint64_t)GrantedAccess;
-    call.AccessStatus = (uint64_t)AccessStatus;
-    call.pfGenerateOnClose = (uint64_t)pfGenerateOnClose;
+    call.Subsystem = (ULONG_PTR)Subsystem;
+    call.HandleId = (ULONG_PTR)HandleId;
+    call.ObjectTypeName = (ULONG_PTR)ObjectTypeName;
+    call.ObjectName = (ULONG_PTR)ObjectName;
+    call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
+    call.GenericMapping = (ULONG_PTR)GenericMapping;
+    call.ObjectCreation = (ULONG_PTR)ObjectCreation;
+    call.GrantedAccess = (ULONG_PTR)GrantedAccess;
+    call.AccessStatus = (ULONG_PTR)AccessStatus;
+    call.pfGenerateOnClose = (ULONG_PTR)pfGenerateOnClose;
 
     qemu_syscall(&call.super);
 
@@ -3414,9 +3414,9 @@ WINBASEAPI BOOL WINAPI ObjectCloseAuditAlarmA(LPCSTR SubsystemName, LPVOID Handl
 {
     struct qemu_ObjectCloseAuditAlarmA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OBJECTCLOSEAUDITALARMA);
-    call.SubsystemName = (uint64_t)SubsystemName;
-    call.HandleId = (uint64_t)HandleId;
-    call.GenerateOnClose = (uint64_t)GenerateOnClose;
+    call.SubsystemName = (ULONG_PTR)SubsystemName;
+    call.HandleId = (ULONG_PTR)HandleId;
+    call.GenerateOnClose = (ULONG_PTR)GenerateOnClose;
 
     qemu_syscall(&call.super);
 
@@ -3448,9 +3448,9 @@ WINBASEAPI BOOL WINAPI ObjectCloseAuditAlarmW(LPCWSTR SubsystemName, LPVOID Hand
 {
     struct qemu_ObjectCloseAuditAlarmW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OBJECTCLOSEAUDITALARMW);
-    call.SubsystemName = (uint64_t)SubsystemName;
-    call.HandleId = (uint64_t)HandleId;
-    call.GenerateOnClose = (uint64_t)GenerateOnClose;
+    call.SubsystemName = (ULONG_PTR)SubsystemName;
+    call.HandleId = (ULONG_PTR)HandleId;
+    call.GenerateOnClose = (ULONG_PTR)GenerateOnClose;
 
     qemu_syscall(&call.super);
 
@@ -3482,9 +3482,9 @@ WINBASEAPI BOOL WINAPI ObjectDeleteAuditAlarmW(LPCWSTR SubsystemName, LPVOID Han
 {
     struct qemu_ObjectDeleteAuditAlarmW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OBJECTDELETEAUDITALARMW);
-    call.SubsystemName = (uint64_t)SubsystemName;
-    call.HandleId = (uint64_t)HandleId;
-    call.GenerateOnClose = (uint64_t)GenerateOnClose;
+    call.SubsystemName = (ULONG_PTR)SubsystemName;
+    call.HandleId = (ULONG_PTR)HandleId;
+    call.GenerateOnClose = (ULONG_PTR)GenerateOnClose;
 
     qemu_syscall(&call.super);
 
@@ -3525,18 +3525,18 @@ WINBASEAPI BOOL WINAPI ObjectOpenAuditAlarmA(LPCSTR SubsystemName, LPVOID Handle
 {
     struct qemu_ObjectOpenAuditAlarmA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OBJECTOPENAUDITALARMA);
-    call.SubsystemName = (uint64_t)SubsystemName;
-    call.HandleId = (uint64_t)HandleId;
-    call.ObjectTypeName = (uint64_t)ObjectTypeName;
-    call.ObjectName = (uint64_t)ObjectName;
-    call.pSecurityDescriptor = (uint64_t)pSecurityDescriptor;
-    call.ClientToken = (uint64_t)ClientToken;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
-    call.GrantedAccess = (uint64_t)GrantedAccess;
-    call.Privileges = (uint64_t)Privileges;
-    call.ObjectCreation = (uint64_t)ObjectCreation;
-    call.AccessGranted = (uint64_t)AccessGranted;
-    call.GenerateOnClose = (uint64_t)GenerateOnClose;
+    call.SubsystemName = (ULONG_PTR)SubsystemName;
+    call.HandleId = (ULONG_PTR)HandleId;
+    call.ObjectTypeName = (ULONG_PTR)ObjectTypeName;
+    call.ObjectName = (ULONG_PTR)ObjectName;
+    call.pSecurityDescriptor = (ULONG_PTR)pSecurityDescriptor;
+    call.ClientToken = (ULONG_PTR)ClientToken;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
+    call.GrantedAccess = (ULONG_PTR)GrantedAccess;
+    call.Privileges = (ULONG_PTR)Privileges;
+    call.ObjectCreation = (ULONG_PTR)ObjectCreation;
+    call.AccessGranted = (ULONG_PTR)AccessGranted;
+    call.GenerateOnClose = (ULONG_PTR)GenerateOnClose;
 
     qemu_syscall(&call.super);
 
@@ -3577,18 +3577,18 @@ WINBASEAPI BOOL WINAPI ObjectOpenAuditAlarmW(LPCWSTR SubsystemName, LPVOID Handl
 {
     struct qemu_ObjectOpenAuditAlarmW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OBJECTOPENAUDITALARMW);
-    call.SubsystemName = (uint64_t)SubsystemName;
-    call.HandleId = (uint64_t)HandleId;
-    call.ObjectTypeName = (uint64_t)ObjectTypeName;
-    call.ObjectName = (uint64_t)ObjectName;
-    call.pSecurityDescriptor = (uint64_t)pSecurityDescriptor;
-    call.ClientToken = (uint64_t)ClientToken;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
-    call.GrantedAccess = (uint64_t)GrantedAccess;
-    call.Privileges = (uint64_t)Privileges;
-    call.ObjectCreation = (uint64_t)ObjectCreation;
-    call.AccessGranted = (uint64_t)AccessGranted;
-    call.GenerateOnClose = (uint64_t)GenerateOnClose;
+    call.SubsystemName = (ULONG_PTR)SubsystemName;
+    call.HandleId = (ULONG_PTR)HandleId;
+    call.ObjectTypeName = (ULONG_PTR)ObjectTypeName;
+    call.ObjectName = (ULONG_PTR)ObjectName;
+    call.pSecurityDescriptor = (ULONG_PTR)pSecurityDescriptor;
+    call.ClientToken = (ULONG_PTR)ClientToken;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
+    call.GrantedAccess = (ULONG_PTR)GrantedAccess;
+    call.Privileges = (ULONG_PTR)Privileges;
+    call.ObjectCreation = (ULONG_PTR)ObjectCreation;
+    call.AccessGranted = (ULONG_PTR)AccessGranted;
+    call.GenerateOnClose = (ULONG_PTR)GenerateOnClose;
 
     qemu_syscall(&call.super);
 
@@ -3623,12 +3623,12 @@ WINBASEAPI BOOL WINAPI ObjectPrivilegeAuditAlarmA(LPCSTR SubsystemName, LPVOID H
 {
     struct qemu_ObjectPrivilegeAuditAlarmA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OBJECTPRIVILEGEAUDITALARMA);
-    call.SubsystemName = (uint64_t)SubsystemName;
-    call.HandleId = (uint64_t)HandleId;
-    call.ClientToken = (uint64_t)ClientToken;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
-    call.Privileges = (uint64_t)Privileges;
-    call.AccessGranted = (uint64_t)AccessGranted;
+    call.SubsystemName = (ULONG_PTR)SubsystemName;
+    call.HandleId = (ULONG_PTR)HandleId;
+    call.ClientToken = (ULONG_PTR)ClientToken;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
+    call.Privileges = (ULONG_PTR)Privileges;
+    call.AccessGranted = (ULONG_PTR)AccessGranted;
 
     qemu_syscall(&call.super);
 
@@ -3663,12 +3663,12 @@ WINBASEAPI BOOL WINAPI ObjectPrivilegeAuditAlarmW(LPCWSTR SubsystemName, LPVOID 
 {
     struct qemu_ObjectPrivilegeAuditAlarmW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OBJECTPRIVILEGEAUDITALARMW);
-    call.SubsystemName = (uint64_t)SubsystemName;
-    call.HandleId = (uint64_t)HandleId;
-    call.ClientToken = (uint64_t)ClientToken;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
-    call.Privileges = (uint64_t)Privileges;
-    call.AccessGranted = (uint64_t)AccessGranted;
+    call.SubsystemName = (ULONG_PTR)SubsystemName;
+    call.HandleId = (ULONG_PTR)HandleId;
+    call.ClientToken = (ULONG_PTR)ClientToken;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
+    call.Privileges = (ULONG_PTR)Privileges;
+    call.AccessGranted = (ULONG_PTR)AccessGranted;
 
     qemu_syscall(&call.super);
 
@@ -3702,11 +3702,11 @@ WINBASEAPI BOOL WINAPI PrivilegedServiceAuditAlarmA(LPCSTR SubsystemName, LPCSTR
 {
     struct qemu_PrivilegedServiceAuditAlarmA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRIVILEGEDSERVICEAUDITALARMA);
-    call.SubsystemName = (uint64_t)SubsystemName;
-    call.ServiceName = (uint64_t)ServiceName;
-    call.ClientToken = (uint64_t)ClientToken;
-    call.Privileges = (uint64_t)Privileges;
-    call.AccessGranted = (uint64_t)AccessGranted;
+    call.SubsystemName = (ULONG_PTR)SubsystemName;
+    call.ServiceName = (ULONG_PTR)ServiceName;
+    call.ClientToken = (ULONG_PTR)ClientToken;
+    call.Privileges = (ULONG_PTR)Privileges;
+    call.AccessGranted = (ULONG_PTR)AccessGranted;
 
     qemu_syscall(&call.super);
 
@@ -3740,11 +3740,11 @@ WINBASEAPI BOOL WINAPI PrivilegedServiceAuditAlarmW(LPCWSTR SubsystemName, LPCWS
 {
     struct qemu_PrivilegedServiceAuditAlarmW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRIVILEGEDSERVICEAUDITALARMW);
-    call.SubsystemName = (uint64_t)SubsystemName;
-    call.ServiceName = (uint64_t)ServiceName;
-    call.ClientToken = (uint64_t)ClientToken;
-    call.Privileges = (uint64_t)Privileges;
-    call.AccessGranted = (uint64_t)AccessGranted;
+    call.SubsystemName = (ULONG_PTR)SubsystemName;
+    call.ServiceName = (ULONG_PTR)ServiceName;
+    call.ClientToken = (ULONG_PTR)ClientToken;
+    call.Privileges = (ULONG_PTR)Privileges;
+    call.AccessGranted = (ULONG_PTR)AccessGranted;
 
     qemu_syscall(&call.super);
 
@@ -3781,14 +3781,14 @@ WINBASEAPI DWORD WINAPI GetSecurityInfo(HANDLE hObject, SE_OBJECT_TYPE ObjectTyp
 {
     struct qemu_GetSecurityInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSECURITYINFO);
-    call.hObject = (uint64_t)hObject;
-    call.ObjectType = (uint64_t)ObjectType;
-    call.SecurityInfo = (uint64_t)SecurityInfo;
-    call.ppsidOwner = (uint64_t)ppsidOwner;
-    call.ppsidGroup = (uint64_t)ppsidGroup;
-    call.ppDacl = (uint64_t)ppDacl;
-    call.ppSacl = (uint64_t)ppSacl;
-    call.ppSecurityDescriptor = (uint64_t)ppSecurityDescriptor;
+    call.hObject = (ULONG_PTR)hObject;
+    call.ObjectType = (ULONG_PTR)ObjectType;
+    call.SecurityInfo = (ULONG_PTR)SecurityInfo;
+    call.ppsidOwner = (ULONG_PTR)ppsidOwner;
+    call.ppsidGroup = (ULONG_PTR)ppsidGroup;
+    call.ppDacl = (ULONG_PTR)ppDacl;
+    call.ppSacl = (ULONG_PTR)ppSacl;
+    call.ppSecurityDescriptor = (ULONG_PTR)ppSecurityDescriptor;
 
     qemu_syscall(&call.super);
 
@@ -3826,15 +3826,15 @@ WINBASEAPI DWORD WINAPI GetSecurityInfoExA(HANDLE hObject, SE_OBJECT_TYPE Object
 {
     struct qemu_GetSecurityInfoExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSECURITYINFOEXA);
-    call.hObject = (uint64_t)hObject;
-    call.ObjectType = (uint64_t)ObjectType;
-    call.SecurityInfo = (uint64_t)SecurityInfo;
-    call.lpProvider = (uint64_t)lpProvider;
-    call.lpProperty = (uint64_t)lpProperty;
-    call.ppAccessList = (uint64_t)ppAccessList;
-    call.ppAuditList = (uint64_t)ppAuditList;
-    call.lppOwner = (uint64_t)lppOwner;
-    call.lppGroup = (uint64_t)lppGroup;
+    call.hObject = (ULONG_PTR)hObject;
+    call.ObjectType = (ULONG_PTR)ObjectType;
+    call.SecurityInfo = (ULONG_PTR)SecurityInfo;
+    call.lpProvider = (ULONG_PTR)lpProvider;
+    call.lpProperty = (ULONG_PTR)lpProperty;
+    call.ppAccessList = (ULONG_PTR)ppAccessList;
+    call.ppAuditList = (ULONG_PTR)ppAuditList;
+    call.lppOwner = (ULONG_PTR)lppOwner;
+    call.lppGroup = (ULONG_PTR)lppGroup;
 
     qemu_syscall(&call.super);
 
@@ -3872,15 +3872,15 @@ WINBASEAPI DWORD WINAPI GetSecurityInfoExW(HANDLE hObject, SE_OBJECT_TYPE Object
 {
     struct qemu_GetSecurityInfoExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSECURITYINFOEXW);
-    call.hObject = (uint64_t)hObject;
-    call.ObjectType = (uint64_t)ObjectType;
-    call.SecurityInfo = (uint64_t)SecurityInfo;
-    call.lpProvider = (uint64_t)lpProvider;
-    call.lpProperty = (uint64_t)lpProperty;
-    call.ppAccessList = (uint64_t)ppAccessList;
-    call.ppAuditList = (uint64_t)ppAuditList;
-    call.lppOwner = (uint64_t)lppOwner;
-    call.lppGroup = (uint64_t)lppGroup;
+    call.hObject = (ULONG_PTR)hObject;
+    call.ObjectType = (ULONG_PTR)ObjectType;
+    call.SecurityInfo = (ULONG_PTR)SecurityInfo;
+    call.lpProvider = (ULONG_PTR)lpProvider;
+    call.lpProperty = (ULONG_PTR)lpProperty;
+    call.ppAccessList = (ULONG_PTR)ppAccessList;
+    call.ppAuditList = (ULONG_PTR)ppAuditList;
+    call.lppOwner = (ULONG_PTR)lppOwner;
+    call.lppGroup = (ULONG_PTR)lppGroup;
 
     qemu_syscall(&call.super);
 
@@ -3914,11 +3914,11 @@ WINBASEAPI VOID WINAPI BuildExplicitAccessWithNameA(PEXPLICIT_ACCESSA pExplicitA
 {
     struct qemu_BuildExplicitAccessWithNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDEXPLICITACCESSWITHNAMEA);
-    call.pExplicitAccess = (uint64_t)pExplicitAccess;
-    call.pTrusteeName = (uint64_t)pTrusteeName;
-    call.AccessPermissions = (uint64_t)AccessPermissions;
-    call.AccessMode = (uint64_t)AccessMode;
-    call.Inheritance = (uint64_t)Inheritance;
+    call.pExplicitAccess = (ULONG_PTR)pExplicitAccess;
+    call.pTrusteeName = (ULONG_PTR)pTrusteeName;
+    call.AccessPermissions = (ULONG_PTR)AccessPermissions;
+    call.AccessMode = (ULONG_PTR)AccessMode;
+    call.Inheritance = (ULONG_PTR)Inheritance;
 
     qemu_syscall(&call.super);
 }
@@ -3950,11 +3950,11 @@ WINBASEAPI VOID WINAPI BuildExplicitAccessWithNameW(PEXPLICIT_ACCESSW pExplicitA
 {
     struct qemu_BuildExplicitAccessWithNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDEXPLICITACCESSWITHNAMEW);
-    call.pExplicitAccess = (uint64_t)pExplicitAccess;
-    call.pTrusteeName = (uint64_t)pTrusteeName;
-    call.AccessPermissions = (uint64_t)AccessPermissions;
-    call.AccessMode = (uint64_t)AccessMode;
-    call.Inheritance = (uint64_t)Inheritance;
+    call.pExplicitAccess = (ULONG_PTR)pExplicitAccess;
+    call.pTrusteeName = (ULONG_PTR)pTrusteeName;
+    call.AccessPermissions = (ULONG_PTR)AccessPermissions;
+    call.AccessMode = (ULONG_PTR)AccessMode;
+    call.Inheritance = (ULONG_PTR)Inheritance;
 
     qemu_syscall(&call.super);
 }
@@ -3987,12 +3987,12 @@ WINBASEAPI VOID WINAPI BuildTrusteeWithObjectsAndNameA(PTRUSTEEA pTrustee, POBJE
 {
     struct qemu_BuildTrusteeWithObjectsAndNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHOBJECTSANDNAMEA);
-    call.pTrustee = (uint64_t)pTrustee;
-    call.pObjName = (uint64_t)pObjName;
-    call.ObjectType = (uint64_t)ObjectType;
-    call.ObjectTypeName = (uint64_t)ObjectTypeName;
-    call.InheritedObjectTypeName = (uint64_t)InheritedObjectTypeName;
-    call.Name = (uint64_t)Name;
+    call.pTrustee = (ULONG_PTR)pTrustee;
+    call.pObjName = (ULONG_PTR)pObjName;
+    call.ObjectType = (ULONG_PTR)ObjectType;
+    call.ObjectTypeName = (ULONG_PTR)ObjectTypeName;
+    call.InheritedObjectTypeName = (ULONG_PTR)InheritedObjectTypeName;
+    call.Name = (ULONG_PTR)Name;
 
     qemu_syscall(&call.super);
 }
@@ -4025,12 +4025,12 @@ WINBASEAPI VOID WINAPI BuildTrusteeWithObjectsAndNameW(PTRUSTEEW pTrustee, POBJE
 {
     struct qemu_BuildTrusteeWithObjectsAndNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHOBJECTSANDNAMEW);
-    call.pTrustee = (uint64_t)pTrustee;
-    call.pObjName = (uint64_t)pObjName;
-    call.ObjectType = (uint64_t)ObjectType;
-    call.ObjectTypeName = (uint64_t)ObjectTypeName;
-    call.InheritedObjectTypeName = (uint64_t)InheritedObjectTypeName;
-    call.Name = (uint64_t)Name;
+    call.pTrustee = (ULONG_PTR)pTrustee;
+    call.pObjName = (ULONG_PTR)pObjName;
+    call.ObjectType = (ULONG_PTR)ObjectType;
+    call.ObjectTypeName = (ULONG_PTR)ObjectTypeName;
+    call.InheritedObjectTypeName = (ULONG_PTR)InheritedObjectTypeName;
+    call.Name = (ULONG_PTR)Name;
 
     qemu_syscall(&call.super);
 }
@@ -4062,11 +4062,11 @@ WINBASEAPI VOID WINAPI BuildTrusteeWithObjectsAndSidA(PTRUSTEEA pTrustee, POBJEC
 {
     struct qemu_BuildTrusteeWithObjectsAndSidA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHOBJECTSANDSIDA);
-    call.pTrustee = (uint64_t)pTrustee;
-    call.pObjSid = (uint64_t)pObjSid;
-    call.pObjectGuid = (uint64_t)pObjectGuid;
-    call.pInheritedObjectGuid = (uint64_t)pInheritedObjectGuid;
-    call.pSid = (uint64_t)pSid;
+    call.pTrustee = (ULONG_PTR)pTrustee;
+    call.pObjSid = (ULONG_PTR)pObjSid;
+    call.pObjectGuid = (ULONG_PTR)pObjectGuid;
+    call.pInheritedObjectGuid = (ULONG_PTR)pInheritedObjectGuid;
+    call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
 }
@@ -4098,11 +4098,11 @@ WINBASEAPI VOID WINAPI BuildTrusteeWithObjectsAndSidW(PTRUSTEEW pTrustee, POBJEC
 {
     struct qemu_BuildTrusteeWithObjectsAndSidW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHOBJECTSANDSIDW);
-    call.pTrustee = (uint64_t)pTrustee;
-    call.pObjSid = (uint64_t)pObjSid;
-    call.pObjectGuid = (uint64_t)pObjectGuid;
-    call.pInheritedObjectGuid = (uint64_t)pInheritedObjectGuid;
-    call.pSid = (uint64_t)pSid;
+    call.pTrustee = (ULONG_PTR)pTrustee;
+    call.pObjSid = (ULONG_PTR)pObjSid;
+    call.pObjectGuid = (ULONG_PTR)pObjectGuid;
+    call.pInheritedObjectGuid = (ULONG_PTR)pInheritedObjectGuid;
+    call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
 }
@@ -4131,8 +4131,8 @@ WINBASEAPI VOID WINAPI BuildTrusteeWithSidA(PTRUSTEEA pTrustee, PSID pSid)
 {
     struct qemu_BuildTrusteeWithSidA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHSIDA);
-    call.pTrustee = (uint64_t)pTrustee;
-    call.pSid = (uint64_t)pSid;
+    call.pTrustee = (ULONG_PTR)pTrustee;
+    call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
 }
@@ -4161,8 +4161,8 @@ WINBASEAPI VOID WINAPI BuildTrusteeWithSidW(PTRUSTEEW pTrustee, PSID pSid)
 {
     struct qemu_BuildTrusteeWithSidW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHSIDW);
-    call.pTrustee = (uint64_t)pTrustee;
-    call.pSid = (uint64_t)pSid;
+    call.pTrustee = (ULONG_PTR)pTrustee;
+    call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
 }
@@ -4191,8 +4191,8 @@ WINBASEAPI VOID WINAPI BuildTrusteeWithNameA(PTRUSTEEA pTrustee, LPSTR name)
 {
     struct qemu_BuildTrusteeWithNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHNAMEA);
-    call.pTrustee = (uint64_t)pTrustee;
-    call.name = (uint64_t)name;
+    call.pTrustee = (ULONG_PTR)pTrustee;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 }
@@ -4221,8 +4221,8 @@ WINBASEAPI VOID WINAPI BuildTrusteeWithNameW(PTRUSTEEW pTrustee, LPWSTR name)
 {
     struct qemu_BuildTrusteeWithNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHNAMEW);
-    call.pTrustee = (uint64_t)pTrustee;
-    call.name = (uint64_t)name;
+    call.pTrustee = (ULONG_PTR)pTrustee;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 }
@@ -4250,7 +4250,7 @@ WINBASEAPI TRUSTEE_FORM WINAPI GetTrusteeFormA(PTRUSTEEA pTrustee)
 {
     struct qemu_GetTrusteeFormA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTRUSTEEFORMA);
-    call.pTrustee = (uint64_t)pTrustee;
+    call.pTrustee = (ULONG_PTR)pTrustee;
 
     qemu_syscall(&call.super);
 
@@ -4280,7 +4280,7 @@ WINBASEAPI TRUSTEE_FORM WINAPI GetTrusteeFormW(PTRUSTEEW pTrustee)
 {
     struct qemu_GetTrusteeFormW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTRUSTEEFORMW);
-    call.pTrustee = (uint64_t)pTrustee;
+    call.pTrustee = (ULONG_PTR)pTrustee;
 
     qemu_syscall(&call.super);
 
@@ -4310,11 +4310,11 @@ WINBASEAPI LPSTR WINAPI GetTrusteeNameA(PTRUSTEEA pTrustee)
 {
     struct qemu_GetTrusteeNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTRUSTEENAMEA);
-    call.pTrustee = (uint64_t)pTrustee;
+    call.pTrustee = (ULONG_PTR)pTrustee;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -4323,7 +4323,7 @@ void qemu_GetTrusteeNameA(struct qemu_syscall *call)
 {
     struct qemu_GetTrusteeNameA *c = (struct qemu_GetTrusteeNameA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GetTrusteeNameA(QEMU_G2H(c->pTrustee));
+    c->super.iret = (ULONG_PTR)GetTrusteeNameA(QEMU_G2H(c->pTrustee));
 }
 
 #endif
@@ -4340,11 +4340,11 @@ WINBASEAPI LPWSTR WINAPI GetTrusteeNameW(PTRUSTEEW pTrustee)
 {
     struct qemu_GetTrusteeNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTRUSTEENAMEW);
-    call.pTrustee = (uint64_t)pTrustee;
+    call.pTrustee = (ULONG_PTR)pTrustee;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -4353,7 +4353,7 @@ void qemu_GetTrusteeNameW(struct qemu_syscall *call)
 {
     struct qemu_GetTrusteeNameW *c = (struct qemu_GetTrusteeNameW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GetTrusteeNameW(QEMU_G2H(c->pTrustee));
+    c->super.iret = (ULONG_PTR)GetTrusteeNameW(QEMU_G2H(c->pTrustee));
 }
 
 #endif
@@ -4370,7 +4370,7 @@ WINBASEAPI TRUSTEE_TYPE WINAPI GetTrusteeTypeA(PTRUSTEEA pTrustee)
 {
     struct qemu_GetTrusteeTypeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTRUSTEETYPEA);
-    call.pTrustee = (uint64_t)pTrustee;
+    call.pTrustee = (ULONG_PTR)pTrustee;
 
     qemu_syscall(&call.super);
 
@@ -4400,7 +4400,7 @@ WINBASEAPI TRUSTEE_TYPE WINAPI GetTrusteeTypeW(PTRUSTEEW pTrustee)
 {
     struct qemu_GetTrusteeTypeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTRUSTEETYPEW);
-    call.pTrustee = (uint64_t)pTrustee;
+    call.pTrustee = (ULONG_PTR)pTrustee;
 
     qemu_syscall(&call.super);
 
@@ -4433,10 +4433,10 @@ WINBASEAPI BOOL WINAPI SetAclInformation(PACL pAcl, LPVOID pAclInformation, DWOR
 {
     struct qemu_SetAclInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETACLINFORMATION);
-    call.pAcl = (uint64_t)pAcl;
-    call.pAclInformation = (uint64_t)pAclInformation;
-    call.nAclInformationLength = (uint64_t)nAclInformationLength;
-    call.dwAclInformationClass = (uint64_t)dwAclInformationClass;
+    call.pAcl = (ULONG_PTR)pAcl;
+    call.pAclInformation = (ULONG_PTR)pAclInformation;
+    call.nAclInformationLength = (ULONG_PTR)nAclInformationLength;
+    call.dwAclInformationClass = (ULONG_PTR)dwAclInformationClass;
 
     qemu_syscall(&call.super);
 
@@ -4469,10 +4469,10 @@ WINBASEAPI DWORD WINAPI SetEntriesInAclA(ULONG count, PEXPLICIT_ACCESSA pEntries
 {
     struct qemu_SetEntriesInAclA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETENTRIESINACLA);
-    call.count = (uint64_t)count;
-    call.pEntries = (uint64_t)pEntries;
-    call.OldAcl = (uint64_t)OldAcl;
-    call.NewAcl = (uint64_t)NewAcl;
+    call.count = (ULONG_PTR)count;
+    call.pEntries = (ULONG_PTR)pEntries;
+    call.OldAcl = (ULONG_PTR)OldAcl;
+    call.NewAcl = (ULONG_PTR)NewAcl;
 
     qemu_syscall(&call.super);
 
@@ -4505,10 +4505,10 @@ WINBASEAPI DWORD WINAPI SetEntriesInAclW(ULONG count, PEXPLICIT_ACCESSW pEntries
 {
     struct qemu_SetEntriesInAclW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETENTRIESINACLW);
-    call.count = (uint64_t)count;
-    call.pEntries = (uint64_t)pEntries;
-    call.OldAcl = (uint64_t)OldAcl;
-    call.NewAcl = (uint64_t)NewAcl;
+    call.count = (ULONG_PTR)count;
+    call.pEntries = (ULONG_PTR)pEntries;
+    call.OldAcl = (ULONG_PTR)OldAcl;
+    call.NewAcl = (ULONG_PTR)NewAcl;
 
     qemu_syscall(&call.super);
 
@@ -4544,13 +4544,13 @@ WINBASEAPI DWORD WINAPI SetNamedSecurityInfoA(LPSTR pObjectName, SE_OBJECT_TYPE 
 {
     struct qemu_SetNamedSecurityInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETNAMEDSECURITYINFOA);
-    call.pObjectName = (uint64_t)pObjectName;
-    call.ObjectType = (uint64_t)ObjectType;
-    call.SecurityInfo = (uint64_t)SecurityInfo;
-    call.psidOwner = (uint64_t)psidOwner;
-    call.psidGroup = (uint64_t)psidGroup;
-    call.pDacl = (uint64_t)pDacl;
-    call.pSacl = (uint64_t)pSacl;
+    call.pObjectName = (ULONG_PTR)pObjectName;
+    call.ObjectType = (ULONG_PTR)ObjectType;
+    call.SecurityInfo = (ULONG_PTR)SecurityInfo;
+    call.psidOwner = (ULONG_PTR)psidOwner;
+    call.psidGroup = (ULONG_PTR)psidGroup;
+    call.pDacl = (ULONG_PTR)pDacl;
+    call.pSacl = (ULONG_PTR)pSacl;
 
     qemu_syscall(&call.super);
 
@@ -4584,11 +4584,11 @@ WINBASEAPI BOOL WINAPI SetPrivateObjectSecurity(SECURITY_INFORMATION SecurityInf
 {
     struct qemu_SetPrivateObjectSecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPRIVATEOBJECTSECURITY);
-    call.SecurityInformation = (uint64_t)SecurityInformation;
-    call.ModificationDescriptor = (uint64_t)ModificationDescriptor;
-    call.ObjectsSecurityDescriptor = (uint64_t)ObjectsSecurityDescriptor;
-    call.GenericMapping = (uint64_t)GenericMapping;
-    call.Token = (uint64_t)Token;
+    call.SecurityInformation = (ULONG_PTR)SecurityInformation;
+    call.ModificationDescriptor = (ULONG_PTR)ModificationDescriptor;
+    call.ObjectsSecurityDescriptor = (ULONG_PTR)ObjectsSecurityDescriptor;
+    call.GenericMapping = (ULONG_PTR)GenericMapping;
+    call.Token = (ULONG_PTR)Token;
 
     qemu_syscall(&call.super);
 
@@ -4619,8 +4619,8 @@ WINBASEAPI BOOL WINAPI AreAllAccessesGranted(DWORD GrantedAccess, DWORD DesiredA
 {
     struct qemu_AreAllAccessesGranted call;
     call.super.id = QEMU_SYSCALL_ID(CALL_AREALLACCESSESGRANTED);
-    call.GrantedAccess = (uint64_t)GrantedAccess;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
+    call.GrantedAccess = (ULONG_PTR)GrantedAccess;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
 
     qemu_syscall(&call.super);
 
@@ -4651,8 +4651,8 @@ WINBASEAPI BOOL WINAPI AreAnyAccessesGranted(DWORD GrantedAccess, DWORD DesiredA
 {
     struct qemu_AreAnyAccessesGranted call;
     call.super.id = QEMU_SYSCALL_ID(CALL_AREANYACCESSESGRANTED);
-    call.GrantedAccess = (uint64_t)GrantedAccess;
-    call.DesiredAccess = (uint64_t)DesiredAccess;
+    call.GrantedAccess = (ULONG_PTR)GrantedAccess;
+    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
 
     qemu_syscall(&call.super);
 
@@ -4688,13 +4688,13 @@ WINBASEAPI DWORD WINAPI SetNamedSecurityInfoW(LPWSTR pObjectName, SE_OBJECT_TYPE
 {
     struct qemu_SetNamedSecurityInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETNAMEDSECURITYINFOW);
-    call.pObjectName = (uint64_t)pObjectName;
-    call.ObjectType = (uint64_t)ObjectType;
-    call.SecurityInfo = (uint64_t)SecurityInfo;
-    call.psidOwner = (uint64_t)psidOwner;
-    call.psidGroup = (uint64_t)psidGroup;
-    call.pDacl = (uint64_t)pDacl;
-    call.pSacl = (uint64_t)pSacl;
+    call.pObjectName = (ULONG_PTR)pObjectName;
+    call.ObjectType = (ULONG_PTR)ObjectType;
+    call.SecurityInfo = (ULONG_PTR)SecurityInfo;
+    call.psidOwner = (ULONG_PTR)psidOwner;
+    call.psidGroup = (ULONG_PTR)psidGroup;
+    call.pDacl = (ULONG_PTR)pDacl;
+    call.pSacl = (ULONG_PTR)pSacl;
 
     qemu_syscall(&call.super);
 
@@ -4726,9 +4726,9 @@ WINBASEAPI DWORD WINAPI GetExplicitEntriesFromAclA(PACL pacl, PULONG pcCountOfEx
 {
     struct qemu_GetExplicitEntriesFromAclA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETEXPLICITENTRIESFROMACLA);
-    call.pacl = (uint64_t)pacl;
-    call.pcCountOfExplicitEntries = (uint64_t)pcCountOfExplicitEntries;
-    call.pListOfExplicitEntries = (uint64_t)pListOfExplicitEntries;
+    call.pacl = (ULONG_PTR)pacl;
+    call.pcCountOfExplicitEntries = (ULONG_PTR)pcCountOfExplicitEntries;
+    call.pListOfExplicitEntries = (ULONG_PTR)pListOfExplicitEntries;
 
     qemu_syscall(&call.super);
 
@@ -4760,9 +4760,9 @@ WINBASEAPI DWORD WINAPI GetExplicitEntriesFromAclW(PACL pacl, PULONG pcCountOfEx
 {
     struct qemu_GetExplicitEntriesFromAclW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETEXPLICITENTRIESFROMACLW);
-    call.pacl = (uint64_t)pacl;
-    call.pcCountOfExplicitEntries = (uint64_t)pcCountOfExplicitEntries;
-    call.pListOfExplicitEntries = (uint64_t)pListOfExplicitEntries;
+    call.pacl = (ULONG_PTR)pacl;
+    call.pcCountOfExplicitEntries = (ULONG_PTR)pcCountOfExplicitEntries;
+    call.pListOfExplicitEntries = (ULONG_PTR)pListOfExplicitEntries;
 
     qemu_syscall(&call.super);
 
@@ -4795,10 +4795,10 @@ WINBASEAPI DWORD WINAPI GetAuditedPermissionsFromAclA(PACL pacl, PTRUSTEEA pTrus
 {
     struct qemu_GetAuditedPermissionsFromAclA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETAUDITEDPERMISSIONSFROMACLA);
-    call.pacl = (uint64_t)pacl;
-    call.pTrustee = (uint64_t)pTrustee;
-    call.pSuccessfulAuditedRights = (uint64_t)pSuccessfulAuditedRights;
-    call.pFailedAuditRights = (uint64_t)pFailedAuditRights;
+    call.pacl = (ULONG_PTR)pacl;
+    call.pTrustee = (ULONG_PTR)pTrustee;
+    call.pSuccessfulAuditedRights = (ULONG_PTR)pSuccessfulAuditedRights;
+    call.pFailedAuditRights = (ULONG_PTR)pFailedAuditRights;
 
     qemu_syscall(&call.super);
 
@@ -4833,10 +4833,10 @@ WINBASEAPI DWORD WINAPI GetAuditedPermissionsFromAclW(PACL pacl, PTRUSTEEW pTrus
 {
     struct qemu_GetAuditedPermissionsFromAclW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETAUDITEDPERMISSIONSFROMACLW);
-    call.pacl = (uint64_t)pacl;
-    call.pTrustee = (uint64_t)pTrustee;
-    call.pSuccessfulAuditedRights = (uint64_t)pSuccessfulAuditedRights;
-    call.pFailedAuditRights = (uint64_t)pFailedAuditRights;
+    call.pacl = (ULONG_PTR)pacl;
+    call.pTrustee = (ULONG_PTR)pTrustee;
+    call.pSuccessfulAuditedRights = (ULONG_PTR)pSuccessfulAuditedRights;
+    call.pFailedAuditRights = (ULONG_PTR)pFailedAuditRights;
 
     qemu_syscall(&call.super);
 
@@ -4871,10 +4871,10 @@ WINBASEAPI BOOL WINAPI ConvertStringSecurityDescriptorToSecurityDescriptorA(LPCS
 {
     struct qemu_ConvertStringSecurityDescriptorToSecurityDescriptorA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTSTRINGSECURITYDESCRIPTORTOSECURITYDESCRIPTORA);
-    call.StringSecurityDescriptor = (uint64_t)StringSecurityDescriptor;
-    call.StringSDRevision = (uint64_t)StringSDRevision;
-    call.SecurityDescriptor = (uint64_t)SecurityDescriptor;
-    call.SecurityDescriptorSize = (uint64_t)SecurityDescriptorSize;
+    call.StringSecurityDescriptor = (ULONG_PTR)StringSecurityDescriptor;
+    call.StringSDRevision = (ULONG_PTR)StringSDRevision;
+    call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
+    call.SecurityDescriptorSize = (ULONG_PTR)SecurityDescriptorSize;
 
     qemu_syscall(&call.super);
 
@@ -4909,10 +4909,10 @@ WINBASEAPI BOOL WINAPI ConvertStringSecurityDescriptorToSecurityDescriptorW(LPCW
 {
     struct qemu_ConvertStringSecurityDescriptorToSecurityDescriptorW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTSTRINGSECURITYDESCRIPTORTOSECURITYDESCRIPTORW);
-    call.StringSecurityDescriptor = (uint64_t)StringSecurityDescriptor;
-    call.StringSDRevision = (uint64_t)StringSDRevision;
-    call.SecurityDescriptor = (uint64_t)SecurityDescriptor;
-    call.SecurityDescriptorSize = (uint64_t)SecurityDescriptorSize;
+    call.StringSecurityDescriptor = (ULONG_PTR)StringSecurityDescriptor;
+    call.StringSDRevision = (ULONG_PTR)StringSDRevision;
+    call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
+    call.SecurityDescriptorSize = (ULONG_PTR)SecurityDescriptorSize;
 
     qemu_syscall(&call.super);
 
@@ -4948,11 +4948,11 @@ WINBASEAPI BOOL WINAPI ConvertSecurityDescriptorToStringSecurityDescriptorW(PSEC
 {
     struct qemu_ConvertSecurityDescriptorToStringSecurityDescriptorW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTSECURITYDESCRIPTORTOSTRINGSECURITYDESCRIPTORW);
-    call.SecurityDescriptor = (uint64_t)SecurityDescriptor;
-    call.SDRevision = (uint64_t)SDRevision;
-    call.RequestedInformation = (uint64_t)RequestedInformation;
-    call.OutputString = (uint64_t)OutputString;
-    call.OutputLen = (uint64_t)OutputLen;
+    call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
+    call.SDRevision = (ULONG_PTR)SDRevision;
+    call.RequestedInformation = (ULONG_PTR)RequestedInformation;
+    call.OutputString = (ULONG_PTR)OutputString;
+    call.OutputLen = (ULONG_PTR)OutputLen;
 
     qemu_syscall(&call.super);
 
@@ -4988,11 +4988,11 @@ WINBASEAPI BOOL WINAPI ConvertSecurityDescriptorToStringSecurityDescriptorA(PSEC
 {
     struct qemu_ConvertSecurityDescriptorToStringSecurityDescriptorA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTSECURITYDESCRIPTORTOSTRINGSECURITYDESCRIPTORA);
-    call.SecurityDescriptor = (uint64_t)SecurityDescriptor;
-    call.SDRevision = (uint64_t)SDRevision;
-    call.Information = (uint64_t)Information;
-    call.OutputString = (uint64_t)OutputString;
-    call.OutputLen = (uint64_t)OutputLen;
+    call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
+    call.SDRevision = (ULONG_PTR)SDRevision;
+    call.Information = (ULONG_PTR)Information;
+    call.OutputString = (ULONG_PTR)OutputString;
+    call.OutputLen = (ULONG_PTR)OutputLen;
 
     qemu_syscall(&call.super);
 
@@ -5025,8 +5025,8 @@ WINBASEAPI BOOL WINAPI ConvertStringSidToSidW(LPCWSTR StringSid, PSID* Sid)
 {
     struct qemu_ConvertStringSidToSidW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTSTRINGSIDTOSIDW);
-    call.StringSid = (uint64_t)StringSid;
-    call.Sid = (uint64_t)Sid;
+    call.StringSid = (ULONG_PTR)StringSid;
+    call.Sid = (ULONG_PTR)Sid;
 
     qemu_syscall(&call.super);
 
@@ -5059,8 +5059,8 @@ WINBASEAPI BOOL WINAPI ConvertStringSidToSidA(LPCSTR StringSid, PSID* Sid)
 {
     struct qemu_ConvertStringSidToSidA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTSTRINGSIDTOSIDA);
-    call.StringSid = (uint64_t)StringSid;
-    call.Sid = (uint64_t)Sid;
+    call.StringSid = (ULONG_PTR)StringSid;
+    call.Sid = (ULONG_PTR)Sid;
 
     qemu_syscall(&call.super);
 
@@ -5093,8 +5093,8 @@ WINBASEAPI BOOL WINAPI ConvertSidToStringSidW(PSID pSid, LPWSTR *pstr)
 {
     struct qemu_ConvertSidToStringSidW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTSIDTOSTRINGSIDW);
-    call.pSid = (uint64_t)pSid;
-    call.pstr = (uint64_t)pstr;
+    call.pSid = (ULONG_PTR)pSid;
+    call.pstr = (ULONG_PTR)pstr;
 
     qemu_syscall(&call.super);
 
@@ -5127,8 +5127,8 @@ WINBASEAPI BOOL WINAPI ConvertSidToStringSidA(PSID pSid, LPSTR *pstr)
 {
     struct qemu_ConvertSidToStringSidA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTSIDTOSTRINGSIDA);
-    call.pSid = (uint64_t)pSid;
-    call.pstr = (uint64_t)pstr;
+    call.pSid = (ULONG_PTR)pSid;
+    call.pstr = (ULONG_PTR)pstr;
 
     qemu_syscall(&call.super);
 
@@ -5165,12 +5165,12 @@ WINBASEAPI WINBOOL WINAPI ConvertToAutoInheritPrivateObjectSecurity(PSECURITY_DE
 {
     struct qemu_ConvertToAutoInheritPrivateObjectSecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTTOAUTOINHERITPRIVATEOBJECTSECURITY);
-    call.pdesc = (uint64_t)pdesc;
-    call.cdesc = (uint64_t)cdesc;
-    call.ndesc = (uint64_t)ndesc;
-    call.objtype = (uint64_t)objtype;
-    call.isdir = (uint64_t)isdir;
-    call.genmap = (uint64_t)genmap;
+    call.pdesc = (ULONG_PTR)pdesc;
+    call.cdesc = (ULONG_PTR)cdesc;
+    call.ndesc = (ULONG_PTR)ndesc;
+    call.objtype = (ULONG_PTR)objtype;
+    call.isdir = (ULONG_PTR)isdir;
+    call.genmap = (ULONG_PTR)genmap;
 
     qemu_syscall(&call.super);
 
@@ -5207,14 +5207,14 @@ WINBASEAPI BOOL WINAPI CreatePrivateObjectSecurityEx(PSECURITY_DESCRIPTOR parent
 {
     struct qemu_CreatePrivateObjectSecurityEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPRIVATEOBJECTSECURITYEX);
-    call.parent = (uint64_t)parent;
-    call.creator = (uint64_t)creator;
-    call.out = (uint64_t)out;
-    call.objtype = (uint64_t)objtype;
-    call.is_directory = (uint64_t)is_directory;
-    call.flags = (uint64_t)flags;
-    call.token = (uint64_t)token;
-    call.mapping = (uint64_t)mapping;
+    call.parent = (ULONG_PTR)parent;
+    call.creator = (ULONG_PTR)creator;
+    call.out = (ULONG_PTR)out;
+    call.objtype = (ULONG_PTR)objtype;
+    call.is_directory = (ULONG_PTR)is_directory;
+    call.flags = (ULONG_PTR)flags;
+    call.token = (ULONG_PTR)token;
+    call.mapping = (ULONG_PTR)mapping;
 
     qemu_syscall(&call.super);
 
@@ -5249,12 +5249,12 @@ WINBASEAPI BOOL WINAPI CreatePrivateObjectSecurity(PSECURITY_DESCRIPTOR parent, 
 {
     struct qemu_CreatePrivateObjectSecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPRIVATEOBJECTSECURITY);
-    call.parent = (uint64_t)parent;
-    call.creator = (uint64_t)creator;
-    call.out = (uint64_t)out;
-    call.is_container = (uint64_t)is_container;
-    call.token = (uint64_t)token;
-    call.mapping = (uint64_t)mapping;
+    call.parent = (ULONG_PTR)parent;
+    call.creator = (ULONG_PTR)creator;
+    call.out = (ULONG_PTR)out;
+    call.is_container = (ULONG_PTR)is_container;
+    call.token = (ULONG_PTR)token;
+    call.mapping = (ULONG_PTR)mapping;
 
     qemu_syscall(&call.super);
 
@@ -5292,15 +5292,15 @@ WINBASEAPI BOOL WINAPI CreatePrivateObjectSecurityWithMultipleInheritance(PSECUR
 {
     struct qemu_CreatePrivateObjectSecurityWithMultipleInheritance call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPRIVATEOBJECTSECURITYWITHMULTIPLEINHERITANCE);
-    call.parent = (uint64_t)parent;
-    call.creator = (uint64_t)creator;
-    call.out = (uint64_t)out;
-    call.types = (uint64_t)types;
-    call.count = (uint64_t)count;
-    call.is_container = (uint64_t)is_container;
-    call.flags = (uint64_t)flags;
-    call.token = (uint64_t)token;
-    call.mapping = (uint64_t)mapping;
+    call.parent = (ULONG_PTR)parent;
+    call.creator = (ULONG_PTR)creator;
+    call.out = (ULONG_PTR)out;
+    call.types = (ULONG_PTR)types;
+    call.count = (ULONG_PTR)count;
+    call.is_container = (ULONG_PTR)is_container;
+    call.flags = (ULONG_PTR)flags;
+    call.token = (ULONG_PTR)token;
+    call.mapping = (ULONG_PTR)mapping;
 
     qemu_syscall(&call.super);
 
@@ -5330,7 +5330,7 @@ WINBASEAPI BOOL WINAPI DestroyPrivateObjectSecurity(PSECURITY_DESCRIPTOR* Object
 {
     struct qemu_DestroyPrivateObjectSecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DESTROYPRIVATEOBJECTSECURITY);
-    call.ObjectDescriptor = (uint64_t)ObjectDescriptor;
+    call.ObjectDescriptor = (ULONG_PTR)ObjectDescriptor;
 
     qemu_syscall(&call.super);
 
@@ -5370,17 +5370,17 @@ WINBASEAPI BOOL WINAPI CreateProcessAsUserA(HANDLE hToken, LPCSTR lpApplicationN
 {
     struct qemu_CreateProcessAsUserA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPROCESSASUSERA);
-    call.hToken = (uint64_t)hToken;
-    call.lpApplicationName = (uint64_t)lpApplicationName;
-    call.lpCommandLine = (uint64_t)lpCommandLine;
-    call.lpProcessAttributes = (uint64_t)lpProcessAttributes;
-    call.lpThreadAttributes = (uint64_t)lpThreadAttributes;
-    call.bInheritHandles = (uint64_t)bInheritHandles;
-    call.dwCreationFlags = (uint64_t)dwCreationFlags;
-    call.lpEnvironment = (uint64_t)lpEnvironment;
-    call.lpCurrentDirectory = (uint64_t)lpCurrentDirectory;
-    call.lpStartupInfo = (uint64_t)lpStartupInfo;
-    call.lpProcessInformation = (uint64_t)lpProcessInformation;
+    call.hToken = (ULONG_PTR)hToken;
+    call.lpApplicationName = (ULONG_PTR)lpApplicationName;
+    call.lpCommandLine = (ULONG_PTR)lpCommandLine;
+    call.lpProcessAttributes = (ULONG_PTR)lpProcessAttributes;
+    call.lpThreadAttributes = (ULONG_PTR)lpThreadAttributes;
+    call.bInheritHandles = (ULONG_PTR)bInheritHandles;
+    call.dwCreationFlags = (ULONG_PTR)dwCreationFlags;
+    call.lpEnvironment = (ULONG_PTR)lpEnvironment;
+    call.lpCurrentDirectory = (ULONG_PTR)lpCurrentDirectory;
+    call.lpStartupInfo = (ULONG_PTR)lpStartupInfo;
+    call.lpProcessInformation = (ULONG_PTR)lpProcessInformation;
 
     qemu_syscall(&call.super);
 
@@ -5420,17 +5420,17 @@ WINBASEAPI BOOL WINAPI CreateProcessAsUserW(HANDLE hToken, LPCWSTR lpApplication
 {
     struct qemu_CreateProcessAsUserW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPROCESSASUSERW);
-    call.hToken = (uint64_t)hToken;
-    call.lpApplicationName = (uint64_t)lpApplicationName;
-    call.lpCommandLine = (uint64_t)lpCommandLine;
-    call.lpProcessAttributes = (uint64_t)lpProcessAttributes;
-    call.lpThreadAttributes = (uint64_t)lpThreadAttributes;
-    call.bInheritHandles = (uint64_t)bInheritHandles;
-    call.dwCreationFlags = (uint64_t)dwCreationFlags;
-    call.lpEnvironment = (uint64_t)lpEnvironment;
-    call.lpCurrentDirectory = (uint64_t)lpCurrentDirectory;
-    call.lpStartupInfo = (uint64_t)lpStartupInfo;
-    call.lpProcessInformation = (uint64_t)lpProcessInformation;
+    call.hToken = (ULONG_PTR)hToken;
+    call.lpApplicationName = (ULONG_PTR)lpApplicationName;
+    call.lpCommandLine = (ULONG_PTR)lpCommandLine;
+    call.lpProcessAttributes = (ULONG_PTR)lpProcessAttributes;
+    call.lpThreadAttributes = (ULONG_PTR)lpThreadAttributes;
+    call.bInheritHandles = (ULONG_PTR)bInheritHandles;
+    call.dwCreationFlags = (ULONG_PTR)dwCreationFlags;
+    call.lpEnvironment = (ULONG_PTR)lpEnvironment;
+    call.lpCurrentDirectory = (ULONG_PTR)lpCurrentDirectory;
+    call.lpStartupInfo = (ULONG_PTR)lpStartupInfo;
+    call.lpProcessInformation = (ULONG_PTR)lpProcessInformation;
 
     qemu_syscall(&call.super);
 
@@ -5470,17 +5470,17 @@ WINBASEAPI BOOL WINAPI CreateProcessWithLogonW(LPCWSTR lpUsername, LPCWSTR lpDom
 {
     struct qemu_CreateProcessWithLogonW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPROCESSWITHLOGONW);
-    call.lpUsername = (uint64_t)lpUsername;
-    call.lpDomain = (uint64_t)lpDomain;
-    call.lpPassword = (uint64_t)lpPassword;
-    call.dwLogonFlags = (uint64_t)dwLogonFlags;
-    call.lpApplicationName = (uint64_t)lpApplicationName;
-    call.lpCommandLine = (uint64_t)lpCommandLine;
-    call.dwCreationFlags = (uint64_t)dwCreationFlags;
-    call.lpEnvironment = (uint64_t)lpEnvironment;
-    call.lpCurrentDirectory = (uint64_t)lpCurrentDirectory;
-    call.lpStartupInfo = (uint64_t)lpStartupInfo;
-    call.lpProcessInformation = (uint64_t)lpProcessInformation;
+    call.lpUsername = (ULONG_PTR)lpUsername;
+    call.lpDomain = (ULONG_PTR)lpDomain;
+    call.lpPassword = (ULONG_PTR)lpPassword;
+    call.dwLogonFlags = (ULONG_PTR)dwLogonFlags;
+    call.lpApplicationName = (ULONG_PTR)lpApplicationName;
+    call.lpCommandLine = (ULONG_PTR)lpCommandLine;
+    call.dwCreationFlags = (ULONG_PTR)dwCreationFlags;
+    call.lpEnvironment = (ULONG_PTR)lpEnvironment;
+    call.lpCurrentDirectory = (ULONG_PTR)lpCurrentDirectory;
+    call.lpStartupInfo = (ULONG_PTR)lpStartupInfo;
+    call.lpProcessInformation = (ULONG_PTR)lpProcessInformation;
 
     qemu_syscall(&call.super);
 
@@ -5518,15 +5518,15 @@ WINBASEAPI BOOL WINAPI CreateProcessWithTokenW(HANDLE token, DWORD logon_flags, 
 {
     struct qemu_CreateProcessWithTokenW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPROCESSWITHTOKENW);
-    call.token = (uint64_t)token;
-    call.logon_flags = (uint64_t)logon_flags;
-    call.application_name = (uint64_t)application_name;
-    call.command_line = (uint64_t)command_line;
-    call.creation_flags = (uint64_t)creation_flags;
-    call.environment = (uint64_t)environment;
-    call.current_directory = (uint64_t)current_directory;
-    call.startup_info = (uint64_t)startup_info;
-    call.process_information = (uint64_t)process_information;
+    call.token = (ULONG_PTR)token;
+    call.logon_flags = (ULONG_PTR)logon_flags;
+    call.application_name = (ULONG_PTR)application_name;
+    call.command_line = (ULONG_PTR)command_line;
+    call.creation_flags = (ULONG_PTR)creation_flags;
+    call.environment = (ULONG_PTR)environment;
+    call.current_directory = (ULONG_PTR)current_directory;
+    call.startup_info = (ULONG_PTR)startup_info;
+    call.process_information = (ULONG_PTR)process_information;
 
     qemu_syscall(&call.super);
 
@@ -5563,12 +5563,12 @@ WINBASEAPI BOOL WINAPI DuplicateTokenEx(HANDLE ExistingTokenHandle, DWORD dwDesi
 {
     struct qemu_DuplicateTokenEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DUPLICATETOKENEX);
-    call.ExistingTokenHandle = (uint64_t)ExistingTokenHandle;
+    call.ExistingTokenHandle = (ULONG_PTR)ExistingTokenHandle;
     call.dwDesiredAccess = dwDesiredAccess;
-    call.lpTokenAttributes = (uint64_t)lpTokenAttributes;
+    call.lpTokenAttributes = (ULONG_PTR)lpTokenAttributes;
     call.ImpersonationLevel = ImpersonationLevel;
     call.TokenType = TokenType;
-    call.DuplicateTokenHandle = (uint64_t)DuplicateTokenHandle;
+    call.DuplicateTokenHandle = (ULONG_PTR)DuplicateTokenHandle;
 
     qemu_syscall(&call.super);
 
@@ -5601,9 +5601,9 @@ WINBASEAPI BOOL WINAPI DuplicateToken(HANDLE ExistingTokenHandle, SECURITY_IMPER
 {
     struct qemu_DuplicateToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DUPLICATETOKEN);
-    call.ExistingTokenHandle = (uint64_t)ExistingTokenHandle;
-    call.ImpersonationLevel = (uint64_t)ImpersonationLevel;
-    call.DuplicateTokenHandle = (uint64_t)DuplicateTokenHandle;
+    call.ExistingTokenHandle = (ULONG_PTR)ExistingTokenHandle;
+    call.ImpersonationLevel = (ULONG_PTR)ImpersonationLevel;
+    call.DuplicateTokenHandle = (ULONG_PTR)DuplicateTokenHandle;
 
     qemu_syscall(&call.super);
 
@@ -5640,14 +5640,14 @@ WINBASEAPI DWORD WINAPI GetNamedSecurityInfoA(LPCSTR pObjectName, SE_OBJECT_TYPE
 {
     struct qemu_GetNamedSecurityInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNAMEDSECURITYINFOA);
-    call.pObjectName = (uint64_t)pObjectName;
-    call.ObjectType = (uint64_t)ObjectType;
-    call.SecurityInfo = (uint64_t)SecurityInfo;
-    call.ppsidOwner = (uint64_t)ppsidOwner;
-    call.ppsidGroup = (uint64_t)ppsidGroup;
-    call.ppDacl = (uint64_t)ppDacl;
-    call.ppSacl = (uint64_t)ppSacl;
-    call.ppSecurityDescriptor = (uint64_t)ppSecurityDescriptor;
+    call.pObjectName = (ULONG_PTR)pObjectName;
+    call.ObjectType = (ULONG_PTR)ObjectType;
+    call.SecurityInfo = (ULONG_PTR)SecurityInfo;
+    call.ppsidOwner = (ULONG_PTR)ppsidOwner;
+    call.ppsidGroup = (ULONG_PTR)ppsidGroup;
+    call.ppDacl = (ULONG_PTR)ppDacl;
+    call.ppSacl = (ULONG_PTR)ppSacl;
+    call.ppSecurityDescriptor = (ULONG_PTR)ppSecurityDescriptor;
 
     qemu_syscall(&call.super);
 
@@ -5684,14 +5684,14 @@ WINBASEAPI DWORD WINAPI GetNamedSecurityInfoW(LPCWSTR name, SE_OBJECT_TYPE type,
 {
     struct qemu_GetNamedSecurityInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNAMEDSECURITYINFOW);
-    call.name = (uint64_t)name;
-    call.type = (uint64_t)type;
-    call.info = (uint64_t)info;
-    call.owner = (uint64_t)owner;
-    call.group = (uint64_t)group;
-    call.dacl = (uint64_t)dacl;
-    call.sacl = (uint64_t)sacl;
-    call.descriptor = (uint64_t)descriptor;
+    call.name = (ULONG_PTR)name;
+    call.type = (ULONG_PTR)type;
+    call.info = (ULONG_PTR)info;
+    call.owner = (ULONG_PTR)owner;
+    call.group = (ULONG_PTR)group;
+    call.dacl = (ULONG_PTR)dacl;
+    call.sacl = (ULONG_PTR)sacl;
+    call.descriptor = (ULONG_PTR)descriptor;
 
     qemu_syscall(&call.super);
 
@@ -5729,15 +5729,15 @@ WINBASEAPI DWORD WINAPI GetNamedSecurityInfoExW(LPCWSTR object, SE_OBJECT_TYPE t
 {
     struct qemu_GetNamedSecurityInfoExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNAMEDSECURITYINFOEXW);
-    call.object = (uint64_t)object;
-    call.type = (uint64_t)type;
-    call.info = (uint64_t)info;
-    call.provider = (uint64_t)provider;
-    call.property = (uint64_t)property;
-    call.access_list = (uint64_t)access_list;
-    call.audit_list = (uint64_t)audit_list;
-    call.owner = (uint64_t)owner;
-    call.group = (uint64_t)group;
+    call.object = (ULONG_PTR)object;
+    call.type = (ULONG_PTR)type;
+    call.info = (ULONG_PTR)info;
+    call.provider = (ULONG_PTR)provider;
+    call.property = (ULONG_PTR)property;
+    call.access_list = (ULONG_PTR)access_list;
+    call.audit_list = (ULONG_PTR)audit_list;
+    call.owner = (ULONG_PTR)owner;
+    call.group = (ULONG_PTR)group;
 
     qemu_syscall(&call.super);
 
@@ -5777,15 +5777,15 @@ WINBASEAPI DWORD WINAPI GetNamedSecurityInfoExA(LPCSTR object, SE_OBJECT_TYPE ty
 {
     struct qemu_GetNamedSecurityInfoExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNAMEDSECURITYINFOEXA);
-    call.object = (uint64_t)object;
-    call.type = (uint64_t)type;
-    call.info = (uint64_t)info;
-    call.provider = (uint64_t)provider;
-    call.property = (uint64_t)property;
-    call.access_list = (uint64_t)access_list;
-    call.audit_list = (uint64_t)audit_list;
-    call.owner = (uint64_t)owner;
-    call.group = (uint64_t)group;
+    call.object = (ULONG_PTR)object;
+    call.type = (ULONG_PTR)type;
+    call.info = (ULONG_PTR)info;
+    call.provider = (ULONG_PTR)provider;
+    call.property = (ULONG_PTR)property;
+    call.access_list = (ULONG_PTR)access_list;
+    call.audit_list = (ULONG_PTR)audit_list;
+    call.owner = (ULONG_PTR)owner;
+    call.group = (ULONG_PTR)group;
 
     qemu_syscall(&call.super);
 
@@ -5818,8 +5818,8 @@ WINBASEAPI BOOL WINAPI DecryptFileW(LPCWSTR lpFileName, DWORD dwReserved)
 {
     struct qemu_DecryptFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DECRYPTFILEW);
-    call.lpFileName = (uint64_t)lpFileName;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.lpFileName = (ULONG_PTR)lpFileName;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -5850,8 +5850,8 @@ WINBASEAPI BOOL WINAPI DecryptFileA(LPCSTR lpFileName, DWORD dwReserved)
 {
     struct qemu_DecryptFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DECRYPTFILEA);
-    call.lpFileName = (uint64_t)lpFileName;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.lpFileName = (ULONG_PTR)lpFileName;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -5881,7 +5881,7 @@ WINBASEAPI BOOL WINAPI EncryptFileW(LPCWSTR lpFileName)
 {
     struct qemu_EncryptFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENCRYPTFILEW);
-    call.lpFileName = (uint64_t)lpFileName;
+    call.lpFileName = (ULONG_PTR)lpFileName;
 
     qemu_syscall(&call.super);
 
@@ -5911,7 +5911,7 @@ WINBASEAPI BOOL WINAPI EncryptFileA(LPCSTR lpFileName)
 {
     struct qemu_EncryptFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENCRYPTFILEA);
-    call.lpFileName = (uint64_t)lpFileName;
+    call.lpFileName = (ULONG_PTR)lpFileName;
 
     qemu_syscall(&call.super);
 
@@ -5942,8 +5942,8 @@ WINBASEAPI BOOL WINAPI FileEncryptionStatusW(LPCWSTR lpFileName, LPDWORD lpStatu
 {
     struct qemu_FileEncryptionStatusW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILEENCRYPTIONSTATUSW);
-    call.lpFileName = (uint64_t)lpFileName;
-    call.lpStatus = (uint64_t)lpStatus;
+    call.lpFileName = (ULONG_PTR)lpFileName;
+    call.lpStatus = (ULONG_PTR)lpStatus;
 
     qemu_syscall(&call.super);
 
@@ -5974,8 +5974,8 @@ WINBASEAPI BOOL WINAPI FileEncryptionStatusA(LPCSTR lpFileName, LPDWORD lpStatus
 {
     struct qemu_FileEncryptionStatusA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FILEENCRYPTIONSTATUSA);
-    call.lpFileName = (uint64_t)lpFileName;
-    call.lpStatus = (uint64_t)lpStatus;
+    call.lpFileName = (ULONG_PTR)lpFileName;
+    call.lpStatus = (ULONG_PTR)lpStatus;
 
     qemu_syscall(&call.super);
 
@@ -6011,13 +6011,13 @@ WINBASEAPI DWORD WINAPI SetSecurityInfo(HANDLE handle, SE_OBJECT_TYPE ObjectType
 {
     struct qemu_SetSecurityInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSECURITYINFO);
-    call.handle = (uint64_t)handle;
-    call.ObjectType = (uint64_t)ObjectType;
-    call.SecurityInfo = (uint64_t)SecurityInfo;
-    call.psidOwner = (uint64_t)psidOwner;
-    call.psidGroup = (uint64_t)psidGroup;
-    call.pDacl = (uint64_t)pDacl;
-    call.pSacl = (uint64_t)pSacl;
+    call.handle = (ULONG_PTR)handle;
+    call.ObjectType = (ULONG_PTR)ObjectType;
+    call.SecurityInfo = (ULONG_PTR)SecurityInfo;
+    call.psidOwner = (ULONG_PTR)psidOwner;
+    call.psidGroup = (ULONG_PTR)psidGroup;
+    call.pDacl = (ULONG_PTR)pDacl;
+    call.pSacl = (ULONG_PTR)pSacl;
 
     qemu_syscall(&call.super);
 
@@ -6051,11 +6051,11 @@ WINBASEAPI BOOL WINAPI SaferCreateLevel(DWORD ScopeId, DWORD LevelId, DWORD Open
 {
     struct qemu_SaferCreateLevel call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SAFERCREATELEVEL);
-    call.ScopeId = (uint64_t)ScopeId;
-    call.LevelId = (uint64_t)LevelId;
-    call.OpenFlags = (uint64_t)OpenFlags;
-    call.LevelHandle = (uint64_t)LevelHandle;
-    call.lpReserved = (uint64_t)lpReserved;
+    call.ScopeId = (ULONG_PTR)ScopeId;
+    call.LevelId = (ULONG_PTR)LevelId;
+    call.OpenFlags = (ULONG_PTR)OpenFlags;
+    call.LevelHandle = (ULONG_PTR)LevelHandle;
+    call.lpReserved = (ULONG_PTR)lpReserved;
 
     qemu_syscall(&call.super);
 
@@ -6089,11 +6089,11 @@ WINBASEAPI BOOL WINAPI SaferComputeTokenFromLevel(SAFER_LEVEL_HANDLE handle, HAN
 {
     struct qemu_SaferComputeTokenFromLevel call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SAFERCOMPUTETOKENFROMLEVEL);
-    call.handle = (uint64_t)handle;
-    call.token = (uint64_t)token;
-    call.access_token = (uint64_t)access_token;
-    call.flags = (uint64_t)flags;
-    call.reserved = (uint64_t)reserved;
+    call.handle = (ULONG_PTR)handle;
+    call.token = (ULONG_PTR)token;
+    call.access_token = (ULONG_PTR)access_token;
+    call.flags = (ULONG_PTR)flags;
+    call.reserved = (ULONG_PTR)reserved;
 
     qemu_syscall(&call.super);
 
@@ -6125,7 +6125,7 @@ WINBASEAPI BOOL WINAPI SaferCloseLevel(SAFER_LEVEL_HANDLE handle)
 {
     struct qemu_SaferCloseLevel call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SAFERCLOSELEVEL);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -6167,17 +6167,17 @@ WINBASEAPI DWORD WINAPI TreeResetNamedSecurityInfoW(LPWSTR pObjectName, SE_OBJEC
 {
     struct qemu_TreeResetNamedSecurityInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TREERESETNAMEDSECURITYINFOW);
-    call.pObjectName = (uint64_t)pObjectName;
-    call.ObjectType = (uint64_t)ObjectType;
-    call.SecurityInfo = (uint64_t)SecurityInfo;
-    call.pOwner = (uint64_t)pOwner;
-    call.pGroup = (uint64_t)pGroup;
-    call.pDacl = (uint64_t)pDacl;
-    call.pSacl = (uint64_t)pSacl;
-    call.KeepExplicit = (uint64_t)KeepExplicit;
-    call.fnProgress = (uint64_t)fnProgress;
-    call.ProgressInvokeSetting = (uint64_t)ProgressInvokeSetting;
-    call.Args = (uint64_t)Args;
+    call.pObjectName = (ULONG_PTR)pObjectName;
+    call.ObjectType = (ULONG_PTR)ObjectType;
+    call.SecurityInfo = (ULONG_PTR)SecurityInfo;
+    call.pOwner = (ULONG_PTR)pOwner;
+    call.pGroup = (ULONG_PTR)pGroup;
+    call.pDacl = (ULONG_PTR)pDacl;
+    call.pSacl = (ULONG_PTR)pSacl;
+    call.KeepExplicit = (ULONG_PTR)KeepExplicit;
+    call.fnProgress = (ULONG_PTR)fnProgress;
+    call.ProgressInvokeSetting = (ULONG_PTR)ProgressInvokeSetting;
+    call.Args = (ULONG_PTR)Args;
 
     qemu_syscall(&call.super);
 
@@ -6214,12 +6214,12 @@ WINBASEAPI BOOL WINAPI SaferGetPolicyInformation(DWORD scope, SAFER_POLICY_INFO_
 {
     struct qemu_SaferGetPolicyInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SAFERGETPOLICYINFORMATION);
-    call.scope = (uint64_t)scope;
-    call.class = (uint64_t)class;
-    call.size = (uint64_t)size;
-    call.buffer = (uint64_t)buffer;
-    call.required = (uint64_t)required;
-    call.lpReserved = (uint64_t)lpReserved;
+    call.scope = (ULONG_PTR)scope;
+    call.class = (ULONG_PTR)class;
+    call.size = (ULONG_PTR)size;
+    call.buffer = (ULONG_PTR)buffer;
+    call.required = (ULONG_PTR)required;
+    call.lpReserved = (ULONG_PTR)lpReserved;
 
     qemu_syscall(&call.super);
 
@@ -6252,10 +6252,10 @@ WINBASEAPI BOOL WINAPI SaferSetLevelInformation(SAFER_LEVEL_HANDLE handle, SAFER
 {
     struct qemu_SaferSetLevelInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SAFERSETLEVELINFORMATION);
-    call.handle = (uint64_t)handle;
-    call.infotype = (uint64_t)infotype;
-    call.buffer = (uint64_t)buffer;
-    call.size = (uint64_t)size;
+    call.handle = (ULONG_PTR)handle;
+    call.infotype = (ULONG_PTR)infotype;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -6291,13 +6291,13 @@ WINBASEAPI DWORD WINAPI LookupSecurityDescriptorPartsA(PTRUSTEE_A *owner, PTRUST
 {
     struct qemu_LookupSecurityDescriptorPartsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPSECURITYDESCRIPTORPARTSA);
-    call.owner = (uint64_t)owner;
-    call.group = (uint64_t)group;
-    call.access_count = (uint64_t)access_count;
-    call.access_list = (uint64_t)access_list;
-    call.audit_count = (uint64_t)audit_count;
-    call.audit_list = (uint64_t)audit_list;
-    call.descriptor = (uint64_t)descriptor;
+    call.owner = (ULONG_PTR)owner;
+    call.group = (ULONG_PTR)group;
+    call.access_count = (ULONG_PTR)access_count;
+    call.access_list = (ULONG_PTR)access_list;
+    call.audit_count = (ULONG_PTR)audit_count;
+    call.audit_list = (ULONG_PTR)audit_list;
+    call.descriptor = (ULONG_PTR)descriptor;
 
     qemu_syscall(&call.super);
 
@@ -6335,13 +6335,13 @@ WINBASEAPI DWORD WINAPI LookupSecurityDescriptorPartsW(PTRUSTEE_W *owner, PTRUST
 {
     struct qemu_LookupSecurityDescriptorPartsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPSECURITYDESCRIPTORPARTSW);
-    call.owner = (uint64_t)owner;
-    call.group = (uint64_t)group;
-    call.access_count = (uint64_t)access_count;
-    call.access_list = (uint64_t)access_list;
-    call.audit_count = (uint64_t)audit_count;
-    call.audit_list = (uint64_t)audit_list;
-    call.descriptor = (uint64_t)descriptor;
+    call.owner = (ULONG_PTR)owner;
+    call.group = (ULONG_PTR)group;
+    call.access_count = (ULONG_PTR)access_count;
+    call.access_list = (ULONG_PTR)access_list;
+    call.audit_count = (ULONG_PTR)audit_count;
+    call.audit_list = (ULONG_PTR)audit_list;
+    call.descriptor = (ULONG_PTR)descriptor;
 
     qemu_syscall(&call.super);
 

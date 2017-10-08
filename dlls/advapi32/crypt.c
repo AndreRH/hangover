@@ -43,7 +43,7 @@ WINBASEAPI void WINAPI CloseEncryptedFileRaw(PVOID context)
 {
     struct qemu_CloseEncryptedFileRaw call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CLOSEENCRYPTEDFILERAW);
-    call.context = (uint64_t)context;
+    call.context = (ULONG_PTR)context;
 
     qemu_syscall(&call.super);
 }
@@ -75,11 +75,11 @@ WINBASEAPI BOOL WINAPI CryptAcquireContextW (HCRYPTPROV *phProv, LPCWSTR pszCont
 {
     struct qemu_CryptAcquireContextW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTACQUIRECONTEXTW);
-    call.phProv = (uint64_t)phProv;
-    call.pszContainer = (uint64_t)pszContainer;
-    call.pszProvider = (uint64_t)pszProvider;
-    call.dwProvType = (uint64_t)dwProvType;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.phProv = (ULONG_PTR)phProv;
+    call.pszContainer = (ULONG_PTR)pszContainer;
+    call.pszProvider = (ULONG_PTR)pszProvider;
+    call.dwProvType = (ULONG_PTR)dwProvType;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -113,11 +113,11 @@ WINBASEAPI BOOL WINAPI CryptAcquireContextA (HCRYPTPROV *phProv, LPCSTR pszConta
 {
     struct qemu_CryptAcquireContextA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTACQUIRECONTEXTA);
-    call.phProv = (uint64_t)phProv;
-    call.pszContainer = (uint64_t)pszContainer;
-    call.pszProvider = (uint64_t)pszProvider;
-    call.dwProvType = (uint64_t)dwProvType;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.phProv = (ULONG_PTR)phProv;
+    call.pszContainer = (ULONG_PTR)pszContainer;
+    call.pszProvider = (ULONG_PTR)pszProvider;
+    call.dwProvType = (ULONG_PTR)dwProvType;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -149,9 +149,9 @@ WINBASEAPI BOOL WINAPI CryptContextAddRef (HCRYPTPROV hProv, DWORD *pdwReserved,
 {
     struct qemu_CryptContextAddRef call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTCONTEXTADDREF);
-    call.hProv = (uint64_t)hProv;
-    call.pdwReserved = (uint64_t)pdwReserved;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hProv = (ULONG_PTR)hProv;
+    call.pdwReserved = (ULONG_PTR)pdwReserved;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -182,8 +182,8 @@ WINBASEAPI WINBOOL WINAPI CryptReleaseContext (HCRYPTPROV hProv, DWORD dwFlags)
 {
     struct qemu_CryptReleaseContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTRELEASECONTEXT);
-    call.hProv = (uint64_t)hProv;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hProv = (ULONG_PTR)hProv;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -215,9 +215,9 @@ WINBASEAPI BOOL WINAPI CryptGenRandom (HCRYPTPROV hProv, DWORD dwLen, BYTE *pbBu
 {
     struct qemu_CryptGenRandom call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTGENRANDOM);
-    call.hProv = (uint64_t)hProv;
-    call.dwLen = (uint64_t)dwLen;
-    call.pbBuffer = (uint64_t)pbBuffer;
+    call.hProv = (ULONG_PTR)hProv;
+    call.dwLen = (ULONG_PTR)dwLen;
+    call.pbBuffer = (ULONG_PTR)pbBuffer;
 
     qemu_syscall(&call.super);
 
@@ -251,11 +251,11 @@ WINBASEAPI BOOL WINAPI CryptCreateHash (HCRYPTPROV hProv, ALG_ID Algid, HCRYPTKE
 {
     struct qemu_CryptCreateHash call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTCREATEHASH);
-    call.hProv = (uint64_t)hProv;
-    call.Algid = (uint64_t)Algid;
-    call.hKey = (uint64_t)hKey;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.phHash = (uint64_t)phHash;
+    call.hProv = (ULONG_PTR)hProv;
+    call.Algid = (ULONG_PTR)Algid;
+    call.hKey = (ULONG_PTR)hKey;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.phHash = (ULONG_PTR)phHash;
 
     qemu_syscall(&call.super);
 
@@ -290,12 +290,12 @@ WINBASEAPI BOOL WINAPI CryptDecrypt (HCRYPTKEY hKey, HCRYPTHASH hHash, BOOL Fina
 {
     struct qemu_CryptDecrypt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTDECRYPT);
-    call.hKey = (uint64_t)hKey;
-    call.hHash = (uint64_t)hHash;
-    call.Final = (uint64_t)Final;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pbData = (uint64_t)pbData;
-    call.pdwDataLen = (uint64_t)pdwDataLen;
+    call.hKey = (ULONG_PTR)hKey;
+    call.hHash = (ULONG_PTR)hHash;
+    call.Final = (ULONG_PTR)Final;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pbData = (ULONG_PTR)pbData;
+    call.pdwDataLen = (ULONG_PTR)pdwDataLen;
 
     qemu_syscall(&call.super);
 
@@ -329,11 +329,11 @@ WINBASEAPI BOOL WINAPI CryptDeriveKey (HCRYPTPROV hProv, ALG_ID Algid, HCRYPTHAS
 {
     struct qemu_CryptDeriveKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTDERIVEKEY);
-    call.hProv = (uint64_t)hProv;
-    call.Algid = (uint64_t)Algid;
-    call.hBaseData = (uint64_t)hBaseData;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.phKey = (uint64_t)phKey;
+    call.hProv = (ULONG_PTR)hProv;
+    call.Algid = (ULONG_PTR)Algid;
+    call.hBaseData = (ULONG_PTR)hBaseData;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.phKey = (ULONG_PTR)phKey;
 
     qemu_syscall(&call.super);
 
@@ -363,7 +363,7 @@ WINBASEAPI BOOL WINAPI CryptDestroyHash (HCRYPTHASH hHash)
 {
     struct qemu_CryptDestroyHash call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTDESTROYHASH);
-    call.hHash = (uint64_t)hHash;
+    call.hHash = (ULONG_PTR)hHash;
 
     qemu_syscall(&call.super);
 
@@ -393,7 +393,7 @@ WINBASEAPI BOOL WINAPI CryptDestroyKey (HCRYPTKEY hKey)
 {
     struct qemu_CryptDestroyKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTDESTROYKEY);
-    call.hKey = (uint64_t)hKey;
+    call.hKey = (ULONG_PTR)hKey;
 
     qemu_syscall(&call.super);
 
@@ -426,10 +426,10 @@ WINBASEAPI BOOL WINAPI CryptDuplicateHash (HCRYPTHASH hHash, DWORD *pdwReserved,
 {
     struct qemu_CryptDuplicateHash call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTDUPLICATEHASH);
-    call.hHash = (uint64_t)hHash;
-    call.pdwReserved = (uint64_t)pdwReserved;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.phHash = (uint64_t)phHash;
+    call.hHash = (ULONG_PTR)hHash;
+    call.pdwReserved = (ULONG_PTR)pdwReserved;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.phHash = (ULONG_PTR)phHash;
 
     qemu_syscall(&call.super);
 
@@ -462,10 +462,10 @@ WINBASEAPI BOOL WINAPI CryptDuplicateKey (HCRYPTKEY hKey, DWORD *pdwReserved, DW
 {
     struct qemu_CryptDuplicateKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTDUPLICATEKEY);
-    call.hKey = (uint64_t)hKey;
-    call.pdwReserved = (uint64_t)pdwReserved;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.phKey = (uint64_t)phKey;
+    call.hKey = (ULONG_PTR)hKey;
+    call.pdwReserved = (ULONG_PTR)pdwReserved;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.phKey = (ULONG_PTR)phKey;
 
     qemu_syscall(&call.super);
 
@@ -501,13 +501,13 @@ WINBASEAPI BOOL WINAPI CryptEncrypt (HCRYPTKEY hKey, HCRYPTHASH hHash, BOOL Fina
 {
     struct qemu_CryptEncrypt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTENCRYPT);
-    call.hKey = (uint64_t)hKey;
-    call.hHash = (uint64_t)hHash;
-    call.Final = (uint64_t)Final;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pbData = (uint64_t)pbData;
-    call.pdwDataLen = (uint64_t)pdwDataLen;
-    call.dwBufLen = (uint64_t)dwBufLen;
+    call.hKey = (ULONG_PTR)hKey;
+    call.hHash = (ULONG_PTR)hHash;
+    call.Final = (ULONG_PTR)Final;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pbData = (ULONG_PTR)pbData;
+    call.pdwDataLen = (ULONG_PTR)pdwDataLen;
+    call.dwBufLen = (ULONG_PTR)dwBufLen;
 
     qemu_syscall(&call.super);
 
@@ -542,12 +542,12 @@ WINBASEAPI BOOL WINAPI CryptEnumProvidersW (DWORD dwIndex, DWORD *pdwReserved, D
 {
     struct qemu_CryptEnumProvidersW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTENUMPROVIDERSW);
-    call.dwIndex = (uint64_t)dwIndex;
-    call.pdwReserved = (uint64_t)pdwReserved;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pdwProvType = (uint64_t)pdwProvType;
-    call.pszProvName = (uint64_t)pszProvName;
-    call.pcbProvName = (uint64_t)pcbProvName;
+    call.dwIndex = (ULONG_PTR)dwIndex;
+    call.pdwReserved = (ULONG_PTR)pdwReserved;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pdwProvType = (ULONG_PTR)pdwProvType;
+    call.pszProvName = (ULONG_PTR)pszProvName;
+    call.pcbProvName = (ULONG_PTR)pcbProvName;
 
     qemu_syscall(&call.super);
 
@@ -582,12 +582,12 @@ WINBASEAPI BOOL WINAPI CryptEnumProvidersA (DWORD dwIndex, DWORD *pdwReserved, D
 {
     struct qemu_CryptEnumProvidersA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTENUMPROVIDERSA);
-    call.dwIndex = (uint64_t)dwIndex;
-    call.pdwReserved = (uint64_t)pdwReserved;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pdwProvType = (uint64_t)pdwProvType;
-    call.pszProvName = (uint64_t)pszProvName;
-    call.pcbProvName = (uint64_t)pcbProvName;
+    call.dwIndex = (ULONG_PTR)dwIndex;
+    call.pdwReserved = (ULONG_PTR)pdwReserved;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pdwProvType = (ULONG_PTR)pdwProvType;
+    call.pszProvName = (ULONG_PTR)pszProvName;
+    call.pcbProvName = (ULONG_PTR)pcbProvName;
 
     qemu_syscall(&call.super);
 
@@ -622,12 +622,12 @@ WINBASEAPI BOOL WINAPI CryptEnumProviderTypesW (DWORD dwIndex, DWORD *pdwReserve
 {
     struct qemu_CryptEnumProviderTypesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTENUMPROVIDERTYPESW);
-    call.dwIndex = (uint64_t)dwIndex;
-    call.pdwReserved = (uint64_t)pdwReserved;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pdwProvType = (uint64_t)pdwProvType;
-    call.pszTypeName = (uint64_t)pszTypeName;
-    call.pcbTypeName = (uint64_t)pcbTypeName;
+    call.dwIndex = (ULONG_PTR)dwIndex;
+    call.pdwReserved = (ULONG_PTR)pdwReserved;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pdwProvType = (ULONG_PTR)pdwProvType;
+    call.pszTypeName = (ULONG_PTR)pszTypeName;
+    call.pcbTypeName = (ULONG_PTR)pcbTypeName;
 
     qemu_syscall(&call.super);
 
@@ -662,12 +662,12 @@ WINBASEAPI BOOL WINAPI CryptEnumProviderTypesA (DWORD dwIndex, DWORD *pdwReserve
 {
     struct qemu_CryptEnumProviderTypesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTENUMPROVIDERTYPESA);
-    call.dwIndex = (uint64_t)dwIndex;
-    call.pdwReserved = (uint64_t)pdwReserved;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pdwProvType = (uint64_t)pdwProvType;
-    call.pszTypeName = (uint64_t)pszTypeName;
-    call.pcbTypeName = (uint64_t)pcbTypeName;
+    call.dwIndex = (ULONG_PTR)dwIndex;
+    call.pdwReserved = (ULONG_PTR)pdwReserved;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pdwProvType = (ULONG_PTR)pdwProvType;
+    call.pszTypeName = (ULONG_PTR)pszTypeName;
+    call.pcbTypeName = (ULONG_PTR)pcbTypeName;
 
     qemu_syscall(&call.super);
 
@@ -702,12 +702,12 @@ WINBASEAPI BOOL WINAPI CryptExportKey (HCRYPTKEY hKey, HCRYPTKEY hExpKey, DWORD 
 {
     struct qemu_CryptExportKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTEXPORTKEY);
-    call.hKey = (uint64_t)hKey;
-    call.hExpKey = (uint64_t)hExpKey;
-    call.dwBlobType = (uint64_t)dwBlobType;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pbData = (uint64_t)pbData;
-    call.pdwDataLen = (uint64_t)pdwDataLen;
+    call.hKey = (ULONG_PTR)hKey;
+    call.hExpKey = (ULONG_PTR)hExpKey;
+    call.dwBlobType = (ULONG_PTR)dwBlobType;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pbData = (ULONG_PTR)pbData;
+    call.pdwDataLen = (ULONG_PTR)pdwDataLen;
 
     qemu_syscall(&call.super);
 
@@ -740,10 +740,10 @@ WINBASEAPI BOOL WINAPI CryptGenKey (HCRYPTPROV hProv, ALG_ID Algid, DWORD dwFlag
 {
     struct qemu_CryptGenKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTGENKEY);
-    call.hProv = (uint64_t)hProv;
-    call.Algid = (uint64_t)Algid;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.phKey = (uint64_t)phKey;
+    call.hProv = (ULONG_PTR)hProv;
+    call.Algid = (ULONG_PTR)Algid;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.phKey = (ULONG_PTR)phKey;
 
     qemu_syscall(&call.super);
 
@@ -777,11 +777,11 @@ WINBASEAPI BOOL WINAPI CryptGetDefaultProviderW (DWORD dwProvType, DWORD *pdwRes
 {
     struct qemu_CryptGetDefaultProviderW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTGETDEFAULTPROVIDERW);
-    call.dwProvType = (uint64_t)dwProvType;
-    call.pdwReserved = (uint64_t)pdwReserved;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pszProvName = (uint64_t)pszProvName;
-    call.pcbProvName = (uint64_t)pcbProvName;
+    call.dwProvType = (ULONG_PTR)dwProvType;
+    call.pdwReserved = (ULONG_PTR)pdwReserved;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pszProvName = (ULONG_PTR)pszProvName;
+    call.pcbProvName = (ULONG_PTR)pcbProvName;
 
     qemu_syscall(&call.super);
 
@@ -815,11 +815,11 @@ WINBASEAPI BOOL WINAPI CryptGetDefaultProviderA (DWORD dwProvType, DWORD *pdwRes
 {
     struct qemu_CryptGetDefaultProviderA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTGETDEFAULTPROVIDERA);
-    call.dwProvType = (uint64_t)dwProvType;
-    call.pdwReserved = (uint64_t)pdwReserved;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pszProvName = (uint64_t)pszProvName;
-    call.pcbProvName = (uint64_t)pcbProvName;
+    call.dwProvType = (ULONG_PTR)dwProvType;
+    call.pdwReserved = (ULONG_PTR)pdwReserved;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pszProvName = (ULONG_PTR)pszProvName;
+    call.pcbProvName = (ULONG_PTR)pcbProvName;
 
     qemu_syscall(&call.super);
 
@@ -853,11 +853,11 @@ WINBASEAPI BOOL WINAPI CryptGetHashParam (HCRYPTHASH hHash, DWORD dwParam, BYTE 
 {
     struct qemu_CryptGetHashParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTGETHASHPARAM);
-    call.hHash = (uint64_t)hHash;
-    call.dwParam = (uint64_t)dwParam;
-    call.pbData = (uint64_t)pbData;
-    call.pdwDataLen = (uint64_t)pdwDataLen;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hHash = (ULONG_PTR)hHash;
+    call.dwParam = (ULONG_PTR)dwParam;
+    call.pbData = (ULONG_PTR)pbData;
+    call.pdwDataLen = (ULONG_PTR)pdwDataLen;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -891,11 +891,11 @@ WINBASEAPI BOOL WINAPI CryptGetKeyParam (HCRYPTKEY hKey, DWORD dwParam, BYTE *pb
 {
     struct qemu_CryptGetKeyParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTGETKEYPARAM);
-    call.hKey = (uint64_t)hKey;
-    call.dwParam = (uint64_t)dwParam;
-    call.pbData = (uint64_t)pbData;
-    call.pdwDataLen = (uint64_t)pdwDataLen;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hKey = (ULONG_PTR)hKey;
+    call.dwParam = (ULONG_PTR)dwParam;
+    call.pbData = (ULONG_PTR)pbData;
+    call.pdwDataLen = (ULONG_PTR)pdwDataLen;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -929,11 +929,11 @@ WINBASEAPI BOOL WINAPI CryptGetProvParam (HCRYPTPROV hProv, DWORD dwParam, BYTE 
 {
     struct qemu_CryptGetProvParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTGETPROVPARAM);
-    call.hProv = (uint64_t)hProv;
-    call.dwParam = (uint64_t)dwParam;
-    call.pbData = (uint64_t)pbData;
-    call.pdwDataLen = (uint64_t)pdwDataLen;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hProv = (ULONG_PTR)hProv;
+    call.dwParam = (ULONG_PTR)dwParam;
+    call.pbData = (ULONG_PTR)pbData;
+    call.pdwDataLen = (ULONG_PTR)pdwDataLen;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -965,9 +965,9 @@ WINBASEAPI BOOL WINAPI CryptGetUserKey (HCRYPTPROV hProv, DWORD dwKeySpec, HCRYP
 {
     struct qemu_CryptGetUserKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTGETUSERKEY);
-    call.hProv = (uint64_t)hProv;
-    call.dwKeySpec = (uint64_t)dwKeySpec;
-    call.phUserKey = (uint64_t)phUserKey;
+    call.hProv = (ULONG_PTR)hProv;
+    call.dwKeySpec = (ULONG_PTR)dwKeySpec;
+    call.phUserKey = (ULONG_PTR)phUserKey;
 
     qemu_syscall(&call.super);
 
@@ -1000,10 +1000,10 @@ WINBASEAPI BOOL WINAPI CryptHashData (HCRYPTHASH hHash, const BYTE *pbData, DWOR
 {
     struct qemu_CryptHashData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTHASHDATA);
-    call.hHash = (uint64_t)hHash;
-    call.pbData = (uint64_t)pbData;
-    call.dwDataLen = (uint64_t)dwDataLen;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hHash = (ULONG_PTR)hHash;
+    call.pbData = (ULONG_PTR)pbData;
+    call.dwDataLen = (ULONG_PTR)dwDataLen;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1035,9 +1035,9 @@ WINBASEAPI BOOL WINAPI CryptHashSessionKey (HCRYPTHASH hHash, HCRYPTKEY hKey, DW
 {
     struct qemu_CryptHashSessionKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTHASHSESSIONKEY);
-    call.hHash = (uint64_t)hHash;
-    call.hKey = (uint64_t)hKey;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hHash = (ULONG_PTR)hHash;
+    call.hKey = (ULONG_PTR)hKey;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1072,12 +1072,12 @@ WINBASEAPI BOOL WINAPI CryptImportKey (HCRYPTPROV hProv, const BYTE *pbData, DWO
 {
     struct qemu_CryptImportKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTIMPORTKEY);
-    call.hProv = (uint64_t)hProv;
-    call.pbData = (uint64_t)pbData;
-    call.dwDataLen = (uint64_t)dwDataLen;
-    call.hPubKey = (uint64_t)hPubKey;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.phKey = (uint64_t)phKey;
+    call.hProv = (ULONG_PTR)hProv;
+    call.pbData = (ULONG_PTR)pbData;
+    call.dwDataLen = (ULONG_PTR)dwDataLen;
+    call.hPubKey = (ULONG_PTR)hPubKey;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.phKey = (ULONG_PTR)phKey;
 
     qemu_syscall(&call.super);
 
@@ -1112,12 +1112,12 @@ WINBASEAPI BOOL WINAPI CryptSignHashW (HCRYPTHASH hHash, DWORD dwKeySpec, LPCWST
 {
     struct qemu_CryptSignHashW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSIGNHASHW);
-    call.hHash = (uint64_t)hHash;
-    call.dwKeySpec = (uint64_t)dwKeySpec;
-    call.sDescription = (uint64_t)sDescription;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pbSignature = (uint64_t)pbSignature;
-    call.pdwSigLen = (uint64_t)pdwSigLen;
+    call.hHash = (ULONG_PTR)hHash;
+    call.dwKeySpec = (ULONG_PTR)dwKeySpec;
+    call.sDescription = (ULONG_PTR)sDescription;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pbSignature = (ULONG_PTR)pbSignature;
+    call.pdwSigLen = (ULONG_PTR)pdwSigLen;
 
     qemu_syscall(&call.super);
 
@@ -1152,12 +1152,12 @@ WINBASEAPI BOOL WINAPI CryptSignHashA (HCRYPTHASH hHash, DWORD dwKeySpec, LPCSTR
 {
     struct qemu_CryptSignHashA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSIGNHASHA);
-    call.hHash = (uint64_t)hHash;
-    call.dwKeySpec = (uint64_t)dwKeySpec;
-    call.sDescription = (uint64_t)sDescription;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pbSignature = (uint64_t)pbSignature;
-    call.pdwSigLen = (uint64_t)pdwSigLen;
+    call.hHash = (ULONG_PTR)hHash;
+    call.dwKeySpec = (ULONG_PTR)dwKeySpec;
+    call.sDescription = (ULONG_PTR)sDescription;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pbSignature = (ULONG_PTR)pbSignature;
+    call.pdwSigLen = (ULONG_PTR)pdwSigLen;
 
     qemu_syscall(&call.super);
 
@@ -1190,10 +1190,10 @@ WINBASEAPI BOOL WINAPI CryptSetHashParam (HCRYPTHASH hHash, DWORD dwParam, const
 {
     struct qemu_CryptSetHashParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSETHASHPARAM);
-    call.hHash = (uint64_t)hHash;
-    call.dwParam = (uint64_t)dwParam;
-    call.pbData = (uint64_t)pbData;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hHash = (ULONG_PTR)hHash;
+    call.dwParam = (ULONG_PTR)dwParam;
+    call.pbData = (ULONG_PTR)pbData;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1226,10 +1226,10 @@ WINBASEAPI BOOL WINAPI CryptSetKeyParam (HCRYPTKEY hKey, DWORD dwParam, const BY
 {
     struct qemu_CryptSetKeyParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSETKEYPARAM);
-    call.hKey = (uint64_t)hKey;
-    call.dwParam = (uint64_t)dwParam;
-    call.pbData = (uint64_t)pbData;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hKey = (ULONG_PTR)hKey;
+    call.dwParam = (ULONG_PTR)dwParam;
+    call.pbData = (ULONG_PTR)pbData;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1260,8 +1260,8 @@ WINBASEAPI BOOL WINAPI CryptSetProviderA (LPCSTR pszProvName, DWORD dwProvType)
 {
     struct qemu_CryptSetProviderA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSETPROVIDERA);
-    call.pszProvName = (uint64_t)pszProvName;
-    call.dwProvType = (uint64_t)dwProvType;
+    call.pszProvName = (ULONG_PTR)pszProvName;
+    call.dwProvType = (ULONG_PTR)dwProvType;
 
     qemu_syscall(&call.super);
 
@@ -1292,8 +1292,8 @@ WINBASEAPI BOOL WINAPI CryptSetProviderW (LPCWSTR pszProvName, DWORD dwProvType)
 {
     struct qemu_CryptSetProviderW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSETPROVIDERW);
-    call.pszProvName = (uint64_t)pszProvName;
-    call.dwProvType = (uint64_t)dwProvType;
+    call.pszProvName = (ULONG_PTR)pszProvName;
+    call.dwProvType = (ULONG_PTR)dwProvType;
 
     qemu_syscall(&call.super);
 
@@ -1326,10 +1326,10 @@ WINBASEAPI BOOL WINAPI CryptSetProviderExW (LPCWSTR pszProvName, DWORD dwProvTyp
 {
     struct qemu_CryptSetProviderExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSETPROVIDEREXW);
-    call.pszProvName = (uint64_t)pszProvName;
-    call.dwProvType = (uint64_t)dwProvType;
-    call.pdwReserved = (uint64_t)pdwReserved;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.pszProvName = (ULONG_PTR)pszProvName;
+    call.dwProvType = (ULONG_PTR)dwProvType;
+    call.pdwReserved = (ULONG_PTR)pdwReserved;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1362,10 +1362,10 @@ WINBASEAPI BOOL WINAPI CryptSetProviderExA (LPCSTR pszProvName, DWORD dwProvType
 {
     struct qemu_CryptSetProviderExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSETPROVIDEREXA);
-    call.pszProvName = (uint64_t)pszProvName;
-    call.dwProvType = (uint64_t)dwProvType;
-    call.pdwReserved = (uint64_t)pdwReserved;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.pszProvName = (ULONG_PTR)pszProvName;
+    call.dwProvType = (ULONG_PTR)dwProvType;
+    call.pdwReserved = (ULONG_PTR)pdwReserved;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1398,10 +1398,10 @@ WINBASEAPI BOOL WINAPI CryptSetProvParam (HCRYPTPROV hProv, DWORD dwParam, const
 {
     struct qemu_CryptSetProvParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSETPROVPARAM);
-    call.hProv = (uint64_t)hProv;
-    call.dwParam = (uint64_t)dwParam;
-    call.pbData = (uint64_t)pbData;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hProv = (ULONG_PTR)hProv;
+    call.dwParam = (ULONG_PTR)dwParam;
+    call.pbData = (ULONG_PTR)pbData;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1436,12 +1436,12 @@ WINBASEAPI BOOL WINAPI CryptVerifySignatureW (HCRYPTHASH hHash, const BYTE *pbSi
 {
     struct qemu_CryptVerifySignatureW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTVERIFYSIGNATUREW);
-    call.hHash = (uint64_t)hHash;
-    call.pbSignature = (uint64_t)pbSignature;
-    call.dwSigLen = (uint64_t)dwSigLen;
-    call.hPubKey = (uint64_t)hPubKey;
-    call.sDescription = (uint64_t)sDescription;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hHash = (ULONG_PTR)hHash;
+    call.pbSignature = (ULONG_PTR)pbSignature;
+    call.dwSigLen = (ULONG_PTR)dwSigLen;
+    call.hPubKey = (ULONG_PTR)hPubKey;
+    call.sDescription = (ULONG_PTR)sDescription;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1476,12 +1476,12 @@ WINBASEAPI BOOL WINAPI CryptVerifySignatureA (HCRYPTHASH hHash, const BYTE *pbSi
 {
     struct qemu_CryptVerifySignatureA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTVERIFYSIGNATUREA);
-    call.hHash = (uint64_t)hHash;
-    call.pbSignature = (uint64_t)pbSignature;
-    call.dwSigLen = (uint64_t)dwSigLen;
-    call.hPubKey = (uint64_t)hPubKey;
-    call.sDescription = (uint64_t)sDescription;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hHash = (ULONG_PTR)hHash;
+    call.pbSignature = (ULONG_PTR)pbSignature;
+    call.dwSigLen = (ULONG_PTR)dwSigLen;
+    call.hPubKey = (ULONG_PTR)hPubKey;
+    call.sDescription = (ULONG_PTR)sDescription;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1513,9 +1513,9 @@ WINBASEAPI DWORD WINAPI OpenEncryptedFileRawA(LPCSTR filename, ULONG flags, PVOI
 {
     struct qemu_OpenEncryptedFileRawA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENENCRYPTEDFILERAWA);
-    call.filename = (uint64_t)filename;
-    call.flags = (uint64_t)flags;
-    call.context = (uint64_t)context;
+    call.filename = (ULONG_PTR)filename;
+    call.flags = (ULONG_PTR)flags;
+    call.context = (ULONG_PTR)context;
 
     qemu_syscall(&call.super);
 
@@ -1547,9 +1547,9 @@ WINBASEAPI DWORD WINAPI OpenEncryptedFileRawW(LPCWSTR filename, ULONG flags, PVO
 {
     struct qemu_OpenEncryptedFileRawW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENENCRYPTEDFILERAWW);
-    call.filename = (uint64_t)filename;
-    call.flags = (uint64_t)flags;
-    call.context = (uint64_t)context;
+    call.filename = (ULONG_PTR)filename;
+    call.flags = (ULONG_PTR)flags;
+    call.context = (ULONG_PTR)context;
 
     qemu_syscall(&call.super);
 
@@ -1581,9 +1581,9 @@ WINBASEAPI DWORD WINAPI ReadEncryptedFileRaw(PFE_EXPORT_FUNC export, PVOID callb
 {
     struct qemu_ReadEncryptedFileRaw call;
     call.super.id = QEMU_SYSCALL_ID(CALL_READENCRYPTEDFILERAW);
-    call.export = (uint64_t)export;
-    call.callback = (uint64_t)callback;
-    call.context = (uint64_t)context;
+    call.export = (ULONG_PTR)export;
+    call.callback = (ULONG_PTR)callback;
+    call.context = (ULONG_PTR)context;
 
     qemu_syscall(&call.super);
 
@@ -1614,8 +1614,8 @@ WINBASEAPI BOOL WINAPI SystemFunction030(LPCVOID b1, LPCVOID b2)
 {
     struct qemu_SystemFunction030 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMFUNCTION030);
-    call.b1 = (uint64_t)b1;
-    call.b2 = (uint64_t)b2;
+    call.b1 = (ULONG_PTR)b1;
+    call.b2 = (ULONG_PTR)b2;
 
     qemu_syscall(&call.super);
 
@@ -1647,7 +1647,7 @@ WINBASEAPI BOOL WINAPI SystemFunction035(LPCSTR lpszDllFilePath)
 {
     struct qemu_SystemFunction035 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMFUNCTION035);
-    call.lpszDllFilePath = (uint64_t)lpszDllFilePath;
+    call.lpszDllFilePath = (ULONG_PTR)lpszDllFilePath;
 
     qemu_syscall(&call.super);
 
@@ -1680,8 +1680,8 @@ WINBASEAPI BOOLEAN WINAPI SystemFunction036(PVOID pbBuffer, ULONG dwLen)
 {
     struct qemu_SystemFunction036 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMFUNCTION036);
-    call.pbBuffer = (uint64_t)pbBuffer;
-    call.dwLen = (uint64_t)dwLen;
+    call.pbBuffer = (ULONG_PTR)pbBuffer;
+    call.dwLen = (ULONG_PTR)dwLen;
 
     qemu_syscall(&call.super);
 
@@ -1715,9 +1715,9 @@ WINBASEAPI NTSTATUS WINAPI SystemFunction040(PVOID memory, ULONG length, ULONG f
 {
     struct qemu_SystemFunction040 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMFUNCTION040);
-    call.memory = (uint64_t)memory;
-    call.length = (uint64_t)length;
-    call.flags = (uint64_t)flags;
+    call.memory = (ULONG_PTR)memory;
+    call.length = (ULONG_PTR)length;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -1751,9 +1751,9 @@ WINBASEAPI NTSTATUS WINAPI SystemFunction041(PVOID memory, ULONG length, ULONG f
 {
     struct qemu_SystemFunction041 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMFUNCTION041);
-    call.memory = (uint64_t)memory;
-    call.length = (uint64_t)length;
-    call.flags = (uint64_t)flags;
+    call.memory = (ULONG_PTR)memory;
+    call.length = (ULONG_PTR)length;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -1787,9 +1787,9 @@ WINBASEAPI DWORD WINAPI WriteEncryptedFileRaw(PFE_IMPORT_FUNC import, PVOID call
 {
     struct qemu_WriteEncryptedFileRaw call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITEENCRYPTEDFILERAW);
-    call.import = (uint64_t)import;
-    call.callback = (uint64_t)callback;
-    call.context = (uint64_t)context;
+    call.import = (ULONG_PTR)import;
+    call.callback = (ULONG_PTR)callback;
+    call.context = (ULONG_PTR)context;
 
     qemu_syscall(&call.super);
 

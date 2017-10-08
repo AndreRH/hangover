@@ -816,7 +816,7 @@
 @ stdcall TraceEvent(int64 ptr)
 @ stub TraceEventInstance
 @ varargs TraceMessage(int64 long ptr long)
-@ stdcall TraceMessageVa(int64 long ptr long ptr)
+@ stdcall advapi32_TraceMessageVa(int64 long ptr long ptr)
 # @ stub TraceQueryInformation
 # @ stub TraceSetInformation
 # @ stub TreeResetNamedSecurityInfoA
