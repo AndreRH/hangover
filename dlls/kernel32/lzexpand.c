@@ -71,7 +71,7 @@ WINBASEAPI HFILE WINAPI LZInit(HFILE hfSrc)
 {
     struct qemu_LZInit call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LZINIT);
-    call.hfSrc = (uint64_t)hfSrc;
+    call.hfSrc = hfSrc;
 
     qemu_syscall(&call.super);
 
@@ -128,8 +128,8 @@ WINBASEAPI INT WINAPI GetExpandedNameA(LPSTR in, LPSTR out)
 {
     struct qemu_GetExpandedNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETEXPANDEDNAMEA);
-    call.in = (uint64_t)in;
-    call.out = (uint64_t)out;
+    call.in = (ULONG_PTR)in;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -160,8 +160,8 @@ WINBASEAPI INT WINAPI GetExpandedNameW(LPWSTR in, LPWSTR out)
 {
     struct qemu_GetExpandedNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETEXPANDEDNAMEW);
-    call.in = (uint64_t)in;
-    call.out = (uint64_t)out;
+    call.in = (ULONG_PTR)in;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -193,9 +193,9 @@ WINBASEAPI INT WINAPI LZRead(HFILE fd, LPSTR vbuf, INT toread)
 {
     struct qemu_LZRead call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LZREAD);
-    call.fd = (uint64_t)fd;
-    call.vbuf = (uint64_t)vbuf;
-    call.toread = (uint64_t)toread;
+    call.fd = fd;
+    call.vbuf = (ULONG_PTR)vbuf;
+    call.toread = toread;
 
     qemu_syscall(&call.super);
 
@@ -227,9 +227,9 @@ WINBASEAPI LONG WINAPI LZSeek(HFILE fd, LONG off, INT type)
 {
     struct qemu_LZSeek call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LZSEEK);
-    call.fd = (uint64_t)fd;
-    call.off = (uint64_t)off;
-    call.type = (uint64_t)type;
+    call.fd = fd;
+    call.off = off;
+    call.type = type;
 
     qemu_syscall(&call.super);
 
@@ -260,8 +260,8 @@ WINBASEAPI LONG WINAPI LZCopy(HFILE src, HFILE dest)
 {
     struct qemu_LZCopy call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LZCOPY);
-    call.src = (uint64_t)src;
-    call.dest = (uint64_t)dest;
+    call.src = src;
+    call.dest = dest;
 
     qemu_syscall(&call.super);
 
@@ -293,9 +293,9 @@ WINBASEAPI HFILE WINAPI LZOpenFileA(LPSTR fn, LPOFSTRUCT ofs, WORD mode)
 {
     struct qemu_LZOpenFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LZOPENFILEA);
-    call.fn = (uint64_t)fn;
-    call.ofs = (uint64_t)ofs;
-    call.mode = (uint64_t)mode;
+    call.fn = (ULONG_PTR)fn;
+    call.ofs = (ULONG_PTR)ofs;
+    call.mode = mode;
 
     qemu_syscall(&call.super);
 
@@ -327,9 +327,9 @@ WINBASEAPI HFILE WINAPI LZOpenFileW(LPWSTR fn, LPOFSTRUCT ofs, WORD mode)
 {
     struct qemu_LZOpenFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LZOPENFILEW);
-    call.fn = (uint64_t)fn;
-    call.ofs = (uint64_t)ofs;
-    call.mode = (uint64_t)mode;
+    call.fn = (ULONG_PTR)fn;
+    call.ofs = (ULONG_PTR)ofs;
+    call.mode = mode;
 
     qemu_syscall(&call.super);
 
@@ -359,7 +359,7 @@ WINBASEAPI void WINAPI LZClose(HFILE fd)
 {
     struct qemu_LZClose call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LZCLOSE);
-    call.fd = (uint64_t)fd;
+    call.fd = fd;
 
     qemu_syscall(&call.super);
 }
