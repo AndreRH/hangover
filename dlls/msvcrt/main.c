@@ -852,7 +852,6 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
 {
     HMODULE msvcrt;
     const char *dll_name;
-    WINE_TRACE("Loading host-side msvcrt wrapper.\n");
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
@@ -861,6 +860,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
         dll_name = "msvcr100.dll";
     else
         dll_name = "msvcrt.dll";
+
+    WINE_TRACE("Loading host-side %s wrapper.\n", dll_name);
 
     msvcrt = LoadLibraryA(dll_name);
     if (!msvcrt)
