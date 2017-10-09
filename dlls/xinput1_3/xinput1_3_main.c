@@ -73,8 +73,8 @@ WINBASEAPI DWORD WINAPI XInputSetState(DWORD index, XINPUT_VIBRATION* vibration)
 {
     struct qemu_XInputSetState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_XINPUTSETSTATE);
-    call.index = (uint64_t)index;
-    call.vibration = (uint64_t)vibration;
+    call.index = (ULONG_PTR)index;
+    call.vibration = (ULONG_PTR)vibration;
 
     qemu_syscall(&call.super);
 
@@ -106,7 +106,7 @@ WINBASEAPI DWORD WINAPI XInputGetState(DWORD index, XINPUT_STATE* state)
     struct qemu_XInputGetState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_XINPUTGETSTATE);
     call.index = index;
-    call.state = (uint64_t)state;
+    call.state = (ULONG_PTR)state;
 
     qemu_syscall(&call.super);
 
@@ -137,8 +137,8 @@ WINBASEAPI DWORD WINAPI XInputGetStateEx(DWORD index, void* state_ex)
 {
     struct qemu_XInputGetStateEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_XINPUTGETSTATEEX);
-    call.index = (uint64_t)index;
-    call.state_ex = (uint64_t)state_ex;
+    call.index = (ULONG_PTR)index;
+    call.state_ex = (ULONG_PTR)state_ex;
 
     qemu_syscall(&call.super);
 
@@ -170,9 +170,9 @@ WINBASEAPI DWORD WINAPI XInputGetKeystroke(DWORD index, DWORD reserved, PXINPUT_
 {
     struct qemu_XInputGetKeystroke call;
     call.super.id = QEMU_SYSCALL_ID(CALL_XINPUTGETKEYSTROKE);
-    call.index = (uint64_t)index;
-    call.reserved = (uint64_t)reserved;
-    call.keystroke = (uint64_t)keystroke;
+    call.index = (ULONG_PTR)index;
+    call.reserved = (ULONG_PTR)reserved;
+    call.keystroke = (ULONG_PTR)keystroke;
 
     qemu_syscall(&call.super);
 
@@ -204,9 +204,9 @@ WINBASEAPI DWORD WINAPI XInputGetCapabilities(DWORD index, DWORD flags, XINPUT_C
 {
     struct qemu_XInputGetCapabilities call;
     call.super.id = QEMU_SYSCALL_ID(CALL_XINPUTGETCAPABILITIES);
-    call.index = (uint64_t)index;
-    call.flags = (uint64_t)flags;
-    call.capabilities = (uint64_t)capabilities;
+    call.index = (ULONG_PTR)index;
+    call.flags = (ULONG_PTR)flags;
+    call.capabilities = (ULONG_PTR)capabilities;
 
     qemu_syscall(&call.super);
 
@@ -238,9 +238,9 @@ WINBASEAPI DWORD WINAPI XInputGetDSoundAudioDeviceGuids(DWORD index, GUID* rende
 {
     struct qemu_XInputGetDSoundAudioDeviceGuids call;
     call.super.id = QEMU_SYSCALL_ID(CALL_XINPUTGETDSOUNDAUDIODEVICEGUIDS);
-    call.index = (uint64_t)index;
-    call.render_guid = (uint64_t)render_guid;
-    call.capture_guid = (uint64_t)capture_guid;
+    call.index = (ULONG_PTR)index;
+    call.render_guid = (ULONG_PTR)render_guid;
+    call.capture_guid = (ULONG_PTR)capture_guid;
 
     qemu_syscall(&call.super);
 
@@ -272,9 +272,9 @@ WINBASEAPI DWORD WINAPI XInputGetBatteryInformation(DWORD index, BYTE type, XINP
 {
     struct qemu_XInputGetBatteryInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_XINPUTGETBATTERYINFORMATION);
-    call.index = (uint64_t)index;
-    call.type = (uint64_t)type;
-    call.battery = (uint64_t)battery;
+    call.index = (ULONG_PTR)index;
+    call.type = (ULONG_PTR)type;
+    call.battery = (ULONG_PTR)battery;
 
     qemu_syscall(&call.super);
 
