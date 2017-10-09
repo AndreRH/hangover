@@ -1,1 +1,1 @@
-../msvcrt/msvcrt.h
+../msvcrt/qemu_msvcrt.h

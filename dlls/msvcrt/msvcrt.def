@@ -72,6 +72,7 @@ EXPORTS
   _beginthreadex=MSVCRT__beginthreadex
   _cabs=MSVCRT__cabs
   _cexit=MSVCRT__cexit
+  _cgets
   _chdir=MSVCRT__chdir
   _chdrive=MSVCRT__chdrive
   _chgsign=MSVCRT__chgsign
@@ -104,6 +105,8 @@ EXPORTS
   _controlfp_s
   _copysign=MSVCRT__copysign
   _copysignf=MSVCRT__copysignf
+  _cputs
+  _cputws
   _creat=MSVCRT__creat
   _cwait
   _CxxThrowException=MSVCRT__CxxThrowException
@@ -188,6 +191,10 @@ EXPORTS
   _get_osfhandle=MSVCRT__get_osfhandle
   _get_stream_buffer_pointers=MSVCRT__get_stream_buffer_pointers
   _get_thread_local_invalid_parameter_handler
+  _getch
+  _getch_nolock
+  _getche
+  _getche_nolock
   _getcwd=MSVCRT__getcwd
   _getdcwd=MSVCRT__getdcwd
   _getdiskfree=MSVCRT__getdiskfree
@@ -198,6 +205,10 @@ EXPORTS
   _getpid
   _getptd=MSVCRT__getptd
   _getw=MSVCRT__getw
+  _getwch
+  _getwch_nolock
+  _getwche
+  _getwche_nolock
   _getws=MSVCRT__getws
   _hypot
   _hypotf=MSVCRT__hypotf
@@ -247,6 +258,7 @@ EXPORTS
   _j0=MSVCRT__j0
   _j1=MSVCRT__j1
   _jn=MSVCRT__jn
+  _kbhit
   _loaddll
   _lock
   _lock_file=MSVCRT__lock_file
@@ -344,9 +356,13 @@ EXPORTS
   _pipe=MSVCRT__pipe
   _popen=MSVCRT__popen
   _purecall
+  _putch
+  _putch_nolock
   _putenv=MSVCRT__putenv
   _putenv_s
   _putw=MSVCRT__putw
+  _putwch
+  _putwch_nolock
   _putws=MSVCRT__putws
   _read=MSVCRT__read
   _rmdir=MSVCRT__rmdir
@@ -406,7 +422,11 @@ EXPORTS
   _ultoa=ntdll._ultoa
   _umask=MSVCRT__umask
   _ungetc_nolock=MSVCRT__ungetc_nolock
+  _ungetch
+  _ungetch_nolock
   _ungetwc_nolock=MSVCRT__ungetwc_nolock
+  _ungetwch
+  _ungetwch_nolock
   _unlink=MSVCRT__unlink
   _unloaddll
   _unlock
@@ -616,7 +636,6 @@ EXPORTS
   modf=MSVCRT_modf
   modff=MSVCRT_modff
   MSVCR110__crtTerminateProcess
-  system=MSVCRT_system
   nearbyint=MSVCRT_nearbyint
   nearbyintf=MSVCRT_nearbyintf
   perror=MSVCRT_perror
@@ -672,6 +691,7 @@ EXPORTS
   strtoul=ntdll.strtoul
   swprintf_s=MSVCRT_swprintf_s
   swscanf_s=MSVCRT_swscanf_s
+  system=MSVCRT_system
   tan=MSVCRT_tan
   tanf=MSVCRT_tanf
   tanh=MSVCRT_tanh

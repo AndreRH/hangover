@@ -64,6 +64,7 @@ enum msvcrt_calls
     CALL__BEGINTHREADEX,
     CALL__CABS,
     CALL__CEXIT,
+    CALL__CGETS,
     CALL__CHDIR,
     CALL__CHDRIVE,
     CALL__CHGSIGN,
@@ -96,6 +97,8 @@ enum msvcrt_calls
     CALL__CONTROLFP_S,
     CALL__COPYSIGN,
     CALL__COPYSIGNF,
+    CALL__CPUTS,
+    CALL__CPUTWS,
     CALL__CREAT,
     CALL__CRTTERMINATEPROCESS,
     CALL__CWAIT,
@@ -186,6 +189,10 @@ enum msvcrt_calls
     CALL__GET_OSFHANDLE,
     CALL__GET_STREAM_BUFFER_POINTERS,
     CALL__GET_THREAD_LOCAL_INVALID_PARAMETER_HANDLER,
+    CALL__GETCH,
+    CALL__GETCH_NOLOCK,
+    CALL__GETCHE,
+    CALL__GETCHE_NOLOCK,
     CALL__GETCWD,
     CALL__GETDCWD,
     CALL__GETDISKFREE,
@@ -196,6 +203,10 @@ enum msvcrt_calls
     CALL__GETPID,
     CALL__GETPTD,
     CALL__GETW,
+    CALL__GETWCH,
+    CALL__GETWCH_NOLOCK,
+    CALL__GETWCHE,
+    CALL__GETWCHE_NOLOCK,
     CALL__GETWS,
     CALL__HYPOT,
     CALL__HYPOTF,
@@ -240,6 +251,7 @@ enum msvcrt_calls
     CALL__J0,
     CALL__J1,
     CALL__JN,
+    CALL__KBHIT,
     CALL__LDCLASS,
     CALL__LDTEST,
     CALL__LOADDLL,
@@ -337,9 +349,13 @@ enum msvcrt_calls
     CALL__PIPE,
     CALL__POPEN,
     CALL__PURECALL,
+    CALL__PUTCH,
+    CALL__PUTCH_NOLOCK,
     CALL__PUTENV,
     CALL__PUTENV_S,
     CALL__PUTW,
+    CALL__PUTWCH,
+    CALL__PUTWCH_NOLOCK,
     CALL__PUTWS,
     CALL__READ,
     CALL__RMDIR,
@@ -396,7 +412,11 @@ enum msvcrt_calls
     CALL__TOUPPER_L,
     CALL__UMASK,
     CALL__UNGETC_NOLOCK,
+    CALL__UNGETCH,
+    CALL__UNGETCH_NOLOCK,
     CALL__UNGETWC_NOLOCK,
+    CALL__UNGETWCH,
+    CALL__UNGETWCH_NOLOCK,
     CALL__UNLINK,
     CALL__UNLOADDLL,
     CALL__UNLOCK,
@@ -644,6 +664,8 @@ enum msvcrt_calls
     CALL_MEMSET,
     CALL_MODF,
     CALL_MODFF,
+    CALL_MSVCRT__CONIO_COMMON_VCPRINTF,
+    CALL_MSVCRT__CONIO_COMMON_VCWPRINTF,
     CALL_NAN,
     CALL_NANF,
     CALL_NEARBYINT,
@@ -850,6 +872,7 @@ void qemu__beginthread(struct qemu_syscall *call);
 void qemu__beginthreadex(struct qemu_syscall *call);
 void qemu__cabs(struct qemu_syscall *call);
 void qemu__cexit(struct qemu_syscall *call);
+void qemu__cgets(struct qemu_syscall *call);
 void qemu__chdir(struct qemu_syscall *call);
 void qemu__chdrive(struct qemu_syscall *call);
 void qemu__chgsign(struct qemu_syscall *call);
@@ -882,6 +905,8 @@ void qemu__controlfp(struct qemu_syscall *call);
 void qemu__controlfp_s(struct qemu_syscall *call);
 void qemu__copysign(struct qemu_syscall *call);
 void qemu__copysignf(struct qemu_syscall *call);
+void qemu__cputs(struct qemu_syscall *call);
+void qemu__cputws(struct qemu_syscall *call);
 void qemu__creat(struct qemu_syscall *c);
 void qemu__crtTerminateProcess(struct qemu_syscall *call);
 void qemu__cwait(struct qemu_syscall *call);
@@ -972,6 +997,10 @@ void qemu__get_invalid_parameter_handler(struct qemu_syscall *call);
 void qemu__get_osfhandle(struct qemu_syscall *c);
 void qemu__get_stream_buffer_pointers(struct qemu_syscall *c);
 void qemu__get_thread_local_invalid_parameter_handler(struct qemu_syscall *call);
+void qemu__getch(struct qemu_syscall *call);
+void qemu__getch_nolock(struct qemu_syscall *call);
+void qemu__getche(struct qemu_syscall *call);
+void qemu__getche_nolock(struct qemu_syscall *call);
 void qemu__getcwd(struct qemu_syscall *call);
 void qemu__getdcwd(struct qemu_syscall *call);
 void qemu__getdiskfree(struct qemu_syscall *call);
@@ -982,6 +1011,10 @@ void qemu__getmbcp(struct qemu_syscall *call);
 void qemu__getpid(struct qemu_syscall *call);
 void qemu__getptd(struct qemu_syscall *call);
 void qemu__getw(struct qemu_syscall *c);
+void qemu__getwch(struct qemu_syscall *call);
+void qemu__getwch_nolock(struct qemu_syscall *call);
+void qemu__getwche(struct qemu_syscall *call);
+void qemu__getwche_nolock(struct qemu_syscall *call);
 void qemu__getws(struct qemu_syscall *c);
 void qemu__hypot(struct qemu_syscall *call);
 void qemu__hypotf(struct qemu_syscall *call);
@@ -1026,6 +1059,7 @@ void qemu__isxdigit_l(struct qemu_syscall *call);
 void qemu__j0(struct qemu_syscall *call);
 void qemu__j1(struct qemu_syscall *call);
 void qemu__jn(struct qemu_syscall *call);
+void qemu__kbhit(struct qemu_syscall *call);
 void qemu__ldclass(struct qemu_syscall *call);
 void qemu__ldtest(struct qemu_syscall *call);
 void qemu__loaddll(struct qemu_syscall *call);
@@ -1123,9 +1157,13 @@ void qemu__pclose(struct qemu_syscall *call);
 void qemu__pipe(struct qemu_syscall *c);
 void qemu__popen(struct qemu_syscall *call);
 void qemu__purecall(struct qemu_syscall *call);
+void qemu__putch(struct qemu_syscall *call);
+void qemu__putch_nolock(struct qemu_syscall *call);
 void qemu__putenv(struct qemu_syscall *call);
 void qemu__putenv_s(struct qemu_syscall *call);
 void qemu__putw(struct qemu_syscall *c);
+void qemu__putwch(struct qemu_syscall *call);
+void qemu__putwch_nolock(struct qemu_syscall *call);
 void qemu__putws(struct qemu_syscall *c);
 void qemu__read(struct qemu_syscall *c);
 void qemu__rmdir(struct qemu_syscall *call);
@@ -1182,7 +1220,11 @@ void qemu__toupper(struct qemu_syscall *call);
 void qemu__toupper_l(struct qemu_syscall *call);
 void qemu__umask(struct qemu_syscall *c);
 void qemu__ungetc_nolock(struct qemu_syscall *c);
+void qemu__ungetch(struct qemu_syscall *call);
+void qemu__ungetch_nolock(struct qemu_syscall *call);
 void qemu__ungetwc_nolock(struct qemu_syscall *c);
+void qemu__ungetwch(struct qemu_syscall *call);
+void qemu__ungetwch_nolock(struct qemu_syscall *call);
 void qemu__unlink(struct qemu_syscall *c);
 void qemu__unloaddll(struct qemu_syscall *call);
 void qemu__unlock(struct qemu_syscall *call);
@@ -2248,6 +2290,27 @@ void (* CDECL p__endthread)(void);
 void (* CDECL p__endthreadex)(unsigned int retval);
 uintptr_t (* CDECL p__beginthread)(MSVCRT__beginthread_start_routine_t start_address, void *arglist);
 uintptr_t (* CDECL p__beginthreadex)(void *security, unsigned int stack_size, MSVCRT__beginthreadex_start_routine_t start_address, void *arglist, unsigned int initflag, unsigned int *thrdaddr);
+
+int (* CDECL p__cputs)(const char* str);
+int (* CDECL p__cputws)(const WCHAR* str);
+int (* CDECL p__getch_nolock)(void);
+int (* CDECL p__getch)(void);
+WCHAR (* CDECL p__getwch_nolock)(void);
+WCHAR (* CDECL p__getwch)(void);
+int (* CDECL p__putch_nolock)(int c);
+int (* CDECL p__putch)(int c);
+WCHAR (* CDECL p__putwch_nolock)(WCHAR c);
+WCHAR (* CDECL p__putwch)(WCHAR c);
+int (* CDECL p__getche_nolock)(void);
+int (* CDECL p__getche)(void);
+WCHAR (* CDECL p__getwche_nolock)(void);
+WCHAR (* CDECL p__getwche)(void);
+char* (* CDECL p__cgets)(char* str);
+int (* CDECL p__ungetch_nolock)(int c);
+int (* CDECL p__ungetch)(int c);
+WCHAR (* CDECL p__ungetwch_nolock)(WCHAR c);
+WCHAR (* CDECL p__ungetwch)(WCHAR c);
+int (* CDECL p__kbhit)(void);
 
 DWORD msvcrt_tls;
 
