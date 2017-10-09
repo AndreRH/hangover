@@ -48,11 +48,11 @@ WINBASEAPI BOOL WINAPI FtpPutFileA(HINTERNET hConnect, LPCSTR lpszLocalFile, LPC
 {
     struct qemu_FtpPutFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPPUTFILEA);
-    call.hConnect = (uint64_t)hConnect;
-    call.lpszLocalFile = (uint64_t)lpszLocalFile;
-    call.lpszNewRemoteFile = (uint64_t)lpszNewRemoteFile;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hConnect = (ULONG_PTR)hConnect;
+    call.lpszLocalFile = (ULONG_PTR)lpszLocalFile;
+    call.lpszNewRemoteFile = (ULONG_PTR)lpszNewRemoteFile;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
@@ -86,11 +86,11 @@ WINBASEAPI BOOL WINAPI FtpPutFileW(HINTERNET hConnect, LPCWSTR lpszLocalFile, LP
 {
     struct qemu_FtpPutFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPPUTFILEW);
-    call.hConnect = (uint64_t)hConnect;
-    call.lpszLocalFile = (uint64_t)lpszLocalFile;
-    call.lpszNewRemoteFile = (uint64_t)lpszNewRemoteFile;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hConnect = (ULONG_PTR)hConnect;
+    call.lpszLocalFile = (ULONG_PTR)lpszLocalFile;
+    call.lpszNewRemoteFile = (ULONG_PTR)lpszNewRemoteFile;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
@@ -121,8 +121,8 @@ WINBASEAPI BOOL WINAPI FtpSetCurrentDirectoryA(HINTERNET hConnect, LPCSTR lpszDi
 {
     struct qemu_FtpSetCurrentDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPSETCURRENTDIRECTORYA);
-    call.hConnect = (uint64_t)hConnect;
-    call.lpszDirectory = (uint64_t)lpszDirectory;
+    call.hConnect = (ULONG_PTR)hConnect;
+    call.lpszDirectory = (ULONG_PTR)lpszDirectory;
 
     qemu_syscall(&call.super);
 
@@ -153,8 +153,8 @@ WINBASEAPI BOOL WINAPI FtpSetCurrentDirectoryW(HINTERNET hConnect, LPCWSTR lpszD
 {
     struct qemu_FtpSetCurrentDirectoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPSETCURRENTDIRECTORYW);
-    call.hConnect = (uint64_t)hConnect;
-    call.lpszDirectory = (uint64_t)lpszDirectory;
+    call.hConnect = (ULONG_PTR)hConnect;
+    call.lpszDirectory = (ULONG_PTR)lpszDirectory;
 
     qemu_syscall(&call.super);
 
@@ -185,8 +185,8 @@ WINBASEAPI BOOL WINAPI FtpCreateDirectoryA(HINTERNET hConnect, LPCSTR lpszDirect
 {
     struct qemu_FtpCreateDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPCREATEDIRECTORYA);
-    call.hConnect = (uint64_t)hConnect;
-    call.lpszDirectory = (uint64_t)lpszDirectory;
+    call.hConnect = (ULONG_PTR)hConnect;
+    call.lpszDirectory = (ULONG_PTR)lpszDirectory;
 
     qemu_syscall(&call.super);
 
@@ -217,8 +217,8 @@ WINBASEAPI BOOL WINAPI FtpCreateDirectoryW(HINTERNET hConnect, LPCWSTR lpszDirec
 {
     struct qemu_FtpCreateDirectoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPCREATEDIRECTORYW);
-    call.hConnect = (uint64_t)hConnect;
-    call.lpszDirectory = (uint64_t)lpszDirectory;
+    call.hConnect = (ULONG_PTR)hConnect;
+    call.lpszDirectory = (ULONG_PTR)lpszDirectory;
 
     qemu_syscall(&call.super);
 
@@ -252,15 +252,15 @@ WINBASEAPI HINTERNET WINAPI FtpFindFirstFileA(HINTERNET hConnect, LPCSTR lpszSea
 {
     struct qemu_FtpFindFirstFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPFINDFIRSTFILEA);
-    call.hConnect = (uint64_t)hConnect;
-    call.lpszSearchFile = (uint64_t)lpszSearchFile;
-    call.lpFindFileData = (uint64_t)lpFindFileData;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hConnect = (ULONG_PTR)hConnect;
+    call.lpszSearchFile = (ULONG_PTR)lpszSearchFile;
+    call.lpFindFileData = (ULONG_PTR)lpFindFileData;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
-    return (HINTERNET)call.super.iret;
+    return (HINTERNET)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -269,7 +269,7 @@ void qemu_FtpFindFirstFileA(struct qemu_syscall *call)
 {
     struct qemu_FtpFindFirstFileA *c = (struct qemu_FtpFindFirstFileA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)FtpFindFirstFileA(QEMU_G2H(c->hConnect), QEMU_G2H(c->lpszSearchFile), QEMU_G2H(c->lpFindFileData), c->dwFlags, c->dwContext);
+    c->super.iret = (ULONG_PTR)FtpFindFirstFileA(QEMU_G2H(c->hConnect), QEMU_G2H(c->lpszSearchFile), QEMU_G2H(c->lpFindFileData), c->dwFlags, c->dwContext);
 }
 
 #endif
@@ -290,15 +290,15 @@ WINBASEAPI HINTERNET WINAPI FtpFindFirstFileW(HINTERNET hConnect, LPCWSTR lpszSe
 {
     struct qemu_FtpFindFirstFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPFINDFIRSTFILEW);
-    call.hConnect = (uint64_t)hConnect;
-    call.lpszSearchFile = (uint64_t)lpszSearchFile;
-    call.lpFindFileData = (uint64_t)lpFindFileData;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hConnect = (ULONG_PTR)hConnect;
+    call.lpszSearchFile = (ULONG_PTR)lpszSearchFile;
+    call.lpFindFileData = (ULONG_PTR)lpFindFileData;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
-    return (HINTERNET)call.super.iret;
+    return (HINTERNET)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -307,7 +307,7 @@ void qemu_FtpFindFirstFileW(struct qemu_syscall *call)
 {
     struct qemu_FtpFindFirstFileW *c = (struct qemu_FtpFindFirstFileW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)FtpFindFirstFileW(QEMU_G2H(c->hConnect), QEMU_G2H(c->lpszSearchFile), QEMU_G2H(c->lpFindFileData), c->dwFlags, c->dwContext);
+    c->super.iret = (ULONG_PTR)FtpFindFirstFileW(QEMU_G2H(c->hConnect), QEMU_G2H(c->lpszSearchFile), QEMU_G2H(c->lpFindFileData), c->dwFlags, c->dwContext);
 }
 
 #endif
@@ -326,9 +326,9 @@ WINBASEAPI BOOL WINAPI FtpGetCurrentDirectoryA(HINTERNET hFtpSession, LPSTR lpsz
 {
     struct qemu_FtpGetCurrentDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPGETCURRENTDIRECTORYA);
-    call.hFtpSession = (uint64_t)hFtpSession;
-    call.lpszCurrentDirectory = (uint64_t)lpszCurrentDirectory;
-    call.lpdwCurrentDirectory = (uint64_t)lpdwCurrentDirectory;
+    call.hFtpSession = (ULONG_PTR)hFtpSession;
+    call.lpszCurrentDirectory = (ULONG_PTR)lpszCurrentDirectory;
+    call.lpdwCurrentDirectory = (ULONG_PTR)lpdwCurrentDirectory;
 
     qemu_syscall(&call.super);
 
@@ -360,9 +360,9 @@ WINBASEAPI BOOL WINAPI FtpGetCurrentDirectoryW(HINTERNET hFtpSession, LPWSTR lps
 {
     struct qemu_FtpGetCurrentDirectoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPGETCURRENTDIRECTORYW);
-    call.hFtpSession = (uint64_t)hFtpSession;
-    call.lpszCurrentDirectory = (uint64_t)lpszCurrentDirectory;
-    call.lpdwCurrentDirectory = (uint64_t)lpdwCurrentDirectory;
+    call.hFtpSession = (ULONG_PTR)hFtpSession;
+    call.lpszCurrentDirectory = (ULONG_PTR)lpszCurrentDirectory;
+    call.lpdwCurrentDirectory = (ULONG_PTR)lpdwCurrentDirectory;
 
     qemu_syscall(&call.super);
 
@@ -396,15 +396,15 @@ WINBASEAPI HINTERNET WINAPI FtpOpenFileA(HINTERNET hFtpSession, LPCSTR lpszFileN
 {
     struct qemu_FtpOpenFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPOPENFILEA);
-    call.hFtpSession = (uint64_t)hFtpSession;
-    call.lpszFileName = (uint64_t)lpszFileName;
-    call.fdwAccess = (uint64_t)fdwAccess;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hFtpSession = (ULONG_PTR)hFtpSession;
+    call.lpszFileName = (ULONG_PTR)lpszFileName;
+    call.fdwAccess = (ULONG_PTR)fdwAccess;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
-    return (HINTERNET)call.super.iret;
+    return (HINTERNET)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -413,7 +413,7 @@ void qemu_FtpOpenFileA(struct qemu_syscall *call)
 {
     struct qemu_FtpOpenFileA *c = (struct qemu_FtpOpenFileA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)FtpOpenFileA(QEMU_G2H(c->hFtpSession), QEMU_G2H(c->lpszFileName), c->fdwAccess, c->dwFlags, c->dwContext);
+    c->super.iret = (ULONG_PTR)FtpOpenFileA(QEMU_G2H(c->hFtpSession), QEMU_G2H(c->lpszFileName), c->fdwAccess, c->dwFlags, c->dwContext);
 }
 
 #endif
@@ -434,15 +434,15 @@ WINBASEAPI HINTERNET WINAPI FtpOpenFileW(HINTERNET hFtpSession, LPCWSTR lpszFile
 {
     struct qemu_FtpOpenFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPOPENFILEW);
-    call.hFtpSession = (uint64_t)hFtpSession;
-    call.lpszFileName = (uint64_t)lpszFileName;
-    call.fdwAccess = (uint64_t)fdwAccess;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hFtpSession = (ULONG_PTR)hFtpSession;
+    call.lpszFileName = (ULONG_PTR)lpszFileName;
+    call.fdwAccess = (ULONG_PTR)fdwAccess;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
-    return (HINTERNET)call.super.iret;
+    return (HINTERNET)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -451,7 +451,7 @@ void qemu_FtpOpenFileW(struct qemu_syscall *call)
 {
     struct qemu_FtpOpenFileW *c = (struct qemu_FtpOpenFileW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)FtpOpenFileW(QEMU_G2H(c->hFtpSession), QEMU_G2H(c->lpszFileName), c->fdwAccess, c->dwFlags, c->dwContext);
+    c->super.iret = (ULONG_PTR)FtpOpenFileW(QEMU_G2H(c->hFtpSession), QEMU_G2H(c->lpszFileName), c->fdwAccess, c->dwFlags, c->dwContext);
 }
 
 #endif
@@ -474,13 +474,13 @@ WINBASEAPI BOOL WINAPI FtpGetFileA(HINTERNET hInternet, LPCSTR lpszRemoteFile, L
 {
     struct qemu_FtpGetFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPGETFILEA);
-    call.hInternet = (uint64_t)hInternet;
-    call.lpszRemoteFile = (uint64_t)lpszRemoteFile;
-    call.lpszNewFile = (uint64_t)lpszNewFile;
-    call.fFailIfExists = (uint64_t)fFailIfExists;
-    call.dwLocalFlagsAttribute = (uint64_t)dwLocalFlagsAttribute;
-    call.dwInternetFlags = (uint64_t)dwInternetFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hInternet = (ULONG_PTR)hInternet;
+    call.lpszRemoteFile = (ULONG_PTR)lpszRemoteFile;
+    call.lpszNewFile = (ULONG_PTR)lpszNewFile;
+    call.fFailIfExists = (ULONG_PTR)fFailIfExists;
+    call.dwLocalFlagsAttribute = (ULONG_PTR)dwLocalFlagsAttribute;
+    call.dwInternetFlags = (ULONG_PTR)dwInternetFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
@@ -516,13 +516,13 @@ WINBASEAPI BOOL WINAPI FtpGetFileW(HINTERNET hInternet, LPCWSTR lpszRemoteFile, 
 {
     struct qemu_FtpGetFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPGETFILEW);
-    call.hInternet = (uint64_t)hInternet;
-    call.lpszRemoteFile = (uint64_t)lpszRemoteFile;
-    call.lpszNewFile = (uint64_t)lpszNewFile;
-    call.fFailIfExists = (uint64_t)fFailIfExists;
-    call.dwLocalFlagsAttribute = (uint64_t)dwLocalFlagsAttribute;
-    call.dwInternetFlags = (uint64_t)dwInternetFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hInternet = (ULONG_PTR)hInternet;
+    call.lpszRemoteFile = (ULONG_PTR)lpszRemoteFile;
+    call.lpszNewFile = (ULONG_PTR)lpszNewFile;
+    call.fFailIfExists = (ULONG_PTR)fFailIfExists;
+    call.dwLocalFlagsAttribute = (ULONG_PTR)dwLocalFlagsAttribute;
+    call.dwInternetFlags = (ULONG_PTR)dwInternetFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
@@ -553,8 +553,8 @@ WINBASEAPI DWORD WINAPI FtpGetFileSize(HINTERNET hFile, LPDWORD lpdwFileSizeHigh
 {
     struct qemu_FtpGetFileSize call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPGETFILESIZE);
-    call.hFile = (uint64_t)hFile;
-    call.lpdwFileSizeHigh = (uint64_t)lpdwFileSizeHigh;
+    call.hFile = (ULONG_PTR)hFile;
+    call.lpdwFileSizeHigh = (ULONG_PTR)lpdwFileSizeHigh;
 
     qemu_syscall(&call.super);
 
@@ -585,8 +585,8 @@ WINBASEAPI BOOL WINAPI FtpDeleteFileA(HINTERNET hFtpSession, LPCSTR lpszFileName
 {
     struct qemu_FtpDeleteFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPDELETEFILEA);
-    call.hFtpSession = (uint64_t)hFtpSession;
-    call.lpszFileName = (uint64_t)lpszFileName;
+    call.hFtpSession = (ULONG_PTR)hFtpSession;
+    call.lpszFileName = (ULONG_PTR)lpszFileName;
 
     qemu_syscall(&call.super);
 
@@ -617,8 +617,8 @@ WINBASEAPI BOOL WINAPI FtpDeleteFileW(HINTERNET hFtpSession, LPCWSTR lpszFileNam
 {
     struct qemu_FtpDeleteFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPDELETEFILEW);
-    call.hFtpSession = (uint64_t)hFtpSession;
-    call.lpszFileName = (uint64_t)lpszFileName;
+    call.hFtpSession = (ULONG_PTR)hFtpSession;
+    call.lpszFileName = (ULONG_PTR)lpszFileName;
 
     qemu_syscall(&call.super);
 
@@ -649,8 +649,8 @@ WINBASEAPI BOOL WINAPI FtpRemoveDirectoryA(HINTERNET hFtpSession, LPCSTR lpszDir
 {
     struct qemu_FtpRemoveDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPREMOVEDIRECTORYA);
-    call.hFtpSession = (uint64_t)hFtpSession;
-    call.lpszDirectory = (uint64_t)lpszDirectory;
+    call.hFtpSession = (ULONG_PTR)hFtpSession;
+    call.lpszDirectory = (ULONG_PTR)lpszDirectory;
 
     qemu_syscall(&call.super);
 
@@ -681,8 +681,8 @@ WINBASEAPI BOOL WINAPI FtpRemoveDirectoryW(HINTERNET hFtpSession, LPCWSTR lpszDi
 {
     struct qemu_FtpRemoveDirectoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPREMOVEDIRECTORYW);
-    call.hFtpSession = (uint64_t)hFtpSession;
-    call.lpszDirectory = (uint64_t)lpszDirectory;
+    call.hFtpSession = (ULONG_PTR)hFtpSession;
+    call.lpszDirectory = (ULONG_PTR)lpszDirectory;
 
     qemu_syscall(&call.super);
 
@@ -714,9 +714,9 @@ WINBASEAPI BOOL WINAPI FtpRenameFileA(HINTERNET hFtpSession, LPCSTR lpszSrc, LPC
 {
     struct qemu_FtpRenameFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPRENAMEFILEA);
-    call.hFtpSession = (uint64_t)hFtpSession;
-    call.lpszSrc = (uint64_t)lpszSrc;
-    call.lpszDest = (uint64_t)lpszDest;
+    call.hFtpSession = (ULONG_PTR)hFtpSession;
+    call.lpszSrc = (ULONG_PTR)lpszSrc;
+    call.lpszDest = (ULONG_PTR)lpszDest;
 
     qemu_syscall(&call.super);
 
@@ -748,9 +748,9 @@ WINBASEAPI BOOL WINAPI FtpRenameFileW(HINTERNET hFtpSession, LPCWSTR lpszSrc, LP
 {
     struct qemu_FtpRenameFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPRENAMEFILEW);
-    call.hFtpSession = (uint64_t)hFtpSession;
-    call.lpszSrc = (uint64_t)lpszSrc;
-    call.lpszDest = (uint64_t)lpszDest;
+    call.hFtpSession = (ULONG_PTR)hFtpSession;
+    call.lpszSrc = (ULONG_PTR)lpszSrc;
+    call.lpszDest = (ULONG_PTR)lpszDest;
 
     qemu_syscall(&call.super);
 
@@ -785,12 +785,12 @@ WINBASEAPI BOOL WINAPI FtpCommandA(HINTERNET hConnect, BOOL fExpectResponse, DWO
 {
     struct qemu_FtpCommandA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPCOMMANDA);
-    call.hConnect = (uint64_t)hConnect;
-    call.fExpectResponse = (uint64_t)fExpectResponse;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpszCommand = (uint64_t)lpszCommand;
-    call.dwContext = (uint64_t)dwContext;
-    call.phFtpCommand = (uint64_t)phFtpCommand;
+    call.hConnect = (ULONG_PTR)hConnect;
+    call.fExpectResponse = (ULONG_PTR)fExpectResponse;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpszCommand = (ULONG_PTR)lpszCommand;
+    call.dwContext = (ULONG_PTR)dwContext;
+    call.phFtpCommand = (ULONG_PTR)phFtpCommand;
 
     qemu_syscall(&call.super);
 
@@ -825,12 +825,12 @@ WINBASEAPI BOOL WINAPI FtpCommandW(HINTERNET hConnect, BOOL fExpectResponse, DWO
 {
     struct qemu_FtpCommandW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FTPCOMMANDW);
-    call.hConnect = (uint64_t)hConnect;
-    call.fExpectResponse = (uint64_t)fExpectResponse;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpszCommand = (uint64_t)lpszCommand;
-    call.dwContext = (uint64_t)dwContext;
-    call.phFtpCommand = (uint64_t)phFtpCommand;
+    call.hConnect = (ULONG_PTR)hConnect;
+    call.fExpectResponse = (ULONG_PTR)fExpectResponse;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpszCommand = (ULONG_PTR)lpszCommand;
+    call.dwContext = (ULONG_PTR)dwContext;
+    call.phFtpCommand = (ULONG_PTR)phFtpCommand;
 
     qemu_syscall(&call.super);
 

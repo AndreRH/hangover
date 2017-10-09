@@ -49,12 +49,12 @@ WINBASEAPI BOOL WINAPI InternetGetCookieExW(LPCWSTR lpszUrl, LPCWSTR lpszCookieN
 {
     struct qemu_InternetGetCookieExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETGETCOOKIEEXW);
-    call.lpszUrl = (uint64_t)lpszUrl;
-    call.lpszCookieName = (uint64_t)lpszCookieName;
-    call.lpCookieData = (uint64_t)lpCookieData;
-    call.lpdwSize = (uint64_t)lpdwSize;
-    call.flags = (uint64_t)flags;
-    call.reserved = (uint64_t)reserved;
+    call.lpszUrl = (ULONG_PTR)lpszUrl;
+    call.lpszCookieName = (ULONG_PTR)lpszCookieName;
+    call.lpCookieData = (ULONG_PTR)lpCookieData;
+    call.lpdwSize = (ULONG_PTR)lpdwSize;
+    call.flags = (ULONG_PTR)flags;
+    call.reserved = (ULONG_PTR)reserved;
 
     qemu_syscall(&call.super);
 
@@ -87,10 +87,10 @@ WINBASEAPI BOOL WINAPI InternetGetCookieW(const WCHAR *url, const WCHAR *name, W
 {
     struct qemu_InternetGetCookieW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETGETCOOKIEW);
-    call.url = (uint64_t)url;
-    call.name = (uint64_t)name;
-    call.data = (uint64_t)data;
-    call.size = (uint64_t)size;
+    call.url = (ULONG_PTR)url;
+    call.name = (ULONG_PTR)name;
+    call.data = (ULONG_PTR)data;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -125,12 +125,12 @@ WINBASEAPI BOOL WINAPI InternetGetCookieExA(LPCSTR lpszUrl, LPCSTR lpszCookieNam
 {
     struct qemu_InternetGetCookieExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETGETCOOKIEEXA);
-    call.lpszUrl = (uint64_t)lpszUrl;
-    call.lpszCookieName = (uint64_t)lpszCookieName;
-    call.lpCookieData = (uint64_t)lpCookieData;
-    call.lpdwSize = (uint64_t)lpdwSize;
-    call.flags = (uint64_t)flags;
-    call.reserved = (uint64_t)reserved;
+    call.lpszUrl = (ULONG_PTR)lpszUrl;
+    call.lpszCookieName = (ULONG_PTR)lpszCookieName;
+    call.lpCookieData = (ULONG_PTR)lpCookieData;
+    call.lpdwSize = (ULONG_PTR)lpdwSize;
+    call.flags = (ULONG_PTR)flags;
+    call.reserved = (ULONG_PTR)reserved;
 
     qemu_syscall(&call.super);
 
@@ -163,10 +163,10 @@ WINBASEAPI BOOL WINAPI InternetGetCookieA(const char *url, const char *name, cha
 {
     struct qemu_InternetGetCookieA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETGETCOOKIEA);
-    call.url = (uint64_t)url;
-    call.name = (uint64_t)name;
-    call.data = (uint64_t)data;
-    call.size = (uint64_t)size;
+    call.url = (ULONG_PTR)url;
+    call.name = (ULONG_PTR)name;
+    call.data = (ULONG_PTR)data;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -197,8 +197,8 @@ WINBASEAPI BOOL WINAPI IsDomainLegalCookieDomainW(const WCHAR *domain, const WCH
 {
     struct qemu_IsDomainLegalCookieDomainW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISDOMAINLEGALCOOKIEDOMAINW);
-    call.domain = (uint64_t)domain;
-    call.full_domain = (uint64_t)full_domain;
+    call.domain = (ULONG_PTR)domain;
+    call.full_domain = (ULONG_PTR)full_domain;
 
     qemu_syscall(&call.super);
 
@@ -234,11 +234,11 @@ WINBASEAPI DWORD WINAPI InternetSetCookieExW(LPCWSTR lpszUrl, LPCWSTR lpszCookie
 {
     struct qemu_InternetSetCookieExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETSETCOOKIEEXW);
-    call.lpszUrl = (uint64_t)lpszUrl;
-    call.lpszCookieName = (uint64_t)lpszCookieName;
-    call.lpCookieData = (uint64_t)lpCookieData;
-    call.flags = (uint64_t)flags;
-    call.reserved = (uint64_t)reserved;
+    call.lpszUrl = (ULONG_PTR)lpszUrl;
+    call.lpszCookieName = (ULONG_PTR)lpszCookieName;
+    call.lpCookieData = (ULONG_PTR)lpCookieData;
+    call.flags = (ULONG_PTR)flags;
+    call.reserved = (ULONG_PTR)reserved;
 
     qemu_syscall(&call.super);
 
@@ -270,9 +270,9 @@ WINBASEAPI BOOL WINAPI InternetSetCookieW(const WCHAR *url, const WCHAR *name, c
 {
     struct qemu_InternetSetCookieW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETSETCOOKIEW);
-    call.url = (uint64_t)url;
-    call.name = (uint64_t)name;
-    call.data = (uint64_t)data;
+    call.url = (ULONG_PTR)url;
+    call.name = (ULONG_PTR)name;
+    call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
 
@@ -304,9 +304,9 @@ WINBASEAPI BOOL WINAPI InternetSetCookieA(LPCSTR lpszUrl, LPCSTR lpszCookieName,
 {
     struct qemu_InternetSetCookieA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETSETCOOKIEA);
-    call.lpszUrl = (uint64_t)lpszUrl;
-    call.lpszCookieName = (uint64_t)lpszCookieName;
-    call.lpCookieData = (uint64_t)lpCookieData;
+    call.lpszUrl = (ULONG_PTR)lpszUrl;
+    call.lpszCookieName = (ULONG_PTR)lpszCookieName;
+    call.lpCookieData = (ULONG_PTR)lpCookieData;
 
     qemu_syscall(&call.super);
 
@@ -340,11 +340,11 @@ WINBASEAPI DWORD WINAPI InternetSetCookieExA(LPCSTR lpszURL, LPCSTR lpszCookieNa
 {
     struct qemu_InternetSetCookieExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETSETCOOKIEEXA);
-    call.lpszURL = (uint64_t)lpszURL;
-    call.lpszCookieName = (uint64_t)lpszCookieName;
-    call.lpszCookieData = (uint64_t)lpszCookieData;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.lpszURL = (ULONG_PTR)lpszURL;
+    call.lpszCookieName = (ULONG_PTR)lpszCookieName;
+    call.lpszCookieData = (ULONG_PTR)lpszCookieData;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -405,10 +405,10 @@ WINBASEAPI BOOL WINAPI InternetEnumPerSiteCookieDecisionA(LPSTR pszSiteName, ULO
 {
     struct qemu_InternetEnumPerSiteCookieDecisionA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETENUMPERSITECOOKIEDECISIONA);
-    call.pszSiteName = (uint64_t)pszSiteName;
-    call.pcSiteNameSize = (uint64_t)pcSiteNameSize;
-    call.pdwDecision = (uint64_t)pdwDecision;
-    call.dwIndex = (uint64_t)dwIndex;
+    call.pszSiteName = (ULONG_PTR)pszSiteName;
+    call.pcSiteNameSize = (ULONG_PTR)pcSiteNameSize;
+    call.pdwDecision = (ULONG_PTR)pdwDecision;
+    call.dwIndex = (ULONG_PTR)dwIndex;
 
     qemu_syscall(&call.super);
 
@@ -441,10 +441,10 @@ WINBASEAPI BOOL WINAPI InternetEnumPerSiteCookieDecisionW(LPWSTR pszSiteName, UL
 {
     struct qemu_InternetEnumPerSiteCookieDecisionW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETENUMPERSITECOOKIEDECISIONW);
-    call.pszSiteName = (uint64_t)pszSiteName;
-    call.pcSiteNameSize = (uint64_t)pcSiteNameSize;
-    call.pdwDecision = (uint64_t)pdwDecision;
-    call.dwIndex = (uint64_t)dwIndex;
+    call.pszSiteName = (ULONG_PTR)pszSiteName;
+    call.pcSiteNameSize = (ULONG_PTR)pcSiteNameSize;
+    call.pdwDecision = (ULONG_PTR)pdwDecision;
+    call.dwIndex = (ULONG_PTR)dwIndex;
 
     qemu_syscall(&call.super);
 
@@ -475,8 +475,8 @@ WINBASEAPI BOOL WINAPI InternetGetPerSiteCookieDecisionA(LPCSTR pwchHostName, UL
 {
     struct qemu_InternetGetPerSiteCookieDecisionA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETGETPERSITECOOKIEDECISIONA);
-    call.pwchHostName = (uint64_t)pwchHostName;
-    call.pResult = (uint64_t)pResult;
+    call.pwchHostName = (ULONG_PTR)pwchHostName;
+    call.pResult = (ULONG_PTR)pResult;
 
     qemu_syscall(&call.super);
 
@@ -507,8 +507,8 @@ WINBASEAPI BOOL WINAPI InternetGetPerSiteCookieDecisionW(LPCWSTR pwchHostName, U
 {
     struct qemu_InternetGetPerSiteCookieDecisionW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETGETPERSITECOOKIEDECISIONW);
-    call.pwchHostName = (uint64_t)pwchHostName;
-    call.pResult = (uint64_t)pResult;
+    call.pwchHostName = (ULONG_PTR)pwchHostName;
+    call.pResult = (ULONG_PTR)pResult;
 
     qemu_syscall(&call.super);
 
@@ -539,8 +539,8 @@ WINBASEAPI BOOL WINAPI InternetSetPerSiteCookieDecisionA(LPCSTR pchHostName, DWO
 {
     struct qemu_InternetSetPerSiteCookieDecisionA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETSETPERSITECOOKIEDECISIONA);
-    call.pchHostName = (uint64_t)pchHostName;
-    call.dwDecision = (uint64_t)dwDecision;
+    call.pchHostName = (ULONG_PTR)pchHostName;
+    call.dwDecision = (ULONG_PTR)dwDecision;
 
     qemu_syscall(&call.super);
 
@@ -571,8 +571,8 @@ WINBASEAPI BOOL WINAPI InternetSetPerSiteCookieDecisionW(LPCWSTR pchHostName, DW
 {
     struct qemu_InternetSetPerSiteCookieDecisionW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETSETPERSITECOOKIEDECISIONW);
-    call.pchHostName = (uint64_t)pchHostName;
-    call.dwDecision = (uint64_t)dwDecision;
+    call.pchHostName = (ULONG_PTR)pchHostName;
+    call.dwDecision = (ULONG_PTR)dwDecision;
 
     qemu_syscall(&call.super);
 

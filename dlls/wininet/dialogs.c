@@ -48,11 +48,11 @@ WINBASEAPI DWORD WINAPI InternetErrorDlg(HWND hWnd, HINTERNET hRequest, DWORD dw
 {
     struct qemu_InternetErrorDlg call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETERRORDLG);
-    call.hWnd = (uint64_t)hWnd;
-    call.hRequest = (uint64_t)hRequest;
-    call.dwError = (uint64_t)dwError;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lppvData = (uint64_t)lppvData;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hRequest = (ULONG_PTR)hRequest;
+    call.dwError = (ULONG_PTR)dwError;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lppvData = (ULONG_PTR)lppvData;
 
     qemu_syscall(&call.super);
 
@@ -83,8 +83,8 @@ WINBASEAPI BOOL WINAPI InternetShowSecurityInfoByURLA(LPCSTR url, HWND window)
 {
     struct qemu_InternetShowSecurityInfoByURLA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETSHOWSECURITYINFOBYURLA);
-    call.url = (uint64_t)url;
-    call.window = (uint64_t)window;
+    call.url = (ULONG_PTR)url;
+    call.window = (ULONG_PTR)window;
 
     qemu_syscall(&call.super);
 
@@ -117,8 +117,8 @@ WINBASEAPI BOOL WINAPI InternetShowSecurityInfoByURLW(LPCWSTR url, HWND window)
 {
     struct qemu_InternetShowSecurityInfoByURLW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETSHOWSECURITYINFOBYURLW);
-    call.url = (uint64_t)url;
-    call.window = (uint64_t)window;
+    call.url = (ULONG_PTR)url;
+    call.window = (ULONG_PTR)window;
 
     qemu_syscall(&call.super);
 
@@ -152,9 +152,9 @@ WINBASEAPI DWORD WINAPI ShowX509EncodedCertificate(HWND parent, LPBYTE cert, DWO
 {
     struct qemu_ShowX509EncodedCertificate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHOWX509ENCODEDCERTIFICATE);
-    call.parent = (uint64_t)parent;
-    call.cert = (uint64_t)cert;
-    call.len = (uint64_t)len;
+    call.parent = (ULONG_PTR)parent;
+    call.cert = (ULONG_PTR)cert;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 

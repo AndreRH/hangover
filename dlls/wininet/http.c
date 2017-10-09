@@ -47,10 +47,10 @@ WINBASEAPI BOOL WINAPI HttpAddRequestHeadersW(HINTERNET hHttpRequest, LPCWSTR lp
 {
     struct qemu_HttpAddRequestHeadersW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HTTPADDREQUESTHEADERSW);
-    call.hHttpRequest = (uint64_t)hHttpRequest;
-    call.lpszHeader = (uint64_t)lpszHeader;
-    call.dwHeaderLength = (uint64_t)dwHeaderLength;
-    call.dwModifier = (uint64_t)dwModifier;
+    call.hHttpRequest = (ULONG_PTR)hHttpRequest;
+    call.lpszHeader = (ULONG_PTR)lpszHeader;
+    call.dwHeaderLength = (ULONG_PTR)dwHeaderLength;
+    call.dwModifier = (ULONG_PTR)dwModifier;
 
     qemu_syscall(&call.super);
 
@@ -83,10 +83,10 @@ WINBASEAPI BOOL WINAPI HttpAddRequestHeadersA(HINTERNET hHttpRequest, LPCSTR lps
 {
     struct qemu_HttpAddRequestHeadersA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HTTPADDREQUESTHEADERSA);
-    call.hHttpRequest = (uint64_t)hHttpRequest;
-    call.lpszHeader = (uint64_t)lpszHeader;
-    call.dwHeaderLength = (uint64_t)dwHeaderLength;
-    call.dwModifier = (uint64_t)dwModifier;
+    call.hHttpRequest = (ULONG_PTR)hHttpRequest;
+    call.lpszHeader = (ULONG_PTR)lpszHeader;
+    call.dwHeaderLength = (ULONG_PTR)dwHeaderLength;
+    call.dwModifier = (ULONG_PTR)dwModifier;
 
     qemu_syscall(&call.super);
 
@@ -123,18 +123,18 @@ WINBASEAPI HINTERNET WINAPI HttpOpenRequestA(HINTERNET hHttpSession, LPCSTR lpsz
 {
     struct qemu_HttpOpenRequestA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HTTPOPENREQUESTA);
-    call.hHttpSession = (uint64_t)hHttpSession;
-    call.lpszVerb = (uint64_t)lpszVerb;
-    call.lpszObjectName = (uint64_t)lpszObjectName;
-    call.lpszVersion = (uint64_t)lpszVersion;
-    call.lpszReferrer = (uint64_t)lpszReferrer;
-    call.lpszAcceptTypes = (uint64_t)lpszAcceptTypes;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hHttpSession = (ULONG_PTR)hHttpSession;
+    call.lpszVerb = (ULONG_PTR)lpszVerb;
+    call.lpszObjectName = (ULONG_PTR)lpszObjectName;
+    call.lpszVersion = (ULONG_PTR)lpszVersion;
+    call.lpszReferrer = (ULONG_PTR)lpszReferrer;
+    call.lpszAcceptTypes = (ULONG_PTR)lpszAcceptTypes;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
-    return (HINTERNET)call.super.iret;
+    return (HINTERNET)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -143,7 +143,7 @@ void qemu_HttpOpenRequestA(struct qemu_syscall *call)
 {
     struct qemu_HttpOpenRequestA *c = (struct qemu_HttpOpenRequestA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)HttpOpenRequestA(QEMU_G2H(c->hHttpSession), QEMU_G2H(c->lpszVerb), QEMU_G2H(c->lpszObjectName), QEMU_G2H(c->lpszVersion), QEMU_G2H(c->lpszReferrer), QEMU_G2H(c->lpszAcceptTypes), c->dwFlags, c->dwContext);
+    c->super.iret = (ULONG_PTR)HttpOpenRequestA(QEMU_G2H(c->hHttpSession), QEMU_G2H(c->lpszVerb), QEMU_G2H(c->lpszObjectName), QEMU_G2H(c->lpszVersion), QEMU_G2H(c->lpszReferrer), QEMU_G2H(c->lpszAcceptTypes), c->dwFlags, c->dwContext);
 }
 
 #endif
@@ -167,18 +167,18 @@ WINBASEAPI HINTERNET WINAPI HttpOpenRequestW(HINTERNET hHttpSession, LPCWSTR lps
 {
     struct qemu_HttpOpenRequestW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HTTPOPENREQUESTW);
-    call.hHttpSession = (uint64_t)hHttpSession;
-    call.lpszVerb = (uint64_t)lpszVerb;
-    call.lpszObjectName = (uint64_t)lpszObjectName;
-    call.lpszVersion = (uint64_t)lpszVersion;
-    call.lpszReferrer = (uint64_t)lpszReferrer;
-    call.lpszAcceptTypes = (uint64_t)lpszAcceptTypes;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hHttpSession = (ULONG_PTR)hHttpSession;
+    call.lpszVerb = (ULONG_PTR)lpszVerb;
+    call.lpszObjectName = (ULONG_PTR)lpszObjectName;
+    call.lpszVersion = (ULONG_PTR)lpszVersion;
+    call.lpszReferrer = (ULONG_PTR)lpszReferrer;
+    call.lpszAcceptTypes = (ULONG_PTR)lpszAcceptTypes;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
-    return (HINTERNET)call.super.iret;
+    return (HINTERNET)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -187,7 +187,7 @@ void qemu_HttpOpenRequestW(struct qemu_syscall *call)
 {
     struct qemu_HttpOpenRequestW *c = (struct qemu_HttpOpenRequestW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)HttpOpenRequestW(QEMU_G2H(c->hHttpSession), QEMU_G2H(c->lpszVerb), QEMU_G2H(c->lpszObjectName), QEMU_G2H(c->lpszVersion), QEMU_G2H(c->lpszReferrer), QEMU_G2H(c->lpszAcceptTypes), c->dwFlags, c->dwContext);
+    c->super.iret = (ULONG_PTR)HttpOpenRequestW(QEMU_G2H(c->hHttpSession), QEMU_G2H(c->lpszVerb), QEMU_G2H(c->lpszObjectName), QEMU_G2H(c->lpszVersion), QEMU_G2H(c->lpszReferrer), QEMU_G2H(c->lpszAcceptTypes), c->dwFlags, c->dwContext);
 }
 
 #endif
@@ -208,11 +208,11 @@ WINBASEAPI BOOL WINAPI HttpQueryInfoW(HINTERNET hHttpRequest, DWORD dwInfoLevel,
 {
     struct qemu_HttpQueryInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HTTPQUERYINFOW);
-    call.hHttpRequest = (uint64_t)hHttpRequest;
-    call.dwInfoLevel = (uint64_t)dwInfoLevel;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
-    call.lpdwIndex = (uint64_t)lpdwIndex;
+    call.hHttpRequest = (ULONG_PTR)hHttpRequest;
+    call.dwInfoLevel = (ULONG_PTR)dwInfoLevel;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
+    call.lpdwIndex = (ULONG_PTR)lpdwIndex;
 
     qemu_syscall(&call.super);
 
@@ -246,11 +246,11 @@ WINBASEAPI BOOL WINAPI HttpQueryInfoA(HINTERNET hHttpRequest, DWORD dwInfoLevel,
 {
     struct qemu_HttpQueryInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HTTPQUERYINFOA);
-    call.hHttpRequest = (uint64_t)hHttpRequest;
-    call.dwInfoLevel = (uint64_t)dwInfoLevel;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
-    call.lpdwIndex = (uint64_t)lpdwIndex;
+    call.hHttpRequest = (ULONG_PTR)hHttpRequest;
+    call.dwInfoLevel = (ULONG_PTR)dwInfoLevel;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
+    call.lpdwIndex = (ULONG_PTR)lpdwIndex;
 
     qemu_syscall(&call.super);
 
@@ -283,10 +283,10 @@ WINBASEAPI BOOL WINAPI HttpEndRequestA(HINTERNET hRequest, LPINTERNET_BUFFERSA l
 {
     struct qemu_HttpEndRequestA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HTTPENDREQUESTA);
-    call.hRequest = (uint64_t)hRequest;
-    call.lpBuffersOut = (uint64_t)lpBuffersOut;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hRequest = (ULONG_PTR)hRequest;
+    call.lpBuffersOut = (ULONG_PTR)lpBuffersOut;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
@@ -319,10 +319,10 @@ WINBASEAPI BOOL WINAPI HttpEndRequestW(HINTERNET hRequest, LPINTERNET_BUFFERSW l
 {
     struct qemu_HttpEndRequestW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HTTPENDREQUESTW);
-    call.hRequest = (uint64_t)hRequest;
-    call.lpBuffersOut = (uint64_t)lpBuffersOut;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hRequest = (ULONG_PTR)hRequest;
+    call.lpBuffersOut = (ULONG_PTR)lpBuffersOut;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
@@ -356,11 +356,11 @@ WINBASEAPI BOOL WINAPI HttpSendRequestExA(HINTERNET hRequest, LPINTERNET_BUFFERS
 {
     struct qemu_HttpSendRequestExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HTTPSENDREQUESTEXA);
-    call.hRequest = (uint64_t)hRequest;
-    call.lpBuffersIn = (uint64_t)lpBuffersIn;
-    call.lpBuffersOut = (uint64_t)lpBuffersOut;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hRequest = (ULONG_PTR)hRequest;
+    call.lpBuffersIn = (ULONG_PTR)lpBuffersIn;
+    call.lpBuffersOut = (ULONG_PTR)lpBuffersOut;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
@@ -394,11 +394,11 @@ WINBASEAPI BOOL WINAPI HttpSendRequestExW(HINTERNET hRequest, LPINTERNET_BUFFERS
 {
     struct qemu_HttpSendRequestExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HTTPSENDREQUESTEXW);
-    call.hRequest = (uint64_t)hRequest;
-    call.lpBuffersIn = (uint64_t)lpBuffersIn;
-    call.lpBuffersOut = (uint64_t)lpBuffersOut;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hRequest = (ULONG_PTR)hRequest;
+    call.lpBuffersIn = (ULONG_PTR)lpBuffersIn;
+    call.lpBuffersOut = (ULONG_PTR)lpBuffersOut;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
@@ -432,11 +432,11 @@ WINBASEAPI BOOL WINAPI HttpSendRequestW(HINTERNET hHttpRequest, LPCWSTR lpszHead
 {
     struct qemu_HttpSendRequestW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HTTPSENDREQUESTW);
-    call.hHttpRequest = (uint64_t)hHttpRequest;
-    call.lpszHeaders = (uint64_t)lpszHeaders;
-    call.dwHeaderLength = (uint64_t)dwHeaderLength;
-    call.lpOptional = (uint64_t)lpOptional;
-    call.dwOptionalLength = (uint64_t)dwOptionalLength;
+    call.hHttpRequest = (ULONG_PTR)hHttpRequest;
+    call.lpszHeaders = (ULONG_PTR)lpszHeaders;
+    call.dwHeaderLength = (ULONG_PTR)dwHeaderLength;
+    call.lpOptional = (ULONG_PTR)lpOptional;
+    call.dwOptionalLength = (ULONG_PTR)dwOptionalLength;
 
     qemu_syscall(&call.super);
 
@@ -470,11 +470,11 @@ WINBASEAPI BOOL WINAPI HttpSendRequestA(HINTERNET hHttpRequest, LPCSTR lpszHeade
 {
     struct qemu_HttpSendRequestA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HTTPSENDREQUESTA);
-    call.hHttpRequest = (uint64_t)hHttpRequest;
-    call.lpszHeaders = (uint64_t)lpszHeaders;
-    call.dwHeaderLength = (uint64_t)dwHeaderLength;
-    call.lpOptional = (uint64_t)lpOptional;
-    call.dwOptionalLength = (uint64_t)dwOptionalLength;
+    call.hHttpRequest = (ULONG_PTR)hHttpRequest;
+    call.lpszHeaders = (ULONG_PTR)lpszHeaders;
+    call.dwHeaderLength = (ULONG_PTR)dwHeaderLength;
+    call.lpOptional = (ULONG_PTR)lpOptional;
+    call.dwOptionalLength = (ULONG_PTR)dwOptionalLength;
 
     qemu_syscall(&call.super);
 
@@ -506,9 +506,9 @@ WINBASEAPI BOOL WINAPI IsHostInProxyBypassList(DWORD flags, LPCSTR szHost, DWORD
 {
     struct qemu_IsHostInProxyBypassList call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISHOSTINPROXYBYPASSLIST);
-    call.flags = (uint64_t)flags;
-    call.szHost = (uint64_t)szHost;
-    call.length = (uint64_t)length;
+    call.flags = (ULONG_PTR)flags;
+    call.szHost = (ULONG_PTR)szHost;
+    call.length = (ULONG_PTR)length;
 
     qemu_syscall(&call.super);
 

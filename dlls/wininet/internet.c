@@ -43,7 +43,7 @@ WINBASEAPI BOOL WINAPI InternetInitializeAutoProxyDll(DWORD dwReserved)
 {
     struct qemu_InternetInitializeAutoProxyDll call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETINITIALIZEAUTOPROXYDLL);
-    call.dwReserved = (uint64_t)dwReserved;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -75,9 +75,9 @@ WINBASEAPI BOOL WINAPI DetectAutoProxyUrl(LPSTR lpszAutoProxyUrl, DWORD dwAutoPr
 {
     struct qemu_DetectAutoProxyUrl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DETECTAUTOPROXYURL);
-    call.lpszAutoProxyUrl = (uint64_t)lpszAutoProxyUrl;
-    call.dwAutoProxyUrlLength = (uint64_t)dwAutoProxyUrlLength;
-    call.dwDetectFlags = (uint64_t)dwDetectFlags;
+    call.lpszAutoProxyUrl = (ULONG_PTR)lpszAutoProxyUrl;
+    call.dwAutoProxyUrlLength = (ULONG_PTR)dwAutoProxyUrlLength;
+    call.dwDetectFlags = (ULONG_PTR)dwDetectFlags;
 
     qemu_syscall(&call.super);
 
@@ -111,15 +111,15 @@ WINBASEAPI HINTERNET WINAPI InternetOpenW(LPCWSTR lpszAgent, DWORD dwAccessType,
 {
     struct qemu_InternetOpenW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETOPENW);
-    call.lpszAgent = (uint64_t)lpszAgent;
-    call.dwAccessType = (uint64_t)dwAccessType;
-    call.lpszProxy = (uint64_t)lpszProxy;
-    call.lpszProxyBypass = (uint64_t)lpszProxyBypass;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.lpszAgent = (ULONG_PTR)lpszAgent;
+    call.dwAccessType = (ULONG_PTR)dwAccessType;
+    call.lpszProxy = (ULONG_PTR)lpszProxy;
+    call.lpszProxyBypass = (ULONG_PTR)lpszProxyBypass;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
-    return (HINTERNET)call.super.iret;
+    return (HINTERNET)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -128,7 +128,7 @@ void qemu_InternetOpenW(struct qemu_syscall *call)
 {
     struct qemu_InternetOpenW *c = (struct qemu_InternetOpenW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)InternetOpenW(QEMU_G2H(c->lpszAgent), c->dwAccessType, QEMU_G2H(c->lpszProxy), QEMU_G2H(c->lpszProxyBypass), c->dwFlags);
+    c->super.iret = (ULONG_PTR)InternetOpenW(QEMU_G2H(c->lpszAgent), c->dwAccessType, QEMU_G2H(c->lpszProxy), QEMU_G2H(c->lpszProxyBypass), c->dwFlags);
 }
 
 #endif
@@ -149,15 +149,15 @@ WINBASEAPI HINTERNET WINAPI InternetOpenA(LPCSTR lpszAgent, DWORD dwAccessType, 
 {
     struct qemu_InternetOpenA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETOPENA);
-    call.lpszAgent = (uint64_t)lpszAgent;
-    call.dwAccessType = (uint64_t)dwAccessType;
-    call.lpszProxy = (uint64_t)lpszProxy;
-    call.lpszProxyBypass = (uint64_t)lpszProxyBypass;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.lpszAgent = (ULONG_PTR)lpszAgent;
+    call.dwAccessType = (ULONG_PTR)dwAccessType;
+    call.lpszProxy = (ULONG_PTR)lpszProxy;
+    call.lpszProxyBypass = (ULONG_PTR)lpszProxyBypass;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
-    return (HINTERNET)call.super.iret;
+    return (HINTERNET)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -166,7 +166,7 @@ void qemu_InternetOpenA(struct qemu_syscall *call)
 {
     struct qemu_InternetOpenA *c = (struct qemu_InternetOpenA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)InternetOpenA(QEMU_G2H(c->lpszAgent), c->dwAccessType, QEMU_G2H(c->lpszProxy), QEMU_G2H(c->lpszProxyBypass), c->dwFlags);
+    c->super.iret = (ULONG_PTR)InternetOpenA(QEMU_G2H(c->lpszAgent), c->dwAccessType, QEMU_G2H(c->lpszProxy), QEMU_G2H(c->lpszProxyBypass), c->dwFlags);
 }
 
 #endif
@@ -185,9 +185,9 @@ WINBASEAPI BOOL WINAPI InternetGetLastResponseInfoA(LPDWORD lpdwError, LPSTR lps
 {
     struct qemu_InternetGetLastResponseInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETGETLASTRESPONSEINFOA);
-    call.lpdwError = (uint64_t)lpdwError;
-    call.lpszBuffer = (uint64_t)lpszBuffer;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
+    call.lpdwError = (ULONG_PTR)lpdwError;
+    call.lpszBuffer = (ULONG_PTR)lpszBuffer;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
 
     qemu_syscall(&call.super);
 
@@ -219,9 +219,9 @@ WINBASEAPI BOOL WINAPI InternetGetLastResponseInfoW(LPDWORD lpdwError, LPWSTR lp
 {
     struct qemu_InternetGetLastResponseInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETGETLASTRESPONSEINFOW);
-    call.lpdwError = (uint64_t)lpdwError;
-    call.lpszBuffer = (uint64_t)lpszBuffer;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
+    call.lpdwError = (ULONG_PTR)lpdwError;
+    call.lpszBuffer = (ULONG_PTR)lpszBuffer;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
 
     qemu_syscall(&call.super);
 
@@ -252,8 +252,8 @@ WINBASEAPI BOOL WINAPI InternetGetConnectedState(LPDWORD lpdwStatus, DWORD dwRes
 {
     struct qemu_InternetGetConnectedState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETGETCONNECTEDSTATE);
-    call.lpdwStatus = (uint64_t)lpdwStatus;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.lpdwStatus = (ULONG_PTR)lpdwStatus;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -286,10 +286,10 @@ WINBASEAPI BOOL WINAPI InternetGetConnectedStateExW(LPDWORD lpdwStatus, LPWSTR l
 {
     struct qemu_InternetGetConnectedStateExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETGETCONNECTEDSTATEEXW);
-    call.lpdwStatus = (uint64_t)lpdwStatus;
-    call.lpszConnectionName = (uint64_t)lpszConnectionName;
-    call.dwNameLen = (uint64_t)dwNameLen;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.lpdwStatus = (ULONG_PTR)lpdwStatus;
+    call.lpszConnectionName = (ULONG_PTR)lpszConnectionName;
+    call.dwNameLen = (ULONG_PTR)dwNameLen;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -322,10 +322,10 @@ WINBASEAPI BOOL WINAPI InternetGetConnectedStateExA(LPDWORD lpdwStatus, LPSTR lp
 {
     struct qemu_InternetGetConnectedStateExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETGETCONNECTEDSTATEEXA);
-    call.lpdwStatus = (uint64_t)lpdwStatus;
-    call.lpszConnectionName = (uint64_t)lpszConnectionName;
-    call.dwNameLen = (uint64_t)dwNameLen;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.lpdwStatus = (ULONG_PTR)lpdwStatus;
+    call.lpszConnectionName = (ULONG_PTR)lpszConnectionName;
+    call.dwNameLen = (ULONG_PTR)dwNameLen;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -362,18 +362,18 @@ WINBASEAPI HINTERNET WINAPI InternetConnectW(HINTERNET hInternet, LPCWSTR lpszSe
 {
     struct qemu_InternetConnectW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETCONNECTW);
-    call.hInternet = (uint64_t)hInternet;
-    call.lpszServerName = (uint64_t)lpszServerName;
-    call.nServerPort = (uint64_t)nServerPort;
-    call.lpszUserName = (uint64_t)lpszUserName;
-    call.lpszPassword = (uint64_t)lpszPassword;
-    call.dwService = (uint64_t)dwService;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hInternet = (ULONG_PTR)hInternet;
+    call.lpszServerName = (ULONG_PTR)lpszServerName;
+    call.nServerPort = (ULONG_PTR)nServerPort;
+    call.lpszUserName = (ULONG_PTR)lpszUserName;
+    call.lpszPassword = (ULONG_PTR)lpszPassword;
+    call.dwService = (ULONG_PTR)dwService;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
-    return (HINTERNET)call.super.iret;
+    return (HINTERNET)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -382,7 +382,7 @@ void qemu_InternetConnectW(struct qemu_syscall *call)
 {
     struct qemu_InternetConnectW *c = (struct qemu_InternetConnectW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)InternetConnectW(QEMU_G2H(c->hInternet), QEMU_G2H(c->lpszServerName), c->nServerPort, QEMU_G2H(c->lpszUserName), QEMU_G2H(c->lpszPassword), c->dwService, c->dwFlags, c->dwContext);
+    c->super.iret = (ULONG_PTR)InternetConnectW(QEMU_G2H(c->hInternet), QEMU_G2H(c->lpszServerName), c->nServerPort, QEMU_G2H(c->lpszUserName), QEMU_G2H(c->lpszPassword), c->dwService, c->dwFlags, c->dwContext);
 }
 
 #endif
@@ -406,18 +406,18 @@ WINBASEAPI HINTERNET WINAPI InternetConnectA(HINTERNET hInternet, LPCSTR lpszSer
 {
     struct qemu_InternetConnectA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETCONNECTA);
-    call.hInternet = (uint64_t)hInternet;
-    call.lpszServerName = (uint64_t)lpszServerName;
-    call.nServerPort = (uint64_t)nServerPort;
-    call.lpszUserName = (uint64_t)lpszUserName;
-    call.lpszPassword = (uint64_t)lpszPassword;
-    call.dwService = (uint64_t)dwService;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hInternet = (ULONG_PTR)hInternet;
+    call.lpszServerName = (ULONG_PTR)lpszServerName;
+    call.nServerPort = (ULONG_PTR)nServerPort;
+    call.lpszUserName = (ULONG_PTR)lpszUserName;
+    call.lpszPassword = (ULONG_PTR)lpszPassword;
+    call.dwService = (ULONG_PTR)dwService;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
-    return (HINTERNET)call.super.iret;
+    return (HINTERNET)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -426,7 +426,7 @@ void qemu_InternetConnectA(struct qemu_syscall *call)
 {
     struct qemu_InternetConnectA *c = (struct qemu_InternetConnectA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)InternetConnectA(QEMU_G2H(c->hInternet), QEMU_G2H(c->lpszServerName), c->nServerPort, QEMU_G2H(c->lpszUserName), QEMU_G2H(c->lpszPassword), c->dwService, c->dwFlags, c->dwContext);
+    c->super.iret = (ULONG_PTR)InternetConnectA(QEMU_G2H(c->hInternet), QEMU_G2H(c->lpszServerName), c->nServerPort, QEMU_G2H(c->lpszUserName), QEMU_G2H(c->lpszPassword), c->dwService, c->dwFlags, c->dwContext);
 }
 
 #endif
@@ -444,8 +444,8 @@ WINBASEAPI BOOL WINAPI InternetFindNextFileA(HINTERNET hFind, LPVOID lpvFindData
 {
     struct qemu_InternetFindNextFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETFINDNEXTFILEA);
-    call.hFind = (uint64_t)hFind;
-    call.lpvFindData = (uint64_t)lpvFindData;
+    call.hFind = (ULONG_PTR)hFind;
+    call.lpvFindData = (ULONG_PTR)lpvFindData;
 
     qemu_syscall(&call.super);
 
@@ -476,8 +476,8 @@ WINBASEAPI BOOL WINAPI InternetFindNextFileW(HINTERNET hFind, LPVOID lpvFindData
 {
     struct qemu_InternetFindNextFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETFINDNEXTFILEW);
-    call.hFind = (uint64_t)hFind;
-    call.lpvFindData = (uint64_t)lpvFindData;
+    call.hFind = (ULONG_PTR)hFind;
+    call.lpvFindData = (ULONG_PTR)lpvFindData;
 
     qemu_syscall(&call.super);
 
@@ -507,7 +507,7 @@ WINBASEAPI BOOL WINAPI InternetCloseHandle(HINTERNET hInternet)
 {
     struct qemu_InternetCloseHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETCLOSEHANDLE);
-    call.hInternet = (uint64_t)hInternet;
+    call.hInternet = (ULONG_PTR)hInternet;
 
     qemu_syscall(&call.super);
 
@@ -540,10 +540,10 @@ WINBASEAPI BOOL WINAPI InternetCrackUrlA(const char *url, DWORD url_length, DWOR
 {
     struct qemu_InternetCrackUrlA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETCRACKURLA);
-    call.url = (uint64_t)url;
-    call.url_length = (uint64_t)url_length;
-    call.flags = (uint64_t)flags;
-    call.ret_comp = (uint64_t)ret_comp;
+    call.url = (ULONG_PTR)url;
+    call.url_length = (ULONG_PTR)url_length;
+    call.flags = (ULONG_PTR)flags;
+    call.ret_comp = (ULONG_PTR)ret_comp;
 
     qemu_syscall(&call.super);
 
@@ -576,10 +576,10 @@ WINBASEAPI BOOL WINAPI InternetCrackUrlW(const WCHAR *lpszUrl, DWORD dwUrlLength
 {
     struct qemu_InternetCrackUrlW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETCRACKURLW);
-    call.lpszUrl = (uint64_t)lpszUrl;
-    call.dwUrlLength = (uint64_t)dwUrlLength;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpUC = (uint64_t)lpUC;
+    call.lpszUrl = (ULONG_PTR)lpszUrl;
+    call.dwUrlLength = (ULONG_PTR)dwUrlLength;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpUC = (ULONG_PTR)lpUC;
 
     qemu_syscall(&call.super);
 
@@ -609,7 +609,7 @@ WINBASEAPI DWORD WINAPI InternetAttemptConnect(DWORD dwReserved)
 {
     struct qemu_InternetAttemptConnect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETATTEMPTCONNECT);
-    call.dwReserved = (uint64_t)dwReserved;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -642,10 +642,10 @@ WINBASEAPI BOOL WINAPI InternetCanonicalizeUrlA(LPCSTR lpszUrl, LPSTR lpszBuffer
 {
     struct qemu_InternetCanonicalizeUrlA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETCANONICALIZEURLA);
-    call.lpszUrl = (uint64_t)lpszUrl;
-    call.lpszBuffer = (uint64_t)lpszBuffer;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.lpszUrl = (ULONG_PTR)lpszUrl;
+    call.lpszBuffer = (ULONG_PTR)lpszBuffer;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -678,10 +678,10 @@ WINBASEAPI BOOL WINAPI InternetCanonicalizeUrlW(LPCWSTR lpszUrl, LPWSTR lpszBuff
 {
     struct qemu_InternetCanonicalizeUrlW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETCANONICALIZEURLW);
-    call.lpszUrl = (uint64_t)lpszUrl;
-    call.lpszBuffer = (uint64_t)lpszBuffer;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.lpszUrl = (ULONG_PTR)lpszUrl;
+    call.lpszBuffer = (ULONG_PTR)lpszBuffer;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -712,12 +712,12 @@ WINBASEAPI INTERNET_STATUS_CALLBACK WINAPI InternetSetStatusCallbackA(HINTERNET 
 {
     struct qemu_InternetSetStatusCallbackA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETSETSTATUSCALLBACKA);
-    call.hInternet = (uint64_t)hInternet;
-    call.lpfnIntCB = (uint64_t)lpfnIntCB;
+    call.hInternet = (ULONG_PTR)hInternet;
+    call.lpfnIntCB = (ULONG_PTR)lpfnIntCB;
 
     qemu_syscall(&call.super);
 
-    return (INTERNET_STATUS_CALLBACK)call.super.iret;
+    return (INTERNET_STATUS_CALLBACK)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -726,7 +726,7 @@ void qemu_InternetSetStatusCallbackA(struct qemu_syscall *call)
 {
     struct qemu_InternetSetStatusCallbackA *c = (struct qemu_InternetSetStatusCallbackA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)InternetSetStatusCallbackA(QEMU_G2H(c->hInternet), QEMU_G2H(c->lpfnIntCB));
+    c->super.iret = (ULONG_PTR)InternetSetStatusCallbackA(QEMU_G2H(c->hInternet), QEMU_G2H(c->lpfnIntCB));
 }
 
 #endif
@@ -744,12 +744,12 @@ WINBASEAPI INTERNET_STATUS_CALLBACK WINAPI InternetSetStatusCallbackW(HINTERNET 
 {
     struct qemu_InternetSetStatusCallbackW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETSETSTATUSCALLBACKW);
-    call.hInternet = (uint64_t)hInternet;
-    call.lpfnIntCB = (uint64_t)lpfnIntCB;
+    call.hInternet = (ULONG_PTR)hInternet;
+    call.lpfnIntCB = (ULONG_PTR)lpfnIntCB;
 
     qemu_syscall(&call.super);
 
-    return (INTERNET_STATUS_CALLBACK)call.super.iret;
+    return (INTERNET_STATUS_CALLBACK)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -758,7 +758,7 @@ void qemu_InternetSetStatusCallbackW(struct qemu_syscall *call)
 {
     struct qemu_InternetSetStatusCallbackW *c = (struct qemu_InternetSetStatusCallbackW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)InternetSetStatusCallbackW(QEMU_G2H(c->hInternet), QEMU_G2H(c->lpfnIntCB));
+    c->super.iret = (ULONG_PTR)InternetSetStatusCallbackW(QEMU_G2H(c->hInternet), QEMU_G2H(c->lpfnIntCB));
 }
 
 #endif
@@ -779,11 +779,11 @@ WINBASEAPI DWORD WINAPI InternetSetFilePointer(HINTERNET hFile, LONG lDistanceTo
 {
     struct qemu_InternetSetFilePointer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETSETFILEPOINTER);
-    call.hFile = (uint64_t)hFile;
-    call.lDistanceToMove = (uint64_t)lDistanceToMove;
-    call.pReserved = (uint64_t)pReserved;
-    call.dwMoveContext = (uint64_t)dwMoveContext;
-    call.dwContext = (uint64_t)dwContext;
+    call.hFile = (ULONG_PTR)hFile;
+    call.lDistanceToMove = (ULONG_PTR)lDistanceToMove;
+    call.pReserved = (ULONG_PTR)pReserved;
+    call.dwMoveContext = (ULONG_PTR)dwMoveContext;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
@@ -816,10 +816,10 @@ WINBASEAPI BOOL WINAPI InternetWriteFile(HINTERNET hFile, LPCVOID lpBuffer, DWOR
 {
     struct qemu_InternetWriteFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETWRITEFILE);
-    call.hFile = (uint64_t)hFile;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.dwNumOfBytesToWrite = (uint64_t)dwNumOfBytesToWrite;
-    call.lpdwNumOfBytesWritten = (uint64_t)lpdwNumOfBytesWritten;
+    call.hFile = (ULONG_PTR)hFile;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.dwNumOfBytesToWrite = (ULONG_PTR)dwNumOfBytesToWrite;
+    call.lpdwNumOfBytesWritten = (ULONG_PTR)lpdwNumOfBytesWritten;
 
     qemu_syscall(&call.super);
 
@@ -852,10 +852,10 @@ WINBASEAPI BOOL WINAPI InternetReadFile(HINTERNET hFile, LPVOID lpBuffer, DWORD 
 {
     struct qemu_InternetReadFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETREADFILE);
-    call.hFile = (uint64_t)hFile;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.dwNumOfBytesToRead = (uint64_t)dwNumOfBytesToRead;
-    call.pdwNumOfBytesRead = (uint64_t)pdwNumOfBytesRead;
+    call.hFile = (ULONG_PTR)hFile;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.dwNumOfBytesToRead = (ULONG_PTR)dwNumOfBytesToRead;
+    call.pdwNumOfBytesRead = (ULONG_PTR)pdwNumOfBytesRead;
 
     qemu_syscall(&call.super);
 
@@ -888,10 +888,10 @@ WINBASEAPI BOOL WINAPI InternetReadFileExA(HINTERNET hFile, LPINTERNET_BUFFERSA 
 {
     struct qemu_InternetReadFileExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETREADFILEEXA);
-    call.hFile = (uint64_t)hFile;
-    call.lpBuffersOut = (uint64_t)lpBuffersOut;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hFile = (ULONG_PTR)hFile;
+    call.lpBuffersOut = (ULONG_PTR)lpBuffersOut;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
@@ -924,10 +924,10 @@ WINBASEAPI BOOL WINAPI InternetReadFileExW(HINTERNET hFile, LPINTERNET_BUFFERSW 
 {
     struct qemu_InternetReadFileExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETREADFILEEXW);
-    call.hFile = (uint64_t)hFile;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hFile = (ULONG_PTR)hFile;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
@@ -960,10 +960,10 @@ WINBASEAPI BOOL WINAPI InternetQueryOptionW(HINTERNET hInternet, DWORD dwOption,
 {
     struct qemu_InternetQueryOptionW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETQUERYOPTIONW);
-    call.hInternet = (uint64_t)hInternet;
-    call.dwOption = (uint64_t)dwOption;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
+    call.hInternet = (ULONG_PTR)hInternet;
+    call.dwOption = (ULONG_PTR)dwOption;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
 
     qemu_syscall(&call.super);
 
@@ -996,10 +996,10 @@ WINBASEAPI BOOL WINAPI InternetQueryOptionA(HINTERNET hInternet, DWORD dwOption,
 {
     struct qemu_InternetQueryOptionA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETQUERYOPTIONA);
-    call.hInternet = (uint64_t)hInternet;
-    call.dwOption = (uint64_t)dwOption;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
+    call.hInternet = (ULONG_PTR)hInternet;
+    call.dwOption = (ULONG_PTR)dwOption;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
 
     qemu_syscall(&call.super);
 
@@ -1032,10 +1032,10 @@ WINBASEAPI BOOL WINAPI InternetSetOptionW(HINTERNET hInternet, DWORD dwOption, L
 {
     struct qemu_InternetSetOptionW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETSETOPTIONW);
-    call.hInternet = (uint64_t)hInternet;
-    call.dwOption = (uint64_t)dwOption;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.dwBufferLength = (uint64_t)dwBufferLength;
+    call.hInternet = (ULONG_PTR)hInternet;
+    call.dwOption = (ULONG_PTR)dwOption;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.dwBufferLength = (ULONG_PTR)dwBufferLength;
 
     qemu_syscall(&call.super);
 
@@ -1068,10 +1068,10 @@ WINBASEAPI BOOL WINAPI InternetSetOptionA(HINTERNET hInternet, DWORD dwOption, L
 {
     struct qemu_InternetSetOptionA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETSETOPTIONA);
-    call.hInternet = (uint64_t)hInternet;
-    call.dwOption = (uint64_t)dwOption;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.dwBufferLength = (uint64_t)dwBufferLength;
+    call.hInternet = (ULONG_PTR)hInternet;
+    call.dwOption = (ULONG_PTR)dwOption;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.dwBufferLength = (ULONG_PTR)dwBufferLength;
 
     qemu_syscall(&call.super);
 
@@ -1105,11 +1105,11 @@ WINBASEAPI BOOL WINAPI InternetSetOptionExA(HINTERNET hInternet, DWORD dwOption,
 {
     struct qemu_InternetSetOptionExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETSETOPTIONEXA);
-    call.hInternet = (uint64_t)hInternet;
-    call.dwOption = (uint64_t)dwOption;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.dwBufferLength = (uint64_t)dwBufferLength;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hInternet = (ULONG_PTR)hInternet;
+    call.dwOption = (ULONG_PTR)dwOption;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.dwBufferLength = (ULONG_PTR)dwBufferLength;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1143,11 +1143,11 @@ WINBASEAPI BOOL WINAPI InternetSetOptionExW(HINTERNET hInternet, DWORD dwOption,
 {
     struct qemu_InternetSetOptionExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETSETOPTIONEXW);
-    call.hInternet = (uint64_t)hInternet;
-    call.dwOption = (uint64_t)dwOption;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.dwBufferLength = (uint64_t)dwBufferLength;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hInternet = (ULONG_PTR)hInternet;
+    call.dwOption = (ULONG_PTR)dwOption;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.dwBufferLength = (ULONG_PTR)dwBufferLength;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1180,10 +1180,10 @@ WINBASEAPI BOOL WINAPI InternetTimeFromSystemTimeA(const SYSTEMTIME* time, DWORD
 {
     struct qemu_InternetTimeFromSystemTimeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETTIMEFROMSYSTEMTIMEA);
-    call.time = (uint64_t)time;
-    call.format = (uint64_t)format;
-    call.string = (uint64_t)string;
-    call.size = (uint64_t)size;
+    call.time = (ULONG_PTR)time;
+    call.format = (ULONG_PTR)format;
+    call.string = (ULONG_PTR)string;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -1216,10 +1216,10 @@ WINBASEAPI BOOL WINAPI InternetTimeFromSystemTimeW(const SYSTEMTIME* time, DWORD
 {
     struct qemu_InternetTimeFromSystemTimeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETTIMEFROMSYSTEMTIMEW);
-    call.time = (uint64_t)time;
-    call.format = (uint64_t)format;
-    call.string = (uint64_t)string;
-    call.size = (uint64_t)size;
+    call.time = (ULONG_PTR)time;
+    call.format = (ULONG_PTR)format;
+    call.string = (ULONG_PTR)string;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -1251,9 +1251,9 @@ WINBASEAPI BOOL WINAPI InternetTimeToSystemTimeA(LPCSTR string, SYSTEMTIME* time
 {
     struct qemu_InternetTimeToSystemTimeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETTIMETOSYSTEMTIMEA);
-    call.string = (uint64_t)string;
-    call.time = (uint64_t)time;
-    call.reserved = (uint64_t)reserved;
+    call.string = (ULONG_PTR)string;
+    call.time = (ULONG_PTR)time;
+    call.reserved = (ULONG_PTR)reserved;
 
     qemu_syscall(&call.super);
 
@@ -1285,9 +1285,9 @@ WINBASEAPI BOOL WINAPI InternetTimeToSystemTimeW(LPCWSTR string, SYSTEMTIME* tim
 {
     struct qemu_InternetTimeToSystemTimeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETTIMETOSYSTEMTIMEW);
-    call.string = (uint64_t)string;
-    call.time = (uint64_t)time;
-    call.reserved = (uint64_t)reserved;
+    call.string = (ULONG_PTR)string;
+    call.time = (ULONG_PTR)time;
+    call.reserved = (ULONG_PTR)reserved;
 
     qemu_syscall(&call.super);
 
@@ -1319,9 +1319,9 @@ WINBASEAPI BOOL WINAPI InternetCheckConnectionW(LPCWSTR lpszUrl, DWORD dwFlags, 
 {
     struct qemu_InternetCheckConnectionW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETCHECKCONNECTIONW);
-    call.lpszUrl = (uint64_t)lpszUrl;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.lpszUrl = (ULONG_PTR)lpszUrl;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -1353,9 +1353,9 @@ WINBASEAPI BOOL WINAPI InternetCheckConnectionA(LPCSTR lpszUrl, DWORD dwFlags, D
 {
     struct qemu_InternetCheckConnectionA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETCHECKCONNECTIONA);
-    call.lpszUrl = (uint64_t)lpszUrl;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.lpszUrl = (ULONG_PTR)lpszUrl;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -1390,16 +1390,16 @@ WINBASEAPI HINTERNET WINAPI InternetOpenUrlW(HINTERNET hInternet, LPCWSTR lpszUr
 {
     struct qemu_InternetOpenUrlW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETOPENURLW);
-    call.hInternet = (uint64_t)hInternet;
-    call.lpszUrl = (uint64_t)lpszUrl;
-    call.lpszHeaders = (uint64_t)lpszHeaders;
-    call.dwHeadersLength = (uint64_t)dwHeadersLength;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hInternet = (ULONG_PTR)hInternet;
+    call.lpszUrl = (ULONG_PTR)lpszUrl;
+    call.lpszHeaders = (ULONG_PTR)lpszHeaders;
+    call.dwHeadersLength = (ULONG_PTR)dwHeadersLength;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
-    return (HINTERNET)call.super.iret;
+    return (HINTERNET)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1408,7 +1408,7 @@ void qemu_InternetOpenUrlW(struct qemu_syscall *call)
 {
     struct qemu_InternetOpenUrlW *c = (struct qemu_InternetOpenUrlW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)InternetOpenUrlW(QEMU_G2H(c->hInternet), QEMU_G2H(c->lpszUrl), QEMU_G2H(c->lpszHeaders), c->dwHeadersLength, c->dwFlags, c->dwContext);
+    c->super.iret = (ULONG_PTR)InternetOpenUrlW(QEMU_G2H(c->hInternet), QEMU_G2H(c->lpszUrl), QEMU_G2H(c->lpszHeaders), c->dwHeadersLength, c->dwFlags, c->dwContext);
 }
 
 #endif
@@ -1430,16 +1430,16 @@ WINBASEAPI HINTERNET WINAPI InternetOpenUrlA(HINTERNET hInternet, LPCSTR lpszUrl
 {
     struct qemu_InternetOpenUrlA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETOPENURLA);
-    call.hInternet = (uint64_t)hInternet;
-    call.lpszUrl = (uint64_t)lpszUrl;
-    call.lpszHeaders = (uint64_t)lpszHeaders;
-    call.dwHeadersLength = (uint64_t)dwHeadersLength;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hInternet = (ULONG_PTR)hInternet;
+    call.lpszUrl = (ULONG_PTR)lpszUrl;
+    call.lpszHeaders = (ULONG_PTR)lpszHeaders;
+    call.dwHeadersLength = (ULONG_PTR)dwHeadersLength;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
-    return (HINTERNET)call.super.iret;
+    return (HINTERNET)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1448,7 +1448,7 @@ void qemu_InternetOpenUrlA(struct qemu_syscall *call)
 {
     struct qemu_InternetOpenUrlA *c = (struct qemu_InternetOpenUrlA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)InternetOpenUrlA(QEMU_G2H(c->hInternet), QEMU_G2H(c->lpszUrl), QEMU_G2H(c->lpszHeaders), c->dwHeadersLength, c->dwFlags, c->dwContext);
+    c->super.iret = (ULONG_PTR)InternetOpenUrlA(QEMU_G2H(c->hInternet), QEMU_G2H(c->lpszUrl), QEMU_G2H(c->lpszHeaders), c->dwHeadersLength, c->dwFlags, c->dwContext);
 }
 
 #endif
@@ -1468,10 +1468,10 @@ WINBASEAPI BOOL WINAPI InternetQueryDataAvailable(HINTERNET hFile, LPDWORD lpdwN
 {
     struct qemu_InternetQueryDataAvailable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETQUERYDATAAVAILABLE);
-    call.hFile = (uint64_t)hFile;
-    call.lpdwNumberOfBytesAvailable = (uint64_t)lpdwNumberOfBytesAvailable;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hFile = (ULONG_PTR)hFile;
+    call.lpdwNumberOfBytesAvailable = (ULONG_PTR)lpdwNumberOfBytesAvailable;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
@@ -1502,8 +1502,8 @@ WINBASEAPI BOOL WINAPI InternetLockRequestFile(HINTERNET hInternet, HANDLE *lphL
 {
     struct qemu_InternetLockRequestFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETLOCKREQUESTFILE);
-    call.hInternet = (uint64_t)hInternet;
-    call.lphLockReqHandle = (uint64_t)lphLockReqHandle;
+    call.hInternet = (ULONG_PTR)hInternet;
+    call.lphLockReqHandle = (ULONG_PTR)lphLockReqHandle;
 
     qemu_syscall(&call.super);
 
@@ -1533,7 +1533,7 @@ WINBASEAPI BOOL WINAPI InternetUnlockRequestFile(HANDLE hLockHandle)
 {
     struct qemu_InternetUnlockRequestFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETUNLOCKREQUESTFILE);
-    call.hLockHandle = (uint64_t)hLockHandle;
+    call.hLockHandle = (ULONG_PTR)hLockHandle;
 
     qemu_syscall(&call.super);
 
@@ -1564,8 +1564,8 @@ WINBASEAPI BOOL WINAPI InternetAutodial(DWORD dwFlags, HWND hwndParent)
 {
     struct qemu_InternetAutodial call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETAUTODIAL);
-    call.dwFlags = (uint64_t)dwFlags;
-    call.hwndParent = (uint64_t)hwndParent;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.hwndParent = (ULONG_PTR)hwndParent;
 
     qemu_syscall(&call.super);
 
@@ -1595,7 +1595,7 @@ WINBASEAPI BOOL WINAPI InternetAutodialHangup(DWORD dwReserved)
 {
     struct qemu_InternetAutodialHangup call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETAUTODIALHANGUP);
-    call.dwReserved = (uint64_t)dwReserved;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -1629,11 +1629,11 @@ WINBASEAPI BOOL WINAPI InternetCombineUrlA(LPCSTR lpszBaseUrl, LPCSTR lpszRelati
 {
     struct qemu_InternetCombineUrlA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETCOMBINEURLA);
-    call.lpszBaseUrl = (uint64_t)lpszBaseUrl;
-    call.lpszRelativeUrl = (uint64_t)lpszRelativeUrl;
-    call.lpszBuffer = (uint64_t)lpszBuffer;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.lpszBaseUrl = (ULONG_PTR)lpszBaseUrl;
+    call.lpszRelativeUrl = (ULONG_PTR)lpszRelativeUrl;
+    call.lpszBuffer = (ULONG_PTR)lpszBuffer;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1667,11 +1667,11 @@ WINBASEAPI BOOL WINAPI InternetCombineUrlW(LPCWSTR lpszBaseUrl, LPCWSTR lpszRela
 {
     struct qemu_InternetCombineUrlW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETCOMBINEURLW);
-    call.lpszBaseUrl = (uint64_t)lpszBaseUrl;
-    call.lpszRelativeUrl = (uint64_t)lpszRelativeUrl;
-    call.lpszBuffer = (uint64_t)lpszBuffer;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.lpszBaseUrl = (ULONG_PTR)lpszBaseUrl;
+    call.lpszRelativeUrl = (ULONG_PTR)lpszRelativeUrl;
+    call.lpszBuffer = (ULONG_PTR)lpszBuffer;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1704,10 +1704,10 @@ WINBASEAPI BOOL WINAPI InternetCreateUrlA(LPURL_COMPONENTSA lpUrlComponents, DWO
 {
     struct qemu_InternetCreateUrlA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETCREATEURLA);
-    call.lpUrlComponents = (uint64_t)lpUrlComponents;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpszUrl = (uint64_t)lpszUrl;
-    call.lpdwUrlLength = (uint64_t)lpdwUrlLength;
+    call.lpUrlComponents = (ULONG_PTR)lpUrlComponents;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpszUrl = (ULONG_PTR)lpszUrl;
+    call.lpdwUrlLength = (ULONG_PTR)lpdwUrlLength;
 
     qemu_syscall(&call.super);
 
@@ -1740,10 +1740,10 @@ WINBASEAPI BOOL WINAPI InternetCreateUrlW(LPURL_COMPONENTSW lpUrlComponents, DWO
 {
     struct qemu_InternetCreateUrlW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETCREATEURLW);
-    call.lpUrlComponents = (uint64_t)lpUrlComponents;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpszUrl = (uint64_t)lpszUrl;
-    call.lpdwUrlLength = (uint64_t)lpdwUrlLength;
+    call.lpUrlComponents = (ULONG_PTR)lpUrlComponents;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpszUrl = (ULONG_PTR)lpszUrl;
+    call.lpdwUrlLength = (ULONG_PTR)lpdwUrlLength;
 
     qemu_syscall(&call.super);
 
@@ -1776,10 +1776,10 @@ WINBASEAPI DWORD WINAPI InternetConfirmZoneCrossingA(HWND hWnd, LPSTR szUrlPrev,
 {
     struct qemu_InternetConfirmZoneCrossingA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETCONFIRMZONECROSSINGA);
-    call.hWnd = (uint64_t)hWnd;
-    call.szUrlPrev = (uint64_t)szUrlPrev;
-    call.szUrlNew = (uint64_t)szUrlNew;
-    call.bPost = (uint64_t)bPost;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.szUrlPrev = (ULONG_PTR)szUrlPrev;
+    call.szUrlNew = (ULONG_PTR)szUrlNew;
+    call.bPost = (ULONG_PTR)bPost;
 
     qemu_syscall(&call.super);
 
@@ -1812,10 +1812,10 @@ WINBASEAPI DWORD WINAPI InternetConfirmZoneCrossingW(HWND hWnd, LPWSTR szUrlPrev
 {
     struct qemu_InternetConfirmZoneCrossingW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETCONFIRMZONECROSSINGW);
-    call.hWnd = (uint64_t)hWnd;
-    call.szUrlPrev = (uint64_t)szUrlPrev;
-    call.szUrlNew = (uint64_t)szUrlNew;
-    call.bPost = (uint64_t)bPost;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.szUrlPrev = (ULONG_PTR)szUrlPrev;
+    call.szUrlNew = (ULONG_PTR)szUrlNew;
+    call.bPost = (ULONG_PTR)bPost;
 
     qemu_syscall(&call.super);
 
@@ -1848,10 +1848,10 @@ WINBASEAPI DWORD WINAPI PrivacySetZonePreferenceW(DWORD zone, DWORD type, DWORD 
 {
     struct qemu_PrivacySetZonePreferenceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRIVACYSETZONEPREFERENCEW);
-    call.zone = (uint64_t)zone;
-    call.type = (uint64_t)type;
-    call.template = (uint64_t)template;
-    call.preference = (uint64_t)preference;
+    call.zone = (ULONG_PTR)zone;
+    call.type = (ULONG_PTR)type;
+    call.template = (ULONG_PTR)template;
+    call.preference = (ULONG_PTR)preference;
 
     qemu_syscall(&call.super);
 
@@ -1885,11 +1885,11 @@ WINBASEAPI DWORD WINAPI PrivacyGetZonePreferenceW(DWORD zone, DWORD type, LPDWOR
 {
     struct qemu_PrivacyGetZonePreferenceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRIVACYGETZONEPREFERENCEW);
-    call.zone = (uint64_t)zone;
-    call.type = (uint64_t)type;
-    call.template = (uint64_t)template;
-    call.preference = (uint64_t)preference;
-    call.length = (uint64_t)length;
+    call.zone = (ULONG_PTR)zone;
+    call.type = (ULONG_PTR)type;
+    call.template = (ULONG_PTR)template;
+    call.preference = (ULONG_PTR)preference;
+    call.length = (ULONG_PTR)length;
 
     qemu_syscall(&call.super);
 
@@ -1921,9 +1921,9 @@ WINBASEAPI BOOL WINAPI InternetGetSecurityInfoByURLA(LPSTR lpszURL, PCCERT_CHAIN
 {
     struct qemu_InternetGetSecurityInfoByURLA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETGETSECURITYINFOBYURLA);
-    call.lpszURL = (uint64_t)lpszURL;
-    call.ppCertChain = (uint64_t)ppCertChain;
-    call.pdwSecureFlags = (uint64_t)pdwSecureFlags;
+    call.lpszURL = (ULONG_PTR)lpszURL;
+    call.ppCertChain = (ULONG_PTR)ppCertChain;
+    call.pdwSecureFlags = (ULONG_PTR)pdwSecureFlags;
 
     qemu_syscall(&call.super);
 
@@ -1957,9 +1957,9 @@ WINBASEAPI BOOL WINAPI InternetGetSecurityInfoByURLW(LPCWSTR lpszURL, PCCERT_CHA
 {
     struct qemu_InternetGetSecurityInfoByURLW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETGETSECURITYINFOBYURLW);
-    call.lpszURL = (uint64_t)lpszURL;
-    call.ppCertChain = (uint64_t)ppCertChain;
-    call.pdwSecureFlags = (uint64_t)pdwSecureFlags;
+    call.lpszURL = (ULONG_PTR)lpszURL;
+    call.ppCertChain = (ULONG_PTR)ppCertChain;
+    call.pdwSecureFlags = (ULONG_PTR)pdwSecureFlags;
 
     qemu_syscall(&call.super);
 
@@ -1995,11 +1995,11 @@ WINBASEAPI DWORD WINAPI InternetDialA(HWND hwndParent, LPSTR lpszConnectoid, DWO
 {
     struct qemu_InternetDialA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETDIALA);
-    call.hwndParent = (uint64_t)hwndParent;
-    call.lpszConnectoid = (uint64_t)lpszConnectoid;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpdwConnection = (uint64_t)lpdwConnection;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.hwndParent = (ULONG_PTR)hwndParent;
+    call.lpszConnectoid = (ULONG_PTR)lpszConnectoid;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpdwConnection = (ULONG_PTR)lpdwConnection;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -2033,11 +2033,11 @@ WINBASEAPI DWORD WINAPI InternetDialW(HWND hwndParent, LPWSTR lpszConnectoid, DW
 {
     struct qemu_InternetDialW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETDIALW);
-    call.hwndParent = (uint64_t)hwndParent;
-    call.lpszConnectoid = (uint64_t)lpszConnectoid;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpdwConnection = (uint64_t)lpdwConnection;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.hwndParent = (ULONG_PTR)hwndParent;
+    call.lpszConnectoid = (ULONG_PTR)lpszConnectoid;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpdwConnection = (ULONG_PTR)lpdwConnection;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -2069,9 +2069,9 @@ WINBASEAPI BOOL WINAPI InternetGoOnlineA(LPSTR lpszURL, HWND hwndParent, DWORD d
 {
     struct qemu_InternetGoOnlineA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETGOONLINEA);
-    call.lpszURL = (uint64_t)lpszURL;
-    call.hwndParent = (uint64_t)hwndParent;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.lpszURL = (ULONG_PTR)lpszURL;
+    call.hwndParent = (ULONG_PTR)hwndParent;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -2103,9 +2103,9 @@ WINBASEAPI BOOL WINAPI InternetGoOnlineW(LPWSTR lpszURL, HWND hwndParent, DWORD 
 {
     struct qemu_InternetGoOnlineW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETGOONLINEW);
-    call.lpszURL = (uint64_t)lpszURL;
-    call.hwndParent = (uint64_t)hwndParent;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.lpszURL = (ULONG_PTR)lpszURL;
+    call.hwndParent = (ULONG_PTR)hwndParent;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -2136,8 +2136,8 @@ WINBASEAPI DWORD WINAPI InternetHangUp(DWORD_PTR dwConnection, DWORD dwReserved)
 {
     struct qemu_InternetHangUp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETHANGUP);
-    call.dwConnection = (uint64_t)dwConnection;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.dwConnection = (ULONG_PTR)dwConnection;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -2170,10 +2170,10 @@ WINBASEAPI BOOL WINAPI CreateMD5SSOHash(PWSTR pszChallengeInfo, PWSTR pwszRealm,
 {
     struct qemu_CreateMD5SSOHash call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEMD5SSOHASH);
-    call.pszChallengeInfo = (uint64_t)pszChallengeInfo;
-    call.pwszRealm = (uint64_t)pwszRealm;
-    call.pwszTarget = (uint64_t)pwszTarget;
-    call.pbHexHash = (uint64_t)pbHexHash;
+    call.pszChallengeInfo = (ULONG_PTR)pszChallengeInfo;
+    call.pwszRealm = (ULONG_PTR)pwszRealm;
+    call.pwszTarget = (ULONG_PTR)pwszTarget;
+    call.pbHexHash = (ULONG_PTR)pbHexHash;
 
     qemu_syscall(&call.super);
 
@@ -2204,8 +2204,8 @@ WINBASEAPI BOOL WINAPI ResumeSuspendedDownload(HINTERNET hInternet, DWORD dwErro
 {
     struct qemu_ResumeSuspendedDownload call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RESUMESUSPENDEDDOWNLOAD);
-    call.hInternet = (uint64_t)hInternet;
-    call.dwError = (uint64_t)dwError;
+    call.hInternet = (ULONG_PTR)hInternet;
+    call.dwError = (ULONG_PTR)dwError;
 
     qemu_syscall(&call.super);
 
@@ -2236,8 +2236,8 @@ WINBASEAPI BOOL WINAPI InternetQueryFortezzaStatus(DWORD *a, DWORD_PTR b)
 {
     struct qemu_InternetQueryFortezzaStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INTERNETQUERYFORTEZZASTATUS);
-    call.a = (uint64_t)a;
-    call.b = (uint64_t)b;
+    call.a = (ULONG_PTR)a;
+    call.b = (ULONG_PTR)b;
 
     qemu_syscall(&call.super);
 
@@ -2269,7 +2269,7 @@ WINBASEAPI DWORD WINAPI ShowClientAuthCerts(HWND parent)
 {
     struct qemu_ShowClientAuthCerts call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHOWCLIENTAUTHCERTS);
-    call.parent = (uint64_t)parent;
+    call.parent = (ULONG_PTR)parent;
 
     qemu_syscall(&call.super);
 

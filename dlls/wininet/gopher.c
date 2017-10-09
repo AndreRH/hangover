@@ -50,13 +50,13 @@ WINBASEAPI BOOL WINAPI GopherCreateLocatorA(LPCSTR lpszHost, INTERNET_PORT nServ
 {
     struct qemu_GopherCreateLocatorA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GOPHERCREATELOCATORA);
-    call.lpszHost = (uint64_t)lpszHost;
-    call.nServerPort = (uint64_t)nServerPort;
-    call.lpszDisplayString = (uint64_t)lpszDisplayString;
-    call.lpszSelectorString = (uint64_t)lpszSelectorString;
-    call.dwGopherType = (uint64_t)dwGopherType;
-    call.lpszLocator = (uint64_t)lpszLocator;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
+    call.lpszHost = (ULONG_PTR)lpszHost;
+    call.nServerPort = (ULONG_PTR)nServerPort;
+    call.lpszDisplayString = (ULONG_PTR)lpszDisplayString;
+    call.lpszSelectorString = (ULONG_PTR)lpszSelectorString;
+    call.dwGopherType = (ULONG_PTR)dwGopherType;
+    call.lpszLocator = (ULONG_PTR)lpszLocator;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
 
     qemu_syscall(&call.super);
 
@@ -92,13 +92,13 @@ WINBASEAPI BOOL WINAPI GopherCreateLocatorW(LPCWSTR lpszHost, INTERNET_PORT nSer
 {
     struct qemu_GopherCreateLocatorW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GOPHERCREATELOCATORW);
-    call.lpszHost = (uint64_t)lpszHost;
-    call.nServerPort = (uint64_t)nServerPort;
-    call.lpszDisplayString = (uint64_t)lpszDisplayString;
-    call.lpszSelectorString = (uint64_t)lpszSelectorString;
-    call.dwHopherType = (uint64_t)dwHopherType;
-    call.lpszLocator = (uint64_t)lpszLocator;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
+    call.lpszHost = (ULONG_PTR)lpszHost;
+    call.nServerPort = (ULONG_PTR)nServerPort;
+    call.lpszDisplayString = (ULONG_PTR)lpszDisplayString;
+    call.lpszSelectorString = (ULONG_PTR)lpszSelectorString;
+    call.dwHopherType = (ULONG_PTR)dwHopherType;
+    call.lpszLocator = (ULONG_PTR)lpszLocator;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
 
     qemu_syscall(&call.super);
 
@@ -133,16 +133,16 @@ WINBASEAPI HINTERNET WINAPI GopherFindFirstFileA(HINTERNET hConnect, LPCSTR lpsz
 {
     struct qemu_GopherFindFirstFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GOPHERFINDFIRSTFILEA);
-    call.hConnect = (uint64_t)hConnect;
-    call.lpszLocator = (uint64_t)lpszLocator;
-    call.lpszSearchString = (uint64_t)lpszSearchString;
-    call.lpFindData = (uint64_t)lpFindData;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hConnect = (ULONG_PTR)hConnect;
+    call.lpszLocator = (ULONG_PTR)lpszLocator;
+    call.lpszSearchString = (ULONG_PTR)lpszSearchString;
+    call.lpFindData = (ULONG_PTR)lpFindData;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
-    return (HINTERNET)call.super.iret;
+    return (HINTERNET)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -151,7 +151,7 @@ void qemu_GopherFindFirstFileA(struct qemu_syscall *call)
 {
     struct qemu_GopherFindFirstFileA *c = (struct qemu_GopherFindFirstFileA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GopherFindFirstFileA(QEMU_G2H(c->hConnect), QEMU_G2H(c->lpszLocator), QEMU_G2H(c->lpszSearchString), QEMU_G2H(c->lpFindData), c->dwFlags, c->dwContext);
+    c->super.iret = (ULONG_PTR)GopherFindFirstFileA(QEMU_G2H(c->hConnect), QEMU_G2H(c->lpszLocator), QEMU_G2H(c->lpszSearchString), QEMU_G2H(c->lpFindData), c->dwFlags, c->dwContext);
 }
 
 #endif
@@ -173,16 +173,16 @@ WINBASEAPI HINTERNET WINAPI GopherFindFirstFileW(HINTERNET hConnect, LPCWSTR lps
 {
     struct qemu_GopherFindFirstFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GOPHERFINDFIRSTFILEW);
-    call.hConnect = (uint64_t)hConnect;
-    call.lpszLocator = (uint64_t)lpszLocator;
-    call.lpszSearchString = (uint64_t)lpszSearchString;
-    call.lpFindData = (uint64_t)lpFindData;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hConnect = (ULONG_PTR)hConnect;
+    call.lpszLocator = (ULONG_PTR)lpszLocator;
+    call.lpszSearchString = (ULONG_PTR)lpszSearchString;
+    call.lpFindData = (ULONG_PTR)lpFindData;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
-    return (HINTERNET)call.super.iret;
+    return (HINTERNET)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -191,7 +191,7 @@ void qemu_GopherFindFirstFileW(struct qemu_syscall *call)
 {
     struct qemu_GopherFindFirstFileW *c = (struct qemu_GopherFindFirstFileW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GopherFindFirstFileW(QEMU_G2H(c->hConnect), QEMU_G2H(c->lpszLocator), QEMU_G2H(c->lpszSearchString), QEMU_G2H(c->lpFindData), c->dwFlags, c->dwContext);
+    c->super.iret = (ULONG_PTR)GopherFindFirstFileW(QEMU_G2H(c->hConnect), QEMU_G2H(c->lpszLocator), QEMU_G2H(c->lpszSearchString), QEMU_G2H(c->lpFindData), c->dwFlags, c->dwContext);
 }
 
 #endif
@@ -215,14 +215,14 @@ WINBASEAPI BOOL WINAPI GopherGetAttributeA(HINTERNET hConnect, LPCSTR lpszLocato
 {
     struct qemu_GopherGetAttributeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GOPHERGETATTRIBUTEA);
-    call.hConnect = (uint64_t)hConnect;
-    call.lpszLocator = (uint64_t)lpszLocator;
-    call.lpszAttributeName = (uint64_t)lpszAttributeName;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.dwBufferLength = (uint64_t)dwBufferLength;
-    call.lpdwCharactersReturned = (uint64_t)lpdwCharactersReturned;
-    call.lpfnEnumerator = (uint64_t)lpfnEnumerator;
-    call.dwContext = (uint64_t)dwContext;
+    call.hConnect = (ULONG_PTR)hConnect;
+    call.lpszLocator = (ULONG_PTR)lpszLocator;
+    call.lpszAttributeName = (ULONG_PTR)lpszAttributeName;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.dwBufferLength = (ULONG_PTR)dwBufferLength;
+    call.lpdwCharactersReturned = (ULONG_PTR)lpdwCharactersReturned;
+    call.lpfnEnumerator = (ULONG_PTR)lpfnEnumerator;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
@@ -259,14 +259,14 @@ WINBASEAPI BOOL WINAPI GopherGetAttributeW(HINTERNET hConnect, LPCWSTR lpszLocat
 {
     struct qemu_GopherGetAttributeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GOPHERGETATTRIBUTEW);
-    call.hConnect = (uint64_t)hConnect;
-    call.lpszLocator = (uint64_t)lpszLocator;
-    call.lpszAttributeName = (uint64_t)lpszAttributeName;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.dwBufferLength = (uint64_t)dwBufferLength;
-    call.lpdwCharactersReturned = (uint64_t)lpdwCharactersReturned;
-    call.lpfnEnumerator = (uint64_t)lpfnEnumerator;
-    call.dwContext = (uint64_t)dwContext;
+    call.hConnect = (ULONG_PTR)hConnect;
+    call.lpszLocator = (ULONG_PTR)lpszLocator;
+    call.lpszAttributeName = (ULONG_PTR)lpszAttributeName;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.dwBufferLength = (ULONG_PTR)dwBufferLength;
+    call.lpdwCharactersReturned = (ULONG_PTR)lpdwCharactersReturned;
+    call.lpfnEnumerator = (ULONG_PTR)lpfnEnumerator;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
@@ -297,8 +297,8 @@ WINBASEAPI BOOL WINAPI GopherGetLocatorTypeA(LPCSTR lpszLocator, LPDWORD lpdwGop
 {
     struct qemu_GopherGetLocatorTypeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GOPHERGETLOCATORTYPEA);
-    call.lpszLocator = (uint64_t)lpszLocator;
-    call.lpdwGopherType = (uint64_t)lpdwGopherType;
+    call.lpszLocator = (ULONG_PTR)lpszLocator;
+    call.lpdwGopherType = (ULONG_PTR)lpdwGopherType;
 
     qemu_syscall(&call.super);
 
@@ -329,8 +329,8 @@ WINBASEAPI BOOL WINAPI GopherGetLocatorTypeW(LPCWSTR lpszLocator, LPDWORD lpdwGo
 {
     struct qemu_GopherGetLocatorTypeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GOPHERGETLOCATORTYPEW);
-    call.lpszLocator = (uint64_t)lpszLocator;
-    call.lpdwGopherType = (uint64_t)lpdwGopherType;
+    call.lpszLocator = (ULONG_PTR)lpszLocator;
+    call.lpdwGopherType = (ULONG_PTR)lpdwGopherType;
 
     qemu_syscall(&call.super);
 
@@ -364,15 +364,15 @@ WINBASEAPI HINTERNET WINAPI GopherOpenFileA(HINTERNET hConnect, LPCSTR lpszLocat
 {
     struct qemu_GopherOpenFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GOPHEROPENFILEA);
-    call.hConnect = (uint64_t)hConnect;
-    call.lpszLocator = (uint64_t)lpszLocator;
-    call.lpszView = (uint64_t)lpszView;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hConnect = (ULONG_PTR)hConnect;
+    call.lpszLocator = (ULONG_PTR)lpszLocator;
+    call.lpszView = (ULONG_PTR)lpszView;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
-    return (HINTERNET)call.super.iret;
+    return (HINTERNET)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -381,7 +381,7 @@ void qemu_GopherOpenFileA(struct qemu_syscall *call)
 {
     struct qemu_GopherOpenFileA *c = (struct qemu_GopherOpenFileA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GopherOpenFileA(QEMU_G2H(c->hConnect), QEMU_G2H(c->lpszLocator), QEMU_G2H(c->lpszView), c->dwFlags, c->dwContext);
+    c->super.iret = (ULONG_PTR)GopherOpenFileA(QEMU_G2H(c->hConnect), QEMU_G2H(c->lpszLocator), QEMU_G2H(c->lpszView), c->dwFlags, c->dwContext);
 }
 
 #endif
@@ -402,15 +402,15 @@ WINBASEAPI HINTERNET WINAPI GopherOpenFileW(HINTERNET hConnect, LPCWSTR lpszLoca
 {
     struct qemu_GopherOpenFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GOPHEROPENFILEW);
-    call.hConnect = (uint64_t)hConnect;
-    call.lpszLocator = (uint64_t)lpszLocator;
-    call.lpszView = (uint64_t)lpszView;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwContext = (uint64_t)dwContext;
+    call.hConnect = (ULONG_PTR)hConnect;
+    call.lpszLocator = (ULONG_PTR)lpszLocator;
+    call.lpszView = (ULONG_PTR)lpszView;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwContext = (ULONG_PTR)dwContext;
 
     qemu_syscall(&call.super);
 
-    return (HINTERNET)call.super.iret;
+    return (HINTERNET)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -419,7 +419,7 @@ void qemu_GopherOpenFileW(struct qemu_syscall *call)
 {
     struct qemu_GopherOpenFileW *c = (struct qemu_GopherOpenFileW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GopherOpenFileW(QEMU_G2H(c->hConnect), QEMU_G2H(c->lpszLocator), QEMU_G2H(c->lpszView), c->dwFlags, c->dwContext);
+    c->super.iret = (ULONG_PTR)GopherOpenFileW(QEMU_G2H(c->hConnect), QEMU_G2H(c->lpszLocator), QEMU_G2H(c->lpszView), c->dwFlags, c->dwContext);
 }
 
 #endif
