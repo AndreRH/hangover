@@ -37,7 +37,7 @@ DEFINE_GUID(IID_ITextHost2, 0x13e670f5,0x1a5a,0x11cf,0xab,0xeb,0x00,0xaa,0x00,0x
 
 #ifdef QEMU_DLL_GUEST
 
-BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
+BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
     return TRUE;
 }

@@ -8,8 +8,8 @@ VPATH=$(SRCDIR)
 
 all: riched20.dll qemu_riched20.dll.so
 
-riched20.dll: editor_g.o main_g.o riched20.def txtsrv_g.o
-	$(GUEST_CC)-ld -shared $(SRCDIR)/riched20.def *_g.o -o riched20.dll -nostdlib -e DllMain
+riched20.dll: editor_g.o main_g.o riched20.spec txtsrv_g.o
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/riched20.spec *_g.o -o riched20.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x110000000
 
 qemu_riched20.dll.so: editor_h.o main_h.o txtsrv_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_riched20.spec *_h.o -o qemu_riched20.dll.so -lriched20
