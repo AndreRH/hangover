@@ -44,8 +44,8 @@ WINBASEAPI DWORD WINAPI GetFileVersionInfoSizeW(LPCWSTR filename, LPDWORD handle
 {
     struct qemu_GetFileVersionInfoSizeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILEVERSIONINFOSIZEW);
-    call.filename = (uint64_t)filename;
-    call.handle = (uint64_t)handle;
+    call.filename = (ULONG_PTR)filename;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -76,8 +76,8 @@ WINBASEAPI DWORD WINAPI GetFileVersionInfoSizeA(LPCSTR filename, LPDWORD handle)
 {
     struct qemu_GetFileVersionInfoSizeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILEVERSIONINFOSIZEA);
-    call.filename = (uint64_t)filename;
-    call.handle = (uint64_t)handle;
+    call.filename = (ULONG_PTR)filename;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -109,9 +109,9 @@ WINBASEAPI DWORD WINAPI GetFileVersionInfoSizeExW(DWORD flags, LPCWSTR filename,
 {
     struct qemu_GetFileVersionInfoSizeExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILEVERSIONINFOSIZEEXW);
-    call.flags = (uint64_t)flags;
-    call.filename = (uint64_t)filename;
-    call.handle = (uint64_t)handle;
+    call.flags = (ULONG_PTR)flags;
+    call.filename = (ULONG_PTR)filename;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -143,9 +143,9 @@ WINBASEAPI DWORD WINAPI GetFileVersionInfoSizeExA(DWORD flags, LPCSTR filename, 
 {
     struct qemu_GetFileVersionInfoSizeExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILEVERSIONINFOSIZEEXA);
-    call.flags = (uint64_t)flags;
-    call.filename = (uint64_t)filename;
-    call.handle = (uint64_t)handle;
+    call.flags = (ULONG_PTR)flags;
+    call.filename = (ULONG_PTR)filename;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -179,11 +179,11 @@ WINBASEAPI BOOL WINAPI GetFileVersionInfoExW(DWORD flags, LPCWSTR filename, DWOR
 {
     struct qemu_GetFileVersionInfoExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILEVERSIONINFOEXW);
-    call.flags = (uint64_t)flags;
-    call.filename = (uint64_t)filename;
-    call.handle = (uint64_t)handle;
-    call.datasize = (uint64_t)datasize;
-    call.data = (uint64_t)data;
+    call.flags = (ULONG_PTR)flags;
+    call.filename = (ULONG_PTR)filename;
+    call.handle = (ULONG_PTR)handle;
+    call.datasize = (ULONG_PTR)datasize;
+    call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
 
@@ -217,11 +217,11 @@ WINBASEAPI BOOL WINAPI GetFileVersionInfoExA(DWORD flags, LPCSTR filename, DWORD
 {
     struct qemu_GetFileVersionInfoExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILEVERSIONINFOEXA);
-    call.flags = (uint64_t)flags;
-    call.filename = (uint64_t)filename;
-    call.handle = (uint64_t)handle;
-    call.datasize = (uint64_t)datasize;
-    call.data = (uint64_t)data;
+    call.flags = (ULONG_PTR)flags;
+    call.filename = (ULONG_PTR)filename;
+    call.handle = (ULONG_PTR)handle;
+    call.datasize = (ULONG_PTR)datasize;
+    call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
 
@@ -254,10 +254,10 @@ WINBASEAPI BOOL WINAPI GetFileVersionInfoW(LPCWSTR filename, DWORD handle, DWORD
 {
     struct qemu_GetFileVersionInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILEVERSIONINFOW);
-    call.filename = (uint64_t)filename;
-    call.handle = (uint64_t)handle;
-    call.datasize = (uint64_t)datasize;
-    call.data = (uint64_t)data;
+    call.filename = (ULONG_PTR)filename;
+    call.handle = (ULONG_PTR)handle;
+    call.datasize = (ULONG_PTR)datasize;
+    call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
 
@@ -290,10 +290,10 @@ WINBASEAPI BOOL WINAPI GetFileVersionInfoA(LPCSTR filename, DWORD handle, DWORD 
 {
     struct qemu_GetFileVersionInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILEVERSIONINFOA);
-    call.filename = (uint64_t)filename;
-    call.handle = (uint64_t)handle;
-    call.datasize = (uint64_t)datasize;
-    call.data = (uint64_t)data;
+    call.filename = (ULONG_PTR)filename;
+    call.handle = (ULONG_PTR)handle;
+    call.datasize = (ULONG_PTR)datasize;
+    call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
 
@@ -326,10 +326,10 @@ WINBASEAPI BOOL WINAPI VerQueryValueA(LPCVOID pBlock, LPCSTR lpSubBlock, LPVOID 
 {
     struct qemu_VerQueryValueA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VERQUERYVALUEA);
-    call.pBlock = (uint64_t)pBlock;
-    call.lpSubBlock = (uint64_t)lpSubBlock;
-    call.lplpBuffer = (uint64_t)lplpBuffer;
-    call.puLen = (uint64_t)puLen;
+    call.pBlock = (ULONG_PTR)pBlock;
+    call.lpSubBlock = (ULONG_PTR)lpSubBlock;
+    call.lplpBuffer = (ULONG_PTR)lplpBuffer;
+    call.puLen = (ULONG_PTR)puLen;
 
     qemu_syscall(&call.super);
 
@@ -362,10 +362,10 @@ WINBASEAPI BOOL WINAPI VerQueryValueW(LPCVOID pBlock, LPCWSTR lpSubBlock, LPVOID
 {
     struct qemu_VerQueryValueW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VERQUERYVALUEW);
-    call.pBlock = (uint64_t)pBlock;
-    call.lpSubBlock = (uint64_t)lpSubBlock;
-    call.lplpBuffer = (uint64_t)lplpBuffer;
-    call.puLen = (uint64_t)puLen;
+    call.pBlock = (ULONG_PTR)pBlock;
+    call.lpSubBlock = (ULONG_PTR)lpSubBlock;
+    call.lplpBuffer = (ULONG_PTR)lplpBuffer;
+    call.puLen = (ULONG_PTR)puLen;
 
     qemu_syscall(&call.super);
 
@@ -402,14 +402,14 @@ WINBASEAPI DWORD WINAPI VerFindFileA(DWORD flags, LPSTR lpszFilename, LPSTR lpsz
 {
     struct qemu_VerFindFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VERFINDFILEA);
-    call.flags = (uint64_t)flags;
-    call.lpszFilename = (uint64_t)lpszFilename;
-    call.lpszWinDir = (uint64_t)lpszWinDir;
-    call.lpszAppDir = (uint64_t)lpszAppDir;
-    call.lpszCurDir = (uint64_t)lpszCurDir;
-    call.lpuCurDirLen = (uint64_t)lpuCurDirLen;
-    call.lpszDestDir = (uint64_t)lpszDestDir;
-    call.lpuDestDirLen = (uint64_t)lpuDestDirLen;
+    call.flags = (ULONG_PTR)flags;
+    call.lpszFilename = (ULONG_PTR)lpszFilename;
+    call.lpszWinDir = (ULONG_PTR)lpszWinDir;
+    call.lpszAppDir = (ULONG_PTR)lpszAppDir;
+    call.lpszCurDir = (ULONG_PTR)lpszCurDir;
+    call.lpuCurDirLen = (ULONG_PTR)lpuCurDirLen;
+    call.lpszDestDir = (ULONG_PTR)lpszDestDir;
+    call.lpuDestDirLen = (ULONG_PTR)lpuDestDirLen;
 
     qemu_syscall(&call.super);
 
@@ -446,14 +446,14 @@ WINBASEAPI DWORD WINAPI VerFindFileW(DWORD flags,LPWSTR lpszFilename,LPWSTR lpsz
 {
     struct qemu_VerFindFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VERFINDFILEW);
-    call.flags = (uint64_t)flags;
-    call.lpszFilename = (uint64_t)lpszFilename;
-    call.lpszWinDir = (uint64_t)lpszWinDir;
-    call.lpszAppDir = (uint64_t)lpszAppDir;
-    call.lpszCurDir = (uint64_t)lpszCurDir;
-    call.lpuCurDirLen = (uint64_t)lpuCurDirLen;
-    call.lpszDestDir = (uint64_t)lpszDestDir;
-    call.lpuDestDirLen = (uint64_t)lpuDestDirLen;
+    call.flags = (ULONG_PTR)flags;
+    call.lpszFilename = (ULONG_PTR)lpszFilename;
+    call.lpszWinDir = (ULONG_PTR)lpszWinDir;
+    call.lpszAppDir = (ULONG_PTR)lpszAppDir;
+    call.lpszCurDir = (ULONG_PTR)lpszCurDir;
+    call.lpuCurDirLen = (ULONG_PTR)lpuCurDirLen;
+    call.lpszDestDir = (ULONG_PTR)lpszDestDir;
+    call.lpuDestDirLen = (ULONG_PTR)lpuDestDirLen;
 
     qemu_syscall(&call.super);
 
@@ -490,14 +490,14 @@ WINBASEAPI DWORD WINAPI VerInstallFileA(DWORD flags,LPSTR srcfilename,LPSTR dest
 {
     struct qemu_VerInstallFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VERINSTALLFILEA);
-    call.flags = (uint64_t)flags;
-    call.srcfilename = (uint64_t)srcfilename;
-    call.destfilename = (uint64_t)destfilename;
-    call.srcdir = (uint64_t)srcdir;
-    call.destdir = (uint64_t)destdir;
-    call.curdir = (uint64_t)curdir;
-    call.tmpfile = (uint64_t)tmpfile;
-    call.tmpfilelen = (uint64_t)tmpfilelen;
+    call.flags = (ULONG_PTR)flags;
+    call.srcfilename = (ULONG_PTR)srcfilename;
+    call.destfilename = (ULONG_PTR)destfilename;
+    call.srcdir = (ULONG_PTR)srcdir;
+    call.destdir = (ULONG_PTR)destdir;
+    call.curdir = (ULONG_PTR)curdir;
+    call.tmpfile = (ULONG_PTR)tmpfile;
+    call.tmpfilelen = (ULONG_PTR)tmpfilelen;
 
     qemu_syscall(&call.super);
 
@@ -534,14 +534,14 @@ WINBASEAPI DWORD WINAPI VerInstallFileW(DWORD flags,LPWSTR srcfilename,LPWSTR de
 {
     struct qemu_VerInstallFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VERINSTALLFILEW);
-    call.flags = (uint64_t)flags;
-    call.srcfilename = (uint64_t)srcfilename;
-    call.destfilename = (uint64_t)destfilename;
-    call.srcdir = (uint64_t)srcdir;
-    call.destdir = (uint64_t)destdir;
-    call.curdir = (uint64_t)curdir;
-    call.tmpfile = (uint64_t)tmpfile;
-    call.tmpfilelen = (uint64_t)tmpfilelen;
+    call.flags = (ULONG_PTR)flags;
+    call.srcfilename = (ULONG_PTR)srcfilename;
+    call.destfilename = (ULONG_PTR)destfilename;
+    call.srcdir = (ULONG_PTR)srcdir;
+    call.destdir = (ULONG_PTR)destdir;
+    call.curdir = (ULONG_PTR)curdir;
+    call.tmpfile = (ULONG_PTR)tmpfile;
+    call.tmpfilelen = (ULONG_PTR)tmpfilelen;
 
     qemu_syscall(&call.super);
 
