@@ -1,4 +1,4 @@
-LIBRARY usp10.dll BASE=0x1c0000000
+LIBRARY usp10.dll BASE=0xf0000000
 
 EXPORTS
   ScriptApplyDigitSubstitution
