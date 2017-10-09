@@ -44,7 +44,7 @@ WINBASEAPI INT_PTR WINAPI PropertySheetA(LPCPROPSHEETHEADERA lppsh)
 {
     struct qemu_PropertySheetA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PROPERTYSHEETA);
-    call.lppsh = (uint64_t)lppsh;
+    call.lppsh = (ULONG_PTR)lppsh;
 
     qemu_syscall(&call.super);
 
@@ -74,7 +74,7 @@ WINBASEAPI INT_PTR WINAPI PropertySheetW(LPCPROPSHEETHEADERW lppsh)
 {
     struct qemu_PropertySheetW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PROPERTYSHEETW);
-    call.lppsh = (uint64_t)lppsh;
+    call.lppsh = (ULONG_PTR)lppsh;
 
     qemu_syscall(&call.super);
 
@@ -104,11 +104,11 @@ WINBASEAPI HPROPSHEETPAGE WINAPI CreatePropertySheetPageA(LPCPROPSHEETPAGEA lpPr
 {
     struct qemu_CreatePropertySheetPageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPROPERTYSHEETPAGEA);
-    call.lpPropSheetPage = (uint64_t)lpPropSheetPage;
+    call.lpPropSheetPage = (ULONG_PTR)lpPropSheetPage;
 
     qemu_syscall(&call.super);
 
-    return (HPROPSHEETPAGE)call.super.iret;
+    return (HPROPSHEETPAGE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -117,7 +117,7 @@ void qemu_CreatePropertySheetPageA(struct qemu_syscall *call)
 {
     struct qemu_CreatePropertySheetPageA *c = (struct qemu_CreatePropertySheetPageA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreatePropertySheetPageA(QEMU_G2H(c->lpPropSheetPage));
+    c->super.iret = (ULONG_PTR)CreatePropertySheetPageA(QEMU_G2H(c->lpPropSheetPage));
 }
 
 #endif
@@ -134,11 +134,11 @@ WINBASEAPI HPROPSHEETPAGE WINAPI CreatePropertySheetPageW(LPCPROPSHEETPAGEW lpPr
 {
     struct qemu_CreatePropertySheetPageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPROPERTYSHEETPAGEW);
-    call.lpPropSheetPage = (uint64_t)lpPropSheetPage;
+    call.lpPropSheetPage = (ULONG_PTR)lpPropSheetPage;
 
     qemu_syscall(&call.super);
 
-    return (HPROPSHEETPAGE)call.super.iret;
+    return (HPROPSHEETPAGE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -147,7 +147,7 @@ void qemu_CreatePropertySheetPageW(struct qemu_syscall *call)
 {
     struct qemu_CreatePropertySheetPageW *c = (struct qemu_CreatePropertySheetPageW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreatePropertySheetPageW(QEMU_G2H(c->lpPropSheetPage));
+    c->super.iret = (ULONG_PTR)CreatePropertySheetPageW(QEMU_G2H(c->lpPropSheetPage));
 }
 
 #endif
@@ -164,7 +164,7 @@ WINBASEAPI BOOL WINAPI DestroyPropertySheetPage(HPROPSHEETPAGE hPropPage)
 {
     struct qemu_DestroyPropertySheetPage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DESTROYPROPERTYSHEETPAGE);
-    call.hPropPage = (uint64_t)hPropPage;
+    call.hPropPage = (ULONG_PTR)hPropPage;
 
     qemu_syscall(&call.super);
 

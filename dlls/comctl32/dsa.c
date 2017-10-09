@@ -50,7 +50,7 @@ WINBASEAPI HDSA WINAPI DSA_Create (INT nSize, INT nGrow)
 
     qemu_syscall(&call.super);
 
-    return (HDSA)call.super.iret;
+    return (HDSA)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -59,7 +59,7 @@ void qemu_DSA_Create(struct qemu_syscall *call)
 {
     struct qemu_DSA_Create *c = (struct qemu_DSA_Create *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DSA_Create(c->nSize, c->nGrow);
+    c->super.iret = (ULONG_PTR)DSA_Create(c->nSize, c->nGrow);
 }
 
 #endif
@@ -147,7 +147,7 @@ WINBASEAPI LPVOID WINAPI DSA_GetItemPtr (HDSA hdsa, INT nIndex)
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -156,7 +156,7 @@ void qemu_DSA_GetItemPtr(struct qemu_syscall *call)
 {
     struct qemu_DSA_GetItemPtr *c = (struct qemu_DSA_GetItemPtr *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DSA_GetItemPtr(QEMU_G2H(c->hdsa), c->nIndex);
+    c->super.iret = (ULONG_PTR)DSA_GetItemPtr(QEMU_G2H(c->hdsa), c->nIndex);
 }
 
 #endif
@@ -375,7 +375,7 @@ WINBASEAPI HDSA WINAPI DSA_Clone(HDSA hdsa)
 
     qemu_syscall(&call.super);
 
-    return (HDSA)call.super.iret;
+    return (HDSA)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -385,7 +385,7 @@ void qemu_DSA_Clone(struct qemu_syscall *call)
 {
     struct qemu_DSA_Clone *c = (struct qemu_DSA_Clone *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DSA_Clone(QEMU_G2H(c->hdsa));
+    c->super.iret = (ULONG_PTR)DSA_Clone(QEMU_G2H(c->hdsa));
 }
 
 #endif

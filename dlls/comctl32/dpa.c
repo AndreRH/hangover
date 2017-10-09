@@ -224,7 +224,7 @@ WINBASEAPI HDPA WINAPI DPA_Clone (const HDPA hdpa, HDPA hdpaNew)
 
     qemu_syscall(&call.super);
 
-    return (HDPA)call.super.iret;
+    return (HDPA)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -257,7 +257,7 @@ WINBASEAPI LPVOID WINAPI DPA_GetPtr (HDPA hdpa, INT_PTR nIndex)
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -266,7 +266,7 @@ void qemu_DPA_GetPtr(struct qemu_syscall *call)
 {
     struct qemu_DPA_GetPtr *c = (struct qemu_DPA_GetPtr *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DPA_GetPtr(QEMU_G2H(c->hdpa), c->nIndex);
+    c->super.iret = (ULONG_PTR)DPA_GetPtr(QEMU_G2H(c->hdpa), c->nIndex);
 }
 
 #endif
@@ -389,7 +389,7 @@ WINBASEAPI LPVOID WINAPI DPA_DeletePtr (HDPA hdpa, INT i)
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -398,7 +398,7 @@ void qemu_DPA_DeletePtr(struct qemu_syscall *call)
 {
     struct qemu_DPA_DeletePtr *c = (struct qemu_DPA_DeletePtr *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DPA_DeletePtr(QEMU_G2H(c->hdpa), c->i);
+    c->super.iret = (ULONG_PTR)DPA_DeletePtr(QEMU_G2H(c->hdpa), c->i);
 }
 
 #endif
@@ -525,7 +525,7 @@ WINBASEAPI HDPA WINAPI DPA_CreateEx (INT nGrow, HANDLE hHeap)
 
     qemu_syscall(&call.super);
 
-    return (HDPA)call.super.iret;
+    return (HDPA)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -556,7 +556,7 @@ WINBASEAPI HDPA WINAPI DPA_Create (INT nGrow)
 
     qemu_syscall(&call.super);
 
-    return (HDPA)call.super.iret;
+    return (HDPA)(ULONG_PTR)call.super.iret;
 }
 
 #else

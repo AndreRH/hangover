@@ -50,13 +50,13 @@ WINBASEAPI VOID WINAPI MenuHelp (UINT uMsg, WPARAM wParam, LPARAM lParam, HMENU 
 {
     struct qemu_MenuHelp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MENUHELP);
-    call.uMsg = (uint64_t)uMsg;
-    call.wParam = (uint64_t)wParam;
-    call.lParam = (uint64_t)lParam;
-    call.hMainMenu = (uint64_t)hMainMenu;
-    call.hInst = (uint64_t)hInst;
-    call.hwndStatus = (uint64_t)hwndStatus;
-    call.lpwIDs = (uint64_t)lpwIDs;
+    call.uMsg = (ULONG_PTR)uMsg;
+    call.wParam = (ULONG_PTR)wParam;
+    call.lParam = (ULONG_PTR)lParam;
+    call.hMainMenu = (ULONG_PTR)hMainMenu;
+    call.hInst = (ULONG_PTR)hInst;
+    call.hwndStatus = (ULONG_PTR)hwndStatus;
+    call.lpwIDs = (ULONG_PTR)lpwIDs;
 
     qemu_syscall(&call.super);
 }
@@ -86,9 +86,9 @@ WINBASEAPI BOOL WINAPI ShowHideMenuCtl (HWND hwnd, UINT_PTR uFlags, LPINT lpInfo
 {
     struct qemu_ShowHideMenuCtl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHOWHIDEMENUCTL);
-    call.hwnd = (uint64_t)hwnd;
-    call.uFlags = (uint64_t)uFlags;
-    call.lpInfo = (uint64_t)lpInfo;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.uFlags = (ULONG_PTR)uFlags;
+    call.lpInfo = (ULONG_PTR)lpInfo;
 
     qemu_syscall(&call.super);
 
@@ -120,9 +120,9 @@ WINBASEAPI VOID WINAPI GetEffectiveClientRect (HWND hwnd, LPRECT lpRect, const I
 {
     struct qemu_GetEffectiveClientRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETEFFECTIVECLIENTRECT);
-    call.hwnd = (uint64_t)hwnd;
-    call.lpRect = (uint64_t)lpRect;
-    call.lpInfo = (uint64_t)lpInfo;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.lpRect = (ULONG_PTR)lpRect;
+    call.lpInfo = (ULONG_PTR)lpInfo;
 
     qemu_syscall(&call.super);
 }
@@ -153,10 +153,10 @@ WINBASEAPI void WINAPI DrawStatusTextW (HDC hdc, LPCRECT lprc, LPCWSTR text, UIN
 {
     struct qemu_DrawStatusTextW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWSTATUSTEXTW);
-    call.hdc = (uint64_t)hdc;
-    call.lprc = (uint64_t)lprc;
-    call.text = (uint64_t)text;
-    call.style = (uint64_t)style;
+    call.hdc = (ULONG_PTR)hdc;
+    call.lprc = (ULONG_PTR)lprc;
+    call.text = (ULONG_PTR)text;
+    call.style = (ULONG_PTR)style;
 
     qemu_syscall(&call.super);
 }
@@ -187,10 +187,10 @@ WINBASEAPI void WINAPI DrawStatusTextA (HDC hdc, LPCRECT lprc, LPCSTR text, UINT
 {
     struct qemu_DrawStatusTextA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWSTATUSTEXTA);
-    call.hdc = (uint64_t)hdc;
-    call.lprc = (uint64_t)lprc;
-    call.text = (uint64_t)text;
-    call.style = (uint64_t)style;
+    call.hdc = (ULONG_PTR)hdc;
+    call.lprc = (ULONG_PTR)lprc;
+    call.text = (ULONG_PTR)text;
+    call.style = (ULONG_PTR)style;
 
     qemu_syscall(&call.super);
 }
@@ -221,14 +221,14 @@ WINBASEAPI HWND WINAPI CreateStatusWindowA (LONG style, LPCSTR text, HWND parent
 {
     struct qemu_CreateStatusWindowA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATESTATUSWINDOWA);
-    call.style = (uint64_t)style;
-    call.text = (uint64_t)text;
-    call.parent = (uint64_t)parent;
-    call.wid = (uint64_t)wid;
+    call.style = (ULONG_PTR)style;
+    call.text = (ULONG_PTR)text;
+    call.parent = (ULONG_PTR)parent;
+    call.wid = (ULONG_PTR)wid;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -237,7 +237,7 @@ void qemu_CreateStatusWindowA(struct qemu_syscall *call)
 {
     struct qemu_CreateStatusWindowA *c = (struct qemu_CreateStatusWindowA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateStatusWindowA(c->style, QEMU_G2H(c->text), QEMU_G2H(c->parent), c->wid);
+    c->super.iret = (ULONG_PTR)CreateStatusWindowA(c->style, QEMU_G2H(c->text), QEMU_G2H(c->parent), c->wid);
 }
 
 #endif
@@ -257,14 +257,14 @@ WINBASEAPI HWND WINAPI CreateStatusWindowW (LONG style, LPCWSTR text, HWND paren
 {
     struct qemu_CreateStatusWindowW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATESTATUSWINDOWW);
-    call.style = (uint64_t)style;
-    call.text = (uint64_t)text;
-    call.parent = (uint64_t)parent;
-    call.wid = (uint64_t)wid;
+    call.style = (ULONG_PTR)style;
+    call.text = (ULONG_PTR)text;
+    call.parent = (ULONG_PTR)parent;
+    call.wid = (ULONG_PTR)wid;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -273,7 +273,7 @@ void qemu_CreateStatusWindowW(struct qemu_syscall *call)
 {
     struct qemu_CreateStatusWindowW *c = (struct qemu_CreateStatusWindowW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateStatusWindowW(c->style, QEMU_G2H(c->text), QEMU_G2H(c->parent), c->wid);
+    c->super.iret = (ULONG_PTR)CreateStatusWindowW(c->style, QEMU_G2H(c->text), QEMU_G2H(c->parent), c->wid);
 }
 
 #endif
@@ -301,22 +301,22 @@ WINBASEAPI HWND WINAPI CreateUpDownControl (DWORD style, INT x, INT y, INT cx, I
 {
     struct qemu_CreateUpDownControl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEUPDOWNCONTROL);
-    call.style = (uint64_t)style;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
-    call.cx = (uint64_t)cx;
-    call.cy = (uint64_t)cy;
-    call.parent = (uint64_t)parent;
-    call.id = (uint64_t)id;
-    call.inst = (uint64_t)inst;
-    call.buddy = (uint64_t)buddy;
-    call.maxVal = (uint64_t)maxVal;
-    call.minVal = (uint64_t)minVal;
-    call.curVal = (uint64_t)curVal;
+    call.style = (ULONG_PTR)style;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    call.cx = (ULONG_PTR)cx;
+    call.cy = (ULONG_PTR)cy;
+    call.parent = (ULONG_PTR)parent;
+    call.id = (ULONG_PTR)id;
+    call.inst = (ULONG_PTR)inst;
+    call.buddy = (ULONG_PTR)buddy;
+    call.maxVal = (ULONG_PTR)maxVal;
+    call.minVal = (ULONG_PTR)minVal;
+    call.curVal = (ULONG_PTR)curVal;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -325,7 +325,7 @@ void qemu_CreateUpDownControl(struct qemu_syscall *call)
 {
     struct qemu_CreateUpDownControl *c = (struct qemu_CreateUpDownControl *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateUpDownControl(c->style, c->x, c->y, c->cx, c->cy, QEMU_G2H(c->parent), c->id, QEMU_G2H(c->inst), QEMU_G2H(c->buddy), c->maxVal, c->minVal, c->curVal);
+    c->super.iret = (ULONG_PTR)CreateUpDownControl(c->style, c->x, c->y, c->cx, c->cy, QEMU_G2H(c->parent), c->id, QEMU_G2H(c->inst), QEMU_G2H(c->buddy), c->maxVal, c->minVal, c->curVal);
 }
 
 #endif
@@ -368,7 +368,7 @@ WINBASEAPI BOOL WINAPI InitCommonControlsEx (const INITCOMMONCONTROLSEX *lpInitC
 {
     struct qemu_InitCommonControlsEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INITCOMMONCONTROLSEX);
-    call.lpInitCtrls = (uint64_t)lpInitCtrls;
+    call.lpInitCtrls = (ULONG_PTR)lpInitCtrls;
 
     qemu_syscall(&call.super);
 
@@ -410,23 +410,23 @@ WINBASEAPI HWND WINAPI CreateToolbarEx (HWND hwnd, DWORD style, UINT wID, INT nB
 {
     struct qemu_CreateToolbarEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATETOOLBAREX);
-    call.hwnd = (uint64_t)hwnd;
-    call.style = (uint64_t)style;
-    call.wID = (uint64_t)wID;
-    call.nBitmaps = (uint64_t)nBitmaps;
-    call.hBMInst = (uint64_t)hBMInst;
-    call.wBMID = (uint64_t)wBMID;
-    call.lpButtons = (uint64_t)lpButtons;
-    call.iNumButtons = (uint64_t)iNumButtons;
-    call.dxButton = (uint64_t)dxButton;
-    call.dyButton = (uint64_t)dyButton;
-    call.dxBitmap = (uint64_t)dxBitmap;
-    call.dyBitmap = (uint64_t)dyBitmap;
-    call.uStructSize = (uint64_t)uStructSize;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.style = (ULONG_PTR)style;
+    call.wID = (ULONG_PTR)wID;
+    call.nBitmaps = (ULONG_PTR)nBitmaps;
+    call.hBMInst = (ULONG_PTR)hBMInst;
+    call.wBMID = (ULONG_PTR)wBMID;
+    call.lpButtons = (ULONG_PTR)lpButtons;
+    call.iNumButtons = (ULONG_PTR)iNumButtons;
+    call.dxButton = (ULONG_PTR)dxButton;
+    call.dyButton = (ULONG_PTR)dyButton;
+    call.dxBitmap = (ULONG_PTR)dxBitmap;
+    call.dyBitmap = (ULONG_PTR)dyBitmap;
+    call.uStructSize = (ULONG_PTR)uStructSize;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -435,7 +435,7 @@ void qemu_CreateToolbarEx(struct qemu_syscall *call)
 {
     struct qemu_CreateToolbarEx *c = (struct qemu_CreateToolbarEx *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateToolbarEx(QEMU_G2H(c->hwnd), c->style, c->wID, c->nBitmaps, QEMU_G2H(c->hBMInst), c->wBMID, QEMU_G2H(c->lpButtons), c->iNumButtons, c->dxButton, c->dyButton, c->dxBitmap, c->dyBitmap, c->uStructSize);
+    c->super.iret = (ULONG_PTR)CreateToolbarEx(QEMU_G2H(c->hwnd), c->style, c->wID, c->nBitmaps, QEMU_G2H(c->hBMInst), c->wBMID, QEMU_G2H(c->lpButtons), c->iNumButtons, c->dxButton, c->dyButton, c->dxBitmap, c->dyBitmap, c->uStructSize);
 }
 
 #endif
@@ -456,15 +456,15 @@ WINBASEAPI HBITMAP WINAPI CreateMappedBitmap (HINSTANCE hInstance, INT_PTR idBit
 {
     struct qemu_CreateMappedBitmap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEMAPPEDBITMAP);
-    call.hInstance = (uint64_t)hInstance;
-    call.idBitmap = (uint64_t)idBitmap;
-    call.wFlags = (uint64_t)wFlags;
-    call.lpColorMap = (uint64_t)lpColorMap;
-    call.iNumMaps = (uint64_t)iNumMaps;
+    call.hInstance = (ULONG_PTR)hInstance;
+    call.idBitmap = (ULONG_PTR)idBitmap;
+    call.wFlags = (ULONG_PTR)wFlags;
+    call.lpColorMap = (ULONG_PTR)lpColorMap;
+    call.iNumMaps = (ULONG_PTR)iNumMaps;
 
     qemu_syscall(&call.super);
 
-    return (HBITMAP)call.super.iret;
+    return (HBITMAP)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -473,7 +473,7 @@ void qemu_CreateMappedBitmap(struct qemu_syscall *call)
 {
     struct qemu_CreateMappedBitmap *c = (struct qemu_CreateMappedBitmap *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateMappedBitmap(QEMU_G2H(c->hInstance), c->idBitmap, c->wFlags, QEMU_G2H(c->lpColorMap), c->iNumMaps);
+    c->super.iret = (ULONG_PTR)CreateMappedBitmap(QEMU_G2H(c->hInstance), c->idBitmap, c->wFlags, QEMU_G2H(c->lpColorMap), c->iNumMaps);
 }
 
 #endif
@@ -497,18 +497,18 @@ WINBASEAPI HWND WINAPI CreateToolbar (HWND hwnd, DWORD style, UINT wID, INT nBit
 {
     struct qemu_CreateToolbar call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATETOOLBAR);
-    call.hwnd = (uint64_t)hwnd;
-    call.style = (uint64_t)style;
-    call.wID = (uint64_t)wID;
-    call.nBitmaps = (uint64_t)nBitmaps;
-    call.hBMInst = (uint64_t)hBMInst;
-    call.wBMID = (uint64_t)wBMID;
-    call.lpButtons = (uint64_t)lpButtons;
-    call.iNumButtons = (uint64_t)iNumButtons;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.style = (ULONG_PTR)style;
+    call.wID = (ULONG_PTR)wID;
+    call.nBitmaps = (ULONG_PTR)nBitmaps;
+    call.hBMInst = (ULONG_PTR)hBMInst;
+    call.wBMID = (ULONG_PTR)wBMID;
+    call.lpButtons = (ULONG_PTR)lpButtons;
+    call.iNumButtons = (ULONG_PTR)iNumButtons;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -517,7 +517,7 @@ void qemu_CreateToolbar(struct qemu_syscall *call)
 {
     struct qemu_CreateToolbar *c = (struct qemu_CreateToolbar *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateToolbar(QEMU_G2H(c->hwnd), c->style, c->wID, c->nBitmaps, QEMU_G2H(c->hBMInst), c->wBMID, QEMU_G2H(c->lpButtons), c->iNumButtons);
+    c->super.iret = (ULONG_PTR)CreateToolbar(QEMU_G2H(c->hwnd), c->style, c->wID, c->nBitmaps, QEMU_G2H(c->hBMInst), c->wBMID, QEMU_G2H(c->lpButtons), c->iNumButtons);
 }
 
 #endif
@@ -534,7 +534,7 @@ WINBASEAPI HRESULT WINAPI DllGetVersion (void *pdvi)
 {
     struct qemu_DllGetVersion call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DLLGETVERSION);
-    call.pdvi = (uint64_t)pdvi;
+    call.pdvi = (ULONG_PTR)pdvi;
 
     qemu_syscall(&call.super);
 
@@ -565,8 +565,8 @@ WINBASEAPI HRESULT WINAPI DllInstall(BOOL bInstall, LPCWSTR cmdline)
 {
     struct qemu_DllInstall call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DLLINSTALL);
-    call.bInstall = (uint64_t)bInstall;
-    call.cmdline = (uint64_t)cmdline;
+    call.bInstall = (ULONG_PTR)bInstall;
+    call.cmdline = (ULONG_PTR)cmdline;
 
     qemu_syscall(&call.super);
 
@@ -596,7 +596,7 @@ WINBASEAPI BOOL WINAPI _TrackMouseEvent (TRACKMOUSEEVENT *ptme)
 {
     struct qemu__TrackMouseEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL__TRACKMOUSEEVENT);
-    call.ptme = (uint64_t)ptme;
+    call.ptme = (ULONG_PTR)ptme;
 
     qemu_syscall(&call.super);
 
@@ -654,7 +654,7 @@ WINBASEAPI VOID WINAPI InitMUILanguage (LANGID uiLang)
 {
     struct qemu_InitMUILanguage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INITMUILANGUAGE);
-    call.uiLang = (uint64_t)uiLang;
+    call.uiLang = (ULONG_PTR)uiLang;
 
     qemu_syscall(&call.super);
 }
@@ -685,10 +685,10 @@ WINBASEAPI BOOL WINAPI SetWindowSubclass (HWND hWnd, SUBCLASSPROC pfnSubclass, U
 {
     struct qemu_SetWindowSubclass call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWSUBCLASS);
-    call.hWnd = (uint64_t)hWnd;
-    call.pfnSubclass = (uint64_t)pfnSubclass;
-    call.uIDSubclass = (uint64_t)uIDSubclass;
-    call.dwRef = (uint64_t)dwRef;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.pfnSubclass = (ULONG_PTR)pfnSubclass;
+    call.uIDSubclass = (ULONG_PTR)uIDSubclass;
+    call.dwRef = (ULONG_PTR)dwRef;
 
     qemu_syscall(&call.super);
 
@@ -721,10 +721,10 @@ WINBASEAPI BOOL WINAPI GetWindowSubclass (HWND hWnd, SUBCLASSPROC pfnSubclass, U
 {
     struct qemu_GetWindowSubclass call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETWINDOWSUBCLASS);
-    call.hWnd = (uint64_t)hWnd;
-    call.pfnSubclass = (uint64_t)pfnSubclass;
-    call.uID = (uint64_t)uID;
-    call.pdwRef = (uint64_t)pdwRef;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.pfnSubclass = (ULONG_PTR)pfnSubclass;
+    call.uID = (ULONG_PTR)uID;
+    call.pdwRef = (ULONG_PTR)pdwRef;
 
     qemu_syscall(&call.super);
 
@@ -756,9 +756,9 @@ WINBASEAPI BOOL WINAPI RemoveWindowSubclass(HWND hWnd, SUBCLASSPROC pfnSubclass,
 {
     struct qemu_RemoveWindowSubclass call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMOVEWINDOWSUBCLASS);
-    call.hWnd = (uint64_t)hWnd;
-    call.pfnSubclass = (uint64_t)pfnSubclass;
-    call.uID = (uint64_t)uID;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.pfnSubclass = (ULONG_PTR)pfnSubclass;
+    call.uID = (ULONG_PTR)uID;
 
     qemu_syscall(&call.super);
 
@@ -791,10 +791,10 @@ WINBASEAPI LRESULT WINAPI DefSubclassProc (HWND hWnd, UINT uMsg, WPARAM wParam, 
 {
     struct qemu_DefSubclassProc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEFSUBCLASSPROC);
-    call.hWnd = (uint64_t)hWnd;
-    call.uMsg = (uint64_t)uMsg;
-    call.wParam = (uint64_t)wParam;
-    call.lParam = (uint64_t)lParam;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.uMsg = (ULONG_PTR)uMsg;
+    call.wParam = (ULONG_PTR)wParam;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
@@ -825,8 +825,8 @@ WINBASEAPI BOOL WINAPI MirrorIcon(HICON *phicon1, HICON *phicon2)
 {
     struct qemu_MirrorIcon call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIRRORICON);
-    call.phicon1 = (uint64_t)phicon1;
-    call.phicon2 = (uint64_t)phicon2;
+    call.phicon1 = (ULONG_PTR)phicon1;
+    call.phicon2 = (ULONG_PTR)phicon2;
 
     qemu_syscall(&call.super);
 
@@ -859,8 +859,8 @@ WINBASEAPI LRESULT WINAPI SetPathWordBreakProc(HWND hwnd, BOOL bSet)
 {
     struct qemu_SetPathWordBreakProc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPATHWORDBREAKPROC);
-    call.hwnd = (uint64_t)hwnd;
-    call.bSet = (uint64_t)bSet;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.bSet = (ULONG_PTR)bSet;
 
     qemu_syscall(&call.super);
 
@@ -900,15 +900,15 @@ WINBASEAPI int WINAPI DrawShadowText(HDC hdc, LPCWSTR text, UINT length, RECT *r
 {
     struct qemu_DrawShadowText call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWSHADOWTEXT);
-    call.hdc = (uint64_t)hdc;
-    call.text = (uint64_t)text;
-    call.length = (uint64_t)length;
-    call.rect = (uint64_t)rect;
-    call.flags = (uint64_t)flags;
-    call.crText = (uint64_t)crText;
-    call.crShadow = (uint64_t)crShadow;
-    call.offset_x = (uint64_t)offset_x;
-    call.offset_y = (uint64_t)offset_y;
+    call.hdc = (ULONG_PTR)hdc;
+    call.text = (ULONG_PTR)text;
+    call.length = (ULONG_PTR)length;
+    call.rect = (ULONG_PTR)rect;
+    call.flags = (ULONG_PTR)flags;
+    call.crText = (ULONG_PTR)crText;
+    call.crShadow = (ULONG_PTR)crShadow;
+    call.offset_x = (ULONG_PTR)offset_x;
+    call.offset_y = (ULONG_PTR)offset_y;
 
     qemu_syscall(&call.super);
 
@@ -942,11 +942,11 @@ WINBASEAPI HRESULT WINAPI LoadIconWithScaleDown(HINSTANCE hinst, const WCHAR *na
 {
     struct qemu_LoadIconWithScaleDown call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADICONWITHSCALEDOWN);
-    call.hinst = (uint64_t)hinst;
-    call.name = (uint64_t)name;
-    call.cx = (uint64_t)cx;
-    call.cy = (uint64_t)cy;
-    call.icon = (uint64_t)icon;
+    call.hinst = (ULONG_PTR)hinst;
+    call.name = (ULONG_PTR)name;
+    call.cx = (ULONG_PTR)cx;
+    call.cy = (ULONG_PTR)cy;
+    call.icon = (ULONG_PTR)icon;
 
     qemu_syscall(&call.super);
 
@@ -979,10 +979,10 @@ WINBASEAPI HRESULT WINAPI LoadIconMetric(HINSTANCE hinst, const WCHAR *name, int
 {
     struct qemu_LoadIconMetric call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADICONMETRIC);
-    call.hinst = (uint64_t)hinst;
-    call.name = (uint64_t)name;
-    call.size = (uint64_t)size;
-    call.icon = (uint64_t)icon;
+    call.hinst = (ULONG_PTR)hinst;
+    call.name = (ULONG_PTR)name;
+    call.size = (ULONG_PTR)size;
+    call.icon = (ULONG_PTR)icon;
 
     qemu_syscall(&call.super);
 

@@ -49,7 +49,7 @@ WINBASEAPI LPVOID WINAPI Alloc (DWORD dwSize)
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -59,7 +59,7 @@ void qemu_Alloc(struct qemu_syscall *call)
 {
     struct qemu_Alloc *c = (struct qemu_Alloc *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)Alloc(c->dwSize);
+    c->super.iret = (ULONG_PTR)Alloc(c->dwSize);
 }
 
 #endif
@@ -82,7 +82,7 @@ WINBASEAPI LPVOID WINAPI ReAlloc (LPVOID lpSrc, DWORD dwSize)
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -92,7 +92,7 @@ void qemu_ReAlloc(struct qemu_syscall *call)
 {
     struct qemu_ReAlloc *c = (struct qemu_ReAlloc *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ReAlloc(QEMU_G2H(c->lpSrc), c->dwSize);
+    c->super.iret = (ULONG_PTR)ReAlloc(QEMU_G2H(c->lpSrc), c->dwSize);
 }
 
 #endif
@@ -451,7 +451,7 @@ WINBASEAPI HANDLE WINAPI CreateMRUListLazyW (const MRUINFOW *infoW, DWORD dwPara
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -461,7 +461,7 @@ void qemu_CreateMRUListLazyW(struct qemu_syscall *call)
 {
     struct qemu_CreateMRUListLazyW *c = (struct qemu_CreateMRUListLazyW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateMRUListLazyW(QEMU_G2H(c->infoW), c->dwParam2, c->dwParam3, c->dwParam4);
+    c->super.iret = (ULONG_PTR)CreateMRUListLazyW(QEMU_G2H(c->infoW), c->dwParam2, c->dwParam3, c->dwParam4);
 }
 
 #endif
@@ -488,7 +488,7 @@ WINBASEAPI HANDLE WINAPI CreateMRUListLazyA (const MRUINFOA *lpcml, DWORD dwPara
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -498,7 +498,7 @@ void qemu_CreateMRUListLazyA(struct qemu_syscall *call)
 {
     struct qemu_CreateMRUListLazyA *c = (struct qemu_CreateMRUListLazyA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateMRUListLazyA(QEMU_G2H(c->lpcml), c->dwParam2, c->dwParam3, c->dwParam4);
+    c->super.iret = (ULONG_PTR)CreateMRUListLazyA(QEMU_G2H(c->lpcml), c->dwParam2, c->dwParam3, c->dwParam4);
 }
 
 #endif
@@ -519,7 +519,7 @@ WINBASEAPI HANDLE WINAPI CreateMRUListW (const MRUINFOW *infoW)
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -529,7 +529,7 @@ void qemu_CreateMRUListW(struct qemu_syscall *call)
 {
     struct qemu_CreateMRUListW *c = (struct qemu_CreateMRUListW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateMRUListW(QEMU_G2H(c->infoW));
+    c->super.iret = (ULONG_PTR)CreateMRUListW(QEMU_G2H(c->infoW));
 }
 
 #endif
@@ -550,7 +550,7 @@ WINBASEAPI HANDLE WINAPI CreateMRUListA (const MRUINFOA *lpcml)
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -560,7 +560,7 @@ void qemu_CreateMRUListA(struct qemu_syscall *call)
 {
     struct qemu_CreateMRUListA *c = (struct qemu_CreateMRUListA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CreateMRUListA(QEMU_G2H(c->lpcml));
+    c->super.iret = (ULONG_PTR)CreateMRUListA(QEMU_G2H(c->lpcml));
 }
 
 #endif

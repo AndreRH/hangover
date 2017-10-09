@@ -189,7 +189,7 @@ WINBASEAPI LPSTR WINAPI StrChrA(LPCSTR lpszStr, WORD ch)
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -198,7 +198,7 @@ void qemu_StrChrA(struct qemu_syscall *call)
 {
     struct qemu_StrChrA *c = (struct qemu_StrChrA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrChrA(QEMU_G2H(c->lpszStr), c->ch);
+    c->super.iret = (ULONG_PTR)StrChrA(QEMU_G2H(c->lpszStr), c->ch);
 }
 
 #endif
@@ -289,7 +289,7 @@ WINBASEAPI LPSTR WINAPI StrStrIA(LPCSTR lpszStr, LPCSTR lpszSearch)
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -298,7 +298,7 @@ void qemu_StrStrIA(struct qemu_syscall *call)
 {
     struct qemu_StrStrIA *c = (struct qemu_StrStrIA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrStrIA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSearch));
+    c->super.iret = (ULONG_PTR)StrStrIA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSearch));
 }
 
 #endif
@@ -351,7 +351,7 @@ WINBASEAPI LPWSTR WINAPI StrStrIW(LPCWSTR lpszStr, LPCWSTR lpszSearch)
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -360,7 +360,7 @@ void qemu_StrStrIW(struct qemu_syscall *call)
 {
     struct qemu_StrStrIW *c = (struct qemu_StrStrIW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrStrIW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSearch));
+    c->super.iret = (ULONG_PTR)StrStrIW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSearch));
 }
 
 #endif
@@ -445,7 +445,7 @@ WINBASEAPI LPWSTR WINAPI StrChrW(LPCWSTR lpszStr, WCHAR ch)
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -454,7 +454,7 @@ void qemu_StrChrW(struct qemu_syscall *call)
 {
     struct qemu_StrChrW *c = (struct qemu_StrChrW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrChrW(QEMU_G2H(c->lpszStr), c->ch);
+    c->super.iret = (ULONG_PTR)StrChrW(QEMU_G2H(c->lpszStr), c->ch);
 }
 
 #endif
@@ -547,7 +547,7 @@ WINBASEAPI LPSTR WINAPI StrRChrA(LPCSTR lpszStr, LPCSTR lpszEnd, WORD ch)
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -556,7 +556,7 @@ void qemu_StrRChrA(struct qemu_syscall *call)
 {
     struct qemu_StrRChrA *c = (struct qemu_StrRChrA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrRChrA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszEnd), c->ch);
+    c->super.iret = (ULONG_PTR)StrRChrA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszEnd), c->ch);
 }
 
 #endif
@@ -581,7 +581,7 @@ WINBASEAPI LPWSTR WINAPI StrRChrW(LPCWSTR str, LPCWSTR end, WORD ch)
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -590,7 +590,7 @@ void qemu_StrRChrW(struct qemu_syscall *call)
 {
     struct qemu_StrRChrW *c = (struct qemu_StrRChrW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrRChrW(QEMU_G2H(c->str), QEMU_G2H(c->end), c->ch);
+    c->super.iret = (ULONG_PTR)StrRChrW(QEMU_G2H(c->str), QEMU_G2H(c->end), c->ch);
 }
 
 #endif
@@ -613,7 +613,7 @@ WINBASEAPI LPSTR WINAPI StrStrA(LPCSTR lpszStr, LPCSTR lpszSearch)
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -622,7 +622,7 @@ void qemu_StrStrA(struct qemu_syscall *call)
 {
     struct qemu_StrStrA *c = (struct qemu_StrStrA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrStrA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSearch));
+    c->super.iret = (ULONG_PTR)StrStrA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSearch));
 }
 
 #endif
@@ -645,7 +645,7 @@ WINBASEAPI LPWSTR WINAPI StrStrW(LPCWSTR lpszStr, LPCWSTR lpszSearch)
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -654,7 +654,7 @@ void qemu_StrStrW(struct qemu_syscall *call)
 {
     struct qemu_StrStrW *c = (struct qemu_StrStrW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrStrW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSearch));
+    c->super.iret = (ULONG_PTR)StrStrW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSearch));
 }
 
 #endif
@@ -677,7 +677,7 @@ WINBASEAPI LPSTR WINAPI StrChrIA(LPCSTR lpszStr, WORD ch)
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -686,7 +686,7 @@ void qemu_StrChrIA(struct qemu_syscall *call)
 {
     struct qemu_StrChrIA *c = (struct qemu_StrChrIA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrChrIA(QEMU_G2H(c->lpszStr), c->ch);
+    c->super.iret = (ULONG_PTR)StrChrIA(QEMU_G2H(c->lpszStr), c->ch);
 }
 
 #endif
@@ -709,7 +709,7 @@ WINBASEAPI LPWSTR WINAPI StrChrIW(LPCWSTR lpszStr, WCHAR ch)
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -718,7 +718,7 @@ void qemu_StrChrIW(struct qemu_syscall *call)
 {
     struct qemu_StrChrIW *c = (struct qemu_StrChrIW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrChrIW(QEMU_G2H(c->lpszStr), c->ch);
+    c->super.iret = (ULONG_PTR)StrChrIW(QEMU_G2H(c->lpszStr), c->ch);
 }
 
 #endif
@@ -743,7 +743,7 @@ WINBASEAPI LPSTR WINAPI StrRStrIA(LPCSTR lpszStr, LPCSTR lpszEnd, LPCSTR lpszSea
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -752,7 +752,7 @@ void qemu_StrRStrIA(struct qemu_syscall *call)
 {
     struct qemu_StrRStrIA *c = (struct qemu_StrRStrIA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrRStrIA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszEnd), QEMU_G2H(c->lpszSearch));
+    c->super.iret = (ULONG_PTR)StrRStrIA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszEnd), QEMU_G2H(c->lpszSearch));
 }
 
 #endif
@@ -777,7 +777,7 @@ WINBASEAPI LPWSTR WINAPI StrRStrIW(LPCWSTR lpszStr, LPCWSTR lpszEnd, LPCWSTR lps
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -786,7 +786,7 @@ void qemu_StrRStrIW(struct qemu_syscall *call)
 {
     struct qemu_StrRStrIW *c = (struct qemu_StrRStrIW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrRStrIW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszEnd), QEMU_G2H(c->lpszSearch));
+    c->super.iret = (ULONG_PTR)StrRStrIW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszEnd), QEMU_G2H(c->lpszSearch));
 }
 
 #endif
@@ -875,7 +875,7 @@ WINBASEAPI LPSTR WINAPI StrRChrIA(LPCSTR lpszStr, LPCSTR lpszEnd, WORD ch)
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -884,7 +884,7 @@ void qemu_StrRChrIA(struct qemu_syscall *call)
 {
     struct qemu_StrRChrIA *c = (struct qemu_StrRChrIA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrRChrIA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszEnd), c->ch);
+    c->super.iret = (ULONG_PTR)StrRChrIA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszEnd), c->ch);
 }
 
 #endif
@@ -909,7 +909,7 @@ WINBASEAPI LPWSTR WINAPI StrRChrIW(LPCWSTR str, LPCWSTR end, WORD ch)
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -918,7 +918,7 @@ void qemu_StrRChrIW(struct qemu_syscall *call)
 {
     struct qemu_StrRChrIW *c = (struct qemu_StrRChrIW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrRChrIW(QEMU_G2H(c->str), QEMU_G2H(c->end), c->ch);
+    c->super.iret = (ULONG_PTR)StrRChrIW(QEMU_G2H(c->str), QEMU_G2H(c->end), c->ch);
 }
 
 #endif
