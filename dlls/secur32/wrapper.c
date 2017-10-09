@@ -53,15 +53,15 @@ SECURITY_STATUS WINAPI AcquireCredentialsHandleA(SEC_CHAR *pszPrincipal,SEC_CHAR
 {
     struct qemu_AcquireCredentialsHandleA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACQUIRECREDENTIALSHANDLEA);
-    call.pszPrincipal = (uint64_t)pszPrincipal;
-    call.pszPackage = (uint64_t)pszPackage;
-    call.fCredentialUse = (uint64_t)fCredentialUse;
-    call.pvLogonId = (uint64_t)pvLogonId;
-    call.pAuthData = (uint64_t)pAuthData;
-    call.pGetKeyFn = (uint64_t)pGetKeyFn;
-    call.pvGetKeyArgument = (uint64_t)pvGetKeyArgument;
-    call.phCredential = (uint64_t)phCredential;
-    call.ptsExpiry = (uint64_t)ptsExpiry;
+    call.pszPrincipal = (ULONG_PTR)pszPrincipal;
+    call.pszPackage = (ULONG_PTR)pszPackage;
+    call.fCredentialUse = (ULONG_PTR)fCredentialUse;
+    call.pvLogonId = (ULONG_PTR)pvLogonId;
+    call.pAuthData = (ULONG_PTR)pAuthData;
+    call.pGetKeyFn = (ULONG_PTR)pGetKeyFn;
+    call.pvGetKeyArgument = (ULONG_PTR)pvGetKeyArgument;
+    call.phCredential = (ULONG_PTR)phCredential;
+    call.ptsExpiry = (ULONG_PTR)ptsExpiry;
 
     qemu_syscall(&call.super);
 
@@ -99,15 +99,15 @@ KSECDDDECLSPEC SECURITY_STATUS WINAPI AcquireCredentialsHandleW(SEC_WCHAR *pszPr
 {
     struct qemu_AcquireCredentialsHandleW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACQUIRECREDENTIALSHANDLEW);
-    call.pszPrincipal = (uint64_t)pszPrincipal;
-    call.pszPackage = (uint64_t)pszPackage;
-    call.fCredentialUse = (uint64_t)fCredentialUse;
-    call.pvLogonId = (uint64_t)pvLogonId;
-    call.pAuthData = (uint64_t)pAuthData;
-    call.pGetKeyFn = (uint64_t)pGetKeyFn;
-    call.pvGetKeyArgument = (uint64_t)pvGetKeyArgument;
-    call.phCredential = (uint64_t)phCredential;
-    call.ptsExpiry = (uint64_t)ptsExpiry;
+    call.pszPrincipal = (ULONG_PTR)pszPrincipal;
+    call.pszPackage = (ULONG_PTR)pszPackage;
+    call.fCredentialUse = (ULONG_PTR)fCredentialUse;
+    call.pvLogonId = (ULONG_PTR)pvLogonId;
+    call.pAuthData = (ULONG_PTR)pAuthData;
+    call.pGetKeyFn = (ULONG_PTR)pGetKeyFn;
+    call.pvGetKeyArgument = (ULONG_PTR)pvGetKeyArgument;
+    call.phCredential = (ULONG_PTR)phCredential;
+    call.ptsExpiry = (ULONG_PTR)ptsExpiry;
 
     qemu_syscall(&call.super);
 
@@ -137,7 +137,7 @@ WINBASEAPI SECURITY_STATUS WINAPI FreeCredentialsHandle(PCredHandle phCredential
 {
     struct qemu_FreeCredentialsHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FREECREDENTIALSHANDLE);
-    call.phCredential = (uint64_t)phCredential;
+    call.phCredential = (ULONG_PTR)phCredential;
 
     qemu_syscall(&call.super);
 
@@ -169,9 +169,9 @@ WINBASEAPI SECURITY_STATUS WINAPI QueryCredentialsAttributesA(PCredHandle phCred
 {
     struct qemu_QueryCredentialsAttributesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYCREDENTIALSATTRIBUTESA);
-    call.phCredential = (uint64_t)phCredential;
-    call.ulAttribute = (uint64_t)ulAttribute;
-    call.pBuffer = (uint64_t)pBuffer;
+    call.phCredential = (ULONG_PTR)phCredential;
+    call.ulAttribute = (ULONG_PTR)ulAttribute;
+    call.pBuffer = (ULONG_PTR)pBuffer;
 
     qemu_syscall(&call.super);
 
@@ -203,9 +203,9 @@ WINBASEAPI SECURITY_STATUS WINAPI QueryCredentialsAttributesW(PCredHandle phCred
 {
     struct qemu_QueryCredentialsAttributesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYCREDENTIALSATTRIBUTESW);
-    call.phCredential = (uint64_t)phCredential;
-    call.ulAttribute = (uint64_t)ulAttribute;
-    call.pBuffer = (uint64_t)pBuffer;
+    call.phCredential = (ULONG_PTR)phCredential;
+    call.ulAttribute = (ULONG_PTR)ulAttribute;
+    call.pBuffer = (ULONG_PTR)pBuffer;
 
     qemu_syscall(&call.super);
 
@@ -246,18 +246,18 @@ WINBASEAPI SECURITY_STATUS WINAPI InitializeSecurityContextA(PCredHandle phCrede
 {
     struct qemu_InitializeSecurityContextA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INITIALIZESECURITYCONTEXTA);
-    call.phCredential = (uint64_t)phCredential;
-    call.phContext = (uint64_t)phContext;
-    call.pszTargetName = (uint64_t)pszTargetName;
-    call.fContextReq = (uint64_t)fContextReq;
-    call.Reserved1 = (uint64_t)Reserved1;
-    call.TargetDataRep = (uint64_t)TargetDataRep;
-    call.pInput = (uint64_t)pInput;
-    call.Reserved2 = (uint64_t)Reserved2;
-    call.phNewContext = (uint64_t)phNewContext;
-    call.pOutput = (uint64_t)pOutput;
-    call.pfContextAttr = (uint64_t)pfContextAttr;
-    call.ptsExpiry = (uint64_t)ptsExpiry;
+    call.phCredential = (ULONG_PTR)phCredential;
+    call.phContext = (ULONG_PTR)phContext;
+    call.pszTargetName = (ULONG_PTR)pszTargetName;
+    call.fContextReq = (ULONG_PTR)fContextReq;
+    call.Reserved1 = (ULONG_PTR)Reserved1;
+    call.TargetDataRep = (ULONG_PTR)TargetDataRep;
+    call.pInput = (ULONG_PTR)pInput;
+    call.Reserved2 = (ULONG_PTR)Reserved2;
+    call.phNewContext = (ULONG_PTR)phNewContext;
+    call.pOutput = (ULONG_PTR)pOutput;
+    call.pfContextAttr = (ULONG_PTR)pfContextAttr;
+    call.ptsExpiry = (ULONG_PTR)ptsExpiry;
 
     qemu_syscall(&call.super);
 
@@ -298,18 +298,18 @@ WINBASEAPI SECURITY_STATUS WINAPI InitializeSecurityContextW(PCredHandle phCrede
 {
     struct qemu_InitializeSecurityContextW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INITIALIZESECURITYCONTEXTW);
-    call.phCredential = (uint64_t)phCredential;
-    call.phContext = (uint64_t)phContext;
-    call.pszTargetName = (uint64_t)pszTargetName;
-    call.fContextReq = (uint64_t)fContextReq;
-    call.Reserved1 = (uint64_t)Reserved1;
-    call.TargetDataRep = (uint64_t)TargetDataRep;
-    call.pInput = (uint64_t)pInput;
-    call.Reserved2 = (uint64_t)Reserved2;
-    call.phNewContext = (uint64_t)phNewContext;
-    call.pOutput = (uint64_t)pOutput;
-    call.pfContextAttr = (uint64_t)pfContextAttr;
-    call.ptsExpiry = (uint64_t)ptsExpiry;
+    call.phCredential = (ULONG_PTR)phCredential;
+    call.phContext = (ULONG_PTR)phContext;
+    call.pszTargetName = (ULONG_PTR)pszTargetName;
+    call.fContextReq = (ULONG_PTR)fContextReq;
+    call.Reserved1 = (ULONG_PTR)Reserved1;
+    call.TargetDataRep = (ULONG_PTR)TargetDataRep;
+    call.pInput = (ULONG_PTR)pInput;
+    call.Reserved2 = (ULONG_PTR)Reserved2;
+    call.phNewContext = (ULONG_PTR)phNewContext;
+    call.pOutput = (ULONG_PTR)pOutput;
+    call.pfContextAttr = (ULONG_PTR)pfContextAttr;
+    call.ptsExpiry = (ULONG_PTR)ptsExpiry;
 
     qemu_syscall(&call.super);
 
@@ -347,15 +347,15 @@ WINBASEAPI SECURITY_STATUS WINAPI AcceptSecurityContext(PCredHandle phCredential
 {
     struct qemu_AcceptSecurityContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACCEPTSECURITYCONTEXT);
-    call.phCredential = (uint64_t)phCredential;
-    call.phContext = (uint64_t)phContext;
-    call.pInput = (uint64_t)pInput;
-    call.fContextReq = (uint64_t)fContextReq;
-    call.TargetDataRep = (uint64_t)TargetDataRep;
-    call.phNewContext = (uint64_t)phNewContext;
-    call.pOutput = (uint64_t)pOutput;
-    call.pfContextAttr = (uint64_t)pfContextAttr;
-    call.ptsExpiry = (uint64_t)ptsExpiry;
+    call.phCredential = (ULONG_PTR)phCredential;
+    call.phContext = (ULONG_PTR)phContext;
+    call.pInput = (ULONG_PTR)pInput;
+    call.fContextReq = (ULONG_PTR)fContextReq;
+    call.TargetDataRep = (ULONG_PTR)TargetDataRep;
+    call.phNewContext = (ULONG_PTR)phNewContext;
+    call.pOutput = (ULONG_PTR)pOutput;
+    call.pfContextAttr = (ULONG_PTR)pfContextAttr;
+    call.ptsExpiry = (ULONG_PTR)ptsExpiry;
 
     qemu_syscall(&call.super);
 
@@ -386,8 +386,8 @@ WINBASEAPI SECURITY_STATUS WINAPI CompleteAuthToken(PCtxtHandle phContext, PSecB
 {
     struct qemu_CompleteAuthToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COMPLETEAUTHTOKEN);
-    call.phContext = (uint64_t)phContext;
-    call.pToken = (uint64_t)pToken;
+    call.phContext = (ULONG_PTR)phContext;
+    call.pToken = (ULONG_PTR)pToken;
 
     qemu_syscall(&call.super);
 
@@ -417,7 +417,7 @@ WINBASEAPI SECURITY_STATUS WINAPI DeleteSecurityContext(PCtxtHandle phContext)
 {
     struct qemu_DeleteSecurityContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETESECURITYCONTEXT);
-    call.phContext = (uint64_t)phContext;
+    call.phContext = (ULONG_PTR)phContext;
 
     qemu_syscall(&call.super);
 
@@ -448,8 +448,8 @@ WINBASEAPI SECURITY_STATUS WINAPI ApplyControlToken(PCtxtHandle phContext, PSecB
 {
     struct qemu_ApplyControlToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_APPLYCONTROLTOKEN);
-    call.phContext = (uint64_t)phContext;
-    call.pInput = (uint64_t)pInput;
+    call.phContext = (ULONG_PTR)phContext;
+    call.pInput = (ULONG_PTR)pInput;
 
     qemu_syscall(&call.super);
 
@@ -481,9 +481,9 @@ WINBASEAPI SECURITY_STATUS WINAPI QueryContextAttributesA(PCtxtHandle phContext,
 {
     struct qemu_QueryContextAttributesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYCONTEXTATTRIBUTESA);
-    call.phContext = (uint64_t)phContext;
-    call.ulAttribute = (uint64_t)ulAttribute;
-    call.pBuffer = (uint64_t)pBuffer;
+    call.phContext = (ULONG_PTR)phContext;
+    call.ulAttribute = (ULONG_PTR)ulAttribute;
+    call.pBuffer = (ULONG_PTR)pBuffer;
 
     qemu_syscall(&call.super);
 
@@ -515,9 +515,9 @@ WINBASEAPI SECURITY_STATUS WINAPI QueryContextAttributesW(PCtxtHandle phContext,
 {
     struct qemu_QueryContextAttributesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYCONTEXTATTRIBUTESW);
-    call.phContext = (uint64_t)phContext;
-    call.ulAttribute = (uint64_t)ulAttribute;
-    call.pBuffer = (uint64_t)pBuffer;
+    call.phContext = (ULONG_PTR)phContext;
+    call.ulAttribute = (ULONG_PTR)ulAttribute;
+    call.pBuffer = (ULONG_PTR)pBuffer;
 
     qemu_syscall(&call.super);
 
@@ -547,7 +547,7 @@ WINBASEAPI SECURITY_STATUS WINAPI ImpersonateSecurityContext(PCtxtHandle phConte
 {
     struct qemu_ImpersonateSecurityContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMPERSONATESECURITYCONTEXT);
-    call.phContext = (uint64_t)phContext;
+    call.phContext = (ULONG_PTR)phContext;
 
     qemu_syscall(&call.super);
 
@@ -577,7 +577,7 @@ WINBASEAPI SECURITY_STATUS WINAPI RevertSecurityContext(PCtxtHandle phContext)
 {
     struct qemu_RevertSecurityContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REVERTSECURITYCONTEXT);
-    call.phContext = (uint64_t)phContext;
+    call.phContext = (ULONG_PTR)phContext;
 
     qemu_syscall(&call.super);
 
@@ -610,10 +610,10 @@ WINBASEAPI SECURITY_STATUS WINAPI MakeSignature(PCtxtHandle phContext, ULONG fQO
 {
     struct qemu_MakeSignature call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MAKESIGNATURE);
-    call.phContext = (uint64_t)phContext;
-    call.fQOP = (uint64_t)fQOP;
-    call.pMessage = (uint64_t)pMessage;
-    call.MessageSeqNo = (uint64_t)MessageSeqNo;
+    call.phContext = (ULONG_PTR)phContext;
+    call.fQOP = (ULONG_PTR)fQOP;
+    call.pMessage = (ULONG_PTR)pMessage;
+    call.MessageSeqNo = (ULONG_PTR)MessageSeqNo;
 
     qemu_syscall(&call.super);
 
@@ -646,10 +646,10 @@ WINBASEAPI SECURITY_STATUS WINAPI VerifySignature(PCtxtHandle phContext, PSecBuf
 {
     struct qemu_VerifySignature call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VERIFYSIGNATURE);
-    call.phContext = (uint64_t)phContext;
-    call.pMessage = (uint64_t)pMessage;
-    call.MessageSeqNo = (uint64_t)MessageSeqNo;
-    call.pfQOP = (uint64_t)pfQOP;
+    call.phContext = (ULONG_PTR)phContext;
+    call.pMessage = (ULONG_PTR)pMessage;
+    call.MessageSeqNo = (ULONG_PTR)MessageSeqNo;
+    call.pfQOP = (ULONG_PTR)pfQOP;
 
     qemu_syscall(&call.super);
 
@@ -680,8 +680,8 @@ WINBASEAPI SECURITY_STATUS WINAPI QuerySecurityPackageInfoA(SEC_CHAR *pszPackage
 {
     struct qemu_QuerySecurityPackageInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYSECURITYPACKAGEINFOA);
-    call.pszPackageName = (uint64_t)pszPackageName;
-    call.ppPackageInfo = (uint64_t)ppPackageInfo;
+    call.pszPackageName = (ULONG_PTR)pszPackageName;
+    call.ppPackageInfo = (ULONG_PTR)ppPackageInfo;
 
     qemu_syscall(&call.super);
 
@@ -712,8 +712,8 @@ WINBASEAPI SECURITY_STATUS WINAPI QuerySecurityPackageInfoW(SEC_WCHAR *pszPackag
 {
     struct qemu_QuerySecurityPackageInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYSECURITYPACKAGEINFOW);
-    call.pszPackageName = (uint64_t)pszPackageName;
-    call.ppPackageInfo = (uint64_t)ppPackageInfo;
+    call.pszPackageName = (ULONG_PTR)pszPackageName;
+    call.ppPackageInfo = (ULONG_PTR)ppPackageInfo;
 
     qemu_syscall(&call.super);
 
@@ -746,10 +746,10 @@ WINBASEAPI SECURITY_STATUS WINAPI ExportSecurityContext(PCtxtHandle phContext, U
 {
     struct qemu_ExportSecurityContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXPORTSECURITYCONTEXT);
-    call.phContext = (uint64_t)phContext;
-    call.fFlags = (uint64_t)fFlags;
-    call.pPackedContext = (uint64_t)pPackedContext;
-    call.pToken = (uint64_t)pToken;
+    call.phContext = (ULONG_PTR)phContext;
+    call.fFlags = (ULONG_PTR)fFlags;
+    call.pPackedContext = (ULONG_PTR)pPackedContext;
+    call.pToken = (ULONG_PTR)pToken;
 
     qemu_syscall(&call.super);
 
@@ -782,10 +782,10 @@ WINBASEAPI SECURITY_STATUS WINAPI ImportSecurityContextA(SEC_CHAR *pszPackage, P
 {
     struct qemu_ImportSecurityContextA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMPORTSECURITYCONTEXTA);
-    call.pszPackage = (uint64_t)pszPackage;
-    call.pPackedContext = (uint64_t)pPackedContext;
-    call.Token = (uint64_t)Token;
-    call.phContext = (uint64_t)phContext;
+    call.pszPackage = (ULONG_PTR)pszPackage;
+    call.pPackedContext = (ULONG_PTR)pPackedContext;
+    call.Token = (ULONG_PTR)Token;
+    call.phContext = (ULONG_PTR)phContext;
 
     qemu_syscall(&call.super);
 
@@ -818,10 +818,10 @@ WINBASEAPI SECURITY_STATUS WINAPI ImportSecurityContextW(SEC_WCHAR *pszPackage, 
 {
     struct qemu_ImportSecurityContextW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMPORTSECURITYCONTEXTW);
-    call.pszPackage = (uint64_t)pszPackage;
-    call.pPackedContext = (uint64_t)pPackedContext;
-    call.Token = (uint64_t)Token;
-    call.phContext = (uint64_t)phContext;
+    call.pszPackage = (ULONG_PTR)pszPackage;
+    call.pPackedContext = (ULONG_PTR)pPackedContext;
+    call.Token = (ULONG_PTR)Token;
+    call.phContext = (ULONG_PTR)phContext;
 
     qemu_syscall(&call.super);
 
@@ -858,14 +858,14 @@ WINBASEAPI SECURITY_STATUS WINAPI AddCredentialsA(PCredHandle hCredentials, SEC_
 {
     struct qemu_AddCredentialsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDCREDENTIALSA);
-    call.hCredentials = (uint64_t)hCredentials;
-    call.pszPrincipal = (uint64_t)pszPrincipal;
-    call.pszPackage = (uint64_t)pszPackage;
-    call.fCredentialUse = (uint64_t)fCredentialUse;
-    call.pAuthData = (uint64_t)pAuthData;
-    call.pGetKeyFn = (uint64_t)pGetKeyFn;
-    call.pvGetKeyArgument = (uint64_t)pvGetKeyArgument;
-    call.ptsExpiry = (uint64_t)ptsExpiry;
+    call.hCredentials = (ULONG_PTR)hCredentials;
+    call.pszPrincipal = (ULONG_PTR)pszPrincipal;
+    call.pszPackage = (ULONG_PTR)pszPackage;
+    call.fCredentialUse = (ULONG_PTR)fCredentialUse;
+    call.pAuthData = (ULONG_PTR)pAuthData;
+    call.pGetKeyFn = (ULONG_PTR)pGetKeyFn;
+    call.pvGetKeyArgument = (ULONG_PTR)pvGetKeyArgument;
+    call.ptsExpiry = (ULONG_PTR)ptsExpiry;
 
     qemu_syscall(&call.super);
 
@@ -902,14 +902,14 @@ WINBASEAPI SECURITY_STATUS WINAPI AddCredentialsW(PCredHandle hCredentials, SEC_
 {
     struct qemu_AddCredentialsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDCREDENTIALSW);
-    call.hCredentials = (uint64_t)hCredentials;
-    call.pszPrincipal = (uint64_t)pszPrincipal;
-    call.pszPackage = (uint64_t)pszPackage;
-    call.fCredentialUse = (uint64_t)fCredentialUse;
-    call.pAuthData = (uint64_t)pAuthData;
-    call.pGetKeyFn = (uint64_t)pGetKeyFn;
-    call.pvGetKeyArgument = (uint64_t)pvGetKeyArgument;
-    call.ptsExpiry = (uint64_t)ptsExpiry;
+    call.hCredentials = (ULONG_PTR)hCredentials;
+    call.pszPrincipal = (ULONG_PTR)pszPrincipal;
+    call.pszPackage = (ULONG_PTR)pszPackage;
+    call.fCredentialUse = (ULONG_PTR)fCredentialUse;
+    call.pAuthData = (ULONG_PTR)pAuthData;
+    call.pGetKeyFn = (ULONG_PTR)pGetKeyFn;
+    call.pvGetKeyArgument = (ULONG_PTR)pvGetKeyArgument;
+    call.ptsExpiry = (ULONG_PTR)ptsExpiry;
 
     qemu_syscall(&call.super);
 
@@ -940,8 +940,8 @@ WINBASEAPI SECURITY_STATUS WINAPI QuerySecurityContextToken(PCtxtHandle phContex
 {
     struct qemu_QuerySecurityContextToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYSECURITYCONTEXTTOKEN);
-    call.phContext = (uint64_t)phContext;
-    call.phToken = (uint64_t)phToken;
+    call.phContext = (ULONG_PTR)phContext;
+    call.phToken = (ULONG_PTR)phToken;
 
     qemu_syscall(&call.super);
 
@@ -974,10 +974,10 @@ WINBASEAPI SECURITY_STATUS WINAPI EncryptMessage(PCtxtHandle phContext, ULONG fQ
 {
     struct qemu_EncryptMessage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENCRYPTMESSAGE);
-    call.phContext = (uint64_t)phContext;
-    call.fQOP = (uint64_t)fQOP;
-    call.pMessage = (uint64_t)pMessage;
-    call.MessageSeqNo = (uint64_t)MessageSeqNo;
+    call.phContext = (ULONG_PTR)phContext;
+    call.fQOP = (ULONG_PTR)fQOP;
+    call.pMessage = (ULONG_PTR)pMessage;
+    call.MessageSeqNo = (ULONG_PTR)MessageSeqNo;
 
     qemu_syscall(&call.super);
 
@@ -1010,10 +1010,10 @@ WINBASEAPI SECURITY_STATUS WINAPI DecryptMessage(PCtxtHandle phContext, PSecBuff
 {
     struct qemu_DecryptMessage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DECRYPTMESSAGE);
-    call.phContext = (uint64_t)phContext;
-    call.pMessage = (uint64_t)pMessage;
-    call.MessageSeqNo = (uint64_t)MessageSeqNo;
-    call.pfQOP = (uint64_t)pfQOP;
+    call.phContext = (ULONG_PTR)phContext;
+    call.pMessage = (ULONG_PTR)pMessage;
+    call.MessageSeqNo = (ULONG_PTR)MessageSeqNo;
+    call.pfQOP = (ULONG_PTR)pfQOP;
 
     qemu_syscall(&call.super);
 
@@ -1046,10 +1046,10 @@ WINBASEAPI SECURITY_STATUS WINAPI SetContextAttributesA(PCtxtHandle phContext, U
 {
     struct qemu_SetContextAttributesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCONTEXTATTRIBUTESA);
-    call.phContext = (uint64_t)phContext;
-    call.ulAttribute = (uint64_t)ulAttribute;
-    call.pBuffer = (uint64_t)pBuffer;
-    call.cbBuffer = (uint64_t)cbBuffer;
+    call.phContext = (ULONG_PTR)phContext;
+    call.ulAttribute = (ULONG_PTR)ulAttribute;
+    call.pBuffer = (ULONG_PTR)pBuffer;
+    call.cbBuffer = (ULONG_PTR)cbBuffer;
 
     qemu_syscall(&call.super);
 
@@ -1082,10 +1082,10 @@ WINBASEAPI SECURITY_STATUS WINAPI SetContextAttributesW(PCtxtHandle phContext, U
 {
     struct qemu_SetContextAttributesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCONTEXTATTRIBUTESW);
-    call.phContext = (uint64_t)phContext;
-    call.ulAttribute = (uint64_t)ulAttribute;
-    call.pBuffer = (uint64_t)pBuffer;
-    call.cbBuffer = (uint64_t)cbBuffer;
+    call.phContext = (ULONG_PTR)phContext;
+    call.ulAttribute = (ULONG_PTR)ulAttribute;
+    call.pBuffer = (ULONG_PTR)pBuffer;
+    call.cbBuffer = (ULONG_PTR)cbBuffer;
 
     qemu_syscall(&call.super);
 

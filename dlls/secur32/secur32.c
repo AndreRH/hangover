@@ -47,7 +47,7 @@ WINBASEAPI SECURITY_STATUS WINAPI FreeContextBuffer(PVOID pv)
 {
     struct qemu_FreeContextBuffer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FREECONTEXTBUFFER);
-    call.pv = (uint64_t)pv;
+    call.pv = (ULONG_PTR)pv;
 
     qemu_syscall(&call.super);
 
@@ -78,8 +78,8 @@ WINBASEAPI SECURITY_STATUS WINAPI EnumerateSecurityPackagesW(PULONG pcPackages, 
 {
     struct qemu_EnumerateSecurityPackagesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMERATESECURITYPACKAGESW);
-    call.pcPackages = (uint64_t)pcPackages;
-    call.ppPackageInfo = (uint64_t)ppPackageInfo;
+    call.pcPackages = (ULONG_PTR)pcPackages;
+    call.ppPackageInfo = (ULONG_PTR)ppPackageInfo;
 
     qemu_syscall(&call.super);
 
@@ -110,8 +110,8 @@ WINBASEAPI SECURITY_STATUS WINAPI EnumerateSecurityPackagesA(PULONG pcPackages, 
 {
     struct qemu_EnumerateSecurityPackagesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMERATESECURITYPACKAGESA);
-    call.pcPackages = (uint64_t)pcPackages;
-    call.ppPackageInfo = (uint64_t)ppPackageInfo;
+    call.pcPackages = (ULONG_PTR)pcPackages;
+    call.ppPackageInfo = (ULONG_PTR)ppPackageInfo;
 
     qemu_syscall(&call.super);
 
@@ -143,9 +143,9 @@ WINBASEAPI BOOLEAN WINAPI GetComputerObjectNameA(EXTENDED_NAME_FORMAT NameFormat
 {
     struct qemu_GetComputerObjectNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOMPUTEROBJECTNAMEA);
-    call.NameFormat = (uint64_t)NameFormat;
-    call.lpNameBuffer = (uint64_t)lpNameBuffer;
-    call.nSize = (uint64_t)nSize;
+    call.NameFormat = (ULONG_PTR)NameFormat;
+    call.lpNameBuffer = (ULONG_PTR)lpNameBuffer;
+    call.nSize = (ULONG_PTR)nSize;
 
     qemu_syscall(&call.super);
 
@@ -177,9 +177,9 @@ WINBASEAPI BOOLEAN WINAPI GetComputerObjectNameW(EXTENDED_NAME_FORMAT NameFormat
 {
     struct qemu_GetComputerObjectNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOMPUTEROBJECTNAMEW);
-    call.NameFormat = (uint64_t)NameFormat;
-    call.lpNameBuffer = (uint64_t)lpNameBuffer;
-    call.nSize = (uint64_t)nSize;
+    call.NameFormat = (ULONG_PTR)NameFormat;
+    call.lpNameBuffer = (ULONG_PTR)lpNameBuffer;
+    call.nSize = (ULONG_PTR)nSize;
 
     qemu_syscall(&call.super);
 
@@ -210,8 +210,8 @@ WINBASEAPI SECURITY_STATUS WINAPI AddSecurityPackageA(LPSTR name, SECURITY_PACKA
 {
     struct qemu_AddSecurityPackageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDSECURITYPACKAGEA);
-    call.name = (uint64_t)name;
-    call.options = (uint64_t)options;
+    call.name = (ULONG_PTR)name;
+    call.options = (ULONG_PTR)options;
 
     qemu_syscall(&call.super);
 
@@ -242,8 +242,8 @@ WINBASEAPI SECURITY_STATUS WINAPI AddSecurityPackageW(LPWSTR name, SECURITY_PACK
 {
     struct qemu_AddSecurityPackageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDSECURITYPACKAGEW);
-    call.name = (uint64_t)name;
-    call.options = (uint64_t)options;
+    call.name = (ULONG_PTR)name;
+    call.options = (ULONG_PTR)options;
 
     qemu_syscall(&call.super);
 
@@ -275,9 +275,9 @@ WINBASEAPI BOOLEAN WINAPI GetUserNameExA(EXTENDED_NAME_FORMAT NameFormat, LPSTR 
 {
     struct qemu_GetUserNameExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETUSERNAMEEXA);
-    call.NameFormat = (uint64_t)NameFormat;
-    call.lpNameBuffer = (uint64_t)lpNameBuffer;
-    call.nSize = (uint64_t)nSize;
+    call.NameFormat = (ULONG_PTR)NameFormat;
+    call.lpNameBuffer = (ULONG_PTR)lpNameBuffer;
+    call.nSize = (ULONG_PTR)nSize;
 
     qemu_syscall(&call.super);
 
@@ -309,9 +309,9 @@ WINBASEAPI BOOLEAN WINAPI GetUserNameExW(EXTENDED_NAME_FORMAT NameFormat, LPWSTR
 {
     struct qemu_GetUserNameExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETUSERNAMEEXW);
-    call.NameFormat = (uint64_t)NameFormat;
-    call.lpNameBuffer = (uint64_t)lpNameBuffer;
-    call.nSize = (uint64_t)nSize;
+    call.NameFormat = (ULONG_PTR)NameFormat;
+    call.lpNameBuffer = (ULONG_PTR)lpNameBuffer;
+    call.nSize = (ULONG_PTR)nSize;
 
     qemu_syscall(&call.super);
 
@@ -345,11 +345,11 @@ WINBASEAPI BOOLEAN WINAPI TranslateNameA(LPCSTR lpAccountName, EXTENDED_NAME_FOR
 {
     struct qemu_TranslateNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRANSLATENAMEA);
-    call.lpAccountName = (uint64_t)lpAccountName;
-    call.AccountNameFormat = (uint64_t)AccountNameFormat;
-    call.DesiredNameFormat = (uint64_t)DesiredNameFormat;
-    call.lpTranslatedName = (uint64_t)lpTranslatedName;
-    call.nSize = (uint64_t)nSize;
+    call.lpAccountName = (ULONG_PTR)lpAccountName;
+    call.AccountNameFormat = (ULONG_PTR)AccountNameFormat;
+    call.DesiredNameFormat = (ULONG_PTR)DesiredNameFormat;
+    call.lpTranslatedName = (ULONG_PTR)lpTranslatedName;
+    call.nSize = (ULONG_PTR)nSize;
 
     qemu_syscall(&call.super);
 
@@ -383,11 +383,11 @@ WINBASEAPI BOOLEAN WINAPI TranslateNameW(LPCWSTR lpAccountName, EXTENDED_NAME_FO
 {
     struct qemu_TranslateNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRANSLATENAMEW);
-    call.lpAccountName = (uint64_t)lpAccountName;
-    call.AccountNameFormat = (uint64_t)AccountNameFormat;
-    call.DesiredNameFormat = (uint64_t)DesiredNameFormat;
-    call.lpTranslatedName = (uint64_t)lpTranslatedName;
-    call.nSize = (uint64_t)nSize;
+    call.lpAccountName = (ULONG_PTR)lpAccountName;
+    call.AccountNameFormat = (ULONG_PTR)AccountNameFormat;
+    call.DesiredNameFormat = (ULONG_PTR)DesiredNameFormat;
+    call.lpTranslatedName = (ULONG_PTR)lpTranslatedName;
+    call.nSize = (ULONG_PTR)nSize;
 
     qemu_syscall(&call.super);
 

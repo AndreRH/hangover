@@ -51,13 +51,13 @@ WINBASEAPI NTSTATUS WINAPI LsaCallAuthenticationPackage(HANDLE LsaHandle, ULONG 
 {
     struct qemu_LsaCallAuthenticationPackage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LSACALLAUTHENTICATIONPACKAGE);
-    call.LsaHandle = (uint64_t)LsaHandle;
-    call.AuthenticationPackage = (uint64_t)AuthenticationPackage;
-    call.ProtocolSubmitBuffer = (uint64_t)ProtocolSubmitBuffer;
-    call.SubmitBufferLength = (uint64_t)SubmitBufferLength;
-    call.ProtocolReturnBuffer = (uint64_t)ProtocolReturnBuffer;
-    call.ReturnBufferLength = (uint64_t)ReturnBufferLength;
-    call.ProtocolStatus = (uint64_t)ProtocolStatus;
+    call.LsaHandle = (ULONG_PTR)LsaHandle;
+    call.AuthenticationPackage = (ULONG_PTR)AuthenticationPackage;
+    call.ProtocolSubmitBuffer = (ULONG_PTR)ProtocolSubmitBuffer;
+    call.SubmitBufferLength = (ULONG_PTR)SubmitBufferLength;
+    call.ProtocolReturnBuffer = (ULONG_PTR)ProtocolReturnBuffer;
+    call.ReturnBufferLength = (ULONG_PTR)ReturnBufferLength;
+    call.ProtocolStatus = (ULONG_PTR)ProtocolStatus;
 
     qemu_syscall(&call.super);
 
@@ -87,7 +87,7 @@ WINBASEAPI NTSTATUS WINAPI LsaConnectUntrusted(PHANDLE LsaHandle)
 {
     struct qemu_LsaConnectUntrusted call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LSACONNECTUNTRUSTED);
-    call.LsaHandle = (uint64_t)LsaHandle;
+    call.LsaHandle = (ULONG_PTR)LsaHandle;
 
     qemu_syscall(&call.super);
 
@@ -117,7 +117,7 @@ WINBASEAPI NTSTATUS WINAPI LsaDeregisterLogonProcess(HANDLE LsaHandle)
 {
     struct qemu_LsaDeregisterLogonProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LSADEREGISTERLOGONPROCESS);
-    call.LsaHandle = (uint64_t)LsaHandle;
+    call.LsaHandle = (ULONG_PTR)LsaHandle;
 
     qemu_syscall(&call.super);
 
@@ -148,8 +148,8 @@ WINBASEAPI NTSTATUS WINAPI LsaEnumerateLogonSessions(PULONG LogonSessionCount, P
 {
     struct qemu_LsaEnumerateLogonSessions call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LSAENUMERATELOGONSESSIONS);
-    call.LogonSessionCount = (uint64_t)LogonSessionCount;
-    call.LogonSessionList = (uint64_t)LogonSessionList;
+    call.LogonSessionCount = (ULONG_PTR)LogonSessionCount;
+    call.LogonSessionList = (ULONG_PTR)LogonSessionList;
 
     qemu_syscall(&call.super);
 
@@ -179,7 +179,7 @@ WINBASEAPI NTSTATUS WINAPI LsaFreeReturnBuffer(PVOID Buffer)
 {
     struct qemu_LsaFreeReturnBuffer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LSAFREERETURNBUFFER);
-    call.Buffer = (uint64_t)Buffer;
+    call.Buffer = (ULONG_PTR)Buffer;
 
     qemu_syscall(&call.super);
 
@@ -210,8 +210,8 @@ WINBASEAPI NTSTATUS WINAPI LsaGetLogonSessionData(PLUID LogonId, PSECURITY_LOGON
 {
     struct qemu_LsaGetLogonSessionData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LSAGETLOGONSESSIONDATA);
-    call.LogonId = (uint64_t)LogonId;
-    call.ppLogonSessionData = (uint64_t)ppLogonSessionData;
+    call.LogonId = (ULONG_PTR)LogonId;
+    call.ppLogonSessionData = (ULONG_PTR)ppLogonSessionData;
 
     qemu_syscall(&call.super);
 
@@ -254,20 +254,20 @@ WINBASEAPI NTSTATUS WINAPI LsaLogonUser(HANDLE LsaHandle, PLSA_STRING OriginName
 {
     struct qemu_LsaLogonUser call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LSALOGONUSER);
-    call.LsaHandle = (uint64_t)LsaHandle;
-    call.OriginName = (uint64_t)OriginName;
-    call.LogonType = (uint64_t)LogonType;
-    call.AuthenticationPackage = (uint64_t)AuthenticationPackage;
-    call.AuthenticationInformation = (uint64_t)AuthenticationInformation;
-    call.AuthenticationInformationLength = (uint64_t)AuthenticationInformationLength;
-    call.LocalGroups = (uint64_t)LocalGroups;
-    call.SourceContext = (uint64_t)SourceContext;
-    call.ProfileBuffer = (uint64_t)ProfileBuffer;
-    call.ProfileBufferLength = (uint64_t)ProfileBufferLength;
-    call.LogonId = (uint64_t)LogonId;
-    call.Token = (uint64_t)Token;
-    call.Quotas = (uint64_t)Quotas;
-    call.SubStatus = (uint64_t)SubStatus;
+    call.LsaHandle = (ULONG_PTR)LsaHandle;
+    call.OriginName = (ULONG_PTR)OriginName;
+    call.LogonType = (ULONG_PTR)LogonType;
+    call.AuthenticationPackage = (ULONG_PTR)AuthenticationPackage;
+    call.AuthenticationInformation = (ULONG_PTR)AuthenticationInformation;
+    call.AuthenticationInformationLength = (ULONG_PTR)AuthenticationInformationLength;
+    call.LocalGroups = (ULONG_PTR)LocalGroups;
+    call.SourceContext = (ULONG_PTR)SourceContext;
+    call.ProfileBuffer = (ULONG_PTR)ProfileBuffer;
+    call.ProfileBufferLength = (ULONG_PTR)ProfileBufferLength;
+    call.LogonId = (ULONG_PTR)LogonId;
+    call.Token = (ULONG_PTR)Token;
+    call.Quotas = (ULONG_PTR)Quotas;
+    call.SubStatus = (ULONG_PTR)SubStatus;
 
     qemu_syscall(&call.super);
 
@@ -299,9 +299,9 @@ WINBASEAPI NTSTATUS WINAPI LsaLookupAuthenticationPackage(HANDLE LsaHandle, PLSA
 {
     struct qemu_LsaLookupAuthenticationPackage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LSALOOKUPAUTHENTICATIONPACKAGE);
-    call.LsaHandle = (uint64_t)LsaHandle;
-    call.PackageName = (uint64_t)PackageName;
-    call.AuthenticationPackage = (uint64_t)AuthenticationPackage;
+    call.LsaHandle = (ULONG_PTR)LsaHandle;
+    call.PackageName = (ULONG_PTR)PackageName;
+    call.AuthenticationPackage = (ULONG_PTR)AuthenticationPackage;
 
     qemu_syscall(&call.super);
 
@@ -333,9 +333,9 @@ WINBASEAPI NTSTATUS WINAPI LsaRegisterLogonProcess(PLSA_STRING LogonProcessName,
 {
     struct qemu_LsaRegisterLogonProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LSAREGISTERLOGONPROCESS);
-    call.LogonProcessName = (uint64_t)LogonProcessName;
-    call.LsaHandle = (uint64_t)LsaHandle;
-    call.SecurityMode = (uint64_t)SecurityMode;
+    call.LogonProcessName = (ULONG_PTR)LogonProcessName;
+    call.LsaHandle = (ULONG_PTR)LsaHandle;
+    call.SecurityMode = (ULONG_PTR)SecurityMode;
 
     qemu_syscall(&call.super);
 
