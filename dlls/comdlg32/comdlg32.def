@@ -5,6 +5,10 @@ EXPORTS
   ChooseColorW
   ChooseFontA
   ChooseFontW
+  CommDlgExtendedError
+  DllGetClassObject
+  DllRegisterServer
+  DllUnregisterServer
   FindTextA
   FindTextW
   GetFileTitleA

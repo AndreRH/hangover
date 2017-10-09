@@ -9,6 +9,10 @@ enum comdlg32_calls
     CALL_CHOOSECOLORW,
     CALL_CHOOSEFONTA,
     CALL_CHOOSEFONTW,
+    CALL_COMMDLGEXTENDEDERROR,
+    CALL_DLLGETCLASSOBJECT,
+    CALL_DLLREGISTERSERVER,
+    CALL_DLLUNREGISTERSERVER,
     CALL_FINDTEXTA,
     CALL_FINDTEXTW,
     CALL_GETFILETITLEA,
@@ -35,6 +39,10 @@ void qemu_ChooseColorA(struct qemu_syscall *call);
 void qemu_ChooseColorW(struct qemu_syscall *call);
 void qemu_ChooseFontA(struct qemu_syscall *call);
 void qemu_ChooseFontW(struct qemu_syscall *call);
+void qemu_CommDlgExtendedError(struct qemu_syscall *call);
+void qemu_DllGetClassObject(struct qemu_syscall *call);
+void qemu_DllRegisterServer(struct qemu_syscall *call);
+void qemu_DllUnregisterServer(struct qemu_syscall *call);
 void qemu_FindTextA(struct qemu_syscall *call);
 void qemu_FindTextW(struct qemu_syscall *call);
 void qemu_GetFileTitleA(struct qemu_syscall *call);
@@ -50,6 +58,10 @@ void qemu_ReplaceTextA(struct qemu_syscall *call);
 void qemu_ReplaceTextW(struct qemu_syscall *call);
 
 DWORD comdlg32_tls;
+
+HRESULT (* WINAPI p_DllGetClassObject)(REFCLSID rclsid, REFIID riid, void **ppv);
+HRESULT (* WINAPI p_DllRegisterServer)(void);
+HRESULT (* WINAPI p_DllUnregisterServer)(void);
 
 #endif
 
