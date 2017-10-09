@@ -50,9 +50,9 @@ HRESULT WINAPI CreateTextServices(IUnknown *pUnkOuter, void *pITextHost, IUnknow
 {
     struct qemu_CreateTextServices call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATETEXTSERVICES);
-    call.pUnkOuter = (uint64_t)pUnkOuter;
-    call.pITextHost = (uint64_t)pITextHost;
-    call.ppUnk = (uint64_t)ppUnk;
+    call.pUnkOuter = (ULONG_PTR)pUnkOuter;
+    call.pITextHost = (ULONG_PTR)pITextHost;
+    call.ppUnk = (ULONG_PTR)ppUnk;
 
     qemu_syscall(&call.super);
 

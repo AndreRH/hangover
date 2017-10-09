@@ -77,10 +77,10 @@ WINBASEAPI LRESULT WINAPI RichEdit10ANSIWndProc(HWND hWnd, UINT msg, WPARAM wPar
 {
     struct qemu_RichEdit10ANSIWndProc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RICHEDIT10ANSIWNDPROC);
-    call.hWnd = (uint64_t)hWnd;
-    call.msg = (uint64_t)msg;
-    call.wParam = (uint64_t)wParam;
-    call.lParam = (uint64_t)lParam;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.msg = (ULONG_PTR)msg;
+    call.wParam = (ULONG_PTR)wParam;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
@@ -115,10 +115,10 @@ WINBASEAPI LRESULT WINAPI RichEditANSIWndProc(HWND hWnd, UINT msg, WPARAM wParam
 {
     struct qemu_RichEditANSIWndProc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RICHEDITANSIWNDPROC);
-    call.hWnd = (uint64_t)hWnd;
-    call.msg = (uint64_t)msg;
-    call.wParam = (uint64_t)wParam;
-    call.lParam = (uint64_t)lParam;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.msg = (ULONG_PTR)msg;
+    call.wParam = (ULONG_PTR)wParam;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
