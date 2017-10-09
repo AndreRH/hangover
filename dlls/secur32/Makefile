@@ -14,10 +14,10 @@ secur32.dll: lsa_g.o main_g.o secur32.def secur32_g.o wrapper_g.o
 qemu_secur32.dll.so: lsa_h.o main_h.o secur32_h.o wrapper_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_secur32.spec *_h.o -o qemu_secur32.dll.so -lsecur32 -DUSE_WS_PREFIX
 
-%_g.o: %.c secur32.h Makefile $(SRCDIR)/Makefile
+%_g.o: %.c qemu_secur32.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
-%_h.o: %.c secur32.h Makefile $(SRCDIR)/Makefile
+%_h.o: %.c qemu_secur32.h Makefile $(SRCDIR)/Makefile
 	$(WINEGCC) $< -c -o $@ $(CFLAGS) -DUSE_WS_PREFIX
 
 clean:

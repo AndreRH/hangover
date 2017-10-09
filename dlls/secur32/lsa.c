@@ -25,7 +25,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "secur32.h"
+#include "qemu_secur32.h"
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
