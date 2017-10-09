@@ -110,6 +110,7 @@ EXPORTS
   _cputs
   _cputws
   _creat=MSVCRT__creat
+  _crtTerminateProcess=MSVCR110__crtTerminateProcess
   _CurrentScheduler__Get
   _CurrentScheduler__GetNumberOfVirtualProcessors
   _CurrentScheduler__Id
@@ -194,6 +195,7 @@ EXPORTS
   _get_errno
   _get_invalid_parameter_handler=MSVCRT__get_invalid_parameter_handler
   _get_osfhandle=MSVCRT__get_osfhandle
+  _get_printf_count_output=MSVCRT__get_printf_count_output
   _get_stream_buffer_pointers=MSVCRT__get_stream_buffer_pointers
   _get_thread_local_invalid_parameter_handler
   _getch
@@ -258,6 +260,12 @@ EXPORTS
   _isprint_l=MSVCRT__isprint_l
   _isspace_l=MSVCRT__isspace_l
   _isupper_l=MSVCRT__isupper_l
+  _iswalpha_l=MSVCRT__iswalpha_l
+  _iswblank_l=MSVCRT__iswblank_l
+  _iswctype_l=MSVCRT__iswctype_l
+  _iswdigit_l=MSVCRT__iswdigit_l
+  _iswpunct_l=MSVCRT__iswpunct_l
+  _iswspace_l=MSVCRT__iswspace_l
   _isxdigit_l=MSVCRT__isxdigit_l
   _itoa=ntdll._itoa
   _j0=MSVCRT__j0
@@ -385,6 +393,7 @@ EXPORTS
   _set_errno
   _set_FMA3_enable=MSVCRT__set_FMA3_enable
   _set_invalid_parameter_handler=MSVCRT__set_invalid_parameter_handler
+  _set_printf_count_output=MSVCRT__set_printf_count_output
   _set_SSE2_enable=MSVCRT__set_SSE2_enable
   _set_thread_local_invalid_parameter_handler
   _seterrormode=MSVCRT__seterrormode
@@ -424,6 +433,8 @@ EXPORTS
   _tolower_l=MSVCRT__tolower_l
   _toupper=MSVCRT__toupper
   _toupper_l=MSVCRT__toupper_l
+  _towlower_l=MSVCRT__towlower_l
+  _towupper_l=MSVCRT__towupper_l
   _ultoa=ntdll._ultoa
   _umask=MSVCRT__umask
   _ungetc_nolock=MSVCRT__ungetc_nolock
@@ -447,9 +458,44 @@ EXPORTS
   _wchmod=MSVCRT__wchmod
   _wcmdln=MSVCRT__wcmdln
   _wcreat=MSVCRT__wcreat
+  _wcscoll_l=MSVCRT__wcscoll_l
+  _wcsdup=MSVCRT__wcsdup
   _wcserror=MSVCRT__wcserror
   _wcserror_s=MSVCRT__wcserror_s
+  _wcsicmp=MSVCRT__wcsicmp
+  _wcsicmp_l=MSVCRT__wcsicmp_l
+  _wcsicoll=MSVCRT__wcsicoll
+  _wcsicoll_l=MSVCRT__wcsicoll_l
+  _wcslwr=MSVCRT__wcslwr
+  _wcslwr_l=MSVCRT__wcslwr_l
+  _wcslwr_s=MSVCRT__wcslwr_s
+  _wcslwr_s_l=MSVCRT__wcslwr_s_l
+  _wcsncoll=MSVCRT__wcsncoll
+  _wcsncoll_l=MSVCRT__wcsncoll_l
   _wcsnicmp=MSVCRT__wcsnicmp
+  _wcsnicmp=MSVCRT__wcsnicmp
+  _wcsnicmp_l=MSVCRT__wcsnicmp_l
+  _wcsnicoll=MSVCRT__wcsnicoll
+  _wcsnicoll_l=MSVCRT__wcsnicoll_l
+  _wcsnset=MSVCRT__wcsnset
+  _wcsrev=MSVCRT__wcsrev
+  _wcsset=MSVCRT__wcsset
+  _wcsset_s=MSVCRT__wcsset_s
+  _wcstod_l=MSVCRT__wcstod_l
+  _wcstof_l=MSVCRT__wcstof_l
+  _wcstoi64=MSVCRT__wcstoi64
+  _wcstoi64_l=MSVCRT__wcstoi64_l
+  _wcstol_l=MSVCRT__wcstol_l
+  _wcstombs_l=MSVCRT__wcstombs_l
+  _wcstombs_s_l=MSVCRT__wcstombs_s_l
+  _wcstoui64=MSVCRT__wcstoui64
+  _wcstoui64_l=MSVCRT__wcstoui64_l
+  _wcsupr_l=MSVCRT__wcsupr_l
+  _wcsupr_s=MSVCRT__wcsupr_s
+  _wcsupr_s_l=MSVCRT__wcsupr_s_l
+  _wcsxfrm_l=MSVCRT__wcsxfrm_l
+  _wctomb_l=MSVCRT__wctomb_l
+  _wctomb_s_l=MSVCRT__wctomb_s_l
   _wdupenv_s
   _wexecv
   _wexecve
@@ -511,6 +557,10 @@ EXPORTS
   _wtmpnam=MSVCRT__wtmpnam
   _wtmpnam_s=MSVCRT__wtmpnam_s
   _wtof=MSVCRT__wtof
+  _wtof=MSVCRT__wtof
+  _wtof_l=MSVCRT__wtof_l
+  _wtoi64=MSVCRT__wtoi64
+  _wtoi64_l=MSVCRT__wtoi64_l
   _wtoi=MSVCRT__wtoi
   _wunlink=MSVCRT__wunlink
   _wutime32=MSVCRT__wutime32
@@ -629,11 +679,23 @@ EXPORTS
   ispunct=MSVCRT_ispunct
   isspace=MSVCRT_isspace
   isupper=MSVCRT_isupper
+  iswalnum=MSVCRT_iswalnum
+  iswalpha=MSVCRT_iswalpha
   iswalpha=MSVCRT_iswalpha
   iswascii=MSVCRT_iswascii
+  iswblank=MSVCRT_iswblank
+  iswcntrl=MSVCRT_iswcntrl
   iswdigit=MSVCRT_iswdigit
+  iswdigit=MSVCRT_iswdigit
+  iswgraph=MSVCRT_iswgraph
+  iswlower=MSVCRT_iswlower
+  iswprint=MSVCRT_iswprint
+  iswpunct=MSVCRT_iswpunct
   iswpunct=MSVCRT_iswpunct
   iswspace=MSVCRT_iswspace
+  iswspace=MSVCRT_iswspace
+  iswupper=MSVCRT_iswupper
+  iswxdigit=MSVCRT_iswxdigit
   isxdigit=MSVCRT_isxdigit
   labs=MSVCRT_labs
   ldexp=MSVCRT_ldexp
@@ -660,7 +722,14 @@ EXPORTS
   memset=MSVCRT_memset
   modf=MSVCRT_modf
   modff=MSVCRT_modff
-  MSVCR110__crtTerminateProcess
+  _wcstoul_l=MSVCRT__wcstoul_l
+  _wtoi_l=MSVCRT__wtoi_l
+  _wtol=MSVCRT__wtol
+  _wtol_l=MSVCRT__wtol_l
+  _wtoll=MSVCRT__wtoll
+  _wtoll_l=MSVCRT__wtoll_l
+  wcsncpy=MSVCRT_wcsncpy
+  wcstoul=MSVCRT_wcstoul
   nearbyint=MSVCRT_nearbyint
   nearbyintf=MSVCRT_nearbyintf
   perror=MSVCRT_perror
@@ -718,6 +787,7 @@ EXPORTS
   strtol=ntdll.strtol
   strtoul=ntdll.strtoul
   swprintf_s=MSVCRT_swprintf_s
+  swprintf_s=MSVCRT_swprintf_s
   swscanf_s=MSVCRT_swscanf_s
   system=MSVCRT_system
   tan=MSVCRT_tan
@@ -730,6 +800,8 @@ EXPORTS
   tmpnam_s=MSVCRT_tmpnam_s
   tolower=MSVCRT_tolower
   toupper=MSVCRT_toupper
+  towlower=MSVCRT_towlower
+  towupper=MSVCRT_towupper
   ungetc=MSVCRT_ungetc
   ungetwc=MSVCRT_ungetwc
   vfprintf=MSVCRT_vfprintf
@@ -738,13 +810,38 @@ EXPORTS
   vsprintf=MSVCRT_vsprintf
   vsscanf_l=MSVCRT_vsscanf_l
   vswprintf_s=MSVCRT_vswprintf_s
+  vswprintf_s=MSVCRT_vswprintf_s
+  wcrtomb=MSVCRT_wcrtomb
   wcscat_s=MSVCRT_wcscat_s
+  wcscat_s=MSVCRT_wcscat_s
+  wcschr=MSVCRT_wcschr
+  wcscoll=MSVCRT_wcscoll
   wcscpy=MSVCRT_wcscpy
   wcscpy_s=MSVCRT_wcscpy_s
+  wcscpy_s=MSVCRT_wcscpy_s
+  wcslen=MSVCRT_wcslen
+  wcsncat_s=MSVCRT_wcsncat_s
   wcsncmp=MSVCRT_wcsncmp
+  wcsncmp=MSVCRT_wcsncmp
+  wcsncpy_s=MSVCRT_wcsncpy_s
+  wcsnlen=MSVCRT_wcsnlen
+  wcspbrk=MSVCRT_wcspbrk
   wcsrchr=ntdll.wcsrchr
+  wcsrtombs=MSVCRT_wcsrtombs
+  wcsrtombs_s=MSVCRT_wcsrtombs_s
+  wcsstr=MSVCRT_wcsstr
   wcsstr=MSVCRT_wcsstr
   wcstod=MSVCRT_wcstod
+  wcstod=MSVCRT_wcstod
+  wcstof=MSVCRT_wcstof
+  wcstok=MSVCRT_wcstok
+  wcstok_s=MSVCRT_wcstok_s
   wcstombs=MSVCRT_wcstombs
+  wcstombs=MSVCRT_wcstombs
+  wcstombs_s=MSVCRT_wcstombs_s
+  wcsxfrm=MSVCRT_wcsxfrm
+  wctob=MSVCRT_wctob
   wctomb=MSVCRT_wctomb
+  wctomb=MSVCRT_wctomb
+  wctomb_s=MSVCRT_wctomb_s
   wprintf=MSVCRT_wprintf
