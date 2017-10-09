@@ -42,7 +42,7 @@ WINBASEAPI BOOL WINAPI ChooseFontW(LPCHOOSEFONTW lpChFont)
 {
     struct qemu_ChooseFontW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHOOSEFONTW);
-    call.lpChFont = (uint64_t)lpChFont;
+    call.lpChFont = (ULONG_PTR)lpChFont;
 
     qemu_syscall(&call.super);
 
@@ -78,7 +78,7 @@ WINBASEAPI BOOL WINAPI ChooseFontA(LPCHOOSEFONTA lpChFont)
 {
     struct qemu_ChooseFontA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHOOSEFONTA);
-    call.lpChFont = (uint64_t)lpChFont;
+    call.lpChFont = (ULONG_PTR)lpChFont;
 
     qemu_syscall(&call.super);
 

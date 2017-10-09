@@ -43,11 +43,11 @@ WINBASEAPI HWND WINAPI FindTextA(LPFINDREPLACEA pfr)
 {
     struct qemu_FindTextA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDTEXTA);
-    call.pfr = (uint64_t)pfr;
+    call.pfr = (ULONG_PTR)pfr;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -56,7 +56,7 @@ void qemu_FindTextA(struct qemu_syscall *call)
 {
     struct qemu_FindTextA *c = (struct qemu_FindTextA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)FindTextA(QEMU_G2H(c->pfr));
+    c->super.iret = (ULONG_PTR)FindTextA(QEMU_G2H(c->pfr));
 }
 
 #endif
@@ -73,11 +73,11 @@ WINBASEAPI HWND WINAPI ReplaceTextA(LPFINDREPLACEA pfr)
 {
     struct qemu_ReplaceTextA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REPLACETEXTA);
-    call.pfr = (uint64_t)pfr;
+    call.pfr = (ULONG_PTR)pfr;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -86,7 +86,7 @@ void qemu_ReplaceTextA(struct qemu_syscall *call)
 {
     struct qemu_ReplaceTextA *c = (struct qemu_ReplaceTextA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)ReplaceTextA(QEMU_G2H(c->pfr));
+    c->super.iret = (ULONG_PTR)ReplaceTextA(QEMU_G2H(c->pfr));
 }
 
 #endif
@@ -103,11 +103,11 @@ WINBASEAPI HWND WINAPI FindTextW(LPFINDREPLACEW pfr)
 {
     struct qemu_FindTextW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDTEXTW);
-    call.pfr = (uint64_t)pfr;
+    call.pfr = (ULONG_PTR)pfr;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -116,7 +116,7 @@ void qemu_FindTextW(struct qemu_syscall *call)
 {
     struct qemu_FindTextW *c = (struct qemu_FindTextW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)FindTextW(QEMU_G2H(c->pfr));
+    c->super.iret = (ULONG_PTR)FindTextW(QEMU_G2H(c->pfr));
 }
 
 #endif
@@ -133,11 +133,11 @@ WINBASEAPI HWND WINAPI ReplaceTextW(LPFINDREPLACEW pfr)
 {
     struct qemu_ReplaceTextW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REPLACETEXTW);
-    call.pfr = (uint64_t)pfr;
+    call.pfr = (ULONG_PTR)pfr;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -146,7 +146,7 @@ void qemu_ReplaceTextW(struct qemu_syscall *call)
 {
     struct qemu_ReplaceTextW *c = (struct qemu_ReplaceTextW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)ReplaceTextW(QEMU_G2H(c->pfr));
+    c->super.iret = (ULONG_PTR)ReplaceTextW(QEMU_G2H(c->pfr));
 }
 
 #endif

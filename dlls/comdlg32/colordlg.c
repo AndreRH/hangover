@@ -48,16 +48,16 @@ struct qemu_ChooseColorW_cb
 
 static uint64_t guest_wrapper(const struct qemu_ChooseColorW_cb *cb)
 {
-    LPCCHOOKPROC guest_proc = (LPCCHOOKPROC)cb->guest_proc;
-    return guest_proc((HWND)cb->dlg, cb->msg, cb->wp, cb->lp);
+    LPCCHOOKPROC guest_proc = (LPCCHOOKPROC)(ULONG_PTR)cb->guest_proc;
+    return guest_proc((HWND)(ULONG_PTR)cb->dlg, cb->msg, cb->wp, cb->lp);
 }
 
 WINBASEAPI BOOL WINAPI ChooseColorW(CHOOSECOLORW *lpChCol)
 {
     struct qemu_ChooseColorW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHOOSECOLORW);
-    call.lpChCol = (uint64_t)lpChCol;
-    call.guest_wrapper = (uint64_t)guest_wrapper;
+    call.lpChCol = (ULONG_PTR)lpChCol;
+    call.guest_wrapper = (ULONG_PTR)guest_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -76,7 +76,7 @@ static UINT_PTR CALLBACK hook_proc_wrapper(HWND dlg, UINT msg, WPARAM wp, LPARAM
 
     WINE_TRACE("Calling guest proc 0x%lx(%p, %u, %lu, %lu).\n", *guest_proc, dlg, msg, wp, lp);
     call.guest_proc = *guest_proc;
-    call.dlg = (uint64_t)dlg;
+    call.dlg = (ULONG_PTR)dlg;
     call.msg = msg;
     call.wp = wp;
     call.lp = lp;
@@ -97,7 +97,7 @@ void qemu_ChooseColorW(struct qemu_syscall *call)
     choose = *(CHOOSECOLORW *)QEMU_G2H(c->lpChCol);
     choose.lStructSize = sizeof(choose);
 
-    guest_proc = (uint64_t)choose.lpfnHook;
+    guest_proc = (ULONG_PTR)choose.lpfnHook;
     choose.lpfnHook = guest_proc ? hook_proc_wrapper : NULL;
     guest_wrapper = c->guest_wrapper;
 
@@ -135,8 +135,8 @@ WINBASEAPI BOOL WINAPI ChooseColorA(LPCHOOSECOLORA lpChCol)
 {
     struct qemu_ChooseColorA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHOOSECOLORA);
-    call.lpChCol = (uint64_t)lpChCol;
-    call.guest_wrapper = (uint64_t)guest_wrapper;
+    call.lpChCol = (ULONG_PTR)lpChCol;
+    call.guest_wrapper = (ULONG_PTR)guest_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -156,7 +156,7 @@ void qemu_ChooseColorA(struct qemu_syscall *call)
     choose = *(CHOOSECOLORA *)QEMU_G2H(c->lpChCol);
     choose.lStructSize = sizeof(choose);
 
-    guest_proc = (uint64_t)choose.lpfnHook;
+    guest_proc = (ULONG_PTR)choose.lpfnHook;
     choose.lpfnHook = guest_proc ? hook_proc_wrapper : NULL;
     guest_wrapper = c->guest_wrapper;
 

@@ -42,7 +42,7 @@ WINBASEAPI BOOL WINAPI PrintDlgA(LPPRINTDLGA lppd)
 {
     struct qemu_PrintDlgA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRINTDLGA);
-    call.lppd = (uint64_t)lppd;
+    call.lppd = (ULONG_PTR)lppd;
 
     qemu_syscall(&call.super);
 
@@ -72,7 +72,7 @@ WINBASEAPI BOOL WINAPI PrintDlgW(LPPRINTDLGW lppd)
 {
     struct qemu_PrintDlgW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRINTDLGW);
-    call.lppd = (uint64_t)lppd;
+    call.lppd = (ULONG_PTR)lppd;
 
     qemu_syscall(&call.super);
 
@@ -102,7 +102,7 @@ WINBASEAPI BOOL WINAPI PageSetupDlgA(LPPAGESETUPDLGA setupdlg)
 {
     struct qemu_PageSetupDlgA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PAGESETUPDLGA);
-    call.setupdlg = (uint64_t)setupdlg;
+    call.setupdlg = (ULONG_PTR)setupdlg;
 
     qemu_syscall(&call.super);
 
@@ -132,7 +132,7 @@ WINBASEAPI BOOL WINAPI PageSetupDlgW(LPPAGESETUPDLGW setupdlg)
 {
     struct qemu_PageSetupDlgW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PAGESETUPDLGW);
-    call.setupdlg = (uint64_t)setupdlg;
+    call.setupdlg = (ULONG_PTR)setupdlg;
 
     qemu_syscall(&call.super);
 
@@ -162,7 +162,7 @@ WINBASEAPI HRESULT WINAPI PrintDlgExA(LPPRINTDLGEXA lppd)
 {
     struct qemu_PrintDlgExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRINTDLGEXA);
-    call.lppd = (uint64_t)lppd;
+    call.lppd = (ULONG_PTR)lppd;
 
     qemu_syscall(&call.super);
 
@@ -192,7 +192,7 @@ WINBASEAPI HRESULT WINAPI PrintDlgExW(LPPRINTDLGEXW lppd)
 {
     struct qemu_PrintDlgExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRINTDLGEXW);
-    call.lppd = (uint64_t)lppd;
+    call.lppd = (ULONG_PTR)lppd;
 
     qemu_syscall(&call.super);
 

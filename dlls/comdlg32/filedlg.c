@@ -47,16 +47,16 @@ struct qemu_GetOpenSaveFileName_cb
 
 static uint64_t guest_wrapper(const struct qemu_GetOpenSaveFileName_cb *cb)
 {
-    LPOFNHOOKPROC guest_proc = (LPOFNHOOKPROC)cb->guest_proc;
-    return guest_proc((HWND)cb->dlg, cb->msg, cb->wp, cb->lp);
+    LPOFNHOOKPROC guest_proc = (LPOFNHOOKPROC)(ULONG_PTR)cb->guest_proc;
+    return guest_proc((HWND)(ULONG_PTR)cb->dlg, cb->msg, cb->wp, cb->lp);
 }
 
 WINBASEAPI BOOL WINAPI GetOpenFileNameA(OPENFILENAMEA *ofn)
 {
     struct qemu_GetOpenSaveFileName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETOPENFILENAMEA);
-    call.ofn = (uint64_t)ofn;
-    call.guest_wrapper = (uint64_t)guest_wrapper;
+    call.ofn = (ULONG_PTR)ofn;
+    call.guest_wrapper = (ULONG_PTR)guest_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -67,8 +67,8 @@ WINBASEAPI BOOL WINAPI GetOpenFileNameW(OPENFILENAMEW *ofn)
 {
     struct qemu_GetOpenSaveFileName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETOPENFILENAMEW);
-    call.ofn = (uint64_t)ofn;
-    call.guest_wrapper = (uint64_t)guest_wrapper;
+    call.ofn = (ULONG_PTR)ofn;
+    call.guest_wrapper = (ULONG_PTR)guest_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -79,8 +79,8 @@ WINBASEAPI BOOL WINAPI GetSaveFileNameA(OPENFILENAMEA *ofn)
 {
     struct qemu_GetOpenSaveFileName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSAVEFILENAMEA);
-    call.ofn = (uint64_t)ofn;
-    call.guest_wrapper = (uint64_t)guest_wrapper;
+    call.ofn = (ULONG_PTR)ofn;
+    call.guest_wrapper = (ULONG_PTR)guest_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -91,8 +91,8 @@ WINBASEAPI BOOL WINAPI GetSaveFileNameW(LPOPENFILENAMEW ofn)
 {
     struct qemu_GetOpenSaveFileName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSAVEFILENAMEW);
-    call.ofn = (uint64_t)ofn;
-    call.guest_wrapper = (uint64_t)guest_wrapper;
+    call.ofn = (ULONG_PTR)ofn;
+    call.guest_wrapper = (ULONG_PTR)guest_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -111,7 +111,7 @@ static UINT_PTR CALLBACK hook_proc_wrapper(HWND dlg, UINT msg, WPARAM wp, LPARAM
 
     WINE_TRACE("Calling guest proc 0x%lx(%p, %u, %lu, %lu).\n", *guest_proc, dlg, msg, wp, lp);
     call.guest_proc = *guest_proc;
-    call.dlg = (uint64_t)dlg;
+    call.dlg = (ULONG_PTR)dlg;
     call.msg = msg;
     call.wp = wp;
     call.lp = lp;
@@ -136,13 +136,13 @@ void qemu_GetOpenSaveFileName(struct qemu_syscall *call)
             || c->super.id == QEMU_SYSCALL_ID(CALL_GETSAVEFILENAMEA))
     {
         a = *(OPENFILENAMEA *)QEMU_G2H(c->ofn);
-        guest_proc = (uint64_t)a.lpfnHook;
+        guest_proc = (ULONG_PTR)a.lpfnHook;
         a.lpfnHook = hook_proc_wrapper;
     }
     else
     {
         w = *(OPENFILENAMEW *)QEMU_G2H(c->ofn);
-        guest_proc = (uint64_t)w.lpfnHook;
+        guest_proc = (ULONG_PTR)w.lpfnHook;
         w.lpfnHook = hook_proc_wrapper;
     }
 
@@ -199,9 +199,9 @@ WINBASEAPI short WINAPI GetFileTitleA(LPCSTR lpFile, LPSTR lpTitle, WORD cbBuf)
 {
     struct qemu_GetFileTitleA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILETITLEA);
-    call.lpFile = (uint64_t)lpFile;
-    call.lpTitle = (uint64_t)lpTitle;
-    call.cbBuf = (uint64_t)cbBuf;
+    call.lpFile = (ULONG_PTR)lpFile;
+    call.lpTitle = (ULONG_PTR)lpTitle;
+    call.cbBuf = (ULONG_PTR)cbBuf;
 
     qemu_syscall(&call.super);
 
@@ -233,9 +233,9 @@ WINBASEAPI short WINAPI GetFileTitleW(LPCWSTR lpFile, LPWSTR lpTitle, WORD cbBuf
 {
     struct qemu_GetFileTitleW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILETITLEW);
-    call.lpFile = (uint64_t)lpFile;
-    call.lpTitle = (uint64_t)lpTitle;
-    call.cbBuf = (uint64_t)cbBuf;
+    call.lpFile = (ULONG_PTR)lpFile;
+    call.lpTitle = (ULONG_PTR)lpTitle;
+    call.cbBuf = (ULONG_PTR)cbBuf;
 
     qemu_syscall(&call.super);
 
