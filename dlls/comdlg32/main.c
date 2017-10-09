@@ -84,13 +84,13 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
         WINE_ERR("Cannot find comdlg32.dll.\n");
 
     p_DllGetClassObject = (void *)GetProcAddress(comdlg32, "DllGetClassObject");
-    if (!p_DllGetClassObject);
+    if (!p_DllGetClassObject)
         WINE_ERR("Cannot find DllGetClassObject\n");
     p_DllRegisterServer = (void *)GetProcAddress(comdlg32, "DllRegisterServer");
-    if (!p_DllRegisterServer);
+    if (!p_DllRegisterServer)
         WINE_ERR("Cannot find DllRegisterServer\n");
     p_DllUnregisterServer = (void *)GetProcAddress(comdlg32, "DllUnregisterServer");
-    if (!p_DllUnregisterServer);
+    if (!p_DllUnregisterServer)
         WINE_ERR("Cannot find DllUnregisterServer\n");
 
     return dll_functions;
