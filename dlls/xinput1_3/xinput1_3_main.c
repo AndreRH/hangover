@@ -24,7 +24,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "xinput1_3.h"
+#include "qemu_xinput1_3.h"
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>

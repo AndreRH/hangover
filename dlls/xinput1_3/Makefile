@@ -14,10 +14,10 @@ xinput1_3.dll: main_g.o xinput1_3.spec xinput1_3_main_g.o
 qemu_xinput1_3.dll.so: main_h.o xinput1_3_main_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_xinput1_3.spec *_h.o -o qemu_xinput1_3.dll.so -lxinput
 
-%_g.o: %.c xinput1_3.h Makefile $(SRCDIR)/Makefile
+%_g.o: %.c qemu_xinput1_3.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
-%_h.o: %.c xinput1_3.h Makefile $(SRCDIR)/Makefile
+%_h.o: %.c qemu_xinput1_3.h Makefile $(SRCDIR)/Makefile
 	$(WINEGCC) $< -c -o $@ $(CFLAGS)
 
 clean:
