@@ -50,8 +50,12 @@ EXPORTS
   __libm_sse2_tan=MSVCRT___libm_sse2_tan
   __libm_sse2_tanf=MSVCRT___libm_sse2_tanf
   __p___mb_cur_max
+  __p__amblksiz
+  __p__daylight=MSVCRT___p__daylight                                                                                                                                           
+  __p__dstbias=MSVCRT___p__dstbias                                                                                                                                             
   __p__mbctype
   __p__pctype=MSVCRT___p__pctype
+  __p__timezone=MSVCRT___p__timezone                                                                                                                                           
   __p__tzname
   __pctype_func=MSVCRT___pctype_func
   __pioinfo=msvcrt.__qemu_native_data__
@@ -70,10 +74,18 @@ EXPORTS
   _access=MSVCRT__access
   _access_s=MSVCRT__access_s
   _acmdln=MSVCRT__acmdln
+  _aligned_free=MSVCRT__aligned_free
+  _aligned_malloc=MSVCRT__aligned_malloc
+  _aligned_msize
+  _aligned_offset_malloc
+  _aligned_offset_realloc
+  _aligned_realloc
   _amsg_exit
   _beginthread=MSVCRT__beginthread
   _beginthreadex=MSVCRT__beginthreadex
   _cabs=MSVCRT__cabs
+  _callnewh
+  _calloc_base
   _cexit=MSVCRT__cexit
   _cgets
   _chdir=MSVCRT__chdir
@@ -112,11 +124,17 @@ EXPORTS
   _cputws
   _creat=MSVCRT__creat
   _crtTerminateProcess=MSVCR110__crtTerminateProcess
+  _ctime32=MSVCRT__ctime32                                                                                                                                                     
+  _ctime32_s=MSVCRT__ctime32_s                                                                                                                                                 
+  _ctime64=MSVCRT__ctime64                                                                                                                                                     
+  _ctime64_s=MSVCRT__ctime64_s                                                                                                                                                 
   _CurrentScheduler__Get
   _CurrentScheduler__GetNumberOfVirtualProcessors
   _CurrentScheduler__Id
   _cwait
   _CxxThrowException=MSVCRT__CxxThrowException
+  _difftime32=MSVCRT__difftime32                                                                                                                                               
+  _difftime64=MSVCRT__difftime64                                                                                                                                               
   _dup2=MSVCRT__dup2
   _dup=MSVCRT__dup
   _dupenv_s
@@ -132,6 +150,7 @@ EXPORTS
   _execvp
   _execvpe
   _exit=MSVCRT__exit
+  _expand
   _fclose_nolock=MSVCRT__fclose_nolock
   _fcloseall=MSVCRT__fcloseall
   _fcvt=MSVCRT__fcvt
@@ -171,6 +190,7 @@ EXPORTS
   _fputwchar=MSVCRT__fputwchar
   _fread_nolock=MSVCRT__fread_nolock
   _fread_nolock_s=MSVCRT__fread_nolock_s
+  _free_base
   _fseek_nolock=MSVCRT__fseek_nolock
   _fseeki64=MSVCRT__fseeki64
   _fseeki64_nolock=MSVCRT__fseeki64_nolock
@@ -184,6 +204,11 @@ EXPORTS
   _ftell_nolock=MSVCRT__ftell_nolock
   _ftelli64=MSVCRT__ftelli64
   _ftelli64_nolock=MSVCRT__ftelli64_nolock
+  _ftime32=MSVCRT__ftime32                                                                                                                                                     
+  _ftime32_s=MSVCRT__ftime32_s                                                                                                                                                 
+  _ftime64=MSVCRT__ftime64                                                                                                                                                     
+  _ftime64_s=MSVCRT__ftime64_s                                                                                                                                                 
+  _ftime=MSVCRT__ftime                                                                                                                                                         
   _ftol=MSVCRT__ftol
   _fullpath=MSVCRT__fullpath
   _futime32=MSVCRT__futime32
@@ -194,13 +219,17 @@ EXPORTS
   _gcvt_s=MSVCRT__gcvt_s
   _get_daylight
   _get_doserrno=MSVCRT__get_doserrno
+  _get_dstbias=MSVCRT__get_dstbias                                                                                                                                             
   _get_errno
+  _get_heap_handle
   _get_invalid_parameter_handler=MSVCRT__get_invalid_parameter_handler
   _get_osfhandle=MSVCRT__get_osfhandle
   _get_printf_count_output=MSVCRT__get_printf_count_output
+  _get_sbh_threshold
   _get_stream_buffer_pointers=MSVCRT__get_stream_buffer_pointers
   _get_thread_local_invalid_parameter_handler
   _get_timezone
+  _get_tzname=MSVCRT__get_tzname
   _getch
   _getch_nolock
   _getche
@@ -220,6 +249,15 @@ EXPORTS
   _getwche
   _getwche_nolock
   _getws=MSVCRT__getws
+  _gmtime32=MSVCRT__gmtime32
+  _gmtime32_s=MSVCRT__gmtime32_s
+  _gmtime64=MSVCRT__gmtime64
+  _gmtime64_s=MSVCRT__gmtime64_s
+  _heapadd
+  _heapchk
+  _heapmin
+  _heapset
+  _heapwalk=MSVCRT__heapwalk
   _hypot
   _hypotf=MSVCRT__hypotf
   _initterm
@@ -276,7 +314,9 @@ EXPORTS
   _jn=MSVCRT__jn
   _kbhit
   _loaddll
+  _localtime32=MSVCRT__localtime32
   _localtime32_s=MSVCRT__localtime32_s
+  _localtime64=MSVCRT__localtime64
   _localtime64_s=MSVCRT__localtime64_s
   _lock
   _lock_file=MSVCRT__lock_file
@@ -291,6 +331,7 @@ EXPORTS
   _lseeki64=MSVCRT__lseeki64
   _makepath=MSVCRT__makepath
   _makepath_s=MSVCRT__makepath_s
+  _malloc_base
   _matherr=MSVCRT__matherr
   _mbbtombc
   _mbbtype
@@ -363,8 +404,14 @@ EXPORTS
   _mbsupr
   _mbsupr_s
   _mkdir=MSVCRT__mkdir
+  _mkgmtime32=MSVCRT__mkgmtime32
+  _mkgmtime64=MSVCRT__mkgmtime64
+  _mkgmtime=MSVCRT__mkgmtime
   _mktemp=MSVCRT__mktemp
   _mktemp_s=MSVCRT__mktemp_s
+  _mktime32=MSVCRT__mktime32
+  _mktime64=MSVCRT__mktime64
+  _msize
   _nextafter=MSVCRT__nextafter
   _nextafterf=MSVCRT__nextafterf
   _onexit=MSVCRT__onexit
@@ -383,6 +430,8 @@ EXPORTS
   _putwch_nolock
   _putws=MSVCRT__putws
   _read=MSVCRT__read
+  _realloc_base
+  _recalloc
   _rmdir=MSVCRT__rmdir
   _rmtmp=MSVCRT__rmtmp
   _rotl64
@@ -399,6 +448,7 @@ EXPORTS
   _set_FMA3_enable=MSVCRT__set_FMA3_enable
   _set_invalid_parameter_handler=MSVCRT__set_invalid_parameter_handler
   _set_printf_count_output=MSVCRT__set_printf_count_output
+  _set_sbh_threshold
   _set_SSE2_enable=MSVCRT__set_SSE2_enable
   _set_thread_local_invalid_parameter_handler
   _seterrormode=MSVCRT__seterrormode
@@ -423,12 +473,15 @@ EXPORTS
   _statusfp
   _statusfp2
   _strdate=MSVCRT__strdate
+  _strdate=MSVCRT__strdate
   _strdate_s
   _strdup = MSVCRT__strdup
   _strerror=MSVCRT__strerror
   _Strftime
+  _strftime_l=MSVCRT__strftime_l
   _stricmp=MSVCRT__stricmp
   _strnicmp=MSVCRT__strnicmp
+  _strtime=MSVCRT__strtime
   _strtime=MSVCRT__strtime
   _strtime_s
   _strtoui64=MSVCRT__strtoui64
@@ -436,6 +489,8 @@ EXPORTS
   _telli64
   _tempnam=MSVCRT__tempnam
   _tempnam=MSVCRT__tempnam
+  _time32=MSVCRT__time32
+  _time64=MSVCRT__time64
   _time64=MSVCRT__time64
   _tolower=MSVCRT__tolower
   _tolower_l=MSVCRT__tolower_l
@@ -443,6 +498,7 @@ EXPORTS
   _toupper_l=MSVCRT__toupper_l
   _towlower_l=MSVCRT__towlower_l
   _towupper_l=MSVCRT__towupper_l
+  _tzset=MSVCRT__tzset
   _ultoa=ntdll._ultoa
   _umask=MSVCRT__umask
   _ungetc_nolock=MSVCRT__ungetc_nolock
@@ -462,6 +518,8 @@ EXPORTS
   _vsnwprintf=MSVCRT__vsnwprintf
   _waccess=MSVCRT__waccess
   _waccess_s=MSVCRT__waccess_s
+  _wasctime=MSVCRT__wasctime
+  _wasctime_s=MSVCRT__wasctime_s
   _wchdir=MSVCRT__wchdir
   _wchmod=MSVCRT__wchmod
   _wcmdln=MSVCRT__wcmdln
@@ -471,6 +529,7 @@ EXPORTS
   _wcserror=MSVCRT__wcserror
   _wcserror_s=MSVCRT__wcserror_s
   _Wcsftime
+  _wcsftime_l=MSVCRT__wcsftime_l
   _wcsicmp=MSVCRT__wcsicmp
   _wcsicmp_l=MSVCRT__wcsicmp_l
   _wcsicoll=MSVCRT__wcsicoll
@@ -504,6 +563,11 @@ EXPORTS
   _wcsupr_s=MSVCRT__wcsupr_s
   _wcsupr_s_l=MSVCRT__wcsupr_s_l
   _wcsxfrm_l=MSVCRT__wcsxfrm_l
+  _wctime32=MSVCRT__wctime32
+  _wctime32_s=MSVCRT__wctime32_s
+  _wctime64=MSVCRT__wctime64
+  _wctime64_s=MSVCRT__wctime64_s
+  _wctime=MSVCRT__wctime
   _wctomb_l=MSVCRT__wctomb_l
   _wctomb_s_l=MSVCRT__wctomb_s_l
   _wdupenv_s
@@ -562,7 +626,9 @@ EXPORTS
   _wstat64i32=MSVCRT__wstat64i32
   _wstat=MSVCRT__wstat
   _wstati64=MSVCRT__wstati64
+  _wstrdate=MSVCRT__wstrdate
   _wstrdate_s
+  _wstrtime=MSVCRT__wstrtime
   _wstrtime_s
   _wsystem=MSVCRT__wsystem
   _wtempnam=MSVCRT__wtempnam
@@ -592,6 +658,8 @@ EXPORTS
   abs=MSVCRT_abs
   acos=MSVCRT_acos
   acosf=MSVCRT_acosf
+  asctime=MSVCRT_asctime
+  asctime_s=MSVCRT_asctime_s
   asin=MSVCRT_asin
   asinf=MSVCRT_asinf
   atan2=MSVCRT_atan2
@@ -607,6 +675,7 @@ EXPORTS
   ceil=MSVCRT_ceil
   ceilf=MSVCRT_ceilf
   clearerr=MSVCRT_clearerr
+  clock=MSVCRT_clock
   Concurrency_Alloc
   Concurrency_Free
   Context__SpinYield
@@ -623,6 +692,7 @@ EXPORTS
   cosf=MSVCRT_cosf
   cosh=MSVCRT_cosh
   coshf=MSVCRT_coshf
+  ctime=MSVCRT_ctime
   CurrentScheduler_Create
   CurrentScheduler_CreateScheduleGroup
   CurrentScheduler_Detach
@@ -632,6 +702,7 @@ EXPORTS
   CurrentScheduler_Id
   CurrentScheduler_IsAvailableLocation
   CurrentScheduler_RegisterShutdownEvent
+  difftime=MSVCRT_difftime
   div=MSVCRT_div
   exit=MSVCRT_exit
   exp=MSVCRT_exp
@@ -684,6 +755,7 @@ EXPORTS
   gets=MSVCRT_gets
   getwc=MSVCRT_getwc
   getwchar=MSVCRT_getwchar
+  gmtime=MSVCRT_gmtime
   isalnum=MSVCRT_isalnum
   isalpha=MSVCRT_isalpha
   isblank=MSVCRT_isblank
@@ -718,6 +790,7 @@ EXPORTS
   ldexp=MSVCRT_ldexp
   ldiv=MSVCRT_ldiv
   llabs=MSVCRT_llabs
+  localtime=MSVCRT_localtime
   log10=MSVCRT_log10
   log10f=MSVCRT_log10f
   log=MSVCRT_log
@@ -737,62 +810,24 @@ EXPORTS
   memcpy=MSVCRT_memcpy
   memmove=MSVCRT_memmove
   memset=MSVCRT_memset
+  mktime=MSVCRT_mktime
   modf=MSVCRT_modf
   modff=MSVCRT_modff
-  __p__daylight=MSVCRT___p__daylight                                                                                                                                           
-  __p__dstbias=MSVCRT___p__dstbias                                                                                                                                             
-  __p__timezone=MSVCRT___p__timezone                                                                                                                                           
-  _ctime32=MSVCRT__ctime32                                                                                                                                                     
-  _ctime32_s=MSVCRT__ctime32_s                                                                                                                                                 
-  _ctime64=MSVCRT__ctime64                                                                                                                                                     
-  _ctime64_s=MSVCRT__ctime64_s                                                                                                                                                 
-  _difftime32=MSVCRT__difftime32                                                                                                                                               
-  _difftime64=MSVCRT__difftime64                                                                                                                                               
-  _ftime=MSVCRT__ftime                                                                                                                                                         
-  _ftime32=MSVCRT__ftime32                                                                                                                                                     
-  _ftime32_s=MSVCRT__ftime32_s                                                                                                                                                 
-  _ftime64=MSVCRT__ftime64                                                                                                                                                     
-  _ftime64_s=MSVCRT__ftime64_s                                                                                                                                                 
-  _get_dstbias=MSVCRT__get_dstbias                                                                                                                                             
-  _get_tzname=MSVCRT__get_tzname
-  _gmtime32=MSVCRT__gmtime32
-  _gmtime32_s=MSVCRT__gmtime32_s
-  _gmtime64=MSVCRT__gmtime64
-  _gmtime64_s=MSVCRT__gmtime64_s
-  _localtime32=MSVCRT__localtime32
-  _localtime64=MSVCRT__localtime64
-  _mkgmtime=MSVCRT__mkgmtime
-  _mkgmtime32=MSVCRT__mkgmtime32
-  _mkgmtime64=MSVCRT__mkgmtime64
-  _mktime32=MSVCRT__mktime32
-  _mktime64=MSVCRT__mktime64
-  _strdate=MSVCRT__strdate
-  _strftime_l=MSVCRT__strftime_l
-  _strtime=MSVCRT__strtime
-  _time32=MSVCRT__time32
-  _time64=MSVCRT__time64
-  _tzset=MSVCRT__tzset
-  _wasctime=MSVCRT__wasctime
-  _wasctime_s=MSVCRT__wasctime_s
-  _wcsftime_l=MSVCRT__wcsftime_l
-  _wctime=MSVCRT__wctime
-  _wctime32=MSVCRT__wctime32
-  _wctime32_s=MSVCRT__wctime32_s
-  _wctime64=MSVCRT__wctime64
-  _wctime64_s=MSVCRT__wctime64_s
-  _wstrdate=MSVCRT__wstrdate
-  _wstrtime=MSVCRT__wstrtime
-  asctime=MSVCRT_asctime
-  asctime_s=MSVCRT_asctime_s
-  clock=MSVCRT_clock
-  ctime=MSVCRT_ctime
-  difftime=MSVCRT_difftime
-  gmtime=MSVCRT_gmtime
-  localtime=MSVCRT_localtime
-  mktime=MSVCRT_mktime
-  strftime=MSVCRT_strftime
-  time=MSVCRT_time
-  wcsftime=MSVCRT_wcsftime
+  _query_new_handler=MSVCRT__query_new_handler
+  _query_new_mode=MSVCRT__query_new_mode
+  _set_new_handler=MSVCRT__set_new_handler
+  _set_new_mode=MSVCRT__set_new_mode
+  calloc=MSVCRT_calloc
+  free=MSVCRT_free
+  malloc=MSVCRT_malloc
+  memcpy_s=MSVCRT_memcpy_s
+  memmove_s=MSVCRT_memmove_s
+  operator_delete=MSVCRT_operator_delete
+  operator_new=MSVCRT_operator_new
+  operator_new_dbg=MSVCRT_operator_new_dbg
+  realloc=MSVCRT_realloc
+  set_new_handler=MSVCRT_set_new_handler
+  strncpy_s=MSVCRT_strncpy_s
   nearbyint=MSVCRT_nearbyint
   nearbyintf=MSVCRT_nearbyintf
   perror=MSVCRT_perror
@@ -841,6 +876,7 @@ EXPORTS
   strcspn=ntdll.strcspn
   strerror=MSVCRT_strerror
   strerror_s=MSVCRT_strerror_s
+  strftime=MSVCRT_strftime
   strlen=MSVCRT_strlen
   strncmp=MSVCRT_strncmp
   strncpy=MSVCRT_strncpy
@@ -857,6 +893,7 @@ EXPORTS
   tanf=MSVCRT_tanf
   tanh=MSVCRT_tanh
   tanhf=MSVCRT_tanhf
+  time=MSVCRT_time
   tmpfile=MSVCRT_tmpfile
   tmpfile_s=MSVCRT_tmpfile_s
   tmpnam=MSVCRT_tmpnam
@@ -882,6 +919,7 @@ EXPORTS
   wcscpy=MSVCRT_wcscpy
   wcscpy_s=MSVCRT_wcscpy_s
   wcscpy_s=MSVCRT_wcscpy_s
+  wcsftime=MSVCRT_wcsftime
   wcslen=MSVCRT_wcslen
   wcsncat_s=MSVCRT_wcsncat_s
   wcsncmp=MSVCRT_wcsncmp
@@ -909,4 +947,6 @@ EXPORTS
   wctomb=MSVCRT_wctomb
   wctomb=MSVCRT_wctomb
   wctomb_s=MSVCRT_wctomb_s
+  wmemcpy_s
+  wmemmove_s
   wprintf=MSVCRT_wprintf
