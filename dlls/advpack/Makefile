@@ -14,10 +14,10 @@ advpack.dll: advpack.spec advpack_g.o files_g.o install_g.o main_g.o reg_g.o
 qemu_advpack.dll.so: advpack_h.o files_h.o install_h.o main_h.o reg_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_advpack.spec *_h.o -o qemu_advpack.dll.so -ladvpack
 
-%_g.o: %.c advpack.h Makefile $(SRCDIR)/Makefile
+%_g.o: %.c qemu_advpack.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
-%_h.o: %.c advpack.h Makefile $(SRCDIR)/Makefile
+%_h.o: %.c qemu_advpack.h Makefile $(SRCDIR)/Makefile
 	$(WINEGCC) $< -c -o $@ $(CFLAGS) -DUSE_WS_PREFIX
 
 clean:

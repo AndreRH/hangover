@@ -25,7 +25,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "advpack.h"
+#include "qemu_advpack.h"
 
 #ifdef QEMU_DLL_GUEST
 
