@@ -50,7 +50,7 @@ static WCHAR *msvcrt_wstrdupa(const char *str)
     return wstr;
 }
 
-BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
+BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
     switch (reason)
     {
