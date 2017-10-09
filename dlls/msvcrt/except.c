@@ -25,7 +25,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "msvcrt.h"
+#include "qemu_msvcrt.h"
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>

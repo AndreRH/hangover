@@ -14,10 +14,10 @@ msvcrt.dll: cpp_g.o ctype_g.o data_g.o dir_g.o environ_g.o errno_g.o except_g.o 
 qemu_msvcrt.dll.so: cpp_h.o ctype_h.o data_h.o dir_h.o environ_h.o errno_h.o except_h.o exit_h.o file_h.o heap_h.o locale_h.o lock_h.o main_h.o math_h.o mbcs_h.o misc_h.o process_h.o qemu_msvcrt.spec scanf_h.o string_h.o time_h.o wcs_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_msvcrt.spec *_h.o -o qemu_msvcrt.dll.so
 
-%_g.o: %.c msvcrt.h Makefile $(SRCDIR)/Makefile
+%_g.o: %.c qemu_msvcrt.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
-%_h.o: %.c msvcrt.h Makefile $(SRCDIR)/Makefile
+%_h.o: %.c qemu_msvcrt.h Makefile $(SRCDIR)/Makefile
 	$(WINEGCC) $< -c -o $@ $(CFLAGS)
 
 clean:

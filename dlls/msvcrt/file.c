@@ -26,7 +26,7 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "va_helper.h"
-#include "msvcrt.h"
+#include "qemu_msvcrt.h"
 
 #ifdef QEMU_DLL_GUEST
 #include <sys/utime.h>
