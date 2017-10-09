@@ -8,8 +8,8 @@ VPATH=$(SRCDIR)
 
 all: winmm.dll qemu_winmm.dll.so
 
-winmm.dll: driver_g.o joystick_g.o main_g.o mci_g.o mmio_g.o playsound_g.o time_g.o waveform_g.o winmm.def winmm_g.o
-	$(GUEST_CC)-ld -shared $(SRCDIR)/winmm.def *_g.o -o winmm.dll -nostdlib -e DllMain
+winmm.dll: driver_g.o joystick_g.o main_g.o mci_g.o mmio_g.o playsound_g.o time_g.o waveform_g.o winmm.spec winmm_g.o
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/winmm.spec *_g.o -o winmm.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x150000000
 
 qemu_winmm.dll.so: driver_h.o joystick_h.o main_h.o mci_h.o mmio_h.o playsound_h.o time_h.o waveform_h.o winmm_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_winmm.spec *_h.o -o qemu_winmm.dll.so -lwinmm
