@@ -25,15 +25,9 @@
 #include <ws2tcpip.h>
 #include <ws2spi.h>
 
-#ifdef QEMU_DLL_GUEST
-
-#else
-
-#endif
-
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "ws2_32.h"
+#include "qemu_ws2_32.h"
 
 #ifdef QEMU_DLL_GUEST
 

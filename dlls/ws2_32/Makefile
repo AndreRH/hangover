@@ -14,10 +14,10 @@ ws2_32.dll: async_g.o main_g.o socket_g.o ws2_32.def
 qemu_ws2_32.dll.so: async_h.o main_h.o socket_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_ws2_32.spec *_h.o -o qemu_ws2_32.dll.so -lws2_32
 
-%_g.o: %.c ws2_32.h Makefile $(SRCDIR)/Makefile
+%_g.o: %.c qemu_ws2_32.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
-%_h.o: %.c ws2_32.h Makefile $(SRCDIR)/Makefile
+%_h.o: %.c qemu_ws2_32.h Makefile $(SRCDIR)/Makefile
 	$(WINEGCC) $< -c -o $@ $(CFLAGS) -DUSE_WS_PREFIX
 
 clean:
