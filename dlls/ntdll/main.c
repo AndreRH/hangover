@@ -23,7 +23,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "ntdll.h"
+#include "qemu_ntdll.h"
 
 struct qemu_set_callbacks
 {

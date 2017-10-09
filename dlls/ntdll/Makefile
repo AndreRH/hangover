@@ -14,10 +14,10 @@ ntdll.dll: actctx_g.o critsection_g.o error_g.o exception_g.o file_g.o heap_g.o 
 qemu_ntdll.dll.so: actctx_h.o critsection_h.o error_h.o exception_h.o file_h.o heap_h.o loader_h.o main_h.o misc_h.o nt_h.o om_h.o path_h.o process_h.o qemu_ntdll.spec reg_h.o rtl_h.o rtlstr_h.o signal_h.o string_h.o sync_h.o thread_h.o version_h.o wcstring_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_ntdll.spec *_h.o -o qemu_ntdll.dll.so
 
-%_g.o: %.c ntdll.h Makefile $(SRCDIR)/Makefile
+%_g.o: %.c qemu_ntdll.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
-%_h.o: %.c ntdll.h Makefile $(SRCDIR)/Makefile
+%_h.o: %.c qemu_ntdll.h Makefile $(SRCDIR)/Makefile
 	$(WINEGCC) $< -c -o $@ $(CFLAGS)
 
 clean:
