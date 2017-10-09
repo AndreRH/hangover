@@ -231,6 +231,7 @@ enum msvcrt_calls
     CALL__GETCH_NOLOCK,
     CALL__GETCHE,
     CALL__GETCHE_NOLOCK,
+    CALL__GETCONCURRENCY,
     CALL__GETCWD,
     CALL__GETDCWD,
     CALL__GETDISKFREE,
@@ -314,6 +315,7 @@ enum msvcrt_calls
     CALL__LOCALTIME64_S,
     CALL__LOCK,
     CALL__LOCK_FILE,
+    CALL__LOCK_SHARED_PTR_SPIN_LOCK,
     CALL__LOCKING,
     CALL__LOGB,
     CALL__LOGBF,
@@ -501,6 +503,7 @@ enum msvcrt_calls
     CALL__UNLOADDLL,
     CALL__UNLOCK,
     CALL__UNLOCK_FILE,
+    CALL__UNLOCK_SHARED_PTR_SPIN_LOCK,
     CALL__UTIME,
     CALL__UTIME32,
     CALL__UTIME64,
@@ -703,6 +706,7 @@ enum msvcrt_calls
     CALL_ERFCL,
     CALL_ERFF,
     CALL_ERFL,
+    CALL_EVENT_WAIT_FOR_MULTIPLE,
     CALL_EXIT,
     CALL_EXP,
     CALL_EXP2,
@@ -881,6 +885,7 @@ enum msvcrt_calls
     CALL_SINF,
     CALL_SINH,
     CALL_SINHF,
+    CALL_SPINCOUNT__VALUE,
     CALL_SPRINTF,
     CALL_SPRINTF_S,
     CALL_SQRT,
@@ -1259,6 +1264,7 @@ void qemu__getch(struct qemu_syscall *call);
 void qemu__getch_nolock(struct qemu_syscall *call);
 void qemu__getche(struct qemu_syscall *call);
 void qemu__getche_nolock(struct qemu_syscall *call);
+void qemu__GetConcurrency(struct qemu_syscall *call);
 void qemu__getcwd(struct qemu_syscall *call);
 void qemu__getdcwd(struct qemu_syscall *call);
 void qemu__getdiskfree(struct qemu_syscall *call);
@@ -1342,6 +1348,7 @@ void qemu__localtime64(struct qemu_syscall *call);
 void qemu__localtime64_s(struct qemu_syscall *call);
 void qemu__lock(struct qemu_syscall *call);
 void qemu__lock_file(struct qemu_syscall *c);
+void qemu__Lock_shared_ptr_spin_lock(struct qemu_syscall *call);
 void qemu__locking(struct qemu_syscall *c);
 void qemu__logb(struct qemu_syscall *call);
 void qemu__logbf(struct qemu_syscall *call);
@@ -1530,6 +1537,7 @@ void qemu__unlink(struct qemu_syscall *c);
 void qemu__unloaddll(struct qemu_syscall *call);
 void qemu__unlock(struct qemu_syscall *call);
 void qemu__unlock_file(struct qemu_syscall *c);
+void qemu__Unlock_shared_ptr_spin_lock(struct qemu_syscall *call);
 void qemu__utime(struct qemu_syscall *c);
 void qemu__utime32(struct qemu_syscall *c);
 void qemu__utime64(struct qemu_syscall *c);
@@ -1733,6 +1741,7 @@ void qemu_erfcf(struct qemu_syscall *call);
 void qemu_erfcl(struct qemu_syscall *call);
 void qemu_erff(struct qemu_syscall *call);
 void qemu_erfl(struct qemu_syscall *call);
+void qemu_event_wait_for_multiple(struct qemu_syscall *call);
 void qemu_exit(struct qemu_syscall *call);
 void qemu_exp(struct qemu_syscall *call);
 void qemu_exp2(struct qemu_syscall *call);
@@ -1913,6 +1922,7 @@ void qemu_sin(struct qemu_syscall *call);
 void qemu_sinf(struct qemu_syscall *call);
 void qemu_sinh(struct qemu_syscall *call);
 void qemu_sinhf(struct qemu_syscall *call);
+void qemu_SpinCount__Value(struct qemu_syscall *call);
 void qemu_sprintf(struct qemu_syscall *call);
 void qemu_sqrt(struct qemu_syscall *call);
 void qemu_sqrtf(struct qemu_syscall *call);
@@ -1986,6 +1996,7 @@ void qemu_wctomb(struct qemu_syscall *call);
 void qemu_wctomb_s(struct qemu_syscall *call);
 void qemu_wmemcpy_s(struct qemu_syscall *call);
 void qemu_wmemmove_s(struct qemu_syscall *call);
+
 /* Be careful not to call the Linux libc! */
 void (* CDECL p___crt_debugger_hook)(int reserved);
 void (* CDECL p___getmainargs)(int *argc, char** *argv, char** *envp,
@@ -2964,6 +2975,12 @@ int (* CDECL p_wmemmove_s)(WCHAR *dest, size_t numberOfElements, const WCHAR *sr
 int (* CDECL p_memcpy_s)(void *dest, size_t numberOfElements, const void *src, size_t count);
 int (* CDECL p_wmemcpy_s)(WCHAR *dest, size_t numberOfElements, const WCHAR *src, size_t count);
 int (* CDECL p_strncpy_s)(char *dest, size_t numberOfElements, const char *src, size_t count);
+
+unsigned int (* CDECL p_SpinCount__Value)(void);
+unsigned int (* CDECL p__GetConcurrency)(void);
+int (* CDECL p_event_wait_for_multiple)(void **events, size_t count, BOOL wait_all, unsigned int timeout);
+void (* CDECL p__Lock_shared_ptr_spin_lock)(void);
+void (* CDECL p__Unlock_shared_ptr_spin_lock)(void);
 
 DWORD msvcrt_tls;
 

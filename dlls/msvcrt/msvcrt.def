@@ -234,6 +234,7 @@ EXPORTS
   _getch_nolock
   _getche
   _getche_nolock
+  _GetConcurrency
   _getcwd=MSVCRT__getcwd
   _getdcwd=MSVCRT__getdcwd
   _getdiskfree=MSVCRT__getdiskfree
@@ -320,6 +321,7 @@ EXPORTS
   _localtime64_s=MSVCRT__localtime64_s
   _lock
   _lock_file=MSVCRT__lock_file
+  _Lock_shared_ptr_spin_lock
   _locking=MSVCRT__locking
   _logb=MSVCRT__logb
   _logbf=MSVCRT__logbf
@@ -429,6 +431,8 @@ EXPORTS
   _putwch
   _putwch_nolock
   _putws=MSVCRT__putws
+  _query_new_handler=MSVCRT__query_new_handler
+  _query_new_mode=MSVCRT__query_new_mode
   _read=MSVCRT__read
   _realloc_base
   _recalloc
@@ -447,6 +451,8 @@ EXPORTS
   _set_errno
   _set_FMA3_enable=MSVCRT__set_FMA3_enable
   _set_invalid_parameter_handler=MSVCRT__set_invalid_parameter_handler
+  _set_new_handler=MSVCRT__set_new_handler
+  _set_new_mode=MSVCRT__set_new_mode
   _set_printf_count_output=MSVCRT__set_printf_count_output
   _set_sbh_threshold
   _set_SSE2_enable=MSVCRT__set_SSE2_enable
@@ -511,6 +517,7 @@ EXPORTS
   _unloaddll
   _unlock
   _unlock_file=MSVCRT__unlock_file
+  _Unlock_shared_ptr_spin_lock
   _utime32=MSVCRT__utime32
   _utime64=MSVCRT__utime64
   _utime=MSVCRT__utime
@@ -672,6 +679,7 @@ EXPORTS
   atol=ntdll.atol
   bsearch=MSVCRT_bsearch
   calloc=MSVCRT_calloc
+  calloc=MSVCRT_calloc
   ceil=MSVCRT_ceil
   ceilf=MSVCRT_ceilf
   clearerr=MSVCRT_clearerr
@@ -704,6 +712,7 @@ EXPORTS
   CurrentScheduler_RegisterShutdownEvent
   difftime=MSVCRT_difftime
   div=MSVCRT_div
+  event_wait_for_multiple
   exit=MSVCRT_exit
   exp=MSVCRT_exp
   expf=MSVCRT_expf
@@ -737,6 +746,7 @@ EXPORTS
   fread=MSVCRT_fread
   fread=MSVCRT_fread
   fread_s=MSVCRT_fread_s
+  free=MSVCRT_free
   free=MSVCRT_free
   freopen=MSVCRT_freopen
   freopen_s=MSVCRT_freopen_s
@@ -797,6 +807,7 @@ EXPORTS
   logf=MSVCRT_logf
   longjmp=MSVCRT_longjmp
   malloc=MSVCRT_malloc
+  malloc=MSVCRT_malloc
   mblen=MSVCRT_mblen
   mbrlen=MSVCRT_mbrlen
   mbrtowc=MSVCRT_mbrtowc
@@ -808,28 +819,18 @@ EXPORTS
   memchr=MSVCRT_memchr
   memcmp=MSVCRT_memcmp
   memcpy=MSVCRT_memcpy
+  memcpy_s=MSVCRT_memcpy_s
   memmove=MSVCRT_memmove
+  memmove_s=MSVCRT_memmove_s
   memset=MSVCRT_memset
   mktime=MSVCRT_mktime
   modf=MSVCRT_modf
   modff=MSVCRT_modff
-  _query_new_handler=MSVCRT__query_new_handler
-  _query_new_mode=MSVCRT__query_new_mode
-  _set_new_handler=MSVCRT__set_new_handler
-  _set_new_mode=MSVCRT__set_new_mode
-  calloc=MSVCRT_calloc
-  free=MSVCRT_free
-  malloc=MSVCRT_malloc
-  memcpy_s=MSVCRT_memcpy_s
-  memmove_s=MSVCRT_memmove_s
+  nearbyint=MSVCRT_nearbyint
+  nearbyintf=MSVCRT_nearbyintf
   operator_delete=MSVCRT_operator_delete
   operator_new=MSVCRT_operator_new
   operator_new_dbg=MSVCRT_operator_new_dbg
-  realloc=MSVCRT_realloc
-  set_new_handler=MSVCRT_set_new_handler
-  strncpy_s=MSVCRT_strncpy_s
-  nearbyint=MSVCRT_nearbyint
-  nearbyintf=MSVCRT_nearbyintf
   perror=MSVCRT_perror
   pow=MSVCRT_pow
   powf=MSVCRT_powf
@@ -842,12 +843,14 @@ EXPORTS
   raise=MSVCRT_raise
   rand=MSVCRT_rand
   realloc=MSVCRT_realloc
+  realloc=MSVCRT_realloc
   remove=MSVCRT_remove
   rename=MSVCRT_rename
   rewind=MSVCRT_rewind
   Scheduler_Create
   Scheduler_ResetDefaultSchedulerPolicy
   Scheduler_SetDefaultSchedulerPolicy
+  set_new_handler=MSVCRT_set_new_handler
   setbuf=MSVCRT_setbuf
   setlocale=MSVCRT_setlocale
   setvbuf=MSVCRT_setvbuf
@@ -858,6 +861,7 @@ EXPORTS
   sinf=MSVCRT_sinf
   sinh=MSVCRT_sinh
   sinhf=MSVCRT_sinhf
+  SpinCount__Value
   sprintf=MSVCRT_sprintf
   sprintf_s=MSVCRT_sprintf_s
   sqrt=MSVCRT_sqrt
@@ -880,6 +884,7 @@ EXPORTS
   strlen=MSVCRT_strlen
   strncmp=MSVCRT_strncmp
   strncpy=MSVCRT_strncpy
+  strncpy_s=MSVCRT_strncpy_s
   strrchr=MSVCRT_strrchr
   strstr=MSVCRT_strstr
   strtod=MSVCRT_strtod

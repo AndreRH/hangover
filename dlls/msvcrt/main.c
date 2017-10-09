@@ -298,6 +298,7 @@ static const syscall_handler dll_functions[] =
     qemu__getch_nolock,
     qemu__getche,
     qemu__getche_nolock,
+    qemu__GetConcurrency,
     qemu__getcwd,
     qemu__getdcwd,
     qemu__getdiskfree,
@@ -381,6 +382,7 @@ static const syscall_handler dll_functions[] =
     qemu__localtime64_s,
     qemu__lock,
     qemu__lock_file,
+    qemu__Lock_shared_ptr_spin_lock,
     qemu__locking,
     qemu__logb,
     qemu__logbf,
@@ -568,6 +570,7 @@ static const syscall_handler dll_functions[] =
     qemu__unloaddll,
     qemu__unlock,
     qemu__unlock_file,
+    qemu__Unlock_shared_ptr_spin_lock,
     qemu__utime,
     qemu__utime32,
     qemu__utime64,
@@ -770,6 +773,7 @@ static const syscall_handler dll_functions[] =
     qemu_erfcl,
     qemu_erff,
     qemu_erfl,
+    qemu_event_wait_for_multiple,
     qemu_exit,
     qemu_exp,
     qemu_exp2,
@@ -948,6 +952,7 @@ static const syscall_handler dll_functions[] =
     qemu_sinf,
     qemu_sinh,
     qemu_sinhf,
+    qemu_SpinCount__Value,
     qemu_sprintf,
     qemu_sprintf,
     qemu_sqrt,
@@ -1255,6 +1260,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__getch_nolock = (void *)GetProcAddress(msvcrt, "_getch_nolock");
     p__getche = (void *)GetProcAddress(msvcrt, "_getche");
     p__getche_nolock = (void *)GetProcAddress(msvcrt, "_getche_nolock");
+    p__GetConcurrency = (void *)GetProcAddress(msvcrt, "_GetConcurrency");
     p__getcwd = (void *)GetProcAddress(msvcrt, "_getcwd");
     p__getdcwd = (void *)GetProcAddress(msvcrt, "_getdcwd");
     p__getdiskfree = (void *)GetProcAddress(msvcrt, "_getdiskfree");
@@ -1339,6 +1345,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__localtime64_s = (void *)GetProcAddress(msvcrt, "_localtime64_s");
     p__lock = (void *)GetProcAddress(msvcrt, "_lock");
     p__lock_file = (void *)GetProcAddress(msvcrt, "_lock_file");
+    p__Lock_shared_ptr_spin_lock = (void *)GetProcAddress(msvcrt, "_Lock_shared_ptr_spin_lock");
     p__locking = (void *)GetProcAddress(msvcrt, "_locking");
     p__logb = (void *)GetProcAddress(msvcrt, "_logb");
     p__logbf = (void *)GetProcAddress(msvcrt, "_logbf");
@@ -1529,6 +1536,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__unloaddll = (void *)GetProcAddress(msvcrt, "_unloaddll");
     p__unlock = (void *)GetProcAddress(msvcrt, "_unlock");
     p__unlock_file = (void *)GetProcAddress(msvcrt, "_unlock_file");
+    p__Unlock_shared_ptr_spin_lock = (void *)GetProcAddress(msvcrt, "_Unlock_shared_ptr_spin_lock");
     p__vsnprintf = (void *)GetProcAddress(msvcrt, "_vsnprintf");
     p__vsnwprintf = (void *)GetProcAddress(msvcrt, "_vsnwprintf");
     p__waccess = (void *)GetProcAddress(msvcrt, "_waccess");
@@ -1726,6 +1734,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_erfcl = (void *)GetProcAddress(msvcrt, "erfcl");
     p_erff = (void *)GetProcAddress(msvcrt, "erff");
     p_erfl = (void *)GetProcAddress(msvcrt, "erfl");
+    p_event_wait_for_multiple = (void *)GetProcAddress(msvcrt, "event_wait_for_multiple");
     p_exit = (void *)GetProcAddress(msvcrt, "exit");
     p_exp = (void *)GetProcAddress(msvcrt, "exp");
     p_exp2 = (void *)GetProcAddress(msvcrt, "exp2");
@@ -1912,6 +1921,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_sinf = (void *)GetProcAddress(msvcrt, "sinf");
     p_sinh = (void *)GetProcAddress(msvcrt, "sinh");
     p_sinhf = (void *)GetProcAddress(msvcrt, "sinhf");
+    p_SpinCount__Value = (void *)GetProcAddress(msvcrt, "SpinCount__Value");
     p_sqrt = (void *)GetProcAddress(msvcrt, "sqrt");
     p_sqrtf = (void *)GetProcAddress(msvcrt, "sqrtf");
     p_srand = (void *)GetProcAddress(msvcrt, "srand");
