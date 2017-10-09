@@ -120,6 +120,8 @@ static const syscall_handler dll_functions[] =
     qemu___sys_errlist,
     qemu___sys_nerr,
     qemu___toascii,
+    qemu___unDName,
+    qemu___unDNameEx,
     qemu___wcserror,
     qemu___wcserror_s,
     qemu___wgetmainargs,
@@ -784,8 +786,6 @@ static const syscall_handler dll_functions[] =
     qemu_roundf,
     qemu_roundl,
     qemu_scalbnl,
-    qemu_scanf,
-    qemu_scanf,
     qemu_Scheduler_Create,
     qemu_Scheduler_ResetDefaultSchedulerPolicy,
     qemu_Scheduler_SetDefaultSchedulerPolicy,
@@ -910,6 +910,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p___sys_errlist = (void *)GetProcAddress(msvcrt, "__sys_errlist");
     p___sys_nerr = (void *)GetProcAddress(msvcrt, "__sys_nerr");
     p___toascii = (void *)GetProcAddress(msvcrt, "__toascii");
+    p___unDName = (void *)GetProcAddress(msvcrt, "__unDName");
+    p___unDNameEx = (void *)GetProcAddress(msvcrt, "__unDNameEx");
     p___wcserror = (void *)GetProcAddress(msvcrt, "__wcserror");
     p___wcserror_s = (void *)GetProcAddress(msvcrt, "__wcserror_s");
     p___wgetmainargs = (void *)GetProcAddress(msvcrt, "__wgetmainargs");

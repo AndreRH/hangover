@@ -53,6 +53,8 @@ enum msvcrt_calls
     CALL___SYS_ERRLIST,
     CALL___SYS_NERR,
     CALL___TOASCII,
+    CALL___UNDNAME,
+    CALL___UNDNAMEEX,
     CALL___WCSERROR,
     CALL___WCSERROR_S,
     CALL___WGETMAINARGS,
@@ -821,6 +823,7 @@ typedef void thread_data_t;
 typedef void Context;
 typedef void Scheduler, _Scheduler;
 typedef void SchedulerPolicy;
+typedef void *malloc_func_t, *free_func_t;
 
 #ifdef QEMU_DLL_GUEST
 
@@ -888,6 +891,8 @@ void qemu___setusermatherr(struct qemu_syscall *call);
 void qemu___sys_errlist(struct qemu_syscall *call);
 void qemu___sys_nerr(struct qemu_syscall *call);
 void qemu___toascii(struct qemu_syscall *call);
+void qemu___unDName(struct qemu_syscall *call);
+void qemu___unDNameEx(struct qemu_syscall *call);
 void qemu___wcserror(struct qemu_syscall *call);
 void qemu___wcserror_s(struct qemu_syscall *call);
 void qemu___wgetmainargs(struct qemu_syscall *call);
@@ -2391,6 +2396,8 @@ void (* CDECL p_CurrentScheduler_RegisterShutdownEvent)(HANDLE event);
 _Scheduler* (* CDECL p__CurrentScheduler__Get)(_Scheduler *ret);
 unsigned int (* CDECL p__CurrentScheduler__GetNumberOfVirtualProcessors)(void);
 unsigned int (* CDECL p__CurrentScheduler__Id)(void);
+char* (* CDECL p___unDNameEx)(char* buffer, const char* mangled, int buflen, malloc_func_t memget, free_func_t memfree, void* unknown, unsigned short int flags);
+char* (* CDECL p___unDName)(char* buffer, const char* mangled, int buflen, malloc_func_t memget, free_func_t memfree, unsigned short int flags);
 
 DWORD msvcrt_tls;
 

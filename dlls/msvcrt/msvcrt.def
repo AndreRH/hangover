@@ -60,6 +60,8 @@ EXPORTS
   __sys_errlist
   __sys_nerr
   __toascii=MSVCRT___toascii
+  __unDName
+  __unDNameEx
   __wcserror=MSVCRT___wcserror
   __wcserror_s=MSVCRT___wcserror_s
   __wgetmainargs
