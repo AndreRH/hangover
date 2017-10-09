@@ -8,8 +8,8 @@ VPATH=$(SRCDIR)
 
 all: secur32.dll qemu_secur32.dll.so
 
-secur32.dll: lsa_g.o main_g.o secur32.def secur32_g.o wrapper_g.o
-	$(GUEST_CC)-ld -shared $(SRCDIR)/secur32.def *_g.o -o secur32.dll -nostdlib -e DllMain
+secur32.dll: lsa_g.o main_g.o secur32.spec secur32_g.o wrapper_g.o
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/secur32.spec *_g.o -o secur32.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x190000000
 
 qemu_secur32.dll.so: lsa_h.o main_h.o secur32_h.o wrapper_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_secur32.spec *_h.o -o qemu_secur32.dll.so -lsecur32 -DUSE_WS_PREFIX
