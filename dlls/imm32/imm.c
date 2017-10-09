@@ -48,12 +48,12 @@ WINBASEAPI HIMC WINAPI ImmAssociateContext(HWND hWnd, HIMC hIMC)
 {
     struct qemu_ImmAssociateContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMASSOCIATECONTEXT);
-    call.hWnd = (uint64_t)hWnd;
-    call.hIMC = (uint64_t)hIMC;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hIMC = (ULONG_PTR)hIMC;
 
     qemu_syscall(&call.super);
 
-    return (HIMC)call.super.iret;
+    return (HIMC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -62,7 +62,7 @@ void qemu_ImmAssociateContext(struct qemu_syscall *call)
 {
     struct qemu_ImmAssociateContext *c = (struct qemu_ImmAssociateContext *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ImmAssociateContext(QEMU_G2H(c->hWnd), QEMU_G2H(c->hIMC));
+    c->super.iret = (ULONG_PTR)ImmAssociateContext(QEMU_G2H(c->hWnd), QEMU_G2H(c->hIMC));
 }
 
 #endif
@@ -81,9 +81,9 @@ WINBASEAPI BOOL WINAPI ImmAssociateContextEx(HWND hWnd, HIMC hIMC, DWORD dwFlags
 {
     struct qemu_ImmAssociateContextEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMASSOCIATECONTEXTEX);
-    call.hWnd = (uint64_t)hWnd;
-    call.hIMC = (uint64_t)hIMC;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -116,10 +116,10 @@ WINBASEAPI BOOL WINAPI ImmConfigureIMEA(HKL hKL, HWND hWnd, DWORD dwMode, LPVOID
 {
     struct qemu_ImmConfigureIMEA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMCONFIGUREIMEA);
-    call.hKL = (uint64_t)hKL;
-    call.hWnd = (uint64_t)hWnd;
-    call.dwMode = (uint64_t)dwMode;
-    call.lpData = (uint64_t)lpData;
+    call.hKL = (ULONG_PTR)hKL;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.dwMode = (ULONG_PTR)dwMode;
+    call.lpData = (ULONG_PTR)lpData;
 
     qemu_syscall(&call.super);
 
@@ -152,10 +152,10 @@ WINBASEAPI BOOL WINAPI ImmConfigureIMEW(HKL hKL, HWND hWnd, DWORD dwMode, LPVOID
 {
     struct qemu_ImmConfigureIMEW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMCONFIGUREIMEW);
-    call.hKL = (uint64_t)hKL;
-    call.hWnd = (uint64_t)hWnd;
-    call.dwMode = (uint64_t)dwMode;
-    call.lpData = (uint64_t)lpData;
+    call.hKL = (ULONG_PTR)hKL;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.dwMode = (ULONG_PTR)dwMode;
+    call.lpData = (ULONG_PTR)lpData;
 
     qemu_syscall(&call.super);
 
@@ -187,7 +187,7 @@ WINBASEAPI HIMC WINAPI ImmCreateContext(void)
 
     qemu_syscall(&call.super);
 
-    return (HIMC)call.super.iret;
+    return (HIMC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -196,7 +196,7 @@ void qemu_ImmCreateContext(struct qemu_syscall *call)
 {
     struct qemu_ImmCreateContext *c = (struct qemu_ImmCreateContext *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ImmCreateContext();
+    c->super.iret = (ULONG_PTR)ImmCreateContext();
 }
 
 #endif
@@ -213,7 +213,7 @@ WINBASEAPI BOOL WINAPI ImmDestroyContext(HIMC hIMC)
 {
     struct qemu_ImmDestroyContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMDESTROYCONTEXT);
-    call.hIMC = (uint64_t)hIMC;
+    call.hIMC = (ULONG_PTR)hIMC;
 
     qemu_syscall(&call.super);
 
@@ -243,7 +243,7 @@ WINBASEAPI BOOL WINAPI ImmDisableIME(DWORD idThread)
 {
     struct qemu_ImmDisableIME call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMDISABLEIME);
-    call.idThread = (uint64_t)idThread;
+    call.idThread = (ULONG_PTR)idThread;
 
     qemu_syscall(&call.super);
 
@@ -278,12 +278,12 @@ WINBASEAPI UINT WINAPI ImmEnumRegisterWordA(HKL hKL, REGISTERWORDENUMPROCA lpfnE
 {
     struct qemu_ImmEnumRegisterWordA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMENUMREGISTERWORDA);
-    call.hKL = (uint64_t)hKL;
-    call.lpfnEnumProc = (uint64_t)lpfnEnumProc;
-    call.lpszReading = (uint64_t)lpszReading;
-    call.dwStyle = (uint64_t)dwStyle;
-    call.lpszRegister = (uint64_t)lpszRegister;
-    call.lpData = (uint64_t)lpData;
+    call.hKL = (ULONG_PTR)hKL;
+    call.lpfnEnumProc = (ULONG_PTR)lpfnEnumProc;
+    call.lpszReading = (ULONG_PTR)lpszReading;
+    call.dwStyle = (ULONG_PTR)dwStyle;
+    call.lpszRegister = (ULONG_PTR)lpszRegister;
+    call.lpData = (ULONG_PTR)lpData;
 
     qemu_syscall(&call.super);
 
@@ -318,12 +318,12 @@ WINBASEAPI UINT WINAPI ImmEnumRegisterWordW(HKL hKL, REGISTERWORDENUMPROCW lpfnE
 {
     struct qemu_ImmEnumRegisterWordW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMENUMREGISTERWORDW);
-    call.hKL = (uint64_t)hKL;
-    call.lpfnEnumProc = (uint64_t)lpfnEnumProc;
-    call.lpszReading = (uint64_t)lpszReading;
-    call.dwStyle = (uint64_t)dwStyle;
-    call.lpszRegister = (uint64_t)lpszRegister;
-    call.lpData = (uint64_t)lpData;
+    call.hKL = (ULONG_PTR)hKL;
+    call.lpfnEnumProc = (ULONG_PTR)lpfnEnumProc;
+    call.lpszReading = (ULONG_PTR)lpszReading;
+    call.dwStyle = (ULONG_PTR)dwStyle;
+    call.lpszRegister = (ULONG_PTR)lpszRegister;
+    call.lpData = (ULONG_PTR)lpData;
 
     qemu_syscall(&call.super);
 
@@ -356,10 +356,10 @@ WINBASEAPI LRESULT WINAPI ImmEscapeA(HKL hKL, HIMC hIMC, UINT uEscape, LPVOID lp
 {
     struct qemu_ImmEscapeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMESCAPEA);
-    call.hKL = (uint64_t)hKL;
-    call.hIMC = (uint64_t)hIMC;
-    call.uEscape = (uint64_t)uEscape;
-    call.lpData = (uint64_t)lpData;
+    call.hKL = (ULONG_PTR)hKL;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.uEscape = (ULONG_PTR)uEscape;
+    call.lpData = (ULONG_PTR)lpData;
 
     qemu_syscall(&call.super);
 
@@ -392,10 +392,10 @@ WINBASEAPI LRESULT WINAPI ImmEscapeW(HKL hKL, HIMC hIMC, UINT uEscape, LPVOID lp
 {
     struct qemu_ImmEscapeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMESCAPEW);
-    call.hKL = (uint64_t)hKL;
-    call.hIMC = (uint64_t)hIMC;
-    call.uEscape = (uint64_t)uEscape;
-    call.lpData = (uint64_t)lpData;
+    call.hKL = (ULONG_PTR)hKL;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.uEscape = (ULONG_PTR)uEscape;
+    call.lpData = (ULONG_PTR)lpData;
 
     qemu_syscall(&call.super);
 
@@ -428,10 +428,10 @@ WINBASEAPI DWORD WINAPI ImmGetCandidateListA(HIMC hIMC, DWORD dwIndex, LPCANDIDA
 {
     struct qemu_ImmGetCandidateListA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETCANDIDATELISTA);
-    call.hIMC = (uint64_t)hIMC;
-    call.dwIndex = (uint64_t)dwIndex;
-    call.lpCandList = (uint64_t)lpCandList;
-    call.dwBufLen = (uint64_t)dwBufLen;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.dwIndex = (ULONG_PTR)dwIndex;
+    call.lpCandList = (ULONG_PTR)lpCandList;
+    call.dwBufLen = (ULONG_PTR)dwBufLen;
 
     qemu_syscall(&call.super);
 
@@ -462,8 +462,8 @@ WINBASEAPI DWORD WINAPI ImmGetCandidateListCountA(HIMC hIMC, LPDWORD lpdwListCou
 {
     struct qemu_ImmGetCandidateListCountA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETCANDIDATELISTCOUNTA);
-    call.hIMC = (uint64_t)hIMC;
-    call.lpdwListCount = (uint64_t)lpdwListCount;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.lpdwListCount = (ULONG_PTR)lpdwListCount;
 
     qemu_syscall(&call.super);
 
@@ -494,8 +494,8 @@ WINBASEAPI DWORD WINAPI ImmGetCandidateListCountW(HIMC hIMC, LPDWORD lpdwListCou
 {
     struct qemu_ImmGetCandidateListCountW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETCANDIDATELISTCOUNTW);
-    call.hIMC = (uint64_t)hIMC;
-    call.lpdwListCount = (uint64_t)lpdwListCount;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.lpdwListCount = (ULONG_PTR)lpdwListCount;
 
     qemu_syscall(&call.super);
 
@@ -528,10 +528,10 @@ WINBASEAPI DWORD WINAPI ImmGetCandidateListW(HIMC hIMC, DWORD dwIndex, LPCANDIDA
 {
     struct qemu_ImmGetCandidateListW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETCANDIDATELISTW);
-    call.hIMC = (uint64_t)hIMC;
-    call.dwIndex = (uint64_t)dwIndex;
-    call.lpCandList = (uint64_t)lpCandList;
-    call.dwBufLen = (uint64_t)dwBufLen;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.dwIndex = (ULONG_PTR)dwIndex;
+    call.lpCandList = (ULONG_PTR)lpCandList;
+    call.dwBufLen = (ULONG_PTR)dwBufLen;
 
     qemu_syscall(&call.super);
 
@@ -563,9 +563,9 @@ WINBASEAPI BOOL WINAPI ImmGetCandidateWindow(HIMC hIMC, DWORD dwIndex, LPCANDIDA
 {
     struct qemu_ImmGetCandidateWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETCANDIDATEWINDOW);
-    call.hIMC = (uint64_t)hIMC;
-    call.dwIndex = (uint64_t)dwIndex;
-    call.lpCandidate = (uint64_t)lpCandidate;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.dwIndex = (ULONG_PTR)dwIndex;
+    call.lpCandidate = (ULONG_PTR)lpCandidate;
 
     qemu_syscall(&call.super);
 
@@ -596,8 +596,8 @@ WINBASEAPI BOOL WINAPI ImmGetCompositionFontA(HIMC hIMC, LPLOGFONTA lplf)
 {
     struct qemu_ImmGetCompositionFontA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETCOMPOSITIONFONTA);
-    call.hIMC = (uint64_t)hIMC;
-    call.lplf = (uint64_t)lplf;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.lplf = (ULONG_PTR)lplf;
 
     qemu_syscall(&call.super);
 
@@ -628,8 +628,8 @@ WINBASEAPI BOOL WINAPI ImmGetCompositionFontW(HIMC hIMC, LPLOGFONTW lplf)
 {
     struct qemu_ImmGetCompositionFontW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETCOMPOSITIONFONTW);
-    call.hIMC = (uint64_t)hIMC;
-    call.lplf = (uint64_t)lplf;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.lplf = (ULONG_PTR)lplf;
 
     qemu_syscall(&call.super);
 
@@ -662,10 +662,10 @@ WINBASEAPI LONG WINAPI ImmGetCompositionStringA(HIMC hIMC, DWORD dwIndex, LPVOID
 {
     struct qemu_ImmGetCompositionStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETCOMPOSITIONSTRINGA);
-    call.hIMC = (uint64_t)hIMC;
-    call.dwIndex = (uint64_t)dwIndex;
-    call.lpBuf = (uint64_t)lpBuf;
-    call.dwBufLen = (uint64_t)dwBufLen;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.dwIndex = (ULONG_PTR)dwIndex;
+    call.lpBuf = (ULONG_PTR)lpBuf;
+    call.dwBufLen = (ULONG_PTR)dwBufLen;
 
     qemu_syscall(&call.super);
 
@@ -698,10 +698,10 @@ WINBASEAPI LONG WINAPI ImmGetCompositionStringW(HIMC hIMC, DWORD dwIndex, LPVOID
 {
     struct qemu_ImmGetCompositionStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETCOMPOSITIONSTRINGW);
-    call.hIMC = (uint64_t)hIMC;
-    call.dwIndex = (uint64_t)dwIndex;
-    call.lpBuf = (uint64_t)lpBuf;
-    call.dwBufLen = (uint64_t)dwBufLen;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.dwIndex = (ULONG_PTR)dwIndex;
+    call.lpBuf = (ULONG_PTR)lpBuf;
+    call.dwBufLen = (ULONG_PTR)dwBufLen;
 
     qemu_syscall(&call.super);
 
@@ -732,8 +732,8 @@ WINBASEAPI BOOL WINAPI ImmGetCompositionWindow(HIMC hIMC, LPCOMPOSITIONFORM lpCo
 {
     struct qemu_ImmGetCompositionWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETCOMPOSITIONWINDOW);
-    call.hIMC = (uint64_t)hIMC;
-    call.lpCompForm = (uint64_t)lpCompForm;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.lpCompForm = (ULONG_PTR)lpCompForm;
 
     qemu_syscall(&call.super);
 
@@ -763,11 +763,11 @@ WINBASEAPI HIMC WINAPI ImmGetContext(HWND hWnd)
 {
     struct qemu_ImmGetContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETCONTEXT);
-    call.hWnd = (uint64_t)hWnd;
+    call.hWnd = (ULONG_PTR)hWnd;
 
     qemu_syscall(&call.super);
 
-    return (HIMC)call.super.iret;
+    return (HIMC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -776,7 +776,7 @@ void qemu_ImmGetContext(struct qemu_syscall *call)
 {
     struct qemu_ImmGetContext *c = (struct qemu_ImmGetContext *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)ImmGetContext(QEMU_G2H(c->hWnd));
+    c->super.iret = (ULONG_PTR)ImmGetContext(QEMU_G2H(c->hWnd));
 }
 
 #endif
@@ -798,12 +798,12 @@ WINBASEAPI DWORD WINAPI ImmGetConversionListA(HKL hKL, HIMC hIMC, LPCSTR pSrc, L
 {
     struct qemu_ImmGetConversionListA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETCONVERSIONLISTA);
-    call.hKL = (uint64_t)hKL;
-    call.hIMC = (uint64_t)hIMC;
-    call.pSrc = (uint64_t)pSrc;
-    call.lpDst = (uint64_t)lpDst;
-    call.dwBufLen = (uint64_t)dwBufLen;
-    call.uFlag = (uint64_t)uFlag;
+    call.hKL = (ULONG_PTR)hKL;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.pSrc = (ULONG_PTR)pSrc;
+    call.lpDst = (ULONG_PTR)lpDst;
+    call.dwBufLen = (ULONG_PTR)dwBufLen;
+    call.uFlag = (ULONG_PTR)uFlag;
 
     qemu_syscall(&call.super);
 
@@ -838,12 +838,12 @@ WINBASEAPI DWORD WINAPI ImmGetConversionListW(HKL hKL, HIMC hIMC, LPCWSTR pSrc, 
 {
     struct qemu_ImmGetConversionListW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETCONVERSIONLISTW);
-    call.hKL = (uint64_t)hKL;
-    call.hIMC = (uint64_t)hIMC;
-    call.pSrc = (uint64_t)pSrc;
-    call.lpDst = (uint64_t)lpDst;
-    call.dwBufLen = (uint64_t)dwBufLen;
-    call.uFlag = (uint64_t)uFlag;
+    call.hKL = (ULONG_PTR)hKL;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.pSrc = (ULONG_PTR)pSrc;
+    call.lpDst = (ULONG_PTR)lpDst;
+    call.dwBufLen = (ULONG_PTR)dwBufLen;
+    call.uFlag = (ULONG_PTR)uFlag;
 
     qemu_syscall(&call.super);
 
@@ -875,9 +875,9 @@ WINBASEAPI BOOL WINAPI ImmGetConversionStatus(HIMC hIMC, LPDWORD lpfdwConversion
 {
     struct qemu_ImmGetConversionStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETCONVERSIONSTATUS);
-    call.hIMC = (uint64_t)hIMC;
-    call.lpfdwConversion = (uint64_t)lpfdwConversion;
-    call.lpfdwSentence = (uint64_t)lpfdwSentence;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.lpfdwConversion = (ULONG_PTR)lpfdwConversion;
+    call.lpfdwSentence = (ULONG_PTR)lpfdwSentence;
 
     qemu_syscall(&call.super);
 
@@ -907,11 +907,11 @@ WINBASEAPI HWND WINAPI ImmGetDefaultIMEWnd(HWND hWnd)
 {
     struct qemu_ImmGetDefaultIMEWnd call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETDEFAULTIMEWND);
-    call.hWnd = (uint64_t)hWnd;
+    call.hWnd = (ULONG_PTR)hWnd;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -920,7 +920,7 @@ void qemu_ImmGetDefaultIMEWnd(struct qemu_syscall *call)
 {
     struct qemu_ImmGetDefaultIMEWnd *c = (struct qemu_ImmGetDefaultIMEWnd *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ImmGetDefaultIMEWnd(QEMU_G2H(c->hWnd));
+    c->super.iret = (ULONG_PTR)ImmGetDefaultIMEWnd(QEMU_G2H(c->hWnd));
 }
 
 #endif
@@ -939,9 +939,9 @@ WINBASEAPI UINT WINAPI ImmGetDescriptionA(HKL hKL, LPSTR lpszDescription, UINT u
 {
     struct qemu_ImmGetDescriptionA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETDESCRIPTIONA);
-    call.hKL = (uint64_t)hKL;
-    call.lpszDescription = (uint64_t)lpszDescription;
-    call.uBufLen = (uint64_t)uBufLen;
+    call.hKL = (ULONG_PTR)hKL;
+    call.lpszDescription = (ULONG_PTR)lpszDescription;
+    call.uBufLen = (ULONG_PTR)uBufLen;
 
     qemu_syscall(&call.super);
 
@@ -973,9 +973,9 @@ WINBASEAPI UINT WINAPI ImmGetDescriptionW(HKL hKL, LPWSTR lpszDescription, UINT 
 {
     struct qemu_ImmGetDescriptionW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETDESCRIPTIONW);
-    call.hKL = (uint64_t)hKL;
-    call.lpszDescription = (uint64_t)lpszDescription;
-    call.uBufLen = (uint64_t)uBufLen;
+    call.hKL = (ULONG_PTR)hKL;
+    call.lpszDescription = (ULONG_PTR)lpszDescription;
+    call.uBufLen = (ULONG_PTR)uBufLen;
 
     qemu_syscall(&call.super);
 
@@ -1008,10 +1008,10 @@ WINBASEAPI DWORD WINAPI ImmGetGuideLineA(HIMC hIMC, DWORD dwIndex, LPSTR lpBuf, 
 {
     struct qemu_ImmGetGuideLineA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETGUIDELINEA);
-    call.hIMC = (uint64_t)hIMC;
-    call.dwIndex = (uint64_t)dwIndex;
-    call.lpBuf = (uint64_t)lpBuf;
-    call.dwBufLen = (uint64_t)dwBufLen;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.dwIndex = (ULONG_PTR)dwIndex;
+    call.lpBuf = (ULONG_PTR)lpBuf;
+    call.dwBufLen = (ULONG_PTR)dwBufLen;
 
     qemu_syscall(&call.super);
 
@@ -1044,10 +1044,10 @@ WINBASEAPI DWORD WINAPI ImmGetGuideLineW(HIMC hIMC, DWORD dwIndex, LPWSTR lpBuf,
 {
     struct qemu_ImmGetGuideLineW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETGUIDELINEW);
-    call.hIMC = (uint64_t)hIMC;
-    call.dwIndex = (uint64_t)dwIndex;
-    call.lpBuf = (uint64_t)lpBuf;
-    call.dwBufLen = (uint64_t)dwBufLen;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.dwIndex = (ULONG_PTR)dwIndex;
+    call.lpBuf = (ULONG_PTR)lpBuf;
+    call.dwBufLen = (ULONG_PTR)dwBufLen;
 
     qemu_syscall(&call.super);
 
@@ -1079,9 +1079,9 @@ WINBASEAPI UINT WINAPI ImmGetIMEFileNameA(HKL hKL, LPSTR lpszFileName, UINT uBuf
 {
     struct qemu_ImmGetIMEFileNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETIMEFILENAMEA);
-    call.hKL = (uint64_t)hKL;
-    call.lpszFileName = (uint64_t)lpszFileName;
-    call.uBufLen = (uint64_t)uBufLen;
+    call.hKL = (ULONG_PTR)hKL;
+    call.lpszFileName = (ULONG_PTR)lpszFileName;
+    call.uBufLen = (ULONG_PTR)uBufLen;
 
     qemu_syscall(&call.super);
 
@@ -1113,9 +1113,9 @@ WINBASEAPI UINT WINAPI ImmGetIMEFileNameW(HKL hKL, LPWSTR lpszFileName, UINT uBu
 {
     struct qemu_ImmGetIMEFileNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETIMEFILENAMEW);
-    call.hKL = (uint64_t)hKL;
-    call.lpszFileName = (uint64_t)lpszFileName;
-    call.uBufLen = (uint64_t)uBufLen;
+    call.hKL = (ULONG_PTR)hKL;
+    call.lpszFileName = (ULONG_PTR)lpszFileName;
+    call.uBufLen = (ULONG_PTR)uBufLen;
 
     qemu_syscall(&call.super);
 
@@ -1145,7 +1145,7 @@ WINBASEAPI BOOL WINAPI ImmGetOpenStatus(HIMC hIMC)
 {
     struct qemu_ImmGetOpenStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETOPENSTATUS);
-    call.hIMC = (uint64_t)hIMC;
+    call.hIMC = (ULONG_PTR)hIMC;
 
     qemu_syscall(&call.super);
 
@@ -1176,8 +1176,8 @@ WINBASEAPI DWORD WINAPI ImmGetProperty(HKL hKL, DWORD fdwIndex)
 {
     struct qemu_ImmGetProperty call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETPROPERTY);
-    call.hKL = (uint64_t)hKL;
-    call.fdwIndex = (uint64_t)fdwIndex;
+    call.hKL = (ULONG_PTR)hKL;
+    call.fdwIndex = (ULONG_PTR)fdwIndex;
 
     qemu_syscall(&call.super);
 
@@ -1209,9 +1209,9 @@ WINBASEAPI UINT WINAPI ImmGetRegisterWordStyleA(HKL hKL, UINT nItem, LPSTYLEBUFA
 {
     struct qemu_ImmGetRegisterWordStyleA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETREGISTERWORDSTYLEA);
-    call.hKL = (uint64_t)hKL;
-    call.nItem = (uint64_t)nItem;
-    call.lpStyleBuf = (uint64_t)lpStyleBuf;
+    call.hKL = (ULONG_PTR)hKL;
+    call.nItem = (ULONG_PTR)nItem;
+    call.lpStyleBuf = (ULONG_PTR)lpStyleBuf;
 
     qemu_syscall(&call.super);
 
@@ -1243,9 +1243,9 @@ WINBASEAPI UINT WINAPI ImmGetRegisterWordStyleW(HKL hKL, UINT nItem, LPSTYLEBUFW
 {
     struct qemu_ImmGetRegisterWordStyleW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETREGISTERWORDSTYLEW);
-    call.hKL = (uint64_t)hKL;
-    call.nItem = (uint64_t)nItem;
-    call.lpStyleBuf = (uint64_t)lpStyleBuf;
+    call.hKL = (ULONG_PTR)hKL;
+    call.nItem = (ULONG_PTR)nItem;
+    call.lpStyleBuf = (ULONG_PTR)lpStyleBuf;
 
     qemu_syscall(&call.super);
 
@@ -1276,8 +1276,8 @@ WINBASEAPI BOOL WINAPI ImmGetStatusWindowPos(HIMC hIMC, LPPOINT lpptPos)
 {
     struct qemu_ImmGetStatusWindowPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETSTATUSWINDOWPOS);
-    call.hIMC = (uint64_t)hIMC;
-    call.lpptPos = (uint64_t)lpptPos;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.lpptPos = (ULONG_PTR)lpptPos;
 
     qemu_syscall(&call.super);
 
@@ -1307,7 +1307,7 @@ WINBASEAPI UINT WINAPI ImmGetVirtualKey(HWND hWnd)
 {
     struct qemu_ImmGetVirtualKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETVIRTUALKEY);
-    call.hWnd = (uint64_t)hWnd;
+    call.hWnd = (ULONG_PTR)hWnd;
 
     qemu_syscall(&call.super);
 
@@ -1338,12 +1338,12 @@ WINBASEAPI HKL WINAPI ImmInstallIMEA(LPCSTR lpszIMEFileName, LPCSTR lpszLayoutTe
 {
     struct qemu_ImmInstallIMEA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMINSTALLIMEA);
-    call.lpszIMEFileName = (uint64_t)lpszIMEFileName;
-    call.lpszLayoutText = (uint64_t)lpszLayoutText;
+    call.lpszIMEFileName = (ULONG_PTR)lpszIMEFileName;
+    call.lpszLayoutText = (ULONG_PTR)lpszLayoutText;
 
     qemu_syscall(&call.super);
 
-    return (HKL)call.super.iret;
+    return (HKL)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1352,7 +1352,7 @@ void qemu_ImmInstallIMEA(struct qemu_syscall *call)
 {
     struct qemu_ImmInstallIMEA *c = (struct qemu_ImmInstallIMEA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ImmInstallIMEA(QEMU_G2H(c->lpszIMEFileName), QEMU_G2H(c->lpszLayoutText));
+    c->super.iret = (ULONG_PTR)ImmInstallIMEA(QEMU_G2H(c->lpszIMEFileName), QEMU_G2H(c->lpszLayoutText));
 }
 
 #endif
@@ -1370,12 +1370,12 @@ WINBASEAPI HKL WINAPI ImmInstallIMEW(LPCWSTR lpszIMEFileName, LPCWSTR lpszLayout
 {
     struct qemu_ImmInstallIMEW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMINSTALLIMEW);
-    call.lpszIMEFileName = (uint64_t)lpszIMEFileName;
-    call.lpszLayoutText = (uint64_t)lpszLayoutText;
+    call.lpszIMEFileName = (ULONG_PTR)lpszIMEFileName;
+    call.lpszLayoutText = (ULONG_PTR)lpszLayoutText;
 
     qemu_syscall(&call.super);
 
-    return (HKL)call.super.iret;
+    return (HKL)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1384,7 +1384,7 @@ void qemu_ImmInstallIMEW(struct qemu_syscall *call)
 {
     struct qemu_ImmInstallIMEW *c = (struct qemu_ImmInstallIMEW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ImmInstallIMEW(QEMU_G2H(c->lpszIMEFileName), QEMU_G2H(c->lpszLayoutText));
+    c->super.iret = (ULONG_PTR)ImmInstallIMEW(QEMU_G2H(c->lpszIMEFileName), QEMU_G2H(c->lpszLayoutText));
 }
 
 #endif
@@ -1401,7 +1401,7 @@ WINBASEAPI BOOL WINAPI ImmIsIME(HKL hKL)
 {
     struct qemu_ImmIsIME call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMISIME);
-    call.hKL = (uint64_t)hKL;
+    call.hKL = (ULONG_PTR)hKL;
 
     qemu_syscall(&call.super);
 
@@ -1434,10 +1434,10 @@ WINBASEAPI BOOL WINAPI ImmIsUIMessageA(HWND hWndIME, UINT msg, WPARAM wParam, LP
 {
     struct qemu_ImmIsUIMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMISUIMESSAGEA);
-    call.hWndIME = (uint64_t)hWndIME;
-    call.msg = (uint64_t)msg;
-    call.wParam = (uint64_t)wParam;
-    call.lParam = (uint64_t)lParam;
+    call.hWndIME = (ULONG_PTR)hWndIME;
+    call.msg = (ULONG_PTR)msg;
+    call.wParam = (ULONG_PTR)wParam;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
@@ -1470,10 +1470,10 @@ WINBASEAPI BOOL WINAPI ImmIsUIMessageW(HWND hWndIME, UINT msg, WPARAM wParam, LP
 {
     struct qemu_ImmIsUIMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMISUIMESSAGEW);
-    call.hWndIME = (uint64_t)hWndIME;
-    call.msg = (uint64_t)msg;
-    call.wParam = (uint64_t)wParam;
-    call.lParam = (uint64_t)lParam;
+    call.hWndIME = (ULONG_PTR)hWndIME;
+    call.msg = (ULONG_PTR)msg;
+    call.wParam = (ULONG_PTR)wParam;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
@@ -1506,10 +1506,10 @@ WINBASEAPI BOOL WINAPI ImmNotifyIME(HIMC hIMC, DWORD dwAction, DWORD dwIndex, DW
 {
     struct qemu_ImmNotifyIME call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMNOTIFYIME);
-    call.hIMC = (uint64_t)hIMC;
-    call.dwAction = (uint64_t)dwAction;
-    call.dwIndex = (uint64_t)dwIndex;
-    call.dwValue = (uint64_t)dwValue;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.dwAction = (ULONG_PTR)dwAction;
+    call.dwIndex = (ULONG_PTR)dwIndex;
+    call.dwValue = (ULONG_PTR)dwValue;
 
     qemu_syscall(&call.super);
 
@@ -1542,10 +1542,10 @@ WINBASEAPI BOOL WINAPI ImmRegisterWordA(HKL hKL, LPCSTR lpszReading, DWORD dwSty
 {
     struct qemu_ImmRegisterWordA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMREGISTERWORDA);
-    call.hKL = (uint64_t)hKL;
-    call.lpszReading = (uint64_t)lpszReading;
-    call.dwStyle = (uint64_t)dwStyle;
-    call.lpszRegister = (uint64_t)lpszRegister;
+    call.hKL = (ULONG_PTR)hKL;
+    call.lpszReading = (ULONG_PTR)lpszReading;
+    call.dwStyle = (ULONG_PTR)dwStyle;
+    call.lpszRegister = (ULONG_PTR)lpszRegister;
 
     qemu_syscall(&call.super);
 
@@ -1578,10 +1578,10 @@ WINBASEAPI BOOL WINAPI ImmRegisterWordW(HKL hKL, LPCWSTR lpszReading, DWORD dwSt
 {
     struct qemu_ImmRegisterWordW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMREGISTERWORDW);
-    call.hKL = (uint64_t)hKL;
-    call.lpszReading = (uint64_t)lpszReading;
-    call.dwStyle = (uint64_t)dwStyle;
-    call.lpszRegister = (uint64_t)lpszRegister;
+    call.hKL = (ULONG_PTR)hKL;
+    call.lpszReading = (ULONG_PTR)lpszReading;
+    call.dwStyle = (ULONG_PTR)dwStyle;
+    call.lpszRegister = (ULONG_PTR)lpszRegister;
 
     qemu_syscall(&call.super);
 
@@ -1612,8 +1612,8 @@ WINBASEAPI BOOL WINAPI ImmReleaseContext(HWND hWnd, HIMC hIMC)
 {
     struct qemu_ImmReleaseContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMRELEASECONTEXT);
-    call.hWnd = (uint64_t)hWnd;
-    call.hIMC = (uint64_t)hIMC;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.hIMC = (ULONG_PTR)hIMC;
 
     qemu_syscall(&call.super);
 
@@ -1645,9 +1645,9 @@ WINBASEAPI LRESULT WINAPI ImmRequestMessageA(HIMC hIMC, WPARAM wParam, LPARAM lP
 {
     struct qemu_ImmRequestMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMREQUESTMESSAGEA);
-    call.hIMC = (uint64_t)hIMC;
-    call.wParam = (uint64_t)wParam;
-    call.lParam = (uint64_t)lParam;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.wParam = (ULONG_PTR)wParam;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
@@ -1679,9 +1679,9 @@ WINBASEAPI LRESULT WINAPI ImmRequestMessageW(HIMC hIMC, WPARAM wParam, LPARAM lP
 {
     struct qemu_ImmRequestMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMREQUESTMESSAGEW);
-    call.hIMC = (uint64_t)hIMC;
-    call.wParam = (uint64_t)wParam;
-    call.lParam = (uint64_t)lParam;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.wParam = (ULONG_PTR)wParam;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
@@ -1712,8 +1712,8 @@ WINBASEAPI BOOL WINAPI ImmSetCandidateWindow(HIMC hIMC, LPCANDIDATEFORM lpCandid
 {
     struct qemu_ImmSetCandidateWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMSETCANDIDATEWINDOW);
-    call.hIMC = (uint64_t)hIMC;
-    call.lpCandidate = (uint64_t)lpCandidate;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.lpCandidate = (ULONG_PTR)lpCandidate;
 
     qemu_syscall(&call.super);
 
@@ -1744,8 +1744,8 @@ WINBASEAPI BOOL WINAPI ImmSetCompositionFontA(HIMC hIMC, LPLOGFONTA lplf)
 {
     struct qemu_ImmSetCompositionFontA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMSETCOMPOSITIONFONTA);
-    call.hIMC = (uint64_t)hIMC;
-    call.lplf = (uint64_t)lplf;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.lplf = (ULONG_PTR)lplf;
 
     qemu_syscall(&call.super);
 
@@ -1776,8 +1776,8 @@ WINBASEAPI BOOL WINAPI ImmSetCompositionFontW(HIMC hIMC, LPLOGFONTW lplf)
 {
     struct qemu_ImmSetCompositionFontW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMSETCOMPOSITIONFONTW);
-    call.hIMC = (uint64_t)hIMC;
-    call.lplf = (uint64_t)lplf;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.lplf = (ULONG_PTR)lplf;
 
     qemu_syscall(&call.super);
 
@@ -1812,12 +1812,12 @@ WINBASEAPI BOOL WINAPI ImmSetCompositionStringA(HIMC hIMC, DWORD dwIndex, LPVOID
 {
     struct qemu_ImmSetCompositionStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMSETCOMPOSITIONSTRINGA);
-    call.hIMC = (uint64_t)hIMC;
-    call.dwIndex = (uint64_t)dwIndex;
-    call.lpComp = (uint64_t)lpComp;
-    call.dwCompLen = (uint64_t)dwCompLen;
-    call.lpRead = (uint64_t)lpRead;
-    call.dwReadLen = (uint64_t)dwReadLen;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.dwIndex = (ULONG_PTR)dwIndex;
+    call.lpComp = (ULONG_PTR)lpComp;
+    call.dwCompLen = (ULONG_PTR)dwCompLen;
+    call.lpRead = (ULONG_PTR)lpRead;
+    call.dwReadLen = (ULONG_PTR)dwReadLen;
 
     qemu_syscall(&call.super);
 
@@ -1852,12 +1852,12 @@ WINBASEAPI BOOL WINAPI ImmSetCompositionStringW(HIMC hIMC, DWORD dwIndex, LPVOID
 {
     struct qemu_ImmSetCompositionStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMSETCOMPOSITIONSTRINGW);
-    call.hIMC = (uint64_t)hIMC;
-    call.dwIndex = (uint64_t)dwIndex;
-    call.lpComp = (uint64_t)lpComp;
-    call.dwCompLen = (uint64_t)dwCompLen;
-    call.lpRead = (uint64_t)lpRead;
-    call.dwReadLen = (uint64_t)dwReadLen;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.dwIndex = (ULONG_PTR)dwIndex;
+    call.lpComp = (ULONG_PTR)lpComp;
+    call.dwCompLen = (ULONG_PTR)dwCompLen;
+    call.lpRead = (ULONG_PTR)lpRead;
+    call.dwReadLen = (ULONG_PTR)dwReadLen;
 
     qemu_syscall(&call.super);
 
@@ -1888,8 +1888,8 @@ WINBASEAPI BOOL WINAPI ImmSetCompositionWindow(HIMC hIMC, LPCOMPOSITIONFORM lpCo
 {
     struct qemu_ImmSetCompositionWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMSETCOMPOSITIONWINDOW);
-    call.hIMC = (uint64_t)hIMC;
-    call.lpCompForm = (uint64_t)lpCompForm;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.lpCompForm = (ULONG_PTR)lpCompForm;
 
     qemu_syscall(&call.super);
 
@@ -1921,9 +1921,9 @@ WINBASEAPI BOOL WINAPI ImmSetConversionStatus(HIMC hIMC, DWORD fdwConversion, DW
 {
     struct qemu_ImmSetConversionStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMSETCONVERSIONSTATUS);
-    call.hIMC = (uint64_t)hIMC;
-    call.fdwConversion = (uint64_t)fdwConversion;
-    call.fdwSentence = (uint64_t)fdwSentence;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.fdwConversion = (ULONG_PTR)fdwConversion;
+    call.fdwSentence = (ULONG_PTR)fdwSentence;
 
     qemu_syscall(&call.super);
 
@@ -1954,8 +1954,8 @@ WINBASEAPI BOOL WINAPI ImmSetOpenStatus(HIMC hIMC, BOOL fOpen)
 {
     struct qemu_ImmSetOpenStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMSETOPENSTATUS);
-    call.hIMC = (uint64_t)hIMC;
-    call.fOpen = (uint64_t)fOpen;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.fOpen = (ULONG_PTR)fOpen;
 
     qemu_syscall(&call.super);
 
@@ -1986,8 +1986,8 @@ WINBASEAPI BOOL WINAPI ImmSetStatusWindowPos(HIMC hIMC, LPPOINT lpptPos)
 {
     struct qemu_ImmSetStatusWindowPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMSETSTATUSWINDOWPOS);
-    call.hIMC = (uint64_t)hIMC;
-    call.lpptPos = (uint64_t)lpptPos;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.lpptPos = (ULONG_PTR)lpptPos;
 
     qemu_syscall(&call.super);
 
@@ -2020,14 +2020,14 @@ WINBASEAPI HWND WINAPI ImmCreateSoftKeyboard(UINT uType, UINT hOwner, int x, int
 {
     struct qemu_ImmCreateSoftKeyboard call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMCREATESOFTKEYBOARD);
-    call.uType = (uint64_t)uType;
-    call.hOwner = (uint64_t)hOwner;
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.uType = (ULONG_PTR)uType;
+    call.hOwner = (ULONG_PTR)hOwner;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
-    return (HWND)call.super.iret;
+    return (HWND)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2036,7 +2036,7 @@ void qemu_ImmCreateSoftKeyboard(struct qemu_syscall *call)
 {
     struct qemu_ImmCreateSoftKeyboard *c = (struct qemu_ImmCreateSoftKeyboard *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ImmCreateSoftKeyboard(c->uType, c->hOwner, c->x, c->y);
+    c->super.iret = (ULONG_PTR)ImmCreateSoftKeyboard(c->uType, c->hOwner, c->x, c->y);
 }
 
 #endif
@@ -2053,7 +2053,7 @@ WINBASEAPI BOOL WINAPI ImmDestroySoftKeyboard(HWND hSoftWnd)
 {
     struct qemu_ImmDestroySoftKeyboard call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMDESTROYSOFTKEYBOARD);
-    call.hSoftWnd = (uint64_t)hSoftWnd;
+    call.hSoftWnd = (ULONG_PTR)hSoftWnd;
 
     qemu_syscall(&call.super);
 
@@ -2084,8 +2084,8 @@ WINBASEAPI BOOL WINAPI ImmShowSoftKeyboard(HWND hSoftWnd, int nCmdShow)
 {
     struct qemu_ImmShowSoftKeyboard call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMSHOWSOFTKEYBOARD);
-    call.hSoftWnd = (uint64_t)hSoftWnd;
-    call.nCmdShow = (uint64_t)nCmdShow;
+    call.hSoftWnd = (ULONG_PTR)hSoftWnd;
+    call.nCmdShow = (ULONG_PTR)nCmdShow;
 
     qemu_syscall(&call.super);
 
@@ -2116,8 +2116,8 @@ WINBASEAPI BOOL WINAPI ImmSimulateHotKey(HWND hWnd, DWORD dwHotKeyID)
 {
     struct qemu_ImmSimulateHotKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMSIMULATEHOTKEY);
-    call.hWnd = (uint64_t)hWnd;
-    call.dwHotKeyID = (uint64_t)dwHotKeyID;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.dwHotKeyID = (ULONG_PTR)dwHotKeyID;
 
     qemu_syscall(&call.super);
 
@@ -2150,10 +2150,10 @@ WINBASEAPI BOOL WINAPI ImmUnregisterWordA(HKL hKL, LPCSTR lpszReading, DWORD dwS
 {
     struct qemu_ImmUnregisterWordA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMUNREGISTERWORDA);
-    call.hKL = (uint64_t)hKL;
-    call.lpszReading = (uint64_t)lpszReading;
-    call.dwStyle = (uint64_t)dwStyle;
-    call.lpszUnregister = (uint64_t)lpszUnregister;
+    call.hKL = (ULONG_PTR)hKL;
+    call.lpszReading = (ULONG_PTR)lpszReading;
+    call.dwStyle = (ULONG_PTR)dwStyle;
+    call.lpszUnregister = (ULONG_PTR)lpszUnregister;
 
     qemu_syscall(&call.super);
 
@@ -2186,10 +2186,10 @@ WINBASEAPI BOOL WINAPI ImmUnregisterWordW(HKL hKL, LPCWSTR lpszReading, DWORD dw
 {
     struct qemu_ImmUnregisterWordW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMUNREGISTERWORDW);
-    call.hKL = (uint64_t)hKL;
-    call.lpszReading = (uint64_t)lpszReading;
-    call.dwStyle = (uint64_t)dwStyle;
-    call.lpszUnregister = (uint64_t)lpszUnregister;
+    call.hKL = (ULONG_PTR)hKL;
+    call.lpszReading = (ULONG_PTR)lpszReading;
+    call.dwStyle = (ULONG_PTR)dwStyle;
+    call.lpszUnregister = (ULONG_PTR)lpszUnregister;
 
     qemu_syscall(&call.super);
 
@@ -2224,12 +2224,12 @@ WINBASEAPI DWORD WINAPI ImmGetImeMenuItemsA(HIMC hIMC, DWORD dwFlags, DWORD dwTy
 {
     struct qemu_ImmGetImeMenuItemsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETIMEMENUITEMSA);
-    call.hIMC = (uint64_t)hIMC;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwType = (uint64_t)dwType;
-    call.lpImeParentMenu = (uint64_t)lpImeParentMenu;
-    call.lpImeMenu = (uint64_t)lpImeMenu;
-    call.dwSize = (uint64_t)dwSize;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwType = (ULONG_PTR)dwType;
+    call.lpImeParentMenu = (ULONG_PTR)lpImeParentMenu;
+    call.lpImeMenu = (ULONG_PTR)lpImeMenu;
+    call.dwSize = (ULONG_PTR)dwSize;
 
     qemu_syscall(&call.super);
 
@@ -2264,12 +2264,12 @@ WINBASEAPI DWORD WINAPI ImmGetImeMenuItemsW(HIMC hIMC, DWORD dwFlags, DWORD dwTy
 {
     struct qemu_ImmGetImeMenuItemsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETIMEMENUITEMSW);
-    call.hIMC = (uint64_t)hIMC;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.dwType = (uint64_t)dwType;
-    call.lpImeParentMenu = (uint64_t)lpImeParentMenu;
-    call.lpImeMenu = (uint64_t)lpImeMenu;
-    call.dwSize = (uint64_t)dwSize;
+    call.hIMC = (ULONG_PTR)hIMC;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwType = (ULONG_PTR)dwType;
+    call.lpImeParentMenu = (ULONG_PTR)lpImeParentMenu;
+    call.lpImeMenu = (ULONG_PTR)lpImeMenu;
+    call.dwSize = (ULONG_PTR)dwSize;
 
     qemu_syscall(&call.super);
 
@@ -2299,11 +2299,11 @@ WINBASEAPI INPUTCONTEXT * WINAPI ImmLockIMC(HIMC hIMC)
 {
     struct qemu_ImmLockIMC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMLOCKIMC);
-    call.hIMC = (uint64_t)hIMC;
+    call.hIMC = (ULONG_PTR)hIMC;
 
     qemu_syscall(&call.super);
 
-    return (INPUTCONTEXT *)call.super.iret;
+    return (INPUTCONTEXT *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2312,7 +2312,7 @@ void qemu_ImmLockIMC(struct qemu_syscall *call)
 {
     struct qemu_ImmLockIMC *c = (struct qemu_ImmLockIMC *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ImmLockIMC(QEMU_G2H(c->hIMC));
+    c->super.iret = (ULONG_PTR)ImmLockIMC(QEMU_G2H(c->hIMC));
 }
 
 #endif
@@ -2329,7 +2329,7 @@ WINBASEAPI BOOL WINAPI ImmUnlockIMC(HIMC hIMC)
 {
     struct qemu_ImmUnlockIMC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMUNLOCKIMC);
-    call.hIMC = (uint64_t)hIMC;
+    call.hIMC = (ULONG_PTR)hIMC;
 
     qemu_syscall(&call.super);
 
@@ -2359,7 +2359,7 @@ WINBASEAPI DWORD WINAPI ImmGetIMCLockCount(HIMC hIMC)
 {
     struct qemu_ImmGetIMCLockCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETIMCLOCKCOUNT);
-    call.hIMC = (uint64_t)hIMC;
+    call.hIMC = (ULONG_PTR)hIMC;
 
     qemu_syscall(&call.super);
 
@@ -2389,11 +2389,11 @@ WINBASEAPI HIMCC WINAPI ImmCreateIMCC(DWORD size)
 {
     struct qemu_ImmCreateIMCC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMCREATEIMCC);
-    call.size = (uint64_t)size;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
-    return (HIMCC)call.super.iret;
+    return (HIMCC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2402,7 +2402,7 @@ void qemu_ImmCreateIMCC(struct qemu_syscall *call)
 {
     struct qemu_ImmCreateIMCC *c = (struct qemu_ImmCreateIMCC *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ImmCreateIMCC(c->size);
+    c->super.iret = (ULONG_PTR)ImmCreateIMCC(c->size);
 }
 
 #endif
@@ -2419,11 +2419,11 @@ WINBASEAPI HIMCC WINAPI ImmDestroyIMCC(HIMCC block)
 {
     struct qemu_ImmDestroyIMCC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMDESTROYIMCC);
-    call.block = (uint64_t)block;
+    call.block = (ULONG_PTR)block;
 
     qemu_syscall(&call.super);
 
-    return (HIMCC)call.super.iret;
+    return (HIMCC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2432,7 +2432,7 @@ void qemu_ImmDestroyIMCC(struct qemu_syscall *call)
 {
     struct qemu_ImmDestroyIMCC *c = (struct qemu_ImmDestroyIMCC *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ImmDestroyIMCC((HIMCC)c->block);
+    c->super.iret = (ULONG_PTR)ImmDestroyIMCC((HIMCC)c->block);
 }
 
 #endif
@@ -2449,11 +2449,11 @@ WINBASEAPI LPVOID WINAPI ImmLockIMCC(HIMCC imcc)
 {
     struct qemu_ImmLockIMCC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMLOCKIMCC);
-    call.imcc = (uint64_t)imcc;
+    call.imcc = (ULONG_PTR)imcc;
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2462,7 +2462,7 @@ void qemu_ImmLockIMCC(struct qemu_syscall *call)
 {
     struct qemu_ImmLockIMCC *c = (struct qemu_ImmLockIMCC *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ImmLockIMCC((HIMCC)c->imcc);
+    c->super.iret = (ULONG_PTR)ImmLockIMCC((HIMCC)c->imcc);
 }
 
 #endif
@@ -2479,7 +2479,7 @@ WINBASEAPI BOOL WINAPI ImmUnlockIMCC(HIMCC imcc)
 {
     struct qemu_ImmUnlockIMCC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMUNLOCKIMCC);
-    call.imcc = (uint64_t)imcc;
+    call.imcc = (ULONG_PTR)imcc;
 
     qemu_syscall(&call.super);
 
@@ -2509,7 +2509,7 @@ WINBASEAPI DWORD WINAPI ImmGetIMCCLockCount(HIMCC imcc)
 {
     struct qemu_ImmGetIMCCLockCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETIMCCLOCKCOUNT);
-    call.imcc = (uint64_t)imcc;
+    call.imcc = (ULONG_PTR)imcc;
 
     qemu_syscall(&call.super);
 
@@ -2540,12 +2540,12 @@ WINBASEAPI HIMCC WINAPI ImmReSizeIMCC(HIMCC imcc, DWORD size)
 {
     struct qemu_ImmReSizeIMCC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMRESIZEIMCC);
-    call.imcc = (uint64_t)imcc;
-    call.size = (uint64_t)size;
+    call.imcc = (ULONG_PTR)imcc;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
-    return (HIMCC)call.super.iret;
+    return (HIMCC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2554,7 +2554,7 @@ void qemu_ImmReSizeIMCC(struct qemu_syscall *call)
 {
     struct qemu_ImmReSizeIMCC *c = (struct qemu_ImmReSizeIMCC *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ImmReSizeIMCC((HIMCC)c->imcc, c->size);
+    c->super.iret = (ULONG_PTR)ImmReSizeIMCC((HIMCC)c->imcc, c->size);
 }
 
 #endif
@@ -2571,7 +2571,7 @@ WINBASEAPI DWORD WINAPI ImmGetIMCCSize(HIMCC imcc)
 {
     struct qemu_ImmGetIMCCSize call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETIMCCSIZE);
-    call.imcc = (uint64_t)imcc;
+    call.imcc = (ULONG_PTR)imcc;
 
     qemu_syscall(&call.super);
 
@@ -2601,7 +2601,7 @@ WINBASEAPI BOOL WINAPI ImmGenerateMessage(HIMC hIMC)
 {
     struct qemu_ImmGenerateMessage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGENERATEMESSAGE);
-    call.hIMC = (uint64_t)hIMC;
+    call.hIMC = (ULONG_PTR)hIMC;
 
     qemu_syscall(&call.super);
 
@@ -2634,10 +2634,10 @@ WINBASEAPI BOOL WINAPI ImmTranslateMessage(HWND hwnd, UINT msg, WPARAM wParam, L
 {
     struct qemu_ImmTranslateMessage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMTRANSLATEMESSAGE);
-    call.hwnd = (uint64_t)hwnd;
-    call.msg = (uint64_t)msg;
-    call.wParam = (uint64_t)wParam;
-    call.lKeyData = (uint64_t)lKeyData;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.msg = (ULONG_PTR)msg;
+    call.wParam = (ULONG_PTR)wParam;
+    call.lKeyData = (ULONG_PTR)lKeyData;
 
     qemu_syscall(&call.super);
 
@@ -2671,11 +2671,11 @@ WINBASEAPI BOOL WINAPI ImmProcessKey(HWND hwnd, HKL hKL, UINT vKey, LPARAM lKeyD
 {
     struct qemu_ImmProcessKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMPROCESSKEY);
-    call.hwnd = (uint64_t)hwnd;
-    call.hKL = (uint64_t)hKL;
-    call.vKey = (uint64_t)vKey;
-    call.lKeyData = (uint64_t)lKeyData;
-    call.unknown = (uint64_t)unknown;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.hKL = (ULONG_PTR)hKL;
+    call.vKey = (ULONG_PTR)vKey;
+    call.lKeyData = (ULONG_PTR)lKeyData;
+    call.unknown = (ULONG_PTR)unknown;
 
     qemu_syscall(&call.super);
 
@@ -2707,7 +2707,7 @@ WINBASEAPI BOOL WINAPI ImmDisableTextFrameService(DWORD idThread)
 {
     struct qemu_ImmDisableTextFrameService call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMDISABLETEXTFRAMESERVICE);
-    call.idThread = (uint64_t)idThread;
+    call.idThread = (ULONG_PTR)idThread;
 
     qemu_syscall(&call.super);
 
@@ -2739,9 +2739,9 @@ WINBASEAPI BOOL WINAPI ImmEnumInputContext(DWORD idThread, IMCENUMPROC lpfn, LPA
 {
     struct qemu_ImmEnumInputContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMENUMINPUTCONTEXT);
-    call.idThread = (uint64_t)idThread;
-    call.lpfn = (uint64_t)lpfn;
-    call.lParam = (uint64_t)lParam;
+    call.idThread = (ULONG_PTR)idThread;
+    call.lpfn = (ULONG_PTR)lpfn;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
@@ -2774,10 +2774,10 @@ WINBASEAPI BOOL WINAPI ImmGetHotKey(DWORD hotkey, UINT *modifiers, UINT *key, HK
 {
     struct qemu_ImmGetHotKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMMGETHOTKEY);
-    call.hotkey = (uint64_t)hotkey;
-    call.modifiers = (uint64_t)modifiers;
-    call.key = (uint64_t)key;
-    call.hkl = (uint64_t)hkl;
+    call.hotkey = (ULONG_PTR)hotkey;
+    call.modifiers = (ULONG_PTR)modifiers;
+    call.key = (ULONG_PTR)key;
+    call.hkl = (ULONG_PTR)hkl;
 
     qemu_syscall(&call.super);
 
