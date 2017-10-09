@@ -23,13 +23,12 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "comdlg32.h"
+#include "qemu_comdlg32.h"
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_comdlg32);
 #endif
-
 
 struct qemu_PrintDlgA
 {
