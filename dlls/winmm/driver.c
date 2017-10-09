@@ -46,10 +46,10 @@ WINBASEAPI LRESULT WINAPI SendDriverMessage(HDRVR hDriver, UINT msg, LPARAM lPar
 {
     struct qemu_SendDriverMessage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDDRIVERMESSAGE);
-    call.hDriver = (uint64_t)hDriver;
-    call.msg = (uint64_t)msg;
-    call.lParam1 = (uint64_t)lParam1;
-    call.lParam2 = (uint64_t)lParam2;
+    call.hDriver = (ULONG_PTR)hDriver;
+    call.msg = (ULONG_PTR)msg;
+    call.lParam1 = (ULONG_PTR)lParam1;
+    call.lParam2 = (ULONG_PTR)lParam2;
 
     qemu_syscall(&call.super);
 
@@ -81,13 +81,13 @@ WINBASEAPI HDRVR WINAPI OpenDriverA(LPCSTR lpDriverName, LPCSTR lpSectionName, L
 {
     struct qemu_OpenDriverA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENDRIVERA);
-    call.lpDriverName = (uint64_t)lpDriverName;
-    call.lpSectionName = (uint64_t)lpSectionName;
-    call.lParam = (uint64_t)lParam;
+    call.lpDriverName = (ULONG_PTR)lpDriverName;
+    call.lpSectionName = (ULONG_PTR)lpSectionName;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
-    return (HDRVR)call.super.iret;
+    return (HDRVR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -96,7 +96,7 @@ void qemu_OpenDriverA(struct qemu_syscall *call)
 {
     struct qemu_OpenDriverA *c = (struct qemu_OpenDriverA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)OpenDriverA(QEMU_G2H(c->lpDriverName), QEMU_G2H(c->lpSectionName), c->lParam);
+    c->super.iret = (ULONG_PTR)OpenDriverA(QEMU_G2H(c->lpDriverName), QEMU_G2H(c->lpSectionName), c->lParam);
 }
 
 #endif
@@ -115,13 +115,13 @@ WINBASEAPI HDRVR WINAPI OpenDriver(LPCWSTR lpDriverName, LPCWSTR lpSectionName, 
 {
     struct qemu_OpenDriver call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENDRIVER);
-    call.lpDriverName = (uint64_t)lpDriverName;
-    call.lpSectionName = (uint64_t)lpSectionName;
-    call.lParam = (uint64_t)lParam;
+    call.lpDriverName = (ULONG_PTR)lpDriverName;
+    call.lpSectionName = (ULONG_PTR)lpSectionName;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
-    return (HDRVR)call.super.iret;
+    return (HDRVR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -130,7 +130,7 @@ void qemu_OpenDriver(struct qemu_syscall *call)
 {
     struct qemu_OpenDriver *c = (struct qemu_OpenDriver *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)OpenDriver(QEMU_G2H(c->lpDriverName), QEMU_G2H(c->lpSectionName), c->lParam);
+    c->super.iret = (ULONG_PTR)OpenDriver(QEMU_G2H(c->lpDriverName), QEMU_G2H(c->lpSectionName), c->lParam);
 }
 
 #endif
@@ -149,9 +149,9 @@ WINBASEAPI LRESULT WINAPI CloseDriver(HDRVR hDrvr, LPARAM lParam1, LPARAM lParam
 {
     struct qemu_CloseDriver call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CLOSEDRIVER);
-    call.hDrvr = (uint64_t)hDrvr;
-    call.lParam1 = (uint64_t)lParam1;
-    call.lParam2 = (uint64_t)lParam2;
+    call.hDrvr = (ULONG_PTR)hDrvr;
+    call.lParam1 = (ULONG_PTR)lParam1;
+    call.lParam2 = (ULONG_PTR)lParam2;
 
     qemu_syscall(&call.super);
 
@@ -181,7 +181,7 @@ WINBASEAPI DWORD WINAPI GetDriverFlags(HDRVR hDrvr)
 {
     struct qemu_GetDriverFlags call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDRIVERFLAGS);
-    call.hDrvr = (uint64_t)hDrvr;
+    call.hDrvr = (ULONG_PTR)hDrvr;
 
     qemu_syscall(&call.super);
 
@@ -211,11 +211,11 @@ WINBASEAPI HMODULE WINAPI GetDriverModuleHandle(HDRVR hDrvr)
 {
     struct qemu_GetDriverModuleHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDRIVERMODULEHANDLE);
-    call.hDrvr = (uint64_t)hDrvr;
+    call.hDrvr = (ULONG_PTR)hDrvr;
 
     qemu_syscall(&call.super);
 
-    return (HMODULE)call.super.iret;
+    return (HMODULE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -224,7 +224,7 @@ void qemu_GetDriverModuleHandle(struct qemu_syscall *call)
 {
     struct qemu_GetDriverModuleHandle *c = (struct qemu_GetDriverModuleHandle *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)GetDriverModuleHandle(QEMU_G2H(c->hDrvr));
+    c->super.iret = (ULONG_PTR)GetDriverModuleHandle(QEMU_G2H(c->hDrvr));
 }
 
 #endif
@@ -245,11 +245,11 @@ WINBASEAPI LRESULT WINAPI DefDriverProc(DWORD_PTR dwDriverIdentifier, HDRVR hDrv
 {
     struct qemu_DefDriverProc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEFDRIVERPROC);
-    call.dwDriverIdentifier = (uint64_t)dwDriverIdentifier;
-    call.hDrv = (uint64_t)hDrv;
-    call.Msg = (uint64_t)Msg;
-    call.lParam1 = (uint64_t)lParam1;
-    call.lParam2 = (uint64_t)lParam2;
+    call.dwDriverIdentifier = (ULONG_PTR)dwDriverIdentifier;
+    call.hDrv = (ULONG_PTR)hDrv;
+    call.Msg = (ULONG_PTR)Msg;
+    call.lParam1 = (ULONG_PTR)lParam1;
+    call.lParam2 = (ULONG_PTR)lParam2;
 
     qemu_syscall(&call.super);
 
@@ -285,13 +285,13 @@ WINBASEAPI BOOL WINAPI DriverCallback(DWORD_PTR dwCallBack, DWORD uFlags, HDRVR 
 {
     struct qemu_DriverCallback call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRIVERCALLBACK);
-    call.dwCallBack = (uint64_t)dwCallBack;
-    call.uFlags = (uint64_t)uFlags;
-    call.hDev = (uint64_t)hDev;
-    call.wMsg = (uint64_t)wMsg;
-    call.dwUser = (uint64_t)dwUser;
-    call.dwParam1 = (uint64_t)dwParam1;
-    call.dwParam2 = (uint64_t)dwParam2;
+    call.dwCallBack = (ULONG_PTR)dwCallBack;
+    call.uFlags = (ULONG_PTR)uFlags;
+    call.hDev = (ULONG_PTR)hDev;
+    call.wMsg = (ULONG_PTR)wMsg;
+    call.dwUser = (ULONG_PTR)dwUser;
+    call.dwParam1 = (ULONG_PTR)dwParam1;
+    call.dwParam2 = (ULONG_PTR)dwParam2;
 
     qemu_syscall(&call.super);
 

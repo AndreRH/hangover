@@ -45,13 +45,13 @@ WINBASEAPI HMMIO WINAPI mmioOpenW(LPWSTR szFileName, MMIOINFO* lpmmioinfo, DWORD
 {
     struct qemu_mmioOpenW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOOPENW);
-    call.szFileName = (uint64_t)szFileName;
-    call.lpmmioinfo = (uint64_t)lpmmioinfo;
-    call.dwOpenFlags = (uint64_t)dwOpenFlags;
+    call.szFileName = (ULONG_PTR)szFileName;
+    call.lpmmioinfo = (ULONG_PTR)lpmmioinfo;
+    call.dwOpenFlags = (ULONG_PTR)dwOpenFlags;
 
     qemu_syscall(&call.super);
 
-    return (HMMIO)call.super.iret;
+    return (HMMIO)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -60,7 +60,7 @@ void qemu_mmioOpenW(struct qemu_syscall *call)
 {
     struct qemu_mmioOpenW *c = (struct qemu_mmioOpenW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)mmioOpenW(QEMU_G2H(c->szFileName), QEMU_G2H(c->lpmmioinfo), c->dwOpenFlags);
+    c->super.iret = (ULONG_PTR)mmioOpenW(QEMU_G2H(c->szFileName), QEMU_G2H(c->lpmmioinfo), c->dwOpenFlags);
 }
 
 #endif
@@ -79,13 +79,13 @@ WINBASEAPI HMMIO WINAPI mmioOpenA(LPSTR szFileName, MMIOINFO* lpmmioinfo, DWORD 
 {
     struct qemu_mmioOpenA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOOPENA);
-    call.szFileName = (uint64_t)szFileName;
-    call.lpmmioinfo = (uint64_t)lpmmioinfo;
-    call.dwOpenFlags = (uint64_t)dwOpenFlags;
+    call.szFileName = (ULONG_PTR)szFileName;
+    call.lpmmioinfo = (ULONG_PTR)lpmmioinfo;
+    call.dwOpenFlags = (ULONG_PTR)dwOpenFlags;
 
     qemu_syscall(&call.super);
 
-    return (HMMIO)call.super.iret;
+    return (HMMIO)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -94,7 +94,7 @@ void qemu_mmioOpenA(struct qemu_syscall *call)
 {
     struct qemu_mmioOpenA *c = (struct qemu_mmioOpenA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)mmioOpenA(QEMU_G2H(c->szFileName), QEMU_G2H(c->lpmmioinfo), c->dwOpenFlags);
+    c->super.iret = (ULONG_PTR)mmioOpenA(QEMU_G2H(c->szFileName), QEMU_G2H(c->lpmmioinfo), c->dwOpenFlags);
 }
 
 #endif
@@ -112,8 +112,8 @@ WINBASEAPI MMRESULT WINAPI mmioClose(HMMIO hmmio, UINT uFlags)
 {
     struct qemu_mmioClose call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOCLOSE);
-    call.hmmio = (uint64_t)hmmio;
-    call.uFlags = (uint64_t)uFlags;
+    call.hmmio = (ULONG_PTR)hmmio;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -145,9 +145,9 @@ WINBASEAPI LONG WINAPI mmioRead(HMMIO hmmio, HPSTR pch, LONG cch)
 {
     struct qemu_mmioRead call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOREAD);
-    call.hmmio = (uint64_t)hmmio;
-    call.pch = (uint64_t)pch;
-    call.cch = (uint64_t)cch;
+    call.hmmio = (ULONG_PTR)hmmio;
+    call.pch = (ULONG_PTR)pch;
+    call.cch = (ULONG_PTR)cch;
 
     qemu_syscall(&call.super);
 
@@ -179,9 +179,9 @@ WINBASEAPI LONG WINAPI mmioWrite(HMMIO hmmio, LPCSTR pch, LONG cch)
 {
     struct qemu_mmioWrite call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOWRITE);
-    call.hmmio = (uint64_t)hmmio;
-    call.pch = (uint64_t)pch;
-    call.cch = (uint64_t)cch;
+    call.hmmio = (ULONG_PTR)hmmio;
+    call.pch = (ULONG_PTR)pch;
+    call.cch = (ULONG_PTR)cch;
 
     qemu_syscall(&call.super);
 
@@ -213,9 +213,9 @@ WINBASEAPI LONG WINAPI mmioSeek(HMMIO hmmio, LONG lOffset, INT iOrigin)
 {
     struct qemu_mmioSeek call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOSEEK);
-    call.hmmio = (uint64_t)hmmio;
-    call.lOffset = (uint64_t)lOffset;
-    call.iOrigin = (uint64_t)iOrigin;
+    call.hmmio = (ULONG_PTR)hmmio;
+    call.lOffset = (ULONG_PTR)lOffset;
+    call.iOrigin = (ULONG_PTR)iOrigin;
 
     qemu_syscall(&call.super);
 
@@ -247,9 +247,9 @@ WINBASEAPI MMRESULT WINAPI mmioGetInfo(HMMIO hmmio, MMIOINFO* lpmmioinfo, UINT u
 {
     struct qemu_mmioGetInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOGETINFO);
-    call.hmmio = (uint64_t)hmmio;
-    call.lpmmioinfo = (uint64_t)lpmmioinfo;
-    call.uFlags = (uint64_t)uFlags;
+    call.hmmio = (ULONG_PTR)hmmio;
+    call.lpmmioinfo = (ULONG_PTR)lpmmioinfo;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -281,9 +281,9 @@ WINBASEAPI MMRESULT WINAPI mmioSetInfo(HMMIO hmmio, const MMIOINFO* lpmmioinfo, 
 {
     struct qemu_mmioSetInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOSETINFO);
-    call.hmmio = (uint64_t)hmmio;
-    call.lpmmioinfo = (uint64_t)lpmmioinfo;
-    call.uFlags = (uint64_t)uFlags;
+    call.hmmio = (ULONG_PTR)hmmio;
+    call.lpmmioinfo = (ULONG_PTR)lpmmioinfo;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -316,10 +316,10 @@ WINBASEAPI MMRESULT WINAPI mmioSetBuffer(HMMIO hmmio, LPSTR pchBuffer, LONG cchB
 {
     struct qemu_mmioSetBuffer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOSETBUFFER);
-    call.hmmio = (uint64_t)hmmio;
-    call.pchBuffer = (uint64_t)pchBuffer;
-    call.cchBuffer = (uint64_t)cchBuffer;
-    call.uFlags = (uint64_t)uFlags;
+    call.hmmio = (ULONG_PTR)hmmio;
+    call.pchBuffer = (ULONG_PTR)pchBuffer;
+    call.cchBuffer = (ULONG_PTR)cchBuffer;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -350,8 +350,8 @@ WINBASEAPI MMRESULT WINAPI mmioFlush(HMMIO hmmio, UINT uFlags)
 {
     struct qemu_mmioFlush call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOFLUSH);
-    call.hmmio = (uint64_t)hmmio;
-    call.uFlags = (uint64_t)uFlags;
+    call.hmmio = (ULONG_PTR)hmmio;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -383,9 +383,9 @@ WINBASEAPI MMRESULT WINAPI mmioAdvance(HMMIO hmmio, MMIOINFO* lpmmioinfo, UINT u
 {
     struct qemu_mmioAdvance call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOADVANCE);
-    call.hmmio = (uint64_t)hmmio;
-    call.lpmmioinfo = (uint64_t)lpmmioinfo;
-    call.uFlags = (uint64_t)uFlags;
+    call.hmmio = (ULONG_PTR)hmmio;
+    call.lpmmioinfo = (ULONG_PTR)lpmmioinfo;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -416,8 +416,8 @@ WINBASEAPI FOURCC WINAPI mmioStringToFOURCCA(LPCSTR sz, UINT uFlags)
 {
     struct qemu_mmioStringToFOURCCA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOSTRINGTOFOURCCA);
-    call.sz = (uint64_t)sz;
-    call.uFlags = (uint64_t)uFlags;
+    call.sz = (ULONG_PTR)sz;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -448,8 +448,8 @@ WINBASEAPI FOURCC WINAPI mmioStringToFOURCCW(LPCWSTR sz, UINT uFlags)
 {
     struct qemu_mmioStringToFOURCCW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOSTRINGTOFOURCCW);
-    call.sz = (uint64_t)sz;
-    call.uFlags = (uint64_t)uFlags;
+    call.sz = (ULONG_PTR)sz;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -481,13 +481,13 @@ WINBASEAPI LPMMIOPROC WINAPI mmioInstallIOProcA(FOURCC fccIOProc, LPMMIOPROC pIO
 {
     struct qemu_mmioInstallIOProcA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOINSTALLIOPROCA);
-    call.fccIOProc = (uint64_t)fccIOProc;
-    call.pIOProc = (uint64_t)pIOProc;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.fccIOProc = (ULONG_PTR)fccIOProc;
+    call.pIOProc = (ULONG_PTR)pIOProc;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
-    return (LPMMIOPROC)call.super.iret;
+    return (LPMMIOPROC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -496,7 +496,7 @@ void qemu_mmioInstallIOProcA(struct qemu_syscall *call)
 {
     struct qemu_mmioInstallIOProcA *c = (struct qemu_mmioInstallIOProcA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)mmioInstallIOProcA(c->fccIOProc, QEMU_G2H(c->pIOProc), c->dwFlags);
+    c->super.iret = (ULONG_PTR)mmioInstallIOProcA(c->fccIOProc, QEMU_G2H(c->pIOProc), c->dwFlags);
 }
 
 #endif
@@ -515,13 +515,13 @@ WINBASEAPI LPMMIOPROC WINAPI mmioInstallIOProcW(FOURCC fccIOProc, LPMMIOPROC pIO
 {
     struct qemu_mmioInstallIOProcW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOINSTALLIOPROCW);
-    call.fccIOProc = (uint64_t)fccIOProc;
-    call.pIOProc = (uint64_t)pIOProc;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.fccIOProc = (ULONG_PTR)fccIOProc;
+    call.pIOProc = (ULONG_PTR)pIOProc;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
-    return (LPMMIOPROC)call.super.iret;
+    return (LPMMIOPROC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -530,7 +530,7 @@ void qemu_mmioInstallIOProcW(struct qemu_syscall *call)
 {
     struct qemu_mmioInstallIOProcW *c = (struct qemu_mmioInstallIOProcW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)mmioInstallIOProcW(c->fccIOProc, QEMU_G2H(c->pIOProc), c->dwFlags);
+    c->super.iret = (ULONG_PTR)mmioInstallIOProcW(c->fccIOProc, QEMU_G2H(c->pIOProc), c->dwFlags);
 }
 
 #endif
@@ -550,10 +550,10 @@ WINBASEAPI LRESULT WINAPI mmioSendMessage(HMMIO hmmio, UINT uMessage, LPARAM lPa
 {
     struct qemu_mmioSendMessage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOSENDMESSAGE);
-    call.hmmio = (uint64_t)hmmio;
-    call.uMessage = (uint64_t)uMessage;
-    call.lParam1 = (uint64_t)lParam1;
-    call.lParam2 = (uint64_t)lParam2;
+    call.hmmio = (ULONG_PTR)hmmio;
+    call.uMessage = (ULONG_PTR)uMessage;
+    call.lParam1 = (ULONG_PTR)lParam1;
+    call.lParam2 = (ULONG_PTR)lParam2;
 
     qemu_syscall(&call.super);
 
@@ -586,10 +586,10 @@ WINBASEAPI MMRESULT WINAPI mmioDescend(HMMIO hmmio, LPMMCKINFO lpck, const MMCKI
 {
     struct qemu_mmioDescend call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIODESCEND);
-    call.hmmio = (uint64_t)hmmio;
-    call.lpck = (uint64_t)lpck;
-    call.lpckParent = (uint64_t)lpckParent;
-    call.uFlags = (uint64_t)uFlags;
+    call.hmmio = (ULONG_PTR)hmmio;
+    call.lpck = (ULONG_PTR)lpck;
+    call.lpckParent = (ULONG_PTR)lpckParent;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -621,9 +621,9 @@ WINBASEAPI MMRESULT WINAPI mmioAscend(HMMIO hmmio, LPMMCKINFO lpck, UINT uFlags)
 {
     struct qemu_mmioAscend call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOASCEND);
-    call.hmmio = (uint64_t)hmmio;
-    call.lpck = (uint64_t)lpck;
-    call.uFlags = (uint64_t)uFlags;
+    call.hmmio = (ULONG_PTR)hmmio;
+    call.lpck = (ULONG_PTR)lpck;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -655,9 +655,9 @@ WINBASEAPI MMRESULT WINAPI mmioCreateChunk(HMMIO hmmio, MMCKINFO* lpck, UINT uFl
 {
     struct qemu_mmioCreateChunk call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOCREATECHUNK);
-    call.hmmio = (uint64_t)hmmio;
-    call.lpck = (uint64_t)lpck;
-    call.uFlags = (uint64_t)uFlags;
+    call.hmmio = (ULONG_PTR)hmmio;
+    call.lpck = (ULONG_PTR)lpck;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -690,10 +690,10 @@ WINBASEAPI MMRESULT WINAPI mmioRenameA(LPCSTR szFileName, LPCSTR szNewFileName, 
 {
     struct qemu_mmioRenameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIORENAMEA);
-    call.szFileName = (uint64_t)szFileName;
-    call.szNewFileName = (uint64_t)szNewFileName;
-    call.lpmmioinfo = (uint64_t)lpmmioinfo;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.szFileName = (ULONG_PTR)szFileName;
+    call.szNewFileName = (ULONG_PTR)szNewFileName;
+    call.lpmmioinfo = (ULONG_PTR)lpmmioinfo;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -726,10 +726,10 @@ WINBASEAPI MMRESULT WINAPI mmioRenameW(LPCWSTR szFileName, LPCWSTR szNewFileName
 {
     struct qemu_mmioRenameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIORENAMEW);
-    call.szFileName = (uint64_t)szFileName;
-    call.szNewFileName = (uint64_t)szNewFileName;
-    call.lpmmioinfo = (uint64_t)lpmmioinfo;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.szFileName = (ULONG_PTR)szFileName;
+    call.szNewFileName = (ULONG_PTR)szNewFileName;
+    call.lpmmioinfo = (ULONG_PTR)lpmmioinfo;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 

@@ -44,8 +44,8 @@ WINBASEAPI MMRESULT WINAPI timeGetSystemTime(LPMMTIME lpTime, UINT wSize)
 {
     struct qemu_timeGetSystemTime call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TIMEGETSYSTEMTIME);
-    call.lpTime = (uint64_t)lpTime;
-    call.wSize = (uint64_t)wSize;
+    call.lpTime = (ULONG_PTR)lpTime;
+    call.wSize = (ULONG_PTR)wSize;
 
     qemu_syscall(&call.super);
 
@@ -79,11 +79,11 @@ WINBASEAPI MMRESULT WINAPI timeSetEvent(UINT wDelay, UINT wResol, LPTIMECALLBACK
 {
     struct qemu_timeSetEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TIMESETEVENT);
-    call.wDelay = (uint64_t)wDelay;
-    call.wResol = (uint64_t)wResol;
-    call.lpFunc = (uint64_t)lpFunc;
-    call.dwUser = (uint64_t)dwUser;
-    call.wFlags = (uint64_t)wFlags;
+    call.wDelay = (ULONG_PTR)wDelay;
+    call.wResol = (ULONG_PTR)wResol;
+    call.lpFunc = (ULONG_PTR)lpFunc;
+    call.dwUser = (ULONG_PTR)dwUser;
+    call.wFlags = (ULONG_PTR)wFlags;
 
     qemu_syscall(&call.super);
 
@@ -113,7 +113,7 @@ WINBASEAPI MMRESULT WINAPI timeKillEvent(UINT wID)
 {
     struct qemu_timeKillEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TIMEKILLEVENT);
-    call.wID = (uint64_t)wID;
+    call.wID = (ULONG_PTR)wID;
 
     qemu_syscall(&call.super);
 
@@ -144,8 +144,8 @@ WINBASEAPI MMRESULT WINAPI timeGetDevCaps(LPTIMECAPS lpCaps, UINT wSize)
 {
     struct qemu_timeGetDevCaps call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TIMEGETDEVCAPS);
-    call.lpCaps = (uint64_t)lpCaps;
-    call.wSize = (uint64_t)wSize;
+    call.lpCaps = (ULONG_PTR)lpCaps;
+    call.wSize = (ULONG_PTR)wSize;
 
     qemu_syscall(&call.super);
 
@@ -175,7 +175,7 @@ WINBASEAPI MMRESULT WINAPI timeBeginPeriod(UINT wPeriod)
 {
     struct qemu_timeBeginPeriod call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TIMEBEGINPERIOD);
-    call.wPeriod = (uint64_t)wPeriod;
+    call.wPeriod = (ULONG_PTR)wPeriod;
 
     qemu_syscall(&call.super);
 
@@ -205,7 +205,7 @@ WINBASEAPI MMRESULT WINAPI timeEndPeriod(UINT wPeriod)
 {
     struct qemu_timeEndPeriod call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TIMEENDPERIOD);
-    call.wPeriod = (uint64_t)wPeriod;
+    call.wPeriod = (ULONG_PTR)wPeriod;
 
     qemu_syscall(&call.super);
 

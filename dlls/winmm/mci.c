@@ -46,10 +46,10 @@ WINBASEAPI DWORD WINAPI mciSendStringW(LPCWSTR lpstrCommand, LPWSTR lpstrRet, UI
 {
     struct qemu_mciSendStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCISENDSTRINGW);
-    call.lpstrCommand = (uint64_t)lpstrCommand;
-    call.lpstrRet = (uint64_t)lpstrRet;
-    call.uRetLen = (uint64_t)uRetLen;
-    call.hwndCallback = (uint64_t)hwndCallback;
+    call.lpstrCommand = (ULONG_PTR)lpstrCommand;
+    call.lpstrRet = (ULONG_PTR)lpstrRet;
+    call.uRetLen = (ULONG_PTR)uRetLen;
+    call.hwndCallback = (ULONG_PTR)hwndCallback;
 
     qemu_syscall(&call.super);
 
@@ -82,10 +82,10 @@ WINBASEAPI DWORD WINAPI mciSendStringA(LPCSTR lpstrCommand, LPSTR lpstrRet, UINT
 {
     struct qemu_mciSendStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCISENDSTRINGA);
-    call.lpstrCommand = (uint64_t)lpstrCommand;
-    call.lpstrRet = (uint64_t)lpstrRet;
-    call.uRetLen = (uint64_t)uRetLen;
-    call.hwndCallback = (uint64_t)hwndCallback;
+    call.lpstrCommand = (ULONG_PTR)lpstrCommand;
+    call.lpstrRet = (ULONG_PTR)lpstrRet;
+    call.uRetLen = (ULONG_PTR)uRetLen;
+    call.hwndCallback = (ULONG_PTR)hwndCallback;
 
     qemu_syscall(&call.super);
 
@@ -115,7 +115,7 @@ WINBASEAPI BOOL WINAPI mciExecute(LPCSTR lpstrCommand)
 {
     struct qemu_mciExecute call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCIEXECUTE);
-    call.lpstrCommand = (uint64_t)lpstrCommand;
+    call.lpstrCommand = (ULONG_PTR)lpstrCommand;
 
     qemu_syscall(&call.super);
 
@@ -147,9 +147,9 @@ WINBASEAPI UINT WINAPI mciLoadCommandResource(HINSTANCE hInst, LPCWSTR resNameW,
 {
     struct qemu_mciLoadCommandResource call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCILOADCOMMANDRESOURCE);
-    call.hInst = (uint64_t)hInst;
-    call.resNameW = (uint64_t)resNameW;
-    call.type = (uint64_t)type;
+    call.hInst = (ULONG_PTR)hInst;
+    call.resNameW = (ULONG_PTR)resNameW;
+    call.type = (ULONG_PTR)type;
 
     qemu_syscall(&call.super);
 
@@ -181,7 +181,7 @@ WINBASEAPI BOOL WINAPI mciFreeCommandResource(UINT uTable)
 {
     struct qemu_mciFreeCommandResource call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCIFREECOMMANDRESOURCE);
-    call.uTable = (uint64_t)uTable;
+    call.uTable = (ULONG_PTR)uTable;
 
     qemu_syscall(&call.super);
 
@@ -215,9 +215,9 @@ WINBASEAPI BOOL WINAPI mciGetErrorStringW(MCIERROR wError, LPWSTR lpstrBuffer, U
 {
     struct qemu_mciGetErrorStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCIGETERRORSTRINGW);
-    call.wError = (uint64_t)wError;
-    call.lpstrBuffer = (uint64_t)lpstrBuffer;
-    call.uLength = (uint64_t)uLength;
+    call.wError = (ULONG_PTR)wError;
+    call.lpstrBuffer = (ULONG_PTR)lpstrBuffer;
+    call.uLength = (ULONG_PTR)uLength;
 
     qemu_syscall(&call.super);
 
@@ -249,9 +249,9 @@ WINBASEAPI BOOL WINAPI mciGetErrorStringA(MCIERROR dwError, LPSTR lpstrBuffer, U
 {
     struct qemu_mciGetErrorStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCIGETERRORSTRINGA);
-    call.dwError = (uint64_t)dwError;
-    call.lpstrBuffer = (uint64_t)lpstrBuffer;
-    call.uLength = (uint64_t)uLength;
+    call.dwError = (ULONG_PTR)dwError;
+    call.lpstrBuffer = (ULONG_PTR)lpstrBuffer;
+    call.uLength = (ULONG_PTR)uLength;
 
     qemu_syscall(&call.super);
 
@@ -283,9 +283,9 @@ WINBASEAPI BOOL WINAPI mciDriverNotify(HWND hWndCallBack, MCIDEVICEID wDevID, UI
 {
     struct qemu_mciDriverNotify call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCIDRIVERNOTIFY);
-    call.hWndCallBack = (uint64_t)hWndCallBack;
-    call.wDevID = (uint64_t)wDevID;
-    call.wStatus = (uint64_t)wStatus;
+    call.hWndCallBack = (ULONG_PTR)hWndCallBack;
+    call.wDevID = (ULONG_PTR)wDevID;
+    call.wStatus = (ULONG_PTR)wStatus;
 
     qemu_syscall(&call.super);
 
@@ -317,7 +317,7 @@ WINBASEAPI DWORD_PTR WINAPI mciGetDriverData(MCIDEVICEID uDeviceID)
 {
     struct qemu_mciGetDriverData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCIGETDRIVERDATA);
-    call.uDeviceID = (uint64_t)uDeviceID;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
 
     qemu_syscall(&call.super);
 
@@ -350,8 +350,8 @@ WINBASEAPI BOOL WINAPI mciSetDriverData(MCIDEVICEID uDeviceID, DWORD_PTR data)
 {
     struct qemu_mciSetDriverData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCISETDRIVERDATA);
-    call.uDeviceID = (uint64_t)uDeviceID;
-    call.data = (uint64_t)data;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
+    call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
 
@@ -386,10 +386,10 @@ WINBASEAPI DWORD WINAPI mciSendCommandW(MCIDEVICEID wDevID, UINT wMsg, DWORD_PTR
 {
     struct qemu_mciSendCommandW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCISENDCOMMANDW);
-    call.wDevID = (uint64_t)wDevID;
-    call.wMsg = (uint64_t)wMsg;
-    call.dwParam1 = (uint64_t)dwParam1;
-    call.dwParam2 = (uint64_t)dwParam2;
+    call.wDevID = (ULONG_PTR)wDevID;
+    call.wMsg = (ULONG_PTR)wMsg;
+    call.dwParam1 = (ULONG_PTR)dwParam1;
+    call.dwParam2 = (ULONG_PTR)dwParam2;
 
     qemu_syscall(&call.super);
 
@@ -422,10 +422,10 @@ WINBASEAPI DWORD WINAPI mciSendCommandA(MCIDEVICEID wDevID, UINT wMsg, DWORD_PTR
 {
     struct qemu_mciSendCommandA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCISENDCOMMANDA);
-    call.wDevID = (uint64_t)wDevID;
-    call.wMsg = (uint64_t)wMsg;
-    call.dwParam1 = (uint64_t)dwParam1;
-    call.dwParam2 = (uint64_t)dwParam2;
+    call.wDevID = (ULONG_PTR)wDevID;
+    call.wMsg = (ULONG_PTR)wMsg;
+    call.dwParam1 = (ULONG_PTR)dwParam1;
+    call.dwParam2 = (ULONG_PTR)dwParam2;
 
     qemu_syscall(&call.super);
 
@@ -455,7 +455,7 @@ WINBASEAPI UINT WINAPI mciGetDeviceIDA(LPCSTR lpstrName)
 {
     struct qemu_mciGetDeviceIDA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCIGETDEVICEIDA);
-    call.lpstrName = (uint64_t)lpstrName;
+    call.lpstrName = (ULONG_PTR)lpstrName;
 
     qemu_syscall(&call.super);
 
@@ -485,7 +485,7 @@ WINBASEAPI UINT WINAPI mciGetDeviceIDW(LPCWSTR lpwstrName)
 {
     struct qemu_mciGetDeviceIDW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCIGETDEVICEIDW);
-    call.lpwstrName = (uint64_t)lpwstrName;
+    call.lpwstrName = (ULONG_PTR)lpwstrName;
 
     qemu_syscall(&call.super);
 
@@ -517,9 +517,9 @@ WINBASEAPI BOOL WINAPI mciSetYieldProc(MCIDEVICEID uDeviceID, YIELDPROC fpYieldP
 {
     struct qemu_mciSetYieldProc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCISETYIELDPROC);
-    call.uDeviceID = (uint64_t)uDeviceID;
-    call.fpYieldProc = (uint64_t)fpYieldProc;
-    call.dwYieldData = (uint64_t)dwYieldData;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
+    call.fpYieldProc = (ULONG_PTR)fpYieldProc;
+    call.dwYieldData = (ULONG_PTR)dwYieldData;
 
     qemu_syscall(&call.super);
 
@@ -550,8 +550,8 @@ WINBASEAPI UINT WINAPI mciGetDeviceIDFromElementIDA(DWORD dwElementID, LPCSTR lp
 {
     struct qemu_mciGetDeviceIDFromElementIDA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCIGETDEVICEIDFROMELEMENTIDA);
-    call.dwElementID = (uint64_t)dwElementID;
-    call.lpstrType = (uint64_t)lpstrType;
+    call.dwElementID = (ULONG_PTR)dwElementID;
+    call.lpstrType = (ULONG_PTR)lpstrType;
 
     qemu_syscall(&call.super);
 
@@ -582,8 +582,8 @@ WINBASEAPI UINT WINAPI mciGetDeviceIDFromElementIDW(DWORD dwElementID, LPCWSTR l
 {
     struct qemu_mciGetDeviceIDFromElementIDW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCIGETDEVICEIDFROMELEMENTIDW);
-    call.dwElementID = (uint64_t)dwElementID;
-    call.lpstrType = (uint64_t)lpstrType;
+    call.dwElementID = (ULONG_PTR)dwElementID;
+    call.lpstrType = (ULONG_PTR)lpstrType;
 
     qemu_syscall(&call.super);
 
@@ -614,12 +614,12 @@ WINBASEAPI YIELDPROC WINAPI mciGetYieldProc(MCIDEVICEID uDeviceID, DWORD* lpdwYi
 {
     struct qemu_mciGetYieldProc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCIGETYIELDPROC);
-    call.uDeviceID = (uint64_t)uDeviceID;
-    call.lpdwYieldData = (uint64_t)lpdwYieldData;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
+    call.lpdwYieldData = (ULONG_PTR)lpdwYieldData;
 
     qemu_syscall(&call.super);
 
-    return (YIELDPROC)call.super.iret;
+    return (YIELDPROC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -628,7 +628,7 @@ void qemu_mciGetYieldProc(struct qemu_syscall *call)
 {
     struct qemu_mciGetYieldProc *c = (struct qemu_mciGetYieldProc *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)mciGetYieldProc(c->uDeviceID, QEMU_G2H(c->lpdwYieldData));
+    c->super.iret = (ULONG_PTR)mciGetYieldProc(c->uDeviceID, QEMU_G2H(c->lpdwYieldData));
 }
 
 #endif
@@ -645,11 +645,11 @@ WINBASEAPI HTASK WINAPI mciGetCreatorTask(MCIDEVICEID uDeviceID)
 {
     struct qemu_mciGetCreatorTask call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCIGETCREATORTASK);
-    call.uDeviceID = (uint64_t)uDeviceID;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
 
     qemu_syscall(&call.super);
 
-    return (HTASK)call.super.iret;
+    return (HTASK)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -658,7 +658,7 @@ void qemu_mciGetCreatorTask(struct qemu_syscall *call)
 {
     struct qemu_mciGetCreatorTask *c = (struct qemu_mciGetCreatorTask *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)mciGetCreatorTask(c->uDeviceID);
+    c->super.iret = (ULONG_PTR)mciGetCreatorTask(c->uDeviceID);
 }
 
 #endif
@@ -675,7 +675,7 @@ WINBASEAPI UINT WINAPI mciDriverYield(MCIDEVICEID uDeviceID)
 {
     struct qemu_mciDriverYield call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCIDRIVERYIELD);
-    call.uDeviceID = (uint64_t)uDeviceID;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
 
     qemu_syscall(&call.super);
 

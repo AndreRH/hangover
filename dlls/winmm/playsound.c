@@ -45,9 +45,9 @@ WINBASEAPI BOOL WINAPI PlaySoundA(LPCSTR pszSoundA, HMODULE hmod, DWORD fdwSound
 {
     struct qemu_PlaySoundA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PLAYSOUNDA);
-    call.pszSoundA = (uint64_t)pszSoundA;
-    call.hmod = (uint64_t)hmod;
-    call.fdwSound = (uint64_t)fdwSound;
+    call.pszSoundA = (ULONG_PTR)pszSoundA;
+    call.hmod = (ULONG_PTR)hmod;
+    call.fdwSound = (ULONG_PTR)fdwSound;
 
     qemu_syscall(&call.super);
 
@@ -79,9 +79,9 @@ WINBASEAPI BOOL WINAPI PlaySoundW(LPCWSTR pszSoundW, HMODULE hmod, DWORD fdwSoun
 {
     struct qemu_PlaySoundW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PLAYSOUNDW);
-    call.pszSoundW = (uint64_t)pszSoundW;
-    call.hmod = (uint64_t)hmod;
-    call.fdwSound = (uint64_t)fdwSound;
+    call.pszSoundW = (ULONG_PTR)pszSoundW;
+    call.hmod = (ULONG_PTR)hmod;
+    call.fdwSound = (ULONG_PTR)fdwSound;
 
     qemu_syscall(&call.super);
 
@@ -112,8 +112,8 @@ WINBASEAPI BOOL WINAPI sndPlaySoundA(LPCSTR pszSoundA, UINT uFlags)
 {
     struct qemu_sndPlaySoundA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SNDPLAYSOUNDA);
-    call.pszSoundA = (uint64_t)pszSoundA;
-    call.uFlags = (uint64_t)uFlags;
+    call.pszSoundA = (ULONG_PTR)pszSoundA;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -144,8 +144,8 @@ WINBASEAPI BOOL WINAPI sndPlaySoundW(LPCWSTR pszSound, UINT uFlags)
 {
     struct qemu_sndPlaySoundW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SNDPLAYSOUNDW);
-    call.pszSound = (uint64_t)pszSound;
-    call.uFlags = (uint64_t)uFlags;
+    call.pszSound = (ULONG_PTR)pszSound;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 

@@ -74,9 +74,9 @@ WINBASEAPI UINT WINAPI auxGetDevCapsW(UINT_PTR uDeviceID, LPAUXCAPSW lpCaps, UIN
 {
     struct qemu_auxGetDevCapsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_AUXGETDEVCAPSW);
-    call.uDeviceID = (uint64_t)uDeviceID;
-    call.lpCaps = (uint64_t)lpCaps;
-    call.uSize = (uint64_t)uSize;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
+    call.lpCaps = (ULONG_PTR)lpCaps;
+    call.uSize = (ULONG_PTR)uSize;
 
     qemu_syscall(&call.super);
 
@@ -108,9 +108,9 @@ WINBASEAPI UINT WINAPI auxGetDevCapsA(UINT_PTR uDeviceID, LPAUXCAPSA lpCaps, UIN
 {
     struct qemu_auxGetDevCapsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_AUXGETDEVCAPSA);
-    call.uDeviceID = (uint64_t)uDeviceID;
-    call.lpCaps = (uint64_t)lpCaps;
-    call.uSize = (uint64_t)uSize;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
+    call.lpCaps = (ULONG_PTR)lpCaps;
+    call.uSize = (ULONG_PTR)uSize;
 
     qemu_syscall(&call.super);
 
@@ -141,8 +141,8 @@ WINBASEAPI UINT WINAPI auxGetVolume(UINT uDeviceID, DWORD* lpdwVolume)
 {
     struct qemu_auxGetVolume call;
     call.super.id = QEMU_SYSCALL_ID(CALL_AUXGETVOLUME);
-    call.uDeviceID = (uint64_t)uDeviceID;
-    call.lpdwVolume = (uint64_t)lpdwVolume;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
+    call.lpdwVolume = (ULONG_PTR)lpdwVolume;
 
     qemu_syscall(&call.super);
 
@@ -173,8 +173,8 @@ WINBASEAPI UINT WINAPI auxSetVolume(UINT uDeviceID, DWORD dwVolume)
 {
     struct qemu_auxSetVolume call;
     call.super.id = QEMU_SYSCALL_ID(CALL_AUXSETVOLUME);
-    call.uDeviceID = (uint64_t)uDeviceID;
-    call.dwVolume = (uint64_t)dwVolume;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
+    call.dwVolume = (ULONG_PTR)dwVolume;
 
     qemu_syscall(&call.super);
 
@@ -207,10 +207,10 @@ WINBASEAPI UINT WINAPI auxOutMessage(UINT uDeviceID, UINT uMessage, DWORD_PTR dw
 {
     struct qemu_auxOutMessage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_AUXOUTMESSAGE);
-    call.uDeviceID = (uint64_t)uDeviceID;
-    call.uMessage = (uint64_t)uMessage;
-    call.dw1 = (uint64_t)dw1;
-    call.dw2 = (uint64_t)dw2;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
+    call.uMessage = (ULONG_PTR)uMessage;
+    call.dw1 = (ULONG_PTR)dw1;
+    call.dw2 = (ULONG_PTR)dw2;
 
     qemu_syscall(&call.super);
 
@@ -270,9 +270,9 @@ WINBASEAPI UINT WINAPI midiOutGetDevCapsW(UINT_PTR uDeviceID, LPMIDIOUTCAPSW lpC
 {
     struct qemu_midiOutGetDevCapsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTGETDEVCAPSW);
-    call.uDeviceID = (uint64_t)uDeviceID;
-    call.lpCaps = (uint64_t)lpCaps;
-    call.uSize = (uint64_t)uSize;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
+    call.lpCaps = (ULONG_PTR)lpCaps;
+    call.uSize = (ULONG_PTR)uSize;
 
     qemu_syscall(&call.super);
 
@@ -304,9 +304,9 @@ WINBASEAPI UINT WINAPI midiOutGetDevCapsA(UINT_PTR uDeviceID, LPMIDIOUTCAPSA lpC
 {
     struct qemu_midiOutGetDevCapsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTGETDEVCAPSA);
-    call.uDeviceID = (uint64_t)uDeviceID;
-    call.lpCaps = (uint64_t)lpCaps;
-    call.uSize = (uint64_t)uSize;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
+    call.lpCaps = (ULONG_PTR)lpCaps;
+    call.uSize = (ULONG_PTR)uSize;
 
     qemu_syscall(&call.super);
 
@@ -338,9 +338,9 @@ WINBASEAPI UINT WINAPI midiOutGetErrorTextA(UINT uError, LPSTR lpText, UINT uSiz
 {
     struct qemu_midiOutGetErrorTextA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTGETERRORTEXTA);
-    call.uError = (uint64_t)uError;
-    call.lpText = (uint64_t)lpText;
-    call.uSize = (uint64_t)uSize;
+    call.uError = (ULONG_PTR)uError;
+    call.lpText = (ULONG_PTR)lpText;
+    call.uSize = (ULONG_PTR)uSize;
 
     qemu_syscall(&call.super);
 
@@ -372,9 +372,9 @@ WINBASEAPI UINT WINAPI midiOutGetErrorTextW(UINT uError, LPWSTR lpText, UINT uSi
 {
     struct qemu_midiOutGetErrorTextW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTGETERRORTEXTW);
-    call.uError = (uint64_t)uError;
-    call.lpText = (uint64_t)lpText;
-    call.uSize = (uint64_t)uSize;
+    call.uError = (ULONG_PTR)uError;
+    call.lpText = (ULONG_PTR)lpText;
+    call.uSize = (ULONG_PTR)uSize;
 
     qemu_syscall(&call.super);
 
@@ -408,11 +408,11 @@ WINBASEAPI MMRESULT WINAPI midiOutOpen(LPHMIDIOUT lphMidiOut, UINT uDeviceID, DW
 {
     struct qemu_midiOutOpen call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTOPEN);
-    call.lphMidiOut = (uint64_t)lphMidiOut;
-    call.uDeviceID = (uint64_t)uDeviceID;
-    call.dwCallback = (uint64_t)dwCallback;
-    call.dwInstance = (uint64_t)dwInstance;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.lphMidiOut = (ULONG_PTR)lphMidiOut;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
+    call.dwCallback = (ULONG_PTR)dwCallback;
+    call.dwInstance = (ULONG_PTR)dwInstance;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -442,7 +442,7 @@ WINBASEAPI UINT WINAPI midiOutClose(HMIDIOUT hMidiOut)
 {
     struct qemu_midiOutClose call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTCLOSE);
-    call.hMidiOut = (uint64_t)hMidiOut;
+    call.hMidiOut = (ULONG_PTR)hMidiOut;
 
     qemu_syscall(&call.super);
 
@@ -474,9 +474,9 @@ WINBASEAPI UINT WINAPI midiOutPrepareHeader(HMIDIOUT hMidiOut, MIDIHDR* lpMidiOu
 {
     struct qemu_midiOutPrepareHeader call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTPREPAREHEADER);
-    call.hMidiOut = (uint64_t)hMidiOut;
-    call.lpMidiOutHdr = (uint64_t)lpMidiOutHdr;
-    call.uSize = (uint64_t)uSize;
+    call.hMidiOut = (ULONG_PTR)hMidiOut;
+    call.lpMidiOutHdr = (ULONG_PTR)lpMidiOutHdr;
+    call.uSize = (ULONG_PTR)uSize;
 
     qemu_syscall(&call.super);
 
@@ -508,9 +508,9 @@ WINBASEAPI UINT WINAPI midiOutUnprepareHeader(HMIDIOUT hMidiOut, MIDIHDR* lpMidi
 {
     struct qemu_midiOutUnprepareHeader call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTUNPREPAREHEADER);
-    call.hMidiOut = (uint64_t)hMidiOut;
-    call.lpMidiOutHdr = (uint64_t)lpMidiOutHdr;
-    call.uSize = (uint64_t)uSize;
+    call.hMidiOut = (ULONG_PTR)hMidiOut;
+    call.lpMidiOutHdr = (ULONG_PTR)lpMidiOutHdr;
+    call.uSize = (ULONG_PTR)uSize;
 
     qemu_syscall(&call.super);
 
@@ -541,8 +541,8 @@ WINBASEAPI UINT WINAPI midiOutShortMsg(HMIDIOUT hMidiOut, DWORD dwMsg)
 {
     struct qemu_midiOutShortMsg call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTSHORTMSG);
-    call.hMidiOut = (uint64_t)hMidiOut;
-    call.dwMsg = (uint64_t)dwMsg;
+    call.hMidiOut = (ULONG_PTR)hMidiOut;
+    call.dwMsg = (ULONG_PTR)dwMsg;
 
     qemu_syscall(&call.super);
 
@@ -574,9 +574,9 @@ WINBASEAPI UINT WINAPI midiOutLongMsg(HMIDIOUT hMidiOut, MIDIHDR* lpMidiOutHdr, 
 {
     struct qemu_midiOutLongMsg call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTLONGMSG);
-    call.hMidiOut = (uint64_t)hMidiOut;
-    call.lpMidiOutHdr = (uint64_t)lpMidiOutHdr;
-    call.uSize = (uint64_t)uSize;
+    call.hMidiOut = (ULONG_PTR)hMidiOut;
+    call.lpMidiOutHdr = (ULONG_PTR)lpMidiOutHdr;
+    call.uSize = (ULONG_PTR)uSize;
 
     qemu_syscall(&call.super);
 
@@ -606,7 +606,7 @@ WINBASEAPI UINT WINAPI midiOutReset(HMIDIOUT hMidiOut)
 {
     struct qemu_midiOutReset call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTRESET);
-    call.hMidiOut = (uint64_t)hMidiOut;
+    call.hMidiOut = (ULONG_PTR)hMidiOut;
 
     qemu_syscall(&call.super);
 
@@ -637,8 +637,8 @@ WINBASEAPI UINT WINAPI midiOutGetVolume(HMIDIOUT hMidiOut, DWORD* lpdwVolume)
 {
     struct qemu_midiOutGetVolume call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTGETVOLUME);
-    call.hMidiOut = (uint64_t)hMidiOut;
-    call.lpdwVolume = (uint64_t)lpdwVolume;
+    call.hMidiOut = (ULONG_PTR)hMidiOut;
+    call.lpdwVolume = (ULONG_PTR)lpdwVolume;
 
     qemu_syscall(&call.super);
 
@@ -669,8 +669,8 @@ WINBASEAPI UINT WINAPI midiOutSetVolume(HMIDIOUT hMidiOut, DWORD dwVolume)
 {
     struct qemu_midiOutSetVolume call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTSETVOLUME);
-    call.hMidiOut = (uint64_t)hMidiOut;
-    call.dwVolume = (uint64_t)dwVolume;
+    call.hMidiOut = (ULONG_PTR)hMidiOut;
+    call.dwVolume = (ULONG_PTR)dwVolume;
 
     qemu_syscall(&call.super);
 
@@ -703,10 +703,10 @@ WINBASEAPI UINT WINAPI midiOutCachePatches(HMIDIOUT hMidiOut, UINT uBank, WORD* 
 {
     struct qemu_midiOutCachePatches call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTCACHEPATCHES);
-    call.hMidiOut = (uint64_t)hMidiOut;
-    call.uBank = (uint64_t)uBank;
-    call.lpwPatchArray = (uint64_t)lpwPatchArray;
-    call.uFlags = (uint64_t)uFlags;
+    call.hMidiOut = (ULONG_PTR)hMidiOut;
+    call.uBank = (ULONG_PTR)uBank;
+    call.lpwPatchArray = (ULONG_PTR)lpwPatchArray;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -739,10 +739,10 @@ WINBASEAPI UINT WINAPI midiOutCacheDrumPatches(HMIDIOUT hMidiOut, UINT uPatch, W
 {
     struct qemu_midiOutCacheDrumPatches call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTCACHEDRUMPATCHES);
-    call.hMidiOut = (uint64_t)hMidiOut;
-    call.uPatch = (uint64_t)uPatch;
-    call.lpwKeyArray = (uint64_t)lpwKeyArray;
-    call.uFlags = (uint64_t)uFlags;
+    call.hMidiOut = (ULONG_PTR)hMidiOut;
+    call.uPatch = (ULONG_PTR)uPatch;
+    call.lpwKeyArray = (ULONG_PTR)lpwKeyArray;
+    call.uFlags = (ULONG_PTR)uFlags;
 
     qemu_syscall(&call.super);
 
@@ -773,8 +773,8 @@ WINBASEAPI UINT WINAPI midiOutGetID(HMIDIOUT hMidiOut, UINT* lpuDeviceID)
 {
     struct qemu_midiOutGetID call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTGETID);
-    call.hMidiOut = (uint64_t)hMidiOut;
-    call.lpuDeviceID = (uint64_t)lpuDeviceID;
+    call.hMidiOut = (ULONG_PTR)hMidiOut;
+    call.lpuDeviceID = (ULONG_PTR)lpuDeviceID;
 
     qemu_syscall(&call.super);
 
@@ -807,10 +807,10 @@ WINBASEAPI UINT WINAPI midiOutMessage(HMIDIOUT hMidiOut, UINT uMessage, DWORD_PT
 {
     struct qemu_midiOutMessage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIOUTMESSAGE);
-    call.hMidiOut = (uint64_t)hMidiOut;
-    call.uMessage = (uint64_t)uMessage;
-    call.dwParam1 = (uint64_t)dwParam1;
-    call.dwParam2 = (uint64_t)dwParam2;
+    call.hMidiOut = (ULONG_PTR)hMidiOut;
+    call.uMessage = (ULONG_PTR)uMessage;
+    call.dwParam1 = (ULONG_PTR)dwParam1;
+    call.dwParam2 = (ULONG_PTR)dwParam2;
 
     qemu_syscall(&call.super);
 
@@ -870,9 +870,9 @@ WINBASEAPI UINT WINAPI midiInGetDevCapsW(UINT_PTR uDeviceID, LPMIDIINCAPSW lpCap
 {
     struct qemu_midiInGetDevCapsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIINGETDEVCAPSW);
-    call.uDeviceID = (uint64_t)uDeviceID;
-    call.lpCaps = (uint64_t)lpCaps;
-    call.uSize = (uint64_t)uSize;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
+    call.lpCaps = (ULONG_PTR)lpCaps;
+    call.uSize = (ULONG_PTR)uSize;
 
     qemu_syscall(&call.super);
 
@@ -904,9 +904,9 @@ WINBASEAPI UINT WINAPI midiInGetDevCapsA(UINT_PTR uDeviceID, LPMIDIINCAPSA lpCap
 {
     struct qemu_midiInGetDevCapsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIINGETDEVCAPSA);
-    call.uDeviceID = (uint64_t)uDeviceID;
-    call.lpCaps = (uint64_t)lpCaps;
-    call.uSize = (uint64_t)uSize;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
+    call.lpCaps = (ULONG_PTR)lpCaps;
+    call.uSize = (ULONG_PTR)uSize;
 
     qemu_syscall(&call.super);
 
@@ -940,11 +940,11 @@ WINBASEAPI MMRESULT WINAPI midiInOpen(HMIDIIN* lphMidiIn, UINT uDeviceID, DWORD_
 {
     struct qemu_midiInOpen call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIINOPEN);
-    call.lphMidiIn = (uint64_t)lphMidiIn;
-    call.uDeviceID = (uint64_t)uDeviceID;
-    call.dwCallback = (uint64_t)dwCallback;
-    call.dwInstance = (uint64_t)dwInstance;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.lphMidiIn = (ULONG_PTR)lphMidiIn;
+    call.uDeviceID = (ULONG_PTR)uDeviceID;
+    call.dwCallback = (ULONG_PTR)dwCallback;
+    call.dwInstance = (ULONG_PTR)dwInstance;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -974,7 +974,7 @@ WINBASEAPI UINT WINAPI midiInClose(HMIDIIN hMidiIn)
 {
     struct qemu_midiInClose call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIINCLOSE);
-    call.hMidiIn = (uint64_t)hMidiIn;
+    call.hMidiIn = (ULONG_PTR)hMidiIn;
 
     qemu_syscall(&call.super);
 
@@ -1006,9 +1006,9 @@ WINBASEAPI UINT WINAPI midiInPrepareHeader(HMIDIIN hMidiIn, MIDIHDR* lpMidiInHdr
 {
     struct qemu_midiInPrepareHeader call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIINPREPAREHEADER);
-    call.hMidiIn = (uint64_t)hMidiIn;
-    call.lpMidiInHdr = (uint64_t)lpMidiInHdr;
-    call.uSize = (uint64_t)uSize;
+    call.hMidiIn = (ULONG_PTR)hMidiIn;
+    call.lpMidiInHdr = (ULONG_PTR)lpMidiInHdr;
+    call.uSize = (ULONG_PTR)uSize;
 
     qemu_syscall(&call.super);
 
@@ -1040,9 +1040,9 @@ WINBASEAPI UINT WINAPI midiInUnprepareHeader(HMIDIIN hMidiIn, MIDIHDR* lpMidiInH
 {
     struct qemu_midiInUnprepareHeader call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIINUNPREPAREHEADER);
-    call.hMidiIn = (uint64_t)hMidiIn;
-    call.lpMidiInHdr = (uint64_t)lpMidiInHdr;
-    call.uSize = (uint64_t)uSize;
+    call.hMidiIn = (ULONG_PTR)hMidiIn;
+    call.lpMidiInHdr = (ULONG_PTR)lpMidiInHdr;
+    call.uSize = (ULONG_PTR)uSize;
 
     qemu_syscall(&call.super);
 
@@ -1074,9 +1074,9 @@ WINBASEAPI UINT WINAPI midiInAddBuffer(HMIDIIN hMidiIn, MIDIHDR* lpMidiInHdr, UI
 {
     struct qemu_midiInAddBuffer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIINADDBUFFER);
-    call.hMidiIn = (uint64_t)hMidiIn;
-    call.lpMidiInHdr = (uint64_t)lpMidiInHdr;
-    call.uSize = (uint64_t)uSize;
+    call.hMidiIn = (ULONG_PTR)hMidiIn;
+    call.lpMidiInHdr = (ULONG_PTR)lpMidiInHdr;
+    call.uSize = (ULONG_PTR)uSize;
 
     qemu_syscall(&call.super);
 
@@ -1106,7 +1106,7 @@ WINBASEAPI UINT WINAPI midiInStart(HMIDIIN hMidiIn)
 {
     struct qemu_midiInStart call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIINSTART);
-    call.hMidiIn = (uint64_t)hMidiIn;
+    call.hMidiIn = (ULONG_PTR)hMidiIn;
 
     qemu_syscall(&call.super);
 
@@ -1136,7 +1136,7 @@ WINBASEAPI UINT WINAPI midiInStop(HMIDIIN hMidiIn)
 {
     struct qemu_midiInStop call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIINSTOP);
-    call.hMidiIn = (uint64_t)hMidiIn;
+    call.hMidiIn = (ULONG_PTR)hMidiIn;
 
     qemu_syscall(&call.super);
 
@@ -1166,7 +1166,7 @@ WINBASEAPI UINT WINAPI midiInReset(HMIDIIN hMidiIn)
 {
     struct qemu_midiInReset call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIINRESET);
-    call.hMidiIn = (uint64_t)hMidiIn;
+    call.hMidiIn = (ULONG_PTR)hMidiIn;
 
     qemu_syscall(&call.super);
 
@@ -1197,8 +1197,8 @@ WINBASEAPI UINT WINAPI midiInGetID(HMIDIIN hMidiIn, UINT* lpuDeviceID)
 {
     struct qemu_midiInGetID call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIINGETID);
-    call.hMidiIn = (uint64_t)hMidiIn;
-    call.lpuDeviceID = (uint64_t)lpuDeviceID;
+    call.hMidiIn = (ULONG_PTR)hMidiIn;
+    call.lpuDeviceID = (ULONG_PTR)lpuDeviceID;
 
     qemu_syscall(&call.super);
 
@@ -1231,10 +1231,10 @@ WINBASEAPI UINT WINAPI midiInMessage(HMIDIIN hMidiIn, UINT uMessage, DWORD_PTR d
 {
     struct qemu_midiInMessage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIINMESSAGE);
-    call.hMidiIn = (uint64_t)hMidiIn;
-    call.uMessage = (uint64_t)uMessage;
-    call.dwParam1 = (uint64_t)dwParam1;
-    call.dwParam2 = (uint64_t)dwParam2;
+    call.hMidiIn = (ULONG_PTR)hMidiIn;
+    call.uMessage = (ULONG_PTR)uMessage;
+    call.dwParam1 = (ULONG_PTR)dwParam1;
+    call.dwParam2 = (ULONG_PTR)dwParam2;
 
     qemu_syscall(&call.super);
 
@@ -1266,9 +1266,9 @@ WINBASEAPI MMRESULT WINAPI midiConnect(HMIDI hMidi, HMIDIOUT hmo, LPVOID pReserv
 {
     struct qemu_midiConnect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDICONNECT);
-    call.hMidi = (uint64_t)hMidi;
-    call.hmo = (uint64_t)hmo;
-    call.pReserved = (uint64_t)pReserved;
+    call.hMidi = (ULONG_PTR)hMidi;
+    call.hmo = (ULONG_PTR)hmo;
+    call.pReserved = (ULONG_PTR)pReserved;
 
     qemu_syscall(&call.super);
 
@@ -1302,9 +1302,9 @@ WINBASEAPI MMRESULT WINAPI midiDisconnect(HMIDI hMidi, HMIDIOUT hmo, LPVOID pRes
 {
     struct qemu_midiDisconnect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDIDISCONNECT);
-    call.hMidi = (uint64_t)hMidi;
-    call.hmo = (uint64_t)hmo;
-    call.pReserved = (uint64_t)pReserved;
+    call.hMidi = (ULONG_PTR)hMidi;
+    call.hmo = (ULONG_PTR)hmo;
+    call.pReserved = (ULONG_PTR)pReserved;
 
     qemu_syscall(&call.super);
 
@@ -1336,7 +1336,7 @@ WINBASEAPI MMRESULT WINAPI midiStreamClose(HMIDISTRM hMidiStrm)
 {
     struct qemu_midiStreamClose call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDISTREAMCLOSE);
-    call.hMidiStrm = (uint64_t)hMidiStrm;
+    call.hMidiStrm = (ULONG_PTR)hMidiStrm;
 
     qemu_syscall(&call.super);
 
@@ -1371,12 +1371,12 @@ WINBASEAPI MMRESULT WINAPI midiStreamOpen(HMIDISTRM* lphMidiStrm, LPUINT lpuDevi
 {
     struct qemu_midiStreamOpen call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDISTREAMOPEN);
-    call.lphMidiStrm = (uint64_t)lphMidiStrm;
-    call.lpuDeviceID = (uint64_t)lpuDeviceID;
-    call.cMidi = (uint64_t)cMidi;
-    call.dwCallback = (uint64_t)dwCallback;
-    call.dwInstance = (uint64_t)dwInstance;
-    call.fdwOpen = (uint64_t)fdwOpen;
+    call.lphMidiStrm = (ULONG_PTR)lphMidiStrm;
+    call.lpuDeviceID = (ULONG_PTR)lpuDeviceID;
+    call.cMidi = (ULONG_PTR)cMidi;
+    call.dwCallback = (ULONG_PTR)dwCallback;
+    call.dwInstance = (ULONG_PTR)dwInstance;
+    call.fdwOpen = (ULONG_PTR)fdwOpen;
 
     qemu_syscall(&call.super);
 
@@ -1408,9 +1408,9 @@ WINBASEAPI MMRESULT WINAPI midiStreamOut(HMIDISTRM hMidiStrm, LPMIDIHDR lpMidiHd
 {
     struct qemu_midiStreamOut call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDISTREAMOUT);
-    call.hMidiStrm = (uint64_t)hMidiStrm;
-    call.lpMidiHdr = (uint64_t)lpMidiHdr;
-    call.cbMidiHdr = (uint64_t)cbMidiHdr;
+    call.hMidiStrm = (ULONG_PTR)hMidiStrm;
+    call.lpMidiHdr = (ULONG_PTR)lpMidiHdr;
+    call.cbMidiHdr = (ULONG_PTR)cbMidiHdr;
 
     qemu_syscall(&call.super);
 
@@ -1440,7 +1440,7 @@ WINBASEAPI MMRESULT WINAPI midiStreamPause(HMIDISTRM hMidiStrm)
 {
     struct qemu_midiStreamPause call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDISTREAMPAUSE);
-    call.hMidiStrm = (uint64_t)hMidiStrm;
+    call.hMidiStrm = (ULONG_PTR)hMidiStrm;
 
     qemu_syscall(&call.super);
 
@@ -1472,9 +1472,9 @@ WINBASEAPI MMRESULT WINAPI midiStreamPosition(HMIDISTRM hMidiStrm, LPMMTIME lpMM
 {
     struct qemu_midiStreamPosition call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDISTREAMPOSITION);
-    call.hMidiStrm = (uint64_t)hMidiStrm;
-    call.lpMMT = (uint64_t)lpMMT;
-    call.cbmmt = (uint64_t)cbmmt;
+    call.hMidiStrm = (ULONG_PTR)hMidiStrm;
+    call.lpMMT = (ULONG_PTR)lpMMT;
+    call.cbmmt = (ULONG_PTR)cbmmt;
 
     qemu_syscall(&call.super);
 
@@ -1506,9 +1506,9 @@ WINBASEAPI MMRESULT WINAPI midiStreamProperty(HMIDISTRM hMidiStrm, LPBYTE lpProp
 {
     struct qemu_midiStreamProperty call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDISTREAMPROPERTY);
-    call.hMidiStrm = (uint64_t)hMidiStrm;
-    call.lpPropData = (uint64_t)lpPropData;
-    call.dwProperty = (uint64_t)dwProperty;
+    call.hMidiStrm = (ULONG_PTR)hMidiStrm;
+    call.lpPropData = (ULONG_PTR)lpPropData;
+    call.dwProperty = (ULONG_PTR)dwProperty;
 
     qemu_syscall(&call.super);
 
@@ -1538,7 +1538,7 @@ WINBASEAPI MMRESULT WINAPI midiStreamRestart(HMIDISTRM hMidiStrm)
 {
     struct qemu_midiStreamRestart call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDISTREAMRESTART);
-    call.hMidiStrm = (uint64_t)hMidiStrm;
+    call.hMidiStrm = (ULONG_PTR)hMidiStrm;
 
     qemu_syscall(&call.super);
 
@@ -1568,7 +1568,7 @@ WINBASEAPI MMRESULT WINAPI midiStreamStop(HMIDISTRM hMidiStrm)
 {
     struct qemu_midiStreamStop call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIDISTREAMSTOP);
-    call.hMidiStrm = (uint64_t)hMidiStrm;
+    call.hMidiStrm = (ULONG_PTR)hMidiStrm;
 
     qemu_syscall(&call.super);
 
@@ -1600,9 +1600,9 @@ WINBASEAPI UINT WINAPI mmTaskCreate(void *cb, HANDLE* ph, DWORD_PTR client)
 {
     struct qemu_mmTaskCreate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMTASKCREATE);
-    call.cb = (uint64_t)cb;
-    call.ph = (uint64_t)ph;
-    call.client = (uint64_t)client;
+    call.cb = (ULONG_PTR)cb;
+    call.ph = (ULONG_PTR)ph;
+    call.client = (ULONG_PTR)client;
 
     qemu_syscall(&call.super);
 
@@ -1632,7 +1632,7 @@ WINBASEAPI VOID WINAPI mmTaskBlock(DWORD tid)
 {
     struct qemu_mmTaskBlock call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMTASKBLOCK);
-    call.tid = (uint64_t)tid;
+    call.tid = (ULONG_PTR)tid;
 
     qemu_syscall(&call.super);
 }
@@ -1660,7 +1660,7 @@ WINBASEAPI BOOL WINAPI mmTaskSignal(DWORD tid)
 {
     struct qemu_mmTaskSignal call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMTASKSIGNAL);
-    call.tid = (uint64_t)tid;
+    call.tid = (ULONG_PTR)tid;
 
     qemu_syscall(&call.super);
 

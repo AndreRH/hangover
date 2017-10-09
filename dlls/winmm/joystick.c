@@ -43,7 +43,7 @@ WINBASEAPI MMRESULT WINAPI joyConfigChanged(DWORD flags)
 {
     struct qemu_joyConfigChanged call;
     call.super.id = QEMU_SYSCALL_ID(CALL_JOYCONFIGCHANGED);
-    call.flags = (uint64_t)flags;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -105,9 +105,9 @@ WINBASEAPI MMRESULT WINAPI joyGetDevCapsW(UINT_PTR wID, LPJOYCAPSW lpCaps, UINT 
 {
     struct qemu_joyGetDevCapsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_JOYGETDEVCAPSW);
-    call.wID = (uint64_t)wID;
-    call.lpCaps = (uint64_t)lpCaps;
-    call.wSize = (uint64_t)wSize;
+    call.wID = (ULONG_PTR)wID;
+    call.lpCaps = (ULONG_PTR)lpCaps;
+    call.wSize = (ULONG_PTR)wSize;
 
     qemu_syscall(&call.super);
 
@@ -139,9 +139,9 @@ WINBASEAPI MMRESULT WINAPI joyGetDevCapsA(UINT_PTR wID, LPJOYCAPSA lpCaps, UINT 
 {
     struct qemu_joyGetDevCapsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_JOYGETDEVCAPSA);
-    call.wID = (uint64_t)wID;
-    call.lpCaps = (uint64_t)lpCaps;
-    call.wSize = (uint64_t)wSize;
+    call.wID = (ULONG_PTR)wID;
+    call.lpCaps = (ULONG_PTR)lpCaps;
+    call.wSize = (ULONG_PTR)wSize;
 
     qemu_syscall(&call.super);
 
@@ -172,8 +172,8 @@ WINBASEAPI MMRESULT WINAPI joyGetPosEx(UINT wID, LPJOYINFOEX lpInfo)
 {
     struct qemu_joyGetPosEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_JOYGETPOSEX);
-    call.wID = (uint64_t)wID;
-    call.lpInfo = (uint64_t)lpInfo;
+    call.wID = (ULONG_PTR)wID;
+    call.lpInfo = (ULONG_PTR)lpInfo;
 
     qemu_syscall(&call.super);
 
@@ -204,8 +204,8 @@ WINBASEAPI MMRESULT WINAPI joyGetPos(UINT wID, LPJOYINFO lpInfo)
 {
     struct qemu_joyGetPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_JOYGETPOS);
-    call.wID = (uint64_t)wID;
-    call.lpInfo = (uint64_t)lpInfo;
+    call.wID = (ULONG_PTR)wID;
+    call.lpInfo = (ULONG_PTR)lpInfo;
 
     qemu_syscall(&call.super);
 
@@ -236,8 +236,8 @@ WINBASEAPI MMRESULT WINAPI joyGetThreshold(UINT wID, LPUINT lpThreshold)
 {
     struct qemu_joyGetThreshold call;
     call.super.id = QEMU_SYSCALL_ID(CALL_JOYGETTHRESHOLD);
-    call.wID = (uint64_t)wID;
-    call.lpThreshold = (uint64_t)lpThreshold;
+    call.wID = (ULONG_PTR)wID;
+    call.lpThreshold = (ULONG_PTR)lpThreshold;
 
     qemu_syscall(&call.super);
 
@@ -267,7 +267,7 @@ WINBASEAPI MMRESULT WINAPI joyReleaseCapture(UINT wID)
 {
     struct qemu_joyReleaseCapture call;
     call.super.id = QEMU_SYSCALL_ID(CALL_JOYRELEASECAPTURE);
-    call.wID = (uint64_t)wID;
+    call.wID = (ULONG_PTR)wID;
 
     qemu_syscall(&call.super);
 
@@ -300,10 +300,10 @@ WINBASEAPI MMRESULT WINAPI joySetCapture(HWND hWnd, UINT wID, UINT wPeriod, BOOL
 {
     struct qemu_joySetCapture call;
     call.super.id = QEMU_SYSCALL_ID(CALL_JOYSETCAPTURE);
-    call.hWnd = (uint64_t)hWnd;
-    call.wID = (uint64_t)wID;
-    call.wPeriod = (uint64_t)wPeriod;
-    call.bChanged = (uint64_t)bChanged;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.wID = (ULONG_PTR)wID;
+    call.wPeriod = (ULONG_PTR)wPeriod;
+    call.bChanged = (ULONG_PTR)bChanged;
 
     qemu_syscall(&call.super);
 
@@ -334,8 +334,8 @@ WINBASEAPI MMRESULT WINAPI joySetThreshold(UINT wID, UINT wThreshold)
 {
     struct qemu_joySetThreshold call;
     call.super.id = QEMU_SYSCALL_ID(CALL_JOYSETTHRESHOLD);
-    call.wID = (uint64_t)wID;
-    call.wThreshold = (uint64_t)wThreshold;
+    call.wID = (ULONG_PTR)wID;
+    call.wThreshold = (ULONG_PTR)wThreshold;
 
     qemu_syscall(&call.super);
 
