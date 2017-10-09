@@ -17,7 +17,7 @@
 #define DLL_IMM32       0x0eLL
 #define DLL_USP10       0x0fLL
 #define DLL_VERSION     0x10LL
-#define DLL_OLEAUT32    0x11LL
+#define DLL_RICHED20    0x11LL
 #define DLL_D3DX10_43   0x12LL
 #define DLL_XINPUT1_3   0x13LL
 #define DLL_OPENGL32    0x14LL
@@ -28,6 +28,5 @@
 #define DLL_SECUR32     0x19LL
 #define DLL_WININET     0x1aLL
 #define DLL_ADVPACK     0x1bLL
-#define DLL_RICHED20    0x1cLL
 
 #endif
