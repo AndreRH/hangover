@@ -76,6 +76,8 @@ static const syscall_handler dll_functions[] =
 {
     qemu____mb_cur_max_func,
     qemu____mb_cur_max_l_func,
+    qemu____setlc_active_func,
+    qemu____unguarded_readlc_active_add_func,
     qemu___acrt_iob_func,
     qemu___control87_2,
     qemu___crt_debugger_hook,
@@ -115,10 +117,12 @@ static const syscall_handler dll_functions[] =
     qemu___p__amblksiz,
     qemu___p__daylight,
     qemu___p__dstbias,
+    qemu___p__environ,
     qemu___p__mbctype,
     qemu___p__pctype,
     qemu___p__timezone,
     qemu___p__tzname,
+    qemu___p__wenviron,
     qemu___pctype_func,
     qemu___set_app_type,
     qemu___setusermatherr,
@@ -182,6 +186,8 @@ static const syscall_handler dll_functions[] =
     qemu__close,
     qemu__commit,
     qemu__configthreadlocale,
+    qemu__configure_narrow_argv,
+    qemu__configure_wide_argv,
     qemu__control87,
     qemu__controlfp,
     qemu__controlfp_s,
@@ -293,15 +299,23 @@ static const syscall_handler dll_functions[] =
     qemu__get_doserrno,
     qemu__get_dstbias,
     qemu__get_errno,
+    qemu__get_fmode,
     qemu__get_heap_handle,
+    qemu__get_initial_narrow_environment,
+    qemu__get_initial_wide_environment,
     qemu__get_invalid_parameter_handler,
+    qemu__get_narrow_winmain_command_line,
     qemu__get_osfhandle,
+    qemu__get_osplatform,
+    qemu__get_pgmptr,
     qemu__get_printf_count_output,
     qemu__get_sbh_threshold,
     qemu__get_stream_buffer_pointers,
     qemu__get_thread_local_invalid_parameter_handler,
     qemu__get_timezone,
     qemu__get_tzname,
+    qemu__get_wide_winmain_command_line,
+    qemu__get_wpgmptr,
     qemu__getch,
     qemu__getch_nolock,
     qemu__getche,
@@ -335,6 +349,8 @@ static const syscall_handler dll_functions[] =
     qemu__hypotf,
     qemu__i64toa_s,
     qemu__i64tow_s,
+    qemu__initialize_narrow_environment,
+    qemu__initialize_wide_environment,
     qemu__invalid_parameter_noinfo,
     qemu__invalid_parameter_noinfo_noreturn,
     qemu__isalnum_l,
@@ -524,6 +540,7 @@ static const syscall_handler dll_functions[] =
     qemu__set_doserrno,
     qemu__set_errno,
     qemu__set_FMA3_enable,
+    qemu__set_fmode,
     qemu__set_invalid_parameter_handler,
     qemu__set_new_handler,
     qemu__set_new_mode,
@@ -1113,6 +1130,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
 
     p____mb_cur_max_func = (void *)GetProcAddress(msvcrt, "___mb_cur_max_func");
     p____mb_cur_max_l_func = (void *)GetProcAddress(msvcrt, "___mb_cur_max_l_func");
+    p____setlc_active_func = (void *)GetProcAddress(msvcrt, "___setlc_active_func");
+    p____unguarded_readlc_active_add_func = (void *)GetProcAddress(msvcrt, "___unguarded_readlc_active_add_func");
     p___control87_2 = (void *)GetProcAddress(msvcrt, "__control87_2");
     p___crt_debugger_hook = (void *)GetProcAddress(msvcrt, "__crt_debugger_hook");
     p___doserrno = (void *)GetProcAddress(msvcrt, "__doserrno");
@@ -1150,10 +1169,12 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p___p__amblksiz = (void *)GetProcAddress(msvcrt, "__p__amblksiz");
     p___p__daylight = (void *)GetProcAddress(msvcrt, "__p__daylight");
     p___p__dstbias = (void *)GetProcAddress(msvcrt, "__p__dstbias");
+    p___p__environ = (void *)GetProcAddress(msvcrt, "__p__environ");
     p___p__mbctype = (void *)GetProcAddress(msvcrt, "__p__mbctype");
     p___p__pctype = (void *)GetProcAddress(msvcrt, "__p__pctype");
     p___p__timezone = (void *)GetProcAddress(msvcrt, "__p__timezone");
     p___p__tzname = (void *)GetProcAddress(msvcrt, "__p__tzname");
+    p___p__wenviron = (void *)GetProcAddress(msvcrt, "__p__wenviron");
     p___pctype_func = (void *)GetProcAddress(msvcrt, "__pctype_func");
     p___set_app_type = (void *)GetProcAddress(msvcrt, "__set_app_type");
     p___setusermatherr = (void *)GetProcAddress(msvcrt, "__setusermatherr");
@@ -1210,6 +1231,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__CItanh = (void *)GetProcAddress(msvcrt, "_CItanh");
     p__clearfp = (void *)GetProcAddress(msvcrt, "_clearfp");
     p__configthreadlocale = (void *)GetProcAddress(msvcrt, "_configthreadlocale");
+    p__configure_narrow_argv = (void *)GetProcAddress(msvcrt, "_configure_narrow_argv");
+    p__configure_wide_argv = (void *)GetProcAddress(msvcrt, "_configure_wide_argv");
     p__control87 = (void *)GetProcAddress(msvcrt, "_control87");
     p__controlfp = (void *)GetProcAddress(msvcrt, "_controlfp");
     p__copysign = (void *)GetProcAddress(msvcrt, "_copysign");
@@ -1316,15 +1339,23 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__get_doserrno = (void *)GetProcAddress(msvcrt, "_get_doserrno");
     p__get_dstbias = (void *)GetProcAddress(msvcrt, "_get_dstbias");
     p__get_errno = (void *)GetProcAddress(msvcrt, "_get_errno");
+    p__get_fmode = (void *)GetProcAddress(msvcrt, "_get_fmode");
     p__get_heap_handle = (void *)GetProcAddress(msvcrt, "_get_heap_handle");
+    p__get_initial_narrow_environment = (void *)GetProcAddress(msvcrt, "_get_initial_narrow_environment");
+    p__get_initial_wide_environment = (void *)GetProcAddress(msvcrt, "_get_initial_wide_environment");
     p__get_invalid_parameter_handler = (void *)GetProcAddress(msvcrt, "_get_invalid_parameter_handler");
+    p__get_narrow_winmain_command_line = (void *)GetProcAddress(msvcrt, "_get_narrow_winmain_command_line");
     p__get_osfhandle = (void *)GetProcAddress(msvcrt, "_get_osfhandle");
+    p__get_osplatform = (void *)GetProcAddress(msvcrt, "_get_osplatform");
+    p__get_pgmptr = (void *)GetProcAddress(msvcrt, "_get_pgmptr");
     p__get_printf_count_output = (void *)GetProcAddress(msvcrt, "_get_printf_count_output");
     p__get_sbh_threshold = (void *)GetProcAddress(msvcrt, "_get_sbh_threshold");
     p__get_stream_buffer_pointers = (void *)GetProcAddress(msvcrt, "_get_stream_buffer_pointers");
     p__get_thread_local_invalid_parameter_handler = (void *)GetProcAddress(msvcrt, "_get_thread_local_invalid_parameter_handler");
     p__get_timezone = (void *)GetProcAddress(msvcrt, "_get_timezone");
     p__get_tzname = (void *)GetProcAddress(msvcrt, "_get_tzname");
+    p__get_wide_winmain_command_line = (void *)GetProcAddress(msvcrt, "_get_wide_winmain_command_line");
+    p__get_wpgmptr = (void *)GetProcAddress(msvcrt, "_get_wpgmptr");
     p__getch = (void *)GetProcAddress(msvcrt, "_getch");
     p__getch_nolock = (void *)GetProcAddress(msvcrt, "_getch_nolock");
     p__getche = (void *)GetProcAddress(msvcrt, "_getche");
@@ -1358,6 +1389,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__hypotf = (void *)GetProcAddress(msvcrt, "_hypotf");
     p__i64toa_s = (void *)GetProcAddress(msvcrt, "_i64toa_s");
     p__i64tow_s = (void *)GetProcAddress(msvcrt, "_i64tow_s");
+    p__initialize_narrow_environment = (void *)GetProcAddress(msvcrt, "_initialize_narrow_environment");
+    p__initialize_wide_environment = (void *)GetProcAddress(msvcrt, "_initialize_wide_environment");
     p__invalid_parameter_noinfo = (void *)GetProcAddress(msvcrt, "_invalid_parameter_noinfo");
     p__invalid_parameter_noinfo_noreturn = (void *)GetProcAddress(msvcrt, "_invalid_parameter_noinfo_noreturn");
     p__isalnum_l = (void *)GetProcAddress(msvcrt, "_isalnum_l");
@@ -1550,6 +1583,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__set_doserrno = (void *)GetProcAddress(msvcrt, "_set_doserrno");
     p__set_errno = (void *)GetProcAddress(msvcrt, "_set_errno");
     p__set_FMA3_enable = (void *)GetProcAddress(msvcrt, "_set_FMA3_enable");
+    p__set_fmode = (void *)GetProcAddress(msvcrt, "_set_fmode");
     p__set_invalid_parameter_handler = (void *)GetProcAddress(msvcrt, "_set_invalid_parameter_handler");
     p__set_new_handler = (void *)GetProcAddress(msvcrt, "_set_new_handler");
     p__set_new_mode = (void *)GetProcAddress(msvcrt, "_set_new_mode");

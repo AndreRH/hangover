@@ -192,3 +192,494 @@ int CDECL _initterm_e(_INITTERM_E_FN *table, _INITTERM_E_FN *end)
 }
 
 #endif
+
+struct qemu__get_pgmptr
+{
+    struct qemu_syscall super;
+    uint64_t p;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int CDECL _get_pgmptr(char** p)
+{
+    struct qemu__get_pgmptr call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__GET_PGMPTR);
+    call.p = (ULONG_PTR)p;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__get_pgmptr(struct qemu_syscall *call)
+{
+    struct qemu__get_pgmptr *c = (struct qemu__get_pgmptr *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p__get_pgmptr(QEMU_G2H(c->p));
+}
+
+#endif
+
+struct qemu__get_wpgmptr
+{
+    struct qemu_syscall super;
+    uint64_t p;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int CDECL _get_wpgmptr(WCHAR** p)
+{
+    struct qemu__get_wpgmptr call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__GET_WPGMPTR);
+    call.p = (ULONG_PTR)p;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__get_wpgmptr(struct qemu_syscall *call)
+{
+    struct qemu__get_wpgmptr *c = (struct qemu__get_wpgmptr *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p__get_wpgmptr(QEMU_G2H(c->p));
+}
+
+#endif
+
+struct qemu__set_fmode
+{
+    struct qemu_syscall super;
+    uint64_t mode;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int CDECL MSVCRT__set_fmode(int mode)
+{
+    struct qemu__set_fmode call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__SET_FMODE);
+    call.mode = mode;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__set_fmode(struct qemu_syscall *call)
+{
+    struct qemu__set_fmode *c = (struct qemu__set_fmode *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p__set_fmode(c->mode);
+}
+
+#endif
+
+struct qemu__get_fmode
+{
+    struct qemu_syscall super;
+    uint64_t mode;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int CDECL MSVCRT__get_fmode(int *mode)
+{
+    struct qemu__get_fmode call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__GET_FMODE);
+    call.mode = (ULONG_PTR)mode;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__get_fmode(struct qemu_syscall *call)
+{
+    struct qemu__get_fmode *c = (struct qemu__get_fmode *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p__get_fmode(QEMU_G2H(c->mode));
+}
+
+#endif
+
+struct qemu___p__environ
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI char*** CDECL MSVCRT___p__environ(void)
+{
+    struct qemu___p__environ call;
+    call.super.id = QEMU_SYSCALL_ID(CALL___P__ENVIRON);
+
+    qemu_syscall(&call.super);
+
+    return (char***)call.super.iret;
+}
+
+#else
+
+void qemu___p__environ(struct qemu_syscall *call)
+{
+    struct qemu___p__environ *c = (struct qemu___p__environ *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(p___p__environ());
+}
+
+#endif
+
+struct qemu___p__wenviron
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI WCHAR*** CDECL MSVCRT___p__wenviron(void)
+{
+    struct qemu___p__wenviron call;
+    call.super.id = QEMU_SYSCALL_ID(CALL___P__WENVIRON);
+
+    qemu_syscall(&call.super);
+
+    return (WCHAR ***)call.super.iret;
+}
+
+#else
+
+void qemu___p__wenviron(struct qemu_syscall *call)
+{
+    struct qemu___p__wenviron *c = (struct qemu___p__wenviron *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(p___p__wenviron());
+}
+
+#endif
+
+struct qemu__get_osplatform
+{
+    struct qemu_syscall super;
+    uint64_t pValue;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int CDECL MSVCRT__get_osplatform(int *pValue)
+{
+    struct qemu__get_osplatform call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__GET_OSPLATFORM);
+    call.pValue = (ULONG_PTR)pValue;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__get_osplatform(struct qemu_syscall *call)
+{
+    struct qemu__get_osplatform *c = (struct qemu__get_osplatform *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p__get_osplatform(QEMU_G2H(c->pValue));
+}
+
+#endif
+
+struct qemu____unguarded_readlc_active_add_func
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI unsigned int * CDECL MSVCRT____unguarded_readlc_active_add_func(void)
+{
+    struct qemu____unguarded_readlc_active_add_func call;
+    call.super.id = QEMU_SYSCALL_ID(CALL____UNGUARDED_READLC_ACTIVE_ADD_FUNC);
+
+    qemu_syscall(&call.super);
+
+    return (unsigned int *)call.super.iret;
+}
+
+#else
+
+void qemu____unguarded_readlc_active_add_func(struct qemu_syscall *call)
+{
+    struct qemu____unguarded_readlc_active_add_func *c = (struct qemu____unguarded_readlc_active_add_func *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(p____unguarded_readlc_active_add_func());
+}
+
+#endif
+
+struct qemu____setlc_active_func
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI unsigned int CDECL MSVCRT____setlc_active_func(void)
+{
+    struct qemu____setlc_active_func call;
+    call.super.id = QEMU_SYSCALL_ID(CALL____SETLC_ACTIVE_FUNC);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu____setlc_active_func(struct qemu_syscall *call)
+{
+    struct qemu____setlc_active_func *c = (struct qemu____setlc_active_func *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p____setlc_active_func();
+}
+
+#endif
+
+struct qemu__get_initial_narrow_environment
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI char** CDECL _get_initial_narrow_environment(void)
+{
+    struct qemu__get_initial_narrow_environment call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__GET_INITIAL_NARROW_ENVIRONMENT);
+
+    qemu_syscall(&call.super);
+
+    return (char **)call.super.iret;
+}
+
+#else
+
+void qemu__get_initial_narrow_environment(struct qemu_syscall *call)
+{
+    struct qemu__get_initial_narrow_environment *c = (struct qemu__get_initial_narrow_environment *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(p__get_initial_narrow_environment());
+}
+
+#endif
+
+struct qemu__configure_narrow_argv
+{
+    struct qemu_syscall super;
+    uint64_t mode;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int CDECL _configure_narrow_argv(int mode)
+{
+    struct qemu__configure_narrow_argv call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__CONFIGURE_NARROW_ARGV);
+    call.mode = mode;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__configure_narrow_argv(struct qemu_syscall *call)
+{
+    struct qemu__configure_narrow_argv *c = (struct qemu__configure_narrow_argv *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p__configure_narrow_argv(c->mode);
+}
+
+#endif
+
+struct qemu__initialize_narrow_environment
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int CDECL _initialize_narrow_environment(void)
+{
+    struct qemu__initialize_narrow_environment call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__INITIALIZE_NARROW_ENVIRONMENT);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__initialize_narrow_environment(struct qemu_syscall *call)
+{
+    struct qemu__initialize_narrow_environment *c = (struct qemu__initialize_narrow_environment *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p__initialize_narrow_environment();
+}
+
+#endif
+
+struct qemu__get_initial_wide_environment
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI WCHAR** CDECL _get_initial_wide_environment(void)
+{
+    struct qemu__get_initial_wide_environment call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__GET_INITIAL_WIDE_ENVIRONMENT);
+
+    qemu_syscall(&call.super);
+
+    return (WCHAR **)call.super.iret;
+}
+
+#else
+
+void qemu__get_initial_wide_environment(struct qemu_syscall *call)
+{
+    struct qemu__get_initial_wide_environment *c = (struct qemu__get_initial_wide_environment *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(p__get_initial_wide_environment());
+}
+
+#endif
+
+struct qemu__configure_wide_argv
+{
+    struct qemu_syscall super;
+    uint64_t mode;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int CDECL _configure_wide_argv(int mode)
+{
+    struct qemu__configure_wide_argv call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__CONFIGURE_WIDE_ARGV);
+    call.mode = mode;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__configure_wide_argv(struct qemu_syscall *call)
+{
+    struct qemu__configure_wide_argv *c = (struct qemu__configure_wide_argv *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p__configure_wide_argv(c->mode);
+}
+
+#endif
+
+struct qemu__initialize_wide_environment
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int CDECL _initialize_wide_environment(void)
+{
+    struct qemu__initialize_wide_environment call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__INITIALIZE_WIDE_ENVIRONMENT);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__initialize_wide_environment(struct qemu_syscall *call)
+{
+    struct qemu__initialize_wide_environment *c = (struct qemu__initialize_wide_environment *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p__initialize_wide_environment();
+}
+
+#endif
+
+struct qemu__get_narrow_winmain_command_line
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI char* CDECL _get_narrow_winmain_command_line(void)
+{
+    struct qemu__get_narrow_winmain_command_line call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__GET_NARROW_WINMAIN_COMMAND_LINE);
+
+    qemu_syscall(&call.super);
+
+    return (char *)call.super.iret;
+}
+
+#else
+
+void qemu__get_narrow_winmain_command_line(struct qemu_syscall *call)
+{
+    struct qemu__get_narrow_winmain_command_line *c = (struct qemu__get_narrow_winmain_command_line *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(p__get_narrow_winmain_command_line());
+}
+
+#endif
+
+struct qemu__get_wide_winmain_command_line
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI WCHAR* CDECL _get_wide_winmain_command_line(void)
+{
+    struct qemu__get_wide_winmain_command_line call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__GET_WIDE_WINMAIN_COMMAND_LINE);
+
+    qemu_syscall(&call.super);
+
+    return (WCHAR *)call.super.iret;
+}
+
+#else
+
+void qemu__get_wide_winmain_command_line(struct qemu_syscall *call)
+{
+    struct qemu__get_wide_winmain_command_line *c = (struct qemu__get_wide_winmain_command_line *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(p__get_wide_winmain_command_line());
+}
+
+#endif
+

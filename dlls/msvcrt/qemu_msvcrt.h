@@ -9,6 +9,8 @@ enum msvcrt_calls
 {
     CALL____MB_CUR_MAX_FUNC = 0,
     CALL____MB_CUR_MAX_L_FUNC,
+    CALL____SETLC_ACTIVE_FUNC,
+    CALL____UNGUARDED_READLC_ACTIVE_ADD_FUNC,
     CALL___ACRT_IOB_FUNC,
     CALL___CONTROL87_2,
     CALL___CRT_DEBUGGER_HOOK,
@@ -48,10 +50,12 @@ enum msvcrt_calls
     CALL___P__AMBLKSIZ,
     CALL___P__DAYLIGHT,
     CALL___P__DSTBIAS,
+    CALL___P__ENVIRON,
     CALL___P__MBCTYPE,
     CALL___P__PCTYPE,
     CALL___P__TIMEZONE,
     CALL___P__TZNAME,
+    CALL___P__WENVIRON,
     CALL___PCTYPE_FUNC,
     CALL___SET_APP_TYPE,
     CALL___SETUSERMATHERR,
@@ -115,6 +119,8 @@ enum msvcrt_calls
     CALL__CLOSE,
     CALL__COMMIT,
     CALL__CONFIGTHREADLOCALE,
+    CALL__CONFIGURE_NARROW_ARGV,
+    CALL__CONFIGURE_WIDE_ARGV,
     CALL__CONTROL87,
     CALL__CONTROLFP,
     CALL__CONTROLFP_S,
@@ -226,15 +232,23 @@ enum msvcrt_calls
     CALL__GET_DOSERRNO,
     CALL__GET_DSTBIAS,
     CALL__GET_ERRNO,
+    CALL__GET_FMODE,
     CALL__GET_HEAP_HANDLE,
+    CALL__GET_INITIAL_NARROW_ENVIRONMENT,
+    CALL__GET_INITIAL_WIDE_ENVIRONMENT,
     CALL__GET_INVALID_PARAMETER_HANDLER,
+    CALL__GET_NARROW_WINMAIN_COMMAND_LINE,
     CALL__GET_OSFHANDLE,
+    CALL__GET_OSPLATFORM,
+    CALL__GET_PGMPTR,
     CALL__GET_PRINTF_COUNT_OUTPUT,
     CALL__GET_SBH_THRESHOLD,
     CALL__GET_STREAM_BUFFER_POINTERS,
     CALL__GET_THREAD_LOCAL_INVALID_PARAMETER_HANDLER,
     CALL__GET_TIMEZONE,
     CALL__GET_TZNAME,
+    CALL__GET_WIDE_WINMAIN_COMMAND_LINE,
+    CALL__GET_WPGMPTR,
     CALL__GETCH,
     CALL__GETCH_NOLOCK,
     CALL__GETCHE,
@@ -268,6 +282,8 @@ enum msvcrt_calls
     CALL__HYPOTF,
     CALL__I64TOA_S,
     CALL__I64TOW_S,
+    CALL__INITIALIZE_NARROW_ENVIRONMENT,
+    CALL__INITIALIZE_WIDE_ENVIRONMENT,
     CALL__INVALID_PARAMETER_NOINFO,
     CALL__INVALID_PARAMETER_NOINFO_NORETURN,
     CALL__ISALNUM_L,
@@ -457,6 +473,7 @@ enum msvcrt_calls
     CALL__SET_DOSERRNO,
     CALL__SET_ERRNO,
     CALL__SET_FMA3_ENABLE,
+    CALL__SET_FMODE,
     CALL__SET_INVALID_PARAMETER_HANDLER,
     CALL__SET_NEW_HANDLER,
     CALL__SET_NEW_MODE,
@@ -1103,6 +1120,8 @@ extern const struct qemu_ops *qemu_ops;
 
 void qemu____mb_cur_max_func(struct qemu_syscall *call);
 void qemu____mb_cur_max_l_func(struct qemu_syscall *call);
+void qemu____setlc_active_func(struct qemu_syscall *call);
+void qemu____unguarded_readlc_active_add_func(struct qemu_syscall *call);
 void qemu___acrt_iob_func(struct qemu_syscall *c);
 void qemu___control87_2(struct qemu_syscall *call);
 void qemu___crt_debugger_hook(struct qemu_syscall *call);
@@ -1142,10 +1161,12 @@ void qemu___p___mb_cur_max(struct qemu_syscall *call);
 void qemu___p__amblksiz(struct qemu_syscall *call);
 void qemu___p__daylight(struct qemu_syscall *call);
 void qemu___p__dstbias(struct qemu_syscall *call);
+void qemu___p__environ(struct qemu_syscall *call);
 void qemu___p__mbctype(struct qemu_syscall *call);
 void qemu___p__pctype(struct qemu_syscall *call);
 void qemu___p__timezone(struct qemu_syscall *call);
 void qemu___p__tzname(struct qemu_syscall *call);
+void qemu___p__wenviron(struct qemu_syscall *call);
 void qemu___pctype_func(struct qemu_syscall *call);
 void qemu___set_app_type(struct qemu_syscall *call);
 void qemu___setusermatherr(struct qemu_syscall *call);
@@ -1209,6 +1230,8 @@ void qemu__clearfp(struct qemu_syscall *call);
 void qemu__close(struct qemu_syscall *c);
 void qemu__commit(struct qemu_syscall *c);
 void qemu__configthreadlocale(struct qemu_syscall *call);
+void qemu__configure_narrow_argv(struct qemu_syscall *call);
+void qemu__configure_wide_argv(struct qemu_syscall *call);
 void qemu__control87(struct qemu_syscall *call);
 void qemu__controlfp(struct qemu_syscall *call);
 void qemu__controlfp_s(struct qemu_syscall *call);
@@ -1321,15 +1344,23 @@ void qemu__get_daylight(struct qemu_syscall *call);
 void qemu__get_doserrno(struct qemu_syscall *call);
 void qemu__get_dstbias(struct qemu_syscall *call);
 void qemu__get_errno(struct qemu_syscall *call);
+void qemu__get_fmode(struct qemu_syscall *call);
 void qemu__get_heap_handle(struct qemu_syscall *call);
+void qemu__get_initial_narrow_environment(struct qemu_syscall *call);
+void qemu__get_initial_wide_environment(struct qemu_syscall *call);
 void qemu__get_invalid_parameter_handler(struct qemu_syscall *call);
+void qemu__get_narrow_winmain_command_line(struct qemu_syscall *call);
 void qemu__get_osfhandle(struct qemu_syscall *c);
+void qemu__get_osplatform(struct qemu_syscall *call);
+void qemu__get_pgmptr(struct qemu_syscall *call);
 void qemu__get_printf_count_output(struct qemu_syscall *call);
 void qemu__get_sbh_threshold(struct qemu_syscall *call);
 void qemu__get_stream_buffer_pointers(struct qemu_syscall *c);
 void qemu__get_thread_local_invalid_parameter_handler(struct qemu_syscall *call);
 void qemu__get_timezone(struct qemu_syscall *call);
 void qemu__get_tzname(struct qemu_syscall *call);
+void qemu__get_wide_winmain_command_line(struct qemu_syscall *call);
+void qemu__get_wpgmptr(struct qemu_syscall *call);
 void qemu__getch(struct qemu_syscall *call);
 void qemu__getch_nolock(struct qemu_syscall *call);
 void qemu__getche(struct qemu_syscall *call);
@@ -1363,6 +1394,8 @@ void qemu__hypot(struct qemu_syscall *call);
 void qemu__hypotf(struct qemu_syscall *call);
 void qemu__i64toa_s(struct qemu_syscall *call);
 void qemu__i64tow_s(struct qemu_syscall *call);
+void qemu__initialize_narrow_environment(struct qemu_syscall *call);
+void qemu__initialize_wide_environment(struct qemu_syscall *call);
 void qemu__invalid_parameter_noinfo(struct qemu_syscall *call);
 void qemu__invalid_parameter_noinfo_noreturn(struct qemu_syscall *call);
 void qemu__isalnum_l(struct qemu_syscall *call);
@@ -1553,6 +1586,7 @@ void qemu__set_controlfp(struct qemu_syscall *call);
 void qemu__set_doserrno(struct qemu_syscall *call);
 void qemu__set_errno(struct qemu_syscall *call);
 void qemu__set_FMA3_enable(struct qemu_syscall *call);
+void qemu__set_fmode(struct qemu_syscall *call);
 void qemu__set_invalid_parameter_handler(struct qemu_syscall *call);
 void qemu__set_new_handler(struct qemu_syscall *call);
 void qemu__set_new_mode(struct qemu_syscall *call);
@@ -3166,6 +3200,24 @@ int (* CDECL p__ultow_s)(ULONG value, WCHAR *str, size_t size, int radix);
 int (* CDECL p__i64toa_s)(__int64 value, char *str, size_t size, int radix);
 int (* CDECL p__i64tow_s)(__int64 value, WCHAR *str, size_t size, int radix);
 int (* CDECL p_I10_OUTPUT)(long double ld80, int prec, int flag, struct _I10_OUTPUT_DATA *data);
+
+int (* CDECL p__get_pgmptr)(char** p);
+int (* CDECL p__get_wpgmptr)(WCHAR** p);
+int (* CDECL p__set_fmode)(int mode);
+int (* CDECL p__get_fmode)(int *mode);
+char*** (* CDECL p___p__environ)(void);
+WCHAR*** (* CDECL p___p__wenviron)(void);
+int (* CDECL p__get_osplatform)(int *pValue);
+unsigned int * (* CDECL p____unguarded_readlc_active_add_func)(void);
+unsigned int (* CDECL p____setlc_active_func)(void);
+char** (* CDECL p__get_initial_narrow_environment)(void);
+int (* CDECL p__configure_narrow_argv)(int mode);
+int (* CDECL p__initialize_narrow_environment)(void);
+WCHAR** (* CDECL p__get_initial_wide_environment)(void);
+int (* CDECL p__configure_wide_argv)(int mode);
+int (* CDECL p__initialize_wide_environment)(void);
+char* (* CDECL p__get_narrow_winmain_command_line)(void);
+WCHAR* (* CDECL p__get_wide_winmain_command_line)(void);
 
 DWORD msvcrt_tls;
 
