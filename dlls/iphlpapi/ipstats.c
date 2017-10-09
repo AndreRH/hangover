@@ -29,7 +29,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "iphlpapi.h"
+#include "qemu_iphlpapi.h"
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>

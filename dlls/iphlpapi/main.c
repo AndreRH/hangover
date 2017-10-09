@@ -29,15 +29,9 @@
 #include <netioapi.h>
 #include <tcpestats.h>
 
-#ifdef QEMU_DLL_GUEST
-
-#else
-
-#endif
-
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "iphlpapi.h"
+#include "qemu_iphlpapi.h"
 
 #ifdef QEMU_DLL_GUEST
 

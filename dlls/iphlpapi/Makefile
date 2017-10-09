@@ -14,10 +14,10 @@ iphlpapi.dll: icmp_g.o iphlpapi.def iphlpapi_main_g.o ipstats_g.o main_g.o
 qemu_iphlpapi.dll.so: icmp_h.o iphlpapi_main_h.o ipstats_h.o main_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_iphlpapi.spec *_h.o -o qemu_iphlpapi.dll.so -liphlpapi -DUSE_WS_PREFIX
 
-%_g.o: %.c iphlpapi.h Makefile $(SRCDIR)/Makefile
+%_g.o: %.c qemu_iphlpapi.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
-%_h.o: %.c iphlpapi.h Makefile $(SRCDIR)/Makefile
+%_h.o: %.c qemu_iphlpapi.h Makefile $(SRCDIR)/Makefile
 	$(WINEGCC) $< -c -o $@ $(CFLAGS) -DUSE_WS_PREFIX
 
 clean:
