@@ -14,10 +14,10 @@ shell32.dll: appbar_g.o brsfolder_g.o main_g.o pidl_g.o shell32.def shell32_main
 qemu_shell32.dll.so: appbar_h.o brsfolder_h.o main_h.o pidl_h.o shell32_main_h.o shellitem_h.o shellole_h.o shellord_h.o shellpath_h.o shfolder_h.o shlexec_h.o shlfileop_h.o systray_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_shell32.spec *_h.o -o qemu_shell32.dll.so -lshell32
 
-%_g.o: %.c shell32.h Makefile $(SRCDIR)/Makefile
+%_g.o: %.c qemu_shell32.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
-%_h.o: %.c shell32.h Makefile $(SRCDIR)/Makefile
+%_h.o: %.c qemu_shell32.h Makefile $(SRCDIR)/Makefile
 	$(WINEGCC) $< -c -o $@ $(CFLAGS)
 
 clean:
