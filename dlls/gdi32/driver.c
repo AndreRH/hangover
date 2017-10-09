@@ -23,7 +23,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "gdi32.h"
+#include "qemu_gdi32.h"
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
