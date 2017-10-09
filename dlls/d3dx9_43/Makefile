@@ -14,10 +14,10 @@ d3dx9_43.dll: d3dx9_43.def main_g.o math_g.o
 qemu_d3dx9_43.dll.so: main_h.o math_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_d3dx9_43.spec *_h.o -o qemu_d3dx9_43.dll.so -ld3dx9
 
-%_g.o: %.c d3dx9_43.h Makefile $(SRCDIR)/Makefile
+%_g.o: %.c qemu_d3dx9_43.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
-%_h.o: %.c d3dx9_43.h Makefile $(SRCDIR)/Makefile
+%_h.o: %.c qemu_d3dx9_43.h Makefile $(SRCDIR)/Makefile
 	$(WINEGCC) $< -c -o $@ $(CFLAGS)
 
 clean:

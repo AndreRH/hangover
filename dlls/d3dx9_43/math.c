@@ -26,7 +26,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "d3dx9_43.h"
+#include "qemu_d3dx9_43.h"
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
