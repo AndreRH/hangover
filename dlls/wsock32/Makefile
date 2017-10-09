@@ -14,10 +14,10 @@ wsock32.dll: main_g.o protocol_g.o service_g.o socket_g.o wsock32.def
 qemu_wsock32.dll.so: main_h.o protocol_h.o service_h.o socket_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_wsock32.spec *_h.o -o qemu_wsock32.dll.so -lwsock32
 
-%_g.o: %.c wsock32.h Makefile $(SRCDIR)/Makefile
+%_g.o: %.c qemu_wsock32.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
-%_h.o: %.c wsock32.h Makefile $(SRCDIR)/Makefile
+%_h.o: %.c qemu_wsock32.h Makefile $(SRCDIR)/Makefile
 	$(WINEGCC) $< -c -o $@ $(CFLAGS)
 
 clean:

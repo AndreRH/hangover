@@ -21,15 +21,9 @@
 #include <windows.h>
 #include <stdio.h>
 
-#ifdef QEMU_DLL_GUEST
-
-#else
-
-#endif
-
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "wsock32.h"
+#include "qemu_wsock32.h"
 
 #ifdef QEMU_DLL_GUEST
 
