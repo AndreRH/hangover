@@ -55,11 +55,11 @@ WINBASEAPI DWORD WINAPI AddIPAddress(IPAddr Address, IPMask IpMask, DWORD IfInde
 {
     struct qemu_AddIPAddress call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDIPADDRESS);
-    call.Address = (uint64_t)Address;
-    call.IpMask = (uint64_t)IpMask;
-    call.IfIndex = (uint64_t)IfIndex;
-    call.NTEContext = (uint64_t)NTEContext;
-    call.NTEInstance = (uint64_t)NTEInstance;
+    call.Address = (ULONG_PTR)Address;
+    call.IpMask = (ULONG_PTR)IpMask;
+    call.IfIndex = (ULONG_PTR)IfIndex;
+    call.NTEContext = (ULONG_PTR)NTEContext;
+    call.NTEInstance = (ULONG_PTR)NTEInstance;
 
     qemu_syscall(&call.super);
 
@@ -92,10 +92,10 @@ WINBASEAPI DWORD WINAPI AllocateAndGetIfTableFromStack(PMIB_IFTABLE *ppIfTable, 
 {
     struct qemu_AllocateAndGetIfTableFromStack call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ALLOCATEANDGETIFTABLEFROMSTACK);
-    call.ppIfTable = (uint64_t)ppIfTable;
-    call.bOrder = (uint64_t)bOrder;
-    call.heap = (uint64_t)heap;
-    call.flags = (uint64_t)flags;
+    call.ppIfTable = (ULONG_PTR)ppIfTable;
+    call.bOrder = (ULONG_PTR)bOrder;
+    call.heap = (ULONG_PTR)heap;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -130,10 +130,10 @@ WINBASEAPI DWORD WINAPI AllocateAndGetIpAddrTableFromStack(PMIB_IPADDRTABLE *ppI
 {
     struct qemu_AllocateAndGetIpAddrTableFromStack call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ALLOCATEANDGETIPADDRTABLEFROMSTACK);
-    call.ppIpAddrTable = (uint64_t)ppIpAddrTable;
-    call.bOrder = (uint64_t)bOrder;
-    call.heap = (uint64_t)heap;
-    call.flags = (uint64_t)flags;
+    call.ppIpAddrTable = (ULONG_PTR)ppIpAddrTable;
+    call.bOrder = (ULONG_PTR)bOrder;
+    call.heap = (ULONG_PTR)heap;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -165,7 +165,7 @@ WINBASEAPI BOOL WINAPI CancelIPChangeNotify(LPOVERLAPPED overlapped)
 {
     struct qemu_CancelIPChangeNotify call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CANCELIPCHANGENOTIFY);
-    call.overlapped = (uint64_t)overlapped;
+    call.overlapped = (ULONG_PTR)overlapped;
 
     qemu_syscall(&call.super);
 
@@ -195,7 +195,7 @@ WINBASEAPI DWORD WINAPI CancelMibChangeNotify2(HANDLE handle)
 {
     struct qemu_CancelMibChangeNotify2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CANCELMIBCHANGENOTIFY2);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -227,7 +227,7 @@ WINBASEAPI DWORD WINAPI CreateIpForwardEntry(PMIB_IPFORWARDROW pRoute)
 {
     struct qemu_CreateIpForwardEntry call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEIPFORWARDENTRY);
-    call.pRoute = (uint64_t)pRoute;
+    call.pRoute = (ULONG_PTR)pRoute;
 
     qemu_syscall(&call.super);
 
@@ -257,7 +257,7 @@ WINBASEAPI DWORD WINAPI CreateIpNetEntry(PMIB_IPNETROW pArpEntry)
 {
     struct qemu_CreateIpNetEntry call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEIPNETENTRY);
-    call.pArpEntry = (uint64_t)pArpEntry;
+    call.pArpEntry = (ULONG_PTR)pArpEntry;
 
     qemu_syscall(&call.super);
 
@@ -289,9 +289,9 @@ WINBASEAPI DWORD WINAPI CreateProxyArpEntry(DWORD dwAddress, DWORD dwMask, DWORD
 {
     struct qemu_CreateProxyArpEntry call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPROXYARPENTRY);
-    call.dwAddress = (uint64_t)dwAddress;
-    call.dwMask = (uint64_t)dwMask;
-    call.dwIfIndex = (uint64_t)dwIfIndex;
+    call.dwAddress = (ULONG_PTR)dwAddress;
+    call.dwMask = (ULONG_PTR)dwMask;
+    call.dwIfIndex = (ULONG_PTR)dwIfIndex;
 
     qemu_syscall(&call.super);
 
@@ -327,13 +327,13 @@ WINBASEAPI DWORD WINAPI CreateSortedAddressPairs(const PSOCKADDR_IN6 src_list, D
 {
     struct qemu_CreateSortedAddressPairs call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATESORTEDADDRESSPAIRS);
-    call.src_list = (uint64_t)src_list;
-    call.src_count = (uint64_t)src_count;
-    call.dst_list = (uint64_t)dst_list;
-    call.dst_count = (uint64_t)dst_count;
-    call.options = (uint64_t)options;
-    call.pair_list = (uint64_t)pair_list;
-    call.pair_count = (uint64_t)pair_count;
+    call.src_list = (ULONG_PTR)src_list;
+    call.src_count = (ULONG_PTR)src_count;
+    call.dst_list = (ULONG_PTR)dst_list;
+    call.dst_count = (ULONG_PTR)dst_count;
+    call.options = (ULONG_PTR)options;
+    call.pair_list = (ULONG_PTR)pair_list;
+    call.pair_count = (ULONG_PTR)pair_count;
 
     qemu_syscall(&call.super);
 
@@ -365,7 +365,7 @@ WINBASEAPI DWORD WINAPI DeleteIPAddress(ULONG NTEContext)
 {
     struct qemu_DeleteIPAddress call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETEIPADDRESS);
-    call.NTEContext = (uint64_t)NTEContext;
+    call.NTEContext = (ULONG_PTR)NTEContext;
 
     qemu_syscall(&call.super);
 
@@ -395,7 +395,7 @@ WINBASEAPI DWORD WINAPI DeleteIpForwardEntry(PMIB_IPFORWARDROW pRoute)
 {
     struct qemu_DeleteIpForwardEntry call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETEIPFORWARDENTRY);
-    call.pRoute = (uint64_t)pRoute;
+    call.pRoute = (ULONG_PTR)pRoute;
 
     qemu_syscall(&call.super);
 
@@ -425,7 +425,7 @@ WINBASEAPI DWORD WINAPI DeleteIpNetEntry(PMIB_IPNETROW pArpEntry)
 {
     struct qemu_DeleteIpNetEntry call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETEIPNETENTRY);
-    call.pArpEntry = (uint64_t)pArpEntry;
+    call.pArpEntry = (ULONG_PTR)pArpEntry;
 
     qemu_syscall(&call.super);
 
@@ -457,9 +457,9 @@ WINBASEAPI DWORD WINAPI DeleteProxyArpEntry(DWORD dwAddress, DWORD dwMask, DWORD
 {
     struct qemu_DeleteProxyArpEntry call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETEPROXYARPENTRY);
-    call.dwAddress = (uint64_t)dwAddress;
-    call.dwMask = (uint64_t)dwMask;
-    call.dwIfIndex = (uint64_t)dwIfIndex;
+    call.dwAddress = (ULONG_PTR)dwAddress;
+    call.dwMask = (ULONG_PTR)dwMask;
+    call.dwIfIndex = (ULONG_PTR)dwIfIndex;
 
     qemu_syscall(&call.super);
 
@@ -490,8 +490,8 @@ WINBASEAPI DWORD WINAPI EnableRouter(HANDLE * pHandle, OVERLAPPED * pOverlapped)
 {
     struct qemu_EnableRouter call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENABLEROUTER);
-    call.pHandle = (uint64_t)pHandle;
-    call.pOverlapped = (uint64_t)pOverlapped;
+    call.pHandle = (ULONG_PTR)pHandle;
+    call.pOverlapped = (ULONG_PTR)pOverlapped;
 
     qemu_syscall(&call.super);
 
@@ -521,7 +521,7 @@ WINBASEAPI DWORD WINAPI FlushIpNetTable(DWORD dwIfIndex)
 {
     struct qemu_FlushIpNetTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FLUSHIPNETTABLE);
-    call.dwIfIndex = (uint64_t)dwIfIndex;
+    call.dwIfIndex = (ULONG_PTR)dwIfIndex;
 
     qemu_syscall(&call.super);
 
@@ -551,7 +551,7 @@ WINBASEAPI void WINAPI FreeMibTable(void *ptr)
 {
     struct qemu_FreeMibTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FREEMIBTABLE);
-    call.ptr = (uint64_t)ptr;
+    call.ptr = (ULONG_PTR)ptr;
 
     qemu_syscall(&call.super);
 }
@@ -580,8 +580,8 @@ WINBASEAPI DWORD WINAPI GetAdapterIndex(LPWSTR AdapterName, PULONG IfIndex)
 {
     struct qemu_GetAdapterIndex call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETADAPTERINDEX);
-    call.AdapterName = (uint64_t)AdapterName;
-    call.IfIndex = (uint64_t)IfIndex;
+    call.AdapterName = (ULONG_PTR)AdapterName;
+    call.IfIndex = (ULONG_PTR)IfIndex;
 
     qemu_syscall(&call.super);
 
@@ -612,8 +612,8 @@ WINBASEAPI DWORD WINAPI GetAdaptersInfo(PIP_ADAPTER_INFO pAdapterInfo, PULONG pO
 {
     struct qemu_GetAdaptersInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETADAPTERSINFO);
-    call.pAdapterInfo = (uint64_t)pAdapterInfo;
-    call.pOutBufLen = (uint64_t)pOutBufLen;
+    call.pAdapterInfo = (ULONG_PTR)pAdapterInfo;
+    call.pOutBufLen = (ULONG_PTR)pOutBufLen;
 
     qemu_syscall(&call.super);
 
@@ -647,11 +647,11 @@ WINBASEAPI ULONG WINAPI GetAdaptersAddresses(ULONG family, ULONG flags, PVOID re
 {
     struct qemu_GetAdaptersAddresses call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETADAPTERSADDRESSES);
-    call.family = (uint64_t)family;
-    call.flags = (uint64_t)flags;
-    call.reserved = (uint64_t)reserved;
-    call.aa = (uint64_t)aa;
-    call.buflen = (uint64_t)buflen;
+    call.family = (ULONG_PTR)family;
+    call.flags = (ULONG_PTR)flags;
+    call.reserved = (ULONG_PTR)reserved;
+    call.aa = (ULONG_PTR)aa;
+    call.buflen = (ULONG_PTR)buflen;
 
     qemu_syscall(&call.super);
 
@@ -682,8 +682,8 @@ WINBASEAPI DWORD WINAPI GetBestInterface(IPAddr dwDestAddr, PDWORD pdwBestIfInde
 {
     struct qemu_GetBestInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETBESTINTERFACE);
-    call.dwDestAddr = (uint64_t)dwDestAddr;
-    call.pdwBestIfIndex = (uint64_t)pdwBestIfIndex;
+    call.dwDestAddr = (ULONG_PTR)dwDestAddr;
+    call.pdwBestIfIndex = (ULONG_PTR)pdwBestIfIndex;
 
     qemu_syscall(&call.super);
 
@@ -714,8 +714,8 @@ WINBASEAPI DWORD WINAPI GetBestInterfaceEx(struct sockaddr *pDestAddr, PDWORD pd
 {
     struct qemu_GetBestInterfaceEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETBESTINTERFACEEX);
-    call.pDestAddr = (uint64_t)pDestAddr;
-    call.pdwBestIfIndex = (uint64_t)pdwBestIfIndex;
+    call.pDestAddr = (ULONG_PTR)pDestAddr;
+    call.pdwBestIfIndex = (ULONG_PTR)pdwBestIfIndex;
 
     qemu_syscall(&call.super);
 
@@ -747,9 +747,9 @@ WINBASEAPI DWORD WINAPI GetBestRoute(DWORD dwDestAddr, DWORD dwSourceAddr, PMIB_
 {
     struct qemu_GetBestRoute call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETBESTROUTE);
-    call.dwDestAddr = (uint64_t)dwDestAddr;
-    call.dwSourceAddr = (uint64_t)dwSourceAddr;
-    call.pBestRoute = (uint64_t)pBestRoute;
+    call.dwDestAddr = (ULONG_PTR)dwDestAddr;
+    call.dwSourceAddr = (ULONG_PTR)dwSourceAddr;
+    call.pBestRoute = (ULONG_PTR)pBestRoute;
 
     qemu_syscall(&call.super);
 
@@ -779,7 +779,7 @@ WINBASEAPI DWORD WINAPI GetFriendlyIfIndex(DWORD IfIndex)
 {
     struct qemu_GetFriendlyIfIndex call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFRIENDLYIFINDEX);
-    call.IfIndex = (uint64_t)IfIndex;
+    call.IfIndex = (ULONG_PTR)IfIndex;
 
     qemu_syscall(&call.super);
 
@@ -809,7 +809,7 @@ WINBASEAPI DWORD WINAPI GetIfEntry(PMIB_IFROW pIfRow)
 {
     struct qemu_GetIfEntry call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETIFENTRY);
-    call.pIfRow = (uint64_t)pIfRow;
+    call.pIfRow = (ULONG_PTR)pIfRow;
 
     qemu_syscall(&call.super);
 
@@ -839,7 +839,7 @@ WINBASEAPI DWORD WINAPI GetIfEntry2(MIB_IF_ROW2 *row2)
 {
     struct qemu_GetIfEntry2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETIFENTRY2);
-    call.row2 = (uint64_t)row2;
+    call.row2 = (ULONG_PTR)row2;
 
     qemu_syscall(&call.super);
 
@@ -871,9 +871,9 @@ WINBASEAPI DWORD WINAPI GetIfTable(PMIB_IFTABLE pIfTable, PULONG pdwSize, BOOL b
 {
     struct qemu_GetIfTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETIFTABLE);
-    call.pIfTable = (uint64_t)pIfTable;
-    call.pdwSize = (uint64_t)pdwSize;
-    call.bOrder = (uint64_t)bOrder;
+    call.pIfTable = (ULONG_PTR)pIfTable;
+    call.pdwSize = (ULONG_PTR)pdwSize;
+    call.bOrder = (ULONG_PTR)bOrder;
 
     qemu_syscall(&call.super);
 
@@ -904,8 +904,8 @@ WINBASEAPI DWORD WINAPI GetIfTable2Ex(MIB_IF_TABLE_LEVEL level, MIB_IF_TABLE2 **
 {
     struct qemu_GetIfTable2Ex call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETIFTABLE2EX);
-    call.level = (uint64_t)level;
-    call.table = (uint64_t)table;
+    call.level = (ULONG_PTR)level;
+    call.table = (ULONG_PTR)table;
 
     qemu_syscall(&call.super);
 
@@ -937,7 +937,7 @@ WINBASEAPI DWORD WINAPI GetIfTable2(MIB_IF_TABLE2 **table)
 {
     struct qemu_GetIfTable2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETIFTABLE2);
-    call.table = (uint64_t)table;
+    call.table = (ULONG_PTR)table;
 
     qemu_syscall(&call.super);
 
@@ -968,8 +968,8 @@ WINBASEAPI DWORD WINAPI GetInterfaceInfo(PIP_INTERFACE_INFO pIfTable, PULONG dwO
 {
     struct qemu_GetInterfaceInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETINTERFACEINFO);
-    call.pIfTable = (uint64_t)pIfTable;
-    call.dwOutBufLen = (uint64_t)dwOutBufLen;
+    call.pIfTable = (ULONG_PTR)pIfTable;
+    call.dwOutBufLen = (ULONG_PTR)dwOutBufLen;
 
     qemu_syscall(&call.super);
 
@@ -1001,9 +1001,9 @@ WINBASEAPI DWORD WINAPI GetIpAddrTable(PMIB_IPADDRTABLE pIpAddrTable, PULONG pdw
 {
     struct qemu_GetIpAddrTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETIPADDRTABLE);
-    call.pIpAddrTable = (uint64_t)pIpAddrTable;
-    call.pdwSize = (uint64_t)pdwSize;
-    call.bOrder = (uint64_t)bOrder;
+    call.pIpAddrTable = (ULONG_PTR)pIpAddrTable;
+    call.pdwSize = (ULONG_PTR)pdwSize;
+    call.bOrder = (ULONG_PTR)bOrder;
 
     qemu_syscall(&call.super);
 
@@ -1035,9 +1035,9 @@ WINBASEAPI DWORD WINAPI GetIpForwardTable(PMIB_IPFORWARDTABLE pIpForwardTable, P
 {
     struct qemu_GetIpForwardTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETIPFORWARDTABLE);
-    call.pIpForwardTable = (uint64_t)pIpForwardTable;
-    call.pdwSize = (uint64_t)pdwSize;
-    call.bOrder = (uint64_t)bOrder;
+    call.pIpForwardTable = (ULONG_PTR)pIpForwardTable;
+    call.pdwSize = (ULONG_PTR)pdwSize;
+    call.bOrder = (ULONG_PTR)bOrder;
 
     qemu_syscall(&call.super);
 
@@ -1069,9 +1069,9 @@ WINBASEAPI DWORD WINAPI GetIpNetTable(PMIB_IPNETTABLE pIpNetTable, PULONG pdwSiz
 {
     struct qemu_GetIpNetTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETIPNETTABLE);
-    call.pIpNetTable = (uint64_t)pIpNetTable;
-    call.pdwSize = (uint64_t)pdwSize;
-    call.bOrder = (uint64_t)bOrder;
+    call.pIpNetTable = (ULONG_PTR)pIpNetTable;
+    call.pdwSize = (ULONG_PTR)pdwSize;
+    call.bOrder = (ULONG_PTR)bOrder;
 
     qemu_syscall(&call.super);
 
@@ -1102,8 +1102,8 @@ WINBASEAPI DWORD WINAPI GetNetworkParams(PFIXED_INFO pFixedInfo, PULONG pOutBufL
 {
     struct qemu_GetNetworkParams call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNETWORKPARAMS);
-    call.pFixedInfo = (uint64_t)pFixedInfo;
-    call.pOutBufLen = (uint64_t)pOutBufLen;
+    call.pFixedInfo = (ULONG_PTR)pFixedInfo;
+    call.pOutBufLen = (ULONG_PTR)pOutBufLen;
 
     qemu_syscall(&call.super);
 
@@ -1133,7 +1133,7 @@ WINBASEAPI DWORD WINAPI GetNumberOfInterfaces(PDWORD pdwNumIf)
 {
     struct qemu_GetNumberOfInterfaces call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNUMBEROFINTERFACES);
-    call.pdwNumIf = (uint64_t)pdwNumIf;
+    call.pdwNumIf = (ULONG_PTR)pdwNumIf;
 
     qemu_syscall(&call.super);
 
@@ -1165,9 +1165,9 @@ WINBASEAPI DWORD WINAPI GetPerAdapterInfo(ULONG IfIndex, PIP_PER_ADAPTER_INFO pP
 {
     struct qemu_GetPerAdapterInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPERADAPTERINFO);
-    call.IfIndex = (uint64_t)IfIndex;
-    call.pPerAdapterInfo = (uint64_t)pPerAdapterInfo;
-    call.pOutBufLen = (uint64_t)pOutBufLen;
+    call.IfIndex = (ULONG_PTR)IfIndex;
+    call.pPerAdapterInfo = (ULONG_PTR)pPerAdapterInfo;
+    call.pOutBufLen = (ULONG_PTR)pOutBufLen;
 
     qemu_syscall(&call.super);
 
@@ -1200,10 +1200,10 @@ WINBASEAPI BOOL WINAPI GetRTTAndHopCount(IPAddr DestIpAddress, PULONG HopCount, 
 {
     struct qemu_GetRTTAndHopCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETRTTANDHOPCOUNT);
-    call.DestIpAddress = (uint64_t)DestIpAddress;
-    call.HopCount = (uint64_t)HopCount;
-    call.MaxHops = (uint64_t)MaxHops;
-    call.RTT = (uint64_t)RTT;
+    call.DestIpAddress = (ULONG_PTR)DestIpAddress;
+    call.HopCount = (ULONG_PTR)HopCount;
+    call.MaxHops = (ULONG_PTR)MaxHops;
+    call.RTT = (ULONG_PTR)RTT;
 
     qemu_syscall(&call.super);
 
@@ -1235,9 +1235,9 @@ WINBASEAPI DWORD WINAPI GetTcpTable(PMIB_TCPTABLE pTcpTable, PDWORD pdwSize, BOO
 {
     struct qemu_GetTcpTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTCPTABLE);
-    call.pTcpTable = (uint64_t)pTcpTable;
-    call.pdwSize = (uint64_t)pdwSize;
-    call.bOrder = (uint64_t)bOrder;
+    call.pTcpTable = (ULONG_PTR)pTcpTable;
+    call.pdwSize = (ULONG_PTR)pdwSize;
+    call.bOrder = (ULONG_PTR)bOrder;
 
     qemu_syscall(&call.super);
 
@@ -1272,12 +1272,12 @@ WINBASEAPI DWORD WINAPI GetExtendedTcpTable(PVOID pTcpTable, PDWORD pdwSize, BOO
 {
     struct qemu_GetExtendedTcpTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETEXTENDEDTCPTABLE);
-    call.pTcpTable = (uint64_t)pTcpTable;
-    call.pdwSize = (uint64_t)pdwSize;
-    call.bOrder = (uint64_t)bOrder;
-    call.ulAf = (uint64_t)ulAf;
-    call.TableClass = (uint64_t)TableClass;
-    call.Reserved = (uint64_t)Reserved;
+    call.pTcpTable = (ULONG_PTR)pTcpTable;
+    call.pdwSize = (ULONG_PTR)pdwSize;
+    call.bOrder = (ULONG_PTR)bOrder;
+    call.ulAf = (ULONG_PTR)ulAf;
+    call.TableClass = (ULONG_PTR)TableClass;
+    call.Reserved = (ULONG_PTR)Reserved;
 
     qemu_syscall(&call.super);
 
@@ -1309,9 +1309,9 @@ WINBASEAPI DWORD WINAPI GetUdpTable(PMIB_UDPTABLE pUdpTable, PDWORD pdwSize, BOO
 {
     struct qemu_GetUdpTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETUDPTABLE);
-    call.pUdpTable = (uint64_t)pUdpTable;
-    call.pdwSize = (uint64_t)pdwSize;
-    call.bOrder = (uint64_t)bOrder;
+    call.pUdpTable = (ULONG_PTR)pUdpTable;
+    call.pdwSize = (ULONG_PTR)pdwSize;
+    call.bOrder = (ULONG_PTR)bOrder;
 
     qemu_syscall(&call.super);
 
@@ -1346,12 +1346,12 @@ WINBASEAPI DWORD WINAPI GetExtendedUdpTable(PVOID pUdpTable, PDWORD pdwSize, BOO
 {
     struct qemu_GetExtendedUdpTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETEXTENDEDUDPTABLE);
-    call.pUdpTable = (uint64_t)pUdpTable;
-    call.pdwSize = (uint64_t)pdwSize;
-    call.bOrder = (uint64_t)bOrder;
-    call.ulAf = (uint64_t)ulAf;
-    call.TableClass = (uint64_t)TableClass;
-    call.Reserved = (uint64_t)Reserved;
+    call.pUdpTable = (ULONG_PTR)pUdpTable;
+    call.pdwSize = (ULONG_PTR)pdwSize;
+    call.bOrder = (ULONG_PTR)bOrder;
+    call.ulAf = (ULONG_PTR)ulAf;
+    call.TableClass = (ULONG_PTR)TableClass;
+    call.Reserved = (ULONG_PTR)Reserved;
 
     qemu_syscall(&call.super);
 
@@ -1381,7 +1381,7 @@ WINBASEAPI DWORD WINAPI GetUnicastIpAddressEntry(MIB_UNICASTIPADDRESS_ROW *row)
 {
     struct qemu_GetUnicastIpAddressEntry call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETUNICASTIPADDRESSENTRY);
-    call.row = (uint64_t)row;
+    call.row = (ULONG_PTR)row;
 
     qemu_syscall(&call.super);
 
@@ -1412,8 +1412,8 @@ WINBASEAPI DWORD WINAPI GetUnicastIpAddressTable(ADDRESS_FAMILY family, MIB_UNIC
 {
     struct qemu_GetUnicastIpAddressTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETUNICASTIPADDRESSTABLE);
-    call.family = (uint64_t)family;
-    call.table = (uint64_t)table;
+    call.family = (ULONG_PTR)family;
+    call.table = (ULONG_PTR)table;
 
     qemu_syscall(&call.super);
 
@@ -1446,8 +1446,8 @@ WINBASEAPI DWORD WINAPI GetUniDirectionalAdapterInfo(PIP_UNIDIRECTIONAL_ADAPTER_
 {
     struct qemu_GetUniDirectionalAdapterInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETUNIDIRECTIONALADAPTERINFO);
-    call.pIPIfInfo = (uint64_t)pIPIfInfo;
-    call.dwOutBufLen = (uint64_t)dwOutBufLen;
+    call.pIPIfInfo = (ULONG_PTR)pIPIfInfo;
+    call.dwOutBufLen = (ULONG_PTR)dwOutBufLen;
 
     qemu_syscall(&call.super);
 
@@ -1477,7 +1477,7 @@ WINBASEAPI DWORD WINAPI IpReleaseAddress(PIP_ADAPTER_INDEX_MAP AdapterInfo)
 {
     struct qemu_IpReleaseAddress call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IPRELEASEADDRESS);
-    call.AdapterInfo = (uint64_t)AdapterInfo;
+    call.AdapterInfo = (ULONG_PTR)AdapterInfo;
 
     qemu_syscall(&call.super);
 
@@ -1507,7 +1507,7 @@ WINBASEAPI DWORD WINAPI IpRenewAddress(PIP_ADAPTER_INDEX_MAP AdapterInfo)
 {
     struct qemu_IpRenewAddress call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IPRENEWADDRESS);
-    call.AdapterInfo = (uint64_t)AdapterInfo;
+    call.AdapterInfo = (ULONG_PTR)AdapterInfo;
 
     qemu_syscall(&call.super);
 
@@ -1538,8 +1538,8 @@ WINBASEAPI DWORD WINAPI NotifyAddrChange(PHANDLE Handle, LPOVERLAPPED overlapped
 {
     struct qemu_NotifyAddrChange call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NOTIFYADDRCHANGE);
-    call.Handle = (uint64_t)Handle;
-    call.overlapped = (uint64_t)overlapped;
+    call.Handle = (ULONG_PTR)Handle;
+    call.overlapped = (ULONG_PTR)overlapped;
 
     qemu_syscall(&call.super);
 
@@ -1573,11 +1573,11 @@ WINBASEAPI DWORD WINAPI NotifyIpInterfaceChange(ADDRESS_FAMILY family, PIPINTERF
 {
     struct qemu_NotifyIpInterfaceChange call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NOTIFYIPINTERFACECHANGE);
-    call.family = (uint64_t)family;
-    call.callback = (uint64_t)callback;
-    call.context = (uint64_t)context;
-    call.init_notify = (uint64_t)init_notify;
-    call.handle = (uint64_t)handle;
+    call.family = (ULONG_PTR)family;
+    call.callback = (ULONG_PTR)callback;
+    call.context = (ULONG_PTR)context;
+    call.init_notify = (ULONG_PTR)init_notify;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -1610,8 +1610,8 @@ WINBASEAPI DWORD WINAPI NotifyRouteChange(PHANDLE Handle, LPOVERLAPPED overlappe
 {
     struct qemu_NotifyRouteChange call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NOTIFYROUTECHANGE);
-    call.Handle = (uint64_t)Handle;
-    call.overlapped = (uint64_t)overlapped;
+    call.Handle = (ULONG_PTR)Handle;
+    call.overlapped = (ULONG_PTR)overlapped;
 
     qemu_syscall(&call.super);
 
@@ -1645,11 +1645,11 @@ WINBASEAPI DWORD WINAPI NotifyUnicastIpAddressChange(ADDRESS_FAMILY family, PUNI
 {
     struct qemu_NotifyUnicastIpAddressChange call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NOTIFYUNICASTIPADDRESSCHANGE);
-    call.family = (uint64_t)family;
-    call.callback = (uint64_t)callback;
-    call.context = (uint64_t)context;
-    call.init_notify = (uint64_t)init_notify;
-    call.handle = (uint64_t)handle;
+    call.family = (ULONG_PTR)family;
+    call.callback = (ULONG_PTR)callback;
+    call.context = (ULONG_PTR)context;
+    call.init_notify = (ULONG_PTR)init_notify;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -1684,10 +1684,10 @@ WINBASEAPI DWORD WINAPI SendARP(IPAddr DestIP, IPAddr SrcIP, PVOID pMacAddr, PUL
 {
     struct qemu_SendARP call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDARP);
-    call.DestIP = (uint64_t)DestIP;
-    call.SrcIP = (uint64_t)SrcIP;
-    call.pMacAddr = (uint64_t)pMacAddr;
-    call.PhyAddrLen = (uint64_t)PhyAddrLen;
+    call.DestIP = (ULONG_PTR)DestIP;
+    call.SrcIP = (ULONG_PTR)SrcIP;
+    call.pMacAddr = (ULONG_PTR)pMacAddr;
+    call.PhyAddrLen = (ULONG_PTR)PhyAddrLen;
 
     qemu_syscall(&call.super);
 
@@ -1717,7 +1717,7 @@ WINBASEAPI DWORD WINAPI SetIfEntry(PMIB_IFROW pIfRow)
 {
     struct qemu_SetIfEntry call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETIFENTRY);
-    call.pIfRow = (uint64_t)pIfRow;
+    call.pIfRow = (ULONG_PTR)pIfRow;
 
     qemu_syscall(&call.super);
 
@@ -1747,7 +1747,7 @@ WINBASEAPI DWORD WINAPI SetIpForwardEntry(PMIB_IPFORWARDROW pRoute)
 {
     struct qemu_SetIpForwardEntry call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETIPFORWARDENTRY);
-    call.pRoute = (uint64_t)pRoute;
+    call.pRoute = (ULONG_PTR)pRoute;
 
     qemu_syscall(&call.super);
 
@@ -1777,7 +1777,7 @@ WINBASEAPI DWORD WINAPI SetIpNetEntry(PMIB_IPNETROW pArpEntry)
 {
     struct qemu_SetIpNetEntry call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETIPNETENTRY);
-    call.pArpEntry = (uint64_t)pArpEntry;
+    call.pArpEntry = (ULONG_PTR)pArpEntry;
 
     qemu_syscall(&call.super);
 
@@ -1807,7 +1807,7 @@ WINBASEAPI DWORD WINAPI SetIpStatistics(PMIB_IPSTATS pIpStats)
 {
     struct qemu_SetIpStatistics call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETIPSTATISTICS);
-    call.pIpStats = (uint64_t)pIpStats;
+    call.pIpStats = (ULONG_PTR)pIpStats;
 
     qemu_syscall(&call.super);
 
@@ -1837,7 +1837,7 @@ WINBASEAPI DWORD WINAPI SetIpTTL(UINT nTTL)
 {
     struct qemu_SetIpTTL call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETIPTTL);
-    call.nTTL = (uint64_t)nTTL;
+    call.nTTL = (ULONG_PTR)nTTL;
 
     qemu_syscall(&call.super);
 
@@ -1867,7 +1867,7 @@ WINBASEAPI DWORD WINAPI SetTcpEntry(PMIB_TCPROW pTcpRow)
 {
     struct qemu_SetTcpEntry call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTCPENTRY);
-    call.pTcpRow = (uint64_t)pTcpRow;
+    call.pTcpRow = (ULONG_PTR)pTcpRow;
 
     qemu_syscall(&call.super);
 
@@ -1902,12 +1902,12 @@ WINBASEAPI DWORD WINAPI SetPerTcpConnectionEStats(PMIB_TCPROW row, TCP_ESTATS_TY
 {
     struct qemu_SetPerTcpConnectionEStats call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPERTCPCONNECTIONESTATS);
-    call.row = (uint64_t)row;
-    call.state = (uint64_t)state;
-    call.rw = (uint64_t)rw;
-    call.version = (uint64_t)version;
-    call.size = (uint64_t)size;
-    call.offset = (uint64_t)offset;
+    call.row = (ULONG_PTR)row;
+    call.state = (ULONG_PTR)state;
+    call.rw = (ULONG_PTR)rw;
+    call.version = (ULONG_PTR)version;
+    call.size = (ULONG_PTR)size;
+    call.offset = (ULONG_PTR)offset;
 
     qemu_syscall(&call.super);
 
@@ -1940,8 +1940,8 @@ WINBASEAPI DWORD WINAPI UnenableRouter(OVERLAPPED * pOverlapped, LPDWORD lpdwEna
 {
     struct qemu_UnenableRouter call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNENABLEROUTER);
-    call.pOverlapped = (uint64_t)pOverlapped;
-    call.lpdwEnableCount = (uint64_t)lpdwEnableCount;
+    call.pOverlapped = (ULONG_PTR)pOverlapped;
+    call.lpdwEnableCount = (ULONG_PTR)lpdwEnableCount;
 
     qemu_syscall(&call.super);
 
@@ -1976,12 +1976,12 @@ DWORD WINAPI PfCreateInterface(DWORD dwName, PFFORWARD_ACTION inAction, PFFORWAR
 {
     struct qemu_PfCreateInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PFCREATEINTERFACE);
-    call.dwName = (uint64_t)dwName;
-    call.inAction = (uint64_t)inAction;
-    call.outAction = (uint64_t)outAction;
-    call.bUseLog = (uint64_t)bUseLog;
-    call.bMustBeUnique = (uint64_t)bMustBeUnique;
-    call.ppInterface = (uint64_t)ppInterface;
+    call.dwName = (ULONG_PTR)dwName;
+    call.inAction = (ULONG_PTR)inAction;
+    call.outAction = (ULONG_PTR)outAction;
+    call.bUseLog = (ULONG_PTR)bUseLog;
+    call.bMustBeUnique = (ULONG_PTR)bMustBeUnique;
+    call.ppInterface = (ULONG_PTR)ppInterface;
 
     qemu_syscall(&call.super);
 
@@ -2011,7 +2011,7 @@ DWORD WINAPI PfUnBindInterface(INTERFACE_HANDLE interfaceXX)
 {
     struct qemu_PfUnBindInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PFUNBINDINTERFACE);
-    call.interfaceXX = (uint64_t)interfaceXX;
+    call.interfaceXX = (ULONG_PTR)interfaceXX;
 
     qemu_syscall(&call.super);
 
@@ -2041,7 +2041,7 @@ DWORD WINAPI PfDeleteInterface(INTERFACE_HANDLE interfaceXX)
 {
     struct qemu_PfDeleteInterface call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PFDELETEINTERFACE);
-    call.interfaceXX = (uint64_t)interfaceXX;
+    call.interfaceXX = (ULONG_PTR)interfaceXX;
 
     qemu_syscall(&call.super);
 
@@ -2073,9 +2073,9 @@ DWORD WINAPI PfBindInterfaceToIPAddress(INTERFACE_HANDLE interfaceXX, PFADDRESST
 {
     struct qemu_PfBindInterfaceToIPAddress call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PFBINDINTERFACETOIPADDRESS);
-    call.interfaceXX = (uint64_t)interfaceXX;
-    call.type = (uint64_t)type;
-    call.ip = (uint64_t)ip;
+    call.interfaceXX = (ULONG_PTR)interfaceXX;
+    call.type = (ULONG_PTR)type;
+    call.ip = (ULONG_PTR)ip;
 
     qemu_syscall(&call.super);
 
@@ -2107,9 +2107,9 @@ WINBASEAPI ULONG WINAPI GetTcpTable2(PMIB_TCPTABLE2 table, PULONG size, BOOL ord
 {
     struct qemu_GetTcpTable2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTCPTABLE2);
-    call.table = (uint64_t)table;
-    call.size = (uint64_t)size;
-    call.order = (uint64_t)order;
+    call.table = (ULONG_PTR)table;
+    call.size = (ULONG_PTR)size;
+    call.order = (ULONG_PTR)order;
 
     qemu_syscall(&call.super);
 
@@ -2143,9 +2143,9 @@ WINBASEAPI ULONG WINAPI GetTcp6Table(PMIB_TCP6TABLE table, PULONG size, BOOL ord
 {
     struct qemu_GetTcp6Table call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTCP6TABLE);
-    call.table = (uint64_t)table;
-    call.size = (uint64_t)size;
-    call.order = (uint64_t)order;
+    call.table = (ULONG_PTR)table;
+    call.size = (ULONG_PTR)size;
+    call.order = (ULONG_PTR)order;
 
     qemu_syscall(&call.super);
 
@@ -2179,9 +2179,9 @@ WINBASEAPI ULONG WINAPI GetTcp6Table2(PMIB_TCP6TABLE2 table, PULONG size, BOOL o
 {
     struct qemu_GetTcp6Table2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTCP6TABLE2);
-    call.table = (uint64_t)table;
-    call.size = (uint64_t)size;
-    call.order = (uint64_t)order;
+    call.table = (ULONG_PTR)table;
+    call.size = (ULONG_PTR)size;
+    call.order = (ULONG_PTR)order;
 
     qemu_syscall(&call.super);
 
@@ -2214,8 +2214,8 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceGuidToLuid(const GUID *guid, NET_LUID *l
 {
     struct qemu_ConvertInterfaceGuidToLuid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTINTERFACEGUIDTOLUID);
-    call.guid = (uint64_t)guid;
-    call.luid = (uint64_t)luid;
+    call.guid = (ULONG_PTR)guid;
+    call.luid = (ULONG_PTR)luid;
 
     qemu_syscall(&call.super);
 
@@ -2246,8 +2246,8 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceIndexToLuid(NET_IFINDEX index, NET_LUID 
 {
     struct qemu_ConvertInterfaceIndexToLuid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTINTERFACEINDEXTOLUID);
-    call.index = (uint64_t)index;
-    call.luid = (uint64_t)luid;
+    call.index = (ULONG_PTR)index;
+    call.luid = (ULONG_PTR)luid;
 
     qemu_syscall(&call.super);
 
@@ -2278,8 +2278,8 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceLuidToGuid(const NET_LUID *luid, GUID *g
 {
     struct qemu_ConvertInterfaceLuidToGuid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTINTERFACELUIDTOGUID);
-    call.luid = (uint64_t)luid;
-    call.guid = (uint64_t)guid;
+    call.luid = (ULONG_PTR)luid;
+    call.guid = (ULONG_PTR)guid;
 
     qemu_syscall(&call.super);
 
@@ -2310,8 +2310,8 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceLuidToIndex(const NET_LUID *luid, NET_IF
 {
     struct qemu_ConvertInterfaceLuidToIndex call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTINTERFACELUIDTOINDEX);
-    call.luid = (uint64_t)luid;
-    call.index = (uint64_t)index;
+    call.luid = (ULONG_PTR)luid;
+    call.index = (ULONG_PTR)index;
 
     qemu_syscall(&call.super);
 
@@ -2343,9 +2343,9 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceLuidToNameA(const NET_LUID *luid, char *
 {
     struct qemu_ConvertInterfaceLuidToNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTINTERFACELUIDTONAMEA);
-    call.luid = (uint64_t)luid;
-    call.name = (uint64_t)name;
-    call.len = (uint64_t)len;
+    call.luid = (ULONG_PTR)luid;
+    call.name = (ULONG_PTR)name;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
@@ -2377,9 +2377,9 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceLuidToNameW(const NET_LUID *luid, WCHAR 
 {
     struct qemu_ConvertInterfaceLuidToNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTINTERFACELUIDTONAMEW);
-    call.luid = (uint64_t)luid;
-    call.name = (uint64_t)name;
-    call.len = (uint64_t)len;
+    call.luid = (ULONG_PTR)luid;
+    call.name = (ULONG_PTR)name;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
@@ -2410,8 +2410,8 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceNameToLuidA(const char *name, NET_LUID *
 {
     struct qemu_ConvertInterfaceNameToLuidA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTINTERFACENAMETOLUIDA);
-    call.name = (uint64_t)name;
-    call.luid = (uint64_t)luid;
+    call.name = (ULONG_PTR)name;
+    call.luid = (ULONG_PTR)luid;
 
     qemu_syscall(&call.super);
 
@@ -2442,8 +2442,8 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceNameToLuidW(const WCHAR *name, NET_LUID 
 {
     struct qemu_ConvertInterfaceNameToLuidW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTINTERFACENAMETOLUIDW);
-    call.name = (uint64_t)name;
-    call.luid = (uint64_t)luid;
+    call.name = (ULONG_PTR)name;
+    call.luid = (ULONG_PTR)luid;
 
     qemu_syscall(&call.super);
 
@@ -2473,7 +2473,7 @@ WINBASEAPI IF_INDEX WINAPI IPHLP_if_nametoindex(const char *name)
 {
     struct qemu_IPHLP_if_nametoindex call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IPHLP_IF_NAMETOINDEX);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 

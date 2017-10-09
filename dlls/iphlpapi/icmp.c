@@ -53,7 +53,7 @@ WINBASEAPI HANDLE WINAPI Icmp6CreateFile(VOID)
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -64,7 +64,7 @@ void qemu_Icmp6CreateFile(struct qemu_syscall *call)
 {
     struct qemu_Icmp6CreateFile *c = (struct qemu_Icmp6CreateFile *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)Icmp6CreateFile();
+    c->super.iret = (ULONG_PTR)Icmp6CreateFile();
 }
 
 #endif
@@ -93,18 +93,18 @@ DWORD WINAPI iphlpapi_Icmp6SendEcho2(HANDLE IcmpHandle,HANDLE Event,FARPROC ApcR
 {
     struct qemu_Icmp6SendEcho2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ICMP6SENDECHO2);
-    call.IcmpHandle = (uint64_t)IcmpHandle;
-    call.Event = (uint64_t)Event;
-    call.ApcRoutine = (uint64_t)ApcRoutine;
-    call.ApcContext = (uint64_t)ApcContext;
-    call.SourceAddress = (uint64_t)SourceAddress;
-    call.DestinationAddress = (uint64_t)DestinationAddress;
-    call.RequestData = (uint64_t)RequestData;
-    call.RequestSize = (uint64_t)RequestSize;
-    call.RequestOptions = (uint64_t)RequestOptions;
-    call.ReplyBuffer = (uint64_t)ReplyBuffer;
-    call.ReplySize = (uint64_t)ReplySize;
-    call.Timeout = (uint64_t)Timeout;
+    call.IcmpHandle = (ULONG_PTR)IcmpHandle;
+    call.Event = (ULONG_PTR)Event;
+    call.ApcRoutine = (ULONG_PTR)ApcRoutine;
+    call.ApcContext = (ULONG_PTR)ApcContext;
+    call.SourceAddress = (ULONG_PTR)SourceAddress;
+    call.DestinationAddress = (ULONG_PTR)DestinationAddress;
+    call.RequestData = (ULONG_PTR)RequestData;
+    call.RequestSize = (ULONG_PTR)RequestSize;
+    call.RequestOptions = (ULONG_PTR)RequestOptions;
+    call.ReplyBuffer = (ULONG_PTR)ReplyBuffer;
+    call.ReplySize = (ULONG_PTR)ReplySize;
+    call.Timeout = (ULONG_PTR)Timeout;
 
     qemu_syscall(&call.super);
 
@@ -138,7 +138,7 @@ WINBASEAPI HANDLE WINAPI IcmpCreateFile(VOID)
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -147,7 +147,7 @@ void qemu_IcmpCreateFile(struct qemu_syscall *call)
 {
     struct qemu_IcmpCreateFile *c = (struct qemu_IcmpCreateFile *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)IcmpCreateFile();
+    c->super.iret = (ULONG_PTR)IcmpCreateFile();
 }
 
 #endif
@@ -164,7 +164,7 @@ WINBASEAPI BOOL WINAPI IcmpCloseHandle(HANDLE IcmpHandle)
 {
     struct qemu_IcmpCloseHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ICMPCLOSEHANDLE);
-    call.IcmpHandle = (uint64_t)IcmpHandle;
+    call.IcmpHandle = (ULONG_PTR)IcmpHandle;
 
     qemu_syscall(&call.super);
 
@@ -201,14 +201,14 @@ WINBASEAPI DWORD WINAPI IcmpSendEcho(HANDLE IcmpHandle, IPAddr DestinationAddres
 {
     struct qemu_IcmpSendEcho call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ICMPSENDECHO);
-    call.IcmpHandle = (uint64_t)IcmpHandle;
-    call.DestinationAddress = (uint64_t)DestinationAddress;
-    call.RequestData = (uint64_t)RequestData;
-    call.RequestSize = (uint64_t)RequestSize;
-    call.RequestOptions = (uint64_t)RequestOptions;
-    call.ReplyBuffer = (uint64_t)ReplyBuffer;
-    call.ReplySize = (uint64_t)ReplySize;
-    call.Timeout = (uint64_t)Timeout;
+    call.IcmpHandle = (ULONG_PTR)IcmpHandle;
+    call.DestinationAddress = (ULONG_PTR)DestinationAddress;
+    call.RequestData = (ULONG_PTR)RequestData;
+    call.RequestSize = (ULONG_PTR)RequestSize;
+    call.RequestOptions = (ULONG_PTR)RequestOptions;
+    call.ReplyBuffer = (ULONG_PTR)ReplyBuffer;
+    call.ReplySize = (ULONG_PTR)ReplySize;
+    call.Timeout = (ULONG_PTR)Timeout;
 
     qemu_syscall(&call.super);
 
@@ -248,17 +248,17 @@ WINBASEAPI DWORD WINAPI IcmpSendEcho2(HANDLE IcmpHandle, HANDLE Event, FARPROC A
 {
     struct qemu_IcmpSendEcho2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ICMPSENDECHO2);
-    call.IcmpHandle = (uint64_t)IcmpHandle;
-    call.Event = (uint64_t)Event;
-    call.ApcRoutine = (uint64_t)ApcRoutine;
-    call.ApcContext = (uint64_t)ApcContext;
-    call.DestinationAddress = (uint64_t)DestinationAddress;
-    call.RequestData = (uint64_t)RequestData;
-    call.RequestSize = (uint64_t)RequestSize;
-    call.RequestOptions = (uint64_t)RequestOptions;
-    call.ReplyBuffer = (uint64_t)ReplyBuffer;
-    call.ReplySize = (uint64_t)ReplySize;
-    call.Timeout = (uint64_t)Timeout;
+    call.IcmpHandle = (ULONG_PTR)IcmpHandle;
+    call.Event = (ULONG_PTR)Event;
+    call.ApcRoutine = (ULONG_PTR)ApcRoutine;
+    call.ApcContext = (ULONG_PTR)ApcContext;
+    call.DestinationAddress = (ULONG_PTR)DestinationAddress;
+    call.RequestData = (ULONG_PTR)RequestData;
+    call.RequestSize = (ULONG_PTR)RequestSize;
+    call.RequestOptions = (ULONG_PTR)RequestOptions;
+    call.ReplyBuffer = (ULONG_PTR)ReplyBuffer;
+    call.ReplySize = (ULONG_PTR)ReplySize;
+    call.Timeout = (ULONG_PTR)Timeout;
 
     qemu_syscall(&call.super);
 
@@ -301,18 +301,18 @@ WINBASEAPI DWORD WINAPI IcmpSendEcho2Ex(HANDLE IcmpHandle, HANDLE Event, PIO_APC
 {
     struct qemu_IcmpSendEcho2Ex call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ICMPSENDECHO2EX);
-    call.IcmpHandle = (uint64_t)IcmpHandle;
-    call.Event = (uint64_t)Event;
-    call.ApcRoutine = (uint64_t)ApcRoutine;
-    call.ApcContext = (uint64_t)ApcContext;
-    call.SourceAddress = (uint64_t)SourceAddress;
-    call.DestinationAddress = (uint64_t)DestinationAddress;
-    call.RequestData = (uint64_t)RequestData;
-    call.RequestSize = (uint64_t)RequestSize;
-    call.RequestOptions = (uint64_t)RequestOptions;
-    call.ReplyBuffer = (uint64_t)ReplyBuffer;
-    call.ReplySize = (uint64_t)ReplySize;
-    call.Timeout = (uint64_t)Timeout;
+    call.IcmpHandle = (ULONG_PTR)IcmpHandle;
+    call.Event = (ULONG_PTR)Event;
+    call.ApcRoutine = (ULONG_PTR)ApcRoutine;
+    call.ApcContext = (ULONG_PTR)ApcContext;
+    call.SourceAddress = (ULONG_PTR)SourceAddress;
+    call.DestinationAddress = (ULONG_PTR)DestinationAddress;
+    call.RequestData = (ULONG_PTR)RequestData;
+    call.RequestSize = (ULONG_PTR)RequestSize;
+    call.RequestOptions = (ULONG_PTR)RequestOptions;
+    call.ReplyBuffer = (ULONG_PTR)ReplyBuffer;
+    call.ReplySize = (ULONG_PTR)ReplySize;
+    call.Timeout = (ULONG_PTR)Timeout;
 
     qemu_syscall(&call.super);
 

@@ -49,7 +49,7 @@ WINBASEAPI DWORD WINAPI GetIcmpStatistics(PMIB_ICMP stats)
 {
     struct qemu_GetIcmpStatistics call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETICMPSTATISTICS);
-    call.stats = (uint64_t)stats;
+    call.stats = (ULONG_PTR)stats;
 
     qemu_syscall(&call.super);
 
@@ -80,8 +80,8 @@ WINBASEAPI DWORD WINAPI GetIcmpStatisticsEx(PMIB_ICMP_EX stats, DWORD family)
 {
     struct qemu_GetIcmpStatisticsEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETICMPSTATISTICSEX);
-    call.stats = (uint64_t)stats;
-    call.family = (uint64_t)family;
+    call.stats = (ULONG_PTR)stats;
+    call.family = (ULONG_PTR)family;
 
     qemu_syscall(&call.super);
 
@@ -114,8 +114,8 @@ WINBASEAPI DWORD WINAPI GetIpStatisticsEx(PMIB_IPSTATS stats, DWORD family)
 {
     struct qemu_GetIpStatisticsEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETIPSTATISTICSEX);
-    call.stats = (uint64_t)stats;
-    call.family = (uint64_t)family;
+    call.stats = (ULONG_PTR)stats;
+    call.family = (ULONG_PTR)family;
 
     qemu_syscall(&call.super);
 
@@ -145,7 +145,7 @@ WINBASEAPI DWORD WINAPI GetIpStatistics(PMIB_IPSTATS stats)
 {
     struct qemu_GetIpStatistics call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETIPSTATISTICS);
-    call.stats = (uint64_t)stats;
+    call.stats = (ULONG_PTR)stats;
 
     qemu_syscall(&call.super);
 
@@ -176,8 +176,8 @@ WINBASEAPI DWORD WINAPI GetTcpStatisticsEx(PMIB_TCPSTATS stats, DWORD family)
 {
     struct qemu_GetTcpStatisticsEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTCPSTATISTICSEX);
-    call.stats = (uint64_t)stats;
-    call.family = (uint64_t)family;
+    call.stats = (ULONG_PTR)stats;
+    call.family = (ULONG_PTR)family;
 
     qemu_syscall(&call.super);
 
@@ -207,7 +207,7 @@ WINBASEAPI DWORD WINAPI GetTcpStatistics(PMIB_TCPSTATS stats)
 {
     struct qemu_GetTcpStatistics call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTCPSTATISTICS);
-    call.stats = (uint64_t)stats;
+    call.stats = (ULONG_PTR)stats;
 
     qemu_syscall(&call.super);
 
@@ -238,8 +238,8 @@ WINBASEAPI DWORD WINAPI GetUdpStatisticsEx(PMIB_UDPSTATS stats, DWORD family)
 {
     struct qemu_GetUdpStatisticsEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETUDPSTATISTICSEX);
-    call.stats = (uint64_t)stats;
-    call.family = (uint64_t)family;
+    call.stats = (ULONG_PTR)stats;
+    call.family = (ULONG_PTR)family;
 
     qemu_syscall(&call.super);
 
@@ -269,7 +269,7 @@ WINBASEAPI DWORD WINAPI GetUdpStatistics(PMIB_UDPSTATS stats)
 {
     struct qemu_GetUdpStatistics call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETUDPSTATISTICS);
-    call.stats = (uint64_t)stats;
+    call.stats = (ULONG_PTR)stats;
 
     qemu_syscall(&call.super);
 
@@ -302,10 +302,10 @@ WINBASEAPI DWORD WINAPI AllocateAndGetIpForwardTableFromStack(PMIB_IPFORWARDTABL
 {
     struct qemu_AllocateAndGetIpForwardTableFromStack call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ALLOCATEANDGETIPFORWARDTABLEFROMSTACK);
-    call.ppIpForwardTable = (uint64_t)ppIpForwardTable;
-    call.bOrder = (uint64_t)bOrder;
-    call.heap = (uint64_t)heap;
-    call.flags = (uint64_t)flags;
+    call.ppIpForwardTable = (ULONG_PTR)ppIpForwardTable;
+    call.bOrder = (ULONG_PTR)bOrder;
+    call.heap = (ULONG_PTR)heap;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -340,10 +340,10 @@ WINBASEAPI DWORD WINAPI AllocateAndGetIpNetTableFromStack(PMIB_IPNETTABLE *ppIpN
 {
     struct qemu_AllocateAndGetIpNetTableFromStack call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ALLOCATEANDGETIPNETTABLEFROMSTACK);
-    call.ppIpNetTable = (uint64_t)ppIpNetTable;
-    call.bOrder = (uint64_t)bOrder;
-    call.heap = (uint64_t)heap;
-    call.flags = (uint64_t)flags;
+    call.ppIpNetTable = (ULONG_PTR)ppIpNetTable;
+    call.bOrder = (ULONG_PTR)bOrder;
+    call.heap = (ULONG_PTR)heap;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -378,10 +378,10 @@ WINBASEAPI DWORD WINAPI AllocateAndGetTcpTableFromStack(PMIB_TCPTABLE *ppTcpTabl
 {
     struct qemu_AllocateAndGetTcpTableFromStack call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ALLOCATEANDGETTCPTABLEFROMSTACK);
-    call.ppTcpTable = (uint64_t)ppTcpTable;
-    call.bOrder = (uint64_t)bOrder;
-    call.heap = (uint64_t)heap;
-    call.flags = (uint64_t)flags;
+    call.ppTcpTable = (ULONG_PTR)ppTcpTable;
+    call.bOrder = (ULONG_PTR)bOrder;
+    call.heap = (ULONG_PTR)heap;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -416,10 +416,10 @@ WINBASEAPI DWORD WINAPI AllocateAndGetUdpTableFromStack(PMIB_UDPTABLE *ppUdpTabl
 {
     struct qemu_AllocateAndGetUdpTableFromStack call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ALLOCATEANDGETUDPTABLEFROMSTACK);
-    call.ppUdpTable = (uint64_t)ppUdpTable;
-    call.bOrder = (uint64_t)bOrder;
-    call.heap = (uint64_t)heap;
-    call.flags = (uint64_t)flags;
+    call.ppUdpTable = (ULONG_PTR)ppUdpTable;
+    call.bOrder = (ULONG_PTR)bOrder;
+    call.heap = (ULONG_PTR)heap;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
