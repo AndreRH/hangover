@@ -1,5 +1,5 @@
-#ifndef QEMU_D3D9_H
-#define QEMU_D3D9_H
+#ifndef QEMU_D3DX10_H
+#define QEMU_D3DX10_H
 
 #include <stdlib.h>
 

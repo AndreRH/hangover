@@ -45,7 +45,7 @@ static const syscall_handler dll_functions[] =
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
-    WINE_TRACE("Loading host-side d3dx9 wrapper.\n");
+    WINE_TRACE("Loading host-side d3dx10 wrapper.\n");
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
