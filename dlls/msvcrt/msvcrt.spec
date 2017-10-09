@@ -990,7 +990,7 @@
 @ cdecl _strupr_s_l(str long ptr) MSVCRT__strupr_s_l
 @ cdecl _strxfrm_l(ptr str long ptr) MSVCRT__strxfrm_l
 @ cdecl _swab(str str long) MSVCRT__swab
-@ varargs _swprintf(ptr wstr) MSVCRT_swprintf
+# @ varargs _swprintf(ptr wstr) MSVCRT_swprintf FIXME
 # stub _swprintf_c(ptr long str)
 # stub _swprintf_c_l(ptr long str ptr)
 @ varargs _swprintf_p_l(ptr long wstr ptr) MSVCRT_swprintf_p_l
@@ -1063,8 +1063,8 @@
 @ cdecl _vscwprintf(wstr ptr) MSVCRT__vscwprintf
 @ cdecl _vscwprintf_l(wstr ptr ptr) MSVCRT__vscwprintf_l
 @ cdecl _vscwprintf_p_l(wstr ptr ptr) MSVCRT__vscwprintf_p_l
-@ cdecl _vsnprintf(ptr long str ptr) MSVCRT_vsnprintf
-@ cdecl _vsnprintf_c(ptr long str ptr) MSVCRT_vsnprintf
+@ cdecl _vsnprintf(ptr long str ptr) MSVCRT__vsnprintf
+@ cdecl _vsnprintf_c(ptr long str ptr) MSVCRT__vsnprintf
 @ cdecl _vsnprintf_c_l(ptr long str ptr ptr) MSVCRT_vsnprintf_l
 @ cdecl _vsnprintf_l(ptr long str ptr ptr) MSVCRT_vsnprintf_l
 @ cdecl _vsnprintf_s(ptr long long str ptr) MSVCRT_vsnprintf_s
@@ -1077,7 +1077,7 @@
 @ cdecl _vsprintf_p(ptr long str ptr) MSVCRT_vsprintf_p
 @ cdecl _vsprintf_p_l(ptr long str ptr ptr) MSVCRT_vsprintf_p_l
 @ cdecl _vsprintf_s_l(ptr long str ptr ptr) MSVCRT_vsprintf_s_l
-@ cdecl _vswprintf(ptr wstr ptr) MSVCRT_vswprintf
+# @ cdecl _vswprintf(ptr wstr ptr) MSVCRT_vswprintf FIXME
 @ cdecl _vswprintf_c(ptr long wstr ptr) MSVCRT_vsnwprintf
 @ cdecl _vswprintf_c_l(ptr long wstr ptr ptr) MSVCRT_vsnwprintf_l
 @ cdecl _vswprintf_l(ptr wstr ptr ptr) MSVCRT_vswprintf_l
@@ -1428,7 +1428,7 @@
 @ cdecl strerror_s(ptr long long) MSVCRT_strerror_s
 @ cdecl strftime(ptr long str ptr) MSVCRT_strftime
 @ cdecl strlen(str) MSVCRT_strlen
-@ cdecl strncat(str str long) MSVCRT_strncat
+# @ cdecl strncat(str str long) MSVCRT_strncat FIXME
 @ cdecl strncat_s(str long str long) MSVCRT_strncat_s
 @ cdecl strncmp(str str long) MSVCRT_strncmp
 @ cdecl strncpy(ptr str long) MSVCRT_strncpy
@@ -1446,7 +1446,7 @@
 @ cdecl strxfrm(ptr str long) MSVCRT_strxfrm
 @ varargs swprintf(ptr wstr) MSVCRT_swprintf
 @ varargs swprintf_s(ptr long wstr) MSVCRT_swprintf_s
-@ varargs swscanf(wstr wstr) MSVCRT_swscanf
+# @ varargs swscanf(wstr wstr) MSVCRT_swscanf FIXME
 @ varargs swscanf_s(wstr wstr) MSVCRT_swscanf_s
 @ cdecl system(str) MSVCRT_system
 @ cdecl tan(double) MSVCRT_tan
@@ -1466,18 +1466,18 @@
 @ cdecl ungetwc(long ptr) MSVCRT_ungetwc
 # stub utime
 @ cdecl vfprintf(ptr str ptr) MSVCRT_vfprintf
-@ cdecl vfprintf_s(ptr str ptr) MSVCRT_vfprintf_s
+# @ cdecl vfprintf_s(ptr str ptr) MSVCRT_vfprintf_s FIXME
 @ cdecl vfwprintf(ptr wstr ptr) MSVCRT_vfwprintf
-@ cdecl vfwprintf_s(ptr wstr ptr) MSVCRT_vfwprintf_s
+# @ cdecl vfwprintf_s(ptr wstr ptr) MSVCRT_vfwprintf_s FIXME
 @ cdecl vprintf(str ptr) MSVCRT_vprintf
-@ cdecl vprintf_s(str ptr) MSVCRT_vprintf_s
-@ cdecl vsnprintf(ptr long str ptr) MSVCRT_vsnprintf
+# @ cdecl vprintf_s(str ptr) MSVCRT_vprintf_s FIXME
+@ cdecl vsnprintf(ptr long str ptr) MSVCRT__vsnprintf
 @ cdecl vsprintf(ptr str ptr) MSVCRT_vsprintf
-@ cdecl vsprintf_s(ptr long str ptr) MSVCRT_vsprintf_s
-@ cdecl vswprintf(ptr wstr ptr) MSVCRT_vswprintf
+# @ cdecl vsprintf_s(ptr long str ptr) MSVCRT_vsprintf_s FIXME
+# @ cdecl vswprintf(ptr wstr ptr) MSVCRT_vswprintf FIXME
 @ cdecl vswprintf_s(ptr long wstr ptr) MSVCRT_vswprintf_s
-@ cdecl vwprintf(wstr ptr) MSVCRT_vwprintf
-@ cdecl vwprintf_s(wstr ptr) MSVCRT_vwprintf_s
+# @ cdecl vwprintf(wstr ptr) MSVCRT_vwprintf FIXME
+# @ cdecl vwprintf_s(wstr ptr) MSVCRT_vwprintf_s FIXME
 @ cdecl wcrtomb(ptr long ptr) MSVCRT_wcrtomb
 # stub wcrtomb_s(ptr ptr long long ptr)
 @ cdecl wcscat(wstr wstr) ntdll.wcscat
@@ -1514,6 +1514,6 @@
 @ cdecl wctomb(ptr long) MSVCRT_wctomb
 @ cdecl wctomb_s(ptr ptr long long) MSVCRT_wctomb_s
 @ varargs wprintf(wstr) MSVCRT_wprintf
-@ varargs wprintf_s(wstr) MSVCRT_wprintf_s
-@ varargs wscanf(wstr) MSVCRT_wscanf
-@ varargs wscanf_s(wstr) MSVCRT_wscanf_s
+# @ varargs wprintf_s(wstr) MSVCRT_wprintf_s FIXME
+# @ varargs wscanf(wstr) MSVCRT_wscanf FIXME
+# @ varargs wscanf_s(wstr) MSVCRT_wscanf_s FIXME
