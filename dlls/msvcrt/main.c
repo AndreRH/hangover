@@ -168,6 +168,9 @@ static const syscall_handler dll_functions[] =
     qemu__cputws,
     qemu__creat,
     qemu__crtTerminateProcess,
+    qemu__CurrentScheduler__Get,
+    qemu__CurrentScheduler__GetNumberOfVirtualProcessors,
+    qemu__CurrentScheduler__Id,
     qemu__cwait,
     qemu__CxxThrowException,
     qemu__dclass,
@@ -598,10 +601,30 @@ static const syscall_handler dll_functions[] =
     qemu_ceil,
     qemu_ceilf,
     qemu_clearerr,
+    qemu_Concurrency_Alloc,
+    qemu_Concurrency_Free,
+    qemu_Context__SpinYield,
+    qemu_Context_Block,
+    qemu_Context_CurrentContext,
+    qemu_Context_Id,
+    qemu_Context_IsCurrentTaskCollectionCanceling,
+    qemu_Context_Oversubscribe,
+    qemu_Context_ScheduleGroupId,
+    qemu_Context_VirtualProcessorId,
+    qemu_Context_Yield,
     qemu_cos,
     qemu_cosf,
     qemu_cosh,
     qemu_coshf,
+    qemu_CurrentScheduler_Create,
+    qemu_CurrentScheduler_CreateScheduleGroup,
+    qemu_CurrentScheduler_Detach,
+    qemu_CurrentScheduler_Get,
+    qemu_CurrentScheduler_GetNumberOfVirtualProcessors,
+    qemu_CurrentScheduler_GetPolicy,
+    qemu_CurrentScheduler_Id,
+    qemu_CurrentScheduler_IsAvailableLocation,
+    qemu_CurrentScheduler_RegisterShutdownEvent,
     qemu_div,
     qemu_erf,
     qemu_erfc,
@@ -763,6 +786,9 @@ static const syscall_handler dll_functions[] =
     qemu_scalbnl,
     qemu_scanf,
     qemu_scanf,
+    qemu_Scheduler_Create,
+    qemu_Scheduler_ResetDefaultSchedulerPolicy,
+    qemu_Scheduler_SetDefaultSchedulerPolicy,
     qemu_setbuf,
     qemu_setlocale,
     qemu_setvbuf,
@@ -923,6 +949,9 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__cputs = (void *)GetProcAddress(msvcrt, "_cputs");
     p__cputws = (void *)GetProcAddress(msvcrt, "_cputws");
     p__crtTerminateProcess = (void *)GetProcAddress(msvcrt, "_crtTerminateProcess");
+    p__CurrentScheduler__Get = (void *)GetProcAddress(msvcrt, "_CurrentScheduler__Get");
+    p__CurrentScheduler__GetNumberOfVirtualProcessors = (void *)GetProcAddress(msvcrt, "_CurrentScheduler__GetNumberOfVirtualProcessors");
+    p__CurrentScheduler__Id = (void *)GetProcAddress(msvcrt, "_CurrentScheduler__Id");
     p__cwait = (void *)GetProcAddress(msvcrt, "_cwait");
     p__dclass = (void *)GetProcAddress(msvcrt, "_dclass");
     p__dpcomp = (void *)GetProcAddress(msvcrt, "_dpcomp");
@@ -1345,10 +1374,30 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_ceil = (void *)GetProcAddress(msvcrt, "ceil");
     p_ceilf = (void *)GetProcAddress(msvcrt, "ceilf");
     p_clearerr = (void *)GetProcAddress(msvcrt, "clearerr");
+    p_Concurrency_Alloc = (void *)GetProcAddress(msvcrt, "Concurrency_Alloc");
+    p_Concurrency_Free = (void *)GetProcAddress(msvcrt, "Concurrency_Free");
+    p_Context__SpinYield = (void *)GetProcAddress(msvcrt, "Context__SpinYield");
+    p_Context_Block = (void *)GetProcAddress(msvcrt, "Context_Block");
+    p_Context_CurrentContext = (void *)GetProcAddress(msvcrt, "Context_CurrentContext");
+    p_Context_Id = (void *)GetProcAddress(msvcrt, "Context_Id");
+    p_Context_IsCurrentTaskCollectionCanceling = (void *)GetProcAddress(msvcrt, "Context_IsCurrentTaskCollectionCanceling");
+    p_Context_Oversubscribe = (void *)GetProcAddress(msvcrt, "Context_Oversubscribe");
+    p_Context_ScheduleGroupId = (void *)GetProcAddress(msvcrt, "Context_ScheduleGroupId");
+    p_Context_VirtualProcessorId = (void *)GetProcAddress(msvcrt, "Context_VirtualProcessorId");
+    p_Context_Yield = (void *)GetProcAddress(msvcrt, "Context_Yield");
     p_cos = (void *)GetProcAddress(msvcrt, "cos");
     p_cosf = (void *)GetProcAddress(msvcrt, "cosf");
     p_cosh = (void *)GetProcAddress(msvcrt, "cosh");
     p_coshf = (void *)GetProcAddress(msvcrt, "coshf");
+    p_CurrentScheduler_Create = (void *)GetProcAddress(msvcrt, "CurrentScheduler_Create");
+    p_CurrentScheduler_CreateScheduleGroup = (void *)GetProcAddress(msvcrt, "CurrentScheduler_CreateScheduleGroup");
+    p_CurrentScheduler_Detach = (void *)GetProcAddress(msvcrt, "CurrentScheduler_Detach");
+    p_CurrentScheduler_Get = (void *)GetProcAddress(msvcrt, "CurrentScheduler_Get");
+    p_CurrentScheduler_GetNumberOfVirtualProcessors = (void *)GetProcAddress(msvcrt, "CurrentScheduler_GetNumberOfVirtualProcessors");
+    p_CurrentScheduler_GetPolicy = (void *)GetProcAddress(msvcrt, "CurrentScheduler_GetPolicy");
+    p_CurrentScheduler_Id = (void *)GetProcAddress(msvcrt, "CurrentScheduler_Id");
+    p_CurrentScheduler_IsAvailableLocation = (void *)GetProcAddress(msvcrt, "CurrentScheduler_IsAvailableLocation");
+    p_CurrentScheduler_RegisterShutdownEvent = (void *)GetProcAddress(msvcrt, "CurrentScheduler_RegisterShutdownEvent");
     p_div = (void *)GetProcAddress(msvcrt, "div");
     p_erf = (void *)GetProcAddress(msvcrt, "erf");
     p_erfc = (void *)GetProcAddress(msvcrt, "erfc");
@@ -1507,6 +1556,9 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_roundf = (void *)GetProcAddress(msvcrt, "roundf");
     p_roundl = (void *)GetProcAddress(msvcrt, "roundl");
     p_scalbnl = (void *)GetProcAddress(msvcrt, "scalbnl");
+    p_Scheduler_Create = (void *)GetProcAddress(msvcrt, "Scheduler_Create");
+    p_Scheduler_ResetDefaultSchedulerPolicy = (void *)GetProcAddress(msvcrt, "Scheduler_ResetDefaultSchedulerPolicy");
+    p_Scheduler_SetDefaultSchedulerPolicy = (void *)GetProcAddress(msvcrt, "Scheduler_SetDefaultSchedulerPolicy");
     p_setbuf = (void *)GetProcAddress(msvcrt, "setbuf");
     p_setlocale = (void *)GetProcAddress(msvcrt, "setlocale");
     p_setvbuf = (void *)GetProcAddress(msvcrt, "setvbuf");

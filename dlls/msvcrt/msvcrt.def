@@ -108,6 +108,9 @@ EXPORTS
   _cputs
   _cputws
   _creat=MSVCRT__creat
+  _CurrentScheduler__Get
+  _CurrentScheduler__GetNumberOfVirtualProcessors
+  _CurrentScheduler__Id
   _cwait
   _CxxThrowException=MSVCRT__CxxThrowException
   _dup2=MSVCRT__dup2
@@ -535,11 +538,31 @@ EXPORTS
   ceil=MSVCRT_ceil
   ceilf=MSVCRT_ceilf
   clearerr=MSVCRT_clearerr
+  Concurrency_Alloc
+  Concurrency_Free
+  Context__SpinYield
+  Context_Block
+  Context_CurrentContext
+  Context_Id
+  Context_IsCurrentTaskCollectionCanceling
+  Context_Oversubscribe
+  Context_ScheduleGroupId
+  Context_VirtualProcessorId
+  Context_Yield
   cos=MSVCRT_cos
   cosf=MSVCRT_cosf
   cosf=MSVCRT_cosf
   cosh=MSVCRT_cosh
   coshf=MSVCRT_coshf
+  CurrentScheduler_Create
+  CurrentScheduler_CreateScheduleGroup
+  CurrentScheduler_Detach
+  CurrentScheduler_Get
+  CurrentScheduler_GetNumberOfVirtualProcessors
+  CurrentScheduler_GetPolicy
+  CurrentScheduler_Id
+  CurrentScheduler_IsAvailableLocation
+  CurrentScheduler_RegisterShutdownEvent
   div=MSVCRT_div
   exit=MSVCRT_exit
   exp=MSVCRT_exp
@@ -653,6 +676,9 @@ EXPORTS
   remove=MSVCRT_remove
   rename=MSVCRT_rename
   rewind=MSVCRT_rewind
+  Scheduler_Create
+  Scheduler_ResetDefaultSchedulerPolicy
+  Scheduler_SetDefaultSchedulerPolicy
   setbuf=MSVCRT_setbuf
   setlocale=MSVCRT_setlocale
   setvbuf=MSVCRT_setvbuf

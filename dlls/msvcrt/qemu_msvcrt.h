@@ -101,6 +101,9 @@ enum msvcrt_calls
     CALL__CPUTWS,
     CALL__CREAT,
     CALL__CRTTERMINATEPROCESS,
+    CALL__CURRENTSCHEDULER__GET,
+    CALL__CURRENTSCHEDULER__GETNUMBEROFVIRTUALPROCESSORS,
+    CALL__CURRENTSCHEDULER__ID,
     CALL__CWAIT,
     CALL__CXXTHROWEXCEPTION,
     CALL__DCLASS,
@@ -531,10 +534,30 @@ enum msvcrt_calls
     CALL_CEIL,
     CALL_CEILF,
     CALL_CLEARERR,
+    CALL_CONCURRENCY_ALLOC,
+    CALL_CONCURRENCY_FREE,
+    CALL_CONTEXT__SPINYIELD,
+    CALL_CONTEXT_BLOCK,
+    CALL_CONTEXT_CURRENTCONTEXT,
+    CALL_CONTEXT_ID,
+    CALL_CONTEXT_ISCURRENTTASKCOLLECTIONCANCELING,
+    CALL_CONTEXT_OVERSUBSCRIBE,
+    CALL_CONTEXT_SCHEDULEGROUPID,
+    CALL_CONTEXT_VIRTUALPROCESSORID,
+    CALL_CONTEXT_YIELD,
     CALL_COS,
     CALL_COSF,
     CALL_COSH,
     CALL_COSHF,
+    CALL_CURRENTSCHEDULER_CREATE,
+    CALL_CURRENTSCHEDULER_CREATESCHEDULEGROUP,
+    CALL_CURRENTSCHEDULER_DETACH,
+    CALL_CURRENTSCHEDULER_GET,
+    CALL_CURRENTSCHEDULER_GETNUMBEROFVIRTUALPROCESSORS,
+    CALL_CURRENTSCHEDULER_GETPOLICY,
+    CALL_CURRENTSCHEDULER_ID,
+    CALL_CURRENTSCHEDULER_ISAVAILABLELOCATION,
+    CALL_CURRENTSCHEDULER_REGISTERSHUTDOWNEVENT,
     CALL_DIV,
     CALL_ERF,
     CALL_ERFC,
@@ -664,8 +687,6 @@ enum msvcrt_calls
     CALL_MEMSET,
     CALL_MODF,
     CALL_MODFF,
-    CALL_MSVCRT__CONIO_COMMON_VCPRINTF,
-    CALL_MSVCRT__CONIO_COMMON_VCWPRINTF,
     CALL_NAN,
     CALL_NANF,
     CALL_NEARBYINT,
@@ -696,6 +717,9 @@ enum msvcrt_calls
     CALL_ROUNDF,
     CALL_ROUNDL,
     CALL_SCALBNL,
+    CALL_SCHEDULER_CREATE,
+    CALL_SCHEDULER_RESETDEFAULTSCHEDULERPOLICY,
+    CALL_SCHEDULER_SETDEFAULTSCHEDULERPOLICY,
     CALL_SETBUF,
     CALL_SETLOCALE,
     CALL_SETVBUF,
@@ -794,6 +818,9 @@ typedef void *MSVCRT_invalid_parameter_handler;
 typedef void *MSVCRT__beginthread_start_routine_t;
 typedef void *MSVCRT__beginthreadex_start_routine_t;
 typedef void thread_data_t;
+typedef void Context;
+typedef void Scheduler, _Scheduler;
+typedef void SchedulerPolicy;
 
 #ifdef QEMU_DLL_GUEST
 
@@ -909,6 +936,9 @@ void qemu__cputs(struct qemu_syscall *call);
 void qemu__cputws(struct qemu_syscall *call);
 void qemu__creat(struct qemu_syscall *c);
 void qemu__crtTerminateProcess(struct qemu_syscall *call);
+void qemu__CurrentScheduler__Get(struct qemu_syscall *call);
+void qemu__CurrentScheduler__GetNumberOfVirtualProcessors(struct qemu_syscall *call);
+void qemu__CurrentScheduler__Id(struct qemu_syscall *call);
 void qemu__cwait(struct qemu_syscall *call);
 void qemu__CxxThrowException(struct qemu_syscall *c);
 void qemu__dclass(struct qemu_syscall *call);
@@ -1338,11 +1368,31 @@ void qemu_cbrtl(struct qemu_syscall *call);
 void qemu_ceil(struct qemu_syscall *call);
 void qemu_ceilf(struct qemu_syscall *call);
 void qemu_clearerr(struct qemu_syscall *c);
+void qemu_Concurrency_Alloc(struct qemu_syscall *call);
+void qemu_Concurrency_Free(struct qemu_syscall *call);
+void qemu_Context__SpinYield(struct qemu_syscall *call);
+void qemu_Context_Block(struct qemu_syscall *call);
+void qemu_Context_CurrentContext(struct qemu_syscall *call);
+void qemu_Context_Id(struct qemu_syscall *call);
+void qemu_Context_IsCurrentTaskCollectionCanceling(struct qemu_syscall *call);
+void qemu_Context_Oversubscribe(struct qemu_syscall *call);
+void qemu_Context_ScheduleGroupId(struct qemu_syscall *call);
+void qemu_Context_VirtualProcessorId(struct qemu_syscall *call);
+void qemu_Context_Yield(struct qemu_syscall *call);
 void qemu_cos(struct qemu_syscall *call);
 void qemu_cosf(struct qemu_syscall *call);
 void qemu_cosf(struct qemu_syscall *call);
 void qemu_cosh(struct qemu_syscall *call);
 void qemu_coshf(struct qemu_syscall *call);
+void qemu_CurrentScheduler_Create(struct qemu_syscall *call);
+void qemu_CurrentScheduler_CreateScheduleGroup(struct qemu_syscall *call);
+void qemu_CurrentScheduler_Detach(struct qemu_syscall *call);
+void qemu_CurrentScheduler_Get(struct qemu_syscall *call);
+void qemu_CurrentScheduler_GetNumberOfVirtualProcessors(struct qemu_syscall *call);
+void qemu_CurrentScheduler_GetPolicy(struct qemu_syscall *call);
+void qemu_CurrentScheduler_Id(struct qemu_syscall *call);
+void qemu_CurrentScheduler_IsAvailableLocation(struct qemu_syscall *call);
+void qemu_CurrentScheduler_RegisterShutdownEvent(struct qemu_syscall *call);
 void qemu_div(struct qemu_syscall *call);
 void qemu_erf(struct qemu_syscall *call);
 void qemu_erfc(struct qemu_syscall *call);
@@ -1502,6 +1552,9 @@ void qemu_roundf(struct qemu_syscall *call);
 void qemu_roundl(struct qemu_syscall *call);
 void qemu_scalbnl(struct qemu_syscall *call);
 void qemu_scanf(struct qemu_syscall *call);
+void qemu_Scheduler_Create(struct qemu_syscall *call);
+void qemu_Scheduler_ResetDefaultSchedulerPolicy(struct qemu_syscall *call);
+void qemu_Scheduler_SetDefaultSchedulerPolicy(struct qemu_syscall *call);
 void qemu_setbuf(struct qemu_syscall *c);
 void qemu_setlocale(struct qemu_syscall *call);
 void qemu_setvbuf(struct qemu_syscall *call);
@@ -2311,6 +2364,33 @@ int (* CDECL p__ungetch)(int c);
 WCHAR (* CDECL p__ungetwch_nolock)(WCHAR c);
 WCHAR (* CDECL p__ungetwch)(WCHAR c);
 int (* CDECL p__kbhit)(void);
+
+Context* (* CDECL p_Context_CurrentContext)(void);
+unsigned int (* CDECL p_Context_Id)(void);
+void (* CDECL p_Context_Block)(void);
+void (* CDECL p_Context_Yield)(void);
+void (* CDECL p_Context__SpinYield)(void);
+BOOL (* CDECL p_Context_IsCurrentTaskCollectionCanceling)(void);
+void (* CDECL p_Context_Oversubscribe)(BOOL begin);
+unsigned int (* CDECL p_Context_ScheduleGroupId)(void);
+unsigned int (* CDECL p_Context_VirtualProcessorId)(void);
+void * (* CDECL p_Concurrency_Alloc)(size_t size);
+void (* CDECL p_Concurrency_Free)(void* mem);
+Scheduler* (* CDECL p_Scheduler_Create)(const SchedulerPolicy *policy);
+void (* CDECL p_Scheduler_ResetDefaultSchedulerPolicy)(void);
+void (* CDECL p_Scheduler_SetDefaultSchedulerPolicy)(const SchedulerPolicy *policy);
+void (* CDECL p_CurrentScheduler_Create)(const SchedulerPolicy *policy);
+void (* CDECL p_CurrentScheduler_Detach)(void);
+Scheduler* (* CDECL p_CurrentScheduler_Get)(void);
+void* (* CDECL p_CurrentScheduler_CreateScheduleGroup)(void);
+unsigned int (* CDECL p_CurrentScheduler_GetNumberOfVirtualProcessors)(void);
+SchedulerPolicy* (* CDECL p_CurrentScheduler_GetPolicy)(SchedulerPolicy *policy);
+unsigned int (* CDECL p_CurrentScheduler_Id)(void);
+BOOL (* CDECL p_CurrentScheduler_IsAvailableLocation)(const void *placement);
+void (* CDECL p_CurrentScheduler_RegisterShutdownEvent)(HANDLE event);
+_Scheduler* (* CDECL p__CurrentScheduler__Get)(_Scheduler *ret);
+unsigned int (* CDECL p__CurrentScheduler__GetNumberOfVirtualProcessors)(void);
+unsigned int (* CDECL p__CurrentScheduler__Id)(void);
 
 DWORD msvcrt_tls;
 
