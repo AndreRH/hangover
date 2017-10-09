@@ -8,8 +8,8 @@ VPATH=$(SRCDIR)
 
 all: ws2_32.dll qemu_ws2_32.dll.so
 
-ws2_32.dll: async_g.o main_g.o socket_g.o ws2_32.def
-	$(GUEST_CC)-ld -shared $(SRCDIR)/ws2_32.def *_g.o -o ws2_32.dll -nostdlib -e DllMain
+ws2_32.dll: async_g.o main_g.o socket_g.o ws2_32.spec
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/ws2_32.spec *_g.o -o ws2_32.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x170000000
 
 qemu_ws2_32.dll.so: async_h.o main_h.o socket_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_ws2_32.spec *_h.o -o qemu_ws2_32.dll.so -lws2_32
