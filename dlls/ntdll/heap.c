@@ -140,7 +140,7 @@ WINBASEAPI PVOID WINAPI RtlAllocateHeap(HANDLE heap, ULONG flags, SIZE_T size)
 void qemu_RtlAllocateHeap(struct qemu_syscall *call)
 {
     struct qemu_RtlAllocateHeap *c = (struct qemu_RtlAllocateHeap *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)RtlAllocateHeap(QEMU_G2H(c->heap), c->flags, c->size);
 }
 
@@ -174,7 +174,7 @@ WINBASEAPI BOOLEAN WINAPI RtlFreeHeap(HANDLE heap, ULONG flags, PVOID ptr)
 void qemu_RtlFreeHeap(struct qemu_syscall *call)
 {
     struct qemu_RtlFreeHeap *c = (struct qemu_RtlFreeHeap *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RtlFreeHeap(QEMU_G2H(c->heap), c->flags, QEMU_G2H(c->ptr));
 }
 
@@ -210,7 +210,7 @@ WINBASEAPI PVOID WINAPI RtlReAllocateHeap(HANDLE heap, ULONG flags, PVOID ptr, S
 void qemu_RtlReAllocateHeap(struct qemu_syscall *call)
 {
     struct qemu_RtlReAllocateHeap *c = (struct qemu_RtlReAllocateHeap *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)RtlReAllocateHeap(QEMU_G2H(c->heap), c->flags, QEMU_G2H(c->ptr), c->size);
 }
 
