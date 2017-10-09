@@ -122,6 +122,7 @@ static const syscall_handler dll_functions[] =
     qemu___pctype_func,
     qemu___set_app_type,
     qemu___setusermatherr,
+    qemu___STRINGTOLD,
     qemu___sys_errlist,
     qemu___sys_nerr,
     qemu___toascii,
@@ -140,6 +141,13 @@ static const syscall_handler dll_functions[] =
     qemu__aligned_offset_realloc,
     qemu__aligned_realloc,
     qemu__amsg_exit,
+    qemu__atodbl,
+    qemu__atodbl_l,
+    qemu__atof_l,
+    qemu__atoflt,
+    qemu__atoflt_l,
+    qemu__atoldbl,
+    qemu__atoll_l,
     qemu__beginthread,
     qemu__beginthreadex,
     qemu__cabs,
@@ -325,6 +333,8 @@ static const syscall_handler dll_functions[] =
     qemu__heapwalk,
     qemu__hypot,
     qemu__hypotf,
+    qemu__i64toa_s,
+    qemu__i64tow_s,
     qemu__invalid_parameter_noinfo,
     qemu__invalid_parameter_noinfo_noreturn,
     qemu__isalnum_l,
@@ -369,6 +379,9 @@ static const syscall_handler dll_functions[] =
     qemu__iswpunct_l,
     qemu__iswspace_l,
     qemu__isxdigit_l,
+    qemu__itoa,
+    qemu__itoa_s,
+    qemu__itow_s,
     qemu__j0,
     qemu__j1,
     qemu__jn,
@@ -390,6 +403,8 @@ static const syscall_handler dll_functions[] =
     qemu__lrotr,
     qemu__lseek,
     qemu__lseeki64,
+    qemu__ltoa_s,
+    qemu__ltow_s,
     qemu__makepath,
     qemu__makepath_s,
     qemu__malloc_base,
@@ -543,10 +558,32 @@ static const syscall_handler dll_functions[] =
     qemu__Strftime,
     qemu__strftime_l,
     qemu__stricmp,
+    qemu__stricoll,
+    qemu__stricoll_l,
+    qemu__strlwr,
+    qemu__strlwr_l,
+    qemu__strlwr_s,
+    qemu__strlwr_s_l,
+    qemu__strncoll,
+    qemu__strncoll_l,
     qemu__strnicmp,
+    qemu__strnicoll,
+    qemu__strnicoll_l,
+    qemu__strnset,
+    qemu__strnset_s,
+    qemu__strrev,
+    qemu__strset,
     qemu__strtime,
     qemu__strtime_s,
+    qemu__strtof_l,
+    qemu__strtol_l,
     qemu__strtoui64,
+    qemu__strupr,
+    qemu__strupr_l,
+    qemu__strupr_s,
+    qemu__strupr_s_l,
+    qemu__strxfrm_l,
+    qemu__swab,
     qemu__tell,
     qemu__telli64,
     qemu__tempnam,
@@ -559,6 +596,10 @@ static const syscall_handler dll_functions[] =
     qemu__towlower_l,
     qemu__towupper_l,
     qemu__tzset,
+    qemu__ui64toa_s,
+    qemu__ui64tow_s,
+    qemu__ultoa_s,
+    qemu__ultow_s,
     qemu__umask,
     qemu__ungetc_nolock,
     qemu__ungetch,
@@ -731,6 +772,8 @@ static const syscall_handler dll_functions[] =
     qemu_atanhf,
     qemu_atanhl,
     qemu_atof,
+    qemu_atoi,
+    qemu_atoll,
     qemu_bsearch,
     qemu_calloc,
     qemu_cbrt,
@@ -833,6 +876,7 @@ static const syscall_handler dll_functions[] =
     qemu_getwc,
     qemu_getwchar,
     qemu_gmtime,
+    qemu_I10_OUTPUT,
     qemu_isalnum,
     qemu_isalpha,
     qemu_isblank,
@@ -963,17 +1007,34 @@ static const syscall_handler dll_functions[] =
     qemu_strcat_s,
     qemu_strchr,
     qemu_strcmp,
+    qemu_strcoll,
+    qemu_strcoll_l,
+    qemu_strcpy,
     qemu_strcpy_s,
     qemu_strerror,
     qemu_strerror_s,
     qemu_strftime,
     qemu_strlen,
+    qemu_strncat_s,
     qemu_strncmp,
     qemu_strncpy,
     qemu_strncpy_s,
+    qemu_strnlen,
     qemu_strrchr,
     qemu_strstr,
     qemu_strtod,
+    qemu_strtod_l,
+    qemu_strtof,
+    qemu_strtoi64,
+    qemu_strtoi64_l,
+    qemu_strtok,
+    qemu_strtok_s,
+    qemu_strtol,
+    qemu_strtoui64,
+    qemu_strtoui64_l,
+    qemu_strtoul,
+    qemu_strtoul_l,
+    qemu_strxfrm,
     qemu_sprintf,
     qemu_swscanf_s,
     qemu_system,
@@ -1096,6 +1157,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p___pctype_func = (void *)GetProcAddress(msvcrt, "__pctype_func");
     p___set_app_type = (void *)GetProcAddress(msvcrt, "__set_app_type");
     p___setusermatherr = (void *)GetProcAddress(msvcrt, "__setusermatherr");
+    p___STRINGTOLD = (void *)GetProcAddress(msvcrt, "__STRINGTOLD");
     p___sys_errlist = (void *)GetProcAddress(msvcrt, "__sys_errlist");
     p___sys_nerr = (void *)GetProcAddress(msvcrt, "__sys_nerr");
     p___toascii = (void *)GetProcAddress(msvcrt, "__toascii");
@@ -1112,6 +1174,13 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__aligned_offset_realloc = (void *)GetProcAddress(msvcrt, "_aligned_offset_realloc");
     p__aligned_realloc = (void *)GetProcAddress(msvcrt, "_aligned_realloc");
     p__amsg_exit = (void *)GetProcAddress(msvcrt, "_amsg_exit");
+    p__atodbl = (void *)GetProcAddress(msvcrt, "_atodbl");
+    p__atodbl_l = (void *)GetProcAddress(msvcrt, "_atodbl_l");
+    p__atof_l = (void *)GetProcAddress(msvcrt, "_atof_l");
+    p__atoflt = (void *)GetProcAddress(msvcrt, "_atoflt");
+    p__atoflt_l = (void *)GetProcAddress(msvcrt, "_atoflt_l");
+    p__atoldbl = (void *)GetProcAddress(msvcrt, "_atoldbl");
+    p__atoll_l = (void *)GetProcAddress(msvcrt, "_atoll_l");
     p__beginthread = (void *)GetProcAddress(msvcrt, "_beginthread");
     p__beginthreadex = (void *)GetProcAddress(msvcrt, "_beginthreadex");
     p__cabs = (void *)GetProcAddress(msvcrt, "_cabs");
@@ -1287,6 +1356,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__heapwalk = (void *)GetProcAddress(msvcrt, "_heapwalk");
     p__hypot = (void *)GetProcAddress(msvcrt, "_hypot");
     p__hypotf = (void *)GetProcAddress(msvcrt, "_hypotf");
+    p__i64toa_s = (void *)GetProcAddress(msvcrt, "_i64toa_s");
+    p__i64tow_s = (void *)GetProcAddress(msvcrt, "_i64tow_s");
     p__invalid_parameter_noinfo = (void *)GetProcAddress(msvcrt, "_invalid_parameter_noinfo");
     p__invalid_parameter_noinfo_noreturn = (void *)GetProcAddress(msvcrt, "_invalid_parameter_noinfo_noreturn");
     p__isalnum_l = (void *)GetProcAddress(msvcrt, "_isalnum_l");
@@ -1332,6 +1403,9 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__iswpunct_l = (void *)GetProcAddress(msvcrt, "_iswpunct_l");
     p__iswspace_l = (void *)GetProcAddress(msvcrt, "_iswspace_l");
     p__isxdigit_l = (void *)GetProcAddress(msvcrt, "_isxdigit_l");
+    p__itoa = (void *)GetProcAddress(msvcrt, "_itoa");
+    p__itoa_s = (void *)GetProcAddress(msvcrt, "_itoa_s");
+    p__itow_s = (void *)GetProcAddress(msvcrt, "_itow_s");
     p__j0 = (void *)GetProcAddress(msvcrt, "_j0");
     p__j1 = (void *)GetProcAddress(msvcrt, "_j1");
     p__jn = (void *)GetProcAddress(msvcrt, "_jn");
@@ -1355,6 +1429,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__lseek = (void *)GetProcAddress(msvcrt, "_lseek");
     p__lseeki64 = (void *)GetProcAddress(msvcrt, "_lseeki64");
     p__lseeki64 = (void *)GetProcAddress(msvcrt, "_lseeki64");
+    p__ltoa_s = (void *)GetProcAddress(msvcrt, "_ltoa_s");
+    p__ltow_s = (void *)GetProcAddress(msvcrt, "_ltow_s");
     p__makepath = (void *)GetProcAddress(msvcrt, "_makepath");
     p__makepath_s = (void *)GetProcAddress(msvcrt, "_makepath_s");
     p__malloc_base = (void *)GetProcAddress(msvcrt, "_malloc_base");
@@ -1507,11 +1583,33 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__Strftime = (void *)GetProcAddress(msvcrt, "_Strftime");
     p__strftime_l = (void *)GetProcAddress(msvcrt, "_strftime_l");
     p__stricmp = (void *)GetProcAddress(msvcrt, "_stricmp");
+    p__stricoll = (void *)GetProcAddress(msvcrt, "_stricoll");
+    p__stricoll_l = (void *)GetProcAddress(msvcrt, "_stricoll_l");
+    p__strlwr = (void *)GetProcAddress(msvcrt, "_strlwr");
+    p__strlwr_l = (void *)GetProcAddress(msvcrt, "_strlwr_l");
+    p__strlwr_s = (void *)GetProcAddress(msvcrt, "_strlwr_s");
+    p__strlwr_s_l = (void *)GetProcAddress(msvcrt, "_strlwr_s_l");
+    p__strncoll = (void *)GetProcAddress(msvcrt, "_strncoll");
+    p__strncoll_l = (void *)GetProcAddress(msvcrt, "_strncoll_l");
     p__strnicmp = (void *)GetProcAddress(msvcrt, "_strnicmp");
+    p__strnicoll = (void *)GetProcAddress(msvcrt, "_strnicoll");
+    p__strnicoll_l = (void *)GetProcAddress(msvcrt, "_strnicoll_l");
+    p__strnset = (void *)GetProcAddress(msvcrt, "_strnset");
+    p__strnset_s = (void *)GetProcAddress(msvcrt, "_strnset_s");
+    p__strrev = (void *)GetProcAddress(msvcrt, "_strrev");
+    p__strset = (void *)GetProcAddress(msvcrt, "_strset");
     p__strtime = (void *)GetProcAddress(msvcrt, "_strtime");
     p__strtime = (void *)GetProcAddress(msvcrt, "_strtime");
     p__strtime_s = (void *)GetProcAddress(msvcrt, "_strtime_s");
+    p__strtof_l = (void *)GetProcAddress(msvcrt, "_strtof_l");
+    p__strtol_l = (void *)GetProcAddress(msvcrt, "_strtol_l");
     p__strtoui64 = (void *)GetProcAddress(msvcrt, "_strtoui64");
+    p__strupr = (void *)GetProcAddress(msvcrt, "_strupr");
+    p__strupr_l = (void *)GetProcAddress(msvcrt, "_strupr_l");
+    p__strupr_s = (void *)GetProcAddress(msvcrt, "_strupr_s");
+    p__strupr_s_l = (void *)GetProcAddress(msvcrt, "_strupr_s_l");
+    p__strxfrm_l = (void *)GetProcAddress(msvcrt, "_strxfrm_l");
+    p__swab = (void *)GetProcAddress(msvcrt, "_swab");
     p__tell = (void *)GetProcAddress(msvcrt, "_tell");
     p__tempnam = (void *)GetProcAddress(msvcrt, "_tempnam");
     p__tempnam = (void *)GetProcAddress(msvcrt, "_tempnam");
@@ -1525,6 +1623,10 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__towlower_l = (void *)GetProcAddress(msvcrt, "_towlower_l");
     p__towupper_l = (void *)GetProcAddress(msvcrt, "_towupper_l");
     p__tzset = (void *)GetProcAddress(msvcrt, "_tzset");
+    p__ui64toa_s = (void *)GetProcAddress(msvcrt, "_ui64toa_s");
+    p__ui64tow_s = (void *)GetProcAddress(msvcrt, "_ui64tow_s");
+    p__ultoa_s = (void *)GetProcAddress(msvcrt, "_ultoa_s");
+    p__ultow_s = (void *)GetProcAddress(msvcrt, "_ultow_s");
     p__umask = (void *)GetProcAddress(msvcrt, "_umask");
     p__ungetc_nolock = (void *)GetProcAddress(msvcrt, "_ungetc_nolock");
     p__ungetch = (void *)GetProcAddress(msvcrt, "_ungetch");
@@ -1691,6 +1793,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_atanhf = (void *)GetProcAddress(msvcrt, "atanhf");
     p_atanhl = (void *)GetProcAddress(msvcrt, "atanhl");
     p_atof = (void *)GetProcAddress(msvcrt, "atof");
+    p_atoi = (void *)GetProcAddress(msvcrt, "atoi");
+    p_atoll = (void *)GetProcAddress(msvcrt, "atoll");
     p_bsearch = (void *)GetProcAddress(msvcrt, "bsearch");
     p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
     p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
@@ -1796,6 +1900,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_getwc = (void *)GetProcAddress(msvcrt, "getwc");
     p_getwchar = (void *)GetProcAddress(msvcrt, "getwchar");
     p_gmtime = (void *)GetProcAddress(msvcrt, "gmtime");
+    p_I10_OUTPUT = (void *)GetProcAddress(msvcrt, "I10_OUTPUT");
     p_isalnum = (void *)GetProcAddress(msvcrt, "isalnum");
     p_isalpha = (void *)GetProcAddress(msvcrt, "isalpha");
     p_isblank = (void *)GetProcAddress(msvcrt, "isblank");
@@ -1930,17 +2035,34 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_strcat_s = (void *)GetProcAddress(msvcrt, "strcat_s");
     p_strchr = (void *)GetProcAddress(msvcrt, "strchr");
     p_strcmp = (void *)GetProcAddress(msvcrt, "strcmp");
+    p_strcoll = (void *)GetProcAddress(msvcrt, "strcoll");
+    p_strcoll_l = (void *)GetProcAddress(msvcrt, "strcoll_l");
+    p_strcpy = (void *)GetProcAddress(msvcrt, "strcpy");
     p_strcpy_s = (void *)GetProcAddress(msvcrt, "strcpy_s");
     p_strerror = (void *)GetProcAddress(msvcrt, "strerror");
     p_strerror_s = (void *)GetProcAddress(msvcrt, "strerror_s");
     p_strftime = (void *)GetProcAddress(msvcrt, "strftime");
     p_strlen = (void *)GetProcAddress(msvcrt, "strlen");
+    p_strncat_s = (void *)GetProcAddress(msvcrt, "strncat_s");
     p_strncmp = (void *)GetProcAddress(msvcrt, "strncmp");
     p_strncpy = (void *)GetProcAddress(msvcrt, "strncpy");
     p_strncpy_s = (void *)GetProcAddress(msvcrt, "strncpy_s");
+    p_strnlen = (void *)GetProcAddress(msvcrt, "strnlen");
     p_strrchr = (void *)GetProcAddress(msvcrt, "strrchr");
     p_strstr = (void *)GetProcAddress(msvcrt, "strstr");
     p_strtod = (void *)GetProcAddress(msvcrt, "strtod");
+    p_strtod_l = (void *)GetProcAddress(msvcrt, "strtod_l");
+    p_strtof = (void *)GetProcAddress(msvcrt, "strtof");
+    p_strtoi64 = (void *)GetProcAddress(msvcrt, "strtoi64");
+    p_strtoi64_l = (void *)GetProcAddress(msvcrt, "strtoi64_l");
+    p_strtok = (void *)GetProcAddress(msvcrt, "strtok");
+    p_strtok_s = (void *)GetProcAddress(msvcrt, "strtok_s");
+    p_strtol = (void *)GetProcAddress(msvcrt, "strtol");
+    p_strtoui64 = (void *)GetProcAddress(msvcrt, "strtoui64");
+    p_strtoui64_l = (void *)GetProcAddress(msvcrt, "strtoui64_l");
+    p_strtoul = (void *)GetProcAddress(msvcrt, "strtoul");
+    p_strtoul_l = (void *)GetProcAddress(msvcrt, "strtoul_l");
+    p_strxfrm = (void *)GetProcAddress(msvcrt, "strxfrm");
     p_swscanf_s = (void *)GetProcAddress(msvcrt, "swscanf_s");
     p_system = (void *)GetProcAddress(msvcrt, "system");
     p_tan = (void *)GetProcAddress(msvcrt, "tan");

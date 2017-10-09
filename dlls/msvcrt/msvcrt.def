@@ -62,6 +62,7 @@ EXPORTS
   __set_app_type=MSVCRT___set_app_type
   __setusermatherr=MSVCRT___setusermatherr
   __setusermatherr=MSVCRT___setusermatherr
+  __STRINGTOLD
   __sys_errlist
   __sys_nerr
   __toascii=MSVCRT___toascii
@@ -486,7 +487,9 @@ EXPORTS
   _Strftime
   _strftime_l=MSVCRT__strftime_l
   _stricmp=MSVCRT__stricmp
+  _strlwr_l
   _strnicmp=MSVCRT__strnicmp
+  _strset
   _strtime=MSVCRT__strtime
   _strtime=MSVCRT__strtime
   _strtime_s
@@ -826,6 +829,69 @@ EXPORTS
   mktime=MSVCRT_mktime
   modf=MSVCRT_modf
   modff=MSVCRT_modff
+  _atodbl=MSVCRT__atodbl
+  _atodbl_l=MSVCRT__atodbl_l
+  _atof_l=MSVCRT__atof_l
+  _atoflt=MSVCRT__atoflt
+  _atoflt_l=MSVCRT__atoflt_l
+  _atoldbl=MSVCRT__atoldbl
+  _atoll_l=MSVCRT__atoll_l
+  _i64toa_s=MSVCRT__i64toa_s
+  _i64tow_s=MSVCRT__i64tow_s
+  _itoa=MSVCRT__itoa
+  _itoa_s=MSVCRT__itoa_s
+  _itow_s=MSVCRT__itow_s
+  _ltoa_s=MSVCRT__ltoa_s
+  _ltow_s=MSVCRT__ltow_s
+  _strdup=MSVCRT__strdup
+  _stricoll=MSVCRT__stricoll
+  _stricoll_l=MSVCRT__stricoll_l
+  _strlwr=MSVCRT__strlwr
+  _strlwr_s=MSVCRT__strlwr_s
+  _strlwr_s_l=MSVCRT__strlwr_s_l
+  _strncoll=MSVCRT__strncoll
+  _strncoll_l=MSVCRT__strncoll_l
+  _strnicoll=MSVCRT__strnicoll
+  _strnicoll_l=MSVCRT__strnicoll_l
+  _strnset=MSVCRT__strnset
+  _strnset_s=MSVCRT__strnset_s
+  _strrev=MSVCRT__strrev
+  _strtof_l=MSVCRT__strtof_l
+  _strtol_l=MSVCRT__strtol_l
+  _strupr=MSVCRT__strupr
+  _strupr_l=MSVCRT__strupr_l
+  _strupr_s=MSVCRT__strupr_s
+  _strupr_s_l=MSVCRT__strupr_s_l
+  _strxfrm_l=MSVCRT__strxfrm_l
+  _swab=MSVCRT__swab
+  _ui64toa_s=MSVCRT__ui64toa_s
+  _ui64tow_s=MSVCRT__ui64tow_s
+  _ultoa_s=MSVCRT__ultoa_s
+  _ultow_s=MSVCRT__ultow_s
+  atof=MSVCRT_atof
+  atoi=MSVCRT_atoi
+  atoll=MSVCRT_atoll
+  I10_OUTPUT=MSVCRT_I10_OUTPUT
+  strcat_s=MSVCRT_strcat_s
+  strcoll=MSVCRT_strcoll
+  strcoll_l=MSVCRT_strcoll_l
+  strcpy=MSVCRT_strcpy
+  strcpy_s=MSVCRT_strcpy_s
+  strncat_s=MSVCRT_strncat_s
+  strnlen=MSVCRT_strnlen
+  strtod=MSVCRT_strtod
+  strtod_l=MSVCRT_strtod_l
+  strtof=MSVCRT_strtof
+  strtoi64=MSVCRT_strtoi64
+  strtoi64_l=MSVCRT_strtoi64_l
+  strtok=MSVCRT_strtok
+  strtok_s=MSVCRT_strtok_s
+  strtol=MSVCRT_strtol
+  strtoui64=MSVCRT_strtoui64
+  strtoui64_l=MSVCRT_strtoui64_l
+  strtoul=MSVCRT_strtoul
+  strtoul_l=MSVCRT_strtoul_l
+  strxfrm=MSVCRT_strxfrm
   nearbyint=MSVCRT_nearbyint
   nearbyintf=MSVCRT_nearbyintf
   operator_delete=MSVCRT_operator_delete
