@@ -24,7 +24,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "user32.h"
+#include "qemu_user32.h"
 
 struct qemu_set_callbacks
 {
