@@ -60,6 +60,8 @@ enum msvcrt_calls
     CALL__ACCESS,
     CALL__ACCESS_S,
     CALL__AMSG_EXIT,
+    CALL__BEGINTHREAD,
+    CALL__BEGINTHREADEX,
     CALL__CABS,
     CALL__CEXIT,
     CALL__CHDIR,
@@ -107,6 +109,8 @@ enum msvcrt_calls
     CALL__DUPENV_S,
     CALL__ECVT,
     CALL__ECVT_S,
+    CALL__ENDTHREAD,
+    CALL__ENDTHREADEX,
     CALL__EOF,
     CALL__ERRNO,
     CALL__EXECV,
@@ -190,6 +194,7 @@ enum msvcrt_calls
     CALL__GETMAXSTDIO,
     CALL__GETMBCP,
     CALL__GETPID,
+    CALL__GETPTD,
     CALL__GETW,
     CALL__GETWS,
     CALL__HYPOT,
@@ -764,6 +769,9 @@ struct MSVCRT__wfinddatai64_t;
 struct MSVCRT__diskfree_t;
 typedef unsigned short MSVCRT_wint_t;
 typedef void *MSVCRT_invalid_parameter_handler;
+typedef void *MSVCRT__beginthread_start_routine_t;
+typedef void *MSVCRT__beginthreadex_start_routine_t;
+typedef void thread_data_t;
 
 #ifdef QEMU_DLL_GUEST
 
@@ -838,6 +846,8 @@ void qemu__abs64(struct qemu_syscall *call);
 void qemu__access(struct qemu_syscall *c);
 void qemu__access_s(struct qemu_syscall *c);
 void qemu__amsg_exit(struct qemu_syscall *call);
+void qemu__beginthread(struct qemu_syscall *call);
+void qemu__beginthreadex(struct qemu_syscall *call);
 void qemu__cabs(struct qemu_syscall *call);
 void qemu__cexit(struct qemu_syscall *call);
 void qemu__chdir(struct qemu_syscall *call);
@@ -885,6 +895,8 @@ void qemu__dup2(struct qemu_syscall *c);
 void qemu__dupenv_s(struct qemu_syscall *call);
 void qemu__ecvt(struct qemu_syscall *call);
 void qemu__ecvt_s(struct qemu_syscall *call);
+void qemu__endthread(struct qemu_syscall *call);
+void qemu__endthreadex(struct qemu_syscall *call);
 void qemu__eof(struct qemu_syscall *c);
 void qemu__errno(struct qemu_syscall *call);
 void qemu__execv(struct qemu_syscall *call);
@@ -968,6 +980,7 @@ void qemu__getdrive(struct qemu_syscall *call);
 void qemu__getmaxstdio(struct qemu_syscall *c);
 void qemu__getmbcp(struct qemu_syscall *call);
 void qemu__getpid(struct qemu_syscall *call);
+void qemu__getptd(struct qemu_syscall *call);
 void qemu__getw(struct qemu_syscall *c);
 void qemu__getws(struct qemu_syscall *c);
 void qemu__hypot(struct qemu_syscall *call);
@@ -2229,6 +2242,12 @@ void * (* CDECL p__getdllprocaddr)(intptr_t dll, const char *name, int ordinal);
 int (* CDECL p__getpid)(void);
 int (* CDECL p__crtTerminateProcess)(UINT exit_code);
 int (* CDECL p__open)(const char *path, int flags, ...);
+
+thread_data_t* (* CDECL p__getptd)(void);
+void (* CDECL p__endthread)(void);
+void (* CDECL p__endthreadex)(unsigned int retval);
+uintptr_t (* CDECL p__beginthread)(MSVCRT__beginthread_start_routine_t start_address, void *arglist);
+uintptr_t (* CDECL p__beginthreadex)(void *security, unsigned int stack_size, MSVCRT__beginthreadex_start_routine_t start_address, void *arglist, unsigned int initflag, unsigned int *thrdaddr);
 
 DWORD msvcrt_tls;
 

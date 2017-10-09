@@ -68,6 +68,8 @@ EXPORTS
   _access_s=MSVCRT__access_s
   _acmdln=MSVCRT__acmdln
   _amsg_exit
+  _beginthread=MSVCRT__beginthread
+  _beginthreadex=MSVCRT__beginthreadex
   _cabs=MSVCRT__cabs
   _cexit=MSVCRT__cexit
   _chdir=MSVCRT__chdir
@@ -110,10 +112,13 @@ EXPORTS
   _dupenv_s
   _ecvt=MSVCRT__ecvt
   _ecvt_s=MSVCRT__ecvt_s
+  _endthread=MSVCRT__endthread
+  _endthreadex=MSVCRT__endthreadex
   _environ=msvcrt.__qemu_native_data__
   _eof=MSVCRT__eof
   _errno=MSVCRT__errno
   _execv
+  _execve=MSVCRT__execve
   _execvp
   _execvpe
   _exit=MSVCRT__exit
@@ -191,6 +196,7 @@ EXPORTS
   _getmaxstdio=MSVCRT__getmaxstdio
   _getmbcp
   _getpid
+  _getptd=MSVCRT__getptd
   _getw=MSVCRT__getw
   _getws=MSVCRT__getws
   _hypot
@@ -334,7 +340,9 @@ EXPORTS
   _onexit=MSVCRT__onexit
   _open=MSVCRT__open
   _open_osfhandle=MSVCRT__open_osfhandle
+  _pclose=MSVCRT__pclose
   _pipe=MSVCRT__pipe
+  _popen=MSVCRT__popen
   _purecall
   _putenv=MSVCRT__putenv
   _putenv_s
@@ -368,7 +376,9 @@ EXPORTS
   _sopen_dispatch=MSVCRT__sopen_dispatch
   _sopen_s=MSVCRT__sopen_s
   _spawnv=MSVCRT__spawnv
+  _spawnve=MSVCRT__spawnve
   _spawnvp=MSVCRT__spawnvp
+  _spawnvpe=MSVCRT__spawnvpe
   _splitpath=MSVCRT__splitpath
   _splitpath_s=MSVCRT__splitpath_s
   _stat32=MSVCRT__stat32
@@ -447,6 +457,7 @@ EXPORTS
   _wmktemp=MSVCRT__wmktemp
   _wmktemp_s=MSVCRT__wmktemp_s
   _wperror=MSVCRT__wperror
+  _wpopen=MSVCRT__wpopen
   _wputenv=MSVCRT__wputenv
   _wputenv_s
   _wremove=MSVCRT__wremove
@@ -459,7 +470,9 @@ EXPORTS
   _wsopen_dispatch=MSVCRT__wsopen_dispatch
   _wsopen_s=MSVCRT__wsopen_s
   _wspawnv=MSVCRT__wspawnv
+  _wspawnve=MSVCRT__wspawnve
   _wspawnvp=MSVCRT__wspawnvp
+  _wspawnvpe=MSVCRT__wspawnvpe
   _wsplitpath=MSVCRT__wsplitpath
   _wsplitpath_s=MSVCRT__wsplitpath_s
   _wstat32=MSVCRT__wstat32
@@ -603,15 +616,7 @@ EXPORTS
   modf=MSVCRT_modf
   modff=MSVCRT_modff
   MSVCR110__crtTerminateProcess
-  _execve=MSVCRT__execve
-  _pclose=MSVCRT__pclose
-  _popen=MSVCRT__popen
-  _spawnve=MSVCRT__spawnve
-  _spawnvpe=MSVCRT__spawnvpe
-  _wpopen=MSVCRT__wpopen
-  _wspawnve=MSVCRT__wspawnve
-  _wspawnvpe=MSVCRT__wspawnvpe
-  MSVCRT_system
+  system=MSVCRT_system
   nearbyint=MSVCRT_nearbyint
   nearbyintf=MSVCRT_nearbyintf
   perror=MSVCRT_perror

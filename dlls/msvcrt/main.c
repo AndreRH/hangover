@@ -127,6 +127,8 @@ static const syscall_handler dll_functions[] =
     qemu__access,
     qemu__access_s,
     qemu__amsg_exit,
+    qemu__beginthread,
+    qemu__beginthreadex,
     qemu__cabs,
     qemu__cexit,
     qemu__chdir,
@@ -174,6 +176,8 @@ static const syscall_handler dll_functions[] =
     qemu__dupenv_s,
     qemu__ecvt,
     qemu__ecvt_s,
+    qemu__endthread,
+    qemu__endthreadex,
     qemu__eof,
     qemu__errno,
     qemu__execv,
@@ -257,6 +261,7 @@ static const syscall_handler dll_functions[] =
     qemu__getmaxstdio,
     qemu__getmbcp,
     qemu__getpid,
+    qemu__getptd,
     qemu__getw,
     qemu__getws,
     qemu__hypot,
@@ -862,6 +867,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p___wgetmainargs = (void *)GetProcAddress(msvcrt, "__wgetmainargs");
     p__abs64 = (void *)GetProcAddress(msvcrt, "_abs64");
     p__amsg_exit = (void *)GetProcAddress(msvcrt, "_amsg_exit");
+    p__beginthread = (void *)GetProcAddress(msvcrt, "_beginthread");
+    p__beginthreadex = (void *)GetProcAddress(msvcrt, "_beginthreadex");
     p__cabs = (void *)GetProcAddress(msvcrt, "_cabs");
     p__cexit = (void *)GetProcAddress(msvcrt, "_cexit");
     p__chdir = (void *)GetProcAddress(msvcrt, "_chdir");
@@ -901,6 +908,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__dupenv_s = (void *)GetProcAddress(msvcrt, "_dupenv_s");
     p__ecvt = (void *)GetProcAddress(msvcrt, "_ecvt");
     p__ecvt_s = (void *)GetProcAddress(msvcrt, "_ecvt_s");
+    p__endthread = (void *)GetProcAddress(msvcrt, "_endthread");
+    p__endthreadex = (void *)GetProcAddress(msvcrt, "_endthreadex");
     p__eof = (void *)GetProcAddress(msvcrt, "_eof");
     p__errno = (void *)GetProcAddress(msvcrt, "_errno");
     p__errno = (void *)GetProcAddress(msvcrt, "_errno");
@@ -982,6 +991,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__getmaxstdio = (void *)GetProcAddress(msvcrt, "_getmaxstdio");
     p__getmbcp = (void *)GetProcAddress(msvcrt, "_getmbcp");
     p__getpid = (void *)GetProcAddress(msvcrt, "_getpid");
+    p__getptd = (void *)GetProcAddress(msvcrt, "_getptd");
     p__getw = (void *)GetProcAddress(msvcrt, "_getw");
     p__getws = (void *)GetProcAddress(msvcrt, "_getws");
     p__hypot = (void *)GetProcAddress(msvcrt, "_hypot");
