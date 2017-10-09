@@ -54,16 +54,16 @@ WINBASEAPI INT WINAPI GetAddressByNameA(DWORD dwNameSpace, LPGUID lpServiceType,
 {
     struct qemu_GetAddressByNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETADDRESSBYNAMEA);
-    call.dwNameSpace = (uint64_t)dwNameSpace;
-    call.lpServiceType = (uint64_t)lpServiceType;
-    call.lpServiceName = (uint64_t)lpServiceName;
-    call.lpiProtocols = (uint64_t)lpiProtocols;
-    call.dwResolution = (uint64_t)dwResolution;
-    call.lpServiceAsyncInfo = (uint64_t)lpServiceAsyncInfo;
-    call.lpCsaddrBuffer = (uint64_t)lpCsaddrBuffer;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
-    call.lpAliasBuffer = (uint64_t)lpAliasBuffer;
-    call.lpdwAliasBufferLength = (uint64_t)lpdwAliasBufferLength;
+    call.dwNameSpace = (ULONG_PTR)dwNameSpace;
+    call.lpServiceType = (ULONG_PTR)lpServiceType;
+    call.lpServiceName = (ULONG_PTR)lpServiceName;
+    call.lpiProtocols = (ULONG_PTR)lpiProtocols;
+    call.dwResolution = (ULONG_PTR)dwResolution;
+    call.lpServiceAsyncInfo = (ULONG_PTR)lpServiceAsyncInfo;
+    call.lpCsaddrBuffer = (ULONG_PTR)lpCsaddrBuffer;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
+    call.lpAliasBuffer = (ULONG_PTR)lpAliasBuffer;
+    call.lpdwAliasBufferLength = (ULONG_PTR)lpdwAliasBufferLength;
 
     qemu_syscall(&call.super);
 
@@ -104,16 +104,16 @@ WINBASEAPI INT WINAPI GetAddressByNameW(DWORD dwNameSpace, LPGUID lpServiceType,
 {
     struct qemu_GetAddressByNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETADDRESSBYNAMEW);
-    call.dwNameSpace = (uint64_t)dwNameSpace;
-    call.lpServiceType = (uint64_t)lpServiceType;
-    call.lpServiceName = (uint64_t)lpServiceName;
-    call.lpiProtocols = (uint64_t)lpiProtocols;
-    call.dwResolution = (uint64_t)dwResolution;
-    call.lpServiceAsyncInfo = (uint64_t)lpServiceAsyncInfo;
-    call.lpCsaddrBuffer = (uint64_t)lpCsaddrBuffer;
-    call.lpdwBufferLength = (uint64_t)lpdwBufferLength;
-    call.lpAliasBuffer = (uint64_t)lpAliasBuffer;
-    call.lpdwAliasBufferLength = (uint64_t)lpdwAliasBufferLength;
+    call.dwNameSpace = (ULONG_PTR)dwNameSpace;
+    call.lpServiceType = (ULONG_PTR)lpServiceType;
+    call.lpServiceName = (ULONG_PTR)lpServiceName;
+    call.lpiProtocols = (ULONG_PTR)lpiProtocols;
+    call.dwResolution = (ULONG_PTR)dwResolution;
+    call.lpServiceAsyncInfo = (ULONG_PTR)lpServiceAsyncInfo;
+    call.lpCsaddrBuffer = (ULONG_PTR)lpCsaddrBuffer;
+    call.lpdwBufferLength = (ULONG_PTR)lpdwBufferLength;
+    call.lpAliasBuffer = (ULONG_PTR)lpAliasBuffer;
+    call.lpdwAliasBufferLength = (ULONG_PTR)lpdwAliasBufferLength;
 
     qemu_syscall(&call.super);
 
@@ -144,8 +144,8 @@ WINBASEAPI INT WINAPI GetTypeByNameA(LPSTR lpServiceName, LPGUID lpServiceType)
 {
     struct qemu_GetTypeByNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTYPEBYNAMEA);
-    call.lpServiceName = (uint64_t)lpServiceName;
-    call.lpServiceType = (uint64_t)lpServiceType;
+    call.lpServiceName = (ULONG_PTR)lpServiceName;
+    call.lpServiceType = (ULONG_PTR)lpServiceType;
 
     qemu_syscall(&call.super);
 
@@ -176,8 +176,8 @@ WINBASEAPI INT WINAPI GetTypeByNameW(LPWSTR lpServiceName, LPGUID lpServiceType)
 {
     struct qemu_GetTypeByNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTYPEBYNAMEW);
-    call.lpServiceName = (uint64_t)lpServiceName;
-    call.lpServiceType = (uint64_t)lpServiceType;
+    call.lpServiceName = (ULONG_PTR)lpServiceName;
+    call.lpServiceType = (ULONG_PTR)lpServiceType;
 
     qemu_syscall(&call.super);
 
@@ -212,12 +212,12 @@ WINBASEAPI INT WINAPI SetServiceA(DWORD dwNameSpace, DWORD dwOperation, DWORD dw
 {
     struct qemu_SetServiceA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSERVICEA);
-    call.dwNameSpace = (uint64_t)dwNameSpace;
-    call.dwOperation = (uint64_t)dwOperation;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpServiceInfo = (uint64_t)lpServiceInfo;
-    call.lpServiceAsyncInfo = (uint64_t)lpServiceAsyncInfo;
-    call.lpdwStatusFlags = (uint64_t)lpdwStatusFlags;
+    call.dwNameSpace = (ULONG_PTR)dwNameSpace;
+    call.dwOperation = (ULONG_PTR)dwOperation;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpServiceInfo = (ULONG_PTR)lpServiceInfo;
+    call.lpServiceAsyncInfo = (ULONG_PTR)lpServiceAsyncInfo;
+    call.lpdwStatusFlags = (ULONG_PTR)lpdwStatusFlags;
 
     qemu_syscall(&call.super);
 
@@ -252,12 +252,12 @@ WINBASEAPI INT WINAPI SetServiceW(DWORD dwNameSpace, DWORD dwOperation, DWORD dw
 {
     struct qemu_SetServiceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSERVICEW);
-    call.dwNameSpace = (uint64_t)dwNameSpace;
-    call.dwOperation = (uint64_t)dwOperation;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpServiceInfo = (uint64_t)lpServiceInfo;
-    call.lpServiceAsyncInfo = (uint64_t)lpServiceAsyncInfo;
-    call.lpdwStatusFlags = (uint64_t)lpdwStatusFlags;
+    call.dwNameSpace = (ULONG_PTR)dwNameSpace;
+    call.dwOperation = (ULONG_PTR)dwOperation;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpServiceInfo = (ULONG_PTR)lpServiceInfo;
+    call.lpServiceAsyncInfo = (ULONG_PTR)lpServiceAsyncInfo;
+    call.lpdwStatusFlags = (ULONG_PTR)lpdwStatusFlags;
 
     qemu_syscall(&call.super);
 
@@ -293,13 +293,13 @@ WINBASEAPI INT WINAPI GetServiceA(DWORD dwNameSpace, LPGUID lpGuid, LPSTR lpServ
 {
     struct qemu_GetServiceA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSERVICEA);
-    call.dwNameSpace = (uint64_t)dwNameSpace;
-    call.lpGuid = (uint64_t)lpGuid;
-    call.lpServiceName = (uint64_t)lpServiceName;
-    call.dwProperties = (uint64_t)dwProperties;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.lpdwBufferSize = (uint64_t)lpdwBufferSize;
-    call.lpServiceAsyncInfo = (uint64_t)lpServiceAsyncInfo;
+    call.dwNameSpace = (ULONG_PTR)dwNameSpace;
+    call.lpGuid = (ULONG_PTR)lpGuid;
+    call.lpServiceName = (ULONG_PTR)lpServiceName;
+    call.dwProperties = (ULONG_PTR)dwProperties;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.lpdwBufferSize = (ULONG_PTR)lpdwBufferSize;
+    call.lpServiceAsyncInfo = (ULONG_PTR)lpServiceAsyncInfo;
 
     qemu_syscall(&call.super);
 
@@ -335,13 +335,13 @@ INT WINAPI GetServiceW(DWORD dwNameSpace,LPGUID lpGuid,LPWSTR lpServiceName,DWOR
 {
     struct qemu_GetServiceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSERVICEW);
-    call.dwNameSpace = (uint64_t)dwNameSpace;
-    call.lpGuid = (uint64_t)lpGuid;
-    call.lpServiceName = (uint64_t)lpServiceName;
-    call.dwProperties = (uint64_t)dwProperties;
-    call.lpBuffer = (uint64_t)lpBuffer;
-    call.lpdwBufferSize = (uint64_t)lpdwBufferSize;
-    call.lpServiceAsyncInfo = (uint64_t)lpServiceAsyncInfo;
+    call.dwNameSpace = (ULONG_PTR)dwNameSpace;
+    call.lpGuid = (ULONG_PTR)lpGuid;
+    call.lpServiceName = (ULONG_PTR)lpServiceName;
+    call.dwProperties = (ULONG_PTR)dwProperties;
+    call.lpBuffer = (ULONG_PTR)lpBuffer;
+    call.lpdwBufferSize = (ULONG_PTR)lpdwBufferSize;
+    call.lpServiceAsyncInfo = (ULONG_PTR)lpServiceAsyncInfo;
 
     qemu_syscall(&call.super);
 

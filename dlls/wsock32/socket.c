@@ -49,11 +49,11 @@ WINBASEAPI INT WINAPI WS1_setsockopt(SOCKET s, INT level, INT optname, char *opt
 {
     struct qemu_WS1_setsockopt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS1_SETSOCKOPT);
-    call.s = (uint64_t)s;
-    call.level = (uint64_t)level;
-    call.optname = (uint64_t)optname;
-    call.optval = (uint64_t)optval;
-    call.optlen = (uint64_t)optlen;
+    call.s = (ULONG_PTR)s;
+    call.level = (ULONG_PTR)level;
+    call.optname = (ULONG_PTR)optname;
+    call.optval = (ULONG_PTR)optval;
+    call.optlen = (ULONG_PTR)optlen;
 
     qemu_syscall(&call.super);
 
@@ -87,11 +87,11 @@ WINBASEAPI INT WINAPI WS1_getsockopt(SOCKET s, INT level, INT optname, char *opt
 {
     struct qemu_WS1_getsockopt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS1_GETSOCKOPT);
-    call.s = (uint64_t)s;
-    call.level = (uint64_t)level;
-    call.optname = (uint64_t)optname;
-    call.optval = (uint64_t)optval;
-    call.optlen = (uint64_t)optlen;
+    call.s = (ULONG_PTR)s;
+    call.level = (ULONG_PTR)level;
+    call.optname = (ULONG_PTR)optname;
+    call.optval = (ULONG_PTR)optval;
+    call.optlen = (ULONG_PTR)optlen;
 
     qemu_syscall(&call.super);
 
@@ -126,12 +126,12 @@ WINBASEAPI DWORD WINAPI WsControl(DWORD protocol, DWORD action, LPVOID pRequestI
 {
     struct qemu_WsControl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSCONTROL);
-    call.protocol = (uint64_t)protocol;
-    call.action = (uint64_t)action;
-    call.pRequestInfo = (uint64_t)pRequestInfo;
-    call.pcbRequestInfoLen = (uint64_t)pcbRequestInfoLen;
-    call.pResponseInfo = (uint64_t)pResponseInfo;
-    call.pcbResponseInfoLen = (uint64_t)pcbResponseInfoLen;
+    call.protocol = (ULONG_PTR)protocol;
+    call.action = (ULONG_PTR)action;
+    call.pRequestInfo = (ULONG_PTR)pRequestInfo;
+    call.pcbRequestInfoLen = (ULONG_PTR)pcbRequestInfoLen;
+    call.pResponseInfo = (ULONG_PTR)pResponseInfo;
+    call.pcbResponseInfoLen = (ULONG_PTR)pcbResponseInfoLen;
 
     qemu_syscall(&call.super);
 
@@ -164,10 +164,10 @@ WINBASEAPI INT WINAPI WSARecvEx(SOCKET s, char *buf, INT len, INT *flags)
 {
     struct qemu_WSARecvEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSARECVEX);
-    call.s = (uint64_t)s;
-    call.buf = (uint64_t)buf;
-    call.len = (uint64_t)len;
-    call.flags = (uint64_t)flags;
+    call.s = (ULONG_PTR)s;
+    call.buf = (ULONG_PTR)buf;
+    call.len = (ULONG_PTR)len;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -199,7 +199,7 @@ WINBASEAPI void WINAPI s_perror(LPCSTR message)
 {
     struct qemu_s_perror call;
     call.super.id = QEMU_SYSCALL_ID(CALL_S_PERROR);
-    call.message = (uint64_t)message;
+    call.message = (ULONG_PTR)message;
 
     qemu_syscall(&call.super);
 }

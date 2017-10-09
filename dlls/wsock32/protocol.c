@@ -44,7 +44,7 @@ WINBASEAPI UINT WINAPI WSOCK32_inet_network(const char *cp)
 {
     struct qemu_WSOCK32_inet_network call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSOCK32_INET_NETWORK);
-    call.cp = (uint64_t)cp;
+    call.cp = (ULONG_PTR)cp;
 
     qemu_syscall(&call.super);
 
@@ -74,11 +74,11 @@ WINBASEAPI struct netent * WINAPI WSOCK32_getnetbyname(const char *name)
 {
     struct qemu_WSOCK32_getnetbyname call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSOCK32_GETNETBYNAME);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (struct netent *)call.super.iret;
+    return (struct netent *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -106,9 +106,9 @@ WINBASEAPI INT WINAPI EnumProtocolsA(LPINT protocols, LPVOID buffer, LPDWORD buf
 {
     struct qemu_EnumProtocolsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMPROTOCOLSA);
-    call.protocols = (uint64_t)protocols;
-    call.buffer = (uint64_t)buffer;
-    call.buflen = (uint64_t)buflen;
+    call.protocols = (ULONG_PTR)protocols;
+    call.buffer = (ULONG_PTR)buffer;
+    call.buflen = (ULONG_PTR)buflen;
 
     qemu_syscall(&call.super);
 
@@ -140,9 +140,9 @@ WINBASEAPI INT WINAPI EnumProtocolsW(LPINT protocols, LPVOID buffer, LPDWORD buf
 {
     struct qemu_EnumProtocolsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMPROTOCOLSW);
-    call.protocols = (uint64_t)protocols;
-    call.buffer = (uint64_t)buffer;
-    call.buflen = (uint64_t)buflen;
+    call.protocols = (ULONG_PTR)protocols;
+    call.buffer = (ULONG_PTR)buffer;
+    call.buflen = (ULONG_PTR)buflen;
 
     qemu_syscall(&call.super);
 
