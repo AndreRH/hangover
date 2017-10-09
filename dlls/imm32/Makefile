@@ -14,10 +14,10 @@ imm32.dll: imm32.def imm_g.o main_g.o
 qemu_imm32.dll.so: imm_h.o main_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_imm32.spec *_h.o -o qemu_imm32.dll.so -limm32
 
-%_g.o: %.c imm32.h Makefile $(SRCDIR)/Makefile
+%_g.o: %.c qemu_imm32.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
-%_h.o: %.c imm32.h Makefile $(SRCDIR)/Makefile
+%_h.o: %.c qemu_imm32.h Makefile $(SRCDIR)/Makefile
 	$(WINEGCC) $< -c -o $@ $(CFLAGS)
 
 clean:
