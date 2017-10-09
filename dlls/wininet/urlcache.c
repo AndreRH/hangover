@@ -25,7 +25,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "wininet.h"
+#include "qemu_wininet.h"
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
