@@ -52,6 +52,7 @@ EXPORTS
   __p___mb_cur_max
   __p__mbctype
   __p__pctype=MSVCRT___p__pctype
+  __p__tzname
   __pctype_func=MSVCRT___pctype_func
   __pioinfo=msvcrt.__qemu_native_data__
   __set_app_type=MSVCRT___set_app_type
@@ -191,6 +192,7 @@ EXPORTS
   _fwrite_nolock=MSVCRT__fwrite_nolock
   _gcvt=MSVCRT__gcvt
   _gcvt_s=MSVCRT__gcvt_s
+  _get_daylight
   _get_doserrno=MSVCRT__get_doserrno
   _get_errno
   _get_invalid_parameter_handler=MSVCRT__get_invalid_parameter_handler
@@ -198,6 +200,7 @@ EXPORTS
   _get_printf_count_output=MSVCRT__get_printf_count_output
   _get_stream_buffer_pointers=MSVCRT__get_stream_buffer_pointers
   _get_thread_local_invalid_parameter_handler
+  _get_timezone
   _getch
   _getch_nolock
   _getche
@@ -273,6 +276,8 @@ EXPORTS
   _jn=MSVCRT__jn
   _kbhit
   _loaddll
+  _localtime32_s=MSVCRT__localtime32_s
+  _localtime64_s=MSVCRT__localtime64_s
   _lock
   _lock_file=MSVCRT__lock_file
   _locking=MSVCRT__locking
@@ -418,11 +423,14 @@ EXPORTS
   _statusfp
   _statusfp2
   _strdate=MSVCRT__strdate
+  _strdate_s
   _strdup = MSVCRT__strdup
   _strerror=MSVCRT__strerror
+  _Strftime
   _stricmp=MSVCRT__stricmp
   _strnicmp=MSVCRT__strnicmp
   _strtime=MSVCRT__strtime
+  _strtime_s
   _strtoui64=MSVCRT__strtoui64
   _tell=MSVCRT__tell
   _telli64
@@ -462,6 +470,7 @@ EXPORTS
   _wcsdup=MSVCRT__wcsdup
   _wcserror=MSVCRT__wcserror
   _wcserror_s=MSVCRT__wcserror_s
+  _Wcsftime
   _wcsicmp=MSVCRT__wcsicmp
   _wcsicmp_l=MSVCRT__wcsicmp_l
   _wcsicoll=MSVCRT__wcsicoll
@@ -490,6 +499,7 @@ EXPORTS
   _wcstombs_s_l=MSVCRT__wcstombs_s_l
   _wcstoui64=MSVCRT__wcstoui64
   _wcstoui64_l=MSVCRT__wcstoui64_l
+  _wcstoul_l=MSVCRT__wcstoul_l
   _wcsupr_l=MSVCRT__wcsupr_l
   _wcsupr_s=MSVCRT__wcsupr_s
   _wcsupr_s_l=MSVCRT__wcsupr_s_l
@@ -552,6 +562,8 @@ EXPORTS
   _wstat64i32=MSVCRT__wstat64i32
   _wstat=MSVCRT__wstat
   _wstati64=MSVCRT__wstati64
+  _wstrdate_s
+  _wstrtime_s
   _wsystem=MSVCRT__wsystem
   _wtempnam=MSVCRT__wtempnam
   _wtmpnam=MSVCRT__wtmpnam
@@ -562,6 +574,11 @@ EXPORTS
   _wtoi64=MSVCRT__wtoi64
   _wtoi64_l=MSVCRT__wtoi64_l
   _wtoi=MSVCRT__wtoi
+  _wtoi_l=MSVCRT__wtoi_l
+  _wtol=MSVCRT__wtol
+  _wtol_l=MSVCRT__wtol_l
+  _wtoll=MSVCRT__wtoll
+  _wtoll_l=MSVCRT__wtoll_l
   _wunlink=MSVCRT__wunlink
   _wutime32=MSVCRT__wutime32
   _wutime64=MSVCRT__wutime64
@@ -722,14 +739,60 @@ EXPORTS
   memset=MSVCRT_memset
   modf=MSVCRT_modf
   modff=MSVCRT_modff
-  _wcstoul_l=MSVCRT__wcstoul_l
-  _wtoi_l=MSVCRT__wtoi_l
-  _wtol=MSVCRT__wtol
-  _wtol_l=MSVCRT__wtol_l
-  _wtoll=MSVCRT__wtoll
-  _wtoll_l=MSVCRT__wtoll_l
-  wcsncpy=MSVCRT_wcsncpy
-  wcstoul=MSVCRT_wcstoul
+  __p__daylight=MSVCRT___p__daylight                                                                                                                                           
+  __p__dstbias=MSVCRT___p__dstbias                                                                                                                                             
+  __p__timezone=MSVCRT___p__timezone                                                                                                                                           
+  _ctime32=MSVCRT__ctime32                                                                                                                                                     
+  _ctime32_s=MSVCRT__ctime32_s                                                                                                                                                 
+  _ctime64=MSVCRT__ctime64                                                                                                                                                     
+  _ctime64_s=MSVCRT__ctime64_s                                                                                                                                                 
+  _difftime32=MSVCRT__difftime32                                                                                                                                               
+  _difftime64=MSVCRT__difftime64                                                                                                                                               
+  _ftime=MSVCRT__ftime                                                                                                                                                         
+  _ftime32=MSVCRT__ftime32                                                                                                                                                     
+  _ftime32_s=MSVCRT__ftime32_s                                                                                                                                                 
+  _ftime64=MSVCRT__ftime64                                                                                                                                                     
+  _ftime64_s=MSVCRT__ftime64_s                                                                                                                                                 
+  _get_dstbias=MSVCRT__get_dstbias                                                                                                                                             
+  _get_tzname=MSVCRT__get_tzname
+  _gmtime32=MSVCRT__gmtime32
+  _gmtime32_s=MSVCRT__gmtime32_s
+  _gmtime64=MSVCRT__gmtime64
+  _gmtime64_s=MSVCRT__gmtime64_s
+  _localtime32=MSVCRT__localtime32
+  _localtime64=MSVCRT__localtime64
+  _mkgmtime=MSVCRT__mkgmtime
+  _mkgmtime32=MSVCRT__mkgmtime32
+  _mkgmtime64=MSVCRT__mkgmtime64
+  _mktime32=MSVCRT__mktime32
+  _mktime64=MSVCRT__mktime64
+  _strdate=MSVCRT__strdate
+  _strftime_l=MSVCRT__strftime_l
+  _strtime=MSVCRT__strtime
+  _time32=MSVCRT__time32
+  _time64=MSVCRT__time64
+  _tzset=MSVCRT__tzset
+  _wasctime=MSVCRT__wasctime
+  _wasctime_s=MSVCRT__wasctime_s
+  _wcsftime_l=MSVCRT__wcsftime_l
+  _wctime=MSVCRT__wctime
+  _wctime32=MSVCRT__wctime32
+  _wctime32_s=MSVCRT__wctime32_s
+  _wctime64=MSVCRT__wctime64
+  _wctime64_s=MSVCRT__wctime64_s
+  _wstrdate=MSVCRT__wstrdate
+  _wstrtime=MSVCRT__wstrtime
+  asctime=MSVCRT_asctime
+  asctime_s=MSVCRT_asctime_s
+  clock=MSVCRT_clock
+  ctime=MSVCRT_ctime
+  difftime=MSVCRT_difftime
+  gmtime=MSVCRT_gmtime
+  localtime=MSVCRT_localtime
+  mktime=MSVCRT_mktime
+  strftime=MSVCRT_strftime
+  time=MSVCRT_time
+  wcsftime=MSVCRT_wcsftime
   nearbyint=MSVCRT_nearbyint
   nearbyintf=MSVCRT_nearbyintf
   perror=MSVCRT_perror
@@ -823,6 +886,7 @@ EXPORTS
   wcsncat_s=MSVCRT_wcsncat_s
   wcsncmp=MSVCRT_wcsncmp
   wcsncmp=MSVCRT_wcsncmp
+  wcsncpy=MSVCRT_wcsncpy
   wcsncpy_s=MSVCRT_wcsncpy_s
   wcsnlen=MSVCRT_wcsnlen
   wcspbrk=MSVCRT_wcspbrk
@@ -839,6 +903,7 @@ EXPORTS
   wcstombs=MSVCRT_wcstombs
   wcstombs=MSVCRT_wcstombs
   wcstombs_s=MSVCRT_wcstombs_s
+  wcstoul=MSVCRT_wcstoul
   wcsxfrm=MSVCRT_wcsxfrm
   wctob=MSVCRT_wctob
   wctomb=MSVCRT_wctomb

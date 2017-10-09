@@ -45,8 +45,12 @@ enum msvcrt_calls
     CALL___LIBM_SSE2_TAN,
     CALL___LIBM_SSE2_TANF,
     CALL___P___MB_CUR_MAX,
+    CALL___P__DAYLIGHT,
+    CALL___P__DSTBIAS,
     CALL___P__MBCTYPE,
     CALL___P__PCTYPE,
+    CALL___P__TIMEZONE,
+    CALL___P__TZNAME,
     CALL___PCTYPE_FUNC,
     CALL___SET_APP_TYPE,
     CALL___SETUSERMATHERR,
@@ -103,12 +107,18 @@ enum msvcrt_calls
     CALL__CPUTWS,
     CALL__CREAT,
     CALL__CRTTERMINATEPROCESS,
+    CALL__CTIME32,
+    CALL__CTIME32_S,
+    CALL__CTIME64,
+    CALL__CTIME64_S,
     CALL__CURRENTSCHEDULER__GET,
     CALL__CURRENTSCHEDULER__GETNUMBEROFVIRTUALPROCESSORS,
     CALL__CURRENTSCHEDULER__ID,
     CALL__CWAIT,
     CALL__CXXTHROWEXCEPTION,
     CALL__DCLASS,
+    CALL__DIFFTIME32,
+    CALL__DIFFTIME64,
     CALL__DPCOMP,
     CALL__DSIGN,
     CALL__DTEST,
@@ -180,6 +190,11 @@ enum msvcrt_calls
     CALL__FTELL_NOLOCK,
     CALL__FTELLI64,
     CALL__FTELLI64_NOLOCK,
+    CALL__FTIME,
+    CALL__FTIME32,
+    CALL__FTIME32_S,
+    CALL__FTIME64,
+    CALL__FTIME64_S,
     CALL__FTOL,
     CALL__FULLPATH,
     CALL__FUTIME,
@@ -188,13 +203,17 @@ enum msvcrt_calls
     CALL__FWRITE_NOLOCK,
     CALL__GCVT,
     CALL__GCVT_S,
+    CALL__GET_DAYLIGHT,
     CALL__GET_DOSERRNO,
+    CALL__GET_DSTBIAS,
     CALL__GET_ERRNO,
     CALL__GET_INVALID_PARAMETER_HANDLER,
     CALL__GET_OSFHANDLE,
     CALL__GET_PRINTF_COUNT_OUTPUT,
     CALL__GET_STREAM_BUFFER_POINTERS,
     CALL__GET_THREAD_LOCAL_INVALID_PARAMETER_HANDLER,
+    CALL__GET_TIMEZONE,
+    CALL__GET_TZNAME,
     CALL__GETCH,
     CALL__GETCH_NOLOCK,
     CALL__GETCHE,
@@ -214,6 +233,10 @@ enum msvcrt_calls
     CALL__GETWCHE,
     CALL__GETWCHE_NOLOCK,
     CALL__GETWS,
+    CALL__GMTIME32,
+    CALL__GMTIME32_S,
+    CALL__GMTIME64,
+    CALL__GMTIME64_S,
     CALL__HYPOT,
     CALL__HYPOTF,
     CALL__INVALID_PARAMETER_NOINFO,
@@ -267,6 +290,10 @@ enum msvcrt_calls
     CALL__LDCLASS,
     CALL__LDTEST,
     CALL__LOADDLL,
+    CALL__LOCALTIME32,
+    CALL__LOCALTIME32_S,
+    CALL__LOCALTIME64,
+    CALL__LOCALTIME64_S,
     CALL__LOCK,
     CALL__LOCK_FILE,
     CALL__LOCKING,
@@ -350,8 +377,13 @@ enum msvcrt_calls
     CALL__MBSUPR,
     CALL__MBSUPR_S,
     CALL__MKDIR,
+    CALL__MKGMTIME,
+    CALL__MKGMTIME32,
+    CALL__MKGMTIME64,
     CALL__MKTEMP,
     CALL__MKTEMP_S,
+    CALL__MKTIME32,
+    CALL__MKTIME64,
     CALL__NEXTAFTER,
     CALL__NEXTAFTERF,
     CALL__ONEXIT,
@@ -409,15 +441,20 @@ enum msvcrt_calls
     CALL__STATUSFP,
     CALL__STATUSFP2,
     CALL__STRDATE,
+    CALL__STRDATE_S,
     CALL__STRDUP,
     CALL__STRERROR,
+    CALL__STRFTIME,
+    CALL__STRFTIME_L,
     CALL__STRICMP,
     CALL__STRNICMP,
     CALL__STRTIME,
+    CALL__STRTIME_S,
     CALL__STRTOUI64,
     CALL__TELL,
     CALL__TELLI64,
     CALL__TEMPNAM,
+    CALL__TIME32,
     CALL__TIME64,
     CALL__TOLOWER,
     CALL__TOLOWER_L,
@@ -425,6 +462,7 @@ enum msvcrt_calls
     CALL__TOUPPER_L,
     CALL__TOWLOWER_L,
     CALL__TOWUPPER_L,
+    CALL__TZSET,
     CALL__UMASK,
     CALL__UNGETC_NOLOCK,
     CALL__UNGETCH,
@@ -443,6 +481,8 @@ enum msvcrt_calls
     CALL__VSNWPRINTF,
     CALL__WACCESS,
     CALL__WACCESS_S,
+    CALL__WASCTIME,
+    CALL__WASCTIME_S,
     CALL__WCHDIR,
     CALL__WCHMOD,
     CALL__WCREAT,
@@ -450,6 +490,8 @@ enum msvcrt_calls
     CALL__WCSDUP,
     CALL__WCSERROR,
     CALL__WCSERROR_S,
+    CALL__WCSFTIME,
+    CALL__WCSFTIME_L,
     CALL__WCSICMP,
     CALL__WCSICMP_L,
     CALL__WCSICOLL,
@@ -482,6 +524,11 @@ enum msvcrt_calls
     CALL__WCSUPR_S,
     CALL__WCSUPR_S_L,
     CALL__WCSXFRM_L,
+    CALL__WCTIME,
+    CALL__WCTIME32,
+    CALL__WCTIME32_S,
+    CALL__WCTIME64,
+    CALL__WCTIME64_S,
     CALL__WCTOMB_L,
     CALL__WCTOMB_S_L,
     CALL__WDUPENV_S,
@@ -539,6 +586,10 @@ enum msvcrt_calls
     CALL__WSTAT64,
     CALL__WSTAT64I32,
     CALL__WSTATI64,
+    CALL__WSTRDATE,
+    CALL__WSTRDATE_S,
+    CALL__WSTRTIME,
+    CALL__WSTRTIME_S,
     CALL__WSYSTEM,
     CALL__WTEMPNAM,
     CALL__WTMPNAM,
@@ -568,6 +619,8 @@ enum msvcrt_calls
     CALL_ACOSH,
     CALL_ACOSHF,
     CALL_ACOSHL,
+    CALL_ASCTIME,
+    CALL_ASCTIME_S,
     CALL_ASIN,
     CALL_ASINF,
     CALL_ASINH,
@@ -589,6 +642,7 @@ enum msvcrt_calls
     CALL_CEIL,
     CALL_CEILF,
     CALL_CLEARERR,
+    CALL_CLOCK,
     CALL_CONCURRENCY_ALLOC,
     CALL_CONCURRENCY_FREE,
     CALL_CONTEXT__SPINYIELD,
@@ -604,6 +658,7 @@ enum msvcrt_calls
     CALL_COSF,
     CALL_COSH,
     CALL_COSHF,
+    CALL_CTIME,
     CALL_CURRENTSCHEDULER_CREATE,
     CALL_CURRENTSCHEDULER_CREATESCHEDULEGROUP,
     CALL_CURRENTSCHEDULER_DETACH,
@@ -613,6 +668,7 @@ enum msvcrt_calls
     CALL_CURRENTSCHEDULER_ID,
     CALL_CURRENTSCHEDULER_ISAVAILABLELOCATION,
     CALL_CURRENTSCHEDULER_REGISTERSHUTDOWNEVENT,
+    CALL_DIFFTIME,
     CALL_DIV,
     CALL_ERF,
     CALL_ERFC,
@@ -678,6 +734,7 @@ enum msvcrt_calls
     CALL_GETS,
     CALL_GETWC,
     CALL_GETWCHAR,
+    CALL_GMTIME,
     CALL_ISALNUM,
     CALL_ISALPHA,
     CALL_ISBLANK,
@@ -717,6 +774,7 @@ enum msvcrt_calls
     CALL_LLROUND,
     CALL_LLROUNDF,
     CALL_LLROUNDL,
+    CALL_LOCALTIME,
     CALL_LOG,
     CALL_LOG10,
     CALL_LOG10F,
@@ -748,6 +806,7 @@ enum msvcrt_calls
     CALL_MEMCPY,
     CALL_MEMMOVE,
     CALL_MEMSET,
+    CALL_MKTIME,
     CALL_MODF,
     CALL_MODFF,
     CALL_NAN,
@@ -804,6 +863,7 @@ enum msvcrt_calls
     CALL_STRCPY_S,
     CALL_STRERROR,
     CALL_STRERROR_S,
+    CALL_STRFTIME,
     CALL_STRLEN,
     CALL_STRNCMP,
     CALL_STRNCPY,
@@ -818,6 +878,7 @@ enum msvcrt_calls
     CALL_TANH,
     CALL_TANHF,
     CALL_TERMINATE,
+    CALL_TIME,
     CALL_TMPFILE,
     CALL_TMPFILE_S,
     CALL_TMPNAM,
@@ -839,6 +900,7 @@ enum msvcrt_calls
     CALL_WCSCOLL,
     CALL_WCSCPY,
     CALL_WCSCPY_S,
+    CALL_WCSFTIME,
     CALL_WCSLEN,
     CALL_WCSNCAT_S,
     CALL_WCSNCMP,
@@ -908,6 +970,13 @@ typedef void SchedulerPolicy;
 typedef void *malloc_func_t, *free_func_t;
 typedef void MSVCRT_mbstate_t;
 typedef unsigned short MSVCRT_wctype_t;
+struct MSVCRT_tm;
+typedef void MSVCRT___lc_time_data;
+typedef int MSVCRT___time32_t;
+typedef __int64 DECLSPEC_ALIGN(8) MSVCRT___time64_t;
+typedef int MSVCRT_clock_t;
+struct MSVCRT___timeb64;
+struct MSVCRT___timeb32;
 
 #ifdef QEMU_DLL_GUEST
 
@@ -967,8 +1036,12 @@ void qemu___libm_sse2_sqrt_precise(struct qemu_syscall *call);
 void qemu___libm_sse2_tan(struct qemu_syscall *call);
 void qemu___libm_sse2_tanf(struct qemu_syscall *call);
 void qemu___p___mb_cur_max(struct qemu_syscall *call);
+void qemu___p__daylight(struct qemu_syscall *call);
+void qemu___p__dstbias(struct qemu_syscall *call);
 void qemu___p__mbctype(struct qemu_syscall *call);
 void qemu___p__pctype(struct qemu_syscall *call);
+void qemu___p__timezone(struct qemu_syscall *call);
+void qemu___p__tzname(struct qemu_syscall *call);
 void qemu___pctype_func(struct qemu_syscall *call);
 void qemu___set_app_type(struct qemu_syscall *call);
 void qemu___setusermatherr(struct qemu_syscall *call);
@@ -1025,12 +1098,18 @@ void qemu__cputs(struct qemu_syscall *call);
 void qemu__cputws(struct qemu_syscall *call);
 void qemu__creat(struct qemu_syscall *c);
 void qemu__crtTerminateProcess(struct qemu_syscall *call);
+void qemu__ctime32(struct qemu_syscall *call);
+void qemu__ctime32_s(struct qemu_syscall *call);
+void qemu__ctime64(struct qemu_syscall *call);
+void qemu__ctime64_s(struct qemu_syscall *call);
 void qemu__CurrentScheduler__Get(struct qemu_syscall *call);
 void qemu__CurrentScheduler__GetNumberOfVirtualProcessors(struct qemu_syscall *call);
 void qemu__CurrentScheduler__Id(struct qemu_syscall *call);
 void qemu__cwait(struct qemu_syscall *call);
 void qemu__CxxThrowException(struct qemu_syscall *c);
 void qemu__dclass(struct qemu_syscall *call);
+void qemu__difftime32(struct qemu_syscall *call);
+void qemu__difftime64(struct qemu_syscall *call);
 void qemu__dpcomp(struct qemu_syscall *call);
 void qemu__dsign(struct qemu_syscall *call);
 void qemu__dtest(struct qemu_syscall *call);
@@ -1102,6 +1181,12 @@ void qemu__fstati64(struct qemu_syscall *c);
 void qemu__ftell_nolock(struct qemu_syscall *c);
 void qemu__ftelli64(struct qemu_syscall *c);
 void qemu__ftelli64_nolock(struct qemu_syscall *c);
+void qemu__ftime(struct qemu_syscall *call);
+void qemu__ftime(struct qemu_syscall *call);
+void qemu__ftime32(struct qemu_syscall *call);
+void qemu__ftime32_s(struct qemu_syscall *call);
+void qemu__ftime64(struct qemu_syscall *call);
+void qemu__ftime64_s(struct qemu_syscall *call);
 void qemu__ftol(struct qemu_syscall *call);
 void qemu__fullpath(struct qemu_syscall *call);
 void qemu__futime(struct qemu_syscall *c);
@@ -1110,13 +1195,17 @@ void qemu__futime64(struct qemu_syscall *c);
 void qemu__fwrite_nolock(struct qemu_syscall *c);
 void qemu__gcvt(struct qemu_syscall *call);
 void qemu__gcvt_s(struct qemu_syscall *call);
+void qemu__get_daylight(struct qemu_syscall *call);
 void qemu__get_doserrno(struct qemu_syscall *call);
+void qemu__get_dstbias(struct qemu_syscall *call);
 void qemu__get_errno(struct qemu_syscall *call);
 void qemu__get_invalid_parameter_handler(struct qemu_syscall *call);
 void qemu__get_osfhandle(struct qemu_syscall *c);
 void qemu__get_printf_count_output(struct qemu_syscall *call);
 void qemu__get_stream_buffer_pointers(struct qemu_syscall *c);
 void qemu__get_thread_local_invalid_parameter_handler(struct qemu_syscall *call);
+void qemu__get_timezone(struct qemu_syscall *call);
+void qemu__get_tzname(struct qemu_syscall *call);
 void qemu__getch(struct qemu_syscall *call);
 void qemu__getch_nolock(struct qemu_syscall *call);
 void qemu__getche(struct qemu_syscall *call);
@@ -1136,6 +1225,10 @@ void qemu__getwch_nolock(struct qemu_syscall *call);
 void qemu__getwche(struct qemu_syscall *call);
 void qemu__getwche_nolock(struct qemu_syscall *call);
 void qemu__getws(struct qemu_syscall *c);
+void qemu__gmtime32(struct qemu_syscall *call);
+void qemu__gmtime32_s(struct qemu_syscall *call);
+void qemu__gmtime64(struct qemu_syscall *call);
+void qemu__gmtime64_s(struct qemu_syscall *call);
 void qemu__hypot(struct qemu_syscall *call);
 void qemu__hypotf(struct qemu_syscall *call);
 void qemu__invalid_parameter_noinfo(struct qemu_syscall *call);
@@ -1189,6 +1282,10 @@ void qemu__kbhit(struct qemu_syscall *call);
 void qemu__ldclass(struct qemu_syscall *call);
 void qemu__ldtest(struct qemu_syscall *call);
 void qemu__loaddll(struct qemu_syscall *call);
+void qemu__localtime32(struct qemu_syscall *call);
+void qemu__localtime32_s(struct qemu_syscall *call);
+void qemu__localtime64(struct qemu_syscall *call);
+void qemu__localtime64_s(struct qemu_syscall *call);
 void qemu__lock(struct qemu_syscall *call);
 void qemu__lock_file(struct qemu_syscall *c);
 void qemu__locking(struct qemu_syscall *c);
@@ -1272,8 +1369,14 @@ void qemu__mbstrlen_l(struct qemu_syscall *call);
 void qemu__mbsupr(struct qemu_syscall *call);
 void qemu__mbsupr_s(struct qemu_syscall *call);
 void qemu__mkdir(struct qemu_syscall *call);
+void qemu__mkgmtime(struct qemu_syscall *call);
+void qemu__mkgmtime(struct qemu_syscall *call);
+void qemu__mkgmtime32(struct qemu_syscall *call);
+void qemu__mkgmtime64(struct qemu_syscall *call);
 void qemu__mktemp(struct qemu_syscall *c);
 void qemu__mktemp_s(struct qemu_syscall *c);
+void qemu__mktime32(struct qemu_syscall *call);
+void qemu__mktime64(struct qemu_syscall *call);
 void qemu__nextafter(struct qemu_syscall *call);
 void qemu__nextafterf(struct qemu_syscall *call);
 void qemu__onexit(struct qemu_syscall *call);
@@ -1331,15 +1434,20 @@ void qemu__stat64i32(struct qemu_syscall *c);
 void qemu__statusfp(struct qemu_syscall *call);
 void qemu__statusfp2(struct qemu_syscall *call);
 void qemu__strdate(struct qemu_syscall *call);
+void qemu__strdate_s(struct qemu_syscall *call);
 void qemu__strdup(struct qemu_syscall *call);
 void qemu__strerror(struct qemu_syscall *call);
+void qemu__Strftime(struct qemu_syscall *call);
+void qemu__strftime_l(struct qemu_syscall *call);
 void qemu__stricmp(struct qemu_syscall *call);
 void qemu__strnicmp(struct qemu_syscall *call);
 void qemu__strtime(struct qemu_syscall *call);
+void qemu__strtime_s(struct qemu_syscall *call);
 void qemu__strtoui64(struct qemu_syscall *call);
 void qemu__tell(struct qemu_syscall *c);
 void qemu__telli64(struct qemu_syscall *c);
 void qemu__tempnam(struct qemu_syscall *call);
+void qemu__time32(struct qemu_syscall *call);
 void qemu__time64(struct qemu_syscall *call);
 void qemu__tolower(struct qemu_syscall *call);
 void qemu__tolower_l(struct qemu_syscall *call);
@@ -1347,6 +1455,7 @@ void qemu__toupper(struct qemu_syscall *call);
 void qemu__toupper_l(struct qemu_syscall *call);
 void qemu__towlower_l(struct qemu_syscall *call);
 void qemu__towupper_l(struct qemu_syscall *call);
+void qemu__tzset(struct qemu_syscall *call);
 void qemu__umask(struct qemu_syscall *c);
 void qemu__ungetc_nolock(struct qemu_syscall *c);
 void qemu__ungetch(struct qemu_syscall *call);
@@ -1363,6 +1472,8 @@ void qemu__utime32(struct qemu_syscall *c);
 void qemu__utime64(struct qemu_syscall *c);
 void qemu__waccess(struct qemu_syscall *c);
 void qemu__waccess_s(struct qemu_syscall *c);
+void qemu__wasctime(struct qemu_syscall *call);
+void qemu__wasctime_s(struct qemu_syscall *call);
 void qemu__wchdir(struct qemu_syscall *call);
 void qemu__wchmod(struct qemu_syscall *c);
 void qemu__wcreat(struct qemu_syscall *c);
@@ -1370,6 +1481,8 @@ void qemu__wcscoll_l(struct qemu_syscall *call);
 void qemu__wcsdup(struct qemu_syscall *call);
 void qemu__wcserror(struct qemu_syscall *call);
 void qemu__wcserror_s(struct qemu_syscall *call);
+void qemu__Wcsftime(struct qemu_syscall *call);
+void qemu__wcsftime_l(struct qemu_syscall *call);
 void qemu__wcsicmp(struct qemu_syscall *call);
 void qemu__wcsicmp_l(struct qemu_syscall *call);
 void qemu__wcsicoll(struct qemu_syscall *call);
@@ -1402,6 +1515,12 @@ void qemu__wcsupr_l(struct qemu_syscall *call);
 void qemu__wcsupr_s(struct qemu_syscall *call);
 void qemu__wcsupr_s_l(struct qemu_syscall *call);
 void qemu__wcsxfrm_l(struct qemu_syscall *call);
+void qemu__wctime(struct qemu_syscall *call);
+void qemu__wctime(struct qemu_syscall *call);
+void qemu__wctime32(struct qemu_syscall *call);
+void qemu__wctime32_s(struct qemu_syscall *call);
+void qemu__wctime64(struct qemu_syscall *call);
+void qemu__wctime64_s(struct qemu_syscall *call);
 void qemu__wctomb_l(struct qemu_syscall *call);
 void qemu__wctomb_s_l(struct qemu_syscall *call);
 void qemu__wdupenv_s(struct qemu_syscall *call);
@@ -1459,6 +1578,10 @@ void qemu__wstat32i64(struct qemu_syscall *c);
 void qemu__wstat64(struct qemu_syscall *c);
 void qemu__wstat64i32(struct qemu_syscall *c);
 void qemu__wstati64(struct qemu_syscall *c);
+void qemu__wstrdate(struct qemu_syscall *call);
+void qemu__wstrdate_s(struct qemu_syscall *call);
+void qemu__wstrtime(struct qemu_syscall *call);
+void qemu__wstrtime_s(struct qemu_syscall *call);
 void qemu__wsystem(struct qemu_syscall *call);
 void qemu__wtempnam(struct qemu_syscall *c);
 void qemu__wtmpnam(struct qemu_syscall *c);
@@ -1488,6 +1611,8 @@ void qemu_acosf(struct qemu_syscall *call);
 void qemu_acosh(struct qemu_syscall *call);
 void qemu_acoshf(struct qemu_syscall *call);
 void qemu_acoshl(struct qemu_syscall *call);
+void qemu_asctime(struct qemu_syscall *call);
+void qemu_asctime_s(struct qemu_syscall *call);
 void qemu_asin(struct qemu_syscall *call);
 void qemu_asinf(struct qemu_syscall *call);
 void qemu_asinh(struct qemu_syscall *call);
@@ -1509,6 +1634,7 @@ void qemu_cbrtl(struct qemu_syscall *call);
 void qemu_ceil(struct qemu_syscall *call);
 void qemu_ceilf(struct qemu_syscall *call);
 void qemu_clearerr(struct qemu_syscall *c);
+void qemu_clock(struct qemu_syscall *call);
 void qemu_Concurrency_Alloc(struct qemu_syscall *call);
 void qemu_Concurrency_Free(struct qemu_syscall *call);
 void qemu_Context__SpinYield(struct qemu_syscall *call);
@@ -1524,6 +1650,8 @@ void qemu_cos(struct qemu_syscall *call);
 void qemu_cosf(struct qemu_syscall *call);
 void qemu_cosh(struct qemu_syscall *call);
 void qemu_coshf(struct qemu_syscall *call);
+void qemu_ctime(struct qemu_syscall *call);
+void qemu_ctime(struct qemu_syscall *call);
 void qemu_CurrentScheduler_Create(struct qemu_syscall *call);
 void qemu_CurrentScheduler_CreateScheduleGroup(struct qemu_syscall *call);
 void qemu_CurrentScheduler_Detach(struct qemu_syscall *call);
@@ -1533,6 +1661,8 @@ void qemu_CurrentScheduler_GetPolicy(struct qemu_syscall *call);
 void qemu_CurrentScheduler_Id(struct qemu_syscall *call);
 void qemu_CurrentScheduler_IsAvailableLocation(struct qemu_syscall *call);
 void qemu_CurrentScheduler_RegisterShutdownEvent(struct qemu_syscall *call);
+void qemu_difftime(struct qemu_syscall *call);
+void qemu_difftime(struct qemu_syscall *call);
 void qemu_div(struct qemu_syscall *call);
 void qemu_erf(struct qemu_syscall *call);
 void qemu_erfc(struct qemu_syscall *call);
@@ -1597,6 +1727,8 @@ void qemu_getenv_s(struct qemu_syscall *call);
 void qemu_gets(struct qemu_syscall *c);
 void qemu_getwc(struct qemu_syscall *c);
 void qemu_getwchar(struct qemu_syscall *c);
+void qemu_gmtime(struct qemu_syscall *call);
+void qemu_gmtime(struct qemu_syscall *call);
 void qemu_isalnum(struct qemu_syscall *call);
 void qemu_isalpha(struct qemu_syscall *call);
 void qemu_isblank(struct qemu_syscall *call);
@@ -1636,6 +1768,8 @@ void qemu_llrintl(struct qemu_syscall *call);
 void qemu_llround(struct qemu_syscall *call);
 void qemu_llroundf(struct qemu_syscall *call);
 void qemu_llroundl(struct qemu_syscall *call);
+void qemu_localtime(struct qemu_syscall *call);
+void qemu_localtime(struct qemu_syscall *call);
 void qemu_log(struct qemu_syscall *call);
 void qemu_log10(struct qemu_syscall *call);
 void qemu_log10f(struct qemu_syscall *call);
@@ -1667,6 +1801,8 @@ void qemu_memcmp(struct qemu_syscall *call);
 void qemu_memcpy(struct qemu_syscall *call);
 void qemu_memmove(struct qemu_syscall *call);
 void qemu_memset(struct qemu_syscall *call);
+void qemu_mktime(struct qemu_syscall *call);
+void qemu_mktime(struct qemu_syscall *call);
 void qemu_modf(struct qemu_syscall *call);
 void qemu_modff(struct qemu_syscall *call);
 void qemu_nan(struct qemu_syscall *call);
@@ -1722,6 +1858,7 @@ void qemu_strcmp(struct qemu_syscall *call);
 void qemu_strcpy_s(struct qemu_syscall *call);
 void qemu_strerror(struct qemu_syscall *call);
 void qemu_strerror_s(struct qemu_syscall *call);
+void qemu_strftime(struct qemu_syscall *call);
 void qemu_strlen(struct qemu_syscall *call);
 void qemu_strncmp(struct qemu_syscall *call);
 void qemu_strncpy(struct qemu_syscall *call);
@@ -1735,6 +1872,8 @@ void qemu_tanf(struct qemu_syscall *call);
 void qemu_tanh(struct qemu_syscall *call);
 void qemu_tanhf(struct qemu_syscall *call);
 void qemu_terminate(struct qemu_syscall *c);
+void qemu_time(struct qemu_syscall *call);
+void qemu_time(struct qemu_syscall *call);
 void qemu_tmpfile(struct qemu_syscall *c);
 void qemu_tmpfile_s(struct qemu_syscall *c);
 void qemu_tmpnam(struct qemu_syscall *c);
@@ -1755,6 +1894,7 @@ void qemu_wcschr(struct qemu_syscall *call);
 void qemu_wcscoll(struct qemu_syscall *call);
 void qemu_wcscpy(struct qemu_syscall *call);
 void qemu_wcscpy_s(struct qemu_syscall *call);
+void qemu_wcsftime(struct qemu_syscall *call);
 void qemu_wcslen(struct qemu_syscall *call);
 void qemu_wcsncat_s(struct qemu_syscall *call);
 void qemu_wcsncmp(struct qemu_syscall *call);
@@ -2649,6 +2789,72 @@ LONGLONG (* CDECL p__wtoll_l)(const WCHAR *str, MSVCRT__locale_t locale);
 LONGLONG (* CDECL p__wtoll)(const WCHAR *str);
 ULONG (* CDECL p__wcstoul_l)(const WCHAR *s, WCHAR **end, int base, MSVCRT__locale_t locale);
 ULONG (* CDECL p_wcstoul)(const WCHAR *s, WCHAR **end, int base);
+
+void (* CDECL p__tzset)(void);
+MSVCRT___time64_t (* CDECL p__mktime64)(struct MSVCRT_tm *mstm);
+MSVCRT___time32_t (* CDECL p__mktime32)(struct MSVCRT_tm *mstm);
+MSVCRT___time64_t (* CDECL p_mktime)(struct MSVCRT_tm *mstm);
+MSVCRT___time64_t (* CDECL p__mkgmtime64)(struct MSVCRT_tm *time);
+MSVCRT___time32_t (* CDECL p__mkgmtime32)(struct MSVCRT_tm *time);
+MSVCRT___time32_t (* CDECL p__mkgmtime)(struct MSVCRT_tm *time);
+int (* CDECL p__localtime64_s)(struct MSVCRT_tm *res, const MSVCRT___time64_t *secs);
+struct MSVCRT_tm* (* CDECL p__localtime64)(const MSVCRT___time64_t* secs);
+struct MSVCRT_tm* (* CDECL p__localtime32)(const MSVCRT___time32_t* secs);
+int (* CDECL p__localtime32_s)(struct MSVCRT_tm *time, const MSVCRT___time32_t *secs);
+struct MSVCRT_tm* (* CDECL p_localtime)(const MSVCRT___time64_t* secs);
+int (* CDECL p__gmtime64_s)(struct MSVCRT_tm *res, const MSVCRT___time64_t *secs);
+struct MSVCRT_tm* (* CDECL p__gmtime64)(const MSVCRT___time64_t *secs);
+int (* CDECL p__gmtime32_s)(struct MSVCRT_tm *res, const MSVCRT___time32_t *secs);
+struct MSVCRT_tm* (* CDECL p__gmtime32)(const MSVCRT___time32_t* secs);
+struct MSVCRT_tm* (* CDECL p_gmtime)(const MSVCRT___time64_t* secs);
+char* (* CDECL p__strdate)(char* date);
+int (* CDECL p__strdate_s)(char* date, size_t size);
+WCHAR* (* CDECL p__wstrdate)(WCHAR* date);
+int (* CDECL p__wstrdate_s)(WCHAR* date, size_t size);
+char* (* CDECL p__strtime)(char* time);
+int (* CDECL p__strtime_s)(char* time, size_t size);
+WCHAR* (* CDECL p__wstrtime)(WCHAR* time);
+int (* CDECL p__wstrtime_s)(WCHAR* time, size_t size);
+MSVCRT_clock_t (* CDECL p_clock)(void);
+double (* CDECL p__difftime64)(MSVCRT___time64_t time1, MSVCRT___time64_t time2);
+double (* CDECL p__difftime32)(MSVCRT___time32_t time1, MSVCRT___time32_t time2);
+double (* CDECL p_difftime)(MSVCRT___time64_t time1, MSVCRT___time64_t time2);
+void (* CDECL p__ftime64)(struct MSVCRT___timeb64 *buf);
+int (* CDECL p__ftime64_s)(struct MSVCRT___timeb64 *buf);
+void (* CDECL p__ftime32)(struct MSVCRT___timeb32 *buf);
+int (* CDECL p__ftime32_s)(struct MSVCRT___timeb32 *buf);
+void (* CDECL p__ftime)(struct MSVCRT___timeb64 *buf);
+MSVCRT___time64_t (* CDECL p__time64)(MSVCRT___time64_t *buf);
+MSVCRT___time32_t (* CDECL p__time32)(MSVCRT___time32_t *buf);
+MSVCRT___time64_t (* CDECL p_time)(MSVCRT___time64_t* buf);
+int * (* CDECL p___p__daylight)(void);
+int * (* CDECL p___p__dstbias)(void);
+int (* CDECL p__get_dstbias)(int *seconds);
+LONG * (* CDECL p___p__timezone)(void);
+int (* CDECL p__get_tzname)(size_t *ret, char *buf, size_t bufsize, int index);
+char ** (* CDECL p___p__tzname)(void);
+size_t (* CDECL p__strftime_l)(char *str, size_t max, const char *format, const struct MSVCRT_tm *mstm, MSVCRT__locale_t loc);
+size_t (* CDECL p__Strftime)(char *str, size_t max, const char *format, const struct MSVCRT_tm *mstm, MSVCRT___lc_time_data *time_data);
+size_t (* CDECL p_strftime)(char *str, size_t max, const char *format, const struct MSVCRT_tm *mstm);
+size_t (* CDECL p__wcsftime_l)(WCHAR *str, size_t max, const WCHAR *format, const struct MSVCRT_tm *mstm, MSVCRT__locale_t loc);
+size_t (* CDECL p_wcsftime)(WCHAR *str, size_t max, const WCHAR *format, const struct MSVCRT_tm *mstm);
+size_t (* CDECL p__Wcsftime)(WCHAR *str, size_t max, const WCHAR *format, const struct MSVCRT_tm *mstm, MSVCRT___lc_time_data *time_data);
+char * (* CDECL p_asctime)(const struct MSVCRT_tm *mstm);
+int (* CDECL p_asctime_s)(char* time, size_t size, const struct MSVCRT_tm *mstm);
+WCHAR * (* CDECL p__wasctime)(const struct MSVCRT_tm *mstm);
+int (* CDECL p__wasctime_s)(WCHAR* time, size_t size, const struct MSVCRT_tm *mstm);
+char * (* CDECL p__ctime64)(const MSVCRT___time64_t *time);
+int (* CDECL p__ctime64_s)(char *res, size_t len, const MSVCRT___time64_t *time);
+char * (* CDECL p__ctime32)(const MSVCRT___time32_t *time);
+int (* CDECL p__ctime32_s)(char *res, size_t len, const MSVCRT___time32_t *time);
+char * (* CDECL p_ctime)(const MSVCRT___time64_t *time);
+WCHAR * (* CDECL p__wctime64)(const MSVCRT___time64_t *time);
+WCHAR * (* CDECL p__wctime32)(const MSVCRT___time32_t *time);
+WCHAR * (* CDECL p__wctime)(const MSVCRT___time64_t *time);
+int (* CDECL p__wctime64_s)(WCHAR *buf, size_t size, const MSVCRT___time64_t *time);
+int (* CDECL p__wctime32_s)(WCHAR *buf, size_t size, const MSVCRT___time32_t *time);
+int (* CDECL p__get_timezone)(LONG *timezone);
+int (* CDECL p__get_daylight)(int *hours);
 
 DWORD msvcrt_tls;
 
