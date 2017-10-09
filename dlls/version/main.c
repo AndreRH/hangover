@@ -23,7 +23,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "version.h"
+#include "qemu_version.h"
 
 #ifdef QEMU_DLL_GUEST
 

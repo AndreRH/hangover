@@ -14,10 +14,10 @@ version.dll: main_g.o version.def version_g.o
 qemu_version.dll.so: main_h.o version_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_version.spec *_h.o -o qemu_version.dll.so -lversion
 
-%_g.o: %.c version.h Makefile $(SRCDIR)/Makefile
+%_g.o: %.c qemu_version.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
-%_h.o: %.c version.h Makefile $(SRCDIR)/Makefile
+%_h.o: %.c qemu_version.h Makefile $(SRCDIR)/Makefile
 	$(WINEGCC) $< -c -o $@ $(CFLAGS)
 
 clean:
