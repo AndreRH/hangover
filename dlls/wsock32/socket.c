@@ -207,7 +207,7 @@ WINBASEAPI void WINAPI s_perror(LPCSTR message)
 #else
 
 /* TODO: Add s_perror to Wine headers? */
-// extern void WINAPI s_perror(LPCSTR message);
+extern void WINAPI s_perror(LPCSTR message);
 void qemu_s_perror(struct qemu_syscall *call)
 {
     struct qemu_s_perror *c = (struct qemu_s_perror *)call;
