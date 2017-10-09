@@ -8,8 +8,8 @@ VPATH=$(SRCDIR)
 
 all: version.dll qemu_version.dll.so
 
-version.dll: main_g.o version.def version_g.o
-	$(GUEST_CC)-ld -shared $(SRCDIR)/version.def *_g.o -o version.dll -nostdlib -e DllMain
+version.dll: main_g.o version.spec version_g.o
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/version.spec *_g.o -o version.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x101000000
 
 qemu_version.dll.so: main_h.o version_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_version.spec *_h.o -o qemu_version.dll.so -lversion
