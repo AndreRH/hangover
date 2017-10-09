@@ -48,8 +48,8 @@ WINBASEAPI int WINAPI WSAStartup(WORD wVersionRequested, LPWSADATA lpWSAData)
 {
     struct qemu_WSAStartup call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASTARTUP);
-    call.wVersionRequested = (uint64_t)wVersionRequested;
-    call.lpWSAData = (uint64_t)lpWSAData;
+    call.wVersionRequested = (ULONG_PTR)wVersionRequested;
+    call.lpWSAData = (ULONG_PTR)lpWSAData;
 
     qemu_syscall(&call.super);
 
@@ -135,7 +135,7 @@ WINBASEAPI void WINAPI WSASetLastError(INT iError)
 {
     struct qemu_WSASetLastError call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASETLASTERROR);
-    call.iError = (uint64_t)iError;
+    call.iError = (ULONG_PTR)iError;
 
     qemu_syscall(&call.super);
 }
@@ -165,9 +165,9 @@ WINBASEAPI SOCKET WINAPI WS_accept(SOCKET s, struct sockaddr *addr, int *addrlen
 {
     struct qemu_WS_accept call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_ACCEPT);
-    call.s = (uint64_t)s;
-    call.addr = (uint64_t)addr;
-    call.addrlen32 = (uint64_t)addrlen32;
+    call.s = (ULONG_PTR)s;
+    call.addr = (ULONG_PTR)addr;
+    call.addrlen32 = (ULONG_PTR)addrlen32;
 
     qemu_syscall(&call.super);
 
@@ -202,12 +202,12 @@ WINBASEAPI int WINAPI WSASendMsg(SOCKET s, LPWSAMSG msg, DWORD dwFlags, LPDWORD 
 {
     struct qemu_WSASendMsg call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASENDMSG);
-    call.s = (uint64_t)s;
-    call.msg = (uint64_t)msg;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpNumberOfBytesSent = (uint64_t)lpNumberOfBytesSent;
-    call.lpOverlapped = (uint64_t)lpOverlapped;
-    call.lpCompletionRoutine = (uint64_t)lpCompletionRoutine;
+    call.s = (ULONG_PTR)s;
+    call.msg = (ULONG_PTR)msg;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpNumberOfBytesSent = (ULONG_PTR)lpNumberOfBytesSent;
+    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
+    call.lpCompletionRoutine = (ULONG_PTR)lpCompletionRoutine;
 
     qemu_syscall(&call.super);
 
@@ -241,9 +241,9 @@ WINBASEAPI int WINAPI WS_bind(SOCKET s, const struct sockaddr* name, int namelen
 {
     struct qemu_WS_bind call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_BIND);
-    call.s = (uint64_t)s;
-    call.name = (uint64_t)name;
-    call.namelen = (uint64_t)namelen;
+    call.s = (ULONG_PTR)s;
+    call.name = (ULONG_PTR)name;
+    call.namelen = (ULONG_PTR)namelen;
 
     qemu_syscall(&call.super);
 
@@ -273,7 +273,7 @@ WINBASEAPI int WINAPI WS_closesocket(SOCKET s)
 {
     struct qemu_WS_closesocket call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_CLOSESOCKET);
-    call.s = (uint64_t)s;
+    call.s = (ULONG_PTR)s;
 
     qemu_syscall(&call.super);
 
@@ -305,9 +305,9 @@ WINBASEAPI int WINAPI WS_connect(SOCKET s, const struct sockaddr* name, int name
 {
     struct qemu_WS_connect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_CONNECT);
-    call.s = (uint64_t)s;
-    call.name = (uint64_t)name;
-    call.namelen = (uint64_t)namelen;
+    call.s = (ULONG_PTR)s;
+    call.name = (ULONG_PTR)name;
+    call.namelen = (ULONG_PTR)namelen;
 
     qemu_syscall(&call.super);
 
@@ -343,13 +343,13 @@ WINBASEAPI int WINAPI WSAConnect(SOCKET s, const struct sockaddr* name, int name
 {
     struct qemu_WSAConnect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSACONNECT);
-    call.s = (uint64_t)s;
-    call.name = (uint64_t)name;
-    call.namelen = (uint64_t)namelen;
-    call.lpCallerData = (uint64_t)lpCallerData;
-    call.lpCalleeData = (uint64_t)lpCalleeData;
-    call.lpSQOS = (uint64_t)lpSQOS;
-    call.lpGQOS = (uint64_t)lpGQOS;
+    call.s = (ULONG_PTR)s;
+    call.name = (ULONG_PTR)name;
+    call.namelen = (ULONG_PTR)namelen;
+    call.lpCallerData = (ULONG_PTR)lpCallerData;
+    call.lpCalleeData = (ULONG_PTR)lpCalleeData;
+    call.lpSQOS = (ULONG_PTR)lpSQOS;
+    call.lpGQOS = (ULONG_PTR)lpGQOS;
 
     qemu_syscall(&call.super);
 
@@ -381,9 +381,9 @@ WINBASEAPI int WINAPI WS_getpeername(SOCKET s, struct sockaddr *name, int *namel
 {
     struct qemu_WS_getpeername call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETPEERNAME);
-    call.s = (uint64_t)s;
-    call.name = (uint64_t)name;
-    call.namelen = (uint64_t)namelen;
+    call.s = (ULONG_PTR)s;
+    call.name = (ULONG_PTR)name;
+    call.namelen = (ULONG_PTR)namelen;
 
     qemu_syscall(&call.super);
 
@@ -415,9 +415,9 @@ WINBASEAPI int WINAPI WS_getsockname(SOCKET s, struct sockaddr *name, int *namel
 {
     struct qemu_WS_getsockname call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETSOCKNAME);
-    call.s = (uint64_t)s;
-    call.name = (uint64_t)name;
-    call.namelen = (uint64_t)namelen;
+    call.s = (ULONG_PTR)s;
+    call.name = (ULONG_PTR)name;
+    call.namelen = (ULONG_PTR)namelen;
 
     qemu_syscall(&call.super);
 
@@ -451,11 +451,11 @@ WINBASEAPI INT WINAPI WS_getsockopt(SOCKET s, INT level, INT optname, char *optv
 {
     struct qemu_WS_getsockopt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETSOCKOPT);
-    call.s = (uint64_t)s;
-    call.level = (uint64_t)level;
-    call.optname = (uint64_t)optname;
-    call.optval = (uint64_t)optval;
-    call.optlen = (uint64_t)optlen;
+    call.s = (ULONG_PTR)s;
+    call.level = (ULONG_PTR)level;
+    call.optname = (ULONG_PTR)optname;
+    call.optval = (ULONG_PTR)optval;
+    call.optlen = (ULONG_PTR)optlen;
 
     qemu_syscall(&call.super);
 
@@ -485,7 +485,7 @@ WINBASEAPI u_long WINAPI WS_htonl(u_long hostlong)
 {
     struct qemu_WS_htonl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_HTONL);
-    call.hostlong = (uint64_t)hostlong;
+    call.hostlong = (ULONG_PTR)hostlong;
 
     qemu_syscall(&call.super);
 
@@ -515,7 +515,7 @@ WINBASEAPI u_short WINAPI WS_htons(u_short hostshort)
 {
     struct qemu_WS_htons call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_HTONS);
-    call.hostshort = (uint64_t)hostshort;
+    call.hostshort = (ULONG_PTR)hostshort;
 
     qemu_syscall(&call.super);
 
@@ -547,9 +547,9 @@ WINBASEAPI int WINAPI WSAHtonl(SOCKET s, u_long hostlong, u_long *lpnetlong)
 {
     struct qemu_WSAHtonl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAHTONL);
-    call.s = (uint64_t)s;
-    call.hostlong = (uint64_t)hostlong;
-    call.lpnetlong = (uint64_t)lpnetlong;
+    call.s = (ULONG_PTR)s;
+    call.hostlong = (ULONG_PTR)hostlong;
+    call.lpnetlong = (ULONG_PTR)lpnetlong;
 
     qemu_syscall(&call.super);
 
@@ -581,9 +581,9 @@ WINBASEAPI int WINAPI WSAHtons(SOCKET s, u_short hostshort, u_short *lpnetshort)
 {
     struct qemu_WSAHtons call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAHTONS);
-    call.s = (uint64_t)s;
-    call.hostshort = (uint64_t)hostshort;
-    call.lpnetshort = (uint64_t)lpnetshort;
+    call.s = (ULONG_PTR)s;
+    call.hostshort = (ULONG_PTR)hostshort;
+    call.lpnetshort = (ULONG_PTR)lpnetshort;
 
     qemu_syscall(&call.super);
 
@@ -613,7 +613,7 @@ WINBASEAPI u_long WINAPI WS_inet_addr(const char *cp)
 {
     struct qemu_WS_inet_addr call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_INET_ADDR);
-    call.cp = (uint64_t)cp;
+    call.cp = (ULONG_PTR)cp;
 
     qemu_syscall(&call.super);
 
@@ -643,7 +643,7 @@ WINBASEAPI u_long WINAPI WS_ntohl(u_long netlong)
 {
     struct qemu_WS_ntohl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_NTOHL);
-    call.netlong = (uint64_t)netlong;
+    call.netlong = (ULONG_PTR)netlong;
 
     qemu_syscall(&call.super);
 
@@ -673,7 +673,7 @@ WINBASEAPI u_short WINAPI WS_ntohs(u_short netshort)
 {
     struct qemu_WS_ntohs call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_NTOHS);
-    call.netshort = (uint64_t)netshort;
+    call.netshort = (ULONG_PTR)netshort;
 
     qemu_syscall(&call.super);
 
@@ -707,7 +707,7 @@ WINBASEAPI char* WINAPI WS_inet_ntoa(struct in_addr in)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -744,15 +744,15 @@ WINBASEAPI INT WINAPI WSAIoctl(SOCKET s, DWORD code, LPVOID in_buff, DWORD in_si
 {
     struct qemu_WSAIoctl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAIOCTL);
-    call.s = (uint64_t)s;
-    call.code = (uint64_t)code;
-    call.in_buff = (uint64_t)in_buff;
-    call.in_size = (uint64_t)in_size;
-    call.out_buff = (uint64_t)out_buff;
-    call.out_size = (uint64_t)out_size;
-    call.ret_size = (uint64_t)ret_size;
-    call.overlapped = (uint64_t)overlapped;
-    call.completion = (uint64_t)completion;
+    call.s = (ULONG_PTR)s;
+    call.code = (ULONG_PTR)code;
+    call.in_buff = (ULONG_PTR)in_buff;
+    call.in_size = (ULONG_PTR)in_size;
+    call.out_buff = (ULONG_PTR)out_buff;
+    call.out_size = (ULONG_PTR)out_size;
+    call.ret_size = (ULONG_PTR)ret_size;
+    call.overlapped = (ULONG_PTR)overlapped;
+    call.completion = (ULONG_PTR)completion;
 
     qemu_syscall(&call.super);
 
@@ -784,9 +784,9 @@ WINBASEAPI int WINAPI WS_ioctlsocket(SOCKET s, LONG cmd, u_long *argp)
 {
     struct qemu_WS_ioctlsocket call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_IOCTLSOCKET);
-    call.s = (uint64_t)s;
-    call.cmd = (uint64_t)cmd;
-    call.argp = (uint64_t)argp;
+    call.s = (ULONG_PTR)s;
+    call.cmd = (ULONG_PTR)cmd;
+    call.argp = (ULONG_PTR)argp;
 
     qemu_syscall(&call.super);
 
@@ -817,8 +817,8 @@ WINBASEAPI int WINAPI WS_listen(SOCKET s, int backlog)
 {
     struct qemu_WS_listen call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_LISTEN);
-    call.s = (uint64_t)s;
-    call.backlog = (uint64_t)backlog;
+    call.s = (ULONG_PTR)s;
+    call.backlog = (ULONG_PTR)backlog;
 
     qemu_syscall(&call.super);
 
@@ -851,10 +851,10 @@ WINBASEAPI int WINAPI WS_recv(SOCKET s, char *buf, int len, int flags)
 {
     struct qemu_WS_recv call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_RECV);
-    call.s = (uint64_t)s;
-    call.buf = (uint64_t)buf;
-    call.len = (uint64_t)len;
-    call.flags = (uint64_t)flags;
+    call.s = (ULONG_PTR)s;
+    call.buf = (ULONG_PTR)buf;
+    call.len = (ULONG_PTR)len;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -889,12 +889,12 @@ WINBASEAPI int WINAPI WS_recvfrom(SOCKET s, char *buf, INT len, int flags, struc
 {
     struct qemu_WS_recvfrom call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_RECVFROM);
-    call.s = (uint64_t)s;
-    call.buf = (uint64_t)buf;
-    call.len = (uint64_t)len;
-    call.flags = (uint64_t)flags;
-    call.from = (uint64_t)from;
-    call.fromlen = (uint64_t)fromlen;
+    call.s = (ULONG_PTR)s;
+    call.buf = (ULONG_PTR)buf;
+    call.len = (ULONG_PTR)len;
+    call.flags = (ULONG_PTR)flags;
+    call.from = (ULONG_PTR)from;
+    call.fromlen = (ULONG_PTR)fromlen;
 
     qemu_syscall(&call.super);
 
@@ -928,11 +928,11 @@ WINBASEAPI int WINAPI WS_select(int nfds, fd_set *ws_readfds, fd_set *ws_writefd
 {
     struct qemu_WS_select call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_SELECT);
-    call.nfds = (uint64_t)nfds;
-    call.ws_readfds = (uint64_t)ws_readfds;
-    call.ws_writefds = (uint64_t)ws_writefds;
-    call.ws_exceptfds = (uint64_t)ws_exceptfds;
-    call.ws_timeout = (uint64_t)ws_timeout;
+    call.nfds = (ULONG_PTR)nfds;
+    call.ws_readfds = (ULONG_PTR)ws_readfds;
+    call.ws_writefds = (ULONG_PTR)ws_writefds;
+    call.ws_exceptfds = (ULONG_PTR)ws_exceptfds;
+    call.ws_timeout = (ULONG_PTR)ws_timeout;
 
     qemu_syscall(&call.super);
 
@@ -964,9 +964,9 @@ WINBASEAPI int WINAPI WSAPoll(WSAPOLLFD *wfds, ULONG count, int timeout)
 {
     struct qemu_WSAPoll call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAPOLL);
-    call.wfds = (uint64_t)wfds;
-    call.count = (uint64_t)count;
-    call.timeout = (uint64_t)timeout;
+    call.wfds = (ULONG_PTR)wfds;
+    call.count = (ULONG_PTR)count;
+    call.timeout = (ULONG_PTR)timeout;
 
     qemu_syscall(&call.super);
 
@@ -999,10 +999,10 @@ WINBASEAPI int WINAPI WS_send(SOCKET s, const char *buf, int len, int flags)
 {
     struct qemu_WS_send call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_SEND);
-    call.s = (uint64_t)s;
-    call.buf = (uint64_t)buf;
-    call.len = (uint64_t)len;
-    call.flags = (uint64_t)flags;
+    call.s = (ULONG_PTR)s;
+    call.buf = (ULONG_PTR)buf;
+    call.len = (ULONG_PTR)len;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -1038,13 +1038,13 @@ WINBASEAPI INT WINAPI WSASend(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount,
 {
     struct qemu_WSASend call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASEND);
-    call.s = (uint64_t)s;
-    call.lpBuffers = (uint64_t)lpBuffers;
-    call.dwBufferCount = (uint64_t)dwBufferCount;
-    call.lpNumberOfBytesSent = (uint64_t)lpNumberOfBytesSent;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpOverlapped = (uint64_t)lpOverlapped;
-    call.lpCompletionRoutine = (uint64_t)lpCompletionRoutine;
+    call.s = (ULONG_PTR)s;
+    call.lpBuffers = (ULONG_PTR)lpBuffers;
+    call.dwBufferCount = (ULONG_PTR)dwBufferCount;
+    call.lpNumberOfBytesSent = (ULONG_PTR)lpNumberOfBytesSent;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
+    call.lpCompletionRoutine = (ULONG_PTR)lpCompletionRoutine;
 
     qemu_syscall(&call.super);
 
@@ -1075,8 +1075,8 @@ WINBASEAPI INT WINAPI WSASendDisconnect(SOCKET s, LPWSABUF lpBuffers)
 {
     struct qemu_WSASendDisconnect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASENDDISCONNECT);
-    call.s = (uint64_t)s;
-    call.lpBuffers = (uint64_t)lpBuffers;
+    call.s = (ULONG_PTR)s;
+    call.lpBuffers = (ULONG_PTR)lpBuffers;
 
     qemu_syscall(&call.super);
 
@@ -1114,15 +1114,15 @@ WINBASEAPI INT WINAPI WSASendTo(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCoun
 {
     struct qemu_WSASendTo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASENDTO);
-    call.s = (uint64_t)s;
-    call.lpBuffers = (uint64_t)lpBuffers;
-    call.dwBufferCount = (uint64_t)dwBufferCount;
-    call.lpNumberOfBytesSent = (uint64_t)lpNumberOfBytesSent;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.to = (uint64_t)to;
-    call.tolen = (uint64_t)tolen;
-    call.lpOverlapped = (uint64_t)lpOverlapped;
-    call.lpCompletionRoutine = (uint64_t)lpCompletionRoutine;
+    call.s = (ULONG_PTR)s;
+    call.lpBuffers = (ULONG_PTR)lpBuffers;
+    call.dwBufferCount = (ULONG_PTR)dwBufferCount;
+    call.lpNumberOfBytesSent = (ULONG_PTR)lpNumberOfBytesSent;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.to = (ULONG_PTR)to;
+    call.tolen = (ULONG_PTR)tolen;
+    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
+    call.lpCompletionRoutine = (ULONG_PTR)lpCompletionRoutine;
 
     qemu_syscall(&call.super);
 
@@ -1157,12 +1157,12 @@ WINBASEAPI int WINAPI WS_sendto(SOCKET s, const char *buf, int len, int flags, c
 {
     struct qemu_WS_sendto call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_SENDTO);
-    call.s = (uint64_t)s;
-    call.buf = (uint64_t)buf;
-    call.len = (uint64_t)len;
-    call.flags = (uint64_t)flags;
-    call.to = (uint64_t)to;
-    call.tolen = (uint64_t)tolen;
+    call.s = (ULONG_PTR)s;
+    call.buf = (ULONG_PTR)buf;
+    call.len = (ULONG_PTR)len;
+    call.flags = (ULONG_PTR)flags;
+    call.to = (ULONG_PTR)to;
+    call.tolen = (ULONG_PTR)tolen;
 
     qemu_syscall(&call.super);
 
@@ -1196,11 +1196,11 @@ WINBASEAPI int WINAPI WS_setsockopt(SOCKET s, int level, int optname, const char
 {
     struct qemu_WS_setsockopt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_SETSOCKOPT);
-    call.s = (uint64_t)s;
-    call.level = (uint64_t)level;
-    call.optname = (uint64_t)optname;
-    call.optval = (uint64_t)optval;
-    call.optlen = (uint64_t)optlen;
+    call.s = (ULONG_PTR)s;
+    call.level = (ULONG_PTR)level;
+    call.optname = (ULONG_PTR)optname;
+    call.optval = (ULONG_PTR)optval;
+    call.optlen = (ULONG_PTR)optlen;
 
     qemu_syscall(&call.super);
 
@@ -1231,8 +1231,8 @@ WINBASEAPI int WINAPI WS_shutdown(SOCKET s, int how)
 {
     struct qemu_WS_shutdown call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_SHUTDOWN);
-    call.s = (uint64_t)s;
-    call.how = (uint64_t)how;
+    call.s = (ULONG_PTR)s;
+    call.how = (ULONG_PTR)how;
 
     qemu_syscall(&call.super);
 
@@ -1264,9 +1264,9 @@ WINBASEAPI SOCKET WINAPI WS_socket(int af, int type, int protocol)
 {
     struct qemu_WS_socket call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_SOCKET);
-    call.af = (uint64_t)af;
-    call.type = (uint64_t)type;
-    call.protocol = (uint64_t)protocol;
+    call.af = (ULONG_PTR)af;
+    call.type = (ULONG_PTR)type;
+    call.protocol = (ULONG_PTR)protocol;
 
     qemu_syscall(&call.super);
 
@@ -1298,13 +1298,13 @@ WINBASEAPI struct WS_hostent* WINAPI WS_gethostbyaddr(const char *addr, int len,
 {
     struct qemu_WS_gethostbyaddr call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETHOSTBYADDR);
-    call.addr = (uint64_t)addr;
-    call.len = (uint64_t)len;
-    call.type = (uint64_t)type;
+    call.addr = (ULONG_PTR)addr;
+    call.len = (ULONG_PTR)len;
+    call.type = (ULONG_PTR)type;
 
     qemu_syscall(&call.super);
 
-    return (struct WS_hostent *)call.super.iret;
+    return (struct WS_hostent *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1330,11 +1330,11 @@ WINBASEAPI struct WS_hostent* WINAPI WS_gethostbyname(const char* name)
 {
     struct qemu_WS_gethostbyname call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETHOSTBYNAME);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (struct WS_hostent *)call.super.iret;
+    return (struct WS_hostent *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1360,11 +1360,11 @@ WINBASEAPI struct WS_protoent* WINAPI WS_getprotobyname(const char* name)
 {
     struct qemu_WS_getprotobyname call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETPROTOBYNAME);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (struct WS_protoent *)call.super.iret;
+    return (struct WS_protoent *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1390,11 +1390,11 @@ WINBASEAPI struct WS_protoent* WINAPI WS_getprotobynumber(int number)
 {
     struct qemu_WS_getprotobynumber call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETPROTOBYNUMBER);
-    call.number = (uint64_t)number;
+    call.number = (ULONG_PTR)number;
 
     qemu_syscall(&call.super);
 
-    return (struct WS_protoent *)call.super.iret;
+    return (struct WS_protoent *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1421,12 +1421,12 @@ WINBASEAPI struct WS_servent* WINAPI WS_getservbyname(const char *name, const ch
 {
     struct qemu_WS_getservbyname call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETSERVBYNAME);
-    call.name = (uint64_t)name;
-    call.proto = (uint64_t)proto;
+    call.name = (ULONG_PTR)name;
+    call.proto = (ULONG_PTR)proto;
 
     qemu_syscall(&call.super);
 
-    return (struct WS_servent *)call.super.iret;
+    return (struct WS_servent *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1452,7 +1452,7 @@ WINBASEAPI void WINAPI WS_freeaddrinfo(struct addrinfo *res)
 {
     struct qemu_WS_freeaddrinfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_FREEADDRINFO);
-    call.res = (uint64_t)res;
+    call.res = (ULONG_PTR)res;
 
     qemu_syscall(&call.super);
 }
@@ -1483,10 +1483,10 @@ WINBASEAPI int WINAPI WS_getaddrinfo(LPCSTR nodename, LPCSTR servname, const str
 {
     struct qemu_WS_getaddrinfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETADDRINFO);
-    call.nodename = (uint64_t)nodename;
-    call.servname = (uint64_t)servname;
-    call.hints = (uint64_t)hints;
-    call.res = (uint64_t)res;
+    call.nodename = (ULONG_PTR)nodename;
+    call.servname = (ULONG_PTR)servname;
+    call.hints = (ULONG_PTR)hints;
+    call.res = (ULONG_PTR)res;
 
     qemu_syscall(&call.super);
 
@@ -1525,16 +1525,16 @@ WINBASEAPI int WINAPI GetAddrInfoExW(const WCHAR *name, const WCHAR *servname, D
 {
     struct qemu_GetAddrInfoExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETADDRINFOEXW);
-    call.name = (uint64_t)name;
-    call.servname = (uint64_t)servname;
-    call.namespace = (uint64_t)namespace;
-    call.namespace_id = (uint64_t)namespace_id;
-    call.hints = (uint64_t)hints;
-    call.result = (uint64_t)result;
-    call.timeout = (uint64_t)timeout;
-    call.overlapped = (uint64_t)overlapped;
-    call.completion_routine = (uint64_t)completion_routine;
-    call.handle = (uint64_t)handle;
+    call.name = (ULONG_PTR)name;
+    call.servname = (ULONG_PTR)servname;
+    call.namespace = (ULONG_PTR)namespace;
+    call.namespace_id = (ULONG_PTR)namespace_id;
+    call.hints = (ULONG_PTR)hints;
+    call.result = (ULONG_PTR)result;
+    call.timeout = (ULONG_PTR)timeout;
+    call.overlapped = (ULONG_PTR)overlapped;
+    call.completion_routine = (ULONG_PTR)completion_routine;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -1564,7 +1564,7 @@ WINBASEAPI int WINAPI GetAddrInfoExOverlappedResult(OVERLAPPED *overlapped)
 {
     struct qemu_GetAddrInfoExOverlappedResult call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETADDRINFOEXOVERLAPPEDRESULT);
-    call.overlapped = (uint64_t)overlapped;
+    call.overlapped = (ULONG_PTR)overlapped;
 
     qemu_syscall(&call.super);
 
@@ -1594,7 +1594,7 @@ WINBASEAPI int WINAPI GetAddrInfoExCancel(HANDLE *handle)
 {
     struct qemu_GetAddrInfoExCancel call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETADDRINFOEXCANCEL);
-    call.handle = (uint64_t)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -1627,10 +1627,10 @@ WINBASEAPI int WINAPI GetAddrInfoW(LPCWSTR nodename, LPCWSTR servname, const ADD
 {
     struct qemu_GetAddrInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETADDRINFOW);
-    call.nodename = (uint64_t)nodename;
-    call.servname = (uint64_t)servname;
-    call.hints = (uint64_t)hints;
-    call.res = (uint64_t)res;
+    call.nodename = (ULONG_PTR)nodename;
+    call.servname = (ULONG_PTR)servname;
+    call.hints = (ULONG_PTR)hints;
+    call.res = (ULONG_PTR)res;
 
     qemu_syscall(&call.super);
 
@@ -1660,7 +1660,7 @@ WINBASEAPI void WINAPI FreeAddrInfoW(PADDRINFOW ai)
 {
     struct qemu_FreeAddrInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FREEADDRINFOW);
-    call.ai = (uint64_t)ai;
+    call.ai = (ULONG_PTR)ai;
 
     qemu_syscall(&call.super);
 }
@@ -1688,7 +1688,7 @@ WINBASEAPI void WINAPI FreeAddrInfoExW(ADDRINFOEXW *ai)
 {
     struct qemu_FreeAddrInfoExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FREEADDRINFOEXW);
-    call.ai = (uint64_t)ai;
+    call.ai = (ULONG_PTR)ai;
 
     qemu_syscall(&call.super);
 }
@@ -1722,13 +1722,13 @@ WINBASEAPI int WINAPI WS_getnameinfo(const SOCKADDR *sa, socklen_t salen, PCHAR 
 {
     struct qemu_WS_getnameinfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETNAMEINFO);
-    call.sa = (uint64_t)sa;
-    call.salen = (uint64_t)salen;
-    call.host = (uint64_t)host;
-    call.hostlen = (uint64_t)hostlen;
-    call.serv = (uint64_t)serv;
-    call.servlen = (uint64_t)servlen;
-    call.flags = (uint64_t)flags;
+    call.sa = (ULONG_PTR)sa;
+    call.salen = (ULONG_PTR)salen;
+    call.host = (ULONG_PTR)host;
+    call.hostlen = (ULONG_PTR)hostlen;
+    call.serv = (ULONG_PTR)serv;
+    call.servlen = (ULONG_PTR)servlen;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -1764,13 +1764,13 @@ WINBASEAPI int WINAPI GetNameInfoW(const SOCKADDR *sa, socklen_t salen, PWCHAR h
 {
     struct qemu_GetNameInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNAMEINFOW);
-    call.sa = (uint64_t)sa;
-    call.salen = (uint64_t)salen;
-    call.host = (uint64_t)host;
-    call.hostlen = (uint64_t)hostlen;
-    call.serv = (uint64_t)serv;
-    call.servlen = (uint64_t)servlen;
-    call.flags = (uint64_t)flags;
+    call.sa = (ULONG_PTR)sa;
+    call.salen = (ULONG_PTR)salen;
+    call.host = (ULONG_PTR)host;
+    call.hostlen = (ULONG_PTR)hostlen;
+    call.serv = (ULONG_PTR)serv;
+    call.servlen = (ULONG_PTR)servlen;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -1801,12 +1801,12 @@ WINBASEAPI struct WS_servent* WINAPI WS_getservbyport(int port, const char *prot
 {
     struct qemu_WS_getservbyport call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETSERVBYPORT);
-    call.port = (uint64_t)port;
-    call.proto = (uint64_t)proto;
+    call.port = (ULONG_PTR)port;
+    call.proto = (ULONG_PTR)proto;
 
     qemu_syscall(&call.super);
 
-    return (struct WS_servent *)call.super.iret;
+    return (struct WS_servent *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1833,8 +1833,8 @@ WINBASEAPI int WINAPI WS_gethostname(char *name, int namelen)
 {
     struct qemu_WS_gethostname call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETHOSTNAME);
-    call.name = (uint64_t)name;
-    call.namelen = (uint64_t)namelen;
+    call.name = (ULONG_PTR)name;
+    call.namelen = (ULONG_PTR)namelen;
 
     qemu_syscall(&call.super);
 
@@ -1866,9 +1866,9 @@ WINBASEAPI int WINAPI WSAEnumNetworkEvents(SOCKET s, WSAEVENT hEvent, LPWSANETWO
 {
     struct qemu_WSAEnumNetworkEvents call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAENUMNETWORKEVENTS);
-    call.s = (uint64_t)s;
-    call.hEvent = (uint64_t)hEvent;
-    call.lpEvent = (uint64_t)lpEvent;
+    call.s = (ULONG_PTR)s;
+    call.hEvent = (ULONG_PTR)hEvent;
+    call.lpEvent = (ULONG_PTR)lpEvent;
 
     qemu_syscall(&call.super);
 
@@ -1900,9 +1900,9 @@ WINBASEAPI int WINAPI WSAEventSelect(SOCKET s, WSAEVENT hEvent, LONG lEvent)
 {
     struct qemu_WSAEventSelect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAEVENTSELECT);
-    call.s = (uint64_t)s;
-    call.hEvent = (uint64_t)hEvent;
-    call.lEvent = (uint64_t)lEvent;
+    call.s = (ULONG_PTR)s;
+    call.hEvent = (ULONG_PTR)hEvent;
+    call.lEvent = (ULONG_PTR)lEvent;
 
     qemu_syscall(&call.super);
 
@@ -1936,11 +1936,11 @@ WINBASEAPI BOOL WINAPI WSAGetOverlappedResult(SOCKET s, LPWSAOVERLAPPED lpOverla
 {
     struct qemu_WSAGetOverlappedResult call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAGETOVERLAPPEDRESULT);
-    call.s = (uint64_t)s;
-    call.lpOverlapped = (uint64_t)lpOverlapped;
-    call.lpcbTransfer = (uint64_t)lpcbTransfer;
-    call.fWait = (uint64_t)fWait;
-    call.lpdwFlags = (uint64_t)lpdwFlags;
+    call.s = (ULONG_PTR)s;
+    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
+    call.lpcbTransfer = (ULONG_PTR)lpcbTransfer;
+    call.fWait = (ULONG_PTR)fWait;
+    call.lpdwFlags = (ULONG_PTR)lpdwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1973,10 +1973,10 @@ WINBASEAPI INT WINAPI WSAAsyncSelect(SOCKET s, HWND hWnd, UINT uMsg, LONG lEvent
 {
     struct qemu_WSAAsyncSelect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAASYNCSELECT);
-    call.s = (uint64_t)s;
-    call.hWnd = (uint64_t)hWnd;
-    call.uMsg = (uint64_t)uMsg;
-    call.lEvent = (uint64_t)lEvent;
+    call.s = (ULONG_PTR)s;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.uMsg = (ULONG_PTR)uMsg;
+    call.lEvent = (ULONG_PTR)lEvent;
 
     qemu_syscall(&call.super);
 
@@ -2008,7 +2008,7 @@ WINBASEAPI WSAEVENT WINAPI WSACreateEvent(void)
 
     qemu_syscall(&call.super);
 
-    return (WSAEVENT)call.super.iret;
+    return (WSAEVENT)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2017,7 +2017,7 @@ void qemu_WSACreateEvent(struct qemu_syscall *call)
 {
     struct qemu_WSACreateEvent *c = (struct qemu_WSACreateEvent *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)WSACreateEvent();
+    c->super.iret = (ULONG_PTR)WSACreateEvent();
 }
 
 #endif
@@ -2034,7 +2034,7 @@ WINBASEAPI BOOL WINAPI WSACloseEvent(WSAEVENT event)
 {
     struct qemu_WSACloseEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSACLOSEEVENT);
-    call.event = (uint64_t)event;
+    call.event = (ULONG_PTR)event;
 
     qemu_syscall(&call.super);
 
@@ -2069,12 +2069,12 @@ WINBASEAPI SOCKET WINAPI WSASocketA(int af, int type, int protocol, LPWSAPROTOCO
 {
     struct qemu_WSASocketA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASOCKETA);
-    call.af = (uint64_t)af;
-    call.type = (uint64_t)type;
-    call.protocol = (uint64_t)protocol;
-    call.lpProtocolInfo = (uint64_t)lpProtocolInfo;
-    call.g = (uint64_t)g;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.af = (ULONG_PTR)af;
+    call.type = (ULONG_PTR)type;
+    call.protocol = (ULONG_PTR)protocol;
+    call.lpProtocolInfo = (ULONG_PTR)lpProtocolInfo;
+    call.g = (ULONG_PTR)g;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -2109,12 +2109,12 @@ WINBASEAPI SOCKET WINAPI WSASocketW(int af, int type, int protocol, LPWSAPROTOCO
 {
     struct qemu_WSASocketW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASOCKETW);
-    call.af = (uint64_t)af;
-    call.type = (uint64_t)type;
-    call.protocol = (uint64_t)protocol;
-    call.lpProtocolInfo = (uint64_t)lpProtocolInfo;
-    call.g = (uint64_t)g;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.af = (ULONG_PTR)af;
+    call.type = (ULONG_PTR)type;
+    call.protocol = (ULONG_PTR)protocol;
+    call.lpProtocolInfo = (ULONG_PTR)lpProtocolInfo;
+    call.g = (ULONG_PTR)g;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -2151,14 +2151,14 @@ WINBASEAPI SOCKET WINAPI WSAJoinLeaf(SOCKET s, const struct sockaddr *addr, int 
 {
     struct qemu_WSAJoinLeaf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAJOINLEAF);
-    call.s = (uint64_t)s;
-    call.addr = (uint64_t)addr;
-    call.addrlen = (uint64_t)addrlen;
-    call.lpCallerData = (uint64_t)lpCallerData;
-    call.lpCalleeData = (uint64_t)lpCalleeData;
-    call.lpSQOS = (uint64_t)lpSQOS;
-    call.lpGQOS = (uint64_t)lpGQOS;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.s = (ULONG_PTR)s;
+    call.addr = (ULONG_PTR)addr;
+    call.addrlen = (ULONG_PTR)addrlen;
+    call.lpCallerData = (ULONG_PTR)lpCallerData;
+    call.lpCalleeData = (ULONG_PTR)lpCalleeData;
+    call.lpSQOS = (ULONG_PTR)lpSQOS;
+    call.lpGQOS = (ULONG_PTR)lpGQOS;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -2189,8 +2189,8 @@ WINBASEAPI int WINAPI __WSAFDIsSet(SOCKET s, fd_set *set)
 {
     struct qemu___WSAFDIsSet call;
     call.super.id = QEMU_SYSCALL_ID(CALL___WSAFDISSET);
-    call.s = (uint64_t)s;
-    call.set = (uint64_t)set;
+    call.s = (ULONG_PTR)s;
+    call.set = (ULONG_PTR)set;
 
     qemu_syscall(&call.super);
 
@@ -2276,11 +2276,11 @@ WINBASEAPI FARPROC WINAPI WSASetBlockingHook(FARPROC lpBlockFunc)
 {
     struct qemu_WSASetBlockingHook call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASETBLOCKINGHOOK);
-    call.lpBlockFunc = (uint64_t)lpBlockFunc;
+    call.lpBlockFunc = (ULONG_PTR)lpBlockFunc;
 
     qemu_syscall(&call.super);
 
-    return (FARPROC)call.super.iret;
+    return (FARPROC)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2289,7 +2289,7 @@ void qemu_WSASetBlockingHook(struct qemu_syscall *call)
 {
     struct qemu_WSASetBlockingHook *c = (struct qemu_WSASetBlockingHook *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)WSASetBlockingHook(QEMU_G2H(c->lpBlockFunc));
+    c->super.iret = (ULONG_PTR)WSASetBlockingHook(QEMU_G2H(c->lpBlockFunc));
 }
 
 #endif
@@ -2340,13 +2340,13 @@ WINBASEAPI int WINAPI WSARecv(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount,
 {
     struct qemu_WSARecv call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSARECV);
-    call.s = (uint64_t)s;
-    call.lpBuffers = (uint64_t)lpBuffers;
-    call.dwBufferCount = (uint64_t)dwBufferCount;
-    call.NumberOfBytesReceived = (uint64_t)NumberOfBytesReceived;
-    call.lpFlags = (uint64_t)lpFlags;
-    call.lpOverlapped = (uint64_t)lpOverlapped;
-    call.lpCompletionRoutine = (uint64_t)lpCompletionRoutine;
+    call.s = (ULONG_PTR)s;
+    call.lpBuffers = (ULONG_PTR)lpBuffers;
+    call.dwBufferCount = (ULONG_PTR)dwBufferCount;
+    call.NumberOfBytesReceived = (ULONG_PTR)NumberOfBytesReceived;
+    call.lpFlags = (ULONG_PTR)lpFlags;
+    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
+    call.lpCompletionRoutine = (ULONG_PTR)lpCompletionRoutine;
 
     qemu_syscall(&call.super);
 
@@ -2384,15 +2384,15 @@ WINBASEAPI INT WINAPI WSARecvFrom(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCo
 {
     struct qemu_WSARecvFrom call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSARECVFROM);
-    call.s = (uint64_t)s;
-    call.lpBuffers = (uint64_t)lpBuffers;
-    call.dwBufferCount = (uint64_t)dwBufferCount;
-    call.lpNumberOfBytesRecvd = (uint64_t)lpNumberOfBytesRecvd;
-    call.lpFlags = (uint64_t)lpFlags;
-    call.lpFrom = (uint64_t)lpFrom;
-    call.lpFromlen = (uint64_t)lpFromlen;
-    call.lpOverlapped = (uint64_t)lpOverlapped;
-    call.lpCompletionRoutine = (uint64_t)lpCompletionRoutine;
+    call.s = (ULONG_PTR)s;
+    call.lpBuffers = (ULONG_PTR)lpBuffers;
+    call.dwBufferCount = (ULONG_PTR)dwBufferCount;
+    call.lpNumberOfBytesRecvd = (ULONG_PTR)lpNumberOfBytesRecvd;
+    call.lpFlags = (ULONG_PTR)lpFlags;
+    call.lpFrom = (ULONG_PTR)lpFrom;
+    call.lpFromlen = (ULONG_PTR)lpFromlen;
+    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
+    call.lpCompletionRoutine = (ULONG_PTR)lpCompletionRoutine;
 
     qemu_syscall(&call.super);
 
@@ -2426,11 +2426,11 @@ WINBASEAPI INT WINAPI WSCInstallProvider(const LPGUID lpProviderId, LPCWSTR lpsz
 {
     struct qemu_WSCInstallProvider call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSCINSTALLPROVIDER);
-    call.lpProviderId = (uint64_t)lpProviderId;
-    call.lpszProviderDllPath = (uint64_t)lpszProviderDllPath;
-    call.lpProtocolInfoList = (uint64_t)lpProtocolInfoList;
-    call.dwNumberOfEntries = (uint64_t)dwNumberOfEntries;
-    call.lpErrno = (uint64_t)lpErrno;
+    call.lpProviderId = (ULONG_PTR)lpProviderId;
+    call.lpszProviderDllPath = (ULONG_PTR)lpszProviderDllPath;
+    call.lpProtocolInfoList = (ULONG_PTR)lpProtocolInfoList;
+    call.dwNumberOfEntries = (ULONG_PTR)dwNumberOfEntries;
+    call.lpErrno = (ULONG_PTR)lpErrno;
 
     qemu_syscall(&call.super);
 
@@ -2461,8 +2461,8 @@ WINBASEAPI INT WINAPI WSCDeinstallProvider(LPGUID lpProviderId, LPINT lpErrno)
 {
     struct qemu_WSCDeinstallProvider call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSCDEINSTALLPROVIDER);
-    call.lpProviderId = (uint64_t)lpProviderId;
-    call.lpErrno = (uint64_t)lpErrno;
+    call.lpProviderId = (ULONG_PTR)lpProviderId;
+    call.lpErrno = (ULONG_PTR)lpErrno;
 
     qemu_syscall(&call.super);
 
@@ -2496,11 +2496,11 @@ WINBASEAPI SOCKET WINAPI WSAAccept(SOCKET s, struct sockaddr *addr, LPINT addrle
 {
     struct qemu_WSAAccept call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAACCEPT);
-    call.s = (uint64_t)s;
-    call.addr = (uint64_t)addr;
-    call.addrlen = (uint64_t)addrlen;
-    call.lpfnCondition = (uint64_t)lpfnCondition;
-    call.dwCallbackData = (uint64_t)dwCallbackData;
+    call.s = (ULONG_PTR)s;
+    call.addr = (ULONG_PTR)addr;
+    call.addrlen = (ULONG_PTR)addrlen;
+    call.lpfnCondition = (ULONG_PTR)lpfnCondition;
+    call.dwCallbackData = (ULONG_PTR)dwCallbackData;
 
     qemu_syscall(&call.super);
 
@@ -2532,9 +2532,9 @@ WINBASEAPI int WINAPI WSADuplicateSocketA(SOCKET s, DWORD dwProcessId, LPWSAPROT
 {
     struct qemu_WSADuplicateSocketA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSADUPLICATESOCKETA);
-    call.s = (uint64_t)s;
-    call.dwProcessId = (uint64_t)dwProcessId;
-    call.lpProtocolInfo = (uint64_t)lpProtocolInfo;
+    call.s = (ULONG_PTR)s;
+    call.dwProcessId = (ULONG_PTR)dwProcessId;
+    call.lpProtocolInfo = (ULONG_PTR)lpProtocolInfo;
 
     qemu_syscall(&call.super);
 
@@ -2566,9 +2566,9 @@ WINBASEAPI int WINAPI WSADuplicateSocketW(SOCKET s, DWORD dwProcessId, LPWSAPROT
 {
     struct qemu_WSADuplicateSocketW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSADUPLICATESOCKETW);
-    call.s = (uint64_t)s;
-    call.dwProcessId = (uint64_t)dwProcessId;
-    call.lpProtocolInfo = (uint64_t)lpProtocolInfo;
+    call.s = (ULONG_PTR)s;
+    call.dwProcessId = (ULONG_PTR)dwProcessId;
+    call.lpProtocolInfo = (ULONG_PTR)lpProtocolInfo;
 
     qemu_syscall(&call.super);
 
@@ -2598,7 +2598,7 @@ WINBASEAPI int WINAPI WSAInstallServiceClassA(LPWSASERVICECLASSINFOA info)
 {
     struct qemu_WSAInstallServiceClassA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAINSTALLSERVICECLASSA);
-    call.info = (uint64_t)info;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -2628,7 +2628,7 @@ WINBASEAPI int WINAPI WSAInstallServiceClassW(LPWSASERVICECLASSINFOW info)
 {
     struct qemu_WSAInstallServiceClassW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAINSTALLSERVICECLASSW);
-    call.info = (uint64_t)info;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -2658,7 +2658,7 @@ WINBASEAPI int WINAPI WSARemoveServiceClass(LPGUID info)
 {
     struct qemu_WSARemoveServiceClass call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAREMOVESERVICECLASS);
-    call.info = (uint64_t)info;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -2691,14 +2691,14 @@ WINBASEAPI PCSTR WINAPI WS_inet_ntop(INT family, PVOID addr, PSTR buffer, SIZE_T
 {
     struct qemu_WS_inet_ntop call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_INET_NTOP);
-    call.family = (uint64_t)family;
-    call.addr = (uint64_t)addr;
-    call.buffer = (uint64_t)buffer;
-    call.len = (uint64_t)len;
+    call.family = (ULONG_PTR)family;
+    call.addr = (ULONG_PTR)addr;
+    call.buffer = (ULONG_PTR)buffer;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
-    return (const char *)call.super.iret;
+    return (const char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2726,9 +2726,9 @@ WINBASEAPI INT WINAPI WS_inet_pton(INT family, PCSTR addr, PVOID buffer)
 {
     struct qemu_WS_inet_pton call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_INET_PTON);
-    call.family = (uint64_t)family;
-    call.addr = (uint64_t)addr;
-    call.buffer = (uint64_t)buffer;
+    call.family = (ULONG_PTR)family;
+    call.addr = (ULONG_PTR)addr;
+    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
 
@@ -2760,9 +2760,9 @@ WINBASEAPI INT WINAPI InetPtonW(INT family, PCWSTR addr, PVOID buffer)
 {
     struct qemu_InetPtonW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INETPTONW);
-    call.family = (uint64_t)family;
-    call.addr = (uint64_t)addr;
-    call.buffer = (uint64_t)buffer;
+    call.family = (ULONG_PTR)family;
+    call.addr = (ULONG_PTR)addr;
+    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
 
@@ -2791,18 +2791,18 @@ struct qemu_InetNtopW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI PCWSTR WINAPI InetNtopW(INT family, PVOID addr, PWSTR buffer, SIZE_T len)
+WINBASEAPI PCWSTR WINAPI wininet_InetNtopW(INT family, PVOID addr, PWSTR buffer, SIZE_T len)
 {
     struct qemu_InetNtopW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INETNTOPW);
-    call.family = (uint64_t)family;
-    call.addr = (uint64_t)addr;
-    call.buffer = (uint64_t)buffer;
-    call.len = (uint64_t)len;
+    call.family = (ULONG_PTR)family;
+    call.addr = (ULONG_PTR)addr;
+    call.buffer = (ULONG_PTR)buffer;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
-    return (PCWSTR)call.super.iret;
+    return (PCWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2811,7 +2811,7 @@ void qemu_InetNtopW(struct qemu_syscall *call)
 {
     struct qemu_InetNtopW *c = (struct qemu_InetNtopW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)InetNtopW(c->family, QEMU_G2H(c->addr), QEMU_G2H(c->buffer), c->len);
+    c->super.iret = (ULONG_PTR)InetNtopW(c->family, QEMU_G2H(c->addr), QEMU_G2H(c->buffer), c->len);
 }
 
 #endif
@@ -2832,11 +2832,11 @@ WINBASEAPI INT WINAPI WSAStringToAddressA(LPSTR AddressString, INT AddressFamily
 {
     struct qemu_WSAStringToAddressA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASTRINGTOADDRESSA);
-    call.AddressString = (uint64_t)AddressString;
-    call.AddressFamily = (uint64_t)AddressFamily;
-    call.lpProtocolInfo = (uint64_t)lpProtocolInfo;
-    call.lpAddress = (uint64_t)lpAddress;
-    call.lpAddressLength = (uint64_t)lpAddressLength;
+    call.AddressString = (ULONG_PTR)AddressString;
+    call.AddressFamily = (ULONG_PTR)AddressFamily;
+    call.lpProtocolInfo = (ULONG_PTR)lpProtocolInfo;
+    call.lpAddress = (ULONG_PTR)lpAddress;
+    call.lpAddressLength = (ULONG_PTR)lpAddressLength;
 
     qemu_syscall(&call.super);
 
@@ -2870,11 +2870,11 @@ WINBASEAPI INT WINAPI WSAStringToAddressW(LPWSTR AddressString, INT AddressFamil
 {
     struct qemu_WSAStringToAddressW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASTRINGTOADDRESSW);
-    call.AddressString = (uint64_t)AddressString;
-    call.AddressFamily = (uint64_t)AddressFamily;
-    call.lpProtocolInfo = (uint64_t)lpProtocolInfo;
-    call.lpAddress = (uint64_t)lpAddress;
-    call.lpAddressLength = (uint64_t)lpAddressLength;
+    call.AddressString = (ULONG_PTR)AddressString;
+    call.AddressFamily = (ULONG_PTR)AddressFamily;
+    call.lpProtocolInfo = (ULONG_PTR)lpProtocolInfo;
+    call.lpAddress = (ULONG_PTR)lpAddress;
+    call.lpAddressLength = (ULONG_PTR)lpAddressLength;
 
     qemu_syscall(&call.super);
 
@@ -2908,11 +2908,11 @@ WINBASEAPI INT WINAPI WSAAddressToStringA(LPSOCKADDR sockaddr, DWORD len, LPWSAP
 {
     struct qemu_WSAAddressToStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAADDRESSTOSTRINGA);
-    call.sockaddr = (uint64_t)sockaddr;
-    call.len = (uint64_t)len;
-    call.info = (uint64_t)info;
-    call.string = (uint64_t)string;
-    call.lenstr = (uint64_t)lenstr;
+    call.sockaddr = (ULONG_PTR)sockaddr;
+    call.len = (ULONG_PTR)len;
+    call.info = (ULONG_PTR)info;
+    call.string = (ULONG_PTR)string;
+    call.lenstr = (ULONG_PTR)lenstr;
 
     qemu_syscall(&call.super);
 
@@ -2946,11 +2946,11 @@ WINBASEAPI INT WINAPI WSAAddressToStringW(LPSOCKADDR sockaddr, DWORD len, LPWSAP
 {
     struct qemu_WSAAddressToStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAADDRESSTOSTRINGW);
-    call.sockaddr = (uint64_t)sockaddr;
-    call.len = (uint64_t)len;
-    call.info = (uint64_t)info;
-    call.string = (uint64_t)string;
-    call.lenstr = (uint64_t)lenstr;
+    call.sockaddr = (ULONG_PTR)sockaddr;
+    call.len = (ULONG_PTR)len;
+    call.info = (ULONG_PTR)info;
+    call.string = (ULONG_PTR)string;
+    call.lenstr = (ULONG_PTR)lenstr;
 
     qemu_syscall(&call.super);
 
@@ -2981,8 +2981,8 @@ WINBASEAPI INT WINAPI WSAEnumNameSpaceProvidersA(LPDWORD len, LPWSANAMESPACE_INF
 {
     struct qemu_WSAEnumNameSpaceProvidersA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAENUMNAMESPACEPROVIDERSA);
-    call.len = (uint64_t)len;
-    call.buffer = (uint64_t)buffer;
+    call.len = (ULONG_PTR)len;
+    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
 
@@ -3013,8 +3013,8 @@ WINBASEAPI INT WINAPI WSAEnumNameSpaceProvidersW(LPDWORD len, LPWSANAMESPACE_INF
 {
     struct qemu_WSAEnumNameSpaceProvidersW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAENUMNAMESPACEPROVIDERSW);
-    call.len = (uint64_t)len;
-    call.buffer = (uint64_t)buffer;
+    call.len = (ULONG_PTR)len;
+    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
 
@@ -3046,9 +3046,9 @@ WINBASEAPI BOOL WINAPI WSAGetQOSByName(SOCKET s, LPWSABUF lpQOSName, LPQOS lpQOS
 {
     struct qemu_WSAGetQOSByName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAGETQOSBYNAME);
-    call.s = (uint64_t)s;
-    call.lpQOSName = (uint64_t)lpQOSName;
-    call.lpQOS = (uint64_t)lpQOS;
+    call.s = (ULONG_PTR)s;
+    call.lpQOSName = (ULONG_PTR)lpQOSName;
+    call.lpQOS = (ULONG_PTR)lpQOS;
 
     qemu_syscall(&call.super);
 
@@ -3081,10 +3081,10 @@ WINBASEAPI INT WINAPI WSAGetServiceClassInfoA(LPGUID provider, LPGUID service, L
 {
     struct qemu_WSAGetServiceClassInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAGETSERVICECLASSINFOA);
-    call.provider = (uint64_t)provider;
-    call.service = (uint64_t)service;
-    call.len = (uint64_t)len;
-    call.info = (uint64_t)info;
+    call.provider = (ULONG_PTR)provider;
+    call.service = (ULONG_PTR)service;
+    call.len = (ULONG_PTR)len;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -3117,10 +3117,10 @@ WINBASEAPI INT WINAPI WSAGetServiceClassInfoW(LPGUID provider, LPGUID service, L
 {
     struct qemu_WSAGetServiceClassInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAGETSERVICECLASSINFOW);
-    call.provider = (uint64_t)provider;
-    call.service = (uint64_t)service;
-    call.len = (uint64_t)len;
-    call.info = (uint64_t)info;
+    call.provider = (ULONG_PTR)provider;
+    call.service = (ULONG_PTR)service;
+    call.len = (ULONG_PTR)len;
+    call.info = (ULONG_PTR)info;
 
     qemu_syscall(&call.super);
 
@@ -3152,9 +3152,9 @@ WINBASEAPI INT WINAPI WSAGetServiceClassNameByClassIdA(LPGUID class, LPSTR servi
 {
     struct qemu_WSAGetServiceClassNameByClassIdA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAGETSERVICECLASSNAMEBYCLASSIDA);
-    call.class = (uint64_t)class;
-    call.service = (uint64_t)service;
-    call.len = (uint64_t)len;
+    call.class = (ULONG_PTR)class;
+    call.service = (ULONG_PTR)service;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
@@ -3186,9 +3186,9 @@ WINBASEAPI INT WINAPI WSAGetServiceClassNameByClassIdW(LPGUID class, LPWSTR serv
 {
     struct qemu_WSAGetServiceClassNameByClassIdW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAGETSERVICECLASSNAMEBYCLASSIDW);
-    call.class = (uint64_t)class;
-    call.service = (uint64_t)service;
-    call.len = (uint64_t)len;
+    call.class = (ULONG_PTR)class;
+    call.service = (ULONG_PTR)service;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
@@ -3220,9 +3220,9 @@ WINBASEAPI INT WINAPI WSALookupServiceBeginA(LPWSAQUERYSETA lpqsRestrictions, DW
 {
     struct qemu_WSALookupServiceBeginA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSALOOKUPSERVICEBEGINA);
-    call.lpqsRestrictions = (uint64_t)lpqsRestrictions;
-    call.dwControlFlags = (uint64_t)dwControlFlags;
-    call.lphLookup = (uint64_t)lphLookup;
+    call.lpqsRestrictions = (ULONG_PTR)lpqsRestrictions;
+    call.dwControlFlags = (ULONG_PTR)dwControlFlags;
+    call.lphLookup = (ULONG_PTR)lphLookup;
 
     qemu_syscall(&call.super);
 
@@ -3254,9 +3254,9 @@ WINBASEAPI INT WINAPI WSALookupServiceBeginW(LPWSAQUERYSETW lpqsRestrictions, DW
 {
     struct qemu_WSALookupServiceBeginW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSALOOKUPSERVICEBEGINW);
-    call.lpqsRestrictions = (uint64_t)lpqsRestrictions;
-    call.dwControlFlags = (uint64_t)dwControlFlags;
-    call.lphLookup = (uint64_t)lphLookup;
+    call.lpqsRestrictions = (ULONG_PTR)lpqsRestrictions;
+    call.dwControlFlags = (ULONG_PTR)dwControlFlags;
+    call.lphLookup = (ULONG_PTR)lphLookup;
 
     qemu_syscall(&call.super);
 
@@ -3286,7 +3286,7 @@ WINBASEAPI INT WINAPI WSALookupServiceEnd(HANDLE lookup)
 {
     struct qemu_WSALookupServiceEnd call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSALOOKUPSERVICEEND);
-    call.lookup = (uint64_t)lookup;
+    call.lookup = (ULONG_PTR)lookup;
 
     qemu_syscall(&call.super);
 
@@ -3319,10 +3319,10 @@ WINBASEAPI INT WINAPI WSALookupServiceNextA(HANDLE lookup, DWORD flags, LPDWORD 
 {
     struct qemu_WSALookupServiceNextA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSALOOKUPSERVICENEXTA);
-    call.lookup = (uint64_t)lookup;
-    call.flags = (uint64_t)flags;
-    call.len = (uint64_t)len;
-    call.results = (uint64_t)results;
+    call.lookup = (ULONG_PTR)lookup;
+    call.flags = (ULONG_PTR)flags;
+    call.len = (ULONG_PTR)len;
+    call.results = (ULONG_PTR)results;
 
     qemu_syscall(&call.super);
 
@@ -3355,10 +3355,10 @@ WINBASEAPI INT WINAPI WSALookupServiceNextW(HANDLE lookup, DWORD flags, LPDWORD 
 {
     struct qemu_WSALookupServiceNextW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSALOOKUPSERVICENEXTW);
-    call.lookup = (uint64_t)lookup;
-    call.flags = (uint64_t)flags;
-    call.len = (uint64_t)len;
-    call.results = (uint64_t)results;
+    call.lookup = (ULONG_PTR)lookup;
+    call.flags = (ULONG_PTR)flags;
+    call.len = (ULONG_PTR)len;
+    call.results = (ULONG_PTR)results;
 
     qemu_syscall(&call.super);
 
@@ -3390,9 +3390,9 @@ WINBASEAPI INT WINAPI WSANtohl(SOCKET s, u_long netlong, u_long* lphostlong)
 {
     struct qemu_WSANtohl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSANTOHL);
-    call.s = (uint64_t)s;
-    call.netlong = (uint64_t)netlong;
-    call.lphostlong = (uint64_t)lphostlong;
+    call.s = (ULONG_PTR)s;
+    call.netlong = (ULONG_PTR)netlong;
+    call.lphostlong = (ULONG_PTR)lphostlong;
 
     qemu_syscall(&call.super);
 
@@ -3424,9 +3424,9 @@ WINBASEAPI INT WINAPI WSANtohs(SOCKET s, u_short netshort, u_short* lphostshort)
 {
     struct qemu_WSANtohs call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSANTOHS);
-    call.s = (uint64_t)s;
-    call.netshort = (uint64_t)netshort;
-    call.lphostshort = (uint64_t)lphostshort;
+    call.s = (ULONG_PTR)s;
+    call.netshort = (ULONG_PTR)netshort;
+    call.lphostshort = (ULONG_PTR)lphostshort;
 
     qemu_syscall(&call.super);
 
@@ -3458,9 +3458,9 @@ WINBASEAPI INT WINAPI WSAProviderConfigChange(LPHANDLE handle, LPWSAOVERLAPPED o
 {
     struct qemu_WSAProviderConfigChange call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAPROVIDERCONFIGCHANGE);
-    call.handle = (uint64_t)handle;
-    call.overlapped = (uint64_t)overlapped;
-    call.completion = (uint64_t)completion;
+    call.handle = (ULONG_PTR)handle;
+    call.overlapped = (ULONG_PTR)overlapped;
+    call.completion = (ULONG_PTR)completion;
 
     qemu_syscall(&call.super);
 
@@ -3491,8 +3491,8 @@ WINBASEAPI INT WINAPI WSARecvDisconnect(SOCKET s, LPWSABUF disconnectdata)
 {
     struct qemu_WSARecvDisconnect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSARECVDISCONNECT);
-    call.s = (uint64_t)s;
-    call.disconnectdata = (uint64_t)disconnectdata;
+    call.s = (ULONG_PTR)s;
+    call.disconnectdata = (ULONG_PTR)disconnectdata;
 
     qemu_syscall(&call.super);
 
@@ -3524,9 +3524,9 @@ WINBASEAPI INT WINAPI WSASetServiceA(LPWSAQUERYSETA query, WSAESETSERVICEOP oper
 {
     struct qemu_WSASetServiceA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASETSERVICEA);
-    call.query = (uint64_t)query;
-    call.operation = (uint64_t)operation;
-    call.flags = (uint64_t)flags;
+    call.query = (ULONG_PTR)query;
+    call.operation = (ULONG_PTR)operation;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -3558,9 +3558,9 @@ WINBASEAPI INT WINAPI WSASetServiceW(LPWSAQUERYSETW query, WSAESETSERVICEOP oper
 {
     struct qemu_WSASetServiceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASETSERVICEW);
-    call.query = (uint64_t)query;
-    call.operation = (uint64_t)operation;
-    call.flags = (uint64_t)flags;
+    call.query = (ULONG_PTR)query;
+    call.operation = (ULONG_PTR)operation;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -3591,8 +3591,8 @@ WINBASEAPI INT WINAPI WSCEnableNSProvider(LPGUID provider, BOOL enable)
 {
     struct qemu_WSCEnableNSProvider call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSCENABLENSPROVIDER);
-    call.provider = (uint64_t)provider;
-    call.enable = (uint64_t)enable;
+    call.provider = (ULONG_PTR)provider;
+    call.enable = (ULONG_PTR)enable;
 
     qemu_syscall(&call.super);
 
@@ -3625,10 +3625,10 @@ WINBASEAPI INT WINAPI WSCGetProviderPath(LPGUID provider, LPWSTR path, LPINT len
 {
     struct qemu_WSCGetProviderPath call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSCGETPROVIDERPATH);
-    call.provider = (uint64_t)provider;
-    call.path = (uint64_t)path;
-    call.len = (uint64_t)len;
-    call.errcode = (uint64_t)errcode;
+    call.provider = (ULONG_PTR)provider;
+    call.path = (ULONG_PTR)path;
+    call.len = (ULONG_PTR)len;
+    call.errcode = (ULONG_PTR)errcode;
 
     qemu_syscall(&call.super);
 
@@ -3662,11 +3662,11 @@ WINBASEAPI INT WINAPI WSCInstallNameSpace(LPWSTR identifier, LPWSTR path, DWORD 
 {
     struct qemu_WSCInstallNameSpace call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSCINSTALLNAMESPACE);
-    call.identifier = (uint64_t)identifier;
-    call.path = (uint64_t)path;
-    call.namespace = (uint64_t)namespace;
-    call.version = (uint64_t)version;
-    call.provider = (uint64_t)provider;
+    call.identifier = (ULONG_PTR)identifier;
+    call.path = (ULONG_PTR)path;
+    call.namespace = (ULONG_PTR)namespace;
+    call.version = (ULONG_PTR)version;
+    call.provider = (ULONG_PTR)provider;
 
     qemu_syscall(&call.super);
 
@@ -3696,7 +3696,7 @@ WINBASEAPI INT WINAPI WSCUnInstallNameSpace(LPGUID lpProviderId)
 {
     struct qemu_WSCUnInstallNameSpace call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSCUNINSTALLNAMESPACE);
-    call.lpProviderId = (uint64_t)lpProviderId;
+    call.lpProviderId = (ULONG_PTR)lpProviderId;
 
     qemu_syscall(&call.super);
 
@@ -3727,8 +3727,8 @@ WINBASEAPI INT WINAPI WSCWriteProviderOrder(LPDWORD entry, DWORD number)
 {
     struct qemu_WSCWriteProviderOrder call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSCWRITEPROVIDERORDER);
-    call.entry = (uint64_t)entry;
-    call.number = (uint64_t)number;
+    call.entry = (ULONG_PTR)entry;
+    call.number = (ULONG_PTR)number;
 
     qemu_syscall(&call.super);
 
@@ -3765,14 +3765,14 @@ WINBASEAPI INT WINAPI WSANSPIoctl(HANDLE hLookup, DWORD dwControlCode, LPVOID lp
 {
     struct qemu_WSANSPIoctl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSANSPIOCTL);
-    call.hLookup = (uint64_t)hLookup;
-    call.dwControlCode = (uint64_t)dwControlCode;
-    call.lpvInBuffer = (uint64_t)lpvInBuffer;
-    call.cbInBuffer = (uint64_t)cbInBuffer;
-    call.lpvOutBuffer = (uint64_t)lpvOutBuffer;
-    call.cbOutBuffer = (uint64_t)cbOutBuffer;
-    call.lpcbBytesReturned = (uint64_t)lpcbBytesReturned;
-    call.lpCompletion = (uint64_t)lpCompletion;
+    call.hLookup = (ULONG_PTR)hLookup;
+    call.dwControlCode = (ULONG_PTR)dwControlCode;
+    call.lpvInBuffer = (ULONG_PTR)lpvInBuffer;
+    call.cbInBuffer = (ULONG_PTR)cbInBuffer;
+    call.lpvOutBuffer = (ULONG_PTR)lpvOutBuffer;
+    call.cbOutBuffer = (ULONG_PTR)cbOutBuffer;
+    call.lpcbBytesReturned = (ULONG_PTR)lpcbBytesReturned;
+    call.lpCompletion = (ULONG_PTR)lpCompletion;
 
     qemu_syscall(&call.super);
 
@@ -3804,9 +3804,9 @@ WINBASEAPI INT WINAPI WSAEnumProtocolsA(LPINT protocols, LPWSAPROTOCOL_INFOA buf
 {
     struct qemu_WSAEnumProtocolsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAENUMPROTOCOLSA);
-    call.protocols = (uint64_t)protocols;
-    call.buffer = (uint64_t)buffer;
-    call.len = (uint64_t)len;
+    call.protocols = (ULONG_PTR)protocols;
+    call.buffer = (ULONG_PTR)buffer;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
@@ -3838,9 +3838,9 @@ WINBASEAPI INT WINAPI WSAEnumProtocolsW(LPINT protocols, LPWSAPROTOCOL_INFOW buf
 {
     struct qemu_WSAEnumProtocolsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAENUMPROTOCOLSW);
-    call.protocols = (uint64_t)protocols;
-    call.buffer = (uint64_t)buffer;
-    call.len = (uint64_t)len;
+    call.protocols = (ULONG_PTR)protocols;
+    call.buffer = (ULONG_PTR)buffer;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
@@ -3873,10 +3873,10 @@ WINBASEAPI INT WINAPI WSCEnumProtocols(LPINT protocols, LPWSAPROTOCOL_INFOW buff
 {
     struct qemu_WSCEnumProtocols call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSCENUMPROTOCOLS);
-    call.protocols = (uint64_t)protocols;
-    call.buffer = (uint64_t)buffer;
-    call.len = (uint64_t)len;
-    call.err = (uint64_t)err;
+    call.protocols = (ULONG_PTR)protocols;
+    call.buffer = (ULONG_PTR)buffer;
+    call.len = (ULONG_PTR)len;
+    call.err = (ULONG_PTR)err;
 
     qemu_syscall(&call.super);
 

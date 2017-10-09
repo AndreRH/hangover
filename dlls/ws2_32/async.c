@@ -53,17 +53,17 @@ WINBASEAPI HANDLE WINAPI WSAAsyncGetHostByAddr(HWND hWnd, UINT uMsg, LPCSTR addr
 {
     struct qemu_WSAAsyncGetHostByAddr call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAASYNCGETHOSTBYADDR);
-    call.hWnd = (uint64_t)hWnd;
-    call.uMsg = (uint64_t)uMsg;
-    call.addr = (uint64_t)addr;
-    call.len = (uint64_t)len;
-    call.type = (uint64_t)type;
-    call.sbuf = (uint64_t)sbuf;
-    call.buflen = (uint64_t)buflen;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.uMsg = (ULONG_PTR)uMsg;
+    call.addr = (ULONG_PTR)addr;
+    call.len = (ULONG_PTR)len;
+    call.type = (ULONG_PTR)type;
+    call.sbuf = (ULONG_PTR)sbuf;
+    call.buflen = (ULONG_PTR)buflen;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -72,7 +72,7 @@ void qemu_WSAAsyncGetHostByAddr(struct qemu_syscall *call)
 {
     struct qemu_WSAAsyncGetHostByAddr *c = (struct qemu_WSAAsyncGetHostByAddr *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)WSAAsyncGetHostByAddr(QEMU_G2H(c->hWnd), c->uMsg, QEMU_G2H(c->addr), c->len, c->type, QEMU_G2H(c->sbuf), c->buflen);
+    c->super.iret = (ULONG_PTR)WSAAsyncGetHostByAddr(QEMU_G2H(c->hWnd), c->uMsg, QEMU_G2H(c->addr), c->len, c->type, QEMU_G2H(c->sbuf), c->buflen);
 }
 
 #endif
@@ -93,15 +93,15 @@ WINBASEAPI HANDLE WINAPI WSAAsyncGetHostByName(HWND hWnd, UINT uMsg, LPCSTR name
 {
     struct qemu_WSAAsyncGetHostByName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAASYNCGETHOSTBYNAME);
-    call.hWnd = (uint64_t)hWnd;
-    call.uMsg = (uint64_t)uMsg;
-    call.name = (uint64_t)name;
-    call.sbuf = (uint64_t)sbuf;
-    call.buflen = (uint64_t)buflen;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.uMsg = (ULONG_PTR)uMsg;
+    call.name = (ULONG_PTR)name;
+    call.sbuf = (ULONG_PTR)sbuf;
+    call.buflen = (ULONG_PTR)buflen;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -110,7 +110,7 @@ void qemu_WSAAsyncGetHostByName(struct qemu_syscall *call)
 {
     struct qemu_WSAAsyncGetHostByName *c = (struct qemu_WSAAsyncGetHostByName *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)WSAAsyncGetHostByName(QEMU_G2H(c->hWnd), c->uMsg, QEMU_G2H(c->name), QEMU_G2H(c->sbuf), c->buflen);
+    c->super.iret = (ULONG_PTR)WSAAsyncGetHostByName(QEMU_G2H(c->hWnd), c->uMsg, QEMU_G2H(c->name), QEMU_G2H(c->sbuf), c->buflen);
 }
 
 #endif
@@ -131,15 +131,15 @@ WINBASEAPI HANDLE WINAPI WSAAsyncGetProtoByName(HWND hWnd, UINT uMsg, LPCSTR nam
 {
     struct qemu_WSAAsyncGetProtoByName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAASYNCGETPROTOBYNAME);
-    call.hWnd = (uint64_t)hWnd;
-    call.uMsg = (uint64_t)uMsg;
-    call.name = (uint64_t)name;
-    call.sbuf = (uint64_t)sbuf;
-    call.buflen = (uint64_t)buflen;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.uMsg = (ULONG_PTR)uMsg;
+    call.name = (ULONG_PTR)name;
+    call.sbuf = (ULONG_PTR)sbuf;
+    call.buflen = (ULONG_PTR)buflen;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -148,7 +148,7 @@ void qemu_WSAAsyncGetProtoByName(struct qemu_syscall *call)
 {
     struct qemu_WSAAsyncGetProtoByName *c = (struct qemu_WSAAsyncGetProtoByName *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)WSAAsyncGetProtoByName(QEMU_G2H(c->hWnd), c->uMsg, QEMU_G2H(c->name), QEMU_G2H(c->sbuf), c->buflen);
+    c->super.iret = (ULONG_PTR)WSAAsyncGetProtoByName(QEMU_G2H(c->hWnd), c->uMsg, QEMU_G2H(c->name), QEMU_G2H(c->sbuf), c->buflen);
 }
 
 #endif
@@ -169,15 +169,15 @@ WINBASEAPI HANDLE WINAPI WSAAsyncGetProtoByNumber(HWND hWnd, UINT uMsg, INT numb
 {
     struct qemu_WSAAsyncGetProtoByNumber call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAASYNCGETPROTOBYNUMBER);
-    call.hWnd = (uint64_t)hWnd;
-    call.uMsg = (uint64_t)uMsg;
-    call.number = (uint64_t)number;
-    call.sbuf = (uint64_t)sbuf;
-    call.buflen = (uint64_t)buflen;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.uMsg = (ULONG_PTR)uMsg;
+    call.number = (ULONG_PTR)number;
+    call.sbuf = (ULONG_PTR)sbuf;
+    call.buflen = (ULONG_PTR)buflen;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -186,7 +186,7 @@ void qemu_WSAAsyncGetProtoByNumber(struct qemu_syscall *call)
 {
     struct qemu_WSAAsyncGetProtoByNumber *c = (struct qemu_WSAAsyncGetProtoByNumber *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)WSAAsyncGetProtoByNumber(QEMU_G2H(c->hWnd), c->uMsg, c->number, QEMU_G2H(c->sbuf), c->buflen);
+    c->super.iret = (ULONG_PTR)WSAAsyncGetProtoByNumber(QEMU_G2H(c->hWnd), c->uMsg, c->number, QEMU_G2H(c->sbuf), c->buflen);
 }
 
 #endif
@@ -208,16 +208,16 @@ WINBASEAPI HANDLE WINAPI WSAAsyncGetServByName(HWND hWnd, UINT uMsg, LPCSTR name
 {
     struct qemu_WSAAsyncGetServByName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAASYNCGETSERVBYNAME);
-    call.hWnd = (uint64_t)hWnd;
-    call.uMsg = (uint64_t)uMsg;
-    call.name = (uint64_t)name;
-    call.proto = (uint64_t)proto;
-    call.sbuf = (uint64_t)sbuf;
-    call.buflen = (uint64_t)buflen;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.uMsg = (ULONG_PTR)uMsg;
+    call.name = (ULONG_PTR)name;
+    call.proto = (ULONG_PTR)proto;
+    call.sbuf = (ULONG_PTR)sbuf;
+    call.buflen = (ULONG_PTR)buflen;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -226,7 +226,7 @@ void qemu_WSAAsyncGetServByName(struct qemu_syscall *call)
 {
     struct qemu_WSAAsyncGetServByName *c = (struct qemu_WSAAsyncGetServByName *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)WSAAsyncGetServByName(QEMU_G2H(c->hWnd), c->uMsg, QEMU_G2H(c->name), QEMU_G2H(c->proto), QEMU_G2H(c->sbuf), c->buflen);
+    c->super.iret = (ULONG_PTR)WSAAsyncGetServByName(QEMU_G2H(c->hWnd), c->uMsg, QEMU_G2H(c->name), QEMU_G2H(c->proto), QEMU_G2H(c->sbuf), c->buflen);
 }
 
 #endif
@@ -248,16 +248,16 @@ WINBASEAPI HANDLE WINAPI WSAAsyncGetServByPort(HWND hWnd, UINT uMsg, INT port, L
 {
     struct qemu_WSAAsyncGetServByPort call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAASYNCGETSERVBYPORT);
-    call.hWnd = (uint64_t)hWnd;
-    call.uMsg = (uint64_t)uMsg;
-    call.port = (uint64_t)port;
-    call.proto = (uint64_t)proto;
-    call.sbuf = (uint64_t)sbuf;
-    call.buflen = (uint64_t)buflen;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.uMsg = (ULONG_PTR)uMsg;
+    call.port = (ULONG_PTR)port;
+    call.proto = (ULONG_PTR)proto;
+    call.sbuf = (ULONG_PTR)sbuf;
+    call.buflen = (ULONG_PTR)buflen;
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -266,7 +266,7 @@ void qemu_WSAAsyncGetServByPort(struct qemu_syscall *call)
 {
     struct qemu_WSAAsyncGetServByPort *c = (struct qemu_WSAAsyncGetServByPort *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)WSAAsyncGetServByPort(QEMU_G2H(c->hWnd), c->uMsg, c->port, QEMU_G2H(c->proto), QEMU_G2H(c->sbuf), c->buflen);
+    c->super.iret = (ULONG_PTR)WSAAsyncGetServByPort(QEMU_G2H(c->hWnd), c->uMsg, c->port, QEMU_G2H(c->proto), QEMU_G2H(c->sbuf), c->buflen);
 }
 
 #endif
@@ -283,7 +283,7 @@ WINBASEAPI INT WINAPI WSACancelAsyncRequest(HANDLE hAsyncTaskHandle)
 {
     struct qemu_WSACancelAsyncRequest call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSACANCELASYNCREQUEST);
-    call.hAsyncTaskHandle = (uint64_t)hAsyncTaskHandle;
+    call.hAsyncTaskHandle = (ULONG_PTR)hAsyncTaskHandle;
 
     qemu_syscall(&call.super);
 
@@ -313,7 +313,7 @@ WINBASEAPI INT WINAPI WSApSetPostRoutine(LPWPUPOSTMESSAGE lpPostRoutine)
 {
     struct qemu_WSApSetPostRoutine call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAPSETPOSTROUTINE);
-    call.lpPostRoutine = (uint64_t)lpPostRoutine;
+    call.lpPostRoutine = (ULONG_PTR)lpPostRoutine;
 
     qemu_syscall(&call.super);
 
@@ -349,11 +349,11 @@ WINBASEAPI int WINAPI WPUCompleteOverlappedRequest(SOCKET s, LPWSAOVERLAPPED ove
 {
     struct qemu_WPUCompleteOverlappedRequest call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WPUCOMPLETEOVERLAPPEDREQUEST);
-    call.s = (uint64_t)s;
-    call.overlapped = (uint64_t)overlapped;
-    call.error = (uint64_t)error;
-    call.transferred = (uint64_t)transferred;
-    call.errcode = (uint64_t)errcode;
+    call.s = (ULONG_PTR)s;
+    call.overlapped = (ULONG_PTR)overlapped;
+    call.error = (ULONG_PTR)error;
+    call.transferred = (ULONG_PTR)transferred;
+    call.errcode = (ULONG_PTR)errcode;
 
     qemu_syscall(&call.super);
 
@@ -367,7 +367,7 @@ void qemu_WPUCompleteOverlappedRequest(struct qemu_syscall *call)
     struct qemu_WPUCompleteOverlappedRequest *c = (struct qemu_WPUCompleteOverlappedRequest *)call;
     WINE_FIXME("Unverified!\n");
     /* FIXME: Wine defines the return value as WSAEVENT, aka void *, mingw as int. */
-    c->super.iret = (uint64_t)WPUCompleteOverlappedRequest(c->s, QEMU_G2H(c->overlapped), c->error, c->transferred, QEMU_G2H(c->errcode));
+    c->super.iret = (ULONG_PTR)WPUCompleteOverlappedRequest(c->s, QEMU_G2H(c->overlapped), c->error, c->transferred, QEMU_G2H(c->errcode));
 }
 
 #endif
