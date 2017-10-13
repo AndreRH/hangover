@@ -8,8 +8,8 @@ VPATH=$(SRCDIR)
 
 all: shlwapi.dll qemu_shlwapi.dll.so
 
-shlwapi.dll: assoc_g.o istream_g.o main_g.o path_g.o shlwapi.def string_g.o url_g.o wsprintf_g.o
-	$(GUEST_CC)-gcc -shared $(SRCDIR)/shlwapi.def *_g.o -o shlwapi.dll -nostdlib -e DllMain -lgcc
+shlwapi.dll: assoc_g.o istream_g.o main_g.o path_g.o shlwapi.spec string_g.o url_g.o wsprintf_g.o
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/shlwapi.spec *_g.o -o shlwapi.dll -lgcc -nodefaultlibs -nostdlib -Wl,--image-base,0x90000000
 
 qemu_shlwapi.dll.so: assoc_h.o istream_h.o main_h.o path_h.o qemu_shlwapi.spec string_h.o url_h.o wsprintf_h.o
 	$(WINEGCC) -shared $(SRCDIR)/qemu_shlwapi.spec *_h.o -o qemu_shlwapi.dll.so -lshlwapi
