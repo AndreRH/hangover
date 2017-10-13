@@ -49,12 +49,12 @@ WINBASEAPI HRESULT WINAPI SHCreateStreamOnFileEx(LPCWSTR lpszPath, DWORD dwMode,
 {
     struct qemu_SHCreateStreamOnFileEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATESTREAMONFILEEX);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.dwMode = (uint64_t)dwMode;
-    call.dwAttributes = (uint64_t)dwAttributes;
-    call.bCreate = (uint64_t)bCreate;
-    call.lpTemplate = (uint64_t)lpTemplate;
-    call.lppStream = (uint64_t)lppStream;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.dwMode = (ULONG_PTR)dwMode;
+    call.dwAttributes = (ULONG_PTR)dwAttributes;
+    call.bCreate = (ULONG_PTR)bCreate;
+    call.lpTemplate = (ULONG_PTR)lpTemplate;
+    call.lppStream = (ULONG_PTR)lppStream;
 
     qemu_syscall(&call.super);
 
@@ -86,9 +86,9 @@ WINBASEAPI HRESULT WINAPI SHCreateStreamOnFileW(LPCWSTR lpszPath, DWORD dwMode, 
 {
     struct qemu_SHCreateStreamOnFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATESTREAMONFILEW);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.dwMode = (uint64_t)dwMode;
-    call.lppStream = (uint64_t)lppStream;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.dwMode = (ULONG_PTR)dwMode;
+    call.lppStream = (ULONG_PTR)lppStream;
 
     qemu_syscall(&call.super);
 
@@ -120,9 +120,9 @@ WINBASEAPI HRESULT WINAPI SHCreateStreamOnFileA(LPCSTR lpszPath, DWORD dwMode, I
 {
     struct qemu_SHCreateStreamOnFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATESTREAMONFILEA);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.dwMode = (uint64_t)dwMode;
-    call.lppStream = (uint64_t)lppStream;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.dwMode = (ULONG_PTR)dwMode;
+    call.lppStream = (ULONG_PTR)lppStream;
 
     qemu_syscall(&call.super);
 
@@ -154,9 +154,9 @@ WINBASEAPI HRESULT WINAPI SHIStream_Read(IStream *lpStream, LPVOID lpvDest, ULON
 {
     struct qemu_SHIStream_Read call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHISTREAM_READ);
-    call.lpStream = (uint64_t)lpStream;
-    call.lpvDest = (uint64_t)lpvDest;
-    call.ulSize = (uint64_t)ulSize;
+    call.lpStream = (ULONG_PTR)lpStream;
+    call.lpvDest = (ULONG_PTR)lpvDest;
+    call.ulSize = (ULONG_PTR)ulSize;
 
     qemu_syscall(&call.super);
 
@@ -186,7 +186,7 @@ WINBASEAPI BOOL WINAPI SHIsEmptyStream(IStream *lpStream)
 {
     struct qemu_SHIsEmptyStream call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHISEMPTYSTREAM);
-    call.lpStream = (uint64_t)lpStream;
+    call.lpStream = (ULONG_PTR)lpStream;
 
     qemu_syscall(&call.super);
 
@@ -220,9 +220,9 @@ WINBASEAPI HRESULT WINAPI SHIStream_Write(IStream *lpStream, LPCVOID lpvSrc, ULO
 {
     struct qemu_SHIStream_Write call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHISTREAM_WRITE);
-    call.lpStream = (uint64_t)lpStream;
-    call.lpvSrc = (uint64_t)lpvSrc;
-    call.ulSize = (uint64_t)ulSize;
+    call.lpStream = (ULONG_PTR)lpStream;
+    call.lpvSrc = (ULONG_PTR)lpvSrc;
+    call.ulSize = (ULONG_PTR)ulSize;
 
     qemu_syscall(&call.super);
 
@@ -252,7 +252,7 @@ WINBASEAPI HRESULT WINAPI IStream_Reset(IStream *lpStream)
 {
     struct qemu_IStream_Reset call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISTREAM_RESET);
-    call.lpStream = (uint64_t)lpStream;
+    call.lpStream = (ULONG_PTR)lpStream;
 
     qemu_syscall(&call.super);
 
@@ -283,8 +283,8 @@ WINBASEAPI HRESULT WINAPI IStream_Size(IStream *lpStream, ULARGE_INTEGER* lpulSi
 {
     struct qemu_IStream_Size call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISTREAM_SIZE);
-    call.lpStream = (uint64_t)lpStream;
-    call.lpulSize = (uint64_t)lpulSize;
+    call.lpStream = (ULONG_PTR)lpStream;
+    call.lpulSize = (ULONG_PTR)lpulSize;
 
     qemu_syscall(&call.super);
 

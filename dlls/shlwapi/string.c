@@ -45,8 +45,8 @@ WINBASEAPI BOOL WINAPI ChrCmpIA(WORD ch1, WORD ch2)
 {
     struct qemu_ChrCmpIA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHRCMPIA);
-    call.ch1 = (uint64_t)ch1;
-    call.ch2 = (uint64_t)ch2;
+    call.ch1 = (ULONG_PTR)ch1;
+    call.ch2 = (ULONG_PTR)ch2;
 
     qemu_syscall(&call.super);
 
@@ -79,8 +79,8 @@ WINBASEAPI BOOL WINAPI ChrCmpIW(WCHAR ch1, WCHAR ch2)
 {
     struct qemu_ChrCmpIW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHRCMPIW);
-    call.ch1 = (uint64_t)ch1;
-    call.ch2 = (uint64_t)ch2;
+    call.ch1 = (ULONG_PTR)ch1;
+    call.ch2 = (ULONG_PTR)ch2;
 
     qemu_syscall(&call.super);
 
@@ -113,12 +113,12 @@ WINBASEAPI LPSTR WINAPI StrChrA(LPCSTR lpszStr, WORD ch)
 {
     struct qemu_StrChrA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCHRA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.ch = (uint64_t)ch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.ch = (ULONG_PTR)ch;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -129,7 +129,7 @@ void qemu_StrChrA(struct qemu_syscall *call)
 {
     struct qemu_StrChrA *c = (struct qemu_StrChrA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrChrA(QEMU_G2H(c->lpszStr), c->ch);
+    c->super.iret = (ULONG_PTR)StrChrA(QEMU_G2H(c->lpszStr), c->ch);
 }
 
 #endif
@@ -147,12 +147,12 @@ WINBASEAPI LPWSTR WINAPI StrChrW(LPCWSTR lpszStr, WCHAR ch)
 {
     struct qemu_StrChrW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCHRW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.ch = (uint64_t)ch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.ch = (ULONG_PTR)ch;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -163,7 +163,7 @@ void qemu_StrChrW(struct qemu_syscall *call)
 {
     struct qemu_StrChrW *c = (struct qemu_StrChrW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrChrW(QEMU_G2H(c->lpszStr), c->ch);
+    c->super.iret = (ULONG_PTR)StrChrW(QEMU_G2H(c->lpszStr), c->ch);
 }
 
 #endif
@@ -181,12 +181,12 @@ WINBASEAPI LPSTR WINAPI StrChrIA(LPCSTR lpszStr, WORD ch)
 {
     struct qemu_StrChrIA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCHRIA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.ch = (uint64_t)ch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.ch = (ULONG_PTR)ch;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -197,7 +197,7 @@ void qemu_StrChrIA(struct qemu_syscall *call)
 {
     struct qemu_StrChrIA *c = (struct qemu_StrChrIA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrChrIA(QEMU_G2H(c->lpszStr), c->ch);
+    c->super.iret = (ULONG_PTR)StrChrIA(QEMU_G2H(c->lpszStr), c->ch);
 }
 
 #endif
@@ -215,12 +215,12 @@ WINBASEAPI LPWSTR WINAPI StrChrIW(LPCWSTR lpszStr, WCHAR ch)
 {
     struct qemu_StrChrIW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCHRIW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.ch = (uint64_t)ch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.ch = (ULONG_PTR)ch;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -231,7 +231,7 @@ void qemu_StrChrIW(struct qemu_syscall *call)
 {
     struct qemu_StrChrIW *c = (struct qemu_StrChrIW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrChrIW(QEMU_G2H(c->lpszStr), c->ch);
+    c->super.iret = (ULONG_PTR)StrChrIW(QEMU_G2H(c->lpszStr), c->ch);
 }
 
 #endif
@@ -250,13 +250,13 @@ WINBASEAPI LPWSTR WINAPI StrChrNW(LPCWSTR lpszStr, WCHAR ch, UINT cchMax)
 {
     struct qemu_StrChrNW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCHRNW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.ch = (uint64_t)ch;
-    call.cchMax = (uint64_t)cchMax;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.ch = (ULONG_PTR)ch;
+    call.cchMax = (ULONG_PTR)cchMax;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -267,7 +267,7 @@ void qemu_StrChrNW(struct qemu_syscall *call)
 {
     struct qemu_StrChrNW *c = (struct qemu_StrChrNW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrChrNW(QEMU_G2H(c->lpszStr), c->ch, c->cchMax);
+    c->super.iret = (ULONG_PTR)StrChrNW(QEMU_G2H(c->lpszStr), c->ch, c->cchMax);
 }
 
 #endif
@@ -285,8 +285,8 @@ WINBASEAPI int WINAPI StrCmpIW(LPCWSTR lpszStr, LPCWSTR lpszComp)
 {
     struct qemu_StrCmpIW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCMPIW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszComp = (uint64_t)lpszComp;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszComp = (ULONG_PTR)lpszComp;
 
     qemu_syscall(&call.super);
 
@@ -320,9 +320,9 @@ WINBASEAPI INT WINAPI StrCmpNA(LPCSTR lpszStr, LPCSTR lpszComp, INT iLen)
 {
     struct qemu_StrCmpNA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCMPNA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszComp = (uint64_t)lpszComp;
-    call.iLen = (uint64_t)iLen;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszComp = (ULONG_PTR)lpszComp;
+    call.iLen = (ULONG_PTR)iLen;
 
     qemu_syscall(&call.super);
 
@@ -356,9 +356,9 @@ WINBASEAPI INT WINAPI StrCmpNW(LPCWSTR lpszStr, LPCWSTR lpszComp, INT iLen)
 {
     struct qemu_StrCmpNW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCMPNW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszComp = (uint64_t)lpszComp;
-    call.iLen = (uint64_t)iLen;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszComp = (ULONG_PTR)lpszComp;
+    call.iLen = (ULONG_PTR)iLen;
 
     qemu_syscall(&call.super);
 
@@ -392,9 +392,9 @@ WINBASEAPI int WINAPI StrCmpNIA(LPCSTR lpszStr, LPCSTR lpszComp, int iLen)
 {
     struct qemu_StrCmpNIA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCMPNIA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszComp = (uint64_t)lpszComp;
-    call.iLen = (uint64_t)iLen;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszComp = (ULONG_PTR)lpszComp;
+    call.iLen = (ULONG_PTR)iLen;
 
     qemu_syscall(&call.super);
 
@@ -428,9 +428,9 @@ WINBASEAPI INT WINAPI StrCmpNIW(LPCWSTR lpszStr, LPCWSTR lpszComp, int iLen)
 {
     struct qemu_StrCmpNIW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCMPNIW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszComp = (uint64_t)lpszComp;
-    call.iLen = (uint64_t)iLen;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszComp = (ULONG_PTR)lpszComp;
+    call.iLen = (ULONG_PTR)iLen;
 
     qemu_syscall(&call.super);
 
@@ -463,8 +463,8 @@ WINBASEAPI int WINAPI StrCmpW(LPCWSTR lpszStr, LPCWSTR lpszComp)
 {
     struct qemu_StrCmpW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCMPW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszComp = (uint64_t)lpszComp;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszComp = (ULONG_PTR)lpszComp;
 
     qemu_syscall(&call.super);
 
@@ -497,12 +497,12 @@ WINBASEAPI LPWSTR WINAPI StrCatW(LPWSTR lpszStr, LPCWSTR lpszSrc)
 {
     struct qemu_StrCatW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCATW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszSrc = (uint64_t)lpszSrc;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszSrc = (ULONG_PTR)lpszSrc;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -513,7 +513,7 @@ void qemu_StrCatW(struct qemu_syscall *call)
 {
     struct qemu_StrCatW *c = (struct qemu_StrCatW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrCatW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSrc));
+    c->super.iret = (ULONG_PTR)StrCatW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSrc));
 }
 
 #endif
@@ -533,10 +533,10 @@ WINBASEAPI DWORD WINAPI StrCatChainW(LPWSTR lpszStr, DWORD cchMax, DWORD ichAt, 
 {
     struct qemu_StrCatChainW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCATCHAINW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.cchMax = (uint64_t)cchMax;
-    call.ichAt = (uint64_t)ichAt;
-    call.lpszCat = (uint64_t)lpszCat;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.cchMax = (ULONG_PTR)cchMax;
+    call.ichAt = (ULONG_PTR)ichAt;
+    call.lpszCat = (ULONG_PTR)lpszCat;
 
     qemu_syscall(&call.super);
 
@@ -569,12 +569,12 @@ WINBASEAPI LPWSTR WINAPI StrCpyW(LPWSTR lpszStr, LPCWSTR lpszSrc)
 {
     struct qemu_StrCpyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCPYW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszSrc = (uint64_t)lpszSrc;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszSrc = (ULONG_PTR)lpszSrc;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -585,7 +585,7 @@ void qemu_StrCpyW(struct qemu_syscall *call)
 {
     struct qemu_StrCpyW *c = (struct qemu_StrCpyW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrCpyW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSrc));
+    c->super.iret = (ULONG_PTR)StrCpyW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSrc));
 }
 
 #endif
@@ -604,13 +604,13 @@ WINBASEAPI LPWSTR WINAPI StrCpyNW(LPWSTR dst, LPCWSTR src, int count)
 {
     struct qemu_StrCpyNW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCPYNW);
-    call.dst = (uint64_t)dst;
-    call.src = (uint64_t)src;
-    call.count = (uint64_t)count;
+    call.dst = (ULONG_PTR)dst;
+    call.src = (ULONG_PTR)src;
+    call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -621,7 +621,7 @@ void qemu_StrCpyNW(struct qemu_syscall *call)
 {
     struct qemu_StrCpyNW *c = (struct qemu_StrCpyNW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrCpyNW(QEMU_G2H(c->dst), QEMU_G2H(c->src), c->count);
+    c->super.iret = (ULONG_PTR)StrCpyNW(QEMU_G2H(c->dst), QEMU_G2H(c->src), c->count);
 }
 
 #endif
@@ -639,12 +639,12 @@ WINBASEAPI LPSTR WINAPI StrStrA(LPCSTR lpszStr, LPCSTR lpszSearch)
 {
     struct qemu_StrStrA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRSTRA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszSearch = (uint64_t)lpszSearch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszSearch = (ULONG_PTR)lpszSearch;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -655,7 +655,7 @@ void qemu_StrStrA(struct qemu_syscall *call)
 {
     struct qemu_StrStrA *c = (struct qemu_StrStrA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)StrStrA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSearch));
+    c->super.iret = (ULONG_PTR)StrStrA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSearch));
 }
 
 #endif
@@ -673,12 +673,12 @@ WINBASEAPI LPWSTR WINAPI StrStrW(LPCWSTR lpszStr, LPCWSTR lpszSearch)
 {
     struct qemu_StrStrW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRSTRW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszSearch = (uint64_t)lpszSearch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszSearch = (ULONG_PTR)lpszSearch;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -689,7 +689,7 @@ void qemu_StrStrW(struct qemu_syscall *call)
 {
     struct qemu_StrStrW *c = (struct qemu_StrStrW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)StrStrW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSearch));
+    c->super.iret = (ULONG_PTR)StrStrW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSearch));
 }
 
 #endif
@@ -708,13 +708,13 @@ WINBASEAPI LPSTR WINAPI StrRStrIA(LPCSTR lpszStr, LPCSTR lpszEnd, LPCSTR lpszSea
 {
     struct qemu_StrRStrIA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRRSTRIA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszEnd = (uint64_t)lpszEnd;
-    call.lpszSearch = (uint64_t)lpszSearch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszEnd = (ULONG_PTR)lpszEnd;
+    call.lpszSearch = (ULONG_PTR)lpszSearch;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -725,7 +725,7 @@ void qemu_StrRStrIA(struct qemu_syscall *call)
 {
     struct qemu_StrRStrIA *c = (struct qemu_StrRStrIA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)StrRStrIA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszEnd), QEMU_G2H(c->lpszSearch));
+    c->super.iret = (ULONG_PTR)StrRStrIA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszEnd), QEMU_G2H(c->lpszSearch));
 }
 
 #endif
@@ -744,13 +744,13 @@ WINBASEAPI LPWSTR WINAPI StrRStrIW(LPCWSTR lpszStr, LPCWSTR lpszEnd, LPCWSTR lps
 {
     struct qemu_StrRStrIW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRRSTRIW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszEnd = (uint64_t)lpszEnd;
-    call.lpszSearch = (uint64_t)lpszSearch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszEnd = (ULONG_PTR)lpszEnd;
+    call.lpszSearch = (ULONG_PTR)lpszSearch;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -761,7 +761,7 @@ void qemu_StrRStrIW(struct qemu_syscall *call)
 {
     struct qemu_StrRStrIW *c = (struct qemu_StrRStrIW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)StrRStrIW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszEnd), QEMU_G2H(c->lpszSearch));
+    c->super.iret = (ULONG_PTR)StrRStrIW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszEnd), QEMU_G2H(c->lpszSearch));
 }
 
 #endif
@@ -779,12 +779,12 @@ WINBASEAPI LPSTR WINAPI StrStrIA(LPCSTR lpszStr, LPCSTR lpszSearch)
 {
     struct qemu_StrStrIA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRSTRIA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszSearch = (uint64_t)lpszSearch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszSearch = (ULONG_PTR)lpszSearch;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -795,7 +795,7 @@ void qemu_StrStrIA(struct qemu_syscall *call)
 {
     struct qemu_StrStrIA *c = (struct qemu_StrStrIA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)StrStrIA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSearch));
+    c->super.iret = (ULONG_PTR)StrStrIA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSearch));
 }
 
 #endif
@@ -813,12 +813,12 @@ WINBASEAPI LPWSTR WINAPI StrStrIW(LPCWSTR lpszStr, LPCWSTR lpszSearch)
 {
     struct qemu_StrStrIW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRSTRIW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszSearch = (uint64_t)lpszSearch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszSearch = (ULONG_PTR)lpszSearch;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -829,7 +829,7 @@ void qemu_StrStrIW(struct qemu_syscall *call)
 {
     struct qemu_StrStrIW *c = (struct qemu_StrStrIW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)StrStrIW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSearch));
+    c->super.iret = (ULONG_PTR)StrStrIW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszSearch));
 }
 
 #endif
@@ -848,13 +848,13 @@ WINBASEAPI LPWSTR WINAPI StrStrNW(LPCWSTR lpFirst, LPCWSTR lpSrch, UINT cchMax)
 {
     struct qemu_StrStrNW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRSTRNW);
-    call.lpFirst = (uint64_t)lpFirst;
-    call.lpSrch = (uint64_t)lpSrch;
-    call.cchMax = (uint64_t)cchMax;
+    call.lpFirst = (ULONG_PTR)lpFirst;
+    call.lpSrch = (ULONG_PTR)lpSrch;
+    call.cchMax = (ULONG_PTR)cchMax;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -865,7 +865,7 @@ void qemu_StrStrNW(struct qemu_syscall *call)
 {
     struct qemu_StrStrNW *c = (struct qemu_StrStrNW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)StrStrNW(QEMU_G2H(c->lpFirst), QEMU_G2H(c->lpSrch), c->cchMax);
+    c->super.iret = (ULONG_PTR)StrStrNW(QEMU_G2H(c->lpFirst), QEMU_G2H(c->lpSrch), c->cchMax);
 }
 
 #endif
@@ -884,13 +884,13 @@ WINBASEAPI LPWSTR WINAPI StrStrNIW(LPCWSTR lpFirst, LPCWSTR lpSrch, UINT cchMax)
 {
     struct qemu_StrStrNIW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRSTRNIW);
-    call.lpFirst = (uint64_t)lpFirst;
-    call.lpSrch = (uint64_t)lpSrch;
-    call.cchMax = (uint64_t)cchMax;
+    call.lpFirst = (ULONG_PTR)lpFirst;
+    call.lpSrch = (ULONG_PTR)lpSrch;
+    call.cchMax = (ULONG_PTR)cchMax;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -901,7 +901,7 @@ void qemu_StrStrNIW(struct qemu_syscall *call)
 {
     struct qemu_StrStrNIW *c = (struct qemu_StrStrNIW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)StrStrNIW(QEMU_G2H(c->lpFirst), QEMU_G2H(c->lpSrch), c->cchMax);
+    c->super.iret = (ULONG_PTR)StrStrNIW(QEMU_G2H(c->lpFirst), QEMU_G2H(c->lpSrch), c->cchMax);
 }
 
 #endif
@@ -918,7 +918,7 @@ WINBASEAPI int WINAPI StrToIntA(LPCSTR lpszStr)
 {
     struct qemu_StrToIntA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRTOINTA);
-    call.lpszStr = (uint64_t)lpszStr;
+    call.lpszStr = (ULONG_PTR)lpszStr;
 
     qemu_syscall(&call.super);
 
@@ -950,7 +950,7 @@ WINBASEAPI int WINAPI StrToIntW(LPCWSTR lpszStr)
 {
     struct qemu_StrToIntW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRTOINTW);
-    call.lpszStr = (uint64_t)lpszStr;
+    call.lpszStr = (ULONG_PTR)lpszStr;
 
     qemu_syscall(&call.super);
 
@@ -984,9 +984,9 @@ WINBASEAPI BOOL WINAPI StrToIntExA(LPCSTR lpszStr, DWORD dwFlags, LPINT lpiRet)
 {
     struct qemu_StrToIntExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRTOINTEXA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpiRet = (uint64_t)lpiRet;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpiRet = (ULONG_PTR)lpiRet;
 
     qemu_syscall(&call.super);
 
@@ -1020,9 +1020,9 @@ WINBASEAPI BOOL WINAPI StrToInt64ExA(LPCSTR lpszStr, DWORD dwFlags, LONGLONG *lp
 {
     struct qemu_StrToInt64ExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRTOINT64EXA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpiRet = (uint64_t)lpiRet;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpiRet = (ULONG_PTR)lpiRet;
 
     qemu_syscall(&call.super);
 
@@ -1056,9 +1056,9 @@ WINBASEAPI BOOL WINAPI StrToIntExW(LPCWSTR lpszStr, DWORD dwFlags, LPINT lpiRet)
 {
     struct qemu_StrToIntExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRTOINTEXW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpiRet = (uint64_t)lpiRet;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpiRet = (ULONG_PTR)lpiRet;
 
     qemu_syscall(&call.super);
 
@@ -1092,9 +1092,9 @@ WINBASEAPI BOOL WINAPI StrToInt64ExW(LPCWSTR lpszStr, DWORD dwFlags, LONGLONG *l
 {
     struct qemu_StrToInt64ExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRTOINT64EXW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpiRet = (uint64_t)lpiRet;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpiRet = (ULONG_PTR)lpiRet;
 
     qemu_syscall(&call.super);
 
@@ -1126,11 +1126,11 @@ WINBASEAPI LPSTR WINAPI StrDupA(LPCSTR lpszStr)
 {
     struct qemu_StrDupA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRDUPA);
-    call.lpszStr = (uint64_t)lpszStr;
+    call.lpszStr = (ULONG_PTR)lpszStr;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1141,7 +1141,7 @@ void qemu_StrDupA(struct qemu_syscall *call)
 {
     struct qemu_StrDupA *c = (struct qemu_StrDupA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrDupA(QEMU_G2H(c->lpszStr));
+    c->super.iret = (ULONG_PTR)StrDupA(QEMU_G2H(c->lpszStr));
 }
 
 #endif
@@ -1158,11 +1158,11 @@ WINBASEAPI LPWSTR WINAPI StrDupW(LPCWSTR lpszStr)
 {
     struct qemu_StrDupW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRDUPW);
-    call.lpszStr = (uint64_t)lpszStr;
+    call.lpszStr = (ULONG_PTR)lpszStr;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1173,7 +1173,7 @@ void qemu_StrDupW(struct qemu_syscall *call)
 {
     struct qemu_StrDupW *c = (struct qemu_StrDupW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrDupW(QEMU_G2H(c->lpszStr));
+    c->super.iret = (ULONG_PTR)StrDupW(QEMU_G2H(c->lpszStr));
 }
 
 #endif
@@ -1191,8 +1191,8 @@ WINBASEAPI int WINAPI StrSpnA(LPCSTR lpszStr, LPCSTR lpszMatch)
 {
     struct qemu_StrSpnA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRSPNA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszMatch = (uint64_t)lpszMatch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszMatch = (ULONG_PTR)lpszMatch;
 
     qemu_syscall(&call.super);
 
@@ -1225,8 +1225,8 @@ WINBASEAPI int WINAPI StrSpnW(LPCWSTR lpszStr, LPCWSTR lpszMatch)
 {
     struct qemu_StrSpnW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRSPNW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszMatch = (uint64_t)lpszMatch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszMatch = (ULONG_PTR)lpszMatch;
 
     qemu_syscall(&call.super);
 
@@ -1259,8 +1259,8 @@ WINBASEAPI int WINAPI StrCSpnA(LPCSTR lpszStr, LPCSTR lpszMatch)
 {
     struct qemu_StrCSpnA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCSPNA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszMatch = (uint64_t)lpszMatch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszMatch = (ULONG_PTR)lpszMatch;
 
     qemu_syscall(&call.super);
 
@@ -1293,8 +1293,8 @@ WINBASEAPI int WINAPI StrCSpnW(LPCWSTR lpszStr, LPCWSTR lpszMatch)
 {
     struct qemu_StrCSpnW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCSPNW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszMatch = (uint64_t)lpszMatch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszMatch = (ULONG_PTR)lpszMatch;
 
     qemu_syscall(&call.super);
 
@@ -1327,8 +1327,8 @@ WINBASEAPI int WINAPI StrCSpnIA(LPCSTR lpszStr, LPCSTR lpszMatch)
 {
     struct qemu_StrCSpnIA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCSPNIA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszMatch = (uint64_t)lpszMatch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszMatch = (ULONG_PTR)lpszMatch;
 
     qemu_syscall(&call.super);
 
@@ -1361,8 +1361,8 @@ WINBASEAPI int WINAPI StrCSpnIW(LPCWSTR lpszStr, LPCWSTR lpszMatch)
 {
     struct qemu_StrCSpnIW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCSPNIW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszMatch = (uint64_t)lpszMatch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszMatch = (ULONG_PTR)lpszMatch;
 
     qemu_syscall(&call.super);
 
@@ -1395,12 +1395,12 @@ WINBASEAPI LPSTR WINAPI StrPBrkA(LPCSTR lpszStr, LPCSTR lpszMatch)
 {
     struct qemu_StrPBrkA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRPBRKA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszMatch = (uint64_t)lpszMatch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszMatch = (ULONG_PTR)lpszMatch;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1411,7 +1411,7 @@ void qemu_StrPBrkA(struct qemu_syscall *call)
 {
     struct qemu_StrPBrkA *c = (struct qemu_StrPBrkA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrPBrkA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszMatch));
+    c->super.iret = (ULONG_PTR)StrPBrkA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszMatch));
 }
 
 #endif
@@ -1429,12 +1429,12 @@ WINBASEAPI LPWSTR WINAPI StrPBrkW(LPCWSTR lpszStr, LPCWSTR lpszMatch)
 {
     struct qemu_StrPBrkW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRPBRKW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszMatch = (uint64_t)lpszMatch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszMatch = (ULONG_PTR)lpszMatch;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1445,7 +1445,7 @@ void qemu_StrPBrkW(struct qemu_syscall *call)
 {
     struct qemu_StrPBrkW *c = (struct qemu_StrPBrkW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrPBrkW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszMatch));
+    c->super.iret = (ULONG_PTR)StrPBrkW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszMatch));
 }
 
 #endif
@@ -1464,13 +1464,13 @@ WINBASEAPI LPSTR WINAPI StrRChrA(LPCSTR lpszStr, LPCSTR lpszEnd, WORD ch)
 {
     struct qemu_StrRChrA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRRCHRA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszEnd = (uint64_t)lpszEnd;
-    call.ch = (uint64_t)ch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszEnd = (ULONG_PTR)lpszEnd;
+    call.ch = (ULONG_PTR)ch;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1481,7 +1481,7 @@ void qemu_StrRChrA(struct qemu_syscall *call)
 {
     struct qemu_StrRChrA *c = (struct qemu_StrRChrA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrRChrA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszEnd), c->ch);
+    c->super.iret = (ULONG_PTR)StrRChrA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszEnd), c->ch);
 }
 
 #endif
@@ -1500,13 +1500,13 @@ WINBASEAPI LPWSTR WINAPI StrRChrW(LPCWSTR str, LPCWSTR end, WORD ch)
 {
     struct qemu_StrRChrW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRRCHRW);
-    call.str = (uint64_t)str;
-    call.end = (uint64_t)end;
-    call.ch = (uint64_t)ch;
+    call.str = (ULONG_PTR)str;
+    call.end = (ULONG_PTR)end;
+    call.ch = (ULONG_PTR)ch;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1517,7 +1517,7 @@ void qemu_StrRChrW(struct qemu_syscall *call)
 {
     struct qemu_StrRChrW *c = (struct qemu_StrRChrW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrRChrW(QEMU_G2H(c->str), QEMU_G2H(c->end), c->ch);
+    c->super.iret = (ULONG_PTR)StrRChrW(QEMU_G2H(c->str), QEMU_G2H(c->end), c->ch);
 }
 
 #endif
@@ -1536,13 +1536,13 @@ WINBASEAPI LPSTR WINAPI StrRChrIA(LPCSTR lpszStr, LPCSTR lpszEnd, WORD ch)
 {
     struct qemu_StrRChrIA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRRCHRIA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszEnd = (uint64_t)lpszEnd;
-    call.ch = (uint64_t)ch;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszEnd = (ULONG_PTR)lpszEnd;
+    call.ch = (ULONG_PTR)ch;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1553,7 +1553,7 @@ void qemu_StrRChrIA(struct qemu_syscall *call)
 {
     struct qemu_StrRChrIA *c = (struct qemu_StrRChrIA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrRChrIA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszEnd), c->ch);
+    c->super.iret = (ULONG_PTR)StrRChrIA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszEnd), c->ch);
 }
 
 #endif
@@ -1572,13 +1572,13 @@ WINBASEAPI LPWSTR WINAPI StrRChrIW(LPCWSTR str, LPCWSTR end, WORD ch)
 {
     struct qemu_StrRChrIW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRRCHRIW);
-    call.str = (uint64_t)str;
-    call.end = (uint64_t)end;
-    call.ch = (uint64_t)ch;
+    call.str = (ULONG_PTR)str;
+    call.end = (ULONG_PTR)end;
+    call.ch = (ULONG_PTR)ch;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1589,7 +1589,7 @@ void qemu_StrRChrIW(struct qemu_syscall *call)
 {
     struct qemu_StrRChrIW *c = (struct qemu_StrRChrIW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrRChrIW(QEMU_G2H(c->str), QEMU_G2H(c->end), c->ch);
+    c->super.iret = (ULONG_PTR)StrRChrIW(QEMU_G2H(c->str), QEMU_G2H(c->end), c->ch);
 }
 
 #endif
@@ -1608,13 +1608,13 @@ WINBASEAPI LPSTR WINAPI StrCatBuffA(LPSTR lpszStr, LPCSTR lpszCat, INT cchMax)
 {
     struct qemu_StrCatBuffA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCATBUFFA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszCat = (uint64_t)lpszCat;
-    call.cchMax = (uint64_t)cchMax;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszCat = (ULONG_PTR)lpszCat;
+    call.cchMax = (ULONG_PTR)cchMax;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1625,7 +1625,7 @@ void qemu_StrCatBuffA(struct qemu_syscall *call)
 {
     struct qemu_StrCatBuffA *c = (struct qemu_StrCatBuffA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrCatBuffA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszCat), c->cchMax);
+    c->super.iret = (ULONG_PTR)StrCatBuffA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszCat), c->cchMax);
 }
 
 #endif
@@ -1644,13 +1644,13 @@ WINBASEAPI LPWSTR WINAPI StrCatBuffW(LPWSTR lpszStr, LPCWSTR lpszCat, INT cchMax
 {
     struct qemu_StrCatBuffW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCATBUFFW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszCat = (uint64_t)lpszCat;
-    call.cchMax = (uint64_t)cchMax;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszCat = (ULONG_PTR)lpszCat;
+    call.cchMax = (ULONG_PTR)cchMax;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1661,7 +1661,7 @@ void qemu_StrCatBuffW(struct qemu_syscall *call)
 {
     struct qemu_StrCatBuffW *c = (struct qemu_StrCatBuffW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrCatBuffW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszCat), c->cchMax);
+    c->super.iret = (ULONG_PTR)StrCatBuffW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszCat), c->cchMax);
 }
 
 #endif
@@ -1681,10 +1681,10 @@ WINBASEAPI HRESULT WINAPI StrRetToBufA (LPSTRRET src, const ITEMIDLIST *pidl, LP
 {
     struct qemu_StrRetToBufA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRRETTOBUFA);
-    call.src = (uint64_t)src;
-    call.pidl = (uint64_t)pidl;
-    call.dest = (uint64_t)dest;
-    call.len = (uint64_t)len;
+    call.src = (ULONG_PTR)src;
+    call.pidl = (ULONG_PTR)pidl;
+    call.dest = (ULONG_PTR)dest;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
@@ -1719,10 +1719,10 @@ WINBASEAPI HRESULT WINAPI StrRetToBufW (LPSTRRET src, const ITEMIDLIST *pidl, LP
 {
     struct qemu_StrRetToBufW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRRETTOBUFW);
-    call.src = (uint64_t)src;
-    call.pidl = (uint64_t)pidl;
-    call.dest = (uint64_t)dest;
-    call.len = (uint64_t)len;
+    call.src = (ULONG_PTR)src;
+    call.pidl = (ULONG_PTR)pidl;
+    call.dest = (ULONG_PTR)dest;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
@@ -1756,9 +1756,9 @@ WINBASEAPI HRESULT WINAPI StrRetToStrA(LPSTRRET lpStrRet, const ITEMIDLIST *pidl
 {
     struct qemu_StrRetToStrA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRRETTOSTRA);
-    call.lpStrRet = (uint64_t)lpStrRet;
-    call.pidl = (uint64_t)pidl;
-    call.ppszName = (uint64_t)ppszName;
+    call.lpStrRet = (ULONG_PTR)lpStrRet;
+    call.pidl = (ULONG_PTR)pidl;
+    call.ppszName = (ULONG_PTR)ppszName;
 
     qemu_syscall(&call.super);
 
@@ -1792,9 +1792,9 @@ WINBASEAPI HRESULT WINAPI StrRetToStrW(LPSTRRET lpStrRet, const ITEMIDLIST *pidl
 {
     struct qemu_StrRetToStrW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRRETTOSTRW);
-    call.lpStrRet = (uint64_t)lpStrRet;
-    call.pidl = (uint64_t)pidl;
-    call.ppszName = (uint64_t)ppszName;
+    call.lpStrRet = (ULONG_PTR)lpStrRet;
+    call.pidl = (ULONG_PTR)pidl;
+    call.ppszName = (ULONG_PTR)ppszName;
 
     qemu_syscall(&call.super);
 
@@ -1828,9 +1828,9 @@ WINBASEAPI HRESULT WINAPI StrRetToBSTR(STRRET *lpStrRet, LPCITEMIDLIST pidl, BST
 {
     struct qemu_StrRetToBSTR call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRRETTOBSTR);
-    call.lpStrRet = (uint64_t)lpStrRet;
-    call.pidl = (uint64_t)pidl;
-    call.pBstrOut = (uint64_t)pBstrOut;
+    call.lpStrRet = (ULONG_PTR)lpStrRet;
+    call.pidl = (ULONG_PTR)pidl;
+    call.pBstrOut = (ULONG_PTR)pBstrOut;
 
     qemu_syscall(&call.super);
 
@@ -1864,13 +1864,13 @@ WINBASEAPI LPSTR WINAPI StrFormatKBSizeA(LONGLONG llBytes, LPSTR lpszDest, UINT 
 {
     struct qemu_StrFormatKBSizeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRFORMATKBSIZEA);
-    call.llBytes = (uint64_t)llBytes;
-    call.lpszDest = (uint64_t)lpszDest;
-    call.cchMax = (uint64_t)cchMax;
+    call.llBytes = (ULONG_PTR)llBytes;
+    call.lpszDest = (ULONG_PTR)lpszDest;
+    call.cchMax = (ULONG_PTR)cchMax;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1881,7 +1881,7 @@ void qemu_StrFormatKBSizeA(struct qemu_syscall *call)
 {
     struct qemu_StrFormatKBSizeA *c = (struct qemu_StrFormatKBSizeA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrFormatKBSizeA(c->llBytes, QEMU_G2H(c->lpszDest), c->cchMax);
+    c->super.iret = (ULONG_PTR)StrFormatKBSizeA(c->llBytes, QEMU_G2H(c->lpszDest), c->cchMax);
 }
 
 #endif
@@ -1900,13 +1900,13 @@ WINBASEAPI LPWSTR WINAPI StrFormatKBSizeW(LONGLONG llBytes, LPWSTR lpszDest, UIN
 {
     struct qemu_StrFormatKBSizeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRFORMATKBSIZEW);
-    call.llBytes = (uint64_t)llBytes;
-    call.lpszDest = (uint64_t)lpszDest;
-    call.cchMax = (uint64_t)cchMax;
+    call.llBytes = (ULONG_PTR)llBytes;
+    call.lpszDest = (ULONG_PTR)lpszDest;
+    call.cchMax = (ULONG_PTR)cchMax;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1917,7 +1917,7 @@ void qemu_StrFormatKBSizeW(struct qemu_syscall *call)
 {
     struct qemu_StrFormatKBSizeW *c = (struct qemu_StrFormatKBSizeW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrFormatKBSizeW(c->llBytes, QEMU_G2H(c->lpszDest), c->cchMax);
+    c->super.iret = (ULONG_PTR)StrFormatKBSizeW(c->llBytes, QEMU_G2H(c->lpszDest), c->cchMax);
 }
 
 #endif
@@ -1936,13 +1936,13 @@ WINBASEAPI LPSTR WINAPI StrNCatA(LPSTR lpszStr, LPCSTR lpszCat, INT cchMax)
 {
     struct qemu_StrNCatA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRNCATA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszCat = (uint64_t)lpszCat;
-    call.cchMax = (uint64_t)cchMax;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszCat = (ULONG_PTR)lpszCat;
+    call.cchMax = (ULONG_PTR)cchMax;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1953,7 +1953,7 @@ void qemu_StrNCatA(struct qemu_syscall *call)
 {
     struct qemu_StrNCatA *c = (struct qemu_StrNCatA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrNCatA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszCat), c->cchMax);
+    c->super.iret = (ULONG_PTR)StrNCatA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszCat), c->cchMax);
 }
 
 #endif
@@ -1972,13 +1972,13 @@ WINBASEAPI LPWSTR WINAPI StrNCatW(LPWSTR lpszStr, LPCWSTR lpszCat, INT cchMax)
 {
     struct qemu_StrNCatW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRNCATW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszCat = (uint64_t)lpszCat;
-    call.cchMax = (uint64_t)cchMax;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszCat = (ULONG_PTR)lpszCat;
+    call.cchMax = (ULONG_PTR)cchMax;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1989,7 +1989,7 @@ void qemu_StrNCatW(struct qemu_syscall *call)
 {
     struct qemu_StrNCatW *c = (struct qemu_StrNCatW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrNCatW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszCat), c->cchMax);
+    c->super.iret = (ULONG_PTR)StrNCatW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszCat), c->cchMax);
 }
 
 #endif
@@ -2007,8 +2007,8 @@ WINBASEAPI BOOL WINAPI StrTrimA(LPSTR lpszStr, LPCSTR lpszTrim)
 {
     struct qemu_StrTrimA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRTRIMA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszTrim = (uint64_t)lpszTrim;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszTrim = (ULONG_PTR)lpszTrim;
 
     qemu_syscall(&call.super);
 
@@ -2041,8 +2041,8 @@ WINBASEAPI BOOL WINAPI StrTrimW(LPWSTR lpszStr, LPCWSTR lpszTrim)
 {
     struct qemu_StrTrimW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRTRIMW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszTrim = (uint64_t)lpszTrim;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszTrim = (ULONG_PTR)lpszTrim;
 
     qemu_syscall(&call.super);
 
@@ -2075,8 +2075,8 @@ WINBASEAPI HRESULT WINAPI SHStrDupA(LPCSTR lpszStr, LPWSTR * lppszDest)
 {
     struct qemu_SHStrDupA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHSTRDUPA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lppszDest = (uint64_t)lppszDest;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lppszDest = (ULONG_PTR)lppszDest;
 
     qemu_syscall(&call.super);
 
@@ -2109,8 +2109,8 @@ WINBASEAPI HRESULT WINAPI SHStrDupW(LPCWSTR src, LPWSTR * dest)
 {
     struct qemu_SHStrDupW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHSTRDUPW);
-    call.src = (uint64_t)src;
-    call.dest = (uint64_t)dest;
+    call.src = (ULONG_PTR)src;
+    call.dest = (ULONG_PTR)dest;
 
     qemu_syscall(&call.super);
 
@@ -2145,10 +2145,10 @@ WINBASEAPI INT WINAPI StrFromTimeIntervalA(LPSTR lpszStr, UINT cchMax, DWORD dwM
 {
     struct qemu_StrFromTimeIntervalA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRFROMTIMEINTERVALA);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.cchMax = (uint64_t)cchMax;
-    call.dwMS = (uint64_t)dwMS;
-    call.iDigits = (uint64_t)iDigits;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.cchMax = (ULONG_PTR)cchMax;
+    call.dwMS = (ULONG_PTR)dwMS;
+    call.iDigits = (ULONG_PTR)iDigits;
 
     qemu_syscall(&call.super);
 
@@ -2183,10 +2183,10 @@ WINBASEAPI INT WINAPI StrFromTimeIntervalW(LPWSTR lpszStr, UINT cchMax, DWORD dw
 {
     struct qemu_StrFromTimeIntervalW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRFROMTIMEINTERVALW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.cchMax = (uint64_t)cchMax;
-    call.dwMS = (uint64_t)dwMS;
-    call.iDigits = (uint64_t)iDigits;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.cchMax = (ULONG_PTR)cchMax;
+    call.dwMS = (ULONG_PTR)dwMS;
+    call.iDigits = (ULONG_PTR)iDigits;
 
     qemu_syscall(&call.super);
 
@@ -2221,10 +2221,10 @@ WINBASEAPI BOOL WINAPI StrIsIntlEqualA(BOOL bCase, LPCSTR lpszStr, LPCSTR lpszCo
 {
     struct qemu_StrIsIntlEqualA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRISINTLEQUALA);
-    call.bCase = (uint64_t)bCase;
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszComp = (uint64_t)lpszComp;
-    call.iLen = (uint64_t)iLen;
+    call.bCase = (ULONG_PTR)bCase;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszComp = (ULONG_PTR)lpszComp;
+    call.iLen = (ULONG_PTR)iLen;
 
     qemu_syscall(&call.super);
 
@@ -2259,10 +2259,10 @@ WINBASEAPI BOOL WINAPI StrIsIntlEqualW(BOOL bCase, LPCWSTR lpszStr, LPCWSTR lpsz
 {
     struct qemu_StrIsIntlEqualW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRISINTLEQUALW);
-    call.bCase = (uint64_t)bCase;
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszComp = (uint64_t)lpszComp;
-    call.iLen = (uint64_t)iLen;
+    call.bCase = (ULONG_PTR)bCase;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszComp = (ULONG_PTR)lpszComp;
+    call.iLen = (ULONG_PTR)iLen;
 
     qemu_syscall(&call.super);
 
@@ -2296,13 +2296,13 @@ WINBASEAPI LPSTR WINAPI StrCpyNXA(LPSTR lpszDest, LPCSTR lpszSrc, int iLen)
 {
     struct qemu_StrCpyNXA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCPYNXA);
-    call.lpszDest = (uint64_t)lpszDest;
-    call.lpszSrc = (uint64_t)lpszSrc;
-    call.iLen = (uint64_t)iLen;
+    call.lpszDest = (ULONG_PTR)lpszDest;
+    call.lpszSrc = (ULONG_PTR)lpszSrc;
+    call.iLen = (ULONG_PTR)iLen;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2313,7 +2313,7 @@ void qemu_StrCpyNXA(struct qemu_syscall *call)
 {
     struct qemu_StrCpyNXA *c = (struct qemu_StrCpyNXA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrCpyNXA(QEMU_G2H(c->lpszDest), QEMU_G2H(c->lpszSrc), c->iLen);
+    c->super.iret = (ULONG_PTR)StrCpyNXA(QEMU_G2H(c->lpszDest), QEMU_G2H(c->lpszSrc), c->iLen);
 }
 
 #endif
@@ -2332,13 +2332,13 @@ WINBASEAPI LPWSTR WINAPI StrCpyNXW(LPWSTR lpszDest, LPCWSTR lpszSrc, int iLen)
 {
     struct qemu_StrCpyNXW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCPYNXW);
-    call.lpszDest = (uint64_t)lpszDest;
-    call.lpszSrc = (uint64_t)lpszSrc;
-    call.iLen = (uint64_t)iLen;
+    call.lpszDest = (ULONG_PTR)lpszDest;
+    call.lpszSrc = (ULONG_PTR)lpszSrc;
+    call.iLen = (ULONG_PTR)iLen;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2349,7 +2349,7 @@ void qemu_StrCpyNXW(struct qemu_syscall *call)
 {
     struct qemu_StrCpyNXW *c = (struct qemu_StrCpyNXW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrCpyNXW(QEMU_G2H(c->lpszDest), QEMU_G2H(c->lpszSrc), c->iLen);
+    c->super.iret = (ULONG_PTR)StrCpyNXW(QEMU_G2H(c->lpszDest), QEMU_G2H(c->lpszSrc), c->iLen);
 }
 
 #endif
@@ -2367,8 +2367,8 @@ WINBASEAPI INT WINAPI StrCmpLogicalW(LPCWSTR lpszStr, LPCWSTR lpszComp)
 {
     struct qemu_StrCmpLogicalW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCMPLOGICALW);
-    call.lpszStr = (uint64_t)lpszStr;
-    call.lpszComp = (uint64_t)lpszComp;
+    call.lpszStr = (ULONG_PTR)lpszStr;
+    call.lpszComp = (ULONG_PTR)lpszComp;
 
     qemu_syscall(&call.super);
 
@@ -2402,13 +2402,13 @@ WINBASEAPI LPWSTR WINAPI StrFormatByteSizeW(LONGLONG llBytes, LPWSTR lpszDest, U
 {
     struct qemu_StrFormatByteSizeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRFORMATBYTESIZEW);
-    call.llBytes = (uint64_t)llBytes;
-    call.lpszDest = (uint64_t)lpszDest;
-    call.cchMax = (uint64_t)cchMax;
+    call.llBytes = (ULONG_PTR)llBytes;
+    call.lpszDest = (ULONG_PTR)lpszDest;
+    call.cchMax = (ULONG_PTR)cchMax;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2419,7 +2419,7 @@ void qemu_StrFormatByteSizeW(struct qemu_syscall *call)
 {
     struct qemu_StrFormatByteSizeW *c = (struct qemu_StrFormatByteSizeW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrFormatByteSizeW(c->llBytes, QEMU_G2H(c->lpszDest), c->cchMax);
+    c->super.iret = (ULONG_PTR)StrFormatByteSizeW(c->llBytes, QEMU_G2H(c->lpszDest), c->cchMax);
 }
 
 #endif
@@ -2438,13 +2438,13 @@ WINBASEAPI LPSTR WINAPI StrFormatByteSize64A(LONGLONG llBytes, LPSTR lpszDest, U
 {
     struct qemu_StrFormatByteSize64A call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRFORMATBYTESIZE64A);
-    call.llBytes = (uint64_t)llBytes;
-    call.lpszDest = (uint64_t)lpszDest;
-    call.cchMax = (uint64_t)cchMax;
+    call.llBytes = (ULONG_PTR)llBytes;
+    call.lpszDest = (ULONG_PTR)lpszDest;
+    call.cchMax = (ULONG_PTR)cchMax;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2455,7 +2455,7 @@ void qemu_StrFormatByteSize64A(struct qemu_syscall *call)
 {
     struct qemu_StrFormatByteSize64A *c = (struct qemu_StrFormatByteSize64A *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrFormatByteSize64A(c->llBytes, QEMU_G2H(c->lpszDest), c->cchMax);
+    c->super.iret = (ULONG_PTR)StrFormatByteSize64A(c->llBytes, QEMU_G2H(c->lpszDest), c->cchMax);
 }
 
 #endif
@@ -2474,13 +2474,13 @@ WINBASEAPI LPSTR WINAPI StrFormatByteSizeA(DWORD dwBytes, LPSTR lpszDest, UINT c
 {
     struct qemu_StrFormatByteSizeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRFORMATBYTESIZEA);
-    call.dwBytes = (uint64_t)dwBytes;
-    call.lpszDest = (uint64_t)lpszDest;
-    call.cchMax = (uint64_t)cchMax;
+    call.dwBytes = (ULONG_PTR)dwBytes;
+    call.lpszDest = (ULONG_PTR)lpszDest;
+    call.cchMax = (ULONG_PTR)cchMax;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2491,7 +2491,7 @@ void qemu_StrFormatByteSizeA(struct qemu_syscall *call)
 {
     struct qemu_StrFormatByteSizeA *c = (struct qemu_StrFormatByteSizeA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StrFormatByteSizeA(c->dwBytes, QEMU_G2H(c->lpszDest), c->cchMax);
+    c->super.iret = (ULONG_PTR)StrFormatByteSizeA(c->dwBytes, QEMU_G2H(c->lpszDest), c->cchMax);
 }
 
 #endif
@@ -2509,8 +2509,8 @@ WINBASEAPI DWORD WINAPI SHTruncateString(LPSTR lpStr, DWORD size)
 {
     struct qemu_SHTruncateString call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHTRUNCATESTRING);
-    call.lpStr = (uint64_t)lpStr;
-    call.size = (uint64_t)size;
+    call.lpStr = (ULONG_PTR)lpStr;
+    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
 
@@ -2542,7 +2542,7 @@ WINBASEAPI char WINAPI SHStripMneumonicA(LPCSTR lpszStr)
 {
     struct qemu_SHStripMneumonicA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHSTRIPMNEUMONICA);
-    call.lpszStr = (uint64_t)lpszStr;
+    call.lpszStr = (ULONG_PTR)lpszStr;
 
     qemu_syscall(&call.super);
 
@@ -2574,7 +2574,7 @@ WINBASEAPI WCHAR WINAPI SHStripMneumonicW(LPCWSTR lpszStr)
 {
     struct qemu_SHStripMneumonicW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHSTRIPMNEUMONICW);
-    call.lpszStr = (uint64_t)lpszStr;
+    call.lpszStr = (ULONG_PTR)lpszStr;
 
     qemu_syscall(&call.super);
 
@@ -2609,10 +2609,10 @@ WINBASEAPI DWORD WINAPI SHAnsiToUnicodeCP(DWORD dwCp, LPCSTR lpSrcStr, LPWSTR lp
 {
     struct qemu_SHAnsiToUnicodeCP call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHANSITOUNICODECP);
-    call.dwCp = (uint64_t)dwCp;
-    call.lpSrcStr = (uint64_t)lpSrcStr;
-    call.lpDstStr = (uint64_t)lpDstStr;
-    call.iLen = (uint64_t)iLen;
+    call.dwCp = (ULONG_PTR)dwCp;
+    call.lpSrcStr = (ULONG_PTR)lpSrcStr;
+    call.lpDstStr = (ULONG_PTR)lpDstStr;
+    call.iLen = (ULONG_PTR)iLen;
 
     qemu_syscall(&call.super);
 
@@ -2646,9 +2646,9 @@ WINBASEAPI DWORD WINAPI SHAnsiToUnicode(LPCSTR lpSrcStr, LPWSTR lpDstStr, int iL
 {
     struct qemu_SHAnsiToUnicode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHANSITOUNICODE);
-    call.lpSrcStr = (uint64_t)lpSrcStr;
-    call.lpDstStr = (uint64_t)lpDstStr;
-    call.iLen = (uint64_t)iLen;
+    call.lpSrcStr = (ULONG_PTR)lpSrcStr;
+    call.lpDstStr = (ULONG_PTR)lpDstStr;
+    call.iLen = (ULONG_PTR)iLen;
 
     qemu_syscall(&call.super);
 
@@ -2683,10 +2683,10 @@ WINBASEAPI DWORD WINAPI SHUnicodeToAnsiCP(UINT CodePage, LPCWSTR lpSrcStr, LPSTR
 {
     struct qemu_SHUnicodeToAnsiCP call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHUNICODETOANSICP);
-    call.CodePage = (uint64_t)CodePage;
-    call.lpSrcStr = (uint64_t)lpSrcStr;
-    call.lpDstStr = (uint64_t)lpDstStr;
-    call.dstlen = (uint64_t)dstlen;
+    call.CodePage = (ULONG_PTR)CodePage;
+    call.lpSrcStr = (ULONG_PTR)lpSrcStr;
+    call.lpDstStr = (ULONG_PTR)lpDstStr;
+    call.dstlen = (ULONG_PTR)dstlen;
 
     qemu_syscall(&call.super);
 
@@ -2720,9 +2720,9 @@ WINBASEAPI INT WINAPI SHUnicodeToAnsi(LPCWSTR lpSrcStr, LPSTR lpDstStr, INT iLen
 {
     struct qemu_SHUnicodeToAnsi call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHUNICODETOANSI);
-    call.lpSrcStr = (uint64_t)lpSrcStr;
-    call.lpDstStr = (uint64_t)lpDstStr;
-    call.iLen = (uint64_t)iLen;
+    call.lpSrcStr = (ULONG_PTR)lpSrcStr;
+    call.lpDstStr = (ULONG_PTR)lpDstStr;
+    call.iLen = (ULONG_PTR)iLen;
 
     qemu_syscall(&call.super);
 
@@ -2756,9 +2756,9 @@ WINBASEAPI DWORD WINAPI SHAnsiToAnsi(LPCSTR lpszSrc, LPSTR lpszDst, int iLen)
 {
     struct qemu_SHAnsiToAnsi call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHANSITOANSI);
-    call.lpszSrc = (uint64_t)lpszSrc;
-    call.lpszDst = (uint64_t)lpszDst;
-    call.iLen = (uint64_t)iLen;
+    call.lpszSrc = (ULONG_PTR)lpszSrc;
+    call.lpszDst = (ULONG_PTR)lpszDst;
+    call.iLen = (ULONG_PTR)iLen;
 
     qemu_syscall(&call.super);
 
@@ -2792,9 +2792,9 @@ WINBASEAPI DWORD WINAPI SHUnicodeToUnicode(LPCWSTR lpszSrc, LPWSTR lpszDst, int 
 {
     struct qemu_SHUnicodeToUnicode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHUNICODETOUNICODE);
-    call.lpszSrc = (uint64_t)lpszSrc;
-    call.lpszDst = (uint64_t)lpszDst;
-    call.iLen = (uint64_t)iLen;
+    call.lpszSrc = (ULONG_PTR)lpszSrc;
+    call.lpszDst = (ULONG_PTR)lpszDst;
+    call.iLen = (ULONG_PTR)iLen;
 
     qemu_syscall(&call.super);
 
@@ -2828,9 +2828,9 @@ WINBASEAPI BOOL WINAPI DoesStringRoundTripA(LPCSTR lpSrcStr, LPSTR lpDst, INT iL
 {
     struct qemu_DoesStringRoundTripA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DOESSTRINGROUNDTRIPA);
-    call.lpSrcStr = (uint64_t)lpSrcStr;
-    call.lpDst = (uint64_t)lpDst;
-    call.iLen = (uint64_t)iLen;
+    call.lpSrcStr = (ULONG_PTR)lpSrcStr;
+    call.lpDst = (ULONG_PTR)lpDst;
+    call.iLen = (ULONG_PTR)iLen;
 
     qemu_syscall(&call.super);
 
@@ -2864,9 +2864,9 @@ WINBASEAPI BOOL WINAPI DoesStringRoundTripW(LPCWSTR lpSrcStr, LPSTR lpDst, INT i
 {
     struct qemu_DoesStringRoundTripW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DOESSTRINGROUNDTRIPW);
-    call.lpSrcStr = (uint64_t)lpSrcStr;
-    call.lpDst = (uint64_t)lpDst;
-    call.iLen = (uint64_t)iLen;
+    call.lpSrcStr = (ULONG_PTR)lpSrcStr;
+    call.lpDst = (ULONG_PTR)lpDst;
+    call.iLen = (ULONG_PTR)iLen;
 
     qemu_syscall(&call.super);
 
@@ -2901,10 +2901,10 @@ WINBASEAPI HRESULT WINAPI SHLoadIndirectString(LPCWSTR src, LPWSTR dst, UINT dst
 {
     struct qemu_SHLoadIndirectString call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHLOADINDIRECTSTRING);
-    call.src = (uint64_t)src;
-    call.dst = (uint64_t)dst;
-    call.dst_len = (uint64_t)dst_len;
-    call.reserved = (uint64_t)reserved;
+    call.src = (ULONG_PTR)src;
+    call.dst = (ULONG_PTR)dst;
+    call.dst_len = (ULONG_PTR)dst_len;
+    call.reserved = (ULONG_PTR)reserved;
 
     qemu_syscall(&call.super);
 
@@ -2936,7 +2936,7 @@ WINBASEAPI BOOL WINAPI IsCharSpaceA(CHAR c)
 {
     struct qemu_IsCharSpaceA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISCHARSPACEA);
-    call.c = (uint64_t)c;
+    call.c = (ULONG_PTR)c;
 
     qemu_syscall(&call.super);
 
@@ -2968,7 +2968,7 @@ WINBASEAPI BOOL WINAPI IsCharSpaceW(WCHAR wc)
 {
     struct qemu_IsCharSpaceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISCHARSPACEW);
-    call.wc = (uint64_t)wc;
+    call.wc = (ULONG_PTR)wc;
 
     qemu_syscall(&call.super);
 

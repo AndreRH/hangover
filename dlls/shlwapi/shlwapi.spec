@@ -846,5 +846,5 @@
 # @ stdcall _SHGetInstanceExplorer(ptr)
 @ varargs wnsprintfA(ptr long str)
 @ varargs wnsprintfW(ptr long wstr)
-@ stdcall wvnsprintfA(ptr long str ptr) shlwapi_wvnsprintfA
-@ stdcall wvnsprintfW(ptr long wstr ptr) shlwapi_wvnsprintfW
+@ stdcall wvnsprintfA(ptr long str ptr)
+@ stdcall wvnsprintfW(ptr long wstr ptr)

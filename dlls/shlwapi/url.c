@@ -45,8 +45,8 @@ WINBASEAPI HRESULT WINAPI ParseURLA(LPCSTR x, void *y)
 {
     struct qemu_ParseURLA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PARSEURLA);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -77,8 +77,8 @@ WINBASEAPI HRESULT WINAPI ParseURLW(LPCWSTR x, void *y)
 {
     struct qemu_ParseURLW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PARSEURLW);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -111,10 +111,10 @@ WINBASEAPI HRESULT WINAPI UrlCanonicalizeA(LPCSTR pszUrl, LPSTR pszCanonicalized
 {
     struct qemu_UrlCanonicalizeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLCANONICALIZEA);
-    call.pszUrl = (uint64_t)pszUrl;
-    call.pszCanonicalized = (uint64_t)pszCanonicalized;
-    call.pcchCanonicalized = (uint64_t)pcchCanonicalized;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.pszUrl = (ULONG_PTR)pszUrl;
+    call.pszCanonicalized = (ULONG_PTR)pszCanonicalized;
+    call.pcchCanonicalized = (ULONG_PTR)pcchCanonicalized;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -147,10 +147,10 @@ WINBASEAPI HRESULT WINAPI UrlCanonicalizeW(LPCWSTR pszUrl, LPWSTR pszCanonicaliz
 {
     struct qemu_UrlCanonicalizeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLCANONICALIZEW);
-    call.pszUrl = (uint64_t)pszUrl;
-    call.pszCanonicalized = (uint64_t)pszCanonicalized;
-    call.pcchCanonicalized = (uint64_t)pcchCanonicalized;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.pszUrl = (ULONG_PTR)pszUrl;
+    call.pszCanonicalized = (ULONG_PTR)pszCanonicalized;
+    call.pcchCanonicalized = (ULONG_PTR)pcchCanonicalized;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -184,11 +184,11 @@ WINBASEAPI HRESULT WINAPI UrlCombineA(LPCSTR pszBase, LPCSTR pszRelative, LPSTR 
 {
     struct qemu_UrlCombineA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLCOMBINEA);
-    call.pszBase = (uint64_t)pszBase;
-    call.pszRelative = (uint64_t)pszRelative;
-    call.pszCombined = (uint64_t)pszCombined;
-    call.pcchCombined = (uint64_t)pcchCombined;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.pszBase = (ULONG_PTR)pszBase;
+    call.pszRelative = (ULONG_PTR)pszRelative;
+    call.pszCombined = (ULONG_PTR)pszCombined;
+    call.pcchCombined = (ULONG_PTR)pcchCombined;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -222,11 +222,11 @@ WINBASEAPI HRESULT WINAPI UrlCombineW(LPCWSTR pszBase, LPCWSTR pszRelative, LPWS
 {
     struct qemu_UrlCombineW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLCOMBINEW);
-    call.pszBase = (uint64_t)pszBase;
-    call.pszRelative = (uint64_t)pszRelative;
-    call.pszCombined = (uint64_t)pszCombined;
-    call.pcchCombined = (uint64_t)pcchCombined;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.pszBase = (ULONG_PTR)pszBase;
+    call.pszRelative = (ULONG_PTR)pszRelative;
+    call.pszCombined = (ULONG_PTR)pszCombined;
+    call.pcchCombined = (ULONG_PTR)pcchCombined;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -259,10 +259,10 @@ WINBASEAPI HRESULT WINAPI UrlEscapeA(LPCSTR pszUrl, LPSTR pszEscaped, LPDWORD pc
 {
     struct qemu_UrlEscapeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLESCAPEA);
-    call.pszUrl = (uint64_t)pszUrl;
-    call.pszEscaped = (uint64_t)pszEscaped;
-    call.pcchEscaped = (uint64_t)pcchEscaped;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.pszUrl = (ULONG_PTR)pszUrl;
+    call.pszEscaped = (ULONG_PTR)pszEscaped;
+    call.pcchEscaped = (ULONG_PTR)pcchEscaped;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -295,10 +295,10 @@ WINBASEAPI HRESULT WINAPI UrlEscapeW(LPCWSTR pszUrl, LPWSTR pszEscaped, LPDWORD 
 {
     struct qemu_UrlEscapeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLESCAPEW);
-    call.pszUrl = (uint64_t)pszUrl;
-    call.pszEscaped = (uint64_t)pszEscaped;
-    call.pcchEscaped = (uint64_t)pcchEscaped;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.pszUrl = (ULONG_PTR)pszUrl;
+    call.pszEscaped = (ULONG_PTR)pszEscaped;
+    call.pcchEscaped = (ULONG_PTR)pcchEscaped;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -331,10 +331,10 @@ WINBASEAPI HRESULT WINAPI UrlUnescapeA(LPSTR pszUrl, LPSTR pszUnescaped, LPDWORD
 {
     struct qemu_UrlUnescapeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLUNESCAPEA);
-    call.pszUrl = (uint64_t)pszUrl;
-    call.pszUnescaped = (uint64_t)pszUnescaped;
-    call.pcchUnescaped = (uint64_t)pcchUnescaped;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.pszUrl = (ULONG_PTR)pszUrl;
+    call.pszUnescaped = (ULONG_PTR)pszUnescaped;
+    call.pcchUnescaped = (ULONG_PTR)pcchUnescaped;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -367,10 +367,10 @@ WINBASEAPI HRESULT WINAPI UrlUnescapeW(LPWSTR pszUrl, LPWSTR pszUnescaped, LPDWO
 {
     struct qemu_UrlUnescapeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLUNESCAPEW);
-    call.pszUrl = (uint64_t)pszUrl;
-    call.pszUnescaped = (uint64_t)pszUnescaped;
-    call.pcchUnescaped = (uint64_t)pcchUnescaped;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.pszUrl = (ULONG_PTR)pszUrl;
+    call.pszUnescaped = (ULONG_PTR)pszUnescaped;
+    call.pcchUnescaped = (ULONG_PTR)pcchUnescaped;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -400,11 +400,11 @@ WINBASEAPI LPCSTR WINAPI UrlGetLocationA(LPCSTR pszUrl)
 {
     struct qemu_UrlGetLocationA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLGETLOCATIONA);
-    call.pszUrl = (uint64_t)pszUrl;
+    call.pszUrl = (ULONG_PTR)pszUrl;
 
     qemu_syscall(&call.super);
 
-    return (LPCSTR)call.super.iret;
+    return (LPCSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -413,7 +413,7 @@ void qemu_UrlGetLocationA(struct qemu_syscall *call)
 {
     struct qemu_UrlGetLocationA *c = (struct qemu_UrlGetLocationA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)UrlGetLocationA(QEMU_G2H(c->pszUrl));
+    c->super.iret = (ULONG_PTR)UrlGetLocationA(QEMU_G2H(c->pszUrl));
 }
 
 #endif
@@ -430,11 +430,11 @@ WINBASEAPI LPCWSTR WINAPI UrlGetLocationW(LPCWSTR pszUrl)
 {
     struct qemu_UrlGetLocationW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLGETLOCATIONW);
-    call.pszUrl = (uint64_t)pszUrl;
+    call.pszUrl = (ULONG_PTR)pszUrl;
 
     qemu_syscall(&call.super);
 
-    return (LPCWSTR)call.super.iret;
+    return (LPCWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -443,7 +443,7 @@ void qemu_UrlGetLocationW(struct qemu_syscall *call)
 {
     struct qemu_UrlGetLocationW *c = (struct qemu_UrlGetLocationW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)UrlGetLocationW(QEMU_G2H(c->pszUrl));
+    c->super.iret = (ULONG_PTR)UrlGetLocationW(QEMU_G2H(c->pszUrl));
 }
 
 #endif
@@ -462,9 +462,9 @@ WINBASEAPI INT WINAPI UrlCompareA(LPCSTR pszUrl1, LPCSTR pszUrl2, BOOL fIgnoreSl
 {
     struct qemu_UrlCompareA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLCOMPAREA);
-    call.pszUrl1 = (uint64_t)pszUrl1;
-    call.pszUrl2 = (uint64_t)pszUrl2;
-    call.fIgnoreSlash = (uint64_t)fIgnoreSlash;
+    call.pszUrl1 = (ULONG_PTR)pszUrl1;
+    call.pszUrl2 = (ULONG_PTR)pszUrl2;
+    call.fIgnoreSlash = (ULONG_PTR)fIgnoreSlash;
 
     qemu_syscall(&call.super);
 
@@ -496,9 +496,9 @@ WINBASEAPI INT WINAPI UrlCompareW(LPCWSTR pszUrl1, LPCWSTR pszUrl2, BOOL fIgnore
 {
     struct qemu_UrlCompareW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLCOMPAREW);
-    call.pszUrl1 = (uint64_t)pszUrl1;
-    call.pszUrl2 = (uint64_t)pszUrl2;
-    call.fIgnoreSlash = (uint64_t)fIgnoreSlash;
+    call.pszUrl1 = (ULONG_PTR)pszUrl1;
+    call.pszUrl2 = (ULONG_PTR)pszUrl2;
+    call.fIgnoreSlash = (ULONG_PTR)fIgnoreSlash;
 
     qemu_syscall(&call.super);
 
@@ -531,10 +531,10 @@ WINBASEAPI HRESULT WINAPI HashData(unsigned char *lpSrc, DWORD nSrcLen, unsigned
 {
     struct qemu_HashData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HASHDATA);
-    call.lpSrc = (uint64_t)lpSrc;
-    call.nSrcLen = (uint64_t)nSrcLen;
-    call.lpDest = (uint64_t)lpDest;
-    call.nDestLen = (uint64_t)nDestLen;
+    call.lpSrc = (ULONG_PTR)lpSrc;
+    call.nSrcLen = (ULONG_PTR)nSrcLen;
+    call.lpDest = (ULONG_PTR)lpDest;
+    call.nDestLen = (ULONG_PTR)nDestLen;
 
     qemu_syscall(&call.super);
 
@@ -566,9 +566,9 @@ WINBASEAPI HRESULT WINAPI UrlHashA(LPCSTR pszUrl, unsigned char *lpDest, DWORD n
 {
     struct qemu_UrlHashA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLHASHA);
-    call.pszUrl = (uint64_t)pszUrl;
-    call.lpDest = (uint64_t)lpDest;
-    call.nDestLen = (uint64_t)nDestLen;
+    call.pszUrl = (ULONG_PTR)pszUrl;
+    call.lpDest = (ULONG_PTR)lpDest;
+    call.nDestLen = (ULONG_PTR)nDestLen;
 
     qemu_syscall(&call.super);
 
@@ -600,9 +600,9 @@ WINBASEAPI HRESULT WINAPI UrlHashW(LPCWSTR pszUrl, unsigned char *lpDest, DWORD 
 {
     struct qemu_UrlHashW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLHASHW);
-    call.pszUrl = (uint64_t)pszUrl;
-    call.lpDest = (uint64_t)lpDest;
-    call.nDestLen = (uint64_t)nDestLen;
+    call.pszUrl = (ULONG_PTR)pszUrl;
+    call.lpDest = (ULONG_PTR)lpDest;
+    call.nDestLen = (ULONG_PTR)nDestLen;
 
     qemu_syscall(&call.super);
 
@@ -635,10 +635,10 @@ WINBASEAPI HRESULT WINAPI UrlApplySchemeA(LPCSTR pszIn, LPSTR pszOut, LPDWORD pc
 {
     struct qemu_UrlApplySchemeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLAPPLYSCHEMEA);
-    call.pszIn = (uint64_t)pszIn;
-    call.pszOut = (uint64_t)pszOut;
-    call.pcchOut = (uint64_t)pcchOut;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.pszIn = (ULONG_PTR)pszIn;
+    call.pszOut = (ULONG_PTR)pszOut;
+    call.pcchOut = (ULONG_PTR)pcchOut;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -671,10 +671,10 @@ WINBASEAPI HRESULT WINAPI UrlApplySchemeW(LPCWSTR pszIn, LPWSTR pszOut, LPDWORD 
 {
     struct qemu_UrlApplySchemeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLAPPLYSCHEMEW);
-    call.pszIn = (uint64_t)pszIn;
-    call.pszOut = (uint64_t)pszOut;
-    call.pcchOut = (uint64_t)pcchOut;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.pszIn = (ULONG_PTR)pszIn;
+    call.pszOut = (ULONG_PTR)pszOut;
+    call.pcchOut = (ULONG_PTR)pcchOut;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -705,8 +705,8 @@ WINBASEAPI BOOL WINAPI UrlIsA(LPCSTR pszUrl, URLIS Urlis)
 {
     struct qemu_UrlIsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLISA);
-    call.pszUrl = (uint64_t)pszUrl;
-    call.Urlis = (uint64_t)Urlis;
+    call.pszUrl = (ULONG_PTR)pszUrl;
+    call.Urlis = (ULONG_PTR)Urlis;
 
     qemu_syscall(&call.super);
 
@@ -737,8 +737,8 @@ WINBASEAPI BOOL WINAPI UrlIsW(LPCWSTR pszUrl, URLIS Urlis)
 {
     struct qemu_UrlIsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLISW);
-    call.pszUrl = (uint64_t)pszUrl;
-    call.Urlis = (uint64_t)Urlis;
+    call.pszUrl = (ULONG_PTR)pszUrl;
+    call.Urlis = (ULONG_PTR)Urlis;
 
     qemu_syscall(&call.super);
 
@@ -768,7 +768,7 @@ WINBASEAPI BOOL WINAPI UrlIsNoHistoryA(LPCSTR pszUrl)
 {
     struct qemu_UrlIsNoHistoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLISNOHISTORYA);
-    call.pszUrl = (uint64_t)pszUrl;
+    call.pszUrl = (ULONG_PTR)pszUrl;
 
     qemu_syscall(&call.super);
 
@@ -798,7 +798,7 @@ WINBASEAPI BOOL WINAPI UrlIsNoHistoryW(LPCWSTR pszUrl)
 {
     struct qemu_UrlIsNoHistoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLISNOHISTORYW);
-    call.pszUrl = (uint64_t)pszUrl;
+    call.pszUrl = (ULONG_PTR)pszUrl;
 
     qemu_syscall(&call.super);
 
@@ -828,7 +828,7 @@ WINBASEAPI BOOL WINAPI UrlIsOpaqueA(LPCSTR pszUrl)
 {
     struct qemu_UrlIsOpaqueA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLISOPAQUEA);
-    call.pszUrl = (uint64_t)pszUrl;
+    call.pszUrl = (ULONG_PTR)pszUrl;
 
     qemu_syscall(&call.super);
 
@@ -858,7 +858,7 @@ WINBASEAPI BOOL WINAPI UrlIsOpaqueW(LPCWSTR pszUrl)
 {
     struct qemu_UrlIsOpaqueW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLISOPAQUEW);
-    call.pszUrl = (uint64_t)pszUrl;
+    call.pszUrl = (ULONG_PTR)pszUrl;
 
     qemu_syscall(&call.super);
 
@@ -892,11 +892,11 @@ WINBASEAPI HRESULT WINAPI UrlGetPartA(LPCSTR pszIn, LPSTR pszOut, LPDWORD pcchOu
 {
     struct qemu_UrlGetPartA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLGETPARTA);
-    call.pszIn = (uint64_t)pszIn;
-    call.pszOut = (uint64_t)pszOut;
-    call.pcchOut = (uint64_t)pcchOut;
-    call.dwPart = (uint64_t)dwPart;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.pszIn = (ULONG_PTR)pszIn;
+    call.pszOut = (ULONG_PTR)pszOut;
+    call.pcchOut = (ULONG_PTR)pcchOut;
+    call.dwPart = (ULONG_PTR)dwPart;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -930,11 +930,11 @@ WINBASEAPI HRESULT WINAPI UrlGetPartW(LPCWSTR pszIn, LPWSTR pszOut, LPDWORD pcch
 {
     struct qemu_UrlGetPartW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLGETPARTW);
-    call.pszIn = (uint64_t)pszIn;
-    call.pszOut = (uint64_t)pszOut;
-    call.pcchOut = (uint64_t)pcchOut;
-    call.dwPart = (uint64_t)dwPart;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.pszIn = (ULONG_PTR)pszIn;
+    call.pszOut = (ULONG_PTR)pszOut;
+    call.pcchOut = (ULONG_PTR)pcchOut;
+    call.dwPart = (ULONG_PTR)dwPart;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -964,7 +964,7 @@ WINBASEAPI BOOL WINAPI PathIsURLA(LPCSTR lpstrPath)
 {
     struct qemu_PathIsURLA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISURLA);
-    call.lpstrPath = (uint64_t)lpstrPath;
+    call.lpstrPath = (ULONG_PTR)lpstrPath;
 
     qemu_syscall(&call.super);
 
@@ -994,7 +994,7 @@ WINBASEAPI BOOL WINAPI PathIsURLW(LPCWSTR lpstrPath)
 {
     struct qemu_PathIsURLW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISURLW);
-    call.lpstrPath = (uint64_t)lpstrPath;
+    call.lpstrPath = (ULONG_PTR)lpstrPath;
 
     qemu_syscall(&call.super);
 
@@ -1027,10 +1027,10 @@ WINBASEAPI HRESULT WINAPI UrlCreateFromPathA(LPCSTR pszPath, LPSTR pszUrl, LPDWO
 {
     struct qemu_UrlCreateFromPathA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLCREATEFROMPATHA);
-    call.pszPath = (uint64_t)pszPath;
-    call.pszUrl = (uint64_t)pszUrl;
-    call.pcchUrl = (uint64_t)pcchUrl;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.pszPath = (ULONG_PTR)pszPath;
+    call.pszUrl = (ULONG_PTR)pszUrl;
+    call.pcchUrl = (ULONG_PTR)pcchUrl;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -1063,10 +1063,10 @@ WINBASEAPI HRESULT WINAPI UrlCreateFromPathW(LPCWSTR pszPath, LPWSTR pszUrl, LPD
 {
     struct qemu_UrlCreateFromPathW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLCREATEFROMPATHW);
-    call.pszPath = (uint64_t)pszPath;
-    call.pszUrl = (uint64_t)pszUrl;
-    call.pcchUrl = (uint64_t)pcchUrl;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.pszPath = (ULONG_PTR)pszPath;
+    call.pszUrl = (ULONG_PTR)pszUrl;
+    call.pcchUrl = (ULONG_PTR)pcchUrl;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -1097,8 +1097,8 @@ WINBASEAPI HRESULT WINAPI SHAutoComplete(HWND hwndEdit, DWORD dwFlags)
 {
     struct qemu_SHAutoComplete call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHAUTOCOMPLETE);
-    call.hwndEdit = (uint64_t)hwndEdit;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.hwndEdit = (ULONG_PTR)hwndEdit;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1133,12 +1133,12 @@ WINBASEAPI HRESULT WINAPI MLBuildResURLA(LPCSTR lpszLibName, HMODULE hMod, DWORD
 {
     struct qemu_MLBuildResURLA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MLBUILDRESURLA);
-    call.lpszLibName = (uint64_t)lpszLibName;
-    call.hMod = (uint64_t)hMod;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpszRes = (uint64_t)lpszRes;
-    call.lpszDest = (uint64_t)lpszDest;
-    call.dwDestLen = (uint64_t)dwDestLen;
+    call.lpszLibName = (ULONG_PTR)lpszLibName;
+    call.hMod = (ULONG_PTR)hMod;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpszRes = (ULONG_PTR)lpszRes;
+    call.lpszDest = (ULONG_PTR)lpszDest;
+    call.dwDestLen = (ULONG_PTR)dwDestLen;
 
     qemu_syscall(&call.super);
 
@@ -1175,12 +1175,12 @@ WINBASEAPI HRESULT WINAPI MLBuildResURLW(LPCWSTR lpszLibName, HMODULE hMod, DWOR
 {
     struct qemu_MLBuildResURLW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MLBUILDRESURLW);
-    call.lpszLibName = (uint64_t)lpszLibName;
-    call.hMod = (uint64_t)hMod;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.lpszRes = (uint64_t)lpszRes;
-    call.lpszDest = (uint64_t)lpszDest;
-    call.dwDestLen = (uint64_t)dwDestLen;
+    call.lpszLibName = (ULONG_PTR)lpszLibName;
+    call.hMod = (ULONG_PTR)hMod;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpszRes = (ULONG_PTR)lpszRes;
+    call.lpszDest = (ULONG_PTR)lpszDest;
+    call.dwDestLen = (ULONG_PTR)dwDestLen;
 
     qemu_syscall(&call.super);
 
@@ -1214,9 +1214,9 @@ WINBASEAPI HRESULT WINAPI UrlFixupW(LPCWSTR url, LPWSTR translatedUrl, DWORD max
 {
     struct qemu_UrlFixupW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_URLFIXUPW);
-    call.url = (uint64_t)url;
-    call.translatedUrl = (uint64_t)translatedUrl;
-    call.maxChars = (uint64_t)maxChars;
+    call.url = (ULONG_PTR)url;
+    call.translatedUrl = (ULONG_PTR)translatedUrl;
+    call.maxChars = (ULONG_PTR)maxChars;
 
     qemu_syscall(&call.super);
 

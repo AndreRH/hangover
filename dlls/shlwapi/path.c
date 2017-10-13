@@ -45,8 +45,8 @@ WINBASEAPI BOOL WINAPI PathAppendA (LPSTR lpszPath, LPCSTR lpszAppend)
 {
     struct qemu_PathAppendA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHAPPENDA);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.lpszAppend = (uint64_t)lpszAppend;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.lpszAppend = (ULONG_PTR)lpszAppend;
 
     qemu_syscall(&call.super);
 
@@ -77,8 +77,8 @@ WINBASEAPI BOOL WINAPI PathAppendW(LPWSTR lpszPath, LPCWSTR lpszAppend)
 {
     struct qemu_PathAppendW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHAPPENDW);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.lpszAppend = (uint64_t)lpszAppend;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.lpszAppend = (ULONG_PTR)lpszAppend;
 
     qemu_syscall(&call.super);
 
@@ -110,13 +110,13 @@ WINBASEAPI LPSTR WINAPI PathCombineA(LPSTR lpszDest, LPCSTR lpszDir, LPCSTR lpsz
 {
     struct qemu_PathCombineA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHCOMBINEA);
-    call.lpszDest = (uint64_t)lpszDest;
-    call.lpszDir = (uint64_t)lpszDir;
-    call.lpszFile = (uint64_t)lpszFile;
+    call.lpszDest = (ULONG_PTR)lpszDest;
+    call.lpszDir = (ULONG_PTR)lpszDir;
+    call.lpszFile = (ULONG_PTR)lpszFile;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -125,7 +125,7 @@ void qemu_PathCombineA(struct qemu_syscall *call)
 {
     struct qemu_PathCombineA *c = (struct qemu_PathCombineA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathCombineA(QEMU_G2H(c->lpszDest), QEMU_G2H(c->lpszDir), QEMU_G2H(c->lpszFile));
+    c->super.iret = (ULONG_PTR)PathCombineA(QEMU_G2H(c->lpszDest), QEMU_G2H(c->lpszDir), QEMU_G2H(c->lpszFile));
 }
 
 #endif
@@ -144,13 +144,13 @@ WINBASEAPI LPWSTR WINAPI PathCombineW(LPWSTR lpszDest, LPCWSTR lpszDir, LPCWSTR 
 {
     struct qemu_PathCombineW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHCOMBINEW);
-    call.lpszDest = (uint64_t)lpszDest;
-    call.lpszDir = (uint64_t)lpszDir;
-    call.lpszFile = (uint64_t)lpszFile;
+    call.lpszDest = (ULONG_PTR)lpszDest;
+    call.lpszDir = (ULONG_PTR)lpszDir;
+    call.lpszFile = (ULONG_PTR)lpszFile;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -159,7 +159,7 @@ void qemu_PathCombineW(struct qemu_syscall *call)
 {
     struct qemu_PathCombineW *c = (struct qemu_PathCombineW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathCombineW(QEMU_G2H(c->lpszDest), QEMU_G2H(c->lpszDir), QEMU_G2H(c->lpszFile));
+    c->super.iret = (ULONG_PTR)PathCombineW(QEMU_G2H(c->lpszDest), QEMU_G2H(c->lpszDir), QEMU_G2H(c->lpszFile));
 }
 
 #endif
@@ -176,11 +176,11 @@ WINBASEAPI LPSTR WINAPI PathAddBackslashA(LPSTR lpszPath)
 {
     struct qemu_PathAddBackslashA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHADDBACKSLASHA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -189,7 +189,7 @@ void qemu_PathAddBackslashA(struct qemu_syscall *call)
 {
     struct qemu_PathAddBackslashA *c = (struct qemu_PathAddBackslashA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathAddBackslashA(QEMU_G2H(c->lpszPath));
+    c->super.iret = (ULONG_PTR)PathAddBackslashA(QEMU_G2H(c->lpszPath));
 }
 
 #endif
@@ -206,11 +206,11 @@ WINBASEAPI LPWSTR WINAPI PathAddBackslashW(LPWSTR lpszPath)
 {
     struct qemu_PathAddBackslashW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHADDBACKSLASHW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -219,7 +219,7 @@ void qemu_PathAddBackslashW(struct qemu_syscall *call)
 {
     struct qemu_PathAddBackslashW *c = (struct qemu_PathAddBackslashW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathAddBackslashW(QEMU_G2H(c->lpszPath));
+    c->super.iret = (ULONG_PTR)PathAddBackslashW(QEMU_G2H(c->lpszPath));
 }
 
 #endif
@@ -237,12 +237,12 @@ WINBASEAPI LPSTR WINAPI PathBuildRootA(LPSTR lpszPath, int drive)
 {
     struct qemu_PathBuildRootA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHBUILDROOTA);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.drive = (uint64_t)drive;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.drive = (ULONG_PTR)drive;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -251,7 +251,7 @@ void qemu_PathBuildRootA(struct qemu_syscall *call)
 {
     struct qemu_PathBuildRootA *c = (struct qemu_PathBuildRootA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathBuildRootA(QEMU_G2H(c->lpszPath), c->drive);
+    c->super.iret = (ULONG_PTR)PathBuildRootA(QEMU_G2H(c->lpszPath), c->drive);
 }
 
 #endif
@@ -269,12 +269,12 @@ WINBASEAPI LPWSTR WINAPI PathBuildRootW(LPWSTR lpszPath, int drive)
 {
     struct qemu_PathBuildRootW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHBUILDROOTW);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.drive = (uint64_t)drive;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.drive = (ULONG_PTR)drive;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -283,7 +283,7 @@ void qemu_PathBuildRootW(struct qemu_syscall *call)
 {
     struct qemu_PathBuildRootW *c = (struct qemu_PathBuildRootW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathBuildRootW(QEMU_G2H(c->lpszPath), c->drive);
+    c->super.iret = (ULONG_PTR)PathBuildRootW(QEMU_G2H(c->lpszPath), c->drive);
 }
 
 #endif
@@ -300,11 +300,11 @@ WINBASEAPI LPSTR WINAPI PathFindFileNameA(LPCSTR lpszPath)
 {
     struct qemu_PathFindFileNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFINDFILENAMEA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -313,7 +313,7 @@ void qemu_PathFindFileNameA(struct qemu_syscall *call)
 {
     struct qemu_PathFindFileNameA *c = (struct qemu_PathFindFileNameA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathFindFileNameA(QEMU_G2H(c->lpszPath));
+    c->super.iret = (ULONG_PTR)PathFindFileNameA(QEMU_G2H(c->lpszPath));
 }
 
 #endif
@@ -330,11 +330,11 @@ WINBASEAPI LPWSTR WINAPI PathFindFileNameW(LPCWSTR lpszPath)
 {
     struct qemu_PathFindFileNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFINDFILENAMEW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -343,7 +343,7 @@ void qemu_PathFindFileNameW(struct qemu_syscall *call)
 {
     struct qemu_PathFindFileNameW *c = (struct qemu_PathFindFileNameW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)PathFindFileNameW(QEMU_G2H(c->lpszPath));
+    c->super.iret = (ULONG_PTR)PathFindFileNameW(QEMU_G2H(c->lpszPath));
 }
 
 #endif
@@ -360,11 +360,11 @@ WINBASEAPI LPSTR WINAPI PathFindExtensionA(LPCSTR lpszPath)
 {
     struct qemu_PathFindExtensionA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFINDEXTENSIONA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -373,7 +373,7 @@ void qemu_PathFindExtensionA(struct qemu_syscall *call)
 {
     struct qemu_PathFindExtensionA *c = (struct qemu_PathFindExtensionA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathFindExtensionA(QEMU_G2H(c->lpszPath));
+    c->super.iret = (ULONG_PTR)PathFindExtensionA(QEMU_G2H(c->lpszPath));
 }
 
 #endif
@@ -390,11 +390,11 @@ WINBASEAPI LPWSTR WINAPI PathFindExtensionW(LPCWSTR lpszPath)
 {
     struct qemu_PathFindExtensionW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFINDEXTENSIONW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -403,7 +403,7 @@ void qemu_PathFindExtensionW(struct qemu_syscall *call)
 {
     struct qemu_PathFindExtensionW *c = (struct qemu_PathFindExtensionW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)PathFindExtensionW(QEMU_G2H(c->lpszPath));
+    c->super.iret = (ULONG_PTR)PathFindExtensionW(QEMU_G2H(c->lpszPath));
 }
 
 #endif
@@ -420,11 +420,11 @@ WINBASEAPI LPSTR WINAPI PathGetArgsA(LPCSTR lpszPath)
 {
     struct qemu_PathGetArgsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHGETARGSA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -433,7 +433,7 @@ void qemu_PathGetArgsA(struct qemu_syscall *call)
 {
     struct qemu_PathGetArgsA *c = (struct qemu_PathGetArgsA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathGetArgsA(QEMU_G2H(c->lpszPath));
+    c->super.iret = (ULONG_PTR)PathGetArgsA(QEMU_G2H(c->lpszPath));
 }
 
 #endif
@@ -450,11 +450,11 @@ WINBASEAPI LPWSTR WINAPI PathGetArgsW(LPCWSTR lpszPath)
 {
     struct qemu_PathGetArgsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHGETARGSW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -463,7 +463,7 @@ void qemu_PathGetArgsW(struct qemu_syscall *call)
 {
     struct qemu_PathGetArgsW *c = (struct qemu_PathGetArgsW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathGetArgsW(QEMU_G2H(c->lpszPath));
+    c->super.iret = (ULONG_PTR)PathGetArgsW(QEMU_G2H(c->lpszPath));
 }
 
 #endif
@@ -480,7 +480,7 @@ WINBASEAPI int WINAPI PathGetDriveNumberA(LPCSTR lpszPath)
 {
     struct qemu_PathGetDriveNumberA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHGETDRIVENUMBERA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -510,7 +510,7 @@ WINBASEAPI int WINAPI PathGetDriveNumberW(LPCWSTR lpszPath)
 {
     struct qemu_PathGetDriveNumberW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHGETDRIVENUMBERW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -540,7 +540,7 @@ WINBASEAPI BOOL WINAPI PathRemoveFileSpecA(LPSTR lpszPath)
 {
     struct qemu_PathRemoveFileSpecA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHREMOVEFILESPECA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -570,7 +570,7 @@ WINBASEAPI BOOL WINAPI PathRemoveFileSpecW(LPWSTR lpszPath)
 {
     struct qemu_PathRemoveFileSpecW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHREMOVEFILESPECW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -600,7 +600,7 @@ WINBASEAPI void WINAPI PathStripPathA(LPSTR lpszPath)
 {
     struct qemu_PathStripPathA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHSTRIPPATHA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 }
@@ -628,7 +628,7 @@ WINBASEAPI void WINAPI PathStripPathW(LPWSTR lpszPath)
 {
     struct qemu_PathStripPathW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHSTRIPPATHW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 }
@@ -656,7 +656,7 @@ WINBASEAPI BOOL WINAPI PathStripToRootA(LPSTR lpszPath)
 {
     struct qemu_PathStripToRootA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHSTRIPTOROOTA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -686,7 +686,7 @@ WINBASEAPI BOOL WINAPI PathStripToRootW(LPWSTR lpszPath)
 {
     struct qemu_PathStripToRootW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHSTRIPTOROOTW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -716,7 +716,7 @@ WINBASEAPI void WINAPI PathRemoveArgsA(LPSTR lpszPath)
 {
     struct qemu_PathRemoveArgsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHREMOVEARGSA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 }
@@ -744,7 +744,7 @@ WINBASEAPI void WINAPI PathRemoveArgsW(LPWSTR lpszPath)
 {
     struct qemu_PathRemoveArgsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHREMOVEARGSW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 }
@@ -772,7 +772,7 @@ WINBASEAPI void WINAPI PathRemoveExtensionA(LPSTR lpszPath)
 {
     struct qemu_PathRemoveExtensionA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHREMOVEEXTENSIONA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 }
@@ -800,7 +800,7 @@ WINBASEAPI void WINAPI PathRemoveExtensionW(LPWSTR lpszPath)
 {
     struct qemu_PathRemoveExtensionW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHREMOVEEXTENSIONW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 }
@@ -828,11 +828,11 @@ WINBASEAPI LPSTR WINAPI PathRemoveBackslashA(LPSTR lpszPath)
 {
     struct qemu_PathRemoveBackslashA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHREMOVEBACKSLASHA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -841,7 +841,7 @@ void qemu_PathRemoveBackslashA(struct qemu_syscall *call)
 {
     struct qemu_PathRemoveBackslashA *c = (struct qemu_PathRemoveBackslashA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathRemoveBackslashA(QEMU_G2H(c->lpszPath));
+    c->super.iret = (ULONG_PTR)PathRemoveBackslashA(QEMU_G2H(c->lpszPath));
 }
 
 #endif
@@ -858,11 +858,11 @@ WINBASEAPI LPWSTR WINAPI PathRemoveBackslashW(LPWSTR lpszPath)
 {
     struct qemu_PathRemoveBackslashW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHREMOVEBACKSLASHW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -871,7 +871,7 @@ void qemu_PathRemoveBackslashW(struct qemu_syscall *call)
 {
     struct qemu_PathRemoveBackslashW *c = (struct qemu_PathRemoveBackslashW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathRemoveBackslashW(QEMU_G2H(c->lpszPath));
+    c->super.iret = (ULONG_PTR)PathRemoveBackslashW(QEMU_G2H(c->lpszPath));
 }
 
 #endif
@@ -888,7 +888,7 @@ WINBASEAPI VOID WINAPI PathRemoveBlanksA(LPSTR lpszPath)
 {
     struct qemu_PathRemoveBlanksA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHREMOVEBLANKSA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 }
@@ -916,7 +916,7 @@ WINBASEAPI VOID WINAPI PathRemoveBlanksW(LPWSTR lpszPath)
 {
     struct qemu_PathRemoveBlanksW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHREMOVEBLANKSW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 }
@@ -944,7 +944,7 @@ WINBASEAPI VOID WINAPI PathQuoteSpacesA(LPSTR lpszPath)
 {
     struct qemu_PathQuoteSpacesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHQUOTESPACESA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 }
@@ -972,7 +972,7 @@ WINBASEAPI VOID WINAPI PathQuoteSpacesW(LPWSTR lpszPath)
 {
     struct qemu_PathQuoteSpacesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHQUOTESPACESW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 }
@@ -1000,7 +1000,7 @@ WINBASEAPI VOID WINAPI PathUnquoteSpacesA(LPSTR lpszPath)
 {
     struct qemu_PathUnquoteSpacesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHUNQUOTESPACESA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 }
@@ -1028,7 +1028,7 @@ WINBASEAPI VOID WINAPI PathUnquoteSpacesW(LPWSTR lpszPath)
 {
     struct qemu_PathUnquoteSpacesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHUNQUOTESPACESW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 }
@@ -1056,7 +1056,7 @@ WINBASEAPI int WINAPI PathParseIconLocationA(LPSTR lpszPath)
 {
     struct qemu_PathParseIconLocationA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHPARSEICONLOCATIONA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -1086,7 +1086,7 @@ WINBASEAPI int WINAPI PathParseIconLocationW(LPWSTR lpszPath)
 {
     struct qemu_PathParseIconLocationW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHPARSEICONLOCATIONW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -1117,8 +1117,8 @@ WINBASEAPI BOOL WINAPI PathFileExistsDefExtW(LPWSTR lpszPath,DWORD dwWhich)
 {
     struct qemu_PathFileExistsDefExtW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFILEEXISTSDEFEXTW);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.dwWhich = (uint64_t)dwWhich;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.dwWhich = (ULONG_PTR)dwWhich;
 
     qemu_syscall(&call.super);
 
@@ -1151,8 +1151,8 @@ WINBASEAPI BOOL WINAPI PathFileExistsDefExtA(LPSTR lpszPath,DWORD dwWhich)
 {
     struct qemu_PathFileExistsDefExtA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFILEEXISTSDEFEXTA);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.dwWhich = (uint64_t)dwWhich;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.dwWhich = (ULONG_PTR)dwWhich;
 
     qemu_syscall(&call.super);
 
@@ -1186,9 +1186,9 @@ WINBASEAPI BOOL WINAPI PathFindOnPathExA(LPSTR lpszFile,LPCSTR *lppszOtherDirs,D
 {
     struct qemu_PathFindOnPathExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFINDONPATHEXA);
-    call.lpszFile = (uint64_t)lpszFile;
-    call.lppszOtherDirs = (uint64_t)lppszOtherDirs;
-    call.dwWhich = (uint64_t)dwWhich;
+    call.lpszFile = (ULONG_PTR)lpszFile;
+    call.lppszOtherDirs = (ULONG_PTR)lppszOtherDirs;
+    call.dwWhich = (ULONG_PTR)dwWhich;
 
     qemu_syscall(&call.super);
 
@@ -1222,9 +1222,9 @@ WINBASEAPI BOOL WINAPI PathFindOnPathExW(LPWSTR lpszFile,LPCWSTR *lppszOtherDirs
 {
     struct qemu_PathFindOnPathExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFINDONPATHEXW);
-    call.lpszFile = (uint64_t)lpszFile;
-    call.lppszOtherDirs = (uint64_t)lppszOtherDirs;
-    call.dwWhich = (uint64_t)dwWhich;
+    call.lpszFile = (ULONG_PTR)lpszFile;
+    call.lppszOtherDirs = (ULONG_PTR)lppszOtherDirs;
+    call.dwWhich = (ULONG_PTR)dwWhich;
 
     qemu_syscall(&call.super);
 
@@ -1257,8 +1257,8 @@ WINBASEAPI BOOL WINAPI PathFindOnPathA(LPSTR lpszFile, LPCSTR *lppszOtherDirs)
 {
     struct qemu_PathFindOnPathA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFINDONPATHA);
-    call.lpszFile = (uint64_t)lpszFile;
-    call.lppszOtherDirs = (uint64_t)lppszOtherDirs;
+    call.lpszFile = (ULONG_PTR)lpszFile;
+    call.lppszOtherDirs = (ULONG_PTR)lppszOtherDirs;
 
     qemu_syscall(&call.super);
 
@@ -1289,8 +1289,8 @@ WINBASEAPI BOOL WINAPI PathFindOnPathW(LPWSTR lpszFile, LPCWSTR *lppszOtherDirs)
 {
     struct qemu_PathFindOnPathW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFINDONPATHW);
-    call.lpszFile = (uint64_t)lpszFile;
-    call.lppszOtherDirs = (uint64_t)lppszOtherDirs;
+    call.lpszFile = (ULONG_PTR)lpszFile;
+    call.lppszOtherDirs = (ULONG_PTR)lppszOtherDirs;
 
     qemu_syscall(&call.super);
 
@@ -1323,10 +1323,10 @@ WINBASEAPI BOOL WINAPI PathCompactPathExA(LPSTR lpszDest, LPCSTR lpszPath, UINT 
 {
     struct qemu_PathCompactPathExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHCOMPACTPATHEXA);
-    call.lpszDest = (uint64_t)lpszDest;
-    call.lpszPath = (uint64_t)lpszPath;
-    call.cchMax = (uint64_t)cchMax;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.lpszDest = (ULONG_PTR)lpszDest;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.cchMax = (ULONG_PTR)cchMax;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1359,10 +1359,10 @@ WINBASEAPI BOOL WINAPI PathCompactPathExW(LPWSTR lpszDest, LPCWSTR lpszPath, UIN
 {
     struct qemu_PathCompactPathExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHCOMPACTPATHEXW);
-    call.lpszDest = (uint64_t)lpszDest;
-    call.lpszPath = (uint64_t)lpszPath;
-    call.cchMax = (uint64_t)cchMax;
-    call.dwFlags = (uint64_t)dwFlags;
+    call.lpszDest = (ULONG_PTR)lpszDest;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.cchMax = (ULONG_PTR)cchMax;
+    call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -1392,7 +1392,7 @@ WINBASEAPI BOOL WINAPI PathIsRelativeA (LPCSTR lpszPath)
 {
     struct qemu_PathIsRelativeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISRELATIVEA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -1422,7 +1422,7 @@ WINBASEAPI BOOL WINAPI PathIsRelativeW (LPCWSTR lpszPath)
 {
     struct qemu_PathIsRelativeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISRELATIVEW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -1452,7 +1452,7 @@ WINBASEAPI BOOL WINAPI PathIsRootA(LPCSTR lpszPath)
 {
     struct qemu_PathIsRootA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISROOTA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -1482,7 +1482,7 @@ WINBASEAPI BOOL WINAPI PathIsRootW(LPCWSTR lpszPath)
 {
     struct qemu_PathIsRootW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISROOTW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -1512,7 +1512,7 @@ WINBASEAPI BOOL WINAPI PathIsDirectoryA(LPCSTR lpszPath)
 {
     struct qemu_PathIsDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISDIRECTORYA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -1542,7 +1542,7 @@ WINBASEAPI BOOL WINAPI PathIsDirectoryW(LPCWSTR lpszPath)
 {
     struct qemu_PathIsDirectoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISDIRECTORYW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -1572,7 +1572,7 @@ WINBASEAPI BOOL WINAPI PathFileExistsA(LPCSTR lpszPath)
 {
     struct qemu_PathFileExistsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFILEEXISTSA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -1602,7 +1602,7 @@ WINBASEAPI BOOL WINAPI PathFileExistsW(LPCWSTR lpszPath)
 {
     struct qemu_PathFileExistsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFILEEXISTSW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -1633,8 +1633,8 @@ WINBASEAPI BOOL WINAPI PathFileExistsAndAttributesA(LPCSTR lpszPath, DWORD *dwAt
 {
     struct qemu_PathFileExistsAndAttributesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFILEEXISTSANDATTRIBUTESA);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.dwAttr = (uint64_t)dwAttr;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.dwAttr = (ULONG_PTR)dwAttr;
 
     qemu_syscall(&call.super);
 
@@ -1665,8 +1665,8 @@ WINBASEAPI BOOL WINAPI PathFileExistsAndAttributesW(LPCWSTR lpszPath, DWORD *dwA
 {
     struct qemu_PathFileExistsAndAttributesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFILEEXISTSANDATTRIBUTESW);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.dwAttr = (uint64_t)dwAttr;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.dwAttr = (ULONG_PTR)dwAttr;
 
     qemu_syscall(&call.super);
 
@@ -1697,8 +1697,8 @@ WINBASEAPI BOOL WINAPI PathMatchSpecA(LPCSTR lpszPath, LPCSTR lpszMask)
 {
     struct qemu_PathMatchSpecA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHMATCHSPECA);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.lpszMask = (uint64_t)lpszMask;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.lpszMask = (ULONG_PTR)lpszMask;
 
     qemu_syscall(&call.super);
 
@@ -1729,8 +1729,8 @@ WINBASEAPI BOOL WINAPI PathMatchSpecW(LPCWSTR lpszPath, LPCWSTR lpszMask)
 {
     struct qemu_PathMatchSpecW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHMATCHSPECW);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.lpszMask = (uint64_t)lpszMask;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.lpszMask = (ULONG_PTR)lpszMask;
 
     qemu_syscall(&call.super);
 
@@ -1761,8 +1761,8 @@ WINBASEAPI BOOL WINAPI PathIsSameRootA(LPCSTR lpszPath1, LPCSTR lpszPath2)
 {
     struct qemu_PathIsSameRootA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISSAMEROOTA);
-    call.lpszPath1 = (uint64_t)lpszPath1;
-    call.lpszPath2 = (uint64_t)lpszPath2;
+    call.lpszPath1 = (ULONG_PTR)lpszPath1;
+    call.lpszPath2 = (ULONG_PTR)lpszPath2;
 
     qemu_syscall(&call.super);
 
@@ -1793,8 +1793,8 @@ WINBASEAPI BOOL WINAPI PathIsSameRootW(LPCWSTR lpszPath1, LPCWSTR lpszPath2)
 {
     struct qemu_PathIsSameRootW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISSAMEROOTW);
-    call.lpszPath1 = (uint64_t)lpszPath1;
-    call.lpszPath2 = (uint64_t)lpszPath2;
+    call.lpszPath1 = (ULONG_PTR)lpszPath1;
+    call.lpszPath2 = (ULONG_PTR)lpszPath2;
 
     qemu_syscall(&call.super);
 
@@ -1825,8 +1825,8 @@ WINBASEAPI BOOL WINAPI PathIsContentTypeA(LPCSTR lpszPath, LPCSTR lpszContentTyp
 {
     struct qemu_PathIsContentTypeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISCONTENTTYPEA);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.lpszContentType = (uint64_t)lpszContentType;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.lpszContentType = (ULONG_PTR)lpszContentType;
 
     qemu_syscall(&call.super);
 
@@ -1857,8 +1857,8 @@ WINBASEAPI BOOL WINAPI PathIsContentTypeW(LPCWSTR lpszPath, LPCWSTR lpszContentT
 {
     struct qemu_PathIsContentTypeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISCONTENTTYPEW);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.lpszContentType = (uint64_t)lpszContentType;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.lpszContentType = (ULONG_PTR)lpszContentType;
 
     qemu_syscall(&call.super);
 
@@ -1888,7 +1888,7 @@ WINBASEAPI BOOL WINAPI PathIsFileSpecA(LPCSTR lpszPath)
 {
     struct qemu_PathIsFileSpecA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISFILESPECA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -1918,7 +1918,7 @@ WINBASEAPI BOOL WINAPI PathIsFileSpecW(LPCWSTR lpszPath)
 {
     struct qemu_PathIsFileSpecW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISFILESPECW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -1949,8 +1949,8 @@ WINBASEAPI BOOL WINAPI PathIsPrefixA (LPCSTR lpszPrefix, LPCSTR lpszPath)
 {
     struct qemu_PathIsPrefixA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISPREFIXA);
-    call.lpszPrefix = (uint64_t)lpszPrefix;
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPrefix = (ULONG_PTR)lpszPrefix;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -1981,8 +1981,8 @@ WINBASEAPI BOOL WINAPI PathIsPrefixW(LPCWSTR lpszPrefix, LPCWSTR lpszPath)
 {
     struct qemu_PathIsPrefixW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISPREFIXW);
-    call.lpszPrefix = (uint64_t)lpszPrefix;
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPrefix = (ULONG_PTR)lpszPrefix;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -2013,8 +2013,8 @@ WINBASEAPI BOOL WINAPI PathIsSystemFolderA(LPCSTR lpszPath, DWORD dwAttrib)
 {
     struct qemu_PathIsSystemFolderA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISSYSTEMFOLDERA);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.dwAttrib = (uint64_t)dwAttrib;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.dwAttrib = (ULONG_PTR)dwAttrib;
 
     qemu_syscall(&call.super);
 
@@ -2045,8 +2045,8 @@ WINBASEAPI BOOL WINAPI PathIsSystemFolderW(LPCWSTR lpszPath, DWORD dwAttrib)
 {
     struct qemu_PathIsSystemFolderW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISSYSTEMFOLDERW);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.dwAttrib = (uint64_t)dwAttrib;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.dwAttrib = (ULONG_PTR)dwAttrib;
 
     qemu_syscall(&call.super);
 
@@ -2076,7 +2076,7 @@ WINBASEAPI BOOL WINAPI PathIsUNCA(LPCSTR lpszPath)
 {
     struct qemu_PathIsUNCA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISUNCA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -2106,7 +2106,7 @@ WINBASEAPI BOOL WINAPI PathIsUNCW(LPCWSTR lpszPath)
 {
     struct qemu_PathIsUNCW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISUNCW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -2136,7 +2136,7 @@ WINBASEAPI BOOL WINAPI PathIsUNCServerA(LPCSTR lpszPath)
 {
     struct qemu_PathIsUNCServerA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISUNCSERVERA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -2166,7 +2166,7 @@ WINBASEAPI BOOL WINAPI PathIsUNCServerW(LPCWSTR lpszPath)
 {
     struct qemu_PathIsUNCServerW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISUNCSERVERW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -2196,7 +2196,7 @@ WINBASEAPI BOOL WINAPI PathIsUNCServerShareA(LPCSTR lpszPath)
 {
     struct qemu_PathIsUNCServerShareA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISUNCSERVERSHAREA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -2226,7 +2226,7 @@ WINBASEAPI BOOL WINAPI PathIsUNCServerShareW(LPCWSTR lpszPath)
 {
     struct qemu_PathIsUNCServerShareW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISUNCSERVERSHAREW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -2257,8 +2257,8 @@ WINBASEAPI BOOL WINAPI PathCanonicalizeA(LPSTR lpszBuf, LPCSTR lpszPath)
 {
     struct qemu_PathCanonicalizeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHCANONICALIZEA);
-    call.lpszBuf = (uint64_t)lpszBuf;
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszBuf = (ULONG_PTR)lpszBuf;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -2289,8 +2289,8 @@ WINBASEAPI BOOL WINAPI PathCanonicalizeW(LPWSTR lpszBuf, LPCWSTR lpszPath)
 {
     struct qemu_PathCanonicalizeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHCANONICALIZEW);
-    call.lpszBuf = (uint64_t)lpszBuf;
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszBuf = (ULONG_PTR)lpszBuf;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -2320,11 +2320,11 @@ WINBASEAPI LPSTR WINAPI PathFindNextComponentA(LPCSTR lpszPath)
 {
     struct qemu_PathFindNextComponentA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFINDNEXTCOMPONENTA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2333,7 +2333,7 @@ void qemu_PathFindNextComponentA(struct qemu_syscall *call)
 {
     struct qemu_PathFindNextComponentA *c = (struct qemu_PathFindNextComponentA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathFindNextComponentA(QEMU_G2H(c->lpszPath));
+    c->super.iret = (ULONG_PTR)PathFindNextComponentA(QEMU_G2H(c->lpszPath));
 }
 
 #endif
@@ -2350,11 +2350,11 @@ WINBASEAPI LPWSTR WINAPI PathFindNextComponentW(LPCWSTR lpszPath)
 {
     struct qemu_PathFindNextComponentW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFINDNEXTCOMPONENTW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2363,7 +2363,7 @@ void qemu_PathFindNextComponentW(struct qemu_syscall *call)
 {
     struct qemu_PathFindNextComponentW *c = (struct qemu_PathFindNextComponentW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathFindNextComponentW(QEMU_G2H(c->lpszPath));
+    c->super.iret = (ULONG_PTR)PathFindNextComponentW(QEMU_G2H(c->lpszPath));
 }
 
 #endif
@@ -2381,8 +2381,8 @@ WINBASEAPI BOOL WINAPI PathAddExtensionA(LPSTR lpszPath, LPCSTR lpszExtension)
 {
     struct qemu_PathAddExtensionA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHADDEXTENSIONA);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.lpszExtension = (uint64_t)lpszExtension;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.lpszExtension = (ULONG_PTR)lpszExtension;
 
     qemu_syscall(&call.super);
 
@@ -2413,8 +2413,8 @@ WINBASEAPI BOOL WINAPI PathAddExtensionW(LPWSTR lpszPath, LPCWSTR lpszExtension)
 {
     struct qemu_PathAddExtensionW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHADDEXTENSIONW);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.lpszExtension = (uint64_t)lpszExtension;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.lpszExtension = (ULONG_PTR)lpszExtension;
 
     qemu_syscall(&call.super);
 
@@ -2444,7 +2444,7 @@ WINBASEAPI BOOL WINAPI PathMakePrettyA(LPSTR lpszPath)
 {
     struct qemu_PathMakePrettyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHMAKEPRETTYA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -2474,7 +2474,7 @@ WINBASEAPI BOOL WINAPI PathMakePrettyW(LPWSTR lpszPath)
 {
     struct qemu_PathMakePrettyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHMAKEPRETTYW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -2506,9 +2506,9 @@ WINBASEAPI int WINAPI PathCommonPrefixA(LPCSTR lpszFile1, LPCSTR lpszFile2, LPST
 {
     struct qemu_PathCommonPrefixA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHCOMMONPREFIXA);
-    call.lpszFile1 = (uint64_t)lpszFile1;
-    call.lpszFile2 = (uint64_t)lpszFile2;
-    call.achPath = (uint64_t)achPath;
+    call.lpszFile1 = (ULONG_PTR)lpszFile1;
+    call.lpszFile2 = (ULONG_PTR)lpszFile2;
+    call.achPath = (ULONG_PTR)achPath;
 
     qemu_syscall(&call.super);
 
@@ -2540,9 +2540,9 @@ WINBASEAPI int WINAPI PathCommonPrefixW(LPCWSTR lpszFile1, LPCWSTR lpszFile2, LP
 {
     struct qemu_PathCommonPrefixW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHCOMMONPREFIXW);
-    call.lpszFile1 = (uint64_t)lpszFile1;
-    call.lpszFile2 = (uint64_t)lpszFile2;
-    call.achPath = (uint64_t)achPath;
+    call.lpszFile1 = (ULONG_PTR)lpszFile1;
+    call.lpszFile2 = (ULONG_PTR)lpszFile2;
+    call.achPath = (ULONG_PTR)achPath;
 
     qemu_syscall(&call.super);
 
@@ -2574,9 +2574,9 @@ WINBASEAPI BOOL WINAPI PathCompactPathA(HDC hDC, LPSTR lpszPath, UINT dx)
 {
     struct qemu_PathCompactPathA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHCOMPACTPATHA);
-    call.hDC = (uint64_t)hDC;
-    call.lpszPath = (uint64_t)lpszPath;
-    call.dx = (uint64_t)dx;
+    call.hDC = (ULONG_PTR)hDC;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.dx = (ULONG_PTR)dx;
 
     qemu_syscall(&call.super);
 
@@ -2608,9 +2608,9 @@ WINBASEAPI BOOL WINAPI PathCompactPathW(HDC hDC, LPWSTR lpszPath, UINT dx)
 {
     struct qemu_PathCompactPathW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHCOMPACTPATHW);
-    call.hDC = (uint64_t)hDC;
-    call.lpszPath = (uint64_t)lpszPath;
-    call.dx = (uint64_t)dx;
+    call.hDC = (ULONG_PTR)hDC;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.dx = (ULONG_PTR)dx;
 
     qemu_syscall(&call.super);
 
@@ -2640,7 +2640,7 @@ WINBASEAPI UINT WINAPI PathGetCharTypeA(UCHAR ch)
 {
     struct qemu_PathGetCharTypeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHGETCHARTYPEA);
-    call.ch = (uint64_t)ch;
+    call.ch = (ULONG_PTR)ch;
 
     qemu_syscall(&call.super);
 
@@ -2670,7 +2670,7 @@ WINBASEAPI UINT WINAPI PathGetCharTypeW(WCHAR ch)
 {
     struct qemu_PathGetCharTypeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHGETCHARTYPEW);
-    call.ch = (uint64_t)ch;
+    call.ch = (ULONG_PTR)ch;
 
     qemu_syscall(&call.super);
 
@@ -2700,7 +2700,7 @@ WINBASEAPI BOOL WINAPI PathMakeSystemFolderA(LPCSTR lpszPath)
 {
     struct qemu_PathMakeSystemFolderA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHMAKESYSTEMFOLDERA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -2730,7 +2730,7 @@ WINBASEAPI BOOL WINAPI PathMakeSystemFolderW(LPCWSTR lpszPath)
 {
     struct qemu_PathMakeSystemFolderW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHMAKESYSTEMFOLDERW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -2761,8 +2761,8 @@ WINBASEAPI BOOL WINAPI PathRenameExtensionA(LPSTR lpszPath, LPCSTR lpszExt)
 {
     struct qemu_PathRenameExtensionA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHRENAMEEXTENSIONA);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.lpszExt = (uint64_t)lpszExt;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.lpszExt = (ULONG_PTR)lpszExt;
 
     qemu_syscall(&call.super);
 
@@ -2793,8 +2793,8 @@ WINBASEAPI BOOL WINAPI PathRenameExtensionW(LPWSTR lpszPath, LPCWSTR lpszExt)
 {
     struct qemu_PathRenameExtensionW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHRENAMEEXTENSIONW);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.lpszExt = (uint64_t)lpszExt;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.lpszExt = (ULONG_PTR)lpszExt;
 
     qemu_syscall(&call.super);
 
@@ -2826,9 +2826,9 @@ WINBASEAPI BOOL WINAPI PathSearchAndQualifyA(LPCSTR lpszPath, LPSTR lpszBuf, UIN
 {
     struct qemu_PathSearchAndQualifyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHSEARCHANDQUALIFYA);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.lpszBuf = (uint64_t)lpszBuf;
-    call.cchBuf = (uint64_t)cchBuf;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.lpszBuf = (ULONG_PTR)lpszBuf;
+    call.cchBuf = (ULONG_PTR)cchBuf;
 
     qemu_syscall(&call.super);
 
@@ -2860,9 +2860,9 @@ WINBASEAPI BOOL WINAPI PathSearchAndQualifyW(LPCWSTR lpszPath, LPWSTR lpszBuf, U
 {
     struct qemu_PathSearchAndQualifyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHSEARCHANDQUALIFYW);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.lpszBuf = (uint64_t)lpszBuf;
-    call.cchBuf = (uint64_t)cchBuf;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.lpszBuf = (ULONG_PTR)lpszBuf;
+    call.cchBuf = (ULONG_PTR)cchBuf;
 
     qemu_syscall(&call.super);
 
@@ -2892,11 +2892,11 @@ WINBASEAPI LPSTR WINAPI PathSkipRootA(LPCSTR lpszPath)
 {
     struct qemu_PathSkipRootA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHSKIPROOTA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
-    return (LPSTR)call.super.iret;
+    return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2905,7 +2905,7 @@ void qemu_PathSkipRootA(struct qemu_syscall *call)
 {
     struct qemu_PathSkipRootA *c = (struct qemu_PathSkipRootA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathSkipRootA(QEMU_G2H(c->lpszPath));
+    c->super.iret = (ULONG_PTR)PathSkipRootA(QEMU_G2H(c->lpszPath));
 }
 
 #endif
@@ -2922,11 +2922,11 @@ WINBASEAPI LPWSTR WINAPI PathSkipRootW(LPCWSTR lpszPath)
 {
     struct qemu_PathSkipRootW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHSKIPROOTW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR)call.super.iret;
+    return (LPWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -2935,7 +2935,7 @@ void qemu_PathSkipRootW(struct qemu_syscall *call)
 {
     struct qemu_PathSkipRootW *c = (struct qemu_PathSkipRootW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathSkipRootW(QEMU_G2H(c->lpszPath));
+    c->super.iret = (ULONG_PTR)PathSkipRootW(QEMU_G2H(c->lpszPath));
 }
 
 #endif
@@ -2955,10 +2955,10 @@ WINBASEAPI HRESULT WINAPI PathCreateFromUrlA(LPCSTR pszUrl, LPSTR pszPath, LPDWO
 {
     struct qemu_PathCreateFromUrlA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHCREATEFROMURLA);
-    call.pszUrl = (uint64_t)pszUrl;
-    call.pszPath = (uint64_t)pszPath;
-    call.pcchPath = (uint64_t)pcchPath;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.pszUrl = (ULONG_PTR)pszUrl;
+    call.pszPath = (ULONG_PTR)pszPath;
+    call.pcchPath = (ULONG_PTR)pcchPath;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -2991,10 +2991,10 @@ WINBASEAPI HRESULT WINAPI PathCreateFromUrlW(LPCWSTR pszUrl, LPWSTR pszPath, LPD
 {
     struct qemu_PathCreateFromUrlW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHCREATEFROMURLW);
-    call.pszUrl = (uint64_t)pszUrl;
-    call.pszPath = (uint64_t)pszPath;
-    call.pcchPath = (uint64_t)pcchPath;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.pszUrl = (ULONG_PTR)pszUrl;
+    call.pszPath = (ULONG_PTR)pszPath;
+    call.pcchPath = (ULONG_PTR)pcchPath;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -3026,9 +3026,9 @@ WINBASEAPI HRESULT WINAPI PathCreateFromUrlAlloc(LPCWSTR pszUrl, LPWSTR *pszPath
 {
     struct qemu_PathCreateFromUrlAlloc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHCREATEFROMURLALLOC);
-    call.pszUrl = (uint64_t)pszUrl;
-    call.pszPath = (uint64_t)pszPath;
-    call.dwReserved = (uint64_t)dwReserved;
+    call.pszUrl = (ULONG_PTR)pszUrl;
+    call.pszPath = (ULONG_PTR)pszPath;
+    call.dwReserved = (ULONG_PTR)dwReserved;
 
     qemu_syscall(&call.super);
 
@@ -3062,11 +3062,11 @@ WINBASEAPI BOOL WINAPI PathRelativePathToA(LPSTR lpszPath, LPCSTR lpszFrom, DWOR
 {
     struct qemu_PathRelativePathToA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHRELATIVEPATHTOA);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.lpszFrom = (uint64_t)lpszFrom;
-    call.dwAttrFrom = (uint64_t)dwAttrFrom;
-    call.lpszTo = (uint64_t)lpszTo;
-    call.dwAttrTo = (uint64_t)dwAttrTo;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.lpszFrom = (ULONG_PTR)lpszFrom;
+    call.dwAttrFrom = (ULONG_PTR)dwAttrFrom;
+    call.lpszTo = (ULONG_PTR)lpszTo;
+    call.dwAttrTo = (ULONG_PTR)dwAttrTo;
 
     qemu_syscall(&call.super);
 
@@ -3100,11 +3100,11 @@ WINBASEAPI BOOL WINAPI PathRelativePathToW(LPWSTR lpszPath, LPCWSTR lpszFrom, DW
 {
     struct qemu_PathRelativePathToW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHRELATIVEPATHTOW);
-    call.lpszPath = (uint64_t)lpszPath;
-    call.lpszFrom = (uint64_t)lpszFrom;
-    call.dwAttrFrom = (uint64_t)dwAttrFrom;
-    call.lpszTo = (uint64_t)lpszTo;
-    call.dwAttrTo = (uint64_t)dwAttrTo;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.lpszFrom = (ULONG_PTR)lpszFrom;
+    call.dwAttrFrom = (ULONG_PTR)dwAttrFrom;
+    call.lpszTo = (ULONG_PTR)lpszTo;
+    call.dwAttrTo = (ULONG_PTR)dwAttrTo;
 
     qemu_syscall(&call.super);
 
@@ -3134,7 +3134,7 @@ WINBASEAPI BOOL WINAPI PathUnmakeSystemFolderA(LPCSTR lpszPath)
 {
     struct qemu_PathUnmakeSystemFolderA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHUNMAKESYSTEMFOLDERA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -3164,7 +3164,7 @@ WINBASEAPI BOOL WINAPI PathUnmakeSystemFolderW(LPCWSTR lpszPath)
 {
     struct qemu_PathUnmakeSystemFolderW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHUNMAKESYSTEMFOLDERW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -3196,9 +3196,9 @@ WINBASEAPI VOID WINAPI PathSetDlgItemPathA(HWND hDlg, int id, LPCSTR lpszPath)
 {
     struct qemu_PathSetDlgItemPathA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHSETDLGITEMPATHA);
-    call.hDlg = (uint64_t)hDlg;
-    call.id = (uint64_t)id;
-    call.lpszPath = (uint64_t)lpszPath;
+    call.hDlg = (ULONG_PTR)hDlg;
+    call.id = (ULONG_PTR)id;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 }
@@ -3228,9 +3228,9 @@ WINBASEAPI VOID WINAPI PathSetDlgItemPathW(HWND hDlg, int id, LPCWSTR lpszPath)
 {
     struct qemu_PathSetDlgItemPathW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHSETDLGITEMPATHW);
-    call.hDlg = (uint64_t)hDlg;
-    call.id = (uint64_t)id;
-    call.lpszPath = (uint64_t)lpszPath;
+    call.hDlg = (ULONG_PTR)hDlg;
+    call.id = (ULONG_PTR)id;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 }
@@ -3258,7 +3258,7 @@ WINBASEAPI BOOL WINAPI PathIsNetworkPathA(LPCSTR lpszPath)
 {
     struct qemu_PathIsNetworkPathA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISNETWORKPATHA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -3288,7 +3288,7 @@ WINBASEAPI BOOL WINAPI PathIsNetworkPathW(LPCWSTR lpszPath)
 {
     struct qemu_PathIsNetworkPathW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISNETWORKPATHW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -3318,7 +3318,7 @@ WINBASEAPI BOOL WINAPI PathIsLFNFileSpecA(LPCSTR lpszPath)
 {
     struct qemu_PathIsLFNFileSpecA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISLFNFILESPECA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -3348,7 +3348,7 @@ WINBASEAPI BOOL WINAPI PathIsLFNFileSpecW(LPCWSTR lpszPath)
 {
     struct qemu_PathIsLFNFileSpecW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISLFNFILESPECW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -3378,7 +3378,7 @@ WINBASEAPI BOOL WINAPI PathIsDirectoryEmptyA(LPCSTR lpszPath)
 {
     struct qemu_PathIsDirectoryEmptyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISDIRECTORYEMPTYA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -3408,7 +3408,7 @@ WINBASEAPI BOOL WINAPI PathIsDirectoryEmptyW(LPCWSTR lpszPath)
 {
     struct qemu_PathIsDirectoryEmptyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISDIRECTORYEMPTYW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -3440,13 +3440,13 @@ WINBASEAPI LPCSTR WINAPI PathFindSuffixArrayA(LPCSTR lpszSuffix, const LPCSTR *l
 {
     struct qemu_PathFindSuffixArrayA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFINDSUFFIXARRAYA);
-    call.lpszSuffix = (uint64_t)lpszSuffix;
-    call.lppszArray = (uint64_t)lppszArray;
-    call.dwCount = (uint64_t)dwCount;
+    call.lpszSuffix = (ULONG_PTR)lpszSuffix;
+    call.lppszArray = (ULONG_PTR)lppszArray;
+    call.dwCount = (ULONG_PTR)dwCount;
 
     qemu_syscall(&call.super);
 
-    return (LPCSTR)call.super.iret;
+    return (LPCSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -3455,7 +3455,7 @@ void qemu_PathFindSuffixArrayA(struct qemu_syscall *call)
 {
     struct qemu_PathFindSuffixArrayA *c = (struct qemu_PathFindSuffixArrayA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathFindSuffixArrayA(QEMU_G2H(c->lpszSuffix), QEMU_G2H(c->lppszArray), c->dwCount);
+    c->super.iret = (ULONG_PTR)PathFindSuffixArrayA(QEMU_G2H(c->lpszSuffix), QEMU_G2H(c->lppszArray), c->dwCount);
 }
 
 #endif
@@ -3474,13 +3474,13 @@ WINBASEAPI LPCWSTR WINAPI PathFindSuffixArrayW(LPCWSTR lpszSuffix, const LPCWSTR
 {
     struct qemu_PathFindSuffixArrayW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHFINDSUFFIXARRAYW);
-    call.lpszSuffix = (uint64_t)lpszSuffix;
-    call.lppszArray = (uint64_t)lppszArray;
-    call.dwCount = (uint64_t)dwCount;
+    call.lpszSuffix = (ULONG_PTR)lpszSuffix;
+    call.lppszArray = (ULONG_PTR)lppszArray;
+    call.dwCount = (ULONG_PTR)dwCount;
 
     qemu_syscall(&call.super);
 
-    return (LPCWSTR)call.super.iret;
+    return (LPCWSTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -3489,7 +3489,7 @@ void qemu_PathFindSuffixArrayW(struct qemu_syscall *call)
 {
     struct qemu_PathFindSuffixArrayW *c = (struct qemu_PathFindSuffixArrayW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)PathFindSuffixArrayW(QEMU_G2H(c->lpszSuffix), QEMU_G2H(c->lppszArray), c->dwCount);
+    c->super.iret = (ULONG_PTR)PathFindSuffixArrayW(QEMU_G2H(c->lpszSuffix), QEMU_G2H(c->lppszArray), c->dwCount);
 }
 
 #endif
@@ -3506,7 +3506,7 @@ WINBASEAPI VOID WINAPI PathUndecorateA(LPSTR lpszPath)
 {
     struct qemu_PathUndecorateA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHUNDECORATEA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 }
@@ -3534,7 +3534,7 @@ WINBASEAPI VOID WINAPI PathUndecorateW(LPWSTR lpszPath)
 {
     struct qemu_PathUndecorateW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHUNDECORATEW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 }
@@ -3564,9 +3564,9 @@ WINBASEAPI BOOL WINAPI PathUnExpandEnvStringsA(LPCSTR path, LPSTR buffer, UINT b
 {
     struct qemu_PathUnExpandEnvStringsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHUNEXPANDENVSTRINGSA);
-    call.path = (uint64_t)path;
-    call.buffer = (uint64_t)buffer;
-    call.buf_len = (uint64_t)buf_len;
+    call.path = (ULONG_PTR)path;
+    call.buffer = (ULONG_PTR)buffer;
+    call.buf_len = (ULONG_PTR)buf_len;
 
     qemu_syscall(&call.super);
 
@@ -3598,9 +3598,9 @@ WINBASEAPI BOOL WINAPI PathUnExpandEnvStringsW(LPCWSTR path, LPWSTR buffer, UINT
 {
     struct qemu_PathUnExpandEnvStringsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHUNEXPANDENVSTRINGSW);
-    call.path = (uint64_t)path;
-    call.buffer = (uint64_t)buffer;
-    call.buf_len = (uint64_t)buf_len;
+    call.path = (ULONG_PTR)path;
+    call.buffer = (ULONG_PTR)buffer;
+    call.buf_len = (ULONG_PTR)buf_len;
 
     qemu_syscall(&call.super);
 
@@ -3632,9 +3632,9 @@ WINBASEAPI HRESULT WINAPI SHGetWebFolderFilePathA(LPCSTR lpszFile, LPSTR lpszPat
 {
     struct qemu_SHGetWebFolderFilePathA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETWEBFOLDERFILEPATHA);
-    call.lpszFile = (uint64_t)lpszFile;
-    call.lpszPath = (uint64_t)lpszPath;
-    call.dwPathLen = (uint64_t)dwPathLen;
+    call.lpszFile = (ULONG_PTR)lpszFile;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.dwPathLen = (ULONG_PTR)dwPathLen;
 
     qemu_syscall(&call.super);
 
@@ -3668,9 +3668,9 @@ WINBASEAPI HRESULT WINAPI SHGetWebFolderFilePathW(LPCWSTR lpszFile, LPWSTR lpszP
 {
     struct qemu_SHGetWebFolderFilePathW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETWEBFOLDERFILEPATHW);
-    call.lpszFile = (uint64_t)lpszFile;
-    call.lpszPath = (uint64_t)lpszPath;
-    call.dwPathLen = (uint64_t)dwPathLen;
+    call.lpszFile = (ULONG_PTR)lpszFile;
+    call.lpszPath = (ULONG_PTR)lpszPath;
+    call.dwPathLen = (ULONG_PTR)dwPathLen;
 
     qemu_syscall(&call.super);
 
@@ -3703,8 +3703,8 @@ WINBASEAPI BOOL WINAPI PathIsValidCharA(char c, DWORD class)
 {
     struct qemu_PathIsValidCharA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISVALIDCHARA);
-    call.c = (uint64_t)c;
-    call.class = (uint64_t)class;
+    call.c = (ULONG_PTR)c;
+    call.class = (ULONG_PTR)class;
 
     qemu_syscall(&call.super);
 
@@ -3737,8 +3737,8 @@ WINBASEAPI BOOL WINAPI PathIsValidCharW(WCHAR c, DWORD class)
 {
     struct qemu_PathIsValidCharW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHISVALIDCHARW);
-    call.c = (uint64_t)c;
-    call.class = (uint64_t)class;
+    call.c = (ULONG_PTR)c;
+    call.class = (ULONG_PTR)class;
 
     qemu_syscall(&call.super);
 

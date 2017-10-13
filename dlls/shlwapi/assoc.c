@@ -47,9 +47,9 @@ WINBASEAPI HRESULT WINAPI AssocCreate(CLSID clsid, REFIID refiid, void **lpInter
 {
     struct qemu_AssocCreate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ASSOCCREATE);
-    call.clsid = (uint64_t)&clsid;
-    call.refiid = (uint64_t)refiid;
-    call.lpInterface = (uint64_t)lpInterface;
+    call.clsid = (ULONG_PTR)&clsid;
+    call.refiid = (ULONG_PTR)refiid;
+    call.lpInterface = (ULONG_PTR)lpInterface;
 
     qemu_syscall(&call.super);
 
@@ -82,10 +82,10 @@ WINBASEAPI HRESULT WINAPI AssocGetPerceivedType(LPCWSTR lpszExt, PERCEIVED *lpTy
 {
     struct qemu_AssocGetPerceivedType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ASSOCGETPERCEIVEDTYPE);
-    call.lpszExt = (uint64_t)lpszExt;
-    call.lpType = (uint64_t)lpType;
-    call.lpFlag = (uint64_t)lpFlag;
-    call.lppszType = (uint64_t)lppszType;
+    call.lpszExt = (ULONG_PTR)lpszExt;
+    call.lpType = (ULONG_PTR)lpType;
+    call.lpFlag = (ULONG_PTR)lpFlag;
+    call.lppszType = (ULONG_PTR)lppszType;
 
     qemu_syscall(&call.super);
 
@@ -121,11 +121,11 @@ WINBASEAPI HRESULT WINAPI AssocQueryKeyW(ASSOCF cfFlags, ASSOCKEY assockey, LPCW
 {
     struct qemu_AssocQueryKeyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ASSOCQUERYKEYW);
-    call.cfFlags = (uint64_t)cfFlags;
-    call.assockey = (uint64_t)assockey;
-    call.pszAssoc = (uint64_t)pszAssoc;
-    call.pszExtra = (uint64_t)pszExtra;
-    call.phkeyOut = (uint64_t)phkeyOut;
+    call.cfFlags = (ULONG_PTR)cfFlags;
+    call.assockey = (ULONG_PTR)assockey;
+    call.pszAssoc = (ULONG_PTR)pszAssoc;
+    call.pszExtra = (ULONG_PTR)pszExtra;
+    call.phkeyOut = (ULONG_PTR)phkeyOut;
 
     qemu_syscall(&call.super);
 
@@ -159,11 +159,11 @@ WINBASEAPI HRESULT WINAPI AssocQueryKeyA(ASSOCF cfFlags, ASSOCKEY assockey, LPCS
 {
     struct qemu_AssocQueryKeyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ASSOCQUERYKEYA);
-    call.cfFlags = (uint64_t)cfFlags;
-    call.assockey = (uint64_t)assockey;
-    call.pszAssoc = (uint64_t)pszAssoc;
-    call.pszExtra = (uint64_t)pszExtra;
-    call.phkeyOut = (uint64_t)phkeyOut;
+    call.cfFlags = (ULONG_PTR)cfFlags;
+    call.assockey = (ULONG_PTR)assockey;
+    call.pszAssoc = (ULONG_PTR)pszAssoc;
+    call.pszExtra = (ULONG_PTR)pszExtra;
+    call.phkeyOut = (ULONG_PTR)phkeyOut;
 
     qemu_syscall(&call.super);
 
@@ -198,12 +198,12 @@ WINBASEAPI HRESULT WINAPI AssocQueryStringW(ASSOCF cfFlags, ASSOCSTR str, LPCWST
 {
     struct qemu_AssocQueryStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ASSOCQUERYSTRINGW);
-    call.cfFlags = (uint64_t)cfFlags;
-    call.str = (uint64_t)str;
-    call.pszAssoc = (uint64_t)pszAssoc;
-    call.pszExtra = (uint64_t)pszExtra;
-    call.pszOut = (uint64_t)pszOut;
-    call.pcchOut = (uint64_t)pcchOut;
+    call.cfFlags = (ULONG_PTR)cfFlags;
+    call.str = (ULONG_PTR)str;
+    call.pszAssoc = (ULONG_PTR)pszAssoc;
+    call.pszExtra = (ULONG_PTR)pszExtra;
+    call.pszOut = (ULONG_PTR)pszOut;
+    call.pcchOut = (ULONG_PTR)pcchOut;
 
     qemu_syscall(&call.super);
 
@@ -238,12 +238,12 @@ WINBASEAPI HRESULT WINAPI AssocQueryStringA(ASSOCF cfFlags, ASSOCSTR str, LPCSTR
 {
     struct qemu_AssocQueryStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ASSOCQUERYSTRINGA);
-    call.cfFlags = (uint64_t)cfFlags;
-    call.str = (uint64_t)str;
-    call.pszAssoc = (uint64_t)pszAssoc;
-    call.pszExtra = (uint64_t)pszExtra;
-    call.pszOut = (uint64_t)pszOut;
-    call.pcchOut = (uint64_t)pcchOut;
+    call.cfFlags = (ULONG_PTR)cfFlags;
+    call.str = (ULONG_PTR)str;
+    call.pszAssoc = (ULONG_PTR)pszAssoc;
+    call.pszExtra = (ULONG_PTR)pszExtra;
+    call.pszOut = (ULONG_PTR)pszOut;
+    call.pcchOut = (ULONG_PTR)pcchOut;
 
     qemu_syscall(&call.super);
 
@@ -278,12 +278,12 @@ WINBASEAPI HRESULT WINAPI AssocQueryStringByKeyW(ASSOCF cfFlags, ASSOCSTR str, H
 {
     struct qemu_AssocQueryStringByKeyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ASSOCQUERYSTRINGBYKEYW);
-    call.cfFlags = (uint64_t)cfFlags;
-    call.str = (uint64_t)str;
-    call.hkAssoc = (uint64_t)hkAssoc;
-    call.pszExtra = (uint64_t)pszExtra;
-    call.pszOut = (uint64_t)pszOut;
-    call.pcchOut = (uint64_t)pcchOut;
+    call.cfFlags = (ULONG_PTR)cfFlags;
+    call.str = (ULONG_PTR)str;
+    call.hkAssoc = (ULONG_PTR)hkAssoc;
+    call.pszExtra = (ULONG_PTR)pszExtra;
+    call.pszOut = (ULONG_PTR)pszOut;
+    call.pcchOut = (ULONG_PTR)pcchOut;
 
     qemu_syscall(&call.super);
 
@@ -318,12 +318,12 @@ WINBASEAPI HRESULT WINAPI AssocQueryStringByKeyA(ASSOCF cfFlags, ASSOCSTR str, H
 {
     struct qemu_AssocQueryStringByKeyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ASSOCQUERYSTRINGBYKEYA);
-    call.cfFlags = (uint64_t)cfFlags;
-    call.str = (uint64_t)str;
-    call.hkAssoc = (uint64_t)hkAssoc;
-    call.pszExtra = (uint64_t)pszExtra;
-    call.pszOut = (uint64_t)pszOut;
-    call.pcchOut = (uint64_t)pcchOut;
+    call.cfFlags = (ULONG_PTR)cfFlags;
+    call.str = (ULONG_PTR)str;
+    call.hkAssoc = (ULONG_PTR)hkAssoc;
+    call.pszExtra = (ULONG_PTR)pszExtra;
+    call.pszOut = (ULONG_PTR)pszOut;
+    call.pcchOut = (ULONG_PTR)pcchOut;
 
     qemu_syscall(&call.super);
 
@@ -353,7 +353,7 @@ WINBASEAPI BOOL WINAPI AssocIsDangerous(LPCWSTR lpszAssoc)
 {
     struct qemu_AssocIsDangerous call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ASSOCISDANGEROUS);
-    call.lpszAssoc = (uint64_t)lpszAssoc;
+    call.lpszAssoc = (ULONG_PTR)lpszAssoc;
 
     qemu_syscall(&call.super);
 
