@@ -6,5 +6,6 @@
 #include "thunk/qemu_windef.h"
 #include "thunk/qemu_winbase.h"
 #include "thunk/qemu_winuser.h"
+#include "thunk/qemu_commdlg.h"
 
 #endif

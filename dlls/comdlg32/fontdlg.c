@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_comdlg32.h"
@@ -51,13 +53,46 @@ WINBASEAPI BOOL WINAPI ChooseFontW(LPCHOOSEFONTW lpChFont)
 
 #else
 
+static inline void CHOOSEFONT_g2h(CHOOSEFONTW *host, const struct qemu_CHOOSEFONT *guest)
+{
+    host->lStructSize = sizeof(*host);
+    host->hwndOwner = (HWND)(ULONG_PTR)guest->hwndOwner;
+    host->hDC = (HDC)(ULONG_PTR)guest->hDC;
+    host->lpLogFont = (LOGFONTW *)(ULONG_PTR)guest->lpLogFont;
+    host->iPointSize = guest->iPointSize;
+    host->Flags = guest->Flags;
+    host->rgbColors = guest->rgbColors;
+    host->lCustData = guest->lCustData;
+    host->lpfnHook = (LPCFHOOKPROC)(ULONG_PTR)guest->lpfnHook;
+    host->lpTemplateName = (WCHAR *)(ULONG_PTR)guest->lpTemplateName;
+    host->hInstance = (HINSTANCE)(ULONG_PTR)guest->hInstance;
+    host->lpszStyle = (WCHAR *)(ULONG_PTR)guest->lpszStyle;
+    host->nFontType = guest->nFontType;
+    host->___MISSING_ALIGNMENT__ = guest->___MISSING_ALIGNMENT__; /* Hmm... */
+    host->nSizeMin = guest->nSizeMin;
+    host->nSizeMax = guest->nSizeMax;
+}
+
 void qemu_ChooseFontW(struct qemu_syscall *call)
 {
     struct qemu_ChooseFontW *c = (struct qemu_ChooseFontW *)call;
     CHOOSEFONTW cf;
+    struct qemu_CHOOSEFONT *struct32 = (struct qemu_CHOOSEFONT *)QEMU_G2H(c->lpChFont);
     WINE_TRACE("\n");
 
+#if HOST_BIT == GUEST_BIT
     cf = *(CHOOSEFONTW *)QEMU_G2H(c->lpChFont);
+#else
+    if (struct32->lStructSize != sizeof(*struct32))
+    {
+        WINE_ERR("structure size failure!!!\n");
+        c->super.iret = FALSE;
+        return;
+    }
+
+    CHOOSEFONT_g2h(&cf, struct32);
+#endif
+
     if (cf.Flags & (CF_ENABLETEMPLATEHANDLE | CF_ENABLETEMPLATE) == CF_ENABLETEMPLATE && !cf.hInstance)
         cf.hInstance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
 
@@ -91,9 +126,22 @@ void qemu_ChooseFontA(struct qemu_syscall *call)
 {
     struct qemu_ChooseFontA *c = (struct qemu_ChooseFontA *)call;
     CHOOSEFONTA cf;
+    struct qemu_CHOOSEFONT *struct32 = (struct qemu_CHOOSEFONT *)QEMU_G2H(c->lpChFont);
     WINE_TRACE("\n");
 
+#if HOST_BIT == GUEST_BIT
     cf = *(CHOOSEFONTA *)QEMU_G2H(c->lpChFont);
+#else
+    if (struct32->lStructSize != sizeof(*struct32))
+    {
+        WINE_ERR("structure size failure!!!\n");
+        c->super.iret = FALSE;
+        return;
+    }
+
+    CHOOSEFONT_g2h((CHOOSEFONTW *)&cf, struct32);
+#endif
+
     if (cf.Flags & (CF_ENABLETEMPLATEHANDLE | CF_ENABLETEMPLATE) == CF_ENABLETEMPLATE && !cf.hInstance)
         cf.hInstance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
 
