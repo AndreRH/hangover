@@ -8,6 +8,7 @@ DESTDIR=`pwd`
 mkdir -p $DESTDIR/build
 mkdir -p $DESTDIR/build/wine-host
 mkdir -p $DESTDIR/build/wine-guest
+mkdir -p $DESTDIR/build/wine-guest32
 mkdir -p $DESTDIR/build/qemu
 
 # Build the Host (e.g. arm64) wine
@@ -15,10 +16,12 @@ cd $DESTDIR/build/wine-host
 $SRCDIR/wine/configure --prefix=$DESTDIR/build/install
 make -j 4
 
-# Cross-Compile Wine for the guest platform to copy higher level DLLs from. Disabled for now.
-# Unfortunately this won't work for msvcrt because our msvcrt imports symbols from Linux libc.
+# Cross-Compile Wine for the guest platform to copy higher level DLLs from.
 cd ../wine-guest
 $SRCDIR/wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-host --without-freetype
+make -j 4
+cd ../wine-guest32
+$SRCDIR/wine/configure --host=i686-w64-mingw32 --with-wine-tools=../wine-host --without-freetype
 make -j 4
 
 # Build qemu
@@ -65,9 +68,9 @@ do
     echo >> Makefile
     echo "include $SRCDIR/dlls/$dll/Makefile" >> Makefile
 
-#     make -j4
-#     ln -sf $PWD/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
-#     ln -sf $PWD/qemu_$dll.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll32
+    make -j4
+    ln -sf $PWD/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
+    ln -sf $PWD/qemu_$dll.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll32
 done
 
 # Link Wine libraries.
@@ -75,12 +78,15 @@ declare -a wine_dlls=("dbghelp" "ole32" "oleaut32" "propsys" "rpcrt4" "urlmon" "
         "crypt32" "dwmapi" "uxtheme" "setupapi" "wintrust" "wtsapi32" "pdh" "avrt" "cryptnet" "imagehlp" "cryptui" "sensapi"
         "riched20")
 ln -sf $DESTDIR/build/wine-guest/libs/wine/libwine.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll64
+ln -sf $DESTDIR/build/wine-guest32/libs/wine/libwine.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
 
 for dll in "${wine_dlls[@]}"
 do
     ln -sf $DESTDIR/build/wine-guest/dlls/$dll/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll64
+    ln -sf $DESTDIR/build/wine-guest/dlls32/$dll/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
 done
 ln -sf $DESTDIR/build/wine-guest/dlls/winspool.drv/winspool.drv $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll64
+ln -sf $DESTDIR/build/wine-guest32/dlls/winspool.drv/winspool.drv $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
 
 # Build the test progs. FIXME: automate this better.
 cd $DESTDIR/testprogs/advapi32
