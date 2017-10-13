@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_comdlg32.h"
@@ -29,7 +31,6 @@
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_comdlg32);
 #endif
-
 
 struct qemu_FindTextA
 {
@@ -52,11 +53,34 @@ WINBASEAPI HWND WINAPI FindTextA(LPFINDREPLACEA pfr)
 
 #else
 
+static inline void FINDREPLACE_g2h(FINDREPLACEW *host, const struct qemu_FINDREPLACE *guest)
+{
+    host->lStructSize = sizeof(*host);
+    host->hwndOwner = (HWND)(ULONG_PTR)guest->hwndOwner;
+    host->hInstance = (HINSTANCE)(ULONG_PTR)guest->hInstance;
+    host->Flags = guest->Flags;
+    host->lpstrFindWhat = (WCHAR *)(ULONG_PTR)guest->lpstrFindWhat;
+    host->lpstrReplaceWith = (WCHAR *)(ULONG_PTR)guest->lpstrReplaceWith;
+    host->wFindWhatLen = guest->wFindWhatLen;
+    host->wReplaceWithLen = guest->wReplaceWithLen;
+    host->lCustData = guest->lCustData;
+    host->lpfnHook = (LPFRHOOKPROC)(ULONG_PTR)guest->lpfnHook;
+    host->lpTemplateName = (const WCHAR *)(ULONG_PTR)guest->lpTemplateName;
+}
+
 void qemu_FindTextA(struct qemu_syscall *call)
 {
     struct qemu_FindTextA *c = (struct qemu_FindTextA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)FindTextA(QEMU_G2H(c->pfr));
+    FINDREPLACEA copy, *dlg = &copy;
+
+#if HOST_BIT == GUEST_BIT
+    dlg = QEMU_G2H(c->pfr);
+#else
+    FINDREPLACE_g2h((FINDREPLACEW *)dlg, QEMU_G2H(c->pfr));
+#endif
+
+    c->super.iret = (ULONG_PTR)FindTextA(dlg);
 }
 
 #endif
@@ -86,7 +110,15 @@ void qemu_ReplaceTextA(struct qemu_syscall *call)
 {
     struct qemu_ReplaceTextA *c = (struct qemu_ReplaceTextA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)ReplaceTextA(QEMU_G2H(c->pfr));
+    FINDREPLACEA copy, *dlg = &copy;
+
+#if HOST_BIT == GUEST_BIT
+    dlg = QEMU_G2H(c->pfr);
+#else
+    FINDREPLACE_g2h((FINDREPLACEW *)dlg, QEMU_G2H(c->pfr));
+#endif
+
+    c->super.iret = (ULONG_PTR)ReplaceTextA(dlg);
 }
 
 #endif
@@ -115,8 +147,16 @@ WINBASEAPI HWND WINAPI FindTextW(LPFINDREPLACEW pfr)
 void qemu_FindTextW(struct qemu_syscall *call)
 {
     struct qemu_FindTextW *c = (struct qemu_FindTextW *)call;
+    FINDREPLACEW copy, *dlg = &copy;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)FindTextW(QEMU_G2H(c->pfr));
+
+#if HOST_BIT == GUEST_BIT
+    dlg = QEMU_G2H(c->pfr);
+#else
+    FINDREPLACE_g2h(dlg, QEMU_G2H(c->pfr));
+#endif
+
+    c->super.iret = (ULONG_PTR)FindTextW(dlg);
 }
 
 #endif
@@ -145,8 +185,16 @@ WINBASEAPI HWND WINAPI ReplaceTextW(LPFINDREPLACEW pfr)
 void qemu_ReplaceTextW(struct qemu_syscall *call)
 {
     struct qemu_ReplaceTextW *c = (struct qemu_ReplaceTextW *)call;
+    FINDREPLACEW copy, *dlg = &copy;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)ReplaceTextW(QEMU_G2H(c->pfr));
+
+#if HOST_BIT == GUEST_BIT
+    dlg = QEMU_G2H(c->pfr);
+#else
+    FINDREPLACE_g2h(dlg, QEMU_G2H(c->pfr));
+#endif
+
+    c->super.iret = (ULONG_PTR)ReplaceTextW(dlg);
 }
 
 #endif
