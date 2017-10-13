@@ -50,11 +50,11 @@ WINBASEAPI HRESULT WINAPI SHCreateLinks(HWND hWnd, LPCSTR lpszDir, LPDATAOBJECT 
 {
     struct qemu_SHCreateLinks call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATELINKS);
-    call.hWnd = (uint64_t)hWnd;
-    call.lpszDir = (uint64_t)lpszDir;
-    call.lpDataObject = (uint64_t)lpDataObject;
-    call.uFlags = (uint64_t)uFlags;
-    call.lppidlLinks = (uint64_t)lppidlLinks;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.lpszDir = (ULONG_PTR)lpszDir;
+    call.lpDataObject = (ULONG_PTR)lpDataObject;
+    call.uFlags = (ULONG_PTR)uFlags;
+    call.lppidlLinks = (ULONG_PTR)lppidlLinks;
 
     qemu_syscall(&call.super);
 
@@ -89,10 +89,10 @@ WINBASEAPI HRESULT WINAPI SHOpenFolderAndSelectItems(PCIDLIST_ABSOLUTE pidlFolde
 {
     struct qemu_SHOpenFolderAndSelectItems call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHOPENFOLDERANDSELECTITEMS);
-    call.pidlFolder = (uint64_t)pidlFolder;
-    call.cidl = (uint64_t)cidl;
-    call.apidl = (uint64_t)apidl;
-    call.flags = (uint64_t)flags;
+    call.pidlFolder = (ULONG_PTR)pidlFolder;
+    call.cidl = (ULONG_PTR)cidl;
+    call.apidl = (ULONG_PTR)apidl;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -126,9 +126,9 @@ WINBASEAPI HRESULT WINAPI SHGetSetFolderCustomSettings(LPSHFOLDERCUSTOMSETTINGS 
 {
     struct qemu_SHGetSetFolderCustomSettings call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETSETFOLDERCUSTOMSETTINGS);
-    call.fcs = (uint64_t)fcs;
-    call.path = (uint64_t)path;
-    call.flag = (uint64_t)flag;
+    call.fcs = (ULONG_PTR)fcs;
+    call.path = (ULONG_PTR)path;
+    call.flag = (ULONG_PTR)flag;
 
     qemu_syscall(&call.super);
 
@@ -159,8 +159,8 @@ WINBASEAPI HRESULT WINAPI SHLimitInputEdit(HWND textbox, IShellFolder *folder)
 {
     struct qemu_SHLimitInputEdit call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHLIMITINPUTEDIT);
-    call.textbox = (uint64_t)textbox;
-    call.folder = (uint64_t)folder;
+    call.textbox = (ULONG_PTR)textbox;
+    call.folder = (ULONG_PTR)folder;
 
     qemu_syscall(&call.super);
 

@@ -45,8 +45,8 @@ WINBASEAPI BOOL WINAPI Shell_NotifyIconA(DWORD dwMessage, PNOTIFYICONDATAA pnid)
 {
     struct qemu_Shell_NotifyIconA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHELL_NOTIFYICONA);
-    call.dwMessage = (uint64_t)dwMessage;
-    call.pnid = (uint64_t)pnid;
+    call.dwMessage = (ULONG_PTR)dwMessage;
+    call.pnid = (ULONG_PTR)pnid;
 
     qemu_syscall(&call.super);
 
@@ -77,8 +77,8 @@ WINBASEAPI BOOL WINAPI Shell_NotifyIconW(DWORD dwMessage, PNOTIFYICONDATAW nid)
 {
     struct qemu_Shell_NotifyIconW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHELL_NOTIFYICONW);
-    call.dwMessage = (uint64_t)dwMessage;
-    call.nid = (uint64_t)nid;
+    call.dwMessage = (ULONG_PTR)dwMessage;
+    call.nid = (ULONG_PTR)nid;
 
     qemu_syscall(&call.super);
 

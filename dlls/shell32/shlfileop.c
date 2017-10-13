@@ -46,8 +46,8 @@ WINBASEAPI HRESULT WINAPI SHIsFileAvailableOffline(LPCWSTR path, LPDWORD status)
 {
     struct qemu_SHIsFileAvailableOffline call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHISFILEAVAILABLEOFFLINE);
-    call.path = (uint64_t)path;
-    call.status = (uint64_t)status;
+    call.path = (ULONG_PTR)path;
+    call.status = (ULONG_PTR)status;
 
     qemu_syscall(&call.super);
 
@@ -80,8 +80,8 @@ WINBASEAPI BOOL WINAPI Win32CreateDirectory(LPCVOID path, LPSECURITY_ATTRIBUTES 
 {
     struct qemu_Win32CreateDirectory call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WIN32CREATEDIRECTORY);
-    call.path = (uint64_t)path;
-    call.sec = (uint64_t)sec;
+    call.path = (ULONG_PTR)path;
+    call.sec = (ULONG_PTR)sec;
 
     qemu_syscall(&call.super);
 
@@ -113,7 +113,7 @@ WINBASEAPI BOOL WINAPI Win32RemoveDirectory(LPCVOID path)
 {
     struct qemu_Win32RemoveDirectory call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WIN32REMOVEDIRECTORY);
-    call.path = (uint64_t)path;
+    call.path = (ULONG_PTR)path;
 
     qemu_syscall(&call.super);
 
@@ -145,7 +145,7 @@ WINBASEAPI WINBOOL WINAPI Win32DeleteFile(const WCHAR *path)
 {
     struct qemu_Win32DeleteFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WIN32DELETEFILE);
-    call.path = (uint64_t)path;
+    call.path = (ULONG_PTR)path;
 
     qemu_syscall(&call.super);
 
@@ -176,8 +176,8 @@ WINBASEAPI int WINAPI SHCreateDirectory(HWND hWnd, const WCHAR *path)
 {
     struct qemu_SHCreateDirectory call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATEDIRECTORY);
-    call.hWnd = (uint64_t)hWnd;
-    call.path = (uint64_t)path;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.path = (ULONG_PTR)path;
 
     qemu_syscall(&call.super);
 
@@ -209,9 +209,9 @@ WINBASEAPI int WINAPI SHCreateDirectoryExA(HWND hWnd, LPCSTR path, const SECURIT
 {
     struct qemu_SHCreateDirectoryExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATEDIRECTORYEXA);
-    call.hWnd = (uint64_t)hWnd;
-    call.path = (uint64_t)path;
-    call.sec = (uint64_t)sec;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.path = (ULONG_PTR)path;
+    call.sec = (ULONG_PTR)sec;
 
     qemu_syscall(&call.super);
 
@@ -243,9 +243,9 @@ WINBASEAPI int WINAPI SHCreateDirectoryExW(HWND hWnd, LPCWSTR path, const SECURI
 {
     struct qemu_SHCreateDirectoryExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATEDIRECTORYEXW);
-    call.hWnd = (uint64_t)hWnd;
-    call.path = (uint64_t)path;
-    call.sec = (uint64_t)sec;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.path = (ULONG_PTR)path;
+    call.sec = (ULONG_PTR)sec;
 
     qemu_syscall(&call.super);
 
@@ -275,7 +275,7 @@ WINBASEAPI int WINAPI SHFileOperationA(LPSHFILEOPSTRUCTA lpFileOp)
 {
     struct qemu_SHFileOperationA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHFILEOPERATIONA);
-    call.lpFileOp = (uint64_t)lpFileOp;
+    call.lpFileOp = (ULONG_PTR)lpFileOp;
 
     qemu_syscall(&call.super);
 
@@ -305,7 +305,7 @@ WINBASEAPI int WINAPI SHFileOperationW(LPSHFILEOPSTRUCTW lpFileOp)
 {
     struct qemu_SHFileOperationW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHFILEOPERATIONW);
-    call.lpFileOp = (uint64_t)lpFileOp;
+    call.lpFileOp = (ULONG_PTR)lpFileOp;
 
     qemu_syscall(&call.super);
 
@@ -335,7 +335,7 @@ WINBASEAPI void WINAPI SHFreeNameMappings(HANDLE hNameMapping)
 {
     struct qemu_SHFreeNameMappings call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHFREENAMEMAPPINGS);
-    call.hNameMapping = (uint64_t)hNameMapping;
+    call.hNameMapping = (ULONG_PTR)hNameMapping;
 
     qemu_syscall(&call.super);
 }
@@ -364,8 +364,8 @@ WINBASEAPI DWORD WINAPI SheGetDirA(DWORD drive, LPSTR buffer)
 {
     struct qemu_SheGetDirA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHEGETDIRA);
-    call.drive = (uint64_t)drive;
-    call.buffer = (uint64_t)buffer;
+    call.drive = (ULONG_PTR)drive;
+    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
 
@@ -398,8 +398,8 @@ WINBASEAPI DWORD WINAPI SheGetDirW(DWORD drive, LPWSTR buffer)
 {
     struct qemu_SheGetDirW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHEGETDIRW);
-    call.drive = (uint64_t)drive;
-    call.buffer = (uint64_t)buffer;
+    call.drive = (ULONG_PTR)drive;
+    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
 
@@ -431,7 +431,7 @@ WINBASEAPI DWORD WINAPI SheChangeDirA(LPSTR path)
 {
     struct qemu_SheChangeDirA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHECHANGEDIRA);
-    call.path = (uint64_t)path;
+    call.path = (ULONG_PTR)path;
 
     qemu_syscall(&call.super);
 
@@ -463,7 +463,7 @@ WINBASEAPI DWORD WINAPI SheChangeDirW(LPWSTR path)
 {
     struct qemu_SheChangeDirW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHECHANGEDIRW);
-    call.path = (uint64_t)path;
+    call.path = (ULONG_PTR)path;
 
     qemu_syscall(&call.super);
 
@@ -495,7 +495,7 @@ WINBASEAPI int WINAPI IsNetDrive(int drive)
 {
     struct qemu_IsNetDrive call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISNETDRIVE);
-    call.drive = (uint64_t)drive;
+    call.drive = (ULONG_PTR)drive;
 
     qemu_syscall(&call.super);
 
@@ -526,8 +526,8 @@ WINBASEAPI int WINAPI RealDriveType(int drive, BOOL bQueryNet)
 {
     struct qemu_RealDriveType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REALDRIVETYPE);
-    call.drive = (uint64_t)drive;
-    call.bQueryNet = (uint64_t)bQueryNet;
+    call.drive = (ULONG_PTR)drive;
+    call.bQueryNet = (ULONG_PTR)bQueryNet;
 
     qemu_syscall(&call.super);
 
@@ -560,10 +560,10 @@ WINBASEAPI HRESULT WINAPI SHPathPrepareForWriteA(HWND hwnd, IUnknown *modless, L
 {
     struct qemu_SHPathPrepareForWriteA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHPATHPREPAREFORWRITEA);
-    call.hwnd = (uint64_t)hwnd;
-    call.modless = (uint64_t)modless;
-    call.path = (uint64_t)path;
-    call.flags = (uint64_t)flags;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.modless = (ULONG_PTR)modless;
+    call.path = (ULONG_PTR)path;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -596,10 +596,10 @@ WINBASEAPI HRESULT WINAPI SHPathPrepareForWriteW(HWND hwnd, IUnknown *modless, L
 {
     struct qemu_SHPathPrepareForWriteW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHPATHPREPAREFORWRITEW);
-    call.hwnd = (uint64_t)hwnd;
-    call.modless = (uint64_t)modless;
-    call.path = (uint64_t)path;
-    call.flags = (uint64_t)flags;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.modless = (ULONG_PTR)modless;
+    call.path = (ULONG_PTR)path;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 

@@ -45,7 +45,7 @@ WINBASEAPI BOOL WINAPI IsLFNDriveA(LPCSTR lpszPath)
 {
     struct qemu_IsLFNDriveA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISLFNDRIVEA);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -77,7 +77,7 @@ WINBASEAPI BOOL WINAPI IsLFNDriveW(LPCWSTR lpszPath)
 {
     struct qemu_IsLFNDriveW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISLFNDRIVEW);
-    call.lpszPath = (uint64_t)lpszPath;
+    call.lpszPath = (ULONG_PTR)lpszPath;
 
     qemu_syscall(&call.super);
 
@@ -112,10 +112,10 @@ WINBASEAPI BOOL WINAPI PathYetAnotherMakeUniqueName(LPWSTR buffer, LPCWSTR path,
 {
     struct qemu_PathYetAnotherMakeUniqueName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PATHYETANOTHERMAKEUNIQUENAME);
-    call.buffer = (uint64_t)buffer;
-    call.path = (uint64_t)path;
-    call.shortname = (uint64_t)shortname;
-    call.longname = (uint64_t)longname;
+    call.buffer = (ULONG_PTR)buffer;
+    call.path = (ULONG_PTR)path;
+    call.shortname = (ULONG_PTR)shortname;
+    call.longname = (ULONG_PTR)longname;
 
     qemu_syscall(&call.super);
 
@@ -149,11 +149,11 @@ WINBASEAPI HRESULT WINAPI SHGetFolderPathW(HWND hwndOwner, int nFolder, HANDLE h
 {
     struct qemu_SHGetFolderPathW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETFOLDERPATHW);
-    call.hwndOwner = (uint64_t)hwndOwner;
-    call.nFolder = (uint64_t)nFolder;
-    call.hToken = (uint64_t)hToken;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pszPath = (uint64_t)pszPath;
+    call.hwndOwner = (ULONG_PTR)hwndOwner;
+    call.nFolder = (ULONG_PTR)nFolder;
+    call.hToken = (ULONG_PTR)hToken;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pszPath = (ULONG_PTR)pszPath;
 
     qemu_syscall(&call.super);
 
@@ -188,12 +188,12 @@ WINBASEAPI HRESULT WINAPI SHGetFolderPathAndSubDirA(HWND hwndOwner, int nFolder,
 {
     struct qemu_SHGetFolderPathAndSubDirA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETFOLDERPATHANDSUBDIRA);
-    call.hwndOwner = (uint64_t)hwndOwner;
-    call.nFolder = (uint64_t)nFolder;
-    call.hToken = (uint64_t)hToken;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pszSubPath = (uint64_t)pszSubPath;
-    call.pszPath = (uint64_t)pszPath;
+    call.hwndOwner = (ULONG_PTR)hwndOwner;
+    call.nFolder = (ULONG_PTR)nFolder;
+    call.hToken = (ULONG_PTR)hToken;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pszSubPath = (ULONG_PTR)pszSubPath;
+    call.pszPath = (ULONG_PTR)pszPath;
 
     qemu_syscall(&call.super);
 
@@ -228,12 +228,12 @@ WINBASEAPI HRESULT WINAPI SHGetFolderPathAndSubDirW(HWND hwndOwner, int nFolder,
 {
     struct qemu_SHGetFolderPathAndSubDirW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETFOLDERPATHANDSUBDIRW);
-    call.hwndOwner = (uint64_t)hwndOwner;
-    call.nFolder = (uint64_t)nFolder;
-    call.hToken = (uint64_t)hToken;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pszSubPath = (uint64_t)pszSubPath;
-    call.pszPath = (uint64_t)pszPath;
+    call.hwndOwner = (ULONG_PTR)hwndOwner;
+    call.nFolder = (ULONG_PTR)nFolder;
+    call.hToken = (ULONG_PTR)hToken;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pszSubPath = (ULONG_PTR)pszSubPath;
+    call.pszPath = (ULONG_PTR)pszPath;
 
     qemu_syscall(&call.super);
 
@@ -267,11 +267,11 @@ WINBASEAPI HRESULT WINAPI SHGetFolderPathA(HWND hwndOwner, int nFolder, HANDLE h
 {
     struct qemu_SHGetFolderPathA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETFOLDERPATHA);
-    call.hwndOwner = (uint64_t)hwndOwner;
-    call.nFolder = (uint64_t)nFolder;
-    call.hToken = (uint64_t)hToken;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.pszPath = (uint64_t)pszPath;
+    call.hwndOwner = (ULONG_PTR)hwndOwner;
+    call.nFolder = (ULONG_PTR)nFolder;
+    call.hToken = (ULONG_PTR)hToken;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.pszPath = (ULONG_PTR)pszPath;
 
     qemu_syscall(&call.super);
 
@@ -304,10 +304,10 @@ WINBASEAPI BOOL WINAPI SHGetSpecialFolderPathA (HWND hwndOwner, LPSTR szPath, in
 {
     struct qemu_SHGetSpecialFolderPathA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETSPECIALFOLDERPATHA);
-    call.hwndOwner = (uint64_t)hwndOwner;
-    call.szPath = (uint64_t)szPath;
-    call.nFolder = (uint64_t)nFolder;
-    call.bCreate = (uint64_t)bCreate;
+    call.hwndOwner = (ULONG_PTR)hwndOwner;
+    call.szPath = (ULONG_PTR)szPath;
+    call.nFolder = (ULONG_PTR)nFolder;
+    call.bCreate = (ULONG_PTR)bCreate;
 
     qemu_syscall(&call.super);
 
@@ -340,10 +340,10 @@ WINBASEAPI BOOL WINAPI SHGetSpecialFolderPathW (HWND hwndOwner, LPWSTR szPath, i
 {
     struct qemu_SHGetSpecialFolderPathW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETSPECIALFOLDERPATHW);
-    call.hwndOwner = (uint64_t)hwndOwner;
-    call.szPath = (uint64_t)szPath;
-    call.nFolder = (uint64_t)nFolder;
-    call.bCreate = (uint64_t)bCreate;
+    call.hwndOwner = (ULONG_PTR)hwndOwner;
+    call.szPath = (ULONG_PTR)szPath;
+    call.nFolder = (ULONG_PTR)nFolder;
+    call.bCreate = (ULONG_PTR)bCreate;
 
     qemu_syscall(&call.super);
 
@@ -377,11 +377,11 @@ WINBASEAPI HRESULT WINAPI SHGetFolderLocation(HWND hwndOwner, int nFolder, HANDL
 {
     struct qemu_SHGetFolderLocation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETFOLDERLOCATION);
-    call.hwndOwner = (uint64_t)hwndOwner;
-    call.nFolder = (uint64_t)nFolder;
-    call.hToken = (uint64_t)hToken;
-    call.dwReserved = (uint64_t)dwReserved;
-    call.ppidl = (uint64_t)ppidl;
+    call.hwndOwner = (ULONG_PTR)hwndOwner;
+    call.nFolder = (ULONG_PTR)nFolder;
+    call.hToken = (ULONG_PTR)hToken;
+    call.dwReserved = (ULONG_PTR)dwReserved;
+    call.ppidl = (ULONG_PTR)ppidl;
 
     qemu_syscall(&call.super);
 
@@ -413,9 +413,9 @@ WINBASEAPI HRESULT WINAPI SHGetSpecialFolderLocation(HWND hwndOwner, INT nFolder
 {
     struct qemu_SHGetSpecialFolderLocation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETSPECIALFOLDERLOCATION);
-    call.hwndOwner = (uint64_t)hwndOwner;
-    call.nFolder = (uint64_t)nFolder;
-    call.ppidl = (uint64_t)ppidl;
+    call.hwndOwner = (ULONG_PTR)hwndOwner;
+    call.nFolder = (ULONG_PTR)nFolder;
+    call.ppidl = (ULONG_PTR)ppidl;
 
     qemu_syscall(&call.super);
 
@@ -448,10 +448,10 @@ WINBASEAPI HRESULT WINAPI SHGetKnownFolderPath(REFKNOWNFOLDERID rfid, DWORD flag
 {
     struct qemu_SHGetKnownFolderPath call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETKNOWNFOLDERPATH);
-    call.rfid = (uint64_t)rfid;
-    call.flags = (uint64_t)flags;
-    call.token = (uint64_t)token;
-    call.ret_path = (uint64_t)ret_path;
+    call.rfid = (ULONG_PTR)rfid;
+    call.flags = (ULONG_PTR)flags;
+    call.token = (ULONG_PTR)token;
+    call.ret_path = (ULONG_PTR)ret_path;
 
     qemu_syscall(&call.super);
 
@@ -485,11 +485,11 @@ WINBASEAPI HRESULT WINAPI SHGetFolderPathEx(REFKNOWNFOLDERID rfid, DWORD flags, 
 {
     struct qemu_SHGetFolderPathEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETFOLDERPATHEX);
-    call.rfid = (uint64_t)rfid;
-    call.flags = (uint64_t)flags;
-    call.token = (uint64_t)token;
-    call.path = (uint64_t)path;
-    call.len = (uint64_t)len;
+    call.rfid = (ULONG_PTR)rfid;
+    call.flags = (ULONG_PTR)flags;
+    call.token = (ULONG_PTR)token;
+    call.path = (ULONG_PTR)path;
+    call.len = (ULONG_PTR)len;
 
     qemu_syscall(&call.super);
 
@@ -524,10 +524,10 @@ WINBASEAPI HRESULT WINAPI SHGetKnownFolderIDList(REFKNOWNFOLDERID rfid, DWORD fl
 {
     struct qemu_SHGetKnownFolderIDList call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETKNOWNFOLDERIDLIST);
-    call.rfid = (uint64_t)rfid;
-    call.flags = (uint64_t)flags;
-    call.token = (uint64_t)token;
-    call.pidl = (uint64_t)pidl;
+    call.rfid = (ULONG_PTR)rfid;
+    call.flags = (ULONG_PTR)flags;
+    call.token = (ULONG_PTR)token;
+    call.pidl = (ULONG_PTR)pidl;
 
     qemu_syscall(&call.super);
 
@@ -561,11 +561,11 @@ WINBASEAPI HRESULT WINAPI SHGetKnownFolderItem(REFKNOWNFOLDERID rfid, KNOWN_FOLD
 {
     struct qemu_SHGetKnownFolderItem call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETKNOWNFOLDERITEM);
-    call.rfid = (uint64_t)rfid;
-    call.flags = (uint64_t)flags;
-    call.hToken = (uint64_t)hToken;
-    call.riid = (uint64_t)riid;
-    call.ppv = (uint64_t)ppv;
+    call.rfid = (ULONG_PTR)rfid;
+    call.flags = (ULONG_PTR)flags;
+    call.hToken = (ULONG_PTR)hToken;
+    call.riid = (ULONG_PTR)riid;
+    call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
 

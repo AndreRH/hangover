@@ -45,13 +45,13 @@ WINBASEAPI HINSTANCE WINAPI FindExecutableA(LPCSTR lpFile, LPCSTR lpDirectory, L
 {
     struct qemu_FindExecutableA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDEXECUTABLEA);
-    call.lpFile = (uint64_t)lpFile;
-    call.lpDirectory = (uint64_t)lpDirectory;
-    call.lpResult = (uint64_t)lpResult;
+    call.lpFile = (ULONG_PTR)lpFile;
+    call.lpDirectory = (ULONG_PTR)lpDirectory;
+    call.lpResult = (ULONG_PTR)lpResult;
 
     qemu_syscall(&call.super);
 
-    return (HINSTANCE)call.super.iret;
+    return (HINSTANCE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -60,7 +60,7 @@ void qemu_FindExecutableA(struct qemu_syscall *call)
 {
     struct qemu_FindExecutableA *c = (struct qemu_FindExecutableA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)FindExecutableA(QEMU_G2H(c->lpFile), QEMU_G2H(c->lpDirectory), QEMU_G2H(c->lpResult));
+    c->super.iret = (ULONG_PTR)FindExecutableA(QEMU_G2H(c->lpFile), QEMU_G2H(c->lpDirectory), QEMU_G2H(c->lpResult));
 }
 
 #endif
@@ -79,13 +79,13 @@ WINBASEAPI HINSTANCE WINAPI FindExecutableW(LPCWSTR lpFile, LPCWSTR lpDirectory,
 {
     struct qemu_FindExecutableW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDEXECUTABLEW);
-    call.lpFile = (uint64_t)lpFile;
-    call.lpDirectory = (uint64_t)lpDirectory;
-    call.lpResult = (uint64_t)lpResult;
+    call.lpFile = (ULONG_PTR)lpFile;
+    call.lpDirectory = (ULONG_PTR)lpDirectory;
+    call.lpResult = (ULONG_PTR)lpResult;
 
     qemu_syscall(&call.super);
 
-    return (HINSTANCE)call.super.iret;
+    return (HINSTANCE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -94,7 +94,7 @@ void qemu_FindExecutableW(struct qemu_syscall *call)
 {
     struct qemu_FindExecutableW *c = (struct qemu_FindExecutableW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)FindExecutableW(QEMU_G2H(c->lpFile), QEMU_G2H(c->lpDirectory), QEMU_G2H(c->lpResult));
+    c->super.iret = (ULONG_PTR)FindExecutableW(QEMU_G2H(c->lpFile), QEMU_G2H(c->lpDirectory), QEMU_G2H(c->lpResult));
 }
 
 #endif
@@ -116,16 +116,16 @@ WINBASEAPI HINSTANCE WINAPI ShellExecuteA(HWND hWnd, LPCSTR lpVerb, LPCSTR lpFil
 {
     struct qemu_ShellExecuteA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHELLEXECUTEA);
-    call.hWnd = (uint64_t)hWnd;
-    call.lpVerb = (uint64_t)lpVerb;
-    call.lpFile = (uint64_t)lpFile;
-    call.lpParameters = (uint64_t)lpParameters;
-    call.lpDirectory = (uint64_t)lpDirectory;
-    call.iShowCmd = (uint64_t)iShowCmd;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.lpVerb = (ULONG_PTR)lpVerb;
+    call.lpFile = (ULONG_PTR)lpFile;
+    call.lpParameters = (ULONG_PTR)lpParameters;
+    call.lpDirectory = (ULONG_PTR)lpDirectory;
+    call.iShowCmd = (ULONG_PTR)iShowCmd;
 
     qemu_syscall(&call.super);
 
-    return (HINSTANCE)call.super.iret;
+    return (HINSTANCE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -134,7 +134,7 @@ void qemu_ShellExecuteA(struct qemu_syscall *call)
 {
     struct qemu_ShellExecuteA *c = (struct qemu_ShellExecuteA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ShellExecuteA(QEMU_G2H(c->hWnd), QEMU_G2H(c->lpVerb), QEMU_G2H(c->lpFile), QEMU_G2H(c->lpParameters), QEMU_G2H(c->lpDirectory), c->iShowCmd);
+    c->super.iret = (ULONG_PTR)ShellExecuteA(QEMU_G2H(c->hWnd), QEMU_G2H(c->lpVerb), QEMU_G2H(c->lpFile), QEMU_G2H(c->lpParameters), QEMU_G2H(c->lpDirectory), c->iShowCmd);
 }
 
 #endif
@@ -151,7 +151,7 @@ WINBASEAPI BOOL WINAPI ShellExecuteExA (LPSHELLEXECUTEINFOA sei)
 {
     struct qemu_ShellExecuteExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHELLEXECUTEEXA);
-    call.sei = (uint64_t)sei;
+    call.sei = (ULONG_PTR)sei;
 
     qemu_syscall(&call.super);
 
@@ -181,7 +181,7 @@ WINBASEAPI BOOL WINAPI ShellExecuteExW (LPSHELLEXECUTEINFOW sei)
 {
     struct qemu_ShellExecuteExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHELLEXECUTEEXW);
-    call.sei = (uint64_t)sei;
+    call.sei = (ULONG_PTR)sei;
 
     qemu_syscall(&call.super);
 
@@ -216,16 +216,16 @@ WINBASEAPI HINSTANCE WINAPI ShellExecuteW(HWND hwnd, LPCWSTR lpVerb, LPCWSTR lpF
 {
     struct qemu_ShellExecuteW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHELLEXECUTEW);
-    call.hwnd = (uint64_t)hwnd;
-    call.lpVerb = (uint64_t)lpVerb;
-    call.lpFile = (uint64_t)lpFile;
-    call.lpParameters = (uint64_t)lpParameters;
-    call.lpDirectory = (uint64_t)lpDirectory;
-    call.nShowCmd = (uint64_t)nShowCmd;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.lpVerb = (ULONG_PTR)lpVerb;
+    call.lpFile = (ULONG_PTR)lpFile;
+    call.lpParameters = (ULONG_PTR)lpParameters;
+    call.lpDirectory = (ULONG_PTR)lpDirectory;
+    call.nShowCmd = (ULONG_PTR)nShowCmd;
 
     qemu_syscall(&call.super);
 
-    return (HINSTANCE)call.super.iret;
+    return (HINSTANCE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -234,7 +234,7 @@ void qemu_ShellExecuteW(struct qemu_syscall *call)
 {
     struct qemu_ShellExecuteW *c = (struct qemu_ShellExecuteW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ShellExecuteW(QEMU_G2H(c->hwnd), QEMU_G2H(c->lpVerb), QEMU_G2H(c->lpFile), QEMU_G2H(c->lpParameters), QEMU_G2H(c->lpDirectory), c->nShowCmd);
+    c->super.iret = (ULONG_PTR)ShellExecuteW(QEMU_G2H(c->hwnd), QEMU_G2H(c->lpVerb), QEMU_G2H(c->lpFile), QEMU_G2H(c->lpParameters), QEMU_G2H(c->lpDirectory), c->nShowCmd);
 }
 
 #endif
@@ -257,17 +257,17 @@ WINBASEAPI HINSTANCE WINAPI WOWShellExecute(HWND hWnd, LPCSTR lpVerb,LPCSTR lpFi
 {
     struct qemu_WOWShellExecute call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WOWSHELLEXECUTE);
-    call.hWnd = (uint64_t)hWnd;
-    call.lpVerb = (uint64_t)lpVerb;
-    call.lpFile = (uint64_t)lpFile;
-    call.lpParameters = (uint64_t)lpParameters;
-    call.lpDirectory = (uint64_t)lpDirectory;
-    call.iShowCmd = (uint64_t)iShowCmd;
-    call.callback = (uint64_t)callback;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.lpVerb = (ULONG_PTR)lpVerb;
+    call.lpFile = (ULONG_PTR)lpFile;
+    call.lpParameters = (ULONG_PTR)lpParameters;
+    call.lpDirectory = (ULONG_PTR)lpDirectory;
+    call.iShowCmd = (ULONG_PTR)iShowCmd;
+    call.callback = (ULONG_PTR)callback;
 
     qemu_syscall(&call.super);
 
-    return (HINSTANCE)call.super.iret;
+    return (HINSTANCE)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -278,7 +278,7 @@ void qemu_WOWShellExecute(struct qemu_syscall *call)
 {
     struct qemu_WOWShellExecute *c = (struct qemu_WOWShellExecute *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)WOWShellExecute(QEMU_G2H(c->hWnd), QEMU_G2H(c->lpVerb), QEMU_G2H(c->lpFile), QEMU_G2H(c->lpParameters), QEMU_G2H(c->lpDirectory), c->iShowCmd, QEMU_G2H(c->callback));
+    c->super.iret = (ULONG_PTR)WOWShellExecute(QEMU_G2H(c->hWnd), QEMU_G2H(c->lpVerb), QEMU_G2H(c->lpFile), QEMU_G2H(c->lpParameters), QEMU_G2H(c->lpDirectory), c->iShowCmd, QEMU_G2H(c->callback));
 }
 
 #endif
@@ -298,10 +298,10 @@ WINBASEAPI void WINAPI OpenAs_RunDLLA(HWND hwnd, HINSTANCE hinst, LPCSTR cmdline
 {
     struct qemu_OpenAs_RunDLLA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENAS_RUNDLLA);
-    call.hwnd = (uint64_t)hwnd;
-    call.hinst = (uint64_t)hinst;
-    call.cmdline = (uint64_t)cmdline;
-    call.cmdshow = (uint64_t)cmdshow;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.hinst = (ULONG_PTR)hinst;
+    call.cmdline = (ULONG_PTR)cmdline;
+    call.cmdshow = (ULONG_PTR)cmdshow;
 
     qemu_syscall(&call.super);
 }
@@ -334,10 +334,10 @@ WINBASEAPI void WINAPI OpenAs_RunDLLW(HWND hwnd, HINSTANCE hinst, LPCWSTR cmdlin
 {
     struct qemu_OpenAs_RunDLLW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENAS_RUNDLLW);
-    call.hwnd = (uint64_t)hwnd;
-    call.hinst = (uint64_t)hinst;
-    call.cmdline = (uint64_t)cmdline;
-    call.cmdshow = (uint64_t)cmdshow;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.hinst = (ULONG_PTR)hinst;
+    call.cmdline = (ULONG_PTR)cmdline;
+    call.cmdshow = (ULONG_PTR)cmdshow;
 
     qemu_syscall(&call.super);
 }
@@ -368,8 +368,8 @@ WINBASEAPI BOOL WINAPI RegenerateUserEnvironment(WCHAR *wunknown, BOOL bunknown)
 {
     struct qemu_RegenerateUserEnvironment call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGENERATEUSERENVIRONMENT);
-    call.wunknown = (uint64_t)wunknown;
-    call.bunknown = (uint64_t)bunknown;
+    call.wunknown = (ULONG_PTR)wunknown;
+    call.bunknown = (ULONG_PTR)bunknown;
 
     qemu_syscall(&call.super);
 

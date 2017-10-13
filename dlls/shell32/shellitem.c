@@ -48,10 +48,10 @@ WINBASEAPI HRESULT WINAPI SHCreateShellItem(LPCITEMIDLIST pidlParent, IShellFold
 {
     struct qemu_SHCreateShellItem call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATESHELLITEM);
-    call.pidlParent = (uint64_t)pidlParent;
-    call.psfParent = (uint64_t)psfParent;
-    call.pidl = (uint64_t)pidl;
-    call.ppsi = (uint64_t)ppsi;
+    call.pidlParent = (ULONG_PTR)pidlParent;
+    call.psfParent = (ULONG_PTR)psfParent;
+    call.pidl = (ULONG_PTR)pidl;
+    call.ppsi = (ULONG_PTR)ppsi;
 
     qemu_syscall(&call.super);
 
@@ -84,10 +84,10 @@ WINBASEAPI HRESULT WINAPI SHCreateItemFromParsingName(PCWSTR pszPath, IBindCtx *
 {
     struct qemu_SHCreateItemFromParsingName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATEITEMFROMPARSINGNAME);
-    call.pszPath = (uint64_t)pszPath;
-    call.pbc = (uint64_t)pbc;
-    call.riid = (uint64_t)riid;
-    call.ppv = (uint64_t)ppv;
+    call.pszPath = (ULONG_PTR)pszPath;
+    call.pbc = (ULONG_PTR)pbc;
+    call.riid = (ULONG_PTR)riid;
+    call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
 
@@ -119,9 +119,9 @@ WINBASEAPI HRESULT WINAPI SHCreateItemFromIDList(PCIDLIST_ABSOLUTE pidl, REFIID 
 {
     struct qemu_SHCreateItemFromIDList call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATEITEMFROMIDLIST);
-    call.pidl = (uint64_t)pidl;
-    call.riid = (uint64_t)riid;
-    call.ppv = (uint64_t)ppv;
+    call.pidl = (ULONG_PTR)pidl;
+    call.riid = (ULONG_PTR)riid;
+    call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
 
@@ -154,10 +154,10 @@ WINBASEAPI HRESULT WINAPI SHGetItemFromDataObject(IDataObject *pdtobj, DATAOBJ_G
 {
     struct qemu_SHGetItemFromDataObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETITEMFROMDATAOBJECT);
-    call.pdtobj = (uint64_t)pdtobj;
-    call.dwFlags = (uint64_t)dwFlags;
-    call.riid = (uint64_t)riid;
-    call.ppv = (uint64_t)ppv;
+    call.pdtobj = (ULONG_PTR)pdtobj;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.riid = (ULONG_PTR)riid;
+    call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
 
@@ -189,9 +189,9 @@ WINBASEAPI HRESULT WINAPI SHGetItemFromObject(IUnknown *punk, REFIID riid, void 
 {
     struct qemu_SHGetItemFromObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETITEMFROMOBJECT);
-    call.punk = (uint64_t)punk;
-    call.riid = (uint64_t)riid;
-    call.ppv = (uint64_t)ppv;
+    call.punk = (ULONG_PTR)punk;
+    call.riid = (ULONG_PTR)riid;
+    call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
 
@@ -225,11 +225,11 @@ WINBASEAPI HRESULT WINAPI SHCreateShellItemArray(PCIDLIST_ABSOLUTE pidlParent, I
 {
     struct qemu_SHCreateShellItemArray call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATESHELLITEMARRAY);
-    call.pidlParent = (uint64_t)pidlParent;
-    call.psf = (uint64_t)psf;
-    call.cidl = (uint64_t)cidl;
-    call.ppidl = (uint64_t)ppidl;
-    call.ppsiItemArray = (uint64_t)ppsiItemArray;
+    call.pidlParent = (ULONG_PTR)pidlParent;
+    call.psf = (ULONG_PTR)psf;
+    call.cidl = (ULONG_PTR)cidl;
+    call.ppidl = (ULONG_PTR)ppidl;
+    call.ppsiItemArray = (ULONG_PTR)ppsiItemArray;
 
     qemu_syscall(&call.super);
 
@@ -261,9 +261,9 @@ WINBASEAPI HRESULT WINAPI SHCreateShellItemArrayFromShellItem(IShellItem *item, 
 {
     struct qemu_SHCreateShellItemArrayFromShellItem call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATESHELLITEMARRAYFROMSHELLITEM);
-    call.item = (uint64_t)item;
-    call.riid = (uint64_t)riid;
-    call.ppv = (uint64_t)ppv;
+    call.item = (ULONG_PTR)item;
+    call.riid = (ULONG_PTR)riid;
+    call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
 
@@ -295,9 +295,9 @@ WINBASEAPI HRESULT WINAPI SHCreateShellItemArrayFromDataObject(IDataObject *pdo,
 {
     struct qemu_SHCreateShellItemArrayFromDataObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATESHELLITEMARRAYFROMDATAOBJECT);
-    call.pdo = (uint64_t)pdo;
-    call.riid = (uint64_t)riid;
-    call.ppv = (uint64_t)ppv;
+    call.pdo = (ULONG_PTR)pdo;
+    call.riid = (ULONG_PTR)riid;
+    call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
 
@@ -329,9 +329,9 @@ WINBASEAPI HRESULT WINAPI SHCreateShellItemArrayFromIDLists(UINT cidl, PCIDLIST_
 {
     struct qemu_SHCreateShellItemArrayFromIDLists call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATESHELLITEMARRAYFROMIDLISTS);
-    call.cidl = (uint64_t)cidl;
-    call.pidl_array = (uint64_t)pidl_array;
-    call.psia = (uint64_t)psia;
+    call.cidl = (ULONG_PTR)cidl;
+    call.pidl_array = (ULONG_PTR)pidl_array;
+    call.psia = (ULONG_PTR)psia;
 
     qemu_syscall(&call.super);
 
@@ -365,11 +365,11 @@ WINBASEAPI HRESULT WINAPI SHGetPropertyStoreFromParsingName(const WCHAR *path, I
 {
     struct qemu_SHGetPropertyStoreFromParsingName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETPROPERTYSTOREFROMPARSINGNAME);
-    call.path = (uint64_t)path;
-    call.pbc = (uint64_t)pbc;
-    call.flags = (uint64_t)flags;
-    call.riid = (uint64_t)riid;
-    call.ppv = (uint64_t)ppv;
+    call.path = (ULONG_PTR)path;
+    call.pbc = (ULONG_PTR)pbc;
+    call.flags = (ULONG_PTR)flags;
+    call.riid = (ULONG_PTR)riid;
+    call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
 

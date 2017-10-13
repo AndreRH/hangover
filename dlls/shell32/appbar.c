@@ -47,8 +47,8 @@ WINBASEAPI UINT_PTR WINAPI SHAppBarMessage(DWORD msg, PAPPBARDATA data)
 {
     struct qemu_SHAppBarMessage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHAPPBARMESSAGE);
-    call.msg = (uint64_t)msg;
-    call.data = (uint64_t)data;
+    call.msg = (ULONG_PTR)msg;
+    call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
 

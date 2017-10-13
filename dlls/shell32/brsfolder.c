@@ -45,11 +45,11 @@ WINBASEAPI LPITEMIDLIST WINAPI SHBrowseForFolderA (LPBROWSEINFOA lpbi)
 {
     struct qemu_SHBrowseForFolderA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHBROWSEFORFOLDERA);
-    call.lpbi = (uint64_t)lpbi;
+    call.lpbi = (ULONG_PTR)lpbi;
 
     qemu_syscall(&call.super);
 
-    return (LPITEMIDLIST)call.super.iret;
+    return (LPITEMIDLIST)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -58,7 +58,7 @@ void qemu_SHBrowseForFolderA(struct qemu_syscall *call)
 {
     struct qemu_SHBrowseForFolderA *c = (struct qemu_SHBrowseForFolderA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)SHBrowseForFolderA(QEMU_G2H(c->lpbi));
+    c->super.iret = (ULONG_PTR)SHBrowseForFolderA(QEMU_G2H(c->lpbi));
 }
 
 #endif
@@ -75,11 +75,11 @@ WINBASEAPI LPITEMIDLIST WINAPI SHBrowseForFolderW (LPBROWSEINFOW lpbi)
 {
     struct qemu_SHBrowseForFolderW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHBROWSEFORFOLDERW);
-    call.lpbi = (uint64_t)lpbi;
+    call.lpbi = (ULONG_PTR)lpbi;
 
     qemu_syscall(&call.super);
 
-    return (LPITEMIDLIST)call.super.iret;
+    return (LPITEMIDLIST)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -88,7 +88,7 @@ void qemu_SHBrowseForFolderW(struct qemu_syscall *call)
 {
     struct qemu_SHBrowseForFolderW *c = (struct qemu_SHBrowseForFolderW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)SHBrowseForFolderW(QEMU_G2H(c->lpbi));
+    c->super.iret = (ULONG_PTR)SHBrowseForFolderW(QEMU_G2H(c->lpbi));
 }
 
 #endif

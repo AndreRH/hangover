@@ -45,12 +45,12 @@ WINBASEAPI LPWSTR* WINAPI CommandLineToArgvW(LPCWSTR lpCmdline, int* numargs)
 {
     struct qemu_CommandLineToArgvW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COMMANDLINETOARGVW);
-    call.lpCmdline = (uint64_t)lpCmdline;
-    call.numargs = (uint64_t)numargs;
+    call.lpCmdline = (ULONG_PTR)lpCmdline;
+    call.numargs = (ULONG_PTR)numargs;
 
     qemu_syscall(&call.super);
 
-    return (LPWSTR*)call.super.iret;
+    return (LPWSTR*)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -59,7 +59,7 @@ void qemu_CommandLineToArgvW(struct qemu_syscall *call)
 {
     struct qemu_CommandLineToArgvW *c = (struct qemu_CommandLineToArgvW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)CommandLineToArgvW(QEMU_G2H(c->lpCmdline), QEMU_G2H(c->numargs));
+    c->super.iret = (ULONG_PTR)CommandLineToArgvW(QEMU_G2H(c->lpCmdline), QEMU_G2H(c->numargs));
 }
 
 #endif
@@ -80,11 +80,11 @@ WINBASEAPI DWORD_PTR WINAPI SHGetFileInfoW(LPCWSTR path,DWORD dwFileAttributes, 
 {
     struct qemu_SHGetFileInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETFILEINFOW);
-    call.path = (uint64_t)path;
-    call.dwFileAttributes = (uint64_t)dwFileAttributes;
-    call.psfi = (uint64_t)psfi;
-    call.sizeofpsfi = (uint64_t)sizeofpsfi;
-    call.flags = (uint64_t)flags;
+    call.path = (ULONG_PTR)path;
+    call.dwFileAttributes = (ULONG_PTR)dwFileAttributes;
+    call.psfi = (ULONG_PTR)psfi;
+    call.sizeofpsfi = (ULONG_PTR)sizeofpsfi;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -118,11 +118,11 @@ WINBASEAPI DWORD_PTR WINAPI SHGetFileInfoA(LPCSTR path,DWORD dwFileAttributes, S
 {
     struct qemu_SHGetFileInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETFILEINFOA);
-    call.path = (uint64_t)path;
-    call.dwFileAttributes = (uint64_t)dwFileAttributes;
-    call.psfi = (uint64_t)psfi;
-    call.sizeofpsfi = (uint64_t)sizeofpsfi;
-    call.flags = (uint64_t)flags;
+    call.path = (ULONG_PTR)path;
+    call.dwFileAttributes = (ULONG_PTR)dwFileAttributes;
+    call.psfi = (ULONG_PTR)psfi;
+    call.sizeofpsfi = (ULONG_PTR)sizeofpsfi;
+    call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
 
@@ -153,12 +153,12 @@ WINBASEAPI HICON WINAPI DuplicateIcon(HINSTANCE hInstance, HICON hIcon)
 {
     struct qemu_DuplicateIcon call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DUPLICATEICON);
-    call.hInstance = (uint64_t)hInstance;
-    call.hIcon = (uint64_t)hIcon;
+    call.hInstance = (ULONG_PTR)hInstance;
+    call.hIcon = (ULONG_PTR)hIcon;
 
     qemu_syscall(&call.super);
 
-    return (HICON)call.super.iret;
+    return (HICON)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -169,7 +169,7 @@ void qemu_DuplicateIcon(struct qemu_syscall *call)
 {
     struct qemu_DuplicateIcon *c = (struct qemu_DuplicateIcon *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)DuplicateIcon(QEMU_G2H(c->hInstance), QEMU_G2H(c->hIcon));
+    c->super.iret = (ULONG_PTR)DuplicateIcon(QEMU_G2H(c->hInstance), QEMU_G2H(c->hIcon));
 }
 
 #endif
@@ -188,13 +188,13 @@ WINBASEAPI HICON WINAPI ExtractIconA(HINSTANCE hInstance, const char *file, UINT
 {
     struct qemu_ExtractIconA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXTRACTICONA);
-    call.hInstance = (uint64_t)hInstance;
-    call.file = (uint64_t)file;
-    call.nIconIndex = (uint64_t)nIconIndex;
+    call.hInstance = (ULONG_PTR)hInstance;
+    call.file = (ULONG_PTR)file;
+    call.nIconIndex = (ULONG_PTR)nIconIndex;
 
     qemu_syscall(&call.super);
 
-    return (HICON)call.super.iret;
+    return (HICON)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -203,7 +203,7 @@ void qemu_ExtractIconA(struct qemu_syscall *call)
 {
     struct qemu_ExtractIconA *c = (struct qemu_ExtractIconA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ExtractIconA(QEMU_G2H(c->hInstance), QEMU_G2H(c->file), c->nIconIndex);
+    c->super.iret = (ULONG_PTR)ExtractIconA(QEMU_G2H(c->hInstance), QEMU_G2H(c->file), c->nIconIndex);
 }
 
 #endif
@@ -222,13 +222,13 @@ WINBASEAPI HICON WINAPI ExtractIconW(HINSTANCE hInstance, LPCWSTR lpszFile, UINT
 {
     struct qemu_ExtractIconW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXTRACTICONW);
-    call.hInstance = (uint64_t)hInstance;
-    call.lpszFile = (uint64_t)lpszFile;
-    call.nIconIndex = (uint64_t)nIconIndex;
+    call.hInstance = (ULONG_PTR)hInstance;
+    call.lpszFile = (ULONG_PTR)lpszFile;
+    call.nIconIndex = (ULONG_PTR)nIconIndex;
 
     qemu_syscall(&call.super);
 
-    return (HICON)call.super.iret;
+    return (HICON)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -237,7 +237,7 @@ void qemu_ExtractIconW(struct qemu_syscall *call)
 {
     struct qemu_ExtractIconW *c = (struct qemu_ExtractIconW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ExtractIconW(QEMU_G2H(c->hInstance), QEMU_G2H(c->lpszFile), c->nIconIndex);
+    c->super.iret = (ULONG_PTR)ExtractIconW(QEMU_G2H(c->hInstance), QEMU_G2H(c->lpszFile), c->nIconIndex);
 }
 
 #endif
@@ -257,10 +257,10 @@ WINBASEAPI HRESULT WINAPI SHCreateFileExtractIconW(LPCWSTR file, DWORD attribs, 
 {
     struct qemu_SHCreateFileExtractIconW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATEFILEEXTRACTICONW);
-    call.file = (uint64_t)file;
-    call.attribs = (uint64_t)attribs;
-    call.riid = (uint64_t)riid;
-    call.ppv = (uint64_t)ppv;
+    call.file = (ULONG_PTR)file;
+    call.attribs = (ULONG_PTR)attribs;
+    call.riid = (ULONG_PTR)riid;
+    call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
 
@@ -294,9 +294,9 @@ WINBASEAPI VOID WINAPI Printer_LoadIconsW(LPCWSTR wsPrinterName, HICON * pLargeI
 {
     struct qemu_Printer_LoadIconsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRINTER_LOADICONSW);
-    call.wsPrinterName = (uint64_t)wsPrinterName;
-    call.pLargeIcon = (uint64_t)pLargeIcon;
-    call.pSmallIcon = (uint64_t)pSmallIcon;
+    call.wsPrinterName = (ULONG_PTR)wsPrinterName;
+    call.pLargeIcon = (ULONG_PTR)pLargeIcon;
+    call.pSmallIcon = (ULONG_PTR)pSmallIcon;
 
     qemu_syscall(&call.super);
 }
@@ -329,10 +329,10 @@ WINBASEAPI BOOL WINAPI Printers_RegisterWindowW(LPCWSTR wsPrinter, DWORD dwType,
 {
     struct qemu_Printers_RegisterWindowW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRINTERS_REGISTERWINDOWW);
-    call.wsPrinter = (uint64_t)wsPrinter;
-    call.dwType = (uint64_t)dwType;
-    call.phClassPidl = (uint64_t)phClassPidl;
-    call.phwnd = (uint64_t)phwnd;
+    call.wsPrinter = (ULONG_PTR)wsPrinter;
+    call.dwType = (ULONG_PTR)dwType;
+    call.phClassPidl = (ULONG_PTR)phClassPidl;
+    call.phwnd = (ULONG_PTR)phwnd;
 
     qemu_syscall(&call.super);
 
@@ -365,8 +365,8 @@ WINBASEAPI VOID WINAPI Printers_UnregisterWindow(HANDLE hClassPidl, HWND hwnd)
 {
     struct qemu_Printers_UnregisterWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRINTERS_UNREGISTERWINDOW);
-    call.hClassPidl = (uint64_t)hClassPidl;
-    call.hwnd = (uint64_t)hwnd;
+    call.hClassPidl = (ULONG_PTR)hClassPidl;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 }
@@ -398,9 +398,9 @@ WINBASEAPI HRESULT WINAPI SHGetPropertyStoreForWindow(HWND hwnd, REFIID riid, vo
 {
     struct qemu_SHGetPropertyStoreForWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETPROPERTYSTOREFORWINDOW);
-    call.hwnd = (uint64_t)hwnd;
-    call.riid = (uint64_t)riid;
-    call.ppv = (uint64_t)ppv;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.riid = (ULONG_PTR)riid;
+    call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
 
@@ -433,10 +433,10 @@ WINBASEAPI DWORD WINAPI SHHelpShortcuts_RunDLLA(DWORD dwArg1, DWORD dwArg2, DWOR
 {
     struct qemu_SHHelpShortcuts_RunDLLA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHHELPSHORTCUTS_RUNDLLA);
-    call.dwArg1 = (uint64_t)dwArg1;
-    call.dwArg2 = (uint64_t)dwArg2;
-    call.dwArg3 = (uint64_t)dwArg3;
-    call.dwArg4 = (uint64_t)dwArg4;
+    call.dwArg1 = (ULONG_PTR)dwArg1;
+    call.dwArg2 = (ULONG_PTR)dwArg2;
+    call.dwArg3 = (ULONG_PTR)dwArg3;
+    call.dwArg4 = (ULONG_PTR)dwArg4;
 
     qemu_syscall(&call.super);
 
@@ -471,10 +471,10 @@ WINBASEAPI DWORD WINAPI SHHelpShortcuts_RunDLLW(DWORD dwArg1, DWORD dwArg2, DWOR
 {
     struct qemu_SHHelpShortcuts_RunDLLW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHHELPSHORTCUTS_RUNDLLW);
-    call.dwArg1 = (uint64_t)dwArg1;
-    call.dwArg2 = (uint64_t)dwArg2;
-    call.dwArg3 = (uint64_t)dwArg3;
-    call.dwArg4 = (uint64_t)dwArg4;
+    call.dwArg1 = (ULONG_PTR)dwArg1;
+    call.dwArg2 = (ULONG_PTR)dwArg2;
+    call.dwArg3 = (ULONG_PTR)dwArg3;
+    call.dwArg4 = (ULONG_PTR)dwArg4;
 
     qemu_syscall(&call.super);
 
@@ -506,7 +506,7 @@ WINBASEAPI HRESULT WINAPI SHLoadInProc (REFCLSID rclsid)
 {
     struct qemu_SHLoadInProc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHLOADINPROC);
-    call.rclsid = (uint64_t)rclsid;
+    call.rclsid = (ULONG_PTR)rclsid;
 
     qemu_syscall(&call.super);
 
@@ -541,10 +541,10 @@ WINBASEAPI BOOL WINAPI ShellAboutA(HWND hWnd, LPCSTR szApp, LPCSTR szOtherStuff,
 {
     struct qemu_ShellAboutA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHELLABOUTA);
-    call.hWnd = (uint64_t)hWnd;
-    call.szApp = (uint64_t)szApp;
-    call.szOtherStuff = (uint64_t)szOtherStuff;
-    call.hIcon = (uint64_t)hIcon;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.szApp = (ULONG_PTR)szApp;
+    call.szOtherStuff = (ULONG_PTR)szOtherStuff;
+    call.hIcon = (ULONG_PTR)hIcon;
 
     qemu_syscall(&call.super);
 
@@ -577,10 +577,10 @@ WINBASEAPI BOOL WINAPI ShellAboutW(HWND hWnd, LPCWSTR szApp, LPCWSTR szOtherStuf
 {
     struct qemu_ShellAboutW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHELLABOUTW);
-    call.hWnd = (uint64_t)hWnd;
-    call.szApp = (uint64_t)szApp;
-    call.szOtherStuff = (uint64_t)szOtherStuff;
-    call.hIcon = (uint64_t)hIcon;
+    call.hWnd = (ULONG_PTR)hWnd;
+    call.szApp = (ULONG_PTR)szApp;
+    call.szOtherStuff = (ULONG_PTR)szOtherStuff;
+    call.hIcon = (ULONG_PTR)hIcon;
 
     qemu_syscall(&call.super);
 
@@ -610,7 +610,7 @@ WINBASEAPI void WINAPI FreeIconList(DWORD dw)
 {
     struct qemu_FreeIconList call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FREEICONLIST);
-    call.dw = (uint64_t)dw;
+    call.dw = (ULONG_PTR)dw;
 
     qemu_syscall(&call.super);
 }
@@ -670,7 +670,7 @@ WINBASEAPI HRESULT WINAPI DllGetVersion (DLLVERSIONINFO *pdvi)
 {
     struct qemu_DllGetVersion call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DLLGETVERSION);
-    call.pdvi = (uint64_t)pdvi;
+    call.pdvi = (ULONG_PTR)pdvi;
 
     qemu_syscall(&call.super);
 
@@ -703,8 +703,8 @@ WINBASEAPI HRESULT WINAPI DllInstall(BOOL bInstall, LPCWSTR cmdline)
 {
     struct qemu_DllInstall call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DLLINSTALL);
-    call.bInstall = (uint64_t)bInstall;
-    call.cmdline = (uint64_t)cmdline;
+    call.bInstall = (ULONG_PTR)bInstall;
+    call.cmdline = (ULONG_PTR)cmdline;
 
     qemu_syscall(&call.super);
 
@@ -825,8 +825,8 @@ WINBASEAPI BOOL WINAPI ExtractVersionResource16W(LPWSTR s, DWORD d)
 {
     struct qemu_ExtractVersionResource16W call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXTRACTVERSIONRESOURCE16W);
-    call.s = (uint64_t)s;
-    call.d = (uint64_t)d;
+    call.s = (ULONG_PTR)s;
+    call.d = (ULONG_PTR)d;
 
     qemu_syscall(&call.super);
 
@@ -891,10 +891,10 @@ WINBASEAPI HRESULT WINAPI SHGetLocalizedName(LPCWSTR path, LPWSTR module, UINT s
 {
     struct qemu_SHGetLocalizedName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETLOCALIZEDNAME);
-    call.path = (uint64_t)path;
-    call.module = (uint64_t)module;
-    call.size = (uint64_t)size;
-    call.res = (uint64_t)res;
+    call.path = (ULONG_PTR)path;
+    call.module = (ULONG_PTR)module;
+    call.size = (ULONG_PTR)size;
+    call.res = (ULONG_PTR)res;
 
     qemu_syscall(&call.super);
 
@@ -926,7 +926,7 @@ WINBASEAPI HRESULT WINAPI SetCurrentProcessExplicitAppUserModelID(PCWSTR appid)
 {
     struct qemu_SetCurrentProcessExplicitAppUserModelID call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCURRENTPROCESSEXPLICITAPPUSERMODELID);
-    call.appid = (uint64_t)appid;
+    call.appid = (ULONG_PTR)appid;
 
     qemu_syscall(&call.super);
 
@@ -958,7 +958,7 @@ WINBASEAPI HRESULT WINAPI GetCurrentProcessExplicitAppUserModelID(PWSTR *appid)
 {
     struct qemu_GetCurrentProcessExplicitAppUserModelID call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTPROCESSEXPLICITAPPUSERMODELID);
-    call.appid = (uint64_t)appid;
+    call.appid = (ULONG_PTR)appid;
 
     qemu_syscall(&call.super);
 
@@ -992,9 +992,9 @@ WINBASEAPI HRESULT WINAPI SHSetUnreadMailCountW(LPCWSTR mailaddress, DWORD count
 {
     struct qemu_SHSetUnreadMailCountW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHSETUNREADMAILCOUNTW);
-    call.mailaddress = (uint64_t)mailaddress;
-    call.count = (uint64_t)count;
-    call.executecommand = (uint64_t)executecommand;
+    call.mailaddress = (ULONG_PTR)mailaddress;
+    call.count = (ULONG_PTR)count;
+    call.executecommand = (ULONG_PTR)executecommand;
 
     qemu_syscall(&call.super);
 
@@ -1029,10 +1029,10 @@ WINBASEAPI HRESULT WINAPI SHEnumerateUnreadMailAccountsW(HKEY user, DWORD idx, L
 {
     struct qemu_SHEnumerateUnreadMailAccountsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHENUMERATEUNREADMAILACCOUNTSW);
-    call.user = (uint64_t)user;
-    call.idx = (uint64_t)idx;
-    call.mailaddress = (uint64_t)mailaddress;
-    call.mailaddresslen = (uint64_t)mailaddresslen;
+    call.user = (ULONG_PTR)user;
+    call.idx = (ULONG_PTR)idx;
+    call.mailaddress = (ULONG_PTR)mailaddress;
+    call.mailaddresslen = (ULONG_PTR)mailaddresslen;
 
     qemu_syscall(&call.super);
 
@@ -1063,7 +1063,7 @@ WINBASEAPI HRESULT WINAPI SHQueryUserNotificationState(QUERY_USER_NOTIFICATION_S
 {
     struct qemu_SHQueryUserNotificationState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHQUERYUSERNOTIFICATIONSTATE);
-    call.state = (uint64_t)state;
+    call.state = (ULONG_PTR)state;
 
     qemu_syscall(&call.super);
 
