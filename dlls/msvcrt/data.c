@@ -56,13 +56,14 @@ void CDECL __getmainargs(int *argc, char** *argv, char** *envp, int expand_wildc
 {
     struct qemu___getmainargs call;
     call.super.id = QEMU_SYSCALL_ID(CALL___GETMAINARGS);
-    call.argc = (ULONG_PTR)argc;
-    call.argv = (ULONG_PTR)argv;
-    call.envp = (ULONG_PTR)envp;
     call.expand_wildcards = expand_wildcards;
     call.new_mode = (ULONG_PTR)new_mode;
 
     qemu_syscall(&call.super);
+
+    *argc = call.argc;
+    *argv = (char **)(ULONG_PTR)call.argv;
+    *envp = (char **)(ULONG_PTR)call.envp;
 }
 
 #else
@@ -70,16 +71,58 @@ void CDECL __getmainargs(int *argc, char** *argv, char** *envp, int expand_wildc
 void qemu___getmainargs(struct qemu_syscall *call)
 {
     char **host_argv, **host_envp;
+    int host_argc, i;
+
+    static BOOL initialized;
+    static char **cache_host_argv, **cache_host_envp;
+    static int cache_hostargc;
 
     struct qemu___getmainargs *c = (struct qemu___getmainargs *)(ULONG_PTR)call;
     /* QEMU hacks up argc and argv after kernel32 consumes it but before
      * msvcrt does, so this *should* work. */
     WINE_TRACE("\n");
-    p___getmainargs(QEMU_G2H(c->argc), &host_argv, &host_envp,
-            c->expand_wildcards, QEMU_G2H(c->new_mode));
 
-    *(uint64_t *)(QEMU_G2H(c->argv)) = QEMU_H2G(host_argv);
-    *(uint64_t *)(QEMU_G2H(c->envp)) = QEMU_H2G(host_envp);
+    if (!initialized)
+    {
+        p___getmainargs(&host_argc, &host_argv, &host_envp,
+                c->expand_wildcards, QEMU_G2H(c->new_mode));
+    }
+
+#if HOST_BIT == GUEST_BIT
+    c->argc = QEMU_H2G(host_argc);
+    c->argv = QEMU_H2G(host_argv);
+    c->envp = QEMU_H2G(host_envp);
+    return;
+#endif
+
+    /* Copy the data into 32 bit address space. */
+    if (!initialized)
+    {
+        initialized = TRUE;
+        cache_hostargc = host_argc;
+        cache_host_argv = HeapAlloc(GetProcessHeap(), 0, sizeof(cache_host_argv) * host_argc);
+        for (i = 0; i < host_argc; ++i)
+        {
+            size_t len = strlen(host_argv[i]);
+            cache_host_argv[i] = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache_host_argv) * len);
+            memcpy(cache_host_argv[i], host_argv[i], len);
+        }
+
+        for (host_argc = 0; host_envp[host_argc]; ++host_argc);
+
+        cache_host_envp = HeapAlloc(GetProcessHeap(), 0, sizeof(cache_host_envp) * (host_argc + 1));
+        for (i = 0; i < host_argc; ++i)
+        {
+            size_t len = strlen(host_envp[i]);
+            cache_host_envp[i] = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache_host_envp) * len);
+            memcpy(cache_host_envp[i], host_envp[i], len);
+        }
+        cache_host_envp[i] = NULL;
+    }
+
+    c->argc = QEMU_H2G(cache_hostargc);
+    c->argv = QEMU_H2G(cache_host_argv);
+    c->envp = QEMU_H2G(cache_host_envp);
 }
 
 #endif
