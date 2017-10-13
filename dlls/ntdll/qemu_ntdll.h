@@ -11,6 +11,7 @@ enum ntdll_calls
     CALL__ATOI64,
     CALL__I64TOA,
     CALL__ITOA,
+    CALL__LOCAL_UNWIND,
     CALL__LTOA,
     CALL__MEMCCPY,
     CALL__MEMICMP,
@@ -480,6 +481,7 @@ void qemu___toascii(struct qemu_syscall *call);
 void qemu__atoi64(struct qemu_syscall *call);
 void qemu__i64toa(struct qemu_syscall *call);
 void qemu__itoa(struct qemu_syscall *call);
+void qemu__local_unwind(struct qemu_syscall *call);
 void qemu__ltoa(struct qemu_syscall *call);
 void qemu__memccpy(struct qemu_syscall *call);
 void qemu__memicmp(struct qemu_syscall *call);

@@ -1592,3 +1592,28 @@ void WINAPI RtlRaiseException( EXCEPTION_RECORD *rec )
 #endif
 
 #endif
+
+struct qemu__local_unwind
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+void WINAPI _local_unwind( void *frame, void *target_ip )
+{
+    struct qemu__local_unwind call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__LOCAL_UNWIND);
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu__local_unwind(struct qemu_syscall *call)
+{
+    struct qemu__local_unwind *c = (struct qemu__local_unwind *)call;
+    WINE_FIXME("Stub!\n");
+    c->super.iret = 0;
+}
+
+#endif

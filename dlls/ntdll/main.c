@@ -70,6 +70,7 @@ static const syscall_handler dll_functions[] =
     qemu__atoi64,
     qemu__i64toa,
     qemu__itoa,
+    qemu__local_unwind,
     qemu__ltoa,
     qemu__memccpy,
     qemu__memicmp,
