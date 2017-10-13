@@ -69,9 +69,12 @@ static const syscall_handler dll_functions[] =
     qemu___toascii,
     qemu__atoi64,
     qemu__i64toa,
+    qemu__i64tow,
     qemu__itoa,
+    qemu__itow,
     qemu__local_unwind,
     qemu__ltoa,
+    qemu__ltow,
     qemu__memccpy,
     qemu__memicmp,
     qemu__splitpath,
@@ -82,7 +85,16 @@ static const syscall_handler dll_functions[] =
     qemu__tolower,
     qemu__toupper,
     qemu__ui64toa,
+    qemu__ui64tow,
     qemu__ultoa,
+    qemu__ultow,
+    qemu__wcsicmp,
+    qemu__wcslwr,
+    qemu__wcsnicmp,
+    qemu__wcsupr,
+    qemu__wtoi,
+    qemu__wtoi64,
+    qemu__wtol,
     qemu_atoi,
     qemu_atol,
     qemu_EtwEventEnabled,
@@ -103,8 +115,15 @@ static const syscall_handler dll_functions[] =
     qemu_ispunct,
     qemu_isspace,
     qemu_isupper,
+    qemu_iswalpha,
+    qemu_iswctype,
+    qemu_iswdigit,
+    qemu_iswlower,
+    qemu_iswspace,
+    qemu_iswxdigit,
     qemu_isxdigit,
     qemu_LdrFindEntryForAddress,
+    qemu_mbstowcs,
     qemu_memchr,
     qemu_memcmp,
     qemu_memcpy,
@@ -505,8 +524,27 @@ static const syscall_handler dll_functions[] =
     qemu_strtoul,
     qemu_tolower,
     qemu_toupper,
+    qemu_towlower,
+    qemu_towupper,
     qemu_VerSetConditionMask,
+    qemu_wcscat,
+    qemu_wcschr,
+    qemu_wcscmp,
+    qemu_wcscpy,
+    qemu_wcscspn,
+    qemu_wcslen,
+    qemu_wcsncat,
+    qemu_wcsncmp,
+    qemu_wcsncpy,
+    qemu_wcspbrk,
     qemu_wcsrchr,
+    qemu_wcsrchr,
+    qemu_wcsspn,
+    qemu_wcsstr,
+    qemu_wcstok,
+    qemu_wcstol,
+    qemu_wcstombs,
+    qemu_wcstoul,
     qemu_WinSqmEndSession,
     qemu_WinSqmIsOptedIn,
     qemu_WinSqmStartSession,
@@ -523,60 +561,372 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
         WINE_ERR("ntdll.dll not loaded\n");
 
     p___isascii = (void *)GetProcAddress(ntdll, "__isascii");
+    if (!p___isascii)
+        WINE_ERR("Could not find \"__isascii\" in ntdll\n");
+
     p___iscsym = (void *)GetProcAddress(ntdll, "__iscsym");
+    if (!p___iscsym)
+        WINE_ERR("Could not find \"__iscsym\" in ntdll\n");
+
     p___iscsymf = (void *)GetProcAddress(ntdll, "__iscsymf");
+    if (!p___iscsymf)
+        WINE_ERR("Could not find \"__iscsymf\" in ntdll\n");
+
     p___toascii = (void *)GetProcAddress(ntdll, "__toascii");
+    if (!p___toascii)
+        WINE_ERR("Could not find \"__toascii\" in ntdll\n");
+
     p__atoi64 = (void *)GetProcAddress(ntdll, "_atoi64");
+    if (!p__atoi64)
+        WINE_ERR("Could not find \"_atoi64\" in ntdll\n");
+
     p__i64toa = (void *)GetProcAddress(ntdll, "_i64toa");
+    if (!p__i64toa)
+        WINE_ERR("Could not find \"_i64toa\" in ntdll\n");
+
+    p__i64tow = (void *)GetProcAddress(ntdll, "_i64tow");
+    if (!p__i64tow)
+        WINE_ERR("Could not find \"_i64tow\" in ntdll\n");
+
     p__itoa = (void *)GetProcAddress(ntdll, "_itoa");
+    if (!p__itoa)
+        WINE_ERR("Could not find \"_itoa\" in ntdll\n");
+
+    p__itow = (void *)GetProcAddress(ntdll, "_itow");
+    if (!p__itow)
+        WINE_ERR("Could not find \"_itow\" in ntdll\n");
+
     p__ltoa = (void *)GetProcAddress(ntdll, "_ltoa");
+    if (!p__ltoa)
+        WINE_ERR("Could not find \"_ltoa\" in ntdll\n");
+
+    p__ltow = (void *)GetProcAddress(ntdll, "_ltow");
+    if (!p__ltow)
+        WINE_ERR("Could not find \"_ltow\" in ntdll\n");
+
     p__memccpy = (void *)GetProcAddress(ntdll, "_memccpy");
+    if (!p__memccpy)
+        WINE_ERR("Could not find \"_memccpy\" in ntdll\n");
+
     p__memicmp = (void *)GetProcAddress(ntdll, "_memicmp");
+    if (!p__memicmp)
+        WINE_ERR("Could not find \"_memicmp\" in ntdll\n");
+
     p__splitpath = (void *)GetProcAddress(ntdll, "_splitpath");
+    if (!p__splitpath)
+        WINE_ERR("Could not find \"_splitpath\" in ntdll\n");
+
     p__stricmp = (void *)GetProcAddress(ntdll, "_stricmp");
+    if (!p__stricmp)
+        WINE_ERR("Could not find \"_stricmp\" in ntdll\n");
+
     p__strlwr = (void *)GetProcAddress(ntdll, "_strlwr");
+    if (!p__strlwr)
+        WINE_ERR("Could not find \"_strlwr\" in ntdll\n");
+
     p__strnicmp = (void *)GetProcAddress(ntdll, "_strnicmp");
+    if (!p__strnicmp)
+        WINE_ERR("Could not find \"_strnicmp\" in ntdll\n");
+
     p__strupr = (void *)GetProcAddress(ntdll, "_strupr");
+    if (!p__strupr)
+        WINE_ERR("Could not find \"_strupr\" in ntdll\n");
+
     p__tolower = (void *)GetProcAddress(ntdll, "_tolower");
+    if (!p__tolower)
+        WINE_ERR("Could not find \"_tolower\" in ntdll\n");
+
     p__toupper = (void *)GetProcAddress(ntdll, "_toupper");
+    if (!p__toupper)
+        WINE_ERR("Could not find \"_toupper\" in ntdll\n");
+
     p__ui64toa = (void *)GetProcAddress(ntdll, "_ui64toa");
+    if (!p__ui64toa)
+        WINE_ERR("Could not find \"_ui64toa\" in ntdll\n");
+
+    p__ui64tow = (void *)GetProcAddress(ntdll, "_ui64tow");
+    if (!p__ui64tow)
+        WINE_ERR("Could not find \"_ui64tow\" in ntdll\n");
+
     p__ultoa = (void *)GetProcAddress(ntdll, "_ultoa");
+    if (!p__ultoa)
+        WINE_ERR("Could not find \"_ultoa\" in ntdll\n");
+
+    p__ultow = (void *)GetProcAddress(ntdll, "_ultow");
+    if (!p__ultow)
+        WINE_ERR("Could not find \"_ultow\" in ntdll\n");
+
+    p__wcsicmp = (void *)GetProcAddress(ntdll, "_wcsicmp");
+    if (!p__wcsicmp)
+        WINE_ERR("Could not find \"_wcsicmp\" in ntdll\n");
+
+    p__wcslwr = (void *)GetProcAddress(ntdll, "_wcslwr");
+    if (!p__wcslwr)
+        WINE_ERR("Could not find \"_wcslwr\" in ntdll\n");
+
+    p__wcsnicmp = (void *)GetProcAddress(ntdll, "_wcsnicmp");
+    if (!p__wcsnicmp)
+        WINE_ERR("Could not find \"_wcsnicmp\" in ntdll\n");
+
+    p__wcsupr = (void *)GetProcAddress(ntdll, "_wcsupr");
+    if (!p__wcsupr)
+        WINE_ERR("Could not find \"_wcsupr\" in ntdll\n");
+
+    p__wtoi = (void *)GetProcAddress(ntdll, "_wtoi");
+    if (!p__wtoi)
+        WINE_ERR("Could not find \"_wtoi\" in ntdll\n");
+
+    p__wtoi64 = (void *)GetProcAddress(ntdll, "_wtoi64");
+    if (!p__wtoi64)
+        WINE_ERR("Could not find \"_wtoi64\" in ntdll\n");
+
+    p__wtol = (void *)GetProcAddress(ntdll, "_wtol");
+    if (!p__wtol)
+        WINE_ERR("Could not find \"_wtol\" in ntdll\n");
+
     p_atoi = (void *)GetProcAddress(ntdll, "atoi");
+    if (!p_atoi)
+        WINE_ERR("Could not find \"atoi\" in ntdll\n");
+
     p_atol = (void *)GetProcAddress(ntdll, "atol");
+    if (!p_atol)
+        WINE_ERR("Could not find \"atol\" in ntdll\n");
+
     p_isalnum = (void *)GetProcAddress(ntdll, "isalnum");
+    if (!p_isalnum)
+        WINE_ERR("Could not find \"isalnum\" in ntdll\n");
+
     p_isalpha = (void *)GetProcAddress(ntdll, "isalpha");
+    if (!p_isalpha)
+        WINE_ERR("Could not find \"isalpha\" in ntdll\n");
+
     p_iscntrl = (void *)GetProcAddress(ntdll, "iscntrl");
+    if (!p_iscntrl)
+        WINE_ERR("Could not find \"iscntrl\" in ntdll\n");
+
     p_isdigit = (void *)GetProcAddress(ntdll, "isdigit");
+    if (!p_isdigit)
+        WINE_ERR("Could not find \"isdigit\" in ntdll\n");
+
     p_isgraph = (void *)GetProcAddress(ntdll, "isgraph");
+    if (!p_isgraph)
+        WINE_ERR("Could not find \"isgraph\" in ntdll\n");
+
     p_islower = (void *)GetProcAddress(ntdll, "islower");
+    if (!p_islower)
+        WINE_ERR("Could not find \"islower\" in ntdll\n");
+
     p_isprint = (void *)GetProcAddress(ntdll, "isprint");
+    if (!p_isprint)
+        WINE_ERR("Could not find \"isprint\" in ntdll\n");
+
     p_ispunct = (void *)GetProcAddress(ntdll, "ispunct");
+    if (!p_ispunct)
+        WINE_ERR("Could not find \"ispunct\" in ntdll\n");
+
     p_isspace = (void *)GetProcAddress(ntdll, "isspace");
+    if (!p_isspace)
+        WINE_ERR("Could not find \"isspace\" in ntdll\n");
+
     p_isupper = (void *)GetProcAddress(ntdll, "isupper");
+    if (!p_isupper)
+        WINE_ERR("Could not find \"isupper\" in ntdll\n");
+
+    p_iswalpha = (void *)GetProcAddress(ntdll, "iswalpha");
+    if (!p_iswalpha)
+        WINE_ERR("Could not find \"iswalpha\" in ntdll\n");
+
+    p_iswctype = (void *)GetProcAddress(ntdll, "iswctype");
+    if (!p_iswctype)
+        WINE_ERR("Could not find \"iswctype\" in ntdll\n");
+
+    p_iswdigit = (void *)GetProcAddress(ntdll, "iswdigit");
+    if (!p_iswdigit)
+        WINE_ERR("Could not find \"iswdigit\" in ntdll\n");
+
+    p_iswlower = (void *)GetProcAddress(ntdll, "iswlower");
+    if (!p_iswlower)
+        WINE_ERR("Could not find \"iswlower\" in ntdll\n");
+
+    p_iswspace = (void *)GetProcAddress(ntdll, "iswspace");
+    if (!p_iswspace)
+        WINE_ERR("Could not find \"iswspace\" in ntdll\n");
+
+    p_iswxdigit = (void *)GetProcAddress(ntdll, "iswxdigit");
+    if (!p_iswxdigit)
+        WINE_ERR("Could not find \"iswxdigit\" in ntdll\n");
+
     p_isxdigit = (void *)GetProcAddress(ntdll, "isxdigit");
+    if (!p_isxdigit)
+        WINE_ERR("Could not find \"isxdigit\" in ntdll\n");
+
+    p_mbstowcs = (void *)GetProcAddress(ntdll, "mbstowcs");
+    if (!p_mbstowcs)
+        WINE_ERR("Could not find \"mbstowcs\" in ntdll\n");
+
     p_memchr = (void *)GetProcAddress(ntdll, "memchr");
+    if (!p_memchr)
+        WINE_ERR("Could not find \"memchr\" in ntdll\n");
+
     p_memcmp = (void *)GetProcAddress(ntdll, "memcmp");
+    if (!p_memcmp)
+        WINE_ERR("Could not find \"memcmp\" in ntdll\n");
+
     p_memcpy = (void *)GetProcAddress(ntdll, "memcpy");
+    if (!p_memcpy)
+        WINE_ERR("Could not find \"memcpy\" in ntdll\n");
+
     p_memmove = (void *)GetProcAddress(ntdll, "memmove");
+    if (!p_memmove)
+        WINE_ERR("Could not find \"memmove\" in ntdll\n");
+
     p_memset = (void *)GetProcAddress(ntdll, "memset");
+    if (!p_memset)
+        WINE_ERR("Could not find \"memset\" in ntdll\n");
+
     p_strcat = (void *)GetProcAddress(ntdll, "strcat");
+    if (!p_strcat)
+        WINE_ERR("Could not find \"strcat\" in ntdll\n");
+
     p_strchr = (void *)GetProcAddress(ntdll, "strchr");
+    if (!p_strchr)
+        WINE_ERR("Could not find \"strchr\" in ntdll\n");
+
     p_strcmp = (void *)GetProcAddress(ntdll, "strcmp");
+    if (!p_strcmp)
+        WINE_ERR("Could not find \"strcmp\" in ntdll\n");
+
     p_strcpy = (void *)GetProcAddress(ntdll, "strcpy");
+    if (!p_strcpy)
+        WINE_ERR("Could not find \"strcpy\" in ntdll\n");
+
     p_strcspn = (void *)GetProcAddress(ntdll, "strcspn");
+    if (!p_strcspn)
+        WINE_ERR("Could not find \"strcspn\" in ntdll\n");
+
     p_strlen = (void *)GetProcAddress(ntdll, "strlen");
+    if (!p_strlen)
+        WINE_ERR("Could not find \"strlen\" in ntdll\n");
+
     p_strncat = (void *)GetProcAddress(ntdll, "strncat");
+    if (!p_strncat)
+        WINE_ERR("Could not find \"strncat\" in ntdll\n");
+
     p_strncmp = (void *)GetProcAddress(ntdll, "strncmp");
+    if (!p_strncmp)
+        WINE_ERR("Could not find \"strncmp\" in ntdll\n");
+
     p_strncpy = (void *)GetProcAddress(ntdll, "strncpy");
+    if (!p_strncpy)
+        WINE_ERR("Could not find \"strncpy\" in ntdll\n");
+
     p_strpbrk = (void *)GetProcAddress(ntdll, "strpbrk");
+    if (!p_strpbrk)
+        WINE_ERR("Could not find \"strpbrk\" in ntdll\n");
+
     p_strrchr = (void *)GetProcAddress(ntdll, "strrchr");
+    if (!p_strrchr)
+        WINE_ERR("Could not find \"strrchr\" in ntdll\n");
+
     p_strspn = (void *)GetProcAddress(ntdll, "strspn");
+    if (!p_strspn)
+        WINE_ERR("Could not find \"strspn\" in ntdll\n");
+
     p_strstr = (void *)GetProcAddress(ntdll, "strstr");
+    if (!p_strstr)
+        WINE_ERR("Could not find \"strstr\" in ntdll\n");
+
     p_strtol = (void *)GetProcAddress(ntdll, "strtol");
+    if (!p_strtol)
+        WINE_ERR("Could not find \"strtol\" in ntdll\n");
+
     p_strtoul = (void *)GetProcAddress(ntdll, "strtoul");
+    if (!p_strtoul)
+        WINE_ERR("Could not find \"strtoul\" in ntdll\n");
+
     p_tolower = (void *)GetProcAddress(ntdll, "tolower");
+    if (!p_tolower)
+        WINE_ERR("Could not find \"tolower\" in ntdll\n");
+
     p_toupper = (void *)GetProcAddress(ntdll, "toupper");
+    if (!p_toupper)
+        WINE_ERR("Could not find \"toupper\" in ntdll\n");
+
+    p_towlower = (void *)GetProcAddress(ntdll, "towlower");
+    if (!p_towlower)
+        WINE_ERR("Could not find \"towlower\" in ntdll\n");
+
+    p_towupper = (void *)GetProcAddress(ntdll, "towupper");
+    if (!p_towupper)
+        WINE_ERR("Could not find \"towupper\" in ntdll\n");
+
+    p_wcscat = (void *)GetProcAddress(ntdll, "wcscat");
+    if (!p_wcscat)
+        WINE_ERR("Could not find \"wcscat\" in ntdll\n");
+
+    p_wcschr = (void *)GetProcAddress(ntdll, "wcschr");
+    if (!p_wcschr)
+        WINE_ERR("Could not find \"wcschr\" in ntdll\n");
+
+    p_wcscmp = (void *)GetProcAddress(ntdll, "wcscmp");
+    if (!p_wcscmp)
+        WINE_ERR("Could not find \"wcscmp\" in ntdll\n");
+
+    p_wcscpy = (void *)GetProcAddress(ntdll, "wcscpy");
+    if (!p_wcscpy)
+        WINE_ERR("Could not find \"wcscpy\" in ntdll\n");
+
+    p_wcscspn = (void *)GetProcAddress(ntdll, "wcscspn");
+    if (!p_wcscspn)
+        WINE_ERR("Could not find \"wcscspn\" in ntdll\n");
+
+    p_wcslen = (void *)GetProcAddress(ntdll, "wcslen");
+    if (!p_wcslen)
+        WINE_ERR("Could not find \"wcslen\" in ntdll\n");
+
+    p_wcsncat = (void *)GetProcAddress(ntdll, "wcsncat");
+    if (!p_wcsncat)
+        WINE_ERR("Could not find \"wcsncat\" in ntdll\n");
+
+    p_wcsncmp = (void *)GetProcAddress(ntdll, "wcsncmp");
+    if (!p_wcsncmp)
+        WINE_ERR("Could not find \"wcsncmp\" in ntdll\n");
+
+    p_wcsncpy = (void *)GetProcAddress(ntdll, "wcsncpy");
+    if (!p_wcsncpy)
+        WINE_ERR("Could not find \"wcsncpy\" in ntdll\n");
+
+    p_wcspbrk = (void *)GetProcAddress(ntdll, "wcspbrk");
+    if (!p_wcspbrk)
+        WINE_ERR("Could not find \"wcspbrk\" in ntdll\n");
+
     p_wcsrchr = (void *)GetProcAddress(ntdll, "wcsrchr");
+    if (!p_wcsrchr)
+        WINE_ERR("Could not find \"wcsrchr\" in ntdll\n");
+
+    p_wcsspn = (void *)GetProcAddress(ntdll, "wcsspn");
+    if (!p_wcsspn)
+        WINE_ERR("Could not find \"wcsspn\" in ntdll\n");
+
+    p_wcsstr = (void *)GetProcAddress(ntdll, "wcsstr");
+    if (!p_wcsstr)
+        WINE_ERR("Could not find \"wcsstr\" in ntdll\n");
+
+    p_wcstok = (void *)GetProcAddress(ntdll, "wcstok");
+    if (!p_wcstok)
+        WINE_ERR("Could not find \"wcstok\" in ntdll\n");
+
+    p_wcstol = (void *)GetProcAddress(ntdll, "wcstol");
+    if (!p_wcstol)
+        WINE_ERR("Could not find \"wcstol\" in ntdll\n");
+
+    p_wcstombs = (void *)GetProcAddress(ntdll, "wcstombs");
+    if (!p_wcstombs)
+        WINE_ERR("Could not find \"wcstombs\" in ntdll\n");
+
+    p_wcstoul = (void *)GetProcAddress(ntdll, "wcstoul");
+    if (!p_wcstoul)
+        WINE_ERR("Could not find \"wcstoul\" in ntdll\n");
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;

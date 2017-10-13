@@ -1295,13 +1295,13 @@
 @ stub _fltused
 # @ cdecl -private -arch=i386 -ret64 _ftol() NTDLL__ftol
 @ cdecl -private _i64toa(int64 ptr long)
-# @ cdecl -private _i64tow(int64 ptr long)
+@ cdecl -private _i64tow(int64 ptr long)
 @ cdecl -private _itoa(long ptr long)
-# @ cdecl -private _itow(long ptr long)
+@ cdecl -private _itow(long ptr long)
 # @ cdecl -private _lfind(ptr ptr ptr long ptr)
 @ stdcall -arch=x86_64 _local_unwind(ptr ptr)
 @ cdecl -private _ltoa(long ptr long)
-# @ cdecl -private _ltow(long ptr long)
+@ cdecl -private _ltow(long ptr long)
 @ cdecl -private _memccpy(ptr ptr long long)
 @ cdecl -private _memicmp(str str long) NTDLL__memicmp
 # @ varargs -private _snprintf(ptr long str) NTDLL__snprintf
@@ -1315,18 +1315,18 @@
 @ cdecl -private _tolower(long) NTDLL__tolower
 @ cdecl -private _toupper(long) NTDLL__toupper
 @ cdecl -private _ui64toa(int64 ptr long)
-# @ cdecl -private _ui64tow(int64 ptr long)
+@ cdecl -private _ui64tow(int64 ptr long)
 @ cdecl -private _ultoa(long ptr long)
-# @ cdecl -private _ultow(long ptr long)
+@ cdecl -private _ultow(long ptr long)
 # @ cdecl -private _vsnprintf(ptr long str ptr) NTDLL__vsnprintf
 # @ cdecl -private _vsnwprintf(ptr long wstr ptr) NTDLL__vsnwprintf
-# @ cdecl -private _wcsicmp(wstr wstr) NTDLL__wcsicmp
-# @ cdecl -private _wcslwr(wstr) NTDLL__wcslwr
-# @ cdecl -private _wcsnicmp(wstr wstr long) NTDLL__wcsnicmp
-# @ cdecl -private _wcsupr(wstr) NTDLL__wcsupr
-# @ cdecl -private _wtoi(wstr)
-# @ cdecl -private -ret64 _wtoi64(wstr)
-# @ cdecl -private _wtol(wstr)
+@ cdecl -private _wcsicmp(wstr wstr) NTDLL__wcsicmp
+@ cdecl -private _wcslwr(wstr) NTDLL__wcslwr
+@ cdecl -private _wcsnicmp(wstr wstr long) NTDLL__wcsnicmp
+@ cdecl -private _wcsupr(wstr) NTDLL__wcsupr
+@ cdecl -private _wtoi(wstr)
+@ cdecl -private -ret64 _wtoi64(wstr)
+@ cdecl -private _wtol(wstr)
 # @ cdecl -private abs(long) NTDLL_abs
 # @ cdecl -private atan(double) NTDLL_atan
 @ cdecl -private atoi(str) NTDLL_atoi
@@ -1346,12 +1346,12 @@
 @ cdecl -private ispunct(long) NTDLL_ispunct
 @ cdecl -private isspace(long) NTDLL_isspace
 @ cdecl -private isupper(long) NTDLL_isupper
-# @ cdecl -private iswalpha(long) NTDLL_iswalpha
-# @ cdecl -private iswctype(long long) NTDLL_iswctype
-# @ cdecl -private iswdigit(long) NTDLL_iswdigit
-# @ cdecl -private iswlower(long) NTDLL_iswlower
-# @ cdecl -private iswspace(long) NTDLL_iswspace
-# @ cdecl -private iswxdigit(long) NTDLL_iswxdigitfpow
+@ cdecl -private iswalpha(long) NTDLL_iswalpha
+@ cdecl -private iswctype(long long) NTDLL_iswctype
+@ cdecl -private iswdigit(long) NTDLL_iswdigit
+@ cdecl -private iswlower(long) NTDLL_iswlower
+@ cdecl -private iswspace(long) NTDLL_iswspace
+@ cdecl -private iswxdigit(long) NTDLL_iswxdigit
 @ cdecl -private isxdigit(long) NTDLL_isxdigit
 # @ cdecl -private labs(long) NTDLL_labs
 # @ cdecl -private log(double) NTDLL_log
@@ -1386,25 +1386,25 @@
 # @ cdecl -private tan(double) NTDLL_tanf
 @ cdecl -private tolower(long) NTDLL_tolower
 @ cdecl -private toupper(long) NTDLL_toupper
-# @ cdecl -private towlower(long) NTDLL_towlower
-# @ cdecl -private towupper(long) NTDLL_towupper
+@ cdecl -private towlower(long) NTDLL_towlower
+@ cdecl -private towupper(long) NTDLL_towupper
 # @ stdcall vDbgPrintEx(long long str ptr)
 # @ stdcall vDbgPrintExWithPrefix(str long long str ptr)
 # @ cdecl -private vsprintf(ptr str ptr) NTDLL_vsprintf
-# @ cdecl -private wcscat(wstr wstr) NTDLL_wcscat
-# @ cdecl -private wcschr(wstr long) NTDLL_wcschr
-# @ cdecl -private wcscmp(wstr wstr) NTDLL_wcscmp
-# @ cdecl -private wcscpy(ptr wstr) NTDLL_wcscpy
-# @ cdecl -private wcscspn(wstr wstr) NTDLL_wcscspn
-# @ cdecl -private wcslen(wstr) NTDLL_wcslen
-# @ cdecl -private wcsncat(wstr wstr long) NTDLL_wcsncat
-# @ cdecl -private wcsncmp(wstr wstr long) NTDLL_wcsncmp
-# @ cdecl -private wcsncpy(ptr wstr long) NTDLL_wcsncpy
-# @ cdecl -private wcspbrk(wstr wstr) NTDLL_wcspbrk
+@ cdecl -private wcscat(wstr wstr) NTDLL_wcscat
+@ cdecl -private wcschr(wstr long) NTDLL_wcschr
+@ cdecl -private wcscmp(wstr wstr) NTDLL_wcscmp
+@ cdecl -private wcscpy(ptr wstr) NTDLL_wcscpy
+@ cdecl -private wcscspn(wstr wstr) NTDLL_wcscspn
+@ cdecl -private wcslen(wstr) NTDLL_wcslen
+@ cdecl -private wcsncat(wstr wstr long) NTDLL_wcsncat
+@ cdecl -private wcsncmp(wstr wstr long) NTDLL_wcsncmp
+@ cdecl -private wcsncpy(ptr wstr long) NTDLL_wcsncpy
+@ cdecl -private wcspbrk(wstr wstr) NTDLL_wcspbrk
 @ cdecl -private wcsrchr(wstr long) NTDLL_wcsrchr
-# @ cdecl -private wcsspn(wstr wstr) NTDLL_wcsspn
-# @ cdecl -private wcsstr(wstr wstr) NTDLL_wcsstr
-# @ cdecl -private wcstok(wstr wstr) NTDLL_wcstok
-# @ cdecl -private wcstol(wstr ptr long) NTDLL_wcstol
-# @ cdecl -private wcstombs(ptr ptr long) NTDLL_wcstombs
-# @ cdecl -private wcstoul(wstr ptr long) NTDLL_wcstoul
+@ cdecl -private wcsspn(wstr wstr) NTDLL_wcsspn
+@ cdecl -private wcsstr(wstr wstr) NTDLL_wcsstr
+@ cdecl -private wcstok(wstr wstr) NTDLL_wcstok
+@ cdecl -private wcstol(wstr ptr long) NTDLL_wcstol
+@ cdecl -private wcstombs(ptr ptr long) NTDLL_wcstombs
+@ cdecl -private wcstoul(wstr ptr long) NTDLL_wcstoul
