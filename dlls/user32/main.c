@@ -48,7 +48,7 @@ long CALLBACK wndproc_except_handler(EXCEPTION_POINTERS *pointers, ULONG64 frame
     return EXCEPTION_EXECUTE_HANDLER;
 }
 
-static LRESULT wndproc_wrapper(const struct wndproc_call *call)
+static LRESULT __fastcall wndproc_wrapper(const struct wndproc_call *call)
 {
     WNDPROC proc = (WNDPROC)(ULONG_PTR)call->wndproc;
     LRESULT ret = 0;
@@ -826,20 +826,31 @@ uint64_t guest_wndproc_wrapper;
 
 LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam, struct wndproc_wrapper *wrapper)
 {
-    struct wndproc_call call;
+    struct wndproc_call stack_call, *call = &stack_call;
     MSG msg_struct = {win, msg, wparam, lparam};
+    LRESULT ret;
 
     msg_host_to_guest(&msg_struct, &msg_struct);
 
-    call.wndproc = wrapper->guest_proc;
-    call.win = (ULONG_PTR)msg_struct.hwnd;
-    call.msg = msg_struct.message;
-    call.wparam = msg_struct.wParam;
-    call.lparam = msg_struct.lParam;
+#if HOST_BIT != GUEST_BIT
+    call = HeapAlloc(GetProcessHeap(), 0, sizeof(*call));
+#endif
+
+    call->wndproc = wrapper->guest_proc;
+    call->win = (ULONG_PTR)msg_struct.hwnd;
+    call->msg = msg_struct.message;
+    call->wparam = msg_struct.wParam;
+    call->lparam = msg_struct.lParam;
 
     WINE_TRACE("Calling guest wndproc 0x%lx(%p, %x, %lx, %lx)\n", wrapper->guest_proc, win, msg, wparam, lparam);
-    WINE_TRACE("wrapper at %p\n", wrapper);
-    return qemu_ops->qemu_execute(QEMU_G2H(guest_wndproc_wrapper), QEMU_H2G(&call));
+    WINE_TRACE("wrapper at %p, param struct at %p\n", wrapper, call);
+
+    ret = qemu_ops->qemu_execute(QEMU_G2H(guest_wndproc_wrapper), QEMU_H2G(call));
+
+    if (call != &stack_call)
+        HeapFree(GetProcessHeap(), 0, call);
+
+    return ret;
 }
 
 void init_wndproc(struct wndproc_wrapper *wrapper)
