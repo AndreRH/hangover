@@ -259,5 +259,5 @@ EXPORTS
   UrlUnescapeW
   wnsprintfA
   wnsprintfW
-  wvnsprintfA
-  wvnsprintfW
+  wvnsprintfA=shlwapi_wvnsprintfA
+  wvnsprintfW=shlwapi_wvnsprintfW

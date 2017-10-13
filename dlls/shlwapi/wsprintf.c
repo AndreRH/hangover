@@ -425,7 +425,7 @@ static INT my_wvnsprintfA( LPSTR buffer, INT maxlen, LPCSTR spec, va_list args )
     return (maxlen > 1) ? (INT)(p - buffer) : -1;
 }
 
-WINBASEAPI INT wvnsprintfA( LPSTR buffer, INT maxlen, LPCSTR spec, va_list args )
+INT shlwapi_wvnsprintfA( LPSTR buffer, INT maxlen, LPCSTR spec, va_list args )
 {
     return my_wvnsprintfA(buffer, maxlen, spec, args);
 }
@@ -532,9 +532,9 @@ static INT my_wvnsprintfW( LPWSTR buffer, INT maxlen, LPCWSTR spec, va_list args
     return (maxlen > 1) ? (INT)(p - buffer) : -1;
 }
 
-WINBASEAPI INT wvnsprintfW( LPWSTR buffer, INT maxlen, LPCWSTR spec, va_list args )
+INT shlwapi_wvnsprintfW( LPWSTR buffer, INT maxlen, LPCWSTR spec, va_list args )
 {
-    return wvnsprintfW(buffer, maxlen, spec, args);
+    return my_wvnsprintfW(buffer, maxlen, spec, args);
 }
 
 
