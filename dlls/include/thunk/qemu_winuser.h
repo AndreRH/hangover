@@ -33,4 +33,15 @@ struct qemu_CREATESTRUCT
     DWORD           dwExStyle;
 };
 
+struct qemu_WINDOWPOS
+{
+    qemu_handle hwnd;
+    qemu_handle hwndInsertAfter;
+    INT         x;
+    INT         y;
+    INT         cx;
+    INT         cy;
+    UINT        flags;
+};
+
 #endif

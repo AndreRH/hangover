@@ -1026,6 +1026,28 @@ uint64_t wndproc_host_to_guest(WNDPROC host_proc)
     assert(0);
 }
 
+static inline void windowpos_g2h(WINDOWPOS *host, const struct qemu_WINDOWPOS *guest)
+{
+    host->hwnd = (HWND)(ULONG_PTR)guest->hwnd;
+    host->hwndInsertAfter = (HWND)(ULONG_PTR)guest->hwndInsertAfter;
+    host->x = guest->x;
+    host->y = guest->y;
+    host->cx = guest->cx;
+    host->cy = guest->cy;
+    host->flags = guest->flags;
+}
+
+static inline void windowpos_h2g(struct qemu_WINDOWPOS *guest, const WINDOWPOS *host)
+{
+    guest->hwnd = (ULONG_PTR)host->hwnd;
+    guest->hwndInsertAfter = (ULONG_PTR)host->hwndInsertAfter;
+    guest->x = host->x;
+    guest->y = host->y;
+    guest->cx = host->cx;
+    guest->cy = host->cy;
+    guest->flags = host->flags;
+}
+
 void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
 {
     *msg_out = *msg_in;
@@ -1042,6 +1064,7 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
         {
             struct qemu_CREATESTRUCT *guest = (struct qemu_CREATESTRUCT *)msg_in->lParam;
             CREATESTRUCTW *host = HeapAlloc(GetProcessHeap(), 0, sizeof(*host));
+
             host->lpCreateParams = (void *)(ULONG_PTR)guest->lpCreateParams;
             host->hInstance = (HANDLE)(ULONG_PTR)guest->hInstance;
             host->hMenu = (HANDLE)(ULONG_PTR)guest->hMenu;
@@ -1054,6 +1077,17 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             host->lpszName = (void *)(ULONG_PTR)guest->lpszName;
             host->lpszClass = (void *)(ULONG_PTR)guest->lpszClass;
             host->dwExStyle = guest->dwExStyle;
+
+            msg_out->lParam = (LPARAM)host;
+            break;
+        }
+
+        case WM_WINDOWPOSCHANGING:
+        case WM_WINDOWPOSCHANGED:
+        {
+            struct qemu_WINDOWPOS *guest = (struct qemu_WINDOWPOS *)msg_in->lParam;
+            WINDOWPOS *host = HeapAlloc(GetProcessHeap(), 0, sizeof(*host));
+            windowpos_g2h(host, guest);
             msg_out->lParam = (LPARAM)host;
             break;
         }
@@ -1072,6 +1106,18 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
         case WM_NCCREATE:
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
+
+        case WM_WINDOWPOSCHANGING:
+        case WM_WINDOWPOSCHANGED:
+        {
+            struct qemu_WINDOWPOS *guest = (struct qemu_WINDOWPOS *)orig->lParam;
+            WINDOWPOS *host = (WINDOWPOS *)conv->lParam;
+
+            windowpos_h2g(guest, host);
+
+            HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
+        }
     }
 #endif
 }
@@ -1116,6 +1162,18 @@ void msg_host_to_guest(MSG *msg_out, const MSG *msg_in)
             msg_out->lParam = (LPARAM)copy;
             break;
         }
+
+        case WM_WINDOWPOSCHANGING:
+        case WM_WINDOWPOSCHANGED:
+        {
+            WINDOWPOS *host = (WINDOWPOS *)msg_in->lParam;
+            struct qemu_WINDOWPOS *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*host));
+
+            windowpos_h2g(guest, host);
+
+            msg_out->lParam = (LPARAM)guest;
+            break;
+        }
 #endif
         default:
             break;
@@ -1136,6 +1194,18 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
             *(RECT *)orig->lParam = *(RECT *)conv->lParam;
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
+
+        case WM_WINDOWPOSCHANGING:
+        case WM_WINDOWPOSCHANGED:
+        {
+            struct qemu_WINDOWPOS *guest = (struct qemu_WINDOWPOS *)conv->lParam;
+            WINDOWPOS *host = (WINDOWPOS *)orig->lParam;
+
+            windowpos_g2h(host, guest);
+
+            HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
+        }
     }
 #endif
 }
