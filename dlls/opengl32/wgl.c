@@ -20,17 +20,17 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include <GL/gl.h>
 
 #ifdef QEMU_DLL_GUEST
 
+#include <GL/gl.h>
 #include <GL/wglext.h>
 #include <GL/glext.h>
 
 #else
 
 #define WGL_WGLEXT_PROTOTYPES
-#include <wine/wglext.h>
+#include <wine/wgl.h>
 
 #endif
 
