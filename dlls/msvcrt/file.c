@@ -291,7 +291,6 @@ struct qemu_fprintf
     uint64_t argcount, argcount_float;
     uint64_t file;
     uint64_t format;
-    uint64_t FILE_size;
     struct va_array args[1];
 };
 
@@ -373,7 +372,6 @@ static int CDECL vfprintf_helper(uint64_t op, FILE *file, const char *format, va
     call->argcount = count;
     call->file = (ULONG_PTR)file;
     call->format = (ULONG_PTR)format;
-    call->FILE_size = sizeof(FILE);
     call->argcount_float = 0;
 
     for (i = 0; i < count; ++i)
@@ -516,7 +514,6 @@ static int CDECL vfwprintf_helper(uint64_t op, FILE *file, const WCHAR *format, 
     call->argcount = count;
     call->file = (ULONG_PTR)file;
     call->format = (ULONG_PTR)format;
-    call->FILE_size = sizeof(FILE);
     call->argcount_float = 0;
 
     for (i = 0; i < count; ++i)
@@ -618,11 +615,9 @@ void qemu_fprintf(struct qemu_syscall *call)
     switch (c->super.id)
     {
         case QEMU_SYSCALL_ID(CALL_PRINTF):
-            /* Don't put "stdout" here, it will call the Linux libc __iob_func export.
-             * Plus, the size of FILE is different between Linux and Windows, and I
-             * haven't found a nice way to get FILE from Wine, other than
-             * copypasting it, so grab the proper offset from the VM. */
-            data.file = (BYTE *)p___iob_func() + c->FILE_size;
+            WINE_ERR("Hmm, wanna right size\n");
+            /* Don't put "stdout" here, it will call the Linux libc __iob_func export. */
+            data.file = p___iob_func() + 1;
             data.unicode = FALSE;
             break;
 
@@ -632,7 +627,7 @@ void qemu_fprintf(struct qemu_syscall *call)
             break;
 
         case QEMU_SYSCALL_ID(CALL_WPRINTF):
-            data.file = (BYTE *)p___iob_func() + c->FILE_size;
+            data.file = p___iob_func() + 1;
             data.unicode = TRUE;
             break;
 

@@ -1056,6 +1056,19 @@ typedef struct
     unsigned int status;
 } MSVCRT_fenv_t;
 
+struct MSVCRT__iobuf {
+  char* _ptr;
+  int   _cnt;
+  char* _base;
+  int   _flag;
+  int   _file;
+  int   _charbuf;
+  int   _bufsiz;
+  char* _tmpfname;
+};
+
+typedef struct MSVCRT__iobuf MSVCRT_FILE;
+
 typedef void *MSVCRT__locale_t;
 struct MSVCRT__stat64i32;
 struct MSVCRT__stat64;
@@ -2158,7 +2171,7 @@ void qemu_wmemmove_s(struct qemu_syscall *call);
 void (* CDECL p___crt_debugger_hook)(int reserved);
 void (* CDECL p___getmainargs)(int *argc, char** *argv, char** *envp,
         int expand_wildcards, int *new_mode);
-FILE *(* CDECL p___iob_func)();
+MSVCRT_FILE *(* CDECL p___iob_func)();
 int (* CDECL p___lconv_init)(void);
 void (* CDECL p___set_app_type)(int type);
 void (* CDECL p___setusermatherr)(void *func);
