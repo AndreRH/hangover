@@ -829,27 +829,27 @@ uint64_t guest_wndproc_wrapper;
 LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam, struct wndproc_wrapper *wrapper)
 {
     struct wndproc_call stack_call, *call = &stack_call;
-    MSG msg_struct = {win, msg, wparam, lparam};
+    MSG msg_struct = {win, msg, wparam, lparam}, msg_conv;
     LRESULT ret;
 
-    msg_host_to_guest(&msg_struct, &msg_struct);
+    msg_host_to_guest(&msg_conv, &msg_struct);
 
 #if HOST_BIT != GUEST_BIT
     call = HeapAlloc(GetProcessHeap(), 0, sizeof(*call));
 #endif
 
     call->wndproc = wrapper->guest_proc;
-    call->win = (ULONG_PTR)msg_struct.hwnd;
-    call->msg = msg_struct.message;
-    call->wparam = msg_struct.wParam;
-    call->lparam = msg_struct.lParam;
+    call->win = (ULONG_PTR)msg_conv.hwnd;
+    call->msg = msg_conv.message;
+    call->wparam = msg_conv.wParam;
+    call->lparam = msg_conv.lParam;
 
     WINE_TRACE("Calling guest wndproc 0x%lx(%p, %x, %lx, %lx)\n", wrapper->guest_proc, win, msg, wparam, lparam);
     WINE_TRACE("wrapper at %p, param struct at %p\n", wrapper, call);
 
     ret = qemu_ops->qemu_execute(QEMU_G2H(guest_wndproc_wrapper), QEMU_H2G(call));
 
-    msg_host_to_guest_free(&msg_struct);
+    msg_host_to_guest_return(&msg_struct, &msg_conv);
     if (call != &stack_call)
         HeapFree(GetProcessHeap(), 0, call);
 
@@ -1064,9 +1064,16 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
     }
 }
 
-void msg_guest_to_host_free(MSG *msg)
+void msg_guest_to_host_return(MSG *orig, MSG *conv)
 {
-    msg_host_to_guest_free(msg);
+#if HOST_BIT != GUEST_BIT
+    switch (conv->message)
+    {
+        case WM_NCCREATE:
+            HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
+    }
+#endif
 }
 
 void msg_host_to_guest(MSG *msg_out, const MSG *msg_in)
@@ -1100,19 +1107,34 @@ void msg_host_to_guest(MSG *msg_out, const MSG *msg_in)
             msg_out->lParam = (LPARAM)guest;
             break;
         }
+
+        case WM_NCCALCSIZE:
+        {
+            /* FIXME: This should not be necessary if we restriced the host stack to < 4 GB. */
+            RECT *copy = HeapAlloc(GetProcessHeap(), 0, sizeof(*copy));
+            *copy = *(RECT *)msg_in->lParam;
+            msg_out->lParam = (LPARAM)copy;
+            break;
+        }
 #endif
         default:
             break;
     }
 }
 
-void msg_host_to_guest_free(MSG *msg)
+void msg_host_to_guest_return(MSG *orig, MSG *conv)
 {
 #if HOST_BIT != GUEST_BIT
-    switch (msg->message)
+    switch (conv->message)
     {
         case WM_NCCREATE:
-            HeapFree(GetProcessHeap(), 0, (void *)msg->lParam);
+            HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
+
+        case WM_NCCALCSIZE:
+            /* FIXME: This should not be necessary if we restriced the host stack to < 4 GB. */
+            *(RECT *)orig->lParam = *(RECT *)conv->lParam;
+            HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
     }
 #endif
