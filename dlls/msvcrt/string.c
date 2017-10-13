@@ -42,18 +42,18 @@ char * CDECL MSVCRT__strdup(const char *str)
 {
     struct qemu__strdup call;
     call.super.id = QEMU_SYSCALL_ID(CALL__STRDUP);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__strdup(struct qemu_syscall *call)
 {
-    struct qemu__strdup *c = (struct qemu__strdup *)call;
+    struct qemu__strdup *c = (struct qemu__strdup *)(ULONG_PTR)call;
     WINE_TRACE("\n", c->str);
     c->super.iret = QEMU_H2G(p__strdup(QEMU_G2H(c->str)));
 }
@@ -87,7 +87,7 @@ int CDECL MSVCRT__strlwr_s_l(char *str, size_t len, MSVCRT__locale_t locale)
 
 void qemu__strlwr_s_l(struct qemu_syscall *call)
 {
-    struct qemu__strlwr_s_l *c = (struct qemu__strlwr_s_l *)call;
+    struct qemu__strlwr_s_l *c = (struct qemu__strlwr_s_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__strlwr_s_l(QEMU_G2H(c->str), c->len, QEMU_G2H(c->locale));
 }
@@ -119,7 +119,7 @@ int CDECL MSVCRT__strlwr_s(char *str, size_t len)
 
 void qemu__strlwr_s(struct qemu_syscall *call)
 {
-    struct qemu__strlwr_s *c = (struct qemu__strlwr_s *)call;
+    struct qemu__strlwr_s *c = (struct qemu__strlwr_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__strlwr_s(QEMU_G2H(c->str), c->len);
 }
@@ -144,14 +144,14 @@ char* CDECL _strlwr_l(char *str, MSVCRT__locale_t locale)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__strlwr_l(struct qemu_syscall *call)
 {
-    struct qemu__strlwr_l *c = (struct qemu__strlwr_l *)call;
+    struct qemu__strlwr_l *c = (struct qemu__strlwr_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__strlwr_l(QEMU_G2H(c->str), QEMU_G2H(c->locale)));
 }
@@ -174,14 +174,14 @@ char* CDECL MSVCRT__strlwr(char *str)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__strlwr(struct qemu_syscall *call)
 {
-    struct qemu__strlwr *c = (struct qemu__strlwr *)call;
+    struct qemu__strlwr *c = (struct qemu__strlwr *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__strlwr(QEMU_G2H(c->str)));
 }
@@ -215,7 +215,7 @@ int CDECL MSVCRT__strupr_s_l(char *str, size_t len, MSVCRT__locale_t locale)
 
 void qemu__strupr_s_l(struct qemu_syscall *call)
 {
-    struct qemu__strupr_s_l *c = (struct qemu__strupr_s_l *)call;
+    struct qemu__strupr_s_l *c = (struct qemu__strupr_s_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__strupr_s_l(QEMU_G2H(c->str), c->len, QEMU_G2H(c->locale));
 }
@@ -247,7 +247,7 @@ int CDECL MSVCRT__strupr_s(char *str, size_t len)
 
 void qemu__strupr_s(struct qemu_syscall *call)
 {
-    struct qemu__strupr_s *c = (struct qemu__strupr_s *)call;
+    struct qemu__strupr_s *c = (struct qemu__strupr_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__strupr_s(QEMU_G2H(c->str), c->len);
 }
@@ -272,14 +272,14 @@ char* CDECL MSVCRT__strupr_l(char *str, MSVCRT__locale_t locale)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__strupr_l(struct qemu_syscall *call)
 {
-    struct qemu__strupr_l *c = (struct qemu__strupr_l *)call;
+    struct qemu__strupr_l *c = (struct qemu__strupr_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__strupr_l(QEMU_G2H(c->str), QEMU_G2H(c->locale)));
 }
@@ -302,14 +302,14 @@ char* CDECL MSVCRT__strupr(char *str)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__strupr(struct qemu_syscall *call)
 {
-    struct qemu__strupr *c = (struct qemu__strupr *)call;
+    struct qemu__strupr *c = (struct qemu__strupr *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__strupr(QEMU_G2H(c->str)));
 }
@@ -345,7 +345,7 @@ int CDECL MSVCRT__strnset_s(char *str, size_t size, int c, size_t count)
 
 void qemu__strnset_s(struct qemu_syscall *call)
 {
-    struct qemu__strnset_s *c = (struct qemu__strnset_s *)call;
+    struct qemu__strnset_s *c = (struct qemu__strnset_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__strnset_s(QEMU_G2H(c->str), c->size, c->c, c->count);
 }
@@ -372,14 +372,14 @@ char* CDECL MSVCRT__strnset(char* str, int value, size_t len)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__strnset(struct qemu_syscall *call)
 {
-    struct qemu__strnset *c = (struct qemu__strnset *)call;
+    struct qemu__strnset *c = (struct qemu__strnset *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__strnset(QEMU_G2H(c->str), c->value, c->len));
 }
@@ -402,14 +402,14 @@ char* CDECL MSVCRT__strrev(char* str)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__strrev(struct qemu_syscall *call)
 {
-    struct qemu__strrev *c = (struct qemu__strrev *)call;
+    struct qemu__strrev *c = (struct qemu__strrev *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__strrev(QEMU_G2H(c->str)));
 }
@@ -434,14 +434,14 @@ char* CDECL _strset(char* str, int value)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__strset(struct qemu_syscall *call)
 {
-    struct qemu__strset *c = (struct qemu__strset *)call;
+    struct qemu__strset *c = (struct qemu__strset *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__strset(QEMU_G2H(c->str), c->value));
 }
@@ -466,14 +466,14 @@ char * CDECL MSVCRT_strtok(char *str, const char *delim)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_strtok(struct qemu_syscall *call)
 {
-    struct qemu_strtok *c = (struct qemu_strtok *)call;
+    struct qemu_strtok *c = (struct qemu_strtok *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p_strtok(QEMU_G2H(c->str), QEMU_G2H(c->delim)));
 }
@@ -500,14 +500,14 @@ char * CDECL MSVCRT_strtok_s(char *str, const char *delim, char **ctx)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_strtok_s(struct qemu_syscall *call)
 {
-    struct qemu_strtok_s *c = (struct qemu_strtok_s *)call;
+    struct qemu_strtok_s *c = (struct qemu_strtok_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p_strtok_s(QEMU_G2H(c->str), QEMU_G2H(c->delim), QEMU_G2H(c->ctx)));
 }
@@ -539,7 +539,7 @@ void CDECL MSVCRT__swab(char* src, char* dst, int len)
 
 void qemu__swab(struct qemu_syscall *call)
 {
-    struct qemu__swab *c = (struct qemu__swab *)call;
+    struct qemu__swab *c = (struct qemu__swab *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__swab(QEMU_G2H(c->src), QEMU_G2H(c->dst), c->len);
 }
@@ -573,7 +573,7 @@ double CDECL MSVCRT_strtod_l(const char *str, char **end, MSVCRT__locale_t local
 
 void qemu_strtod_l(struct qemu_syscall *call)
 {
-    struct qemu_strtod_l *c = (struct qemu_strtod_l *)call;
+    struct qemu_strtod_l *c = (struct qemu_strtod_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_strtod_l(QEMU_G2H(c->str), QEMU_G2H(c->end), QEMU_G2H(c->locale));
 }
@@ -593,8 +593,8 @@ double CDECL MSVCRT_strtod(const char *str, char **end)
 {
     struct qemu_strtod call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRTOD);
-    call.str = (uint64_t)str;
-    call.end = (uint64_t)end;
+    call.str = (ULONG_PTR)str;
+    call.end = (ULONG_PTR)end;
 
     qemu_syscall(&call.super);
 
@@ -605,7 +605,7 @@ double CDECL MSVCRT_strtod(const char *str, char **end)
 
 void qemu_strtod(struct qemu_syscall *call)
 {
-    struct qemu_strtod *c = (struct qemu_strtod *)call;
+    struct qemu_strtod *c = (struct qemu_strtod *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_strtod(QEMU_G2H(c->str), QEMU_G2H(c->end));
 }
@@ -639,7 +639,7 @@ float CDECL MSVCRT__strtof_l(const char *str, char **end, MSVCRT__locale_t local
 
 void qemu__strtof_l(struct qemu_syscall *call)
 {
-    struct qemu__strtof_l *c = (struct qemu__strtof_l *)call;
+    struct qemu__strtof_l *c = (struct qemu__strtof_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__strtof_l(QEMU_G2H(c->str), QEMU_G2H(c->end), QEMU_G2H(c->locale));
 }
@@ -671,7 +671,7 @@ float CDECL MSVCRT_strtof(const char *str, char **end)
 
 void qemu_strtof(struct qemu_syscall *call)
 {
-    struct qemu_strtof *c = (struct qemu_strtof *)call;
+    struct qemu_strtof *c = (struct qemu_strtof *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_strtof(QEMU_G2H(c->str), QEMU_G2H(c->end));
 }
@@ -690,7 +690,7 @@ double CDECL MSVCRT_atof(const char *str)
 {
     struct qemu_atof call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ATOF);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -701,7 +701,7 @@ double CDECL MSVCRT_atof(const char *str)
 
 void qemu_atof(struct qemu_syscall *call)
 {
-    struct qemu_atof *c = (struct qemu_atof *)call;
+    struct qemu_atof *c = (struct qemu_atof *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_atof(QEMU_G2H(c->str));
 }
@@ -733,7 +733,7 @@ double CDECL MSVCRT__atof_l(const char *str, MSVCRT__locale_t locale)
 
 void qemu__atof_l(struct qemu_syscall *call)
 {
-    struct qemu__atof_l *c = (struct qemu__atof_l *)call;
+    struct qemu__atof_l *c = (struct qemu__atof_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__atof_l(QEMU_G2H(c->str), QEMU_G2H(c->locale));
 }
@@ -767,7 +767,7 @@ int CDECL MSVCRT__atoflt_l(FLOAT *value, char *str, MSVCRT__locale_t locale)
 
 void qemu__atoflt_l(struct qemu_syscall *call)
 {
-    struct qemu__atoflt_l *c = (struct qemu__atoflt_l *)call;
+    struct qemu__atoflt_l *c = (struct qemu__atoflt_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__atoflt_l(QEMU_G2H(c->value), QEMU_G2H(c->str), QEMU_G2H(c->locale));
 }
@@ -799,7 +799,7 @@ int CDECL MSVCRT__atoflt(FLOAT *value, char *str)
 
 void qemu__atoflt(struct qemu_syscall *call)
 {
-    struct qemu__atoflt *c = (struct qemu__atoflt *)call;
+    struct qemu__atoflt *c = (struct qemu__atoflt *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__atoflt(QEMU_G2H(c->value), QEMU_G2H(c->str));
 }
@@ -833,7 +833,7 @@ int CDECL MSVCRT__atodbl_l(DOUBLE *value, char *str, MSVCRT__locale_t locale)
 
 void qemu__atodbl_l(struct qemu_syscall *call)
 {
-    struct qemu__atodbl_l *c = (struct qemu__atodbl_l *)call;
+    struct qemu__atodbl_l *c = (struct qemu__atodbl_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__atodbl_l(QEMU_G2H(c->value), QEMU_G2H(c->str), QEMU_G2H(c->locale));
 }
@@ -865,7 +865,7 @@ int CDECL MSVCRT__atodbl(DOUBLE *value, char *str)
 
 void qemu__atodbl(struct qemu_syscall *call)
 {
-    struct qemu__atodbl *c = (struct qemu__atodbl *)call;
+    struct qemu__atodbl *c = (struct qemu__atodbl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__atodbl(QEMU_G2H(c->value), QEMU_G2H(c->str));
 }
@@ -899,7 +899,7 @@ int CDECL MSVCRT_strcoll_l(const char* str1, const char* str2, MSVCRT__locale_t 
 
 void qemu_strcoll_l(struct qemu_syscall *call)
 {
-    struct qemu_strcoll_l *c = (struct qemu_strcoll_l *)call;
+    struct qemu_strcoll_l *c = (struct qemu_strcoll_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_strcoll_l(QEMU_G2H(c->str1), QEMU_G2H(c->str2), QEMU_G2H(c->locale));
 }
@@ -931,7 +931,7 @@ int CDECL MSVCRT_strcoll(const char* str1, const char* str2)
 
 void qemu_strcoll(struct qemu_syscall *call)
 {
-    struct qemu_strcoll *c = (struct qemu_strcoll *)call;
+    struct qemu_strcoll *c = (struct qemu_strcoll *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_strcoll(QEMU_G2H(c->str1), QEMU_G2H(c->str2));
 }
@@ -965,7 +965,7 @@ int CDECL MSVCRT__stricoll_l(const char* str1, const char* str2, MSVCRT__locale_
 
 void qemu__stricoll_l(struct qemu_syscall *call)
 {
-    struct qemu__stricoll_l *c = (struct qemu__stricoll_l *)call;
+    struct qemu__stricoll_l *c = (struct qemu__stricoll_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__stricoll_l(QEMU_G2H(c->str1), QEMU_G2H(c->str2), QEMU_G2H(c->locale));
 }
@@ -997,7 +997,7 @@ int CDECL MSVCRT__stricoll(const char* str1, const char* str2)
 
 void qemu__stricoll(struct qemu_syscall *call)
 {
-    struct qemu__stricoll *c = (struct qemu__stricoll *)call;
+    struct qemu__stricoll *c = (struct qemu__stricoll *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__stricoll(QEMU_G2H(c->str1), QEMU_G2H(c->str2));
 }
@@ -1033,7 +1033,7 @@ int CDECL MSVCRT__strncoll_l(const char* str1, const char* str2, size_t count, M
 
 void qemu__strncoll_l(struct qemu_syscall *call)
 {
-    struct qemu__strncoll_l *c = (struct qemu__strncoll_l *)call;
+    struct qemu__strncoll_l *c = (struct qemu__strncoll_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__strncoll_l(QEMU_G2H(c->str1), QEMU_G2H(c->str2), c->count, QEMU_G2H(c->locale));
 }
@@ -1067,7 +1067,7 @@ int CDECL MSVCRT__strncoll(const char* str1, const char* str2, size_t count)
 
 void qemu__strncoll(struct qemu_syscall *call)
 {
-    struct qemu__strncoll *c = (struct qemu__strncoll *)call;
+    struct qemu__strncoll *c = (struct qemu__strncoll *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__strncoll(QEMU_G2H(c->str1), QEMU_G2H(c->str2), c->count);
 }
@@ -1103,7 +1103,7 @@ int CDECL MSVCRT__strnicoll_l(const char* str1, const char* str2, size_t count, 
 
 void qemu__strnicoll_l(struct qemu_syscall *call)
 {
-    struct qemu__strnicoll_l *c = (struct qemu__strnicoll_l *)call;
+    struct qemu__strnicoll_l *c = (struct qemu__strnicoll_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__strnicoll_l(QEMU_G2H(c->str1), QEMU_G2H(c->str2), c->count, QEMU_G2H(c->locale));
 }
@@ -1137,7 +1137,7 @@ int CDECL MSVCRT__strnicoll(const char* str1, const char* str2, size_t count)
 
 void qemu__strnicoll(struct qemu_syscall *call)
 {
-    struct qemu__strnicoll *c = (struct qemu__strnicoll *)call;
+    struct qemu__strnicoll *c = (struct qemu__strnicoll *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__strnicoll(QEMU_G2H(c->str1), QEMU_G2H(c->str2), c->count);
 }
@@ -1162,14 +1162,14 @@ char* CDECL MSVCRT_strcpy(char *dst, const char *src)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_strcpy(struct qemu_syscall *call)
 {
-    struct qemu_strcpy *c = (struct qemu_strcpy *)call;
+    struct qemu_strcpy *c = (struct qemu_strcpy *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p_strcpy(QEMU_G2H(c->dst), QEMU_G2H(c->src)));
 }
@@ -1192,9 +1192,9 @@ int CDECL MSVCRT_strcpy_s(char *dst, size_t elem, const char *src)
 {
     struct qemu_strcpy_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCPY_S);
-    call.dst = (uint64_t)dst;
+    call.dst = (ULONG_PTR)dst;
     call.elem = elem;
-    call.src = (uint64_t)src;
+    call.src = (ULONG_PTR)src;
 
     qemu_syscall(&call.super);
 
@@ -1205,7 +1205,7 @@ int CDECL MSVCRT_strcpy_s(char *dst, size_t elem, const char *src)
 
 void qemu_strcpy_s(struct qemu_syscall *call)
 {
-    struct qemu_strcpy_s *c = (struct qemu_strcpy_s *)call;
+    struct qemu_strcpy_s *c = (struct qemu_strcpy_s *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = p_strcpy_s(QEMU_G2H(c->dst), c->elem, QEMU_G2H(c->src));
 }
@@ -1228,9 +1228,9 @@ int CDECL MSVCRT_strcat_s(char *dst, size_t elem, const char *src)
 {
     struct qemu_strcat_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCAT_S);
-    call.dst = (uint64_t)dst;
+    call.dst = (ULONG_PTR)dst;
     call.elem = elem;
-    call.src = (uint64_t)src;
+    call.src = (ULONG_PTR)src;
 
     qemu_syscall(&call.super);
 
@@ -1241,7 +1241,7 @@ int CDECL MSVCRT_strcat_s(char *dst, size_t elem, const char *src)
 
 void qemu_strcat_s(struct qemu_syscall *call)
 {
-    struct qemu_strcat_s *c = (struct qemu_strcat_s *)call;
+    struct qemu_strcat_s *c = (struct qemu_strcat_s *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = p_strcat_s(QEMU_G2H(c->dst), c->elem, QEMU_G2H(c->src));
 }
@@ -1277,7 +1277,7 @@ int CDECL MSVCRT_strncat_s(char* dst, size_t elem, const char* src, size_t count
 
 void qemu_strncat_s(struct qemu_syscall *call)
 {
-    struct qemu_strncat_s *c = (struct qemu_strncat_s *)call;
+    struct qemu_strncat_s *c = (struct qemu_strncat_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_strncat_s(QEMU_G2H(c->dst), c->elem, QEMU_G2H(c->src), c->count);
 }
@@ -1313,7 +1313,7 @@ size_t CDECL MSVCRT__strxfrm_l(char *dest, const char *src, size_t len, MSVCRT__
 
 void qemu__strxfrm_l(struct qemu_syscall *call)
 {
-    struct qemu__strxfrm_l *c = (struct qemu__strxfrm_l *)call;
+    struct qemu__strxfrm_l *c = (struct qemu__strxfrm_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__strxfrm_l(QEMU_G2H(c->dest), QEMU_G2H(c->src), c->len, QEMU_G2H(c->locale));
 }
@@ -1347,7 +1347,7 @@ size_t CDECL MSVCRT_strxfrm(char *dest, const char *src, size_t len)
 
 void qemu_strxfrm(struct qemu_syscall *call)
 {
-    struct qemu_strxfrm *c = (struct qemu_strxfrm *)call;
+    struct qemu_strxfrm *c = (struct qemu_strxfrm *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_strxfrm(QEMU_G2H(c->dest), QEMU_G2H(c->src), c->len);
 }
@@ -1379,7 +1379,7 @@ int CDECL MSVCRT__atoldbl(long double *value, const char *str)
 
 void qemu__atoldbl(struct qemu_syscall *call)
 {
-    struct qemu__atoldbl *c = (struct qemu__atoldbl *)call;
+    struct qemu__atoldbl *c = (struct qemu__atoldbl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__atoldbl(QEMU_G2H(c->value), QEMU_G2H(c->str));
 }
@@ -1415,7 +1415,7 @@ int CDECL __STRINGTOLD(long double *value, char **endptr, const char *str, int f
 
 void qemu___STRINGTOLD(struct qemu_syscall *call)
 {
-    struct qemu___STRINGTOLD *c = (struct qemu___STRINGTOLD *)call;
+    struct qemu___STRINGTOLD *c = (struct qemu___STRINGTOLD *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p___STRINGTOLD(QEMU_G2H(c->value), QEMU_G2H(c->endptr), QEMU_G2H(c->str), c->flags);
 }
@@ -1447,7 +1447,7 @@ size_t CDECL MSVCRT_strnlen(const char *s, size_t maxlen)
 
 void qemu_strnlen(struct qemu_syscall *call)
 {
-    struct qemu_strnlen *c = (struct qemu_strnlen *)call;
+    struct qemu_strnlen *c = (struct qemu_strnlen *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_strnlen(QEMU_G2H(c->s), c->maxlen);
 }
@@ -1483,7 +1483,7 @@ __int64 CDECL MSVCRT_strtoi64_l(const char *nptr, char **endptr, int base, MSVCR
 
 void qemu_strtoi64_l(struct qemu_syscall *call)
 {
-    struct qemu_strtoi64_l *c = (struct qemu_strtoi64_l *)call;
+    struct qemu_strtoi64_l *c = (struct qemu_strtoi64_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_strtoi64_l(QEMU_G2H(c->nptr), QEMU_G2H(c->endptr), c->base, QEMU_G2H(c->locale));
 }
@@ -1517,7 +1517,7 @@ __int64 CDECL MSVCRT_strtoi64(const char *nptr, char **endptr, int base)
 
 void qemu_strtoi64(struct qemu_syscall *call)
 {
-    struct qemu_strtoi64 *c = (struct qemu_strtoi64 *)call;
+    struct qemu_strtoi64 *c = (struct qemu_strtoi64 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_strtoi64(QEMU_G2H(c->nptr), QEMU_G2H(c->endptr), c->base);
 }
@@ -1547,7 +1547,7 @@ int CDECL MSVCRT_atoi(const char *str)
 
 void qemu_atoi(struct qemu_syscall *call)
 {
-    struct qemu_atoi *c = (struct qemu_atoi *)call;
+    struct qemu_atoi *c = (struct qemu_atoi *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_atoi(QEMU_G2H(c->str));
 }
@@ -1579,7 +1579,7 @@ LONGLONG CDECL MSVCRT__atoll_l(const char* str, MSVCRT__locale_t locale)
 
 void qemu__atoll_l(struct qemu_syscall *call)
 {
-    struct qemu__atoll_l *c = (struct qemu__atoll_l *)call;
+    struct qemu__atoll_l *c = (struct qemu__atoll_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__atoll_l(QEMU_G2H(c->str), QEMU_G2H(c->locale));
 }
@@ -1609,7 +1609,7 @@ LONGLONG CDECL MSVCRT_atoll(const char* str)
 
 void qemu_atoll(struct qemu_syscall *call)
 {
-    struct qemu_atoll *c = (struct qemu_atoll *)call;
+    struct qemu_atoll *c = (struct qemu_atoll *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_atoll(QEMU_G2H(c->str));
 }
@@ -1645,7 +1645,7 @@ LONG CDECL MSVCRT__strtol_l(const char* nptr, char** end, int base, MSVCRT__loca
 
 void qemu__strtol_l(struct qemu_syscall *call)
 {
-    struct qemu__strtol_l *c = (struct qemu__strtol_l *)call;
+    struct qemu__strtol_l *c = (struct qemu__strtol_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__strtol_l(QEMU_G2H(c->nptr), QEMU_G2H(c->end), c->base, QEMU_G2H(c->locale));
 }
@@ -1679,7 +1679,7 @@ LONG CDECL MSVCRT_strtol(const char* nptr, char** end, int base)
 
 void qemu_strtol(struct qemu_syscall *call)
 {
-    struct qemu_strtol *c = (struct qemu_strtol *)call;
+    struct qemu_strtol *c = (struct qemu_strtol *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_strtol(QEMU_G2H(c->nptr), QEMU_G2H(c->end), c->base);
 }
@@ -1715,7 +1715,7 @@ ULONG CDECL MSVCRT_strtoul_l(const char* nptr, char** end, int base, MSVCRT__loc
 
 void qemu_strtoul_l(struct qemu_syscall *call)
 {
-    struct qemu_strtoul_l *c = (struct qemu_strtoul_l *)call;
+    struct qemu_strtoul_l *c = (struct qemu_strtoul_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_strtoul_l(QEMU_G2H(c->nptr), QEMU_G2H(c->end), c->base, QEMU_G2H(c->locale));
 }
@@ -1749,7 +1749,7 @@ ULONG CDECL MSVCRT_strtoul(const char* nptr, char** end, int base)
 
 void qemu_strtoul(struct qemu_syscall *call)
 {
-    struct qemu_strtoul *c = (struct qemu_strtoul *)call;
+    struct qemu_strtoul *c = (struct qemu_strtoul *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_strtoul(QEMU_G2H(c->nptr), QEMU_G2H(c->end), c->base);
 }
@@ -1785,7 +1785,7 @@ unsigned __int64 CDECL MSVCRT_strtoui64_l(const char *nptr, char **endptr, int b
 
 void qemu_strtoui64_l(struct qemu_syscall *call)
 {
-    struct qemu_strtoui64_l *c = (struct qemu_strtoui64_l *)call;
+    struct qemu_strtoui64_l *c = (struct qemu_strtoui64_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_strtoui64_l(QEMU_G2H(c->nptr), QEMU_G2H(c->endptr), c->base, QEMU_G2H(c->locale));
 }
@@ -1819,7 +1819,7 @@ unsigned __int64 CDECL MSVCRT_strtoui64(const char *nptr, char **endptr, int bas
 
 void qemu_strtoui64(struct qemu_syscall *call)
 {
-    struct qemu_strtoui64 *c = (struct qemu_strtoui64 *)call;
+    struct qemu_strtoui64 *c = (struct qemu_strtoui64 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_strtoui64(QEMU_G2H(c->nptr), QEMU_G2H(c->endptr), c->base);
 }
@@ -1855,7 +1855,7 @@ int CDECL MSVCRT__ltoa_s(LONG value, char *str, size_t size, int radix)
 
 void qemu__ltoa_s(struct qemu_syscall *call)
 {
-    struct qemu__ltoa_s *c = (struct qemu__ltoa_s *)call;
+    struct qemu__ltoa_s *c = (struct qemu__ltoa_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__ltoa_s(c->value, QEMU_G2H(c->str), c->size, c->radix);
 }
@@ -1891,7 +1891,7 @@ int CDECL MSVCRT__ltow_s(LONG value, WCHAR *str, size_t size, int radix)
 
 void qemu__ltow_s(struct qemu_syscall *call)
 {
-    struct qemu__ltow_s *c = (struct qemu__ltow_s *)call;
+    struct qemu__ltow_s *c = (struct qemu__ltow_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__ltow_s(c->value, QEMU_G2H(c->str), c->size, c->radix);
 }
@@ -1927,7 +1927,7 @@ int CDECL MSVCRT__itoa_s(int value, char *str, size_t size, int radix)
 
 void qemu__itoa_s(struct qemu_syscall *call)
 {
-    struct qemu__itoa_s *c = (struct qemu__itoa_s *)call;
+    struct qemu__itoa_s *c = (struct qemu__itoa_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__itoa_s(c->value, QEMU_G2H(c->str), c->size, c->radix);
 }
@@ -1954,14 +1954,14 @@ char* CDECL MSVCRT__itoa(int value, char *str, int radix)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__itoa(struct qemu_syscall *call)
 {
-    struct qemu__itoa *c = (struct qemu__itoa *)call;
+    struct qemu__itoa *c = (struct qemu__itoa *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__itoa(c->value, QEMU_G2H(c->str), c->radix));
 }
@@ -1997,7 +1997,7 @@ int CDECL MSVCRT__itow_s(int value, WCHAR *str, size_t size, int radix)
 
 void qemu__itow_s(struct qemu_syscall *call)
 {
-    struct qemu__itow_s *c = (struct qemu__itow_s *)call;
+    struct qemu__itow_s *c = (struct qemu__itow_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__itow_s(c->value, QEMU_G2H(c->str), c->size, c->radix);
 }
@@ -2033,7 +2033,7 @@ int CDECL MSVCRT__ui64toa_s(unsigned __int64 value, char *str, size_t size, int 
 
 void qemu__ui64toa_s(struct qemu_syscall *call)
 {
-    struct qemu__ui64toa_s *c = (struct qemu__ui64toa_s *)call;
+    struct qemu__ui64toa_s *c = (struct qemu__ui64toa_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__ui64toa_s(c->value, QEMU_G2H(c->str), c->size, c->radix);
 }
@@ -2069,7 +2069,7 @@ int CDECL MSVCRT__ui64tow_s(unsigned __int64 value, WCHAR *str, size_t size, int
 
 void qemu__ui64tow_s(struct qemu_syscall *call)
 {
-    struct qemu__ui64tow_s *c = (struct qemu__ui64tow_s *)call;
+    struct qemu__ui64tow_s *c = (struct qemu__ui64tow_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__ui64tow_s(c->value, QEMU_G2H(c->str), c->size, c->radix);
 }
@@ -2105,7 +2105,7 @@ int CDECL MSVCRT__ultoa_s(ULONG value, char *str, size_t size, int radix)
 
 void qemu__ultoa_s(struct qemu_syscall *call)
 {
-    struct qemu__ultoa_s *c = (struct qemu__ultoa_s *)call;
+    struct qemu__ultoa_s *c = (struct qemu__ultoa_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__ultoa_s(c->value, QEMU_G2H(c->str), c->size, c->radix);
 }
@@ -2141,7 +2141,7 @@ int CDECL MSVCRT__ultow_s(ULONG value, WCHAR *str, size_t size, int radix)
 
 void qemu__ultow_s(struct qemu_syscall *call)
 {
-    struct qemu__ultow_s *c = (struct qemu__ultow_s *)call;
+    struct qemu__ultow_s *c = (struct qemu__ultow_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__ultow_s(c->value, QEMU_G2H(c->str), c->size, c->radix);
 }
@@ -2177,7 +2177,7 @@ int CDECL MSVCRT__i64toa_s(__int64 value, char *str, size_t size, int radix)
 
 void qemu__i64toa_s(struct qemu_syscall *call)
 {
-    struct qemu__i64toa_s *c = (struct qemu__i64toa_s *)call;
+    struct qemu__i64toa_s *c = (struct qemu__i64toa_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__i64toa_s(c->value, QEMU_G2H(c->str), c->size, c->radix);
 }
@@ -2213,7 +2213,7 @@ int CDECL MSVCRT__i64tow_s(__int64 value, WCHAR *str, size_t size, int radix)
 
 void qemu__i64tow_s(struct qemu_syscall *call)
 {
-    struct qemu__i64tow_s *c = (struct qemu__i64tow_s *)call;
+    struct qemu__i64tow_s *c = (struct qemu__i64tow_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__i64tow_s(c->value, QEMU_G2H(c->str), c->size, c->radix);
 }
@@ -2249,7 +2249,7 @@ int CDECL MSVCRT_I10_OUTPUT(long double ld80, int prec, int flag, struct _I10_OU
 
 void qemu_I10_OUTPUT(struct qemu_syscall *call)
 {
-    struct qemu_I10_OUTPUT *c = (struct qemu_I10_OUTPUT *)call;
+    struct qemu_I10_OUTPUT *c = (struct qemu_I10_OUTPUT *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_I10_OUTPUT(c->ld80, c->prec, c->flag, QEMU_G2H(c->data));
 }
@@ -2269,8 +2269,8 @@ int __cdecl MSVCRT__stricmp(const char *s1, const char *s2)
 {
     struct qemu__stricmp call;
     call.super.id = QEMU_SYSCALL_ID(CALL__STRICMP);
-    call.s1 = (uint64_t)s1;
-    call.s2 = (uint64_t)s2;
+    call.s1 = (ULONG_PTR)s1;
+    call.s2 = (ULONG_PTR)s2;
 
     qemu_syscall(&call.super);
 
@@ -2281,7 +2281,7 @@ int __cdecl MSVCRT__stricmp(const char *s1, const char *s2)
 
 void qemu__stricmp(struct qemu_syscall *call)
 {
-    struct qemu__stricmp *c = (struct qemu__stricmp *)call;
+    struct qemu__stricmp *c = (struct qemu__stricmp *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = p__stricmp(QEMU_G2H(c->s1), QEMU_G2H(c->s2));
 }
@@ -2301,9 +2301,9 @@ int CDECL MSVCRT__strnicmp(const char *s1, const char *s2, size_t count)
 {
     struct qemu__strnicmp call;
     call.super.id = QEMU_SYSCALL_ID(CALL__STRNICMP);
-    call.s1 = (uint64_t)s1;
-    call.s2 = (uint64_t)s2;
-    call.count = (uint64_t)count;
+    call.s1 = (ULONG_PTR)s1;
+    call.s2 = (ULONG_PTR)s2;
+    call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
 
@@ -2314,7 +2314,7 @@ int CDECL MSVCRT__strnicmp(const char *s1, const char *s2, size_t count)
 
 void qemu__strnicmp(struct qemu_syscall *call)
 {
-    struct qemu__strnicmp *c = (struct qemu__strnicmp *)call;
+    struct qemu__strnicmp *c = (struct qemu__strnicmp *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = p__strnicmp(QEMU_G2H(c->s1), QEMU_G2H(c->s2), c->count);
 }
@@ -2335,8 +2335,8 @@ int CDECL MSVCRT__strtoui64(const char *nptr, char **endptr, int base)
 {
     struct qemu__strtoui64 call;
     call.super.id = QEMU_SYSCALL_ID(CALL__STRTOUI64);
-    call.nptr = (uint64_t)nptr;
-    call.endptr = (uint64_t)endptr;
+    call.nptr = (ULONG_PTR)nptr;
+    call.endptr = (ULONG_PTR)endptr;
     call.base = base;
 
     qemu_syscall(&call.super);
@@ -2348,7 +2348,7 @@ int CDECL MSVCRT__strtoui64(const char *nptr, char **endptr, int base)
 
 void qemu__strtoui64(struct qemu_syscall *call)
 {
-    struct qemu__strtoui64 *c = (struct qemu__strtoui64 *)call;
+    struct qemu__strtoui64 *c = (struct qemu__strtoui64 *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = p__strtoui64(QEMU_G2H(c->nptr), QEMU_G2H(c->endptr), c->base);
 }
@@ -2369,20 +2369,20 @@ void * CDECL MSVCRT_memchr(const void *ptr, int c, size_t n)
 {
     struct qemu_memchr call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MEMCHR);
-    call.ptr = (uint64_t)ptr;
+    call.ptr = (ULONG_PTR)ptr;
     call.c = c;
     call.n = n;
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_memchr(struct qemu_syscall *call)
 {
-    struct qemu_memchr *c = (struct qemu_memchr *)call;
+    struct qemu_memchr *c = (struct qemu_memchr *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_memchr(QEMU_G2H(c->ptr), c->c, c->n));
 }
@@ -2403,8 +2403,8 @@ int CDECL MSVCRT_memcmp(const void *ptr1, const void *ptr2, size_t size)
 {
     struct qemu_memcmp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MEMCMP);
-    call.ptr1 = (uint64_t)ptr1;
-    call.ptr2 = (uint64_t)ptr2;
+    call.ptr1 = (ULONG_PTR)ptr1;
+    call.ptr2 = (ULONG_PTR)ptr2;
     call.size = size;
 
     qemu_syscall(&call.super);
@@ -2416,7 +2416,7 @@ int CDECL MSVCRT_memcmp(const void *ptr1, const void *ptr2, size_t size)
 
 void qemu_memcmp(struct qemu_syscall *call)
 {
-    struct qemu_memcmp *c = (struct qemu_memcmp *)call;
+    struct qemu_memcmp *c = (struct qemu_memcmp *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_memcmp(QEMU_G2H(c->ptr1), QEMU_G2H(c->ptr2), c->size));
 }
@@ -2439,20 +2439,20 @@ void * CDECL MSVCRT_memset(void *ptr,int c,size_t size)
 {
     struct qemu_memset call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MEMSET);
-    call.ptr = (uint64_t)ptr;
+    call.ptr = (ULONG_PTR)ptr;
     call.c = c;
     call.size = size;
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_memset(struct qemu_syscall *call)
 {
-    struct qemu_memset *c = (struct qemu_memset *)call;
+    struct qemu_memset *c = (struct qemu_memset *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_memset(QEMU_G2H(c->ptr), c->c, c->size));
 }
@@ -2474,40 +2474,40 @@ void * CDECL MSVCRT_memcpy(void *dst, const void *src, size_t size)
 {
     struct qemu_memcpy call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MEMCPY);
-    call.dst = (uint64_t)dst;
-    call.src = (uint64_t)src;
+    call.dst = (ULONG_PTR)dst;
+    call.src = (ULONG_PTR)src;
     call.size = size;
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 void * CDECL MSVCRT_memmove(void *dst, const void *src, size_t size)
 {
     struct qemu_memcpy call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MEMMOVE);
-    call.dst = (uint64_t)dst;
-    call.src = (uint64_t)src;
+    call.dst = (ULONG_PTR)dst;
+    call.src = (ULONG_PTR)src;
     call.size = size;
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_memmove(struct qemu_syscall *call)
 {
-    struct qemu_memcpy *c = (struct qemu_memcpy *)call;
+    struct qemu_memcpy *c = (struct qemu_memcpy *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_memmove(QEMU_G2H(c->dst), QEMU_G2H(c->src), c->size));
 }
 
 void qemu_memcpy(struct qemu_syscall *call)
 {
-    struct qemu_memcpy *c = (struct qemu_memcpy *)call;
+    struct qemu_memcpy *c = (struct qemu_memcpy *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_memcpy(QEMU_G2H(c->dst), QEMU_G2H(c->src), c->size));
 }
@@ -2528,19 +2528,19 @@ char * CDECL MSVCRT_strchr(const char *str, int c)
 {
     struct qemu_strchr call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCHR);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
     call.c = c;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_strchr(struct qemu_syscall *call)
 {
-    struct qemu_strchr *c = (struct qemu_strchr *)call;
+    struct qemu_strchr *c = (struct qemu_strchr *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_strchr(QEMU_G2H(c->str), c->c));
 }
@@ -2561,19 +2561,19 @@ char * CDECL MSVCRT_strcmp(const char *str1, const char *str2)
 {
     struct qemu_strcmp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRCMP);
-    call.str1 = (uint64_t)str1;
-    call.str2 = (uint64_t)str2;
+    call.str1 = (ULONG_PTR)str1;
+    call.str2 = (ULONG_PTR)str2;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_strcmp(struct qemu_syscall *call)
 {
-    struct qemu_strcmp *c = (struct qemu_strcmp *)call;
+    struct qemu_strcmp *c = (struct qemu_strcmp *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_strcmp(QEMU_G2H(c->str1), QEMU_G2H(c->str2)));
 }
@@ -2593,7 +2593,7 @@ size_t CDECL MSVCRT_strlen(const char *str)
 {
     struct qemu_strlen call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRLEN);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -2604,7 +2604,7 @@ size_t CDECL MSVCRT_strlen(const char *str)
 
 void qemu_strlen(struct qemu_syscall *call)
 {
-    struct qemu_strlen *c = (struct qemu_strlen *)call;
+    struct qemu_strlen *c = (struct qemu_strlen *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = p_strlen(QEMU_G2H(c->str));
 }
@@ -2626,8 +2626,8 @@ int CDECL MSVCRT_strncmp(const char *str1, const char *str2, size_t len)
 {
     struct qemu_strncmp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRNCMP);
-    call.str1 = (uint64_t)str1;
-    call.str2 = (uint64_t)str2;
+    call.str1 = (ULONG_PTR)str1;
+    call.str2 = (ULONG_PTR)str2;
     call.len = len;
 
     qemu_syscall(&call.super);
@@ -2639,7 +2639,7 @@ int CDECL MSVCRT_strncmp(const char *str1, const char *str2, size_t len)
 
 void qemu_strncmp(struct qemu_syscall *call)
 {
-    struct qemu_strncmp *c = (struct qemu_strncmp *)call;
+    struct qemu_strncmp *c = (struct qemu_strncmp *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = p_strncmp(QEMU_G2H(c->str1), QEMU_G2H(c->str2), c->len);
 }
@@ -2660,20 +2660,20 @@ char * CDECL MSVCRT_strncpy(char *dst, const char *src, size_t len)
 {
     struct qemu_strncpy call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRNCPY);
-    call.dst = (uint64_t)dst;
-    call.src = (uint64_t)src;
+    call.dst = (ULONG_PTR)dst;
+    call.src = (ULONG_PTR)src;
     call.len = len;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_strncpy(struct qemu_syscall *call)
 {
-    struct qemu_strncpy *c = (struct qemu_strncpy *)call;
+    struct qemu_strncpy *c = (struct qemu_strncpy *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_strncpy(QEMU_G2H(c->dst), QEMU_G2H(c->src), c->len));
 }
@@ -2694,21 +2694,21 @@ char * CDECL MSVCRT_strrchr(const char *str, int c)
 {
     struct qemu_strrchr call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRRCHR);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
     call.c = c;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_strrchr(struct qemu_syscall *call)
 {
-    struct qemu_strrchr *c = (struct qemu_strrchr *)call;
+    struct qemu_strrchr *c = (struct qemu_strrchr *)(ULONG_PTR)call;
     WINE_TRACE("\n");
-    c->super.iret = (uint64_t)p_strrchr(QEMU_G2H(c->str), c->c);
+    c->super.iret = (ULONG_PTR)p_strrchr(QEMU_G2H(c->str), c->c);
 }
 
 #endif
@@ -2726,19 +2726,19 @@ char * CDECL MSVCRT_strstr(const char *haystack, const char *needle)
 {
     struct qemu_strstr call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRSTR);
-    call.haystack = (uint64_t)haystack;
-    call.needle = (uint64_t)needle;
+    call.haystack = (ULONG_PTR)haystack;
+    call.needle = (ULONG_PTR)needle;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_strstr(struct qemu_syscall *call)
 {
-    struct qemu_strstr *c = (struct qemu_strstr *)call;
+    struct qemu_strstr *c = (struct qemu_strstr *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_strstr(QEMU_G2H(c->haystack), QEMU_G2H(c->needle)));
 }

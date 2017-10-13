@@ -45,14 +45,14 @@ WINBASEAPI Context* CDECL Context_CurrentContext(void)
 
     qemu_syscall(&call.super);
 
-    return (Context *)(ULONG_PTR)call.super.iret;
+    return (Context *)(ULONG_PTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_Context_CurrentContext(struct qemu_syscall *call)
 {
-    struct qemu_Context_CurrentContext *c = (struct qemu_Context_CurrentContext *)call;
+    struct qemu_Context_CurrentContext *c = (struct qemu_Context_CurrentContext *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p_Context_CurrentContext());
 }
@@ -80,7 +80,7 @@ WINBASEAPI unsigned int CDECL Context_Id(void)
 
 void qemu_Context_Id(struct qemu_syscall *call)
 {
-    struct qemu_Context_Id *c = (struct qemu_Context_Id *)call;
+    struct qemu_Context_Id *c = (struct qemu_Context_Id *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_Context_Id();
 }
@@ -106,7 +106,7 @@ WINBASEAPI void CDECL Context_Block(void)
 
 void qemu_Context_Block(struct qemu_syscall *call)
 {
-    struct qemu_Context_Block *c = (struct qemu_Context_Block *)call;
+    struct qemu_Context_Block *c = (struct qemu_Context_Block *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p_Context_Block();
 }
@@ -132,7 +132,7 @@ WINBASEAPI void CDECL Context_Yield(void)
 
 void qemu_Context_Yield(struct qemu_syscall *call)
 {
-    struct qemu_Context_Yield *c = (struct qemu_Context_Yield *)call;
+    struct qemu_Context_Yield *c = (struct qemu_Context_Yield *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p_Context_Yield();
 }
@@ -158,7 +158,7 @@ WINBASEAPI void CDECL Context__SpinYield(void)
 
 void qemu_Context__SpinYield(struct qemu_syscall *call)
 {
-    struct qemu_Context__SpinYield *c = (struct qemu_Context__SpinYield *)call;
+    struct qemu_Context__SpinYield *c = (struct qemu_Context__SpinYield *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p_Context__SpinYield();
 }
@@ -186,7 +186,7 @@ WINBASEAPI BOOL CDECL Context_IsCurrentTaskCollectionCanceling(void)
 
 void qemu_Context_IsCurrentTaskCollectionCanceling(struct qemu_syscall *call)
 {
-    struct qemu_Context_IsCurrentTaskCollectionCanceling *c = (struct qemu_Context_IsCurrentTaskCollectionCanceling *)call;
+    struct qemu_Context_IsCurrentTaskCollectionCanceling *c = (struct qemu_Context_IsCurrentTaskCollectionCanceling *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_Context_IsCurrentTaskCollectionCanceling();
 }
@@ -214,7 +214,7 @@ WINBASEAPI void CDECL Context_Oversubscribe(BOOL begin)
 
 void qemu_Context_Oversubscribe(struct qemu_syscall *call)
 {
-    struct qemu_Context_Oversubscribe *c = (struct qemu_Context_Oversubscribe *)call;
+    struct qemu_Context_Oversubscribe *c = (struct qemu_Context_Oversubscribe *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p_Context_Oversubscribe(c->begin);
 }
@@ -242,7 +242,7 @@ WINBASEAPI unsigned int CDECL Context_ScheduleGroupId(void)
 
 void qemu_Context_ScheduleGroupId(struct qemu_syscall *call)
 {
-    struct qemu_Context_ScheduleGroupId *c = (struct qemu_Context_ScheduleGroupId *)call;
+    struct qemu_Context_ScheduleGroupId *c = (struct qemu_Context_ScheduleGroupId *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_Context_ScheduleGroupId();
 }
@@ -270,7 +270,7 @@ WINBASEAPI unsigned int CDECL Context_VirtualProcessorId(void)
 
 void qemu_Context_VirtualProcessorId(struct qemu_syscall *call)
 {
-    struct qemu_Context_VirtualProcessorId *c = (struct qemu_Context_VirtualProcessorId *)call;
+    struct qemu_Context_VirtualProcessorId *c = (struct qemu_Context_VirtualProcessorId *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_Context_VirtualProcessorId();
 }
@@ -298,7 +298,7 @@ WINBASEAPI void * CDECL Concurrency_Alloc(size_t size)
 
 void qemu_Concurrency_Alloc(struct qemu_syscall *call)
 {
-    struct qemu_Concurrency_Alloc *c = (struct qemu_Concurrency_Alloc *)call;
+    struct qemu_Concurrency_Alloc *c = (struct qemu_Concurrency_Alloc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p_Concurrency_Alloc(c->size);
 }
@@ -326,7 +326,7 @@ WINBASEAPI void CDECL Concurrency_Free(void* mem)
 
 void qemu_Concurrency_Free(struct qemu_syscall *call)
 {
-    struct qemu_Concurrency_Free *c = (struct qemu_Concurrency_Free *)call;
+    struct qemu_Concurrency_Free *c = (struct qemu_Concurrency_Free *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p_Concurrency_Free(QEMU_G2H(c->mem));
 }
@@ -349,14 +349,14 @@ WINBASEAPI Scheduler* CDECL Scheduler_Create(const SchedulerPolicy *policy)
 
     qemu_syscall(&call.super);
 
-    return (Scheduler *)(ULONG_PTR)call.super.iret;
+    return (Scheduler *)(ULONG_PTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_Scheduler_Create(struct qemu_syscall *call)
 {
-    struct qemu_Scheduler_Create *c = (struct qemu_Scheduler_Create *)call;
+    struct qemu_Scheduler_Create *c = (struct qemu_Scheduler_Create *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p_Scheduler_Create(QEMU_G2H(c->policy)));
 }
@@ -382,7 +382,7 @@ WINBASEAPI void CDECL Scheduler_ResetDefaultSchedulerPolicy(void)
 
 void qemu_Scheduler_ResetDefaultSchedulerPolicy(struct qemu_syscall *call)
 {
-    struct qemu_Scheduler_ResetDefaultSchedulerPolicy *c = (struct qemu_Scheduler_ResetDefaultSchedulerPolicy *)call;
+    struct qemu_Scheduler_ResetDefaultSchedulerPolicy *c = (struct qemu_Scheduler_ResetDefaultSchedulerPolicy *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p_Scheduler_ResetDefaultSchedulerPolicy();
 }
@@ -410,7 +410,7 @@ WINBASEAPI void CDECL Scheduler_SetDefaultSchedulerPolicy(const SchedulerPolicy 
 
 void qemu_Scheduler_SetDefaultSchedulerPolicy(struct qemu_syscall *call)
 {
-    struct qemu_Scheduler_SetDefaultSchedulerPolicy *c = (struct qemu_Scheduler_SetDefaultSchedulerPolicy *)call;
+    struct qemu_Scheduler_SetDefaultSchedulerPolicy *c = (struct qemu_Scheduler_SetDefaultSchedulerPolicy *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p_Scheduler_SetDefaultSchedulerPolicy(QEMU_G2H(c->policy));
 }
@@ -438,7 +438,7 @@ WINBASEAPI void CDECL CurrentScheduler_Create(const SchedulerPolicy *policy)
 
 void qemu_CurrentScheduler_Create(struct qemu_syscall *call)
 {
-    struct qemu_CurrentScheduler_Create *c = (struct qemu_CurrentScheduler_Create *)call;
+    struct qemu_CurrentScheduler_Create *c = (struct qemu_CurrentScheduler_Create *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p_CurrentScheduler_Create(QEMU_G2H(c->policy));
 }
@@ -464,7 +464,7 @@ WINBASEAPI void CDECL CurrentScheduler_Detach(void)
 
 void qemu_CurrentScheduler_Detach(struct qemu_syscall *call)
 {
-    struct qemu_CurrentScheduler_Detach *c = (struct qemu_CurrentScheduler_Detach *)call;
+    struct qemu_CurrentScheduler_Detach *c = (struct qemu_CurrentScheduler_Detach *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p_CurrentScheduler_Detach();
 }
@@ -485,14 +485,14 @@ WINBASEAPI Scheduler* CDECL CurrentScheduler_Get(void)
 
     qemu_syscall(&call.super);
 
-    return (Scheduler *)(ULONG_PTR)call.super.iret;
+    return (Scheduler *)(ULONG_PTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_CurrentScheduler_Get(struct qemu_syscall *call)
 {
-    struct qemu_CurrentScheduler_Get *c = (struct qemu_CurrentScheduler_Get *)call;
+    struct qemu_CurrentScheduler_Get *c = (struct qemu_CurrentScheduler_Get *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p_CurrentScheduler_Get());
 }
@@ -513,14 +513,14 @@ WINBASEAPI void* CDECL CurrentScheduler_CreateScheduleGroup(void)
 
     qemu_syscall(&call.super);
 
-    return (void *)(ULONG_PTR)call.super.iret;
+    return (void *)(ULONG_PTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_CurrentScheduler_CreateScheduleGroup(struct qemu_syscall *call)
 {
-    struct qemu_CurrentScheduler_CreateScheduleGroup *c = (struct qemu_CurrentScheduler_CreateScheduleGroup *)call;
+    struct qemu_CurrentScheduler_CreateScheduleGroup *c = (struct qemu_CurrentScheduler_CreateScheduleGroup *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p_CurrentScheduler_CreateScheduleGroup());
 }
@@ -548,7 +548,7 @@ WINBASEAPI unsigned int CDECL CurrentScheduler_GetNumberOfVirtualProcessors(void
 
 void qemu_CurrentScheduler_GetNumberOfVirtualProcessors(struct qemu_syscall *call)
 {
-    struct qemu_CurrentScheduler_GetNumberOfVirtualProcessors *c = (struct qemu_CurrentScheduler_GetNumberOfVirtualProcessors *)call;
+    struct qemu_CurrentScheduler_GetNumberOfVirtualProcessors *c = (struct qemu_CurrentScheduler_GetNumberOfVirtualProcessors *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_CurrentScheduler_GetNumberOfVirtualProcessors();
 }
@@ -571,14 +571,14 @@ WINBASEAPI SchedulerPolicy* CDECL CurrentScheduler_GetPolicy(SchedulerPolicy *po
 
     qemu_syscall(&call.super);
 
-    return (SchedulerPolicy *)(ULONG_PTR)call.super.iret;
+    return (SchedulerPolicy *)(ULONG_PTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_CurrentScheduler_GetPolicy(struct qemu_syscall *call)
 {
-    struct qemu_CurrentScheduler_GetPolicy *c = (struct qemu_CurrentScheduler_GetPolicy *)call;
+    struct qemu_CurrentScheduler_GetPolicy *c = (struct qemu_CurrentScheduler_GetPolicy *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p_CurrentScheduler_GetPolicy(QEMU_G2H(c->policy)));
 }
@@ -606,7 +606,7 @@ WINBASEAPI unsigned int CDECL CurrentScheduler_Id(void)
 
 void qemu_CurrentScheduler_Id(struct qemu_syscall *call)
 {
-    struct qemu_CurrentScheduler_Id *c = (struct qemu_CurrentScheduler_Id *)call;
+    struct qemu_CurrentScheduler_Id *c = (struct qemu_CurrentScheduler_Id *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_CurrentScheduler_Id();
 }
@@ -636,7 +636,7 @@ WINBASEAPI BOOL CDECL CurrentScheduler_IsAvailableLocation(const void *placement
 
 void qemu_CurrentScheduler_IsAvailableLocation(struct qemu_syscall *call)
 {
-    struct qemu_CurrentScheduler_IsAvailableLocation *c = (struct qemu_CurrentScheduler_IsAvailableLocation *)call;
+    struct qemu_CurrentScheduler_IsAvailableLocation *c = (struct qemu_CurrentScheduler_IsAvailableLocation *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_CurrentScheduler_IsAvailableLocation(QEMU_G2H(c->placement));
 }
@@ -664,7 +664,7 @@ WINBASEAPI void CDECL CurrentScheduler_RegisterShutdownEvent(HANDLE event)
 
 void qemu_CurrentScheduler_RegisterShutdownEvent(struct qemu_syscall *call)
 {
-    struct qemu_CurrentScheduler_RegisterShutdownEvent *c = (struct qemu_CurrentScheduler_RegisterShutdownEvent *)call;
+    struct qemu_CurrentScheduler_RegisterShutdownEvent *c = (struct qemu_CurrentScheduler_RegisterShutdownEvent *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p_CurrentScheduler_RegisterShutdownEvent(QEMU_G2H(c->event));
 }
@@ -687,14 +687,14 @@ WINBASEAPI _Scheduler* CDECL _CurrentScheduler__Get(_Scheduler *ret)
 
     qemu_syscall(&call.super);
 
-    return (_Scheduler *)(ULONG_PTR)call.super.iret;
+    return (_Scheduler *)(ULONG_PTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__CurrentScheduler__Get(struct qemu_syscall *call)
 {
-    struct qemu__CurrentScheduler__Get *c = (struct qemu__CurrentScheduler__Get *)call;
+    struct qemu__CurrentScheduler__Get *c = (struct qemu__CurrentScheduler__Get *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__CurrentScheduler__Get(QEMU_G2H(c->ret)));
 }
@@ -722,7 +722,7 @@ WINBASEAPI unsigned int CDECL _CurrentScheduler__GetNumberOfVirtualProcessors(vo
 
 void qemu__CurrentScheduler__GetNumberOfVirtualProcessors(struct qemu_syscall *call)
 {
-    struct qemu__CurrentScheduler__GetNumberOfVirtualProcessors *c = (struct qemu__CurrentScheduler__GetNumberOfVirtualProcessors *)call;
+    struct qemu__CurrentScheduler__GetNumberOfVirtualProcessors *c = (struct qemu__CurrentScheduler__GetNumberOfVirtualProcessors *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__CurrentScheduler__GetNumberOfVirtualProcessors());
 }
@@ -750,7 +750,7 @@ WINBASEAPI unsigned int CDECL _CurrentScheduler__Id(void)
 
 void qemu__CurrentScheduler__Id(struct qemu_syscall *call)
 {
-    struct qemu__CurrentScheduler__Id *c = (struct qemu__CurrentScheduler__Id *)call;
+    struct qemu__CurrentScheduler__Id *c = (struct qemu__CurrentScheduler__Id *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__CurrentScheduler__Id();
 }

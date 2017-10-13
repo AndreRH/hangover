@@ -32,7 +32,11 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 
 #ifdef QEMU_DLL_GUEST
 
+#ifdef _WIN64
 void CDECL MSVCRT__CxxThrowException(void *object, const void *type)
+#else
+void WINAPI MSVCRT__CxxThrowException( void *object, const void *type )
+#endif
 {
     struct qemu_syscall call;
     call.id = QEMU_SYSCALL_ID(CALL__CXXTHROWEXCEPTION);
@@ -81,7 +85,7 @@ void __thiscall MSVCRT_type_info_dtor(void * _this)
 {
     struct qemu_type_info_dtor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TYPE_INFO_DTOR);
-    call.this = (uint64_t)_this;
+    call.this = (ULONG_PTR)_this;
 
     qemu_syscall(&call.super);
 }
@@ -90,7 +94,7 @@ void __thiscall MSVCRT_type_info_dtor(void * _this)
 
 void qemu_type_info_dtor(struct qemu_syscall *call)
 {
-    struct qemu_type_info_dtor *c = (struct qemu_type_info_dtor *)call;
+    struct qemu_type_info_dtor *c = (struct qemu_type_info_dtor *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p_type_info_dtor(QEMU_G2H(c->this));
 }

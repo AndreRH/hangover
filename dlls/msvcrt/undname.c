@@ -59,14 +59,14 @@ WINBASEAPI char* CDECL __unDNameEx(char* buffer, const char* mangled, int buflen
 
     qemu_syscall(&call.super);
 
-    return (char *)(ULONG_PTR)call.super.iret;
+    return (char *)(ULONG_PTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu___unDNameEx(struct qemu_syscall *call)
 {
-    struct qemu___unDNameEx *c = (struct qemu___unDNameEx *)call;
+    struct qemu___unDNameEx *c = (struct qemu___unDNameEx *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p___unDNameEx(QEMU_G2H(c->buffer), QEMU_G2H(c->mangled), c->buflen, QEMU_G2H(c->memget), QEMU_G2H(c->memfree), QEMU_G2H(c->unknown), c->flags));
 }
@@ -99,14 +99,14 @@ WINBASEAPI char* CDECL __unDName(char* buffer, const char* mangled, int buflen, 
 
     qemu_syscall(&call.super);
 
-    return (char *)(ULONG_PTR)call.super.iret;
+    return (char *)(ULONG_PTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu___unDName(struct qemu_syscall *call)
 {
-    struct qemu___unDName *c = (struct qemu___unDName *)call;
+    struct qemu___unDName *c = (struct qemu___unDName *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p___unDName(QEMU_G2H(c->buffer), QEMU_G2H(c->mangled), c->buflen, QEMU_G2H(c->memget), QEMU_G2H(c->memfree), c->flags));
 }

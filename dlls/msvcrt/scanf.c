@@ -53,9 +53,9 @@ static int scanf_helper(const char *str, const char *fmt, MSVCRT__locale_t local
     call = MSVCRT_malloc(offsetof(struct qemu_scanf, args[count]));
 
     call->super.id = QEMU_SYSCALL_ID(CALL_VSSCANF);
-    call->str = (uint64_t)str;
-    call->fmt = (uint64_t)fmt;
-    call->locale = (uint64_t)locale;
+    call->str = (ULONG_PTR)str;
+    call->fmt = (ULONG_PTR)fmt;
+    call->locale = (ULONG_PTR)locale;
     call->argcount_float = 0;
     call->argcount = count;
 
@@ -100,9 +100,9 @@ static int swscanf_helper(const WCHAR *str, const WCHAR *fmt, MSVCRT__locale_t l
     call = MSVCRT_malloc(offsetof(struct qemu_scanf, args[count]));
 
     call->super.id = id;
-    call->str = (uint64_t)str;
-    call->fmt = (uint64_t)fmt;
-    call->locale = (uint64_t)locale;
+    call->str = (ULONG_PTR)str;
+    call->fmt = (ULONG_PTR)fmt;
+    call->locale = (ULONG_PTR)locale;
     call->argcount_float = 0;
     call->argcount = count;
 
@@ -157,7 +157,7 @@ static uint64_t scanf_wrapper(void *data, ...)
 
 void qemu_scanf(struct qemu_syscall *call)
 {
-    struct qemu_scanf *c = (struct qemu_scanf *)call;
+    struct qemu_scanf *c = (struct qemu_scanf *)(ULONG_PTR)call;
     struct scanf_data d;
 
     WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", c->argcount_float, c->argcount, (char *)QEMU_G2H(c->fmt));
@@ -171,7 +171,7 @@ void qemu_scanf(struct qemu_syscall *call)
 
 void qemu_swscanf_s(struct qemu_syscall *call)
 {
-    struct qemu_scanf *c = (struct qemu_scanf *)call;
+    struct qemu_scanf *c = (struct qemu_scanf *)(ULONG_PTR)call;
 
     WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", c->argcount_float, c->argcount, (char *)QEMU_G2H(c->fmt));
 

@@ -52,7 +52,7 @@ void CDECL _lock(int locknum)
 
 void qemu__lock(struct qemu_syscall *call)
 {
-    struct qemu__lock *c = (struct qemu__lock *)call;
+    struct qemu__lock *c = (struct qemu__lock *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     p__lock(c->locknum);
 }
@@ -80,7 +80,7 @@ void CDECL _unlock(int locknum)
 
 void qemu__unlock(struct qemu_syscall *call)
 {
-    struct qemu__unlock *c = (struct qemu__unlock *)call;
+    struct qemu__unlock *c = (struct qemu__unlock *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     p__unlock(c->locknum);
 }
@@ -108,7 +108,7 @@ WINBASEAPI unsigned int CDECL SpinCount__Value(void)
 
 void qemu_SpinCount__Value(struct qemu_syscall *call)
 {
-    struct qemu_SpinCount__Value *c = (struct qemu_SpinCount__Value *)call;
+    struct qemu_SpinCount__Value *c = (struct qemu_SpinCount__Value *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_SpinCount__Value();
 }
@@ -136,7 +136,7 @@ WINBASEAPI unsigned int CDECL _GetConcurrency(void)
 
 void qemu__GetConcurrency(struct qemu_syscall *call)
 {
-    struct qemu__GetConcurrency *c = (struct qemu__GetConcurrency *)call;
+    struct qemu__GetConcurrency *c = (struct qemu__GetConcurrency *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__GetConcurrency();
 }
@@ -172,7 +172,7 @@ WINBASEAPI int CDECL event_wait_for_multiple(void **events, size_t count, BOOL w
 
 void qemu_event_wait_for_multiple(struct qemu_syscall *call)
 {
-    struct qemu_event_wait_for_multiple *c = (struct qemu_event_wait_for_multiple *)call;
+    struct qemu_event_wait_for_multiple *c = (struct qemu_event_wait_for_multiple *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_event_wait_for_multiple(QEMU_G2H(c->events), c->count, c->wait_all, c->timeout);
 }
@@ -198,7 +198,7 @@ WINBASEAPI void CDECL _Lock_shared_ptr_spin_lock(void)
 
 void qemu__Lock_shared_ptr_spin_lock(struct qemu_syscall *call)
 {
-    struct qemu__Lock_shared_ptr_spin_lock *c = (struct qemu__Lock_shared_ptr_spin_lock *)call;
+    struct qemu__Lock_shared_ptr_spin_lock *c = (struct qemu__Lock_shared_ptr_spin_lock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__Lock_shared_ptr_spin_lock();
 }
@@ -224,7 +224,7 @@ WINBASEAPI void CDECL _Unlock_shared_ptr_spin_lock(void)
 
 void qemu__Unlock_shared_ptr_spin_lock(struct qemu_syscall *call)
 {
-    struct qemu__Unlock_shared_ptr_spin_lock *c = (struct qemu__Unlock_shared_ptr_spin_lock *)call;
+    struct qemu__Unlock_shared_ptr_spin_lock *c = (struct qemu__Unlock_shared_ptr_spin_lock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__Unlock_shared_ptr_spin_lock();
 }

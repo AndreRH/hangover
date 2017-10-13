@@ -49,7 +49,7 @@ void CDECL MSVCRT__endthread(void)
 
 void qemu__endthread(struct qemu_syscall *call)
 {
-    struct qemu__endthread *c = (struct qemu__endthread *)call;
+    struct qemu__endthread *c = (struct qemu__endthread *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__endthread();
 }
@@ -77,7 +77,7 @@ void CDECL MSVCRT__endthreadex(unsigned int retval)
 
 void qemu__endthreadex(struct qemu_syscall *call)
 {
-    struct qemu__endthreadex *c = (struct qemu__endthreadex *)call;
+    struct qemu__endthreadex *c = (struct qemu__endthreadex *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__endthreadex(c->retval);
 }
@@ -109,7 +109,7 @@ uintptr_t CDECL MSVCRT__beginthread(MSVCRT__beginthread_start_routine_t start_ad
 
 void qemu__beginthread(struct qemu_syscall *call)
 {
-    struct qemu__beginthread *c = (struct qemu__beginthread *)call;
+    struct qemu__beginthread *c = (struct qemu__beginthread *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__beginthread(QEMU_G2H(c->start_address), QEMU_G2H(c->arglist));
 }
@@ -149,7 +149,7 @@ uintptr_t CDECL MSVCRT__beginthreadex(void *security, unsigned int stack_size, M
 
 void qemu__beginthreadex(struct qemu_syscall *call)
 {
-    struct qemu__beginthreadex *c = (struct qemu__beginthreadex *)call;
+    struct qemu__beginthreadex *c = (struct qemu__beginthreadex *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__beginthreadex(QEMU_G2H(c->security), c->stack_size, QEMU_G2H(c->start_address), QEMU_G2H(c->arglist), c->initflag, QEMU_G2H(c->thrdaddr));
 }
@@ -170,14 +170,14 @@ thread_data_t* CDECL MSVCRT__getptd(void)
 
     qemu_syscall(&call.super);
 
-    return (thread_data_t *)(ULONG_PTR)call.super.iret;
+    return (thread_data_t *)(ULONG_PTR)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__getptd(struct qemu_syscall *call)
 {
-    struct qemu__getptd *c = (struct qemu__getptd *)call;
+    struct qemu__getptd *c = (struct qemu__getptd *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__getptd());
 }

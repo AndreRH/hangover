@@ -43,7 +43,7 @@ void CDECL MSVCRT___crt_debugger_hook(int reserved)
 {
     struct qemu___crt_debugger_hook call;
     call.super.id = QEMU_SYSCALL_ID(CALL___CRT_DEBUGGER_HOOK);
-    call.reserved = (uint64_t)reserved;
+    call.reserved = (ULONG_PTR)reserved;
 
     qemu_syscall(&call.super);
 }
@@ -52,7 +52,7 @@ void CDECL MSVCRT___crt_debugger_hook(int reserved)
 
 void qemu___crt_debugger_hook(struct qemu_syscall *call)
 {
-    struct qemu___crt_debugger_hook *c = (struct qemu___crt_debugger_hook *)call;
+    struct qemu___crt_debugger_hook *c = (struct qemu___crt_debugger_hook *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     p___crt_debugger_hook(c->reserved);
 }
@@ -81,9 +81,9 @@ struct qemu_bsearch_cb
 
 static uint64_t bsearch_guest_wrapper(const struct qemu_bsearch_cb *cb)
 {
-    int (__cdecl *compare)(const void *,const void *) = (void *)cb->func;
+    int (__cdecl *compare)(const void *,const void *) = (void *)(ULONG_PTR)cb->func;
 
-    return compare((void *)cb->ptr1, (void *)cb->ptr2);
+    return compare((void *)(ULONG_PTR)cb->ptr1, (void *)(ULONG_PTR)cb->ptr2);
 }
 
 void * CDECL MSVCRT_bsearch(const void *key, const void *base, size_t nmemb,
@@ -91,16 +91,16 @@ void * CDECL MSVCRT_bsearch(const void *key, const void *base, size_t nmemb,
 {
     struct qemu_bsearch call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BSEARCH);
-    call.key = (uint64_t)key;
-    call.base = (uint64_t)base;
+    call.key = (ULONG_PTR)key;
+    call.base = (ULONG_PTR)base;
     call.nmemb = nmemb;
     call.size = size;
-    call.compare = (uint64_t)compare;
-    call.wrapper = (uint64_t)bsearch_guest_wrapper;
+    call.compare = (ULONG_PTR)compare;
+    call.wrapper = (ULONG_PTR)bsearch_guest_wrapper;
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -122,7 +122,7 @@ static int bsearch_wrapper(const void *ptr1, const void *ptr2)
 
 void qemu_bsearch(struct qemu_syscall *call)
 {
-    struct qemu_bsearch *c = (struct qemu_bsearch *)call;
+    struct qemu_bsearch *c = (struct qemu_bsearch *)(ULONG_PTR)call;
     uint64_t *old = TlsGetValue(msvcrt_tls);
     WINE_TRACE("\n");
 
@@ -157,9 +157,9 @@ struct qemu_qsort_cb
 static uint64_t qsort_guest_wrapper(void *data)
 {
     const struct qemu_qsort_cb *cb = data;
-    int (__cdecl *compare)(const void *,const void *) = (void *)cb->func;
+    int (__cdecl *compare)(const void *,const void *) = (void *)(ULONG_PTR)cb->func;
 
-    return compare((void *)cb->ptr1, (void *)cb->ptr2);
+    return compare((void *)(ULONG_PTR)cb->ptr1, (void *)(ULONG_PTR)cb->ptr2);
 }
 
 void __cdecl MSVCRT_qsort(void *base, size_t elem_count, size_t elem_size,
@@ -167,11 +167,11 @@ void __cdecl MSVCRT_qsort(void *base, size_t elem_count, size_t elem_size,
 {
     struct qemu_qsort call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QSORT);
-    call.base = (uint64_t)base;
+    call.base = (ULONG_PTR)base;
     call.elem_count = elem_count;
     call.elem_size = elem_size;
-    call.compare = (uint64_t)compare;
-    call.wrapper = (uint64_t)qsort_guest_wrapper;
+    call.compare = (ULONG_PTR)compare;
+    call.wrapper = (ULONG_PTR)qsort_guest_wrapper;
 
     qemu_syscall(&call.super);
 }
@@ -195,7 +195,7 @@ int qsort_wrapper(const void *ptr1, const void *ptr2)
 
 void qemu_qsort(struct qemu_syscall *call)
 {
-    struct qemu_qsort *c = (struct qemu_qsort *)call;
+    struct qemu_qsort *c = (struct qemu_qsort *)(ULONG_PTR)call;
     WINE_TRACE("\n");
 
     qsort_guest_wrapper = c->wrapper;
@@ -248,7 +248,7 @@ void CDECL MSVCRT_srand(unsigned int seed)
 
 void qemu_srand(struct qemu_syscall *call)
 {
-    struct qemu_srand *c = (struct qemu_srand *)call;
+    struct qemu_srand *c = (struct qemu_srand *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     p_srand(c->seed);
 }

@@ -50,7 +50,7 @@ WINBASEAPI void CDECL MSVCRT__tzset(void)
 
 void qemu__tzset(struct qemu_syscall *call)
 {
-    struct qemu__tzset *c = (struct qemu__tzset *)call;
+    struct qemu__tzset *c = (struct qemu__tzset *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__tzset();
 }
@@ -80,7 +80,7 @@ WINBASEAPI MSVCRT___time64_t CDECL MSVCRT__mktime64(struct MSVCRT_tm *mstm)
 
 void qemu__mktime64(struct qemu_syscall *call)
 {
-    struct qemu__mktime64 *c = (struct qemu__mktime64 *)call;
+    struct qemu__mktime64 *c = (struct qemu__mktime64 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__mktime64(QEMU_G2H(c->mstm));
 }
@@ -110,7 +110,7 @@ WINBASEAPI MSVCRT___time32_t CDECL MSVCRT__mktime32(struct MSVCRT_tm *mstm)
 
 void qemu__mktime32(struct qemu_syscall *call)
 {
-    struct qemu__mktime32 *c = (struct qemu__mktime32 *)call;
+    struct qemu__mktime32 *c = (struct qemu__mktime32 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__mktime32(QEMU_G2H(c->mstm));
 }
@@ -140,7 +140,7 @@ WINBASEAPI MSVCRT___time64_t CDECL MSVCRT_mktime(struct MSVCRT_tm *mstm)
 
 void qemu_mktime(struct qemu_syscall *call)
 {
-    struct qemu_mktime *c = (struct qemu_mktime *)call;
+    struct qemu_mktime *c = (struct qemu_mktime *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_mktime(QEMU_G2H(c->mstm));
 }
@@ -170,7 +170,7 @@ WINBASEAPI MSVCRT___time64_t CDECL MSVCRT__mkgmtime64(struct MSVCRT_tm *time)
 
 void qemu__mkgmtime64(struct qemu_syscall *call)
 {
-    struct qemu__mkgmtime64 *c = (struct qemu__mkgmtime64 *)call;
+    struct qemu__mkgmtime64 *c = (struct qemu__mkgmtime64 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__mkgmtime64(QEMU_G2H(c->time));
 }
@@ -200,7 +200,7 @@ WINBASEAPI MSVCRT___time32_t CDECL MSVCRT__mkgmtime32(struct MSVCRT_tm *time)
 
 void qemu__mkgmtime32(struct qemu_syscall *call)
 {
-    struct qemu__mkgmtime32 *c = (struct qemu__mkgmtime32 *)call;
+    struct qemu__mkgmtime32 *c = (struct qemu__mkgmtime32 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__mkgmtime32(QEMU_G2H(c->time));
 }
@@ -230,7 +230,7 @@ WINBASEAPI MSVCRT___time32_t CDECL MSVCRT__mkgmtime(struct MSVCRT_tm *time)
 
 void qemu__mkgmtime(struct qemu_syscall *call)
 {
-    struct qemu__mkgmtime *c = (struct qemu__mkgmtime *)call;
+    struct qemu__mkgmtime *c = (struct qemu__mkgmtime *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__mkgmtime(QEMU_G2H(c->time));
 }
@@ -262,7 +262,7 @@ WINBASEAPI int CDECL MSVCRT__localtime64_s(struct MSVCRT_tm *res, const MSVCRT__
 
 void qemu__localtime64_s(struct qemu_syscall *call)
 {
-    struct qemu__localtime64_s *c = (struct qemu__localtime64_s *)call;
+    struct qemu__localtime64_s *c = (struct qemu__localtime64_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__localtime64_s(QEMU_G2H(c->res), QEMU_G2H(c->secs));
 }
@@ -285,14 +285,14 @@ WINBASEAPI struct MSVCRT_tm* CDECL MSVCRT__localtime64(const MSVCRT___time64_t* 
 
     qemu_syscall(&call.super);
 
-    return (struct MSVCRT_tm *)call.super.iret;
+    return (struct MSVCRT_tm *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__localtime64(struct qemu_syscall *call)
 {
-    struct qemu__localtime64 *c = (struct qemu__localtime64 *)call;
+    struct qemu__localtime64 *c = (struct qemu__localtime64 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__localtime64(QEMU_G2H(c->secs)));
 }
@@ -315,14 +315,14 @@ WINBASEAPI struct MSVCRT_tm* CDECL MSVCRT__localtime32(const MSVCRT___time32_t* 
 
     qemu_syscall(&call.super);
 
-    return (struct MSVCRT_tm *)call.super.iret;
+    return (struct MSVCRT_tm *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__localtime32(struct qemu_syscall *call)
 {
-    struct qemu__localtime32 *c = (struct qemu__localtime32 *)call;
+    struct qemu__localtime32 *c = (struct qemu__localtime32 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__localtime32(QEMU_G2H(c->secs)));
 }
@@ -354,7 +354,7 @@ WINBASEAPI int CDECL MSVCRT__localtime32_s(struct MSVCRT_tm *time, const MSVCRT_
 
 void qemu__localtime32_s(struct qemu_syscall *call)
 {
-    struct qemu__localtime32_s *c = (struct qemu__localtime32_s *)call;
+    struct qemu__localtime32_s *c = (struct qemu__localtime32_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__localtime32_s(QEMU_G2H(c->time), QEMU_G2H(c->secs));
 }
@@ -377,14 +377,14 @@ WINBASEAPI struct MSVCRT_tm* CDECL MSVCRT_localtime(const MSVCRT___time64_t* sec
 
     qemu_syscall(&call.super);
 
-    return (struct MSVCRT_tm *)call.super.iret;
+    return (struct MSVCRT_tm *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_localtime(struct qemu_syscall *call)
 {
-    struct qemu_localtime *c = (struct qemu_localtime *)call;
+    struct qemu_localtime *c = (struct qemu_localtime *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p_localtime(QEMU_G2H(c->secs)));
 }
@@ -416,7 +416,7 @@ WINBASEAPI int CDECL MSVCRT__gmtime64_s(struct MSVCRT_tm *res, const MSVCRT___ti
 
 void qemu__gmtime64_s(struct qemu_syscall *call)
 {
-    struct qemu__gmtime64_s *c = (struct qemu__gmtime64_s *)call;
+    struct qemu__gmtime64_s *c = (struct qemu__gmtime64_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__gmtime64_s(QEMU_G2H(c->res), QEMU_G2H(c->secs));
 }
@@ -439,14 +439,14 @@ WINBASEAPI struct MSVCRT_tm* CDECL MSVCRT__gmtime64(const MSVCRT___time64_t *sec
 
     qemu_syscall(&call.super);
 
-    return (struct MSVCRT_tm *)call.super.iret;
+    return (struct MSVCRT_tm *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__gmtime64(struct qemu_syscall *call)
 {
-    struct qemu__gmtime64 *c = (struct qemu__gmtime64 *)call;
+    struct qemu__gmtime64 *c = (struct qemu__gmtime64 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__gmtime64(QEMU_G2H(c->secs)));
 }
@@ -478,7 +478,7 @@ WINBASEAPI int CDECL MSVCRT__gmtime32_s(struct MSVCRT_tm *res, const MSVCRT___ti
 
 void qemu__gmtime32_s(struct qemu_syscall *call)
 {
-    struct qemu__gmtime32_s *c = (struct qemu__gmtime32_s *)call;
+    struct qemu__gmtime32_s *c = (struct qemu__gmtime32_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__gmtime32_s(QEMU_G2H(c->res), QEMU_G2H(c->secs));
 }
@@ -501,14 +501,14 @@ WINBASEAPI struct MSVCRT_tm* CDECL MSVCRT__gmtime32(const MSVCRT___time32_t* sec
 
     qemu_syscall(&call.super);
 
-    return (struct MSVCRT_tm *)call.super.iret;
+    return (struct MSVCRT_tm *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__gmtime32(struct qemu_syscall *call)
 {
-    struct qemu__gmtime32 *c = (struct qemu__gmtime32 *)call;
+    struct qemu__gmtime32 *c = (struct qemu__gmtime32 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__gmtime32(QEMU_G2H(c->secs)));
 }
@@ -531,14 +531,14 @@ WINBASEAPI struct MSVCRT_tm* CDECL MSVCRT_gmtime(const MSVCRT___time64_t* secs)
 
     qemu_syscall(&call.super);
 
-    return (struct MSVCRT_tm *)call.super.iret;
+    return (struct MSVCRT_tm *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_gmtime(struct qemu_syscall *call)
 {
-    struct qemu_gmtime *c = (struct qemu_gmtime *)call;
+    struct qemu_gmtime *c = (struct qemu_gmtime *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p_gmtime(QEMU_G2H(c->secs)));
 }
@@ -561,14 +561,14 @@ WINBASEAPI char* CDECL MSVCRT__strdate(char* date)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__strdate(struct qemu_syscall *call)
 {
-    struct qemu__strdate *c = (struct qemu__strdate *)call;
+    struct qemu__strdate *c = (struct qemu__strdate *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__strdate(QEMU_G2H(c->date)));
 }
@@ -600,7 +600,7 @@ WINBASEAPI int CDECL _strdate_s(char* date, size_t size)
 
 void qemu__strdate_s(struct qemu_syscall *call)
 {
-    struct qemu__strdate_s *c = (struct qemu__strdate_s *)call;
+    struct qemu__strdate_s *c = (struct qemu__strdate_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__strdate_s(QEMU_G2H(c->date), c->size);
 }
@@ -623,14 +623,14 @@ WINBASEAPI WCHAR* CDECL MSVCRT__wstrdate(WCHAR* date)
 
     qemu_syscall(&call.super);
 
-    return (WCHAR *)call.super.iret;
+    return (WCHAR *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__wstrdate(struct qemu_syscall *call)
 {
-    struct qemu__wstrdate *c = (struct qemu__wstrdate *)call;
+    struct qemu__wstrdate *c = (struct qemu__wstrdate *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__wstrdate(QEMU_G2H(c->date)));
 }
@@ -662,7 +662,7 @@ WINBASEAPI int CDECL _wstrdate_s(WCHAR* date, size_t size)
 
 void qemu__wstrdate_s(struct qemu_syscall *call)
 {
-    struct qemu__wstrdate_s *c = (struct qemu__wstrdate_s *)call;
+    struct qemu__wstrdate_s *c = (struct qemu__wstrdate_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__wstrdate_s(QEMU_G2H(c->date), c->size);
 }
@@ -685,14 +685,14 @@ WINBASEAPI char* CDECL MSVCRT__strtime(char* time)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__strtime(struct qemu_syscall *call)
 {
-    struct qemu__strtime *c = (struct qemu__strtime *)call;
+    struct qemu__strtime *c = (struct qemu__strtime *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__strtime(QEMU_G2H(c->time)));
 }
@@ -724,7 +724,7 @@ WINBASEAPI int CDECL _strtime_s(char* time, size_t size)
 
 void qemu__strtime_s(struct qemu_syscall *call)
 {
-    struct qemu__strtime_s *c = (struct qemu__strtime_s *)call;
+    struct qemu__strtime_s *c = (struct qemu__strtime_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__strtime_s(QEMU_G2H(c->time), c->size);
 }
@@ -747,14 +747,14 @@ WINBASEAPI WCHAR* CDECL MSVCRT__wstrtime(WCHAR* time)
 
     qemu_syscall(&call.super);
 
-    return (WCHAR *)call.super.iret;
+    return (WCHAR *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__wstrtime(struct qemu_syscall *call)
 {
-    struct qemu__wstrtime *c = (struct qemu__wstrtime *)call;
+    struct qemu__wstrtime *c = (struct qemu__wstrtime *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__wstrtime(QEMU_G2H(c->time)));
 }
@@ -786,7 +786,7 @@ WINBASEAPI int CDECL _wstrtime_s(WCHAR* time, size_t size)
 
 void qemu__wstrtime_s(struct qemu_syscall *call)
 {
-    struct qemu__wstrtime_s *c = (struct qemu__wstrtime_s *)call;
+    struct qemu__wstrtime_s *c = (struct qemu__wstrtime_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__wstrtime_s(QEMU_G2H(c->time), c->size);
 }
@@ -814,7 +814,7 @@ WINBASEAPI MSVCRT_clock_t CDECL MSVCRT_clock(void)
 
 void qemu_clock(struct qemu_syscall *call)
 {
-    struct qemu_clock *c = (struct qemu_clock *)call;
+    struct qemu_clock *c = (struct qemu_clock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_clock();
 }
@@ -846,7 +846,7 @@ WINBASEAPI double CDECL MSVCRT__difftime64(MSVCRT___time64_t time1, MSVCRT___tim
 
 void qemu__difftime64(struct qemu_syscall *call)
 {
-    struct qemu__difftime64 *c = (struct qemu__difftime64 *)call;
+    struct qemu__difftime64 *c = (struct qemu__difftime64 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__difftime64(c->time1, c->time2);
 }
@@ -878,7 +878,7 @@ WINBASEAPI double CDECL MSVCRT__difftime32(MSVCRT___time32_t time1, MSVCRT___tim
 
 void qemu__difftime32(struct qemu_syscall *call)
 {
-    struct qemu__difftime32 *c = (struct qemu__difftime32 *)call;
+    struct qemu__difftime32 *c = (struct qemu__difftime32 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__difftime32(c->time1, c->time2);
 }
@@ -910,7 +910,7 @@ WINBASEAPI double CDECL MSVCRT_difftime(MSVCRT___time64_t time1, MSVCRT___time64
 
 void qemu_difftime(struct qemu_syscall *call)
 {
-    struct qemu_difftime *c = (struct qemu_difftime *)call;
+    struct qemu_difftime *c = (struct qemu_difftime *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_difftime(c->time1, c->time2);
 }
@@ -938,7 +938,7 @@ WINBASEAPI void CDECL MSVCRT__ftime64(struct MSVCRT___timeb64 *buf)
 
 void qemu__ftime64(struct qemu_syscall *call)
 {
-    struct qemu__ftime64 *c = (struct qemu__ftime64 *)call;
+    struct qemu__ftime64 *c = (struct qemu__ftime64 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__ftime64(QEMU_G2H(c->buf));
 }
@@ -968,7 +968,7 @@ WINBASEAPI int CDECL MSVCRT__ftime64_s(struct MSVCRT___timeb64 *buf)
 
 void qemu__ftime64_s(struct qemu_syscall *call)
 {
-    struct qemu__ftime64_s *c = (struct qemu__ftime64_s *)call;
+    struct qemu__ftime64_s *c = (struct qemu__ftime64_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__ftime64_s(QEMU_G2H(c->buf));
 }
@@ -996,7 +996,7 @@ WINBASEAPI void CDECL MSVCRT__ftime32(struct MSVCRT___timeb32 *buf)
 
 void qemu__ftime32(struct qemu_syscall *call)
 {
-    struct qemu__ftime32 *c = (struct qemu__ftime32 *)call;
+    struct qemu__ftime32 *c = (struct qemu__ftime32 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__ftime32(QEMU_G2H(c->buf));
 }
@@ -1026,7 +1026,7 @@ WINBASEAPI int CDECL MSVCRT__ftime32_s(struct MSVCRT___timeb32 *buf)
 
 void qemu__ftime32_s(struct qemu_syscall *call)
 {
-    struct qemu__ftime32_s *c = (struct qemu__ftime32_s *)call;
+    struct qemu__ftime32_s *c = (struct qemu__ftime32_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__ftime32_s(QEMU_G2H(c->buf));
 }
@@ -1054,7 +1054,7 @@ WINBASEAPI void CDECL MSVCRT__ftime(struct MSVCRT___timeb64 *buf)
 
 void qemu__ftime(struct qemu_syscall *call)
 {
-    struct qemu__ftime *c = (struct qemu__ftime *)call;
+    struct qemu__ftime *c = (struct qemu__ftime *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__ftime(QEMU_G2H(c->buf));
 }
@@ -1084,7 +1084,7 @@ WINBASEAPI MSVCRT___time64_t CDECL MSVCRT__time64(MSVCRT___time64_t *buf)
 
 void qemu__time64(struct qemu_syscall *call)
 {
-    struct qemu__time64 *c = (struct qemu__time64 *)call;
+    struct qemu__time64 *c = (struct qemu__time64 *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = p__time64(QEMU_G2H(c->buf));
 }
@@ -1114,7 +1114,7 @@ WINBASEAPI MSVCRT___time32_t CDECL MSVCRT__time32(MSVCRT___time32_t *buf)
 
 void qemu__time32(struct qemu_syscall *call)
 {
-    struct qemu__time32 *c = (struct qemu__time32 *)call;
+    struct qemu__time32 *c = (struct qemu__time32 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__time32(QEMU_G2H(c->buf));
 }
@@ -1144,7 +1144,7 @@ WINBASEAPI MSVCRT___time64_t CDECL MSVCRT_time(MSVCRT___time64_t* buf)
 
 void qemu_time(struct qemu_syscall *call)
 {
-    struct qemu_time *c = (struct qemu_time *)call;
+    struct qemu_time *c = (struct qemu_time *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_time(QEMU_G2H(c->buf));
 }
@@ -1165,14 +1165,14 @@ WINBASEAPI int * CDECL MSVCRT___p__daylight(void)
 
     qemu_syscall(&call.super);
 
-    return (int *)call.super.iret;
+    return (int *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu___p__daylight(struct qemu_syscall *call)
 {
-    struct qemu___p__daylight *c = (struct qemu___p__daylight *)call;
+    struct qemu___p__daylight *c = (struct qemu___p__daylight *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p___p__daylight());
 }
@@ -1193,14 +1193,14 @@ WINBASEAPI int * CDECL MSVCRT___p__dstbias(void)
 
     qemu_syscall(&call.super);
 
-    return (int *)call.super.iret;
+    return (int *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu___p__dstbias(struct qemu_syscall *call)
 {
-    struct qemu___p__dstbias *c = (struct qemu___p__dstbias *)call;
+    struct qemu___p__dstbias *c = (struct qemu___p__dstbias *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p___p__dstbias());
 }
@@ -1230,7 +1230,7 @@ WINBASEAPI int CDECL MSVCRT__get_dstbias(int *seconds)
 
 void qemu__get_dstbias(struct qemu_syscall *call)
 {
-    struct qemu__get_dstbias *c = (struct qemu__get_dstbias *)call;
+    struct qemu__get_dstbias *c = (struct qemu__get_dstbias *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__get_dstbias(QEMU_G2H(c->seconds));
 }
@@ -1251,14 +1251,14 @@ WINBASEAPI LONG * CDECL MSVCRT___p__timezone(void)
 
     qemu_syscall(&call.super);
 
-    return (LONG *)call.super.iret;
+    return (LONG *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu___p__timezone(struct qemu_syscall *call)
 {
-    struct qemu___p__timezone *c = (struct qemu___p__timezone *)call;
+    struct qemu___p__timezone *c = (struct qemu___p__timezone *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p___p__timezone());
 }
@@ -1294,7 +1294,7 @@ WINBASEAPI int CDECL MSVCRT__get_tzname(size_t *ret, char *buf, size_t bufsize, 
 
 void qemu__get_tzname(struct qemu_syscall *call)
 {
-    struct qemu__get_tzname *c = (struct qemu__get_tzname *)call;
+    struct qemu__get_tzname *c = (struct qemu__get_tzname *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__get_tzname(QEMU_G2H(c->ret), QEMU_G2H(c->buf), c->bufsize, c->index);
 }
@@ -1315,14 +1315,14 @@ WINBASEAPI char ** CDECL __p__tzname(void)
 
     qemu_syscall(&call.super);
 
-    return (char **)call.super.iret;
+    return (char **)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu___p__tzname(struct qemu_syscall *call)
 {
-    struct qemu___p__tzname *c = (struct qemu___p__tzname *)call;
+    struct qemu___p__tzname *c = (struct qemu___p__tzname *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p___p__tzname());
 }
@@ -1360,7 +1360,7 @@ WINBASEAPI size_t CDECL MSVCRT__strftime_l(char *str, size_t max, const char *fo
 
 void qemu__strftime_l(struct qemu_syscall *call)
 {
-    struct qemu__strftime_l *c = (struct qemu__strftime_l *)call;
+    struct qemu__strftime_l *c = (struct qemu__strftime_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__strftime_l(QEMU_G2H(c->str), c->max, QEMU_G2H(c->format), QEMU_G2H(c->mstm), QEMU_G2H(c->loc));
 }
@@ -1398,7 +1398,7 @@ WINBASEAPI size_t CDECL _Strftime(char *str, size_t max, const char *format, con
 
 void qemu__Strftime(struct qemu_syscall *call)
 {
-    struct qemu__Strftime *c = (struct qemu__Strftime *)call;
+    struct qemu__Strftime *c = (struct qemu__Strftime *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__Strftime(QEMU_G2H(c->str), c->max, QEMU_G2H(c->format), QEMU_G2H(c->mstm), QEMU_G2H(c->time_data));
 }
@@ -1434,7 +1434,7 @@ WINBASEAPI size_t CDECL MSVCRT_strftime(char *str, size_t max, const char *forma
 
 void qemu_strftime(struct qemu_syscall *call)
 {
-    struct qemu_strftime *c = (struct qemu_strftime *)call;
+    struct qemu_strftime *c = (struct qemu_strftime *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_strftime(QEMU_G2H(c->str), c->max, QEMU_G2H(c->format), QEMU_G2H(c->mstm));
 }
@@ -1472,7 +1472,7 @@ WINBASEAPI size_t CDECL MSVCRT__wcsftime_l(WCHAR *str, size_t max, const WCHAR *
 
 void qemu__wcsftime_l(struct qemu_syscall *call)
 {
-    struct qemu__wcsftime_l *c = (struct qemu__wcsftime_l *)call;
+    struct qemu__wcsftime_l *c = (struct qemu__wcsftime_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__wcsftime_l(QEMU_G2H(c->str), c->max, QEMU_G2H(c->format), QEMU_G2H(c->mstm), QEMU_G2H(c->loc));
 }
@@ -1508,7 +1508,7 @@ WINBASEAPI size_t CDECL MSVCRT_wcsftime(WCHAR *str, size_t max, const WCHAR *for
 
 void qemu_wcsftime(struct qemu_syscall *call)
 {
-    struct qemu_wcsftime *c = (struct qemu_wcsftime *)call;
+    struct qemu_wcsftime *c = (struct qemu_wcsftime *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_wcsftime(QEMU_G2H(c->str), c->max, QEMU_G2H(c->format), QEMU_G2H(c->mstm));
 }
@@ -1546,7 +1546,7 @@ WINBASEAPI size_t CDECL _Wcsftime(WCHAR *str, size_t max, const WCHAR *format, c
 
 void qemu__Wcsftime(struct qemu_syscall *call)
 {
-    struct qemu__Wcsftime *c = (struct qemu__Wcsftime *)call;
+    struct qemu__Wcsftime *c = (struct qemu__Wcsftime *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__Wcsftime(QEMU_G2H(c->str), c->max, QEMU_G2H(c->format), QEMU_G2H(c->mstm), QEMU_G2H(c->time_data));
 }
@@ -1569,14 +1569,14 @@ WINBASEAPI char * CDECL MSVCRT_asctime(const struct MSVCRT_tm *mstm)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_asctime(struct qemu_syscall *call)
 {
-    struct qemu_asctime *c = (struct qemu_asctime *)call;
+    struct qemu_asctime *c = (struct qemu_asctime *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p_asctime(QEMU_G2H(c->mstm)));
 }
@@ -1610,7 +1610,7 @@ WINBASEAPI int CDECL MSVCRT_asctime_s(char* time, size_t size, const struct MSVC
 
 void qemu_asctime_s(struct qemu_syscall *call)
 {
-    struct qemu_asctime_s *c = (struct qemu_asctime_s *)call;
+    struct qemu_asctime_s *c = (struct qemu_asctime_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_asctime_s(QEMU_G2H(c->time), c->size, QEMU_G2H(c->mstm));
 }
@@ -1633,14 +1633,14 @@ WINBASEAPI WCHAR * CDECL MSVCRT__wasctime(const struct MSVCRT_tm *mstm)
 
     qemu_syscall(&call.super);
 
-    return (WCHAR *)call.super.iret;
+    return (WCHAR *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__wasctime(struct qemu_syscall *call)
 {
-    struct qemu__wasctime *c = (struct qemu__wasctime *)call;
+    struct qemu__wasctime *c = (struct qemu__wasctime *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__wasctime(QEMU_G2H(c->mstm)));
 }
@@ -1674,7 +1674,7 @@ WINBASEAPI int CDECL MSVCRT__wasctime_s(WCHAR* time, size_t size, const struct M
 
 void qemu__wasctime_s(struct qemu_syscall *call)
 {
-    struct qemu__wasctime_s *c = (struct qemu__wasctime_s *)call;
+    struct qemu__wasctime_s *c = (struct qemu__wasctime_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__wasctime_s(QEMU_G2H(c->time), c->size, QEMU_G2H(c->mstm));
 }
@@ -1697,14 +1697,14 @@ WINBASEAPI char * CDECL MSVCRT__ctime64(const MSVCRT___time64_t *time)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__ctime64(struct qemu_syscall *call)
 {
-    struct qemu__ctime64 *c = (struct qemu__ctime64 *)call;
+    struct qemu__ctime64 *c = (struct qemu__ctime64 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__ctime64(QEMU_G2H(c->time)));
 }
@@ -1738,7 +1738,7 @@ WINBASEAPI int CDECL MSVCRT__ctime64_s(char *res, size_t len, const MSVCRT___tim
 
 void qemu__ctime64_s(struct qemu_syscall *call)
 {
-    struct qemu__ctime64_s *c = (struct qemu__ctime64_s *)call;
+    struct qemu__ctime64_s *c = (struct qemu__ctime64_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__ctime64_s(QEMU_G2H(c->res), c->len, QEMU_G2H(c->time));
 }
@@ -1761,14 +1761,14 @@ WINBASEAPI char * CDECL MSVCRT__ctime32(const MSVCRT___time32_t *time)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__ctime32(struct qemu_syscall *call)
 {
-    struct qemu__ctime32 *c = (struct qemu__ctime32 *)call;
+    struct qemu__ctime32 *c = (struct qemu__ctime32 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__ctime32(QEMU_G2H(c->time)));
 }
@@ -1802,7 +1802,7 @@ WINBASEAPI int CDECL MSVCRT__ctime32_s(char *res, size_t len, const MSVCRT___tim
 
 void qemu__ctime32_s(struct qemu_syscall *call)
 {
-    struct qemu__ctime32_s *c = (struct qemu__ctime32_s *)call;
+    struct qemu__ctime32_s *c = (struct qemu__ctime32_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__ctime32_s(QEMU_G2H(c->res), c->len, QEMU_G2H(c->time));
 }
@@ -1825,14 +1825,14 @@ WINBASEAPI char * CDECL MSVCRT_ctime(const MSVCRT___time64_t *time)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_ctime(struct qemu_syscall *call)
 {
-    struct qemu_ctime *c = (struct qemu_ctime *)call;
+    struct qemu_ctime *c = (struct qemu_ctime *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p_ctime(QEMU_G2H(c->time)));
 }
@@ -1855,14 +1855,14 @@ WINBASEAPI WCHAR * CDECL MSVCRT__wctime64(const MSVCRT___time64_t *time)
 
     qemu_syscall(&call.super);
 
-    return (WCHAR *)call.super.iret;
+    return (WCHAR *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__wctime64(struct qemu_syscall *call)
 {
-    struct qemu__wctime64 *c = (struct qemu__wctime64 *)call;
+    struct qemu__wctime64 *c = (struct qemu__wctime64 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__wctime64(QEMU_G2H(c->time)));
 }
@@ -1885,14 +1885,14 @@ WINBASEAPI WCHAR * CDECL MSVCRT__wctime32(const MSVCRT___time32_t *time)
 
     qemu_syscall(&call.super);
 
-    return (WCHAR *)call.super.iret;
+    return (WCHAR *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__wctime32(struct qemu_syscall *call)
 {
-    struct qemu__wctime32 *c = (struct qemu__wctime32 *)call;
+    struct qemu__wctime32 *c = (struct qemu__wctime32 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__wctime32(QEMU_G2H(c->time)));
 }
@@ -1915,14 +1915,14 @@ WINBASEAPI WCHAR * CDECL MSVCRT__wctime(const MSVCRT___time64_t *time)
 
     qemu_syscall(&call.super);
 
-    return (WCHAR *)call.super.iret;
+    return (WCHAR *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__wctime(struct qemu_syscall *call)
 {
-    struct qemu__wctime *c = (struct qemu__wctime *)call;
+    struct qemu__wctime *c = (struct qemu__wctime *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__wctime(QEMU_G2H(c->time)));
 }
@@ -1956,7 +1956,7 @@ WINBASEAPI int CDECL MSVCRT__wctime64_s(WCHAR *buf, size_t size, const MSVCRT___
 
 void qemu__wctime64_s(struct qemu_syscall *call)
 {
-    struct qemu__wctime64_s *c = (struct qemu__wctime64_s *)call;
+    struct qemu__wctime64_s *c = (struct qemu__wctime64_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__wctime64_s(QEMU_G2H(c->buf), c->size, QEMU_G2H(c->time));
 }
@@ -1990,7 +1990,7 @@ WINBASEAPI int CDECL MSVCRT__wctime32_s(WCHAR *buf, size_t size, const MSVCRT___
 
 void qemu__wctime32_s(struct qemu_syscall *call)
 {
-    struct qemu__wctime32_s *c = (struct qemu__wctime32_s *)call;
+    struct qemu__wctime32_s *c = (struct qemu__wctime32_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__wctime32_s(QEMU_G2H(c->buf), c->size, QEMU_G2H(c->time));
 }
@@ -2020,7 +2020,7 @@ WINBASEAPI int CDECL _get_timezone(LONG *timezone)
 
 void qemu__get_timezone(struct qemu_syscall *call)
 {
-    struct qemu__get_timezone *c = (struct qemu__get_timezone *)call;
+    struct qemu__get_timezone *c = (struct qemu__get_timezone *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__get_timezone(QEMU_G2H(c->timezone));
 }
@@ -2050,7 +2050,7 @@ WINBASEAPI int CDECL _get_daylight(int *hours)
 
 void qemu__get_daylight(struct qemu_syscall *call)
 {
-    struct qemu__get_daylight *c = (struct qemu__get_daylight *)call;
+    struct qemu__get_daylight *c = (struct qemu__get_daylight *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__get_daylight(QEMU_G2H(c->hours));
 }

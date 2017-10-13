@@ -34,6 +34,8 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 
 #ifdef QEMU_DLL_GUEST
 
+#ifdef _WIN64
+
 EXCEPTION_DISPOSITION CDECL __CxxFrameHandler(EXCEPTION_RECORD *rec, ULONG64 frame,
         CONTEXT *context, DISPATCHER_CONTEXT *dispatch)
 {
@@ -44,6 +46,21 @@ EXCEPTION_DISPOSITION CDECL __CxxFrameHandler(EXCEPTION_RECORD *rec, ULONG64 fra
 
     return 0;
 }
+
+#else
+
+DWORD CDECL __CxxFrameHandler( PEXCEPTION_RECORD rec, EXCEPTION_REGISTRATION_RECORD* frame,
+        PCONTEXT context, EXCEPTION_REGISTRATION_RECORD** dispatch )
+{
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL___CXXFRAMEHANDLER);
+
+    qemu_syscall(&call);
+
+    return 0;
+}
+
+#endif
 
 #else
 
@@ -63,6 +80,8 @@ void CDECL MSVCRT__setjmp_log()
 
     qemu_syscall(&call);
 }
+
+#ifdef _WIN64
 
 #define __ASM_NAME(name) name
 #define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.def " #name suffix "; .scl 2; .type 32; .endef\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc");
@@ -103,6 +122,8 @@ __ASM_GLOBAL_FUNC( MSVCRT__setjmpex,
                    "xorq %rax,%rax\n\t"
                    "retq" );
 
+#endif
+
 #else
 
 void qemu__setjmp(struct qemu_syscall *c)
@@ -136,6 +157,8 @@ void qemu__xcptfilter(struct qemu_syscall *c)
 
 #ifdef QEMU_DLL_GUEST
 
+#ifdef _WIN64
+
 extern void DECLSPEC_NORETURN CDECL longjmp_set_regs( jmp_buf jmp, int retval );
 __ASM_GLOBAL_FUNC( longjmp_set_regs,
                    "movq %rdx,%rax\n\t"            /* retval */
@@ -161,6 +184,8 @@ __ASM_GLOBAL_FUNC( longjmp_set_regs,
                    "movq 0x10(%rcx),%rsp\n\t"      /* jmp_buf->Rsp */
                    "jmp *%rdx" );
 
+#endif
+
 void __cdecl MSVCRT_longjmp(jmp_buf jmp, int retval)
 {
     struct qemu_syscall call;
@@ -171,7 +196,10 @@ void __cdecl MSVCRT_longjmp(jmp_buf jmp, int retval)
     /* FIXME: jmp->frame. */
 
     if (!retval) retval = 1;
+#ifdef _WIN64
     longjmp_set_regs( jmp, retval );
+#endif
+    ExitProcess(1);
 }
 
 #else

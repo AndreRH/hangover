@@ -56,11 +56,11 @@ void CDECL __getmainargs(int *argc, char** *argv, char** *envp, int expand_wildc
 {
     struct qemu___getmainargs call;
     call.super.id = QEMU_SYSCALL_ID(CALL___GETMAINARGS);
-    call.argc = (uint64_t)argc;
-    call.argv = (uint64_t)argv;
-    call.envp = (uint64_t)envp;
+    call.argc = (ULONG_PTR)argc;
+    call.argv = (ULONG_PTR)argv;
+    call.envp = (ULONG_PTR)envp;
     call.expand_wildcards = expand_wildcards;
-    call.new_mode = (uint64_t)new_mode;
+    call.new_mode = (ULONG_PTR)new_mode;
 
     qemu_syscall(&call.super);
 }
@@ -71,7 +71,7 @@ void qemu___getmainargs(struct qemu_syscall *call)
 {
     char **host_argv, **host_envp;
 
-    struct qemu___getmainargs *c = (struct qemu___getmainargs *)call;
+    struct qemu___getmainargs *c = (struct qemu___getmainargs *)(ULONG_PTR)call;
     /* QEMU hacks up argc and argv after kernel32 consumes it but before
      * msvcrt does, so this *should* work. */
     WINE_TRACE("\n");
@@ -99,11 +99,11 @@ void CDECL __wgetmainargs(int *argc, WCHAR** *wargv, WCHAR** *wenvp,
 {
     struct qemu___getmainargs call;
     call.super.id = QEMU_SYSCALL_ID(CALL___WGETMAINARGS);
-    call.argc = (uint64_t)argc;
-    call.argv = (uint64_t)wargv;
-    call.envp = (uint64_t)wenvp;
+    call.argc = (ULONG_PTR)argc;
+    call.argv = (ULONG_PTR)wargv;
+    call.envp = (ULONG_PTR)wenvp;
     call.expand_wildcards = expand_wildcards;
-    call.new_mode = (uint64_t)new_mode;
+    call.new_mode = (ULONG_PTR)new_mode;
 
     qemu_syscall(&call.super);
 }
@@ -114,7 +114,7 @@ void qemu___wgetmainargs(struct qemu_syscall *call)
 {
     WCHAR **host_argv, **host_envp;
 
-    struct qemu___wgetmainargs *c = (struct qemu___wgetmainargs *)call;
+    struct qemu___wgetmainargs *c = (struct qemu___wgetmainargs *)(ULONG_PTR)call;
     /* QEMU hacks up argc and argv after kernel32 consumes it but before
      * msvcrt does, so this *should* work. */
     WINE_TRACE("\n");
@@ -149,7 +149,7 @@ void CDECL MSVCRT___set_app_type(int type)
 
 void qemu___set_app_type(struct qemu_syscall *call)
 {
-    struct qemu___set_app_type *c = (struct qemu___set_app_type *)call;
+    struct qemu___set_app_type *c = (struct qemu___set_app_type *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     /* No harm in forwarding this. If there is a conflict with qemu then qemu should
      * leave this thing alone. */
@@ -216,7 +216,7 @@ WINBASEAPI int CDECL _get_pgmptr(char** p)
 
 void qemu__get_pgmptr(struct qemu_syscall *call)
 {
-    struct qemu__get_pgmptr *c = (struct qemu__get_pgmptr *)call;
+    struct qemu__get_pgmptr *c = (struct qemu__get_pgmptr *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__get_pgmptr(QEMU_G2H(c->p));
 }
@@ -246,7 +246,7 @@ WINBASEAPI int CDECL _get_wpgmptr(WCHAR** p)
 
 void qemu__get_wpgmptr(struct qemu_syscall *call)
 {
-    struct qemu__get_wpgmptr *c = (struct qemu__get_wpgmptr *)call;
+    struct qemu__get_wpgmptr *c = (struct qemu__get_wpgmptr *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__get_wpgmptr(QEMU_G2H(c->p));
 }
@@ -276,7 +276,7 @@ WINBASEAPI int CDECL MSVCRT__set_fmode(int mode)
 
 void qemu__set_fmode(struct qemu_syscall *call)
 {
-    struct qemu__set_fmode *c = (struct qemu__set_fmode *)call;
+    struct qemu__set_fmode *c = (struct qemu__set_fmode *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__set_fmode(c->mode);
 }
@@ -306,7 +306,7 @@ WINBASEAPI int CDECL MSVCRT__get_fmode(int *mode)
 
 void qemu__get_fmode(struct qemu_syscall *call)
 {
-    struct qemu__get_fmode *c = (struct qemu__get_fmode *)call;
+    struct qemu__get_fmode *c = (struct qemu__get_fmode *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__get_fmode(QEMU_G2H(c->mode));
 }
@@ -327,14 +327,14 @@ WINBASEAPI char*** CDECL MSVCRT___p__environ(void)
 
     qemu_syscall(&call.super);
 
-    return (char***)call.super.iret;
+    return (char***)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu___p__environ(struct qemu_syscall *call)
 {
-    struct qemu___p__environ *c = (struct qemu___p__environ *)call;
+    struct qemu___p__environ *c = (struct qemu___p__environ *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p___p__environ());
 }
@@ -355,14 +355,14 @@ WINBASEAPI WCHAR*** CDECL MSVCRT___p__wenviron(void)
 
     qemu_syscall(&call.super);
 
-    return (WCHAR ***)call.super.iret;
+    return (WCHAR ***)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu___p__wenviron(struct qemu_syscall *call)
 {
-    struct qemu___p__wenviron *c = (struct qemu___p__wenviron *)call;
+    struct qemu___p__wenviron *c = (struct qemu___p__wenviron *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p___p__wenviron());
 }
@@ -392,7 +392,7 @@ WINBASEAPI int CDECL MSVCRT__get_osplatform(int *pValue)
 
 void qemu__get_osplatform(struct qemu_syscall *call)
 {
-    struct qemu__get_osplatform *c = (struct qemu__get_osplatform *)call;
+    struct qemu__get_osplatform *c = (struct qemu__get_osplatform *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__get_osplatform(QEMU_G2H(c->pValue));
 }
@@ -413,14 +413,14 @@ WINBASEAPI unsigned int * CDECL MSVCRT____unguarded_readlc_active_add_func(void)
 
     qemu_syscall(&call.super);
 
-    return (unsigned int *)call.super.iret;
+    return (unsigned int *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu____unguarded_readlc_active_add_func(struct qemu_syscall *call)
 {
-    struct qemu____unguarded_readlc_active_add_func *c = (struct qemu____unguarded_readlc_active_add_func *)call;
+    struct qemu____unguarded_readlc_active_add_func *c = (struct qemu____unguarded_readlc_active_add_func *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p____unguarded_readlc_active_add_func());
 }
@@ -448,7 +448,7 @@ WINBASEAPI unsigned int CDECL MSVCRT____setlc_active_func(void)
 
 void qemu____setlc_active_func(struct qemu_syscall *call)
 {
-    struct qemu____setlc_active_func *c = (struct qemu____setlc_active_func *)call;
+    struct qemu____setlc_active_func *c = (struct qemu____setlc_active_func *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p____setlc_active_func();
 }
@@ -469,14 +469,14 @@ WINBASEAPI char** CDECL _get_initial_narrow_environment(void)
 
     qemu_syscall(&call.super);
 
-    return (char **)call.super.iret;
+    return (char **)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__get_initial_narrow_environment(struct qemu_syscall *call)
 {
-    struct qemu__get_initial_narrow_environment *c = (struct qemu__get_initial_narrow_environment *)call;
+    struct qemu__get_initial_narrow_environment *c = (struct qemu__get_initial_narrow_environment *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__get_initial_narrow_environment());
 }
@@ -506,7 +506,7 @@ WINBASEAPI int CDECL _configure_narrow_argv(int mode)
 
 void qemu__configure_narrow_argv(struct qemu_syscall *call)
 {
-    struct qemu__configure_narrow_argv *c = (struct qemu__configure_narrow_argv *)call;
+    struct qemu__configure_narrow_argv *c = (struct qemu__configure_narrow_argv *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__configure_narrow_argv(c->mode);
 }
@@ -534,7 +534,7 @@ WINBASEAPI int CDECL _initialize_narrow_environment(void)
 
 void qemu__initialize_narrow_environment(struct qemu_syscall *call)
 {
-    struct qemu__initialize_narrow_environment *c = (struct qemu__initialize_narrow_environment *)call;
+    struct qemu__initialize_narrow_environment *c = (struct qemu__initialize_narrow_environment *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__initialize_narrow_environment();
 }
@@ -555,14 +555,14 @@ WINBASEAPI WCHAR** CDECL _get_initial_wide_environment(void)
 
     qemu_syscall(&call.super);
 
-    return (WCHAR **)call.super.iret;
+    return (WCHAR **)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__get_initial_wide_environment(struct qemu_syscall *call)
 {
-    struct qemu__get_initial_wide_environment *c = (struct qemu__get_initial_wide_environment *)call;
+    struct qemu__get_initial_wide_environment *c = (struct qemu__get_initial_wide_environment *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__get_initial_wide_environment());
 }
@@ -592,7 +592,7 @@ WINBASEAPI int CDECL _configure_wide_argv(int mode)
 
 void qemu__configure_wide_argv(struct qemu_syscall *call)
 {
-    struct qemu__configure_wide_argv *c = (struct qemu__configure_wide_argv *)call;
+    struct qemu__configure_wide_argv *c = (struct qemu__configure_wide_argv *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__configure_wide_argv(c->mode);
 }
@@ -620,7 +620,7 @@ WINBASEAPI int CDECL _initialize_wide_environment(void)
 
 void qemu__initialize_wide_environment(struct qemu_syscall *call)
 {
-    struct qemu__initialize_wide_environment *c = (struct qemu__initialize_wide_environment *)call;
+    struct qemu__initialize_wide_environment *c = (struct qemu__initialize_wide_environment *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__initialize_wide_environment();
 }
@@ -641,14 +641,14 @@ WINBASEAPI char* CDECL _get_narrow_winmain_command_line(void)
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__get_narrow_winmain_command_line(struct qemu_syscall *call)
 {
-    struct qemu__get_narrow_winmain_command_line *c = (struct qemu__get_narrow_winmain_command_line *)call;
+    struct qemu__get_narrow_winmain_command_line *c = (struct qemu__get_narrow_winmain_command_line *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__get_narrow_winmain_command_line());
 }
@@ -669,14 +669,14 @@ WINBASEAPI WCHAR* CDECL _get_wide_winmain_command_line(void)
 
     qemu_syscall(&call.super);
 
-    return (WCHAR *)call.super.iret;
+    return (WCHAR *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__get_wide_winmain_command_line(struct qemu_syscall *call)
 {
-    struct qemu__get_wide_winmain_command_line *c = (struct qemu__get_wide_winmain_command_line *)call;
+    struct qemu__get_wide_winmain_command_line *c = (struct qemu__get_wide_winmain_command_line *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__get_wide_winmain_command_line());
 }

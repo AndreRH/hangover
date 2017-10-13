@@ -47,14 +47,14 @@ WINBASEAPI void* CDECL MSVCRT_operator_new(size_t size)
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_operator_new(struct qemu_syscall *call)
 {
-    struct qemu_operator_new *c = (struct qemu_operator_new *)call;
+    struct qemu_operator_new *c = (struct qemu_operator_new *)(ULONG_PTR)call;
     WINE_TRACE("\n");
 
     /* This is only half the fun as long as we don't implement the new handler setter. */
@@ -85,14 +85,14 @@ WINBASEAPI void* CDECL MSVCRT_operator_new_dbg(size_t size, int type, const char
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_operator_new_dbg(struct qemu_syscall *call)
 {
-    struct qemu_operator_new_dbg *c = (struct qemu_operator_new_dbg *)call;
+    struct qemu_operator_new_dbg *c = (struct qemu_operator_new_dbg *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p_operator_new_dbg(c->size, c->type, QEMU_G2H(c->file), c->line));
 }
@@ -120,7 +120,7 @@ WINBASEAPI void CDECL MSVCRT_operator_delete(void *mem)
 
 void qemu_operator_delete(struct qemu_syscall *call)
 {
-    struct qemu_operator_delete *c = (struct qemu_operator_delete *)call;
+    struct qemu_operator_delete *c = (struct qemu_operator_delete *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     p_operator_delete(QEMU_G2H(c->mem));
 }
@@ -141,14 +141,14 @@ WINBASEAPI MSVCRT_new_handler_func CDECL MSVCRT__query_new_handler(void)
 
     qemu_syscall(&call.super);
 
-    return (MSVCRT_new_handler_func)call.super.iret;
+    return (MSVCRT_new_handler_func)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__query_new_handler(struct qemu_syscall *call)
 {
-    struct qemu__query_new_handler *c = (struct qemu__query_new_handler *)call;
+    struct qemu__query_new_handler *c = (struct qemu__query_new_handler *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__query_new_handler());
 }
@@ -176,7 +176,7 @@ WINBASEAPI int CDECL MSVCRT__query_new_mode(void)
 
 void qemu__query_new_mode(struct qemu_syscall *call)
 {
-    struct qemu__query_new_mode *c = (struct qemu__query_new_mode *)call;
+    struct qemu__query_new_mode *c = (struct qemu__query_new_mode *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__query_new_mode();
 }
@@ -199,14 +199,14 @@ WINBASEAPI MSVCRT_new_handler_func CDECL MSVCRT__set_new_handler(MSVCRT_new_hand
 
     qemu_syscall(&call.super);
 
-    return (MSVCRT_new_handler_func)call.super.iret;
+    return (MSVCRT_new_handler_func)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__set_new_handler(struct qemu_syscall *call)
 {
-    struct qemu__set_new_handler *c = (struct qemu__set_new_handler *)call;
+    struct qemu__set_new_handler *c = (struct qemu__set_new_handler *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__set_new_handler(QEMU_G2H(c->func)));
 }
@@ -229,14 +229,14 @@ WINBASEAPI MSVCRT_new_handler_func CDECL MSVCRT_set_new_handler(void *func)
 
     qemu_syscall(&call.super);
 
-    return (MSVCRT_new_handler_func)call.super.iret;
+    return (MSVCRT_new_handler_func)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_set_new_handler(struct qemu_syscall *call)
 {
-    struct qemu_set_new_handler *c = (struct qemu_set_new_handler *)call;
+    struct qemu_set_new_handler *c = (struct qemu_set_new_handler *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p_set_new_handler(QEMU_G2H(c->func)));
 }
@@ -266,7 +266,7 @@ WINBASEAPI int CDECL MSVCRT__set_new_mode(int mode)
 
 void qemu__set_new_mode(struct qemu_syscall *call)
 {
-    struct qemu__set_new_mode *c = (struct qemu__set_new_mode *)call;
+    struct qemu__set_new_mode *c = (struct qemu__set_new_mode *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__set_new_mode(c->mode);
 }
@@ -296,7 +296,7 @@ WINBASEAPI int CDECL _callnewh(size_t size)
 
 void qemu__callnewh(struct qemu_syscall *call)
 {
-    struct qemu__callnewh *c = (struct qemu__callnewh *)call;
+    struct qemu__callnewh *c = (struct qemu__callnewh *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__callnewh(c->size);
 }
@@ -321,14 +321,14 @@ WINBASEAPI void* CDECL _expand(void* mem, size_t size)
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__expand(struct qemu_syscall *call)
 {
-    struct qemu__expand *c = (struct qemu__expand *)call;
+    struct qemu__expand *c = (struct qemu__expand *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__expand(QEMU_G2H(c->mem), c->size));
 }
@@ -356,7 +356,7 @@ WINBASEAPI int CDECL _heapchk(void)
 
 void qemu__heapchk(struct qemu_syscall *call)
 {
-    struct qemu__heapchk *c = (struct qemu__heapchk *)call;
+    struct qemu__heapchk *c = (struct qemu__heapchk *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__heapchk();
 }
@@ -384,7 +384,7 @@ WINBASEAPI int CDECL _heapmin(void)
 
 void qemu__heapmin(struct qemu_syscall *call)
 {
-    struct qemu__heapmin *c = (struct qemu__heapmin *)call;
+    struct qemu__heapmin *c = (struct qemu__heapmin *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__heapmin();
 }
@@ -414,7 +414,7 @@ WINBASEAPI int CDECL MSVCRT__heapwalk(struct MSVCRT__heapinfo* next)
 
 void qemu__heapwalk(struct qemu_syscall *call)
 {
-    struct qemu__heapwalk *c = (struct qemu__heapwalk *)call;
+    struct qemu__heapwalk *c = (struct qemu__heapwalk *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__heapwalk(QEMU_G2H(c->next));
 }
@@ -444,7 +444,7 @@ WINBASEAPI int CDECL _heapset(unsigned int value)
 
 void qemu__heapset(struct qemu_syscall *call)
 {
-    struct qemu__heapset *c = (struct qemu__heapset *)call;
+    struct qemu__heapset *c = (struct qemu__heapset *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__heapset(c->value);
 }
@@ -476,7 +476,7 @@ WINBASEAPI int CDECL _heapadd(void* mem, size_t size)
 
 void qemu__heapadd(struct qemu_syscall *call)
 {
-    struct qemu__heapadd *c = (struct qemu__heapadd *)call;
+    struct qemu__heapadd *c = (struct qemu__heapadd *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__heapadd(QEMU_G2H(c->mem), c->size);
 }
@@ -504,7 +504,7 @@ WINBASEAPI intptr_t CDECL _get_heap_handle(void)
 
 void qemu__get_heap_handle(struct qemu_syscall *call)
 {
-    struct qemu__get_heap_handle *c = (struct qemu__get_heap_handle *)call;
+    struct qemu__get_heap_handle *c = (struct qemu__get_heap_handle *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__get_heap_handle();
 }
@@ -534,7 +534,7 @@ WINBASEAPI size_t CDECL _msize(void* mem)
 
 void qemu__msize(struct qemu_syscall *call)
 {
-    struct qemu__msize *c = (struct qemu__msize *)call;
+    struct qemu__msize *c = (struct qemu__msize *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__msize(QEMU_G2H(c->mem));
 }
@@ -568,7 +568,7 @@ WINBASEAPI size_t CDECL _aligned_msize(void *p, size_t alignment, size_t offset)
 
 void qemu__aligned_msize(struct qemu_syscall *call)
 {
-    struct qemu__aligned_msize *c = (struct qemu__aligned_msize *)call;
+    struct qemu__aligned_msize *c = (struct qemu__aligned_msize *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__aligned_msize(QEMU_G2H(c->p), c->alignment, c->offset);
 }
@@ -593,14 +593,14 @@ WINBASEAPI void* CDECL MSVCRT_calloc(size_t count, size_t size)
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_calloc(struct qemu_syscall *call)
 {
-    struct qemu_calloc *c = (struct qemu_calloc *)call;
+    struct qemu_calloc *c = (struct qemu_calloc *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_calloc(c->count, c->size));
 }
@@ -625,14 +625,14 @@ WINBASEAPI void* CDECL _calloc_base(size_t count, size_t size)
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__calloc_base(struct qemu_syscall *call)
 {
-    struct qemu__calloc_base *c = (struct qemu__calloc_base *)call;
+    struct qemu__calloc_base *c = (struct qemu__calloc_base *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__calloc_base(c->count, c->size));
 }
@@ -660,7 +660,7 @@ WINBASEAPI void CDECL MSVCRT_free(void* ptr)
 
 void qemu_free(struct qemu_syscall *call)
 {
-    struct qemu_free *c = (struct qemu_free *)call;
+    struct qemu_free *c = (struct qemu_free *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     p_free(QEMU_G2H(c->ptr));
 }
@@ -688,7 +688,7 @@ WINBASEAPI void CDECL _free_base(void* ptr)
 
 void qemu__free_base(struct qemu_syscall *call)
 {
-    struct qemu__free_base *c = (struct qemu__free_base *)call;
+    struct qemu__free_base *c = (struct qemu__free_base *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__free_base(QEMU_G2H(c->ptr));
 }
@@ -711,14 +711,14 @@ WINBASEAPI void* CDECL MSVCRT_malloc(size_t size)
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_malloc(struct qemu_syscall *call)
 {
-    struct qemu_malloc *c = (struct qemu_malloc *)call;
+    struct qemu_malloc *c = (struct qemu_malloc *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_malloc(c->size));
 }
@@ -741,14 +741,14 @@ WINBASEAPI void* CDECL _malloc_base(size_t size)
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__malloc_base(struct qemu_syscall *call)
 {
-    struct qemu__malloc_base *c = (struct qemu__malloc_base *)call;
+    struct qemu__malloc_base *c = (struct qemu__malloc_base *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__malloc_base(c->size));
 }
@@ -773,14 +773,14 @@ WINBASEAPI void* CDECL MSVCRT_realloc(void* ptr, size_t size)
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_realloc(struct qemu_syscall *call)
 {
-    struct qemu_realloc *c = (struct qemu_realloc *)call;
+    struct qemu_realloc *c = (struct qemu_realloc *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_realloc(QEMU_G2H(c->ptr), c->size));
 }
@@ -805,14 +805,14 @@ WINBASEAPI void* CDECL _realloc_base(void* ptr, size_t size)
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__realloc_base(struct qemu_syscall *call)
 {
-    struct qemu__realloc_base *c = (struct qemu__realloc_base *)call;
+    struct qemu__realloc_base *c = (struct qemu__realloc_base *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__realloc_base(QEMU_G2H(c->ptr), c->size));
 }
@@ -839,14 +839,14 @@ WINBASEAPI void* CDECL _recalloc(void *mem, size_t num, size_t size)
 
     qemu_syscall(&call.super);
 
-    return (void *)call.super.iret;
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__recalloc(struct qemu_syscall *call)
 {
-    struct qemu__recalloc *c = (struct qemu__recalloc *)call;
+    struct qemu__recalloc *c = (struct qemu__recalloc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__recalloc(QEMU_G2H(c->mem), c->num, c->size));
 }
@@ -867,14 +867,14 @@ WINBASEAPI unsigned int* CDECL __p__amblksiz(void)
 
     qemu_syscall(&call.super);
 
-    return (unsigned int *)call.super.iret;
+    return (unsigned int *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu___p__amblksiz(struct qemu_syscall *call)
 {
-    struct qemu___p__amblksiz *c = (struct qemu___p__amblksiz *)call;
+    struct qemu___p__amblksiz *c = (struct qemu___p__amblksiz *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p___p__amblksiz());
 }
@@ -902,7 +902,7 @@ WINBASEAPI size_t CDECL _get_sbh_threshold(void)
 
 void qemu__get_sbh_threshold(struct qemu_syscall *call)
 {
-    struct qemu__get_sbh_threshold *c = (struct qemu__get_sbh_threshold *)call;
+    struct qemu__get_sbh_threshold *c = (struct qemu__get_sbh_threshold *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__get_sbh_threshold();
 }
@@ -932,7 +932,7 @@ WINBASEAPI int CDECL _set_sbh_threshold(size_t threshold)
 
 void qemu__set_sbh_threshold(struct qemu_syscall *call)
 {
-    struct qemu__set_sbh_threshold *c = (struct qemu__set_sbh_threshold *)call;
+    struct qemu__set_sbh_threshold *c = (struct qemu__set_sbh_threshold *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__set_sbh_threshold(c->threshold);
 }
@@ -960,7 +960,7 @@ WINBASEAPI void CDECL MSVCRT__aligned_free(void *memblock)
 
 void qemu__aligned_free(struct qemu_syscall *call)
 {
-    struct qemu__aligned_free *c = (struct qemu__aligned_free *)call;
+    struct qemu__aligned_free *c = (struct qemu__aligned_free *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__aligned_free(QEMU_G2H(c->memblock));
 }
@@ -992,7 +992,7 @@ WINBASEAPI void * CDECL _aligned_offset_malloc(size_t size, size_t alignment, si
 
 void qemu__aligned_offset_malloc(struct qemu_syscall *call)
 {
-    struct qemu__aligned_offset_malloc *c = (struct qemu__aligned_offset_malloc *)call;
+    struct qemu__aligned_offset_malloc *c = (struct qemu__aligned_offset_malloc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__aligned_offset_malloc(c->size, c->alignment, c->offset);
 }
@@ -1022,7 +1022,7 @@ WINBASEAPI void * CDECL MSVCRT__aligned_malloc(size_t size, size_t alignment)
 
 void qemu__aligned_malloc(struct qemu_syscall *call)
 {
-    struct qemu__aligned_malloc *c = (struct qemu__aligned_malloc *)call;
+    struct qemu__aligned_malloc *c = (struct qemu__aligned_malloc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__aligned_malloc(c->size, c->alignment);
 }
@@ -1056,7 +1056,7 @@ WINBASEAPI void * CDECL _aligned_offset_realloc(void *memblock, size_t size, siz
 
 void qemu__aligned_offset_realloc(struct qemu_syscall *call)
 {
-    struct qemu__aligned_offset_realloc *c = (struct qemu__aligned_offset_realloc *)call;
+    struct qemu__aligned_offset_realloc *c = (struct qemu__aligned_offset_realloc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__aligned_offset_realloc(QEMU_G2H(c->memblock), c->size, c->alignment, c->offset);
 }
@@ -1088,7 +1088,7 @@ WINBASEAPI void * CDECL _aligned_realloc(void *memblock, size_t size, size_t ali
 
 void qemu__aligned_realloc(struct qemu_syscall *call)
 {
-    struct qemu__aligned_realloc *c = (struct qemu__aligned_realloc *)call;
+    struct qemu__aligned_realloc *c = (struct qemu__aligned_realloc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__aligned_realloc(QEMU_G2H(c->memblock), c->size, c->alignment);
 }
@@ -1124,7 +1124,7 @@ WINBASEAPI int CDECL MSVCRT_memmove_s(void *dest, size_t numberOfElements, const
 
 void qemu_memmove_s(struct qemu_syscall *call)
 {
-    struct qemu_memmove_s *c = (struct qemu_memmove_s *)call;
+    struct qemu_memmove_s *c = (struct qemu_memmove_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_memmove_s(QEMU_G2H(c->dest), c->numberOfElements, QEMU_G2H(c->src), c->count);
 }
@@ -1160,7 +1160,7 @@ WINBASEAPI int CDECL wmemmove_s(WCHAR *dest, size_t numberOfElements, const WCHA
 
 void qemu_wmemmove_s(struct qemu_syscall *call)
 {
-    struct qemu_wmemmove_s *c = (struct qemu_wmemmove_s *)call;
+    struct qemu_wmemmove_s *c = (struct qemu_wmemmove_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_wmemmove_s(QEMU_G2H(c->dest), c->numberOfElements, QEMU_G2H(c->src), c->count);
 }
@@ -1196,7 +1196,7 @@ WINBASEAPI int CDECL MSVCRT_memcpy_s(void *dest, size_t numberOfElements, const 
 
 void qemu_memcpy_s(struct qemu_syscall *call)
 {
-    struct qemu_memcpy_s *c = (struct qemu_memcpy_s *)call;
+    struct qemu_memcpy_s *c = (struct qemu_memcpy_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_memcpy_s(QEMU_G2H(c->dest), c->numberOfElements, QEMU_G2H(c->src), c->count);
 }
@@ -1232,7 +1232,7 @@ WINBASEAPI int CDECL wmemcpy_s(WCHAR *dest, size_t numberOfElements, const WCHAR
 
 void qemu_wmemcpy_s(struct qemu_syscall *call)
 {
-    struct qemu_wmemcpy_s *c = (struct qemu_wmemcpy_s *)call;
+    struct qemu_wmemcpy_s *c = (struct qemu_wmemcpy_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_wmemcpy_s(QEMU_G2H(c->dest), c->numberOfElements, QEMU_G2H(c->src), c->count);
 }
@@ -1268,7 +1268,7 @@ WINBASEAPI int CDECL MSVCRT_strncpy_s(char *dest, size_t numberOfElements, const
 
 void qemu_strncpy_s(struct qemu_syscall *call)
 {
-    struct qemu_strncpy_s *c = (struct qemu_strncpy_s *)call;
+    struct qemu_strncpy_s *c = (struct qemu_strncpy_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_strncpy_s(QEMU_G2H(c->dest), c->numberOfElements, QEMU_G2H(c->src), c->count);
 }

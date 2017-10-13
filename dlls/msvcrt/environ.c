@@ -43,18 +43,18 @@ char * CDECL MSVCRT_getenv(const char *name)
 {
     struct qemu_getenv call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETENV);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu_getenv(struct qemu_syscall *call)
 {
-    struct qemu_getenv *c = (struct qemu_getenv *)call;
+    struct qemu_getenv *c = (struct qemu_getenv *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_getenv(QEMU_G2H(c->name)));
 }
@@ -73,18 +73,18 @@ WCHAR * CDECL MSVCRT__wgetenv(const WCHAR *name)
 {
     struct qemu__wgetenv call;
     call.super.id = QEMU_SYSCALL_ID(CALL__WGETENV);
-    call.name = (uint64_t)name;
+    call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
 
-    return (WCHAR *)call.super.iret;
+    return (WCHAR *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__wgetenv(struct qemu_syscall *call)
 {
-    struct qemu__wgetenv *c = (struct qemu__wgetenv *)call;
+    struct qemu__wgetenv *c = (struct qemu__wgetenv *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__wgetenv(QEMU_G2H(c->name)));
 }
@@ -103,7 +103,7 @@ int CDECL MSVCRT__putenv(const char *str)
 {
     struct qemu__putenv call;
     call.super.id = QEMU_SYSCALL_ID(CALL__PUTENV);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -114,7 +114,7 @@ int CDECL MSVCRT__putenv(const char *str)
 
 void qemu__putenv(struct qemu_syscall *call)
 {
-    struct qemu__putenv *c = (struct qemu__putenv *)call;
+    struct qemu__putenv *c = (struct qemu__putenv *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__putenv(QEMU_G2H(c->str));
 }
@@ -133,7 +133,7 @@ int CDECL MSVCRT__wputenv(const WCHAR *str)
 {
     struct qemu__wputenv call;
     call.super.id = QEMU_SYSCALL_ID(CALL__WPUTENV);
-    call.str = (uint64_t)str;
+    call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
 
@@ -144,7 +144,7 @@ int CDECL MSVCRT__wputenv(const WCHAR *str)
 
 void qemu__wputenv(struct qemu_syscall *call)
 {
-    struct qemu__wputenv *c = (struct qemu__wputenv *)call;
+    struct qemu__wputenv *c = (struct qemu__wputenv *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__wputenv(QEMU_G2H(c->str));
 }
@@ -164,8 +164,8 @@ int CDECL _putenv_s(const char *name, const char *value)
 {
     struct qemu__putenv_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__PUTENV_S);
-    call.name = (uint64_t)name;
-    call.value = (uint64_t)value;
+    call.name = (ULONG_PTR)name;
+    call.value = (ULONG_PTR)value;
 
     qemu_syscall(&call.super);
 
@@ -176,7 +176,7 @@ int CDECL _putenv_s(const char *name, const char *value)
 
 void qemu__putenv_s(struct qemu_syscall *call)
 {
-    struct qemu__putenv_s *c = (struct qemu__putenv_s *)call;
+    struct qemu__putenv_s *c = (struct qemu__putenv_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__putenv_s(QEMU_G2H(c->name), QEMU_G2H(c->value));
 }
@@ -196,8 +196,8 @@ int CDECL _wputenv_s(const WCHAR *name, const WCHAR *value)
 {
     struct qemu__wputenv_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__WPUTENV_S);
-    call.name = (uint64_t)name;
-    call.value = (uint64_t)value;
+    call.name = (ULONG_PTR)name;
+    call.value = (ULONG_PTR)value;
 
     qemu_syscall(&call.super);
 
@@ -208,7 +208,7 @@ int CDECL _wputenv_s(const WCHAR *name, const WCHAR *value)
 
 void qemu__wputenv_s(struct qemu_syscall *call)
 {
-    struct qemu__wputenv_s *c = (struct qemu__wputenv_s *)call;
+    struct qemu__wputenv_s *c = (struct qemu__wputenv_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__wputenv_s(QEMU_G2H(c->name), QEMU_G2H(c->value));
 }
@@ -229,9 +229,9 @@ int CDECL _dupenv_s(char **buffer, size_t *numberOfElements, const char *varname
 {
     struct qemu__dupenv_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__DUPENV_S);
-    call.buffer = (uint64_t)buffer;
-    call.numberOfElements = (uint64_t)numberOfElements;
-    call.varname = (uint64_t)varname;
+    call.buffer = (ULONG_PTR)buffer;
+    call.numberOfElements = (ULONG_PTR)numberOfElements;
+    call.varname = (ULONG_PTR)varname;
 
     qemu_syscall(&call.super);
 
@@ -242,7 +242,7 @@ int CDECL _dupenv_s(char **buffer, size_t *numberOfElements, const char *varname
 
 void qemu__dupenv_s(struct qemu_syscall *call)
 {
-    struct qemu__dupenv_s *c = (struct qemu__dupenv_s *)call;
+    struct qemu__dupenv_s *c = (struct qemu__dupenv_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__dupenv_s(QEMU_G2H(c->buffer), QEMU_G2H(c->numberOfElements), QEMU_G2H(c->varname));
 }
@@ -263,9 +263,9 @@ int CDECL _wdupenv_s(WCHAR **buffer, size_t *numberOfElements, const WCHAR *varn
 {
     struct qemu__wdupenv_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__WDUPENV_S);
-    call.buffer = (uint64_t)buffer;
-    call.numberOfElements = (uint64_t)numberOfElements;
-    call.varname = (uint64_t)varname;
+    call.buffer = (ULONG_PTR)buffer;
+    call.numberOfElements = (ULONG_PTR)numberOfElements;
+    call.varname = (ULONG_PTR)varname;
 
     qemu_syscall(&call.super);
 
@@ -276,7 +276,7 @@ int CDECL _wdupenv_s(WCHAR **buffer, size_t *numberOfElements, const WCHAR *varn
 
 void qemu__wdupenv_s(struct qemu_syscall *call)
 {
-    struct qemu__wdupenv_s *c = (struct qemu__wdupenv_s *)call;
+    struct qemu__wdupenv_s *c = (struct qemu__wdupenv_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__wdupenv_s(QEMU_G2H(c->buffer), QEMU_G2H(c->numberOfElements), QEMU_G2H(c->varname));
 }
@@ -298,10 +298,10 @@ int CDECL getenv_s(size_t *pReturnValue, char* buffer, size_t numberOfElements, 
 {
     struct qemu_getenv_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETENV_S);
-    call.pReturnValue = (uint64_t)pReturnValue;
-    call.buffer = (uint64_t)buffer;
-    call.numberOfElements = (uint64_t)numberOfElements;
-    call.varname = (uint64_t)varname;
+    call.pReturnValue = (ULONG_PTR)pReturnValue;
+    call.buffer = (ULONG_PTR)buffer;
+    call.numberOfElements = (ULONG_PTR)numberOfElements;
+    call.varname = (ULONG_PTR)varname;
 
     qemu_syscall(&call.super);
 
@@ -312,7 +312,7 @@ int CDECL getenv_s(size_t *pReturnValue, char* buffer, size_t numberOfElements, 
 
 void qemu_getenv_s(struct qemu_syscall *call)
 {
-    struct qemu_getenv_s *c = (struct qemu_getenv_s *)call;
+    struct qemu_getenv_s *c = (struct qemu_getenv_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_getenv_s(QEMU_G2H(c->pReturnValue), QEMU_G2H(c->buffer), c->numberOfElements, QEMU_G2H(c->varname));
 }
@@ -334,10 +334,10 @@ int CDECL _wgetenv_s(size_t *pReturnValue, WCHAR *buffer, size_t numberOfElement
 {
     struct qemu__wgetenv_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__WGETENV_S);
-    call.pReturnValue = (uint64_t)pReturnValue;
-    call.buffer = (uint64_t)buffer;
-    call.numberOfElements = (uint64_t)numberOfElements;
-    call.varname = (uint64_t)varname;
+    call.pReturnValue = (ULONG_PTR)pReturnValue;
+    call.buffer = (ULONG_PTR)buffer;
+    call.numberOfElements = (ULONG_PTR)numberOfElements;
+    call.varname = (ULONG_PTR)varname;
 
     qemu_syscall(&call.super);
 
@@ -348,7 +348,7 @@ int CDECL _wgetenv_s(size_t *pReturnValue, WCHAR *buffer, size_t numberOfElement
 
 void qemu__wgetenv_s(struct qemu_syscall *call)
 {
-    struct qemu__wgetenv_s *c = (struct qemu__wgetenv_s *)call;
+    struct qemu__wgetenv_s *c = (struct qemu__wgetenv_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__wgetenv_s(QEMU_G2H(c->pReturnValue), QEMU_G2H(c->buffer), c->numberOfElements, QEMU_G2H(c->varname));
 }

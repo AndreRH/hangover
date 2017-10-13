@@ -101,7 +101,7 @@ MSVCRT__onexit_t CDECL MSVCRT__onexit(MSVCRT__onexit_t func)
         return NULL;
 
     call.super.id = QEMU_SYSCALL_ID(CALL__ONEXIT);
-    call.func = (uint64_t)guest_onexit_callback;
+    call.func = (ULONG_PTR)guest_onexit_callback;
 
     qemu_syscall(&call.super);
 
@@ -137,7 +137,7 @@ static int CDECL onexit_callback(void)
 
 void qemu__onexit(struct qemu_syscall *call)
 {
-    struct qemu_onexit *c = (struct qemu_onexit *)call;
+    struct qemu_onexit *c = (struct qemu_onexit *)(ULONG_PTR)call;
     WINE_TRACE("\n");
 
     if (!guest_onexit_callback)
@@ -171,7 +171,7 @@ CDECL void _amsg_exit(int errnum)
 
 void qemu__amsg_exit(struct qemu_syscall *call)
 {
-    struct qemu__amsg_exit *c = (struct qemu__amsg_exit *)call;
+    struct qemu__amsg_exit *c = (struct qemu__amsg_exit *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     p__amsg_exit(c->errnum);
 }
@@ -237,14 +237,14 @@ CDECL DECLSPEC_NORETURN void __MINGW_NOTHROW MSVCRT_exit(int code)
 
 void qemu__exit(struct qemu_syscall *call)
 {
-    struct qemu_exit *c = (struct qemu_exit *)call;
+    struct qemu_exit *c = (struct qemu_exit *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     p__exit(c->code);
 }
 
 void qemu_exit(struct qemu_syscall *call)
 {
-    struct qemu_exit *c = (struct qemu_exit *)call;
+    struct qemu_exit *c = (struct qemu_exit *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     p_exit(c->code);
 }

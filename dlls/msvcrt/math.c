@@ -53,7 +53,7 @@ void CDECL MSVCRT___setusermatherr(void *func)
 {
     struct qemu___setusermatherr call;
     call.super.id = QEMU_SYSCALL_ID(CALL___SETUSERMATHERR);
-    call.func = (uint64_t)matherr_callback;
+    call.func = (ULONG_PTR)matherr_callback;
     MSVCRT_default_matherr_func = func;
 
     qemu_syscall(&call.super);
@@ -75,7 +75,7 @@ static int host_matherr_callback(void *exception)
 
 void qemu___setusermatherr(struct qemu_syscall *call)
 {
-    struct qemu___setusermatherr *c = (struct qemu___setusermatherr *)call;
+    struct qemu___setusermatherr *c = (struct qemu___setusermatherr *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     if (!matherr_guest_func)
     {
@@ -99,7 +99,7 @@ int CDECL MSVCRT__matherr(void *exception)
 {
     struct qemu__matherr call;
     call.super.id = QEMU_SYSCALL_ID(CALL__MATHERR);
-    call.exception = (uint64_t)exception;
+    call.exception = (ULONG_PTR)exception;
 
     qemu_syscall(&call.super);
 
@@ -110,7 +110,7 @@ int CDECL MSVCRT__matherr(void *exception)
 
 void qemu__matherr(struct qemu_syscall *call)
 {
-    struct qemu__matherr *c = (struct qemu__matherr *)call;
+    struct qemu__matherr *c = (struct qemu__matherr *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     if (!matherr_guest_func)
         WINE_FIXME("Make sure the exception struct makes sense for the host.\n");
@@ -131,7 +131,7 @@ WINBASEAPI int CDECL MSVCRT__set_SSE2_enable(int flag)
 {
     struct qemu__set_SSE2_enable call;
     call.super.id = QEMU_SYSCALL_ID(CALL__SET_SSE2_ENABLE);
-    call.flag = (uint64_t)flag;
+    call.flag = (ULONG_PTR)flag;
 
     qemu_syscall(&call.super);
 
@@ -142,7 +142,7 @@ WINBASEAPI int CDECL MSVCRT__set_SSE2_enable(int flag)
 
 void qemu__set_SSE2_enable(struct qemu_syscall *call)
 {
-    struct qemu__set_SSE2_enable *c = (struct qemu__set_SSE2_enable *)call;
+    struct qemu__set_SSE2_enable *c = (struct qemu__set_SSE2_enable *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__set_SSE2_enable(c->flag);
 }
@@ -161,7 +161,7 @@ WINBASEAPI int CDECL MSVCRT__set_FMA3_enable(int flag)
 {
     struct qemu__set_FMA3_enable call;
     call.super.id = QEMU_SYSCALL_ID(CALL__SET_FMA3_ENABLE);
-    call.flag = (uint64_t)flag;
+    call.flag = (ULONG_PTR)flag;
 
     qemu_syscall(&call.super);
 
@@ -172,7 +172,7 @@ WINBASEAPI int CDECL MSVCRT__set_FMA3_enable(int flag)
 
 void qemu__set_FMA3_enable(struct qemu_syscall *call)
 {
-    struct qemu__set_FMA3_enable *c = (struct qemu__set_FMA3_enable *)call;
+    struct qemu__set_FMA3_enable *c = (struct qemu__set_FMA3_enable *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__set_FMA3_enable(c->flag);
 }
@@ -202,7 +202,7 @@ WINBASEAPI float CDECL MSVCRT__chgsignf(float num)
 
 void qemu__chgsignf(struct qemu_syscall *call)
 {
-    struct qemu__chgsignf *c = (struct qemu__chgsignf *)call;
+    struct qemu__chgsignf *c = (struct qemu__chgsignf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__chgsignf(c->num);
 }
@@ -234,7 +234,7 @@ WINBASEAPI float CDECL MSVCRT__copysignf(float num, float sign)
 
 void qemu__copysignf(struct qemu_syscall *call)
 {
-    struct qemu__copysignf *c = (struct qemu__copysignf *)call;
+    struct qemu__copysignf *c = (struct qemu__copysignf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__copysignf(c->num, c->sign);
 }
@@ -266,7 +266,7 @@ WINBASEAPI float CDECL MSVCRT__nextafterf(float num, float next)
 
 void qemu__nextafterf(struct qemu_syscall *call)
 {
-    struct qemu__nextafterf *c = (struct qemu__nextafterf *)call;
+    struct qemu__nextafterf *c = (struct qemu__nextafterf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__nextafterf(c->num, c->next);
 }
@@ -296,7 +296,7 @@ WINBASEAPI int CDECL MSVCRT__finitef(float num)
 
 void qemu__finitef(struct qemu_syscall *call)
 {
-    struct qemu__finitef *c = (struct qemu__finitef *)call;
+    struct qemu__finitef *c = (struct qemu__finitef *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__finitef(c->num);
 }
@@ -326,7 +326,7 @@ WINBASEAPI INT CDECL MSVCRT__isnanf(float num)
 
 void qemu__isnanf(struct qemu_syscall *call)
 {
-    struct qemu__isnanf *c = (struct qemu__isnanf *)call;
+    struct qemu__isnanf *c = (struct qemu__isnanf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__isnanf(c->num);
 }
@@ -356,7 +356,7 @@ WINBASEAPI float CDECL MSVCRT__logbf(float num)
 
 void qemu__logbf(struct qemu_syscall *call)
 {
-    struct qemu__logbf *c = (struct qemu__logbf *)call;
+    struct qemu__logbf *c = (struct qemu__logbf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__logbf(c->num);
 }
@@ -386,7 +386,7 @@ WINBASEAPI float CDECL MSVCRT_acosf(float x)
 
 void qemu_acosf(struct qemu_syscall *call)
 {
-    struct qemu_acosf *c = (struct qemu_acosf *)call;
+    struct qemu_acosf *c = (struct qemu_acosf *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_acosf(c->x);
 }
@@ -416,7 +416,7 @@ WINBASEAPI float CDECL MSVCRT_asinf(float x)
 
 void qemu_asinf(struct qemu_syscall *call)
 {
-    struct qemu_asinf *c = (struct qemu_asinf *)call;
+    struct qemu_asinf *c = (struct qemu_asinf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_asinf(c->x);
 }
@@ -446,7 +446,7 @@ WINBASEAPI float CDECL MSVCRT_atanf(float x)
 
 void qemu_atanf(struct qemu_syscall *call)
 {
-    struct qemu_atanf *c = (struct qemu_atanf *)call;
+    struct qemu_atanf *c = (struct qemu_atanf *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_atanf(c->x);
 }
@@ -478,7 +478,7 @@ WINBASEAPI float CDECL MSVCRT_atan2f(float x, float y)
 
 void qemu_atan2f(struct qemu_syscall *call)
 {
-    struct qemu_atan2f *c = (struct qemu_atan2f *)call;
+    struct qemu_atan2f *c = (struct qemu_atan2f *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_atan2f(c->x, c->y);
 }
@@ -508,7 +508,7 @@ WINBASEAPI float CDECL MSVCRT_cosf(float x)
 
 void qemu_cosf(struct qemu_syscall *call)
 {
-    struct qemu_cosf *c = (struct qemu_cosf *)call;
+    struct qemu_cosf *c = (struct qemu_cosf *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_cosf(c->x);
 }
@@ -538,7 +538,7 @@ WINBASEAPI float CDECL MSVCRT_coshf(float x)
 
 void qemu_coshf(struct qemu_syscall *call)
 {
-    struct qemu_coshf *c = (struct qemu_coshf *)call;
+    struct qemu_coshf *c = (struct qemu_coshf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_coshf(c->x);
 }
@@ -568,7 +568,7 @@ WINBASEAPI float CDECL MSVCRT_expf(float x)
 
 void qemu_expf(struct qemu_syscall *call)
 {
-    struct qemu_expf *c = (struct qemu_expf *)call;
+    struct qemu_expf *c = (struct qemu_expf *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_expf(c->x);
 }
@@ -600,7 +600,7 @@ WINBASEAPI float CDECL MSVCRT_fmodf(float x, float y)
 
 void qemu_fmodf(struct qemu_syscall *call)
 {
-    struct qemu_fmodf *c = (struct qemu_fmodf *)call;
+    struct qemu_fmodf *c = (struct qemu_fmodf *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_fmodf(c->x, c->y);
 }
@@ -630,7 +630,7 @@ WINBASEAPI float CDECL MSVCRT_logf(float x)
 
 void qemu_logf(struct qemu_syscall *call)
 {
-    struct qemu_logf *c = (struct qemu_logf *)call;
+    struct qemu_logf *c = (struct qemu_logf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_logf(c->x);
 }
@@ -660,7 +660,7 @@ WINBASEAPI float CDECL MSVCRT_log10f(float x)
 
 void qemu_log10f(struct qemu_syscall *call)
 {
-    struct qemu_log10f *c = (struct qemu_log10f *)call;
+    struct qemu_log10f *c = (struct qemu_log10f *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_log10f(c->x);
 }
@@ -692,7 +692,7 @@ WINBASEAPI float CDECL MSVCRT_powf(float x, float y)
 
 void qemu_powf(struct qemu_syscall *call)
 {
-    struct qemu_powf *c = (struct qemu_powf *)call;
+    struct qemu_powf *c = (struct qemu_powf *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_powf(c->x, c->y);
 }
@@ -722,7 +722,7 @@ WINBASEAPI float CDECL MSVCRT_sinf(float x)
 
 void qemu_sinf(struct qemu_syscall *call)
 {
-    struct qemu_sinf *c = (struct qemu_sinf *)call;
+    struct qemu_sinf *c = (struct qemu_sinf *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_sinf(c->x);
 }
@@ -752,7 +752,7 @@ WINBASEAPI float CDECL MSVCRT_sinhf(float x)
 
 void qemu_sinhf(struct qemu_syscall *call)
 {
-    struct qemu_sinhf *c = (struct qemu_sinhf *)call;
+    struct qemu_sinhf *c = (struct qemu_sinhf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_sinhf(c->x);
 }
@@ -782,7 +782,7 @@ WINBASEAPI float CDECL MSVCRT_sqrtf(float x)
 
 void qemu_sqrtf(struct qemu_syscall *call)
 {
-    struct qemu_sqrtf *c = (struct qemu_sqrtf *)call;
+    struct qemu_sqrtf *c = (struct qemu_sqrtf *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_sqrtf(c->x);
 }
@@ -812,7 +812,7 @@ WINBASEAPI float CDECL MSVCRT_tanf(float x)
 
 void qemu_tanf(struct qemu_syscall *call)
 {
-    struct qemu_tanf *c = (struct qemu_tanf *)call;
+    struct qemu_tanf *c = (struct qemu_tanf *)(ULONG_PTR)call;
     WINE_TRACE("Unverified!\n");
     c->super.dret = p_tanf(c->x);
 }
@@ -842,7 +842,7 @@ WINBASEAPI float CDECL MSVCRT_tanhf(float x)
 
 void qemu_tanhf(struct qemu_syscall *call)
 {
-    struct qemu_tanhf *c = (struct qemu_tanhf *)call;
+    struct qemu_tanhf *c = (struct qemu_tanhf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_tanhf(c->x);
 }
@@ -861,7 +861,7 @@ WINBASEAPI float CDECL MSVCRT_ceilf(float x)
 {
     struct qemu_ceilf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CEILF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -872,7 +872,7 @@ WINBASEAPI float CDECL MSVCRT_ceilf(float x)
 
 void qemu_ceilf(struct qemu_syscall *call)
 {
-    struct qemu_ceilf *c = (struct qemu_ceilf *)call;
+    struct qemu_ceilf *c = (struct qemu_ceilf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_ceilf(c->x);
 }
@@ -891,7 +891,7 @@ WINBASEAPI float CDECL MSVCRT_fabsf(float x)
 {
     struct qemu_fabsf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FABSF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -902,7 +902,7 @@ WINBASEAPI float CDECL MSVCRT_fabsf(float x)
 
 void qemu_fabsf(struct qemu_syscall *call)
 {
-    struct qemu_fabsf *c = (struct qemu_fabsf *)call;
+    struct qemu_fabsf *c = (struct qemu_fabsf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_fabsf(c->x);
 }
@@ -932,7 +932,7 @@ WINBASEAPI float CDECL MSVCRT_floorf(float x)
 
 void qemu_floorf(struct qemu_syscall *call)
 {
-    struct qemu_floorf *c = (struct qemu_floorf *)call;
+    struct qemu_floorf *c = (struct qemu_floorf *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_floorf(c->x);
 }
@@ -952,8 +952,8 @@ WINBASEAPI float CDECL MSVCRT_frexpf(float x, int *exp)
 {
     struct qemu_frexpf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FREXPF);
-    call.x = (uint64_t)x;
-    call.exp = (uint64_t)exp;
+    call.x = (ULONG_PTR)x;
+    call.exp = (ULONG_PTR)exp;
 
     qemu_syscall(&call.super);
 
@@ -964,7 +964,7 @@ WINBASEAPI float CDECL MSVCRT_frexpf(float x, int *exp)
 
 void qemu_frexpf(struct qemu_syscall *call)
 {
-    struct qemu_frexpf *c = (struct qemu_frexpf *)call;
+    struct qemu_frexpf *c = (struct qemu_frexpf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_frexpf(c->x, QEMU_G2H(c->exp));
 }
@@ -984,8 +984,8 @@ WINBASEAPI float CDECL MSVCRT_modff(float x, float *iptr)
 {
     struct qemu_modff call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MODFF);
-    call.x = (uint64_t)x;
-    call.iptr = (uint64_t)iptr;
+    call.x = (ULONG_PTR)x;
+    call.iptr = (ULONG_PTR)iptr;
 
     qemu_syscall(&call.super);
 
@@ -996,7 +996,7 @@ WINBASEAPI float CDECL MSVCRT_modff(float x, float *iptr)
 
 void qemu_modff(struct qemu_syscall *call)
 {
-    struct qemu_modff *c = (struct qemu_modff *)call;
+    struct qemu_modff *c = (struct qemu_modff *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_modff(c->x, QEMU_G2H(c->iptr));
 }
@@ -1015,7 +1015,7 @@ WINBASEAPI double CDECL MSVCRT_acos(double x)
 {
     struct qemu_acos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACOS);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -1026,7 +1026,7 @@ WINBASEAPI double CDECL MSVCRT_acos(double x)
 
 void qemu_acos(struct qemu_syscall *call)
 {
-    struct qemu_acos *c = (struct qemu_acos *)call;
+    struct qemu_acos *c = (struct qemu_acos *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_acos(c->x);
 }
@@ -1045,7 +1045,7 @@ WINBASEAPI double CDECL MSVCRT_asin(double x)
 {
     struct qemu_asin call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ASIN);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -1056,7 +1056,7 @@ WINBASEAPI double CDECL MSVCRT_asin(double x)
 
 void qemu_asin(struct qemu_syscall *call)
 {
-    struct qemu_asin *c = (struct qemu_asin *)call;
+    struct qemu_asin *c = (struct qemu_asin *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_asin(c->x);
 }
@@ -1086,7 +1086,7 @@ WINBASEAPI double CDECL MSVCRT_atan(double x)
 
 void qemu_atan(struct qemu_syscall *call)
 {
-    struct qemu_atan *c = (struct qemu_atan *)call;
+    struct qemu_atan *c = (struct qemu_atan *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_atan(c->x);
 }
@@ -1106,8 +1106,8 @@ WINBASEAPI double CDECL MSVCRT_atan2(double x, double y)
 {
     struct qemu_atan2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ATAN2);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -1118,7 +1118,7 @@ WINBASEAPI double CDECL MSVCRT_atan2(double x, double y)
 
 void qemu_atan2(struct qemu_syscall *call)
 {
-    struct qemu_atan2 *c = (struct qemu_atan2 *)call;
+    struct qemu_atan2 *c = (struct qemu_atan2 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_atan2(c->x, c->y);
 }
@@ -1148,7 +1148,7 @@ WINBASEAPI double CDECL MSVCRT_cos(double x)
 
 void qemu_cos(struct qemu_syscall *call)
 {
-    struct qemu_cos *c = (struct qemu_cos *)call;
+    struct qemu_cos *c = (struct qemu_cos *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_cos(c->x);
 }
@@ -1167,7 +1167,7 @@ WINBASEAPI double CDECL MSVCRT_cosh(double x)
 {
     struct qemu_cosh call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COSH);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -1178,7 +1178,7 @@ WINBASEAPI double CDECL MSVCRT_cosh(double x)
 
 void qemu_cosh(struct qemu_syscall *call)
 {
-    struct qemu_cosh *c = (struct qemu_cosh *)call;
+    struct qemu_cosh *c = (struct qemu_cosh *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_cosh(c->x);
 }
@@ -1197,7 +1197,7 @@ WINBASEAPI double CDECL MSVCRT_exp(double x)
 {
     struct qemu_exp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXP);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -1208,7 +1208,7 @@ WINBASEAPI double CDECL MSVCRT_exp(double x)
 
 void qemu_exp(struct qemu_syscall *call)
 {
-    struct qemu_exp *c = (struct qemu_exp *)call;
+    struct qemu_exp *c = (struct qemu_exp *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_exp(c->x);
 }
@@ -1240,7 +1240,7 @@ WINBASEAPI double CDECL MSVCRT_fmod(double x, double y)
 
 void qemu_fmod(struct qemu_syscall *call)
 {
-    struct qemu_fmod *c = (struct qemu_fmod *)call;
+    struct qemu_fmod *c = (struct qemu_fmod *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_fmod(c->x, c->y);
 }
@@ -1270,7 +1270,7 @@ WINBASEAPI double CDECL MSVCRT_log(double x)
 
 void qemu_log(struct qemu_syscall *call)
 {
-    struct qemu_log *c = (struct qemu_log *)call;
+    struct qemu_log *c = (struct qemu_log *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_log(c->x);
 }
@@ -1289,7 +1289,7 @@ WINBASEAPI double CDECL MSVCRT_log10(double x)
 {
     struct qemu_log10 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOG10);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -1300,7 +1300,7 @@ WINBASEAPI double CDECL MSVCRT_log10(double x)
 
 void qemu_log10(struct qemu_syscall *call)
 {
-    struct qemu_log10 *c = (struct qemu_log10 *)call;
+    struct qemu_log10 *c = (struct qemu_log10 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_log10(c->x);
 }
@@ -1332,7 +1332,7 @@ WINBASEAPI double CDECL MSVCRT_pow(double x, double y)
 
 void qemu_pow(struct qemu_syscall *call)
 {
-    struct qemu_pow *c = (struct qemu_pow *)call;
+    struct qemu_pow *c = (struct qemu_pow *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_pow(c->x, c->y);
 }
@@ -1362,7 +1362,7 @@ WINBASEAPI double CDECL MSVCRT_sin(double x)
 
 void qemu_sin(struct qemu_syscall *call)
 {
-    struct qemu_sin *c = (struct qemu_sin *)call;
+    struct qemu_sin *c = (struct qemu_sin *)(ULONG_PTR)call;
     WINE_TRACE("Unverified!\n");
     c->super.dret = p_sin(c->x);
 }
@@ -1381,7 +1381,7 @@ WINBASEAPI double CDECL MSVCRT_sinh(double x)
 {
     struct qemu_sinh call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SINH);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -1392,7 +1392,7 @@ WINBASEAPI double CDECL MSVCRT_sinh(double x)
 
 void qemu_sinh(struct qemu_syscall *call)
 {
-    struct qemu_sinh *c = (struct qemu_sinh *)call;
+    struct qemu_sinh *c = (struct qemu_sinh *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_sinh(c->x);
 }
@@ -1411,7 +1411,7 @@ WINBASEAPI double CDECL MSVCRT_sqrt(double x)
 {
     struct qemu_sqrt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SQRT);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -1422,7 +1422,7 @@ WINBASEAPI double CDECL MSVCRT_sqrt(double x)
 
 void qemu_sqrt(struct qemu_syscall *call)
 {
-    struct qemu_sqrt *c = (struct qemu_sqrt *)call;
+    struct qemu_sqrt *c = (struct qemu_sqrt *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_sqrt(c->x);
 }
@@ -1441,7 +1441,7 @@ WINBASEAPI double CDECL MSVCRT_tan(double x)
 {
     struct qemu_tan call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TAN);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -1452,7 +1452,7 @@ WINBASEAPI double CDECL MSVCRT_tan(double x)
 
 void qemu_tan(struct qemu_syscall *call)
 {
-    struct qemu_tan *c = (struct qemu_tan *)call;
+    struct qemu_tan *c = (struct qemu_tan *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_tan(c->x);
 }
@@ -1471,7 +1471,7 @@ WINBASEAPI double CDECL MSVCRT_tanh(double x)
 {
     struct qemu_tanh call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TANH);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -1482,7 +1482,7 @@ WINBASEAPI double CDECL MSVCRT_tanh(double x)
 
 void qemu_tanh(struct qemu_syscall *call)
 {
-    struct qemu_tanh *c = (struct qemu_tanh *)call;
+    struct qemu_tanh *c = (struct qemu_tanh *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_tanh(c->x);
 }
@@ -1510,7 +1510,7 @@ WINBASEAPI double CDECL _CIacos(void)
 
 void qemu__CIacos(struct qemu_syscall *call)
 {
-    struct qemu__CIacos *c = (struct qemu__CIacos *)call;
+    struct qemu__CIacos *c = (struct qemu__CIacos *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__CIacos();
 }
@@ -1538,7 +1538,7 @@ WINBASEAPI double CDECL _CIasin(void)
 
 void qemu__CIasin(struct qemu_syscall *call)
 {
-    struct qemu__CIasin *c = (struct qemu__CIasin *)call;
+    struct qemu__CIasin *c = (struct qemu__CIasin *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__CIasin();
 }
@@ -1566,7 +1566,7 @@ WINBASEAPI double CDECL _CIatan(void)
 
 void qemu__CIatan(struct qemu_syscall *call)
 {
-    struct qemu__CIatan *c = (struct qemu__CIatan *)call;
+    struct qemu__CIatan *c = (struct qemu__CIatan *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__CIatan();
 }
@@ -1594,7 +1594,7 @@ WINBASEAPI double CDECL _CIatan2(void)
 
 void qemu__CIatan2(struct qemu_syscall *call)
 {
-    struct qemu__CIatan2 *c = (struct qemu__CIatan2 *)call;
+    struct qemu__CIatan2 *c = (struct qemu__CIatan2 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__CIatan2();
 }
@@ -1622,7 +1622,7 @@ WINBASEAPI double CDECL _CIcos(void)
 
 void qemu__CIcos(struct qemu_syscall *call)
 {
-    struct qemu__CIcos *c = (struct qemu__CIcos *)call;
+    struct qemu__CIcos *c = (struct qemu__CIcos *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__CIcos();
 }
@@ -1650,7 +1650,7 @@ WINBASEAPI double CDECL _CIcosh(void)
 
 void qemu__CIcosh(struct qemu_syscall *call)
 {
-    struct qemu__CIcosh *c = (struct qemu__CIcosh *)call;
+    struct qemu__CIcosh *c = (struct qemu__CIcosh *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__CIcosh();
 }
@@ -1678,7 +1678,7 @@ WINBASEAPI double CDECL _CIexp(void)
 
 void qemu__CIexp(struct qemu_syscall *call)
 {
-    struct qemu__CIexp *c = (struct qemu__CIexp *)call;
+    struct qemu__CIexp *c = (struct qemu__CIexp *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__CIexp();
 }
@@ -1706,7 +1706,7 @@ WINBASEAPI double CDECL _CIfmod(void)
 
 void qemu__CIfmod(struct qemu_syscall *call)
 {
-    struct qemu__CIfmod *c = (struct qemu__CIfmod *)call;
+    struct qemu__CIfmod *c = (struct qemu__CIfmod *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__CIfmod();
 }
@@ -1734,7 +1734,7 @@ WINBASEAPI double CDECL _CIlog(void)
 
 void qemu__CIlog(struct qemu_syscall *call)
 {
-    struct qemu__CIlog *c = (struct qemu__CIlog *)call;
+    struct qemu__CIlog *c = (struct qemu__CIlog *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__CIlog();
 }
@@ -1762,7 +1762,7 @@ WINBASEAPI double CDECL _CIlog10(void)
 
 void qemu__CIlog10(struct qemu_syscall *call)
 {
-    struct qemu__CIlog10 *c = (struct qemu__CIlog10 *)call;
+    struct qemu__CIlog10 *c = (struct qemu__CIlog10 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__CIlog10();
 }
@@ -1790,7 +1790,7 @@ WINBASEAPI double CDECL _CIpow(void)
 
 void qemu__CIpow(struct qemu_syscall *call)
 {
-    struct qemu__CIpow *c = (struct qemu__CIpow *)call;
+    struct qemu__CIpow *c = (struct qemu__CIpow *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__CIpow();
 }
@@ -1818,7 +1818,7 @@ WINBASEAPI double CDECL _CIsin(void)
 
 void qemu__CIsin(struct qemu_syscall *call)
 {
-    struct qemu__CIsin *c = (struct qemu__CIsin *)call;
+    struct qemu__CIsin *c = (struct qemu__CIsin *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__CIsin();
 }
@@ -1846,7 +1846,7 @@ WINBASEAPI double CDECL _CIsinh(void)
 
 void qemu__CIsinh(struct qemu_syscall *call)
 {
-    struct qemu__CIsinh *c = (struct qemu__CIsinh *)call;
+    struct qemu__CIsinh *c = (struct qemu__CIsinh *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__CIsinh();
 }
@@ -1874,7 +1874,7 @@ WINBASEAPI double CDECL _CIsqrt(void)
 
 void qemu__CIsqrt(struct qemu_syscall *call)
 {
-    struct qemu__CIsqrt *c = (struct qemu__CIsqrt *)call;
+    struct qemu__CIsqrt *c = (struct qemu__CIsqrt *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__CIsqrt();
 }
@@ -1902,7 +1902,7 @@ WINBASEAPI double CDECL _CItan(void)
 
 void qemu__CItan(struct qemu_syscall *call)
 {
-    struct qemu__CItan *c = (struct qemu__CItan *)call;
+    struct qemu__CItan *c = (struct qemu__CItan *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__CItan();
 }
@@ -1930,7 +1930,7 @@ WINBASEAPI double CDECL _CItanh(void)
 
 void qemu__CItanh(struct qemu_syscall *call)
 {
-    struct qemu__CItanh *c = (struct qemu__CItanh *)call;
+    struct qemu__CItanh *c = (struct qemu__CItanh *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__CItanh();
 }
@@ -1958,7 +1958,7 @@ WINBASEAPI LONGLONG CDECL MSVCRT__ftol(void)
 
 void qemu__ftol(struct qemu_syscall *call)
 {
-    struct qemu__ftol *c = (struct qemu__ftol *)call;
+    struct qemu__ftol *c = (struct qemu__ftol *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__ftol();
 }
@@ -1988,7 +1988,7 @@ WINBASEAPI int CDECL MSVCRT__fpclass(double num)
 
 void qemu__fpclass(struct qemu_syscall *call)
 {
-    struct qemu__fpclass *c = (struct qemu__fpclass *)call;
+    struct qemu__fpclass *c = (struct qemu__fpclass *)(ULONG_PTR)call;
     WINE_TRACE("Unverified!\n");
     c->super.iret = p__fpclass(c->num);
 }
@@ -2008,8 +2008,8 @@ WINBASEAPI unsigned int CDECL MSVCRT__rotl(unsigned int num, int shift)
 {
     struct qemu__rotl call;
     call.super.id = QEMU_SYSCALL_ID(CALL__ROTL);
-    call.num = (uint64_t)num;
-    call.shift = (uint64_t)shift;
+    call.num = (ULONG_PTR)num;
+    call.shift = (ULONG_PTR)shift;
 
     qemu_syscall(&call.super);
 
@@ -2020,7 +2020,7 @@ WINBASEAPI unsigned int CDECL MSVCRT__rotl(unsigned int num, int shift)
 
 void qemu__rotl(struct qemu_syscall *call)
 {
-    struct qemu__rotl *c = (struct qemu__rotl *)call;
+    struct qemu__rotl *c = (struct qemu__rotl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__rotl(c->num, c->shift);
 }
@@ -2040,8 +2040,8 @@ WINBASEAPI uint32_t CDECL MSVCRT__lrotl(uint32_t num, int shift)
 {
     struct qemu__lrotl call;
     call.super.id = QEMU_SYSCALL_ID(CALL__LROTL);
-    call.num = (uint64_t)num;
-    call.shift = (uint64_t)shift;
+    call.num = (ULONG_PTR)num;
+    call.shift = (ULONG_PTR)shift;
 
     qemu_syscall(&call.super);
 
@@ -2052,7 +2052,7 @@ WINBASEAPI uint32_t CDECL MSVCRT__lrotl(uint32_t num, int shift)
 
 void qemu__lrotl(struct qemu_syscall *call)
 {
-    struct qemu__lrotl *c = (struct qemu__lrotl *)call;
+    struct qemu__lrotl *c = (struct qemu__lrotl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__lrotl(c->num, c->shift);
 }
@@ -2072,8 +2072,8 @@ WINBASEAPI uint32_t CDECL MSVCRT__lrotr(uint32_t num, int shift)
 {
     struct qemu__lrotr call;
     call.super.id = QEMU_SYSCALL_ID(CALL__LROTR);
-    call.num = (uint64_t)num;
-    call.shift = (uint64_t)shift;
+    call.num = (ULONG_PTR)num;
+    call.shift = (ULONG_PTR)shift;
 
     qemu_syscall(&call.super);
 
@@ -2084,7 +2084,7 @@ WINBASEAPI uint32_t CDECL MSVCRT__lrotr(uint32_t num, int shift)
 
 void qemu__lrotr(struct qemu_syscall *call)
 {
-    struct qemu__lrotr *c = (struct qemu__lrotr *)call;
+    struct qemu__lrotr *c = (struct qemu__lrotr *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__lrotr(c->num, c->shift);
 }
@@ -2104,8 +2104,8 @@ WINBASEAPI unsigned int CDECL MSVCRT__rotr(unsigned int num, int shift)
 {
     struct qemu__rotr call;
     call.super.id = QEMU_SYSCALL_ID(CALL__ROTR);
-    call.num = (uint64_t)num;
-    call.shift = (uint64_t)shift;
+    call.num = (ULONG_PTR)num;
+    call.shift = (ULONG_PTR)shift;
 
     qemu_syscall(&call.super);
 
@@ -2116,7 +2116,7 @@ WINBASEAPI unsigned int CDECL MSVCRT__rotr(unsigned int num, int shift)
 
 void qemu__rotr(struct qemu_syscall *call)
 {
-    struct qemu__rotr *c = (struct qemu__rotr *)call;
+    struct qemu__rotr *c = (struct qemu__rotr *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__rotr(c->num, c->shift);
 }
@@ -2136,8 +2136,8 @@ WINBASEAPI unsigned __int64 CDECL _rotl64(unsigned __int64 num, int shift)
 {
     struct qemu__rotl64 call;
     call.super.id = QEMU_SYSCALL_ID(CALL__ROTL64);
-    call.num = (uint64_t)num;
-    call.shift = (uint64_t)shift;
+    call.num = (ULONG_PTR)num;
+    call.shift = (ULONG_PTR)shift;
 
     qemu_syscall(&call.super);
 
@@ -2148,7 +2148,7 @@ WINBASEAPI unsigned __int64 CDECL _rotl64(unsigned __int64 num, int shift)
 
 void qemu__rotl64(struct qemu_syscall *call)
 {
-    struct qemu__rotl64 *c = (struct qemu__rotl64 *)call;
+    struct qemu__rotl64 *c = (struct qemu__rotl64 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__rotl64(c->num, c->shift);
 }
@@ -2168,8 +2168,8 @@ WINBASEAPI unsigned __int64 CDECL _rotr64(unsigned __int64 num, int shift)
 {
     struct qemu__rotr64 call;
     call.super.id = QEMU_SYSCALL_ID(CALL__ROTR64);
-    call.num = (uint64_t)num;
-    call.shift = (uint64_t)shift;
+    call.num = (ULONG_PTR)num;
+    call.shift = (ULONG_PTR)shift;
 
     qemu_syscall(&call.super);
 
@@ -2180,7 +2180,7 @@ WINBASEAPI unsigned __int64 CDECL _rotr64(unsigned __int64 num, int shift)
 
 void qemu__rotr64(struct qemu_syscall *call)
 {
-    struct qemu__rotr64 *c = (struct qemu__rotr64 *)call;
+    struct qemu__rotr64 *c = (struct qemu__rotr64 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__rotr64(c->num, c->shift);
 }
@@ -2199,7 +2199,7 @@ WINBASEAPI int CDECL MSVCRT_abs(int n)
 {
     struct qemu_abs call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ABS);
-    call.n = (uint64_t)n;
+    call.n = (ULONG_PTR)n;
 
     qemu_syscall(&call.super);
 
@@ -2210,7 +2210,7 @@ WINBASEAPI int CDECL MSVCRT_abs(int n)
 
 void qemu_abs(struct qemu_syscall *call)
 {
-    struct qemu_abs *c = (struct qemu_abs *)call;
+    struct qemu_abs *c = (struct qemu_abs *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_abs(c->n);
 }
@@ -2229,7 +2229,7 @@ WINBASEAPI int32_t CDECL MSVCRT_labs(int32_t n)
 {
     struct qemu_labs call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LABS);
-    call.n = (uint64_t)n;
+    call.n = (ULONG_PTR)n;
 
     qemu_syscall(&call.super);
 
@@ -2240,7 +2240,7 @@ WINBASEAPI int32_t CDECL MSVCRT_labs(int32_t n)
 
 void qemu_labs(struct qemu_syscall *call)
 {
-    struct qemu_labs *c = (struct qemu_labs *)call;
+    struct qemu_labs *c = (struct qemu_labs *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_labs(c->n);
 }
@@ -2259,7 +2259,7 @@ WINBASEAPI int64_t CDECL MSVCRT_llabs(int64_t n)
 {
     struct qemu_llabs call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LLABS);
-    call.n = (uint64_t)n;
+    call.n = (ULONG_PTR)n;
 
     qemu_syscall(&call.super);
 
@@ -2270,7 +2270,7 @@ WINBASEAPI int64_t CDECL MSVCRT_llabs(int64_t n)
 
 void qemu_llabs(struct qemu_syscall *call)
 {
-    struct qemu_llabs *c = (struct qemu_llabs *)call;
+    struct qemu_llabs *c = (struct qemu_llabs *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_llabs(c->n);
 }
@@ -2289,7 +2289,7 @@ WINBASEAPI __int64 CDECL _abs64(__int64 n)
 {
     struct qemu__abs64 call;
     call.super.id = QEMU_SYSCALL_ID(CALL__ABS64);
-    call.n = (uint64_t)n;
+    call.n = (ULONG_PTR)n;
 
     qemu_syscall(&call.super);
 
@@ -2300,7 +2300,7 @@ WINBASEAPI __int64 CDECL _abs64(__int64 n)
 
 void qemu__abs64(struct qemu_syscall *call)
 {
-    struct qemu__abs64 *c = (struct qemu__abs64 *)call;
+    struct qemu__abs64 *c = (struct qemu__abs64 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__abs64(c->n);
 }
@@ -2319,7 +2319,7 @@ WINBASEAPI double CDECL MSVCRT__logb(double num)
 {
     struct qemu__logb call;
     call.super.id = QEMU_SYSCALL_ID(CALL__LOGB);
-    call.num = (uint64_t)num;
+    call.num = (ULONG_PTR)num;
 
     qemu_syscall(&call.super);
 
@@ -2330,7 +2330,7 @@ WINBASEAPI double CDECL MSVCRT__logb(double num)
 
 void qemu__logb(struct qemu_syscall *call)
 {
-    struct qemu__logb *c = (struct qemu__logb *)call;
+    struct qemu__logb *c = (struct qemu__logb *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__logb(c->num);
 }
@@ -2350,8 +2350,8 @@ WINBASEAPI double CDECL _hypot(double x, double y)
 {
     struct qemu__hypot call;
     call.super.id = QEMU_SYSCALL_ID(CALL__HYPOT);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -2362,7 +2362,7 @@ WINBASEAPI double CDECL _hypot(double x, double y)
 
 void qemu__hypot(struct qemu_syscall *call)
 {
-    struct qemu__hypot *c = (struct qemu__hypot *)call;
+    struct qemu__hypot *c = (struct qemu__hypot *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__hypot(c->x, c->y);
 }
@@ -2382,8 +2382,8 @@ WINBASEAPI float CDECL MSVCRT__hypotf(float x, float y)
 {
     struct qemu__hypotf call;
     call.super.id = QEMU_SYSCALL_ID(CALL__HYPOTF);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -2394,7 +2394,7 @@ WINBASEAPI float CDECL MSVCRT__hypotf(float x, float y)
 
 void qemu__hypotf(struct qemu_syscall *call)
 {
-    struct qemu__hypotf *c = (struct qemu__hypotf *)call;
+    struct qemu__hypotf *c = (struct qemu__hypotf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__hypotf(c->x, c->y);
 }
@@ -2413,7 +2413,7 @@ WINBASEAPI double CDECL MSVCRT_ceil(double x)
 {
     struct qemu_ceil call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CEIL);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -2424,7 +2424,7 @@ WINBASEAPI double CDECL MSVCRT_ceil(double x)
 
 void qemu_ceil(struct qemu_syscall *call)
 {
-    struct qemu_ceil *c = (struct qemu_ceil *)call;
+    struct qemu_ceil *c = (struct qemu_ceil *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_ceil(c->x);
 }
@@ -2443,7 +2443,7 @@ WINBASEAPI double CDECL MSVCRT_floor(double x)
 {
     struct qemu_floor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FLOOR);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -2454,7 +2454,7 @@ WINBASEAPI double CDECL MSVCRT_floor(double x)
 
 void qemu_floor(struct qemu_syscall *call)
 {
-    struct qemu_floor *c = (struct qemu_floor *)call;
+    struct qemu_floor *c = (struct qemu_floor *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.dret = p_floor(c->x);
 }
@@ -2473,7 +2473,7 @@ WINBASEAPI double CDECL MSVCRT_fabs(double x)
 {
     struct qemu_fabs call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FABS);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -2484,7 +2484,7 @@ WINBASEAPI double CDECL MSVCRT_fabs(double x)
 
 void qemu_fabs(struct qemu_syscall *call)
 {
-    struct qemu_fabs *c = (struct qemu_fabs *)call;
+    struct qemu_fabs *c = (struct qemu_fabs *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_fabs(c->x);
 }
@@ -2504,8 +2504,8 @@ WINBASEAPI double CDECL MSVCRT_frexp(double x, int *exp)
 {
     struct qemu_frexp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FREXP);
-    call.x = (uint64_t)x;
-    call.exp = (uint64_t)exp;
+    call.x = (ULONG_PTR)x;
+    call.exp = (ULONG_PTR)exp;
 
     qemu_syscall(&call.super);
 
@@ -2516,7 +2516,7 @@ WINBASEAPI double CDECL MSVCRT_frexp(double x, int *exp)
 
 void qemu_frexp(struct qemu_syscall *call)
 {
-    struct qemu_frexp *c = (struct qemu_frexp *)call;
+    struct qemu_frexp *c = (struct qemu_frexp *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_frexp(c->x, QEMU_G2H(c->exp));
 }
@@ -2536,8 +2536,8 @@ WINBASEAPI double CDECL MSVCRT_modf(double x, double *iptr)
 {
     struct qemu_modf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MODF);
-    call.x = (uint64_t)x;
-    call.iptr = (uint64_t)iptr;
+    call.x = (ULONG_PTR)x;
+    call.iptr = (ULONG_PTR)iptr;
 
     qemu_syscall(&call.super);
 
@@ -2548,7 +2548,7 @@ WINBASEAPI double CDECL MSVCRT_modf(double x, double *iptr)
 
 void qemu_modf(struct qemu_syscall *call)
 {
-    struct qemu_modf *c = (struct qemu_modf *)call;
+    struct qemu_modf *c = (struct qemu_modf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_modf(c->x, QEMU_G2H(c->iptr));
 }
@@ -2568,8 +2568,8 @@ WINBASEAPI void CDECL _statusfp2(unsigned int *x86_sw, unsigned int *sse2_sw)
 {
     struct qemu__statusfp2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL__STATUSFP2);
-    call.x86_sw = (uint64_t)x86_sw;
-    call.sse2_sw = (uint64_t)sse2_sw;
+    call.x86_sw = (ULONG_PTR)x86_sw;
+    call.sse2_sw = (ULONG_PTR)sse2_sw;
 
     qemu_syscall(&call.super);
 }
@@ -2578,7 +2578,7 @@ WINBASEAPI void CDECL _statusfp2(unsigned int *x86_sw, unsigned int *sse2_sw)
 
 void qemu__statusfp2(struct qemu_syscall *call)
 {
-    struct qemu__statusfp2 *c = (struct qemu__statusfp2 *)call;
+    struct qemu__statusfp2 *c = (struct qemu__statusfp2 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__statusfp2(QEMU_G2H(c->x86_sw), QEMU_G2H(c->sse2_sw));
 }
@@ -2606,7 +2606,7 @@ WINBASEAPI unsigned int CDECL _statusfp(void)
 
 void qemu__statusfp(struct qemu_syscall *call)
 {
-    struct qemu__statusfp *c = (struct qemu__statusfp *)call;
+    struct qemu__statusfp *c = (struct qemu__statusfp *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__statusfp();
 }
@@ -2634,7 +2634,7 @@ WINBASEAPI unsigned int CDECL _clearfp(void)
 
 void qemu__clearfp(struct qemu_syscall *call)
 {
-    struct qemu__clearfp *c = (struct qemu__clearfp *)call;
+    struct qemu__clearfp *c = (struct qemu__clearfp *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__clearfp();
 }
@@ -2655,14 +2655,14 @@ WINBASEAPI int * CDECL __fpecode(void)
 
     qemu_syscall(&call.super);
 
-    return (int *)call.super.iret;
+    return (int *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu___fpecode(struct qemu_syscall *call)
 {
-    struct qemu___fpecode *c = (struct qemu___fpecode *)call;
+    struct qemu___fpecode *c = (struct qemu___fpecode *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p___fpecode());
 }
@@ -2682,8 +2682,8 @@ WINBASEAPI double CDECL MSVCRT_ldexp(double num, int32_t exp)
 {
     struct qemu_ldexp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LDEXP);
-    call.num = (uint64_t)num;
-    call.exp = (uint64_t)exp;
+    call.num = (ULONG_PTR)num;
+    call.exp = (ULONG_PTR)exp;
 
     qemu_syscall(&call.super);
 
@@ -2694,7 +2694,7 @@ WINBASEAPI double CDECL MSVCRT_ldexp(double num, int32_t exp)
 
 void qemu_ldexp(struct qemu_syscall *call)
 {
-    struct qemu_ldexp *c = (struct qemu_ldexp *)call;
+    struct qemu_ldexp *c = (struct qemu_ldexp *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_ldexp(c->num, c->exp);
 }
@@ -2725,7 +2725,7 @@ WINBASEAPI double CDECL MSVCRT__cabs(struct MSVCRT__complex num)
 
 void qemu__cabs(struct qemu_syscall *call)
 {
-    struct qemu__cabs *c = (struct qemu__cabs *)call;
+    struct qemu__cabs *c = (struct qemu__cabs *)(ULONG_PTR)call;
     struct MSVCRT__complex num;
     WINE_FIXME("Unverified!\n");
     num.x = c->x;
@@ -2747,7 +2747,7 @@ WINBASEAPI double CDECL MSVCRT__chgsign(double num)
 {
     struct qemu__chgsign call;
     call.super.id = QEMU_SYSCALL_ID(CALL__CHGSIGN);
-    call.num = (uint64_t)num;
+    call.num = (ULONG_PTR)num;
 
     qemu_syscall(&call.super);
 
@@ -2758,7 +2758,7 @@ WINBASEAPI double CDECL MSVCRT__chgsign(double num)
 
 void qemu__chgsign(struct qemu_syscall *call)
 {
-    struct qemu__chgsign *c = (struct qemu__chgsign *)call;
+    struct qemu__chgsign *c = (struct qemu__chgsign *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__chgsign(c->num);
 }
@@ -2780,10 +2780,10 @@ WINBASEAPI int CDECL __control87_2(unsigned int newval, unsigned int mask, unsig
 {
     struct qemu___control87_2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL___CONTROL87_2);
-    call.newval = (uint64_t)newval;
-    call.mask = (uint64_t)mask;
-    call.x86_cw = (uint64_t)x86_cw;
-    call.sse2_cw = (uint64_t)sse2_cw;
+    call.newval = (ULONG_PTR)newval;
+    call.mask = (ULONG_PTR)mask;
+    call.x86_cw = (ULONG_PTR)x86_cw;
+    call.sse2_cw = (ULONG_PTR)sse2_cw;
 
     qemu_syscall(&call.super);
 
@@ -2794,7 +2794,7 @@ WINBASEAPI int CDECL __control87_2(unsigned int newval, unsigned int mask, unsig
 
 void qemu___control87_2(struct qemu_syscall *call)
 {
-    struct qemu___control87_2 *c = (struct qemu___control87_2 *)call;
+    struct qemu___control87_2 *c = (struct qemu___control87_2 *)(ULONG_PTR)call;
     WINE_WARN("Stub!\n");
     c->super.iret = 0;
 }
@@ -2814,8 +2814,8 @@ WINBASEAPI unsigned int CDECL _control87(unsigned int newval, unsigned int mask)
 {
     struct qemu__control87 call;
     call.super.id = QEMU_SYSCALL_ID(CALL__CONTROL87);
-    call.newval = (uint64_t)newval;
-    call.mask = (uint64_t)mask;
+    call.newval = (ULONG_PTR)newval;
+    call.mask = (ULONG_PTR)mask;
 
     qemu_syscall(&call.super);
 
@@ -2826,7 +2826,7 @@ WINBASEAPI unsigned int CDECL _control87(unsigned int newval, unsigned int mask)
 
 void qemu__control87(struct qemu_syscall *call)
 {
-    struct qemu__control87 *c = (struct qemu__control87 *)call;
+    struct qemu__control87 *c = (struct qemu__control87 *)(ULONG_PTR)call;
     WINE_WARN("Stub\n");
     c->super.iret = 0;
 }
@@ -2846,8 +2846,8 @@ WINBASEAPI unsigned int CDECL _controlfp(unsigned int newval, unsigned int mask)
 {
     struct qemu__controlfp call;
     call.super.id = QEMU_SYSCALL_ID(CALL__CONTROLFP);
-    call.newval = (uint64_t)newval;
-    call.mask = (uint64_t)mask;
+    call.newval = (ULONG_PTR)newval;
+    call.mask = (ULONG_PTR)mask;
 
     qemu_syscall(&call.super);
 
@@ -2858,7 +2858,7 @@ WINBASEAPI unsigned int CDECL _controlfp(unsigned int newval, unsigned int mask)
 
 void qemu__controlfp(struct qemu_syscall *call)
 {
-    struct qemu__controlfp *c = (struct qemu__controlfp *)call;
+    struct qemu__controlfp *c = (struct qemu__controlfp *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__controlfp(c->newval, c->mask);
 }
@@ -2878,8 +2878,8 @@ WINBASEAPI void CDECL _set_controlfp(unsigned int newval, unsigned int mask)
 {
     struct qemu__set_controlfp call;
     call.super.id = QEMU_SYSCALL_ID(CALL__SET_CONTROLFP);
-    call.newval = (uint64_t)newval;
-    call.mask = (uint64_t)mask;
+    call.newval = (ULONG_PTR)newval;
+    call.mask = (ULONG_PTR)mask;
 
     qemu_syscall(&call.super);
 }
@@ -2888,7 +2888,7 @@ WINBASEAPI void CDECL _set_controlfp(unsigned int newval, unsigned int mask)
 
 void qemu__set_controlfp(struct qemu_syscall *call)
 {
-    struct qemu__set_controlfp *c = (struct qemu__set_controlfp *)call;
+    struct qemu__set_controlfp *c = (struct qemu__set_controlfp *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__set_controlfp(c->newval, c->mask);
 }
@@ -2909,9 +2909,9 @@ WINBASEAPI int CDECL _controlfp_s(unsigned int *cur, unsigned int newval, unsign
 {
     struct qemu__controlfp_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__CONTROLFP_S);
-    call.cur = (uint64_t)cur;
-    call.newval = (uint64_t)newval;
-    call.mask = (uint64_t)mask;
+    call.cur = (ULONG_PTR)cur;
+    call.newval = (ULONG_PTR)newval;
+    call.mask = (ULONG_PTR)mask;
 
     qemu_syscall(&call.super);
 
@@ -2922,7 +2922,7 @@ WINBASEAPI int CDECL _controlfp_s(unsigned int *cur, unsigned int newval, unsign
 
 void qemu__controlfp_s(struct qemu_syscall *call)
 {
-    struct qemu__controlfp_s *c = (struct qemu__controlfp_s *)call;
+    struct qemu__controlfp_s *c = (struct qemu__controlfp_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__controlfp_s(QEMU_G2H(c->cur), c->newval, c->mask);
 }
@@ -2941,7 +2941,7 @@ WINBASEAPI int CDECL MSVCRT_fegetenv(MSVCRT_fenv_t *env)
 {
     struct qemu_fegetenv call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FEGETENV);
-    call.env = (uint64_t)env;
+    call.env = (ULONG_PTR)env;
 
     qemu_syscall(&call.super);
 
@@ -2952,7 +2952,7 @@ WINBASEAPI int CDECL MSVCRT_fegetenv(MSVCRT_fenv_t *env)
 
 void qemu_fegetenv(struct qemu_syscall *call)
 {
-    struct qemu_fegetenv *c = (struct qemu_fegetenv *)call;
+    struct qemu_fegetenv *c = (struct qemu_fegetenv *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_fegetenv(QEMU_G2H(c->env));
 }
@@ -2980,7 +2980,7 @@ WINBASEAPI int CDECL __fpe_flt_rounds(void)
 
 void qemu___fpe_flt_rounds(struct qemu_syscall *call)
 {
-    struct qemu___fpe_flt_rounds *c = (struct qemu___fpe_flt_rounds *)call;
+    struct qemu___fpe_flt_rounds *c = (struct qemu___fpe_flt_rounds *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p___fpe_flt_rounds();
 }
@@ -3008,7 +3008,7 @@ WINBASEAPI int CDECL MSVCRT_fegetround(void)
 
 void qemu_fegetround(struct qemu_syscall *call)
 {
-    struct qemu_fegetround *c = (struct qemu_fegetround *)call;
+    struct qemu_fegetround *c = (struct qemu_fegetround *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_fegetround();
 }
@@ -3027,7 +3027,7 @@ WINBASEAPI int CDECL MSVCRT_fesetround(int round_mode)
 {
     struct qemu_fesetround call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FESETROUND);
-    call.round_mode = (uint64_t)round_mode;
+    call.round_mode = (ULONG_PTR)round_mode;
 
     qemu_syscall(&call.super);
 
@@ -3038,7 +3038,7 @@ WINBASEAPI int CDECL MSVCRT_fesetround(int round_mode)
 
 void qemu_fesetround(struct qemu_syscall *call)
 {
-    struct qemu_fesetround *c = (struct qemu_fesetround *)call;
+    struct qemu_fesetround *c = (struct qemu_fesetround *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_fesetround(c->round_mode);
 }
@@ -3058,8 +3058,8 @@ WINBASEAPI double CDECL MSVCRT__copysign(double num, double sign)
 {
     struct qemu__copysign call;
     call.super.id = QEMU_SYSCALL_ID(CALL__COPYSIGN);
-    call.num = (uint64_t)num;
-    call.sign = (uint64_t)sign;
+    call.num = (ULONG_PTR)num;
+    call.sign = (ULONG_PTR)sign;
 
     qemu_syscall(&call.super);
 
@@ -3070,7 +3070,7 @@ WINBASEAPI double CDECL MSVCRT__copysign(double num, double sign)
 
 void qemu__copysign(struct qemu_syscall *call)
 {
-    struct qemu__copysign *c = (struct qemu__copysign *)call;
+    struct qemu__copysign *c = (struct qemu__copysign *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__copysign(c->num, c->sign);
 }
@@ -3089,7 +3089,7 @@ WINBASEAPI int CDECL MSVCRT__finite(double num)
 {
     struct qemu__finite call;
     call.super.id = QEMU_SYSCALL_ID(CALL__FINITE);
-    call.num = (uint64_t)num;
+    call.num = (ULONG_PTR)num;
 
     qemu_syscall(&call.super);
 
@@ -3100,7 +3100,7 @@ WINBASEAPI int CDECL MSVCRT__finite(double num)
 
 void qemu__finite(struct qemu_syscall *call)
 {
-    struct qemu__finite *c = (struct qemu__finite *)call;
+    struct qemu__finite *c = (struct qemu__finite *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = p__finite(c->num);
 }
@@ -3126,7 +3126,7 @@ WINBASEAPI void CDECL _fpreset(void)
 
 void qemu__fpreset(struct qemu_syscall *call)
 {
-    struct qemu__fpreset *c = (struct qemu__fpreset *)call;
+    struct qemu__fpreset *c = (struct qemu__fpreset *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p__fpreset();
 }
@@ -3145,7 +3145,7 @@ WINBASEAPI int CDECL MSVCRT_fesetenv(const MSVCRT_fenv_t *env)
 {
     struct qemu_fesetenv call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FESETENV);
-    call.env = (uint64_t)env;
+    call.env = (ULONG_PTR)env;
 
     qemu_syscall(&call.super);
 
@@ -3156,7 +3156,7 @@ WINBASEAPI int CDECL MSVCRT_fesetenv(const MSVCRT_fenv_t *env)
 
 void qemu_fesetenv(struct qemu_syscall *call)
 {
-    struct qemu_fesetenv *c = (struct qemu_fesetenv *)call;
+    struct qemu_fesetenv *c = (struct qemu_fesetenv *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_fesetenv(QEMU_G2H(c->env));
 }
@@ -3175,7 +3175,7 @@ WINBASEAPI INT CDECL MSVCRT__isnan(double num)
 {
     struct qemu__isnan call;
     call.super.id = QEMU_SYSCALL_ID(CALL__ISNAN);
-    call.num = (uint64_t)num;
+    call.num = (ULONG_PTR)num;
 
     qemu_syscall(&call.super);
 
@@ -3186,7 +3186,7 @@ WINBASEAPI INT CDECL MSVCRT__isnan(double num)
 
 void qemu__isnan(struct qemu_syscall *call)
 {
-    struct qemu__isnan *c = (struct qemu__isnan *)call;
+    struct qemu__isnan *c = (struct qemu__isnan *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__isnan(c->num);
 }
@@ -3205,7 +3205,7 @@ WINBASEAPI double CDECL MSVCRT__j0(double num)
 {
     struct qemu__j0 call;
     call.super.id = QEMU_SYSCALL_ID(CALL__J0);
-    call.num = (uint64_t)num;
+    call.num = (ULONG_PTR)num;
 
     qemu_syscall(&call.super);
 
@@ -3216,7 +3216,7 @@ WINBASEAPI double CDECL MSVCRT__j0(double num)
 
 void qemu__j0(struct qemu_syscall *call)
 {
-    struct qemu__j0 *c = (struct qemu__j0 *)call;
+    struct qemu__j0 *c = (struct qemu__j0 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__j0(c->num);
 }
@@ -3235,7 +3235,7 @@ WINBASEAPI double CDECL MSVCRT__j1(double num)
 {
     struct qemu__j1 call;
     call.super.id = QEMU_SYSCALL_ID(CALL__J1);
-    call.num = (uint64_t)num;
+    call.num = (ULONG_PTR)num;
 
     qemu_syscall(&call.super);
 
@@ -3246,7 +3246,7 @@ WINBASEAPI double CDECL MSVCRT__j1(double num)
 
 void qemu__j1(struct qemu_syscall *call)
 {
-    struct qemu__j1 *c = (struct qemu__j1 *)call;
+    struct qemu__j1 *c = (struct qemu__j1 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__j1(c->num);
 }
@@ -3266,8 +3266,8 @@ WINBASEAPI double CDECL MSVCRT__jn(int n, double num)
 {
     struct qemu__jn call;
     call.super.id = QEMU_SYSCALL_ID(CALL__JN);
-    call.n = (uint64_t)n;
-    call.num = (uint64_t)num;
+    call.n = (ULONG_PTR)n;
+    call.num = (ULONG_PTR)num;
 
     qemu_syscall(&call.super);
 
@@ -3278,7 +3278,7 @@ WINBASEAPI double CDECL MSVCRT__jn(int n, double num)
 
 void qemu__jn(struct qemu_syscall *call)
 {
-    struct qemu__jn *c = (struct qemu__jn *)call;
+    struct qemu__jn *c = (struct qemu__jn *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__jn(c->n, c->num);
 }
@@ -3297,7 +3297,7 @@ WINBASEAPI double CDECL MSVCRT__y0(double num)
 {
     struct qemu__y0 call;
     call.super.id = QEMU_SYSCALL_ID(CALL__Y0);
-    call.num = (uint64_t)num;
+    call.num = (ULONG_PTR)num;
 
     qemu_syscall(&call.super);
 
@@ -3308,7 +3308,7 @@ WINBASEAPI double CDECL MSVCRT__y0(double num)
 
 void qemu__y0(struct qemu_syscall *call)
 {
-    struct qemu__y0 *c = (struct qemu__y0 *)call;
+    struct qemu__y0 *c = (struct qemu__y0 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__y0(c->num);
 }
@@ -3327,7 +3327,7 @@ WINBASEAPI double CDECL MSVCRT__y1(double num)
 {
     struct qemu__y1 call;
     call.super.id = QEMU_SYSCALL_ID(CALL__Y1);
-    call.num = (uint64_t)num;
+    call.num = (ULONG_PTR)num;
 
     qemu_syscall(&call.super);
 
@@ -3338,7 +3338,7 @@ WINBASEAPI double CDECL MSVCRT__y1(double num)
 
 void qemu__y1(struct qemu_syscall *call)
 {
-    struct qemu__y1 *c = (struct qemu__y1 *)call;
+    struct qemu__y1 *c = (struct qemu__y1 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__y1(c->num);
 }
@@ -3358,8 +3358,8 @@ WINBASEAPI double CDECL MSVCRT__yn(int order, double num)
 {
     struct qemu__yn call;
     call.super.id = QEMU_SYSCALL_ID(CALL__YN);
-    call.order = (uint64_t)order;
-    call.num = (uint64_t)num;
+    call.order = (ULONG_PTR)order;
+    call.num = (ULONG_PTR)num;
 
     qemu_syscall(&call.super);
 
@@ -3370,7 +3370,7 @@ WINBASEAPI double CDECL MSVCRT__yn(int order, double num)
 
 void qemu__yn(struct qemu_syscall *call)
 {
-    struct qemu__yn *c = (struct qemu__yn *)call;
+    struct qemu__yn *c = (struct qemu__yn *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__yn(c->order, c->num);
 }
@@ -3389,7 +3389,7 @@ WINBASEAPI double CDECL MSVCRT_nearbyint(double num)
 {
     struct qemu_nearbyint call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NEARBYINT);
-    call.num = (uint64_t)num;
+    call.num = (ULONG_PTR)num;
 
     qemu_syscall(&call.super);
 
@@ -3400,7 +3400,7 @@ WINBASEAPI double CDECL MSVCRT_nearbyint(double num)
 
 void qemu_nearbyint(struct qemu_syscall *call)
 {
-    struct qemu_nearbyint *c = (struct qemu_nearbyint *)call;
+    struct qemu_nearbyint *c = (struct qemu_nearbyint *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_nearbyint(c->num);
 }
@@ -3419,7 +3419,7 @@ WINBASEAPI float CDECL MSVCRT_nearbyintf(float num)
 {
     struct qemu_nearbyintf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NEARBYINTF);
-    call.num = (uint64_t)num;
+    call.num = (ULONG_PTR)num;
 
     qemu_syscall(&call.super);
 
@@ -3430,7 +3430,7 @@ WINBASEAPI float CDECL MSVCRT_nearbyintf(float num)
 
 void qemu_nearbyintf(struct qemu_syscall *call)
 {
-    struct qemu_nearbyintf *c = (struct qemu_nearbyintf *)call;
+    struct qemu_nearbyintf *c = (struct qemu_nearbyintf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_nearbyintf(c->num);
 }
@@ -3450,8 +3450,8 @@ WINBASEAPI double CDECL MSVCRT__nextafter(double num, double next)
 {
     struct qemu__nextafter call;
     call.super.id = QEMU_SYSCALL_ID(CALL__NEXTAFTER);
-    call.num = (uint64_t)num;
-    call.next = (uint64_t)next;
+    call.num = (ULONG_PTR)num;
+    call.next = (ULONG_PTR)next;
 
     qemu_syscall(&call.super);
 
@@ -3462,7 +3462,7 @@ WINBASEAPI double CDECL MSVCRT__nextafter(double num, double next)
 
 void qemu__nextafter(struct qemu_syscall *call)
 {
-    struct qemu__nextafter *c = (struct qemu__nextafter *)call;
+    struct qemu__nextafter *c = (struct qemu__nextafter *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__nextafter(c->num, c->next);
 }
@@ -3484,21 +3484,21 @@ WINBASEAPI char * CDECL MSVCRT__ecvt(double number, int ndigits, int *decpt, int
 {
     struct qemu__ecvt call;
     call.super.id = QEMU_SYSCALL_ID(CALL__ECVT);
-    call.number = (uint64_t)number;
-    call.ndigits = (uint64_t)ndigits;
-    call.decpt = (uint64_t)decpt;
-    call.sign = (uint64_t)sign;
+    call.number = (ULONG_PTR)number;
+    call.ndigits = (ULONG_PTR)ndigits;
+    call.decpt = (ULONG_PTR)decpt;
+    call.sign = (ULONG_PTR)sign;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__ecvt(struct qemu_syscall *call)
 {
-    struct qemu__ecvt *c = (struct qemu__ecvt *)call;
+    struct qemu__ecvt *c = (struct qemu__ecvt *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__ecvt(c->number, c->ndigits, QEMU_G2H(c->decpt), QEMU_G2H(c->sign)));
 }
@@ -3522,12 +3522,12 @@ WINBASEAPI int CDECL MSVCRT__ecvt_s(char *buffer, size_t length, double number, 
 {
     struct qemu__ecvt_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__ECVT_S);
-    call.buffer = (uint64_t)buffer;
-    call.length = (uint64_t)length;
-    call.number = (uint64_t)number;
-    call.ndigits = (uint64_t)ndigits;
-    call.decpt = (uint64_t)decpt;
-    call.sign = (uint64_t)sign;
+    call.buffer = (ULONG_PTR)buffer;
+    call.length = (ULONG_PTR)length;
+    call.number = (ULONG_PTR)number;
+    call.ndigits = (ULONG_PTR)ndigits;
+    call.decpt = (ULONG_PTR)decpt;
+    call.sign = (ULONG_PTR)sign;
 
     qemu_syscall(&call.super);
 
@@ -3538,7 +3538,7 @@ WINBASEAPI int CDECL MSVCRT__ecvt_s(char *buffer, size_t length, double number, 
 
 void qemu__ecvt_s(struct qemu_syscall *call)
 {
-    struct qemu__ecvt_s *c = (struct qemu__ecvt_s *)call;
+    struct qemu__ecvt_s *c = (struct qemu__ecvt_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__ecvt_s(QEMU_G2H(c->buffer), c->length, c->number, c->ndigits, QEMU_G2H(c->decpt), QEMU_G2H(c->sign));
 }
@@ -3560,21 +3560,21 @@ WINBASEAPI char * CDECL MSVCRT__fcvt(double number, int ndigits, int *decpt, int
 {
     struct qemu__fcvt call;
     call.super.id = QEMU_SYSCALL_ID(CALL__FCVT);
-    call.number = (uint64_t)number;
-    call.ndigits = (uint64_t)ndigits;
-    call.decpt = (uint64_t)decpt;
-    call.sign = (uint64_t)sign;
+    call.number = (ULONG_PTR)number;
+    call.ndigits = (ULONG_PTR)ndigits;
+    call.decpt = (ULONG_PTR)decpt;
+    call.sign = (ULONG_PTR)sign;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__fcvt(struct qemu_syscall *call)
 {
-    struct qemu__fcvt *c = (struct qemu__fcvt *)call;
+    struct qemu__fcvt *c = (struct qemu__fcvt *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__fcvt(c->number, c->ndigits, QEMU_G2H(c->decpt), QEMU_G2H(c->sign)));
 }
@@ -3598,12 +3598,12 @@ WINBASEAPI int CDECL MSVCRT__fcvt_s(char* outbuffer, size_t size, double number,
 {
     struct qemu__fcvt_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__FCVT_S);
-    call.outbuffer = (uint64_t)outbuffer;
-    call.size = (uint64_t)size;
-    call.number = (uint64_t)number;
-    call.ndigits = (uint64_t)ndigits;
-    call.decpt = (uint64_t)decpt;
-    call.sign = (uint64_t)sign;
+    call.outbuffer = (ULONG_PTR)outbuffer;
+    call.size = (ULONG_PTR)size;
+    call.number = (ULONG_PTR)number;
+    call.ndigits = (ULONG_PTR)ndigits;
+    call.decpt = (ULONG_PTR)decpt;
+    call.sign = (ULONG_PTR)sign;
 
     qemu_syscall(&call.super);
 
@@ -3614,7 +3614,7 @@ WINBASEAPI int CDECL MSVCRT__fcvt_s(char* outbuffer, size_t size, double number,
 
 void qemu__fcvt_s(struct qemu_syscall *call)
 {
-    struct qemu__fcvt_s *c = (struct qemu__fcvt_s *)call;
+    struct qemu__fcvt_s *c = (struct qemu__fcvt_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__fcvt_s(QEMU_G2H(c->outbuffer), c->size, c->number, c->ndigits, QEMU_G2H(c->decpt), QEMU_G2H(c->sign));
 }
@@ -3635,20 +3635,20 @@ WINBASEAPI char * CDECL MSVCRT__gcvt(double number, int ndigit, char *buff)
 {
     struct qemu__gcvt call;
     call.super.id = QEMU_SYSCALL_ID(CALL__GCVT);
-    call.number = (uint64_t)number;
-    call.ndigit = (uint64_t)ndigit;
-    call.buff = (uint64_t)buff;
+    call.number = (ULONG_PTR)number;
+    call.ndigit = (ULONG_PTR)ndigit;
+    call.buff = (ULONG_PTR)buff;
 
     qemu_syscall(&call.super);
 
-    return (char *)call.super.iret;
+    return (char *)(ULONG_PTR)call.super.iret;
 }
 
 #else
 
 void qemu__gcvt(struct qemu_syscall *call)
 {
-    struct qemu__gcvt *c = (struct qemu__gcvt *)call;
+    struct qemu__gcvt *c = (struct qemu__gcvt *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(p__gcvt(c->number, c->ndigit, QEMU_G2H(c->buff)));
 }
@@ -3670,10 +3670,10 @@ WINBASEAPI int CDECL MSVCRT__gcvt_s(char *buff, size_t size, double number, int 
 {
     struct qemu__gcvt_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__GCVT_S);
-    call.buff = (uint64_t)buff;
-    call.size = (uint64_t)size;
-    call.number = (uint64_t)number;
-    call.digits = (uint64_t)digits;
+    call.buff = (ULONG_PTR)buff;
+    call.size = (ULONG_PTR)size;
+    call.number = (ULONG_PTR)number;
+    call.digits = (ULONG_PTR)digits;
 
     qemu_syscall(&call.super);
 
@@ -3684,7 +3684,7 @@ WINBASEAPI int CDECL MSVCRT__gcvt_s(char *buff, size_t size, double number, int 
 
 void qemu__gcvt_s(struct qemu_syscall *call)
 {
-    struct qemu__gcvt_s *c = (struct qemu__gcvt_s *)call;
+    struct qemu__gcvt_s *c = (struct qemu__gcvt_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__gcvt_s(QEMU_G2H(c->buff), c->size, c->number, c->digits);
 }
@@ -3704,8 +3704,8 @@ WINBASEAPI unsigned __int64 CDECL MSVCRT_div(int num, int denom)
 {
     struct qemu_div call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DIV);
-    call.num = (uint64_t)num;
-    call.denom = (uint64_t)denom;
+    call.num = (ULONG_PTR)num;
+    call.denom = (ULONG_PTR)denom;
 
     qemu_syscall(&call.super);
 
@@ -3716,7 +3716,7 @@ WINBASEAPI unsigned __int64 CDECL MSVCRT_div(int num, int denom)
 
 void qemu_div(struct qemu_syscall *call)
 {
-    struct qemu_div *c = (struct qemu_div *)call;
+    struct qemu_div *c = (struct qemu_div *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_div(c->num, c->denom);
 }
@@ -3736,8 +3736,8 @@ WINBASEAPI unsigned __int64 CDECL MSVCRT_ldiv(int32_t num, int32_t denom)
 {
     struct qemu_ldiv call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LDIV);
-    call.num = (uint64_t)num;
-    call.denom = (uint64_t)denom;
+    call.num = (ULONG_PTR)num;
+    call.denom = (ULONG_PTR)denom;
 
     qemu_syscall(&call.super);
 
@@ -3748,7 +3748,7 @@ WINBASEAPI unsigned __int64 CDECL MSVCRT_ldiv(int32_t num, int32_t denom)
 
 void qemu_ldiv(struct qemu_syscall *call)
 {
-    struct qemu_ldiv *c = (struct qemu_ldiv *)call;
+    struct qemu_ldiv *c = (struct qemu_ldiv *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_ldiv(c->num, c->denom);
 }
@@ -3774,7 +3774,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_acos(void)
 
 void qemu___libm_sse2_acos(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_acos *c = (struct qemu___libm_sse2_acos *)call;
+    struct qemu___libm_sse2_acos *c = (struct qemu___libm_sse2_acos *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_acos();
 }
@@ -3800,7 +3800,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_acosf(void)
 
 void qemu___libm_sse2_acosf(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_acosf *c = (struct qemu___libm_sse2_acosf *)call;
+    struct qemu___libm_sse2_acosf *c = (struct qemu___libm_sse2_acosf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_acosf();
 }
@@ -3826,7 +3826,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_asin(void)
 
 void qemu___libm_sse2_asin(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_asin *c = (struct qemu___libm_sse2_asin *)call;
+    struct qemu___libm_sse2_asin *c = (struct qemu___libm_sse2_asin *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_asin();
 }
@@ -3852,7 +3852,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_asinf(void)
 
 void qemu___libm_sse2_asinf(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_asinf *c = (struct qemu___libm_sse2_asinf *)call;
+    struct qemu___libm_sse2_asinf *c = (struct qemu___libm_sse2_asinf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_asinf();
 }
@@ -3878,7 +3878,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_atan(void)
 
 void qemu___libm_sse2_atan(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_atan *c = (struct qemu___libm_sse2_atan *)call;
+    struct qemu___libm_sse2_atan *c = (struct qemu___libm_sse2_atan *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_atan();
 }
@@ -3904,7 +3904,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_atan2(void)
 
 void qemu___libm_sse2_atan2(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_atan2 *c = (struct qemu___libm_sse2_atan2 *)call;
+    struct qemu___libm_sse2_atan2 *c = (struct qemu___libm_sse2_atan2 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_atan2();
 }
@@ -3930,7 +3930,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_atanf(void)
 
 void qemu___libm_sse2_atanf(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_atanf *c = (struct qemu___libm_sse2_atanf *)call;
+    struct qemu___libm_sse2_atanf *c = (struct qemu___libm_sse2_atanf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_atanf();
 }
@@ -3956,7 +3956,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_cos(void)
 
 void qemu___libm_sse2_cos(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_cos *c = (struct qemu___libm_sse2_cos *)call;
+    struct qemu___libm_sse2_cos *c = (struct qemu___libm_sse2_cos *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_cos();
 }
@@ -3982,7 +3982,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_cosf(void)
 
 void qemu___libm_sse2_cosf(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_cosf *c = (struct qemu___libm_sse2_cosf *)call;
+    struct qemu___libm_sse2_cosf *c = (struct qemu___libm_sse2_cosf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_cosf();
 }
@@ -4008,7 +4008,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_exp(void)
 
 void qemu___libm_sse2_exp(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_exp *c = (struct qemu___libm_sse2_exp *)call;
+    struct qemu___libm_sse2_exp *c = (struct qemu___libm_sse2_exp *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_exp();
 }
@@ -4034,7 +4034,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_expf(void)
 
 void qemu___libm_sse2_expf(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_expf *c = (struct qemu___libm_sse2_expf *)call;
+    struct qemu___libm_sse2_expf *c = (struct qemu___libm_sse2_expf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_expf();
 }
@@ -4060,7 +4060,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_log(void)
 
 void qemu___libm_sse2_log(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_log *c = (struct qemu___libm_sse2_log *)call;
+    struct qemu___libm_sse2_log *c = (struct qemu___libm_sse2_log *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_log();
 }
@@ -4086,7 +4086,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_log10(void)
 
 void qemu___libm_sse2_log10(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_log10 *c = (struct qemu___libm_sse2_log10 *)call;
+    struct qemu___libm_sse2_log10 *c = (struct qemu___libm_sse2_log10 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_log10();
 }
@@ -4112,7 +4112,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_log10f(void)
 
 void qemu___libm_sse2_log10f(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_log10f *c = (struct qemu___libm_sse2_log10f *)call;
+    struct qemu___libm_sse2_log10f *c = (struct qemu___libm_sse2_log10f *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_log10f();
 }
@@ -4138,7 +4138,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_logf(void)
 
 void qemu___libm_sse2_logf(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_logf *c = (struct qemu___libm_sse2_logf *)call;
+    struct qemu___libm_sse2_logf *c = (struct qemu___libm_sse2_logf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_logf();
 }
@@ -4164,7 +4164,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_pow(void)
 
 void qemu___libm_sse2_pow(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_pow *c = (struct qemu___libm_sse2_pow *)call;
+    struct qemu___libm_sse2_pow *c = (struct qemu___libm_sse2_pow *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_pow();
 }
@@ -4190,7 +4190,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_powf(void)
 
 void qemu___libm_sse2_powf(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_powf *c = (struct qemu___libm_sse2_powf *)call;
+    struct qemu___libm_sse2_powf *c = (struct qemu___libm_sse2_powf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_powf();
 }
@@ -4216,7 +4216,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_sin(void)
 
 void qemu___libm_sse2_sin(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_sin *c = (struct qemu___libm_sse2_sin *)call;
+    struct qemu___libm_sse2_sin *c = (struct qemu___libm_sse2_sin *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_sin();
 }
@@ -4242,7 +4242,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_sinf(void)
 
 void qemu___libm_sse2_sinf(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_sinf *c = (struct qemu___libm_sse2_sinf *)call;
+    struct qemu___libm_sse2_sinf *c = (struct qemu___libm_sse2_sinf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_sinf();
 }
@@ -4268,7 +4268,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_tan(void)
 
 void qemu___libm_sse2_tan(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_tan *c = (struct qemu___libm_sse2_tan *)call;
+    struct qemu___libm_sse2_tan *c = (struct qemu___libm_sse2_tan *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_tan();
 }
@@ -4294,7 +4294,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_tanf(void)
 
 void qemu___libm_sse2_tanf(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_tanf *c = (struct qemu___libm_sse2_tanf *)call;
+    struct qemu___libm_sse2_tanf *c = (struct qemu___libm_sse2_tanf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_tanf();
 }
@@ -4320,7 +4320,7 @@ WINBASEAPI void CDECL MSVCRT___libm_sse2_sqrt_precise(void)
 
 void qemu___libm_sse2_sqrt_precise(struct qemu_syscall *call)
 {
-    struct qemu___libm_sse2_sqrt_precise *c = (struct qemu___libm_sse2_sqrt_precise *)call;
+    struct qemu___libm_sse2_sqrt_precise *c = (struct qemu___libm_sse2_sqrt_precise *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p___libm_sse2_sqrt_precise();
 }
@@ -4339,7 +4339,7 @@ WINBASEAPI double CDECL MSVCR120_cbrt(double x)
 {
     struct qemu_cbrt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CBRT);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4350,7 +4350,7 @@ WINBASEAPI double CDECL MSVCR120_cbrt(double x)
 
 void qemu_cbrt(struct qemu_syscall *call)
 {
-    struct qemu_cbrt *c = (struct qemu_cbrt *)call;
+    struct qemu_cbrt *c = (struct qemu_cbrt *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_cbrt(c->x);
 }
@@ -4369,7 +4369,7 @@ WINBASEAPI float CDECL MSVCR120_cbrtf(float x)
 {
     struct qemu_cbrtf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CBRTF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4380,7 +4380,7 @@ WINBASEAPI float CDECL MSVCR120_cbrtf(float x)
 
 void qemu_cbrtf(struct qemu_syscall *call)
 {
-    struct qemu_cbrtf *c = (struct qemu_cbrtf *)call;
+    struct qemu_cbrtf *c = (struct qemu_cbrtf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_cbrtf(c->x);
 }
@@ -4399,7 +4399,7 @@ WINBASEAPI double CDECL MSVCR120_cbrtl(double x)
 {
     struct qemu_cbrtl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CBRTL);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4410,7 +4410,7 @@ WINBASEAPI double CDECL MSVCR120_cbrtl(double x)
 
 void qemu_cbrtl(struct qemu_syscall *call)
 {
-    struct qemu_cbrtl *c = (struct qemu_cbrtl *)call;
+    struct qemu_cbrtl *c = (struct qemu_cbrtl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_cbrtl(c->x);
 }
@@ -4429,7 +4429,7 @@ WINBASEAPI double CDECL MSVCR120_exp2(double x)
 {
     struct qemu_exp2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXP2);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4440,7 +4440,7 @@ WINBASEAPI double CDECL MSVCR120_exp2(double x)
 
 void qemu_exp2(struct qemu_syscall *call)
 {
-    struct qemu_exp2 *c = (struct qemu_exp2 *)call;
+    struct qemu_exp2 *c = (struct qemu_exp2 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_exp2(c->x);
 }
@@ -4459,7 +4459,7 @@ WINBASEAPI float CDECL MSVCR120_exp2f(float x)
 {
     struct qemu_exp2f call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXP2F);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4470,7 +4470,7 @@ WINBASEAPI float CDECL MSVCR120_exp2f(float x)
 
 void qemu_exp2f(struct qemu_syscall *call)
 {
-    struct qemu_exp2f *c = (struct qemu_exp2f *)call;
+    struct qemu_exp2f *c = (struct qemu_exp2f *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_exp2f(c->x);
 }
@@ -4489,7 +4489,7 @@ WINBASEAPI double CDECL MSVCR120_exp2l(double x)
 {
     struct qemu_exp2l call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXP2L);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4500,7 +4500,7 @@ WINBASEAPI double CDECL MSVCR120_exp2l(double x)
 
 void qemu_exp2l(struct qemu_syscall *call)
 {
-    struct qemu_exp2l *c = (struct qemu_exp2l *)call;
+    struct qemu_exp2l *c = (struct qemu_exp2l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_exp2l(c->x);
 }
@@ -4519,7 +4519,7 @@ WINBASEAPI double CDECL MSVCR120_expm1(double x)
 {
     struct qemu_expm1 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXPM1);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4530,7 +4530,7 @@ WINBASEAPI double CDECL MSVCR120_expm1(double x)
 
 void qemu_expm1(struct qemu_syscall *call)
 {
-    struct qemu_expm1 *c = (struct qemu_expm1 *)call;
+    struct qemu_expm1 *c = (struct qemu_expm1 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_expm1(c->x);
 }
@@ -4549,7 +4549,7 @@ WINBASEAPI float CDECL MSVCR120_expm1f(float x)
 {
     struct qemu_expm1f call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXPM1F);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4560,7 +4560,7 @@ WINBASEAPI float CDECL MSVCR120_expm1f(float x)
 
 void qemu_expm1f(struct qemu_syscall *call)
 {
-    struct qemu_expm1f *c = (struct qemu_expm1f *)call;
+    struct qemu_expm1f *c = (struct qemu_expm1f *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_expm1f(c->x);
 }
@@ -4579,7 +4579,7 @@ WINBASEAPI double CDECL MSVCR120_expm1l(double x)
 {
     struct qemu_expm1l call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXPM1L);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4590,7 +4590,7 @@ WINBASEAPI double CDECL MSVCR120_expm1l(double x)
 
 void qemu_expm1l(struct qemu_syscall *call)
 {
-    struct qemu_expm1l *c = (struct qemu_expm1l *)call;
+    struct qemu_expm1l *c = (struct qemu_expm1l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_expm1l(c->x);
 }
@@ -4609,7 +4609,7 @@ WINBASEAPI double CDECL MSVCR120_log1p(double x)
 {
     struct qemu_log1p call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOG1P);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4620,7 +4620,7 @@ WINBASEAPI double CDECL MSVCR120_log1p(double x)
 
 void qemu_log1p(struct qemu_syscall *call)
 {
-    struct qemu_log1p *c = (struct qemu_log1p *)call;
+    struct qemu_log1p *c = (struct qemu_log1p *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_log1p(c->x);
 }
@@ -4639,7 +4639,7 @@ WINBASEAPI float CDECL MSVCR120_log1pf(float x)
 {
     struct qemu_log1pf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOG1PF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4650,7 +4650,7 @@ WINBASEAPI float CDECL MSVCR120_log1pf(float x)
 
 void qemu_log1pf(struct qemu_syscall *call)
 {
-    struct qemu_log1pf *c = (struct qemu_log1pf *)call;
+    struct qemu_log1pf *c = (struct qemu_log1pf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_log1pf(c->x);
 }
@@ -4669,7 +4669,7 @@ WINBASEAPI double CDECL MSVCR120_log1pl(double x)
 {
     struct qemu_log1pl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOG1PL);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4680,7 +4680,7 @@ WINBASEAPI double CDECL MSVCR120_log1pl(double x)
 
 void qemu_log1pl(struct qemu_syscall *call)
 {
-    struct qemu_log1pl *c = (struct qemu_log1pl *)call;
+    struct qemu_log1pl *c = (struct qemu_log1pl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_log1pl(c->x);
 }
@@ -4699,7 +4699,7 @@ WINBASEAPI double CDECL MSVCR120_log2(double x)
 {
     struct qemu_log2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOG2);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4710,7 +4710,7 @@ WINBASEAPI double CDECL MSVCR120_log2(double x)
 
 void qemu_log2(struct qemu_syscall *call)
 {
-    struct qemu_log2 *c = (struct qemu_log2 *)call;
+    struct qemu_log2 *c = (struct qemu_log2 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_log2(c->x);
 }
@@ -4729,7 +4729,7 @@ WINBASEAPI float CDECL MSVCR120_log2f(float x)
 {
     struct qemu_log2f call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOG2F);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4740,7 +4740,7 @@ WINBASEAPI float CDECL MSVCR120_log2f(float x)
 
 void qemu_log2f(struct qemu_syscall *call)
 {
-    struct qemu_log2f *c = (struct qemu_log2f *)call;
+    struct qemu_log2f *c = (struct qemu_log2f *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_log2f(c->x);
 }
@@ -4759,7 +4759,7 @@ WINBASEAPI double CDECL MSVCR120_log2l(double x)
 {
     struct qemu_log2l call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOG2L);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4770,7 +4770,7 @@ WINBASEAPI double CDECL MSVCR120_log2l(double x)
 
 void qemu_log2l(struct qemu_syscall *call)
 {
-    struct qemu_log2l *c = (struct qemu_log2l *)call;
+    struct qemu_log2l *c = (struct qemu_log2l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_log2l(c->x);
 }
@@ -4789,7 +4789,7 @@ WINBASEAPI double CDECL MSVCR120_rint(double x)
 {
     struct qemu_rint call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RINT);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4800,7 +4800,7 @@ WINBASEAPI double CDECL MSVCR120_rint(double x)
 
 void qemu_rint(struct qemu_syscall *call)
 {
-    struct qemu_rint *c = (struct qemu_rint *)call;
+    struct qemu_rint *c = (struct qemu_rint *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_rint(c->x);
 }
@@ -4819,7 +4819,7 @@ WINBASEAPI float CDECL MSVCR120_rintf(float x)
 {
     struct qemu_rintf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RINTF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4830,7 +4830,7 @@ WINBASEAPI float CDECL MSVCR120_rintf(float x)
 
 void qemu_rintf(struct qemu_syscall *call)
 {
-    struct qemu_rintf *c = (struct qemu_rintf *)call;
+    struct qemu_rintf *c = (struct qemu_rintf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_rintf(c->x);
 }
@@ -4849,7 +4849,7 @@ WINBASEAPI double CDECL MSVCR120_rintl(double x)
 {
     struct qemu_rintl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RINTL);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4860,7 +4860,7 @@ WINBASEAPI double CDECL MSVCR120_rintl(double x)
 
 void qemu_rintl(struct qemu_syscall *call)
 {
-    struct qemu_rintl *c = (struct qemu_rintl *)call;
+    struct qemu_rintl *c = (struct qemu_rintl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_rintl(c->x);
 }
@@ -4879,7 +4879,7 @@ WINBASEAPI int32_t CDECL MSVCR120_lrint(double x)
 {
     struct qemu_lrint call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LRINT);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4890,7 +4890,7 @@ WINBASEAPI int32_t CDECL MSVCR120_lrint(double x)
 
 void qemu_lrint(struct qemu_syscall *call)
 {
-    struct qemu_lrint *c = (struct qemu_lrint *)call;
+    struct qemu_lrint *c = (struct qemu_lrint *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_lrint(c->x);
 }
@@ -4909,7 +4909,7 @@ WINBASEAPI int32_t CDECL MSVCR120_lrintf(float x)
 {
     struct qemu_lrintf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LRINTF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4920,7 +4920,7 @@ WINBASEAPI int32_t CDECL MSVCR120_lrintf(float x)
 
 void qemu_lrintf(struct qemu_syscall *call)
 {
-    struct qemu_lrintf *c = (struct qemu_lrintf *)call;
+    struct qemu_lrintf *c = (struct qemu_lrintf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_lrintf(c->x);
 }
@@ -4939,7 +4939,7 @@ WINBASEAPI int32_t CDECL MSVCR120_lrintl(double x)
 {
     struct qemu_lrintl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LRINTL);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4950,7 +4950,7 @@ WINBASEAPI int32_t CDECL MSVCR120_lrintl(double x)
 
 void qemu_lrintl(struct qemu_syscall *call)
 {
-    struct qemu_lrintl *c = (struct qemu_lrintl *)call;
+    struct qemu_lrintl *c = (struct qemu_lrintl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_lrintl(c->x);
 }
@@ -4969,7 +4969,7 @@ WINBASEAPI int64_t CDECL MSVCR120_llrint(double x)
 {
     struct qemu_llrint call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LLRINT);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -4980,7 +4980,7 @@ WINBASEAPI int64_t CDECL MSVCR120_llrint(double x)
 
 void qemu_llrint(struct qemu_syscall *call)
 {
-    struct qemu_llrint *c = (struct qemu_llrint *)call;
+    struct qemu_llrint *c = (struct qemu_llrint *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_llrint(c->x);
 }
@@ -4999,7 +4999,7 @@ WINBASEAPI int64_t CDECL MSVCR120_llrintf(float x)
 {
     struct qemu_llrintf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LLRINTF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5010,7 +5010,7 @@ WINBASEAPI int64_t CDECL MSVCR120_llrintf(float x)
 
 void qemu_llrintf(struct qemu_syscall *call)
 {
-    struct qemu_llrintf *c = (struct qemu_llrintf *)call;
+    struct qemu_llrintf *c = (struct qemu_llrintf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_llrintf(c->x);
 }
@@ -5029,7 +5029,7 @@ WINBASEAPI int64_t CDECL MSVCR120_llrintl(double x)
 {
     struct qemu_llrintl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LLRINTL);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5040,7 +5040,7 @@ WINBASEAPI int64_t CDECL MSVCR120_llrintl(double x)
 
 void qemu_llrintl(struct qemu_syscall *call)
 {
-    struct qemu_llrintl *c = (struct qemu_llrintl *)call;
+    struct qemu_llrintl *c = (struct qemu_llrintl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_llrintl(c->x);
 }
@@ -5059,7 +5059,7 @@ WINBASEAPI double CDECL MSVCR120_round(double x)
 {
     struct qemu_round call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ROUND);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5070,7 +5070,7 @@ WINBASEAPI double CDECL MSVCR120_round(double x)
 
 void qemu_round(struct qemu_syscall *call)
 {
-    struct qemu_round *c = (struct qemu_round *)call;
+    struct qemu_round *c = (struct qemu_round *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_round(c->x);
 }
@@ -5089,7 +5089,7 @@ WINBASEAPI float CDECL MSVCR120_roundf(float x)
 {
     struct qemu_roundf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ROUNDF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5100,7 +5100,7 @@ WINBASEAPI float CDECL MSVCR120_roundf(float x)
 
 void qemu_roundf(struct qemu_syscall *call)
 {
-    struct qemu_roundf *c = (struct qemu_roundf *)call;
+    struct qemu_roundf *c = (struct qemu_roundf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_roundf(c->x);
 }
@@ -5119,7 +5119,7 @@ WINBASEAPI double CDECL MSVCR120_roundl(double x)
 {
     struct qemu_roundl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ROUNDL);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5130,7 +5130,7 @@ WINBASEAPI double CDECL MSVCR120_roundl(double x)
 
 void qemu_roundl(struct qemu_syscall *call)
 {
-    struct qemu_roundl *c = (struct qemu_roundl *)call;
+    struct qemu_roundl *c = (struct qemu_roundl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_roundl(c->x);
 }
@@ -5149,7 +5149,7 @@ WINBASEAPI int32_t CDECL MSVCR120_lround(double x)
 {
     struct qemu_lround call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LROUND);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5160,7 +5160,7 @@ WINBASEAPI int32_t CDECL MSVCR120_lround(double x)
 
 void qemu_lround(struct qemu_syscall *call)
 {
-    struct qemu_lround *c = (struct qemu_lround *)call;
+    struct qemu_lround *c = (struct qemu_lround *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_lround(c->x);
 }
@@ -5179,7 +5179,7 @@ WINBASEAPI int32_t CDECL MSVCR120_lroundf(float x)
 {
     struct qemu_lroundf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LROUNDF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5190,7 +5190,7 @@ WINBASEAPI int32_t CDECL MSVCR120_lroundf(float x)
 
 void qemu_lroundf(struct qemu_syscall *call)
 {
-    struct qemu_lroundf *c = (struct qemu_lroundf *)call;
+    struct qemu_lroundf *c = (struct qemu_lroundf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_lroundf(c->x);
 }
@@ -5209,7 +5209,7 @@ WINBASEAPI int32_t CDECL MSVCR120_lroundl(double x)
 {
     struct qemu_lroundl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LROUNDL);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5220,7 +5220,7 @@ WINBASEAPI int32_t CDECL MSVCR120_lroundl(double x)
 
 void qemu_lroundl(struct qemu_syscall *call)
 {
-    struct qemu_lroundl *c = (struct qemu_lroundl *)call;
+    struct qemu_lroundl *c = (struct qemu_lroundl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_lroundl(c->x);
 }
@@ -5239,7 +5239,7 @@ WINBASEAPI int64_t CDECL MSVCR120_llround(double x)
 {
     struct qemu_llround call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LLROUND);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5250,7 +5250,7 @@ WINBASEAPI int64_t CDECL MSVCR120_llround(double x)
 
 void qemu_llround(struct qemu_syscall *call)
 {
-    struct qemu_llround *c = (struct qemu_llround *)call;
+    struct qemu_llround *c = (struct qemu_llround *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_llround(c->x);
 }
@@ -5269,7 +5269,7 @@ WINBASEAPI int64_t CDECL MSVCR120_llroundf(float x)
 {
     struct qemu_llroundf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LLROUNDF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5280,7 +5280,7 @@ WINBASEAPI int64_t CDECL MSVCR120_llroundf(float x)
 
 void qemu_llroundf(struct qemu_syscall *call)
 {
-    struct qemu_llroundf *c = (struct qemu_llroundf *)call;
+    struct qemu_llroundf *c = (struct qemu_llroundf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_llroundf(c->x);
 }
@@ -5299,7 +5299,7 @@ WINBASEAPI int64_t CDECL MSVCR120_llroundl(double x)
 {
     struct qemu_llroundl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LLROUNDL);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5310,7 +5310,7 @@ WINBASEAPI int64_t CDECL MSVCR120_llroundl(double x)
 
 void qemu_llroundl(struct qemu_syscall *call)
 {
-    struct qemu_llroundl *c = (struct qemu_llroundl *)call;
+    struct qemu_llroundl *c = (struct qemu_llroundl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p_llroundl(c->x);
 }
@@ -5329,7 +5329,7 @@ WINBASEAPI double CDECL MSVCR120_trunc(double x)
 {
     struct qemu_trunc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRUNC);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5340,7 +5340,7 @@ WINBASEAPI double CDECL MSVCR120_trunc(double x)
 
 void qemu_trunc(struct qemu_syscall *call)
 {
-    struct qemu_trunc *c = (struct qemu_trunc *)call;
+    struct qemu_trunc *c = (struct qemu_trunc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_trunc(c->x);
 }
@@ -5359,7 +5359,7 @@ WINBASEAPI float CDECL MSVCR120_truncf(float x)
 {
     struct qemu_truncf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRUNCF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5370,7 +5370,7 @@ WINBASEAPI float CDECL MSVCR120_truncf(float x)
 
 void qemu_truncf(struct qemu_syscall *call)
 {
-    struct qemu_truncf *c = (struct qemu_truncf *)call;
+    struct qemu_truncf *c = (struct qemu_truncf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_truncf(c->x);
 }
@@ -5389,7 +5389,7 @@ WINBASEAPI double CDECL MSVCR120_truncl(double x)
 {
     struct qemu_truncl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRUNCL);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5400,7 +5400,7 @@ WINBASEAPI double CDECL MSVCR120_truncl(double x)
 
 void qemu_truncl(struct qemu_syscall *call)
 {
-    struct qemu_truncl *c = (struct qemu_truncl *)call;
+    struct qemu_truncl *c = (struct qemu_truncl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_truncl(c->x);
 }
@@ -5419,7 +5419,7 @@ WINBASEAPI short CDECL MSVCR120__dclass(double x)
 {
     struct qemu__dclass call;
     call.super.id = QEMU_SYSCALL_ID(CALL__DCLASS);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5430,7 +5430,7 @@ WINBASEAPI short CDECL MSVCR120__dclass(double x)
 
 void qemu__dclass(struct qemu_syscall *call)
 {
-    struct qemu__dclass *c = (struct qemu__dclass *)call;
+    struct qemu__dclass *c = (struct qemu__dclass *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__dclass(c->x);
 }
@@ -5449,7 +5449,7 @@ WINBASEAPI short CDECL MSVCR120__fdclass(float x)
 {
     struct qemu__fdclass call;
     call.super.id = QEMU_SYSCALL_ID(CALL__FDCLASS);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5460,7 +5460,7 @@ WINBASEAPI short CDECL MSVCR120__fdclass(float x)
 
 void qemu__fdclass(struct qemu_syscall *call)
 {
-    struct qemu__fdclass *c = (struct qemu__fdclass *)call;
+    struct qemu__fdclass *c = (struct qemu__fdclass *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__fdclass(c->x);
 }
@@ -5479,7 +5479,7 @@ WINBASEAPI short CDECL MSVCR120__ldclass(double x)
 {
     struct qemu__ldclass call;
     call.super.id = QEMU_SYSCALL_ID(CALL__LDCLASS);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5490,7 +5490,7 @@ WINBASEAPI short CDECL MSVCR120__ldclass(double x)
 
 void qemu__ldclass(struct qemu_syscall *call)
 {
-    struct qemu__ldclass *c = (struct qemu__ldclass *)call;
+    struct qemu__ldclass *c = (struct qemu__ldclass *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__ldclass(c->x);
 }
@@ -5509,7 +5509,7 @@ WINBASEAPI short CDECL MSVCR120__dtest(double *x)
 {
     struct qemu__dtest call;
     call.super.id = QEMU_SYSCALL_ID(CALL__DTEST);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5520,7 +5520,7 @@ WINBASEAPI short CDECL MSVCR120__dtest(double *x)
 
 void qemu__dtest(struct qemu_syscall *call)
 {
-    struct qemu__dtest *c = (struct qemu__dtest *)call;
+    struct qemu__dtest *c = (struct qemu__dtest *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__dtest(QEMU_G2H(c->x));
 }
@@ -5539,7 +5539,7 @@ WINBASEAPI short CDECL MSVCR120__fdtest(float *x)
 {
     struct qemu__fdtest call;
     call.super.id = QEMU_SYSCALL_ID(CALL__FDTEST);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5550,7 +5550,7 @@ WINBASEAPI short CDECL MSVCR120__fdtest(float *x)
 
 void qemu__fdtest(struct qemu_syscall *call)
 {
-    struct qemu__fdtest *c = (struct qemu__fdtest *)call;
+    struct qemu__fdtest *c = (struct qemu__fdtest *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__fdtest(QEMU_G2H(c->x));
 }
@@ -5569,7 +5569,7 @@ WINBASEAPI short CDECL MSVCR120__ldtest(double *x)
 {
     struct qemu__ldtest call;
     call.super.id = QEMU_SYSCALL_ID(CALL__LDTEST);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5580,7 +5580,7 @@ WINBASEAPI short CDECL MSVCR120__ldtest(double *x)
 
 void qemu__ldtest(struct qemu_syscall *call)
 {
-    struct qemu__ldtest *c = (struct qemu__ldtest *)call;
+    struct qemu__ldtest *c = (struct qemu__ldtest *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__ldtest(QEMU_G2H(c->x));
 }
@@ -5599,7 +5599,7 @@ WINBASEAPI double CDECL MSVCR120_erf(double x)
 {
     struct qemu_erf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ERF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5610,7 +5610,7 @@ WINBASEAPI double CDECL MSVCR120_erf(double x)
 
 void qemu_erf(struct qemu_syscall *call)
 {
-    struct qemu_erf *c = (struct qemu_erf *)call;
+    struct qemu_erf *c = (struct qemu_erf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_erf(c->x);
 }
@@ -5629,7 +5629,7 @@ WINBASEAPI float CDECL MSVCR120_erff(float x)
 {
     struct qemu_erff call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ERFF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5640,7 +5640,7 @@ WINBASEAPI float CDECL MSVCR120_erff(float x)
 
 void qemu_erff(struct qemu_syscall *call)
 {
-    struct qemu_erff *c = (struct qemu_erff *)call;
+    struct qemu_erff *c = (struct qemu_erff *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_erff(c->x);
 }
@@ -5659,7 +5659,7 @@ WINBASEAPI double CDECL MSVCR120_erfl(double x)
 {
     struct qemu_erfl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ERFL);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5670,7 +5670,7 @@ WINBASEAPI double CDECL MSVCR120_erfl(double x)
 
 void qemu_erfl(struct qemu_syscall *call)
 {
-    struct qemu_erfl *c = (struct qemu_erfl *)call;
+    struct qemu_erfl *c = (struct qemu_erfl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_erfl(c->x);
 }
@@ -5689,7 +5689,7 @@ WINBASEAPI double CDECL MSVCR120_erfc(double x)
 {
     struct qemu_erfc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ERFC);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5700,7 +5700,7 @@ WINBASEAPI double CDECL MSVCR120_erfc(double x)
 
 void qemu_erfc(struct qemu_syscall *call)
 {
-    struct qemu_erfc *c = (struct qemu_erfc *)call;
+    struct qemu_erfc *c = (struct qemu_erfc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_erfc(c->x);
 }
@@ -5719,7 +5719,7 @@ WINBASEAPI float CDECL MSVCR120_erfcf(float x)
 {
     struct qemu_erfcf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ERFCF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5730,7 +5730,7 @@ WINBASEAPI float CDECL MSVCR120_erfcf(float x)
 
 void qemu_erfcf(struct qemu_syscall *call)
 {
-    struct qemu_erfcf *c = (struct qemu_erfcf *)call;
+    struct qemu_erfcf *c = (struct qemu_erfcf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_erfcf(c->x);
 }
@@ -5749,7 +5749,7 @@ WINBASEAPI double CDECL MSVCR120_erfcl(double x)
 {
     struct qemu_erfcl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ERFCL);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5760,7 +5760,7 @@ WINBASEAPI double CDECL MSVCR120_erfcl(double x)
 
 void qemu_erfcl(struct qemu_syscall *call)
 {
-    struct qemu_erfcl *c = (struct qemu_erfcl *)call;
+    struct qemu_erfcl *c = (struct qemu_erfcl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_erfcl(c->x);
 }
@@ -5780,8 +5780,8 @@ WINBASEAPI float CDECL MSVCR120_fmaxf(float x, float y)
 {
     struct qemu_fmaxf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FMAXF);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -5792,7 +5792,7 @@ WINBASEAPI float CDECL MSVCR120_fmaxf(float x, float y)
 
 void qemu_fmaxf(struct qemu_syscall *call)
 {
-    struct qemu_fmaxf *c = (struct qemu_fmaxf *)call;
+    struct qemu_fmaxf *c = (struct qemu_fmaxf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_fmaxf(c->x, c->y);
 }
@@ -5812,8 +5812,8 @@ WINBASEAPI double CDECL MSVCR120_fmax(double x, double y)
 {
     struct qemu_fmax call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FMAX);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -5824,7 +5824,7 @@ WINBASEAPI double CDECL MSVCR120_fmax(double x, double y)
 
 void qemu_fmax(struct qemu_syscall *call)
 {
-    struct qemu_fmax *c = (struct qemu_fmax *)call;
+    struct qemu_fmax *c = (struct qemu_fmax *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_fmax(c->x, c->y);
 }
@@ -5843,7 +5843,7 @@ WINBASEAPI int CDECL MSVCR120__fdsign(float x)
 {
     struct qemu__fdsign call;
     call.super.id = QEMU_SYSCALL_ID(CALL__FDSIGN);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5854,7 +5854,7 @@ WINBASEAPI int CDECL MSVCR120__fdsign(float x)
 
 void qemu__fdsign(struct qemu_syscall *call)
 {
-    struct qemu__fdsign *c = (struct qemu__fdsign *)call;
+    struct qemu__fdsign *c = (struct qemu__fdsign *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__fdsign(c->x);
 }
@@ -5873,7 +5873,7 @@ WINBASEAPI int CDECL MSVCR120__dsign(double x)
 {
     struct qemu__dsign call;
     call.super.id = QEMU_SYSCALL_ID(CALL__DSIGN);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -5884,7 +5884,7 @@ WINBASEAPI int CDECL MSVCR120__dsign(double x)
 
 void qemu__dsign(struct qemu_syscall *call)
 {
-    struct qemu__dsign *c = (struct qemu__dsign *)call;
+    struct qemu__dsign *c = (struct qemu__dsign *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__dsign(c->x);
 }
@@ -5904,8 +5904,8 @@ WINBASEAPI int CDECL MSVCR120__dpcomp(double x, double y)
 {
     struct qemu__dpcomp call;
     call.super.id = QEMU_SYSCALL_ID(CALL__DPCOMP);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -5916,7 +5916,7 @@ WINBASEAPI int CDECL MSVCR120__dpcomp(double x, double y)
 
 void qemu__dpcomp(struct qemu_syscall *call)
 {
-    struct qemu__dpcomp *c = (struct qemu__dpcomp *)call;
+    struct qemu__dpcomp *c = (struct qemu__dpcomp *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__dpcomp(c->x, c->y);
 }
@@ -5936,8 +5936,8 @@ WINBASEAPI int CDECL MSVCR120__fdpcomp(float x, float y)
 {
     struct qemu__fdpcomp call;
     call.super.id = QEMU_SYSCALL_ID(CALL__FDPCOMP);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -5948,7 +5948,7 @@ WINBASEAPI int CDECL MSVCR120__fdpcomp(float x, float y)
 
 void qemu__fdpcomp(struct qemu_syscall *call)
 {
-    struct qemu__fdpcomp *c = (struct qemu__fdpcomp *)call;
+    struct qemu__fdpcomp *c = (struct qemu__fdpcomp *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = p__fdpcomp(c->x, c->y);
 }
@@ -5968,8 +5968,8 @@ WINBASEAPI float CDECL MSVCR120_fminf(float x, float y)
 {
     struct qemu_fminf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FMINF);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -5980,7 +5980,7 @@ WINBASEAPI float CDECL MSVCR120_fminf(float x, float y)
 
 void qemu_fminf(struct qemu_syscall *call)
 {
-    struct qemu_fminf *c = (struct qemu_fminf *)call;
+    struct qemu_fminf *c = (struct qemu_fminf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_fminf(c->x, c->y);
 }
@@ -6000,8 +6000,8 @@ WINBASEAPI double CDECL MSVCR120_fmin(double x, double y)
 {
     struct qemu_fmin call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FMIN);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -6012,7 +6012,7 @@ WINBASEAPI double CDECL MSVCR120_fmin(double x, double y)
 
 void qemu_fmin(struct qemu_syscall *call)
 {
-    struct qemu_fmin *c = (struct qemu_fmin *)call;
+    struct qemu_fmin *c = (struct qemu_fmin *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_fmin(c->x, c->y);
 }
@@ -6031,7 +6031,7 @@ WINBASEAPI double CDECL MSVCR120_asinh(double x)
 {
     struct qemu_asinh call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ASINH);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -6042,7 +6042,7 @@ WINBASEAPI double CDECL MSVCR120_asinh(double x)
 
 void qemu_asinh(struct qemu_syscall *call)
 {
-    struct qemu_asinh *c = (struct qemu_asinh *)call;
+    struct qemu_asinh *c = (struct qemu_asinh *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_asinh(c->x);
 }
@@ -6061,7 +6061,7 @@ WINBASEAPI float CDECL MSVCR120_asinhf(float x)
 {
     struct qemu_asinhf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ASINHF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -6072,7 +6072,7 @@ WINBASEAPI float CDECL MSVCR120_asinhf(float x)
 
 void qemu_asinhf(struct qemu_syscall *call)
 {
-    struct qemu_asinhf *c = (struct qemu_asinhf *)call;
+    struct qemu_asinhf *c = (struct qemu_asinhf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_asinhf(c->x);
 }
@@ -6091,7 +6091,7 @@ WINBASEAPI double CDECL MSVCR120_asinhl(double x)
 {
     struct qemu_asinhl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ASINHL);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -6102,7 +6102,7 @@ WINBASEAPI double CDECL MSVCR120_asinhl(double x)
 
 void qemu_asinhl(struct qemu_syscall *call)
 {
-    struct qemu_asinhl *c = (struct qemu_asinhl *)call;
+    struct qemu_asinhl *c = (struct qemu_asinhl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_asinhl(c->x);
 }
@@ -6121,7 +6121,7 @@ WINBASEAPI double CDECL MSVCR120_acosh(double x)
 {
     struct qemu_acosh call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACOSH);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -6132,7 +6132,7 @@ WINBASEAPI double CDECL MSVCR120_acosh(double x)
 
 void qemu_acosh(struct qemu_syscall *call)
 {
-    struct qemu_acosh *c = (struct qemu_acosh *)call;
+    struct qemu_acosh *c = (struct qemu_acosh *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_acosh(c->x);
 }
@@ -6151,7 +6151,7 @@ WINBASEAPI float CDECL MSVCR120_acoshf(float x)
 {
     struct qemu_acoshf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACOSHF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -6162,7 +6162,7 @@ WINBASEAPI float CDECL MSVCR120_acoshf(float x)
 
 void qemu_acoshf(struct qemu_syscall *call)
 {
-    struct qemu_acoshf *c = (struct qemu_acoshf *)call;
+    struct qemu_acoshf *c = (struct qemu_acoshf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_acoshf(c->x);
 }
@@ -6181,7 +6181,7 @@ WINBASEAPI double CDECL MSVCR120_acoshl(double x)
 {
     struct qemu_acoshl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACOSHL);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -6192,7 +6192,7 @@ WINBASEAPI double CDECL MSVCR120_acoshl(double x)
 
 void qemu_acoshl(struct qemu_syscall *call)
 {
-    struct qemu_acoshl *c = (struct qemu_acoshl *)call;
+    struct qemu_acoshl *c = (struct qemu_acoshl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_acoshl(c->x);
 }
@@ -6211,7 +6211,7 @@ WINBASEAPI double CDECL MSVCR120_atanh(double x)
 {
     struct qemu_atanh call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ATANH);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -6222,7 +6222,7 @@ WINBASEAPI double CDECL MSVCR120_atanh(double x)
 
 void qemu_atanh(struct qemu_syscall *call)
 {
-    struct qemu_atanh *c = (struct qemu_atanh *)call;
+    struct qemu_atanh *c = (struct qemu_atanh *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_atanh(c->x);
 }
@@ -6241,7 +6241,7 @@ WINBASEAPI float CDECL MSVCR120_atanhf(float x)
 {
     struct qemu_atanhf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ATANHF);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -6252,7 +6252,7 @@ WINBASEAPI float CDECL MSVCR120_atanhf(float x)
 
 void qemu_atanhf(struct qemu_syscall *call)
 {
-    struct qemu_atanhf *c = (struct qemu_atanhf *)call;
+    struct qemu_atanhf *c = (struct qemu_atanhf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_atanhf(c->x);
 }
@@ -6271,7 +6271,7 @@ WINBASEAPI double CDECL MSVCR120_atanhl(double x)
 {
     struct qemu_atanhl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ATANHL);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -6282,7 +6282,7 @@ WINBASEAPI double CDECL MSVCR120_atanhl(double x)
 
 void qemu_atanhl(struct qemu_syscall *call)
 {
-    struct qemu_atanhl *c = (struct qemu_atanhl *)call;
+    struct qemu_atanhl *c = (struct qemu_atanhl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_atanhl(c->x);
 }
@@ -6302,8 +6302,8 @@ WINBASEAPI double CDECL MSVCRT__scalb(double num, int32_t power)
 {
     struct qemu__scalb call;
     call.super.id = QEMU_SYSCALL_ID(CALL__SCALB);
-    call.num = (uint64_t)num;
-    call.power = (uint64_t)power;
+    call.num = (ULONG_PTR)num;
+    call.power = (ULONG_PTR)power;
 
     qemu_syscall(&call.super);
 
@@ -6314,7 +6314,7 @@ WINBASEAPI double CDECL MSVCRT__scalb(double num, int32_t power)
 
 void qemu__scalb(struct qemu_syscall *call)
 {
-    struct qemu__scalb *c = (struct qemu__scalb *)call;
+    struct qemu__scalb *c = (struct qemu__scalb *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__scalb(c->num, c->power);
 }
@@ -6334,8 +6334,8 @@ WINBASEAPI float CDECL MSVCRT__scalbf(float num, int32_t power)
 {
     struct qemu__scalbf call;
     call.super.id = QEMU_SYSCALL_ID(CALL__SCALBF);
-    call.num = (uint64_t)num;
-    call.power = (uint64_t)power;
+    call.num = (ULONG_PTR)num;
+    call.power = (ULONG_PTR)power;
 
     qemu_syscall(&call.super);
 
@@ -6346,7 +6346,7 @@ WINBASEAPI float CDECL MSVCRT__scalbf(float num, int32_t power)
 
 void qemu__scalbf(struct qemu_syscall *call)
 {
-    struct qemu__scalbf *c = (struct qemu__scalbf *)call;
+    struct qemu__scalbf *c = (struct qemu__scalbf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p__scalbf(c->num, c->power);
 }
@@ -6366,8 +6366,8 @@ WINBASEAPI double CDECL MSVCR120_scalbnl(double num, int32_t power)
 {
     struct qemu_scalbnl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCALBNL);
-    call.num = (uint64_t)num;
-    call.power = (uint64_t)power;
+    call.num = (ULONG_PTR)num;
+    call.power = (ULONG_PTR)power;
 
     qemu_syscall(&call.super);
 
@@ -6378,7 +6378,7 @@ WINBASEAPI double CDECL MSVCR120_scalbnl(double num, int32_t power)
 
 void qemu_scalbnl(struct qemu_syscall *call)
 {
-    struct qemu_scalbnl *c = (struct qemu_scalbnl *)call;
+    struct qemu_scalbnl *c = (struct qemu_scalbnl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_scalbnl(c->num, c->power);
 }
@@ -6398,8 +6398,8 @@ WINBASEAPI double CDECL MSVCR120_remainder(double x, double y)
 {
     struct qemu_remainder call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMAINDER);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -6410,7 +6410,7 @@ WINBASEAPI double CDECL MSVCR120_remainder(double x, double y)
 
 void qemu_remainder(struct qemu_syscall *call)
 {
-    struct qemu_remainder *c = (struct qemu_remainder *)call;
+    struct qemu_remainder *c = (struct qemu_remainder *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_remainder(c->x, c->y);
 }
@@ -6430,8 +6430,8 @@ WINBASEAPI float CDECL MSVCR120_remainderf(float x, float y)
 {
     struct qemu_remainderf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMAINDERF);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -6442,7 +6442,7 @@ WINBASEAPI float CDECL MSVCR120_remainderf(float x, float y)
 
 void qemu_remainderf(struct qemu_syscall *call)
 {
-    struct qemu_remainderf *c = (struct qemu_remainderf *)call;
+    struct qemu_remainderf *c = (struct qemu_remainderf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_remainderf(c->x, c->y);
 }
@@ -6462,8 +6462,8 @@ WINBASEAPI double CDECL MSVCR120_remainderl(double x, double y)
 {
     struct qemu_remainderl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMAINDERL);
-    call.x = (uint64_t)x;
-    call.y = (uint64_t)y;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
 
     qemu_syscall(&call.super);
 
@@ -6474,7 +6474,7 @@ WINBASEAPI double CDECL MSVCR120_remainderl(double x, double y)
 
 void qemu_remainderl(struct qemu_syscall *call)
 {
-    struct qemu_remainderl *c = (struct qemu_remainderl *)call;
+    struct qemu_remainderl *c = (struct qemu_remainderl *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_remainderl(c->x, c->y);
 }
@@ -6493,7 +6493,7 @@ WINBASEAPI double CDECL MSVCR120_lgamma(double x)
 {
     struct qemu_lgamma call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LGAMMA);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -6504,7 +6504,7 @@ WINBASEAPI double CDECL MSVCR120_lgamma(double x)
 
 void qemu_lgamma(struct qemu_syscall *call)
 {
-    struct qemu_lgamma *c = (struct qemu_lgamma *)call;
+    struct qemu_lgamma *c = (struct qemu_lgamma *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_lgamma(c->x);
 }
@@ -6534,7 +6534,7 @@ WINBASEAPI float CDECL MSVCR120_lgammaf(float x)
 
 void qemu_lgammaf(struct qemu_syscall *call)
 {
-    struct qemu_lgammaf *c = (struct qemu_lgammaf *)call;
+    struct qemu_lgammaf *c = (struct qemu_lgammaf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_lgammaf(c->x);
 }
@@ -6553,7 +6553,7 @@ WINBASEAPI double CDECL MSVCR120_lgammal(double x)
 {
     struct qemu_lgammal call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LGAMMAL);
-    call.x = (uint64_t)x;
+    call.x = (ULONG_PTR)x;
 
     qemu_syscall(&call.super);
 
@@ -6564,7 +6564,7 @@ WINBASEAPI double CDECL MSVCR120_lgammal(double x)
 
 void qemu_lgammal(struct qemu_syscall *call)
 {
-    struct qemu_lgammal *c = (struct qemu_lgammal *)call;
+    struct qemu_lgammal *c = (struct qemu_lgammal *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_lgammal(c->x);
 }
@@ -6583,7 +6583,7 @@ WINBASEAPI double CDECL MSVCR120_nan(const char *tagp)
 {
     struct qemu_nan call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NAN);
-    call.tagp = (uint64_t)tagp;
+    call.tagp = (ULONG_PTR)tagp;
 
     qemu_syscall(&call.super);
 
@@ -6594,7 +6594,7 @@ WINBASEAPI double CDECL MSVCR120_nan(const char *tagp)
 
 void qemu_nan(struct qemu_syscall *call)
 {
-    struct qemu_nan *c = (struct qemu_nan *)call;
+    struct qemu_nan *c = (struct qemu_nan *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_nan(QEMU_G2H(c->tagp));
 }
@@ -6613,7 +6613,7 @@ WINBASEAPI float CDECL MSVCR120_nanf(const char *tagp)
 {
     struct qemu_nanf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NANF);
-    call.tagp = (uint64_t)tagp;
+    call.tagp = (ULONG_PTR)tagp;
 
     qemu_syscall(&call.super);
 
@@ -6624,7 +6624,7 @@ WINBASEAPI float CDECL MSVCR120_nanf(const char *tagp)
 
 void qemu_nanf(struct qemu_syscall *call)
 {
-    struct qemu_nanf *c = (struct qemu_nanf *)call;
+    struct qemu_nanf *c = (struct qemu_nanf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     c->super.dret = p_nanf(QEMU_G2H(c->tagp));
 }

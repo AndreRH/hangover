@@ -49,7 +49,7 @@
 # @ thiscall -arch=i386 ??1exception@@UAE@XZ(ptr) MSVCRT_exception_dtor FIXME
 # @ cdecl -arch=win64 ??1exception@@UEAA@XZ(ptr) MSVCRT_exception_dtor FIXME
 @ cdecl -arch=arm ??1type_info@@UAA@XZ(ptr) MSVCRT_type_info_dtor
-@ thiscall -arch=i386 ??1type_info@@UAE@XZ(ptr) MSVCRT_type_info_dtor
+# @ thiscall -arch=i386 ??1type_info@@UAE@XZ(ptr) MSVCRT_type_info_dtor
 @ cdecl -arch=win64 ??1type_info@@UEAA@XZ(ptr) MSVCRT_type_info_dtor
 @ cdecl -arch=win32 ??2@YAPAXI@Z(long) MSVCRT_operator_new
 @ cdecl -arch=win64 ??2@YAPEAX_K@Z(long) MSVCRT_operator_new
@@ -79,20 +79,20 @@
 # @ extern ??_7bad_cast@@6B@ MSVCRT_bad_cast_vtable
 # @ extern ??_7bad_typeid@@6B@ MSVCRT_bad_typeid_vtable
 # @ extern ??_7exception@@6B@ MSVCRT_exception_vtable
-@ thiscall -arch=win32 ??_E__non_rtti_object@@UAEPAXI@Z(ptr long) MSVCRT___non_rtti_object_vector_dtor
-@ thiscall -arch=win32 ??_Ebad_cast@@UAEPAXI@Z(ptr long) MSVCRT_bad_cast_vector_dtor
-@ thiscall -arch=win32 ??_Ebad_typeid@@UAEPAXI@Z(ptr long) MSVCRT_bad_typeid_vector_dtor
-@ thiscall -arch=win32 ??_Eexception@@UAEPAXI@Z(ptr long) MSVCRT_exception_vector_dtor
+# @ thiscall -arch=win32 ??_E__non_rtti_object@@UAEPAXI@Z(ptr long) MSVCRT___non_rtti_object_vector_dtor
+# @ thiscall -arch=win32 ??_Ebad_cast@@UAEPAXI@Z(ptr long) MSVCRT_bad_cast_vector_dtor
+# @ thiscall -arch=win32 ??_Ebad_typeid@@UAEPAXI@Z(ptr long) MSVCRT_bad_typeid_vector_dtor
+# @ thiscall -arch=win32 ??_Eexception@@UAEPAXI@Z(ptr long) MSVCRT_exception_vector_dtor
 # @ cdecl -arch=arm ??_Fbad_cast@std@@QAAXXZ(ptr) MSVCRT_bad_cast_default_ctor
 # @ thiscall -arch=i386 ??_Fbad_cast@@QAEXXZ(ptr) MSVCRT_bad_cast_default_ctor
 # @ cdecl -arch=win64 ??_Fbad_cast@@QEAAXXZ(ptr) MSVCRT_bad_cast_default_ctor
 # @ cdecl -arch=arm ??_Fbad_typeid@std@@QAAXXZ(ptr) MSVCRT_bad_typeid_default_ctor
 # @ thiscall -arch=i386 ??_Fbad_typeid@@QAEXXZ(ptr) MSVCRT_bad_typeid_default_ctor
 # @ cdecl -arch=win64 ??_Fbad_typeid@@QEAAXXZ(ptr) MSVCRT_bad_typeid_default_ctor
-@ thiscall -arch=win32 ??_G__non_rtti_object@@UAEPAXI@Z(ptr long) MSVCRT___non_rtti_object_scalar_dtor
-@ thiscall -arch=win32 ??_Gbad_cast@@UAEPAXI@Z(ptr long) MSVCRT_bad_cast_scalar_dtor
-@ thiscall -arch=win32 ??_Gbad_typeid@@UAEPAXI@Z(ptr long) MSVCRT_bad_typeid_scalar_dtor
-@ thiscall -arch=win32 ??_Gexception@@UAEPAXI@Z(ptr long) MSVCRT_exception_scalar_dtor
+# @ thiscall -arch=win32 ??_G__non_rtti_object@@UAEPAXI@Z(ptr long) MSVCRT___non_rtti_object_scalar_dtor
+# @ thiscall -arch=win32 ??_Gbad_cast@@UAEPAXI@Z(ptr long) MSVCRT_bad_cast_scalar_dtor
+# @ thiscall -arch=win32 ??_Gbad_typeid@@UAEPAXI@Z(ptr long) MSVCRT_bad_typeid_scalar_dtor
+# @ thiscall -arch=win32 ??_Gexception@@UAEPAXI@Z(ptr long) MSVCRT_exception_scalar_dtor
 @ cdecl -arch=win32 ??_U@YAPAXI@Z(long) MSVCRT_operator_new
 @ cdecl -arch=win64 ??_U@YAPEAX_K@Z(long) MSVCRT_operator_new
 @ cdecl -arch=win32 ??_U@YAPAXIHPBDH@Z(long long str long) MSVCRT_operator_new_dbg
@@ -165,7 +165,7 @@
 # stub _CrtSetReportHook2
 # stub _CrtSetReportMode
 @ stdcall _CxxThrowException(ptr ptr) MSVCRT__CxxThrowException
-@ cdecl -arch=i386 -norelay _EH_prolog()
+# @ cdecl -arch=i386 -norelay _EH_prolog()
 # @ cdecl _Getdays()
 # @ cdecl _Getmonths()
 # @ cdecl _Gettnames()
@@ -182,7 +182,7 @@
 @ cdecl -arch=i386,x86_64,arm,arm64 -norelay __CxxFrameHandler(ptr ptr ptr ptr)
 @ cdecl -arch=i386,x86_64,arm,arm64 -norelay __CxxFrameHandler2(ptr ptr ptr ptr) __CxxFrameHandler
 @ cdecl -arch=i386,x86_64,arm,arm64 -norelay __CxxFrameHandler3(ptr ptr ptr ptr) __CxxFrameHandler
-@ stdcall -arch=i386 __CxxLongjmpUnwind(ptr)
+# @ stdcall -arch=i386 __CxxLongjmpUnwind(ptr)
 # @ cdecl -arch=i386,x86_64,arm,arm64 __CxxQueryExceptionSize()
 # @ cdecl __CxxRegisterExceptionObject(ptr ptr)
 # @ cdecl __CxxUnregisterExceptionObject(ptr long)
@@ -300,20 +300,20 @@
 @ cdecl _access(str long) MSVCRT__access
 @ cdecl _access_s(str long) MSVCRT__access_s
 @ extern _acmdln MSVCRT__acmdln
-@ stdcall -arch=i386 _adj_fdiv_m16i(long)
-@ stdcall -arch=i386 _adj_fdiv_m32(long)
-@ stdcall -arch=i386 _adj_fdiv_m32i(long)
-@ stdcall -arch=i386 _adj_fdiv_m64(int64)
-@ cdecl -arch=i386 _adj_fdiv_r()
-@ stdcall -arch=i386 _adj_fdivr_m16i(long)
-@ stdcall -arch=i386 _adj_fdivr_m32(long)
-@ stdcall -arch=i386 _adj_fdivr_m32i(long)
-@ stdcall -arch=i386 _adj_fdivr_m64(int64)
-@ cdecl -arch=i386 _adj_fpatan()
-@ cdecl -arch=i386 _adj_fprem()
-@ cdecl -arch=i386 _adj_fprem1()
-@ cdecl -arch=i386 _adj_fptan()
-@ extern -arch=i386 _adjust_fdiv MSVCRT__adjust_fdiv
+# @ stdcall -arch=i386 _adj_fdiv_m16i(long)
+# @ stdcall -arch=i386 _adj_fdiv_m32(long)
+# @ stdcall -arch=i386 _adj_fdiv_m32i(long)
+# @ stdcall -arch=i386 _adj_fdiv_m64(int64)
+# @ cdecl -arch=i386 _adj_fdiv_r()
+# @ stdcall -arch=i386 _adj_fdivr_m16i(long)
+# @ stdcall -arch=i386 _adj_fdivr_m32(long)
+# @ stdcall -arch=i386 _adj_fdivr_m32i(long)
+# @ stdcall -arch=i386 _adj_fdivr_m64(int64)
+# @ cdecl -arch=i386 _adj_fpatan()
+# @ cdecl -arch=i386 _adj_fprem()
+# @ cdecl -arch=i386 _adj_fprem1()
+# @ cdecl -arch=i386 _adj_fptan()
+# @ extern -arch=i386 _adjust_fdiv MSVCRT__adjust_fdiv
 # @ extern _aexit_rtn
 @ cdecl _aligned_free(ptr) MSVCRT__aligned_free
 # stub _aligned_free_dbg(ptr)
@@ -353,7 +353,7 @@
 @ cdecl _chdrive(long) MSVCRT__chdrive
 @ cdecl _chgsign(double) MSVCRT__chgsign
 @ cdecl -arch=arm,x86_64,arm64 _chgsignf(float) MSVCRT__chgsignf
-@ cdecl -arch=i386 -norelay _chkesp()
+# @ cdecl -arch=i386 -norelay _chkesp()
 @ cdecl _chmod(str long) MSVCRT__chmod
 @ cdecl _chsize(long long) MSVCRT__chsize
 @ cdecl _chsize_s(long int64) MSVCRT__chsize_s
@@ -414,9 +414,9 @@
 @ extern _environ msvcrt.__qemu_native_data__
 @ cdecl _eof(long) MSVCRT__eof
 @ cdecl _errno() MSVCRT__errno
-@ cdecl -arch=i386 _except_handler2(ptr ptr ptr ptr)
-@ cdecl -arch=i386 _except_handler3(ptr ptr ptr ptr)
-@ cdecl -arch=i386 _except_handler4_common(ptr ptr ptr ptr ptr ptr)
+# @ cdecl -arch=i386 _except_handler2(ptr ptr ptr ptr)
+# @ cdecl -arch=i386 _except_handler3(ptr ptr ptr ptr)
+# @ cdecl -arch=i386 _except_handler4_common(ptr ptr ptr ptr ptr ptr)
 # @ varargs _execl(str str)
 # @ varargs _execle(str str)
 # @ varargs _execlp(str str)
@@ -536,7 +536,7 @@
 @ cdecl _getwch()
 @ cdecl _getwche()
 @ cdecl _getws(ptr) MSVCRT__getws
-@ cdecl -arch=i386 _global_unwind2(ptr)
+# @ cdecl -arch=i386 _global_unwind2(ptr)
 @ cdecl _gmtime32(ptr) MSVCRT__gmtime32
 @ cdecl _gmtime32_s(ptr ptr) MSVCRT__gmtime32_s
 @ cdecl _gmtime64(ptr) MSVCRT__gmtime64
@@ -658,8 +658,8 @@
 # @ cdecl _lfind_s(ptr ptr ptr long ptr ptr)
 @ cdecl _loaddll(str)
 @ cdecl -arch=x86_64 _local_unwind(ptr ptr)
-@ cdecl -arch=i386 _local_unwind2(ptr long)
-@ cdecl -arch=i386 _local_unwind4(ptr ptr long)
+# @ cdecl -arch=i386 _local_unwind2(ptr long)
+# @ cdecl -arch=i386 _local_unwind4(ptr ptr long)
 @ cdecl _localtime32(ptr) MSVCRT__localtime32
 @ cdecl _localtime32_s(ptr ptr) MSVCRT__localtime32_s
 @ cdecl _localtime64(ptr) MSVCRT__localtime64
@@ -873,10 +873,10 @@
 @ cdecl -ret64 _rotl64(int64 long)
 @ cdecl _rotr(long long) MSVCRT__rotr
 @ cdecl -ret64 _rotr64(int64 long)
-@ cdecl -arch=i386 _safe_fdiv()
-@ cdecl -arch=i386 _safe_fdivr()
-@ cdecl -arch=i386 _safe_fprem()
-@ cdecl -arch=i386 _safe_fprem1()
+# @ cdecl -arch=i386 _safe_fdiv()
+# @ cdecl -arch=i386 _safe_fdivr()
+# @ cdecl -arch=i386 _safe_fprem()
+# @ cdecl -arch=i386 _safe_fprem1()
 @ cdecl _scalb(double long) MSVCRT__scalb
 @ cdecl -arch=x86_64 _scalbf(float long) MSVCRT__scalbf
 # @ varargs _scanf_l(str ptr) MSVCRT__scanf_l
@@ -889,8 +889,8 @@
 # stub _scwprintf_p_l(wstr ptr)
 @ cdecl _searchenv(str str ptr) MSVCRT__searchenv
 @ cdecl _searchenv_s(str str ptr long) MSVCRT__searchenv_s
-@ stdcall -arch=i386 _seh_longjmp_unwind4(ptr)
-@ stdcall -arch=i386 _seh_longjmp_unwind(ptr)
+# @ stdcall -arch=i386 _seh_longjmp_unwind4(ptr)
+# @ stdcall -arch=i386 _seh_longjmp_unwind(ptr)
 @ cdecl _set_SSE2_enable(long) MSVCRT__set_SSE2_enable
 @ cdecl _set_controlfp(long long)
 @ cdecl _set_doserrno(long) MSVCRT__set_doserrno
@@ -901,8 +901,8 @@
 # @ cdecl _set_output_format(long) MSVCRT__set_output_format
 @ cdecl _set_sbh_threshold(long)
 @ cdecl _seterrormode(long) MSVCRT__seterrormode
-@ cdecl -arch=i386,x86_64,arm,arm64 -norelay _setjmp(ptr) MSVCRT__setjmp
-@ cdecl -arch=i386 -norelay _setjmp3(ptr long) MSVCRT__setjmp3
+@ cdecl -arch=x86_64,arm,arm64 -norelay _setjmp(ptr) MSVCRT__setjmp
+# @ cdecl -arch=i386 -norelay _setjmp3(ptr long) MSVCRT__setjmp3
 @ cdecl -arch=x86_64,arm -norelay _setjmpex(ptr ptr) MSVCRT__setjmpex
 @ cdecl _setmaxstdio(long) MSVCRT__setmaxstdio
 @ cdecl _setmbcp(long)
