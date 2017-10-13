@@ -905,6 +905,8 @@ void qemu_DispatchMessageA(struct qemu_syscall *call)
     msg_guest_to_host(&msg_out, msg_in);
 
     c->super.iret = DispatchMessageA(&msg_out);
+
+    msg_guest_to_host_free(&msg_out);
 }
 
 #endif
@@ -941,6 +943,8 @@ void qemu_DispatchMessageW(struct qemu_syscall *call)
     msg_guest_to_host(&msg_out, msg_in);
 
     c->super.iret = DispatchMessageW(&msg_out);
+
+    msg_guest_to_host_free(&msg_out);
 }
 
 #endif

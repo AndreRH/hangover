@@ -62,7 +62,12 @@ void qemu_DefWindowProcA(struct qemu_syscall *call)
 {
     struct qemu_DefWindowProcA *c = (struct qemu_DefWindowProcA *)call;
     WINE_TRACE("\n");
-    c->super.iret = DefWindowProcA((HWND)c->hwnd, c->msg, c->wParam, c->lParam);
+    MSG msg_in = {(HWND)c->hwnd, c->msg, c->wParam, c->lParam};
+    MSG msg_out;
+
+    msg_guest_to_host(&msg_out, &msg_in);
+    c->super.iret = DefWindowProcA(msg_out.hwnd, msg_out.message, msg_out.wParam, msg_out.lParam);
+    msg_guest_to_host_free(&msg_out);
 }
 
 #endif
@@ -98,7 +103,12 @@ void qemu_DefWindowProcW(struct qemu_syscall *call)
 {
     struct qemu_DefWindowProcW *c = (struct qemu_DefWindowProcW *)call;
     WINE_TRACE("\n");
-    c->super.iret = DefWindowProcW((HWND)c->hwnd, c->msg, c->wParam, c->lParam);
+    MSG msg_in = {(HWND)c->hwnd, c->msg, c->wParam, c->lParam};
+    MSG msg_out;
+
+    msg_guest_to_host(&msg_out, &msg_in);
+    c->super.iret = DefWindowProcW(msg_out.hwnd, msg_out.message, msg_out.wParam, msg_out.lParam);
+    msg_guest_to_host_free(&msg_out);
 }
 
 #endif

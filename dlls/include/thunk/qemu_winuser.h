@@ -17,4 +17,20 @@ struct qemu_WNDCLASSEX
     qemu_handle hIconSm;
 };
 
+struct qemu_CREATESTRUCT
+{
+    qemu_ptr        lpCreateParams;
+    qemu_handle     hInstance;
+    qemu_handle     hMenu;
+    qemu_handle     hwndParent;
+    INT             cy;
+    INT             cx;
+    INT             y;
+    INT             x;
+    LONG            style;
+    qemu_ptr        lpszName;
+    qemu_ptr        lpszClass;
+    DWORD           dwExStyle;
+};
+
 #endif
