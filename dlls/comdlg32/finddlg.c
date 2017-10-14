@@ -53,34 +53,23 @@ WINBASEAPI HWND WINAPI FindTextA(LPFINDREPLACEA pfr)
 
 #else
 
-static inline void FINDREPLACE_g2h(FINDREPLACEW *host, const struct qemu_FINDREPLACE *guest)
-{
-    host->lStructSize = sizeof(*host);
-    host->hwndOwner = (HWND)(ULONG_PTR)guest->hwndOwner;
-    host->hInstance = (HINSTANCE)(ULONG_PTR)guest->hInstance;
-    host->Flags = guest->Flags;
-    host->lpstrFindWhat = (WCHAR *)(ULONG_PTR)guest->lpstrFindWhat;
-    host->lpstrReplaceWith = (WCHAR *)(ULONG_PTR)guest->lpstrReplaceWith;
-    host->wFindWhatLen = guest->wFindWhatLen;
-    host->wReplaceWithLen = guest->wReplaceWithLen;
-    host->lCustData = guest->lCustData;
-    host->lpfnHook = (LPFRHOOKPROC)(ULONG_PTR)guest->lpfnHook;
-    host->lpTemplateName = (const WCHAR *)(ULONG_PTR)guest->lpTemplateName;
-}
-
 void qemu_FindTextA(struct qemu_syscall *call)
 {
     struct qemu_FindTextA *c = (struct qemu_FindTextA *)call;
     WINE_TRACE("\n");
-    FINDREPLACEA copy, *dlg = &copy;
+    FINDREPLACEA *dlg;
 
 #if HOST_BIT == GUEST_BIT
     dlg = QEMU_G2H(c->pfr);
 #else
+    dlg = HeapAlloc(GetProcessHeap(), 0, sizeof(*dlg));
     FINDREPLACE_g2h((FINDREPLACEW *)dlg, QEMU_G2H(c->pfr));
+    dlg->lCustData = (LPARAM)QEMU_G2H(c->pfr);
 #endif
 
     c->super.iret = (ULONG_PTR)FindTextA(dlg);
+    if (!c->super.iret && dlg != QEMU_G2H(c->pfr))
+        HeapFree(GetProcessHeap(), 0, dlg);
 }
 
 #endif
@@ -115,10 +104,14 @@ void qemu_ReplaceTextA(struct qemu_syscall *call)
 #if HOST_BIT == GUEST_BIT
     dlg = QEMU_G2H(c->pfr);
 #else
+    dlg = HeapAlloc(GetProcessHeap(), 0, sizeof(*dlg));
     FINDREPLACE_g2h((FINDREPLACEW *)dlg, QEMU_G2H(c->pfr));
+    dlg->lCustData = (LPARAM)QEMU_G2H(c->pfr);
 #endif
 
     c->super.iret = (ULONG_PTR)ReplaceTextA(dlg);
+    if (!c->super.iret && dlg != QEMU_G2H(c->pfr))
+        HeapFree(GetProcessHeap(), 0, dlg);
 }
 
 #endif
@@ -153,10 +146,14 @@ void qemu_FindTextW(struct qemu_syscall *call)
 #if HOST_BIT == GUEST_BIT
     dlg = QEMU_G2H(c->pfr);
 #else
+    dlg = HeapAlloc(GetProcessHeap(), 0, sizeof(*dlg));
     FINDREPLACE_g2h(dlg, QEMU_G2H(c->pfr));
+    dlg->lCustData = (LPARAM)QEMU_G2H(c->pfr);
 #endif
 
     c->super.iret = (ULONG_PTR)FindTextW(dlg);
+    if (!c->super.iret && dlg != QEMU_G2H(c->pfr))
+        HeapFree(GetProcessHeap(), 0, dlg);
 }
 
 #endif
@@ -191,10 +188,14 @@ void qemu_ReplaceTextW(struct qemu_syscall *call)
 #if HOST_BIT == GUEST_BIT
     dlg = QEMU_G2H(c->pfr);
 #else
+    dlg = HeapAlloc(GetProcessHeap(), 0, sizeof(*dlg));
     FINDREPLACE_g2h(dlg, QEMU_G2H(c->pfr));
+    dlg->lCustData = (LPARAM)QEMU_G2H(c->pfr);
 #endif
 
     c->super.iret = (ULONG_PTR)ReplaceTextW(dlg);
+    if (!c->super.iret && dlg != QEMU_G2H(c->pfr))
+        HeapFree(GetProcessHeap(), 0, dlg);
 }
 
 #endif

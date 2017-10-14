@@ -1482,6 +1482,9 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv);
 void msg_guest_to_host(MSG *msg_out, const MSG *msg_in);
 void msg_guest_to_host_return(MSG *orig, MSG *conv);
 
+/* Registered messages that need translation */
+ATOM msg_FINDMSGSTRING;
+
 #endif
 
 #endif

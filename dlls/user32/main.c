@@ -844,7 +844,8 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
     call->wparam = msg_conv.wParam;
     call->lparam = msg_conv.lParam;
 
-    WINE_TRACE("Calling guest wndproc 0x%lx(%p, %x, %lx, %lx)\n", wrapper->guest_proc, win, msg, wparam, lparam);
+    WINE_TRACE("Calling guest wndproc 0x%lx(%p, %lx, %lx, %lx)\n", wrapper->guest_proc,
+            msg_conv.hwnd, call->msg, call->wparam, call->lparam);
     WINE_TRACE("wrapper at %p, param struct at %p\n", wrapper, call);
 
     ret = qemu_ops->qemu_execute(QEMU_G2H(guest_wndproc_wrapper), QEMU_H2G(call));
@@ -1026,7 +1027,7 @@ uint64_t wndproc_host_to_guest(WNDPROC host_proc)
     assert(0);
 }
 
-static inline void windowpos_g2h(WINDOWPOS *host, const struct qemu_WINDOWPOS *guest)
+static inline void WINDOWPOS_g2h(WINDOWPOS *host, const struct qemu_WINDOWPOS *guest)
 {
     host->hwnd = (HWND)(ULONG_PTR)guest->hwnd;
     host->hwndInsertAfter = (HWND)(ULONG_PTR)guest->hwndInsertAfter;
@@ -1037,7 +1038,7 @@ static inline void windowpos_g2h(WINDOWPOS *host, const struct qemu_WINDOWPOS *g
     host->flags = guest->flags;
 }
 
-static inline void windowpos_h2g(struct qemu_WINDOWPOS *guest, const WINDOWPOS *host)
+static inline void WINDOWPOS_h2g(struct qemu_WINDOWPOS *guest, const WINDOWPOS *host)
 {
     guest->hwnd = (ULONG_PTR)host->hwnd;
     guest->hwndInsertAfter = (ULONG_PTR)host->hwndInsertAfter;
@@ -1087,14 +1088,19 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
         {
             struct qemu_WINDOWPOS *guest = (struct qemu_WINDOWPOS *)msg_in->lParam;
             WINDOWPOS *host = HeapAlloc(GetProcessHeap(), 0, sizeof(*host));
-            windowpos_g2h(host, guest);
+            WINDOWPOS_g2h(host, guest);
             msg_out->lParam = (LPARAM)host;
             break;
         }
 #endif
 
         default:
-            break;
+            /* Not constant numbers */
+            if (msg_in->message == msg_FINDMSGSTRING)
+            {
+                WINE_FIXME("Did not expect MSG_FINDMSGSTRING to be passed back to the host\n");
+                break;
+            }
     }
 }
 
@@ -1113,9 +1119,16 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
             struct qemu_WINDOWPOS *guest = (struct qemu_WINDOWPOS *)orig->lParam;
             WINDOWPOS *host = (WINDOWPOS *)conv->lParam;
 
-            windowpos_h2g(guest, host);
+            WINDOWPOS_h2g(guest, host);
 
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
+
+        default:
+            if (conv->message == msg_FINDMSGSTRING)
+            {
+                break;
+            }
             break;
         }
     }
@@ -1169,14 +1182,25 @@ void msg_host_to_guest(MSG *msg_out, const MSG *msg_in)
             WINDOWPOS *host = (WINDOWPOS *)msg_in->lParam;
             struct qemu_WINDOWPOS *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*host));
 
-            windowpos_h2g(guest, host);
+            WINDOWPOS_h2g(guest, host);
 
             msg_out->lParam = (LPARAM)guest;
             break;
         }
-#endif
+
         default:
+            /* Not constant numbers */
+            if (msg_in->message == msg_FINDMSGSTRING)
+            {
+                FINDREPLACEW *host = (FINDREPLACEW *)msg_in->lParam;
+                struct qemu_FINDREPLACE *guest = (struct qemu_FINDREPLACE *)host->lCustData;
+
+                FINDREPLACE_h2g(guest, host);
+
+                msg_out->lParam = (LPARAM)guest;
+            }
             break;
+#endif
     }
 }
 
@@ -1201,11 +1225,22 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
             struct qemu_WINDOWPOS *guest = (struct qemu_WINDOWPOS *)conv->lParam;
             WINDOWPOS *host = (WINDOWPOS *)orig->lParam;
 
-            windowpos_g2h(host, guest);
+            WINDOWPOS_g2h(host, guest);
 
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
         }
+
+        default:
+            if (conv->message == msg_FINDMSGSTRING)
+            {
+                FINDREPLACEW *host = (FINDREPLACEW *)orig->lParam;
+                if (host->Flags & FR_DIALOGTERM)
+                    HeapFree(GetProcessHeap(), 0, host);
+                else
+                    FINDREPLACE_g2h(host, (struct qemu_FINDREPLACE *)conv->lParam);
+            }
+            break;
     }
 #endif
 }

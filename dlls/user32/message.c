@@ -27,6 +27,7 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <wine/unicode.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 #endif
 
@@ -1253,8 +1254,23 @@ WINUSERAPI UINT WINAPI RegisterWindowMessageW(LPCWSTR str)
 void qemu_RegisterWindowMessageW(struct qemu_syscall *call)
 {
     struct qemu_RegisterWindowMessageW *c = (struct qemu_RegisterWindowMessageW *)call;
+    ATOM ret;
+
     WINE_TRACE("\n");
-    c->super.iret = RegisterWindowMessageW(QEMU_G2H(c->str));
+    ret = RegisterWindowMessageW(QEMU_G2H(c->str));
+
+    if (ret)
+    {
+        if (!strcmpW(QEMU_G2H(c->str), FINDMSGSTRINGW))
+        {
+            if (msg_FINDMSGSTRING && msg_FINDMSGSTRING != ret)
+                WINE_ERR("FINDMSGSTRINGW already has atom %x, now I got %x.\n",
+                        msg_FINDMSGSTRING, ret);
+            msg_FINDMSGSTRING = ret;
+        }
+    }
+
+    c->super.iret = ret;
 }
 
 #endif
