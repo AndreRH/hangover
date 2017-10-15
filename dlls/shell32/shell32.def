@@ -124,6 +124,7 @@ EXPORTS
   SHCreatePropSheetExtArray
   SHCreatePropSheetExtArrayEx
   SHCreateQueryCancelAutoPlayMoniker
+  SHCreateSessionKey
   SHCreateShellItem
   SHCreateShellItemArray
   SHCreateShellItemArrayFromDataObject
@@ -228,7 +229,15 @@ EXPORTS
   SHQueryRecycleBinA
   SHQueryRecycleBinW
   SHQueryUserNotificationState
+  SHRegCloseKey
+  SHRegDeleteKeyW
   SHRegisterDragDrop
+  SHRegOpenKeyA
+  SHRegOpenKeyW
+  SHRegQueryValueA
+  SHRegQueryValueExA
+  SHRegQueryValueExW
+  SHRegQueryValueW
   SHRemoveLocalizedName
   SHReplaceFromPropSheetExtArray
   SHRevokeDragDrop

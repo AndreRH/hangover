@@ -128,6 +128,7 @@ enum shell32_calls
     CALL_SHCREATEPROPSHEETEXTARRAY,
     CALL_SHCREATEPROPSHEETEXTARRAYEX,
     CALL_SHCREATEQUERYCANCELAUTOPLAYMONIKER,
+    CALL_SHCREATESESSIONKEY,
     CALL_SHCREATESHELLITEM,
     CALL_SHCREATESHELLITEMARRAY,
     CALL_SHCREATESHELLITEMARRAYFROMDATAOBJECT,
@@ -231,7 +232,15 @@ enum shell32_calls
     CALL_SHQUERYRECYCLEBINA,
     CALL_SHQUERYRECYCLEBINW,
     CALL_SHQUERYUSERNOTIFICATIONSTATE,
+    CALL_SHREGCLOSEKEY,
+    CALL_SHREGDELETEKEYW,
     CALL_SHREGISTERDRAGDROP,
+    CALL_SHREGOPENKEYA,
+    CALL_SHREGOPENKEYW,
+    CALL_SHREGQUERYVALUEA,
+    CALL_SHREGQUERYVALUEEXA,
+    CALL_SHREGQUERYVALUEEXW,
+    CALL_SHREGQUERYVALUEW,
     CALL_SHREMOVELOCALIZEDNAME,
     CALL_SHREPLACEFROMPROPSHEETEXTARRAY,
     CALL_SHREVOKEDRAGDROP,
@@ -384,6 +393,7 @@ void qemu_SHCreateLinks(struct qemu_syscall *call);
 void qemu_SHCreatePropSheetExtArray(struct qemu_syscall *call);
 void qemu_SHCreatePropSheetExtArrayEx(struct qemu_syscall *call);
 void qemu_SHCreateQueryCancelAutoPlayMoniker(struct qemu_syscall *call);
+void qemu_SHCreateSessionKey(struct qemu_syscall *call);
 void qemu_SHCreateShellItem(struct qemu_syscall *call);
 void qemu_SHCreateShellItemArray(struct qemu_syscall *call);
 void qemu_SHCreateShellItemArrayFromDataObject(struct qemu_syscall *call);
@@ -488,7 +498,15 @@ void qemu_SHPropStgWriteMultiple(struct qemu_syscall *call);
 void qemu_SHQueryRecycleBinA(struct qemu_syscall *call);
 void qemu_SHQueryRecycleBinW(struct qemu_syscall *call);
 void qemu_SHQueryUserNotificationState(struct qemu_syscall *call);
+void qemu_SHRegCloseKey(struct qemu_syscall *call);
+void qemu_SHRegDeleteKeyW(struct qemu_syscall *call);
 void qemu_SHRegisterDragDrop(struct qemu_syscall *call);
+void qemu_SHRegOpenKeyA(struct qemu_syscall *call);
+void qemu_SHRegOpenKeyW(struct qemu_syscall *call);
+void qemu_SHRegQueryValueA(struct qemu_syscall *call);
+void qemu_SHRegQueryValueExA(struct qemu_syscall *call);
+void qemu_SHRegQueryValueExW(struct qemu_syscall *call);
+void qemu_SHRegQueryValueW(struct qemu_syscall *call);
 void qemu_SHRemoveLocalizedName(struct qemu_syscall *call);
 void qemu_SHReplaceFromPropSheetExtArray(struct qemu_syscall *call);
 void qemu_SHRevokeDragDrop(struct qemu_syscall *call);
