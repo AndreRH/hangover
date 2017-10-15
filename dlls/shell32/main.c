@@ -173,6 +173,7 @@ static const syscall_handler dll_functions[] =
     qemu_Shell_NotifyIconW,
     qemu_ShellAboutA,
     qemu_ShellAboutW,
+    qemu_ShellDDEInit,
     qemu_ShellExecuteA,
     qemu_ShellExecuteExA,
     qemu_ShellExecuteExW,

@@ -130,6 +130,7 @@ EXPORTS
   Shell_NotifyIconW
   ShellAboutA
   ShellAboutW
+  ShellDDEInit
   ShellExecuteA
   ShellExecuteExA
   ShellExecuteExW
