@@ -2211,7 +2211,7 @@ WINBASEAPI int CDECL MSVCRT_abs(int n)
 void qemu_abs(struct qemu_syscall *call)
 {
     struct qemu_abs *c = (struct qemu_abs *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_abs(c->n);
 }
 
