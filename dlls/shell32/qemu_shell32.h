@@ -87,6 +87,7 @@ enum shell32_calls
     CALL_SHALLOC,
     CALL_SHALLOCSHARED,
     CALL_SHAPPBARMESSAGE,
+    CALL_SHASSOCENUMHANDLERS,
     CALL_SHBINDTOPARENT,
     CALL_SHBROWSEFORFOLDERA,
     CALL_SHBROWSEFORFOLDERW,
@@ -302,6 +303,7 @@ void qemu_SHAddToRecentDocs(struct qemu_syscall *call);
 void qemu_SHAlloc(struct qemu_syscall *call);
 void qemu_SHAllocShared(struct qemu_syscall *call);
 void qemu_SHAppBarMessage(struct qemu_syscall *call);
+void qemu_SHAssocEnumHandlers(struct qemu_syscall *call);
 void qemu_SHBindToParent(struct qemu_syscall *call);
 void qemu_SHBrowseForFolderA(struct qemu_syscall *call);
 void qemu_SHBrowseForFolderW(struct qemu_syscall *call);

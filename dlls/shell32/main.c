@@ -126,6 +126,7 @@ static const syscall_handler dll_functions[] =
     qemu_SHAlloc,
     qemu_SHAllocShared,
     qemu_SHAppBarMessage,
+    qemu_SHAssocEnumHandlers,
     qemu_SHBindToParent,
     qemu_SHBrowseForFolderA,
     qemu_SHBrowseForFolderW,
