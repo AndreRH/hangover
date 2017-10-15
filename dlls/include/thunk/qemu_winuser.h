@@ -44,4 +44,18 @@ struct qemu_WINDOWPOS
     UINT        flags;
 };
 
+struct qemu_NMHDR
+{
+    qemu_handle hwndFrom;
+    qemu_ptr    idFrom;
+    UINT        code;
+};
+
+static inline void NMHDR_h2g(struct qemu_NMHDR *guest, const NMHDR *host)
+{
+    guest->hwndFrom = (ULONG_PTR)host->hwndFrom;
+    guest->idFrom = host->idFrom;
+    guest->code = host->code;
+}
+
 #endif

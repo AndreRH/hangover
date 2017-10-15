@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_comdlg32.h"
@@ -45,7 +47,7 @@ struct qemu_GetOpenSaveFileName_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t guest_wrapper(const struct qemu_GetOpenSaveFileName_cb *cb)
+static uint64_t __fastcall guest_wrapper(const struct qemu_GetOpenSaveFileName_cb *cb)
 {
     LPOFNHOOKPROC guest_proc = (LPOFNHOOKPROC)(ULONG_PTR)cb->guest_proc;
     return guest_proc((HWND)(ULONG_PTR)cb->dlg, cb->msg, cb->wp, cb->lp);
@@ -105,19 +107,46 @@ static uint64_t guest_wrapper;
 
 static UINT_PTR CALLBACK hook_proc_wrapper(HWND dlg, UINT msg, WPARAM wp, LPARAM lp)
 {
-    struct qemu_GetOpenSaveFileName_cb call;
+    struct qemu_GetOpenSaveFileName_cb call_local, *call = &call_local;
     uint64_t *guest_proc = TlsGetValue(comdlg32_tls);
     UINT_PTR ret;
+    struct qemu_OFNOTIFY *notify = NULL;
 
-    WINE_TRACE("Calling guest proc 0x%lx(%p, %u, %lu, %lu).\n", *guest_proc, dlg, msg, wp, lp);
-    call.guest_proc = *guest_proc;
-    call.dlg = (ULONG_PTR)dlg;
-    call.msg = msg;
-    call.wp = wp;
-    call.lp = lp;
+#if HOST_BIT != GUEST_BIT
+    call = HeapAlloc(GetProcessHeap(), 0, sizeof(*call));
+#endif
 
-    ret = qemu_ops->qemu_execute(QEMU_G2H(guest_wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Calling guest proc 0x%lx(%p, %x, %lu, %lu).\n", *guest_proc, dlg, msg, wp, lp);
+    call->guest_proc = *guest_proc;
+    call->dlg = (ULONG_PTR)dlg;
+    call->msg = msg;
+    call->wp = wp;
+    call->lp = lp;
+
+#if HOST_BIT != GUEST_BIT
+    if (msg == WM_NOTIFY)
+    {
+        const OFNOTIFYW *in = (const OFNOTIFYW *)lp;
+
+        notify = HeapAlloc(GetProcessHeap(), 0, sizeof(*notify));
+        NMHDR_h2g(&notify->hdr, &in->hdr);
+        notify->lpOFN = in->lpOFN->lCustData;
+        OPENFILENAME_h2g((struct qemu_OPENFILENAME *)in->lpOFN->lCustData, in->lpOFN);
+        notify->pszFile = (ULONG_PTR)in->pszFile;
+
+        call->lp = QEMU_H2G(notify);
+    }
+#endif
+
+    ret = qemu_ops->qemu_execute(QEMU_G2H(guest_wrapper), QEMU_H2G(call));
     WINE_TRACE("Guest proc returned %lu\n", ret);
+
+    if (call != &call_local)
+    {
+        HeapFree(GetProcessHeap(), 0, call);
+        HeapFree(GetProcessHeap(), 0, notify);
+    }
+
     return ret;
 }
 
@@ -135,13 +164,23 @@ void qemu_GetOpenSaveFileName(struct qemu_syscall *call)
     if (c->super.id == QEMU_SYSCALL_ID(CALL_GETOPENFILENAMEA)
             || c->super.id == QEMU_SYSCALL_ID(CALL_GETSAVEFILENAMEA))
     {
+#if HOST_BIT == GUEST_BIT
         a = *(OPENFILENAMEA *)QEMU_G2H(c->ofn);
+#else
+        OPENFILENAME_g2h((OPENFILENAMEW *)&a, QEMU_G2H(c->ofn));
+        a.lCustData = (LPARAM)QEMU_G2H(c->ofn);
+#endif
         guest_proc = (ULONG_PTR)a.lpfnHook;
         a.lpfnHook = hook_proc_wrapper;
     }
     else
     {
+#if HOST_BIT == GUEST_BIT
         w = *(OPENFILENAMEW *)QEMU_G2H(c->ofn);
+#else
+        OPENFILENAME_g2h(&w, QEMU_G2H(c->ofn));
+        w.lCustData = (LPARAM)QEMU_G2H(c->ofn);
+#endif
         guest_proc = (ULONG_PTR)w.lpfnHook;
         w.lpfnHook = hook_proc_wrapper;
     }
