@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_gdi32.h"
@@ -29,7 +31,6 @@
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_gdi32);
 #endif
-
 
 struct qemu_GdiGetSpoolMessage
 {
@@ -125,8 +126,16 @@ WINGDIAPI INT WINAPI StartDocW(HDC hdc, const DOCINFOW* doc)
 void qemu_StartDocW(struct qemu_syscall *call)
 {
     struct qemu_StartDocW *c = (struct qemu_StartDocW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = StartDocW(QEMU_G2H(c->hdc), QEMU_G2H(c->doc));
+    DOCINFOW stack, *ptr = &stack;
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+    ptr = QEMU_G2H(c->doc);
+#else
+    DOCINFO_g2h(ptr, QEMU_G2H(c->doc));
+#endif
+
+    c->super.iret = StartDocW(QEMU_G2H(c->hdc), ptr);
 }
 
 #endif
@@ -157,8 +166,16 @@ WINGDIAPI INT WINAPI StartDocA(HDC hdc, const DOCINFOA* doc)
 void qemu_StartDocA(struct qemu_syscall *call)
 {
     struct qemu_StartDocA *c = (struct qemu_StartDocA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = StartDocA(QEMU_G2H(c->hdc), QEMU_G2H(c->doc));
+    DOCINFOA stack, *ptr = &stack;
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+    ptr = QEMU_G2H(c->doc);
+#else
+    DOCINFO_g2h((DOCINFOW *)ptr, QEMU_G2H(c->doc));
+#endif
+
+    c->super.iret = StartDocA(QEMU_G2H(c->hdc), ptr);
 }
 
 #endif
