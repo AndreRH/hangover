@@ -425,7 +425,7 @@ static void init_titleA()
 /* Works for both A and W versions. */
 static void startupinfo_htog(struct qemu_STARTUPINFO *guest, const STARTUPINFOW *host)
 {
-    guest->cb = host->cb;
+    guest->cb = sizeof(*guest);
     guest->lpReserved = (ULONG_PTR)host->lpReserved;
     guest->lpDesktop = (ULONG_PTR)host->lpDesktop;
     guest->lpTitle = (ULONG_PTR)host->lpTitle;
@@ -452,6 +452,7 @@ void qemu_GetStartupInfoA(struct qemu_syscall *call)
 
     WINE_TRACE("\n");
     GetStartupInfoA(&a);
+    a.cb = sizeof(a);
 
     if (!titleA)
         init_titleA();
@@ -488,6 +489,7 @@ void qemu_GetStartupInfoW(struct qemu_syscall *call)
 {
     struct qemu_GetStartupInfoW *c = (struct qemu_GetStartupInfoW *)call;
     STARTUPINFOW w;
+    w.cb = sizeof(w);
 
     WINE_TRACE("\n");
     GetStartupInfoW(&w);
