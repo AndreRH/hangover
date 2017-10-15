@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_comdlg32.h"
@@ -84,8 +86,24 @@ WINBASEAPI BOOL WINAPI PrintDlgW(LPPRINTDLGW lppd)
 void qemu_PrintDlgW(struct qemu_syscall *call)
 {
     struct qemu_PrintDlgW *c = (struct qemu_PrintDlgW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = PrintDlgW(QEMU_G2H(c->lppd));
+    PRINTDLGW copy, *dlg = &copy;
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+        dlg = (PRINTDLGW *)QEMU_G2H(c->lppd);
+#else
+        PRINTDLG_g2h(dlg, QEMU_G2H(c->lppd));
+        dlg->lCustData = (LPARAM)QEMU_G2H(c->lppd);
+#endif
+
+    if (dlg->lpfnPrintHook || dlg->lpfnSetupHook)
+        WINE_FIXME("Implement wrappers for print dialog hooks.\n");
+
+    c->super.iret = PrintDlgW(dlg);
+
+#if HOST_BIT != GUEST_BIT
+        PRINTDLG_h2g(QEMU_G2H(c->lppd), dlg);
+#endif
 }
 
 #endif

@@ -154,4 +154,73 @@ struct qemu_OFNOTIFY
     qemu_ptr            pszFile;
 };
 
+struct qemu_PRINTDLG
+{
+    DWORD           lStructSize;
+    qemu_handle     hwndOwner;
+    qemu_handle     hDevMode;
+    qemu_handle     hDevNames;
+    qemu_handle     hDC;
+    DWORD           Flags;
+    WORD            nFromPage;
+    WORD            nToPage;
+    WORD            nMinPage;
+    WORD            nMaxPage;
+    WORD            nCopies;
+    qemu_handle     hInstance;
+    qemu_ptr        lCustData;
+    qemu_ptr        lpfnPrintHook;
+    qemu_ptr        lpfnSetupHook;
+    qemu_ptr        lpPrintTemplateName;
+    qemu_ptr        lpSetupTemplateName;
+    qemu_handle     hPrintTemplate;
+    qemu_handle     hSetupTemplate;
+};
+
+static inline void PRINTDLG_g2h(PRINTDLGW *host, const struct qemu_PRINTDLG *guest)
+{
+    host->lStructSize = sizeof(*host);
+    host->hwndOwner = (HWND)(ULONG_PTR)guest->hwndOwner;
+    host->hDevMode = (HGLOBAL)(ULONG_PTR)guest->hDevMode;
+    host->hDevNames = (HGLOBAL)(ULONG_PTR)guest->hDevNames;
+    host->hDC = (HDC)(ULONG_PTR)guest->hDC;
+    host->Flags = guest->Flags;
+    host->nFromPage = guest->nFromPage;
+    host->nToPage = guest->nToPage;
+    host->nMinPage = guest->nMinPage;
+    host->nMaxPage = guest->nMaxPage;
+    host->nCopies = guest->nCopies;
+    host->hInstance = (HINSTANCE)(ULONG_PTR)guest->hInstance;
+    /* Do not touch lCustData, it is used by the calling functions. */
+    host->lpfnPrintHook = (LPPRINTHOOKPROC)(ULONG_PTR)guest->lpfnPrintHook;
+    host->lpfnSetupHook = (LPSETUPHOOKPROC)(ULONG_PTR)guest->lpfnSetupHook;
+    host->lpPrintTemplateName = (const WCHAR *)(ULONG_PTR)guest->lpPrintTemplateName;
+    host->lpSetupTemplateName = (const WCHAR *)(ULONG_PTR)guest->lpSetupTemplateName;
+    host->hPrintTemplate = (HGLOBAL)(ULONG_PTR)guest->hPrintTemplate;
+    host->hSetupTemplate = (HGLOBAL)(ULONG_PTR)guest->hSetupTemplate;
+}
+
+static inline void PRINTDLG_h2g(struct qemu_PRINTDLG *guest, const PRINTDLGW *host)
+{
+    guest->lStructSize = sizeof(*guest);
+    guest->hwndOwner = (ULONG_PTR)host->hwndOwner;
+    guest->hDevMode = (ULONG_PTR)host->hDevMode;
+    guest->hDevNames = (ULONG_PTR)host->hDevNames;
+    guest->hDC = (ULONG_PTR)host->hDC;
+    guest->Flags = host->Flags;
+    guest->nFromPage = host->nFromPage;
+    guest->nToPage = host->nToPage;
+    guest->nMinPage = host->nMinPage;
+    guest->nMaxPage = host->nMaxPage;
+    guest->nCopies = host->nCopies;
+    guest->hInstance = (ULONG_PTR)host->hInstance;
+    /* Do not touch lCustData, it is used by the calling functions. */
+    guest->lpfnPrintHook = (ULONG_PTR)host->lpfnPrintHook;
+    guest->lpfnSetupHook = (ULONG_PTR)host->lpfnSetupHook;
+    guest->lpPrintTemplateName = (ULONG_PTR)host->lpPrintTemplateName;
+    guest->lpSetupTemplateName = (ULONG_PTR)host->lpSetupTemplateName;
+    guest->hPrintTemplate = (ULONG_PTR)host->hPrintTemplate;
+    guest->hSetupTemplate = (ULONG_PTR)host->hSetupTemplate;
+}
+
 #endif
