@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <shlobj.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -74,7 +75,13 @@ static const syscall_handler dll_functions[] =
     qemu_DriveType,
     qemu_DuplicateIcon,
     qemu_ExitWindowsDialog,
+    qemu_ExtractAssociatedIconA,
+    qemu_ExtractAssociatedIconExA,
+    qemu_ExtractAssociatedIconExW,
+    qemu_ExtractAssociatedIconW,
     qemu_ExtractIconA,
+    qemu_ExtractIconExA,
+    qemu_ExtractIconExW,
     qemu_ExtractIconW,
     qemu_ExtractVersionResource16W,
     qemu_FileIconInit,
@@ -167,6 +174,8 @@ static const syscall_handler dll_functions[] =
     qemu_SHCreateShellItemArrayFromIDLists,
     qemu_SHCreateShellItemArrayFromShellItem,
     qemu_SHCreateStdEnumFmtEtc,
+    qemu_SHDefExtractIconA,
+    qemu_SHDefExtractIconW,
     qemu_SHDestroyPropSheetExtArray,
     qemu_SHDoDragDrop,
     qemu_SheChangeDirA,
@@ -174,6 +183,8 @@ static const syscall_handler dll_functions[] =
     qemu_SheGetDirA,
     qemu_SheGetDirW,
     qemu_shell32_243,
+    qemu_Shell_GetCachedImageIndexAW,
+    qemu_Shell_GetImageLists,
     qemu_Shell_NotifyIconA,
     qemu_Shell_NotifyIconW,
     qemu_ShellAboutA,
@@ -204,6 +215,8 @@ static const syscall_handler dll_functions[] =
     qemu_SHGetFolderPathAndSubDirW,
     qemu_SHGetFolderPathEx,
     qemu_SHGetFolderPathW,
+    qemu_SHGetIconOverlayIndexA,
+    qemu_SHGetIconOverlayIndexW,
     qemu_SHGetIDListFromObject,
     qemu_SHGetImageList,
     qemu_SHGetInstanceExplorer,
@@ -229,6 +242,7 @@ static const syscall_handler dll_functions[] =
     qemu_SHGetSpecialFolderLocation,
     qemu_SHGetSpecialFolderPathA,
     qemu_SHGetSpecialFolderPathW,
+    qemu_SHGetStockIconInfo,
     qemu_SHHandleUpdateImage,
     qemu_SHHelpShortcuts_RunDLLA,
     qemu_SHHelpShortcuts_RunDLLW,
@@ -240,6 +254,8 @@ static const syscall_handler dll_functions[] =
     qemu_SHLoadOLE,
     qemu_SHLockShared,
     qemu_SHLogILFromFSIL,
+    qemu_SHMapIDListToImageListIndexAsync,
+    qemu_SHMapPIDLToSystemImageListIndex,
     qemu_SHObjectProperties,
     qemu_SHOpenFolderAndSelectItems,
     qemu_SHOpenWithDialog,
@@ -301,6 +317,12 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_SHCLSIDFromString = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(147));
     if (!p_SHCLSIDFromString)
         WINE_ERR("Failed to load shell32.SHCLSIDFromString (#147).\n");
+    p_Shell_GetCachedImageIndexAW = (void *)GetProcAddress(shell32, "Shell_GetCachedImageIndex");
+    if (!p_Shell_GetCachedImageIndexAW)
+        WINE_ERR("Failed to load shell32.Shell_GetCachedImageIndex.\n");
+    p_SHMapIDListToImageListIndexAsync = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(148));
+    if (!p_SHMapIDListToImageListIndexAsync)
+        WINE_ERR("Failed to load shell32.SHMapIDListToImageListIndexAsync (#148).\n");
 
     return dll_functions;
 }

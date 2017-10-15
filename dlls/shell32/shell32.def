@@ -31,7 +31,13 @@ EXPORTS
   DriveType
   DuplicateIcon
   ExitWindowsDialog
+  ExtractAssociatedIconA
+  ExtractAssociatedIconExA
+  ExtractAssociatedIconExW
+  ExtractAssociatedIconW
   ExtractIconA
+  ExtractIconExA
+  ExtractIconExW
   ExtractIconW
   ExtractVersionResource16W
   FileIconInit
@@ -124,6 +130,8 @@ EXPORTS
   SHCreateShellItemArrayFromIDLists
   SHCreateShellItemArrayFromShellItem
   SHCreateStdEnumFmtEtc
+  SHDefExtractIconA
+  SHDefExtractIconW
   SHDestroyPropSheetExtArray
   SHDoDragDrop
   SheChangeDirA
@@ -131,6 +139,8 @@ EXPORTS
   SheGetDirA
   SheGetDirW
   shell32_243
+  Shell_GetCachedImageIndexAW
+  Shell_GetImageLists
   Shell_NotifyIconA
   Shell_NotifyIconW
   ShellAboutA
@@ -161,6 +171,8 @@ EXPORTS
   SHGetFolderPathAndSubDirW
   SHGetFolderPathEx
   SHGetFolderPathW
+  SHGetIconOverlayIndexA
+  SHGetIconOverlayIndexW
   SHGetIDListFromObject
   SHGetImageList
   SHGetInstanceExplorer
@@ -186,6 +198,7 @@ EXPORTS
   SHGetSpecialFolderLocation
   SHGetSpecialFolderPathA
   SHGetSpecialFolderPathW
+  SHGetStockIconInfo
   SHHandleUpdateImage
   SHHelpShortcuts_RunDLLA
   SHHelpShortcuts_RunDLLW
@@ -198,6 +211,8 @@ EXPORTS
   SHLoadOLE
   SHLockShared
   SHLogILFromFSIL
+  SHMapIDListToImageListIndexAsync
+  SHMapPIDLToSystemImageListIndex
   SHObjectProperties
   SHOpenFolderAndSelectItems
   SHOpenWithDialog

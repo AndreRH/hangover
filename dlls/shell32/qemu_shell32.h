@@ -35,7 +35,13 @@ enum shell32_calls
     CALL_DRIVETYPE,
     CALL_DUPLICATEICON,
     CALL_EXITWINDOWSDIALOG,
+    CALL_EXTRACTASSOCIATEDICONA,
+    CALL_EXTRACTASSOCIATEDICONEXA,
+    CALL_EXTRACTASSOCIATEDICONEXW,
+    CALL_EXTRACTASSOCIATEDICONW,
     CALL_EXTRACTICONA,
+    CALL_EXTRACTICONEXA,
+    CALL_EXTRACTICONEXW,
     CALL_EXTRACTICONW,
     CALL_EXTRACTVERSIONRESOURCE16W,
     CALL_FILEICONINIT,
@@ -128,6 +134,8 @@ enum shell32_calls
     CALL_SHCREATESHELLITEMARRAYFROMIDLISTS,
     CALL_SHCREATESHELLITEMARRAYFROMSHELLITEM,
     CALL_SHCREATESTDENUMFMTETC,
+    CALL_SHDEFEXTRACTICONA,
+    CALL_SHDEFEXTRACTICONW,
     CALL_SHDESTROYPROPSHEETEXTARRAY,
     CALL_SHDODRAGDROP,
     CALL_SHECHANGEDIRA,
@@ -135,6 +143,8 @@ enum shell32_calls
     CALL_SHEGETDIRA,
     CALL_SHEGETDIRW,
     CALL_SHELL32_243,
+    CALL_SHELL_GETCACHEDIMAGEINDEXAW,
+    CALL_SHELL_GETIMAGELISTS,
     CALL_SHELL_NOTIFYICONA,
     CALL_SHELL_NOTIFYICONW,
     CALL_SHELLABOUTA,
@@ -165,6 +175,8 @@ enum shell32_calls
     CALL_SHGETFOLDERPATHANDSUBDIRW,
     CALL_SHGETFOLDERPATHEX,
     CALL_SHGETFOLDERPATHW,
+    CALL_SHGETICONOVERLAYINDEXA,
+    CALL_SHGETICONOVERLAYINDEXW,
     CALL_SHGETIDLISTFROMOBJECT,
     CALL_SHGETIMAGELIST,
     CALL_SHGETINSTANCEEXPLORER,
@@ -190,6 +202,7 @@ enum shell32_calls
     CALL_SHGETSPECIALFOLDERLOCATION,
     CALL_SHGETSPECIALFOLDERPATHA,
     CALL_SHGETSPECIALFOLDERPATHW,
+    CALL_SHGETSTOCKICONINFO,
     CALL_SHHANDLEUPDATEIMAGE,
     CALL_SHHELPSHORTCUTS_RUNDLLA,
     CALL_SHHELPSHORTCUTS_RUNDLLW,
@@ -201,6 +214,8 @@ enum shell32_calls
     CALL_SHLOADOLE,
     CALL_SHLOCKSHARED,
     CALL_SHLOGILFROMFSIL,
+    CALL_SHMAPIDLISTTOIMAGELISTINDEXASYNC,
+    CALL_SHMAPPIDLTOSYSTEMIMAGELISTINDEX,
     CALL_SHOBJECTPROPERTIES,
     CALL_SHOPENFOLDERANDSELECTITEMS,
     CALL_SHOPENWITHDIALOG,
@@ -271,7 +286,13 @@ void qemu_DragQueryPoint(struct qemu_syscall *call);
 void qemu_DriveType(struct qemu_syscall *call);
 void qemu_DuplicateIcon(struct qemu_syscall *call);
 void qemu_ExitWindowsDialog(struct qemu_syscall *call);
+void qemu_ExtractAssociatedIconA(struct qemu_syscall *call);
+void qemu_ExtractAssociatedIconExA(struct qemu_syscall *call);
+void qemu_ExtractAssociatedIconExW(struct qemu_syscall *call);
+void qemu_ExtractAssociatedIconW(struct qemu_syscall *call);
 void qemu_ExtractIconA(struct qemu_syscall *call);
+void qemu_ExtractIconExA(struct qemu_syscall *call);
+void qemu_ExtractIconExW(struct qemu_syscall *call);
 void qemu_ExtractIconW(struct qemu_syscall *call);
 void qemu_ExtractVersionResource16W(struct qemu_syscall *call);
 void qemu_FileIconInit(struct qemu_syscall *call);
@@ -364,6 +385,8 @@ void qemu_SHCreateShellItemArrayFromDataObject(struct qemu_syscall *call);
 void qemu_SHCreateShellItemArrayFromIDLists(struct qemu_syscall *call);
 void qemu_SHCreateShellItemArrayFromShellItem(struct qemu_syscall *call);
 void qemu_SHCreateStdEnumFmtEtc(struct qemu_syscall *call);
+void qemu_SHDefExtractIconA(struct qemu_syscall *call);
+void qemu_SHDefExtractIconW(struct qemu_syscall *call);
 void qemu_SHDestroyPropSheetExtArray(struct qemu_syscall *call);
 void qemu_SHDoDragDrop(struct qemu_syscall *call);
 void qemu_SheChangeDirA(struct qemu_syscall *call);
@@ -371,6 +394,8 @@ void qemu_SheChangeDirW(struct qemu_syscall *call);
 void qemu_SheGetDirA(struct qemu_syscall *call);
 void qemu_SheGetDirW(struct qemu_syscall *call);
 void qemu_shell32_243(struct qemu_syscall *call);
+void qemu_Shell_GetCachedImageIndexAW(struct qemu_syscall *call);
+void qemu_Shell_GetImageLists(struct qemu_syscall *call);
 void qemu_Shell_NotifyIconA(struct qemu_syscall *call);
 void qemu_Shell_NotifyIconW(struct qemu_syscall *call);
 void qemu_ShellAboutA(struct qemu_syscall *call);
@@ -401,6 +426,8 @@ void qemu_SHGetFolderPathAndSubDirA(struct qemu_syscall *call);
 void qemu_SHGetFolderPathAndSubDirW(struct qemu_syscall *call);
 void qemu_SHGetFolderPathEx(struct qemu_syscall *call);
 void qemu_SHGetFolderPathW(struct qemu_syscall *call);
+void qemu_SHGetIconOverlayIndexA(struct qemu_syscall *call);
+void qemu_SHGetIconOverlayIndexW(struct qemu_syscall *call);
 void qemu_SHGetIDListFromObject(struct qemu_syscall *call);
 void qemu_SHGetImageList(struct qemu_syscall *call);
 void qemu_SHGetInstanceExplorer(struct qemu_syscall *call);
@@ -427,6 +454,7 @@ void qemu_SHGetSpecialFolderLocation(struct qemu_syscall *call);
 void qemu_SHGetSpecialFolderPathA(struct qemu_syscall *call);
 void qemu_SHGetSpecialFolderPathAW(struct qemu_syscall *call);
 void qemu_SHGetSpecialFolderPathW(struct qemu_syscall *call);
+void qemu_SHGetStockIconInfo(struct qemu_syscall *call);
 void qemu_SHHandleUpdateImage(struct qemu_syscall *call);
 void qemu_SHHelpShortcuts_RunDLLA(struct qemu_syscall *call);
 void qemu_SHHelpShortcuts_RunDLLW(struct qemu_syscall *call);
@@ -438,6 +466,8 @@ void qemu_SHLoadNonloadedIconOverlayIdentifiers(struct qemu_syscall *call);
 void qemu_SHLoadOLE(struct qemu_syscall *call);
 void qemu_SHLockShared(struct qemu_syscall *call);
 void qemu_SHLogILFromFSIL(struct qemu_syscall *call);
+void qemu_SHMapIDListToImageListIndexAsync(struct qemu_syscall *call);
+void qemu_SHMapPIDLToSystemImageListIndex(struct qemu_syscall *call);
 void qemu_SHObjectProperties(struct qemu_syscall *call);
 void qemu_SHOpenFolderAndSelectItems(struct qemu_syscall *call);
 void qemu_SHOpenWithDialog(struct qemu_syscall *call);
@@ -477,6 +507,8 @@ DWORD (* WINAPI p_SHCLSIDFromString)(const void *clsid, CLSID *id);
 HRESULT (* WINAPI p_DllGetClassObject)(REFCLSID rclsid, REFIID iid, LPVOID *ppv);
 void (* WINAPI p_RunFileDlgAW)(HWND hwndOwner, HICON hIcon, LPCVOID lpstrDirectory, LPCVOID lpstrTitle, LPCVOID lpstrDescription, UINT uFlags);
 void (* WINAPI p_ExitWindowsDialog)(HWND hWndOwner);
+INT (* WINAPI p_Shell_GetCachedImageIndexAW)(LPCVOID szPath, INT nIndex, BOOL bSimulateDoc);
+HRESULT ( * WINAPI p_SHMapIDListToImageListIndexAsync)(IUnknown *pts, IShellFolder *psf, LPCITEMIDLIST pidl, UINT flags, void *pfn, void *pvData, void *pvHint, int *piIndex, int *piIndexSel);
 
 #endif
 

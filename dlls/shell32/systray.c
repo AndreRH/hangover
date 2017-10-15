@@ -21,6 +21,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <shlwapi.h>
+#include <shlobj.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -30,7 +31,6 @@
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_shell32);
 #endif
-
 
 struct qemu_Shell_NotifyIconA
 {

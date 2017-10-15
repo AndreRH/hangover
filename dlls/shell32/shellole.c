@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <shlobj.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -61,8 +62,6 @@ WINBASEAPI HRESULT WINAPI SHCoCreateInstance(LPCWSTR aclsid, const CLSID *clsid,
 
 #else
 
-/* TODO: Add SHCoCreateInstance to Wine headers? */
-extern HRESULT WINAPI SHCoCreateInstance(LPCWSTR aclsid, const CLSID *clsid, LPUNKNOWN pUnkOuter, REFIID refiid, LPVOID *ppv);
 void qemu_SHCoCreateInstance(struct qemu_syscall *call)
 {
     struct qemu_SHCoCreateInstance *c = (struct qemu_SHCoCreateInstance *)call;
@@ -136,7 +135,7 @@ struct qemu_SHCLSIDFromString
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI SHCLSIDFromString(const void *clsid, CLSID *id)
+SHSTDAPI SHCLSIDFromString(const WCHAR *clsid, CLSID *id)
 {
     struct qemu_SHCLSIDFromString call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCLSIDFROMSTRING);
@@ -180,8 +179,6 @@ WINBASEAPI HRESULT WINAPI SHGetMalloc(LPMALLOC *lpmal)
 
 #else
 
-/* TODO: Add SHGetMalloc to Wine headers? */
-extern HRESULT WINAPI SHGetMalloc(LPMALLOC *lpmal);
 void qemu_SHGetMalloc(struct qemu_syscall *call)
 {
     struct qemu_SHGetMalloc *c = (struct qemu_SHGetMalloc *)call;
@@ -199,7 +196,7 @@ struct qemu_SHAlloc
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI LPVOID WINAPI SHAlloc(DWORD len)
+WINBASEAPI LPVOID WINAPI SHAlloc(SIZE_T len)
 {
     struct qemu_SHAlloc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHALLOC);
@@ -212,8 +209,6 @@ WINBASEAPI LPVOID WINAPI SHAlloc(DWORD len)
 
 #else
 
-/* TODO: Add SHAlloc to Wine headers? */
-extern LPVOID WINAPI SHAlloc(DWORD len);
 void qemu_SHAlloc(struct qemu_syscall *call)
 {
     struct qemu_SHAlloc *c = (struct qemu_SHAlloc *)call;
@@ -242,8 +237,6 @@ WINBASEAPI void WINAPI SHFree(LPVOID pv)
 
 #else
 
-/* TODO: Add SHFree to Wine headers? */
-extern void WINAPI SHFree(LPVOID pv);
 void qemu_SHFree(struct qemu_syscall *call)
 {
     struct qemu_SHFree *c = (struct qemu_SHFree *)call;
@@ -564,8 +557,6 @@ WINBASEAPI HRESULT WINAPI SHCreateQueryCancelAutoPlayMoniker(IMoniker **moniker)
 
 #else
 
-/* TODO: Add SHCreateQueryCancelAutoPlayMoniker to Wine headers? */
-extern HRESULT WINAPI SHCreateQueryCancelAutoPlayMoniker(IMoniker **moniker);
 void qemu_SHCreateQueryCancelAutoPlayMoniker(struct qemu_syscall *call)
 {
     struct qemu_SHCreateQueryCancelAutoPlayMoniker *c = (struct qemu_SHCreateQueryCancelAutoPlayMoniker *)call;
