@@ -67,6 +67,8 @@ enum shell32_calls
     CALL_ISUSERANADMIN,
     CALL_LINKWINDOW_REGISTERCLASS,
     CALL_LINKWINDOW_UNREGISTERCLASS,
+    CALL_NTSHCHANGENOTIFYDEREGISTER,
+    CALL_NTSHCHANGENOTIFYREGISTER,
     CALL_OPENAS_RUNDLLA,
     CALL_OPENAS_RUNDLLW,
     CALL_PARSEFIELD,
@@ -91,6 +93,12 @@ enum shell32_calls
     CALL_SHBINDTOPARENT,
     CALL_SHBROWSEFORFOLDERA,
     CALL_SHBROWSEFORFOLDERW,
+    CALL_SHCHANGENOTIFICATION_LOCK,
+    CALL_SHCHANGENOTIFICATION_UNLOCK,
+    CALL_SHCHANGENOTIFY,
+    CALL_SHCHANGENOTIFYDEREGISTER,
+    CALL_SHCHANGENOTIFYREGISTER,
+    CALL_SHCHANGENOTIFYUPDATEENTRYLIST,
     CALL_SHCLONESPECIALIDLIST,
     CALL_SHCLSIDFROMSTRING,
     CALL_SHCOCREATEINSTANCE,
@@ -283,6 +291,8 @@ void qemu_IsNetDrive(struct qemu_syscall *call);
 void qemu_IsUserAnAdmin(struct qemu_syscall *call);
 void qemu_LinkWindow_RegisterClass(struct qemu_syscall *call);
 void qemu_LinkWindow_UnregisterClass(struct qemu_syscall *call);
+void qemu_NTSHChangeNotifyDeregister(struct qemu_syscall *call);
+void qemu_NTSHChangeNotifyRegister(struct qemu_syscall *call);
 void qemu_OpenAs_RunDLLA(struct qemu_syscall *call);
 void qemu_OpenAs_RunDLLW(struct qemu_syscall *call);
 void qemu_ParseField(struct qemu_syscall *call);
@@ -307,6 +317,12 @@ void qemu_SHAssocEnumHandlers(struct qemu_syscall *call);
 void qemu_SHBindToParent(struct qemu_syscall *call);
 void qemu_SHBrowseForFolderA(struct qemu_syscall *call);
 void qemu_SHBrowseForFolderW(struct qemu_syscall *call);
+void qemu_SHChangeNotification_Lock(struct qemu_syscall *call);
+void qemu_SHChangeNotification_Unlock(struct qemu_syscall *call);
+void qemu_SHChangeNotify(struct qemu_syscall *call);
+void qemu_SHChangeNotifyDeregister(struct qemu_syscall *call);
+void qemu_SHChangeNotifyRegister(struct qemu_syscall *call);
+void qemu_SHChangeNotifyUpdateEntryList(struct qemu_syscall *call);
 void qemu_SHCloneSpecialIDList(struct qemu_syscall *call);
 void qemu_SHCLSIDFromString(struct qemu_syscall *call);
 void qemu_SHCoCreateInstance(struct qemu_syscall *call);

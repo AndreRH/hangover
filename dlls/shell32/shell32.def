@@ -63,6 +63,8 @@ EXPORTS
   IsUserAnAdmin
   LinkWindow_RegisterClass
   LinkWindow_UnregisterClass
+  NTSHChangeNotifyDeregister
+  NTSHChangeNotifyRegister
   OpenAs_RunDLLA
   OpenAs_RunDLLW
   ParseField
@@ -87,6 +89,12 @@ EXPORTS
   SHBindToParent
   SHBrowseForFolderA
   SHBrowseForFolderW
+  SHChangeNotification_Lock
+  SHChangeNotification_Unlock
+  SHChangeNotify
+  SHChangeNotifyDeregister
+  SHChangeNotifyRegister
+  SHChangeNotifyUpdateEntryList
   SHCloneSpecialIDList
   SHCLSIDFromString
   SHCoCreateInstance
