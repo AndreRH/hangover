@@ -2,8 +2,13 @@ LIBRARY shell32.dll BASE=0x80000000
 
 EXPORTS
   ArrangeWindows
+  CallCPLEntry16
   CIDLData_CreateFromIDArray
   CommandLineToArgvW
+  Control_FillCache_RunDLLA
+  Control_FillCache_RunDLLW
+  Control_RunDLLA
+  Control_RunDLLW
   DAD_AutoScroll
   DAD_DragEnter
   DAD_DragEnterEx

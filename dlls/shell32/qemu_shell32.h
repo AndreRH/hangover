@@ -6,8 +6,13 @@
 enum shell32_calls
 {
     CALL_ARRANGEWINDOWS = 0,
+    CALL_CALLCPLENTRY16,
     CALL_CIDLDATA_CREATEFROMIDARRAY,
     CALL_COMMANDLINETOARGVW,
+    CALL_CONTROL_FILLCACHE_RUNDLLA,
+    CALL_CONTROL_FILLCACHE_RUNDLLW,
+    CALL_CONTROL_RUNDLLA,
+    CALL_CONTROL_RUNDLLW,
     CALL_DAD_AUTOSCROLL,
     CALL_DAD_DRAGENTER,
     CALL_DAD_DRAGENTEREX,
@@ -230,8 +235,13 @@ enum shell32_calls
 extern const struct qemu_ops *qemu_ops;
 
 void qemu_ArrangeWindows(struct qemu_syscall *call);
+void qemu_CallCPLEntry16(struct qemu_syscall *call);
 void qemu_CIDLData_CreateFromIDArray(struct qemu_syscall *call);
 void qemu_CommandLineToArgvW(struct qemu_syscall *call);
+void qemu_Control_FillCache_RunDLLA(struct qemu_syscall *call);
+void qemu_Control_FillCache_RunDLLW(struct qemu_syscall *call);
+void qemu_Control_RunDLLA(struct qemu_syscall *call);
+void qemu_Control_RunDLLW(struct qemu_syscall *call);
 void qemu_DAD_AutoScroll(struct qemu_syscall *call);
 void qemu_DAD_DragEnter(struct qemu_syscall *call);
 void qemu_DAD_DragEnterEx(struct qemu_syscall *call);

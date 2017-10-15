@@ -45,8 +45,13 @@ const struct qemu_ops *qemu_ops;
 static const syscall_handler dll_functions[] =
 {
     qemu_ArrangeWindows,
+    qemu_CallCPLEntry16,
     qemu_CIDLData_CreateFromIDArray,
     qemu_CommandLineToArgvW,
+    qemu_Control_FillCache_RunDLLA,
+    qemu_Control_FillCache_RunDLLW,
+    qemu_Control_RunDLLA,
+    qemu_Control_RunDLLW,
     qemu_DAD_AutoScroll,
     qemu_DAD_DragEnter,
     qemu_DAD_DragEnterEx,
