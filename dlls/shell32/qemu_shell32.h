@@ -34,6 +34,7 @@ enum shell32_calls
     CALL_DRAGQUERYPOINT,
     CALL_DRIVETYPE,
     CALL_DUPLICATEICON,
+    CALL_EXITWINDOWSDIALOG,
     CALL_EXTRACTICONA,
     CALL_EXTRACTICONW,
     CALL_EXTRACTVERSIONRESOURCE16W,
@@ -78,6 +79,7 @@ enum shell32_calls
     CALL_OPENAS_RUNDLLW,
     CALL_PARSEFIELD,
     CALL_PATHYETANOTHERMAKEUNIQUENAME,
+    CALL_PICKICONDLG,
     CALL_PRINTER_LOADICONSW,
     CALL_PRINTERS_REGISTERWINDOWW,
     CALL_PRINTERS_UNREGISTERWINDOW,
@@ -85,7 +87,10 @@ enum shell32_calls
     CALL_REALDRIVETYPE,
     CALL_REGENERATEUSERENVIRONMENT,
     CALL_REGISTERSHELLHOOK,
+    CALL_RESTARTDIALOG,
+    CALL_RESTARTDIALOGEX,
     CALL_RLBUILDLISTOFPATHS,
+    CALL_RUNFILEDLGAW,
     CALL_SETAPPSTARTINGCURSOR,
     CALL_SETCURRENTPROCESSEXPLICITAPPUSERMODELID,
     CALL_SHABORTINVOKECOMMAND,
@@ -198,6 +203,7 @@ enum shell32_calls
     CALL_SHLOGILFROMFSIL,
     CALL_SHOBJECTPROPERTIES,
     CALL_SHOPENFOLDERANDSELECTITEMS,
+    CALL_SHOPENWITHDIALOG,
     CALL_SHOUTOFMEMORYMESSAGEBOX,
     CALL_SHPARSEDISPLAYNAME,
     CALL_SHPATHPREPAREFORWRITEA,
@@ -264,6 +270,7 @@ void qemu_DragQueryFileW(struct qemu_syscall *call);
 void qemu_DragQueryPoint(struct qemu_syscall *call);
 void qemu_DriveType(struct qemu_syscall *call);
 void qemu_DuplicateIcon(struct qemu_syscall *call);
+void qemu_ExitWindowsDialog(struct qemu_syscall *call);
 void qemu_ExtractIconA(struct qemu_syscall *call);
 void qemu_ExtractIconW(struct qemu_syscall *call);
 void qemu_ExtractVersionResource16W(struct qemu_syscall *call);
@@ -308,6 +315,7 @@ void qemu_OpenAs_RunDLLA(struct qemu_syscall *call);
 void qemu_OpenAs_RunDLLW(struct qemu_syscall *call);
 void qemu_ParseField(struct qemu_syscall *call);
 void qemu_PathYetAnotherMakeUniqueName(struct qemu_syscall *call);
+void qemu_PickIconDlg(struct qemu_syscall *call);
 void qemu_Printer_LoadIconsW(struct qemu_syscall *call);
 void qemu_Printers_RegisterWindowW(struct qemu_syscall *call);
 void qemu_Printers_UnregisterWindow(struct qemu_syscall *call);
@@ -315,7 +323,10 @@ void qemu_ReadCabinetState(struct qemu_syscall *call);
 void qemu_RealDriveType(struct qemu_syscall *call);
 void qemu_RegenerateUserEnvironment(struct qemu_syscall *call);
 void qemu_RegisterShellHook(struct qemu_syscall *call);
+void qemu_RestartDialog(struct qemu_syscall *call);
+void qemu_RestartDialogEx(struct qemu_syscall *call);
 void qemu_RLBuildListOfPaths(struct qemu_syscall *call);
+void qemu_RunFileDlgAW(struct qemu_syscall *call);
 void qemu_SetAppStartingCursor(struct qemu_syscall *call);
 void qemu_SetCurrentProcessExplicitAppUserModelID(struct qemu_syscall *call);
 void qemu_SHAbortInvokeCommand(struct qemu_syscall *call);
@@ -429,6 +440,7 @@ void qemu_SHLockShared(struct qemu_syscall *call);
 void qemu_SHLogILFromFSIL(struct qemu_syscall *call);
 void qemu_SHObjectProperties(struct qemu_syscall *call);
 void qemu_SHOpenFolderAndSelectItems(struct qemu_syscall *call);
+void qemu_SHOpenWithDialog(struct qemu_syscall *call);
 void qemu_SHOutOfMemoryMessageBox(struct qemu_syscall *call);
 void qemu_SHParseDisplayName(struct qemu_syscall *call);
 void qemu_SHPathPrepareForWriteA(struct qemu_syscall *call);
@@ -463,6 +475,8 @@ void qemu_WriteCabinetState(struct qemu_syscall *call);
 
 DWORD (* WINAPI p_SHCLSIDFromString)(const void *clsid, CLSID *id);
 HRESULT (* WINAPI p_DllGetClassObject)(REFCLSID rclsid, REFIID iid, LPVOID *ppv);
+void (* WINAPI p_RunFileDlgAW)(HWND hwndOwner, HICON hIcon, LPCVOID lpstrDirectory, LPCVOID lpstrTitle, LPCVOID lpstrDescription, UINT uFlags);
+void (* WINAPI p_ExitWindowsDialog)(HWND hWndOwner);
 
 #endif
 

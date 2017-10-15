@@ -73,6 +73,7 @@ static const syscall_handler dll_functions[] =
     qemu_DragQueryPoint,
     qemu_DriveType,
     qemu_DuplicateIcon,
+    qemu_ExitWindowsDialog,
     qemu_ExtractIconA,
     qemu_ExtractIconW,
     qemu_ExtractVersionResource16W,
@@ -117,6 +118,7 @@ static const syscall_handler dll_functions[] =
     qemu_OpenAs_RunDLLW,
     qemu_ParseField,
     qemu_PathYetAnotherMakeUniqueName,
+    qemu_PickIconDlg,
     qemu_Printer_LoadIconsW,
     qemu_Printers_RegisterWindowW,
     qemu_Printers_UnregisterWindow,
@@ -124,7 +126,10 @@ static const syscall_handler dll_functions[] =
     qemu_RealDriveType,
     qemu_RegenerateUserEnvironment,
     qemu_RegisterShellHook,
+    qemu_RestartDialog,
+    qemu_RestartDialogEx,
     qemu_RLBuildListOfPaths,
+    qemu_RunFileDlgAW,
     qemu_SetAppStartingCursor,
     qemu_SetCurrentProcessExplicitAppUserModelID,
     qemu_SHAbortInvokeCommand,
@@ -237,6 +242,7 @@ static const syscall_handler dll_functions[] =
     qemu_SHLogILFromFSIL,
     qemu_SHObjectProperties,
     qemu_SHOpenFolderAndSelectItems,
+    qemu_SHOpenWithDialog,
     qemu_SHOutOfMemoryMessageBox,
     qemu_SHParseDisplayName,
     qemu_SHPathPrepareForWriteA,
@@ -283,10 +289,18 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (!shell32)
         WINE_ERR("Cannot find shell32.dll\n");
 
-    p_SHCLSIDFromString = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(147));
     p_DllGetClassObject = (void *)GetProcAddress(shell32, "DllGetClassObject");
     if (!p_DllGetClassObject)
         WINE_ERR("Failed to load shell32.DllGetClassObject.\n");
+    p_ExitWindowsDialog = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(60));
+    if (!p_ExitWindowsDialog)
+        WINE_ERR("Failed to load shell32.ExitWindowsDialog (#60).\n");
+    p_RunFileDlgAW = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(61));
+    if (!p_RunFileDlgAW)
+        WINE_ERR("Failed to load shell32.RunFileDlgAW (#61).\n");
+    p_SHCLSIDFromString = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(147));
+    if (!p_SHCLSIDFromString)
+        WINE_ERR("Failed to load shell32.SHCLSIDFromString (#147).\n");
 
     return dll_functions;
 }

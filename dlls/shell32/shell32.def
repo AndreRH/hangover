@@ -30,6 +30,7 @@ EXPORTS
   DragQueryPoint
   DriveType
   DuplicateIcon
+  ExitWindowsDialog
   ExtractIconA
   ExtractIconW
   ExtractVersionResource16W
@@ -74,6 +75,7 @@ EXPORTS
   OpenAs_RunDLLW
   ParseField
   PathYetAnotherMakeUniqueName
+  PickIconDlg
   Printer_LoadIconsW
   Printers_RegisterWindowW
   Printers_UnregisterWindow
@@ -81,7 +83,10 @@ EXPORTS
   RealDriveType
   RegenerateUserEnvironment
   RegisterShellHook
+  RestartDialog
+  RestartDialogEx
   RLBuildListOfPaths
+  RunFileDlgAW
   SetAppStartingCursor
   SetCurrentProcessExplicitAppUserModelID
   SHAbortInvokeCommand
@@ -195,6 +200,7 @@ EXPORTS
   SHLogILFromFSIL
   SHObjectProperties
   SHOpenFolderAndSelectItems
+  SHOpenWithDialog
   SHOutOfMemoryMessageBox
   SHParseDisplayName
   SHPathPrepareForWriteA
