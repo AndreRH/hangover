@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_msvcrt.h"
@@ -74,7 +76,7 @@ void qemu___getmainargs(struct qemu_syscall *call)
     int host_argc, i;
 
     static BOOL initialized;
-    static char **cache_host_argv, **cache_host_envp;
+    static qemu_ptr *cache_host_argv, *cache_host_envp;
     static int cache_hostargc;
 
     struct qemu___getmainargs *c = (struct qemu___getmainargs *)(ULONG_PTR)call;
@@ -98,26 +100,31 @@ void qemu___getmainargs(struct qemu_syscall *call)
     /* Copy the data into 32 bit address space. */
     if (!initialized)
     {
+        char *ptr;
+
         initialized = TRUE;
         cache_hostargc = host_argc;
-        cache_host_argv = HeapAlloc(GetProcessHeap(), 0, sizeof(cache_host_argv) * host_argc);
+        cache_host_argv = HeapAlloc(GetProcessHeap(), 0, sizeof(cache_host_argv) * (host_argc + 1));
         for (i = 0; i < host_argc; ++i)
         {
-            size_t len = strlen(host_argv[i]);
-            cache_host_argv[i] = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache_host_argv) * len);
-            memcpy(cache_host_argv[i], host_argv[i], len);
+            size_t len = strlen(host_argv[i]) + 1;
+            ptr = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache_host_argv) * len);
+            memcpy(ptr, host_argv[i], len);
+            cache_host_argv[i] = (ULONG_PTR)ptr;
         }
+        cache_host_argv[i] = 0;
 
         for (host_argc = 0; host_envp[host_argc]; ++host_argc);
 
         cache_host_envp = HeapAlloc(GetProcessHeap(), 0, sizeof(cache_host_envp) * (host_argc + 1));
         for (i = 0; i < host_argc; ++i)
         {
-            size_t len = strlen(host_envp[i]);
-            cache_host_envp[i] = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache_host_envp) * len);
-            memcpy(cache_host_envp[i], host_envp[i], len);
+            size_t len = strlen(host_envp[i]) + 1;
+            ptr = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache_host_envp) * len);
+            memcpy(ptr, host_envp[i], len);
+            cache_host_envp[i] = (ULONG_PTR)ptr;
         }
-        cache_host_envp[i] = NULL;
+        cache_host_envp[i] = 0;
     }
 
     c->argc = QEMU_H2G(cache_hostargc);
