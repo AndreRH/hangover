@@ -204,7 +204,7 @@ WINGDIAPI INT WINAPI EndDoc(HDC hdc)
 void qemu_EndDoc(struct qemu_syscall *call)
 {
     struct qemu_EndDoc *c = (struct qemu_EndDoc *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EndDoc(QEMU_G2H(c->hdc));
 }
 
@@ -234,7 +234,7 @@ WINGDIAPI INT WINAPI StartPage(HDC hdc)
 void qemu_StartPage(struct qemu_syscall *call)
 {
     struct qemu_StartPage *c = (struct qemu_StartPage *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = StartPage(QEMU_G2H(c->hdc));
 }
 
@@ -264,7 +264,7 @@ WINGDIAPI INT WINAPI EndPage(HDC hdc)
 void qemu_EndPage(struct qemu_syscall *call)
 {
     struct qemu_EndPage *c = (struct qemu_EndPage *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EndPage(QEMU_G2H(c->hdc));
 }
 
