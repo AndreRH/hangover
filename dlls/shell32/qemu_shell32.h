@@ -7,6 +7,8 @@ enum shell32_calls
 {
     CALL_ARRANGEWINDOWS = 0,
     CALL_CALLCPLENTRY16,
+    CALL_CHECKESCAPESA,
+    CALL_CHECKESCAPESW,
     CALL_CIDLDATA_CREATEFROMIDARRAY,
     CALL_COMMANDLINETOARGVW,
     CALL_CONTROL_FILLCACHE_RUNDLLA,
@@ -81,6 +83,7 @@ enum shell32_calls
     CALL_LINKWINDOW_UNREGISTERCLASS,
     CALL_NTSHCHANGENOTIFYDEREGISTER,
     CALL_NTSHCHANGENOTIFYREGISTER,
+    CALL_OLESTRTOSTRNAW,
     CALL_OPENAS_RUNDLLA,
     CALL_OPENAS_RUNDLLW,
     CALL_PARSEFIELD,
@@ -259,6 +262,9 @@ enum shell32_calls
     CALL_SHWAITFORFILETOOPEN,
     CALL_SHWINHELP,
     CALL_SIGNALFILEOPEN,
+    CALL_STRRETTOSTRNAW,
+    CALL_STRTOOLESTRAW,
+    CALL_STRTOOLESTRNAW,
     CALL_WIN32CREATEDIRECTORY,
     CALL_WIN32DELETEFILE,
     CALL_WIN32REMOVEDIRECTORY,
@@ -272,6 +278,8 @@ extern const struct qemu_ops *qemu_ops;
 
 void qemu_ArrangeWindows(struct qemu_syscall *call);
 void qemu_CallCPLEntry16(struct qemu_syscall *call);
+void qemu_CheckEscapesA(struct qemu_syscall *call);
+void qemu_CheckEscapesW(struct qemu_syscall *call);
 void qemu_CIDLData_CreateFromIDArray(struct qemu_syscall *call);
 void qemu_CommandLineToArgvW(struct qemu_syscall *call);
 void qemu_Control_FillCache_RunDLLA(struct qemu_syscall *call);
@@ -346,6 +354,7 @@ void qemu_LinkWindow_RegisterClass(struct qemu_syscall *call);
 void qemu_LinkWindow_UnregisterClass(struct qemu_syscall *call);
 void qemu_NTSHChangeNotifyDeregister(struct qemu_syscall *call);
 void qemu_NTSHChangeNotifyRegister(struct qemu_syscall *call);
+void qemu_OleStrToStrNAW(struct qemu_syscall *call);
 void qemu_OpenAs_RunDLLA(struct qemu_syscall *call);
 void qemu_OpenAs_RunDLLW(struct qemu_syscall *call);
 void qemu_ParseField(struct qemu_syscall *call);
@@ -525,6 +534,11 @@ void qemu_SHValidateUNC(struct qemu_syscall *call);
 void qemu_SHWaitForFileToOpen(struct qemu_syscall *call);
 void qemu_SHWinHelp(struct qemu_syscall *call);
 void qemu_SignalFileOpen(struct qemu_syscall *call);
+void qemu_StrRetToStrNA(struct qemu_syscall *call);
+void qemu_StrRetToStrNAW(struct qemu_syscall *call);
+void qemu_StrRetToStrNW(struct qemu_syscall *call);
+void qemu_StrToOleStrAW(struct qemu_syscall *call);
+void qemu_StrToOleStrNAW(struct qemu_syscall *call);
 void qemu_Win32CreateDirectory(struct qemu_syscall *call);
 void qemu_Win32DeleteFile(struct qemu_syscall *call);
 void qemu_Win32RemoveDirectory(struct qemu_syscall *call);
@@ -537,6 +551,10 @@ void (* WINAPI p_RunFileDlgAW)(HWND hwndOwner, HICON hIcon, LPCVOID lpstrDirecto
 void (* WINAPI p_ExitWindowsDialog)(HWND hWndOwner);
 INT (* WINAPI p_Shell_GetCachedImageIndexAW)(LPCVOID szPath, INT nIndex, BOOL bSimulateDoc);
 HRESULT ( * WINAPI p_SHMapIDListToImageListIndexAsync)(IUnknown *pts, IShellFolder *psf, LPCITEMIDLIST pidl, UINT flags, void *pfn, void *pvData, void *pvHint, int *piIndex, int *piIndexSel);
+BOOL (* WINAPI p_StrRetToStrNAW)(LPVOID dest, DWORD len, LPSTRRET src, const ITEMIDLIST *pidl);
+BOOL (* WINAPI p_StrToOleStrAW)(LPWSTR lpWideCharStr, LPCVOID lpString);
+BOOL (* WINAPI p_StrToOleStrNAW)(LPWSTR lpWide, INT nWide, LPCVOID lpStr, INT nStr);
+BOOL (* WINAPI p_OleStrToStrNAW)(LPVOID lpOut, INT nOut, LPCVOID lpIn, INT nIn);
 
 #endif
 

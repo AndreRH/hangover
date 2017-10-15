@@ -3,6 +3,8 @@ LIBRARY shell32.dll BASE=0x80000000
 EXPORTS
   ArrangeWindows
   CallCPLEntry16
+  CheckEscapesA
+  CheckEscapesW
   CIDLData_CreateFromIDArray
   CommandLineToArgvW
   Control_FillCache_RunDLLA
@@ -77,6 +79,7 @@ EXPORTS
   LinkWindow_UnregisterClass
   NTSHChangeNotifyDeregister
   NTSHChangeNotifyRegister
+  OleStrToStrNAW
   OpenAs_RunDLLA
   OpenAs_RunDLLW
   ParseField
@@ -260,9 +263,12 @@ EXPORTS
   StrChrW=shlwapi.StrChrW
   StrCmpNIW=shlwapi.StrCmpNIW
   StrCmpNW=shlwapi.StrCmpNW
+  StrRetToStrNAW
   StrRStrIW=shlwapi.StrRStrIW
   StrStrIW=shlwapi.StrStrIW
   StrStrW=shlwapi.StrStrW
+  StrToOleStrAW
+  StrToOleStrNAW
   Win32CreateDirectory
   Win32DeleteFile
   Win32RemoveDirectory

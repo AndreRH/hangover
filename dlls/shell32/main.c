@@ -47,6 +47,8 @@ static const syscall_handler dll_functions[] =
 {
     qemu_ArrangeWindows,
     qemu_CallCPLEntry16,
+    qemu_CheckEscapesA,
+    qemu_CheckEscapesW,
     qemu_CIDLData_CreateFromIDArray,
     qemu_CommandLineToArgvW,
     qemu_Control_FillCache_RunDLLA,
@@ -121,6 +123,7 @@ static const syscall_handler dll_functions[] =
     qemu_LinkWindow_UnregisterClass,
     qemu_NTSHChangeNotifyDeregister,
     qemu_NTSHChangeNotifyRegister,
+    qemu_OleStrToStrNAW,
     qemu_OpenAs_RunDLLA,
     qemu_OpenAs_RunDLLW,
     qemu_ParseField,
@@ -299,6 +302,9 @@ static const syscall_handler dll_functions[] =
     qemu_SHWaitForFileToOpen,
     qemu_SHWinHelp,
     qemu_SignalFileOpen,
+    qemu_StrRetToStrNAW,
+    qemu_StrToOleStrAW,
+    qemu_StrToOleStrNAW,
     qemu_Win32CreateDirectory,
     qemu_Win32DeleteFile,
     qemu_Win32RemoveDirectory,
@@ -337,6 +343,18 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_SHMapIDListToImageListIndexAsync = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(148));
     if (!p_SHMapIDListToImageListIndexAsync)
         WINE_ERR("Failed to load shell32.SHMapIDListToImageListIndexAsync (#148).\n");
+    p_StrRetToStrNAW = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(96));
+    if (!p_StrRetToStrNAW)
+        WINE_ERR("Failed to load shell32.StrRetToStrNAW (96).\n");
+    p_StrToOleStrAW = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(163));
+    if (!p_StrToOleStrAW)
+        WINE_ERR("Failed to load shell32.StrToOleStrAW (163).\n");
+    p_StrToOleStrNAW = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(79));
+    if (!p_StrToOleStrNAW)
+        WINE_ERR("Failed to load shell32.StrToOleStrNAW (79).\n");
+    p_OleStrToStrNAW = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(78));
+    if (!p_OleStrToStrNAW)
+        WINE_ERR("Failed to load shell32.OleStrToStrNAW (78).\n");
 
     return dll_functions;
 }
