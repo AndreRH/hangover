@@ -154,6 +154,8 @@ enum shell32_calls
     CALL_SHELLEXECUTEEXA,
     CALL_SHELLEXECUTEEXW,
     CALL_SHELLEXECUTEW,
+    CALL_SHEMPTYRECYCLEBINA,
+    CALL_SHEMPTYRECYCLEBINW,
     CALL_SHENUMERATEUNREADMAILACCOUNTSW,
     CALL_SHFILEOPERATIONA,
     CALL_SHFILEOPERATIONW,
@@ -226,6 +228,8 @@ enum shell32_calls
     CALL_SHPROPSTGCREATE,
     CALL_SHPROPSTGREADMULTIPLE,
     CALL_SHPROPSTGWRITEMULTIPLE,
+    CALL_SHQUERYRECYCLEBINA,
+    CALL_SHQUERYRECYCLEBINW,
     CALL_SHQUERYUSERNOTIFICATIONSTATE,
     CALL_SHREGISTERDRAGDROP,
     CALL_SHREMOVELOCALIZEDNAME,
@@ -241,6 +245,7 @@ enum shell32_calls
     CALL_SHUNLOCKSHARED,
     CALL_SHUPDATEIMAGEA,
     CALL_SHUPDATEIMAGEW,
+    CALL_SHUPDATERECYCLEBINICON,
     CALL_SHVALIDATEUNC,
     CALL_SHWAITFORFILETOOPEN,
     CALL_SHWINHELP,
@@ -405,6 +410,8 @@ void qemu_ShellExecuteA(struct qemu_syscall *call);
 void qemu_ShellExecuteExA(struct qemu_syscall *call);
 void qemu_ShellExecuteExW(struct qemu_syscall *call);
 void qemu_ShellExecuteW(struct qemu_syscall *call);
+void qemu_SHEmptyRecycleBinA(struct qemu_syscall *call);
+void qemu_SHEmptyRecycleBinW(struct qemu_syscall *call);
 void qemu_SHEnumerateUnreadMailAccountsW(struct qemu_syscall *call);
 void qemu_SHFileOperationA(struct qemu_syscall *call);
 void qemu_SHFileOperationW(struct qemu_syscall *call);
@@ -478,6 +485,8 @@ void qemu_SHPathPrepareForWriteW(struct qemu_syscall *call);
 void qemu_SHPropStgCreate(struct qemu_syscall *call);
 void qemu_SHPropStgReadMultiple(struct qemu_syscall *call);
 void qemu_SHPropStgWriteMultiple(struct qemu_syscall *call);
+void qemu_SHQueryRecycleBinA(struct qemu_syscall *call);
+void qemu_SHQueryRecycleBinW(struct qemu_syscall *call);
 void qemu_SHQueryUserNotificationState(struct qemu_syscall *call);
 void qemu_SHRegisterDragDrop(struct qemu_syscall *call);
 void qemu_SHRemoveLocalizedName(struct qemu_syscall *call);
@@ -493,6 +502,7 @@ void qemu_SHStartNetConnectionDialog(struct qemu_syscall *call);
 void qemu_SHUnlockShared(struct qemu_syscall *call);
 void qemu_SHUpdateImageA(struct qemu_syscall *call);
 void qemu_SHUpdateImageW(struct qemu_syscall *call);
+void qemu_SHUpdateRecycleBinIcon(struct qemu_syscall *call);
 void qemu_SHValidateUNC(struct qemu_syscall *call);
 void qemu_SHWaitForFileToOpen(struct qemu_syscall *call);
 void qemu_SHWinHelp(struct qemu_syscall *call);

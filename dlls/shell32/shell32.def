@@ -150,6 +150,8 @@ EXPORTS
   ShellExecuteExA
   ShellExecuteExW
   ShellExecuteW
+  SHEmptyRecycleBinA
+  SHEmptyRecycleBinW
   SHEnumerateUnreadMailAccountsW
   SHFileOperationA
   SHFileOperationW
@@ -223,6 +225,8 @@ EXPORTS
   SHPropStgCreate
   SHPropStgReadMultiple
   SHPropStgWriteMultiple
+  SHQueryRecycleBinA
+  SHQueryRecycleBinW
   SHQueryUserNotificationState
   SHRegisterDragDrop
   SHRemoveLocalizedName
@@ -239,6 +243,7 @@ EXPORTS
   SHUnlockShared
   SHUpdateImageA
   SHUpdateImageW
+  SHUpdateRecycleBinIcon
   SHValidateUNC
   SHWaitForFileToOpen
   SHWinHelp
