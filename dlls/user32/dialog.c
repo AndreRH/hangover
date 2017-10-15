@@ -280,7 +280,7 @@ struct qemu_dlgproc_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t dlgproc_guest_wrapper(const struct qemu_dlgproc_cb *cb)
+static uint64_t __fastcall dlgproc_guest_wrapper(const struct qemu_dlgproc_cb *cb)
 {
     DLGPROC guest_proc = (DLGPROC)(ULONG_PTR)cb->guest_proc;
     return guest_proc((HWND)(ULONG_PTR)cb->dlg, cb->msg, cb->wp, cb->lp);
@@ -326,11 +326,24 @@ static INT_PTR WINAPI dlgproc_wrapper(HWND dlg, UINT msg, WPARAM wp, LPARAM lp)
 {
     uint64_t *dlgproc = TlsGetValue(user32_tls);
     uint64_t ret;
-    struct qemu_dlgproc_cb call = {*dlgproc, (ULONG_PTR)dlg, msg, wp, lp};
+    struct qemu_dlgproc_cb stack, *call = &stack;
+
+#if GUEST_BIT != HOST_BIT
+    call = HeapAlloc(GetProcessHeap(), 0, sizeof(*call));
+#endif
+
+    call->guest_proc = *dlgproc;
+    call->dlg = (ULONG_PTR)dlg;
+    call->msg = msg;
+    call->wp = wp;
+    call->lp = lp;
 
     WINE_TRACE("Calling guest proc 0x%lx(%p, %u, %lu, %lu).\n", *dlgproc, dlg, msg, wp, lp);
-    ret = qemu_ops->qemu_execute(QEMU_G2H(guest_wrapper), QEMU_H2G(&call));
+    ret = qemu_ops->qemu_execute(QEMU_G2H(guest_wrapper), QEMU_H2G(call));
     WINE_TRACE("Guest proc returned %lu\n", ret);
+
+    if (call != &stack)
+        HeapFree(GetProcessHeap(), 0, call);
 
     return ret;
 }
