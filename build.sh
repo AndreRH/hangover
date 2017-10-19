@@ -68,7 +68,7 @@ do
     echo >> Makefile
     echo "include $SRCDIR/dlls/$dll/Makefile" >> Makefile
 
-    make -j4
+    make -j4 || true
     ln -sf $PWD/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
     ln -sf $PWD/qemu_$dll.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll32
 done
