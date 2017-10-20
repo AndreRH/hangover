@@ -242,6 +242,7 @@ enum shell32_calls
     CALL_SHHELPSHORTCUTS_RUNDLLA,
     CALL_SHHELPSHORTCUTS_RUNDLLW,
     CALL_SHILCREATEFROMPATHAW,
+    CALL_SHINITRESTRICTED,
     CALL_SHISFILEAVAILABLEOFFLINE,
     CALL_SHLIMITINPUTEDIT,
     CALL_SHLOADINPROC,
@@ -275,6 +276,7 @@ enum shell32_calls
     CALL_SHREGQUERYVALUEW,
     CALL_SHREMOVELOCALIZEDNAME,
     CALL_SHREPLACEFROMPROPSHEETEXTARRAY,
+    CALL_SHRESTRICTED,
     CALL_SHREVOKEDRAGDROP,
     CALL_SHRUNCONTROLPANEL,
     CALL_SHSETINSTANCEEXPLORER,
@@ -543,6 +545,7 @@ void qemu_SHHandleUpdateImage(struct qemu_syscall *call);
 void qemu_SHHelpShortcuts_RunDLLA(struct qemu_syscall *call);
 void qemu_SHHelpShortcuts_RunDLLW(struct qemu_syscall *call);
 void qemu_SHILCreateFromPathAW(struct qemu_syscall *call);
+void qemu_SHInitRestricted(struct qemu_syscall *call);
 void qemu_SHIsFileAvailableOffline(struct qemu_syscall *call);
 void qemu_SHLimitInputEdit(struct qemu_syscall *call);
 void qemu_SHLoadInProc(struct qemu_syscall *call);
@@ -576,6 +579,7 @@ void qemu_SHRegQueryValueExW(struct qemu_syscall *call);
 void qemu_SHRegQueryValueW(struct qemu_syscall *call);
 void qemu_SHRemoveLocalizedName(struct qemu_syscall *call);
 void qemu_SHReplaceFromPropSheetExtArray(struct qemu_syscall *call);
+void qemu_SHRestricted(struct qemu_syscall *call);
 void qemu_SHRevokeDragDrop(struct qemu_syscall *call);
 void qemu_SHRunControlPanel(struct qemu_syscall *call);
 void qemu_SHSetInstanceExplorer(struct qemu_syscall *call);

@@ -239,6 +239,7 @@ EXPORTS
   SHHelpShortcuts_RunDLLW
   SHILCreateFromPathA=SHILCreateFromPathAW
   SHILCreateFromPathW=SHILCreateFromPathAW
+  SHInitRestricted
   SHIsFileAvailableOffline
   SHLimitInputEdit
   SHLoadInProc
@@ -272,6 +273,7 @@ EXPORTS
   SHRegQueryValueW
   SHRemoveLocalizedName
   SHReplaceFromPropSheetExtArray
+  SHRestricted
   SHRevokeDragDrop
   SHRunControlPanel
   SHSetInstanceExplorer
