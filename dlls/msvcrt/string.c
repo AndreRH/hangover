@@ -1170,7 +1170,7 @@ char* CDECL MSVCRT_strcpy(char *dst, const char *src)
 void qemu_strcpy(struct qemu_syscall *call)
 {
     struct qemu_strcpy *c = (struct qemu_strcpy *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_strcpy(QEMU_G2H(c->dst), QEMU_G2H(c->src)));
 }
 
@@ -1750,7 +1750,7 @@ ULONG CDECL MSVCRT_strtoul(const char* nptr, char** end, int base)
 void qemu_strtoul(struct qemu_syscall *call)
 {
     struct qemu_strtoul *c = (struct qemu_strtoul *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_strtoul(QEMU_G2H(c->nptr), QEMU_G2H(c->end), c->base);
 }
 
