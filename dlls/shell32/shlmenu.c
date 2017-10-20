@@ -58,7 +58,7 @@ WINBASEAPI HMENU WINAPI FileMenu_Create (COLORREF crBorderColor, int nBorderWidt
 
     qemu_syscall(&call.super);
 
-    return (HMENU)call.super.iret;
+    return (HMENU)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -276,7 +276,7 @@ WINBASEAPI HMENU WINAPI FileMenu_FindSubMenuByPidl(HMENU hMenu, LPCITEMIDLIST pi
 
     qemu_syscall(&call.super);
 
-    return (HMENU)call.super.iret;
+    return (HMENU)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -870,7 +870,7 @@ SHSTDAPI_(IContextMenu *) SHFind_InitMenuPopup (HMENU hMenu, HWND hWndParent, UI
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else

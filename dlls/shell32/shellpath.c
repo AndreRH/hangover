@@ -667,7 +667,7 @@ WINBASEAPI LPVOID WINAPI PathCombineAW(LPVOID szDest, LPCVOID lpszDir, LPCVOID l
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -699,7 +699,7 @@ WINBASEAPI LPVOID WINAPI PathBuildRootAW(LPVOID lpszPath, int drive)
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -729,7 +729,7 @@ WINBASEAPI LPVOID WINAPI PathFindFileNameAW(LPCVOID lpszPath)
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -759,7 +759,7 @@ WINBASEAPI LPVOID WINAPI PathFindExtensionAW(LPCVOID lpszPath)
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -793,7 +793,7 @@ WINBASEAPI LPVOID WINAPI PathGetExtensionAW(LPCVOID lpszPath,DWORD void1, DWORD 
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -825,7 +825,7 @@ WINBASEAPI LPVOID WINAPI PathGetArgsAW(LPVOID lpszPath)
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1543,7 +1543,7 @@ WINBASEAPI LPVOID WINAPI PathAddBackslashAW(LPVOID lpszPath)
 
     qemu_syscall(&call.super);
 
-    return (LPVOID)call.super.iret;
+    return (LPVOID)(ULONG_PTR)call.super.iret;
 }
 
 #else

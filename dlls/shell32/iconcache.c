@@ -274,7 +274,7 @@ WINBASEAPI HICON WINAPI ExtractAssociatedIconA(HINSTANCE hInst, LPSTR lpIconPath
 
     qemu_syscall(&call.super);
 
-    return (HICON)call.super.iret;
+    return (HICON)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -308,7 +308,7 @@ WINBASEAPI HICON WINAPI ExtractAssociatedIconW(HINSTANCE hInst, LPWSTR lpIconPat
 
     qemu_syscall(&call.super);
 
-    return (HICON)call.super.iret;
+    return (HICON)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -344,7 +344,7 @@ WINBASEAPI HICON WINAPI ExtractAssociatedIconExW(HINSTANCE hInst, LPWSTR lpIconP
 
     qemu_syscall(&call.super);
 
-    return (HICON)call.super.iret;
+    return (HICON)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -380,7 +380,7 @@ WINBASEAPI HICON WINAPI ExtractAssociatedIconExA(HINSTANCE hInst, LPSTR lpIconPa
 
     qemu_syscall(&call.super);
 
-    return (HICON)call.super.iret;
+    return (HICON)(ULONG_PTR)call.super.iret;
 }
 
 #else

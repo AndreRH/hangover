@@ -237,7 +237,7 @@ WINBASEAPI HANDLE WINAPI SHChangeNotification_Lock(HANDLE hChange, DWORD dwProce
 
     qemu_syscall(&call.super);
 
-    return (HANDLE)call.super.iret;
+    return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
 #else
