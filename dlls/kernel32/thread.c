@@ -915,11 +915,41 @@ WINBASEAPI BOOL WINAPI QueueUserWorkItem(LPTHREAD_START_ROUTINE Function, PVOID 
 
 #else
 
+static DWORD CALLBACK host_user_work_cb(void *param)
+{
+    struct apc_data *data = param;
+    uint64_t func = data->func;
+    uint64_t guest_data = data->guest_data;
+    DWORD ret;
+
+    HeapFree(GetProcessHeap(), 0, data);
+    WINE_TRACE("Executing user work callback 0x%lx(0x%lx).\n", func, guest_data);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(func), guest_data);
+    WINE_TRACE("User callback returned %x.\n", ret);
+
+    return ret;
+}
+
 void qemu_QueueUserWorkItem(struct qemu_syscall *call)
 {
     struct qemu_QueueUserWorkItem *c = (struct qemu_QueueUserWorkItem *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QueueUserWorkItem(QEMU_G2H(c->Function), QEMU_G2H(c->Context), c->Flags);
+    struct apc_data *data;
+    WINE_TRACE("\n");
+
+    data = HeapAlloc(GetProcessHeap(), 0, sizeof(*data));
+    if (!data)
+    {
+        c->super.iret = 0;
+        SetLastError(ERROR_NOT_ENOUGH_MEMORY);
+        return;
+    }
+
+    data->guest_data = c->Context;
+    data->func = c->Function;
+
+    c->super.iret = QueueUserWorkItem(host_user_work_cb, data, c->Flags);
+    if (!c->super.iret)
+        HeapFree(GetProcessHeap(), 0, data);
 }
 
 #endif
