@@ -57,7 +57,7 @@ WINBASEAPI BOOL WINAPI GetComputerNameW(LPWSTR name,LPDWORD size)
 void qemu_GetComputerNameW(struct qemu_syscall *call)
 {
     struct qemu_GetComputerNameW *c = (struct qemu_GetComputerNameW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetComputerNameW(QEMU_G2H(c->name), QEMU_G2H(c->size));
 }
 
@@ -89,7 +89,7 @@ WINBASEAPI BOOL WINAPI GetComputerNameA(LPSTR name, LPDWORD size)
 void qemu_GetComputerNameA(struct qemu_syscall *call)
 {
     struct qemu_GetComputerNameA *c = (struct qemu_GetComputerNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetComputerNameA(QEMU_G2H(c->name), QEMU_G2H(c->size));
 }
 
@@ -123,7 +123,7 @@ WINBASEAPI BOOL WINAPI GetComputerNameExA(COMPUTER_NAME_FORMAT type, LPSTR name,
 void qemu_GetComputerNameExA(struct qemu_syscall *call)
 {
     struct qemu_GetComputerNameExA *c = (struct qemu_GetComputerNameExA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetComputerNameExA(c->type, QEMU_G2H(c->name), QEMU_G2H(c->size));
 }
 
@@ -157,7 +157,7 @@ WINBASEAPI BOOL WINAPI GetComputerNameExW(COMPUTER_NAME_FORMAT type, LPWSTR name
 void qemu_GetComputerNameExW(struct qemu_syscall *call)
 {
     struct qemu_GetComputerNameExW *c = (struct qemu_GetComputerNameExW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetComputerNameExW(c->type, QEMU_G2H(c->name), QEMU_G2H(c->size));
 }
 

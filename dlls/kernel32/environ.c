@@ -248,7 +248,7 @@ WINBASEAPI BOOL WINAPI SetEnvironmentVariableW(LPCWSTR name, LPCWSTR value)
 void qemu_SetEnvironmentVariableW(struct qemu_syscall *call)
 {
     struct qemu_SetEnvironmentVariableW *c = (struct qemu_SetEnvironmentVariableW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetEnvironmentVariableW(QEMU_G2H(c->name), QEMU_G2H(c->value));
 }
 

@@ -1223,7 +1223,7 @@ WINBASEAPI UINT WINAPI GetWindowsDirectoryW(LPWSTR path, UINT count)
 void qemu_GetWindowsDirectoryW(struct qemu_syscall *call)
 {
     struct qemu_GetWindowsDirectoryW *c = (struct qemu_GetWindowsDirectoryW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWindowsDirectoryW(QEMU_G2H(c->path), c->count);
 }
 
@@ -1351,7 +1351,7 @@ WINBASEAPI UINT WINAPI GetSystemDirectoryW(LPWSTR path, UINT count)
 void qemu_GetSystemDirectoryW(struct qemu_syscall *call)
 {
     struct qemu_GetSystemDirectoryW *c = (struct qemu_GetSystemDirectoryW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetSystemDirectoryW(QEMU_G2H(c->path), c->count);
 }
 
@@ -1383,7 +1383,7 @@ WINBASEAPI UINT WINAPI GetSystemDirectoryA(LPSTR path, UINT count)
 void qemu_GetSystemDirectoryA(struct qemu_syscall *call)
 {
     struct qemu_GetSystemDirectoryA *c = (struct qemu_GetSystemDirectoryA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetSystemDirectoryA(QEMU_G2H(c->path), c->count);
 }
 
