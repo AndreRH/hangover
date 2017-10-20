@@ -198,7 +198,7 @@ WINBASEAPI DWORD WINAPI GetShortPathNameW(LPCWSTR longpath, LPWSTR shortpath, DW
 void qemu_GetShortPathNameW(struct qemu_syscall *call)
 {
     struct qemu_GetShortPathNameW *c = (struct qemu_GetShortPathNameW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetShortPathNameW(QEMU_G2H(c->longpath), QEMU_G2H(c->shortpath), c->shortlen);
 }
 
@@ -232,7 +232,7 @@ WINBASEAPI DWORD WINAPI GetShortPathNameA(LPCSTR longpath, LPSTR shortpath, DWOR
 void qemu_GetShortPathNameA(struct qemu_syscall *call)
 {
     struct qemu_GetShortPathNameA *c = (struct qemu_GetShortPathNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetShortPathNameA(QEMU_G2H(c->longpath), QEMU_G2H(c->shortpath), c->shortlen);
 }
 
@@ -408,7 +408,7 @@ WINBASEAPI DWORD WINAPI SearchPathW(LPCWSTR path, LPCWSTR name, LPCWSTR ext, DWO
 void qemu_SearchPathW(struct qemu_syscall *call)
 {
     struct qemu_SearchPathW *c = (struct qemu_SearchPathW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SearchPathW(QEMU_G2H(c->path), QEMU_G2H(c->name), QEMU_G2H(c->ext), c->buflen, QEMU_G2H(c->buffer), QEMU_G2H(c->lastpart));
 }
 
@@ -448,7 +448,7 @@ WINBASEAPI DWORD WINAPI SearchPathA(LPCSTR path, LPCSTR name, LPCSTR ext, DWORD 
 void qemu_SearchPathA(struct qemu_syscall *call)
 {
     struct qemu_SearchPathA *c = (struct qemu_SearchPathA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SearchPathA(QEMU_G2H(c->path), QEMU_G2H(c->name), QEMU_G2H(c->ext), c->buflen, QEMU_G2H(c->buffer), QEMU_G2H(c->lastpart));
 }
 
@@ -1567,7 +1567,7 @@ WINBASEAPI BOOL WINAPI NeedCurrentDirectoryForExePathW(LPCWSTR name)
 void qemu_NeedCurrentDirectoryForExePathW(struct qemu_syscall *call)
 {
     struct qemu_NeedCurrentDirectoryForExePathW *c = (struct qemu_NeedCurrentDirectoryForExePathW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = NeedCurrentDirectoryForExePathW(QEMU_G2H(c->name));
 }
 
@@ -1597,7 +1597,7 @@ WINBASEAPI BOOL WINAPI NeedCurrentDirectoryForExePathA(LPCSTR name)
 void qemu_NeedCurrentDirectoryForExePathA(struct qemu_syscall *call)
 {
     struct qemu_NeedCurrentDirectoryForExePathA *c = (struct qemu_NeedCurrentDirectoryForExePathA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = NeedCurrentDirectoryForExePathA(QEMU_G2H(c->name));
 }
 
@@ -1779,7 +1779,7 @@ WINBASEAPI BOOL WINAPI CheckNameLegalDOS8Dot3A(const char *name, char *oemname, 
 void qemu_CheckNameLegalDOS8Dot3A(struct qemu_syscall *call)
 {
     struct qemu_CheckNameLegalDOS8Dot3A *c = (struct qemu_CheckNameLegalDOS8Dot3A *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CheckNameLegalDOS8Dot3A(QEMU_G2H(c->name), QEMU_G2H(c->oemname), c->oemname_len, QEMU_G2H(c->contains_spaces), QEMU_G2H(c->is_legal));
 }
 
@@ -1817,7 +1817,7 @@ WINBASEAPI BOOL WINAPI CheckNameLegalDOS8Dot3W(const WCHAR *name, char *oemname,
 void qemu_CheckNameLegalDOS8Dot3W(struct qemu_syscall *call)
 {
     struct qemu_CheckNameLegalDOS8Dot3W *c = (struct qemu_CheckNameLegalDOS8Dot3W *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CheckNameLegalDOS8Dot3W(QEMU_G2H(c->name), QEMU_G2H(c->oemname), c->oemname_len, QEMU_G2H(c->contains_spaces_ret), QEMU_G2H(c->is_legal));
 }
 
@@ -1849,7 +1849,7 @@ extern BOOL WINAPI SetSearchPathMode(DWORD flags);
 void qemu_SetSearchPathMode(struct qemu_syscall *call)
 {
     struct qemu_SetSearchPathMode *c = (struct qemu_SetSearchPathMode *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetSearchPathMode(c->flags);
 }
 
