@@ -267,6 +267,8 @@ enum ntdll_calls
     CALL_RTLCOPYUNICODESTRING,
     CALL_RTLCREATEACTIVATIONCONTEXT,
     CALL_RTLCREATEHEAP,
+    CALL_RTLCREATETIMER,
+    CALL_RTLCREATETIMERQUEUE,
     CALL_RTLCREATEUNICODESTRING,
     CALL_RTLCREATEUNICODESTRINGFROMASCIIZ,
     CALL_RTLCREATEUSERPROCESS,
@@ -280,6 +282,10 @@ enum ntdll_calls
     CALL_RTLDELETEREGISTRYVALUE,
     CALL_RTLDELETERESOURCE,
     CALL_RTLDELETESECURITYOBJECT,
+    CALL_RTLDELETETIMER,
+    CALL_RTLDELETETIMERQUEUEEX,
+    CALL_RTLDEREGISTERWAIT,
+    CALL_RTLDEREGISTERWAITEX,
     CALL_RTLDESTROYHEAP,
     CALL_RTLDETERMINEDOSPATHNAMETYPE_U,
     CALL_RTLDOSPATHNAMETONTPATHNAME_U,
@@ -389,9 +395,11 @@ enum ntdll_calls
     CALL_RTLQUERYHEAPINFORMATION,
     CALL_RTLQUERYINFORMATIONACTIVATIONCONTEXT,
     CALL_RTLQUERYREGISTRYVALUES,
+    CALL_RTLQUEUEWORKITEM,
     CALL_RTLRAISESTATUS,
     CALL_RTLRANDOM,
     CALL_RTLREALLOCATEHEAP,
+    CALL_RTLREGISTERWAIT,
     CALL_RTLRELEASEACTIVATIONCONTEXT,
     CALL_RTLRELEASEPEBLOCK,
     CALL_RTLRELEASERESOURCE,
@@ -408,6 +416,7 @@ enum ntdll_calls
     CALL_RTLSETCURRENTDIRECTORY_U,
     CALL_RTLSETCURRENTTRANSACTION,
     CALL_RTLSETHEAPINFORMATION,
+    CALL_RTLSETIOCOMPLETIONCALLBACK,
     CALL_RTLSETLASTWIN32ERROR,
     CALL_RTLSETLASTWIN32ERRORANDNTSTATUSFROMNTSTATUS,
     CALL_RTLSETTHREADERRORMODE,
@@ -436,6 +445,7 @@ enum ntdll_calls
     CALL_RTLUPCASEUNICODESTRINGTOOEMSTRING,
     CALL_RTLUPCASEUNICODETOMULTIBYTEN,
     CALL_RTLUPCASEUNICODETOOEMN,
+    CALL_RTLUPDATETIMER,
     CALL_RTLUPPERCHAR,
     CALL_RTLUPPERSTRING,
     CALL_RTLVALIDATEHEAP,
@@ -467,6 +477,34 @@ enum ntdll_calls
     CALL_TOUPPER,
     CALL_TOWLOWER,
     CALL_TOWUPPER,
+    CALL_TPALLOCCLEANUPGROUP,
+    CALL_TPALLOCPOOL,
+    CALL_TPALLOCTIMER,
+    CALL_TPALLOCWAIT,
+    CALL_TPALLOCWORK,
+    CALL_TPCALLBACKLEAVECRITICALSECTIONONCOMPLETION,
+    CALL_TPCALLBACKMAYRUNLONG,
+    CALL_TPCALLBACKRELEASEMUTEXONCOMPLETION,
+    CALL_TPCALLBACKRELEASESEMAPHOREONCOMPLETION,
+    CALL_TPCALLBACKSETEVENTONCOMPLETION,
+    CALL_TPCALLBACKUNLOADDLLONCOMPLETION,
+    CALL_TPDISASSOCIATECALLBACK,
+    CALL_TPISTIMERSET,
+    CALL_TPPOSTWORK,
+    CALL_TPRELEASECLEANUPGROUP,
+    CALL_TPRELEASECLEANUPGROUPMEMBERS,
+    CALL_TPRELEASEPOOL,
+    CALL_TPRELEASETIMER,
+    CALL_TPRELEASEWAIT,
+    CALL_TPRELEASEWORK,
+    CALL_TPSETPOOLMAXTHREADS,
+    CALL_TPSETPOOLMINTHREADS,
+    CALL_TPSETTIMER,
+    CALL_TPSETWAIT,
+    CALL_TPSIMPLETRYPOST,
+    CALL_TPWAITFORTIMER,
+    CALL_TPWAITFORWAIT,
+    CALL_TPWAITFORWORK,
     CALL_VERSETCONDITIONMASK,
     CALL_WCSCAT,
     CALL_WCSCHR,
@@ -774,6 +812,8 @@ void qemu_RtlCopyString(struct qemu_syscall *call);
 void qemu_RtlCopyUnicodeString(struct qemu_syscall *call);
 void qemu_RtlCreateActivationContext(struct qemu_syscall *call);
 void qemu_RtlCreateHeap(struct qemu_syscall *call);
+void qemu_RtlCreateTimer(struct qemu_syscall *call);
+void qemu_RtlCreateTimerQueue(struct qemu_syscall *call);
 void qemu_RtlCreateUnicodeString(struct qemu_syscall *call);
 void qemu_RtlCreateUnicodeStringFromAsciiz(struct qemu_syscall *call);
 void qemu_RtlCreateUserProcess(struct qemu_syscall *call);
@@ -787,6 +827,10 @@ void qemu_RtlDeleteFunctionTable(struct qemu_syscall *call);
 void qemu_RtlDeleteRegistryValue(struct qemu_syscall *call);
 void qemu_RtlDeleteResource(struct qemu_syscall *call);
 void qemu_RtlDeleteSecurityObject(struct qemu_syscall *call);
+void qemu_RtlDeleteTimer(struct qemu_syscall *call);
+void qemu_RtlDeleteTimerQueueEx(struct qemu_syscall *call);
+void qemu_RtlDeregisterWait(struct qemu_syscall *call);
+void qemu_RtlDeregisterWaitEx(struct qemu_syscall *call);
 void qemu_RtlDestroyHeap(struct qemu_syscall *call);
 void qemu_RtlDetermineDosPathNameType_U(struct qemu_syscall *call);
 void qemu_RtlDosPathNameToNtPathName_U(struct qemu_syscall *call);
@@ -896,9 +940,11 @@ void qemu_RtlQueryDepthSList(struct qemu_syscall *call);
 void qemu_RtlQueryHeapInformation(struct qemu_syscall *call);
 void qemu_RtlQueryInformationActivationContext(struct qemu_syscall *call);
 void qemu_RtlQueryRegistryValues(struct qemu_syscall *call);
+void qemu_RtlQueueWorkItem(struct qemu_syscall *call);
 void qemu_RtlRaiseStatus(struct qemu_syscall *call);
 void qemu_RtlRandom(struct qemu_syscall *call);
 void qemu_RtlReAllocateHeap(struct qemu_syscall *call);
+void qemu_RtlRegisterWait(struct qemu_syscall *call);
 void qemu_RtlReleaseActivationContext(struct qemu_syscall *call);
 void qemu_RtlReleasePebLock(struct qemu_syscall *call);
 void qemu_RtlReleaseResource(struct qemu_syscall *call);
@@ -915,6 +961,7 @@ void qemu_RtlSetCriticalSectionSpinCount(struct qemu_syscall *call);
 void qemu_RtlSetCurrentDirectory_U(struct qemu_syscall *call);
 void qemu_RtlSetCurrentTransaction(struct qemu_syscall *call);
 void qemu_RtlSetHeapInformation(struct qemu_syscall *call);
+void qemu_RtlSetIoCompletionCallback(struct qemu_syscall *call);
 void qemu_RtlSetLastWin32Error(struct qemu_syscall *call);
 void qemu_RtlSetLastWin32ErrorAndNtStatusFromNtStatus(struct qemu_syscall *call);
 void qemu_RtlSetThreadErrorMode(struct qemu_syscall *call);
@@ -943,6 +990,7 @@ void qemu_RtlUpcaseUnicodeStringToCountedOemString(struct qemu_syscall *call);
 void qemu_RtlUpcaseUnicodeStringToOemString(struct qemu_syscall *call);
 void qemu_RtlUpcaseUnicodeToMultiByteN(struct qemu_syscall *call);
 void qemu_RtlUpcaseUnicodeToOemN(struct qemu_syscall *call);
+void qemu_RtlUpdateTimer(struct qemu_syscall *call);
 void qemu_RtlUpperChar(struct qemu_syscall *call);
 void qemu_RtlUpperString(struct qemu_syscall *call);
 void qemu_RtlValidateHeap(struct qemu_syscall *call);
@@ -973,6 +1021,34 @@ void qemu_tolower(struct qemu_syscall *call);
 void qemu_toupper(struct qemu_syscall *call);
 void qemu_towlower(struct qemu_syscall *call);
 void qemu_towupper(struct qemu_syscall *call);
+void qemu_TpAllocCleanupGroup(struct qemu_syscall *call);
+void qemu_TpAllocPool(struct qemu_syscall *call);
+void qemu_TpAllocTimer(struct qemu_syscall *call);
+void qemu_TpAllocWait(struct qemu_syscall *call);
+void qemu_TpAllocWork(struct qemu_syscall *call);
+void qemu_TpCallbackLeaveCriticalSectionOnCompletion(struct qemu_syscall *call);
+void qemu_TpCallbackMayRunLong(struct qemu_syscall *call);
+void qemu_TpCallbackReleaseMutexOnCompletion(struct qemu_syscall *call);
+void qemu_TpCallbackReleaseSemaphoreOnCompletion(struct qemu_syscall *call);
+void qemu_TpCallbackSetEventOnCompletion(struct qemu_syscall *call);
+void qemu_TpCallbackUnloadDllOnCompletion(struct qemu_syscall *call);
+void qemu_TpDisassociateCallback(struct qemu_syscall *call);
+void qemu_TpIsTimerSet(struct qemu_syscall *call);
+void qemu_TpPostWork(struct qemu_syscall *call);
+void qemu_TpReleaseCleanupGroup(struct qemu_syscall *call);
+void qemu_TpReleaseCleanupGroupMembers(struct qemu_syscall *call);
+void qemu_TpReleasePool(struct qemu_syscall *call);
+void qemu_TpReleaseTimer(struct qemu_syscall *call);
+void qemu_TpReleaseWait(struct qemu_syscall *call);
+void qemu_TpReleaseWork(struct qemu_syscall *call);
+void qemu_TpSetPoolMaxThreads(struct qemu_syscall *call);
+void qemu_TpSetPoolMinThreads(struct qemu_syscall *call);
+void qemu_TpSetTimer(struct qemu_syscall *call);
+void qemu_TpSetWait(struct qemu_syscall *call);
+void qemu_TpSimpleTryPost(struct qemu_syscall *call);
+void qemu_TpWaitForTimer(struct qemu_syscall *call);
+void qemu_TpWaitForWait(struct qemu_syscall *call);
+void qemu_TpWaitForWork(struct qemu_syscall *call);
 void qemu_VerSetConditionMask(struct qemu_syscall *call);
 void qemu_wcscat(struct qemu_syscall *call);
 void qemu_wcschr(struct qemu_syscall *call);
