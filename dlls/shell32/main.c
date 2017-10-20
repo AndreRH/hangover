@@ -228,6 +228,7 @@ static const syscall_handler dll_functions[] =
     qemu_ShellExecuteExA,
     qemu_ShellExecuteExW,
     qemu_ShellExecuteW,
+    qemu_ShellMessageBox,
     qemu_SHEmptyRecycleBinA,
     qemu_SHEmptyRecycleBinW,
     qemu_SHEnumerateUnreadMailAccountsW,

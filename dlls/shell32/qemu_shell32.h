@@ -188,6 +188,7 @@ enum shell32_calls
     CALL_SHELLEXECUTEEXA,
     CALL_SHELLEXECUTEEXW,
     CALL_SHELLEXECUTEW,
+    CALL_SHELLMESSAGEBOX,
     CALL_SHEMPTYRECYCLEBINA,
     CALL_SHEMPTYRECYCLEBINW,
     CALL_SHENUMERATEUNREADMAILACCOUNTSW,
@@ -492,6 +493,7 @@ void qemu_ShellExecuteA(struct qemu_syscall *call);
 void qemu_ShellExecuteExA(struct qemu_syscall *call);
 void qemu_ShellExecuteExW(struct qemu_syscall *call);
 void qemu_ShellExecuteW(struct qemu_syscall *call);
+void qemu_ShellMessageBox(struct qemu_syscall *call);
 void qemu_SHEmptyRecycleBinA(struct qemu_syscall *call);
 void qemu_SHEmptyRecycleBinW(struct qemu_syscall *call);
 void qemu_SHEnumerateUnreadMailAccountsW(struct qemu_syscall *call);

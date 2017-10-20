@@ -2325,3 +2325,40 @@ void qemu_SHGetImageList(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_ShellMessageBox
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int WINAPIV ShellMessageBoxA(HINSTANCE hInstance, HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType, ...)
+{
+    struct qemu_ShellMessageBox call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SHELLMESSAGEBOX);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+WINBASEAPI int WINAPIV ShellMessageBoxW(HINSTANCE hInstance, HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType, ...)
+{
+    struct qemu_ShellMessageBox call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SHELLMESSAGEBOX);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_ShellMessageBox(struct qemu_syscall *call)
+{
+    struct qemu_ShellMessageBox *c = (struct qemu_ShellMessageBox *)call;
+    WINE_FIXME("Stub!\n");
+    c->super.iret = 0;
+}
+
+#endif
