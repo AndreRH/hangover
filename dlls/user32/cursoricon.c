@@ -870,17 +870,6 @@ void qemu_GetIconInfoExA(struct qemu_syscall *call)
     info = QEMU_G2H(c->info);
 
     c->super.iret = GetIconInfoExA(QEMU_G2H(c->icon), info);
-
-    if (c->super.iret)
-    {
-        GetModuleFileNameA(host_mod, host_name, sizeof(host_name) / sizeof(*host_name));
-        if (!strcmp(host_name, info->szModName))
-        {
-            qemu_ops->qemu_GetModuleFileName(guest_mod, wbuf, sizeof(wbuf) / sizeof(*wbuf));
-            WideCharToMultiByte(CP_ACP, 0, wbuf, -1, info->szModName,
-                    sizeof(info->szModName) / sizeof(*info->szModName), NULL, NULL);
-        }
-    }
 }
 
 #endif
@@ -918,16 +907,6 @@ void qemu_GetIconInfoExW(struct qemu_syscall *call)
     info = QEMU_G2H(c->info);
 
     c->super.iret = GetIconInfoExW(QEMU_G2H(c->icon), info);
-
-    if (c->super.iret)
-    {
-        GetModuleFileNameW(host_mod, host_name, sizeof(host_name) / sizeof(*host_name));
-        if (!strcmpW(host_name, info->szModName))
-        {
-            qemu_ops->qemu_GetModuleFileName(guest_mod, info->szModName,
-                    sizeof(info->szModName) / sizeof(*info->szModName));
-        }
-    }
 }
 
 #endif
