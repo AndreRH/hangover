@@ -1058,12 +1058,10 @@ struct qemu_SetLastError
 
 #ifdef QEMU_DLL_GUEST
 
-#if defined(__x86_64__)
-
-#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.def " #name suffix "; .scl 2; .type 32; .endef\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc")
-#define __ASM_STDCALL(args)
-#define __ASM_STDCALL_FUNC(name,args,code) __ASM_DEFINE_FUNC(name,__ASM_STDCALL(args),code)
-
+/* There are actually some Win32 functions that depend on the incoming last error value.
+ * So we have to update the host side too when the client sets it. Disable the inline
+ * asm for now. kernel32/tests/pipe.c shows a few examples. */
+#if defined(__x86_64__) && 0
 
 __ASM_STDCALL_FUNC( kernel32_SetLastError, 8, ".byte 0x65\n\tmovl %ecx,0x68\n\tret" );
 
@@ -1093,6 +1091,10 @@ void qemu_SetLastError(struct qemu_syscall *call)
 #ifdef QEMU_DLL_GUEST
 
 #if defined(__x86_64__)
+
+#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.def " #name suffix "; .scl 2; .type 32; .endef\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc")
+#define __ASM_STDCALL(args)
+#define __ASM_STDCALL_FUNC(name,args,code) __ASM_DEFINE_FUNC(name,__ASM_STDCALL(args),code)
 
 __ASM_STDCALL_FUNC( kernel32_GetLastError, 0, ".byte 0x65\n\tmovl 0x68,%eax\n\tret" );
 
