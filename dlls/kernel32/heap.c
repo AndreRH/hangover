@@ -155,7 +155,7 @@ WINBASEAPI BOOL WINAPI HeapValidate(HANDLE heap, DWORD flags, LPCVOID block)
 void qemu_HeapValidate(struct qemu_syscall *call)
 {
     struct qemu_HeapValidate *c = (struct qemu_HeapValidate *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = HeapValidate(QEMU_G2H(c->heap), c->flags, QEMU_G2H(c->block));
 }
 

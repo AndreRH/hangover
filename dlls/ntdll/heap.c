@@ -336,7 +336,7 @@ WINBASEAPI SIZE_T WINAPI RtlSizeHeap(HANDLE heap, ULONG flags, const void *ptr)
 void qemu_RtlSizeHeap(struct qemu_syscall *call)
 {
     struct qemu_RtlSizeHeap *c = (struct qemu_RtlSizeHeap *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RtlSizeHeap(QEMU_G2H(c->heap), c->flags, QEMU_G2H(c->ptr));
 }
 
