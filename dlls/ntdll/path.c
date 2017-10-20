@@ -344,8 +344,14 @@ WINBASEAPI NTSTATUS WINAPI RtlSetCurrentDirectory_U(const UNICODE_STRING* dir)
 void qemu_RtlSetCurrentDirectory_U(struct qemu_syscall *call)
 {
     struct qemu_RtlSetCurrentDirectory_U *c = (struct qemu_RtlSetCurrentDirectory_U *)call;
+    TEB *qemu_teb = qemu_ops->qemu_getTEB(), *wine_teb = NtCurrentTeb();
+
     WINE_FIXME("Unverified!\n");
     c->super.iret = RtlSetCurrentDirectory_U(QEMU_G2H(c->dir));
+
+    /* No need to update dosPath, it always points to the same place anyway. */
+    qemu_teb->Peb->ProcessParameters->CurrentDirectory.Handle =
+            wine_teb->Peb->ProcessParameters->CurrentDirectory.Handle;
 }
 
 #endif

@@ -18,6 +18,8 @@
 
 /* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
 
+#include <ntstatus.h>
+#define WIN32_NO_STATUS
 #include <windows.h>
 #include <stdio.h>
 #include <excpt.h>
@@ -1192,14 +1194,14 @@ static const syscall_handler dll_functions[] =
     qemu_ZombifyActCtx,
 };
 
+/* Wine's TEB access is slow because it doesn't store it in a CPU register yet.
+ * Cache it using ELF TLS for now. Yeah, it's ugly. */
 __thread TEB *teb;
 
 static void WINAPI hook_SetLastError(DWORD error)
 {
     TEB *qemu_teb = qemu_ops->qemu_getTEB();
 
-    /* Wine's TEB access is slow because it doesn't store it in a CPU register yet.
-     * Cache it using ELF TLS for now. Yeah, it's ugly. */
     if (!teb)
         teb = NtCurrentTeb();
     teb->LastErrorValue = error;
@@ -1209,16 +1211,107 @@ static void WINAPI hook_SetLastError(DWORD error)
         qemu_teb->LastErrorValue = error;
 }
 
+/* RtlSetCurrentDirectory_U is non-trivial and I'd have to use an
+ * actual hook that keeps the function callable. SetCurrentDirectoryA/W
+ * is its only caller in Wine, so hook it to fix up the guest TEB,
+ * and special-case the RtlSetCurrentDirectory_U wrapper in our ntdll. */
+static BOOL WINAPI hook_SetCurrentDirectoryW(const WCHAR *dir)
+{
+    UNICODE_STRING dirW;
+    NTSTATUS status;
+
+    RtlInitUnicodeString( &dirW, dir );
+    status = RtlSetCurrentDirectory_U( &dirW );
+    if (status != STATUS_SUCCESS)
+    {
+        hook_SetLastError( RtlNtStatusToDosError(status) );
+    }
+    else
+    {
+        TEB *qemu_teb = qemu_ops->qemu_getTEB();
+
+        if (!teb)
+            teb = NtCurrentTeb();
+
+        /* No need to update dosPath, it always points to the same place anyway. */
+        qemu_teb->Peb->ProcessParameters->CurrentDirectory.Handle =
+                teb->Peb->ProcessParameters->CurrentDirectory.Handle;
+    }
+    return !status;
+}
+
+static WCHAR *FILE_name_AtoW( LPCSTR name, BOOL alloc )
+{
+    ANSI_STRING str;
+    UNICODE_STRING strW, *pstrW;
+    NTSTATUS status;
+
+    RtlInitAnsiString( &str, name );
+    pstrW = alloc ? &strW : &teb->StaticUnicodeString;
+    if (!AreFileApisANSI())
+        status = RtlOemStringToUnicodeString( pstrW, &str, alloc );
+    else
+        status = RtlAnsiStringToUnicodeString( pstrW, &str, alloc );
+    if (status == STATUS_SUCCESS) return pstrW->Buffer;
+
+    if (status == STATUS_BUFFER_OVERFLOW)
+        SetLastError( ERROR_FILENAME_EXCED_RANGE );
+    else
+        SetLastError( RtlNtStatusToDosError(status) );
+    return NULL;
+}
+
+static BOOL WINAPI hook_SetCurrentDirectoryA(const CHAR *dir)
+{
+    WCHAR *dirW;
+    UNICODE_STRING strW;
+    NTSTATUS status;
+
+    if (!teb)
+        teb = NtCurrentTeb();
+
+    if (!(dirW = FILE_name_AtoW( dir, FALSE ))) return FALSE;
+    RtlInitUnicodeString( &strW, dirW );
+    status = RtlSetCurrentDirectory_U( &strW );
+    if (status != STATUS_SUCCESS)
+    {
+        hook_SetLastError( RtlNtStatusToDosError(status) );
+    }
+    else
+    {
+        TEB *qemu_teb = qemu_ops->qemu_getTEB();
+
+        /* No need to update dosPath, it always points to the same place anyway. */
+        qemu_teb->Peb->ProcessParameters->CurrentDirectory.Handle =
+                teb->Peb->ProcessParameters->CurrentDirectory.Handle;
+    }
+    return !status;
+}
+
+static void hook(void *to_hook, const void *replace)
+{
+    DWORD old_protect;
+    size_t offset;
+    struct hooked_function
+    {
+        DWORD ldr, br;
+        const void *dst;
+    } *hooked_function = to_hook;
+
+    if(!VirtualProtect(hooked_function, sizeof(*hooked_function), PAGE_EXECUTE_READWRITE, &old_protect))
+        WINE_ERR("Failed to make hooked function writeable.\n");
+
+    offset = offsetof(struct hooked_function, dst) - offsetof(struct hooked_function, ldr);
+    hooked_function->ldr = 0x58000005 | (offset << 3);   /* ldr x5, offset */;
+    hooked_function->br = 0xd61f00a0; /* br x5 */;
+    hooked_function->dst = replace;
+
+    VirtualProtect(hooked_function, sizeof(*hooked_function), old_protect, &old_protect);
+    __clear_cache(hooked_function, (char *)hooked_function + sizeof(*hooked_function));
+}
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
-    DWORD old_protect;
-    struct set_last_error
-    {
-        DWORD ldr, br;
-        void *dst;
-    } *set_last_error;
-    size_t offset;
     HANDLE kernel32;
 
     WINE_TRACE("Loading host-side kernel32 wrapper.\n");
@@ -1229,23 +1322,12 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (kernel32_tls == TLS_OUT_OF_INDEXES)
         WINE_ERR("Out of TLS indices\n");
 
-    /* The SetLastError pointer provided by the linker points into the IAT, not the actual function. */
+    /* The function pointers provided by the linker point into the IAT, not the actual function. */
     kernel32 = GetModuleHandleA("kernel32");
-    set_last_error = (void *)GetProcAddress(kernel32, "SetLastError");
+    hook(GetProcAddress(kernel32, "SetLastError"), hook_SetLastError);
+    hook(GetProcAddress(kernel32, "SetCurrentDirectoryA"), hook_SetCurrentDirectoryA);
+    hook(GetProcAddress(kernel32, "SetCurrentDirectoryW"), hook_SetCurrentDirectoryW);
 
-    if(!VirtualProtect(set_last_error, sizeof(*set_last_error), PAGE_EXECUTE_READWRITE, &old_protect))
-    {
-        WINE_FIXME("Failed to make SetLastError() writeable.\n");
-        return NULL;
-    }
-
-    offset = offsetof(struct set_last_error, dst) - offsetof(struct set_last_error, ldr);
-    set_last_error->ldr = 0x58000005 | (offset << 3);   /* ldr x5, offset */;
-    set_last_error->br = 0xd61f00a0; /* br x5 */;
-    set_last_error->dst = hook_SetLastError;
-
-    VirtualProtect(set_last_error, sizeof(*set_last_error), old_protect, &old_protect);
-    __clear_cache(set_last_error, (char *)set_last_error + sizeof(*set_last_error));
 
     return dll_functions;
 }
