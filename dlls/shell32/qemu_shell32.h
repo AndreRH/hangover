@@ -84,6 +84,7 @@ enum shell32_calls
     CALL_ILCLONEFIRST,
     CALL_ILCOMBINE,
     CALL_ILCREATEFROMPATHA,
+    CALL_ILCREATEFROMPATHAW,
     CALL_ILCREATEFROMPATHW,
     CALL_ILFINDCHILD,
     CALL_ILFINDLASTID,
@@ -392,6 +393,7 @@ void qemu_ILClone(struct qemu_syscall *call);
 void qemu_ILCloneFirst(struct qemu_syscall *call);
 void qemu_ILCombine(struct qemu_syscall *call);
 void qemu_ILCreateFromPathA(struct qemu_syscall *call);
+void qemu_ILCreateFromPathAW(struct qemu_syscall *call);
 void qemu_ILCreateFromPathW(struct qemu_syscall *call);
 void qemu_ILFindChild(struct qemu_syscall *call);
 void qemu_ILFindLastID(struct qemu_syscall *call);

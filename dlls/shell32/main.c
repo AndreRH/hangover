@@ -124,6 +124,7 @@ static const syscall_handler dll_functions[] =
     qemu_ILCloneFirst,
     qemu_ILCombine,
     qemu_ILCreateFromPathA,
+    qemu_ILCreateFromPathAW,
     qemu_ILCreateFromPathW,
     qemu_ILFindChild,
     qemu_ILFindLastID,

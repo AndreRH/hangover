@@ -740,6 +740,36 @@ void qemu_ILGlobalFree(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_ILCreateFromPathAW
+{
+    struct qemu_syscall super;
+    uint64_t path;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+LPITEMIDLIST WINAPI ILCreateFromPathAW (LPCVOID path)
+{
+    struct qemu_ILCreateFromPathAW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ILCREATEFROMPATHAW);
+    call.path = (ULONG_PTR)path;
+
+    qemu_syscall(&call.super);
+
+    return (LPITEMIDLIST)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+void qemu_ILCreateFromPathAW(struct qemu_syscall *call)
+{
+    struct qemu_ILCreateFromPathAW *c = (struct qemu_ILCreateFromPathAW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = (ULONG_PTR)ILCreateFromPath(QEMU_G2H(c->path));
+}
+
+#endif
+
 struct qemu_ILCreateFromPathA
 {
     struct qemu_syscall super;
