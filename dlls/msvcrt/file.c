@@ -615,7 +615,6 @@ void qemu_fprintf(struct qemu_syscall *call)
     switch (c->super.id)
     {
         case QEMU_SYSCALL_ID(CALL_PRINTF):
-            WINE_ERR("Hmm, wanna right size\n");
             /* Don't put "stdout" here, it will call the Linux libc __iob_func export. */
             data.file = p___iob_func() + 1;
             data.unicode = FALSE;
