@@ -3,6 +3,7 @@ LIBRARY shell32.dll BASE=0x80000000
 EXPORTS
   ArrangeWindows
   CallCPLEntry16
+  CDefFolderMenu_Create2
   CheckEscapesA
   CheckEscapesW
   CIDLData_CreateFromIDArray
@@ -43,6 +44,29 @@ EXPORTS
   ExtractIconW
   ExtractVersionResource16W
   FileIconInit
+  FileMenu_AbortInitMenu
+  FileMenu_AddFilesForPidl
+  FileMenu_AppendFilesForPidl
+  FileMenu_AppendItemAW
+  FileMenu_Create
+  FileMenu_DeleteAllItems
+  FileMenu_DeleteItemByCmd
+  FileMenu_DeleteItemByFirstID
+  FileMenu_DeleteItemByIndex
+  FileMenu_DeleteSeparator
+  FileMenu_Destroy
+  FileMenu_DrawItem
+  FileMenu_EnableItemByCmd
+  FileMenu_FindSubMenuByPidl
+  FileMenu_GetItemExtent
+  FileMenu_GetLastSelectedItemPidls
+  FileMenu_HandleMenuChar
+  FileMenu_InitMenuPopup
+  FileMenu_InsertUsingPidl
+  FileMenu_Invalidate
+  FileMenu_MeasureItem
+  FileMenu_ReplaceUsingPidl
+  FileMenu_TrackPopupMenuEx
   FindExecutableA
   FindExecutableW
   FreeIconList
@@ -117,6 +141,7 @@ EXPORTS
   SHCloneSpecialIDList
   SHCLSIDFromString
   SHCoCreateInstance
+  SHCreateDefaultContextMenu
   SHCreateDirectory
   SHCreateDirectoryExA
   SHCreateDirectoryExW
@@ -145,6 +170,7 @@ EXPORTS
   shell32_243
   Shell_GetCachedImageIndexAW
   Shell_GetImageLists
+  Shell_MergeMenus
   Shell_NotifyIconA
   Shell_NotifyIconW
   ShellAboutA
@@ -159,6 +185,7 @@ EXPORTS
   SHEnumerateUnreadMailAccountsW
   SHFileOperationA
   SHFileOperationW
+  SHFind_InitMenuPopup
   SHFindFiles
   SHFlushClipboard
   SHFlushSFCache

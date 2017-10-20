@@ -7,6 +7,7 @@ enum shell32_calls
 {
     CALL_ARRANGEWINDOWS = 0,
     CALL_CALLCPLENTRY16,
+    CALL_CDEFFOLDERMENU_CREATE2,
     CALL_CHECKESCAPESA,
     CALL_CHECKESCAPESW,
     CALL_CIDLDATA_CREATEFROMIDARRAY,
@@ -47,6 +48,29 @@ enum shell32_calls
     CALL_EXTRACTICONW,
     CALL_EXTRACTVERSIONRESOURCE16W,
     CALL_FILEICONINIT,
+    CALL_FILEMENU_ABORTINITMENU,
+    CALL_FILEMENU_ADDFILESFORPIDL,
+    CALL_FILEMENU_APPENDFILESFORPIDL,
+    CALL_FILEMENU_APPENDITEMAW,
+    CALL_FILEMENU_CREATE,
+    CALL_FILEMENU_DELETEALLITEMS,
+    CALL_FILEMENU_DELETEITEMBYCMD,
+    CALL_FILEMENU_DELETEITEMBYFIRSTID,
+    CALL_FILEMENU_DELETEITEMBYINDEX,
+    CALL_FILEMENU_DELETESEPARATOR,
+    CALL_FILEMENU_DESTROY,
+    CALL_FILEMENU_DRAWITEM,
+    CALL_FILEMENU_ENABLEITEMBYCMD,
+    CALL_FILEMENU_FINDSUBMENUBYPIDL,
+    CALL_FILEMENU_GETITEMEXTENT,
+    CALL_FILEMENU_GETLASTSELECTEDITEMPIDLS,
+    CALL_FILEMENU_HANDLEMENUCHAR,
+    CALL_FILEMENU_INITMENUPOPUP,
+    CALL_FILEMENU_INSERTUSINGPIDL,
+    CALL_FILEMENU_INVALIDATE,
+    CALL_FILEMENU_MEASUREITEM,
+    CALL_FILEMENU_REPLACEUSINGPIDL,
+    CALL_FILEMENU_TRACKPOPUPMENUEX,
     CALL_FINDEXECUTABLEA,
     CALL_FINDEXECUTABLEW,
     CALL_FREEICONLIST,
@@ -121,6 +145,7 @@ enum shell32_calls
     CALL_SHCLONESPECIALIDLIST,
     CALL_SHCLSIDFROMSTRING,
     CALL_SHCOCREATEINSTANCE,
+    CALL_SHCREATEDEFAULTCONTEXTMENU,
     CALL_SHCREATEDIRECTORY,
     CALL_SHCREATEDIRECTORYEXA,
     CALL_SHCREATEDIRECTORYEXW,
@@ -149,6 +174,7 @@ enum shell32_calls
     CALL_SHELL32_243,
     CALL_SHELL_GETCACHEDIMAGEINDEXAW,
     CALL_SHELL_GETIMAGELISTS,
+    CALL_SHELL_MERGEMENUS,
     CALL_SHELL_NOTIFYICONA,
     CALL_SHELL_NOTIFYICONW,
     CALL_SHELLABOUTA,
@@ -163,6 +189,7 @@ enum shell32_calls
     CALL_SHENUMERATEUNREADMAILACCOUNTSW,
     CALL_SHFILEOPERATIONA,
     CALL_SHFILEOPERATIONW,
+    CALL_SHFIND_INITMENUPOPUP,
     CALL_SHFINDFILES,
     CALL_SHFLUSHCLIPBOARD,
     CALL_SHFLUSHSFCACHE,
@@ -278,6 +305,7 @@ extern const struct qemu_ops *qemu_ops;
 
 void qemu_ArrangeWindows(struct qemu_syscall *call);
 void qemu_CallCPLEntry16(struct qemu_syscall *call);
+void qemu_CDefFolderMenu_Create2(struct qemu_syscall *call);
 void qemu_CheckEscapesA(struct qemu_syscall *call);
 void qemu_CheckEscapesW(struct qemu_syscall *call);
 void qemu_CIDLData_CreateFromIDArray(struct qemu_syscall *call);
@@ -318,6 +346,29 @@ void qemu_ExtractIconExW(struct qemu_syscall *call);
 void qemu_ExtractIconW(struct qemu_syscall *call);
 void qemu_ExtractVersionResource16W(struct qemu_syscall *call);
 void qemu_FileIconInit(struct qemu_syscall *call);
+void qemu_FileMenu_AbortInitMenu(struct qemu_syscall *call);
+void qemu_FileMenu_AddFilesForPidl(struct qemu_syscall *call);
+void qemu_FileMenu_AppendFilesForPidl(struct qemu_syscall *call);
+void qemu_FileMenu_AppendItemAW(struct qemu_syscall *call);
+void qemu_FileMenu_Create(struct qemu_syscall *call);
+void qemu_FileMenu_DeleteAllItems(struct qemu_syscall *call);
+void qemu_FileMenu_DeleteItemByCmd(struct qemu_syscall *call);
+void qemu_FileMenu_DeleteItemByFirstID(struct qemu_syscall *call);
+void qemu_FileMenu_DeleteItemByIndex(struct qemu_syscall *call);
+void qemu_FileMenu_DeleteSeparator(struct qemu_syscall *call);
+void qemu_FileMenu_Destroy(struct qemu_syscall *call);
+void qemu_FileMenu_DrawItem(struct qemu_syscall *call);
+void qemu_FileMenu_EnableItemByCmd(struct qemu_syscall *call);
+void qemu_FileMenu_FindSubMenuByPidl(struct qemu_syscall *call);
+void qemu_FileMenu_GetItemExtent(struct qemu_syscall *call);
+void qemu_FileMenu_GetLastSelectedItemPidls(struct qemu_syscall *call);
+void qemu_FileMenu_HandleMenuChar(struct qemu_syscall *call);
+void qemu_FileMenu_InitMenuPopup(struct qemu_syscall *call);
+void qemu_FileMenu_InsertUsingPidl(struct qemu_syscall *call);
+void qemu_FileMenu_Invalidate(struct qemu_syscall *call);
+void qemu_FileMenu_MeasureItem(struct qemu_syscall *call);
+void qemu_FileMenu_ReplaceUsingPidl(struct qemu_syscall *call);
+void qemu_FileMenu_TrackPopupMenuEx(struct qemu_syscall *call);
 void qemu_FindExecutableA(struct qemu_syscall *call);
 void qemu_FindExecutableW(struct qemu_syscall *call);
 void qemu_FreeIconList(struct qemu_syscall *call);
@@ -392,6 +443,7 @@ void qemu_SHChangeNotifyUpdateEntryList(struct qemu_syscall *call);
 void qemu_SHCloneSpecialIDList(struct qemu_syscall *call);
 void qemu_SHCLSIDFromString(struct qemu_syscall *call);
 void qemu_SHCoCreateInstance(struct qemu_syscall *call);
+void qemu_SHCreateDefaultContextMenu(struct qemu_syscall *call);
 void qemu_SHCreateDirectory(struct qemu_syscall *call);
 void qemu_SHCreateDirectoryExA(struct qemu_syscall *call);
 void qemu_SHCreateDirectoryExW(struct qemu_syscall *call);
@@ -420,6 +472,7 @@ void qemu_SheGetDirW(struct qemu_syscall *call);
 void qemu_shell32_243(struct qemu_syscall *call);
 void qemu_Shell_GetCachedImageIndexAW(struct qemu_syscall *call);
 void qemu_Shell_GetImageLists(struct qemu_syscall *call);
+void qemu_Shell_MergeMenus(struct qemu_syscall *call);
 void qemu_Shell_NotifyIconA(struct qemu_syscall *call);
 void qemu_Shell_NotifyIconW(struct qemu_syscall *call);
 void qemu_ShellAboutA(struct qemu_syscall *call);
@@ -434,6 +487,7 @@ void qemu_SHEmptyRecycleBinW(struct qemu_syscall *call);
 void qemu_SHEnumerateUnreadMailAccountsW(struct qemu_syscall *call);
 void qemu_SHFileOperationA(struct qemu_syscall *call);
 void qemu_SHFileOperationW(struct qemu_syscall *call);
+void qemu_SHFind_InitMenuPopup(struct qemu_syscall *call);
 void qemu_SHFindFiles(struct qemu_syscall *call);
 void qemu_SHFlushClipboard(struct qemu_syscall *call);
 void qemu_SHFlushSFCache(struct qemu_syscall *call);
