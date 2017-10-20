@@ -1082,3 +1082,36 @@ void qemu_SHQueryUserNotificationState(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_ShellHookProc
+{
+    struct qemu_syscall super;
+    uint64_t a, b, c;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+LRESULT CALLBACK ShellHookProc(DWORD a, DWORD b, DWORD c)
+{
+    struct qemu_ShellHookProc call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SHELLHOOKPROC);
+    call.a = a;
+    call.b = b;
+    call.c = c;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add ShellHookProc to Wine headers? */
+extern LRESULT CALLBACK ShellHookProc(DWORD a, DWORD b, DWORD c);
+void qemu_ShellHookProc(struct qemu_syscall *call)
+{
+    struct qemu_ShellHookProc *c = (struct qemu_ShellHookProc *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = ShellHookProc(c->a, c->b, c->c);
+}
+
+#endif
