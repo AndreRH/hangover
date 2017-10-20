@@ -178,6 +178,8 @@ EXPORTS
   ShellAboutA
   ShellAboutW
   ShellDDEInit
+  ShellExec_RunDLLA
+  ShellExec_RunDLLW
   ShellExecuteA
   ShellExecuteExA
   ShellExecuteExW

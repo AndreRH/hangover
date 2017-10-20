@@ -293,6 +293,78 @@ struct qemu_OpenAs_RunDLLA
     uint64_t cmdshow;
 };
 
+struct qemu_ShellExec_RunDLLW
+{
+    struct qemu_syscall super;
+    uint64_t hwnd;
+    uint64_t instance;
+    uint64_t cmdline;
+    uint64_t cmdshow;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void WINAPI ShellExec_RunDLLW(HWND hwnd, HINSTANCE instance, WCHAR *cmdline, int cmdshow)
+{
+    struct qemu_ShellExec_RunDLLW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SHELLEXEC_RUNDLLW);
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.instance = (ULONG_PTR)instance;
+    call.cmdline = (ULONG_PTR)cmdline;
+    call.cmdshow = cmdshow;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+/* TODO: Add ShellExec_RunDLLW to Wine headers? */
+extern void WINAPI ShellExec_RunDLLW(HWND hwnd, HINSTANCE instance, WCHAR *cmdline, int cmdshow);
+void qemu_ShellExec_RunDLLW(struct qemu_syscall *call)
+{
+    struct qemu_ShellExec_RunDLLW *c = (struct qemu_ShellExec_RunDLLW *)call;
+    WINE_FIXME("Unverified!\n");
+    ShellExec_RunDLLW(QEMU_G2H(c->hwnd), QEMU_G2H(c->instance), QEMU_G2H(c->cmdline), c->cmdshow);
+}
+
+#endif
+
+struct qemu_ShellExec_RunDLLA
+{
+    struct qemu_syscall super;
+    uint64_t hwnd;
+    uint64_t instance;
+    uint64_t cmdline;
+    uint64_t cmdshow;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void WINAPI ShellExec_RunDLLA(HWND hwnd, HINSTANCE instance, CHAR *cmdline, int cmdshow)
+{
+    struct qemu_ShellExec_RunDLLA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SHELLEXEC_RUNDLLA);
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.instance = (ULONG_PTR)instance;
+    call.cmdline = (ULONG_PTR)cmdline;
+    call.cmdshow = cmdshow;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+/* TODO: Add ShellExec_RunDLLA to Wine headers? */
+extern void WINAPI ShellExec_RunDLLA(HWND hwnd, HINSTANCE instance, CHAR *cmdline, int cmdshow);
+void qemu_ShellExec_RunDLLA(struct qemu_syscall *call)
+{
+    struct qemu_ShellExec_RunDLLA *c = (struct qemu_ShellExec_RunDLLA *)call;
+    WINE_FIXME("Unverified!\n");
+    ShellExec_RunDLLA(QEMU_G2H(c->hwnd), QEMU_G2H(c->instance), QEMU_G2H(c->cmdline), c->cmdshow);
+}
+
+#endif
+
 #ifdef QEMU_DLL_GUEST
 
 WINBASEAPI void WINAPI OpenAs_RunDLLA(HWND hwnd, HINSTANCE hinst, LPCSTR cmdline, int cmdshow)

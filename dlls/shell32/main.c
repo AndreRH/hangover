@@ -224,6 +224,8 @@ static const syscall_handler dll_functions[] =
     qemu_ShellAboutA,
     qemu_ShellAboutW,
     qemu_ShellDDEInit,
+    qemu_ShellExec_RunDLLA,
+    qemu_ShellExec_RunDLLW,
     qemu_ShellExecuteA,
     qemu_ShellExecuteExA,
     qemu_ShellExecuteExW,

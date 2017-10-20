@@ -184,6 +184,8 @@ enum shell32_calls
     CALL_SHELLABOUTA,
     CALL_SHELLABOUTW,
     CALL_SHELLDDEINIT,
+    CALL_SHELLEXEC_RUNDLLA,
+    CALL_SHELLEXEC_RUNDLLW,
     CALL_SHELLEXECUTEA,
     CALL_SHELLEXECUTEEXA,
     CALL_SHELLEXECUTEEXW,
@@ -490,6 +492,8 @@ void qemu_Shell_NotifyIconW(struct qemu_syscall *call);
 void qemu_ShellAboutA(struct qemu_syscall *call);
 void qemu_ShellAboutW(struct qemu_syscall *call);
 void qemu_ShellDDEInit(struct qemu_syscall *call);
+void qemu_ShellExec_RunDLLA(struct qemu_syscall *call);
+void qemu_ShellExec_RunDLLW(struct qemu_syscall *call);
 void qemu_ShellExecuteA(struct qemu_syscall *call);
 void qemu_ShellExecuteExA(struct qemu_syscall *call);
 void qemu_ShellExecuteExW(struct qemu_syscall *call);
