@@ -102,7 +102,7 @@ void qemu_PrintDlgW(struct qemu_syscall *call)
     c->super.iret = PrintDlgW(dlg);
 
 #if HOST_BIT != GUEST_BIT
-        PRINTDLG_h2g(QEMU_G2H(c->lppd), dlg);
+    PRINTDLG_h2g(QEMU_G2H(c->lppd), dlg);
 #endif
 }
 
@@ -192,8 +192,23 @@ WINBASEAPI HRESULT WINAPI PrintDlgExA(LPPRINTDLGEXA lppd)
 void qemu_PrintDlgExA(struct qemu_syscall *call)
 {
     struct qemu_PrintDlgExA *c = (struct qemu_PrintDlgExA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = PrintDlgExA(QEMU_G2H(c->lppd));
+    PRINTDLGEXA copy, *dlg = &copy;
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+    dlg = (PRINTDLGEXA *)QEMU_G2H(c->lppd);
+#else
+    WINE_FIXME("PRINTDLGEX for 32 bit\n");
+#endif
+
+    if (dlg->lpCallback || dlg->lpCallback)
+        WINE_FIXME("Implement wrappers for print dialog hooks.\n");
+
+    c->super.iret = PrintDlgExA(dlg);
+
+#if HOST_BIT != GUEST_BIT
+    /* TODO */
+#endif
 }
 
 #endif
@@ -222,8 +237,23 @@ WINBASEAPI HRESULT WINAPI PrintDlgExW(LPPRINTDLGEXW lppd)
 void qemu_PrintDlgExW(struct qemu_syscall *call)
 {
     struct qemu_PrintDlgExW *c = (struct qemu_PrintDlgExW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = PrintDlgExW(QEMU_G2H(c->lppd));
+    PRINTDLGEXW copy, *dlg = &copy;
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+    dlg = (PRINTDLGEXW *)QEMU_G2H(c->lppd);
+#else
+    WINE_FIXME("PRINTDLGEX for 32 bit\n");
+#endif
+
+    if (dlg->lpCallback || dlg->lpCallback)
+        WINE_FIXME("Implement wrappers for print dialog hooks.\n");
+
+    c->super.iret = PrintDlgExW(dlg);
+
+#if HOST_BIT != GUEST_BIT
+    /* TODO */
+#endif
 }
 
 #endif
