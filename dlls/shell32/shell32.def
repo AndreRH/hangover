@@ -20,6 +20,7 @@ EXPORTS
   DAD_SetDragImage
   DAD_ShowDragImage
   DllCanUnloadNow
+  DllGetClassObject
   DllGetClassObject PRIVATE
   DllGetVersion
   DllInstall
@@ -177,6 +178,7 @@ EXPORTS
   SHCLSIDFromString
   SHCoCreateInstance
   SHCreateDefaultContextMenu
+  SHCreateDefClassObject
   SHCreateDirectory
   SHCreateDirectoryExA
   SHCreateDirectoryExW
@@ -235,6 +237,7 @@ EXPORTS
   SHFreeUnusedLibraries
   SHGetDataFromIDListA
   SHGetDataFromIDListW
+  SHGetDesktopFolder
   SHGetFileInfoA
   SHGetFileInfoW
   SHGetFolderLocation

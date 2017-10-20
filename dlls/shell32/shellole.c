@@ -31,7 +31,7 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_shell32);
 #endif
 
-typedef HRESULT (CALLBACK *LPFNCREATEINSTANCE)(IUnknown* pUnkOuter, REFIID riid, LPVOID* ppvObject);
+typedef void *LPFNCREATEINSTANCE;
 
 struct qemu_SHCoCreateInstance
 {
@@ -200,7 +200,7 @@ WINBASEAPI LPVOID WINAPI SHAlloc(SIZE_T len)
 {
     struct qemu_SHAlloc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHALLOC);
-    call.len = (ULONG_PTR)len;
+    call.len = len;
 
     qemu_syscall(&call.super);
 
@@ -213,7 +213,7 @@ void qemu_SHAlloc(struct qemu_syscall *call)
 {
     struct qemu_SHAlloc *c = (struct qemu_SHAlloc *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)SHAlloc(c->len);
+    c->super.iret = QEMU_H2G(SHAlloc(c->len));
 }
 
 #endif
@@ -260,7 +260,7 @@ WINBASEAPI void WINAPI DragAcceptFiles(HWND hWnd, BOOL b)
     struct qemu_DragAcceptFiles call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAGACCEPTFILES);
     call.hWnd = (ULONG_PTR)hWnd;
-    call.b = (ULONG_PTR)b;
+    call.b = b;
 
     qemu_syscall(&call.super);
 }
@@ -352,9 +352,9 @@ WINBASEAPI UINT WINAPI DragQueryFileA(HDROP hDrop, UINT lFile, LPSTR lpszFile, U
     struct qemu_DragQueryFileA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAGQUERYFILEA);
     call.hDrop = (ULONG_PTR)hDrop;
-    call.lFile = (ULONG_PTR)lFile;
+    call.lFile = lFile;
     call.lpszFile = (ULONG_PTR)lpszFile;
-    call.lLength = (ULONG_PTR)lLength;
+    call.lLength = lLength;
 
     qemu_syscall(&call.super);
 
@@ -388,9 +388,9 @@ WINBASEAPI UINT WINAPI DragQueryFileW(HDROP hDrop, UINT lFile, LPWSTR lpszwFile,
     struct qemu_DragQueryFileW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAGQUERYFILEW);
     call.hDrop = (ULONG_PTR)hDrop;
-    call.lFile = (ULONG_PTR)lFile;
+    call.lFile = lFile;
     call.lpszwFile = (ULONG_PTR)lpszwFile;
-    call.lLength = (ULONG_PTR)lLength;
+    call.lLength = lLength;
 
     qemu_syscall(&call.super);
 
@@ -430,9 +430,9 @@ WINBASEAPI HRESULT WINAPI SHPropStgCreate(IPropertySetStorage *psstg, REFFMTID f
     call.psstg = (ULONG_PTR)psstg;
     call.fmtid = (ULONG_PTR)fmtid;
     call.pclsid = (ULONG_PTR)pclsid;
-    call.grfFlags = (ULONG_PTR)grfFlags;
-    call.grfMode = (ULONG_PTR)grfMode;
-    call.dwDisposition = (ULONG_PTR)dwDisposition;
+    call.grfFlags = grfFlags;
+    call.grfMode = grfMode;
+    call.dwDisposition = dwDisposition;
     call.ppstg = (ULONG_PTR)ppstg;
     call.puCodePage = (ULONG_PTR)puCodePage;
 
@@ -471,8 +471,8 @@ WINBASEAPI HRESULT WINAPI SHPropStgReadMultiple(IPropertyStorage *pps, UINT uCod
     struct qemu_SHPropStgReadMultiple call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHPROPSTGREADMULTIPLE);
     call.pps = (ULONG_PTR)pps;
-    call.uCodePage = (ULONG_PTR)uCodePage;
-    call.cpspec = (ULONG_PTR)cpspec;
+    call.uCodePage = uCodePage;
+    call.cpspec = cpspec;
     call.rgpspec = (ULONG_PTR)rgpspec;
     call.rgvar = (ULONG_PTR)rgvar;
 
@@ -513,10 +513,10 @@ WINBASEAPI HRESULT WINAPI SHPropStgWriteMultiple(IPropertyStorage *pps, UINT *uC
     call.super.id = QEMU_SYSCALL_ID(CALL_SHPROPSTGWRITEMULTIPLE);
     call.pps = (ULONG_PTR)pps;
     call.uCodePage = (ULONG_PTR)uCodePage;
-    call.cpspec = (ULONG_PTR)cpspec;
+    call.cpspec = cpspec;
     call.rgpspec = (ULONG_PTR)rgpspec;
     call.rgvar = (ULONG_PTR)rgvar;
-    call.propidNameFirst = (ULONG_PTR)propidNameFirst;
+    call.propidNameFirst = propidNameFirst;
 
     qemu_syscall(&call.super);
 
@@ -562,6 +562,76 @@ void qemu_SHCreateQueryCancelAutoPlayMoniker(struct qemu_syscall *call)
     struct qemu_SHCreateQueryCancelAutoPlayMoniker *c = (struct qemu_SHCreateQueryCancelAutoPlayMoniker *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = SHCreateQueryCancelAutoPlayMoniker(QEMU_G2H(c->moniker));
+}
+
+#endif
+
+struct qemu_SHCreateDefClassObject
+{
+    struct qemu_syscall super;
+    uint64_t riid;
+    uint64_t ppv;
+    uint64_t lpfnCI;
+    uint64_t pcRefDll;
+    uint64_t riidInst;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HRESULT WINAPI SHCreateDefClassObject(REFIID riid, LPVOID* ppv, LPFNCREATEINSTANCE lpfnCI, LPDWORD pcRefDll, REFIID riidInst)
+{
+    struct qemu_SHCreateDefClassObject call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATEDEFCLASSOBJECT);
+    call.riid = (ULONG_PTR)riid;
+    call.ppv = (ULONG_PTR)ppv;
+    call.lpfnCI = (ULONG_PTR)lpfnCI;
+    call.pcRefDll = (ULONG_PTR)pcRefDll;
+    call.riidInst = (ULONG_PTR)riidInst;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add SHCreateDefClassObject to Wine headers? */
+extern HRESULT WINAPI SHCreateDefClassObject(REFIID riid, LPVOID* ppv, LPFNCREATEINSTANCE lpfnCI, LPDWORD pcRefDll, REFIID riidInst);
+void qemu_SHCreateDefClassObject(struct qemu_syscall *call)
+{
+    struct qemu_SHCreateDefClassObject *c = (struct qemu_SHCreateDefClassObject *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SHCreateDefClassObject(QEMU_G2H(c->riid), QEMU_G2H(c->ppv), QEMU_G2H(c->lpfnCI), QEMU_G2H(c->pcRefDll), QEMU_G2H(c->riidInst));
+}
+
+#endif
+
+struct qemu_SHGetDesktopFolder
+{
+    struct qemu_syscall super;
+    uint64_t psf;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HRESULT WINAPI SHGetDesktopFolder(IShellFolder **psf)
+{
+    struct qemu_SHGetDesktopFolder call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SHGETDESKTOPFOLDER);
+    call.psf = (ULONG_PTR)psf;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_SHGetDesktopFolder(struct qemu_syscall *call)
+{
+    struct qemu_SHGetDesktopFolder *c = (struct qemu_SHGetDesktopFolder *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SHGetDesktopFolder(QEMU_G2H(c->psf));
 }
 
 #endif

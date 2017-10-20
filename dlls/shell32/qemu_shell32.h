@@ -184,6 +184,7 @@ enum shell32_calls
     CALL_SHCLSIDFROMSTRING,
     CALL_SHCOCREATEINSTANCE,
     CALL_SHCREATEDEFAULTCONTEXTMENU,
+    CALL_SHCREATEDEFCLASSOBJECT,
     CALL_SHCREATEDIRECTORY,
     CALL_SHCREATEDIRECTORYEXA,
     CALL_SHCREATEDIRECTORYEXW,
@@ -244,6 +245,7 @@ enum shell32_calls
     CALL_SHFREEUNUSEDLIBRARIES,
     CALL_SHGETDATAFROMIDLISTA,
     CALL_SHGETDATAFROMIDLISTW,
+    CALL_SHGETDESKTOPFOLDER,
     CALL_SHGETFILEINFOA,
     CALL_SHGETFILEINFOW,
     CALL_SHGETFOLDERLOCATION,
@@ -529,6 +531,7 @@ void qemu_SHCloneSpecialIDList(struct qemu_syscall *call);
 void qemu_SHCLSIDFromString(struct qemu_syscall *call);
 void qemu_SHCoCreateInstance(struct qemu_syscall *call);
 void qemu_SHCreateDefaultContextMenu(struct qemu_syscall *call);
+void qemu_SHCreateDefClassObject(struct qemu_syscall *call);
 void qemu_SHCreateDirectory(struct qemu_syscall *call);
 void qemu_SHCreateDirectoryExA(struct qemu_syscall *call);
 void qemu_SHCreateDirectoryExW(struct qemu_syscall *call);
@@ -589,6 +592,7 @@ void qemu_SHFreeShared(struct qemu_syscall *call);
 void qemu_SHFreeUnusedLibraries(struct qemu_syscall *call);
 void qemu_SHGetDataFromIDListA(struct qemu_syscall *call);
 void qemu_SHGetDataFromIDListW(struct qemu_syscall *call);
+void qemu_SHGetDesktopFolder(struct qemu_syscall *call);
 void qemu_SHGetFileInfoA(struct qemu_syscall *call);
 void qemu_SHGetFileInfoW(struct qemu_syscall *call);
 void qemu_SHGetFolderLocation(struct qemu_syscall *call);
