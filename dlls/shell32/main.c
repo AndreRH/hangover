@@ -70,6 +70,8 @@ static const syscall_handler dll_functions[] =
     qemu_DllRegisterServer,
     qemu_DllUnregisterServer,
     qemu_DoEnvironmentSubst,
+    qemu_DoEnvironmentSubstA,
+    qemu_DoEnvironmentSubstW,
     qemu_DragAcceptFiles,
     qemu_DragFinish,
     qemu_DragQueryFileA,

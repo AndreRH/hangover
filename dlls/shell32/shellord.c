@@ -1452,6 +1452,70 @@ void qemu_DoEnvironmentSubst(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_DoEnvironmentSubstW
+{
+    struct qemu_syscall super;
+    uint64_t pszString;
+    uint64_t cchString;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI DoEnvironmentSubstW(LPWSTR pszString, UINT cchString)
+{
+    struct qemu_DoEnvironmentSubstW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DOENVIRONMENTSUBSTW);
+    call.pszString = (ULONG_PTR)pszString;
+    call.cchString = cchString;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_DoEnvironmentSubstW(struct qemu_syscall *call)
+{
+    struct qemu_DoEnvironmentSubstW *c = (struct qemu_DoEnvironmentSubstW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = DoEnvironmentSubstW(QEMU_G2H(c->pszString), c->cchString);
+}
+
+#endif
+
+struct qemu_DoEnvironmentSubstA
+{
+    struct qemu_syscall super;
+    uint64_t pszString;
+    uint64_t cchString;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI DoEnvironmentSubstA(LPSTR pszString, UINT cchString)
+{
+    struct qemu_DoEnvironmentSubstA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DOENVIRONMENTSUBSTA);
+    call.pszString = (ULONG_PTR)pszString;
+    call.cchString = cchString;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_DoEnvironmentSubstA(struct qemu_syscall *call)
+{
+    struct qemu_DoEnvironmentSubstA *c = (struct qemu_DoEnvironmentSubstA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = DoEnvironmentSubstA(QEMU_G2H(c->pszString), c->cchString);
+}
+
+#endif
+
 struct qemu_shell32_243
 {
     struct qemu_syscall super;

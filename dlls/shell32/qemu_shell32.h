@@ -30,6 +30,8 @@ enum shell32_calls
     CALL_DLLREGISTERSERVER,
     CALL_DLLUNREGISTERSERVER,
     CALL_DOENVIRONMENTSUBST,
+    CALL_DOENVIRONMENTSUBSTA,
+    CALL_DOENVIRONMENTSUBSTW,
     CALL_DRAGACCEPTFILES,
     CALL_DRAGFINISH,
     CALL_DRAGQUERYFILEA,
@@ -332,6 +334,8 @@ void qemu_DllInstall(struct qemu_syscall *call);
 void qemu_DllRegisterServer(struct qemu_syscall *call);
 void qemu_DllUnregisterServer(struct qemu_syscall *call);
 void qemu_DoEnvironmentSubst(struct qemu_syscall *call);
+void qemu_DoEnvironmentSubstA(struct qemu_syscall *call);
+void qemu_DoEnvironmentSubstW(struct qemu_syscall *call);
 void qemu_DragAcceptFiles(struct qemu_syscall *call);
 void qemu_DragFinish(struct qemu_syscall *call);
 void qemu_DragQueryFileA(struct qemu_syscall *call);
