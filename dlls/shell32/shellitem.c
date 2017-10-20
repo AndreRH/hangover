@@ -21,8 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 #include <shtypes.h>
-#include <shlobj.h>
 #include <shlwapi.h>
+#include <shlobj.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -155,7 +155,7 @@ WINBASEAPI HRESULT WINAPI SHGetItemFromDataObject(IDataObject *pdtobj, DATAOBJ_G
     struct qemu_SHGetItemFromDataObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETITEMFROMDATAOBJECT);
     call.pdtobj = (ULONG_PTR)pdtobj;
-    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.dwFlags = dwFlags;
     call.riid = (ULONG_PTR)riid;
     call.ppv = (ULONG_PTR)ppv;
 
@@ -227,7 +227,7 @@ WINBASEAPI HRESULT WINAPI SHCreateShellItemArray(PCIDLIST_ABSOLUTE pidlParent, I
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATESHELLITEMARRAY);
     call.pidlParent = (ULONG_PTR)pidlParent;
     call.psf = (ULONG_PTR)psf;
-    call.cidl = (ULONG_PTR)cidl;
+    call.cidl = cidl;
     call.ppidl = (ULONG_PTR)ppidl;
     call.ppsiItemArray = (ULONG_PTR)ppsiItemArray;
 
@@ -329,7 +329,7 @@ WINBASEAPI HRESULT WINAPI SHCreateShellItemArrayFromIDLists(UINT cidl, PCIDLIST_
 {
     struct qemu_SHCreateShellItemArrayFromIDLists call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATESHELLITEMARRAYFROMIDLISTS);
-    call.cidl = (ULONG_PTR)cidl;
+    call.cidl = cidl;
     call.pidl_array = (ULONG_PTR)pidl_array;
     call.psia = (ULONG_PTR)psia;
 
@@ -367,7 +367,7 @@ WINBASEAPI HRESULT WINAPI SHGetPropertyStoreFromParsingName(const WCHAR *path, I
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETPROPERTYSTOREFROMPARSINGNAME);
     call.path = (ULONG_PTR)path;
     call.pbc = (ULONG_PTR)pbc;
-    call.flags = (ULONG_PTR)flags;
+    call.flags = flags;
     call.riid = (ULONG_PTR)riid;
     call.ppv = (ULONG_PTR)ppv;
 
@@ -385,6 +385,82 @@ void qemu_SHGetPropertyStoreFromParsingName(struct qemu_syscall *call)
     struct qemu_SHGetPropertyStoreFromParsingName *c = (struct qemu_SHGetPropertyStoreFromParsingName *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = SHGetPropertyStoreFromParsingName(QEMU_G2H(c->path), QEMU_G2H(c->pbc), c->flags, QEMU_G2H(c->riid), QEMU_G2H(c->ppv));
+}
+
+#endif
+
+struct qemu_SHCreateItemFromRelativeName
+{
+    struct qemu_syscall super;
+    uint64_t parent;
+    uint64_t name;
+    uint64_t pbc;
+    uint64_t riid;
+    uint64_t ppv;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HRESULT WINAPI SHCreateItemFromRelativeName(IShellItem *parent, PCWSTR name, IBindCtx *pbc, REFIID riid, void **ppv)
+{
+    struct qemu_SHCreateItemFromRelativeName call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATEITEMFROMRELATIVENAME);
+    call.parent = (ULONG_PTR)parent;
+    call.name = (ULONG_PTR)name;
+    call.pbc = (ULONG_PTR)pbc;
+    call.riid = (ULONG_PTR)riid;
+    call.ppv = (ULONG_PTR)ppv;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_SHCreateItemFromRelativeName(struct qemu_syscall *call)
+{
+    struct qemu_SHCreateItemFromRelativeName *c = (struct qemu_SHCreateItemFromRelativeName *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SHCreateItemFromRelativeName(QEMU_G2H(c->parent), QEMU_G2H(c->name), QEMU_G2H(c->pbc), QEMU_G2H(c->riid), QEMU_G2H(c->ppv));
+}
+
+#endif
+
+struct qemu_SHCreateItemInKnownFolder
+{
+    struct qemu_syscall super;
+    uint64_t rfid;
+    uint64_t flags;
+    uint64_t filename;
+    uint64_t riid;
+    uint64_t ppv;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HRESULT WINAPI SHCreateItemInKnownFolder(REFKNOWNFOLDERID rfid, DWORD flags, PCWSTR filename, REFIID riid, void **ppv)
+{
+    struct qemu_SHCreateItemInKnownFolder call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SHCREATEITEMINKNOWNFOLDER);
+    call.rfid = (ULONG_PTR)rfid;
+    call.flags = flags;
+    call.filename = (ULONG_PTR)filename;
+    call.riid = (ULONG_PTR)riid;
+    call.ppv = (ULONG_PTR)ppv;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_SHCreateItemInKnownFolder(struct qemu_syscall *call)
+{
+    struct qemu_SHCreateItemInKnownFolder *c = (struct qemu_SHCreateItemInKnownFolder *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SHCreateItemInKnownFolder(QEMU_G2H(c->rfid), c->flags, QEMU_G2H(c->filename), QEMU_G2H(c->riid), QEMU_G2H(c->ppv));
 }
 
 #endif

@@ -185,6 +185,8 @@ EXPORTS
   SHCreateFileExtractIconW
   SHCreateItemFromIDList
   SHCreateItemFromParsingName
+  SHCreateItemFromRelativeName
+  SHCreateItemInKnownFolder
   SHCreateLinks
   SHCreatePropSheetExtArray
   SHCreatePropSheetExtArrayEx

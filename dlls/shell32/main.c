@@ -231,6 +231,8 @@ static const syscall_handler dll_functions[] =
     qemu_SHCreateFileExtractIconW,
     qemu_SHCreateItemFromIDList,
     qemu_SHCreateItemFromParsingName,
+    qemu_SHCreateItemFromRelativeName,
+    qemu_SHCreateItemInKnownFolder,
     qemu_SHCreateLinks,
     qemu_SHCreatePropSheetExtArray,
     qemu_SHCreatePropSheetExtArrayEx,

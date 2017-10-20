@@ -191,6 +191,8 @@ enum shell32_calls
     CALL_SHCREATEFILEEXTRACTICONW,
     CALL_SHCREATEITEMFROMIDLIST,
     CALL_SHCREATEITEMFROMPARSINGNAME,
+    CALL_SHCREATEITEMFROMRELATIVENAME,
+    CALL_SHCREATEITEMINKNOWNFOLDER,
     CALL_SHCREATELINKS,
     CALL_SHCREATEPROPSHEETEXTARRAY,
     CALL_SHCREATEPROPSHEETEXTARRAYEX,
@@ -538,6 +540,8 @@ void qemu_SHCreateDirectoryExW(struct qemu_syscall *call);
 void qemu_SHCreateFileExtractIconW(struct qemu_syscall *call);
 void qemu_SHCreateItemFromIDList(struct qemu_syscall *call);
 void qemu_SHCreateItemFromParsingName(struct qemu_syscall *call);
+void qemu_SHCreateItemFromRelativeName(struct qemu_syscall *call);
+void qemu_SHCreateItemInKnownFolder(struct qemu_syscall *call);
 void qemu_SHCreateLinks(struct qemu_syscall *call);
 void qemu_SHCreatePropSheetExtArray(struct qemu_syscall *call);
 void qemu_SHCreatePropSheetExtArrayEx(struct qemu_syscall *call);
