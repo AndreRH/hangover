@@ -1227,7 +1227,7 @@ WINBASEAPI WORD WINAPI RtlQueryDepthSList(PSLIST_HEADER list)
 void qemu_RtlQueryDepthSList(struct qemu_syscall *call)
 {
     struct qemu_RtlQueryDepthSList *c = (struct qemu_RtlQueryDepthSList *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RtlQueryDepthSList(QEMU_G2H(c->list));
 }
 
@@ -1287,7 +1287,7 @@ WINBASEAPI PSLIST_ENTRY WINAPI RtlInterlockedFlushSList(PSLIST_HEADER list)
 void qemu_RtlInterlockedFlushSList(struct qemu_syscall *call)
 {
     struct qemu_RtlInterlockedFlushSList *c = (struct qemu_RtlInterlockedFlushSList *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)RtlInterlockedFlushSList(QEMU_G2H(c->list));
 }
 
@@ -1319,7 +1319,7 @@ WINBASEAPI PSLIST_ENTRY WINAPI RtlInterlockedPushEntrySList(PSLIST_HEADER list, 
 void qemu_RtlInterlockedPushEntrySList(struct qemu_syscall *call)
 {
     struct qemu_RtlInterlockedPushEntrySList *c = (struct qemu_RtlInterlockedPushEntrySList *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)RtlInterlockedPushEntrySList(QEMU_G2H(c->list), QEMU_G2H(c->entry));
 }
 
@@ -1349,7 +1349,7 @@ WINBASEAPI PSLIST_ENTRY WINAPI RtlInterlockedPopEntrySList(PSLIST_HEADER list)
 void qemu_RtlInterlockedPopEntrySList(struct qemu_syscall *call)
 {
     struct qemu_RtlInterlockedPopEntrySList *c = (struct qemu_RtlInterlockedPopEntrySList *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)RtlInterlockedPopEntrySList(QEMU_G2H(c->list));
 }
 
@@ -1387,7 +1387,7 @@ extern PSLIST_ENTRY WINAPI RtlInterlockedPushListSListEx(PSLIST_HEADER list, PSL
 void qemu_RtlInterlockedPushListSListEx(struct qemu_syscall *call)
 {
     struct qemu_RtlInterlockedPushListSListEx *c = (struct qemu_RtlInterlockedPushListSListEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)RtlInterlockedPushListSListEx(QEMU_G2H(c->list), QEMU_G2H(c->first), QEMU_G2H(c->last), c->count);
 }
 
@@ -1425,7 +1425,7 @@ extern PSLIST_ENTRY WINAPI RtlInterlockedPushListSList(PSLIST_HEADER list, PSLIS
 void qemu_RtlInterlockedPushListSList(struct qemu_syscall *call)
 {
     struct qemu_RtlInterlockedPushListSList *c = (struct qemu_RtlInterlockedPushListSList *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)RtlInterlockedPushListSList(QEMU_G2H(c->list), QEMU_G2H(c->first), QEMU_G2H(c->last), c->count);
 }
 

@@ -1111,7 +1111,7 @@ WINBASEAPI NTSTATUS WINAPI NtWaitForMultipleObjects(DWORD count, const HANDLE *h
 void qemu_NtWaitForMultipleObjects(struct qemu_syscall *call)
 {
     struct qemu_NtWaitForMultipleObjects *c = (struct qemu_NtWaitForMultipleObjects *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = NtWaitForMultipleObjects(c->count, QEMU_G2H(c->handles), c->wait_any, c->alertable, QEMU_G2H(c->timeout));
 }
 
@@ -1145,7 +1145,7 @@ WINBASEAPI NTSTATUS WINAPI NtWaitForSingleObject(HANDLE handle, BOOLEAN alertabl
 void qemu_NtWaitForSingleObject(struct qemu_syscall *call)
 {
     struct qemu_NtWaitForSingleObject *c = (struct qemu_NtWaitForSingleObject *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = NtWaitForSingleObject(QEMU_G2H(c->handle), c->alertable, QEMU_G2H(c->timeout));
 }
 
@@ -1595,7 +1595,7 @@ WINBASEAPI void WINAPI RtlRunOnceInitialize(RTL_RUN_ONCE *once)
 void qemu_RtlRunOnceInitialize(struct qemu_syscall *call)
 {
     struct qemu_RtlRunOnceInitialize *c = (struct qemu_RtlRunOnceInitialize *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     RtlRunOnceInitialize(QEMU_G2H(c->once));
 }
 
@@ -1727,7 +1727,7 @@ WINBASEAPI void WINAPI RtlInitializeSRWLock(RTL_SRWLOCK *lock)
 void qemu_RtlInitializeSRWLock(struct qemu_syscall *call)
 {
     struct qemu_RtlInitializeSRWLock *c = (struct qemu_RtlInitializeSRWLock *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     RtlInitializeSRWLock(QEMU_G2H(c->lock));
 }
 
@@ -1755,7 +1755,7 @@ WINBASEAPI void WINAPI RtlAcquireSRWLockExclusive(RTL_SRWLOCK *lock)
 void qemu_RtlAcquireSRWLockExclusive(struct qemu_syscall *call)
 {
     struct qemu_RtlAcquireSRWLockExclusive *c = (struct qemu_RtlAcquireSRWLockExclusive *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     RtlAcquireSRWLockExclusive(QEMU_G2H(c->lock));
 }
 
@@ -1783,7 +1783,7 @@ WINBASEAPI void WINAPI RtlAcquireSRWLockShared(RTL_SRWLOCK *lock)
 void qemu_RtlAcquireSRWLockShared(struct qemu_syscall *call)
 {
     struct qemu_RtlAcquireSRWLockShared *c = (struct qemu_RtlAcquireSRWLockShared *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     RtlAcquireSRWLockShared(QEMU_G2H(c->lock));
 }
 
@@ -1811,7 +1811,7 @@ WINBASEAPI void WINAPI RtlReleaseSRWLockExclusive(RTL_SRWLOCK *lock)
 void qemu_RtlReleaseSRWLockExclusive(struct qemu_syscall *call)
 {
     struct qemu_RtlReleaseSRWLockExclusive *c = (struct qemu_RtlReleaseSRWLockExclusive *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     RtlReleaseSRWLockExclusive(QEMU_G2H(c->lock));
 }
 
@@ -1839,7 +1839,7 @@ WINBASEAPI void WINAPI RtlReleaseSRWLockShared(RTL_SRWLOCK *lock)
 void qemu_RtlReleaseSRWLockShared(struct qemu_syscall *call)
 {
     struct qemu_RtlReleaseSRWLockShared *c = (struct qemu_RtlReleaseSRWLockShared *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     RtlReleaseSRWLockShared(QEMU_G2H(c->lock));
 }
 
@@ -1869,7 +1869,7 @@ WINBASEAPI BOOLEAN WINAPI RtlTryAcquireSRWLockExclusive(RTL_SRWLOCK *lock)
 void qemu_RtlTryAcquireSRWLockExclusive(struct qemu_syscall *call)
 {
     struct qemu_RtlTryAcquireSRWLockExclusive *c = (struct qemu_RtlTryAcquireSRWLockExclusive *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RtlTryAcquireSRWLockExclusive(QEMU_G2H(c->lock));
 }
 
@@ -1899,7 +1899,7 @@ WINBASEAPI BOOLEAN WINAPI RtlTryAcquireSRWLockShared(RTL_SRWLOCK *lock)
 void qemu_RtlTryAcquireSRWLockShared(struct qemu_syscall *call)
 {
     struct qemu_RtlTryAcquireSRWLockShared *c = (struct qemu_RtlTryAcquireSRWLockShared *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RtlTryAcquireSRWLockShared(QEMU_G2H(c->lock));
 }
 
@@ -1927,7 +1927,7 @@ WINBASEAPI void WINAPI RtlInitializeConditionVariable(RTL_CONDITION_VARIABLE *va
 void qemu_RtlInitializeConditionVariable(struct qemu_syscall *call)
 {
     struct qemu_RtlInitializeConditionVariable *c = (struct qemu_RtlInitializeConditionVariable *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     RtlInitializeConditionVariable(QEMU_G2H(c->variable));
 }
 
@@ -1955,7 +1955,7 @@ WINBASEAPI void WINAPI RtlWakeConditionVariable(RTL_CONDITION_VARIABLE *variable
 void qemu_RtlWakeConditionVariable(struct qemu_syscall *call)
 {
     struct qemu_RtlWakeConditionVariable *c = (struct qemu_RtlWakeConditionVariable *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     RtlWakeConditionVariable(QEMU_G2H(c->variable));
 }
 
@@ -1983,7 +1983,7 @@ WINBASEAPI void WINAPI RtlWakeAllConditionVariable(RTL_CONDITION_VARIABLE *varia
 void qemu_RtlWakeAllConditionVariable(struct qemu_syscall *call)
 {
     struct qemu_RtlWakeAllConditionVariable *c = (struct qemu_RtlWakeAllConditionVariable *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     RtlWakeAllConditionVariable(QEMU_G2H(c->variable));
 }
 

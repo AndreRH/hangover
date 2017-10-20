@@ -1050,7 +1050,7 @@ WINBASEAPI BOOL WINAPI InitializeSecurityDescriptor(PSECURITY_DESCRIPTOR pDescr,
 void qemu_InitializeSecurityDescriptor(struct qemu_syscall *call)
 {
     struct qemu_InitializeSecurityDescriptor *c = (struct qemu_InitializeSecurityDescriptor *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = InitializeSecurityDescriptor(QEMU_G2H(c->pDescr), c->revision);
 }
 
@@ -1444,7 +1444,7 @@ WINBASEAPI BOOL WINAPI SetSecurityDescriptorDacl (PSECURITY_DESCRIPTOR lpsd, BOO
 void qemu_SetSecurityDescriptorDacl(struct qemu_syscall *call)
 {
     struct qemu_SetSecurityDescriptorDacl *c = (struct qemu_SetSecurityDescriptorDacl *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetSecurityDescriptorDacl(QEMU_G2H(c->lpsd), c->daclpresent, QEMU_G2H(c->dacl), c->dacldefaulted);
 }
 
@@ -1688,7 +1688,7 @@ WINBASEAPI BOOL WINAPI InitializeAcl(PACL acl, DWORD size, DWORD rev)
 void qemu_InitializeAcl(struct qemu_syscall *call)
 {
     struct qemu_InitializeAcl *c = (struct qemu_InitializeAcl *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = InitializeAcl(QEMU_G2H(c->acl), c->size, c->rev);
 }
 

@@ -488,7 +488,7 @@ WINBASEAPI DWORD WINAPI SignalObjectAndWait(HANDLE hObjectToSignal, HANDLE hObje
 void qemu_SignalObjectAndWait(struct qemu_syscall *call)
 {
     struct qemu_SignalObjectAndWait *c = (struct qemu_SignalObjectAndWait *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SignalObjectAndWait(QEMU_G2H(c->hObjectToSignal), QEMU_G2H(c->hObjectToWaitOn), c->dwMilliseconds, c->bAlertable);
 }
 
@@ -1129,7 +1129,7 @@ WINBASEAPI HANDLE WINAPI OpenMutexA(DWORD access, BOOL inherit, LPCSTR name)
 void qemu_OpenMutexA(struct qemu_syscall *call)
 {
     struct qemu_OpenMutexA *c = (struct qemu_OpenMutexA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)OpenMutexA(c->access, c->inherit, QEMU_G2H(c->name));
 }
 
@@ -1379,7 +1379,7 @@ WINBASEAPI HANDLE WINAPI OpenSemaphoreA(DWORD access, BOOL inherit, LPCSTR name)
 void qemu_OpenSemaphoreA(struct qemu_syscall *call)
 {
     struct qemu_OpenSemaphoreA *c = (struct qemu_OpenSemaphoreA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)OpenSemaphoreA(c->access, c->inherit, QEMU_G2H(c->name));
 }
 
@@ -1925,7 +1925,7 @@ WINBASEAPI HANDLE WINAPI OpenWaitableTimerA(DWORD access, BOOL inherit, LPCSTR n
 void qemu_OpenWaitableTimerA(struct qemu_syscall *call)
 {
     struct qemu_OpenWaitableTimerA *c = (struct qemu_OpenWaitableTimerA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)OpenWaitableTimerA(c->access, c->inherit, QEMU_G2H(c->name));
 }
 
@@ -2101,7 +2101,7 @@ WINBASEAPI HANDLE WINAPI CreateTimerQueue(void)
 void qemu_CreateTimerQueue(struct qemu_syscall *call)
 {
     struct qemu_CreateTimerQueue *c = (struct qemu_CreateTimerQueue *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)CreateTimerQueue();
 }
 
@@ -2133,7 +2133,7 @@ WINBASEAPI BOOL WINAPI DeleteTimerQueueEx(HANDLE TimerQueue, HANDLE CompletionEv
 void qemu_DeleteTimerQueueEx(struct qemu_syscall *call)
 {
     struct qemu_DeleteTimerQueueEx *c = (struct qemu_DeleteTimerQueueEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_FIXME("How should I free the timer wrappers?\n");
     c->super.iret = DeleteTimerQueueEx(QEMU_G2H(c->TimerQueue), QEMU_G2H(c->CompletionEvent));
 }
 
@@ -2219,6 +2219,9 @@ WINBASEAPI BOOL WINAPI CreateTimerQueueTimer(PHANDLE phNewTimer, HANDLE TimerQue
 
 #else
 
+/* FIXME: Considering the effort we need to properly free the structure and that we can't properly handle
+ * DeleteTimerQueueEx without also tracking the timer queue it might be better to allocate never released
+ * wrappers for callback functions similar to how we handle WNDPROCs. */
 struct queue_timer
 {
     HANDLE host_timer;
@@ -3323,7 +3326,7 @@ WINBASEAPI HANDLE WINAPI CreateMemoryResourceNotification(MEMORY_RESOURCE_NOTIFI
 void qemu_CreateMemoryResourceNotification(struct qemu_syscall *call)
 {
     struct qemu_CreateMemoryResourceNotification *c = (struct qemu_CreateMemoryResourceNotification *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)CreateMemoryResourceNotification(c->type);
 }
 
@@ -3355,7 +3358,7 @@ WINBASEAPI BOOL WINAPI QueryMemoryResourceNotification(HANDLE handle, PBOOL stat
 void qemu_QueryMemoryResourceNotification(struct qemu_syscall *call)
 {
     struct qemu_QueryMemoryResourceNotification *c = (struct qemu_QueryMemoryResourceNotification *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QueryMemoryResourceNotification(QEMU_G2H(c->handle), QEMU_G2H(c->state));
 }
 
@@ -3391,7 +3394,7 @@ WINBASEAPI BOOL WINAPI InitOnceBeginInitialize(INIT_ONCE *once, DWORD flags, BOO
 void qemu_InitOnceBeginInitialize(struct qemu_syscall *call)
 {
     struct qemu_InitOnceBeginInitialize *c = (struct qemu_InitOnceBeginInitialize *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = InitOnceBeginInitialize(QEMU_G2H(c->once), c->flags, QEMU_G2H(c->pending), QEMU_G2H(c->context));
 }
 
@@ -3425,7 +3428,7 @@ WINBASEAPI BOOL WINAPI InitOnceComplete(INIT_ONCE *once, DWORD flags, void *cont
 void qemu_InitOnceComplete(struct qemu_syscall *call)
 {
     struct qemu_InitOnceComplete *c = (struct qemu_InitOnceComplete *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = InitOnceComplete(QEMU_G2H(c->once), c->flags, QEMU_G2H(c->context));
 }
 
@@ -3543,7 +3546,7 @@ WINBASEAPI BOOL WINAPI SleepConditionVariableCS(CONDITION_VARIABLE *variable, CR
 void qemu_SleepConditionVariableCS(struct qemu_syscall *call)
 {
     struct qemu_SleepConditionVariableCS *c = (struct qemu_SleepConditionVariableCS *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SleepConditionVariableCS(QEMU_G2H(c->variable), QEMU_G2H(c->crit), c->timeout);
 }
 
@@ -3579,7 +3582,7 @@ WINBASEAPI BOOL WINAPI SleepConditionVariableSRW(RTL_CONDITION_VARIABLE *variabl
 void qemu_SleepConditionVariableSRW(struct qemu_syscall *call)
 {
     struct qemu_SleepConditionVariableSRW *c = (struct qemu_SleepConditionVariableSRW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SleepConditionVariableSRW(QEMU_G2H(c->variable), QEMU_G2H(c->lock), c->timeout, c->flags);
 }
 
