@@ -2179,34 +2179,86 @@ struct qemu_CreateTimerQueueTimer
     uint64_t DueTime;
     uint64_t Period;
     uint64_t Flags;
+    uint64_t wrapper;
+};
+
+struct qemu_CreateTimerQueueTimer_cb
+{
+    uint64_t cb;
+    uint64_t param;
+    uint64_t timedout;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static void __fastcall timer_guest_cb(struct qemu_CreateTimerQueueTimer_cb *data)
+{
+    WAITORTIMERCALLBACK cb = (WAITORTIMERCALLBACK)(ULONG_PTR)data->cb;
+    cb((void *)(ULONG_PTR)data->param, data->timedout);
+}
 
 WINBASEAPI BOOL WINAPI CreateTimerQueueTimer(PHANDLE phNewTimer, HANDLE TimerQueue, WAITORTIMERCALLBACK Callback, PVOID Parameter, DWORD DueTime, DWORD Period, ULONG Flags)
 {
     struct qemu_CreateTimerQueueTimer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATETIMERQUEUETIMER);
-    call.phNewTimer = (ULONG_PTR)phNewTimer;
     call.TimerQueue = (ULONG_PTR)TimerQueue;
     call.Callback = (ULONG_PTR)Callback;
     call.Parameter = (ULONG_PTR)Parameter;
     call.DueTime = (ULONG_PTR)DueTime;
     call.Period = (ULONG_PTR)Period;
     call.Flags = (ULONG_PTR)Flags;
+    call.wrapper = (ULONG_PTR)timer_guest_cb;
 
     qemu_syscall(&call.super);
+
+    if (call.super.iret)
+        *phNewTimer = (HANDLE)(ULONG_PTR)call.phNewTimer;
 
     return call.super.iret;
 }
 
 #else
 
+struct queue_timer
+{
+    HANDLE host_timer;
+    uint64_t guest_param, guest_cb, wrapper;
+    HANDLE wait_event, signal_event;
+};
+
+static void CALLBACK timer_host_cb(void *param, BOOLEAN timedOut)
+{
+    struct queue_timer *timer = param;
+    struct qemu_CreateTimerQueueTimer_cb call;
+
+    call.cb = timer->guest_cb;
+    call.param = timer->guest_param;
+    call.timedout = timedOut;
+
+    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, %u).\n", call.cb, call.param, timedOut);
+    qemu_ops->qemu_execute(QEMU_G2H(timer->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned.\n");
+}
+
 void qemu_CreateTimerQueueTimer(struct qemu_syscall *call)
 {
     struct qemu_CreateTimerQueueTimer *c = (struct qemu_CreateTimerQueueTimer *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CreateTimerQueueTimer(QEMU_G2H(c->phNewTimer), QEMU_G2H(c->TimerQueue), QEMU_G2H(c->Callback), QEMU_G2H(c->Parameter), c->DueTime, c->Period, c->Flags);
+    struct queue_timer *timer;
+    WINE_TRACE("\n");
+
+    timer = HeapAlloc(GetProcessHeap(), 0, sizeof(*timer));
+    timer->guest_param = c->Parameter;
+    timer->guest_cb = c->Callback;
+    timer->wrapper = c->wrapper;
+    timer->wait_event = timer->signal_event = NULL;
+
+    c->super.iret = CreateTimerQueueTimer(&timer->host_timer, QEMU_G2H(c->TimerQueue),
+            c->Callback ? timer_host_cb : NULL, timer, c->DueTime, c->Period, c->Flags);
+
+    if (c->super.iret)
+        c->phNewTimer = (ULONG_PTR)timer;
+    else
+        HeapFree(GetProcessHeap(), 0, timer);
 }
 
 #endif
@@ -2241,8 +2293,11 @@ WINBASEAPI BOOL WINAPI ChangeTimerQueueTimer(HANDLE TimerQueue, HANDLE Timer, UL
 void qemu_ChangeTimerQueueTimer(struct qemu_syscall *call)
 {
     struct qemu_ChangeTimerQueueTimer *c = (struct qemu_ChangeTimerQueueTimer *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ChangeTimerQueueTimer(QEMU_G2H(c->TimerQueue), QEMU_G2H(c->Timer), c->DueTime, c->Period);
+    struct queue_timer *timer;
+    WINE_TRACE("\n");
+
+    timer = QEMU_G2H(c->Timer);
+    c->super.iret = ChangeTimerQueueTimer(QEMU_G2H(c->TimerQueue), timer->host_timer, c->DueTime, c->Period);
 }
 
 #endif
@@ -2273,8 +2328,11 @@ WINBASEAPI BOOL WINAPI CancelTimerQueueTimer(HANDLE queue, HANDLE timer)
 void qemu_CancelTimerQueueTimer(struct qemu_syscall *call)
 {
     struct qemu_CancelTimerQueueTimer *c = (struct qemu_CancelTimerQueueTimer *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CancelTimerQueueTimer(QEMU_G2H(c->queue), QEMU_G2H(c->timer));
+    struct queue_timer *timer;
+    WINE_TRACE("\n");
+
+    timer = QEMU_G2H(c->timer);
+    c->super.iret = CancelTimerQueueTimer(QEMU_G2H(c->queue), timer->host_timer);
 }
 
 #endif
@@ -2304,11 +2362,68 @@ WINBASEAPI BOOL WINAPI DeleteTimerQueueTimer(HANDLE TimerQueue, HANDLE Timer, HA
 
 #else
 
+static DWORD CALLBACK delete_thread(void *data)
+{
+    struct queue_timer *timer = data;
+
+    WaitForSingleObject(timer->wait_event, INFINITE);
+
+    if (timer->signal_event)
+        SetEvent(timer->signal_event);
+
+    WINE_TRACE("Delayed destroying timer object %p (host %p).\n", timer, timer->host_timer);
+    HeapFree(GetProcessHeap(), 0, timer);
+}
+
 void qemu_DeleteTimerQueueTimer(struct qemu_syscall *call)
 {
     struct qemu_DeleteTimerQueueTimer *c = (struct qemu_DeleteTimerQueueTimer *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DeleteTimerQueueTimer(QEMU_G2H(c->TimerQueue), QEMU_G2H(c->Timer), QEMU_G2H(c->CompletionEvent));
+    struct queue_timer *timer;
+    HANDLE event = INVALID_HANDLE_VALUE, app_event;
+    WINE_TRACE("\n");
+    DWORD last_error;
+
+    timer = QEMU_G2H(c->Timer);
+    timer->signal_event = NULL;
+    app_event = QEMU_G2H(c->CompletionEvent);
+    if (app_event != INVALID_HANDLE_VALUE)
+    {
+        last_error = GetLastError();
+
+        event = CreateEventW(NULL, 0, 0, NULL);
+        timer->signal_event = app_event;
+        timer->wait_event = event;
+
+        /* CreateEventW calls SetLastError(0). */
+        SetLastError(last_error);
+    }
+
+    c->super.iret = DeleteTimerQueueTimer(QEMU_G2H(c->TimerQueue), timer->host_timer, event);
+
+    if (c->super.iret)
+    {
+        if (event != INVALID_HANDLE_VALUE)
+        {
+            CloseHandle(event);
+            if (app_event)
+                SetEvent(app_event);
+        }
+        WINE_TRACE("Destroying timer object %p (host %p).\n", timer, timer->host_timer);
+        HeapFree(GetProcessHeap(), 0, timer);
+    }
+    else if (GetLastError() == ERROR_IO_PENDING)
+    {
+        /* FIXME: Consider using some threadpool API. */
+        HANDLE thread;
+        DWORD dw;
+
+        WINE_TRACE("Scheduling destruction of timer object %p (host %p).\n", timer, timer->host_timer);
+        thread = CreateThread(NULL, 0, delete_thread, timer, 0, &dw);
+        CloseHandle(thread);
+
+        /* Something in the above code calls SetLastError(0). */
+        SetLastError(ERROR_IO_PENDING);
+    }
 }
 
 #endif
