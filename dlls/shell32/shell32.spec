@@ -48,17 +48,17 @@
   50 stdcall -noname PathStripToRoot(ptr) PathStripToRootAW
   51 stdcall PathResolve(str long long) PathResolveAW
   52 stdcall -noname PathGetArgs(str) PathGetArgsAW
-  53 stdcall DoEnvironmentSubst(ptr long) shell32_DoEnvironmentSubst
+  53 stdcall DoEnvironmentSubst(ptr long) DoEnvironmentSubstAW
   54 stub LogoffWindowsDialog
   55 stdcall -noname PathQuoteSpaces(ptr) PathQuoteSpacesAW
   56 stdcall -noname PathUnquoteSpaces(str) PathUnquoteSpacesAW
   57 stdcall -noname PathGetDriveNumber(str) PathGetDriveNumberAW
-  58 stdcall -noname ParseField(str long ptr long) ParseField
+  58 stdcall -noname ParseField(str long ptr long) ParseFieldAW
   59 stdcall -ordinal RestartDialog(long wstr long)
   60 stdcall -noname ExitWindowsDialog(long)
   61 stdcall -noname RunFileDlg(long long str str str long) RunFileDlgAW
   62 stdcall -ordinal PickIconDlg(long wstr long ptr)
-  63 stdcall -ordinal GetFileNameFromBrowse(long ptr long str str str str)
+  63 stdcall -ordinal GetFileNameFromBrowse(long ptr long str str str str) GetFileNameFromBrowseAW
   64 stdcall -ordinal DriveType(long)
   65 stdcall -noname InvalidateDriveType(long)
   66 stdcall -ordinal IsNetDrive(long)
@@ -85,8 +85,8 @@
   90 stdcall -ordinal SHFindFiles(ptr ptr)
   91 stub SHFindComputer
   92 stdcall -ordinal PathGetShortPath(ptr) PathGetShortPathAW
-  93 stdcall -noname Win32CreateDirectory(wstr ptr)
-  94 stdcall -noname Win32RemoveDirectory(wstr)
+  93 stdcall -noname Win32CreateDirectory(wstr ptr) Win32CreateDirectoryAW
+  94 stdcall -noname Win32RemoveDirectory(wstr) Win32RemoveDirectoryAW
   95 stdcall -noname SHLogILFromFSIL(ptr)
   96 stdcall -noname StrRetToStrN(ptr long ptr ptr) StrRetToStrNAW
   97 stdcall -noname SHWaitForFileToOpen (ptr long long)
@@ -136,7 +136,7 @@
  144 stdcall -noname FileMenu_GetItemExtent(long long)
  145 stdcall -noname PathFindOnPath(ptr ptr) PathFindOnPathAW
  146 stdcall -noname RLBuildListOfPaths()
- 147 stdcall -ordinal SHCLSIDFromString(ptr ptr)
+ 147 stdcall -ordinal SHCLSIDFromString(ptr ptr) SHCLSIDFromStringAW
  148 stdcall -noname SHMapIDListToImageListIndexAsync(ptr ptr ptr long ptr ptr ptr ptr ptr)
  149 stdcall -ordinal SHFind_InitMenuPopup(long long long long)
 
@@ -153,7 +153,7 @@
  161 stdcall -noname SHRunControlPanel(wstr long)
  162 stdcall -ordinal SHSimpleIDListFromPath(ptr) SHSimpleIDListFromPathAW
  163 stdcall -noname StrToOleStr(wstr str) StrToOleStrAW
- 164 stdcall -ordinal Win32DeleteFile(str)
+ 164 stdcall -ordinal Win32DeleteFile(str) Win32DeleteFileAW
  165 stdcall -ordinal SHCreateDirectory(long ptr)
  166 stdcall -noname CallCPLEntry16(long ptr long long long long)
  167 stdcall -ordinal SHAddFromPropSheetExtArray(long ptr long)

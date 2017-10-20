@@ -135,7 +135,7 @@ struct qemu_SHCLSIDFromString
 
 #ifdef QEMU_DLL_GUEST
 
-SHSTDAPI SHCLSIDFromString(const WCHAR *clsid, CLSID *id)
+SHSTDAPI SHCLSIDFromStringAW(const WCHAR *clsid, CLSID *id)
 {
     struct qemu_SHCLSIDFromString call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHCLSIDFROMSTRING);

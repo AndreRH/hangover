@@ -45,7 +45,7 @@ struct qemu_ParseField
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI ParseField(LPCVOID src, DWORD nField, LPVOID dst, DWORD len)
+WINBASEAPI DWORD WINAPI ParseFieldAW(LPCVOID src, DWORD nField, LPVOID dst, DWORD len)
 {
     struct qemu_ParseField call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PARSEFIELD);
@@ -86,7 +86,7 @@ struct qemu_GetFileNameFromBrowse
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetFileNameFromBrowse(HWND hwndOwner, PWSTR lpstrFile, UINT nMaxFile, PCWSTR lpstrInitialDir, PCWSTR lpstrDefExt, PCWSTR lpstrFilter, PCWSTR lpstrTitle)
+WINBASEAPI BOOL WINAPI GetFileNameFromBrowseAW(HWND hwndOwner, PWSTR lpstrFile, UINT nMaxFile, PCWSTR lpstrInitialDir, PCWSTR lpstrDefExt, PCWSTR lpstrFilter, PCWSTR lpstrTitle)
 {
     struct qemu_GetFileNameFromBrowse call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILENAMEFROMBROWSE);
@@ -1429,7 +1429,7 @@ struct qemu_DoEnvironmentSubst
 
 #ifdef QEMU_DLL_GUEST
 
-DWORD WINAPI shell32_DoEnvironmentSubst(LPSTR x, UINT y)
+DWORD WINAPI DoEnvironmentSubstAW(LPSTR x, UINT y)
 {
     struct qemu_DoEnvironmentSubst call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DOENVIRONMENTSUBST);

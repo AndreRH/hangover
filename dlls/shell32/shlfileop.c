@@ -76,7 +76,7 @@ struct qemu_Win32CreateDirectory
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI Win32CreateDirectory(LPCVOID path, LPSECURITY_ATTRIBUTES sec)
+WINBASEAPI BOOL WINAPI Win32CreateDirectoryAW(LPCVOID path, LPSECURITY_ATTRIBUTES sec)
 {
     struct qemu_Win32CreateDirectory call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WIN32CREATEDIRECTORY);
@@ -109,7 +109,7 @@ struct qemu_Win32RemoveDirectory
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI Win32RemoveDirectory(LPCVOID path)
+WINBASEAPI BOOL WINAPI Win32RemoveDirectoryAW(LPCVOID path)
 {
     struct qemu_Win32RemoveDirectory call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WIN32REMOVEDIRECTORY);
@@ -141,7 +141,7 @@ struct qemu_Win32DeleteFile
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI WINBOOL WINAPI Win32DeleteFile(const WCHAR *path)
+WINBASEAPI WINBOOL WINAPI Win32DeleteFileAW(const WCHAR *path)
 {
     struct qemu_Win32DeleteFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WIN32DELETEFILE);
