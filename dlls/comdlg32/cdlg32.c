@@ -54,7 +54,7 @@ WINBASEAPI DWORD WINAPI CommDlgExtendedError(void)
 void qemu_CommDlgExtendedError(struct qemu_syscall *call)
 {
     struct qemu_CommDlgExtendedError *c = (struct qemu_CommDlgExtendedError *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CommDlgExtendedError();
 }
 
