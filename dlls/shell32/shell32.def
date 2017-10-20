@@ -153,6 +153,8 @@ EXPORTS
   SHCreatePropSheetExtArrayEx
   SHCreateQueryCancelAutoPlayMoniker
   SHCreateSessionKey
+  SHCreateShellFolderView
+  SHCreateShellFolderViewEx
   SHCreateShellItem
   SHCreateShellItemArray
   SHCreateShellItemArrayFromDataObject

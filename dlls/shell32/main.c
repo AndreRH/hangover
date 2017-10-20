@@ -197,6 +197,8 @@ static const syscall_handler dll_functions[] =
     qemu_SHCreatePropSheetExtArrayEx,
     qemu_SHCreateQueryCancelAutoPlayMoniker,
     qemu_SHCreateSessionKey,
+    qemu_SHCreateShellFolderView,
+    qemu_SHCreateShellFolderViewEx,
     qemu_SHCreateShellItem,
     qemu_SHCreateShellItemArray,
     qemu_SHCreateShellItemArrayFromDataObject,

@@ -157,6 +157,8 @@ enum shell32_calls
     CALL_SHCREATEPROPSHEETEXTARRAYEX,
     CALL_SHCREATEQUERYCANCELAUTOPLAYMONIKER,
     CALL_SHCREATESESSIONKEY,
+    CALL_SHCREATESHELLFOLDERVIEW,
+    CALL_SHCREATESHELLFOLDERVIEWEX,
     CALL_SHCREATESHELLITEM,
     CALL_SHCREATESHELLITEMARRAY,
     CALL_SHCREATESHELLITEMARRAYFROMDATAOBJECT,
@@ -455,6 +457,8 @@ void qemu_SHCreatePropSheetExtArray(struct qemu_syscall *call);
 void qemu_SHCreatePropSheetExtArrayEx(struct qemu_syscall *call);
 void qemu_SHCreateQueryCancelAutoPlayMoniker(struct qemu_syscall *call);
 void qemu_SHCreateSessionKey(struct qemu_syscall *call);
+void qemu_SHCreateShellFolderView(struct qemu_syscall *call);
+void qemu_SHCreateShellFolderViewEx(struct qemu_syscall *call);
 void qemu_SHCreateShellItem(struct qemu_syscall *call);
 void qemu_SHCreateShellItemArray(struct qemu_syscall *call);
 void qemu_SHCreateShellItemArrayFromDataObject(struct qemu_syscall *call);
