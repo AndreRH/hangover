@@ -143,6 +143,7 @@ static const syscall_handler dll_functions[] =
     qemu_InitNetworkAddressControl,
     qemu_InvalidateDriveType,
     qemu_IsLFNDriveA,
+    qemu_IsLFNDriveAW,
     qemu_IsLFNDriveW,
     qemu_IsNetDrive,
     qemu_IsUserAnAdmin,
@@ -154,6 +155,40 @@ static const syscall_handler dll_functions[] =
     qemu_OpenAs_RunDLLA,
     qemu_OpenAs_RunDLLW,
     qemu_ParseField,
+    qemu_PathAddBackslashAW,
+    qemu_PathAppendAW,
+    qemu_PathBuildRootAW,
+    qemu_PathCleanupSpec,
+    qemu_PathCombineAW,
+    qemu_PathFileExistsAW,
+    qemu_PathFindExtensionAW,
+    qemu_PathFindFileNameAW,
+    qemu_PathFindOnPathAW,
+    qemu_PathGetArgsAW,
+    qemu_PathGetDriveNumberAW,
+    qemu_PathGetExtensionAW,
+    qemu_PathGetShortPathAW,
+    qemu_PathIsDirectoryAW,
+    qemu_PathIsExeAW,
+    qemu_PathIsRelativeAW,
+    qemu_PathIsRootAW,
+    qemu_PathIsSameRootAW,
+    qemu_PathIsUNCAW,
+    qemu_PathMakeUniqueNameAW,
+    qemu_PathMatchSpecAW,
+    qemu_PathParseIconLocationAW,
+    qemu_PathProcessCommandAW,
+    qemu_PathQualifyAW,
+    qemu_PathQuoteSpacesAW,
+    qemu_PathRemoveArgsAW,
+    qemu_PathRemoveBlanksAW,
+    qemu_PathRemoveExtensionAW,
+    qemu_PathRemoveFileSpecAW,
+    qemu_PathResolveAW,
+    qemu_PathSetDlgItemPathAW,
+    qemu_PathStripPathAW,
+    qemu_PathStripToRootAW,
+    qemu_PathUnquoteSpacesAW,
     qemu_PathYetAnotherMakeUniqueName,
     qemu_PickIconDlg,
     qemu_Printer_LoadIconsW,
@@ -283,6 +318,7 @@ static const syscall_handler dll_functions[] =
     qemu_SHGetSettings,
     qemu_SHGetSpecialFolderLocation,
     qemu_SHGetSpecialFolderPathA,
+    qemu_SHGetSpecialFolderPathAW,
     qemu_SHGetSpecialFolderPathW,
     qemu_SHGetStockIconInfo,
     qemu_SHHandleUpdateImage,
@@ -394,6 +430,90 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (!p_OleStrToStrNAW)
         WINE_ERR("Failed to load shell32.OleStrToStrNAW (78).\n");
 
+    p_PathAppend = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(36));
+    if (!p_PathAppend)
+        WINE_ERR("Failed to load shell32.PathAppend (36).\n");
+    p_PathCombine = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(37));
+    if (!p_PathCombine)
+        WINE_ERR("Failed to load shell32.PathCombine (37).\n");
+    p_PathFindFileName = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(34));
+    if (!p_PathFindFileName)
+        WINE_ERR("Failed to load shell32.PathFindFileName (34).\n");
+    p_PathFindExtension = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(31));
+    if (!p_PathFindExtension)
+        WINE_ERR("Failed to load shell32.PathFindExtension (31).\n");
+    p_PathGetArgs = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(52));
+    if (!p_PathGetArgs)
+        WINE_ERR("Failed to load shell32.PathGetArgs (52).\n");
+    p_PathStripToRoot = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(50));
+    if (!p_PathStripToRoot)
+        WINE_ERR("Failed to load shell32.PathStripToRoot (50).\n");
+    p_PathRemoveArgs = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(251));
+    if (!p_PathRemoveArgs)
+        WINE_ERR("Failed to load shell32.PathRemoveArgs (251).\n");
+    p_PathRemoveBlanks = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(33));
+    if (!p_PathRemoveBlanks)
+        WINE_ERR("Failed to load shell32.PathRemoveBlanks (33).\n");
+    p_PathQuoteSpaces = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(55));
+    if (!p_PathQuoteSpaces)
+        WINE_ERR("Failed to load shell32.PathQuoteSpaces (55).\n");
+    p_PathUnquoteSpaces = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(56));
+    if (!p_PathUnquoteSpaces)
+        WINE_ERR("Failed to load shell32.PathUnquoteSpaces (56).\n");
+    p_PathParseIconLocation = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(249));
+    if (!p_PathParseIconLocation)
+        WINE_ERR("Failed to load shell32.PathParseIconLocation (249).\n");
+    p_PathIsRelative = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(40));
+    if (!p_PathIsRelative)
+        WINE_ERR("Failed to load shell32.PathIsRelative (40).\n");
+    p_PathIsRoot = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(29));
+    if (!p_PathIsRoot)
+        WINE_ERR("Failed to load shell32.PathIsRoot (29).\n");
+    p_PathIsDirectory = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(159));
+    if (!p_PathIsDirectory)
+        WINE_ERR("Failed to load shell32.PathIsDirectory (159).\n");
+    p_PathFileExists = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(45));
+    if (!p_PathFileExists)
+        WINE_ERR("Failed to load shell32.PathFileExists (45).\n");
+    p_PathIsSameRoot = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(650));
+    if (!p_PathIsSameRoot)
+        WINE_ERR("Failed to load shell32.PathIsSameRoot (650).\n");
+    p_PathFindOnPath = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(145));
+    if (!p_PathFindOnPath)
+        WINE_ERR("Failed to load shell32.PathFindOnPath (145).\n");
+    p_PathResolve = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(51));
+    if (!p_PathResolve)
+        WINE_ERR("Failed to load shell32.PathResolve (51).\n");
+    p_PathProcessCommand = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(653));
+    if (!p_PathProcessCommand)
+        WINE_ERR("Failed to load shell32.PathProcessCommand (653).\n");
+    p_PathSetDlgItemPath = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(48));
+    if (!p_PathSetDlgItemPath)
+        WINE_ERR("Failed to load shell32.PathSetDlgItemPath (48).\n");
+    p_PathBuildRoot = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(30));
+    if (!p_PathBuildRoot)
+        WINE_ERR("Failed to load shell32.PathBuildRoot (30).\n");
+    p_PathGetDriveNumber = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(57));
+    if (!p_PathGetDriveNumber)
+        WINE_ERR("Failed to load shell32.PathGetDriveNumber (57).\n");
+    p_PathAddBackslash = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(32));
+    if (!p_PathAddBackslash)
+        WINE_ERR("Failed to load shell32.PathAddBackslash (32).\n");
+    p_PathIsUNC = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(39));
+    if (!p_PathIsUNC)
+        WINE_ERR("Failed to load shell32.PathIsUNC (39).\n");
+    p_PathMatchSpec = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(46));
+    if (!p_PathMatchSpec)
+        WINE_ERR("Failed to load shell32.PathMatchSpec (46).\n");
+    p_PathRemoveExtension = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(250));
+    if (!p_PathRemoveExtension)
+        WINE_ERR("Failed to load shell32.PathRemoveExtension (250).\n");
+    p_PathRemoveFileSpec = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(35));
+    if (!p_PathRemoveFileSpec)
+        WINE_ERR("Failed to load shell32.PathRemoveFileSpec (35).\n");
+    p_PathStripPath = (void *)GetProcAddress(shell32, MAKEINTRESOURCE(38));
+    if (!p_PathStripPath)
+        WINE_ERR("Failed to load shell32.PathStripPath (38).\n");
     return dll_functions;
 }
 

@@ -96,6 +96,7 @@ EXPORTS
   InitNetworkAddressControl
   InvalidateDriveType
   IsLFNDriveA
+  IsLFNDriveAW
   IsLFNDriveW
   IsNetDrive
   IsUserAnAdmin
@@ -107,6 +108,40 @@ EXPORTS
   OpenAs_RunDLLA
   OpenAs_RunDLLW
   ParseField
+  PathAddBackslashAW
+  PathAppendAW
+  PathBuildRootAW
+  PathCleanupSpec
+  PathCombineAW
+  PathFileExistsAW
+  PathFindExtensionAW
+  PathFindFileNameAW
+  PathFindOnPathAW
+  PathGetArgsAW
+  PathGetDriveNumberAW
+  PathGetExtensionAW
+  PathGetShortPathAW
+  PathIsDirectoryAW
+  PathIsExeAW
+  PathIsRelativeAW
+  PathIsRootAW
+  PathIsSameRootAW
+  PathIsUNCAW
+  PathMakeUniqueNameAW
+  PathMatchSpecAW
+  PathParseIconLocationAW
+  PathProcessCommandAW
+  PathQualifyAW
+  PathQuoteSpacesAW
+  PathRemoveArgsAW
+  PathRemoveBlanksAW
+  PathRemoveExtensionAW
+  PathRemoveFileSpecAW
+  PathResolveAW
+  PathSetDlgItemPathAW
+  PathStripPathAW
+  PathStripToRootAW
+  PathUnquoteSpacesAW
   PathYetAnotherMakeUniqueName
   PickIconDlg
   Printer_LoadIconsW
@@ -234,6 +269,7 @@ EXPORTS
   SHGetSettings
   SHGetSpecialFolderLocation
   SHGetSpecialFolderPathA
+  SHGetSpecialFolderPathAW
   SHGetSpecialFolderPathW
   SHGetStockIconInfo
   SHHandleUpdateImage

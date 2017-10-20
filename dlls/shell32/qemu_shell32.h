@@ -103,6 +103,7 @@ enum shell32_calls
     CALL_INITNETWORKADDRESSCONTROL,
     CALL_INVALIDATEDRIVETYPE,
     CALL_ISLFNDRIVEA,
+    CALL_ISLFNDRIVEAW,
     CALL_ISLFNDRIVEW,
     CALL_ISNETDRIVE,
     CALL_ISUSERANADMIN,
@@ -114,6 +115,40 @@ enum shell32_calls
     CALL_OPENAS_RUNDLLA,
     CALL_OPENAS_RUNDLLW,
     CALL_PARSEFIELD,
+    CALL_PATHADDBACKSLASHAW,
+    CALL_PATHAPPENDAW,
+    CALL_PATHBUILDROOTAW,
+    CALL_PATHCLEANUPSPEC,
+    CALL_PATHCOMBINEAW,
+    CALL_PATHFILEEXISTSAW,
+    CALL_PATHFINDEXTENSIONAW,
+    CALL_PATHFINDFILENAMEAW,
+    CALL_PATHFINDONPATHAW,
+    CALL_PATHGETARGSAW,
+    CALL_PATHGETDRIVENUMBERAW,
+    CALL_PATHGETEXTENSIONAW,
+    CALL_PATHGETSHORTPATHAW,
+    CALL_PATHISDIRECTORYAW,
+    CALL_PATHISEXEAW,
+    CALL_PATHISRELATIVEAW,
+    CALL_PATHISROOTAW,
+    CALL_PATHISSAMEROOTAW,
+    CALL_PATHISUNCAW,
+    CALL_PATHMAKEUNIQUENAMEAW,
+    CALL_PATHMATCHSPECAW,
+    CALL_PATHPARSEICONLOCATIONAW,
+    CALL_PATHPROCESSCOMMANDAW,
+    CALL_PATHQUALIFYAW,
+    CALL_PATHQUOTESPACESAW,
+    CALL_PATHREMOVEARGSAW,
+    CALL_PATHREMOVEBLANKSAW,
+    CALL_PATHREMOVEEXTENSIONAW,
+    CALL_PATHREMOVEFILESPECAW,
+    CALL_PATHRESOLVEAW,
+    CALL_PATHSETDLGITEMPATHAW,
+    CALL_PATHSTRIPPATHAW,
+    CALL_PATHSTRIPTOROOTAW,
+    CALL_PATHUNQUOTESPACESAW,
     CALL_PATHYETANOTHERMAKEUNIQUENAME,
     CALL_PICKICONDLG,
     CALL_PRINTER_LOADICONSW,
@@ -243,6 +278,7 @@ enum shell32_calls
     CALL_SHGETSETTINGS,
     CALL_SHGETSPECIALFOLDERLOCATION,
     CALL_SHGETSPECIALFOLDERPATHA,
+    CALL_SHGETSPECIALFOLDERPATHAW,
     CALL_SHGETSPECIALFOLDERPATHW,
     CALL_SHGETSTOCKICONINFO,
     CALL_SHHANDLEUPDATEIMAGE,
@@ -412,6 +448,7 @@ void qemu_ILSaveToStream(struct qemu_syscall *call);
 void qemu_InitNetworkAddressControl(struct qemu_syscall *call);
 void qemu_InvalidateDriveType(struct qemu_syscall *call);
 void qemu_IsLFNDriveA(struct qemu_syscall *call);
+void qemu_IsLFNDriveAW(struct qemu_syscall *call);
 void qemu_IsLFNDriveW(struct qemu_syscall *call);
 void qemu_IsNetDrive(struct qemu_syscall *call);
 void qemu_IsUserAnAdmin(struct qemu_syscall *call);
@@ -423,6 +460,40 @@ void qemu_OleStrToStrNAW(struct qemu_syscall *call);
 void qemu_OpenAs_RunDLLA(struct qemu_syscall *call);
 void qemu_OpenAs_RunDLLW(struct qemu_syscall *call);
 void qemu_ParseField(struct qemu_syscall *call);
+void qemu_PathAddBackslashAW(struct qemu_syscall *call);
+void qemu_PathAppendAW(struct qemu_syscall *call);
+void qemu_PathBuildRootAW(struct qemu_syscall *call);
+void qemu_PathCleanupSpec(struct qemu_syscall *call);
+void qemu_PathCombineAW(struct qemu_syscall *call);
+void qemu_PathFileExistsAW(struct qemu_syscall *call);
+void qemu_PathFindExtensionAW(struct qemu_syscall *call);
+void qemu_PathFindFileNameAW(struct qemu_syscall *call);
+void qemu_PathFindOnPathAW(struct qemu_syscall *call);
+void qemu_PathGetArgsAW(struct qemu_syscall *call);
+void qemu_PathGetDriveNumberAW(struct qemu_syscall *call);
+void qemu_PathGetExtensionAW(struct qemu_syscall *call);
+void qemu_PathGetShortPathAW(struct qemu_syscall *call);
+void qemu_PathIsDirectoryAW(struct qemu_syscall *call);
+void qemu_PathIsExeAW(struct qemu_syscall *call);
+void qemu_PathIsRelativeAW(struct qemu_syscall *call);
+void qemu_PathIsRootAW(struct qemu_syscall *call);
+void qemu_PathIsSameRootAW(struct qemu_syscall *call);
+void qemu_PathIsUNCAW(struct qemu_syscall *call);
+void qemu_PathMakeUniqueNameAW(struct qemu_syscall *call);
+void qemu_PathMatchSpecAW(struct qemu_syscall *call);
+void qemu_PathParseIconLocationAW(struct qemu_syscall *call);
+void qemu_PathProcessCommandAW(struct qemu_syscall *call);
+void qemu_PathQualifyAW(struct qemu_syscall *call);
+void qemu_PathQuoteSpacesAW(struct qemu_syscall *call);
+void qemu_PathRemoveArgsAW(struct qemu_syscall *call);
+void qemu_PathRemoveBlanksAW(struct qemu_syscall *call);
+void qemu_PathRemoveExtensionAW(struct qemu_syscall *call);
+void qemu_PathRemoveFileSpecAW(struct qemu_syscall *call);
+void qemu_PathResolveAW(struct qemu_syscall *call);
+void qemu_PathSetDlgItemPathAW(struct qemu_syscall *call);
+void qemu_PathStripPathAW(struct qemu_syscall *call);
+void qemu_PathStripToRootAW(struct qemu_syscall *call);
+void qemu_PathUnquoteSpacesAW(struct qemu_syscall *call);
 void qemu_PathYetAnotherMakeUniqueName(struct qemu_syscall *call);
 void qemu_PickIconDlg(struct qemu_syscall *call);
 void qemu_Printer_LoadIconsW(struct qemu_syscall *call);
@@ -631,6 +702,34 @@ BOOL (* WINAPI p_StrRetToStrNAW)(LPVOID dest, DWORD len, LPSTRRET src, const ITE
 BOOL (* WINAPI p_StrToOleStrAW)(LPWSTR lpWideCharStr, LPCVOID lpString);
 BOOL (* WINAPI p_StrToOleStrNAW)(LPWSTR lpWide, INT nWide, LPCVOID lpStr, INT nStr);
 BOOL (* WINAPI p_OleStrToStrNAW)(LPVOID lpOut, INT nOut, LPCVOID lpIn, INT nIn);
+BOOL (* WINAPI p_PathAppend)(LPVOID lpszPath1, LPCVOID lpszPath2);
+LPVOID (* WINAPI p_PathCombine)(LPVOID szDest, LPCVOID lpszDir, LPCVOID lpszFile);
+LPVOID (* WINAPI p_PathFindFileName)(LPCVOID lpszPath);
+LPVOID (* WINAPI p_PathFindExtension)(LPCVOID lpszPath);
+LPVOID (* WINAPI p_PathGetArgs)(LPVOID lpszPath);
+int (* WINAPI p_PathGetDriveNumber)(LPVOID lpszPath);
+BOOL (* WINAPI p_PathStripToRoot)(LPVOID lpszPath);
+void (* WINAPI p_PathRemoveArgs)(LPVOID lpszPath);
+void (* WINAPI p_PathRemoveBlanks)(LPVOID str);
+VOID (* WINAPI p_PathQuoteSpaces)(LPVOID lpszPath);
+VOID (* WINAPI p_PathUnquoteSpaces)(LPVOID str);
+int (* WINAPI p_PathParseIconLocation)(LPVOID lpszPath);
+BOOL (* WINAPI p_PathIsRelative)(LPCVOID lpszPath);
+BOOL (* WINAPI p_PathIsRoot)(LPCVOID lpszPath);
+BOOL (* WINAPI p_PathIsDirectory)(LPCVOID lpszPath);
+BOOL (* WINAPI p_PathFileExists)(LPCVOID lpszPath);
+BOOL (* WINAPI p_PathIsSameRoot)(LPCVOID lpszPath1, LPCVOID lpszPath2);
+BOOL (* WINAPI p_PathFindOnPath)(LPVOID sFile, LPCVOID *sOtherDirs);
+BOOL (* WINAPI p_PathResolve)(LPVOID path, LPCVOID *paths, DWORD flags);
+LONG (* WINAPI p_PathProcessCommand)(LPCVOID lpszPath, LPVOID lpszBuff, DWORD dwBuffSize, DWORD dwFlags);
+VOID (* WINAPI p_PathSetDlgItemPath)(HWND hDlg, int id, LPCVOID pszPath);
+LPVOID (* WINAPI p_PathBuildRoot)(LPVOID lpszPath, int drive);
+LPVOID (* WINAPI p_PathAddBackslash)(LPVOID lpszPath);
+BOOL (* WINAPI p_PathIsUNC)(LPCVOID lpszPath);
+BOOL (* WINAPI p_PathMatchSpec)(LPVOID name, LPVOID mask);
+void (* WINAPI p_PathRemoveExtension)(LPVOID lpszPath);
+BOOL (* WINAPI p_PathRemoveFileSpec)(LPVOID lpszPath);
+void (* WINAPI p_PathStripPath)(LPVOID lpszPath);
 
 #endif
 
