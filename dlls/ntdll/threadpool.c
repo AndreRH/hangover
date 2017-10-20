@@ -525,31 +525,87 @@ struct qemu_TpAllocWork
     uint64_t callback;
     uint64_t userdata;
     uint64_t environment;
+    uint64_t wrapper;
+};
+
+struct qemu_TpAllocWork_cb
+{
+    uint64_t cb, instance, context, work;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+struct tp_work
+{
+    TP_WORK *host;
+    uint64_t guest_cb, guest_data;
+};
+
+static void __fastcall TpAllocWork_guest_cb(struct qemu_TpAllocWork_cb *data)
+{
+    PTP_WORK_CALLBACK cb = (PTP_WORK_CALLBACK)(ULONG_PTR)data->cb;
+    cb((PTP_CALLBACK_INSTANCE)(ULONG_PTR)data->instance, (void *)(ULONG_PTR)data->context, (TP_WORK *)(ULONG_PTR)data->work);
+}
 
 WINBASEAPI NTSTATUS WINAPI TpAllocWork(TP_WORK **out, PTP_WORK_CALLBACK callback, PVOID userdata, TP_CALLBACK_ENVIRON *environment)
 {
     struct qemu_TpAllocWork call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TPALLOCWORK);
-    call.out = (ULONG_PTR)out;
     call.callback = (ULONG_PTR)callback;
     call.userdata = (ULONG_PTR)userdata;
     call.environment = (ULONG_PTR)environment;
+    call.wrapper = (ULONG_PTR)TpAllocWork_guest_cb;
 
     qemu_syscall(&call.super);
+
+    if (call.super.iret == STATUS_SUCCESS)
+        *out = (TP_WORK *)(ULONG_PTR)call.out;
 
     return call.super.iret;
 }
 
 #else
 
+struct tp_work
+{
+    TP_WORK *host;
+    uint64_t wrapper, guest_cb, guest_ctx;
+};
+
+static void WINAPI TpAllocWork_host_cb(TP_CALLBACK_INSTANCE *instance, void *context, TP_WORK *work)
+{
+    struct tp_work *w = (struct tp_work *)context;
+    struct qemu_TpAllocWork_cb call;
+
+    WINE_TRACE("Calling guest callback 0x%lx(%p, 0x%lx, %p).\n", w->guest_cb, instance, w->guest_ctx, w);
+
+    call.cb = w->guest_cb;
+    call.instance = (ULONG_PTR)instance;
+    call.context = w->guest_ctx;
+    call.work = (ULONG_PTR)w;
+    qemu_ops->qemu_execute(QEMU_G2H(w->wrapper), QEMU_H2G(&call));
+
+    WINE_TRACE("Guest callback returned.\n");
+}
+
 void qemu_TpAllocWork(struct qemu_syscall *call)
 {
     struct qemu_TpAllocWork *c = (struct qemu_TpAllocWork *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = TpAllocWork(QEMU_G2H(c->out), QEMU_G2H(c->callback), QEMU_G2H(c->userdata), QEMU_G2H(c->environment));
+    struct tp_work *out;
+
+    WINE_TRACE("\n");
+    out = HeapAlloc(GetProcessHeap(), 0, sizeof(*out));
+    out->wrapper = c->wrapper;
+    out->guest_cb = c->callback;
+    out->guest_ctx = c->userdata;
+
+    c->super.iret = TpAllocWork(&out->host, c->callback ? TpAllocWork_host_cb : NULL,
+            out, QEMU_G2H(c->environment));
+
+    if (c->super.iret == STATUS_SUCCESS)
+        c->out = QEMU_H2G(out);
+    else
+        HeapFree(GetProcessHeap(), 0, out);
 }
 
 #endif
@@ -816,8 +872,11 @@ WINBASEAPI VOID WINAPI TpPostWork(TP_WORK *work)
 void qemu_TpPostWork(struct qemu_syscall *call)
 {
     struct qemu_TpPostWork *c = (struct qemu_TpPostWork *)call;
-    WINE_FIXME("Unverified!\n");
-    TpPostWork(QEMU_G2H(c->work));
+    struct tp_work *work;
+    WINE_TRACE("\n");
+
+    work = QEMU_G2H(c->work);
+    TpPostWork(work->host);
 }
 
 #endif
@@ -988,8 +1047,12 @@ WINBASEAPI VOID WINAPI TpReleaseWork(TP_WORK *work)
 void qemu_TpReleaseWork(struct qemu_syscall *call)
 {
     struct qemu_TpReleaseWork *c = (struct qemu_TpReleaseWork *)call;
-    WINE_FIXME("Unverified!\n");
-    TpReleaseWork(QEMU_G2H(c->work));
+    struct tp_work *work;
+    WINE_TRACE("\n");
+
+    work = QEMU_G2H(c->work);
+    TpReleaseWork(work->host);
+    HeapFree(GetProcessHeap(), 0, work);
 }
 
 #endif
@@ -1240,8 +1303,11 @@ WINBASEAPI VOID WINAPI TpWaitForWork(TP_WORK *work, BOOL cancel_pending)
 void qemu_TpWaitForWork(struct qemu_syscall *call)
 {
     struct qemu_TpWaitForWork *c = (struct qemu_TpWaitForWork *)call;
-    WINE_FIXME("Unverified!\n");
-    TpWaitForWork(QEMU_G2H(c->work), c->cancel_pending);
+    struct tp_work *work;
+    WINE_TRACE("\n");
+
+    work = QEMU_G2H(c->work);
+    TpWaitForWork(work->host, c->cancel_pending);
 }
 
 #endif

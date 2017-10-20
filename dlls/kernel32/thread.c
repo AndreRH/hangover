@@ -1438,26 +1438,32 @@ struct qemu_CreateThreadpoolWork
 
 #ifdef QEMU_DLL_GUEST
 
+extern NTSTATUS WINAPI TpAllocWork(TP_WORK **out, PTP_WORK_CALLBACK callback, PVOID userdata, TP_CALLBACK_ENVIRON *environment);
 WINBASEAPI PTP_WORK WINAPI CreateThreadpoolWork(PTP_WORK_CALLBACK callback, PVOID userdata, TP_CALLBACK_ENVIRON *environment)
 {
+    TP_WORK *work;
+    NTSTATUS status;
     struct qemu_CreateThreadpoolWork call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATETHREADPOOLWORK);
-    call.callback = (ULONG_PTR)callback;
-    call.userdata = (ULONG_PTR)userdata;
-    call.environment = (ULONG_PTR)environment;
 
+    /* For tracing. */
     qemu_syscall(&call.super);
 
-    return (PTP_WORK)(ULONG_PTR)call.super.iret;
+    status = TpAllocWork( &work, callback, userdata, environment );
+    if (status)
+    {
+        kernel32_SetLastError( RtlNtStatusToDosError(status) );
+        return NULL;
+    }
+
+    return work;
 }
 
 #else
 
 void qemu_CreateThreadpoolWork(struct qemu_syscall *call)
 {
-    struct qemu_CreateThreadpoolWork *c = (struct qemu_CreateThreadpoolWork *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(CreateThreadpoolWork(QEMU_G2H(c->callback), QEMU_G2H(c->userdata), QEMU_G2H(c->environment)));
+    WINE_TRACE("\n");
 }
 
 #endif
