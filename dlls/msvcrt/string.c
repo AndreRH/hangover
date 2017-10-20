@@ -1548,7 +1548,7 @@ int CDECL MSVCRT_atoi(const char *str)
 void qemu_atoi(struct qemu_syscall *call)
 {
     struct qemu_atoi *c = (struct qemu_atoi *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_atoi(QEMU_G2H(c->str));
 }
 
