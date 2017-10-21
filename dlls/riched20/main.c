@@ -49,12 +49,22 @@ struct callback_impl
     ULONG refcount;
 };
 
-struct qemu_set_ole_callbacks
+struct qemu_set_callbacks
 {
     struct qemu_syscall super;
     uint64_t QueryInterface;
     uint64_t AddRef;
     uint64_t Release;
+    uint64_t editstream_cb;
+};
+
+struct qemu_editstream_cb
+{
+    uint64_t cb_func;
+    uint64_t cookie;
+    uint64_t buffer;
+    uint64_t cb;
+    uint64_t pcb;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -69,17 +79,24 @@ static uint64_t __fastcall guest_ole_callback_Release(struct callback_impl *impl
     return impl->guest->lpVtbl->Release(impl->guest);
 }
 
+static uint64_t __fastcall guest_editstream_cb(struct qemu_editstream_cb *data)
+{
+    EDITSTREAMCALLBACK cb = (EDITSTREAMCALLBACK)(ULONG_PTR)data->cb_func;
+    return cb(data->cookie, (BYTE *)(ULONG_PTR)data->buffer, data->cb, (LONG *)(ULONG_PTR)data->pcb);
+}
+
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
-    struct qemu_set_ole_callbacks call;
+    struct qemu_set_callbacks call;
 
     switch (reason)
     {
         case DLL_PROCESS_ATTACH:
-            call.super.id = QEMU_SYSCALL_ID(CALL_SET_OLE_CALLBACKS);
+            call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
             call.QueryInterface = 0;
             call.AddRef = (ULONG_PTR)guest_ole_callback_AddRef;
             call.Release = (ULONG_PTR)guest_ole_callback_Release;
+            call.editstream_cb = (ULONG_PTR)guest_editstream_cb;
             qemu_syscall(&call.super);
             break;
     }
@@ -96,15 +113,17 @@ const struct qemu_ops *qemu_ops;
 static uint64_t guest_ole_callback_QueryInterface;
 static uint64_t guest_ole_callback_AddRef;
 static uint64_t guest_ole_callback_Release;
+static uint64_t guest_editstream_cb;
 
-static void qemu_set_ole_callbacks(struct qemu_syscall *call)
+static void qemu_set_callbacks(struct qemu_syscall *call)
 {
-    struct qemu_set_ole_callbacks *c = (struct qemu_set_ole_callbacks *)call;
+    struct qemu_set_callbacks *c = (struct qemu_set_callbacks *)call;
     WINE_TRACE("\n");
 
     guest_ole_callback_QueryInterface = c->QueryInterface;
     guest_ole_callback_AddRef = c->AddRef;
     guest_ole_callback_Release = c->Release;
+    guest_editstream_cb = c->editstream_cb;
 }
 
 static const syscall_handler dll_functions[] =
@@ -113,7 +132,7 @@ static const syscall_handler dll_functions[] =
     qemu_REExtendedRegisterClass,
     qemu_RichEdit10ANSIWndProc,
     qemu_RichEditANSIWndProc,
-    qemu_set_ole_callbacks,
+    qemu_set_callbacks,
 };
 
 static inline struct callback_impl *impl_from_IRichEditOleCallback(IRichEditOleCallback *iface)
@@ -299,12 +318,68 @@ static LRESULT handle_set_ole_callback(HWND hWnd, UINT msg, WPARAM wParam, LPARA
     cb->IRichEditOleCallback_iface.lpVtbl->Release(&cb->IRichEditOleCallback_iface);
 }
 
+struct stream_cb_data
+{
+    uint64_t guest_cookie;
+    uint64_t guest_cb;
+};
+
+static DWORD CALLBACK host_stream_cb(DWORD_PTR cookie, LPBYTE buffer, LONG cb, LONG *pcb)
+{
+    struct qemu_editstream_cb call;
+    struct stream_cb_data *data = (struct stream_cb_data *)cookie;
+    DWORD ret;
+
+    call.cb_func = data->guest_cb;
+    call.cookie = data->guest_cookie;
+    call.buffer = (ULONG_PTR)buffer;
+    call.cb = cb;
+    call.pcb = (ULONG_PTR)pcb;
+
+    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx, %lu, 0x%lx).\n",
+            call.cb_func, call.cookie, call.buffer, call.cb, call.pcb);
+
+    ret = qemu_ops->qemu_execute(QEMU_G2H(guest_editstream_cb), QEMU_H2G(&call));
+
+    WINE_TRACE("Guest callback returned %x.\n", ret);
+    return ret;
+}
+
+static LRESULT handle_stream(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, BOOL unicode)
+{
+    struct stream_cb_data data;
+    EDITSTREAM es = *(EDITSTREAM *)lParam;
+    LRESULT ret;
+
+    /* EDITSTREAM is only valid until the message is processed. */
+    data.guest_cookie = es.dwCookie;
+    data.guest_cb = (ULONG_PTR)es.pfnCallback;
+    es.dwCookie = (DWORD_PTR)&data;
+    es.pfnCallback = host_stream_cb;
+
+    if (unicode)
+        ret = CallWindowProcW(orig_proc_w, hWnd, msg, wParam, (LPARAM)&es);
+    else
+        ret = CallWindowProcA(orig_proc_a, hWnd, msg, wParam, (LPARAM)&es);
+
+    es.dwCookie = data.guest_cookie;
+    es.pfnCallback = (EDITSTREAMCALLBACK)data.guest_cb;
+    *(EDITSTREAM *)lParam = es;
+
+    return ret;
+}
+
 static LRESULT WINAPI wrap_proc_w(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
     {
         case EM_SETOLECALLBACK:
             return handle_set_ole_callback(hWnd, msg, wParam, lParam, TRUE);
+
+        case EM_STREAMIN:
+        case EM_STREAMOUT:
+            return handle_stream(hWnd, msg, wParam, lParam, TRUE);
+            break;
 
         default:
             return CallWindowProcW(orig_proc_w, hWnd, msg, wParam, lParam);
@@ -317,6 +392,10 @@ LRESULT WINAPI wrap_proc_a(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
         case EM_SETOLECALLBACK:
             return handle_set_ole_callback(hWnd, msg, wParam, lParam, FALSE);
+
+        case EM_STREAMIN:
+        case EM_STREAMOUT:
+            return handle_stream(hWnd, msg, wParam, lParam, FALSE);
 
         default:
             return CallWindowProcA(orig_proc_a, hWnd, msg, wParam, lParam);
