@@ -7,6 +7,7 @@ enum riched20_calls
     CALL_REEXTENDEDREGISTERCLASS,
     CALL_RICHEDIT10ANSIWNDPROC,
     CALL_RICHEDITANSIWNDPROC,
+    CALL_SET_OLE_CALLBACKS,
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -14,6 +15,7 @@ enum riched20_calls
 #else
 
 extern const struct qemu_ops *qemu_ops;
+extern LRESULT WINAPI wrap_proc_a(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 void qemu_REExtendedRegisterClass(struct qemu_syscall *call);
 void qemu_CreateTextServices(struct qemu_syscall *call);

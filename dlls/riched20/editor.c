@@ -127,13 +127,11 @@ WINBASEAPI LRESULT WINAPI RichEditANSIWndProc(HWND hWnd, UINT msg, WPARAM wParam
 
 #else
 
-/* TODO: Add RichEditANSIWndProc to Wine headers? */
-extern LRESULT WINAPI RichEditANSIWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 void qemu_RichEditANSIWndProc(struct qemu_syscall *call)
 {
     struct qemu_RichEditANSIWndProc *c = (struct qemu_RichEditANSIWndProc *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = RichEditANSIWndProc(QEMU_G2H(c->hWnd), c->msg, c->wParam, c->lParam);
+    c->super.iret = wrap_proc_a(QEMU_G2H(c->hWnd), c->msg, c->wParam, c->lParam);
 }
 
 #endif
