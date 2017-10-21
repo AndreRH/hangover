@@ -72,6 +72,7 @@
 @ stub LdrUnloadAlternateResourceModule
 @ stub LdrVerifyImageMatchesChecksum
 @ stdcall NtAcceptConnectPort(ptr long ptr long ptr ptr)
+@ stdcall NtAccessCheck(ptr long long ptr ptr ptr ptr ptr)
 @ stdcall NtAccessCheckAndAuditAlarm(ptr long ptr ptr ptr long ptr long ptr ptr ptr)
 # @ stub NtAccessCheckByType
 # @ stub NtAccessCheckByTypeAndAuditAlarm
@@ -310,7 +311,7 @@
 @ stub NtSetLowWaitHighEventPair
 @ stub NtSetLowWaitHighThread
 # @ stub NtSetQuotaInformationFile
-# @ stdcall NtSetSecurityObject(long long ptr)
+@ stdcall NtSetSecurityObject(long long ptr)
 @ stub NtSetSystemEnvironmentValue
 # @ stub NtSetSystemEnvironmentValueEx
 @ stdcall NtSetSystemInformation(long ptr long)
@@ -361,7 +362,7 @@
 @ stub PfxRemovePrefix
 # @ stub PropertyLengthAsVariant
 @ stub RtlAbortRXact
-# @ stdcall RtlAbsoluteToSelfRelativeSD(ptr ptr ptr)
+@ stdcall RtlAbsoluteToSelfRelativeSD(ptr ptr ptr)
 @ stdcall RtlAcquirePebLock()
 @ stdcall RtlAcquireResourceExclusive(ptr long)
 @ stdcall RtlAcquireResourceShared(ptr long)
@@ -370,21 +371,21 @@
 @ stdcall RtlActivateActivationContext(long ptr ptr)
 @ stub RtlActivateActivationContextEx
 @ stub RtlActivateActivationContextUnsafeFast
-# @ stdcall RtlAddAccessAllowedAce(ptr long long ptr)
-# @ stdcall RtlAddAccessAllowedAceEx(ptr long long long ptr)
-# @ stdcall RtlAddAccessAllowedObjectAce(ptr long long long ptr ptr ptr)
-# @ stdcall RtlAddAccessDeniedAce(ptr long long ptr)
-# @ stdcall RtlAddAccessDeniedAceEx(ptr long long long ptr)
-# @ stdcall RtlAddAccessDeniedObjectAce(ptr long long long ptr ptr ptr)
-# @ stdcall RtlAddAce(ptr long long ptr long)
+@ stdcall RtlAddAccessAllowedAce(ptr long long ptr)
+@ stdcall RtlAddAccessAllowedAceEx(ptr long long long ptr)
+@ stdcall RtlAddAccessAllowedObjectAce(ptr long long long ptr ptr ptr)
+@ stdcall RtlAddAccessDeniedAce(ptr long long ptr)
+@ stdcall RtlAddAccessDeniedAceEx(ptr long long long ptr)
+@ stdcall RtlAddAccessDeniedObjectAce(ptr long long long ptr ptr ptr)
+@ stdcall RtlAddAce(ptr long long ptr long)
 @ stub RtlAddActionToRXact
 # @ stdcall RtlAddAtomToAtomTable(ptr wstr ptr)
 @ stub RtlAddAttributeActionToRXact
-# @ stdcall RtlAddAuditAccessAce(ptr long long ptr long long)
-# @ stdcall RtlAddAuditAccessAceEx(ptr long long long ptr long long)
-# @ stdcall RtlAddAuditAccessObjectAce(ptr long long long ptr ptr ptr long long)
+@ stdcall RtlAddAuditAccessAce(ptr long long ptr long long)
+@ stdcall RtlAddAuditAccessAceEx(ptr long long long ptr long long)
+@ stdcall RtlAddAuditAccessObjectAce(ptr long long long ptr ptr ptr long long)
 # @ stub RtlAddCompoundAce
-# @ stdcall RtlAddMandatoryAce(ptr long long long long ptr)
+@ stdcall RtlAddMandatoryAce(ptr long long long long ptr)
 # @ stub RtlAddRange
 @ cdecl -arch=arm,x86_64 RtlAddFunctionTable(ptr long long)
 @ stdcall RtlAddRefActivationContext(ptr)
@@ -392,8 +393,8 @@
 @ stdcall RtlAddVectoredContinueHandler(long ptr)
 @ stdcall RtlAddVectoredExceptionHandler(long ptr)
 # @ stub RtlAddressInSectionTable
-# @ stdcall RtlAdjustPrivilege(long long long ptr)
-# @ stdcall RtlAllocateAndInitializeSid (ptr long long long long long long long long long ptr)
+@ stdcall RtlAdjustPrivilege(long long long ptr)
+@ stdcall RtlAllocateAndInitializeSid (ptr long long long long long long long long long ptr)
 # @ stdcall RtlAllocateHandle(ptr ptr)
 @ stdcall RtlAllocateHeap(long long long)
 @ stdcall RtlAnsiCharToUnicodeChar(ptr)
@@ -441,8 +442,8 @@
 # @ stdcall -arch=win32 -ret64 RtlConvertLongToLargeInteger(long)
 # @ stub RtlConvertPropertyToVariant
 @ stub RtlConvertSharedToExclusive
-# @ stdcall RtlConvertSidToUnicodeString(ptr ptr long)
-# @ stdcall RtlConvertToAutoInheritSecurityObject(ptr ptr ptr ptr long ptr)
+@ stdcall RtlConvertSidToUnicodeString(ptr ptr long)
+@ stdcall RtlConvertToAutoInheritSecurityObject(ptr ptr ptr ptr long ptr)
 @ stub RtlConvertUiListToApiList
 # @ stdcall -arch=win32 -ret64 RtlConvertUlongToLargeInteger(long)
 # @ stub RtlConvertVariantToProperty
@@ -452,12 +453,12 @@
 # @ stub RtlCopyMemoryStreamTo
 # @ stub RtlCopyOutOfProcessMemoryStreamTo
 # @ stub RtlCopyRangeList
-# @ stdcall RtlCopySecurityDescriptor(ptr ptr)
-# @ stdcall RtlCopySid(long ptr ptr)
+@ stdcall RtlCopySecurityDescriptor(ptr ptr)
+@ stdcall RtlCopySid(long ptr ptr)
 @ stub RtlCopySidAndAttributesArray
 @ stdcall RtlCopyString(ptr ptr)
 @ stdcall RtlCopyUnicodeString(ptr ptr)
-# @ stdcall RtlCreateAcl(ptr long long)
+@ stdcall RtlCreateAcl(ptr long long)
 @ stdcall RtlCreateActivationContext(ptr ptr)
 @ stub RtlCreateAndSetSD
 # @ stdcall RtlCreateAtomTable(long ptr)
@@ -468,7 +469,7 @@
 @ stub RtlCreatePropertySet
 # @ stdcall RtlCreateQueryDebugBuffer(long long)
 @ stub RtlCreateRegistryKey
-# @ stdcall RtlCreateSecurityDescriptor(ptr long)
+@ stdcall RtlCreateSecurityDescriptor(ptr long)
 # @ stub RtlCreateSystemVolumeInformationFolder
 @ stub RtlCreateTagHeap
 @ stdcall RtlCreateTimer(ptr ptr ptr ptr long long long)
@@ -490,7 +491,7 @@
 @ stdcall RtlDecompressFragment(long ptr long ptr long long ptr ptr)
 @ stub RtlDefaultNpAcl
 @ stub RtlDelete
-# @ stdcall RtlDeleteAce(ptr long)
+@ stdcall RtlDeleteAce(ptr long)
 # @ stdcall RtlDeleteAtomFromAtomTable(ptr long)
 @ stdcall RtlDeleteCriticalSection(ptr)
 @ stub RtlDeleteElementGenericTable
@@ -543,8 +544,8 @@
 @ stdcall RtlEqualComputerName(ptr ptr)
 @ stdcall RtlEqualDomainName(ptr ptr)
 @ stdcall RtlEqualLuid(ptr ptr)
-# @ stdcall RtlEqualPrefixSid(ptr ptr)
-# @ stdcall RtlEqualSid(ptr ptr)
+@ stdcall RtlEqualPrefixSid(ptr ptr)
+@ stdcall RtlEqualSid(ptr ptr)
 @ stdcall RtlEqualString(ptr ptr long)
 @ stdcall RtlEqualUnicodeString(ptr ptr long)
 @ stdcall RtlEraseUnicodeString(ptr)
@@ -578,7 +579,7 @@
 # @ stdcall RtlFindSetBitsAndClear(ptr long long)
 # @ stdcall RtlFindSetRuns(ptr ptr long long)
 @ stdcall RtlFirstEntrySList(ptr)
-# @ stdcall RtlFirstFreeAce(ptr ptr)
+@ stdcall RtlFirstFreeAce(ptr ptr)
 @ stub RtlFlushPropertySet
 # @ stub RtlFlushSecureMemoryCache
 @ stdcall RtlFormatCurrentUserKeyPath(ptr)
@@ -588,28 +589,28 @@
 @ stdcall RtlFreeHeap(long long ptr)
 @ stdcall RtlFreeOemString(ptr)
 # @ stub RtlFreeRangeList
-# @ stdcall RtlFreeSid (ptr)
+@ stdcall RtlFreeSid (ptr)
 @ stdcall RtlFreeThreadActivationContextStack()
 @ stdcall RtlFreeUnicodeString(ptr)
 @ stub RtlFreeUserThreadStack
 @ stdcall RtlGUIDFromString(ptr ptr)
 @ stub RtlGenerate8dot3Name
-# @ stdcall RtlGetAce(ptr long ptr)
+@ stdcall RtlGetAce(ptr long ptr)
 @ stdcall RtlGetActiveActivationContext(ptr)
 @ stub RtlGetCallersAddress
 @ stdcall RtlGetCompressionWorkSpaceSize(long ptr ptr)
-# @ stdcall RtlGetControlSecurityDescriptor(ptr ptr ptr)
+@ stdcall RtlGetControlSecurityDescriptor(ptr ptr ptr)
 @ stdcall RtlGetCurrentDirectory_U(long ptr)
 @ stdcall RtlGetCurrentPeb()
 @ stdcall RtlGetCurrentProcessorNumberEx(ptr)
 @ stdcall RtlGetCurrentTransaction()
-# @ stdcall RtlGetDaclSecurityDescriptor(ptr ptr ptr ptr)
+@ stdcall RtlGetDaclSecurityDescriptor(ptr ptr ptr ptr)
 @ stub RtlGetElementGenericTable
 # @ stub RtlGetElementGenericTableAvl
 # @ stub RtlGetFirstRange
 # @ stub RtlGetFrame
 @ stdcall RtlGetFullPathName_U(wstr long ptr ptr)
-# @ stdcall RtlGetGroupSecurityDescriptor(ptr ptr ptr)
+@ stdcall RtlGetGroupSecurityDescriptor(ptr ptr ptr)
 @ stdcall RtlGetLastNtStatus()
 @ stdcall RtlGetLastWin32Error()
 # @ stub RtlGetLengthWithoutLastFullDosOrNtPathElement
@@ -621,10 +622,10 @@
 @ stdcall RtlGetNtGlobalFlags()
 @ stdcall RtlGetNtProductType(ptr)
 @ stdcall RtlGetNtVersionNumbers(ptr ptr ptr)
-# @ stdcall RtlGetOwnerSecurityDescriptor(ptr ptr ptr)
+@ stdcall RtlGetOwnerSecurityDescriptor(ptr ptr ptr)
 @ stdcall RtlGetProductInfo(long long long long ptr)
 @ stdcall RtlGetProcessHeaps(long ptr)
-# @ stdcall RtlGetSaclSecurityDescriptor(ptr ptr ptr ptr)
+@ stdcall RtlGetSaclSecurityDescriptor(ptr ptr ptr ptr)
 # @ stub RtlGetSecurityDescriptorRMControl
 # @ stub RtlGetSetBootStatusData
 @ stdcall RtlGetThreadErrorMode()
@@ -633,12 +634,12 @@
 @ stdcall RtlGetVersion(ptr)
 @ stub RtlGuidToPropertySetName
 @ stdcall RtlHashUnicodeString(ptr long long ptr)
-# @ stdcall RtlIdentifierAuthoritySid(ptr)
+@ stdcall RtlIdentifierAuthoritySid(ptr)
 @ stdcall RtlImageDirectoryEntryToData(long long long ptr) ntdll_RtlImageDirectoryEntryToData
 @ stdcall RtlImageNtHeader(long) ntdll_RtlImageNtHeader
 @ stdcall RtlImageRvaToSection(ptr long long) ntdll_RtlImageRvaToSection
 @ stdcall RtlImageRvaToVa(ptr long long ptr) ntdll_RtlImageRvaToVa
-# @ stdcall RtlImpersonateSelf(long)
+@ stdcall RtlImpersonateSelf(long)
 @ stdcall RtlInitAnsiString(ptr str)
 @ stdcall RtlInitAnsiStringEx(ptr str)
 @ stub RtlInitCodePageTable
@@ -663,7 +664,7 @@
 @ stdcall RtlInitializeResource(ptr)
 @ stdcall RtlInitializeSListHead(ptr)
 @ stdcall RtlInitializeSRWLock(ptr)
-# @ stdcall RtlInitializeSid(ptr ptr long)
+@ stdcall RtlInitializeSid(ptr ptr long)
 # @ stub RtlInitializeStackTraceDataBase
 @ stub RtlInsertElementGenericTable
 @ stdcall RtlInsertElementGenericTableAvl(ptr ptr long ptr)
@@ -715,9 +716,9 @@
 # @ stdcall -arch=win32 -ret64 RtlLargeIntegerSubtract(int64 int64)
 # @ stdcall RtlLargeIntegerToChar(ptr long long ptr)
 @ stdcall RtlLeaveCriticalSection(ptr)
-# @ stdcall RtlLengthRequiredSid(long)
-# @ stdcall RtlLengthSecurityDescriptor(ptr)
-# @ stdcall RtlLengthSid(ptr)
+@ stdcall RtlLengthRequiredSid(long)
+@ stdcall RtlLengthSecurityDescriptor(ptr)
+@ stdcall RtlLengthSid(ptr)
 # @ stdcall RtlLocalTimeToSystemTime(ptr ptr)
 # @ stub RtlLockBootStatusData
 @ stdcall RtlLockHeap(long)
@@ -727,7 +728,7 @@
 @ stub RtlLookupElementGenericTable
 # @ stub RtlLookupElementGenericTableAvl
 @ stdcall -arch=arm,x86_64 RtlLookupFunctionEntry(long ptr ptr) ntdll_RtlLookupFunctionEntry
-# @ stdcall RtlMakeSelfRelativeSD(ptr ptr ptr)
+@ stdcall RtlMakeSelfRelativeSD(ptr ptr ptr)
 @ stdcall RtlMapGenericMask(ptr ptr)
 # @ stub RtlMapSecurityErrorToNtStatus
 # @ stub RtlMergeRangeLists
@@ -765,7 +766,7 @@
 # @ stdcall RtlQueryDynamicTimeZoneInformation(ptr)
 # @ stdcall RtlQueryEnvironmentVariable_U(ptr ptr ptr)
 @ stdcall RtlQueryHeapInformation(long long ptr long ptr)
-# @ stdcall RtlQueryInformationAcl(ptr ptr long long)
+@ stdcall RtlQueryInformationAcl(ptr ptr long long)
 @ stdcall RtlQueryInformationActivationContext(long long ptr long ptr long ptr)
 @ stub RtlQueryInformationActiveActivationContext
 @ stub RtlQueryInterfaceMemoryStream
@@ -817,31 +818,31 @@
 # @ stdcall RtlSecondsSince1980ToTime(long ptr)
 # @ stub RtlSeekMemoryStream
 # @ stub RtlSelfRelativeToAbsoluteSD2
-# @ stdcall RtlSelfRelativeToAbsoluteSD(ptr ptr ptr ptr ptr ptr ptr ptr ptr ptr ptr)
+@ stdcall RtlSelfRelativeToAbsoluteSD(ptr ptr ptr ptr ptr ptr ptr ptr ptr ptr ptr)
 # @ stdcall RtlSetAllBits(ptr)
 # @ stub RtlSetAttributesSecurityDescriptor
 # @ stdcall RtlSetBits(ptr long long)
-# @ stdcall RtlSetControlSecurityDescriptor(ptr long long)
+@ stdcall RtlSetControlSecurityDescriptor(ptr long long)
 @ stdcall RtlSetCriticalSectionSpinCount(ptr long)
 @ stdcall RtlSetCurrentDirectory_U(ptr)
 # @ stdcall RtlSetCurrentEnvironment(wstr ptr)
 @ stdcall RtlSetCurrentTransaction(ptr)
-# @ stdcall RtlSetDaclSecurityDescriptor(ptr long ptr long)
+@ stdcall RtlSetDaclSecurityDescriptor(ptr long ptr long)
 # @ stdcall RtlSetEnvironmentVariable(ptr ptr ptr)
-# @ stdcall RtlSetGroupSecurityDescriptor(ptr ptr long)
+@ stdcall RtlSetGroupSecurityDescriptor(ptr ptr long)
 @ stdcall RtlSetHeapInformation(long long ptr long)
 @ stub RtlSetInformationAcl
 @ stdcall RtlSetIoCompletionCallback(long ptr long)
 @ stdcall RtlSetLastWin32Error(long)
 @ stdcall RtlSetLastWin32ErrorAndNtStatusFromNtStatus(long)
 # @ stub RtlSetMemoryStreamSize
-# @ stdcall RtlSetOwnerSecurityDescriptor(ptr ptr long)
+@ stdcall RtlSetOwnerSecurityDescriptor(ptr ptr long)
 # @ stub RtlSetProcessIsCritical
 @ stub RtlSetProperties
 @ stub RtlSetPropertyClassId
 @ stub RtlSetPropertyNames
 @ stub RtlSetPropertySetClassId
-# @ stdcall RtlSetSaclSecurityDescriptor(ptr long ptr long)
+@ stdcall RtlSetSaclSecurityDescriptor(ptr long ptr long)
 # @ stub RtlSetSecurityDescriptorRMControl
 @ stub RtlSetSecurityObject
 # @ stub RtlSetSecurityObjectEx
@@ -860,8 +861,8 @@
 @ stub RtlStartRXact
 # @ stub RtlStatMemoryStream
 @ stdcall RtlStringFromGUID(ptr ptr)
-# @ stdcall RtlSubAuthorityCountSid(ptr)
-# @ stdcall RtlSubAuthoritySid(ptr long)
+@ stdcall RtlSubAuthorityCountSid(ptr)
+@ stdcall RtlSubAuthoritySid(ptr long)
 @ stub RtlSubtreePredecessor
 @ stub RtlSubtreeSuccessor
 # @ stdcall RtlSystemTimeToLocalTime(ptr ptr)
@@ -914,10 +915,10 @@
 @ stdcall RtlUpperString(ptr ptr)
 @ stub RtlUsageHeap
 # @ cdecl -i386 -norelay RtlUshortByteSwap() NTDLL_RtlUshortByteSwap
-# @ stdcall RtlValidAcl(ptr)
-# @ stdcall RtlValidRelativeSecurityDescriptor(ptr long long)
-# @ stdcall RtlValidSecurityDescriptor(ptr)
-# @ stdcall RtlValidSid(ptr)
+@ stdcall RtlValidAcl(ptr)
+@ stdcall RtlValidRelativeSecurityDescriptor(ptr long long)
+@ stdcall RtlValidSecurityDescriptor(ptr)
+@ stdcall RtlValidSid(ptr)
 @ stdcall RtlValidateHeap(long long ptr)
 @ stub RtlValidateProcessHeaps
 # @ stub RtlValidateUnicodeString
@@ -982,7 +983,7 @@
 @ stdcall WinSqmIsOptedIn()
 @ stdcall WinSqmStartSession(ptr long long)
 @ stdcall -private ZwAcceptConnectPort(ptr long ptr long ptr ptr) NtAcceptConnectPort
-# @ stdcall -private ZwAccessCheck(ptr long long ptr ptr ptr ptr ptr) NtAccessCheck
+@ stdcall -private ZwAccessCheck(ptr long long ptr ptr ptr ptr ptr) NtAccessCheck
 @ stdcall -private ZwAccessCheckAndAuditAlarm(ptr long ptr ptr ptr long ptr long ptr ptr ptr) NtAccessCheckAndAuditAlarm
 # @ stub ZwAccessCheckByType
 # @ stub ZwAccessCheckByTypeAndAuditAlarm
@@ -1223,7 +1224,7 @@
 @ stub ZwSetLowWaitHighEventPair
 @ stub ZwSetLowWaitHighThread
 # @ stub ZwSetQuotaInformationFile
-# @ stdcall -private ZwSetSecurityObject(long long ptr) NtSetSecurityObject
+@ stdcall -private ZwSetSecurityObject(long long ptr) NtSetSecurityObject
 @ stub ZwSetSystemEnvironmentValue
 # @ stub ZwSetSystemEnvironmentValueEx
 @ stdcall -private ZwSetSystemInformation(long ptr long) NtSetSystemInformation
