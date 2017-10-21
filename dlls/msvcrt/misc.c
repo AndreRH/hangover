@@ -79,7 +79,7 @@ struct qemu_bsearch_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t bsearch_guest_wrapper(const struct qemu_bsearch_cb *cb)
+static uint64_t __fastcall bsearch_guest_wrapper(const struct qemu_bsearch_cb *cb)
 {
     int (__cdecl *compare)(const void *,const void *) = (void *)(ULONG_PTR)cb->func;
 
@@ -110,12 +110,23 @@ static uint64_t bsearch_guest_wrapper;
 static int bsearch_wrapper(const void *ptr1, const void *ptr2)
 {
     uint64_t *guest_proc = TlsGetValue(msvcrt_tls);
-    struct qemu_bsearch_cb call = {*guest_proc, QEMU_H2G(ptr1), QEMU_H2G(ptr2)};
+    struct qemu_bsearch_cb stack_copy, *call = &stack_copy;
     int ret;
 
+#if HOST_BIT != GUEST_BIT
+    call = HeapAlloc(GetProcessHeap(), 0, sizeof(*call));
+#endif
+
+    call->func = *guest_proc;
+    call->ptr1 = QEMU_H2G(ptr1);
+    call->ptr2 = QEMU_H2G(ptr2);
+
     WINE_TRACE("Calling guest proc 0x%lx(%p, %p).\n", *guest_proc, ptr1, ptr2);
-    ret = qemu_ops->qemu_execute(QEMU_G2H(bsearch_guest_wrapper), QEMU_H2G(&call));
+    ret = qemu_ops->qemu_execute(QEMU_G2H(bsearch_guest_wrapper), QEMU_H2G(call));
     WINE_TRACE("Guest proc returned %d.\n", ret);
+
+    if (call != &stack_copy)
+        HeapFree(GetProcessHeap(), 0, call);
 
     return ret;
 }
