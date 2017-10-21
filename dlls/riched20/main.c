@@ -56,6 +56,7 @@ struct qemu_set_callbacks
     uint64_t AddRef;
     uint64_t Release;
     uint64_t editstream_cb;
+    uint64_t breakproc;
 };
 
 struct qemu_editstream_cb
@@ -65,6 +66,15 @@ struct qemu_editstream_cb
     uint64_t buffer;
     uint64_t cb;
     uint64_t pcb;
+};
+
+struct qemu_breakproc_cb
+{
+    uint64_t cb;
+    uint64_t text;
+    uint64_t pos;
+    uint64_t bytes;
+    uint64_t code;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -85,6 +95,12 @@ static uint64_t __fastcall guest_editstream_cb(struct qemu_editstream_cb *data)
     return cb(data->cookie, (BYTE *)(ULONG_PTR)data->buffer, data->cb, (LONG *)(ULONG_PTR)data->pcb);
 }
 
+static uint64_t __fastcall guest_breakproc_cb(struct qemu_breakproc_cb *data)
+{
+    EDITWORDBREAKPROCW cb = (EDITWORDBREAKPROCW)(ULONG_PTR)data->cb;
+    return cb((WCHAR *)(ULONG_PTR)data->text, data->pos, data->bytes, data->code);
+}
+
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_set_callbacks call;
@@ -97,6 +113,7 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
             call.AddRef = (ULONG_PTR)guest_ole_callback_AddRef;
             call.Release = (ULONG_PTR)guest_ole_callback_Release;
             call.editstream_cb = (ULONG_PTR)guest_editstream_cb;
+            call.breakproc = (ULONG_PTR)guest_breakproc_cb;
             qemu_syscall(&call.super);
             break;
     }
@@ -114,6 +131,7 @@ static uint64_t guest_ole_callback_QueryInterface;
 static uint64_t guest_ole_callback_AddRef;
 static uint64_t guest_ole_callback_Release;
 static uint64_t guest_editstream_cb;
+static uint64_t guest_breakproc_wrapper;
 
 static void qemu_set_callbacks(struct qemu_syscall *call)
 {
@@ -124,6 +142,7 @@ static void qemu_set_callbacks(struct qemu_syscall *call)
     guest_ole_callback_AddRef = c->AddRef;
     guest_ole_callback_Release = c->Release;
     guest_editstream_cb = c->editstream_cb;
+    guest_breakproc_wrapper = c->breakproc;
 }
 
 static const syscall_handler dll_functions[] =
@@ -369,6 +388,42 @@ static LRESULT handle_stream(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, 
     return ret;
 }
 
+static uint64_t guest_breakproc;
+
+static LONG CALLBACK host_breakproc(WCHAR *text, int pos, int bytes, int code)
+{
+    struct qemu_breakproc_cb call;
+    LONG ret;
+
+    call.cb = guest_breakproc;
+    call.text = (ULONG_PTR)text;
+    call.pos = pos;
+    call.bytes = bytes;
+    call.code = code;
+
+    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, %d, %d, %d).\n",
+            call.cb, call.text, pos, bytes, code);
+
+    ret = qemu_ops->qemu_execute(QEMU_G2H(guest_breakproc_wrapper), QEMU_H2G(&call));
+
+    WINE_TRACE("Guest callback returned %x.\n", ret);
+    return ret;
+}
+
+static LRESULT handle_breakproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, BOOL unicode)
+{
+    /* There may be more than one richedit control active. */
+    if (guest_breakproc && guest_breakproc != lParam)
+        WINE_FIXME("Only one breakproc is supported at the moment.\n");
+
+    guest_breakproc = lParam;
+
+    if (unicode)
+        return CallWindowProcW(orig_proc_w, hWnd, msg, wParam, lParam ? (LPARAM)host_breakproc : 0);
+    else
+        return CallWindowProcA(orig_proc_a, hWnd, msg, wParam, lParam ? (LPARAM)host_breakproc : 0);
+}
+
 static LRESULT WINAPI wrap_proc_w(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
@@ -380,6 +435,9 @@ static LRESULT WINAPI wrap_proc_w(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
         case EM_STREAMOUT:
             return handle_stream(hWnd, msg, wParam, lParam, TRUE);
             break;
+
+        case EM_SETWORDBREAKPROC:
+            return handle_breakproc(hWnd, msg, wParam, lParam, FALSE);
 
         default:
             return CallWindowProcW(orig_proc_w, hWnd, msg, wParam, lParam);
@@ -396,6 +454,9 @@ LRESULT WINAPI wrap_proc_a(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         case EM_STREAMIN:
         case EM_STREAMOUT:
             return handle_stream(hWnd, msg, wParam, lParam, FALSE);
+
+        case EM_SETWORDBREAKPROC:
+            return handle_breakproc(hWnd, msg, wParam, lParam, FALSE);
 
         default:
             return CallWindowProcA(orig_proc_a, hWnd, msg, wParam, lParam);
