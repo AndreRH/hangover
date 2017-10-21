@@ -355,7 +355,7 @@ WINBASEAPI size_t CDECL NTDLL_strcspn(const char *str, const char *reject)
 void qemu_strcspn(struct qemu_syscall *call)
 {
     struct qemu_strcspn *c = (struct qemu_strcspn *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_strcspn(QEMU_G2H(c->str), QEMU_G2H(c->reject));
 }
 
