@@ -143,6 +143,7 @@ enum comctl32_calls
     CALL_REMOVEWINDOWSUBCLASS,
     CALL_SENDNOTIFY,
     CALL_SENDNOTIFYEX,
+    CALL_SET_CALLBACKS,
     CALL_SETPATHWORDBREAKPROC,
     CALL_SETWINDOWSUBCLASS,
     CALL_SHOWHIDEMENUCTL,
@@ -316,8 +317,7 @@ void qemu_LoadIconWithScaleDown(struct qemu_syscall *call);
 void qemu_MakeDragList(struct qemu_syscall *call);
 void qemu_MenuHelp(struct qemu_syscall *call);
 void qemu_MirrorIcon(struct qemu_syscall *call);
-void qemu_PropertySheetA(struct qemu_syscall *call);
-void qemu_PropertySheetW(struct qemu_syscall *call);
+void qemu_PropertySheet(struct qemu_syscall *call);
 void qemu_ReAlloc(struct qemu_syscall *call);
 void qemu_RemoveWindowSubclass(struct qemu_syscall *call);
 void qemu_SendNotify(struct qemu_syscall *call);
@@ -360,6 +360,42 @@ void qemu_UninitializeFlatSB(struct qemu_syscall *call);
 
 UINT (* WINAPI p_ImageList_SetColorTable)(HIMAGELIST himl, UINT uStartIndex, UINT cEntries, const RGBQUAD *prgb);
 HRESULT (* WINAPI p_DllGetVersion)(void *pdvi);
+
+struct wndproc_wrapper
+{
+    int32_t ldrx4;
+    int32_t ldrx5;
+    int32_t br;
+    void *selfptr;
+    void *host_proc;
+    uint64_t guest_proc;
+};
+
+struct propsheet_data
+{
+    /* Top level callback wrapper */
+    int32_t ldrx3;
+    int32_t ldrx4;
+    int32_t br;
+    void *selfptr;
+    void *host_proc;
+
+    PROPSHEETHEADERW header;
+    ULONG ref;
+    uint64_t guest_cb, guest_wrapper;
+
+    /* I need to pass this array to PropertySheetW(), so I can't interleave it with my own data. */
+    PROPSHEETPAGEW *pages;
+
+    struct page_data
+    {
+        uint64_t guest_lparam, guest_cb;
+        struct propsheet_data *header;
+    } page_data[1];
+
+};
+
+WNDPROC wndproc_guest_to_host(uint64_t guest_func);
 
 #endif
 

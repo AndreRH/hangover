@@ -21,15 +21,48 @@
 #include <windows.h>
 #include <stdio.h>
 #include <commctrl.h>
+#include <assert.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_comctl32.h"
 
+struct qemu_set_callbacks
+{
+    struct qemu_syscall super;
+    uint64_t wndproc_wrapper;
+};
+
+struct wndproc_call
+{
+    uint64_t wndproc;
+    uint64_t win, msg, wparam, lparam;
+};
+
 #ifdef QEMU_DLL_GUEST
+
+static LRESULT __fastcall wndproc_wrapper(const struct wndproc_call *call)
+{
+    WNDPROC proc = (WNDPROC)(ULONG_PTR)call->wndproc;
+    LRESULT ret = 0;
+
+    ret = proc((HWND)(ULONG_PTR)call->win, call->msg, call->wparam, call->lparam);
+
+    return ret;
+}
 
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
+    struct qemu_set_callbacks call;
+
+    switch (reason)
+    {
+        case DLL_PROCESS_ATTACH:
+            call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
+            call.wndproc_wrapper = (ULONG_PTR)wndproc_wrapper;
+            qemu_syscall(&call.super);
+            break;
+    }
     return TRUE;
 }
 
@@ -39,6 +72,13 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_comctl32);
 
 const struct qemu_ops *qemu_ops;
+static uint64_t guest_wndproc_wrapper;
+
+static void qemu_set_callbacks(struct qemu_syscall *call)
+{
+    struct qemu_set_callbacks *c = (struct qemu_set_callbacks *)call;
+    guest_wndproc_wrapper = c->wndproc_wrapper;
+}
 
 static const syscall_handler dll_functions[] =
 {
@@ -174,12 +214,13 @@ static const syscall_handler dll_functions[] =
     qemu_MakeDragList,
     qemu_MenuHelp,
     qemu_MirrorIcon,
-    qemu_PropertySheetA,
-    qemu_PropertySheetW,
+    qemu_PropertySheet,
+    qemu_PropertySheet,
     qemu_ReAlloc,
     qemu_RemoveWindowSubclass,
     qemu_SendNotify,
     qemu_SendNotifyEx,
+    qemu_set_callbacks,
     qemu_SetPathWordBreakProc,
     qemu_SetWindowSubclass,
     qemu_ShowHideMenuCtl,
@@ -217,9 +258,92 @@ static const syscall_handler dll_functions[] =
     qemu_UninitializeFlatSB,
 };
 
+struct wndproc_wrapper *wndproc_wrappers;
+unsigned int wndproc_wrapper_count;
+
+/* Taken from user32 for propsheet wrappers. */
+LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam, struct wndproc_wrapper *wrapper)
+{
+    struct wndproc_call stack_call, *call = &stack_call;
+    LRESULT ret;
+    LPARAM orig_param;
+    PROPSHEETPAGEW *page;
+    PROPSHEETPAGEW stack_copy, *page_copy = &stack_copy;
+
+#if HOST_BIT != GUEST_BIT
+    call = HeapAlloc(GetProcessHeap(), 0, sizeof(*call));
+#endif
+
+    call->wndproc = wrapper->guest_proc;
+    call->win = (ULONG_PTR)win;
+    call->msg = msg;
+    call->wparam = wparam;
+    call->lparam = lparam;
+
+    WINE_TRACE("Calling guest wndproc 0x%lx(%p, %lx, %lx, %lx)\n", wrapper->guest_proc,
+            win, call->msg, call->wparam, call->lparam);
+    WINE_TRACE("wrapper at %p, param struct at %p\n", wrapper, call);
+
+    /* FIXME: This currently assumes we're dealing with property sheet dialogs. If a different
+     * control needs to run through this function store the control type in struct wndproc_wrapper */
+    if (msg == WM_INITDIALOG)
+    {
+        struct page_data *page_data;
+        page = (PROPSHEETPAGEW *)lparam;
+        page_data = (struct page_data *)page->lParam;
+
+#if HOST_BIT != GUEST_BIT
+        page_copy = HeapAlloc(GetProcessHeap(), 0, sizeof(*page_copy));
+#endif
+
+        *page_copy = *page;
+        orig_param = page_copy->lParam;
+        page_copy->lParam = page_data->guest_lparam;
+        call->lparam = QEMU_H2G(page_copy);
+    }
+
+    ret = qemu_ops->qemu_execute(QEMU_G2H(guest_wndproc_wrapper), QEMU_H2G(call));
+
+    if (msg == WM_INITDIALOG)
+    {
+        *page = *page_copy;
+        page->lParam = orig_param;
+    }
+
+    if (call != &stack_call)
+        HeapFree(GetProcessHeap(), 0, call);
+    if (page_copy != &stack_copy)
+        HeapFree(GetProcessHeap(), 0, page_copy);
+
+    return ret;
+}
+
+static void init_wndproc(struct wndproc_wrapper *wrapper)
+{
+    size_t offset;
+
+    offset = offsetof(struct wndproc_wrapper, selfptr) - offsetof(struct wndproc_wrapper, ldrx4);
+    /* The load offset is stored in bits 5-24. The stored offset is left-shifted by 2 to generate the 21
+     * bit real offset. So to place it in the right place we need our offset (multiple of 4, unless the
+     * compiler screwed up terribly) shifted by another 3 bits. */
+    wrapper->ldrx4 = 0x58000004 | (offset << 3); /* ldr x4, offset */
+
+    offset = offsetof(struct wndproc_wrapper, host_proc) - offsetof(struct wndproc_wrapper, ldrx5);
+    wrapper->ldrx5 = 0x58000005 | (offset << 3);   /* ldr x5, offset */
+
+    wrapper->br = 0xd61f00a0; /* br x5 */
+
+    wrapper->selfptr = wrapper;
+    wrapper->host_proc = wndproc_wrapper;
+    wrapper->guest_proc = 0;
+
+    __clear_cache(&wrapper->ldrx4, &wrapper->br + 1);
+}
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     HMODULE comctl32;
+    unsigned int i;
 
     WINE_TRACE("Loading host-side comctl32 wrapper.\n");
 
@@ -234,7 +358,45 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (!p_DllGetVersion)
         WINE_ERR("Cannot resolve comctl32.DllGetVersion.\n");
 
+    /* Comctl32 probably doesn't need as many wrappers as user32... */
+    wndproc_wrapper_count = 64;
+    wndproc_wrappers = VirtualAlloc(NULL, sizeof(*wndproc_wrappers) * wndproc_wrapper_count,
+            MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+    if (!wndproc_wrappers)
+    {
+        WINE_ERR("Failed to allocate memory for class wndproc wrappers.\n");
+        return NULL;
+    }
+
+    for (i = 0; i < wndproc_wrapper_count; ++i)
+        init_wndproc(&wndproc_wrappers[i]);
+
     return dll_functions;
+}
+
+WNDPROC wndproc_guest_to_host(uint64_t guest_proc)
+{
+    unsigned int i;
+
+    /* Assume we never get a WNDPROC handle in comctl32. */
+    if (!guest_proc)
+        return (WNDPROC)guest_proc;
+
+    for (i = 0; i < wndproc_wrapper_count; i++)
+    {
+        if (wndproc_wrappers[i].guest_proc == guest_proc)
+            return (WNDPROC)&wndproc_wrappers[i];
+        if (!wndproc_wrappers[i].guest_proc)
+        {
+            WINE_TRACE("Creating host WNDPROC %p for guest func 0x%lx.\n",
+                    &wndproc_wrappers[i], guest_proc);
+            wndproc_wrappers[i].guest_proc = guest_proc;
+            return (WNDPROC)&wndproc_wrappers[i];
+        }
+    }
+
+    WINE_FIXME("Out of guest -> host WNDPROC wrappers.\n");
+    assert(0);
 }
 
 #endif
