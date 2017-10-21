@@ -55,8 +55,9 @@ char * CDECL MSVCRT_getenv(const char *name)
 void qemu_getenv(struct qemu_syscall *call)
 {
     struct qemu_getenv *c = (struct qemu_getenv *)(ULONG_PTR)call;
-    WINE_TRACE("\n");
+    WINE_TRACE(" %s\n", QEMU_G2H(c->name));
     c->super.iret = QEMU_H2G(p_getenv(QEMU_G2H(c->name)));
+    WINE_TRACE("Ret %p\n", QEMU_G2H(c->super.iret));
 }
 
 #endif
