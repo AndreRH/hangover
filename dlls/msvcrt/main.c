@@ -2041,7 +2041,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_sqrtf = (void *)GetProcAddress(msvcrt, "sqrtf");
     p_srand = (void *)GetProcAddress(msvcrt, "srand");
     p_stat = (void *)GetProcAddress(msvcrt, "stat");
-    p_stati64 = (void *)GetProcAddress(msvcrt, "stati64");
+    p_stati64 = (void *)GetProcAddress(msvcrt, "_stati64");
     p_strcat_s = (void *)GetProcAddress(msvcrt, "strcat_s");
     p_strchr = (void *)GetProcAddress(msvcrt, "strchr");
     p_strcmp = (void *)GetProcAddress(msvcrt, "strcmp");
