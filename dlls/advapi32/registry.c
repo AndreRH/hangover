@@ -44,8 +44,8 @@ WINBASEAPI LSTATUS WINAPI RegOverridePredefKey(HKEY hkey, HKEY override)
 {
     struct qemu_RegOverridePredefKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGOVERRIDEPREDEFKEY);
-    call.hkey = (ULONG_PTR)hkey;
-    call.override = (ULONG_PTR)override;
+    call.hkey = (LONG_PTR)hkey;
+    call.override = (LONG_PTR)override;
 
     qemu_syscall(&call.super);
 
@@ -83,17 +83,19 @@ WINBASEAPI LSTATUS WINAPI RegCreateKeyExW(HKEY hkey, LPCWSTR name, DWORD reserve
 {
     struct qemu_RegCreateKeyExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGCREATEKEYEXW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
     call.reserved = (ULONG_PTR)reserved;
     call.class = (ULONG_PTR)class;
     call.options = (ULONG_PTR)options;
     call.access = (ULONG_PTR)access;
     call.sa = (ULONG_PTR)sa;
-    call.retkey = (ULONG_PTR)retkey;
     call.dispos = (ULONG_PTR)dispos;
 
     qemu_syscall(&call.super);
+
+    if (call.super.iret == ERROR_SUCCESS)
+        *retkey = (HKEY)(ULONG_PTR)call.retkey;
 
     return call.super.iret;
 }
@@ -103,8 +105,11 @@ WINBASEAPI LSTATUS WINAPI RegCreateKeyExW(HKEY hkey, LPCWSTR name, DWORD reserve
 void qemu_RegCreateKeyExW(struct qemu_syscall *call)
 {
     struct qemu_RegCreateKeyExW *c = (struct qemu_RegCreateKeyExW *)call;
+    HKEY retkey = 0;
     WINE_TRACE("\n");
-    c->super.iret = RegCreateKeyExW(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->reserved, QEMU_G2H(c->class), c->options, c->access, QEMU_G2H(c->sa), QEMU_G2H(c->retkey), QEMU_G2H(c->dispos));
+    c->super.iret = RegCreateKeyExW(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->reserved, QEMU_G2H(c->class), c->options, c->access, QEMU_G2H(c->sa), &retkey, QEMU_G2H(c->dispos));
+
+    c->retkey = (ULONG_PTR)retkey;
 }
 
 #endif
@@ -129,17 +134,19 @@ WINBASEAPI LSTATUS WINAPI RegCreateKeyExA(HKEY hkey, LPCSTR name, DWORD reserved
 {
     struct qemu_RegCreateKeyExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGCREATEKEYEXA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
     call.reserved = (ULONG_PTR)reserved;
     call.class = (ULONG_PTR)class;
     call.options = (ULONG_PTR)options;
     call.access = (ULONG_PTR)access;
     call.sa = (ULONG_PTR)sa;
-    call.retkey = (ULONG_PTR)retkey;
     call.dispos = (ULONG_PTR)dispos;
 
     qemu_syscall(&call.super);
+
+    if (call.super.iret == ERROR_SUCCESS)
+        *retkey = (HKEY)(ULONG_PTR)call.retkey;
 
     return call.super.iret;
 }
@@ -149,8 +156,12 @@ WINBASEAPI LSTATUS WINAPI RegCreateKeyExA(HKEY hkey, LPCSTR name, DWORD reserved
 void qemu_RegCreateKeyExA(struct qemu_syscall *call)
 {
     struct qemu_RegCreateKeyExA *c = (struct qemu_RegCreateKeyExA *)call;
+    HKEY retkey = 0;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = RegCreateKeyExA(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->reserved, QEMU_G2H(c->class), c->options, c->access, QEMU_G2H(c->sa), QEMU_G2H(c->retkey), QEMU_G2H(c->dispos));
+
+    c->super.iret = RegCreateKeyExA(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->reserved, QEMU_G2H(c->class),
+            c->options, c->access, QEMU_G2H(c->sa), &retkey, QEMU_G2H(c->dispos));
+    c->retkey = (ULONG_PTR)retkey;
 }
 
 #endif
@@ -169,11 +180,12 @@ WINBASEAPI LSTATUS WINAPI RegCreateKeyW(HKEY hkey, LPCWSTR lpSubKey, PHKEY phkRe
 {
     struct qemu_RegCreateKeyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGCREATEKEYW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.lpSubKey = (ULONG_PTR)lpSubKey;
-    call.phkResult = (ULONG_PTR)phkResult;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == ERROR_SUCCESS)
+        *phkResult = (HKEY)(ULONG_PTR)call.phkResult;
 
     return call.super.iret;
 }
@@ -183,8 +195,11 @@ WINBASEAPI LSTATUS WINAPI RegCreateKeyW(HKEY hkey, LPCWSTR lpSubKey, PHKEY phkRe
 void qemu_RegCreateKeyW(struct qemu_syscall *call)
 {
     struct qemu_RegCreateKeyW *c = (struct qemu_RegCreateKeyW *)call;
+    HKEY retkey;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = RegCreateKeyW(QEMU_G2H(c->hkey), QEMU_G2H(c->lpSubKey), QEMU_G2H(c->phkResult));
+
+    c->super.iret = RegCreateKeyW(QEMU_G2H(c->hkey), QEMU_G2H(c->lpSubKey), &retkey);
+    c->phkResult = (ULONG_PTR)retkey;
 }
 
 #endif
@@ -203,11 +218,12 @@ WINBASEAPI LSTATUS WINAPI RegCreateKeyA(HKEY hkey, LPCSTR lpSubKey, PHKEY phkRes
 {
     struct qemu_RegCreateKeyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGCREATEKEYA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.lpSubKey = (ULONG_PTR)lpSubKey;
-    call.phkResult = (ULONG_PTR)phkResult;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == ERROR_SUCCESS)
+        *phkResult = (HKEY)(ULONG_PTR)call.phkResult;
 
     return call.super.iret;
 }
@@ -217,8 +233,11 @@ WINBASEAPI LSTATUS WINAPI RegCreateKeyA(HKEY hkey, LPCSTR lpSubKey, PHKEY phkRes
 void qemu_RegCreateKeyA(struct qemu_syscall *call)
 {
     struct qemu_RegCreateKeyA *c = (struct qemu_RegCreateKeyA *)call;
+    HKEY retkey;
     WINE_TRACE("\n");
+
     c->super.iret = RegCreateKeyA(QEMU_G2H(c->hkey), QEMU_G2H(c->lpSubKey), QEMU_G2H(c->phkResult));
+    c->phkResult = (ULONG_PTR)retkey;
 }
 
 #endif
@@ -245,19 +264,20 @@ WINBASEAPI LSTATUS WINAPI RegCreateKeyTransactedW(HKEY hkey, LPCWSTR name, DWORD
 {
     struct qemu_RegCreateKeyTransactedW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGCREATEKEYTRANSACTEDW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
     call.reserved = (ULONG_PTR)reserved;
     call.class = (ULONG_PTR)class;
     call.options = (ULONG_PTR)options;
     call.access = (ULONG_PTR)access;
     call.sa = (ULONG_PTR)sa;
-    call.retkey = (ULONG_PTR)retkey;
     call.dispos = (ULONG_PTR)dispos;
     call.transaction = (ULONG_PTR)transaction;
     call.reserved2 = (ULONG_PTR)reserved2;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == ERROR_SUCCESS)
+        *retkey = (HKEY)(ULONG_PTR)call.retkey;
 
     return call.super.iret;
 }
@@ -269,8 +289,13 @@ extern LSTATUS WINAPI RegCreateKeyTransactedW(HKEY hkey, LPCWSTR name, DWORD res
 void qemu_RegCreateKeyTransactedW(struct qemu_syscall *call)
 {
     struct qemu_RegCreateKeyTransactedW *c = (struct qemu_RegCreateKeyTransactedW *)call;
+    HKEY retkey;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = RegCreateKeyTransactedW(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->reserved, QEMU_G2H(c->class), c->options, c->access, QEMU_G2H(c->sa), QEMU_G2H(c->retkey), QEMU_G2H(c->dispos), QEMU_G2H(c->transaction), QEMU_G2H(c->reserved2));
+
+    c->super.iret = RegCreateKeyTransactedW(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->reserved,
+            QEMU_G2H(c->class), c->options, c->access, QEMU_G2H(c->sa), &retkey,
+            QEMU_G2H(c->dispos), QEMU_G2H(c->transaction), QEMU_G2H(c->reserved2));
+    c->retkey = (ULONG_PTR)retkey;
 }
 
 #endif
@@ -297,7 +322,7 @@ WINBASEAPI LSTATUS WINAPI RegCreateKeyTransactedA(HKEY hkey, LPCSTR name, DWORD 
 {
     struct qemu_RegCreateKeyTransactedA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGCREATEKEYTRANSACTEDA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
     call.reserved = (ULONG_PTR)reserved;
     call.class = (ULONG_PTR)class;
@@ -343,13 +368,17 @@ WINBASEAPI LSTATUS WINAPI RegOpenKeyExW(HKEY hkey, LPCWSTR name, DWORD options, 
 {
     struct qemu_RegOpenKeyExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGOPENKEYEXW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
     call.options = (ULONG_PTR)options;
     call.access = (ULONG_PTR)access;
-    call.retkey = (ULONG_PTR)retkey;
+
+    if (!retkey)
+        return ERROR_INVALID_PARAMETER;
 
     qemu_syscall(&call.super);
+
+    *retkey = (HKEY)(LONG_PTR)call.retkey;
 
     return call.super.iret;
 }
@@ -359,8 +388,11 @@ WINBASEAPI LSTATUS WINAPI RegOpenKeyExW(HKEY hkey, LPCWSTR name, DWORD options, 
 void qemu_RegOpenKeyExW(struct qemu_syscall *call)
 {
     struct qemu_RegOpenKeyExW *c = (struct qemu_RegOpenKeyExW *)call;
+    HKEY retkey = 0;
     WINE_TRACE("\n");
-    c->super.iret = RegOpenKeyExW(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->options, c->access, QEMU_G2H(c->retkey));
+    c->super.iret = RegOpenKeyExW(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->options, c->access, &retkey);
+
+    c->retkey = (ULONG_PTR)retkey;
 }
 
 #endif
@@ -381,13 +413,14 @@ WINBASEAPI LSTATUS WINAPI RegOpenKeyExA(HKEY hkey, LPCSTR name, DWORD options, R
 {
     struct qemu_RegOpenKeyExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGOPENKEYEXA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
     call.options = options;
     call.access = access;
-    call.retkey = (ULONG_PTR)retkey;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == ERROR_SUCCESS)
+        *retkey = (HKEY)(ULONG_PTR)call.retkey;
 
     return call.super.iret;
 }
@@ -397,8 +430,11 @@ WINBASEAPI LSTATUS WINAPI RegOpenKeyExA(HKEY hkey, LPCSTR name, DWORD options, R
 void qemu_RegOpenKeyExA(struct qemu_syscall *call)
 {
     struct qemu_RegOpenKeyExA *c = (struct qemu_RegOpenKeyExA *)call;
+    HKEY retkey = 0;
     WINE_TRACE("\n");
-    c->super.iret = RegOpenKeyExA(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->options, c->access, QEMU_G2H(c->retkey));
+
+    c->super.iret = RegOpenKeyExA(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->options, c->access, &retkey);
+    c->retkey = (ULONG_PTR)retkey;
 }
 
 #endif
@@ -417,11 +453,13 @@ WINBASEAPI LSTATUS WINAPI RegOpenKeyW(HKEY hkey, LPCWSTR name, PHKEY retkey)
 {
     struct qemu_RegOpenKeyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGOPENKEYW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
-    call.retkey = (ULONG_PTR)retkey;
 
     qemu_syscall(&call.super);
+
+    if (call.super.iret == ERROR_SUCCESS)
+        *retkey = (HKEY)(ULONG_PTR)call.retkey;
 
     return call.super.iret;
 }
@@ -431,8 +469,11 @@ WINBASEAPI LSTATUS WINAPI RegOpenKeyW(HKEY hkey, LPCWSTR name, PHKEY retkey)
 void qemu_RegOpenKeyW(struct qemu_syscall *call)
 {
     struct qemu_RegOpenKeyW *c = (struct qemu_RegOpenKeyW *)call;
+    HKEY retkey = 0;
     WINE_TRACE("\n");
-    c->super.iret = RegOpenKeyW(QEMU_G2H(c->hkey), QEMU_G2H(c->name), QEMU_G2H(c->retkey));
+
+    c->super.iret = RegOpenKeyW(QEMU_G2H(c->hkey), QEMU_G2H(c->name), &retkey);
+    c->retkey = (ULONG_PTR)retkey;
 }
 
 #endif
@@ -451,11 +492,13 @@ WINBASEAPI LSTATUS WINAPI RegOpenKeyA(HKEY hkey, LPCSTR name, PHKEY retkey)
 {
     struct qemu_RegOpenKeyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGOPENKEYA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
-    call.retkey = (ULONG_PTR)retkey;
 
     qemu_syscall(&call.super);
+
+    if (call.super.iret == ERROR_SUCCESS)
+        *retkey = (HKEY)(ULONG_PTR)call.retkey;
 
     return call.super.iret;
 }
@@ -465,8 +508,11 @@ WINBASEAPI LSTATUS WINAPI RegOpenKeyA(HKEY hkey, LPCSTR name, PHKEY retkey)
 void qemu_RegOpenKeyA(struct qemu_syscall *call)
 {
     struct qemu_RegOpenKeyA *c = (struct qemu_RegOpenKeyA *)call;
+    HKEY retkey = 0;
     WINE_TRACE("\n");
-    c->super.iret = RegOpenKeyA((HKEY)c->hkey, QEMU_G2H(c->name), QEMU_G2H(c->retkey));
+
+    c->super.iret = RegOpenKeyA((HKEY)c->hkey, QEMU_G2H(c->name), &retkey);
+    c->retkey = (ULONG_PTR)retkey;
 }
 
 #endif
@@ -485,9 +531,11 @@ WINBASEAPI LSTATUS WINAPI RegOpenCurrentUser(REGSAM access, PHKEY retkey)
     struct qemu_RegOpenCurrentUser call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGOPENCURRENTUSER);
     call.access = (ULONG_PTR)access;
-    call.retkey = (ULONG_PTR)retkey;
 
     qemu_syscall(&call.super);
+
+    if (call.super.iret == ERROR_SUCCESS)
+        *retkey = (HKEY)(ULONG_PTR)call.retkey;
 
     return call.super.iret;
 }
@@ -497,8 +545,11 @@ WINBASEAPI LSTATUS WINAPI RegOpenCurrentUser(REGSAM access, PHKEY retkey)
 void qemu_RegOpenCurrentUser(struct qemu_syscall *call)
 {
     struct qemu_RegOpenCurrentUser *c = (struct qemu_RegOpenCurrentUser *)call;
+    HKEY retkey = 0;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = RegOpenCurrentUser(c->access, QEMU_G2H(c->retkey));
+
+    c->super.iret = RegOpenCurrentUser(c->access, &retkey);
+    c->retkey = (ULONG_PTR)retkey;
 }
 
 #endif
@@ -522,7 +573,7 @@ WINBASEAPI LSTATUS WINAPI RegEnumKeyExW(HKEY hkey, DWORD index, LPWSTR name, LPD
 {
     struct qemu_RegEnumKeyExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGENUMKEYEXW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.index = (ULONG_PTR)index;
     call.name = (ULONG_PTR)name;
     call.name_len = (ULONG_PTR)name_len;
@@ -566,7 +617,7 @@ WINBASEAPI LSTATUS WINAPI RegEnumKeyExA(HKEY hkey, DWORD index, LPSTR name, LPDW
 {
     struct qemu_RegEnumKeyExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGENUMKEYEXA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.index = (ULONG_PTR)index;
     call.name = (ULONG_PTR)name;
     call.name_len = (ULONG_PTR)name_len;
@@ -606,7 +657,7 @@ WINBASEAPI LSTATUS WINAPI RegEnumKeyW(HKEY hkey, DWORD index, LPWSTR name, DWORD
 {
     struct qemu_RegEnumKeyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGENUMKEYW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.index = (ULONG_PTR)index;
     call.name = (ULONG_PTR)name;
     call.name_len = (ULONG_PTR)name_len;
@@ -642,7 +693,7 @@ WINBASEAPI LSTATUS WINAPI RegEnumKeyA(HKEY hkey, DWORD index, LPSTR name, DWORD 
 {
     struct qemu_RegEnumKeyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGENUMKEYA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.index = (ULONG_PTR)index;
     call.name = (ULONG_PTR)name;
     call.name_len = (ULONG_PTR)name_len;
@@ -686,7 +737,7 @@ WINBASEAPI LSTATUS WINAPI RegQueryInfoKeyW(HKEY hkey, LPWSTR class, LPDWORD clas
 {
     struct qemu_RegQueryInfoKeyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGQUERYINFOKEYW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.class = (ULONG_PTR)class;
     call.class_len = (ULONG_PTR)class_len;
     call.reserved = (ULONG_PTR)reserved;
@@ -731,7 +782,7 @@ WINBASEAPI LSTATUS WINAPI RegQueryMultipleValuesA(HKEY hkey, PVALENTA val_list, 
 {
     struct qemu_RegQueryMultipleValuesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGQUERYMULTIPLEVALUESA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.val_list = (ULONG_PTR)val_list;
     call.num_vals = (ULONG_PTR)num_vals;
     call.lpValueBuf = (ULONG_PTR)lpValueBuf;
@@ -769,7 +820,7 @@ WINBASEAPI LSTATUS WINAPI RegQueryMultipleValuesW(HKEY hkey, PVALENTW val_list, 
 {
     struct qemu_RegQueryMultipleValuesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGQUERYMULTIPLEVALUESW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.val_list = (ULONG_PTR)val_list;
     call.num_vals = (ULONG_PTR)num_vals;
     call.lpValueBuf = (ULONG_PTR)lpValueBuf;
@@ -814,7 +865,7 @@ WINBASEAPI LSTATUS WINAPI RegQueryInfoKeyA(HKEY hkey, LPSTR class, LPDWORD class
 {
     struct qemu_RegQueryInfoKeyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGQUERYINFOKEYA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.class = (ULONG_PTR)class;
     call.class_len = (ULONG_PTR)class_len;
     call.reserved = (ULONG_PTR)reserved;
@@ -855,7 +906,7 @@ WINBASEAPI LSTATUS WINAPI RegCloseKey(HKEY hkey)
 {
     struct qemu_RegCloseKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGCLOSEKEY);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
 
     qemu_syscall(&call.super);
 
@@ -888,7 +939,7 @@ WINBASEAPI LSTATUS WINAPI RegDeleteKeyExW(HKEY hkey, LPCWSTR name, REGSAM access
 {
     struct qemu_RegDeleteKeyExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGDELETEKEYEXW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
     call.access = (ULONG_PTR)access;
     call.reserved = (ULONG_PTR)reserved;
@@ -922,7 +973,7 @@ WINBASEAPI LSTATUS WINAPI RegDeleteKeyW(HKEY hkey, LPCWSTR name)
 {
     struct qemu_RegDeleteKeyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGDELETEKEYW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
@@ -956,7 +1007,7 @@ WINBASEAPI LSTATUS WINAPI RegDeleteKeyExA(HKEY hkey, LPCSTR name, REGSAM access,
 {
     struct qemu_RegDeleteKeyExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGDELETEKEYEXA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
     call.access = (ULONG_PTR)access;
     call.reserved = (ULONG_PTR)reserved;
@@ -990,7 +1041,7 @@ WINBASEAPI LSTATUS WINAPI RegDeleteKeyA(HKEY hkey, LPCSTR name)
 {
     struct qemu_RegDeleteKeyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGDELETEKEYA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
@@ -1026,7 +1077,7 @@ WINBASEAPI LSTATUS WINAPI RegSetValueExW(HKEY hkey, LPCWSTR name, DWORD reserved
 {
     struct qemu_RegSetValueExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSETVALUEEXW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
     call.reserved = (ULONG_PTR)reserved;
     call.type = (ULONG_PTR)type;
@@ -1066,7 +1117,7 @@ WINBASEAPI LSTATUS WINAPI RegSetValueExA(HKEY hkey, LPCSTR name, DWORD reserved,
 {
     struct qemu_RegSetValueExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSETVALUEEXA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
     call.reserved = reserved;
     call.type = type;
@@ -1106,7 +1157,7 @@ WINBASEAPI LSTATUS WINAPI RegSetValueW(HKEY hkey, LPCWSTR subkey, DWORD type, LP
 {
     struct qemu_RegSetValueW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSETVALUEW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.subkey = (ULONG_PTR)subkey;
     call.type = (ULONG_PTR)type;
     call.data = (ULONG_PTR)data;
@@ -1144,7 +1195,7 @@ WINBASEAPI LSTATUS WINAPI RegSetValueA(HKEY hkey, LPCSTR subkey, DWORD type, LPC
 {
     struct qemu_RegSetValueA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSETVALUEA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.subkey = (ULONG_PTR)subkey;
     call.type = (ULONG_PTR)type;
     call.data = (ULONG_PTR)data;
@@ -1183,7 +1234,7 @@ WINBASEAPI LONG WINAPI RegSetKeyValueW(HKEY hkey, LPCWSTR subkey, LPCWSTR name, 
 {
     struct qemu_RegSetKeyValueW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSETKEYVALUEW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.subkey = (ULONG_PTR)subkey;
     call.name = (ULONG_PTR)name;
     call.type = (ULONG_PTR)type;
@@ -1223,7 +1274,7 @@ WINBASEAPI LONG WINAPI RegSetKeyValueA(HKEY hkey, LPCSTR subkey, LPCSTR name, DW
 {
     struct qemu_RegSetKeyValueA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSETKEYVALUEA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.subkey = (ULONG_PTR)subkey;
     call.name = (ULONG_PTR)name;
     call.type = (ULONG_PTR)type;
@@ -1263,7 +1314,7 @@ WINBASEAPI LSTATUS WINAPI RegQueryValueExW(HKEY hkey, LPCWSTR name, LPDWORD rese
 {
     struct qemu_RegQueryValueExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGQUERYVALUEEXW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
     call.reserved = (ULONG_PTR)reserved;
     call.type = (ULONG_PTR)type;
@@ -1303,7 +1354,7 @@ WINBASEAPI LSTATUS WINAPI RegQueryValueExA(HKEY hkey, LPCSTR name, LPDWORD reser
 {
     struct qemu_RegQueryValueExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGQUERYVALUEEXA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
     call.reserved = (ULONG_PTR)reserved;
     call.type = (ULONG_PTR)type;
@@ -1342,7 +1393,7 @@ WINBASEAPI LSTATUS WINAPI RegQueryValueW(HKEY hkey, LPCWSTR name, LPWSTR data, L
 {
     struct qemu_RegQueryValueW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGQUERYVALUEW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
     call.data = (ULONG_PTR)data;
     call.count = (ULONG_PTR)count;
@@ -1378,7 +1429,7 @@ WINBASEAPI LSTATUS WINAPI RegQueryValueA(HKEY hkey, LPCSTR name, LPSTR data, LPL
 {
     struct qemu_RegQueryValueA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGQUERYVALUEA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
     call.data = (ULONG_PTR)data;
     call.count = (ULONG_PTR)count;
@@ -1502,7 +1553,7 @@ WINBASEAPI LSTATUS WINAPI RegEnumValueW(HKEY hkey, DWORD index, LPWSTR value, LP
 {
     struct qemu_RegEnumValueW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGENUMVALUEW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.index = (ULONG_PTR)index;
     call.value = (ULONG_PTR)value;
     call.val_count = (ULONG_PTR)val_count;
@@ -1546,7 +1597,7 @@ WINBASEAPI LSTATUS WINAPI RegEnumValueA(HKEY hkey, DWORD index, LPSTR value, LPD
 {
     struct qemu_RegEnumValueA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGENUMVALUEA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.index = (ULONG_PTR)index;
     call.value = (ULONG_PTR)value;
     call.val_count = (ULONG_PTR)val_count;
@@ -1584,7 +1635,7 @@ WINBASEAPI LSTATUS WINAPI RegDeleteValueW(HKEY hkey, LPCWSTR name)
 {
     struct qemu_RegDeleteValueW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGDELETEVALUEW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
@@ -1616,7 +1667,7 @@ WINBASEAPI LSTATUS WINAPI RegDeleteValueA(HKEY hkey, LPCSTR name)
 {
     struct qemu_RegDeleteValueA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGDELETEVALUEA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
@@ -1649,7 +1700,7 @@ WINBASEAPI LONG WINAPI RegDeleteKeyValueW(HKEY hkey, LPCWSTR subkey, LPCWSTR nam
 {
     struct qemu_RegDeleteKeyValueW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGDELETEKEYVALUEW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.subkey = (ULONG_PTR)subkey;
     call.name = (ULONG_PTR)name;
 
@@ -1683,7 +1734,7 @@ WINBASEAPI LONG WINAPI RegDeleteKeyValueA(HKEY hkey, LPCSTR subkey, LPCSTR name)
 {
     struct qemu_RegDeleteKeyValueA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGDELETEKEYVALUEA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.subkey = (ULONG_PTR)subkey;
     call.name = (ULONG_PTR)name;
 
@@ -1717,7 +1768,7 @@ WINBASEAPI LSTATUS WINAPI RegLoadKeyW(HKEY hkey, LPCWSTR subkey, LPCWSTR filenam
 {
     struct qemu_RegLoadKeyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGLOADKEYW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.subkey = (ULONG_PTR)subkey;
     call.filename = (ULONG_PTR)filename;
 
@@ -1751,7 +1802,7 @@ WINBASEAPI LSTATUS WINAPI RegLoadKeyA(HKEY hkey, LPCSTR subkey, LPCSTR filename)
 {
     struct qemu_RegLoadKeyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGLOADKEYA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.subkey = (ULONG_PTR)subkey;
     call.filename = (ULONG_PTR)filename;
 
@@ -1785,7 +1836,7 @@ WINBASEAPI LSTATUS WINAPI RegSaveKeyW(HKEY hkey, LPCWSTR file, LPSECURITY_ATTRIB
 {
     struct qemu_RegSaveKeyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSAVEKEYW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.file = (ULONG_PTR)file;
     call.sa = (ULONG_PTR)sa;
 
@@ -1819,7 +1870,7 @@ WINBASEAPI LSTATUS WINAPI RegSaveKeyA(HKEY hkey, LPCSTR file, LPSECURITY_ATTRIBU
 {
     struct qemu_RegSaveKeyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSAVEKEYA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.file = (ULONG_PTR)file;
     call.sa = (ULONG_PTR)sa;
 
@@ -1854,7 +1905,7 @@ WINBASEAPI LSTATUS WINAPI RegSaveKeyExA(HKEY hkey, LPCSTR file, SECURITY_ATTRIBU
 {
     struct qemu_RegSaveKeyExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSAVEKEYEXA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.file = (ULONG_PTR)file;
     call.sa = (ULONG_PTR)sa;
     call.flags = (ULONG_PTR)flags;
@@ -1890,7 +1941,7 @@ WINBASEAPI LSTATUS WINAPI RegSaveKeyExW(HKEY hkey, LPCWSTR file, SECURITY_ATTRIB
 {
     struct qemu_RegSaveKeyExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSAVEKEYEXW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.file = (ULONG_PTR)file;
     call.sa = (ULONG_PTR)sa;
     call.flags = (ULONG_PTR)flags;
@@ -1925,7 +1976,7 @@ WINBASEAPI LSTATUS WINAPI RegRestoreKeyW(HKEY hkey, LPCWSTR lpFile, DWORD dwFlag
 {
     struct qemu_RegRestoreKeyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGRESTOREKEYW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.lpFile = (ULONG_PTR)lpFile;
     call.dwFlags = (ULONG_PTR)dwFlags;
 
@@ -1959,7 +2010,7 @@ WINBASEAPI LSTATUS WINAPI RegRestoreKeyA(HKEY hkey, LPCSTR lpFile, DWORD dwFlags
 {
     struct qemu_RegRestoreKeyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGRESTOREKEYA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.lpFile = (ULONG_PTR)lpFile;
     call.dwFlags = (ULONG_PTR)dwFlags;
 
@@ -1992,7 +2043,7 @@ WINBASEAPI LSTATUS WINAPI RegUnLoadKeyW(HKEY hkey, LPCWSTR lpSubKey)
 {
     struct qemu_RegUnLoadKeyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGUNLOADKEYW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.lpSubKey = (ULONG_PTR)lpSubKey;
 
     qemu_syscall(&call.super);
@@ -2024,7 +2075,7 @@ WINBASEAPI LSTATUS WINAPI RegUnLoadKeyA(HKEY hkey, LPCSTR lpSubKey)
 {
     struct qemu_RegUnLoadKeyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGUNLOADKEYA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.lpSubKey = (ULONG_PTR)lpSubKey;
 
     qemu_syscall(&call.super);
@@ -2058,7 +2109,7 @@ WINBASEAPI LSTATUS WINAPI RegReplaceKeyW(HKEY hkey, LPCWSTR lpSubKey, LPCWSTR lp
 {
     struct qemu_RegReplaceKeyW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGREPLACEKEYW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.lpSubKey = (ULONG_PTR)lpSubKey;
     call.lpNewFile = (ULONG_PTR)lpNewFile;
     call.lpOldFile = (ULONG_PTR)lpOldFile;
@@ -2094,7 +2145,7 @@ WINBASEAPI LSTATUS WINAPI RegReplaceKeyA(HKEY hkey, LPCSTR lpSubKey, LPCSTR lpNe
 {
     struct qemu_RegReplaceKeyA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGREPLACEKEYA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.lpSubKey = (ULONG_PTR)lpSubKey;
     call.lpNewFile = (ULONG_PTR)lpNewFile;
     call.lpOldFile = (ULONG_PTR)lpOldFile;
@@ -2129,7 +2180,7 @@ WINBASEAPI LSTATUS WINAPI RegSetKeySecurity(HKEY hkey, SECURITY_INFORMATION Secu
 {
     struct qemu_RegSetKeySecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSETKEYSECURITY);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.SecurityInfo = (ULONG_PTR)SecurityInfo;
     call.pSecurityDesc = (ULONG_PTR)pSecurityDesc;
 
@@ -2164,7 +2215,7 @@ WINBASEAPI LSTATUS WINAPI RegGetKeySecurity(HKEY hkey, SECURITY_INFORMATION Secu
 {
     struct qemu_RegGetKeySecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGGETKEYSECURITY);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.SecurityInformation = (ULONG_PTR)SecurityInformation;
     call.pSecurityDescriptor = (ULONG_PTR)pSecurityDescriptor;
     call.lpcbSecurityDescriptor = (ULONG_PTR)lpcbSecurityDescriptor;
@@ -2197,7 +2248,7 @@ WINBASEAPI LSTATUS WINAPI RegFlushKey(HKEY hkey)
 {
     struct qemu_RegFlushKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGFLUSHKEY);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
 
     qemu_syscall(&call.super);
 
@@ -2264,7 +2315,7 @@ WINBASEAPI LSTATUS WINAPI RegConnectRegistryA(LPCSTR machine, HKEY hkey, PHKEY r
     struct qemu_RegConnectRegistryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGCONNECTREGISTRYA);
     call.machine = (ULONG_PTR)machine;
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.reskey = (ULONG_PTR)reskey;
 
     qemu_syscall(&call.super);
@@ -2299,7 +2350,7 @@ WINBASEAPI LSTATUS WINAPI RegNotifyChangeKeyValue(HKEY hkey, BOOL fWatchSubTree,
 {
     struct qemu_RegNotifyChangeKeyValue call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGNOTIFYCHANGEKEYVALUE);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.fWatchSubTree = (ULONG_PTR)fWatchSubTree;
     call.fdwNotifyFilter = (ULONG_PTR)fdwNotifyFilter;
     call.hEvent = (ULONG_PTR)hEvent;
@@ -2482,7 +2533,7 @@ WINBASEAPI LSTATUS WINAPI RegDeleteTreeW(HKEY hkey, const WCHAR *subkey)
 {
     struct qemu_RegDeleteTreeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGDELETETREEW);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.subkey = (ULONG_PTR)subkey;
 
     qemu_syscall(&call.super);
@@ -2514,7 +2565,7 @@ WINBASEAPI LSTATUS WINAPI RegDeleteTreeA(HKEY hkey, const char *subkey)
 {
     struct qemu_RegDeleteTreeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGDELETETREEA);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.subkey = (ULONG_PTR)subkey;
 
     qemu_syscall(&call.super);
