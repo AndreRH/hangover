@@ -30,7 +30,6 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 #endif
 
-
 struct qemu_CallWindowProcA
 {
     struct qemu_syscall super;

@@ -805,6 +805,8 @@ void qemu_call_wndproc(struct qemu_syscall *call)
 {
     struct qemu_call_wndproc *c = (struct qemu_call_wndproc *)call;
     struct reverse_wndproc_wrapper *wrapper;
+    MSG msg_in = {(HWND)c->win, c->msg, c->wp, c->lp};
+    MSG msg_out;
 
     WINE_TRACE("\n");
     wrapper = QEMU_G2H(c->data);
@@ -815,7 +817,10 @@ void qemu_call_wndproc(struct qemu_syscall *call)
     if (wndproc_is_handle((LONG_PTR)wrapper->host_proc))
         WINE_ERR("Calling a WNDPROC handle via a reverse wrapper.\n");
 
-    c->super.iret = CallWindowProcW(wrapper->host_proc, (HWND)c->win, c->msg, c->wp, c->lp);
+    msg_guest_to_host(&msg_out, &msg_in);
+    c->super.iret = CallWindowProcW(wrapper->host_proc, msg_out.hwnd, msg_out.message,
+            msg_out.wParam, msg_out.lParam);
+    msg_guest_to_host_return(&msg_in, &msg_out);
 
     WINE_TRACE("Returning 0x%lx.\n", c->super.iret);
 }
