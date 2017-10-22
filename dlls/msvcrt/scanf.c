@@ -62,7 +62,7 @@ static int scanf_helper(const char *str, const char *fmt, MSVCRT__locale_t local
     for (i = 0; i < count; ++i)
     {
         call->args[i].is_float = FALSE;
-        call->args[i].arg = va_arg(args, uint64_t);
+        call->args[i].arg = va_arg(args, ULONG_PTR);
     }
 
     qemu_syscall(&call->super);
@@ -109,7 +109,7 @@ static int swscanf_helper(const WCHAR *str, const WCHAR *fmt, MSVCRT__locale_t l
     for (i = 0; i < count; ++i)
     {
         call->args[i].is_float = FALSE;
-        call->args[i].arg = va_arg(args, uint64_t);
+        call->args[i].arg = va_arg(args, ULONG_PTR);
     }
 
     qemu_syscall(&call->super);

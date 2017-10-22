@@ -394,7 +394,7 @@ static int CDECL vfprintf_helper(uint64_t op, FILE *file, const char *format, va
 
             default:
                 call->args[i].is_float = FALSE;
-                call->args[i].arg = va_arg(args, uint64_t);
+                call->args[i].arg = va_arg(args, ULONG_PTR);
                 break;
         }
     }
@@ -536,7 +536,7 @@ static int CDECL vfwprintf_helper(uint64_t op, FILE *file, const WCHAR *format, 
 
             default:
                 call->args[i].is_float = FALSE;
-                call->args[i].arg = va_arg(args, uint64_t);
+                call->args[i].arg = va_arg(args, ULONG_PTR);
                 break;
         }
     }
@@ -699,7 +699,7 @@ static int CDECL vsprintf_helper(uint64_t op, char *str, size_t charcount, const
 
             default:
                 call->args[i].is_float = FALSE;
-                call->args[i].arg = va_arg(args, uint64_t);
+                call->args[i].arg = va_arg(args, ULONG_PTR);
                 break;
         }
     }
@@ -752,7 +752,7 @@ static int CDECL vswprintf_helper(uint64_t op, WCHAR *str, size_t charcount, con
 
             default:
                 call->args[i].is_float = FALSE;
-                call->args[i].arg = va_arg(args, uint64_t);
+                call->args[i].arg = va_arg(args, ULONG_PTR);
                 break;
         }
     }
