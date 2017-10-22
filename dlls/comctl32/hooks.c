@@ -94,6 +94,7 @@ static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
     struct qemu_NMHDR *guest_hdr;
     struct qemu_NMRBAUTOSIZE *autosize;
     struct qemu_NMCUSTOMDRAW *customdraw;
+    struct qemu_NMMOUSE *nmmouse;
 
     WINE_TRACE("Handling a rebar notify message\n");
     if (ret)
@@ -114,6 +115,11 @@ static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
                 autosize = (struct qemu_NMRBAUTOSIZE *)guest->lParam;
                 NMRBAUTOSIZE_g2h((NMRBAUTOSIZE *)hdr, autosize);
                 break;
+
+            case NM_NCHITTEST:
+                nmmouse = (struct qemu_NMMOUSE *)guest->lParam;
+                NMMOUSE_g2h((NMMOUSE *)hdr, nmmouse);
+                break;
         }
 
         if (guest->lParam != host->lParam)
@@ -131,7 +137,10 @@ static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
             break;
 
         case NM_NCHITTEST:
-            WINE_FIXME("Unhandled notify message NM_NCHITTEST.\n");
+            WINE_TRACE("Handling notify message NM_NCHITTEST.\n");
+            nmmouse = HeapAlloc(GetProcessHeap(), 0, sizeof(*nmmouse));
+            NMMOUSE_h2g(nmmouse, (NMMOUSE *)hdr);
+            guest->lParam = (LPARAM)nmmouse;
             break;
 
         case RBN_CHILDSIZE:

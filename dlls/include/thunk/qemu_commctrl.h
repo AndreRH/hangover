@@ -243,4 +243,33 @@ static inline void NMTBCUSTOMDRAW_g2h(NMTBCUSTOMDRAW *host, const struct qemu_NM
     host->iListGap = guest->iListGap;
 }
 
+struct qemu_NMMOUSE
+{
+    struct qemu_NMHDR   hdr;
+    qemu_ptr            dwItemSpec;
+    qemu_ptr            dwItemData;
+    POINT               pt;
+    DWORD               dwHitInfo;
+};
+
+static inline void NMMOUSE_h2g(struct qemu_NMMOUSE *guest, const NMMOUSE *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->dwItemSpec = host->dwItemSpec;
+    guest->dwItemData = host->dwItemData;
+    guest->pt.x = host->pt.x;
+    guest->pt.y = host->pt.y;
+    guest->dwHitInfo = host->dwHitInfo;
+}
+
+static inline void NMMOUSE_g2h(NMMOUSE *host, const struct qemu_NMMOUSE *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->dwItemSpec = guest->dwItemSpec;
+    host->dwItemData = guest->dwItemData;
+    host->pt.x = guest->pt.x;
+    host->pt.y = guest->pt.y;
+    host->dwHitInfo = guest->dwHitInfo;
+}
+
 #endif
