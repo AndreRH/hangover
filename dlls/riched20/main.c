@@ -460,30 +460,61 @@ struct stream_cb_data
 
 static DWORD CALLBACK host_stream_cb(DWORD_PTR cookie, LPBYTE buffer, LONG cb, LONG *pcb)
 {
-    struct qemu_editstream_cb call;
+    struct qemu_editstream_cb stack, *call = &stack;
     struct stream_cb_data *data = (struct stream_cb_data *)cookie;
     DWORD ret;
+    struct alloc
+    {
+        struct qemu_editstream_cb call;
+        LONG pcb;
+        BYTE buffer[1];
+    } *alloc = NULL;
 
-    call.cb_func = data->guest_cb;
-    call.cookie = data->guest_cookie;
-    call.buffer = (ULONG_PTR)buffer;
-    call.cb = cb;
-    call.pcb = (ULONG_PTR)pcb;
+#if HOST_BIT != GUEST_BIT
+    alloc = HeapAlloc(GetProcessHeap(), 0, FIELD_OFFSET(struct alloc, buffer[cb]));
+    memcpy(alloc->buffer, buffer, cb);
+    alloc->pcb = *pcb;
+
+    call = &alloc->call;
+    call->buffer = (ULONG_PTR)alloc->buffer;
+    call->pcb = (ULONG_PTR)&alloc->pcb;
+#else
+    call->buffer = (ULONG_PTR)buffer;
+    call->pcb = (ULONG_PTR)pcb;
+#endif
+
+    call->cb_func = data->guest_cb;
+    call->cookie = data->guest_cookie;
+    call->cb = cb;
 
     WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx, %lu, 0x%lx).\n",
-            call.cb_func, call.cookie, call.buffer, call.cb, call.pcb);
+            call->cb_func, call->cookie, call->buffer, call->cb, call->pcb);
 
-    ret = qemu_ops->qemu_execute(QEMU_G2H(guest_editstream_cb), QEMU_H2G(&call));
+    ret = qemu_ops->qemu_execute(QEMU_G2H(guest_editstream_cb), QEMU_H2G(call));
 
     WINE_TRACE("Guest callback returned %x.\n", ret);
+    if (alloc)
+    {
+        *pcb = alloc->pcb;
+        memcpy(buffer, alloc->buffer, cb);
+        HeapFree(GetProcessHeap(), 0, alloc);
+    }
+
     return ret;
 }
 
 static LRESULT handle_stream(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, BOOL unicode)
 {
     struct stream_cb_data data;
-    EDITSTREAM es = *(EDITSTREAM *)lParam;
+    EDITSTREAM es;
     LRESULT ret;
+
+    WINE_ERR("stream\n");
+#if GUEST_BIT == HOST_BIT
+    es = *(EDITSTREAM *)lParam;
+#else
+    EDITSTREAM_g2h(&es, (void *)lParam);
+#endif
 
     /* EDITSTREAM is only valid until the message is processed. */
     data.guest_cookie = es.dwCookie;
@@ -498,7 +529,11 @@ static LRESULT handle_stream(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, 
 
     es.dwCookie = data.guest_cookie;
     es.pfnCallback = (EDITSTREAMCALLBACK)data.guest_cb;
+#if GUEST_BIT == HOST_BIT
     *(EDITSTREAM *)lParam = es;
+#else
+    EDITSTREAM_h2g((void *)lParam, &es);
+#endif
 
     return ret;
 }
@@ -541,6 +576,7 @@ static LRESULT handle_breakproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 static LRESULT WINAPI wrap_proc_w(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    LRESULT ret;
     switch (msg)
     {
         case EM_SETOLECALLBACK:
@@ -552,7 +588,7 @@ static LRESULT WINAPI wrap_proc_w(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
             break;
 
         case EM_SETWORDBREAKPROC:
-            return handle_breakproc(hWnd, msg, wParam, lParam, FALSE);
+            return handle_breakproc(hWnd, msg, wParam, lParam, TRUE);
 
         default:
             return CallWindowProcW(orig_proc_w, hWnd, msg, wParam, lParam);

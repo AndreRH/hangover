@@ -48,4 +48,25 @@ static void SELCHANGE_g2h(SELCHANGE *host, const struct qemu_SELCHANGE *guest)
     host->seltyp = guest->seltyp;
 }
 
+struct qemu_EDITSTREAM
+{
+    qemu_ptr            dwCookie;
+    DWORD               dwError;
+    qemu_ptr            pfnCallback;
+};
+
+static void EDITSTREAM_h2g(struct qemu_EDITSTREAM *guest, const EDITSTREAM *host)
+{
+    guest->dwCookie = host->dwCookie;
+    guest->dwError = host->dwError;
+    guest->pfnCallback = (ULONG_PTR)host->pfnCallback;
+}
+
+static void EDITSTREAM_g2h(EDITSTREAM *host, const struct qemu_EDITSTREAM *guest)
+{
+    host->dwCookie = guest->dwCookie;
+    host->dwError = guest->dwError;
+    host->pfnCallback = (EDITSTREAMCALLBACK)(ULONG_PTR)guest->pfnCallback;
+}
+
 #endif
