@@ -25,6 +25,7 @@
 #include "thunk/qemu_windows.h"
 #include "thunk/qemu_commctrl.h"
 
+#include "user32_wrapper.h"
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_comctl32.h"
@@ -86,6 +87,17 @@ static LRESULT WINAPI rebar_wndproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
     return ret;
 }
 
+static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
+{
+    WINE_ERR("Handling a rebar notify message\n");
+    if (ret)
+    {
+        if (guest->lParam != host->lParam)
+            HeapFree(GetProcessHeap(), 0, (void *)guest->lParam);
+        return;
+    }
+}
+
 static WNDPROC hook_class(const WCHAR *name, WNDPROC replace)
 {
     WNDPROC ret;
@@ -106,7 +118,7 @@ static WNDPROC hook_class(const WCHAR *name, WNDPROC replace)
     return ret;
 }
 
-void hook_wndprocs()
+void hook_wndprocs(void)
 {
     /* Intercepting messages before they enter the control has the advantage that we
      * don't have to bother the user32 mapper with comctl32 internals and that we don't
@@ -116,6 +128,20 @@ void hook_wndprocs()
 
     orig_rebar_wndproc = hook_class(REBARCLASSNAMEW, rebar_wndproc);
     /* Toolbars: Used by Wine's comdlg32, and internal messages from comctl32. */
+}
+
+void register_notify_callbacks(void)
+{
+    QEMU_USER32_NOTIFY_FUNC register_notify;
+    HMODULE qemu_user32 = GetModuleHandleA("qemu_user32");
+
+    if (!qemu_user32)
+        WINE_ERR("Cannot get qemu_user32.dll\n");
+    register_notify = (void *)GetProcAddress(qemu_user32, "qemu_user32_notify");
+    if (!register_notify)
+        WINE_ERR("Cannot get qemu_user32_notify\n");
+
+    register_notify(REBARCLASSNAMEW, rebar_notify);
 }
 
 #endif

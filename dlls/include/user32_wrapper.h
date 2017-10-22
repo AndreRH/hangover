@@ -16,15 +16,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
-#ifndef QEMU_NTDLL_WRAPPER_H
-#define QEMU_NTDLL_WRAPPER_H
+#ifndef QEMU_USER32_WRAPPER_H
+#define QEMU_USER32_WRAPPER_H
 
-struct qemu_ntdll_wait_work_item
-{
-    HANDLE host_handle;
-    uint64_t context;
-    uint64_t guest_cb;
-    uint64_t wrapper;
-};
+typedef BOOL (* WINAPI QEMU_USER32_NOTIFY_FUNC)(const WCHAR *class, void (*func)(MSG *guest, MSG *host, BOOL ret));
 
 #endif

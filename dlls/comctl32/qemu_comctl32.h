@@ -397,7 +397,8 @@ struct propsheet_data
 
 WNDPROC wndproc_guest_to_host(uint64_t guest_func);
 
-void hook_wndprocs();
+void hook_wndprocs(void);
+void register_notify_callbacks(void);
 
 #endif
 

@@ -1196,7 +1196,15 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
 #endif
 }
 
-void msg_host_to_guest(MSG *msg_out, const MSG *msg_in)
+struct notify_record
+{
+    WCHAR *name;
+    void (*translate)(MSG *guest, MSG *host, BOOL ret);
+};
+
+static struct notify_record notify_callbacks[64];
+
+void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
 {
     *msg_out = *msg_in;
 
@@ -1249,6 +1257,25 @@ void msg_host_to_guest(MSG *msg_out, const MSG *msg_in)
             break;
         }
 
+        case WM_NOTIFY:
+        {
+            unsigned int i;
+            WCHAR class[256];
+            NMHDR *hdr = (NMHDR *)msg_in->lParam;
+
+            i = GetClassNameW(hdr->hwndFrom, class, sizeof(class) / sizeof(*class));
+            if (i < 0 || i == 256)
+                break;
+
+            for (i = 0; notify_callbacks[i].name; ++i)
+            {
+                if (strcmpW(class, notify_callbacks[i].name))
+                    continue;
+                notify_callbacks[i].translate(msg_out, msg_in, FALSE);
+            }
+            break;
+        }
+
         default:
             /* Not constant numbers */
             if (msg_in->message == msg_FINDMSGSTRING)
@@ -1292,6 +1319,25 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
             break;
         }
 
+        case WM_NOTIFY:
+        {
+            unsigned int i;
+            WCHAR class[256];
+            NMHDR *hdr = (NMHDR *)orig->lParam;
+
+            i = GetClassNameW(hdr->hwndFrom, class, sizeof(class) / sizeof(*class));
+            if (i < 0 || i == 256)
+                break;
+
+            for (i = 0; notify_callbacks[i].name; ++i)
+            {
+                if (strcmpW(class, notify_callbacks[i].name))
+                    continue;
+                notify_callbacks[i].translate(conv, orig, TRUE);
+            }
+            break;
+        }
+
         default:
             if (conv->message == msg_FINDMSGSTRING)
             {
@@ -1322,6 +1368,27 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
     }
 
     return TRUE;
+}
+
+BOOL WINAPI qemu_user32_notify(const WCHAR *class, void (*func)(MSG *guest, MSG *host, BOOL ret))
+{
+    unsigned int i;
+    size_t len;
+
+    for (i = 0; i < (sizeof(notify_callbacks) / sizeof(*notify_callbacks)) - 1; ++i)
+    {
+        if (notify_callbacks[i].name)
+            continue;
+
+        len = strlenW(class) + 1;
+        notify_callbacks[i].name = HeapAlloc(GetProcessHeap(), 0, sizeof(*class) * len);
+        memcpy(notify_callbacks[i].name, class, sizeof(*class) * len);
+        notify_callbacks[i].translate = func;
+        return TRUE;
+    }
+
+    WINE_ERR("Increase the notify callback array\n");
+    return FALSE;
 }
 
 #endif

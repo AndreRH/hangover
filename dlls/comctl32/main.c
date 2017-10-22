@@ -78,6 +78,7 @@ static void qemu_set_callbacks(struct qemu_syscall *call)
 {
     struct qemu_set_callbacks *c = (struct qemu_set_callbacks *)call;
     guest_wndproc_wrapper = c->wndproc_wrapper;
+    register_notify_callbacks();
 }
 
 static const syscall_handler dll_functions[] =
