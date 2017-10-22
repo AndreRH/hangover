@@ -154,10 +154,13 @@ static WNDPROC hook_class(const WCHAR *name, WNDPROC replace)
 {
     WNDPROC ret;
     HMODULE comctl32 = GetModuleHandleA("comctl32");
-    HWND win;
+    HWND win, label;
 
-    win = CreateWindowExW(0, name, NULL,
+    /* May need a parent to respond to various messages, e.g. WM_NOTIFYFORMAT. */
+    label = CreateWindowExW(0, WC_STATICW, NULL,
             WS_POPUP, 0, 0, 200, 60, NULL, NULL, comctl32, NULL);
+    win = CreateWindowExW(0, name, NULL,
+            WS_POPUP, 0, 0, 200, 60, label, NULL, comctl32, NULL);
     if (!win)
         WINE_ERR("Failed to instantiate a %s window.\n", wine_dbgstr_w(name));
 
@@ -166,6 +169,7 @@ static WNDPROC hook_class(const WCHAR *name, WNDPROC replace)
         WINE_ERR("Failed to set WNDPROC of %s.\n", wine_dbgstr_w(name));
 
     DestroyWindow(win);
+    DestroyWindow(label);
 
     return ret;
 }
