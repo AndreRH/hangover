@@ -21,8 +21,10 @@
 #include <windows.h>
 #include <stdio.h>
 #include <excpt.h>
+#include <commctrl.h>
 
 #include "thunk/qemu_windows.h"
+#include "thunk/qemu_commctrl.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -97,6 +99,7 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 #else
 
 #include <wine/debug.h>
+#include <wine/unicode.h>
 #include <assert.h>
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
@@ -1052,6 +1055,8 @@ static inline void WINDOWPOS_h2g(struct qemu_WINDOWPOS *guest, const WINDOWPOS *
 void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
 {
     *msg_out = *msg_in;
+    WCHAR class[256];
+    int len;
 
     switch (msg_in->message)
     {
@@ -1092,6 +1097,30 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             msg_out->lParam = (LPARAM)host;
             break;
         }
+
+        /* If a message can come from the guest or the host user32 has to translate it
+         * when it is passed out of the VM. Otherwise other DLLs translate it before it reaches
+         * the original WNDPROC. */
+        case WM_USER+19:
+            /* Possible TB_ADDBITMAP */
+            len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
+            if (len < 0 || len == 256)
+                break;
+
+            if (!strcmpW(class, TOOLBARCLASSNAMEW))
+            {
+                struct qemu_TBADDBITMAP *guest_ab;
+                TBADDBITMAP *host_ab;
+                WINE_TRACE("Translating TB_ADDBITMAP message.\n");
+
+                guest_ab = (struct qemu_TBADDBITMAP *)msg_in->lParam;
+                host_ab = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_ab));
+                TBADDBITMAP_g2h(host_ab, guest_ab);
+                msg_out->lParam = (LPARAM)host_ab;
+            }
+
+            break;
+
 #endif
 
         default:
@@ -1122,6 +1151,12 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
             WINDOWPOS_h2g(guest, host);
 
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
+
+        case WM_USER+19:
+            /* Possible TB_ADDBITMAP */
+            if (conv->lParam != orig->lParam)
+                HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
 
         default:

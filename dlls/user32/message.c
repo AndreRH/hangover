@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_user32.h"
@@ -164,17 +166,19 @@ WINUSERAPI LRESULT WINAPI SendMessageW(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 void qemu_SendMessageW(struct qemu_syscall *call)
 {
     struct qemu_SendMessageW *c = (struct qemu_SendMessageW *)call;
+    MSG msg_in;
+    MSG msg_out;
     WINE_TRACE("\n");
 
-    switch (c->msg)
-    {
-        case WM_TIMER:
-        case WM_SYSTIMER:
-            WINE_FIXME("Do I have to fix up WM_TIMER.lParam here?\n");
-            break;
-    }
+    msg_in.hwnd = HANDLE_g2h(c->hwnd);
+    msg_in.message = c->msg;
+    msg_in.wParam = c->wparam;
+    msg_in.lParam = c->lparam;
+    msg_guest_to_host(&msg_out, &msg_in);
 
-    c->super.iret = SendMessageW(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam);
+    c->super.iret = SendMessageW(msg_out.hwnd, msg_out.message, msg_out.wParam, msg_out.lParam);
+
+    msg_guest_to_host_return(&msg_in, &msg_out);
 }
 
 #endif
@@ -209,17 +213,19 @@ WINUSERAPI LRESULT WINAPI SendMessageA(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 void qemu_SendMessageA(struct qemu_syscall *call)
 {
     struct qemu_SendMessageA *c = (struct qemu_SendMessageA *)call;
+    MSG msg_in;
+    MSG msg_out;
     WINE_TRACE("\n");
 
-    switch (c->msg)
-    {
-        case WM_TIMER:
-        case WM_SYSTIMER:
-            WINE_FIXME("Do I have to fix up WM_TIMER.lParam here?\n");
-            break;
-    }
+    msg_in.hwnd = HANDLE_g2h(c->hwnd);
+    msg_in.message = c->msg;
+    msg_in.wParam = c->wparam;
+    msg_in.lParam = c->lparam;
+    msg_guest_to_host(&msg_out, &msg_in);
 
-    c->super.iret = SendMessageA(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam);
+    c->super.iret = SendMessageA(msg_out.hwnd, msg_out.message, msg_out.wParam, msg_out.lParam);
+
+    msg_guest_to_host_return(&msg_in, &msg_out);
 }
 
 #endif

@@ -15,4 +15,16 @@ static inline void REBARINFO_g2h(REBARINFO *host, const struct qemu_REBARINFO *g
     host->himl = HANDLE_g2h(guest->himl);
 }
 
+struct qemu_TBADDBITMAP
+{
+    qemu_handle hInst;
+    qemu_ptr    nID;
+};
+
+static inline void TBADDBITMAP_g2h(TBADDBITMAP *host, const struct qemu_TBADDBITMAP *guest)
+{
+    host->hInst = HANDLE_g2h(guest->hInst);
+    host->nID = guest->nID;
+}
+
 #endif

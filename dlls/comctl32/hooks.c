@@ -92,7 +92,14 @@ static WNDPROC hook_class(const WCHAR *name, WNDPROC replace)
 
 void hook_wndprocs()
 {
+    /* Intercepting messages before they enter the control has the advantage that we
+     * don't have to bother the user32 mapper with comctl32 internals and that we don't
+     * have to inspect the window class on every WM_USER + x message. The disadvantage
+     * is that the hook wndproc will also run when the message is received from another
+     * Wine DLL, in which case translation will break things. */
+
     orig_rebar_wndproc = hook_class(REBARCLASSNAMEW, rebar_wndproc);
+    /* Toolbars: Used by Wine's comdlg32, and internal messages from comctl32. */
 }
 
 #endif
