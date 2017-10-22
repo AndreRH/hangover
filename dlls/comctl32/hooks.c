@@ -180,6 +180,133 @@ static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
     }
 }
 
+static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
+{
+    NMHDR *hdr = (NMHDR *)host->lParam;
+    struct qemu_NMTBCUSTOMDRAW *customdraw;
+
+    WINE_TRACE("Handling a toolbar notify message\n");
+    if (ret)
+    {
+        switch (hdr->code)
+        {
+            case NM_CUSTOMDRAW:
+                customdraw = (struct qemu_NMTBCUSTOMDRAW *)guest->lParam;
+                NMTBCUSTOMDRAW_g2h((NMTBCUSTOMDRAW *)hdr, customdraw);
+                break;
+        }
+
+        if (guest->lParam != host->lParam)
+            HeapFree(GetProcessHeap(), 0, (void *)guest->lParam);
+        return;
+    }
+
+    switch (hdr->code)
+    {
+        case NM_CUSTOMDRAW:
+            WINE_TRACE("Handling notify message NM_CUSTOMDRAW.\n");
+            customdraw = HeapAlloc(GetProcessHeap(), 0, sizeof(*customdraw));
+            NMTBCUSTOMDRAW_h2g(customdraw, (NMTBCUSTOMDRAW *)hdr);
+            guest->lParam = (LPARAM)customdraw;
+            break;
+
+        case NM_TOOLTIPSCREATED:
+            WINE_FIXME("Unhandled notify message NM_TOOLTIPSCREATED.\n");
+            break;
+
+        case TBN_GETDISPINFOW:
+            WINE_FIXME("Unhandled notify message TBN_GETDISPINFOW.\n");
+            break;
+
+        case TBN_TOOLBARCHANGE:
+            WINE_FIXME("Unhandled notify message TBN_TOOLBARCHANGE.\n");
+            break;
+
+        case TBN_QUERYINSERT:
+            WINE_FIXME("Unhandled notify message TBN_QUERYINSERT.\n");
+            break;
+
+        case TBN_QUERYDELETE:
+            WINE_FIXME("Unhandled notify message TBN_QUERYDELETE.\n");
+            break;
+
+        case TBN_INITCUSTOMIZE:
+            WINE_FIXME("Unhandled notify message TBN_INITCUSTOMIZE.\n");
+            break;
+
+        case TBN_CUSTHELP:
+            WINE_FIXME("Unhandled notify message TBN_CUSTHELP.\n");
+            break;
+
+        case TBN_RESET:
+            WINE_FIXME("Unhandled notify message TBN_RESET.\n");
+            break;
+
+        case TBN_BEGINADJUST:
+            WINE_FIXME("Unhandled notify message TBN_BEGINADJUST.\n");
+            break;
+
+        case TBN_ENDADJUST:
+            WINE_FIXME("Unhandled notify message TBN_ENDADJUST.\n");
+            break;
+
+        case TBN_DELETINGBUTTON:
+            WINE_FIXME("Unhandled notify message TBN_DELETINGBUTTON.\n");
+            break;
+
+        case TBN_SAVE:
+            WINE_FIXME("Unhandled notify message TBN_SAVE.\n");
+            break;
+
+        case TBN_RESTORE:
+            WINE_FIXME("Unhandled notify message TBN_RESTORE.\n");
+            break;
+
+        case TBN_GETBUTTONINFOA:
+            WINE_FIXME("Unhandled notify message TBN_GETBUTTONINFOA.\n");
+            break;
+
+        case TBN_GETBUTTONINFOW:
+            WINE_FIXME("Unhandled notify message TBN_GETBUTTONINFOW.\n");
+            break;
+
+        case TBN_HOTITEMCHANGE:
+            WINE_FIXME("Unhandled notify message TBN_HOTITEMCHANGE.\n");
+            break;
+
+        case TBN_WRAPHOTITEM:
+            WINE_FIXME("Unhandled notify message TBN_WRAPHOTITEM.\n");
+            break;
+
+        case TBN_DROPDOWN:
+            WINE_FIXME("Unhandled notify message TBN_DROPDOWN.\n");
+            break;
+
+        case TBN_BEGINDRAG:
+            WINE_FIXME("Unhandled notify message TBN_BEGINDRAG.\n");
+            break;
+
+        case TBN_ENDDRAG:
+            WINE_FIXME("Unhandled notify message TBN_ENDDRAG.\n");
+            break;
+
+        case TBN_DRAGOUT:
+            WINE_FIXME("Unhandled notify message TBN_DRAGOUT.\n");
+            break;
+
+        case TBN_GETINFOTIPA:
+            WINE_FIXME("Unhandled notify message TBN_GETINFOTIPA.\n");
+            break;
+
+        case TBN_GETINFOTIPW:
+            WINE_FIXME("Unhandled notify message TBN_GETINFOTIPW.\n");
+            break;
+
+        default:
+            WINE_ERR("Unexpected notify message %x.\n", hdr->code);
+    }
+}
+
 static WNDPROC hook_class(const WCHAR *name, WNDPROC replace)
 {
     WNDPROC ret;
@@ -228,6 +355,7 @@ void register_notify_callbacks(void)
         WINE_ERR("Cannot get qemu_user32_notify\n");
 
     register_notify(REBARCLASSNAMEW, rebar_notify);
+    register_notify(TOOLBARCLASSNAMEW, toolbar_notify);
 }
 
 #endif

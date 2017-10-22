@@ -189,4 +189,58 @@ static inline void NMCUSTOMDRAW_g2h(NMCUSTOMDRAW *host, const struct qemu_NMCUST
     host->lItemlParam = guest->lItemlParam;
 }
 
+struct qemu_NMTBCUSTOMDRAW
+{
+    struct qemu_NMCUSTOMDRAW nmcd;
+    qemu_handle hbrMonoDither;
+    qemu_handle hbrLines;
+    qemu_handle hpenLines;
+    COLORREF clrText;
+    COLORREF clrMark;
+    COLORREF clrTextHighlight;
+    COLORREF clrBtnFace;
+    COLORREF clrBtnHighlight;
+    COLORREF clrHighlightHotTrack;
+    RECT rcText;
+    int nStringBkMode;
+    int nHLStringBkMode;
+    int iListGap;
+};
+
+static inline void NMTBCUSTOMDRAW_h2g(struct qemu_NMTBCUSTOMDRAW *guest, const NMTBCUSTOMDRAW *host)
+{
+    NMCUSTOMDRAW_h2g(&guest->nmcd, &host->nmcd);
+    guest->hbrMonoDither = (ULONG_PTR)host->hbrMonoDither;
+    guest->hbrLines = (ULONG_PTR)host->hbrLines;
+    guest->hpenLines = (ULONG_PTR)host->hpenLines;
+    guest->clrText = host->clrText;
+    guest->clrMark = host->clrMark;
+    guest->clrTextHighlight = host->clrTextHighlight;
+    guest->clrBtnFace = host->clrBtnFace;
+    guest->clrBtnHighlight = host->clrBtnHighlight;
+    guest->clrHighlightHotTrack = host->clrHighlightHotTrack;
+    memcpy(&guest->rcText, &host->rcText, sizeof(guest->rcText));
+    guest->nStringBkMode = host->nStringBkMode;
+    guest->nHLStringBkMode = host->nHLStringBkMode;
+    guest->iListGap = host->iListGap;
+}
+
+static inline void NMTBCUSTOMDRAW_g2h(NMTBCUSTOMDRAW *host, const struct qemu_NMTBCUSTOMDRAW *guest)
+{
+    NMCUSTOMDRAW_g2h(&host->nmcd, &guest->nmcd);
+    host->hbrMonoDither = HANDLE_g2h(guest->hbrMonoDither);
+    host->hbrLines = HANDLE_g2h(guest->hbrLines);
+    host->hpenLines = HANDLE_g2h(guest->hpenLines);
+    host->clrText = guest->clrText;
+    host->clrMark = guest->clrMark;
+    host->clrTextHighlight = guest->clrTextHighlight;
+    host->clrBtnFace = guest->clrBtnFace;
+    host->clrBtnHighlight = guest->clrBtnHighlight;
+    host->clrHighlightHotTrack = guest->clrHighlightHotTrack;
+    memcpy(&host->rcText, &guest->rcText, sizeof(guest->rcText));
+    host->nStringBkMode = guest->nStringBkMode;
+    host->nHLStringBkMode = guest->nHLStringBkMode;
+    host->iListGap = guest->iListGap;
+}
+
 #endif
