@@ -349,7 +349,7 @@ struct qemu_EnumFontFamilies_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t EnumFontFamiliesW_guest_cb(struct qemu_EnumFontFamilies_cb *data)
+static uint64_t __fastcall EnumFontFamiliesW_guest_cb(struct qemu_EnumFontFamilies_cb *data)
 {
     FONTENUMPROCW proc = (FONTENUMPROCW)(ULONG_PTR)data->proc;
     return proc((const LOGFONTW *)(ULONG_PTR)data->font, (const TEXTMETRICW *)(ULONG_PTR)data->metric, data->type, data->param);
@@ -382,19 +382,37 @@ struct qemu_EnumFontFamilies_host_data
 static INT CALLBACK qemu_EnumFontFamiliesW_host_proc(const LOGFONTW *font, const TEXTMETRICW *metric, DWORD type, LPARAM param)
 {
     struct qemu_EnumFontFamilies_host_data *data = (struct qemu_EnumFontFamilies_host_data *)param;
-    struct qemu_EnumFontFamilies_cb call;
+    struct qemu_EnumFontFamilies_cb stack, *call = &stack;
     INT ret;
+    struct
+    {
+        LOGFONTW font;
+        TEXTMETRICW metric;
+        struct qemu_EnumFontFamilies_cb call;
+    } *alloc = NULL;
+
+#if HOST_BIT != GUEST_BIT
+    alloc = HeapAlloc(GetProcessHeap(), 0, sizeof(*alloc));
+    memcpy(&alloc->font, font, sizeof(*font));
+    font = &alloc->font;
+    memcpy(&alloc->metric, metric, sizeof(*metric));
+    metric = &alloc->metric;
+    call = &alloc->call;
+#endif
 
     WINE_TRACE("Calling guest callback 0x%lx(%p, %p, %u, 0x%lx).\n", data->guest_func, font, metric, type, data->guest_data);
-    call.proc = data->guest_func;
-    call.font = QEMU_H2G(font);
-    call.metric = QEMU_H2G(metric);
-    call.type = type;
-    call.param = data->guest_data;
+    call->proc = data->guest_func;
+    call->font = QEMU_H2G(font);
+    call->metric = QEMU_H2G(metric);
+    call->type = type;
+    call->param = data->guest_data;
 
-    ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&call));
+    ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(call));
 
     WINE_TRACE("Callback returned %u.\n", ret);
+    if (alloc) /* Redundant, but the idea is the compiler knows it can remove the call. */
+        HeapFree(GetProcessHeap(), 0, alloc);
+
     return ret;
 }
 
@@ -427,7 +445,7 @@ struct qemu_EnumFontFamiliesExA
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t EnumFontFamiliesA_guest_cb(struct qemu_EnumFontFamilies_cb *data)
+static uint64_t __fastcall EnumFontFamiliesA_guest_cb(struct qemu_EnumFontFamilies_cb *data)
 {
     FONTENUMPROCA proc = (FONTENUMPROCA)(ULONG_PTR)data->proc;
     return proc((const LOGFONTA *)(ULONG_PTR)data->font, (const TEXTMETRICA *)(ULONG_PTR)data->metric, data->type, data->param);
@@ -451,22 +469,41 @@ WINGDIAPI INT WINAPI EnumFontFamiliesExA(HDC hDC, LPLOGFONTA plf, FONTENUMPROCA 
 
 #else
 
+/* LOGFONTA and LOGFONTW have different sizes. */
 static INT CALLBACK qemu_EnumFontFamiliesA_host_proc(const LOGFONTA *font, const TEXTMETRICA *metric, DWORD type, LPARAM param)
 {
     struct qemu_EnumFontFamilies_host_data *data = (struct qemu_EnumFontFamilies_host_data *)param;
-    struct qemu_EnumFontFamilies_cb call;
+    struct qemu_EnumFontFamilies_cb stack, *call = &stack;
     INT ret;
+    struct
+    {
+        LOGFONTA font;
+        TEXTMETRICA metric;
+        struct qemu_EnumFontFamilies_cb call;
+    } *alloc = NULL;
+
+#if HOST_BIT != GUEST_BIT
+    alloc = HeapAlloc(GetProcessHeap(), 0, sizeof(*alloc));
+    memcpy(&alloc->font, font, sizeof(*font));
+    font = &alloc->font;
+    memcpy(&alloc->metric, metric, sizeof(*metric));
+    metric = &alloc->metric;
+    call = &alloc->call;
+#endif
 
     WINE_TRACE("Calling guest callback 0x%lx(%p, %p, %u, 0x%lx).\n", data->guest_func, font, metric, type, data->guest_data);
-    call.proc = data->guest_func;
-    call.font = QEMU_H2G(font);
-    call.metric = QEMU_H2G(metric);
-    call.type = type;
-    call.param = data->guest_data;
+    call->proc = data->guest_func;
+    call->font = QEMU_H2G(font);
+    call->metric = QEMU_H2G(metric);
+    call->type = type;
+    call->param = data->guest_data;
 
-    ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&call));
+    ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(call));
 
     WINE_TRACE("Callback returned %u.\n", ret);
+    if (alloc) /* Redundant, but the idea is the compiler knows it can remove the call. */
+        HeapFree(GetProcessHeap(), 0, alloc);
+
     return ret;
 }
 
@@ -481,7 +518,7 @@ void qemu_EnumFontFamiliesExA(struct qemu_syscall *call)
     data.guest_data = c->lParam;
 
     c->super.iret = EnumFontFamiliesExA((HDC)c->hDC, QEMU_G2H(c->plf),
-            c->efproc ? qemu_EnumFontFamiliesA_host_proc : NULL, (LPARAM)&data, c->dwFlags);
+            c->efproc ? (void *)qemu_EnumFontFamiliesW_host_proc : NULL, (LPARAM)&data, c->dwFlags);
 }
 
 #endif
