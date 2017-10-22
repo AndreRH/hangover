@@ -58,4 +58,11 @@ static inline void NMHDR_h2g(struct qemu_NMHDR *guest, const NMHDR *host)
     guest->code = host->code;
 }
 
+static inline void NMHDR_g2h(NMHDR *host, const struct qemu_NMHDR *guest)
+{
+    host->hwndFrom = HANDLE_g2h(guest->hwndFrom);
+    host->idFrom = guest->idFrom;
+    host->code = guest->code;
+}
+
 #endif

@@ -91,10 +91,25 @@ static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
 {
     NMHDR *hdr = (NMHDR *)host->lParam;
     struct qemu_NMREBARCHILDSIZE *childsize;
+    struct qemu_NMHDR *guest_hdr;
+    struct qemu_NMRBAUTOSIZE *autosize;
 
     WINE_TRACE("Handling a rebar notify message\n");
     if (ret)
     {
+        switch (hdr->code)
+        {
+            case RBN_CHILDSIZE:
+                childsize = (struct qemu_NMREBARCHILDSIZE *)guest->lParam;
+                NMREBARCHILDSIZE_g2h((NMREBARCHILDSIZE *)hdr, childsize);
+                break;
+
+            case RBN_AUTOSIZE:
+                autosize = (struct qemu_NMRBAUTOSIZE *)guest->lParam;
+                NMRBAUTOSIZE_g2h((NMRBAUTOSIZE *)hdr, autosize);
+                break;
+        }
+
         if (guest->lParam != host->lParam)
             HeapFree(GetProcessHeap(), 0, (void *)guest->lParam);
         return;
@@ -118,11 +133,17 @@ static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
             break;
 
         case RBN_HEIGHTCHANGE:
-            WINE_FIXME("Unhandled notify message RBN_HEIGHTCHANGE.\n");
+            WINE_TRACE("Handling notify message RBN_HEIGHTCHANGE.\n");
+            guest_hdr = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest_hdr));
+            NMHDR_h2g(guest_hdr, hdr);
+            guest->lParam = (LPARAM)guest_hdr;
             break;
 
         case RBN_AUTOSIZE:
-            WINE_FIXME("Unhandled notify message RBN_AUTOSIZE.\n");
+            WINE_TRACE("Handling notify message RBN_AUTOSIZE.\n");
+            autosize = HeapAlloc(GetProcessHeap(), 0, sizeof(*autosize));
+            NMRBAUTOSIZE_h2g(autosize, (NMRBAUTOSIZE *)hdr);
+            guest->lParam = (LPARAM)autosize;
             break;
 
         case RBN_DELETINGBAND:

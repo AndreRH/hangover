@@ -123,4 +123,37 @@ static inline void NMREBARCHILDSIZE_h2g(struct qemu_NMREBARCHILDSIZE *guest, con
     memcpy(&guest->rcBand, &host->rcBand, sizeof(guest->rcBand));
 }
 
+static inline void NMREBARCHILDSIZE_g2h(NMREBARCHILDSIZE *host, const struct qemu_NMREBARCHILDSIZE *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->uBand = guest->uBand;
+    host->wID = guest->wID;
+    memcpy(&host->rcChild, &guest->rcChild, sizeof(host->rcChild));
+    memcpy(&host->rcBand, &guest->rcBand, sizeof(host->rcBand));
+}
+
+struct qemu_NMRBAUTOSIZE
+{
+    struct qemu_NMHDR hdr;
+    BOOL fChanged;
+    RECT rcTarget;
+    RECT rcActual;
+};
+
+static inline void NMRBAUTOSIZE_h2g(struct qemu_NMRBAUTOSIZE *guest, const NMRBAUTOSIZE *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->fChanged = host->fChanged;
+    memcpy(&guest->rcTarget, &host->rcTarget, sizeof(guest->rcTarget));
+    memcpy(&guest->rcActual, &host->rcActual, sizeof(guest->rcActual));
+}
+
+static inline void NMRBAUTOSIZE_g2h(NMRBAUTOSIZE *host, const struct qemu_NMRBAUTOSIZE *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->fChanged = guest->fChanged;
+    memcpy(&host->rcTarget, &guest->rcTarget, sizeof(host->rcTarget));
+    memcpy(&host->rcActual, &guest->rcActual, sizeof(host->rcActual));
+}
+
 #endif
