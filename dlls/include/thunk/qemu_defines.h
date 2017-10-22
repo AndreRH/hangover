@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 typedef DWORD qemu_ptr, qemu_handle;
+typedef INT qemu_sptr;
 typedef DWORD qemu_size_t;
 
 static inline HANDLE HANDLE_g2h(uint64_t h)

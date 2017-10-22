@@ -27,4 +27,26 @@ static inline void TBADDBITMAP_g2h(TBADDBITMAP *host, const struct qemu_TBADDBIT
     host->nID = guest->nID;
 }
 
+struct qemu_TBBUTTON
+{
+    INT         iBitmap;
+    INT         idCommand;
+    BYTE        fsState;
+    BYTE        fsStyle;
+    BYTE        bReserved[2];
+    qemu_ptr    dwData;
+    qemu_sptr   iString;
+};
+
+static inline void TBBUTTON_g2h(TBBUTTON *host, const struct qemu_TBBUTTON *guest)
+{
+    host->iBitmap = guest->iBitmap;
+    host->idCommand = guest->idCommand;
+    host->fsState = guest->fsState;
+    host->fsStyle = guest->fsStyle;
+    memset(&host->bReserved, 0, sizeof(host->bReserved));
+    host->dwData = guest->dwData;
+    host->iString = guest->iString;
+}
+
 #endif

@@ -1118,7 +1118,32 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
                 TBADDBITMAP_g2h(host_ab, guest_ab);
                 msg_out->lParam = (LPARAM)host_ab;
             }
+            break;
 
+        case WM_USER+20:
+            /* Possible TB_ADDBUTTONSA */
+            /* Drop through */
+        case WM_USER+68:
+            /* Possible TB_ADDBUTTONSW */
+
+            /* Possible TB_ADDBITMAP */
+            len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
+            if (len < 0 || len == 256)
+                break;
+
+            if (!strcmpW(class, TOOLBARCLASSNAMEW))
+            {
+                struct qemu_TBBUTTON *guest_button;
+                TBBUTTON *host_button;
+                WINE_TRACE("Translating TB_ADDBUTTONS message, %lu buttons at %p.\n",
+                        msg_in->wParam, (void *)msg_in->lParam);
+
+                guest_button = (struct qemu_TBBUTTON *)msg_in->lParam;
+                host_button = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_button) * msg_in->wParam);
+                for (len = 0; len < msg_in->wParam; ++len)
+                    TBBUTTON_g2h(&host_button[len], &guest_button[len]);
+                msg_out->lParam = (LPARAM)host_button;
+            }
             break;
 
 #endif
@@ -1154,7 +1179,8 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
             break;
 
         case WM_USER+19:
-            /* Possible TB_ADDBITMAP */
+        case WM_USER+20:
+        case WM_USER+68:
             if (conv->lParam != orig->lParam)
                 HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
