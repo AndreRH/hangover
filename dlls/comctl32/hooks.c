@@ -316,6 +316,77 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
     }
 }
 
+static void combobox_notify(MSG *guest, MSG *host, BOOL ret)
+{
+    NMHDR *hdr = (NMHDR *)host->lParam;
+    struct qemu_NMMOUSE *nmmouse;
+
+    WINE_TRACE("Handling a toolbar notify message\n");
+    if (ret)
+    {
+        switch (hdr->code)
+        {
+            case NM_SETCURSOR:
+                nmmouse = (struct qemu_NMMOUSE *)guest->lParam;
+                NMMOUSE_g2h((NMMOUSE *)hdr, nmmouse);
+                break;
+        }
+
+        if (guest->lParam != host->lParam)
+            HeapFree(GetProcessHeap(), 0, (void *)guest->lParam);
+        return;
+    }
+
+    switch (hdr->code)
+    {
+        case CBEN_BEGINEDIT:
+            WINE_FIXME("Unhandled notify message CBEN_BEGINEDIT.\n");
+            break;
+
+        case CBEN_ENDEDITA:
+            WINE_FIXME("Unhandled notify message CBEN_ENDEDITA.\n");
+            break;
+
+        case CBEN_ENDEDITW:
+            WINE_FIXME("Unhandled notify message CBEN_ENDEDITW.\n");
+            break;
+
+        case CBEN_DRAGBEGINA:
+            WINE_FIXME("Unhandled notify message CBEN_DRAGBEGINA.\n");
+            break;
+
+        case CBEN_DRAGBEGINW:
+            WINE_FIXME("Unhandled notify message CBEN_DRAGBEGINW.\n");
+            break;
+
+        case CBEN_GETDISPINFOA:
+            WINE_FIXME("Unhandled notify message CBEN_GETDISPINFOA.\n");
+            break;
+
+        case CBEN_GETDISPINFOW:
+            WINE_FIXME("Unhandled notify message CBEN_GETDISPINFOW.\n");
+            break;
+
+        case CBEN_INSERTITEM:
+            WINE_FIXME("Unhandled notify message CBEN_INSERTITEM.\n");
+            break;
+
+        case CBEN_DELETEITEM:
+            WINE_FIXME("Unhandled notify message CBEN_DELETEITEM.\n");
+            break;
+
+        case NM_SETCURSOR:
+            WINE_TRACE("Handling notify message NM_SETCURSOR.\n");
+            nmmouse = HeapAlloc(GetProcessHeap(), 0, sizeof(*nmmouse));
+            NMMOUSE_h2g(nmmouse, (NMMOUSE *)hdr);
+            guest->lParam = (LPARAM)nmmouse;
+            break;
+
+        default:
+            WINE_ERR("Unexpected notify message %x.\n", hdr->code);
+    }
+}
+
 static WNDPROC hook_class(const WCHAR *name, WNDPROC replace)
 {
     WNDPROC ret;
@@ -365,6 +436,7 @@ void register_notify_callbacks(void)
 
     register_notify(REBARCLASSNAMEW, rebar_notify);
     register_notify(TOOLBARCLASSNAMEW, toolbar_notify);
+    register_notify(WC_COMBOBOXEXW, combobox_notify);
 }
 
 #endif
