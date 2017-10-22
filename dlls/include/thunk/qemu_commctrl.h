@@ -49,6 +49,17 @@ static inline void TBBUTTON_g2h(TBBUTTON *host, const struct qemu_TBBUTTON *gues
     host->iString = guest->iString;
 }
 
+static inline void TBBUTTON_h2g(struct qemu_TBBUTTON *guest, const TBBUTTON *host)
+{
+    guest->iBitmap = host->iBitmap;
+    guest->idCommand = host->idCommand;
+    guest->fsState = host->fsState;
+    guest->fsStyle = host->fsStyle;
+    memset(&guest->bReserved, 0, sizeof(guest->bReserved));
+    guest->dwData = host->dwData;
+    guest->iString = host->iString;
+}
+
 struct qemu_REBARBANDINFO
 {
     UINT    cbSize;
@@ -426,6 +437,81 @@ static inline void NMCOMBOBOXEX_g2h(NMCOMBOBOXEXW *host, const struct qemu_NMCOM
 {
     NMHDR_g2h(&host->hdr, &guest->hdr);
     COMBOBOXEXITEM_g2h(&host->ceItem, &guest->ceItem);
+}
+
+struct qemu_NMTBHOTITEM
+{
+    struct qemu_NMHDR hdr;
+    int idOld;
+    int idNew;
+    DWORD dwFlags;
+};
+
+static inline void NMTBHOTITEM_h2g(struct qemu_NMTBHOTITEM *guest, const NMTBHOTITEM *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->idOld = host->idOld;
+    guest->idNew = host->idNew;
+    guest->dwFlags = host->dwFlags;
+}
+
+static inline void NMTBHOTITEM_g2h(NMTBHOTITEM *host, const struct qemu_NMTBHOTITEM *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->idOld = guest->idOld;
+    host->idNew = guest->idNew;
+    host->dwFlags = guest->dwFlags;
+}
+
+struct qemu_NMTOOLBAR
+{
+    struct qemu_NMHDR       hdr;
+    INT                     iItem;
+    struct qemu_TBBUTTON    tbButton;
+    INT                     cchText;
+    qemu_ptr                pszText;
+    RECT                    rcButton;
+};
+
+static inline void NMTOOLBAR_h2g(struct qemu_NMTOOLBAR *guest, const NMTOOLBARW *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->iItem = host->iItem;
+    TBBUTTON_h2g(&guest->tbButton, &host->tbButton);
+    guest->cchText = host->cchText;
+    guest->pszText = (ULONG_PTR)host->pszText;
+    memcpy(&guest->rcButton, &host->rcButton, sizeof(guest->rcButton));
+}
+
+static inline void NMTOOLBAR_g2h(NMTOOLBARW *host, const struct qemu_NMTOOLBAR *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->iItem = guest->iItem;
+    TBBUTTON_g2h(&host->tbButton, &guest->tbButton);
+    host->cchText = guest->cchText;
+    host->pszText = (WCHAR *)(ULONG_PTR)guest->pszText;
+    memcpy(&host->rcButton, &guest->rcButton, sizeof(host->rcButton));
+}
+
+struct qemu_NMKEY
+{
+    struct qemu_NMHDR   hdr;
+    UINT                nVKey;
+    UINT                uFlags;
+};
+
+static inline void NMKEY_h2g(struct qemu_NMKEY *guest, const NMKEY *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->nVKey = host->nVKey;
+    guest->uFlags = host->uFlags;
+}
+
+static inline void NMKEY_g2h(NMKEY *host, const struct qemu_NMKEY *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->nVKey = guest->nVKey;
+    host->uFlags = guest->uFlags;
 }
 
 #endif

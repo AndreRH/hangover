@@ -195,6 +195,11 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
     struct qemu_NMTBCUSTOMDRAW *customdraw;
     struct qemu_NMTOOLTIPSCREATED *tooltip;
     struct qemu_NMTBGETINFOTIP *infotip;
+    struct qemu_NMTBHOTITEM *hotitem;
+    struct qemu_NMTOOLBAR *toolbar;
+    struct qemu_NMMOUSE *mouse;
+    struct qemu_NMHDR *guest_hdr;
+    struct qemu_NMKEY *key;
 
     WINE_TRACE("Handling a toolbar notify message\n");
     if (ret)
@@ -211,6 +216,22 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
                 NMTOOLTIPSCREATED_g2h((NMTOOLTIPSCREATED *)hdr, tooltip);
                 break;
 
+            case NM_CLICK:
+            case NM_LDOWN:
+                mouse = (struct qemu_NMMOUSE *)guest->lParam;
+                NMMOUSE_g2h((NMMOUSE *)hdr, mouse);
+                break;
+
+            case NM_KEYDOWN:
+                key = (struct qemu_NMKEY *)guest->lParam;
+                NMKEY_g2h((NMKEY *)hdr, key);
+                break;
+
+            case NM_RELEASEDCAPTURE:
+                guest_hdr = (struct qemu_NMHDR *)guest->lParam;
+                NMHDR_g2h(hdr, guest_hdr);
+                break;
+
             case TBN_GETINFOTIPA:
                 infotip = (struct qemu_NMTBGETINFOTIP *)guest->lParam;
                 NMTBGETINFOTIP_g2h((NMTBGETINFOTIPW *)hdr, infotip);
@@ -225,6 +246,17 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
                 memcpy(((NMTBGETINFOTIPW *)hdr)->pszText, (void *)(ULONG_PTR)infotip->pszText,
                         infotip->cchTextMax * sizeof(WCHAR));
                 HeapFree(GetProcessHeap(), 0, (void *)(ULONG_PTR)infotip->pszText);
+                break;
+
+            case TBN_HOTITEMCHANGE:
+                hotitem = (struct qemu_NMTBHOTITEM *)guest->lParam;
+                NMTBHOTITEM_g2h((NMTBHOTITEM *)hdr, hotitem);
+                break;
+
+            case TBN_ENDDRAG:
+            case TBN_BEGINDRAG:
+                toolbar = (struct qemu_NMTOOLBAR *)guest->lParam;
+                NMTOOLBAR_g2h((NMTOOLBARW *)hdr, toolbar);
                 break;
         }
 
@@ -250,8 +282,31 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
             guest->lParam = (LPARAM)tooltip;
             break;
 
+        case NM_CLICK:
+        case NM_LDOWN:
+            WINE_TRACE("Handling notify message NM_LDOWN.\n");
+            mouse = HeapAlloc(GetProcessHeap(), 0, sizeof(*mouse));
+            NMMOUSE_h2g(mouse, (NMMOUSE *)hdr);
+            guest->lParam = (LPARAM)mouse;
+            break;
+
+        case NM_KEYDOWN:
+            WINE_TRACE("Handling notify message NM_KEYDOWN.\n");
+            key = HeapAlloc(GetProcessHeap(), 0, sizeof(*key));
+            NMKEY_h2g(key, (NMKEY *)hdr);
+            guest->lParam = (LPARAM)key;
+            break;
+
+        case NM_RELEASEDCAPTURE:
+            WINE_TRACE("Handling notify message NM_LDOWN.\n");
+            guest_hdr = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest_hdr));
+            NMHDR_h2g(guest_hdr, hdr);
+            guest->lParam = (LPARAM)guest_hdr;
+            break;
+
+        case TBN_GETDISPINFOA:
         case TBN_GETDISPINFOW:
-            WINE_FIXME("Unhandled notify message TBN_GETDISPINFOW.\n");
+            WINE_FIXME("Unhandled notify message TBN_GETDISPINFO.\n");
             break;
 
         case TBN_TOOLBARCHANGE:
@@ -307,7 +362,10 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
             break;
 
         case TBN_HOTITEMCHANGE:
-            WINE_FIXME("Unhandled notify message TBN_HOTITEMCHANGE.\n");
+            WINE_TRACE("Handling notify message TBN_HOTITEMCHANGE.\n");
+            hotitem = HeapAlloc(GetProcessHeap(), 0, sizeof(*hotitem));
+            NMTBHOTITEM_h2g(hotitem, (NMTBHOTITEM *)hdr);
+            guest->lParam = (LPARAM)hotitem;
             break;
 
         case TBN_WRAPHOTITEM:
@@ -318,16 +376,36 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
             WINE_FIXME("Unhandled notify message TBN_DROPDOWN.\n");
             break;
 
-        case TBN_BEGINDRAG:
-            WINE_FIXME("Unhandled notify message TBN_BEGINDRAG.\n");
-            break;
-
         case TBN_ENDDRAG:
-            WINE_FIXME("Unhandled notify message TBN_ENDDRAG.\n");
+        case TBN_BEGINDRAG:
+            WINE_TRACE("Handling notify message TBN_[BEGIN|END]DRAG.\n");
+            toolbar = HeapAlloc(GetProcessHeap(), 0, sizeof(*toolbar));
+            NMTOOLBAR_h2g(toolbar, (NMTOOLBARW *)hdr);
+            guest->lParam = (LPARAM)toolbar;
             break;
 
         case TBN_DRAGOUT:
             WINE_FIXME("Unhandled notify message TBN_DRAGOUT.\n");
+            break;
+
+        case TBN_GETOBJECT:
+            WINE_FIXME("Unhandled notify message TBN_GETOBJECT.\n");
+            break;
+
+        case TBN_DUPACCELERATOR:
+            WINE_FIXME("Unhandled notify message TBN_DUPACCELERATOR.\n");
+            break;
+
+        case TBN_WRAPACCELERATOR:
+            WINE_FIXME("Unhandled notify message TBN_WRAPACCELERATOR.\n");
+            break;
+
+        case TBN_DRAGOVER:
+            WINE_FIXME("Unhandled notify message TBN_DRAGOVER.\n");
+            break;
+
+        case TBN_MAPACCELERATOR:
+            WINE_FIXME("Unhandled notify message TBN_MAPACCELERATOR.\n");
             break;
 
         case TBN_GETINFOTIPA:
