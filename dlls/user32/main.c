@@ -1139,6 +1139,28 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
         /* If a message can come from the guest or the host user32 has to translate it
          * when it is passed out of the VM. Otherwise other DLLs translate it before it reaches
          * the original WNDPROC. */
+        case WM_USER+1:
+        case WM_USER+4:
+        case WM_USER+11:
+        case WM_USER+13:
+            /* Possible CBEM_INSERTITEM & friends */
+            len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
+            if (len < 0 || len == 256)
+                break;
+
+            if (!strcmpW(class, WC_COMBOBOXEXW))
+            {
+                struct qemu_COMBOBOXEXITEM *guest_item;
+                COMBOBOXEXITEMW *host_item;
+                WINE_TRACE("Translating CBEM_[GET|INSERT][A|W] message.\n");
+
+                guest_item = (struct qemu_COMBOBOXEXITEM *)msg_in->lParam;
+                host_item = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_item));
+                COMBOBOXEXITEM_g2h(host_item, guest_item);
+                msg_out->lParam = (LPARAM)host_item;
+            }
+            break;
+
         case WM_USER+19:
             /* Possible TB_ADDBITMAP */
             len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
@@ -1214,6 +1236,22 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
             WINDOWPOS_h2g(guest, host);
 
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
+
+        case WM_USER+1:
+        case WM_USER+4:
+        case WM_USER+11:
+        case WM_USER+13:
+            if (conv->lParam != orig->lParam)
+            {
+                struct qemu_COMBOBOXEXITEM *guest_item = (struct qemu_COMBOBOXEXITEM *)orig->lParam;
+                COMBOBOXEXITEMW *host_item = (COMBOBOXEXITEMW *)conv->lParam;
+                WINE_TRACE("Reverse translating CBEM_[GET|INSERT][A|W] message.\n");
+
+                COMBOBOXEXITEM_h2g(guest_item, host_item);
+
+                HeapFree(GetProcessHeap(), 0, host_item);
+            }
             break;
 
         case WM_USER+19:

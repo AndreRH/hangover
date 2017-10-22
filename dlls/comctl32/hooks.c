@@ -352,6 +352,7 @@ static void combobox_notify(MSG *guest, MSG *host, BOOL ret)
     struct qemu_NMCBEENDEDITW *editw;
     struct qemu_NMCBEENDEDITA *edita;
     struct qemu_NMHDR *guest_hdr;
+    struct qemu_NMCOMBOBOXEX *insertmsg;
 
     WINE_TRACE("Handling a toolbar notify message\n");
     if (ret)
@@ -371,6 +372,11 @@ static void combobox_notify(MSG *guest, MSG *host, BOOL ret)
             case CBEN_ENDEDITW:
                 editw = (struct qemu_NMCBEENDEDITW *)guest->lParam;
                 NMCBEENDEDITW_g2h((NMCBEENDEDITW *)hdr, editw);
+                break;
+
+            case CBEN_INSERTITEM:
+                insertmsg = (struct qemu_NMCOMBOBOXEX *)guest->lParam;
+                NMCOMBOBOXEX_g2h((NMCOMBOBOXEXW *)hdr, insertmsg);
                 break;
         }
 
@@ -419,7 +425,10 @@ static void combobox_notify(MSG *guest, MSG *host, BOOL ret)
             break;
 
         case CBEN_INSERTITEM:
-            WINE_FIXME("Unhandled notify message CBEN_INSERTITEM.\n");
+            WINE_TRACE("Handling notify message CBEN_INSERTITEM.\n");
+            insertmsg = HeapAlloc(GetProcessHeap(), 0, sizeof(*insertmsg));
+            NMCOMBOBOXEX_h2g(insertmsg, (NMCOMBOBOXEXW *)hdr);
+            guest->lParam = (LPARAM)insertmsg;
             break;
 
         case CBEN_DELETEITEM:

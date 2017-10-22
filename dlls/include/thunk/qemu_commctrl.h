@@ -371,4 +371,61 @@ static inline void NMCBEENDEDITA_g2h(NMCBEENDEDITA *host, const struct qemu_NMCB
     host->iWhy = guest->iWhy;
 }
 
+struct qemu_COMBOBOXEXITEM
+{
+    UINT        mask;
+    qemu_sptr   iItem;
+    qemu_ptr    pszText;
+    int         cchTextMax;
+    int         iImage;
+    int         iSelectedImage;
+    int         iOverlay;
+    int         iIndent;
+    qemu_ptr    lParam;
+};
+
+static inline void COMBOBOXEXITEM_h2g(struct qemu_COMBOBOXEXITEM *guest, const COMBOBOXEXITEMW *host)
+{
+    guest->mask = host->mask;
+    guest->iItem = host->iItem;
+    guest->pszText = (ULONG_PTR)host->pszText;
+    guest->cchTextMax = host->cchTextMax;
+    guest->iImage = host->iImage;
+    guest->iSelectedImage = host->iSelectedImage;
+    guest->iOverlay = host->iOverlay;
+    guest->iIndent = host->iIndent;
+    guest->lParam = host->lParam;
+}
+
+static inline void COMBOBOXEXITEM_g2h(COMBOBOXEXITEMW *host, const struct qemu_COMBOBOXEXITEM *guest)
+{
+    host->mask = guest->mask;
+    host->iItem = guest->iItem;
+    host->pszText = (WCHAR *)(ULONG_PTR)guest->pszText;
+    host->cchTextMax = guest->cchTextMax;
+    host->iImage = guest->iImage;
+    host->iSelectedImage = guest->iSelectedImage;
+    host->iOverlay = guest->iOverlay;
+    host->iIndent = guest->iIndent;
+    host->lParam = guest->lParam;
+}
+
+struct qemu_NMCOMBOBOXEX
+{
+    struct qemu_NMHDR hdr;
+    struct qemu_COMBOBOXEXITEM ceItem;
+};
+
+static inline void NMCOMBOBOXEX_h2g(struct qemu_NMCOMBOBOXEX *guest, const NMCOMBOBOXEXW *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    COMBOBOXEXITEM_h2g(&guest->ceItem, &host->ceItem);
+}
+
+static inline void NMCOMBOBOXEX_g2h(NMCOMBOBOXEXW *host, const struct qemu_NMCOMBOBOXEX *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    COMBOBOXEXITEM_g2h(&host->ceItem, &guest->ceItem);
+}
+
 #endif
