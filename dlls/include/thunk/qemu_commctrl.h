@@ -317,4 +317,58 @@ static inline void NMTBGETINFOTIP_g2h(NMTBGETINFOTIPW *host, const struct qemu_N
     host->lParam = guest->lParam;
 }
 
+struct qemu_NMCBEENDEDITW
+{
+    struct qemu_NMHDR   hdr;
+    BOOL                fChanged;
+    int                 iNewSelection;
+    WCHAR               szText[CBEMAXSTRLEN];
+    int                 iWhy;
+};
+
+static inline void NMCBEENDEDITW_h2g(struct qemu_NMCBEENDEDITW *guest, const NMCBEENDEDITW *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->fChanged = host->fChanged;
+    guest->iNewSelection = host->iNewSelection;
+    memcpy(guest->szText, host->szText, sizeof(guest->szText));
+    guest->iWhy = host->iWhy;
+}
+
+static inline void NMCBEENDEDITW_g2h(NMCBEENDEDITW *host, const struct qemu_NMCBEENDEDITW *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->fChanged = guest->fChanged;
+    host->iNewSelection = guest->iNewSelection;
+    memcpy(host->szText, guest->szText, sizeof(host->szText));
+    host->iWhy = guest->iWhy;
+}
+
+struct qemu_NMCBEENDEDITA
+{
+    struct qemu_NMHDR   hdr;
+    BOOL                fChanged;
+    int                 iNewSelection;
+    char                szText[CBEMAXSTRLEN];
+    int                 iWhy;
+};
+
+static inline void NMCBEENDEDITA_h2g(struct qemu_NMCBEENDEDITA *guest, const NMCBEENDEDITA *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->fChanged = host->fChanged;
+    guest->iNewSelection = host->iNewSelection;
+    memcpy(guest->szText, host->szText, sizeof(guest->szText));
+    guest->iWhy = host->iWhy;
+}
+
+static inline void NMCBEENDEDITA_g2h(NMCBEENDEDITA *host, const struct qemu_NMCBEENDEDITA *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->fChanged = guest->fChanged;
+    host->iNewSelection = guest->iNewSelection;
+    memcpy(host->szText, guest->szText, sizeof(host->szText));
+    host->iWhy = guest->iWhy;
+}
+
 #endif

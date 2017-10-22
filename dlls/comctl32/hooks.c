@@ -349,6 +349,9 @@ static void combobox_notify(MSG *guest, MSG *host, BOOL ret)
 {
     NMHDR *hdr = (NMHDR *)host->lParam;
     struct qemu_NMMOUSE *nmmouse;
+    struct qemu_NMCBEENDEDITW *editw;
+    struct qemu_NMCBEENDEDITA *edita;
+    struct qemu_NMHDR *guest_hdr;
 
     WINE_TRACE("Handling a toolbar notify message\n");
     if (ret)
@@ -358,6 +361,16 @@ static void combobox_notify(MSG *guest, MSG *host, BOOL ret)
             case NM_SETCURSOR:
                 nmmouse = (struct qemu_NMMOUSE *)guest->lParam;
                 NMMOUSE_g2h((NMMOUSE *)hdr, nmmouse);
+                break;
+
+            case CBEN_ENDEDITA:
+                edita = (struct qemu_NMCBEENDEDITA *)guest->lParam;
+                NMCBEENDEDITA_g2h((NMCBEENDEDITA *)hdr, edita);
+                break;
+
+            case CBEN_ENDEDITW:
+                editw = (struct qemu_NMCBEENDEDITW *)guest->lParam;
+                NMCBEENDEDITW_g2h((NMCBEENDEDITW *)hdr, editw);
                 break;
         }
 
@@ -369,15 +382,24 @@ static void combobox_notify(MSG *guest, MSG *host, BOOL ret)
     switch (hdr->code)
     {
         case CBEN_BEGINEDIT:
-            WINE_FIXME("Unhandled notify message CBEN_BEGINEDIT.\n");
+            WINE_TRACE("Handling notify message CBEN_BEGINEDIT.\n");
+            guest_hdr = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest_hdr));
+            NMHDR_h2g(guest_hdr, hdr);
+            guest->lParam = (LPARAM)guest_hdr;
             break;
 
         case CBEN_ENDEDITA:
-            WINE_FIXME("Unhandled notify message CBEN_ENDEDITA.\n");
+            WINE_TRACE("Handling notify message CBEN_ENDEDITA.\n");
+            edita = HeapAlloc(GetProcessHeap(), 0, sizeof(*edita));
+            NMCBEENDEDITA_h2g(edita, (NMCBEENDEDITA *)hdr);
+            guest->lParam = (LPARAM)edita;
             break;
 
         case CBEN_ENDEDITW:
-            WINE_FIXME("Unhandled notify message CBEN_ENDEDITW.\n");
+            WINE_TRACE("Handling notify message CBEN_ENDEDITW.\n");
+            editw = HeapAlloc(GetProcessHeap(), 0, sizeof(*editw));
+            NMCBEENDEDITW_h2g(editw, (NMCBEENDEDITW *)hdr);
+            guest->lParam = (LPARAM)editw;
             break;
 
         case CBEN_DRAGBEGINA:
