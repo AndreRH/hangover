@@ -525,6 +525,64 @@ static void combobox_notify(MSG *guest, MSG *host, BOOL ret)
     }
 }
 
+static void tooltips_notify(MSG *guest, MSG *host, BOOL ret)
+{
+    NMHDR *hdr = (NMHDR *)host->lParam;
+    struct qemu_NMTTDISPINFOW *dispinfow;
+    struct qemu_NMTTDISPINFOA *dispinfoa;
+
+    WINE_TRACE("Handling a tooltip notify message\n");
+    if (ret)
+    {
+    WINE_TRACE("in release\n");
+        switch (hdr->code)
+        {
+            case TTN_GETDISPINFOA:
+                dispinfoa = (struct qemu_NMTTDISPINFOA *)guest->lParam;
+                NMTTDISPINFOA_g2h((NMTTDISPINFOA *)hdr, dispinfoa);
+                break;
+
+            case TTN_GETDISPINFOW:
+                dispinfow = (struct qemu_NMTTDISPINFOW *)guest->lParam;
+                NMTTDISPINFOW_g2h((NMTTDISPINFOW *)hdr, dispinfow);
+                break;
+        }
+
+        if (guest->lParam != host->lParam)
+            HeapFree(GetProcessHeap(), 0, (void *)guest->lParam);
+    WINE_TRACE("rel done\n");
+        return;
+    }
+
+    switch (hdr->code)
+    {
+        case TTN_GETDISPINFOA:
+            WINE_TRACE("Handling notify message TTN_GETDISPINFOA.\n");
+            dispinfoa = HeapAlloc(GetProcessHeap(), 0, sizeof(*dispinfoa));
+            NMTTDISPINFOA_h2g(dispinfoa, (NMTTDISPINFOA *)hdr);
+            guest->lParam = (LPARAM)dispinfoa;
+            break;
+
+        case TTN_GETDISPINFOW:
+            WINE_TRACE("Handling notify message TTN_GETDISPINFOW.\n");
+            dispinfow = HeapAlloc(GetProcessHeap(), 0, sizeof(*dispinfow));
+            NMTTDISPINFOW_h2g(dispinfow, (NMTTDISPINFOW *)hdr);
+            guest->lParam = (LPARAM)dispinfow;
+            break;
+
+        case TTN_SHOW:
+            WINE_FIXME("Unhandled notify message TTN_SHOW.\n");
+            break;
+
+        case TTN_POP:
+            WINE_FIXME("Unhandled notify message TTN_POP.\n");
+            break;
+
+        default:
+            WINE_ERR("Unexpected notify message %x.\n", hdr->code);
+    }
+}
+
 static WNDPROC hook_class(const WCHAR *name, WNDPROC replace)
 {
     WNDPROC ret;
@@ -575,6 +633,7 @@ void register_notify_callbacks(void)
     register_notify(REBARCLASSNAMEW, rebar_notify);
     register_notify(TOOLBARCLASSNAMEW, toolbar_notify);
     register_notify(WC_COMBOBOXEXW, combobox_notify);
+    register_notify(TOOLTIPS_CLASSW, tooltips_notify);
 }
 
 #endif

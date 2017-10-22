@@ -514,4 +514,82 @@ static inline void NMKEY_g2h(NMKEY *host, const struct qemu_NMKEY *guest)
     host->uFlags = guest->uFlags;
 }
 
+struct qemu_NMTTDISPINFOA
+{
+    struct qemu_NMHDR   hdr;
+    qemu_ptr            lpszText;
+    CHAR                szText[80];
+    qemu_handle         hinst;
+    UINT                uFlags;
+    qemu_ptr            lParam;
+};
+
+static inline void NMTTDISPINFOA_h2g(struct qemu_NMTTDISPINFOA *guest, const NMTTDISPINFOA *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+
+    if (host->lpszText == host->szText)
+        guest->lpszText = (ULONG_PTR)guest->szText;
+    else
+        guest->lpszText = (ULONG_PTR)host->lpszText;
+
+    memcpy(guest->szText, host->szText, sizeof(guest->szText));
+    guest->hinst = (ULONG_PTR)host->hinst;
+    guest->uFlags = host->uFlags;
+    guest->lParam = host->lParam;
+}
+
+static inline void NMTTDISPINFOA_g2h(NMTTDISPINFOA *host, const struct qemu_NMTTDISPINFOA *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+
+    if (guest->lpszText == (ULONG_PTR)guest->szText)
+        host->lpszText = host->szText;
+    else
+        host->lpszText = (CHAR *)(ULONG_PTR)guest->lpszText;
+
+    memcpy(host->szText, guest->szText, sizeof(host->szText));
+    host->hinst = HANDLE_g2h(guest->hinst);
+    host->uFlags = guest->uFlags;
+    host->lParam = guest->lParam;
+}
+
+struct qemu_NMTTDISPINFOW
+{
+    struct qemu_NMHDR   hdr;
+    qemu_ptr            lpszText;
+    WCHAR               szText[80];
+    qemu_handle         hinst;
+    UINT                uFlags;
+    qemu_ptr            lParam;
+};
+
+static inline void NMTTDISPINFOW_h2g(struct qemu_NMTTDISPINFOW *guest, const NMTTDISPINFOW *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    if (host->lpszText == host->szText)
+        guest->lpszText = (ULONG_PTR)guest->szText;
+    else
+        guest->lpszText = (ULONG_PTR)host->lpszText;
+    memcpy(guest->szText, host->szText, sizeof(guest->szText));
+    guest->hinst = (ULONG_PTR)host->hinst;
+    guest->uFlags = host->uFlags;
+    guest->lParam = host->lParam;
+}
+
+static inline void NMTTDISPINFOW_g2h(NMTTDISPINFOW *host, const struct qemu_NMTTDISPINFOW *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+
+    if (guest->lpszText == (ULONG_PTR)guest->szText)
+        host->lpszText = host->szText;
+    else
+        host->lpszText = (WCHAR *)(ULONG_PTR)guest->lpszText;
+
+    memcpy(host->szText, guest->szText, sizeof(host->szText));
+    host->hinst = HANDLE_g2h(guest->hinst);
+    host->uFlags = guest->uFlags;
+    host->lParam = guest->lParam;
+}
+
 #endif
