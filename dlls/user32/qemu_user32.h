@@ -1457,14 +1457,14 @@ extern uint64_t guest_wndproc_wrapper;
 
 struct reverse_wndproc_wrapper
 {
+#if GUEST_BIT == HOST_BIT
     char code[0x20];
+#else
+    char code[0x40];
+#endif
     uint64_t guest_proc;
     void *host_proc;
 };
-
-#define REVERSE_WNDPROC_WRAPPER_COUNT 1024
-extern struct reverse_wndproc_wrapper
-        reverse_wndproc_wrappers[REVERSE_WNDPROC_WRAPPER_COUNT];
 
 WNDPROC wndproc_guest_to_host(uint64_t guest_func);
 uint64_t wndproc_host_to_guest(WNDPROC host_func);

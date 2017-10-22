@@ -106,13 +106,90 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 
 uint64_t reverse_wndproc_func;
 
+#define REVERSE_WNDPROC_WRAPPER_COUNT 1024
+static struct reverse_wndproc_wrapper *reverse_wndproc_wrappers;
+
+void init_reverse_wndproc(struct reverse_wndproc_wrapper *wrapper)
+{
+    /* This is a bit more complicated than the ARM counterpart because we do not
+     * have a spare argument in register to put our self pointer in. This means we
+     * have to shuffle push the argument on the stack and do an actual call on top
+     * of it, and then clean up the stack on return.
+     *
+     * The 64 bit code is generated from this C code:
+     * LRESULT WINAPI wndproc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+     * {
+     *     LRESULT (* WINAPI wndproc2)(HWND wnd, UINT msg, WPARAM wp, LPARAM lp, void *extra);
+     *     wndproc2 = *(void **)((ULONG_PTR)wndproc + 0x28);
+     *     return wndproc2(wnd, msg, wp, lp, wndproc);
+     * }
+     *
+     * For 32 I decided to put the absolute call address and the self pointer directly
+     * into the code at runtime.
+     **/
+#if HOST_BIT == GUEST_BIT
+
+static const char wrapper_code[] =
+    {
+        /* 27 bytes */
+        0x48, 0x83, 0xec, 0x38,                     /* sub    $0x38,%rsp        - Reserve stack space   */
+        0x48, 0x8d, 0x05, 0xf5, 0xff, 0xff, 0xff,   /* lea    -0xb(%rip),%rax   - Get self ptr          */
+        0x48, 0x89, 0x44, 0x24, 0x20,               /* mov    %rax,0x20(%rsp)   - push self ptr         */
+        0xff, 0x15, 0x0a, 0x00, 0x00, 0x00,         /* callq  *0xa(%rip)        - Call guest func       */
+        0x48, 0x83, 0xc4, 0x38,                     /* add    $0x38,%rsp        - Clean up stack        */
+        0xc3,                                       /* retq                     - return                */
+    };
+
+    memset(wrapper->code, 0xcc, sizeof(wrapper->code));
+    memcpy(wrapper->code, wrapper_code, sizeof(wrapper_code));
+
+#else
+
+    /* FIXME: Where does this get the self ptr? */
+    static const char wrapper_code[] =
+    {
+        0x83, 0xec, 0x2c,                               /* sub    $0x2c,%esp                            */
+        0x8b, 0x44, 0x24, 0x3c,                         /* mov    0x3c(%esp),%eax                       */
+        0xc7, 0x44, 0x24, 0x10, 0xef, 0xcd, 0xab, 0x89, /* movl   $0x89abcdef,0x10(%esp) selfptr        */
+        0x89, 0x44, 0x24, 0x0c,                         /* mov    %eax,0xc(%esp)                        */
+        0x8b, 0x44, 0x24, 0x38,                         /* mov    0x38(%esp),%eax                       */
+        0x89, 0x44, 0x24, 0x08,                         /* mov    %eax,0x8(%esp)                        */
+        0x8b, 0x44, 0x24, 0x34,                         /* mov    0x34(%esp),%eax                       */
+        0x89, 0x44, 0x24, 0x04,                         /* mov    %eax,0x4(%esp)                        */
+        0x8b, 0x44, 0x24, 0x30,                         /* mov    0x30(%esp),%eax                       */
+        0x89, 0x04, 0x24,                               /* mov    %eax,(%esp)                           */
+        0xb8, 0x78, 0x56, 0x34, 0x12,                   /* mov    $0x12345678,%eax - call address here  */
+        0xff, 0xd0,                                     /* call   *%eax                                 */
+        0x83, 0xec, 0x14,                               /* sub    $0x14,%esp                            */
+        0x83, 0xc4, 0x2c,                               /* add    $0x2c,%esp                            */
+        0xc2, 0x10, 0x00,                               /* ret    $0x10                                 */
+    };
+
+    memset(wrapper->code, 0xcc, sizeof(wrapper->code));
+    memcpy(wrapper->code, wrapper_code, sizeof(wrapper_code));
+    *(DWORD *)&wrapper->code[0x0b] = (ULONG_PTR)wrapper;
+    *(DWORD *)&wrapper->code[0x2b] = reverse_wndproc_func;
+
+#endif
+}
+
 static void qemu_set_callbacks(struct qemu_syscall *call)
 {
     struct qemu_set_callbacks *c = (struct qemu_set_callbacks *)call;
+    unsigned int i;
+
     reverse_wndproc_func = c->rev_wndproc_wrapper;
     guest_wndproc_wrapper = c->wndproc_wrapper;
     guest_mod = (HMODULE)c->guest_mod;
     guest_win_event_wrapper = c->guest_win_event_wrapper;
+
+    /* This needs to be guest accessible, so delay allocation until the address space
+     * is set up. */
+    reverse_wndproc_wrappers = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
+            sizeof(*reverse_wndproc_wrappers) * REVERSE_WNDPROC_WRAPPER_COUNT);
+    for (i = 0; i < REVERSE_WNDPROC_WRAPPER_COUNT; ++i)
+        init_reverse_wndproc(&reverse_wndproc_wrappers[i]);
+
 }
 
 const struct qemu_ops *qemu_ops;
@@ -882,42 +959,6 @@ void init_wndproc(struct wndproc_wrapper *wrapper)
     __clear_cache(&wrapper->ldrx4, &wrapper->br + 1);
 }
 
-/* This is most likely dead code. It will only be triggered if Wine runs out of WNDPROC handles, 
- * then a Wine module uses a not-yet-used WNDPROC and the application retrieves this WNDPROC with
- * GetWindowLongPtr or friends. The code has been used previously when WNDPROCs were handled in a
- * different way, so it received some testing before becoming a really rare corner case. */
-struct reverse_wndproc_wrapper
-        reverse_wndproc_wrappers[REVERSE_WNDPROC_WRAPPER_COUNT];
-
-void init_reverse_wndproc(struct reverse_wndproc_wrapper *wrapper)
-{
-    /* This is a bit more complicated than the ARM counterpart because we do not
-     * have a spare argument in register to put our self pointer in. This means we
-     * have to shuffle push the argument on the stack and do an actual call on top
-     * of it, and then clean up the stack on return.
-     *
-     * The code is generated from this C code:
-     * LRESULT WINAPI wndproc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-     * {
-     *     LRESULT (* WINAPI wndproc2)(HWND wnd, UINT msg, WPARAM wp, LPARAM lp, void *extra);
-     *     wndproc2 = *(void **)((ULONG_PTR)wndproc + 0x28);
-     *     return wndproc2(wnd, msg, wp, lp, wndproc);
-     * }
-     **/
-    static const char wrapper_code[] =
-    {
-        0x48, 0x83, 0xec, 0x38,                     /* sub    $0x38,%rsp        - Reserve stack space   */
-        0x48, 0x8d, 0x05, 0xf5, 0xff, 0xff, 0xff,   /* lea    -0xb(%rip),%rax   - Get self ptr          */
-        0x48, 0x89, 0x44, 0x24, 0x20,               /* mov    %rax,0x20(%rsp)   - push self ptr         */
-        0xff, 0x15, 0x0a, 0x00, 0x00, 0x00,         /* callq  *0xa(%rip)        - Call guest func       */
-        0x48, 0x83, 0xc4, 0x38,                     /* add    $0x38,%rsp        - Clean up stack        */
-        0xc3,                                       /* retq                     - return                */
-    };
-
-    memset(wrapper->code, 0xcc, sizeof(wrapper->code));
-    memcpy(wrapper->code, wrapper_code, sizeof(wrapper_code));
-}
-
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     unsigned int i;
@@ -949,9 +990,6 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
 
     for (i = 0; i < wndproc_wrapper_count; ++i)
         init_wndproc(&wndproc_wrappers[i]);
-
-    for (i = 0; i < REVERSE_WNDPROC_WRAPPER_COUNT; ++i)
-        init_reverse_wndproc(&reverse_wndproc_wrappers[i]);
 
     user32_tls = TlsAlloc();
     if (user32_tls == TLS_OUT_OF_INDEXES)
