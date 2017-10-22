@@ -272,4 +272,49 @@ static inline void NMMOUSE_g2h(NMMOUSE *host, const struct qemu_NMMOUSE *guest)
     host->dwHitInfo = guest->dwHitInfo;
 }
 
+struct qemu_NMTOOLTIPSCREATED
+{
+    struct qemu_NMHDR   hdr;
+    qemu_handle         hwndToolTips;
+};
+
+static inline void NMTOOLTIPSCREATED_h2g(struct qemu_NMTOOLTIPSCREATED *guest, const NMTOOLTIPSCREATED *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->hwndToolTips = (ULONG_PTR)host->hwndToolTips;
+}
+
+static inline void NMTOOLTIPSCREATED_g2h(NMTOOLTIPSCREATED *host, const struct qemu_NMTOOLTIPSCREATED *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->hwndToolTips = HANDLE_g2h(guest->hwndToolTips);
+}
+
+struct qemu_NMTBGETINFOTIP
+{
+    struct qemu_NMHDR   hdr;
+    qemu_ptr            pszText;
+    INT                 cchTextMax;
+    INT                 iItem;
+    qemu_ptr            lParam;
+};
+
+static inline void NMTBGETINFOTIP_h2g(struct qemu_NMTBGETINFOTIP *guest, const NMTBGETINFOTIPW *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    /* guest->pszText = (ULONG_PTR)host->pszText; - handled by caller */
+    guest->cchTextMax = host->cchTextMax;
+    guest->iItem = host->iItem;
+    guest->lParam = host->lParam;
+}
+
+static inline void NMTBGETINFOTIP_g2h(NMTBGETINFOTIPW *host, const struct qemu_NMTBGETINFOTIP *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    /* host->pszText = (WCHAR *)(ULONG_PTR)guest->pszText; - handled by caller */
+    host->cchTextMax = guest->cchTextMax;
+    host->iItem = guest->iItem;
+    host->lParam = guest->lParam;
+}
+
 #endif

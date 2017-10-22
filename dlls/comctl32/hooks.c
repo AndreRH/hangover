@@ -193,6 +193,8 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
 {
     NMHDR *hdr = (NMHDR *)host->lParam;
     struct qemu_NMTBCUSTOMDRAW *customdraw;
+    struct qemu_NMTOOLTIPSCREATED *tooltip;
+    struct qemu_NMTBGETINFOTIP *infotip;
 
     WINE_TRACE("Handling a toolbar notify message\n");
     if (ret)
@@ -203,10 +205,32 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
                 customdraw = (struct qemu_NMTBCUSTOMDRAW *)guest->lParam;
                 NMTBCUSTOMDRAW_g2h((NMTBCUSTOMDRAW *)hdr, customdraw);
                 break;
+
+            case NM_TOOLTIPSCREATED:
+                tooltip = (struct qemu_NMTOOLTIPSCREATED *)guest->lParam;
+                NMTOOLTIPSCREATED_g2h((NMTOOLTIPSCREATED *)hdr, tooltip);
+                break;
+
+            case TBN_GETINFOTIPA:
+                infotip = (struct qemu_NMTBGETINFOTIP *)guest->lParam;
+                NMTBGETINFOTIP_g2h((NMTBGETINFOTIPW *)hdr, infotip);
+                memcpy(((NMTBGETINFOTIPA *)hdr)->pszText, (void *)(ULONG_PTR)infotip->pszText,
+                        infotip->cchTextMax);
+                HeapFree(GetProcessHeap(), 0, (void *)(ULONG_PTR)infotip->pszText);
+                break;
+
+            case TBN_GETINFOTIPW:
+                infotip = (struct qemu_NMTBGETINFOTIP *)guest->lParam;
+                NMTBGETINFOTIP_g2h((NMTBGETINFOTIPW *)hdr, infotip);
+                memcpy(((NMTBGETINFOTIPW *)hdr)->pszText, (void *)(ULONG_PTR)infotip->pszText,
+                        infotip->cchTextMax * sizeof(WCHAR));
+                HeapFree(GetProcessHeap(), 0, (void *)(ULONG_PTR)infotip->pszText);
+                break;
         }
 
         if (guest->lParam != host->lParam)
             HeapFree(GetProcessHeap(), 0, (void *)guest->lParam);
+        WINE_TRACE("Free done\n");
         return;
     }
 
@@ -220,7 +244,10 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
             break;
 
         case NM_TOOLTIPSCREATED:
-            WINE_FIXME("Unhandled notify message NM_TOOLTIPSCREATED.\n");
+            WINE_TRACE("Handling notify message NM_TOOLTIPSCREATED.\n");
+            tooltip = HeapAlloc(GetProcessHeap(), 0, sizeof(*tooltip));
+            NMTOOLTIPSCREATED_h2g(tooltip, (NMTOOLTIPSCREATED *)hdr);
+            guest->lParam = (LPARAM)tooltip;
             break;
 
         case TBN_GETDISPINFOW:
@@ -304,11 +331,13 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
             break;
 
         case TBN_GETINFOTIPA:
-            WINE_FIXME("Unhandled notify message TBN_GETINFOTIPA.\n");
-            break;
-
         case TBN_GETINFOTIPW:
-            WINE_FIXME("Unhandled notify message TBN_GETINFOTIPW.\n");
+            WINE_TRACE("Handling notify message TBN_GETINFOTIP.\n");
+            infotip = HeapAlloc(GetProcessHeap(), 0, sizeof(*infotip));
+            NMTBGETINFOTIP_h2g(infotip, (NMTBGETINFOTIPW *)hdr);
+            infotip->pszText = (DWORD_PTR)HeapAlloc(GetProcessHeap(),
+                    HEAP_ZERO_MEMORY, infotip->cchTextMax * sizeof(WCHAR));
+            guest->lParam = (LPARAM)infotip;
             break;
 
         default:
