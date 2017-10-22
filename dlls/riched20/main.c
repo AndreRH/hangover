@@ -25,7 +25,6 @@
 #ifdef QEMU_DLL_GUEST
 
 #include <initguid.h>
-#include <richole.h>
 DEFINE_GUID(IID_ITextServices, 0x8d33f740, 0xcf58, 0x11ce, 0xa8, 0x9d, 0x00, 0xaa, 0x00, 0x6c, 0xad, 0xc5);
 DEFINE_GUID(IID_ITextHost, 0x13e670f4,0x1a5a,0x11cf,0xab,0xeb,0x00,0xaa,0x00,0xb6,0x5e,0xa1);
 DEFINE_GUID(IID_ITextHost2, 0x13e670f5,0x1a5a,0x11cf,0xab,0xeb,0x00,0xaa,0x00,0xb6,0x5e,0xa1);
@@ -34,6 +33,10 @@ DEFINE_GUID(IID_ITextHost2, 0x13e670f5,0x1a5a,0x11cf,0xab,0xeb,0x00,0xaa,0x00,0x
 
 /* Separate because of <initguid.h>. */
 #include <richole.h>
+
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_richedit.h"
+#include "user32_wrapper.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -133,6 +136,116 @@ static uint64_t guest_ole_callback_Release;
 static uint64_t guest_editstream_cb;
 static uint64_t guest_breakproc_wrapper;
 
+#if GUEST_BIT != HOST_BIT
+
+static void riched20_notify(MSG *guest, MSG *host, BOOL ret)
+{
+    NMHDR *hdr = (NMHDR *)host->lParam;
+    struct qemu_MSGFILTER *filter;
+    struct qemu_SELCHANGE *selchange;
+
+    WINE_TRACE("Handling a riched20 notify message\n");
+    if (ret)
+    {
+        switch (hdr->code)
+        {
+            case EN_MSGFILTER:
+                filter = (struct qemu_MSGFILTER *)guest->lParam;
+                MSGFILTER_g2h((MSGFILTER *)hdr, filter);
+                break;
+
+            case EN_SELCHANGE:
+                selchange = (struct qemu_SELCHANGE *)guest->lParam;
+                SELCHANGE_g2h((SELCHANGE *)hdr, selchange);
+                break;
+        }
+
+        if (guest->lParam != host->lParam)
+            HeapFree(GetProcessHeap(), 0, (void *)guest->lParam);
+        return;
+    }
+
+    switch (hdr->code)
+    {
+        case EN_MSGFILTER:
+            WINE_TRACE("Handling notification message EN_MSGFILTER.\n");
+            filter = HeapAlloc(GetProcessHeap(), 0, sizeof(*filter));
+            MSGFILTER_h2g(filter, (MSGFILTER *)hdr);
+            guest->lParam = (LPARAM)filter;
+            break;
+
+        case EN_LINK:
+            WINE_FIXME("Unhandled notification message EN_LINK.\n");
+            break;
+
+        case EN_SETFOCUS:
+            WINE_FIXME("Unhandled notification message EN_SETFOCUS.\n");
+            break;
+
+        case EN_KILLFOCUS:
+            WINE_FIXME("Unhandled notification message EN_KILLFOCUS.\n");
+            break;
+
+        case EN_UPDATE:
+            WINE_FIXME("Unhandled notification message EN_MSGFILTER.\n");
+            break;
+
+        case EN_DROPFILES:
+            WINE_FIXME("Unhandled notification message EN_DROPFILES.\n");
+            break;
+
+        case EN_OLEOPFAILED:
+            WINE_FIXME("Unhandled notification message EN_OLEOPFAILED.\n");
+            break;
+
+        case EN_PROTECTED:
+            WINE_FIXME("Unhandled notification message EN_PROTECTED.\n");
+            break;
+
+        case EN_REQUESTRESIZE:
+            WINE_FIXME("Unhandled notification message EN_MSGFILTER.\n");
+            break;
+
+        case EN_SAVECLIPBOARD:
+            WINE_FIXME("Unhandled notification message EN_SAVECLIPBOARD.\n");
+            break;
+
+        case EN_SELCHANGE:
+            WINE_TRACE("Handling notification message EN_SELCHANGE.\n");
+            selchange = HeapAlloc(GetProcessHeap(), 0, sizeof(*selchange));
+            SELCHANGE_h2g(selchange, (SELCHANGE *)hdr);
+            guest->lParam = (LPARAM)selchange;
+            break;
+
+        case EN_STOPNOUNDO:
+            WINE_FIXME("Unhandled notification message EN_STOPNOUNDO.\n");
+            break;
+
+        default:
+            WINE_ERR("Unexpected notify message %x.\n", hdr->code);
+    }
+}
+
+static void register_notify_callbacks(void)
+{
+    QEMU_USER32_NOTIFY_FUNC register_notify;
+    HMODULE qemu_user32 = GetModuleHandleA("qemu_user32");
+
+    if (!qemu_user32)
+        WINE_ERR("Cannot get qemu_user32.dll\n");
+    register_notify = (void *)GetProcAddress(qemu_user32, "qemu_user32_notify");
+    if (!register_notify)
+        WINE_ERR("Cannot get qemu_user32_notify\n");
+
+    register_notify(RICHEDIT_CLASS20W, riched20_notify);
+    register_notify(MSFTEDIT_CLASS, riched20_notify);
+}
+
+#else
+
+static void register_notify_callbacks(void) {}
+
+#endif
 static void qemu_set_callbacks(struct qemu_syscall *call)
 {
     struct qemu_set_callbacks *c = (struct qemu_set_callbacks *)call;
@@ -143,6 +256,8 @@ static void qemu_set_callbacks(struct qemu_syscall *call)
     guest_ole_callback_Release = c->Release;
     guest_editstream_cb = c->editstream_cb;
     guest_breakproc_wrapper = c->breakproc;
+
+    register_notify_callbacks();
 }
 
 static const syscall_handler dll_functions[] =

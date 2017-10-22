@@ -1312,6 +1312,7 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
                 notify_callbacks[i].translate(msg_out, msg_in, FALSE);
                 return;
             }
+            WINE_WARN("WM_NOTIFY from unregistered class %s.\n", wine_dbgstr_w(class));
             break;
         }
 
