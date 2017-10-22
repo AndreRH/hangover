@@ -49,7 +49,10 @@ static LRESULT WINAPI rebar_wndproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 {
     LRESULT ret;
     REBARINFO rbi_host;
+    REBARBANDINFOW band_host;
+
     struct qemu_REBARINFO *rbi_guest;
+    struct qemu_REBARBANDINFO *band_guest;
 
     WINE_TRACE("Message %x\n", msg);
 
@@ -62,6 +65,19 @@ static LRESULT WINAPI rebar_wndproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 
             REBARINFO_g2h(&rbi_host, rbi_guest);
             lParam = (LPARAM)&rbi_host;
+            break;
+
+        case RB_INSERTBANDA:
+        case RB_INSERTBANDW:
+            band_guest = (struct qemu_REBARBANDINFO *)lParam;
+            if (band_guest)
+            {
+                if (band_guest->cbSize == sizeof(REBARBANDINFOW))
+                    WINE_ERR("Got a guest message with host size. Called from a Wine DLL?.\n");
+
+                REBARBANDINFO_g2h(&band_host, band_guest);
+                lParam = (LPARAM)&band_host;
+            }
             break;
     }
 

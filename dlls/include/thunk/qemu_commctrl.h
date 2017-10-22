@@ -49,4 +49,60 @@ static inline void TBBUTTON_g2h(TBBUTTON *host, const struct qemu_TBBUTTON *gues
     host->iString = guest->iString;
 }
 
+struct qemu_REBARBANDINFO
+{
+    UINT    cbSize;
+    UINT    fMask;
+    UINT    fStyle;
+    COLORREF  clrFore;
+    COLORREF  clrBack;
+    qemu_ptr    lpText;
+    UINT    cch;
+    INT     iImage;
+    qemu_handle    hwndChild;
+    UINT    cxMinChild;
+    UINT    cyMinChild;
+    UINT    cx;
+    qemu_handle hbmBack;
+    UINT    wID;
+    UINT    cyChild;
+    UINT    cyMaxChild;
+    UINT    cyIntegral;
+    UINT    cxIdeal;
+    qemu_ptr    lParam;
+    UINT    cxHeader;
+    /* _WIN32_WINNT >= 0x0600 */
+    RECT    rcChevronLocation;
+    UINT    uChevronState;
+};
+
+static inline void REBARBANDINFO_g2h(REBARBANDINFOW *host, const struct qemu_REBARBANDINFO *guest)
+{
+    host->cbSize = sizeof(*host);
+    host->fMask = guest->fMask;
+    host->fStyle = guest->fStyle;
+    host->clrFore = guest->clrFore;
+    host->clrBack = guest->clrBack;
+    host->lpText = (WCHAR *)(ULONG_PTR)guest->lpText;
+    host->cch = guest->cch;
+    host->iImage = guest->iImage;
+    host->hwndChild = HANDLE_g2h(guest->hwndChild);
+    host->cxMinChild = guest->cxMinChild;
+    host->cyMinChild = guest->cyMinChild;
+    host->cx = guest->cx;
+    host->hbmBack = HANDLE_g2h(guest->hbmBack);
+    host->wID = guest->wID;
+    host->cyChild = guest->cyChild;
+    host->cyMaxChild = guest->cyMaxChild;
+    host->cyIntegral = guest->cyIntegral;
+    host->cxIdeal = guest->cxIdeal;
+    host->lParam = guest->lParam;
+    host->cxHeader = guest->cxHeader;
+    host->rcChevronLocation.left = guest->rcChevronLocation.left;
+    host->rcChevronLocation.top = guest->rcChevronLocation.top;
+    host->rcChevronLocation.right = guest->rcChevronLocation.right;
+    host->rcChevronLocation.bottom = guest->rcChevronLocation.bottom;
+    host->uChevronState = guest->uChevronState;
+}
+
 #endif
