@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_user32.h"
@@ -29,7 +31,6 @@
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 #endif
-
 
 struct qemu_TrackPopupMenuEx
 {
@@ -1569,8 +1570,17 @@ WINUSERAPI BOOL WINAPI InsertMenuItemA(HMENU hMenu, UINT uItem, BOOL bypos, cons
 void qemu_InsertMenuItemA(struct qemu_syscall *call)
 {
     struct qemu_InsertMenuItemA *c = (struct qemu_InsertMenuItemA *)call;
+    MENUITEMINFOA copy, *item;
     WINE_TRACE("\n");
-    c->super.iret = InsertMenuItemA(QEMU_G2H(c->hMenu), c->uItem, c->bypos, QEMU_G2H(c->lpmii));
+
+#if GUEST_BIT == HOST_BIT
+    item = QEMU_G2H(c->lpmii);
+#else
+    item = &copy;
+    MENUITEMINFO_g2h((MENUITEMINFOW *)item, QEMU_G2H(c->lpmii));
+#endif
+
+    c->super.iret = InsertMenuItemA(QEMU_G2H(c->hMenu), c->uItem, c->bypos, item);
 }
 
 #endif
@@ -1605,8 +1615,17 @@ WINUSERAPI BOOL WINAPI InsertMenuItemW(HMENU hMenu, UINT uItem, BOOL bypos, cons
 void qemu_InsertMenuItemW(struct qemu_syscall *call)
 {
     struct qemu_InsertMenuItemW *c = (struct qemu_InsertMenuItemW *)call;
+    MENUITEMINFOW copy, *item;
     WINE_TRACE("\n");
-    c->super.iret = InsertMenuItemW(QEMU_G2H(c->hMenu), c->uItem, c->bypos, QEMU_G2H(c->lpmii));
+
+#if GUEST_BIT == HOST_BIT
+    item = QEMU_G2H(c->lpmii);
+#else
+    item = &copy;
+    MENUITEMINFO_g2h(item, QEMU_G2H(c->lpmii));
+#endif
+
+    c->super.iret = InsertMenuItemW(QEMU_G2H(c->hMenu), c->uItem, c->bypos, item);
 }
 
 #endif

@@ -95,4 +95,36 @@ static inline void PAINTSTRUCT_g2h(PAINTSTRUCT *host, const struct qemu_PAINTSTR
     memcpy(host->rgbReserved, guest->rgbReserved, sizeof(host->rgbReserved));
 }
 
+struct qemu_MENUITEMINFO
+{
+    UINT            cbSize;
+    UINT            fMask;
+    UINT            fType;
+    UINT            fState;
+    UINT            wID;
+    qemu_handle     hSubMenu;
+    qemu_handle     hbmpChecked;
+    qemu_handle     hbmpUnchecked;
+    qemu_ptr        dwItemData;
+    qemu_ptr        dwTypeData;
+    UINT            cch;
+    qemu_handle     hbmpItem;
+};
+
+static inline void MENUITEMINFO_g2h(MENUITEMINFOW *host, const struct qemu_MENUITEMINFO *guest)
+{
+    host->cbSize = sizeof(*host);
+    host->fMask = guest->fMask;
+    host->fType = guest->fType;
+    host->fState = guest->fState;
+    host->wID = guest->wID;
+    host->hSubMenu = HANDLE_g2h(guest->hSubMenu);
+    host->hbmpChecked = HANDLE_g2h(guest->hbmpChecked);
+    host->hbmpUnchecked = HANDLE_g2h(guest->hbmpUnchecked);
+    host->dwItemData = guest->dwItemData;
+    host->dwTypeData = (LPWSTR)(ULONG_PTR)guest->dwTypeData;
+    host->cch = guest->cch;
+    host->hbmpItem = HANDLE_g2h(guest->hbmpItem);
+}
+
 #endif
