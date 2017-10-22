@@ -65,4 +65,34 @@ static inline void NMHDR_g2h(NMHDR *host, const struct qemu_NMHDR *guest)
     host->code = guest->code;
 }
 
+struct qemu_PAINTSTRUCT
+{
+    qemu_handle     hdc;
+    BOOL            fErase;
+    RECT            rcPaint;
+    BOOL            fRestore;
+    BOOL            fIncUpdate;
+    BYTE            rgbReserved[32];
+};
+
+static inline void PAINTSTRUCT_h2g(struct qemu_PAINTSTRUCT *guest, const PAINTSTRUCT *host)
+{
+    guest->hdc = (ULONG_PTR)host->hdc;
+    guest->fErase = host->fErase;
+    memcpy(&guest->rcPaint, &host->rcPaint, sizeof(guest->rcPaint));
+    guest->fRestore = host->fRestore;
+    guest->fIncUpdate = host->fIncUpdate;
+    memcpy(guest->rgbReserved, host->rgbReserved, sizeof(guest->rgbReserved));
+}
+
+static inline void PAINTSTRUCT_g2h(PAINTSTRUCT *host, const struct qemu_PAINTSTRUCT *guest)
+{
+    host->hdc = HANDLE_g2h(guest->hdc);
+    host->fErase = guest->fErase;
+    memcpy(&host->rcPaint, &guest->rcPaint, sizeof(host->rcPaint));
+    host->fRestore = guest->fRestore;
+    host->fIncUpdate = guest->fIncUpdate;
+    memcpy(host->rgbReserved, guest->rgbReserved, sizeof(host->rgbReserved));
+}
+
 #endif
