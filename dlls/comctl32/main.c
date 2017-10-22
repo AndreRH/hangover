@@ -371,6 +371,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     for (i = 0; i < wndproc_wrapper_count; ++i)
         init_wndproc(&wndproc_wrappers[i]);
 
+    hook_wndprocs();
+
     return dll_functions;
 }
 
