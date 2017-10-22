@@ -1272,6 +1272,7 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
                 if (strcmpW(class, notify_callbacks[i].name))
                     continue;
                 notify_callbacks[i].translate(msg_out, msg_in, FALSE);
+                return;
             }
             break;
         }
@@ -1334,6 +1335,7 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
                 if (strcmpW(class, notify_callbacks[i].name))
                     continue;
                 notify_callbacks[i].translate(conv, orig, TRUE);
+                return;
             }
             break;
         }
