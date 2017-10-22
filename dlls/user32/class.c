@@ -746,8 +746,8 @@ LRESULT CALLBACK reverse_wndproc_func(HWND win, UINT msg, WPARAM wp, LPARAM lp, 
     call.super.id = QEMU_SYSCALL_ID(CALL_CALL_WNDPROC);
     call.win = (ULONG_PTR)win;
     call.msg = msg;
-    call.wp = wp;
-    call.lp = lp;
+    call.wp = (ULONG_PTR)wp;
+    call.lp = (ULONG_PTR)lp;
     call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);

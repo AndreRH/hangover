@@ -1328,7 +1328,7 @@ WINUSERAPI BOOL WINAPI EnumWindows(WNDENUMPROC lpEnumFunc, LPARAM lParam)
     struct qemu_EnumWindows call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMWINDOWS);
     call.lpEnumFunc = (ULONG_PTR)lpEnumFunc;
-    call.lParam = lParam;
+    call.lParam = (LPARAM)lParam;
     call.wrapper = (ULONG_PTR)WndEnum_guest_cb;
 
     qemu_syscall(&call.super);
@@ -1394,7 +1394,7 @@ WINUSERAPI BOOL WINAPI EnumThreadWindows(DWORD id, WNDENUMPROC func, LPARAM lPar
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMTHREADWINDOWS);
     call.id = id;
     call.func = (ULONG_PTR)func;
-    call.lParam = lParam;
+    call.lParam = (LPARAM)lParam;
     call.wrapper = (ULONG_PTR)WndEnum_guest_cb;
 
     qemu_syscall(&call.super);
@@ -1470,7 +1470,7 @@ WINUSERAPI BOOL WINAPI EnumChildWindows(HWND parent, WNDENUMPROC func, LPARAM lP
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMCHILDWINDOWS);
     call.parent = (ULONG_PTR)parent;
     call.func = (ULONG_PTR)func;
-    call.lParam = lParam;
+    call.lParam = (LPARAM)lParam;
     call.wrapper = (ULONG_PTR)WndEnum_guest_cb;
 
     qemu_syscall(&call.super);
