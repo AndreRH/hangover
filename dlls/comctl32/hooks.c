@@ -89,12 +89,64 @@ static LRESULT WINAPI rebar_wndproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 
 static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
 {
-    WINE_ERR("Handling a rebar notify message\n");
+    NMHDR *hdr = (NMHDR *)host->lParam;
+    struct qemu_NMREBARCHILDSIZE *childsize;
+
+    WINE_TRACE("Handling a rebar notify message\n");
     if (ret)
     {
         if (guest->lParam != host->lParam)
             HeapFree(GetProcessHeap(), 0, (void *)guest->lParam);
         return;
+    }
+
+    switch (hdr->code)
+    {
+        case NM_CUSTOMDRAW:
+            WINE_FIXME("Unhandled notify message NM_CUSTOMDRAW.\n");
+            break;
+
+        case NM_NCHITTEST:
+            WINE_FIXME("Unhandled notify message NM_NCHITTEST.\n");
+            break;
+
+        case RBN_CHILDSIZE:
+            WINE_TRACE("Handling notify message RBN_CHILDSIZE.\n");
+            childsize = HeapAlloc(GetProcessHeap(), 0, sizeof(*childsize));
+            NMREBARCHILDSIZE_h2g(childsize, (NMREBARCHILDSIZE *)hdr);
+            guest->lParam = (LPARAM)childsize;
+            break;
+
+        case RBN_HEIGHTCHANGE:
+            WINE_FIXME("Unhandled notify message RBN_HEIGHTCHANGE.\n");
+            break;
+
+        case RBN_AUTOSIZE:
+            WINE_FIXME("Unhandled notify message RBN_AUTOSIZE.\n");
+            break;
+
+        case RBN_DELETINGBAND:
+            WINE_FIXME("Unhandled notify message RBN_DELETINGBAND.\n");
+            break;
+
+        case RBN_CHEVRONPUSHED:
+            WINE_FIXME("Unhandled notify message RBN_CHEVRONPUSHED.\n");
+            break;
+
+        case RBN_LAYOUTCHANGED:
+            WINE_FIXME("Unhandled notify message RBN_LAYOUTCHANGED.\n");
+            break;
+
+        case RBN_BEGINDRAG:
+            WINE_FIXME("Unhandled notify message RBN_BEGINDRAG.\n");
+            break;
+
+        case RBN_ENDDRAG:
+            WINE_FIXME("Unhandled notify message RBN_ENDDRAG.\n");
+            break;
+
+        default:
+            WINE_ERR("Unexpected notify message %x.\n", hdr->code);
     }
 }
 

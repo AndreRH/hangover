@@ -105,4 +105,22 @@ static inline void REBARBANDINFO_g2h(REBARBANDINFOW *host, const struct qemu_REB
     host->uChevronState = guest->uChevronState;
 }
 
+struct qemu_NMREBARCHILDSIZE
+{
+    struct qemu_NMHDR  hdr;
+    UINT uBand;
+    UINT wID;
+    RECT rcChild;
+    RECT rcBand;
+};
+
+static inline void NMREBARCHILDSIZE_h2g(struct qemu_NMREBARCHILDSIZE *guest, const NMREBARCHILDSIZE *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->uBand = host->uBand;
+    guest->wID = host->wID;
+    memcpy(&guest->rcChild, &host->rcChild, sizeof(guest->rcChild));
+    memcpy(&guest->rcBand, &host->rcBand, sizeof(guest->rcBand));
+}
+
 #endif
