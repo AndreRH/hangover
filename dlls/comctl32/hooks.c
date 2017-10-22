@@ -93,12 +93,18 @@ static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
     struct qemu_NMREBARCHILDSIZE *childsize;
     struct qemu_NMHDR *guest_hdr;
     struct qemu_NMRBAUTOSIZE *autosize;
+    struct qemu_NMCUSTOMDRAW *customdraw;
 
     WINE_TRACE("Handling a rebar notify message\n");
     if (ret)
     {
         switch (hdr->code)
         {
+            case NM_CUSTOMDRAW:
+                customdraw = (struct qemu_NMCUSTOMDRAW *)guest->lParam;
+                NMCUSTOMDRAW_g2h((NMCUSTOMDRAW *)hdr, customdraw);
+                break;
+
             case RBN_CHILDSIZE:
                 childsize = (struct qemu_NMREBARCHILDSIZE *)guest->lParam;
                 NMREBARCHILDSIZE_g2h((NMREBARCHILDSIZE *)hdr, childsize);
@@ -118,7 +124,10 @@ static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
     switch (hdr->code)
     {
         case NM_CUSTOMDRAW:
-            WINE_FIXME("Unhandled notify message NM_CUSTOMDRAW.\n");
+            WINE_TRACE("Handling notify message NM_CUSTOMDRAW.\n");
+            customdraw = HeapAlloc(GetProcessHeap(), 0, sizeof(*customdraw));
+            NMCUSTOMDRAW_h2g(customdraw, (NMCUSTOMDRAW *)hdr);
+            guest->lParam = (LPARAM)customdraw;
             break;
 
         case NM_NCHITTEST:

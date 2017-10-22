@@ -156,4 +156,37 @@ static inline void NMRBAUTOSIZE_g2h(NMRBAUTOSIZE *host, const struct qemu_NMRBAU
     memcpy(&host->rcActual, &guest->rcActual, sizeof(host->rcActual));
 }
 
+struct qemu_NMCUSTOMDRAW
+{
+    struct qemu_NMHDR   hdr;
+    DWORD               dwDrawStage;
+    qemu_handle         hdc;
+    RECT                rc;
+    qemu_ptr            dwItemSpec;
+    UINT                uItemState;
+    qemu_ptr            lItemlParam;
+};
+
+static inline void NMCUSTOMDRAW_h2g(struct qemu_NMCUSTOMDRAW *guest, const NMCUSTOMDRAW *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->dwDrawStage = host->dwDrawStage;
+    guest->hdc = (ULONG_PTR)host->hdc;
+    memcpy(&guest->rc, &host->rc, sizeof(guest->rc));
+    guest->dwItemSpec = host->dwItemSpec;
+    guest->uItemState = host->uItemState;
+    guest->lItemlParam = host->lItemlParam;
+}
+
+static inline void NMCUSTOMDRAW_g2h(NMCUSTOMDRAW *host, const struct qemu_NMCUSTOMDRAW *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->dwDrawStage = guest->dwDrawStage;
+    host->hdc = (HDC)HANDLE_g2h(guest->hdc);
+    memcpy(&host->rc, &guest->rc, sizeof(host->rc));
+    host->dwItemSpec = guest->dwItemSpec;
+    host->uItemState = guest->uItemState;
+    host->lItemlParam = guest->lItemlParam;
+}
+
 #endif
