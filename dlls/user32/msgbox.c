@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_user32.h"
@@ -287,8 +289,18 @@ WINUSERAPI int WINAPI MessageBoxIndirectA(CONST MSGBOXPARAMSA *lpmbp)
 void qemu_MessageBoxIndirectA(struct qemu_syscall *call)
 {
     struct qemu_MessageBoxIndirectA *c = (struct qemu_MessageBoxIndirectA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = MessageBoxIndirectA(QEMU_G2H(c->lpmbp));
+    MSGBOXPARAMSA copy, *params = &copy;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    params = QEMU_G2H(c->lpmbp);
+#else
+    MSGBOXPARAMS_g2h((MSGBOXPARAMSW *)params, QEMU_G2H(c->lpmbp));
+#endif
+
+    if (params->lpfnMsgBoxCallback)
+        WINE_FIXME("Handle message box callback\n");
+    c->super.iret = MessageBoxIndirectA(params);
 }
 
 #endif
@@ -317,8 +329,18 @@ WINUSERAPI int WINAPI MessageBoxIndirectW(CONST MSGBOXPARAMSW *lpmbp)
 void qemu_MessageBoxIndirectW(struct qemu_syscall *call)
 {
     struct qemu_MessageBoxIndirectW *c = (struct qemu_MessageBoxIndirectW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = MessageBoxIndirectW(QEMU_G2H(c->lpmbp));
+    MSGBOXPARAMSW copy, *params = &copy;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    params = QEMU_G2H(c->lpmbp);
+#else
+    MSGBOXPARAMS_g2h(params, QEMU_G2H(c->lpmbp));
+#endif
+
+    if (params->lpfnMsgBoxCallback)
+        WINE_FIXME("Handle message box callback\n");
+    c->super.iret = MessageBoxIndirectW(params);
 }
 
 #endif

@@ -143,4 +143,32 @@ static inline void MENUITEMINFO_h2g(struct qemu_MENUITEMINFO *guest, const MENUI
     guest->hbmpItem = (ULONG_PTR)host->hbmpItem;
 }
 
+struct qemu_MSGBOXPARAMSW
+{
+    UINT            cbSize;
+    qemu_handle     hwndOwner;
+    qemu_handle     hInstance;
+    qemu_ptr        lpszText;
+    qemu_ptr        lpszCaption;
+    DWORD           dwStyle;
+    qemu_ptr        lpszIcon;
+    qemu_ptr        dwContextHelpId;
+    qemu_ptr        lpfnMsgBoxCallback;
+    DWORD           dwLanguageId;
+};
+
+static inline void MSGBOXPARAMS_g2h(MSGBOXPARAMSW *host, const struct qemu_MSGBOXPARAMSW *guest)
+{
+    host->cbSize = sizeof(*host);
+    host->hwndOwner = HANDLE_g2h(guest->hwndOwner);
+    host->hInstance = HANDLE_g2h(guest->hInstance);
+    host->lpszText = (const WCHAR *)(ULONG_PTR)guest->lpszText;
+    host->lpszCaption = (const WCHAR *)(ULONG_PTR)guest->lpszCaption;
+    host->dwStyle = guest->dwStyle;
+    host->lpszIcon = (const WCHAR *)(ULONG_PTR)guest->lpszIcon;
+    host->dwContextHelpId = guest->dwContextHelpId;
+    host->lpfnMsgBoxCallback = (MSGBOXCALLBACK)(ULONG_PTR)guest->lpfnMsgBoxCallback;
+    host->dwLanguageId = guest->dwLanguageId;
+}
+
 #endif
