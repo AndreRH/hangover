@@ -69,4 +69,49 @@ static void EDITSTREAM_g2h(EDITSTREAM *host, const struct qemu_EDITSTREAM *guest
     host->pfnCallback = (EDITSTREAMCALLBACK)(ULONG_PTR)guest->pfnCallback;
 }
 
+struct qemu_FINDTEXT
+{
+    CHARRANGE  chrg;
+    qemu_ptr   lpstrText;
+};
+
+static void FINDTEXT_h2g(struct qemu_FINDTEXT *guest, const FINDTEXTW *host)
+{
+    guest->chrg.cpMin = host->chrg.cpMin;
+    guest->chrg.cpMax = host->chrg.cpMax;
+    guest->lpstrText = (ULONG_PTR)host->lpstrText;
+}
+
+static void FINDTEXT_g2h(FINDTEXTW *host, const struct qemu_FINDTEXT *guest)
+{
+    host->chrg.cpMin = guest->chrg.cpMin;
+    host->chrg.cpMax = guest->chrg.cpMax;
+    host->lpstrText = (const WCHAR *)(ULONG_PTR)guest->lpstrText;
+}
+
+struct qemu_FINDTEXTEX
+{
+    CHARRANGE  chrg;
+    qemu_ptr   lpstrText;
+    CHARRANGE  chrgText;
+};
+
+static void FINDTEXTEX_h2g(struct qemu_FINDTEXTEX *guest, const FINDTEXTEXW *host)
+{
+    guest->chrg.cpMin = host->chrg.cpMin;
+    guest->chrg.cpMax = host->chrg.cpMax;
+    guest->lpstrText = (ULONG_PTR)host->lpstrText;
+    guest->chrgText.cpMin = host->chrgText.cpMin;
+    guest->chrgText.cpMax = host->chrgText.cpMax;
+}
+
+static void FINDTEXTEX_g2h(FINDTEXTEXW *host, const struct qemu_FINDTEXTEX *guest)
+{
+    host->chrg.cpMin = guest->chrg.cpMin;
+    host->chrg.cpMax = guest->chrg.cpMax;
+    host->lpstrText = (const WCHAR *)(ULONG_PTR)guest->lpstrText;
+    host->chrgText.cpMin = guest->chrgText.cpMin;
+    host->chrgText.cpMax = guest->chrgText.cpMax;
+}
+
 #endif
