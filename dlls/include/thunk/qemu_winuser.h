@@ -127,4 +127,20 @@ static inline void MENUITEMINFO_g2h(MENUITEMINFOW *host, const struct qemu_MENUI
     host->hbmpItem = HANDLE_g2h(guest->hbmpItem);
 }
 
+static inline void MENUITEMINFO_h2g(struct qemu_MENUITEMINFO *guest, const MENUITEMINFOW *host)
+{
+    guest->cbSize = sizeof(*guest);
+    guest->fMask = host->fMask;
+    guest->fType = host->fType;
+    guest->fState = host->fState;
+    guest->wID = host->wID;
+    guest->hSubMenu = (ULONG_PTR)host->hSubMenu;
+    guest->hbmpChecked = (ULONG_PTR)host->hbmpChecked;
+    guest->hbmpUnchecked = (ULONG_PTR)host->hbmpUnchecked;
+    guest->dwItemData = host->dwItemData;
+    guest->dwTypeData = (ULONG_PTR)host->dwTypeData;
+    guest->cch = host->cch;
+    guest->hbmpItem = (ULONG_PTR)host->hbmpItem;
+}
+
 #endif

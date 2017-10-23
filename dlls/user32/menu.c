@@ -1359,7 +1359,31 @@ void qemu_GetMenuItemInfoA(struct qemu_syscall *call)
 {
     struct qemu_GetMenuItemInfoA *c = (struct qemu_GetMenuItemInfoA *)call;
     WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
     c->super.iret = GetMenuItemInfoA(QEMU_G2H(c->hmenu), c->item, c->bypos, QEMU_G2H(c->lpmii));
+#else
+    {
+        MENUITEMINFOA infoa;
+        struct qemu_MENUITEMINFO *guest = QEMU_G2H(c->lpmii);
+        struct qemu_MENUITEMINFO guest_lcl;
+
+        if (guest->cbSize != sizeof(*guest) && guest->cbSize != sizeof(*guest) - sizeof(guest->hbmpItem))
+        {
+            infoa.cbSize = 0;
+            c->super.iret = GetMenuItemInfoA(QEMU_G2H(c->hmenu), c->item, c->bypos, &infoa);
+            return;
+        }
+        else
+        {
+            MENUITEMINFO_g2h((MENUITEMINFOW *)&infoa, guest);
+        }
+
+        c->super.iret = GetMenuItemInfoA(QEMU_G2H(c->hmenu), c->item, c->bypos, &infoa);
+        MENUITEMINFO_h2g(&guest_lcl, (MENUITEMINFOW *)&infoa);
+        guest_lcl.cbSize = guest->cbSize;
+        memcpy(guest, &guest_lcl, guest_lcl.cbSize);
+    }
+#endif
 }
 
 #endif
@@ -1395,7 +1419,31 @@ void qemu_GetMenuItemInfoW(struct qemu_syscall *call)
 {
     struct qemu_GetMenuItemInfoW *c = (struct qemu_GetMenuItemInfoW *)call;
     WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
     c->super.iret = GetMenuItemInfoW(QEMU_G2H(c->hmenu), c->item, c->bypos, QEMU_G2H(c->lpmii));
+#else
+    {
+        MENUITEMINFOW infow;
+        struct qemu_MENUITEMINFO *guest = QEMU_G2H(c->lpmii);
+        struct qemu_MENUITEMINFO guest_lcl;
+
+        if (guest->cbSize != sizeof(*guest) && guest->cbSize != sizeof(*guest) - sizeof(guest->hbmpItem))
+        {
+            infow.cbSize = 0;
+            c->super.iret = GetMenuItemInfoW(QEMU_G2H(c->hmenu), c->item, c->bypos, &infow);
+            return;
+        }
+        else
+        {
+            MENUITEMINFO_g2h(&infow, guest);
+        }
+
+        c->super.iret = GetMenuItemInfoW(QEMU_G2H(c->hmenu), c->item, c->bypos, &infow);
+        MENUITEMINFO_h2g(&guest_lcl, &infow);
+        guest_lcl.cbSize = guest->cbSize;
+        memcpy(guest, &guest_lcl, guest_lcl.cbSize);
+    }
+#endif
 }
 
 #endif
