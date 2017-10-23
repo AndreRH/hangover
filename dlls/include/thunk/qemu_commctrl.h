@@ -592,4 +592,34 @@ static inline void NMTTDISPINFOW_g2h(NMTTDISPINFOW *host, const struct qemu_NMTT
     host->lParam = guest->lParam;
 }
 
+struct qemu_NMREBAR
+{
+    struct qemu_NMHDR   hdr;
+    DWORD               dwMask;
+    UINT                uBand;
+    UINT                fStyle;
+    UINT                wID;
+    qemu_ptr            lParam;
+};
+
+static inline void NMREBAR_h2g(struct qemu_NMREBAR *guest, const NMREBAR *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->dwMask = host->dwMask;
+    guest->uBand = host->uBand;
+    guest->fStyle = host->fStyle;
+    guest->wID = host->wID;
+    guest->lParam = host->lParam;
+}
+
+static inline void NMREBAR_g2h(NMREBAR *host, const struct qemu_NMREBAR *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->dwMask = guest->dwMask;
+    host->uBand = guest->uBand;
+    host->fStyle = guest->fStyle;
+    host->wID = guest->wID;
+    host->lParam = guest->lParam;
+}
+
 #endif

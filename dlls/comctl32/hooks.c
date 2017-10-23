@@ -95,6 +95,7 @@ static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
     struct qemu_NMRBAUTOSIZE *autosize;
     struct qemu_NMCUSTOMDRAW *customdraw;
     struct qemu_NMMOUSE *nmmouse;
+    struct qemu_NMREBAR *rebar;
 
     WINE_TRACE("Handling a rebar notify message\n");
     if (ret)
@@ -114,6 +115,12 @@ static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
             case RBN_AUTOSIZE:
                 autosize = (struct qemu_NMRBAUTOSIZE *)guest->lParam;
                 NMRBAUTOSIZE_g2h((NMRBAUTOSIZE *)hdr, autosize);
+                break;
+
+            case RBN_DELETEDBAND:
+            case RBN_DELETINGBAND:
+                rebar = (struct qemu_NMREBAR *)guest->lParam;
+                NMREBAR_g2h((NMREBAR *)hdr, rebar);
                 break;
 
             case NM_NCHITTEST:
@@ -164,8 +171,12 @@ static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
             guest->lParam = (LPARAM)autosize;
             break;
 
+        case RBN_DELETEDBAND:
         case RBN_DELETINGBAND:
-            WINE_FIXME("Unhandled notify message RBN_DELETINGBAND.\n");
+            WINE_TRACE("Handling notify message RBN_DELETINGBAND.\n");
+            rebar = HeapAlloc(GetProcessHeap(), 0, sizeof(*rebar));
+            NMREBAR_h2g(rebar, (NMREBAR *)hdr);
+            guest->lParam = (LPARAM)rebar;
             break;
 
         case RBN_CHEVRONPUSHED:
@@ -186,6 +197,7 @@ static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
 
         default:
             WINE_ERR("Unexpected notify message %x.\n", hdr->code);
+            DebugBreak();
     }
 }
 
