@@ -1237,6 +1237,7 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
 
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
+        }
 
         case WM_USER+1:
         case WM_USER+4:
@@ -1267,7 +1268,6 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
                 break;
             }
             break;
-        }
     }
 #endif
 }
