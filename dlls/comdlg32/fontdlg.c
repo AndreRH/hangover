@@ -99,32 +99,13 @@ static UINT_PTR CALLBACK hook_proc_wrapper(HWND dlg, UINT msg, WPARAM wp, LPARAM
     return ret;
 }
 
-static inline void CHOOSEFONT_g2h(CHOOSEFONTW *host, const struct qemu_CHOOSEFONT *guest)
-{
-    host->lStructSize = sizeof(*host);
-    host->hwndOwner = (HWND)(ULONG_PTR)guest->hwndOwner;
-    host->hDC = (HDC)(ULONG_PTR)guest->hDC;
-    host->lpLogFont = (LOGFONTW *)(ULONG_PTR)guest->lpLogFont;
-    host->iPointSize = guest->iPointSize;
-    host->Flags = guest->Flags;
-    host->rgbColors = guest->rgbColors;
-    host->lCustData = guest->lCustData;
-    host->lpfnHook = (LPCFHOOKPROC)(ULONG_PTR)guest->lpfnHook;
-    host->lpTemplateName = (WCHAR *)(ULONG_PTR)guest->lpTemplateName;
-    host->hInstance = (HINSTANCE)(ULONG_PTR)guest->hInstance;
-    host->lpszStyle = (WCHAR *)(ULONG_PTR)guest->lpszStyle;
-    host->nFontType = guest->nFontType;
-    host->___MISSING_ALIGNMENT__ = guest->___MISSING_ALIGNMENT__; /* Hmm... */
-    host->nSizeMin = guest->nSizeMin;
-    host->nSizeMax = guest->nSizeMax;
-}
-
 void qemu_ChooseFontW(struct qemu_syscall *call)
 {
     struct qemu_ChooseFontW *c = (struct qemu_ChooseFontW *)call;
     CHOOSEFONTW cf;
     struct qemu_CHOOSEFONT *struct32 = (struct qemu_CHOOSEFONT *)QEMU_G2H(c->lpChFont);
     uint64_t guest_proc, *old_proc = TlsGetValue(comdlg32_tls);
+    HINSTANCE orig_instance;
     WINE_TRACE("\n");
 
     guest_wrapper = c->wrapper;
@@ -142,6 +123,7 @@ void qemu_ChooseFontW(struct qemu_syscall *call)
     CHOOSEFONT_g2h(&cf, struct32);
 #endif
 
+    orig_instance = cf.hInstance;
     if (cf.Flags & (CF_ENABLETEMPLATEHANDLE | CF_ENABLETEMPLATE) == CF_ENABLETEMPLATE && !cf.hInstance)
         cf.hInstance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
 
@@ -153,11 +135,12 @@ void qemu_ChooseFontW(struct qemu_syscall *call)
 
     TlsSetValue(comdlg32_tls, old_proc);
 
-    #if HOST_BIT == GUEST_BIT
     cf.lpfnHook = (LPCFHOOKPROC)guest_proc;
+    cf.hInstance = orig_instance;
+#if HOST_BIT == GUEST_BIT
     *(CHOOSEFONTW *)QEMU_G2H(c->lpChFont) = cf;
 #else
-    WINE_FIXME("Convert output back.\n");
+    CHOOSEFONT_h2g(struct32, &cf);
 #endif
 }
 
@@ -192,6 +175,7 @@ void qemu_ChooseFontA(struct qemu_syscall *call)
     CHOOSEFONTA cf;
     struct qemu_CHOOSEFONT *struct32 = (struct qemu_CHOOSEFONT *)QEMU_G2H(c->lpChFont);
     uint64_t guest_proc, *old_proc = TlsGetValue(comdlg32_tls);
+    HINSTANCE orig_instance;
     WINE_TRACE("\n");
 
     guest_wrapper = c->wrapper;
@@ -209,6 +193,7 @@ void qemu_ChooseFontA(struct qemu_syscall *call)
     CHOOSEFONT_g2h((CHOOSEFONTW *)&cf, struct32);
 #endif
 
+    orig_instance = cf.hInstance;
     if (cf.Flags & (CF_ENABLETEMPLATEHANDLE | CF_ENABLETEMPLATE) == CF_ENABLETEMPLATE && !cf.hInstance)
         cf.hInstance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
 
@@ -220,11 +205,12 @@ void qemu_ChooseFontA(struct qemu_syscall *call)
 
     TlsSetValue(comdlg32_tls, old_proc);
 
-#if HOST_BIT == GUEST_BIT
     cf.lpfnHook = (LPCFHOOKPROC)guest_proc;
+    cf.hInstance = orig_instance;
+#if HOST_BIT == GUEST_BIT
     *(CHOOSEFONTA *)QEMU_G2H(c->lpChFont) = cf;
 #else
-    WINE_FIXME("Convert output back.\n");
+    CHOOSEFONT_h2g(struct32, (CHOOSEFONTW *)&cf);
 #endif
 }
 

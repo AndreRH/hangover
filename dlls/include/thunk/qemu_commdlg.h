@@ -21,6 +21,46 @@ struct qemu_CHOOSEFONT
     INT             nSizeMax;
 };
 
+static inline void CHOOSEFONT_g2h(CHOOSEFONTW *host, const struct qemu_CHOOSEFONT *guest)
+{
+    host->lStructSize = sizeof(*host);
+    host->hwndOwner = (HWND)(ULONG_PTR)guest->hwndOwner;
+    host->hDC = (HDC)(ULONG_PTR)guest->hDC;
+    host->lpLogFont = (LOGFONTW *)(ULONG_PTR)guest->lpLogFont;
+    host->iPointSize = guest->iPointSize;
+    host->Flags = guest->Flags;
+    host->rgbColors = guest->rgbColors;
+    host->lCustData = guest->lCustData;
+    host->lpfnHook = (LPCFHOOKPROC)(ULONG_PTR)guest->lpfnHook;
+    host->lpTemplateName = (WCHAR *)(ULONG_PTR)guest->lpTemplateName;
+    host->hInstance = (HINSTANCE)(ULONG_PTR)guest->hInstance;
+    host->lpszStyle = (WCHAR *)(ULONG_PTR)guest->lpszStyle;
+    host->nFontType = guest->nFontType;
+    host->___MISSING_ALIGNMENT__ = guest->___MISSING_ALIGNMENT__; /* Hmm... */
+    host->nSizeMin = guest->nSizeMin;
+    host->nSizeMax = guest->nSizeMax;
+}
+
+static inline void CHOOSEFONT_h2g(struct qemu_CHOOSEFONT *guest, const CHOOSEFONTW *host)
+{
+    guest->lStructSize = sizeof(*guest);
+    guest->hwndOwner = (ULONG_PTR)host->hwndOwner;
+    guest->hDC = (ULONG_PTR)host->hDC;
+    guest->lpLogFont = (ULONG_PTR)host->lpLogFont;
+    guest->iPointSize = host->iPointSize;
+    guest->Flags = host->Flags;
+    guest->rgbColors = host->rgbColors;
+    guest->lCustData = host->lCustData;
+    guest->lpfnHook = (ULONG_PTR)host->lpfnHook;
+    guest->lpTemplateName = (ULONG_PTR)host->lpTemplateName;
+    guest->hInstance = (ULONG_PTR)host->hInstance;
+    guest->lpszStyle = (ULONG_PTR)host->lpszStyle;
+    guest->nFontType = host->nFontType;
+    guest->___MISSING_ALIGNMENT__ = host->___MISSING_ALIGNMENT__; /* Hmm... */
+    guest->nSizeMin = host->nSizeMin;
+    guest->nSizeMax = host->nSizeMax;
+}
+
 struct qemu_FINDREPLACE
 {
     DWORD           lStructSize;
