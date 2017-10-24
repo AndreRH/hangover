@@ -42,6 +42,11 @@ void hook_wndprocs()
     /* Do nothing */
 }
 
+void register_notify_callbacks(void)
+{
+    /* Do nothing */
+}
+
 #else
 
 static WNDPROC orig_rebar_wndproc;
