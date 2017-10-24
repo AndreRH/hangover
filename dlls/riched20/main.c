@@ -509,7 +509,6 @@ static LRESULT handle_stream(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, 
     EDITSTREAM es;
     LRESULT ret;
 
-    WINE_ERR("stream\n");
 #if GUEST_BIT == HOST_BIT
     es = *(EDITSTREAM *)lParam;
 #else
@@ -613,7 +612,8 @@ static LRESULT handle_findtextex(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 
 static LRESULT WINAPI wrap_proc_w(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    LRESULT ret;
+    WINE_TRACE("Richedit message %x\n", msg);
+
     switch (msg)
     {
         case EM_SETOLECALLBACK:
@@ -641,6 +641,8 @@ static LRESULT WINAPI wrap_proc_w(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 LRESULT WINAPI wrap_proc_a(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    WINE_TRACE("Richedit message %x\n", msg);
+
     switch (msg)
     {
         case EM_SETOLECALLBACK:

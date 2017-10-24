@@ -930,6 +930,8 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
 
     ret = qemu_ops->qemu_execute(QEMU_G2H(guest_wndproc_wrapper), QEMU_H2G(call));
 
+    WINE_TRACE("Guest returned %lx.\n", ret);
+
     msg_host_to_guest_return(&msg_struct, &msg_conv);
     if (call != &stack_call)
         HeapFree(GetProcessHeap(), 0, call);
