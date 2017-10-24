@@ -400,6 +400,9 @@ WNDPROC wndproc_guest_to_host(uint64_t guest_func);
 void hook_wndprocs(void);
 void register_notify_callbacks(void);
 
+struct qemu_NMHDR *propsheet_notify_h2g(NMHDR *host);
+void propsheet_notify_g2h(NMHDR *host, NMHDR *guest);
+
 #endif
 
 #endif

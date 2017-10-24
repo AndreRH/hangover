@@ -1,6 +1,8 @@
 #ifndef HAVE_QEMU_COMMCTRL_H
 #define HAVE_QEMU_COMMCTRL_H
 
+#include "thunk/qemu_prsht.h"
+
 struct qemu_REBARINFO
 {
     UINT        cbSize;

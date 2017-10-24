@@ -271,6 +271,8 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
     PROPSHEETPAGEW *page;
     PROPSHEETPAGEW stack_copy, *page_copy = &stack_copy;
 
+    WINE_TRACE("Processing meesage %x.\n", msg);
+
 #if HOST_BIT != GUEST_BIT
     call = HeapAlloc(GetProcessHeap(), 0, sizeof(*call));
 #endif
@@ -280,10 +282,6 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
     call->msg = msg;
     call->wparam = wparam;
     call->lparam = lparam;
-
-    WINE_TRACE("Calling guest wndproc 0x%lx(%p, %lx, %lx, %lx)\n", wrapper->guest_proc,
-            win, call->msg, call->wparam, call->lparam);
-    WINE_TRACE("wrapper at %p, param struct at %p\n", wrapper, call);
 
     /* FIXME: This currently assumes we're dealing with property sheet dialogs. If a different
      * control needs to run through this function store the control type in struct wndproc_wrapper */
@@ -302,13 +300,28 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
         page_copy->lParam = page_data->guest_lparam;
         call->lparam = QEMU_H2G(page_copy);
     }
+    else if (msg == WM_NOTIFY)
+    {
+        orig_param = call->lparam;
+        call->lparam = (LPARAM)propsheet_notify_h2g((NMHDR *)call->lparam);
+    }
+
+    WINE_TRACE("Calling guest wndproc 0x%lx(%p, %lx, %lx, %lx)\n", wrapper->guest_proc,
+            win, call->msg, call->wparam, call->lparam);
+    WINE_TRACE("wrapper at %p, param struct at %p\n", wrapper, call);
 
     ret = qemu_ops->qemu_execute(QEMU_G2H(guest_wndproc_wrapper), QEMU_H2G(call));
+
+    WINE_TRACE("Guest returned %lu.\n", ret);
 
     if (msg == WM_INITDIALOG)
     {
         *page = *page_copy;
         page->lParam = orig_param;
+    }
+    else if (msg == WM_NOTIFY)
+    {
+        propsheet_notify_g2h((NMHDR *)orig_param, (NMHDR *)call->lparam);
     }
 
     if (call != &stack_call)

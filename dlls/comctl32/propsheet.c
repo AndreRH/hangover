@@ -22,6 +22,9 @@
 #include <windows.h>
 #include <commctrl.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_commctrl.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_comctl32.h"
@@ -116,6 +119,10 @@ static INT CALLBACK propsheet_header_host_cb(HWND hwnd, UINT msg, LPARAM lparam,
     struct qemu_PropertySheet_cb stack, *call = &stack;
     INT ret;
 
+#if GUEST_BIT != HOST_BIT
+    call = HeapAlloc(GetProcessHeap(), 0, sizeof(*call));
+#endif
+
     call->cb = data->guest_cb;
     call->hwnd = (ULONG_PTR)hwnd;
     call->msg = msg;
@@ -126,6 +133,9 @@ static INT CALLBACK propsheet_header_host_cb(HWND hwnd, UINT msg, LPARAM lparam,
     ret = qemu_ops->qemu_execute(QEMU_G2H(data->guest_wrapper), QEMU_H2G(call));
     WINE_TRACE("Guest callback returned %u.\n", ret);
 
+    if (call != &stack)
+        HeapFree(GetProcessHeap(), 0, call);
+
     return ret;
 }
 
@@ -134,7 +144,7 @@ void qemu_PropertySheet(struct qemu_syscall *call)
     struct qemu_PropertySheet *c = (struct qemu_PropertySheet *)call;
     struct propsheet_data *data;
     unsigned int i, page_count;
-    const PROPSHEETHEADERW *header_in;
+    PROPSHEETHEADERW copy, *header_in = &copy;
     size_t offset;
 
     /* FIXME: My god is this ugly and complicated. Is there some easier way? */
@@ -149,7 +159,12 @@ void qemu_PropertySheet(struct qemu_syscall *call)
         return;
     }
 
+#if GUEST_BIT == HOST_BIT
     header_in = (PROPSHEETHEADERW *)QEMU_G2H(c->lppsh);
+#else
+    PROPSHEETHEADER_g2h(header_in, QEMU_G2H(c->lppsh));
+#endif
+
     page_count = header_in->nPages;
     data = VirtualAlloc(NULL, FIELD_OFFSET(struct propsheet_data, page_data[page_count]), MEM_COMMIT,
             PAGE_EXECUTE_READWRITE);
@@ -182,8 +197,12 @@ void qemu_PropertySheet(struct qemu_syscall *call)
 
         for (i = 0; i < page_count; ++i)
         {
+#if GUEST_BIT == HOST_BIT
             memcpy(&data->pages[i], &header_in->ppsp[i],
                     min(header_in->ppsp[i].dwSize, sizeof(data->pages[i])));
+#else
+            PROPSHEETPAGE_g2h(&data->pages[i], &((struct qemu_PROPSHEETPAGE *)header_in->ppsp)[i]);
+#endif
 
             if (data->pages[i].pfnDlgProc)
                 data->pages[i].pfnDlgProc = (DLGPROC)wndproc_guest_to_host((ULONG_PTR)data->pages[i].pfnDlgProc);
@@ -315,6 +334,47 @@ void qemu_DestroyPropertySheetPage(struct qemu_syscall *call)
     struct qemu_DestroyPropertySheetPage *c = (struct qemu_DestroyPropertySheetPage *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = DestroyPropertySheetPage(QEMU_G2H(c->hPropPage));
+}
+
+#endif
+
+#ifndef QEMU_DLL_GUEST
+struct qemu_NMHDR *propsheet_notify_h2g(NMHDR *host)
+{
+    struct qemu_PSHNOTIFY *notify;
+
+    switch (host->code)
+    {
+        case PSN_SETACTIVE:
+        case PSN_KILLACTIVE:
+        case PSN_APPLY:
+        case PSN_RESET:
+        case PSN_HELP:
+        case PSN_WIZBACK:
+        case PSN_WIZNEXT:
+        case PSN_WIZFINISH:
+        case PSN_QUERYCANCEL:
+        case PSN_GETOBJECT:
+        case PSN_TRANSLATEACCELERATOR:
+        case PSN_QUERYINITIALFOCUS:
+            notify = HeapAlloc(GetProcessHeap(), 0, sizeof(*notify));
+            PSHNOTIFY_h2g(notify, (PSHNOTIFY *)host);
+            return &notify->hdr;
+
+        default:
+            WINE_ERR("Unexpected propsheet notify message %x.\n", host->code);
+            break;
+    }
+}
+
+void propsheet_notify_g2h(NMHDR *host, NMHDR *guest)
+{
+    switch (host->code)
+    {
+    }
+
+    if (guest != host)
+        HeapFree(GetProcessHeap(), 0, guest);
 }
 
 #endif
