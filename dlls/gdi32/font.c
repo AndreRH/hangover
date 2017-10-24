@@ -1441,7 +1441,7 @@ WINGDIAPI BOOL WINAPI ExtTextOutW(HDC hdc, INT x, INT y, UINT flags, const RECT 
 void qemu_ExtTextOutW(struct qemu_syscall *call)
 {
     struct qemu_ExtTextOutW *c = (struct qemu_ExtTextOutW *)call;
-    WINE_TRACE("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ExtTextOutW(QEMU_G2H(c->hdc), c->x, c->y, c->flags, QEMU_G2H(c->lprect), QEMU_G2H(c->str), c->count, QEMU_G2H(c->lpDx));
 }
 
@@ -1517,7 +1517,7 @@ WINGDIAPI BOOL WINAPI TextOutW(HDC hdc, INT x, INT y, LPCWSTR str, INT count)
 void qemu_TextOutW(struct qemu_syscall *call)
 {
     struct qemu_TextOutW *c = (struct qemu_TextOutW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = TextOutW(QEMU_G2H(c->hdc), c->x, c->y, QEMU_G2H(c->str), c->count);
 }
 
