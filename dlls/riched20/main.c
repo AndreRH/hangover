@@ -609,6 +609,23 @@ static LRESULT handle_findtextex(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
     return ret;
 }
 
+static LRESULT handle_formatrange(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, BOOL unicode)
+{
+    FORMATRANGE host;
+    LRESULT ret;
+    struct qemu_FORMATRANGE *guest = (struct qemu_FORMATRANGE *)lParam;
+
+    FORMATRANGE_g2h(&host, guest);
+
+    if (unicode)
+        ret = CallWindowProcW(orig_proc_w, hWnd, msg, wParam, (LPARAM)&host);
+    else
+        ret = CallWindowProcA(orig_proc_a, hWnd, msg, wParam, (LPARAM)&host);
+
+    FORMATRANGE_h2g(guest, &host);
+
+    return ret;
+}
 
 static LRESULT WINAPI wrap_proc_w(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -633,6 +650,9 @@ static LRESULT WINAPI wrap_proc_w(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
         case EM_FINDTEXTEX:
         case EM_FINDTEXTEXW:
             return handle_findtextex(hWnd, msg, wParam, lParam, TRUE);
+
+        case EM_FORMATRANGE:
+            return handle_formatrange(hWnd, msg, wParam, lParam, TRUE);
 
         default:
             return CallWindowProcW(orig_proc_w, hWnd, msg, wParam, lParam);
@@ -661,6 +681,9 @@ LRESULT WINAPI wrap_proc_a(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         case EM_FINDTEXTEX:
         case EM_FINDTEXTEXW:
             return handle_findtextex(hWnd, msg, wParam, lParam, FALSE);
+
+        case EM_FORMATRANGE:
+            return handle_formatrange(hWnd, msg, wParam, lParam, FALSE);
 
         default:
             return CallWindowProcA(orig_proc_a, hWnd, msg, wParam, lParam);

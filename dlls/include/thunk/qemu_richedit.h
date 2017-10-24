@@ -114,4 +114,33 @@ static void FINDTEXTEX_g2h(FINDTEXTEXW *host, const struct qemu_FINDTEXTEX *gues
     host->chrgText.cpMax = guest->chrgText.cpMax;
 }
 
+struct qemu_FORMATRANGE
+{
+    qemu_handle hdc;
+    qemu_handle hdcTarget;
+    RECT        rc;
+    RECT        rcPage;
+    CHARRANGE   chrg;
+};
+
+static void FORMATRANGE_h2g(struct qemu_FORMATRANGE *guest, const FORMATRANGE *host)
+{
+    guest->hdc = (ULONG_PTR)host->hdc;
+    guest->hdcTarget = (ULONG_PTR)host->hdcTarget;
+    memcpy(&guest->rc, &host->rc, sizeof(guest->rc));
+    memcpy(&guest->rcPage, &host->rc, sizeof(guest->rcPage));
+    guest->chrg.cpMin = host->chrg.cpMin;
+    guest->chrg.cpMax = host->chrg.cpMax;
+}
+
+static void FORMATRANGE_g2h(FORMATRANGE *host, const struct qemu_FORMATRANGE *guest)
+{
+    host->hdc = HANDLE_g2h(guest->hdc);
+    host->hdcTarget = HANDLE_g2h(guest->hdcTarget);
+    memcpy(&host->rc, &guest->rc, sizeof(host->rc));
+    memcpy(&host->rcPage, &guest->rc, sizeof(host->rcPage));
+    host->chrg.cpMin = guest->chrg.cpMin;
+    host->chrg.cpMax = guest->chrg.cpMax;
+}
+
 #endif
