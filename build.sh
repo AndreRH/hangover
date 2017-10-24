@@ -82,7 +82,7 @@ ln -sf $DESTDIR/build/wine-guest32/libs/wine/libwine.dll $DESTDIR/build/qemu/x86
 for dll in "${wine_dlls[@]}"
 do
     ln -sf $DESTDIR/build/wine-guest/dlls/$dll/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll64
-    ln -sf $DESTDIR/build/wine-guest/dlls32/$dll/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
+    ln -sf $DESTDIR/build/wine-guest32/dlls/$dll/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
 done
 ln -sf $DESTDIR/build/wine-guest/dlls/winspool.drv/winspool.drv $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll64
 ln -sf $DESTDIR/build/wine-guest32/dlls/winspool.drv/winspool.drv $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
