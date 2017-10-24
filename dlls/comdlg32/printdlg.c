@@ -199,7 +199,9 @@ void qemu_PrintDlgW(struct qemu_syscall *call)
     TlsSetValue(comdlg32_tls, old_hook);
     copy.lpfnPrintHook = (LPPRINTHOOKPROC)print_hook;
 
-#if HOST_BIT != GUEST_BIT
+#if HOST_BIT == GUEST_BIT
+    *(PRINTDLGW *)QEMU_G2H(c->lppd) = copy;
+#else
     PRINTDLG_h2g(QEMU_G2H(c->lppd), &copy);
 #endif
 }
