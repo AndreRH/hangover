@@ -171,4 +171,37 @@ static inline void MSGBOXPARAMS_g2h(MSGBOXPARAMSW *host, const struct qemu_MSGBO
     host->dwLanguageId = guest->dwLanguageId;
 }
 
+struct qemu_COMBOBOXINFO
+{
+    DWORD cbSize;
+    RECT  rcItem;
+    RECT  rcButton;
+    DWORD stateButton;
+    qemu_handle  hwndCombo;
+    qemu_handle  hwndItem;
+    qemu_handle  hwndList;
+};
+
+static inline void COMBOBOXINFO_g2h(COMBOBOXINFO *host, const struct qemu_COMBOBOXINFO *guest)
+{
+    host->cbSize = sizeof(*host);
+    memcpy(&host->rcItem, &guest->rcItem, sizeof(host->rcItem));
+    memcpy(&host->rcButton, &guest->rcButton, sizeof(host->rcButton));
+    host->stateButton = guest->stateButton;
+    host->hwndCombo = HANDLE_g2h(guest->hwndCombo);
+    host->hwndItem = HANDLE_g2h(guest->hwndItem);
+    host->hwndList = HANDLE_g2h(guest->hwndList);
+}
+
+static inline void COMBOBOXINFO_h2g(struct qemu_COMBOBOXINFO *guest, const COMBOBOXINFO *host)
+{
+    guest->cbSize = sizeof(*guest);
+    memcpy(&guest->rcItem, &host->rcItem, sizeof(guest->rcItem));
+    memcpy(&guest->rcButton, &host->rcButton, sizeof(guest->rcButton));
+    guest->stateButton = host->stateButton;
+    guest->hwndCombo = (ULONG_PTR)host->hwndCombo;
+    guest->hwndItem = (ULONG_PTR)host->hwndItem;
+    guest->hwndList = (ULONG_PTR)host->hwndList;
+}
+
 #endif

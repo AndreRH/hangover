@@ -1136,6 +1136,15 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             break;
         }
 
+        case CB_GETCOMBOBOXINFO:
+        {
+            struct qemu_COMBOBOXINFO *guest = (struct qemu_COMBOBOXINFO *)msg_in->lParam;
+            COMBOBOXINFO *host = HeapAlloc(GetProcessHeap(), 0, sizeof(*host));
+            COMBOBOXINFO_g2h(host, guest);
+            msg_out->lParam = (LPARAM)host;
+            break;
+        }
+
         /* If a message can come from the guest or the host user32 has to translate it
          * when it is passed out of the VM. Otherwise other DLLs translate it before it reaches
          * the original WNDPROC. */
@@ -1234,6 +1243,17 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
             WINDOWPOS *host = (WINDOWPOS *)conv->lParam;
 
             WINDOWPOS_h2g(guest, host);
+
+            HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
+        }
+
+        case CB_GETCOMBOBOXINFO:
+        {
+            struct qemu_COMBOBOXINFO *guest = (struct qemu_COMBOBOXINFO *)orig->lParam;
+            COMBOBOXINFO *host = (COMBOBOXINFO *)conv->lParam;
+
+            COMBOBOXINFO_h2g(guest, host);
 
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
