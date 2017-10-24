@@ -1092,6 +1092,8 @@ double CDECL MSVCRT_wcstod(const WCHAR *str, WCHAR **end)
     call.end = (ULONG_PTR)end;
 
     qemu_syscall(&call.super);
+    if (end)
+        *end = (WCHAR *)(ULONG_PTR)call.end;
 
     return call.super.dret;
 }
@@ -1104,10 +1106,8 @@ void qemu_wcstod(struct qemu_syscall *call)
     WCHAR *end;
     WINE_TRACE("\n");
 
-    c->super.dret = p_wcstod(QEMU_G2H(c->str), c->end ? &end : NULL);
-
-    if (c->end)
-        *(uint64_t *)QEMU_G2H(c->end) = QEMU_H2G(end);
+    c->super.dret = p_wcstod(QEMU_G2H(c->str), &end);
+    c->end = QEMU_H2G(end);
 }
 
 #endif
