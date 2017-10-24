@@ -37,7 +37,7 @@ mkdir -p $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll32
 # TODO: Figure out dependencies between them better.
 declare -a dlls=("ntdll" "kernel32" "msvcrt" "advapi32" "comctl32" "comdlg32" "d3d9" "d3dx10_43" "d3dx9_43" "gdi32" "imm32"
         "msvcr100" "opengl32" "shell32" "shlwapi" "user32" "version" "xinput1_3" "winmm" "wsock32" "ws2_32"
-        "iphlpapi" "secur32" "wininet" "advpack" "usp10")
+        "iphlpapi" "secur32" "wininet" "advpack" "usp10" "riched20")
 
 mkdir -p $DESTDIR/build/dlls32
 mkdir -p $DESTDIR/build/dlls64
@@ -75,8 +75,7 @@ done
 
 # Link Wine libraries.
 declare -a wine_dlls=("dbghelp" "ole32" "oleaut32" "propsys" "rpcrt4" "urlmon" "windowscodecs" "netapi32" "dnsapi" "msimg32"
-        "crypt32" "dwmapi" "uxtheme" "setupapi" "wintrust" "wtsapi32" "pdh" "avrt" "cryptnet" "imagehlp" "cryptui" "sensapi"
-        "riched20")
+        "crypt32" "dwmapi" "uxtheme" "setupapi" "wintrust" "wtsapi32" "pdh" "avrt" "cryptnet" "imagehlp" "cryptui" "sensapi")
 ln -sf $DESTDIR/build/wine-guest/libs/wine/libwine.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll64
 ln -sf $DESTDIR/build/wine-guest32/libs/wine/libwine.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
 
