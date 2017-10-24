@@ -230,8 +230,32 @@ WINBASEAPI BOOL WINAPI PageSetupDlgA(LPPAGESETUPDLGA setupdlg)
 void qemu_PageSetupDlgA(struct qemu_syscall *call)
 {
     struct qemu_PageSetupDlgA *c = (struct qemu_PageSetupDlgA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = PageSetupDlgA(QEMU_G2H(c->setupdlg));
+    PAGESETUPDLGA copy, *dlg = &copy;
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+    dlg = QEMU_G2H(c->setupdlg);
+#else
+    {
+        struct qemu_PAGESETUPDLG *dlg32 = QEMU_G2H(c->setupdlg);
+        if (dlg32->lStructSize != sizeof(*dlg32))
+        {
+            dlg->lStructSize = 0;
+            c->super.iret = PageSetupDlgA(dlg);
+            return;
+        }
+        PAGESETUPDLG_g2h((PAGESETUPDLGW *)dlg, dlg32);
+    }
+#endif
+
+    if (dlg->lpfnPageSetupHook || dlg->lpfnPagePaintHook)
+        WINE_FIXME("Handle page setup dialog hooks.\n");
+
+    c->super.iret = PageSetupDlgA(dlg);
+
+#if HOST_BIT != GUEST_BIT
+    PAGESETUPDLG_h2g(QEMU_G2H(c->setupdlg), (PAGESETUPDLGW *)dlg);
+#endif
 }
 
 #endif
@@ -260,8 +284,32 @@ WINBASEAPI BOOL WINAPI PageSetupDlgW(LPPAGESETUPDLGW setupdlg)
 void qemu_PageSetupDlgW(struct qemu_syscall *call)
 {
     struct qemu_PageSetupDlgW *c = (struct qemu_PageSetupDlgW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = PageSetupDlgW(QEMU_G2H(c->setupdlg));
+    PAGESETUPDLGW copy, *dlg = &copy;
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+    dlg = QEMU_G2H(c->setupdlg);
+#else
+    {
+        struct qemu_PAGESETUPDLG *dlg32 = QEMU_G2H(c->setupdlg);
+        if (dlg32->lStructSize != sizeof(*dlg32))
+        {
+            dlg->lStructSize = 0;
+            c->super.iret = PageSetupDlgW(dlg);
+            return;
+        }
+        PAGESETUPDLG_g2h((PAGESETUPDLGW *)dlg, dlg32);
+    }
+#endif
+
+    if (dlg->lpfnPageSetupHook || dlg->lpfnPagePaintHook)
+        WINE_FIXME("Handle page setup dialog hooks.\n");
+
+    c->super.iret = PageSetupDlgW(dlg);
+
+#if HOST_BIT != GUEST_BIT
+    PAGESETUPDLG_h2g(QEMU_G2H(c->setupdlg), dlg);
+#endif
 }
 
 #endif

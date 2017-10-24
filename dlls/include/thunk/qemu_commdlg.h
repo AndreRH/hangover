@@ -263,4 +263,58 @@ static inline void PRINTDLG_h2g(struct qemu_PRINTDLG *guest, const PRINTDLGW *ho
     guest->hSetupTemplate = (ULONG_PTR)host->hSetupTemplate;
 }
 
+struct qemu_PAGESETUPDLG
+{
+    DWORD           lStructSize;
+    qemu_handle     hwndOwner;
+    qemu_handle     hDevMode;
+    qemu_handle     hDevNames;
+    DWORD           Flags;
+    POINT           ptPaperSize;
+    RECT            rtMinMargin;
+    RECT            rtMargin;
+    qemu_handle     hInstance;
+    qemu_ptr        lCustData;
+    qemu_ptr        lpfnPageSetupHook;
+    qemu_ptr        lpfnPagePaintHook;
+    qemu_ptr        lpPageSetupTemplateName;
+    qemu_handle     hPageSetupTemplate;
+};
+
+static inline void PAGESETUPDLG_g2h(PAGESETUPDLGW *host, const struct qemu_PAGESETUPDLG *guest)
+{
+    host->lStructSize = sizeof(*host);
+    host->hwndOwner = (HWND)(ULONG_PTR)guest->hwndOwner;
+    host->hDevMode = (HGLOBAL)(ULONG_PTR)guest->hDevMode;
+    host->hDevNames = (HGLOBAL)(ULONG_PTR)guest->hDevNames;
+    host->Flags = guest->Flags;
+    memcpy(&host->ptPaperSize, &guest->ptPaperSize, sizeof(host->ptPaperSize));
+    memcpy(&host->rtMinMargin, &guest->rtMinMargin, sizeof(host->rtMinMargin));
+    memcpy(&host->rtMargin, &guest->rtMargin, sizeof(host->rtMargin));
+    host->hInstance = (HINSTANCE)(ULONG_PTR)guest->hInstance;
+    host->lCustData = guest->lCustData;
+    host->lpfnPageSetupHook = (LPPAGESETUPHOOK)(ULONG_PTR)guest->lpfnPageSetupHook;
+    host->lpfnPagePaintHook = (LPPAGEPAINTHOOK)(ULONG_PTR) guest->lpfnPagePaintHook;
+    host->lpPageSetupTemplateName = (const WCHAR *)(ULONG_PTR)guest->lpPageSetupTemplateName;
+    host->hPageSetupTemplate = (HGLOBAL)(ULONG_PTR)guest->hPageSetupTemplate;
+}
+
+static inline void PAGESETUPDLG_h2g(struct qemu_PAGESETUPDLG *guest, const PAGESETUPDLGW *host)
+{
+    guest->lStructSize = sizeof(*guest);
+    guest->hwndOwner = (ULONG_PTR)host->hwndOwner;
+    guest->hDevMode = (ULONG_PTR)host->hDevMode;
+    guest->hDevNames = (ULONG_PTR)host->hDevNames;
+    guest->Flags = host->Flags;
+    memcpy(&guest->ptPaperSize, &host->ptPaperSize, sizeof(guest->ptPaperSize));
+    memcpy(&guest->rtMinMargin, &host->rtMinMargin, sizeof(guest->rtMinMargin));
+    memcpy(&guest->rtMargin, &host->rtMargin, sizeof(guest->rtMargin));
+    guest->hInstance = (ULONG_PTR)host->hInstance;
+    guest->lCustData = host->lCustData;
+    guest->lpfnPageSetupHook = (ULONG_PTR)host->lpfnPageSetupHook;
+    guest->lpfnPagePaintHook = (ULONG_PTR)host->lpfnPagePaintHook;
+    guest->lpPageSetupTemplateName = (ULONG_PTR)host->lpPageSetupTemplateName;
+    guest->hPageSetupTemplate = (ULONG_PTR)host->hPageSetupTemplate;
+}
+
 #endif
