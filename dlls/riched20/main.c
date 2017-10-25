@@ -615,14 +615,16 @@ static LRESULT handle_formatrange(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     LRESULT ret;
     struct qemu_FORMATRANGE *guest = (struct qemu_FORMATRANGE *)lParam;
 
-    FORMATRANGE_g2h(&host, guest);
+    if (guest)
+        FORMATRANGE_g2h(&host, guest);
 
     if (unicode)
-        ret = CallWindowProcW(orig_proc_w, hWnd, msg, wParam, (LPARAM)&host);
+        ret = CallWindowProcW(orig_proc_w, hWnd, msg, wParam, guest ? (LPARAM)&host : 0);
     else
-        ret = CallWindowProcA(orig_proc_a, hWnd, msg, wParam, (LPARAM)&host);
+        ret = CallWindowProcA(orig_proc_a, hWnd, msg, wParam, guest ? (LPARAM)&host : 0);
 
-    FORMATRANGE_h2g(guest, &host);
+    if (guest)
+        FORMATRANGE_h2g(guest, &host);
 
     return ret;
 }
