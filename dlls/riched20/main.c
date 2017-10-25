@@ -644,6 +644,7 @@ static LRESULT WINAPI wrap_proc_w(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
         case EM_SETWORDBREAKPROC:
             return handle_breakproc(hWnd, msg, wParam, lParam, TRUE);
 
+#if HOST_BIT != GUEST_BIT
         case EM_FINDTEXT:
         case EM_FINDTEXTW:
             return handle_findtext(hWnd, msg, wParam, lParam, TRUE);
@@ -653,6 +654,7 @@ static LRESULT WINAPI wrap_proc_w(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
         case EM_FORMATRANGE:
             return handle_formatrange(hWnd, msg, wParam, lParam, TRUE);
+#endif
 
         default:
             return CallWindowProcW(orig_proc_w, hWnd, msg, wParam, lParam);
@@ -675,6 +677,7 @@ LRESULT WINAPI wrap_proc_a(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         case EM_SETWORDBREAKPROC:
             return handle_breakproc(hWnd, msg, wParam, lParam, FALSE);
 
+#if HOST_BIT != GUEST_BIT
         case EM_FINDTEXT:
         case EM_FINDTEXTW:
             return handle_findtext(hWnd, msg, wParam, lParam, FALSE);
@@ -684,6 +687,7 @@ LRESULT WINAPI wrap_proc_a(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
         case EM_FORMATRANGE:
             return handle_formatrange(hWnd, msg, wParam, lParam, FALSE);
+#endif
 
         default:
             return CallWindowProcA(orig_proc_a, hWnd, msg, wParam, lParam);
