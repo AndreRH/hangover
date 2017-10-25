@@ -92,6 +92,24 @@ static LRESULT WINAPI rebar_wndproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
     return ret;
 }
 
+static void nmmouse_notify(MSG *guest, MSG *host, BOOL ret)
+{
+    NMHDR *hdr = (NMHDR *)host->lParam;
+    struct qemu_NMMOUSE *nmmouse;
+
+    if (ret)
+    {
+        nmmouse = (struct qemu_NMMOUSE *)guest->lParam;
+        NMMOUSE_g2h((NMMOUSE *)hdr, nmmouse);
+    }
+    else
+    {
+        nmmouse = HeapAlloc(GetProcessHeap(), 0, sizeof(*nmmouse));
+        NMMOUSE_h2g(nmmouse, (NMMOUSE *)hdr);
+        guest->lParam = (LPARAM)nmmouse;
+    }
+}
+
 static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
 {
     NMHDR *hdr = (NMHDR *)host->lParam;
@@ -99,7 +117,6 @@ static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
     struct qemu_NMHDR *guest_hdr;
     struct qemu_NMRBAUTOSIZE *autosize;
     struct qemu_NMCUSTOMDRAW *customdraw;
-    struct qemu_NMMOUSE *nmmouse;
     struct qemu_NMREBAR *rebar;
 
     WINE_TRACE("Handling a rebar notify message\n");
@@ -129,8 +146,7 @@ static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
                 break;
 
             case NM_NCHITTEST:
-                nmmouse = (struct qemu_NMMOUSE *)guest->lParam;
-                NMMOUSE_g2h((NMMOUSE *)hdr, nmmouse);
+                nmmouse_notify(guest, host, ret);
                 break;
         }
 
@@ -150,9 +166,7 @@ static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
 
         case NM_NCHITTEST:
             WINE_TRACE("Handling notify message NM_NCHITTEST.\n");
-            nmmouse = HeapAlloc(GetProcessHeap(), 0, sizeof(*nmmouse));
-            NMMOUSE_h2g(nmmouse, (NMMOUSE *)hdr);
-            guest->lParam = (LPARAM)nmmouse;
+            nmmouse_notify(guest, host, ret);
             break;
 
         case RBN_CHILDSIZE:
@@ -214,7 +228,6 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
     struct qemu_NMTBGETINFOTIP *infotip;
     struct qemu_NMTBHOTITEM *hotitem;
     struct qemu_NMTOOLBAR *toolbar;
-    struct qemu_NMMOUSE *mouse;
     struct qemu_NMHDR *guest_hdr;
     struct qemu_NMKEY *key;
 
@@ -235,8 +248,7 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
 
             case NM_CLICK:
             case NM_LDOWN:
-                mouse = (struct qemu_NMMOUSE *)guest->lParam;
-                NMMOUSE_g2h((NMMOUSE *)hdr, mouse);
+                nmmouse_notify(guest, host, ret);
                 break;
 
             case NM_KEYDOWN:
@@ -303,9 +315,7 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
         case NM_CLICK:
         case NM_LDOWN:
             WINE_TRACE("Handling notify message NM_LDOWN.\n");
-            mouse = HeapAlloc(GetProcessHeap(), 0, sizeof(*mouse));
-            NMMOUSE_h2g(mouse, (NMMOUSE *)hdr);
-            guest->lParam = (LPARAM)mouse;
+            nmmouse_notify(guest, host, ret);
             break;
 
         case NM_KEYDOWN:
@@ -441,7 +451,6 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
 static void combobox_notify(MSG *guest, MSG *host, BOOL ret)
 {
     NMHDR *hdr = (NMHDR *)host->lParam;
-    struct qemu_NMMOUSE *nmmouse;
     struct qemu_NMCBEENDEDITW *editw;
     struct qemu_NMCBEENDEDITA *edita;
     struct qemu_NMHDR *guest_hdr;
@@ -453,8 +462,7 @@ static void combobox_notify(MSG *guest, MSG *host, BOOL ret)
         switch (hdr->code)
         {
             case NM_SETCURSOR:
-                nmmouse = (struct qemu_NMMOUSE *)guest->lParam;
-                NMMOUSE_g2h((NMMOUSE *)hdr, nmmouse);
+                nmmouse_notify(guest, host, ret);
                 break;
 
             case CBEN_ENDEDITA:
@@ -530,9 +538,7 @@ static void combobox_notify(MSG *guest, MSG *host, BOOL ret)
 
         case NM_SETCURSOR:
             WINE_TRACE("Handling notify message NM_SETCURSOR.\n");
-            nmmouse = HeapAlloc(GetProcessHeap(), 0, sizeof(*nmmouse));
-            NMMOUSE_h2g(nmmouse, (NMMOUSE *)hdr);
-            guest->lParam = (LPARAM)nmmouse;
+            nmmouse_notify(guest, host, ret);
             break;
 
         default:
@@ -549,7 +555,6 @@ static void tooltips_notify(MSG *guest, MSG *host, BOOL ret)
     WINE_TRACE("Handling a tooltip notify message\n");
     if (ret)
     {
-    WINE_TRACE("in release\n");
         switch (hdr->code)
         {
             case TTN_GETDISPINFOA:
@@ -565,7 +570,6 @@ static void tooltips_notify(MSG *guest, MSG *host, BOOL ret)
 
         if (guest->lParam != host->lParam)
             HeapFree(GetProcessHeap(), 0, (void *)guest->lParam);
-    WINE_TRACE("rel done\n");
         return;
     }
 
@@ -591,6 +595,47 @@ static void tooltips_notify(MSG *guest, MSG *host, BOOL ret)
 
         case TTN_POP:
             WINE_FIXME("Unhandled notify message TTN_POP.\n");
+            break;
+
+        default:
+            WINE_ERR("Unexpected notify message %x.\n", hdr->code);
+    }
+}
+
+static void status_notify(MSG *guest, MSG *host, BOOL ret)
+{
+    NMHDR *hdr = (NMHDR *)host->lParam;
+
+    WINE_TRACE("Handling a status notify message\n");
+    if (ret)
+    {
+        switch (hdr->code)
+        {
+            case NM_CLICK:
+            case NM_DBLCLK:
+            case NM_RDBLCLK:
+            case NM_RCLICK:
+                nmmouse_notify(guest, host, ret);
+                break;
+        }
+
+        if (guest->lParam != host->lParam)
+            HeapFree(GetProcessHeap(), 0, (void *)guest->lParam);
+        return;
+    }
+
+    switch (hdr->code)
+    {
+        case NM_CLICK:
+        case NM_DBLCLK:
+        case NM_RDBLCLK:
+        case NM_RCLICK:
+            WINE_TRACE("Handing NMMOUSE notify message %x.\n", hdr->code);
+            nmmouse_notify(guest, host, ret);
+            break;
+
+        case SBN_SIMPLEMODECHANGE:
+            WINE_FIXME("Unhandled notify message SBN_SIMPLEMODECHANGE.\n");
             break;
 
         default:
@@ -649,6 +694,7 @@ void register_notify_callbacks(void)
     register_notify(TOOLBARCLASSNAMEW, toolbar_notify);
     register_notify(WC_COMBOBOXEXW, combobox_notify);
     register_notify(TOOLTIPS_CLASSW, tooltips_notify);
+    register_notify(STATUSCLASSNAMEW, status_notify);
 }
 
 #endif
