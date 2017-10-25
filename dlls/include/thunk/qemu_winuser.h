@@ -44,6 +44,28 @@ struct qemu_WINDOWPOS
     UINT        flags;
 };
 
+static inline void WINDOWPOS_g2h(WINDOWPOS *host, const struct qemu_WINDOWPOS *guest)
+{
+    host->hwnd = (HWND)(ULONG_PTR)guest->hwnd;
+    host->hwndInsertAfter = (HWND)(ULONG_PTR)guest->hwndInsertAfter;
+    host->x = guest->x;
+    host->y = guest->y;
+    host->cx = guest->cx;
+    host->cy = guest->cy;
+    host->flags = guest->flags;
+}
+
+static inline void WINDOWPOS_h2g(struct qemu_WINDOWPOS *guest, const WINDOWPOS *host)
+{
+    guest->hwnd = (ULONG_PTR)host->hwnd;
+    guest->hwndInsertAfter = (ULONG_PTR)host->hwndInsertAfter;
+    guest->x = host->x;
+    guest->y = host->y;
+    guest->cx = host->cx;
+    guest->cy = host->cy;
+    guest->flags = host->flags;
+}
+
 struct qemu_NMHDR
 {
     qemu_handle hwndFrom;

@@ -23,6 +23,8 @@
 #include <commctrl.h>
 #include <assert.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_comctl32.h"
@@ -262,7 +264,7 @@ static const syscall_handler dll_functions[] =
 struct wndproc_wrapper *wndproc_wrappers;
 unsigned int wndproc_wrapper_count;
 
-/* Taken from user32 for propsheet wrappers. */
+/* FIXME: Taken from user32 for propsheet wrappers. De-duplicate this... */
 LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam, struct wndproc_wrapper *wrapper)
 {
     struct wndproc_call stack_call, *call = &stack_call;
@@ -301,6 +303,45 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
         call->lparam = QEMU_H2G(page_copy);
     }
 #if HOST_BIT != GUEST_BIT
+    else if (msg == WM_NCCREATE)
+    {
+        struct qemu_CREATESTRUCT *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
+        CREATESTRUCTW *host = (CREATESTRUCTW *)call->lparam;
+
+        guest->lpCreateParams = (ULONG_PTR)host->lpCreateParams;
+        guest->hInstance = (ULONG_PTR)host->hInstance;
+        guest->hMenu = (ULONG_PTR)host->hMenu;
+        guest->hwndParent = (ULONG_PTR)host->hwndParent;
+        guest->cy = host->cy;
+        guest->cx = host->cx;
+        guest->y = host->y;
+        guest->x = host->x;
+        guest->style = host->style;
+        guest->lpszName = (ULONG_PTR)host->lpszName;
+        guest->lpszClass = (ULONG_PTR)host->lpszClass;
+        guest->dwExStyle = host->dwExStyle;
+
+        orig_param = call->lparam;
+        call->lparam = (LPARAM)guest;
+    }
+    else if (msg == WM_NCCALCSIZE)
+    {
+        /* FIXME: This should not be necessary if we restriced the host stack to < 4 GB. */
+        RECT *copy = HeapAlloc(GetProcessHeap(), 0, sizeof(*copy));
+        *copy = *(RECT *)call->lparam;
+        orig_param = call->lparam;
+        call->lparam = (LPARAM)copy;
+    }
+    else if (msg == WM_WINDOWPOSCHANGING || msg == WM_WINDOWPOSCHANGED)
+    {
+        WINDOWPOS *host = (WINDOWPOS *)call->lparam;
+        struct qemu_WINDOWPOS *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*host));
+
+        WINDOWPOS_h2g(guest, host);
+
+        orig_param = call->lparam;
+        call->lparam = (LPARAM)guest;
+    }
     else if (msg == WM_NOTIFY)
     {
         orig_param = call->lparam;
@@ -322,6 +363,25 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
         page->lParam = orig_param;
     }
 #if HOST_BIT != GUEST_BIT
+    else if (msg == WM_NCCREATE)
+    {
+        HeapFree(GetProcessHeap(), 0, (void *)call->lparam);
+    }
+    else if (msg == WM_NCCALCSIZE)
+    {
+        /* FIXME: This should not be necessary if we restriced the host stack to < 4 GB. */
+        *(RECT *)orig_param = *(RECT *)call->lparam;
+        HeapFree(GetProcessHeap(), 0, (void *)call->lparam);
+    }
+    else if (msg == WM_WINDOWPOSCHANGING || msg == WM_WINDOWPOSCHANGED)
+    {
+        struct qemu_WINDOWPOS *guest = (struct qemu_WINDOWPOS *)call->lparam;
+        WINDOWPOS *host = (WINDOWPOS *)orig_param;
+
+        WINDOWPOS_g2h(host, guest);
+
+        HeapFree(GetProcessHeap(), 0, (void *)call->lparam);
+    }
     else if (msg == WM_NOTIFY)
     {
         propsheet_notify_g2h((NMHDR *)orig_param, (NMHDR *)call->lparam);
