@@ -58,6 +58,7 @@ struct qemu_set_callbacks
     uint64_t QueryInterface;
     uint64_t AddRef;
     uint64_t Release;
+    uint64_t GetClipboardData;
     uint64_t editstream_cb;
     uint64_t breakproc;
 };
@@ -80,6 +81,14 @@ struct qemu_breakproc_cb
     uint64_t code;
 };
 
+struct qemu_GetClipboardData_cb
+{
+    uint64_t impl;
+    uint64_t chrg;
+    uint64_t reco;
+    uint64_t object;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 static uint64_t __fastcall guest_ole_callback_AddRef(struct callback_impl *impl)
@@ -90,6 +99,19 @@ static uint64_t __fastcall guest_ole_callback_AddRef(struct callback_impl *impl)
 static uint64_t __fastcall guest_ole_callback_Release(struct callback_impl *impl)
 {
     return impl->guest->lpVtbl->Release(impl->guest);
+}
+
+static uint64_t __fastcall guest_GetClipboardData(struct qemu_GetClipboardData_cb *call)
+{
+    struct callback_impl *impl = (struct callback_impl *)(ULONG_PTR)call->impl;
+    IDataObject *object = NULL;
+    uint64_t ret;
+
+    ret = impl->guest->lpVtbl->GetClipboardData(impl->guest, (CHARRANGE *)(ULONG_PTR)call->chrg,
+            call->reco, &object);
+    call->object = (ULONG_PTR)object;
+
+    return ret;
 }
 
 static uint64_t __fastcall guest_editstream_cb(struct qemu_editstream_cb *data)
@@ -115,6 +137,7 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
             call.QueryInterface = 0;
             call.AddRef = (ULONG_PTR)guest_ole_callback_AddRef;
             call.Release = (ULONG_PTR)guest_ole_callback_Release;
+            call.GetClipboardData = (ULONG_PTR)guest_GetClipboardData;
             call.editstream_cb = (ULONG_PTR)guest_editstream_cb;
             call.breakproc = (ULONG_PTR)guest_breakproc_cb;
             qemu_syscall(&call.super);
@@ -133,6 +156,7 @@ const struct qemu_ops *qemu_ops;
 static uint64_t guest_ole_callback_QueryInterface;
 static uint64_t guest_ole_callback_AddRef;
 static uint64_t guest_ole_callback_Release;
+static uint64_t guest_ole_callback_GetClipboardData;
 static uint64_t guest_editstream_cb;
 static uint64_t guest_breakproc_wrapper;
 
@@ -254,6 +278,7 @@ static void qemu_set_callbacks(struct qemu_syscall *call)
     guest_ole_callback_QueryInterface = c->QueryInterface;
     guest_ole_callback_AddRef = c->AddRef;
     guest_ole_callback_Release = c->Release;
+    guest_ole_callback_GetClipboardData = c->GetClipboardData;
     guest_editstream_cb = c->editstream_cb;
     guest_breakproc_wrapper = c->breakproc;
 
@@ -379,8 +404,40 @@ static HRESULT STDMETHODCALLTYPE RichEditOleCallback_GetClipboardData(IRichEditO
         CHARRANGE *lpchrg, DWORD reco, LPDATAOBJECT *lplpdataobj)
 {
     struct callback_impl *impl = impl_from_IRichEditOleCallback(iface);
-    WINE_FIXME("(%p, %p, %x, %p)\n", impl, lpchrg, reco, lplpdataobj);
-    return E_FAIL;
+    struct qemu_GetClipboardData_cb stack, *call = &stack;
+    struct
+    {
+        struct qemu_GetClipboardData_cb call;
+        CHARRANGE chrg;
+    } *alloc = NULL;
+    HRESULT hr;
+
+    WINE_TRACE("(%p, %p, %x, %p)\n", impl, lpchrg, reco, lplpdataobj);
+
+#if GUEST_BIT != HOST_BIT
+    alloc = HeapAlloc(GetProcessHeap(), 0, sizeof(*alloc));
+    call = &alloc->call;
+    call->chrg = (ULONG_PTR)&alloc->chrg;
+#else
+    call->chrg = (ULONG_PTR)lpchrg;
+#endif
+
+    call->impl = (ULONG_PTR)impl;
+    call->reco = reco;
+
+    hr = qemu_ops->qemu_execute(QEMU_G2H(guest_ole_callback_GetClipboardData), QEMU_H2G(call));
+
+    if (SUCCEEDED(hr) && call->object)
+        WINE_FIXME("Wrap returned IDataObject 0x%lx.\n", call->object);
+    *lplpdataobj = NULL;
+
+    if (alloc)
+    {
+        *lpchrg = alloc->chrg;
+        HeapFree(GetProcessHeap(), 0, call);
+    }
+
+    return hr;
 }
 
 static HRESULT STDMETHODCALLTYPE RichEditOleCallback_GetDragDropEffect( IRichEditOleCallback* iface, BOOL fDrag,
