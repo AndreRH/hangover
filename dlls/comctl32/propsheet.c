@@ -187,7 +187,7 @@ void qemu_PropertySheet(struct qemu_syscall *call)
 
     if (data->header.dwFlags & PSH_PROPSHEETPAGE)
     {
-        data->pages = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, page_count * sizeof(data->pages));
+        data->pages = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, page_count * sizeof(*data->pages));
         if (!data->pages)
         {
             VirtualFree(data, 0, MEM_RELEASE);
