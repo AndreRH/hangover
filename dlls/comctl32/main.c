@@ -300,11 +300,13 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
         page_copy->lParam = page_data->guest_lparam;
         call->lparam = QEMU_H2G(page_copy);
     }
+#if HOST_BIT != GUEST_BIT
     else if (msg == WM_NOTIFY)
     {
         orig_param = call->lparam;
         call->lparam = (LPARAM)propsheet_notify_h2g((NMHDR *)call->lparam);
     }
+#endif
 
     WINE_TRACE("Calling guest wndproc 0x%lx(%p, %lx, %lx, %lx)\n", wrapper->guest_proc,
             win, call->msg, call->wparam, call->lparam);
@@ -319,10 +321,12 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
         *page = *page_copy;
         page->lParam = orig_param;
     }
+#if HOST_BIT != GUEST_BIT
     else if (msg == WM_NOTIFY)
     {
         propsheet_notify_g2h((NMHDR *)orig_param, (NMHDR *)call->lparam);
     }
+#endif
 
     if (call != &stack_call)
         HeapFree(GetProcessHeap(), 0, call);
