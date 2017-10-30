@@ -1,19 +1,4 @@
-1) Checking out submodules
-
-My server is crappy (a small router), so it will either die or be very slow when you try to clone the full tree from it. Please clone qemu and wine from git://source.winehq.org/git/wine.git and git://git.qemu.org/qemu.git and run
-
-git submodule update --init --reference /local/path/to/wine wine
-git submodule update --init --reference /local/path/to/qemu qemu
-
-The local checkouts need to remain because .git/modules/{wine|qemu}/objects/info points there.
-
-If you prefer to have the entire code inside this directory you can do
-git clone git://git.qemu.org/qemu.git
-git clone git://source.winehq.org/git/wine.git
-git submodule update --init qemu    # Ignore "Direct fetching of that commit failed." error
-git submodule update --init wine    # Ignore "Direct fetching of that commit failed." error
-git submodule sync qemu
-git submodule sync wine
-git submodule update
-
-This will clone the upstream projects, update the remote URL and check out the remaining parts from my server. Once the submodules are checked out you can use the normal git submodule workflow. My server should survive incremental fetches :-) .
+This is hangover, a project startet bei Stefan Dösinger and André Hentschel to run
+x86_64 Windows applications on aarch64 Windows or Wine. (More architectures can be added)
+Currently it is somewhat messy and the buildsystem is a joke.
+We hope to improve this now that it's public :)
