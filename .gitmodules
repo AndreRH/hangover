@@ -1,9 +1,9 @@
 [submodule "wine"]
 	path = wine
-	url = ssh://stefandoesinger.ddns.net/~git/hangover/wine
+	url = https://github.com/AndreRH/wine.git
 [submodule "qemu"]
 	path = qemu
-	url = ssh://stefandoesinger.ddns.net/~git/hangover/qemu
+	url = https://github.com/AndreRH/qemu.git
 [submodule "glib"]
 	path = glib
-	url = ssh://stefandoesinger.ddns.net/~git/hangover/glib
+	url = https://github.com/AndreRH/glib.git
