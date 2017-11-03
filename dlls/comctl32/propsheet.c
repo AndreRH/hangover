@@ -31,6 +31,7 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include "callback_helper.h"
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_comctl32);
 #endif
 
@@ -81,6 +82,22 @@ WINBASEAPI INT_PTR WINAPI PropertySheetW(LPCPROPSHEETHEADERW lppsh)
 
 #else
 
+struct propsheet_data
+{
+    /* Top level callback wrapper */
+    struct callback_entry callback_entry;
+
+    PROPSHEETHEADERW header;
+    ULONG ref;
+    uint64_t guest_wrapper;
+
+    /* I need to pass this array to PropertySheetW(), so I can't interleave it with my own data. */
+    PROPSHEETPAGEW *pages;
+
+    struct page_data page_data[1];
+
+};
+
 static UINT propsheet_host_cb(HWND hwnd, UINT msg, PROPSHEETPAGEW *page)
 {
     /* We get a PROPSHEETPAGEW struct with the original data, but not our
@@ -114,8 +131,9 @@ static UINT propsheet_host_cb(HWND hwnd, UINT msg, PROPSHEETPAGEW *page)
     }
 }
 
-static INT CALLBACK propsheet_header_host_cb(HWND hwnd, UINT msg, LPARAM lparam, struct propsheet_data *data)
+static INT CALLBACK propsheet_header_host_cb(HWND hwnd, UINT msg, LPARAM lparam, struct callback_entry *entry)
 {
+    struct propsheet_data *data = CONTAINING_RECORD(entry, struct propsheet_data, callback_entry);
     struct qemu_PropertySheet_cb stack, *call = &stack;
     INT ret;
 
@@ -123,7 +141,7 @@ static INT CALLBACK propsheet_header_host_cb(HWND hwnd, UINT msg, LPARAM lparam,
     call = HeapAlloc(GetProcessHeap(), 0, sizeof(*call));
 #endif
 
-    call->cb = data->guest_cb;
+    call->cb = data->callback_entry.guest_proc;
     call->hwnd = (ULONG_PTR)hwnd;
     call->msg = msg;
     call->lparam = lparam;
@@ -173,15 +191,7 @@ void qemu_PropertySheet(struct qemu_syscall *call)
 
     /* Does the top level callback (PFNPROPSHEETCALLBACK) allow us to pass a custom pointer somewhere?
      * Why do you ask, of course it doesn't... */
-    offset = offsetof(struct propsheet_data, selfptr) - offsetof(struct propsheet_data, ldrx3);
-    data->ldrx3 = 0x58000003 | (offset << 3); /* ldr x3, offset */
-    offset = offsetof(struct propsheet_data, host_proc) - offsetof(struct propsheet_data, ldrx4);
-    data->ldrx4 = 0x58000004 | (offset << 3);   /* ldr x4, offset */
-    data->br = 0xd61f0080; /* br x4 */
-
-    data->selfptr = data;
-    data->host_proc = propsheet_header_host_cb;
-    __clear_cache(&data->ldrx3, &data->br + 1);
+    callback_init(&data->callback_entry, 3, propsheet_header_host_cb);
 
     /* FIXME: What about phpage? How does it choose between the two? */
 
@@ -229,7 +239,7 @@ void qemu_PropertySheet(struct qemu_syscall *call)
 
     if ((data->header.dwFlags & PSH_USECALLBACK) && data->header.pfnCallback)
     {
-        data->guest_cb = (ULONG_PTR)data->header.pfnCallback;
+        data->callback_entry.guest_proc = (ULONG_PTR)data->header.pfnCallback;
         data->guest_wrapper = c->wrapper;
         data->header.pfnCallback = (PFNPROPSHEETCALLBACK)data;
     }

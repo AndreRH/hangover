@@ -34,6 +34,7 @@ struct callback_entry
 
 struct callback_entry_table;
 
+void callback_init(struct callback_entry *entry, unsigned int params, void *proc);
 extern BOOL callback_alloc_table(struct callback_entry_table **table, unsigned int count,
         size_t entry_size, void *func, unsigned int params);
 extern struct callback_entry *callback_get(struct callback_entry_table *table, uint64_t guest_proc, BOOL *is_new);

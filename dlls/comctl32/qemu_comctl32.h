@@ -361,40 +361,6 @@ void qemu_UninitializeFlatSB(struct qemu_syscall *call);
 UINT (* WINAPI p_ImageList_SetColorTable)(HIMAGELIST himl, UINT uStartIndex, UINT cEntries, const RGBQUAD *prgb);
 HRESULT (* WINAPI p_DllGetVersion)(void *pdvi);
 
-struct wndproc_wrapper
-{
-    int32_t ldrx4;
-    int32_t ldrx5;
-    int32_t br;
-    void *selfptr;
-    void *host_proc;
-    uint64_t guest_proc;
-};
-
-struct propsheet_data
-{
-    /* Top level callback wrapper */
-    int32_t ldrx3;
-    int32_t ldrx4;
-    int32_t br;
-    void *selfptr;
-    void *host_proc;
-
-    PROPSHEETHEADERW header;
-    ULONG ref;
-    uint64_t guest_cb, guest_wrapper;
-
-    /* I need to pass this array to PropertySheetW(), so I can't interleave it with my own data. */
-    PROPSHEETPAGEW *pages;
-
-    struct page_data
-    {
-        uint64_t guest_lparam, guest_cb;
-        struct propsheet_data *header;
-    } page_data[1];
-
-};
-
 WNDPROC wndproc_guest_to_host(uint64_t guest_func);
 
 void hook_wndprocs(void);
@@ -402,6 +368,12 @@ void register_notify_callbacks(void);
 
 struct qemu_NMHDR *propsheet_notify_h2g(NMHDR *host);
 void propsheet_notify_g2h(NMHDR *host, NMHDR *guest);
+
+struct page_data
+{
+    uint64_t guest_lparam, guest_cb;
+    struct propsheet_data *header;
+};
 
 #endif
 

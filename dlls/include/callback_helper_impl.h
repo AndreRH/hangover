@@ -26,7 +26,7 @@ struct callback_entry_table
     struct callback_entry entries[1];
 };
 
-static void init_callback(struct callback_entry *entry, unsigned int params, void *proc)
+void callback_init(struct callback_entry *entry, unsigned int params, void *proc)
 {
     size_t offset;
 
@@ -65,7 +65,7 @@ BOOL callback_alloc_table(struct callback_entry_table **table, unsigned int coun
         return FALSE;
 
     for (i = 0; i < count; ++i)
-        init_callback(&ret->entries[i], params, func);
+        callback_init(&ret->entries[i], params, func);
 
     ret->count = count;
     *table = ret;

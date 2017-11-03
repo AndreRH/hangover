@@ -73,6 +73,8 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_comctl32);
 
+#include "callback_helper_impl.h"
+
 const struct qemu_ops *qemu_ops;
 static uint64_t guest_wndproc_wrapper;
 
@@ -261,11 +263,10 @@ static const syscall_handler dll_functions[] =
     qemu_UninitializeFlatSB,
 };
 
-struct wndproc_wrapper *wndproc_wrappers;
-unsigned int wndproc_wrapper_count;
+struct callback_entry_table *wndproc_wrappers;
 
 /* FIXME: Taken from user32 for propsheet wrappers. De-duplicate this... */
-LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam, struct wndproc_wrapper *wrapper)
+LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam, struct callback_entry *wrapper)
 {
     struct wndproc_call stack_call, *call = &stack_call;
     LRESULT ret;
@@ -396,28 +397,6 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
     return ret;
 }
 
-static void init_wndproc(struct wndproc_wrapper *wrapper)
-{
-    size_t offset;
-
-    offset = offsetof(struct wndproc_wrapper, selfptr) - offsetof(struct wndproc_wrapper, ldrx4);
-    /* The load offset is stored in bits 5-24. The stored offset is left-shifted by 2 to generate the 21
-     * bit real offset. So to place it in the right place we need our offset (multiple of 4, unless the
-     * compiler screwed up terribly) shifted by another 3 bits. */
-    wrapper->ldrx4 = 0x58000004 | (offset << 3); /* ldr x4, offset */
-
-    offset = offsetof(struct wndproc_wrapper, host_proc) - offsetof(struct wndproc_wrapper, ldrx5);
-    wrapper->ldrx5 = 0x58000005 | (offset << 3);   /* ldr x5, offset */
-
-    wrapper->br = 0xd61f00a0; /* br x5 */
-
-    wrapper->selfptr = wrapper;
-    wrapper->host_proc = wndproc_wrapper;
-    wrapper->guest_proc = 0;
-
-    __clear_cache(&wrapper->ldrx4, &wrapper->br + 1);
-}
-
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     HMODULE comctl32;
@@ -437,17 +416,11 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
         WINE_ERR("Cannot resolve comctl32.DllGetVersion.\n");
 
     /* Comctl32 probably doesn't need as many wrappers as user32... */
-    wndproc_wrapper_count = 64;
-    wndproc_wrappers = VirtualAlloc(NULL, sizeof(*wndproc_wrappers) * wndproc_wrapper_count,
-            MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-    if (!wndproc_wrappers)
+    if (!callback_alloc_table(&wndproc_wrappers, 64, sizeof(struct callback_entry), wndproc_wrapper, 4))
     {
         WINE_ERR("Failed to allocate memory for class wndproc wrappers.\n");
         return NULL;
     }
-
-    for (i = 0; i < wndproc_wrapper_count; ++i)
-        init_wndproc(&wndproc_wrappers[i]);
 
     hook_wndprocs();
 
@@ -457,26 +430,27 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
 WNDPROC wndproc_guest_to_host(uint64_t guest_proc)
 {
     unsigned int i;
+    struct callback_entry *wrapper;
+    BOOL is_new;
 
     /* Assume we never get a WNDPROC handle in comctl32. */
     if (!guest_proc)
         return (WNDPROC)guest_proc;
 
-    for (i = 0; i < wndproc_wrapper_count; i++)
+    wrapper = callback_get(wndproc_wrappers, guest_proc, &is_new);
+    if (!wrapper)
     {
-        if (wndproc_wrappers[i].guest_proc == guest_proc)
-            return (WNDPROC)&wndproc_wrappers[i];
-        if (!wndproc_wrappers[i].guest_proc)
-        {
-            WINE_TRACE("Creating host WNDPROC %p for guest func 0x%lx.\n",
-                    &wndproc_wrappers[i], guest_proc);
-            wndproc_wrappers[i].guest_proc = guest_proc;
-            return (WNDPROC)&wndproc_wrappers[i];
-        }
+        WINE_FIXME("Out of guest -> host WNDPROC wrappers.\n");
+        assert(0);
     }
 
-    WINE_FIXME("Out of guest -> host WNDPROC wrappers.\n");
-    assert(0);
+    if (is_new)
+    {
+        WINE_TRACE("Creating host WNDPROC %p for guest func 0x%lx.\n",
+                wrapper, guest_proc);
+    }
+
+    return (WNDPROC)wrapper;
 }
 
 #endif
