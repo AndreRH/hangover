@@ -139,18 +139,9 @@ WINBASEAPI BOOL WINAPI GetSystemRegistryQuota(PDWORD pdwQuotaAllowed, PDWORD pdw
 
 #include <wine/debug.h>
 #include "va_helper_impl.h"
+#include "callback_helper_impl.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
-
-struct OVERLAPPED_wrapper
-{
-    int32_t ldrx3;
-    int32_t ldrx4;
-    int32_t br;
-    void *selfptr;
-    void *host_proc;
-    uint64_t guest_cb;
-};
 
 const struct qemu_ops *qemu_ops;
 
@@ -163,57 +154,21 @@ static void qemu_set_callbacks(struct qemu_syscall *call)
     guest_completion_cb = c->guest_completion_cb;
 }
 
-void free_completion_wrapper(struct OVERLAPPED_wrapper *wrapper)
-{
-    VirtualFree(wrapper, 0, MEM_RELEASE);
-}
-
 /* We cannot use the OVERLAPPED structure as a context pointer to add our data because it is passed to
  * other functions too, so we'd have to modify it in the same way all the time. The lifetime of the
- * OVERLAPPED structure is more complicated than the lifetime of the callback.
- *
- * This wrapper setup is similar to the WNDPROC wrapper used in user32. */
-static void CALLBACK host_completion_cb(DWORD error, DWORD len, OVERLAPPED *ov, struct OVERLAPPED_wrapper *wrapper)
+ * OVERLAPPED structure is more complicated than the lifetime of the callback. */
+static void CALLBACK host_completion_cb(DWORD error, DWORD len, OVERLAPPED *ov, struct callback_entry *wrapper)
 {
     struct qemu_completion_cb call;
 
-    call.func = wrapper->guest_cb;
+    call.func = callback_get_guest_proc(wrapper);
     call.error = error;
     call.len = len;
     call.ov = QEMU_H2G(ov);
 
-    free_completion_wrapper(wrapper);
     WINE_TRACE("Calling guest callback 0x%lx(%x, %u, 0x%lx).\n", call.func, error, len, call.ov);
     qemu_ops->qemu_execute(QEMU_G2H(guest_completion_cb), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned.\n");
-}
-
-struct OVERLAPPED_wrapper *alloc_completion_wrapper(uint64_t guest_cb)
-{
-    struct OVERLAPPED_wrapper *wrapper;
-    size_t offset;
-
-    wrapper = VirtualAlloc(NULL, sizeof(*wrapper), MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-    if (!wrapper)
-        return NULL;
-
-    offset = offsetof(struct OVERLAPPED_wrapper, selfptr) - offsetof(struct OVERLAPPED_wrapper, ldrx3);
-    /* The load offset is stored in bits 5-24. The stored offset is left-shifted by 2 to generate the 21
-     * bit real offset. So to place it in the right place we need our offset (multiple of 4, unless the
-     * compiler screwed up terribly) shifted by another 3 bits. */
-    wrapper->ldrx3 = 0x58000003 | (offset << 3); /* ldr x3, offset */
-
-    offset = offsetof(struct OVERLAPPED_wrapper, host_proc) - offsetof(struct OVERLAPPED_wrapper, ldrx4);
-    wrapper->ldrx4 = 0x58000004 | (offset << 3);   /* ldr x4, offset */
-
-    wrapper->br = 0xd61f0080; /* br x4 */
-    __clear_cache(&wrapper->ldrx3, &wrapper->br + 1);
-
-    wrapper->selfptr = wrapper;
-    wrapper->host_proc = host_completion_cb;
-    wrapper->guest_cb = guest_cb;
-
-    return wrapper;
 }
 
 static void qemu_GetSystemRegistryQuota(struct qemu_syscall *call)
@@ -1310,6 +1265,8 @@ static void hook(void *to_hook, const void *replace)
     __clear_cache(hooked_function, (char *)hooked_function + sizeof(*hooked_function));
 }
 
+struct callback_entry_table *overlapped_wrappers;
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     HANDLE kernel32;
@@ -1328,6 +1285,11 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     hook(GetProcAddress(kernel32, "SetCurrentDirectoryA"), hook_SetCurrentDirectoryA);
     hook(GetProcAddress(kernel32, "SetCurrentDirectoryW"), hook_SetCurrentDirectoryW);
 
+    /* We're searching through this array every time there's an IO request. If 32 entries are not enough for
+     * an application, then the linear search isn't good enough. Before growing this array find a way to do
+     * improve the search speed. */
+    if (!callback_alloc_table(&overlapped_wrappers, 32, sizeof(struct callback_entry), host_completion_cb, 3))
+        WINE_ERR("Failed to allocate overlapped wrappers.\n");
 
     return dll_functions;
 }

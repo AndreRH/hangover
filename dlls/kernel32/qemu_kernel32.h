@@ -1961,9 +1961,7 @@ void qemu_ZombifyActCtx(struct qemu_syscall *call);
 
 DWORD kernel32_tls;
 
-struct OVERLAPPED_wrapper;
-struct OVERLAPPED_wrapper *alloc_completion_wrapper(uint64_t guest_cb);
-void free_completion_wrapper(struct OVERLAPPED_wrapper *wrapper);
+extern struct callback_entry_table *overlapped_wrappers;
 
 #endif
 

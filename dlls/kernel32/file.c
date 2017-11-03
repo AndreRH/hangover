@@ -28,9 +28,9 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include "callback_helper.h"
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
-
 
 struct qemu_SetFileApisToOEM
 {
@@ -146,7 +146,7 @@ void qemu_ReadFileEx(struct qemu_syscall *call)
     struct qemu_ReadFileEx *c = (struct qemu_ReadFileEx *)call;
     uint64_t guest_completion;
     OVERLAPPED *guest_ov;
-    struct OVERLAPPED_wrapper *wrapper = NULL;
+    struct callback_entry *wrapper = NULL;
 
     WINE_TRACE("\n");
     guest_completion = c->lpCompletionRoutine;
@@ -154,22 +154,13 @@ void qemu_ReadFileEx(struct qemu_syscall *call)
 
     if (guest_completion && guest_ov)
     {
-        wrapper = alloc_completion_wrapper(guest_completion);
+        wrapper = callback_get(overlapped_wrappers, guest_completion, NULL);
         if (!wrapper)
-        {
-            SetLastError(ERROR_NOT_ENOUGH_MEMORY);
-            c->super.iret = FALSE;
-            return;
-        }
+            WINE_ERR("Failed to get an overlapped IO callback wrapper.\n");
     }
 
     c->super.iret = ReadFileEx(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToRead, guest_ov,
             (LPOVERLAPPED_COMPLETION_ROUTINE)wrapper);
-    if (wrapper && !c->super.iret)
-    {
-        WINE_TRACE("Synchronous return, freeing wrapper structure.\n");
-        free_completion_wrapper(wrapper);
-    }
 }
 
 #endif
@@ -286,7 +277,7 @@ void qemu_WriteFileEx(struct qemu_syscall *call)
     struct qemu_WriteFileEx *c = (struct qemu_WriteFileEx *)call;
     uint64_t guest_completion;
     OVERLAPPED *guest_ov;
-    struct OVERLAPPED_wrapper *wrapper = NULL;
+    struct callback_entry *wrapper = NULL;
 
     WINE_TRACE("\n");
     guest_completion = c->lpCompletionRoutine;
@@ -294,22 +285,13 @@ void qemu_WriteFileEx(struct qemu_syscall *call)
 
     if (guest_completion && guest_ov)
     {
-        wrapper = alloc_completion_wrapper(guest_completion);
+        wrapper = callback_get(overlapped_wrappers, guest_completion, NULL);
         if (!wrapper)
-        {
-            SetLastError(ERROR_NOT_ENOUGH_MEMORY);
-            c->super.iret = FALSE;
-            return;
-        }
+            WINE_ERR("Failed to get an overlapped IO callback wrapper.\n");
     }
 
     c->super.iret = WriteFileEx(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToWrite, guest_ov,
             (LPOVERLAPPED_COMPLETION_ROUTINE)wrapper);
-    if (wrapper && !c->super.iret)
-    {
-        WINE_TRACE("Synchronous return, freeing wrapper structure.\n");
-        free_completion_wrapper(wrapper);
-    }
 }
 
 #endif
