@@ -1266,6 +1266,7 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             break;
 
 #if HOST_BIT != GUEST_BIT
+        case WM_CREATE:
         case WM_NCCREATE:
         {
             struct qemu_CREATESTRUCT *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
@@ -1349,6 +1350,7 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
 #if HOST_BIT != GUEST_BIT
     switch (conv->message)
     {
+        case WM_CREATE:
         case WM_NCCREATE:
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
