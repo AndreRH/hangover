@@ -285,6 +285,7 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
             case TBN_ENDDRAG:
             case TBN_BEGINDRAG:
             case TBN_DROPDOWN:
+            case TBN_DRAGOUT:
                 toolbar = (struct qemu_NMTOOLBAR *)guest->lParam;
                 NMTOOLBAR_g2h((NMTOOLBARW *)hdr, toolbar);
                 break;
@@ -403,14 +404,11 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
         case TBN_ENDDRAG:
         case TBN_BEGINDRAG:
         case TBN_DROPDOWN:
+        case TBN_DRAGOUT:
             WINE_TRACE("Handling notify message TBN_[BEGIN|END]DRAG.\n");
             toolbar = HeapAlloc(GetProcessHeap(), 0, sizeof(*toolbar));
             NMTOOLBAR_h2g(toolbar, (NMTOOLBARW *)hdr);
             guest->lParam = (LPARAM)toolbar;
-            break;
-
-        case TBN_DRAGOUT:
-            WINE_FIXME("Unhandled notify message TBN_DRAGOUT.\n");
             break;
 
         case TBN_GETOBJECT:
