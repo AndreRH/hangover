@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_user32.h"
@@ -29,7 +31,6 @@
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 #endif
-
 
 struct qemu_BeginPaint
 {
@@ -57,8 +58,22 @@ WINUSERAPI HDC WINAPI BeginPaint(HWND hwnd, PAINTSTRUCT *lps)
 void qemu_BeginPaint(struct qemu_syscall *call)
 {
     struct qemu_BeginPaint *c = (struct qemu_BeginPaint *)call;
+    PAINTSTRUCT copy, *paint = &copy;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)BeginPaint(QEMU_G2H(c->hwnd), QEMU_G2H(c->lps));
+
+#if GUEST_BIT == HOST_BIT
+    paint = QEMU_G2H(c->lps);
+#else
+    if (!c->lps)
+        paint = NULL;
+#endif
+
+    c->super.iret = (ULONG_PTR)BeginPaint(QEMU_G2H(c->hwnd), paint);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->lps)
+        PAINTSTRUCT_h2g(QEMU_G2H(c->lps), paint);
+#endif
 }
 
 #endif
@@ -89,8 +104,23 @@ WINUSERAPI BOOL WINAPI EndPaint(HWND hwnd, const PAINTSTRUCT *lps)
 void qemu_EndPaint(struct qemu_syscall *call)
 {
     struct qemu_EndPaint *c = (struct qemu_EndPaint *)call;
+    PAINTSTRUCT copy, *paint = &copy;
     WINE_TRACE("\n");
-    c->super.iret = EndPaint(QEMU_G2H(c->hwnd), QEMU_G2H(c->lps));
+
+#if GUEST_BIT == HOST_BIT
+    paint = QEMU_G2H(c->lps);
+#else
+    if (c->lps)
+    {
+        PAINTSTRUCT_g2h(paint, QEMU_G2H(c->lps));
+    }
+    else
+    {
+        paint = NULL;
+    }
+#endif
+
+    c->super.iret = (ULONG_PTR)EndPaint(QEMU_G2H(c->hwnd), paint);
 }
 
 #endif
