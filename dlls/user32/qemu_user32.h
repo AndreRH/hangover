@@ -1439,17 +1439,6 @@ void qemu_UserRegisterWowHandlers(struct qemu_syscall *call);
 
 extern uint64_t reverse_wndproc_func;
 
-struct wndproc_wrapper
-{
-    int32_t ldrx4;
-    int32_t ldrx5;
-    int32_t br;
-    void *selfptr;
-    void *host_proc;
-    uint64_t guest_proc;
-};
-
-extern struct wndproc_wrapper *wndproc_wrappers;
 extern unsigned int wndproc_wrapper_count;
 
 /* Reverse wrapper for Wine's wndprocs. */

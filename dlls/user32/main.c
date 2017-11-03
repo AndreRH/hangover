@@ -102,6 +102,8 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 #include <wine/unicode.h>
 #include <assert.h>
 
+#include "callback_helper_impl.h"
+
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 
 uint64_t reverse_wndproc_func;
@@ -902,11 +904,11 @@ static const syscall_handler dll_functions[] =
     qemu_WINNLSGetIMEHotkey,
 };
 
-struct wndproc_wrapper *wndproc_wrappers;
+struct callback_entry_table *wndproc_wrappers;
 unsigned int wndproc_wrapper_count;
 uint64_t guest_wndproc_wrapper;
 
-LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam, struct wndproc_wrapper *wrapper)
+LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam, struct callback_entry *wrapper)
 {
     struct wndproc_call stack_call, *call = &stack_call;
     MSG msg_struct = {win, msg, wparam, lparam}, msg_conv;
@@ -939,28 +941,6 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
     return ret;
 }
 
-void init_wndproc(struct wndproc_wrapper *wrapper)
-{
-    size_t offset;
-
-    offset = offsetof(struct wndproc_wrapper, selfptr) - offsetof(struct wndproc_wrapper, ldrx4);
-    /* The load offset is stored in bits 5-24. The stored offset is left-shifted by 2 to generate the 21
-     * bit real offset. So to place it in the right place we need our offset (multiple of 4, unless the
-     * compiler screwed up terribly) shifted by another 3 bits. */
-    wrapper->ldrx4 = 0x58000004 | (offset << 3); /* ldr x4, offset */
-
-    offset = offsetof(struct wndproc_wrapper, host_proc) - offsetof(struct wndproc_wrapper, ldrx5);
-    wrapper->ldrx5 = 0x58000005 | (offset << 3);   /* ldr x5, offset */
-
-    wrapper->br = 0xd61f00a0; /* br x5 */
-
-    wrapper->selfptr = wrapper;
-    wrapper->host_proc = wndproc_wrapper;
-    wrapper->guest_proc = 0;
-
-    __clear_cache(&wrapper->ldrx4, &wrapper->br + 1);
-}
-
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     unsigned int i;
@@ -982,16 +962,12 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
      *
      * This array uses 800 kilobytes of memory :-\ . */
     wndproc_wrapper_count = 20 * 1024;
-    wndproc_wrappers = VirtualAlloc(NULL, sizeof(*wndproc_wrappers) * wndproc_wrapper_count,
-            MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-    if (!wndproc_wrappers)
+    if (!callback_alloc_table(&wndproc_wrappers, 20 * 1024, sizeof(struct callback_entry),
+            wndproc_wrapper, 4))
     {
         WINE_ERR("Failed to allocate memory for class wndproc wrappers.\n");
         return NULL;
     }
-
-    for (i = 0; i < wndproc_wrapper_count; ++i)
-        init_wndproc(&wndproc_wrappers[i]);
 
     user32_tls = TlsAlloc();
     if (user32_tls == TLS_OUT_OF_INDEXES)
@@ -1003,6 +979,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
 WNDPROC wndproc_guest_to_host(uint64_t guest_proc)
 {
     unsigned int i;
+    struct callback_entry *entry;
+    BOOL is_new;
 
     if (!guest_proc || wndproc_is_handle(guest_proc))
         return (WNDPROC)guest_proc;
@@ -1017,21 +995,18 @@ WNDPROC wndproc_guest_to_host(uint64_t guest_proc)
         return rev_wrapper->host_proc;
     }
 
-    for (i = 0; i < wndproc_wrapper_count; i++)
+    entry = callback_get(wndproc_wrappers, guest_proc, &is_new);
+    if (!entry)
     {
-        if (wndproc_wrappers[i].guest_proc == guest_proc)
-            return (WNDPROC)&wndproc_wrappers[i];
-        if (!wndproc_wrappers[i].guest_proc)
-        {
-            WINE_TRACE("Creating host WNDPROC %p for guest func 0x%lx.\n",
-                    &wndproc_wrappers[i], guest_proc);
-            wndproc_wrappers[i].guest_proc = guest_proc;
-            return (WNDPROC)&wndproc_wrappers[i];
-        }
+        WINE_FIXME("Out of guest -> host WNDPROC wrappers.\n");
+        assert(0);
     }
-
-    WINE_FIXME("Out of guest -> host WNDPROC wrappers.\n");
-    assert(0);
+    if (is_new)
+    {
+        WINE_TRACE("Creating host WNDPROC %p for guest func 0x%lx.\n",
+                entry, guest_proc);
+    }
+    return (WNDPROC)entry;
 }
 
 uint64_t wndproc_host_to_guest(WNDPROC host_proc)
@@ -1041,13 +1016,12 @@ uint64_t wndproc_host_to_guest(WNDPROC host_proc)
     if (!host_proc || wndproc_is_handle((LONG_PTR)host_proc))
         return (ULONG_PTR)host_proc;
 
-    if ((ULONG_PTR)host_proc >= (ULONG_PTR)&wndproc_wrappers[0]
-            && (ULONG_PTR)host_proc <= (ULONG_PTR)&wndproc_wrappers[wndproc_wrapper_count])
+    if (callback_is_in_table(wndproc_wrappers, (struct callback_entry *)host_proc))
     {
-        struct wndproc_wrapper *wrapper = (struct wndproc_wrapper *)host_proc;
+        uint64_t ret = callback_get_guest_proc((struct callback_entry *)host_proc);
         WINE_TRACE("Host wndproc %p is a wrapper function. Returning guest wndproc 0x%lx.\n",
-                wrapper, wrapper->guest_proc);
-        return wrapper->guest_proc;
+                host_proc, ret);
+        return ret;
     }
 
     for (i = 0; i < REVERSE_WNDPROC_WRAPPER_COUNT; ++i)
