@@ -20,6 +20,8 @@
 
 #include "va_helper.h"
 
+#ifdef __aarch64__
+
 #define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.type " #name suffix ",@function\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc\n\t.previous");
 #define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
 extern int CDECL call_va_asm( void *ctx, void *func, int nb_args, int nb_onstack, const void *args );
@@ -107,6 +109,16 @@ __ASM_GLOBAL_FUNC( call_va_asm,
                    "ldp x29, x30, [SP], #16\n\t"            /* pop FP & LR */
                    "ret\n\t" )
 
+#else
+
+int CDECL call_va_asm( void *ctx, void *func, int nb_args, int nb_onstack, const void *args )
+{
+#warning Implement variadic calls
+    return 0;
+}
+
+#endif
+
 uint64_t call_va(uint64_t (*func)(void *ctx, ...), void *ctx, unsigned int icount,
         unsigned int fcount, const struct va_array *array)
 {
@@ -119,6 +131,8 @@ uint64_t call_va(uint64_t (*func)(void *ctx, ...), void *ctx, unsigned int icoun
 
     return call_va_asm(ctx, func, icount, onstack, array);
 }
+
+#ifdef __aarch64__
 
 extern int CDECL call_va_asm2( void *fixed1, void *fixed2, void *func, int nb_args, int nb_onstack, const void *args );
 __ASM_GLOBAL_FUNC( call_va_asm2,
@@ -202,6 +216,16 @@ __ASM_GLOBAL_FUNC( call_va_asm2,
                    "ldp x19, x20, [SP], #16\n\t"            /* pop local regs */
                    "ldp x29, x30, [SP], #16\n\t"            /* pop FP & LR */
                    "ret\n\t" )
+
+#else
+
+int CDECL call_va_asm2( void *fixed1, void *fixed2, void *func, int nb_args, int nb_onstack, const void *args )
+{
+#warning Implement variadic calls
+    return 0;
+}
+
+#endif
 
 uint64_t call_va2(uint64_t (*func)(void *fixed1, void *fixed2, ...), void *fixed1, void *fixed2,
         unsigned int icount, unsigned int fcount, const struct va_array *array)
