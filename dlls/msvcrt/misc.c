@@ -107,7 +107,7 @@ void * CDECL MSVCRT_bsearch(const void *key, const void *base, size_t nmemb,
 
 static uint64_t bsearch_guest_wrapper;
 
-static int bsearch_wrapper(const void *ptr1, const void *ptr2)
+static int CDECL bsearch_wrapper(const void *ptr1, const void *ptr2)
 {
     uint64_t *guest_proc = TlsGetValue(msvcrt_tls);
     struct qemu_bsearch_cb stack_copy, *call = &stack_copy;
@@ -191,7 +191,7 @@ void __cdecl MSVCRT_qsort(void *base, size_t elem_count, size_t elem_size,
 
 static uint64_t qsort_guest_wrapper;
 
-int qsort_wrapper(const void *ptr1, const void *ptr2)
+static int CDECL qsort_wrapper(const void *ptr1, const void *ptr2)
 {
     uint64_t *guest_proc = TlsGetValue(msvcrt_tls);
     struct qemu_qsort_cb call = {*guest_proc, QEMU_H2G(ptr1), QEMU_H2G(ptr2)};
