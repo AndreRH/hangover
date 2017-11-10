@@ -350,8 +350,8 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
     }
 #endif
 
-    WINE_TRACE("Calling guest wndproc 0x%lx(%p, %lx, %lx, %lx)\n", wrapper->guest_proc,
-            win, call->msg, call->wparam, call->lparam);
+    WINE_TRACE("Calling guest wndproc 0x%lx(%p, %lx, %lx, %lx)\n", (unsigned long)wrapper->guest_proc,
+            win, (unsigned long)call->msg, (unsigned long)call->wparam, (unsigned long)call->lparam);
     WINE_TRACE("wrapper at %p, param struct at %p\n", wrapper, call);
 
     ret = qemu_ops->qemu_execute(QEMU_G2H(guest_wndproc_wrapper), QEMU_H2G(call));
@@ -447,7 +447,7 @@ WNDPROC wndproc_guest_to_host(uint64_t guest_proc)
     if (is_new)
     {
         WINE_TRACE("Creating host WNDPROC %p for guest func 0x%lx.\n",
-                wrapper, guest_proc);
+                wrapper, (unsigned long)guest_proc);
     }
 
     return (WNDPROC)wrapper;

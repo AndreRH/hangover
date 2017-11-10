@@ -146,8 +146,8 @@ static INT CALLBACK propsheet_header_host_cb(HWND hwnd, UINT msg, LPARAM lparam,
     call->msg = msg;
     call->lparam = lparam;
 
-    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, %lx, 0x%lx).\n", call->cb, call->hwnd,
-            call->msg, call->lparam);
+    WINE_TRACE("Calling guest callback 0x%lx(%p, 0x%x, 0x%lx).\n", (unsigned long)call->cb,
+            hwnd, msg, lparam);
     ret = qemu_ops->qemu_execute(QEMU_G2H(data->guest_wrapper), QEMU_H2G(call));
     WINE_TRACE("Guest callback returned %u.\n", ret);
 
@@ -373,7 +373,7 @@ struct qemu_NMHDR *propsheet_notify_h2g(NMHDR *host)
 
         default:
             WINE_ERR("Unexpected propsheet notify message %x.\n", host->code);
-            break;
+            return NULL;
     }
 }
 
