@@ -822,7 +822,7 @@ void qemu_call_wndproc(struct qemu_syscall *call)
             msg_out.wParam, msg_out.lParam);
     msg_guest_to_host_return(&msg_in, &msg_out);
 
-    WINE_TRACE("Returning 0x%lx.\n", c->super.iret);
+    WINE_TRACE("Returning 0x%lx.\n", (unsigned long)c->super.iret);
 }
 
 #endif

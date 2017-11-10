@@ -308,7 +308,8 @@ static BOOL CALLBACK qemu_EnumWindowStationsA_host_cb(char *winsta, LPARAM lp)
     struct qemu_EnumWindowStations_cb call;
     BOOL ret;
 
-    WINE_TRACE("Calling guest func 0x%lx(%s, 0x%lx).\n", param->guest_cb, winsta, param->guest_param);
+    WINE_TRACE("Calling guest func 0x%lx(%s, 0x%lx).\n", (unsigned long)param->guest_cb, winsta,
+            (unsigned long)param->guest_param);
     call.func = param->guest_cb;
     call.winsta = QEMU_H2G(winsta);
     call.param = param->guest_param;
@@ -371,7 +372,8 @@ static BOOL CALLBACK qemu_EnumWindowStationsW_host_cb(WCHAR *winsta, LPARAM lp)
     struct qemu_EnumWindowStations_cb call;
     BOOL ret;
 
-    WINE_TRACE("Calling guest func 0x%lx(%s, 0x%lx).\n", param->guest_cb, wine_dbgstr_w(winsta), param->guest_param);
+    WINE_TRACE("Calling guest func 0x%lx(%s, 0x%lx).\n", (unsigned long)param->guest_cb,
+            wine_dbgstr_w(winsta), (unsigned long)param->guest_param);
     call.func = param->guest_cb;
     call.winsta = QEMU_H2G(winsta);
     call.param = param->guest_param;
@@ -690,7 +692,8 @@ static BOOL CALLBACK EnumDesktopsA_host_cb(char *desktop, LPARAM lp)
     struct qemu_EnumDesktops_cb call;
     BOOL ret;
 
-    WINE_TRACE("Calling guest func 0x%lx(%s, 0x%lx).\n", param->guest_cb, desktop, param->guest_param);
+    WINE_TRACE("Calling guest func 0x%lx(%s, 0x%lx).\n", (unsigned long)param->guest_cb, desktop,
+            (unsigned long)param->guest_param);
     call.func = param->guest_cb;
     call.desktop = QEMU_H2G(desktop);
     call.param = param->guest_param;
@@ -755,8 +758,8 @@ static BOOL CALLBACK EnumDesktopsW_host_cb(WCHAR *desktop, LPARAM lp)
     struct qemu_EnumDesktops_cb call;
     BOOL ret;
 
-    WINE_TRACE("Calling guest func 0x%lx(%s, 0x%lx).\n", param->guest_cb, wine_dbgstr_w(desktop),
-            param->guest_param);
+    WINE_TRACE("Calling guest func 0x%lx(%s, 0x%lx).\n", (unsigned long)param->guest_cb,
+            wine_dbgstr_w(desktop), (unsigned long)param->guest_param);
     call.func = param->guest_cb;
     call.desktop = QEMU_H2G(desktop);
     call.param = param->guest_param;

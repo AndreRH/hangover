@@ -651,7 +651,7 @@ static LONG_PTR set_wndproc(HWND win, uint64_t newval, BOOL wide)
     ULONG_PTR guest_old;
 
     WINE_TRACE("Application is setting the class proc to 0x%lx, setting host proc 0x%lx.\n",
-            newval, host_proc);
+            (unsigned long)newval, host_proc);
 
     if (wide)
         old = SetWindowLongPtrW(win, GWLP_WNDPROC, (LONG_PTR)host_proc);
@@ -1351,7 +1351,8 @@ static BOOL CALLBACK qemu_WndEnum_host_cb(HWND child, LPARAM lp)
     struct qemu_WndEnum_cb call;
     BOOL ret;
 
-    WINE_TRACE("Calling guest proc 0x%lx(%p, 0x%lx).\n", param->guest_func, child, param->guest_param);
+    WINE_TRACE("Calling guest proc 0x%lx(%p, 0x%lx).\n", (unsigned long)param->guest_func, child,
+            (unsigned long)param->guest_param);
     call.func = param->guest_func;
     call.lparam = param->guest_param;
     call.child = (ULONG_PTR)child;

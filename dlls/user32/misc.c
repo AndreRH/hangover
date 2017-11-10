@@ -597,7 +597,8 @@ static BOOL CALLBACK qemu_EnumDisplayMonitors_host_cb(HMONITOR monitor, HDC dc, 
     BOOL ret;
     struct qemu_EnumDisplayMonitors_cb call;
 
-    WINE_TRACE("Calling guest callback 0x%lx(%p, %p, %p, 0x%lx).\n", data->guest_func, monitor, dc, rect, data->guest_param);
+    WINE_TRACE("Calling guest callback 0x%lx(%p, %p, %p, 0x%lx).\n", (unsigned long)data->guest_func,
+            monitor, dc, rect, (unsigned long)data->guest_param);
     call.func = data->guest_func;
     call.monitor = QEMU_H2G(monitor);
     call.dc = QEMU_H2G(dc);

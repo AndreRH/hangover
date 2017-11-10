@@ -325,7 +325,7 @@ static uint64_t guest_wrapper;
 static INT_PTR WINAPI dlgproc_wrapper(HWND dlg, UINT msg, WPARAM wp, LPARAM lp)
 {
     uint64_t *dlgproc = TlsGetValue(user32_tls);
-    uint64_t ret;
+    INT_PTR ret;
     struct qemu_dlgproc_cb stack, *call = &stack;
 
 #if GUEST_BIT != HOST_BIT
@@ -338,7 +338,7 @@ static INT_PTR WINAPI dlgproc_wrapper(HWND dlg, UINT msg, WPARAM wp, LPARAM lp)
     call->wp = wp;
     call->lp = lp;
 
-    WINE_TRACE("Calling guest proc 0x%lx(%p, %u, %lu, %lu).\n", *dlgproc, dlg, msg, wp, lp);
+    WINE_TRACE("Calling guest proc 0x%lx(%p, %u, %lu, %lu).\n", (unsigned long)*dlgproc, dlg, msg, wp, lp);
     ret = qemu_ops->qemu_execute(QEMU_G2H(guest_wrapper), QEMU_H2G(call));
     WINE_TRACE("Guest proc returned %lu\n", ret);
 
@@ -377,7 +377,7 @@ void qemu_DialogBoxParam(struct qemu_syscall *call)
             break;
 
         default:
-            WINE_ERR("Unreachable code, id %16lx.\n", c->super.id);
+            WINE_ERR("Unreachable code, id %16lx.\n", (unsigned long)c->super.id);
     }
 
     TlsSetValue(user32_tls, old);
@@ -500,7 +500,7 @@ void qemu_DialogBoxIndirectParam(struct qemu_syscall *call)
             break;
 
         default:
-            WINE_ERR("Unreachable code, id %16lx.\n", c->super.id);
+            WINE_ERR("Unreachable code, id %16lx.\n", (unsigned long)c->super.id);
     }
 
     TlsSetValue(user32_tls, old);

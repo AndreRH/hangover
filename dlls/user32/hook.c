@@ -156,7 +156,7 @@ static LRESULT CALLBACK qemu_hook_wrapper(int code, WPARAM wp, LPARAM lp, struct
     struct qemu_cbt_hook_cb call;
     LRESULT ret;
 
-    WINE_TRACE("Calling callback 0x%lx(%u, %lu, %lu).\n", data->client_cb, code, wp, lp);
+    WINE_TRACE("Calling callback 0x%lx(%u, %lu, %lu).\n", (unsigned long)data->client_cb, code, wp, lp);
     call.func = data->client_cb;
     call.inst = data->client_inst;
     call.code = code;
@@ -277,7 +277,8 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
     {
         case WH_CBT:
             /* This hook can be global. */
-            WINE_FIXME("(WH_CBT, 0x%lx, 0x%lx, %x, %u).\n", proc, inst, tid, unicode);
+            WINE_FIXME("(WH_CBT, 0x%lx, 0x%lx, %x, %u).\n", (unsigned long)proc, (unsigned long)inst,
+                    tid, unicode);
 
             real_mod = 0;
             if (!installed_hooks[WH_CBT - WH_MIN][0])
@@ -300,7 +301,8 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
 
         case WH_KEYBOARD_LL:
             /* This is a global hook, but always called on the registering thread. */
-            WINE_TRACE("(WH_KEYBOARD_LL, 0x%lx, 0x%lx, %x, %u).\n", proc, inst, tid, unicode);
+            WINE_TRACE("(WH_KEYBOARD_LL, 0x%lx, 0x%lx, %x, %u).\n", (unsigned long)proc, (unsigned long)inst,
+                    tid, unicode);
 
             real_proc = qemu_KEYBOARD_LL_wrapper;
             real_mod = 0;
@@ -315,7 +317,8 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
 
         case WH_MOUSE_LL:
             /* This is a global hook, but always called on the registering thread. */
-            WINE_TRACE("(WH_MOUSE_LL, 0x%lx, 0x%lx, %x, %u).\n", proc, inst, tid, unicode);
+            WINE_TRACE("(WH_MOUSE_LL, 0x%lx, 0x%lx, %x, %u).\n", (unsigned long)proc, (unsigned long)inst,
+                    tid, unicode);
 
             real_mod = 0;
             if (!installed_hooks[WH_MOUSE_LL - WH_MIN][0])
@@ -338,7 +341,8 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
 
         case WH_MSGFILTER:
             /* This hook can be global. */
-            WINE_FIXME("(WH_MSGFILTER, 0x%lx, 0x%lx, %x, %u).\n", proc, inst, tid, unicode);
+            WINE_FIXME("(WH_MSGFILTER, 0x%lx, 0x%lx, %x, %u).\n", (unsigned long)proc, (unsigned long)inst,
+                    tid, unicode);
 
             real_proc = qemu_MSGFILTER_wrapper;
             real_mod = 0;
@@ -353,7 +357,8 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
 
         case WH_GETMESSAGE:
             /* This hook can be global. */
-            WINE_FIXME("(WH_GETMESSAGE, 0x%lx, 0x%lx, %x, %u).\n", proc, inst, tid, unicode);
+            WINE_FIXME("(WH_GETMESSAGE, 0x%lx, 0x%lx, %x, %u).\n", (unsigned long)proc, (unsigned long)inst,
+                    tid, unicode);
 
             real_proc = qemu_GETMESSAGE_wrapper;
             real_mod = 0;
@@ -368,7 +373,8 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
 
         case WH_CALLWNDPROC:
             /* This hook can be global. */
-            WINE_FIXME("(WH_CALLWNDPROC, 0x%lx, 0x%lx, %x, %u).\n", proc, inst, tid, unicode);
+            WINE_FIXME("(WH_CALLWNDPROC, 0x%lx, 0x%lx, %x, %u).\n", (unsigned long)proc, (unsigned long)inst,
+                    tid, unicode);
 
             real_proc = qemu_CALLWNDPROC_wrapper;
             real_mod = 0;
@@ -382,7 +388,8 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
             break;
 
         default:
-            WINE_FIXME("(%d, 0x%lx, 0x%lx, %x, %u).\n", id, proc, inst, tid, unicode);
+            WINE_FIXME("(%d, 0x%lx, 0x%lx, %x, %u).\n", id, (unsigned long)proc, (unsigned long)inst,
+                    tid, unicode);
             LeaveCriticalSection(&hook_cs);
             HeapFree(GetProcessHeap(), 0, hook_data);
             WINE_FIXME("Hook %d not implemented.\n", id);
@@ -735,7 +742,7 @@ static void CALLBACK win_event_host_proc(HWINEVENTHOOK hevent, DWORD event, HWND
     LeaveCriticalSection(&hook_cs);
 
     WINE_TRACE("Calling guest hook function 0x%lx(%p, %x, %p, %x, %x, %x, %x).\n",
-            call.func, hevent, event, hwnd, object_id, child_id, thread_id, event_time);
+            (unsigned long)call.func, hevent, event, hwnd, object_id, child_id, thread_id, event_time);
     call.hevent = (ULONG_PTR)hevent;
     call.event = event;
     call.hwnd = (ULONG_PTR)hwnd;
