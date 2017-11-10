@@ -98,7 +98,7 @@ struct propsheet_data
 
 };
 
-static UINT propsheet_host_cb(HWND hwnd, UINT msg, PROPSHEETPAGEW *page)
+static UINT CALLBACK propsheet_host_cb(HWND hwnd, UINT msg, PROPSHEETPAGEW *page)
 {
     /* We get a PROPSHEETPAGEW struct with the original data, but not our
      * original address.
