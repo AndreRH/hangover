@@ -80,7 +80,8 @@ static UINT_PTR CALLBACK hook_proc_wrapper(HWND dlg, UINT msg, WPARAM wp, LPARAM
     call = HeapAlloc(GetProcessHeap(), 0, sizeof(*call));
 #endif
 
-    WINE_TRACE("Calling guest proc 0x%lx(%p, %x, %lu, %lu).\n", *guest_proc, dlg, msg, wp, lp);
+    WINE_TRACE("Calling guest proc 0x%lx(%p, %x, %lu, %lu).\n", (unsigned long)*guest_proc, dlg, msg,
+            wp, lp);
     call->guest_proc = *guest_proc;
     call->dlg = (ULONG_PTR)dlg;
     call->msg = msg;
@@ -124,7 +125,7 @@ void qemu_ChooseFontW(struct qemu_syscall *call)
 #endif
 
     orig_instance = cf.hInstance;
-    if (cf.Flags & (CF_ENABLETEMPLATEHANDLE | CF_ENABLETEMPLATE) == CF_ENABLETEMPLATE && !cf.hInstance)
+    if ((cf.Flags & (CF_ENABLETEMPLATEHANDLE | CF_ENABLETEMPLATE)) == CF_ENABLETEMPLATE && !cf.hInstance)
         cf.hInstance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
 
     guest_proc = (ULONG_PTR)cf.lpfnHook;
@@ -194,7 +195,7 @@ void qemu_ChooseFontA(struct qemu_syscall *call)
 #endif
 
     orig_instance = cf.hInstance;
-    if (cf.Flags & (CF_ENABLETEMPLATEHANDLE | CF_ENABLETEMPLATE) == CF_ENABLETEMPLATE && !cf.hInstance)
+    if ((cf.Flags & (CF_ENABLETEMPLATEHANDLE | CF_ENABLETEMPLATE)) == CF_ENABLETEMPLATE && !cf.hInstance)
         cf.hInstance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
 
     guest_proc = (ULONG_PTR)cf.lpfnHook;

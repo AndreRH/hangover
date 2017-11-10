@@ -74,7 +74,8 @@ static UINT_PTR CALLBACK hook_proc_wrapper(HWND dlg, UINT msg, WPARAM wp, LPARAM
     uint64_t *guest_proc = TlsGetValue(comdlg32_tls);
     UINT_PTR ret;
 
-    WINE_TRACE("Calling guest proc 0x%lx(%p, %u, %lu, %lu).\n", *guest_proc, dlg, msg, wp, lp);
+    WINE_TRACE("Calling guest proc 0x%lx(%p, %u, %lu, %lu).\n", (unsigned long)*guest_proc, dlg, msg,
+            wp, lp);
     call.guest_proc = *guest_proc;
     call.dlg = (ULONG_PTR)dlg;
     call.msg = msg;
@@ -102,7 +103,7 @@ void qemu_ChooseColorW(struct qemu_syscall *call)
     guest_wrapper = c->guest_wrapper;
 
     instance = choose.hInstance;
-    if (choose.Flags & (CC_ENABLETEMPLATEHANDLE | CC_ENABLETEMPLATE) == CC_ENABLETEMPLATE && !choose.hInstance)
+    if ((choose.Flags & (CC_ENABLETEMPLATEHANDLE | CC_ENABLETEMPLATE)) == CC_ENABLETEMPLATE && !choose.hInstance)
     {
         choose.hInstance = (void *)qemu_ops->qemu_GetModuleHandleEx(
                 GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
@@ -161,7 +162,7 @@ void qemu_ChooseColorA(struct qemu_syscall *call)
     guest_wrapper = c->guest_wrapper;
 
     instance = choose.hInstance;
-    if (choose.Flags & (CC_ENABLETEMPLATEHANDLE | CC_ENABLETEMPLATE) == CC_ENABLETEMPLATE && !choose.hInstance)
+    if ((choose.Flags & (CC_ENABLETEMPLATEHANDLE | CC_ENABLETEMPLATE)) == CC_ENABLETEMPLATE && !choose.hInstance)
     {
         choose.hInstance = (void *)qemu_ops->qemu_GetModuleHandleEx(
                 GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);

@@ -116,7 +116,8 @@ static UINT_PTR CALLBACK hook_proc_wrapper(HWND dlg, UINT msg, WPARAM wp, LPARAM
     call = HeapAlloc(GetProcessHeap(), 0, sizeof(*call));
 #endif
 
-    WINE_TRACE("Calling guest proc 0x%lx(%p, %x, %lu, %lu).\n", *guest_proc, dlg, msg, wp, lp);
+    WINE_TRACE("Calling guest proc 0x%lx(%p, %x, %lu, %lu).\n", (unsigned long)*guest_proc, dlg, msg,
+            wp, lp);
     call->guest_proc = *guest_proc;
     call->dlg = (ULONG_PTR)dlg;
     call->msg = msg;
