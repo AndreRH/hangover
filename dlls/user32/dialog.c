@@ -950,7 +950,7 @@ WINUSERAPI BOOL WINAPI CheckDlgButton(HWND hwnd, INT id, UINT check)
 void qemu_CheckDlgButton(struct qemu_syscall *call)
 {
     struct qemu_CheckDlgButton *c = (struct qemu_CheckDlgButton *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CheckDlgButton(QEMU_G2H(c->hwnd), c->id, c->check);
 }
 
@@ -982,7 +982,7 @@ WINUSERAPI UINT WINAPI IsDlgButtonChecked(HWND hwnd, int id)
 void qemu_IsDlgButtonChecked(struct qemu_syscall *call)
 {
     struct qemu_IsDlgButtonChecked *c = (struct qemu_IsDlgButtonChecked *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsDlgButtonChecked(QEMU_G2H(c->hwnd), c->id);
 }
 
@@ -1018,7 +1018,7 @@ WINUSERAPI BOOL WINAPI CheckRadioButton(HWND hwndDlg, int firstID, int lastID, i
 void qemu_CheckRadioButton(struct qemu_syscall *call)
 {
     struct qemu_CheckRadioButton *c = (struct qemu_CheckRadioButton *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CheckRadioButton(QEMU_G2H(c->hwndDlg), c->firstID, c->lastID, c->checkID);
 }
 

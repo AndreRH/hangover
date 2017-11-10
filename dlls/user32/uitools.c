@@ -61,7 +61,7 @@ WINUSERAPI BOOL WINAPI DrawEdge(HDC hdc, LPRECT rc, UINT edge, UINT flags)
 void qemu_DrawEdge(struct qemu_syscall *call)
 {
     struct qemu_DrawEdge *c = (struct qemu_DrawEdge *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DrawEdge(QEMU_G2H(c->hdc), QEMU_G2H(c->rc), c->edge, c->flags);
 }
 

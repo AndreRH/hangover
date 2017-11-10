@@ -236,7 +236,7 @@ WINBASEAPI HWND WINAPI CreateStatusWindowA (LONG style, LPCSTR text, HWND parent
 void qemu_CreateStatusWindowA(struct qemu_syscall *call)
 {
     struct qemu_CreateStatusWindowA *c = (struct qemu_CreateStatusWindowA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)CreateStatusWindowA(c->style, QEMU_G2H(c->text), QEMU_G2H(c->parent), c->wid);
 }
 
@@ -272,7 +272,7 @@ WINBASEAPI HWND WINAPI CreateStatusWindowW (LONG style, LPCWSTR text, HWND paren
 void qemu_CreateStatusWindowW(struct qemu_syscall *call)
 {
     struct qemu_CreateStatusWindowW *c = (struct qemu_CreateStatusWindowW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)CreateStatusWindowW(c->style, QEMU_G2H(c->text), QEMU_G2H(c->parent), c->wid);
 }
 
@@ -434,7 +434,7 @@ WINBASEAPI HWND WINAPI CreateToolbarEx (HWND hwnd, DWORD style, UINT wID, INT nB
 void qemu_CreateToolbarEx(struct qemu_syscall *call)
 {
     struct qemu_CreateToolbarEx *c = (struct qemu_CreateToolbarEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)CreateToolbarEx(QEMU_G2H(c->hwnd), c->style, c->wID, c->nBitmaps, QEMU_G2H(c->hBMInst), c->wBMID, QEMU_G2H(c->lpButtons), c->iNumButtons, c->dxButton, c->dyButton, c->dxBitmap, c->dyBitmap, c->uStructSize);
 }
 
