@@ -355,8 +355,8 @@ static int CALLBACK qemu_EnumEnhMetaFile_host_cb(HDC hdc, HANDLETABLE *handle_ta
     struct qemu_EnumEnhMetaFile_cb call;
     int ret;
 
-    WINE_TRACE("Calling guest callback 0x%lx(%p, %p, %p, %d, 0x%lx).\n", data->guest_func, hdc,
-            handle_table, emr, n_objs, data->guest_data);
+    WINE_TRACE("Calling guest callback 0x%lx(%p, %p, %p, %d, 0x%lx).\n", (unsigned long)data->guest_func,
+            hdc, handle_table, emr, n_objs, (unsigned long)data->guest_data);
     call.proc = data->guest_func;
     call.dc = (ULONG_PTR)hdc;
     call.handle_table = QEMU_H2G(handle_table);

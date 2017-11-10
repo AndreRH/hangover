@@ -400,7 +400,8 @@ static INT CALLBACK qemu_EnumFontFamiliesW_host_proc(const LOGFONTW *font, const
     call = &alloc->call;
 #endif
 
-    WINE_TRACE("Calling guest callback 0x%lx(%p, %p, %u, 0x%lx).\n", data->guest_func, font, metric, type, data->guest_data);
+    WINE_TRACE("Calling guest callback 0x%lx(%p, %p, %u, 0x%lx).\n", (unsigned long)data->guest_func, font,
+            metric, type, (unsigned long)data->guest_data);
     call->proc = data->guest_func;
     call->font = QEMU_H2G(font);
     call->metric = QEMU_H2G(metric);
@@ -491,7 +492,8 @@ static INT CALLBACK qemu_EnumFontFamiliesA_host_proc(const LOGFONTA *font, const
     call = &alloc->call;
 #endif
 
-    WINE_TRACE("Calling guest callback 0x%lx(%p, %p, %u, 0x%lx).\n", data->guest_func, font, metric, type, data->guest_data);
+    WINE_TRACE("Calling guest callback 0x%lx(%p, %p, %u, 0x%lx).\n", (unsigned long)data->guest_func, font,
+            metric, type, (unsigned long)data->guest_data);
     call->proc = data->guest_func;
     call->font = QEMU_H2G(font);
     call->metric = QEMU_H2G(metric);

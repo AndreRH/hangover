@@ -1200,7 +1200,8 @@ static void WINAPI qemu_LineDDA_host_proc(INT x, INT y, LPARAM param)
     struct qemu_LineDDA_host_data *data = (struct qemu_LineDDA_host_data *)param;
     struct qemu_LineDDA_cb call;
 
-    WINE_TRACE("Calling guest callback 0x%lx(%d, %d 0x%lx).\n", data->guest_func, x, y, data->guest_data);
+    WINE_TRACE("Calling guest callback 0x%lx(%d, %d 0x%lx).\n", (unsigned long)data->guest_func, x, y,
+            (unsigned long)data->guest_data);
     call.proc = data->guest_func;
     call.x = x;
     call.y = y;
