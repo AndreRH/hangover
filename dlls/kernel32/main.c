@@ -1247,6 +1247,7 @@ static void hook(void *to_hook, const void *replace)
 {
     DWORD old_protect;
     size_t offset;
+#ifdef __aarch64__
     struct hooked_function
     {
         DWORD ldr, br;
@@ -1260,6 +1261,35 @@ static void hook(void *to_hook, const void *replace)
     hooked_function->ldr = 0x58000005 | (offset << 3);   /* ldr x5, offset */;
     hooked_function->br = 0xd61f00a0; /* br x5 */;
     hooked_function->dst = replace;
+
+#elif defined(__x86_64__)
+    struct hooked_function
+    {
+        char jmp[8];
+        void *dst;
+    } *hooked_function = to_hook;
+
+    if(!VirtualProtect(hooked_function, sizeof(*hooked_function), PAGE_EXECUTE_READWRITE, &old_protect))
+        WINE_ERR("Failed to make hooked function writeable.\n");
+
+    /* The offset is from the end of the jmp instruction (6 bytes) to the start of the destination. */
+    offset = offsetof(struct hooked_function, dst) - offsetof(struct hooked_function, jmp) - 0x6;
+
+    /* jmp *(rip + offset) */
+    hooked_function->jmp[0] = 0xff;
+    hooked_function->jmp[1] = 0x25;
+    hooked_function->jmp[2] = offset;
+    hooked_function->jmp[3] = 0x00;
+    hooked_function->jmp[4] = 0x00;
+    hooked_function->jmp[5] = 0x00;
+    /* Filler */
+    hooked_function->jmp[6] = 0xcc;
+    hooked_function->jmp[7] = 0xcc;
+    /* Dest address absolute */
+    hooked_function->dst = replace;
+#else
+#error Implement hooks for your platform
+#endif
 
     VirtualProtect(hooked_function, sizeof(*hooked_function), old_protect, &old_protect);
     __clear_cache(hooked_function, (char *)hooked_function + sizeof(*hooked_function));
