@@ -2625,6 +2625,8 @@ void d3d9_texture_init(struct qemu_d3d9_texture_impl *texture, IDirect3DBaseText
             texture->sub_resource_count = level_count;
             break;
 
+        default:
+            WINE_ERR("Unexpected resource type.\n");
     }
 }
 

@@ -1069,6 +1069,9 @@ void d3d9_buffer_init(struct qemu_d3d9_buffer_impl *buffer, IDirect3DResource9 *
         case D3DRTYPE_INDEXBUFFER:
             buffer->hostib = (IDirect3DIndexBuffer9 *)host;
             break;
+
+        default:
+            WINE_ERR("Unexpected resource type.\n");
     }
 
     IDirect3DResource9_SetPrivateData(host, &qemu_d3d9_buffer_guid, &buffer->private_data,

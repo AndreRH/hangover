@@ -96,7 +96,7 @@ struct qemu_d3d9_swapchain_impl
     IDirect3DSwapChain9Ex *host;
 
     IUnknown private_data;
-    ULONG private_data_ref; /* NOT the externally visible ref! */
+    LONG private_data_ref; /* NOT the externally visible ref! */
     struct qemu_d3d9_device_impl *device;
     DWORD back_buffer_count;
     struct qemu_d3d9_subresource_impl backbuffers[1];
@@ -118,7 +118,7 @@ struct qemu_d3d9_texture_impl
     IDirect3DBaseTexture9 *host;
 
     IUnknown private_data;
-    ULONG private_data_ref; /* NOT the externally visible ref! */
+    LONG private_data_ref; /* NOT the externally visible ref! */
     struct qemu_d3d9_device_impl *device;
 
     UINT sub_resource_count;
@@ -140,7 +140,7 @@ struct qemu_d3d9_vertex_declaration_impl
     IDirect3DVertexDeclaration9 *host;
 
     struct qemu_d3d9_device_impl *device;
-    ULONG internal_ref;
+    LONG internal_ref;
     DWORD fvf;
 };
 
@@ -168,7 +168,7 @@ struct qemu_d3d9_buffer_impl
     };
 
     IUnknown private_data;
-    ULONG private_data_ref; /* NOT the externally visible ref! */
+    LONG private_data_ref; /* NOT the externally visible ref! */
     struct qemu_d3d9_device_impl *device;
 };
 
@@ -215,7 +215,7 @@ struct qemu_d3d9_shader_impl
     };
 
     struct qemu_d3d9_device_impl *device;
-    ULONG internal_ref;
+    LONG internal_ref;
 };
 
 static inline struct qemu_d3d9_shader_impl *unsafe_impl_from_IDirect3DVertexShader9(IDirect3DVertexShader9 *iface)

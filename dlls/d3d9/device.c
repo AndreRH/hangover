@@ -4345,7 +4345,7 @@ void qemu_d3d9_device_SetFVF(struct qemu_syscall *call)
 
     if (!c->fvf)
     {
-        WINE_WARN("Ignoring FVF %#lx.\n", c->fvf);
+        WINE_WARN("Ignoring FVF %#lx.\n", (unsigned long)c->fvf);
         c->super.iret = D3D_OK;
         return;
     }

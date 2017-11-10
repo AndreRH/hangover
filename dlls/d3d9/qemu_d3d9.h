@@ -730,7 +730,7 @@ struct qemu_d3d9_surface_impl
 {
     struct qemu_d3d9_subresource_impl sub_resource;
     IUnknown private_data;
-    ULONG private_data_ref; /* NOT the externally visible ref! */
+    LONG private_data_ref; /* NOT the externally visible ref! */
 };
 
 void d3d9_standalone_surface_init(struct qemu_d3d9_surface_impl *surface, IDirect3DSurface9 *host,
