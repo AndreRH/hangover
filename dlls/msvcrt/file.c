@@ -610,7 +610,8 @@ void qemu_fprintf(struct qemu_syscall *call)
     void *file;
     struct printf_data data;
 
-    WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", c->argcount_float, c->argcount, (char *)QEMU_G2H(c->format));
+    WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", (unsigned long)c->argcount_float, (unsigned long)c->argcount,
+            (char *)QEMU_G2H(c->format));
 
     switch (c->super.id)
     {
@@ -636,7 +637,7 @@ void qemu_fprintf(struct qemu_syscall *call)
             break;
 
         default:
-            WINE_ERR("Unexpected op %lx\n", c->super.id);
+            WINE_ERR("Unexpected op %lx\n", (unsigned long)c->super.id);
     }
     data.fmt = QEMU_G2H(c->format);
 
@@ -884,7 +885,8 @@ void qemu_sprintf(struct qemu_syscall *call)
     struct sprintf_data data;
     int ret;
 
-    WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", c->argcount_float, c->argcount, (char *)QEMU_G2H(c->format));
+    WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", (unsigned long)c->argcount_float, (unsigned long)c->argcount,
+            (char *)QEMU_G2H(c->format));
 
     data.op = c->super.id;
     data.charcount = c->charcount;

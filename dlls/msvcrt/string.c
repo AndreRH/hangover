@@ -54,7 +54,7 @@ char * CDECL MSVCRT__strdup(const char *str)
 void qemu__strdup(struct qemu_syscall *call)
 {
     struct qemu__strdup *c = (struct qemu__strdup *)(ULONG_PTR)call;
-    WINE_TRACE("\n", c->str);
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p__strdup(QEMU_G2H(c->str)));
 }
 

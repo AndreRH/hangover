@@ -160,7 +160,8 @@ void qemu_scanf(struct qemu_syscall *call)
     struct qemu_scanf *c = (struct qemu_scanf *)(ULONG_PTR)call;
     struct scanf_data d;
 
-    WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", c->argcount_float, c->argcount, (char *)QEMU_G2H(c->fmt));
+    WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", (unsigned long)c->argcount_float, (unsigned long)c->argcount,
+            (char *)QEMU_G2H(c->fmt));
 
     d.str = QEMU_G2H(c->str);
     d.fmt = QEMU_G2H(c->fmt);
@@ -173,7 +174,8 @@ void qemu_swscanf_s(struct qemu_syscall *call)
 {
     struct qemu_scanf *c = (struct qemu_scanf *)(ULONG_PTR)call;
 
-    WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", c->argcount_float, c->argcount, (char *)QEMU_G2H(c->fmt));
+    WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", (unsigned long)c->argcount_float, (unsigned long)c->argcount,
+            (char *)QEMU_G2H(c->fmt));
 
     c->super.iret = call_va2((void *)p_swscanf_s, QEMU_G2H(c->str), QEMU_G2H(c->fmt), c->argcount,
             c->argcount_float, c->args);

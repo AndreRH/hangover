@@ -121,7 +121,7 @@ static int CDECL bsearch_wrapper(const void *ptr1, const void *ptr2)
     call->ptr1 = QEMU_H2G(ptr1);
     call->ptr2 = QEMU_H2G(ptr2);
 
-    WINE_TRACE("Calling guest proc 0x%lx(%p, %p).\n", *guest_proc, ptr1, ptr2);
+    WINE_TRACE("Calling guest proc 0x%lx(%p, %p).\n", (unsigned long)*guest_proc, ptr1, ptr2);
     ret = qemu_ops->qemu_execute(QEMU_G2H(bsearch_guest_wrapper), QEMU_H2G(call));
     WINE_TRACE("Guest proc returned %d.\n", ret);
 
@@ -197,7 +197,7 @@ static int CDECL qsort_wrapper(const void *ptr1, const void *ptr2)
     struct qemu_qsort_cb call = {*guest_proc, QEMU_H2G(ptr1), QEMU_H2G(ptr2)};
     int ret;
 
-    WINE_TRACE("Calling guest proc 0x%lx(%p, %p).\n", *guest_proc, ptr1, ptr2);
+    WINE_TRACE("Calling guest proc 0x%lx(%p, %p).\n", (unsigned long)*guest_proc, ptr1, ptr2);
     ret = qemu_ops->qemu_execute(QEMU_G2H(qsort_guest_wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest proc returned %d.\n", ret);
 
