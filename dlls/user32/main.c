@@ -1310,7 +1310,7 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
 
         case WM_NOTIFY:
         {
-            unsigned int i;
+            int i;
             WCHAR class[256];
             NMHDR *hdr = (NMHDR *)msg_in->lParam;
 
@@ -1375,7 +1375,7 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
 
         case WM_NOTIFY:
         {
-            unsigned int i;
+            int i;
             WCHAR class[256];
             NMHDR *hdr = (NMHDR *)orig->lParam;
 
