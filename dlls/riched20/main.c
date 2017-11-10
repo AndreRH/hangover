@@ -49,7 +49,7 @@ struct callback_impl
 
     /* Host side */
     IRichEditOleCallback IRichEditOleCallback_iface;
-    ULONG refcount;
+    LONG refcount;
 };
 
 struct qemu_set_callbacks
@@ -335,7 +335,7 @@ static ULONG STDMETHODCALLTYPE RichEditOleCallback_Release(IRichEditOleCallback 
         uint64_t ret;
         WINE_TRACE("Releasing guest inteface.\n");
         ret = qemu_ops->qemu_execute(QEMU_G2H(guest_ole_callback_Release), QEMU_H2G(impl));
-        WINE_TRACE("Guest returned refcount %lu.\n", ret);
+        WINE_TRACE("Guest returned refcount %lu.\n", (unsigned long)ret);
     }
 
     return refcount;
@@ -428,7 +428,7 @@ static HRESULT STDMETHODCALLTYPE RichEditOleCallback_GetClipboardData(IRichEditO
     hr = qemu_ops->qemu_execute(QEMU_G2H(guest_ole_callback_GetClipboardData), QEMU_H2G(call));
 
     if (SUCCEEDED(hr) && call->object)
-        WINE_FIXME("Wrap returned IDataObject 0x%lx.\n", call->object);
+        WINE_FIXME("Wrap returned IDataObject 0x%lx.\n", (unsigned long)call->object);
     *lplpdataobj = NULL;
 
     if (alloc)
@@ -498,7 +498,7 @@ static LRESULT handle_set_ole_callback(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
     WINE_TRACE("AddRefing guest inteface.\n");
     ref = qemu_ops->qemu_execute(QEMU_G2H(guest_ole_callback_AddRef), QEMU_H2G(cb));
-    WINE_TRACE("Guest returned refcount %lu.\n", ref);
+    WINE_TRACE("Guest returned refcount %lu.\n", (unsigned long)ref);
 
     if (unicode)
         ret = CallWindowProcW(orig_proc_w, hWnd, msg, wParam, (LPARAM)&cb->IRichEditOleCallback_iface);
@@ -507,6 +507,8 @@ static LRESULT handle_set_ole_callback(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
     /* This will destroy the callback in case the host procedure didn't do anything with it. */
     cb->IRichEditOleCallback_iface.lpVtbl->Release(&cb->IRichEditOleCallback_iface);
+
+    return ret;
 }
 
 struct stream_cb_data
@@ -545,7 +547,8 @@ static DWORD CALLBACK host_stream_cb(DWORD_PTR cookie, LPBYTE buffer, LONG cb, L
     call->cb = cb;
 
     WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx, %lu, 0x%lx).\n",
-            call->cb_func, call->cookie, call->buffer, call->cb, call->pcb);
+            (unsigned long)call->cb_func, (unsigned long)call->cookie, (unsigned long)call->buffer,
+            (unsigned long)call->cb, (unsigned long)call->pcb);
 
     ret = qemu_ops->qemu_execute(QEMU_G2H(guest_editstream_cb), QEMU_H2G(call));
 
@@ -607,8 +610,8 @@ static LONG CALLBACK host_breakproc(WCHAR *text, int pos, int bytes, int code)
     call.bytes = bytes;
     call.code = code;
 
-    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, %d, %d, %d).\n",
-            call.cb, call.text, pos, bytes, code);
+    WINE_TRACE("Calling guest callback 0x%lx(%p, %d, %d, %d).\n",
+            (unsigned long)call.cb, text, pos, bytes, code);
 
     ret = qemu_ops->qemu_execute(QEMU_G2H(guest_breakproc_wrapper), QEMU_H2G(&call));
 
