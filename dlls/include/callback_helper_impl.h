@@ -63,9 +63,22 @@ void callback_init(struct callback_entry *entry, unsigned int params, void *proc
         0x48, 0x83, 0xc4, 0x38,                     /* add    $0x38,%rsp        - Clean up stack        */
         0xc3,                                       /* retq                     - return                */
     };
+    static const char wrapper_code3[] =
+    {
+        0x4c, 0x8d, 0x0d, 0xf9, 0xff, 0xff, 0xff,   /* lea    -0x7(%rip),%r9    - selfptr in 4th param  */
+        0x48, 0xff, 0x25, 0x22, 0x00, 0x00, 0x00,   /* rex.W jmpq *0x22(%rip)   - call host_proc        */
+    };
 
-    memset(entry->code, 0xcc, sizeof(entry->code));
-    memcpy(entry->code, wrapper_code4, sizeof(wrapper_code4));
+    if (params == 4)
+    {
+        memset(entry->code, 0xcc, sizeof(entry->code));
+        memcpy(entry->code, wrapper_code4, sizeof(wrapper_code4));
+    }
+    else if (params == 3)
+    {
+        memset(entry->code, 0xcc, sizeof(entry->code));
+        memcpy(entry->code, wrapper_code3, sizeof(wrapper_code3));
+    }
 #else
 #error callback helper not supported on your platform
 #endif
