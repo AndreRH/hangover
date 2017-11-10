@@ -311,7 +311,8 @@ static void CALLBACK guest_wait_callback(void *p, BOOLEAN timeout)
     struct qemu_ntdll_wait_work_item *item = p;
     struct qemu_wait_callback call;
 
-    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, %u).\n", item->guest_cb, item->context, timeout);
+    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, %u).\n", (unsigned long)item->guest_cb,
+            (unsigned long)item->context, timeout);
 
     call.func = item->guest_cb;
     call.context = item->context;
@@ -2238,7 +2239,8 @@ static void CALLBACK timer_host_cb(void *param, BOOLEAN timedOut)
     call.param = timer->guest_param;
     call.timedout = timedOut;
 
-    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, %u).\n", call.cb, call.param, timedOut);
+    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, %u).\n", (unsigned long)call.cb,
+            (unsigned long)call.param, timedOut);
     qemu_ops->qemu_execute(QEMU_G2H(timer->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned.\n");
 }
@@ -3497,7 +3499,8 @@ static BOOL WINAPI InitOnceExecuteOnce_host_cb( INIT_ONCE *once, void *param, vo
     call.param = data->param;
     call.context = QEMU_H2G(context);
 
-    WINE_TRACE("Calling guest callback 0x%lx(%p, 0x%lx, %p).\n", call.func, once, call.param, context);
+    WINE_TRACE("Calling guest callback 0x%lx(%p, 0x%lx, %p).\n", (unsigned long)call.func, once,
+            (unsigned long)call.param, context);
     ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned %u.\n", ret);
 

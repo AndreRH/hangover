@@ -1350,8 +1350,8 @@ static BOOL CALLBACK qemu_EnumSystemLocalesEx_host_cb(WCHAR *name, DWORD flags, 
     struct qemu_EnumSystemLocalesEx_cb_data guest_data = {data->guest_cb, QEMU_H2G(name), flags, data->guest_param};
     BOOL ret;
 
-    WINE_TRACE("Calling guest proc 0x%lx(%s, 0x%08x, 0x%lx).\n", data->guest_cb,
-            wine_dbgstr_w(name), flags, data->guest_param);
+    WINE_TRACE("Calling guest proc 0x%lx(%s, 0x%08x, 0x%lx).\n", (unsigned long)data->guest_cb,
+            wine_dbgstr_w(name), flags, (unsigned long)data->guest_param);
     ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&guest_data));
     WINE_TRACE("Guest proc returned %u.\n", ret);
     return ret;
@@ -2137,8 +2137,8 @@ static BOOL CALLBACK qemu_EnumSystemLanguageGroupsA_cb(LGRPID lgrpid, char *num,
             flags, data->guest_param, data->guest_cb};
     BOOL ret;
 
-    WINE_TRACE("Calling guest proc 0x%lx(0x%08x, %s, %s, %08x, 0x%lx).\n", data->guest_cb,
-            lgrpid, num, name, flags, data->guest_param);
+    WINE_TRACE("Calling guest proc 0x%lx(0x%08x, %s, %s, %08x, 0x%lx).\n", (unsigned long)data->guest_cb,
+            lgrpid, num, name, flags, (unsigned long)data->guest_param);
     ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&guest_data));
     WINE_TRACE("Guest proc returned %u.\n", ret);
     return ret;
@@ -2202,8 +2202,8 @@ static BOOL CALLBACK qemu_EnumSystemLanguageGroupsW_cb(LGRPID lgrpid, WCHAR *num
             flags, data->guest_param, data->guest_cb};
     BOOL ret;
 
-    WINE_TRACE("Calling guest proc 0x%lx(0x%08x, %s, %s, %08x, 0x%lx).\n", data->guest_cb,
-            lgrpid, wine_dbgstr_w(num), wine_dbgstr_w(name), flags, data->guest_param);
+    WINE_TRACE("Calling guest proc 0x%lx(0x%08x, %s, %s, %08x, 0x%lx).\n", (unsigned long)data->guest_cb,
+            lgrpid, wine_dbgstr_w(num), wine_dbgstr_w(name), flags, (unsigned long)data->guest_param);
     ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&guest_data));
     WINE_TRACE("Guest proc returned %u.\n", ret);
     return ret;
@@ -2311,8 +2311,8 @@ static BOOL CALLBACK qemu_EnumLanguageGroupLocalesA_host_cb(LGRPID lgrpid, LCID 
             data->guest_param};
     BOOL ret;
 
-    WINE_TRACE("Calling guest proc 0x%lx(0x%x, 0x%x, %s, 0x%lx).\n", data->guest_cb,
-            lgrpid, lcid, num, data->guest_param);
+    WINE_TRACE("Calling guest proc 0x%lx(0x%x, 0x%x, %s, 0x%lx).\n", (unsigned long)data->guest_cb,
+            lgrpid, lcid, num, (unsigned long)data->guest_param);
     ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&guest_data));
     WINE_TRACE("Guest proc returned %u.\n", ret);
     return ret;
@@ -2507,8 +2507,8 @@ static BOOL CALLBACK qemu_EnumUILanguagesA_host_cb(char *value, LONG_PTR param)
     struct qemu_EnumUILanguagesA_cb guest_data = {data->guest_cb, QEMU_H2G(value), data->guest_param};
     BOOL ret;
 
-    WINE_TRACE("Calling guest proc 0x%lx(%s, 0x%lx).\n", data->guest_cb,
-            value, data->guest_param);
+    WINE_TRACE("Calling guest proc 0x%lx(%s, 0x%lx).\n", (unsigned long)data->guest_cb,
+            value, (unsigned long)data->guest_param);
     ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&guest_data));
     WINE_TRACE("Guest proc returned %u.\n", ret);
     return ret;
@@ -2670,7 +2670,7 @@ static BOOL CALLBACK qemu_EnumSystemGeoID_host_cb(GEOID id)
     uint64_t *guest_proc = TlsGetValue(kernel32_tls);
     BOOL ret;
 
-    WINE_TRACE("Calling guest proc 0x%lx(%x).\n", *guest_proc, id);
+    WINE_TRACE("Calling guest proc 0x%lx(%x).\n", (unsigned long)*guest_proc, id);
     ret = qemu_ops->qemu_execute(QEMU_G2H(*guest_proc), id);
     WINE_TRACE("Guest proc returned %u\n", ret);
     return ret;

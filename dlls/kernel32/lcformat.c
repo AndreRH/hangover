@@ -574,7 +574,7 @@ static BOOL CALLBACK qemu_EnumTimeDateFormatsA_cb(char *fmt)
     uint64_t *guest_proc = TlsGetValue(kernel32_tls);
     BOOL ret;
 
-    WINE_TRACE("Calling guest proc 0x%lx(%s).\n", *guest_proc, fmt);
+    WINE_TRACE("Calling guest proc 0x%lx(%s).\n", (unsigned long)*guest_proc, fmt);
     ret = qemu_ops->qemu_execute(QEMU_G2H(*guest_proc), QEMU_H2G(fmt));
     WINE_TRACE("Guest proc returned %u\n", ret);
     return ret;
@@ -626,7 +626,7 @@ static BOOL CALLBACK qemu_EnumTimeDateFormatsW_cb(WCHAR *fmt)
     uint64_t *guest_proc = TlsGetValue(kernel32_tls);
     BOOL ret;
 
-    WINE_TRACE("Calling guest proc 0x%lx(%s).\n", *guest_proc, wine_dbgstr_w(fmt));
+    WINE_TRACE("Calling guest proc 0x%lx(%s).\n", (unsigned long)*guest_proc, wine_dbgstr_w(fmt));
     ret = qemu_ops->qemu_execute(QEMU_G2H(*guest_proc), QEMU_H2G(fmt));
     WINE_TRACE("Guest proc returned %u\n", ret);
     return ret;

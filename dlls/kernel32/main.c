@@ -166,7 +166,8 @@ static void CALLBACK host_completion_cb(DWORD error, DWORD len, OVERLAPPED *ov, 
     call.len = len;
     call.ov = QEMU_H2G(ov);
 
-    WINE_TRACE("Calling guest callback 0x%lx(%x, %u, 0x%lx).\n", call.func, error, len, call.ov);
+    WINE_TRACE("Calling guest callback 0x%lx(%x, %u, 0x%lx).\n", (unsigned long)call.func, error, len,
+            (unsigned long)call.ov);
     qemu_ops->qemu_execute(QEMU_G2H(guest_completion_cb), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned.\n");
 }
@@ -1262,11 +1263,12 @@ static void hook(void *to_hook, const void *replace)
     hooked_function->br = 0xd61f00a0; /* br x5 */;
     hooked_function->dst = replace;
 
+    __clear_cache(hooked_function, (char *)hooked_function + sizeof(*hooked_function));
 #elif defined(__x86_64__)
     struct hooked_function
     {
         char jmp[8];
-        void *dst;
+        const void *dst;
     } *hooked_function = to_hook;
 
     if(!VirtualProtect(hooked_function, sizeof(*hooked_function), PAGE_EXECUTE_READWRITE, &old_protect))
@@ -1292,7 +1294,6 @@ static void hook(void *to_hook, const void *replace)
 #endif
 
     VirtualProtect(hooked_function, sizeof(*hooked_function), old_protect, &old_protect);
-    __clear_cache(hooked_function, (char *)hooked_function + sizeof(*hooked_function));
 }
 
 struct callback_entry_table *overlapped_wrappers;

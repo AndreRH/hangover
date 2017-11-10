@@ -97,9 +97,9 @@ static DWORD WINAPI qemu_CreateThread_wrapper(void *context)
     wrapper = ctx->guest_wrapper;
     HeapFree(GetProcessHeap(), 0, ctx);
 
-    WINE_TRACE("Calling thread function 0x%lx(0x%lx).\n", cb.proc, cb.context);
+    WINE_TRACE("Calling thread function 0x%lx(0x%lx).\n", (unsigned long)cb.proc, (unsigned long)cb.context);
     ret = qemu_ops->qemu_execute(QEMU_G2H(wrapper), QEMU_H2G(&cb));
-    WINE_TRACE("Thread function 0x%lx returned %x.\n", cb.proc, ret);
+    WINE_TRACE("Thread function 0x%lx returned %x.\n", (unsigned long)cb.proc, ret);
     return ret;
 }
 
@@ -108,7 +108,7 @@ void qemu_CreateThread(struct qemu_syscall *call)
     struct qemu_CreateThread *c = (struct qemu_CreateThread *)call;
     struct qemu_CreateThread_context *context;
 
-    WINE_TRACE("func %lx, ctx %lx\n", c->start, c->param);
+    WINE_TRACE("func %lx, ctx %lx\n", (unsigned long)c->start, (unsigned long)c->param);
 
     context = HeapAlloc(GetProcessHeap(), 0, sizeof(*context));
     if (!context)
@@ -853,7 +853,8 @@ static void CALLBACK host_user_apc_cb(ULONG_PTR param)
     uint64_t guest_data = data->guest_data;
 
     HeapFree(GetProcessHeap(), 0, data);
-    WINE_TRACE("Executing user APC callback 0x%lx(0x%lx).\n", func, guest_data);
+    WINE_TRACE("Executing user APC callback 0x%lx(0x%lx).\n", (unsigned long)func,
+            (unsigned long)guest_data);
     qemu_ops->qemu_execute(QEMU_G2H(func), guest_data);
     WINE_TRACE("User callback returned.\n");
 }
@@ -923,7 +924,8 @@ static DWORD CALLBACK host_user_work_cb(void *param)
     DWORD ret;
 
     HeapFree(GetProcessHeap(), 0, data);
-    WINE_TRACE("Executing user work callback 0x%lx(0x%lx).\n", func, guest_data);
+    WINE_TRACE("Executing user work callback 0x%lx(0x%lx).\n", (unsigned long)func,
+            (unsigned long)guest_data);
     ret = qemu_ops->qemu_execute(QEMU_G2H(func), guest_data);
     WINE_TRACE("User callback returned %x.\n", ret);
 

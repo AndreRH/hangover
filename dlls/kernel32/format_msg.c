@@ -318,7 +318,7 @@ void qemu_FormatMessage(struct qemu_syscall *call)
         struct format_message_data data = {unicode, c->flags, src, c->msg_id,
                 c->lang_id, buffer_arg, c->size};
 
-        WINE_TRACE("Calling va_arg version, %lu args\n", c->array_size);
+        WINE_TRACE("Calling va_arg version, %lu args\n", (unsigned long)c->array_size);
         /* You'd think we can just add FORMAT_MESSAGE_ARGUMENT_ARRAY and pass the array,
          * but you'd be wrong. Using argument-dependent width and precision specifiers
          * shifts the argument offsets, and it does so in a different way for va_args
