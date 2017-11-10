@@ -795,7 +795,7 @@ NTSYSAPI BOOLEAN CDECL RtlAddFunctionTable(PRUNTIME_FUNCTION func, DWORD entry_c
 void qemu_RtlAddFunctionTable(struct qemu_syscall *call)
 {
     struct qemu_RtlAddFunctionTable *c = (struct qemu_RtlAddFunctionTable *)call;
-    WINE_FIXME("(%p, %lu, %#lx) Stub!\n", QEMU_G2H(c->func), c->entry_count, c->base);
+    WINE_FIXME("(%p, %lu, %#lx) Stub!\n", QEMU_G2H(c->func), (unsigned long)c->entry_count, (unsigned long)c->base);
     c->super.iret = TRUE;
 }
 

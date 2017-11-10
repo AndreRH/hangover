@@ -577,7 +577,8 @@ static void WINAPI TpAllocWork_host_cb(TP_CALLBACK_INSTANCE *instance, void *con
     struct tp_work *w = (struct tp_work *)context;
     struct qemu_TpAllocWork_cb call;
 
-    WINE_TRACE("Calling guest callback 0x%lx(%p, 0x%lx, %p).\n", w->guest_cb, instance, w->guest_ctx, w);
+    WINE_TRACE("Calling guest callback 0x%lx(%p, 0x%lx, %p).\n", (unsigned long)w->guest_cb, instance,
+            (unsigned long)w->guest_ctx, w);
 
     call.cb = w->guest_cb;
     call.instance = (ULONG_PTR)instance;
