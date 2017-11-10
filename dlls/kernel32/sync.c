@@ -2376,6 +2376,8 @@ static DWORD CALLBACK delete_thread(void *data)
 
     WINE_TRACE("Delayed destroying timer object %p (host %p).\n", timer, timer->host_timer);
     HeapFree(GetProcessHeap(), 0, timer);
+
+    return 0;
 }
 
 void qemu_DeleteTimerQueueTimer(struct qemu_syscall *call)
