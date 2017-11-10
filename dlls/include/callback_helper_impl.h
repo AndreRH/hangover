@@ -28,6 +28,7 @@ struct callback_entry_table
 
 void callback_init(struct callback_entry *entry, unsigned int params, void *proc)
 {
+#ifdef __aarch64__
     size_t offset;
 
     /* Note: A maximum of 4 parameters are supported. */
@@ -47,10 +48,30 @@ void callback_init(struct callback_entry *entry, unsigned int params, void *proc
     entry->br = 0xd61f0000 | ((params + 1) << 5); /* br x[params + 1] */
 
     entry->selfptr = entry;
-    entry->host_proc = proc;
-    entry->guest_proc = 0;
 
     __clear_cache(&entry->ldr_self, &entry->br + 1);
+#elif defined(__x86_64__)
+    /* See init_reverse_wndproc in dlls/user32/main.c for details. The only difference
+     * is the offset of the function to call with the extra parameter. */
+    static const char wrapper_code4[] =
+    {
+        /* 27 bytes */
+        0x48, 0x83, 0xec, 0x38,                     /* sub    $0x38,%rsp        - Reserve stack space   */
+        0x48, 0x8d, 0x05, 0xf5, 0xff, 0xff, 0xff,   /* lea    -0xb(%rip),%rax   - Get self ptr          */
+        0x48, 0x89, 0x44, 0x24, 0x20,               /* mov    %rax,0x20(%rsp)   - push self ptr         */
+        0xff, 0x15, 0x12, 0x00, 0x00, 0x00,         /* callq  *0x12(%rip)       - Call host_proc        */
+        0x48, 0x83, 0xc4, 0x38,                     /* add    $0x38,%rsp        - Clean up stack        */
+        0xc3,                                       /* retq                     - return                */
+    };
+
+    memset(entry->code, 0xcc, sizeof(entry->code));
+    memcpy(entry->code, wrapper_code4, sizeof(wrapper_code4));
+#else
+#error callback helper not supported on your platform
+#endif
+
+    entry->host_proc = proc;
+    entry->guest_proc = 0;
 }
 
 BOOL callback_alloc_table(struct callback_entry_table **table, unsigned int count,
