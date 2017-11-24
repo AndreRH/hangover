@@ -1,4 +1,37 @@
 This is hangover, a project startet bei Stefan Dösinger and André Hentschel to run
 x86_64 Windows applications on aarch64 Windows or Wine. (More architectures can be added)
 Currently it is somewhat messy and the buildsystem is a joke.
-We hope to improve this now that it's public :)
+
+1) Status
+Hangover runs a few simple Win64 applications on arm64 Linux and Android. D3D9 is supported in theory, but only tested with the d3d9 Wine tests and DirectX SDK samples. Real games are unlikely to work.
+
+Notepad++ is known to work. A few Wine programs (wordpad, notepad, winemine) are working. No other software has been tested and is unlikely to work.
+
+There is code to support 32 bit applications on 64 hosts, which has been tested on arm64 Linux and x86_64 MacOS. This support is very limited and only Wine's notepad, wordpad and winemine are tested. Other applications are unlikely to work because currently structures need to be manually translated between 32 and 64 bit.
+
+2) Requirements
+
+Hangover currently works only on 64 bit hosts. Conceptually 32 bit hosts can be made to work as well, but currently are likely to fail because of address space conflicts.
+
+To build this project you need
+*) The dependencies to build a 64 bit Wine (./configure --enable-win64)
+*) The dependencies to build qemu (in particular glib)
+*) x86_64-w64-mingw32-gcc (exactly this name)
+*) i686-w64-mingw32-gcc (exactly this name)
+*) About 5gb of disk space
+
+3) How to build
+
+First make sure you have the submodules set up:
+$ git submodule init
+$ git submodule update
+
+In theory everything should be built by running ./build.sh . In practise you're likely to run into a bug in the build system. You can set environment variables necessary for Wine's or Qemu's configure scripts to find the dependencies.
+
+For Android run ./build.android.sh . The Android script is poorly tested though.
+
+4) How to run
+
+/path/to/hangover/build/wine-host/loader/wine64 /path/to/hangover/build/qemu/x86_64-windows-user/qemu-x86_64.exe.so foo.exe
+
+Wine's programs can be found in build/wine-guest/programs/* and build/wine-guest32/programs/* . build/wine-[guest|guest32]/ also contain PE builds of Wine's tests.
