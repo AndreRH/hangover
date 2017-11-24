@@ -30,6 +30,8 @@ In theory everything should be built by running ./build.sh . In practise you're 
 
 For Android run ./build.android.sh . The Android script is poorly tested though.
 
+Some 32 bit programs and DLLs built with mingw depend on libgcc_s_sjlj-1.dll. You can symlink the DLL from your mingw installation to build/qemu/x86_64-windows-user/qemu_guest_dll32.
+
 4) How to run
 
 /path/to/hangover/build/wine-host/loader/wine64 /path/to/hangover/build/qemu/x86_64-windows-user/qemu-x86_64.exe.so foo.exe
