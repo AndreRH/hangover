@@ -37,6 +37,14 @@
 #include "dll_list.h"
 #include "qemu_msvcrt.h"
 
+struct qemu_set_iob
+{
+    struct qemu_syscall super;
+    uint64_t iob;
+    uint64_t FILE_size;
+    uint64_t iob_size;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 /* INTERNAL: Create a wide string from an ascii string */
@@ -52,9 +60,18 @@ static WCHAR *msvcrt_wstrdupa(const char *str)
 
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
+    struct qemu_set_iob call;
+
     switch (reason)
     {
         case DLL_PROCESS_ATTACH:
+#ifndef __x86_64__
+            call.super.id = QEMU_SYSCALL_ID(CALL_SET_IOB);
+            call.iob = (ULONG_PTR)guest_iob;
+            call.FILE_size = sizeof(FILE);
+            call.iob_size = GUEST_IOB_SIZE;
+            qemu_syscall(&call.super);
+#endif
             MSVCRT__acmdln = MSVCRT__strdup(GetCommandLineA());
             MSVCRT__wcmdln = msvcrt_wstrdupa(MSVCRT__acmdln);
             return TRUE;
@@ -71,6 +88,14 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 
 const struct qemu_ops *qemu_ops;
+
+static void qemu_set_iob(struct qemu_syscall *call)
+{
+    struct qemu_set_iob *c = (struct qemu_set_iob *)call;
+    guest_FILE_size = c->FILE_size;
+    guest_iob = c->iob;
+    guest_iob_size = c->iob_size;
+}
 
 static const syscall_handler dll_functions[] =
 {
@@ -1004,6 +1029,7 @@ static const syscall_handler dll_functions[] =
     qemu_Scheduler_Create,
     qemu_Scheduler_ResetDefaultSchedulerPolicy,
     qemu_Scheduler_SetDefaultSchedulerPolicy,
+    qemu_set_iob,
     qemu_set_new_handler,
     qemu_setbuf,
     qemu_setlocale,

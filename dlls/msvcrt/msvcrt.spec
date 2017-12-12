@@ -559,7 +559,8 @@
 @ stub -arch=i386 _inpd(long)
 @ stub -arch=i386 _inpw(long)
 # @ cdecl _invalid_parameter(wstr wstr wstr long long) MSVCRT__invalid_parameter
-@ extern _iob msvcrt.__qemu_native_data__
+@ extern -arch=i386 _iob guest_iob
+@ extern -arch=x86_64 _iob msvcrt.__qemu_native_data__
 @ cdecl _isalnum_l(long ptr) MSVCRT__isalnum_l
 @ cdecl _isalpha_l(long ptr) MSVCRT__isalpha_l
 @ cdecl _isatty(long) MSVCRT__isatty

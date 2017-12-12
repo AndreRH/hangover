@@ -37,8 +37,17 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 
 #ifdef QEMU_DLL_GUEST
 
-/* FIXME: Passing the IOB and FILE pointers like this only works when they have the same size
- * in guest and host. */
+#ifndef __x86_64__
+
+FILE guest_iob[GUEST_IOB_SIZE];
+
+FILE * CDECL MSVCRT___iob_func(void)
+{
+    return guest_iob;
+}
+
+#else
+
 FILE * CDECL MSVCRT___iob_func(void)
 {
     struct qemu_syscall call;
@@ -48,6 +57,8 @@ FILE * CDECL MSVCRT___iob_func(void)
 
     return (FILE *)(ULONG_PTR)call.iret;
 }
+
+#endif
 
 #else
 
@@ -84,8 +95,11 @@ int CDECL MSVCRT__fileno(FILE *f)
 void qemu__fileno(struct qemu_syscall *call)
 {
     struct qemu__fileno *c = (struct qemu__fileno *)(ULONG_PTR)call;
+    MSVCRT_FILE *f;
+
     WINE_TRACE("\n");
-    c->super.iret = p__fileno(QEMU_G2H(c->f));
+    f = FILE_g2h(c->f);
+    c->super.iret = p__fileno(f);
 }
 
 #endif
@@ -246,7 +260,7 @@ void qemu_fflush(struct qemu_syscall *call)
 {
     struct qemu_fflush *c = (struct qemu_fflush *)(ULONG_PTR)call;
     WINE_TRACE("\n");
-    c->super.iret = p_fflush(QEMU_G2H(c->file));
+    c->super.iret = p_fflush(FILE_g2h(c->file));
 }
 
 #endif
@@ -622,7 +636,7 @@ void qemu_fprintf(struct qemu_syscall *call)
             break;
 
         case QEMU_SYSCALL_ID(CALL_FPRINTF):
-            data.file = QEMU_G2H(c->file);
+            data.file = FILE_g2h(c->file);
             data.unicode = FALSE;
             break;
 
@@ -632,7 +646,7 @@ void qemu_fprintf(struct qemu_syscall *call)
             break;
 
         case QEMU_SYSCALL_ID(CALL_FWPRINTF):
-            data.file = QEMU_G2H(c->file);
+            data.file = FILE_g2h(c->file);
             data.unicode = TRUE;
             break;
 
@@ -930,7 +944,7 @@ void qemu_fread(struct qemu_syscall *call)
 {
     struct qemu_fread *c = (struct qemu_fread *)(ULONG_PTR)call;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)p_fread(QEMU_G2H(c->str), c->size, c->count, QEMU_G2H(c->file));
+    c->super.iret = (ULONG_PTR)p_fread(QEMU_G2H(c->str), c->size, c->count, FILE_g2h(c->file));
 }
 
 #endif
@@ -966,7 +980,7 @@ void qemu_fwrite(struct qemu_syscall *call)
 {
     struct qemu_fwrite *c = (struct qemu_fwrite *)(ULONG_PTR)call;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)p_fwrite(QEMU_G2H(c->str), c->size, c->count, QEMU_G2H(c->file));
+    c->super.iret = (ULONG_PTR)p_fwrite(QEMU_G2H(c->str), c->size, c->count, FILE_g2h(c->file));
 }
 
 #endif
@@ -1031,8 +1045,11 @@ int CDECL MSVCRT_setvbuf(FILE *file, char *buf, int mode, size_t size)
 void qemu_setvbuf(struct qemu_syscall *call)
 {
     struct qemu_setvbuf *c = (struct qemu_setvbuf *)(ULONG_PTR)call;
+    MSVCRT_FILE *f;
+
     WINE_TRACE("\n");
-    c->super.iret = p_setvbuf(QEMU_G2H(c->file), QEMU_G2H(c->buf), c->mode, c->size);
+    f = FILE_g2h(c->file);
+    c->super.iret = p_setvbuf(f, QEMU_G2H(c->buf), c->mode, c->size);
 }
 
 #endif
@@ -1402,7 +1419,7 @@ void qemu__fflush_nolock(struct qemu_syscall *call)
 {
     struct qemu__fflush_nolock *c = (struct qemu__fflush_nolock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__fflush_nolock(QEMU_G2H(c->file));
+    c->super.iret = p__fflush_nolock(FILE_g2h(c->file));
 }
 
 #endif
@@ -1580,7 +1597,7 @@ void qemu__lock_file(struct qemu_syscall *call)
 {
     struct qemu__lock_file *c = (struct qemu__lock_file *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    p__lock_file(QEMU_G2H(c->file));
+    p__lock_file(FILE_g2h(c->file));
 }
 
 #endif
@@ -1608,7 +1625,7 @@ void qemu__unlock_file(struct qemu_syscall *call)
 {
     struct qemu__unlock_file *c = (struct qemu__unlock_file *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    p__unlock_file(QEMU_G2H(c->file));
+    p__unlock_file(FILE_g2h(c->file));
 }
 
 #endif
@@ -1676,7 +1693,7 @@ void qemu__fseeki64(struct qemu_syscall *call)
 {
     struct qemu__fseeki64 *c = (struct qemu__fseeki64 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__fseeki64(QEMU_G2H(c->file), c->offset, c->whence);
+    c->super.iret = p__fseeki64(FILE_g2h(c->file), c->offset, c->whence);
 }
 
 #endif
@@ -1710,7 +1727,7 @@ void qemu__fseeki64_nolock(struct qemu_syscall *call)
 {
     struct qemu__fseeki64_nolock *c = (struct qemu__fseeki64_nolock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__fseeki64_nolock(QEMU_G2H(c->file), c->offset, c->whence);
+    c->super.iret = p__fseeki64_nolock(FILE_g2h(c->file), c->offset, c->whence);
 }
 
 #endif
@@ -1744,7 +1761,7 @@ void qemu_fseek(struct qemu_syscall *call)
 {
     struct qemu_fseek *c = (struct qemu_fseek *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_fseek(QEMU_G2H(c->file), c->offset, c->whence);
+    c->super.iret = p_fseek(FILE_g2h(c->file), c->offset, c->whence);
 }
 
 #endif
@@ -1778,7 +1795,7 @@ void qemu__fseek_nolock(struct qemu_syscall *call)
 {
     struct qemu__fseek_nolock *c = (struct qemu__fseek_nolock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__fseek_nolock(QEMU_G2H(c->file), c->offset, c->whence);
+    c->super.iret = p__fseek_nolock(FILE_g2h(c->file), c->offset, c->whence);
 }
 
 #endif
@@ -1870,7 +1887,7 @@ void qemu_clearerr(struct qemu_syscall *call)
 {
     struct qemu_clearerr *c = (struct qemu_clearerr *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    p_clearerr(QEMU_G2H(c->file));
+    p_clearerr(FILE_g2h(c->file));
 }
 
 #endif
@@ -1898,7 +1915,7 @@ void qemu_rewind(struct qemu_syscall *call)
 {
     struct qemu_rewind *c = (struct qemu_rewind *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    p_rewind(QEMU_G2H(c->file));
+    p_rewind(FILE_g2h(c->file));
 }
 
 #endif
@@ -3604,7 +3621,7 @@ void qemu_fclose(struct qemu_syscall *call)
 {
     struct qemu_fclose *c = (struct qemu_fclose *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_fclose(QEMU_G2H(c->file));
+    c->super.iret = p_fclose(FILE_g2h(c->file));
 }
 
 #endif
@@ -3634,7 +3651,7 @@ void qemu__fclose_nolock(struct qemu_syscall *call)
 {
     struct qemu__fclose_nolock *c = (struct qemu__fclose_nolock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__fclose_nolock(QEMU_G2H(c->file));
+    c->super.iret = p__fclose_nolock(FILE_g2h(c->file));
 }
 
 #endif
@@ -3664,7 +3681,7 @@ void qemu_feof(struct qemu_syscall *call)
 {
     struct qemu_feof *c = (struct qemu_feof *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_feof(QEMU_G2H(c->file));
+    c->super.iret = p_feof(FILE_g2h(c->file));
 }
 
 #endif
@@ -3694,7 +3711,7 @@ void qemu_ferror(struct qemu_syscall *call)
 {
     struct qemu_ferror *c = (struct qemu_ferror *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_ferror(QEMU_G2H(c->file));
+    c->super.iret = p_ferror(FILE_g2h(c->file));
 }
 
 #endif
@@ -3724,7 +3741,7 @@ void qemu__filbuf(struct qemu_syscall *call)
 {
     struct qemu__filbuf *c = (struct qemu__filbuf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__filbuf(QEMU_G2H(c->file));
+    c->super.iret = p__filbuf(FILE_g2h(c->file));
 }
 
 #endif
@@ -3754,7 +3771,7 @@ void qemu_fgetc(struct qemu_syscall *call)
 {
     struct qemu_fgetc *c = (struct qemu_fgetc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_fgetc(QEMU_G2H(c->file));
+    c->super.iret = p_fgetc(FILE_g2h(c->file));
 }
 
 #endif
@@ -3784,7 +3801,7 @@ void qemu__fgetc_nolock(struct qemu_syscall *call)
 {
     struct qemu__fgetc_nolock *c = (struct qemu__fgetc_nolock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__fgetc_nolock(QEMU_G2H(c->file));
+    c->super.iret = p__fgetc_nolock(FILE_g2h(c->file));
 }
 
 #endif
@@ -3846,7 +3863,7 @@ void qemu_fgets(struct qemu_syscall *call)
 {
     struct qemu_fgets *c = (struct qemu_fgets *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(p_fgets(QEMU_G2H(c->s), c->size, QEMU_G2H(c->file)));
+    c->super.iret = QEMU_H2G(p_fgets(QEMU_G2H(c->s), c->size, FILE_g2h(c->file)));
 }
 
 #endif
@@ -3876,7 +3893,7 @@ void qemu_fgetwc(struct qemu_syscall *call)
 {
     struct qemu_fgetwc *c = (struct qemu_fgetwc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_fgetwc(QEMU_G2H(c->file));
+    c->super.iret = p_fgetwc(FILE_g2h(c->file));
 }
 
 #endif
@@ -3906,7 +3923,7 @@ void qemu__fgetwc_nolock(struct qemu_syscall *call)
 {
     struct qemu__fgetwc_nolock *c = (struct qemu__fgetwc_nolock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__fgetwc_nolock(QEMU_G2H(c->file));
+    c->super.iret = p__fgetwc_nolock(FILE_g2h(c->file));
 }
 
 #endif
@@ -3936,7 +3953,7 @@ void qemu__getw(struct qemu_syscall *call)
 {
     struct qemu__getw *c = (struct qemu__getw *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__getw(QEMU_G2H(c->file));
+    c->super.iret = p__getw(FILE_g2h(c->file));
 }
 
 #endif
@@ -3966,7 +3983,7 @@ void qemu_getwc(struct qemu_syscall *call)
 {
     struct qemu_getwc *c = (struct qemu_getwc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_getwc(QEMU_G2H(c->file));
+    c->super.iret = p_getwc(FILE_g2h(c->file));
 }
 
 #endif
@@ -4056,7 +4073,7 @@ void qemu_fgetws(struct qemu_syscall *call)
 {
     struct qemu_fgetws *c = (struct qemu_fgetws *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(p_fgetws(QEMU_G2H(c->s), c->size, QEMU_G2H(c->file)));
+    c->super.iret = QEMU_H2G(p_fgetws(QEMU_G2H(c->s), c->size, FILE_g2h(c->file)));
 }
 
 #endif
@@ -4088,7 +4105,7 @@ void qemu__flsbuf(struct qemu_syscall *call)
 {
     struct qemu__flsbuf *c = (struct qemu__flsbuf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__flsbuf(c->c, QEMU_G2H(c->file));
+    c->super.iret = p__flsbuf(c->c, FILE_g2h(c->file));
 }
 
 #endif
@@ -4124,7 +4141,7 @@ void qemu__fwrite_nolock(struct qemu_syscall *call)
 {
     struct qemu__fwrite_nolock *c = (struct qemu__fwrite_nolock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__fwrite_nolock(QEMU_G2H(c->ptr), c->size, c->nmemb, QEMU_G2H(c->file));
+    c->super.iret = p__fwrite_nolock(QEMU_G2H(c->ptr), c->size, c->nmemb, FILE_g2h(c->file));
 }
 
 #endif
@@ -4156,7 +4173,7 @@ void qemu_fputwc(struct qemu_syscall *call)
 {
     struct qemu_fputwc *c = (struct qemu_fputwc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_fputwc(c->wc, QEMU_G2H(c->file));
+    c->super.iret = p_fputwc(c->wc, FILE_g2h(c->file));
 }
 
 #endif
@@ -4188,7 +4205,7 @@ void qemu__fputwc_nolock(struct qemu_syscall *call)
 {
     struct qemu__fputwc_nolock *c = (struct qemu__fputwc_nolock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__fputwc_nolock(c->wc, QEMU_G2H(c->file));
+    c->super.iret = p__fputwc_nolock(c->wc, FILE_g2h(c->file));
 }
 
 #endif
@@ -4450,7 +4467,7 @@ void qemu_fputc(struct qemu_syscall *call)
 {
     struct qemu_fputc *c = (struct qemu_fputc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_fputc(c->c, QEMU_G2H(c->file));
+    c->super.iret = p_fputc(c->c, FILE_g2h(c->file));
 }
 
 #endif
@@ -4482,7 +4499,7 @@ void qemu__fputc_nolock(struct qemu_syscall *call)
 {
     struct qemu__fputc_nolock *c = (struct qemu__fputc_nolock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__fputc_nolock(c->c, QEMU_G2H(c->file));
+    c->super.iret = p__fputc_nolock(c->c, FILE_g2h(c->file));
 }
 
 #endif
@@ -4548,7 +4565,7 @@ void qemu__fread_nolock(struct qemu_syscall *call)
 {
     struct qemu__fread_nolock *c = (struct qemu__fread_nolock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__fread_nolock(QEMU_G2H(c->ptr), c->size, c->nmemb, QEMU_G2H(c->file));
+    c->super.iret = p__fread_nolock(QEMU_G2H(c->ptr), c->size, c->nmemb, FILE_g2h(c->file));
 }
 
 #endif
@@ -4586,7 +4603,7 @@ void qemu_fread_s(struct qemu_syscall *call)
 {
     struct qemu_fread_s *c = (struct qemu_fread_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_fread_s(QEMU_G2H(c->buf), c->buf_size, c->elem_size, c->count, QEMU_G2H(c->stream));
+    c->super.iret = p_fread_s(QEMU_G2H(c->buf), c->buf_size, c->elem_size, c->count, FILE_g2h(c->stream));
 }
 
 #endif
@@ -4624,7 +4641,7 @@ void qemu__fread_nolock_s(struct qemu_syscall *call)
 {
     struct qemu__fread_nolock_s *c = (struct qemu__fread_nolock_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__fread_nolock_s(QEMU_G2H(c->buf), c->buf_size, c->elem_size, c->count, QEMU_G2H(c->stream));
+    c->super.iret = p__fread_nolock_s(QEMU_G2H(c->buf), c->buf_size, c->elem_size, c->count, FILE_g2h(c->stream));
 }
 
 #endif
@@ -4658,7 +4675,7 @@ void qemu__wfreopen(struct qemu_syscall *call)
 {
     struct qemu__wfreopen *c = (struct qemu__wfreopen *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(p__wfreopen(QEMU_G2H(c->path), QEMU_G2H(c->mode), QEMU_G2H(c->file)));
+    c->super.iret = QEMU_H2G(p__wfreopen(QEMU_G2H(c->path), QEMU_G2H(c->mode), FILE_g2h(c->file)));
 }
 
 #endif
@@ -4694,7 +4711,7 @@ void qemu__wfreopen_s(struct qemu_syscall *call)
 {
     struct qemu__wfreopen_s *c = (struct qemu__wfreopen_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__wfreopen_s(QEMU_G2H(c->pFile), QEMU_G2H(c->path), QEMU_G2H(c->mode), QEMU_G2H(c->file));
+    c->super.iret = p__wfreopen_s(QEMU_G2H(c->pFile), QEMU_G2H(c->path), QEMU_G2H(c->mode), FILE_g2h(c->file));
 }
 
 #endif
@@ -4728,7 +4745,7 @@ void qemu_freopen(struct qemu_syscall *call)
 {
     struct qemu_freopen *c = (struct qemu_freopen *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(p_freopen(QEMU_G2H(c->path), QEMU_G2H(c->mode), QEMU_G2H(c->file)));
+    c->super.iret = QEMU_H2G(p_freopen(QEMU_G2H(c->path), QEMU_G2H(c->mode), FILE_g2h(c->file)));
 }
 
 #endif
@@ -4764,7 +4781,7 @@ void qemu_freopen_s(struct qemu_syscall *call)
 {
     struct qemu_freopen_s *c = (struct qemu_freopen_s *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_freopen_s(QEMU_G2H(c->pFile), QEMU_G2H(c->path), QEMU_G2H(c->mode), QEMU_G2H(c->file));
+    c->super.iret = p_freopen_s(QEMU_G2H(c->pFile), QEMU_G2H(c->path), QEMU_G2H(c->mode), FILE_g2h(c->file));
 }
 
 #endif
@@ -4796,7 +4813,7 @@ void qemu_fsetpos(struct qemu_syscall *call)
 {
     struct qemu_fsetpos *c = (struct qemu_fsetpos *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_fsetpos(QEMU_G2H(c->file), QEMU_G2H(c->pos));
+    c->super.iret = p_fsetpos(FILE_g2h(c->file), QEMU_G2H(c->pos));
 }
 
 #endif
@@ -4826,7 +4843,7 @@ void qemu__ftelli64(struct qemu_syscall *call)
 {
     struct qemu__ftelli64 *c = (struct qemu__ftelli64 *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__ftelli64(QEMU_G2H(c->file));
+    c->super.iret = p__ftelli64(FILE_g2h(c->file));
 }
 
 #endif
@@ -4856,7 +4873,7 @@ void qemu__ftelli64_nolock(struct qemu_syscall *call)
 {
     struct qemu__ftelli64_nolock *c = (struct qemu__ftelli64_nolock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__ftelli64_nolock(QEMU_G2H(c->file));
+    c->super.iret = p__ftelli64_nolock(FILE_g2h(c->file));
 }
 
 #endif
@@ -4886,7 +4903,7 @@ void qemu_ftell(struct qemu_syscall *call)
 {
     struct qemu_ftell *c = (struct qemu_ftell *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_ftell(QEMU_G2H(c->file));
+    c->super.iret = p_ftell(FILE_g2h(c->file));
 }
 
 #endif
@@ -4916,7 +4933,7 @@ void qemu__ftell_nolock(struct qemu_syscall *call)
 {
     struct qemu__ftell_nolock *c = (struct qemu__ftell_nolock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__ftell_nolock(QEMU_G2H(c->file));
+    c->super.iret = p__ftell_nolock(FILE_g2h(c->file));
 }
 
 #endif
@@ -4948,7 +4965,7 @@ void qemu_fgetpos(struct qemu_syscall *call)
 {
     struct qemu_fgetpos *c = (struct qemu_fgetpos *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_fgetpos(QEMU_G2H(c->file), QEMU_G2H(c->pos));
+    c->super.iret = p_fgetpos(FILE_g2h(c->file), QEMU_G2H(c->pos));
 }
 
 #endif
@@ -4980,7 +4997,7 @@ void qemu_fputs(struct qemu_syscall *call)
 {
     struct qemu_fputs *c = (struct qemu_fputs *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_fputs(QEMU_G2H(c->s), QEMU_G2H(c->file));
+    c->super.iret = p_fputs(QEMU_G2H(c->s), FILE_g2h(c->file));
 }
 
 #endif
@@ -5012,7 +5029,7 @@ void qemu_fputws(struct qemu_syscall *call)
 {
     struct qemu_fputws *c = (struct qemu_fputws *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_fputws(QEMU_G2H(c->s), QEMU_G2H(c->file));
+    c->super.iret = p_fputws(QEMU_G2H(c->s), FILE_g2h(c->file));
 }
 
 #endif
@@ -5070,7 +5087,7 @@ void qemu_getc(struct qemu_syscall *call)
 {
     struct qemu_getc *c = (struct qemu_getc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_getc(QEMU_G2H(c->file));
+    c->super.iret = p_getc(FILE_g2h(c->file));
 }
 
 #endif
@@ -5162,7 +5179,7 @@ void qemu_putc(struct qemu_syscall *call)
 {
     struct qemu_putc *c = (struct qemu_putc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_putc(c->c, QEMU_G2H(c->file));
+    c->super.iret = p_putc(c->c, FILE_g2h(c->file));
 }
 
 #endif
@@ -5376,7 +5393,7 @@ void qemu_setbuf(struct qemu_syscall *call)
 {
     struct qemu_setbuf *c = (struct qemu_setbuf *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    p_setbuf(QEMU_G2H(c->file), QEMU_G2H(c->buf));
+    p_setbuf(FILE_g2h(c->file), QEMU_G2H(c->buf));
 }
 
 #endif
@@ -5590,7 +5607,7 @@ void qemu_ungetc(struct qemu_syscall *call)
 {
     struct qemu_ungetc *c = (struct qemu_ungetc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_ungetc(c->c, QEMU_G2H(c->file));
+    c->super.iret = p_ungetc(c->c, FILE_g2h(c->file));
 }
 
 #endif
@@ -5622,7 +5639,7 @@ void qemu__ungetc_nolock(struct qemu_syscall *call)
 {
     struct qemu__ungetc_nolock *c = (struct qemu__ungetc_nolock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__ungetc_nolock(c->c, QEMU_G2H(c->file));
+    c->super.iret = p__ungetc_nolock(c->c, FILE_g2h(c->file));
 }
 
 #endif
@@ -5654,7 +5671,7 @@ void qemu_ungetwc(struct qemu_syscall *call)
 {
     struct qemu_ungetwc *c = (struct qemu_ungetwc *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_ungetwc(c->wc, QEMU_G2H(c->file));
+    c->super.iret = p_ungetwc(c->wc, FILE_g2h(c->file));
 }
 
 #endif
@@ -5686,7 +5703,7 @@ void qemu__ungetwc_nolock(struct qemu_syscall *call)
 {
     struct qemu__ungetwc_nolock *c = (struct qemu__ungetwc_nolock *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__ungetwc_nolock(c->wc, QEMU_G2H(c->file));
+    c->super.iret = p__ungetwc_nolock(c->wc, FILE_g2h(c->file));
 }
 
 #endif
@@ -5780,7 +5797,7 @@ void qemu__get_stream_buffer_pointers(struct qemu_syscall *call)
 {
     struct qemu__get_stream_buffer_pointers *c = (struct qemu__get_stream_buffer_pointers *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__get_stream_buffer_pointers(QEMU_G2H(c->file), QEMU_G2H(c->base), QEMU_G2H(c->ptr), QEMU_G2H(c->count));
+    c->super.iret = p__get_stream_buffer_pointers(FILE_g2h(c->file), QEMU_G2H(c->base), QEMU_G2H(c->ptr), QEMU_G2H(c->count));
 }
 
 #endif

@@ -937,6 +937,7 @@ enum msvcrt_calls
     CALL_SCHEDULER_CREATE,
     CALL_SCHEDULER_RESETDEFAULTSCHEDULERPOLICY,
     CALL_SCHEDULER_SETDEFAULTSCHEDULERPOLICY,
+    CALL_SET_IOB,
     CALL_SET_NEW_HANDLER,
     CALL_SETBUF,
     CALL_SETLOCALE,
@@ -1126,6 +1127,9 @@ size_t CDECL MSVCRT_strlen(const char *str);
 
 unsigned int count_printf_argsA(const char *format, char *fmts);
 unsigned int count_printf_argsW(const WCHAR *format, WCHAR *fmts);
+
+#define GUEST_IOB_SIZE 20
+extern FILE guest_iob[GUEST_IOB_SIZE];
 
 #else
 
@@ -2199,7 +2203,7 @@ void *(* CDECL p_calloc)(size_t item_count,size_t size);
 float (* CDECL p_cosf)(float x);
 void (* CDECL p_exit)(int code);
 void (* CDECL p_free)(void *ptr);
-size_t (* CDECL p_fwrite)(const void *str, size_t size, size_t count, FILE *file);
+size_t (* CDECL p_fwrite)(const void *str, size_t size, size_t count, MSVCRT_FILE *file);
 void *(* CDECL p_malloc)(size_t size);
 void *(* CDECL p_memset)(void *dst, int c, size_t n);
 void (* CDECL p_operator_delete)(void *mem);
@@ -2507,13 +2511,13 @@ char * (* CDECL p_setlocale)(int category, const char *locale);
 int (* CDECL p__isatty)(int fd);
 int (* CDECL p__vsnprintf)(char *str, size_t len, const char *format, va_list valist);
 int (* CDECL p__vsnwprintf)(WCHAR *str, size_t len, const WCHAR *format, va_list valist);
-int (* CDECL p__fileno)(FILE *f);
+int (* CDECL p__fileno)(MSVCRT_FILE *f);
 int (* CDECL p__write)(int fd, const void *buf, unsigned int count);
 double (* CDECL p_atof)(const char *str);
-size_t (* CDECL p_fread)(void *ptr, size_t size, size_t nmemb, FILE *file);
+size_t (* CDECL p_fread)(void *ptr, size_t size, size_t nmemb, MSVCRT_FILE *file);
 int (*CDECL p_rand)(void);
 int (*CDECL p_srand)(int seed);
-int (* CDECL p_fflush)(FILE *file);
+int (* CDECL p_fflush)(MSVCRT_FILE *file);
 LONG (* CDECL p__lseek)(int fd, LONG offset, int whence);
 __int64 (* CDECL p__lseeki64)(int fd, __int64 offset, int whence);
 char * (* CDECL p__tempnam)(const char *dir, const char *prefix);
@@ -2638,11 +2642,11 @@ int (* CDECL p__dupenv_s)(char **buffer, size_t *numberOfElements, const char *v
 int (* CDECL p__wdupenv_s)(WCHAR **buffer, size_t *numberOfElements, const WCHAR *varname);
 int (* CDECL p_getenv_s)(size_t *pReturnValue, char* buffer, size_t numberOfElements, const char *varname);
 int (* CDECL p__wgetenv_s)(size_t *pReturnValue, WCHAR *buffer, size_t numberOfElements, const WCHAR *varname);
-int (* CDECL p_setvbuf)(FILE *file, char *buf, int mode, size_t size);
+int (* CDECL p_setvbuf)(MSVCRT_FILE *file, char *buf, int mode, size_t size);
 /* FIXME: Should use __time64_t, but somehow it isn't defined. */
 __int64 (* CDECL p__time64)(__int64 *buf);
 int (* CDECL p_swscanf_s)(const WCHAR *str, const WCHAR *format, ...);
-FILE * (* CDECL p___acrt_iob_func)(unsigned idx);
+MSVCRT_FILE * (* CDECL p___acrt_iob_func)(unsigned idx);
 int (* CDECL p__access)(const char *filename, int mode);
 int (* CDECL p__access_s)(const char *filename, int mode);
 int (* CDECL p__waccess)(const WCHAR *filename, int mode);
@@ -2653,25 +2657,25 @@ int (* CDECL p__unlink)(const char *path);
 int (* CDECL p__wunlink)(const WCHAR *path);
 int (* CDECL p__commit)(int fd);
 int (* CDECL p__flushall)(void);
-int (* CDECL p__fflush_nolock)(FILE* file);
+int (* CDECL p__fflush_nolock)(MSVCRT_FILE* file);
 int (* CDECL p__close)(int fd);
 int (* CDECL p__dup2)(int od, int nd);
 int (* CDECL p__dup)(int od);
 int (* CDECL p__eof)(int fd);
 int (* CDECL p__fcloseall)(void);
-void (* CDECL p__lock_file)(FILE *file);
-void (* CDECL p__unlock_file)(FILE *file);
+void (* CDECL p__lock_file)(MSVCRT_FILE *file);
+void (* CDECL p__unlock_file)(MSVCRT_FILE *file);
 int (* CDECL p__locking)(int fd, int mode, LONG nbytes);
-int (* CDECL p__fseeki64)(FILE* file, __int64 offset, int whence);
-int (* CDECL p__fseeki64_nolock)(FILE* file, __int64 offset, int whence);
-int (* CDECL p_fseek)(FILE* file, LONG offset, int whence);
-int (* CDECL p__fseek_nolock)(FILE* file, LONG offset, int whence);
+int (* CDECL p__fseeki64)(MSVCRT_FILE* file, __int64 offset, int whence);
+int (* CDECL p__fseeki64_nolock)(MSVCRT_FILE* file, __int64 offset, int whence);
+int (* CDECL p_fseek)(MSVCRT_FILE* file, LONG offset, int whence);
+int (* CDECL p__fseek_nolock)(MSVCRT_FILE* file, LONG offset, int whence);
 int (* CDECL p__chsize_s)(int fd, __int64 size);
 int (* CDECL p__chsize)(int fd, LONG size);
-void (* CDECL p_clearerr)(FILE* file);
-void (* CDECL p_rewind)(FILE* file);
-FILE * (* CDECL p__fdopen)(int fd, const char *mode);
-FILE * (* CDECL p__wfdopen)(int fd, const WCHAR *mode);
+void (* CDECL p_clearerr)(MSVCRT_FILE* file);
+void (* CDECL p_rewind)(MSVCRT_FILE* file);
+MSVCRT_FILE * (* CDECL p__fdopen)(int fd, const char *mode);
+MSVCRT_FILE * (* CDECL p__wfdopen)(int fd, const WCHAR *mode);
 LONG (* CDECL p__filelength)(int fd);
 __int64 (* CDECL p__filelengthi64)(int fd);
 int (* CDECL p__fstat64)(int fd, struct MSVCRT__stat64* buf);
@@ -2721,77 +2725,77 @@ int (* CDECL p__utime)(const char* path, struct MSVCRT__utimbuf64 *t);
 int (* CDECL p__wutime64)(const WCHAR* path, struct MSVCRT__utimbuf64 *t);
 int (* CDECL p__wutime32)(const WCHAR* path, struct MSVCRT__utimbuf32 *t);
 int (* CDECL p__wutime)(const WCHAR* path, struct MSVCRT__utimbuf64 *t);
-int (* CDECL p__putw)(int val, FILE* file);
-int (* CDECL p_fclose)(FILE* file);
-int (* CDECL p__fclose_nolock)(FILE* file);
-int (* CDECL p_feof)(FILE* file);
-int (* CDECL p_ferror)(FILE* file);
-int (* CDECL p__filbuf)(FILE* file);
-int (* CDECL p_fgetc)(FILE* file);
-int (* CDECL p__fgetc_nolock)(FILE* file);
+int (* CDECL p__putw)(int val, MSVCRT_FILE* file);
+int (* CDECL p_fclose)(MSVCRT_FILE* file);
+int (* CDECL p__fclose_nolock)(MSVCRT_FILE* file);
+int (* CDECL p_feof)(MSVCRT_FILE* file);
+int (* CDECL p_ferror)(MSVCRT_FILE* file);
+int (* CDECL p__filbuf)(MSVCRT_FILE* file);
+int (* CDECL p_fgetc)(MSVCRT_FILE* file);
+int (* CDECL p__fgetc_nolock)(MSVCRT_FILE* file);
 int (* CDECL p__fgetchar)(void);
-char * (* CDECL p_fgets)(char *s, int size, FILE* file);
-MSVCRT_wint_t (* CDECL p_fgetwc)(FILE* file);
-MSVCRT_wint_t (* CDECL p__fgetwc_nolock)(FILE* file);
-int (* CDECL p__getw)(FILE* file);
-MSVCRT_wint_t (* CDECL p_getwc)(FILE* file);
+char * (* CDECL p_fgets)(char *s, int size, MSVCRT_FILE* file);
+MSVCRT_wint_t (* CDECL p_fgetwc)(MSVCRT_FILE* file);
+MSVCRT_wint_t (* CDECL p__fgetwc_nolock)(MSVCRT_FILE* file);
+int (* CDECL p__getw)(MSVCRT_FILE* file);
+MSVCRT_wint_t (* CDECL p_getwc)(MSVCRT_FILE* file);
 MSVCRT_wint_t (* CDECL p__fgetwchar)(void);
 MSVCRT_wint_t (* CDECL p_getwchar)(void);
-WCHAR * (* CDECL p_fgetws)(WCHAR *s, int size, FILE* file);
-int (* CDECL p__flsbuf)(int c, FILE* file);
-size_t (* CDECL p__fwrite_nolock)(const void *ptr, size_t size, size_t nmemb, FILE* file);
-MSVCRT_wint_t (* CDECL p_fputwc)(MSVCRT_wint_t wc, FILE* file);
-MSVCRT_wint_t (* CDECL p__fputwc_nolock)(MSVCRT_wint_t wc, FILE* file);
+WCHAR * (* CDECL p_fgetws)(WCHAR *s, int size, MSVCRT_FILE* file);
+int (* CDECL p__flsbuf)(int c, MSVCRT_FILE* file);
+size_t (* CDECL p__fwrite_nolock)(const void *ptr, size_t size, size_t nmemb, MSVCRT_FILE* file);
+MSVCRT_wint_t (* CDECL p_fputwc)(MSVCRT_wint_t wc, MSVCRT_FILE* file);
+MSVCRT_wint_t (* CDECL p__fputwc_nolock)(MSVCRT_wint_t wc, MSVCRT_FILE* file);
 MSVCRT_wint_t (* CDECL p__fputwchar)(MSVCRT_wint_t wc);
-FILE * (* CDECL p__wfsopen)(const WCHAR *path, const WCHAR *mode, int share);
-FILE * (* CDECL p__fsopen)(const char *path, const char *mode, int share);
-FILE * (* CDECL p_fopen)(const char *path, const char *mode);
+MSVCRT_FILE * (* CDECL p__wfsopen)(const WCHAR *path, const WCHAR *mode, int share);
+MSVCRT_FILE * (* CDECL p__fsopen)(const char *path, const char *mode, int share);
+MSVCRT_FILE * (* CDECL p_fopen)(const char *path, const char *mode);
 int (* CDECL p_fopen_s)(FILE** pFile, const char *filename, const char *mode);
-FILE * (* CDECL p__wfopen)(const WCHAR *path, const WCHAR *mode);
-int (* CDECL p__wfopen_s)(FILE** pFile, const WCHAR *filename, const WCHAR *mode);
-int (* CDECL p_fputc)(int c, FILE* file);
-int (* CDECL p__fputc_nolock)(int c, FILE* file);
+MSVCRT_FILE * (* CDECL p__wfopen)(const WCHAR *path, const WCHAR *mode);
+int (* CDECL p__wfopen_s)(MSVCRT_FILE** pFile, const WCHAR *filename, const WCHAR *mode);
+int (* CDECL p_fputc)(int c, MSVCRT_FILE* file);
+int (* CDECL p__fputc_nolock)(int c, MSVCRT_FILE* file);
 int (* CDECL p__fputchar)(int c);
-size_t (* CDECL p__fread_nolock)(void *ptr, size_t size, size_t nmemb, FILE* file);
-size_t (* CDECL p_fread_s)(void *buf, size_t buf_size, size_t elem_size, size_t count, FILE *stream);
-size_t (* CDECL p__fread_nolock_s)(void *buf, size_t buf_size, size_t elem_size, size_t count, FILE *stream);
-FILE * (* CDECL p__wfreopen)(const WCHAR *path, const WCHAR *mode, FILE* file);
-int (* CDECL p__wfreopen_s)(FILE** pFile, const WCHAR *path, const WCHAR *mode, FILE* file);
-FILE * (* CDECL p_freopen)(const char *path, const char *mode, FILE* file);
-int (* CDECL p_freopen_s)(FILE** pFile, const char *path, const char *mode, FILE* file);
-int (* CDECL p_fsetpos)(FILE* file, fpos_t *pos);
-__int64 (* CDECL p__ftelli64)(FILE* file);
-__int64 (* CDECL p__ftelli64_nolock)(FILE* file);
-LONG (* CDECL p_ftell)(FILE* file);
-LONG (* CDECL p__ftell_nolock)(FILE* file);
-int (* CDECL p_fgetpos)(FILE* file, fpos_t *pos);
-int (* CDECL p_fputs)(const char *s, FILE* file);
-int (* CDECL p_fputws)(const WCHAR *s, FILE* file);
+size_t (* CDECL p__fread_nolock)(void *ptr, size_t size, size_t nmemb, MSVCRT_FILE* file);
+size_t (* CDECL p_fread_s)(void *buf, size_t buf_size, size_t elem_size, size_t count, MSVCRT_FILE *stream);
+size_t (* CDECL p__fread_nolock_s)(void *buf, size_t buf_size, size_t elem_size, size_t count, MSVCRT_FILE *stream);
+MSVCRT_FILE * (* CDECL p__wfreopen)(const WCHAR *path, const WCHAR *mode, MSVCRT_FILE* file);
+int (* CDECL p__wfreopen_s)(MSVCRT_FILE** pFile, const WCHAR *path, const WCHAR *mode, MSVCRT_FILE* file);
+MSVCRT_FILE * (* CDECL p_freopen)(const char *path, const char *mode, MSVCRT_FILE* file);
+int (* CDECL p_freopen_s)(MSVCRT_FILE** pFile, const char *path, const char *mode, MSVCRT_FILE* file);
+int (* CDECL p_fsetpos)(MSVCRT_FILE* file, fpos_t *pos);
+__int64 (* CDECL p__ftelli64)(MSVCRT_FILE* file);
+__int64 (* CDECL p__ftelli64_nolock)(MSVCRT_FILE* file);
+LONG (* CDECL p_ftell)(MSVCRT_FILE* file);
+LONG (* CDECL p__ftell_nolock)(MSVCRT_FILE* file);
+int (* CDECL p_fgetpos)(MSVCRT_FILE* file, fpos_t *pos);
+int (* CDECL p_fputs)(const char *s, MSVCRT_FILE* file);
+int (* CDECL p_fputws)(const WCHAR *s, MSVCRT_FILE* file);
 int (* CDECL p_getchar)(void);
-int (* CDECL p_getc)(FILE* file);
+int (* CDECL p_getc)(MSVCRT_FILE* file);
 char * (* CDECL p_gets)(char *buf);
 WCHAR* (* CDECL p__getws)(WCHAR* buf);
-int (* CDECL p_putc)(int c, FILE* file);
+int (* CDECL p_putc)(int c, MSVCRT_FILE* file);
 int (* CDECL p_putchar)(int c);
 int (* CDECL p__putws)(const WCHAR *s);
 int (* CDECL p_remove)(const char *path);
 int (* CDECL p__wremove)(const WCHAR *path);
 int (* CDECL p_rename)(const char *oldpath,const char *newpath);
 int (* CDECL p__wrename)(const WCHAR *oldpath,const WCHAR *newpath);
-void (* CDECL p_setbuf)(FILE* file, char *buf);
+void (* CDECL p_setbuf)(MSVCRT_FILE* file, char *buf);
 int (* CDECL p_tmpnam_s)(char *s, size_t size);
 char * (* CDECL p_tmpnam)(char *s);
 int (* CDECL p__wtmpnam_s)(WCHAR *s, size_t size);
 WCHAR * (* CDECL p__wtmpnam)(WCHAR *s);
-FILE * (* CDECL p_tmpfile)(void);
-int (* CDECL p_tmpfile_s)(FILE** file);
-int (* CDECL p_ungetc)(int c, FILE * file);
-int (* CDECL p__ungetc_nolock)(int c, FILE * file);
-MSVCRT_wint_t (* CDECL p_ungetwc)(MSVCRT_wint_t wc, FILE * file);
-MSVCRT_wint_t (* CDECL p__ungetwc_nolock)(MSVCRT_wint_t wc, FILE * file);
+MSVCRT_FILE * (* CDECL p_tmpfile)(void);
+int (* CDECL p_tmpfile_s)(MSVCRT_FILE** file);
+int (* CDECL p_ungetc)(int c, MSVCRT_FILE * file);
+int (* CDECL p__ungetc_nolock)(int c, MSVCRT_FILE * file);
+MSVCRT_wint_t (* CDECL p_ungetwc)(MSVCRT_wint_t wc, MSVCRT_FILE * file);
+MSVCRT_wint_t (* CDECL p__ungetwc_nolock)(MSVCRT_wint_t wc, MSVCRT_FILE * file);
 int (* CDECL p__getmaxstdio)(void);
 int (* CDECL p__setmaxstdio)(int newmax);
-int (* CDECL p__get_stream_buffer_pointers)(FILE *file, char*** base, char*** ptr, int** count);
+int (* CDECL p__get_stream_buffer_pointers)(MSVCRT_FILE *file, char*** base, char*** ptr, int** count);
 int* (* CDECL p___sys_nerr)(void);
 char** (* CDECL p___sys_errlist)(void);
 int* (* CDECL p__errno)(void);
@@ -2883,9 +2887,9 @@ intptr_t (* CDECL p__spawnvpe)(int flags, const char* name, const char* const* a
 intptr_t (* CDECL p__wspawnvpe)(int flags, const WCHAR* name, const WCHAR* const* argv, const WCHAR* const* envv);
 intptr_t (* CDECL p__spawnvp)(int flags, const char* name, const char* const* argv);
 intptr_t (* CDECL p__wspawnvp)(int flags, const WCHAR* name, const WCHAR* const* argv);
-FILE* (* CDECL p__wpopen)(const WCHAR* command, const WCHAR* mode);
-FILE* (* CDECL p__popen)(const char* command, const char* mode);
-int (* CDECL p__pclose)(FILE* file);
+MSVCRT_FILE* (* CDECL p__wpopen)(const WCHAR* command, const WCHAR* mode);
+MSVCRT_FILE* (* CDECL p__popen)(const char* command, const char* mode);
+int (* CDECL p__pclose)(MSVCRT_FILE* file);
 int (* CDECL p__wsystem)(const WCHAR* cmd);
 int (* CDECL p_system)(const char* cmd);
 intptr_t (* CDECL p__loaddll)(const char* dllname);
@@ -3233,6 +3237,25 @@ char* (* CDECL p__get_narrow_winmain_command_line)(void);
 WCHAR* (* CDECL p__get_wide_winmain_command_line)(void);
 
 DWORD msvcrt_tls;
+size_t guest_FILE_size;
+uint64_t guest_iob;
+unsigned int guest_iob_size;
+
+static inline MSVCRT_FILE *FILE_g2h(uint64_t guest)
+{
+#if GUEST_BIT == HOST_BIT
+    return QEMU_G2H(guest);
+#else
+    if (guest >= guest_iob)
+    {
+        size_t offset;
+        offset = (guest - guest_iob) / guest_FILE_size;
+        if (offset <= guest_iob_size)
+            return p___iob_func() + offset;
+    }
+    return QEMU_G2H(guest);
+#endif
+}
 
 #endif
 

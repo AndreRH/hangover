@@ -698,7 +698,7 @@ void qemu__pclose(struct qemu_syscall *call)
 {
     struct qemu__pclose *c = (struct qemu__pclose *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p__pclose(QEMU_G2H(c->file));
+    c->super.iret = p__pclose(FILE_g2h(c->file));
 }
 
 #endif
