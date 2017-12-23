@@ -334,18 +334,8 @@ __ASM_GLOBAL_FUNC( call_va_asm2,
                    "ldp x29, x30, [SP], #16\n\t"            /* pop FP & LR */
                    "ret\n\t" )
 
-#else
-
-int CDECL call_va_asm2( void *fixed1, void *fixed2, void *func, int nb_args, int nb_onstack, const void *args )
-{
-#warning Implement variadic calls
-    return 0;
-}
-
-#endif
-
 uint64_t call_va2(uint64_t (* CDECL func)(void *fixed1, void *fixed2, ...), void *fixed1, void *fixed2,
-        unsigned int icount, unsigned int fcount, const struct va_array *array)
+                  unsigned int icount, unsigned int fcount, const struct va_array *array)
 {
     int onstack = 0;
 
@@ -356,3 +346,133 @@ uint64_t call_va2(uint64_t (* CDECL func)(void *fixed1, void *fixed2, ...), void
 
     return call_va_asm2(fixed1, fixed2, func, icount, onstack, array);
 }
+
+#else
+
+extern int CDECL call_va_asm2( void *fixed1, void *fixed2, void *func, int nb_args, int nb_onstack, const void *args );
+__ASM_GLOBAL_FUNC(call_va_asm2,
+                  "push %rbp\n\t"
+                  "push %rbx\n\t"
+                  "push %rsi\n\t"
+                  /* Stack should be aligned here (8 bytes ret, 40 bytes pushed) */
+                  "mov %rsp, %rbp\n\t"
+
+                  /* Load args from stack 0x8*5(push) + 0x8 (ret) + 0x20(space) */
+                  "mov 0x48(%rbp), %rsi\n\t"
+
+                  /* Calculate array end */
+                  "leaq (%rsi,%r9,8), %r11\n\t"
+                  "leaq (%r11,%r9,8), %r11\n\t"
+
+                  /* align stack in case of uneven number of stack params */
+                  "mov 0x40(%rbp), %r10\n\t"
+                  "mov %r10, %rax\n\t"
+                  "and $0x1, %rax\n\t"
+                  "add %rax, %r10\n\t"
+
+                  /* Remember fixed2, we’ll overwrite it in the mul */
+                  "mov %rdx, %rbx\n\t"
+
+                  /* Reserve stack space for stack params */
+                  "mov $0x8, %rax\n\t"
+                  "mulq %r10\n\t"
+                  "sub %rax, %rsp\n\t"
+
+                  /* If parameter X is a float, the corresponding int parameter register
+                   * is ignored and vice versa. */
+                  "xor %rax, %rax\n\t" /* stored register params */
+
+                  /* Restore fixed2 back into where we want it */
+                  "mov %rbx, %rdx\n\t"
+
+                  /* Remember func before we overwrite the register for param 3. */
+                  "mov %r8, %rbx\n\t"
+
+                  /* From here on RDX, R8 and R9 may no longer contain our params, and instead
+                   * the params we pass on to func */
+                  "loop2:\n\t"
+                      "cmpq %rsi, %r11\n\t"
+                      "je done2\n\t"
+
+                      /* is it a float? */
+                      "cmpq $0x0, (%rsi)\n\t"
+                      "je int_param2\n\t"
+                          /* Handle floats here. It seems that float register parameters are also
+                           * copied into their int slots, and apparently also read from there.
+                           * This behavior isn't explicitly mentioned in the calling convention
+                           * description. However, Microsoft's page describing the behavior for
+                           * calling unprototyped functions mentions it. */
+                          "cmpq $0x0, %rax\n\t"
+                          "jne cmp_f12\n\t"
+                              "mov 0x8(%rsi), %r8\n\t"
+                              "movsd 0x8(%rsi), %xmm2\n\t"
+                              "inc %rax\n\t"
+                              "jmp end_branch2\n\t"
+
+                          "cmp_f12:\n\t"
+                          "cmpq $0x1, %rax\n\t"
+                          "jne store_fstack2\n\t"
+                              "mov 0x8(%rsi), %r9\n\t"
+                              "movsd 0x8(%rsi), %xmm3\n\t"
+                              "inc %rax\n\t"
+                              "jmp end_branch2\n\t"
+
+                          "store_fstack2:\n\t"
+                              "mov 0x8(%rsi), %r10\n\t"
+                              "mov %r10, -0x10(%rsp, %rax, 8)\n\t"
+                              "inc %rax\n\t"
+
+                          "jmp end_branch2\n\t"
+
+                      /* else */
+                      "int_param2:\n\t"
+                          "cmpq $0x0, %rax\n\t"
+                          "jne cmp_i12\n\t"
+                              "mov 0x8(%rsi), %r8\n\t"
+                              "inc %rax\n\t"
+                              "jmp end_branch2\n\t"
+
+                          "cmp_i12:\n\t"
+                          "cmpq $0x1, %rax\n\t"
+                          "jne store_istack2\n\t"
+                              "mov 0x8(%rsi), %r9\n\t"
+                              "inc %rax\n\t"
+                              "jmp end_branch2\n\t"
+
+                          "store_istack2:\n\t"
+                              "mov 0x8(%rsi), %r10\n\t"
+                              "mov %r10, -0x10(%rsp, %rax, 8)\n\t"
+                              "inc %rax\n\t"
+
+                      "end_branch2:\n\t"
+
+                      /* Next array entry */
+                      "add $0x10, %rsi\n\t"
+
+                      "jmp loop2\n\t"
+                  "done2:\n\t"
+
+                  /* parameter 1 (fixed1, in rcx) is already in place */
+                  /* parameter 2 (fixed2, in rdx) is already in place */
+                  "sub $0x20, %rsp\n\t" /* Shadow register space */
+                  "call *%rbx\n\t"
+
+                  "mov %rbp, %rsp\n\t"
+                  "pop %rsi\n\t"
+                  "pop %rbx\n\t"
+                  "pop %rbp\n\t"
+
+                  "ret\n\t" )
+
+uint64_t call_va2(uint64_t (* CDECL func)(void *fixed1, void *fixed2, ...), void *fixed1, void *fixed2,
+                  unsigned int icount, unsigned int fcount, const struct va_array *array)
+{
+    int onstack = 0;
+
+    if (icount > 2)
+        onstack += icount - 2;
+
+    return call_va_asm2(fixed1, fixed2, func, icount, onstack, array);
+}
+
+#endif
