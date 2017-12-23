@@ -601,18 +601,18 @@ struct printf_data
     BOOL unicode;
 };
 
-static uint64_t printf_wrapper(void *ctx, ...)
+static uint64_t CDECL printf_wrapper(void *ctx, ...)
 {
-    va_list list;
+    __ms_va_list list;
     const struct printf_data *data = ctx;
     int ret;
 
-    va_start(list, ctx);
+    __ms_va_start(list, ctx);
     if (data->unicode)
         ret = p_vfwprintf(data->file, data->fmt, list);
     else
         ret = p_vfprintf(data->file, data->fmt, list);
-    va_end(list);
+    __ms_va_end(list);
 
     return ret;
 }
@@ -859,13 +859,13 @@ struct sprintf_data
     void *fmt;
 };
 
-static uint64_t sprintf_wrapper(void *ctx, ...)
+static uint64_t CDECL sprintf_wrapper(void *ctx, ...)
 {
-    va_list list;
+    __ms_va_list list;
     const struct sprintf_data *data = ctx;
     int ret;
 
-    va_start(list, ctx);
+    __ms_va_start(list, ctx);
     switch (data->op)
     {
         case QEMU_SYSCALL_ID(CALL_SPRINTF):
@@ -888,7 +888,7 @@ static uint64_t sprintf_wrapper(void *ctx, ...)
             ret = p__vsnwprintf(data->dst, data->charcount, data->fmt, list);
             break;
     }
-    va_end(list);
+    __ms_va_end(list);
 
     return ret;
 }

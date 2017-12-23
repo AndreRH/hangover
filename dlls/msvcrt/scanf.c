@@ -140,17 +140,27 @@ struct scanf_data
     MSVCRT__locale_t locale;
 };
 
-static uint64_t scanf_wrapper(void *data, ...)
+static uint64_t CDECL scanf_wrapper(void *data, ...)
 {
     struct scanf_data *d = data;
-    va_list args;
+    __ms_va_list args;
     int ret;
 
-    va_start(args, data);
+    __ms_va_start(args, data);
     /* Deliberately call Linux here, there is no va_list version of sscanf in msvcrt.dll.
-     * It exists in msvcr120+, but Wine's implementation is a stub. */
+     * It exists in msvcr120+, but Wine's implementation is a stub.
+     *
+     * Well, that's not going to work on x86_64 because __ms_va_list is incompatible with
+     * va_list. Option 1 is to implement the missing function in msvcrt120 and call it from
+     * here. Option 2 is to implement a SysV ABI version of call_va. Option 3 is to use
+     * Wine's scanf.h in this libary. Option 4 is to call the regular scanf directly with-
+     * out a wrapper function. */
+#ifdef __x86_64__
+    WINE_FIXME("Find a miracle __ms_va_list to va_list conversion.\n");
+#else
     ret = vsscanf(d->str, d->fmt, args);
-    va_end(args);
+#endif
+    __ms_va_end(args);
 
     return ret;
 }

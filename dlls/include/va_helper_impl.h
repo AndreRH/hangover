@@ -111,23 +111,140 @@ __ASM_GLOBAL_FUNC( call_va_asm,
 
 #else
 
-int CDECL call_va_asm( void *ctx, void *func, int nb_args, int nb_onstack, const void *args )
-{
-#warning Implement variadic calls
-    return 0;
-}
+extern int CDECL call_va_asm( void *ctx, void *func, int nb_args, int nb_onstack, const void *args );
+#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl _" #name suffix "\n\t\n_" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc\n\t.previous");
+#define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
+__ASM_GLOBAL_FUNC(call_va_asm,
+                  "push %rbp\n\t"
+                  "push %rbx\n\t"
+                  "push %rsi\n\t"
+                  /* Stack should be aligned here (8 bytes ret, 40 bytes pushed) */
+                  "mov %rsp, %rbp\n\t"
+
+                  /* Load args from stack 0x8*5(push) + 0x8 (ret) + 0x20(space) */
+                  "mov 0x40(%rbp), %rsi\n\t"
+
+                  /* Calculate array end */
+                  "leaq (%rsi,%r8,8), %r11\n\t"
+                  "leaq (%r11,%r8,8), %r11\n\t"
+
+                  /* align stack in case of uneven number of stack params */
+                  "mov %r9, %rax\n\t"
+                  "and $0x1, %rax\n\t"
+                  "add %rax, %r9\n\t"
+
+                  /* Remember func, we’ll probably overwrite it in the input register */
+                  "mov %rdx, %rbx\n\t"
+
+                  /* Reserve stack space for stack params */
+                  "mov $0x8, %rax\n\t"
+                  "mulq %r9\n\t"
+                  "sub %rax, %rsp\n\t"
+
+                  /* If parameter X is a float, the corresponding int parameter register
+                   * is ignored and vice versa. */
+                  "xor %rax, %rax\n\t" /* stored register params */
+
+                  /* From here on RDX, R8 and R9 may no longer contain our params, and instead
+                   * the params we pass on to func */
+
+                  "loop:\n\t"
+                      "cmpq %rsi, %r11\n\t"
+                      "je done\n\t"
+
+                      /* is it a float? */
+                      "cmpq $0x0, (%rsi)\n\t"
+                      "je int_param\n\t"
+                          /* Handle floats here. It seems that float register parameters are also
+                           * copied into their int slots, and apparently also read from there.
+                           * This behavior isn't explicitly mentioned in the calling convention
+                           * description. However, Microsoft's page describing the behavior for
+                           * calling unprototyped functions mentions it. */
+                          "cmpq $0x0, %rax\n\t"
+                          "jne cmp_f1\n\t"
+                              "mov 0x8(%rsi), %rdx\n\t"
+                              "movsd 0x8(%rsi), %xmm1\n\t"
+                              "inc %rax\n\t"
+                              "jmp end_branch\n\t"
+
+                          "cmp_f1:\n\t"
+                          "cmpq $0x1, %rax\n\t"
+                          "jne cmp_f2\n\t"
+                              "mov 0x8(%rsi), %r8\n\t"
+                              "movsd 0x8(%rsi), %xmm2\n\t"
+                              "inc %rax\n\t"
+                              "jmp end_branch\n\t"
+
+                          "cmp_f2:\n\t"
+                          "cmpq $0x2, %rax\n\t"
+                          "jne store_fstack\n\t"
+                              "mov 0x8(%rsi), %r9\n\t"
+                              "movsd 0x8(%rsi), %xmm3\n\t"
+                              "inc %rax\n\t"
+                              "jmp end_branch\n\t"
+
+                          "store_fstack:\n\t"
+                              "mov 0x8(%rsi), %r10\n\t"
+                              "mov %r10, -0x18(%rsp, %rax, 8)\n\t"
+                              "inc %rax\n\t"
+
+                          "jmp end_branch\n\t"
+
+                      /* else */
+                      "int_param:\n\t"
+                          "cmpq $0x0, %rax\n\t"
+                          "jne cmp_i1\n\t"
+                              "mov 0x8(%rsi), %rdx\n\t"
+                              "inc %rax\n\t"
+                              "jmp end_branch\n\t"
+
+                          "cmp_i1:\n\t"
+                          "cmpq $0x1, %rax\n\t"
+                          "jne cmp_i2\n\t"
+                              "mov 0x8(%rsi), %r8\n\t"
+                              "inc %rax\n\t"
+                              "jmp end_branch\n\t"
+
+                          "cmp_i2:\n\t"
+                          "cmpq $0x2, %rax\n\t"
+                          "jne store_istack\n\t"
+                              "mov 0x8(%rsi), %r9\n\t"
+                              "inc %rax\n\t"
+                              "jmp end_branch\n\t"
+
+                          "store_istack:\n\t"
+                              "mov 0x8(%rsi), %r10\n\t"
+                              "mov %r10, -0x18(%rsp, %rax, 8)\n\t"
+                              "inc %rax\n\t"
+
+                      "end_branch:\n\t"
+
+                      /* Next array entry */
+                      "add $0x10, %rsi\n\t"
+
+                      "jmp loop\n\t"
+
+                  "done:\n\t"
+
+                  /* parameter 1 (ctx, in rcx) is already in place */
+                  "sub $0x20, %rsp\n\t" /* Shadow register space */
+                  "call *%rbx\n\t"
+
+                  "mov %rbp, %rsp\n\t"
+                  "pop %rsi\n\t"
+                  "pop %rbx\n\t"
+                  "pop %rbp\n\t"
+                  "ret\n\t" )
 
 #endif
 
-uint64_t call_va(uint64_t (*func)(void *ctx, ...), void *ctx, unsigned int icount,
+uint64_t CDECL call_va(uint64_t (* CDECL func)(void *ctx, ...), void *ctx, unsigned int icount,
         unsigned int fcount, const struct va_array *array)
 {
     int onstack = 0;
 
-    if (icount - fcount > 7)
-        onstack = icount - fcount - 7;
-    if (fcount > 8)
-        onstack += fcount - 8;
+    if (icount > 3)
+        onstack += icount - 3;
 
     return call_va_asm(ctx, func, icount, onstack, array);
 }
@@ -227,7 +344,7 @@ int CDECL call_va_asm2( void *fixed1, void *fixed2, void *func, int nb_args, int
 
 #endif
 
-uint64_t call_va2(uint64_t (*func)(void *fixed1, void *fixed2, ...), void *fixed1, void *fixed2,
+uint64_t call_va2(uint64_t (* CDECL func)(void *fixed1, void *fixed2, ...), void *fixed1, void *fixed2,
         unsigned int icount, unsigned int fcount, const struct va_array *array)
 {
     int onstack = 0;

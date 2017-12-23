@@ -2228,12 +2228,12 @@ int (* CDECL p_strncmp)(const char *str1, const char *str2, size_t len);
 char *(* CDECL p_strncpy)(char *dst, const char *src, size_t len);
 char * (* CDECL p_strrchr)(const char *str, int c);
 void (* CDECL p_terminate)(void);
-int (* CDECL p_vfprintf)(FILE *file,const char *format, va_list args);
-int (* CDECL p_vfwprintf)(FILE *file, const WCHAR *format, va_list args);
-int (* CDECL p_vsprintf)(char *str, const char *format, va_list args);
-int (* CDECL p_vsprintf_s)(char *str, size_t num, const char *format, va_list args);
+int (* CDECL p_vfprintf)(FILE *file,const char *format, __ms_va_list args);
+int (* CDECL p_vfwprintf)(FILE *file, const WCHAR *format, __ms_va_list args);
+int (* CDECL p_vsprintf)(char *str, const char *format, __ms_va_list args);
+int (* CDECL p_vsprintf_s)(char *str, size_t num, const char *format, __ms_va_list args);
 int (* CDECL p_vswprintf_s)(WCHAR *dst, size_t charcount,
-        const WCHAR *fmt, va_list args);
+        const WCHAR *fmt, __ms_va_list args);
 int (* CDECL p_wcscat_s)(WCHAR *dst, size_t count, const WCHAR *src);
 WCHAR (* CDECL p_wcscpy)(WCHAR *dst, const WCHAR *src);
 int (* CDECL p_wcscpy_s)(WCHAR *dst, size_t size, const WCHAR *src);
@@ -2509,8 +2509,8 @@ size_t (* CDECL p_wcstombs)(char *mbstr, const WCHAR *wcstr, size_t count);
 
 char * (* CDECL p_setlocale)(int category, const char *locale);
 int (* CDECL p__isatty)(int fd);
-int (* CDECL p__vsnprintf)(char *str, size_t len, const char *format, va_list valist);
-int (* CDECL p__vsnwprintf)(WCHAR *str, size_t len, const WCHAR *format, va_list valist);
+int (* CDECL p__vsnprintf)(char *str, size_t len, const char *format, __ms_va_list valist);
+int (* CDECL p__vsnwprintf)(WCHAR *str, size_t len, const WCHAR *format, __ms_va_list valist);
 int (* CDECL p__fileno)(MSVCRT_FILE *f);
 int (* CDECL p__write)(int fd, const void *buf, unsigned int count);
 double (* CDECL p_atof)(const char *str);
