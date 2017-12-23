@@ -2646,6 +2646,7 @@ int (* CDECL p_setvbuf)(MSVCRT_FILE *file, char *buf, int mode, size_t size);
 /* FIXME: Should use __time64_t, but somehow it isn't defined. */
 __int64 (* CDECL p__time64)(__int64 *buf);
 int (* CDECL p_swscanf_s)(const WCHAR *str, const WCHAR *format, ...);
+int (* CDECL p_sscanf)(const char *str, const char *format, ...);
 MSVCRT_FILE * (* CDECL p___acrt_iob_func)(unsigned idx);
 int (* CDECL p__access)(const char *filename, int mode);
 int (* CDECL p__access_s)(const char *filename, int mode);

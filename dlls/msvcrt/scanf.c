@@ -133,51 +133,15 @@ int CDECL MSVCRT_swscanf_s(const WCHAR *str, const WCHAR *fmt, ...)
 }
 #else
 
-struct scanf_data
-{
-    void *str;
-    void *fmt;
-    MSVCRT__locale_t locale;
-};
-
-static uint64_t CDECL scanf_wrapper(void *data, ...)
-{
-    struct scanf_data *d = data;
-    __ms_va_list args;
-    int ret;
-
-    __ms_va_start(args, data);
-    /* Deliberately call Linux here, there is no va_list version of sscanf in msvcrt.dll.
-     * It exists in msvcr120+, but Wine's implementation is a stub.
-     *
-     * Well, that's not going to work on x86_64 because __ms_va_list is incompatible with
-     * va_list. Option 1 is to implement the missing function in msvcrt120 and call it from
-     * here. Option 2 is to implement a SysV ABI version of call_va. Option 3 is to use
-     * Wine's scanf.h in this libary. Option 4 is to call the regular scanf directly with-
-     * out a wrapper function. */
-#ifdef __x86_64__
-    WINE_FIXME("Find a miracle __ms_va_list to va_list conversion.\n");
-#else
-    ret = vsscanf(d->str, d->fmt, args);
-#endif
-    __ms_va_end(args);
-
-    return ret;
-}
-
 void qemu_scanf(struct qemu_syscall *call)
 {
     struct qemu_scanf *c = (struct qemu_scanf *)(ULONG_PTR)call;
-    struct scanf_data d;
 
     WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", (unsigned long)c->argcount_float, (unsigned long)c->argcount,
             (char *)QEMU_G2H(c->fmt));
 
-    d.str = QEMU_G2H(c->str);
-    d.fmt = QEMU_G2H(c->fmt);
-    d.locale = QEMU_G2H(c->locale);
-
-    c->super.iret = call_va(scanf_wrapper, &d, c->argcount, c->argcount_float, c->args);
+    c->super.iret = call_va2((void *)p_sscanf, QEMU_G2H(c->str), QEMU_G2H(c->fmt),
+            c->argcount, c->argcount_float, c->args);
 }
 
 void qemu_swscanf_s(struct qemu_syscall *call)

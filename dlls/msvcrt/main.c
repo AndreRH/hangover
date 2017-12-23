@@ -2100,6 +2100,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_strtoul_l = (void *)GetProcAddress(msvcrt, "strtoul_l");
     p_strxfrm = (void *)GetProcAddress(msvcrt, "strxfrm");
     p_swscanf_s = (void *)GetProcAddress(msvcrt, "swscanf_s");
+    p_sscanf = (void *)GetProcAddress(msvcrt, "sscanf");
     p_system = (void *)GetProcAddress(msvcrt, "system");
     p_tan = (void *)GetProcAddress(msvcrt, "tan");
     p_tanf = (void *)GetProcAddress(msvcrt, "tanf");
