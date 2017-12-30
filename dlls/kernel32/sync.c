@@ -281,7 +281,7 @@ struct qemu_wait_callback
 
 #ifdef QEMU_DLL_GUEST
 
-static void CALLBACK host_wait_callback(struct qemu_wait_callback *data)
+static void __fastcall host_wait_callback(struct qemu_wait_callback *data)
 {
     WAITORTIMERCALLBACK cb = (WAITORTIMERCALLBACK)(ULONG_PTR)data->func;
     cb((void *)(ULONG_PTR)data->context, data->timeout);
