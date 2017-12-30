@@ -122,6 +122,116 @@ __ASM_GLOBAL_FUNC( MSVCRT__setjmpex,
                    "xorq %rax,%rax\n\t"
                    "retq" );
 
+#else
+
+#define __ASM_NAME(name) "_" name
+#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl _" #name suffix "\n\t.def _" #name suffix "; .scl 2; .type 32; .endef\n_" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc");
+#define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
+
+struct MSVCRT___JUMP_BUFFER {
+    unsigned long Ebp;
+    unsigned long Ebx;
+    unsigned long Edi;
+    unsigned long Esi;
+    unsigned long Esp;
+    unsigned long Eip;
+    unsigned long Registration;
+    unsigned long TryLevel;
+    /* Start of new struct members */
+    unsigned long Cookie;
+    unsigned long UnwindFunc;
+    unsigned long UnwindData[6];
+};
+
+#define MSVCRT_JMP_MAGIC 0x56433230 /* ID value for new jump structure */
+typedef void (__stdcall *MSVCRT_unwind_function)(const struct MSVCRT___JUMP_BUFFER *);
+
+/* define an entrypoint for setjmp/setjmp3 that stores the registers in the jmp buf */
+/* and then jumps to the C backend function */
+#define DEFINE_SETJMP_ENTRYPOINT(name) \
+    __ASM_GLOBAL_FUNC( name, \
+                       "movl 4(%esp),%ecx\n\t"   /* jmp_buf */      \
+                       "movl %ebp,0(%ecx)\n\t"   /* jmp_buf.Ebp */  \
+                       "movl %ebx,4(%ecx)\n\t"   /* jmp_buf.Ebx */  \
+                       "movl %edi,8(%ecx)\n\t"   /* jmp_buf.Edi */  \
+                       "movl %esi,12(%ecx)\n\t"  /* jmp_buf.Esi */  \
+                       "movl %esp,16(%ecx)\n\t"  /* jmp_buf.Esp */  \
+                       "movl 0(%esp),%eax\n\t"                      \
+                       "movl %eax,20(%ecx)\n\t"  /* jmp_buf.Eip */  \
+                       "jmp " __ASM_NAME("__regs_") # name )
+
+/* restore the registers from the jmp buf upon longjmp */
+extern void DECLSPEC_NORETURN longjmp_set_regs( struct MSVCRT___JUMP_BUFFER *jmp, int retval );
+__ASM_GLOBAL_FUNC( longjmp_set_regs,
+                  "movl 4(%esp),%ecx\n\t"   /* jmp_buf */
+                  "movl 8(%esp),%eax\n\t"   /* retval */
+                  "movl 0(%ecx),%ebp\n\t"   /* jmp_buf.Ebp */
+                  "movl 4(%ecx),%ebx\n\t"   /* jmp_buf.Ebx */
+                  "movl 8(%ecx),%edi\n\t"   /* jmp_buf.Edi */
+                  "movl 12(%ecx),%esi\n\t"  /* jmp_buf.Esi */
+                  "movl 16(%ecx),%esp\n\t"  /* jmp_buf.Esp */
+                  "addl $4,%esp\n\t"        /* get rid of return address */
+                  "jmp *20(%ecx)\n\t"       /* jmp_buf.Eip */ )
+
+/*
+ * The signatures of the setjmp/longjmp functions do not match that
+ * declared in the setjmp header so they don't follow the regular naming
+ * convention to avoid conflicts.
+ */
+
+/*******************************************************************
+ *        _setjmp (MSVCRT.@)
+ */
+DEFINE_SETJMP_ENTRYPOINT(MSVCRT__setjmp)
+int CDECL __regs_MSVCRT__setjmp(struct MSVCRT___JUMP_BUFFER *jmp)
+{
+#if 0
+    jmp->Registration = (unsigned long)NtCurrentTeb()->Tib.ExceptionList;
+    if (jmp->Registration == ~0UL)
+    jmp->TryLevel = TRYLEVEL_END;
+    else
+    jmp->TryLevel = ((MSVCRT_EXCEPTION_FRAME*)jmp->Registration)->trylevel;
+
+    TRACE("buf=%p ebx=%08lx esi=%08lx edi=%08lx ebp=%08lx esp=%08lx eip=%08lx frame=%08lx\n",
+          jmp, jmp->Ebx, jmp->Esi, jmp->Edi, jmp->Ebp, jmp->Esp, jmp->Eip, jmp->Registration );
+#endif
+    return 0;
+}
+
+/*******************************************************************
+ *        _setjmp3 (MSVCRT.@)
+ */
+DEFINE_SETJMP_ENTRYPOINT( MSVCRT__setjmp3 )
+int WINAPIV __regs_MSVCRT__setjmp3(struct MSVCRT___JUMP_BUFFER *jmp, int nb_args, ...)
+{
+#if 0
+    jmp->Cookie = MSVCRT_JMP_MAGIC;
+    jmp->UnwindFunc = 0;
+    jmp->Registration = (unsigned long)NtCurrentTeb()->Tib.ExceptionList;
+    if (jmp->Registration == ~0UL)
+    {
+        jmp->TryLevel = TRYLEVEL_END;
+    }
+    else
+    {
+        int i;
+        va_list args;
+
+        va_start( args, nb_args );
+        if (nb_args > 0) jmp->UnwindFunc = va_arg( args, unsigned long );
+        if (nb_args > 1) jmp->TryLevel = va_arg( args, unsigned long );
+        else jmp->TryLevel = ((MSVCRT_EXCEPTION_FRAME*)jmp->Registration)->trylevel;
+        for (i = 0; i < 6 && i < nb_args - 2; i++)
+        jmp->UnwindData[i] = va_arg( args, unsigned long );
+        va_end( args );
+    }
+
+    TRACE("buf=%p ebx=%08lx esi=%08lx edi=%08lx ebp=%08lx esp=%08lx eip=%08lx frame=%08lx\n",
+          jmp, jmp->Ebx, jmp->Esi, jmp->Edi, jmp->Ebp, jmp->Esp, jmp->Eip, jmp->Registration );
+#endif
+    return 0;
+}
+
 #endif
 
 #else

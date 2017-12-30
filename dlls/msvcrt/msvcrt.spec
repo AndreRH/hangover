@@ -903,7 +903,7 @@
 @ cdecl _set_sbh_threshold(long)
 @ cdecl _seterrormode(long) MSVCRT__seterrormode
 @ cdecl -arch=x86_64,arm,arm64 -norelay _setjmp(ptr) MSVCRT__setjmp
-# @ cdecl -arch=i386 -norelay _setjmp3(ptr long) MSVCRT__setjmp3
+@ cdecl -arch=i386 -norelay _setjmp3(ptr long) MSVCRT__setjmp3
 @ cdecl -arch=x86_64,arm -norelay _setjmpex(ptr ptr) MSVCRT__setjmpex
 @ cdecl _setmaxstdio(long) MSVCRT__setmaxstdio
 @ cdecl _setmbcp(long)
