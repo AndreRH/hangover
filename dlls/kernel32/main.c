@@ -1154,19 +1154,6 @@ static const syscall_handler dll_functions[] =
  * Cache it using ELF TLS for now. Yeah, it's ugly. */
 __thread TEB *teb;
 
-static void WINAPI hook_SetLastError(DWORD error)
-{
-    TEB *qemu_teb = qemu_ops->qemu_getTEB();
-
-    if (!teb)
-        teb = NtCurrentTeb();
-    teb->LastErrorValue = error;
-
-    /* We may be on a thread that has not run guest code yet. */
-    if (qemu_teb)
-        qemu_teb->LastErrorValue = error;
-}
-
 /* RtlSetCurrentDirectory_U is non-trivial and I'd have to use an
  * actual hook that keeps the function callable. SetCurrentDirectoryA/W
  * is its only caller in Wine, so hook it to fix up the guest TEB,
@@ -1180,7 +1167,7 @@ static BOOL WINAPI hook_SetCurrentDirectoryW(const WCHAR *dir)
     status = RtlSetCurrentDirectory_U( &dirW );
     if (status != STATUS_SUCCESS)
     {
-        hook_SetLastError( RtlNtStatusToDosError(status) );
+        SetLastError( RtlNtStatusToDosError(status) );
     }
     else
     {
@@ -1231,7 +1218,7 @@ static BOOL WINAPI hook_SetCurrentDirectoryA(const CHAR *dir)
     status = RtlSetCurrentDirectory_U( &strW );
     if (status != STATUS_SUCCESS)
     {
-        hook_SetLastError( RtlNtStatusToDosError(status) );
+        SetLastError( RtlNtStatusToDosError(status) );
     }
     else
     {
@@ -1312,7 +1299,6 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
 
     /* The function pointers provided by the linker point into the IAT, not the actual function. */
     kernel32 = GetModuleHandleA("kernel32");
-    hook(GetProcAddress(kernel32, "SetLastError"), hook_SetLastError);
     hook(GetProcAddress(kernel32, "SetCurrentDirectoryA"), hook_SetCurrentDirectoryA);
     hook(GetProcAddress(kernel32, "SetCurrentDirectoryW"), hook_SetCurrentDirectoryW);
 
