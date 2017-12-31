@@ -271,13 +271,15 @@ static HRESULT WINAPI d3d9_swapchain_GetBackBuffer(IDirect3DSwapChain9Ex *iface,
     call.iface = (ULONG_PTR)swapchain;
     call.backbuffer_idx = (ULONG_PTR)backbuffer_idx;
     call.backbuffer_type = (ULONG_PTR)backbuffer_type;
-    call.backbuffer = (ULONG_PTR)&surface_impl;
 
     qemu_syscall(&call.super);
 
     /* Do not set *backbuffer in case of failure, see tests/device.c, test_swapchain(). */
     if (SUCCEEDED(call.super.iret))
+    {
+        surface_impl = (struct qemu_d3d9_subresource_impl *)(ULONG_PTR)call.backbuffer;
         *backbuffer = &surface_impl->IDirect3DSurface9_iface;
+    }
 
     return call.super.iret;
 }
@@ -301,7 +303,7 @@ void qemu_d3d9_swapchain_GetBackBuffer(struct qemu_syscall *call)
 
     IDirect3DSurface9_GetPrivateData(host, &qemu_d3d9_surface_guid, &surface_impl, &size);
     WINE_TRACE("Got surface %p from private data from host surface %p.\n", surface_impl, host);
-    *(uint64_t *)QEMU_G2H(c->backbuffer) = QEMU_H2G(surface_impl);
+    c->backbuffer = QEMU_H2G(surface_impl);
 }
 
 #endif
