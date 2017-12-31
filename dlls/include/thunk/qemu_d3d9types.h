@@ -89,4 +89,30 @@ static inline void D3DLOCKED_RECT_h2g(struct qemu_D3DLOCKED_RECT *guest, const D
     guest->pBits = (ULONG_PTR)host->pBits;
 }
 
+/* There are no pointers in here, but alignment differs. */
+#include <pshpack4.h>
+struct qemu_D3DADAPTER_IDENTIFIER9
+{
+    char            Driver[MAX_DEVICE_IDENTIFIER_STRING];
+    char            Description[MAX_DEVICE_IDENTIFIER_STRING];
+    char            DeviceName[32];
+    LARGE_INTEGER   DriverVersion;
+
+    DWORD           VendorId;
+    DWORD           DeviceId;
+    DWORD           SubSysId;
+    DWORD           Revision;
+
+    GUID            DeviceIdentifier;
+
+    DWORD           WHQLLevel;
+};
+#include <poppack.h>
+
+static inline void D3DADAPTER_IDENTIFIER9_h2g(struct qemu_D3DADAPTER_IDENTIFIER9 *guest, const D3DADAPTER_IDENTIFIER9 *host)
+{
+    /* The structures is the same on 32 and 64 bit, except for the extra 4 byte padding added behind WHQLLevel on 64. */
+    memcpy(guest, host, sizeof(*guest));
+}
+
 #endif

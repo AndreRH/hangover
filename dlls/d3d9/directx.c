@@ -40,7 +40,6 @@ struct qemu_d3d9_QueryInterface
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t riid;
-    uint64_t out;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -57,7 +56,6 @@ static HRESULT WINAPI d3d9_QueryInterface(IDirect3D9Ex *iface, REFIID riid, void
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_QUERYINTERFACE);
     call.iface = (ULONG_PTR)d3d9;
     call.riid = (ULONG_PTR)riid;
-    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -76,12 +74,13 @@ void qemu_d3d9_QueryInterface(struct qemu_syscall *call)
     struct qemu_d3d9_QueryInterface *c = (struct qemu_d3d9_QueryInterface *)call;
     struct qemu_d3d9_impl *d3d9;
     GUID *iid;
+    void *out;
 
     WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
     iid = QEMU_G2H(c->riid);
 
-    c->super.iret = IDirect3D9_QueryInterface(d3d9->host, iid, QEMU_G2H(c->out));
+    c->super.iret = IDirect3D9_QueryInterface(d3d9->host, iid, &out);
 
     if (SUCCEEDED(c->super.iret) && !IsEqualGUID(iid, &IID_IDirect3D9)
             && !IsEqualGUID(iid, &IID_IDirect3D9Ex) && !IsEqualGUID(iid, &IID_IUnknown))
@@ -279,13 +278,24 @@ void qemu_d3d9_GetAdapterIdentifier(struct qemu_syscall *call)
 {
     struct qemu_d3d9_GetAdapterIdentifier *c = (struct qemu_d3d9_GetAdapterIdentifier *)call;
     struct qemu_d3d9_impl *d3d9;
+    D3DADAPTER_IDENTIFIER9 stack, *identifier = &stack;
 
     WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
 
-    /* D3DADAPTER_IDENTIFIER9 has the same layout on 32 and 64 bit. */
+#if GUEST_BIT == HOST_BIT
+    identifier = QEMU_G2H(c->identifier);
+#else
+    if (!c->identifier)
+        identifier = NULL;
+#endif
 
-    c->super.iret = IDirect3D9_GetAdapterIdentifier(d3d9->host, c->adapter, c->flags, QEMU_G2H(c->identifier));
+    c->super.iret = IDirect3D9_GetAdapterIdentifier(d3d9->host, c->adapter, c->flags, identifier);
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret) && c->identifier)
+        D3DADAPTER_IDENTIFIER9_h2g(QEMU_G2H(c->identifier), identifier);
+#endif
 }
 
 #endif
