@@ -1261,6 +1261,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__configure_wide_argv = (void *)GetProcAddress(msvcrt, "_configure_wide_argv");
     p__control87 = (void *)GetProcAddress(msvcrt, "_control87");
     p__controlfp = (void *)GetProcAddress(msvcrt, "_controlfp");
+    p__controlfp_s = (void *)GetProcAddress(msvcrt, "_controlfp_s");
     p__copysign = (void *)GetProcAddress(msvcrt, "_copysign");
     p__copysignf = (void *)GetProcAddress(msvcrt, "_copysignf");
     p__cputs = (void *)GetProcAddress(msvcrt, "_cputs");
