@@ -190,9 +190,9 @@ static HRESULT WINAPI d3d9_vertexshader_GetDevice(IDirect3DVertexShader9 *iface,
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VERTEXSHADER_GETDEVICE);
     call.iface = (ULONG_PTR)shader;
-    call.device = (ULONG_PTR)&impl;
 
     qemu_syscall(&call.super);
+    impl = (struct qemu_d3d9_device_impl *)(ULONG_PTR)call.device;
     *device = (IDirect3DDevice9 *)&impl->IDirect3DDevice9Ex_iface;
 
     return call.super.iret;
@@ -210,7 +210,7 @@ void qemu_d3d9_vertexshader_GetDevice(struct qemu_syscall *call)
 
     c->super.iret = D3D_OK;
     d3d9_device_wrapper_addref(shader->device);
-    *(uint64_t *)QEMU_G2H(c->device) = QEMU_H2G(shader->device);
+    c->device = QEMU_H2G(shader->device);
 }
 
 #endif
@@ -393,9 +393,9 @@ static HRESULT WINAPI d3d9_pixelshader_GetDevice(IDirect3DPixelShader9 *iface, I
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_PIXELSHADER_GETDEVICE);
     call.iface = (ULONG_PTR)shader;
-    call.device = (ULONG_PTR)&impl;
 
     qemu_syscall(&call.super);
+    impl = (struct qemu_d3d9_device_impl *)(ULONG_PTR)call.device;
     *device = (IDirect3DDevice9 *)&impl->IDirect3DDevice9Ex_iface;
 
     return call.super.iret;
@@ -414,7 +414,7 @@ void qemu_d3d9_pixelshader_GetDevice(struct qemu_syscall *call)
 
     c->super.iret = D3D_OK;
     d3d9_device_wrapper_addref(shader->device);
-    *(uint64_t *)QEMU_G2H(c->device) = QEMU_H2G(shader->device);
+    c->device = QEMU_H2G(shader->device);
 }
 
 #endif
