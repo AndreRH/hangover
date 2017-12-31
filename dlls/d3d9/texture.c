@@ -24,6 +24,8 @@
 #include <stdio.h>
 #include <d3d9.h>
 
+#include "thunk/qemu_d3d9.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_d3d9.h"
@@ -38,7 +40,6 @@ struct qemu_d3d9_texture_2d_QueryInterface
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t riid;
-    uint64_t out;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -55,13 +56,14 @@ static HRESULT WINAPI d3d9_texture_2d_QueryInterface(IDirect3DTexture9 *iface, R
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_QUERYINTERFACE);
     call.iface = (ULONG_PTR)texture;
     call.riid = (ULONG_PTR)riid;
-    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
     /* This call returns only the texture interfaces. */
     if (SUCCEEDED(call.super.iret))
         *out = &texture->IDirect3DBaseTexture9_iface;
+    else
+        *out = NULL;
 
     return call.super.iret;
 }
@@ -81,7 +83,6 @@ void qemu_d3d9_texture_2d_QueryInterface(struct qemu_syscall *call)
 
     c->super.iret = IDirect3DTexture9_QueryInterface(texture->host, iid, &out);
 
-    *(uint64_t *)QEMU_G2H(c->out) = QEMU_H2G(out);
     if (SUCCEEDED(c->super.iret) && out != texture->host)
         WINE_FIXME("Unexpected interface %p, GUID %s.\n", out, wine_dbgstr_guid(iid));
 }
@@ -662,14 +663,18 @@ static HRESULT WINAPI d3d9_texture_2d_GetSurfaceLevel(IDirect3DTexture9 *iface, 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_GETSURFACELEVEL);
     call.iface = (ULONG_PTR)texture;
     call.level = level;
-    call.surface = (ULONG_PTR)&surface_impl;
 
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
+    {
+        surface_impl = (struct qemu_d3d9_subresource_impl *)(ULONG_PTR)call.surface;
         *surface = &surface_impl->IDirect3DSurface9_iface;
+    }
     else
+    {
         *surface = NULL;
+    }
 
     return call.super.iret;
 }
@@ -693,7 +698,7 @@ void qemu_d3d9_texture_2d_GetSurfaceLevel(struct qemu_syscall *call)
 
     IDirect3DSurface9_GetPrivateData(host, &qemu_d3d9_surface_guid, &surface_impl, &size);
     WINE_TRACE("Got surface %p from private data from host surface %p.\n", surface_impl, host);
-    *(uint64_t *)QEMU_G2H(c->surface) = QEMU_H2G(surface_impl);
+    c->surface = QEMU_H2G(surface_impl);
 }
 
 #endif
@@ -732,11 +737,24 @@ void qemu_d3d9_texture_2d_LockRect(struct qemu_syscall *call)
 {
     struct qemu_d3d9_texture_2d_LockRect *c = (struct qemu_d3d9_texture_2d_LockRect *)call;
     struct qemu_d3d9_texture_impl *texture;
+    D3DLOCKED_RECT stack, *lr = &stack;
 
     WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DTexture9_LockRect((IDirect3DTexture9 *)texture->host, c->level, QEMU_G2H(c->locked_rect), QEMU_G2H(c->rect), c->flags);
+#if GUEST_BIT == HOST_BIT
+    lr = QEMU_G2H(c->locked_rect);
+#else
+    if (!c->locked_rect)
+        lr = NULL;
+#endif
+
+    c->super.iret = IDirect3DTexture9_LockRect((IDirect3DTexture9 *)texture->host, c->level, lr, QEMU_G2H(c->rect), c->flags);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->locked_rect)
+        D3DLOCKED_RECT_h2g(QEMU_G2H(c->locked_rect), lr);
+#endif
 }
 
 #endif
@@ -820,7 +838,6 @@ struct qemu_d3d9_texture_cube_QueryInterface
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t riid;
-    uint64_t out;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -837,13 +854,14 @@ static HRESULT WINAPI d3d9_texture_cube_QueryInterface(IDirect3DCubeTexture9 *if
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_QUERYINTERFACE);
     call.iface = (ULONG_PTR)texture;
     call.riid = (ULONG_PTR)riid;
-    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
     /* This call returns only the texture interfaces. */
     if (SUCCEEDED(call.super.iret))
         *out = &texture->IDirect3DBaseTexture9_iface;
+    else
+        *out = NULL;
 
     return call.super.iret;
 }
@@ -863,7 +881,6 @@ void qemu_d3d9_texture_cube_QueryInterface(struct qemu_syscall *call)
 
     c->super.iret = IDirect3DCubeTexture9_QueryInterface(texture->host, iid, &out);
 
-    *(uint64_t *)QEMU_G2H(c->out) = QEMU_H2G(out);
     if (SUCCEEDED(c->super.iret) && out != texture->host)
         WINE_FIXME("Unexpected interface %p, GUID %s.\n", out, wine_dbgstr_guid(iid));
 }
@@ -1442,14 +1459,18 @@ static HRESULT WINAPI d3d9_texture_cube_GetCubeMapSurface(IDirect3DCubeTexture9 
     call.iface = (ULONG_PTR)texture;
     call.face = face;
     call.level = level;
-    call.surface = (ULONG_PTR)&surface_impl;
 
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
+    {
+        surface_impl = (struct qemu_d3d9_subresource_impl *)(ULONG_PTR)call.surface;
         *surface = &surface_impl->IDirect3DSurface9_iface;
+    }
     else
+    {
         *surface = NULL;
+    }
 
     return call.super.iret;
 }
@@ -1474,7 +1495,7 @@ void qemu_d3d9_texture_cube_GetCubeMapSurface(struct qemu_syscall *call)
 
     IDirect3DSurface9_GetPrivateData(host, &qemu_d3d9_surface_guid, &surface_impl, &size);
     WINE_TRACE("Got surface %p from private data from host surface %p.\n", surface_impl, host);
-    *(uint64_t *)QEMU_G2H(c->surface) = QEMU_H2G(surface_impl);
+    c->surface = QEMU_H2G(surface_impl);
 }
 
 #endif
@@ -1515,11 +1536,23 @@ void qemu_d3d9_texture_cube_LockRect(struct qemu_syscall *call)
 {
     struct qemu_d3d9_texture_cube_LockRect *c = (struct qemu_d3d9_texture_cube_LockRect *)call;
     struct qemu_d3d9_texture_impl *texture;
+    D3DLOCKED_RECT stack, *lr = &stack;
 
     WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    lr = QEMU_G2H(c->locked_rect);
+#else
+    if (!c->locked_rect)
+        lr = NULL;
+#endif
 
-    c->super.iret = IDirect3DCubeTexture9_LockRect((IDirect3DCubeTexture9 *)texture->host, c->face, c->level, QEMU_G2H(c->locked_rect), QEMU_G2H(c->rect), c->flags);
+    c->super.iret = IDirect3DCubeTexture9_LockRect((IDirect3DCubeTexture9 *)texture->host, c->face, c->level, lr, QEMU_G2H(c->rect), c->flags);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->locked_rect)
+        D3DLOCKED_RECT_h2g(QEMU_G2H(c->locked_rect), lr);
+#endif
 }
 
 #endif
@@ -2224,14 +2257,18 @@ static HRESULT WINAPI d3d9_texture_3d_GetVolumeLevel(IDirect3DVolumeTexture9 *if
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_GETVOLUMELEVEL);
     call.iface = (ULONG_PTR)texture;
     call.level = level;
-    call.volume = (ULONG_PTR)&volume_impl;
 
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
+    {
+        volume_impl = (struct qemu_d3d9_subresource_impl *)(ULONG_PTR)call.volume;
         *volume = &volume_impl->IDirect3DVolume9_iface;
+    }
     else
+    {
         *volume = NULL;
+    }
 
     return call.super.iret;
 }
@@ -2255,7 +2292,7 @@ void qemu_d3d9_texture_3d_GetVolumeLevel(struct qemu_syscall *call)
 
     IDirect3DVolume9_GetPrivateData(host, &qemu_d3d9_volume_guid, &volume_impl, &size);
     WINE_TRACE("Got volume %p from private data from host volume %p.\n", volume_impl, host);
-    *(uint64_t *)QEMU_G2H(c->volume) = QEMU_H2G(volume_impl);
+    c->volume = QEMU_H2G(volume_impl);
 }
 
 #endif
@@ -2294,11 +2331,23 @@ void qemu_d3d9_texture_3d_LockBox(struct qemu_syscall *call)
 {
     struct qemu_d3d9_texture_3d_LockBox *c = (struct qemu_d3d9_texture_3d_LockBox *)call;
     struct qemu_d3d9_texture_impl *texture;
+    D3DLOCKED_BOX stack, *lb = &stack;
 
     WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    lb = QEMU_G2H(c->locked_box);
+#else
+    if (!c->locked_box)
+        lb = NULL;
+#endif
 
-    c->super.iret = IDirect3DVolumeTexture9_LockBox((IDirect3DVolumeTexture9 *)texture->host, c->level, QEMU_G2H(c->locked_box), QEMU_G2H(c->box), c->flags);
+    c->super.iret = IDirect3DVolumeTexture9_LockBox((IDirect3DVolumeTexture9 *)texture->host, c->level, lb, QEMU_G2H(c->box), c->flags);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->locked_box)
+        D3DLOCKED_BOX_h2g(QEMU_G2H(c->locked_box), lb);
+#endif
 }
 
 #endif

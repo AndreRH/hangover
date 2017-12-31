@@ -89,6 +89,20 @@ static inline void D3DLOCKED_RECT_h2g(struct qemu_D3DLOCKED_RECT *guest, const D
     guest->pBits = (ULONG_PTR)host->pBits;
 }
 
+struct qemu_D3DLOCKED_BOX
+{
+    INT                 RowPitch;
+    INT                 SlicePitch;
+    qemu_ptr            pBits;
+};
+
+static inline void D3DLOCKED_BOX_h2g(struct qemu_D3DLOCKED_BOX *guest, const D3DLOCKED_BOX *host)
+{
+    guest->RowPitch = host->RowPitch;
+    guest->SlicePitch = host->SlicePitch;
+    guest->pBits = (ULONG_PTR)host->pBits;
+}
+
 /* There are no pointers in here, but alignment differs. */
 #include <pshpack4.h>
 struct qemu_D3DADAPTER_IDENTIFIER9
