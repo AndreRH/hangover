@@ -24,6 +24,8 @@
 #include <stdio.h>
 #include <d3d9.h>
 
+#include "thunk/qemu_d3d9.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_d3d9.h"
@@ -280,6 +282,8 @@ void qemu_d3d9_GetAdapterIdentifier(struct qemu_syscall *call)
 
     WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
+
+    /* D3DADAPTER_IDENTIFIER9 has the same layout on 32 and 64 bit. */
 
     c->super.iret = IDirect3D9_GetAdapterIdentifier(d3d9->host, c->adapter, c->flags, QEMU_G2H(c->identifier));
 }
@@ -761,9 +765,20 @@ void qemu_d3d9_CreateDevice(struct qemu_syscall *call)
     struct qemu_d3d9_CreateDevice *c = (struct qemu_d3d9_CreateDevice *)call;
     struct qemu_d3d9_impl *d3d9;
     struct qemu_d3d9_device_impl *device_impl;
+    D3DPRESENT_PARAMETERS stack, *parameters = &stack;
 
     WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
+
+    /* FIXME: This can be an array in case of an adapter group device. */
+#if GUEST_BIT == HOST_BIT
+    parameters = QEMU_G2H(c->parameters);
+#else
+    if (c->parameters)
+        D3DPRESENT_PARAMETERS_g2h(parameters, QEMU_G2H(c->parameters));
+    else
+        parameters = NULL;
+#endif
 
     device_impl = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*device_impl));
     if (!device_impl)
@@ -773,7 +788,7 @@ void qemu_d3d9_CreateDevice(struct qemu_syscall *call)
     }
 
     c->super.iret = IDirect3D9_CreateDevice(d3d9->host, c->adapter, c->device_type,
-            QEMU_G2H(c->focus_window), c->flags, QEMU_G2H(c->parameters),
+            QEMU_G2H(c->focus_window), c->flags, parameters,
             (IDirect3DDevice9 **)&device_impl->host);
     if (FAILED(c->super.iret))
         goto error;
@@ -786,6 +801,11 @@ void qemu_d3d9_CreateDevice(struct qemu_syscall *call)
         c->super.iret = E_OUTOFMEMORY;
         goto error;
     }
+
+#if GUEST_BIT != HOST_BIT
+    if (c->parameters)
+        D3DPRESENT_PARAMETERS_h2g(QEMU_G2H(c->parameters), parameters);
+#endif
 
     *(uint64_t *)QEMU_G2H(c->device) = QEMU_H2G(device_impl);
 
@@ -973,9 +993,20 @@ void qemu_d3d9_CreateDeviceEx(struct qemu_syscall *call)
     struct qemu_d3d9_CreateDeviceEx *c = (struct qemu_d3d9_CreateDeviceEx *)call;
     struct qemu_d3d9_impl *d3d9;
     struct qemu_d3d9_device_impl *device_impl;
+    D3DPRESENT_PARAMETERS stack, *parameters = &stack;
 
     WINE_TRACE("\n");
     d3d9 = QEMU_G2H(c->iface);
+
+    /* FIXME: This can be an array in case of an adapter group device. */
+#if GUEST_BIT == HOST_BIT
+    parameters = QEMU_G2H(c->parameters);
+#else
+    if (c->parameters)
+        D3DPRESENT_PARAMETERS_g2h(parameters, QEMU_G2H(c->parameters));
+    else
+        parameters = NULL;
+#endif
 
     device_impl = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*device_impl));
     if (!device_impl)
@@ -985,7 +1016,7 @@ void qemu_d3d9_CreateDeviceEx(struct qemu_syscall *call)
     }
 
     c->super.iret = IDirect3D9Ex_CreateDeviceEx(d3d9->host, c->adapter, c->device_type, QEMU_G2H(c->focus_window),
-            c->flags, QEMU_G2H(c->parameters), QEMU_G2H(c->mode), &device_impl->host);
+            c->flags, parameters, QEMU_G2H(c->mode), &device_impl->host);
     if (FAILED(c->super.iret))
         goto error;
 
@@ -997,6 +1028,11 @@ void qemu_d3d9_CreateDeviceEx(struct qemu_syscall *call)
         c->super.iret = E_OUTOFMEMORY;
         goto error;
     }
+
+#if GUEST_BIT != HOST_BIT
+    if (c->parameters)
+        D3DPRESENT_PARAMETERS_h2g(QEMU_G2H(c->parameters), parameters);
+#endif
 
     *(uint64_t *)QEMU_G2H(c->device) = QEMU_H2G(device_impl);
 

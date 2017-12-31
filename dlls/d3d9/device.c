@@ -24,6 +24,8 @@
 #include <stdio.h>
 #include <d3d9.h>
 
+#include "thunk/qemu_d3d9.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_d3d9.h"
@@ -619,12 +621,20 @@ void qemu_d3d9_device_CreateAdditionalSwapChain(struct qemu_syscall *call)
     struct qemu_d3d9_device_impl *device;
     struct qemu_d3d9_swapchain_impl *swapchain;
     IDirect3DSwapChain9 *host;
-    D3DPRESENT_PARAMETERS pp;
+    D3DPRESENT_PARAMETERS pp, stack, *parameters = &stack;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    parameters = QEMU_G2H(c->present_parameters);
+#else
+    if (c->present_parameters)
+        D3DPRESENT_PARAMETERS_g2h(parameters, QEMU_G2H(c->present_parameters));
+    else
+        parameters = NULL;
+#endif
 
-    c->super.iret = IDirect3DDevice9Ex_CreateAdditionalSwapChain(device->host, QEMU_G2H(c->present_parameters),
+    c->super.iret = IDirect3DDevice9Ex_CreateAdditionalSwapChain(device->host, parameters,
             &host);
     if (FAILED(c->super.iret))
         return;
@@ -643,6 +653,11 @@ void qemu_d3d9_device_CreateAdditionalSwapChain(struct qemu_syscall *call)
 
     swapchain->back_buffer_count = pp.BackBufferCount;
     d3d9_swapchain_init(swapchain, (IDirect3DSwapChain9Ex *)host, device);
+
+    #if GUEST_BIT != HOST_BIT
+    if (c->present_parameters)
+        D3DPRESENT_PARAMETERS_h2g(QEMU_G2H(c->present_parameters), parameters);
+#endif
 
     *(uint64_t *)QEMU_G2H(c->swapchain) = QEMU_H2G(swapchain);
 }
@@ -778,17 +793,33 @@ void qemu_d3d9_device_Reset(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_Reset *c = (struct qemu_d3d9_device_Reset *)call;
     struct qemu_d3d9_device_impl *device;
+    D3DPRESENT_PARAMETERS stack, *parameters = &stack;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_Reset(device->host, QEMU_G2H(c->present_parameters));
+    /* FIXME: This can be an array in case of an adapter group device. */
+#if GUEST_BIT == HOST_BIT
+    parameters = QEMU_G2H(c->present_parameters);
+#else
+    if (c->present_parameters)
+        D3DPRESENT_PARAMETERS_g2h(parameters, QEMU_G2H(c->present_parameters));
+    else
+        parameters = NULL;
+#endif
+
+    c->super.iret = IDirect3DDevice9Ex_Reset(device->host, parameters);
 
     if (SUCCEEDED(c->super.iret) && !d3d9_device_wrap_implicit_resources(device))
     {
         c->super.iret = E_OUTOFMEMORY;
         return;
     }
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret) && c->present_parameters)
+        D3DPRESENT_PARAMETERS_h2g(QEMU_G2H(c->present_parameters), parameters);
+#endif
 }
 
 #endif
@@ -6340,17 +6371,33 @@ void qemu_d3d9_device_ResetEx(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_ResetEx *c = (struct qemu_d3d9_device_ResetEx *)call;
     struct qemu_d3d9_device_impl *device;
+    D3DPRESENT_PARAMETERS stack, *parameters = &stack;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_ResetEx(device->host, QEMU_G2H(c->present_parameters), QEMU_G2H(c->mode));
+    /* FIXME: This can be an array in case of an adapter group device. */
+#if GUEST_BIT == HOST_BIT
+    parameters = QEMU_G2H(c->present_parameters);
+#else
+    if (c->present_parameters)
+        D3DPRESENT_PARAMETERS_g2h(parameters, QEMU_G2H(c->present_parameters));
+    else
+        parameters = NULL;
+#endif
+
+    c->super.iret = IDirect3DDevice9Ex_ResetEx(device->host, parameters, QEMU_G2H(c->mode));
 
     if (SUCCEEDED(c->super.iret) && !d3d9_device_wrap_implicit_resources(device))
     {
         c->super.iret = E_OUTOFMEMORY;
         return;
     }
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret) && c->present_parameters)
+        D3DPRESENT_PARAMETERS_h2g(QEMU_G2H(c->present_parameters), parameters);
+#endif
 }
 
 #endif

@@ -23,6 +23,8 @@
 #include <stdio.h>
 #include <d3d9.h>
 
+#include "thunk/qemu_d3d9.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_d3d9.h"
@@ -443,11 +445,26 @@ void qemu_d3d9_swapchain_GetPresentParameters(struct qemu_syscall *call)
 {
     struct qemu_d3d9_swapchain_GetPresentParameters *c = (struct qemu_d3d9_swapchain_GetPresentParameters *)call;
     struct qemu_d3d9_swapchain_impl *swapchain;
+    D3DPRESENT_PARAMETERS stack, *parameters = &stack;
 
     WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DSwapChain9_GetPresentParameters(swapchain->host, QEMU_G2H(c->parameters));
+#if GUEST_BIT == HOST_BIT
+    parameters = QEMU_G2H(c->parameters);
+#else
+    if (c->parameters)
+        D3DPRESENT_PARAMETERS_g2h(parameters, QEMU_G2H(c->parameters));
+    else
+        parameters = NULL;
+#endif
+
+    c->super.iret = IDirect3DSwapChain9_GetPresentParameters(swapchain->host, parameters);
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret) && c->parameters)
+        D3DPRESENT_PARAMETERS_h2g(QEMU_G2H(c->parameters), parameters);
+#endif
 }
 
 #endif
