@@ -77,4 +77,16 @@ static inline void D3DDEVICE_CREATION_PARAMETERS_h2g(struct qemu_D3DDEVICE_CREAT
     guest->BehaviorFlags = host->BehaviorFlags;
 }
 
+struct qemu_D3DLOCKED_RECT
+{
+    INT                 Pitch;
+    qemu_ptr            pBits;
+};
+
+static inline void D3DLOCKED_RECT_h2g(struct qemu_D3DLOCKED_RECT *guest, const D3DLOCKED_RECT *host)
+{
+    guest->Pitch = host->Pitch;
+    guest->pBits = (ULONG_PTR)host->pBits;
+}
+
 #endif

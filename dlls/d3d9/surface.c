@@ -23,6 +23,8 @@
 #include <stdio.h>
 #include <d3d9.h>
 
+#include "thunk/qemu_d3d9.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_d3d9.h"
@@ -567,11 +569,23 @@ void qemu_d3d9_surface_LockRect(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_LockRect *c = (struct qemu_d3d9_surface_LockRect *)call;
     struct qemu_d3d9_subresource_impl *surface;
+    D3DLOCKED_RECT stack, *lr = &stack;
 
     WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    lr = QEMU_G2H(c->locked_rect);
+#else
+    if (!c->locked_rect)
+        lr = NULL;
+#endif
 
-    c->super.iret = IDirect3DSurface9_LockRect(surface->host, QEMU_G2H(c->locked_rect), QEMU_G2H(c->rect), c->flags);
+    c->super.iret = IDirect3DSurface9_LockRect(surface->host, lr, QEMU_G2H(c->rect), c->flags);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->locked_rect)
+        D3DLOCKED_RECT_h2g(QEMU_G2H(c->locked_rect), lr);
+#endif
 }
 
 #endif
