@@ -23,6 +23,8 @@
 #include <stdio.h>
 #include <d3d9.h>
 
+#include "thunk/qemu_d3d9.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_d3d9.h"
@@ -38,7 +40,6 @@ struct qemu_d3d9_volume_QueryInterface
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t riid;
-    uint64_t out;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -55,13 +56,14 @@ static HRESULT WINAPI d3d9_volume_QueryInterface(IDirect3DVolume9 *iface, REFIID
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VOLUME_QUERYINTERFACE);
     call.iface = (ULONG_PTR)volume;
     call.riid = (ULONG_PTR)riid;
-    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
     /* This call only returns IDirect3DVolume9 and no other interface. */
     if (SUCCEEDED(call.super.iret))
         *out = iface;
+    else
+        *out = NULL;
 
     return call.super.iret;
 }
@@ -73,12 +75,13 @@ void qemu_d3d9_volume_QueryInterface(struct qemu_syscall *call)
     struct qemu_d3d9_volume_QueryInterface *c = (struct qemu_d3d9_volume_QueryInterface *)call;
     struct qemu_d3d9_subresource_impl *volume;
     GUID *iid;
+    void *out;
 
     WINE_TRACE("\n");
     volume = QEMU_G2H(c->iface);
     iid = QEMU_G2H(c->riid);
 
-    c->super.iret = IDirect3DVolume9_QueryInterface(volume->host_volume, iid, QEMU_G2H(c->out));
+    c->super.iret = IDirect3DVolume9_QueryInterface(volume->host_volume, iid, &out);
 
     /* Note that IDirect3DVolume9 does not inherit or implement IDirect3DResource9. */
     if (SUCCEEDED(c->super.iret) && !IsEqualGUID(iid, &IID_IDirect3DVolume9)
@@ -338,23 +341,29 @@ static HRESULT WINAPI d3d9_volume_GetContainer(IDirect3DVolume9 *iface, REFIID r
 {
     struct qemu_d3d9_subresource_impl *volume = impl_from_IDirect3DVolume9(iface);
     struct qemu_d3d9_volume_GetContainer call;
-    struct qemu_d3d9_texture_impl *texture = NULL;
-    struct qemu_d3d9_device_impl *device = NULL;
+    struct qemu_d3d9_texture_impl *texture;
+    struct qemu_d3d9_device_impl *device;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_VOLUME_GETCONTAINER);
     call.iface = (ULONG_PTR)volume;
     call.riid = (ULONG_PTR)riid;
-    call.texture = (ULONG_PTR)&texture;
-    call.device = (ULONG_PTR)&device;
 
     qemu_syscall(&call.super);
 
-    if (texture)
+    if (call.texture)
+    {
+        texture = (struct qemu_d3d9_texture_impl *)(ULONG_PTR)call.texture;
         *container = &texture->IDirect3DBaseTexture9_iface;
-    else if (device)
+    }
+    else if (call.device)
+    {
+        device = (struct qemu_d3d9_device_impl *)(ULONG_PTR)call.device;
         *container = &device->IDirect3DDevice9Ex_iface;
+    }
     else
+    {
         *container = NULL;
+    }
 
     return call.super.iret;
 }
@@ -376,6 +385,8 @@ void qemu_d3d9_volume_GetContainer(struct qemu_syscall *call)
     WINE_TRACE("\n");
     volume = QEMU_G2H(c->iface);
     iid = QEMU_G2H(c->riid);
+    c->texture = 0;
+    c->device = 0;
 
     c->super.iret = IDirect3DVolume9_GetContainer(volume->host_volume, iid, &container);
     if (FAILED(c->super.iret))
@@ -390,12 +401,12 @@ void qemu_d3d9_volume_GetContainer(struct qemu_syscall *call)
         WINE_TRACE("Retrieved texture wrapper %p from private data.\n", texture);
         priv_data->lpVtbl->Release(priv_data);
 
-        *(uint64_t *)QEMU_G2H(c->texture) = QEMU_H2G(texture);
+        c->texture = QEMU_H2G(texture);
     }
     else if (IsEqualGUID(iid, &IID_IDirect3DDevice9))
     {
         /* Do not release the container returned by GetContainer, we pass the reference on! */
-        *(uint64_t *)QEMU_G2H(c->device) = QEMU_H2G(volume->device);
+        c->device = QEMU_H2G(volume->device);
     }
     else
     {
@@ -477,11 +488,22 @@ void qemu_d3d9_volume_LockBox(struct qemu_syscall *call)
 {
     struct qemu_d3d9_volume_LockBox *c = (struct qemu_d3d9_volume_LockBox *)call;
     struct qemu_d3d9_subresource_impl *volume;
+    D3DLOCKED_BOX stack, *lb = &stack;
 
     WINE_FIXME("Unverified!\n");
     volume = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    lb = QEMU_G2H(c->locked_box);
+#else
+    if (!c->locked_box)
+        lb = NULL;
+#endif
 
-    c->super.iret = IDirect3DVolume9_LockBox(volume->host_volume, QEMU_G2H(c->locked_box), QEMU_G2H(c->box), c->flags);
+    c->super.iret = IDirect3DVolume9_LockBox(volume->host_volume, lb, QEMU_G2H(c->box), c->flags);
+#if GUEST_BIT != HOST_BIT
+    if (c->locked_box)
+        D3DLOCKED_BOX_h2g(QEMU_G2H(c->locked_box), lb);
+#endif
 }
 
 #endif
