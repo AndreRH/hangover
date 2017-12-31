@@ -67,6 +67,7 @@ void qemu_d3d9_vertexbuffer_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d9_vertexbuffer_QueryInterface *c = (struct qemu_d3d9_vertexbuffer_QueryInterface *)call;
     struct qemu_d3d9_buffer_impl *buffer;
+    void *out;
 
     WINE_FIXME("Unverified!\n");
     buffer = QEMU_G2H(c->iface);
@@ -400,10 +401,11 @@ static HRESULT WINAPI d3d9_vertexbuffer_Lock(IDirect3DVertexBuffer9 *iface, UINT
     call.iface = (ULONG_PTR)iface;
     call.offset = offset;
     call.size = size;
-    call.data = (ULONG_PTR)data;
     call.flags = flags;
 
     qemu_syscall(&call.super);
+
+    *data = (void *)(ULONG_PTR)call.data;
 
     return call.super.iret;
 }
@@ -414,11 +416,13 @@ void qemu_d3d9_vertexbuffer_Lock(struct qemu_syscall *call)
 {
     struct qemu_d3d9_vertexbuffer_Lock *c = (struct qemu_d3d9_vertexbuffer_Lock *)call;
     struct qemu_d3d9_buffer_impl *buffer;
+    void *data;
 
     WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DVertexBuffer9_Lock(buffer->hostvb, c->offset, c->size, QEMU_G2H(c->data), c->flags);
+    c->super.iret = IDirect3DVertexBuffer9_Lock(buffer->hostvb, c->offset, c->size, &data, c->flags);
+    c->data = QEMU_H2G(data);
 }
 
 #endif
@@ -865,10 +869,10 @@ static HRESULT WINAPI d3d9_indexbuffer_Lock(IDirect3DIndexBuffer9 *iface, UINT o
     call.iface = (ULONG_PTR)iface;
     call.offset = offset;
     call.size = size;
-    call.data = (ULONG_PTR)data;
     call.flags = flags;
 
     qemu_syscall(&call.super);
+    *data = (void *)(ULONG_PTR)call.data;
 
     return call.super.iret;
 }
@@ -879,11 +883,13 @@ void qemu_d3d9_indexbuffer_Lock(struct qemu_syscall *call)
 {
     struct qemu_d3d9_indexbuffer_Lock *c = (struct qemu_d3d9_indexbuffer_Lock *)call;
     struct qemu_d3d9_buffer_impl *buffer;
+    void *data;
 
     WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DIndexBuffer9_Lock(buffer->hostib, c->offset, c->size, QEMU_G2H(c->data), c->flags);
+    c->super.iret = IDirect3DIndexBuffer9_Lock(buffer->hostib, c->offset, c->size, &data, c->flags);
+    c->data = QEMU_H2G(data);
 }
 
 #endif
