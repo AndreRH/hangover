@@ -76,6 +76,7 @@ void qemu_d3d9_device_QueryInterface(struct qemu_syscall *call)
     struct qemu_d3d9_device_QueryInterface *c = (struct qemu_d3d9_device_QueryInterface *)call;
     struct qemu_d3d9_device_impl *device;
     GUID *iid;
+    void *out;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
@@ -84,7 +85,7 @@ void qemu_d3d9_device_QueryInterface(struct qemu_syscall *call)
     if (!IsEqualGUID(iid, &IID_IDirect3DDevice9) && !IsEqualGUID(iid, &IID_IDirect3DDevice9Ex))
         WINE_FIXME("Unexpected GUID %s.\n", wine_dbgstr_guid(iid));
 
-    c->super.iret = IDirect3DDevice9Ex_QueryInterface(device->host, iid, QEMU_G2H(c->out));
+    c->super.iret = IDirect3DDevice9Ex_QueryInterface(device->host, iid, &out);
 }
 
 #endif
@@ -314,10 +315,10 @@ static HRESULT WINAPI d3d9_device_GetDirect3D(IDirect3DDevice9Ex *iface, IDirect
     struct qemu_d3d9_impl *d3d;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETDIRECT3D);
     call.iface = (ULONG_PTR)device;
-    call.d3d9 = (ULONG_PTR)&d3d;
 
     qemu_syscall(&call.super);
 
+    d3d = (struct qemu_d3d9_impl *)(ULONG_PTR)call.d3d9;
     *d3d9 = (IDirect3D9 *)&d3d->IDirect3D9Ex_iface;
     IDirect3D9_AddRef(*d3d9);
 
@@ -334,7 +335,7 @@ void qemu_d3d9_device_GetDirect3D(struct qemu_syscall *call)
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    *(uint64_t *)QEMU_G2H(c->d3d9) = QEMU_H2G(device->d3d9);
+    c->d3d9 = QEMU_H2G(device->d3d9);
 
     c->super.iret = D3D_OK;
 }
@@ -357,6 +358,8 @@ static HRESULT WINAPI d3d9_device_GetDeviceCaps(IDirect3DDevice9Ex *iface, D3DCA
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETDEVICECAPS);
     call.iface = (ULONG_PTR)device;
     call.caps = (ULONG_PTR)caps;
+
+    /* D3DCAPS9 has the same layout in 32 and 64 bit. */
 
     qemu_syscall(&call.super);
 
@@ -396,6 +399,8 @@ static HRESULT WINAPI d3d9_device_GetDisplayMode(IDirect3DDevice9Ex *iface, UINT
     call.iface = (ULONG_PTR)device;
     call.swapchain = swapchain;
     call.mode = (ULONG_PTR)mode;
+
+    /* D3DDISPLAYMODE has the same layout in 32 and 64 bit. */
 
     qemu_syscall(&call.super);
 
@@ -608,12 +613,12 @@ static HRESULT WINAPI d3d9_device_CreateAdditionalSwapChain(IDirect3DDevice9Ex *
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_CREATEADDITIONALSWAPCHAIN);
     call.iface = (ULONG_PTR)device;
     call.present_parameters = (ULONG_PTR)present_parameters;
-    call.swapchain = (ULONG_PTR)&impl;
 
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
     {
+        impl = (struct qemu_d3d9_swapchain_impl *)(ULONG_PTR)call.swapchain;
         impl->IDirect3DSwapChain9Ex_iface.lpVtbl = &d3d9_swapchain_vtbl;
         d3d9_swapchain_set_surfaces_ifaces(&impl->IDirect3DSwapChain9Ex_iface);
         *swapchain = (IDirect3DSwapChain9 *)&impl->IDirect3DSwapChain9Ex_iface;
@@ -672,7 +677,7 @@ void qemu_d3d9_device_CreateAdditionalSwapChain(struct qemu_syscall *call)
         D3DPRESENT_PARAMETERS_h2g(QEMU_G2H(c->present_parameters), parameters);
 #endif
 
-    *(uint64_t *)QEMU_G2H(c->swapchain) = QEMU_H2G(swapchain);
+    c->swapchain = QEMU_H2G(swapchain);
 }
 
 #endif
@@ -698,11 +703,15 @@ static HRESULT WINAPI d3d9_device_GetSwapChain(IDirect3DDevice9Ex *iface, UINT s
     call.swapchain_idx = (ULONG_PTR)swapchain_idx;
 
     qemu_syscall(&call.super);
-    swapchain_impl = (struct qemu_d3d9_swapchain_impl *)(ULONG_PTR)call.swapchain;
     if (SUCCEEDED(call.super.iret))
+    {
+    swapchain_impl = (struct qemu_d3d9_swapchain_impl *)(ULONG_PTR)call.swapchain;
         *swapchain = (IDirect3DSwapChain9 *)&swapchain_impl->IDirect3DSwapChain9Ex_iface;
+    }
     else
+    {
         *swapchain = NULL;
+    }
 
     return call.super.iret;
 }
@@ -903,14 +912,18 @@ static HRESULT WINAPI d3d9_device_GetBackBuffer(IDirect3DDevice9Ex *iface, UINT 
     call.swapchain = (ULONG_PTR)swapchain;
     call.backbuffer_idx = (ULONG_PTR)backbuffer_idx;
     call.backbuffer_type = (ULONG_PTR)backbuffer_type;
-    call.backbuffer = (ULONG_PTR)&surface_impl;
 
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
+    {
+        surface_impl = (struct qemu_d3d9_subresource_impl *)(ULONG_PTR)call.backbuffer;
         *backbuffer = &surface_impl->IDirect3DSurface9_iface;
+    }
     else
+    {
         *backbuffer = NULL;
+    }
 
     return call.super.iret;
 }
@@ -934,7 +947,7 @@ void qemu_d3d9_device_GetBackBuffer(struct qemu_syscall *call)
 
     IDirect3DSurface9_GetPrivateData(host, &qemu_d3d9_surface_guid, &surface_impl, &size);
     WINE_TRACE("Got surface %p from private data from host surface %p.\n", surface_impl, host);
-    *(uint64_t *)QEMU_G2H(c->backbuffer) = QEMU_H2G(surface_impl);
+    c->backbuffer = QEMU_H2G(surface_impl);
 }
 
 #endif
@@ -1123,13 +1136,13 @@ static HRESULT WINAPI d3d9_device_CreateTexture(IDirect3DDevice9Ex *iface, UINT 
     call.usage = usage;
     call.format = format;
     call.pool = pool;
-    call.texture = (ULONG_PTR)&impl;
     call.shared_handle = (ULONG_PTR)shared_handle;
 
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
     {
+        impl = (struct qemu_d3d9_texture_impl *)(ULONG_PTR)call.texture;
         impl->IDirect3DBaseTexture9_iface.lpVtbl = (IDirect3DBaseTexture9Vtbl *)&d3d9_texture_2d_vtbl;
         d3d9_texture_set_surfaces_ifaces(impl);
         *texture = (IDirect3DTexture9 *)&impl->IDirect3DBaseTexture9_iface;
@@ -1167,7 +1180,7 @@ void qemu_d3d9_device_CreateTexture(struct qemu_syscall *call)
     }
 
     d3d9_texture_init(texture, (IDirect3DBaseTexture9 *)host_texture, device);
-    *(uint64_t *)QEMU_G2H(c->texture) = QEMU_H2G(texture);
+    c->texture = QEMU_H2G(texture);
 }
 
 #endif
@@ -1206,13 +1219,13 @@ static HRESULT WINAPI d3d9_device_CreateVolumeTexture(IDirect3DDevice9Ex *iface,
     call.usage = usage;
     call.format = format;
     call.pool = pool;
-    call.texture = (ULONG_PTR)&impl;
     call.shared_handle = (ULONG_PTR)shared_handle;
 
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
     {
+        impl = (struct qemu_d3d9_texture_impl *)(ULONG_PTR)call.texture;
         impl->IDirect3DBaseTexture9_iface.lpVtbl = (IDirect3DBaseTexture9Vtbl *)&d3d9_texture_3d_vtbl;
         d3d9_texture_set_surfaces_ifaces(impl);
         *texture = (IDirect3DVolumeTexture9 *)&impl->IDirect3DBaseTexture9_iface;
@@ -1250,7 +1263,7 @@ void qemu_d3d9_device_CreateVolumeTexture(struct qemu_syscall *call)
     }
 
     d3d9_texture_init(texture, (IDirect3DBaseTexture9 *)host_texture, device);
-    *(uint64_t *)QEMU_G2H(c->texture) = QEMU_H2G(texture);
+    c->texture = QEMU_H2G(texture);
 }
 
 #endif
@@ -1283,13 +1296,13 @@ static HRESULT WINAPI d3d9_device_CreateCubeTexture(IDirect3DDevice9Ex *iface, U
     call.usage = usage;
     call.format = format;
     call.pool = pool;
-    call.texture = (ULONG_PTR)&impl;
     call.shared_handle = (ULONG_PTR)shared_handle;
 
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
     {
+        impl = (struct qemu_d3d9_texture_impl *)(ULONG_PTR)call.texture;
         impl->IDirect3DBaseTexture9_iface.lpVtbl = (IDirect3DBaseTexture9Vtbl *)&d3d9_texture_cube_vtbl;
         d3d9_texture_set_surfaces_ifaces(impl);
         *texture = (IDirect3DCubeTexture9 *)&impl->IDirect3DBaseTexture9_iface;
@@ -1332,7 +1345,7 @@ void qemu_d3d9_device_CreateCubeTexture(struct qemu_syscall *call)
     }
 
     d3d9_texture_init(texture, (IDirect3DBaseTexture9 *)host_texture, device);
-    *(uint64_t *)QEMU_G2H(c->texture) = QEMU_H2G(texture);
+    c->texture = QEMU_H2G(texture);
 }
 
 #endif
@@ -1363,13 +1376,13 @@ static HRESULT WINAPI d3d9_device_CreateVertexBuffer(IDirect3DDevice9Ex *iface, 
     call.usage = usage;
     call.fvf = fvf;
     call.pool = pool;
-    call.buffer = (ULONG_PTR)&impl;
     call.shared_handle = (ULONG_PTR)shared_handle;
 
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
     {
+        impl = (struct qemu_d3d9_buffer_impl *)(ULONG_PTR)call.buffer;
         impl->IDirect3DVertexBuffer9_iface.lpVtbl = &d3d9_vertexbuffer_vtbl;
         wined3d_private_store_init(&impl->private_store);
         *buffer = &impl->IDirect3DVertexBuffer9_iface;
@@ -1405,7 +1418,7 @@ void qemu_d3d9_device_CreateVertexBuffer(struct qemu_syscall *call)
     }
 
     d3d9_buffer_init(buffer, (IDirect3DResource9 *)host_buffer, device);
-    *(uint64_t *)QEMU_G2H(c->buffer) = QEMU_H2G(buffer);
+    c->buffer = QEMU_H2G(buffer);
 }
 
 #endif
@@ -1436,13 +1449,13 @@ static HRESULT WINAPI d3d9_device_CreateIndexBuffer(IDirect3DDevice9Ex *iface, U
     call.usage = usage;
     call.format = format;
     call.pool = pool;
-    call.buffer = (ULONG_PTR)&impl;
     call.shared_handle = (ULONG_PTR)shared_handle;
 
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
     {
+        impl = (struct qemu_d3d9_buffer_impl *)(ULONG_PTR)call.buffer;
         impl->IDirect3DIndexBuffer9_iface.lpVtbl = &d3d9_indexbuffer_vtbl;
         wined3d_private_store_init(&impl->private_store);
         *buffer = &impl->IDirect3DIndexBuffer9_iface;
@@ -1479,7 +1492,7 @@ void qemu_d3d9_device_CreateIndexBuffer(struct qemu_syscall *call)
     }
 
     d3d9_buffer_init(buffer, (IDirect3DResource9 *)host_buffer, device);
-    *(uint64_t *)QEMU_G2H(c->buffer) = QEMU_H2G(buffer);
+    c->buffer = QEMU_H2G(buffer);
 }
 
 #endif
@@ -1514,12 +1527,12 @@ static HRESULT WINAPI d3d9_device_CreateRenderTarget(IDirect3DDevice9Ex *iface, 
     call.multisample_type = multisample_type;
     call.multisample_quality = multisample_quality;
     call.lockable = lockable;
-    call.surface = (ULONG_PTR)&impl;
     call.shared_handle = (ULONG_PTR)shared_handle;
 
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
     {
+        impl = (struct qemu_d3d9_subresource_impl *)(ULONG_PTR)call.surface;
         qemu_d3d9_surface_init_guest(&impl->IDirect3DSurface9_iface);
         *surface = &impl->IDirect3DSurface9_iface;
     }
@@ -1559,7 +1572,7 @@ void qemu_d3d9_device_CreateRenderTarget(struct qemu_syscall *call)
     }
 
     d3d9_standalone_surface_init(surface, host_surface, device);
-    *(uint64_t *)QEMU_G2H(c->surface) = QEMU_H2G(&surface->sub_resource);
+    c->surface = QEMU_H2G(&surface->sub_resource);
 }
 
 #endif
@@ -1594,12 +1607,12 @@ static HRESULT WINAPI d3d9_device_CreateDepthStencilSurface(IDirect3DDevice9Ex *
     call.multisample_type = multisample_type;
     call.multisample_quality = multisample_quality;
     call.discard = discard;
-    call.surface = (ULONG_PTR)&impl;
     call.shared_handle = (ULONG_PTR)shared_handle;
 
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
     {
+        impl = (struct qemu_d3d9_subresource_impl *)(ULONG_PTR)call.surface;
         qemu_d3d9_surface_init_guest(&impl->IDirect3DSurface9_iface);
         *surface = &impl->IDirect3DSurface9_iface;
     }
@@ -1639,7 +1652,7 @@ void qemu_d3d9_device_CreateDepthStencilSurface(struct qemu_syscall *call)
     }
 
     d3d9_standalone_surface_init(surface, host_surface, device);
-    *(uint64_t *)QEMU_G2H(c->surface) = QEMU_H2G(&surface->sub_resource);
+    c->surface = QEMU_H2G(&surface->sub_resource);
 }
 
 #endif
@@ -2459,6 +2472,8 @@ static HRESULT WINAPI d3d9_device_SetViewport(IDirect3DDevice9Ex *iface, const D
     call.iface = (ULONG_PTR)device;
     call.viewport = (ULONG_PTR)viewport;
 
+    /* D3DVIEWPORT9 has the same layout in 32 and 64 bit. */
+
     qemu_syscall(&call.super);
 
     return call.super.iret;
@@ -2495,6 +2510,8 @@ static HRESULT WINAPI d3d9_device_GetViewport(IDirect3DDevice9Ex *iface, D3DVIEW
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETVIEWPORT);
     call.iface = (ULONG_PTR)device;
     call.viewport = (ULONG_PTR)viewport;
+
+    /* D3DVIEWPORT9 has the same layout in 32 and 64 bit. */
 
     qemu_syscall(&call.super);
 
@@ -2921,12 +2938,12 @@ static HRESULT WINAPI d3d9_device_CreateStateBlock(IDirect3DDevice9Ex *iface, D3
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_CREATESTATEBLOCK);
     call.iface = (ULONG_PTR)device;
     call.type = type;
-    call.stateblock = (ULONG_PTR)&impl;
 
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
     {
+        impl = (struct qemu_d3d9_stateblock_impl *)(ULONG_PTR)call.stateblock;
         impl->IDirect3DStateBlock9_iface.lpVtbl = &d3d9_stateblock_vtbl;
         *stateblock = &impl->IDirect3DStateBlock9_iface;
     }
@@ -2990,7 +3007,7 @@ void qemu_d3d9_device_CreateStateBlock(struct qemu_syscall *call)
     if (stateblock->state.ps)
         d3d9_shader_internal_addref(stateblock->state.ps);
 
-    *(uint64_t *)QEMU_G2H(c->stateblock) = QEMU_H2G(stateblock);
+    c->stateblock = QEMU_H2G(stateblock);
 }
 
 #endif
@@ -3063,12 +3080,12 @@ static HRESULT WINAPI d3d9_device_EndStateBlock(IDirect3DDevice9Ex *iface, IDire
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_ENDSTATEBLOCK);
     call.iface = (ULONG_PTR)device;
-    call.stateblock = (ULONG_PTR)&impl;
 
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
     {
+        impl = (struct qemu_d3d9_stateblock_impl *)(ULONG_PTR)call.stateblock;
         impl->IDirect3DStateBlock9_iface.lpVtbl = &d3d9_stateblock_vtbl;
         *stateblock = &impl->IDirect3DStateBlock9_iface;
     }
@@ -3105,7 +3122,7 @@ void qemu_d3d9_device_EndStateBlock(struct qemu_syscall *call)
     stateblock->state.flags |= QEMU_D3D_STATE_RECORDED;
     stateblock->device = device;
     stateblock->host = host_stateblock;
-    *(uint64_t *)QEMU_G2H(c->stateblock) = QEMU_H2G(stateblock);
+    c->stateblock = QEMU_H2G(stateblock);
 }
 
 #endif
@@ -3203,14 +3220,18 @@ static HRESULT WINAPI d3d9_device_GetTexture(IDirect3DDevice9Ex *iface, DWORD st
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETTEXTURE);
     call.iface = (ULONG_PTR)device;
     call.stage = stage;
-    call.texture = (ULONG_PTR)&texture_impl;
 
     qemu_syscall(&call.super);
 
-    if (SUCCEEDED(call.super.iret) && texture_impl)
+    if (SUCCEEDED(call.super.iret) && call.texture)
+    {
+        texture_impl = (struct qemu_d3d9_texture_impl *)(ULONG_PTR)call.texture;
         *texture = &texture_impl->IDirect3DBaseTexture9_iface;
+    }
     else
+    {
         *texture = NULL;
+    }
 
     return call.super.iret;
 }
@@ -3234,7 +3255,7 @@ void qemu_d3d9_device_GetTexture(struct qemu_syscall *call)
         return;
     if (!host)
     {
-        *(uint64_t *)QEMU_G2H(c->texture) = QEMU_H2G(NULL);
+        c->texture = QEMU_H2G(NULL);
         return;
     }
 
@@ -3245,7 +3266,7 @@ void qemu_d3d9_device_GetTexture(struct qemu_syscall *call)
 
     IUnknown_Release(priv_data);
 
-    *(uint64_t *)QEMU_G2H(c->texture) = QEMU_H2G(texture);
+    c->texture = QEMU_H2G(texture);
 }
 
 #endif
@@ -4112,13 +4133,13 @@ static HRESULT WINAPI d3d9_device_CreateVertexDeclaration(IDirect3DDevice9Ex *if
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_CREATEVERTEXDECLARATION);
     call.iface = (ULONG_PTR)device;
     call.elements = (ULONG_PTR)elements;
-    call.declaration = (ULONG_PTR)&decl;
 
     *declaration = NULL;
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
     {
+        decl = (struct qemu_d3d9_vertex_declaration_impl *)(ULONG_PTR)call.declaration;
         decl->IDirect3DVertexDeclaration9_iface.lpVtbl = &d3d9_vertex_declaration_vtbl;
         *declaration = &decl->IDirect3DVertexDeclaration9_iface;
     }
@@ -4155,7 +4176,7 @@ void qemu_d3d9_device_CreateVertexDeclaration(struct qemu_syscall *call)
     decl->host = host;
     decl->device = device;
     decl->internal_ref = 1;
-    *(uint64_t *)QEMU_G2H(c->declaration) = QEMU_H2G(decl);
+    c->declaration = QEMU_H2G(decl);
 }
 
 #endif
@@ -4240,14 +4261,18 @@ static HRESULT WINAPI d3d9_device_GetVertexDeclaration(IDirect3DDevice9Ex *iface
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETVERTEXDECLARATION);
     call.iface = (ULONG_PTR)device;
-    call.declaration = (ULONG_PTR)&impl;
 
     qemu_syscall(&call.super);
 
-    if (impl)
+    if (call.declaration)
+    {
+        impl = (struct qemu_d3d9_vertex_declaration_impl *)(ULONG_PTR)call.declaration;
         *declaration = &impl->IDirect3DVertexDeclaration9_iface;
+    }
     else
+    {
         *declaration = NULL;
+    }
 
     return call.super.iret;
 }
@@ -4262,7 +4287,7 @@ void qemu_d3d9_device_GetVertexDeclaration(struct qemu_syscall *call)
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    *(uint64_t *)QEMU_G2H(c->declaration) = QEMU_H2G(device->dev_state.vdecl);
+    c->declaration = QEMU_H2G(device->dev_state.vdecl);
     if (device->dev_state.vdecl)
         IDirect3DVertexDeclaration9_AddRef(device->dev_state.vdecl->host);
 
@@ -4475,11 +4500,11 @@ static HRESULT WINAPI d3d9_device_CreateVertexShader(IDirect3DDevice9Ex *iface, 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_CREATEVERTEXSHADER);
     call.iface = (ULONG_PTR)device;
     call.byte_code = (ULONG_PTR)byte_code;
-    call.shader = (ULONG_PTR)&impl;
 
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
     {
+        impl = (struct qemu_d3d9_shader_impl *)(ULONG_PTR)call.shader;
         impl->IDirect3DVertexShader9_iface.lpVtbl = &d3d9_vertexshader_vtbl;
         *shader = &impl->IDirect3DVertexShader9_iface;
     }
@@ -4516,7 +4541,7 @@ void qemu_d3d9_device_CreateVertexShader(struct qemu_syscall *call)
     shader->hostvs = host_shader;
     shader->device = device;
     shader->internal_ref = 1;
-    *(uint64_t *)QEMU_G2H(c->shader) = QEMU_H2G(shader);
+    c->shader = QEMU_H2G(shader);
 }
 
 #endif
@@ -4590,12 +4615,14 @@ static HRESULT WINAPI d3d9_device_GetVertexShader(IDirect3DDevice9Ex *iface, IDi
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETVERTEXSHADER);
     call.iface = (ULONG_PTR)device;
-    call.shader = (ULONG_PTR)&impl;
 
     qemu_syscall(&call.super);
 
-    if (impl)
+    if (call.shader)
+    {
+        impl = (struct qemu_d3d9_shader_impl *)(ULONG_PTR)call.shader;
         *shader = &impl->IDirect3DVertexShader9_iface;
+    }
     else
         *shader = NULL;
 
@@ -4612,7 +4639,7 @@ void qemu_d3d9_device_GetVertexShader(struct qemu_syscall *call)
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    *(uint64_t *)QEMU_G2H(c->shader) = QEMU_H2G(device->dev_state.vs);
+    c->shader = QEMU_H2G(device->dev_state.vs);
     if (device->dev_state.vs)
         IDirect3DVertexShader9_AddRef(device->dev_state.vs->hostvs);
 
@@ -4935,16 +4962,20 @@ static HRESULT WINAPI d3d9_device_GetStreamSource(IDirect3DDevice9Ex *iface, UIN
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETSTREAMSOURCE);
     call.iface = (ULONG_PTR)device;
     call.stream_idx = (ULONG_PTR)stream_idx;
-    call.buffer = (ULONG_PTR)&impl;
     call.offset = (ULONG_PTR)offset;
     call.stride = (ULONG_PTR)stride;
 
     qemu_syscall(&call.super);
 
-    if (SUCCEEDED(call.super.iret) && impl)
+    if (SUCCEEDED(call.super.iret) && call.buffer)
+    {
+        impl = (struct qemu_d3d9_buffer_impl *)(ULONG_PTR)call.buffer;
         *buffer = &impl->IDirect3DVertexBuffer9_iface;
+    }
     else
+    {
         *buffer = NULL;
+    }
 
     return call.super.iret;
 }
@@ -4967,7 +4998,7 @@ void qemu_d3d9_device_GetStreamSource(struct qemu_syscall *call)
             QEMU_G2H(c->offset), QEMU_G2H(c->stride));
     if (FAILED(c->super.iret) || !host)
     {
-        *(uint64_t *)QEMU_G2H(c->buffer) = QEMU_H2G(NULL);
+        c->buffer = QEMU_H2G(NULL);
         return;
     }
 
@@ -4978,7 +5009,7 @@ void qemu_d3d9_device_GetStreamSource(struct qemu_syscall *call)
 
     IUnknown_Release(priv_data);
 
-    *(uint64_t *)QEMU_G2H(c->buffer) = QEMU_H2G(buffer);
+    c->buffer = QEMU_H2G(buffer);
 }
 
 #endif
@@ -5119,14 +5150,18 @@ static HRESULT WINAPI d3d9_device_GetIndices(IDirect3DDevice9Ex *iface, IDirect3
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETINDICES);
     call.iface = (ULONG_PTR)device;
-    call.buffer = (ULONG_PTR)&impl;
 
     qemu_syscall(&call.super);
 
-    if (SUCCEEDED(call.super.iret) && impl)
+    if (SUCCEEDED(call.super.iret) && call.buffer)
+    {
+        impl = (struct qemu_d3d9_buffer_impl *)(ULONG_PTR)call.buffer;
         *buffer = &impl->IDirect3DIndexBuffer9_iface;
+    }
     else
+    {
         *buffer = NULL;
+    }
 
     return call.super.iret;
 }
@@ -5148,7 +5183,7 @@ void qemu_d3d9_device_GetIndices(struct qemu_syscall *call)
     c->super.iret = IDirect3DDevice9Ex_GetIndices(device->host, &host);
     if (FAILED(c->super.iret) || !host)
     {
-        *(uint64_t *)QEMU_G2H(c->buffer) = QEMU_H2G(NULL);
+        c->buffer = QEMU_H2G(NULL);
         return;
     }
 
@@ -5159,7 +5194,7 @@ void qemu_d3d9_device_GetIndices(struct qemu_syscall *call)
 
     IUnknown_Release(priv_data);
 
-    *(uint64_t *)QEMU_G2H(c->buffer) = QEMU_H2G(buffer);
+    c->buffer = QEMU_H2G(buffer);
 }
 
 #endif
@@ -5183,11 +5218,11 @@ static HRESULT WINAPI d3d9_device_CreatePixelShader(IDirect3DDevice9Ex *iface, c
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_CREATEPIXELSHADER);
     call.iface = (ULONG_PTR)device;
     call.byte_code = (ULONG_PTR)byte_code;
-    call.shader = (ULONG_PTR)&impl;
 
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
     {
+        impl = (struct qemu_d3d9_shader_impl *)(ULONG_PTR)call.shader;
         impl->IDirect3DPixelShader9_iface.lpVtbl = &d3d9_pixelshader_vtbl;
         *shader = &impl->IDirect3DPixelShader9_iface;
     }
@@ -5224,7 +5259,7 @@ void qemu_d3d9_device_CreatePixelShader(struct qemu_syscall *call)
     shader->hostps = host_shader;
     shader->device = device;
     shader->internal_ref = 1;
-    *(uint64_t *)QEMU_G2H(c->shader) = QEMU_H2G(shader);
+    c->shader = QEMU_H2G(shader);
 }
 
 #endif
@@ -5299,14 +5334,18 @@ static HRESULT WINAPI d3d9_device_GetPixelShader(IDirect3DDevice9Ex *iface, IDir
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETPIXELSHADER);
     call.iface = (ULONG_PTR)device;
-    call.shader = (ULONG_PTR)&impl;
 
     qemu_syscall(&call.super);
 
-    if (impl)
+    if (call.shader)
+    {
+        impl = (struct qemu_d3d9_shader_impl *)(ULONG_PTR)call.shader;
         *shader = &impl->IDirect3DPixelShader9_iface;
+    }
     else
+    {
         *shader = NULL;
+    }
 
     return call.super.iret;
 }
@@ -5321,7 +5360,7 @@ void qemu_d3d9_device_GetPixelShader(struct qemu_syscall *call)
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    *(uint64_t *)QEMU_G2H(c->shader) = QEMU_H2G(device->dev_state.ps);
+    c->shader = QEMU_H2G(device->dev_state.ps);
     if (device->dev_state.ps)
         IDirect3DPixelShader9_AddRef(device->dev_state.ps->hostps);
 
@@ -5714,11 +5753,11 @@ static HRESULT WINAPI d3d9_device_CreateQuery(IDirect3DDevice9Ex *iface, D3DQUER
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_CREATEQUERY);
     call.iface = (ULONG_PTR)device;
     call.type = type;
-    call.query = (ULONG_PTR)&impl;
 
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
     {
+        impl = (struct qemu_d3d9_query_impl *)(ULONG_PTR)call.query;
         impl->IDirect3DQuery9_iface.lpVtbl = &d3d9_query_vtbl;
         if (query)
             *query = &impl->IDirect3DQuery9_iface;
@@ -5758,7 +5797,7 @@ void qemu_d3d9_device_CreateQuery(struct qemu_syscall *call)
 
     query->host = host;
     query->device = device;
-    *(uint64_t *)QEMU_G2H(c->query) = QEMU_H2G(query);
+    c->query = QEMU_H2G(query);
 }
 
 #endif
@@ -6048,6 +6087,8 @@ void qemu_d3d9_device_CheckResourceResidency(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     device = QEMU_G2H(c->iface);
 
+    /* FIXME: This needs an adjustment for 32 bit. */
+
     c->super.iret = IDirect3DDevice9Ex_CheckResourceResidency(device->host, QEMU_G2H(c->resources), c->resource_count);
 }
 
@@ -6297,7 +6338,6 @@ static HRESULT WINAPI d3d9_device_CreateDepthStencilSurfaceEx(IDirect3DDevice9Ex
     call.multisample_type = multisample_type;
     call.multisample_quality = multisample_quality;
     call.discard = discard;
-    call.surface = (ULONG_PTR)&impl;
     call.shared_handle = (ULONG_PTR)shared_handle;
     call.usage = usage;
 
@@ -6310,6 +6350,7 @@ static HRESULT WINAPI d3d9_device_CreateDepthStencilSurfaceEx(IDirect3DDevice9Ex
 
     if (SUCCEEDED(call.super.iret))
     {
+        impl = (struct qemu_d3d9_subresource_impl *)(ULONG_PTR)call.surface;
         qemu_d3d9_surface_init_guest(&impl->IDirect3DSurface9_iface);
         *surface = &impl->IDirect3DSurface9_iface;
     }
@@ -6350,7 +6391,7 @@ void qemu_d3d9_device_CreateDepthStencilSurfaceEx(struct qemu_syscall *call)
     }
 
     d3d9_standalone_surface_init(surface, host_surface, device);
-    *(uint64_t *)QEMU_G2H(c->surface) = QEMU_H2G(&surface->sub_resource);
+    c->surface = QEMU_H2G(&surface->sub_resource);
 }
 
 #endif
