@@ -951,11 +951,11 @@
 @ stdcall InitializeProcThreadAttributeList(ptr long long ptr)
 @ stdcall InitializeSListHead(ptr) ntdll.RtlInitializeSListHead
 @ stdcall InitializeSRWLock(ptr) ntdll.RtlInitializeSRWLock
-# @ stdcall -arch=i386 InterlockedCompareExchange (ptr long long)
-# @ stdcall -arch=i386 -ret64 InterlockedCompareExchange64(ptr int64 int64) ntdll.RtlInterlockedCompareExchange64
-# @ stdcall -arch=i386 InterlockedDecrement(ptr)
-# @ stdcall -arch=i386 InterlockedExchange(ptr long)
-# @ stdcall -arch=i386 InterlockedExchangeAdd (ptr long )
+@ stdcall -arch=i386 InterlockedCompareExchange (ptr long long)
+@ stdcall -arch=i386 -ret64 InterlockedCompareExchange64(ptr int64 int64) ntdll.RtlInterlockedCompareExchange64
+@ stdcall -arch=i386 InterlockedDecrement(ptr)
+@ stdcall -arch=i386 InterlockedExchange(ptr long)
+@ stdcall -arch=i386 InterlockedExchangeAdd (ptr long )
 @ stdcall InterlockedFlushSList(ptr) ntdll.RtlInterlockedFlushSList
 # @ stdcall -arch=i386 InterlockedIncrement(ptr)
 @ stdcall InterlockedPopEntrySList(ptr) ntdll.RtlInterlockedPopEntrySList

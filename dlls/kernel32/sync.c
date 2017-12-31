@@ -3593,3 +3593,63 @@ void qemu_SleepConditionVariableSRW(struct qemu_syscall *call)
 
 #endif
 
+#ifdef __i386__
+
+#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl _" #name suffix "\n\t.def _" #name suffix "; .scl 2; .type 32; .endef\n_" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc");
+#define __ASM_STDCALL(args) "@" #args
+#define __ASM_STDCALL_FUNC(name,args,code) __ASM_DEFINE_FUNC(name,__ASM_STDCALL(args),code)
+
+/***********************************************************************
+ *		InterlockedCompareExchange (KERNEL32.@)
+ */
+/* LONG WINAPI InterlockedCompareExchange( PLONG dest, LONG xchg, LONG compare ); */
+__ASM_STDCALL_FUNC(InterlockedCompareExchange, 12,
+                  "movl 12(%esp),%eax\n\t"
+                  "movl 8(%esp),%ecx\n\t"
+                  "movl 4(%esp),%edx\n\t"
+                  "lock; cmpxchgl %ecx,(%edx)\n\t"
+                  "ret $12")
+
+/***********************************************************************
+ *		InterlockedExchange (KERNEL32.@)
+ */
+/* LONG WINAPI InterlockedExchange( PLONG dest, LONG val ); */
+__ASM_STDCALL_FUNC(InterlockedExchange, 8,
+                  "movl 8(%esp),%eax\n\t"
+                  "movl 4(%esp),%edx\n\t"
+                  "lock; xchgl %eax,(%edx)\n\t"
+                  "ret $8")
+
+/***********************************************************************
+ *		InterlockedExchangeAdd (KERNEL32.@)
+ */
+/* LONG WINAPI InterlockedExchangeAdd( PLONG dest, LONG incr ); */
+__ASM_STDCALL_FUNC(InterlockedExchangeAdd, 8,
+                  "movl 8(%esp),%eax\n\t"
+                  "movl 4(%esp),%edx\n\t"
+                  "lock; xaddl %eax,(%edx)\n\t"
+                  "ret $8")
+
+/***********************************************************************
+ *		InterlockedIncrement (KERNEL32.@)
+ */
+/* LONG WINAPI InterlockedIncrement( PLONG dest ); */
+__ASM_STDCALL_FUNC(InterlockedIncrement, 4,
+                  "movl 4(%esp),%edx\n\t"
+                  "movl $1,%eax\n\t"
+                  "lock; xaddl %eax,(%edx)\n\t"
+                  "incl %eax\n\t"
+                  "ret $4")
+
+/***********************************************************************
+ *		InterlockedDecrement (KERNEL32.@)
+ */
+__ASM_STDCALL_FUNC(InterlockedDecrement, 4,
+                  "movl 4(%esp),%edx\n\t"
+                  "movl $-1,%eax\n\t"
+                  "lock; xaddl %eax,(%edx)\n\t"
+                  "decl %eax\n\t"
+                  "ret $4")
+
+#endif  /* __i386__ */
+
