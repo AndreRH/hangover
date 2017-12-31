@@ -696,9 +696,9 @@ static HRESULT WINAPI d3d9_device_GetSwapChain(IDirect3DDevice9Ex *iface, UINT s
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETSWAPCHAIN);
     call.iface = (ULONG_PTR)device;
     call.swapchain_idx = (ULONG_PTR)swapchain_idx;
-    call.swapchain = (ULONG_PTR)&swapchain_impl;
 
     qemu_syscall(&call.super);
+    swapchain_impl = (struct qemu_d3d9_swapchain_impl *)(ULONG_PTR)call.swapchain;
     if (SUCCEEDED(call.super.iret))
         *swapchain = (IDirect3DSwapChain9 *)&swapchain_impl->IDirect3DSwapChain9Ex_iface;
     else
@@ -735,7 +735,7 @@ void qemu_d3d9_device_GetSwapChain(struct qemu_syscall *call)
 
     IUnknown_Release(priv_data);
 
-    *(uint64_t *)QEMU_G2H(c->swapchain) = QEMU_H2G(swapchain_impl);
+    c->swapchain = QEMU_H2G(swapchain_impl);
 }
 
 #endif
