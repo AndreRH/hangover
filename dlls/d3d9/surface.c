@@ -121,7 +121,7 @@ struct qemu_d3d9_surface_Release
 
 #ifdef QEMU_DLL_GUEST
 
-void WINAPI qemu_d3d9_subresource_destroyed(struct qemu_d3d9_subresource_impl *res)
+void __fastcall qemu_d3d9_subresource_destroyed(struct qemu_d3d9_subresource_impl *res)
 {
     wined3d_private_store_cleanup(&res->private_store);
 }

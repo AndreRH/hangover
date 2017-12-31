@@ -363,9 +363,9 @@ void d3d9_texture_set_surfaces_ifaces(struct qemu_d3d9_texture_impl *texture);
 void qemu_d3d9_surface_init_guest(IDirect3DSurface9 *surface);
 void qemu_d3d9_volume_init_guest(IDirect3DVolume9 *volume);
 
-void WINAPI qemu_d3d9_buffer_destroyed(struct qemu_d3d9_buffer_impl *buffer);
-void WINAPI qemu_d3d9_texture_destroyed(struct qemu_d3d9_texture_impl *texture);
-void WINAPI qemu_d3d9_subresource_destroyed(struct qemu_d3d9_subresource_impl *texture);
+void __fastcall qemu_d3d9_buffer_destroyed(struct qemu_d3d9_buffer_impl *buffer);
+void __fastcall qemu_d3d9_texture_destroyed(struct qemu_d3d9_texture_impl *texture);
+void __fastcall qemu_d3d9_subresource_destroyed(struct qemu_d3d9_subresource_impl *texture);
 
 HRESULT qemu_d3d9_free_private_data(struct wined3d_private_store *store, const GUID *guid);
 HRESULT qemu_d3d9_get_private_data(struct wined3d_private_store *store, const GUID *guid,

@@ -131,7 +131,7 @@ struct qemu_d3d9_texture_2d_Release
 
 #ifdef QEMU_DLL_GUEST
 
-void WINAPI qemu_d3d9_texture_destroyed(struct qemu_d3d9_texture_impl *texture)
+void __fastcall qemu_d3d9_texture_destroyed(struct qemu_d3d9_texture_impl *texture)
 {
     wined3d_private_store_cleanup(&texture->private_store);
 }

@@ -119,7 +119,7 @@ struct qemu_d3d9_vertexbuffer_Release
 
 #ifdef QEMU_DLL_GUEST
 
-void WINAPI qemu_d3d9_buffer_destroyed(struct qemu_d3d9_buffer_impl *buffer)
+void __fastcall qemu_d3d9_buffer_destroyed(struct qemu_d3d9_buffer_impl *buffer)
 {
     wined3d_private_store_cleanup(&buffer->private_store);
 }
