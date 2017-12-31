@@ -445,11 +445,24 @@ void qemu_d3d9_device_GetCreationParameters(struct qemu_syscall *call)
 {
     struct qemu_d3d9_device_GetCreationParameters *c = (struct qemu_d3d9_device_GetCreationParameters *)call;
     struct qemu_d3d9_device_impl *device;
+    D3DDEVICE_CREATION_PARAMETERS stack, *parameters = &stack;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice9Ex_GetCreationParameters(device->host, QEMU_G2H(c->parameters));
+#if GUEST_BIT == HOST_BIT
+    parameters = QEMU_G2H(c->parameters);
+#else
+    if (!c->parameters)
+        parameters = NULL;
+#endif
+
+    c->super.iret = IDirect3DDevice9Ex_GetCreationParameters(device->host, parameters);
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret) && c->parameters)
+        D3DDEVICE_CREATION_PARAMETERS_h2g(QEMU_G2H(c->parameters), parameters);
+#endif
 }
 
 #endif
@@ -654,7 +667,7 @@ void qemu_d3d9_device_CreateAdditionalSwapChain(struct qemu_syscall *call)
     swapchain->back_buffer_count = pp.BackBufferCount;
     d3d9_swapchain_init(swapchain, (IDirect3DSwapChain9Ex *)host, device);
 
-    #if GUEST_BIT != HOST_BIT
+#if GUEST_BIT != HOST_BIT
     if (c->present_parameters)
         D3DPRESENT_PARAMETERS_h2g(QEMU_G2H(c->present_parameters), parameters);
 #endif
@@ -706,7 +719,7 @@ void qemu_d3d9_device_GetSwapChain(struct qemu_syscall *call)
     DWORD size = sizeof(priv_data);
     struct qemu_d3d9_swapchain_impl *swapchain_impl;
 
-    WINE_TRACE("TRACE!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice9Ex_GetSwapChain(device->host, c->swapchain_idx, &swapchain);

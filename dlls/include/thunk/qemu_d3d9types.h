@@ -61,4 +61,20 @@ static inline void D3DPRESENT_PARAMETERS_h2g(struct qemu_D3DPRESENT_PARAMETERS *
     guest->PresentationInterval = host->PresentationInterval;
 }
 
+struct qemu_D3DDEVICE_CREATION_PARAMETERS
+{
+    UINT          AdapterOrdinal;
+    D3DDEVTYPE    DeviceType;
+    qemu_handle   hFocusWindow;
+    DWORD         BehaviorFlags;
+};
+
+static inline void D3DDEVICE_CREATION_PARAMETERS_h2g(struct qemu_D3DDEVICE_CREATION_PARAMETERS *guest, const D3DDEVICE_CREATION_PARAMETERS *host)
+{
+    guest->AdapterOrdinal = host->AdapterOrdinal;
+    guest->DeviceType = host->DeviceType;
+    guest->hFocusWindow = (ULONG_PTR)host->hFocusWindow;
+    guest->BehaviorFlags = host->BehaviorFlags;
+}
+
 #endif
