@@ -1948,12 +1948,12 @@ static HRESULT WINAPI d3d9_device_CreateOffscreenPlainSurface(IDirect3DDevice9Ex
     call.height = height;
     call.format = format;
     call.pool = pool;
-    call.surface = (ULONG_PTR)&impl;
     call.shared_handle = (ULONG_PTR)shared_handle;
 
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
     {
+        impl = (struct qemu_d3d9_subresource_impl *)(ULONG_PTR)call.surface;
         qemu_d3d9_surface_init_guest(&impl->IDirect3DSurface9_iface);
         *surface = &impl->IDirect3DSurface9_iface;
     }
@@ -1993,7 +1993,7 @@ void qemu_d3d9_device_CreateOffscreenPlainSurface(struct qemu_syscall *call)
     }
 
     d3d9_standalone_surface_init(surface, host_surface, device);
-    *(uint64_t *)QEMU_G2H(c->surface) = QEMU_H2G(&surface->sub_resource);
+    c->surface = QEMU_H2G(&surface->sub_resource);
 }
 
 #endif
@@ -2060,12 +2060,14 @@ static HRESULT WINAPI d3d9_device_GetRenderTarget(IDirect3DDevice9Ex *iface, DWO
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETRENDERTARGET);
     call.iface = (ULONG_PTR)device;
     call.idx = idx;
-    call.surface = (ULONG_PTR)&surface_impl;
 
     qemu_syscall(&call.super);
 
-    if (SUCCEEDED(call.super.iret) && surface_impl)
+    if (SUCCEEDED(call.super.iret) && call.surface)
+    {
+        surface_impl = (struct qemu_d3d9_subresource_impl *)(ULONG_PTR)call.surface;
         *surface = &surface_impl->IDirect3DSurface9_iface;
+    }
     else
         *surface = NULL;
 
@@ -2093,11 +2095,11 @@ void qemu_d3d9_device_GetRenderTarget(struct qemu_syscall *call)
     {
         IDirect3DSurface9_GetPrivateData(host, &qemu_d3d9_surface_guid, &surface_impl, &size);
         WINE_TRACE("Got surface %p from private data from host surface %p.\n", surface_impl, host);
-        *(uint64_t *)QEMU_G2H(c->surface) = QEMU_H2G(surface_impl);
+        c->surface = QEMU_H2G(surface_impl);
     }
     else
     {
-        *(uint64_t *)QEMU_G2H(c->surface) = QEMU_H2G(NULL);
+        c->surface = QEMU_H2G(NULL);
     }
 }
 
@@ -2161,12 +2163,14 @@ static HRESULT WINAPI d3d9_device_GetDepthStencilSurface(IDirect3DDevice9Ex *ifa
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_DEVICE_GETDEPTHSTENCILSURFACE);
     call.iface = (ULONG_PTR)device;
-    call.depth_stencil = (ULONG_PTR)&surface_impl;
 
     qemu_syscall(&call.super);
 
-    if (SUCCEEDED(call.super.iret) && surface_impl)
+    if (SUCCEEDED(call.super.iret) && call.depth_stencil)
+    {
+        surface_impl = (struct qemu_d3d9_subresource_impl *)(ULONG_PTR)call.depth_stencil;
         *depth_stencil = &surface_impl->IDirect3DSurface9_iface;
+    }
     else
         *depth_stencil = NULL;
 
@@ -2194,11 +2198,11 @@ void qemu_d3d9_device_GetDepthStencilSurface(struct qemu_syscall *call)
     {
         IDirect3DSurface9_GetPrivateData(host, &qemu_d3d9_surface_guid, &surface_impl, &size);
         WINE_TRACE("Got surface %p from private data from host surface %p.\n", surface_impl, host);
-        *(uint64_t *)QEMU_G2H(c->depth_stencil) = QEMU_H2G(surface_impl);
+        c->depth_stencil = QEMU_H2G(surface_impl);
     }
     else
     {
-        *(uint64_t *)QEMU_G2H(c->depth_stencil) = QEMU_H2G(NULL);
+        c->depth_stencil = QEMU_H2G(NULL);
     }
 }
 

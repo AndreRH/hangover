@@ -743,7 +743,6 @@ static HRESULT WINAPI d3d9_CreateDevice(IDirect3D9Ex *iface, UINT adapter, D3DDE
     call.focus_window = (ULONG_PTR)focus_window;
     call.flags = (ULONG_PTR)flags;
     call.parameters = (ULONG_PTR)parameters;
-    call.device = (ULONG_PTR)&ret;
 
     qemu_syscall(&call.super);
     if (FAILED(call.super.iret))
@@ -752,6 +751,7 @@ static HRESULT WINAPI d3d9_CreateDevice(IDirect3D9Ex *iface, UINT adapter, D3DDE
         return call.super.iret;
     }
 
+    ret = (struct qemu_d3d9_device_impl *)(ULONG_PTR)call.device;
     qemu_d3d9_device_setup_guest(ret, TRUE);
     *device = (IDirect3DDevice9 *)&ret->IDirect3DDevice9Ex_iface;
 
@@ -807,7 +807,7 @@ void qemu_d3d9_CreateDevice(struct qemu_syscall *call)
         D3DPRESENT_PARAMETERS_h2g(QEMU_G2H(c->parameters), parameters);
 #endif
 
-    *(uint64_t *)QEMU_G2H(c->device) = QEMU_H2G(device_impl);
+    c->device = QEMU_H2G(device_impl);
 
     return;
 
@@ -971,7 +971,6 @@ static HRESULT WINAPI d3d9_CreateDeviceEx(IDirect3D9Ex *iface, UINT adapter, D3D
     call.flags = flags;
     call.parameters = (ULONG_PTR)parameters;
     call.mode = (ULONG_PTR)mode;
-    call.device = (ULONG_PTR)&ret;
 
     qemu_syscall(&call.super);
     if (FAILED(call.super.iret))
@@ -980,6 +979,7 @@ static HRESULT WINAPI d3d9_CreateDeviceEx(IDirect3D9Ex *iface, UINT adapter, D3D
         return call.super.iret;
     }
 
+    ret = (struct qemu_d3d9_device_impl *)(ULONG_PTR)call.device;
     qemu_d3d9_device_setup_guest(ret, TRUE);
     *device = &ret->IDirect3DDevice9Ex_iface;
 
@@ -1034,7 +1034,7 @@ void qemu_d3d9_CreateDeviceEx(struct qemu_syscall *call)
         D3DPRESENT_PARAMETERS_h2g(QEMU_G2H(c->parameters), parameters);
 #endif
 
-    *(uint64_t *)QEMU_G2H(c->device) = QEMU_H2G(device_impl);
+    c->device = QEMU_H2G(device_impl);
 
     return;
 
