@@ -176,10 +176,10 @@ static HRESULT WINAPI d3d9_surface_GetDevice(IDirect3DSurface9 *iface, IDirect3D
     struct qemu_d3d9_surface_GetDevice call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETDEVICE);
     call.iface = (ULONG_PTR)surface;
-    call.device = (ULONG_PTR)&dev_impl;
 
     qemu_syscall(&call.super);
 
+    dev_impl = (struct qemu_d3d9_device_impl *)(ULONG_PTR)call.device;
     *device = (IDirect3DDevice9 *)&dev_impl->IDirect3DDevice9Ex_iface;
     IDirect3DDevice9_AddRef(*device);
 
@@ -196,7 +196,7 @@ void qemu_d3d9_surface_GetDevice(struct qemu_syscall *call)
     WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
-    *(uint64_t *)QEMU_G2H(c->device) = QEMU_H2G(surface->device);
+    c->device = QEMU_H2G(surface->device);
     c->super.iret = D3D_OK;
 }
 
@@ -413,27 +413,35 @@ static HRESULT WINAPI d3d9_surface_GetContainer(IDirect3DSurface9 *iface, REFIID
 {
     struct qemu_d3d9_subresource_impl *surface = impl_from_IDirect3DSurface(iface);
     struct qemu_d3d9_surface_GetContainer call;
-    struct qemu_d3d9_texture_impl *texture = NULL;
-    struct qemu_d3d9_swapchain_impl *swapchain = NULL;
-    struct qemu_d3d9_device_impl *device = NULL;
+    struct qemu_d3d9_texture_impl *texture;
+    struct qemu_d3d9_swapchain_impl *swapchain;
+    struct qemu_d3d9_device_impl *device;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETCONTAINER);
     call.iface = (ULONG_PTR)surface;
     call.riid = (ULONG_PTR)riid;
-    call.texture = (ULONG_PTR)&texture;
-    call.swapchain = (ULONG_PTR)&swapchain;
-    call.device = (ULONG_PTR)&device;
 
     qemu_syscall(&call.super);
 
-    if (texture)
+    if (call.texture)
+    {
+        texture = (struct qemu_d3d9_texture_impl *)(ULONG_PTR)call.texture;
         *container = &texture->IDirect3DBaseTexture9_iface;
-    else if (swapchain)
+    }
+    else if (call.swapchain)
+    {
+        swapchain = (struct qemu_d3d9_swapchain_impl *)(ULONG_PTR)call.swapchain;
         *container = &swapchain->IDirect3DSwapChain9Ex_iface;
-    else if (device)
+    }
+    else if (call.device)
+    {
+        device = (struct qemu_d3d9_device_impl *)(ULONG_PTR)call.device;
         *container = &device->IDirect3DDevice9Ex_iface;
+    }
     else
+    {
         *container = NULL;
+    }
 
     return call.super.iret;
 }
@@ -455,6 +463,9 @@ void qemu_d3d9_surface_GetContainer(struct qemu_syscall *call)
     WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
     iid = QEMU_G2H(c->riid);
+    c->texture = QEMU_H2G(NULL);
+    c->swapchain = QEMU_H2G(NULL);
+    c->device = QEMU_H2G(NULL);
 
     c->super.iret = IDirect3DSurface9_GetContainer(surface->host, iid, &container);
     if (FAILED(c->super.iret))
@@ -470,7 +481,7 @@ void qemu_d3d9_surface_GetContainer(struct qemu_syscall *call)
         WINE_TRACE("Retrieved swapchain wrapper %p from private data.\n", swapchain);
         priv_data->lpVtbl->Release(priv_data);
 
-        *(uint64_t *)QEMU_G2H(c->swapchain) = QEMU_H2G(swapchain);
+        c->swapchain = QEMU_H2G(swapchain);
     }
     else if (IsEqualGUID(iid, &IID_IDirect3DTexture9) || IsEqualGUID(iid, &IID_IDirect3DCubeTexture9)
             || IsEqualGUID(iid, &IID_IDirect3DBaseTexture9) || IsEqualGUID(iid, &IID_IDirect3DResource9)
@@ -482,12 +493,12 @@ void qemu_d3d9_surface_GetContainer(struct qemu_syscall *call)
         WINE_TRACE("Retrieved texture wrapper %p from private data.\n", texture);
         priv_data->lpVtbl->Release(priv_data);
 
-        *(uint64_t *)QEMU_G2H(c->texture) = QEMU_H2G(texture);
+        c->texture = QEMU_H2G(texture);
     }
     else if (IsEqualGUID(iid, &IID_IDirect3DDevice9))
     {
         /* Do not release the container returned by GetContainer, we pass the reference on! */
-        *(uint64_t *)QEMU_G2H(c->device) = QEMU_H2G(surface->device);
+        c->device = QEMU_H2G(surface->device);
     }
     else
     {
@@ -640,9 +651,10 @@ static HRESULT WINAPI d3d9_surface_GetDC(IDirect3DSurface9 *iface, HDC *dc)
     struct qemu_d3d9_surface_GetDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_SURFACE_GETDC);
     call.iface = (ULONG_PTR)surface;
-    call.dc = (ULONG_PTR)dc;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+        *dc = (HDC)(ULONG_PTR)call.dc;
 
     return call.super.iret;
 }
@@ -653,11 +665,13 @@ void qemu_d3d9_surface_GetDC(struct qemu_syscall *call)
 {
     struct qemu_d3d9_surface_GetDC *c = (struct qemu_d3d9_surface_GetDC *)call;
     struct qemu_d3d9_subresource_impl *surface;
+    HDC dc;
 
     WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DSurface9_GetDC(surface->host, QEMU_G2H(c->dc));
+    c->super.iret = IDirect3DSurface9_GetDC(surface->host, &dc);
+    c->dc = QEMU_H2G(dc);
 }
 
 #endif
