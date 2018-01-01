@@ -31,6 +31,17 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
+#ifdef QEMU_DLL_GUEST
+/* For now the main purpose of this one is to force this library to import ntdll for the RVA Forwards. */
+extern NTSTATUS WINAPI RtlInitializeCriticalSectionEx(RTL_CRITICAL_SECTION *crit, ULONG spincount, ULONG flags);
+extern void WINAPI RtlRaiseStatus(NTSTATUS status);
+BOOL WINAPI qemu_InitializeCriticalSectionEx(CRITICAL_SECTION *section, DWORD spincount, DWORD flags)
+{
+    NTSTATUS ret = RtlInitializeCriticalSectionEx( section, spincount, flags );
+    if (ret) RtlRaiseStatus( ret );
+    return !ret;
+}
+#endif
 
 struct qemu_Sleep
 {
@@ -495,81 +506,24 @@ void qemu_SignalObjectAndWait(struct qemu_syscall *call)
 
 #endif
 
-/* Critical section already destroy the hope of 32 bit emulation in a 64 bit emulator
- * and 64 bit libs. The structure is allocated by the guest app and contains pointers,
- * so it will have a different size in 32 and 64 bit.
- *
- * There are a few options around this for this particular data structure. The best seems
- * to reimplement them ourselves instead of calling Wine and using the LockSemaphore
- * entry to store a pointer or handle to a Win64 sync object. Because we need to limit
- * the address space anyway we can fit this pointer into the 32 bit HANDLE. */
-struct qemu_InitializeCriticalSection
-{
-    struct qemu_syscall super;
-    uint64_t crit;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 WINBASEAPI void WINAPI InitializeCriticalSection(CRITICAL_SECTION *crit)
 {
-    struct qemu_InitializeCriticalSection call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_INITIALIZECRITICALSECTION);
-    call.crit = (ULONG_PTR)crit;
-
-    qemu_syscall(&call.super);
+    qemu_InitializeCriticalSectionEx( crit, 0, 0 );
 }
-
-#else
-
-void qemu_InitializeCriticalSection(struct qemu_syscall *call)
-{
-    struct qemu_InitializeCriticalSection *c = (struct qemu_InitializeCriticalSection *)call;
-    WINE_TRACE("\n");
-    InitializeCriticalSection(QEMU_G2H(c->crit));
-}
-
-#endif
-
-struct qemu_InitializeCriticalSectionAndSpinCount
-{
-    struct qemu_syscall super;
-    uint64_t crit;
-    uint64_t spincount;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 WINBASEAPI BOOL WINAPI InitializeCriticalSectionAndSpinCount(CRITICAL_SECTION *crit, DWORD spincount)
 {
-    struct qemu_InitializeCriticalSectionAndSpinCount call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_INITIALIZECRITICALSECTIONANDSPINCOUNT);
-    call.crit = (ULONG_PTR)crit;
-    call.spincount = spincount;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_InitializeCriticalSectionEx( crit, spincount, 0 );
 }
 
-#else
-
-void qemu_InitializeCriticalSectionAndSpinCount(struct qemu_syscall *call)
+NTSTATUS WINAPI RtlDeleteCriticalSection( RTL_CRITICAL_SECTION *crit );
+WINBASEAPI void WINAPI UninitializeCriticalSection(CRITICAL_SECTION *crit)
 {
-    struct qemu_InitializeCriticalSectionAndSpinCount *c = (struct qemu_InitializeCriticalSectionAndSpinCount *)call;
-    WINE_TRACE("\n");
-    c->super.iret = InitializeCriticalSectionAndSpinCount(QEMU_G2H(c->crit), c->spincount);
+    RtlDeleteCriticalSection( crit );
 }
 
-#endif
-
-#ifdef QEMU_DLL_GUEST
-/* For now the main purpose of this one is to force this library to import ntdll for the RVA Forwards. */
-extern NTSTATUS WINAPI RtlInitializeCriticalSectionEx(RTL_CRITICAL_SECTION *crit, ULONG spincount, ULONG flags);
-WINBASEAPI BOOL WINAPI InitializeCriticalSectionEx(CRITICAL_SECTION *section, DWORD spincount, DWORD flags)
-{
-    return !RtlInitializeCriticalSectionEx(section, spincount, flags);
-}
 #endif
 
 struct qemu_MakeCriticalSectionGlobal
@@ -626,36 +580,6 @@ void qemu_ReinitializeCriticalSection(struct qemu_syscall *call)
     struct qemu_ReinitializeCriticalSection *c = (struct qemu_ReinitializeCriticalSection *)call;
     WINE_FIXME("Unverified!\n");
     ReinitializeCriticalSection(QEMU_G2H(c->crit));
-}
-
-#endif
-
-struct qemu_UninitializeCriticalSection
-{
-    struct qemu_syscall super;
-    uint64_t crit;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI void WINAPI UninitializeCriticalSection(CRITICAL_SECTION *crit)
-{
-    struct qemu_UninitializeCriticalSection call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_UNINITIALIZECRITICALSECTION);
-    call.crit = (ULONG_PTR)crit;
-
-    qemu_syscall(&call.super);
-}
-
-#else
-
-/* TODO: Add UninitializeCriticalSection to Wine headers? */
-extern void WINAPI UninitializeCriticalSection(CRITICAL_SECTION *crit);
-void qemu_UninitializeCriticalSection(struct qemu_syscall *call)
-{
-    struct qemu_UninitializeCriticalSection *c = (struct qemu_UninitializeCriticalSection *)call;
-    WINE_FIXME("Unverified!\n");
-    UninitializeCriticalSection(QEMU_G2H(c->crit));
 }
 
 #endif

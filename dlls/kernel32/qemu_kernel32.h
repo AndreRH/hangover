@@ -566,8 +566,6 @@ enum kernel32_calls
     CALL_IDNTONAMEPREPUNICODE,
     CALL_IDNTOUNICODE,
     CALL_INITATOMTABLE,
-    CALL_INITIALIZECRITICALSECTION,
-    CALL_INITIALIZECRITICALSECTIONANDSPINCOUNT,
     CALL_INITIALIZEPROCTHREADATTRIBUTELIST,
     CALL_INITONCEBEGININITIALIZE,
     CALL_INITONCECOMPLETE,
@@ -901,7 +899,6 @@ enum kernel32_calls
     CALL_TRYSUBMITTHREADPOOLCALLBACK,
     CALL_TZSPECIFICLOCALTIMETOSYSTEMTIME,
     CALL_UNHANDLEDEXCEPTIONFILTER,
-    CALL_UNINITIALIZECRITICALSECTION,
     CALL_UNLOCKFILE,
     CALL_UNLOCKFILEEX,
     CALL_UNMAPVIEWOFFILE,
@@ -1555,8 +1552,6 @@ void qemu_IdnToAscii(struct qemu_syscall *call);
 void qemu_IdnToNameprepUnicode(struct qemu_syscall *call);
 void qemu_IdnToUnicode(struct qemu_syscall *call);
 void qemu_InitAtomTable(struct qemu_syscall *call);
-void qemu_InitializeCriticalSection(struct qemu_syscall *call);
-void qemu_InitializeCriticalSectionAndSpinCount(struct qemu_syscall *call);
 void qemu_InitializeProcThreadAttributeList(struct qemu_syscall *call);
 void qemu_InitOnceBeginInitialize(struct qemu_syscall *call);
 void qemu_InitOnceComplete(struct qemu_syscall *call);
@@ -1889,7 +1884,6 @@ void qemu_TransmitCommChar(struct qemu_syscall *call);
 void qemu_TrySubmitThreadpoolCallback(struct qemu_syscall *call);
 void qemu_TzSpecificLocalTimeToSystemTime(struct qemu_syscall *call);
 void qemu_UnhandledExceptionFilter(struct qemu_syscall *call);
-void qemu_UninitializeCriticalSection(struct qemu_syscall *call);
 void qemu_UnlockFile(struct qemu_syscall *call);
 void qemu_UnlockFileEx(struct qemu_syscall *call);
 void qemu_UnmapViewOfFile(struct qemu_syscall *call);
