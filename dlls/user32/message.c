@@ -694,10 +694,25 @@ WINUSERAPI BOOL WINAPI PeekMessageW(MSG *msg_out, HWND hwnd, UINT first, UINT la
 void qemu_PeekMessageW(struct qemu_syscall *call)
 {
     struct qemu_PeekMessageW *c = (struct qemu_PeekMessageW *)call;
-    WINE_TRACE("\n");
-    c->super.iret = PeekMessageW(QEMU_G2H(c->msg_out), QEMU_G2H(c->hwnd), c->first, c->last, c->flags);
+    MSG stack, *msg = &stack;
+    WINE_WARN("\n");
 
-    /* FIXME: WM_TIMER's lParam? */
+#if GUEST_BIT == HOST_BIT
+    msg = QEMU_G2H(c->msg_out);
+#else
+    if (!c->msg_out)
+        msg = NULL;
+#endif
+
+    c->super.iret = PeekMessageW(msg, QEMU_G2H(c->hwnd), c->first, c->last, c->flags);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->msg_out && c->super.iret)
+        MSG_h2g(QEMU_G2H(c->msg_out), msg);
+#endif
+
+    /* FIXME: I should probably run this through msg_host_to_guest, but if I allocate any
+     * helper memory I won't be able to free it. */
 }
 
 #endif
@@ -734,10 +749,25 @@ WINUSERAPI BOOL WINAPI PeekMessageA(MSG *msg, HWND hwnd, UINT first, UINT last, 
 void qemu_PeekMessageA(struct qemu_syscall *call)
 {
     struct qemu_PeekMessageA *c = (struct qemu_PeekMessageA *)call;
-    WINE_TRACE("\n");
-    c->super.iret = PeekMessageA(QEMU_G2H(c->msg), QEMU_G2H(c->hwnd), c->first, c->last, c->flags);
+    MSG stack, *msg = &stack;
+    WINE_WARN("\n");
 
-    /* FIXME: WM_TIMER's lParam? */
+#if GUEST_BIT == HOST_BIT
+    msg = QEMU_G2H(c->msg);
+#else
+    if (!c->msg)
+        msg = NULL;
+#endif
+
+    c->super.iret = PeekMessageA(msg, QEMU_G2H(c->hwnd), c->first, c->last, c->flags);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->msg && c->super.iret)
+        MSG_h2g(QEMU_G2H(c->msg), msg);
+#endif
+
+    /* FIXME: I should probably run this through msg_host_to_guest, but if I allocate any
+     * helper memory I won't be able to free it. */
 }
 
 #endif
@@ -772,10 +802,25 @@ WINUSERAPI BOOL WINAPI GetMessageW(MSG *msg, HWND hwnd, UINT first, UINT last)
 void qemu_GetMessageW(struct qemu_syscall *call)
 {
     struct qemu_GetMessageW *c = (struct qemu_GetMessageW *)call;
-    WINE_TRACE("\n");
-    c->super.iret = GetMessageW(QEMU_G2H(c->msg), (HWND)c->hwnd, c->first, c->last);
+    MSG stack, *msg = &stack;
+    WINE_WARN("\n");
 
-    /* FIXME: WM_TIMER's lParam? */
+#if GUEST_BIT == HOST_BIT
+    msg = QEMU_G2H(c->msg);
+#else
+    if (!c->msg)
+        msg = NULL;
+#endif
+
+    c->super.iret = GetMessageW(msg, (HWND)c->hwnd, c->first, c->last);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->msg && c->super.iret)
+        MSG_h2g(QEMU_G2H(c->msg), msg);
+#endif
+
+    /* FIXME: I should probably run this through msg_host_to_guest, but if I allocate any
+     * helper memory I won't be able to free it. */
 }
 
 #endif
@@ -810,10 +855,25 @@ WINUSERAPI BOOL WINAPI GetMessageA(MSG *msg, HWND hwnd, UINT first, UINT last)
 void qemu_GetMessageA(struct qemu_syscall *call)
 {
     struct qemu_GetMessageA *c = (struct qemu_GetMessageA *)call;
-    WINE_TRACE("\n");
-    c->super.iret = GetMessageA(QEMU_G2H(c->msg), (HWND)c->hwnd, c->first, c->last);
+    MSG stack, *msg = &stack;
+    WINE_WARN("\n");
 
-    /* FIXME: WM_TIMER's lParam? */
+#if GUEST_BIT == HOST_BIT
+    msg = QEMU_G2H(c->msg);
+#else
+    if (!c->msg)
+        msg = NULL;
+#endif
+
+    c->super.iret = GetMessageA(msg, (HWND)c->hwnd, c->first, c->last);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->msg && c->super.iret)
+        MSG_h2g(QEMU_G2H(c->msg), msg);
+#endif
+
+    /* FIXME: I should probably run this through msg_host_to_guest, but if I allocate any
+     * helper memory I won't be able to free it. */
 }
 
 #endif
@@ -844,8 +904,16 @@ WINUSERAPI BOOL WINAPI IsDialogMessageA(HWND hwndDlg, LPMSG pmsg)
 void qemu_IsDialogMessageA(struct qemu_syscall *call)
 {
     struct qemu_IsDialogMessageA *c = (struct qemu_IsDialogMessageA *)call;
+    MSG stack, *msg = &stack;
     WINE_TRACE("\n");
-    c->super.iret = IsDialogMessageA(QEMU_G2H(c->hwndDlg), QEMU_G2H(c->pmsg));
+
+#if GUEST_BIT == HOST_BIT
+    msg = QEMU_G2H(c->pmsg);
+#else
+    MSG_g2h(msg, QEMU_G2H(c->pmsg));
+#endif
+
+    c->super.iret = IsDialogMessageA(QEMU_G2H(c->hwndDlg), msg);
 }
 
 #endif
@@ -874,8 +942,16 @@ WINUSERAPI BOOL WINAPI TranslateMessage(const MSG *msg)
 void qemu_TranslateMessage(struct qemu_syscall *call)
 {
     struct qemu_TranslateMessage *c = (struct qemu_TranslateMessage *)call;
+    MSG stack;
+    const MSG *msg = &stack;
     WINE_TRACE("\n");
-    c->super.iret = TranslateMessage(QEMU_G2H(c->msg));
+
+#if GUEST_BIT == HOST_BIT
+    msg = QEMU_G2H(c->pmsg);
+#else
+    MSG_g2h(&stack, QEMU_G2H(c->msg));
+#endif
+    c->super.iret = TranslateMessage(msg);
 }
 
 #endif
@@ -904,16 +980,24 @@ WINUSERAPI LRESULT WINAPI DispatchMessageA(const MSG* msg)
 void qemu_DispatchMessageA(struct qemu_syscall *call)
 {
     struct qemu_DispatchMessageA *c = (struct qemu_DispatchMessageA *)call;
-    MSG *msg_in;
+    MSG stack, *msg_in = &stack;
     MSG msg_out;
 
     WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
     msg_in = QEMU_G2H(c->msg);
+#else
+    MSG_g2h(msg_in, QEMU_G2H(c->msg));
+#endif
     msg_guest_to_host(&msg_out, msg_in);
 
     c->super.iret = DispatchMessageA(&msg_out);
 
     msg_guest_to_host_return(msg_in, &msg_out);
+
+#if GUEST_BIT != HOST_BIT
+    MSG_h2g(QEMU_G2H(c->msg), msg_in);
+#endif
 }
 
 #endif
@@ -942,16 +1026,24 @@ WINUSERAPI LRESULT WINAPI DispatchMessageW(const MSG* msg)
 void qemu_DispatchMessageW(struct qemu_syscall *call)
 {
     struct qemu_DispatchMessageW *c = (struct qemu_DispatchMessageW *)call;
-    MSG *msg_in;
+    MSG stack, *msg_in = &stack;
     MSG msg_out;
 
     WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
     msg_in = QEMU_G2H(c->msg);
+#else
+    MSG_g2h(msg_in, QEMU_G2H(c->msg));
+#endif
     msg_guest_to_host(&msg_out, msg_in);
 
     c->super.iret = DispatchMessageW(&msg_out);
 
     msg_guest_to_host_return(msg_in, &msg_out);
+
+#if GUEST_BIT != HOST_BIT
+    MSG_h2g(QEMU_G2H(c->msg), msg_in);
+#endif
 }
 
 #endif

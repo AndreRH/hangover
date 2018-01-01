@@ -226,4 +226,38 @@ static inline void COMBOBOXINFO_h2g(struct qemu_COMBOBOXINFO *guest, const COMBO
     guest->hwndList = (ULONG_PTR)host->hwndList;
 }
 
+struct qemu_MSG
+{
+    qemu_handle     hwnd;
+    UINT            message;
+    qemu_ptr        wParam;
+    qemu_ptr        lParam;
+    DWORD           time;
+    POINT           pt;
+};
+
+static inline void MSG_g2h(MSG *host, const struct qemu_MSG *guest)
+{
+    host->hwnd = (HWND)(ULONG_PTR)guest->hwnd;
+    host->message = guest->message;
+    host->wParam = guest->wParam;
+    host->lParam = guest->lParam;
+    host->time = guest->time;
+    host->pt.x = guest->pt.x;
+    host->pt.y = guest->pt.y;
+}
+
+static inline void MSG_h2g(struct qemu_MSG *guest, const MSG *host)
+{
+    guest->hwnd = (ULONG_PTR)host->hwnd;
+    guest->message = host->message;
+    guest->wParam = host->wParam;
+    guest->lParam = host->lParam;
+    guest->time = host->time;
+    guest->pt.x = host->pt.x;
+    guest->pt.y = host->pt.y;
+}
+
+
+
 #endif
