@@ -165,7 +165,7 @@ struct qemu_qsort_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t qsort_guest_wrapper(void *data)
+static uint64_t __fastcall qsort_guest_wrapper(void *data)
 {
     const struct qemu_qsort_cb *cb = data;
     int (__cdecl *compare)(const void *,const void *) = (void *)(ULONG_PTR)cb->func;
