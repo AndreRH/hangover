@@ -91,7 +91,7 @@ void qemu___getmainargs(struct qemu_syscall *call)
     }
 
 #if HOST_BIT == GUEST_BIT
-    c->argc = QEMU_H2G(host_argc);
+    c->argc = host_argc;
     c->argv = QEMU_H2G(host_argv);
     c->envp = QEMU_H2G(host_envp);
     return;
@@ -108,7 +108,7 @@ void qemu___getmainargs(struct qemu_syscall *call)
         for (i = 0; i < host_argc; ++i)
         {
             size_t len = strlen(host_argv[i]) + 1;
-            ptr = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache_host_argv) * len);
+            ptr = HeapAlloc(GetProcessHeap(), 0, sizeof(char) * len);
             memcpy(ptr, host_argv[i], len);
             cache_host_argv[i] = (ULONG_PTR)ptr;
         }
@@ -120,14 +120,14 @@ void qemu___getmainargs(struct qemu_syscall *call)
         for (i = 0; i < host_argc; ++i)
         {
             size_t len = strlen(host_envp[i]) + 1;
-            ptr = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache_host_envp) * len);
+            ptr = HeapAlloc(GetProcessHeap(), 0, sizeof(char) * len);
             memcpy(ptr, host_envp[i], len);
             cache_host_envp[i] = (ULONG_PTR)ptr;
         }
         cache_host_envp[i] = 0;
     }
 
-    c->argc = QEMU_H2G(cache_hostargc);
+    c->argc = cache_hostargc;
     c->argv = QEMU_H2G(cache_host_argv);
     c->envp = QEMU_H2G(cache_host_envp);
 }
@@ -147,15 +147,16 @@ struct qemu___wgetmainargs
 void CDECL __wgetmainargs(int *argc, WCHAR** *wargv, WCHAR** *wenvp,
                           int expand_wildcards, int *new_mode)
 {
-    struct qemu___getmainargs call;
+    struct qemu___wgetmainargs call;
     call.super.id = QEMU_SYSCALL_ID(CALL___WGETMAINARGS);
-    call.argc = (ULONG_PTR)argc;
-    call.argv = (ULONG_PTR)wargv;
-    call.envp = (ULONG_PTR)wenvp;
     call.expand_wildcards = expand_wildcards;
     call.new_mode = (ULONG_PTR)new_mode;
 
     qemu_syscall(&call.super);
+
+    *argc = call.argc;
+    *wargv = (WCHAR **)(ULONG_PTR)call.wargv;
+    *wenvp = (WCHAR **)(ULONG_PTR)call.wenvp;
 }
 
 #else
@@ -163,16 +164,63 @@ void CDECL __wgetmainargs(int *argc, WCHAR** *wargv, WCHAR** *wenvp,
 void qemu___wgetmainargs(struct qemu_syscall *call)
 {
     WCHAR **host_argv, **host_envp;
+    int host_argc, i;
+
+    static BOOL initialized;
+    static qemu_ptr *cache_host_argv, *cache_host_envp;
+    static int cache_hostargc;
 
     struct qemu___wgetmainargs *c = (struct qemu___wgetmainargs *)(ULONG_PTR)call;
     /* QEMU hacks up argc and argv after kernel32 consumes it but before
      * msvcrt does, so this *should* work. */
     WINE_TRACE("\n");
-    p___wgetmainargs(QEMU_G2H(c->argc), &host_argv, &host_envp,
-            c->expand_wildcards, QEMU_G2H(c->new_mode));
 
-    *(uint64_t *)(QEMU_G2H(c->wargv)) = QEMU_H2G(host_argv);
-    *(uint64_t *)(QEMU_G2H(c->wenvp)) = QEMU_H2G(host_envp);
+    if (!initialized)
+    {
+        p___wgetmainargs(&host_argc, &host_argv, &host_envp,
+                c->expand_wildcards, QEMU_G2H(c->new_mode));
+    }
+
+#if HOST_BIT == GUEST_BIT
+    c->argc = host_argc;
+    c->wargv = QEMU_H2G(host_argv);
+    c->wenvp = QEMU_H2G(host_envp);
+    return;
+#endif
+
+    /* Copy the data into 32 bit address space. */
+    if (!initialized)
+    {
+        WCHAR *ptr;
+
+        initialized = TRUE;
+        cache_hostargc = host_argc;
+        cache_host_argv = HeapAlloc(GetProcessHeap(), 0, sizeof(cache_host_argv) * (host_argc + 1));
+        for (i = 0; i < host_argc; ++i)
+        {
+            size_t len = p_wcslen(host_argv[i]) + 1;
+            ptr = HeapAlloc(GetProcessHeap(), 0, sizeof(WCHAR) * len);
+            memcpy(ptr, host_argv[i], len * sizeof(WCHAR));
+            cache_host_argv[i] = (ULONG_PTR)ptr;
+        }
+        cache_host_argv[i] = 0;
+
+        for (host_argc = 0; host_envp[host_argc]; ++host_argc);
+
+        cache_host_envp = HeapAlloc(GetProcessHeap(), 0, sizeof(cache_host_envp) * (host_argc + 1));
+        for (i = 0; i < host_argc; ++i)
+        {
+            size_t len = p_wcslen(host_envp[i]) + 1;
+            ptr = HeapAlloc(GetProcessHeap(), 0, sizeof(WCHAR) * len);
+            memcpy(ptr, host_envp[i], len * sizeof(WCHAR));
+            cache_host_envp[i] = (ULONG_PTR)ptr;
+        }
+        cache_host_envp[i] = 0;
+    }
+
+    c->argc = cache_hostargc;
+    c->wargv = QEMU_H2G(cache_host_argv);
+    c->wenvp = QEMU_H2G(cache_host_envp);
 }
 
 #endif
