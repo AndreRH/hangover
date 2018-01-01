@@ -52,7 +52,7 @@ struct qemu_CreateThread_cb
 #ifdef QEMU_DLL_GUEST
 
 /* Not strictly necessary, but seems like a good idea for future extensions. */
-static DWORD WINAPI qemu_CreateThread_guest_wrapper(void *ctx)
+static DWORD __fastcall qemu_CreateThread_guest_wrapper(void *ctx)
 {
     struct qemu_CreateThread_cb *cb = ctx;
     LPTHREAD_START_ROUTINE proc = (LPTHREAD_START_ROUTINE)(ULONG_PTR)cb->proc;
