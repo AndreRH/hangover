@@ -21,12 +21,15 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_gdi32.h"
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <ddk/d3dkmthk.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_gdi32);
 #endif
 
@@ -400,13 +403,68 @@ WINBASEAPI NTSTATUS WINAPI D3DKMTCreateDCFromMemory(void *desc)
 
 #else
 
-/* TODO: Add D3DKMTCreateDCFromMemory to Wine headers? */
-extern NTSTATUS WINAPI D3DKMTCreateDCFromMemory(void *desc);
+struct qemu_D3DKMT_CREATEDCFROMMEMORY
+{
+    qemu_ptr        pMemory;
+    D3DDDIFORMAT    Format;
+    UINT            Width;
+    UINT            Height;
+    UINT            Pitch;
+    qemu_ptr        hDeviceDc;
+    qemu_ptr        pColorTable;
+    qemu_ptr        hDc;
+    qemu_ptr        hBitmap;
+};
+
+static inline void D3DKMT_CREATEDCFROMMEMORY_g2h(D3DKMT_CREATEDCFROMMEMORY *host,
+        const struct qemu_D3DKMT_CREATEDCFROMMEMORY *guest)
+{
+    host->pMemory = (void *)(ULONG_PTR)guest->pMemory;
+    host->Format = guest->Format;
+    host->Width = guest->Width;
+    host->Height = guest->Height;
+    host->Pitch = guest->Pitch;
+    host->hDeviceDc = (HDC)(ULONG_PTR)guest->hDeviceDc;
+    host->pColorTable = (PALETTEENTRY *)(ULONG_PTR)guest->pColorTable;
+    host->hDc = (HDC)(ULONG_PTR)guest->hDc;
+    host->hBitmap = (HANDLE)(ULONG_PTR)guest->hBitmap;
+}
+
+static inline void D3DKMT_CREATEDCFROMMEMORY_h2g(struct qemu_D3DKMT_CREATEDCFROMMEMORY *guest,
+        D3DKMT_CREATEDCFROMMEMORY *host)
+{
+    guest->pMemory = (ULONG_PTR)host->pMemory;
+    guest->Format = host->Format;
+    guest->Width = host->Width;
+    guest->Height = host->Height;
+    guest->Pitch = host->Pitch;
+    guest->hDeviceDc = (ULONG_PTR)host->hDeviceDc;
+    guest->pColorTable = (ULONG_PTR)host->pColorTable;
+    guest->hDc = (ULONG_PTR)host->hDc;
+    guest->hBitmap = (ULONG_PTR)host->hBitmap;
+}
+
 void qemu_D3DKMTCreateDCFromMemory(struct qemu_syscall *call)
 {
     struct qemu_D3DKMTCreateDCFromMemory *c = (struct qemu_D3DKMTCreateDCFromMemory *)call;
+    D3DKMT_CREATEDCFROMMEMORY stack, *desc = &stack;
     WINE_TRACE("\n");
-    c->super.iret = D3DKMTCreateDCFromMemory(QEMU_G2H(c->desc));
+
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->desc);
+#else
+    if (c->desc)
+        D3DKMT_CREATEDCFROMMEMORY_g2h(desc, QEMU_G2H(c->desc));
+    else
+        desc = NULL;
+#endif
+
+    c->super.iret = D3DKMTCreateDCFromMemory(desc);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->desc)
+        D3DKMT_CREATEDCFROMMEMORY_h2g(QEMU_G2H(c->desc), desc);
+#endif
 }
 
 #endif
@@ -432,13 +490,35 @@ WINBASEAPI NTSTATUS WINAPI D3DKMTDestroyDCFromMemory(const void *desc)
 
 #else
 
-/* TODO: Add D3DKMTDestroyDCFromMemory to Wine headers? */
-extern NTSTATUS WINAPI D3DKMTDestroyDCFromMemory(const void *desc);
+struct qemu_D3DKMT_DESTROYDCFROMMEMORY
+{
+    qemu_ptr hDc;
+    qemu_ptr hBitmap;
+};
+
+static inline void D3DKMT_DESTROYDCFROMMEMORY_g2h(D3DKMT_DESTROYDCFROMMEMORY *host,
+        const struct qemu_D3DKMT_DESTROYDCFROMMEMORY *guest)
+{
+    host->hDc = (HDC)(ULONG_PTR)guest->hDc;
+    host->hBitmap = (HANDLE)(ULONG_PTR)guest->hBitmap;
+}
+
 void qemu_D3DKMTDestroyDCFromMemory(struct qemu_syscall *call)
 {
     struct qemu_D3DKMTDestroyDCFromMemory *c = (struct qemu_D3DKMTDestroyDCFromMemory *)call;
+    D3DKMT_DESTROYDCFROMMEMORY stack, *desc = &stack;
     WINE_TRACE("\n");
-    c->super.iret = D3DKMTDestroyDCFromMemory(QEMU_G2H(c->desc));
+
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->desc);
+#else
+    if (c->desc)
+        D3DKMT_DESTROYDCFROMMEMORY_g2h(desc, QEMU_G2H(c->desc));
+    else
+        desc = NULL;
+#endif
+
+    c->super.iret = D3DKMTDestroyDCFromMemory(desc);
 }
 
 #endif
