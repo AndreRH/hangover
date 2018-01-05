@@ -14,6 +14,18 @@ struct qemu_MEMORY_BASIC_INFORMATION
     DWORD       Type;
 };
 
+static inline void MEMORY_BASIC_INFORMATION_h2g(const MEMORY_BASIC_INFORMATION *host,
+        struct qemu_MEMORY_BASIC_INFORMATION *guest)
+{
+    guest->BaseAddress = (ULONG_PTR)host->BaseAddress;
+    guest->AllocationBase = (ULONG_PTR)host->AllocationBase;
+    guest->AllocationProtect = host->AllocationProtect;
+    guest->RegionSize = host->RegionSize;
+    guest->State = host->State;
+    guest->Protect = host->Protect;
+    guest->Type = host->Type;
+}
+
 struct qemu_RTL_CRITICAL_SECTION_DEBUG
 {
     WORD   Type;
