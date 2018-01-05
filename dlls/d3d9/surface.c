@@ -594,7 +594,7 @@ void qemu_d3d9_surface_LockRect(struct qemu_syscall *call)
     c->super.iret = IDirect3DSurface9_LockRect(surface->host, lr, QEMU_G2H(c->rect), c->flags);
 
 #if GUEST_BIT != HOST_BIT
-    if (c->locked_rect)
+    if (c->locked_rect && SUCCEEDED(c->super.iret))
         D3DLOCKED_RECT_h2g(QEMU_G2H(c->locked_rect), lr);
 #endif
 }

@@ -752,7 +752,7 @@ void qemu_d3d9_texture_2d_LockRect(struct qemu_syscall *call)
     c->super.iret = IDirect3DTexture9_LockRect((IDirect3DTexture9 *)texture->host, c->level, lr, QEMU_G2H(c->rect), c->flags);
 
 #if GUEST_BIT != HOST_BIT
-    if (c->locked_rect)
+    if (c->locked_rect && SUCCEEDED(c->super.iret))
         D3DLOCKED_RECT_h2g(QEMU_G2H(c->locked_rect), lr);
 #endif
 }
@@ -1550,7 +1550,7 @@ void qemu_d3d9_texture_cube_LockRect(struct qemu_syscall *call)
     c->super.iret = IDirect3DCubeTexture9_LockRect((IDirect3DCubeTexture9 *)texture->host, c->face, c->level, lr, QEMU_G2H(c->rect), c->flags);
 
 #if GUEST_BIT != HOST_BIT
-    if (c->locked_rect)
+    if (c->locked_rect && SUCCEEDED(c->super.iret))
         D3DLOCKED_RECT_h2g(QEMU_G2H(c->locked_rect), lr);
 #endif
 }
@@ -2345,7 +2345,7 @@ void qemu_d3d9_texture_3d_LockBox(struct qemu_syscall *call)
     c->super.iret = IDirect3DVolumeTexture9_LockBox((IDirect3DVolumeTexture9 *)texture->host, c->level, lb, QEMU_G2H(c->box), c->flags);
 
 #if GUEST_BIT != HOST_BIT
-    if (c->locked_box)
+    if (c->locked_box && SUCCEEDED(c->super.iret))
         D3DLOCKED_BOX_h2g(QEMU_G2H(c->locked_box), lb);
 #endif
 }
