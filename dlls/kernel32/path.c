@@ -50,7 +50,13 @@ WINBASEAPI DWORD WINAPI GetFullPathNameW(LPCWSTR name, DWORD len, LPWSTR buffer,
     call.buffer = (ULONG_PTR)buffer;
     call.lastpart = (ULONG_PTR)lastpart;
 
+    if (lastpart)
+        call.lastpart = (ULONG_PTR)*lastpart;
+
     qemu_syscall(&call.super);
+
+    if (lastpart)
+        *lastpart = (WCHAR *)(ULONG_PTR)call.lastpart;
 
     return call.super.iret;
 }
@@ -60,8 +66,14 @@ WINBASEAPI DWORD WINAPI GetFullPathNameW(LPCWSTR name, DWORD len, LPWSTR buffer,
 void qemu_GetFullPathNameW(struct qemu_syscall *call)
 {
     struct qemu_GetFullPathNameW *c = (struct qemu_GetFullPathNameW *)call;
+    WCHAR *lastpart;
     WINE_TRACE("\n");
-    c->super.iret = GetFullPathNameW(QEMU_G2H(c->name), c->len, QEMU_G2H(c->buffer), QEMU_G2H(c->lastpart));
+
+    lastpart = QEMU_G2H(c->lastpart);
+
+    c->super.iret = GetFullPathNameW(QEMU_G2H(c->name), c->len, QEMU_G2H(c->buffer), &lastpart);
+
+    c->lastpart = QEMU_H2G(lastpart);
 }
 
 #endif
@@ -84,9 +96,14 @@ WINBASEAPI DWORD WINAPI GetFullPathNameA(LPCSTR name, DWORD len, LPSTR buffer, L
     call.name = (ULONG_PTR)name;
     call.len = len;
     call.buffer = (ULONG_PTR)buffer;
-    call.lastpart = (ULONG_PTR)lastpart;
+
+    if (lastpart)
+        call.lastpart = (ULONG_PTR)*lastpart;
 
     qemu_syscall(&call.super);
+
+    if (lastpart)
+        *lastpart = (char *)(ULONG_PTR)call.lastpart;
 
     return call.super.iret;
 }
@@ -96,8 +113,14 @@ WINBASEAPI DWORD WINAPI GetFullPathNameA(LPCSTR name, DWORD len, LPSTR buffer, L
 void qemu_GetFullPathNameA(struct qemu_syscall *call)
 {
     struct qemu_GetFullPathNameA *c = (struct qemu_GetFullPathNameA *)call;
+    char *lastpart;
     WINE_TRACE("\n");
-    c->super.iret = GetFullPathNameA(QEMU_G2H(c->name), c->len, QEMU_G2H(c->buffer), QEMU_G2H(c->lastpart));
+
+    lastpart = QEMU_G2H(c->lastpart);
+
+    c->super.iret = GetFullPathNameA(QEMU_G2H(c->name), c->len, QEMU_G2H(c->buffer), &lastpart);
+
+    c->lastpart = QEMU_H2G(lastpart);
 }
 
 #endif
