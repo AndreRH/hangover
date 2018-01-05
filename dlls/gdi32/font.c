@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_gdi32.h"
@@ -2243,8 +2245,24 @@ WINGDIAPI DWORD WINAPI GetCharacterPlacementW(HDC hdc, LPCWSTR lpString, INT uCo
 void qemu_GetCharacterPlacementW(struct qemu_syscall *call)
 {
     struct qemu_GetCharacterPlacementW *c = (struct qemu_GetCharacterPlacementW *)call;
+    GCP_RESULTSW stack, *results = &stack;
+
     WINE_TRACE("\n");
-    c->super.iret = GetCharacterPlacementW((HDC)c->hdc, QEMU_G2H(c->lpString), c->uCount, c->nMaxExtent, QEMU_G2H(c->lpResults), c->dwFlags);
+#if GUEST_BIT == HOST_BIT
+    results = QEMU_G2H(c->lpResults);
+#else
+    if (c->lpResults)
+        GCP_RESULTS_g2h(results, QEMU_G2H(c->lpResults));
+    else
+        results = NULL;
+#endif
+
+    c->super.iret = GetCharacterPlacementW((HDC)c->hdc, QEMU_G2H(c->lpString), c->uCount, c->nMaxExtent, results, c->dwFlags);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->lpResults)
+        GCP_RESULTS_h2g(QEMU_G2H(c->lpResults), results);
+#endif
 }
 
 #endif
