@@ -57,4 +57,37 @@ static inline void GCP_RESULTS_g2h(GCP_RESULTSW *host, const struct qemu_GCP_RES
     host->nMaxFit = host->nMaxFit;
 }
 
+struct qemu_BITMAP
+{
+    INT         bmType;
+    INT         bmWidth;
+    INT         bmHeight;
+    INT         bmWidthBytes;
+    WORD        bmPlanes;
+    WORD        bmBitsPixel;
+    qemu_ptr    bmBits;
+};
+
+static inline void BITMAP_h2g(struct qemu_BITMAP *guest, const BITMAP *host)
+{
+    guest->bmType = host->bmType;
+    guest->bmWidth = host->bmWidth;
+    guest->bmHeight = host->bmHeight;
+    guest->bmWidthBytes = host->bmWidthBytes;
+    guest->bmPlanes = host->bmPlanes;
+    guest->bmBitsPixel = host->bmBitsPixel;
+    guest->bmBits = (ULONG_PTR)host->bmBits;
+}
+
+static inline void BITMAP_g2h(BITMAP *host, const struct qemu_BITMAP *guest)
+{
+    host->bmType = guest->bmType;
+    host->bmWidth = guest->bmWidth;
+    host->bmHeight = guest->bmHeight;
+    host->bmWidthBytes = guest->bmWidthBytes;
+    host->bmPlanes = guest->bmPlanes;
+    host->bmBitsPixel = guest->bmBitsPixel;
+    host->bmBits = (void *)(ULONG_PTR)guest->bmBits;
+}
+
 #endif

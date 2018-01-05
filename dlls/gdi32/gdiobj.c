@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_gdi32.h"
@@ -91,7 +93,7 @@ void qemu_GetStockObject(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_GetObjectA
+struct qemu_GetObject
 {
     struct qemu_syscall super;
     uint64_t handle;
@@ -103,7 +105,7 @@ struct qemu_GetObjectA
 
 WINGDIAPI INT WINAPI GetObjectA(HGDIOBJ handle, INT count, LPVOID buffer)
 {
-    struct qemu_GetObjectA call;
+    struct qemu_GetObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETOBJECTA);
     call.handle = (ULONG_PTR)handle;
     call.count = count;
@@ -114,30 +116,9 @@ WINGDIAPI INT WINAPI GetObjectA(HGDIOBJ handle, INT count, LPVOID buffer)
     return call.super.iret;
 }
 
-#else
-
-void qemu_GetObjectA(struct qemu_syscall *call)
-{
-    struct qemu_GetObjectA *c = (struct qemu_GetObjectA *)call;
-    WINE_TRACE("\n");
-    c->super.iret = GetObjectA((HGDIOBJ)c->handle, c->count, QEMU_G2H(c->buffer));
-}
-
-#endif
-
-struct qemu_GetObjectW
-{
-    struct qemu_syscall super;
-    uint64_t handle;
-    uint64_t count;
-    uint64_t buffer;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINGDIAPI INT WINAPI GetObjectW(HGDIOBJ handle, INT count, LPVOID buffer)
 {
-    struct qemu_GetObjectW call;
+    struct qemu_GetObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETOBJECTW);
     call.handle = (ULONG_PTR)handle;
     call.count = (ULONG_PTR)count;
@@ -150,11 +131,127 @@ WINGDIAPI INT WINAPI GetObjectW(HGDIOBJ handle, INT count, LPVOID buffer)
 
 #else
 
-void qemu_GetObjectW(struct qemu_syscall *call)
+static uint64_t call_GetObject(const struct qemu_GetObject *c, INT size, void *buffer)
 {
-    struct qemu_GetObjectW *c = (struct qemu_GetObjectW *)call;
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_GETOBJECTW))
+        return GetObjectW(QEMU_G2H(c->handle), size, buffer);
+    else
+        return GetObjectA(QEMU_G2H(c->handle), size, buffer);
+}
+
+void qemu_GetObject(struct qemu_syscall *call)
+{
+    struct qemu_GetObject *c = (struct qemu_GetObject *)call;
+    INT type;
     WINE_TRACE("\n");
-    c->super.iret = GetObjectW(QEMU_G2H(c->handle), c->count, QEMU_G2H(c->buffer));
+
+#if GUEST_BIT == HOST_BIT
+    c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+    return;
+#endif
+
+    type = GetObjectType(QEMU_G2H(c->handle));
+
+    switch (type)
+    {
+        case OBJ_PEN:
+            WINE_FIXME("Unexpected object type OBJ_PEN\n");
+            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            break;
+
+        case OBJ_BRUSH:
+            WINE_FIXME("Unexpected object type OBJ_BRUSH\n");
+            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            break;
+
+        case OBJ_DC:
+            WINE_FIXME("Unexpected object type OBJ_DC\n");
+            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            break;
+
+        case OBJ_METADC:
+            WINE_FIXME("Unexpected object type OBJ_METADC\n");
+            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            break;
+
+        case OBJ_PAL:
+            WINE_FIXME("Unexpected object type OBJ_PAL\n");
+            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            break;
+
+        case OBJ_FONT:
+            WINE_FIXME("Unexpected object type OBJ_FONT\n");
+            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            break;
+
+        case OBJ_BITMAP:
+        {
+            BITMAP bm;
+            struct qemu_BITMAP *bm_guest = QEMU_G2H(c->buffer);
+            WINE_TRACE("Translating OBJ_BITMAP\n");
+
+            if (!bm_guest)
+            {
+                c->super.iret = sizeof(*bm_guest);
+                return;
+            }
+
+            if (c->count < sizeof(*bm_guest))
+            {
+                WINE_WARN("Size too small\n");
+                c->super.iret = 0;
+                return;
+            }
+
+            c->super.iret = call_GetObject(c, sizeof(bm), &bm);
+            if (!c->super.iret)
+                return;
+
+            BITMAP_h2g(bm_guest, &bm);
+            c->super.iret = sizeof(*bm_guest);
+            break;
+        }
+
+        case OBJ_REGION:
+            WINE_FIXME("Unexpected object type OBJ_REGION\n");
+            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            break;
+
+        case OBJ_METAFILE:
+            WINE_FIXME("Unexpected object type OBJ_METAFILE\n");
+            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            break;
+
+        case OBJ_MEMDC:
+            WINE_FIXME("Unexpected object type OBJ_MEMDC\n");
+            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            break;
+
+        case OBJ_EXTPEN:
+            WINE_FIXME("Unexpected object type OBJ_EXTPEN\n");
+            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            break;
+
+        case OBJ_ENHMETADC:
+            WINE_FIXME("Unexpected object type OBJ_ENHMETADC\n");
+            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            break;
+
+        case OBJ_ENHMETAFILE:
+            WINE_FIXME("Unexpected object type OBJ_ENHMETAFILE\n");
+            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            break;
+
+        case OBJ_COLORSPACE:
+            WINE_FIXME("Unexpected object type OBJ_COLORSPACE\n");
+            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            break;
+
+
+        default:
+            WINE_FIXME("Unexpected object type %x\n", type);
+            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+    }
 }
 
 #endif
