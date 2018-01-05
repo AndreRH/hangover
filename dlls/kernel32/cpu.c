@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <psapi.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_kernel32.h"
@@ -117,8 +119,22 @@ WINBASEAPI VOID WINAPI GetSystemInfo(LPSYSTEM_INFO si)
 void qemu_GetSystemInfo(struct qemu_syscall *call)
 {
     struct qemu_GetSystemInfo *c = (struct qemu_GetSystemInfo *)call;
+    SYSTEM_INFO stack, *si = &stack;
     WINE_TRACE("\n");
-    GetSystemInfo(QEMU_G2H(c->si));
+
+#if GUEST_BIT == HOST_BIT
+    si = QEMU_G2H(c->si);
+#else
+    if (!c->si)
+        si = NULL;
+#endif
+
+    GetSystemInfo(si);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->si)
+        SYSTEM_INFO_h2g(QEMU_G2H(c->si), si);
+#endif
 }
 
 #endif

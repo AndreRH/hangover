@@ -25,4 +25,44 @@ struct qemu_STARTUPINFO
         qemu_handle hStdError;
 };
 
+struct qemu_SYSTEM_INFO
+{
+    union
+    {
+        DWORD   dwOemId; /* Obsolete field - do not use */
+        struct
+        {
+            WORD wProcessorArchitecture;
+            WORD wReserved;
+        } s1;
+    } u1;
+    DWORD       dwPageSize;
+    qemu_ptr    lpMinimumApplicationAddress;
+    qemu_ptr    lpMaximumApplicationAddress;
+    qemu_ptr    dwActiveProcessorMask;
+    DWORD       dwNumberOfProcessors;
+    DWORD       dwProcessorType;
+    DWORD       dwAllocationGranularity;
+    WORD        wProcessorLevel;
+    WORD        wProcessorRevision;
+};
+
+static inline void SYSTEM_INFO_h2g(struct qemu_SYSTEM_INFO *guest, const SYSTEM_INFO *host)
+{
+    guest->u1.s1.wProcessorArchitecture = host->wProcessorArchitecture;
+    guest->u1.s1.wReserved = host->wReserved;
+    guest->dwPageSize = host->dwPageSize;
+    guest->lpMinimumApplicationAddress = (ULONG_PTR)host->lpMinimumApplicationAddress;
+    if ((ULONG_PTR)host->lpMaximumApplicationAddress > ~0U)
+        guest->lpMaximumApplicationAddress = ~0U;
+    else
+        guest->lpMaximumApplicationAddress = (ULONG_PTR)host->lpMaximumApplicationAddress;
+    guest->dwActiveProcessorMask = host->dwActiveProcessorMask;
+    guest->dwNumberOfProcessors = host->dwNumberOfProcessors;
+    guest->dwProcessorType = host->dwProcessorType;
+    guest->dwAllocationGranularity = host->dwAllocationGranularity;
+    guest->wProcessorLevel = host->wProcessorLevel;
+    guest->wProcessorRevision = host->wProcessorRevision;
+}
+
 #endif
