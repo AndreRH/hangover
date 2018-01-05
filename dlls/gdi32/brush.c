@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_gdi32.h"
@@ -55,8 +57,19 @@ WINBASEAPI HBRUSH WINAPI CreateBrushIndirect(const LOGBRUSH * brush)
 void qemu_CreateBrushIndirect(struct qemu_syscall *call)
 {
     struct qemu_CreateBrushIndirect *c = (struct qemu_CreateBrushIndirect *)call;
+    LOGBRUSH stack, *brush = &stack;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)CreateBrushIndirect(QEMU_G2H(c->brush));
+
+#if GUEST_BIT == HOST_BIT
+    brush = QEMU_G2H(c->brush);
+#else
+    if (c->brush)
+        LOGBRUSH_g2h(brush, QEMU_G2H(c->brush));
+    else
+        brush = NULL;
+#endif
+
+    c->super.iret = (ULONG_PTR)CreateBrushIndirect(brush);
 }
 
 #endif

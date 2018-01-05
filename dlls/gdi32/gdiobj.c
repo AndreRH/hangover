@@ -154,6 +154,7 @@ void qemu_GetObject(struct qemu_syscall *call)
         long dummy;
         BITMAP bm;
         DIBSECTION dib;
+        LOGBRUSH brush;
     } host_buf;
 
     WINE_TRACE("\n");
@@ -167,35 +168,42 @@ void qemu_GetObject(struct qemu_syscall *call)
 
     switch (type)
     {
+        case 0:
+            WINE_WARN("Translating invalid object\n");
+            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            return;
+
         case OBJ_PEN:
             WINE_FIXME("Unexpected object type OBJ_PEN\n");
             c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
-            break;
+            return;
 
         case OBJ_BRUSH:
-            WINE_FIXME("Unexpected object type OBJ_BRUSH\n");
-            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            WINE_TRACE("Translating OBJ_BRUSH\n");
+            convert.host_size = sizeof(host_buf.brush);
+            convert.guest_size = sizeof(struct qemu_LOGBRUSH);
+            convert.func = (void *)LOGBRUSH_h2g;
             break;
 
         case OBJ_DC:
             WINE_FIXME("Unexpected object type OBJ_DC\n");
             c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
-            break;
+            return;
 
         case OBJ_METADC:
             WINE_FIXME("Unexpected object type OBJ_METADC\n");
             c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
-            break;
+            return;
 
         case OBJ_PAL:
             WINE_FIXME("Unexpected object type OBJ_PAL\n");
             c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
-            break;
+            return;
 
         case OBJ_FONT:
             WINE_FIXME("Unexpected object type OBJ_FONT\n");
             c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
-            break;
+            return;
 
         case OBJ_BITMAP:
         {

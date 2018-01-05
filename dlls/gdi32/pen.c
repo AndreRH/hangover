@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_gdi32.h"
@@ -127,8 +129,19 @@ WINBASEAPI HPEN WINAPI ExtCreatePen(DWORD style, DWORD width, const LOGBRUSH * b
 void qemu_ExtCreatePen(struct qemu_syscall *call)
 {
     struct qemu_ExtCreatePen *c = (struct qemu_ExtCreatePen *)call;
+    LOGBRUSH stack, *brush = &stack;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)ExtCreatePen(c->style, c->width, QEMU_G2H(c->brush), c->style_count, QEMU_G2H(c->style_bits));
+
+#if GUEST_BIT == HOST_BIT
+    brush = QEMU_G2H(c->brush);
+#else
+    if (c->brush)
+        LOGBRUSH_g2h(brush, QEMU_G2H(c->brush));
+    else
+        brush = NULL;
+#endif
+
+    c->super.iret = (ULONG_PTR)ExtCreatePen(c->style, c->width, brush, c->style_count, QEMU_G2H(c->style_bits));
 }
 
 #endif

@@ -121,4 +121,25 @@ static void DIBSECTION_g2h(DIBSECTION *host, const struct qemu_DIBSECTION *guest
     host->dsOffset = guest->dsOffset;
 }
 
+struct qemu_LOGBRUSH
+{
+    UINT       lbStyle;
+    COLORREF   lbColor;
+    qemu_ptr   lbHatch;
+};
+
+static void LOGBRUSH_h2g(struct qemu_LOGBRUSH *guest, const LOGBRUSH *host)
+{
+    guest->lbStyle = host->lbStyle;
+    guest->lbColor = host->lbColor;
+    guest->lbHatch = (ULONG_PTR)host->lbHatch;
+}
+
+static void LOGBRUSH_g2h(LOGBRUSH *host, const struct qemu_LOGBRUSH *guest)
+{
+    host->lbStyle = guest->lbStyle;
+    host->lbColor = guest->lbColor;
+    host->lbHatch = (ULONG_PTR)guest->lbHatch;
+}
+
 #endif
