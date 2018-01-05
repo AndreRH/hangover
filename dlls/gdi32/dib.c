@@ -353,11 +353,13 @@ WINBASEAPI HBITMAP WINAPI CreateDIBSection(HDC hdc, const BITMAPINFO *bmi, UINT 
     call.hdc = (ULONG_PTR)hdc;
     call.bmi = (ULONG_PTR)bmi;
     call.usage = usage;
-    call.bits = (ULONG_PTR)bits;
     call.section = (ULONG_PTR)section;
     call.offset = offset;
 
     qemu_syscall(&call.super);
+
+    if (bits)
+        *bits = (void *)(ULONG_PTR)call.bits;
 
     return (HBITMAP)(ULONG_PTR)call.super.iret;
 }
@@ -367,8 +369,12 @@ WINBASEAPI HBITMAP WINAPI CreateDIBSection(HDC hdc, const BITMAPINFO *bmi, UINT 
 void qemu_CreateDIBSection(struct qemu_syscall *call)
 {
     struct qemu_CreateDIBSection *c = (struct qemu_CreateDIBSection *)call;
+    void *bits;
+
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)CreateDIBSection((HDC)c->hdc, QEMU_G2H(c->bmi), c->usage, QEMU_G2H(c->bits), (HANDLE)c->section, c->offset);
+    /* FIXME: Write to bits on 32 bit. */
+    c->super.iret = (ULONG_PTR)CreateDIBSection((HDC)c->hdc, QEMU_G2H(c->bmi), c->usage, &bits, (HANDLE)c->section, c->offset);
+    c->bits = QEMU_H2G(bits);
 }
 
 #endif
