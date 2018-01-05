@@ -191,22 +191,6 @@ static const syscall_handler dll_functions[] =
     qemu__chmod,
     qemu__chsize,
     qemu__chsize_s,
-    qemu__CIacos,
-    qemu__CIasin,
-    qemu__CIatan,
-    qemu__CIatan2,
-    qemu__CIcos,
-    qemu__CIcosh,
-    qemu__CIexp,
-    qemu__CIfmod,
-    qemu__CIlog,
-    qemu__CIlog10,
-    qemu__CIpow,
-    qemu__CIsin,
-    qemu__CIsinh,
-    qemu__CIsqrt,
-    qemu__CItan,
-    qemu__CItanh,
     qemu__clearfp,
     qemu__close,
     qemu__commit,
@@ -1239,22 +1223,6 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__chdrive = (void *)GetProcAddress(msvcrt, "_chdrive");
     p__chgsign = (void *)GetProcAddress(msvcrt, "_chgsign");
     p__chgsignf = (void *)GetProcAddress(msvcrt, "_chgsignf");
-    p__CIacos = (void *)GetProcAddress(msvcrt, "_CIacos");
-    p__CIasin = (void *)GetProcAddress(msvcrt, "_CIasin");
-    p__CIatan = (void *)GetProcAddress(msvcrt, "_CIatan");
-    p__CIatan2 = (void *)GetProcAddress(msvcrt, "_CIatan2");
-    p__CIcos = (void *)GetProcAddress(msvcrt, "_CIcos");
-    p__CIcosh = (void *)GetProcAddress(msvcrt, "_CIcosh");
-    p__CIexp = (void *)GetProcAddress(msvcrt, "_CIexp");
-    p__CIfmod = (void *)GetProcAddress(msvcrt, "_CIfmod");
-    p__CIlog = (void *)GetProcAddress(msvcrt, "_CIlog");
-    p__CIlog10 = (void *)GetProcAddress(msvcrt, "_CIlog10");
-    p__CIpow = (void *)GetProcAddress(msvcrt, "_CIpow");
-    p__CIsin = (void *)GetProcAddress(msvcrt, "_CIsin");
-    p__CIsinh = (void *)GetProcAddress(msvcrt, "_CIsinh");
-    p__CIsqrt = (void *)GetProcAddress(msvcrt, "_CIsqrt");
-    p__CItan = (void *)GetProcAddress(msvcrt, "_CItan");
-    p__CItanh = (void *)GetProcAddress(msvcrt, "_CItanh");
     p__clearfp = (void *)GetProcAddress(msvcrt, "_clearfp");
     p__configthreadlocale = (void *)GetProcAddress(msvcrt, "_configthreadlocale");
     p__configure_narrow_argv = (void *)GetProcAddress(msvcrt, "_configure_narrow_argv");

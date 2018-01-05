@@ -1489,454 +1489,6 @@ void qemu_tanh(struct qemu_syscall *call)
 
 #endif
 
-struct qemu__CIacos
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI double CDECL _CIacos(void)
-{
-    struct qemu__CIacos call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CIACOS);
-
-    qemu_syscall(&call.super);
-
-    return call.super.dret;
-}
-
-#else
-
-void qemu__CIacos(struct qemu_syscall *call)
-{
-    struct qemu__CIacos *c = (struct qemu__CIacos *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.dret = p__CIacos();
-}
-
-#endif
-
-struct qemu__CIasin
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI double CDECL _CIasin(void)
-{
-    struct qemu__CIasin call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CIASIN);
-
-    qemu_syscall(&call.super);
-
-    return call.super.dret;
-}
-
-#else
-
-void qemu__CIasin(struct qemu_syscall *call)
-{
-    struct qemu__CIasin *c = (struct qemu__CIasin *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.dret = p__CIasin();
-}
-
-#endif
-
-struct qemu__CIatan
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI double CDECL _CIatan(void)
-{
-    struct qemu__CIatan call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CIATAN);
-
-    qemu_syscall(&call.super);
-
-    return call.super.dret;
-}
-
-#else
-
-void qemu__CIatan(struct qemu_syscall *call)
-{
-    struct qemu__CIatan *c = (struct qemu__CIatan *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.dret = p__CIatan();
-}
-
-#endif
-
-struct qemu__CIatan2
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI double CDECL _CIatan2(void)
-{
-    struct qemu__CIatan2 call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CIATAN2);
-
-    qemu_syscall(&call.super);
-
-    return call.super.dret;
-}
-
-#else
-
-void qemu__CIatan2(struct qemu_syscall *call)
-{
-    struct qemu__CIatan2 *c = (struct qemu__CIatan2 *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.dret = p__CIatan2();
-}
-
-#endif
-
-struct qemu__CIcos
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI double CDECL _CIcos(void)
-{
-    struct qemu__CIcos call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CICOS);
-
-    qemu_syscall(&call.super);
-
-    return call.super.dret;
-}
-
-#else
-
-void qemu__CIcos(struct qemu_syscall *call)
-{
-    struct qemu__CIcos *c = (struct qemu__CIcos *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.dret = p__CIcos();
-}
-
-#endif
-
-struct qemu__CIcosh
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI double CDECL _CIcosh(void)
-{
-    struct qemu__CIcosh call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CICOSH);
-
-    qemu_syscall(&call.super);
-
-    return call.super.dret;
-}
-
-#else
-
-void qemu__CIcosh(struct qemu_syscall *call)
-{
-    struct qemu__CIcosh *c = (struct qemu__CIcosh *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.dret = p__CIcosh();
-}
-
-#endif
-
-struct qemu__CIexp
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI double CDECL _CIexp(void)
-{
-    struct qemu__CIexp call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CIEXP);
-
-    qemu_syscall(&call.super);
-
-    return call.super.dret;
-}
-
-#else
-
-void qemu__CIexp(struct qemu_syscall *call)
-{
-    struct qemu__CIexp *c = (struct qemu__CIexp *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.dret = p__CIexp();
-}
-
-#endif
-
-struct qemu__CIfmod
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI double CDECL _CIfmod(void)
-{
-    struct qemu__CIfmod call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CIFMOD);
-
-    qemu_syscall(&call.super);
-
-    return call.super.dret;
-}
-
-#else
-
-void qemu__CIfmod(struct qemu_syscall *call)
-{
-    struct qemu__CIfmod *c = (struct qemu__CIfmod *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.dret = p__CIfmod();
-}
-
-#endif
-
-struct qemu__CIlog
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI double CDECL _CIlog(void)
-{
-    struct qemu__CIlog call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CILOG);
-
-    qemu_syscall(&call.super);
-
-    return call.super.dret;
-}
-
-#else
-
-void qemu__CIlog(struct qemu_syscall *call)
-{
-    struct qemu__CIlog *c = (struct qemu__CIlog *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.dret = p__CIlog();
-}
-
-#endif
-
-struct qemu__CIlog10
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI double CDECL _CIlog10(void)
-{
-    struct qemu__CIlog10 call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CILOG10);
-
-    qemu_syscall(&call.super);
-
-    return call.super.dret;
-}
-
-#else
-
-void qemu__CIlog10(struct qemu_syscall *call)
-{
-    struct qemu__CIlog10 *c = (struct qemu__CIlog10 *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.dret = p__CIlog10();
-}
-
-#endif
-
-struct qemu__CIpow
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI double CDECL _CIpow(void)
-{
-    struct qemu__CIpow call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CIPOW);
-
-    qemu_syscall(&call.super);
-
-    return call.super.dret;
-}
-
-#else
-
-void qemu__CIpow(struct qemu_syscall *call)
-{
-    struct qemu__CIpow *c = (struct qemu__CIpow *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.dret = p__CIpow();
-}
-
-#endif
-
-struct qemu__CIsin
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI double CDECL _CIsin(void)
-{
-    struct qemu__CIsin call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CISIN);
-
-    qemu_syscall(&call.super);
-
-    return call.super.dret;
-}
-
-#else
-
-void qemu__CIsin(struct qemu_syscall *call)
-{
-    struct qemu__CIsin *c = (struct qemu__CIsin *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.dret = p__CIsin();
-}
-
-#endif
-
-struct qemu__CIsinh
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI double CDECL _CIsinh(void)
-{
-    struct qemu__CIsinh call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CISINH);
-
-    qemu_syscall(&call.super);
-
-    return call.super.dret;
-}
-
-#else
-
-void qemu__CIsinh(struct qemu_syscall *call)
-{
-    struct qemu__CIsinh *c = (struct qemu__CIsinh *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.dret = p__CIsinh();
-}
-
-#endif
-
-struct qemu__CIsqrt
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI double CDECL _CIsqrt(void)
-{
-    struct qemu__CIsqrt call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CISQRT);
-
-    qemu_syscall(&call.super);
-
-    return call.super.dret;
-}
-
-#else
-
-void qemu__CIsqrt(struct qemu_syscall *call)
-{
-    struct qemu__CIsqrt *c = (struct qemu__CIsqrt *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.dret = p__CIsqrt();
-}
-
-#endif
-
-struct qemu__CItan
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI double CDECL _CItan(void)
-{
-    struct qemu__CItan call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CITAN);
-
-    qemu_syscall(&call.super);
-
-    return call.super.dret;
-}
-
-#else
-
-void qemu__CItan(struct qemu_syscall *call)
-{
-    struct qemu__CItan *c = (struct qemu__CItan *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.dret = p__CItan();
-}
-
-#endif
-
-struct qemu__CItanh
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI double CDECL _CItanh(void)
-{
-    struct qemu__CItanh call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CITANH);
-
-    qemu_syscall(&call.super);
-
-    return call.super.dret;
-}
-
-#else
-
-void qemu__CItanh(struct qemu_syscall *call)
-{
-    struct qemu__CItanh *c = (struct qemu__CItanh *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.dret = p__CItanh();
-}
-
-#endif
-
 struct qemu__ftol
 {
     struct qemu_syscall super;
@@ -6631,3 +6183,102 @@ void qemu_nanf(struct qemu_syscall *call)
 
 #endif
 
+#if defined(QEMU_DLL_GUEST) && defined(__i386__)
+
+#define __ASM_CFI(str) str
+#define __ASM_NAME(name) "_" name
+#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl _" #name suffix "\n\t.def _" #name suffix "; .scl 2; .type 32; .endef\n_" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc");
+#define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
+
+#define CREATE_FPU_FUNC1(name, call) \
+    __ASM_GLOBAL_FUNC(name, \
+            "pushl   %ebp\n\t" \
+            __ASM_CFI(".cfi_adjust_cfa_offset 4\n\t") \
+            __ASM_CFI(".cfi_rel_offset %ebp,0\n\t") \
+            "movl    %esp, %ebp\n\t" \
+            __ASM_CFI(".cfi_def_cfa_register %ebp\n\t") \
+            "subl    $68, %esp\n\t" /* sizeof(double)*8 + sizeof(int) */ \
+            "fstpl   (%esp)\n\t"    /* store function argument */ \
+            "fwait\n\t" \
+            "movl    $1, %ecx\n\t"  /* empty FPU stack */ \
+            "1:\n\t" \
+            "fxam\n\t" \
+            "fstsw   %ax\n\t" \
+            "and     $0x4500, %ax\n\t" \
+            "cmp     $0x4100, %ax\n\t" \
+            "je      2f\n\t" \
+            "fstpl    (%esp,%ecx,8)\n\t" \
+            "fwait\n\t" \
+            "incl    %ecx\n\t" \
+            "jmp     1b\n\t" \
+            "2:\n\t" \
+            "movl    %ecx, -4(%ebp)\n\t" \
+            "call    " __ASM_NAME( #call ) "\n\t" \
+            "movl    -4(%ebp), %ecx\n\t" \
+            "fstpl   (%esp)\n\t"    /* save result */ \
+            "3:\n\t"                /* restore FPU stack */ \
+            "decl    %ecx\n\t" \
+            "fldl    (%esp,%ecx,8)\n\t" \
+            "cmpl    $0, %ecx\n\t" \
+            "jne     3b\n\t" \
+            "leave\n\t" \
+            __ASM_CFI(".cfi_def_cfa %esp,4\n\t") \
+            __ASM_CFI(".cfi_same_value %ebp\n\t") \
+            "ret")
+
+#define CREATE_FPU_FUNC2(name, call) \
+    __ASM_GLOBAL_FUNC(name, \
+            "pushl   %ebp\n\t" \
+            __ASM_CFI(".cfi_adjust_cfa_offset 4\n\t") \
+            __ASM_CFI(".cfi_rel_offset %ebp,0\n\t") \
+            "movl    %esp, %ebp\n\t" \
+            __ASM_CFI(".cfi_def_cfa_register %ebp\n\t") \
+            "subl    $68, %esp\n\t" /* sizeof(double)*8 + sizeof(int) */ \
+            "fstpl   8(%esp)\n\t"   /* store function argument */ \
+            "fwait\n\t" \
+            "fstpl   (%esp)\n\t" \
+            "fwait\n\t" \
+            "movl    $2, %ecx\n\t"  /* empty FPU stack */ \
+            "1:\n\t" \
+            "fxam\n\t" \
+            "fstsw   %ax\n\t" \
+            "and     $0x4500, %ax\n\t" \
+            "cmp     $0x4100, %ax\n\t" \
+            "je      2f\n\t" \
+            "fstpl    (%esp,%ecx,8)\n\t" \
+            "fwait\n\t" \
+            "incl    %ecx\n\t" \
+            "jmp     1b\n\t" \
+            "2:\n\t" \
+            "movl    %ecx, -4(%ebp)\n\t" \
+            "call    " __ASM_NAME( #call ) "\n\t" \
+            "movl    -4(%ebp), %ecx\n\t" \
+            "fstpl   8(%esp)\n\t"   /* save result */ \
+            "3:\n\t"                /* restore FPU stack */ \
+            "decl    %ecx\n\t" \
+            "fldl    (%esp,%ecx,8)\n\t" \
+            "cmpl    $1, %ecx\n\t" \
+            "jne     3b\n\t" \
+            "leave\n\t" \
+            __ASM_CFI(".cfi_def_cfa %esp,4\n\t") \
+            __ASM_CFI(".cfi_same_value %ebp\n\t") \
+            "ret")
+
+CREATE_FPU_FUNC1(_CIacos, MSVCRT_acos)
+CREATE_FPU_FUNC1(_CIasin, MSVCRT_asin)
+CREATE_FPU_FUNC1(_CIatan, MSVCRT_atan)
+CREATE_FPU_FUNC2(_CIatan2, MSVCRT_atan2)
+CREATE_FPU_FUNC1(_CIcos, MSVCRT_cos)
+CREATE_FPU_FUNC1(_CIcosh, MSVCRT_cosh)
+CREATE_FPU_FUNC1(_CIexp, MSVCRT_exp)
+CREATE_FPU_FUNC2(_CIfmod, MSVCRT_fmod)
+CREATE_FPU_FUNC1(_CIlog, MSVCRT_log)
+CREATE_FPU_FUNC1(_CIlog10, MSVCRT_log10)
+CREATE_FPU_FUNC2(_CIpow, MSVCRT_pow)
+CREATE_FPU_FUNC1(_CIsin, MSVCRT_sin)
+CREATE_FPU_FUNC1(_CIsinh, MSVCRT_sinh)
+CREATE_FPU_FUNC1(_CIsqrt, MSVCRT_sqrt)
+CREATE_FPU_FUNC1(_CItan, MSVCRT_tan)
+CREATE_FPU_FUNC1(_CItanh, MSVCRT_tanh)
+
+#endif

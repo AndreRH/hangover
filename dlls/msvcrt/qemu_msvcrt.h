@@ -99,22 +99,6 @@ enum msvcrt_calls
     CALL__CHMOD,
     CALL__CHSIZE,
     CALL__CHSIZE_S,
-    CALL__CIACOS,
-    CALL__CIASIN,
-    CALL__CIATAN,
-    CALL__CIATAN2,
-    CALL__CICOS,
-    CALL__CICOSH,
-    CALL__CIEXP,
-    CALL__CIFMOD,
-    CALL__CILOG,
-    CALL__CILOG10,
-    CALL__CIPOW,
-    CALL__CISIN,
-    CALL__CISINH,
-    CALL__CISQRT,
-    CALL__CITAN,
-    CALL__CITANH,
     CALL__CLEARFP,
     CALL__CLOSE,
     CALL__COMMIT,
@@ -1227,22 +1211,6 @@ void qemu__chgsignf(struct qemu_syscall *call);
 void qemu__chmod(struct qemu_syscall *c);
 void qemu__chsize(struct qemu_syscall *c);
 void qemu__chsize_s(struct qemu_syscall *c);
-void qemu__CIacos(struct qemu_syscall *call);
-void qemu__CIasin(struct qemu_syscall *call);
-void qemu__CIatan(struct qemu_syscall *call);
-void qemu__CIatan2(struct qemu_syscall *call);
-void qemu__CIcos(struct qemu_syscall *call);
-void qemu__CIcosh(struct qemu_syscall *call);
-void qemu__CIexp(struct qemu_syscall *call);
-void qemu__CIfmod(struct qemu_syscall *call);
-void qemu__CIlog(struct qemu_syscall *call);
-void qemu__CIlog10(struct qemu_syscall *call);
-void qemu__CIpow(struct qemu_syscall *call);
-void qemu__CIsin(struct qemu_syscall *call);
-void qemu__CIsinh(struct qemu_syscall *call);
-void qemu__CIsqrt(struct qemu_syscall *call);
-void qemu__CItan(struct qemu_syscall *call);
-void qemu__CItanh(struct qemu_syscall *call);
 void qemu__clearfp(struct qemu_syscall *call);
 void qemu__close(struct qemu_syscall *c);
 void qemu__commit(struct qemu_syscall *c);
@@ -2286,22 +2254,6 @@ double (* CDECL p_sinh)(double x);
 double (* CDECL p_sqrt)(double x);
 double (* CDECL p_tan)(double x);
 double (* CDECL p_tanh)(double x);
-double (* CDECL p__CIacos)(void);
-double (* CDECL p__CIasin)(void);
-double (* CDECL p__CIatan)(void);
-double (* CDECL p__CIatan2)(void);
-double (* CDECL p__CIcos)(void);
-double (* CDECL p__CIcosh)(void);
-double (* CDECL p__CIexp)(void);
-double (* CDECL p__CIfmod)(void);
-double (* CDECL p__CIlog)(void);
-double (* CDECL p__CIlog10)(void);
-double (* CDECL p__CIpow)(void);
-double (* CDECL p__CIsin)(void);
-double (* CDECL p__CIsinh)(void);
-double (* CDECL p__CIsqrt)(void);
-double (* CDECL p__CItan)(void);
-double (* CDECL p__CItanh)(void);
 LONGLONG (* CDECL p__ftol)(void);
 int (* CDECL p__fpclass)(double num);
 unsigned int (* CDECL p__rotl)(unsigned int num, int shift);
