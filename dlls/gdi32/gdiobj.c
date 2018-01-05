@@ -143,6 +143,19 @@ void qemu_GetObject(struct qemu_syscall *call)
 {
     struct qemu_GetObject *c = (struct qemu_GetObject *)call;
     INT type;
+    struct obj_type
+    {
+        size_t host_size;
+        size_t guest_size;
+        void (*func)(void *, const void *);
+    } convert;
+    union
+    {
+        long dummy;
+        BITMAP bm;
+        DIBSECTION dib;
+    } host_buf;
+
     WINE_TRACE("\n");
 
 #if GUEST_BIT == HOST_BIT
@@ -186,72 +199,91 @@ void qemu_GetObject(struct qemu_syscall *call)
 
         case OBJ_BITMAP:
         {
-            BITMAP bm;
-            struct qemu_BITMAP *bm_guest = QEMU_G2H(c->buffer);
             WINE_TRACE("Translating OBJ_BITMAP\n");
 
-            if (!bm_guest)
+            /* If we ask a DIBSECTION for its size, it will return sizeof(BITMAP). To get a DIBSECTION
+             * to admit to being a DIBSECTION we have to explicitly ask for enough bytes. However, note
+             * that we also have to be able to work with the smaller part when the app only asks for
+             * a BITMAP struct or if the object turns out to be a plain bitmap. */
+            type = call_GetObject(c, sizeof(host_buf.dib), &host_buf.dib);
+            if (c->count >= sizeof(struct qemu_DIBSECTION) && type == sizeof(DIBSECTION))
             {
-                c->super.iret = sizeof(*bm_guest);
-                return;
+                WINE_TRACE("Asking for DIBSECTION due to client request and actual object size.\n");
+                convert.host_size = sizeof(host_buf.dib);
+                convert.guest_size = sizeof(struct qemu_DIBSECTION);
+                convert.func = (void *)DIBSECTION_h2g;
             }
-
-            if (c->count < sizeof(*bm_guest))
+            else
             {
-                WINE_WARN("Size too small\n");
-                c->super.iret = 0;
-                return;
+                WINE_TRACE("Asking for struct BITMAP either because of input size or actual object.\n");
+                convert.host_size = sizeof(host_buf.bm);
+                convert.guest_size = sizeof(struct qemu_BITMAP);
+                convert.func = (void *)BITMAP_h2g;
+                break;
             }
-
-            c->super.iret = call_GetObject(c, sizeof(bm), &bm);
-            if (!c->super.iret)
-                return;
-
-            BITMAP_h2g(bm_guest, &bm);
-            c->super.iret = sizeof(*bm_guest);
             break;
         }
 
         case OBJ_REGION:
             WINE_FIXME("Unexpected object type OBJ_REGION\n");
             c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
-            break;
+            return;
 
         case OBJ_METAFILE:
             WINE_FIXME("Unexpected object type OBJ_METAFILE\n");
             c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
-            break;
+            return;
 
         case OBJ_MEMDC:
             WINE_FIXME("Unexpected object type OBJ_MEMDC\n");
             c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
-            break;
+            return;
 
         case OBJ_EXTPEN:
             WINE_FIXME("Unexpected object type OBJ_EXTPEN\n");
             c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
-            break;
+            return;
 
         case OBJ_ENHMETADC:
             WINE_FIXME("Unexpected object type OBJ_ENHMETADC\n");
             c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
-            break;
+            return;
 
         case OBJ_ENHMETAFILE:
             WINE_FIXME("Unexpected object type OBJ_ENHMETAFILE\n");
             c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
-            break;
+            return;
 
         case OBJ_COLORSPACE:
             WINE_FIXME("Unexpected object type OBJ_COLORSPACE\n");
             c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
-            break;
-
+            return;
 
         default:
             WINE_FIXME("Unexpected object type %x\n", type);
             c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            return;
     }
+
+    if (!c->buffer)
+    {
+        c->super.iret = convert.guest_size;
+        return;
+    }
+
+    if (c->count < convert.guest_size)
+    {
+        WINE_WARN("Size too small\n");
+        c->super.iret = 0;
+        return;
+    }
+
+    c->super.iret = call_GetObject(c, convert.host_size, &host_buf.dummy);
+    if (!c->super.iret)
+        return;
+
+    convert.func(QEMU_G2H(c->buffer), &host_buf.dummy);
+    c->super.iret = convert.guest_size;
 }
 
 #endif

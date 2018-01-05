@@ -68,7 +68,7 @@ struct qemu_BITMAP
     qemu_ptr    bmBits;
 };
 
-static inline void BITMAP_h2g(struct qemu_BITMAP *guest, const BITMAP *host)
+static void BITMAP_h2g(struct qemu_BITMAP *guest, const BITMAP *host)
 {
     guest->bmType = host->bmType;
     guest->bmWidth = host->bmWidth;
@@ -79,7 +79,7 @@ static inline void BITMAP_h2g(struct qemu_BITMAP *guest, const BITMAP *host)
     guest->bmBits = (ULONG_PTR)host->bmBits;
 }
 
-static inline void BITMAP_g2h(BITMAP *host, const struct qemu_BITMAP *guest)
+static void BITMAP_g2h(BITMAP *host, const struct qemu_BITMAP *guest)
 {
     host->bmType = guest->bmType;
     host->bmWidth = guest->bmWidth;
@@ -88,6 +88,37 @@ static inline void BITMAP_g2h(BITMAP *host, const struct qemu_BITMAP *guest)
     host->bmPlanes = guest->bmPlanes;
     host->bmBitsPixel = guest->bmBitsPixel;
     host->bmBits = (void *)(ULONG_PTR)guest->bmBits;
+}
+
+struct qemu_DIBSECTION
+{
+    struct qemu_BITMAP  dsBm;
+    BITMAPINFOHEADER    dsBmih;
+    DWORD               dsBitfields[3];
+    qemu_ptr            dshSection;
+    DWORD               dsOffset;
+};
+
+static void DIBSECTION_h2g(struct qemu_DIBSECTION *guest, const DIBSECTION *host)
+{
+    BITMAP_h2g(&guest->dsBm, &host->dsBm);
+    guest->dsBmih = host->dsBmih;
+    guest->dsBitfields[0] = host->dsBitfields[0];
+    guest->dsBitfields[1] = host->dsBitfields[1];
+    guest->dsBitfields[2] = host->dsBitfields[2];
+    guest->dshSection = (ULONG_PTR)host->dshSection;
+    guest->dsOffset = host->dsOffset;
+}
+
+static void DIBSECTION_g2h(DIBSECTION *host, const struct qemu_DIBSECTION *guest)
+{
+    BITMAP_g2h(&host->dsBm, &guest->dsBm);
+    host->dsBmih = guest->dsBmih;
+    host->dsBitfields[0] = guest->dsBitfields[0];
+    host->dsBitfields[1] = guest->dsBitfields[1];
+    host->dsBitfields[2] = guest->dsBitfields[2];
+    host->dshSection = (HANDLE)(ULONG_PTR)guest->dshSection;
+    host->dsOffset = guest->dsOffset;
 }
 
 #endif
