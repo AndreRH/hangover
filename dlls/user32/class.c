@@ -119,22 +119,6 @@ WINUSERAPI ATOM WINAPI RegisterClassExW(const WNDCLASSEXW* wc)
 
 #else
 
-static inline void wndclassex_htog(WNDCLASSEXW *host, const struct qemu_WNDCLASSEX *g)
-{
-    host->cbSize = sizeof(*host);
-    host->style = g->style;
-    host->lpfnWndProc = (WNDPROC)(ULONG_PTR)g->lpfnWndProc;
-    host->cbClsExtra = g->cbClsExtra;
-    host->cbWndExtra = g->cbWndExtra;
-    host->hInstance = (HANDLE)(ULONG_PTR)g->hInstance;
-    host->hIcon = (HANDLE)(ULONG_PTR)g->hIcon;
-    host->hCursor = (HANDLE)(ULONG_PTR)g->hCursor;
-    host->hbrBackground = (HANDLE)(ULONG_PTR)g->hbrBackground;
-    host->lpszMenuName = (WCHAR *)(ULONG_PTR)g->lpszMenuName;
-    host->lpszClassName = (WCHAR *)(ULONG_PTR)g->lpszClassName;
-    host->hIconSm = (HANDLE)(ULONG_PTR)g->hIconSm;
-}
-
 void qemu_RegisterClassEx(struct qemu_syscall *call)
 {
     struct qemu_RegisterClass *c = (struct qemu_RegisterClass *)call;
@@ -149,7 +133,7 @@ void qemu_RegisterClassEx(struct qemu_syscall *call)
         exw = *(WNDCLASSEXW *)QEMU_G2H(c->wc);
 #else
         /* FIXME: Verify cbSize */
-        wndclassex_htog(&exw, QEMU_G2H(c->wc));
+        WNDCLASSEX_g2h(&exw, QEMU_G2H(c->wc));
 #endif
 
         guest_proc = (ULONG_PTR)exw.lpfnWndProc;
@@ -167,7 +151,7 @@ void qemu_RegisterClassEx(struct qemu_syscall *call)
         exa = *(WNDCLASSEXA *)QEMU_G2H(c->wc);
 #else
         /* FIXME: Verify cbSize */
-        wndclassex_htog((WNDCLASSEXW *)&exa, QEMU_G2H(c->wc));
+        WNDCLASSEX_g2h((WNDCLASSEXW *)&exa, QEMU_G2H(c->wc));
 #endif
 
         guest_proc = (ULONG_PTR)exa.lpfnWndProc;
@@ -599,14 +583,22 @@ WINUSERAPI BOOL WINAPI GetClassInfoA(HINSTANCE hInstance, LPCSTR name, WNDCLASSA
 void qemu_GetClassInfoA(struct qemu_syscall *call)
 {
     struct qemu_GetClassInfoA *c = (struct qemu_GetClassInfoA *)call;
-    WNDCLASSA *wc;
+    WNDCLASSA stack, *wc = &stack;
 
     WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
     wc = QEMU_G2H(c->wc);
+#endif
     c->super.iret = GetClassInfoA(QEMU_G2H(c->hInstance), QEMU_G2H(c->name), wc);
 
     if (c->super.iret)
+    {
         wc->lpfnWndProc = (void *)wndproc_host_to_guest(wc->lpfnWndProc);
+#if GUEST_BIT != HOST_BIT
+        WNDCLASS_h2g(QEMU_G2H(c->wc), (WNDCLASSW *)wc);
+#endif
+    }
 }
 
 #endif
@@ -639,14 +631,22 @@ WINUSERAPI BOOL WINAPI GetClassInfoW(HINSTANCE hInstance, LPCWSTR name, WNDCLASS
 void qemu_GetClassInfoW(struct qemu_syscall *call)
 {
     struct qemu_GetClassInfoW *c = (struct qemu_GetClassInfoW *)call;
-    WNDCLASSW *wc;
+    WNDCLASSW stack, *wc = &stack;
 
     WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
     wc = QEMU_G2H(c->wc);
+#endif
     c->super.iret = GetClassInfoW(QEMU_G2H(c->hInstance), QEMU_G2H(c->name), wc);
 
     if (c->super.iret)
+    {
         wc->lpfnWndProc = (void *)wndproc_host_to_guest(wc->lpfnWndProc);
+#if GUEST_BIT != HOST_BIT
+        WNDCLASS_h2g(QEMU_G2H(c->wc), wc);
+#endif
+    }
 
 }
 

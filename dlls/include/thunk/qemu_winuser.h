@@ -17,6 +17,80 @@ struct qemu_WNDCLASSEX
     qemu_handle hIconSm;
 };
 
+static inline void WNDCLASSEX_g2h(WNDCLASSEXW *host, const struct qemu_WNDCLASSEX *guest)
+{
+    host->cbSize = sizeof(*host);
+    host->style = guest->style;
+    host->lpfnWndProc = (WNDPROC)(ULONG_PTR)guest->lpfnWndProc;
+    host->cbClsExtra = guest->cbClsExtra;
+    host->cbWndExtra = guest->cbWndExtra;
+    host->hInstance = (HANDLE)(ULONG_PTR)guest->hInstance;
+    host->hIcon = (HANDLE)(ULONG_PTR)guest->hIcon;
+    host->hCursor = (HANDLE)(ULONG_PTR)guest->hCursor;
+    host->hbrBackground = (HANDLE)(ULONG_PTR)guest->hbrBackground;
+    host->lpszMenuName = (WCHAR *)(ULONG_PTR)guest->lpszMenuName;
+    host->lpszClassName = (WCHAR *)(ULONG_PTR)guest->lpszClassName;
+    host->hIconSm = (HANDLE)(ULONG_PTR)guest->hIconSm;
+}
+
+static inline void WNDCLASSEX_h2g(struct qemu_WNDCLASSEX *guest, const WNDCLASSEXW *host)
+{
+    guest->cbSize = sizeof(*guest);
+    guest->style = host->style;
+    guest->lpfnWndProc = (ULONG_PTR)host->lpfnWndProc;
+    guest->cbClsExtra = host->cbClsExtra;
+    guest->cbWndExtra = host->cbWndExtra;
+    guest->hInstance = (ULONG_PTR)host->hInstance;
+    guest->hIcon = (ULONG_PTR)host->hIcon;
+    guest->hCursor = (ULONG_PTR)host->hCursor;
+    guest->hbrBackground = (ULONG_PTR)host->hbrBackground;
+    guest->lpszMenuName = (ULONG_PTR)host->lpszMenuName;
+    guest->lpszClassName = (ULONG_PTR)host->lpszClassName;
+    guest->hIconSm = (ULONG_PTR)host->hIconSm;
+}
+
+struct qemu_WNDCLASS
+{
+    UINT        style;
+    qemu_ptr    lpfnWndProc;
+    INT         cbClsExtra;
+    INT         cbWndExtra;
+    qemu_handle hInstance;
+    qemu_handle hIcon;
+    qemu_handle hCursor;
+    qemu_handle hbrBackground;
+    qemu_ptr    lpszMenuName;
+    qemu_ptr    lpszClassName;
+};
+
+static inline void WNDCLASS_g2h(WNDCLASSW *host, const struct qemu_WNDCLASS *guest)
+{
+    host->style = guest->style;
+    host->lpfnWndProc = (WNDPROC)(ULONG_PTR)guest->lpfnWndProc;
+    host->cbClsExtra = guest->cbClsExtra;
+    host->cbWndExtra = guest->cbWndExtra;
+    host->hInstance = (HANDLE)(ULONG_PTR)guest->hInstance;
+    host->hIcon = (HANDLE)(ULONG_PTR)guest->hIcon;
+    host->hCursor = (HANDLE)(ULONG_PTR)guest->hCursor;
+    host->hbrBackground = (HANDLE)(ULONG_PTR)guest->hbrBackground;
+    host->lpszMenuName = (WCHAR *)(ULONG_PTR)guest->lpszMenuName;
+    host->lpszClassName = (WCHAR *)(ULONG_PTR)guest->lpszClassName;
+}
+
+static inline void WNDCLASS_h2g(struct qemu_WNDCLASS *guest, const WNDCLASSW *host)
+{
+    guest->style = host->style;
+    guest->lpfnWndProc = (ULONG_PTR)host->lpfnWndProc;
+    guest->cbClsExtra = host->cbClsExtra;
+    guest->cbWndExtra = host->cbWndExtra;
+    guest->hInstance = (ULONG_PTR)host->hInstance;
+    guest->hIcon = (ULONG_PTR)host->hIcon;
+    guest->hCursor = (ULONG_PTR)host->hCursor;
+    guest->hbrBackground = (ULONG_PTR)host->hbrBackground;
+    guest->lpszMenuName = (ULONG_PTR)host->lpszMenuName;
+    guest->lpszClassName = (ULONG_PTR)host->lpszClassName;
+}
+
 struct qemu_CREATESTRUCT
 {
     qemu_ptr        lpCreateParams;
