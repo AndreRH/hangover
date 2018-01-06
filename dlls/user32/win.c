@@ -1580,8 +1580,33 @@ WINUSERAPI BOOL WINAPI FlashWindowEx(PFLASHWINFO pfinfo)
 void qemu_FlashWindowEx(struct qemu_syscall *call)
 {
     struct qemu_FlashWindowEx *c = (struct qemu_FlashWindowEx *)call;
+    FLASHWINFO stack, *info = &stack;
+    struct qemu_FLASHWINFO *info32;
+
     WINE_TRACE("\n");
-    c->super.iret = FlashWindowEx(QEMU_G2H(c->pfinfo));
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->pfinfo);
+#else
+    info32 = QEMU_G2H(c->pfinfo);
+    if (info32)
+    {
+        if (info32->cbSize == sizeof(*info32))
+        {
+            info->cbSize = sizeof(*info);
+            FLASHWINFO_g2h(info, info32);
+        }
+        else
+        {
+            info->cbSize = 0;
+        }
+    }
+    else
+    {
+        info = NULL;
+    }
+#endif
+
+    c->super.iret = FlashWindowEx(info);
 }
 
 #endif

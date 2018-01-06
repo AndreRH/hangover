@@ -399,13 +399,39 @@ static inline void GUITHREADINFO_h2g(struct qemu_GUITHREADINFO *guest, const GUI
 {
     guest->cbSize = sizeof(*guest);
     guest->flags = host->flags;
-    guest->hwndActive = (LONG_PTR)guest->hwndActive;
-    guest->hwndFocus = (LONG_PTR)guest->hwndFocus;
-    guest->hwndCapture = (LONG_PTR)guest->hwndCapture;
-    guest->hwndMenuOwner = (LONG_PTR)guest->hwndMenuOwner;
-    guest->hwndMoveSize = (LONG_PTR)guest->hwndMoveSize;
-    guest->hwndCaret = (LONG_PTR)guest->hwndCaret;
+    guest->hwndActive = (LONG_PTR)host->hwndActive;
+    guest->hwndFocus = (LONG_PTR)host->hwndFocus;
+    guest->hwndCapture = (LONG_PTR)host->hwndCapture;
+    guest->hwndMenuOwner = (LONG_PTR)host->hwndMenuOwner;
+    guest->hwndMoveSize = (LONG_PTR)host->hwndMoveSize;
+    guest->hwndCaret = (LONG_PTR)host->hwndCaret;
     guest->rcCaret = host->rcCaret;
+}
+
+struct qemu_FLASHWINFO
+{
+    UINT        cbSize;
+    qemu_handle hwnd;
+    DWORD       dwFlags;
+    UINT        uCount;
+    DWORD       dwTimeout;
+};
+
+static inline void FLASHWINFO_g2h(FLASHWINFO *host, const struct qemu_FLASHWINFO *guest)
+{
+    host->hwnd = HANDLE_g2h(guest->hwnd);
+    host->dwFlags = guest->dwFlags;
+    host->uCount = guest->uCount;
+    host->dwTimeout = guest->dwTimeout;
+}
+
+static inline void FLASHWINFO_h2g(struct qemu_FLASHWINFO *guest, const FLASHWINFO *host)
+{
+    guest->cbSize = sizeof(*guest);
+    guest->hwnd = (LONG_PTR)host->hwnd;
+    guest->dwFlags = host->dwFlags;
+    guest->uCount = host->uCount;
+    guest->dwTimeout = host->dwTimeout;
 }
 
 #endif
