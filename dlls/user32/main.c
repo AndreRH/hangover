@@ -1078,6 +1078,15 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             break;
         }
 
+        case WM_MDICREATE:
+        {
+            struct qemu_MDICREATESTRUCT *guest_mdi = (struct qemu_MDICREATESTRUCT *)msg_in->lParam;
+            MDICREATESTRUCTW *host_mdi = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_mdi));
+            MDICREATESTRUCT_g2h(host_mdi, guest_mdi);
+            msg_out->lParam = (LPARAM)host_mdi;
+            break;
+        }
+
         case WM_WINDOWPOSCHANGING:
         case WM_WINDOWPOSCHANGED:
         {
@@ -1196,6 +1205,10 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
             break;
         }
 
+        case WM_MDICREATE:
+            HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
+
         case WM_WINDOWPOSCHANGING:
         case WM_WINDOWPOSCHANGED:
         {
@@ -1292,6 +1305,15 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             break;
         }
 
+        case WM_MDICREATE:
+        {
+                MDICREATESTRUCTW *mdi_cs = (MDICREATESTRUCTW *)msg_in->lParam;
+                struct qemu_MDICREATESTRUCT *mdi_cs_guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*mdi_cs_guest));
+                MDICREATESTRUCT_h2g(mdi_cs_guest, mdi_cs);
+                msg_in->lParam = (ULONG_PTR)mdi_cs_guest;
+            break;
+        }
+
         case WM_NCCALCSIZE:
         {
             /* FIXME: This should not be necessary if we restriced the host stack to < 4 GB. */
@@ -1364,6 +1386,10 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
             HeapFree(GetProcessHeap(), 0, guest_cs);
             break;
         }
+
+        case WM_MDICREATE:
+            HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
 
         case WM_NCCALCSIZE:
             /* FIXME: This should not be necessary if we restriced the host stack to < 4 GB. */
