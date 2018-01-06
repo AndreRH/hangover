@@ -1251,8 +1251,63 @@ WINGDIAPI UINT WINAPI GetOutlineTextMetricsA(HDC hdc, UINT cbData, LPOUTLINETEXT
 void qemu_GetOutlineTextMetricsA(struct qemu_syscall *call)
 {
     struct qemu_GetOutlineTextMetricsA *c = (struct qemu_GetOutlineTextMetricsA *)call;
+    OUTLINETEXTMETRICA *metric;
+    UINT size, num, i;
+    struct qemu_OUTLINETEXTMETRICA *metric32, copy32;
+
     WINE_TRACE("\n");
-    c->super.iret = GetOutlineTextMetricsA(QEMU_G2H(c->hdc), c->cbData, QEMU_G2H(c->lpOTM));
+#if GUEST_BIT == HOST_BIT
+    metric = QEMU_G2H(c->lpOTM);
+    size = c->cbData;
+#else
+    if (!c->lpOTM)
+    {
+        metric = NULL;
+        size = c->cbData;
+    }
+    else
+    {
+        size = c->cbData + sizeof(*metric) - sizeof(*metric32);
+        WINE_TRACE("size in %lu, size out %u\n", c->cbData, size);
+        metric = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size);
+        metric->otmSize = size;
+    }
+#endif
+
+    c->super.iret = GetOutlineTextMetricsA(QEMU_G2H(c->hdc), size, metric);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret)
+    {
+        if (c->lpOTM)
+        {
+            metric32 = QEMU_G2H(c->lpOTM);
+            OUTLINETEXTMETRICA_h2g(&copy32, metric);
+            copy32.otmSize += sizeof(copy32) - sizeof(*metric);
+            memcpy(metric32, &copy32, min(sizeof(copy32), c->cbData));
+
+            if (size > sizeof(*metric))
+            {
+                memcpy((char *)metric32 + sizeof(*metric32), (char *)metric + sizeof(*metric), size - sizeof(*metric));
+
+                /* The string pointers are relative to the start of the metric structure, so just adjust for size. */
+                if (metric32->otmpFamilyName)
+                    metric32->otmpFamilyName += sizeof(*metric32) - sizeof(*metric);
+
+                if (metric32->otmpFaceName)
+                    metric32->otmpFaceName += sizeof(*metric32) - sizeof(*metric);
+
+                if (metric32->otmpStyleName)
+                    metric32->otmpStyleName += sizeof(*metric32) - sizeof(*metric);
+
+                if (metric32->otmpFullName)
+                    metric32->otmpFullName += sizeof(*metric32) - sizeof(*metric);
+            }
+        }
+        c->super.iret += sizeof(struct qemu_OUTLINETEXTMETRICA) - sizeof(OUTLINETEXTMETRICA);
+    }
+    HeapFree(GetProcessHeap(), 0, metric);
+#endif
 }
 
 #endif
@@ -1285,8 +1340,63 @@ WINGDIAPI UINT WINAPI GetOutlineTextMetricsW(HDC hdc, UINT cbData, LPOUTLINETEXT
 void qemu_GetOutlineTextMetricsW(struct qemu_syscall *call)
 {
     struct qemu_GetOutlineTextMetricsW *c = (struct qemu_GetOutlineTextMetricsW *)call;
+    OUTLINETEXTMETRICW *metric;
+    UINT size, num, i;
+    struct qemu_OUTLINETEXTMETRICW *metric32, copy32;
+
     WINE_TRACE("\n");
-    c->super.iret = GetOutlineTextMetricsW(QEMU_G2H(c->hdc), c->cbData, QEMU_G2H(c->lpOTM));
+#if GUEST_BIT == HOST_BIT
+    metric = QEMU_G2H(c->lpOTM);
+    size = c->cbData;
+#else
+    if (!c->lpOTM)
+    {
+        metric = NULL;
+        size = c->cbData;
+    }
+    else
+    {
+        size = c->cbData + sizeof(*metric) - sizeof(*metric32);
+        WINE_TRACE("size in %lu, size out %u\n", c->cbData, size);
+        metric = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size);
+        metric->otmSize = size;
+    }
+#endif
+
+    c->super.iret = GetOutlineTextMetricsW(QEMU_G2H(c->hdc), size, metric);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret)
+    {
+        if (c->lpOTM)
+        {
+            metric32 = QEMU_G2H(c->lpOTM);
+            OUTLINETEXTMETRICW_h2g(&copy32, metric);
+            copy32.otmSize += sizeof(copy32) - sizeof(*metric);
+            memcpy(metric32, &copy32, min(sizeof(copy32), c->cbData));
+
+            if (size > sizeof(*metric))
+            {
+                memcpy((char *)metric32 + sizeof(*metric32), (char *)metric + sizeof(*metric), size - sizeof(*metric));
+
+                /* The string pointers are relative to the start of the metric structure, so just adjust for size. */
+                if (metric32->otmpFamilyName)
+                    metric32->otmpFamilyName += sizeof(*metric32) - sizeof(*metric);
+
+                if (metric32->otmpFaceName)
+                    metric32->otmpFaceName += sizeof(*metric32) - sizeof(*metric);
+
+                if (metric32->otmpStyleName)
+                    metric32->otmpStyleName += sizeof(*metric32) - sizeof(*metric);
+
+                if (metric32->otmpFullName)
+                    metric32->otmpFullName += sizeof(*metric32) - sizeof(*metric);
+            }
+        }
+        c->super.iret += sizeof(struct qemu_OUTLINETEXTMETRICW) - sizeof(OUTLINETEXTMETRICW);
+    }
+    HeapFree(GetProcessHeap(), 0, metric);
+#endif
 }
 
 #endif

@@ -201,7 +201,8 @@ void qemu_GetObject(struct qemu_syscall *call)
             return;
 
         case OBJ_FONT:
-            WINE_FIXME("Unexpected object type OBJ_FONT\n");
+            /* LOGFONTA and LOGFONTW do not differ between 32 and 64 bit. */
+            WINE_TRACE("Passthrough object OBJ_FONT\n");
             c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
             return;
 

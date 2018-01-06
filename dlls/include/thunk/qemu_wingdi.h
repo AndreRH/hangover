@@ -142,4 +142,242 @@ static void LOGBRUSH_g2h(LOGBRUSH *host, const struct qemu_LOGBRUSH *guest)
     host->lbHatch = (ULONG_PTR)guest->lbHatch;
 }
 
+#include <pshpack4.h>
+
+struct qemu_PANOSE
+{
+    BYTE bFamilyType;
+    BYTE bSerifStyle;
+    BYTE bWeight;
+    BYTE bProportion;
+    BYTE bContrast;
+    BYTE bStrokeVariation;
+    BYTE bArmStyle;
+    BYTE bLetterform;
+    BYTE bMidline;
+    BYTE bXHeight;
+};
+
+struct qemu_OUTLINETEXTMETRICA
+{
+    UINT          otmSize;
+    TEXTMETRICA   otmTextMetrics;
+    BYTE          otmFiller;
+    struct qemu_PANOSE otmPanoseNumber;
+    UINT          otmfsSelection;
+    UINT          otmfsType;
+    INT           otmsCharSlopeRise;
+    INT           otmsCharSlopeRun;
+    INT           otmItalicAngle;
+    UINT          otmEMSquare;
+    INT           otmAscent;
+    INT           otmDescent;
+    UINT          otmLineGap;
+    UINT          otmsCapEmHeight;
+    UINT          otmsXHeight;
+    RECT          otmrcFontBox;
+    INT           otmMacAscent;
+    INT           otmMacDescent;
+    UINT          otmMacLineGap;
+    UINT          otmusMinimumPPEM;
+    POINT         otmptSubscriptSize;
+    POINT         otmptSubscriptOffset;
+    POINT         otmptSuperscriptSize;
+    POINT         otmptSuperscriptOffset;
+    UINT          otmsStrikeoutSize;
+    INT           otmsStrikeoutPosition;
+    INT           otmsUnderscoreSize;
+    INT           otmsUnderscorePosition;
+    qemu_ptr      otmpFamilyName;
+    qemu_ptr      otmpFaceName;
+    qemu_ptr      otmpStyleName;
+    qemu_ptr      otmpFullName;
+};
+
+struct qemu_OUTLINETEXTMETRICW
+{
+    UINT          otmSize;
+    TEXTMETRICW   otmTextMetrics;
+    BYTE            otmFiller;
+    struct qemu_PANOSE otmPanoseNumber;
+    UINT          otmfsSelection;
+    UINT          otmfsType;
+    INT           otmsCharSlopeRise;
+    INT           otmsCharSlopeRun;
+    INT           otmItalicAngle;
+    UINT          otmEMSquare;
+    INT           otmAscent;
+    INT           otmDescent;
+    UINT          otmLineGap;
+    UINT          otmsCapEmHeight;
+    UINT          otmsXHeight;
+    RECT          otmrcFontBox;
+    INT           otmMacAscent;
+    INT           otmMacDescent;
+    UINT          otmMacLineGap;
+    UINT          otmusMinimumPPEM;
+    POINT         otmptSubscriptSize;
+    POINT         otmptSubscriptOffset;
+    POINT         otmptSuperscriptSize;
+    POINT         otmptSuperscriptOffset;
+    UINT          otmsStrikeoutSize;
+    INT           otmsStrikeoutPosition;
+    INT           otmsUnderscoreSize;
+    INT           otmsUnderscorePosition;
+    qemu_ptr      otmpFamilyName;
+    qemu_ptr      otmpFaceName;
+    qemu_ptr      otmpStyleName;
+    qemu_ptr      otmpFullName;
+};
+
+#include <poppack.h>
+
+static void OUTLINETEXTMETRICA_h2g(struct qemu_OUTLINETEXTMETRICA *guest, const OUTLINETEXTMETRICA *host)
+{
+    guest->otmSize = host->otmSize;
+    guest->otmTextMetrics = host->otmTextMetrics;
+    guest->otmFiller = host->otmFiller;
+    memcpy(&guest->otmPanoseNumber, &host->otmPanoseNumber, sizeof(guest->otmPanoseNumber));
+    guest->otmfsSelection = host->otmfsSelection;
+    guest->otmfsType = host->otmfsType;
+    guest->otmsCharSlopeRise = host->otmsCharSlopeRise;
+    guest->otmsCharSlopeRun = host->otmsCharSlopeRun;
+    guest->otmItalicAngle = host->otmItalicAngle;
+    guest->otmEMSquare = host->otmEMSquare;
+    guest->otmEMSquare = host->otmEMSquare;
+    guest->otmAscent = host->otmAscent;
+    guest->otmDescent = host->otmDescent;
+    guest->otmLineGap = host->otmLineGap;
+    guest->otmsCapEmHeight = host->otmsCapEmHeight;
+    guest->otmsXHeight = host->otmsXHeight;
+    guest->otmrcFontBox = host->otmrcFontBox;
+    guest->otmMacAscent = host->otmMacAscent;
+    guest->otmMacDescent = host->otmMacDescent;
+    guest->otmMacLineGap = host->otmMacLineGap;
+    guest->otmusMinimumPPEM = host->otmusMinimumPPEM;
+    guest->otmptSubscriptSize = host->otmptSubscriptSize;
+    guest->otmptSubscriptOffset = host->otmptSubscriptOffset;
+    guest->otmptSuperscriptSize = host->otmptSuperscriptSize;
+    guest->otmptSuperscriptOffset = host->otmptSuperscriptOffset;
+    guest->otmsStrikeoutSize = host->otmsStrikeoutSize;
+    guest->otmptSubscriptOffset = host->otmptSubscriptOffset;
+    guest->otmsStrikeoutPosition = host->otmsStrikeoutPosition;
+    guest->otmsUnderscoreSize = host->otmsUnderscoreSize;
+    guest->otmpFamilyName = (ULONG_PTR)host->otmpFamilyName;
+    guest->otmpFaceName = (ULONG_PTR)host->otmpFaceName;
+    guest->otmpStyleName = (ULONG_PTR)host->otmpStyleName;
+    guest->otmpFullName = (ULONG_PTR)host->otmpFullName;
+}
+
+static void OUTLINETEXTMETRICA_g2h(OUTLINETEXTMETRICA *host, const struct qemu_OUTLINETEXTMETRICA *guest)
+{
+    host->otmSize = guest->otmSize;
+    host->otmTextMetrics = guest->otmTextMetrics;
+    host->otmFiller = guest->otmFiller;
+    memcpy(&host->otmPanoseNumber, &guest->otmPanoseNumber, sizeof(guest->otmPanoseNumber));
+    host->otmfsSelection = guest->otmfsSelection;
+    host->otmfsType = guest->otmfsType;
+    host->otmsCharSlopeRise = guest->otmsCharSlopeRise;
+    host->otmsCharSlopeRun = guest->otmsCharSlopeRun;
+    host->otmItalicAngle = guest->otmItalicAngle;
+    host->otmEMSquare = guest->otmEMSquare;
+    host->otmEMSquare = guest->otmEMSquare;
+    host->otmAscent = guest->otmAscent;
+    host->otmDescent = guest->otmDescent;
+    host->otmLineGap = guest->otmLineGap;
+    host->otmsCapEmHeight = guest->otmsCapEmHeight;
+    host->otmsXHeight = guest->otmsXHeight;
+    host->otmrcFontBox = guest->otmrcFontBox;
+    host->otmMacAscent = guest->otmMacAscent;
+    host->otmMacDescent = guest->otmMacDescent;
+    host->otmMacLineGap = guest->otmMacLineGap;
+    host->otmusMinimumPPEM = guest->otmusMinimumPPEM;
+    host->otmptSubscriptSize = guest->otmptSubscriptSize;
+    host->otmptSubscriptOffset = guest->otmptSubscriptOffset;
+    host->otmptSuperscriptSize = guest->otmptSuperscriptSize;
+    host->otmptSuperscriptOffset = guest->otmptSuperscriptOffset;
+    host->otmsStrikeoutSize = guest->otmsStrikeoutSize;
+    host->otmptSubscriptOffset = guest->otmptSubscriptOffset;
+    host->otmsStrikeoutPosition = guest->otmsStrikeoutPosition;
+    host->otmsUnderscoreSize = guest->otmsUnderscoreSize;
+    host->otmpFamilyName = (char *)(ULONG_PTR)guest->otmpFamilyName;
+    host->otmpFaceName = (char *)(ULONG_PTR)guest->otmpFaceName;
+    host->otmpStyleName = (char *)(ULONG_PTR)guest->otmpStyleName;
+    host->otmpFullName = (char *)(ULONG_PTR)guest->otmpFullName;
+}
+
+static void OUTLINETEXTMETRICW_h2g(struct qemu_OUTLINETEXTMETRICW *guest, const OUTLINETEXTMETRICW *host)
+{
+    guest->otmSize = host->otmSize;
+    guest->otmTextMetrics = host->otmTextMetrics;
+    guest->otmFiller = host->otmFiller;
+    memcpy(&guest->otmPanoseNumber, &host->otmPanoseNumber, sizeof(guest->otmPanoseNumber));
+    guest->otmfsSelection = host->otmfsSelection;
+    guest->otmfsType = host->otmfsType;
+    guest->otmsCharSlopeRise = host->otmsCharSlopeRise;
+    guest->otmsCharSlopeRun = host->otmsCharSlopeRun;
+    guest->otmItalicAngle = host->otmItalicAngle;
+    guest->otmEMSquare = host->otmEMSquare;
+    guest->otmEMSquare = host->otmEMSquare;
+    guest->otmAscent = host->otmAscent;
+    guest->otmDescent = host->otmDescent;
+    guest->otmLineGap = host->otmLineGap;
+    guest->otmsCapEmHeight = host->otmsCapEmHeight;
+    guest->otmsXHeight = host->otmsXHeight;
+    guest->otmrcFontBox = host->otmrcFontBox;
+    guest->otmMacAscent = host->otmMacAscent;
+    guest->otmMacDescent = host->otmMacDescent;
+    guest->otmMacLineGap = host->otmMacLineGap;
+    guest->otmusMinimumPPEM = host->otmusMinimumPPEM;
+    guest->otmptSubscriptSize = host->otmptSubscriptSize;
+    guest->otmptSubscriptOffset = host->otmptSubscriptOffset;
+    guest->otmptSuperscriptSize = host->otmptSuperscriptSize;
+    guest->otmptSuperscriptOffset = host->otmptSuperscriptOffset;
+    guest->otmsStrikeoutSize = host->otmsStrikeoutSize;
+    guest->otmptSubscriptOffset = host->otmptSubscriptOffset;
+    guest->otmsStrikeoutPosition = host->otmsStrikeoutPosition;
+    guest->otmsUnderscoreSize = host->otmsUnderscoreSize;
+    guest->otmpFamilyName = (ULONG_PTR)host->otmpFamilyName;
+    guest->otmpFaceName = (ULONG_PTR)host->otmpFaceName;
+    guest->otmpStyleName = (ULONG_PTR)host->otmpStyleName;
+    guest->otmpFullName = (ULONG_PTR)host->otmpFullName;
+}
+
+static void OUTLINETEXTMETRICW_g2h(OUTLINETEXTMETRICW *host, const struct qemu_OUTLINETEXTMETRICW *guest)
+{
+    host->otmSize = guest->otmSize;
+    host->otmTextMetrics = guest->otmTextMetrics;
+    host->otmFiller = guest->otmFiller;
+    memcpy(&host->otmPanoseNumber, &guest->otmPanoseNumber, sizeof(guest->otmPanoseNumber));
+    host->otmfsSelection = guest->otmfsSelection;
+    host->otmfsType = guest->otmfsType;
+    host->otmsCharSlopeRise = guest->otmsCharSlopeRise;
+    host->otmsCharSlopeRun = guest->otmsCharSlopeRun;
+    host->otmItalicAngle = guest->otmItalicAngle;
+    host->otmEMSquare = guest->otmEMSquare;
+    host->otmEMSquare = guest->otmEMSquare;
+    host->otmAscent = guest->otmAscent;
+    host->otmDescent = guest->otmDescent;
+    host->otmLineGap = guest->otmLineGap;
+    host->otmsCapEmHeight = guest->otmsCapEmHeight;
+    host->otmsXHeight = guest->otmsXHeight;
+    host->otmrcFontBox = guest->otmrcFontBox;
+    host->otmMacAscent = guest->otmMacAscent;
+    host->otmMacDescent = guest->otmMacDescent;
+    host->otmMacLineGap = guest->otmMacLineGap;
+    host->otmusMinimumPPEM = guest->otmusMinimumPPEM;
+    host->otmptSubscriptSize = guest->otmptSubscriptSize;
+    host->otmptSubscriptOffset = guest->otmptSubscriptOffset;
+    host->otmptSuperscriptSize = guest->otmptSuperscriptSize;
+    host->otmptSuperscriptOffset = guest->otmptSuperscriptOffset;
+    host->otmsStrikeoutSize = guest->otmsStrikeoutSize;
+    host->otmptSubscriptOffset = guest->otmptSubscriptOffset;
+    host->otmsStrikeoutPosition = guest->otmsStrikeoutPosition;
+    host->otmsUnderscoreSize = guest->otmsUnderscoreSize;
+    host->otmpFamilyName = (char *)(ULONG_PTR)guest->otmpFamilyName;
+    host->otmpFaceName = (char *)(ULONG_PTR)guest->otmpFaceName;
+    host->otmpStyleName = (char *)(ULONG_PTR)guest->otmpStyleName;
+    host->otmpFullName = (char *)(ULONG_PTR)guest->otmpFullName;
+}
+
 #endif
