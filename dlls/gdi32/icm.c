@@ -196,6 +196,7 @@ void qemu_GetLogColorSpaceA(struct qemu_syscall *call)
 {
     struct qemu_GetLogColorSpaceA *c = (struct qemu_GetLogColorSpaceA *)call;
     WINE_FIXME("Unverified!\n");
+    /* Note: LOGCOLORSPACEA is the same in 32 and 64 bit. */
     c->super.iret = GetLogColorSpaceA(QEMU_G2H(c->colorspace), QEMU_G2H(c->buffer), c->size);
 }
 
@@ -230,6 +231,7 @@ void qemu_GetLogColorSpaceW(struct qemu_syscall *call)
 {
     struct qemu_GetLogColorSpaceW *c = (struct qemu_GetLogColorSpaceW *)call;
     WINE_FIXME("Unverified!\n");
+    /* Note: LOGCOLORSPACEW is the same in 32 and 64 bit. */
     c->super.iret = GetLogColorSpaceW(QEMU_G2H(c->colorspace), QEMU_G2H(c->buffer), c->size);
 }
 
