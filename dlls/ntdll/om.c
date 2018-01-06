@@ -25,6 +25,8 @@
 #include <winternl.h>
 #include <ntdef.h>
 
+#include "thunk/qemu_winternl.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_ntdll.h"
@@ -75,8 +77,57 @@ WINBASEAPI NTSTATUS WINAPI NtQueryObject(IN HANDLE handle, IN OBJECT_INFORMATION
 void qemu_NtQueryObject(struct qemu_syscall *call)
 {
     struct qemu_NtQueryObject *c = (struct qemu_NtQueryObject *)call;
+    OBJECT_NAME_INFORMATION *name;
+    struct qemu_OBJECT_NAME_INFORMATION *guest_name;
+    ULONG alloc_len;
+    ULONG *len_out;
     WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
     c->super.iret = NtQueryObject((HANDLE)c->handle, c->info_class, QEMU_G2H(c->ptr), c->len, QEMU_G2H(c->used_len));
+    return;
+#endif
+
+    len_out = QEMU_G2H(c->used_len);
+    switch (c->info_class)
+    {
+        case ObjectNameInformation:
+            WINE_TRACE("Translating OBJECT_NAME_INFORMATION\n");
+
+            if (len_out)
+                *len_out = 0;
+            if (c->len < sizeof(struct qemu_OBJECT_NAME_INFORMATION))
+            {
+                WINE_WARN("Expect %lu, got %lu\n", c->len, sizeof(struct qemu_OBJECT_NAME_INFORMATION));
+                c->super.iret = STATUS_INFO_LENGTH_MISMATCH;
+                return;
+            }
+
+            alloc_len = c->len + sizeof(*name) - sizeof(*guest_name);
+            name = HeapAlloc(GetProcessHeap(), 0, alloc_len);
+            guest_name = QEMU_G2H(c->ptr);
+
+            c->super.iret = NtQueryObject((HANDLE)c->handle, ObjectNameInformation, name, alloc_len, &alloc_len);
+
+            if (!c->super.iret)
+            {
+                OBJECT_NAME_INFORMATION_h2g(guest_name, name);
+                memcpy((char *)guest_name + sizeof(*guest_name),
+                        (char *)name + sizeof(*name),
+                        alloc_len - sizeof(*name));
+                guest_name->Name.Buffer = (ULONG_PTR)(guest_name + 1);
+
+                if (len_out)
+                    *len_out = alloc_len - sizeof(*name) + sizeof(*guest_name);
+            }
+
+            HeapFree(GetProcessHeap(), 0, name);
+            break;
+
+        default:
+            WINE_FIXME("Unsupported info class 0x%lx\n", c->info_class);
+            c->super.iret = NtQueryObject((HANDLE)c->handle, c->info_class, QEMU_G2H(c->ptr), c->len, len_out);
+    }
 }
 
 #endif
