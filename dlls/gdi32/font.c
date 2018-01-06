@@ -351,7 +351,7 @@ struct qemu_EnumFontFamilies_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t __fastcall EnumFontFamiliesW_guest_cb(struct qemu_EnumFontFamilies_cb *data)
+static uint64_t __fastcall EnumFontFamiliesW_guest_cb(const struct qemu_EnumFontFamilies_cb *data)
 {
     FONTENUMPROCW proc = (FONTENUMPROCW)(ULONG_PTR)data->proc;
     return proc((const LOGFONTW *)(ULONG_PTR)data->font, (const TEXTMETRICW *)(ULONG_PTR)data->metric, data->type, data->param);
@@ -388,17 +388,17 @@ static INT CALLBACK qemu_EnumFontFamiliesW_host_proc(const LOGFONTW *font, const
     INT ret;
     struct
     {
-        LOGFONTW font;
-        TEXTMETRICW metric;
+        ENUMLOGFONTW font;
+        NEWTEXTMETRICEXW metric;
         struct qemu_EnumFontFamilies_cb call;
     } *alloc = NULL;
 
 #if HOST_BIT != GUEST_BIT
     alloc = HeapAlloc(GetProcessHeap(), 0, sizeof(*alloc));
-    memcpy(&alloc->font, font, sizeof(*font));
-    font = &alloc->font;
-    memcpy(&alloc->metric, metric, sizeof(*metric));
-    metric = &alloc->metric;
+    memcpy(&alloc->font, font, sizeof(alloc->font));
+    font = (LOGFONTW *)&alloc->font;
+    memcpy(&alloc->metric, metric, sizeof(alloc->metric));
+    metric = (TEXTMETRICW *)&alloc->metric;
     call = &alloc->call;
 #endif
 
@@ -448,7 +448,7 @@ struct qemu_EnumFontFamiliesExA
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t __fastcall EnumFontFamiliesA_guest_cb(struct qemu_EnumFontFamilies_cb *data)
+static uint64_t __fastcall EnumFontFamiliesA_guest_cb(const struct qemu_EnumFontFamilies_cb *data)
 {
     FONTENUMPROCA proc = (FONTENUMPROCA)(ULONG_PTR)data->proc;
     return proc((const LOGFONTA *)(ULONG_PTR)data->font, (const TEXTMETRICA *)(ULONG_PTR)data->metric, data->type, data->param);
@@ -480,17 +480,17 @@ static INT CALLBACK qemu_EnumFontFamiliesA_host_proc(const LOGFONTA *font, const
     INT ret;
     struct
     {
-        LOGFONTA font;
-        TEXTMETRICA metric;
+        ENUMLOGFONTA font;
+        NEWTEXTMETRICEXA metric;
         struct qemu_EnumFontFamilies_cb call;
     } *alloc = NULL;
 
 #if HOST_BIT != GUEST_BIT
     alloc = HeapAlloc(GetProcessHeap(), 0, sizeof(*alloc));
-    memcpy(&alloc->font, font, sizeof(*font));
-    font = &alloc->font;
-    memcpy(&alloc->metric, metric, sizeof(*metric));
-    metric = &alloc->metric;
+    memcpy(&alloc->font, font, sizeof(alloc->font));
+    font = (LOGFONTA *)&alloc->font;
+    memcpy(&alloc->metric, metric, sizeof(alloc->metric));
+    metric = (TEXTMETRICA *)&alloc->metric;
     call = &alloc->call;
 #endif
 
@@ -522,7 +522,7 @@ void qemu_EnumFontFamiliesExA(struct qemu_syscall *call)
     data.guest_data = c->lParam;
 
     c->super.iret = EnumFontFamiliesExA((HDC)c->hDC, QEMU_G2H(c->plf),
-            c->efproc ? (void *)qemu_EnumFontFamiliesW_host_proc : NULL, (LPARAM)&data, c->dwFlags);
+            c->efproc ? (void *)qemu_EnumFontFamiliesA_host_proc : NULL, (LPARAM)&data, c->dwFlags);
 }
 
 #endif
