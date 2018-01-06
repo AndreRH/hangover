@@ -91,7 +91,7 @@ void qemu_CreateWindowExA(struct qemu_syscall *call)
     classname = QEMU_G2H(c->className);
     data = QEMU_G2H(c->data);
 #if GUEST_BIT != HOST_BIT
-    if (classname && data && !strcasecmp(classname, "mdiclient"))
+    if (classname && !IS_INTRESOURCE(classname) && data && !strcasecmp(classname, "mdiclient"))
     {
         CLIENTCREATESTRUCT_g2h(&client, data);
         data = &client;
@@ -153,17 +153,17 @@ void qemu_CreateWindowExW(struct qemu_syscall *call)
     HINSTANCE inst;
     CLIENTCREATESTRUCT client;
     void *data;
-    WCHAR *name;
+    WCHAR *classname;
     static const WCHAR mdiclientW[] = {'m','d','i','c','l','i','e','n','t',0};
     WINE_TRACE("\n");
 
     /* FIXME: This feels wrong. We special case a window class in CreateWindow to convert a structure.
      * The mdiclient class is pre-registered, and the documentation says to pass a CLIENTCREATESTRUCT
      * in data, so it is the best place I can find to convert this, but still it feels wrong. */
-    name = QEMU_G2H(c->className);
+    classname = QEMU_G2H(c->className);
     data = QEMU_G2H(c->data);
 #if GUEST_BIT != HOST_BIT
-    if (name && data && !lstrcmpiW(name, mdiclientW))
+    if (classname && !IS_INTRESOURCE(classname) && data && !lstrcmpiW(classname, mdiclientW))
     {
         CLIENTCREATESTRUCT_g2h(&client, data);
         data = &client;
@@ -171,7 +171,7 @@ void qemu_CreateWindowExW(struct qemu_syscall *call)
 #endif
 
     /* Do not modify hInstance here, it breaks the tests. Let's see if it is actually necessary. */
-    c->super.iret = (ULONG_PTR)CreateWindowExW(c->exStyle, name, QEMU_G2H(c->windowName), c->style,
+    c->super.iret = (ULONG_PTR)CreateWindowExW(c->exStyle, classname, QEMU_G2H(c->windowName), c->style,
             c->x, c->y, c->width, c->height, QEMU_G2H(c->parent), QEMU_G2H(c->menu), (HINSTANCE)c->instance, data);
 }
 

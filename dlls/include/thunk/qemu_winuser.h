@@ -24,13 +24,13 @@ static inline void WNDCLASSEX_g2h(WNDCLASSEXW *host, const struct qemu_WNDCLASSE
     host->lpfnWndProc = (WNDPROC)(ULONG_PTR)guest->lpfnWndProc;
     host->cbClsExtra = guest->cbClsExtra;
     host->cbWndExtra = guest->cbWndExtra;
-    host->hInstance = (HANDLE)(ULONG_PTR)guest->hInstance;
-    host->hIcon = (HANDLE)(ULONG_PTR)guest->hIcon;
-    host->hCursor = (HANDLE)(ULONG_PTR)guest->hCursor;
-    host->hbrBackground = (HANDLE)(ULONG_PTR)guest->hbrBackground;
+    host->hInstance = HANDLE_g2h(guest->hInstance);
+    host->hIcon = HANDLE_g2h(guest->hIcon);
+    host->hCursor = HANDLE_g2h(guest->hCursor);
+    host->hbrBackground = HANDLE_g2h(guest->hbrBackground);
     host->lpszMenuName = (WCHAR *)(ULONG_PTR)guest->lpszMenuName;
     host->lpszClassName = (WCHAR *)(ULONG_PTR)guest->lpszClassName;
-    host->hIconSm = (HANDLE)(ULONG_PTR)guest->hIconSm;
+    host->hIconSm = HANDLE_g2h(guest->hIconSm);
 }
 
 static inline void WNDCLASSEX_h2g(struct qemu_WNDCLASSEX *guest, const WNDCLASSEXW *host)
