@@ -137,8 +137,13 @@ WINUSERAPI LRESULT WINAPI DefMDIChildProcA(HWND hwnd, UINT message, WPARAM wPara
 void qemu_DefMDIChildProcA(struct qemu_syscall *call)
 {
     struct qemu_DefMDIChildProcA *c = (struct qemu_DefMDIChildProcA *)call;
+    MSG msg_in = {(HWND)c->hwnd, c->message, c->wParam, c->lParam};
+    MSG msg_out;
     WINE_TRACE("\n");
-    c->super.iret = DefMDIChildProcA(QEMU_G2H(c->hwnd), c->message, c->wParam, c->lParam);
+
+    msg_guest_to_host(&msg_out, &msg_in);
+    c->super.iret = DefMDIChildProcA(msg_out.hwnd, msg_out.message, msg_out.wParam, msg_out.lParam);
+    msg_guest_to_host_return(&msg_in, &msg_out);
 }
 
 #endif
@@ -173,8 +178,13 @@ WINUSERAPI LRESULT WINAPI DefMDIChildProcW(HWND hwnd, UINT message, WPARAM wPara
 void qemu_DefMDIChildProcW(struct qemu_syscall *call)
 {
     struct qemu_DefMDIChildProcW *c = (struct qemu_DefMDIChildProcW *)call;
+    MSG msg_in = {(HWND)c->hwnd, c->message, c->wParam, c->lParam};
+    MSG msg_out;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DefMDIChildProcW(QEMU_G2H(c->hwnd), c->message, c->wParam, c->lParam);
+
+    msg_guest_to_host(&msg_out, &msg_in);
+    c->super.iret = DefMDIChildProcW(msg_out.hwnd, msg_out.message, msg_out.wParam, msg_out.lParam);
+    msg_guest_to_host_return(&msg_in, &msg_out);
 }
 
 #endif

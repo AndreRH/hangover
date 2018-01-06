@@ -1058,12 +1058,21 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             break;
 
 #if HOST_BIT != GUEST_BIT
+        case WM_CREATE:
         case WM_NCCREATE:
         {
             struct qemu_CREATESTRUCT *guest = (struct qemu_CREATESTRUCT *)msg_in->lParam;
             CREATESTRUCTW *host = HeapAlloc(GetProcessHeap(), 0, sizeof(*host));
 
             CREATESTRUCT_g2h(host, guest);
+
+            if (host->dwExStyle & WS_EX_MDICHILD)
+            {
+                struct qemu_MDICREATESTRUCT *guest_mdi = host->lpCreateParams;
+                MDICREATESTRUCTW *host_mdi = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_mdi));
+                MDICREATESTRUCT_g2h(host_mdi, guest_mdi);
+                host->lpCreateParams = host_mdi;
+            }
 
             msg_out->lParam = (LPARAM)host;
             break;
@@ -1175,9 +1184,17 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
 #if HOST_BIT != GUEST_BIT
     switch (conv->message)
     {
+        case WM_CREATE:
         case WM_NCCREATE:
-            HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+        {
+            CREATESTRUCTW *host = (CREATESTRUCTW *)conv->lParam;
+
+            if (host->dwExStyle & WS_EX_MDICHILD)
+                HeapFree(GetProcessHeap(), 0, host->lpCreateParams);
+            HeapFree(GetProcessHeap(), 0, host);
+
             break;
+        }
 
         case WM_WINDOWPOSCHANGING:
         case WM_WINDOWPOSCHANGED:
