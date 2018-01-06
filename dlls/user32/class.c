@@ -235,7 +235,7 @@ WINUSERAPI WORD WINAPI GetClassWord(HWND hwnd, INT offset)
     struct qemu_GetClassWord call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCLASSWORD);
     call.hwnd = (LONG_PTR)hwnd;
-    call.offset = (ULONG_PTR)offset;
+    call.offset = offset;
 
     qemu_syscall(&call.super);
 
@@ -267,7 +267,7 @@ DWORD WINAPI user32_GetClassLongW(HWND hwnd, INT offset)
     struct qemu_GetClassLongW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCLASSLONGW);
     call.hwnd = (LONG_PTR)hwnd;
-    call.offset = (ULONG_PTR)offset;
+    call.offset = offset;
 
     qemu_syscall(&call.super);
 
@@ -299,7 +299,7 @@ DWORD WINAPI user32_GetClassLongA(HWND hwnd, INT offset)
     struct qemu_GetClassLongA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCLASSLONGA);
     call.hwnd = (LONG_PTR)hwnd;
-    call.offset = (ULONG_PTR)offset;
+    call.offset = offset;
 
     qemu_syscall(&call.super);
 
@@ -332,7 +332,7 @@ WINUSERAPI WORD WINAPI SetClassWord(HWND hwnd, INT offset, WORD newval)
     struct qemu_SetClassWord call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCLASSWORD);
     call.hwnd = (LONG_PTR)hwnd;
-    call.offset = (ULONG_PTR)offset;
+    call.offset = offset;
     call.newval = (ULONG_PTR)newval;
 
     qemu_syscall(&call.super);
@@ -366,7 +366,7 @@ DWORD WINAPI user32_SetClassLongW(HWND hwnd, INT offset, LONG newval)
     struct qemu_SetClassLongW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCLASSLONGW);
     call.hwnd = (LONG_PTR)hwnd;
-    call.offset = (ULONG_PTR)offset;
+    call.offset = offset;
     call.newval = (ULONG_PTR)newval;
 
     qemu_syscall(&call.super);
@@ -376,11 +376,45 @@ DWORD WINAPI user32_SetClassLongW(HWND hwnd, INT offset, LONG newval)
 
 #else
 
+ULONG_PTR set_class_wndproc(HWND win, BOOL wide, LONG_PTR newval)
+{
+    LONG_PTR host_proc = (LONG_PTR)wndproc_guest_to_host(newval);
+    LONG_PTR old;
+    ULONG_PTR guest_old;
+
+    WINE_TRACE("Application is setting the class proc to 0x%lx, setting host proc 0x%lx.\n",
+            newval, host_proc);
+
+    if (wide)
+        old = SetClassLongPtrW(win, GCLP_WNDPROC, (LONG_PTR)host_proc);
+    else
+        old = SetClassLongPtrA(win, GCLP_WNDPROC, (LONG_PTR)host_proc);
+
+    guest_old = wndproc_host_to_guest((WNDPROC)old);
+
+    WINE_TRACE("Returning old wndproc 0x%lx for host wndproc 0x%lx.\n", guest_old, old);
+
+    return guest_old;
+}
+
 void qemu_SetClassLongW(struct qemu_syscall *call)
 {
     struct qemu_SetClassLongW *c = (struct qemu_SetClassLongW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetClassLongW(QEMU_G2H(c->hwnd), c->offset, c->newval);
+    HWND win;
+    WINE_TRACE("\n");
+
+    win = (HWND)c->hwnd;
+
+    switch (c->offset)
+    {
+        case GCLP_WNDPROC:
+            c->super.iret = set_class_wndproc(win, TRUE, c->newval);
+            break;
+
+        default:
+            c->super.iret = SetClassLongW(win, c->offset, c->newval);
+            break;
+    }
 }
 
 #endif
@@ -400,7 +434,7 @@ DWORD WINAPI user32_SetClassLongA(HWND hwnd, INT offset, LONG newval)
     struct qemu_SetClassLongA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCLASSLONGA);
     call.hwnd = (LONG_PTR)hwnd;
-    call.offset = (ULONG_PTR)offset;
+    call.offset = offset;
     call.newval = (ULONG_PTR)newval;
 
     qemu_syscall(&call.super);
@@ -413,8 +447,21 @@ DWORD WINAPI user32_SetClassLongA(HWND hwnd, INT offset, LONG newval)
 void qemu_SetClassLongA(struct qemu_syscall *call)
 {
     struct qemu_SetClassLongA *c = (struct qemu_SetClassLongA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetClassLongA(QEMU_G2H(c->hwnd), c->offset, c->newval);
+    HWND win;
+
+    WINE_TRACE("\n");
+    win = (HWND)c->hwnd;
+
+    switch (c->offset)
+    {
+        case GCLP_WNDPROC:
+            c->super.iret = set_class_wndproc(win, FALSE, c->newval);
+            break;
+
+        default:
+            c->super.iret = SetClassLongA(win, c->offset, c->newval);
+            break;
+    }
 }
 
 #endif
@@ -469,7 +516,7 @@ WINUSERAPI INT WINAPI GetClassNameW(HWND hwnd, LPWSTR buffer, INT count)
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCLASSNAMEW);
     call.hwnd = (LONG_PTR)hwnd;
     call.buffer = (ULONG_PTR)buffer;
-    call.count = (ULONG_PTR)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -503,7 +550,7 @@ WINUSERAPI UINT WINAPI RealGetWindowClassA(HWND hwnd, LPSTR buffer, UINT count)
     call.super.id = QEMU_SYSCALL_ID(CALL_REALGETWINDOWCLASSA);
     call.hwnd = (LONG_PTR)hwnd;
     call.buffer = (ULONG_PTR)buffer;
-    call.count = (ULONG_PTR)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -537,7 +584,7 @@ WINUSERAPI UINT WINAPI RealGetWindowClassW(HWND hwnd, LPWSTR buffer, UINT count)
     call.super.id = QEMU_SYSCALL_ID(CALL_REALGETWINDOWCLASSW);
     call.hwnd = (LONG_PTR)hwnd;
     call.buffer = (ULONG_PTR)buffer;
-    call.count = (ULONG_PTR)count;
+    call.count = count;
 
     qemu_syscall(&call.super);
 
@@ -760,7 +807,7 @@ WINUSERAPI ULONG_PTR WINAPI GetClassLongPtrA(HWND hwnd, INT offset)
     struct qemu_GetClassLongPtrA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCLASSLONGPTRA);
     call.hwnd = (LONG_PTR)hwnd;
-    call.offset = (ULONG_PTR)offset;
+    call.offset = offset;
 
     qemu_syscall(&call.super);
 
@@ -841,7 +888,7 @@ WINUSERAPI ULONG_PTR WINAPI GetClassLongPtrW(HWND hwnd, INT offset)
     struct qemu_GetClassLongPtrW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCLASSLONGPTRW);
     call.hwnd = (LONG_PTR)hwnd;
-    call.offset = (ULONG_PTR)offset;
+    call.offset = offset;
 
     qemu_syscall(&call.super);
 
@@ -885,7 +932,7 @@ ULONG_PTR WINAPI user32_SetClassLongPtrW(HWND hwnd, INT offset, LONG_PTR newval)
     struct qemu_SetClassLongPtrW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCLASSLONGPTRW);
     call.hwnd = (LONG_PTR)hwnd;
-    call.offset = (ULONG_PTR)offset;
+    call.offset = offset;
     call.newval = (ULONG_PTR)newval;
 
     qemu_syscall(&call.super);
@@ -894,27 +941,6 @@ ULONG_PTR WINAPI user32_SetClassLongPtrW(HWND hwnd, INT offset, LONG_PTR newval)
 }
 
 #else
-
-ULONG_PTR set_class_wndproc(HWND win, BOOL wide, LONG_PTR newval)
-{
-    LONG_PTR host_proc = (LONG_PTR)wndproc_guest_to_host(newval);
-    LONG_PTR old;
-    ULONG_PTR guest_old;
-
-    WINE_TRACE("Application is setting the class proc to 0x%lx, setting host proc 0x%lx.\n",
-            newval, host_proc);
-
-    if (wide)
-        old = SetClassLongPtrW(win, GCLP_WNDPROC, (LONG_PTR)host_proc);
-    else
-        old = SetClassLongPtrA(win, GCLP_WNDPROC, (LONG_PTR)host_proc);
-
-    guest_old = wndproc_host_to_guest((WNDPROC)old);
-
-    WINE_TRACE("Returning old wndproc 0x%lx for host wndproc 0x%lx.\n", guest_old, old);
-
-    return guest_old;
-}
 
 void qemu_SetClassLongPtrW(struct qemu_syscall *call)
 {
@@ -954,7 +980,7 @@ ULONG_PTR WINAPI user32_SetClassLongPtrA(HWND hwnd, INT offset, LONG_PTR newval)
     struct qemu_SetClassLongPtrA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCLASSLONGPTRA);
     call.hwnd = (LONG_PTR)hwnd;
-    call.offset = (ULONG_PTR)offset;
+    call.offset = offset;
     call.newval = (ULONG_PTR)newval;
 
     qemu_syscall(&call.super);
