@@ -164,6 +164,13 @@ void qemu_GetObject(struct qemu_syscall *call)
     return;
 #endif
 
+    /* Don't call GetObjectType on a NULL handle, the GetLastError behaviour differs. */
+    if (!c->handle)
+    {
+        c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+        return;
+    }
+
     type = GetObjectType(QEMU_G2H(c->handle));
 
     switch (type)
@@ -174,7 +181,8 @@ void qemu_GetObject(struct qemu_syscall *call)
             return;
 
         case OBJ_PEN:
-            WINE_FIXME("Unexpected object type OBJ_PEN\n");
+            /* LOGPEN does not differ between 32 and 64 bit. */
+            WINE_TRACE("Passthrough object OBJ_PEN\n");
             c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
             return;
 
