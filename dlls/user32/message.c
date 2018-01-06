@@ -1260,8 +1260,24 @@ WINUSERAPI DWORD WINAPI MsgWaitForMultipleObjects(DWORD count, const HANDLE *han
 void qemu_MsgWaitForMultipleObjects(struct qemu_syscall *call)
 {
     struct qemu_MsgWaitForMultipleObjects *c = (struct qemu_MsgWaitForMultipleObjects *)call;
+    HANDLE *handles;
+    qemu_handle *handles32;
+    unsigned int i;
     WINE_TRACE("\n");
-    c->super.iret = MsgWaitForMultipleObjects(c->count, QEMU_G2H(c->handles), c->wait_all, c->timeout, c->mask);
+
+#if GUEST_BIT == HOST_BIT
+    handles = QEMU_G2H(c->handles);
+#else
+    handles32 = QEMU_G2H(c->handles);
+    handles = HeapAlloc(GetProcessHeap(), 0, c->count);
+    for (i = 0; i < c->count; ++i)
+        handles[i] = (HANDLE)(LONG_PTR)handles32[i];
+#endif
+
+    c->super.iret = MsgWaitForMultipleObjects(c->count, handles, c->wait_all, c->timeout, c->mask);
+
+    if (handles != QEMU_G2H(c->handles))
+        HeapFree(GetProcessHeap(), 0, handles);
 }
 
 #endif
