@@ -168,7 +168,7 @@ WINUSERAPI BOOL WINAPI ShutdownBlockReasonCreate(HWND hwnd, LPCWSTR reason)
 {
     struct qemu_ShutdownBlockReasonCreate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHUTDOWNBLOCKREASONCREATE);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.reason = (ULONG_PTR)reason;
 
     qemu_syscall(&call.super);
@@ -199,7 +199,7 @@ WINUSERAPI BOOL WINAPI ShutdownBlockReasonDestroy(HWND hwnd)
 {
     struct qemu_ShutdownBlockReasonDestroy call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHUTDOWNBLOCKREASONDESTROY);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 

@@ -116,7 +116,7 @@ WINUSERAPI BOOL WINAPI GetAltTabInfoA(HWND hwnd, int iItem, PALTTABINFO pati, LP
 {
     struct qemu_GetAltTabInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETALTTABINFOA);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.iItem = (ULONG_PTR)iItem;
     call.pati = (ULONG_PTR)pati;
     call.pszItemText = (ULONG_PTR)pszItemText;
@@ -154,7 +154,7 @@ WINUSERAPI BOOL WINAPI GetAltTabInfoW(HWND hwnd, int iItem, PALTTABINFO pati, LP
 {
     struct qemu_GetAltTabInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETALTTABINFOW);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.iItem = (ULONG_PTR)iItem;
     call.pati = (ULONG_PTR)pati;
     call.pszItemText = (ULONG_PTR)pszItemText;
@@ -288,7 +288,7 @@ WINUSERAPI DWORD WINAPI SetLogonNotifyWindow(HWINSTA hwinsta,HWND hwnd)
     struct qemu_SetLogonNotifyWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETLOGONNOTIFYWINDOW);
     call.hwinsta = (ULONG_PTR)hwinsta;
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -462,7 +462,7 @@ WINUSERAPI HMONITOR WINAPI MonitorFromWindow(HWND hWnd, DWORD dwFlags)
 {
     struct qemu_MonitorFromWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MONITORFROMWINDOW);
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
     call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
@@ -715,7 +715,7 @@ WINUSERAPI BOOL WINAPI RegisterShellHookWindow(HWND hWnd)
 {
     struct qemu_RegisterShellHookWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERSHELLHOOKWINDOW);
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
 
     qemu_syscall(&call.super);
 
@@ -747,7 +747,7 @@ WINUSERAPI BOOL WINAPI DeregisterShellHookWindow(HWND hWnd)
 {
     struct qemu_DeregisterShellHookWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEREGISTERSHELLHOOKWINDOW);
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
 
     qemu_syscall(&call.super);
 
@@ -1071,7 +1071,7 @@ WINUSERAPI UINT WINAPI WINNLSGetIMEHotkey(HWND hwnd)
 {
     struct qemu_WINNLSGetIMEHotkey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WINNLSGETIMEHOTKEY);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -1104,7 +1104,7 @@ WINUSERAPI BOOL WINAPI WINNLSEnableIME(HWND hwnd, BOOL enable)
 {
     struct qemu_WINNLSEnableIME call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WINNLSENABLEIME);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.enable = (ULONG_PTR)enable;
 
     qemu_syscall(&call.super);
@@ -1137,7 +1137,7 @@ WINUSERAPI BOOL WINAPI WINNLSGetEnableStatus(HWND hwnd)
 {
     struct qemu_WINNLSGetEnableStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WINNLSGETENABLESTATUS);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -1170,7 +1170,7 @@ WINUSERAPI LRESULT WINAPI SendIMEMessageExA(HWND hwnd, LPARAM lparam)
 {
     struct qemu_SendIMEMessageExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDIMEMESSAGEEXA);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.lparam = (ULONG_PTR)lparam;
 
     qemu_syscall(&call.super);
@@ -1204,7 +1204,7 @@ WINUSERAPI LRESULT WINAPI SendIMEMessageExW(HWND hwnd, LPARAM lparam)
 {
     struct qemu_SendIMEMessageExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDIMEMESSAGEEXW);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.lparam = (ULONG_PTR)lparam;
 
     qemu_syscall(&call.super);
@@ -1370,7 +1370,7 @@ WINBASEAPI BOOL WINAPI GetGestureConfig(HWND hwnd, DWORD reserved, DWORD flags, 
 {
     struct qemu_GetGestureConfig call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETGESTURECONFIG);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.reserved = (ULONG_PTR)reserved;
     call.flags = (ULONG_PTR)flags;
     call.count = (ULONG_PTR)count;
@@ -1409,7 +1409,7 @@ WINBASEAPI BOOL WINAPI SetGestureConfig(HWND hwnd, DWORD reserved, UINT id, PGES
 {
     struct qemu_SetGestureConfig call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETGESTURECONFIG);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.reserved = (ULONG_PTR)reserved;
     call.id = (ULONG_PTR)id;
     call.config = (ULONG_PTR)config;
@@ -1444,7 +1444,7 @@ WINUSERAPI BOOL WINAPI IsTouchWindow(HWND hwnd, PULONG flags)
 {
     struct qemu_IsTouchWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISTOUCHWINDOW);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
@@ -1475,7 +1475,7 @@ WINUSERAPI BOOL WINAPI IsWindowRedirectedForPrint(HWND hwnd)
 {
     struct qemu_IsWindowRedirectedForPrint call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISWINDOWREDIRECTEDFORPRINT);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 

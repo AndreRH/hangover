@@ -53,7 +53,7 @@ WINUSERAPI BOOL WINAPI TrackPopupMenuEx(HMENU hMenu, UINT wFlags, INT x, INT y, 
     call.wFlags = (ULONG_PTR)wFlags;
     call.x = (ULONG_PTR)x;
     call.y = (ULONG_PTR)y;
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
     call.lpTpm = (ULONG_PTR)lpTpm;
 
     qemu_syscall(&call.super);
@@ -95,7 +95,7 @@ WINUSERAPI BOOL WINAPI TrackPopupMenu(HMENU hMenu, UINT wFlags, INT x, INT y, IN
     call.x = (ULONG_PTR)x;
     call.y = (ULONG_PTR)y;
     call.nReserved = (ULONG_PTR)nReserved;
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
     call.lpRect = (ULONG_PTR)lpRect;
 
     qemu_syscall(&call.super);
@@ -349,7 +349,7 @@ WINUSERAPI BOOL WINAPI HiliteMenuItem(HWND hWnd, HMENU hMenu, UINT wItemID, UINT
 {
     struct qemu_HiliteMenuItem call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HILITEMENUITEM);
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
     call.hMenu = (ULONG_PTR)hMenu;
     call.wItemID = (ULONG_PTR)wItemID;
     call.wHilite = (ULONG_PTR)wHilite;
@@ -895,7 +895,7 @@ WINUSERAPI HMENU WINAPI GetSystemMenu(HWND hWnd, BOOL bRevert)
 {
     struct qemu_GetSystemMenu call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMMENU);
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
     call.bRevert = (ULONG_PTR)bRevert;
 
     qemu_syscall(&call.super);
@@ -927,7 +927,7 @@ WINUSERAPI BOOL WINAPI SetSystemMenu(HWND hwnd, HMENU hMenu)
 {
     struct qemu_SetSystemMenu call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSYSTEMMENU);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.hMenu = (ULONG_PTR)hMenu;
 
     qemu_syscall(&call.super);
@@ -958,7 +958,7 @@ WINUSERAPI HMENU WINAPI GetMenu(HWND hWnd)
 {
     struct qemu_GetMenu call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENU);
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
 
     qemu_syscall(&call.super);
 
@@ -991,7 +991,7 @@ WINUSERAPI BOOL WINAPI GetMenuBarInfo(HWND hwnd, LONG idObject, LONG idItem, PME
 {
     struct qemu_GetMenuBarInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENUBARINFO);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.idObject = (ULONG_PTR)idObject;
     call.idItem = (ULONG_PTR)idItem;
     call.pmbi = (ULONG_PTR)pmbi;
@@ -1025,7 +1025,7 @@ WINUSERAPI BOOL WINAPI SetMenu(HWND hWnd, HMENU hMenu)
 {
     struct qemu_SetMenu call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMENU);
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
     call.hMenu = (ULONG_PTR)hMenu;
 
     qemu_syscall(&call.super);
@@ -1088,7 +1088,7 @@ WINUSERAPI BOOL WINAPI DrawMenuBar(HWND hWnd)
 {
     struct qemu_DrawMenuBar call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWMENUBAR);
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
 
     qemu_syscall(&call.super);
 
@@ -1122,7 +1122,7 @@ WINUSERAPI DWORD WINAPI DrawMenuBarTemp(HWND hwnd, HDC hDC, LPRECT lprect, HMENU
 {
     struct qemu_DrawMenuBarTemp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWMENUBARTEMP);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.hDC = (ULONG_PTR)hDC;
     call.lprect = (ULONG_PTR)lprect;
     call.hMenu = (ULONG_PTR)hMenu;
@@ -1731,7 +1731,7 @@ WINUSERAPI BOOL WINAPI GetMenuItemRect(HWND hwnd, HMENU hMenu, UINT uItem, RECT 
 {
     struct qemu_GetMenuItemRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENUITEMRECT);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.hMenu = (ULONG_PTR)hMenu;
     call.uItem = (ULONG_PTR)uItem;
     call.rect = (ULONG_PTR)rect;
@@ -1892,7 +1892,7 @@ WINUSERAPI INT WINAPI TranslateAcceleratorA(HWND hWnd, HACCEL hAccel, LPMSG msg)
 {
     struct qemu_TranslateAcceleratorA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRANSLATEACCELERATORA);
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
     call.hAccel = (ULONG_PTR)hAccel;
     call.msg = (ULONG_PTR)msg;
 
@@ -1926,7 +1926,7 @@ WINUSERAPI INT WINAPI TranslateAcceleratorW(HWND hWnd, HACCEL hAccel, LPMSG msg)
 {
     struct qemu_TranslateAcceleratorW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRANSLATEACCELERATORW);
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
     call.hAccel = (ULONG_PTR)hAccel;
     call.msg = (ULONG_PTR)msg;
 
@@ -1962,7 +1962,7 @@ WINBASEAPI DWORD WINAPI CalcMenuBar(HWND hwnd, DWORD left, DWORD right, DWORD to
 {
     struct qemu_CalcMenuBar call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CALCMENUBAR);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.left = left;
     call.right = right;
     call.top = top;
@@ -1999,7 +1999,7 @@ WINBASEAPI INT WINAPI MenuItemFromPoint(HWND hWnd, HMENU hMenu, POINT ptScreen)
 {
     struct qemu_MenuItemFromPoint call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MENUITEMFROMPOINT);
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
     call.hMenu = (ULONG_PTR)hMenu;
     call.ptScreenX = ptScreen.x;
     call.ptScreenY = ptScreen.y;

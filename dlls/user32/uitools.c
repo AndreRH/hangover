@@ -619,7 +619,7 @@ WINUSERAPI BOOL WINAPI DrawAnimatedRects(HWND hwnd, INT idAni, const RECT* lprcF
 {
     struct qemu_DrawAnimatedRects call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWANIMATEDRECTS);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.idAni = (ULONG_PTR)idAni;
     call.lprcFrom = (ULONG_PTR)lprcFrom;
     call.lprcTo = (ULONG_PTR)lprcTo;

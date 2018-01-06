@@ -46,7 +46,7 @@ WINUSERAPI LRESULT WINAPI DefDlgProcA(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 {
     struct qemu_DefDlgProcA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEFDLGPROCA);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.msg = (ULONG_PTR)msg;
     call.wParam = (ULONG_PTR)wParam;
     call.lParam = (ULONG_PTR)lParam;
@@ -82,7 +82,7 @@ WINUSERAPI LRESULT WINAPI DefDlgProcW(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 {
     struct qemu_DefDlgProcW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEFDLGPROCW);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.msg = (ULONG_PTR)msg;
     call.wParam = (ULONG_PTR)wParam;
     call.lParam = (ULONG_PTR)lParam;

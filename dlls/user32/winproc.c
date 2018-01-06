@@ -64,7 +64,7 @@ WINUSERAPI LRESULT WINAPI CallWindowProcA(WNDPROC func, HWND hwnd, UINT msg, WPA
 
     call.super.id = QEMU_SYSCALL_ID(CALL_CALLWINDOWPROCA);
     call.func = (ULONG_PTR)func;
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.msg = msg;
     call.wParam = wParam;
     call.lParam = lParam;
@@ -108,7 +108,7 @@ WINUSERAPI LRESULT WINAPI CallWindowProcW(WNDPROC func, HWND hwnd, UINT msg, WPA
 
     call.super.id = QEMU_SYSCALL_ID(CALL_CALLWINDOWPROCW);
     call.func = (ULONG_PTR)func;
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.msg = msg;
     call.wParam = wParam;
     call.lParam = lParam;
@@ -177,7 +177,7 @@ WINBASEAPI LRESULT WINAPI EditWndProcA(HWND hwnd, UINT msg, WPARAM wParam, LPARA
 {
     struct qemu_EditWndProcA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EDITWNDPROCA);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.msg = msg;
     call.wParam = wParam;
     call.lParam = lParam;

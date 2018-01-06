@@ -46,7 +46,7 @@ WINUSERAPI INT WINAPI SetScrollInfo(HWND hwnd, INT nBar, const SCROLLINFO *info,
 {
     struct qemu_SetScrollInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSCROLLINFO);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.nBar = (ULONG_PTR)nBar;
     call.info = (ULONG_PTR)info;
     call.bRedraw = (ULONG_PTR)bRedraw;
@@ -81,7 +81,7 @@ WINUSERAPI BOOL WINAPI GetScrollInfo(HWND hwnd, INT nBar, LPSCROLLINFO info)
 {
     struct qemu_GetScrollInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSCROLLINFO);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.nBar = (ULONG_PTR)nBar;
     call.info = (ULONG_PTR)info;
 
@@ -115,7 +115,7 @@ WINUSERAPI BOOL WINAPI GetScrollBarInfo(HWND hwnd, LONG idObject, LPSCROLLBARINF
 {
     struct qemu_GetScrollBarInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSCROLLBARINFO);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.idObject = (ULONG_PTR)idObject;
     call.info = (ULONG_PTR)info;
 
@@ -150,7 +150,7 @@ WINUSERAPI INT WINAPI SetScrollPos(HWND hwnd, INT nBar, INT nPos, BOOL bRedraw)
 {
     struct qemu_SetScrollPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSCROLLPOS);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.nBar = (ULONG_PTR)nBar;
     call.nPos = (ULONG_PTR)nPos;
     call.bRedraw = (ULONG_PTR)bRedraw;
@@ -184,7 +184,7 @@ WINUSERAPI INT WINAPI GetScrollPos(HWND hwnd, INT nBar)
 {
     struct qemu_GetScrollPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSCROLLPOS);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.nBar = (ULONG_PTR)nBar;
 
     qemu_syscall(&call.super);
@@ -219,7 +219,7 @@ WINUSERAPI BOOL WINAPI SetScrollRange(HWND hwnd, INT nBar, INT minVal, INT maxVa
 {
     struct qemu_SetScrollRange call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSCROLLRANGE);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.nBar = (ULONG_PTR)nBar;
     call.minVal = (ULONG_PTR)minVal;
     call.maxVal = (ULONG_PTR)maxVal;
@@ -256,7 +256,7 @@ WINUSERAPI BOOL WINAPI GetScrollRange(HWND hwnd, INT nBar, LPINT lpMin, LPINT lp
 {
     struct qemu_GetScrollRange call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSCROLLRANGE);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.nBar = (ULONG_PTR)nBar;
     call.lpMin = (ULONG_PTR)lpMin;
     call.lpMax = (ULONG_PTR)lpMax;
@@ -291,7 +291,7 @@ WINUSERAPI BOOL WINAPI ShowScrollBar(HWND hwnd, INT nBar, BOOL fShow)
 {
     struct qemu_ShowScrollBar call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHOWSCROLLBAR);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.nBar = (ULONG_PTR)nBar;
     call.fShow = (ULONG_PTR)fShow;
 
@@ -325,7 +325,7 @@ WINUSERAPI BOOL WINAPI EnableScrollBar(HWND hwnd, UINT nBar, UINT flags)
 {
     struct qemu_EnableScrollBar call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENABLESCROLLBAR);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.nBar = (ULONG_PTR)nBar;
     call.flags = (ULONG_PTR)flags;
 

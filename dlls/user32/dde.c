@@ -488,8 +488,8 @@ WINUSERAPI BOOL WINAPI ImpersonateDdeClientWindow(HWND hWndClient, HWND hWndServ
 {
     struct qemu_ImpersonateDdeClientWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMPERSONATEDDECLIENTWINDOW);
-    call.hWndClient = (ULONG_PTR)hWndClient;
-    call.hWndServer = (ULONG_PTR)hWndServer;
+    call.hWndClient = (LONG_PTR)hWndClient;
+    call.hWndServer = (LONG_PTR)hWndServer;
 
     qemu_syscall(&call.super);
 
@@ -521,7 +521,7 @@ WINUSERAPI BOOL WINAPI DdeSetQualityOfService(HWND hwndClient, const SECURITY_QU
 {
     struct qemu_DdeSetQualityOfService call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDESETQUALITYOFSERVICE);
-    call.hwndClient = (ULONG_PTR)hwndClient;
+    call.hwndClient = (LONG_PTR)hwndClient;
     call.pqosNew = (ULONG_PTR)pqosNew;
     call.pqosPrev = (ULONG_PTR)pqosPrev;
 

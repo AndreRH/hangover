@@ -48,7 +48,7 @@ WINUSERAPI INT WINAPI MessageBoxA(HWND hWnd, LPCSTR text, LPCSTR title, UINT typ
 {
     struct qemu_MessageBoxA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MESSAGEBOXA);
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
     call.text = (ULONG_PTR)text;
     call.title = (ULONG_PTR)title;
     call.type = (ULONG_PTR)type;
@@ -84,7 +84,7 @@ WINUSERAPI INT WINAPI MessageBoxW(HWND hwnd, LPCWSTR text, LPCWSTR title, UINT t
 {
     struct qemu_MessageBoxW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MESSAGEBOXW);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.text = (ULONG_PTR)text;
     call.title = (ULONG_PTR)title;
     call.type = (ULONG_PTR)type;
@@ -121,7 +121,7 @@ WINUSERAPI INT WINAPI MessageBoxExA(HWND hWnd, LPCSTR text, LPCSTR title, UINT t
 {
     struct qemu_MessageBoxExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MESSAGEBOXEXA);
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
     call.text = (ULONG_PTR)text;
     call.title = (ULONG_PTR)title;
     call.type = (ULONG_PTR)type;
@@ -159,7 +159,7 @@ WINUSERAPI INT WINAPI MessageBoxExW(HWND hWnd, LPCWSTR text, LPCWSTR title, UINT
 {
     struct qemu_MessageBoxExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MESSAGEBOXEXW);
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
     call.text = (ULONG_PTR)text;
     call.title = (ULONG_PTR)title;
     call.type = (ULONG_PTR)type;
@@ -198,7 +198,7 @@ WINUSERAPI INT WINAPI MessageBoxTimeoutA(HWND hWnd, LPCSTR text, LPCSTR title, U
 {
     struct qemu_MessageBoxTimeoutA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MESSAGEBOXTIMEOUTA);
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
     call.text = (ULONG_PTR)text;
     call.title = (ULONG_PTR)title;
     call.type = (ULONG_PTR)type;
@@ -240,7 +240,7 @@ WINUSERAPI INT WINAPI MessageBoxTimeoutW(HWND hWnd, LPCWSTR text, LPCWSTR title,
 {
     struct qemu_MessageBoxTimeoutW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MESSAGEBOXTIMEOUTW);
-    call.hWnd = (ULONG_PTR)hWnd;
+    call.hWnd = (LONG_PTR)hWnd;
     call.text = (ULONG_PTR)text;
     call.title = (ULONG_PTR)title;
     call.type = (ULONG_PTR)type;

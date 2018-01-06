@@ -433,7 +433,7 @@ WINUSERAPI LONG WINAPI ChangeDisplaySettingsExA(LPCSTR devname, LPDEVMODEA devmo
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGEDISPLAYSETTINGSEXA);
     call.devname = (ULONG_PTR)devname;
     call.devmode = (ULONG_PTR)devmode;
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.flags = (ULONG_PTR)flags;
     call.lparam = (ULONG_PTR)lparam;
 
@@ -471,7 +471,7 @@ WINUSERAPI LONG WINAPI ChangeDisplaySettingsExW(LPCWSTR devname, LPDEVMODEW devm
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGEDISPLAYSETTINGSEXW);
     call.devname = (ULONG_PTR)devname;
     call.devmode = (ULONG_PTR)devmode;
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
     call.flags = (ULONG_PTR)flags;
     call.lparam = (ULONG_PTR)lparam;
 

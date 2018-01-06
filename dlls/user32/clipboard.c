@@ -171,7 +171,7 @@ WINUSERAPI BOOL WINAPI OpenClipboard(HWND hwnd)
 {
     struct qemu_OpenClipboard call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENCLIPBOARD);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -313,7 +313,7 @@ WINUSERAPI HWND WINAPI SetClipboardViewer(HWND hwnd)
 {
     struct qemu_SetClipboardViewer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCLIPBOARDVIEWER);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -372,8 +372,8 @@ WINUSERAPI BOOL WINAPI ChangeClipboardChain(HWND hwnd, HWND next)
 {
     struct qemu_ChangeClipboardChain call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGECLIPBOARDCHAIN);
-    call.hwnd = (ULONG_PTR)hwnd;
-    call.next = (ULONG_PTR)next;
+    call.hwnd = (LONG_PTR)hwnd;
+    call.next = (LONG_PTR)next;
 
     qemu_syscall(&call.super);
 
@@ -647,7 +647,7 @@ WINUSERAPI BOOL WINAPI AddClipboardFormatListener(HWND hwnd)
 {
     struct qemu_AddClipboardFormatListener call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDCLIPBOARDFORMATLISTENER);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -677,7 +677,7 @@ WINUSERAPI BOOL WINAPI RemoveClipboardFormatListener(HWND hwnd)
 {
     struct qemu_RemoveClipboardFormatListener call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMOVECLIPBOARDFORMATLISTENER);
-    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwnd = (LONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
