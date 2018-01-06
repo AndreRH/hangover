@@ -380,4 +380,37 @@ static void OUTLINETEXTMETRICW_g2h(OUTLINETEXTMETRICW *host, const struct qemu_O
     host->otmpFullName = (char *)(ULONG_PTR)guest->otmpFullName;
 }
 
+struct qemu_EXTLOGPEN
+{
+    DWORD    elpPenStyle;
+    DWORD    elpWidth;
+    UINT     elpBrushStyle;
+    COLORREF elpColor;
+    qemu_ptr elpHatch;
+    DWORD    elpNumEntries;
+    DWORD    elpStyleEntry[1];
+};
+
+static void EXTLOGPEN_h2g(struct qemu_EXTLOGPEN *guest, const EXTLOGPEN *host)
+{
+    guest->elpPenStyle = host->elpPenStyle;
+    guest->elpWidth = host->elpWidth;
+    guest->elpBrushStyle = host->elpBrushStyle;
+    guest->elpColor = host->elpColor;
+    guest->elpHatch = host->elpHatch;
+    guest->elpNumEntries = host->elpNumEntries;
+    memcpy(guest->elpStyleEntry, host->elpStyleEntry, guest->elpNumEntries * sizeof(guest->elpStyleEntry));
+}
+
+static void EXTLOGPEN_g2h(EXTLOGPEN *host, const struct qemu_EXTLOGPEN *guest)
+{
+    host->elpPenStyle = guest->elpPenStyle;
+    host->elpWidth = guest->elpWidth;
+    host->elpBrushStyle = guest->elpBrushStyle;
+    host->elpColor = guest->elpColor;
+    host->elpHatch = guest->elpHatch;
+    host->elpNumEntries = guest->elpNumEntries;
+    memcpy(host->elpStyleEntry, guest->elpStyleEntry, guest->elpNumEntries * sizeof(host->elpStyleEntry));
+}
+
 #endif

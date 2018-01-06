@@ -155,7 +155,9 @@ void qemu_GetObject(struct qemu_syscall *call)
         BITMAP bm;
         DIBSECTION dib;
         LOGBRUSH brush;
+        EXTLOGPEN extpen;
     } host_buf;
+    EXTLOGPEN *pen_alloc;
 
     WINE_TRACE("\n");
 
@@ -181,7 +183,30 @@ void qemu_GetObject(struct qemu_syscall *call)
             return;
 
         case OBJ_PEN:
-            /* LOGPEN does not differ between 32 and 64 bit. */
+            /* LOGPEN does not differ between 32 and 64 bit, but this may also return an EXTLOGPEN
+             * that needs conversion. */
+
+            if (c->count == sizeof(struct qemu_EXTLOGPEN))
+            {
+                WINE_TRACE("Asked for EXTLOGPEN\n");
+                convert.host_size = call_GetObject(c, sizeof(host_buf.extpen), &host_buf.extpen);
+                if (convert.host_size == sizeof(host_buf.extpen))
+                {
+                    WINE_TRACE("And got an EXTLOGPEN\n");
+                    convert.host_size = sizeof(host_buf.extpen);
+                    convert.guest_size = sizeof(struct qemu_EXTLOGPEN);
+                    convert.func = (void *)EXTLOGPEN_h2g;
+
+                    /* The unused elpStyleEntry will not be properly set by the conversion function
+                     * because elpNumEntries is 0. However, it is part of the size we return, so
+                     * set it here. */
+                    if (c->buffer)
+                        ((struct qemu_EXTLOGPEN *)QEMU_G2H(c->buffer))->elpStyleEntry[0] = 0;
+                    break;
+                }
+                WINE_TRACE("But got a LOGPEN\n");
+            }
+
             WINE_TRACE("Passthrough object OBJ_PEN\n");
             c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
             return;
@@ -257,8 +282,34 @@ void qemu_GetObject(struct qemu_syscall *call)
             return;
 
         case OBJ_EXTPEN:
-            WINE_FIXME("Unexpected object type OBJ_EXTPEN\n");
-            c->super.iret = call_GetObject(c, c->count, QEMU_G2H(c->buffer));
+            /* This one here is nasty because we have any number of style entries. */
+            convert.host_size = call_GetObject(c, 0, NULL);
+            convert.guest_size = convert.host_size + sizeof(struct qemu_EXTLOGPEN) - sizeof(EXTLOGPEN);
+            WINE_TRACE("Required client EXTLOGPEN size: %lu + %lu - %lu = %lu\n", convert.host_size,
+                    sizeof(struct qemu_EXTLOGPEN), sizeof(EXTLOGPEN), convert.guest_size);
+
+            if (!c->buffer)
+            {
+                WINE_TRACE("Just returning the size\n");
+                c->super.iret = convert.guest_size;
+                return;
+            }
+            if (c->count < convert.guest_size)
+            {
+                WINE_WARN("Size %lu too small, want %lu\n", c->count, convert.guest_size);
+                c->super.iret = 0;
+                return;
+            }
+
+            pen_alloc = HeapAlloc(GetProcessHeap(), 0, convert.host_size);
+
+            c->super.iret = call_GetObject(c, convert.host_size, pen_alloc);
+            if (c->super.iret)
+            {
+                EXTLOGPEN_h2g(QEMU_G2H(c->buffer), pen_alloc);
+                c->super.iret = convert.guest_size;
+            }
+            HeapFree(GetProcessHeap(), 0, pen_alloc);
             return;
 
         case OBJ_ENHMETADC:
@@ -290,7 +341,7 @@ void qemu_GetObject(struct qemu_syscall *call)
 
     if (c->count < convert.guest_size)
     {
-        WINE_WARN("Size too small\n");
+        WINE_WARN("Size %lu too small, want %lu\n", c->count, convert.guest_size);
         c->super.iret = 0;
         return;
     }
