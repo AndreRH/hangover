@@ -1847,8 +1847,33 @@ WINUSERAPI BOOL WINAPI GetGUIThreadInfo(DWORD id, GUITHREADINFO *info)
 void qemu_GetGUIThreadInfo(struct qemu_syscall *call)
 {
     struct qemu_GetGUIThreadInfo *c = (struct qemu_GetGUIThreadInfo *)call;
+    GUITHREADINFO stack, *info = &stack;
+    struct qemu_GUITHREADINFO *info32;
     WINE_TRACE("\n");
-    c->super.iret = GetGUIThreadInfo(c->id, QEMU_G2H(c->info));
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->info);
+#else
+    info32 = QEMU_G2H(c->info);
+    if (info32)
+    {
+        if (info32->cbSize == sizeof(*info32))
+            info->cbSize = sizeof(*info);
+        else
+            info->cbSize = 0;
+    }
+    else
+    {
+        info = NULL;
+    }
+#endif
+
+    c->super.iret = GetGUIThreadInfo(c->id, info);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret && info)
+        GUITHREADINFO_h2g(info32, info);
+#endif
 }
 
 #endif

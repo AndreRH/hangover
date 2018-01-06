@@ -370,4 +370,42 @@ struct qemu_CBT_CREATEWND
     qemu_handle hwndInsertAfter;
 };
 
+struct qemu_GUITHREADINFO
+{
+    DWORD       cbSize;
+    DWORD       flags;
+    qemu_handle hwndActive;
+    qemu_handle hwndFocus;
+    qemu_handle hwndCapture;
+    qemu_handle hwndMenuOwner;
+    qemu_handle hwndMoveSize;
+    qemu_handle hwndCaret;
+    RECT        rcCaret;
+};
+
+static inline void GUITHREADINFO_g2h(GUITHREADINFO *host, const struct qemu_GUITHREADINFO *guest)
+{
+    host->flags = guest->flags;
+    host->hwndActive = HANDLE_g2h(guest->hwndActive);
+    host->hwndFocus = HANDLE_g2h(guest->hwndFocus);
+    host->hwndCapture = HANDLE_g2h(guest->hwndCapture);
+    host->hwndMenuOwner = HANDLE_g2h(guest->hwndMenuOwner);
+    host->hwndMoveSize = HANDLE_g2h(guest->hwndMoveSize);
+    host->hwndCaret = HANDLE_g2h(guest->hwndCaret);
+    host->rcCaret = guest->rcCaret;
+}
+
+static inline void GUITHREADINFO_h2g(struct qemu_GUITHREADINFO *guest, const GUITHREADINFO *host)
+{
+    guest->cbSize = sizeof(*guest);
+    guest->flags = host->flags;
+    guest->hwndActive = (LONG_PTR)guest->hwndActive;
+    guest->hwndFocus = (LONG_PTR)guest->hwndFocus;
+    guest->hwndCapture = (LONG_PTR)guest->hwndCapture;
+    guest->hwndMenuOwner = (LONG_PTR)guest->hwndMenuOwner;
+    guest->hwndMoveSize = (LONG_PTR)guest->hwndMoveSize;
+    guest->hwndCaret = (LONG_PTR)guest->hwndCaret;
+    guest->rcCaret = host->rcCaret;
+}
+
 #endif
