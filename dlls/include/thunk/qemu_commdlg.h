@@ -24,7 +24,7 @@ struct qemu_CHOOSEFONT
 static inline void CHOOSEFONT_g2h(CHOOSEFONTW *host, const struct qemu_CHOOSEFONT *guest)
 {
     host->lStructSize = sizeof(*host);
-    host->hwndOwner = (HWND)(ULONG_PTR)guest->hwndOwner;
+    host->hwndOwner = HANDLE_g2h(guest->hwndOwner);
     host->hDC = (HDC)(ULONG_PTR)guest->hDC;
     host->lpLogFont = (LOGFONTW *)(ULONG_PTR)guest->lpLogFont;
     host->iPointSize = guest->iPointSize;
@@ -79,7 +79,7 @@ struct qemu_FINDREPLACE
 static inline void FINDREPLACE_g2h(FINDREPLACEW *host, const struct qemu_FINDREPLACE *guest)
 {
     host->lStructSize = sizeof(*host);
-    host->hwndOwner = (HWND)(ULONG_PTR)guest->hwndOwner;
+    host->hwndOwner = HANDLE_g2h(guest->hwndOwner);
     host->hInstance = (HINSTANCE)(ULONG_PTR)guest->hInstance;
     host->Flags = guest->Flags;
     host->lpstrFindWhat = (WCHAR *)(ULONG_PTR)guest->lpstrFindWhat;
@@ -136,7 +136,7 @@ struct qemu_OPENFILENAME
 static inline void OPENFILENAME_g2h(OPENFILENAMEW *host, const struct qemu_OPENFILENAME *guest)
 {
     host->lStructSize = sizeof(*host);
-    host->hwndOwner = (HWND)(ULONG_PTR)guest->hwndOwner;
+    host->hwndOwner = HANDLE_g2h(guest->hwndOwner);
     host->hInstance = (HINSTANCE)(ULONG_PTR)guest->hInstance;
     host->lpstrFilter = (LPCWSTR)(ULONG_PTR)guest->lpstrFilter;
     host->lpstrCustomFilter = (LPWSTR)(ULONG_PTR)guest->lpstrCustomFilter;
@@ -220,7 +220,7 @@ struct qemu_PRINTDLG
 static inline void PRINTDLG_g2h(PRINTDLGW *host, const struct qemu_PRINTDLG *guest)
 {
     host->lStructSize = sizeof(*host);
-    host->hwndOwner = (HWND)(ULONG_PTR)guest->hwndOwner;
+    host->hwndOwner = HANDLE_g2h(guest->hwndOwner);
     host->hDevMode = (HGLOBAL)(ULONG_PTR)guest->hDevMode;
     host->hDevNames = (HGLOBAL)(ULONG_PTR)guest->hDevNames;
     host->hDC = (HDC)(ULONG_PTR)guest->hDC;
@@ -284,7 +284,7 @@ struct qemu_PAGESETUPDLG
 static inline void PAGESETUPDLG_g2h(PAGESETUPDLGW *host, const struct qemu_PAGESETUPDLG *guest)
 {
     host->lStructSize = sizeof(*host);
-    host->hwndOwner = (HWND)(ULONG_PTR)guest->hwndOwner;
+    host->hwndOwner = HANDLE_g2h(guest->hwndOwner);
     host->hDevMode = (HGLOBAL)(ULONG_PTR)guest->hDevMode;
     host->hDevNames = (HGLOBAL)(ULONG_PTR)guest->hDevNames;
     host->Flags = guest->Flags;

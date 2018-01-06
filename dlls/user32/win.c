@@ -743,7 +743,7 @@ void qemu_SetWindowLongA(struct qemu_syscall *call)
     HWND win;
     WINE_TRACE("\n");
 
-    win = HANDLE_g2h(c->hwnd);
+    win = QEMU_G2H(c->hwnd);
     switch (c->offset)
     {
         case GWLP_WNDPROC:
@@ -789,7 +789,7 @@ void qemu_SetWindowLongW(struct qemu_syscall *call)
     HWND win;
     WINE_TRACE("\n");
 
-    win = HANDLE_g2h(c->hwnd);
+    win = QEMU_G2H(c->hwnd);
     switch (c->offset)
     {
         case GWLP_WNDPROC:

@@ -152,8 +152,8 @@ struct qemu_WINDOWPOS
 
 static inline void WINDOWPOS_g2h(WINDOWPOS *host, const struct qemu_WINDOWPOS *guest)
 {
-    host->hwnd = (HWND)(ULONG_PTR)guest->hwnd;
-    host->hwndInsertAfter = (HWND)(ULONG_PTR)guest->hwndInsertAfter;
+    host->hwnd = HANDLE_g2h(guest->hwnd);
+    host->hwndInsertAfter = HANDLE_g2h(guest->hwndInsertAfter);
     host->x = guest->x;
     host->y = guest->y;
     host->cx = guest->cx;
@@ -344,7 +344,7 @@ struct qemu_MSG
 
 static inline void MSG_g2h(MSG *host, const struct qemu_MSG *guest)
 {
-    host->hwnd = (HWND)(ULONG_PTR)guest->hwnd;
+    host->hwnd = HANDLE_g2h(guest->hwnd);
     host->message = guest->message;
     host->wParam = guest->wParam;
     host->lParam = guest->lParam;

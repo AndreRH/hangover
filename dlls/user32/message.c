@@ -170,7 +170,7 @@ void qemu_SendMessageW(struct qemu_syscall *call)
     MSG msg_out;
     WINE_TRACE("\n");
 
-    msg_in.hwnd = HANDLE_g2h(c->hwnd);
+    msg_in.hwnd = QEMU_G2H(c->hwnd);
     msg_in.message = c->msg;
     msg_in.wParam = c->wparam;
     msg_in.lParam = c->lparam;
@@ -217,7 +217,7 @@ void qemu_SendMessageA(struct qemu_syscall *call)
     MSG msg_out;
     WINE_TRACE("\n");
 
-    msg_in.hwnd = HANDLE_g2h(c->hwnd);
+    msg_in.hwnd = QEMU_G2H(c->hwnd);
     msg_in.message = c->msg;
     msg_in.wParam = c->wparam;
     msg_in.lParam = c->lparam;
