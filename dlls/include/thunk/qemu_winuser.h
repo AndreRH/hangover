@@ -473,4 +473,22 @@ static inline void MDICREATESTRUCT_h2g(struct qemu_MDICREATESTRUCT *guest, const
     guest->lParam = host->lParam;
 }
 
+struct qemu_CLIENTCREATESTRUCT
+{
+    qemu_handle hWindowMenu;
+    UINT        idFirstChild;
+};
+
+static inline void CLIENTCREATESTRUCT_g2h(CLIENTCREATESTRUCT *host, const struct qemu_CLIENTCREATESTRUCT *guest)
+{
+    host->hWindowMenu = HANDLE_g2h(guest->hWindowMenu);
+    host->idFirstChild = guest->idFirstChild;
+}
+
+static inline void CLIENTCREATESTRUCT_h2g(struct qemu_CLIENTCREATESTRUCT *guest, const CLIENTCREATESTRUCT *host)
+{
+    guest->hWindowMenu = (ULONG_PTR)host->hWindowMenu;
+    guest->idFirstChild = host->idFirstChild;
+}
+
 #endif
