@@ -1164,7 +1164,7 @@ struct qemu_LineDDA_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t LineDDA_guest_cb(struct qemu_LineDDA_cb *data)
+static uint64_t __fastcall LineDDA_guest_cb(struct qemu_LineDDA_cb *data)
 {
     LINEDDAPROC proc = (LINEDDAPROC)(ULONG_PTR)data->proc;
     proc(data->x, data->y, data->param);
