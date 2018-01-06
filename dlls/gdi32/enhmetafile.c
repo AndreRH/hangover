@@ -318,7 +318,7 @@ struct qemu_EnumEnhMetaFile_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t EnumEnhMetaFile_guest_cb(struct qemu_EnumEnhMetaFile_cb *data)
+static uint64_t __fastcall EnumEnhMetaFile_guest_cb(struct qemu_EnumEnhMetaFile_cb *data)
 {
     ENHMFENUMPROC proc = (ENHMFENUMPROC)(ULONG_PTR)data->proc;
     return proc((HDC)(ULONG_PTR)data->dc, (HANDLETABLE *)(ULONG_PTR)data->handle_table, (const ENHMETARECORD *)(ULONG_PTR)data->emr, data->n_objs, data->param);

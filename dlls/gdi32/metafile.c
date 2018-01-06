@@ -244,7 +244,7 @@ struct qemu_EnumMetaFile_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t EnumMetaFile_guest_cb(struct qemu_EnumMetaFile_cb *data)
+static uint64_t __fastcall EnumMetaFile_guest_cb(struct qemu_EnumMetaFile_cb *data)
 {
     MFENUMPROC proc = (MFENUMPROC)(ULONG_PTR)data->proc;
     return proc((HDC)(ULONG_PTR)data->dc, (HANDLETABLE *)(ULONG_PTR)data->handle_table, (METARECORD *)(ULONG_PTR)data->emr, data->n_objs, data->param);
