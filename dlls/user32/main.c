@@ -1262,6 +1262,16 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             CREATESTRUCTW *host = (CREATESTRUCTW *)msg_in->lParam;
             CREATESTRUCT_h2g(guest, host);
             msg_out->lParam = (LPARAM)guest;
+
+            if (host->dwExStyle & WS_EX_MDICHILD)
+            {
+                MDICREATESTRUCTW *mdi_cs = host->lpCreateParams;
+                struct qemu_MDICREATESTRUCT *mdi_cs_guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*mdi_cs_guest));
+
+                WINE_TRACE("Converting MDICREATESTRUCTW, lp %lx\n", mdi_cs->lParam);
+                MDICREATESTRUCT_h2g(mdi_cs_guest, mdi_cs);
+                guest->lpCreateParams = (ULONG_PTR)mdi_cs_guest;
+            }
             break;
         }
 
@@ -1330,8 +1340,13 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
     {
         case WM_CREATE:
         case WM_NCCREATE:
-            HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+        {
+            struct qemu_CREATESTRUCT *guest_cs = (struct qemu_CREATESTRUCT *)conv->lParam;
+            if (guest_cs->dwExStyle & WS_EX_MDICHILD)
+                HeapFree(GetProcessHeap(), 0, (void *)(ULONG_PTR)guest_cs->lpCreateParams);
+            HeapFree(GetProcessHeap(), 0, guest_cs);
             break;
+        }
 
         case WM_NCCALCSIZE:
             /* FIXME: This should not be necessary if we restriced the host stack to < 4 GB. */

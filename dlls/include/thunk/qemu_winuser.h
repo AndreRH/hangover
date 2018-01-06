@@ -434,4 +434,43 @@ static inline void FLASHWINFO_h2g(struct qemu_FLASHWINFO *guest, const FLASHWINF
     guest->dwTimeout = host->dwTimeout;
 }
 
+struct qemu_MDICREATESTRUCT
+{
+    qemu_ptr    szClass;
+    qemu_ptr    szTitle;
+    qemu_handle hOwner;
+    INT         x;
+    INT         y;
+    INT         cx;
+    INT         cy;
+    DWORD       style;
+    qemu_ptr    lParam;
+};
+
+static inline void MDICREATESTRUCT_g2h(MDICREATESTRUCTW *host, const struct qemu_MDICREATESTRUCT *guest)
+{
+    host->szClass = (WCHAR *)(ULONG_PTR)guest->szClass;
+    host->szTitle = (WCHAR *)(ULONG_PTR)guest->szTitle;
+    host->hOwner = HANDLE_g2h(guest->hOwner);
+    host->x = guest->x;
+    host->y = guest->y;
+    host->cx = guest->cx;
+    host->cy = guest->cy;
+    host->style = guest->style;
+    host->lParam = guest->lParam;
+}
+
+static inline void MDICREATESTRUCT_h2g(struct qemu_MDICREATESTRUCT *guest, const MDICREATESTRUCTW *host)
+{
+    guest->szClass = (ULONG_PTR)host->szClass;
+    guest->szTitle = (ULONG_PTR)host->szTitle;
+    guest->hOwner = (LONG_PTR)host->hOwner;
+    guest->x = host->x;
+    guest->y = host->y;
+    guest->cx = host->cx;
+    guest->cy = host->cy;
+    guest->style = host->style;
+    guest->lParam = host->lParam;
+}
+
 #endif
