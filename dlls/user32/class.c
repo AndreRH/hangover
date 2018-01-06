@@ -276,11 +276,36 @@ DWORD WINAPI user32_GetClassLongW(HWND hwnd, INT offset)
 
 #else
 
+static ULONG_PTR get_class_wndproc(HWND win, BOOL wide)
+{
+    ULONG_PTR host_proc;
+    const struct classproc_wrapper *wrapper;
+    struct reverse_classproc_wrapper *reverse_wrapper;
+
+    if (wide)
+        host_proc = GetClassLongPtrW(win, GCLP_WNDPROC);
+    else
+        host_proc = GetClassLongPtrA(win, GCLP_WNDPROC);
+
+    return wndproc_host_to_guest((WNDPROC)host_proc);
+}
+
 void qemu_GetClassLongW(struct qemu_syscall *call)
 {
     struct qemu_GetClassLongW *c = (struct qemu_GetClassLongW *)call;
+    HWND win;
     WINE_TRACE("\n");
-    c->super.iret = GetClassLongW(QEMU_G2H(c->hwnd), c->offset);
+    win = (HWND)c->hwnd;
+
+    switch (c->offset)
+    {
+        case GCLP_WNDPROC:
+            c->super.iret = get_class_wndproc(win, TRUE);
+            break;
+
+        default:
+            c->super.iret = GetClassLongW(win, c->offset);
+    }
 }
 
 #endif
@@ -311,8 +336,19 @@ DWORD WINAPI user32_GetClassLongA(HWND hwnd, INT offset)
 void qemu_GetClassLongA(struct qemu_syscall *call)
 {
     struct qemu_GetClassLongA *c = (struct qemu_GetClassLongA *)call;
+    HWND win;
     WINE_TRACE("\n");
-    c->super.iret = GetClassLongA(QEMU_G2H(c->hwnd), c->offset);
+    win = (HWND)c->hwnd;
+
+    switch (c->offset)
+    {
+        case GCLP_WNDPROC:
+            c->super.iret = get_class_wndproc(win, FALSE);
+            break;
+
+        default:
+            c->super.iret = GetClassLongA(win, c->offset);
+    }
 }
 
 #endif
@@ -815,20 +851,6 @@ WINUSERAPI ULONG_PTR WINAPI GetClassLongPtrA(HWND hwnd, INT offset)
 }
 
 #else
-
-static ULONG_PTR get_class_wndproc(HWND win, BOOL wide)
-{
-    ULONG_PTR host_proc;
-    const struct classproc_wrapper *wrapper;
-    struct reverse_classproc_wrapper *reverse_wrapper;
-
-    if (wide)
-        host_proc = GetClassLongPtrW(win, GCLP_WNDPROC);
-    else
-        host_proc = GetClassLongPtrA(win, GCLP_WNDPROC);
-
-    return wndproc_host_to_guest((WNDPROC)host_proc);
-}
 
 void qemu_GetClassLongPtrA(struct qemu_syscall *call)
 {
