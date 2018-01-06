@@ -364,7 +364,7 @@ WINBASEAPI BOOL WINAPI SetStdHandle(DWORD std_handle, HANDLE handle)
     struct qemu_SetStdHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSTDHANDLE);
     call.std_handle = std_handle;
-    call.handle = (ULONG_PTR)handle;
+    call.handle = (LONG_PTR)handle;
 
     qemu_syscall(&call.super);
 

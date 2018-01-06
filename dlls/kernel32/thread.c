@@ -145,7 +145,7 @@ WINBASEAPI HANDLE WINAPI CreateRemoteThread(HANDLE hProcess, SECURITY_ATTRIBUTES
 {
     struct qemu_CreateRemoteThread call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEREMOTETHREAD);
-    call.hProcess = (ULONG_PTR)hProcess;
+    call.hProcess = (LONG_PTR)hProcess;
     call.sa = (ULONG_PTR)sa;
     call.stack = (ULONG_PTR)stack;
     call.start = (ULONG_PTR)start;
@@ -246,7 +246,7 @@ WINBASEAPI BOOL WINAPI TerminateThread(HANDLE handle, DWORD exit_code)
 {
     struct qemu_TerminateThread call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TERMINATETHREAD);
-    call.handle = (ULONG_PTR)handle;
+    call.handle = (LONG_PTR)handle;
     call.exit_code = (ULONG_PTR)exit_code;
 
     qemu_syscall(&call.super);
@@ -310,7 +310,7 @@ WINBASEAPI BOOL WINAPI GetExitCodeThread(HANDLE hthread, LPDWORD exitcode)
 {
     struct qemu_GetExitCodeThread call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETEXITCODETHREAD);
-    call.hthread = (ULONG_PTR)hthread;
+    call.hthread = (LONG_PTR)hthread;
     call.exitcode = (ULONG_PTR)exitcode;
 
     qemu_syscall(&call.super);
@@ -342,7 +342,7 @@ WINBASEAPI BOOL WINAPI SetThreadContext(HANDLE handle, const CONTEXT *context)
 {
     struct qemu_SetThreadContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADCONTEXT);
-    call.handle = (ULONG_PTR)handle;
+    call.handle = (LONG_PTR)handle;
     call.context = (ULONG_PTR)context;
 
     qemu_syscall(&call.super);
@@ -374,7 +374,7 @@ WINBASEAPI BOOL WINAPI GetThreadContext(HANDLE handle, CONTEXT *context)
 {
     struct qemu_GetThreadContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTHREADCONTEXT);
-    call.handle = (ULONG_PTR)handle;
+    call.handle = (LONG_PTR)handle;
     call.context = (ULONG_PTR)context;
 
     qemu_syscall(&call.super);
@@ -405,7 +405,7 @@ WINBASEAPI DWORD WINAPI SuspendThread(HANDLE hthread)
 {
     struct qemu_SuspendThread call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SUSPENDTHREAD);
-    call.hthread = (ULONG_PTR)hthread;
+    call.hthread = (LONG_PTR)hthread;
 
     qemu_syscall(&call.super);
 
@@ -435,7 +435,7 @@ WINBASEAPI DWORD WINAPI ResumeThread(HANDLE hthread)
 {
     struct qemu_ResumeThread call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RESUMETHREAD);
-    call.hthread = (ULONG_PTR)hthread;
+    call.hthread = (LONG_PTR)hthread;
 
     qemu_syscall(&call.super);
 
@@ -465,7 +465,7 @@ WINBASEAPI INT WINAPI GetThreadPriority(HANDLE hthread)
 {
     struct qemu_GetThreadPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTHREADPRIORITY);
-    call.hthread = (ULONG_PTR)hthread;
+    call.hthread = (LONG_PTR)hthread;
 
     qemu_syscall(&call.super);
 
@@ -496,7 +496,7 @@ WINBASEAPI BOOL WINAPI SetThreadPriority(HANDLE hthread, INT priority)
 {
     struct qemu_SetThreadPriority call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADPRIORITY);
-    call.hthread = (ULONG_PTR)hthread;
+    call.hthread = (LONG_PTR)hthread;
     call.priority = (ULONG_PTR)priority;
 
     qemu_syscall(&call.super);
@@ -528,7 +528,7 @@ WINBASEAPI BOOL WINAPI GetThreadPriorityBoost(HANDLE hthread, PBOOL pstate)
 {
     struct qemu_GetThreadPriorityBoost call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTHREADPRIORITYBOOST);
-    call.hthread = (ULONG_PTR)hthread;
+    call.hthread = (LONG_PTR)hthread;
     call.pstate = (ULONG_PTR)pstate;
 
     qemu_syscall(&call.super);
@@ -560,7 +560,7 @@ WINBASEAPI BOOL WINAPI SetThreadPriorityBoost(HANDLE hthread, BOOL disable)
 {
     struct qemu_SetThreadPriorityBoost call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADPRIORITYBOOST);
-    call.hthread = (ULONG_PTR)hthread;
+    call.hthread = (LONG_PTR)hthread;
     call.disable = (ULONG_PTR)disable;
 
     qemu_syscall(&call.super);
@@ -624,7 +624,7 @@ WINBASEAPI BOOL WINAPI GetThreadGroupAffinity(HANDLE thread, GROUP_AFFINITY *aff
 {
     struct qemu_GetThreadGroupAffinity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTHREADGROUPAFFINITY);
-    call.thread = (ULONG_PTR)thread;
+    call.thread = (LONG_PTR)thread;
     call.affinity = (ULONG_PTR)affinity;
 
     qemu_syscall(&call.super);
@@ -659,7 +659,7 @@ WINBASEAPI BOOL WINAPI SetThreadGroupAffinity(HANDLE thread, const GROUP_AFFINIT
 {
     struct qemu_SetThreadGroupAffinity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADGROUPAFFINITY);
-    call.thread = (ULONG_PTR)thread;
+    call.thread = (LONG_PTR)thread;
     call.affinity_new = (ULONG_PTR)affinity_new;
     call.affinity_old = (ULONG_PTR)affinity_old;
 
@@ -694,7 +694,7 @@ WINBASEAPI DWORD_PTR WINAPI SetThreadAffinityMask(HANDLE hThread, DWORD_PTR dwTh
 {
     struct qemu_SetThreadAffinityMask call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADAFFINITYMASK);
-    call.hThread = (ULONG_PTR)hThread;
+    call.hThread = (LONG_PTR)hThread;
     call.dwThreadAffinityMask = (ULONG_PTR)dwThreadAffinityMask;
 
     qemu_syscall(&call.super);
@@ -726,7 +726,7 @@ WINBASEAPI DWORD WINAPI SetThreadIdealProcessor(HANDLE hThread, DWORD dwIdealPro
 {
     struct qemu_SetThreadIdealProcessor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADIDEALPROCESSOR);
-    call.hThread = (ULONG_PTR)hThread;
+    call.hThread = (LONG_PTR)hThread;
     call.dwIdealProcessor = (ULONG_PTR)dwIdealProcessor;
 
     qemu_syscall(&call.super);
@@ -759,7 +759,7 @@ WINBASEAPI BOOL WINAPI SetThreadIdealProcessorEx(HANDLE thread, PROCESSOR_NUMBER
 {
     struct qemu_SetThreadIdealProcessorEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADIDEALPROCESSOREX);
-    call.thread = (ULONG_PTR)thread;
+    call.thread = (LONG_PTR)thread;
     call.ideal = (ULONG_PTR)ideal;
     call.previous = (ULONG_PTR)previous;
 
@@ -795,7 +795,7 @@ WINBASEAPI BOOL WINAPI GetThreadSelectorEntry(HANDLE hthread, DWORD sel, LPLDT_E
 {
     struct qemu_GetThreadSelectorEntry call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTHREADSELECTORENTRY);
-    call.hthread = (ULONG_PTR)hthread;
+    call.hthread = (LONG_PTR)hthread;
     call.sel = (ULONG_PTR)sel;
     call.ldtent = (ULONG_PTR)ldtent;
 
@@ -830,7 +830,7 @@ WINBASEAPI DWORD WINAPI QueueUserAPC(PAPCFUNC func, HANDLE hthread, ULONG_PTR da
     struct qemu_QueueUserAPC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUEUEUSERAPC);
     call.func = (ULONG_PTR)func;
-    call.hthread = (ULONG_PTR)hthread;
+    call.hthread = (LONG_PTR)hthread;
     call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
@@ -972,7 +972,7 @@ WINBASEAPI BOOL WINAPI GetThreadTimes(HANDLE thread, LPFILETIME creationtime, LP
 {
     struct qemu_GetThreadTimes call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTHREADTIMES);
-    call.thread = (ULONG_PTR)thread;
+    call.thread = (LONG_PTR)thread;
     call.creationtime = (ULONG_PTR)creationtime;
     call.exittime = (ULONG_PTR)exittime;
     call.kerneltime = (ULONG_PTR)kerneltime;
@@ -1006,7 +1006,7 @@ WINBASEAPI DWORD WINAPI GetThreadId(HANDLE Thread)
 {
     struct qemu_GetThreadId call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTHREADID);
-    call.Thread = (ULONG_PTR)Thread;
+    call.Thread = (LONG_PTR)Thread;
 
     qemu_syscall(&call.super);
 
@@ -1036,7 +1036,7 @@ WINBASEAPI DWORD WINAPI GetProcessIdOfThread(HANDLE Thread)
 {
     struct qemu_GetProcessIdOfThread call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCESSIDOFTHREAD);
-    call.Thread = (ULONG_PTR)Thread;
+    call.Thread = (LONG_PTR)Thread;
 
     qemu_syscall(&call.super);
 
@@ -1253,7 +1253,7 @@ WINBASEAPI BOOL WINAPI GetThreadIOPendingFlag(HANDLE thread, PBOOL io_pending)
 {
     struct qemu_GetThreadIOPendingFlag call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTHREADIOPENDINGFLAG);
-    call.thread = (ULONG_PTR)thread;
+    call.thread = (LONG_PTR)thread;
     call.io_pending = (ULONG_PTR)io_pending;
 
     qemu_syscall(&call.super);
@@ -1519,7 +1519,7 @@ WINBASEAPI VOID WINAPI SetThreadpoolWait(TP_WAIT *wait, HANDLE handle, FILETIME 
     struct qemu_SetThreadpoolWait call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADPOOLWAIT);
     call.wait = (ULONG_PTR)wait;
-    call.handle = (ULONG_PTR)handle;
+    call.handle = (LONG_PTR)handle;
     call.due_time = (ULONG_PTR)due_time;
 
     qemu_syscall(&call.super);

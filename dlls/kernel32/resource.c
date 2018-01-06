@@ -672,7 +672,7 @@ WINBASEAPI BOOL WINAPI EndUpdateResourceW(HANDLE hUpdate, BOOL fDiscard)
 {
     struct qemu_EndUpdateResourceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENDUPDATERESOURCEW);
-    call.hUpdate = (ULONG_PTR)hUpdate;
+    call.hUpdate = (LONG_PTR)hUpdate;
     call.fDiscard = (ULONG_PTR)fDiscard;
 
     qemu_syscall(&call.super);
@@ -704,7 +704,7 @@ WINBASEAPI BOOL WINAPI EndUpdateResourceA(HANDLE hUpdate, BOOL fDiscard)
 {
     struct qemu_EndUpdateResourceA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENDUPDATERESOURCEA);
-    call.hUpdate = (ULONG_PTR)hUpdate;
+    call.hUpdate = (LONG_PTR)hUpdate;
     call.fDiscard = (ULONG_PTR)fDiscard;
 
     qemu_syscall(&call.super);
@@ -740,7 +740,7 @@ WINBASEAPI BOOL WINAPI UpdateResourceW(HANDLE hUpdate, LPCWSTR lpType, LPCWSTR l
 {
     struct qemu_UpdateResourceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UPDATERESOURCEW);
-    call.hUpdate = (ULONG_PTR)hUpdate;
+    call.hUpdate = (LONG_PTR)hUpdate;
     call.lpType = (ULONG_PTR)lpType;
     call.lpName = (ULONG_PTR)lpName;
     call.wLanguage = (ULONG_PTR)wLanguage;
@@ -780,7 +780,7 @@ WINBASEAPI BOOL WINAPI UpdateResourceA(HANDLE hUpdate, LPCSTR lpType, LPCSTR lpN
 {
     struct qemu_UpdateResourceA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UPDATERESOURCEA);
-    call.hUpdate = (ULONG_PTR)hUpdate;
+    call.hUpdate = (LONG_PTR)hUpdate;
     call.lpType = (ULONG_PTR)lpType;
     call.lpName = (ULONG_PTR)lpName;
     call.wLanguage = (ULONG_PTR)wLanguage;

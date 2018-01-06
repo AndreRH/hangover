@@ -392,7 +392,7 @@ WINBASEAPI LONG WINAPI GetPackageFullName(HANDLE process, UINT32 *length, PWSTR 
 {
     struct qemu_GetPackageFullName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPACKAGEFULLNAME);
-    call.process = (ULONG_PTR)process;
+    call.process = (LONG_PTR)process;
     call.length = (ULONG_PTR)length;
     call.name = (ULONG_PTR)name;
 

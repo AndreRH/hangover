@@ -189,7 +189,7 @@ WINBASEAPI BOOL WINAPI ActivateActCtx(HANDLE hActCtx, ULONG_PTR *ulCookie)
 {
     struct qemu_ActivateActCtx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACTIVATEACTCTX);
-    call.hActCtx = (ULONG_PTR)hActCtx;
+    call.hActCtx = (LONG_PTR)hActCtx;
     call.ulCookie = (ULONG_PTR)ulCookie;
 
     qemu_syscall(&call.super);
@@ -282,7 +282,7 @@ WINBASEAPI void WINAPI AddRefActCtx(HANDLE hActCtx)
 {
     struct qemu_AddRefActCtx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDREFACTCTX);
-    call.hActCtx = (ULONG_PTR)hActCtx;
+    call.hActCtx = (LONG_PTR)hActCtx;
 
     qemu_syscall(&call.super);
 }
@@ -310,7 +310,7 @@ WINBASEAPI void WINAPI ReleaseActCtx(HANDLE hActCtx)
 {
     struct qemu_ReleaseActCtx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RELEASEACTCTX);
-    call.hActCtx = (ULONG_PTR)hActCtx;
+    call.hActCtx = (LONG_PTR)hActCtx;
 
     qemu_syscall(&call.super);
 }
@@ -338,7 +338,7 @@ WINBASEAPI BOOL WINAPI ZombifyActCtx(HANDLE hActCtx)
 {
     struct qemu_ZombifyActCtx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ZOMBIFYACTCTX);
-    call.hActCtx = (ULONG_PTR)hActCtx;
+    call.hActCtx = (LONG_PTR)hActCtx;
 
     qemu_syscall(&call.super);
 
@@ -489,7 +489,7 @@ WINBASEAPI BOOL WINAPI QueryActCtxW(DWORD dwFlags, HANDLE hActCtx, PVOID pvSubIn
     struct qemu_QueryActCtxW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYACTCTXW);
     call.dwFlags = dwFlags;
-    call.hActCtx = (ULONG_PTR)hActCtx;
+    call.hActCtx = (LONG_PTR)hActCtx;
     call.pvSubInst = (ULONG_PTR)pvSubInst;
     call.ulClass = ulClass;
     call.pvBuff = (ULONG_PTR)pvBuff;

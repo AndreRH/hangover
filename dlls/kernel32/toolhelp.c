@@ -77,7 +77,7 @@ WINBASEAPI BOOL WINAPI Thread32First(HANDLE hSnapShot, LPTHREADENTRY32 lpte)
 {
     struct qemu_Thread32First call;
     call.super.id = QEMU_SYSCALL_ID(CALL_THREAD32FIRST);
-    call.hSnapShot = (ULONG_PTR)hSnapShot;
+    call.hSnapShot = (LONG_PTR)hSnapShot;
     call.lpte = (ULONG_PTR)lpte;
 
     qemu_syscall(&call.super);
@@ -109,7 +109,7 @@ WINBASEAPI BOOL WINAPI Thread32Next(HANDLE hSnapShot, LPTHREADENTRY32 lpte)
 {
     struct qemu_Thread32Next call;
     call.super.id = QEMU_SYSCALL_ID(CALL_THREAD32NEXT);
-    call.hSnapShot = (ULONG_PTR)hSnapShot;
+    call.hSnapShot = (LONG_PTR)hSnapShot;
     call.lpte = (ULONG_PTR)lpte;
 
     qemu_syscall(&call.super);
@@ -141,7 +141,7 @@ WINBASEAPI BOOL WINAPI Process32First(HANDLE hSnapshot, LPPROCESSENTRY32 lppe)
 {
     struct qemu_Process32First call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PROCESS32FIRST);
-    call.hSnapshot = (ULONG_PTR)hSnapshot;
+    call.hSnapshot = (LONG_PTR)hSnapshot;
     call.lppe = (ULONG_PTR)lppe;
 
     qemu_syscall(&call.super);
@@ -173,7 +173,7 @@ WINBASEAPI BOOL WINAPI Process32Next(HANDLE hSnapshot, LPPROCESSENTRY32 lppe)
 {
     struct qemu_Process32Next call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PROCESS32NEXT);
-    call.hSnapshot = (ULONG_PTR)hSnapshot;
+    call.hSnapshot = (LONG_PTR)hSnapshot;
     call.lppe = (ULONG_PTR)lppe;
 
     qemu_syscall(&call.super);
@@ -205,7 +205,7 @@ WINBASEAPI BOOL WINAPI Process32FirstW(HANDLE hSnapshot, LPPROCESSENTRY32W lppe)
 {
     struct qemu_Process32FirstW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PROCESS32FIRSTW);
-    call.hSnapshot = (ULONG_PTR)hSnapshot;
+    call.hSnapshot = (LONG_PTR)hSnapshot;
     call.lppe = (ULONG_PTR)lppe;
 
     qemu_syscall(&call.super);
@@ -237,7 +237,7 @@ WINBASEAPI BOOL WINAPI Process32NextW(HANDLE hSnapshot, LPPROCESSENTRY32W lppe)
 {
     struct qemu_Process32NextW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PROCESS32NEXTW);
-    call.hSnapshot = (ULONG_PTR)hSnapshot;
+    call.hSnapshot = (LONG_PTR)hSnapshot;
     call.lppe = (ULONG_PTR)lppe;
 
     qemu_syscall(&call.super);
@@ -269,7 +269,7 @@ WINBASEAPI BOOL WINAPI Module32FirstW(HANDLE hSnapshot, LPMODULEENTRY32W lpme)
 {
     struct qemu_Module32FirstW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MODULE32FIRSTW);
-    call.hSnapshot = (ULONG_PTR)hSnapshot;
+    call.hSnapshot = (LONG_PTR)hSnapshot;
     call.lpme = (ULONG_PTR)lpme;
 
     qemu_syscall(&call.super);
@@ -301,7 +301,7 @@ WINBASEAPI BOOL WINAPI Module32NextW(HANDLE hSnapshot, LPMODULEENTRY32W lpme)
 {
     struct qemu_Module32NextW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MODULE32NEXTW);
-    call.hSnapshot = (ULONG_PTR)hSnapshot;
+    call.hSnapshot = (LONG_PTR)hSnapshot;
     call.lpme = (ULONG_PTR)lpme;
 
     qemu_syscall(&call.super);
@@ -333,7 +333,7 @@ WINBASEAPI BOOL WINAPI Module32First(HANDLE hSnapshot, LPMODULEENTRY32 lpme)
 {
     struct qemu_Module32First call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MODULE32FIRST);
-    call.hSnapshot = (ULONG_PTR)hSnapshot;
+    call.hSnapshot = (LONG_PTR)hSnapshot;
     call.lpme = (ULONG_PTR)lpme;
 
     qemu_syscall(&call.super);
@@ -365,7 +365,7 @@ WINBASEAPI BOOL WINAPI Module32Next(HANDLE hSnapshot, LPMODULEENTRY32 lpme)
 {
     struct qemu_Module32Next call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MODULE32NEXT);
-    call.hSnapshot = (ULONG_PTR)hSnapshot;
+    call.hSnapshot = (LONG_PTR)hSnapshot;
     call.lpme = (ULONG_PTR)lpme;
 
     qemu_syscall(&call.super);
@@ -397,7 +397,7 @@ WINBASEAPI BOOL WINAPI Heap32ListFirst(HANDLE hSnapshot, LPHEAPLIST32 lphl)
 {
     struct qemu_Heap32ListFirst call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAP32LISTFIRST);
-    call.hSnapshot = (ULONG_PTR)hSnapshot;
+    call.hSnapshot = (LONG_PTR)hSnapshot;
     call.lphl = (ULONG_PTR)lphl;
 
     qemu_syscall(&call.super);

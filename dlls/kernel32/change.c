@@ -112,7 +112,7 @@ WINBASEAPI BOOL WINAPI FindNextChangeNotification(HANDLE handle)
 {
     struct qemu_FindNextChangeNotification call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDNEXTCHANGENOTIFICATION);
-    call.handle = (ULONG_PTR)handle;
+    call.handle = (LONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -142,7 +142,7 @@ WINBASEAPI BOOL WINAPI FindCloseChangeNotification(HANDLE handle)
 {
     struct qemu_FindCloseChangeNotification call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDCLOSECHANGENOTIFICATION);
-    call.handle = (ULONG_PTR)handle;
+    call.handle = (LONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -179,7 +179,7 @@ WINBASEAPI BOOL WINAPI ReadDirectoryChangesW(HANDLE handle, LPVOID buffer, DWORD
 {
     struct qemu_ReadDirectoryChangesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_READDIRECTORYCHANGESW);
-    call.handle = (ULONG_PTR)handle;
+    call.handle = (LONG_PTR)handle;
     call.buffer = (ULONG_PTR)buffer;
     call.len = len;
     call.subtree = subtree;

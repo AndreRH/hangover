@@ -267,7 +267,7 @@ WINBASEAPI HMODULE WINAPI LoadLibraryExA(LPCSTR libname, HANDLE hfile, DWORD fla
     struct qemu_LoadLibraryExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADLIBRARYEXA);
     call.libname = (ULONG_PTR)libname;
-    call.hfile = (ULONG_PTR)hfile;
+    call.hfile = (LONG_PTR)hfile;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -315,7 +315,7 @@ WINBASEAPI HMODULE WINAPI LoadLibraryExW(LPCWSTR libnameW, HANDLE hfile, DWORD f
     struct qemu_LoadLibraryExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADLIBRARYEXW);
     call.libnameW = (ULONG_PTR)libnameW;
-    call.hfile = (ULONG_PTR)hfile;
+    call.hfile = (LONG_PTR)hfile;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -387,7 +387,7 @@ WINBASEAPI BOOL WINAPI K32EnumProcessModules(HANDLE process, HMODULE *lphModule,
 {
     struct qemu_K32EnumProcessModules call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32ENUMPROCESSMODULES);
-    call.process = (ULONG_PTR)process;
+    call.process = (LONG_PTR)process;
     call.lphModule = (ULONG_PTR)lphModule;
     call.cb = cb;
     call.needed = (ULONG_PTR)needed;
@@ -426,7 +426,7 @@ WINBASEAPI BOOL WINAPI K32EnumProcessModulesEx(HANDLE process, HMODULE *lphModul
 {
     struct qemu_K32EnumProcessModulesEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32ENUMPROCESSMODULESEX);
-    call.process = (ULONG_PTR)process;
+    call.process = (LONG_PTR)process;
     call.lphModule = (ULONG_PTR)lphModule;
     call.cb = cb;
     call.needed = (ULONG_PTR)needed;
@@ -465,8 +465,8 @@ WINBASEAPI DWORD WINAPI K32GetModuleBaseNameW(HANDLE process, HMODULE module, LP
 {
     struct qemu_K32GetModuleBaseNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32GETMODULEBASENAMEW);
-    call.process = (ULONG_PTR)process;
-    call.module = (ULONG_PTR)module;
+    call.process = (LONG_PTR)process;
+    call.module = (LONG_PTR)module;
     call.base_name = (ULONG_PTR)base_name;
     call.size = size;
 
@@ -503,8 +503,8 @@ WINBASEAPI DWORD WINAPI K32GetModuleBaseNameA(HANDLE process, HMODULE module, LP
 {
     struct qemu_K32GetModuleBaseNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32GETMODULEBASENAMEA);
-    call.process = (ULONG_PTR)process;
-    call.module = (ULONG_PTR)module;
+    call.process = (LONG_PTR)process;
+    call.module = (LONG_PTR)module;
     call.base_name = (ULONG_PTR)base_name;
     call.size = size;
 
@@ -541,8 +541,8 @@ WINBASEAPI DWORD WINAPI K32GetModuleFileNameExW(HANDLE process, HMODULE module, 
 {
     struct qemu_K32GetModuleFileNameExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32GETMODULEFILENAMEEXW);
-    call.process = (ULONG_PTR)process;
-    call.module = (ULONG_PTR)module;
+    call.process = (LONG_PTR)process;
+    call.module = (LONG_PTR)module;
     call.file_name = (ULONG_PTR)file_name;
     call.size = size;
 
@@ -579,8 +579,8 @@ WINBASEAPI DWORD WINAPI K32GetModuleFileNameExA(HANDLE process, HMODULE module, 
 {
     struct qemu_K32GetModuleFileNameExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32GETMODULEFILENAMEEXA);
-    call.process = (ULONG_PTR)process;
-    call.module = (ULONG_PTR)module;
+    call.process = (LONG_PTR)process;
+    call.module = (LONG_PTR)module;
     call.file_name = (ULONG_PTR)file_name;
     call.size = size;
 
@@ -617,8 +617,8 @@ WINBASEAPI BOOL WINAPI K32GetModuleInformation(HANDLE process, HMODULE module, M
 {
     struct qemu_K32GetModuleInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32GETMODULEINFORMATION);
-    call.process = (ULONG_PTR)process;
-    call.module = (ULONG_PTR)module;
+    call.process = (LONG_PTR)process;
+    call.module = (LONG_PTR)module;
     call.modinfo = (ULONG_PTR)modinfo;
     call.cb = cb;
 

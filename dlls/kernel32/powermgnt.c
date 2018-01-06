@@ -44,7 +44,7 @@ WINBASEAPI BOOL WINAPI GetDevicePowerState(HANDLE hDevice, BOOL* pfOn)
 {
     struct qemu_GetDevicePowerState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDEVICEPOWERSTATE);
-    call.hDevice = (ULONG_PTR)hDevice;
+    call.hDevice = (LONG_PTR)hDevice;
     call.pfOn = (ULONG_PTR)pfOn;
 
     qemu_syscall(&call.super);
@@ -258,7 +258,7 @@ WINBASEAPI BOOL WINAPI PowerSetRequest(HANDLE request, POWER_REQUEST_TYPE type)
 {
     struct qemu_PowerSetRequest call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POWERSETREQUEST);
-    call.request = (ULONG_PTR)request;
+    call.request = (LONG_PTR)request;
     call.type = type;
 
     qemu_syscall(&call.super);
@@ -292,7 +292,7 @@ WINBASEAPI BOOL WINAPI PowerClearRequest(HANDLE request, POWER_REQUEST_TYPE type
 {
     struct qemu_PowerClearRequest call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POWERCLEARREQUEST);
-    call.request = (ULONG_PTR)request;
+    call.request = (LONG_PTR)request;
     call.type = type;
 
     qemu_syscall(&call.super);
