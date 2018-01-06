@@ -741,15 +741,18 @@ WINBASEAPI BOOL WINAPI DuplicateHandle(HANDLE source_process, HANDLE source, HAN
 {
     struct qemu_DuplicateHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DUPLICATEHANDLE);
-    call.source_process = (ULONG_PTR)source_process;
-    call.source = (ULONG_PTR)source;
-    call.dest_process = (ULONG_PTR)dest_process;
+    call.source_process = (LONG_PTR)source_process;
+    call.source = (LONG_PTR)source;
+    call.dest_process = (LONG_PTR)dest_process;
     call.dest = (ULONG_PTR)dest;
     call.access = access;
     call.inherit = inherit;
     call.options = options;
 
     qemu_syscall(&call.super);
+
+    if (dest)
+        *dest = (HANDLE)(ULONG_PTR)call.dest;
 
     return call.super.iret;
 }
@@ -759,8 +762,11 @@ WINBASEAPI BOOL WINAPI DuplicateHandle(HANDLE source_process, HANDLE source, HAN
 void qemu_DuplicateHandle(struct qemu_syscall *call)
 {
     struct qemu_DuplicateHandle *c = (struct qemu_DuplicateHandle *)call;
+    HANDLE dest;
     WINE_TRACE("\n");
-    c->super.iret = DuplicateHandle(QEMU_G2H(c->source_process), QEMU_G2H(c->source), QEMU_G2H(c->dest_process), QEMU_G2H(c->dest), c->access, c->inherit, c->options);
+    c->super.iret = DuplicateHandle(QEMU_G2H(c->source_process), QEMU_G2H(c->source), QEMU_G2H(c->dest_process),
+            c->dest ? &dest : NULL, c->access, c->inherit, c->options);
+    c->dest = QEMU_H2G(dest);
 }
 
 #endif
