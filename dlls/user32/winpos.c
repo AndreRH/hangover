@@ -915,11 +915,11 @@ WINUSERAPI BOOL WINAPI SetWindowPos(HWND hwnd, HWND hwndInsertAfter, INT x, INT 
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWPOS);
     call.hwnd = (LONG_PTR)hwnd;
     call.hwndInsertAfter = (LONG_PTR)hwndInsertAfter;
-    call.x = (ULONG_PTR)x;
-    call.y = (ULONG_PTR)y;
-    call.cx = (ULONG_PTR)cx;
-    call.cy = (ULONG_PTR)cy;
-    call.flags = (ULONG_PTR)flags;
+    call.x = x;
+    call.y = y;
+    call.cx = cx;
+    call.cy = cy;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
