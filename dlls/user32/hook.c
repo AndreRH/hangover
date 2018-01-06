@@ -114,7 +114,7 @@ struct qemu_cbt_hook_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t qemu_hook_guest_cb(struct qemu_cbt_hook_cb *call)
+static uint64_t __fastcall qemu_hook_guest_cb(struct qemu_cbt_hook_cb *call)
 {
     HOOKPROC proc = (HOOKPROC)(ULONG_PTR)call->func;
     return proc(call->code, call->wp, call->lp);

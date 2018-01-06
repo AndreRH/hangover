@@ -276,7 +276,7 @@ struct qemu_EnumWindowStations_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t CALLBACK EnumWindowStationsA_guest_cb(struct qemu_EnumWindowStations_cb *call)
+static uint64_t __fastcall EnumWindowStationsA_guest_cb(struct qemu_EnumWindowStations_cb *call)
 {
     WINSTAENUMPROCA func = (WINSTAENUMPROCA)(ULONG_PTR)call->func;
     return func((char *)(ULONG_PTR)call->winsta, call->param);
@@ -345,7 +345,7 @@ struct qemu_EnumWindowStationsW
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t CALLBACK EnumWindowStationsW_guest_cb(struct qemu_EnumWindowStations_cb *call)
+static uint64_t __fastcall EnumWindowStationsW_guest_cb(struct qemu_EnumWindowStations_cb *call)
 {
     WINSTAENUMPROCW func = (WINSTAENUMPROCW)(ULONG_PTR)call->func;
     return func((WCHAR *)(ULONG_PTR)call->winsta, call->param);
@@ -659,7 +659,7 @@ struct qemu_EnumDesktops_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t CALLBACK EnumDesktopsA_guest_cb(struct qemu_EnumDesktops_cb *call)
+static uint64_t __fastcall EnumDesktopsA_guest_cb(struct qemu_EnumDesktops_cb *call)
 {
     DESKTOPENUMPROCA func = (DESKTOPENUMPROCA)(ULONG_PTR)call->func;
     return func((char *)(ULONG_PTR)call->desktop, call->param);
@@ -730,7 +730,7 @@ struct qemu_EnumDesktopsW
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t CALLBACK EnumDesktopsW_guest_cb(struct qemu_EnumDesktops_cb *call)
+static uint64_t __fastcall EnumDesktopsW_guest_cb(struct qemu_EnumDesktops_cb *call)
 {
     DESKTOPENUMPROCW func = (DESKTOPENUMPROCW)(ULONG_PTR)call->func;
     return func((WCHAR *)(ULONG_PTR)call->desktop, call->param);

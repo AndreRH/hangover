@@ -1317,7 +1317,7 @@ struct qemu_WndEnum_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t WndEnum_guest_cb(struct qemu_WndEnum_cb *call)
+static uint64_t __fastcall WndEnum_guest_cb(struct qemu_WndEnum_cb *call)
 {
     WNDENUMPROC func = (WNDENUMPROC)(ULONG_PTR)call->func;
     return func((HWND)(ULONG_PTR)call->child, call->lparam);
