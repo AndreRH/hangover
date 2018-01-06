@@ -1052,6 +1052,9 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
 
     switch (msg_in->message)
     {
+        case WM_NULL:
+            break;
+
         case WM_TIMER:
         case WM_SYSTIMER:
             msg_out->lParam = (LPARAM)wndproc_guest_to_host(msg_in->lParam);
@@ -1193,6 +1196,9 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
 #if HOST_BIT != GUEST_BIT
     switch (conv->message)
     {
+        case WM_NULL:
+            break;
+
         case WM_CREATE:
         case WM_NCCREATE:
         {
@@ -1279,6 +1285,9 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
 
     switch (msg_in->message)
     {
+        case WM_NULL:
+            break;
+
         case WM_TIMER:
         case WM_SYSTIMER:
             msg_out->lParam = wndproc_host_to_guest((WNDPROC)msg_in->lParam);
@@ -1377,6 +1386,9 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
 #if HOST_BIT != GUEST_BIT
     switch (conv->message)
     {
+        case WM_NULL:
+            break;
+
         case WM_CREATE:
         case WM_NCCREATE:
         {
