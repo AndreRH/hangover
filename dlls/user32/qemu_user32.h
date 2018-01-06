@@ -713,7 +713,7 @@ enum user32_calls
 
 struct qemu_SetWinEventHook_cb;
 
-static inline BOOL wndproc_is_handle(LONG_PTR proc)
+static inline BOOL wndproc_is_handle(ULONG_PTR proc)
 {
     /* This is not exactly right, Wine's user32 also keeps track of how many
      * wndprocs it remembered. We don't know for sure as we only see the ones

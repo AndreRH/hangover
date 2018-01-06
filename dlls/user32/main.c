@@ -1013,7 +1013,7 @@ uint64_t wndproc_host_to_guest(WNDPROC host_proc)
 {
     unsigned int i;
 
-    if (!host_proc || wndproc_is_handle((LONG_PTR)host_proc))
+    if (!host_proc || wndproc_is_handle((ULONG_PTR)host_proc))
         return (ULONG_PTR)host_proc;
 
     if (callback_is_in_table(wndproc_wrappers, (struct callback_entry *)host_proc))

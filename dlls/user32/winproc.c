@@ -59,7 +59,7 @@ WINUSERAPI LRESULT WINAPI CallWindowProcA(WNDPROC func, HWND hwnd, UINT msg, WPA
      * to a WNDPROC provided by the guest app and call it here directly instead of going
      * out of the VM to Wine's CallWindowProc and back in. That will require duplicating
      * the ASCII <-> Unicode mapping. */
-    if (!wndproc_is_handle((LONG_PTR)func))
+    if (!wndproc_is_handle((ULONG_PTR)func))
         return func(hwnd, msg, wParam, lParam);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_CALLWINDOWPROCA);
@@ -103,7 +103,7 @@ WINUSERAPI LRESULT WINAPI CallWindowProcW(WNDPROC func, HWND hwnd, UINT msg, WPA
 
     if (!func)
         return 0;
-    if (!wndproc_is_handle((LONG_PTR)func))
+    if (!wndproc_is_handle((ULONG_PTR)func))
         return func(hwnd, msg, wParam, lParam);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_CALLWINDOWPROCW);

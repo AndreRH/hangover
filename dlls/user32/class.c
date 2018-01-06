@@ -883,7 +883,7 @@ void qemu_call_wndproc(struct qemu_syscall *call)
 
     /* A or W? I think it shouldn't matter, we end up here only for an actual function pointer,
      * not for a WNDPROC handle, so Wine doesn't do any conversion anyway. */
-    if (wndproc_is_handle((LONG_PTR)wrapper->host_proc))
+    if (wndproc_is_handle((ULONG_PTR)wrapper->host_proc))
         WINE_ERR("Calling a WNDPROC handle via a reverse wrapper.\n");
 
     msg_guest_to_host(&msg_out, &msg_in);
