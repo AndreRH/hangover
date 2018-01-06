@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <psapi.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_kernel32.h"
@@ -76,13 +78,23 @@ void qemu_CreateProcessA(struct qemu_syscall *call)
     struct qemu_CreateProcessA *c = (struct qemu_CreateProcessA *)call;
     char *app_name, *cmd_line, *qemu = NULL, *combined = NULL;
     size_t len;
+    STARTUPINFOA stack, *si = &stack;
 
     WINE_TRACE("\n");
     app_name = QEMU_G2H(c->app_name);
     cmd_line = QEMU_G2H(c->cmd_line);
 
+#if GUEST_BIT == HOST_BIT
+    si = QEMU_G2H(c->startup_info);
+#else
+    if (QEMU_G2H(c->startup_info))
+        STARTUPINFO_g2h((STARTUPINFOW *)si, QEMU_G2H(c->startup_info));
+    else
+        si = NULL;
+#endif
+
     c->super.iret = CreateProcessA(app_name, cmd_line, QEMU_G2H(c->process_attr), QEMU_G2H(c->thread_attr),
-            c->inherit, c->flags, QEMU_G2H(c->env), QEMU_G2H(c->cur_dir), QEMU_G2H(c->startup_info),
+            c->inherit, c->flags, QEMU_G2H(c->env), QEMU_G2H(c->cur_dir), si,
             QEMU_G2H(c->info));
     if (!c->super.iret && GetLastError() == ERROR_BAD_EXE_FORMAT)
     {
@@ -134,7 +146,7 @@ void qemu_CreateProcessA(struct qemu_syscall *call)
         }
 
         c->super.iret = CreateProcessA(qemu, cmd_line, QEMU_G2H(c->process_attr), QEMU_G2H(c->thread_attr),
-                c->inherit, c->flags, QEMU_G2H(c->env), QEMU_G2H(c->cur_dir), QEMU_G2H(c->startup_info),
+                c->inherit, c->flags, QEMU_G2H(c->env), QEMU_G2H(c->cur_dir), si,
                 QEMU_G2H(c->info));
 
         HeapFree(GetProcessHeap(), 0, combined);
@@ -186,8 +198,21 @@ WINBASEAPI BOOL WINAPI CreateProcessW(LPCWSTR app_name, LPWSTR cmd_line, LPSECUR
 void qemu_CreateProcessW(struct qemu_syscall *call)
 {
     struct qemu_CreateProcessW *c = (struct qemu_CreateProcessW *)call;
+    STARTUPINFOW stack, *si = &stack;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = CreateProcessW(QEMU_G2H(c->app_name), QEMU_G2H(c->cmd_line), QEMU_G2H(c->process_attr), QEMU_G2H(c->thread_attr), c->inherit, c->flags, QEMU_G2H(c->env), QEMU_G2H(c->cur_dir), QEMU_G2H(c->startup_info), QEMU_G2H(c->info));
+#if GUEST_BIT == HOST_BIT
+    si = QEMU_G2H(c->startup_info);
+#else
+    if (QEMU_G2H(c->startup_info))
+        STARTUPINFO_g2h(si, QEMU_G2H(c->startup_info));
+    else
+        si = NULL;
+#endif
+
+    c->super.iret = CreateProcessW(QEMU_G2H(c->app_name), QEMU_G2H(c->cmd_line), QEMU_G2H(c->process_attr),
+            QEMU_G2H(c->thread_attr), c->inherit, c->flags, QEMU_G2H(c->env), QEMU_G2H(c->cur_dir),
+            si, QEMU_G2H(c->info));
 }
 
 #endif

@@ -422,29 +422,6 @@ static void init_titleA()
     WideCharToMultiByte(CP_ACP, 0, titleW, -1, titleA, len, NULL, NULL);
 }
 
-/* Works for both A and W versions. */
-static void startupinfo_htog(struct qemu_STARTUPINFO *guest, const STARTUPINFOW *host)
-{
-    guest->cb = sizeof(*guest);
-    guest->lpReserved = (ULONG_PTR)host->lpReserved;
-    guest->lpDesktop = (ULONG_PTR)host->lpDesktop;
-    guest->lpTitle = (ULONG_PTR)host->lpTitle;
-    guest->dwX = host->dwX;
-    guest->dwY = host->dwY;
-    guest->dwXSize = host->dwXSize;
-    guest->dwYSize = host->dwYSize;
-    guest->dwXCountChars = host->dwXCountChars;
-    guest->dwYCountChars = host->dwYCountChars;
-    guest->dwFillAttribute = host->dwFillAttribute;
-    guest->dwFlags = host->dwFlags;
-    guest->wShowWindow = host->wShowWindow;
-    guest->cbReserved2 = host->cbReserved2;
-    guest->lpReserved2 = (ULONG_PTR)host->lpReserved2;
-    guest->hStdInput = (ULONG_PTR)host->hStdInput;
-    guest->hStdOutput = (ULONG_PTR)host->hStdOutput;
-    guest->hStdError = (ULONG_PTR)host->hStdError;
-}
-
 void qemu_GetStartupInfoA(struct qemu_syscall *call)
 {
     struct qemu_GetStartupInfo *c = (struct qemu_GetStartupInfo *)call;
@@ -461,7 +438,7 @@ void qemu_GetStartupInfoA(struct qemu_syscall *call)
 #if HOST_BIT==GUEST_BIT
     *((STARTUPINFOA *)QEMU_G2H(c->info)) = a;
 #else
-    startupinfo_htog(QEMU_G2H(c->info), (STARTUPINFOW *)&a);
+    STARTUPINFO_h2g(QEMU_G2H(c->info), (STARTUPINFOW *)&a);
 #endif
 }
 
@@ -502,7 +479,7 @@ void qemu_GetStartupInfoW(struct qemu_syscall *call)
 #if HOST_BIT==GUEST_BIT
     *((STARTUPINFOW *)QEMU_G2H(c->info)) = w;
 #else
-    startupinfo_htog(QEMU_G2H(c->info), &w);
+    STARTUPINFO_h2g(QEMU_G2H(c->info), &w);
 #endif
 }
 
