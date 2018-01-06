@@ -1063,18 +1063,7 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             struct qemu_CREATESTRUCT *guest = (struct qemu_CREATESTRUCT *)msg_in->lParam;
             CREATESTRUCTW *host = HeapAlloc(GetProcessHeap(), 0, sizeof(*host));
 
-            host->lpCreateParams = (void *)(ULONG_PTR)guest->lpCreateParams;
-            host->hInstance = (HANDLE)(ULONG_PTR)guest->hInstance;
-            host->hMenu = (HANDLE)(ULONG_PTR)guest->hMenu;
-            host->hwndParent = (HANDLE)(ULONG_PTR)guest->hwndParent;
-            host->cy = guest->cy;
-            host->cx = guest->cx;
-            host->y = guest->y;
-            host->x = guest->x;
-            host->style = guest->style;
-            host->lpszName = (void *)(ULONG_PTR)guest->lpszName;
-            host->lpszClass = (void *)(ULONG_PTR)guest->lpszClass;
-            host->dwExStyle = guest->dwExStyle;
+            CREATESTRUCT_g2h(host, guest);
 
             msg_out->lParam = (LPARAM)host;
             break;
@@ -1271,18 +1260,7 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
         {
             struct qemu_CREATESTRUCT *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
             CREATESTRUCTW *host = (CREATESTRUCTW *)msg_in->lParam;
-            guest->lpCreateParams = (ULONG_PTR)host->lpCreateParams;
-            guest->hInstance = (ULONG_PTR)host->hInstance;
-            guest->hMenu = (ULONG_PTR)host->hMenu;
-            guest->hwndParent = (ULONG_PTR)host->hwndParent;
-            guest->cy = host->cy;
-            guest->cx = host->cx;
-            guest->y = host->y;
-            guest->x = host->x;
-            guest->style = host->style;
-            guest->lpszName = (ULONG_PTR)host->lpszName;
-            guest->lpszClass = (ULONG_PTR)host->lpszClass;
-            guest->dwExStyle = host->dwExStyle;
+            CREATESTRUCT_h2g(guest, host);
             msg_out->lParam = (LPARAM)guest;
             break;
         }

@@ -33,6 +33,38 @@ struct qemu_CREATESTRUCT
     DWORD           dwExStyle;
 };
 
+static inline void CREATESTRUCT_g2h(CREATESTRUCTW *host, const struct qemu_CREATESTRUCT *guest)
+{
+    host->lpCreateParams = (void *)(ULONG_PTR)guest->lpCreateParams;
+    host->hInstance = (HANDLE)(ULONG_PTR)guest->hInstance;
+    host->hMenu = (HANDLE)(ULONG_PTR)guest->hMenu;
+    host->hwndParent = (HANDLE)(ULONG_PTR)guest->hwndParent;
+    host->cy = guest->cy;
+    host->cx = guest->cx;
+    host->y = guest->y;
+    host->x = guest->x;
+    host->style = guest->style;
+    host->lpszName = (void *)(ULONG_PTR)guest->lpszName;
+    host->lpszClass = (void *)(ULONG_PTR)guest->lpszClass;
+    host->dwExStyle = guest->dwExStyle;
+}
+
+static inline void CREATESTRUCT_h2g(struct qemu_CREATESTRUCT *guest, const CREATESTRUCTW *host)
+{
+    guest->lpCreateParams = (ULONG_PTR)host->lpCreateParams;
+    guest->hInstance = (ULONG_PTR)host->hInstance;
+    guest->hMenu = (ULONG_PTR)host->hMenu;
+    guest->hwndParent = (ULONG_PTR)host->hwndParent;
+    guest->cy = host->cy;
+    guest->cx = host->cx;
+    guest->y = host->y;
+    guest->x = host->x;
+    guest->style = host->style;
+    guest->lpszName = (ULONG_PTR)host->lpszName;
+    guest->lpszClass = (ULONG_PTR)host->lpszClass;
+    guest->dwExStyle = host->dwExStyle;
+}
+
 struct qemu_WINDOWPOS
 {
     qemu_handle hwnd;
@@ -258,6 +290,10 @@ static inline void MSG_h2g(struct qemu_MSG *guest, const MSG *host)
     guest->pt.y = host->pt.y;
 }
 
-
+struct qemu_CBT_CREATEWND
+{
+    qemu_ptr lpcs;
+    qemu_handle hwndInsertAfter;
+};
 
 #endif

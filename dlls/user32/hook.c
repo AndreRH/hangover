@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_user32.h"
@@ -144,6 +146,7 @@ static CRITICAL_SECTION hook_cs = {0, -1, 0, 0, 0, 0};
 struct qemu_hook_data
 {
     HHOOK hook_id;
+    INT type;
     uint64_t client_cb;
     uint64_t client_inst;
 };
@@ -155,6 +158,8 @@ static LRESULT CALLBACK qemu_hook_wrapper(int code, WPARAM wp, LPARAM lp, struct
 {
     struct qemu_cbt_hook_cb call;
     LRESULT ret;
+    struct qemu_CBT_CREATEWND createwnd;
+    struct qemu_CREATESTRUCT createstruct;
 
     WINE_TRACE("Calling callback 0x%lx(%u, %lu, %lu).\n", (unsigned long)data->client_cb, code, wp, lp);
     call.func = data->client_cb;
@@ -162,6 +167,16 @@ static LRESULT CALLBACK qemu_hook_wrapper(int code, WPARAM wp, LPARAM lp, struct
     call.code = code;
     call.wp = wp;
     call.lp = lp;
+
+#if GUEST_BIT != HOST_BIT
+    if (data->type == WH_CBT && code == HCBT_CREATEWND)
+    {
+        CREATESTRUCT_h2g(&createstruct, ((CBT_CREATEWNDW *)lp)->lpcs);
+        createwnd.lpcs = (ULONG_PTR)&createstruct;
+        createwnd.hwndInsertAfter = (ULONG_PTR)((CBT_CREATEWNDW *)lp)->hwndInsertAfter;
+        call.lp = (LPARAM)&createwnd;
+    }
+#endif
 
     ret = qemu_ops->qemu_execute(QEMU_G2H(hook_guest_wrapper), QEMU_H2G(&call));
 
@@ -270,6 +285,7 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
     hook_data = HeapAlloc(GetProcessHeap(), 0, sizeof(hook_data));
     if (!hook_data)
         return NULL;
+    hook_data->type = id;
 
     EnterCriticalSection(&hook_cs);
 
