@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_user32.h"
@@ -46,7 +48,7 @@ WINUSERAPI UINT WINAPI SendInput(UINT count, LPINPUT inputs, int size)
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDINPUT);
     call.count = (ULONG_PTR)count;
     call.inputs = (ULONG_PTR)inputs;
-    call.size = (ULONG_PTR)size;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -58,8 +60,29 @@ WINUSERAPI UINT WINAPI SendInput(UINT count, LPINPUT inputs, int size)
 void qemu_SendInput(struct qemu_syscall *call)
 {
     struct qemu_SendInput *c = (struct qemu_SendInput *)call;
-    WINE_TRACE("\n");
-    c->super.iret = SendInput(c->count, QEMU_G2H(c->inputs), c->size);
+    INPUT *inputs;
+    struct qemu_INPUT *inputs32;
+    int size;
+    UINT i;
+
+#if GUEST_BIT == HOST_BIT
+    inputs = QEMU_G2H(c->inputs);
+    size = c->size;
+#else
+    inputs32 = QEMU_G2H(c->inputs);
+    /* size is completely ignored by Wine's implementation, just set it to something sensible. */
+    size = sizeof(*inputs);
+
+    inputs = HeapAlloc(GetProcessHeap(), 0, c->count * size);
+    for (i = 0; i < c->count; ++i)
+        INPUT_g2h(&inputs[i], &inputs32[i]);
+#endif
+
+    c->super.iret = SendInput(c->count, inputs, size);
+
+#if GUEST_BIT != HOST_BIT
+    HeapFree(GetProcessHeap(), 0, inputs);
+#endif
 }
 
 #endif

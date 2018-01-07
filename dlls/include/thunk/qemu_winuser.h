@@ -590,4 +590,78 @@ static inline void UPDATELAYEREDWINDOWINFO_h2g(struct qemu_UPDATELAYEREDWINDOWIN
     guest->prcDirty = (ULONG_PTR)host->prcDirty;
 }
 
+struct qemu_MOUSEINPUT
+{
+    LONG        dx;
+    LONG        dy;
+    DWORD       mouseData;
+    DWORD       dwFlags;
+    DWORD       time;
+    qemu_ptr    dwExtraInfo;
+};
+
+static inline void MOUSEINPUT_g2h(MOUSEINPUT *host, const struct qemu_MOUSEINPUT *guest)
+{
+    host->dx = guest->dx;
+    host->dy = guest->dy;
+    host->mouseData = guest->mouseData;
+    host->dwFlags = guest->dwFlags;
+    host->time = guest->time;
+    host->dwExtraInfo = guest->dwExtraInfo;
+}
+
+struct qemu_KEYBDINPUT
+{
+    WORD        wVk;
+    WORD        wScan;
+    DWORD       dwFlags;
+    DWORD       time;
+    qemu_ptr    dwExtraInfo;
+};
+
+static inline void KEYBDINPUT_g2h(KEYBDINPUT *host, const struct qemu_KEYBDINPUT *guest)
+{
+    host->wVk = guest->wVk;
+    host->wScan = guest->wScan;
+    host->dwFlags = guest->dwFlags;
+    host->time = guest->time;
+    host->dwExtraInfo = guest->dwExtraInfo;
+}
+
+struct qemu_HARDWAREINPUT
+{
+    DWORD   uMsg;
+    WORD    wParamL;
+    WORD    wParamH;
+};
+
+static inline void HARDWAREINPUT_g2h(HARDWAREINPUT *host, const struct qemu_HARDWAREINPUT *guest)
+{
+    host->uMsg = guest->uMsg;
+    host->wParamL = guest->wParamL;
+    host->wParamH = guest->wParamH;
+}
+
+struct qemu_INPUT
+{
+    DWORD type;
+    union
+    {
+        struct qemu_MOUSEINPUT      mi;
+        struct qemu_KEYBDINPUT      ki;
+        struct qemu_HARDWAREINPUT   hi;
+    } u1;
+};
+
+static inline void INPUT_g2h(INPUT *host, const struct qemu_INPUT *guest)
+{
+    host->type = guest->type;
+    switch (host->type)
+    {
+        case INPUT_MOUSE:       MOUSEINPUT_g2h(&host->mi, &guest->u1.mi); break;
+        case INPUT_KEYBOARD:    KEYBDINPUT_g2h(&host->ki, &guest->u1.ki); break;
+        case INPUT_HARDWARE:    HARDWAREINPUT_g2h(&host->hi, &guest->u1.hi); break;
+    }
+}
+
 #endif
