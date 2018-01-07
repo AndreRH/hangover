@@ -664,4 +664,43 @@ static inline void INPUT_g2h(INPUT *host, const struct qemu_INPUT *guest)
     }
 }
 
+struct qemu_DRAWITEMSTRUCT
+{
+    UINT        CtlType;
+    UINT        CtlID;
+    UINT        itemID;
+    UINT        itemAction;
+    UINT        itemState;
+    qemu_handle hwndItem;
+    qemu_handle hDC;
+    RECT        rcItem;
+    qemu_ptr    itemData;
+};
+
+static inline void DRAWITEMSTRUCT_g2h(DRAWITEMSTRUCT *host, const struct qemu_DRAWITEMSTRUCT *guest)
+{
+    host->CtlType = guest->CtlType;
+    host->CtlID = guest->CtlID;
+    host->itemID = guest->itemID;
+    host->itemAction = guest->itemAction;
+    host->itemState = guest->itemState;
+    host->hwndItem = HANDLE_g2h(guest->hwndItem);
+    host->hDC = HANDLE_g2h(guest->hDC);
+    host->rcItem = guest->rcItem;
+    host->itemData = guest->itemData;
+}
+
+static inline void DRAWITEMSTRUCT_h2g(struct qemu_DRAWITEMSTRUCT *guest, const DRAWITEMSTRUCT *host)
+{
+    guest->CtlType = host->CtlType;
+    guest->CtlID = host->CtlID;
+    guest->itemID = host->itemID;
+    guest->itemAction = host->itemAction;
+    guest->itemState = host->itemState;
+    guest->hwndItem = (LONG_PTR)host->hwndItem;
+    guest->hDC = (LONG_PTR)host->hDC;
+    guest->rcItem = host->rcItem;
+    guest->itemData = host->itemData;
+}
+
 #endif

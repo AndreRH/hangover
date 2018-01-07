@@ -1100,6 +1100,15 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             break;
         }
 
+        case WM_DRAWITEM:
+        {
+            struct qemu_DRAWITEMSTRUCT *guest = (struct qemu_DRAWITEMSTRUCT *)msg_in->lParam;
+            DRAWITEMSTRUCT *host = HeapAlloc(GetProcessHeap(), 0, sizeof(*host));
+            DRAWITEMSTRUCT_g2h(host, guest);
+            msg_out->lParam = (LPARAM)host;
+            break;
+        }
+
         case CB_GETCOMBOBOXINFO:
         {
             struct qemu_COMBOBOXINFO *guest = (struct qemu_COMBOBOXINFO *)msg_in->lParam;
@@ -1227,6 +1236,10 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
             break;
         }
 
+        case WM_DRAWITEM:
+            HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
+
         case CB_GETCOMBOBOXINFO:
         {
             struct qemu_COMBOBOXINFO *guest = (struct qemu_COMBOBOXINFO *)orig->lParam;
@@ -1344,6 +1357,15 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             break;
         }
 
+        case WM_DRAWITEM:
+        {
+            DRAWITEMSTRUCT *host = (DRAWITEMSTRUCT *)msg_in->lParam;
+            struct qemu_DRAWITEMSTRUCT *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
+            DRAWITEMSTRUCT_h2g(guest, host);
+            msg_out->lParam = (LPARAM)guest;
+            break;
+        }
+
         case WM_NOTIFY:
         {
             int i;
@@ -1420,6 +1442,10 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
         }
+
+        case WM_DRAWITEM:
+            HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
 
         case WM_NOTIFY:
         {
