@@ -563,7 +563,7 @@ struct qemu_EnumDisplayMonitors_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t EnumDisplayMonitors_cb(struct qemu_EnumDisplayMonitors_cb *call)
+static uint64_t __fastcall EnumDisplayMonitors_cb(struct qemu_EnumDisplayMonitors_cb *call)
 {
     MONITORENUMPROC func = (MONITORENUMPROC)(ULONG_PTR)call->func;
     return func((HMONITOR)(ULONG_PTR)call->monitor, (HDC)(ULONG_PTR)call->dc, (RECT *)(ULONG_PTR)call->rect, call->param);
