@@ -947,7 +947,7 @@ void qemu_TranslateMessage(struct qemu_syscall *call)
     WINE_TRACE("\n");
 
 #if GUEST_BIT == HOST_BIT
-    msg = QEMU_G2H(c->pmsg);
+    msg = QEMU_G2H(c->msg);
 #else
     MSG_g2h(&stack, QEMU_G2H(c->msg));
 #endif
