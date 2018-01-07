@@ -116,11 +116,11 @@ WINUSERAPI void WINAPI mouse_event(DWORD dwFlags, DWORD dx, DWORD dy, DWORD dwDa
 {
     struct qemu_mouse_event call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MOUSE_EVENT);
-    call.dwFlags = (ULONG_PTR)dwFlags;
-    call.dx = (ULONG_PTR)dx;
-    call.dy = (ULONG_PTR)dy;
-    call.dwData = (ULONG_PTR)dwData;
-    call.dwExtraInfo = (ULONG_PTR)dwExtraInfo;
+    call.dwFlags = dwFlags;
+    call.dx = dx;
+    call.dy = dy;
+    call.dwData = dwData;
+    call.dwExtraInfo = dwExtraInfo;
 
     qemu_syscall(&call.super);
 

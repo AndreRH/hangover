@@ -2028,8 +2028,33 @@ WINUSERAPI BOOL WINAPI UpdateLayeredWindowIndirect(HWND hwnd, const UPDATELAYERE
 void qemu_UpdateLayeredWindowIndirect(struct qemu_syscall *call)
 {
     struct qemu_UpdateLayeredWindowIndirect *c = (struct qemu_UpdateLayeredWindowIndirect *)call;
+    UPDATELAYEREDWINDOWINFO stack, *info = &stack;
+    struct qemu_UPDATELAYEREDWINDOWINFO *info32;
     WINE_TRACE("\n");
-    c->super.iret = UpdateLayeredWindowIndirect(QEMU_G2H(c->hwnd), QEMU_G2H(c->info));
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->info);
+#else
+    info32 = QEMU_G2H(c->info);
+    if (info32)
+    {
+        if (info32->cbSize == sizeof(*info32))
+        {
+            info->cbSize = sizeof(*info);
+            UPDATELAYEREDWINDOWINFO_g2h(info, info32);
+        }
+        else
+        {
+            info->cbSize = 0;
+        }
+    }
+    else
+    {
+        info = NULL;
+    }
+#endif
+
+    c->super.iret = UpdateLayeredWindowIndirect(QEMU_G2H(c->hwnd), info);
 }
 
 #endif

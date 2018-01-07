@@ -491,4 +491,44 @@ static inline void CLIENTCREATESTRUCT_h2g(struct qemu_CLIENTCREATESTRUCT *guest,
     guest->idFirstChild = host->idFirstChild;
 }
 
+struct qemu_UPDATELAYEREDWINDOWINFO
+{
+    DWORD           cbSize;
+    qemu_handle     hdcDst;
+    qemu_ptr        pptDst;
+    qemu_ptr        psize;
+    qemu_handle     hdcSrc;
+    qemu_ptr        pptSrc;
+    COLORREF        crKey;
+    qemu_ptr        pblend;
+    DWORD           dwFlags;
+    qemu_ptr        prcDirty;
+};
+
+static inline void UPDATELAYEREDWINDOWINFO_g2h(UPDATELAYEREDWINDOWINFO *host, const struct qemu_UPDATELAYEREDWINDOWINFO *guest)
+{
+    host->hdcDst = HANDLE_g2h(guest->hdcDst);
+    host->pptDst = (POINT *const)(ULONG_PTR)guest->pptDst;
+    host->psize = (SIZE *const)(ULONG_PTR)guest->psize; /* Note that this is a struct of two LONGs, not a size_t. */
+    host->hdcSrc = HANDLE_g2h(guest->hdcSrc);
+    host->pptSrc = (POINT *const)(ULONG_PTR)guest->pptSrc;
+    host->crKey = guest->crKey;
+    host->pblend = (BLENDFUNCTION *const)(ULONG_PTR)guest->pblend;
+    host->dwFlags = guest->dwFlags;
+    host->prcDirty = (RECT *const)(ULONG_PTR)guest->prcDirty;
+}
+
+static inline void UPDATELAYEREDWINDOWINFO_h2g(struct qemu_UPDATELAYEREDWINDOWINFO *guest, const UPDATELAYEREDWINDOWINFO *host)
+{
+    guest->hdcDst = (ULONG_PTR)host->hdcDst;
+    guest->pptDst = (ULONG_PTR)host->pptDst;
+    guest->psize = (ULONG_PTR)host->psize; /* Note that this is a struct of two LONGs, not a size_t. */
+    guest->hdcSrc = (ULONG_PTR)host->hdcSrc;
+    guest->pptSrc = (ULONG_PTR)host->pptSrc;
+    guest->crKey = host->crKey;
+    guest->pblend = (ULONG_PTR)host->pblend;
+    guest->dwFlags = host->dwFlags;
+    guest->prcDirty = (ULONG_PTR)host->prcDirty;
+}
+
 #endif
