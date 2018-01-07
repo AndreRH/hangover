@@ -1864,8 +1864,34 @@ WINUSERAPI BOOL WINAPI SetMenuInfo (HMENU hMenu, LPCMENUINFO lpmi)
 void qemu_SetMenuInfo(struct qemu_syscall *call)
 {
     struct qemu_SetMenuInfo *c = (struct qemu_SetMenuInfo *)call;
+    MENUINFO stack, *info = &stack;
+    struct qemu_MENUINFO *info32;
+
     WINE_TRACE("\n");
-    c->super.iret = SetMenuInfo(QEMU_G2H(c->hMenu), QEMU_G2H(c->lpmi));
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->lpmi);
+#else
+    info32 = QEMU_G2H(c->lpmi);
+    if (info32)
+    {
+        if (info32->cbSize == sizeof(*info32))
+        {
+            MENUINFO_g2h(info, info32);
+            info->cbSize = sizeof(*info);
+        }
+        else
+        {
+            info->cbSize = 0;
+        }
+    }
+    else
+    {
+        info = NULL;
+    }
+#endif
+
+    c->super.iret = SetMenuInfo(QEMU_G2H(c->hMenu), info);
 }
 
 #endif
@@ -1896,8 +1922,38 @@ WINUSERAPI BOOL WINAPI GetMenuInfo (HMENU hMenu, LPMENUINFO lpmi)
 void qemu_GetMenuInfo(struct qemu_syscall *call)
 {
     struct qemu_GetMenuInfo *c = (struct qemu_GetMenuInfo *)call;
+    MENUINFO stack, *info = &stack;
+    struct qemu_MENUINFO *info32;
     WINE_TRACE("\n");
-    c->super.iret = GetMenuInfo(QEMU_G2H(c->hMenu), QEMU_G2H(c->lpmi));
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->lpmi);
+#else
+    info32 = QEMU_G2H(c->lpmi);
+    if (info32)
+    {
+        if (info32->cbSize == sizeof(*info32))
+        {
+            info->cbSize = sizeof(*info);
+            MENUINFO_g2h(info, info32);
+        }
+        else
+        {
+            info->cbSize = 0;
+        }
+    }
+    else
+    {
+        info = NULL;
+    }
+#endif
+
+    c->super.iret = GetMenuInfo(QEMU_G2H(c->hMenu), info);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret)
+        MENUINFO_h2g(info32, info);
+#endif
 }
 
 #endif

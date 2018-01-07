@@ -271,6 +271,37 @@ static inline void MENUITEMINFO_h2g(struct qemu_MENUITEMINFO *guest, const MENUI
     guest->hbmpItem = (ULONG_PTR)host->hbmpItem;
 }
 
+struct qemu_MENUINFO
+{
+    DWORD       cbSize;
+    DWORD       fMask;
+    DWORD       dwStyle;
+    UINT        cyMax;
+    qemu_handle hbrBack;
+    DWORD       dwContextHelpID;
+    qemu_ptr    dwMenuData;
+};
+
+static inline void MENUINFO_g2h(MENUINFO *host, const struct qemu_MENUINFO *guest)
+{
+    host->fMask = guest->fMask;
+    host->dwStyle = guest->dwStyle;
+    host->cyMax = guest->cyMax;
+    host->hbrBack = HANDLE_g2h(guest->hbrBack);
+    host->dwContextHelpID = guest->dwContextHelpID;
+    host->dwMenuData = guest->dwMenuData;
+}
+
+static inline void MENUINFO_h2g(struct qemu_MENUINFO *guest, const MENUINFO *host)
+{
+    guest->fMask = host->fMask;
+    guest->dwStyle = host->dwStyle;
+    guest->cyMax = host->cyMax;
+    guest->hbrBack = (LONG_PTR)host->hbrBack;
+    guest->dwContextHelpID = host->dwContextHelpID;
+    guest->dwMenuData = host->dwMenuData;
+}
+
 struct qemu_MSGBOXPARAMSW
 {
     UINT            cbSize;
