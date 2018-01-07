@@ -703,4 +703,28 @@ static inline void DRAWITEMSTRUCT_h2g(struct qemu_DRAWITEMSTRUCT *guest, const D
     guest->itemData = host->itemData;
 }
 
+struct qemu_MOUSEMOVEPOINT
+{
+    int x;
+    int y;
+    DWORD time;
+    qemu_ptr dwExtraInfo;
+};
+
+static inline void MOUSEMOVEPOINT_g2h(MOUSEMOVEPOINT *host, const struct qemu_MOUSEMOVEPOINT *guest)
+{
+    host->x = guest->x;
+    host->y = guest->y;
+    host->time = guest->time;
+    host->dwExtraInfo = guest->dwExtraInfo;
+}
+
+static inline void MOUSEMOVEPOINT_h2g(struct qemu_MOUSEMOVEPOINT *guest, const MOUSEMOVEPOINT *host)
+{
+    guest->x = host->x;
+    guest->y = host->y;
+    guest->time = host->time;
+    guest->dwExtraInfo = host->dwExtraInfo;
+}
+
 #endif

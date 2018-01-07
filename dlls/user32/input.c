@@ -1893,11 +1893,11 @@ WINBASEAPI int WINAPI GetMouseMovePointsEx(UINT size, LPMOUSEMOVEPOINT ptin, LPM
 {
     struct qemu_GetMouseMovePointsEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMOUSEMOVEPOINTSEX);
-    call.size = (ULONG_PTR)size;
+    call.size = size;
     call.ptin = (ULONG_PTR)ptin;
     call.ptout = (ULONG_PTR)ptout;
-    call.count = (ULONG_PTR)count;
-    call.res = (ULONG_PTR)res;
+    call.count = count;
+    call.res = res;
 
     qemu_syscall(&call.super);
 
@@ -1911,8 +1911,45 @@ extern int WINAPI GetMouseMovePointsEx(UINT size, LPMOUSEMOVEPOINT ptin, LPMOUSE
 void qemu_GetMouseMovePointsEx(struct qemu_syscall *call)
 {
     struct qemu_GetMouseMovePointsEx *c = (struct qemu_GetMouseMovePointsEx *)call;
+    MOUSEMOVEPOINT stackin, *in = &stackin;
+    MOUSEMOVEPOINT *out;
+    struct qemu_MOUSEMOVEPOINT *in32, *out32;
+    UINT size;
+    int i, ret;
     WINE_TRACE("\n");
-    c->super.iret = GetMouseMovePointsEx(c->size, QEMU_G2H(c->ptin), QEMU_G2H(c->ptout), c->count, c->res);
+
+#if GUEST_BIT == HOST_BIT
+    in = QEMU_G2H(c->ptin);
+    out = QEMU_G2H(c->ptout);
+    size = c->size;
+#else
+    in32 = QEMU_G2H(c->ptin);
+    out32 = QEMU_G2H(c->ptout);
+    size = c->size == sizeof(*in32) ? sizeof(*in) : 0;
+
+    if (in32)
+        MOUSEMOVEPOINT_g2h(in, in32);
+    else
+        in = NULL;
+
+    if (out32)
+        out = HeapAlloc(GetProcessHeap(), 0, sizeof(*out) * c->count);
+    else
+        out = NULL;
+#endif
+
+    ret = GetMouseMovePointsEx(size, in, out, c->count, c->res);
+
+#if GUEST_BIT == HOST_BIT
+    if (out)
+    {
+        for (i = 0; i < ret; ++i)
+            MOUSEMOVEPOINT_h2g(&out32[i]), &out[i]);
+
+        HeapFree(GetProcessHeap(), 0, out);
+    }
+#endif
+    c->super.iret = ret;
 }
 
 #endif
