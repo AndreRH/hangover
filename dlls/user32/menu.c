@@ -1478,8 +1478,34 @@ WINUSERAPI BOOL WINAPI SetMenuItemInfoA(HMENU hmenu, UINT item, BOOL bypos, cons
 void qemu_SetMenuItemInfoA(struct qemu_syscall *call)
 {
     struct qemu_SetMenuItemInfoA *c = (struct qemu_SetMenuItemInfoA *)call;
+    MENUITEMINFOA stack, *info = &stack;
+    struct qemu_MENUITEMINFO *info32;
     WINE_TRACE("\n");
-    c->super.iret = SetMenuItemInfoA(QEMU_G2H(c->hmenu), c->item, c->bypos, QEMU_G2H(c->lpmii));
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->lpmii);
+#else
+    info32 = QEMU_G2H(c->lpmii);
+    if (info32)
+    {
+        if (info32->cbSize >= sizeof(*info32))
+        {
+            MENUITEMINFO_g2h((MENUITEMINFOW *)info, info32);
+        }
+        else
+        {
+            struct qemu_MENUITEMINFO copy = {0};
+            memcpy(&copy, info32, info32->cbSize);
+            MENUITEMINFO_g2h((MENUITEMINFOW *)info, &copy);
+        }
+    }
+    else
+    {
+        info = NULL;
+    }
+#endif
+
+    c->super.iret = SetMenuItemInfoA(QEMU_G2H(c->hmenu), c->item, c->bypos, info);
 }
 
 #endif
@@ -1514,8 +1540,34 @@ WINUSERAPI BOOL WINAPI SetMenuItemInfoW(HMENU hmenu, UINT item, BOOL bypos, cons
 void qemu_SetMenuItemInfoW(struct qemu_syscall *call)
 {
     struct qemu_SetMenuItemInfoW *c = (struct qemu_SetMenuItemInfoW *)call;
+    MENUITEMINFOW stack, *info = &stack;
+    struct qemu_MENUITEMINFO *info32;
     WINE_TRACE("\n");
-    c->super.iret = SetMenuItemInfoW(QEMU_G2H(c->hmenu), c->item, c->bypos, QEMU_G2H(c->lpmii));
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->lpmii);
+#else
+    info32 = QEMU_G2H(c->lpmii);
+    if (info32)
+    {
+        if (info32->cbSize >= sizeof(*info32))
+        {
+            MENUITEMINFO_g2h(info, info32);
+        }
+        else
+        {
+            struct qemu_MENUITEMINFO copy = {0};
+            memcpy(&copy, info32, info32->cbSize);
+            MENUITEMINFO_g2h(info, &copy);
+        }
+    }
+    else
+    {
+        info = NULL;
+    }
+#endif
+
+    c->super.iret = SetMenuItemInfoW(QEMU_G2H(c->hmenu), c->item, c->bypos, info);
 }
 
 #endif
@@ -1618,17 +1670,34 @@ WINUSERAPI BOOL WINAPI InsertMenuItemA(HMENU hMenu, UINT uItem, BOOL bypos, cons
 void qemu_InsertMenuItemA(struct qemu_syscall *call)
 {
     struct qemu_InsertMenuItemA *c = (struct qemu_InsertMenuItemA *)call;
-    MENUITEMINFOA copy, *item;
+    MENUITEMINFOA stack, *info = &stack;
+    struct qemu_MENUITEMINFO *info32;
     WINE_TRACE("\n");
 
 #if GUEST_BIT == HOST_BIT
-    item = QEMU_G2H(c->lpmii);
+    info = QEMU_G2H(c->lpmii);
 #else
-    item = &copy;
-    MENUITEMINFO_g2h((MENUITEMINFOW *)item, QEMU_G2H(c->lpmii));
+    info32 = QEMU_G2H(c->lpmii);
+    if (info32)
+    {
+        if (info32->cbSize >= sizeof(*info32))
+        {
+            MENUITEMINFO_g2h((MENUITEMINFOW *)info, info32);
+        }
+        else
+        {
+            struct qemu_MENUITEMINFO copy = {0};
+            memcpy(&copy, info32, info32->cbSize);
+            MENUITEMINFO_g2h((MENUITEMINFOW *)info, &copy);
+        }
+    }
+    else
+    {
+        info = NULL;
+    }
 #endif
 
-    c->super.iret = InsertMenuItemA(QEMU_G2H(c->hMenu), c->uItem, c->bypos, item);
+    c->super.iret = InsertMenuItemA(QEMU_G2H(c->hMenu), c->uItem, c->bypos, info);
 }
 
 #endif
@@ -1663,17 +1732,34 @@ WINUSERAPI BOOL WINAPI InsertMenuItemW(HMENU hMenu, UINT uItem, BOOL bypos, cons
 void qemu_InsertMenuItemW(struct qemu_syscall *call)
 {
     struct qemu_InsertMenuItemW *c = (struct qemu_InsertMenuItemW *)call;
-    MENUITEMINFOW copy, *item;
+    MENUITEMINFOW stack, *info = &stack;
+    struct qemu_MENUITEMINFO *info32;
     WINE_TRACE("\n");
 
 #if GUEST_BIT == HOST_BIT
-    item = QEMU_G2H(c->lpmii);
+    info = QEMU_G2H(c->lpmii);
 #else
-    item = &copy;
-    MENUITEMINFO_g2h(item, QEMU_G2H(c->lpmii));
+    info32 = QEMU_G2H(c->lpmii);
+    if (info32)
+    {
+        if (info32->cbSize >= sizeof(*info32))
+        {
+            MENUITEMINFO_g2h(info, info32);
+        }
+        else
+        {
+            struct qemu_MENUITEMINFO copy = {0};
+            memcpy(&copy, info32, info32->cbSize);
+            MENUITEMINFO_g2h(info, &copy);
+        }
+    }
+    else
+    {
+        info = NULL;
+    }
 #endif
 
-    c->super.iret = InsertMenuItemW(QEMU_G2H(c->hMenu), c->uItem, c->bypos, item);
+    c->super.iret = InsertMenuItemW(QEMU_G2H(c->hMenu), c->uItem, c->bypos, info);
 }
 
 #endif
