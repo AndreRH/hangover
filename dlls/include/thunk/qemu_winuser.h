@@ -302,6 +302,34 @@ static inline void MENUINFO_h2g(struct qemu_MENUINFO *guest, const MENUINFO *hos
     guest->dwMenuData = host->dwMenuData;
 }
 
+struct qemu_MENUBARINFO
+{
+    DWORD       cbSize;
+    RECT        rcBar;
+    qemu_handle hMenu;
+    qemu_handle hwndMenu;
+    BOOL        fBarFocused:1;
+    BOOL        fFocused:1;
+};
+
+static inline void MENUBARINFO_g2h(MENUBARINFO *host, const struct qemu_MENUBARINFO *guest)
+{
+    host->rcBar = guest->rcBar;
+    host->hMenu = HANDLE_g2h(guest->hMenu);
+    host->hwndMenu = HANDLE_g2h(guest->hwndMenu);
+    host->fBarFocused = guest->fBarFocused;
+    host->fFocused = guest->fFocused;
+}
+
+static inline void MENUBARINFO_h2g(struct qemu_MENUBARINFO *guest, const MENUBARINFO *host)
+{
+    guest->rcBar = host->rcBar;
+    guest->hMenu = (ULONG_PTR)host->hMenu;
+    guest->hwndMenu = (ULONG_PTR)host->hwndMenu;
+    guest->fBarFocused = host->fBarFocused;
+    guest->fFocused = host->fFocused;
+}
+
 struct qemu_MSGBOXPARAMSW
 {
     UINT            cbSize;

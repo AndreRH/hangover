@@ -992,8 +992,8 @@ WINUSERAPI BOOL WINAPI GetMenuBarInfo(HWND hwnd, LONG idObject, LONG idItem, PME
     struct qemu_GetMenuBarInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMENUBARINFO);
     call.hwnd = (LONG_PTR)hwnd;
-    call.idObject = (ULONG_PTR)idObject;
-    call.idItem = (ULONG_PTR)idItem;
+    call.idObject = idObject;
+    call.idItem = idItem;
     call.pmbi = (ULONG_PTR)pmbi;
 
     qemu_syscall(&call.super);
@@ -1006,8 +1006,36 @@ WINUSERAPI BOOL WINAPI GetMenuBarInfo(HWND hwnd, LONG idObject, LONG idItem, PME
 void qemu_GetMenuBarInfo(struct qemu_syscall *call)
 {
     struct qemu_GetMenuBarInfo *c = (struct qemu_GetMenuBarInfo *)call;
-    WINE_TRACE("\n");
-    c->super.iret = GetMenuBarInfo(QEMU_G2H(c->hwnd), c->idObject, c->idItem, QEMU_G2H(c->pmbi));
+    MENUBARINFO stack, *info = &stack;
+    struct qemu_MENUBARINFO *info32;
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->pmbi);
+#else
+    info32 = QEMU_G2H(c->pmbi);
+    if (info32)
+    {
+        if (info32->cbSize == sizeof(*info32))
+        {
+            info->cbSize = sizeof(*info);
+        }
+        else
+        {
+            info->cbSize = 0;
+        }
+    }
+    else
+    {
+        info = NULL;
+    }
+#endif
+
+    c->super.iret = GetMenuBarInfo(QEMU_G2H(c->hwnd), c->idObject, c->idItem, info);
+
+#if GUEST_BIT != HOST_BIT
+    if (info32)
+        MENUBARINFO_h2g(info32, info);
+#endif
 }
 
 #endif
