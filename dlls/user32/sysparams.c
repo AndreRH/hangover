@@ -31,7 +31,7 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 #endif
 
 
-struct qemu_SystemParametersInfoW
+struct qemu_SystemParametersInfo
 {
     struct qemu_syscall super;
     uint64_t uiAction;
@@ -44,8 +44,22 @@ struct qemu_SystemParametersInfoW
 
 WINUSERAPI BOOL WINAPI SystemParametersInfoW(UINT uiAction, UINT uiParam, PVOID pvParam, UINT fWinIni)
 {
-    struct qemu_SystemParametersInfoW call;
+    struct qemu_SystemParametersInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMPARAMETERSINFOW);
+    call.uiAction = (ULONG_PTR)uiAction;
+    call.uiParam = (ULONG_PTR)uiParam;
+    call.pvParam = (ULONG_PTR)pvParam;
+    call.fWinIni = (ULONG_PTR)fWinIni;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+WINUSERAPI BOOL WINAPI SystemParametersInfoA(UINT uiAction, UINT uiParam, PVOID pvParam, UINT fWinIni)
+{
+    struct qemu_SystemParametersInfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMPARAMETERSINFOA);
     call.uiAction = (ULONG_PTR)uiAction;
     call.uiParam = (ULONG_PTR)uiParam;
     call.pvParam = (ULONG_PTR)pvParam;
@@ -58,47 +72,43 @@ WINUSERAPI BOOL WINAPI SystemParametersInfoW(UINT uiAction, UINT uiParam, PVOID 
 
 #else
 
-void qemu_SystemParametersInfoW(struct qemu_syscall *call)
+void qemu_SystemParametersInfo(struct qemu_syscall *call)
 {
-    struct qemu_SystemParametersInfoW *c = (struct qemu_SystemParametersInfoW *)call;
+    struct qemu_SystemParametersInfo *c = (struct qemu_SystemParametersInfo *)call;
+    INT action;
     WINE_TRACE("\n");
-    c->super.iret = SystemParametersInfoW(c->uiAction, c->uiParam, QEMU_G2H(c->pvParam), c->fWinIni);
-}
 
+    action = c->uiAction;
+#if GUEST_BIT == HOST_BIT
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_SYSTEMPARAMETERSINFOA))
+        c->super.iret = SystemParametersInfoA(action, c->uiParam, QEMU_G2H(c->pvParam), c->fWinIni);
+    else
+        c->super.iret = SystemParametersInfoW(action, c->uiParam, QEMU_G2H(c->pvParam), c->fWinIni);
+    return;
 #endif
 
-struct qemu_SystemParametersInfoA
-{
-    struct qemu_syscall super;
-    uint64_t uiAction;
-    uint64_t uiParam;
-    uint64_t pvParam;
-    uint64_t fuWinIni;
-};
+    switch (action)
+    {
+        /* Everything untested */
+        default:
+            WINE_FIXME("Unvalidated system parameter %d\n", action);
+            /* Drop through */
 
-#ifdef QEMU_DLL_GUEST
+        /* Parameters which are known to have matching 32 and 64 bit structs. */
+        case SPI_GETBEEP:
+        case SPI_SETBEEP:
+        case SPI_ICONVERTICALSPACING:
+        case SPI_GETNONCLIENTMETRICS:
+        case SPI_GETMINIMIZEDMETRICS:
+        case SPI_SETMINIMIZEDMETRICS:
+            if (c->super.id == QEMU_SYSCALL_ID(CALL_SYSTEMPARAMETERSINFOA))
+                c->super.iret = SystemParametersInfoA(action, c->uiParam, QEMU_G2H(c->pvParam), c->fWinIni);
+            else
+                c->super.iret = SystemParametersInfoW(action, c->uiParam, QEMU_G2H(c->pvParam), c->fWinIni);
+            break;
 
-WINUSERAPI BOOL WINAPI SystemParametersInfoA(UINT uiAction, UINT uiParam, PVOID pvParam, UINT fuWinIni)
-{
-    struct qemu_SystemParametersInfoA call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMPARAMETERSINFOA);
-    call.uiAction = (ULONG_PTR)uiAction;
-    call.uiParam = (ULONG_PTR)uiParam;
-    call.pvParam = (ULONG_PTR)pvParam;
-    call.fuWinIni = (ULONG_PTR)fuWinIni;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_SystemParametersInfoA(struct qemu_syscall *call)
-{
-    struct qemu_SystemParametersInfoA *c = (struct qemu_SystemParametersInfoA *)call;
-    WINE_TRACE("\n");
-    c->super.iret = SystemParametersInfoA(c->uiAction, c->uiParam, QEMU_G2H(c->pvParam), c->fuWinIni);
+        /* Needs conversion */
+    }
 }
 
 #endif
