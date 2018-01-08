@@ -108,8 +108,8 @@ WINUSERAPI BOOL WINAPI SetCaretPos(INT x, INT y)
 {
     struct qemu_SetCaretPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCARETPOS);
-    call.x = (ULONG_PTR)x;
-    call.y = (ULONG_PTR)y;
+    call.x = x;
+    call.y = y;
 
     qemu_syscall(&call.super);
 
