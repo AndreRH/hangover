@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_user32.h"
@@ -57,8 +59,37 @@ WINUSERAPI BOOL WINAPI GetComboBoxInfo(HWND hwndCombo, PCOMBOBOXINFO pcbi)
 void qemu_GetComboBoxInfo(struct qemu_syscall *call)
 {
     struct qemu_GetComboBoxInfo *c = (struct qemu_GetComboBoxInfo *)call;
+    COMBOBOXINFO stack, *info = &stack;
+    struct qemu_COMBOBOXINFO *info32;
     WINE_TRACE("\n");
-    c->super.iret = GetComboBoxInfo(QEMU_G2H(c->hwndCombo), QEMU_G2H(c->pcbi));
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->pcbi);
+#else
+    info32 = QEMU_G2H(c->pcbi);
+    if (info32)
+    {
+        if (info32->cbSize >= sizeof(*info32))
+        {
+            info->cbSize = sizeof(*info);
+        }
+        else
+        {
+            info->cbSize = 0;
+        }
+    }
+    else
+    {
+        info = NULL;
+    }
+#endif
+
+    c->super.iret = GetComboBoxInfo(QEMU_G2H(c->hwndCombo), info);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret && info)
+        COMBOBOXINFO_h2g(info32, info);
+#endif
 }
 
 #endif
