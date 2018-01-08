@@ -52,7 +52,10 @@ WINUSERAPI LRESULT WINAPI SendMessageTimeoutW(HWND hwnd, UINT msg, WPARAM wparam
 {
     struct qemu_SendMessageTimeoutW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDMESSAGETIMEOUTW);
-    call.hwnd = (ULONG_PTR)hwnd;
+    if (hwnd == HWND_BROADCAST || hwnd == HWND_TOPMOST)
+        call.hwnd = (LONG_PTR)hwnd;
+    else
+        call.hwnd = (ULONG_PTR)hwnd;
     call.msg = (ULONG_PTR)msg;
     call.wparam = (ULONG_PTR)wparam;
     call.lparam = (ULONG_PTR)lparam;
@@ -103,7 +106,10 @@ WINUSERAPI LRESULT WINAPI SendMessageTimeoutA(HWND hwnd, UINT msg, WPARAM wparam
 {
     struct qemu_SendMessageTimeoutA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDMESSAGETIMEOUTA);
-    call.hwnd = (ULONG_PTR)hwnd;
+    if (hwnd == HWND_BROADCAST || hwnd == HWND_TOPMOST)
+        call.hwnd = (LONG_PTR)hwnd;
+    else
+        call.hwnd = (ULONG_PTR)hwnd;
     call.msg = (ULONG_PTR)msg;
     call.wparam = (ULONG_PTR)wparam;
     call.lparam = (ULONG_PTR)lparam;
@@ -151,7 +157,10 @@ WINUSERAPI LRESULT WINAPI SendMessageW(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 {
     struct qemu_SendMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDMESSAGEW);
-    call.hwnd = (ULONG_PTR)hwnd;
+    if (hwnd == HWND_BROADCAST || hwnd == HWND_TOPMOST)
+        call.hwnd = (LONG_PTR)hwnd;
+    else
+        call.hwnd = (ULONG_PTR)hwnd;
     call.msg = (ULONG_PTR)msg;
     call.wparam = (ULONG_PTR)wparam;
     call.lparam = (ULONG_PTR)lparam;
@@ -198,7 +207,10 @@ WINUSERAPI LRESULT WINAPI SendMessageA(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 {
     struct qemu_SendMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDMESSAGEA);
-    call.hwnd = (ULONG_PTR)hwnd;
+    if (hwnd == HWND_BROADCAST || hwnd == HWND_TOPMOST)
+        call.hwnd = (LONG_PTR)hwnd;
+    else
+        call.hwnd = (ULONG_PTR)hwnd;
     call.msg = (ULONG_PTR)msg;
     call.wparam = (ULONG_PTR)wparam;
     call.lparam = (ULONG_PTR)lparam;
@@ -485,7 +497,10 @@ WINUSERAPI BOOL WINAPI PostMessageA(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 {
     struct qemu_PostMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POSTMESSAGEA);
-    call.hwnd = (ULONG_PTR)hwnd;
+    if (hwnd == HWND_BROADCAST || hwnd == HWND_TOPMOST)
+        call.hwnd = (LONG_PTR)hwnd;
+    else
+        call.hwnd = (ULONG_PTR)hwnd;
     call.msg = (ULONG_PTR)msg;
     call.wparam = (ULONG_PTR)wparam;
     call.lparam = (ULONG_PTR)lparam;
@@ -530,7 +545,10 @@ WINUSERAPI BOOL WINAPI PostMessageW(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 {
     struct qemu_PostMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POSTMESSAGEW);
-    call.hwnd = (ULONG_PTR)hwnd;
+    if (hwnd == HWND_BROADCAST || hwnd == HWND_TOPMOST)
+        call.hwnd = (LONG_PTR)hwnd;
+    else
+        call.hwnd = (ULONG_PTR)hwnd;
     call.msg = (ULONG_PTR)msg;
     call.wparam = (ULONG_PTR)wparam;
     call.lparam = (ULONG_PTR)lparam;
@@ -679,7 +697,10 @@ WINUSERAPI BOOL WINAPI PeekMessageW(MSG *msg_out, HWND hwnd, UINT first, UINT la
     struct qemu_PeekMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PEEKMESSAGEW);
     call.msg_out = (ULONG_PTR)msg_out;
-    call.hwnd = (ULONG_PTR)hwnd;
+    if (hwnd == HWND_BROADCAST || hwnd == HWND_TOPMOST)
+        call.hwnd = (LONG_PTR)hwnd;
+    else
+        call.hwnd = (ULONG_PTR)hwnd;
     call.first = (ULONG_PTR)first;
     call.last = (ULONG_PTR)last;
     call.flags = (ULONG_PTR)flags;
@@ -734,7 +755,10 @@ WINUSERAPI BOOL WINAPI PeekMessageA(MSG *msg, HWND hwnd, UINT first, UINT last, 
     struct qemu_PeekMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PEEKMESSAGEA);
     call.msg = (ULONG_PTR)msg;
-    call.hwnd = (ULONG_PTR)hwnd;
+    if (hwnd == HWND_BROADCAST || hwnd == HWND_TOPMOST)
+        call.hwnd = (LONG_PTR)hwnd;
+    else
+        call.hwnd = (ULONG_PTR)hwnd;
     call.first = (ULONG_PTR)first;
     call.last = (ULONG_PTR)last;
     call.flags = (ULONG_PTR)flags;
@@ -788,7 +812,10 @@ WINUSERAPI BOOL WINAPI GetMessageW(MSG *msg, HWND hwnd, UINT first, UINT last)
     struct qemu_GetMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMESSAGEW);
     call.msg = (ULONG_PTR)msg;
-    call.hwnd = (ULONG_PTR)hwnd;
+    if (hwnd == HWND_BROADCAST || hwnd == HWND_TOPMOST)
+        call.hwnd = (LONG_PTR)hwnd;
+    else
+        call.hwnd = (ULONG_PTR)hwnd;
     call.first = (ULONG_PTR)first;
     call.last = (ULONG_PTR)last;
 
@@ -841,7 +868,10 @@ WINUSERAPI BOOL WINAPI GetMessageA(MSG *msg, HWND hwnd, UINT first, UINT last)
     struct qemu_GetMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMESSAGEA);
     call.msg = (ULONG_PTR)msg;
-    call.hwnd = (ULONG_PTR)hwnd;
+    if (hwnd == HWND_BROADCAST || hwnd == HWND_TOPMOST)
+        call.hwnd = (LONG_PTR)hwnd;
+    else
+        call.hwnd = (ULONG_PTR)hwnd;
     call.first = (ULONG_PTR)first;
     call.last = (ULONG_PTR)last;
 
