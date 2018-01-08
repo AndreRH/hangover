@@ -64,7 +64,10 @@ WINUSERAPI HWND WINAPI CreateWindowExA(DWORD exStyle, LPCSTR className, LPCSTR w
     call.y = y;
     call.width = width;
     call.height = height;
-    call.parent = (ULONG_PTR)parent;
+    if (parent == HWND_MESSAGE)
+        call.parent = (LONG_PTR)parent;
+    else
+        call.parent = (ULONG_PTR)parent;
     call.menu = (ULONG_PTR)menu;
     call.instance = (ULONG_PTR)instance;
     call.data = (ULONG_PTR)data;
@@ -135,7 +138,10 @@ WINUSERAPI HWND WINAPI CreateWindowExW(DWORD exStyle, LPCWSTR className, LPCWSTR
     call.y = y;
     call.width = width;
     call.height = height;
-    call.parent = (ULONG_PTR)parent;
+    if (parent == HWND_MESSAGE)
+        call.parent = (LONG_PTR)parent;
+    else
+        call.parent = (ULONG_PTR)parent;
     call.menu = (ULONG_PTR)menu;
     call.instance = (ULONG_PTR)instance;
     call.data = (ULONG_PTR)data;
@@ -282,7 +288,10 @@ WINUSERAPI HWND WINAPI FindWindowExW(HWND parent, HWND child, LPCWSTR className,
 {
     struct qemu_FindWindowExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDWINDOWEXW);
-    call.parent = (ULONG_PTR)parent;
+    if (parent == HWND_MESSAGE)
+        call.parent = (LONG_PTR)parent;
+    else
+        call.parent = (ULONG_PTR)parent;
     call.child = (ULONG_PTR)child;
     call.className = (ULONG_PTR)className;
     call.title = (ULONG_PTR)title;
@@ -350,7 +359,10 @@ WINUSERAPI HWND WINAPI FindWindowExA(HWND parent, HWND child, LPCSTR className, 
 {
     struct qemu_FindWindowExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDWINDOWEXA);
-    call.parent = (ULONG_PTR)parent;
+    if (parent == HWND_MESSAGE)
+        call.parent = (LONG_PTR)parent;
+    else
+        call.parent = (ULONG_PTR)parent;
     call.child = (ULONG_PTR)child;
     call.className = (ULONG_PTR)className;
     call.title = (ULONG_PTR)title;
@@ -1207,7 +1219,10 @@ WINUSERAPI HWND WINAPI SetParent(HWND hwnd, HWND parent)
     struct qemu_SetParent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPARENT);
     call.hwnd = (ULONG_PTR)hwnd;
-    call.parent = (ULONG_PTR)parent;
+    if (parent == HWND_MESSAGE)
+        call.parent = (LONG_PTR)parent;
+    else
+        call.parent = (ULONG_PTR)parent;
 
     qemu_syscall(&call.super);
 
