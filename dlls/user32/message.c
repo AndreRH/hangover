@@ -500,17 +500,17 @@ WINUSERAPI BOOL WINAPI PostMessageA(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 void qemu_PostMessageA(struct qemu_syscall *call)
 {
     struct qemu_PostMessageA *c = (struct qemu_PostMessageA *)call;
+    MSG msg_in, msg_out;
     WINE_TRACE("\n");
 
-    switch (c->msg)
-    {
-        case WM_TIMER:
-        case WM_SYSTIMER:
-            WINE_FIXME("Do I have to fix up WM_TIMER.lParam here?\n");
-            break;
-    }
+    msg_in.hwnd = QEMU_G2H(c->hwnd);
+    msg_in.message = c->msg;
+    msg_in.wParam = c->wparam;
+    msg_in.lParam = c->lparam;
 
-    c->super.iret = PostMessageA(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam);
+    msg_guest_to_host(&msg_out, &msg_in);
+    c->super.iret = PostMessageA(msg_out.hwnd, msg_out.message, msg_out.wParam, msg_out.lParam);
+    msg_guest_to_host_return(&msg_out, &msg_in);
 }
 
 #endif
@@ -545,17 +545,17 @@ WINUSERAPI BOOL WINAPI PostMessageW(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 void qemu_PostMessageW(struct qemu_syscall *call)
 {
     struct qemu_PostMessageW *c = (struct qemu_PostMessageW *)call;
+    MSG msg_in, msg_out;
     WINE_TRACE("\n");
 
-    switch (c->msg)
-    {
-        case WM_TIMER:
-        case WM_SYSTIMER:
-            WINE_FIXME("Do I have to fix up WM_TIMER.lParam here?\n");
-            break;
-    }
+    msg_in.hwnd = QEMU_G2H(c->hwnd);
+    msg_in.message = c->msg;
+    msg_in.wParam = c->wparam;
+    msg_in.lParam = c->lparam;
 
-    c->super.iret = PostMessageW(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam);
+    msg_guest_to_host(&msg_out, &msg_in);
+    c->super.iret = PostMessageW(msg_out.hwnd, msg_out.message, msg_out.wParam, msg_out.lParam);
+    msg_guest_to_host_return(&msg_out, &msg_in);
 }
 
 #endif

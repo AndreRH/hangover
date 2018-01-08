@@ -2063,7 +2063,7 @@ WINUSERAPI INT WINAPI TranslateAcceleratorA(HWND hWnd, HACCEL hAccel, LPMSG msg)
     struct qemu_TranslateAcceleratorA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRANSLATEACCELERATORA);
     call.hWnd = (LONG_PTR)hWnd;
-    call.hAccel = (ULONG_PTR)hAccel;
+    call.hAccel = (LONG_PTR)hAccel;
     call.msg = (ULONG_PTR)msg;
 
     qemu_syscall(&call.super);
@@ -2076,8 +2076,26 @@ WINUSERAPI INT WINAPI TranslateAcceleratorA(HWND hWnd, HACCEL hAccel, LPMSG msg)
 void qemu_TranslateAcceleratorA(struct qemu_syscall *call)
 {
     struct qemu_TranslateAcceleratorA *c = (struct qemu_TranslateAcceleratorA *)call;
+    MSG stack, *msg_in = &stack, msg_out;
     WINE_TRACE("\n");
-    c->super.iret = TranslateAcceleratorA(QEMU_G2H(c->hWnd), QEMU_G2H(c->hAccel), QEMU_G2H(c->msg));
+
+#if GUEST_BIT == HOST_BIT
+    msg = QEMU_G2H(c->msg);
+#else
+    if (c->msg)
+        MSG_g2h(msg_in, QEMU_G2H(c->msg));
+    else
+        msg_in = NULL;
+#endif
+
+    msg_guest_to_host(&msg_out, msg_in);
+    c->super.iret = TranslateAcceleratorA(QEMU_G2H(c->hWnd), QEMU_G2H(c->hAccel), &msg_out);
+    msg_guest_to_host_return(msg_in, &msg_out);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->msg)
+        MSG_h2g(QEMU_G2H(c->msg), msg_in);
+#endif
 }
 
 #endif
@@ -2110,8 +2128,26 @@ WINUSERAPI INT WINAPI TranslateAcceleratorW(HWND hWnd, HACCEL hAccel, LPMSG msg)
 void qemu_TranslateAcceleratorW(struct qemu_syscall *call)
 {
     struct qemu_TranslateAcceleratorW *c = (struct qemu_TranslateAcceleratorW *)call;
+    MSG stack, *msg_in = &stack, msg_out;
     WINE_TRACE("\n");
-    c->super.iret = TranslateAcceleratorW(QEMU_G2H(c->hWnd), QEMU_G2H(c->hAccel), QEMU_G2H(c->msg));
+
+#if GUEST_BIT == HOST_BIT
+    msg = QEMU_G2H(c->msg);
+#else
+    if (c->msg)
+        MSG_g2h(msg_in, QEMU_G2H(c->msg));
+    else
+        msg_in = NULL;
+#endif
+
+    msg_guest_to_host(&msg_out, msg_in);
+    c->super.iret = TranslateAcceleratorW(QEMU_G2H(c->hWnd), QEMU_G2H(c->hAccel), &msg_out);
+    msg_guest_to_host_return(msg_in, &msg_out);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->msg)
+        MSG_h2g(QEMU_G2H(c->msg), msg_in);
+#endif
 }
 
 #endif
