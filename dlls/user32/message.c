@@ -842,7 +842,7 @@ void qemu_GetMessageW(struct qemu_syscall *call)
     c->super.iret = GetMessageW(msg, (HWND)c->hwnd, c->first, c->last);
 
 #if GUEST_BIT != HOST_BIT
-    if (c->msg && c->super.iret)
+    if (c->msg)
         MSG_h2g(QEMU_G2H(c->msg), msg);
 #endif
 
@@ -898,7 +898,7 @@ void qemu_GetMessageA(struct qemu_syscall *call)
     c->super.iret = GetMessageA(msg, (HWND)c->hwnd, c->first, c->last);
 
 #if GUEST_BIT != HOST_BIT
-    if (c->msg && c->super.iret)
+    if (c->msg)
         MSG_h2g(QEMU_G2H(c->msg), msg);
 #endif
 
