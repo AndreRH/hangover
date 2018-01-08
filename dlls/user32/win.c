@@ -578,34 +578,54 @@ WINUSERAPI LONG WINAPI GetWindowLongA(HWND hwnd, INT offset)
 
 #else
 
-static LONG_PTR get_wndproc(HWND window, BOOL wide)
+static LONG_PTR get_wndproc(HWND window, BOOL wide, INT offset)
 {
     LONG_PTR proc;
 
     if (wide)
-        proc = GetWindowLongPtrW(window, GWLP_WNDPROC);
+        proc = GetWindowLongPtrW(window, offset);
     else
-        proc = GetWindowLongPtrA(window, GWLP_WNDPROC);
+        proc = GetWindowLongPtrA(window, offset);
 
     return wndproc_host_to_guest((WNDPROC)proc);
+}
+
+static inline INT GWL_OFFSET_g2h(uint64_t guest)
+{
+    INT val = guest;
+#if GUEST_BIT == HOST_BIT
+    return val;
+#else
+    if (val <= 0)
+        return val;
+    else if (val == 4)
+        return DWLP_DLGPROC;
+    else if (val == 8)
+        return DWLP_USER;
+    WINE_FIXME("Unknown offset %d\n", val);
+    return val;
+#endif
 }
 
 void qemu_GetWindowLongA(struct qemu_syscall *call)
 {
     struct qemu_GetWindowLongA *c = (struct qemu_GetWindowLongA *)call;
     HWND win;
+    INT offset;
 
     WINE_TRACE("\n");
     win = (HWND)c->hwnd;
+    offset = GWL_OFFSET_g2h(c->offset);
 
-    switch (c->offset)
+    switch (offset)
     {
         case GWLP_WNDPROC:
-            c->super.iret = get_wndproc(win, FALSE);
+        case DWLP_DLGPROC:
+            c->super.iret = get_wndproc(win, FALSE, offset);
             break;
 
         default:
-            c->super.iret = GetWindowLongA(win, c->offset);
+            c->super.iret = GetWindowLongA(win, offset);
             break;
     }
 }
@@ -639,18 +659,21 @@ void qemu_GetWindowLongW(struct qemu_syscall *call)
 {
     struct qemu_GetWindowLongW *c = (struct qemu_GetWindowLongW *)call;
     HWND win;
+    INT offset;
 
     WINE_TRACE("\n");
     win = (HWND)c->hwnd;
+    offset = GWL_OFFSET_g2h(c->offset);
 
-    switch (c->offset)
+    switch (offset)
     {
+        case DWLP_DLGPROC:
         case GWLP_WNDPROC:
-            c->super.iret = get_wndproc(win, TRUE);
+            c->super.iret = get_wndproc(win, TRUE, offset);
             break;
 
         default:
-            c->super.iret = GetWindowLongW(win, c->offset);
+            c->super.iret = GetWindowLongW(win, offset);
             break;
     }
 }
@@ -707,7 +730,11 @@ WINUSERAPI LONG WINAPI SetWindowLongA(HWND hwnd, INT offset, LONG newval)
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWLONGA);
     call.hwnd = (LONG_PTR)hwnd;
     call.offset = offset;
-    call.newval = newval;
+
+    if (offset == GWLP_WNDPROC || offset == DWLP_DLGPROC)
+        call.newval = (ULONG_PTR)newval;
+    else
+        call.newval = newval;
 
     qemu_syscall(&call.super);
 
@@ -716,19 +743,19 @@ WINUSERAPI LONG WINAPI SetWindowLongA(HWND hwnd, INT offset, LONG newval)
 
 #else
 
-static LONG_PTR set_wndproc(HWND win, uint64_t newval, BOOL wide)
+static LONG_PTR set_wndproc(HWND win, uint64_t newval, BOOL wide, INT offset)
 {
     LONG_PTR host_proc = (LONG_PTR)wndproc_guest_to_host(newval);
     LONG_PTR old;
     ULONG_PTR guest_old;
 
-    WINE_TRACE("Application is setting the class proc to 0x%lx, setting host proc 0x%lx.\n",
-            (unsigned long)newval, host_proc);
+    WINE_TRACE("Application is setting the class proc to 0x%lx, setting host proc 0x%lx. wide %u.\n",
+            (unsigned long)newval, host_proc, wide);
 
     if (wide)
-        old = SetWindowLongPtrW(win, GWLP_WNDPROC, (LONG_PTR)host_proc);
+        old = SetWindowLongPtrW(win, offset, (LONG_PTR)host_proc);
     else
-        old = SetWindowLongPtrA(win, GWLP_WNDPROC, (LONG_PTR)host_proc);
+        old = SetWindowLongPtrA(win, offset, (LONG_PTR)host_proc);
 
     guest_old = wndproc_host_to_guest((WNDPROC)old);
 
@@ -741,17 +768,21 @@ void qemu_SetWindowLongA(struct qemu_syscall *call)
 {
     struct qemu_SetWindowLongA *c = (struct qemu_SetWindowLongA *)call;
     HWND win;
+    INT offset;
     WINE_TRACE("\n");
 
     win = QEMU_G2H(c->hwnd);
-    switch (c->offset)
+    offset = GWL_OFFSET_g2h(c->offset);
+
+    switch (offset)
     {
         case GWLP_WNDPROC:
-            c->super.iret = set_wndproc(win, c->newval, FALSE);
+        case DWLP_DLGPROC:
+            c->super.iret = set_wndproc(win, c->newval, FALSE, offset);
             break;
 
         default:
-            c->super.iret = SetWindowLongA(win, c->offset, c->newval);
+            c->super.iret = SetWindowLongA(win, offset, c->newval);
             break;
     }
 }
@@ -774,7 +805,11 @@ WINUSERAPI LONG WINAPI SetWindowLongW(HWND hwnd, INT offset, LONG newval)
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWLONGW);
     call.hwnd = (LONG_PTR)hwnd;
     call.offset = offset;
-    call.newval = newval;
+
+    if (offset == GWLP_WNDPROC || offset == DWLP_DLGPROC)
+        call.newval = (ULONG_PTR)newval;
+    else
+        call.newval = newval;
 
     qemu_syscall(&call.super);
 
@@ -787,17 +822,21 @@ void qemu_SetWindowLongW(struct qemu_syscall *call)
 {
     struct qemu_SetWindowLongW *c = (struct qemu_SetWindowLongW *)call;
     HWND win;
+    INT offset;
     WINE_TRACE("\n");
 
     win = QEMU_G2H(c->hwnd);
-    switch (c->offset)
+    offset = GWL_OFFSET_g2h(c->offset);
+
+    switch (offset)
     {
         case GWLP_WNDPROC:
-            c->super.iret = set_wndproc(win, c->newval, TRUE);
+        case DWLP_DLGPROC:
+            c->super.iret = set_wndproc(win, c->newval, TRUE, offset);
             break;
 
         default:
-            c->super.iret = SetWindowLongW(win, c->offset, c->newval);
+            c->super.iret = SetWindowLongW(win, offset, c->newval);
             break;
     }
 }
@@ -2192,18 +2231,21 @@ void qemu_GetWindowLongPtrW(struct qemu_syscall *call)
 {
     struct qemu_GetWindowLongPtrW *c = (struct qemu_GetWindowLongPtrW *)call;
     HWND win;
+    INT offset;
 
     WINE_TRACE("\n");
     win = (HWND)c->hwnd;
+    offset = GWL_OFFSET_g2h(c->offset);
 
-    switch (c->offset)
+    switch (offset)
     {
+        case DWLP_DLGPROC:
         case GWLP_WNDPROC:
-            c->super.iret = get_wndproc(win, TRUE);
+            c->super.iret = get_wndproc(win, TRUE, offset);
             break;
 
         default:
-            c->super.iret = GetWindowLongPtrW(win, c->offset);
+            c->super.iret = GetWindowLongPtrW(win, offset);
             break;
     }
 }
@@ -2237,18 +2279,21 @@ void qemu_GetWindowLongPtrA(struct qemu_syscall *call)
 {
     struct qemu_GetWindowLongPtrA *c = (struct qemu_GetWindowLongPtrA *)call;
     HWND win;
+    INT offset;
 
     WINE_TRACE("\n");
     win = (HWND)c->hwnd;
+    offset = GWL_OFFSET_g2h(c->offset);
 
-    switch (c->offset)
+    switch (offset)
     {
         case GWLP_WNDPROC:
-            c->super.iret = get_wndproc(win, FALSE);
+        case DWLP_DLGPROC:
+            c->super.iret = get_wndproc(win, FALSE, offset);
             break;
 
         default:
-            c->super.iret = GetWindowLongPtrA(win, c->offset);
+            c->super.iret = GetWindowLongPtrA(win, offset);
             break;
     }
 }
@@ -2271,7 +2316,11 @@ LONG_PTR WINAPI user32_SetWindowLongPtrW(HWND hwnd, INT offset, LONG_PTR newval)
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWLONGPTRW);
     call.hwnd = (LONG_PTR)hwnd;
     call.offset = offset;
-    call.newval = newval;
+
+    if (offset == GWLP_WNDPROC || offset == DWLP_DLGPROC)
+        call.newval = (ULONG_PTR)newval;
+    else
+        call.newval = newval;
 
     qemu_syscall(&call.super);
 
@@ -2284,18 +2333,21 @@ void qemu_SetWindowLongPtrW(struct qemu_syscall *call)
 {
     struct qemu_SetWindowLongPtrW *c = (struct qemu_SetWindowLongPtrW *)call;
     HWND win;
+    INT offset;
 
     WINE_TRACE("\n");
     win = (HWND)c->hwnd;
+    offset = GWL_OFFSET_g2h(c->offset);
 
-    switch (c->offset)
+    switch (offset)
     {
         case GWLP_WNDPROC:
-            c->super.iret = set_wndproc(win, c->newval, TRUE);
+        case DWLP_DLGPROC:
+            c->super.iret = set_wndproc(win, c->newval, TRUE, offset);
             break;
 
         default:
-            c->super.iret = SetWindowLongPtrW(QEMU_G2H(c->hwnd), c->offset, c->newval);
+            c->super.iret = SetWindowLongPtrW(QEMU_G2H(c->hwnd), offset, c->newval);
             break;
     }
 }
@@ -2318,7 +2370,11 @@ LONG_PTR WINAPI user32_SetWindowLongPtrA(HWND hwnd, INT offset, LONG_PTR newval)
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWLONGPTRA);
     call.hwnd = (LONG_PTR)hwnd;
     call.offset = offset;
-    call.newval = newval;
+
+    if (offset == GWLP_WNDPROC || offset == DWLP_DLGPROC)
+        call.newval = (ULONG_PTR)newval;
+    else
+        call.newval = newval;
 
     qemu_syscall(&call.super);
 
@@ -2331,18 +2387,21 @@ void qemu_SetWindowLongPtrA(struct qemu_syscall *call)
 {
     struct qemu_SetWindowLongPtrA *c = (struct qemu_SetWindowLongPtrA *)call;
     HWND win;
+    INT offset;
 
     WINE_TRACE("\n");
     win = (HWND)c->hwnd;
+    offset = GWL_OFFSET_g2h(c->offset);
 
-    switch (c->offset)
+    switch (offset)
     {
         case GWLP_WNDPROC:
-            c->super.iret = set_wndproc(win, c->newval, FALSE);
+        case DWLP_DLGPROC:
+            c->super.iret = set_wndproc(win, c->newval, FALSE, offset);
             break;
 
         default:
-            c->super.iret = SetWindowLongPtrA(QEMU_G2H(c->hwnd), c->offset, c->newval);
+            c->super.iret = SetWindowLongPtrA(QEMU_G2H(c->hwnd), offset, c->newval);
             break;
     }
 }
