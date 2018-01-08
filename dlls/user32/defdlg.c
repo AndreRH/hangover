@@ -61,8 +61,13 @@ WINUSERAPI LRESULT WINAPI DefDlgProcA(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 void qemu_DefDlgProcA(struct qemu_syscall *call)
 {
     struct qemu_DefDlgProcA *c = (struct qemu_DefDlgProcA *)call;
+    MSG msg_in = {(HWND)c->hwnd, c->msg, c->wParam, c->lParam};
+    MSG msg_out;
     WINE_TRACE("\n");
-    c->super.iret = DefDlgProcA(QEMU_G2H(c->hwnd), c->msg, c->wParam, c->lParam);
+
+    msg_guest_to_host(&msg_out, &msg_in);
+    c->super.iret = DefDlgProcA(msg_out.hwnd, msg_out.message, msg_out.wParam, msg_out.lParam);
+    msg_guest_to_host_return(&msg_in, &msg_out);
 }
 
 #endif
@@ -97,8 +102,13 @@ WINUSERAPI LRESULT WINAPI DefDlgProcW(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 void qemu_DefDlgProcW(struct qemu_syscall *call)
 {
     struct qemu_DefDlgProcW *c = (struct qemu_DefDlgProcW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DefDlgProcW(QEMU_G2H(c->hwnd), c->msg, c->wParam, c->lParam);
+    MSG msg_in = {(HWND)c->hwnd, c->msg, c->wParam, c->lParam};
+    MSG msg_out;
+
+    WINE_TRACE("\n");
+    msg_guest_to_host(&msg_out, &msg_in);
+    c->super.iret = DefDlgProcW(msg_out.hwnd, msg_out.message, msg_out.wParam, msg_out.lParam);
+    msg_guest_to_host_return(&msg_in, &msg_out);
 }
 
 #endif

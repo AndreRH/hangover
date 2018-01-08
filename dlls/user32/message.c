@@ -905,6 +905,7 @@ void qemu_IsDialogMessageA(struct qemu_syscall *call)
 {
     struct qemu_IsDialogMessageA *c = (struct qemu_IsDialogMessageA *)call;
     MSG stack, *msg = &stack;
+    MSG msg_out;
     WINE_TRACE("\n");
 
 #if GUEST_BIT == HOST_BIT
@@ -913,7 +914,9 @@ void qemu_IsDialogMessageA(struct qemu_syscall *call)
     MSG_g2h(msg, QEMU_G2H(c->pmsg));
 #endif
 
-    c->super.iret = IsDialogMessageA(QEMU_G2H(c->hwndDlg), msg);
+    msg_guest_to_host(&msg_out, msg);
+    c->super.iret = IsDialogMessageA(QEMU_G2H(c->hwndDlg), &msg_out);
+    msg_guest_to_host_return(msg, &msg_out);
 }
 
 #endif
