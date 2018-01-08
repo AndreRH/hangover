@@ -459,7 +459,7 @@ WINUSERAPI DWORD WINAPI GetQueueStatus(UINT flags)
 void qemu_GetQueueStatus(struct qemu_syscall *call)
 {
     struct qemu_GetQueueStatus *c = (struct qemu_GetQueueStatus *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetQueueStatus(c->flags);
 }
 
