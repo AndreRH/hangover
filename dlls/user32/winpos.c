@@ -914,7 +914,14 @@ WINUSERAPI BOOL WINAPI SetWindowPos(HWND hwnd, HWND hwndInsertAfter, INT x, INT 
     struct qemu_SetWindowPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWPOS);
     call.hwnd = (ULONG_PTR)hwnd;
-    call.hwndInsertAfter = (LONG_PTR)hwndInsertAfter;
+#if GUEST_BIT == HOST_BIT
+    call.hwndInsertAfter = (ULONG_PTR)hwndInsertAfter;
+#else
+    if (hwndInsertAfter == HWND_TOPMOST || hwndInsertAfter == HWND_NOTOPMOST)
+        call.hwndInsertAfter = (LONG_PTR)hwndInsertAfter;
+    else
+        call.hwndInsertAfter = (ULONG_PTR)hwndInsertAfter;
+#endif
     call.x = x;
     call.y = y;
     call.cx = cx;

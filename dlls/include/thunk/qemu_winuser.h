@@ -153,7 +153,14 @@ struct qemu_WINDOWPOS
 static inline void WINDOWPOS_g2h(WINDOWPOS *host, const struct qemu_WINDOWPOS *guest)
 {
     host->hwnd = HANDLE_g2h(guest->hwnd);
-    host->hwndInsertAfter = HANDLE_g2h(guest->hwndInsertAfter);
+
+    if (guest->hwndInsertAfter == (qemu_handle)(LONG_PTR)HWND_TOPMOST)
+        host->hwndInsertAfter = HWND_TOPMOST;
+    else if (guest->hwndInsertAfter == (qemu_handle)(LONG_PTR)HWND_NOTOPMOST)
+        host->hwndInsertAfter = HWND_NOTOPMOST;
+    else
+        host->hwndInsertAfter = HANDLE_g2h(guest->hwndInsertAfter);
+
     host->x = guest->x;
     host->y = guest->y;
     host->cx = guest->cx;
