@@ -109,4 +109,20 @@ static inline void SYSTEM_INFO_h2g(struct qemu_SYSTEM_INFO *guest, const SYSTEM_
     guest->wProcessorRevision = host->wProcessorRevision;
 }
 
+struct qemu_PROCESS_INFORMATION
+{
+    qemu_handle hProcess;
+    qemu_handle hThread;
+    DWORD       dwProcessId;
+    DWORD       dwThreadId;
+};
+
+static void PROCESS_INFORMATION_h2g(struct qemu_PROCESS_INFORMATION *guest, const PROCESS_INFORMATION *host)
+{
+    guest->hProcess = (LONG_PTR)host->hProcess;
+    guest->hThread = (LONG_PTR)host->hThread;
+    guest->dwProcessId = host->dwProcessId;
+    guest->dwThreadId = host->dwThreadId;
+}
+
 #endif
