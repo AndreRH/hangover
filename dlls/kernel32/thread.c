@@ -821,9 +821,23 @@ struct qemu_QueueUserAPC
     uint64_t func;
     uint64_t hthread;
     uint64_t data;
+    uint64_t wrapper;
+};
+
+struct qemu_QueueUserAPC_cb
+{
+    uint64_t func;
+    uint64_t data;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static void __fastcall guset_user_apc_wrapper(struct qemu_QueueUserAPC_cb *param)
+{
+    PAPCFUNC func = (PAPCFUNC)(ULONG_PTR)param->func;
+    ULONG_PTR data = param->data;
+    func(data);
+}
 
 WINBASEAPI DWORD WINAPI QueueUserAPC(PAPCFUNC func, HANDLE hthread, ULONG_PTR data)
 {
@@ -832,6 +846,7 @@ WINBASEAPI DWORD WINAPI QueueUserAPC(PAPCFUNC func, HANDLE hthread, ULONG_PTR da
     call.func = (ULONG_PTR)func;
     call.hthread = (LONG_PTR)hthread;
     call.data = (ULONG_PTR)data;
+    call.wrapper = (ULONG_PTR)guset_user_apc_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -843,19 +858,22 @@ WINBASEAPI DWORD WINAPI QueueUserAPC(PAPCFUNC func, HANDLE hthread, ULONG_PTR da
 struct apc_data
 {
     uint64_t guest_data;
-    uint64_t func;
+    uint64_t func, wrapper;
 };
 
 static void CALLBACK host_user_apc_cb(ULONG_PTR param)
 {
     struct apc_data *data = (struct apc_data *)param;
-    uint64_t func = data->func;
-    uint64_t guest_data = data->guest_data;
+    uint64_t wrapper = data->wrapper;
+    struct qemu_QueueUserAPC_cb call;
+
+    call.func = data->func;
+    call.data = data->guest_data;
 
     HeapFree(GetProcessHeap(), 0, data);
-    WINE_TRACE("Executing user APC callback 0x%lx(0x%lx).\n", (unsigned long)func,
-            (unsigned long)guest_data);
-    qemu_ops->qemu_execute(QEMU_G2H(func), guest_data);
+    WINE_TRACE("Executing user APC callback 0x%lx(0x%lx).\n", (unsigned long)call.func,
+            (unsigned long)call.data);
+    qemu_ops->qemu_execute(QEMU_G2H(wrapper), QEMU_H2G(&call));
     WINE_TRACE("User callback returned.\n");
 }
 
@@ -883,6 +901,7 @@ void qemu_QueueUserAPC(struct qemu_syscall *call)
 
     data->guest_data = c->data;
     data->func = c->func;
+    data->wrapper = c->wrapper;
 
     c->super.iret = QueueUserAPC(host_user_apc_cb, (HANDLE)c->hthread, (ULONG_PTR)data);
     if (!c->super.iret)
