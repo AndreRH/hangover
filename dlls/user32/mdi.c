@@ -63,8 +63,14 @@ WINUSERAPI LRESULT WINAPI DefFrameProcA(HWND hwnd, HWND hwndMDIClient, UINT mess
 void qemu_DefFrameProcA(struct qemu_syscall *call)
 {
     struct qemu_DefFrameProcA *c = (struct qemu_DefFrameProcA *)call;
+    MSG msg_in = {(HWND)c->hwnd, c->message, c->wParam, c->lParam};
+    MSG msg_out;
     WINE_TRACE("\n");
-    c->super.iret = DefFrameProcA(QEMU_G2H(c->hwnd), QEMU_G2H(c->hwndMDIClient), c->message, c->wParam, c->lParam);
+
+    msg_guest_to_host(&msg_out, &msg_in);
+    c->super.iret = DefFrameProcA(msg_out.hwnd, QEMU_G2H(c->hwndMDIClient), msg_out.message,
+            msg_out.wParam, msg_out.lParam);
+    msg_guest_to_host_return(&msg_in, &msg_out);
 }
 
 #endif
@@ -101,8 +107,14 @@ WINUSERAPI LRESULT WINAPI DefFrameProcW(HWND hwnd, HWND hwndMDIClient, UINT mess
 void qemu_DefFrameProcW(struct qemu_syscall *call)
 {
     struct qemu_DefFrameProcW *c = (struct qemu_DefFrameProcW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DefFrameProcW(QEMU_G2H(c->hwnd), QEMU_G2H(c->hwndMDIClient), c->message, c->wParam, c->lParam);
+    MSG msg_in = {(HWND)c->hwnd, c->message, c->wParam, c->lParam};
+    MSG msg_out;
+    WINE_TRACE("\n");
+
+    msg_guest_to_host(&msg_out, &msg_in);
+    c->super.iret = DefFrameProcW(msg_out.hwnd, QEMU_G2H(c->hwndMDIClient), msg_out.message,
+            msg_out.wParam, msg_out.lParam);
+    msg_guest_to_host_return(&msg_in, &msg_out);
 }
 
 #endif
