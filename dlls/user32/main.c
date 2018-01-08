@@ -1372,6 +1372,9 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             WCHAR class[256];
             NMHDR *hdr = (NMHDR *)msg_in->lParam;
 
+            if (IsBadReadPtr(hdr, sizeof(*hdr)))
+                break;
+
             i = GetClassNameW(hdr->hwndFrom, class, sizeof(class) / sizeof(*class));
             if (i < 0 || i == 256)
                 break;
@@ -1452,6 +1455,9 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
             int i;
             WCHAR class[256];
             NMHDR *hdr = (NMHDR *)orig->lParam;
+
+            if (IsBadReadPtr(hdr, sizeof(*hdr)))
+                break;
 
             i = GetClassNameW(hdr->hwndFrom, class, sizeof(class) / sizeof(*class));
             if (i < 0 || i == 256)
