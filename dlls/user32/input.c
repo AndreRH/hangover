@@ -1944,7 +1944,7 @@ void qemu_GetMouseMovePointsEx(struct qemu_syscall *call)
     if (out)
     {
         for (i = 0; i < ret; ++i)
-            MOUSEMOVEPOINT_h2g(&out32[i]), &out[i]);
+            MOUSEMOVEPOINT_h2g(&out32[i], &out[i]);
 
         HeapFree(GetProcessHeap(), 0, out);
     }
