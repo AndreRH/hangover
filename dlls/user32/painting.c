@@ -45,7 +45,7 @@ WINUSERAPI HDC WINAPI BeginPaint(HWND hwnd, PAINTSTRUCT *lps)
 {
     struct qemu_BeginPaint call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BEGINPAINT);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.lps = (ULONG_PTR)lps;
 
     qemu_syscall(&call.super);
@@ -91,7 +91,7 @@ WINUSERAPI BOOL WINAPI EndPaint(HWND hwnd, const PAINTSTRUCT *lps)
 {
     struct qemu_EndPaint call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENDPAINT);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.lps = (ULONG_PTR)lps;
 
     qemu_syscall(&call.super);
@@ -139,7 +139,7 @@ WINUSERAPI HDC WINAPI GetDCEx(HWND hwnd, HRGN hrgnClip, DWORD flags)
 {
     struct qemu_GetDCEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDCEX);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.hrgnClip = (ULONG_PTR)hrgnClip;
     call.flags = (ULONG_PTR)flags;
 
@@ -171,7 +171,7 @@ WINUSERAPI HDC WINAPI GetDC(HWND hwnd)
 {
     struct qemu_GetDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDC);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -201,7 +201,7 @@ WINUSERAPI HDC WINAPI GetWindowDC(HWND hwnd)
 {
     struct qemu_GetWindowDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETWINDOWDC);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -232,7 +232,7 @@ WINUSERAPI INT WINAPI ReleaseDC(HWND hwnd, HDC hdc)
 {
     struct qemu_ReleaseDC call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RELEASEDC);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
@@ -293,7 +293,7 @@ WINUSERAPI BOOL WINAPI LockWindowUpdate(HWND hwnd)
 {
     struct qemu_LockWindowUpdate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOCKWINDOWUPDATE);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -326,7 +326,7 @@ WINUSERAPI BOOL WINAPI RedrawWindow(HWND hwnd, const RECT *rect, HRGN hrgn, UINT
 {
     struct qemu_RedrawWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REDRAWWINDOW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.rect = (ULONG_PTR)rect;
     call.hrgn = (ULONG_PTR)hrgn;
     call.flags = (ULONG_PTR)flags;
@@ -359,7 +359,7 @@ WINUSERAPI BOOL WINAPI UpdateWindow(HWND hwnd)
 {
     struct qemu_UpdateWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UPDATEWINDOW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -391,7 +391,7 @@ WINUSERAPI BOOL WINAPI InvalidateRgn(HWND hwnd, HRGN hrgn, BOOL erase)
 {
     struct qemu_InvalidateRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INVALIDATERGN);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.hrgn = (ULONG_PTR)hrgn;
     call.erase = (ULONG_PTR)erase;
 
@@ -425,7 +425,7 @@ WINUSERAPI BOOL WINAPI InvalidateRect(HWND hwnd, const RECT *rect, BOOL erase)
 {
     struct qemu_InvalidateRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INVALIDATERECT);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.rect = (ULONG_PTR)rect;
     call.erase = (ULONG_PTR)erase;
 
@@ -458,7 +458,7 @@ WINUSERAPI BOOL WINAPI ValidateRgn(HWND hwnd, HRGN hrgn)
 {
     struct qemu_ValidateRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VALIDATERGN);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.hrgn = (ULONG_PTR)hrgn;
 
     qemu_syscall(&call.super);
@@ -490,7 +490,7 @@ WINUSERAPI BOOL WINAPI ValidateRect(HWND hwnd, const RECT *rect)
 {
     struct qemu_ValidateRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VALIDATERECT);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.rect = (ULONG_PTR)rect;
 
     qemu_syscall(&call.super);
@@ -523,7 +523,7 @@ WINUSERAPI INT WINAPI GetUpdateRgn(HWND hwnd, HRGN hrgn, BOOL erase)
 {
     struct qemu_GetUpdateRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETUPDATERGN);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.hrgn = (ULONG_PTR)hrgn;
     call.erase = (ULONG_PTR)erase;
 
@@ -557,7 +557,7 @@ WINUSERAPI BOOL WINAPI GetUpdateRect(HWND hwnd, LPRECT rect, BOOL erase)
 {
     struct qemu_GetUpdateRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETUPDATERECT);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.rect = (ULONG_PTR)rect;
     call.erase = (ULONG_PTR)erase;
 
@@ -591,7 +591,7 @@ WINUSERAPI INT WINAPI ExcludeUpdateRgn(HDC hdc, HWND hwnd)
     struct qemu_ExcludeUpdateRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXCLUDEUPDATERGN);
     call.hdc = (ULONG_PTR)hdc;
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -628,7 +628,7 @@ WINUSERAPI INT WINAPI ScrollWindowEx(HWND hwnd, INT dx, INT dy, const RECT *rect
 {
     struct qemu_ScrollWindowEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCROLLWINDOWEX);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.dx = (ULONG_PTR)dx;
     call.dy = (ULONG_PTR)dy;
     call.rect = (ULONG_PTR)rect;
@@ -669,7 +669,7 @@ WINUSERAPI BOOL WINAPI ScrollWindow(HWND hwnd, INT dx, INT dy, const RECT *rect,
 {
     struct qemu_ScrollWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCROLLWINDOW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.dx = (ULONG_PTR)dx;
     call.dy = (ULONG_PTR)dy;
     call.rect = (ULONG_PTR)rect;
@@ -747,7 +747,7 @@ WINUSERAPI BOOL WINAPI PrintWindow(HWND hwnd, HDC hdcBlt, UINT nFlags)
 {
     struct qemu_PrintWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PRINTWINDOW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.hdcBlt = (ULONG_PTR)hdcBlt;
     call.nFlags = (ULONG_PTR)nFlags;
 

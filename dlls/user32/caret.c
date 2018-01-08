@@ -46,7 +46,7 @@ WINUSERAPI BOOL WINAPI CreateCaret(HWND hwnd, HBITMAP bitmap, INT width, INT hei
 {
     struct qemu_CreateCaret call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATECARET);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.bitmap = (ULONG_PTR)bitmap;
     call.width = (ULONG_PTR)width;
     call.height = (ULONG_PTR)height;
@@ -139,7 +139,7 @@ WINUSERAPI BOOL WINAPI HideCaret(HWND hwnd)
 {
     struct qemu_HideCaret call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HIDECARET);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -169,7 +169,7 @@ WINUSERAPI BOOL WINAPI ShowCaret(HWND hwnd)
 {
     struct qemu_ShowCaret call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHOWCARET);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 

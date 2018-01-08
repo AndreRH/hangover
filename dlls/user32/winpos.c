@@ -44,7 +44,7 @@ WINUSERAPI void WINAPI SwitchToThisWindow(HWND hwnd, BOOL alt_tab)
 {
     struct qemu_SwitchToThisWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SWITCHTOTHISWINDOW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.alt_tab = (ULONG_PTR)alt_tab;
 
     qemu_syscall(&call.super);
@@ -74,7 +74,7 @@ WINUSERAPI BOOL WINAPI GetWindowRect(HWND hwnd, LPRECT rect)
 {
     struct qemu_GetWindowRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETWINDOWRECT);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.rect = (ULONG_PTR)rect;
 
     qemu_syscall(&call.super);
@@ -106,7 +106,7 @@ WINUSERAPI int WINAPI GetWindowRgn (HWND hwnd, HRGN hrgn)
 {
     struct qemu_GetWindowRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETWINDOWRGN);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.hrgn = (ULONG_PTR)hrgn;
 
     qemu_syscall(&call.super);
@@ -138,7 +138,7 @@ WINUSERAPI int WINAPI GetWindowRgnBox(HWND hwnd, LPRECT prect)
 {
     struct qemu_GetWindowRgnBox call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETWINDOWRGNBOX);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.prect = (ULONG_PTR)prect;
 
     qemu_syscall(&call.super);
@@ -171,7 +171,7 @@ WINUSERAPI int WINAPI SetWindowRgn(HWND hwnd, HRGN hrgn, BOOL bRedraw)
 {
     struct qemu_SetWindowRgn call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWRGN);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.hrgn = (ULONG_PTR)hrgn;
     call.bRedraw = (ULONG_PTR)bRedraw;
 
@@ -204,7 +204,7 @@ WINUSERAPI BOOL WINAPI GetClientRect(HWND hwnd, LPRECT rect)
 {
     struct qemu_GetClientRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCLIENTRECT);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.rect = (ULONG_PTR)rect;
 
     qemu_syscall(&call.super);
@@ -273,7 +273,7 @@ WINUSERAPI HWND WINAPI ChildWindowFromPoint(HWND hwndParent, POINT pt)
 {
     struct qemu_ChildWindowFromPoint call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHILDWINDOWFROMPOINT);
-    call.hwndParent = (LONG_PTR)hwndParent;
+    call.hwndParent = (ULONG_PTR)hwndParent;
     call.ptX = pt.x;
     call.ptY = pt.y;
 
@@ -311,7 +311,7 @@ WINUSERAPI HWND WINAPI RealChildWindowFromPoint(HWND hwndParent, POINT pt)
 {
     struct qemu_RealChildWindowFromPoint call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REALCHILDWINDOWFROMPOINT);
-    call.hwndParent = (LONG_PTR)hwndParent;
+    call.hwndParent = (ULONG_PTR)hwndParent;
     call.ptX = pt.x;
     call.ptY = pt.y;
 
@@ -350,7 +350,7 @@ WINUSERAPI HWND WINAPI ChildWindowFromPointEx(HWND hwndParent, POINT pt, UINT uF
 {
     struct qemu_ChildWindowFromPointEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHILDWINDOWFROMPOINTEX);
-    call.hwndParent = (LONG_PTR)hwndParent;
+    call.hwndParent = (ULONG_PTR)hwndParent;
     call.ptX = pt.x;
     call.ptY = pt.y;
     call.uFlags = (ULONG_PTR)uFlags;
@@ -390,8 +390,8 @@ WINUSERAPI INT WINAPI MapWindowPoints(HWND hwndFrom, HWND hwndTo, LPPOINT lppt, 
 {
     struct qemu_MapWindowPoints call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MAPWINDOWPOINTS);
-    call.hwndFrom = (LONG_PTR)hwndFrom;
-    call.hwndTo = (LONG_PTR)hwndTo;
+    call.hwndFrom = (ULONG_PTR)hwndFrom;
+    call.hwndTo = (ULONG_PTR)hwndTo;
     call.lppt = (ULONG_PTR)lppt;
     call.count = (ULONG_PTR)count;
 
@@ -424,7 +424,7 @@ WINUSERAPI BOOL WINAPI ClientToScreen(HWND hwnd, LPPOINT lppnt)
 {
     struct qemu_ClientToScreen call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CLIENTTOSCREEN);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.lppnt = (ULONG_PTR)lppnt;
 
     qemu_syscall(&call.super);
@@ -456,7 +456,7 @@ WINUSERAPI BOOL WINAPI ScreenToClient(HWND hwnd, LPPOINT lppnt)
 {
     struct qemu_ScreenToClient call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCREENTOCLIENT);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.lppnt = (ULONG_PTR)lppnt;
 
     qemu_syscall(&call.super);
@@ -487,7 +487,7 @@ WINUSERAPI BOOL WINAPI IsIconic(HWND hWnd)
 {
     struct qemu_IsIconic call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISICONIC);
-    call.hWnd = (LONG_PTR)hWnd;
+    call.hWnd = (ULONG_PTR)hWnd;
 
     qemu_syscall(&call.super);
 
@@ -517,7 +517,7 @@ WINUSERAPI BOOL WINAPI IsZoomed(HWND hWnd)
 {
     struct qemu_IsZoomed call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISZOOMED);
-    call.hWnd = (LONG_PTR)hWnd;
+    call.hWnd = (ULONG_PTR)hWnd;
 
     qemu_syscall(&call.super);
 
@@ -607,7 +607,7 @@ WINUSERAPI BOOL WINAPI BringWindowToTop(HWND hwnd)
 {
     struct qemu_BringWindowToTop call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BRINGWINDOWTOTOP);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -642,7 +642,7 @@ WINUSERAPI BOOL WINAPI MoveWindow(HWND hwnd, INT x, INT y, INT cx, INT cy, BOOL 
 {
     struct qemu_MoveWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MOVEWINDOW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.x = (ULONG_PTR)x;
     call.y = (ULONG_PTR)y;
     call.cx = (ULONG_PTR)cx;
@@ -678,7 +678,7 @@ WINUSERAPI BOOL WINAPI ShowWindowAsync(HWND hwnd, INT cmd)
 {
     struct qemu_ShowWindowAsync call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHOWWINDOWASYNC);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.cmd = (ULONG_PTR)cmd;
 
     qemu_syscall(&call.super);
@@ -710,7 +710,7 @@ WINUSERAPI BOOL WINAPI ShowWindow(HWND hwnd, INT cmd)
 {
     struct qemu_ShowWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHOWWINDOW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.cmd = (ULONG_PTR)cmd;
 
     qemu_syscall(&call.super);
@@ -743,7 +743,7 @@ WINUSERAPI UINT WINAPI GetInternalWindowPos(HWND hwnd, LPRECT rectWnd, LPPOINT p
 {
     struct qemu_GetInternalWindowPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETINTERNALWINDOWPOS);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.rectWnd = (ULONG_PTR)rectWnd;
     call.ptIcon = (ULONG_PTR)ptIcon;
 
@@ -776,7 +776,7 @@ WINUSERAPI BOOL WINAPI GetWindowPlacement(HWND hwnd, WINDOWPLACEMENT *wndpl)
 {
     struct qemu_GetWindowPlacement call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETWINDOWPLACEMENT);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.wndpl = (ULONG_PTR)wndpl;
 
     qemu_syscall(&call.super);
@@ -808,7 +808,7 @@ WINUSERAPI BOOL WINAPI SetWindowPlacement(HWND hwnd, const WINDOWPLACEMENT *wpl)
 {
     struct qemu_SetWindowPlacement call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWPLACEMENT);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.wpl = (ULONG_PTR)wpl;
 
     qemu_syscall(&call.super);
@@ -841,7 +841,7 @@ WINUSERAPI BOOL WINAPI AnimateWindow(HWND hwnd, DWORD dwTime, DWORD dwFlags)
 {
     struct qemu_AnimateWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ANIMATEWINDOW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.dwTime = (ULONG_PTR)dwTime;
     call.dwFlags = (ULONG_PTR)dwFlags;
 
@@ -876,7 +876,7 @@ WINUSERAPI void WINAPI SetInternalWindowPos(HWND hwnd, UINT showCmd, LPRECT rect
 {
     struct qemu_SetInternalWindowPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETINTERNALWINDOWPOS);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.showCmd = (ULONG_PTR)showCmd;
     call.rect = (ULONG_PTR)rect;
     call.pt = (ULONG_PTR)pt;
@@ -913,7 +913,7 @@ WINUSERAPI BOOL WINAPI SetWindowPos(HWND hwnd, HWND hwndInsertAfter, INT x, INT 
 {
     struct qemu_SetWindowPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWPOS);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.hwndInsertAfter = (LONG_PTR)hwndInsertAfter;
     call.x = x;
     call.y = y;
@@ -987,8 +987,8 @@ WINUSERAPI HDWP WINAPI DeferWindowPos(HDWP hdwp, HWND hwnd, HWND hwndAfter, INT 
     struct qemu_DeferWindowPos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEFERWINDOWPOS);
     call.hdwp = (ULONG_PTR)hdwp;
-    call.hwnd = (LONG_PTR)hwnd;
-    call.hwndAfter = (LONG_PTR)hwndAfter;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwndAfter = (ULONG_PTR)hwndAfter;
     call.x = (ULONG_PTR)x;
     call.y = (ULONG_PTR)y;
     call.cx = (ULONG_PTR)cx;
@@ -1053,7 +1053,7 @@ WINUSERAPI UINT WINAPI ArrangeIconicWindows(HWND parent)
 {
     struct qemu_ArrangeIconicWindows call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ARRANGEICONICWINDOWS);
-    call.parent = (LONG_PTR)parent;
+    call.parent = (ULONG_PTR)parent;
 
     qemu_syscall(&call.super);
 
@@ -1084,7 +1084,7 @@ WINUSERAPI BOOL WINAPI LogicalToPhysicalPoint(HWND hwnd, POINT *point)
 {
     struct qemu_LogicalToPhysicalPoint call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOGICALTOPHYSICALPOINT);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.point = (ULONG_PTR)point;
 
     qemu_syscall(&call.super);
@@ -1116,7 +1116,7 @@ WINUSERAPI BOOL WINAPI PhysicalToLogicalPoint(HWND hwnd, POINT *point)
 {
     struct qemu_PhysicalToLogicalPoint call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PHYSICALTOLOGICALPOINT);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.point = (ULONG_PTR)point;
 
     qemu_syscall(&call.super);

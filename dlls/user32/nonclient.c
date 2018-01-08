@@ -46,7 +46,7 @@ WINUSERAPI BOOL WINAPI DrawCaption (HWND hwnd, HDC hdc, const RECT *lpRect, UINT
 {
     struct qemu_DrawCaption call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWCAPTION);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.hdc = (ULONG_PTR)hdc;
     call.lpRect = (ULONG_PTR)lpRect;
     call.uFlags = (ULONG_PTR)uFlags;
@@ -85,7 +85,7 @@ WINUSERAPI BOOL WINAPI DrawCaptionTempA (HWND hwnd, HDC hdc, const RECT *rect, H
 {
     struct qemu_DrawCaptionTempA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWCAPTIONTEMPA);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.hdc = (ULONG_PTR)hdc;
     call.rect = (ULONG_PTR)rect;
     call.hFont = (ULONG_PTR)hFont;
@@ -127,7 +127,7 @@ WINUSERAPI BOOL WINAPI DrawCaptionTempW (HWND hwnd, HDC hdc, const RECT *rect, H
 {
     struct qemu_DrawCaptionTempW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWCAPTIONTEMPW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.hdc = (ULONG_PTR)hdc;
     call.rect = (ULONG_PTR)rect;
     call.hFont = (ULONG_PTR)hFont;
@@ -234,7 +234,7 @@ WINUSERAPI BOOL WINAPI GetTitleBarInfo(HWND hwnd, PTITLEBARINFO tbi)
 {
     struct qemu_GetTitleBarInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTITLEBARINFO);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.tbi = (ULONG_PTR)tbi;
 
     qemu_syscall(&call.super);

@@ -43,7 +43,7 @@ WINUSERAPI DWORD WINAPI GetListBoxInfo(HWND hwnd)
 {
     struct qemu_GetListBoxInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETLISTBOXINFO);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 

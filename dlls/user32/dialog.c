@@ -49,7 +49,7 @@ WINUSERAPI HWND WINAPI CreateDialogParamA(HINSTANCE hInst, LPCSTR name, HWND own
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDIALOGPARAMA);
     call.hInst = (ULONG_PTR)hInst;
     call.name = (ULONG_PTR)name;
-    call.owner = (LONG_PTR)owner;
+    call.owner = (ULONG_PTR)owner;
     call.dlgProc = (ULONG_PTR)dlgProc;
     call.param = (ULONG_PTR)param;
 
@@ -99,7 +99,7 @@ WINUSERAPI HWND WINAPI CreateDialogParamW(HINSTANCE hInst, LPCWSTR name, HWND ow
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDIALOGPARAMW);
     call.hInst = (ULONG_PTR)hInst;
     call.name = (ULONG_PTR)name;
-    call.owner = (LONG_PTR)owner;
+    call.owner = (ULONG_PTR)owner;
     call.dlgProc = (ULONG_PTR)dlgProc;
     call.param = (ULONG_PTR)param;
 
@@ -150,7 +150,7 @@ WINUSERAPI HWND WINAPI CreateDialogIndirectParamAorW(HINSTANCE hInst, LPCVOID dl
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDIALOGINDIRECTPARAMAORW);
     call.hInst = (ULONG_PTR)hInst;
     call.dlgTemplate = (ULONG_PTR)dlgTemplate;
-    call.owner = (LONG_PTR)owner;
+    call.owner = (ULONG_PTR)owner;
     call.dlgProc = (ULONG_PTR)dlgProc;
     call.param = (ULONG_PTR)param;
     call.flags = (ULONG_PTR)flags;
@@ -191,7 +191,7 @@ WINUSERAPI HWND WINAPI CreateDialogIndirectParamA(HINSTANCE hInst, LPCDLGTEMPLAT
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDIALOGINDIRECTPARAMA);
     call.hInst = (ULONG_PTR)hInst;
     call.dlgTemplate = (ULONG_PTR)dlgTemplate;
-    call.owner = (LONG_PTR)owner;
+    call.owner = (ULONG_PTR)owner;
     call.dlgProc = (ULONG_PTR)dlgProc;
     call.param = (ULONG_PTR)param;
 
@@ -235,7 +235,7 @@ WINUSERAPI HWND WINAPI CreateDialogIndirectParamW(HINSTANCE hInst, LPCDLGTEMPLAT
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDIALOGINDIRECTPARAMW);
     call.hInst = (ULONG_PTR)hInst;
     call.dlgTemplate = (ULONG_PTR)dlgTemplate;
-    call.owner = (LONG_PTR)owner;
+    call.owner = (ULONG_PTR)owner;
     call.dlgProc = (ULONG_PTR)dlgProc;
     call.param = (ULONG_PTR)param;
 
@@ -279,7 +279,7 @@ WINUSERAPI INT_PTR WINAPI DialogBoxParamA(HINSTANCE hInst, LPCSTR name, HWND own
     call.super.id = QEMU_SYSCALL_ID(CALL_DIALOGBOXPARAMA);
     call.hInst = (ULONG_PTR)hInst;
     call.name = (ULONG_PTR)name;
-    call.owner = (LONG_PTR)owner;
+    call.owner = (ULONG_PTR)owner;
     call.dlgProc = (ULONG_PTR)dlgProc;
     call.param = (ULONG_PTR)param;
 
@@ -294,7 +294,7 @@ WINUSERAPI INT_PTR WINAPI DialogBoxParamW(HINSTANCE hInst, LPCWSTR name, HWND ow
     call.super.id = QEMU_SYSCALL_ID(CALL_DIALOGBOXPARAMW);
     call.hInst = (ULONG_PTR)hInst;
     call.name = (ULONG_PTR)name;
-    call.owner = (LONG_PTR)owner;
+    call.owner = (ULONG_PTR)owner;
     call.dlgProc = (ULONG_PTR)dlgProc;
     call.param = (ULONG_PTR)param;
 
@@ -359,7 +359,7 @@ WINUSERAPI INT_PTR WINAPI DialogBoxIndirectParamAorW(HINSTANCE hInstance, LPCVOI
     call.super.id = QEMU_SYSCALL_ID(CALL_DIALOGBOXINDIRECTPARAMAORW);
     call.hInstance = (ULONG_PTR)hInstance;
     call.template = (ULONG_PTR)template;
-    call.owner = (LONG_PTR)owner;
+    call.owner = (ULONG_PTR)owner;
     call.dlgProc = (ULONG_PTR)dlgProc;
     call.param = (ULONG_PTR)param;
     call.flags = (ULONG_PTR)flags;
@@ -401,7 +401,7 @@ WINUSERAPI INT_PTR WINAPI DialogBoxIndirectParamA(HINSTANCE hInstance, LPCDLGTEM
     call.super.id = QEMU_SYSCALL_ID(CALL_DIALOGBOXINDIRECTPARAMA);
     call.hInstance = (ULONG_PTR)hInstance;
     call.template = (ULONG_PTR)template;
-    call.owner = (LONG_PTR)owner;
+    call.owner = (ULONG_PTR)owner;
     call.dlgProc = (ULONG_PTR)dlgProc;
     call.param = (ULONG_PTR)param;
 
@@ -416,7 +416,7 @@ WINUSERAPI INT_PTR WINAPI DialogBoxIndirectParamW(HINSTANCE hInstance, LPCDLGTEM
     call.super.id = QEMU_SYSCALL_ID(CALL_DIALOGBOXINDIRECTPARAMW);
     call.hInstance = (ULONG_PTR)hInstance;
     call.template = (ULONG_PTR)template;
-    call.owner = (LONG_PTR)owner;
+    call.owner = (ULONG_PTR)owner;
     call.dlgProc = (ULONG_PTR)dlgProc;
     call.param = (ULONG_PTR)param;
 
@@ -470,7 +470,7 @@ WINUSERAPI BOOL WINAPI EndDialog(HWND hwnd, INT_PTR retval)
 {
     struct qemu_EndDialog call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENDDIALOG);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.retval = (ULONG_PTR)retval;
 
     qemu_syscall(&call.super);
@@ -502,7 +502,7 @@ WINUSERAPI BOOL WINAPI IsDialogMessageW(HWND hwndDlg, LPMSG msg)
 {
     struct qemu_IsDialogMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISDIALOGMESSAGEW);
-    call.hwndDlg = (LONG_PTR)hwndDlg;
+    call.hwndDlg = (ULONG_PTR)hwndDlg;
     call.msg = (ULONG_PTR)msg;
 
     qemu_syscall(&call.super);
@@ -533,7 +533,7 @@ WINUSERAPI INT WINAPI GetDlgCtrlID(HWND hwnd)
 {
     struct qemu_GetDlgCtrlID call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDLGCTRLID);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -564,7 +564,7 @@ WINUSERAPI HWND WINAPI GetDlgItem(HWND hwndDlg, INT id)
 {
     struct qemu_GetDlgItem call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDLGITEM);
-    call.hwndDlg = (LONG_PTR)hwndDlg;
+    call.hwndDlg = (ULONG_PTR)hwndDlg;
     call.id = (ULONG_PTR)id;
 
     qemu_syscall(&call.super);
@@ -599,7 +599,7 @@ WINUSERAPI LRESULT WINAPI SendDlgItemMessageA(HWND hwnd, INT id, UINT msg, WPARA
 {
     struct qemu_SendDlgItemMessageA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDDLGITEMMESSAGEA);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.id = (ULONG_PTR)id;
     call.msg = (ULONG_PTR)msg;
     call.wParam = (ULONG_PTR)wParam;
@@ -637,7 +637,7 @@ WINUSERAPI LRESULT WINAPI SendDlgItemMessageW(HWND hwnd, INT id, UINT msg, WPARA
 {
     struct qemu_SendDlgItemMessageW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDDLGITEMMESSAGEW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.id = (ULONG_PTR)id;
     call.msg = (ULONG_PTR)msg;
     call.wParam = (ULONG_PTR)wParam;
@@ -673,7 +673,7 @@ WINUSERAPI BOOL WINAPI SetDlgItemTextA(HWND hwnd, INT id, LPCSTR lpString)
 {
     struct qemu_SetDlgItemTextA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETDLGITEMTEXTA);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.id = (ULONG_PTR)id;
     call.lpString = (ULONG_PTR)lpString;
 
@@ -707,7 +707,7 @@ WINUSERAPI BOOL WINAPI SetDlgItemTextW(HWND hwnd, INT id, LPCWSTR lpString)
 {
     struct qemu_SetDlgItemTextW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETDLGITEMTEXTW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.id = (ULONG_PTR)id;
     call.lpString = (ULONG_PTR)lpString;
 
@@ -742,7 +742,7 @@ WINUSERAPI UINT WINAPI GetDlgItemTextA(HWND hwnd, INT id, LPSTR str, INT len)
 {
     struct qemu_GetDlgItemTextA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDLGITEMTEXTA);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.id = (ULONG_PTR)id;
     call.str = (ULONG_PTR)str;
     call.len = (ULONG_PTR)len;
@@ -778,7 +778,7 @@ WINUSERAPI UINT WINAPI GetDlgItemTextW(HWND hwnd, INT id, LPWSTR str, INT len)
 {
     struct qemu_GetDlgItemTextW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDLGITEMTEXTW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.id = (ULONG_PTR)id;
     call.str = (ULONG_PTR)str;
     call.len = (ULONG_PTR)len;
@@ -814,7 +814,7 @@ WINUSERAPI BOOL WINAPI SetDlgItemInt(HWND hwnd, INT id, UINT value, BOOL fSigned
 {
     struct qemu_SetDlgItemInt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETDLGITEMINT);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.id = (ULONG_PTR)id;
     call.value = (ULONG_PTR)value;
     call.fSigned = (ULONG_PTR)fSigned;
@@ -850,7 +850,7 @@ WINUSERAPI UINT WINAPI GetDlgItemInt(HWND hwnd, INT id, BOOL *translated, BOOL f
 {
     struct qemu_GetDlgItemInt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETDLGITEMINT);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.id = (ULONG_PTR)id;
     call.translated = (ULONG_PTR)translated;
     call.fSigned = (ULONG_PTR)fSigned;
@@ -885,7 +885,7 @@ WINUSERAPI BOOL WINAPI CheckDlgButton(HWND hwnd, INT id, UINT check)
 {
     struct qemu_CheckDlgButton call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHECKDLGBUTTON);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.id = (ULONG_PTR)id;
     call.check = (ULONG_PTR)check;
 
@@ -918,7 +918,7 @@ WINUSERAPI UINT WINAPI IsDlgButtonChecked(HWND hwnd, int id)
 {
     struct qemu_IsDlgButtonChecked call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISDLGBUTTONCHECKED);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.id = (ULONG_PTR)id;
 
     qemu_syscall(&call.super);
@@ -952,7 +952,7 @@ WINUSERAPI BOOL WINAPI CheckRadioButton(HWND hwndDlg, int firstID, int lastID, i
 {
     struct qemu_CheckRadioButton call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHECKRADIOBUTTON);
-    call.hwndDlg = (LONG_PTR)hwndDlg;
+    call.hwndDlg = (ULONG_PTR)hwndDlg;
     call.firstID = (ULONG_PTR)firstID;
     call.lastID = (ULONG_PTR)lastID;
     call.checkID = (ULONG_PTR)checkID;
@@ -1014,7 +1014,7 @@ WINUSERAPI BOOL WINAPI MapDialogRect(HWND hwnd, LPRECT rect)
 {
     struct qemu_MapDialogRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MAPDIALOGRECT);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.rect = (ULONG_PTR)rect;
 
     qemu_syscall(&call.super);
@@ -1047,8 +1047,8 @@ WINUSERAPI HWND WINAPI GetNextDlgGroupItem(HWND hwndDlg, HWND hwndCtrl, BOOL fPr
 {
     struct qemu_GetNextDlgGroupItem call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNEXTDLGGROUPITEM);
-    call.hwndDlg = (LONG_PTR)hwndDlg;
-    call.hwndCtrl = (LONG_PTR)hwndCtrl;
+    call.hwndDlg = (ULONG_PTR)hwndDlg;
+    call.hwndCtrl = (ULONG_PTR)hwndCtrl;
     call.fPrevious = (ULONG_PTR)fPrevious;
 
     qemu_syscall(&call.super);
@@ -1081,8 +1081,8 @@ WINUSERAPI HWND WINAPI GetNextDlgTabItem(HWND hwndDlg, HWND hwndCtrl, BOOL fPrev
 {
     struct qemu_GetNextDlgTabItem call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNEXTDLGTABITEM);
-    call.hwndDlg = (LONG_PTR)hwndDlg;
-    call.hwndCtrl = (LONG_PTR)hwndCtrl;
+    call.hwndDlg = (ULONG_PTR)hwndDlg;
+    call.hwndCtrl = (ULONG_PTR)hwndCtrl;
     call.fPrevious = (ULONG_PTR)fPrevious;
 
     qemu_syscall(&call.super);
@@ -1116,7 +1116,7 @@ WINUSERAPI BOOL WINAPI DlgDirSelectExA(HWND hwnd, LPSTR str, INT len, INT id)
 {
     struct qemu_DlgDirSelectExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DLGDIRSELECTEXA);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.str = (ULONG_PTR)str;
     call.len = (ULONG_PTR)len;
     call.id = (ULONG_PTR)id;
@@ -1152,7 +1152,7 @@ WINUSERAPI BOOL WINAPI DlgDirSelectExW(HWND hwnd, LPWSTR str, INT len, INT id)
 {
     struct qemu_DlgDirSelectExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DLGDIRSELECTEXW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.str = (ULONG_PTR)str;
     call.len = (ULONG_PTR)len;
     call.id = (ULONG_PTR)id;
@@ -1188,7 +1188,7 @@ WINUSERAPI BOOL WINAPI DlgDirSelectComboBoxExA(HWND hwnd, LPSTR str, INT len, IN
 {
     struct qemu_DlgDirSelectComboBoxExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DLGDIRSELECTCOMBOBOXEXA);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.str = (ULONG_PTR)str;
     call.len = (ULONG_PTR)len;
     call.id = (ULONG_PTR)id;
@@ -1224,7 +1224,7 @@ WINUSERAPI BOOL WINAPI DlgDirSelectComboBoxExW(HWND hwnd, LPWSTR str, INT len, I
 {
     struct qemu_DlgDirSelectComboBoxExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DLGDIRSELECTCOMBOBOXEXW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.str = (ULONG_PTR)str;
     call.len = (ULONG_PTR)len;
     call.id = (ULONG_PTR)id;
@@ -1261,7 +1261,7 @@ WINUSERAPI INT WINAPI DlgDirListA(HWND hDlg, LPSTR spec, INT idLBox, INT idStati
 {
     struct qemu_DlgDirListA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DLGDIRLISTA);
-    call.hDlg = (LONG_PTR)hDlg;
+    call.hDlg = (ULONG_PTR)hDlg;
     call.spec = (ULONG_PTR)spec;
     call.idLBox = (ULONG_PTR)idLBox;
     call.idStatic = (ULONG_PTR)idStatic;
@@ -1299,7 +1299,7 @@ WINUSERAPI INT WINAPI DlgDirListW(HWND hDlg, LPWSTR spec, INT idLBox, INT idStat
 {
     struct qemu_DlgDirListW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DLGDIRLISTW);
-    call.hDlg = (LONG_PTR)hDlg;
+    call.hDlg = (ULONG_PTR)hDlg;
     call.spec = (ULONG_PTR)spec;
     call.idLBox = (ULONG_PTR)idLBox;
     call.idStatic = (ULONG_PTR)idStatic;
@@ -1337,7 +1337,7 @@ WINUSERAPI INT WINAPI DlgDirListComboBoxA(HWND hDlg, LPSTR spec, INT idCBox, INT
 {
     struct qemu_DlgDirListComboBoxA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DLGDIRLISTCOMBOBOXA);
-    call.hDlg = (LONG_PTR)hDlg;
+    call.hDlg = (ULONG_PTR)hDlg;
     call.spec = (ULONG_PTR)spec;
     call.idCBox = (ULONG_PTR)idCBox;
     call.idStatic = (ULONG_PTR)idStatic;
@@ -1375,7 +1375,7 @@ WINUSERAPI INT WINAPI DlgDirListComboBoxW(HWND hDlg, LPWSTR spec, INT idCBox, IN
 {
     struct qemu_DlgDirListComboBoxW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DLGDIRLISTCOMBOBOXW);
-    call.hDlg = (LONG_PTR)hDlg;
+    call.hDlg = (ULONG_PTR)hDlg;
     call.spec = (ULONG_PTR)spec;
     call.idCBox = (ULONG_PTR)idCBox;
     call.idStatic = (ULONG_PTR)idStatic;

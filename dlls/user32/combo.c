@@ -46,7 +46,7 @@ WINUSERAPI BOOL WINAPI GetComboBoxInfo(HWND hwndCombo, PCOMBOBOXINFO pcbi)
 {
     struct qemu_GetComboBoxInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCOMBOBOXINFO);
-    call.hwndCombo = (LONG_PTR)hwndCombo;
+    call.hwndCombo = (ULONG_PTR)hwndCombo;
     call.pcbi = (ULONG_PTR)pcbi;
 
     qemu_syscall(&call.super);

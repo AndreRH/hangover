@@ -47,8 +47,8 @@ WINUSERAPI LRESULT WINAPI DefFrameProcA(HWND hwnd, HWND hwndMDIClient, UINT mess
 {
     struct qemu_DefFrameProcA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEFFRAMEPROCA);
-    call.hwnd = (LONG_PTR)hwnd;
-    call.hwndMDIClient = (LONG_PTR)hwndMDIClient;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwndMDIClient = (ULONG_PTR)hwndMDIClient;
     call.message = (ULONG_PTR)message;
     call.wParam = (ULONG_PTR)wParam;
     call.lParam = (ULONG_PTR)lParam;
@@ -91,8 +91,8 @@ WINUSERAPI LRESULT WINAPI DefFrameProcW(HWND hwnd, HWND hwndMDIClient, UINT mess
 {
     struct qemu_DefFrameProcW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEFFRAMEPROCW);
-    call.hwnd = (LONG_PTR)hwnd;
-    call.hwndMDIClient = (LONG_PTR)hwndMDIClient;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.hwndMDIClient = (ULONG_PTR)hwndMDIClient;
     call.message = (ULONG_PTR)message;
     call.wParam = (ULONG_PTR)wParam;
     call.lParam = (ULONG_PTR)lParam;
@@ -134,7 +134,7 @@ WINUSERAPI LRESULT WINAPI DefMDIChildProcA(HWND hwnd, UINT message, WPARAM wPara
 {
     struct qemu_DefMDIChildProcA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEFMDICHILDPROCA);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.message = (ULONG_PTR)message;
     call.wParam = (ULONG_PTR)wParam;
     call.lParam = (ULONG_PTR)lParam;
@@ -175,7 +175,7 @@ WINUSERAPI LRESULT WINAPI DefMDIChildProcW(HWND hwnd, UINT message, WPARAM wPara
 {
     struct qemu_DefMDIChildProcW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEFMDICHILDPROCW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.message = (ULONG_PTR)message;
     call.wParam = (ULONG_PTR)wParam;
     call.lParam = (ULONG_PTR)lParam;
@@ -229,7 +229,7 @@ WINUSERAPI HWND WINAPI CreateMDIWindowA(LPCSTR lpClassName, LPCSTR lpWindowName,
     call.Y = (ULONG_PTR)Y;
     call.nWidth = (ULONG_PTR)nWidth;
     call.nHeight = (ULONG_PTR)nHeight;
-    call.hWndParent = (LONG_PTR)hWndParent;
+    call.hWndParent = (ULONG_PTR)hWndParent;
     call.hInstance = (ULONG_PTR)hInstance;
     call.lParam = (ULONG_PTR)lParam;
 
@@ -277,7 +277,7 @@ WINUSERAPI HWND WINAPI CreateMDIWindowW(LPCWSTR lpClassName, LPCWSTR lpWindowNam
     call.Y = (ULONG_PTR)Y;
     call.nWidth = (ULONG_PTR)nWidth;
     call.nHeight = (ULONG_PTR)nHeight;
-    call.hWndParent = (LONG_PTR)hWndParent;
+    call.hWndParent = (ULONG_PTR)hWndParent;
     call.hInstance = (ULONG_PTR)hInstance;
     call.lParam = (ULONG_PTR)lParam;
 
@@ -310,7 +310,7 @@ WINUSERAPI BOOL WINAPI TranslateMDISysAccel(HWND hwndClient, LPMSG msg)
 {
     struct qemu_TranslateMDISysAccel call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRANSLATEMDISYSACCEL);
-    call.hwndClient = (LONG_PTR)hwndClient;
+    call.hwndClient = (ULONG_PTR)hwndClient;
     call.msg = (ULONG_PTR)msg;
 
     qemu_syscall(&call.super);
@@ -342,7 +342,7 @@ WINUSERAPI void WINAPI CalcChildScroll(HWND hwnd, INT scroll)
 {
     struct qemu_CalcChildScroll call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CALCCHILDSCROLL);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.scroll = (ULONG_PTR)scroll;
 
     qemu_syscall(&call.super);
@@ -376,7 +376,7 @@ WINUSERAPI void WINAPI ScrollChildren(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 {
     struct qemu_ScrollChildren call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCROLLCHILDREN);
-    call.hWnd = (LONG_PTR)hWnd;
+    call.hWnd = (ULONG_PTR)hWnd;
     call.uMsg = (ULONG_PTR)uMsg;
     call.wParam = (ULONG_PTR)wParam;
     call.lParam = (ULONG_PTR)lParam;
@@ -413,7 +413,7 @@ WINUSERAPI WORD WINAPI CascadeWindows (HWND hwndParent, UINT wFlags, const RECT 
 {
     struct qemu_CascadeWindows call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CASCADEWINDOWS);
-    call.hwndParent = (LONG_PTR)hwndParent;
+    call.hwndParent = (ULONG_PTR)hwndParent;
     call.wFlags = (ULONG_PTR)wFlags;
     call.lpRect = (ULONG_PTR)lpRect;
     call.cKids = (ULONG_PTR)cKids;
@@ -448,7 +448,7 @@ WINUSERAPI WORD WINAPI CascadeChildWindows(HWND parent, UINT flags)
 {
     struct qemu_CascadeChildWindows call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CASCADECHILDWINDOWS);
-    call.parent = (LONG_PTR)parent;
+    call.parent = (ULONG_PTR)parent;
     call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
@@ -485,7 +485,7 @@ WINUSERAPI WORD WINAPI TileWindows (HWND hwndParent, UINT wFlags, const RECT *lp
 {
     struct qemu_TileWindows call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TILEWINDOWS);
-    call.hwndParent = (LONG_PTR)hwndParent;
+    call.hwndParent = (ULONG_PTR)hwndParent;
     call.wFlags = (ULONG_PTR)wFlags;
     call.lpRect = (ULONG_PTR)lpRect;
     call.cKids = (ULONG_PTR)cKids;
@@ -520,7 +520,7 @@ WINUSERAPI WORD WINAPI TileChildWindows(HWND parent, UINT flags)
 {
     struct qemu_TileChildWindows call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TILECHILDWINDOWS);
-    call.parent = (LONG_PTR)parent;
+    call.parent = (ULONG_PTR)parent;
     call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);

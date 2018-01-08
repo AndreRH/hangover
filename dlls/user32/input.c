@@ -331,7 +331,7 @@ WINUSERAPI HWND WINAPI SetCapture(HWND hwnd)
 {
     struct qemu_SetCapture call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETCAPTURE);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -1700,7 +1700,7 @@ WINUSERAPI BOOL WINAPI RegisterHotKey(HWND hwnd,INT id,UINT modifiers,UINT vk)
 {
     struct qemu_RegisterHotKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERHOTKEY);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.id = (ULONG_PTR)id;
     call.modifiers = (ULONG_PTR)modifiers;
     call.vk = (ULONG_PTR)vk;
@@ -1734,7 +1734,7 @@ WINUSERAPI BOOL WINAPI UnregisterHotKey(HWND hwnd,INT id)
 {
     struct qemu_UnregisterHotKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNREGISTERHOTKEY);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.id = (ULONG_PTR)id;
 
     qemu_syscall(&call.super);

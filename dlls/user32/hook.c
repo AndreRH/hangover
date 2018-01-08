@@ -761,7 +761,7 @@ static void CALLBACK win_event_host_proc(HWINEVENTHOOK hevent, DWORD event, HWND
             (unsigned long)call.func, hevent, event, hwnd, object_id, child_id, thread_id, event_time);
     call.hevent = (ULONG_PTR)hevent;
     call.event = event;
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.object_id = object_id;
     call.child_id = child_id;
     call.thread_id = thread_id;
@@ -885,7 +885,7 @@ WINUSERAPI void WINAPI NotifyWinEvent(DWORD event, HWND hwnd, LONG object_id, LO
     struct qemu_NotifyWinEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NOTIFYWINEVENT);
     call.event = (ULONG_PTR)event;
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
     call.object_id = (ULONG_PTR)object_id;
     call.child_id = (ULONG_PTR)child_id;
 

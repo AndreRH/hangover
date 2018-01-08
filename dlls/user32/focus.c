@@ -43,7 +43,7 @@ WINUSERAPI HWND WINAPI SetActiveWindow(HWND hwnd)
 {
     struct qemu_SetActiveWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETACTIVEWINDOW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -73,7 +73,7 @@ WINUSERAPI HWND WINAPI SetFocus(HWND hwnd)
 {
     struct qemu_SetFocus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFOCUS);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -103,7 +103,7 @@ WINUSERAPI BOOL WINAPI SetForegroundWindow(HWND hwnd)
 {
     struct qemu_SetForegroundWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFOREGROUNDWINDOW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -218,8 +218,8 @@ WINUSERAPI BOOL WINAPI SetShellWindowEx(HWND hwndShell, HWND hwndListView)
 {
     struct qemu_SetShellWindowEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSHELLWINDOWEX);
-    call.hwndShell = (LONG_PTR)hwndShell;
-    call.hwndListView = (LONG_PTR)hwndListView;
+    call.hwndShell = (ULONG_PTR)hwndShell;
+    call.hwndListView = (ULONG_PTR)hwndListView;
 
     qemu_syscall(&call.super);
 
@@ -251,7 +251,7 @@ WINUSERAPI BOOL WINAPI SetShellWindow(HWND hwndShell)
 {
     struct qemu_SetShellWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSHELLWINDOW);
-    call.hwndShell = (LONG_PTR)hwndShell;
+    call.hwndShell = (ULONG_PTR)hwndShell;
 
     qemu_syscall(&call.super);
 
@@ -311,7 +311,7 @@ WINUSERAPI HWND WINAPI SetProgmanWindow (HWND hwnd)
 {
     struct qemu_SetProgmanWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPROGMANWINDOW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
@@ -373,7 +373,7 @@ WINUSERAPI HWND WINAPI SetTaskmanWindow (HWND hwnd)
 {
     struct qemu_SetTaskmanWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTASKMANWINDOW);
-    call.hwnd = (LONG_PTR)hwnd;
+    call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
 
