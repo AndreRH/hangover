@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_kernel32.h"
@@ -227,8 +229,27 @@ WINBASEAPI DWORD WINAPI WaitForMultipleObjects(DWORD count, const HANDLE *handle
 void qemu_WaitForMultipleObjects(struct qemu_syscall *call)
 {
     struct qemu_WaitForMultipleObjects *c = (struct qemu_WaitForMultipleObjects *)call;
+    HANDLE stack[10], *handles = stack;
+    qemu_handle *handle32;
+    unsigned int i;
     WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
     c->super.iret = WaitForMultipleObjects(c->count, QEMU_G2H(c->handles), c->wait_all, c->timeout);
+    return;
+#endif
+
+    handle32 = QEMU_G2H(c->handles);
+    if (c->count > sizeof(stack) / sizeof(*stack))
+        handles = HeapAlloc(GetProcessHeap(), 0, c->count * sizeof(*handles));
+
+    for (i = 0; i < c->count; ++i)
+        handles[i] = HANDLE_g2h(handle32[i]);
+
+    c->super.iret = WaitForMultipleObjects(c->count, handles, c->wait_all, c->timeout);
+
+    if (handles != stack)
+        HeapFree(GetProcessHeap(), 0, handles);
 }
 
 #endif
