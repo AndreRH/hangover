@@ -1940,7 +1940,7 @@ void qemu_GetMouseMovePointsEx(struct qemu_syscall *call)
 
     ret = GetMouseMovePointsEx(size, in, out, c->count, c->res);
 
-#if GUEST_BIT == HOST_BIT
+#if GUEST_BIT != HOST_BIT
     if (out)
     {
         for (i = 0; i < ret; ++i)
