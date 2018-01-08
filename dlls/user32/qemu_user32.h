@@ -727,7 +727,7 @@ static inline BOOL wndproc_is_handle(ULONG_PTR proc)
 #ifdef QEMU_DLL_GUEST
 
 LRESULT CALLBACK reverse_wndproc_func(HWND win, UINT msg, WPARAM wp, LPARAM lp, void *data);
-void guest_win_event_wrapper(struct qemu_SetWinEventHook_cb *data);
+void __fastcall guest_win_event_wrapper(struct qemu_SetWinEventHook_cb *data);
 
 #else
 

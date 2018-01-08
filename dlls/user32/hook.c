@@ -693,7 +693,7 @@ struct qemu_SetWinEventHook_cb
 
 #ifdef QEMU_DLL_GUEST
 
-void guest_win_event_wrapper(struct qemu_SetWinEventHook_cb *data)
+void __fastcall guest_win_event_wrapper(struct qemu_SetWinEventHook_cb *data)
 {
     WINEVENTPROC func = (WINEVENTPROC)(ULONG_PTR)data->func;
     func((HWINEVENTHOOK)(ULONG_PTR)data->hevent, data->event, (HWND)(ULONG_PTR)data->hwnd, data->object_id, data->child_id,
