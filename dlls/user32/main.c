@@ -1390,6 +1390,15 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             break;
         }
 
+        case CB_GETCOMBOBOXINFO:
+        {
+            COMBOBOXINFO *host = (COMBOBOXINFO *)msg_in->lParam;
+            struct qemu_COMBOBOXINFO *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
+            COMBOBOXINFO_h2g(guest, host);
+            msg_out->lParam = (LPARAM)guest;
+            break;
+        }
+
         default:
             /* Not constant numbers */
             if (msg_in->message == msg_FINDMSGSTRING)
@@ -1470,6 +1479,17 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
                 notify_callbacks[i].translate(conv, orig, TRUE);
                 return;
             }
+            break;
+        }
+
+        case CB_GETCOMBOBOXINFO:
+        {
+            COMBOBOXINFO *host = (COMBOBOXINFO *)orig->lParam;
+            struct qemu_COMBOBOXINFO *guest = (struct qemu_COMBOBOXINFO *)conv->lParam;
+
+            COMBOBOXINFO_g2h(host, guest);
+
+            HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
         }
 
