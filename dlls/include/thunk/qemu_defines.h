@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-typedef DWORD qemu_ptr;
-typedef INT qemu_sptr, qemu_handle;
+typedef DWORD qemu_ptr, qemu_handle;
+typedef INT qemu_sptr;
 typedef DWORD qemu_size_t;
 
 static inline HANDLE HANDLE_g2h(qemu_handle h)
