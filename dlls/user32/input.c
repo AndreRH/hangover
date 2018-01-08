@@ -1871,8 +1871,38 @@ WINUSERAPI BOOL WINAPI TrackMouseEvent (TRACKMOUSEEVENT *ptme)
 void qemu_TrackMouseEvent(struct qemu_syscall *call)
 {
     struct qemu_TrackMouseEvent *c = (struct qemu_TrackMouseEvent *)call;
+    TRACKMOUSEEVENT stack, *event = &stack;
+    struct qemu_TRACKMOUSEEVENT *event32;
     WINE_TRACE("\n");
-    c->super.iret = TrackMouseEvent(QEMU_G2H(c->ptme));
+
+#if GUEST_BIT == HOST_BIT
+    event = QEMU_G2H(c->ptme);
+#else
+    event32 = QEMU_G2H(c->ptme);
+    if (event32)
+    {
+        if (event32->cbSize == sizeof(*event32))
+        {
+            event->cbSize = sizeof(*event);
+            TRACKMOUSEEVENT_g2h(event, event32);
+        }
+        else
+        {
+            event->cbSize = 0;
+        }
+    }
+    else
+    {
+        event = NULL;
+    }
+#endif
+
+    c->super.iret = TrackMouseEvent(event);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret && event)
+        TRACKMOUSEEVENT_h2g(event32, event);
+#endif
 }
 
 #endif

@@ -734,4 +734,26 @@ static inline void MOUSEMOVEPOINT_h2g(struct qemu_MOUSEMOVEPOINT *guest, const M
     guest->dwExtraInfo = host->dwExtraInfo;
 }
 
+struct qemu_TRACKMOUSEEVENT
+{
+    DWORD       cbSize;
+    DWORD       dwFlags;
+    qemu_handle hwndTrack;
+    DWORD       dwHoverTime;
+};
+
+static inline void TRACKMOUSEEVENT_g2h(TRACKMOUSEEVENT *host, const struct qemu_TRACKMOUSEEVENT *guest)
+{
+    host->dwFlags = guest->dwFlags;
+    host->hwndTrack = HANDLE_g2h(guest->hwndTrack);
+    host->dwHoverTime = guest->dwHoverTime;
+}
+
+static inline void TRACKMOUSEEVENT_h2g(struct qemu_TRACKMOUSEEVENT *guest, const TRACKMOUSEEVENT *host)
+{
+    guest->dwFlags = host->dwFlags;
+    guest->hwndTrack = (ULONG_PTR)host->hwndTrack;
+    guest->dwHoverTime = host->dwHoverTime;
+}
+
 #endif
