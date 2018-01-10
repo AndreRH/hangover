@@ -532,7 +532,7 @@ WINBASEAPI BOOL WINAPI QueryActCtxW(DWORD dwFlags, HANDLE hActCtx, PVOID pvSubIn
     struct qemu_QueryActCtxW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYACTCTXW);
     call.dwFlags = dwFlags;
-    call.hActCtx = (LONG_PTR)hActCtx;
+    call.hActCtx = (ULONG_PTR)hActCtx;
     call.pvSubInst = (ULONG_PTR)pvSubInst;
     call.ulClass = ulClass;
     call.pvBuff = (ULONG_PTR)pvBuff;
@@ -552,9 +552,24 @@ void qemu_QueryActCtxW(struct qemu_syscall *call)
 {
     struct qemu_QueryActCtxW *c = (struct qemu_QueryActCtxW *)call;
     ULONG class;
-    ACTIVATION_CONTEXT_BASIC_INFORMATION bi;
-    struct qemu_ACTIVATION_CONTEXT_BASIC_INFORMATION *bi32;
     SIZE_T retlen;
+    void (*func)(void *, void *);
+
+    struct
+    {
+        SIZE_T guest_size;
+        SIZE_T host_size, host_struct_size;
+        void *func;
+    } convert;
+    union
+    {
+        ACTIVATION_CONTEXT_BASIC_INFORMATION bi;
+        ACTIVATION_CONTEXT_DETAILED_INFORMATION di;
+        ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION adi;
+        ASSEMBLY_FILE_DETAILED_INFORMATION fi;
+    } host;
+    char *ptr = (char *)&host.bi;
+
     WINE_TRACE("\n");
 
     class = c->ulClass;
@@ -565,31 +580,132 @@ void qemu_QueryActCtxW(struct qemu_syscall *call)
     return;
 #endif
 
+    /* FIXME: Move all this to ntdll. */
+    convert.host_size = -1;
     switch (class)
     {
         case ActivationContextBasicInformation:
-            bi32 = QEMU_G2H(c->pvBuff);
-            c->pcbLen = sizeof(*bi32);
-            if (c->cbBuff < sizeof(*bi32))
-            {
-                c->super.iret = QueryActCtxW(c->dwFlags, QEMU_G2H(c->hActCtx), QEMU_G2H(c->pvSubInst), class,
-                        &bi, 0, NULL);
-                return;
-            }
+            convert.guest_size = sizeof(struct qemu_ACTIVATION_CONTEXT_BASIC_INFORMATION);
+            convert.host_struct_size = sizeof(host.bi);
+            convert.func = ACTIVATION_CONTEXT_BASIC_INFORMATION_h2g;
+            break;
 
-            c->super.iret = QueryActCtxW(c->dwFlags, QEMU_G2H(c->hActCtx), QEMU_G2H(c->pvSubInst), class,
-                    &bi, sizeof(bi), NULL);
-            ACTIVATION_CONTEXT_BASIC_INFORMATION_h2g(bi32, &bi);
+        case ActivationContextDetailedInformation:
+            convert.guest_size = sizeof(struct qemu_ACTIVATION_CONTEXT_DETAILED_INFORMATION);
+            convert.host_struct_size = sizeof(host.di);
+            convert.func = ACTIVATION_CONTEXT_DETAILED_INFORMATION_h2g;
+            break;
 
+        case AssemblyDetailedInformationInActivationContext:
+            convert.guest_size = sizeof(struct qemu_ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION);
+            convert.host_struct_size = sizeof(host.adi);
+            convert.func = ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION_h2g;
+            break;
+
+        case FileInformationInAssemblyOfAssemblyInActivationContext:
+            convert.guest_size = sizeof(struct qemu_ASSEMBLY_FILE_DETAILED_INFORMATION);
+            convert.host_struct_size = sizeof(host.fi);
+            convert.func = ASSEMBLY_FILE_DETAILED_INFORMATION_h2g;
             break;
 
         default:
             WINE_FIXME("Unhandled info class %u.\n", class);
-            /* Drop through */
-        case FileInformationInAssemblyOfAssemblyInActivationContext:
             c->super.iret = QueryActCtxW(c->dwFlags, QEMU_G2H(c->hActCtx), QEMU_G2H(c->pvSubInst), class,
                     QEMU_G2H(c->pvBuff), c->cbBuff, &retlen);
             c->pcbLen = retlen;
+            return;
+    }
+
+    c->super.iret = QueryActCtxW(c->dwFlags, QEMU_G2H(c->hActCtx), QEMU_G2H(c->pvSubInst), class,
+            &host.adi, 0, &convert.host_size);
+    if (!convert.host_size)
+    {
+        c->pcbLen = 0;
+        return;
+    }
+
+    WINE_TRACE("%d: %p. sizes guest %ld, host %ld, fixed struct %ld extra %ld\n", class, QEMU_G2H(c->hActCtx),
+            convert.guest_size, convert.host_size, convert.host_struct_size,
+            convert.host_size - convert.host_struct_size);
+    c->pcbLen = convert.guest_size + convert.host_size - convert.host_struct_size;
+    if (c->cbBuff < c->pcbLen)
+    {
+        c->super.iret = QueryActCtxW(c->dwFlags, QEMU_G2H(c->hActCtx), QEMU_G2H(c->pvSubInst), class,
+                ptr, 0, NULL);
+        return;
+    }
+
+    if (convert.host_struct_size != convert.host_size)
+        ptr = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, convert.host_size);
+
+    c->super.iret = QueryActCtxW(c->dwFlags, QEMU_G2H(c->hActCtx), QEMU_G2H(c->pvSubInst), class,
+            ptr, convert.host_size, NULL);
+
+    func = convert.func;
+    func(QEMU_G2H(c->pvBuff), ptr);
+
+    if (convert.host_struct_size != convert.host_size)
+    {
+        WINE_TRACE("Copy from host buf %p to guest buf %p, offsets %ld, %ld, size %ld\n",
+                 ptr, QEMU_G2H(c->pvBuff), convert.host_struct_size, convert.guest_size,
+                 convert.host_size - convert.host_struct_size);
+        memcpy((char *)QEMU_G2H(c->pvBuff) + convert.guest_size, ptr + convert.host_struct_size,
+                convert.host_size - convert.host_struct_size);
+
+        switch (class)
+        {
+            case ActivationContextDetailedInformation:
+            {
+                struct qemu_ACTIVATION_CONTEXT_DETAILED_INFORMATION *g = QEMU_G2H(c->pvBuff);
+                if (g->lpRootManifestPath)
+                    g->lpRootManifestPath = g->lpRootManifestPath - (ULONG_PTR)ptr - convert.host_struct_size
+                        + (ULONG_PTR)g + convert.guest_size;
+                if (g->lpRootConfigurationPath)
+                    g->lpRootConfigurationPath = g->lpRootConfigurationPath - (ULONG_PTR)ptr - convert.host_struct_size
+                        + (ULONG_PTR)g + convert.guest_size;
+                if (g->lpAppDirPath)
+                    g->lpAppDirPath = g->lpAppDirPath - (ULONG_PTR)ptr - convert.host_struct_size
+                        + (ULONG_PTR)g + convert.guest_size;
+                break;
+            }
+
+            case AssemblyDetailedInformationInActivationContext:
+            {
+                struct qemu_ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION *g = QEMU_G2H(c->pvBuff);
+                if (g->lpAssemblyEncodedAssemblyIdentity)
+                    g->lpAssemblyEncodedAssemblyIdentity = g->lpAssemblyEncodedAssemblyIdentity
+                        - (ULONG_PTR)ptr - convert.host_struct_size
+                        + (ULONG_PTR)g + convert.guest_size;
+                if (g->lpAssemblyManifestPath)
+                    g->lpAssemblyManifestPath = g->lpAssemblyManifestPath - (ULONG_PTR)ptr - convert.host_struct_size
+                        + (ULONG_PTR)g + convert.guest_size;
+                if (g->lpAssemblyPolicyPath)
+                    g->lpAssemblyPolicyPath = g->lpAssemblyPolicyPath - (ULONG_PTR)ptr - convert.host_struct_size
+                        + (ULONG_PTR)g + convert.guest_size;
+                if (g->lpAssemblyDirectoryName)
+                    g->lpAssemblyDirectoryName = g->lpAssemblyDirectoryName - (ULONG_PTR)ptr - convert.host_struct_size
+                        + (ULONG_PTR)g + convert.guest_size;
+                break;
+            }
+
+            case FileInformationInAssemblyOfAssemblyInActivationContext:
+            {
+                struct qemu_ASSEMBLY_FILE_DETAILED_INFORMATION *g = QEMU_G2H(c->pvBuff);
+                if (g->lpFileName)
+                    g->lpFileName = g->lpFileName - (ULONG_PTR)ptr - convert.host_struct_size
+                        + (ULONG_PTR)g + convert.guest_size;
+                if (g->lpFilePath)
+                    g->lpFilePath = g->lpFilePath - (ULONG_PTR)ptr - convert.host_struct_size
+                        + (ULONG_PTR)g + convert.guest_size;
+
+                /* Yeah, apparently this info class sets the size to 0 on success... */
+                c->pcbLen = 0;
+                break;
+            }
+
+        }
+
+        HeapFree(GetProcessHeap(), 0, ptr);
     }
 }
 

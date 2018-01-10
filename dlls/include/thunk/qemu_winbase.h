@@ -175,4 +175,104 @@ static void ACTIVATION_CONTEXT_BASIC_INFORMATION_h2g(struct qemu_ACTIVATION_CONT
     guest->dwFlags = host->dwFlags;
 }
 
+struct qemu_ACTIVATION_CONTEXT_DETAILED_INFORMATION
+{
+    DWORD dwFlags;
+    DWORD ulFormatVersion;
+    DWORD ulAssemblyCount;
+    DWORD ulRootManifestPathType;
+    DWORD ulRootManifestPathChars;
+    DWORD ulRootConfigurationPathType;
+    DWORD ulRootConfigurationPathChars;
+    DWORD ulAppDirPathType;
+    DWORD ulAppDirPathChars;
+    qemu_ptr lpRootManifestPath;
+    qemu_ptr lpRootConfigurationPath;
+    qemu_ptr lpAppDirPath;
+};
+
+static void ACTIVATION_CONTEXT_DETAILED_INFORMATION_h2g(struct qemu_ACTIVATION_CONTEXT_DETAILED_INFORMATION *guest,
+        const ACTIVATION_CONTEXT_DETAILED_INFORMATION *host)
+{
+    guest->dwFlags = host->dwFlags;
+    guest->ulFormatVersion = host->ulFormatVersion;
+    guest->ulAssemblyCount = host->ulAssemblyCount;
+    guest->ulRootManifestPathType = host->ulRootManifestPathType;
+    guest->ulRootManifestPathChars = host->ulRootManifestPathChars;
+    guest->ulRootConfigurationPathType = host->ulRootConfigurationPathType;
+    guest->ulRootConfigurationPathChars = host->ulRootConfigurationPathChars;
+    guest->ulAppDirPathType = host->ulAppDirPathType;
+    guest->ulAppDirPathChars = host->ulAppDirPathChars;
+    guest->lpRootManifestPath = (ULONG_PTR)host->lpRootManifestPath;
+    guest->lpRootConfigurationPath = (ULONG_PTR)host->lpRootConfigurationPath;
+    guest->lpAppDirPath = (ULONG_PTR)host->lpAppDirPath;
+}
+
+struct qemu_ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION
+{
+    DWORD ulFlags;
+    DWORD ulEncodedAssemblyIdentityLength;
+    DWORD ulManifestPathType;
+    DWORD ulManifestPathLength;
+    LARGE_INTEGER liManifestLastWriteTime;
+    DWORD ulPolicyPathType;
+    DWORD ulPolicyPathLength;
+    LARGE_INTEGER liPolicyLastWriteTime;
+    DWORD ulMetadataSatelliteRosterIndex;
+    DWORD ulManifestVersionMajor;
+    DWORD ulManifestVersionMinor;
+    DWORD ulPolicyVersionMajor;
+    DWORD ulPolicyVersionMinor;
+    DWORD ulAssemblyDirectoryNameLength;
+    qemu_ptr lpAssemblyEncodedAssemblyIdentity;
+    qemu_ptr lpAssemblyManifestPath;
+    qemu_ptr lpAssemblyPolicyPath;
+    qemu_ptr lpAssemblyDirectoryName;
+    DWORD  ulFileCount;
+};
+
+static void ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION_h2g(
+        struct qemu_ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION *guest,
+        const ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION *host)
+{
+    guest->ulFlags = host->ulFlags;
+    guest->ulEncodedAssemblyIdentityLength = host->ulEncodedAssemblyIdentityLength;
+    guest->ulManifestPathType = host->ulManifestPathType;
+    guest->ulManifestPathLength = host->ulManifestPathLength;
+    guest->liManifestLastWriteTime = host->liManifestLastWriteTime;
+    guest->ulPolicyPathType = host->ulPolicyPathType;
+    guest->ulPolicyPathLength = host->ulPolicyPathLength;
+    guest->liPolicyLastWriteTime = host->liPolicyLastWriteTime;
+    guest->ulMetadataSatelliteRosterIndex = host->ulMetadataSatelliteRosterIndex;
+    guest->ulManifestVersionMajor = host->ulManifestVersionMajor;
+    guest->ulManifestVersionMinor = host->ulManifestVersionMinor;
+    guest->ulPolicyVersionMajor = host->ulPolicyVersionMajor;
+    guest->ulPolicyVersionMinor = host->ulPolicyVersionMinor;
+    guest->ulAssemblyDirectoryNameLength = host->ulAssemblyDirectoryNameLength;
+    guest->lpAssemblyEncodedAssemblyIdentity = (ULONG_PTR)host->lpAssemblyEncodedAssemblyIdentity;
+    guest->lpAssemblyManifestPath = (ULONG_PTR)host->lpAssemblyManifestPath;
+    guest->lpAssemblyPolicyPath = (ULONG_PTR)host->lpAssemblyPolicyPath;
+    guest->lpAssemblyDirectoryName = (ULONG_PTR)host->lpAssemblyDirectoryName;
+    guest->ulFileCount = host->ulFileCount;
+}
+
+struct qemu_ASSEMBLY_FILE_DETAILED_INFORMATION
+{
+    DWORD       ulFlags;
+    DWORD       ulFilenameLength;
+    DWORD       ulPathLength;
+    qemu_ptr    lpFileName;
+    qemu_ptr    lpFilePath;
+};
+
+static void ASSEMBLY_FILE_DETAILED_INFORMATION_h2g(struct qemu_ASSEMBLY_FILE_DETAILED_INFORMATION *guest,
+        const ASSEMBLY_FILE_DETAILED_INFORMATION *host)
+{
+    guest->ulFlags = host->ulFlags;
+    guest->ulFilenameLength = host->ulFilenameLength;
+    guest->ulPathLength = host->ulPathLength;
+    guest->lpFileName = (ULONG_PTR)host->lpFileName;
+    guest->lpFilePath = (ULONG_PTR)host->lpFilePath;
+}
+
 #endif
