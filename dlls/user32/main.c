@@ -1329,10 +1329,10 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
 
         case WM_MDICREATE:
         {
-                MDICREATESTRUCTW *mdi_cs = (MDICREATESTRUCTW *)msg_in->lParam;
-                struct qemu_MDICREATESTRUCT *mdi_cs_guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*mdi_cs_guest));
-                MDICREATESTRUCT_h2g(mdi_cs_guest, mdi_cs);
-                msg_in->lParam = (ULONG_PTR)mdi_cs_guest;
+            MDICREATESTRUCTW *mdi_cs = (MDICREATESTRUCTW *)msg_in->lParam;
+            struct qemu_MDICREATESTRUCT *mdi_cs_guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*mdi_cs_guest));
+            MDICREATESTRUCT_h2g(mdi_cs_guest, mdi_cs);
+            msg_out->lParam = (ULONG_PTR)mdi_cs_guest;
             break;
         }
 
