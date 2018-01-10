@@ -65,6 +65,8 @@ static HRESULT WINAPI d3d9_device_QueryInterface(IDirect3DDevice9Ex *iface, REFI
      * interface. */
     if (SUCCEEDED(call.super.iret))
         *out = &device->IDirect3DDevice9Ex_iface;
+    else
+        *out = NULL;
 
     return call.super.iret;
 }

@@ -64,6 +64,8 @@ static HRESULT WINAPI d3d9_swapchain_QueryInterface(IDirect3DSwapChain9Ex *iface
      * interface. */
     if (SUCCEEDED(call.super.iret))
         *out = iface;
+    else
+        *out = NULL;
 
     return call.super.iret;
 }

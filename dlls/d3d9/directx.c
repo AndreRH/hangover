@@ -63,6 +63,8 @@ static HRESULT WINAPI d3d9_QueryInterface(IDirect3D9Ex *iface, REFIID riid, void
      * interface. */
     if (SUCCEEDED(call.super.iret))
         *out = iface;
+    else
+        *out = NULL;
 
     return call.super.iret;
 }
