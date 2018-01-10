@@ -2345,7 +2345,7 @@ void qemu_d3d9_texture_3d_LockBox(struct qemu_syscall *call)
     c->super.iret = IDirect3DVolumeTexture9_LockBox((IDirect3DVolumeTexture9 *)texture->host, c->level, lb, QEMU_G2H(c->box), c->flags);
 
 #if GUEST_BIT != HOST_BIT
-    if (c->locked_box && SUCCEEDED(c->super.iret))
+    if (c->locked_box)
         D3DLOCKED_BOX_h2g(QEMU_G2H(c->locked_box), lb);
 #endif
 }
