@@ -756,4 +756,16 @@ static inline void TRACKMOUSEEVENT_h2g(struct qemu_TRACKMOUSEEVENT *guest, const
     guest->dwHoverTime = host->dwHoverTime;
 }
 
+struct qemu_RAWINPUTDEVICELIST
+{
+    qemu_handle hDevice;
+    DWORD       dwType;
+};
+
+static inline void RAWINPUTDEVICELIST_h2g(struct qemu_RAWINPUTDEVICELIST *guest, const RAWINPUTDEVICELIST *host)
+{
+    guest->hDevice = (ULONG_PTR)host->hDevice;
+    guest->dwType = host->dwType;
+}
+
 #endif

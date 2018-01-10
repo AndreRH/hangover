@@ -551,8 +551,43 @@ WINUSERAPI UINT WINAPI GetRawInputDeviceList(RAWINPUTDEVICELIST *devices, UINT *
 void qemu_GetRawInputDeviceList(struct qemu_syscall *call)
 {
     struct qemu_GetRawInputDeviceList *c = (struct qemu_GetRawInputDeviceList *)call;
+    RAWINPUTDEVICELIST *list;
+    struct qemu_RAWINPUTDEVICELIST *list32;
+    UINT size, *count;
     WINE_TRACE("\n");
-    c->super.iret = GetRawInputDeviceList(QEMU_G2H(c->devices), QEMU_G2H(c->device_count), c->size);
+
+    count = QEMU_G2H(c->device_count);
+#if GUEST_BIT == HOST_BIT
+    list = QEMU_G2H(c->devices);
+    size = c->size;
+#else
+    list32 = QEMU_G2H(c->devices);
+    if (list32 && count)
+    {
+        list = HeapAlloc(GetProcessHeap(), 0, *count * sizeof(*list));
+    }
+    else
+    {
+        list = NULL;
+    }
+
+    if (c->size == sizeof(*list32))
+        size = sizeof(*list);
+    else
+        size = 0;
+#endif
+
+    c->super.iret = GetRawInputDeviceList(list, count, size);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret && c->super.iret != ~0U)
+    {
+        for (size = 0; size < c->super.iret; size++)
+            RAWINPUTDEVICELIST_h2g(&list32[size], &list[size]);
+    }
+    HeapFree(GetProcessHeap(), 0, list);
+#endif
+
 }
 
 #endif
