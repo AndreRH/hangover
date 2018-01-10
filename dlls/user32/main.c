@@ -1109,6 +1109,12 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             break;
         }
 
+        case WM_STYLECHANGING:
+        case WM_STYLECHANGED:
+            /* The generic code expanded the (most likely) negative numbers wrong. Fix it up!. */
+            msg_out->wParam = (LONG)msg_in->wParam;
+            break;
+
         case CB_GETCOMBOBOXINFO:
         {
             struct qemu_COMBOBOXINFO *guest = (struct qemu_COMBOBOXINFO *)msg_in->lParam;
