@@ -2080,7 +2080,7 @@ void qemu_TranslateAcceleratorA(struct qemu_syscall *call)
     WINE_TRACE("\n");
 
 #if GUEST_BIT == HOST_BIT
-    msg = QEMU_G2H(c->msg);
+    msg_in = QEMU_G2H(c->msg);
 #else
     if (c->msg)
         MSG_g2h(msg_in, QEMU_G2H(c->msg));
@@ -2132,7 +2132,7 @@ void qemu_TranslateAcceleratorW(struct qemu_syscall *call)
     WINE_TRACE("\n");
 
 #if GUEST_BIT == HOST_BIT
-    msg = QEMU_G2H(c->msg);
+    msg_in = QEMU_G2H(c->msg);
 #else
     if (c->msg)
         MSG_g2h(msg_in, QEMU_G2H(c->msg));
