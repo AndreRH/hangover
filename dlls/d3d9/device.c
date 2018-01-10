@@ -1118,6 +1118,7 @@ struct qemu_d3d9_device_CreateTexture
     uint64_t pool;
     uint64_t texture;
     uint64_t shared_handle;
+    uint64_t has_handle;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1138,7 +1139,9 @@ static HRESULT WINAPI d3d9_device_CreateTexture(IDirect3DDevice9Ex *iface, UINT 
     call.usage = usage;
     call.format = format;
     call.pool = pool;
-    call.shared_handle = (ULONG_PTR)shared_handle;
+    call.has_handle = !!shared_handle;
+    if (shared_handle)
+        call.shared_handle = (ULONG_PTR)*shared_handle;
 
     qemu_syscall(&call.super);
 
@@ -1148,6 +1151,9 @@ static HRESULT WINAPI d3d9_device_CreateTexture(IDirect3DDevice9Ex *iface, UINT 
         impl->IDirect3DBaseTexture9_iface.lpVtbl = (IDirect3DBaseTexture9Vtbl *)&d3d9_texture_2d_vtbl;
         d3d9_texture_set_surfaces_ifaces(impl);
         *texture = (IDirect3DTexture9 *)&impl->IDirect3DBaseTexture9_iface;
+
+        if (shared_handle)
+            *shared_handle = (HANDLE)(LONG_PTR)call.shared_handle;
     }
 
     return call.super.iret;
@@ -1162,12 +1168,14 @@ void qemu_d3d9_device_CreateTexture(struct qemu_syscall *call)
     struct qemu_d3d9_texture_impl *texture;
     IDirect3DTexture9 *host_texture;
     DWORD sub_resource_count;
+    HANDLE host_handle;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    host_handle = QEMU_G2H(c->shared_handle);
 
     c->super.iret = IDirect3DDevice9Ex_CreateTexture(device->host, c->width, c->height, c->levels, c->usage,
-            c->format, c->pool, &host_texture, (HANDLE)c->shared_handle);
+            c->format, c->pool, &host_texture, c->has_handle ? &host_handle : NULL);
     if (FAILED(c->super.iret))
         return;
 
@@ -1181,6 +1189,7 @@ void qemu_d3d9_device_CreateTexture(struct qemu_syscall *call)
         return;
     }
 
+    c->shared_handle = (ULONG_PTR)host_handle;
     d3d9_texture_init(texture, (IDirect3DBaseTexture9 *)host_texture, device);
     c->texture = QEMU_H2G(texture);
 }
@@ -1200,6 +1209,7 @@ struct qemu_d3d9_device_CreateVolumeTexture
     uint64_t pool;
     uint64_t texture;
     uint64_t shared_handle;
+    uint64_t has_handle;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1221,7 +1231,9 @@ static HRESULT WINAPI d3d9_device_CreateVolumeTexture(IDirect3DDevice9Ex *iface,
     call.usage = usage;
     call.format = format;
     call.pool = pool;
-    call.shared_handle = (ULONG_PTR)shared_handle;
+    call.has_handle = !!shared_handle;
+    if (shared_handle)
+        call.shared_handle = (ULONG_PTR)*shared_handle;
 
     qemu_syscall(&call.super);
 
@@ -1231,6 +1243,9 @@ static HRESULT WINAPI d3d9_device_CreateVolumeTexture(IDirect3DDevice9Ex *iface,
         impl->IDirect3DBaseTexture9_iface.lpVtbl = (IDirect3DBaseTexture9Vtbl *)&d3d9_texture_3d_vtbl;
         d3d9_texture_set_surfaces_ifaces(impl);
         *texture = (IDirect3DVolumeTexture9 *)&impl->IDirect3DBaseTexture9_iface;
+
+        if (shared_handle)
+            *shared_handle = (HANDLE)(LONG_PTR)call.shared_handle;
     }
 
     return call.super.iret;
@@ -1245,12 +1260,14 @@ void qemu_d3d9_device_CreateVolumeTexture(struct qemu_syscall *call)
     struct qemu_d3d9_texture_impl *texture;
     IDirect3DVolumeTexture9 *host_texture;
     DWORD sub_resource_count;
+    HANDLE host_handle;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    host_handle = QEMU_G2H(c->shared_handle);
 
     c->super.iret = IDirect3DDevice9Ex_CreateVolumeTexture(device->host, c->width, c->height, c->depth, c->levels,
-            c->usage, c->format, c->pool, &host_texture, (HANDLE)c->shared_handle);
+            c->usage, c->format, c->pool, &host_texture, c->has_handle ? &host_handle : NULL);
     if (FAILED(c->super.iret))
         return;
 
@@ -1264,6 +1281,7 @@ void qemu_d3d9_device_CreateVolumeTexture(struct qemu_syscall *call)
         return;
     }
 
+    c->shared_handle = (ULONG_PTR)host_handle;
     d3d9_texture_init(texture, (IDirect3DBaseTexture9 *)host_texture, device);
     c->texture = QEMU_H2G(texture);
 }
@@ -1281,6 +1299,7 @@ struct qemu_d3d9_device_CreateCubeTexture
     uint64_t pool;
     uint64_t texture;
     uint64_t shared_handle;
+    uint64_t has_handle;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1298,7 +1317,9 @@ static HRESULT WINAPI d3d9_device_CreateCubeTexture(IDirect3DDevice9Ex *iface, U
     call.usage = usage;
     call.format = format;
     call.pool = pool;
-    call.shared_handle = (ULONG_PTR)shared_handle;
+    call.has_handle = !!shared_handle;
+    if (shared_handle)
+        call.shared_handle = (ULONG_PTR)*shared_handle;
 
     qemu_syscall(&call.super);
 
@@ -1308,6 +1329,9 @@ static HRESULT WINAPI d3d9_device_CreateCubeTexture(IDirect3DDevice9Ex *iface, U
         impl->IDirect3DBaseTexture9_iface.lpVtbl = (IDirect3DBaseTexture9Vtbl *)&d3d9_texture_cube_vtbl;
         d3d9_texture_set_surfaces_ifaces(impl);
         *texture = (IDirect3DCubeTexture9 *)&impl->IDirect3DBaseTexture9_iface;
+
+        if (shared_handle)
+            *shared_handle = (HANDLE)(LONG_PTR)call.shared_handle;
     }
     else
     {
@@ -1326,12 +1350,14 @@ void qemu_d3d9_device_CreateCubeTexture(struct qemu_syscall *call)
     struct qemu_d3d9_texture_impl *texture;
     IDirect3DCubeTexture9 *host_texture;
     DWORD sub_resource_count;
+    HANDLE host_handle;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    host_handle = QEMU_G2H(c->shared_handle);
 
     c->super.iret = IDirect3DDevice9Ex_CreateCubeTexture(device->host, c->edge_length, c->levels, c->usage,
-            c->format, c->pool, &host_texture, (HANDLE)c->shared_handle);
+            c->format, c->pool, &host_texture, c->has_handle ? &host_handle : NULL);
     if (FAILED(c->super.iret))
         return;
 
@@ -1346,6 +1372,7 @@ void qemu_d3d9_device_CreateCubeTexture(struct qemu_syscall *call)
         return;
     }
 
+    c->shared_handle = (ULONG_PTR)host_handle;
     d3d9_texture_init(texture, (IDirect3DBaseTexture9 *)host_texture, device);
     c->texture = QEMU_H2G(texture);
 }
@@ -1362,6 +1389,7 @@ struct qemu_d3d9_device_CreateVertexBuffer
     uint64_t pool;
     uint64_t buffer;
     uint64_t shared_handle;
+    uint64_t has_handle;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1378,7 +1406,9 @@ static HRESULT WINAPI d3d9_device_CreateVertexBuffer(IDirect3DDevice9Ex *iface, 
     call.usage = usage;
     call.fvf = fvf;
     call.pool = pool;
-    call.shared_handle = (ULONG_PTR)shared_handle;
+    call.has_handle = !!shared_handle;
+    if (shared_handle)
+        call.shared_handle = (ULONG_PTR)*shared_handle;
 
     qemu_syscall(&call.super);
 
@@ -1388,6 +1418,9 @@ static HRESULT WINAPI d3d9_device_CreateVertexBuffer(IDirect3DDevice9Ex *iface, 
         impl->IDirect3DVertexBuffer9_iface.lpVtbl = &d3d9_vertexbuffer_vtbl;
         wined3d_private_store_init(&impl->private_store);
         *buffer = &impl->IDirect3DVertexBuffer9_iface;
+
+        if (shared_handle)
+            *shared_handle = (HANDLE)(LONG_PTR)call.shared_handle;
     }
 
     return call.super.iret;
@@ -1401,9 +1434,11 @@ void qemu_d3d9_device_CreateVertexBuffer(struct qemu_syscall *call)
     struct qemu_d3d9_device_impl *device;
     struct qemu_d3d9_buffer_impl *buffer;
     IDirect3DVertexBuffer9 *host_buffer;
+    HANDLE host_handle;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    host_handle = QEMU_G2H(c->shared_handle);
 
     buffer = HeapAlloc(GetProcessHeap(), 0, sizeof(*buffer));
     if (!buffer)
@@ -1412,13 +1447,15 @@ void qemu_d3d9_device_CreateVertexBuffer(struct qemu_syscall *call)
         return;
     }
 
-    c->super.iret = IDirect3DDevice9Ex_CreateVertexBuffer(device->host, c->size, c->usage, c->fvf, c->pool, &host_buffer, (HANDLE)c->shared_handle);
+    c->super.iret = IDirect3DDevice9Ex_CreateVertexBuffer(device->host, c->size, c->usage, c->fvf, c->pool,
+            &host_buffer, c->has_handle ? &host_handle : NULL);
     if (FAILED(c->super.iret))
     {
         HeapFree(GetProcessHeap(), 0, buffer);
         return;
     }
 
+    c->shared_handle = (ULONG_PTR)host_handle;
     d3d9_buffer_init(buffer, (IDirect3DResource9 *)host_buffer, device);
     c->buffer = QEMU_H2G(buffer);
 }
@@ -1435,6 +1472,7 @@ struct qemu_d3d9_device_CreateIndexBuffer
     uint64_t pool;
     uint64_t buffer;
     uint64_t shared_handle;
+    uint64_t has_handle;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1451,7 +1489,9 @@ static HRESULT WINAPI d3d9_device_CreateIndexBuffer(IDirect3DDevice9Ex *iface, U
     call.usage = usage;
     call.format = format;
     call.pool = pool;
-    call.shared_handle = (ULONG_PTR)shared_handle;
+    call.has_handle = !!shared_handle;
+    if (shared_handle)
+        call.shared_handle = (ULONG_PTR)*shared_handle;
 
     qemu_syscall(&call.super);
 
@@ -1461,6 +1501,9 @@ static HRESULT WINAPI d3d9_device_CreateIndexBuffer(IDirect3DDevice9Ex *iface, U
         impl->IDirect3DIndexBuffer9_iface.lpVtbl = &d3d9_indexbuffer_vtbl;
         wined3d_private_store_init(&impl->private_store);
         *buffer = &impl->IDirect3DIndexBuffer9_iface;
+
+        if (shared_handle)
+            *shared_handle = (HANDLE)(LONG_PTR)call.shared_handle;
     }
 
     return call.super.iret;
@@ -1474,9 +1517,11 @@ void qemu_d3d9_device_CreateIndexBuffer(struct qemu_syscall *call)
     struct qemu_d3d9_device_impl *device;
     struct qemu_d3d9_buffer_impl *buffer;
     IDirect3DIndexBuffer9 *host_buffer;
+    HANDLE host_handle;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    host_handle = QEMU_G2H(c->shared_handle);
 
     buffer = HeapAlloc(GetProcessHeap(), 0, sizeof(*buffer));
     if (!buffer)
@@ -1486,13 +1531,14 @@ void qemu_d3d9_device_CreateIndexBuffer(struct qemu_syscall *call)
     }
 
     c->super.iret = IDirect3DDevice9Ex_CreateIndexBuffer(device->host, c->size, c->usage, c->format,
-            c->pool, &host_buffer, (HANDLE)c->shared_handle);
+            c->pool, &host_buffer, c->has_handle ? &host_handle : NULL);
     if (FAILED(c->super.iret))
     {
         HeapFree(GetProcessHeap(), 0, buffer);
         return;
     }
 
+    c->shared_handle = (ULONG_PTR)host_handle;
     d3d9_buffer_init(buffer, (IDirect3DResource9 *)host_buffer, device);
     c->buffer = QEMU_H2G(buffer);
 }
@@ -1511,6 +1557,7 @@ struct qemu_d3d9_device_CreateRenderTarget
     uint64_t lockable;
     uint64_t surface;
     uint64_t shared_handle;
+    uint64_t has_handle;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1529,7 +1576,9 @@ static HRESULT WINAPI d3d9_device_CreateRenderTarget(IDirect3DDevice9Ex *iface, 
     call.multisample_type = multisample_type;
     call.multisample_quality = multisample_quality;
     call.lockable = lockable;
-    call.shared_handle = (ULONG_PTR)shared_handle;
+    call.has_handle = !!shared_handle;
+    if (shared_handle)
+        call.shared_handle = (ULONG_PTR)*shared_handle;
 
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
@@ -1537,6 +1586,8 @@ static HRESULT WINAPI d3d9_device_CreateRenderTarget(IDirect3DDevice9Ex *iface, 
         impl = (struct qemu_d3d9_subresource_impl *)(ULONG_PTR)call.surface;
         qemu_d3d9_surface_init_guest(&impl->IDirect3DSurface9_iface);
         *surface = &impl->IDirect3DSurface9_iface;
+        if (shared_handle)
+            *shared_handle = (HANDLE)(LONG_PTR)call.shared_handle;
     }
     else
     {
@@ -1554,9 +1605,11 @@ void qemu_d3d9_device_CreateRenderTarget(struct qemu_syscall *call)
     struct qemu_d3d9_device_impl *device;
     struct qemu_d3d9_surface_impl *surface;
     IDirect3DSurface9 *host_surface;
+    HANDLE host_handle;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    host_handle = QEMU_G2H(c->shared_handle);
 
     surface = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*surface));
     if (!surface)
@@ -1566,13 +1619,15 @@ void qemu_d3d9_device_CreateRenderTarget(struct qemu_syscall *call)
     }
 
     c->super.iret = IDirect3DDevice9Ex_CreateRenderTarget(device->host, c->width, c->height, c->format,
-            c->multisample_type, c->multisample_quality, c->lockable, &host_surface, (HANDLE)c->shared_handle);
+            c->multisample_type, c->multisample_quality, c->lockable, &host_surface,
+            c->has_handle ? &host_handle : NULL);
     if (FAILED(c->super.iret))
     {
         HeapFree(GetProcessHeap(), 0, surface);
         return;
     }
 
+    c->shared_handle = (ULONG_PTR)host_handle;
     d3d9_standalone_surface_init(surface, host_surface, device);
     c->surface = QEMU_H2G(&surface->sub_resource);
 }
@@ -1591,6 +1646,7 @@ struct qemu_d3d9_device_CreateDepthStencilSurface
     uint64_t discard;
     uint64_t surface;
     uint64_t shared_handle;
+    uint64_t has_handle;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1609,7 +1665,9 @@ static HRESULT WINAPI d3d9_device_CreateDepthStencilSurface(IDirect3DDevice9Ex *
     call.multisample_type = multisample_type;
     call.multisample_quality = multisample_quality;
     call.discard = discard;
-    call.shared_handle = (ULONG_PTR)shared_handle;
+    call.has_handle = !!shared_handle;
+    if (shared_handle)
+        call.shared_handle = (ULONG_PTR)*shared_handle;
 
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
@@ -1617,6 +1675,9 @@ static HRESULT WINAPI d3d9_device_CreateDepthStencilSurface(IDirect3DDevice9Ex *
         impl = (struct qemu_d3d9_subresource_impl *)(ULONG_PTR)call.surface;
         qemu_d3d9_surface_init_guest(&impl->IDirect3DSurface9_iface);
         *surface = &impl->IDirect3DSurface9_iface;
+
+        if (shared_handle)
+            *shared_handle = (HANDLE)(LONG_PTR)call.shared_handle;
     }
     else
     {
@@ -1634,9 +1695,11 @@ void qemu_d3d9_device_CreateDepthStencilSurface(struct qemu_syscall *call)
     struct qemu_d3d9_device_impl *device;
     struct qemu_d3d9_surface_impl *surface;
     IDirect3DSurface9 *host_surface;
+    HANDLE host_handle;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    host_handle = QEMU_G2H(c->shared_handle);
 
     surface = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*surface));
     if (!surface)
@@ -1646,13 +1709,15 @@ void qemu_d3d9_device_CreateDepthStencilSurface(struct qemu_syscall *call)
     }
 
     c->super.iret = IDirect3DDevice9Ex_CreateDepthStencilSurface(device->host, c->width, c->height, c->format,
-            c->multisample_type, c->multisample_quality, c->discard, &host_surface, (HANDLE)c->shared_handle);
+            c->multisample_type, c->multisample_quality, c->discard, &host_surface,
+            c->has_handle ? &host_handle : NULL);
     if (FAILED(c->super.iret))
     {
         HeapFree(GetProcessHeap(), 0, surface);
         return;
     }
 
+    c->shared_handle = (ULONG_PTR)host_handle;
     d3d9_standalone_surface_init(surface, host_surface, device);
     c->surface = QEMU_H2G(&surface->sub_resource);
 }
@@ -1947,6 +2012,7 @@ struct qemu_d3d9_device_CreateOffscreenPlainSurface
     uint64_t pool;
     uint64_t surface;
     uint64_t shared_handle;
+    uint64_t has_handle;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1963,7 +2029,9 @@ static HRESULT WINAPI d3d9_device_CreateOffscreenPlainSurface(IDirect3DDevice9Ex
     call.height = height;
     call.format = format;
     call.pool = pool;
-    call.shared_handle = (ULONG_PTR)shared_handle;
+    call.has_handle = !!shared_handle;
+    if (shared_handle)
+        call.shared_handle = (ULONG_PTR)*shared_handle;
 
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
@@ -1971,6 +2039,9 @@ static HRESULT WINAPI d3d9_device_CreateOffscreenPlainSurface(IDirect3DDevice9Ex
         impl = (struct qemu_d3d9_subresource_impl *)(ULONG_PTR)call.surface;
         qemu_d3d9_surface_init_guest(&impl->IDirect3DSurface9_iface);
         *surface = &impl->IDirect3DSurface9_iface;
+
+        if (shared_handle)
+            *shared_handle = (HANDLE)(LONG_PTR)call.shared_handle;
     }
     else
     {
@@ -1988,9 +2059,11 @@ void qemu_d3d9_device_CreateOffscreenPlainSurface(struct qemu_syscall *call)
     struct qemu_d3d9_device_impl *device;
     struct qemu_d3d9_surface_impl *surface;
     IDirect3DSurface9 *host_surface;
+    HANDLE host_handle;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    host_handle = QEMU_G2H(c->shared_handle);
 
     surface = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*surface));
     if (!surface)
@@ -2000,13 +2073,14 @@ void qemu_d3d9_device_CreateOffscreenPlainSurface(struct qemu_syscall *call)
     }
 
     c->super.iret = IDirect3DDevice9Ex_CreateOffscreenPlainSurface(device->host, c->width, c->height, c->format,
-            c->pool, &host_surface, (HANDLE)c->shared_handle);
+            c->pool, &host_surface, c->has_handle ? &host_handle : NULL);
     if (FAILED(c->super.iret))
     {
         HeapFree(GetProcessHeap(), 0, surface);
         return;
     }
 
+    c->shared_handle = (ULONG_PTR)host_handle;
     d3d9_standalone_surface_init(surface, host_surface, device);
     c->surface = QEMU_H2G(&surface->sub_resource);
 }
@@ -6322,6 +6396,7 @@ struct qemu_d3d9_device_CreateDepthStencilSurfaceEx
     uint64_t surface;
     uint64_t shared_handle;
     uint64_t usage;
+    uint64_t has_handle;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -6340,7 +6415,9 @@ static HRESULT WINAPI d3d9_device_CreateDepthStencilSurfaceEx(IDirect3DDevice9Ex
     call.multisample_type = multisample_type;
     call.multisample_quality = multisample_quality;
     call.discard = discard;
-    call.shared_handle = (ULONG_PTR)shared_handle;
+    call.has_handle = !!shared_handle;
+    if (shared_handle)
+        call.shared_handle = (ULONG_PTR)*shared_handle;
     call.usage = usage;
 
     /* This is a special case in this function because it doesn't set *surface = NULL.
@@ -6355,6 +6432,9 @@ static HRESULT WINAPI d3d9_device_CreateDepthStencilSurfaceEx(IDirect3DDevice9Ex
         impl = (struct qemu_d3d9_subresource_impl *)(ULONG_PTR)call.surface;
         qemu_d3d9_surface_init_guest(&impl->IDirect3DSurface9_iface);
         *surface = &impl->IDirect3DSurface9_iface;
+
+        if (shared_handle)
+            *shared_handle = (HANDLE)(LONG_PTR)call.shared_handle;
     }
     else
     {
@@ -6372,9 +6452,11 @@ void qemu_d3d9_device_CreateDepthStencilSurfaceEx(struct qemu_syscall *call)
     struct qemu_d3d9_device_impl *device;
     struct qemu_d3d9_surface_impl *surface;
     IDirect3DSurface9 *host_surface;
+    HANDLE host_handle;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    host_handle = QEMU_G2H(c->shared_handle);
 
     surface = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*surface));
     if (!surface)
@@ -6385,13 +6467,14 @@ void qemu_d3d9_device_CreateDepthStencilSurfaceEx(struct qemu_syscall *call)
 
     c->super.iret = IDirect3DDevice9Ex_CreateDepthStencilSurfaceEx(device->host, c->width, c->height,
             c->format, c->multisample_type, c->multisample_quality, c->discard, &host_surface,
-            (HANDLE)c->shared_handle, c->usage);
+            c->has_handle ? &host_handle : NULL, c->usage);
     if (FAILED(c->super.iret))
     {
         HeapFree(GetProcessHeap(), 0, surface);
         return;
     }
 
+    c->shared_handle = (ULONG_PTR)host_handle;
     d3d9_standalone_surface_init(surface, host_surface, device);
     c->surface = QEMU_H2G(&surface->sub_resource);
 }
