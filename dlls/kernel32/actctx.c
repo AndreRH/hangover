@@ -537,9 +537,11 @@ WINBASEAPI BOOL WINAPI QueryActCtxW(DWORD dwFlags, HANDLE hActCtx, PVOID pvSubIn
     call.ulClass = ulClass;
     call.pvBuff = (ULONG_PTR)pvBuff;
     call.cbBuff = cbBuff;
-    call.pcbLen = (ULONG_PTR)pcbLen;
 
     qemu_syscall(&call.super);
+
+    if (pcbLen)
+        *pcbLen = call.pcbLen;
 
     return call.super.iret;
 }
@@ -549,8 +551,46 @@ WINBASEAPI BOOL WINAPI QueryActCtxW(DWORD dwFlags, HANDLE hActCtx, PVOID pvSubIn
 void qemu_QueryActCtxW(struct qemu_syscall *call)
 {
     struct qemu_QueryActCtxW *c = (struct qemu_QueryActCtxW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QueryActCtxW(c->dwFlags, QEMU_G2H(c->hActCtx), QEMU_G2H(c->pvSubInst), c->ulClass, QEMU_G2H(c->pvBuff), c->cbBuff, QEMU_G2H(c->pcbLen));
+    ULONG class;
+    ACTIVATION_CONTEXT_BASIC_INFORMATION bi;
+    struct qemu_ACTIVATION_CONTEXT_BASIC_INFORMATION *bi32;
+    SIZE_T retlen;
+    WINE_TRACE("\n");
+
+    class = c->ulClass;
+#if GUEST_BIT == HOST_BIT
+    c->super.iret = QueryActCtxW(c->dwFlags, QEMU_G2H(c->hActCtx), QEMU_G2H(c->pvSubInst), class,
+            QEMU_G2H(c->pvBuff), c->cbBuff, &retlen);
+    call->pcbLen = retlen;
+    return;
+#endif
+
+    switch (class)
+    {
+        case ActivationContextBasicInformation:
+            bi32 = QEMU_G2H(c->pvBuff);
+            c->pcbLen = sizeof(*bi32);
+            if (c->cbBuff < sizeof(*bi32))
+            {
+                c->super.iret = QueryActCtxW(c->dwFlags, QEMU_G2H(c->hActCtx), QEMU_G2H(c->pvSubInst), class,
+                        &bi, 0, NULL);
+                return;
+            }
+
+            c->super.iret = QueryActCtxW(c->dwFlags, QEMU_G2H(c->hActCtx), QEMU_G2H(c->pvSubInst), class,
+                    &bi, sizeof(bi), NULL);
+            ACTIVATION_CONTEXT_BASIC_INFORMATION_h2g(bi32, &bi);
+
+            break;
+
+        default:
+            WINE_FIXME("Unhandled info class %u.\n", class);
+            /* Drop through */
+        case FileInformationInAssemblyOfAssemblyInActivationContext:
+            c->super.iret = QueryActCtxW(c->dwFlags, QEMU_G2H(c->hActCtx), QEMU_G2H(c->pvSubInst), class,
+                    QEMU_G2H(c->pvBuff), c->cbBuff, &retlen);
+            c->pcbLen = retlen;
+    }
 }
 
 #endif

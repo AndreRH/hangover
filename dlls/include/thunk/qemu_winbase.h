@@ -162,4 +162,17 @@ static void ACTCTX_g2h(ACTCTXW *host, const struct qemu_ACTCTX *guest)
     host->hModule = HANDLE_g2h(guest->hModule);
 }
 
+struct qemu_ACTIVATION_CONTEXT_BASIC_INFORMATION
+{
+    qemu_handle hActCtx;
+    DWORD       dwFlags;
+};
+
+static void ACTIVATION_CONTEXT_BASIC_INFORMATION_h2g(struct qemu_ACTIVATION_CONTEXT_BASIC_INFORMATION *guest,
+        const ACTIVATION_CONTEXT_BASIC_INFORMATION *host)
+{
+    guest->hActCtx = (ULONG_PTR)host->hActCtx;
+    guest->dwFlags = host->dwFlags;
+}
+
 #endif
