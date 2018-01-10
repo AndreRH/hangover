@@ -125,4 +125,41 @@ static void PROCESS_INFORMATION_h2g(struct qemu_PROCESS_INFORMATION *guest, cons
     guest->dwThreadId = host->dwThreadId;
 }
 
+struct qemu_ACTCTX
+{
+    ULONG       cbSize;
+    DWORD       dwFlags;
+    qemu_ptr    lpSource;
+    USHORT      wProcessorArchitecture;
+    LANGID      wLangId;
+    qemu_ptr    lpAssemblyDirectory;
+    qemu_ptr    lpResourceName;
+    qemu_ptr    lpApplicationName;
+    qemu_handle hModule;
+};
+
+static void ACTCTX_h2g(struct qemu_ACTCTX *guest, const ACTCTXW *host)
+{
+    guest->dwFlags = host->dwFlags;
+    guest->lpSource = (ULONG_PTR)host->lpSource;
+    guest->wProcessorArchitecture = host->wProcessorArchitecture;
+    guest->wLangId = host->wLangId;
+    guest->lpAssemblyDirectory = (ULONG_PTR)host->lpAssemblyDirectory;
+    guest->lpResourceName = (ULONG_PTR)host->lpResourceName;
+    guest->lpApplicationName = (ULONG_PTR)host->lpApplicationName;
+    guest->hModule = (ULONG_PTR)host->hModule;
+}
+
+static void ACTCTX_g2h(ACTCTXW *host, const struct qemu_ACTCTX *guest)
+{
+    host->dwFlags = guest->dwFlags;
+    host->lpSource = (WCHAR *)(ULONG_PTR)guest->lpSource;
+    host->wProcessorArchitecture = guest->wProcessorArchitecture;
+    host->wLangId = guest->wLangId;
+    host->lpAssemblyDirectory = (WCHAR *)(ULONG_PTR)guest->lpAssemblyDirectory;
+    host->lpResourceName = (WCHAR *)(ULONG_PTR)guest->lpResourceName;
+    host->lpApplicationName = (WCHAR *)(ULONG_PTR)guest->lpApplicationName;
+    host->hModule = HANDLE_g2h(guest->hModule);
+}
+
 #endif

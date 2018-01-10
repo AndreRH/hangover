@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_kernel32.h"
@@ -46,7 +48,6 @@ WINBASEAPI HANDLE WINAPI CreateActCtxA(PCACTCTXA pActCtx)
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEACTCTXA);
     call.pActCtx = (ULONG_PTR)pActCtx;
 
-
     qemu_syscall(&call.super);
 
     return (HANDLE)(ULONG_PTR)call.super.iret;
@@ -58,17 +59,33 @@ void qemu_CreateActCtxA(struct qemu_syscall *call)
 {
     struct qemu_CreateActCtxA *c = (struct qemu_CreateActCtxA *)call;
     ACTCTXA *copy = NULL, *orig;
+    struct qemu_ACTCTX *orig32;
     WCHAR *appname, *p;
     char *appnameA = NULL;
 
     WINE_TRACE("\n");
-    orig = QEMU_G2H(c->pActCtx);
 
+#if HOST_BIT == GUEST_BIT
+    orig = QEMU_G2H(c->pActCtx);
     if (!orig || orig->cbSize != sizeof(*orig))
     {
         c->super.iret = (uint64_t)CreateActCtxA(orig);
         return;
     }
+#else
+    orig32 = QEMU_G2H(c->pActCtx);
+    if (!orig32)
+    {
+        c->super.iret = (uint64_t)CreateActCtxA(NULL);
+        return;
+    }
+    else if (orig32->cbSize != sizeof(*orig32))
+    {
+        ACTCTXA invalid = {0};
+        c->super.iret = (uint64_t)CreateActCtxA(&invalid);
+        return;
+    }
+#endif
 
     copy = HeapAlloc(GetProcessHeap(), 0, sizeof(*copy));
     if (!copy)
@@ -77,7 +94,12 @@ void qemu_CreateActCtxA(struct qemu_syscall *call)
         return;
     }
 
+#if HOST_BIT == GUEST_BIT
     *copy = *orig;
+#else
+    ACTCTX_g2h((ACTCTXW *)copy, orig32);
+#endif
+
     if (!(copy->dwFlags & ACTCTX_FLAG_APPLICATION_NAME_VALID))
     {
         HMODULE mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
@@ -133,16 +155,32 @@ void qemu_CreateActCtxW(struct qemu_syscall *call)
 {
     struct qemu_CreateActCtxW *c = (struct qemu_CreateActCtxW *)call;
     ACTCTXW *copy = NULL, *orig;
+    struct qemu_ACTCTX *orig32;
     WCHAR *appname = NULL, *p;
 
     WINE_TRACE("\n");
     orig = QEMU_G2H(c->pActCtx);
 
+#if HOST_BIT == GUEST_BIT
     if (!orig || orig->cbSize != sizeof(*orig))
     {
         c->super.iret = (uint64_t)CreateActCtxW(orig);
         return;
     }
+#else
+    orig32 = QEMU_G2H(c->pActCtx);
+    if (!orig32)
+    {
+        c->super.iret = (uint64_t)CreateActCtxW(NULL);
+        return;
+    }
+    else if (orig32->cbSize != sizeof(*orig32))
+    {
+        ACTCTXW invalid = {0};
+        c->super.iret = (uint64_t)CreateActCtxW(&invalid);
+        return;
+    }
+#endif
 
     copy = HeapAlloc(GetProcessHeap(), 0, sizeof(*copy));
     if (!copy)
@@ -151,7 +189,12 @@ void qemu_CreateActCtxW(struct qemu_syscall *call)
         return;
     }
 
+#if HOST_BIT == GUEST_BIT
     *copy = *orig;
+#else
+    ACTCTX_g2h(copy, orig32);
+#endif
+
     if (!(copy->dwFlags & ACTCTX_FLAG_APPLICATION_NAME_VALID))
     {
         HMODULE mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
