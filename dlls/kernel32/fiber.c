@@ -277,12 +277,15 @@ WINBASEAPI DWORD WINAPI FlsAlloc(PFLS_CALLBACK_FUNCTION callback)
 void qemu_FlsAlloc(struct qemu_syscall *call)
 {
     TEB *guest_teb = qemu_ops->qemu_getTEB(), *host_teb = NtCurrentTeb();
+    TEB32 *guest_teb32 = qemu_ops->qemu_getTEB32();
 
     struct qemu_FlsAlloc *c = (struct qemu_FlsAlloc *)call;
     WINE_TRACE("\n");
     c->super.iret = FlsAlloc(QEMU_G2H(c->callback));
 
     guest_teb->FlsSlots = host_teb->FlsSlots;
+    if (guest_teb32)
+        guest_teb32->FlsSlots = (ULONG_PTR)host_teb->FlsSlots;
 }
 
 #endif
@@ -376,7 +379,16 @@ WINBASEAPI BOOL WINAPI FlsSetValue(DWORD index, PVOID data)
 
         qemu_syscall(&call.super);
 
-        return call.super.iret;
+        /* On a 64 bit system we're done here. On a 32 bit system, native FlsSetValue
+         * wrote the value to the wrong offset, so we have to set it again. Also set
+         * the "wrong" value back to 0 to avoid initializing index * 2 to something
+         * wrong. */
+#if GUEST_BIT == HOST_BIT
+        return c->super.iret;
+#else
+        call.data = 0;
+        qemu_syscall(&call.super);
+#endif
     }
     teb->FlsSlots[index] = data;
     return TRUE;
@@ -387,11 +399,14 @@ WINBASEAPI BOOL WINAPI FlsSetValue(DWORD index, PVOID data)
 void qemu_FlsSetValue(struct qemu_syscall *call)
 {
     TEB *guest_teb = qemu_ops->qemu_getTEB(), *host_teb = NtCurrentTeb();
+    TEB32 *guest_teb32 = qemu_ops->qemu_getTEB32();
     struct qemu_FlsSetValue *c = (struct qemu_FlsSetValue *)call;
     WINE_TRACE("\n");
 
     c->super.iret = FlsSetValue(c->index, QEMU_G2H(c->data));
     guest_teb->FlsSlots = host_teb->FlsSlots;
+    if (guest_teb32)
+        guest_teb32->FlsSlots = (ULONG_PTR)host_teb->FlsSlots;
 }
 
 #endif
