@@ -87,6 +87,7 @@ WINBASEAPI DWORD WINAPI FormatMessageA(DWORD flags, const void *src, DWORD msg_i
             call.size = 0;
             call.array = 0;
             qemu_syscall(&call.super);
+            local_string = (char *)(ULONG_PTR)call.buffer;
             if (!call.super.iret)
                 return call.super.iret;
         }
@@ -130,7 +131,7 @@ WINBASEAPI DWORD WINAPI FormatMessageA(DWORD flags, const void *src, DWORD msg_i
         /* Note that this function does not support floats. */
         for (i = 0; i < read; i++)
         {
-            array[i].arg = va_arg(*args, uint64_t);
+            array[i].arg = va_arg(*args, ULONG_PTR);
             array[i].is_float = FALSE;
         }
         call.array_size = read;
@@ -149,6 +150,8 @@ WINBASEAPI DWORD WINAPI FormatMessageA(DWORD flags, const void *src, DWORD msg_i
     call.size = size;
 
     qemu_syscall(&call.super);
+    if (flags & FORMAT_MESSAGE_ALLOCATE_BUFFER && buffer)
+        *(char **)buffer = (char *)(ULONG_PTR)call.buffer;
 
     return call.super.iret;
 }
@@ -181,6 +184,7 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
             call.size = 0;
             call.array = 0;
             qemu_syscall(&call.super);
+            local_string = (WCHAR *)(ULONG_PTR)call.buffer;
             if (!call.super.iret)
                 return call.super.iret;
         }
@@ -224,7 +228,7 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
         /* Note that this function does not support floats. */
         for (i = 0; i < read; i++)
         {
-            array[i].arg = va_arg(*args, uint64_t);
+            array[i].arg = va_arg(*args, ULONG_PTR);
             array[i].is_float = FALSE;
         }
         call.array_size = read;
@@ -243,6 +247,8 @@ WINBASEAPI DWORD WINAPI FormatMessageW(DWORD flags, const void *src, DWORD msg_i
     call.size = size;
 
     qemu_syscall(&call.super);
+    if (flags & FORMAT_MESSAGE_ALLOCATE_BUFFER && buffer)
+        *(WCHAR **)buffer = (WCHAR *)(ULONG_PTR)call.buffer;
 
     return call.super.iret;
 }
@@ -305,12 +311,36 @@ void qemu_FormatMessage(struct qemu_syscall *call)
     if (c->flags & (FORMAT_MESSAGE_ARGUMENT_ARRAY | FORMAT_MESSAGE_IGNORE_INSERTS)
             || !c->array)
     {
+#if GUEST_BIT == HOST_BIT
+        ULONG_PTR *array;
+        array = QEMU_G2H(c->array);
+#else
+        ULONG_PTR *array, copy[100];
+        qemu_handle *guest_array = QEMU_G2H(c->array);
+        unsigned int i;
+
+        if (guest_array)
+        {
+            WINE_FIXME("Implement array-style counting for nicer 32 bit conversion\n");
+            for (i = 0; i < sizeof(copy) / sizeof(*copy); ++i)
+            {
+                if (IsBadReadPtr(&guest_array[i], sizeof(guest_array[i])))
+                    break;
+                copy[i] = guest_array[i];
+            }
+            array = copy;
+        }
+        else
+        {
+            array = NULL;
+        }
+#endif
         if (unicode)
             c->super.iret = FormatMessageW(c->flags, src, c->msg_id, c->lang_id,
-                    buffer_arg, c->size, QEMU_G2H(c->array));
+                    buffer_arg, c->size, (void *)array);
         else
             c->super.iret = FormatMessageA(c->flags, src, c->msg_id, c->lang_id,
-                    buffer_arg, c->size, QEMU_G2H(c->array));
+                    buffer_arg, c->size, (void *)array);
     }
     else
     {
@@ -329,8 +359,8 @@ void qemu_FormatMessage(struct qemu_syscall *call)
         c->super.iret = call_va(call_FormatMessage_va_list, &data, c->array_size, 0, array);
     }
 
-    if (c->flags & FORMAT_MESSAGE_ALLOCATE_BUFFER && c->buffer)
-        *((uint64_t *)(QEMU_G2H(c->buffer))) = QEMU_H2G(local_buffer);
+    if (c->flags & FORMAT_MESSAGE_ALLOCATE_BUFFER)
+        c->buffer = QEMU_H2G(local_buffer);
 
     if (c->free)
     {
