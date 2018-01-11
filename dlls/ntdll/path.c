@@ -25,6 +25,8 @@
 #include <winternl.h>
 #include <ntdef.h>
 
+#include "thunk/qemu_winternl.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_ntdll.h"
@@ -124,7 +126,7 @@ struct qemu_RtlDosPathNameToNtPathName_U
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI RtlDosPathNameToNtPathName_U(PCWSTR dos_path, PUNICODE_STRING ntpath, PCWSTR* file_part, VOID* cd)
+WINBASEAPI BOOL WINAPI RtlDosPathNameToNtPathName_U(const WCHAR *dos_path, PUNICODE_STRING ntpath, PCWSTR* file_part, VOID* cd)
 {
     struct qemu_RtlDosPathNameToNtPathName_U call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLDOSPATHNAMETONTPATHNAME_U);
@@ -134,6 +136,8 @@ WINBASEAPI BOOL WINAPI RtlDosPathNameToNtPathName_U(PCWSTR dos_path, PUNICODE_ST
     call.cd = (ULONG_PTR)cd;
 
     qemu_syscall(&call.super);
+    if (file_part)
+        *file_part = (WCHAR *)(ULONG_PTR)call.file_part;
 
     return call.super.iret;
 }
@@ -143,9 +147,21 @@ WINBASEAPI BOOL WINAPI RtlDosPathNameToNtPathName_U(PCWSTR dos_path, PUNICODE_ST
 void qemu_RtlDosPathNameToNtPathName_U(struct qemu_syscall *call)
 {
     struct qemu_RtlDosPathNameToNtPathName_U *c = (struct qemu_RtlDosPathNameToNtPathName_U *)call;
+    UNICODE_STRING path_stack, *path = &path_stack;
+    WCHAR *file_part;
     WINE_TRACE("\n");
-    c->super.iret = RtlDosPathNameToNtPathName_U(QEMU_G2H(c->dos_path), QEMU_G2H(c->ntpath),
-            QEMU_G2H(c->file_part), QEMU_G2H(c->cd));
+
+#if GUEST_BIT == HOST_BIT
+    path = QEMU_G2H(c->ntpath);
+#endif
+
+    c->super.iret = RtlDosPathNameToNtPathName_U(QEMU_G2H(c->dos_path), path,
+            QEMU_G2H(c->file_part) ? &file_part : NULL, QEMU_G2H(c->cd));
+    c->file_part = QEMU_H2G(file_part);
+
+#if GUEST_BIT != HOST_BIT
+    UNICODE_STRING_h2g(QEMU_G2H(c->ntpath), path);
+#endif
 }
 
 #endif

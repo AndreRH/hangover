@@ -68,8 +68,18 @@ WINBASEAPI void WINAPI RtlInitAnsiString(PANSI_STRING target, PCSZ source)
 void qemu_RtlInitAnsiString(struct qemu_syscall *call)
 {
     struct qemu_RtlInitAnsiString *c = (struct qemu_RtlInitAnsiString *)call;
+    ANSI_STRING stack, *target = &stack;
     WINE_TRACE("\n");
-    RtlInitAnsiString(QEMU_G2H(c->target), QEMU_G2H(c->source));
+
+#if GUEST_BIT == HOST_BIT
+    target = QEMU_G2H(c->target);
+#endif
+
+    RtlInitAnsiString(target, QEMU_G2H(c->source));
+
+#if GUEST_BIT != HOST_BIT
+    STRING_h2g(QEMU_G2H(c->target), target);
+#endif
 }
 
 #endif
@@ -246,8 +256,18 @@ WINBASEAPI void WINAPI RtlInitUnicodeString(PUNICODE_STRING target, PCWSTR sourc
 void qemu_RtlInitUnicodeString(struct qemu_syscall *call)
 {
     struct qemu_RtlInitUnicodeString *c = (struct qemu_RtlInitUnicodeString *)call;
+    UNICODE_STRING stack, *target = &stack;
     WINE_TRACE("\n");
-    RtlInitUnicodeString(QEMU_G2H(c->target), QEMU_G2H(c->source));
+
+#if GUEST_BIT == HOST_BIT
+    target = QEMU_G2H(c->target);
+#endif
+
+    RtlInitUnicodeString(target, QEMU_G2H(c->source));
+
+#if GUEST_BIT != HOST_BIT
+    UNICODE_STRING_h2g(QEMU_G2H(c->target), target);
+#endif
 }
 
 #endif
@@ -384,8 +404,16 @@ WINBASEAPI void WINAPI RtlFreeUnicodeString(PUNICODE_STRING str)
 void qemu_RtlFreeUnicodeString(struct qemu_syscall *call)
 {
     struct qemu_RtlFreeUnicodeString *c = (struct qemu_RtlFreeUnicodeString *)call;
+    UNICODE_STRING stack, *str = &stack;
     WINE_TRACE("\n");
-    RtlFreeUnicodeString(QEMU_G2H(c->str));
+
+#if GUEST_BIT == HOST_BIT
+    str = QEMU_G2H(c->str);
+#else
+    UNICODE_STRING_g2h(str, QEMU_G2H(c->str));
+#endif
+
+    RtlFreeUnicodeString(str);
 }
 
 #endif
@@ -828,7 +856,7 @@ struct qemu_RtlAnsiStringToUnicodeString
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI RtlAnsiStringToUnicodeString(PUNICODE_STRING uni, PCANSI_STRING ansi, BOOLEAN doalloc)
+WINBASEAPI NTSTATUS WINAPI RtlAnsiStringToUnicodeString(UNICODE_STRING *uni, PCANSI_STRING ansi, BOOLEAN doalloc)
 {
     struct qemu_RtlAnsiStringToUnicodeString call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLANSISTRINGTOUNICODESTRING);
@@ -846,8 +874,23 @@ WINBASEAPI NTSTATUS WINAPI RtlAnsiStringToUnicodeString(PUNICODE_STRING uni, PCA
 void qemu_RtlAnsiStringToUnicodeString(struct qemu_syscall *call)
 {
     struct qemu_RtlAnsiStringToUnicodeString *c = (struct qemu_RtlAnsiStringToUnicodeString *)call;
+    UNICODE_STRING stack, *uni = &stack;
+    ANSI_STRING ansi_stack, *ansi = &ansi_stack;
     WINE_TRACE("\n");
-    c->super.iret = RtlAnsiStringToUnicodeString(QEMU_G2H(c->uni), QEMU_G2H(c->ansi), c->doalloc);
+
+#if GUEST_BIT == HOST_BIT
+    uni = QEMU_G2H(c->uni);
+    ansi = QEMU_G2H(c->ansi);
+#else
+    UNICODE_STRING_g2h(uni, QEMU_G2H(c->uni));
+    STRING_g2h(ansi, QEMU_G2H(c->ansi));
+#endif
+
+    c->super.iret = RtlAnsiStringToUnicodeString(uni, ansi, c->doalloc);
+
+#if GUEST_BIT != HOST_BIT
+    UNICODE_STRING_h2g(QEMU_G2H(c->uni), uni);
+#endif
 }
 
 #endif

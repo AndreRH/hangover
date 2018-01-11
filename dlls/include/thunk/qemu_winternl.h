@@ -24,6 +24,27 @@ static inline void UNICODE_STRING_h2g(struct qemu_UNICODE_STRING *guest, const U
     guest->Buffer = (ULONG_PTR)host->Buffer;
 }
 
+struct qemu_STRING
+{
+    USHORT Length;
+    USHORT MaximumLength;
+    qemu_ptr Buffer;
+};
+
+static inline void STRING_g2h(STRING *host, const struct qemu_STRING *guest)
+{
+    host->Length = guest->Length;
+    host->MaximumLength = guest->MaximumLength;
+    host->Buffer = (CHAR *)(ULONG_PTR)guest->Buffer;
+}
+
+static inline void STRING_h2g(struct qemu_STRING *guest, const STRING *host)
+{
+    guest->Length = host->Length;
+    guest->MaximumLength = host->MaximumLength;
+    guest->Buffer = (ULONG_PTR)host->Buffer;
+}
+
 struct qemu_OBJECT_NAME_INFORMATION
 {
     struct qemu_UNICODE_STRING Name;
