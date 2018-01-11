@@ -25,6 +25,8 @@
 #include <winternl.h>
 #include <ntdef.h>
 
+#include "thunk/qemu_winternl.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_ntdll.h"
@@ -100,13 +102,12 @@ struct qemu_NtCreateFile
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI NtCreateFile(PHANDLE handle, ACCESS_MASK access, POBJECT_ATTRIBUTES attr, PIO_STATUS_BLOCK io,
+WINBASEAPI NTSTATUS WINAPI NtCreateFile(HANDLE *handle, ACCESS_MASK access, POBJECT_ATTRIBUTES attr, PIO_STATUS_BLOCK io,
         PLARGE_INTEGER alloc_size, ULONG attributes, ULONG sharing, ULONG disposition, ULONG options, PVOID ea_buffer,
         ULONG ea_length)
 {
     struct qemu_NtCreateFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCREATEFILE);
-    call.handle = (ULONG_PTR)handle;
     call.access = access;
     call.attr = (ULONG_PTR)attr;
     call.io = (ULONG_PTR)io;
@@ -119,6 +120,8 @@ WINBASEAPI NTSTATUS WINAPI NtCreateFile(PHANDLE handle, ACCESS_MASK access, POBJ
     call.ea_length = (ULONG_PTR)ea_length;
 
     qemu_syscall(&call.super);
+    if (handle)
+        *handle = (HANDLE)(ULONG_PTR)call.handle;
 
     return call.super.iret;
 }
@@ -128,10 +131,37 @@ WINBASEAPI NTSTATUS WINAPI NtCreateFile(PHANDLE handle, ACCESS_MASK access, POBJ
 void qemu_NtCreateFile(struct qemu_syscall *call)
 {
     struct qemu_NtCreateFile *c = (struct qemu_NtCreateFile *)call;
+    HANDLE handle;
+    IO_STATUS_BLOCK status_stack, *status = &status_stack;
+    OBJECT_ATTRIBUTES attr_stack, *attr = &attr_stack;
+    struct qemu_OBJECT_ATTRIBUTES *guest_attr;
+    struct qemu_UNICODE_STRING *guest_name;
+    UNICODE_STRING name;
     WINE_TRACE("\n");
-    c->super.iret = NtCreateFile(QEMU_G2H(c->handle), c->access, QEMU_G2H(c->attr), QEMU_G2H(c->io),
+
+#if GUEST_BIT == HOST_BIT
+    status = QEMU_G2H(c->io);
+    attr = QEMU_G2H(c->attr);
+#else
+    guest_attr = QEMU_G2H(c->attr);
+    guest_name = (struct qemu_UNICODE_STRING *)(ULONG_PTR)guest_attr->ObjectName;
+    OBJECT_ATTRIBUTES_g2h(attr, guest_attr);
+
+    if (guest_name)
+    {
+        UNICODE_STRING_g2h(&name, guest_name);
+        attr->ObjectName = &name;
+    }
+#endif
+
+    c->super.iret = NtCreateFile(&handle, c->access, attr, status,
             QEMU_G2H(c->alloc_size), c->attributes, c->sharing, c->disposition, c->options,
             QEMU_G2H(c->ea_buffer), c->ea_length);
+    c->handle = QEMU_H2G(handle);
+
+#if GUEST_BIT != HOST_BIT
+    IO_STATUS_BLOCK_h2g(QEMU_G2H(c->io), status);
+#endif
 }
 
 #endif
