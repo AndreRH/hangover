@@ -1776,7 +1776,7 @@ struct qemu_SetConsoleCtrlHandler
 /* FIXME: Read this from the TEB. */
 static PHANDLER_ROUTINE guest_handler;
 
-static uint64_t WINAPI call_ctrl_handler(uint64_t type)
+static uint64_t __fastcall call_ctrl_handler(ULONG_PTR type)
 {
     uint64_t ret = FALSE;
     if (guest_handler)
