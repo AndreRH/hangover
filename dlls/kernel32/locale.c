@@ -1313,7 +1313,7 @@ struct qemu_EnumSystemLocalesEx_cb_data
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t CALLBACK qemu_EnumSystemLocalesEx_cb(struct qemu_EnumSystemLocalesEx_cb_data *data)
+static uint64_t __fastcall qemu_EnumSystemLocalesEx_cb(struct qemu_EnumSystemLocalesEx_cb_data *data)
 {
     LOCALE_ENUMPROCEX proc = (LOCALE_ENUMPROCEX)(ULONG_PTR)data->proc;
 
@@ -2106,7 +2106,7 @@ struct qemu_EnumSystemLanguageGroups_cb_data
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t WINAPI qemu_EnumSystemLanguageGroupsA_wrapper(struct qemu_EnumSystemLanguageGroups_cb_data *data)
+static uint64_t __fastcall qemu_EnumSystemLanguageGroupsA_wrapper(struct qemu_EnumSystemLanguageGroups_cb_data *data)
 {
     LANGUAGEGROUP_ENUMPROCA proc = (LANGUAGEGROUP_ENUMPROCA)(ULONG_PTR)data->proc;
 
@@ -2171,7 +2171,7 @@ struct qemu_EnumSystemLanguageGroupsW
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t WINAPI qemu_EnumSystemLanguageGroupsW_wrapper(struct qemu_EnumSystemLanguageGroups_cb_data *data)
+static uint64_t __fastcall qemu_EnumSystemLanguageGroupsW_wrapper(struct qemu_EnumSystemLanguageGroups_cb_data *data)
 {
     LANGUAGEGROUP_ENUMPROCW proc = (LANGUAGEGROUP_ENUMPROCW)(ULONG_PTR)data->proc;
 
@@ -2279,7 +2279,7 @@ struct qemu_EnumLanguageGroupLocalesA_cb_data
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t WINAPI qemu_EnumLanguageGroupLocalesA_host_cb(struct qemu_EnumLanguageGroupLocalesA_cb_data *data)
+static uint64_t __fastcall qemu_EnumLanguageGroupLocalesA_host_cb(struct qemu_EnumLanguageGroupLocalesA_cb_data *data)
 {
     LANGGROUPLOCALE_ENUMPROCA proc = (LANGGROUPLOCALE_ENUMPROCA)(ULONG_PTR)data->proc;
 
@@ -2478,7 +2478,7 @@ struct qemu_EnumUILanguagesA_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t WINAPI qemu_EnumUILanguagesA_cb(struct qemu_EnumUILanguagesA_cb *data)
+static uint64_t __fastcall qemu_EnumUILanguagesA_cb(struct qemu_EnumUILanguagesA_cb *data)
 {
     UILANGUAGE_ENUMPROCA proc = (UILANGUAGE_ENUMPROCA)(ULONG_PTR)data->proc;
 
@@ -2646,9 +2646,22 @@ struct qemu_EnumSystemGeoID
     uint64_t geoclass;
     uint64_t parent;
     uint64_t enumproc;
+    uint64_t wrapper;
+};
+
+struct qemu_EnumSystemGeoID_cb
+{
+    uint64_t callback;
+    uint64_t id;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static BOOL __fastcall EnumSystemGeoID_guest_wrapper(struct qemu_EnumSystemGeoID_cb *data)
+{
+    GEO_ENUMPROC proc = (GEO_ENUMPROC)(ULONG_PTR)data->callback;
+    return proc(data->id);
+}
 
 WINBASEAPI BOOL WINAPI EnumSystemGeoID(GEOCLASS geoclass, GEOID parent, GEO_ENUMPROC enumproc)
 {
@@ -2657,6 +2670,7 @@ WINBASEAPI BOOL WINAPI EnumSystemGeoID(GEOCLASS geoclass, GEOID parent, GEO_ENUM
     call.geoclass = geoclass;
     call.parent = parent;
     call.enumproc = (ULONG_PTR)enumproc;
+    call.wrapper = (ULONG_PTR)EnumSystemGeoID_guest_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -2665,13 +2679,20 @@ WINBASEAPI BOOL WINAPI EnumSystemGeoID(GEOCLASS geoclass, GEOID parent, GEO_ENUM
 
 #else
 
+static uint64_t EnumSystemGeoID_guest_wrapper;
+
 static BOOL CALLBACK qemu_EnumSystemGeoID_host_cb(GEOID id)
 {
     uint64_t *guest_proc = TlsGetValue(kernel32_tls);
     BOOL ret;
+    struct qemu_EnumSystemGeoID_cb call;
 
     WINE_TRACE("Calling guest proc 0x%lx(%x).\n", (unsigned long)*guest_proc, id);
-    ret = qemu_ops->qemu_execute(QEMU_G2H(*guest_proc), id);
+    call.callback = *guest_proc;
+    call.id = id;
+
+    ret = qemu_ops->qemu_execute(QEMU_G2H(EnumSystemGeoID_guest_wrapper), QEMU_H2G(&call));
+
     WINE_TRACE("Guest proc returned %u\n", ret);
     return ret;
 };
@@ -2684,6 +2705,7 @@ void qemu_EnumSystemGeoID(struct qemu_syscall *call)
     WINE_TRACE("\n");
     old_tls = TlsGetValue(kernel32_tls);
     TlsSetValue(kernel32_tls, &c->enumproc);
+    EnumSystemGeoID_guest_wrapper = c->wrapper;
 
     c->super.iret = EnumSystemGeoID(c->geoclass, c->parent,
             c->enumproc ? qemu_EnumSystemGeoID_host_cb : NULL);
