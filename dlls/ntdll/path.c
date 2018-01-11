@@ -345,6 +345,7 @@ void qemu_RtlSetCurrentDirectory_U(struct qemu_syscall *call)
 {
     struct qemu_RtlSetCurrentDirectory_U *c = (struct qemu_RtlSetCurrentDirectory_U *)call;
     TEB *qemu_teb = qemu_ops->qemu_getTEB(), *wine_teb = NtCurrentTeb();
+    TEB32 *qemu_teb32 = qemu_ops->qemu_getTEB32();
 
     WINE_FIXME("Unverified!\n");
     c->super.iret = RtlSetCurrentDirectory_U(QEMU_G2H(c->dir));
@@ -352,6 +353,16 @@ void qemu_RtlSetCurrentDirectory_U(struct qemu_syscall *call)
     /* No need to update dosPath, it always points to the same place anyway. */
     qemu_teb->Peb->ProcessParameters->CurrentDirectory.Handle =
             wine_teb->Peb->ProcessParameters->CurrentDirectory.Handle;
+
+    if (qemu_teb32)
+    {
+        PEB32 *peb32 = (PEB32 *)(ULONG_PTR)qemu_teb32->Peb;
+        RTL_USER_PROCESS_PARAMETERS32 *pp32 = (RTL_USER_PROCESS_PARAMETERS32 *)(ULONG_PTR)peb32->ProcessParameters;
+        pp32->CurrentDirectory.Handle = (ULONG_PTR)wine_teb->Peb->ProcessParameters->CurrentDirectory.Handle;
+        memcpy((void *)(ULONG_PTR)pp32->CurrentDirectory.DosPath.Buffer,
+                wine_teb->Peb->ProcessParameters->CurrentDirectory.DosPath.Buffer,
+                pp32->CurrentDirectory.DosPath.MaximumLength);
+    }
 }
 
 #endif

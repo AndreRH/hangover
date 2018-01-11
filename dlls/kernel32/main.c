@@ -1169,6 +1169,7 @@ static BOOL WINAPI hook_SetCurrentDirectoryW(const WCHAR *dir)
     else
     {
         TEB *qemu_teb = qemu_ops->qemu_getTEB();
+        TEB32 *qemu_teb32 = qemu_ops->qemu_getTEB32();
 
         if (!teb)
             teb = NtCurrentTeb();
@@ -1176,6 +1177,15 @@ static BOOL WINAPI hook_SetCurrentDirectoryW(const WCHAR *dir)
         /* No need to update dosPath, it always points to the same place anyway. */
         qemu_teb->Peb->ProcessParameters->CurrentDirectory.Handle =
                 teb->Peb->ProcessParameters->CurrentDirectory.Handle;
+        if (qemu_teb32)
+        {
+            PEB32 *peb32 = (PEB32 *)(ULONG_PTR)qemu_teb32->Peb;
+            RTL_USER_PROCESS_PARAMETERS32 *pp32 = (RTL_USER_PROCESS_PARAMETERS32 *)(ULONG_PTR)peb32->ProcessParameters;
+            pp32->CurrentDirectory.Handle = (ULONG_PTR)teb->Peb->ProcessParameters->CurrentDirectory.Handle;
+            memcpy((void *)(ULONG_PTR)pp32->CurrentDirectory.DosPath.Buffer,
+                    teb->Peb->ProcessParameters->CurrentDirectory.DosPath.Buffer,
+                    pp32->CurrentDirectory.DosPath.MaximumLength);
+        }
     }
     return !status;
 }

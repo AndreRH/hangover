@@ -13,16 +13,16 @@ mkdir -p $DESTDIR/build/qemu
 
 # Build the Host (e.g. arm64) wine
 cd $DESTDIR/build/wine-host
-$SRCDIR/wine/configure --prefix=$DESTDIR/build/install --enable-win64
-make -j 4
+#$SRCDIR/wine/configure --prefix=$DESTDIR/build/install --enable-win64
+#make -j 4
 
 # Cross-Compile Wine for the guest platform to copy higher level DLLs from.
 cd ../wine-guest
-$SRCDIR/wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-host --without-freetype
-make -j 4
+#$SRCDIR/wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-host --without-freetype
+#make -j 4
 cd ../wine-guest32
-$SRCDIR/wine/configure --host=i686-w64-mingw32 --with-wine-tools=../wine-host --without-freetype
-make -j 4
+#$SRCDIR/wine/configure --host=i686-w64-mingw32 --with-wine-tools=../wine-host --without-freetype
+#make -j 4
 
 # Build qemu
 cd $DESTDIR/build/qemu
