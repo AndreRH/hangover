@@ -236,7 +236,7 @@ void qemu_RegCreateKeyA(struct qemu_syscall *call)
     HKEY retkey;
     WINE_TRACE("\n");
 
-    c->super.iret = RegCreateKeyA(QEMU_G2H(c->hkey), QEMU_G2H(c->lpSubKey), QEMU_G2H(c->phkResult));
+    c->super.iret = RegCreateKeyA(QEMU_G2H(c->hkey), QEMU_G2H(c->lpSubKey), &retkey);
     c->phkResult = (ULONG_PTR)retkey;
 }
 
@@ -329,12 +329,13 @@ WINBASEAPI LSTATUS WINAPI RegCreateKeyTransactedA(HKEY hkey, LPCSTR name, DWORD 
     call.options = (ULONG_PTR)options;
     call.access = (ULONG_PTR)access;
     call.sa = (ULONG_PTR)sa;
-    call.retkey = (ULONG_PTR)retkey;
     call.dispos = (ULONG_PTR)dispos;
     call.transaction = (ULONG_PTR)transaction;
     call.reserved2 = (ULONG_PTR)reserved2;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == ERROR_SUCCESS)
+        *retkey = (HKEY)(ULONG_PTR)call.retkey;
 
     return call.super.iret;
 }
@@ -346,8 +347,13 @@ extern LSTATUS WINAPI RegCreateKeyTransactedA(HKEY hkey, LPCSTR name, DWORD rese
 void qemu_RegCreateKeyTransactedA(struct qemu_syscall *call)
 {
     struct qemu_RegCreateKeyTransactedA *c = (struct qemu_RegCreateKeyTransactedA *)call;
+    HKEY retkey;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = RegCreateKeyTransactedA(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->reserved, QEMU_G2H(c->class), c->options, c->access, QEMU_G2H(c->sa), QEMU_G2H(c->retkey), QEMU_G2H(c->dispos), QEMU_G2H(c->transaction), QEMU_G2H(c->reserved2));
+
+    c->super.iret = RegCreateKeyTransactedA(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->reserved, QEMU_G2H(c->class),
+            c->options, c->access, QEMU_G2H(c->sa), &retkey, QEMU_G2H(c->dispos), QEMU_G2H(c->transaction),
+            QEMU_G2H(c->reserved2));
+    c->retkey = QEMU_H2G(retkey);
 }
 
 #endif
@@ -2282,9 +2288,9 @@ WINBASEAPI LSTATUS WINAPI RegConnectRegistryW(LPCWSTR lpMachineName, HKEY hKey, 
     call.super.id = QEMU_SYSCALL_ID(CALL_REGCONNECTREGISTRYW);
     call.lpMachineName = (ULONG_PTR)lpMachineName;
     call.hKey = (ULONG_PTR)hKey;
-    call.phkResult = (ULONG_PTR)phkResult;
 
     qemu_syscall(&call.super);
+    *phkResult = (HKEY)(ULONG_PTR)call.phkResult;
 
     return call.super.iret;
 }
@@ -2294,8 +2300,10 @@ WINBASEAPI LSTATUS WINAPI RegConnectRegistryW(LPCWSTR lpMachineName, HKEY hKey, 
 void qemu_RegConnectRegistryW(struct qemu_syscall *call)
 {
     struct qemu_RegConnectRegistryW *c = (struct qemu_RegConnectRegistryW *)call;
+    HKEY retkey;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = RegConnectRegistryW(QEMU_G2H(c->lpMachineName), QEMU_G2H(c->hKey), QEMU_G2H(c->phkResult));
+    c->super.iret = RegConnectRegistryW(QEMU_G2H(c->lpMachineName), QEMU_G2H(c->hKey), &retkey);
+    c->phkResult = QEMU_H2G(retkey);
 }
 
 #endif
@@ -2316,9 +2324,9 @@ WINBASEAPI LSTATUS WINAPI RegConnectRegistryA(LPCSTR machine, HKEY hkey, PHKEY r
     call.super.id = QEMU_SYSCALL_ID(CALL_REGCONNECTREGISTRYA);
     call.machine = (ULONG_PTR)machine;
     call.hkey = (LONG_PTR)hkey;
-    call.reskey = (ULONG_PTR)reskey;
 
     qemu_syscall(&call.super);
+    *reskey = (HKEY)(ULONG_PTR)call.reskey;
 
     return call.super.iret;
 }
@@ -2328,8 +2336,10 @@ WINBASEAPI LSTATUS WINAPI RegConnectRegistryA(LPCSTR machine, HKEY hkey, PHKEY r
 void qemu_RegConnectRegistryA(struct qemu_syscall *call)
 {
     struct qemu_RegConnectRegistryA *c = (struct qemu_RegConnectRegistryA *)call;
+    HKEY reskey;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = RegConnectRegistryA(QEMU_G2H(c->machine), QEMU_G2H(c->hkey), QEMU_G2H(c->reskey));
+    c->super.iret = RegConnectRegistryA(QEMU_G2H(c->machine), QEMU_G2H(c->hkey), &reskey);
+    c->reskey = QEMU_H2G(reskey);
 }
 
 #endif
@@ -2390,9 +2400,9 @@ WINBASEAPI LSTATUS WINAPI RegOpenUserClassesRoot(HANDLE hToken, DWORD dwOptions,
     call.hToken = (ULONG_PTR)hToken;
     call.dwOptions = (ULONG_PTR)dwOptions;
     call.samDesired = (ULONG_PTR)samDesired;
-    call.phkResult = (ULONG_PTR)phkResult;
 
     qemu_syscall(&call.super);
+    *phkResult = (HKEY)(ULONG_PTR)call.phkResult;
 
     return call.super.iret;
 }
@@ -2402,8 +2412,10 @@ WINBASEAPI LSTATUS WINAPI RegOpenUserClassesRoot(HANDLE hToken, DWORD dwOptions,
 void qemu_RegOpenUserClassesRoot(struct qemu_syscall *call)
 {
     struct qemu_RegOpenUserClassesRoot *c = (struct qemu_RegOpenUserClassesRoot *)call;
+    HKEY retkey;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = RegOpenUserClassesRoot(QEMU_G2H(c->hToken), c->dwOptions, c->samDesired, QEMU_G2H(c->phkResult));
+    c->super.iret = RegOpenUserClassesRoot(QEMU_G2H(c->hToken), c->dwOptions, c->samDesired, &retkey);
+    c->phkResult = QEMU_H2G(retkey);
 }
 
 #endif
