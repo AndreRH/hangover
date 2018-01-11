@@ -77,7 +77,7 @@ WINBASEAPI BOOL WINAPI HeapDestroy(HANDLE heap)
 {
     struct qemu_HeapDestroy call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAPDESTROY);
-    call.heap = (LONG_PTR)heap;
+    call.heap = (ULONG_PTR)heap;
 
     qemu_syscall(&call.super);
 
@@ -108,7 +108,7 @@ WINBASEAPI SIZE_T WINAPI HeapCompact(HANDLE heap, DWORD flags)
 {
     struct qemu_HeapCompact call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAPCOMPACT);
-    call.heap = (LONG_PTR)heap;
+    call.heap = (ULONG_PTR)heap;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -141,7 +141,7 @@ WINBASEAPI BOOL WINAPI HeapValidate(HANDLE heap, DWORD flags, LPCVOID block)
 {
     struct qemu_HeapValidate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAPVALIDATE);
-    call.heap = (LONG_PTR)heap;
+    call.heap = (ULONG_PTR)heap;
     call.flags = flags;
     call.block = (ULONG_PTR)block;
 
@@ -174,7 +174,7 @@ WINBASEAPI BOOL WINAPI HeapWalk(HANDLE heap, LPPROCESS_HEAP_ENTRY entry)
 {
     struct qemu_HeapWalk call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAPWALK);
-    call.heap = (LONG_PTR)heap;
+    call.heap = (ULONG_PTR)heap;
     call.entry = (ULONG_PTR)entry;
 
     qemu_syscall(&call.super);
@@ -205,7 +205,7 @@ WINBASEAPI BOOL WINAPI HeapLock(HANDLE heap)
 {
     struct qemu_HeapLock call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAPLOCK);
-    call.heap = (LONG_PTR)heap;
+    call.heap = (ULONG_PTR)heap;
 
     qemu_syscall(&call.super);
 
@@ -235,7 +235,7 @@ WINBASEAPI BOOL WINAPI HeapUnlock(HANDLE heap)
 {
     struct qemu_HeapUnlock call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAPUNLOCK);
-    call.heap = (LONG_PTR)heap;
+    call.heap = (ULONG_PTR)heap;
 
     qemu_syscall(&call.super);
 
@@ -299,7 +299,7 @@ WINBASEAPI LPVOID WINAPI HeapAlloc(HANDLE heap, DWORD flags, SIZE_T size)
 {
     struct qemu_HeapAlloc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAPALLOC);
-    call.heap = (LONG_PTR)heap;
+    call.heap = (ULONG_PTR)heap;
     call.flags = flags;
     call.size = size;
 
@@ -333,7 +333,7 @@ WINBASEAPI BOOL WINAPI HeapFree(HANDLE heap, DWORD flags, LPVOID ptr)
 {
     struct qemu_HeapFree call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAPFREE);
-    call.heap = (LONG_PTR)heap;
+    call.heap = (ULONG_PTR)heap;
     call.flags = flags;
     call.ptr = (ULONG_PTR)ptr;
 
@@ -368,7 +368,7 @@ WINBASEAPI LPVOID WINAPI HeapReAlloc(HANDLE heap, DWORD flags, LPVOID ptr, SIZE_
 {
     struct qemu_HeapReAlloc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAPREALLOC);
-    call.heap = (LONG_PTR)heap;
+    call.heap = (ULONG_PTR)heap;
     call.flags = flags;
     call.ptr = (ULONG_PTR)ptr;
     call.size = size;
@@ -403,7 +403,7 @@ WINBASEAPI SIZE_T WINAPI HeapSize(HANDLE heap, DWORD flags, LPCVOID ptr)
 {
     struct qemu_HeapSize call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAPSIZE);
-    call.heap = (LONG_PTR)heap;
+    call.heap = (ULONG_PTR)heap;
     call.flags = flags;
     call.ptr = (ULONG_PTR)ptr;
 
@@ -439,7 +439,7 @@ WINBASEAPI BOOL WINAPI HeapQueryInformation(HANDLE heap, HEAP_INFORMATION_CLASS 
 {
     struct qemu_HeapQueryInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAPQUERYINFORMATION);
-    call.heap = (LONG_PTR)heap;
+    call.heap = (ULONG_PTR)heap;
     call.info_class = info_class;
     call.info = (ULONG_PTR)info;
     call.size_in = size_in;
@@ -476,7 +476,7 @@ WINBASEAPI BOOL WINAPI HeapSetInformation(HANDLE heap, HEAP_INFORMATION_CLASS in
 {
     struct qemu_HeapSetInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_HEAPSETINFORMATION);
-    call.heap = (LONG_PTR)heap;
+    call.heap = (ULONG_PTR)heap;
     call.infoclass = infoclass;
     call.info = (ULONG_PTR)info;
     call.size = size;
@@ -1373,7 +1373,7 @@ WINBASEAPI BOOL WINAPI AllocateUserPhysicalPages(HANDLE process, ULONG_PTR *page
 {
     struct qemu_AllocateUserPhysicalPages call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ALLOCATEUSERPHYSICALPAGES);
-    call.process = (LONG_PTR)process;
+    call.process = (ULONG_PTR)process;
     call.pages = (ULONG_PTR)pages;
     call.userarray = (ULONG_PTR)userarray;
 
@@ -1409,7 +1409,7 @@ WINBASEAPI BOOL WINAPI FreeUserPhysicalPages(HANDLE process, ULONG_PTR *pages, U
 {
     struct qemu_FreeUserPhysicalPages call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FREEUSERPHYSICALPAGES);
-    call.process = (LONG_PTR)process;
+    call.process = (ULONG_PTR)process;
     call.pages = (ULONG_PTR)pages;
     call.userarray = (ULONG_PTR)userarray;
 

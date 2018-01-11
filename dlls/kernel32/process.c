@@ -303,7 +303,7 @@ WINBASEAPI WINBOOL WINAPI TerminateProcess(HANDLE handle, UINT exit_code)
 {
     struct qemu_TerminateProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TERMINATEPROCESS);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
     call.exit_code = exit_code;
 
     qemu_syscall(&call.super);
@@ -365,7 +365,7 @@ WINBASEAPI BOOL WINAPI GetExitCodeProcess(HANDLE hProcess, LPDWORD lpExitCode)
 {
     struct qemu_GetExitCodeProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETEXITCODEPROCESS);
-    call.hProcess = (LONG_PTR)hProcess;
+    call.hProcess = (ULONG_PTR)hProcess;
     call.lpExitCode = (ULONG_PTR)lpExitCode;
 
     qemu_syscall(&call.super);
@@ -643,7 +643,7 @@ WINBASEAPI DWORD WINAPI GetProcessId(HANDLE hProcess)
 {
     struct qemu_GetProcessId call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCESSID);
-    call.hProcess = (LONG_PTR)hProcess;
+    call.hProcess = (ULONG_PTR)hProcess;
 
     qemu_syscall(&call.super);
 
@@ -673,7 +673,7 @@ WINBASEAPI BOOL WINAPI CloseHandle(HANDLE handle)
 {
     struct qemu_CloseHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CLOSEHANDLE);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -704,7 +704,7 @@ WINBASEAPI BOOL WINAPI GetHandleInformation(HANDLE handle, LPDWORD flags)
 {
     struct qemu_GetHandleInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETHANDLEINFORMATION);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
     call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
@@ -737,7 +737,7 @@ WINBASEAPI BOOL WINAPI SetHandleInformation(HANDLE handle, DWORD mask, DWORD fla
 {
     struct qemu_SetHandleInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETHANDLEINFORMATION);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
     call.mask = (ULONG_PTR)mask;
     call.flags = (ULONG_PTR)flags;
 
@@ -817,7 +817,7 @@ WINBASEAPI HANDLE WINAPI ConvertToGlobalHandle(HANDLE hSrc)
 {
     struct qemu_ConvertToGlobalHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTTOGLOBALHANDLE);
-    call.hSrc = (LONG_PTR)hSrc;
+    call.hSrc = (ULONG_PTR)hSrc;
 
     qemu_syscall(&call.super);
 
@@ -848,7 +848,7 @@ WINBASEAPI BOOL WINAPI SetHandleContext(HANDLE hnd,DWORD context)
 {
     struct qemu_SetHandleContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETHANDLECONTEXT);
-    call.hnd = (LONG_PTR)hnd;
+    call.hnd = (ULONG_PTR)hnd;
     call.context = (ULONG_PTR)context;
 
     qemu_syscall(&call.super);
@@ -881,7 +881,7 @@ WINBASEAPI DWORD WINAPI GetHandleContext(HANDLE hnd)
 {
     struct qemu_GetHandleContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETHANDLECONTEXT);
-    call.hnd = (LONG_PTR)hnd;
+    call.hnd = (ULONG_PTR)hnd;
 
     qemu_syscall(&call.super);
 
@@ -944,7 +944,7 @@ WINBASEAPI BOOL WINAPI SetPriorityClass(HANDLE hprocess, DWORD priorityclass)
 {
     struct qemu_SetPriorityClass call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPRIORITYCLASS);
-    call.hprocess = (LONG_PTR)hprocess;
+    call.hprocess = (ULONG_PTR)hprocess;
     call.priorityclass = (ULONG_PTR)priorityclass;
 
     qemu_syscall(&call.super);
@@ -975,7 +975,7 @@ WINBASEAPI DWORD WINAPI GetPriorityClass(HANDLE hProcess)
 {
     struct qemu_GetPriorityClass call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRIORITYCLASS);
-    call.hProcess = (LONG_PTR)hProcess;
+    call.hProcess = (ULONG_PTR)hProcess;
 
     qemu_syscall(&call.super);
 
@@ -1006,7 +1006,7 @@ WINBASEAPI BOOL WINAPI SetProcessAffinityMask(HANDLE hProcess, DWORD_PTR affmask
 {
     struct qemu_SetProcessAffinityMask call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPROCESSAFFINITYMASK);
-    call.hProcess = (LONG_PTR)hProcess;
+    call.hProcess = (ULONG_PTR)hProcess;
     call.affmask = (ULONG_PTR)affmask;
 
     qemu_syscall(&call.super);
@@ -1039,7 +1039,7 @@ WINBASEAPI BOOL WINAPI GetProcessAffinityMask(HANDLE hProcess, PDWORD_PTR proces
 {
     struct qemu_GetProcessAffinityMask call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCESSAFFINITYMASK);
-    call.hProcess = (LONG_PTR)hProcess;
+    call.hProcess = (ULONG_PTR)hProcess;
     call.process_mask = (ULONG_PTR)process_mask;
     call.system_mask = (ULONG_PTR)system_mask;
 
@@ -1103,7 +1103,7 @@ WINBASEAPI BOOL WINAPI SetProcessWorkingSetSize(HANDLE hProcess, SIZE_T minset, 
 {
     struct qemu_SetProcessWorkingSetSize call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPROCESSWORKINGSETSIZE);
-    call.hProcess = (LONG_PTR)hProcess;
+    call.hProcess = (ULONG_PTR)hProcess;
     call.minset = (ULONG_PTR)minset;
     call.maxset = (ULONG_PTR)maxset;
 
@@ -1135,7 +1135,7 @@ WINBASEAPI BOOL WINAPI K32EmptyWorkingSet(HANDLE hProcess)
 {
     struct qemu_K32EmptyWorkingSet call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32EMPTYWORKINGSET);
-    call.hProcess = (LONG_PTR)hProcess;
+    call.hProcess = (ULONG_PTR)hProcess;
 
     qemu_syscall(&call.super);
 
@@ -1167,7 +1167,7 @@ WINBASEAPI BOOL WINAPI GetProcessWorkingSetSize(HANDLE hProcess, PSIZE_T minset,
 {
     struct qemu_GetProcessWorkingSetSize call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCESSWORKINGSETSIZE);
-    call.hProcess = (LONG_PTR)hProcess;
+    call.hProcess = (ULONG_PTR)hProcess;
     call.minset = (ULONG_PTR)minset;
     call.maxset = (ULONG_PTR)maxset;
 
@@ -1264,7 +1264,7 @@ WINBASEAPI BOOL WINAPI GetProcessPriorityBoost(HANDLE hprocess,PBOOL pDisablePri
 {
     struct qemu_GetProcessPriorityBoost call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCESSPRIORITYBOOST);
-    call.hprocess = (LONG_PTR)hprocess;
+    call.hprocess = (ULONG_PTR)hprocess;
     call.pDisablePriorityBoost = (ULONG_PTR)pDisablePriorityBoost;
 
     qemu_syscall(&call.super);
@@ -1296,7 +1296,7 @@ WINBASEAPI BOOL WINAPI SetProcessPriorityBoost(HANDLE hprocess,BOOL disableboost
 {
     struct qemu_SetProcessPriorityBoost call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPROCESSPRIORITYBOOST);
-    call.hprocess = (LONG_PTR)hprocess;
+    call.hprocess = (ULONG_PTR)hprocess;
     call.disableboost = (ULONG_PTR)disableboost;
 
     qemu_syscall(&call.super);
@@ -1331,7 +1331,7 @@ WINBASEAPI BOOL WINAPI ReadProcessMemory(HANDLE process, LPCVOID addr, LPVOID bu
 {
     struct qemu_ReadProcessMemory call;
     call.super.id = QEMU_SYSCALL_ID(CALL_READPROCESSMEMORY);
-    call.process = (LONG_PTR)process;
+    call.process = (ULONG_PTR)process;
     call.addr = (ULONG_PTR)addr;
     call.buffer = (ULONG_PTR)buffer;
     call.size = (ULONG_PTR)size;
@@ -1369,7 +1369,7 @@ WINBASEAPI BOOL WINAPI WriteProcessMemory(HANDLE process, LPVOID addr, LPCVOID b
 {
     struct qemu_WriteProcessMemory call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WRITEPROCESSMEMORY);
-    call.process = (LONG_PTR)process;
+    call.process = (ULONG_PTR)process;
     call.addr = (ULONG_PTR)addr;
     call.buffer = (ULONG_PTR)buffer;
     call.size = (ULONG_PTR)size;
@@ -1405,7 +1405,7 @@ WINBASEAPI BOOL WINAPI FlushInstructionCache(HANDLE hProcess, LPCVOID lpBaseAddr
 {
     struct qemu_FlushInstructionCache call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FLUSHINSTRUCTIONCACHE);
-    call.hProcess = (LONG_PTR)hProcess;
+    call.hProcess = (ULONG_PTR)hProcess;
     call.lpBaseAddress = (ULONG_PTR)lpBaseAddress;
     call.dwSize = (ULONG_PTR)dwSize;
 
@@ -1438,7 +1438,7 @@ WINBASEAPI BOOL WINAPI GetProcessIoCounters(HANDLE hProcess, PIO_COUNTERS ioc)
 {
     struct qemu_GetProcessIoCounters call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCESSIOCOUNTERS);
-    call.hProcess = (LONG_PTR)hProcess;
+    call.hProcess = (ULONG_PTR)hProcess;
     call.ioc = (ULONG_PTR)ioc;
 
     qemu_syscall(&call.super);
@@ -1470,7 +1470,7 @@ WINBASEAPI BOOL WINAPI GetProcessHandleCount(HANDLE hProcess, DWORD *cnt)
 {
     struct qemu_GetProcessHandleCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCESSHANDLECOUNT);
-    call.hProcess = (LONG_PTR)hProcess;
+    call.hProcess = (ULONG_PTR)hProcess;
     call.cnt = (ULONG_PTR)cnt;
 
     qemu_syscall(&call.super);
@@ -1506,7 +1506,7 @@ WINBASEAPI BOOL WINAPI QueryFullProcessImageNameA(HANDLE hProcess, DWORD dwFlags
 {
     struct qemu_QueryFullProcessImageNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYFULLPROCESSIMAGENAMEA);
-    call.hProcess = (LONG_PTR)hProcess;
+    call.hProcess = (ULONG_PTR)hProcess;
     call.dwFlags = (ULONG_PTR)dwFlags;
     call.lpExeName = (ULONG_PTR)lpExeName;
     call.pdwSize = (ULONG_PTR)pdwSize;
@@ -1542,7 +1542,7 @@ WINBASEAPI BOOL WINAPI QueryFullProcessImageNameW(HANDLE hProcess, DWORD dwFlags
 {
     struct qemu_QueryFullProcessImageNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYFULLPROCESSIMAGENAMEW);
-    call.hProcess = (LONG_PTR)hProcess;
+    call.hProcess = (ULONG_PTR)hProcess;
     call.dwFlags = (ULONG_PTR)dwFlags;
     call.lpExeName = (ULONG_PTR)lpExeName;
     call.pdwSize = (ULONG_PTR)pdwSize;
@@ -1577,7 +1577,7 @@ WINBASEAPI DWORD WINAPI K32GetProcessImageFileNameA(HANDLE process, LPSTR file, 
 {
     struct qemu_K32GetProcessImageFileNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32GETPROCESSIMAGEFILENAMEA);
-    call.process = (LONG_PTR)process;
+    call.process = (ULONG_PTR)process;
     call.file = (ULONG_PTR)file;
     call.size = (ULONG_PTR)size;
 
@@ -1611,7 +1611,7 @@ WINBASEAPI DWORD WINAPI K32GetProcessImageFileNameW(HANDLE process, LPWSTR file,
 {
     struct qemu_K32GetProcessImageFileNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32GETPROCESSIMAGEFILENAMEW);
-    call.process = (LONG_PTR)process;
+    call.process = (ULONG_PTR)process;
     call.file = (ULONG_PTR)file;
     call.size = (ULONG_PTR)size;
 
@@ -1679,7 +1679,7 @@ WINBASEAPI BOOL WINAPI K32QueryWorkingSet(HANDLE process, LPVOID buffer, DWORD s
 {
     struct qemu_K32QueryWorkingSet call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32QUERYWORKINGSET);
-    call.process = (LONG_PTR)process;
+    call.process = (ULONG_PTR)process;
     call.buffer = (ULONG_PTR)buffer;
     call.size = (ULONG_PTR)size;
 
@@ -1713,7 +1713,7 @@ WINBASEAPI BOOL WINAPI K32QueryWorkingSetEx(HANDLE process, LPVOID buffer, DWORD
 {
     struct qemu_K32QueryWorkingSetEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32QUERYWORKINGSETEX);
-    call.process = (LONG_PTR)process;
+    call.process = (ULONG_PTR)process;
     call.buffer = (ULONG_PTR)buffer;
     call.size = (ULONG_PTR)size;
 
@@ -1747,7 +1747,7 @@ WINBASEAPI BOOL WINAPI K32GetProcessMemoryInfo(HANDLE process, PPROCESS_MEMORY_C
 {
     struct qemu_K32GetProcessMemoryInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32GETPROCESSMEMORYINFO);
-    call.process = (LONG_PTR)process;
+    call.process = (ULONG_PTR)process;
     call.pmc = (ULONG_PTR)pmc;
     call.cb = (ULONG_PTR)cb;
 
@@ -1846,7 +1846,7 @@ WINBASEAPI BOOL WINAPI IsWow64Process(HANDLE hProcess, PBOOL Wow64Process)
 {
     struct qemu_IsWow64Process call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISWOW64PROCESS);
-    call.hProcess = (LONG_PTR)hProcess;
+    call.hProcess = (ULONG_PTR)hProcess;
     call.Wow64Process = (ULONG_PTR)Wow64Process;
 
     qemu_syscall(&call.super);
@@ -2361,7 +2361,7 @@ WINBASEAPI BOOL WINAPI GetProcessDEPPolicy(HANDLE process, LPDWORD flags, PBOOL 
 {
     struct qemu_GetProcessDEPPolicy call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCESSDEPPOLICY);
-    call.process = (LONG_PTR)process;
+    call.process = (ULONG_PTR)process;
     call.flags = (ULONG_PTR)flags;
     call.permanent = (ULONG_PTR)permanent;
 
@@ -2624,7 +2624,7 @@ WINBASEAPI BOOL WINAPI GetProcessWorkingSetSizeEx(HANDLE process, SIZE_T *minset
 {
     struct qemu_GetProcessWorkingSetSizeEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCESSWORKINGSETSIZEEX);
-    call.process = (LONG_PTR)process;
+    call.process = (ULONG_PTR)process;
     call.minset = (ULONG_PTR)minset;
     call.maxset = (ULONG_PTR)maxset;
     call.flags = (ULONG_PTR)flags;

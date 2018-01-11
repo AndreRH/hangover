@@ -146,7 +146,7 @@ WINBASEAPI DWORD WINAPI WaitForSingleObject(HANDLE handle, DWORD timeout)
 {
     struct qemu_WaitForSingleObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WAITFORSINGLEOBJECT);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
     call.timeout = timeout;
 
     qemu_syscall(&call.super);
@@ -179,7 +179,7 @@ WINBASEAPI DWORD WINAPI WaitForSingleObjectEx(HANDLE handle, DWORD timeout, BOOL
 {
     struct qemu_WaitForSingleObjectEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WAITFORSINGLEOBJECTEX);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
     call.timeout = timeout;
     call.alertable = alertable;
 
@@ -324,7 +324,7 @@ WINBASEAPI BOOL WINAPI RegisterWaitForSingleObject(PHANDLE phNewWaitObject, HAND
     struct qemu_RegisterWaitForSingleObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERWAITFORSINGLEOBJECT);
     call.phNewWaitObject = (ULONG_PTR)phNewWaitObject;
-    call.hObject = (LONG_PTR)hObject;
+    call.hObject = (ULONG_PTR)hObject;
     call.Callback = (ULONG_PTR)Callback;
     call.Context = (ULONG_PTR)Context;
     call.dwMilliseconds = dwMilliseconds;
@@ -402,7 +402,7 @@ WINBASEAPI HANDLE WINAPI RegisterWaitForSingleObjectEx(HANDLE hObject, WAITORTIM
 {
     struct qemu_RegisterWaitForSingleObjectEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERWAITFORSINGLEOBJECTEX);
-    call.hObject = (LONG_PTR)hObject;
+    call.hObject = (ULONG_PTR)hObject;
     call.Callback = (ULONG_PTR)Callback;
     call.Context = (ULONG_PTR)Context;
     call.dwMilliseconds = (ULONG_PTR)dwMilliseconds;
@@ -436,7 +436,7 @@ WINBASEAPI BOOL WINAPI UnregisterWait(HANDLE WaitHandle)
 {
     struct qemu_UnregisterWait call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNREGISTERWAIT);
-    call.WaitHandle = (LONG_PTR)WaitHandle;
+    call.WaitHandle = (ULONG_PTR)WaitHandle;
 
     qemu_syscall(&call.super);
 
@@ -472,8 +472,8 @@ WINBASEAPI BOOL WINAPI UnregisterWaitEx(HANDLE WaitHandle, HANDLE CompletionEven
 {
     struct qemu_UnregisterWaitEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_UNREGISTERWAITEX);
-    call.WaitHandle = (LONG_PTR)WaitHandle;
-    call.CompletionEvent = (LONG_PTR)CompletionEvent;
+    call.WaitHandle = (ULONG_PTR)WaitHandle;
+    call.CompletionEvent = (ULONG_PTR)CompletionEvent;
 
     qemu_syscall(&call.super);
 
@@ -506,8 +506,8 @@ WINBASEAPI DWORD WINAPI SignalObjectAndWait(HANDLE hObjectToSignal, HANDLE hObje
 {
     struct qemu_SignalObjectAndWait call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SIGNALOBJECTANDWAIT);
-    call.hObjectToSignal = (LONG_PTR)hObjectToSignal;
-    call.hObjectToWaitOn = (LONG_PTR)hObjectToWaitOn;
+    call.hObjectToSignal = (ULONG_PTR)hObjectToSignal;
+    call.hObjectToWaitOn = (ULONG_PTR)hObjectToWaitOn;
     call.dwMilliseconds = (ULONG_PTR)dwMilliseconds;
     call.bAlertable = (ULONG_PTR)bAlertable;
 
@@ -829,7 +829,7 @@ WINBASEAPI BOOL WINAPI PulseEvent(HANDLE handle)
 {
     struct qemu_PulseEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PULSEEVENT);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -859,7 +859,7 @@ WINBASEAPI BOOL WINAPI SetEvent(HANDLE handle)
 {
     struct qemu_SetEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETEVENT);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -889,7 +889,7 @@ WINBASEAPI BOOL WINAPI ResetEvent(HANDLE handle)
 {
     struct qemu_ResetEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RESETEVENT);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -1127,7 +1127,7 @@ WINBASEAPI BOOL WINAPI ReleaseMutex(HANDLE handle)
 {
     struct qemu_ReleaseMutex call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RELEASEMUTEX);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -1379,7 +1379,7 @@ WINBASEAPI BOOL WINAPI ReleaseSemaphore(HANDLE handle, LONG count, LONG *previou
 {
     struct qemu_ReleaseSemaphore call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RELEASESEMAPHORE);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
     call.count = count;
     call.previous = (ULONG_PTR)previous;
 
@@ -1544,7 +1544,7 @@ WINBASEAPI BOOL WINAPI TerminateJobObject(HANDLE job, UINT exit_code)
 {
     struct qemu_TerminateJobObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TERMINATEJOBOBJECT);
-    call.job = (LONG_PTR)job;
+    call.job = (ULONG_PTR)job;
     call.exit_code = (ULONG_PTR)exit_code;
 
     qemu_syscall(&call.super);
@@ -1579,7 +1579,7 @@ WINBASEAPI BOOL WINAPI QueryInformationJobObject(HANDLE job, JOBOBJECTINFOCLASS 
 {
     struct qemu_QueryInformationJobObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYINFORMATIONJOBOBJECT);
-    call.job = (LONG_PTR)job;
+    call.job = (ULONG_PTR)job;
     call.class = (ULONG_PTR)class;
     call.info = (ULONG_PTR)info;
     call.len = (ULONG_PTR)len;
@@ -1616,7 +1616,7 @@ WINBASEAPI BOOL WINAPI SetInformationJobObject(HANDLE job, JOBOBJECTINFOCLASS cl
 {
     struct qemu_SetInformationJobObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETINFORMATIONJOBOBJECT);
-    call.job = (LONG_PTR)job;
+    call.job = (ULONG_PTR)job;
     call.class = (ULONG_PTR)class;
     call.info = (ULONG_PTR)info;
     call.len = (ULONG_PTR)len;
@@ -1650,8 +1650,8 @@ WINBASEAPI BOOL WINAPI AssignProcessToJobObject(HANDLE job, HANDLE process)
 {
     struct qemu_AssignProcessToJobObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ASSIGNPROCESSTOJOBOBJECT);
-    call.job = (LONG_PTR)job;
-    call.process = (LONG_PTR)process;
+    call.job = (ULONG_PTR)job;
+    call.process = (ULONG_PTR)process;
 
     qemu_syscall(&call.super);
 
@@ -1683,8 +1683,8 @@ WINBASEAPI BOOL WINAPI IsProcessInJob(HANDLE process, HANDLE job, PBOOL result)
 {
     struct qemu_IsProcessInJob call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISPROCESSINJOB);
-    call.process = (LONG_PTR)process;
-    call.job = (LONG_PTR)job;
+    call.process = (ULONG_PTR)process;
+    call.job = (ULONG_PTR)job;
     call.result = (ULONG_PTR)result;
 
     qemu_syscall(&call.super);
@@ -1928,7 +1928,7 @@ WINBASEAPI BOOL WINAPI SetWaitableTimer(HANDLE handle, const LARGE_INTEGER *when
 {
     struct qemu_SetWaitableTimer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWAITABLETIMER);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
     call.when = (ULONG_PTR)when;
     call.period = period;
     call.callback = (ULONG_PTR)callback;
@@ -1971,7 +1971,7 @@ WINBASEAPI BOOL WINAPI SetWaitableTimerEx(HANDLE handle, const LARGE_INTEGER *wh
 {
     struct qemu_SetWaitableTimerEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETWAITABLETIMEREX);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
     call.when = (ULONG_PTR)when;
     call.period = (ULONG_PTR)period;
     call.callback = (ULONG_PTR)callback;
@@ -2007,7 +2007,7 @@ WINBASEAPI BOOL WINAPI CancelWaitableTimer(HANDLE handle)
 {
     struct qemu_CancelWaitableTimer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CANCELWAITABLETIMER);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -2066,8 +2066,8 @@ WINBASEAPI BOOL WINAPI DeleteTimerQueueEx(HANDLE TimerQueue, HANDLE CompletionEv
 {
     struct qemu_DeleteTimerQueueEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETETIMERQUEUEEX);
-    call.TimerQueue = (LONG_PTR)TimerQueue;
-    call.CompletionEvent = (LONG_PTR)CompletionEvent;
+    call.TimerQueue = (ULONG_PTR)TimerQueue;
+    call.CompletionEvent = (ULONG_PTR)CompletionEvent;
 
     qemu_syscall(&call.super);
 
@@ -2097,7 +2097,7 @@ WINBASEAPI BOOL WINAPI DeleteTimerQueue(HANDLE TimerQueue)
 {
     struct qemu_DeleteTimerQueue call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETETIMERQUEUE);
-    call.TimerQueue = (LONG_PTR)TimerQueue;
+    call.TimerQueue = (ULONG_PTR)TimerQueue;
 
     qemu_syscall(&call.super);
 
@@ -2147,7 +2147,7 @@ WINBASEAPI BOOL WINAPI CreateTimerQueueTimer(PHANDLE phNewTimer, HANDLE TimerQue
 {
     struct qemu_CreateTimerQueueTimer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATETIMERQUEUETIMER);
-    call.TimerQueue = (LONG_PTR)TimerQueue;
+    call.TimerQueue = (ULONG_PTR)TimerQueue;
     call.Callback = (ULONG_PTR)Callback;
     call.Parameter = (ULONG_PTR)Parameter;
     call.DueTime = (ULONG_PTR)DueTime;
@@ -2228,8 +2228,8 @@ WINBASEAPI BOOL WINAPI ChangeTimerQueueTimer(HANDLE TimerQueue, HANDLE Timer, UL
 {
     struct qemu_ChangeTimerQueueTimer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHANGETIMERQUEUETIMER);
-    call.TimerQueue = (LONG_PTR)TimerQueue;
-    call.Timer = (LONG_PTR)Timer;
+    call.TimerQueue = (ULONG_PTR)TimerQueue;
+    call.Timer = (ULONG_PTR)Timer;
     call.DueTime = (ULONG_PTR)DueTime;
     call.Period = (ULONG_PTR)Period;
 
@@ -2265,8 +2265,8 @@ WINBASEAPI BOOL WINAPI CancelTimerQueueTimer(HANDLE queue, HANDLE timer)
 {
     struct qemu_CancelTimerQueueTimer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CANCELTIMERQUEUETIMER);
-    call.queue = (LONG_PTR)queue;
-    call.timer = (LONG_PTR)timer;
+    call.queue = (ULONG_PTR)queue;
+    call.timer = (ULONG_PTR)timer;
 
     qemu_syscall(&call.super);
 
@@ -2301,9 +2301,9 @@ WINBASEAPI BOOL WINAPI DeleteTimerQueueTimer(HANDLE TimerQueue, HANDLE Timer, HA
 {
     struct qemu_DeleteTimerQueueTimer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DELETETIMERQUEUETIMER);
-    call.TimerQueue = (LONG_PTR)TimerQueue;
-    call.Timer = (LONG_PTR)Timer;
-    call.CompletionEvent = (LONG_PTR)CompletionEvent;
+    call.TimerQueue = (ULONG_PTR)TimerQueue;
+    call.Timer = (ULONG_PTR)Timer;
+    call.CompletionEvent = (ULONG_PTR)CompletionEvent;
 
     qemu_syscall(&call.super);
 
@@ -2487,7 +2487,7 @@ WINBASEAPI BOOL WINAPI PeekNamedPipe(HANDLE hPipe, LPVOID lpvBuffer, DWORD cbBuf
 {
     struct qemu_PeekNamedPipe call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PEEKNAMEDPIPE);
-    call.hPipe = (LONG_PTR)hPipe;
+    call.hPipe = (ULONG_PTR)hPipe;
     call.lpvBuffer = (ULONG_PTR)lpvBuffer;
     call.cbBuffer = cbBuffer;
     call.lpcbRead = (ULONG_PTR)lpcbRead;
@@ -2588,7 +2588,7 @@ WINBASEAPI BOOL WINAPI ConnectNamedPipe(HANDLE hPipe, LPOVERLAPPED overlapped)
 {
     struct qemu_ConnectNamedPipe call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONNECTNAMEDPIPE);
-    call.hPipe = (LONG_PTR)hPipe;
+    call.hPipe = (ULONG_PTR)hPipe;
     call.overlapped = (ULONG_PTR)overlapped;
 
     qemu_syscall(&call.super);
@@ -2619,7 +2619,7 @@ WINBASEAPI BOOL WINAPI DisconnectNamedPipe(HANDLE hPipe)
 {
     struct qemu_DisconnectNamedPipe call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DISCONNECTNAMEDPIPE);
-    call.hPipe = (LONG_PTR)hPipe;
+    call.hPipe = (ULONG_PTR)hPipe;
 
     qemu_syscall(&call.super);
 
@@ -2655,7 +2655,7 @@ WINBASEAPI BOOL WINAPI TransactNamedPipe(HANDLE handle, LPVOID write_buf, DWORD 
 {
     struct qemu_TransactNamedPipe call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRANSACTNAMEDPIPE);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
     call.write_buf = (ULONG_PTR)write_buf;
     call.write_size = (ULONG_PTR)write_size;
     call.read_buf = (ULONG_PTR)read_buf;
@@ -2695,7 +2695,7 @@ WINBASEAPI BOOL WINAPI GetNamedPipeInfo(HANDLE hNamedPipe, LPDWORD lpFlags, LPDW
 {
     struct qemu_GetNamedPipeInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNAMEDPIPEINFO);
-    call.hNamedPipe = (LONG_PTR)hNamedPipe;
+    call.hNamedPipe = (ULONG_PTR)hNamedPipe;
     call.lpFlags = (ULONG_PTR)lpFlags;
     call.lpOutputBufferSize = (ULONG_PTR)lpOutputBufferSize;
     call.lpInputBufferSize = (ULONG_PTR)lpInputBufferSize;
@@ -2736,7 +2736,7 @@ WINBASEAPI BOOL WINAPI GetNamedPipeHandleStateA(HANDLE hNamedPipe, LPDWORD lpSta
 {
     struct qemu_GetNamedPipeHandleStateA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNAMEDPIPEHANDLESTATEA);
-    call.hNamedPipe = (LONG_PTR)hNamedPipe;
+    call.hNamedPipe = (ULONG_PTR)hNamedPipe;
     call.lpState = (ULONG_PTR)lpState;
     call.lpCurInstances = (ULONG_PTR)lpCurInstances;
     call.lpMaxCollectionCount = (ULONG_PTR)lpMaxCollectionCount;
@@ -2780,7 +2780,7 @@ WINBASEAPI BOOL WINAPI GetNamedPipeHandleStateW(HANDLE hNamedPipe, LPDWORD lpSta
 {
     struct qemu_GetNamedPipeHandleStateW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNAMEDPIPEHANDLESTATEW);
-    call.hNamedPipe = (LONG_PTR)hNamedPipe;
+    call.hNamedPipe = (ULONG_PTR)hNamedPipe;
     call.lpState = (ULONG_PTR)lpState;
     call.lpCurInstances = (ULONG_PTR)lpCurInstances;
     call.lpMaxCollectionCount = (ULONG_PTR)lpMaxCollectionCount;
@@ -2820,7 +2820,7 @@ WINBASEAPI BOOL WINAPI SetNamedPipeHandleState(HANDLE hNamedPipe, LPDWORD lpMode
 {
     struct qemu_SetNamedPipeHandleState call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETNAMEDPIPEHANDLESTATE);
-    call.hNamedPipe = (LONG_PTR)hNamedPipe;
+    call.hNamedPipe = (ULONG_PTR)hNamedPipe;
     call.lpMode = (ULONG_PTR)lpMode;
     call.lpMaxCollectionCount = (ULONG_PTR)lpMaxCollectionCount;
     call.lpCollectDataTimeout = (ULONG_PTR)lpCollectDataTimeout;
@@ -3050,7 +3050,7 @@ WINBASEAPI BOOL WINAPI GetMailslotInfo(HANDLE hMailslot, LPDWORD lpMaxMessageSiz
 {
     struct qemu_GetMailslotInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETMAILSLOTINFO);
-    call.hMailslot = (LONG_PTR)hMailslot;
+    call.hMailslot = (ULONG_PTR)hMailslot;
     call.lpMaxMessageSize = (ULONG_PTR)lpMaxMessageSize;
     call.lpNextSize = (ULONG_PTR)lpNextSize;
     call.lpMessageCount = (ULONG_PTR)lpMessageCount;
@@ -3085,7 +3085,7 @@ WINBASEAPI BOOL WINAPI SetMailslotInfo(HANDLE hMailslot, DWORD dwReadTimeout)
 {
     struct qemu_SetMailslotInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETMAILSLOTINFO);
-    call.hMailslot = (LONG_PTR)hMailslot;
+    call.hMailslot = (ULONG_PTR)hMailslot;
     call.dwReadTimeout = (ULONG_PTR)dwReadTimeout;
 
     qemu_syscall(&call.super);
@@ -3119,8 +3119,8 @@ WINBASEAPI HANDLE WINAPI CreateIoCompletionPort(HANDLE hFileHandle, HANDLE hExis
 {
     struct qemu_CreateIoCompletionPort call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEIOCOMPLETIONPORT);
-    call.hFileHandle = (LONG_PTR)hFileHandle;
-    call.hExistingCompletionPort = (LONG_PTR)hExistingCompletionPort;
+    call.hFileHandle = (ULONG_PTR)hFileHandle;
+    call.hExistingCompletionPort = (ULONG_PTR)hExistingCompletionPort;
     call.CompletionKey = CompletionKey;
     call.dwNumberOfConcurrentThreads = dwNumberOfConcurrentThreads;
 
@@ -3158,7 +3158,7 @@ WINBASEAPI BOOL WINAPI GetQueuedCompletionStatus(HANDLE CompletionPort, LPDWORD 
 {
     struct qemu_GetQueuedCompletionStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETQUEUEDCOMPLETIONSTATUS);
-    call.CompletionPort = (LONG_PTR)CompletionPort;
+    call.CompletionPort = (ULONG_PTR)CompletionPort;
     call.lpNumberOfBytesTransferred = (ULONG_PTR)lpNumberOfBytesTransferred;
     call.pCompletionKey = (ULONG_PTR)pCompletionKey;
     call.lpOverlapped = (ULONG_PTR)lpOverlapped;
@@ -3196,7 +3196,7 @@ WINBASEAPI BOOL WINAPI PostQueuedCompletionStatus(HANDLE CompletionPort, DWORD d
 {
     struct qemu_PostQueuedCompletionStatus call;
     call.super.id = QEMU_SYSCALL_ID(CALL_POSTQUEUEDCOMPLETIONSTATUS);
-    call.CompletionPort = (LONG_PTR)CompletionPort;
+    call.CompletionPort = (ULONG_PTR)CompletionPort;
     call.dwNumberOfBytes = (ULONG_PTR)dwNumberOfBytes;
     call.dwCompletionKey = (ULONG_PTR)dwCompletionKey;
     call.lpOverlapped = (ULONG_PTR)lpOverlapped;
@@ -3231,7 +3231,7 @@ WINBASEAPI BOOL WINAPI BindIoCompletionCallback(HANDLE FileHandle, LPOVERLAPPED_
 {
     struct qemu_BindIoCompletionCallback call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BINDIOCOMPLETIONCALLBACK);
-    call.FileHandle = (LONG_PTR)FileHandle;
+    call.FileHandle = (ULONG_PTR)FileHandle;
     call.Function = (ULONG_PTR)Function;
     call.Flags = (ULONG_PTR)Flags;
 
@@ -3294,7 +3294,7 @@ WINBASEAPI BOOL WINAPI QueryMemoryResourceNotification(HANDLE handle, PBOOL stat
 {
     struct qemu_QueryMemoryResourceNotification call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYMEMORYRESOURCENOTIFICATION);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
     call.state = (ULONG_PTR)state;
 
     qemu_syscall(&call.super);

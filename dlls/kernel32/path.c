@@ -1712,7 +1712,7 @@ WINBASEAPI BOOL WINAPI CreateHardLinkTransactedA(LPCSTR link, LPCSTR target, LPS
     call.link = (ULONG_PTR)link;
     call.target = (ULONG_PTR)target;
     call.sa = (ULONG_PTR)sa;
-    call.transaction = (LONG_PTR)transaction;
+    call.transaction = (ULONG_PTR)transaction;
 
     qemu_syscall(&call.super);
 
@@ -1750,7 +1750,7 @@ WINBASEAPI BOOL WINAPI CreateHardLinkTransactedW(LPCWSTR link, LPCWSTR target, L
     call.link = (ULONG_PTR)link;
     call.target = (ULONG_PTR)target;
     call.sa = (ULONG_PTR)sa;
-    call.transaction = (LONG_PTR)transaction;
+    call.transaction = (ULONG_PTR)transaction;
 
     qemu_syscall(&call.super);
 

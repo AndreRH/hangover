@@ -251,7 +251,7 @@ WINBASEAPI BOOL WINAPI DebugBreakProcess(HANDLE hProc)
 {
     struct qemu_DebugBreakProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DEBUGBREAKPROCESS);
-    call.hProc = (LONG_PTR)hProc;
+    call.hProc = (ULONG_PTR)hProc;
 
     qemu_syscall(&call.super);
 
@@ -310,7 +310,7 @@ WINBASEAPI BOOL WINAPI CheckRemoteDebuggerPresent(HANDLE process, PBOOL Debugger
 {
     struct qemu_CheckRemoteDebuggerPresent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHECKREMOTEDEBUGGERPRESENT);
-    call.process = (LONG_PTR)process;
+    call.process = (ULONG_PTR)process;
     call.DebuggerPresent = (ULONG_PTR)DebuggerPresent;
 
     qemu_syscall(&call.super);

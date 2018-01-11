@@ -905,7 +905,7 @@ WINBASEAPI BOOL WINAPI FindNextVolumeA(HANDLE handle, LPSTR volume, DWORD len)
 {
     struct qemu_FindNextVolumeA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDNEXTVOLUMEA);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
     call.volume = (ULONG_PTR)volume;
     call.len = len;
 
@@ -939,7 +939,7 @@ WINBASEAPI BOOL WINAPI FindNextVolumeW(HANDLE handle, LPWSTR volume, DWORD len)
 {
     struct qemu_FindNextVolumeW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDNEXTVOLUMEW);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
     call.volume = (ULONG_PTR)volume;
     call.len = (ULONG_PTR)len;
 
@@ -971,7 +971,7 @@ WINBASEAPI BOOL WINAPI FindVolumeClose(HANDLE handle)
 {
     struct qemu_FindVolumeClose call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDVOLUMECLOSE);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
 
@@ -1069,7 +1069,7 @@ WINBASEAPI BOOL WINAPI FindVolumeMountPointClose(HANDLE h)
 {
     struct qemu_FindVolumeMountPointClose call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDVOLUMEMOUNTPOINTCLOSE);
-    call.h = (LONG_PTR)h;
+    call.h = (ULONG_PTR)h;
 
     qemu_syscall(&call.super);
 
@@ -1230,7 +1230,7 @@ WINBASEAPI BOOL WINAPI GetVolumeInformationByHandleW(HANDLE handle, WCHAR *volna
 {
     struct qemu_GetVolumeInformationByHandleW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETVOLUMEINFORMATIONBYHANDLEW);
-    call.handle = (LONG_PTR)handle;
+    call.handle = (ULONG_PTR)handle;
     call.volnamebuf = (ULONG_PTR)volnamebuf;
     call.volnamesize = (ULONG_PTR)volnamesize;
     call.volserial = (ULONG_PTR)volserial;
