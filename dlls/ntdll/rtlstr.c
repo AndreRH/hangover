@@ -25,6 +25,8 @@
 #include <winternl.h>
 #include <ntdef.h>
 
+#include "thunk/qemu_winternl.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_ntdll.h"
@@ -340,8 +342,22 @@ WINBASEAPI BOOLEAN WINAPI RtlCreateUnicodeStringFromAsciiz(PUNICODE_STRING targe
 void qemu_RtlCreateUnicodeStringFromAsciiz(struct qemu_syscall *call)
 {
     struct qemu_RtlCreateUnicodeStringFromAsciiz *c = (struct qemu_RtlCreateUnicodeStringFromAsciiz *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlCreateUnicodeStringFromAsciiz(QEMU_G2H(c->target), QEMU_G2H(c->src));
+    UNICODE_STRING stack, *target = &stack;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    target = QEMU_G2H(c->target);
+#else
+    if (!QEMU_G2H(c->target))
+        target = NULL;
+#endif
+
+    c->super.iret = RtlCreateUnicodeStringFromAsciiz(target, QEMU_G2H(c->src));
+
+#if GUEST_BIT != HOST_BIT
+    if (QEMU_G2H(c->target))
+        UNICODE_STRING_h2g(QEMU_G2H(c->target), target);
+#endif
 }
 
 #endif

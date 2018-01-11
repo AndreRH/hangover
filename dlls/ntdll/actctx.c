@@ -25,6 +25,9 @@
 #include <winternl.h>
 #include <ntdef.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_winternl.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_ntdll.h"
@@ -176,9 +179,9 @@ WINBASEAPI NTSTATUS WINAPI RtlActivateActivationContext(ULONG unknown, HANDLE ha
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLACTIVATEACTIVATIONCONTEXT);
     call.unknown = (ULONG_PTR)unknown;
     call.handle = (ULONG_PTR)handle;
-    call.cookie = (ULONG_PTR)cookie;
 
     qemu_syscall(&call.super);
+    *cookie = call.cookie;
 
     return call.super.iret;
 }
@@ -188,8 +191,11 @@ WINBASEAPI NTSTATUS WINAPI RtlActivateActivationContext(ULONG unknown, HANDLE ha
 void qemu_RtlActivateActivationContext(struct qemu_syscall *call)
 {
     struct qemu_RtlActivateActivationContext *c = (struct qemu_RtlActivateActivationContext *)call;
+    ULONG_PTR cookie;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlActivateActivationContext(c->unknown, QEMU_G2H(c->handle), QEMU_G2H(c->cookie));
+
+    c->super.iret = RtlActivateActivationContext(c->unknown, QEMU_G2H(c->handle), &cookie);
+    c->cookie = cookie;
 }
 
 #endif
@@ -262,9 +268,9 @@ WINBASEAPI NTSTATUS WINAPI RtlGetActiveActivationContext(HANDLE *handle)
 {
     struct qemu_RtlGetActiveActivationContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETACTIVEACTIVATIONCONTEXT);
-    call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
+    *handle = (HANDLE)(ULONG_PTR)call.handle;
 
     return call.super.iret;
 }
@@ -274,8 +280,11 @@ WINBASEAPI NTSTATUS WINAPI RtlGetActiveActivationContext(HANDLE *handle)
 void qemu_RtlGetActiveActivationContext(struct qemu_syscall *call)
 {
     struct qemu_RtlGetActiveActivationContext *c = (struct qemu_RtlGetActiveActivationContext *)call;
+    HANDLE handle;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlGetActiveActivationContext(QEMU_G2H(c->handle));
+
+    c->super.iret = RtlGetActiveActivationContext(&handle);
+    c->handle = QEMU_H2G(handle);
 }
 
 #endif
@@ -347,6 +356,7 @@ void qemu_RtlQueryInformationActivationContext(struct qemu_syscall *call)
 {
     struct qemu_RtlQueryInformationActivationContext *c = (struct qemu_RtlQueryInformationActivationContext *)call;
     WINE_FIXME("Unverified!\n");
+    /* FIXME: Copy the code from kernel32 here and make kernel32 call this function on the guest side. */
     c->super.iret = RtlQueryInformationActivationContext(c->flags, QEMU_G2H(c->handle), QEMU_G2H(c->subinst), c->class, QEMU_G2H(c->buffer), c->bufsize, QEMU_G2H(c->retlen));
 }
 
@@ -384,8 +394,44 @@ WINBASEAPI NTSTATUS WINAPI RtlFindActivationContextSectionString(ULONG flags, co
 void qemu_RtlFindActivationContextSectionString(struct qemu_syscall *call)
 {
     struct qemu_RtlFindActivationContextSectionString *c = (struct qemu_RtlFindActivationContextSectionString *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlFindActivationContextSectionString(c->flags, QEMU_G2H(c->guid), c->section_kind, QEMU_G2H(c->section_name), QEMU_G2H(c->ptr));
+    struct qemu_ACTCTX_SECTION_KEYED_DATA *guest_info;
+    ACTCTX_SECTION_KEYED_DATA stack, *info = &stack;
+    UNICODE_STRING stack_str, *section = &stack_str;
+    WINE_TRACE("\n");
+
+    /* I duplicating this between kernel32 and ntdll because of the different UNICODE_STRING handling
+     * (minor issue) and A<->W conversion, which I prefer to leave up to Wine's kernel32. */
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->ptr);
+    section = QEMU_G2H(c->section_name);
+#else
+    guest_info = QEMU_G2H(c->ptr);
+    if (guest_info)
+    {
+        if (guest_info->cbSize < offsetof(struct qemu_ACTCTX_SECTION_KEYED_DATA, ulAssemblyRosterIndex))
+            info->cbSize = 0;
+        else
+            ACTCTX_SECTION_KEYED_DATA_g2h(info, guest_info);
+    }
+    else
+    {
+        info = NULL;
+    }
+
+    if (QEMU_G2H(c->section_name))
+        UNICODE_STRING_g2h(section, QEMU_G2H(c->section_name));
+    else
+        section = NULL;
+#endif
+
+    c->super.iret = RtlFindActivationContextSectionString(c->flags, QEMU_G2H(c->guid), c->section_kind,
+            section, info);
+
+#if GUEST_BIT != HOST_BIT
+    if (info && !c->super.iret)
+        ACTCTX_SECTION_KEYED_DATA_h2g(guest_info, info);
+#endif
 }
 
 #endif
@@ -423,6 +469,7 @@ void qemu_RtlFindActivationContextSectionGuid(struct qemu_syscall *call)
 {
     struct qemu_RtlFindActivationContextSectionGuid *c = (struct qemu_RtlFindActivationContextSectionGuid *)call;
     WINE_FIXME("Unverified!\n");
+    /* This could be moved from kernel32. */
     c->super.iret = RtlFindActivationContextSectionGuid(c->flags, QEMU_G2H(c->extguid), c->section_kind, QEMU_G2H(c->guid), QEMU_G2H(c->ptr));
 }
 

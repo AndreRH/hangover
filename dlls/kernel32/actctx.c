@@ -97,6 +97,7 @@ void qemu_CreateActCtxA(struct qemu_syscall *call)
 #if HOST_BIT == GUEST_BIT
     *copy = *orig;
 #else
+    copy->cbSize = sizeof(*copy);
     ACTCTX_g2h((ACTCTXW *)copy, orig32);
 #endif
 
@@ -122,7 +123,6 @@ void qemu_CreateActCtxA(struct qemu_syscall *call)
     }
 
     c->super.iret = (uint64_t)CreateActCtxA(copy);
-    WINE_ERR("Last errror %u\n", GetLastError());
 
     HeapFree(GetProcessHeap(), 0, copy);
     HeapFree(GetProcessHeap(), 0, appnameA);
@@ -192,6 +192,7 @@ void qemu_CreateActCtxW(struct qemu_syscall *call)
 #if HOST_BIT == GUEST_BIT
     *copy = *orig;
 #else
+    copy->cbSize = sizeof(*copy);
     ACTCTX_g2h(copy, orig32);
 #endif
 
@@ -232,10 +233,10 @@ WINBASEAPI BOOL WINAPI ActivateActCtx(HANDLE hActCtx, ULONG_PTR *ulCookie)
 {
     struct qemu_ActivateActCtx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACTIVATEACTCTX);
-    call.hActCtx = (LONG_PTR)hActCtx;
-    call.ulCookie = (ULONG_PTR)ulCookie;
+    call.hActCtx = (ULONG_PTR)hActCtx;
 
     qemu_syscall(&call.super);
+    *ulCookie = call.ulCookie;
 
     return call.super.iret;
 }
@@ -245,8 +246,11 @@ WINBASEAPI BOOL WINAPI ActivateActCtx(HANDLE hActCtx, ULONG_PTR *ulCookie)
 void qemu_ActivateActCtx(struct qemu_syscall *call)
 {
     struct qemu_ActivateActCtx *c = (struct qemu_ActivateActCtx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ActivateActCtx(QEMU_G2H(c->hActCtx), QEMU_G2H(c->ulCookie));
+    ULONG_PTR ulCookie;
+    WINE_TRACE("\n");
+
+    c->super.iret = ActivateActCtx(QEMU_G2H(c->hActCtx), &ulCookie);
+    c->ulCookie = ulCookie;
 }
 
 #endif
@@ -295,9 +299,9 @@ WINBASEAPI BOOL WINAPI GetCurrentActCtx(HANDLE* phActCtx)
 {
     struct qemu_GetCurrentActCtx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCURRENTACTCTX);
-    call.phActCtx = (ULONG_PTR)phActCtx;
 
     qemu_syscall(&call.super);
+    *phActCtx = (HANDLE)(ULONG_PTR)call.phActCtx;
 
     return call.super.iret;
 }
@@ -307,8 +311,11 @@ WINBASEAPI BOOL WINAPI GetCurrentActCtx(HANDLE* phActCtx)
 void qemu_GetCurrentActCtx(struct qemu_syscall *call)
 {
     struct qemu_GetCurrentActCtx *c = (struct qemu_GetCurrentActCtx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetCurrentActCtx(QEMU_G2H(c->phActCtx));
+    HANDLE ret;
+    WINE_TRACE("\n");
+
+    c->super.iret = GetCurrentActCtx(&ret);
+    c->phActCtx = QEMU_H2G(ret);
 }
 
 #endif
@@ -325,7 +332,7 @@ WINBASEAPI void WINAPI AddRefActCtx(HANDLE hActCtx)
 {
     struct qemu_AddRefActCtx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDREFACTCTX);
-    call.hActCtx = (LONG_PTR)hActCtx;
+    call.hActCtx = (ULONG_PTR)hActCtx;
 
     qemu_syscall(&call.super);
 }
@@ -353,7 +360,7 @@ WINBASEAPI void WINAPI ReleaseActCtx(HANDLE hActCtx)
 {
     struct qemu_ReleaseActCtx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RELEASEACTCTX);
-    call.hActCtx = (LONG_PTR)hActCtx;
+    call.hActCtx = (ULONG_PTR)hActCtx;
 
     qemu_syscall(&call.super);
 }
@@ -381,7 +388,7 @@ WINBASEAPI BOOL WINAPI ZombifyActCtx(HANDLE hActCtx)
 {
     struct qemu_ZombifyActCtx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ZOMBIFYACTCTX);
-    call.hActCtx = (LONG_PTR)hActCtx;
+    call.hActCtx = (ULONG_PTR)hActCtx;
 
     qemu_syscall(&call.super);
 
@@ -399,7 +406,7 @@ void qemu_ZombifyActCtx(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_FindActCtxSectionStringA
+struct qemu_FindActCtxSectionString
 {
     struct qemu_syscall super;
     uint64_t dwFlags;
@@ -413,7 +420,7 @@ struct qemu_FindActCtxSectionStringA
 
 WINBASEAPI BOOL WINAPI FindActCtxSectionStringA(DWORD dwFlags, const GUID* lpExtGuid, ULONG ulId, LPCSTR lpSearchStr, PACTCTX_SECTION_KEYED_DATA pInfo)
 {
-    struct qemu_FindActCtxSectionStringA call;
+    struct qemu_FindActCtxSectionString call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDACTCTXSECTIONSTRINGA);
     call.dwFlags = dwFlags;
     call.lpExtGuid = (ULONG_PTR)lpExtGuid;
@@ -426,32 +433,9 @@ WINBASEAPI BOOL WINAPI FindActCtxSectionStringA(DWORD dwFlags, const GUID* lpExt
     return call.super.iret;
 }
 
-#else
-
-void qemu_FindActCtxSectionStringA(struct qemu_syscall *call)
-{
-    struct qemu_FindActCtxSectionStringA *c = (struct qemu_FindActCtxSectionStringA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = FindActCtxSectionStringA(c->dwFlags, QEMU_G2H(c->lpExtGuid), c->ulId, QEMU_G2H(c->lpSearchStr), QEMU_G2H(c->pInfo));
-}
-
-#endif
-
-struct qemu_FindActCtxSectionStringW
-{
-    struct qemu_syscall super;
-    uint64_t dwFlags;
-    uint64_t lpExtGuid;
-    uint64_t ulId;
-    uint64_t lpSearchStr;
-    uint64_t pInfo;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI BOOL WINAPI FindActCtxSectionStringW(DWORD dwFlags, const GUID* lpExtGuid, ULONG ulId, LPCWSTR lpSearchStr, PACTCTX_SECTION_KEYED_DATA pInfo)
 {
-    struct qemu_FindActCtxSectionStringW call;
+    struct qemu_FindActCtxSectionString call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FINDACTCTXSECTIONSTRINGW);
     call.dwFlags = dwFlags;
     call.lpExtGuid = (ULONG_PTR)lpExtGuid;
@@ -466,11 +450,45 @@ WINBASEAPI BOOL WINAPI FindActCtxSectionStringW(DWORD dwFlags, const GUID* lpExt
 
 #else
 
-void qemu_FindActCtxSectionStringW(struct qemu_syscall *call)
+void qemu_FindActCtxSectionString(struct qemu_syscall *call)
 {
-    struct qemu_FindActCtxSectionStringW *c = (struct qemu_FindActCtxSectionStringW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = FindActCtxSectionStringW(c->dwFlags, QEMU_G2H(c->lpExtGuid), c->ulId, QEMU_G2H(c->lpSearchStr), QEMU_G2H(c->pInfo));
+    struct qemu_FindActCtxSectionString *c = (struct qemu_FindActCtxSectionString *)call;
+    struct qemu_ACTCTX_SECTION_KEYED_DATA *guest_info;
+    ACTCTX_SECTION_KEYED_DATA stack, *info = &stack;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->pInfo);
+#else
+    guest_info = QEMU_G2H(c->pInfo);
+    if (guest_info)
+    {
+        if (guest_info->cbSize < offsetof(struct qemu_ACTCTX_SECTION_KEYED_DATA, ulAssemblyRosterIndex))
+            info->cbSize = 0;
+        else
+            ACTCTX_SECTION_KEYED_DATA_g2h(info, guest_info);
+    }
+    else
+    {
+        info = NULL;
+    }
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_FINDACTCTXSECTIONSTRINGA))
+    {
+        c->super.iret = FindActCtxSectionStringA(c->dwFlags, QEMU_G2H(c->lpExtGuid), c->ulId,
+                QEMU_G2H(c->lpSearchStr), info);
+    }
+    else
+    {
+        c->super.iret = FindActCtxSectionStringW(c->dwFlags, QEMU_G2H(c->lpExtGuid), c->ulId,
+                QEMU_G2H(c->lpSearchStr), info);
+    }
+
+#if GUEST_BIT != HOST_BIT
+    if (info && c->super.iret)
+        ACTCTX_SECTION_KEYED_DATA_h2g(guest_info, info);
+#endif
 }
 
 #endif
@@ -507,8 +525,34 @@ WINBASEAPI BOOL WINAPI FindActCtxSectionGuid(DWORD dwFlags, const GUID* lpExtGui
 void qemu_FindActCtxSectionGuid(struct qemu_syscall *call)
 {
     struct qemu_FindActCtxSectionGuid *c = (struct qemu_FindActCtxSectionGuid *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = FindActCtxSectionGuid(c->dwFlags, QEMU_G2H(c->lpExtGuid), c->ulId, QEMU_G2H(c->lpSearchGuid), QEMU_G2H(c->pInfo));
+    struct qemu_ACTCTX_SECTION_KEYED_DATA *guest_info;
+    ACTCTX_SECTION_KEYED_DATA stack, *info = &stack;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->pInfo);
+#else
+    guest_info = QEMU_G2H(c->pInfo);
+    if (guest_info)
+    {
+        if (guest_info->cbSize < offsetof(struct qemu_ACTCTX_SECTION_KEYED_DATA, ulAssemblyRosterIndex))
+            info->cbSize = 0;
+        else
+            ACTCTX_SECTION_KEYED_DATA_g2h(info, guest_info);
+    }
+    else
+    {
+        info = NULL;
+    }
+#endif
+
+    c->super.iret = FindActCtxSectionGuid(c->dwFlags, QEMU_G2H(c->lpExtGuid), c->ulId,
+            QEMU_G2H(c->lpSearchGuid), info);
+
+#if GUEST_BIT != HOST_BIT
+    if (info && c->super.iret)
+        ACTCTX_SECTION_KEYED_DATA_h2g(guest_info, info);
+#endif
 }
 
 #endif
@@ -576,7 +620,7 @@ void qemu_QueryActCtxW(struct qemu_syscall *call)
 #if GUEST_BIT == HOST_BIT
     c->super.iret = QueryActCtxW(c->dwFlags, QEMU_G2H(c->hActCtx), QEMU_G2H(c->pvSubInst), class,
             QEMU_G2H(c->pvBuff), c->cbBuff, &retlen);
-    call->pcbLen = retlen;
+    c->pcbLen = retlen;
     return;
 #endif
 

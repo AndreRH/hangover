@@ -275,4 +275,109 @@ static void ASSEMBLY_FILE_DETAILED_INFORMATION_h2g(struct qemu_ASSEMBLY_FILE_DET
     guest->lpFilePath = (ULONG_PTR)host->lpFilePath;
 }
 
+struct qemu_ACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA
+{
+    qemu_ptr    lpInformation;
+    qemu_ptr    lpSectionBase;
+    ULONG       ulSectionLength;
+    qemu_ptr    lpSectionGlobalDataBase;
+    ULONG       ulSectionGlobalDataLength;
+};
+
+static inline void ACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA_g2h(
+        ACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA *host,
+        const struct qemu_ACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA *guest)
+{
+    host->lpInformation = (void *)(ULONG_PTR)guest->lpInformation;
+    host->lpSectionBase = (void *)(ULONG_PTR)guest->lpSectionBase;
+    host->ulSectionLength = guest->ulSectionLength;
+    host->lpSectionGlobalDataBase = (void *)(ULONG_PTR)guest->lpSectionGlobalDataBase;
+    host->ulSectionGlobalDataLength = guest->ulSectionGlobalDataLength;
+}
+
+static inline void ACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA_h2g(
+        struct qemu_ACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA *guest,
+        const ACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA *host)
+{
+    guest->lpInformation = (ULONG_PTR)host->lpInformation;
+    guest->lpSectionBase = (ULONG_PTR)host->lpSectionBase;
+    guest->ulSectionLength = host->ulSectionLength;
+    guest->lpSectionGlobalDataBase = (ULONG_PTR)host->lpSectionGlobalDataBase;
+    guest->ulSectionGlobalDataLength = host->ulSectionGlobalDataLength;
+}
+
+struct qemu_ACTCTX_SECTION_KEYED_DATA
+{
+    ULONG       cbSize;
+    ULONG       ulDataFormatVersion;
+    qemu_ptr    lpData;
+    ULONG       ulLength;
+    qemu_ptr    lpSectionGlobalData;
+    ULONG       ulSectionGlobalDataLength;
+    qemu_ptr    lpSectionBase;
+    ULONG       ulSectionTotalLength;
+    qemu_handle hActCtx;
+    ULONG       ulAssemblyRosterIndex;
+
+    /* Non 2600 extra fields */
+    ULONG ulFlags;
+    struct qemu_ACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA AssemblyMetadata;
+};
+
+static inline void ACTCTX_SECTION_KEYED_DATA_g2h(
+        ACTCTX_SECTION_KEYED_DATA *host,
+        const struct qemu_ACTCTX_SECTION_KEYED_DATA *guest)
+{
+    host->cbSize = sizeof(*host);
+    host->ulDataFormatVersion = guest->ulDataFormatVersion;
+    host->lpData = (void *)(ULONG_PTR)guest->lpData;
+    host->ulLength = guest->ulLength;
+    host->lpSectionGlobalData = (void *)(ULONG_PTR)guest->lpSectionGlobalData;
+    host->ulSectionGlobalDataLength = guest->ulSectionGlobalDataLength;
+    host->lpSectionBase = (void *)(ULONG_PTR)guest->lpSectionBase;
+    host->ulSectionTotalLength = guest->ulSectionTotalLength;
+    host->hActCtx = HANDLE_g2h(guest->hActCtx);
+    host->ulAssemblyRosterIndex = guest->ulAssemblyRosterIndex;
+
+    if (guest->cbSize == sizeof(*guest))
+    {
+        host->ulFlags = guest->ulFlags;
+        ACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA_g2h(&host->AssemblyMetadata, &guest->AssemblyMetadata);
+    }
+    else
+    {
+        host->ulFlags = 0;
+        memset(&host->AssemblyMetadata, 0, sizeof(host->AssemblyMetadata));
+    }
+}
+
+static inline void ACTCTX_SECTION_KEYED_DATA_h2g(
+        struct qemu_ACTCTX_SECTION_KEYED_DATA *guest,
+        const ACTCTX_SECTION_KEYED_DATA *host)
+{
+    guest->ulDataFormatVersion = host->ulDataFormatVersion;
+    guest->lpData = (ULONG_PTR)host->lpData;
+    guest->ulLength = host->ulLength;
+    guest->lpSectionGlobalData = (ULONG_PTR)host->lpSectionGlobalData;
+    guest->ulSectionGlobalDataLength = host->ulSectionGlobalDataLength;
+    guest->lpSectionBase = (ULONG_PTR)host->lpSectionBase;
+    guest->ulSectionTotalLength = host->ulSectionTotalLength;
+    guest->hActCtx = (ULONG_PTR)host->hActCtx;
+    guest->ulAssemblyRosterIndex = host->ulAssemblyRosterIndex;
+
+    if (guest->cbSize == sizeof(*guest))
+    {
+        if (host->cbSize == sizeof(*host))
+        {
+            guest->ulFlags = guest->ulFlags;
+            ACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA_h2g(&guest->AssemblyMetadata, &host->AssemblyMetadata);
+        }
+        else
+        {
+            guest->ulFlags = 0;
+            memset(&guest->AssemblyMetadata, 0, sizeof(guest->AssemblyMetadata));
+        }
+    }
+}
+
 #endif
