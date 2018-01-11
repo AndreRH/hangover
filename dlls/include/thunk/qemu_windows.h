@@ -8,5 +8,6 @@
 #include "thunk/qemu_wingdi.h"
 #include "thunk/qemu_winuser.h"
 #include "thunk/qemu_commdlg.h"
+#include "thunk/qemu_winnls.h"
 
 #endif

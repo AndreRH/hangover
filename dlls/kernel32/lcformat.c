@@ -22,6 +22,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_kernel32.h"
@@ -430,8 +432,19 @@ WINBASEAPI INT WINAPI GetCurrencyFormatA(LCID lcid, DWORD dwFlags, LPCSTR lpszVa
 void qemu_GetCurrencyFormatA(struct qemu_syscall *call)
 {
     struct qemu_GetCurrencyFormatA *c = (struct qemu_GetCurrencyFormatA *)call;
+    CURRENCYFMTA stack, *fmt = &stack;
     WINE_TRACE("\n");
-    c->super.iret = GetCurrencyFormatA(c->lcid, c->dwFlags, QEMU_G2H(c->lpszValue), QEMU_G2H(c->lpFormat), QEMU_G2H(c->lpCurrencyStr), c->cchOut);
+
+#if GUEST_BIT == HOST_BIT
+    fmt = QEMU_G2H(c->lpFormat);
+#else
+    if (c->lpFormat)
+        CURRENCYFMT_g2h((CURRENCYFMTW *)fmt, QEMU_G2H(c->lpFormat));
+    else
+        fmt = NULL;
+#endif
+
+    c->super.iret = GetCurrencyFormatA(c->lcid, c->dwFlags, QEMU_G2H(c->lpszValue), fmt, QEMU_G2H(c->lpCurrencyStr), c->cchOut);
 }
 
 #endif
@@ -470,8 +483,19 @@ WINBASEAPI INT WINAPI GetCurrencyFormatW(LCID lcid, DWORD dwFlags, LPCWSTR lpszV
 void qemu_GetCurrencyFormatW(struct qemu_syscall *call)
 {
     struct qemu_GetCurrencyFormatW *c = (struct qemu_GetCurrencyFormatW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetCurrencyFormatW(c->lcid, c->dwFlags, QEMU_G2H(c->lpszValue), QEMU_G2H(c->lpFormat), QEMU_G2H(c->lpCurrencyStr), c->cchOut);
+    CURRENCYFMTW stack, *fmt = &stack;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    fmt = QEMU_G2H(c->lpFormat);
+#else
+    if (c->lpFormat)
+        CURRENCYFMT_g2h(fmt, QEMU_G2H(c->lpFormat));
+    else
+        fmt = NULL;
+#endif
+
+    c->super.iret = GetCurrencyFormatW(c->lcid, c->dwFlags, QEMU_G2H(c->lpszValue), fmt, QEMU_G2H(c->lpCurrencyStr), c->cchOut);
 }
 
 #endif
