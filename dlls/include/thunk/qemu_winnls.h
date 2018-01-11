@@ -37,4 +37,34 @@ static inline void CURRENCYFMT_h2g(struct qemu_CURRENCYFMT *guest, const CURRENC
     guest->lpCurrencySymbol = (ULONG_PTR)host->lpCurrencySymbol;
 }
 
+struct qemu_NUMBERFMT
+{
+    UINT NumDigits;
+    UINT LeadingZero;
+    UINT Grouping;
+    qemu_ptr lpDecimalSep;
+    qemu_ptr lpThousandSep;
+    UINT NegativeOrder;
+};
+
+static inline void NUMBERFMT_g2h(NUMBERFMTW *host, const struct qemu_NUMBERFMT *guest)
+{
+    host->NumDigits = guest->NumDigits;
+    host->LeadingZero = guest->LeadingZero;
+    host->Grouping = guest->Grouping;
+    host->lpDecimalSep = (WCHAR *)(ULONG_PTR)guest->lpDecimalSep;
+    host->lpThousandSep = (WCHAR *)(ULONG_PTR)guest->lpThousandSep;
+    host->NegativeOrder = guest->NegativeOrder;
+}
+
+static inline void NUMBERFMT_h2g(struct qemu_NUMBERFMT *guest, const NUMBERFMTW *host)
+{
+    guest->NumDigits = host->NumDigits;
+    guest->LeadingZero = host->LeadingZero;
+    guest->Grouping = host->Grouping;
+    guest->lpDecimalSep = (ULONG_PTR)host->lpDecimalSep;
+    guest->lpThousandSep = (ULONG_PTR)host->lpThousandSep;
+    guest->NegativeOrder = host->NegativeOrder;
+}
+
 #endif

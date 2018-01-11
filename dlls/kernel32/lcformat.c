@@ -310,8 +310,20 @@ WINBASEAPI INT WINAPI GetNumberFormatA(LCID lcid, DWORD dwFlags, LPCSTR lpszValu
 void qemu_GetNumberFormatA(struct qemu_syscall *call)
 {
     struct qemu_GetNumberFormatA *c = (struct qemu_GetNumberFormatA *)call;
+    NUMBERFMTA stack, *fmt = &stack;
     WINE_TRACE("\n");
-    c->super.iret = GetNumberFormatA(c->lcid, c->dwFlags, QEMU_G2H(c->lpszValue), QEMU_G2H(c->lpFormat), QEMU_G2H(c->lpNumberStr), c->cchOut);
+
+#if GUEST_BIT == HOST_BIT
+    fmt = QEMU_G2H(c->lpFormat);
+#else
+    if (c->lpFormat)
+        NUMBERFMT_g2h((NUMBERFMTW *)fmt, QEMU_G2H(c->lpFormat));
+    else
+        fmt = NULL;
+#endif
+
+    c->super.iret = GetNumberFormatA(c->lcid, c->dwFlags, QEMU_G2H(c->lpszValue), fmt,
+            QEMU_G2H(c->lpNumberStr), c->cchOut);
 }
 
 #endif
@@ -350,8 +362,20 @@ WINBASEAPI INT WINAPI GetNumberFormatW(LCID lcid, DWORD dwFlags, LPCWSTR lpszVal
 void qemu_GetNumberFormatW(struct qemu_syscall *call)
 {
     struct qemu_GetNumberFormatW *c = (struct qemu_GetNumberFormatW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetNumberFormatW(c->lcid, c->dwFlags, QEMU_G2H(c->lpszValue), QEMU_G2H(c->lpFormat), QEMU_G2H(c->lpNumberStr), c->cchOut);
+    NUMBERFMTW stack, *fmt = &stack;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    fmt = QEMU_G2H(c->lpFormat);
+#else
+    if (c->lpFormat)
+        NUMBERFMT_g2h(fmt, QEMU_G2H(c->lpFormat));
+    else
+        fmt = NULL;
+#endif
+
+    c->super.iret = GetNumberFormatW(c->lcid, c->dwFlags, QEMU_G2H(c->lpszValue), fmt,
+            QEMU_G2H(c->lpNumberStr), c->cchOut);
 }
 
 #endif
@@ -392,8 +416,20 @@ extern INT WINAPI GetNumberFormatEx(LPCWSTR name, DWORD flags, LPCWSTR value, co
 void qemu_GetNumberFormatEx(struct qemu_syscall *call)
 {
     struct qemu_GetNumberFormatEx *c = (struct qemu_GetNumberFormatEx *)call;
+    NUMBERFMTW stack, *fmt = &stack;
     WINE_TRACE("\n");
-    c->super.iret = GetNumberFormatEx(QEMU_G2H(c->name), c->flags, QEMU_G2H(c->value), QEMU_G2H(c->format), QEMU_G2H(c->number), c->numout);
+
+#if GUEST_BIT == HOST_BIT
+    fmt = QEMU_G2H(c->format);
+#else
+    if (c->format)
+        NUMBERFMT_g2h(fmt, QEMU_G2H(c->format));
+    else
+        fmt = NULL;
+#endif
+
+    c->super.iret = GetNumberFormatEx(QEMU_G2H(c->name), c->flags, QEMU_G2H(c->value), fmt,
+            QEMU_G2H(c->number), c->numout);
 }
 
 #endif
