@@ -1466,6 +1466,12 @@ void qemu_CreateFileW(struct qemu_syscall *call)
 {
     struct qemu_CreateFileW *c = (struct qemu_CreateFileW *)call;
     WINE_TRACE("\n");
+
+#if GUEST_BIT != HOST_BIT
+    if (c->sa)
+        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+#endif
+
     c->super.iret = QEMU_H2G(CreateFileW(QEMU_G2H(c->filename), c->access, c->sharing, QEMU_G2H(c->sa), c->creation, c->attributes, QEMU_G2H(c->template)));
 }
 
@@ -1508,6 +1514,12 @@ void qemu_CreateFileA(struct qemu_syscall *call)
 {
     struct qemu_CreateFileA *c = (struct qemu_CreateFileA *)call;
     WINE_TRACE("\n");
+
+#if GUEST_BIT != HOST_BIT
+    if (c->sa)
+        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+#endif
+
     c->super.iret = QEMU_H2G(CreateFileA(QEMU_G2H(c->filename), c->access, c->sharing, QEMU_G2H(c->sa),
             c->creation, c->attributes, (HANDLE)c->template));
 }
@@ -2338,6 +2350,12 @@ void qemu_OpenFileById(struct qemu_syscall *call)
 {
     struct qemu_OpenFileById *c = (struct qemu_OpenFileById *)call;
     WINE_TRACE("\n");
+
+#if GUEST_BIT != HOST_BIT
+    if (c->sec_attr)
+        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+#endif
+
     c->super.iret = QEMU_H2G(OpenFileById(QEMU_G2H(c->handle), QEMU_G2H(c->id), c->access, c->share,
             QEMU_G2H(c->sec_attr), c->flags));
 }

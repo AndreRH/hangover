@@ -442,6 +442,11 @@ void qemu_CreateFileMappingA(struct qemu_syscall *call)
     if (c->protect & SEC_IMAGE)
         WINE_FIXME("SEC_IMAGE mappings will be rejected by Wine.\n");
 
+#if GUEST_BIT != HOST_BIT
+    if (c->sa)
+        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+#endif
+
     c->super.iret = (ULONG_PTR)CreateFileMappingA(QEMU_G2H(c->hFile), QEMU_G2H(c->sa), c->protect, c->size_high, c->size_low, QEMU_G2H(c->name));
 }
 
@@ -485,6 +490,11 @@ void qemu_CreateFileMappingW(struct qemu_syscall *call)
 
     if (c->protect & SEC_IMAGE)
         WINE_FIXME("SEC_IMAGE mappings will be rejected by Wine.\n");
+
+#if GUEST_BIT != HOST_BIT
+    if (c->sa)
+        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+#endif
 
     c->super.iret = (ULONG_PTR)CreateFileMappingW(QEMU_G2H(c->hFile), QEMU_G2H(c->sa), c->protect, c->size_high, c->size_low, QEMU_G2H(c->name));
 }

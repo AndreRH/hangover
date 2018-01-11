@@ -931,6 +931,12 @@ void qemu_CreateDirectoryW(struct qemu_syscall *call)
 {
     struct qemu_CreateDirectoryW *c = (struct qemu_CreateDirectoryW *)call;
     WINE_TRACE("\n");
+
+#if GUEST_BIT != HOST_BIT
+    if (c->sa)
+        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+#endif
+
     c->super.iret = CreateDirectoryW(QEMU_G2H(c->path), QEMU_G2H(c->sa));
 }
 
@@ -963,6 +969,12 @@ void qemu_CreateDirectoryA(struct qemu_syscall *call)
 {
     struct qemu_CreateDirectoryA *c = (struct qemu_CreateDirectoryA *)call;
     WINE_TRACE("\n");
+
+#if GUEST_BIT != HOST_BIT
+    if (c->sa)
+        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+#endif
+
     c->super.iret = CreateDirectoryA(QEMU_G2H(c->path), QEMU_G2H(c->sa));
 }
 

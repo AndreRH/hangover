@@ -117,6 +117,11 @@ void qemu_CreateThread(struct qemu_syscall *call)
         return;
     }
 
+#if GUEST_BIT != HOST_BIT
+    if (c->sa)
+        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+#endif
+
     context->app_param = c->param;
     context->app_func = c->start;
     context->guest_wrapper = c->wrapper;

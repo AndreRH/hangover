@@ -636,6 +636,12 @@ void qemu_CreateEventA(struct qemu_syscall *call)
 {
     struct qemu_CreateEventA *c = (struct qemu_CreateEventA *)call;
     WINE_TRACE("\n");
+
+#if GUEST_BIT != HOST_BIT
+    if (c->sa)
+        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+#endif
+
     c->super.iret = (ULONG_PTR)CreateEventA(QEMU_G2H(c->sa), c->manual_reset, c->initial_state, QEMU_G2H(c->name));
 }
 
@@ -672,6 +678,12 @@ void qemu_CreateEventW(struct qemu_syscall *call)
 {
     struct qemu_CreateEventW *c = (struct qemu_CreateEventW *)call;
     WINE_TRACE("\n");
+
+#if GUEST_BIT != HOST_BIT
+    if (c->sa)
+        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+#endif
+
     c->super.iret = (ULONG_PTR)CreateEventW(QEMU_G2H(c->sa), c->manual_reset, c->initial_state, QEMU_G2H(c->name));
 }
 
