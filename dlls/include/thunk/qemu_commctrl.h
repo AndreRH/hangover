@@ -647,4 +647,37 @@ static inline void TCKEYDOWN_g2h(NMTCKEYDOWN *host, const struct qemu_NMTCKEYDOW
     host->flags = guest->flags;
 }
 
+struct qemu_TCITEM
+{
+    UINT        mask;
+    DWORD       dwState;
+    DWORD       dwStateMask;
+    qemu_ptr    pszText;
+    INT         cchTextMax;
+    INT         iImage;
+    qemu_ptr    lParam;
+};
+
+static inline void TCITEM_h2g(struct qemu_TCITEM *guest, const TCITEMW *host)
+{
+    guest->mask = host->mask;
+    guest->dwState = host->dwState;
+    guest->dwStateMask = host->dwStateMask;
+    guest->pszText = (ULONG_PTR)host->pszText;
+    guest->cchTextMax = host->cchTextMax;
+    guest->iImage = host->iImage;
+    guest->lParam = host->lParam;
+}
+
+static inline void TCITEM_g2h(TCITEMW *host, const struct qemu_TCITEM *guest)
+{
+    host->mask = guest->mask;
+    host->dwState = guest->dwState;
+    host->dwStateMask = guest->dwStateMask;
+    host->pszText = (WCHAR *)(ULONG_PTR)guest->pszText;
+    host->cchTextMax = guest->cchTextMax;
+    host->iImage = guest->iImage;
+    host->lParam = guest->lParam;
+}
+
 #endif

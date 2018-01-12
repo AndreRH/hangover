@@ -1194,6 +1194,26 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             }
             break;
 
+        case TCM_GETITEMA:
+        case TCM_GETITEMW:
+        case TCM_SETITEMA:
+        case TCM_SETITEMW:
+        case TCM_INSERTITEMA:
+        case TCM_INSERTITEMW:
+        {
+            /* TODO: Are these message numbers guaranteed to be unique?
+             *
+             * FIXME: The struct has a dynamic size, and the size is stored in the tab control,
+             * not in the struct itself :-( */
+            struct qemu_TCITEM *guest_item = (struct qemu_TCITEM *)msg_in->lParam;;
+            TCITEMW *host_item;
+            WINE_TRACE("Translating TCM_INSERTITEM message at %p.\n", guest_item);
+            host_item = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_item));
+            TCITEM_g2h(host_item, guest_item);
+            msg_out->lParam = (LPARAM)host_item;
+            break;
+        }
+
 #endif
 
         default:
@@ -1278,6 +1298,24 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
         case WM_USER+68:
             if (conv->lParam != orig->lParam)
                 HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
+
+        case TCM_GETITEMA:
+        case TCM_GETITEMW:
+        case TCM_SETITEMA:
+        case TCM_SETITEMW:
+        case TCM_INSERTITEMA:
+        case TCM_INSERTITEMW:
+            if (conv->lParam != orig->lParam)
+            {
+                struct qemu_TCITEM *guest_item = (struct qemu_TCITEM *)orig->lParam;
+                TCITEMW *host_item = (TCITEMW *)conv->lParam;
+                WINE_TRACE("Reverse translating TCM_*ITEM message.\n");
+
+                TCITEM_h2g(guest_item, host_item);
+
+                HeapFree(GetProcessHeap(), 0, host_item);
+            }
             break;
 
         default:
@@ -1405,6 +1443,24 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             break;
         }
 
+        case TCM_GETITEMA:
+        case TCM_GETITEMW:
+        case TCM_SETITEMA:
+        case TCM_SETITEMW:
+        case TCM_INSERTITEMA:
+        case TCM_INSERTITEMW:
+        {
+            /* TODO: Are these message numbers guaranteed to be unique?
+             *
+             * FIXME: The struct has a dynamic size, and the size is stored in the tab control,
+             * not in the struct itself :-( */
+            TCITEMW *host = (TCITEMW *)msg_in->lParam;
+            struct qemu_TCITEM *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
+            TCITEM_h2g(guest, host);
+            msg_out->lParam = (LPARAM)guest;
+            break;
+        }
+
         default:
             /* Not constant numbers */
             if (msg_in->message == msg_FINDMSGSTRING)
@@ -1496,6 +1552,22 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
             COMBOBOXINFO_g2h(host, guest);
 
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
+        }
+
+        case TCM_GETITEMA:
+        case TCM_GETITEMW:
+        case TCM_SETITEMA:
+        case TCM_SETITEMW:
+        case TCM_INSERTITEMA:
+        case TCM_INSERTITEMW:
+        {
+            TCITEMW *host = (TCITEMW *)orig->lParam;
+            struct qemu_TCITEM *guest = (struct qemu_TCITEM *)conv->lParam;
+
+            TCITEM_g2h(host, guest);
+
+            HeapFree(GetProcessHeap(), 0, guest);
             break;
         }
 
