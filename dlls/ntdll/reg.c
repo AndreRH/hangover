@@ -282,12 +282,15 @@ WINBASEAPI NTSTATUS WINAPI NtOpenKeyEx(PHANDLE retkey, ACCESS_MASK access, const
 {
     struct qemu_NtOpenKeyEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTOPENKEYEX);
-    call.retkey = (ULONG_PTR)retkey;
     call.access = (ULONG_PTR)access;
     call.attr = (ULONG_PTR)attr;
     call.options = (ULONG_PTR)options;
 
+    if (!retkey || !attr)
+        return STATUS_ACCESS_VIOLATION;
+
     qemu_syscall(&call.super);
+    *retkey = (HANDLE)(ULONG_PTR)call.retkey;
 
     return call.super.iret;
 }
@@ -297,8 +300,19 @@ WINBASEAPI NTSTATUS WINAPI NtOpenKeyEx(PHANDLE retkey, ACCESS_MASK access, const
 void qemu_NtOpenKeyEx(struct qemu_syscall *call)
 {
     struct qemu_NtOpenKeyEx *c = (struct qemu_NtOpenKeyEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NtOpenKeyEx(QEMU_G2H(c->retkey), c->access, QEMU_G2H(c->attr), c->options);
+    OBJECT_ATTRIBUTES stack, *attr = &stack;
+    UNICODE_STRING name;
+    HANDLE retkey;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    attr = QEMU_G2H(c->attr);
+#else
+    OBJECT_ATTRIBUTES_g2h(attr, QEMU_G2H(c->attr), &name);
+#endif
+
+    c->super.iret = NtOpenKeyEx(&retkey, c->access, attr, c->options);
+    c->retkey = QEMU_H2G(retkey);
 }
 
 #endif
@@ -317,11 +331,14 @@ WINBASEAPI NTSTATUS WINAPI NtOpenKey(PHANDLE retkey, ACCESS_MASK access, const O
 {
     struct qemu_NtOpenKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTOPENKEY);
-    call.retkey = (ULONG_PTR)retkey;
     call.access = (ULONG_PTR)access;
     call.attr = (ULONG_PTR)attr;
 
+    if (!retkey || !attr)
+        return STATUS_ACCESS_VIOLATION;
+
     qemu_syscall(&call.super);
+    *retkey = (HANDLE)(ULONG_PTR)call.retkey;
 
     return call.super.iret;
 }
@@ -331,8 +348,19 @@ WINBASEAPI NTSTATUS WINAPI NtOpenKey(PHANDLE retkey, ACCESS_MASK access, const O
 void qemu_NtOpenKey(struct qemu_syscall *call)
 {
     struct qemu_NtOpenKey *c = (struct qemu_NtOpenKey *)call;
+    OBJECT_ATTRIBUTES stack, *attr = &stack;
+    UNICODE_STRING name;
+    HANDLE retkey;
     WINE_TRACE("\n");
-    c->super.iret = NtOpenKey(QEMU_G2H(c->retkey), c->access, QEMU_G2H(c->attr));
+
+#if GUEST_BIT == HOST_BIT
+    attr = QEMU_G2H(c->attr);
+#else
+    OBJECT_ATTRIBUTES_g2h(attr, QEMU_G2H(c->attr), &name);
+#endif
+
+    c->super.iret = NtOpenKey(&retkey, c->access, attr);
+    c->retkey = QEMU_H2G(retkey);
 }
 
 #endif
@@ -425,11 +453,15 @@ WINBASEAPI NTSTATUS WINAPI RtlpNtOpenKey(PHANDLE retkey, ACCESS_MASK access, OBJ
 {
     struct qemu_RtlpNtOpenKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLPNTOPENKEY);
-    call.retkey = (ULONG_PTR)retkey;
     call.access = (ULONG_PTR)access;
     call.attr = (ULONG_PTR)attr;
 
+    if (!retkey || !attr)
+        return STATUS_ACCESS_VIOLATION;
+
     qemu_syscall(&call.super);
+
+    *retkey = (HANDLE)(ULONG_PTR)call.retkey;
 
     return call.super.iret;
 }
@@ -441,8 +473,19 @@ extern NTSTATUS WINAPI RtlpNtOpenKey(PHANDLE retkey, ACCESS_MASK access, OBJECT_
 void qemu_RtlpNtOpenKey(struct qemu_syscall *call)
 {
     struct qemu_RtlpNtOpenKey *c = (struct qemu_RtlpNtOpenKey *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlpNtOpenKey(QEMU_G2H(c->retkey), c->access, QEMU_G2H(c->attr));
+    OBJECT_ATTRIBUTES stack, *attr = &stack;
+    UNICODE_STRING name;
+    HANDLE retkey;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    attr = QEMU_G2H(c->attr);
+#else
+    OBJECT_ATTRIBUTES_g2h(attr, QEMU_G2H(c->attr), &name);
+#endif
+
+    c->super.iret = RtlpNtOpenKey(&retkey, c->access, attr);
+    c->retkey = QEMU_H2G(retkey);
 }
 
 #endif
