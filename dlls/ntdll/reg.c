@@ -578,8 +578,16 @@ WINBASEAPI NTSTATUS WINAPI NtDeleteValueKey(HANDLE hkey, const UNICODE_STRING *n
 void qemu_NtDeleteValueKey(struct qemu_syscall *call)
 {
     struct qemu_NtDeleteValueKey *c = (struct qemu_NtDeleteValueKey *)call;
+    UNICODE_STRING name_stack, *name = &name_stack;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = NtDeleteValueKey(QEMU_G2H(c->hkey), QEMU_G2H(c->name));
+
+#if GUEST_BIT == HOST_BIT
+    name = QEMU_G2H(c->name);
+#else
+    UNICODE_STRING_g2h(name, QEMU_G2H(c->name));
+#endif
+
+    c->super.iret = NtDeleteValueKey(QEMU_G2H(c->hkey), name);
 }
 
 #endif
