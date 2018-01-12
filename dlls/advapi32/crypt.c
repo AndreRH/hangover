@@ -259,6 +259,9 @@ WINBASEAPI BOOL WINAPI CryptCreateHash (HCRYPTPROV hProv, ALG_ID Algid, HCRYPTKE
 
     qemu_syscall(&call.super);
 
+    if (phHash)
+        *phHash = call.phHash;
+
     return call.super.iret;
 }
 
@@ -267,8 +270,24 @@ WINBASEAPI BOOL WINAPI CryptCreateHash (HCRYPTPROV hProv, ALG_ID Algid, HCRYPTKE
 void qemu_CryptCreateHash(struct qemu_syscall *call)
 {
     struct qemu_CryptCreateHash *c = (struct qemu_CryptCreateHash *)call;
+    HCRYPTHASH hash;
     WINE_TRACE("\n");
-    c->super.iret = CryptCreateHash(c->hProv, c->Algid, c->hKey, c->dwFlags, QEMU_G2H(c->phHash));
+
+    if (!c->phHash)
+    {
+        c->super.iret = CryptCreateHash(c->hProv, c->Algid, c->hKey, c->dwFlags, NULL);
+        return;
+    }
+
+#if GUEST_BIT == HOST_BIT
+    hash = *(HCRYPTHASH *)QEMU_G2H(c->phHash);
+#else
+    hash = (HCRYPTHASH)(ULONG_PTR)*(qemu_ptr *)QEMU_G2H(c->phHash);
+#endif
+
+    c->super.iret = CryptCreateHash(c->hProv, c->Algid, c->hKey, c->dwFlags, &hash);
+
+    c->phHash = QEMU_H2G(hash);
 }
 
 #endif
