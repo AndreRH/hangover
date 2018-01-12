@@ -25,6 +25,8 @@
 #include <winternl.h>
 #include <ntdef.h>
 
+#include "thunk/qemu_winternl.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_ntdll.h"
@@ -81,7 +83,6 @@ WINBASEAPI NTSTATUS WINAPI NtCreateKey(PHANDLE retkey, ACCESS_MASK access, const
 {
     struct qemu_NtCreateKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCREATEKEY);
-    call.retkey = (ULONG_PTR)retkey;
     call.access = (ULONG_PTR)access;
     call.attr = (ULONG_PTR)attr;
     call.TitleIndex = (ULONG_PTR)TitleIndex;
@@ -89,7 +90,12 @@ WINBASEAPI NTSTATUS WINAPI NtCreateKey(PHANDLE retkey, ACCESS_MASK access, const
     call.options = (ULONG_PTR)options;
     call.dispos = (ULONG_PTR)dispos;
 
+    if (!retkey || !attr)
+        return STATUS_ACCESS_VIOLATION;
+
     qemu_syscall(&call.super);
+
+    *retkey = (HANDLE)(ULONG_PTR)call.retkey;
 
     return call.super.iret;
 }
@@ -99,8 +105,25 @@ WINBASEAPI NTSTATUS WINAPI NtCreateKey(PHANDLE retkey, ACCESS_MASK access, const
 void qemu_NtCreateKey(struct qemu_syscall *call)
 {
     struct qemu_NtCreateKey *c = (struct qemu_NtCreateKey *)call;
+    OBJECT_ATTRIBUTES stack, *attr = &stack;
+    UNICODE_STRING cls_stack, *class = &cls_stack;
+    UNICODE_STRING name;
+    HANDLE retkey;
     WINE_TRACE("\n");
-    c->super.iret = NtCreateKey(QEMU_G2H(c->retkey), c->access, QEMU_G2H(c->attr), c->TitleIndex, QEMU_G2H(c->class), c->options, QEMU_G2H(c->dispos));
+
+#if GUEST_BIT == HOST_BIT
+    attr = QEMU_G2H(c->attr);
+    class = QEMU_G2H(c->class);
+#else
+    OBJECT_ATTRIBUTES_g2h(attr, QEMU_G2H(c->attr), &name);
+    if (c->class)
+        UNICODE_STRING_g2h(class, QEMU_G2H(c->class));
+    else
+        class = NULL;
+#endif
+
+    c->super.iret = NtCreateKey(&retkey, c->access, attr, c->TitleIndex, class, c->options, QEMU_G2H(c->dispos));
+    c->retkey = QEMU_H2G(retkey);
 }
 
 #endif
@@ -199,7 +222,6 @@ WINBASEAPI NTSTATUS WINAPI RtlpNtCreateKey(PHANDLE retkey, ACCESS_MASK access, c
 {
     struct qemu_RtlpNtCreateKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLPNTCREATEKEY);
-    call.retkey = (ULONG_PTR)retkey;
     call.access = (ULONG_PTR)access;
     call.attr = (ULONG_PTR)attr;
     call.TitleIndex = (ULONG_PTR)TitleIndex;
@@ -207,7 +229,12 @@ WINBASEAPI NTSTATUS WINAPI RtlpNtCreateKey(PHANDLE retkey, ACCESS_MASK access, c
     call.options = (ULONG_PTR)options;
     call.dispos = (ULONG_PTR)dispos;
 
+    if (!retkey || !attr)
+        return STATUS_ACCESS_VIOLATION;
+
     qemu_syscall(&call.super);
+
+    *retkey = (HANDLE)(ULONG_PTR)call.retkey;
 
     return call.super.iret;
 }
@@ -217,8 +244,25 @@ WINBASEAPI NTSTATUS WINAPI RtlpNtCreateKey(PHANDLE retkey, ACCESS_MASK access, c
 void qemu_RtlpNtCreateKey(struct qemu_syscall *call)
 {
     struct qemu_RtlpNtCreateKey *c = (struct qemu_RtlpNtCreateKey *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlpNtCreateKey(QEMU_G2H(c->retkey), c->access, QEMU_G2H(c->attr), c->TitleIndex, QEMU_G2H(c->class), c->options, QEMU_G2H(c->dispos));
+    OBJECT_ATTRIBUTES stack, *attr = &stack;
+    UNICODE_STRING cls_stack, *class = &cls_stack;
+    UNICODE_STRING name;
+    HANDLE retkey;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    attr = QEMU_G2H(c->attr);
+    class = QEMU_G2H(c->class);
+#else
+    OBJECT_ATTRIBUTES_g2h(attr, QEMU_G2H(c->attr), &name);
+    if (c->class)
+        UNICODE_STRING_g2h(class, QEMU_G2H(c->class));
+    else
+        class = NULL;
+#endif
+
+    c->super.iret = RtlpNtCreateKey(&retkey, c->access, attr, c->TitleIndex, class, c->options, QEMU_G2H(c->dispos));
+    c->retkey = QEMU_H2G(retkey);
 }
 
 #endif

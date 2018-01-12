@@ -135,7 +135,6 @@ void qemu_NtCreateFile(struct qemu_syscall *call)
     IO_STATUS_BLOCK status_stack, *status = &status_stack;
     OBJECT_ATTRIBUTES attr_stack, *attr = &attr_stack;
     struct qemu_OBJECT_ATTRIBUTES *guest_attr;
-    struct qemu_UNICODE_STRING *guest_name;
     UNICODE_STRING name;
     WINE_TRACE("\n");
 
@@ -144,14 +143,7 @@ void qemu_NtCreateFile(struct qemu_syscall *call)
     attr = QEMU_G2H(c->attr);
 #else
     guest_attr = QEMU_G2H(c->attr);
-    guest_name = (struct qemu_UNICODE_STRING *)(ULONG_PTR)guest_attr->ObjectName;
-    OBJECT_ATTRIBUTES_g2h(attr, guest_attr);
-
-    if (guest_name)
-    {
-        UNICODE_STRING_g2h(&name, guest_name);
-        attr->ObjectName = &name;
-    }
+    OBJECT_ATTRIBUTES_g2h(attr, guest_attr, &name);
 #endif
 
     c->super.iret = NtCreateFile(&handle, c->access, attr, status,

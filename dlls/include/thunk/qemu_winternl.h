@@ -93,11 +93,20 @@ struct qemu_OBJECT_ATTRIBUTES
     qemu_ptr SecurityQualityOfService; /* type SECURITY_QUALITY_OF_SERVICE */
 };
 
-static inline void OBJECT_ATTRIBUTES_g2h(OBJECT_ATTRIBUTES *host, const struct qemu_OBJECT_ATTRIBUTES *guest)
+static inline void OBJECT_ATTRIBUTES_g2h(OBJECT_ATTRIBUTES *host, const struct qemu_OBJECT_ATTRIBUTES *guest,
+        UNICODE_STRING *name)
 {
     host->Length = sizeof(*host);
     host->RootDirectory = HANDLE_g2h(guest->RootDirectory);
-    host->ObjectName = (UNICODE_STRING *)(ULONG_PTR)guest->ObjectName;
+    if (guest->ObjectName)
+    {
+        host->ObjectName = name;
+        UNICODE_STRING_g2h(name, (struct qemu_UNICODE_STRING *)(ULONG_PTR)guest->ObjectName);
+    }
+    else
+    {
+        host->ObjectName = 0;
+    }
     host->Attributes = guest->Attributes;
     host->SecurityDescriptor = (void *)(ULONG_PTR)guest->SecurityDescriptor;
     host->SecurityQualityOfService = (void *)(ULONG_PTR)guest->SecurityQualityOfService;
