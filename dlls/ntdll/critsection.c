@@ -65,6 +65,27 @@ WINBASEAPI NTSTATUS WINAPI RtlInitializeCriticalSection(RTL_CRITICAL_SECTION *cr
 
 #else
 
+#if GUEST_BIT != HOST_BIT
+static qemu_ptr alloc_cs32_dbginfo(struct qemu_RTL_CRITICAL_SECTION *crit32)
+{
+    struct qemu_RTL_CRITICAL_SECTION_DEBUG *debug = HeapAlloc(GetProcessHeap(), 0, sizeof(*debug));
+    if (!debug)
+        return 0;
+
+    debug->Type = 0;
+    debug->CreatorBackTraceIndex = 0;
+    debug->CriticalSection = (ULONG_PTR)crit32;
+    debug->ProcessLocksList.Blink = (ULONG_PTR)&(debug->ProcessLocksList);
+    debug->ProcessLocksList.Flink = (ULONG_PTR)&(debug->ProcessLocksList);
+    debug->EntryCount = 0;
+    debug->ContentionCount = 0;
+    debug->Spare[0] = 0;
+    debug->Spare[1] = 0;
+
+    return (ULONG_PTR)debug;
+}
+#endif
+
 void qemu_RtlInitializeCriticalSection(struct qemu_syscall *call)
 {
     struct qemu_RtlInitializeCriticalSection *c = (struct qemu_RtlInitializeCriticalSection *)call;
@@ -77,6 +98,7 @@ void qemu_RtlInitializeCriticalSection(struct qemu_syscall *call)
         crit32 = QEMU_G2H(c->crit);
         crit32->LockSemaphore = 0;
         crit32->SpinCount = 0;
+        crit32->DebugInfo = alloc_cs32_dbginfo(crit32);
         c->super.iret = STATUS_SUCCESS;
     }
 #endif
@@ -119,6 +141,7 @@ void qemu_RtlInitializeCriticalSectionAndSpinCount(struct qemu_syscall *call)
         crit32 = QEMU_G2H(c->crit);
         crit32->LockSemaphore = 0;
         crit32->SpinCount = c->spincount;
+        crit32->DebugInfo = alloc_cs32_dbginfo(crit32);
         c->super.iret = STATUS_SUCCESS;
     }
 #endif
@@ -182,6 +205,10 @@ void qemu_RtlInitializeCriticalSectionEx(struct qemu_syscall *call)
         crit32 = QEMU_G2H(c->crit);
         crit32->LockSemaphore = 0;
         crit32->SpinCount = c->spincount;
+        if (!(c->flags & RTL_CRITICAL_SECTION_FLAG_NO_DEBUG_INFO))
+            crit32->DebugInfo = alloc_cs32_dbginfo(crit32);
+        else
+            crit32->DebugInfo = 0;
         c->super.iret = init_cs32(crit32, c->flags);
     }
 #endif

@@ -26,12 +26,18 @@ static inline void MEMORY_BASIC_INFORMATION_h2g(const MEMORY_BASIC_INFORMATION *
     guest->Type = host->Type;
 }
 
+struct qemu_LIST_ENTRY
+{
+  qemu_ptr Flink;
+  qemu_ptr Blink;
+};
+
 struct qemu_RTL_CRITICAL_SECTION_DEBUG
 {
     WORD   Type;
     WORD   CreatorBackTraceIndex;
-    struct _RTL_CRITICAL_SECTION *CriticalSection;
-    LIST_ENTRY ProcessLocksList;
+    qemu_ptr CriticalSection;
+    struct qemu_LIST_ENTRY ProcessLocksList;
     DWORD EntryCount;
     DWORD ContentionCount;
     DWORD Spare[ 2 ];
