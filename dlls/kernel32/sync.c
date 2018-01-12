@@ -286,8 +286,27 @@ WINBASEAPI DWORD WINAPI WaitForMultipleObjectsEx(DWORD count, const HANDLE *hand
 void qemu_WaitForMultipleObjectsEx(struct qemu_syscall *call)
 {
     struct qemu_WaitForMultipleObjectsEx *c = (struct qemu_WaitForMultipleObjectsEx *)call;
+    HANDLE stack[10], *handles = stack;
+    qemu_handle *handle32;
+    unsigned int i;
     WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
     c->super.iret = WaitForMultipleObjectsEx(c->count, QEMU_G2H(c->handles), c->wait_all, c->timeout, c->alertable);
+    return;
+#endif
+
+    handle32 = QEMU_G2H(c->handles);
+    if (c->count > sizeof(stack) / sizeof(*stack))
+        handles = HeapAlloc(GetProcessHeap(), 0, c->count * sizeof(*handles));
+
+    for (i = 0; i < c->count; ++i)
+        handles[i] = HANDLE_g2h(handle32[i]);
+
+    c->super.iret = WaitForMultipleObjectsEx(c->count, handles, c->wait_all, c->timeout, c->alertable);
+
+    if (handles != stack)
+        HeapFree(GetProcessHeap(), 0, handles);
 }
 
 #endif
