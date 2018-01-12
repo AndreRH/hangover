@@ -3415,7 +3415,7 @@ struct qemu_InitOnceExecuteOnce_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t InitOnceExecuteOnce_guest_cb(struct qemu_InitOnceExecuteOnce_cb *data)
+static uint64_t __fastcall InitOnceExecuteOnce_guest_cb(struct qemu_InitOnceExecuteOnce_cb *data)
 {
     PINIT_ONCE_FN func = (PINIT_ONCE_FN)(ULONG_PTR)data->func;
     return func((INIT_ONCE *)(ULONG_PTR)data->once, (void *)(ULONG_PTR)data->param, (void **)(ULONG_PTR)data->context);
