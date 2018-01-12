@@ -641,6 +641,57 @@ static void status_notify(MSG *guest, MSG *host, BOOL ret)
     }
 }
 
+static void tabcontrol_notify(MSG *guest, MSG *host, BOOL ret)
+{
+    NMHDR *hdr = (NMHDR *)host->lParam;
+    struct qemu_NMTCKEYDOWN *keydown;
+    struct qemu_NMTOOLTIPSCREATED *tooltip;
+    struct qemu_NMHDR *guest_hdr;
+
+    WINE_TRACE("Handling a tab control notify message\n");
+    if (ret)
+    {
+        if (guest->lParam != host->lParam)
+            HeapFree(GetProcessHeap(), 0, (void *)guest->lParam);
+        return;
+    }
+
+    switch (hdr->code)
+    {
+        case NM_TOOLTIPSCREATED:
+            WINE_TRACE("Handling notify message NM_TOOLTIPSCREATED.\n");
+            tooltip = HeapAlloc(GetProcessHeap(), 0, sizeof(*tooltip));
+            NMTOOLTIPSCREATED_h2g(tooltip, (NMTOOLTIPSCREATED *)hdr);
+            guest->lParam = (LPARAM)tooltip;
+            break;
+
+        case TCN_KEYDOWN:
+            WINE_TRACE("Handling notify message TCN_KEYDOWN.\n");
+            keydown = HeapAlloc(GetProcessHeap(), 0, sizeof(*keydown));
+            NMTCKEYDOWN_h2g(keydown, (NMTCKEYDOWN *)hdr);
+            guest->lParam = (LPARAM)keydown;
+            break;
+
+        case NM_CLICK:
+        case NM_RCLICK:
+        case TCN_SELCHANGE:
+        case TCN_SELCHANGING:
+        case TCN_FOCUSCHANGE:
+            WINE_TRACE("Handling notify message %x.\n", hdr->code);
+            guest_hdr = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest_hdr));
+            NMHDR_h2g(guest_hdr, hdr);
+            guest->lParam = (LPARAM)guest_hdr;
+            break;
+
+        case TCN_GETOBJECT:
+            WINE_FIXME("Unhandled notify message %x.\n", hdr->code);
+            break;
+
+        default:
+            WINE_ERR("Unexpected notify message %x.\n", hdr->code);
+    }
+}
+
 static WNDPROC hook_class(const WCHAR *name, WNDPROC replace)
 {
     WNDPROC ret;
@@ -693,6 +744,7 @@ void register_notify_callbacks(void)
     register_notify(WC_COMBOBOXEXW, combobox_notify);
     register_notify(TOOLTIPS_CLASSW, tooltips_notify);
     register_notify(STATUSCLASSNAMEW, status_notify);
+    register_notify(WC_TABCONTROLW, tabcontrol_notify);
 }
 
 #endif

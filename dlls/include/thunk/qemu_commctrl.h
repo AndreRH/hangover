@@ -624,4 +624,27 @@ static inline void NMREBAR_g2h(NMREBAR *host, const struct qemu_NMREBAR *guest)
     host->lParam = guest->lParam;
 }
 
+#include <pshpack1.h>
+struct qemu_NMTCKEYDOWN
+{
+    struct qemu_NMHDR hdr;
+    WORD wVKey;
+    UINT flags;
+};
+#include <poppack.h>
+
+static inline void NMTCKEYDOWN_h2g(struct qemu_NMTCKEYDOWN *guest, const NMTCKEYDOWN *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->wVKey = host->wVKey;
+    guest->flags = host->flags;
+}
+
+static inline void TCKEYDOWN_g2h(NMTCKEYDOWN *host, const struct qemu_NMTCKEYDOWN *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->wVKey = guest->wVKey;
+    host->flags = guest->flags;
+}
+
 #endif
