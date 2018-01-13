@@ -730,7 +730,6 @@ void qemu_GetClassInfoW(struct qemu_syscall *call)
         WNDCLASS_h2g(QEMU_G2H(c->wc), wc);
 #endif
     }
-
 }
 
 #endif
@@ -763,8 +762,37 @@ WINUSERAPI BOOL WINAPI GetClassInfoExA(HINSTANCE hInstance, LPCSTR name, WNDCLAS
 void qemu_GetClassInfoExA(struct qemu_syscall *call)
 {
     struct qemu_GetClassInfoExA *c = (struct qemu_GetClassInfoExA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetClassInfoExA(QEMU_G2H(c->hInstance), QEMU_G2H(c->name), QEMU_G2H(c->wc));
+    WNDCLASSEXA stack, *wc = &stack;
+    struct qemu_WNDCLASSEX *class32;
+
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    wc = QEMU_G2H(c->wc);
+#else
+    class32 = QEMU_G2H(c->wc);
+    if (class32)
+    {
+        if (class32->cbSize == sizeof(*class32))
+            wc->cbSize = sizeof(*wc);
+        else
+            wc->cbSize = 0;
+    }
+    else
+    {
+        wc = NULL;
+    }
+#endif
+
+    c->super.iret = GetClassInfoExA(QEMU_G2H(c->hInstance), QEMU_G2H(c->name), wc);
+
+    if (c->super.iret)
+    {
+        wc->lpfnWndProc = (void *)wndproc_host_to_guest(wc->lpfnWndProc);
+#if GUEST_BIT != HOST_BIT
+        WNDCLASSEX_h2g(class32, (WNDCLASSEXW *)wc);
+#endif
+    }
 }
 
 #endif
@@ -797,8 +825,37 @@ WINUSERAPI BOOL WINAPI GetClassInfoExW(HINSTANCE hInstance, LPCWSTR name, WNDCLA
 void qemu_GetClassInfoExW(struct qemu_syscall *call)
 {
     struct qemu_GetClassInfoExW *c = (struct qemu_GetClassInfoExW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetClassInfoExW(QEMU_G2H(c->hInstance), QEMU_G2H(c->name), QEMU_G2H(c->wc));
+    WNDCLASSEXW stack, *wc = &stack;
+    struct qemu_WNDCLASSEX *class32;
+
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    wc = QEMU_G2H(c->wc);
+#else
+    class32 = QEMU_G2H(c->wc);
+    if (class32)
+    {
+        if (class32->cbSize == sizeof(*class32))
+            wc->cbSize = sizeof(*wc);
+        else
+            wc->cbSize = 0;
+    }
+    else
+    {
+        wc = NULL;
+    }
+#endif
+
+    c->super.iret = GetClassInfoExW(QEMU_G2H(c->hInstance), QEMU_G2H(c->name), wc);
+
+    if (c->super.iret)
+    {
+        wc->lpfnWndProc = (void *)wndproc_host_to_guest(wc->lpfnWndProc);
+#if GUEST_BIT != HOST_BIT
+        WNDCLASSEX_h2g(class32, wc);
+#endif
+    }
 }
 
 #endif
