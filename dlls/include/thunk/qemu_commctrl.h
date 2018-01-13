@@ -594,6 +594,24 @@ static inline void NMTTDISPINFOW_g2h(NMTTDISPINFOW *host, const struct qemu_NMTT
     host->lParam = guest->lParam;
 }
 
+struct qemu_NMTTCUSTOMDRAW
+{
+    struct qemu_NMCUSTOMDRAW nmcd;
+    UINT uDrawFlags;
+};
+
+static inline void NMTTCUSTOMDRAW_h2g(struct qemu_NMTTCUSTOMDRAW *guest, const NMTTCUSTOMDRAW *host)
+{
+    NMCUSTOMDRAW_h2g(&guest->nmcd, &host->nmcd);
+    guest->uDrawFlags = host->uDrawFlags;
+}
+
+static inline void NMTTCUSTOMDRAW_g2h(NMTTCUSTOMDRAW *host, const struct qemu_NMTTCUSTOMDRAW *guest)
+{
+    NMCUSTOMDRAW_g2h(&host->nmcd, &guest->nmcd);
+    host->uDrawFlags = guest->uDrawFlags;
+}
+
 struct qemu_NMREBAR
 {
     struct qemu_NMHDR   hdr;

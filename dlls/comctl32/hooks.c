@@ -549,6 +549,7 @@ static void tooltips_notify(MSG *guest, MSG *host, BOOL ret)
     NMHDR *hdr = (NMHDR *)host->lParam;
     struct qemu_NMTTDISPINFOW *dispinfow;
     struct qemu_NMTTDISPINFOA *dispinfoa;
+    struct qemu_NMTTCUSTOMDRAW *customdraw;
 
     WINE_TRACE("Handling a tooltip notify message\n");
     if (ret)
@@ -563,6 +564,11 @@ static void tooltips_notify(MSG *guest, MSG *host, BOOL ret)
             case TTN_GETDISPINFOW:
                 dispinfow = (struct qemu_NMTTDISPINFOW *)guest->lParam;
                 NMTTDISPINFOW_g2h((NMTTDISPINFOW *)hdr, dispinfow);
+                break;
+
+            case NM_CUSTOMDRAW:
+                customdraw = (struct qemu_NMTTCUSTOMDRAW *)guest->lParam;
+                NMTTCUSTOMDRAW_g2h((NMTTCUSTOMDRAW *)hdr, customdraw);
                 break;
         }
 
@@ -594,6 +600,12 @@ static void tooltips_notify(MSG *guest, MSG *host, BOOL ret)
         case TTN_POP:
             WINE_FIXME("Unhandled notify message TTN_POP.\n");
             break;
+
+        case NM_CUSTOMDRAW:
+            WINE_TRACE("Handling notify message NM_CUSTOMDRAW.\n");
+            customdraw = HeapAlloc(GetProcessHeap(), 0, sizeof(*customdraw));
+            NMTTCUSTOMDRAW_h2g(customdraw, (NMTTCUSTOMDRAW *)hdr);
+            guest->lParam = (LPARAM)customdraw;
 
         default:
             WINE_ERR("Unexpected notify message %x.\n", hdr->code);
