@@ -380,4 +380,32 @@ static inline void ACTCTX_SECTION_KEYED_DATA_h2g(
     }
 }
 
+struct qemu_SECURITY_ATTRIBUTES
+{
+    DWORD       nLength;
+    qemu_ptr    lpSecurityDescriptor;
+    BOOL        bInheritHandle;
+};
+
+struct SA_conv_struct
+{
+    SECURITY_ATTRIBUTES sa;
+    SECURITY_DESCRIPTOR sd;
+};
+
+static inline void SECURITY_ATTRIBUTES_g2h(struct SA_conv_struct *host, const struct qemu_SECURITY_ATTRIBUTES *guest)
+{
+    host->sa.nLength = sizeof(host->sa.nLength);
+    if (guest->lpSecurityDescriptor)
+    {
+        host->sa.lpSecurityDescriptor = &host->sd;
+        SECURITY_DESCRIPTOR_g2h(&host->sd, (struct qemu_SECURITY_DESCRIPTOR *)(ULONG_PTR)guest->lpSecurityDescriptor);
+    }
+    else
+    {
+        host->sa.lpSecurityDescriptor = NULL;
+    }
+    host->sa.bInheritHandle = guest->bInheritHandle;
+}
+
 #endif

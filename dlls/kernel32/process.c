@@ -80,6 +80,8 @@ void qemu_CreateProcessA(struct qemu_syscall *call)
     size_t len;
     STARTUPINFOA stack, *si = &stack;
     PROCESS_INFORMATION pi_stack, *pi = &pi_stack;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *process_attr = &conv.sa;
 
     WINE_TRACE("\n");
     app_name = QEMU_G2H(c->app_name);
@@ -88,6 +90,7 @@ void qemu_CreateProcessA(struct qemu_syscall *call)
 #if GUEST_BIT == HOST_BIT
     si = QEMU_G2H(c->startup_info);
     pi = QEMU_G2H(c->info);
+    process_attr = QEMU_G2H(c->process_attr);
 #else
     if (QEMU_G2H(c->startup_info))
         STARTUPINFO_g2h((STARTUPINFOW *)si, QEMU_G2H(c->startup_info));
@@ -98,9 +101,14 @@ void qemu_CreateProcessA(struct qemu_syscall *call)
      * place... */
     if (!QEMU_G2H(c->info))
         pi = NULL;
+
+    if (c->process_attr)
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->process_attr));
+    else
+        process_attr = NULL;
 #endif
 
-    c->super.iret = CreateProcessA(app_name, cmd_line, QEMU_G2H(c->process_attr), QEMU_G2H(c->thread_attr),
+    c->super.iret = CreateProcessA(app_name, cmd_line, process_attr, QEMU_G2H(c->thread_attr),
             c->inherit, c->flags, QEMU_G2H(c->env), QEMU_G2H(c->cur_dir), si, pi);
     if (!c->super.iret && GetLastError() == ERROR_BAD_EXE_FORMAT)
     {
@@ -151,7 +159,7 @@ void qemu_CreateProcessA(struct qemu_syscall *call)
             cmd_line = combined;
         }
 
-        c->super.iret = CreateProcessA(qemu, cmd_line, QEMU_G2H(c->process_attr), QEMU_G2H(c->thread_attr),
+        c->super.iret = CreateProcessA(qemu, cmd_line, process_attr, QEMU_G2H(c->thread_attr),
                 c->inherit, c->flags, QEMU_G2H(c->env), QEMU_G2H(c->cur_dir), si, pi);
 
         HeapFree(GetProcessHeap(), 0, combined);

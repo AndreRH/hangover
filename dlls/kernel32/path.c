@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_kernel32.h"
@@ -930,14 +932,24 @@ WINBASEAPI BOOL WINAPI CreateDirectoryW(LPCWSTR path, LPSECURITY_ATTRIBUTES sa)
 void qemu_CreateDirectoryW(struct qemu_syscall *call)
 {
     struct qemu_CreateDirectoryW *c = (struct qemu_CreateDirectoryW *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
     WINE_TRACE("\n");
 
-#if GUEST_BIT != HOST_BIT
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
     if (c->sa)
-        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+    {
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    }
+    else
+    {
+        sa = NULL;
+    }
 #endif
 
-    c->super.iret = CreateDirectoryW(QEMU_G2H(c->path), QEMU_G2H(c->sa));
+    c->super.iret = CreateDirectoryW(QEMU_G2H(c->path), sa);
 }
 
 #endif
@@ -968,14 +980,24 @@ WINBASEAPI BOOL WINAPI CreateDirectoryA(LPCSTR path, LPSECURITY_ATTRIBUTES sa)
 void qemu_CreateDirectoryA(struct qemu_syscall *call)
 {
     struct qemu_CreateDirectoryA *c = (struct qemu_CreateDirectoryA *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
     WINE_TRACE("\n");
 
-#if GUEST_BIT != HOST_BIT
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
     if (c->sa)
-        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+    {
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    }
+    else
+    {
+        sa = NULL;
+    }
 #endif
 
-    c->super.iret = CreateDirectoryA(QEMU_G2H(c->path), QEMU_G2H(c->sa));
+    c->super.iret = CreateDirectoryA(QEMU_G2H(c->path), sa);
 }
 
 #endif

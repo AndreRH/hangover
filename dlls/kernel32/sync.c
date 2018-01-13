@@ -654,14 +654,20 @@ WINBASEAPI HANDLE WINAPI CreateEventA(SECURITY_ATTRIBUTES *sa, BOOL manual_reset
 void qemu_CreateEventA(struct qemu_syscall *call)
 {
     struct qemu_CreateEventA *c = (struct qemu_CreateEventA *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
     WINE_TRACE("\n");
 
-#if GUEST_BIT != HOST_BIT
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
     if (c->sa)
-        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
 #endif
 
-    c->super.iret = (ULONG_PTR)CreateEventA(QEMU_G2H(c->sa), c->manual_reset, c->initial_state, QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)CreateEventA(sa, c->manual_reset, c->initial_state, QEMU_G2H(c->name));
 }
 
 #endif
@@ -696,14 +702,20 @@ WINBASEAPI HANDLE WINAPI CreateEventW(SECURITY_ATTRIBUTES *sa, BOOL manual_reset
 void qemu_CreateEventW(struct qemu_syscall *call)
 {
     struct qemu_CreateEventW *c = (struct qemu_CreateEventW *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
     WINE_TRACE("\n");
 
-#if GUEST_BIT != HOST_BIT
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
     if (c->sa)
-        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
 #endif
 
-    c->super.iret = (ULONG_PTR)CreateEventW(QEMU_G2H(c->sa), c->manual_reset, c->initial_state, QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)CreateEventW(sa, c->manual_reset, c->initial_state, QEMU_G2H(c->name));
 }
 
 #endif
@@ -966,8 +978,20 @@ WINBASEAPI HANDLE WINAPI CreateMutexA(SECURITY_ATTRIBUTES *sa, BOOL owner, LPCST
 void qemu_CreateMutexA(struct qemu_syscall *call)
 {
     struct qemu_CreateMutexA *c = (struct qemu_CreateMutexA *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)CreateMutexA(QEMU_G2H(c->sa), c->owner, QEMU_G2H(c->name));
+
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
+    if (c->sa)
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
+#endif
+
+    c->super.iret = (ULONG_PTR)CreateMutexA(sa, c->owner, QEMU_G2H(c->name));
 }
 
 #endif
@@ -1000,8 +1024,20 @@ WINBASEAPI HANDLE WINAPI CreateMutexW(SECURITY_ATTRIBUTES *sa, BOOL owner, LPCWS
 void qemu_CreateMutexW(struct qemu_syscall *call)
 {
     struct qemu_CreateMutexW *c = (struct qemu_CreateMutexW *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)CreateMutexW(QEMU_G2H(c->sa), c->owner, QEMU_G2H(c->name));
+
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
+    if (c->sa)
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
+#endif
+
+    c->super.iret = (ULONG_PTR)CreateMutexW(sa, c->owner, QEMU_G2H(c->name));
 }
 
 #endif
@@ -1206,8 +1242,20 @@ WINBASEAPI HANDLE WINAPI CreateSemaphoreA(SECURITY_ATTRIBUTES *sa, LONG initial,
 void qemu_CreateSemaphoreA(struct qemu_syscall *call)
 {
     struct qemu_CreateSemaphoreA *c = (struct qemu_CreateSemaphoreA *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)CreateSemaphoreA(QEMU_G2H(c->sa), c->initial, c->max, QEMU_G2H(c->name));
+
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
+    if (c->sa)
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
+#endif
+
+    c->super.iret = (ULONG_PTR)CreateSemaphoreA(sa, c->initial, c->max, QEMU_G2H(c->name));
 }
 
 #endif
@@ -1242,8 +1290,20 @@ WINBASEAPI HANDLE WINAPI CreateSemaphoreW(SECURITY_ATTRIBUTES *sa, LONG initial,
 void qemu_CreateSemaphoreW(struct qemu_syscall *call)
 {
     struct qemu_CreateSemaphoreW *c = (struct qemu_CreateSemaphoreW *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)CreateSemaphoreW(QEMU_G2H(c->sa), c->initial, c->max, QEMU_G2H(c->name));
+
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
+    if (c->sa)
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
+#endif
+
+    c->super.iret = (ULONG_PTR)CreateSemaphoreW(sa, c->initial, c->max, QEMU_G2H(c->name));
 }
 
 #endif
@@ -1762,8 +1822,20 @@ WINBASEAPI HANDLE WINAPI CreateWaitableTimerA(SECURITY_ATTRIBUTES *sa, BOOL manu
 void qemu_CreateWaitableTimerA(struct qemu_syscall *call)
 {
     struct qemu_CreateWaitableTimerA *c = (struct qemu_CreateWaitableTimerA *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)CreateWaitableTimerA(QEMU_G2H(c->sa), c->manual, QEMU_G2H(c->name));
+
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
+    if (c->sa)
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
+#endif
+
+    c->super.iret = (ULONG_PTR)CreateWaitableTimerA(sa, c->manual, QEMU_G2H(c->name));
 }
 
 #endif
@@ -1796,8 +1868,20 @@ WINBASEAPI HANDLE WINAPI CreateWaitableTimerW(SECURITY_ATTRIBUTES *sa, BOOL manu
 void qemu_CreateWaitableTimerW(struct qemu_syscall *call)
 {
     struct qemu_CreateWaitableTimerW *c = (struct qemu_CreateWaitableTimerW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)CreateWaitableTimerW(QEMU_G2H(c->sa), c->manual, QEMU_G2H(c->name));
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
+    if (c->sa)
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
+#endif
+
+    c->super.iret = (ULONG_PTR)CreateWaitableTimerW(sa, c->manual, QEMU_G2H(c->name));
 }
 
 #endif
@@ -2450,9 +2534,21 @@ WINBASEAPI HANDLE WINAPI CreateNamedPipeA(LPCSTR name, DWORD dwOpenMode, DWORD d
 void qemu_CreateNamedPipeA(struct qemu_syscall *call)
 {
     struct qemu_CreateNamedPipeA *c = (struct qemu_CreateNamedPipeA *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
     WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->attr);
+#else
+    if (c->attr)
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->attr));
+    else
+        sa = NULL;
+#endif
+
     c->super.iret = (ULONG_PTR)CreateNamedPipeA(QEMU_G2H(c->name), c->dwOpenMode, c->dwPipeMode, c->nMaxInstances,
-            c->nOutBufferSize, c->nInBufferSize, c->nDefaultTimeOut, QEMU_G2H(c->attr));
+            c->nOutBufferSize, c->nInBufferSize, c->nDefaultTimeOut, sa);
 }
 
 #endif
@@ -2495,8 +2591,20 @@ WINBASEAPI HANDLE WINAPI CreateNamedPipeW(LPCWSTR name, DWORD dwOpenMode, DWORD 
 void qemu_CreateNamedPipeW(struct qemu_syscall *call)
 {
     struct qemu_CreateNamedPipeW *c = (struct qemu_CreateNamedPipeW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)CreateNamedPipeW(QEMU_G2H(c->name), c->dwOpenMode, c->dwPipeMode, c->nMaxInstances, c->nOutBufferSize, c->nInBufferSize, c->nDefaultTimeOut, QEMU_G2H(c->sa));
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
+    WINE_FIXME("Unverified\n");
+
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
+    if (c->sa)
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
+#endif
+
+    c->super.iret = (ULONG_PTR)CreateNamedPipeW(QEMU_G2H(c->name), c->dwOpenMode, c->dwPipeMode, c->nMaxInstances, c->nOutBufferSize, c->nInBufferSize, c->nDefaultTimeOut, sa);
 }
 
 #endif
@@ -2987,8 +3095,20 @@ WINBASEAPI BOOL WINAPI CreatePipe(PHANDLE hReadPipe, PHANDLE hWritePipe, LPSECUR
 void qemu_CreatePipe(struct qemu_syscall *call)
 {
     struct qemu_CreatePipe *c = (struct qemu_CreatePipe *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
     WINE_TRACE("\n");
-    c->super.iret = CreatePipe(QEMU_G2H(c->hReadPipe), QEMU_G2H(c->hWritePipe), QEMU_G2H(c->sa), c->size);
+
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
+    if (c->sa)
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
+#endif
+
+    c->super.iret = CreatePipe(QEMU_G2H(c->hReadPipe), QEMU_G2H(c->hWritePipe), sa, c->size);
 }
 
 #endif

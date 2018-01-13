@@ -437,17 +437,23 @@ WINBASEAPI HANDLE WINAPI CreateFileMappingA(HANDLE hFile, SECURITY_ATTRIBUTES *s
 void qemu_CreateFileMappingA(struct qemu_syscall *call)
 {
     struct qemu_CreateFileMappingA *c = (struct qemu_CreateFileMappingA *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
     WINE_TRACE("\n");
 
     if (c->protect & SEC_IMAGE)
         WINE_FIXME("SEC_IMAGE mappings will be rejected by Wine.\n");
 
-#if GUEST_BIT != HOST_BIT
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
     if (c->sa)
-        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
 #endif
 
-    c->super.iret = (ULONG_PTR)CreateFileMappingA(QEMU_G2H(c->hFile), QEMU_G2H(c->sa), c->protect, c->size_high, c->size_low, QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)CreateFileMappingA(QEMU_G2H(c->hFile), sa, c->protect, c->size_high, c->size_low, QEMU_G2H(c->name));
 }
 
 #endif
@@ -486,17 +492,23 @@ WINBASEAPI HANDLE WINAPI CreateFileMappingW(HANDLE hFile, LPSECURITY_ATTRIBUTES 
 void qemu_CreateFileMappingW(struct qemu_syscall *call)
 {
     struct qemu_CreateFileMappingW *c = (struct qemu_CreateFileMappingW *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
     WINE_TRACE("\n");
 
     if (c->protect & SEC_IMAGE)
         WINE_FIXME("SEC_IMAGE mappings will be rejected by Wine.\n");
 
-#if GUEST_BIT != HOST_BIT
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
     if (c->sa)
-        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
 #endif
 
-    c->super.iret = (ULONG_PTR)CreateFileMappingW(QEMU_G2H(c->hFile), QEMU_G2H(c->sa), c->protect, c->size_high, c->size_low, QEMU_G2H(c->name));
+    c->super.iret = (ULONG_PTR)CreateFileMappingW(QEMU_G2H(c->hFile), sa, c->protect, c->size_high, c->size_low, QEMU_G2H(c->name));
 }
 
 #endif

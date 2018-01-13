@@ -22,6 +22,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_kernel32.h"
@@ -107,6 +109,8 @@ void qemu_CreateThread(struct qemu_syscall *call)
 {
     struct qemu_CreateThread *c = (struct qemu_CreateThread *)call;
     struct qemu_CreateThread_context *context;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
 
     WINE_TRACE("func %lx, ctx %lx\n", (unsigned long)c->start, (unsigned long)c->param);
 
@@ -117,16 +121,20 @@ void qemu_CreateThread(struct qemu_syscall *call)
         return;
     }
 
-#if GUEST_BIT != HOST_BIT
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
     if (c->sa)
-        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
 #endif
 
     context->app_param = c->param;
     context->app_func = c->start;
     context->guest_wrapper = c->wrapper;
 
-    c->super.iret = (ULONG_PTR)CreateThread(QEMU_G2H(c->sa), c->stack, qemu_CreateThread_wrapper,
+    c->super.iret = (ULONG_PTR)CreateThread(sa, c->stack, qemu_CreateThread_wrapper,
             context, c->flags, QEMU_G2H(c->id));
 }
 

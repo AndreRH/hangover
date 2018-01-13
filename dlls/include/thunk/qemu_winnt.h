@@ -53,4 +53,37 @@ struct qemu_RTL_CRITICAL_SECTION
     qemu_ptr SpinCount;
 };
 
+struct qemu_SECURITY_DESCRIPTOR
+{
+    BYTE Revision;
+    BYTE Sbz1;
+    SECURITY_DESCRIPTOR_CONTROL Control;    /* USHORT */
+    qemu_ptr Owner; /* Should be fine without conversion. Needs double-checking. */
+    qemu_ptr Group;
+    qemu_ptr Sacl;  /* PACL, no conversion needed. */
+    qemu_ptr Dacl;
+};
+
+static inline void SECURITY_DESCRIPTOR_g2h(SECURITY_DESCRIPTOR *host, const struct qemu_SECURITY_DESCRIPTOR *guest)
+{
+    host->Revision = guest->Revision;
+    host->Sbz1 = guest->Sbz1;
+    host->Control = guest->Control;
+    host->Owner = (SID *)(ULONG_PTR)guest->Owner;
+    host->Group = (SID *)(ULONG_PTR)guest->Group;
+    host->Sacl = (ACL *)(ULONG_PTR)guest->Sacl;
+    host->Dacl = (ACL *)(ULONG_PTR)guest->Dacl;
+}
+
+static inline void SECURITY_DESCRIPTOR_h2g(struct qemu_SECURITY_DESCRIPTOR *guest, const SECURITY_DESCRIPTOR *host)
+{
+    guest->Revision = host->Revision;
+    guest->Sbz1 = host->Sbz1;
+    guest->Control = host->Control;
+    guest->Owner = (ULONG_PTR)host->Owner;
+    guest->Group = (ULONG_PTR)host->Group;
+    guest->Sacl = (ULONG_PTR)host->Sacl;
+    guest->Dacl = (ULONG_PTR)host->Dacl;
+}
+
 #endif

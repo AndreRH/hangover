@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <fileapi.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_kernel32.h"
@@ -1465,14 +1467,20 @@ WINBASEAPI HANDLE WINAPI CreateFileW(LPCWSTR filename, DWORD access, DWORD shari
 void qemu_CreateFileW(struct qemu_syscall *call)
 {
     struct qemu_CreateFileW *c = (struct qemu_CreateFileW *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
     WINE_TRACE("\n");
 
-#if GUEST_BIT != HOST_BIT
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
     if (c->sa)
-        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
 #endif
 
-    c->super.iret = QEMU_H2G(CreateFileW(QEMU_G2H(c->filename), c->access, c->sharing, QEMU_G2H(c->sa), c->creation, c->attributes, QEMU_G2H(c->template)));
+    c->super.iret = QEMU_H2G(CreateFileW(QEMU_G2H(c->filename), c->access, c->sharing, sa, c->creation, c->attributes, QEMU_G2H(c->template)));
 }
 
 #endif
@@ -1513,15 +1521,20 @@ WINBASEAPI HANDLE WINAPI CreateFileA(LPCSTR filename, DWORD access, DWORD sharin
 void qemu_CreateFileA(struct qemu_syscall *call)
 {
     struct qemu_CreateFileA *c = (struct qemu_CreateFileA *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
     WINE_TRACE("\n");
 
-#if GUEST_BIT != HOST_BIT
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
     if (c->sa)
-        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
 #endif
 
-    c->super.iret = QEMU_H2G(CreateFileA(QEMU_G2H(c->filename), c->access, c->sharing, QEMU_G2H(c->sa),
-            c->creation, c->attributes, (HANDLE)c->template));
+    c->super.iret = QEMU_H2G(CreateFileA(QEMU_G2H(c->filename), c->access, c->sharing, sa, c->creation, c->attributes, QEMU_G2H(c->template)));
 }
 
 #endif
@@ -2349,15 +2362,21 @@ extern HANDLE WINAPI OpenFileById(HANDLE handle, LPFILE_ID_DESCRIPTOR id, DWORD 
 void qemu_OpenFileById(struct qemu_syscall *call)
 {
     struct qemu_OpenFileById *c = (struct qemu_OpenFileById *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
     WINE_TRACE("\n");
 
-#if GUEST_BIT != HOST_BIT
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sec_attr);
+#else
     if (c->sec_attr)
-        WINE_FIXME("Convert SECURITY_ATTRIBUTES.\n");
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sec_attr));
+    else
+        sa = NULL;
 #endif
 
     c->super.iret = QEMU_H2G(OpenFileById(QEMU_G2H(c->handle), QEMU_G2H(c->id), c->access, c->share,
-            QEMU_G2H(c->sec_attr), c->flags));
+            sa, c->flags));
 }
 
 #endif
