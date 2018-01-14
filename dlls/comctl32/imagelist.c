@@ -22,6 +22,9 @@
 #include <stdio.h>
 #include <commctrl.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_commctrl.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_comctl32.h"
@@ -794,8 +797,23 @@ WINBASEAPI BOOL WINAPI ImageList_GetImageInfo (HIMAGELIST himl, INT i, IMAGEINFO
 void qemu_ImageList_GetImageInfo(struct qemu_syscall *call)
 {
     struct qemu_ImageList_GetImageInfo *c = (struct qemu_ImageList_GetImageInfo *)call;
+    IMAGEINFO stack, *info = &stack;
+    struct qemu_IMAGEINFO *info32;
     WINE_TRACE("\n");
-    c->super.iret = ImageList_GetImageInfo(QEMU_G2H(c->himl), c->i, QEMU_G2H(c->pImageInfo));
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->pImageInfo);
+#else
+    if (!QEMU_G2H(c->pImageInfo))
+        info = NULL;
+#endif
+
+    c->super.iret = ImageList_GetImageInfo(QEMU_G2H(c->himl), c->i, info);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret)
+        IMAGEINFO_h2g(QEMU_G2H(c->pImageInfo), info);
+#endif
 }
 
 #endif

@@ -698,4 +698,31 @@ static inline void TCITEM_g2h(TCITEMW *host, const struct qemu_TCITEM *guest)
     host->lParam = guest->lParam;
 }
 
+struct qemu_IMAGEINFO
+{
+    qemu_handle hbmImage;
+    qemu_handle hbmMask;
+    INT         Unused1;
+    INT         Unused2;
+    RECT        rcImage;
+};
+
+static inline void IMAGEINFO_h2g(struct qemu_IMAGEINFO *guest, const IMAGEINFO *host)
+{
+    guest->hbmImage = (ULONG_PTR)host->hbmImage;
+    guest->hbmMask = (ULONG_PTR)host->hbmMask;
+    guest->Unused1 = host->Unused1;
+    guest->Unused2 = host->Unused2;
+    guest->rcImage = host->rcImage;
+}
+
+static inline void IMAGEINFO_g2h(IMAGEINFO *host, const struct qemu_IMAGEINFO *guest)
+{
+    host->hbmImage = HANDLE_g2h(guest->hbmImage);
+    host->hbmMask = HANDLE_g2h(guest->hbmMask);
+    host->Unused1 = guest->Unused1;
+    host->Unused2 = guest->Unused2;
+    host->rcImage = guest->rcImage;
+}
+
 #endif
