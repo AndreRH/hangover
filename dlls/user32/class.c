@@ -943,7 +943,13 @@ void qemu_call_wndproc(struct qemu_syscall *call)
     if (wndproc_is_handle((ULONG_PTR)wrapper->host_proc))
         WINE_ERR("Calling a WNDPROC handle via a reverse wrapper.\n");
 
-    msg_guest_to_host(&msg_out, &msg_in);
+    /* When the WM_TIMER callback is actually invoked by DispatchMessage, the lparam callback pointer is
+     * replaced with the value of GetTickCount(). Do not translate it. */
+    if (msg_in.message == WM_TIMER || msg_in.message == WM_SYSTIMER)
+        msg_out = msg_in;
+    else
+        msg_guest_to_host(&msg_out, &msg_in);
+
     c->super.iret = CallWindowProcW(wrapper->host_proc, msg_out.hwnd, msg_out.message,
             msg_out.wParam, msg_out.lParam);
     msg_guest_to_host_return(&msg_in, &msg_out);

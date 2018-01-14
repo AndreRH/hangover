@@ -914,7 +914,12 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
     MSG msg_struct = {win, msg, wparam, lparam}, msg_conv;
     LRESULT ret;
 
-    msg_host_to_guest(&msg_conv, &msg_struct);
+    /* When the WM_TIMER callback is actually invoked by DispatchMessage, the lparam callback pointer is
+     * replaced with the value of GetTickCount(). Do not translate it. */
+    if (msg == WM_TIMER || msg == WM_SYSTIMER)
+        msg_conv = msg_struct;
+    else
+        msg_host_to_guest(&msg_conv, &msg_struct);
 
 #if HOST_BIT != GUEST_BIT
     call = HeapAlloc(GetProcessHeap(), 0, sizeof(*call));
@@ -1028,12 +1033,12 @@ uint64_t wndproc_host_to_guest(WNDPROC host_proc)
     {
         if (reverse_wndproc_wrappers[i].host_proc == host_proc)
         {
-            WINE_TRACE("Allocated reverse WNDPROC wrapper %p for host func %p.\n",
-                    &reverse_wndproc_wrappers[i], host_proc);
             return QEMU_H2G(&reverse_wndproc_wrappers[i]);
         }
         if (!reverse_wndproc_wrappers[i].host_proc)
         {
+            WINE_TRACE("Allocated reverse WNDPROC wrapper %p for host func %p, index %u.\n",
+                    &reverse_wndproc_wrappers[i], host_proc, i);
             reverse_wndproc_wrappers[i].host_proc = host_proc;
             reverse_wndproc_wrappers[i].guest_proc = reverse_wndproc_func;
             return QEMU_H2G(&reverse_wndproc_wrappers[i]);
