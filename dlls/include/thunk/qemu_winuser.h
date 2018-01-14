@@ -768,4 +768,105 @@ static inline void RAWINPUTDEVICELIST_h2g(struct qemu_RAWINPUTDEVICELIST *guest,
     guest->dwType = host->dwType;
 }
 
+struct qemu_ICONINFO
+{
+    BOOL        fIcon;
+    DWORD       xHotspot;
+    DWORD       yHotspot;
+    qemu_handle hbmMask;
+    qemu_handle hbmColor;
+};
+
+static inline void ICONINFO_h2g(struct qemu_ICONINFO *guest, const ICONINFO *host)
+{
+    guest->fIcon = host->fIcon;
+    guest->xHotspot = host->xHotspot;
+    guest->yHotspot = host->yHotspot;
+    guest->hbmMask = (ULONG_PTR)host->hbmMask;
+    guest->hbmColor = (ULONG_PTR)host->hbmColor;
+}
+
+static inline void ICONINFO_g2h(ICONINFO *host, const struct qemu_ICONINFO *guest)
+{
+    host->fIcon = guest->fIcon;
+    host->xHotspot = guest->xHotspot;
+    host->yHotspot = guest->yHotspot;
+    host->hbmMask = HANDLE_g2h(guest->hbmMask);
+    host->hbmColor = HANDLE_g2h(guest->hbmColor);
+}
+
+struct qemu_ICONINFOEXA
+{
+    DWORD       cbSize;
+    BOOL        fIcon;
+    DWORD       xHotspot;
+    DWORD       yHotspot;
+    qemu_handle hbmMask;
+    qemu_handle hbmColor;
+    WORD        wResID;
+    CHAR        szModName[MAX_PATH];
+    CHAR        szResName[MAX_PATH];
+};
+
+static inline void ICONINFOEXA_h2g(struct qemu_ICONINFOEXA *guest, const ICONINFOEXA *host)
+{
+    guest->fIcon = host->fIcon;
+    guest->xHotspot = host->xHotspot;
+    guest->yHotspot = host->yHotspot;
+    guest->hbmMask = (ULONG_PTR)host->hbmMask;
+    guest->hbmColor = (ULONG_PTR)host->hbmColor;
+    guest->wResID = host->wResID;
+    memcpy(guest->szModName, host->szModName, sizeof(guest->szModName));
+    memcpy(guest->szResName, host->szResName, sizeof(guest->szResName));
+}
+
+static inline void ICONINFOEXA_g2h(ICONINFOEXA *host, const struct qemu_ICONINFOEXA *guest)
+{
+    host->fIcon = guest->fIcon;
+    host->xHotspot = guest->xHotspot;
+    host->yHotspot = guest->yHotspot;
+    host->hbmMask = HANDLE_g2h(guest->hbmMask);
+    host->hbmColor = HANDLE_g2h(guest->hbmColor);
+    host->wResID = guest->wResID;
+    memcpy(host->szModName, guest->szModName, sizeof(host->szModName));
+    memcpy(host->szResName, guest->szResName, sizeof(host->szResName));
+}
+
+struct qemu_ICONINFOEXW
+{
+    DWORD       cbSize;
+    BOOL        fIcon;
+    DWORD       xHotspot;
+    DWORD       yHotspot;
+    qemu_handle hbmMask;
+    qemu_handle hbmColor;
+    WORD        wResID;
+    WCHAR       szModName[MAX_PATH];
+    WCHAR       szResName[MAX_PATH];
+};
+
+static inline void ICONINFOEXW_h2g(struct qemu_ICONINFOEXW *guest, const ICONINFOEXW *host)
+{
+    guest->fIcon = host->fIcon;
+    guest->xHotspot = host->xHotspot;
+    guest->yHotspot = host->yHotspot;
+    guest->hbmMask = (ULONG_PTR)host->hbmMask;
+    guest->hbmColor = (ULONG_PTR)host->hbmColor;
+    guest->wResID = host->wResID;
+    memcpy(guest->szModName, host->szModName, sizeof(guest->szModName));
+    memcpy(guest->szResName, host->szResName, sizeof(guest->szResName));
+}
+
+static inline void ICONINFOEXW_g2h(ICONINFOEXW *host, const struct qemu_ICONINFOEXW *guest)
+{
+    host->fIcon = guest->fIcon;
+    host->xHotspot = guest->xHotspot;
+    host->yHotspot = guest->yHotspot;
+    host->hbmMask = HANDLE_g2h(guest->hbmMask);
+    host->hbmColor = HANDLE_g2h(guest->hbmColor);
+    host->wResID = guest->wResID;
+    memcpy(host->szModName, guest->szModName, sizeof(host->szModName));
+    memcpy(host->szResName, guest->szResName, sizeof(host->szResName));
+}
+
 #endif

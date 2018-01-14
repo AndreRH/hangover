@@ -947,6 +947,10 @@ void qemu_IsDialogMessageA(struct qemu_syscall *call)
     msg_guest_to_host(&msg_out, msg);
     c->super.iret = IsDialogMessageA(QEMU_G2H(c->hwndDlg), &msg_out);
     msg_guest_to_host_return(msg, &msg_out);
+
+#if GUEST_BIT != HOST_BIT
+    MSG_h2g(QEMU_G2H(c->pmsg), msg);
+#endif
 }
 
 #endif

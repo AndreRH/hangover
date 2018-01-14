@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_user32.h"
@@ -830,8 +832,24 @@ WINUSERAPI BOOL WINAPI GetIconInfo(HICON hIcon, PICONINFO iconinfo)
 void qemu_GetIconInfo(struct qemu_syscall *call)
 {
     struct qemu_GetIconInfo *c = (struct qemu_GetIconInfo *)call;
+    ICONINFO stack, *info = &stack;
+    struct qemu_ICONINFO *info32;
     WINE_TRACE("\n");
-    c->super.iret = GetIconInfo(QEMU_G2H(c->hIcon), QEMU_G2H(c->iconinfo));
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->iconinfo);
+#else
+    info32 = QEMU_G2H(c->iconinfo);
+    if (!info32)
+        info = NULL;
+#endif
+
+    c->super.iret = GetIconInfo(QEMU_G2H(c->hIcon), info);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret)
+        ICONINFO_h2g(info32, info);
+#endif
 }
 
 #endif
@@ -862,14 +880,37 @@ WINUSERAPI BOOL WINAPI GetIconInfoExA(HICON icon, ICONINFOEXA *info)
 void qemu_GetIconInfoExA(struct qemu_syscall *call)
 {
     struct qemu_GetIconInfoExA *c = (struct qemu_GetIconInfoExA *)call;
-    ICONINFOEXA *info;
-    CHAR host_name[256];
-    WCHAR wbuf[256];
+    ICONINFOEXA stack, *info = &stack;
+    struct qemu_ICONINFOEXA *info32;
 
     WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
     info = QEMU_G2H(c->info);
+#else
+    info32 = QEMU_G2H(c->info);
+    if (info32)
+    {
+        if (info32->cbSize == sizeof(*info32))
+        {
+            info->cbSize = sizeof(*info);
+        }
+        else
+        {
+            info->cbSize = 0;
+        }
+    }
+    else
+    {
+        info = NULL;
+    }
+#endif
 
     c->super.iret = GetIconInfoExA(QEMU_G2H(c->icon), info);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret)
+        ICONINFOEXA_h2g(info32, info);
+#endif
 }
 
 #endif
@@ -900,13 +941,37 @@ WINUSERAPI BOOL WINAPI GetIconInfoExW(HICON icon, ICONINFOEXW *info)
 void qemu_GetIconInfoExW(struct qemu_syscall *call)
 {
     struct qemu_GetIconInfoExW *c = (struct qemu_GetIconInfoExW *)call;
-    ICONINFOEXW *info;
-    WCHAR host_name[256];
+    ICONINFOEXW stack, *info = &stack;
+    struct qemu_ICONINFOEXW *info32;
 
     WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
     info = QEMU_G2H(c->info);
+#else
+    info32 = QEMU_G2H(c->info);
+    if (info32)
+    {
+        if (info32->cbSize == sizeof(*info32))
+        {
+            info->cbSize = sizeof(*info);
+        }
+        else
+        {
+            info->cbSize = 0;
+        }
+    }
+    else
+    {
+        info = NULL;
+    }
+#endif
 
     c->super.iret = GetIconInfoExW(QEMU_G2H(c->icon), info);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret)
+        ICONINFOEXW_h2g(info32, info);
+#endif
 }
 
 #endif
@@ -935,8 +1000,21 @@ WINUSERAPI HICON WINAPI CreateIconIndirect(PICONINFO iconinfo)
 void qemu_CreateIconIndirect(struct qemu_syscall *call)
 {
     struct qemu_CreateIconIndirect *c = (struct qemu_CreateIconIndirect *)call;
+    ICONINFO stack, *info = &stack;
+    struct qemu_ICONINFO *info32;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)CreateIconIndirect(QEMU_G2H(c->iconinfo));
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->iconinfo);
+#else
+    info32 = QEMU_G2H(c->iconinfo);
+    if (info32)
+        ICONINFO_g2h(info, info32);
+    else
+        info = NULL;
+#endif
+
+    c->super.iret = (ULONG_PTR)CreateIconIndirect(info);
 }
 
 #endif
