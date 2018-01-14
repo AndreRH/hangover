@@ -66,8 +66,8 @@ WINUSERAPI LRESULT WINAPI CallWindowProcA(WNDPROC func, HWND hwnd, UINT msg, WPA
     call.func = (ULONG_PTR)func;
     call.hwnd = (ULONG_PTR)hwnd;
     call.msg = msg;
-    call.wParam = wParam;
-    call.lParam = lParam;
+    call.wParam = (ULONG_PTR)wParam;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
@@ -79,8 +79,17 @@ WINUSERAPI LRESULT WINAPI CallWindowProcA(WNDPROC func, HWND hwnd, UINT msg, WPA
 void qemu_CallWindowProcA(struct qemu_syscall *call)
 {
     struct qemu_CallWindowProcA *c = (struct qemu_CallWindowProcA *)call;
+    MSG msg_in, msg_out;
     WINE_TRACE("\n");
-    c->super.iret = CallWindowProcA(QEMU_G2H(c->func), QEMU_G2H(c->hwnd), c->msg, c->wParam, c->lParam);
+
+    msg_in.hwnd = QEMU_G2H(c->hwnd);
+    msg_in.message = c->msg;
+    msg_in.wParam = c->wParam;
+    msg_in.lParam = c->lParam;
+
+    msg_guest_to_host(&msg_out, &msg_in);
+    c->super.iret = CallWindowProcA(QEMU_G2H(c->func), msg_out.hwnd, msg_out.message, msg_out.wParam, msg_out.lParam);
+    msg_guest_to_host_return(&msg_in, &msg_out);
 }
 
 #endif
@@ -110,8 +119,8 @@ WINUSERAPI LRESULT WINAPI CallWindowProcW(WNDPROC func, HWND hwnd, UINT msg, WPA
     call.func = (ULONG_PTR)func;
     call.hwnd = (ULONG_PTR)hwnd;
     call.msg = msg;
-    call.wParam = wParam;
-    call.lParam = lParam;
+    call.wParam = (ULONG_PTR)wParam;
+    call.lParam = (ULONG_PTR)lParam;
 
     qemu_syscall(&call.super);
 
@@ -123,8 +132,17 @@ WINUSERAPI LRESULT WINAPI CallWindowProcW(WNDPROC func, HWND hwnd, UINT msg, WPA
 void qemu_CallWindowProcW(struct qemu_syscall *call)
 {
     struct qemu_CallWindowProcW *c = (struct qemu_CallWindowProcW *)call;
+    MSG msg_in, msg_out;
     WINE_TRACE("\n");
-    c->super.iret = CallWindowProcW(QEMU_G2H(c->func), QEMU_G2H(c->hwnd), c->msg, c->wParam, c->lParam);
+
+    msg_in.hwnd = QEMU_G2H(c->hwnd);
+    msg_in.message = c->msg;
+    msg_in.wParam = c->wParam;
+    msg_in.lParam = c->lParam;
+
+    msg_guest_to_host(&msg_out, &msg_in);
+    c->super.iret = CallWindowProcW(QEMU_G2H(c->func), msg_out.hwnd, msg_out.message, msg_out.wParam, msg_out.lParam);
+    msg_guest_to_host_return(&msg_in, &msg_out);
 }
 
 #endif
