@@ -314,7 +314,7 @@ void qemu_SendNotifyMessageW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_SendMessageCallbackA
+struct qemu_SendMessageCallback
 {
     struct qemu_syscall super;
     uint64_t hwnd;
@@ -323,13 +323,29 @@ struct qemu_SendMessageCallbackA
     uint64_t lparam;
     uint64_t callback;
     uint64_t data;
+    uint64_t wrapper;
+};
+
+struct qemu_SendMessageCallback_cb
+{
+    uint64_t func;
+    uint64_t hwnd;
+    uint64_t msg;
+    uint64_t arg;
+    uint64_t result;
 };
 
 #ifdef QEMU_DLL_GUEST
 
+static void __fastcall SendMessageCallback_guest_cb(struct qemu_SendMessageCallback_cb *call)
+{
+    SENDASYNCPROC proc = (SENDASYNCPROC)(ULONG_PTR)call->func;
+    proc((HWND)(ULONG_PTR)call->hwnd, call->msg, call->arg, call->result);
+}
+
 WINUSERAPI BOOL WINAPI SendMessageCallbackA(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, SENDASYNCPROC callback, ULONG_PTR data)
 {
-    struct qemu_SendMessageCallbackA call;
+    struct qemu_SendMessageCallback call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDMESSAGECALLBACKA);
     call.hwnd = (ULONG_PTR)hwnd;
     call.msg = (ULONG_PTR)msg;
@@ -337,39 +353,16 @@ WINUSERAPI BOOL WINAPI SendMessageCallbackA(HWND hwnd, UINT msg, WPARAM wparam, 
     call.lparam = (ULONG_PTR)lparam;
     call.callback = (ULONG_PTR)callback;
     call.data = (ULONG_PTR)data;
+    call.wrapper = (ULONG_PTR)SendMessageCallback_guest_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_SendMessageCallbackA(struct qemu_syscall *call)
-{
-    struct qemu_SendMessageCallbackA *c = (struct qemu_SendMessageCallbackA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SendMessageCallbackA(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam, QEMU_G2H(c->callback), c->data);
-}
-
-#endif
-
-struct qemu_SendMessageCallbackW
-{
-    struct qemu_syscall super;
-    uint64_t hwnd;
-    uint64_t msg;
-    uint64_t wparam;
-    uint64_t lparam;
-    uint64_t callback;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINUSERAPI BOOL WINAPI SendMessageCallbackW(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, SENDASYNCPROC callback, ULONG_PTR data)
 {
-    struct qemu_SendMessageCallbackW call;
+    struct qemu_SendMessageCallback call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDMESSAGECALLBACKW);
     call.hwnd = (ULONG_PTR)hwnd;
     call.msg = (ULONG_PTR)msg;
@@ -385,11 +378,102 @@ WINUSERAPI BOOL WINAPI SendMessageCallbackW(HWND hwnd, UINT msg, WPARAM wparam, 
 
 #else
 
-void qemu_SendMessageCallbackW(struct qemu_syscall *call)
+struct SendMessageCallback_data
 {
-    struct qemu_SendMessageCallbackW *c = (struct qemu_SendMessageCallbackW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SendMessageCallbackW(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam, QEMU_G2H(c->callback), c->data);
+    uint64_t guest_cb;
+    uint64_t guest_data;
+    uint64_t wrapper;
+    MSG msg_out;
+};
+
+static void CALLBACK SendMessageCallback_host_cb(HWND hwnd, UINT msg, ULONG_PTR arg, LRESULT result)
+{
+    struct SendMessageCallback_data *data = (struct SendMessageCallback_data *)arg;
+    uint64_t wrapper = data->wrapper;
+    struct qemu_SendMessageCallback_cb call;
+    MSG msg_in;
+
+    WINE_TRACE("callback, guest cb 0x%lx\n", data->guest_cb);
+    call.func = data->guest_cb;
+    call.hwnd = QEMU_H2G(hwnd);
+    call.msg = msg;
+    call.arg = data->guest_data;
+    call.result = result;
+
+    /* To free extra message parameters allocated by msg_guest_to_host. */
+    msg_guest_to_host_return(&msg_in, &data->msg_out);
+
+    HeapFree(GetProcessHeap(), 0, data);
+
+    if (call.func)
+    {
+        WINE_TRACE("Calling guest callback 0x%lx(%p, 0x%x 0x%lx, %ld.\n", call.func, hwnd, msg, arg, result);
+        qemu_ops->qemu_execute(QEMU_G2H(wrapper), QEMU_H2G(&call));
+        WINE_TRACE("Callback returned.\n");
+    }
+}
+
+void qemu_SendMessageCallback(struct qemu_syscall *call)
+{
+    struct qemu_SendMessageCallback *c = (struct qemu_SendMessageCallback *)call;
+    struct SendMessageCallback_data *data;
+    SENDASYNCPROC callback = SendMessageCallback_host_cb;
+    MSG msg_in;
+    WPARAM conv_wparam;
+    LPARAM conv_lparam;
+    BOOL ascii = c->super.id == QEMU_SYSCALL_ID(CALL_SENDMESSAGECALLBACKA), free = FALSE;
+    WINE_TRACE("%s(0x%lx, 0x%lx, 0x%lx, 0x%lx, 0x%lx, %lx)\n",
+            ascii ? "SendMessageCallbackA" : "SendMessageCallbackW",
+            c->hwnd, c->msg, c->wparam, c->lparam, c->callback, c->data);
+
+    data = HeapAlloc(GetProcessHeap(), 0, sizeof(*data));
+    data->wrapper = c->wrapper;
+    data->guest_cb = c->callback;
+    data->guest_data = c->data;
+
+    msg_in.hwnd = QEMU_G2H(c->hwnd);
+    msg_in.message = c->msg;
+    msg_in.wParam = c->wparam;
+    msg_in.lParam = c->lparam;
+
+    msg_guest_to_host(&data->msg_out, &msg_in);
+
+    /* The callback invocation requires the application to process messages. We depend on the callback to free
+     * data allocated by msg_guest_to_host. If the application does not process or send any more messages after
+     * invoking this function, we leak memory.
+     *
+     * If the application provides a callback it is likely (but not guaranteed) that it does the required
+     * processing to get the callback invoked. If the message didn't need conversion and no callback is specified
+     * free the allocated data right away and don't request a callback invocation from Wine.
+     *
+     * If the message was converted the allocated new structures need to remain valid until the receiving
+     * thread has processed them. In this case we have to rely on the callback to free them. */
+    if (data->msg_out.wParam == msg_in.wParam && data->msg_out.lParam == msg_in.lParam && !c->callback)
+    {
+        free = TRUE;
+        callback = NULL;
+    }
+    else if (!c->callback)
+    {
+        WINE_FIXME("Sending a converted message without a user callback. Memory leak is likely.\n");
+    }
+
+    if (ascii)
+    {
+        c->super.iret = SendMessageCallbackA(data->msg_out.hwnd, data->msg_out.message, data->msg_out.wParam,
+                data->msg_out.lParam, callback, (LPARAM)data);
+    }
+    else
+    {
+        c->super.iret = SendMessageCallbackW(data->msg_out.hwnd, data->msg_out.message, data->msg_out.wParam,
+                data->msg_out.lParam, callback, (LPARAM)data);
+    }
+
+    if (!c->super.iret || free)
+    {
+        msg_guest_to_host_return(&msg_in, &data->msg_out);
+        HeapFree(GetProcessHeap(), 0, data);
+    }
 }
 
 #endif
@@ -525,7 +609,7 @@ void qemu_PostMessageA(struct qemu_syscall *call)
 
     msg_guest_to_host(&msg_out, &msg_in);
     c->super.iret = PostMessageA(msg_out.hwnd, msg_out.message, msg_out.wParam, msg_out.lParam);
-    msg_guest_to_host_return(&msg_out, &msg_in);
+    msg_guest_to_host_return(&msg_in, &msg_out);
 }
 
 #endif
@@ -573,7 +657,7 @@ void qemu_PostMessageW(struct qemu_syscall *call)
 
     msg_guest_to_host(&msg_out, &msg_in);
     c->super.iret = PostMessageW(msg_out.hwnd, msg_out.message, msg_out.wParam, msg_out.lParam);
-    msg_guest_to_host_return(&msg_out, &msg_in);
+    msg_guest_to_host_return(&msg_in, &msg_out);
 }
 
 #endif
