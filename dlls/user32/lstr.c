@@ -835,7 +835,7 @@ WINUSERAPI BOOL WINAPI IsCharLowerA(CHAR x)
 void qemu_IsCharLowerA(struct qemu_syscall *call)
 {
     struct qemu_IsCharLowerA *c = (struct qemu_IsCharLowerA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsCharLowerA(c->x);
 }
 
@@ -865,7 +865,7 @@ WINUSERAPI BOOL WINAPI IsCharLowerW(WCHAR ch)
 void qemu_IsCharLowerW(struct qemu_syscall *call)
 {
     struct qemu_IsCharLowerW *c = (struct qemu_IsCharLowerW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsCharLowerW(c->ch);
 }
 
@@ -895,7 +895,7 @@ WINUSERAPI BOOL WINAPI IsCharUpperA(CHAR x)
 void qemu_IsCharUpperA(struct qemu_syscall *call)
 {
     struct qemu_IsCharUpperA *c = (struct qemu_IsCharUpperA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsCharUpperA(c->x);
 }
 
@@ -925,7 +925,7 @@ WINUSERAPI BOOL WINAPI IsCharUpperW(WCHAR ch)
 void qemu_IsCharUpperW(struct qemu_syscall *call)
 {
     struct qemu_IsCharUpperW *c = (struct qemu_IsCharUpperW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsCharUpperW(c->ch);
 }
 
@@ -955,7 +955,7 @@ WINUSERAPI BOOL WINAPI IsCharAlphaNumericA(CHAR x)
 void qemu_IsCharAlphaNumericA(struct qemu_syscall *call)
 {
     struct qemu_IsCharAlphaNumericA *c = (struct qemu_IsCharAlphaNumericA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsCharAlphaNumericA(c->x);
 }
 
@@ -985,7 +985,7 @@ WINUSERAPI BOOL WINAPI IsCharAlphaNumericW(WCHAR ch)
 void qemu_IsCharAlphaNumericW(struct qemu_syscall *call)
 {
     struct qemu_IsCharAlphaNumericW *c = (struct qemu_IsCharAlphaNumericW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsCharAlphaNumericW(c->ch);
 }
 
@@ -1015,7 +1015,7 @@ WINUSERAPI BOOL WINAPI IsCharAlphaA(CHAR x)
 void qemu_IsCharAlphaA(struct qemu_syscall *call)
 {
     struct qemu_IsCharAlphaA *c = (struct qemu_IsCharAlphaA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsCharAlphaA(c->x);
 }
 
@@ -1045,7 +1045,7 @@ WINUSERAPI BOOL WINAPI IsCharAlphaW(WCHAR ch)
 void qemu_IsCharAlphaW(struct qemu_syscall *call)
 {
     struct qemu_IsCharAlphaW *c = (struct qemu_IsCharAlphaW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsCharAlphaW(c->ch);
 }
 
