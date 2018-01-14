@@ -1855,9 +1855,10 @@ WINBASEAPI BOOL WINAPI IsWow64Process(HANDLE hProcess, PBOOL Wow64Process)
     struct qemu_IsWow64Process call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISWOW64PROCESS);
     call.hProcess = guest_HANDLE_g2h(hProcess);
-    call.Wow64Process = (ULONG_PTR)Wow64Process;
 
     qemu_syscall(&call.super);
+    if (call.super.iret)
+        *Wow64Process = call.Wow64Process;
 
     return call.super.iret;
 }
@@ -1867,8 +1868,32 @@ WINBASEAPI BOOL WINAPI IsWow64Process(HANDLE hProcess, PBOOL Wow64Process)
 void qemu_IsWow64Process(struct qemu_syscall *call)
 {
     struct qemu_IsWow64Process *c = (struct qemu_IsWow64Process *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = IsWow64Process(QEMU_G2H(c->hProcess), QEMU_G2H(c->Wow64Process));
+    BOOL wow64;
+    WINE_TRACE("\n");
+
+    /* 32 bit is complicated. On the one hand we're clearly a 32 bit program running on a 64 bit Wine or Windows,
+     * but Windows understands us as a 64 bit process (because qemu is built for 64 bit). In the case of Wine we
+     * probably don't even have a 32 bit Wine around. So the system itself is probably missing wow-related registry
+     * keys, etc. So the correct answer is probably no, we're not a wow64 process. The application also doesn't
+     * have to look for wow64 DLLs or keys, we'll load the 64 bit ones and translate the calls. Note that we'll
+     * get a "no" from the system when we invoke IsWow64Process below.
+     *
+     * On the other hand it is plausible that the application knows it is 32 bit, looks at some registry keys or
+     * other system properties and concludes it is running on 64 bit windows and can reasonably expect this call
+     * to return TRUE. */
+#if GUEST_BIT != HOST_BIT
+    {
+        static BOOL warned;
+        if (!warned)
+        {
+            WINE_FIXME("Not sure yet if we qualify as Wow64.\n");
+            warned = TRUE;
+        }
+    }
+#endif
+
+    c->super.iret = IsWow64Process(QEMU_G2H(c->hProcess), &wow64);
+    c->Wow64Process = wow64;
 }
 
 #endif
