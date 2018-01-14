@@ -700,7 +700,7 @@ static void tabcontrol_notify(MSG *guest, MSG *host, BOOL ret)
             break;
 
         default:
-            WINE_ERR("Unexpected notify message %x.\n", hdr->code);
+            WINE_ERR("Unexpected notify message from %p id %lx code %x.\n", hdr->hwndFrom, hdr->idFrom, hdr->code);
     }
 }
 

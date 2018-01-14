@@ -1421,8 +1421,39 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             WCHAR class[256];
             NMHDR *hdr = (NMHDR *)msg_in->lParam;
 
+            /* We can't get WM_NOTIFY messages right :-( . They can be sent from Wine controls in comctl32
+             * and other DLLs, and in this case we have to convert them in a message-specific way. This
+             * library gives the comctl32 wrapper a way to register callbacks for WM_NOTIFY messages with
+             * a hwndFrom that matches a given class name.
+             *
+             * However, WM_NOTIFY messages can also be sent from the application to itself, and there is
+             * no guarantee that lParam points to a valid NMHDR structure. The user32/msg.c tests are an
+             * example of that. So before we try to read hwndFrom, make sure the pointer can be read.
+             *
+             * And to make matters more complicated, even if we have a valid NMHDR we are never converting
+             * it from guest to host. The reason is that NMHDR is usually part of a larger structure, and
+             * we have no way of knowing how big it is. So SendMessage won't touch a WM_NOTIFY's lParam
+             * before feeding the message to Wine. Commonly these messages later get send back to us and
+             * end up in this function, where we try to treat it as a host NMHDR and try to convert it to
+             * a guest NMHDR.
+             *
+             * If we get an "impossible" (> 32 bit) HWND value we're probably reading a qemu_NMHDR instead
+             * of a NMHDR. Ignore it. If it is from an unknown class ignore it. If it is from a subclassed
+             * Wine dialog hope that it doesn't match the filter criteria from a known Wine->Guest NMHDR.
+             *
+             * Furthermore, when the application subclasses a control by registering its own class and using
+             * the wndproc of the registered class we won't be able to recognize that the message is from
+             * the host side or which message it actually is. */
             if (IsBadReadPtr(hdr, sizeof(*hdr)))
                 break;
+
+            if ((ULONG_PTR)hdr->hwndFrom > ~0U)
+            {
+                struct qemu_NMHDR *guest_hdr = (struct qemu_NMHDR *)msg_in->lParam;
+                WINE_WARN("WM_NOTIFY message probably sent from guest (hwndFrom=%p/0x%08x), not touching it.\n",
+                        hdr->hwndFrom, guest_hdr->hwndFrom);
+                break;
+            }
 
             i = GetClassNameW(hdr->hwndFrom, class, sizeof(class) / sizeof(*class));
             if (i < 0 || i == 256)
