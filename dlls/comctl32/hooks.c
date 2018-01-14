@@ -606,6 +606,7 @@ static void tooltips_notify(MSG *guest, MSG *host, BOOL ret)
             customdraw = HeapAlloc(GetProcessHeap(), 0, sizeof(*customdraw));
             NMTTCUSTOMDRAW_h2g(customdraw, (NMTTCUSTOMDRAW *)hdr);
             guest->lParam = (LPARAM)customdraw;
+            break;
 
         default:
             WINE_ERR("Unexpected notify message %x.\n", hdr->code);
