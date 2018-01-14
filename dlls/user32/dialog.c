@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_user32.h"
@@ -515,8 +517,21 @@ WINUSERAPI BOOL WINAPI IsDialogMessageW(HWND hwndDlg, LPMSG msg)
 void qemu_IsDialogMessageW(struct qemu_syscall *call)
 {
     struct qemu_IsDialogMessageW *c = (struct qemu_IsDialogMessageW *)call;
+    MSG stack, *msg = &stack, msg_out;
+#if GUEST_BIT == HOST_BIT
+    msg = QEMU_G2H(c->msg);
+#else
+    MSG_g2h(msg, QEMU_G2H(c->msg));
+#endif
+
     WINE_TRACE("\n");
-    c->super.iret = IsDialogMessageW(QEMU_G2H(c->hwndDlg), QEMU_G2H(c->msg));
+    msg_guest_to_host(&msg_out, msg);
+    c->super.iret = IsDialogMessageW(QEMU_G2H(c->hwndDlg), &msg_out);
+    msg_guest_to_host_return(msg, &msg_out);
+
+#if GUEST_BIT != HOST_BIT
+    MSG_h2g(QEMU_G2H(c->msg), msg);
+#endif
 }
 
 #endif
