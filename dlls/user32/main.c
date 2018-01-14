@@ -1206,19 +1206,49 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
         case TCM_INSERTITEMA:
         case TCM_INSERTITEMW:
         {
-            /* TODO: Are these message numbers guaranteed to be unique?
-             *
-             * FIXME: The struct has a dynamic size, and the size is stored in the tab control,
-             * not in the struct itself :-( */
-            struct qemu_TCITEM *guest_item = (struct qemu_TCITEM *)msg_in->lParam;;
-            TCITEMW *host_item;
-            WINE_TRACE("Translating TCM_INSERTITEM message at %p.\n", guest_item);
+            struct qemu_TCITEM *guest_item = (struct qemu_TCITEM *)msg_in->lParam;
+            struct
+            {
+                TCITEMW item;
+                DWORD pad; /* See TCM_SETITEMEXTRA. */
+            } *host_item;
+            WINE_TRACE("Translating TCM_*ITEM message at %p.\n", guest_item);
             host_item = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_item));
-            TCITEM_g2h(host_item, guest_item);
+            TCITEM_g2h(&host_item->item, guest_item);
             msg_out->lParam = (LPARAM)host_item;
             break;
         }
 
+        case TCM_SETITEMEXTRA:
+        {
+            /* The handling of DRAWITEMSTRUCT.itemData differs betweeen a data size that fits in an LPARAM
+             * and a data size that does not. If the data does not fit, comctl32 will store a pointer to the
+             * data in itemData. Otherwise, it will store the data itself.
+             *
+             * If we are in this range (I am looking at you, comctl32/tab.c test) increase the size to trigger
+             * the > 4 byte behavior the 32 bit app expects. Pad the struct allocation in TCM_*ITEM to make sure
+             * comctl32 can read the extra padding.
+             *
+             * Still this feels rather nasty and it might break, so write a FIXME. */
+            if (msg_in->wParam > sizeof(qemu_ptr) && msg_in->wParam <= sizeof(void *))
+            {
+                WINE_FIXME("Extra data size is %ld bytes, cheating...\n", msg_in->wParam);
+                msg_out->wParam = sizeof(void *) + 1;
+            }
+            else if(msg_in->wParam > sizeof(void *))
+            {
+                /* The TCM_*ITEM wrapper code above has no idea about the size we're setting here, so it cannot
+                 * allocate the right amount of data and copy it from the guest struct to the host struct. If
+                 * we need to support this we either need to find a way to store this info in the tab control
+                 * itself (e.g. by having a wrapper extra data struct) or store the property in an external
+                 * table.
+                 *
+                 * A wrapper struct sounds nice, but WM_DRAWITEM will have to find out if the msg was sent by
+                 * a tab control or not. Or all WM_DRAWITEM senders need a wrapper. */
+                WINE_FIXME("Extra data size is %ld bytes, this will not work right.\n", msg_in->wParam);
+            }
+            break;
+        }
 #endif
 
         default:
