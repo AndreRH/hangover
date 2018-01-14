@@ -216,7 +216,6 @@ static void rebar_notify(MSG *guest, MSG *host, BOOL ret)
 
         default:
             WINE_ERR("Unexpected notify message %x.\n", hdr->code);
-            DebugBreak();
     }
 }
 
