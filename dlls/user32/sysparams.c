@@ -101,6 +101,8 @@ void qemu_SystemParametersInfo(struct qemu_syscall *call)
         case SPI_GETNONCLIENTMETRICS:
         case SPI_GETMINIMIZEDMETRICS:
         case SPI_SETMINIMIZEDMETRICS:
+        case SPI_SETWORKAREA:
+        case SPI_GETWORKAREA:
             if (c->super.id == QEMU_SYSCALL_ID(CALL_SYSTEMPARAMETERSINFOA))
                 c->super.iret = SystemParametersInfoA(action, c->uiParam, QEMU_G2H(c->pvParam), c->fWinIni);
             else
