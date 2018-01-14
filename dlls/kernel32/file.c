@@ -108,7 +108,7 @@ WINBASEAPI BOOL WINAPI AreFileApisANSI(void)
 void qemu_AreFileApisANSI(struct qemu_syscall *call)
 {
     struct qemu_AreFileApisANSI *c = (struct qemu_AreFileApisANSI *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AreFileApisANSI();
 }
 

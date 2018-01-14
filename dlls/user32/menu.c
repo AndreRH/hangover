@@ -608,7 +608,7 @@ WINUSERAPI BOOL WINAPI AppendMenuW(HMENU hMenu, UINT flags, UINT_PTR id, LPCWSTR
 void qemu_AppendMenuW(struct qemu_syscall *call)
 {
     struct qemu_AppendMenuW *c = (struct qemu_AppendMenuW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AppendMenuW(QEMU_G2H(c->hMenu), c->flags, c->id, QEMU_G2H(c->data));
 }
 
