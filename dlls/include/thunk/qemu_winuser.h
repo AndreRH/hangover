@@ -795,6 +795,8 @@ static inline void ICONINFO_g2h(ICONINFO *host, const struct qemu_ICONINFO *gues
     host->hbmColor = HANDLE_g2h(guest->hbmColor);
 }
 
+#if _WIN32_WINNT >= 0x0600
+
 struct qemu_ICONINFOEXA
 {
     DWORD       cbSize;
@@ -868,5 +870,7 @@ static inline void ICONINFOEXW_g2h(ICONINFOEXW *host, const struct qemu_ICONINFO
     memcpy(host->szModName, guest->szModName, sizeof(host->szModName));
     memcpy(host->szResName, guest->szResName, sizeof(host->szResName));
 }
+
+#endif
 
 #endif
