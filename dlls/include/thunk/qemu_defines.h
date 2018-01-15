@@ -9,6 +9,9 @@ typedef DWORD qemu_size_t;
 
 static inline HANDLE HANDLE_g2h(qemu_handle h)
 {
+    if (h == (qemu_handle)(LONG_PTR)INVALID_HANDLE_VALUE)
+        return INVALID_HANDLE_VALUE;
+
     return (HANDLE)(LONG_PTR)h;
 }
 
