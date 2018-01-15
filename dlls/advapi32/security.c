@@ -88,7 +88,7 @@ WINBASEAPI BOOL WINAPI OpenThreadToken(HANDLE ThreadHandle, DWORD DesiredAccess,
 {
     struct qemu_OpenThreadToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENTHREADTOKEN);
-    call.ThreadHandle = (ULONG_PTR)ThreadHandle;
+    call.ThreadHandle = guest_HANDLE_g2h(ThreadHandle);
     call.DesiredAccess = DesiredAccess;
     call.OpenAsSelf = OpenAsSelf;
     call.TokenHandle = (ULONG_PTR)TokenHandle;
