@@ -48,11 +48,13 @@ WINBASEAPI BOOL WINAPI OpenProcessToken(HANDLE ProcessHandle, DWORD DesiredAcces
 {
     struct qemu_OpenProcessToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENPROCESSTOKEN);
-    call.ProcessHandle = (ULONG_PTR)ProcessHandle;
+    call.ProcessHandle = guest_HANDLE_g2h(ProcessHandle);
     call.DesiredAccess = DesiredAccess;
     call.TokenHandle = (ULONG_PTR)TokenHandle;
 
     qemu_syscall(&call.super);
+    if (TokenHandle)
+        *TokenHandle = (HANDLE)(ULONG_PTR)call.TokenHandle;
 
     return call.super.iret;
 }
@@ -62,8 +64,11 @@ WINBASEAPI BOOL WINAPI OpenProcessToken(HANDLE ProcessHandle, DWORD DesiredAcces
 void qemu_OpenProcessToken(struct qemu_syscall *call)
 {
     struct qemu_OpenProcessToken *c = (struct qemu_OpenProcessToken *)call;
+    HANDLE h;
     WINE_TRACE("\n");
-    c->super.iret = OpenProcessToken(QEMU_G2H(c->ProcessHandle), c->DesiredAccess, QEMU_G2H(c->TokenHandle));
+
+    c->super.iret = OpenProcessToken(QEMU_G2H(c->ProcessHandle), c->DesiredAccess, &h);
+    c->TokenHandle = QEMU_H2G(h);
 }
 
 #endif
