@@ -744,7 +744,7 @@ WINBASEAPI BOOL WINAPI ImageList_GetIconSize (HIMAGELIST himl, INT *cx, INT *cy)
 void qemu_ImageList_GetIconSize(struct qemu_syscall *call)
 {
     struct qemu_ImageList_GetIconSize *c = (struct qemu_ImageList_GetIconSize *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ImageList_GetIconSize(QEMU_G2H(c->himl), QEMU_G2H(c->cx), QEMU_G2H(c->cy));
 }
 
@@ -774,7 +774,7 @@ WINBASEAPI INT WINAPI ImageList_GetImageCount (HIMAGELIST himl)
 void qemu_ImageList_GetImageCount(struct qemu_syscall *call)
 {
     struct qemu_ImageList_GetImageCount *c = (struct qemu_ImageList_GetImageCount *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ImageList_GetImageCount(QEMU_G2H(c->himl));
 }
 
@@ -883,11 +883,11 @@ WINBASEAPI HIMAGELIST WINAPI ImageList_LoadImageA (HINSTANCE hi, LPCSTR lpbmp, I
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_LOADIMAGEA);
     call.hi = (ULONG_PTR)hi;
     call.lpbmp = (ULONG_PTR)lpbmp;
-    call.cx = (ULONG_PTR)cx;
-    call.cGrow = (ULONG_PTR)cGrow;
-    call.clrMask = (ULONG_PTR)clrMask;
-    call.uType = (ULONG_PTR)uType;
-    call.uFlags = (ULONG_PTR)uFlags;
+    call.cx = cx;
+    call.cGrow = cGrow;
+    call.clrMask = clrMask;
+    call.uType = uType;
+    call.uFlags = uFlags;
 
     qemu_syscall(&call.super);
 
@@ -899,7 +899,7 @@ WINBASEAPI HIMAGELIST WINAPI ImageList_LoadImageA (HINSTANCE hi, LPCSTR lpbmp, I
 void qemu_ImageList_LoadImageA(struct qemu_syscall *call)
 {
     struct qemu_ImageList_LoadImageA *c = (struct qemu_ImageList_LoadImageA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)ImageList_LoadImageA(QEMU_G2H(c->hi), QEMU_G2H(c->lpbmp), c->cx, c->cGrow, c->clrMask, c->uType, c->uFlags);
 }
 
