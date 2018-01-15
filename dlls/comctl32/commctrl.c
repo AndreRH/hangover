@@ -22,6 +22,9 @@
 #include <stdio.h>
 #include <commctrl.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_commctrl.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_comctl32.h"
@@ -434,8 +437,38 @@ WINBASEAPI HWND WINAPI CreateToolbarEx (HWND hwnd, DWORD style, UINT wID, INT nB
 void qemu_CreateToolbarEx(struct qemu_syscall *call)
 {
     struct qemu_CreateToolbarEx *c = (struct qemu_CreateToolbarEx *)call;
+    TBBUTTON *buttons;
+    struct qemu_TBBUTTON *buttons32;
+    unsigned int count, i;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)CreateToolbarEx(QEMU_G2H(c->hwnd), c->style, c->wID, c->nBitmaps, QEMU_G2H(c->hBMInst), c->wBMID, QEMU_G2H(c->lpButtons), c->iNumButtons, c->dxButton, c->dyButton, c->dxBitmap, c->dyBitmap, c->uStructSize);
+
+    count = c->iNumButtons;
+#if GUEST_BIT == HOST_BIT
+    buttons = QEMU_G2H(c->lpButtons);
+#else
+    buttons32 = QEMU_G2H(c->lpButtons);
+    if (buttons32)
+    {
+        if (c->uStructSize != sizeof(*buttons32))
+            WINE_FIXME("Handle custom struct size %lu.\n", c->uStructSize);
+
+        buttons = HeapAlloc(GetProcessHeap(), 0, count * sizeof(*buttons));
+        for (i = 0; i < count; i++)
+            TBBUTTON_g2h(&buttons[i], &buttons32[i]);
+    }
+    else
+    {
+        buttons = NULL;
+    }
+#endif
+
+    c->super.iret = (ULONG_PTR)CreateToolbarEx(QEMU_G2H(c->hwnd), c->style, c->wID, c->nBitmaps, QEMU_G2H(c->hBMInst),
+            c->wBMID, buttons, count, c->dxButton, c->dyButton, c->dxBitmap, c->dyBitmap, sizeof(*buttons));
+
+#if GUEST_BIT != HOST_BIT
+    HeapFree(GetProcessHeap(), 0, buttons);
+#endif
+
 }
 
 #endif
