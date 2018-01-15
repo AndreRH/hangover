@@ -906,4 +906,61 @@ static inline void NMTBDISPINFO_h2g(struct qemu_NMTBDISPINFO *guest, const NMTBD
     guest->cchText = host->cchText;
 }
 
+struct qemu_TBSAVEPARAMS
+{
+    qemu_handle hkr;
+    qemu_ptr pszSubKey;
+    qemu_ptr pszValueName;
+};
+
+static inline void TBSAVEPARAMS_g2h(TBSAVEPARAMSW *host, const struct qemu_TBSAVEPARAMS *guest)
+{
+    host->hkr = (HKEY)(LONG_PTR)guest->hkr;
+    host->pszSubKey = (WCHAR *)(ULONG_PTR)guest->pszSubKey;
+    host->pszValueName = (WCHAR *)(ULONG_PTR)guest->pszValueName;
+}
+
+static inline void TBSAVEPARAMS_h2g(struct qemu_TBSAVEPARAMS *guest, const TBSAVEPARAMS *host)
+{
+    guest->hkr = (LONG_PTR)host->hkr;
+    guest->pszSubKey = (ULONG_PTR)host->pszSubKey;
+    guest->pszValueName = (ULONG_PTR)host->pszValueName;
+}
+
+struct qemu_NMTBRESTORE
+{
+    struct qemu_NMHDR hdr;
+    qemu_ptr pData;
+    qemu_ptr pCurrent;
+    UINT cbData;
+    int iItem;
+    int cButtons;
+    int cbBytesPerRecord;
+    struct qemu_TBBUTTON tbButton;
+};
+
+static inline void NMTBRESTORE_g2h(NMTBRESTORE *host, const struct qemu_NMTBRESTORE *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->pData = (DWORD *)(ULONG_PTR)guest->pData;
+    host->pCurrent = (DWORD *)(ULONG_PTR)guest->pCurrent;
+    host->cbData = guest->cbData;
+    host->iItem = guest->iItem;
+    host->cButtons = guest->cButtons;
+    host->cbBytesPerRecord = guest->cbBytesPerRecord;
+    TBBUTTON_g2h(&host->tbButton, &guest->tbButton);
+}
+
+static inline void NMTBRESTORE_h2g(struct qemu_NMTBRESTORE *guest, const NMTBRESTORE *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->pData = (ULONG_PTR)host->pData;
+    guest->pCurrent = (ULONG_PTR)host->pCurrent;
+    guest->cbData = host->cbData;
+    guest->iItem = host->iItem;
+    guest->cButtons = host->cButtons;
+    guest->cbBytesPerRecord = host->cbBytesPerRecord;
+    TBBUTTON_h2g(&guest->tbButton, &host->tbButton);
+}
+
 #endif

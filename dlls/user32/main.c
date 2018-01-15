@@ -1207,6 +1207,26 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             }
             break;
 
+        case WM_USER+26: /* Possible TB_SAVERESTOREA */
+        case WM_USER+76: /* Possible TB_SAVERESTOREW*/
+            len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
+            if (len < 0 || len == 256)
+                break;
+
+            if (!strcmpW(class, TOOLBARCLASSNAMEW))
+            {
+                struct qemu_TBSAVEPARAMS *guest_save;
+                TBSAVEPARAMSW *host_save;
+                WINE_TRACE("Translating TB_SAVERESTORE message, info at %p.\n",
+                        (void *)msg_in->lParam);
+
+                guest_save = (struct qemu_TBSAVEPARAMS *)msg_in->lParam;
+                host_save = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_save));
+                TBSAVEPARAMS_g2h(host_save, guest_save);
+                msg_out->lParam = (LPARAM)host_save;
+            }
+            break;
+
         case WM_USER+63: /* Possible TB_GETBUTTONINFOW */
         case WM_USER+64: /* Possible TB_SETBUTTONINFO */
         case WM_USER+65: /* Possible TB_GETBUTTONINFOA */
@@ -1383,6 +1403,8 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
         case WM_USER+64:
         case WM_USER+66:
         case WM_USER+68:
+        case WM_USER+26:
+        case WM_USER+76:
             if (conv->lParam != orig->lParam)
                 HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
