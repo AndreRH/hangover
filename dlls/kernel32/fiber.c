@@ -384,7 +384,7 @@ WINBASEAPI BOOL WINAPI FlsSetValue(DWORD index, PVOID data)
          * the "wrong" value back to 0 to avoid initializing index * 2 to something
          * wrong. */
 #if GUEST_BIT == HOST_BIT
-        return c->super.iret;
+        return call.super.iret;
 #else
         call.data = 0;
         qemu_syscall(&call.super);
