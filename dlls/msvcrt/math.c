@@ -1006,7 +1006,7 @@ void qemu_modff(struct qemu_syscall *call)
 struct qemu_acos
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1015,7 +1015,7 @@ WINBASEAPI double CDECL MSVCRT_acos(double x)
 {
     struct qemu_acos call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACOS);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -1027,7 +1027,7 @@ WINBASEAPI double CDECL MSVCRT_acos(double x)
 void qemu_acos(struct qemu_syscall *call)
 {
     struct qemu_acos *c = (struct qemu_acos *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_acos(c->x);
 }
 
@@ -1096,8 +1096,8 @@ void qemu_atan(struct qemu_syscall *call)
 struct qemu_atan2
 {
     struct qemu_syscall super;
-    uint64_t x;
-    uint64_t y;
+    double x;
+    double y;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1106,8 +1106,8 @@ WINBASEAPI double CDECL MSVCRT_atan2(double x, double y)
 {
     struct qemu_atan2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ATAN2);
-    call.x = (ULONG_PTR)x;
-    call.y = (ULONG_PTR)y;
+    call.x = x;
+    call.y = y;
 
     qemu_syscall(&call.super);
 
