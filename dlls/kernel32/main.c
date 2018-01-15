@@ -1347,6 +1347,16 @@ DWORD CALLBACK overlapped32_wait_func(void *ctx)
     if (ov->ov.hEvent && ov->ov.hEvent != INVALID_HANDLE_VALUE)
         SetEvent(ov->ov.hEvent);
 
+    /* FIXME: How does the event relate to the callback and how do both of them relate to
+     * GetQueuedCompletionStatus? Freeing data here or in the callback may break
+     * GetQueuedCompletionStatus because it reads the pointer it retrieved from Wine. Maybe
+     * I shouldn't free ov here if an IO completion port is used and the event queued to it?
+     * (low bit on the event is not set). How do I find out if the file handle has an IOCP
+     * associated to it?.
+     *
+     * It seems NtQueryInformationFile(FileCompletionInformation) can tell me if there's an
+     * IOCP associated with the handle, but it requires a Wine server call. A different
+     * approach, if possible, may be a good idea. */
     if (ov->guest_cb)
     {
         HANDLE t = OpenThread(THREAD_SET_CONTEXT, FALSE, ov->cb_thread);
@@ -1358,7 +1368,7 @@ DWORD CALLBACK overlapped32_wait_func(void *ctx)
     }
     else
     {
-        WINE_TRACE("Just freeing data\n");
+        WINE_TRACE("Just freeing data %p, guest data %p\n", ov, ov->guest_ov);
         HeapFree(GetProcessHeap(), 0, ov);
     }
 }
@@ -1393,7 +1403,7 @@ void process_OVERLAPPED_data(uint64_t retval, struct OVERLAPPED_data *data)
     }
     else
     {
-        WINE_TRACE("Synchonous return return.\n");
+        WINE_TRACE("Synchonous return return, host ptr %p, guest ptr %p.\n", data, data->guest_ov);
         CloseHandle(data->ov.hEvent);
         HeapFree(GetProcessHeap(), 0, data);
     }

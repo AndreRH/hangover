@@ -3312,10 +3312,11 @@ WINBASEAPI BOOL WINAPI GetQueuedCompletionStatus(HANDLE CompletionPort, LPDWORD 
     call.CompletionPort = (ULONG_PTR)CompletionPort;
     call.lpNumberOfBytesTransferred = (ULONG_PTR)lpNumberOfBytesTransferred;
     call.pCompletionKey = (ULONG_PTR)pCompletionKey;
-    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
     call.dwMilliseconds = dwMilliseconds;
 
     qemu_syscall(&call.super);
+    *lpOverlapped = (OVERLAPPED *)(ULONG_PTR)call.lpOverlapped;
+    *pCompletionKey = call.pCompletionKey;
 
     return call.super.iret;
 }
@@ -3325,9 +3326,31 @@ WINBASEAPI BOOL WINAPI GetQueuedCompletionStatus(HANDLE CompletionPort, LPDWORD 
 void qemu_GetQueuedCompletionStatus(struct qemu_syscall *call)
 {
     struct qemu_GetQueuedCompletionStatus *c = (struct qemu_GetQueuedCompletionStatus *)call;
+    OVERLAPPED *ov;
+    struct OVERLAPPED_data *ov_data;
+    ULONG_PTR key;
+
     WINE_TRACE("\n");
+
     c->super.iret = GetQueuedCompletionStatus(QEMU_G2H(c->CompletionPort), QEMU_G2H(c->lpNumberOfBytesTransferred),
-            QEMU_G2H(c->pCompletionKey), QEMU_G2H(c->lpOverlapped), c->dwMilliseconds);
+            &key, &ov, c->dwMilliseconds);
+
+    c->pCompletionKey = key;
+#if GUEST_BIT == HOST_BIT
+    c->lpOverlapped = QEMU_H2G(ov);
+    return;
+#endif
+    if (!ov)
+    {
+        c->lpOverlapped = 0;
+        return;
+    }
+
+    /* See comment in overlapped32_wait_func, main.c. */
+    WINE_FIXME("This probably reads freed memory.\n");
+    ov_data = CONTAINING_RECORD(ov, struct OVERLAPPED_data, ov);
+    c->lpOverlapped = QEMU_H2G(ov_data->guest_ov);
+    WINE_FIXME("Got guest OVERLAPPED pointer 0x%lx from host pointer %p.\n", c->lpOverlapped, ov);
 }
 
 #endif
