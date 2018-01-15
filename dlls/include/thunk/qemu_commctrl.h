@@ -799,4 +799,45 @@ static inline void IMAGELISTDRAWPARAMS_g2h(IMAGELISTDRAWPARAMS *host, const stru
     }
 }
 
+struct qemu_TBBUTTONINFO
+{
+    UINT cbSize;
+    DWORD  dwMask;
+    INT  idCommand;
+    INT  iImage;
+    BYTE   fsState;
+    BYTE   fsStyle;
+    WORD   cx;
+    qemu_ptr lParam;
+    qemu_ptr  pszText;
+    INT  cchText;
+};
+
+static inline void TBBUTTONINFO_g2h(TBBUTTONINFOW *host, const struct qemu_TBBUTTONINFO *guest)
+{
+    host->cbSize = sizeof(*host);
+    host->dwMask = guest->dwMask;
+    host->idCommand = guest->idCommand;
+    host->iImage = guest->iImage;
+    host->fsState = guest->fsState;
+    host->fsStyle = guest->fsStyle;
+    host->cx = guest->cx;
+    host->lParam = guest->lParam;
+    host->pszText = (WCHAR *)(ULONG_PTR)guest->pszText;
+    host->cchText = guest->cchText;
+}
+
+static inline void TBBUTTONINFO_h2g(struct qemu_TBBUTTONINFO *guest, const TBBUTTONINFOW *host)
+{
+    guest->dwMask = host->dwMask;
+    guest->idCommand = host->idCommand;
+    guest->iImage = host->iImage;
+    guest->fsState = host->fsState;
+    guest->fsStyle = host->fsStyle;
+    guest->cx = host->cx;
+    guest->lParam = host->lParam;
+    guest->pszText = (ULONG_PTR)host->pszText;
+    guest->cchText = host->cchText;
+}
+
 #endif

@@ -1207,6 +1207,31 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             }
             break;
 
+        case WM_USER+63: /* Possible TB_GETBUTTONINFOW */
+        case WM_USER+64: /* Possible TB_SETBUTTONINFO */
+        case WM_USER+65: /* Possible TB_GETBUTTONINFOA */
+        case WM_USER+66:
+            len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
+            if (len < 0 || len == 256)
+                break;
+
+            if (!strcmpW(class, TOOLBARCLASSNAMEW))
+            {
+                struct qemu_TBBUTTONINFO *guest_info;
+                TBBUTTONINFOW *host_info;
+                WINE_TRACE("Translating TB_SETBUTTONINFO message, info at %p.\n",
+                        (void *)msg_in->lParam);
+
+                guest_info = (struct qemu_TBBUTTONINFO *)msg_in->lParam;
+                host_info = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_info));
+                if (guest_info->cbSize == sizeof(*guest_info))
+                    TBBUTTONINFO_g2h(host_info, guest_info);
+                else
+                    host_info->cbSize = 0;
+                msg_out->lParam = (LPARAM)host_info;
+            }
+            break;
+
         case TCM_GETITEMA:
         case TCM_GETITEMW:
         case TCM_SETITEMA:
@@ -1338,9 +1363,25 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
             }
             break;
 
+        case WM_USER+63:
+        case WM_USER+65:
+            if (conv->lParam != orig->lParam)
+            {
+                struct qemu_TBBUTTONINFO *guest = (struct qemu_TBBUTTONINFO *)orig->lParam;
+                TBBUTTONINFOW *host = (TBBUTTONINFOW *)conv->lParam;
+                WINE_TRACE("Reverse translating TB_GETBUTTONINFO.\n");
+
+                if (host->cbSize == sizeof(*host))
+                    TBBUTTONINFO_h2g(guest, host);
+                HeapFree(GetProcessHeap(), 0, host);
+            }
+            break;
+
         case WM_USER+19:
         case WM_USER+20:
         case WM_USER+21:
+        case WM_USER+64:
+        case WM_USER+66:
         case WM_USER+68:
             if (conv->lParam != orig->lParam)
                 HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
