@@ -840,4 +840,70 @@ static inline void TBBUTTONINFO_h2g(struct qemu_TBBUTTONINFO *guest, const TBBUT
     guest->cchText = host->cchText;
 }
 
+struct qemu_NMTBSAVE
+{
+    struct qemu_NMHDR hdr;
+    qemu_ptr pData;
+    qemu_ptr pCurrent;
+    UINT cbData;
+    int iItem;
+    int cButtons;
+    struct qemu_TBBUTTON tbButton;
+};
+
+static inline void NMTBSAVE_g2h(NMTBSAVE *host, const struct qemu_NMTBSAVE *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->pData = (DWORD *)(ULONG_PTR)guest->pData;
+    host->pCurrent = (DWORD *)(ULONG_PTR)guest->pCurrent;
+    host->cbData = guest->cbData;
+    host->iItem = guest->iItem;
+    host->cButtons = guest->cButtons;
+    TBBUTTON_g2h(&host->tbButton, &guest->tbButton);
+}
+
+static inline void NMTBSAVE_h2g(struct qemu_NMTBSAVE *guest, const NMTBSAVE *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->pData = (ULONG_PTR)host->pData;
+    guest->pCurrent = (ULONG_PTR)host->pCurrent;
+    guest->cbData = host->cbData;
+    guest->iItem = host->iItem;
+    guest->cButtons = host->cButtons;
+    TBBUTTON_h2g(&guest->tbButton, &host->tbButton);
+}
+
+struct qemu_NMTBDISPINFO
+{
+    struct qemu_NMHDR hdr;
+    DWORD dwMask;
+    int idCommand;
+    qemu_ptr lParam;
+    int iImage;
+    qemu_ptr pszText;
+    int cchText;
+};
+
+static inline void NMTBDISPINFO_g2h(NMTBDISPINFOW *host, const struct qemu_NMTBDISPINFO *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->dwMask = guest->dwMask;
+    host->idCommand = guest->idCommand;
+    host->lParam = guest->lParam;
+    host->iImage = guest->iImage;
+    host->pszText = (WCHAR *)(ULONG_PTR)guest->pszText;
+    host->cchText = guest->cchText;
+}
+
+static inline void NMTBDISPINFO_h2g(struct qemu_NMTBDISPINFO *guest, const NMTBDISPINFOW *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->dwMask = host->dwMask;
+    guest->idCommand = host->idCommand;
+    guest->lParam = host->lParam;
+    guest->iImage = host->iImage;
+    guest->pszText = (ULONG_PTR)host->pszText;
+    guest->cchText = host->cchText;
+}
+
 #endif

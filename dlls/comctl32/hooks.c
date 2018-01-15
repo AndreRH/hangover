@@ -229,6 +229,8 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
     struct qemu_NMTOOLBAR *toolbar;
     struct qemu_NMHDR *guest_hdr;
     struct qemu_NMKEY *key;
+    struct qemu_NMTBSAVE *save;
+    struct qemu_NMTBDISPINFO *disp;
 
     WINE_TRACE("Handling a toolbar notify message\n");
     if (ret)
@@ -281,10 +283,22 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
                 NMTBHOTITEM_g2h((NMTBHOTITEM *)hdr, hotitem);
                 break;
 
+            case TBN_SAVE:
+                save = (struct qemu_NMTBSAVE *)guest->lParam;
+                NMTBSAVE_g2h((NMTBSAVE *)hdr, save);
+                break;
+
+            case TBN_GETDISPINFOA:
+            case TBN_GETDISPINFOW:
+                disp = (struct qemu_NMTBDISPINFO *)guest->lParam;
+                NMTBDISPINFO_g2h((NMTBDISPINFOW *)hdr, disp);
+                break;
+
             case TBN_ENDDRAG:
             case TBN_BEGINDRAG:
             case TBN_DROPDOWN:
             case TBN_DRAGOUT:
+            case TBN_DELETINGBUTTON:
                 toolbar = (struct qemu_NMTOOLBAR *)guest->lParam;
                 NMTOOLBAR_g2h((NMTOOLBARW *)hdr, toolbar);
                 break;
@@ -334,7 +348,10 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
 
         case TBN_GETDISPINFOA:
         case TBN_GETDISPINFOW:
-            WINE_FIXME("Unhandled notify message TBN_GETDISPINFO.\n");
+            WINE_TRACE("Handling notify message TBN_GETDISPINFO.\n");
+            disp = HeapAlloc(GetProcessHeap(), 0, sizeof(*disp));
+            NMTBDISPINFO_h2g(disp, (NMTBDISPINFOW *)hdr);
+            guest->lParam = (LPARAM)disp;
             break;
 
         case TBN_TOOLBARCHANGE:
@@ -369,12 +386,11 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
             WINE_FIXME("Unhandled notify message TBN_ENDADJUST.\n");
             break;
 
-        case TBN_DELETINGBUTTON:
-            WINE_FIXME("Unhandled notify message TBN_DELETINGBUTTON.\n");
-            break;
-
         case TBN_SAVE:
-            WINE_FIXME("Unhandled notify message TBN_SAVE.\n");
+            WINE_TRACE("Handling notify message TBN_SAVE.\n");
+            save = HeapAlloc(GetProcessHeap(), 0, sizeof(*save));
+            NMTBSAVE_h2g(save, (NMTBSAVE *)hdr);
+            guest->lParam = (LPARAM)save;
             break;
 
         case TBN_RESTORE:
@@ -404,7 +420,8 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
         case TBN_BEGINDRAG:
         case TBN_DROPDOWN:
         case TBN_DRAGOUT:
-            WINE_TRACE("Handling notify message TBN_[BEGIN|END]DRAG.\n");
+        case TBN_DELETINGBUTTON:
+            WINE_TRACE("Handling notify message TBN_[BEGIN|END]DRAG or TBN_DELETINGBUTTON.\n");
             toolbar = HeapAlloc(GetProcessHeap(), 0, sizeof(*toolbar));
             NMTOOLBAR_h2g(toolbar, (NMTOOLBARW *)hdr);
             guest->lParam = (LPARAM)toolbar;
