@@ -1363,4 +1363,40 @@ DWORD CALLBACK overlapped32_wait_func(void *ctx)
     }
 }
 
+struct OVERLAPPED_data *alloc_OVERLAPPED_data(void *ov32, uint64_t guest_completion_cb)
+{
+    struct OVERLAPPED_data *ret;
+
+    ret = HeapAlloc(GetProcessHeap(), 0, sizeof(*ret));
+    OVERLAPPED_g2h(&ret->ov, ov32);
+    ret->guest_ov = ov32;
+    ret->guest_cb = guest_completion_cb;
+    ret->ov.hEvent = CreateEventW( NULL, 0, 0, NULL );
+
+    return ret;
+}
+
+void process_OVERLAPPED_data(uint64_t retval, struct OVERLAPPED_data *data)
+{
+    if (!retval && GetLastError() == ERROR_IO_PENDING)
+    {
+        struct qemu_OVERLAPPED *ov32 = data->guest_ov;
+
+        if (ov32->hEvent && ov32->hEvent != (qemu_handle)(LONG_PTR)INVALID_HANDLE_VALUE)
+            ResetEvent(HANDLE_g2h(ov32->hEvent));
+
+        data->cb_thread = GetCurrentThreadId();
+
+        WINE_TRACE("Async return, starting wait thread.\n");
+        if (!QueueUserWorkItem(overlapped32_wait_func, data, 0))
+            WINE_ERR("Failed to queue work item\n");
+    }
+    else
+    {
+        WINE_TRACE("Synchonous return return.\n");
+        CloseHandle(data->ov.hEvent);
+        HeapFree(GetProcessHeap(), 0, data);
+    }
+}
+
 #endif

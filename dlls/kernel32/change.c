@@ -233,11 +233,7 @@ void qemu_ReadDirectoryChangesW(struct qemu_syscall *call)
                 c->filter, QEMU_G2H(c->returned), NULL, NULL);
         return;
     }
-    ov_wrapper = HeapAlloc(GetProcessHeap(), 0, sizeof(*ov_wrapper));
-    OVERLAPPED_g2h(&ov_wrapper->ov, ov32);
-    ov_wrapper->guest_ov = ov32;
-    ov_wrapper->guest_cb = guest_completion;
-    ov_wrapper->ov.hEvent = CreateEventW( NULL, 0, 0, NULL );
+    ov_wrapper = alloc_OVERLAPPED_data(ov32, guest_completion);
     guest_event = HANDLE_g2h(ov32->hEvent);
 
     WINE_TRACE("Async operation\n");
