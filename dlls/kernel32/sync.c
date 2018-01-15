@@ -2740,8 +2740,36 @@ WINBASEAPI BOOL WINAPI ConnectNamedPipe(HANDLE hPipe, LPOVERLAPPED overlapped)
 void qemu_ConnectNamedPipe(struct qemu_syscall *call)
 {
     struct qemu_ConnectNamedPipe *c = (struct qemu_ConnectNamedPipe *)call;
+    struct qemu_OVERLAPPED *ov32;
+    struct OVERLAPPED_data *ov_wrapper;
+    HANDLE guest_event;
     WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
     c->super.iret = ConnectNamedPipe(QEMU_G2H(c->hPipe), QEMU_G2H(c->overlapped));
+    return;
+#endif
+
+    ov32 = QEMU_G2H(c->overlapped);
+    if (!ov32)
+    {
+        WINE_TRACE("Synchronous operation, easy...\n");
+        c->super.iret = ConnectNamedPipe(QEMU_G2H(c->hPipe), NULL);
+        return;
+    }
+
+    ov_wrapper = alloc_OVERLAPPED_data(ov32, 0);
+    guest_event = HANDLE_g2h(ov32->hEvent);
+
+    WINE_TRACE("Async operation\n");
+    c->super.iret = ConnectNamedPipe(QEMU_G2H(c->hPipe), &ov_wrapper->ov);
+    WINE_TRACE("result %lx\n", c->super.iret);
+
+    OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
+    ov32->hEvent = (ULONG_PTR)guest_event;
+
+    process_OVERLAPPED_data(c->super.iret, ov_wrapper);
+
 }
 
 #endif
