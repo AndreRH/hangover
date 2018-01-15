@@ -992,6 +992,8 @@ void (* WINAPI pRtlRaiseException)(PEXCEPTION_RECORD);
 
 #else
 
+#include <wine/list.h>
+
 extern const struct qemu_ops *qemu_ops;
 
 void qemu__hread(struct qemu_syscall *call);
@@ -1972,6 +1974,8 @@ struct OVERLAPPED_data
     struct qemu_OVERLAPPED *guest_ov;
     uint64_t guest_cb;
     DWORD cb_thread;
+
+    struct list free_list_entry;
 };
 
 #endif

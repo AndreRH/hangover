@@ -1313,6 +1313,25 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     return dll_functions;
 }
 
+static CRITICAL_SECTION ov_cs = {0, -1, 0, 0, 0, 0};
+static struct list ov_free_list = LIST_INIT(ov_free_list);
+unsigned int free_list_space = 1024;
+
+static void free_OVERLAPPED(struct OVERLAPPED_data *ov)
+{
+    EnterCriticalSection(&ov_cs);
+    if (free_list_space)
+    {
+        free_list_space--;
+        list_add_tail(&ov_free_list, &ov->free_list_entry);
+    }
+    else
+    {
+        HeapFree(GetProcessHeap(), 0, ov);
+    }
+    LeaveCriticalSection(&ov_cs);
+}
+
 void CALLBACK apc_callback_func(ULONG_PTR ctx)
 {
     struct OVERLAPPED_data *ov = (struct OVERLAPPED_data *)ctx;
@@ -1329,7 +1348,7 @@ void CALLBACK apc_callback_func(ULONG_PTR ctx)
     qemu_ops->qemu_execute(QEMU_G2H(guest_completion_cb), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned.\n");
 
-    HeapFree(GetProcessHeap(), 0, ov);
+    free_OVERLAPPED(ov);
 }
 
 DWORD CALLBACK overlapped32_wait_func(void *ctx)
@@ -1356,7 +1375,10 @@ DWORD CALLBACK overlapped32_wait_func(void *ctx)
      *
      * It seems NtQueryInformationFile(FileCompletionInformation) can tell me if there's an
      * IOCP associated with the handle, but it requires a Wine server call. A different
-     * approach, if possible, may be a good idea. */
+     * approach, if possible, may be a good idea.
+     *
+     * This NtQueryInformationFile(FileCompletionInformation) is not implemented in Wine.
+     * So do something broken and delay destruction of the OVERLAPPED entries... */
     if (ov->guest_cb)
     {
         HANDLE t = OpenThread(THREAD_SET_CONTEXT, FALSE, ov->cb_thread);
@@ -1369,7 +1391,7 @@ DWORD CALLBACK overlapped32_wait_func(void *ctx)
     else
     {
         WINE_TRACE("Just freeing data %p, guest data %p\n", ov, ov->guest_ov);
-        HeapFree(GetProcessHeap(), 0, ov);
+        free_OVERLAPPED(ov);
     }
 }
 
@@ -1377,11 +1399,26 @@ struct OVERLAPPED_data *alloc_OVERLAPPED_data(void *ov32, uint64_t guest_complet
 {
     struct OVERLAPPED_data *ret;
 
-    ret = HeapAlloc(GetProcessHeap(), 0, sizeof(*ret));
+    EnterCriticalSection(&ov_cs);
+
+    if (!free_list_space)
+    {
+        struct list *reuse;
+        free_list_space++;
+        reuse = list_tail(&ov_free_list);
+        list_remove(reuse);
+        ret = LIST_ENTRY(reuse, struct OVERLAPPED_data, free_list_entry);
+    }
+    else
+    {
+        ret = HeapAlloc(GetProcessHeap(), 0, sizeof(*ret));
+    }
     OVERLAPPED_g2h(&ret->ov, ov32);
     ret->guest_ov = ov32;
     ret->guest_cb = guest_completion_cb;
     ret->ov.hEvent = CreateEventW( NULL, 0, 0, NULL );
+
+    LeaveCriticalSection(&ov_cs);
 
     return ret;
 }
@@ -1405,7 +1442,10 @@ void process_OVERLAPPED_data(uint64_t retval, struct OVERLAPPED_data *data)
     {
         WINE_TRACE("Synchonous return return, host ptr %p, guest ptr %p.\n", data, data->guest_ov);
         CloseHandle(data->ov.hEvent);
-        HeapFree(GetProcessHeap(), 0, data);
+        if (retval)
+            free_OVERLAPPED(data); /* Might be queued in a completion port. */
+        else
+            HeapFree(GetProcessHeap(), 0, data);
     }
 }
 
