@@ -214,17 +214,12 @@ void qemu_ReadFileScatter(struct qemu_syscall *call)
 #endif
 
     ov32 = QEMU_G2H(c->overlapped);
-    if (!ov32 || !ov32->hEvent)
+    if (!ov32)
     {
-        OVERLAPPED copy;
-        WINE_TRACE("Synchonous operation, easy...\n");
+        WINE_TRACE("Synchronous operation, easy...\n");
 
-        if (ov32)
-            OVERLAPPED_g2h(&copy, ov32);
-            c->super.iret = ReadFileScatter(QEMU_G2H(c->file), QEMU_G2H(c->segments), c->count, QEMU_G2H(c->reserved),
-                    ov32 ? &copy : NULL);
-        if (ov32)
-            OVERLAPPED_h2g(ov32, &copy);
+        c->super.iret = ReadFileScatter(QEMU_G2H(c->file), QEMU_G2H(c->segments), c->count, QEMU_G2H(c->reserved),
+                NULL);
         return;
     }
 
@@ -287,17 +282,12 @@ void qemu_ReadFile(struct qemu_syscall *call)
 #endif
 
     ov32 = QEMU_G2H(c->overlapped);
-    if (!ov32 || !ov32->hEvent)
+    if (!ov32)
     {
-        OVERLAPPED copy;
-        WINE_TRACE("Synchonous operation, easy...\n");
+        WINE_TRACE("Synchronous operation, easy...\n");
 
-        if (ov32)
-            OVERLAPPED_g2h(&copy, ov32);
         c->super.iret = ReadFile(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToRead, QEMU_G2H(c->bytesRead),
-                ov32 ? &copy : NULL);
-        if (ov32)
-            OVERLAPPED_h2g(ov32, &copy);
+                NULL);
         return;
     }
 
@@ -415,17 +405,12 @@ void qemu_WriteFileGather(struct qemu_syscall *call)
 #endif
 
     ov32 = QEMU_G2H(c->overlapped);
-    if (!ov32 || !ov32->hEvent)
+    if (!ov32)
     {
-        OVERLAPPED copy;
-        WINE_TRACE("Synchonous operation, easy...\n");
+        WINE_TRACE("Synchronous operation, easy...\n");
 
-        if (ov32)
-            OVERLAPPED_g2h(&copy, ov32);
         c->super.iret = WriteFileGather(QEMU_G2H(c->file), QEMU_G2H(c->segments), c->count, QEMU_G2H(c->reserved),
-                ov32 ? &copy : NULL);
-        if (ov32)
-            OVERLAPPED_h2g(ov32, &copy);
+                NULL);
         return;
     }
 
@@ -489,17 +474,12 @@ void qemu_WriteFile(struct qemu_syscall *call)
 #endif
 
     ov32 = QEMU_G2H(c->overlapped);
-    if (!ov32 || !ov32->hEvent)
+    if (!ov32)
     {
-        OVERLAPPED copy;
-        WINE_TRACE("Synchonous operation, easy...\n");
+        WINE_TRACE("Synchronous operation, easy...\n");
 
-        if (ov32)
-            OVERLAPPED_g2h(&copy, ov32);
         c->super.iret = WriteFile(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToWrite, QEMU_G2H(c->bytesWritten),
-                ov32 ? &copy : NULL);
-        if (ov32)
-            OVERLAPPED_h2g(ov32, &copy);
+                NULL);
         return;
     }
 
@@ -1507,17 +1487,12 @@ void qemu_LockFileEx(struct qemu_syscall *call)
 #endif
 
     ov32 = QEMU_G2H(c->overlapped);
-    if (!ov32 || !ov32->hEvent)
+    if (!ov32)
     {
-        OVERLAPPED copy;
-        WINE_TRACE("Synchonous operation, easy...\n");
+        WINE_TRACE("Synchronous operation, easy...\n");
 
-        if (ov32)
-            OVERLAPPED_g2h(&copy, ov32);
         c->super.iret = LockFileEx((HANDLE)c->hFile, c->flags, c->reserved, c->count_low, c->count_high,
-                ov32 ? &copy : NULL);
-        if (ov32)
-            OVERLAPPED_h2g(ov32, &copy);
+                NULL);
         return;
     }
 
