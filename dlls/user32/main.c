@@ -1053,7 +1053,7 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
 {
     *msg_out = *msg_in;
     WCHAR class[256];
-    int len;
+    int len, count;
 
     switch (msg_in->message)
     {
@@ -1175,8 +1175,8 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             }
             break;
 
-        case WM_USER+20:
-            /* Possible TB_ADDBUTTONSA */
+        case WM_USER+20: /* Possible TB_ADDBUTTONSA */
+        case WM_USER+21: /* Possible TB_INSERTBUTTONA */
             /* Drop through */
         case WM_USER+68:
             /* Possible TB_ADDBUTTONSW */
@@ -1186,16 +1186,22 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             if (len < 0 || len == 256)
                 break;
 
+            msg_out->wParam = (LONG)msg_in->wParam;
+            if (msg_in->message == TB_ADDBUTTONSA || msg_in->message == TB_ADDBUTTONSW)
+                count = msg_out->wParam;
+            else
+                count = 1;
+
             if (!strcmpW(class, TOOLBARCLASSNAMEW))
             {
                 struct qemu_TBBUTTON *guest_button;
                 TBBUTTON *host_button;
-                WINE_TRACE("Translating TB_ADDBUTTONS message, %lu buttons at %p.\n",
-                        msg_in->wParam, (void *)msg_in->lParam);
+                WINE_TRACE("Translating TB_ADDBUTTONS message, %d buttons at %p.\n",
+                        count, (void *)msg_in->lParam);
 
                 guest_button = (struct qemu_TBBUTTON *)msg_in->lParam;
-                host_button = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_button) * msg_in->wParam);
-                for (len = 0; len < msg_in->wParam; ++len)
+                host_button = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_button) * count);
+                for (len = 0; len < count; ++len)
                     TBBUTTON_g2h(&host_button[len], &guest_button[len]);
                 msg_out->lParam = (LPARAM)host_button;
             }
@@ -1334,6 +1340,7 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
 
         case WM_USER+19:
         case WM_USER+20:
+        case WM_USER+21:
         case WM_USER+68:
             if (conv->lParam != orig->lParam)
                 HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
