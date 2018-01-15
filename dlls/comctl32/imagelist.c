@@ -515,8 +515,19 @@ WINBASEAPI BOOL WINAPI ImageList_DrawIndirect (IMAGELISTDRAWPARAMS *pimldp)
 void qemu_ImageList_DrawIndirect(struct qemu_syscall *call)
 {
     struct qemu_ImageList_DrawIndirect *c = (struct qemu_ImageList_DrawIndirect *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_DrawIndirect(QEMU_G2H(c->pimldp));
+    IMAGELISTDRAWPARAMS stack, *param = &stack;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    param = QEMU_G2H(c->pimldp);
+#else
+    if (QEMU_G2H(c->pimldp))
+        IMAGELISTDRAWPARAMS_g2h(param, QEMU_G2H(c->pimldp));
+    else
+        param = NULL;
+#endif
+
+    c->super.iret = ImageList_DrawIndirect(param);
 }
 
 #endif

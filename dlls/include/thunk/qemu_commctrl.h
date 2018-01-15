@@ -725,4 +725,78 @@ static inline void IMAGEINFO_g2h(IMAGEINFO *host, const struct qemu_IMAGEINFO *g
     host->rcImage = guest->rcImage;
 }
 
+struct qemu_IMAGELISTDRAWPARAMS
+{
+    DWORD       cbSize;
+    qemu_handle himl;
+    INT         i;
+    qemu_handle hdcDst;
+    INT         x;
+    INT         y;
+    INT         cx;
+    INT         cy;
+    INT         xBitmap;  /* x offset from the upperleft of bitmap */
+    INT         yBitmap;  /* y offset from the upperleft of bitmap */
+    COLORREF    rgbBk;
+    COLORREF    rgbFg;
+    UINT        fStyle;
+    DWORD       dwRop;
+    DWORD       fState;
+    DWORD       Frame;
+    COLORREF    crEffect;
+};
+
+static inline void IMAGELISTDRAWPARAMS_h2g(struct qemu_IMAGELISTDRAWPARAMS *guest, const IMAGELISTDRAWPARAMS *host)
+{
+    guest->himl = (ULONG_PTR)host->himl;
+    guest->i = host->i;
+    guest->hdcDst = (ULONG_PTR)host->hdcDst;
+    guest->x = host->x;
+    guest->y = host->y;
+    guest->cx = host->cx;
+    guest->cy = host->cy;
+    guest->xBitmap = host->xBitmap;
+    guest->yBitmap = host->yBitmap;
+    guest->rgbBk = host->rgbBk;
+    guest->rgbFg = host->rgbFg;
+    guest->fStyle = host->fStyle;
+    guest->dwRop = host->dwRop;
+    if (guest->cbSize >= sizeof(*guest))
+    {
+        guest->fState = host->fState;
+        guest->Frame = host->Frame;
+        guest->crEffect = host->crEffect;
+    }
+}
+
+static inline void IMAGELISTDRAWPARAMS_g2h(IMAGELISTDRAWPARAMS *host, const struct qemu_IMAGELISTDRAWPARAMS *guest)
+{
+    host->cbSize = sizeof(*host);
+    host->himl = HANDLE_g2h(guest->himl);
+    host->i = guest->i;
+    host->hdcDst = HANDLE_g2h(guest->hdcDst);
+    host->x = guest->x;
+    host->y = guest->y;
+    host->cx = guest->cx;
+    host->cy = guest->cy;
+    host->xBitmap = guest->xBitmap;
+    host->yBitmap = guest->yBitmap;
+    host->rgbBk = guest->rgbBk;
+    host->rgbFg = guest->rgbFg;
+    host->fStyle = guest->fStyle;
+    host->dwRop = guest->dwRop;
+    if (guest->cbSize >= sizeof(*guest))
+    {
+        host->fState = guest->fState;
+        host->Frame = guest->Frame;
+        host->crEffect = guest->crEffect;
+    }
+    else
+    {
+        host->fState = ILS_NORMAL;
+        host->Frame = 0;
+        host->crEffect = 0;
+    }
+}
+
 #endif
