@@ -676,8 +676,8 @@
 @ stdcall RtlInterlockedFlushSList(ptr)
 @ stdcall RtlInterlockedPopEntrySList(ptr)
 @ stdcall RtlInterlockedPushEntrySList(ptr ptr)
-@ stdcall -norelay RtlInterlockedPushListSList(ptr ptr ptr long)
-@ stdcall RtlInterlockedPushListSListEx(ptr ptr ptr long)
+@ cdecl -norelay RtlInterlockedPushListSList(ptr ptr ptr long) RtlInterlockedPushListSList
+@ stdcall RtlInterlockedPushListSListEx(ptr ptr ptr long) qemu_RtlInterlockedPushListSListEx
 # @ stub RtlInvertRangeList
 @ stdcall RtlIpv4AddressToStringA(ptr ptr)
 @ stdcall RtlIpv4AddressToStringExA(ptr long ptr ptr)

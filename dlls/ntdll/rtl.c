@@ -1183,13 +1183,14 @@ struct qemu_RtlInitializeSListHead
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI void WINAPI RtlInitializeSListHead(PSLIST_HEADER list)
+WINBASEAPI VOID WINAPI RtlInitializeSListHead(PSLIST_HEADER list)
 {
-    struct qemu_RtlInitializeSListHead call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_RTLINITIALIZESLISTHEAD);
-    call.list = (ULONG_PTR)list;
-
-    qemu_syscall(&call.super);
+#ifdef _WIN64
+    list->Alignment = list->Region = 0;
+    list->HeaderX64.HeaderType = 1;  /* we use the 16-byte header */
+#else
+    list->Alignment = 0;
+#endif
 }
 
 #else
@@ -1213,13 +1214,11 @@ struct qemu_RtlQueryDepthSList
 
 WINBASEAPI WORD WINAPI RtlQueryDepthSList(PSLIST_HEADER list)
 {
-    struct qemu_RtlQueryDepthSList call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_RTLQUERYDEPTHSLIST);
-    call.list = (ULONG_PTR)list;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+#ifdef _WIN64
+    return list->HeaderX64.Depth;
+#else
+    return list->Depth;
+#endif
 }
 
 #else
@@ -1243,13 +1242,11 @@ struct qemu_RtlFirstEntrySList
 
 WINBASEAPI PSLIST_ENTRY WINAPI RtlFirstEntrySList(const SLIST_HEADER* list)
 {
-    struct qemu_RtlFirstEntrySList call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_RTLFIRSTENTRYSLIST);
-    call.list = (ULONG_PTR)list;
-
-    qemu_syscall(&call.super);
-
-    return (PSLIST_ENTRY)(ULONG_PTR)call.super.iret;
+#ifdef _WIN64
+    return (SLIST_ENTRY *)((ULONG_PTR)list->HeaderX64.NextEntry << 4);
+#else
+    return list->Next.Next;
+#endif
 }
 
 #else
@@ -1271,15 +1268,50 @@ struct qemu_RtlInterlockedFlushSList
 
 #ifdef QEMU_DLL_GUEST
 
+static inline __int64 interlocked_cmpxchg64( __int64 *dest, __int64 xchg, __int64 compare )
+{
+    return __sync_val_compare_and_swap( dest, compare, xchg );
+}
+
+#ifdef _WIN64
+static inline unsigned char interlocked_cmpxchg128( __int64 *dest, __int64 xchg_high,
+                                                    __int64 xchg_low, __int64 *compare )
+{
+    unsigned char ret;
+    __asm__ __volatile__( "lock cmpxchg16b %0; setz %b2"
+                          : "=m" (dest[0]), "=m" (dest[1]), "=r" (ret),
+                            "=a" (compare[0]), "=d" (compare[1])
+                          : "m" (dest[0]), "m" (dest[1]), "3" (compare[0]), "4" (compare[1]),
+                            "c" (xchg_high), "b" (xchg_low) );
+    return ret;
+}
+#endif
+
 WINBASEAPI PSLIST_ENTRY WINAPI RtlInterlockedFlushSList(PSLIST_HEADER list)
 {
-    struct qemu_RtlInterlockedFlushSList call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_RTLINTERLOCKEDFLUSHSLIST);
-    call.list = (ULONG_PTR)list;
+    SLIST_HEADER old, new;
 
-    qemu_syscall(&call.super);
-
-    return (PSLIST_ENTRY)(ULONG_PTR)call.super.iret;
+#ifdef _WIN64
+    if (!list->HeaderX64.NextEntry) return NULL;
+    new.Alignment = new.Region = 0;
+    new.HeaderX64.HeaderType = 1;  /* we use the 16-byte header */
+    do
+    {
+        old = *list;
+        new.HeaderX64.Sequence = old.HeaderX64.Sequence + 1;
+    } while (!interlocked_cmpxchg128((__int64 *)list, new.Region, new.Alignment, (__int64 *)&old));
+    return (SLIST_ENTRY *)((ULONG_PTR)old.HeaderX64.NextEntry << 4);
+#else
+    if (!list->Next.Next) return NULL;
+    new.Alignment = 0;
+    do
+    {
+        old = *list;
+        new.Sequence = old.Sequence + 1;
+    } while (interlocked_cmpxchg64((__int64 *)&list->Alignment, new.Alignment,
+                                   old.Alignment) != old.Alignment);
+    return old.Next.Next;
+#endif
 }
 
 #else
@@ -1304,14 +1336,30 @@ struct qemu_RtlInterlockedPushEntrySList
 
 WINBASEAPI PSLIST_ENTRY WINAPI RtlInterlockedPushEntrySList(PSLIST_HEADER list, PSLIST_ENTRY entry)
 {
-    struct qemu_RtlInterlockedPushEntrySList call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_RTLINTERLOCKEDPUSHENTRYSLIST);
-    call.list = (ULONG_PTR)list;
-    call.entry = (ULONG_PTR)entry;
+    SLIST_HEADER old, new;
 
-    qemu_syscall(&call.super);
-
-    return (PSLIST_ENTRY)(ULONG_PTR)call.super.iret;
+#ifdef _WIN64
+    new.HeaderX64.NextEntry = (ULONG_PTR)entry >> 4;
+    do
+    {
+        old = *list;
+        entry->Next = (SLIST_ENTRY *)((ULONG_PTR)old.HeaderX64.NextEntry << 4);
+        new.HeaderX64.Depth = old.HeaderX64.Depth + 1;
+        new.HeaderX64.Sequence = old.HeaderX64.Sequence + 1;
+    } while (!interlocked_cmpxchg128((__int64 *)list, new.Region, new.Alignment, (__int64 *)&old));
+    return (SLIST_ENTRY *)((ULONG_PTR)old.HeaderX64.NextEntry << 4);
+#else
+    new.Next.Next = entry;
+    do
+    {
+        old = *list;
+        entry->Next = old.Next.Next;
+        new.Depth = old.Depth + 1;
+        new.Sequence = old.Sequence + 1;
+    } while (interlocked_cmpxchg64((__int64 *)&list->Alignment, new.Alignment,
+                                   old.Alignment) != old.Alignment);
+    return old.Next.Next;
+#endif
 }
 
 #else
@@ -1333,15 +1381,54 @@ struct qemu_RtlInterlockedPopEntrySList
 
 #ifdef QEMU_DLL_GUEST
 
+#ifdef _WIN64
+long CALLBACK wndproc_except_handler(EXCEPTION_POINTERS *pointers, ULONG64 frame)
+{
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+#endif
+
 WINBASEAPI PSLIST_ENTRY WINAPI RtlInterlockedPopEntrySList(PSLIST_HEADER list)
 {
-    struct qemu_RtlInterlockedPopEntrySList call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_RTLINTERLOCKEDPOPENTRYSLIST);
-    call.list = (ULONG_PTR)list;
+    SLIST_HEADER old, new;
+    PSLIST_ENTRY entry;
 
-    qemu_syscall(&call.super);
-
-    return (PSLIST_ENTRY)(ULONG_PTR)call.super.iret;
+#ifdef _WIN64
+    do
+    {
+        old = *list;
+        if (!(entry = (SLIST_ENTRY *)((ULONG_PTR)old.HeaderX64.NextEntry << 4))) return NULL;
+        /* entry could be deleted by another thread */
+        __try1(wndproc_except_handler)
+        {
+            new.HeaderX64.NextEntry = (ULONG_PTR)entry->Next >> 4;
+            new.HeaderX64.Depth = old.HeaderX64.Depth - 1;
+            new.HeaderX64.Sequence = old.HeaderX64.Sequence + 1;
+        }
+        __except1
+        {
+        }
+    } while (!interlocked_cmpxchg128((__int64 *)list, new.Region, new.Alignment, (__int64 *)&old));
+#else
+    do
+    {
+        old = *list;
+        if (!(entry = old.Next.Next)) return NULL;
+        /* entry could be deleted by another thread */
+//         __TRY
+//         {
+            new.Next.Next = entry->Next;
+            new.Depth = old.Depth - 1;
+            new.Sequence = old.Sequence + 1;
+//         }
+//         __EXCEPT_PAGE_FAULT
+//         {
+//         }
+//         __ENDTRY
+    } while (interlocked_cmpxchg64((__int64 *)&list->Alignment, new.Alignment,
+                                   old.Alignment) != old.Alignment);
+#endif
+    return entry;
 }
 
 #else
@@ -1366,18 +1453,33 @@ struct qemu_RtlInterlockedPushListSListEx
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI PSLIST_ENTRY WINAPI RtlInterlockedPushListSListEx(PSLIST_HEADER list, PSLIST_ENTRY first, PSLIST_ENTRY last, ULONG count)
+PSLIST_ENTRY WINAPI qemu_RtlInterlockedPushListSListEx(PSLIST_HEADER list, PSLIST_ENTRY first,
+                                                  PSLIST_ENTRY last, ULONG count)
 {
-    struct qemu_RtlInterlockedPushListSListEx call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_RTLINTERLOCKEDPUSHLISTSLISTEX);
-    call.list = (ULONG_PTR)list;
-    call.first = (ULONG_PTR)first;
-    call.last = (ULONG_PTR)last;
-    call.count = (ULONG_PTR)count;
+    SLIST_HEADER old, new;
 
-    qemu_syscall(&call.super);
-
-    return (PSLIST_ENTRY)(ULONG_PTR)call.super.iret;
+#ifdef _WIN64
+    new.HeaderX64.NextEntry = (ULONG_PTR)first >> 4;
+    do
+    {
+        old = *list;
+        new.HeaderX64.Depth = old.HeaderX64.Depth + count;
+        new.HeaderX64.Sequence = old.HeaderX64.Sequence + 1;
+        last->Next = (SLIST_ENTRY *)((ULONG_PTR)old.HeaderX64.NextEntry << 4);
+    } while (!interlocked_cmpxchg128((__int64 *)list, new.Region, new.Alignment, (__int64 *)&old));
+    return (SLIST_ENTRY *)((ULONG_PTR)old.HeaderX64.NextEntry << 4);
+#else
+    new.Next.Next = first;
+    do
+    {
+        old = *list;
+        new.Depth = old.Depth + count;
+        new.Sequence = old.Sequence + 1;
+        last->Next = old.Next.Next;
+    } while (interlocked_cmpxchg64((__int64 *)&list->Alignment, new.Alignment,
+                                   old.Alignment) != old.Alignment);
+    return old.Next.Next;
+#endif
 }
 
 #else
@@ -1404,18 +1506,9 @@ struct qemu_RtlInterlockedPushListSList
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI PSLIST_ENTRY WINAPI RtlInterlockedPushListSList(PSLIST_HEADER list, PSLIST_ENTRY first, PSLIST_ENTRY last, ULONG count)
+WINBASEAPI PSLIST_ENTRY __fastcall RtlInterlockedPushListSList(PSLIST_HEADER list, PSLIST_ENTRY first, PSLIST_ENTRY last, ULONG count)
 {
-    struct qemu_RtlInterlockedPushListSList call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_RTLINTERLOCKEDPUSHLISTSLIST);
-    call.list = (ULONG_PTR)list;
-    call.first = (ULONG_PTR)first;
-    call.last = (ULONG_PTR)last;
-    call.count = (ULONG_PTR)count;
-
-    qemu_syscall(&call.super);
-
-    return (PSLIST_ENTRY)(ULONG_PTR)call.super.iret;
+    return qemu_RtlInterlockedPushListSListEx(list, first, last, count);
 }
 
 #else
