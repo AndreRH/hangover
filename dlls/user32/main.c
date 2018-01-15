@@ -1134,7 +1134,9 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
          * the original WNDPROC. */
         case WM_USER+1:
         case WM_USER+4:
+        case WM_USER+5:
         case WM_USER+11:
+        case WM_USER+12:
         case WM_USER+13:
             /* Possible CBEM_INSERTITEM & friends */
             len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
@@ -1314,7 +1316,9 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
 
         case WM_USER+1:
         case WM_USER+4:
+        case WM_USER+5:
         case WM_USER+11:
+        case WM_USER+12:
         case WM_USER+13:
             if (conv->lParam != orig->lParam)
             {
