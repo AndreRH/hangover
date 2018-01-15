@@ -18,6 +18,8 @@
 
 /* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
 
+#include <ntstatus.h>
+#define WIN32_NO_STATUS
 #include <windows.h>
 #include <stdio.h>
 #include <fileapi.h>
@@ -411,8 +413,47 @@ WINBASEAPI BOOL WINAPI GetOverlappedResult(HANDLE hFile, LPOVERLAPPED lpOverlapp
 void qemu_GetOverlappedResult(struct qemu_syscall *call)
 {
     struct qemu_GetOverlappedResult *c = (struct qemu_GetOverlappedResult *)call;
+    struct qemu_OVERLAPPED *ov32;
+    NTSTATUS status;
+    HANDLE file, event;
     WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
     c->super.iret = GetOverlappedResult(QEMU_G2H(c->hFile), QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpTransferred), c->bWait);
+    return;
+#endif
+
+    /* Taken from Wine. We have to make due with the data in the 32 bit struct, as the 64 bit copy is freed
+     * when the event is notified. Also we don't want to search for the 64 bit copy... */
+    ov32 = QEMU_G2H(c->lpOverlapped);
+    file = QEMU_G2H(c->hFile);
+    WINE_TRACE( "(%p %p 0x%lx %lx)\n", file, ov32, c->lpTransferred, c->bWait );
+
+    status = ov32->Internal;
+    if (status == STATUS_PENDING)
+    {
+        if (!c->bWait)
+        {
+            SetLastError( ERROR_IO_INCOMPLETE );
+            c->super.iret = FALSE;
+            return;
+        }
+
+        event = HANDLE_g2h(ov32->hEvent);
+        if (WaitForSingleObject(event ? event : file, INFINITE) == WAIT_FAILED)
+        {
+            c->super.iret = FALSE;
+            return;
+        }
+
+        status = ov32->Internal;
+        if (status == STATUS_PENDING) status = STATUS_SUCCESS;
+    }
+
+    *(DWORD *)QEMU_G2H(c->lpTransferred) = ov32->InternalHigh;
+
+    if (status) SetLastError( RtlNtStatusToDosError(status) );
+    c->super.iret = !status;
 }
 
 #endif

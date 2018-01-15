@@ -36,13 +36,6 @@ struct qemu_set_callbacks
     uint64_t guest_completion_cb;
 };
 
-struct qemu_completion_cb
-{
-    uint64_t error, len;
-    uint64_t ov;
-    uint64_t func;
-};
-
 struct qemu_GetSystemRegistryQuota
 {
     struct qemu_syscall super;
@@ -145,7 +138,7 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 
 const struct qemu_ops *qemu_ops;
 
-static uint64_t guest_completion_cb;
+uint64_t guest_completion_cb;
 
 static void qemu_set_callbacks(struct qemu_syscall *call)
 {

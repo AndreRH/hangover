@@ -408,4 +408,48 @@ static inline void SECURITY_ATTRIBUTES_g2h(struct SA_conv_struct *host, const st
     host->sa.bInheritHandle = guest->bInheritHandle;
 }
 
+struct qemu_OVERLAPPED
+{
+#ifdef WORDS_BIGENDIAN
+        qemu_ptr InternalHigh;
+        qemu_ptr Internal;
+#else
+        qemu_ptr Internal;
+        qemu_ptr InternalHigh;
+#endif
+        union
+        {
+            struct
+            {
+#ifdef WORDS_BIGENDIAN
+                DWORD OffsetHigh;
+                DWORD Offset;
+#else
+                DWORD Offset;
+                DWORD OffsetHigh;
+#endif
+            } DUMMYSTRUCTNAME;
+            qemu_ptr Pointer;
+        } DUMMYUNIONNAME;
+        qemu_handle hEvent;
+};
+
+static inline void OVERLAPPED_g2h(OVERLAPPED *host, const struct qemu_OVERLAPPED *guest)
+{
+    host->InternalHigh = guest->InternalHigh;
+    host->Internal = guest->Internal;
+    host->OffsetHigh = guest->OffsetHigh;
+    host->Offset = guest->Offset;
+    host->hEvent = HANDLE_g2h(guest->hEvent);
+}
+
+static inline void OVERLAPPED_h2g(struct qemu_OVERLAPPED *guest, const OVERLAPPED *host)
+{
+    guest->InternalHigh = host->InternalHigh;
+    guest->Internal = host->Internal;
+    guest->OffsetHigh = host->OffsetHigh;
+    guest->Offset = host->Offset;
+    guest->hEvent = (ULONG_PTR)host->hEvent;
+}
+
 #endif

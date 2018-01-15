@@ -969,7 +969,12 @@ enum kernel32_calls
     CALL_ZOMBIFYACTCTX,
 };
 
-struct qemu_completion_cb;
+struct qemu_completion_cb
+{
+    uint64_t error, len;
+    uint64_t ov;
+    uint64_t func;
+};
 
 #ifdef QEMU_DLL_GUEST
 
@@ -1955,6 +1960,17 @@ void qemu_ZombifyActCtx(struct qemu_syscall *call);
 DWORD kernel32_tls;
 
 extern struct callback_entry_table *overlapped_wrappers;
+
+extern uint64_t guest_completion_cb;
+
+struct OVERLAPPED_data
+{
+    OVERLAPPED ov;
+
+    struct qemu_OVERLAPPED *guest_ov;
+    uint64_t guest_cb;
+    DWORD cb_thread;
+};
 
 #endif
 
