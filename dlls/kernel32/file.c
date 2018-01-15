@@ -202,9 +202,44 @@ WINBASEAPI BOOL WINAPI ReadFileScatter(HANDLE file, FILE_SEGMENT_ELEMENT *segmen
 void qemu_ReadFileScatter(struct qemu_syscall *call)
 {
     struct qemu_ReadFileScatter *c = (struct qemu_ReadFileScatter *)call;
+    struct qemu_OVERLAPPED *ov32;
+    struct OVERLAPPED_data *ov_wrapper;
+    HANDLE guest_event;
     WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
     c->super.iret = ReadFileScatter(QEMU_G2H(c->file), QEMU_G2H(c->segments), c->count, QEMU_G2H(c->reserved),
             QEMU_G2H(c->overlapped));
+    return;
+#endif
+
+    ov32 = QEMU_G2H(c->overlapped);
+    if (!ov32 || !ov32->hEvent)
+    {
+        OVERLAPPED copy;
+        WINE_TRACE("Synchonous operation, easy...\n");
+
+        if (ov32)
+            OVERLAPPED_g2h(&copy, ov32);
+            c->super.iret = ReadFileScatter(QEMU_G2H(c->file), QEMU_G2H(c->segments), c->count, QEMU_G2H(c->reserved),
+                    ov32 ? &copy : NULL);
+        if (ov32)
+            OVERLAPPED_h2g(ov32, &copy);
+        return;
+    }
+
+    ov_wrapper = alloc_OVERLAPPED_data(ov32, 0);
+    guest_event = HANDLE_g2h(ov32->hEvent);
+
+    WINE_TRACE("Async operation\n");
+    c->super.iret = ReadFileScatter(QEMU_G2H(c->file), QEMU_G2H(c->segments), c->count, QEMU_G2H(c->reserved),
+            &ov_wrapper->ov);
+    WINE_TRACE("result %lx\n", c->super.iret);
+
+    OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
+    ov32->hEvent = (ULONG_PTR)guest_event;
+
+    process_OVERLAPPED_data(c->super.iret, ov_wrapper);
 }
 
 #endif
@@ -368,9 +403,45 @@ WINBASEAPI BOOL WINAPI WriteFileGather(HANDLE file, FILE_SEGMENT_ELEMENT *segmen
 void qemu_WriteFileGather(struct qemu_syscall *call)
 {
     struct qemu_WriteFileGather *c = (struct qemu_WriteFileGather *)call;
+    struct qemu_OVERLAPPED *ov32;
+    struct OVERLAPPED_data *ov_wrapper;
+    HANDLE guest_event;
     WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
     c->super.iret = WriteFileGather(QEMU_G2H(c->file), QEMU_G2H(c->segments), c->count, QEMU_G2H(c->reserved),
             QEMU_G2H(c->overlapped));
+    return;
+#endif
+
+    ov32 = QEMU_G2H(c->overlapped);
+    if (!ov32 || !ov32->hEvent)
+    {
+        OVERLAPPED copy;
+        WINE_TRACE("Synchonous operation, easy...\n");
+
+        if (ov32)
+            OVERLAPPED_g2h(&copy, ov32);
+        c->super.iret = WriteFileGather(QEMU_G2H(c->file), QEMU_G2H(c->segments), c->count, QEMU_G2H(c->reserved),
+                ov32 ? &copy : NULL);
+        if (ov32)
+            OVERLAPPED_h2g(ov32, &copy);
+        return;
+    }
+
+    ov_wrapper = alloc_OVERLAPPED_data(ov32, 0);
+    guest_event = HANDLE_g2h(ov32->hEvent);
+
+    WINE_TRACE("Async operation\n");
+    c->super.iret = WriteFileGather(QEMU_G2H(c->file), QEMU_G2H(c->segments), c->count, QEMU_G2H(c->reserved),
+            &ov_wrapper->ov);
+    WINE_TRACE("result %lx\n", c->super.iret);
+
+    OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
+    ov32->hEvent = (ULONG_PTR)guest_event;
+
+    process_OVERLAPPED_data(c->super.iret, ov_wrapper);
+
 }
 
 #endif
