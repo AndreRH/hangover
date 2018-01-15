@@ -1177,11 +1177,9 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
 
         case WM_USER+20: /* Possible TB_ADDBUTTONSA */
         case WM_USER+21: /* Possible TB_INSERTBUTTONA */
-            /* Drop through */
-        case WM_USER+68:
-            /* Possible TB_ADDBUTTONSW */
+        case WM_USER+23: /* Possible TB_GETBUTTON */
+        case WM_USER+68: /* Possible TB_ADDBUTTONSW */
 
-            /* Possible TB_ADDBITMAP */
             len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
             if (len < 0 || len == 256)
                 break;
@@ -1393,6 +1391,17 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
 
                 if (host->cbSize == sizeof(*host))
                     TBBUTTONINFO_h2g(guest, host);
+                HeapFree(GetProcessHeap(), 0, host);
+            }
+            break;
+
+        case WM_USER+23:
+            if (conv->lParam != orig->lParam)
+            {
+                struct qemu_TBBUTTON *guest = (struct qemu_TBBUTTON *)orig->lParam;
+                TBBUTTON *host = (TBBUTTON *)conv->lParam;
+                WINE_TRACE("Reverse translating TBBUTTON.\n");
+                TBBUTTON_h2g(guest, host);
                 HeapFree(GetProcessHeap(), 0, host);
             }
             break;
