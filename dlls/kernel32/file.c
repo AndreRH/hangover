@@ -1436,8 +1436,29 @@ WINBASEAPI BOOL WINAPI UnlockFileEx(HANDLE hFile, DWORD reserved, DWORD count_lo
 void qemu_UnlockFileEx(struct qemu_syscall *call)
 {
     struct qemu_UnlockFileEx *c = (struct qemu_UnlockFileEx *)call;
+    struct qemu_OVERLAPPED *ov32;
+    OVERLAPPED stack, *ov = &stack;
+    HANDLE guest_event;
     WINE_TRACE("\n");
-    c->super.iret = UnlockFileEx(QEMU_G2H(c->hFile), c->reserved, c->count_low, c->count_high, QEMU_G2H(c->overlapped));
+
+#if GUEST_BIT == HOST_BIT
+    ov = QEMU_G2H(c->overlapped);
+#else
+
+    /* Wine doesn't implement async operations here. Don't bother to do anything fancy. */
+    ov32 = QEMU_G2H(c->overlapped);
+    if (ov32)
+        OVERLAPPED_g2h(ov, ov32);
+    else
+        ov = NULL;
+#endif
+
+    c->super.iret = UnlockFileEx(QEMU_G2H(c->hFile), c->reserved, c->count_low, c->count_high, ov);
+
+#if GUEST_BIT != HOST_BIT
+    if (ov32);
+        OVERLAPPED_h2g(ov32, ov);
+#endif
 }
 
 #endif
