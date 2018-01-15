@@ -1359,9 +1359,63 @@ WINBASEAPI BOOL WINAPI LockFileEx(HANDLE hFile, DWORD flags, DWORD reserved, DWO
 void qemu_LockFileEx(struct qemu_syscall *call)
 {
     struct qemu_LockFileEx *c = (struct qemu_LockFileEx *)call;
+    struct qemu_OVERLAPPED *ov32;
+    struct OVERLAPPED_data *ov_wrapper;
+    HANDLE guest_event;
     WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
     c->super.iret = LockFileEx((HANDLE)c->hFile, c->flags, c->reserved, c->count_low, c->count_high,
             QEMU_G2H(c->overlapped));
+    return;
+#endif
+
+    ov32 = QEMU_G2H(c->overlapped);
+    if (!ov32 || !ov32->hEvent)
+    {
+        OVERLAPPED copy;
+        WINE_TRACE("Synchonous operation, easy...\n");
+
+        if (ov32)
+            OVERLAPPED_g2h(&copy, ov32);
+        c->super.iret = LockFileEx((HANDLE)c->hFile, c->flags, c->reserved, c->count_low, c->count_high,
+                ov32 ? &copy : NULL);
+        if (ov32)
+            OVERLAPPED_h2g(ov32, &copy);
+        return;
+    }
+
+    ov_wrapper = HeapAlloc(GetProcessHeap(), 0, sizeof(*ov_wrapper));
+    OVERLAPPED_g2h(&ov_wrapper->ov, ov32);
+    ov_wrapper->guest_ov = ov32;
+    ov_wrapper->guest_cb = 0;
+    ov_wrapper->ov.hEvent = CreateEventW( NULL, 0, 0, NULL );
+    guest_event = HANDLE_g2h(ov32->hEvent);
+
+    WINE_TRACE("Async operation\n");
+    c->super.iret = LockFileEx((HANDLE)c->hFile, c->flags, c->reserved, c->count_low, c->count_high, &ov_wrapper->ov);
+    WINE_TRACE("result %lx\n", c->super.iret);
+
+    OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
+    ov32->hEvent = (ULONG_PTR)guest_event;
+
+    if (!c->super.iret && GetLastError() == ERROR_IO_PENDING)
+    {
+        if (guest_event != INVALID_HANDLE_VALUE && guest_event)
+            ResetEvent(guest_event);
+
+        ov_wrapper->cb_thread = GetCurrentThreadId();
+
+        WINE_TRACE("Async return, starting wait thread.\n");
+        if (!QueueUserWorkItem(overlapped32_wait_func, ov_wrapper, 0))
+            WINE_ERR("Failed to queue work item\n");
+    }
+    else
+    {
+        WINE_TRACE("Synchonous return return.\n");
+        CloseHandle(ov_wrapper->ov.hEvent);
+        HeapFree(GetProcessHeap(), 0, ov_wrapper);
+    }
 }
 
 #endif

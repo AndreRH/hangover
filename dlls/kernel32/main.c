@@ -25,6 +25,8 @@
 #include <excpt.h>
 #include <winternl.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_kernel32.h"
@@ -1309,6 +1311,56 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
         WINE_ERR("Failed to allocate overlapped wrappers.\n");
 
     return dll_functions;
+}
+
+void CALLBACK apc_callback_func(ULONG_PTR ctx)
+{
+    struct OVERLAPPED_data *ov = (struct OVERLAPPED_data *)ctx;
+    struct qemu_completion_cb call;
+
+    WINE_TRACE("APC callback queued\n");
+    call.func = ov->guest_cb;
+    call.error = ov->ov.Internal;
+    call.len = ov->ov.InternalHigh;
+    call.ov = QEMU_H2G(ov->guest_ov);
+
+    WINE_TRACE("Calling guest callback 0x%lx(%lx, %lu, 0x%lx).\n", (unsigned long)call.func, (unsigned long)call.error,
+            (unsigned long)call.len, (unsigned long)call.ov);
+    qemu_ops->qemu_execute(QEMU_G2H(guest_completion_cb), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned.\n");
+
+    HeapFree(GetProcessHeap(), 0, ov);
+}
+
+DWORD CALLBACK overlapped32_wait_func(void *ctx)
+{
+    struct OVERLAPPED_data *ov = ctx;
+
+    WINE_TRACE("Work item started\n");
+
+    WaitForSingleObjectEx(ov->ov.hEvent, INFINITE, TRUE);
+    WINE_TRACE("Event wait finished\n");
+    ov->ov.hEvent = HANDLE_g2h(ov->guest_ov->hEvent);
+    OVERLAPPED_h2g(ov->guest_ov, &ov->ov);
+
+    WINE_TRACE("Signalling event %p\n", ov->ov.hEvent);
+    if (ov->ov.hEvent && ov->ov.hEvent != INVALID_HANDLE_VALUE)
+        SetEvent(ov->ov.hEvent);
+
+    if (ov->guest_cb)
+    {
+        HANDLE t = OpenThread(THREAD_SET_CONTEXT, FALSE, ov->cb_thread);
+        /* FIXME: Set the event first, or queue the APC first? */
+        WINE_TRACE("Queing APC in thread %x handle %p\n", ov->cb_thread, t);
+        if (!QueueUserAPC(apc_callback_func, t, (ULONG_PTR)ov))
+            WINE_ERR("Failed to queue APC\n");
+        CloseHandle(t);
+    }
+    else
+    {
+        WINE_TRACE("Just freeing data\n");
+        HeapFree(GetProcessHeap(), 0, ov);
+    }
 }
 
 #endif

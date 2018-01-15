@@ -1960,7 +1960,7 @@ void qemu_ZombifyActCtx(struct qemu_syscall *call);
 DWORD kernel32_tls;
 
 extern struct callback_entry_table *overlapped_wrappers;
-
+DWORD CALLBACK overlapped32_wait_func(void *ctx);
 extern uint64_t guest_completion_cb;
 
 struct OVERLAPPED_data
