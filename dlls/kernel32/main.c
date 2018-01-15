@@ -1287,39 +1287,17 @@ static void hook(void *to_hook, const void *replace)
 
 struct callback_entry_table *overlapped_wrappers;
 
-const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
-{
-    HANDLE kernel32;
-
-    WINE_TRACE("Loading host-side kernel32 wrapper.\n");
-    qemu_ops = ops;
-    *dll_num = QEMU_CURRENT_DLL;
-
-    kernel32_tls = TlsAlloc();
-    if (kernel32_tls == TLS_OUT_OF_INDEXES)
-        WINE_ERR("Out of TLS indices\n");
-
-    /* The function pointers provided by the linker point into the IAT, not the actual function. */
-    kernel32 = GetModuleHandleA("kernel32");
-    hook(GetProcAddress(kernel32, "SetCurrentDirectoryA"), hook_SetCurrentDirectoryA);
-    hook(GetProcAddress(kernel32, "SetCurrentDirectoryW"), hook_SetCurrentDirectoryW);
-
-    /* We're searching through this array every time there's an IO request. If 32 entries are not enough for
-     * an application, then the linear search isn't good enough. Before growing this array find a way to do
-     * improve the search speed. */
-    if (!callback_alloc_table(&overlapped_wrappers, 32, sizeof(struct callback_entry), host_completion_cb, 3))
-        WINE_ERR("Failed to allocate overlapped wrappers.\n");
-
-    return dll_functions;
-}
-
 static CRITICAL_SECTION ov_cs = {0, -1, 0, 0, 0, 0};
 static struct list ov_free_list = LIST_INIT(ov_free_list);
+static struct wine_rb_tree ov_rbtree;
 unsigned int free_list_space = 1024;
 
-static void free_OVERLAPPED(struct OVERLAPPED_data *ov)
+static void free_OVERLAPPED(struct OVERLAPPED_data *ov, BOOL remove_from_tree)
 {
     EnterCriticalSection(&ov_cs);
+    if (remove_from_tree)
+        wine_rb_remove(&ov_rbtree, &ov->rbtree_entry);
+
     if (free_list_space)
     {
         free_list_space--;
@@ -1348,7 +1326,7 @@ void CALLBACK apc_callback_func(ULONG_PTR ctx)
     qemu_ops->qemu_execute(QEMU_G2H(guest_completion_cb), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned.\n");
 
-    free_OVERLAPPED(ov);
+    free_OVERLAPPED(ov, TRUE);
 }
 
 DWORD CALLBACK overlapped32_wait_func(void *ctx)
@@ -1391,7 +1369,7 @@ DWORD CALLBACK overlapped32_wait_func(void *ctx)
     else
     {
         WINE_TRACE("Just freeing data %p, guest data %p\n", ov, ov->guest_ov);
-        free_OVERLAPPED(ov);
+        free_OVERLAPPED(ov, TRUE);
     }
 }
 
@@ -1429,6 +1407,11 @@ void process_OVERLAPPED_data(uint64_t retval, struct OVERLAPPED_data *data)
     {
         struct qemu_OVERLAPPED *ov32 = data->guest_ov;
 
+        EnterCriticalSection(&ov_cs);
+        if (wine_rb_put(&ov_rbtree, data->guest_ov, &data->rbtree_entry))
+            WINE_ERR("Cannot place OVERLAPPED wrapper in tree. Did the application reuse the pointer?\n");
+        LeaveCriticalSection(&ov_cs);
+
         if (ov32->hEvent && ov32->hEvent != (qemu_handle)(LONG_PTR)INVALID_HANDLE_VALUE)
             ResetEvent(HANDLE_g2h(ov32->hEvent));
 
@@ -1443,10 +1426,60 @@ void process_OVERLAPPED_data(uint64_t retval, struct OVERLAPPED_data *data)
         WINE_TRACE("Synchonous return return, host ptr %p, guest ptr %p.\n", data, data->guest_ov);
         CloseHandle(data->ov.hEvent);
         if (retval)
-            free_OVERLAPPED(data); /* Might be queued in a completion port. */
+            free_OVERLAPPED(data, FALSE); /* Might be queued in a completion port. */
         else
             HeapFree(GetProcessHeap(), 0, data);
     }
+}
+
+static int ov_tree_compare(const void *key, const struct wine_rb_entry *entry)
+{
+    struct OVERLAPPED_data *data = WINE_RB_ENTRY_VALUE(entry, struct OVERLAPPED_data, rbtree_entry);
+
+    if ((ULONG_PTR)key == (ULONG_PTR)data->guest_ov)
+        return 0;
+    return (ULONG_PTR)key > (ULONG_PTR)data->guest_ov;
+}
+
+struct OVERLAPPED_data *get_OVERLAPPED_data(void *guest)
+{
+    struct wine_rb_entry *entry;
+
+    EnterCriticalSection(&ov_cs);
+    entry = wine_rb_get(&ov_rbtree, guest);
+    LeaveCriticalSection(&ov_cs);
+
+    if (!entry)
+        return NULL;
+    return WINE_RB_ENTRY_VALUE(entry, struct OVERLAPPED_data, rbtree_entry);
+}
+
+const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
+{
+    HANDLE kernel32;
+
+    WINE_TRACE("Loading host-side kernel32 wrapper.\n");
+    qemu_ops = ops;
+    *dll_num = QEMU_CURRENT_DLL;
+
+    kernel32_tls = TlsAlloc();
+    if (kernel32_tls == TLS_OUT_OF_INDEXES)
+        WINE_ERR("Out of TLS indices\n");
+
+    /* The function pointers provided by the linker point into the IAT, not the actual function. */
+    kernel32 = GetModuleHandleA("kernel32");
+    hook(GetProcAddress(kernel32, "SetCurrentDirectoryA"), hook_SetCurrentDirectoryA);
+    hook(GetProcAddress(kernel32, "SetCurrentDirectoryW"), hook_SetCurrentDirectoryW);
+
+    /* We're searching through this array every time there's an IO request. If 32 entries are not enough for
+     * an application, then the linear search isn't good enough. Before growing this array find a way to do
+     * improve the search speed. */
+    if (!callback_alloc_table(&overlapped_wrappers, 32, sizeof(struct callback_entry), host_completion_cb, 3))
+        WINE_ERR("Failed to allocate overlapped wrappers.\n");
+
+    wine_rb_init(&ov_rbtree, ov_tree_compare);
+
+    return dll_functions;
 }
 
 #endif

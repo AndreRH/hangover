@@ -600,8 +600,28 @@ WINBASEAPI BOOL WINAPI CancelIoEx(HANDLE handle, LPOVERLAPPED lpOverlapped)
 void qemu_CancelIoEx(struct qemu_syscall *call)
 {
     struct qemu_CancelIoEx *c = (struct qemu_CancelIoEx *)call;
-    WINE_FIXME("Unverified!\n");
+    struct OVERLAPPED_data *host_ov;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
     c->super.iret = CancelIoEx(QEMU_G2H(c->handle), QEMU_G2H(c->lpOverlapped));
+    return;
+#endif
+
+    if (!c->lpOverlapped)
+    {
+        c->super.iret = CancelIoEx(QEMU_G2H(c->handle), NULL);
+        return;
+    }
+
+    host_ov = get_OVERLAPPED_data(QEMU_G2H(c->lpOverlapped));
+    if (!host_ov)
+    {
+        WINE_FIXME("Cannot find OVERLAPPED entry. Already finished?\n");
+        c->super.iret = FALSE;
+        return;
+    }
+    c->super.iret = CancelIoEx(QEMU_G2H(c->handle), &host_ov->ov);
 }
 
 #endif
