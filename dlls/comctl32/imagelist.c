@@ -151,9 +151,9 @@ WINBASEAPI BOOL WINAPI ImageList_BeginDrag (HIMAGELIST himlTrack, INT iTrack, IN
     struct qemu_ImageList_BeginDrag call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_BEGINDRAG);
     call.himlTrack = (ULONG_PTR)himlTrack;
-    call.iTrack = (ULONG_PTR)iTrack;
-    call.dxHotspot = (ULONG_PTR)dxHotspot;
-    call.dyHotspot = (ULONG_PTR)dyHotspot;
+    call.iTrack = iTrack;
+    call.dxHotspot = dxHotspot;
+    call.dyHotspot = dyHotspot;
 
     qemu_syscall(&call.super);
 
@@ -188,10 +188,10 @@ WINBASEAPI BOOL WINAPI ImageList_Copy (HIMAGELIST himlDst, INT iDst, HIMAGELIST 
     struct qemu_ImageList_Copy call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_COPY);
     call.himlDst = (ULONG_PTR)himlDst;
-    call.iDst = (ULONG_PTR)iDst;
+    call.iDst = iDst;
     call.himlSrc = (ULONG_PTR)himlSrc;
-    call.iSrc = (ULONG_PTR)iSrc;
-    call.uFlags = (ULONG_PTR)uFlags;
+    call.iSrc = iSrc;
+    call.uFlags = uFlags;
 
     qemu_syscall(&call.super);
 
@@ -292,8 +292,8 @@ WINBASEAPI BOOL WINAPI ImageList_DragEnter (HWND hwndLock, INT x, INT y)
     struct qemu_ImageList_DragEnter call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_DRAGENTER);
     call.hwndLock = (ULONG_PTR)hwndLock;
-    call.x = (ULONG_PTR)x;
-    call.y = (ULONG_PTR)y;
+    call.x = x;
+    call.y = y;
 
     qemu_syscall(&call.super);
 
@@ -354,8 +354,8 @@ WINBASEAPI BOOL WINAPI ImageList_DragMove (INT x, INT y)
 {
     struct qemu_ImageList_DragMove call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_DRAGMOVE);
-    call.x = (ULONG_PTR)x;
-    call.y = (ULONG_PTR)y;
+    call.x = x;
+    call.y = y;
 
     qemu_syscall(&call.super);
 
@@ -385,7 +385,7 @@ WINBASEAPI BOOL WINAPI ImageList_DragShowNolock (BOOL bShow)
 {
     struct qemu_ImageList_DragShowNolock call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_DRAGSHOWNOLOCK);
-    call.bShow = (ULONG_PTR)bShow;
+    call.bShow = bShow;
 
     qemu_syscall(&call.super);
 
@@ -421,11 +421,11 @@ WINBASEAPI BOOL WINAPI ImageList_Draw (HIMAGELIST himl, INT i, HDC hdc, INT x, I
     struct qemu_ImageList_Draw call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_DRAW);
     call.himl = (ULONG_PTR)himl;
-    call.i = (ULONG_PTR)i;
+    call.i = i;
     call.hdc = (ULONG_PTR)hdc;
-    call.x = (ULONG_PTR)x;
-    call.y = (ULONG_PTR)y;
-    call.fStyle = (ULONG_PTR)fStyle;
+    call.x = x;
+    call.y = y;
+    call.fStyle = fStyle;
 
     qemu_syscall(&call.super);
 
@@ -465,15 +465,15 @@ WINBASEAPI BOOL WINAPI ImageList_DrawEx (HIMAGELIST himl, INT i, HDC hdc, INT x,
     struct qemu_ImageList_DrawEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_DRAWEX);
     call.himl = (ULONG_PTR)himl;
-    call.i = (ULONG_PTR)i;
+    call.i = i;
     call.hdc = (ULONG_PTR)hdc;
-    call.x = (ULONG_PTR)x;
-    call.y = (ULONG_PTR)y;
-    call.dx = (ULONG_PTR)dx;
-    call.dy = (ULONG_PTR)dy;
-    call.rgbBk = (ULONG_PTR)rgbBk;
-    call.rgbFg = (ULONG_PTR)rgbFg;
-    call.fStyle = (ULONG_PTR)fStyle;
+    call.x = x;
+    call.y = y;
+    call.dx = dx;
+    call.dy = dy;
+    call.rgbBk = rgbBk;
+    call.rgbFg = rgbFg;
+    call.fStyle = fStyle;
 
     qemu_syscall(&call.super);
 
@@ -784,7 +784,7 @@ WINBASEAPI BOOL WINAPI ImageList_GetImageInfo (HIMAGELIST himl, INT i, IMAGEINFO
     struct qemu_ImageList_GetImageInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_GETIMAGEINFO);
     call.himl = (ULONG_PTR)himl;
-    call.i = (ULONG_PTR)i;
+    call.i = i;
     call.pImageInfo = (ULONG_PTR)pImageInfo;
 
     qemu_syscall(&call.super);
@@ -833,7 +833,7 @@ WINBASEAPI BOOL WINAPI ImageList_GetImageRect (HIMAGELIST himl, INT i, LPRECT lp
     struct qemu_ImageList_GetImageRect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_GETIMAGERECT);
     call.himl = (ULONG_PTR)himl;
-    call.i = (ULONG_PTR)i;
+    call.i = i;
     call.lpRect = (ULONG_PTR)lpRect;
 
     qemu_syscall(&call.super);
@@ -1020,7 +1020,7 @@ WINBASEAPI BOOL WINAPI ImageList_Remove (HIMAGELIST himl, INT i)
     struct qemu_ImageList_Remove call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_REMOVE);
     call.himl = (ULONG_PTR)himl;
-    call.i = (ULONG_PTR)i;
+    call.i = i;
 
     qemu_syscall(&call.super);
 
@@ -1054,7 +1054,7 @@ WINBASEAPI BOOL WINAPI ImageList_Replace (HIMAGELIST himl, INT i, HBITMAP hbmIma
     struct qemu_ImageList_Replace call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_REPLACE);
     call.himl = (ULONG_PTR)himl;
-    call.i = (ULONG_PTR)i;
+    call.i = i;
     call.hbmImage = (ULONG_PTR)hbmImage;
     call.hbmMask = (ULONG_PTR)hbmMask;
 
@@ -1156,9 +1156,9 @@ WINBASEAPI BOOL WINAPI ImageList_SetDragCursorImage (HIMAGELIST himlDrag, INT iD
     struct qemu_ImageList_SetDragCursorImage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_SETDRAGCURSORIMAGE);
     call.himlDrag = (ULONG_PTR)himlDrag;
-    call.iDrag = (ULONG_PTR)iDrag;
-    call.dxHotspot = (ULONG_PTR)dxHotspot;
-    call.dyHotspot = (ULONG_PTR)dyHotspot;
+    call.iDrag = iDrag;
+    call.dxHotspot = dxHotspot;
+    call.dyHotspot = dyHotspot;
 
     qemu_syscall(&call.super);
 
@@ -1191,8 +1191,8 @@ WINBASEAPI BOOL WINAPI ImageList_SetFilter (HIMAGELIST himl, INT i, DWORD dwFilt
     struct qemu_ImageList_SetFilter call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_SETFILTER);
     call.himl = (ULONG_PTR)himl;
-    call.i = (ULONG_PTR)i;
-    call.dwFilter = (ULONG_PTR)dwFilter;
+    call.i = i;
+    call.dwFilter = dwFilter;
 
     qemu_syscall(&call.super);
 
@@ -1261,8 +1261,8 @@ WINBASEAPI BOOL WINAPI ImageList_SetIconSize (HIMAGELIST himl, INT cx, INT cy)
     struct qemu_ImageList_SetIconSize call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_SETICONSIZE);
     call.himl = (ULONG_PTR)himl;
-    call.cx = (ULONG_PTR)cx;
-    call.cy = (ULONG_PTR)cy;
+    call.cx = cx;
+    call.cy = cy;
 
     qemu_syscall(&call.super);
 
@@ -1294,7 +1294,7 @@ WINBASEAPI BOOL WINAPI ImageList_SetImageCount (HIMAGELIST himl, UINT iImageCoun
     struct qemu_ImageList_SetImageCount call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_SETIMAGECOUNT);
     call.himl = (ULONG_PTR)himl;
-    call.iImageCount = (ULONG_PTR)iImageCount;
+    call.iImageCount = iImageCount;
 
     qemu_syscall(&call.super);
 
@@ -1327,8 +1327,8 @@ WINBASEAPI BOOL WINAPI ImageList_SetOverlayImage (HIMAGELIST himl, INT iImage, I
     struct qemu_ImageList_SetOverlayImage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_SETOVERLAYIMAGE);
     call.himl = (ULONG_PTR)himl;
-    call.iImage = (ULONG_PTR)iImage;
-    call.iOverlay = (ULONG_PTR)iOverlay;
+    call.iImage = iImage;
+    call.iOverlay = iOverlay;
 
     qemu_syscall(&call.super);
 
