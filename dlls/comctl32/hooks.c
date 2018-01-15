@@ -249,7 +249,10 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
                 break;
 
             case NM_CLICK:
+            case NM_RCLICK:
             case NM_LDOWN:
+            case NM_RDOWN:
+            case NM_RDBLCLK:
                 nmmouse_notify(guest, host, ret);
                 break;
 
@@ -337,8 +340,11 @@ static void toolbar_notify(MSG *guest, MSG *host, BOOL ret)
             break;
 
         case NM_CLICK:
+        case NM_RCLICK:
         case NM_LDOWN:
-            WINE_TRACE("Handling notify message NM_LDOWN.\n");
+        case NM_RDOWN:
+            case NM_RDBLCLK:
+            WINE_TRACE("Handling notify message NM_[R][DOWN/CLICK/DBLCLICK].\n");
             nmmouse_notify(guest, host, ret);
             break;
 
