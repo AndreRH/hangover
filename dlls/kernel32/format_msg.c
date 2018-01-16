@@ -265,7 +265,7 @@ struct format_message_data
     DWORD size;
 };
 
-static uint64_t call_FormatMessage_va_list(void *data, ...)
+static uint64_t CDECL call_FormatMessage_va_list(void *data, ...)
 {
     const struct format_message_data *d = data;
     uint64_t ret;

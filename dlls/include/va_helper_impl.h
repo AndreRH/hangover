@@ -20,10 +20,10 @@
 
 #include "va_helper.h"
 
+#include "config.h"
+
 #ifdef __aarch64__
 
-#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.type " #name suffix ",@function\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc\n\t.previous");
-#define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
 extern int CDECL call_va_asm( void *ctx, void *func, int nb_args, int nb_onstack, const void *args );
 __ASM_GLOBAL_FUNC( call_va_asm,
                    "stp x29, x30, [SP,#-16]!\n\t"           /* push FP & LR */
@@ -112,8 +112,6 @@ __ASM_GLOBAL_FUNC( call_va_asm,
 #else
 
 extern int CDECL call_va_asm( void *ctx, void *func, int nb_args, int nb_onstack, const void *args );
-#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl _" #name suffix "\n\t\n_" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc\n\t.previous");
-#define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
 __ASM_GLOBAL_FUNC(call_va_asm,
                   "push %rbp\n\t"
                   "push %rbx\n\t"
@@ -334,7 +332,7 @@ __ASM_GLOBAL_FUNC( call_va_asm2,
                    "ldp x29, x30, [SP], #16\n\t"            /* pop FP & LR */
                    "ret\n\t" )
 
-uint64_t call_va2(uint64_t (* CDECL func)(void *fixed1, void *fixed2, ...), void *fixed1, void *fixed2,
+uint64_t CDECL call_va2(uint64_t (* CDECL func)(void *fixed1, void *fixed2, ...), void *fixed1, void *fixed2,
                   unsigned int icount, unsigned int fcount, const struct va_array *array)
 {
     int onstack = 0;
@@ -464,7 +462,7 @@ __ASM_GLOBAL_FUNC(call_va_asm2,
 
                   "ret\n\t" )
 
-uint64_t call_va2(uint64_t (* CDECL func)(void *fixed1, void *fixed2, ...), void *fixed1, void *fixed2,
+uint64_t CDECL call_va2(uint64_t (* CDECL func)(void *fixed1, void *fixed2, ...), void *fixed1, void *fixed2,
                   unsigned int icount, unsigned int fcount, const struct va_array *array)
 {
     int onstack = 0;
