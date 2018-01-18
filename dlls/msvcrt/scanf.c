@@ -49,6 +49,7 @@ static int scanf_helper(const char *str, const char *fmt, MSVCRT__locale_t local
     struct qemu_scanf *call;
     int ret;
     unsigned int count = count_printf_argsA(fmt, NULL), i;
+    ULONG_PTR *ptr;
 
     call = MSVCRT_malloc(offsetof(struct qemu_scanf, args[count]));
 
@@ -62,10 +63,17 @@ static int scanf_helper(const char *str, const char *fmt, MSVCRT__locale_t local
     for (i = 0; i < count; ++i)
     {
         call->args[i].is_float = FALSE;
-        call->args[i].arg = va_arg(args, ULONG_PTR);
+        call->args[i].arg = (ULONG_PTR)&call->args[i].arg;
     }
 
     qemu_syscall(&call->super);
+
+    for (i = 0; i < count; ++i)
+    {
+        ptr = va_arg(args, ULONG_PTR *);
+        *ptr = call->args[i].arg;
+    }
+
     ret = call->super.iret;
 
     MSVCRT_free(call);

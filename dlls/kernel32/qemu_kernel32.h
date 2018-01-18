@@ -1964,10 +1964,12 @@ DWORD kernel32_tls;
 
 extern struct callback_entry_table *overlapped_wrappers;
 DWORD CALLBACK overlapped32_wait_func(void *ctx);
-struct OVERLAPPED_data *alloc_OVERLAPPED_data(void *ov32, uint64_t guest_completion_cb);
+struct OVERLAPPED_data *alloc_OVERLAPPED_data(void *ov32, uint64_t guest_completion_cb, BOOL event);
+void free_OVERLAPPED(struct OVERLAPPED_data *ov, BOOL remove_from_tree);
 void process_OVERLAPPED_data(uint64_t retval, struct OVERLAPPED_data *data);
 struct OVERLAPPED_data *get_OVERLAPPED_data(void *guest);
 extern uint64_t guest_completion_cb;
+void queue_OVERLAPPED(struct OVERLAPPED_data *data);
 
 struct OVERLAPPED_data
 {

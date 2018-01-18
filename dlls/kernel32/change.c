@@ -233,7 +233,7 @@ void qemu_ReadDirectoryChangesW(struct qemu_syscall *call)
                 c->filter, QEMU_G2H(c->returned), NULL, NULL);
         return;
     }
-    ov_wrapper = alloc_OVERLAPPED_data(ov32, guest_completion);
+    ov_wrapper = alloc_OVERLAPPED_data(ov32, guest_completion, TRUE);
     guest_event = HANDLE_g2h(ov32->hEvent);
 
     WINE_TRACE("Async operation\n");

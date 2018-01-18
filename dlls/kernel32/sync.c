@@ -2758,7 +2758,7 @@ void qemu_ConnectNamedPipe(struct qemu_syscall *call)
         return;
     }
 
-    ov_wrapper = alloc_OVERLAPPED_data(ov32, 0);
+    ov_wrapper = alloc_OVERLAPPED_data(ov32, 0, TRUE);
     guest_event = HANDLE_g2h(ov32->hEvent);
 
     WINE_TRACE("Async operation\n");

@@ -1292,7 +1292,7 @@ static struct list ov_free_list = LIST_INIT(ov_free_list);
 static struct wine_rb_tree ov_rbtree;
 unsigned int free_list_space = 1024;
 
-static void free_OVERLAPPED(struct OVERLAPPED_data *ov, BOOL remove_from_tree)
+void free_OVERLAPPED(struct OVERLAPPED_data *ov, BOOL remove_from_tree)
 {
     EnterCriticalSection(&ov_cs);
     if (remove_from_tree)
@@ -1373,7 +1373,7 @@ DWORD CALLBACK overlapped32_wait_func(void *ctx)
     }
 }
 
-struct OVERLAPPED_data *alloc_OVERLAPPED_data(void *ov32, uint64_t guest_completion_cb)
+struct OVERLAPPED_data *alloc_OVERLAPPED_data(void *ov32, uint64_t guest_completion_cb, BOOL event)
 {
     struct OVERLAPPED_data *ret;
 
@@ -1394,11 +1394,20 @@ struct OVERLAPPED_data *alloc_OVERLAPPED_data(void *ov32, uint64_t guest_complet
     OVERLAPPED_g2h(&ret->ov, ov32);
     ret->guest_ov = ov32;
     ret->guest_cb = guest_completion_cb;
-    ret->ov.hEvent = CreateEventW( NULL, 0, 0, NULL );
+    if (event)
+        ret->ov.hEvent = CreateEventW( NULL, 0, 0, NULL );
 
     LeaveCriticalSection(&ov_cs);
 
     return ret;
+}
+
+void queue_OVERLAPPED(struct OVERLAPPED_data *data)
+{
+    EnterCriticalSection(&ov_cs);
+    if (wine_rb_put(&ov_rbtree, data->guest_ov, &data->rbtree_entry))
+        WINE_ERR("Cannot place OVERLAPPED wrapper in tree. Did the application reuse the pointer?\n");
+    LeaveCriticalSection(&ov_cs);
 }
 
 void process_OVERLAPPED_data(uint64_t retval, struct OVERLAPPED_data *data)
@@ -1407,10 +1416,7 @@ void process_OVERLAPPED_data(uint64_t retval, struct OVERLAPPED_data *data)
     {
         struct qemu_OVERLAPPED *ov32 = data->guest_ov;
 
-        EnterCriticalSection(&ov_cs);
-        if (wine_rb_put(&ov_rbtree, data->guest_ov, &data->rbtree_entry))
-            WINE_ERR("Cannot place OVERLAPPED wrapper in tree. Did the application reuse the pointer?\n");
-        LeaveCriticalSection(&ov_cs);
+        queue_OVERLAPPED(data);
 
         if (ov32->hEvent && ov32->hEvent != (qemu_handle)(LONG_PTR)INVALID_HANDLE_VALUE)
             ResetEvent(HANDLE_g2h(ov32->hEvent));
@@ -1426,9 +1432,9 @@ void process_OVERLAPPED_data(uint64_t retval, struct OVERLAPPED_data *data)
         WINE_TRACE("Synchonous return return, host ptr %p, guest ptr %p.\n", data, data->guest_ov);
         CloseHandle(data->ov.hEvent);
         if (retval)
-            free_OVERLAPPED(data, FALSE); /* Might be queued in a completion port. */
+            free_OVERLAPPED(data, FALSE); /* Might be queued in a completion port, but we never added it to the rbtree */
         else
-            HeapFree(GetProcessHeap(), 0, data);
+            HeapFree(GetProcessHeap(), 0, data); /* Won't be needed any more. */
     }
 }
 

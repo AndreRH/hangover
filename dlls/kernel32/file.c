@@ -145,17 +145,39 @@ WINBASEAPI BOOL WINAPI ReadFileEx(HANDLE hFile, LPVOID buffer, DWORD bytesToRead
 
 #else
 
+static void CALLBACK ReadWriteFileEx_host_cb(DWORD error, DWORD len, OVERLAPPED *ov)
+{
+    struct OVERLAPPED_data *ov_data = CONTAINING_RECORD(ov, struct OVERLAPPED_data, ov);
+    struct qemu_completion_cb call;
+
+    call.func = ov_data->guest_cb;
+    call.error = error;
+    call.len = len;
+    call.ov = QEMU_H2G(ov_data->guest_ov);
+
+    OVERLAPPED_h2g(ov_data->guest_ov, &ov_data->ov);
+    free_OVERLAPPED(ov_data, TRUE);
+
+    WINE_TRACE("Calling guest callback 0x%lx(%x, %u, 0x%lx).\n", (unsigned long)call.func, error, len,
+            (unsigned long)call.ov);
+    qemu_ops->qemu_execute(QEMU_G2H(guest_completion_cb), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned.\n");
+}
+
 void qemu_ReadFileEx(struct qemu_syscall *call)
 {
     struct qemu_ReadFileEx *c = (struct qemu_ReadFileEx *)call;
     uint64_t guest_completion;
     OVERLAPPED *guest_ov;
     struct callback_entry *wrapper = NULL;
+    struct qemu_OVERLAPPED *ov32;
+    struct OVERLAPPED_data *ov_wrapper;
 
     WINE_TRACE("\n");
     guest_completion = c->lpCompletionRoutine;
-    guest_ov = QEMU_G2H(c->overlapped);
 
+#if GUEST_BIT == HOST_BIT
+    guest_ov = QEMU_G2H(c->overlapped);
     if (guest_completion && guest_ov)
     {
         wrapper = callback_get(overlapped_wrappers, guest_completion, NULL);
@@ -165,6 +187,39 @@ void qemu_ReadFileEx(struct qemu_syscall *call)
 
     c->super.iret = ReadFileEx(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToRead, guest_ov,
             (LPOVERLAPPED_COMPLETION_ROUTINE)wrapper);
+    return;
+#endif
+
+    /* ReadFileEx always calls the callback, passing a NULL pointer causes crashes. It doesn't care
+     * about the event though, and it is incompatible with completion ports. This makes our job a
+     * bit easier. */
+    ov32 = QEMU_G2H(c->overlapped);
+    if (!ov32)
+    {
+        WINE_TRACE("Synchonous operation, that's an error...\n");
+        c->super.iret = ReadFileEx(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToRead, NULL, NULL);
+        return;
+    }
+
+    ov_wrapper = alloc_OVERLAPPED_data(ov32, guest_completion, FALSE);
+
+    WINE_TRACE("Async operation\n");
+    c->super.iret = ReadFileEx(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToRead, &ov_wrapper->ov,
+            ReadWriteFileEx_host_cb);
+    WINE_TRACE("result %lx\n", c->super.iret);
+
+    OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
+
+    if (c->super.iret)
+    {
+        /* IO is running, add to rbtree. No need to start waiting for an event. */
+        queue_OVERLAPPED(ov_wrapper);
+    }
+    else
+    {
+        /* Failure, will never get a callback. */
+        HeapFree(GetProcessHeap(), 0, ov_wrapper);
+    }
 }
 
 #endif
@@ -223,7 +278,7 @@ void qemu_ReadFileScatter(struct qemu_syscall *call)
         return;
     }
 
-    ov_wrapper = alloc_OVERLAPPED_data(ov32, 0);
+    ov_wrapper = alloc_OVERLAPPED_data(ov32, 0, TRUE);
     guest_event = HANDLE_g2h(ov32->hEvent);
 
     WINE_TRACE("Async operation\n");
@@ -291,7 +346,7 @@ void qemu_ReadFile(struct qemu_syscall *call)
         return;
     }
 
-    ov_wrapper = alloc_OVERLAPPED_data(ov32, 0);
+    ov_wrapper = alloc_OVERLAPPED_data(ov32, 0, TRUE);
     guest_event = HANDLE_g2h(ov32->hEvent);
 
     WINE_TRACE("Async operation\n");
@@ -342,11 +397,14 @@ void qemu_WriteFileEx(struct qemu_syscall *call)
     uint64_t guest_completion;
     OVERLAPPED *guest_ov;
     struct callback_entry *wrapper = NULL;
+    struct qemu_OVERLAPPED *ov32;
+    struct OVERLAPPED_data *ov_wrapper;
 
     WINE_TRACE("\n");
     guest_completion = c->lpCompletionRoutine;
-    guest_ov = QEMU_G2H(c->overlapped);
 
+#if GUEST_BIT == HOST_BIT
+    guest_ov = QEMU_G2H(c->overlapped);
     if (guest_completion && guest_ov)
     {
         wrapper = callback_get(overlapped_wrappers, guest_completion, NULL);
@@ -356,6 +414,39 @@ void qemu_WriteFileEx(struct qemu_syscall *call)
 
     c->super.iret = WriteFileEx(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToWrite, guest_ov,
             (LPOVERLAPPED_COMPLETION_ROUTINE)wrapper);
+    return;
+#endif
+
+    /* WriteFileEx always calls the callback, passing a NULL pointer causes crashes. It doesn't care
+     * about the event though, and it is incompatible with completion ports. This makes our job a
+     * bit easier. */
+    ov32 = QEMU_G2H(c->overlapped);
+    if (!ov32)
+    {
+        WINE_TRACE("Synchonous operation, that's an error...\n");
+        c->super.iret = WriteFileEx(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToWrite, NULL, NULL);
+        return;
+    }
+
+    ov_wrapper = alloc_OVERLAPPED_data(ov32, guest_completion, FALSE);
+
+    WINE_TRACE("Async operation\n");
+    c->super.iret = WriteFileEx(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToWrite, &ov_wrapper->ov,
+            ReadWriteFileEx_host_cb);
+    WINE_TRACE("result %lx\n", c->super.iret);
+
+    OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
+
+    if (c->super.iret)
+    {
+        /* IO is running, add to rbtree. No need to start waiting for an event. */
+        queue_OVERLAPPED(ov_wrapper);
+    }
+    else
+    {
+        /* Failure, will never get a callback. */
+        HeapFree(GetProcessHeap(), 0, ov_wrapper);
+    }
 }
 
 #endif
@@ -414,7 +505,7 @@ void qemu_WriteFileGather(struct qemu_syscall *call)
         return;
     }
 
-    ov_wrapper = alloc_OVERLAPPED_data(ov32, 0);
+    ov_wrapper = alloc_OVERLAPPED_data(ov32, 0, TRUE);
     guest_event = HANDLE_g2h(ov32->hEvent);
 
     WINE_TRACE("Async operation\n");
@@ -483,7 +574,7 @@ void qemu_WriteFile(struct qemu_syscall *call)
         return;
     }
 
-    ov_wrapper = alloc_OVERLAPPED_data(ov32, 0);
+    ov_wrapper = alloc_OVERLAPPED_data(ov32, 0, TRUE);
     guest_event = HANDLE_g2h(ov32->hEvent);
 
     WINE_TRACE("Async operation\n");
@@ -1516,7 +1607,7 @@ void qemu_LockFileEx(struct qemu_syscall *call)
         return;
     }
 
-    ov_wrapper = alloc_OVERLAPPED_data(ov32, 0);
+    ov_wrapper = alloc_OVERLAPPED_data(ov32, 0, TRUE);
     guest_event = HANDLE_g2h(ov32->hEvent);
 
     WINE_TRACE("Async operation\n");
