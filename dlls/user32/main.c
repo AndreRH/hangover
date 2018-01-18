@@ -1477,6 +1477,21 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             CREATESTRUCT_h2g(guest, host);
             msg_out->lParam = (LPARAM)guest;
 
+            /* The lovely Warhammer40k: Dawn of War graphics config utility sets a WH_CBT hook and hooks the
+             * wndprocs of *all* windows that are created. Among other things it hooks WineD3D's hidden window
+             * to initialize GPU caps. This window has a string that's in wined3d.dll.so's constant data
+             * segment, so usually above 4 GB. We can't communicate it through the guest structure. Be noisy
+             * and set it to 0.
+             *
+             * Creating a HeapAlloc'ed copy here is not trivial because we do not know if this is an A or W
+             * call. The other alternative would be to hide some Wine internal windows from the application. */
+            if ((ULONG_PTR)host->lpszName > ~0U)
+            {
+                WINE_FIXME("Static Wine window name at %p is sent through a guest function, setting to 0\n",
+                        host->lpszName);
+                guest->lpszName = 0;
+            }
+
             if (host->dwExStyle & WS_EX_MDICHILD)
             {
                 MDICREATESTRUCTW *mdi_cs = host->lpCreateParams;
