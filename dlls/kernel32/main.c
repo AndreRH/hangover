@@ -1335,6 +1335,11 @@ DWORD CALLBACK overlapped32_wait_func(void *ctx)
 
     WINE_TRACE("Work item started\n");
 
+    /* FIXME: This proxy event breaks the kernel32 pipe.c tests because ReadFile (on a pipe)
+     * returns to the application before the WriteFile event that was previously waiting gets
+     * signalled. Either this is just an unlucky race, or there is a guarantee that IO ops
+     * that depend on each other finish in order. The WriteFile is started before the ReadFile,
+     * but the ReadFile ends up finishing first due to the delay here. */
     WaitForSingleObjectEx(ov->ov.hEvent, INFINITE, TRUE);
     WINE_TRACE("Event wait finished\n");
     ov->ov.hEvent = HANDLE_g2h(ov->guest_ov->hEvent);
