@@ -315,7 +315,8 @@ int (* WINAPI p_WSASendMsg)(SOCKET s, LPWSAMSG msg, DWORD dwFlags, LPDWORD lpNum
 struct per_thread_data
 {
     struct qemu_WS_hostent *he_buffer;
-    size_t he_len;
+    struct qemu_WS_servent *se_buffer;
+    size_t he_len, se_len;
 };
 
 struct per_thread_data *get_per_thread_data(void);

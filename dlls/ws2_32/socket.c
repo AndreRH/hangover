@@ -2143,11 +2143,94 @@ WINBASEAPI struct WS_servent* WINAPI WS_getservbyname(const char *name, const ch
 
 #else
 
+static struct qemu_WS_servent *check_buffer_se(int size)
+{
+    struct per_thread_data *ptb = get_per_thread_data();
+    if (ptb->se_buffer)
+    {
+        if (ptb->se_len >= size ) return ptb->se_buffer;
+        HeapFree( GetProcessHeap(), 0, ptb->se_buffer );
+    }
+    ptb->se_buffer = HeapAlloc( GetProcessHeap(), 0, (ptb->se_len = size) );
+    if (!ptb->se_buffer) SetLastError(WSAENOBUFS);
+    return ptb->se_buffer;
+}
+
+static int list_size(char** l, int item_size)
+{
+    int i,j = 0;
+    if(l)
+    {
+        for(i=0;l[i];i++)
+            j += (item_size) ? item_size : strlen(l[i]) + 1;
+        j += (i + 1) * sizeof(qemu_ptr);
+    }
+    return j;
+}
+
+static int list_dup(char **l_src, qemu_ptr *l_to, int item_size)
+{
+   char *p;
+   int i;
+
+   for (i = 0; l_src[i]; i++) ;
+   p = (char *)(l_to + i + 1);
+   for (i = 0; l_src[i]; i++)
+   {
+       int count = ( item_size ) ? item_size : strlen(l_src[i]) + 1;
+       memcpy(p, l_src[i], count);
+       l_to[i] = (ULONG_PTR)p;
+       p += count;
+   }
+   l_to[i] = 0;
+   return p - (char *)l_to;
+}
+
+static struct qemu_WS_servent *WS_dup_se(const struct WS_servent *p_se)
+{
+    char *p;
+    struct qemu_WS_servent *p_to;
+
+    int size = (sizeof(*p_se) +
+                strlen(p_se->s_proto) + 1 +
+                strlen(p_se->s_name) + 1 +
+                list_size(p_se->s_aliases, 0));
+
+    if (!(p_to = check_buffer_se(size))) return NULL;
+    p_to->s_port = p_se->s_port;
+
+    p = (char *)(p_to + 1);
+    p_to->s_name = (ULONG_PTR)p;
+    strcpy(p, p_se->s_name);
+    p += strlen(p) + 1;
+
+    p_to->s_proto = (ULONG_PTR)p;
+    strcpy(p, p_se->s_proto);
+    p += strlen(p) + 1;
+
+    p_to->s_aliases = (ULONG_PTR)p;
+    list_dup(p_se->s_aliases, (qemu_ptr *)(ULONG_PTR)p_to->s_aliases, 0);
+    return p_to;
+}
+
 void qemu_WS_getservbyname(struct qemu_syscall *call)
 {
     struct qemu_WS_getservbyname *c = (struct qemu_WS_getservbyname *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(p_getservbyname(QEMU_G2H(c->name), QEMU_G2H(c->proto)));
+    void *ret;
+    WINE_TRACE("\n");
+
+    ret = p_getservbyname(QEMU_G2H(c->name), QEMU_G2H(c->proto));
+    if (!ret)
+    {
+        c->super.iret = 0;
+        return;
+    }
+
+#if GUEST_BIT != HOST_BIT
+    c->super.iret = QEMU_H2G(WS_dup_se(ret));
+#else
+    c->super.iret = QEMU_H2G(ret);
+#endif
 }
 
 #endif
@@ -2526,8 +2609,21 @@ WINBASEAPI struct WS_servent* WINAPI WS_getservbyport(int port, const char *prot
 void qemu_WS_getservbyport(struct qemu_syscall *call)
 {
     struct qemu_WS_getservbyport *c = (struct qemu_WS_getservbyport *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(p_getservbyport(c->port, QEMU_G2H(c->proto)));
+    void *ret;
+    WINE_TRACE("\n");
+
+    ret = p_getservbyport(c->port, QEMU_G2H(c->proto));
+    if (!ret)
+    {
+        c->super.iret = 0;
+        return;
+    }
+
+#if GUEST_BIT != HOST_BIT
+    c->super.iret = QEMU_H2G(WS_dup_se(ret));
+#else
+    c->super.iret = QEMU_H2G(ret);
+#endif
 }
 
 #endif

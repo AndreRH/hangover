@@ -81,4 +81,12 @@ static inline void WS_fd_set_h2g(struct qemu_WS_fd_set *guest, const WS_fd_set *
         guest->fd_array[i] = (SOCKET)(ULONG_PTR)host->fd_array[i];
 }
 
+struct qemu_WS_servent
+{
+    qemu_ptr s_name;        /* official service name - char * */
+    qemu_ptr s_aliases;     /* alias list - char ** */
+    short s_port;           /* port # */
+    qemu_ptr s_proto;       /* protocol to use - char * */
+};
+
 #endif
