@@ -289,4 +289,35 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     return dll_functions;
 }
 
+static __thread struct per_thread_data *thread_data;
+
+struct per_thread_data *get_per_thread_data(void)
+{
+    /* I should probably use teb32->WinSockData, but keep in mind that this function here is host
+     * code, not guest code. */
+
+    if (!thread_data)
+        thread_data = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*thread_data));
+
+    return thread_data;
+}
+
+static BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
+{
+    switch (reason)
+    {
+        case DLL_THREAD_DETACH:
+            WINE_TRACE("Freeing thread data %p.\n", thread_data);
+            if (!thread_data)
+                break;
+
+            HeapFree(GetProcessHeap(), 0, thread_data->he_buffer);
+            thread_data = NULL;
+            break;
+
+        default:
+            break;
+    }
+}
+
 #endif

@@ -292,6 +292,14 @@ int (* WINAPI p_setsockopt)(SOCKET s, int level, int optname, const char *optval
 int (* WINAPI p_shutdown)(SOCKET s, int how);
 SOCKET (* WINAPI p_socket)(int af, int type, int protocol);
 
+struct per_thread_data
+{
+    struct qemu_WS_hostent *he_buffer;
+    size_t he_len;
+};
+
+struct per_thread_data *get_per_thread_data(void);
+
 #endif
 
 #endif

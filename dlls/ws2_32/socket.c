@@ -25,6 +25,8 @@
 #include <ws2tcpip.h>
 #include <ws2spi.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_ws2_32.h"
@@ -1309,11 +1311,115 @@ WINBASEAPI struct WS_hostent* WINAPI WS_gethostbyaddr(const char *addr, int len,
 
 #else
 
+/* Well, for the sake of the tests stick to the allocation rules that Wine uses and copy
+ * data where we could actually just point into the host struct. */
+static struct qemu_WS_hostent *check_buffer_he(int size)
+{
+    struct per_thread_data * ptb = get_per_thread_data();
+    if (ptb->he_buffer)
+    {
+        if (ptb->he_len >= size ) return ptb->he_buffer;
+        HeapFree( GetProcessHeap(), 0, ptb->he_buffer );
+    }
+    ptb->he_buffer = HeapAlloc( GetProcessHeap(), 0, (ptb->he_len = size) );
+    if (!ptb->he_buffer) SetLastError(WSAENOBUFS);
+    return ptb->he_buffer;
+}
+
+static struct qemu_WS_hostent *WS_create_he(char *name, int aliases, int aliases_size, int addresses, int address_length)
+{
+    struct qemu_WS_hostent *p_to;
+    char *p;
+    qemu_ptr *addr_list;
+    int size = (sizeof(struct qemu_WS_hostent) +
+                strlen(name) + 1 +
+                sizeof(qemu_ptr) * aliases +
+                aliases_size +
+                sizeof(qemu_ptr) * addresses +
+                address_length * (addresses - 1)), i;
+
+    if (!(p_to = check_buffer_he(size))) return NULL;
+    memset(p_to, 0, size);
+
+    /* Use the memory in the same way winsock does.
+     * First set the pointer for aliases, second set the pointers for addresses.
+     * Third fill the addresses indexes, fourth jump aliases names size.
+     * Fifth fill the hostname.
+     * NOTE: This method is valid for OS version's >= XP.
+     */
+    p = (char *)(p_to + 1);
+    p_to->h_aliases = (ULONG_PTR)p;
+    p += sizeof(qemu_ptr)*aliases;
+
+    p_to->h_addr_list = (ULONG_PTR)p;
+    p += sizeof(qemu_ptr)*addresses;
+
+    addr_list = (qemu_ptr *)(ULONG_PTR)p_to->h_addr_list;
+    for (i = 0, addresses--; i < addresses; i++, p += address_length)
+        addr_list[i] = (ULONG_PTR)p;
+
+    /* NOTE: h_aliases must be filled in manually because we don't know each string
+     * size, leave these pointers NULL (already set to NULL by memset earlier).
+     */
+    p += aliases_size;
+
+    p_to->h_name = (ULONG_PTR)p;
+    strcpy(p, name);
+
+    return p_to;
+}
+
+static struct qemu_WS_hostent *WS_dup_he(const struct WS_hostent *p_he)
+{
+    int i, addresses = 0, alias_size = 0;
+    struct qemu_WS_hostent *p_to;
+    char *p;
+    qemu_ptr *aliases;
+    qemu_ptr *addrs;
+
+    for( i = 0; p_he->h_aliases[i]; i++) alias_size += strlen(p_he->h_aliases[i]) + 1;
+    while (p_he->h_addr_list[addresses]) addresses++;
+
+    p_to = WS_create_he(p_he->h_name, i + 1, alias_size, addresses + 1, p_he->h_length);
+
+    if (!p_to) return NULL;
+    p_to->h_addrtype = p_he->h_addrtype;
+    p_to->h_length = p_he->h_length;
+
+    addrs = (qemu_ptr *)(ULONG_PTR)p_to->h_addr_list;
+    for(i = 0, p = (char *)(ULONG_PTR)addrs[0]; p_he->h_addr_list[i]; i++, p += p_to->h_length)
+        memcpy(p, p_he->h_addr_list[i], p_to->h_length);
+
+    /* Fill the aliases after the IP data */
+    aliases = (qemu_ptr *)(ULONG_PTR)p_to->h_aliases;
+    for(i = 0; p_he->h_aliases[i]; i++)
+    {
+        aliases[i] = (ULONG_PTR)p;
+        strcpy(p, p_he->h_aliases[i]);
+        p += strlen(p) + 1;
+    }
+
+    return p_to;
+}
+
 void qemu_WS_gethostbyaddr(struct qemu_syscall *call)
 {
     struct qemu_WS_gethostbyaddr *c = (struct qemu_WS_gethostbyaddr *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(p_gethostbyaddr(QEMU_G2H(c->addr), c->len, c->type));
+    void *ret;
+    WINE_TRACE("\n");
+
+    ret = p_gethostbyaddr(QEMU_G2H(c->addr), c->len, c->type);
+    if (!ret)
+    {
+        c->super.iret = 0;
+        return;
+    }
+
+#if GUEST_BIT != HOST_BIT
+    c->super.iret = QEMU_H2G(WS_dup_he(ret));
+#else
+    c->super.iret = QEMU_H2G(ret);
+#endif
 }
 
 #endif
@@ -1342,8 +1448,21 @@ WINBASEAPI struct WS_hostent* WINAPI WS_gethostbyname(const char* name)
 void qemu_WS_gethostbyname(struct qemu_syscall *call)
 {
     struct qemu_WS_gethostbyname *c = (struct qemu_WS_gethostbyname *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(p_gethostbyname(QEMU_G2H(c->name)));
+    void *ret;
+    WINE_TRACE("\n");
+
+    ret = p_gethostbyname(QEMU_G2H(c->name));
+    if (!ret)
+    {
+        c->super.iret = 0;
+        return;
+    }
+
+#if GUEST_BIT != HOST_BIT
+    c->super.iret = QEMU_H2G(WS_dup_he(ret));
+#else
+    c->super.iret = QEMU_H2G(ret);
+#endif
 }
 
 #endif
