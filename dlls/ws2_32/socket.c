@@ -1414,7 +1414,7 @@ WINBASEAPI int WINAPI WS_recvfrom(SOCKET s, char *buf, INT len, int flags, struc
 void qemu_WS_recvfrom(struct qemu_syscall *call)
 {
     struct qemu_WS_recvfrom *c = (struct qemu_WS_recvfrom *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     /* WS_sockaddr has the same size in 32 and 64 bit. */
     c->super.iret = p_recvfrom(c->s, QEMU_G2H(c->buf), c->len, c->flags, QEMU_G2H(c->from), QEMU_G2H(c->fromlen));
