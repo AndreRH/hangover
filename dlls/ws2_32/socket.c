@@ -119,7 +119,7 @@ WINBASEAPI INT WINAPI WSAGetLastError(void)
 void qemu_WSAGetLastError(struct qemu_syscall *call)
 {
     struct qemu_WSAGetLastError *c = (struct qemu_WSAGetLastError *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WSAGetLastError();
 }
 
@@ -137,7 +137,7 @@ WINBASEAPI void WINAPI WSASetLastError(INT iError)
 {
     struct qemu_WSASetLastError call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASETLASTERROR);
-    call.iError = (ULONG_PTR)iError;
+    call.iError = iError;
 
     qemu_syscall(&call.super);
 }
@@ -147,7 +147,7 @@ WINBASEAPI void WINAPI WSASetLastError(INT iError)
 void qemu_WSASetLastError(struct qemu_syscall *call)
 {
     struct qemu_WSASetLastError *c = (struct qemu_WSASetLastError *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     WSASetLastError(c->iError);
 }
 
@@ -2188,12 +2188,12 @@ WINBASEAPI SOCKET WINAPI WSASocketA(int af, int type, int protocol, LPWSAPROTOCO
 {
     struct qemu_WSASocketA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASOCKETA);
-    call.af = (ULONG_PTR)af;
-    call.type = (ULONG_PTR)type;
-    call.protocol = (ULONG_PTR)protocol;
+    call.af = af;
+    call.type = type;
+    call.protocol = protocol;
     call.lpProtocolInfo = (ULONG_PTR)lpProtocolInfo;
-    call.g = (ULONG_PTR)g;
-    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.g = g;
+    call.dwFlags = dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -2205,7 +2205,9 @@ WINBASEAPI SOCKET WINAPI WSASocketA(int af, int type, int protocol, LPWSAPROTOCO
 void qemu_WSASocketA(struct qemu_syscall *call)
 {
     struct qemu_WSASocketA *c = (struct qemu_WSASocketA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
     c->super.iret = WSASocketA(c->af, c->type, c->protocol, QEMU_G2H(c->lpProtocolInfo), c->g, c->dwFlags);
 }
 
