@@ -102,7 +102,7 @@ WINBASEAPI INT WINAPI WSACleanup(void)
 void qemu_WSACleanup(struct qemu_syscall *call)
 {
     struct qemu_WSACleanup *c = (struct qemu_WSACleanup *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WSACleanup();
 }
 
@@ -192,7 +192,9 @@ WINBASEAPI SOCKET WINAPI WS_accept(SOCKET s, struct sockaddr *addr, int *addrlen
 void qemu_WS_accept(struct qemu_syscall *call)
 {
     struct qemu_WS_accept *c = (struct qemu_WS_accept *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* WS_sockaddr has the same size in 32 and 64 bit. */
     c->super.iret = p_accept(c->s, QEMU_G2H(c->addr), QEMU_G2H(c->addrlen32));
 }
 
@@ -256,7 +258,7 @@ WINBASEAPI int WINAPI WS_bind(SOCKET s, const struct sockaddr* name, int namelen
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_BIND);
     call.s = (ULONG_PTR)s;
     call.name = (ULONG_PTR)name;
-    call.namelen = (ULONG_PTR)namelen;
+    call.namelen = namelen;
 
     qemu_syscall(&call.super);
 
@@ -268,7 +270,9 @@ WINBASEAPI int WINAPI WS_bind(SOCKET s, const struct sockaddr* name, int namelen
 void qemu_WS_bind(struct qemu_syscall *call)
 {
     struct qemu_WS_bind *c = (struct qemu_WS_bind *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* WS_sockaddr has the same size in 32 and 64 bit. */
     c->super.iret = p_bind(c->s, QEMU_G2H(c->name), c->namelen);
 }
 
@@ -298,7 +302,7 @@ WINBASEAPI int WINAPI WS_closesocket(SOCKET s)
 void qemu_WS_closesocket(struct qemu_syscall *call)
 {
     struct qemu_WS_closesocket *c = (struct qemu_WS_closesocket *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_closesocket(c->s);
 }
 
@@ -320,7 +324,7 @@ WINBASEAPI int WINAPI WS_connect(SOCKET s, const struct sockaddr* name, int name
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_CONNECT);
     call.s = (ULONG_PTR)s;
     call.name = (ULONG_PTR)name;
-    call.namelen = (ULONG_PTR)namelen;
+    call.namelen = namelen;
 
     qemu_syscall(&call.super);
 
@@ -332,7 +336,9 @@ WINBASEAPI int WINAPI WS_connect(SOCKET s, const struct sockaddr* name, int name
 void qemu_WS_connect(struct qemu_syscall *call)
 {
     struct qemu_WS_connect *c = (struct qemu_WS_connect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* WS_sockaddr has the same size in 32 and 64 bit. */
     c->super.iret = p_connect(c->s, QEMU_G2H(c->name), c->namelen);
 }
 
@@ -375,6 +381,8 @@ void qemu_WSAConnect(struct qemu_syscall *call)
 {
     struct qemu_WSAConnect *c = (struct qemu_WSAConnect *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WS_sockaddr has the same size in 32 and 64 bit. */
     c->super.iret = WSAConnect(c->s, QEMU_G2H(c->name), c->namelen, QEMU_G2H(c->lpCallerData), QEMU_G2H(c->lpCalleeData), QEMU_G2H(c->lpSQOS), QEMU_G2H(c->lpGQOS));
 }
 
@@ -409,6 +417,8 @@ void qemu_WS_getpeername(struct qemu_syscall *call)
 {
     struct qemu_WS_getpeername *c = (struct qemu_WS_getpeername *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WS_sockaddr has the same size in 32 and 64 bit. */
     c->super.iret = p_getpeername(c->s, QEMU_G2H(c->name), QEMU_G2H(c->namelen));
 }
 
@@ -442,7 +452,9 @@ WINBASEAPI int WINAPI WS_getsockname(SOCKET s, struct sockaddr *name, int *namel
 void qemu_WS_getsockname(struct qemu_syscall *call)
 {
     struct qemu_WS_getsockname *c = (struct qemu_WS_getsockname *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* WS_sockaddr has the same size in 32 and 64 bit. */
     c->super.iret = p_getsockname(c->s, QEMU_G2H(c->name), QEMU_G2H(c->namelen));
 }
 
@@ -638,7 +650,7 @@ WINBASEAPI u_long WINAPI WS_inet_addr(const char *cp)
 void qemu_WS_inet_addr(struct qemu_syscall *call)
 {
     struct qemu_WS_inet_addr *c = (struct qemu_WS_inet_addr *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_inet_addr(QEMU_G2H(c->cp));
 }
 
@@ -729,8 +741,9 @@ void qemu_WS_inet_ntoa(struct qemu_syscall *call)
 {
     struct qemu_WS_inet_ntoa *c = (struct qemu_WS_inet_ntoa *)call;
     struct WS_in_addr in;
+    WINE_TRACE("\n");
 
-    WINE_FIXME("Unverified!\n");
+    /* struct in_addr has the same size in 32 and 64 bit. */
     in.S_un.S_addr = c->in;
     c->super.iret = QEMU_H2G(p_inet_ntoa(in));
 }
@@ -831,7 +844,7 @@ WINBASEAPI int WINAPI WS_listen(SOCKET s, int backlog)
     struct qemu_WS_listen call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_LISTEN);
     call.s = (ULONG_PTR)s;
-    call.backlog = (ULONG_PTR)backlog;
+    call.backlog = backlog;
 
     qemu_syscall(&call.super);
 
@@ -843,7 +856,7 @@ WINBASEAPI int WINAPI WS_listen(SOCKET s, int backlog)
 void qemu_WS_listen(struct qemu_syscall *call)
 {
     struct qemu_WS_listen *c = (struct qemu_WS_listen *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_listen(c->s, c->backlog);
 }
 
@@ -920,6 +933,8 @@ void qemu_WS_recvfrom(struct qemu_syscall *call)
 {
     struct qemu_WS_recvfrom *c = (struct qemu_WS_recvfrom *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WS_sockaddr has the same size in 32 and 64 bit. */
     c->super.iret = p_recvfrom(c->s, QEMU_G2H(c->buf), c->len, c->flags, QEMU_G2H(c->from), QEMU_G2H(c->fromlen));
 }
 
@@ -1014,8 +1029,8 @@ WINBASEAPI int WINAPI WS_send(SOCKET s, const char *buf, int len, int flags)
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_SEND);
     call.s = (ULONG_PTR)s;
     call.buf = (ULONG_PTR)buf;
-    call.len = (ULONG_PTR)len;
-    call.flags = (ULONG_PTR)flags;
+    call.len = len;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -1027,7 +1042,7 @@ WINBASEAPI int WINAPI WS_send(SOCKET s, const char *buf, int len, int flags)
 void qemu_WS_send(struct qemu_syscall *call)
 {
     struct qemu_WS_send *c = (struct qemu_WS_send *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_send(c->s, QEMU_G2H(c->buf), c->len, c->flags);
 }
 
@@ -1148,6 +1163,8 @@ void qemu_WSASendTo(struct qemu_syscall *call)
 {
     struct qemu_WSASendTo *c = (struct qemu_WSASendTo *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WS_sockaddr has the same size in 32 and 64 bit. */
     c->super.iret = WSASendTo(c->s, QEMU_G2H(c->lpBuffers), c->dwBufferCount, QEMU_G2H(c->lpNumberOfBytesSent), c->dwFlags, QEMU_G2H(c->to), c->tolen, QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
 }
 
@@ -1188,6 +1205,8 @@ void qemu_WS_sendto(struct qemu_syscall *call)
 {
     struct qemu_WS_sendto *c = (struct qemu_WS_sendto *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WS_sockaddr has the same size in 32 and 64 bit. */
     c->super.iret = p_sendto(c->s, QEMU_G2H(c->buf), c->len, c->flags, QEMU_G2H(c->to), c->tolen);
 }
 
@@ -1277,9 +1296,9 @@ WINBASEAPI SOCKET WINAPI WS_socket(int af, int type, int protocol)
 {
     struct qemu_WS_socket call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_SOCKET);
-    call.af = (ULONG_PTR)af;
-    call.type = (ULONG_PTR)type;
-    call.protocol = (ULONG_PTR)protocol;
+    call.af = af;
+    call.type = type;
+    call.protocol = protocol;
 
     qemu_syscall(&call.super);
 
@@ -1291,7 +1310,7 @@ WINBASEAPI SOCKET WINAPI WS_socket(int af, int type, int protocol)
 void qemu_WS_socket(struct qemu_syscall *call)
 {
     struct qemu_WS_socket *c = (struct qemu_WS_socket *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_socket(c->af, c->type, c->protocol);
 }
 
@@ -2259,6 +2278,8 @@ void qemu_WSASocketW(struct qemu_syscall *call)
 {
     struct qemu_WSASocketW *c = (struct qemu_WSASocketW *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
     c->super.iret = WSASocketW(c->af, c->type, c->protocol, QEMU_G2H(c->lpProtocolInfo), c->g, c->dwFlags);
 }
 
@@ -2303,6 +2324,8 @@ void qemu_WSAJoinLeaf(struct qemu_syscall *call)
 {
     struct qemu_WSAJoinLeaf *c = (struct qemu_WSAJoinLeaf *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WS_sockaddr has the same size in 32 and 64 bit. */
     c->super.iret = WSAJoinLeaf(c->s, QEMU_G2H(c->addr), c->addrlen, QEMU_G2H(c->lpCallerData), QEMU_G2H(c->lpCalleeData), QEMU_G2H(c->lpSQOS), QEMU_G2H(c->lpGQOS), c->dwFlags);
 }
 
@@ -2537,6 +2560,8 @@ void qemu_WSARecvFrom(struct qemu_syscall *call)
 {
     struct qemu_WSARecvFrom *c = (struct qemu_WSARecvFrom *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WS_sockaddr has the same size in 32 and 64 bit. */
     c->super.iret = WSARecvFrom(c->s, QEMU_G2H(c->lpBuffers), c->dwBufferCount, QEMU_G2H(c->lpNumberOfBytesRecvd), QEMU_G2H(c->lpFlags), QEMU_G2H(c->lpFrom), QEMU_G2H(c->lpFromlen), QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
 }
 
@@ -2575,6 +2600,8 @@ void qemu_WSCInstallProvider(struct qemu_syscall *call)
 {
     struct qemu_WSCInstallProvider *c = (struct qemu_WSCInstallProvider *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
     c->super.iret = WSCInstallProvider(QEMU_G2H(c->lpProviderId), QEMU_G2H(c->lpszProviderDllPath), QEMU_G2H(c->lpProtocolInfoList), c->dwNumberOfEntries, QEMU_G2H(c->lpErrno));
 }
 
@@ -2645,6 +2672,8 @@ void qemu_WSAAccept(struct qemu_syscall *call)
 {
     struct qemu_WSAAccept *c = (struct qemu_WSAAccept *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WS_sockaddr has the same size in 32 and 64 bit. */
     c->super.iret = WSAAccept(c->s, QEMU_G2H(c->addr), QEMU_G2H(c->addrlen), QEMU_G2H(c->lpfnCondition), c->dwCallbackData);
 }
 
@@ -2665,7 +2694,7 @@ WINBASEAPI int WINAPI WSADuplicateSocketA(SOCKET s, DWORD dwProcessId, LPWSAPROT
     struct qemu_WSADuplicateSocketA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSADUPLICATESOCKETA);
     call.s = (ULONG_PTR)s;
-    call.dwProcessId = (ULONG_PTR)dwProcessId;
+    call.dwProcessId = dwProcessId;
     call.lpProtocolInfo = (ULONG_PTR)lpProtocolInfo;
 
     qemu_syscall(&call.super);
@@ -2678,7 +2707,9 @@ WINBASEAPI int WINAPI WSADuplicateSocketA(SOCKET s, DWORD dwProcessId, LPWSAPROT
 void qemu_WSADuplicateSocketA(struct qemu_syscall *call)
 {
     struct qemu_WSADuplicateSocketA *c = (struct qemu_WSADuplicateSocketA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
     c->super.iret = WSADuplicateSocketA(c->s, c->dwProcessId, QEMU_G2H(c->lpProtocolInfo));
 }
 
@@ -2713,6 +2744,8 @@ void qemu_WSADuplicateSocketW(struct qemu_syscall *call)
 {
     struct qemu_WSADuplicateSocketW *c = (struct qemu_WSADuplicateSocketW *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
     c->super.iret = WSADuplicateSocketW(c->s, c->dwProcessId, QEMU_G2H(c->lpProtocolInfo));
 }
 
@@ -2823,10 +2856,10 @@ WINBASEAPI PCSTR WINAPI WS_inet_ntop(INT family, PVOID addr, PSTR buffer, SIZE_T
 {
     struct qemu_WS_inet_ntop call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_INET_NTOP);
-    call.family = (ULONG_PTR)family;
+    call.family = family;
     call.addr = (ULONG_PTR)addr;
     call.buffer = (ULONG_PTR)buffer;
-    call.len = (ULONG_PTR)len;
+    call.len = len;
 
     qemu_syscall(&call.super);
 
@@ -2838,7 +2871,13 @@ WINBASEAPI PCSTR WINAPI WS_inet_ntop(INT family, PVOID addr, PSTR buffer, SIZE_T
 void qemu_WS_inet_ntop(struct qemu_syscall *call)
 {
     struct qemu_WS_inet_ntop *c = (struct qemu_WS_inet_ntop *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+#if GUEST_BIT != HOST_BIT
+    if (c->family != WS_AF_INET && c->family != WS_AF_INET6 && c->family != WS_AF_UNSPEC)
+        WINE_FIXME("Untested family %lx.\n", c->family);
+#endif
+
     c->super.iret = QEMU_H2G(p_inet_ntop(c->family, QEMU_G2H(c->addr), QEMU_G2H(c->buffer), c->len));
 }
 
@@ -2858,7 +2897,7 @@ WINBASEAPI INT WINAPI WS_inet_pton(INT family, PCSTR addr, PVOID buffer)
 {
     struct qemu_WS_inet_pton call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_INET_PTON);
-    call.family = (ULONG_PTR)family;
+    call.family = family;
     call.addr = (ULONG_PTR)addr;
     call.buffer = (ULONG_PTR)buffer;
 
@@ -2872,7 +2911,13 @@ WINBASEAPI INT WINAPI WS_inet_pton(INT family, PCSTR addr, PVOID buffer)
 void qemu_WS_inet_pton(struct qemu_syscall *call)
 {
     struct qemu_WS_inet_pton *c = (struct qemu_WS_inet_pton *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+#if GUEST_BIT != HOST_BIT
+    if (c->family != WS_AF_INET && c->family != WS_AF_INET6 && c->family != WS_AF_UNSPEC)
+        WINE_FIXME("Untested family %lx.\n", c->family);
+#endif
+
     c->super.iret = p_inet_pton(c->family, QEMU_G2H(c->addr), QEMU_G2H(c->buffer));
 }
 
@@ -2892,7 +2937,7 @@ WINBASEAPI INT WINAPI InetPtonW(INT family, PCWSTR addr, PVOID buffer)
 {
     struct qemu_InetPtonW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INETPTONW);
-    call.family = (ULONG_PTR)family;
+    call.family = family;
     call.addr = (ULONG_PTR)addr;
     call.buffer = (ULONG_PTR)buffer;
 
@@ -2906,7 +2951,13 @@ WINBASEAPI INT WINAPI InetPtonW(INT family, PCWSTR addr, PVOID buffer)
 void qemu_InetPtonW(struct qemu_syscall *call)
 {
     struct qemu_InetPtonW *c = (struct qemu_InetPtonW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+#if GUEST_BIT != HOST_BIT
+    if (c->family != WS_AF_INET && c->family != WS_AF_INET6 && c->family != WS_AF_UNSPEC)
+        WINE_FIXME("Untested family %lx.\n", c->family);
+#endif
+
     c->super.iret = InetPtonW(c->family, QEMU_G2H(c->addr), QEMU_G2H(c->buffer));
 }
 
@@ -2927,10 +2978,10 @@ WINBASEAPI PCWSTR WINAPI wininet_InetNtopW(INT family, PVOID addr, PWSTR buffer,
 {
     struct qemu_InetNtopW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INETNTOPW);
-    call.family = (ULONG_PTR)family;
+    call.family = family;
     call.addr = (ULONG_PTR)addr;
     call.buffer = (ULONG_PTR)buffer;
-    call.len = (ULONG_PTR)len;
+    call.len = len;
 
     qemu_syscall(&call.super);
 
@@ -2942,7 +2993,13 @@ WINBASEAPI PCWSTR WINAPI wininet_InetNtopW(INT family, PVOID addr, PWSTR buffer,
 void qemu_InetNtopW(struct qemu_syscall *call)
 {
     struct qemu_InetNtopW *c = (struct qemu_InetNtopW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+#if GUEST_BIT != HOST_BIT
+    if (c->family != WS_AF_INET && c->family != WS_AF_INET6 && c->family != WS_AF_UNSPEC)
+        WINE_FIXME("Untested family %lx.\n", c->family);
+#endif
+
     c->super.iret = (ULONG_PTR)InetNtopW(c->family, QEMU_G2H(c->addr), QEMU_G2H(c->buffer), c->len);
 }
 
@@ -2981,6 +3038,8 @@ void qemu_WSAStringToAddressA(struct qemu_syscall *call)
 {
     struct qemu_WSAStringToAddressA *c = (struct qemu_WSAStringToAddressA *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
     c->super.iret = WSAStringToAddressA(QEMU_G2H(c->AddressString), c->AddressFamily, QEMU_G2H(c->lpProtocolInfo), QEMU_G2H(c->lpAddress), QEMU_G2H(c->lpAddressLength));
 }
 
@@ -3019,6 +3078,8 @@ void qemu_WSAStringToAddressW(struct qemu_syscall *call)
 {
     struct qemu_WSAStringToAddressW *c = (struct qemu_WSAStringToAddressW *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
     c->super.iret = WSAStringToAddressW(QEMU_G2H(c->AddressString), c->AddressFamily, QEMU_G2H(c->lpProtocolInfo), QEMU_G2H(c->lpAddress), QEMU_G2H(c->lpAddressLength));
 }
 
@@ -3057,6 +3118,8 @@ void qemu_WSAAddressToStringA(struct qemu_syscall *call)
 {
     struct qemu_WSAAddressToStringA *c = (struct qemu_WSAAddressToStringA *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
     c->super.iret = WSAAddressToStringA(QEMU_G2H(c->sockaddr), c->len, QEMU_G2H(c->info), QEMU_G2H(c->string), QEMU_G2H(c->lenstr));
 }
 
@@ -3095,6 +3158,8 @@ void qemu_WSAAddressToStringW(struct qemu_syscall *call)
 {
     struct qemu_WSAAddressToStringW *c = (struct qemu_WSAAddressToStringW *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
     c->super.iret = WSAAddressToStringW(QEMU_G2H(c->sockaddr), c->len, QEMU_G2H(c->info), QEMU_G2H(c->string), QEMU_G2H(c->lenstr));
 }
 
@@ -3951,6 +4016,8 @@ void qemu_WSAEnumProtocolsA(struct qemu_syscall *call)
 {
     struct qemu_WSAEnumProtocolsA *c = (struct qemu_WSAEnumProtocolsA *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
     c->super.iret = WSAEnumProtocolsA(QEMU_G2H(c->protocols), QEMU_G2H(c->buffer), QEMU_G2H(c->len));
 }
 
@@ -3985,6 +4052,8 @@ void qemu_WSAEnumProtocolsW(struct qemu_syscall *call)
 {
     struct qemu_WSAEnumProtocolsW *c = (struct qemu_WSAEnumProtocolsW *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
     c->super.iret = WSAEnumProtocolsW(QEMU_G2H(c->protocols), QEMU_G2H(c->buffer), QEMU_G2H(c->len));
 }
 
@@ -4021,6 +4090,8 @@ void qemu_WSCEnumProtocols(struct qemu_syscall *call)
 {
     struct qemu_WSCEnumProtocols *c = (struct qemu_WSCEnumProtocols *)call;
     WINE_FIXME("Unverified!\n");
+
+    /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
     c->super.iret = WSCEnumProtocols(QEMU_G2H(c->protocols), QEMU_G2H(c->buffer), QEMU_G2H(c->len), QEMU_G2H(c->err));
 }
 
