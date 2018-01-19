@@ -26,6 +26,7 @@
 #include <ws2spi.h>
 #include <mswsock.h>
 #include <wsnwlink.h>
+#include <mstcpip.h>
 
 #include "thunk/qemu_windows.h"
 #include "thunk/qemu_winsock2.h"
@@ -419,7 +420,7 @@ WINBASEAPI int WINAPI WS_getpeername(SOCKET s, struct sockaddr *name, int *namel
 void qemu_WS_getpeername(struct qemu_syscall *call)
 {
     struct qemu_WS_getpeername *c = (struct qemu_WS_getpeername *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     /* WS_sockaddr has the same size in 32 and 64 bit. */
     c->super.iret = p_getpeername(c->s, QEMU_G2H(c->name), QEMU_G2H(c->namelen));
@@ -843,16 +844,17 @@ struct qemu_WSAIoctl
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI INT WINAPI WSAIoctl(SOCKET s, DWORD code, LPVOID in_buff, DWORD in_size, LPVOID out_buff, DWORD out_size, LPDWORD ret_size, LPWSAOVERLAPPED overlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE completion)
+WINBASEAPI INT WINAPI WSAIoctl(SOCKET s, DWORD code, LPVOID in_buff, DWORD in_size, void *out_buff,
+        DWORD out_size, DWORD *ret_size, WSAOVERLAPPED *overlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE completion)
 {
     struct qemu_WSAIoctl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAIOCTL);
     call.s = (ULONG_PTR)s;
-    call.code = (ULONG_PTR)code;
+    call.code = code;
     call.in_buff = (ULONG_PTR)in_buff;
-    call.in_size = (ULONG_PTR)in_size;
+    call.in_size = in_size;
     call.out_buff = (ULONG_PTR)out_buff;
-    call.out_size = (ULONG_PTR)out_size;
+    call.out_size = out_size;
     call.ret_size = (ULONG_PTR)ret_size;
     call.overlapped = (ULONG_PTR)overlapped;
     call.completion = (ULONG_PTR)completion;
@@ -867,8 +869,62 @@ WINBASEAPI INT WINAPI WSAIoctl(SOCKET s, DWORD code, LPVOID in_buff, DWORD in_si
 void qemu_WSAIoctl(struct qemu_syscall *call)
 {
     struct qemu_WSAIoctl *c = (struct qemu_WSAIoctl *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = WSAIoctl(c->s, c->code, QEMU_G2H(c->in_buff), c->in_size, QEMU_G2H(c->out_buff), c->out_size, QEMU_G2H(c->ret_size), QEMU_G2H(c->overlapped), QEMU_G2H(c->completion));
+    WINE_TRACE("Unverified!\n");
+
+    /* Note that Wine cheats and handles most cases synchronously. Possibly those that go through the server might be
+     * signalled asynchronously. Wine doesn't support the completion routine. */
+    if (c->overlapped || c->completion)
+        WINE_FIXME("Asynchronous operation not supported yet.\n");
+
+    switch (c->code)
+    {
+        default:
+            WINE_FIXME("Unknown Ioctl code 0x%lx.\n", c->code);
+            /* Drop through */
+        case 0x667e: /* Netscape tries hard to use bogus ioctl 0x667e */
+        case WS_FIONBIO:
+        case WS_FIONREAD:
+        case WS_SIOCATMARK:
+        case WS_FIOASYNC:
+        case WS_SIO_FLUSH:
+        case WS_SIO_KEEPALIVE_VALS:
+        case WS_SIO_ROUTING_INTERFACE_QUERY:
+        case WS_SIO_SET_COMPATIBILITY_MODE:
+        case WS_SIO_UDP_CONNRESET:
+#if GUEST_BIT == HOST_BIT
+        case WS_SIO_GET_INTERFACE_LIST:
+        case WS_SIO_ADDRESS_LIST_QUERY:
+        case WS_SIO_ADDRESS_LIST_CHANGE:
+#endif
+            c->super.iret = WSAIoctl(c->s, c->code, QEMU_G2H(c->in_buff), c->in_size, QEMU_G2H(c->out_buff),
+                    c->out_size, QEMU_G2H(c->ret_size), QEMU_G2H(c->overlapped), QEMU_G2H(c->completion));
+            break;
+
+#if GUEST_BIT != HOST_BIT
+        case WS_SIO_GET_INTERFACE_LIST:  /* INTERFACE_INFO ??? */
+            WINE_FIXME("Handle WS_SIO_GET_INTERFACE_LIST\n");
+            c->super.iret = WSAIoctl(c->s, c->code, QEMU_G2H(c->in_buff), c->in_size, QEMU_G2H(c->out_buff),
+                    c->out_size, QEMU_G2H(c->ret_size), QEMU_G2H(c->overlapped), QEMU_G2H(c->completion));
+            break;
+        case WS_SIO_ADDRESS_LIST_QUERY: /* SOCKET_ADDRESS_LIST */
+            WINE_FIXME("Handle WS_SIO_ADDRESS_LIST_QUERY\n");
+            c->super.iret = WSAIoctl(c->s, c->code, QEMU_G2H(c->in_buff), c->in_size, QEMU_G2H(c->out_buff),
+                    c->out_size, QEMU_G2H(c->ret_size), QEMU_G2H(c->overlapped), QEMU_G2H(c->completion));
+            break;
+
+        case WS_SIO_ADDRESS_LIST_CHANGE:
+            WINE_FIXME("Handle WS_SIO_ADDRESS_LIST_CHANGE\n");
+            c->super.iret = WSAIoctl(c->s, c->code, QEMU_G2H(c->in_buff), c->in_size, QEMU_G2H(c->out_buff),
+                    c->out_size, QEMU_G2H(c->ret_size), QEMU_G2H(c->overlapped), QEMU_G2H(c->completion));
+            break;
+#endif
+
+        case WS_SIO_GET_EXTENSION_FUNCTION_POINTER: /* Handle in guest */
+            WINE_FIXME("Handle WS_SIO_GET_EXTENSION_FUNCTION_POINTER\n");
+            c->super.iret = WSAIoctl(c->s, c->code, QEMU_G2H(c->in_buff), c->in_size, QEMU_G2H(c->out_buff),
+                    c->out_size, QEMU_G2H(c->ret_size), QEMU_G2H(c->overlapped), QEMU_G2H(c->completion));
+            break;
+    }
 }
 
 #endif
