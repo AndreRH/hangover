@@ -1103,7 +1103,57 @@ WINBASEAPI INT WINAPI WSAIoctl(SOCKET s, DWORD code, LPVOID in_buff, DWORD in_si
     call.overlapped = (ULONG_PTR)overlapped;
     call.completion = (ULONG_PTR)completion;
 
+    if (code == SIO_GET_EXTENSION_FUNCTION_POINTER)
+    {
+#define EXTENSION_FUNCTION(x, y) { x, y, #y },
+        static const struct
+        {
+            GUID guid;
+            void *func_ptr;
+            const char *name;
+        } guid_funcs[] = {
+            EXTENSION_FUNCTION(WSAID_CONNECTEX, WS2_ConnectEx)
+            EXTENSION_FUNCTION(WSAID_DISCONNECTEX, WS2_DisconnectEx)
+            EXTENSION_FUNCTION(WSAID_ACCEPTEX, WS2_AcceptEx)
+            EXTENSION_FUNCTION(WSAID_GETACCEPTEXSOCKADDRS, WS2_GetAcceptExSockaddrs)
+            EXTENSION_FUNCTION(WSAID_TRANSMITFILE, WS2_TransmitFile)
+            /* EXTENSION_FUNCTION(WSAID_TRANSMITPACKETS, WS2_TransmitPackets) */
+            EXTENSION_FUNCTION(WSAID_WSARECVMSG, WS2_WSARecvMsg)
+            EXTENSION_FUNCTION(WSAID_WSASENDMSG, WSASendMsg)
+        };
+#undef EXTENSION_FUNCTION
+        BOOL found = FALSE;
+        unsigned int i;
+
+        for (i = 0; i < sizeof(guid_funcs) / sizeof(guid_funcs[0]); i++)
+        {
+            if (IsEqualGUID(&guid_funcs[i].guid, in_buff))
+            {
+                found = TRUE;
+                break;
+            }
+        }
+
+        if (found)
+        {
+            *(void **)out_buff = guid_funcs[i].func_ptr;
+            call.out_buff = 1;
+            if (ret_size)
+                *ret_size = sizeof(void *);
+        }
+        else
+        {
+            call.out_buff = 0;
+        }
+    }
+
     qemu_syscall(&call.super);
+
+    if (code == SIO_GET_EXTENSION_FUNCTION_POINTER && call.super.iret)
+    {
+        void **out = out_buff;
+        *out = NULL;
+    }
 
     return call.super.iret;
 }
@@ -1163,11 +1213,20 @@ void qemu_WSAIoctl(struct qemu_syscall *call)
             break;
 #endif
 
-        case WS_SIO_GET_EXTENSION_FUNCTION_POINTER: /* Handle in guest */
-            WINE_FIXME("Handle WS_SIO_GET_EXTENSION_FUNCTION_POINTER\n");
-            c->super.iret = WSAIoctl(c->s, c->code, QEMU_G2H(c->in_buff), c->in_size, QEMU_G2H(c->out_buff),
-                    c->out_size, QEMU_G2H(c->ret_size), QEMU_G2H(c->overlapped), QEMU_G2H(c->completion));
+        case WS_SIO_GET_EXTENSION_FUNCTION_POINTER:
+        {
+            void *out;
+            DWORD ret_size;
+            /* This is handled in the guest, the call here is mainly there to catch newly added functions
+             * that we don't support yet. */
+            c->super.iret = WSAIoctl(c->s, c->code, QEMU_G2H(c->in_buff), c->in_size, &out,
+                    sizeof(out), &ret_size, NULL, NULL);
+            if (out && !c->out_buff)
+            {
+                WINE_FIXME("Wine supports a WSA function this wrapper does not know about!\n");
+            }
             break;
+        }
     }
 }
 
