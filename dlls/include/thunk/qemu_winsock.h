@@ -66,7 +66,12 @@ static inline void WS_fd_set_g2h(WS_fd_set *host, const struct qemu_WS_fd_set *g
     unsigned int i;
     host->fd_count = guest->fd_count;
     for (i = 0; i < host->fd_count; ++i)
-        host->fd_array[i] = (SOCKET)(ULONG_PTR)guest->fd_array[i];
+    {
+        if (guest->fd_array[i] == (qemu_ptr)INVALID_SOCKET)
+            host->fd_array[i] = INVALID_SOCKET;
+        else
+            host->fd_array[i] = (ULONG_PTR)guest->fd_array[i];
+    }
 }
 
 #ifndef USE_WS_PREFIX
@@ -78,7 +83,7 @@ static inline void WS_fd_set_h2g(struct qemu_WS_fd_set *guest, const WS_fd_set *
     unsigned int i;
     guest->fd_count = host->fd_count;
     for (i = 0; i < guest->fd_count; ++i)
-        guest->fd_array[i] = (SOCKET)(ULONG_PTR)host->fd_array[i];
+        guest->fd_array[i] = host->fd_array[i];
 }
 
 struct qemu_WS_servent
