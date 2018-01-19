@@ -1046,7 +1046,8 @@ struct qemu_WS2_WSARecvMsg
 
 #ifdef QEMU_DLL_GUEST
 
-static int WINAPI WS2_WSARecvMsg(SOCKET s, LPWSAMSG msg, LPDWORD lpNumberOfBytesRecvd, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
+static int WINAPI WS2_WSARecvMsg(SOCKET s, WSAMSG *msg, DWORD *lpNumberOfBytesRecvd, WSAOVERLAPPED *lpOverlapped,
+        LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
 {
     struct qemu_WS2_WSARecvMsg call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS2_WSARECVMSG);
@@ -1066,8 +1067,52 @@ static int WINAPI WS2_WSARecvMsg(SOCKET s, LPWSAMSG msg, LPDWORD lpNumberOfBytes
 void qemu_WS2_WSARecvMsg(struct qemu_syscall *call)
 {
     struct qemu_WS2_WSARecvMsg *c = (struct qemu_WS2_WSARecvMsg *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_WSARecvMsg(c->s, QEMU_G2H(c->msg), QEMU_G2H(c->lpNumberOfBytesRecvd), QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
+    WSAMSG msg;
+    WSABUF stackbuf[10], *buffers;
+    struct qemu_WSABUF *guest_buffers;
+    struct qemu_WSAMSG *guest_msg;
+    unsigned int i;
+    WINE_TRACE("\n");
+
+    if (c->lpCompletionRoutine)
+        WINE_FIXME("Completion routine not handled yet.\n");
+#if GUEST_BIT == HOST_BIT
+    c->super.iret = p_WSARecvMsg(c->s, QEMU_G2H(c->msg), QEMU_G2H(c->lpNumberOfBytesRecvd), QEMU_G2H(c->lpOverlapped),
+            QEMU_G2H(c->lpCompletionRoutine));
+    return;
+#endif
+
+    if (c->lpOverlapped)
+        WINE_FIXME("OVERLAPPED receive not handled yet.\n");
+
+    if (!c->msg)
+    {
+        WINE_WARN("Message is NULL.\n");
+        c->super.iret = p_WSARecvMsg(c->s, NULL, QEMU_G2H(c->lpNumberOfBytesRecvd), QEMU_G2H(c->lpOverlapped),
+                QEMU_G2H(c->lpCompletionRoutine));
+        return;
+    }
+
+    guest_msg = QEMU_G2H(c->msg);
+    WSAMSG_g2h(&msg, guest_msg);
+    guest_buffers = (struct qemu_WSABUF *)msg.lpBuffers;
+    if (msg.dwBufferCount < sizeof(stackbuf) / sizeof(*stackbuf))
+        buffers = stackbuf;
+    else
+        buffers = HeapAlloc(GetProcessHeap(), 0, sizeof(*buffers) * msg.dwBufferCount);
+
+    for (i = 0; i < msg.dwBufferCount; ++i)
+        WSABUF_g2h(&buffers[i], &guest_buffers[i]);
+    msg.lpBuffers = buffers;
+
+    c->super.iret = p_WSARecvMsg(c->s, &msg, QEMU_G2H(c->lpNumberOfBytesRecvd), QEMU_G2H(c->lpOverlapped),
+            QEMU_G2H(c->lpCompletionRoutine));
+
+    if (buffers != stackbuf)
+        HeapFree(GetProcessHeap(), 0, buffers);
+
+    WSAMSG_h2g(guest_msg, &msg);
+    guest_msg->lpBuffers = (ULONG_PTR)guest_buffers;
 }
 
 #endif
