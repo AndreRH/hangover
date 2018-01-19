@@ -3689,12 +3689,13 @@ struct qemu_WSAStringToAddressA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI INT WINAPI WSAStringToAddressA(LPSTR AddressString, INT AddressFamily, LPWSAPROTOCOL_INFOA lpProtocolInfo, LPSOCKADDR lpAddress, LPINT lpAddressLength)
+WINBASEAPI INT WINAPI WSAStringToAddressA(LPSTR AddressString, INT AddressFamily, LPWSAPROTOCOL_INFOA lpProtocolInfo,
+        LPSOCKADDR lpAddress, LPINT lpAddressLength)
 {
     struct qemu_WSAStringToAddressA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASTRINGTOADDRESSA);
     call.AddressString = (ULONG_PTR)AddressString;
-    call.AddressFamily = (ULONG_PTR)AddressFamily;
+    call.AddressFamily = AddressFamily;
     call.lpProtocolInfo = (ULONG_PTR)lpProtocolInfo;
     call.lpAddress = (ULONG_PTR)lpAddress;
     call.lpAddressLength = (ULONG_PTR)lpAddressLength;
@@ -3709,10 +3710,11 @@ WINBASEAPI INT WINAPI WSAStringToAddressA(LPSTR AddressString, INT AddressFamily
 void qemu_WSAStringToAddressA(struct qemu_syscall *call)
 {
     struct qemu_WSAStringToAddressA *c = (struct qemu_WSAStringToAddressA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
-    c->super.iret = WSAStringToAddressA(QEMU_G2H(c->AddressString), c->AddressFamily, QEMU_G2H(c->lpProtocolInfo), QEMU_G2H(c->lpAddress), QEMU_G2H(c->lpAddressLength));
+    c->super.iret = WSAStringToAddressA(QEMU_G2H(c->AddressString), c->AddressFamily, QEMU_G2H(c->lpProtocolInfo),
+            QEMU_G2H(c->lpAddress), QEMU_G2H(c->lpAddressLength));
 }
 
 #endif
@@ -3729,12 +3731,13 @@ struct qemu_WSAStringToAddressW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI INT WINAPI WSAStringToAddressW(LPWSTR AddressString, INT AddressFamily, LPWSAPROTOCOL_INFOW lpProtocolInfo, LPSOCKADDR lpAddress, LPINT lpAddressLength)
+WINBASEAPI INT WINAPI WSAStringToAddressW(LPWSTR AddressString, INT AddressFamily, LPWSAPROTOCOL_INFOW lpProtocolInfo,
+        LPSOCKADDR lpAddress, LPINT lpAddressLength)
 {
     struct qemu_WSAStringToAddressW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASTRINGTOADDRESSW);
     call.AddressString = (ULONG_PTR)AddressString;
-    call.AddressFamily = (ULONG_PTR)AddressFamily;
+    call.AddressFamily = AddressFamily;
     call.lpProtocolInfo = (ULONG_PTR)lpProtocolInfo;
     call.lpAddress = (ULONG_PTR)lpAddress;
     call.lpAddressLength = (ULONG_PTR)lpAddressLength;
@@ -3749,10 +3752,11 @@ WINBASEAPI INT WINAPI WSAStringToAddressW(LPWSTR AddressString, INT AddressFamil
 void qemu_WSAStringToAddressW(struct qemu_syscall *call)
 {
     struct qemu_WSAStringToAddressW *c = (struct qemu_WSAStringToAddressW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
-    c->super.iret = WSAStringToAddressW(QEMU_G2H(c->AddressString), c->AddressFamily, QEMU_G2H(c->lpProtocolInfo), QEMU_G2H(c->lpAddress), QEMU_G2H(c->lpAddressLength));
+    c->super.iret = WSAStringToAddressW(QEMU_G2H(c->AddressString), c->AddressFamily, QEMU_G2H(c->lpProtocolInfo),
+            QEMU_G2H(c->lpAddress), QEMU_G2H(c->lpAddressLength));
 }
 
 #endif
@@ -3769,7 +3773,8 @@ struct qemu_WSAAddressToStringA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI INT WINAPI WSAAddressToStringA(LPSOCKADDR sockaddr, DWORD len, LPWSAPROTOCOL_INFOA info, LPSTR string, LPDWORD lenstr)
+WINBASEAPI INT WINAPI WSAAddressToStringA(LPSOCKADDR sockaddr, DWORD len, LPWSAPROTOCOL_INFOA info,
+        LPSTR string, LPDWORD lenstr)
 {
     struct qemu_WSAAddressToStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAADDRESSTOSTRINGA);
@@ -3789,7 +3794,7 @@ WINBASEAPI INT WINAPI WSAAddressToStringA(LPSOCKADDR sockaddr, DWORD len, LPWSAP
 void qemu_WSAAddressToStringA(struct qemu_syscall *call)
 {
     struct qemu_WSAAddressToStringA *c = (struct qemu_WSAAddressToStringA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
     c->super.iret = WSAAddressToStringA(QEMU_G2H(c->sockaddr), c->len, QEMU_G2H(c->info), QEMU_G2H(c->string), QEMU_G2H(c->lenstr));
@@ -3809,12 +3814,13 @@ struct qemu_WSAAddressToStringW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI INT WINAPI WSAAddressToStringW(LPSOCKADDR sockaddr, DWORD len, LPWSAPROTOCOL_INFOW info, LPWSTR string, LPDWORD lenstr)
+WINBASEAPI INT WINAPI WSAAddressToStringW(LPSOCKADDR sockaddr, DWORD len, LPWSAPROTOCOL_INFOW info,
+        LPWSTR string, LPDWORD lenstr)
 {
     struct qemu_WSAAddressToStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAADDRESSTOSTRINGW);
     call.sockaddr = (ULONG_PTR)sockaddr;
-    call.len = (ULONG_PTR)len;
+    call.len = len;
     call.info = (ULONG_PTR)info;
     call.string = (ULONG_PTR)string;
     call.lenstr = (ULONG_PTR)lenstr;
@@ -3829,7 +3835,7 @@ WINBASEAPI INT WINAPI WSAAddressToStringW(LPSOCKADDR sockaddr, DWORD len, LPWSAP
 void qemu_WSAAddressToStringW(struct qemu_syscall *call)
 {
     struct qemu_WSAAddressToStringW *c = (struct qemu_WSAAddressToStringW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
     c->super.iret = WSAAddressToStringW(QEMU_G2H(c->sockaddr), c->len, QEMU_G2H(c->info), QEMU_G2H(c->string), QEMU_G2H(c->lenstr));
