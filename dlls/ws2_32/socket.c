@@ -3319,11 +3319,35 @@ struct qemu_WSAAccept
     uint64_t addrlen;
     uint64_t lpfnCondition;
     uint64_t dwCallbackData;
+    uint64_t wrapper;
+};
+
+struct qemu_WSAAccept_cb
+{
+    uint64_t func;
+    uint64_t callerId;
+    uint64_t callerData;
+    uint64_t Qos;
+    uint64_t GQOS;
+    uint64_t calleeId;
+    uint64_t calleeData;
+    uint64_t g;
+    uint64_t data;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI SOCKET WINAPI WSAAccept(SOCKET s, struct sockaddr *addr, LPINT addrlen, LPCONDITIONPROC lpfnCondition, DWORD_PTR dwCallbackData)
+static int __fastcall WSAAccept_guest_proc(struct qemu_WSAAccept_cb *data)
+{
+    LPCONDITIONPROC func = (LPCONDITIONPROC)(ULONG_PTR)data->func;
+    return func((WSABUF *)(ULONG_PTR)data->callerId, (WSABUF *)(ULONG_PTR)data->callerData,
+            (QOS *)(ULONG_PTR)data->Qos, (QOS *)(ULONG_PTR)data->GQOS, (WSABUF *)(ULONG_PTR)data->calleeId,
+            (WSABUF *)(ULONG_PTR)data->calleeData,
+            (GROUP *)(ULONG_PTR)data->g, data->data);
+}
+
+WINBASEAPI SOCKET WINAPI WSAAccept(SOCKET s, struct sockaddr *addr, LPINT addrlen,
+        LPCONDITIONPROC lpfnCondition, DWORD_PTR dwCallbackData)
 {
     struct qemu_WSAAccept call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAACCEPT);
@@ -3332,6 +3356,7 @@ WINBASEAPI SOCKET WINAPI WSAAccept(SOCKET s, struct sockaddr *addr, LPINT addrle
     call.addrlen = (ULONG_PTR)addrlen;
     call.lpfnCondition = (ULONG_PTR)lpfnCondition;
     call.dwCallbackData = (ULONG_PTR)dwCallbackData;
+    call.wrapper = (ULONG_PTR)WSAAccept_guest_proc;
 
     qemu_syscall(&call.super);
 
@@ -3340,13 +3365,64 @@ WINBASEAPI SOCKET WINAPI WSAAccept(SOCKET s, struct sockaddr *addr, LPINT addrle
 
 #else
 
+struct WSAAccept_data
+{
+    uint64_t func, data, wrapper;
+};
+
+static int CALLBACK WSAAccept_host_proc(WSABUF *callerId, WSABUF *callerData, QOS *pQos,
+        QOS *lpGQOS, WSABUF *calleeId, WSABUF *calleeData, GROUP *g, DWORD_PTR callbackData)
+{
+    struct WSAAccept_data *data = (struct WSAAccept_data *)callbackData;
+    struct qemu_WSAAccept_cb call;
+    int ret;
+    struct qemu_WSABUF guest_caller_id, guest_caller_data, guest_callee_id, guest_callee_data;
+
+#if GUEST_BIT == HOST_BIT
+    call.callerId = QEMU_H2G(callerId);
+    call.callerData = QEMU_H2G(callerData);
+    call.calleeId = QEMU_H2G(calleeId);
+    call.calleeData = QEMU_H2G(calleeData);
+    call.Qos = QEMU_H2G(pQos);
+    call.GQOS = QEMU_H2G(lpGQOS);
+#else
+    WSABUF_h2g(&guest_caller_id, callerId);
+    WSABUF_h2g(&guest_caller_data, callerData);
+    WSABUF_h2g(&guest_callee_id, calleeId);
+    WSABUF_h2g(&guest_callee_data, calleeData);
+
+    call.callerId = QEMU_H2G(&guest_caller_id);
+    call.callerData = QEMU_H2G(&guest_caller_data);
+    call.calleeId = QEMU_H2G(&guest_callee_id);
+    call.calleeData = QEMU_H2G(&guest_callee_data);
+
+    if (pQos || lpGQOS)
+        WINE_FIXME("QOS structures not translated to 32 bit yet.\n");
+#endif
+    call.g = QEMU_H2G(g);
+    call.data = data->data;
+    call.func = data->func;
+
+    WINE_TRACE("Calling guest callback 0x%lx.\n", call.func);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned %d.\n", ret);
+
+    return ret;
+}
+
 void qemu_WSAAccept(struct qemu_syscall *call)
 {
     struct qemu_WSAAccept *c = (struct qemu_WSAAccept *)call;
-    WINE_FIXME("Unverified!\n");
+    struct WSAAccept_data data;
+    WINE_TRACE("\n");
+
+    data.func = c->lpfnCondition;
+    data.data = c->dwCallbackData;
+    data.wrapper = c->wrapper;
 
     /* WS_sockaddr has the same size in 32 and 64 bit. */
-    c->super.iret = WSAAccept(c->s, QEMU_G2H(c->addr), QEMU_G2H(c->addrlen), QEMU_G2H(c->lpfnCondition), c->dwCallbackData);
+    c->super.iret = WSAAccept(c->s, QEMU_G2H(c->addr), QEMU_G2H(c->addrlen),
+            c->lpfnCondition ? WSAAccept_host_proc : NULL, (DWORD_PTR)&data);
 }
 
 #endif
