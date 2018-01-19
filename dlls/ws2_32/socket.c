@@ -24,6 +24,8 @@
 #include <winsock.h>
 #include <ws2tcpip.h>
 #include <ws2spi.h>
+#include <mswsock.h>
+#include <wsnwlink.h>
 
 #include "thunk/qemu_windows.h"
 
@@ -477,8 +479,8 @@ WINBASEAPI INT WINAPI WS_getsockopt(SOCKET s, INT level, INT optname, char *optv
     struct qemu_WS_getsockopt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETSOCKOPT);
     call.s = (ULONG_PTR)s;
-    call.level = (ULONG_PTR)level;
-    call.optname = (ULONG_PTR)optname;
+    call.level = level;
+    call.optname = optname;
     call.optval = (ULONG_PTR)optval;
     call.optlen = (ULONG_PTR)optlen;
 
@@ -492,8 +494,51 @@ WINBASEAPI INT WINAPI WS_getsockopt(SOCKET s, INT level, INT optname, char *optv
 void qemu_WS_getsockopt(struct qemu_syscall *call)
 {
     struct qemu_WS_getsockopt *c = (struct qemu_WS_getsockopt *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_getsockopt(c->s, c->level, c->optname, QEMU_G2H(c->optval), QEMU_G2H(c->optlen));
+    char *buf;
+    INT *len, optname;
+    WINE_TRACE("\n");
+
+    buf = QEMU_G2H(c->optval);
+    len = QEMU_G2H(c->optlen);
+    optname = c->optname;
+#if GUEST_BIT == HOST_BIT
+    c->super.iret = p_getsockopt(c->s, c->level, optname, buf, len);
+    return;
+#endif
+
+    switch (optname)
+    {
+        default:
+            WINE_FIXME("Unknown option %d\n", optname);
+            /* Drop through. */
+        case WS_SO_OPENTYPE:
+        case WS_SO_RCVTIMEO:
+        case WS_SO_SNDTIMEO:
+        case WS_SO_SNDBUF:
+        case WS_SO_RCVBUF:
+        case WS_SO_LINGER:
+        case WS_SO_DONTLINGER:
+        case WS_SO_ERROR:
+        case WS_IP_MULTICAST_TTL:
+        case WS_SO_PROTOCOL_INFOA:
+        case WS_SO_PROTOCOL_INFOW:
+        case WS_IP_DONTFRAGMENT:
+        case WS_SO_REUSEADDR:
+        case WS_SO_TYPE:
+        case WS_IPX_PTYPE:
+        case WS_SO_ACCEPTCONN:
+        case WS_SO_MAX_MSG_SIZE:
+        case WS_SO_OOBINLINE:
+        case WS_IPV6_V6ONLY:
+        case WS_SO_CONNECT_TIME:
+            c->super.iret = p_getsockopt(c->s, c->level, optname, buf, len);
+            break;
+
+        case WS_SO_BSP_STATE:
+            WINE_FIXME("Fix up SO_BSP_STATE\n");
+            c->super.iret = p_getsockopt(c->s, c->level, optname, buf, len);
+            break;
+    }
 }
 
 #endif
@@ -1229,10 +1274,10 @@ WINBASEAPI int WINAPI WS_setsockopt(SOCKET s, int level, int optname, const char
     struct qemu_WS_setsockopt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_SETSOCKOPT);
     call.s = (ULONG_PTR)s;
-    call.level = (ULONG_PTR)level;
-    call.optname = (ULONG_PTR)optname;
+    call.level = level;
+    call.optname = optname;
     call.optval = (ULONG_PTR)optval;
-    call.optlen = (ULONG_PTR)optlen;
+    call.optlen = optlen;
 
     qemu_syscall(&call.super);
 
@@ -1244,8 +1289,52 @@ WINBASEAPI int WINAPI WS_setsockopt(SOCKET s, int level, int optname, const char
 void qemu_WS_setsockopt(struct qemu_syscall *call)
 {
     struct qemu_WS_setsockopt *c = (struct qemu_WS_setsockopt *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_setsockopt(c->s, c->level, c->optname, QEMU_G2H(c->optval), c->optlen);
+    char *buf;
+    INT len, optname;
+    WINE_TRACE("\n");
+
+    buf = QEMU_G2H(c->optval);
+    len = c->optlen;
+    optname = c->optname;
+#if GUEST_BIT == HOST_BIT
+    c->super.iret = p_setsockopt(c->s, c->level, optname, buf, len);
+    return;
+#endif
+
+    switch (optname)
+    {
+        default:
+            WINE_FIXME("Unknown option %d\n", optname);
+            /* Drop through. */
+        case WS_SO_OPENTYPE:
+        case WS_SO_RCVTIMEO:
+        case WS_SO_SNDTIMEO:
+        case WS_SO_SNDBUF:
+        case WS_SO_RCVBUF:
+        case WS_SO_LINGER:
+        case WS_SO_DONTLINGER:
+        case WS_SO_ERROR:
+        case WS_IP_MULTICAST_TTL:
+        case WS_SO_PROTOCOL_INFOA:
+        case WS_SO_PROTOCOL_INFOW:
+        case WS_IP_DONTFRAGMENT:
+        case WS_SO_REUSEADDR:
+        case WS_SO_TYPE:
+        case WS_IPX_PTYPE:
+        case WS_SO_ACCEPTCONN:
+        case WS_SO_MAX_MSG_SIZE:
+        case WS_SO_OOBINLINE:
+        case WS_IPV6_V6ONLY:
+        case WS_SO_CONNECT_TIME:
+        case WS_IP_PKTINFO:
+            c->super.iret = p_setsockopt(c->s, c->level, optname, buf, len);
+            break;
+
+        case WS_SO_BSP_STATE:
+            WINE_FIXME("Fix up SO_BSP_STATE\n");
+            c->super.iret = p_setsockopt(c->s, c->level, optname, buf, len);
+            break;
+    }
 }
 
 #endif
