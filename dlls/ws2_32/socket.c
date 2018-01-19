@@ -50,7 +50,7 @@ WINBASEAPI int WINAPI WSAStartup(WORD wVersionRequested, LPWSADATA lpWSAData)
 {
     struct qemu_WSAStartup call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASTARTUP);
-    call.wVersionRequested = (ULONG_PTR)wVersionRequested;
+    call.wVersionRequested = wVersionRequested;
     call.lpWSAData = (ULONG_PTR)lpWSAData;
 
     qemu_syscall(&call.super);
@@ -63,8 +63,19 @@ WINBASEAPI int WINAPI WSAStartup(WORD wVersionRequested, LPWSADATA lpWSAData)
 void qemu_WSAStartup(struct qemu_syscall *call)
 {
     struct qemu_WSAStartup *c = (struct qemu_WSAStartup *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = WSAStartup(c->wVersionRequested, QEMU_G2H(c->lpWSAData));
+    WSADATA stack, *data = &stack;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    data = QEMU_G2H(c->lpWSAData);
+#else
+    if (c->lpWSAData)
+        WSADATA_g2h(data, QEMU_G2H(c->lpWSAData));
+    else
+        data = NULL;
+#endif
+
+    c->super.iret = WSAStartup(c->wVersionRequested, data);
 }
 
 #endif
