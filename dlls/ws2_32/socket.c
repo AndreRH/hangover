@@ -588,7 +588,7 @@ WINBASEAPI u_long WINAPI WS_htonl(u_long hostlong)
 {
     struct qemu_WS_htonl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_HTONL);
-    call.hostlong = (ULONG_PTR)hostlong;
+    call.hostlong = hostlong;
 
     qemu_syscall(&call.super);
 
@@ -600,7 +600,7 @@ WINBASEAPI u_long WINAPI WS_htonl(u_long hostlong)
 void qemu_WS_htonl(struct qemu_syscall *call)
 {
     struct qemu_WS_htonl *c = (struct qemu_WS_htonl *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_htonl(c->hostlong);
 }
 
@@ -746,7 +746,7 @@ WINBASEAPI u_long WINAPI WS_ntohl(u_long netlong)
 {
     struct qemu_WS_ntohl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_NTOHL);
-    call.netlong = (ULONG_PTR)netlong;
+    call.netlong = netlong;
 
     qemu_syscall(&call.super);
 
@@ -758,7 +758,7 @@ WINBASEAPI u_long WINAPI WS_ntohl(u_long netlong)
 void qemu_WS_ntohl(struct qemu_syscall *call)
 {
     struct qemu_WS_ntohl *c = (struct qemu_WS_ntohl *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_ntohl(c->netlong);
 }
 

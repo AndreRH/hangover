@@ -807,7 +807,7 @@ WINBASEAPI BOOL WINAPI IsBadReadPtr(LPCVOID ptr, UINT_PTR size)
     struct qemu_IsBadReadPtr call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISBADREADPTR);
     call.ptr = (ULONG_PTR)ptr;
-    call.size = (ULONG_PTR)size;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -819,7 +819,7 @@ WINBASEAPI BOOL WINAPI IsBadReadPtr(LPCVOID ptr, UINT_PTR size)
 void qemu_IsBadReadPtr(struct qemu_syscall *call)
 {
     struct qemu_IsBadReadPtr *c = (struct qemu_IsBadReadPtr *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsBadReadPtr(QEMU_G2H(c->ptr), c->size);
 }
 
@@ -839,7 +839,7 @@ WINBASEAPI BOOL WINAPI IsBadWritePtr(LPVOID ptr, UINT_PTR size)
     struct qemu_IsBadWritePtr call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISBADWRITEPTR);
     call.ptr = (ULONG_PTR)ptr;
-    call.size = (ULONG_PTR)size;
+    call.size = size;
 
     qemu_syscall(&call.super);
 
@@ -851,7 +851,7 @@ WINBASEAPI BOOL WINAPI IsBadWritePtr(LPVOID ptr, UINT_PTR size)
 void qemu_IsBadWritePtr(struct qemu_syscall *call)
 {
     struct qemu_IsBadWritePtr *c = (struct qemu_IsBadWritePtr *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsBadWritePtr(QEMU_G2H(c->ptr), c->size);
 }
 
