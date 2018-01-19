@@ -1292,7 +1292,7 @@ WINBASEAPI int WINAPI WS_ioctlsocket(SOCKET s, LONG cmd, u_long *argp)
     struct qemu_WS_ioctlsocket call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_IOCTLSOCKET);
     call.s = (ULONG_PTR)s;
-    call.cmd = (ULONG_PTR)cmd;
+    call.cmd = cmd;
     call.argp = (ULONG_PTR)argp;
 
     qemu_syscall(&call.super);
@@ -1305,7 +1305,8 @@ WINBASEAPI int WINAPI WS_ioctlsocket(SOCKET s, LONG cmd, u_long *argp)
 void qemu_WS_ioctlsocket(struct qemu_syscall *call)
 {
     struct qemu_WS_ioctlsocket *c = (struct qemu_WS_ioctlsocket *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+    /* This function always has a data type of WS_u_long aka ULONG. */
     c->super.iret = p_ioctlsocket(c->s, c->cmd, QEMU_G2H(c->argp));
 }
 
@@ -1360,8 +1361,8 @@ WINBASEAPI int WINAPI WS_recv(SOCKET s, char *buf, int len, int flags)
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_RECV);
     call.s = (ULONG_PTR)s;
     call.buf = (ULONG_PTR)buf;
-    call.len = (ULONG_PTR)len;
-    call.flags = (ULONG_PTR)flags;
+    call.len = len;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -1373,7 +1374,7 @@ WINBASEAPI int WINAPI WS_recv(SOCKET s, char *buf, int len, int flags)
 void qemu_WS_recv(struct qemu_syscall *call)
 {
     struct qemu_WS_recv *c = (struct qemu_WS_recv *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_recv(c->s, QEMU_G2H(c->buf), c->len, c->flags);
 }
 
@@ -1685,7 +1686,7 @@ WINBASEAPI int WINAPI WS_sendto(SOCKET s, const char *buf, int len, int flags, c
 void qemu_WS_sendto(struct qemu_syscall *call)
 {
     struct qemu_WS_sendto *c = (struct qemu_WS_sendto *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     /* WS_sockaddr has the same size in 32 and 64 bit. */
     c->super.iret = p_sendto(c->s, QEMU_G2H(c->buf), c->len, c->flags, QEMU_G2H(c->to), c->tolen);
@@ -1803,7 +1804,7 @@ WINBASEAPI int WINAPI WS_shutdown(SOCKET s, int how)
     struct qemu_WS_shutdown call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_SHUTDOWN);
     call.s = (ULONG_PTR)s;
-    call.how = (ULONG_PTR)how;
+    call.how = how;
 
     qemu_syscall(&call.super);
 
@@ -1815,7 +1816,7 @@ WINBASEAPI int WINAPI WS_shutdown(SOCKET s, int how)
 void qemu_WS_shutdown(struct qemu_syscall *call)
 {
     struct qemu_WS_shutdown *c = (struct qemu_WS_shutdown *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_shutdown(c->s, c->how);
 }
 
@@ -2568,7 +2569,9 @@ WINBASEAPI int WINAPI WSAEnumNetworkEvents(SOCKET s, WSAEVENT hEvent, LPWSANETWO
 void qemu_WSAEnumNetworkEvents(struct qemu_syscall *call)
 {
     struct qemu_WSAEnumNetworkEvents *c = (struct qemu_WSAEnumNetworkEvents *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* WSANETWORKEVENTS has the same size in 32 and 64 bit. */
     c->super.iret = WSAEnumNetworkEvents(c->s, (WSAEVENT)c->hEvent, QEMU_G2H(c->lpEvent));
 }
 
@@ -2590,7 +2593,7 @@ WINBASEAPI int WINAPI WSAEventSelect(SOCKET s, WSAEVENT hEvent, LONG lEvent)
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAEVENTSELECT);
     call.s = (ULONG_PTR)s;
     call.hEvent = (ULONG_PTR)hEvent;
-    call.lEvent = (ULONG_PTR)lEvent;
+    call.lEvent = lEvent;
 
     qemu_syscall(&call.super);
 
@@ -2602,7 +2605,7 @@ WINBASEAPI int WINAPI WSAEventSelect(SOCKET s, WSAEVENT hEvent, LONG lEvent)
 void qemu_WSAEventSelect(struct qemu_syscall *call)
 {
     struct qemu_WSAEventSelect *c = (struct qemu_WSAEventSelect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WSAEventSelect(c->s, (WSAEVENT)c->hEvent, c->lEvent);
 }
 
@@ -2704,7 +2707,7 @@ WINBASEAPI WSAEVENT WINAPI WSACreateEvent(void)
 void qemu_WSACreateEvent(struct qemu_syscall *call)
 {
     struct qemu_WSACreateEvent *c = (struct qemu_WSACreateEvent *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)WSACreateEvent();
 }
 
@@ -2734,7 +2737,7 @@ WINBASEAPI BOOL WINAPI WSACloseEvent(WSAEVENT event)
 void qemu_WSACloseEvent(struct qemu_syscall *call)
 {
     struct qemu_WSACloseEvent *c = (struct qemu_WSACloseEvent *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WSACloseEvent((WSAEVENT)c->event);
 }
 
