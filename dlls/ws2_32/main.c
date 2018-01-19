@@ -24,6 +24,7 @@
 #include <winsock.h>
 #include <ws2tcpip.h>
 #include <ws2spi.h>
+#include <mswsock.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -56,6 +57,12 @@ static const syscall_handler dll_functions[] =
     qemu_InetNtopW,
     qemu_InetPtonW,
     qemu_WPUCompleteOverlappedRequest,
+    qemu_WS2_AcceptEx,
+    qemu_WS2_ConnectEx,
+    qemu_WS2_DisconnectEx,
+    qemu_WS2_GetAcceptExSockaddrs,
+    qemu_WS2_TransmitFile,
+    qemu_WS2_WSARecvMsg,
     qemu_WS_accept,
     qemu_WS_bind,
     qemu_WS_closesocket,
@@ -171,6 +178,15 @@ static const syscall_handler dll_functions[] =
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     HMODULE ws2_32;
+    GUID WSAAcceptEx_GUID = WSAID_ACCEPTEX;
+    GUID WSAConnectEx_GUID = WSAID_CONNECTEX;
+    GUID WSADisconnectEx_GUID = WSAID_DISCONNECTEX;
+    GUID WSAGetAcceptExSockaddrs_GUID = WSAID_GETACCEPTEXSOCKADDRS;
+    GUID WSATransmitFile_GUID = WSAID_TRANSMITFILE;
+    /* GUID WSATransmitPackets_GUID = WSAID_TRANSMITPACKETS; */
+    GUID WSARecvMsg_GUID = WSAID_WSARECVMSG;
+    GUID WSASendMsg_GUID = WSAID_WSASENDMSG;
+    DWORD bytes;
     WINE_TRACE("Loading host-side ws2_32 wrapper.\n");
 
     qemu_ops = ops;
@@ -285,6 +301,39 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_socket = (void *)GetProcAddress(ws2_32, "socket");
     if (!p_socket)
         WINE_ERR("Failed to get address of socket!\n");
+
+    WSAIoctl(0, WS_SIO_GET_EXTENSION_FUNCTION_POINTER, &WSAAcceptEx_GUID,
+            sizeof(WSAAcceptEx_GUID), &p_AcceptEx, sizeof(p_AcceptEx), &bytes, NULL, NULL);
+    if (!p_AcceptEx)
+        WINE_ERR("Failed to get address of AcceptEx!\n");
+    WSAIoctl(0, WS_SIO_GET_EXTENSION_FUNCTION_POINTER, &WSAConnectEx_GUID,
+            sizeof(WSAConnectEx_GUID), &p_ConnectEx, sizeof(p_ConnectEx), &bytes, NULL, NULL);
+    if (!p_ConnectEx)
+        WINE_ERR("Failed to get address of ConnectEx!\n");
+    WSAIoctl(0, WS_SIO_GET_EXTENSION_FUNCTION_POINTER, &WSADisconnectEx_GUID,
+            sizeof(WSADisconnectEx_GUID), &p_DisconnectEx, sizeof(p_DisconnectEx), &bytes, NULL, NULL);
+    if (!p_DisconnectEx)
+        WINE_ERR("Failed to get address of DisconnectEx!\n");
+    WSAIoctl(0, WS_SIO_GET_EXTENSION_FUNCTION_POINTER, &WSAGetAcceptExSockaddrs_GUID,
+            sizeof(WSAGetAcceptExSockaddrs_GUID), &p_GetAcceptExSockaddrs, sizeof(p_GetAcceptExSockaddrs), &bytes, NULL, NULL);
+    if (!p_GetAcceptExSockaddrs)
+        WINE_ERR("Failed to get address of GetAcceptExSockAddrs!\n");
+    WSAIoctl(0, WS_SIO_GET_EXTENSION_FUNCTION_POINTER, &WSATransmitFile_GUID,
+            sizeof(WSATransmitFile_GUID), &p_TransmitFile, sizeof(p_TransmitFile), &bytes, NULL, NULL);
+    if (!p_TransmitFile)
+        WINE_ERR("Failed to get address of DisconnectEx!\n");
+    /*WSAIoctl(0, WS_SIO_GET_EXTENSION_FUNCTION_POINTER, &WSATransmitPackets_GUID,
+            sizeof(WSATransmitPackets_GUID), &p_TransmitPackets, sizeof(p_TransmitPackets), &bytes, NULL, NULL);
+    if (!p_TransmitPackets)
+        WINE_ERR("Failed to get address of TransmitPackets!\n"); */
+    WSAIoctl(0, WS_SIO_GET_EXTENSION_FUNCTION_POINTER, &WSARecvMsg_GUID,
+            sizeof(WSARecvMsg_GUID), &p_WSARecvMsg, sizeof(p_WSARecvMsg), &bytes, NULL, NULL);
+    if (!p_WSARecvMsg)
+        WINE_ERR("Failed to get address of WSARecvMsg!\n");
+    WSAIoctl(0, WS_SIO_GET_EXTENSION_FUNCTION_POINTER, &WSASendMsg_GUID,
+            sizeof(WSASendMsg_GUID), &p_WSASendMsg, sizeof(p_WSASendMsg), &bytes, NULL, NULL);
+    if (!p_WSASendMsg)
+        WINE_ERR("Failed to get address of p_WSASendMsg!\n");
 
     return dll_functions;
 }

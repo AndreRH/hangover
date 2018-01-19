@@ -16,6 +16,12 @@ enum ws2_32_calls
     CALL_INETNTOPW,
     CALL_INETPTONW,
     CALL_WPUCOMPLETEOVERLAPPEDREQUEST,
+    CALL_WS2_ACCEPTEX,
+    CALL_WS2_CONNECTEX,
+    CALL_WS2_DISCONNECTEX,
+    CALL_WS2_GETACCEPTEXSOCKADDRS,
+    CALL_WS2_TRANSMITFILE,
+    CALL_WS2_WSARECVMSG,
     CALL_WS_ACCEPT,
     CALL_WS_BIND,
     CALL_WS_CLOSESOCKET,
@@ -145,6 +151,12 @@ void qemu_GetNameInfoW(struct qemu_syscall *call);
 void qemu_InetNtopW(struct qemu_syscall *call);
 void qemu_InetPtonW(struct qemu_syscall *call);
 void qemu_WPUCompleteOverlappedRequest(struct qemu_syscall *call);
+void qemu_WS2_AcceptEx(struct qemu_syscall *call);
+void qemu_WS2_ConnectEx(struct qemu_syscall *call);
+void qemu_WS2_DisconnectEx(struct qemu_syscall *call);
+void qemu_WS2_GetAcceptExSockaddrs(struct qemu_syscall *call);
+void qemu_WS2_TransmitFile(struct qemu_syscall *call);
+void qemu_WS2_WSARecvMsg(struct qemu_syscall *call);
 void qemu_WS_accept(struct qemu_syscall *call);
 void qemu_WS_bind(struct qemu_syscall *call);
 void qemu_WS_closesocket(struct qemu_syscall *call);
@@ -291,6 +303,14 @@ int (* WINAPI p_sendto)(SOCKET s, const char *buf, int len, int flags, const str
 int (* WINAPI p_setsockopt)(SOCKET s, int level, int optname, const char *optval, int optlen);
 int (* WINAPI p_shutdown)(SOCKET s, int how);
 SOCKET (* WINAPI p_socket)(int af, int type, int protocol);
+
+BOOL (* WINAPI p_AcceptEx)(SOCKET listener, SOCKET acceptor, PVOID dest, DWORD dest_len, DWORD local_addr_len, DWORD rem_addr_len, LPDWORD received, LPOVERLAPPED overlapped);
+BOOL (* WINAPI p_DisconnectEx)(SOCKET s, LPOVERLAPPED ov, DWORD flags, DWORD reserved);
+BOOL (* WINAPI p_ConnectEx)(SOCKET s, const struct WS_sockaddr* name, int namelen, PVOID sendBuf, DWORD sendBufLen, LPDWORD sent, LPOVERLAPPED ov);
+void (* WINAPI p_GetAcceptExSockaddrs)(PVOID buffer, DWORD data_size, DWORD local_size, DWORD remote_size, struct WS_sockaddr **local_addr, LPINT local_addr_len, struct WS_sockaddr **remote_addr, LPINT remote_addr_len);
+BOOL (* WINAPI p_TransmitFile)(SOCKET s, HANDLE h, DWORD file_bytes, DWORD bytes_per_send, LPOVERLAPPED overlapped, LPTRANSMIT_FILE_BUFFERS buffers, DWORD flags);
+int (* WINAPI p_WSARecvMsg)(SOCKET s, LPWSAMSG msg, LPDWORD lpNumberOfBytesRecvd, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine);
+int (* WINAPI p_WSASendMsg)(SOCKET s, LPWSAMSG msg, DWORD dwFlags, LPDWORD lpNumberOfBytesSent, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine);
 
 struct per_thread_data
 {

@@ -828,6 +828,250 @@ void qemu_WS_inet_ntoa(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_WS2_AcceptEx
+{
+    struct qemu_syscall super;
+    uint64_t listener;
+    uint64_t acceptor;
+    uint64_t dest;
+    uint64_t dest_len;
+    uint64_t local_addr_len;
+    uint64_t rem_addr_len;
+    uint64_t received;
+    uint64_t overlapped;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static BOOL WINAPI WS2_AcceptEx(SOCKET listener, SOCKET acceptor, PVOID dest, DWORD dest_len, DWORD local_addr_len, DWORD rem_addr_len, LPDWORD received, LPOVERLAPPED overlapped)
+{
+    struct qemu_WS2_AcceptEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WS2_ACCEPTEX);
+    call.listener = listener;
+    call.acceptor = acceptor;
+    call.dest = (ULONG_PTR)dest;
+    call.dest_len = dest_len;
+    call.local_addr_len = local_addr_len;
+    call.rem_addr_len = rem_addr_len;
+    call.received = (ULONG_PTR)received;
+    call.overlapped = (ULONG_PTR)overlapped;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WS2_AcceptEx(struct qemu_syscall *call)
+{
+    struct qemu_WS2_AcceptEx *c = (struct qemu_WS2_AcceptEx *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p_AcceptEx(c->listener, c->acceptor, QEMU_G2H(c->dest), c->dest_len, c->local_addr_len, c->rem_addr_len, QEMU_G2H(c->received), QEMU_G2H(c->overlapped));
+}
+
+#endif
+
+struct qemu_WS2_DisconnectEx
+{
+    struct qemu_syscall super;
+    uint64_t s;
+    uint64_t ov;
+    uint64_t flags;
+    uint64_t reserved;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static BOOL WINAPI WS2_DisconnectEx(SOCKET s, LPOVERLAPPED ov, DWORD flags, DWORD reserved)
+{
+    struct qemu_WS2_DisconnectEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WS2_DISCONNECTEX);
+    call.s = s;
+    call.ov = (ULONG_PTR)ov;
+    call.flags = flags;
+    call.reserved = reserved;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WS2_DisconnectEx(struct qemu_syscall *call)
+{
+    struct qemu_WS2_DisconnectEx *c = (struct qemu_WS2_DisconnectEx *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p_DisconnectEx(c->s, QEMU_G2H(c->ov), c->flags, c->reserved);
+}
+
+#endif
+
+struct qemu_WS2_ConnectEx
+{
+    struct qemu_syscall super;
+    uint64_t s;
+    uint64_t name;
+    uint64_t namelen;
+    uint64_t sendBuf;
+    uint64_t sendBufLen;
+    uint64_t sent;
+    uint64_t ov;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static BOOL WINAPI WS2_ConnectEx(SOCKET s, const struct sockaddr *name, int namelen, PVOID sendBuf, DWORD sendBufLen, LPDWORD sent, LPOVERLAPPED ov)
+{
+    struct qemu_WS2_ConnectEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WS2_CONNECTEX);
+    call.s = s;
+    call.name = (ULONG_PTR)name;
+    call.namelen = namelen;
+    call.sendBuf = (ULONG_PTR)sendBuf;
+    call.sendBufLen = sendBufLen;
+    call.sent = (ULONG_PTR)sent;
+    call.ov = (ULONG_PTR)ov;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WS2_ConnectEx(struct qemu_syscall *call)
+{
+    struct qemu_WS2_ConnectEx *c = (struct qemu_WS2_ConnectEx *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p_ConnectEx(c->s, QEMU_G2H(c->name), c->namelen, QEMU_G2H(c->sendBuf), c->sendBufLen, QEMU_G2H(c->sent), QEMU_G2H(c->ov));
+}
+
+#endif
+
+struct qemu_WS2_GetAcceptExSockaddrs
+{
+    struct qemu_syscall super;
+    uint64_t buffer;
+    uint64_t data_size;
+    uint64_t local_size;
+    uint64_t remote_size;
+    uint64_t local_addr;
+    uint64_t local_addr_len;
+    uint64_t remote_addr;
+    uint64_t remote_addr_len;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static void WINAPI WS2_GetAcceptExSockaddrs(PVOID buffer, DWORD data_size, DWORD local_size, DWORD remote_size, struct sockaddr **local_addr, LPINT local_addr_len, struct sockaddr **remote_addr, LPINT remote_addr_len)
+{
+    struct qemu_WS2_GetAcceptExSockaddrs call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WS2_GETACCEPTEXSOCKADDRS);
+    call.buffer = (ULONG_PTR)buffer;
+    call.data_size = data_size;
+    call.local_size = local_size;
+    call.remote_size = remote_size;
+    call.local_addr = (ULONG_PTR)local_addr;
+    call.local_addr_len = (ULONG_PTR)local_addr_len;
+    call.remote_addr = (ULONG_PTR)remote_addr;
+    call.remote_addr_len = (ULONG_PTR)remote_addr_len;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_WS2_GetAcceptExSockaddrs(struct qemu_syscall *call)
+{
+    struct qemu_WS2_GetAcceptExSockaddrs *c = (struct qemu_WS2_GetAcceptExSockaddrs *)call;
+    WINE_FIXME("Unverified!\n");
+    p_GetAcceptExSockaddrs(QEMU_G2H(c->buffer), c->data_size, c->local_size, c->remote_size, QEMU_G2H(c->local_addr), QEMU_G2H(c->local_addr_len), QEMU_G2H(c->remote_addr), QEMU_G2H(c->remote_addr_len));
+}
+
+#endif
+
+struct qemu_WS2_TransmitFile
+{
+    struct qemu_syscall super;
+    uint64_t s;
+    uint64_t h;
+    uint64_t file_bytes;
+    uint64_t bytes_per_send;
+    uint64_t overlapped;
+    uint64_t buffers;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static BOOL WINAPI WS2_TransmitFile(SOCKET s, HANDLE h, DWORD file_bytes, DWORD bytes_per_send, LPOVERLAPPED overlapped, LPTRANSMIT_FILE_BUFFERS buffers, DWORD flags)
+{
+    struct qemu_WS2_TransmitFile call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WS2_TRANSMITFILE);
+    call.s = s;
+    call.h = (ULONG_PTR)h;
+    call.file_bytes = file_bytes;
+    call.bytes_per_send = bytes_per_send;
+    call.overlapped = (ULONG_PTR)overlapped;
+    call.buffers = (ULONG_PTR)buffers;
+    call.flags = flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WS2_TransmitFile(struct qemu_syscall *call)
+{
+    struct qemu_WS2_TransmitFile *c = (struct qemu_WS2_TransmitFile *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p_TransmitFile(c->s, QEMU_G2H(c->h), c->file_bytes, c->bytes_per_send, QEMU_G2H(c->overlapped), QEMU_G2H(c->buffers), c->flags);
+}
+
+#endif
+
+struct qemu_WS2_WSARecvMsg
+{
+    struct qemu_syscall super;
+    uint64_t s;
+    uint64_t msg;
+    uint64_t lpNumberOfBytesRecvd;
+    uint64_t lpOverlapped;
+    uint64_t lpCompletionRoutine;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static int WINAPI WS2_WSARecvMsg(SOCKET s, LPWSAMSG msg, LPDWORD lpNumberOfBytesRecvd, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
+{
+    struct qemu_WS2_WSARecvMsg call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WS2_WSARECVMSG);
+    call.s = s;
+    call.msg = (ULONG_PTR)msg;
+    call.lpNumberOfBytesRecvd = (ULONG_PTR)lpNumberOfBytesRecvd;
+    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
+    call.lpCompletionRoutine = (ULONG_PTR)lpCompletionRoutine;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WS2_WSARecvMsg(struct qemu_syscall *call)
+{
+    struct qemu_WS2_WSARecvMsg *c = (struct qemu_WS2_WSARecvMsg *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = p_WSARecvMsg(c->s, QEMU_G2H(c->msg), QEMU_G2H(c->lpNumberOfBytesRecvd), QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
+}
+
+#endif
+
 struct qemu_WSAIoctl
 {
     struct qemu_syscall super;

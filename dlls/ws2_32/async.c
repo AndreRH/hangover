@@ -24,6 +24,7 @@
 #include <winsock.h>
 #include <ws2tcpip.h>
 #include <ws2spi.h>
+#include <mswsock.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
