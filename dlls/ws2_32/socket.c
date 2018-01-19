@@ -1454,8 +1454,31 @@ WINBASEAPI int WINAPI WS_select(int nfds, fd_set *ws_readfds, fd_set *ws_writefd
 void qemu_WS_select(struct qemu_syscall *call)
 {
     struct qemu_WS_select *c = (struct qemu_WS_select *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_select(c->nfds, QEMU_G2H(c->ws_readfds), QEMU_G2H(c->ws_writefds), QEMU_G2H(c->ws_exceptfds), QEMU_G2H(c->ws_timeout));
+    WS_fd_set read, write, except;
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+    c->super.iret = p_select(c->nfds, QEMU_G2H(c->ws_readfds), QEMU_G2H(c->ws_writefds), QEMU_G2H(c->ws_exceptfds),
+            QEMU_G2H(c->ws_timeout));
+    return;
+#endif
+
+    if (c->ws_readfds)
+        WS_fd_set_g2h(&read, QEMU_G2H(c->ws_readfds));
+    if (c->ws_writefds)
+        WS_fd_set_g2h(&write, QEMU_G2H(c->ws_writefds));
+    if (c->ws_exceptfds)
+        WS_fd_set_g2h(&except, QEMU_G2H(c->ws_exceptfds));
+
+    c->super.iret = p_select(c->nfds, c->ws_readfds ? &read : NULL, c->ws_writefds ? &write : NULL,
+            c->ws_exceptfds ? &except : NULL, QEMU_G2H(c->ws_timeout));
+
+    if (c->ws_readfds)
+        WS_fd_set_h2g(QEMU_G2H(c->ws_readfds), &read);
+    if (c->ws_writefds)
+        WS_fd_set_h2g(QEMU_G2H(c->ws_writefds), &write);
+    if (c->ws_exceptfds)
+        WS_fd_set_h2g(QEMU_G2H(c->ws_exceptfds), &except);
 }
 
 #endif
@@ -2899,8 +2922,19 @@ WINBASEAPI int WINAPI __WSAFDIsSet(SOCKET s, fd_set *set)
 void qemu___WSAFDIsSet(struct qemu_syscall *call)
 {
     struct qemu___WSAFDIsSet *c = (struct qemu___WSAFDIsSet *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = __WSAFDIsSet(c->s, QEMU_G2H(c->set));
+    WS_fd_set stack, *set = &stack;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    set = QEMU_G2H(c->set);
+#else
+    if (c->set)
+        WS_fd_set_g2h(set, QEMU_G2H(c->set));
+    else
+        set = NULL;
+#endif
+
+    c->super.iret = __WSAFDIsSet(c->s, set);
 }
 
 #endif

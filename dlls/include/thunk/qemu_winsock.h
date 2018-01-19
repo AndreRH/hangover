@@ -42,4 +42,43 @@ static inline void WSADATA_h2g(struct qemu_WSADATA *guest, const WSADATA *host)
     guest->iMaxUdpDg = host->iMaxUdpDg;
     guest->lpVendorInfo = (ULONG_PTR)host->lpVendorInfo;
 }
+
+struct qemu_WS_fd_set
+{
+#ifndef USE_WS_PREFIX
+    u_int fd_count;                 /* how many are SET? */
+#else
+    WS_u_int fd_count;                 /* how many are SET? */
+#endif
+# ifndef USE_WS_PREFIX
+    qemu_ptr fd_array[FD_SETSIZE];      /* an array of SOCKETs */
+# else
+    qemu_ptr fd_array[WS_FD_SETSIZE];   /* an array of SOCKETs */
+# endif
+};
+
+#ifndef USE_WS_PREFIX
+static inline void WS_fd_set_g2h(fd_set *host, const struct qemu_WS_fd_set *guest)
+#else
+static inline void WS_fd_set_g2h(WS_fd_set *host, const struct qemu_WS_fd_set *guest)
+#endif
+{
+    unsigned int i;
+    host->fd_count = guest->fd_count;
+    for (i = 0; i < host->fd_count; ++i)
+        host->fd_array[i] = (SOCKET)(ULONG_PTR)guest->fd_array[i];
+}
+
+#ifndef USE_WS_PREFIX
+static inline void WS_fd_set_h2g(struct qemu_WS_fd_set *guest, const fd_set *host)
+#else
+static inline void WS_fd_set_h2g(struct qemu_WS_fd_set *guest, const WS_fd_set *host)
+#endif
+{
+    unsigned int i;
+    guest->fd_count = host->fd_count;
+    for (i = 0; i < guest->fd_count; ++i)
+        guest->fd_array[i] = (SOCKET)(ULONG_PTR)host->fd_array[i];
+}
+
 #endif
