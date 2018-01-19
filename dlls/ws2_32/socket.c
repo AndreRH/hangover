@@ -28,6 +28,7 @@
 #include <wsnwlink.h>
 
 #include "thunk/qemu_windows.h"
+#include "thunk/qemu_winsock2.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -535,9 +536,40 @@ void qemu_WS_getsockopt(struct qemu_syscall *call)
             break;
 
         case WS_SO_BSP_STATE:
-            WINE_FIXME("Fix up SO_BSP_STATE\n");
-            c->super.iret = p_getsockopt(c->s, c->level, optname, buf, len);
+        {
+            size_t extra;
+            char *my_buf;
+            int my_len;
+            struct qemu_CSADDR_INFO *info = (struct qemu_CSADDR_INFO *)buf;
+
+            WINE_TRACE("Handling SO_BSP_STATE.\n");
+            if (!buf || !len)
+            {
+                c->super.iret = p_getsockopt(c->s, c->level, optname, buf, len);
+                break;
+            }
+
+            extra = *len - sizeof(struct qemu_CSADDR_INFO);
+            my_len = sizeof(CSADDR_INFO) + extra;
+            my_buf = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, my_len);
+
+            c->super.iret = p_getsockopt(c->s, c->level, optname, my_buf, &my_len);
+            if (!c->super.iret)
+            {
+                CSADDR_INFO_h2g(info, (CSADDR_INFO *)my_buf);
+
+                memcpy(buf + sizeof(struct qemu_CSADDR_INFO), my_buf + sizeof(CSADDR_INFO), extra);
+                extra = sizeof(CSADDR_INFO) - sizeof(struct qemu_CSADDR_INFO);
+                if (info->LocalAddr.lpSockaddr)
+                    info->LocalAddr.lpSockaddr += (ULONG_PTR)info - (ULONG_PTR)my_buf - extra;
+                if (info->RemoteAddr.lpSockaddr)
+                    info->RemoteAddr.lpSockaddr += (ULONG_PTR)info - (ULONG_PTR)my_buf - extra;
+            }
+            HeapFree(GetProcessHeap(), 0, my_buf);
+
+            /* FIXME: Should I write something to *len? Wine does not. */
             break;
+        }
     }
 }
 
@@ -1331,9 +1363,23 @@ void qemu_WS_setsockopt(struct qemu_syscall *call)
             break;
 
         case WS_SO_BSP_STATE:
-            WINE_FIXME("Fix up SO_BSP_STATE\n");
-            c->super.iret = p_setsockopt(c->s, c->level, optname, buf, len);
+        {
+            /* This is easier than the getter because we do not have to shift around
+             * any extra data. */
+            struct qemu_CSADDR_INFO *guest_in = (struct qemu_CSADDR_INFO *)buf;
+            CSADDR_INFO host_out;
+
+            WINE_TRACE("Handling SO_BSP_STATE.\n");
+            if (!buf)
+            {
+                c->super.iret = p_setsockopt(c->s, c->level, optname, buf, len);
+                break;
+            }
+
+            CSADDR_INFO_g2h(&host_out, guest_in);
+            c->super.iret = p_setsockopt(c->s, c->level, optname, (char *)&host_out, sizeof(host_out));
             break;
+        }
     }
 }
 
