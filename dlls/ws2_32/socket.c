@@ -182,7 +182,7 @@ WINBASEAPI SOCKET WINAPI WS_accept(SOCKET s, struct sockaddr *addr, int *addrlen
 {
     struct qemu_WS_accept call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_ACCEPT);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.addr = (ULONG_PTR)addr;
     call.addrlen32 = (ULONG_PTR)addrlen32;
 
@@ -218,7 +218,7 @@ WINBASEAPI int WINAPI WS_bind(SOCKET s, const struct sockaddr* name, int namelen
 {
     struct qemu_WS_bind call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_BIND);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.name = (ULONG_PTR)name;
     call.namelen = namelen;
 
@@ -252,7 +252,7 @@ WINBASEAPI int WINAPI WS_closesocket(SOCKET s)
 {
     struct qemu_WS_closesocket call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_CLOSESOCKET);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
 
     qemu_syscall(&call.super);
 
@@ -284,7 +284,7 @@ WINBASEAPI int WINAPI WS_connect(SOCKET s, const struct sockaddr* name, int name
 {
     struct qemu_WS_connect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_CONNECT);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.name = (ULONG_PTR)name;
     call.namelen = namelen;
 
@@ -324,7 +324,7 @@ WINBASEAPI int WINAPI WSAConnect(SOCKET s, const struct sockaddr* name, int name
 {
     struct qemu_WSAConnect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSACONNECT);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.name = (ULONG_PTR)name;
     call.namelen = (ULONG_PTR)namelen;
     call.lpCallerData = (ULONG_PTR)lpCallerData;
@@ -364,7 +364,7 @@ WINBASEAPI int WINAPI WS_getpeername(SOCKET s, struct sockaddr *name, int *namel
 {
     struct qemu_WS_getpeername call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETPEERNAME);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.name = (ULONG_PTR)name;
     call.namelen = (ULONG_PTR)namelen;
 
@@ -400,7 +400,7 @@ WINBASEAPI int WINAPI WS_getsockname(SOCKET s, struct sockaddr *name, int *namel
 {
     struct qemu_WS_getsockname call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETSOCKNAME);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.name = (ULONG_PTR)name;
     call.namelen = (ULONG_PTR)namelen;
 
@@ -438,7 +438,7 @@ WINBASEAPI INT WINAPI WS_getsockopt(SOCKET s, INT level, INT optname, char *optv
 {
     struct qemu_WS_getsockopt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETSOCKOPT);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.level = level;
     call.optname = optname;
     call.optval = (ULONG_PTR)optval;
@@ -608,7 +608,7 @@ WINBASEAPI int WINAPI WSAHtonl(SOCKET s, u_long hostlong, u_long *lpnetlong)
 {
     struct qemu_WSAHtonl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAHTONL);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.hostlong = (ULONG_PTR)hostlong;
     call.lpnetlong = (ULONG_PTR)lpnetlong;
 
@@ -642,7 +642,7 @@ WINBASEAPI int WINAPI WSAHtons(SOCKET s, u_short hostshort, u_short *lpnetshort)
 {
     struct qemu_WSAHtons call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAHTONS);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.hostshort = (ULONG_PTR)hostshort;
     call.lpnetshort = (ULONG_PTR)lpnetshort;
 
@@ -805,8 +805,8 @@ static BOOL WINAPI WS2_AcceptEx(SOCKET listener, SOCKET acceptor, PVOID dest, DW
 {
     struct qemu_WS2_AcceptEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS2_ACCEPTEX);
-    call.listener = listener;
-    call.acceptor = acceptor;
+    call.listener = guest_SOCKET_g2h(listener);
+    call.acceptor = guest_SOCKET_g2h(acceptor);
     call.dest = (ULONG_PTR)dest;
     call.dest_len = dest_len;
     call.local_addr_len = local_addr_len;
@@ -1026,7 +1026,7 @@ WINBASEAPI int WINAPI WSASendMsg(SOCKET s, WSAMSG *msg, DWORD dwFlags, DWORD *lp
 {
     struct qemu_WS2_WSASendRecvMsg call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASENDMSG);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.msg = (ULONG_PTR)msg;
     call.dwFlags = dwFlags;
     call.lpNumberOfBytesXferedd = (ULONG_PTR)lpNumberOfBytesSent;
@@ -1138,7 +1138,7 @@ WINBASEAPI INT WINAPI WSAIoctl(SOCKET s, DWORD code, LPVOID in_buff, DWORD in_si
 {
     struct qemu_WSAIoctl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAIOCTL);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.code = code;
     call.in_buff = (ULONG_PTR)in_buff;
     call.in_size = in_size;
@@ -1291,7 +1291,7 @@ WINBASEAPI int WINAPI WS_ioctlsocket(SOCKET s, LONG cmd, u_long *argp)
 {
     struct qemu_WS_ioctlsocket call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_IOCTLSOCKET);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.cmd = cmd;
     call.argp = (ULONG_PTR)argp;
 
@@ -1325,7 +1325,7 @@ WINBASEAPI int WINAPI WS_listen(SOCKET s, int backlog)
 {
     struct qemu_WS_listen call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_LISTEN);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.backlog = backlog;
 
     qemu_syscall(&call.super);
@@ -1359,7 +1359,7 @@ WINBASEAPI int WINAPI WS_recv(SOCKET s, char *buf, int len, int flags)
 {
     struct qemu_WS_recv call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_RECV);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.buf = (ULONG_PTR)buf;
     call.len = len;
     call.flags = flags;
@@ -1397,7 +1397,7 @@ WINBASEAPI int WINAPI WS_recvfrom(SOCKET s, char *buf, INT len, int flags, struc
 {
     struct qemu_WS_recvfrom call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_RECVFROM);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.buf = (ULONG_PTR)buf;
     call.len = (ULONG_PTR)len;
     call.flags = (ULONG_PTR)flags;
@@ -1532,7 +1532,7 @@ WINBASEAPI int WINAPI WS_send(SOCKET s, const char *buf, int len, int flags)
 {
     struct qemu_WS_send call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_SEND);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.buf = (ULONG_PTR)buf;
     call.len = len;
     call.flags = flags;
@@ -1566,7 +1566,7 @@ WINBASEAPI INT WINAPI WSASendDisconnect(SOCKET s, LPWSABUF lpBuffers)
 {
     struct qemu_WSASendDisconnect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASENDDISCONNECT);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.lpBuffers = (ULONG_PTR)lpBuffers;
 
     qemu_syscall(&call.super);
@@ -1602,7 +1602,7 @@ WINBASEAPI int WINAPI WS_sendto(SOCKET s, const char *buf, int len, int flags, c
 {
     struct qemu_WS_sendto call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_SENDTO);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.buf = (ULONG_PTR)buf;
     call.len = (ULONG_PTR)len;
     call.flags = (ULONG_PTR)flags;
@@ -1643,7 +1643,7 @@ WINBASEAPI int WINAPI WS_setsockopt(SOCKET s, int level, int optname, const char
 {
     struct qemu_WS_setsockopt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_SETSOCKOPT);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.level = level;
     call.optname = optname;
     call.optval = (ULONG_PTR)optval;
@@ -1736,7 +1736,7 @@ WINBASEAPI int WINAPI WS_shutdown(SOCKET s, int how)
 {
     struct qemu_WS_shutdown call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_SHUTDOWN);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.how = how;
 
     qemu_syscall(&call.super);
@@ -2584,7 +2584,7 @@ WINBASEAPI int WINAPI WSAEnumNetworkEvents(SOCKET s, WSAEVENT hEvent, LPWSANETWO
 {
     struct qemu_WSAEnumNetworkEvents call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAENUMNETWORKEVENTS);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.hEvent = (ULONG_PTR)hEvent;
     call.lpEvent = (ULONG_PTR)lpEvent;
 
@@ -2620,7 +2620,7 @@ WINBASEAPI int WINAPI WSAEventSelect(SOCKET s, WSAEVENT hEvent, LONG lEvent)
 {
     struct qemu_WSAEventSelect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAEVENTSELECT);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.hEvent = (ULONG_PTR)hEvent;
     call.lEvent = lEvent;
 
@@ -2656,7 +2656,7 @@ WINBASEAPI BOOL WINAPI WSAGetOverlappedResult(SOCKET s, LPWSAOVERLAPPED lpOverla
 {
     struct qemu_WSAGetOverlappedResult call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAGETOVERLAPPEDRESULT);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.lpOverlapped = (ULONG_PTR)lpOverlapped;
     call.lpcbTransfer = (ULONG_PTR)lpcbTransfer;
     call.fWait = (ULONG_PTR)fWait;
@@ -2693,7 +2693,7 @@ WINBASEAPI INT WINAPI WSAAsyncSelect(SOCKET s, HWND hWnd, UINT uMsg, LONG lEvent
 {
     struct qemu_WSAAsyncSelect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAASYNCSELECT);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.hWnd = (ULONG_PTR)hWnd;
     call.uMsg = (ULONG_PTR)uMsg;
     call.lEvent = (ULONG_PTR)lEvent;
@@ -2875,7 +2875,7 @@ WINBASEAPI SOCKET WINAPI WSAJoinLeaf(SOCKET s, const struct sockaddr *addr, int 
 {
     struct qemu_WSAJoinLeaf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAJOINLEAF);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.addr = (ULONG_PTR)addr;
     call.addrlen = (ULONG_PTR)addrlen;
     call.lpCallerData = (ULONG_PTR)lpCallerData;
@@ -2915,7 +2915,7 @@ WINBASEAPI int WINAPI __WSAFDIsSet(SOCKET s, fd_set *set)
 {
     struct qemu___WSAFDIsSet call;
     call.super.id = QEMU_SYSCALL_ID(CALL___WSAFDISSET);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.set = (ULONG_PTR)set;
 
     qemu_syscall(&call.super);
@@ -3081,7 +3081,7 @@ WINBASEAPI int WINAPI WSARecv(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount,
 {
     struct qemu_WSABufOp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSARECV);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.lpBuffers = (ULONG_PTR)lpBuffers;
     call.dwBufferCount = (ULONG_PTR)dwBufferCount;
     call.NumberOfBytesTransfered = (ULONG_PTR)NumberOfBytesReceived;
@@ -3098,7 +3098,7 @@ WINBASEAPI INT WINAPI WSASend(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount,
 {
     struct qemu_WSABufOp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASEND);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.lpBuffers = (ULONG_PTR)lpBuffers;
     call.dwBufferCount = (ULONG_PTR)dwBufferCount;
     call.NumberOfBytesTransfered = (ULONG_PTR)lpNumberOfBytesSent;
@@ -3115,7 +3115,7 @@ WINBASEAPI INT WINAPI WSASendTo(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCoun
 {
     struct qemu_WSABufOp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASENDTO);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.lpBuffers = (ULONG_PTR)lpBuffers;
     call.dwBufferCount = (ULONG_PTR)dwBufferCount;
     call.NumberOfBytesTransfered = (ULONG_PTR)lpNumberOfBytesSent;
@@ -3134,7 +3134,7 @@ WINBASEAPI INT WINAPI WSARecvFrom(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCo
 {
     struct qemu_WSABufOp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSARECVFROM);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.lpBuffers = (ULONG_PTR)lpBuffers;
     call.dwBufferCount = (ULONG_PTR)dwBufferCount;
     call.NumberOfBytesTransfered = (ULONG_PTR)lpNumberOfBytesRecvd;
@@ -3347,7 +3347,7 @@ WINBASEAPI SOCKET WINAPI WSAAccept(SOCKET s, struct sockaddr *addr, LPINT addrle
 {
     struct qemu_WSAAccept call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAACCEPT);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.addr = (ULONG_PTR)addr;
     call.addrlen = (ULONG_PTR)addrlen;
     call.lpfnCondition = (ULONG_PTR)lpfnCondition;
@@ -3437,7 +3437,7 @@ WINBASEAPI int WINAPI WSADuplicateSocketA(SOCKET s, DWORD dwProcessId, LPWSAPROT
 {
     struct qemu_WSADuplicateSocketA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSADUPLICATESOCKETA);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.dwProcessId = dwProcessId;
     call.lpProtocolInfo = (ULONG_PTR)lpProtocolInfo;
 
@@ -3473,7 +3473,7 @@ WINBASEAPI int WINAPI WSADuplicateSocketW(SOCKET s, DWORD dwProcessId, LPWSAPROT
 {
     struct qemu_WSADuplicateSocketW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSADUPLICATESOCKETW);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.dwProcessId = (ULONG_PTR)dwProcessId;
     call.lpProtocolInfo = (ULONG_PTR)lpProtocolInfo;
 
@@ -3993,7 +3993,7 @@ WINBASEAPI BOOL WINAPI WSAGetQOSByName(SOCKET s, LPWSABUF lpQOSName, LPQOS lpQOS
 {
     struct qemu_WSAGetQOSByName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAGETQOSBYNAME);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.lpQOSName = (ULONG_PTR)lpQOSName;
     call.lpQOS = (ULONG_PTR)lpQOS;
 
@@ -4337,7 +4337,7 @@ WINBASEAPI INT WINAPI WSANtohl(SOCKET s, u_long netlong, u_long* lphostlong)
 {
     struct qemu_WSANtohl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSANTOHL);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.netlong = (ULONG_PTR)netlong;
     call.lphostlong = (ULONG_PTR)lphostlong;
 
@@ -4371,7 +4371,7 @@ WINBASEAPI INT WINAPI WSANtohs(SOCKET s, u_short netshort, u_short* lphostshort)
 {
     struct qemu_WSANtohs call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSANTOHS);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.netshort = (ULONG_PTR)netshort;
     call.lphostshort = (ULONG_PTR)lphostshort;
 
@@ -4438,7 +4438,7 @@ WINBASEAPI INT WINAPI WSARecvDisconnect(SOCKET s, LPWSABUF disconnectdata)
 {
     struct qemu_WSARecvDisconnect call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSARECVDISCONNECT);
-    call.s = (ULONG_PTR)s;
+    call.s = guest_SOCKET_g2h(s);
     call.disconnectdata = (ULONG_PTR)disconnectdata;
 
     qemu_syscall(&call.super);

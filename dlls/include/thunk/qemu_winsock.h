@@ -1,6 +1,19 @@
 #ifndef HAVE_QEMU_WINSOCK_H
 #define HAVE_QEMU_WINSOCK_H
 
+static inline uint64_t guest_SOCKET_g2h(SOCKET s)
+{
+#if GUEST_BIT == HOST_BIT
+    return s;
+#else
+    if (s == INVALID_SOCKET)
+        return (LONG_PTR)s;
+    else
+        return (ULONG_PTR)s;
+#endif
+}
+
+
 struct qemu_WS_hostent
 {
     qemu_ptr h_name;               /* official name of host - char * */
