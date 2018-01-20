@@ -2642,7 +2642,7 @@ WINBASEAPI int WINAPI WS_gethostname(char *name, int namelen)
     struct qemu_WS_gethostname call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETHOSTNAME);
     call.name = (ULONG_PTR)name;
-    call.namelen = (ULONG_PTR)namelen;
+    call.namelen = namelen;
 
     qemu_syscall(&call.super);
 
@@ -2654,7 +2654,7 @@ WINBASEAPI int WINAPI WS_gethostname(char *name, int namelen)
 void qemu_WS_gethostname(struct qemu_syscall *call)
 {
     struct qemu_WS_gethostname *c = (struct qemu_WS_gethostname *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_gethostname(QEMU_G2H(c->name), c->namelen);
 }
 
@@ -3185,8 +3185,46 @@ WINBASEAPI int WINAPI WSARecv(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount,
 void qemu_WSARecv(struct qemu_syscall *call)
 {
     struct qemu_WSARecv *c = (struct qemu_WSARecv *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = WSARecv(c->s, QEMU_G2H(c->lpBuffers), c->dwBufferCount, QEMU_G2H(c->NumberOfBytesReceived), QEMU_G2H(c->lpFlags), QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
+    WSABUF stackbuf[10], *buffers;
+    struct qemu_WSABUF *guest_buffers;
+    unsigned int i;
+    DWORD buf_count;
+    WINE_TRACE("\n");
+
+    buf_count = c->dwBufferCount;
+    if (c->lpCompletionRoutine)
+        WINE_FIXME("Completion routine not handled yet.\n");
+#if GUEST_BIT == HOST_BIT
+    c->super.iret = WSARecv(c->s, QEMU_G2H(c->lpBuffers), buf_count, QEMU_G2H(c->NumberOfBytesReceived),
+            QEMU_G2H(c->lpFlags), QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
+    return;
+#endif
+
+    if (c->lpOverlapped)
+        WINE_FIXME("OVERLAPPED receive not handled yet.\n");
+
+    guest_buffers = (struct qemu_WSABUF *)QEMU_G2H(c->lpBuffers);
+    if (!guest_buffers)
+    {
+        WINE_WARN("Buffers is NULL.\n");
+        c->super.iret = WSARecv(c->s, NULL, buf_count, QEMU_G2H(c->NumberOfBytesReceived),
+                QEMU_G2H(c->lpFlags), QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
+        return;
+    }
+
+    if (buf_count < sizeof(stackbuf) / sizeof(*stackbuf))
+        buffers = stackbuf;
+    else
+        buffers = HeapAlloc(GetProcessHeap(), 0, sizeof(*buffers) * buf_count);
+
+    for (i = 0; i < buf_count; ++i)
+        WSABUF_g2h(&buffers[i], &guest_buffers[i]);
+
+    c->super.iret = WSARecv(c->s, buffers, buf_count, QEMU_G2H(c->NumberOfBytesReceived),
+            QEMU_G2H(c->lpFlags), QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
+
+    if (buffers != stackbuf)
+        HeapFree(GetProcessHeap(), 0, buffers);
 }
 
 #endif
