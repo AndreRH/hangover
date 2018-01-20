@@ -1553,48 +1553,6 @@ void qemu_WS_send(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_WSASend
-{
-    struct qemu_syscall super;
-    uint64_t s;
-    uint64_t lpBuffers;
-    uint64_t dwBufferCount;
-    uint64_t lpNumberOfBytesSent;
-    uint64_t dwFlags;
-    uint64_t lpOverlapped;
-    uint64_t lpCompletionRoutine;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI INT WINAPI WSASend(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesSent, DWORD dwFlags, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
-{
-    struct qemu_WSASend call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_WSASEND);
-    call.s = (ULONG_PTR)s;
-    call.lpBuffers = (ULONG_PTR)lpBuffers;
-    call.dwBufferCount = (ULONG_PTR)dwBufferCount;
-    call.lpNumberOfBytesSent = (ULONG_PTR)lpNumberOfBytesSent;
-    call.dwFlags = (ULONG_PTR)dwFlags;
-    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
-    call.lpCompletionRoutine = (ULONG_PTR)lpCompletionRoutine;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_WSASend(struct qemu_syscall *call)
-{
-    struct qemu_WSASend *c = (struct qemu_WSASend *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = WSASend(c->s, QEMU_G2H(c->lpBuffers), c->dwBufferCount, QEMU_G2H(c->lpNumberOfBytesSent), c->dwFlags, QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
-}
-
-#endif
-
 struct qemu_WSASendDisconnect
 {
     struct qemu_syscall super;
@@ -1623,54 +1581,6 @@ void qemu_WSASendDisconnect(struct qemu_syscall *call)
     struct qemu_WSASendDisconnect *c = (struct qemu_WSASendDisconnect *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = WSASendDisconnect(c->s, QEMU_G2H(c->lpBuffers));
-}
-
-#endif
-
-struct qemu_WSASendTo
-{
-    struct qemu_syscall super;
-    uint64_t s;
-    uint64_t lpBuffers;
-    uint64_t dwBufferCount;
-    uint64_t lpNumberOfBytesSent;
-    uint64_t dwFlags;
-    uint64_t to;
-    uint64_t tolen;
-    uint64_t lpOverlapped;
-    uint64_t lpCompletionRoutine;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI INT WINAPI WSASendTo(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesSent, DWORD dwFlags, const struct sockaddr *to, int tolen, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
-{
-    struct qemu_WSASendTo call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_WSASENDTO);
-    call.s = (ULONG_PTR)s;
-    call.lpBuffers = (ULONG_PTR)lpBuffers;
-    call.dwBufferCount = (ULONG_PTR)dwBufferCount;
-    call.lpNumberOfBytesSent = (ULONG_PTR)lpNumberOfBytesSent;
-    call.dwFlags = (ULONG_PTR)dwFlags;
-    call.to = (ULONG_PTR)to;
-    call.tolen = (ULONG_PTR)tolen;
-    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
-    call.lpCompletionRoutine = (ULONG_PTR)lpCompletionRoutine;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_WSASendTo(struct qemu_syscall *call)
-{
-    struct qemu_WSASendTo *c = (struct qemu_WSASendTo *)call;
-    WINE_FIXME("Unverified!\n");
-
-    /* WS_sockaddr has the same size in 32 and 64 bit. */
-    c->super.iret = WSASendTo(c->s, QEMU_G2H(c->lpBuffers), c->dwBufferCount, QEMU_G2H(c->lpNumberOfBytesSent), c->dwFlags, QEMU_G2H(c->to), c->tolen, QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
 }
 
 #endif
@@ -3149,14 +3059,18 @@ void qemu_WSAUnhookBlockingHook(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_WSARecv
+struct qemu_WSABufOp
 {
     struct qemu_syscall super;
     uint64_t s;
     uint64_t lpBuffers;
     uint64_t dwBufferCount;
-    uint64_t NumberOfBytesReceived;
+    uint64_t NumberOfBytesTransfered;
     uint64_t lpFlags;
+    uint64_t dwFlags;
+    uint64_t sockaddr;
+    uint64_t lpSockaddr_len;
+    uint64_t sockaddr_len;
     uint64_t lpOverlapped;
     uint64_t lpCompletionRoutine;
 };
@@ -3165,13 +3079,68 @@ struct qemu_WSARecv
 
 WINBASEAPI int WINAPI WSARecv(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD NumberOfBytesReceived, LPDWORD lpFlags, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
 {
-    struct qemu_WSARecv call;
+    struct qemu_WSABufOp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSARECV);
     call.s = (ULONG_PTR)s;
     call.lpBuffers = (ULONG_PTR)lpBuffers;
     call.dwBufferCount = (ULONG_PTR)dwBufferCount;
-    call.NumberOfBytesReceived = (ULONG_PTR)NumberOfBytesReceived;
+    call.NumberOfBytesTransfered = (ULONG_PTR)NumberOfBytesReceived;
     call.lpFlags = (ULONG_PTR)lpFlags;
+    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
+    call.lpCompletionRoutine = (ULONG_PTR)lpCompletionRoutine;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+WINBASEAPI INT WINAPI WSASend(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesSent, DWORD dwFlags, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
+{
+    struct qemu_WSABufOp call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WSASEND);
+    call.s = (ULONG_PTR)s;
+    call.lpBuffers = (ULONG_PTR)lpBuffers;
+    call.dwBufferCount = (ULONG_PTR)dwBufferCount;
+    call.NumberOfBytesTransfered = (ULONG_PTR)lpNumberOfBytesSent;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
+    call.lpCompletionRoutine = (ULONG_PTR)lpCompletionRoutine;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+WINBASEAPI INT WINAPI WSASendTo(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesSent, DWORD dwFlags, const struct sockaddr *to, int tolen, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
+{
+    struct qemu_WSABufOp call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WSASENDTO);
+    call.s = (ULONG_PTR)s;
+    call.lpBuffers = (ULONG_PTR)lpBuffers;
+    call.dwBufferCount = (ULONG_PTR)dwBufferCount;
+    call.NumberOfBytesTransfered = (ULONG_PTR)lpNumberOfBytesSent;
+    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.sockaddr = (ULONG_PTR)to;
+    call.sockaddr_len = (ULONG_PTR)tolen;
+    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
+    call.lpCompletionRoutine = (ULONG_PTR)lpCompletionRoutine;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+WINBASEAPI INT WINAPI WSARecvFrom(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesRecvd, LPDWORD lpFlags, struct sockaddr *lpFrom, LPINT lpFromlen, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
+{
+    struct qemu_WSABufOp call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WSARECVFROM);
+    call.s = (ULONG_PTR)s;
+    call.lpBuffers = (ULONG_PTR)lpBuffers;
+    call.dwBufferCount = (ULONG_PTR)dwBufferCount;
+    call.NumberOfBytesTransfered = (ULONG_PTR)lpNumberOfBytesRecvd;
+    call.lpFlags = (ULONG_PTR)lpFlags;
+    call.sockaddr = (ULONG_PTR)lpFrom;
+    call.lpSockaddr_len = (ULONG_PTR)lpFromlen;
     call.lpOverlapped = (ULONG_PTR)lpOverlapped;
     call.lpCompletionRoutine = (ULONG_PTR)lpCompletionRoutine;
 
@@ -3182,21 +3151,56 @@ WINBASEAPI int WINAPI WSARecv(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount,
 
 #else
 
-void qemu_WSARecv(struct qemu_syscall *call)
+static uint64_t call_op(uint64_t op, SOCKET s, WSABUF *buffers, DWORD buffer_count, DWORD *bytes_transfered,
+        DWORD dwFlags, DWORD *lpFlags, struct WS_sockaddr *addr, INT addr_len, INT *lp_addr_len,
+        WSAOVERLAPPED *ov, LPWSAOVERLAPPED_COMPLETION_ROUTINE completion)
 {
-    struct qemu_WSARecv *c = (struct qemu_WSARecv *)call;
+    switch (op)
+    {
+        case QEMU_SYSCALL_ID(CALL_WSARECV):
+            return WSARecv(s, buffers, buffer_count, bytes_transfered, lpFlags, ov, completion);
+        case QEMU_SYSCALL_ID(CALL_WSARECVFROM):
+            return WSARecvFrom(s, buffers, buffer_count, bytes_transfered, lpFlags, addr, lp_addr_len, ov, completion);
+        case QEMU_SYSCALL_ID(CALL_WSASEND):
+            return WSASend(s, buffers, buffer_count, bytes_transfered, dwFlags, ov, completion);
+        case QEMU_SYSCALL_ID(CALL_WSASENDTO):
+            return WSASendTo(s, buffers, buffer_count, bytes_transfered, dwFlags, addr, addr_len, ov, completion);
+    }
+}
+
+void qemu_WSABufOp(struct qemu_syscall *call)
+{
+    struct qemu_WSABufOp *c = (struct qemu_WSABufOp *)call;
     WSABUF stackbuf[10], *buffers;
     struct qemu_WSABUF *guest_buffers;
     unsigned int i;
     DWORD buf_count;
-    WINE_TRACE("\n");
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_WSARECV):
+            WINE_TRACE("WSARecv\n");
+            break;
+        case QEMU_SYSCALL_ID(CALL_WSARECVFROM):
+            WINE_TRACE("WSARecvFrom\n");
+            break;
+        case QEMU_SYSCALL_ID(CALL_WSASEND):
+            WINE_TRACE("WSASend\n");
+            break;
+        case QEMU_SYSCALL_ID(CALL_WSASENDTO):
+            WINE_TRACE("WSASendTo\n");
+            break;
+        default:
+            WINE_ERR("Unexpected op 0x%lx\n", c->super.id);
+    }
 
     buf_count = c->dwBufferCount;
     if (c->lpCompletionRoutine)
         WINE_FIXME("Completion routine not handled yet.\n");
 #if GUEST_BIT == HOST_BIT
-    c->super.iret = WSARecv(c->s, QEMU_G2H(c->lpBuffers), buf_count, QEMU_G2H(c->NumberOfBytesReceived),
-            QEMU_G2H(c->lpFlags), QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
+    c->super.iret = call_op(c->super.id, c->s, QEMU_G2H(c->lpBuffers), buf_count, QEMU_G2H(c->NumberOfBytesTransfered),
+            c->dwFlags, QEMU_G2H(c->lpFlags), QEMU_G2H(c->sockaddr), c->sockaddr_len, QEMU_G2H(c->lpSockaddr_len),
+            QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
     return;
 #endif
 
@@ -3207,8 +3211,9 @@ void qemu_WSARecv(struct qemu_syscall *call)
     if (!guest_buffers)
     {
         WINE_WARN("Buffers is NULL.\n");
-        c->super.iret = WSARecv(c->s, NULL, buf_count, QEMU_G2H(c->NumberOfBytesReceived),
-                QEMU_G2H(c->lpFlags), QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
+        c->super.iret = call_op(c->super.id, c->s, NULL, buf_count, QEMU_G2H(c->NumberOfBytesTransfered),
+                c->dwFlags, QEMU_G2H(c->lpFlags), QEMU_G2H(c->sockaddr), c->sockaddr_len, QEMU_G2H(c->lpSockaddr_len),
+                QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
         return;
     }
 
@@ -3220,59 +3225,12 @@ void qemu_WSARecv(struct qemu_syscall *call)
     for (i = 0; i < buf_count; ++i)
         WSABUF_g2h(&buffers[i], &guest_buffers[i]);
 
-    c->super.iret = WSARecv(c->s, buffers, buf_count, QEMU_G2H(c->NumberOfBytesReceived),
-            QEMU_G2H(c->lpFlags), QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
+    c->super.iret = call_op(c->super.id, c->s, buffers, buf_count, QEMU_G2H(c->NumberOfBytesTransfered),
+            c->dwFlags, QEMU_G2H(c->lpFlags), QEMU_G2H(c->sockaddr), c->sockaddr_len, QEMU_G2H(c->lpSockaddr_len),
+            QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
 
     if (buffers != stackbuf)
         HeapFree(GetProcessHeap(), 0, buffers);
-}
-
-#endif
-
-struct qemu_WSARecvFrom
-{
-    struct qemu_syscall super;
-    uint64_t s;
-    uint64_t lpBuffers;
-    uint64_t dwBufferCount;
-    uint64_t lpNumberOfBytesRecvd;
-    uint64_t lpFlags;
-    uint64_t lpFrom;
-    uint64_t lpFromlen;
-    uint64_t lpOverlapped;
-    uint64_t lpCompletionRoutine;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI INT WINAPI WSARecvFrom(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesRecvd, LPDWORD lpFlags, struct sockaddr *lpFrom, LPINT lpFromlen, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
-{
-    struct qemu_WSARecvFrom call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_WSARECVFROM);
-    call.s = (ULONG_PTR)s;
-    call.lpBuffers = (ULONG_PTR)lpBuffers;
-    call.dwBufferCount = (ULONG_PTR)dwBufferCount;
-    call.lpNumberOfBytesRecvd = (ULONG_PTR)lpNumberOfBytesRecvd;
-    call.lpFlags = (ULONG_PTR)lpFlags;
-    call.lpFrom = (ULONG_PTR)lpFrom;
-    call.lpFromlen = (ULONG_PTR)lpFromlen;
-    call.lpOverlapped = (ULONG_PTR)lpOverlapped;
-    call.lpCompletionRoutine = (ULONG_PTR)lpCompletionRoutine;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_WSARecvFrom(struct qemu_syscall *call)
-{
-    struct qemu_WSARecvFrom *c = (struct qemu_WSARecvFrom *)call;
-    WINE_FIXME("Unverified!\n");
-
-    /* WS_sockaddr has the same size in 32 and 64 bit. */
-    c->super.iret = WSARecvFrom(c->s, QEMU_G2H(c->lpBuffers), c->dwBufferCount, QEMU_G2H(c->lpNumberOfBytesRecvd), QEMU_G2H(c->lpFlags), QEMU_G2H(c->lpFrom), QEMU_G2H(c->lpFromlen), QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
 }
 
 #endif
