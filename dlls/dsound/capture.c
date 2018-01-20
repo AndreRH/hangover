@@ -27,11 +27,13 @@
 #include "dll_list.h"
 #include "qemu_dsound.h"
 
-#ifndef QEMU_DLL_GUEST
+#ifdef QEMU_DLL_GUEST
+#include <debug.h>
+#else
 #include <wine/debug.h>
-WINE_DEFAULT_DEBUG_CHANNEL(qemu_dsound);
 #endif
 
+WINE_DEFAULT_DEBUG_CHANNEL(qemu_dsound);
 
 struct qemu_DirectSoundCaptureCreate
 {
@@ -42,6 +44,22 @@ struct qemu_DirectSoundCaptureCreate
 };
 
 #ifdef QEMU_DLL_GUEST
+
+HRESULT IDirectSoundCaptureImpl_Create(IUnknown *outer_unk, REFIID riid, void **ppv, BOOL has_dsc8)
+{
+    WINE_FIXME("Stub!\n");
+    return E_FAIL;
+}
+
+HRESULT DSOUND_CaptureCreate(REFIID riid, void **ppv)
+{
+    return IDirectSoundCaptureImpl_Create(NULL, riid, ppv, FALSE);
+}
+
+HRESULT DSOUND_CaptureCreate8(REFIID riid, void **ppv)
+{
+    return IDirectSoundCaptureImpl_Create(NULL, riid, ppv, TRUE);
+}
 
 WINBASEAPI HRESULT WINAPI DirectSoundCaptureCreate(LPCGUID lpcGUID, IDirectSoundCapture **ppDSC, IUnknown *pUnkOuter)
 {

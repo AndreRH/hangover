@@ -19,6 +19,9 @@
 
 /* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
 
+#define COBJMACROS
+#define INITGUID
+
 #include <windows.h>
 #include <stdio.h>
 #include <dsound.h>
@@ -198,10 +201,134 @@ void qemu_DirectSoundCaptureEnumerateW(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppv)
+typedef  HRESULT (*FnCreateInstance)(REFIID riid, LPVOID *ppobj);
+ 
+typedef struct {
+    IClassFactory IClassFactory_iface;
+    REFCLSID rclsid;
+    FnCreateInstance pfnCreateInstance;
+} IClassFactoryImpl;
+
+static inline IClassFactoryImpl *impl_from_IClassFactory(IClassFactory *iface)
+{
+    return CONTAINING_RECORD(iface, IClassFactoryImpl, IClassFactory_iface);
+}
+
+static HRESULT WINAPI
+DSCF_QueryInterface(IClassFactory *iface, REFIID riid, void **obj)
+{
+    IClassFactoryImpl *This = impl_from_IClassFactory(iface);
+
+    WINE_TRACE("(%p, %s, %p)\n", This, wine_dbgstr_guid(riid), obj);
+
+    if (obj == NULL)
+        return E_POINTER;
+
+    if (IsEqualIID(riid, &IID_IUnknown) ||
+            IsEqualIID(riid, &IID_IClassFactory))
+    {
+        *obj = iface;
+        IClassFactory_AddRef(iface);
+        return S_OK;
+    }
+    *obj = NULL;
+    return E_NOINTERFACE;
+}
+
+static ULONG WINAPI DSCF_AddRef(IClassFactory *iface)
+{
+    return 2;
+}
+
+static ULONG WINAPI DSCF_Release(IClassFactory *iface)
+{
+    /* static class, won't be freed */
+    return 1;
+}
+
+static HRESULT WINAPI DSCF_CreateInstance(IClassFactory *iface, IUnknown *outer, REFIID riid, void **obj)
+{
+    IClassFactoryImpl *This = impl_from_IClassFactory(iface);
+    WINE_TRACE("(%p, %p, %s, %p)\n", This, outer, wine_dbgstr_guid(riid), obj);
+
+    if (outer)
+        return CLASS_E_NOAGGREGATION;
+
+    if (obj == NULL)
+    {
+        WINE_WARN("invalid parameter\n");
+        return DSERR_INVALIDPARAM;
+    }
+    *obj = NULL;
+    return This->pfnCreateInstance(riid, obj);
+}
+ 
+static HRESULT WINAPI DSCF_LockServer(IClassFactory *iface, BOOL dolock)
+{
+    IClassFactoryImpl *This = impl_from_IClassFactory(iface);
+    WINE_FIXME("(%p, %d) stub!\n", This, dolock);
+    return S_OK;
+}
+
+static const IClassFactoryVtbl DSCF_Vtbl =
+{
+    DSCF_QueryInterface,
+    DSCF_AddRef,
+    DSCF_Release,
+    DSCF_CreateInstance,
+    DSCF_LockServer
+};
+
+HRESULT IKsPrivatePropertySetImpl_Create(REFIID riid, void **ppv)
 {
     WINE_FIXME("Stub!\n");
     return E_FAIL;
+}
+
+static IClassFactoryImpl DSOUND_CF[] = {
+    { { &DSCF_Vtbl }, &CLSID_DirectSound, DSOUND_Create },
+    { { &DSCF_Vtbl }, &CLSID_DirectSound8, DSOUND_Create8 },
+    { { &DSCF_Vtbl }, &CLSID_DirectSoundCapture, DSOUND_CaptureCreate },
+    { { &DSCF_Vtbl }, &CLSID_DirectSoundCapture8, DSOUND_CaptureCreate8 },
+    { { &DSCF_Vtbl }, &CLSID_DirectSoundFullDuplex, DSOUND_FullDuplexCreate },
+    { { &DSCF_Vtbl }, &CLSID_DirectSoundPrivate, IKsPrivatePropertySetImpl_Create },
+    { { NULL }, NULL, NULL }
+};
+
+WINBASEAPI HRESULT WINAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppv)
+{
+    int i = 0;
+    WINE_TRACE("(%s, %s, %p)\n", wine_dbgstr_guid(rclsid), wine_dbgstr_guid(riid), ppv);
+
+    if (ppv == NULL)
+    {
+        WINE_WARN("invalid parameter\n");
+        return E_INVALIDARG;
+    }
+
+    *ppv = NULL;
+
+    if (!IsEqualIID(riid, &IID_IClassFactory) &&
+            !IsEqualIID(riid, &IID_IUnknown))
+    {
+        WINE_WARN("no interface for %s\n", wine_dbgstr_guid(riid));
+        return E_NOINTERFACE;
+    }
+
+    while (NULL != DSOUND_CF[i].rclsid)
+    {
+        if (IsEqualGUID(rclsid, DSOUND_CF[i].rclsid))
+        {
+            DSCF_AddRef(&DSOUND_CF[i].IClassFactory_iface);
+            *ppv = &DSOUND_CF[i];
+            return S_OK;
+        }
+        i++;
+    }
+
+    WINE_WARN("(%s, %s, %p): no class found.\n", wine_dbgstr_guid(rclsid),
+            wine_dbgstr_guid(riid), ppv);
+    return CLASS_E_CLASSNOTAVAILABLE;
 }
 
 #endif

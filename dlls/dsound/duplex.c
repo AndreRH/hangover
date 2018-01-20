@@ -27,11 +27,13 @@
 #include "dll_list.h"
 #include "qemu_dsound.h"
 
-#ifndef QEMU_DLL_GUEST
+#ifdef QEMU_DLL_GUEST
+#include <debug.h>
+#else
 #include <wine/debug.h>
-WINE_DEFAULT_DEBUG_CHANNEL(qemu_dsound);
 #endif
 
+WINE_DEFAULT_DEBUG_CHANNEL(qemu_dsound);
 
 struct qemu_DirectSoundFullDuplexCreate
 {
@@ -49,6 +51,12 @@ struct qemu_DirectSoundFullDuplexCreate
 };
 
 #ifdef QEMU_DLL_GUEST
+
+HRESULT DSOUND_FullDuplexCreate(REFIID riid, void **ppv)
+{
+    WINE_FIXME("Stub!\n");
+    return E_FAIL;
+}
 
 WINBASEAPI HRESULT WINAPI DirectSoundFullDuplexCreate(const GUID *capture_dev, const GUID *render_dev, const DSCBUFFERDESC *cbufdesc, const DSBUFFERDESC *bufdesc, HWND hwnd, DWORD level, IDirectSoundFullDuplex **dsfd, IDirectSoundCaptureBuffer8 **dscb8, IDirectSoundBuffer8 **dsb8, IUnknown *outer_unk)
 {

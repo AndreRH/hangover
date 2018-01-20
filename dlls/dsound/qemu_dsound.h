@@ -20,6 +20,13 @@ enum dsound_calls
 
 #ifdef QEMU_DLL_GUEST
 
+HRESULT DSOUND_Create(REFIID riid, void **ppv);
+HRESULT DSOUND_Create8(REFIID riid, void **ppv);
+HRESULT DSOUND_CaptureCreate(REFIID riid, void **ppv);
+HRESULT DSOUND_CaptureCreate8(REFIID riid, void **ppv);
+HRESULT DSOUND_FullDuplexCreate(REFIID riid, void **ppv);
+HRESULT IKsPrivatePropertySetImpl_Create(REFIID riid, void **ppv);
+
 #else
 
 
