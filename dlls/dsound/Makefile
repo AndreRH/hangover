@@ -8,10 +8,10 @@ VPATH=$(SRCDIR)
 
 all: dsound.dll qemu_dsound.dll.so
 
-dsound.dll: dsound.spec main_g.o
+dsound.dll: dsound.spec dsound_main_g.o main_g.o
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/dsound.spec *_g.o -o dsound.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x1c0000000
 
-qemu_dsound.dll.so: qemu_dsound.spec main_h.o
+qemu_dsound.dll.so: dsound_main_h.o main_h.o qemu_dsound.spec
 	$(WINEGCC) -shared $(SRCDIR)/qemu_dsound.spec *_h.o -o qemu_dsound.dll.so -ldsound
 
 %_g.o: %.c qemu_dsound.h Makefile $(SRCDIR)/Makefile
