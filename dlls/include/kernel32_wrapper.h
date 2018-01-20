@@ -35,6 +35,8 @@ struct OVERLAPPED_data
     WSAMSG *msg;
     struct qemu_WSAMSG *guest_msg;
     WSABUF *buffers;
+    BOOL wsa;
+    DWORD wsa_flags;
 
     struct list free_list_entry;
     struct wine_rb_entry rbtree_entry;

@@ -1015,6 +1015,7 @@ static int WINAPI WS2_WSARecvMsg(SOCKET s, WSAMSG *msg, DWORD *lpNumberOfBytesRe
     call.lpNumberOfBytesXferedd = (ULONG_PTR)lpNumberOfBytesRecvd;
     call.lpOverlapped = (ULONG_PTR)lpOverlapped;
     call.lpCompletionRoutine = (ULONG_PTR)lpCompletionRoutine;
+    call.dwFlags = 0;
 
     qemu_syscall(&call.super);
 
@@ -1075,6 +1076,8 @@ void qemu_WS2_WSASendRecvMsg(struct qemu_syscall *call)
     if (ov32)
     {
         ov_wrapper = p_alloc_OVERLAPPED_data(ov32, c->lpCompletionRoutine, TRUE);
+        ov_wrapper->wsa = TRUE;
+        ov_wrapper->wsa_flags = c->dwFlags;
         guest_event = HANDLE_g2h(ov32->hEvent);
     }
     else
@@ -3267,20 +3270,25 @@ void qemu_WSABufOp(struct qemu_syscall *call)
     struct qemu_OVERLAPPED *ov32;
     struct OVERLAPPED_data *ov_wrapper;
     HANDLE guest_event;
+    DWORD flags;
 
     switch (c->super.id)
     {
         case QEMU_SYSCALL_ID(CALL_WSARECV):
             WINE_TRACE("WSARecv\n");
+            flags = c->lpFlags ? *(DWORD *)QEMU_G2H(c->lpFlags) : 0;
             break;
         case QEMU_SYSCALL_ID(CALL_WSARECVFROM):
             WINE_TRACE("WSARecvFrom\n");
+            flags = c->lpFlags ? *(DWORD *)QEMU_G2H(c->lpFlags) : 0;
             break;
         case QEMU_SYSCALL_ID(CALL_WSASEND):
             WINE_TRACE("WSASend\n");
+            flags = c->dwFlags;
             break;
         case QEMU_SYSCALL_ID(CALL_WSASENDTO):
             WINE_TRACE("WSASendTo\n");
+            flags = c->dwFlags;
             break;
         default:
             WINE_ERR("Unexpected op 0x%lx\n", c->super.id);
@@ -3301,6 +3309,8 @@ void qemu_WSABufOp(struct qemu_syscall *call)
     if (ov32)
     {
         ov_wrapper = p_alloc_OVERLAPPED_data(ov32, c->lpCompletionRoutine, TRUE);
+        ov_wrapper->wsa = TRUE;
+        ov_wrapper->wsa_flags = flags;
         guest_event = HANDLE_g2h(ov32->hEvent);
     }
     else

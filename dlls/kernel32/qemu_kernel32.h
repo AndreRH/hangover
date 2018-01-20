@@ -973,7 +973,8 @@ struct qemu_completion_cb
 {
     uint64_t error, len;
     uint64_t ov;
-    uint64_t func;
+    uint64_t func, wsa_func;
+    uint64_t flags;
 };
 
 #ifdef QEMU_DLL_GUEST

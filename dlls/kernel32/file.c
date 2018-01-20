@@ -151,6 +151,7 @@ static void CALLBACK ReadWriteFileEx_host_cb(DWORD error, DWORD len, OVERLAPPED 
     struct qemu_completion_cb call;
 
     call.func = ov_data->guest_cb;
+    call.wsa_func = 0;
     call.error = error;
     call.len = len;
     call.ov = QEMU_H2G(ov_data->guest_ov);

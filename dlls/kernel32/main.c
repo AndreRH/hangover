@@ -52,7 +52,11 @@ struct qemu_GetSystemRegistryQuota
 static uint64_t __fastcall guest_completion_cb(struct qemu_completion_cb *data)
 {
     LPOVERLAPPED_COMPLETION_ROUTINE completion = (LPOVERLAPPED_COMPLETION_ROUTINE)(ULONG_PTR)data->func;
-    completion(data->error, data->len, (OVERLAPPED *)(ULONG_PTR)data->ov);
+    LPWSAOVERLAPPED_COMPLETION_ROUTINE wsa_completion = (LPWSAOVERLAPPED_COMPLETION_ROUTINE)(ULONG_PTR)data->wsa_func;
+    if (completion)
+        completion(data->error, data->len, (OVERLAPPED *)(ULONG_PTR)data->ov);
+    else
+        wsa_completion(data->error, data->len, (WSAOVERLAPPED *)(ULONG_PTR)data->ov, data->flags);
     return 0;
 }
 
@@ -159,6 +163,7 @@ static void CALLBACK host_completion_cb(DWORD error, DWORD len, OVERLAPPED *ov, 
     struct qemu_completion_cb call;
 
     call.func = callback_get_guest_proc(wrapper);
+    call.wsa_func = 0;
     call.error = error;
     call.len = len;
     call.ov = QEMU_H2G(ov);
@@ -1318,10 +1323,20 @@ void CALLBACK apc_callback_func(ULONG_PTR ctx)
     struct qemu_completion_cb call;
 
     WINE_TRACE("APC callback queued\n");
-    call.func = ov->guest_cb;
+    if (ov->wsa)
+    {
+        call.func = 0;
+        call.wsa_func = ov->guest_cb;
+    }
+    else
+    {
+        call.wsa_func = 0;
+        call.func = ov->guest_cb;
+    }
     call.error = ov->ov.Internal;
     call.len = ov->ov.InternalHigh;
     call.ov = QEMU_H2G(ov->guest_ov);
+    call.flags = ov->wsa_flags;
 
     WINE_TRACE("Calling guest callback 0x%lx(%lx, %lu, 0x%lx).\n", (unsigned long)call.func, (unsigned long)call.error,
             (unsigned long)call.len, (unsigned long)call.ov);
