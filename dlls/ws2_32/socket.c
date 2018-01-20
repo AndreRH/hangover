@@ -1533,8 +1533,8 @@ WINBASEAPI int WINAPI WSAPoll(WSAPOLLFD *wfds, ULONG count, int timeout)
     struct qemu_WSAPoll call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAPOLL);
     call.wfds = (ULONG_PTR)wfds;
-    call.count = (ULONG_PTR)count;
-    call.timeout = (ULONG_PTR)timeout;
+    call.count = count;
+    call.timeout = timeout;
 
     qemu_syscall(&call.super);
 
@@ -1546,8 +1546,46 @@ WINBASEAPI int WINAPI WSAPoll(WSAPOLLFD *wfds, ULONG count, int timeout)
 void qemu_WSAPoll(struct qemu_syscall *call)
 {
     struct qemu_WSAPoll *c = (struct qemu_WSAPoll *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = WSAPoll(QEMU_G2H(c->wfds), c->count, c->timeout);
+    WSAPOLLFD stack[10], *fds;
+    ULONG count, i;
+    struct qemu_WSAPOLLFD *guest_fds;
+    WINE_TRACE("\n");
+
+    count = c->count;
+#if GUEST_BIT == HOST_BIT
+    fds = QEMU_G2H(c->wfds);
+#else
+    guest_fds = QEMU_G2H(c->wfds);
+    if (!guest_fds)
+        fds = NULL;
+    else if(count > sizeof(stack) / sizeof(*stack))
+        fds = HeapAlloc(GetProcessHeap(), 0, sizeof(*fds) * count);
+    else
+        fds = stack;
+
+    if (fds)
+    {
+        for (i = 0; i < count; ++i)
+            WSAPOLLFD_g2h(&fds[i], &guest_fds[i]);
+    }
+#endif
+
+    c->super.iret = WSAPoll(fds, count, c->timeout);
+
+#if GUEST_BIT != HOST_BIT
+    if (fds)
+    {
+        if (fds)
+        {
+            for (i = 0; i < count; ++i)
+                WSAPOLLFD_h2g(&guest_fds[i], &fds[i]);
+        }
+
+        if (fds != stack)
+            HeapFree(GetProcessHeap(), 0, fds);
+    }
+#endif
+
 }
 
 #endif
