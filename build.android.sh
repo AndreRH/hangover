@@ -11,6 +11,7 @@ DESTDIR=`pwd`
 #export NDK_SYSROOT=/home/$USER/src/ndk/aarch64-linux-android/sysroot
 
 mkdir -p $DESTDIR/build.android
+mkdir -p $DESTDIR/build.android/wine-tools
 mkdir -p $DESTDIR/build.android/wine-host
 mkdir -p $DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a
 mkdir -p $DESTDIR/build.android/wine-guest
@@ -37,11 +38,16 @@ cd $DESTDIR/build.android/glib
 ../../glib/configure --with-pcre=internal --host=aarch64-linux-android CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang --disable-libmount --prefix=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a
 make -j 4 ; make install
 
+# Build the wine tools for crosscompilation
+cd $DESTDIR/build.android/wine-tools
+$SRCDIR/wine/configure --enable-win64 --with-freetype --with-gettext --disable-tests --disable-win16 --without-alsa --without-capi --without-cms --without-coreaudio --without-cups --without-curses --without-dbus --without-fontconfig --without-gphoto --without-glu --without-gnutls --without-gsm --without-gstreamer --without-hal --without-jpeg --without-krb5 --without-ldap --without-mpg123 --without-netapi --without-openal --without-opencl --without-opengl --without-osmesa --without-oss --without-pcap --without-pulse --without-png --without-sane --without-tiff --without-v4l --without-x --without-xcomposite --without-xcursor --without-xinerama --without-xinput --without-xinput2 --without-xml --without-xrandr --without-xrender --without-xshape --without-xshm --without-xslt --without-xxf86vm --without-zlib
+make -j 4 tools tools/sfnt2fon tools/widl tools/winebuild tools/winegcc tools/wmc tools/wrc
+
 # Build the Host (e.g. arm64) wine
 cd $DESTDIR/build.android/wine-host
-$SRCDIR/wine/configure --host=aarch64-linux-android --with-wine-tools=../../build/wine-host --disable-tests --prefix=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/ --libdir=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang LIBPNG_CFLAGS="-I$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/include/libpng15" LIBPNG_LIBS="-L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib -lpng15" FREETYPE_CFLAGS="-I$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/include/freetype2" FREETYPE_LIBS="-L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib -lm -lz -lpng15 -lfreetype"
+$SRCDIR/wine/configure --host=aarch64-linux-android --with-wine-tools=../wine-tools --disable-tests --prefix=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/ --libdir=$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang LIBPNG_CFLAGS="-I$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/include/libpng15" LIBPNG_LIBS="-L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib -lpng15" FREETYPE_CFLAGS="-I$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/include/freetype2" FREETYPE_LIBS="-L$DESTDIR/build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib -lm -lz -lpng15 -lfreetype"
 make -j 4 ; make install
-ln -sf ../../build/wine-host/tools tools
+ln -sf ../wine-tools/tools tools
 
 # Cross-Compile Wine for the guest platform to copy higher level DLLs from.
 cd ../wine-guest
