@@ -1373,7 +1373,8 @@ DWORD CALLBACK overlapped32_wait_func(void *ctx)
     HeapFree(GetProcessHeap(), 0, ov->buffers);
 
     WINE_TRACE("Signalling event %p\n", ov->ov.hEvent);
-    if (ov->ov.hEvent && ov->ov.hEvent != INVALID_HANDLE_VALUE)
+    /* ws2_32 does not signal the event if there is a callback. */
+    if ((!ov->wsa || !ov->guest_cb) && ov->ov.hEvent && ov->ov.hEvent != INVALID_HANDLE_VALUE)
         SetEvent(ov->ov.hEvent);
 
     /* FIXME: How does the event relate to the callback and how do both of them relate to
