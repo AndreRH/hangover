@@ -491,6 +491,7 @@ void qemu_WS_getsockopt(struct qemu_syscall *call)
         case WS_SO_OOBINLINE:
         case WS_IPV6_V6ONLY:
         case WS_SO_CONNECT_TIME:
+        case WS_SO_EXCLUSIVEADDRUSE:
             c->super.iret = p_getsockopt(c->s, c->level, optname, buf, len);
             break;
 
@@ -1770,6 +1771,7 @@ void qemu_WS_setsockopt(struct qemu_syscall *call)
         case WS_IPV6_V6ONLY:
         case WS_SO_CONNECT_TIME:
         case WS_IP_PKTINFO:
+        case WS_SO_EXCLUSIVEADDRUSE:
             c->super.iret = p_setsockopt(c->s, c->level, optname, buf, len);
             break;
 
