@@ -2689,7 +2689,7 @@ WINBASEAPI BOOL WINAPI WSAGetOverlappedResult(SOCKET s, LPWSAOVERLAPPED lpOverla
     call.s = guest_SOCKET_g2h(s);
     call.lpOverlapped = (ULONG_PTR)lpOverlapped;
     call.lpcbTransfer = (ULONG_PTR)lpcbTransfer;
-    call.fWait = (ULONG_PTR)fWait;
+    call.fWait = fWait;
     call.lpdwFlags = (ULONG_PTR)lpdwFlags;
 
     qemu_syscall(&call.super);
@@ -2702,8 +2702,66 @@ WINBASEAPI BOOL WINAPI WSAGetOverlappedResult(SOCKET s, LPWSAOVERLAPPED lpOverla
 void qemu_WSAGetOverlappedResult(struct qemu_syscall *call)
 {
     struct qemu_WSAGetOverlappedResult *c = (struct qemu_WSAGetOverlappedResult *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = WSAGetOverlappedResult(c->s, QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpcbTransfer), c->fWait, QEMU_G2H(c->lpdwFlags));
+    NTSTATUS status;
+    struct qemu_OVERLAPPED *ov32;
+    HANDLE event;
+    DWORD *transfer, *flags;
+    WINE_TRACE("\n");
+
+    transfer = QEMU_G2H(c->lpcbTransfer);
+    flags = QEMU_G2H(c->lpdwFlags);
+#if GUEST_BIT == HOST_BIT
+    c->super.iret = WSAGetOverlappedResult(c->s, QEMU_G2H(c->lpOverlapped), transfer, c->fWait, flags);
+    return;
+#endif
+
+    ov32 = QEMU_G2H(c->lpOverlapped);
+    if (!ov32)
+    {
+        WINE_ERR( "Invalid pointer\n" );
+        SetLastError(WSA_INVALID_PARAMETER);
+        c->super.iret = FALSE;
+        return;
+    }
+
+    status = ov32->Internal;
+    if (status == STATUS_PENDING)
+    {
+        if (!c->fWait)
+        {
+            SetLastError( WSA_IO_INCOMPLETE );
+            c->super.iret = FALSE;
+            return;
+        }
+
+        event = HANDLE_g2h(ov32->hEvent);
+        if (event)
+        {
+            if (WaitForSingleObject(event, INFINITE ) == WAIT_FAILED)
+            {
+                c->super.iret = FALSE;
+                return;
+            }
+        }
+        else
+        {
+            OVERLAPPED copy;
+            OVERLAPPED_g2h(&copy, ov32);
+            c->super.iret = WSAGetOverlappedResult(c->s, &copy, QEMU_G2H(c->lpcbTransfer),
+                    c->fWait, QEMU_G2H(c->lpdwFlags));
+            return;
+        }
+        status = ov32->Internal;
+    }
+
+    if (transfer)
+        *transfer = ov32->InternalHigh;
+
+    if (flags)
+        *flags = ov32->Offset;
+
+    if (status) SetLastError( RtlNtStatusToDosError(status) );
+    c->super.iret = !status;
 }
 
 #endif
