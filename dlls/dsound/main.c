@@ -47,7 +47,8 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
-    qemu_GetDeviceID,
+    qemu_DirectSoundCaptureCreate,
+    qemu_DirectSoundCaptureCreate8,
     qemu_DirectSoundCaptureEnumerateA,
     qemu_DirectSoundCaptureEnumerateW,
     qemu_DirectSoundCreate,
@@ -58,6 +59,7 @@ static const syscall_handler dll_functions[] =
     qemu_DllGetClassObject,
     qemu_DllRegisterServer,
     qemu_DllUnregisterServer,
+    qemu_GetDeviceID,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
