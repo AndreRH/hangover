@@ -34,9 +34,11 @@ struct OVERLAPPED_data
     /* For WSARecvMsg / WSASendMsg. */
     WSAMSG *msg;
     struct qemu_WSAMSG *guest_msg;
+    WSABUF *buffers;
 
     struct list free_list_entry;
     struct wine_rb_entry rbtree_entry;
+    BOOL in_tree;
 };
 
 typedef struct OVERLAPPED_data * (* WINAPI FN_alloc_OVERLAPPED_data)(void *ov32,

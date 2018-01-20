@@ -1096,7 +1096,7 @@ void qemu_WS2_WSASendRecvMsg(struct qemu_syscall *call)
             c->super.iret = p_WSARecvMsg(c->s, NULL, QEMU_G2H(c->lpNumberOfBytesXferedd),
                     ov_wrapper ? &ov_wrapper->ov : NULL, NULL);
         }
-        return;
+        goto done;
     }
 
     if (ov32)
@@ -1130,6 +1130,7 @@ void qemu_WS2_WSASendRecvMsg(struct qemu_syscall *call)
     WSAMSG_h2g(guest_msg, msg);
     guest_msg->lpBuffers = (ULONG_PTR)guest_buffers;
 
+done:
     if (ov32)
     {
         OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
@@ -3263,6 +3264,9 @@ void qemu_WSABufOp(struct qemu_syscall *call)
     struct qemu_WSABUF *guest_buffers;
     unsigned int i;
     DWORD buf_count;
+    struct qemu_OVERLAPPED *ov32;
+    struct OVERLAPPED_data *ov_wrapper;
+    HANDLE guest_event;
 
     switch (c->super.id)
     {
@@ -3283,17 +3287,27 @@ void qemu_WSABufOp(struct qemu_syscall *call)
     }
 
     buf_count = c->dwBufferCount;
+#if GUEST_BIT == HOST_BIT
     if (c->lpCompletionRoutine)
         WINE_FIXME("Completion routine not handled yet.\n");
-#if GUEST_BIT == HOST_BIT
+
     c->super.iret = call_op(c->super.id, c->s, QEMU_G2H(c->lpBuffers), buf_count, QEMU_G2H(c->NumberOfBytesTransfered),
             c->dwFlags, QEMU_G2H(c->lpFlags), QEMU_G2H(c->sockaddr), c->sockaddr_len, QEMU_G2H(c->lpSockaddr_len),
             QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
     return;
 #endif
 
-    if (c->lpOverlapped)
-        WINE_FIXME("OVERLAPPED receive not handled yet.\n");
+    ov32 = QEMU_G2H(c->lpOverlapped);
+    if (ov32)
+    {
+        ov_wrapper = p_alloc_OVERLAPPED_data(ov32, c->lpCompletionRoutine, TRUE);
+        guest_event = HANDLE_g2h(ov32->hEvent);
+    }
+    else
+    {
+        WINE_TRACE("Synchronous operation, easy...\n");
+        ov_wrapper = NULL;
+    }
 
     guest_buffers = (struct qemu_WSABUF *)QEMU_G2H(c->lpBuffers);
     if (!guest_buffers)
@@ -3301,11 +3315,12 @@ void qemu_WSABufOp(struct qemu_syscall *call)
         WINE_WARN("Buffers is NULL.\n");
         c->super.iret = call_op(c->super.id, c->s, NULL, buf_count, QEMU_G2H(c->NumberOfBytesTransfered),
                 c->dwFlags, QEMU_G2H(c->lpFlags), QEMU_G2H(c->sockaddr), c->sockaddr_len, QEMU_G2H(c->lpSockaddr_len),
-                QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
-        return;
+                ov_wrapper ? &ov_wrapper->ov : NULL, NULL);
+        buffers = NULL;
+        goto done;
     }
 
-    if (buf_count < sizeof(stackbuf) / sizeof(*stackbuf))
+    if (!ov32 && buf_count < sizeof(stackbuf) / sizeof(*stackbuf))
         buffers = stackbuf;
     else
         buffers = HeapAlloc(GetProcessHeap(), 0, sizeof(*buffers) * buf_count);
@@ -3315,10 +3330,20 @@ void qemu_WSABufOp(struct qemu_syscall *call)
 
     c->super.iret = call_op(c->super.id, c->s, buffers, buf_count, QEMU_G2H(c->NumberOfBytesTransfered),
             c->dwFlags, QEMU_G2H(c->lpFlags), QEMU_G2H(c->sockaddr), c->sockaddr_len, QEMU_G2H(c->lpSockaddr_len),
-            QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
+            ov_wrapper ? &ov_wrapper->ov : NULL, NULL);
 
-    if (buffers != stackbuf)
+done:
+    if (ov32)
+    {
+        OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
+        ov32->hEvent = (ULONG_PTR)guest_event;
+        ov_wrapper->buffers = buffers;
+        p_process_OVERLAPPED_data(c->super.iret == SOCKET_ERROR ? 0 : 1, ov_wrapper);
+    }
+    else if (buffers != stackbuf)
+    {
         HeapFree(GetProcessHeap(), 0, buffers);
+    }
 }
 
 #endif

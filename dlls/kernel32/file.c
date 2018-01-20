@@ -156,7 +156,7 @@ static void CALLBACK ReadWriteFileEx_host_cb(DWORD error, DWORD len, OVERLAPPED 
     call.ov = QEMU_H2G(ov_data->guest_ov);
 
     OVERLAPPED_h2g(ov_data->guest_ov, &ov_data->ov);
-    free_OVERLAPPED(ov_data, TRUE);
+    free_OVERLAPPED(ov_data);
 
     WINE_TRACE("Calling guest callback 0x%lx(%x, %u, 0x%lx).\n", (unsigned long)call.func, error, len,
             (unsigned long)call.ov);

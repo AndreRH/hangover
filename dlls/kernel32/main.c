@@ -1294,10 +1294,10 @@ static struct list ov_free_list = LIST_INIT(ov_free_list);
 static struct wine_rb_tree ov_rbtree;
 unsigned int free_list_space = 1024;
 
-void free_OVERLAPPED(struct OVERLAPPED_data *ov, BOOL remove_from_tree)
+void free_OVERLAPPED(struct OVERLAPPED_data *ov)
 {
     EnterCriticalSection(&ov_cs);
-    if (remove_from_tree)
+    if (ov->in_tree)
         wine_rb_remove(&ov_rbtree, &ov->rbtree_entry);
 
     if (free_list_space)
@@ -1328,7 +1328,7 @@ void CALLBACK apc_callback_func(ULONG_PTR ctx)
     qemu_ops->qemu_execute(QEMU_G2H(guest_completion_cb), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned.\n");
 
-    free_OVERLAPPED(ov, TRUE);
+    free_OVERLAPPED(ov);
 }
 
 DWORD CALLBACK overlapped32_wait_func(void *ctx)
@@ -1355,6 +1355,7 @@ DWORD CALLBACK overlapped32_wait_func(void *ctx)
         HeapFree(GetProcessHeap(), 0, ov->msg->lpBuffers);
         HeapFree(GetProcessHeap(), 0, ov->msg);
     }
+    HeapFree(GetProcessHeap(), 0, ov->buffers);
 
     WINE_TRACE("Signalling event %p\n", ov->ov.hEvent);
     if (ov->ov.hEvent && ov->ov.hEvent != INVALID_HANDLE_VALUE)
@@ -1385,7 +1386,7 @@ DWORD CALLBACK overlapped32_wait_func(void *ctx)
     else
     {
         WINE_TRACE("Just freeing data %p, guest data %p\n", ov, ov->guest_ov);
-        free_OVERLAPPED(ov, TRUE);
+        free_OVERLAPPED(ov);
     }
 }
 
@@ -1422,7 +1423,15 @@ void queue_OVERLAPPED(struct OVERLAPPED_data *data)
 {
     EnterCriticalSection(&ov_cs);
     if (wine_rb_put(&ov_rbtree, data->guest_ov, &data->rbtree_entry))
+    {
+        /* This gets hit by ws2_32's test_WSARecv(). And yes, the test does perform two async operations
+         * with the same OVERLAPPED structure. */
         WINE_ERR("Cannot place OVERLAPPED wrapper in tree. Did the application reuse the pointer?\n");
+    }
+    else
+    {
+        data->in_tree = TRUE;
+    }
     LeaveCriticalSection(&ov_cs);
 }
 
@@ -1452,9 +1461,10 @@ void WINAPI process_OVERLAPPED_data(uint64_t retval, struct OVERLAPPED_data *dat
             HeapFree(GetProcessHeap(), 0, data->msg->lpBuffers);
             HeapFree(GetProcessHeap(), 0, data->msg);
         }
+        HeapFree(GetProcessHeap(), 0, data->buffers);
 
         if (retval)
-            free_OVERLAPPED(data, FALSE); /* Might be queued in a completion port, but we never added it to the rbtree */
+            free_OVERLAPPED(data); /* Might be queued in a completion port to report the success. */
         else
             HeapFree(GetProcessHeap(), 0, data); /* Won't be needed any more. */
     }
