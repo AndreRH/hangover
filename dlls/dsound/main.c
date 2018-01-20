@@ -49,6 +49,8 @@ static const syscall_handler dll_functions[] =
 {
     qemu_DirectSoundCaptureEnumerateA,
     qemu_DirectSoundCaptureEnumerateW,
+    qemu_DirectSoundCreate,
+    qemu_DirectSoundCreate8,
     qemu_DirectSoundEnumerateA,
     qemu_DirectSoundEnumerateW,
     qemu_DllCanUnloadNow,
