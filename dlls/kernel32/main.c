@@ -20,12 +20,14 @@
 
 #include <ntstatus.h>
 #define WIN32_NO_STATUS
+#include <winsock2.h>
 #include <windows.h>
 #include <stdio.h>
 #include <excpt.h>
 #include <winternl.h>
 
 #include "thunk/qemu_windows.h"
+#include "thunk/qemu_winsock2.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -1345,6 +1347,15 @@ DWORD CALLBACK overlapped32_wait_func(void *ctx)
     ov->ov.hEvent = HANDLE_g2h(ov->guest_ov->hEvent);
     OVERLAPPED_h2g(ov->guest_ov, &ov->ov);
 
+    if (ov->msg)
+    {
+        ULONG_PTR guest_buffers = ov->guest_msg->lpBuffers;
+        WSAMSG_h2g(ov->guest_msg, ov->msg);
+        ov->guest_msg->lpBuffers = guest_buffers;
+        HeapFree(GetProcessHeap(), 0, ov->msg->lpBuffers);
+        HeapFree(GetProcessHeap(), 0, ov->msg);
+    }
+
     WINE_TRACE("Signalling event %p\n", ov->ov.hEvent);
     if (ov->ov.hEvent && ov->ov.hEvent != INVALID_HANDLE_VALUE)
         SetEvent(ov->ov.hEvent);
@@ -1378,7 +1389,7 @@ DWORD CALLBACK overlapped32_wait_func(void *ctx)
     }
 }
 
-struct OVERLAPPED_data *alloc_OVERLAPPED_data(void *ov32, uint64_t guest_completion_cb, BOOL event)
+struct OVERLAPPED_data * WINAPI alloc_OVERLAPPED_data(void *ov32, uint64_t guest_completion_cb, BOOL event)
 {
     struct OVERLAPPED_data *ret;
 
@@ -1415,7 +1426,7 @@ void queue_OVERLAPPED(struct OVERLAPPED_data *data)
     LeaveCriticalSection(&ov_cs);
 }
 
-void process_OVERLAPPED_data(uint64_t retval, struct OVERLAPPED_data *data)
+void WINAPI process_OVERLAPPED_data(uint64_t retval, struct OVERLAPPED_data *data)
 {
     if (!retval && GetLastError() == ERROR_IO_PENDING)
     {
@@ -1436,6 +1447,12 @@ void process_OVERLAPPED_data(uint64_t retval, struct OVERLAPPED_data *data)
     {
         WINE_TRACE("Synchonous return return, host ptr %p, guest ptr %p.\n", data, data->guest_ov);
         CloseHandle(data->ov.hEvent);
+        if (data->msg)
+        {
+            HeapFree(GetProcessHeap(), 0, data->msg->lpBuffers);
+            HeapFree(GetProcessHeap(), 0, data->msg);
+        }
+
         if (retval)
             free_OVERLAPPED(data, FALSE); /* Might be queued in a completion port, but we never added it to the rbtree */
         else

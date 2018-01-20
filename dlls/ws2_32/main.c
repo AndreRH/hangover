@@ -43,6 +43,8 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_ws2_32);
 
 const struct qemu_ops *qemu_ops;
+FN_alloc_OVERLAPPED_data p_alloc_OVERLAPPED_data;
+FN_process_OVERLAPPED_data p_process_OVERLAPPED_data;
 
 static const syscall_handler dll_functions[] =
 {
@@ -177,7 +179,7 @@ static const syscall_handler dll_functions[] =
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
-    HMODULE ws2_32;
+    HMODULE ws2_32, qemu_kernel32;
     GUID WSAAcceptEx_GUID = WSAID_ACCEPTEX;
     GUID WSAConnectEx_GUID = WSAID_CONNECTEX;
     GUID WSADisconnectEx_GUID = WSAID_DISCONNECTEX;
@@ -334,6 +336,18 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
             sizeof(WSASendMsg_GUID), &p_WSASendMsg, sizeof(p_WSASendMsg), &bytes, NULL, NULL);
     if (!p_WSASendMsg)
         WINE_ERR("Failed to get address of p_WSASendMsg!\n");
+
+    /* It would probably be nicer to delay this until the client DllMain is called instead of
+     * relying on the fact that qemu loads these things alphabetically and k comes before w. */
+    qemu_kernel32 = GetModuleHandleA("qemu_kernel32");
+    if (!qemu_kernel32)
+        WINE_ERR("qemu_kernel32.dll is not (yet?) loaded.\n");
+    p_alloc_OVERLAPPED_data = (void *)GetProcAddress(qemu_kernel32, "alloc_OVERLAPPED_data");
+    if (!p_alloc_OVERLAPPED_data)
+        WINE_ERR("Cannot get alloc_OVERLAPPED_data helper from qemu_kernel32.dll\n");
+    p_process_OVERLAPPED_data = (void *)GetProcAddress(qemu_kernel32, "process_OVERLAPPED_data");
+    if (!p_process_OVERLAPPED_data)
+        WINE_ERR("Cannot get process_OVERLAPPED_data helper from qemu_kernel32.dll\n");
 
     return dll_functions;
 }

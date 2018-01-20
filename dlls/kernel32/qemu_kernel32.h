@@ -995,6 +995,8 @@ void (* WINAPI pRtlRaiseException)(PEXCEPTION_RECORD);
 #include <wine/list.h>
 #include <wine/rbtree.h>
 
+#include "kernel32_wrapper.h"
+
 extern const struct qemu_ops *qemu_ops;
 
 void qemu__hread(struct qemu_syscall *call);
@@ -1964,24 +1966,12 @@ DWORD kernel32_tls;
 
 extern struct callback_entry_table *overlapped_wrappers;
 DWORD CALLBACK overlapped32_wait_func(void *ctx);
-struct OVERLAPPED_data *alloc_OVERLAPPED_data(void *ov32, uint64_t guest_completion_cb, BOOL event);
+struct OVERLAPPED_data * WINAPI alloc_OVERLAPPED_data(void *ov32, uint64_t guest_completion_cb, BOOL event);
 void free_OVERLAPPED(struct OVERLAPPED_data *ov, BOOL remove_from_tree);
-void process_OVERLAPPED_data(uint64_t retval, struct OVERLAPPED_data *data);
+void WINAPI process_OVERLAPPED_data(uint64_t retval, struct OVERLAPPED_data *data);
 struct OVERLAPPED_data *get_OVERLAPPED_data(void *guest);
 extern uint64_t guest_completion_cb;
 void queue_OVERLAPPED(struct OVERLAPPED_data *data);
-
-struct OVERLAPPED_data
-{
-    OVERLAPPED ov;
-
-    struct qemu_OVERLAPPED *guest_ov;
-    uint64_t guest_cb;
-    DWORD cb_thread;
-
-    struct list free_list_entry;
-    struct wine_rb_entry rbtree_entry;
-};
 
 #endif
 

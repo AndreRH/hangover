@@ -138,6 +138,10 @@ enum ws2_32_calls
 
 #else
 
+#include "kernel32_wrapper.h"
+extern FN_alloc_OVERLAPPED_data p_alloc_OVERLAPPED_data;
+extern FN_process_OVERLAPPED_data p_process_OVERLAPPED_data;
+
 extern const struct qemu_ops *qemu_ops;
 
 void qemu___WSAFDIsSet(struct qemu_syscall *call);

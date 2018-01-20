@@ -1043,16 +1043,21 @@ WINBASEAPI int WINAPI WSASendMsg(SOCKET s, WSAMSG *msg, DWORD dwFlags, DWORD *lp
 void qemu_WS2_WSASendRecvMsg(struct qemu_syscall *call)
 {
     struct qemu_WS2_WSASendRecvMsg *c = (struct qemu_WS2_WSASendRecvMsg *)call;
-    WSAMSG msg;
+    WSAMSG msg_stack, *msg;
     WSABUF stackbuf[10], *buffers;
     struct qemu_WSABUF *guest_buffers;
     struct qemu_WSAMSG *guest_msg;
     unsigned int i;
+    struct OVERLAPPED_data *ov_wrapper;
+    HANDLE guest_event;
+    struct qemu_OVERLAPPED *ov32;
     WINE_TRACE("%s\n", c->super.id == QEMU_SYSCALL_ID(CALL_WSASENDMSG) ? "WSASendMsg" : "WSARecvMsg");
 
-    if (c->lpCompletionRoutine)
-        WINE_FIXME("Completion routine not handled yet.\n");
 #if GUEST_BIT == HOST_BIT
+    /* This can be done nicer than 32 bit, just export the completion routine wrapper table from kernel32. */
+    if (c->lpCompletionRoutine)
+        WINE_FIXME("Completion routine not handled yet in 64 bit.\n");
+
     if (c->super.id == QEMU_SYSCALL_ID(CALL_WSASENDMSG))
     {
         c->super.iret = p_WSASendMsg(c->s, QEMU_G2H(c->msg), c->dwFlags, QEMU_G2H(c->lpNumberOfBytesXferedd),
@@ -1066,8 +1071,17 @@ void qemu_WS2_WSASendRecvMsg(struct qemu_syscall *call)
     return;
 #endif
 
-    if (c->lpOverlapped)
-        WINE_FIXME("OVERLAPPED receive not handled yet.\n");
+    ov32 = QEMU_G2H(c->lpOverlapped);
+    if (ov32)
+    {
+        ov_wrapper = p_alloc_OVERLAPPED_data(ov32, c->lpCompletionRoutine, TRUE);
+        guest_event = HANDLE_g2h(ov32->hEvent);
+    }
+    else
+    {
+        WINE_TRACE("Synchronous operation, easy...\n");
+        ov_wrapper = NULL;
+    }
 
     if (!c->msg)
     {
@@ -1075,44 +1089,60 @@ void qemu_WS2_WSASendRecvMsg(struct qemu_syscall *call)
         if (c->super.id == QEMU_SYSCALL_ID(CALL_WSASENDMSG))
         {
             c->super.iret = p_WSASendMsg(c->s, NULL, c->dwFlags, QEMU_G2H(c->lpNumberOfBytesXferedd),
-                    QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
+                    ov_wrapper ? &ov_wrapper->ov : NULL, NULL);
         }
         else
         {
-            c->super.iret = p_WSARecvMsg(c->s, NULL, QEMU_G2H(c->lpNumberOfBytesXferedd), QEMU_G2H(c->lpOverlapped),
-                    QEMU_G2H(c->lpCompletionRoutine));
+            c->super.iret = p_WSARecvMsg(c->s, NULL, QEMU_G2H(c->lpNumberOfBytesXferedd),
+                    ov_wrapper ? &ov_wrapper->ov : NULL, NULL);
         }
         return;
     }
 
+    if (ov32)
+        msg = HeapAlloc(GetProcessHeap(), 0, sizeof(*msg));
+    else
+        msg = &msg_stack;
+
     guest_msg = QEMU_G2H(c->msg);
-    WSAMSG_g2h(&msg, guest_msg);
-    guest_buffers = (struct qemu_WSABUF *)msg.lpBuffers;
-    if (msg.dwBufferCount < sizeof(stackbuf) / sizeof(*stackbuf))
+    WSAMSG_g2h(msg, guest_msg);
+    guest_buffers = (struct qemu_WSABUF *)msg->lpBuffers;
+    if (!ov32 && msg->dwBufferCount < sizeof(stackbuf) / sizeof(*stackbuf))
         buffers = stackbuf;
     else
-        buffers = HeapAlloc(GetProcessHeap(), 0, sizeof(*buffers) * msg.dwBufferCount);
+        buffers = HeapAlloc(GetProcessHeap(), 0, sizeof(*buffers) * msg->dwBufferCount);
 
-    for (i = 0; i < msg.dwBufferCount; ++i)
+    for (i = 0; i < msg->dwBufferCount; ++i)
         WSABUF_g2h(&buffers[i], &guest_buffers[i]);
-    msg.lpBuffers = buffers;
+    msg->lpBuffers = buffers;
 
     if (c->super.id == QEMU_SYSCALL_ID(CALL_WSASENDMSG))
     {
-        c->super.iret = p_WSASendMsg(c->s, &msg, c->dwFlags, QEMU_G2H(c->lpNumberOfBytesXferedd),
-                QEMU_G2H(c->lpOverlapped), QEMU_G2H(c->lpCompletionRoutine));
+        c->super.iret = p_WSASendMsg(c->s, msg, c->dwFlags, QEMU_G2H(c->lpNumberOfBytesXferedd),
+                ov_wrapper ? &ov_wrapper->ov: NULL, NULL);
     }
     else
     {
-        c->super.iret = p_WSARecvMsg(c->s, &msg, QEMU_G2H(c->lpNumberOfBytesXferedd), QEMU_G2H(c->lpOverlapped),
-                QEMU_G2H(c->lpCompletionRoutine));
+        c->super.iret = p_WSARecvMsg(c->s, msg, QEMU_G2H(c->lpNumberOfBytesXferedd),
+                ov_wrapper ? &ov_wrapper->ov : NULL, NULL);
     }
 
-    if (buffers != stackbuf)
-        HeapFree(GetProcessHeap(), 0, buffers);
-
-    WSAMSG_h2g(guest_msg, &msg);
+    WSAMSG_h2g(guest_msg, msg);
     guest_msg->lpBuffers = (ULONG_PTR)guest_buffers;
+
+    if (ov32)
+    {
+        OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
+        ov_wrapper->msg = msg;
+        ov_wrapper->guest_msg = guest_msg;
+        ov32->hEvent = (ULONG_PTR)guest_event;
+        p_process_OVERLAPPED_data(c->super.iret == SOCKET_ERROR ? 0 : 1, ov_wrapper);
+    }
+    else if (buffers != stackbuf)
+    {
+        HeapFree(GetProcessHeap(), 0, buffers);
+    }
+
 }
 
 #endif
