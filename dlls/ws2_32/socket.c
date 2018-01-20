@@ -1089,6 +1089,7 @@ void qemu_WS2_WSASendRecvMsg(struct qemu_syscall *call)
     if (!c->msg)
     {
         WINE_WARN("Message is NULL.\n");
+        buffers = stackbuf;
         if (c->super.id == QEMU_SYSCALL_ID(CALL_WSASENDMSG))
         {
             c->super.iret = p_WSASendMsg(c->s, NULL, c->dwFlags, QEMU_G2H(c->lpNumberOfBytesXferedd),
