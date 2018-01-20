@@ -1335,7 +1335,7 @@ DWORD CALLBACK overlapped32_wait_func(void *ctx)
 {
     struct OVERLAPPED_data *ov = ctx;
 
-    WINE_TRACE("Work item started\n");
+    WINE_TRACE("Work item started %p\n", ov);
 
     /* FIXME: This proxy event breaks the kernel32 pipe.c tests because ReadFile (on a pipe)
      * returns to the application before the WriteFile event that was previously waiting gets
@@ -1343,7 +1343,7 @@ DWORD CALLBACK overlapped32_wait_func(void *ctx)
      * that depend on each other finish in order. The WriteFile is started before the ReadFile,
      * but the ReadFile ends up finishing first due to the delay here. */
     WaitForSingleObjectEx(ov->ov.hEvent, INFINITE, TRUE);
-    WINE_TRACE("Event wait finished\n");
+    WINE_TRACE("Event wait finished %p\n", ov);
     ov->ov.hEvent = HANDLE_g2h(ov->guest_ov->hEvent);
     OVERLAPPED_h2g(ov->guest_ov, &ov->ov);
 
@@ -1403,16 +1403,17 @@ struct OVERLAPPED_data * WINAPI alloc_OVERLAPPED_data(void *ov32, uint64_t guest
         reuse = list_tail(&ov_free_list);
         list_remove(reuse);
         ret = LIST_ENTRY(reuse, struct OVERLAPPED_data, free_list_entry);
+        memset(ret, 0, sizeof(*ret));
     }
     else
     {
-        ret = HeapAlloc(GetProcessHeap(), 0, sizeof(*ret));
+        ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
     }
     OVERLAPPED_g2h(&ret->ov, ov32);
     ret->guest_ov = ov32;
     ret->guest_cb = guest_completion_cb;
     if (event)
-        ret->ov.hEvent = CreateEventW( NULL, 0, 0, NULL );
+        ret->ov.hEvent = CreateEventW(NULL, 0, 0, NULL);
 
     LeaveCriticalSection(&ov_cs);
 
