@@ -3344,7 +3344,8 @@ WINBASEAPI BOOL WINAPI GetQueuedCompletionStatus(HANDLE CompletionPort, LPDWORD 
 
     qemu_syscall(&call.super);
     *lpOverlapped = (OVERLAPPED *)(ULONG_PTR)call.lpOverlapped;
-    *pCompletionKey = call.pCompletionKey;
+    if (call.lpOverlapped)
+        *pCompletionKey = call.pCompletionKey;
 
     return call.super.iret;
 }
