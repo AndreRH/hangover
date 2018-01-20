@@ -30,8 +30,11 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
-WINE_DEFAULT_DEBUG_CHANNEL(qemu_dsound);
+#else
+#include <debug.h>
 #endif
+
+WINE_DEFAULT_DEBUG_CHANNEL(qemu_dsound);
 
 struct qemu_GetDeviceID
 {
@@ -193,36 +196,12 @@ void qemu_DirectSoundCaptureEnumerateW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_DllGetClassObject
-{
-    struct qemu_syscall super;
-    uint64_t rclsid;
-    uint64_t riid;
-    uint64_t ppv;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 WINBASEAPI HRESULT WINAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppv)
 {
-    struct qemu_DllGetClassObject call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_DLLGETCLASSOBJECT);
-    call.rclsid = (ULONG_PTR)rclsid;
-    call.riid = (ULONG_PTR)riid;
-    call.ppv = (ULONG_PTR)ppv;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_DllGetClassObject(struct qemu_syscall *call)
-{
-    struct qemu_DllGetClassObject *c = (struct qemu_DllGetClassObject *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = E_FAIL; /*DllGetClassObject(QEMU_G2H(c->rclsid), QEMU_G2H(c->riid), QEMU_G2H(c->ppv));*/
+    WINE_FIXME("Stub!\n");
+    return E_FAIL;
 }
 
 #endif

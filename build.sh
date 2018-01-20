@@ -51,6 +51,7 @@ do
     echo "DESTDIR?=../../.." >> Makefile
     echo "GUEST_BIT=64" >> Makefile
     echo "HOST_BIT=64" >> Makefile
+    echo "WINE_DIR=wine-guest" >> Makefile
     echo >> Makefile
     echo "include $SRCDIR/dlls/$dll/Makefile" >> Makefile
 
@@ -65,6 +66,7 @@ do
     echo "DESTDIR?=../../.." >> Makefile
     echo "GUEST_BIT=32" >> Makefile
     echo "HOST_BIT=64" >> Makefile
+    echo "WINE_DIR=wine-guest32" >> Makefile
     echo >> Makefile
     echo "include $SRCDIR/dlls/$dll/Makefile" >> Makefile
 
