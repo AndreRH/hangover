@@ -33,6 +33,38 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_dsound);
 #endif
 
+struct qemu_GetDeviceID
+{
+    struct qemu_syscall super;
+    uint64_t pGuidSrc;
+    uint64_t pGuidDest;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HRESULT WINAPI GetDeviceID(LPCGUID pGuidSrc, LPGUID pGuidDest)
+{
+    struct qemu_GetDeviceID call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETDEVICEID);
+    call.pGuidSrc = (ULONG_PTR)pGuidSrc;
+    call.pGuidDest = (ULONG_PTR)pGuidDest;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetDeviceID(struct qemu_syscall *call)
+{
+    struct qemu_GetDeviceID *c = (struct qemu_GetDeviceID *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetDeviceID(QEMU_G2H(c->pGuidSrc), QEMU_G2H(c->pGuidDest));
+}
+
+#endif
+
 struct qemu_DirectSoundEnumerateA
 {
     struct qemu_syscall super;

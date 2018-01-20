@@ -3,6 +3,7 @@
 
 enum dsound_calls
 {
+    CALL_GETDEVICEID,
     CALL_DIRECTSOUNDENUMERATEA,
     CALL_DIRECTSOUNDENUMERATEW,
     CALL_DIRECTSOUNDCREATE,
@@ -19,6 +20,7 @@ enum dsound_calls
 
 #else
 
+void qemu_GetDeviceID(struct qemu_syscall *call);
 void qemu_DirectSoundEnumerateA(struct qemu_syscall *call);
 void qemu_DirectSoundEnumerateW(struct qemu_syscall *call);
 void qemu_DirectSoundCreate(struct qemu_syscall *call);
