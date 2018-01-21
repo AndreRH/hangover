@@ -556,7 +556,8 @@ struct qemu_IDirectSoundBufferImpl_Lock
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectSoundBufferImpl_Lock(IDirectSoundBuffer8 *iface, DWORD writecursor, DWORD writebytes, void **lplpaudioptr1, DWORD *audiobytes1, void **lplpaudioptr2, DWORD *audiobytes2, DWORD flags)
+static HRESULT WINAPI IDirectSoundBufferImpl_Lock(IDirectSoundBuffer8 *iface, DWORD writecursor, DWORD writebytes,
+        void **lplpaudioptr1, DWORD *audiobytes1, void **lplpaudioptr2, DWORD *audiobytes2, DWORD flags)
 {
     struct qemu_dsound_buffer *buffer = impl_from_IDirectSoundBuffer8(iface);
     struct qemu_IDirectSoundBufferImpl_Lock call;
@@ -564,13 +565,17 @@ static HRESULT WINAPI IDirectSoundBufferImpl_Lock(IDirectSoundBuffer8 *iface, DW
     call.iface = (ULONG_PTR)buffer;
     call.writecursor = writecursor;
     call.writebytes = writebytes;
-    call.lplpaudioptr1 = (ULONG_PTR)lplpaudioptr1;
     call.audiobytes1 = (ULONG_PTR)audiobytes1;
-    call.lplpaudioptr2 = (ULONG_PTR)lplpaudioptr2;
     call.audiobytes2 = (ULONG_PTR)audiobytes2;
     call.flags = flags;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+    {
+        *lplpaudioptr1 = (void *)(ULONG_PTR)call.lplpaudioptr1;
+        if (lplpaudioptr2)
+            *lplpaudioptr2 = (void *)(ULONG_PTR)call.lplpaudioptr2;
+    }
 
     return call.super.iret;
 }
@@ -581,10 +586,15 @@ void qemu_IDirectSoundBufferImpl_Lock(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_Lock *c = (struct qemu_IDirectSoundBufferImpl_Lock *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    void *ptr1, *ptr2;
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
-    c->super.iret = IDirectSoundBuffer8_Lock(buffer->host_buffer, c->writecursor, c->writebytes, QEMU_G2H(c->lplpaudioptr1), QEMU_G2H(c->audiobytes1), QEMU_G2H(c->lplpaudioptr2), QEMU_G2H(c->audiobytes2), c->flags);
+    c->super.iret = IDirectSoundBuffer8_Lock(buffer->host_buffer, c->writecursor, c->writebytes,
+            &ptr1, QEMU_G2H(c->audiobytes1), &ptr2, QEMU_G2H(c->audiobytes2), c->flags);
+
+    c->lplpaudioptr1 = QEMU_H2G(ptr1);
+    c->lplpaudioptr2 = QEMU_H2G(ptr2);
 }
 
 #endif
@@ -731,7 +741,7 @@ void qemu_IDirectSoundBufferImpl_Unlock(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_Unlock *c = (struct qemu_IDirectSoundBufferImpl_Unlock *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_Unlock(buffer->host_buffer, QEMU_G2H(c->p1), c->x1, QEMU_G2H(c->p2), c->x2);
