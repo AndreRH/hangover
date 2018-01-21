@@ -1442,8 +1442,11 @@ void queue_OVERLAPPED(struct OVERLAPPED_data *data)
     if (wine_rb_put(&ov_rbtree, data->guest_ov, &data->rbtree_entry))
     {
         /* This gets hit by ws2_32's test_WSARecv(). And yes, the test does perform two async operations
-         * with the same OVERLAPPED structure. */
-        WINE_ERR("Cannot place OVERLAPPED wrapper in tree. Did the application reuse the pointer?\n");
+         * with the same OVERLAPPED structure.
+         *
+         * This is also pretty common in Warhammer 40k: Dawn of war and presumably many other applications.
+         * Don't be too upset about it. */
+        WINE_WARN("Cannot place OVERLAPPED wrapper in tree. Did the application reuse the pointer?\n");
     }
     else
     {
