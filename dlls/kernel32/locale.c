@@ -1229,21 +1229,35 @@ void qemu_IsValidLocaleName(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_EnumSystemLocalesA
+struct qemu_EnumSystemLocales
 {
     struct qemu_syscall super;
     uint64_t lpfnLocaleEnum;
     uint64_t dwFlags;
+    uint64_t wrapper;
+};
+
+struct qemu_EnumSystemLocales_cb
+{
+    uint64_t func;
+    uint64_t str;
 };
 
 #ifdef QEMU_DLL_GUEST
 
+static BOOL __fastcall EnumSystemLocales_guest_cb(struct qemu_EnumSystemLocales_cb *data)
+{
+    LOCALE_ENUMPROCW proc = (LOCALE_ENUMPROCW)(ULONG_PTR)data->func;
+    return proc((WCHAR *)(ULONG_PTR)data->str);
+}
+
 WINBASEAPI BOOL WINAPI EnumSystemLocalesA(LOCALE_ENUMPROCA lpfnLocaleEnum, DWORD dwFlags)
 {
-    struct qemu_EnumSystemLocalesA call;
+    struct qemu_EnumSystemLocales call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMSYSTEMLOCALESA);
     call.lpfnLocaleEnum = (ULONG_PTR)lpfnLocaleEnum;
     call.dwFlags = dwFlags;
+    call.wrapper = (ULONG_PTR)EnumSystemLocales_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -1252,11 +1266,35 @@ WINBASEAPI BOOL WINAPI EnumSystemLocalesA(LOCALE_ENUMPROCA lpfnLocaleEnum, DWORD
 
 #else
 
+static uint64_t EnumSystemLocales_guest_cb;
+
+static BOOL CALLBACK EnumSystemLocales_host_cb(WCHAR *str)
+{
+    struct qemu_EnumSystemLocales_cb call;
+    uint64_t *guest_func = TlsGetValue(kernel32_tls);
+    BOOL ret;
+
+    call.func = *guest_func;
+    call.str = QEMU_H2G(str);
+
+    WINE_TRACE("Calling guest function 0x%lx(%p).\n", call.func, str);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(EnumSystemLocales_guest_cb), QEMU_H2G(&call));
+    WINE_TRACE("Guest function returned %u.\n", ret);
+
+    return ret;
+}
+
 void qemu_EnumSystemLocalesA(struct qemu_syscall *call)
 {
-    struct qemu_EnumSystemLocalesA *c = (struct qemu_EnumSystemLocalesA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumSystemLocalesA(QEMU_G2H(c->lpfnLocaleEnum), c->dwFlags);
+    struct qemu_EnumSystemLocales *c = (struct qemu_EnumSystemLocales *)call;
+    uint64_t *old_tls = TlsGetValue(kernel32_tls);
+    WINE_TRACE("\n");
+
+    EnumSystemLocales_guest_cb = c->wrapper;
+    TlsSetValue(kernel32_tls, &c->lpfnLocaleEnum);
+    c->super.iret = EnumSystemLocalesA((LOCALE_ENUMPROCA)EnumSystemLocales_host_cb, c->dwFlags);
+
+    TlsSetValue(kernel32_tls, old_tls);
 }
 
 #endif
@@ -1272,10 +1310,11 @@ struct qemu_EnumSystemLocalesW
 
 WINBASEAPI BOOL WINAPI EnumSystemLocalesW(LOCALE_ENUMPROCW lpfnLocaleEnum, DWORD dwFlags)
 {
-    struct qemu_EnumSystemLocalesW call;
+    struct qemu_EnumSystemLocales call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMSYSTEMLOCALESW);
     call.lpfnLocaleEnum = (ULONG_PTR)lpfnLocaleEnum;
     call.dwFlags = dwFlags;
+    call.wrapper = (ULONG_PTR)EnumSystemLocales_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -1286,9 +1325,15 @@ WINBASEAPI BOOL WINAPI EnumSystemLocalesW(LOCALE_ENUMPROCW lpfnLocaleEnum, DWORD
 
 void qemu_EnumSystemLocalesW(struct qemu_syscall *call)
 {
-    struct qemu_EnumSystemLocalesW *c = (struct qemu_EnumSystemLocalesW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumSystemLocalesW(QEMU_G2H(c->lpfnLocaleEnum), c->dwFlags);
+    struct qemu_EnumSystemLocales *c = (struct qemu_EnumSystemLocales *)call;
+    uint64_t *old_tls = TlsGetValue(kernel32_tls);
+    WINE_TRACE("\n");
+
+    EnumSystemLocales_guest_cb = c->wrapper;
+    TlsSetValue(kernel32_tls, &c->lpfnLocaleEnum);
+    c->super.iret = EnumSystemLocalesW(EnumSystemLocales_host_cb, c->dwFlags);
+
+    TlsSetValue(kernel32_tls, old_tls);
 }
 
 #endif
