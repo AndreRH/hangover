@@ -65,7 +65,12 @@ static inline struct qemu_dsound *impl_from_IUnknown(IUnknown *iface)
 
 static void directsound_destroy(struct qemu_dsound *dsound)
 {
-    WINE_FIXME("Implement me!\n");
+    struct qemu_IDirectSound8Impl_Release call;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTSOUND8IMPL_RELEASE);
+    call.iface = (ULONG_PTR)dsound;
+
+    qemu_syscall(&call.super);
 }
 
 /* Inner IUnknown for (internal) aggregation. Implemented on the guest side and copypasted
@@ -193,10 +198,12 @@ void qemu_IDirectSound8Impl_Release(struct qemu_syscall *call)
 {
     struct qemu_IDirectSound8Impl_Release *c = (struct qemu_IDirectSound8Impl_Release *)call;
     struct qemu_dsound *dsound;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     dsound = QEMU_G2H(c->iface);
     c->super.iret = IDirectSound8_Release(dsound->host);
+    if (c->super.iret)
+        WINE_ERR("Expected to release the only reference held on the host inteface.\n");
 }
 
 #endif
