@@ -805,7 +805,8 @@ struct qemu_WS2_AcceptEx
 
 #ifdef QEMU_DLL_GUEST
 
-static BOOL WINAPI WS2_AcceptEx(SOCKET listener, SOCKET acceptor, PVOID dest, DWORD dest_len, DWORD local_addr_len, DWORD rem_addr_len, LPDWORD received, LPOVERLAPPED overlapped)
+static BOOL WINAPI WS2_AcceptEx(SOCKET listener, SOCKET acceptor, void *dest, DWORD dest_len, DWORD local_addr_len,
+        DWORD rem_addr_len, DWORD *received, OVERLAPPED *overlapped)
 {
     struct qemu_WS2_AcceptEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS2_ACCEPTEX);
@@ -828,8 +829,37 @@ static BOOL WINAPI WS2_AcceptEx(SOCKET listener, SOCKET acceptor, PVOID dest, DW
 void qemu_WS2_AcceptEx(struct qemu_syscall *call)
 {
     struct qemu_WS2_AcceptEx *c = (struct qemu_WS2_AcceptEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_AcceptEx(c->listener, c->acceptor, QEMU_G2H(c->dest), c->dest_len, c->local_addr_len, c->rem_addr_len, QEMU_G2H(c->received), QEMU_G2H(c->overlapped));
+    struct qemu_OVERLAPPED *ov32;
+    struct OVERLAPPED_data *ov_wrapper;
+    HANDLE guest_event;
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+    c->super.iret = p_AcceptEx(c->listener, c->acceptor, QEMU_G2H(c->dest), c->dest_len, c->local_addr_len,
+            c->rem_addr_len, QEMU_G2H(c->received), QEMU_G2H(c->overlapped));
+    return;
+#endif
+
+    ov32 = QEMU_G2H(c->overlapped);
+    if (!ov32)
+    {
+        WINE_WARN("overlapped is NULL, this is an error.\n");
+        c->super.iret = p_AcceptEx(c->listener, c->acceptor, QEMU_G2H(c->dest), c->dest_len, c->local_addr_len,
+                c->rem_addr_len, QEMU_G2H(c->received), NULL);
+        return;
+    }
+
+    ov_wrapper = p_alloc_OVERLAPPED_data(ov32, 0, TRUE);
+    ov_wrapper->wsa = TRUE;
+    ov_wrapper->wsa_flags = 0;
+    guest_event = HANDLE_g2h(ov32->hEvent);
+
+    c->super.iret = p_AcceptEx(c->listener, c->acceptor, QEMU_G2H(c->dest), c->dest_len, c->local_addr_len,
+            c->rem_addr_len, QEMU_G2H(c->received), &ov_wrapper->ov);
+
+    OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
+    ov32->hEvent = (ULONG_PTR)guest_event;
+    p_process_OVERLAPPED_data(c->super.iret, ov_wrapper);
 }
 
 #endif
