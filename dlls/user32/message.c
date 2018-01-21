@@ -73,17 +73,19 @@ WINUSERAPI LRESULT WINAPI SendMessageTimeoutW(HWND hwnd, UINT msg, WPARAM wparam
 void qemu_SendMessageTimeoutW(struct qemu_syscall *call)
 {
     struct qemu_SendMessageTimeoutW *c = (struct qemu_SendMessageTimeoutW *)call;
-    WINE_FIXME("Unverified!\n");
+    MSG msg_in;
+    MSG msg_out;
+    WINE_TRACE("\n");
 
-    switch (c->msg)
-    {
-        case WM_TIMER:
-        case WM_SYSTIMER:
-            WINE_FIXME("Do I have to fix up WM_TIMER.lParam here?\n");
-            break;
-    }
+    msg_in.hwnd = QEMU_G2H(c->hwnd);
+    msg_in.message = c->msg;
+    msg_in.wParam = c->wparam;
+    msg_in.lParam = c->lparam;
+    msg_guest_to_host(&msg_out, &msg_in);
 
     c->super.iret = SendMessageTimeoutW(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam, c->flags, c->timeout, QEMU_G2H(c->res_ptr));
+
+    msg_guest_to_host_return(&msg_in, &msg_out);
 }
 
 #endif
@@ -127,17 +129,19 @@ WINUSERAPI LRESULT WINAPI SendMessageTimeoutA(HWND hwnd, UINT msg, WPARAM wparam
 void qemu_SendMessageTimeoutA(struct qemu_syscall *call)
 {
     struct qemu_SendMessageTimeoutA *c = (struct qemu_SendMessageTimeoutA *)call;
-    WINE_FIXME("Unverified!\n");
+    MSG msg_in;
+    MSG msg_out;
+    WINE_TRACE("\n");
 
-    switch (c->msg)
-    {
-        case WM_TIMER:
-        case WM_SYSTIMER:
-            WINE_FIXME("Do I have to fix up WM_TIMER.lParam here?\n");
-            break;
-    }
+    msg_in.hwnd = QEMU_G2H(c->hwnd);
+    msg_in.message = c->msg;
+    msg_in.wParam = c->wparam;
+    msg_in.lParam = c->lparam;
+    msg_guest_to_host(&msg_out, &msg_in);
 
     c->super.iret = SendMessageTimeoutA(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam, c->flags, c->timeout, QEMU_G2H(c->res_ptr));
+
+    msg_guest_to_host_return(&msg_in, &msg_out);
 }
 
 #endif
