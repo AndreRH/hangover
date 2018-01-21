@@ -1491,6 +1491,7 @@ void qemu_WS_select(struct qemu_syscall *call)
 {
     struct qemu_WS_select *c = (struct qemu_WS_select *)call;
     WS_fd_set read, write, except;
+    WS_fd_set *pread = &read, *pwrite = &write, *pexcept = &except;
     WINE_TRACE("\n");
 
 #if HOST_BIT == GUEST_BIT
@@ -1501,19 +1502,35 @@ void qemu_WS_select(struct qemu_syscall *call)
 
     if (c->ws_readfds)
         WS_fd_set_g2h(&read, QEMU_G2H(c->ws_readfds));
-    if (c->ws_writefds)
+    else
+        pread = NULL;
+
+    /* If two or more input pointers are the same make sure that the converted pointers are the same too.
+     * This not only saves some conversion work, but it is also important for correct results. The tests
+     * break otherwise. */
+    if (c->ws_writefds == c->ws_readfds)
+        pwrite = pread;
+    else if (c->ws_writefds)
         WS_fd_set_g2h(&write, QEMU_G2H(c->ws_writefds));
-    if (c->ws_exceptfds)
+    else
+        pwrite = NULL;
+
+    if (c->ws_exceptfds == c->ws_readfds)
+        pexcept = pread;
+    else if (c->ws_exceptfds == c->ws_writefds)
+        pexcept = pwrite;
+    else if (c->ws_exceptfds)
         WS_fd_set_g2h(&except, QEMU_G2H(c->ws_exceptfds));
+    else
+        pexcept = NULL;
 
-    c->super.iret = p_select(c->nfds, c->ws_readfds ? &read : NULL, c->ws_writefds ? &write : NULL,
-            c->ws_exceptfds ? &except : NULL, QEMU_G2H(c->ws_timeout));
+    c->super.iret = p_select(c->nfds, pread, pwrite, pexcept, QEMU_G2H(c->ws_timeout));
 
-    if (c->ws_readfds)
+    if (pread)
         WS_fd_set_h2g(QEMU_G2H(c->ws_readfds), &read);
-    if (c->ws_writefds)
+    if (pwrite && pwrite != pread)
         WS_fd_set_h2g(QEMU_G2H(c->ws_writefds), &write);
-    if (c->ws_exceptfds)
+    if (pexcept && pexcept != pread && pexcept != pwrite)
         WS_fd_set_h2g(QEMU_G2H(c->ws_exceptfds), &except);
 }
 
