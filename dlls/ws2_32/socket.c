@@ -2961,8 +2961,8 @@ WINBASEAPI INT WINAPI WSAAsyncSelect(SOCKET s, HWND hWnd, UINT uMsg, LONG lEvent
     call.super.id = QEMU_SYSCALL_ID(CALL_WSAASYNCSELECT);
     call.s = guest_SOCKET_g2h(s);
     call.hWnd = (ULONG_PTR)hWnd;
-    call.uMsg = (ULONG_PTR)uMsg;
-    call.lEvent = (ULONG_PTR)lEvent;
+    call.uMsg = uMsg;
+    call.lEvent = lEvent;
 
     qemu_syscall(&call.super);
 
@@ -2974,7 +2974,7 @@ WINBASEAPI INT WINAPI WSAAsyncSelect(SOCKET s, HWND hWnd, UINT uMsg, LONG lEvent
 void qemu_WSAAsyncSelect(struct qemu_syscall *call)
 {
     struct qemu_WSAAsyncSelect *c = (struct qemu_WSAAsyncSelect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WSAAsyncSelect(c->s, QEMU_G2H(c->hWnd), c->uMsg, c->lEvent);
 }
 
@@ -3093,16 +3093,17 @@ struct qemu_WSASocketW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI SOCKET WINAPI WSASocketW(int af, int type, int protocol, LPWSAPROTOCOL_INFOW lpProtocolInfo, GROUP g, DWORD dwFlags)
+WINBASEAPI SOCKET WINAPI WSASocketW(int af, int type, int protocol, LPWSAPROTOCOL_INFOW lpProtocolInfo,
+        GROUP g, DWORD dwFlags)
 {
     struct qemu_WSASocketW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WSASOCKETW);
-    call.af = (ULONG_PTR)af;
-    call.type = (ULONG_PTR)type;
-    call.protocol = (ULONG_PTR)protocol;
+    call.af = af;
+    call.type = type;
+    call.protocol = protocol;
     call.lpProtocolInfo = (ULONG_PTR)lpProtocolInfo;
-    call.g = (ULONG_PTR)g;
-    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.g = g;
+    call.dwFlags = dwFlags;
 
     qemu_syscall(&call.super);
 
@@ -3114,7 +3115,7 @@ WINBASEAPI SOCKET WINAPI WSASocketW(int af, int type, int protocol, LPWSAPROTOCO
 void qemu_WSASocketW(struct qemu_syscall *call)
 {
     struct qemu_WSASocketW *c = (struct qemu_WSASocketW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
     c->super.iret = WSASocketW(c->af, c->type, c->protocol, QEMU_G2H(c->lpProtocolInfo), c->g, c->dwFlags);
@@ -5062,7 +5063,7 @@ WINBASEAPI INT WINAPI WSAEnumProtocolsA(LPINT protocols, LPWSAPROTOCOL_INFOA buf
 void qemu_WSAEnumProtocolsA(struct qemu_syscall *call)
 {
     struct qemu_WSAEnumProtocolsA *c = (struct qemu_WSAEnumProtocolsA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     /* WSAPROTOCOL_INFO has the same size in 32 and 64 bit. */
     c->super.iret = WSAEnumProtocolsA(QEMU_G2H(c->protocols), QEMU_G2H(c->buffer), QEMU_G2H(c->len));
