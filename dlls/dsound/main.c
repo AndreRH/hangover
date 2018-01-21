@@ -20,12 +20,8 @@
 
 #include <windows.h>
 #include <stdio.h>
-
-#ifdef QEMU_DLL_GUEST
-
-#else
-
-#endif
+#include <dsound.h>
+#include <dsconf.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -69,6 +65,32 @@ static const syscall_handler dll_functions[] =
     qemu_IDirectSound8Impl_SetCooperativeLevel,
     qemu_IDirectSound8Impl_SetSpeakerConfig,
     qemu_IDirectSound8Impl_VerifyCertification,
+    qemu_IDirectSoundBufferImpl_AcquireResources,
+    qemu_IDirectSoundBufferImpl_GetCaps,
+    qemu_IDirectSoundBufferImpl_GetCurrentPosition,
+    qemu_IDirectSoundBufferImpl_GetFormat,
+    qemu_IDirectSoundBufferImpl_GetFrequency,
+    qemu_IDirectSoundBufferImpl_GetObjectInPath,
+    qemu_IDirectSoundBufferImpl_GetPan,
+    qemu_IDirectSoundBufferImpl_GetStatus,
+    qemu_IDirectSoundBufferImpl_GetVolume,
+    qemu_IDirectSoundBufferImpl_Initialize,
+    qemu_IDirectSoundBufferImpl_Lock,
+    qemu_IDirectSoundBufferImpl_Play,
+    qemu_IDirectSoundBufferImpl_Release,
+    qemu_IDirectSoundBufferImpl_Restore,
+    qemu_IDirectSoundBufferImpl_SetCurrentPosition,
+    qemu_IDirectSoundBufferImpl_SetFormat,
+    qemu_IDirectSoundBufferImpl_SetFrequency,
+    qemu_IDirectSoundBufferImpl_SetFX,
+    qemu_IDirectSoundBufferImpl_SetPan,
+    qemu_IDirectSoundBufferImpl_SetVolume,
+    qemu_IDirectSoundBufferImpl_Stop,
+    qemu_IDirectSoundBufferImpl_Unlock,
+    qemu_IDirectSoundNotifyImpl_SetNotificationPositions,
+    qemu_IKsPropertySetImpl_Get,
+    qemu_IKsPropertySetImpl_QuerySupport,
+    qemu_IKsPropertySetImpl_Set,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)

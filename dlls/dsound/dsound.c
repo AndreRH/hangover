@@ -240,7 +240,7 @@ void qemu_IDirectSound8Impl_CreateSoundBuffer(struct qemu_syscall *call)
 {
     struct qemu_IDirectSound8Impl_CreateSoundBuffer *c = (struct qemu_IDirectSound8Impl_CreateSoundBuffer *)call;
     struct qemu_dsound *dsound;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     /* FIXME: DSBUFFERDESC will need conversion, WAVEFORMATEX should be fine. */
     dsound = QEMU_G2H(c->iface);

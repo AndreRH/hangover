@@ -8,10 +8,10 @@ VPATH=$(SRCDIR)
 
 all: dsound.dll qemu_dsound.dll.so
 
-dsound.dll: capture_g.o dsound.spec dsound_g.o dsound_main_g.o duplex_g.o main_g.o
+dsound.dll: buffer_g.o capture_g.o dsound.spec dsound_g.o dsound_main_g.o duplex_g.o main_g.o
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/dsound.spec *_g.o -o dsound.dll -nodefaultlibs -nostdlib -lwine -luuid -Wl,--image-base,0x1c0000000 -L../../$(WINE_DIR)/libs/wine
 
-qemu_dsound.dll.so: capture_h.o dsound_h.o dsound_main_h.o duplex_h.o main_h.o qemu_dsound.spec
+qemu_dsound.dll.so: buffer_h.o capture_h.o dsound_h.o dsound_main_h.o duplex_h.o main_h.o qemu_dsound.spec
 	$(WINEGCC) -shared $(SRCDIR)/qemu_dsound.spec *_h.o -o qemu_dsound.dll.so -ldsound
 
 %_g.o: %.c qemu_dsound.h Makefile $(SRCDIR)/Makefile
