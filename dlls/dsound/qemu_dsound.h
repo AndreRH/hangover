@@ -101,8 +101,9 @@ HRESULT DSOUND_CaptureCreate8(REFIID riid, void **ppv);
 HRESULT DSOUND_FullDuplexCreate(REFIID riid, void **ppv);
 HRESULT IKsPrivatePropertySetImpl_Create(REFIID riid, void **ppv);
 
-#else
+void buffer_init_guest(struct qemu_dsound_buffer *buffer, DWORD flags);
 
+#else
 
 void qemu_DirectSoundCaptureCreate(struct qemu_syscall *call);
 void qemu_DirectSoundCaptureCreate8(struct qemu_syscall *call);

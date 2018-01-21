@@ -387,6 +387,10 @@ void qemu_IDirectSoundBufferImpl_Release(struct qemu_syscall *call)
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_Release(buffer->host_buffer);
+    /* Release host_notify */
+    /* release host_3d_listener if it exists */
+    /* release host_3d_buffer if it exists */
+    /* release host_property */
 }
 
 #endif
@@ -1218,3 +1222,68 @@ void qemu_IKsPropertySetImpl_QuerySupport(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+static const IDirectSoundBuffer8Vtbl buffer_vtbl =
+{
+    IDirectSoundBufferImpl_QueryInterface,
+    IDirectSoundBufferImpl_AddRef,
+    IDirectSoundBufferImpl_Release,
+    IDirectSoundBufferImpl_GetCaps,
+    IDirectSoundBufferImpl_GetCurrentPosition,
+    IDirectSoundBufferImpl_GetFormat,
+    IDirectSoundBufferImpl_GetVolume,
+    IDirectSoundBufferImpl_GetPan,
+    IDirectSoundBufferImpl_GetFrequency,
+    IDirectSoundBufferImpl_GetStatus,
+    IDirectSoundBufferImpl_Initialize,
+    IDirectSoundBufferImpl_Lock,
+    IDirectSoundBufferImpl_Play,
+    IDirectSoundBufferImpl_SetCurrentPosition,
+    IDirectSoundBufferImpl_SetFormat,
+    IDirectSoundBufferImpl_SetVolume,
+    IDirectSoundBufferImpl_SetPan,
+    IDirectSoundBufferImpl_SetFrequency,
+    IDirectSoundBufferImpl_Stop,
+    IDirectSoundBufferImpl_Unlock,
+    IDirectSoundBufferImpl_Restore,
+    IDirectSoundBufferImpl_SetFX,
+    IDirectSoundBufferImpl_AcquireResources,
+    IDirectSoundBufferImpl_GetObjectInPath
+};
+
+static const IDirectSoundNotifyVtbl notify_vtbl =
+{
+    IDirectSoundNotifyImpl_QueryInterface,
+    IDirectSoundNotifyImpl_AddRef,
+    IDirectSoundNotifyImpl_Release,
+    IDirectSoundNotifyImpl_SetNotificationPositions,
+};
+
+static const IKsPropertySetVtbl property_set_vtbl =
+{
+    IKsPropertySetImpl_QueryInterface,
+    IKsPropertySetImpl_AddRef,
+    IKsPropertySetImpl_Release,
+    IKsPropertySetImpl_Get,
+    IKsPropertySetImpl_Set,
+    IKsPropertySetImpl_QuerySupport
+};
+
+void buffer_init_guest(struct qemu_dsound_buffer *buffer, DWORD flags)
+{
+    buffer->IDirectSoundBuffer8_iface.lpVtbl = &buffer_vtbl;
+    buffer->IDirectSoundNotify_iface.lpVtbl = &notify_vtbl;
+    /* buffer->IDirectSound3DBuffer_iface.lpVtbl = &ds3dbvt; */
+    buffer->IKsPropertySet_iface.lpVtbl = &property_set_vtbl;
+
+    buffer->ref = 1;
+    buffer->refn = 0;
+    buffer->ref_3d = 0;
+    buffer->refiks = 0;
+    buffer->iface_count = 1;
+
+    buffer->flags = flags;
+}
+
+#endif

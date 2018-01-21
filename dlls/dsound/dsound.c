@@ -25,6 +25,9 @@
 #include <dsound.h>
 #include <dsconf.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_dsound.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_dsound.h"
@@ -215,6 +218,7 @@ struct qemu_IDirectSound8Impl_CreateSoundBuffer
     uint64_t dsbd;
     uint64_t ppdsb;
     uint64_t lpunk;
+    uint64_t flags;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -223,13 +227,39 @@ static HRESULT WINAPI IDirectSound8Impl_CreateSoundBuffer(IDirectSound8 *iface, 
 {
     struct qemu_dsound *dsound = impl_from_IDirectSound8(iface);
     struct qemu_IDirectSound8Impl_CreateSoundBuffer call;
+    struct qemu_dsound_buffer *buffer;
+
+    if (dsbd == NULL)
+    {
+        WINE_WARN("invalid parameter: dsbd == NULL\n");
+        return DSERR_INVALIDPARAM;
+    }
+
+    if (dsbd->dwSize != sizeof(DSBUFFERDESC) &&
+            dsbd->dwSize != sizeof(DSBUFFERDESC1))
+    {
+        WINE_WARN("invalid parameter: dsbd\n");
+        return DSERR_INVALIDPARAM;
+    }
+
+    if (ppdsb == NULL)
+    {
+        WINE_WARN("invalid parameter: ppdsb == NULL\n");
+        return DSERR_INVALIDPARAM;
+    }
+    *ppdsb = NULL;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTSOUND8IMPL_CREATESOUNDBUFFER);
     call.iface = (ULONG_PTR)dsound;
     call.dsbd = (ULONG_PTR)dsbd;
-    call.ppdsb = (ULONG_PTR)ppdsb;
     call.lpunk = (ULONG_PTR)lpunk;
-
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    buffer = (struct qemu_dsound_buffer *)(ULONG_PTR)call.ppdsb;
+    buffer_init_guest(buffer, call.flags);
+    *ppdsb = (IDirectSoundBuffer *)&buffer->IDirectSoundBuffer8_iface;
 
     return call.super.iret;
 }
@@ -240,11 +270,41 @@ void qemu_IDirectSound8Impl_CreateSoundBuffer(struct qemu_syscall *call)
 {
     struct qemu_IDirectSound8Impl_CreateSoundBuffer *c = (struct qemu_IDirectSound8Impl_CreateSoundBuffer *)call;
     struct qemu_dsound *dsound;
+    DSBUFFERDESC stack, *desc = &stack;
+    struct qemu_dsound_buffer *buffer;
     WINE_TRACE("\n");
 
-    /* FIXME: DSBUFFERDESC will need conversion, WAVEFORMATEX should be fine. */
     dsound = QEMU_G2H(c->iface);
-    c->super.iret = IDirectSound8_CreateSoundBuffer(dsound->host, QEMU_G2H(c->dsbd), QEMU_G2H(c->ppdsb), QEMU_G2H(c->lpunk));
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->dsbd);
+#else
+    DSBUFFERDESC_g2h(desc, QEMU_G2H(c->dsbd));
+#endif
+
+    buffer = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*buffer));
+    c->super.iret = IDirectSound8_CreateSoundBuffer(dsound->host, desc, (IDirectSoundBuffer **)&buffer->host_buffer,
+            QEMU_G2H(c->lpunk));
+    if (FAILED(c->super.iret))
+    {
+        WINE_WARN("Failed to create a dsound buffer.\n");
+        HeapFree(GetProcessHeap(), 0, buffer);
+        return;
+    }
+
+    /* Fetch interfaces */
+    IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
+            &IID_IDirectSoundNotify, (void **)&buffer->host_notify);
+    IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
+            &IID_IDirectSound3DListener, (void **)&buffer->host_3d_listener);
+    IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
+            &IID_IDirectSound3DBuffer, (void **)&buffer->host_3d_buffer);
+    IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
+            &IID_IKsPropertySet, (void **)&buffer->host_property);
+
+    c->ppdsb = QEMU_H2G(buffer);
+    c->flags = 0;
+    if (buffer->host_3d_buffer)
+        c->flags |= DSOUND_BUFFER_FLAG_3D;
 }
 
 #endif

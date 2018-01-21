@@ -1,5 +1,6 @@
 #ifndef HAVE_QEMU_WS2DEF_H
 #define HAVE_QEMU_WS2DEF_H
+
 struct qemu_SOCKET_ADDRESS
 {
         qemu_ptr        lpSockaddr;
