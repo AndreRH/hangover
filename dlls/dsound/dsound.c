@@ -235,6 +235,7 @@ void qemu_IDirectSound8Impl_CreateSoundBuffer(struct qemu_syscall *call)
     struct qemu_dsound *dsound;
     WINE_FIXME("Unverified!\n");
 
+    /* FIXME: DSBUFFERDESC will need conversion, WAVEFORMATEX should be fine. */
     dsound = QEMU_G2H(c->iface);
     c->super.iret = IDirectSound8_CreateSoundBuffer(dsound->host, QEMU_G2H(c->dsbd), QEMU_G2H(c->ppdsb), QEMU_G2H(c->lpunk));
 }
@@ -271,6 +272,7 @@ void qemu_IDirectSound8Impl_GetCaps(struct qemu_syscall *call)
     struct qemu_dsound *dsound;
     WINE_FIXME("Unverified!\n");
 
+    /* DSCAPS is the same in 32 and 64 bit. */
     dsound = QEMU_G2H(c->iface);
     c->super.iret = IDirectSound8_GetCaps(dsound->host, QEMU_G2H(c->dscaps));
 }
@@ -345,7 +347,7 @@ void qemu_IDirectSound8Impl_SetCooperativeLevel(struct qemu_syscall *call)
 {
     struct qemu_IDirectSound8Impl_SetCooperativeLevel *c = (struct qemu_IDirectSound8Impl_SetCooperativeLevel *)call;
     struct qemu_dsound *dsound;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     dsound = QEMU_G2H(c->iface);
     c->super.iret = IDirectSound8_SetCooperativeLevel(dsound->host, QEMU_G2H(c->hwnd), c->level);
@@ -487,7 +489,7 @@ void qemu_IDirectSound8Impl_Initialize(struct qemu_syscall *call)
 {
     struct qemu_IDirectSound8Impl_Initialize *c = (struct qemu_IDirectSound8Impl_Initialize *)call;
     struct qemu_dsound *dsound;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     dsound = QEMU_G2H(c->iface);
     c->super.iret = IDirectSound8_Initialize(dsound->host, QEMU_G2H(c->lpcGuid));
