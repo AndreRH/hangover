@@ -879,7 +879,10 @@ static BOOL WINAPI WS2_DisconnectEx(SOCKET s, LPOVERLAPPED ov, DWORD flags, DWOR
 {
     struct qemu_WS2_DisconnectEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS2_DISCONNECTEX);
-    call.s = s;
+    if (s == INVALID_SOCKET)
+        call.s = (LONG_PTR)s;
+    else
+        call.s = s;
     call.ov = (ULONG_PTR)ov;
     call.flags = flags;
     call.reserved = reserved;
@@ -894,8 +897,34 @@ static BOOL WINAPI WS2_DisconnectEx(SOCKET s, LPOVERLAPPED ov, DWORD flags, DWOR
 void qemu_WS2_DisconnectEx(struct qemu_syscall *call)
 {
     struct qemu_WS2_DisconnectEx *c = (struct qemu_WS2_DisconnectEx *)call;
-    WINE_FIXME("Unverified!\n");
+    struct qemu_OVERLAPPED *ov32;
+    struct OVERLAPPED_data *ov_wrapper;
+    HANDLE guest_event;
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
     c->super.iret = p_DisconnectEx(c->s, QEMU_G2H(c->ov), c->flags, c->reserved);
+    return;
+#endif
+
+    ov32 = QEMU_G2H(c->ov);
+    if (!ov32)
+    {
+        WINE_WARN("overlapped is NULL, this is an error.\n");
+        c->super.iret = p_DisconnectEx(c->s, NULL, c->flags, c->reserved);
+        return;
+    }
+
+    ov_wrapper = p_alloc_OVERLAPPED_data(ov32, 0, TRUE);
+    ov_wrapper->wsa = TRUE;
+    ov_wrapper->wsa_flags = 0;
+    guest_event = HANDLE_g2h(ov32->hEvent);
+
+    c->super.iret = p_DisconnectEx(c->s, &ov_wrapper->ov, c->flags, c->reserved);
+
+    OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
+    ov32->hEvent = (ULONG_PTR)guest_event;
+    p_process_OVERLAPPED_data(c->super.iret, ov_wrapper);
 }
 
 #endif
