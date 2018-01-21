@@ -131,7 +131,7 @@ struct qemu_IDirectSoundBufferImpl_SetFormat
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectSoundBufferImpl_SetFormat(IDirectSoundBuffer8 *iface, LPCWAVEFORMATEX wfex)
+static HRESULT WINAPI IDirectSoundBufferImpl_SetFormat(IDirectSoundBuffer8 *iface, const WAVEFORMATEX *wfex)
 {
     struct qemu_dsound_buffer *buffer = impl_from_IDirectSoundBuffer8(iface);
     struct qemu_IDirectSoundBufferImpl_SetFormat call;
@@ -150,8 +150,9 @@ void qemu_IDirectSoundBufferImpl_SetFormat(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_SetFormat *c = (struct qemu_IDirectSoundBufferImpl_SetFormat *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
+    /* WAVEFORMATEX has the same size in 32 and 64 bit. */
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_SetFormat(buffer->host_buffer, QEMU_G2H(c->wfex));
 }
