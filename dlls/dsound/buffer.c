@@ -365,16 +365,47 @@ struct qemu_IDirectSoundBufferImpl_Release
 
 #ifdef QEMU_DLL_GUEST
 
+static inline BOOL is_primary_buffer(struct qemu_dsound_buffer *buffer)
+{
+    return (buffer->flags & DSBCAPS_PRIMARYBUFFER) != 0;
+}
+
+LONG capped_refcount_dec(LONG *out)
+{
+    LONG ref, oldref;
+    do
+    {
+        ref = *out;
+        if(!ref)
+            return 0;
+        oldref = InterlockedCompareExchange(out, ref - 1, ref);
+    } while(oldref != ref);
+
+    return ref - 1;
+}
+
 static ULONG WINAPI IDirectSoundBufferImpl_Release(IDirectSoundBuffer8 *iface)
 {
     struct qemu_dsound_buffer *buffer = impl_from_IDirectSoundBuffer8(iface);
-    struct qemu_IDirectSoundBufferImpl_Release call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTSOUNDBUFFERIMPL_RELEASE);
-    call.iface = (ULONG_PTR)buffer;
+    ULONG ref;
 
-    qemu_syscall(&call.super);
+    if (is_primary_buffer(buffer))
+    {
+        WINE_FIXME("Whut is this?\n");
+        ref = capped_refcount_dec(&buffer->ref);
+        if(!ref)
+            capped_refcount_dec(&buffer->iface_count);
+        WINE_TRACE("(%p) ref is now: %u\n", buffer, ref);
+        return ref;
+    }
 
-    return call.super.iret;
+    ref = InterlockedDecrement(&buffer->ref);
+    if (!ref && !InterlockedDecrement(&buffer->iface_count))
+            secondarybuffer_destroy(buffer);
+
+    WINE_TRACE("(%p) ref is now %d\n", buffer, ref);
+
+    return ref;
 }
 
 #else
@@ -990,9 +1021,19 @@ static HRESULT WINAPI IDirectSoundBufferImpl_QueryInterface(IDirectSoundBuffer8 
     *obj = NULL;	/* assume failure */
 
     if (IsEqualGUID(riid, &IID_IUnknown) ||
-            IsEqualGUID(riid, &IID_IDirectSoundBuffer) ||
-            IsEqualGUID(riid, &IID_IDirectSoundBuffer8))
+            IsEqualGUID(riid, &IID_IDirectSoundBuffer))
     {
+        IDirectSoundBuffer8_AddRef(iface);
+        *obj = iface;
+        return S_OK;
+    }
+    if (IsEqualGUID( &IID_IDirectSoundBuffer8, riid ))
+    {
+        if (is_primary_buffer(buffer))
+        {
+            WINE_WARN("app requested DirectSoundBuffer8 on primary buffer\n");
+            return E_NOINTERFACE;
+        }
         IDirectSoundBuffer8_AddRef(iface);
         *obj = iface;
         return S_OK;
@@ -1000,6 +1041,12 @@ static HRESULT WINAPI IDirectSoundBufferImpl_QueryInterface(IDirectSoundBuffer8 
 
     if (IsEqualGUID(&IID_IDirectSoundNotify, riid))
     {
+        if (is_primary_buffer(buffer))
+        {
+            /* Wine isn't sure if this handling is correct. */
+            WINE_ERR("app requested IDirectSoundNotify on primary buffer\n");
+            return E_NOINTERFACE;
+        }
         IDirectSoundNotify_AddRef(&buffer->IDirectSoundNotify_iface);
         *obj = &buffer->IDirectSoundNotify_iface;
         return S_OK;
@@ -1007,7 +1054,13 @@ static HRESULT WINAPI IDirectSoundBufferImpl_QueryInterface(IDirectSoundBuffer8 
 
     if (IsEqualGUID(&IID_IDirectSound3DBuffer, riid))
     {
-        if(buffer->flags & DSOUND_BUFFER_FLAG_3D)
+        if (is_primary_buffer(buffer))
+        {
+            WINE_ERR("app requested IDirectSound3DBuffer on primary buffer\n");
+            return E_NOINTERFACE;
+        }
+
+        if (buffer->flags & DSBCAPS_CTRL3D)
         {
             IDirectSound3DBuffer_AddRef(&buffer->IDirectSound3DBuffer_iface);
             *obj = &buffer->IDirectSound3DBuffer_iface;
@@ -1019,8 +1072,14 @@ static HRESULT WINAPI IDirectSoundBufferImpl_QueryInterface(IDirectSoundBuffer8 
 
     if (IsEqualGUID( &IID_IDirectSound3DListener, riid))
     {
-        WINE_ERR("app requested IDirectSound3DListener on secondary buffer\n");
-        return E_NOINTERFACE;
+        if (!is_primary_buffer(buffer))
+        {
+            WINE_ERR("app requested IDirectSound3DListener on secondary buffer\n");
+            return E_NOINTERFACE;
+        }
+        *obj = &buffer->IDirectSound3DListener_iface;
+        IDirectSound3DListener_AddRef(&buffer->IDirectSound3DListener_iface);
+        return S_OK;
     }
 
     if (IsEqualGUID( &IID_IKsPropertySet, riid))
@@ -1064,24 +1123,22 @@ static ULONG WINAPI IKsPropertySetImpl_AddRef(IKsPropertySet *iface)
 static ULONG WINAPI IKsPropertySetImpl_Release(IKsPropertySet *iface)
 {
     struct qemu_dsound_buffer *buffer = impl_from_IKsPropertySet(iface);
-    ULONG ref = 1;
+    ULONG ref;
 
-    WINE_FIXME("Implement me\n");
-    /*
-    if (is_primary_buffer(This)){
-        ref = capped_refcount_dec(&This->refiks);
+    if (is_primary_buffer(buffer))
+    {
+        ref = capped_refcount_dec(&buffer->refiks);
         if(!ref)
-            capped_refcount_dec(&This->numIfaces);
-        TRACE("(%p) ref is now: %d\n", This, ref);
+            capped_refcount_dec(&buffer->iface_count);
+        WINE_TRACE("(%p) ref is now: %d\n", buffer, ref);
         return ref;
     }
 
-    ref = InterlockedDecrement(&This->refiks);
-    if (!ref && !InterlockedDecrement(&This->numIfaces))
-        secondarybuffer_destroy(This);
+    ref = InterlockedDecrement(&buffer->refiks);
+    if (!ref && !InterlockedDecrement(&buffer->iface_count))
+        secondarybuffer_destroy(buffer);
 
-    TRACE("(%p) ref is now %d\n", This, ref);
-    */
+    WINE_TRACE("(%p) ref is now %d\n", buffer, ref);
 
     return ref;
 }

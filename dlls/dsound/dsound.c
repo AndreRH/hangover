@@ -218,7 +218,6 @@ struct qemu_IDirectSound8Impl_CreateSoundBuffer
     uint64_t dsbd;
     uint64_t ppdsb;
     uint64_t lpunk;
-    uint64_t flags;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -258,7 +257,7 @@ static HRESULT WINAPI IDirectSound8Impl_CreateSoundBuffer(IDirectSound8 *iface, 
         return call.super.iret;
 
     buffer = (struct qemu_dsound_buffer *)(ULONG_PTR)call.ppdsb;
-    buffer_init_guest(buffer, call.flags);
+    buffer_init_guest(buffer, dsbd->dwFlags);
     *ppdsb = (IDirectSoundBuffer *)&buffer->IDirectSoundBuffer8_iface;
 
     return call.super.iret;
@@ -293,18 +292,21 @@ void qemu_IDirectSound8Impl_CreateSoundBuffer(struct qemu_syscall *call)
 
     /* Fetch interfaces */
     IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
-            &IID_IDirectSoundNotify, (void **)&buffer->host_notify);
-    IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
-            &IID_IDirectSound3DListener, (void **)&buffer->host_3d_listener);
-    IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
-            &IID_IDirectSound3DBuffer, (void **)&buffer->host_3d_buffer);
-    IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
             &IID_IKsPropertySet, (void **)&buffer->host_property);
+    if (desc->dwFlags & DSBCAPS_PRIMARYBUFFER)
+    {
+        IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
+                &IID_IDirectSound3DListener, (void **)&buffer->host_3d_listener);
+    }
+    else
+    {
+        IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
+                &IID_IDirectSoundNotify, (void **)&buffer->host_notify);
+        IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
+                &IID_IDirectSound3DBuffer, (void **)&buffer->host_3d_buffer);
+    }
 
     c->ppdsb = QEMU_H2G(buffer);
-    c->flags = 0;
-    if (buffer->host_3d_buffer)
-        c->flags |= DSOUND_BUFFER_FLAG_3D;
 }
 
 #endif

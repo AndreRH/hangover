@@ -53,9 +53,6 @@ enum dsound_calls
     CALL_IKSPROPERTYSETIMPL_SET,
 };
 
-#define DSOUND_BUFFER_FLAG_PRIMARY  0x1
-#define DSOUND_BUFFER_FLAG_3D       0x2
-
 struct qemu_dsound_buffer
 {
     /* Guest fields. */
