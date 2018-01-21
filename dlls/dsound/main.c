@@ -52,7 +52,6 @@ static const syscall_handler dll_functions[] =
     qemu_DirectSoundCaptureEnumerateA,
     qemu_DirectSoundCaptureEnumerateW,
     qemu_DirectSoundCreate,
-    qemu_DirectSoundCreate8,
     qemu_DirectSoundEnumerateA,
     qemu_DirectSoundEnumerateW,
     qemu_DirectSoundFullDuplexCreate,
@@ -60,6 +59,16 @@ static const syscall_handler dll_functions[] =
     qemu_DllRegisterServer,
     qemu_DllUnregisterServer,
     qemu_GetDeviceID,
+    qemu_IDirectSound8Impl_Compact,
+    qemu_IDirectSound8Impl_CreateSoundBuffer,
+    qemu_IDirectSound8Impl_DuplicateSoundBuffer,
+    qemu_IDirectSound8Impl_GetCaps,
+    qemu_IDirectSound8Impl_GetSpeakerConfig,
+    qemu_IDirectSound8Impl_Initialize,
+    qemu_IDirectSound8Impl_Release,
+    qemu_IDirectSound8Impl_SetCooperativeLevel,
+    qemu_IDirectSound8Impl_SetSpeakerConfig,
+    qemu_IDirectSound8Impl_VerifyCertification,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
