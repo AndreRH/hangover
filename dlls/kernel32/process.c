@@ -1171,15 +1171,18 @@ struct qemu_GetProcessWorkingSetSize
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetProcessWorkingSetSize(HANDLE hProcess, PSIZE_T minset, PSIZE_T maxset)
+WINBASEAPI BOOL WINAPI GetProcessWorkingSetSize(HANDLE hProcess, SIZE_T *minset, SIZE_T *maxset)
 {
     struct qemu_GetProcessWorkingSetSize call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCESSWORKINGSETSIZE);
     call.hProcess = guest_HANDLE_g2h(hProcess);
-    call.minset = (ULONG_PTR)minset;
-    call.maxset = (ULONG_PTR)maxset;
 
     qemu_syscall(&call.super);
+
+    if (*minset)
+        *minset = call.minset;
+    if (*maxset)
+        *maxset = call.maxset;
 
     return call.super.iret;
 }
@@ -1189,8 +1192,17 @@ WINBASEAPI BOOL WINAPI GetProcessWorkingSetSize(HANDLE hProcess, PSIZE_T minset,
 void qemu_GetProcessWorkingSetSize(struct qemu_syscall *call)
 {
     struct qemu_GetProcessWorkingSetSize *c = (struct qemu_GetProcessWorkingSetSize *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetProcessWorkingSetSize(QEMU_G2H(c->hProcess), QEMU_G2H(c->minset), QEMU_G2H(c->maxset));
+    SIZE_T minset, maxset;
+
+    WINE_TRACE("\n");
+    c->super.iret = GetProcessWorkingSetSize(QEMU_G2H(c->hProcess), &minset, &maxset);
+
+    /* Currently this is a stub in Wine that returns a hardcoded value. */
+    if (minset != 32*1024*1024 || maxset != 32*1024*1024)
+        WINE_FIXME("Somebody implemented this properly in Wine, see if the wrapper is still doing the right thing!\n");
+
+    c->minset = minset;
+    c->maxset = maxset;
 }
 
 #endif
