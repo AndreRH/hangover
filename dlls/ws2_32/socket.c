@@ -914,7 +914,8 @@ struct qemu_WS2_ConnectEx
 
 #ifdef QEMU_DLL_GUEST
 
-static BOOL WINAPI WS2_ConnectEx(SOCKET s, const struct sockaddr *name, int namelen, PVOID sendBuf, DWORD sendBufLen, LPDWORD sent, LPOVERLAPPED ov)
+static BOOL WINAPI WS2_ConnectEx(SOCKET s, const struct sockaddr *name, int namelen, void *sendBuf, DWORD sendBufLen,
+        DWORD *sent, OVERLAPPED *ov)
 {
     struct qemu_WS2_ConnectEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS2_CONNECTEX);
@@ -936,8 +937,38 @@ static BOOL WINAPI WS2_ConnectEx(SOCKET s, const struct sockaddr *name, int name
 void qemu_WS2_ConnectEx(struct qemu_syscall *call)
 {
     struct qemu_WS2_ConnectEx *c = (struct qemu_WS2_ConnectEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_ConnectEx(c->s, QEMU_G2H(c->name), c->namelen, QEMU_G2H(c->sendBuf), c->sendBufLen, QEMU_G2H(c->sent), QEMU_G2H(c->ov));
+    struct qemu_OVERLAPPED *ov32;
+    struct OVERLAPPED_data *ov_wrapper;
+    HANDLE guest_event;
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+    c->super.iret = p_ConnectEx(c->s, QEMU_G2H(c->name), c->namelen, QEMU_G2H(c->sendBuf), c->sendBufLen,
+            QEMU_G2H(c->sent), QEMU_G2H(c->ov));
+    return;
+#endif
+
+    ov32 = QEMU_G2H(c->ov);
+    if (!ov32)
+    {
+        WINE_WARN("overlapped is NULL, this is an error.\n");
+        c->super.iret = p_ConnectEx(c->s, QEMU_G2H(c->name), c->namelen, QEMU_G2H(c->sendBuf), c->sendBufLen,
+                QEMU_G2H(c->sent), NULL);
+        return;
+    }
+
+    ov_wrapper = p_alloc_OVERLAPPED_data(ov32, 0, TRUE);
+    ov_wrapper->wsa = TRUE;
+    ov_wrapper->wsa_flags = 0;
+    guest_event = HANDLE_g2h(ov32->hEvent);
+
+    c->super.iret = p_ConnectEx(c->s, QEMU_G2H(c->name), c->namelen, QEMU_G2H(c->sendBuf), c->sendBufLen,
+            QEMU_G2H(c->sent), &ov_wrapper->ov);
+
+    OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
+    ov32->hEvent = (ULONG_PTR)guest_event;
+    p_process_OVERLAPPED_data(c->super.iret, ov_wrapper);
+
 }
 
 #endif
