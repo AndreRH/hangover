@@ -299,7 +299,7 @@ void qemu_IDirectSoundBufferImpl_Play(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_Play *c = (struct qemu_IDirectSoundBufferImpl_Play *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_Play(buffer->host_buffer, c->reserved1, c->reserved2, c->flags);
@@ -457,7 +457,7 @@ void qemu_IDirectSoundBufferImpl_GetCurrentPosition(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_GetCurrentPosition *c = (struct qemu_IDirectSoundBufferImpl_GetCurrentPosition *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_GetCurrentPosition(buffer->host_buffer, QEMU_G2H(c->playpos), QEMU_G2H(c->writepos));
@@ -627,7 +627,7 @@ void qemu_IDirectSoundBufferImpl_SetCurrentPosition(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_SetCurrentPosition *c = (struct qemu_IDirectSoundBufferImpl_SetCurrentPosition *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_SetCurrentPosition(buffer->host_buffer, c->newpos);
