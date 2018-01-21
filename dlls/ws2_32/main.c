@@ -50,11 +50,11 @@ static const syscall_handler dll_functions[] =
 {
     qemu___WSAFDIsSet,
     qemu_FreeAddrInfoExW,
-    qemu_FreeAddrInfoW,
+    qemu_WS_freeaddrinfo,
     qemu_GetAddrInfoExCancel,
     qemu_GetAddrInfoExOverlappedResult,
     qemu_GetAddrInfoExW,
-    qemu_GetAddrInfoW,
+    qemu_WS_getaddrinfo,
     qemu_GetNameInfoW,
     qemu_InetNtopW,
     qemu_InetPtonW,

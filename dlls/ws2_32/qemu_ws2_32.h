@@ -146,11 +146,9 @@ extern const struct qemu_ops *qemu_ops;
 
 void qemu___WSAFDIsSet(struct qemu_syscall *call);
 void qemu_FreeAddrInfoExW(struct qemu_syscall *call);
-void qemu_FreeAddrInfoW(struct qemu_syscall *call);
 void qemu_GetAddrInfoExCancel(struct qemu_syscall *call);
 void qemu_GetAddrInfoExOverlappedResult(struct qemu_syscall *call);
 void qemu_GetAddrInfoExW(struct qemu_syscall *call);
-void qemu_GetAddrInfoW(struct qemu_syscall *call);
 void qemu_GetNameInfoW(struct qemu_syscall *call);
 void qemu_InetNtopW(struct qemu_syscall *call);
 void qemu_InetPtonW(struct qemu_syscall *call);

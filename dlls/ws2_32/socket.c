@@ -31,6 +31,7 @@
 #include "thunk/qemu_windows.h"
 #include "thunk/qemu_winsock2.h"
 #include "thunk/qemu_mswsock.h"
+#include "thunk/qemu_ws2tcpip.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -38,6 +39,7 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <wine/unicode.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_ws2_32);
 #endif
 
@@ -2292,13 +2294,40 @@ WINBASEAPI void WINAPI WS_freeaddrinfo(struct addrinfo *res)
     qemu_syscall(&call.super);
 }
 
+WINBASEAPI void WINAPI FreeAddrInfoW(PADDRINFOW res)
+{
+    struct qemu_WS_freeaddrinfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_FREEADDRINFOW);
+    call.res = (ULONG_PTR)res;
+
+    qemu_syscall(&call.super);
+}
+
 #else
 
 void qemu_WS_freeaddrinfo(struct qemu_syscall *call)
 {
     struct qemu_WS_freeaddrinfo *c = (struct qemu_WS_freeaddrinfo *)call;
-    WINE_FIXME("Unverified!\n");
-    p_freeaddrinfo(QEMU_G2H(c->res));
+    struct qemu_WS_addrinfo *info, *next;
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_FREEADDRINFOW))
+        FreeAddrInfoW(QEMU_G2H(c->res));
+    else
+        p_freeaddrinfo(QEMU_G2H(c->res));
+    return;
+#endif
+
+    info = QEMU_G2H(c->res);
+    while(info)
+    {
+        next = (struct qemu_WS_addrinfo *)(ULONG_PTR)info->ai_next;
+        HeapFree(GetProcessHeap(), 0, (void *)(ULONG_PTR)info->ai_canonname);
+        HeapFree(GetProcessHeap(), 0, (void *)(ULONG_PTR)info->ai_addr);
+        HeapFree(GetProcessHeap(), 0, info);
+        info = next;
+    }
 }
 
 #endif
@@ -2325,6 +2354,26 @@ WINBASEAPI int WINAPI WS_getaddrinfo(LPCSTR nodename, LPCSTR servname, const str
 
     qemu_syscall(&call.super);
 
+    if (res)
+        *res = (struct addrinfo *)(ULONG_PTR)call.res;
+
+    return call.super.iret;
+}
+
+WINBASEAPI int WINAPI GetAddrInfoW(LPCWSTR nodename, LPCWSTR servname, const ADDRINFOW *hints, ADDRINFOW **res)
+{
+    struct qemu_WS_getaddrinfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETADDRINFOW);
+    call.nodename = (ULONG_PTR)nodename;
+    call.servname = (ULONG_PTR)servname;
+    call.hints = (ULONG_PTR)hints;
+    call.res = (ULONG_PTR)res;
+
+    qemu_syscall(&call.super);
+
+    if (res)
+        *res = (ADDRINFOW *)(ULONG_PTR)call.res;
+
     return call.super.iret;
 }
 
@@ -2333,8 +2382,101 @@ WINBASEAPI int WINAPI WS_getaddrinfo(LPCSTR nodename, LPCSTR servname, const str
 void qemu_WS_getaddrinfo(struct qemu_syscall *call)
 {
     struct qemu_WS_getaddrinfo *c = (struct qemu_WS_getaddrinfo *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_getaddrinfo(QEMU_G2H(c->nodename), QEMU_G2H(c->servname), QEMU_G2H(c->hints), QEMU_G2H(c->res));
+    ADDRINFOW *res, *hints = NULL, *conv = NULL;
+    struct qemu_WS_addrinfo *res32 = NULL, *next, *cur = NULL, *hints_in;
+    void *ptr;
+    size_t len;
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+    hints = QEMU_G2H(c->hints);
+    res = NULL;
+#else
+    for (hints_in = QEMU_G2H(c->hints); hints_in; hints_in = (void *)(ULONG_PTR)hints_in->ai_next)
+    {
+        res = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*res));
+        if (conv)
+            conv->ai_next = res;
+
+        res->ai_flags = hints_in->ai_flags;
+        res->ai_family = hints_in->ai_family;
+        res->ai_socktype = hints_in->ai_socktype;
+        res->ai_protocol = hints_in->ai_protocol;
+        res->ai_addrlen = hints_in->ai_addrlen;
+        res->ai_canonname = (WCHAR *)(ULONG_PTR)hints_in->ai_canonname;
+        res->ai_addr = (struct WS_sockaddr *)(ULONG_PTR)hints_in->ai_addr;
+
+        conv = res;
+        if (!hints)
+            hints = res;
+    }
+    res = conv = NULL;
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_GETADDRINFOW))
+    {
+        c->super.iret = GetAddrInfoW(QEMU_G2H(c->nodename), QEMU_G2H(c->servname), hints, c->res ? &res : NULL);
+    }
+    else
+    {
+        c->super.iret = p_getaddrinfo(QEMU_G2H(c->nodename), QEMU_G2H(c->servname), (ADDRINFOA *)hints,
+                c->res ? (ADDRINFOA **)&res : NULL);
+    }
+
+#if HOST_BIT == GUEST_BIT
+    c->res = QEMU_H2G(res);
+    return;
+#endif
+
+    for (conv = res; conv; conv = conv->ai_next)
+    {
+        next = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*next));
+        if (cur)
+            cur->ai_next = (ULONG_PTR)next;
+
+        next->ai_flags = conv->ai_flags;
+        next->ai_family = conv->ai_family;
+        next->ai_socktype = conv->ai_socktype;
+        next->ai_protocol = conv->ai_protocol;
+        next->ai_addrlen = conv->ai_addrlen;
+
+        if (conv->ai_canonname)
+        {
+            if (c->super.id == QEMU_SYSCALL_ID(CALL_GETADDRINFOW))
+                len = (strlenW(conv->ai_canonname) + 1) * 2;
+            else
+                len = strlen((char *)conv->ai_canonname) + 1;
+
+            ptr = HeapAlloc(GetProcessHeap(), 0, len);
+            memcpy(ptr, conv->ai_canonname, len * 2);
+            next->ai_canonname = (ULONG_PTR)ptr;
+        }
+
+        if (conv->ai_addr)
+        {
+            ptr = HeapAlloc(GetProcessHeap(), 0, (next->ai_addrlen));
+            memcpy(ptr, conv->ai_addr, next->ai_addrlen),
+            next->ai_addr = (ULONG_PTR)ptr;
+        }
+
+        cur = next;
+        if (!res32)
+            res32 = cur;
+    }
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_GETADDRINFOW))
+        p_freeaddrinfo((ADDRINFOA *)res);
+    else
+        FreeAddrInfoW(res);
+
+    while (hints)
+    {
+        res = hints->ai_next;
+        HeapFree(GetProcessHeap(), 0, hints);
+        hints = res;
+    }
+
+    c->res = QEMU_H2G(res32);
 }
 
 #endif
@@ -2443,70 +2585,6 @@ void qemu_GetAddrInfoExCancel(struct qemu_syscall *call)
     struct qemu_GetAddrInfoExCancel *c = (struct qemu_GetAddrInfoExCancel *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = GetAddrInfoExCancel(QEMU_G2H(c->handle));
-}
-
-#endif
-
-struct qemu_GetAddrInfoW
-{
-    struct qemu_syscall super;
-    uint64_t nodename;
-    uint64_t servname;
-    uint64_t hints;
-    uint64_t res;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI int WINAPI GetAddrInfoW(LPCWSTR nodename, LPCWSTR servname, const ADDRINFOW *hints, PADDRINFOW *res)
-{
-    struct qemu_GetAddrInfoW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_GETADDRINFOW);
-    call.nodename = (ULONG_PTR)nodename;
-    call.servname = (ULONG_PTR)servname;
-    call.hints = (ULONG_PTR)hints;
-    call.res = (ULONG_PTR)res;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_GetAddrInfoW(struct qemu_syscall *call)
-{
-    struct qemu_GetAddrInfoW *c = (struct qemu_GetAddrInfoW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetAddrInfoW(QEMU_G2H(c->nodename), QEMU_G2H(c->servname), QEMU_G2H(c->hints), QEMU_G2H(c->res));
-}
-
-#endif
-
-struct qemu_FreeAddrInfoW
-{
-    struct qemu_syscall super;
-    uint64_t ai;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI void WINAPI FreeAddrInfoW(PADDRINFOW ai)
-{
-    struct qemu_FreeAddrInfoW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_FREEADDRINFOW);
-    call.ai = (ULONG_PTR)ai;
-
-    qemu_syscall(&call.super);
-}
-
-#else
-
-void qemu_FreeAddrInfoW(struct qemu_syscall *call)
-{
-    struct qemu_FreeAddrInfoW *c = (struct qemu_FreeAddrInfoW *)call;
-    WINE_FIXME("Unverified!\n");
-    FreeAddrInfoW(QEMU_G2H(c->ai));
 }
 
 #endif
