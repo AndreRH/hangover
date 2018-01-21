@@ -130,16 +130,17 @@ struct qemu_RegCreateKeyExA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI LSTATUS WINAPI RegCreateKeyExA(HKEY hkey, LPCSTR name, DWORD reserved, LPSTR class, DWORD options, REGSAM access, SECURITY_ATTRIBUTES *sa, PHKEY retkey, LPDWORD dispos)
+WINBASEAPI LSTATUS WINAPI RegCreateKeyExA(HKEY hkey, LPCSTR name, DWORD reserved, char *class, DWORD options,
+        REGSAM access, SECURITY_ATTRIBUTES *sa, PHKEY retkey, LPDWORD dispos)
 {
     struct qemu_RegCreateKeyExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGCREATEKEYEXA);
     call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
-    call.reserved = (ULONG_PTR)reserved;
+    call.reserved = reserved;
     call.class = (ULONG_PTR)class;
-    call.options = (ULONG_PTR)options;
-    call.access = (ULONG_PTR)access;
+    call.options = options;
+    call.access = access;
     call.sa = (ULONG_PTR)sa;
     call.dispos = (ULONG_PTR)dispos;
 
@@ -157,7 +158,7 @@ void qemu_RegCreateKeyExA(struct qemu_syscall *call)
 {
     struct qemu_RegCreateKeyExA *c = (struct qemu_RegCreateKeyExA *)call;
     HKEY retkey = 0;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     c->super.iret = RegCreateKeyExA(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->reserved, QEMU_G2H(c->class),
             c->options, c->access, QEMU_G2H(c->sa), &retkey, QEMU_G2H(c->dispos));
