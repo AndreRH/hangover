@@ -1299,6 +1299,16 @@ struct qemu_WSAIoctl
 
 #ifdef QEMU_DLL_GUEST
 
+/* IsEqualGUID is based on memcmp, and we don't link to msvcrt.dll. Some compiler versions inline
+ * the memcmp and it's all fine, but some do not and linking fails. Just do it by hand. */
+static BOOL inline my_IsEqualGUID(const GUID *a, const GUID *b)
+{
+    return a->Data1 == b->Data1 && a->Data2 == b->Data2 == a->Data3 == b->Data3
+            && a->Data4[0] == b->Data4[0] && a->Data4[1] == b->Data4[1] && a->Data4[2] == b->Data4[2]
+            && a->Data4[3] == b->Data4[3] && a->Data4[4] == b->Data4[4] && a->Data4[5] == b->Data4[5]
+            && a->Data4[6] == b->Data4[6] && a->Data4[7] == b->Data4[7];
+}
+
 WINBASEAPI INT WINAPI WSAIoctl(SOCKET s, DWORD code, LPVOID in_buff, DWORD in_size, void *out_buff,
         DWORD out_size, DWORD *ret_size, WSAOVERLAPPED *overlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE completion)
 {
@@ -1338,7 +1348,7 @@ WINBASEAPI INT WINAPI WSAIoctl(SOCKET s, DWORD code, LPVOID in_buff, DWORD in_si
 
         for (i = 0; i < sizeof(guid_funcs) / sizeof(guid_funcs[0]); i++)
         {
-            if (IsEqualGUID(&guid_funcs[i].guid, in_buff))
+            if (my_IsEqualGUID(&guid_funcs[i].guid, in_buff))
             {
                 found = TRUE;
                 break;
