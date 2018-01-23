@@ -197,6 +197,7 @@ enum ntdll_calls
     CALL_NTRESUMETHREAD,
     CALL_NTSAVEKEY,
     CALL_NTSECURECONNECTPORT,
+    CALL_NTSETCONTEXTTHREAD,
     CALL_NTSETEAFILE,
     CALL_NTSETEVENT,
     CALL_NTSETINFORMATIONFILE,
@@ -796,6 +797,7 @@ void qemu_NtResumeProcess(struct qemu_syscall *call);
 void qemu_NtResumeThread(struct qemu_syscall *call);
 void qemu_NtSaveKey(struct qemu_syscall *call);
 void qemu_NtSecureConnectPort(struct qemu_syscall *call);
+void qemu_NtSetContextThread(struct qemu_syscall *call);
 void qemu_NtSetEaFile(struct qemu_syscall *call);
 void qemu_NtSetEvent(struct qemu_syscall *call);
 void qemu_NtSetInformationFile(struct qemu_syscall *call);

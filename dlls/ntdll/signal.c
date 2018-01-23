@@ -681,8 +681,11 @@ NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec
 #define __ASM_CFI(str) str
 #define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl _" #name suffix "\n\t.def _" #name suffix "; .scl 2; .type 32; .endef\n_" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc");
 #define __ASM_STDCALL(args) "@" #args
+#define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
+#define __ASM_NAME(name) "_" name
 #define __ASM_STDCALL_FUNC(name,args,code) __ASM_DEFINE_FUNC(name,__ASM_STDCALL(args),code)
 
+extern VOID NTAPI ntdll_RtlCaptureContext(PCONTEXT ContextRecord);
 __ASM_STDCALL_FUNC( ntdll_RtlCaptureContext, 4,
                     "pushl %eax\n\t"
                     __ASM_CFI(".cfi_adjust_cfa_offset 4\n\t")
@@ -1298,6 +1301,13 @@ void qemu_RtlVirtualUnwind(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_NtSetContextThread
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t context;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 #ifdef _WIN64
@@ -1512,14 +1522,255 @@ done:
 
 #else
 
+NTSTATUS WINAPI NtSetContextThread( HANDLE handle, const CONTEXT *context )
+{
+    struct qemu_NtSetContextThread call;
+    /* We can't set debug registers ourselves, and we can't set a context on a different thread from here.
+     * We need help from qemu in both cases. x86 Wine uses wineserver for this. */
+    call.super.id = QEMU_SYSCALL_ID(CALL_NTSETCONTEXTTHREAD);
+    call.handle = guest_HANDLE_g2h(handle);
+    call.context = (ULONG_PTR)context;
+
+    /* This won't return on the current thread, but it does return if it's a different context. */
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+static inline BOOL is_valid_frame( void *frame )
+{
+    if ((ULONG_PTR)frame & 3) return FALSE;
+    return (frame >= ((NT_TIB *)NtCurrentTeb())->StackLimit &&
+            (void **)frame < (void **)((NT_TIB *)NtCurrentTeb())->StackBase - 1);
+}
+
+typedef struct
+{
+    EXCEPTION_REGISTRATION_RECORD frame;
+    EXCEPTION_REGISTRATION_RECORD *prevFrame;
+} EXC_NESTED_FRAME;
+
+static int raise_handler( EXCEPTION_RECORD *rec, void *shutup,
+                            CONTEXT *context, void *compiler )
+{
+    EXCEPTION_REGISTRATION_RECORD *frame = shutup;
+    EXCEPTION_REGISTRATION_RECORD **dispatcher = compiler;
+    if (rec->ExceptionFlags & (EH_UNWINDING | EH_EXIT_UNWIND))
+        return ExceptionContinueSearch;
+    /* We shouldn't get here so we store faulty frame in dispatcher */
+    *dispatcher = ((EXC_NESTED_FRAME*)frame)->prevFrame;
+    return ExceptionNestedException;
+}
+
+extern DWORD EXC_CallHandler( EXCEPTION_RECORD *record, EXCEPTION_REGISTRATION_RECORD *frame,
+                              CONTEXT *context, EXCEPTION_REGISTRATION_RECORD **dispatcher,
+                              PEXCEPTION_ROUTINE handler, PEXCEPTION_HANDLER nested_handler );
+__ASM_GLOBAL_FUNC( EXC_CallHandler,
+                  "pushl %ebp\n\t"
+                  __ASM_CFI(".cfi_adjust_cfa_offset 4\n\t")
+                  __ASM_CFI(".cfi_rel_offset %ebp,0\n\t")
+                  "movl %esp,%ebp\n\t"
+                  __ASM_CFI(".cfi_def_cfa_register %ebp\n\t")
+                   "pushl %ebx\n\t"
+                   __ASM_CFI(".cfi_rel_offset %ebx,-4\n\t")
+                   "movl 28(%ebp), %edx\n\t" /* ugly hack to pass the 6th param needed because of Shrinker */
+                   "pushl 24(%ebp)\n\t"
+                   "pushl 20(%ebp)\n\t"
+                   "pushl 16(%ebp)\n\t"
+                   "pushl 12(%ebp)\n\t"
+                   "pushl 8(%ebp)\n\t"
+                   "call " __ASM_NAME("call_exception_handler") "\n\t"
+                   "popl %ebx\n\t"
+                   __ASM_CFI(".cfi_same_value %ebx\n\t")
+                   "leave\n"
+                   __ASM_CFI(".cfi_def_cfa %esp,4\n\t")
+                   __ASM_CFI(".cfi_same_value %ebp\n\t")
+                   "ret" )
+__ASM_GLOBAL_FUNC(call_exception_handler,
+                  "pushl %ebp\n\t"
+                  __ASM_CFI(".cfi_adjust_cfa_offset 4\n\t")
+                  __ASM_CFI(".cfi_rel_offset %ebp,0\n\t")
+                  "movl %esp,%ebp\n\t"
+                  __ASM_CFI(".cfi_def_cfa_register %ebp\n\t")
+                  "subl $12,%esp\n\t"
+                  "pushl 12(%ebp)\n\t"      /* make any exceptions in this... */
+                  "pushl %edx\n\t"          /* handler be handled by... */
+                  ".byte 0x64\n\t"
+                  "pushl (0)\n\t"           /* nested_handler (passed in edx). */
+                  ".byte 0x64\n\t"
+                  "movl %esp,(0)\n\t"       /* push the new exception frame onto the exception stack. */
+                  "pushl 20(%ebp)\n\t"
+                  "pushl 16(%ebp)\n\t"
+                  "pushl 12(%ebp)\n\t"
+                  "pushl 8(%ebp)\n\t"
+                  "movl 24(%ebp), %ecx\n\t" /* (*1) */
+                  "call *%ecx\n\t"          /* call handler. (*2) */
+                  ".byte 0x64\n\t"
+                  "movl (0), %esp\n\t"      /* restore previous... (*3) */
+                  ".byte 0x64\n\t"
+                  "popl (0)\n\t"            /* exception frame. */
+                  "movl %ebp, %esp\n\t"     /* restore saved stack, in case it was corrupted */
+                  "popl %ebp\n\t"
+                   __ASM_CFI(".cfi_def_cfa %esp,4\n\t")
+                   __ASM_CFI(".cfi_same_value %ebp\n\t")
+                  "ret $20" )            /* (*4) */
+
+static NTSTATUS call_stack_handlers( EXCEPTION_RECORD *rec, CONTEXT *context )
+{
+    EXCEPTION_REGISTRATION_RECORD *frame, *dispatch, *nested_frame;
+    DWORD res;
+    struct qemu_ExceptDebug call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_NTRAISEEXCEPTION);
+
+    frame = ((NT_TIB *)NtCurrentTeb())->ExceptionList;
+    nested_frame = NULL;
+    while (frame != (EXCEPTION_REGISTRATION_RECORD*)~0UL)
+    {
+        /* Check frame address */
+        if (!is_valid_frame( frame ))
+        {
+            rec->ExceptionFlags |= EH_STACK_INVALID;
+            break;
+        }
+
+        call.string = (ULONG_PTR)"calling handler at 0x%lx code=%lx flags=%lx\n";
+        call.p1 = (ULONG_PTR)frame->Handler;
+        call.p2 = rec->ExceptionCode;
+        call.p3 = rec->ExceptionFlags;
+        call.num_params = 3;
+
+        /* Call handler */
+        res = EXC_CallHandler( rec, frame, context, &dispatch, frame->Handler, raise_handler );
+
+        call.string = (ULONG_PTR)"calling handler at 0x%lx code=%lx flags=%lx\n";
+        call.p1 = (ULONG_PTR)frame->Handler;
+        call.p2 = res;
+        call.num_params = 2;
+
+        if (frame == nested_frame)
+        {
+            /* no longer nested */
+            nested_frame = NULL;
+            rec->ExceptionFlags &= ~EH_NESTED_CALL;
+        }
+
+        switch(res)
+        {
+        case ExceptionContinueExecution:
+            if (!(rec->ExceptionFlags & EH_NONCONTINUABLE)) return STATUS_SUCCESS;
+            return STATUS_NONCONTINUABLE_EXCEPTION;
+        case ExceptionContinueSearch:
+            break;
+        case ExceptionNestedException:
+            if (nested_frame < dispatch) nested_frame = dispatch;
+            rec->ExceptionFlags |= EH_NESTED_CALL;
+            break;
+        default:
+            return STATUS_INVALID_DISPOSITION;
+        }
+        frame = frame->prev;
+    }
+    return STATUS_UNHANDLED_EXCEPTION;
+}
+
+static NTSTATUS raise_exception( EXCEPTION_RECORD *rec, CONTEXT *context, BOOL first_chance )
+{
+    NTSTATUS status;
+    struct qemu_ExceptDebug call;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_NTRAISEEXCEPTION);
+
+    if (first_chance)
+    {
+        DWORD c;
+
+        call.string = (ULONG_PTR)"code=%lx flags=%lx addr=%lx ip=%08lx tid=%04lx\n";
+        call.p1 = rec->ExceptionCode;
+        call.p2 = rec->ExceptionFlags;
+        call.p3 = (ULONG_PTR)rec->ExceptionAddress;
+        call.p4 = context->Eip;
+        call.p5 = 0x1234; /* FIXME, GetCurrentThreadId() */
+        call.num_params = 5;
+
+        /*
+        for (c = 0; c < rec->NumberParameters; c++)
+            TRACE( " info[%d]=%08lx\n", c, rec->ExceptionInformation[c] );
+        if (rec->ExceptionCode == EXCEPTION_WINE_STUB)
+        {
+            if (rec->ExceptionInformation[1] >> 16)
+                MESSAGE( "wine: Call from %p to unimplemented function %s.%s, aborting\n",
+                         rec->ExceptionAddress,
+                         (char*)rec->ExceptionInformation[0], (char*)rec->ExceptionInformation[1] );
+            else
+                MESSAGE( "wine: Call from %p to unimplemented function %s.%ld, aborting\n",
+                         rec->ExceptionAddress,
+                         (char*)rec->ExceptionInformation[0], rec->ExceptionInformation[1] );
+        }
+        else
+        {
+            TRACE(" eax=%08x ebx=%08x ecx=%08x edx=%08x esi=%08x edi=%08x\n",
+                  context->Eax, context->Ebx, context->Ecx,
+                  context->Edx, context->Esi, context->Edi );
+            TRACE(" ebp=%08x esp=%08x cs=%04x ds=%04x es=%04x fs=%04x gs=%04x flags=%08x\n",
+                  context->Ebp, context->Esp, context->SegCs, context->SegDs,
+                  context->SegEs, context->SegFs, context->SegGs, context->EFlags );
+        }
+        status = send_debug_event( rec, TRUE, context );
+        if (status == DBG_CONTINUE || status == DBG_EXCEPTION_HANDLED)
+            return STATUS_SUCCESS;
+        */
+
+        /* fix up instruction pointer in context for EXCEPTION_BREAKPOINT */
+        if (rec->ExceptionCode == EXCEPTION_BREAKPOINT) context->Eip--;
+
+        /* Ignore vectored handlers for now. The setters for those will print FIXMEs if an application
+         * tries to use them.
+        if (call_vectored_handlers( rec, context ) == EXCEPTION_CONTINUE_EXECUTION)
+            return STATUS_SUCCESS;
+        */
+
+        if ((status = call_stack_handlers( rec, context )) != STATUS_UNHANDLED_EXCEPTION)
+            return status;
+    }
+
+    /* last chance exception */
+
+    /*
+    status = send_debug_event( rec, FALSE, context );
+    if (status != DBG_CONTINUE)
+    {
+        if (rec->ExceptionFlags & EH_STACK_INVALID)
+            WINE_ERR("Exception frame is not in stack limits => unable to dispatch exception.\n");
+        else if (rec->ExceptionCode == STATUS_NONCONTINUABLE_EXCEPTION)
+            WINE_ERR("Process attempted to continue execution after noncontinuable exception.\n");
+        else
+            WINE_ERR("Unhandled exception code %x flags %x addr %p\n",
+                     rec->ExceptionCode, rec->ExceptionFlags, rec->ExceptionAddress );
+        NtTerminateProcess( NtCurrentProcess(), rec->ExceptionCode );
+    }
+    return STATUS_SUCCESS;
+    */
+    ntdll_NtTerminateProcess( NtCurrentProcess(), rec->ExceptionCode );
+}
+
 NTSTATUS WINAPI ntdll_NtRaiseException( EXCEPTION_RECORD *rec, CONTEXT *context, BOOL first_chance )
 {
-    return 0;
+    /* Copypasted from Wine. */
+    NTSTATUS status = raise_exception( rec, context, first_chance );
+    /* FIXME: It seems that GetCurrentThread() is a function in mingw and not a macro as Wine's code expects. */
+    if (status == STATUS_SUCCESS) NtSetContextThread( ((HANDLE)~(ULONG_PTR)1), context );
+    return status;
 }
 
 #endif /* _WIN64 */
 
 #else
+
+void qemu_NtSetContextThread(struct qemu_syscall *call)
+{
+    WINE_FIXME("Unimplemented\n");
+    call->iret = STATUS_UNSUCCESSFUL;
+}
 
 void qemu_NtRaiseException(struct qemu_syscall *call)
 {
@@ -1623,15 +1874,17 @@ __ASM_GLOBAL_FUNC( RtlRaiseException,
 #else
 void WINAPI RtlRaiseException( EXCEPTION_RECORD *rec )
 {
-#ifdef _WIN64
     CONTEXT context;
     NTSTATUS status;
 
     ntdll_RtlCaptureContext( &context );
+#ifdef _WIN64
     rec->ExceptionAddress = (LPVOID)context.Rip;
+#else
+    rec->ExceptionAddress = (LPVOID)context.Eip;
+#endif
     status = ntdll_NtRaiseException( rec, &context, TRUE );
     if (status) ntdll_RtlRaiseStatus( status );
-#endif
 }
 #endif
 

@@ -256,6 +256,7 @@ static const syscall_handler dll_functions[] =
     qemu_NtResumeThread,
     qemu_NtSaveKey,
     qemu_NtSecureConnectPort,
+    qemu_NtSetContextThread,
     qemu_NtSetEaFile,
     qemu_NtSetEvent,
     qemu_NtSetInformationFile,
