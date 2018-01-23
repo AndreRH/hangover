@@ -60,10 +60,46 @@ static uint64_t __fastcall guest_completion_cb(struct qemu_completion_cb *data)
     return 0;
 }
 
+#ifndef _WIN64
+
+#define EH_UNWINDING        0x02
+#define EH_EXIT_UNWIND      0x04
+#define EH_NESTED_CALL      0x10
+
+/* Copypasted and adapted from __wine_exception_handler. */
+static DWORD x86_exception_handler(EXCEPTION_RECORD *record,
+        EXCEPTION_REGISTRATION_RECORD *frame, CONTEXT *context,
+        EXCEPTION_REGISTRATION_RECORD **pdispatcher)
+{
+    EXCEPTION_POINTERS ptrs;
+
+    if (record->ExceptionFlags & (EH_UNWINDING | EH_EXIT_UNWIND | EH_NESTED_CALL))
+        return ExceptionContinueSearch;
+
+    ptrs.ExceptionRecord = record;
+    ptrs.ContextRecord = context;
+    switch(kernel32_UnhandledExceptionFilter( &ptrs ))
+    {
+        case EXCEPTION_CONTINUE_SEARCH:
+            return ExceptionContinueSearch;
+        case EXCEPTION_CONTINUE_EXECUTION:
+            return ExceptionContinueExecution;
+        case EXCEPTION_EXECUTE_HANDLER:
+            break;
+    }
+    /* FIXME: We should unwind properly, but how do I find the unwind target? Mingw's exception frame
+     * does not store it. (Wine's exception helper macros store a longjmp buffer). */
+    kernel32_ExitProcess(kernel32_GetLastError());
+}
+#endif
+
 static void __fastcall kernel32_call_process_main(LPTHREAD_START_ROUTINE entry)
 {
 #ifdef _WIN64
     __try1(kernel32_UnhandledExceptionFilter)
+#else
+    __try1(x86_exception_handler)
+#endif
     {
         entry(NULL);
     }
@@ -71,10 +107,6 @@ static void __fastcall kernel32_call_process_main(LPTHREAD_START_ROUTINE entry)
     {
     }
     kernel32_ExitProcess(kernel32_GetLastError());
-#else
-    entry(NULL);
-    kernel32_ExitProcess(kernel32_GetLastError());
-#endif
 }
 
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
