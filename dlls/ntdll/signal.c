@@ -683,6 +683,20 @@ VOID NTAPI ntdll_RtlCaptureContext(PCONTEXT ContextRecord)
     /* TODO */
 }
 
+void WINAPI ntdll_RtlUnwind( void *frame, void *target_ip, EXCEPTION_RECORD *rec, void *retval )
+{
+    struct qemu_ExceptDebug call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLUNWINDEX);
+    call.string = (ULONG_PTR)"Frame=%lx, target=%lx, exception %lx, retval %lx\n";
+    call.p1 = (ULONG_PTR)frame;
+    call.p2 = (ULONG_PTR)target_ip;
+    call.p3 = (ULONG_PTR)rec;
+    call.p4 = (ULONG_PTR)retval;
+    call.num_params = 4;
+
+    qemu_syscall(&call.super);
+}
+
 #endif /* _WIN64 */
 
 #else
