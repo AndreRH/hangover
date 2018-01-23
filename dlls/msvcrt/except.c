@@ -124,6 +124,26 @@ __ASM_GLOBAL_FUNC( MSVCRT__setjmpex,
 
 #else
 
+typedef struct _SCOPETABLE
+{
+  int previousTryLevel;
+  int (*lpfnFilter)(PEXCEPTION_POINTERS);
+  int (*lpfnHandler)(void);
+} SCOPETABLE, *PSCOPETABLE;
+
+typedef struct _MSVCRT_EXCEPTION_FRAME
+{
+  EXCEPTION_REGISTRATION_RECORD *prev;
+  void (*handler)(PEXCEPTION_RECORD, EXCEPTION_REGISTRATION_RECORD*,
+                  PCONTEXT, PEXCEPTION_RECORD);
+  PSCOPETABLE scopetable;
+  int trylevel;
+  int _ebp;
+  PEXCEPTION_POINTERS xpointers;
+} MSVCRT_EXCEPTION_FRAME;
+
+#define TRYLEVEL_END (-1) /* End of trylevel list */
+
 #define __ASM_NAME(name) "_" name
 #define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl _" #name suffix "\n\t.def _" #name suffix "; .scl 2; .type 32; .endef\n_" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc");
 #define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
@@ -185,16 +205,15 @@ __ASM_GLOBAL_FUNC( longjmp_set_regs,
 DEFINE_SETJMP_ENTRYPOINT(MSVCRT__setjmp)
 int CDECL __regs_MSVCRT__setjmp(struct MSVCRT___JUMP_BUFFER *jmp)
 {
-#if 0
-    jmp->Registration = (unsigned long)NtCurrentTeb()->Tib.ExceptionList;
+    jmp->Registration = (unsigned long)((NT_TIB *)NtCurrentTeb())->ExceptionList;
     if (jmp->Registration == ~0UL)
-    jmp->TryLevel = TRYLEVEL_END;
+        jmp->TryLevel = TRYLEVEL_END;
     else
-    jmp->TryLevel = ((MSVCRT_EXCEPTION_FRAME*)jmp->Registration)->trylevel;
+        jmp->TryLevel = ((MSVCRT_EXCEPTION_FRAME*)jmp->Registration)->trylevel;
 
-    TRACE("buf=%p ebx=%08lx esi=%08lx edi=%08lx ebp=%08lx esp=%08lx eip=%08lx frame=%08lx\n",
-          jmp, jmp->Ebx, jmp->Esi, jmp->Edi, jmp->Ebp, jmp->Esp, jmp->Eip, jmp->Registration );
-#endif
+    /*TRACE("buf=%p ebx=%08lx esi=%08lx edi=%08lx ebp=%08lx esp=%08lx eip=%08lx frame=%08lx\n",
+          jmp, jmp->Ebx, jmp->Esi, jmp->Edi, jmp->Ebp, jmp->Esp, jmp->Eip, jmp->Registration );*/
+
     return 0;
 }
 
@@ -204,10 +223,9 @@ int CDECL __regs_MSVCRT__setjmp(struct MSVCRT___JUMP_BUFFER *jmp)
 DEFINE_SETJMP_ENTRYPOINT( MSVCRT__setjmp3 )
 int WINAPIV __regs_MSVCRT__setjmp3(struct MSVCRT___JUMP_BUFFER *jmp, int nb_args, ...)
 {
-#if 0
     jmp->Cookie = MSVCRT_JMP_MAGIC;
     jmp->UnwindFunc = 0;
-    jmp->Registration = (unsigned long)NtCurrentTeb()->Tib.ExceptionList;
+    jmp->Registration = (unsigned long)((NT_TIB *)NtCurrentTeb())->ExceptionList;
     if (jmp->Registration == ~0UL)
     {
         jmp->TryLevel = TRYLEVEL_END;
@@ -226,9 +244,9 @@ int WINAPIV __regs_MSVCRT__setjmp3(struct MSVCRT___JUMP_BUFFER *jmp, int nb_args
         va_end( args );
     }
 
-    TRACE("buf=%p ebx=%08lx esi=%08lx edi=%08lx ebp=%08lx esp=%08lx eip=%08lx frame=%08lx\n",
-          jmp, jmp->Ebx, jmp->Esi, jmp->Edi, jmp->Ebp, jmp->Esp, jmp->Eip, jmp->Registration );
-#endif
+    /*TRACE("buf=%p ebx=%08lx esi=%08lx edi=%08lx ebp=%08lx esp=%08lx eip=%08lx frame=%08lx\n",
+          jmp, jmp->Ebx, jmp->Esi, jmp->Edi, jmp->Ebp, jmp->Esp, jmp->Eip, jmp->Registration );*/
+
     return 0;
 }
 
@@ -296,7 +314,7 @@ __ASM_GLOBAL_FUNC( longjmp_set_regs,
 
 #endif
 
-void __cdecl MSVCRT_longjmp(jmp_buf jmp, int retval)
+void __cdecl MSVCRT_longjmp(void *jmp, int retval)
 {
     struct qemu_syscall call;
     call.id = QEMU_SYSCALL_ID(CALL_LONGJMP);
@@ -306,9 +324,7 @@ void __cdecl MSVCRT_longjmp(jmp_buf jmp, int retval)
     /* FIXME: jmp->frame. */
 
     if (!retval) retval = 1;
-#ifdef _WIN64
     longjmp_set_regs( jmp, retval );
-#endif
     ExitProcess(1);
 }
 
