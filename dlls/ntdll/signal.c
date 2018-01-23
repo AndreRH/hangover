@@ -1770,9 +1770,13 @@ NTSTATUS WINAPI ntdll_NtRaiseException( EXCEPTION_RECORD *rec, CONTEXT *context,
 void qemu_NtSetContextThread(struct qemu_syscall *call)
 {
     struct qemu_NtSetContextThread *c = (struct qemu_NtSetContextThread *)call;
-    WINE_FIXME("Unimplemented!\n");
-    c->super.iret = STATUS_UNSUCCESSFUL;
-    ExitProcess(1);
+    WINE_TRACE("\n");
+
+    /* Note that this call returns to us on the host side even if we're setting the current
+     * thread's contexts. Our return will return to the qemu main loop, which will resume
+     * client side execution wherever the new context points to. So ntdll_NtSetContexThread
+     * will not be executed any more. */
+    c->super.iret = qemu_ops->qemu_set_context(QEMU_G2H(c->handle), QEMU_G2H(c->context));
 }
 
 void qemu_NtRaiseException(struct qemu_syscall *call)
