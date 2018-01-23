@@ -1432,7 +1432,7 @@ void qemu_sqrt(struct qemu_syscall *call)
 struct qemu_tan
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1441,7 +1441,7 @@ WINBASEAPI double CDECL MSVCRT_tan(double x)
 {
     struct qemu_tan call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TAN);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -1453,7 +1453,7 @@ WINBASEAPI double CDECL MSVCRT_tan(double x)
 void qemu_tan(struct qemu_syscall *call)
 {
     struct qemu_tan *c = (struct qemu_tan *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_tan(c->x);
 }
 
@@ -1462,7 +1462,7 @@ void qemu_tan(struct qemu_syscall *call)
 struct qemu_tanh
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1471,7 +1471,7 @@ WINBASEAPI double CDECL MSVCRT_tanh(double x)
 {
     struct qemu_tanh call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TANH);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
