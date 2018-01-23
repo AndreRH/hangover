@@ -113,7 +113,9 @@ LONG WINAPI kernel32_UnhandledExceptionFilter(PEXCEPTION_POINTERS epointers)
         if (ret != EXCEPTION_CONTINUE_SEARCH) return ret;
     }
 
-    return EXCEPTION_CONTINUE_SEARCH;
+    /* FIXME: Check for debuggers. */
+
+    return EXCEPTION_EXECUTE_HANDLER;
 }
 
 #else
