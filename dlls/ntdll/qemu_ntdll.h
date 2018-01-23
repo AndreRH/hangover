@@ -597,7 +597,7 @@ PEXCEPTION_ROUTINE WINAPI ntdll_RtlVirtualUnwind(DWORD type, DWORD64 base, DWORD
         PKNONVOLATILE_CONTEXT_POINTERS ctx_ptr);
 #endif
 
-void WINAPI qemu_exception_handler(EXCEPTION_POINTERS *except);
+void __fastcall qemu_exception_handler(EXCEPTION_POINTERS *except);
 
 #else
 
