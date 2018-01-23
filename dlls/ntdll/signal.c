@@ -1691,6 +1691,7 @@ static NTSTATUS raise_exception( EXCEPTION_RECORD *rec, CONTEXT *context, BOOL f
         call.p4 = context->Eip;
         call.p5 = 0x1234; /* FIXME, GetCurrentThreadId() */
         call.num_params = 5;
+        qemu_syscall(&call.super);
 
         /*
         for (c = 0; c < rec->NumberParameters; c++)
@@ -1768,8 +1769,10 @@ NTSTATUS WINAPI ntdll_NtRaiseException( EXCEPTION_RECORD *rec, CONTEXT *context,
 
 void qemu_NtSetContextThread(struct qemu_syscall *call)
 {
-    WINE_FIXME("Unimplemented\n");
-    call->iret = STATUS_UNSUCCESSFUL;
+    struct qemu_NtSetContextThread *c = (struct qemu_NtSetContextThread *)call;
+    WINE_FIXME("Unimplemented!\n");
+    c->super.iret = STATUS_UNSUCCESSFUL;
+    ExitProcess(1);
 }
 
 void qemu_NtRaiseException(struct qemu_syscall *call)
