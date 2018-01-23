@@ -341,28 +341,31 @@ WINBASEAPI SIZE_T WINAPI VirtualQuery(const void *address,
     return call.super.iret;
 }
 
-#elif GUEST_BIT==HOST_BIT
-
-void qemu_VirtualQuery(struct qemu_syscall *call)
-{
-    struct qemu_VirtualQuery *c = (struct qemu_VirtualQuery *)call;
-    WINE_TRACE("\n");
-    c->super.iret = VirtualQuery(QEMU_G2H(c->address), QEMU_G2H(c->info), c->size);
-}
-
 #else
 
 void qemu_VirtualQuery(struct qemu_syscall *call)
 {
     struct qemu_VirtualQuery *c = (struct qemu_VirtualQuery *)call;
-    MEMORY_BASIC_INFORMATION info;
+    MEMORY_BASIC_INFORMATION stack, *info = &stack;
+    HMODULE mod;
+    void *address;
     WINE_TRACE("\n");
 
-    c->super.iret = VirtualQuery(QEMU_G2H(c->address), &info, c->size);
+    address = QEMU_G2H(c->address);
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->info);
+#endif
 
-    MEMORY_BASIC_INFORMATION_h2g(&info, QEMU_G2H(c->info));
+    c->super.iret = VirtualQuery(address, info, c->size);
+
+    if (qemu_ops->qemu_FindEntryForAddress(address, &mod))
+        info->Type = MEM_IMAGE;
+
+#if GUEST_BIT != HOST_BIT
+    MEMORY_BASIC_INFORMATION_h2g(info, QEMU_G2H(c->info));
     if (c->super.iret == sizeof(info))
         c->super.iret = sizeof(struct qemu_MEMORY_BASIC_INFORMATION);
+#endif
 }
 
 #endif
