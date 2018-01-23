@@ -74,6 +74,8 @@ typedef struct _SCOPE_TABLE
 typedef void (WINAPI *TERMINATION_HANDLER)( ULONG flags, ULONG64 frame );
 typedef LONG (WINAPI *PC_LANGUAGE_EXCEPTION_HANDLER)( EXCEPTION_POINTERS *ptrs, ULONG64 frame );
 
+#ifdef _WIN64
+
 #define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.def " #name suffix "; .scl 2; .type 32; .endef\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc")
 #define __ASM_STDCALL(args)
 #define __ASM_STDCALL_FUNC(name,args,code) __ASM_DEFINE_FUNC(name,__ASM_STDCALL(args),code)
@@ -81,8 +83,6 @@ typedef LONG (WINAPI *PC_LANGUAGE_EXCEPTION_HANDLER)( EXCEPTION_POINTERS *ptrs, 
 #define __ASM_NAME(name) name
 #define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
 #define __ASM_CFI(str) str
-
-#ifdef _WIN64
 
 extern VOID NTAPI ntdll_RtlCaptureContext(PCONTEXT ContextRecord);
 
@@ -678,10 +678,40 @@ NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec
 
 #else
 
-VOID NTAPI ntdll_RtlCaptureContext(PCONTEXT ContextRecord)
-{
-    /* TODO */
-}
+#define __ASM_CFI(str) str
+#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl _" #name suffix "\n\t.def _" #name suffix "; .scl 2; .type 32; .endef\n_" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc");
+#define __ASM_STDCALL(args) "@" #args
+#define __ASM_STDCALL_FUNC(name,args,code) __ASM_DEFINE_FUNC(name,__ASM_STDCALL(args),code)
+
+__ASM_STDCALL_FUNC( ntdll_RtlCaptureContext, 4,
+                    "pushl %eax\n\t"
+                    __ASM_CFI(".cfi_adjust_cfa_offset 4\n\t")
+                    "movl 8(%esp),%eax\n\t"    /* context */
+                    "movl $0x10007,(%eax)\n\t" /* context->ContextFlags */
+                    "movw %gs,0x8c(%eax)\n\t"  /* context->SegGs */
+                    "movw %fs,0x90(%eax)\n\t"  /* context->SegFs */
+                    "movw %es,0x94(%eax)\n\t"  /* context->SegEs */
+                    "movw %ds,0x98(%eax)\n\t"  /* context->SegDs */
+                    "movl %edi,0x9c(%eax)\n\t" /* context->Edi */
+                    "movl %esi,0xa0(%eax)\n\t" /* context->Esi */
+                    "movl %ebx,0xa4(%eax)\n\t" /* context->Ebx */
+                    "movl %edx,0xa8(%eax)\n\t" /* context->Edx */
+                    "movl %ecx,0xac(%eax)\n\t" /* context->Ecx */
+                    "movl 0(%ebp),%edx\n\t"
+                    "movl %edx,0xb4(%eax)\n\t" /* context->Ebp */
+                    "movl 4(%ebp),%edx\n\t"
+                    "movl %edx,0xb8(%eax)\n\t" /* context->Eip */
+                    "movw %cs,0xbc(%eax)\n\t"  /* context->SegCs */
+                    "pushfl\n\t"
+                    __ASM_CFI(".cfi_adjust_cfa_offset 4\n\t")
+                    "popl 0xc0(%eax)\n\t"      /* context->EFlags */
+                    __ASM_CFI(".cfi_adjust_cfa_offset -4\n\t")
+                    "leal 8(%ebp),%edx\n\t"
+                    "movl %edx,0xc4(%eax)\n\t" /* context->Esp */
+                    "movw %ss,0xc8(%eax)\n\t"  /* context->SegSs */
+                    "popl 0xb0(%eax)\n\t"      /* context->Eax */
+                    __ASM_CFI(".cfi_adjust_cfa_offset -4\n\t")
+                    "ret $4" )
 
 void WINAPI ntdll_RtlUnwind( void *frame, void *target_ip, EXCEPTION_RECORD *rec, void *retval )
 {
