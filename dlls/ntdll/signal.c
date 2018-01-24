@@ -1855,14 +1855,14 @@ void qemu_RtlCaptureStackBackTrace(struct qemu_syscall *call)
 
 void WINAPI ntdll_RtlRaiseStatus(NTSTATUS status);
 
-#if 0
-/* The .cfi stuff works with DWARF, but not win64 exception frames. Need to find a way to tell
- * mingw to create proper entries in the function table. */
+#if _WIN64
 
 __ASM_GLOBAL_FUNC( RtlRaiseException,
+                   __ASM_CFI(".seh_proc	RtlRaiseException\n\t")
                    "movq %rcx,8(%rsp)\n\t"
                    "sub $0x4f8,%rsp\n\t"
-                   __ASM_CFI(".cfi_adjust_cfa_offset 0x4f8\n\t")
+                   __ASM_CFI(".seh_stackalloc	0x4f8\n\t")
+                   __ASM_CFI(".seh_endprologue\n\t")
                    "leaq 0x20(%rsp),%rcx\n\t"
                    "call " __ASM_NAME("ntdll_RtlCaptureContext") "\n\t"
                    "leaq 0x20(%rsp),%rdx\n\t"   /* context pointer */
@@ -1876,23 +1876,32 @@ __ASM_GLOBAL_FUNC( RtlRaiseException,
                    "movl $1,%r8d\n\t"
                    "call " __ASM_NAME("ntdll_NtRaiseException") "\n\t"
                    "movq %rax,%rcx\n\t"
-                   "call " __ASM_NAME("ntdll_RtlRaiseStatus") /* does not return */ );
+                   "call " __ASM_NAME("ntdll_RtlRaiseStatus") "\n\t" /* does not return */
+                   __ASM_CFI(".seh_endproc"));
 
 #else
-void WINAPI RtlRaiseException( EXCEPTION_RECORD *rec )
-{
-    CONTEXT context;
-    NTSTATUS status;
 
-    ntdll_RtlCaptureContext( &context );
-#ifdef _WIN64
-    rec->ExceptionAddress = (LPVOID)context.Rip;
-#else
-    rec->ExceptionAddress = (LPVOID)context.Eip;
-#endif
-    status = ntdll_NtRaiseException( rec, &context, TRUE );
-    if (status) ntdll_RtlRaiseStatus( status );
-}
+__ASM_STDCALL_FUNC( RtlRaiseException, 4,
+                    "pushl %ebp\n\t"
+                    "movl %esp,%ebp\n\t"
+                    "leal -0x2cc(%esp),%esp\n\t"  /* sizeof(CONTEXT) */
+                    "pushl %esp\n\t"              /* context */
+                    "call " __ASM_NAME("ntdll_RtlCaptureContext") __ASM_STDCALL(4) "\n\t"
+                    "movl 4(%ebp),%eax\n\t"       /* return address */
+                    "movl 8(%ebp),%ecx\n\t"       /* rec */
+                    "movl %eax,12(%ecx)\n\t"      /* rec->ExceptionAddress */
+                    "leal 12(%ebp),%eax\n\t"
+                    "movl %eax,0xc4(%esp)\n\t"    /* context->Esp */
+                    "movl %esp,%eax\n\t"
+                    "pushl $1\n\t"
+                    "pushl %eax\n\t"
+                    "pushl %ecx\n\t"
+                    "call " __ASM_NAME("ntdll_NtRaiseException") __ASM_STDCALL(12) "\n\t"
+                    "pushl %eax\n\t"
+                    "call " __ASM_NAME("ntdll_RtlRaiseStatus") __ASM_STDCALL(4) "\n\t"
+                    "leave\n\t"
+                    "ret $4" )  /* actually never returns */
+
 #endif
 
 #endif
