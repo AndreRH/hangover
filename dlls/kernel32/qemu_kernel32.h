@@ -375,7 +375,6 @@ enum kernel32_calls
     CALL_GETHANDLEINFORMATION,
     CALL_GETLARGEPAGEMINIMUM,
     CALL_GETLARGESTCONSOLEWINDOWSIZE,
-    CALL_GETLASTERROR,
     CALL_GETLOCALEINFOA,
     CALL_GETLOCALEINFOEX,
     CALL_GETLOCALEINFOW,
@@ -825,7 +824,6 @@ enum kernel32_calls
     CALL_SETHANDLECOUNT,
     CALL_SETHANDLEINFORMATION,
     CALL_SETINFORMATIONJOBOBJECT,
-    CALL_SETLASTERROR,
     CALL_SETLOCALEINFOA,
     CALL_SETLOCALEINFOW,
     CALL_SETLOCALTIME,
@@ -1385,7 +1383,6 @@ void qemu_GetHandleContext(struct qemu_syscall *call);
 void qemu_GetHandleInformation(struct qemu_syscall *call);
 void qemu_GetLargePageMinimum(struct qemu_syscall *call);
 void qemu_GetLargestConsoleWindowSize(struct qemu_syscall *call);
-void qemu_GetLastError(struct qemu_syscall *call);
 void qemu_GetLocaleInfoA(struct qemu_syscall *call);
 void qemu_GetLocaleInfoEx(struct qemu_syscall *call);
 void qemu_GetLocaleInfoW(struct qemu_syscall *call);
@@ -1830,7 +1827,6 @@ void qemu_SetHandleContext(struct qemu_syscall *call);
 void qemu_SetHandleCount(struct qemu_syscall *call);
 void qemu_SetHandleInformation(struct qemu_syscall *call);
 void qemu_SetInformationJobObject(struct qemu_syscall *call);
-void qemu_SetLastError(struct qemu_syscall *call);
 void qemu_SetLocaleInfoA(struct qemu_syscall *call);
 void qemu_SetLocaleInfoW(struct qemu_syscall *call);
 void qemu_SetLocalTime(struct qemu_syscall *call);

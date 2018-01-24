@@ -1114,12 +1114,6 @@ void qemu_GetCurrentThread(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_SetLastError
-{
-    struct qemu_syscall super;
-    uint64_t error;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 /* There are actually some Win32 functions that depend on the incoming last error value.
@@ -1131,24 +1125,13 @@ __ASM_STDCALL_FUNC( kernel32_SetLastError, 8, ".byte 0x65\n\tmovl %ecx,0x68\n\tr
 
 #else
 
-void WINAPI kernel32_SetLastError(DWORD error)
-{
-    struct qemu_SetLastError call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_SETLASTERROR);
-    call.error = error;
-    qemu_syscall(&call.super);
-}
+__ASM_STDCALL_FUNC( kernel32_SetLastError, 4,
+                   "movl 4(%esp),%eax\n\t"
+                   ".byte 0x64\n\t"
+                   "movl %eax,0x34\n\t"
+                   "ret $4" )
 
 #endif
-
-#else
-
-void qemu_SetLastError(struct qemu_syscall *call)
-{
-    struct qemu_SetLastError *c = (struct qemu_SetLastError *)call;
-    WINE_TRACE("\n");
-    SetLastError(c->error);
-}
 
 #endif
 
@@ -1160,23 +1143,9 @@ __ASM_STDCALL_FUNC( kernel32_GetLastError, 0, ".byte 0x65\n\tmovl 0x68,%eax\n\tr
 
 #else
 
-DWORD WINAPI kernel32_GetLastError()
-{
-    struct qemu_syscall call;
-    call.id = QEMU_SYSCALL_ID(CALL_GETLASTERROR);
-    qemu_syscall(&call);
-    return call.iret;
-}
+__ASM_STDCALL_FUNC( kernel32_GetLastError, 0, ".byte 0x64\n\tmovl 0x34,%eax\n\tret" )
 
 #endif
-
-#else
-
-void qemu_GetLastError(struct qemu_syscall *call)
-{
-    WINE_TRACE("\n");
-    call->iret = GetLastError();
-}
 
 #endif
 
