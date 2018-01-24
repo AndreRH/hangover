@@ -538,7 +538,6 @@ static const syscall_handler dll_functions[] =
     qemu_GetCurrentProcess,
     qemu_GetCurrentProcessId,
     qemu_GetCurrentThread,
-    qemu_GetCurrentThreadId,
     qemu_GetDateFormatA,
     qemu_GetDateFormatEx,
     qemu_GetDateFormatW,

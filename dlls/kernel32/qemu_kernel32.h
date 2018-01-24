@@ -326,7 +326,6 @@ enum kernel32_calls
     CALL_GETCURRENTPROCESS,
     CALL_GETCURRENTPROCESSID,
     CALL_GETCURRENTTHREAD,
-    CALL_GETCURRENTTHREADID,
     CALL_GETDATEFORMATA,
     CALL_GETDATEFORMATEX,
     CALL_GETDATEFORMATW,
@@ -991,6 +990,20 @@ void (* WINAPI pRtlRaiseException)(PEXCEPTION_RECORD);
 
 #include "my_winternl.h"
 
+#ifdef __i386__
+
+#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl _" #name suffix "\n\t.def _" #name suffix "; .scl 2; .type 32; .endef\n_" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc");
+#define __ASM_STDCALL(args) "@" #args
+#define __ASM_STDCALL_FUNC(name,args,code) __ASM_DEFINE_FUNC(name,__ASM_STDCALL(args),code)
+
+#else
+
+#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.def " #name suffix "; .scl 2; .type 32; .endef\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc")
+#define __ASM_STDCALL(args)
+#define __ASM_STDCALL_FUNC(name,args,code) __ASM_DEFINE_FUNC(name,__ASM_STDCALL(args),code)
+
+#endif
+
 #else
 
 #include <wine/list.h>
@@ -1323,7 +1336,6 @@ void qemu_GetCurrentPackageId(struct qemu_syscall *call);
 void qemu_GetCurrentProcess(struct qemu_syscall *call);
 void qemu_GetCurrentProcessId(struct qemu_syscall *call);
 void qemu_GetCurrentThread(struct qemu_syscall *call);
-void qemu_GetCurrentThreadId(struct qemu_syscall *call);
 void qemu_GetDateFormatA(struct qemu_syscall *call);
 void qemu_GetDateFormatEx(struct qemu_syscall *call);
 void qemu_GetDateFormatW(struct qemu_syscall *call);

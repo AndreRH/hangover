@@ -565,21 +565,15 @@ void qemu_GetCurrentProcessId(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI GetCurrentThreadId(void)
-{
-    struct qemu_syscall call;
-    call.id = QEMU_SYSCALL_ID(CALL_GETCURRENTTHREADID);
-    qemu_syscall(&call);
-    return call.iret;
-}
+#ifdef _WIN64
+
+__ASM_STDCALL_FUNC( GetCurrentThreadId, 0, ".byte 0x65\n\tmovl 0x48,%eax\n\tret" );
 
 #else
 
-void qemu_GetCurrentThreadId(struct qemu_syscall *call)
-{
-    WINE_TRACE("\n");
-    call->iret = GetCurrentThreadId();
-}
+__ASM_STDCALL_FUNC( GetCurrentThreadId, 0, ".byte 0x64\n\tmovl 0x24,%eax\n\tret" )
+
+#endif
 
 #endif
 

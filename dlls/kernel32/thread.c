@@ -1127,10 +1127,6 @@ struct qemu_SetLastError
  * before calling a Win32 function. */
 #if defined(__x86_64__)
 
-#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.def " #name suffix "; .scl 2; .type 32; .endef\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc")
-#define __ASM_STDCALL(args)
-#define __ASM_STDCALL_FUNC(name,args,code) __ASM_DEFINE_FUNC(name,__ASM_STDCALL(args),code)
-
 __ASM_STDCALL_FUNC( kernel32_SetLastError, 8, ".byte 0x65\n\tmovl %ecx,0x68\n\tret" );
 
 #else
