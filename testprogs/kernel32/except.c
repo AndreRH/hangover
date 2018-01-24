@@ -6,21 +6,21 @@ static CONTEXT compare_ctx;
 
 static LONG WINAPI my_filter(PEXCEPTION_POINTERS epointers)
 {
-    printf("in my filter, %%rcx=%p\n", (void *)epointers->ContextRecord->Rcx);
+    printf("in my filter, %%rcx=%p\n", (void *)epointers->ContextRecord->Ecx);
 
-    if (memcmp(&epointers->ContextRecord->FltSave, &compare_ctx.FltSave, sizeof(compare_ctx.FltSave)))
+    if (memcmp(&epointers->ContextRecord->FloatSave, &compare_ctx.FloatSave, sizeof(compare_ctx.FloatSave)))
         printf("Float state differs.\n");
     else
         printf("Float state is equal.\n");
 
 
-    epointers->ContextRecord->Rcx = (DWORD64)&global;
+    epointers->ContextRecord->Ecx = (DWORD_PTR)&global;
     return EXCEPTION_CONTINUE_EXECUTION;
 }
 
 int main()
 {
-    int *x = NULL;
+    int *x = (int *)0x1234;
     printf("Hello exception test.\n");
     volatile float f = 123.4;
     volatile float g = 456.7;
@@ -31,7 +31,7 @@ int main()
 
     SetUnhandledExceptionFilter(my_filter);
 
-    asm volatile( "movq $1, (%%rcx)\n"
+    asm volatile( "movl $1, (%%ecx)\n"
             : /* no output */
             : "c"(x)
             : "memory");

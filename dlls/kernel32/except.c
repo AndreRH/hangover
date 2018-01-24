@@ -123,7 +123,7 @@ LONG WINAPI kernel32_UnhandledExceptionFilter(PEXCEPTION_POINTERS epointers)
 void qemu_UnhandledExceptionFilter(struct qemu_syscall *call)
 {
     struct qemu_UnhandledExceptionFilter *c = (struct qemu_UnhandledExceptionFilter *)call;
-    WINE_TRACE("Application filter %p.\n", QEMU_G2H(c->filter));
+    WINE_ERR("Application filter %p.\n", QEMU_G2H(c->filter));
 }
 
 #endif

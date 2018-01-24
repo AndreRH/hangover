@@ -22,6 +22,9 @@
 #include <stdio.h>
 #include <tlhelp32.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_tlhelp32.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_kernel32.h"
@@ -256,7 +259,7 @@ void qemu_Process32NextW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_Module32FirstW
+struct qemu_Module32Iteration
 {
     struct qemu_syscall super;
     uint64_t hSnapshot;
@@ -265,9 +268,9 @@ struct qemu_Module32FirstW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI Module32FirstW(HANDLE hSnapshot, LPMODULEENTRY32W lpme)
+WINBASEAPI BOOL WINAPI Module32FirstW(HANDLE hSnapshot, MODULEENTRY32W *lpme)
 {
-    struct qemu_Module32FirstW call;
+    struct qemu_Module32Iteration call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MODULE32FIRSTW);
     call.hSnapshot = (ULONG_PTR)hSnapshot;
     call.lpme = (ULONG_PTR)lpme;
@@ -277,61 +280,9 @@ WINBASEAPI BOOL WINAPI Module32FirstW(HANDLE hSnapshot, LPMODULEENTRY32W lpme)
     return call.super.iret;
 }
 
-#else
-
-void qemu_Module32FirstW(struct qemu_syscall *call)
-{
-    struct qemu_Module32FirstW *c = (struct qemu_Module32FirstW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = Module32FirstW(QEMU_G2H(c->hSnapshot), QEMU_G2H(c->lpme));
-}
-
-#endif
-
-struct qemu_Module32NextW
-{
-    struct qemu_syscall super;
-    uint64_t hSnapshot;
-    uint64_t lpme;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI BOOL WINAPI Module32NextW(HANDLE hSnapshot, LPMODULEENTRY32W lpme)
-{
-    struct qemu_Module32NextW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_MODULE32NEXTW);
-    call.hSnapshot = (ULONG_PTR)hSnapshot;
-    call.lpme = (ULONG_PTR)lpme;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_Module32NextW(struct qemu_syscall *call)
-{
-    struct qemu_Module32NextW *c = (struct qemu_Module32NextW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = Module32NextW(QEMU_G2H(c->hSnapshot), QEMU_G2H(c->lpme));
-}
-
-#endif
-
-struct qemu_Module32First
-{
-    struct qemu_syscall super;
-    uint64_t hSnapshot;
-    uint64_t lpme;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI BOOL WINAPI Module32First(HANDLE hSnapshot, LPMODULEENTRY32 lpme)
 {
-    struct qemu_Module32First call;
+    struct qemu_Module32Iteration call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MODULE32FIRST);
     call.hSnapshot = (ULONG_PTR)hSnapshot;
     call.lpme = (ULONG_PTR)lpme;
@@ -341,29 +292,21 @@ WINBASEAPI BOOL WINAPI Module32First(HANDLE hSnapshot, LPMODULEENTRY32 lpme)
     return call.super.iret;
 }
 
-#else
-
-void qemu_Module32First(struct qemu_syscall *call)
+WINBASEAPI BOOL WINAPI Module32NextW(HANDLE hSnapshot, MODULEENTRY32W *lpme)
 {
-    struct qemu_Module32First *c = (struct qemu_Module32First *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = Module32First(QEMU_G2H(c->hSnapshot), QEMU_G2H(c->lpme));
+    struct qemu_Module32Iteration call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_MODULE32NEXTW);
+    call.hSnapshot = (ULONG_PTR)hSnapshot;
+    call.lpme = (ULONG_PTR)lpme;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
 }
-
-#endif
-
-struct qemu_Module32Next
-{
-    struct qemu_syscall super;
-    uint64_t hSnapshot;
-    uint64_t lpme;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 WINBASEAPI BOOL WINAPI Module32Next(HANDLE hSnapshot, LPMODULEENTRY32 lpme)
 {
-    struct qemu_Module32Next call;
+    struct qemu_Module32Iteration call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MODULE32NEXT);
     call.hSnapshot = (ULONG_PTR)hSnapshot;
     call.lpme = (ULONG_PTR)lpme;
@@ -375,11 +318,54 @@ WINBASEAPI BOOL WINAPI Module32Next(HANDLE hSnapshot, LPMODULEENTRY32 lpme)
 
 #else
 
-void qemu_Module32Next(struct qemu_syscall *call)
+void qemu_Module32Iteration(struct qemu_syscall *call)
 {
-    struct qemu_Module32Next *c = (struct qemu_Module32Next *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = Module32Next(QEMU_G2H(c->hSnapshot), QEMU_G2H(c->lpme));
+    struct qemu_Module32Iteration *c = (struct qemu_Module32Iteration *)call;
+    MODULEENTRY32W stackW, *meW = &stackW;
+    MODULEENTRY32 stackA, *meA = &stackA;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    meA = QEMU_G2H(c->lpme);
+    meW = QEMU_G2H(c->lpme);
+#else
+    if (c->lpme)
+    {
+        meA->dwSize = sizeof(*meA);
+        meW->dwSize = sizeof(*meW);
+    }
+    else
+    {
+        meA = NULL;
+        meW = NULL;
+    }
+#endif
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_MODULE32FIRST):
+            c->super.iret = Module32First(QEMU_G2H(c->hSnapshot), meA);
+            break;
+        case QEMU_SYSCALL_ID(CALL_MODULE32FIRSTW):
+            c->super.iret = Module32FirstW(QEMU_G2H(c->hSnapshot), meW);
+            break;
+        case QEMU_SYSCALL_ID(CALL_MODULE32NEXT):
+            c->super.iret = Module32Next(QEMU_G2H(c->hSnapshot), meA);
+            break;
+        case QEMU_SYSCALL_ID(CALL_MODULE32NEXTW):
+            c->super.iret = Module32NextW(QEMU_G2H(c->hSnapshot), meW);
+            break;
+    }
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret)
+    {
+        if (c->super.id == QEMU_SYSCALL_ID(CALL_MODULE32FIRST) || c->super.id == QEMU_SYSCALL_ID(CALL_MODULE32NEXT))
+            MODULEENTRY32_h2g(QEMU_G2H(c->lpme), meA);
+        else
+            MODULEENTRY32W_h2g(QEMU_G2H(c->lpme), meW);
+    }
+#endif
 }
 
 #endif
