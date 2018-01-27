@@ -36,12 +36,12 @@
 #@ cdecl -arch=win64 ??0__non_rtti_object@std@@QEAA@AEBV01@@Z(ptr ptr) MSVCRT___non_rtti_object_copy_ctor
 #@ thiscall -arch=i386 ??0__non_rtti_object@std@@QAE@PBD@Z(ptr ptr) MSVCRT___non_rtti_object_ctor
 #@ cdecl -arch=win64 ??0__non_rtti_object@std@@QEAA@PEBD@Z(ptr ptr) MSVCRT___non_rtti_object_ctor
-#@ thiscall -arch=i386 ??0bad_cast@std@@AAE@PBQBD@Z(ptr ptr) MSVCRT_bad_cast_ctor
-#@ cdecl -arch=win64 ??0bad_cast@std@@AEAA@PEBQEBD@Z(ptr ptr) MSVCRT_bad_cast_ctor
-#@ thiscall -arch=i386 ??0bad_cast@std@@QAE@ABV01@@Z(ptr ptr) MSVCRT_bad_cast_copy_ctor
-#@ cdecl -arch=win64 ??0bad_cast@std@@QEAA@AEBV01@@Z(ptr ptr) MSVCRT_bad_cast_copy_ctor
-#@ thiscall -arch=i386 ??0bad_cast@std@@QAE@PBD@Z(ptr str) MSVCRT_bad_cast_ctor_charptr
-#@ cdecl -arch=win64 ??0bad_cast@std@@QEAA@PEBD@Z(ptr str) MSVCRT_bad_cast_ctor_charptr
+@ thiscall -arch=i386 ??0bad_cast@std@@AAE@PBQBD@Z(ptr ptr) MSVCRT_bad_cast_ctor
+@ cdecl -arch=win64 ??0bad_cast@std@@AEAA@PEBQEBD@Z(ptr ptr) __thiscall_MSVCRT_bad_cast_ctor
+@ thiscall -arch=i386 ??0bad_cast@std@@QAE@ABV01@@Z(ptr ptr) MSVCRT_bad_cast_copy_ctor
+@ cdecl -arch=win64 ??0bad_cast@std@@QEAA@AEBV01@@Z(ptr ptr) __thiscall_MSVCRT_bad_cast_copy_ctor
+@ thiscall -arch=i386 ??0bad_cast@std@@QAE@PBD@Z(ptr str) MSVCRT_bad_cast_ctor_charptr
+@ cdecl -arch=win64 ??0bad_cast@std@@QEAA@PEBD@Z(ptr str) __thiscall_MSVCRT_bad_cast_ctor_charptr
 @ stub -arch=win32 ??0bad_target@Concurrency@@QAE@PBD@Z
 @ stub -arch=win64 ??0bad_target@Concurrency@@QEAA@PEBD@Z
 @ stub -arch=win32 ??0bad_target@Concurrency@@QAE@XZ
@@ -176,8 +176,8 @@
 @ stub -arch=win64 ??1_Timer@details@Concurrency@@IEAA@XZ
 #@ thiscall -arch=i386 ??1__non_rtti_object@std@@UAE@XZ(ptr) MSVCRT___non_rtti_object_dtor
 #@ cdecl -arch=win64 ??1__non_rtti_object@std@@UEAA@XZ(ptr) MSVCRT___non_rtti_object_dtor
-#@ thiscall -arch=i386 ??1bad_cast@std@@UAE@XZ(ptr) MSVCRT_bad_cast_dtor
-#@ cdecl -arch=win64 ??1bad_cast@std@@UEAA@XZ(ptr) MSVCRT_bad_cast_dtor
+@ thiscall -arch=i386 ??1bad_cast@std@@UAE@XZ(ptr) MSVCRT_bad_cast_dtor
+@ cdecl -arch=win64 ??1bad_cast@std@@UEAA@XZ(ptr) __thiscall_MSVCRT_bad_cast_dtor
 #@ thiscall -arch=i386 ??1bad_typeid@std@@UAE@XZ(ptr) MSVCRT_bad_typeid_dtor
 #@ cdecl -arch=win64 ??1bad_typeid@std@@UEAA@XZ(ptr) MSVCRT_bad_typeid_dtor
 #@ thiscall -arch=win32 ??1critical_section@Concurrency@@QAE@XZ(ptr) critical_section_dtor
@@ -211,8 +211,8 @@
 #@ cdecl -arch=win64 ??4SchedulerPolicy@Concurrency@@QEAAAEAV01@AEBV01@@Z(ptr ptr) SchedulerPolicy_op_assign
 #@ thiscall -arch=i386 ??4__non_rtti_object@std@@QAEAAV01@ABV01@@Z(ptr ptr) MSVCRT___non_rtti_object_opequals
 #@ cdecl -arch=win64 ??4__non_rtti_object@std@@QEAAAEAV01@AEBV01@@Z(ptr ptr) MSVCRT___non_rtti_object_opequals
-#@ thiscall -arch=i386 ??4bad_cast@std@@QAEAAV01@ABV01@@Z(ptr ptr) MSVCRT_bad_cast_opequals
-#@ cdecl -arch=win64 ??4bad_cast@std@@QEAAAEAV01@AEBV01@@Z(ptr ptr) MSVCRT_bad_cast_opequals
+@ thiscall -arch=i386 ??4bad_cast@std@@QAEAAV01@ABV01@@Z(ptr ptr) MSVCRT_bad_cast_opequals
+@ cdecl -arch=win64 ??4bad_cast@std@@QEAAAEAV01@AEBV01@@Z(ptr ptr) __thiscall_MSVCRT_bad_cast_opequals
 #@ thiscall -arch=i386 ??4bad_typeid@std@@QAEAAV01@ABV01@@Z(ptr ptr) MSVCRT_bad_typeid_opequals
 #@ cdecl -arch=win64 ??4bad_typeid@std@@QEAAAEAV01@AEBV01@@Z(ptr ptr) MSVCRT_bad_typeid_opequals
 @ thiscall -arch=i386 ??4exception@std@@QAEAAV01@ABV01@@Z(ptr ptr) MSVCRT_exception_opequals
@@ -224,16 +224,16 @@
 #@ thiscall -arch=i386 ??9type_info@@QBE_NABV0@@Z(ptr ptr) MSVCRT_type_info_opnot_equals
 #@ cdecl -arch=win64 ??9type_info@@QEBA_NAEBV0@@Z(ptr ptr) MSVCRT_type_info_opnot_equals
 #@ extern ??_7__non_rtti_object@std@@6B@ MSVCRT___non_rtti_object_vtable
-#@ extern ??_7bad_cast@std@@6B@ MSVCRT_bad_cast_vtable
+@ extern ??_7bad_cast@std@@6B@ MSVCRT_bad_cast_vtable
 #@ extern ??_7bad_typeid@std@@6B@ MSVCRT_bad_typeid_vtable
-#@ extern ??_7exception@@6B@ MSVCRT_exception_old_vtable
-#@ extern ??_7exception@std@@6B@ MSVCRT_exception_vtable
+@ extern ??_7exception@@6B@ MSVCRT_exception_old_vtable
+@ extern ??_7exception@std@@6B@ MSVCRT_exception_vtable
 #@ thiscall -arch=win32 ??_F?$_SpinWait@$00@details@Concurrency@@QAEXXZ(ptr) SpinWait_dtor
 #@ cdecl -arch=win64 ??_F?$_SpinWait@$00@details@Concurrency@@QEAAXXZ(ptr) SpinWait_dtor
 #@ thiscall -arch=win32 ??_F?$_SpinWait@$0A@@details@Concurrency@@QAEXXZ(ptr) SpinWait_dtor
 #@ cdecl -arch=win64 ??_F?$_SpinWait@$0A@@details@Concurrency@@QEAAXXZ(ptr) SpinWait_dtor
-#@ thiscall -arch=i386 ??_Fbad_cast@std@@QAEXXZ(ptr) MSVCRT_bad_cast_default_ctor
-#@ cdecl -arch=win64 ??_Fbad_cast@std@@QEAAXXZ(ptr) MSVCRT_bad_cast_default_ctor
+@ thiscall -arch=i386 ??_Fbad_cast@std@@QAEXXZ(ptr) MSVCRT_bad_cast_default_ctor
+@ cdecl -arch=win64 ??_Fbad_cast@std@@QEAAXXZ(ptr) __thiscall_MSVCRT_bad_cast_default_ctor
 #@ thiscall -arch=i386 ??_Fbad_typeid@std@@QAEXXZ(ptr) MSVCRT_bad_typeid_default_ctor
 #@ cdecl -arch=win64 ??_Fbad_typeid@std@@QEAAXXZ(ptr) MSVCRT_bad_typeid_default_ctor
 @ cdecl -arch=win32 ??_U@YAPAXI@Z(long) MSVCRT_operator_new
