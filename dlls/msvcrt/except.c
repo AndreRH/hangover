@@ -595,6 +595,99 @@ int CDECL _except_handler4_common( ULONG *cookie, void (*check_cookie)(void),
     return ExceptionContinueSearch;
 }
 
+static void msvcrt_local_unwind2(MSVCRT_EXCEPTION_FRAME* frame, int trylevel, void *ebp)
+{
+//   EXCEPTION_REGISTRATION_RECORD reg;
+
+  TRACE("(%p,%d,%d)\n",frame, frame->trylevel, trylevel);
+
+  /* Register a handler in case of a nested exception */
+//   reg.Handler = MSVCRT_nested_handler;
+//   reg.Prev = NtCurrentTeb()->Tib.ExceptionList;
+//   __wine_push_frame(&reg);
+
+  while (frame->trylevel != TRYLEVEL_END && frame->trylevel != trylevel)
+  {
+      int level = frame->trylevel;
+      frame->trylevel = frame->scopetable[level].previousTryLevel;
+      if (!frame->scopetable[level].lpfnFilter)
+      {
+          TRACE( "__try block cleanup level %d handler %p ebp %p\n",
+                 level, frame->scopetable[level].lpfnHandler, ebp );
+          call_unwind_func( frame->scopetable[level].lpfnHandler, ebp );
+      }
+  }
+//   __wine_pop_frame(&reg);
+  TRACE("unwound OK\n");
+}
+
+int CDECL _except_handler3(PEXCEPTION_RECORD rec,
+                           MSVCRT_EXCEPTION_FRAME* frame,
+                           PCONTEXT context, void* dispatcher)
+{
+  int retval, trylevel;
+  EXCEPTION_POINTERS exceptPtrs;
+  PSCOPETABLE pScopeTable;
+
+  TRACE("exception %x flags=%x at %p handler=%p %p %p semi-stub\n",
+        rec->ExceptionCode, rec->ExceptionFlags, rec->ExceptionAddress,
+        frame->handler, context, dispatcher);
+
+  __asm__ __volatile__ ("cld");
+
+  if (rec->ExceptionFlags & (EH_UNWINDING | EH_EXIT_UNWIND))
+  {
+    /* Unwinding the current frame */
+    msvcrt_local_unwind2(frame, TRYLEVEL_END, &frame->_ebp);
+    TRACE("unwound current frame, returning ExceptionContinueSearch\n");
+    return ExceptionContinueSearch;
+  }
+  else
+  {
+    /* Hunting for handler */
+    exceptPtrs.ExceptionRecord = rec;
+    exceptPtrs.ContextRecord = context;
+    *((DWORD *)frame-1) = (DWORD)&exceptPtrs;
+    trylevel = frame->trylevel;
+    pScopeTable = frame->scopetable;
+
+    while (trylevel != TRYLEVEL_END)
+    {
+      TRACE( "level %d prev %d filter %p\n", trylevel, pScopeTable[trylevel].previousTryLevel,
+             pScopeTable[trylevel].lpfnFilter );
+      if (pScopeTable[trylevel].lpfnFilter)
+      {
+        retval = call_filter( pScopeTable[trylevel].lpfnFilter, &exceptPtrs, &frame->_ebp );
+
+        TRACE("filter returned %s\n", retval == EXCEPTION_CONTINUE_EXECUTION ?
+              "CONTINUE_EXECUTION" : retval == EXCEPTION_EXECUTE_HANDLER ?
+              "EXECUTE_HANDLER" : "CONTINUE_SEARCH");
+
+        if (retval == EXCEPTION_CONTINUE_EXECUTION)
+          return ExceptionContinueExecution;
+
+        if (retval == EXCEPTION_EXECUTE_HANDLER)
+        {
+          /* Unwind all higher frames, this one will handle the exception */
+          _global_unwind2((EXCEPTION_REGISTRATION_RECORD*)frame);
+          msvcrt_local_unwind2(frame, trylevel, &frame->_ebp);
+
+          /* Set our trylevel to the enclosing block, and call the __finally
+           * code, which won't return
+           */
+          frame->trylevel = pScopeTable[trylevel].previousTryLevel;
+          TRACE("__finally block %p\n",pScopeTable[trylevel].lpfnHandler);
+          call_finally_block(pScopeTable[trylevel].lpfnHandler, &frame->_ebp);
+          ERR("Returned from __finally block - expect crash!\n");
+       }
+      }
+      trylevel = pScopeTable[trylevel].previousTryLevel;
+    }
+  }
+  TRACE("reached TRYLEVEL_END, returning ExceptionContinueSearch\n");
+  return ExceptionContinueSearch;
+}
+
 #endif
 
 #else
