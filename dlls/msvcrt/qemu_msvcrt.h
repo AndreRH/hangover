@@ -963,6 +963,7 @@ enum msvcrt_calls
     CALL_SINF,
     CALL_SINH,
     CALL_SINHF,
+    CALL_SNWSCANF,
     CALL_SPINCOUNT__VALUE,
     CALL_SPRINTF,
     CALL_SPRINTF_S,
@@ -2170,7 +2171,6 @@ void qemu_strtoui64_l(struct qemu_syscall *call);
 void qemu_strtoul(struct qemu_syscall *call);
 void qemu_strtoul_l(struct qemu_syscall *call);
 void qemu_strxfrm(struct qemu_syscall *call);
-void qemu_swscanf_s(struct qemu_syscall *call);
 void qemu_system(struct qemu_syscall *call);
 void qemu_tan(struct qemu_syscall *call);
 void qemu_tanf(struct qemu_syscall *call);
@@ -2223,6 +2223,7 @@ void qemu_wctomb(struct qemu_syscall *call);
 void qemu_wctomb_s(struct qemu_syscall *call);
 void qemu_wmemcpy_s(struct qemu_syscall *call);
 void qemu_wmemmove_s(struct qemu_syscall *call);
+void qemu_wscanf(struct qemu_syscall *call);
 
 /* Be careful not to call the Linux libc! */
 void (* CDECL p___crt_debugger_hook)(int reserved);
@@ -2684,6 +2685,7 @@ int (* CDECL p_setvbuf)(MSVCRT_FILE *file, char *buf, int mode, size_t size);
 /* FIXME: Should use __time64_t, but somehow it isn't defined. */
 __int64 (* CDECL p__time64)(__int64 *buf);
 int (* CDECL p_swscanf_s)(const WCHAR *str, const WCHAR *format, ...);
+int (* WINAPIV p_swscanf)(wchar_t *str, const wchar_t *fmt, ...);
 int (* CDECL p_fscanf)(MSVCRT_FILE *file, const char *format, ...);
 int (* CDECL p_sscanf)(const char *str, const char *format, ...);
 MSVCRT_FILE * (* CDECL p___acrt_iob_func)(unsigned idx);

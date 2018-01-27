@@ -1081,6 +1081,7 @@ static const syscall_handler dll_functions[] =
     qemu_sinf,
     qemu_sinh,
     qemu_sinhf,
+    qemu_wscanf,
     qemu_SpinCount__Value,
     qemu_sprintf,
     qemu_sprintf,
@@ -1122,7 +1123,7 @@ static const syscall_handler dll_functions[] =
     qemu_strtoul_l,
     qemu_strxfrm,
     qemu_sprintf,
-    qemu_swscanf_s,
+    qemu_wscanf,
     qemu_system,
     qemu_tan,
     qemu_tanf,
@@ -2168,6 +2169,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_strtoul = (void *)GetProcAddress(msvcrt, "strtoul");
     p_strtoul_l = (void *)GetProcAddress(msvcrt, "strtoul_l");
     p_strxfrm = (void *)GetProcAddress(msvcrt, "strxfrm");
+    p_swscanf = (void *)GetProcAddress(msvcrt, "swscanf");
     p_swscanf_s = (void *)GetProcAddress(msvcrt, "swscanf_s");
     p_system = (void *)GetProcAddress(msvcrt, "system");
     p_tan = (void *)GetProcAddress(msvcrt, "tan");

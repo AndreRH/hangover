@@ -927,7 +927,7 @@
 # @ varargs _snwprintf_l(ptr long wstr ptr) MSVCRT__snwprintf_l
 # @ varargs _snwprintf_s(ptr long long wstr) MSVCRT__snwprintf_s
 # @ varargs _snwprintf_s_l(ptr long long wstr ptr) MSVCRT__snwprintf_s_l
-# @ varargs _snwscanf(wstr long wstr) MSVCRT__snwscanf
+@ varargs _snwscanf(wstr long wstr) MSVCRT__snwscanf
 # @ varargs _snwscanf_l(wstr long wstr ptr) MSVCRT__snwscanf_l
 # @ varargs _snwscanf_s(wstr long wstr) MSVCRT__snwscanf_s
 # @ varargs _snwscanf_s_l(wstr long wstr ptr) MSVCRT__snwscanf_s_l
