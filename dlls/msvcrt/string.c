@@ -1701,10 +1701,14 @@ LONG CDECL MSVCRT_strtol(const char* nptr, char** end, int base)
     struct qemu_strtol call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRTOL);
     call.nptr = (ULONG_PTR)nptr;
-    call.end = (ULONG_PTR)end;
     call.base = base;
+    if (end)
+        call.end = (ULONG_PTR)*end;
 
     qemu_syscall(&call.super);
+
+    if (end)
+        *end = (char *)(ULONG_PTR)call.end;
 
     return call.super.iret;
 }
@@ -1714,8 +1718,12 @@ LONG CDECL MSVCRT_strtol(const char* nptr, char** end, int base)
 void qemu_strtol(struct qemu_syscall *call)
 {
     struct qemu_strtol *c = (struct qemu_strtol *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_strtol(QEMU_G2H(c->nptr), QEMU_G2H(c->end), c->base);
+    char *end;
+    WINE_TRACE("\n");
+
+    end = QEMU_G2H(c->end);
+    c->super.iret = p_strtol(QEMU_G2H(c->nptr), &end, c->base);
+    c->end = QEMU_H2G(end);
 }
 
 #endif
@@ -1962,7 +1970,7 @@ int CDECL MSVCRT__itoa_s(int value, char *str, size_t size, int radix)
 void qemu__itoa_s(struct qemu_syscall *call)
 {
     struct qemu__itoa_s *c = (struct qemu__itoa_s *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__itoa_s(c->value, QEMU_G2H(c->str), c->size, c->radix);
 }
 
@@ -1996,7 +2004,7 @@ char* CDECL MSVCRT__itoa(int value, char *str, int radix)
 void qemu__itoa(struct qemu_syscall *call)
 {
     struct qemu__itoa *c = (struct qemu__itoa *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p__itoa(c->value, QEMU_G2H(c->str), c->radix));
 }
 

@@ -143,8 +143,14 @@ WINBASEAPI int CDECL MSVCRT__set_SSE2_enable(int flag)
 void qemu__set_SSE2_enable(struct qemu_syscall *call)
 {
     struct qemu__set_SSE2_enable *c = (struct qemu__set_SSE2_enable *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* As of the writing of this comment Wine ignores the flag. The function just returns FALSE
+     * if PF_XMMI64_INSTRUCTIONS_AVAILABLE is not set. */
     c->super.iret = p__set_SSE2_enable(c->flag);
+
+    if (c->flag && !c->super.iret)
+        WINE_FIXME("Host msvcrt won't allow enabling SSE2\n");
 }
 
 #endif

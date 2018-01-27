@@ -1197,7 +1197,7 @@ WINBASEAPI int CDECL MSVCRT_memcpy_s(void *dest, size_t numberOfElements, const 
 void qemu_memcpy_s(struct qemu_syscall *call)
 {
     struct qemu_memcpy_s *c = (struct qemu_memcpy_s *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_memcpy_s(QEMU_G2H(c->dest), c->numberOfElements, QEMU_G2H(c->src), c->count);
 }
 

@@ -582,8 +582,9 @@ WINBASEAPI LCID* CDECL ___lc_handle_func(void)
 
 void qemu____lc_handle_func(struct qemu_syscall *call)
 {
+    /* This should be fine on 32 bit as long as the host lib is loaded < 4 GB. */
     struct qemu____lc_handle_func *c = (struct qemu____lc_handle_func *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p____lc_handle_func());
 }
 
@@ -639,7 +640,7 @@ WINBASEAPI unsigned int CDECL ___lc_codepage_func(void)
 void qemu____lc_codepage_func(struct qemu_syscall *call)
 {
     struct qemu____lc_codepage_func *c = (struct qemu____lc_codepage_func *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p____lc_codepage_func();
 }
 

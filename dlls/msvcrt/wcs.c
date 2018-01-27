@@ -1398,7 +1398,7 @@ WINBASEAPI WCHAR * CDECL MSVCRT_wcstok(WCHAR *str, const WCHAR *delim)
 void qemu_wcstok(struct qemu_syscall *call)
 {
     struct qemu_wcstok *c = (struct qemu_wcstok *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_wcstok(QEMU_G2H(c->str), QEMU_G2H(c->delim)));
 }
 
@@ -3011,7 +3011,7 @@ WINBASEAPI WCHAR* CDECL MSVCRT_wcsncpy(WCHAR* s1, const WCHAR *s2, size_t n)
 void qemu_wcsncpy(struct qemu_syscall *call)
 {
     struct qemu_wcsncpy *c = (struct qemu_wcsncpy *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_wcsncpy(QEMU_G2H(c->s1), QEMU_G2H(c->s2), c->n));
 }
 

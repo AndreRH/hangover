@@ -1125,7 +1125,7 @@ int CDECL MSVCRT__access(const char *filename, int mode)
 void qemu__access(struct qemu_syscall *call)
 {
     struct qemu__access *c = (struct qemu__access *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__access(QEMU_G2H(c->filename), c->mode);
 }
 
@@ -1315,7 +1315,7 @@ int CDECL MSVCRT__unlink(const char *path)
 void qemu__unlink(struct qemu_syscall *call)
 {
     struct qemu__unlink *c = (struct qemu__unlink *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__unlink(QEMU_G2H(c->path));
 }
 
@@ -3635,7 +3635,7 @@ int CDECL MSVCRT_fclose(FILE* file)
 void qemu_fclose(struct qemu_syscall *call)
 {
     struct qemu_fclose *c = (struct qemu_fclose *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_fclose(FILE_g2h(c->file));
 }
 
@@ -4349,7 +4349,7 @@ FILE * CDECL MSVCRT_fopen(const char *path, const char *mode)
 void qemu_fopen(struct qemu_syscall *call)
 {
     struct qemu_fopen *c = (struct qemu_fopen *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_fopen(QEMU_G2H(c->path), QEMU_G2H(c->mode)));
 }
 
@@ -5101,7 +5101,7 @@ int CDECL MSVCRT_getc(FILE* file)
 void qemu_getc(struct qemu_syscall *call)
 {
     struct qemu_getc *c = (struct qemu_getc *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_getc(FILE_g2h(c->file));
 }
 
@@ -5131,7 +5131,7 @@ char * CDECL MSVCRT_gets(char *buf)
 void qemu_gets(struct qemu_syscall *call)
 {
     struct qemu_gets *c = (struct qemu_gets *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_gets(QEMU_G2H(c->buf)));
 }
 

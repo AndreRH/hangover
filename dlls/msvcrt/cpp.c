@@ -136,7 +136,8 @@ void __thiscall __clean_type_info_names_internal(void * p)
 void qemu___clean_type_info_names_internal(struct qemu_syscall *call)
 {
     struct qemu___clean_type_info_names_internal *c = (struct qemu___clean_type_info_names_internal *)call;
-    WINE_FIXME("Unverified!\n");
+    /* This is currently a stub in Wine. */
+    WINE_TRACE("\n");
     p___clean_type_info_names_internal(QEMU_G2H(c->p));
 }
 

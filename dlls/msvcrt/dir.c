@@ -63,7 +63,7 @@ int CDECL MSVCRT__chdir(const char * newdir)
 void qemu__chdir(struct qemu_syscall *call)
 {
     struct qemu__chdir *c = (struct qemu__chdir *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__chdir(QEMU_G2H(c->newdir));
 }
 
@@ -825,7 +825,7 @@ char* CDECL MSVCRT__getcwd(char * buf, int size)
 void qemu__getcwd(struct qemu_syscall *call)
 {
     struct qemu__getcwd *c = (struct qemu__getcwd *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p__getcwd(QEMU_G2H(c->buf), c->size));
 }
 
@@ -1187,7 +1187,7 @@ void CDECL MSVCRT__splitpath(const char *inpath, char *drv, char *dir, char *fna
 void qemu__splitpath(struct qemu_syscall *call)
 {
     struct qemu__splitpath *c = (struct qemu__splitpath *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     p__splitpath(QEMU_G2H(c->inpath), QEMU_G2H(c->drv), QEMU_G2H(c->dir), QEMU_G2H(c->fname), QEMU_G2H(c->ext));
 }
 
