@@ -925,7 +925,7 @@ void qemu_tanhf(struct qemu_syscall *call)
 struct qemu_ceilf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -934,7 +934,7 @@ WINBASEAPI float CDECL MSVCRT_ceilf(float x)
 {
     struct qemu_ceilf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CEILF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -946,7 +946,7 @@ WINBASEAPI float CDECL MSVCRT_ceilf(float x)
 void qemu_ceilf(struct qemu_syscall *call)
 {
     struct qemu_ceilf *c = (struct qemu_ceilf *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_ceilf(c->x);
 }
 
@@ -2029,7 +2029,7 @@ void qemu__hypotf(struct qemu_syscall *call)
 struct qemu_ceil
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -2038,7 +2038,7 @@ WINBASEAPI double CDECL MSVCRT_ceil(double x)
 {
     struct qemu_ceil call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CEIL);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -2050,7 +2050,7 @@ WINBASEAPI double CDECL MSVCRT_ceil(double x)
 void qemu_ceil(struct qemu_syscall *call)
 {
     struct qemu_ceil *c = (struct qemu_ceil *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_ceil(c->x);
 }
 
