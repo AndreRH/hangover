@@ -347,3 +347,26 @@ void qemu__encoded_null(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+void * CDECL MSVCRT_generic_stub(void)
+{
+    /* The @stub entries in .spec files don't work in mingw builds. Provide this function for
+     * stubs that are actually imported to shut up the loader warnings. */
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL_GENERIC_STUB);
+
+    qemu_syscall(&call);
+}
+
+#else
+
+void qemu_generic_stub(struct qemu_syscall *call)
+{
+    WINE_FIXME("MSVCRT's generic stub function has been called...\n");
+    DebugBreak();
+    ExitProcess(1);
+}
+
+#endif

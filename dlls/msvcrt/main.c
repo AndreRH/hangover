@@ -922,6 +922,7 @@ static const syscall_handler dll_functions[] =
     qemu_ftell,
     qemu_fprintf,
     qemu_fwrite,
+    qemu_generic_stub,
     qemu_getc,
     qemu_getchar,
     qemu_getenv,

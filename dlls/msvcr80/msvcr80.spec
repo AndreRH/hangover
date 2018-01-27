@@ -612,7 +612,7 @@
 @ stub -arch=i386 _inpw(long)
 #@ cdecl _invalid_parameter(wstr wstr wstr long long) MSVCRT__invalid_parameter
 @ cdecl _invalid_parameter_noinfo()
-@ stub _invoke_watson
+@ cdecl _invoke_watson() MSVCRT_generic_stub
 @ extern -arch=i386 _iob guest_iob
 @ extern -arch=x86_64 _iob msvcrt.__qemu_native_data__
 @ cdecl _isalnum_l(long ptr) MSVCRT__isalnum_l

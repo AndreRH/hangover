@@ -830,6 +830,7 @@ enum msvcrt_calls
     CALL_FTELL,
     CALL_FWPRINTF,
     CALL_FWRITE,
+    CALL_GENERIC_STUB,
     CALL_GETC,
     CALL_GETCHAR,
     CALL_GETENV,
@@ -1988,6 +1989,7 @@ void qemu_fseek(struct qemu_syscall *c);
 void qemu_fsetpos(struct qemu_syscall *c);
 void qemu_ftell(struct qemu_syscall *c);
 void qemu_fwrite(struct qemu_syscall *call);
+void qemu_generic_stub(struct qemu_syscall *call);
 void qemu_getc(struct qemu_syscall *c);
 void qemu_getchar(struct qemu_syscall *c);
 void qemu_getenv(struct qemu_syscall *call);
