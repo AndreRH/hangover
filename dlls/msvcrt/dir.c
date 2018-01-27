@@ -409,7 +409,8 @@ intptr_t CDECL MSVCRT__findfirst64i32(const char * fspec, struct _finddata64i32_
 void qemu__findfirst64i32(struct qemu_syscall *call)
 {
     struct qemu__findfirst64i32 *c = (struct qemu__findfirst64i32 *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    /* The structs have the same size on 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = p__findfirst64i32(QEMU_G2H(c->fspec), QEMU_G2H(c->ft));
 }
 
