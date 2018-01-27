@@ -556,7 +556,7 @@
 #@ cdecl -arch=i386,x86_64,arm,arm64 __CxxQueryExceptionSize()
 #@ cdecl __CxxRegisterExceptionObject(ptr ptr)
 #@ cdecl __CxxUnregisterExceptionObject(ptr long)
-#@ cdecl __DestructExceptionObject(ptr)
+@ cdecl __DestructExceptionObject(ptr)
 @ stub __FrameUnwindFilter
 #@ cdecl __RTCastToVoid(ptr) MSVCRT___RTCastToVoid
 #@ cdecl __RTDynamicCast(ptr long ptr ptr long) MSVCRT___RTDynamicCast
@@ -784,7 +784,7 @@
 @ cdecl _errno() MSVCRT__errno
 #@ cdecl -arch=i386 _except_handler2(ptr ptr ptr ptr)
 #@ cdecl -arch=i386 _except_handler3(ptr ptr ptr ptr)
-#@ cdecl -arch=i386 _except_handler4_common(ptr ptr ptr ptr ptr ptr)
+@ cdecl -arch=i386 _except_handler4_common(ptr ptr ptr ptr ptr ptr)
 #@ varargs _execl(str str)
 #@ varargs _execle(str str)
 #@ varargs _execlp(str str)
@@ -914,7 +914,7 @@
 @ cdecl _getwche_nolock()
 @ cdecl _getws(ptr) MSVCRT__getws
 @ stub _getws_s
-#@ cdecl -arch=i386 _global_unwind2(ptr)
+@ cdecl -arch=i386 _global_unwind2(ptr)
 @ cdecl _gmtime32(ptr) MSVCRT__gmtime32
 @ cdecl _gmtime32_s(ptr ptr) MSVCRT__gmtime32_s
 @ cdecl _gmtime64(ptr) MSVCRT__gmtime64
