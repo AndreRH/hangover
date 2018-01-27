@@ -34,6 +34,8 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 
 #ifdef QEMU_DLL_GUEST
 
+#include "cppexcept.h"
+
 #ifdef _WIN64
 
 EXCEPTION_DISPOSITION CDECL __CxxFrameHandler(EXCEPTION_RECORD *rec, ULONG64 frame,
@@ -263,6 +265,13 @@ int __cdecl MSVCRT__XcptFilter(unsigned long exception_num, struct _EXCEPTION_PO
     qemu_syscall(&call);
 
     return 0;
+}
+
+int CDECL __CppXcptFilter(unsigned long _ExceptionNum,struct _EXCEPTION_POINTERS * _ExceptionPtr)
+{
+    /* only filter c++ exceptions */
+    if (_ExceptionNum != CXX_EXCEPTION) return EXCEPTION_CONTINUE_SEARCH;
+    return MSVCRT__XcptFilter( _ExceptionNum, _ExceptionPtr );
 }
 
 #else

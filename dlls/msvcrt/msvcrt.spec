@@ -173,7 +173,7 @@
 @ cdecl _Strftime(ptr long str ptr ptr)
 @ cdecl _XcptFilter(long ptr) MSVCRT__XcptFilter
 @ stdcall -arch=x86_64 __C_specific_handler(ptr long ptr ptr) ntdll.__C_specific_handler
-# @ cdecl -arch=i386,x86_64,arm,arm64 __CppXcptFilter(long ptr)
+@ cdecl -arch=i386,x86_64,arm,arm64 __CppXcptFilter(long ptr)
 # stub __CxxCallUnwindDelDtor
 # stub __CxxCallUnwindDtor
 # stub __CxxCallUnwindVecDtor
