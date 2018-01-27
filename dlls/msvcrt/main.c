@@ -609,7 +609,6 @@ static const syscall_handler dll_functions[] =
     qemu__setmaxstdio,
     qemu__setmbcp,
     qemu__setmode,
-    qemu__snwprintf,
     qemu__sopen_dispatch,
     qemu__sopen_s,
     qemu__spawnv,

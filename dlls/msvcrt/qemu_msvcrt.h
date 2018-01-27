@@ -491,7 +491,6 @@ enum msvcrt_calls
     CALL__SETMAXSTDIO,
     CALL__SETMBCP,
     CALL__SETMODE,
-    CALL__SNWPRINTF,
     CALL__SOPEN_DISPATCH,
     CALL__SOPEN_S,
     CALL__SPAWNV,
@@ -1659,7 +1658,6 @@ void qemu__setjmp(struct qemu_syscall *call);
 void qemu__setmaxstdio(struct qemu_syscall *c);
 void qemu__setmbcp(struct qemu_syscall *call);
 void qemu__setmode(struct qemu_syscall *c);
-void qemu__snwprintf(struct qemu_syscall *call);
 void qemu__sopen_dispatch(struct qemu_syscall *c);
 void qemu__sopen_s(struct qemu_syscall *c);
 void qemu__spawnv(struct qemu_syscall *call);

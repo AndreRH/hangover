@@ -864,6 +864,18 @@ int CDECL MSVCRT__vsnwprintf(WCHAR *str, size_t len, const WCHAR *format, va_lis
     return vswprintf_helper(QEMU_SYSCALL_ID(CALL__VSNWPRINTF), str, len, format, valist);
 }
 
+int CDECL MSVCRT__snwprintf(WCHAR *str, unsigned int len, const WCHAR *format, ...)
+{
+    int ret;
+    va_list list;
+
+    va_start(list, format);
+    ret = vswprintf_helper(QEMU_SYSCALL_ID(CALL__VSNWPRINTF), str, len, format, list);
+    va_end(list);
+
+    return ret;
+}
+
 #else
 
 struct sprintf_data
