@@ -662,7 +662,7 @@ WINBASEAPI LPWSTR CDECL NTDLL_wcstok(LPWSTR str, LPCWSTR delim)
 void qemu_wcstok(struct qemu_syscall *call)
 {
     struct qemu_wcstok *c = (struct qemu_wcstok *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)p_wcstok(QEMU_G2H(c->str), QEMU_G2H(c->delim));
 }
 

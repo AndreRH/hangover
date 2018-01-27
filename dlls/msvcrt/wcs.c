@@ -180,7 +180,7 @@ WINBASEAPI INT CDECL MSVCRT__wcsicmp(const WCHAR* str1, const WCHAR* str2)
 void qemu__wcsicmp(struct qemu_syscall *call)
 {
     struct qemu__wcsicmp *c = (struct qemu__wcsicmp *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__wcsicmp(QEMU_G2H(c->str1), QEMU_G2H(c->str2));
 }
 
@@ -2660,7 +2660,7 @@ WINBASEAPI WCHAR* CDECL MSVCRT_wcschr(const WCHAR *str, WCHAR ch)
 void qemu_wcschr(struct qemu_syscall *call)
 {
     struct qemu_wcschr *c = (struct qemu_wcschr *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_wcschr(QEMU_G2H(c->str), c->ch));
 }
 

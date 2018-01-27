@@ -2359,7 +2359,7 @@ intptr_t CDECL MSVCRT__get_osfhandle(int fd)
 {
     struct qemu__get_osfhandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL__GET_OSFHANDLE);
-    call.fd = (ULONG_PTR)fd;
+    call.fd = fd;
 
     qemu_syscall(&call.super);
 
@@ -2371,7 +2371,7 @@ intptr_t CDECL MSVCRT__get_osfhandle(int fd)
 void qemu__get_osfhandle(struct qemu_syscall *call)
 {
     struct qemu__get_osfhandle *c = (struct qemu__get_osfhandle *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__get_osfhandle(c->fd);
 }
 

@@ -1373,7 +1373,7 @@ VOID CDECL MSVCRT__makepath(char * path, const char * drive, const char *directo
 void qemu__makepath(struct qemu_syscall *call)
 {
     struct qemu__makepath *c = (struct qemu__makepath *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     p__makepath(QEMU_G2H(c->path), QEMU_G2H(c->drive), QEMU_G2H(c->directory), QEMU_G2H(c->filename), QEMU_G2H(c->extension));
 }
 
