@@ -82,11 +82,6 @@ void CDECL MSVCRT__setjmp_log()
 }
 
 #ifdef _WIN64
-
-#define __ASM_NAME(name) name
-#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.def " #name suffix "; .scl 2; .type 32; .endef\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc");
-#define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
-
 __ASM_GLOBAL_FUNC( MSVCRT__setjmp,
                    "jmp " __ASM_NAME("MSVCRT__setjmpex") );
 
@@ -143,10 +138,6 @@ typedef struct _MSVCRT_EXCEPTION_FRAME
 } MSVCRT_EXCEPTION_FRAME;
 
 #define TRYLEVEL_END (-1) /* End of trylevel list */
-
-#define __ASM_NAME(name) "_" name
-#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl _" #name suffix "\n\t.def _" #name suffix "; .scl 2; .type 32; .endef\n_" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc");
-#define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
 
 struct MSVCRT___JUMP_BUFFER {
     unsigned long Ebp;

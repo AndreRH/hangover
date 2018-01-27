@@ -1137,12 +1137,27 @@ void * CDECL MSVCRT_malloc(size_t size);
 void * CDECL MSVCRT_memcpy(void *dst, const void *src, size_t size);
 void * CDECL MSVCRT_realloc(void *ptr, size_t size);
 size_t CDECL MSVCRT_strlen(const char *str);
+void CDECL MSVCRT_operator_delete(void *mem);
 
 unsigned int count_printf_argsA(const char *format, char *fmts);
 unsigned int count_printf_argsW(const WCHAR *format, WCHAR *fmts);
 
 #define GUEST_IOB_SIZE 20
 extern FILE guest_iob[GUEST_IOB_SIZE];
+
+#ifdef _WIN64
+
+#define __ASM_NAME(name) name
+#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.def " #name suffix "; .scl 2; .type 32; .endef\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc");
+#define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
+
+#else
+
+#define __ASM_NAME(name) "_" name
+#define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl _" #name suffix "\n\t.def _" #name suffix "; .scl 2; .type 32; .endef\n_" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc");
+#define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
+
+#endif
 
 #else
 

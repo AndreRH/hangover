@@ -32,6 +32,16 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 
 #ifdef QEMU_DLL_GUEST
 
+#define TRACE(str, ...)
+
+#include "cppexcept.h"
+#include "cxx.h"
+
+typedef void (*vtable_ptr)(void);
+
+extern const vtable_ptr MSVCRT_exception_vtable;
+extern const vtable_ptr MSVCRT_type_info_vtable;
+
 #ifdef _WIN64
 void CDECL MSVCRT__CxxThrowException(void *object, const void *type)
 #else
@@ -81,7 +91,7 @@ struct qemu_type_info_dtor
 
 #ifdef QEMU_DLL_GUEST
 
-void __thiscall MSVCRT_type_info_dtor(void * _this)
+void __thiscall __thiscall_MSVCRT_type_info_dtor(void * _this)
 {
     struct qemu_type_info_dtor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TYPE_INFO_DTOR);
@@ -97,6 +107,190 @@ void qemu_type_info_dtor(struct qemu_syscall *call)
     struct qemu_type_info_dtor *c = (struct qemu_type_info_dtor *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
     p_type_info_dtor(QEMU_G2H(c->this));
+}
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
+/* Internal common ctor for exception */
+static void EXCEPTION_ctor(exception *_this, const char** name)
+{
+  _this->vtable = &MSVCRT_exception_vtable;
+  if (*name)
+  {
+    unsigned int name_len = MSVCRT_strlen(*name) + 1;
+    _this->name = MSVCRT_malloc(name_len);
+    MSVCRT_memcpy(_this->name, *name, name_len);
+    _this->do_free = TRUE;
+  }
+  else
+  {
+    _this->name = NULL;
+    _this->do_free = FALSE;
+  }
+}
+
+/******************************************************************
+ *		??0exception@@QAE@ABQBD@Z (MSVCRT.@)
+ */
+exception * __thiscall __thiscall_MSVCRT_exception_ctor(exception * _this, const char ** name)
+{
+  TRACE("(%p,%s)\n", _this, *name);
+  EXCEPTION_ctor(_this, name);
+  return _this;
+}
+
+/******************************************************************
+ *		??0exception@@QAE@ABQBDH@Z (MSVCRT.@)
+ */
+exception * __thiscall __thiscall_MSVCRT_exception_ctor_noalloc(exception * _this, char ** name, int noalloc)
+{
+  TRACE("(%p,%s)\n", _this, *name);
+  _this->vtable = &MSVCRT_exception_vtable;
+  _this->name = *name;
+  _this->do_free = FALSE;
+  return _this;
+}
+
+/******************************************************************
+ *		??0exception@@QAE@ABV0@@Z (MSVCRT.@)
+ */
+exception * __thiscall __thiscall_MSVCRT_exception_copy_ctor(exception * _this, const exception * rhs)
+{
+  TRACE("(%p,%p)\n", _this, rhs);
+
+  if (!rhs->do_free)
+  {
+    _this->vtable = &MSVCRT_exception_vtable;
+    _this->name = rhs->name;
+    _this->do_free = FALSE;
+  }
+  else
+    EXCEPTION_ctor(_this, (const char**)&rhs->name);
+  TRACE("name = %s\n", _this->name);
+  return _this;
+}
+
+/******************************************************************
+ *		??0exception@@QAE@XZ (MSVCRT.@)
+ */
+exception * __thiscall __thiscall_MSVCRT_exception_default_ctor(exception * _this)
+{
+  static const char* empty = NULL;
+
+  TRACE("(%p)\n", _this);
+  EXCEPTION_ctor(_this, &empty);
+  return _this;
+}
+
+/******************************************************************
+ *		??1exception@@UAE@XZ (MSVCRT.@)
+ */
+void __thiscall __thiscall_MSVCRT_exception_dtor(exception * _this)
+{
+  TRACE("(%p)\n", _this);
+  _this->vtable = &MSVCRT_exception_vtable;
+  if (_this->do_free) MSVCRT_free(_this->name);
+}
+
+/******************************************************************
+ *		??4exception@@QAEAAV0@ABV0@@Z (MSVCRT.@)
+ */
+exception * __thiscall __thiscall_MSVCRT_exception_opequals(exception * _this, const exception * rhs)
+{
+  TRACE("(%p %p)\n", _this, rhs);
+  if (_this != rhs)
+  {
+      __thiscall_MSVCRT_exception_dtor(_this);
+      __thiscall_MSVCRT_exception_copy_ctor(_this, rhs);
+  }
+  TRACE("name = %s\n", _this->name);
+  return _this;
+}
+
+/******************************************************************
+ *		??_Eexception@@UAEPAXI@Z (MSVCRT.@)
+ */
+void * __thiscall __thiscall_MSVCRT_exception_vector_dtor(exception * _this, unsigned int flags)
+{
+    TRACE("(%p %x)\n", _this, flags);
+    if (flags & 2)
+    {
+        /* we have an array, with the number of elements stored before the first object */
+        INT_PTR i, *ptr = (INT_PTR *)_this - 1;
+
+        for (i = *ptr - 1; i >= 0; i--) __thiscall_MSVCRT_exception_dtor(_this + i);
+        MSVCRT_operator_delete(ptr);
+    }
+    else
+    {
+        __thiscall_MSVCRT_exception_dtor(_this);
+        if (flags & 1) MSVCRT_operator_delete(_this);
+    }
+    return _this;
+}
+
+/******************************************************************
+ *		??_Gexception@@UAEPAXI@Z (MSVCRT.@)
+ */
+void * __thiscall __thiscall_MSVCRT_exception_scalar_dtor(exception * _this, unsigned int flags)
+{
+    TRACE("(%p %x)\n", _this, flags);
+    __thiscall_MSVCRT_exception_dtor(_this);
+    if (flags & 1) MSVCRT_operator_delete(_this);
+    return _this;
+}
+
+/******************************************************************
+ *		?what@exception@@UBEPBDXZ (MSVCRT.@)
+ */
+const char * __thiscall __thiscall_MSVCRT_what_exception(exception * _this)
+{
+  TRACE("(%p) returning %s\n", _this, _this->name);
+  return _this->name ? _this->name : "Unknown exception";
+}
+
+void * __thiscall MSVCRT_type_info_vector_dtor(type_info * _this, unsigned int flags)
+{
+    TRACE("(%p %x)\n", _this, flags);
+    if (flags & 2)
+    {
+        /* we have an array, with the number of elements stored before the first object */
+        INT_PTR i, *ptr = (INT_PTR *)_this - 1;
+
+        for (i = *ptr - 1; i >= 0; i--) __thiscall_MSVCRT_type_info_dtor(_this + i);
+        MSVCRT_operator_delete(ptr);
+    }
+    else
+    {
+        __thiscall_MSVCRT_type_info_dtor(_this);
+        if (flags & 1) MSVCRT_operator_delete(_this);
+    }
+    return _this;
+}
+
+__ASM_VTABLE(type_info,
+        VTABLE_ADD_FUNC(MSVCRT_type_info_vector_dtor));
+__ASM_VTABLE(exception,
+        VTABLE_ADD_FUNC(__thiscall_MSVCRT_exception_vector_dtor)
+        VTABLE_ADD_FUNC(__thiscall_MSVCRT_what_exception));
+__ASM_VTABLE(exception_old,
+        VTABLE_ADD_FUNC(__thiscall_MSVCRT_exception_vector_dtor)
+        VTABLE_ADD_FUNC(__thiscall_MSVCRT_what_exception));
+
+DEFINE_RTTI_DATA0( type_info, 0, ".?AVtype_info@@" )
+DEFINE_RTTI_DATA0( exception, 0, ".?AVexception@std@@" )
+DEFINE_RTTI_DATA0( exception_old, 0, ".?AVexception@@" )
+
+/* FIXME: Call me from DLLMain */
+void msvcrt_init_exception(void *base)
+{
+#ifdef __x86_64__
+    init_type_info_rtti(base);
+    init_exception_rtti(base);
+    init_exception_old_rtti(base);
+#endif
 }
 
 #endif

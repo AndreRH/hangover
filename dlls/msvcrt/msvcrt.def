@@ -162,6 +162,7 @@ EXPORTS
   _dupenv_s
   _ecvt=MSVCRT__ecvt
   _ecvt_s=MSVCRT__ecvt_s
+  _encoded_null
   _endthread=MSVCRT__endthread
   _endthreadex=MSVCRT__endthreadex
   _environ=msvcrt.__qemu_native_data__
@@ -915,6 +916,8 @@ EXPORTS
   MSVCRT__wcreate_locale
   MSVCRT__wsetlocale
   MSVCRT_btowc
+  MSVCRT_decode_pointer
+  MSVCRT_encode_pointer
   MSVCRT_localeconv
   MSVCRT_setlocale
   nearbyint=MSVCRT_nearbyint

@@ -107,7 +107,7 @@ struct qemu_operator_delete
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI void CDECL MSVCRT_operator_delete(void *mem)
+void CDECL MSVCRT_operator_delete(void *mem)
 {
     struct qemu_operator_delete call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPERATOR_DELETE);

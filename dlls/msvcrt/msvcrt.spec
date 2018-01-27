@@ -24,18 +24,18 @@
 # @ cdecl -arch=arm ??0bad_typeid@std@@QAA@PBD@Z(ptr str) MSVCRT_bad_typeid_ctor FIXME
 # @ thiscall -arch=i386 ??0bad_typeid@@QAE@PBD@Z(ptr str) MSVCRT_bad_typeid_ctor FIXME
 # @ cdecl -arch=win64 ??0bad_typeid@@QEAA@PEBD@Z(ptr str) MSVCRT_bad_typeid_ctor FIXME
-# @ cdecl -arch=arm ??0exception@std@@QAA@ABQBD@Z(ptr ptr) MSVCRT_exception_ctor FIXME
-# @ thiscall -arch=i386 ??0exception@@QAE@ABQBD@Z(ptr ptr) MSVCRT_exception_ctor FIXME
-# @ cdecl -arch=win64 ??0exception@@QEAA@AEBQEBD@Z(ptr ptr) MSVCRT_exception_ctor FIXME
-# @ cdecl -arch=arm ??0exception@std@@QAA@ABQBDH@Z(ptr ptr long) MSVCRT_exception_ctor_noalloc FIXME
-# @ thiscall -arch=i386 ??0exception@@QAE@ABQBDH@Z(ptr ptr long) MSVCRT_exception_ctor_noalloc FIXME
-# @ cdecl -arch=win64 ??0exception@@QEAA@AEBQEBDH@Z(ptr ptr long) MSVCRT_exception_ctor_noalloc FIXME
-# @ cdecl -arch=arm ??0exception@std@@QAA@ABV01@@Z(ptr ptr) MSVCRT_exception_copy_ctor FIXME
-# @ thiscall -arch=i386 ??0exception@@QAE@ABV0@@Z(ptr ptr) MSVCRT_exception_copy_ctor FIXME
-# @ cdecl -arch=win64 ??0exception@@QEAA@AEBV0@@Z(ptr ptr) MSVCRT_exception_copy_ctor FIXME
-# @ cdecl -arch=arm ??0exception@std@@QAA@XZ(ptr) MSVCRT_exception_default_ctor FIXME
-# @ thiscall -arch=i386 ??0exception@@QAE@XZ(ptr) MSVCRT_exception_default_ctor FIXME
-# @ cdecl -arch=win64 ??0exception@@QEAA@XZ(ptr) MSVCRT_exception_default_ctor FIXME
+@ cdecl -arch=arm ??0exception@std@@QAA@ABQBD@Z(ptr ptr) __thiscall_MSVCRT_exception_ctor
+@ thiscall -arch=i386 ??0exception@@QAE@ABQBD@Z(ptr ptr) MSVCRT_exception_ctor
+@ cdecl -arch=win64 ??0exception@@QEAA@AEBQEBD@Z(ptr ptr) __thiscall_MSVCRT_exception_ctor
+@ cdecl -arch=arm ??0exception@std@@QAA@ABQBDH@Z(ptr ptr long) __thiscall_MSVCRT_exception_ctor_noalloc
+@ thiscall -arch=i386 ??0exception@@QAE@ABQBDH@Z(ptr ptr long) MSVCRT_exception_ctor_noalloc
+@ cdecl -arch=win64 ??0exception@@QEAA@AEBQEBDH@Z(ptr ptr long) __thiscall_MSVCRT_exception_ctor_noalloc
+@ cdecl -arch=arm ??0exception@std@@QAA@ABV01@@Z(ptr ptr) __thiscall_MSVCRT_exception_copy_ctor
+@ thiscall -arch=i386 ??0exception@@QAE@ABV0@@Z(ptr ptr) MSVCRT_exception_copy_ctor
+@ cdecl -arch=win64 ??0exception@@QEAA@AEBV0@@Z(ptr ptr) __thiscall_MSVCRT_exception_copy_ctor
+@ cdecl -arch=arm ??0exception@std@@QAA@XZ(ptr) __thiscall_MSVCRT_exception_default_ctor
+@ thiscall -arch=i386 ??0exception@@QAE@XZ(ptr) MSVCRT_exception_default_ctor
+@ cdecl -arch=win64 ??0exception@@QEAA@XZ(ptr) __thiscall_MSVCRT_exception_default_ctor
 # @ cdecl -arch=arm ??1__non_rtti_object@std@@UAA@XZ(ptr) MSVCRT___non_rtti_object_dtor FIXME
 # @ thiscall -arch=i386 ??1__non_rtti_object@@UAE@XZ(ptr) MSVCRT___non_rtti_object_dtor FIXME
 # @ cdecl -arch=win64 ??1__non_rtti_object@@UEAA@XZ(ptr) MSVCRT___non_rtti_object_dtor FIXME
@@ -45,12 +45,12 @@
 # @ cdecl -arch=arm ??1bad_typeid@std@@UAA@XZ(ptr) MSVCRT_bad_typeid_dtor FIXME
 # @ thiscall -arch=i386 ??1bad_typeid@@UAE@XZ(ptr) MSVCRT_bad_typeid_dtor FIXME
 # @ cdecl -arch=win64 ??1bad_typeid@@UEAA@XZ(ptr) MSVCRT_bad_typeid_dtor FIXME
-# @ cdecl -arch=arm ??1exception@std@@UAA@XZ(ptr) MSVCRT_exception_dtor FIXME
-# @ thiscall -arch=i386 ??1exception@@UAE@XZ(ptr) MSVCRT_exception_dtor FIXME
-# @ cdecl -arch=win64 ??1exception@@UEAA@XZ(ptr) MSVCRT_exception_dtor FIXME
-@ cdecl -arch=arm ??1type_info@@UAA@XZ(ptr) MSVCRT_type_info_dtor
-# @ thiscall -arch=i386 ??1type_info@@UAE@XZ(ptr) MSVCRT_type_info_dtor
-@ cdecl -arch=win64 ??1type_info@@UEAA@XZ(ptr) MSVCRT_type_info_dtor
+@ cdecl -arch=arm ??1exception@std@@UAA@XZ(ptr) __thiscall_MSVCRT_exception_dtor
+@ thiscall -arch=i386 ??1exception@@UAE@XZ(ptr) MSVCRT_exception_dtor
+@ cdecl -arch=win64 ??1exception@@UEAA@XZ(ptr) __thiscall_MSVCRT_exception_dtor
+@ cdecl -arch=arm ??1type_info@@UAA@XZ(ptr) __thiscall_MSVCRT_type_info_dtor
+@ thiscall -arch=i386 ??1type_info@@UAE@XZ(ptr) MSVCRT_type_info_dtor
+@ cdecl -arch=win64 ??1type_info@@UEAA@XZ(ptr) __thiscall_MSVCRT_type_info_dtor
 @ cdecl -arch=win32 ??2@YAPAXI@Z(long) MSVCRT_operator_new
 @ cdecl -arch=win64 ??2@YAPEAX_K@Z(long) MSVCRT_operator_new
 # @ cdecl -arch=win32 ??2@YAPAXIHPBDH@Z(long long str long) MSVCRT_operator_new_dbg #FIXME
@@ -82,7 +82,7 @@
 # @ thiscall -arch=win32 ??_E__non_rtti_object@@UAEPAXI@Z(ptr long) MSVCRT___non_rtti_object_vector_dtor
 # @ thiscall -arch=win32 ??_Ebad_cast@@UAEPAXI@Z(ptr long) MSVCRT_bad_cast_vector_dtor
 # @ thiscall -arch=win32 ??_Ebad_typeid@@UAEPAXI@Z(ptr long) MSVCRT_bad_typeid_vector_dtor
-# @ thiscall -arch=win32 ??_Eexception@@UAEPAXI@Z(ptr long) MSVCRT_exception_vector_dtor
+@ thiscall -arch=win32 ??_Eexception@@UAEPAXI@Z(ptr long) MSVCRT_exception_vector_dtor
 # @ cdecl -arch=arm ??_Fbad_cast@std@@QAAXXZ(ptr) MSVCRT_bad_cast_default_ctor
 # @ thiscall -arch=i386 ??_Fbad_cast@@QAEXXZ(ptr) MSVCRT_bad_cast_default_ctor
 # @ cdecl -arch=win64 ??_Fbad_cast@@QEAAXXZ(ptr) MSVCRT_bad_cast_default_ctor
@@ -92,7 +92,7 @@
 # @ thiscall -arch=win32 ??_G__non_rtti_object@@UAEPAXI@Z(ptr long) MSVCRT___non_rtti_object_scalar_dtor
 # @ thiscall -arch=win32 ??_Gbad_cast@@UAEPAXI@Z(ptr long) MSVCRT_bad_cast_scalar_dtor
 # @ thiscall -arch=win32 ??_Gbad_typeid@@UAEPAXI@Z(ptr long) MSVCRT_bad_typeid_scalar_dtor
-# @ thiscall -arch=win32 ??_Gexception@@UAEPAXI@Z(ptr long) MSVCRT_exception_scalar_dtor
+@ thiscall -arch=win32 ??_Gexception@@UAEPAXI@Z(ptr long) MSVCRT_exception_scalar_dtor
 @ cdecl -arch=win32 ??_U@YAPAXI@Z(long) MSVCRT_operator_new
 @ cdecl -arch=win64 ??_U@YAPEAX_K@Z(long) MSVCRT_operator_new
 @ cdecl -arch=win32 ??_U@YAPAXIHPBDH@Z(long long str long) MSVCRT_operator_new_dbg
@@ -120,9 +120,9 @@
 # @ cdecl ?set_unexpected@@YAP6AXXZP6AXXZ@Z(ptr) MSVCRT_set_unexpected
 @ cdecl ?terminate@@YAXXZ() MSVCRT_terminate
 # @ cdecl ?unexpected@@YAXXZ() MSVCRT_unexpected
-# @ cdecl -arch=arm ?what@exception@std@@UBAPBDXZ(ptr) MSVCRT_what_exception
-# @ thiscall -arch=i386 ?what@exception@@UBEPBDXZ(ptr) MSVCRT_what_exception
-# @ cdecl -arch=win64 ?what@exception@@UEBAPEBDXZ(ptr) MSVCRT_what_exception
+@ cdecl -arch=arm ?what@exception@std@@UBAPBDXZ(ptr) __thiscall_MSVCRT_what_exception
+@ thiscall -arch=i386 ?what@exception@@UBEPBDXZ(ptr) MSVCRT_what_exception
+@ cdecl -arch=win64 ?what@exception@@UEBAPEBDXZ(ptr) __thiscall_MSVCRT_what_exception
 @ cdecl -arch=i386 _CIacos()
 @ cdecl -arch=i386 _CIasin()
 @ cdecl -arch=i386 _CIatan()
