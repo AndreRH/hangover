@@ -28,6 +28,21 @@
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
+#else
+
+#define MSVCRT__SW_INEXACT      0x00000001 /* inexact (precision) */
+#define MSVCRT__SW_UNDERFLOW    0x00000002 /* underflow */
+#define MSVCRT__SW_OVERFLOW     0x00000004 /* overflow */
+#define MSVCRT__SW_ZERODIVIDE   0x00000008 /* zero divide */
+#define MSVCRT__SW_INVALID      0x00000010 /* invalid */
+
+#define MSVCRT__SW_UNEMULATED     0x00000040  /* unemulated instruction */
+#define MSVCRT__SW_SQRTNEG        0x00000080  /* square root of a neg number */
+#define MSVCRT__SW_STACKOVERFLOW  0x00000200  /* FP stack overflow */
+#define MSVCRT__SW_STACKUNDERFLOW 0x00000400  /* FP stack underflow */
+
+#define MSVCRT__SW_DENORMAL     0x00080000 /* denormal status bit */
+
 #endif
 
 struct qemu___setusermatherr
@@ -2180,12 +2195,26 @@ struct qemu__clearfp
 
 WINBASEAPI unsigned int CDECL _clearfp(void)
 {
-    struct qemu__clearfp call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CLEARFP);
+    unsigned int flags = 0;
+    unsigned long fpword;
 
-    qemu_syscall(&call.super);
+    __asm__ __volatile__( "fnstsw %0; fnclex" : "=m" (fpword) );
+    if (fpword & 0x1)  flags |= MSVCRT__SW_INVALID;
+    if (fpword & 0x2)  flags |= MSVCRT__SW_DENORMAL;
+    if (fpword & 0x4)  flags |= MSVCRT__SW_ZERODIVIDE;
+    if (fpword & 0x8)  flags |= MSVCRT__SW_OVERFLOW;
+    if (fpword & 0x10) flags |= MSVCRT__SW_UNDERFLOW;
+    if (fpword & 0x20) flags |= MSVCRT__SW_INEXACT;
 
-    return call.super.iret;
+    __asm__ __volatile__( "stmxcsr %0" : "=m" (fpword) );
+    if (fpword & 0x1)  flags |= MSVCRT__SW_INVALID;
+    if (fpword & 0x2)  flags |= MSVCRT__SW_DENORMAL;
+    if (fpword & 0x4)  flags |= MSVCRT__SW_ZERODIVIDE;
+    if (fpword & 0x8)  flags |= MSVCRT__SW_OVERFLOW;
+    if (fpword & 0x10) flags |= MSVCRT__SW_UNDERFLOW;
+    if (fpword & 0x20) flags |= MSVCRT__SW_INEXACT;
+    fpword &= ~0x3f;
+    __asm__ __volatile__( "ldmxcsr %0" : : "m" (fpword) );
 }
 
 #else
