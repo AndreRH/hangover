@@ -2125,7 +2125,7 @@ int CDECL _ismbblead(unsigned int c)
 void qemu__ismbblead(struct qemu_syscall *call)
 {
     struct qemu__ismbblead *c = (struct qemu__ismbblead *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__ismbblead(c->c);
 }
 

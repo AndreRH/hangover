@@ -288,7 +288,7 @@ void * CDECL MSVCRT_decode_pointer(void * ptr)
 void qemu_decode_pointer(struct qemu_syscall *call)
 {
     struct qemu_decode_pointer *c = (struct qemu_decode_pointer *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_decode_pointer(QEMU_G2H(c->ptr)));
 }
 
@@ -316,7 +316,7 @@ void * CDECL MSVCRT_encode_pointer(void * ptr)
 void qemu_encode_pointer(struct qemu_syscall *call)
 {
     struct qemu_encode_pointer *c = (struct qemu_encode_pointer *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_encode_pointer(QEMU_G2H(c->ptr)));
 }
 
@@ -342,7 +342,7 @@ void * CDECL _encoded_null(void)
 void qemu__encoded_null(struct qemu_syscall *call)
 {
     struct qemu__encoded_null *c = (struct qemu__encoded_null *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p__encoded_null());
 }
 

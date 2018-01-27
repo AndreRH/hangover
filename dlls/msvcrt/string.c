@@ -182,7 +182,7 @@ char* CDECL MSVCRT__strlwr(char *str)
 void qemu__strlwr(struct qemu_syscall *call)
 {
     struct qemu__strlwr *c = (struct qemu__strlwr *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p__strlwr(QEMU_G2H(c->str)));
 }
 
@@ -310,7 +310,7 @@ char* CDECL MSVCRT__strupr(char *str)
 void qemu__strupr(struct qemu_syscall *call)
 {
     struct qemu__strupr *c = (struct qemu__strupr *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p__strupr(QEMU_G2H(c->str)));
 }
 
