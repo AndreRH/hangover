@@ -169,7 +169,8 @@
 @ cdecl _Getdays()
 @ cdecl _Getmonths()
 @ cdecl _Gettnames()
-# @ extern _HUGE MSVCRT__HUGE
+@ extern -arch=i386 _HUGE MSVCRT__HUGE
+@ extern -arch=x86_64 _HUGE msvcrt.__qemu_native_data__
 @ cdecl _Strftime(ptr long str ptr ptr)
 @ cdecl _XcptFilter(long ptr) MSVCRT__XcptFilter
 @ stdcall -arch=x86_64 __C_specific_handler(ptr long ptr ptr) ntdll.__C_specific_handler

@@ -40,6 +40,8 @@ WCHAR *MSVCRT__wcmdln = NULL;
 unsigned int MSVCRT__commode = 0;
 unsigned int MSVCRT__fmode = 0;
 
+double MSVCRT__HUGE = 0.0;
+
 #endif
 
 struct qemu___getmainargs

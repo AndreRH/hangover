@@ -529,7 +529,8 @@
 @ cdecl _Getdays()
 @ cdecl _Getmonths()
 @ cdecl _Gettnames()
-#@ extern _HUGE MSVCRT__HUGE
+@ extern -arch=i386 _HUGE MSVCRT__HUGE
+@ extern -arch=x86_64 _HUGE msvcr100.__qemu_native_data__
 #@ cdecl _IsExceptionObjectToBeDestroyed(ptr)
 @ stub _NLG_Dispatch2
 @ stub _NLG_Return

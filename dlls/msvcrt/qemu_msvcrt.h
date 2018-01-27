@@ -842,6 +842,7 @@ enum msvcrt_calls
     CALL_GETWCHAR,
     CALL_GMTIME,
     CALL_I10_OUTPUT,
+    CALL_INIT_DLL,
     CALL_ISALNUM,
     CALL_ISALPHA,
     CALL_ISBLANK,
@@ -953,7 +954,6 @@ enum msvcrt_calls
     CALL_SCHEDULER_CREATE,
     CALL_SCHEDULER_RESETDEFAULTSCHEDULERPOLICY,
     CALL_SCHEDULER_SETDEFAULTSCHEDULERPOLICY,
-    CALL_SET_IOB,
     CALL_SET_NEW_HANDLER,
     CALL_SETBUF,
     CALL_SETLOCALE,
@@ -1133,6 +1133,7 @@ struct _I10_OUTPUT_DATA;
 
 extern char *MSVCRT__acmdln;
 extern WCHAR *MSVCRT__wcmdln;
+extern double MSVCRT__HUGE;
 char * CDECL MSVCRT__strdup(const char *str);
 void * CDECL MSVCRT_calloc(size_t item_count,size_t size);
 CDECL DECLSPEC_NORETURN void __MINGW_NOTHROW MSVCRT_exit(int code);
@@ -3302,6 +3303,7 @@ void * (* CDECL p_decode_pointer)(void * ptr);
 void * (* CDECL p_encode_pointer)(void * ptr);
 void * (* CDECL p__encoded_null)(void);
 BOOL (* CDECL p___uncaught_exception)(void);
+double *p__HUGE;
 
 DWORD msvcrt_tls;
 size_t guest_FILE_size;

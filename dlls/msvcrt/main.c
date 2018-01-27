@@ -37,12 +37,13 @@
 #include "dll_list.h"
 #include "qemu_msvcrt.h"
 
-struct qemu_set_iob
+struct qemu_init_dll
 {
     struct qemu_syscall super;
     uint64_t iob;
     uint64_t FILE_size;
     uint64_t iob_size;
+    double HUGE;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -60,17 +61,18 @@ static WCHAR *msvcrt_wstrdupa(const char *str)
 
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
-    struct qemu_set_iob call;
+    struct qemu_init_dll call;
 
     switch (reason)
     {
         case DLL_PROCESS_ATTACH:
 #ifndef __x86_64__
-            call.super.id = QEMU_SYSCALL_ID(CALL_SET_IOB);
+            call.super.id = QEMU_SYSCALL_ID(CALL_INIT_DLL);
             call.iob = (ULONG_PTR)guest_iob;
             call.FILE_size = sizeof(FILE);
             call.iob_size = GUEST_IOB_SIZE;
             qemu_syscall(&call.super);
+            MSVCRT__HUGE = call.HUGE;
 #endif
             MSVCRT__acmdln = MSVCRT__strdup(GetCommandLineA());
             MSVCRT__wcmdln = msvcrt_wstrdupa(MSVCRT__acmdln);
@@ -89,12 +91,13 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 
 const struct qemu_ops *qemu_ops;
 
-static void qemu_set_iob(struct qemu_syscall *call)
+static void qemu_init_dll(struct qemu_syscall *call)
 {
-    struct qemu_set_iob *c = (struct qemu_set_iob *)call;
+    struct qemu_init_dll *c = (struct qemu_init_dll *)call;
     guest_FILE_size = c->FILE_size;
     guest_iob = c->iob;
     guest_iob_size = c->iob_size;
+    c->HUGE = *p__HUGE;
 }
 
 static const syscall_handler dll_functions[] =
@@ -934,6 +937,7 @@ static const syscall_handler dll_functions[] =
     qemu_getwchar,
     qemu_gmtime,
     qemu_I10_OUTPUT,
+    qemu_init_dll,
     qemu_isalnum,
     qemu_isalpha,
     qemu_isblank,
@@ -1045,7 +1049,6 @@ static const syscall_handler dll_functions[] =
     qemu_Scheduler_Create,
     qemu_Scheduler_ResetDefaultSchedulerPolicy,
     qemu_Scheduler_SetDefaultSchedulerPolicy,
-    qemu_set_iob,
     qemu_set_new_handler,
     qemu_setbuf,
     qemu_setlocale,
@@ -1434,6 +1437,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__heapmin = (void *)GetProcAddress(msvcrt, "_heapmin");
     p__heapset = (void *)GetProcAddress(msvcrt, "_heapset");
     p__heapwalk = (void *)GetProcAddress(msvcrt, "_heapwalk");
+    p__HUGE = (double *)GetProcAddress(msvcrt, "_HUGE");
     p__hypot = (void *)GetProcAddress(msvcrt, "_hypot");
     p__hypotf = (void *)GetProcAddress(msvcrt, "_hypotf");
     p__i64toa_s = (void *)GetProcAddress(msvcrt, "_i64toa_s");
