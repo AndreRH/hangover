@@ -1129,6 +1129,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
 
     if (QEMU_CURRENT_DLL == DLL_MSVCR100)
         dll_name = "msvcr100.dll";
+    else if (QEMU_CURRENT_DLL == DLL_MSVCR80)
+        dll_name = "msvcr80.dll";
     else
         dll_name = "msvcrt.dll";
 
