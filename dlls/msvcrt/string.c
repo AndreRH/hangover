@@ -1284,6 +1284,40 @@ void qemu_strncat_s(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_strncat
+{
+    struct qemu_syscall super;
+    uint64_t dst;
+    uint64_t src;
+    uint64_t len;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+char * CDECL MSVCRT_strncat(char *dst, const char *src, size_t len)
+{
+    struct qemu_strncat call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_STRNCAT);
+    call.dst = (ULONG_PTR)dst;
+    call.src = (ULONG_PTR)src;
+    call.len = len;
+
+    qemu_syscall(&call.super);
+
+    return (char *)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+void qemu_strncat(struct qemu_syscall *call)
+{
+    struct qemu_strncat *c = (struct qemu_strncat *)(ULONG_PTR)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(p_strncat(QEMU_G2H(c->dst), QEMU_G2H(c->src), c->len));
+}
+
+#endif
+
 struct qemu__strxfrm_l
 {
     struct qemu_syscall super;

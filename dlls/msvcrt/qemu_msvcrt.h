@@ -982,6 +982,7 @@ enum msvcrt_calls
     CALL_STRERROR_S,
     CALL_STRFTIME,
     CALL_STRLEN,
+    CALL_STRNCAT,
     CALL_STRNCAT_S,
     CALL_STRNCMP,
     CALL_STRNCPY,
@@ -2144,6 +2145,7 @@ void qemu_strerror(struct qemu_syscall *call);
 void qemu_strerror_s(struct qemu_syscall *call);
 void qemu_strftime(struct qemu_syscall *call);
 void qemu_strlen(struct qemu_syscall *call);
+void qemu_strncat(struct qemu_syscall *call);
 void qemu_strncat_s(struct qemu_syscall *call);
 void qemu_strncmp(struct qemu_syscall *call);
 void qemu_strncpy(struct qemu_syscall *call);
@@ -3221,6 +3223,7 @@ int (* CDECL p__strncoll)(const char* str1, const char* str2, size_t count);
 int (* CDECL p__strnicoll_l)(const char* str1, const char* str2, size_t count, MSVCRT__locale_t locale);
 int (* CDECL p__strnicoll)(const char* str1, const char* str2, size_t count);
 char* (* CDECL p_strcpy)(char *dst, const char *src);
+char * (* CDECL p_strncat)(char *dst, const char *src, size_t len);
 int (* CDECL p_strncat_s)(char* dst, size_t elem, const char* src, size_t count);
 size_t (* CDECL p__strxfrm_l)(char *dest, const char *src, size_t len, MSVCRT__locale_t locale);
 size_t (* CDECL p_strxfrm)(char *dest, const char *src, size_t len);

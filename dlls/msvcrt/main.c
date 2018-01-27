@@ -1074,6 +1074,7 @@ static const syscall_handler dll_functions[] =
     qemu_strerror_s,
     qemu_strftime,
     qemu_strlen,
+    qemu_strncat,
     qemu_strncat_s,
     qemu_strncmp,
     qemu_strncpy,
@@ -2114,6 +2115,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_strerror_s = (void *)GetProcAddress(msvcrt, "strerror_s");
     p_strftime = (void *)GetProcAddress(msvcrt, "strftime");
     p_strlen = (void *)GetProcAddress(msvcrt, "strlen");
+    p_strncat = (void *)GetProcAddress(msvcrt, "strncat");
     p_strncat_s = (void *)GetProcAddress(msvcrt, "strncat_s");
     p_strncmp = (void *)GetProcAddress(msvcrt, "strncmp");
     p_strncpy = (void *)GetProcAddress(msvcrt, "strncpy");
