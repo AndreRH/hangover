@@ -1277,6 +1277,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p___wcserror_s = (void *)GetProcAddress(msvcrt, "__wcserror_s");
     p___wgetmainargs = (void *)GetProcAddress(msvcrt, "__wgetmainargs");
     p__abs64 = (void *)GetProcAddress(msvcrt, "_abs64");
+    p__access = (void *)GetProcAddress(msvcrt, "_access");
+    p__access_s = (void *)GetProcAddress(msvcrt, "_access_s");
     p__aligned_free = (void *)GetProcAddress(msvcrt, "_aligned_free");
     p__aligned_malloc = (void *)GetProcAddress(msvcrt, "_aligned_malloc");
     p__aligned_msize = (void *)GetProcAddress(msvcrt, "_aligned_msize");
