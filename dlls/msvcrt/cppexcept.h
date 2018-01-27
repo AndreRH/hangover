@@ -122,8 +122,6 @@ typedef struct
 } cxx_exception_type;
 #endif
 
-void WINAPI _CxxThrowException(exception*,const cxx_exception_type*);
-
 /* compute the this pointer for a base class of a given type */
 static inline void *get_this_pointer( const this_ptr_offsets *off, void *object )
 {

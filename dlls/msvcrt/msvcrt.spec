@@ -189,7 +189,7 @@
 # @ cdecl __CxxUnregisterExceptionObject(ptr long)
  @ cdecl __DestructExceptionObject(ptr)
 # @ cdecl __RTCastToVoid(ptr) MSVCRT___RTCastToVoid
-# @ cdecl __RTDynamicCast(ptr long ptr ptr long) MSVCRT___RTDynamicCast
+@ cdecl __RTDynamicCast(ptr long ptr ptr long) MSVCRT___RTDynamicCast
 # @ cdecl __RTtypeid(ptr) MSVCRT___RTtypeid
 @ cdecl __STRINGTOLD(ptr ptr str long)
 @ cdecl ___lc_codepage_func()

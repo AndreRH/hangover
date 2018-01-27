@@ -16,8 +16,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
-/* Mingw has proper __thiscall support (hopefully...) */
-#define THISCALL(func) func
+/* Mingw has proper __thiscall support (hopefully...). But Wine's linker forcefully
+ * prepends __thiscall_ for functions with a thiscall calling convention, so we just
+ * add it everywhere. */
+#define THISCALL(func) "__thiscall_"#func
 #define THISCALL_NAME(func) __ASM_NAME(#func)
 #define DEFINE_THISCALL_WRAPPER(func,args) /* nothing */
 

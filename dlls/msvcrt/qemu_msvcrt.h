@@ -1143,6 +1143,7 @@ void CDECL MSVCRT_free(void *ptr);
 void * CDECL MSVCRT_malloc(size_t size);
 void * CDECL MSVCRT_memcpy(void *dst, const void *src, size_t size);
 void * CDECL MSVCRT_realloc(void *ptr, size_t size);
+char * CDECL MSVCRT_strcmp(const char *str1, const char *str2);
 size_t CDECL MSVCRT_strlen(const char *str);
 void CDECL MSVCRT_operator_delete(void *mem);
 

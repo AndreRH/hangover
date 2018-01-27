@@ -560,7 +560,7 @@
 @ cdecl __DestructExceptionObject(ptr)
 @ stub __FrameUnwindFilter
 #@ cdecl __RTCastToVoid(ptr) MSVCRT___RTCastToVoid
-#@ cdecl __RTDynamicCast(ptr long ptr ptr long) MSVCRT___RTDynamicCast
+@ cdecl __RTDynamicCast(ptr long ptr ptr long) MSVCRT___RTDynamicCast
 #@ cdecl __RTtypeid(ptr) MSVCRT___RTtypeid
 @ cdecl __STRINGTOLD(ptr ptr str long)
 @ stub __STRINGTOLD_L
