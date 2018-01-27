@@ -1145,6 +1145,8 @@ static const syscall_handler dll_functions[] =
     qemu_ungetc,
     qemu_ungetwc,
     qemu_scanf,
+    qemu_scanf,
+    qemu_scanf,
     qemu_wcrtomb,
     qemu_wcscat_s,
     qemu_wcschr,
@@ -1997,6 +1999,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_freopen_s = (void *)GetProcAddress(msvcrt, "freopen_s");
     p_frexp = (void *)GetProcAddress(msvcrt, "frexp");
     p_frexpf = (void *)GetProcAddress(msvcrt, "frexpf");
+    p_fscanf = (void *)GetProcAddress(msvcrt, "fscanf");
     p_fseek = (void *)GetProcAddress(msvcrt, "fseek");
     p_fsetpos = (void *)GetProcAddress(msvcrt, "fsetpos");
     p_ftell = (void *)GetProcAddress(msvcrt, "ftell");

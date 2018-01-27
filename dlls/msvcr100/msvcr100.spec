@@ -1302,7 +1302,7 @@
 #@ varargs _snprintf_l(ptr long str ptr) MSVCRT__snprintf_l
 #@ varargs _snprintf_s(ptr long long str) MSVCRT__snprintf_s
 @ stub _snprintf_s_l
-#@ varargs _snscanf(str long str) MSVCRT__snscanf
+@ varargs _snscanf(str long str) MSVCRT__snscanf
 #@ varargs _snscanf_l(str long str ptr) MSVCRT__snscanf_l
 #@ varargs _snscanf_s(str long str) MSVCRT__snscanf_s
 #@ varargs _snscanf_s_l(str long str ptr) MSVCRT__snscanf_s_l
@@ -1689,7 +1689,7 @@
 @ cdecl freopen(str str ptr) MSVCRT_freopen
 @ cdecl freopen_s(ptr str str ptr) MSVCRT_freopen_s
 @ cdecl frexp(double ptr) MSVCRT_frexp
-#@ varargs fscanf(ptr str) MSVCRT_fscanf
+@ varargs fscanf(ptr str) MSVCRT_fscanf
 #@ varargs fscanf_s(ptr str) MSVCRT_fscanf_s
 @ cdecl fseek(ptr long long) MSVCRT_fseek
 @ cdecl fsetpos(ptr ptr) MSVCRT_fsetpos
