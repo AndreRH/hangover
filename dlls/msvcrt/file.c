@@ -864,6 +864,16 @@ int CDECL MSVCRT__vsnwprintf(WCHAR *str, size_t len, const WCHAR *format, va_lis
     return vswprintf_helper(QEMU_SYSCALL_ID(CALL__VSNWPRINTF), str, len, format, valist);
 }
 
+int CDECL MSVCRT__vscwprintf( const wchar_t *format, va_list args )
+{
+    return MSVCRT__vsnwprintf( NULL, INT_MAX, format, args );
+}
+
+int CDECL MSVCRT_vswprintf( wchar_t *str, const wchar_t *format, va_list args )
+{
+    return MSVCRT__vsnwprintf( str, INT_MAX, format, args );
+}
+
 int CDECL MSVCRT__snwprintf(WCHAR *str, unsigned int len, const WCHAR *format, ...)
 {
     int ret;
