@@ -495,10 +495,11 @@ unsigned int count_printf_argsW(const WCHAR *format, WCHAR *fmts)
             case 'x':
                 if (fmts)
                 {
-                    fmts[count++] = format[i];
+                    fmts[count] = format[i];
                     if (count == 256)
                         MSVCRT_exit(255);
                 }
+                count++;
                 fmt_start = FALSE;
                 break;
 
