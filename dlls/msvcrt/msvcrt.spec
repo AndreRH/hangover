@@ -198,8 +198,10 @@
 @ cdecl ___mb_cur_max_func() MSVCRT____mb_cur_max_func
 @ cdecl ___setlc_active_func() MSVCRT____setlc_active_func
 @ cdecl ___unguarded_readlc_active_add_func() MSVCRT____unguarded_readlc_active_add_func
-# @ extern __argc MSVCRT___argc
-# @ extern __argv MSVCRT___argv
+@ extern -arch=i386 __argc MSVCRT___argc
+@ extern -arch=x86_64 __argc msvcrt.__qemu_native_data__
+@ extern -arch=i386 __argv MSVCRT___argv
+@ extern -arch=x86_64 __argv msvcrt.__qemu_native_data__
 @ extern __badioinfo msvcr100.__qemu_native_data__
 @ cdecl __crtCompareStringA(long long str long str long)
 @ cdecl __crtCompareStringW(long long wstr long wstr long)

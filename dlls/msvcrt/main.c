@@ -43,6 +43,7 @@ struct qemu_init_dll
     uint64_t iob;
     uint64_t FILE_size;
     uint64_t iob_size;
+    uint64_t argc, argv;
     double HUGE;
 };
 
@@ -72,7 +73,7 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
             call.FILE_size = sizeof(FILE);
             call.iob_size = GUEST_IOB_SIZE;
             qemu_syscall(&call.super);
-            MSVCRT__HUGE = call.HUGE;
+            msvcrt_data_init(call.HUGE, call.argc, (char **)(ULONG_PTR)call.argv);
 #endif
             MSVCRT__acmdln = MSVCRT__strdup(GetCommandLineA());
             MSVCRT__wcmdln = msvcrt_wstrdupa(MSVCRT__acmdln);
@@ -93,11 +94,33 @@ const struct qemu_ops *qemu_ops;
 
 static void qemu_init_dll(struct qemu_syscall *call)
 {
+    qemu_ptr *argv;
+    unsigned int i;
+
     struct qemu_init_dll *c = (struct qemu_init_dll *)call;
     guest_FILE_size = c->FILE_size;
     guest_iob = c->iob;
     guest_iob_size = c->iob_size;
     c->HUGE = *p__HUGE;
+    c->argc = *p___argc;
+
+    argv = HeapAlloc(GetProcessHeap(), 0, sizeof(qemu_ptr) * c->argc);
+    for (i = 0; i < c->argc; ++i)
+    {
+        const char *orig = p___argv[i];
+        char *copy = NULL;
+
+        if (orig)
+        {
+            size_t len = strlen(orig) + 1;
+            copy = HeapAlloc(GetProcessHeap(), 0, len);
+            memcpy(copy, orig, len);
+        }
+
+        argv[i] = QEMU_H2G(copy);
+    }
+
+    c->argv = QEMU_H2G(argv);
 }
 
 static const syscall_handler dll_functions[] =
@@ -1184,6 +1207,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p____mb_cur_max_l_func = (void *)GetProcAddress(msvcrt, "___mb_cur_max_l_func");
     p____setlc_active_func = (void *)GetProcAddress(msvcrt, "___setlc_active_func");
     p____unguarded_readlc_active_add_func = (void *)GetProcAddress(msvcrt, "___unguarded_readlc_active_add_func");
+    p___argc = (int *)GetProcAddress(msvcrt, "__argc");
+    p___argv = (char **)GetProcAddress(msvcrt, "__argv");
     p___clean_type_info_names_internal = (void *)GetProcAddress(msvcrt, "__clean_type_info_names_internal");
     p___control87_2 = (void *)GetProcAddress(msvcrt, "__control87_2");
     p___crt_debugger_hook = (void *)GetProcAddress(msvcrt, "__crt_debugger_hook");

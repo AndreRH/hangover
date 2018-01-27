@@ -1133,7 +1133,7 @@ struct _I10_OUTPUT_DATA;
 
 extern char *MSVCRT__acmdln;
 extern WCHAR *MSVCRT__wcmdln;
-extern double MSVCRT__HUGE;
+void msvcrt_data_init(double huge, int argc, char **argv);
 char * CDECL MSVCRT__strdup(const char *str);
 void * CDECL MSVCRT_calloc(size_t item_count,size_t size);
 CDECL DECLSPEC_NORETURN void __MINGW_NOTHROW MSVCRT_exit(int code);
@@ -3304,6 +3304,8 @@ void * (* CDECL p_encode_pointer)(void * ptr);
 void * (* CDECL p__encoded_null)(void);
 BOOL (* CDECL p___uncaught_exception)(void);
 double *p__HUGE;
+int *p___argc;
+char **p___argv;
 
 DWORD msvcrt_tls;
 size_t guest_FILE_size;

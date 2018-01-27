@@ -41,7 +41,13 @@ unsigned int MSVCRT__commode = 0;
 unsigned int MSVCRT__fmode = 0;
 
 double MSVCRT__HUGE = 0.0;
+int MSVCRT___argc = 0;
+char **MSVCRT___argv = NULL;
 
+void msvcrt_data_init(double huge, int argc, char **argv)
+{
+    MSVCRT__HUGE = huge;
+}
 #endif
 
 struct qemu___getmainargs
