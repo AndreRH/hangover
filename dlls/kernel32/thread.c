@@ -522,7 +522,7 @@ WINBASEAPI BOOL WINAPI SetThreadPriority(HANDLE hthread, INT priority)
 void qemu_SetThreadPriority(struct qemu_syscall *call)
 {
     struct qemu_SetThreadPriority *c = (struct qemu_SetThreadPriority *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetThreadPriority(QEMU_G2H(c->hthread), c->priority);
 }
 

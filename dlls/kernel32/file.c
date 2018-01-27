@@ -1760,7 +1760,7 @@ WINBASEAPI UINT WINAPI SetHandleCount(UINT count)
 void qemu_SetHandleCount(struct qemu_syscall *call)
 {
     struct qemu_SetHandleCount *c = (struct qemu_SetHandleCount *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetHandleCount(c->count);
 }
 

@@ -145,7 +145,7 @@ WINBASEAPI MMRESULT WINAPI timeGetDevCaps(LPTIMECAPS lpCaps, UINT wSize)
     struct qemu_timeGetDevCaps call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TIMEGETDEVCAPS);
     call.lpCaps = (ULONG_PTR)lpCaps;
-    call.wSize = (ULONG_PTR)wSize;
+    call.wSize = wSize;
 
     qemu_syscall(&call.super);
 
@@ -157,7 +157,7 @@ WINBASEAPI MMRESULT WINAPI timeGetDevCaps(LPTIMECAPS lpCaps, UINT wSize)
 void qemu_timeGetDevCaps(struct qemu_syscall *call)
 {
     struct qemu_timeGetDevCaps *c = (struct qemu_timeGetDevCaps *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = timeGetDevCaps(QEMU_G2H(c->lpCaps), c->wSize);
 }
 
@@ -175,7 +175,7 @@ WINBASEAPI MMRESULT WINAPI timeBeginPeriod(UINT wPeriod)
 {
     struct qemu_timeBeginPeriod call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TIMEBEGINPERIOD);
-    call.wPeriod = (ULONG_PTR)wPeriod;
+    call.wPeriod = wPeriod;
 
     qemu_syscall(&call.super);
 
@@ -187,7 +187,7 @@ WINBASEAPI MMRESULT WINAPI timeBeginPeriod(UINT wPeriod)
 void qemu_timeBeginPeriod(struct qemu_syscall *call)
 {
     struct qemu_timeBeginPeriod *c = (struct qemu_timeBeginPeriod *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = timeBeginPeriod(c->wPeriod);
 }
 

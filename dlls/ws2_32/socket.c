@@ -580,7 +580,7 @@ WINBASEAPI u_short WINAPI WS_htons(u_short hostshort)
 {
     struct qemu_WS_htons call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_HTONS);
-    call.hostshort = (ULONG_PTR)hostshort;
+    call.hostshort = hostshort;
 
     qemu_syscall(&call.super);
 
@@ -592,7 +592,7 @@ WINBASEAPI u_short WINAPI WS_htons(u_short hostshort)
 void qemu_WS_htons(struct qemu_syscall *call)
 {
     struct qemu_WS_htons *c = (struct qemu_WS_htons *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_htons(c->hostshort);
 }
 

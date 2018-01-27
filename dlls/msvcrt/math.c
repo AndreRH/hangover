@@ -1436,7 +1436,7 @@ WINBASEAPI double CDECL MSVCRT_sin(double x)
 void qemu_sin(struct qemu_syscall *call)
 {
     struct qemu_sin *c = (struct qemu_sin *)(ULONG_PTR)call;
-    WINE_TRACE("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_sin(c->x);
 }
 

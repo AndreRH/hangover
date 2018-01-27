@@ -148,7 +148,7 @@ WINUSERAPI HCURSOR WINAPI CreateCursor(HINSTANCE hInstance, INT xHotSpot, INT yH
 void qemu_CreateCursor(struct qemu_syscall *call)
 {
     struct qemu_CreateCursor *c = (struct qemu_CreateCursor *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)CreateCursor(QEMU_G2H(c->hInstance), c->xHotSpot, c->yHotSpot, c->nWidth, c->nHeight, QEMU_G2H(c->lpANDbits), QEMU_G2H(c->lpXORbits));
 }
 

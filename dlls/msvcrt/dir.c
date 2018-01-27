@@ -153,7 +153,7 @@ int CDECL MSVCRT__findclose(intptr_t hand)
 void qemu__findclose(struct qemu_syscall *call)
 {
     struct qemu__findclose *c = (struct qemu__findclose *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__findclose(c->hand);
 }
 
@@ -730,7 +730,7 @@ int CDECL MSVCRT__findnext64i32(intptr_t hand, struct _finddata64i32_t * ft)
 void qemu__findnext64i32(struct qemu_syscall *call)
 {
     struct qemu__findnext64i32 *c = (struct qemu__findnext64i32 *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__findnext64i32(c->hand, QEMU_G2H(c->ft));
 }
 
