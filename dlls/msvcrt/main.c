@@ -1943,10 +1943,10 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_CurrentScheduler_Id = (void *)GetProcAddress(msvcrt, "CurrentScheduler_Id");
     p_CurrentScheduler_IsAvailableLocation = (void *)GetProcAddress(msvcrt, "CurrentScheduler_IsAvailableLocation");
     p_CurrentScheduler_RegisterShutdownEvent = (void *)GetProcAddress(msvcrt, "CurrentScheduler_RegisterShutdownEvent");
-    p_decode_pointer = (void *)GetProcAddress(msvcrt, "decode_pointer");
+    p_decode_pointer = (void *)GetProcAddress(msvcrt, "_decode_pointer");
     p_difftime = (void *)GetProcAddress(msvcrt, "difftime");
     p_div = (void *)GetProcAddress(msvcrt, "div");
-    p_encode_pointer = (void *)GetProcAddress(msvcrt, "encode_pointer");
+    p_encode_pointer = (void *)GetProcAddress(msvcrt, "_encode_pointer");
     p_erf = (void *)GetProcAddress(msvcrt, "erf");
     p_erfc = (void *)GetProcAddress(msvcrt, "erfc");
     p_erfcf = (void *)GetProcAddress(msvcrt, "erfcf");
