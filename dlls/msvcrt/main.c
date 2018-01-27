@@ -690,6 +690,7 @@ static const syscall_handler dll_functions[] =
     qemu__utime64,
     qemu_sprintf,
     qemu_sprintf,
+    qemu_sprintf,
     qemu__W_Getdays,
     qemu__W_Getmonths,
     qemu__W_Gettnames,
@@ -1751,6 +1752,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__unlock_locales = (void *)GetProcAddress(msvcrt, "_unlock_locales");
     p__Unlock_shared_ptr_spin_lock = (void *)GetProcAddress(msvcrt, "_Unlock_shared_ptr_spin_lock");
     p__vsnprintf = (void *)GetProcAddress(msvcrt, "_vsnprintf");
+    p__vsnprintf_s = (void *)GetProcAddress(msvcrt, "_vsnprintf_s");
     p__vsnwprintf = (void *)GetProcAddress(msvcrt, "_vsnwprintf");
     p__W_Getdays = (void *)GetProcAddress(msvcrt, "_W_Getdays");
     p__W_Getmonths = (void *)GetProcAddress(msvcrt, "_W_Getmonths");

@@ -571,6 +571,7 @@ enum msvcrt_calls
     CALL__UTIME32,
     CALL__UTIME64,
     CALL__VSNPRINTF,
+    CALL__VSNPRINTF_S,
     CALL__VSNWPRINTF,
     CALL__W_GETDAYS,
     CALL__W_GETMONTHS,
@@ -2548,6 +2549,7 @@ size_t (* CDECL p_wcstombs)(char *mbstr, const WCHAR *wcstr, size_t count);
 char * (* CDECL p_setlocale)(int category, const char *locale);
 int (* CDECL p__isatty)(int fd);
 int (* CDECL p__vsnprintf)(char *str, size_t len, const char *format, __ms_va_list valist);
+int (* CDECL p__vsnprintf_s)(char *str, unsigned int len, unsigned int count, const char *format, __ms_va_list valist);
 int (* CDECL p__vsnwprintf)(WCHAR *str, size_t len, const WCHAR *format, __ms_va_list valist);
 int (* CDECL p__fileno)(MSVCRT_FILE *f);
 int (* CDECL p__write)(int fd, const void *buf, unsigned int count);

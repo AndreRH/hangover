@@ -668,6 +668,7 @@ struct qemu_sprintf
     struct qemu_syscall super;
     uint64_t argcount, argcount_float;
     uint64_t str;
+    uint64_t len;
     uint64_t charcount;
     uint64_t format;
     struct va_array args[1];
@@ -675,7 +676,7 @@ struct qemu_sprintf
 
 #ifdef QEMU_DLL_GUEST
 
-static int CDECL vsprintf_helper(uint64_t op, char *str, size_t charcount, const char *format, va_list args)
+static int CDECL vsprintf_helper(uint64_t op, char *str, size_t len, size_t charcount, const char *format, va_list args)
 {
     struct qemu_sprintf *call;
     int ret;
@@ -689,6 +690,7 @@ static int CDECL vsprintf_helper(uint64_t op, char *str, size_t charcount, const
 
     call = MSVCRT_malloc(offsetof(struct qemu_sprintf, args[count]));
     call->super.id = op;
+    call->len = len;
     call->argcount = count;
     call->charcount = charcount;
     call->str = (ULONG_PTR)str;
@@ -787,7 +789,7 @@ int CDECL MSVCRT_sprintf(char *str, const char *format, ...)
     va_list list;
 
     va_start(list, format);
-    ret = vsprintf_helper(QEMU_SYSCALL_ID(CALL_SPRINTF), str, 0, format, list);
+    ret = vsprintf_helper(QEMU_SYSCALL_ID(CALL_SPRINTF), str, 0, 0, format, list);
     va_end(list);
 
     return ret;
@@ -795,7 +797,7 @@ int CDECL MSVCRT_sprintf(char *str, const char *format, ...)
 
 int CDECL MSVCRT_vsprintf(char *str, const char *format, va_list list)
 {
-    return vsprintf_helper(QEMU_SYSCALL_ID(CALL_SPRINTF), str, 0, format, list);
+    return vsprintf_helper(QEMU_SYSCALL_ID(CALL_SPRINTF), str, 0, 0, format, list);
 }
 
 int CDECL MSVCRT_sprintf_s(char *str, size_t num, const char *format, ...)
@@ -804,7 +806,7 @@ int CDECL MSVCRT_sprintf_s(char *str, size_t num, const char *format, ...)
     va_list list;
 
     va_start(list, format);
-    ret = vsprintf_helper(QEMU_SYSCALL_ID(CALL_SPRINTF_S), str, num, format, list);
+    ret = vsprintf_helper(QEMU_SYSCALL_ID(CALL_SPRINTF_S), str, 0, num, format, list);
     va_end(list);
 
     return ret;
@@ -814,7 +816,7 @@ int CDECL MSVCRT_vsprintf_s(char *str, size_t num, const char *format, va_list l
 {
     int ret;
 
-    ret = vsprintf_helper(QEMU_SYSCALL_ID(CALL_SPRINTF_S), str, num, format, list);
+    ret = vsprintf_helper(QEMU_SYSCALL_ID(CALL_SPRINTF_S), str, 0, num, format, list);
 
     return ret;
 }
@@ -825,7 +827,19 @@ int CDECL MSVCRT__snprintf(char *str, size_t len, const char *format, ...)
     va_list list;
 
     va_start(list, format);
-    ret = vsprintf_helper(QEMU_SYSCALL_ID(CALL__VSNPRINTF), str, len, format, list);
+    ret = vsprintf_helper(QEMU_SYSCALL_ID(CALL__VSNPRINTF), str, len, 0, format, list);
+    va_end(list);
+
+    return ret;
+}
+
+int CDECL MSVCRT__snprintf_s(char *str, unsigned int len, unsigned int count, const char *format, ...)
+{
+    int ret;
+    va_list list;
+
+    va_start(list, format);
+    ret = vsprintf_helper(QEMU_SYSCALL_ID(CALL__VSNPRINTF_S), str, len, count, format, list);
     va_end(list);
 
     return ret;
@@ -833,7 +847,7 @@ int CDECL MSVCRT__snprintf(char *str, size_t len, const char *format, ...)
 
 int CDECL MSVCRT__vsnprintf(char *str, size_t len, const char *format, va_list valist)
 {
-    return vsprintf_helper(QEMU_SYSCALL_ID(CALL__VSNPRINTF), str, len, format, valist);
+    return vsprintf_helper(QEMU_SYSCALL_ID(CALL__VSNPRINTF), str, len, 0, format, valist);
 }
 
 int CDECL MSVCRT__vscprintf(const char *format, va_list valist)
@@ -891,6 +905,7 @@ int CDECL MSVCRT__snwprintf(WCHAR *str, unsigned int len, const WCHAR *format, .
 struct sprintf_data
 {
     uint64_t op;
+    size_t len;
     size_t charcount;
     void *dst;
     void *fmt;
@@ -914,7 +929,11 @@ static uint64_t CDECL sprintf_wrapper(void *ctx, ...)
             break;
 
         case QEMU_SYSCALL_ID(CALL__VSNPRINTF):
-            ret = p__vsnprintf(data->dst, data->charcount, data->fmt, list);
+            ret = p__vsnprintf(data->dst, data->len, data->fmt, list);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL__VSNPRINTF_S):
+            ret = p__vsnprintf_s(data->dst, data->len, data->charcount, data->fmt, list);
             break;
 
         case QEMU_SYSCALL_ID(CALL_SWPRINTF_S):
@@ -922,7 +941,7 @@ static uint64_t CDECL sprintf_wrapper(void *ctx, ...)
             break;
 
         case QEMU_SYSCALL_ID(CALL__VSNWPRINTF):
-            ret = p__vsnwprintf(data->dst, data->charcount, data->fmt, list);
+            ret = p__vsnwprintf(data->dst, data->len, data->fmt, list);
             break;
     }
     __ms_va_end(list);
@@ -940,6 +959,7 @@ void qemu_sprintf(struct qemu_syscall *call)
             (char *)QEMU_G2H(c->format));
 
     data.op = c->super.id;
+    data.len = c->len;
     data.charcount = c->charcount;
     data.dst = QEMU_G2H(c->str);
     data.fmt = QEMU_G2H(c->format);
