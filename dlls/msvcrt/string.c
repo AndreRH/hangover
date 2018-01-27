@@ -474,7 +474,7 @@ char * CDECL MSVCRT_strtok(char *str, const char *delim)
 void qemu_strtok(struct qemu_syscall *call)
 {
     struct qemu_strtok *c = (struct qemu_strtok *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_strtok(QEMU_G2H(c->str), QEMU_G2H(c->delim)));
 }
 
@@ -594,9 +594,13 @@ double CDECL MSVCRT_strtod(const char *str, char **end)
     struct qemu_strtod call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STRTOD);
     call.str = (ULONG_PTR)str;
-    call.end = (ULONG_PTR)end;
+    if (end)
+        call.end = (ULONG_PTR)*end;
 
     qemu_syscall(&call.super);
+
+    if (end)
+        *end = (char *)(ULONG_PTR)call.end;
 
     return call.super.dret;
 }
@@ -606,8 +610,12 @@ double CDECL MSVCRT_strtod(const char *str, char **end)
 void qemu_strtod(struct qemu_syscall *call)
 {
     struct qemu_strtod *c = (struct qemu_strtod *)(ULONG_PTR)call;
+    char *end;
     WINE_TRACE("\n");
-    c->super.dret = p_strtod(QEMU_G2H(c->str), QEMU_G2H(c->end));
+
+    end = QEMU_G2H(c->end);
+    c->super.dret = p_strtod(QEMU_G2H(c->str), &end);
+    c->end = QEMU_H2G(end);
 }
 
 #endif
