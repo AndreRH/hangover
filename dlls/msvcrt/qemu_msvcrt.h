@@ -2291,7 +2291,7 @@ int (* CDECL p_wcscat_s)(WCHAR *dst, size_t count, const WCHAR *src);
 WCHAR (* CDECL p_wcscpy)(WCHAR *dst, const WCHAR *src);
 int (* CDECL p_wcscpy_s)(WCHAR *dst, size_t size, const WCHAR *src);
 int (* CDECL p_wcsncmp)(const WCHAR *str1, const WCHAR *str2, size_t count);
-const WCHAR (* CDECL p_wcsstr)(const WCHAR *str, const WCHAR *sub);
+const WCHAR * (* CDECL p_wcsstr)(const WCHAR *str, const WCHAR *sub);
 double (* CDECL p_wcstod)(const WCHAR *str, WCHAR **end);
 
 int (* CDECL p__set_SSE2_enable)(int flag);
