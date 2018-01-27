@@ -955,7 +955,7 @@ void qemu_ceilf(struct qemu_syscall *call)
 struct qemu_fabsf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -964,7 +964,7 @@ WINBASEAPI float CDECL MSVCRT_fabsf(float x)
 {
     struct qemu_fabsf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FABSF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -1015,7 +1015,7 @@ void qemu_floorf(struct qemu_syscall *call)
 struct qemu_frexpf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
     uint64_t exp;
 };
 
@@ -1025,7 +1025,7 @@ WINBASEAPI float CDECL MSVCRT_frexpf(float x, int *exp)
 {
     struct qemu_frexpf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FREXPF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
     call.exp = (ULONG_PTR)exp;
 
     qemu_syscall(&call.super);
@@ -1047,7 +1047,7 @@ void qemu_frexpf(struct qemu_syscall *call)
 struct qemu_modff
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
     uint64_t iptr;
 };
 
@@ -1057,7 +1057,7 @@ WINBASEAPI float CDECL MSVCRT_modff(float x, float *iptr)
 {
     struct qemu_modff call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MODFF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
     call.iptr = (ULONG_PTR)iptr;
 
     qemu_syscall(&call.super);
@@ -1109,7 +1109,7 @@ void qemu_acos(struct qemu_syscall *call)
 struct qemu_asin
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1118,7 +1118,7 @@ WINBASEAPI double CDECL MSVCRT_asin(double x)
 {
     struct qemu_asin call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ASIN);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -1231,7 +1231,7 @@ void qemu_cos(struct qemu_syscall *call)
 struct qemu_cosh
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1240,7 +1240,7 @@ WINBASEAPI double CDECL MSVCRT_cosh(double x)
 {
     struct qemu_cosh call;
     call.super.id = QEMU_SYSCALL_ID(CALL_COSH);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -1353,7 +1353,7 @@ void qemu_log(struct qemu_syscall *call)
 struct qemu_log10
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1362,7 +1362,7 @@ WINBASEAPI double CDECL MSVCRT_log10(double x)
 {
     struct qemu_log10 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOG10);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -1445,7 +1445,7 @@ void qemu_sin(struct qemu_syscall *call)
 struct qemu_sinh
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1454,7 +1454,7 @@ WINBASEAPI double CDECL MSVCRT_sinh(double x)
 {
     struct qemu_sinh call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SINH);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -1475,7 +1475,7 @@ void qemu_sinh(struct qemu_syscall *call)
 struct qemu_sqrt
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1484,7 +1484,7 @@ WINBASEAPI double CDECL MSVCRT_sqrt(double x)
 {
     struct qemu_sqrt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SQRT);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -1935,7 +1935,7 @@ void qemu__abs64(struct qemu_syscall *call)
 struct qemu__logb
 {
     struct qemu_syscall super;
-    uint64_t num;
+    double num;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1944,7 +1944,7 @@ WINBASEAPI double CDECL MSVCRT__logb(double num)
 {
     struct qemu__logb call;
     call.super.id = QEMU_SYSCALL_ID(CALL__LOGB);
-    call.num = (ULONG_PTR)num;
+    call.num = num;
 
     qemu_syscall(&call.super);
 
@@ -1965,8 +1965,8 @@ void qemu__logb(struct qemu_syscall *call)
 struct qemu__hypot
 {
     struct qemu_syscall super;
-    uint64_t x;
-    uint64_t y;
+    double x;
+    double y;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1975,8 +1975,8 @@ WINBASEAPI double CDECL _hypot(double x, double y)
 {
     struct qemu__hypot call;
     call.super.id = QEMU_SYSCALL_ID(CALL__HYPOT);
-    call.x = (ULONG_PTR)x;
-    call.y = (ULONG_PTR)y;
+    call.x = x;
+    call.y = y;
 
     qemu_syscall(&call.super);
 
@@ -1997,8 +1997,8 @@ void qemu__hypot(struct qemu_syscall *call)
 struct qemu__hypotf
 {
     struct qemu_syscall super;
-    uint64_t x;
-    uint64_t y;
+    double x;
+    double y;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -2007,8 +2007,8 @@ WINBASEAPI float CDECL MSVCRT__hypotf(float x, float y)
 {
     struct qemu__hypotf call;
     call.super.id = QEMU_SYSCALL_ID(CALL__HYPOTF);
-    call.x = (ULONG_PTR)x;
-    call.y = (ULONG_PTR)y;
+    call.x = x;
+    call.y = y;
 
     qemu_syscall(&call.super);
 
@@ -2059,7 +2059,7 @@ void qemu_ceil(struct qemu_syscall *call)
 struct qemu_floor
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -2068,7 +2068,7 @@ WINBASEAPI double CDECL MSVCRT_floor(double x)
 {
     struct qemu_floor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FLOOR);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -2089,7 +2089,7 @@ void qemu_floor(struct qemu_syscall *call)
 struct qemu_fabs
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -2098,7 +2098,7 @@ WINBASEAPI double CDECL MSVCRT_fabs(double x)
 {
     struct qemu_fabs call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FABS);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -2119,7 +2119,7 @@ void qemu_fabs(struct qemu_syscall *call)
 struct qemu_frexp
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
     uint64_t exp;
 };
 
@@ -2129,7 +2129,7 @@ WINBASEAPI double CDECL MSVCRT_frexp(double x, int *exp)
 {
     struct qemu_frexp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FREXP);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
     call.exp = (ULONG_PTR)exp;
 
     qemu_syscall(&call.super);
@@ -2151,7 +2151,7 @@ void qemu_frexp(struct qemu_syscall *call)
 struct qemu_modf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
     uint64_t iptr;
 };
 
@@ -2161,7 +2161,7 @@ WINBASEAPI double CDECL MSVCRT_modf(double x, double *iptr)
 {
     struct qemu_modf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MODF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
     call.iptr = (ULONG_PTR)iptr;
 
     qemu_syscall(&call.super);
@@ -2311,7 +2311,7 @@ void qemu___fpecode(struct qemu_syscall *call)
 struct qemu_ldexp
 {
     struct qemu_syscall super;
-    uint64_t num;
+    double num;
     uint64_t exp;
 };
 
@@ -2321,7 +2321,7 @@ WINBASEAPI double CDECL MSVCRT_ldexp(double num, int32_t exp)
 {
     struct qemu_ldexp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LDEXP);
-    call.num = (ULONG_PTR)num;
+    call.num = num;
     call.exp = (ULONG_PTR)exp;
 
     qemu_syscall(&call.super);
@@ -2377,7 +2377,7 @@ void qemu__cabs(struct qemu_syscall *call)
 struct qemu__chgsign
 {
     struct qemu_syscall super;
-    uint64_t num;
+    double num;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -2386,7 +2386,7 @@ WINBASEAPI double CDECL MSVCRT__chgsign(double num)
 {
     struct qemu__chgsign call;
     call.super.id = QEMU_SYSCALL_ID(CALL__CHGSIGN);
-    call.num = (ULONG_PTR)num;
+    call.num = num;
 
     qemu_syscall(&call.super);
 
@@ -2789,8 +2789,8 @@ void qemu_fesetround(struct qemu_syscall *call)
 struct qemu__copysign
 {
     struct qemu_syscall super;
-    uint64_t num;
-    uint64_t sign;
+    double num;
+    double sign;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -2799,8 +2799,8 @@ WINBASEAPI double CDECL MSVCRT__copysign(double num, double sign)
 {
     struct qemu__copysign call;
     call.super.id = QEMU_SYSCALL_ID(CALL__COPYSIGN);
-    call.num = (ULONG_PTR)num;
-    call.sign = (ULONG_PTR)sign;
+    call.num = num;
+    call.sign = sign;
 
     qemu_syscall(&call.super);
 
@@ -2821,7 +2821,7 @@ void qemu__copysign(struct qemu_syscall *call)
 struct qemu__finite
 {
     struct qemu_syscall super;
-    uint64_t num;
+    double num;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -2830,7 +2830,7 @@ WINBASEAPI int CDECL MSVCRT__finite(double num)
 {
     struct qemu__finite call;
     call.super.id = QEMU_SYSCALL_ID(CALL__FINITE);
-    call.num = (ULONG_PTR)num;
+    call.num = num;
 
     qemu_syscall(&call.super);
 
@@ -2907,7 +2907,7 @@ void qemu_fesetenv(struct qemu_syscall *call)
 struct qemu__isnan
 {
     struct qemu_syscall super;
-    uint64_t num;
+    double num;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -2916,7 +2916,7 @@ WINBASEAPI INT CDECL MSVCRT__isnan(double num)
 {
     struct qemu__isnan call;
     call.super.id = QEMU_SYSCALL_ID(CALL__ISNAN);
-    call.num = (ULONG_PTR)num;
+    call.num = num;
 
     qemu_syscall(&call.super);
 
@@ -2937,7 +2937,7 @@ void qemu__isnan(struct qemu_syscall *call)
 struct qemu__j0
 {
     struct qemu_syscall super;
-    uint64_t num;
+    double num;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -2946,7 +2946,7 @@ WINBASEAPI double CDECL MSVCRT__j0(double num)
 {
     struct qemu__j0 call;
     call.super.id = QEMU_SYSCALL_ID(CALL__J0);
-    call.num = (ULONG_PTR)num;
+    call.num = num;
 
     qemu_syscall(&call.super);
 
@@ -2967,7 +2967,7 @@ void qemu__j0(struct qemu_syscall *call)
 struct qemu__j1
 {
     struct qemu_syscall super;
-    uint64_t num;
+    double num;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -2976,7 +2976,7 @@ WINBASEAPI double CDECL MSVCRT__j1(double num)
 {
     struct qemu__j1 call;
     call.super.id = QEMU_SYSCALL_ID(CALL__J1);
-    call.num = (ULONG_PTR)num;
+    call.num = num;
 
     qemu_syscall(&call.super);
 
@@ -2998,7 +2998,7 @@ struct qemu__jn
 {
     struct qemu_syscall super;
     uint64_t n;
-    uint64_t num;
+    double num;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -3008,7 +3008,7 @@ WINBASEAPI double CDECL MSVCRT__jn(int n, double num)
     struct qemu__jn call;
     call.super.id = QEMU_SYSCALL_ID(CALL__JN);
     call.n = (ULONG_PTR)n;
-    call.num = (ULONG_PTR)num;
+    call.num = num;
 
     qemu_syscall(&call.super);
 
@@ -3029,7 +3029,7 @@ void qemu__jn(struct qemu_syscall *call)
 struct qemu__y0
 {
     struct qemu_syscall super;
-    uint64_t num;
+    double num;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -3038,7 +3038,7 @@ WINBASEAPI double CDECL MSVCRT__y0(double num)
 {
     struct qemu__y0 call;
     call.super.id = QEMU_SYSCALL_ID(CALL__Y0);
-    call.num = (ULONG_PTR)num;
+    call.num = num;
 
     qemu_syscall(&call.super);
 
@@ -3059,7 +3059,7 @@ void qemu__y0(struct qemu_syscall *call)
 struct qemu__y1
 {
     struct qemu_syscall super;
-    uint64_t num;
+    double num;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -3068,7 +3068,7 @@ WINBASEAPI double CDECL MSVCRT__y1(double num)
 {
     struct qemu__y1 call;
     call.super.id = QEMU_SYSCALL_ID(CALL__Y1);
-    call.num = (ULONG_PTR)num;
+    call.num = num;
 
     qemu_syscall(&call.super);
 
@@ -3090,7 +3090,7 @@ struct qemu__yn
 {
     struct qemu_syscall super;
     uint64_t order;
-    uint64_t num;
+    double num;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -3100,7 +3100,7 @@ WINBASEAPI double CDECL MSVCRT__yn(int order, double num)
     struct qemu__yn call;
     call.super.id = QEMU_SYSCALL_ID(CALL__YN);
     call.order = (ULONG_PTR)order;
-    call.num = (ULONG_PTR)num;
+    call.num = num;
 
     qemu_syscall(&call.super);
 
@@ -3121,7 +3121,7 @@ void qemu__yn(struct qemu_syscall *call)
 struct qemu_nearbyint
 {
     struct qemu_syscall super;
-    uint64_t num;
+    double num;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -3130,7 +3130,7 @@ WINBASEAPI double CDECL MSVCRT_nearbyint(double num)
 {
     struct qemu_nearbyint call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NEARBYINT);
-    call.num = (ULONG_PTR)num;
+    call.num = num;
 
     qemu_syscall(&call.super);
 
@@ -3151,7 +3151,7 @@ void qemu_nearbyint(struct qemu_syscall *call)
 struct qemu_nearbyintf
 {
     struct qemu_syscall super;
-    uint64_t num;
+    double num;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -3160,7 +3160,7 @@ WINBASEAPI float CDECL MSVCRT_nearbyintf(float num)
 {
     struct qemu_nearbyintf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NEARBYINTF);
-    call.num = (ULONG_PTR)num;
+    call.num = num;
 
     qemu_syscall(&call.super);
 
@@ -3181,8 +3181,8 @@ void qemu_nearbyintf(struct qemu_syscall *call)
 struct qemu__nextafter
 {
     struct qemu_syscall super;
-    uint64_t num;
-    uint64_t next;
+    double num;
+    double next;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -3191,8 +3191,8 @@ WINBASEAPI double CDECL MSVCRT__nextafter(double num, double next)
 {
     struct qemu__nextafter call;
     call.super.id = QEMU_SYSCALL_ID(CALL__NEXTAFTER);
-    call.num = (ULONG_PTR)num;
-    call.next = (ULONG_PTR)next;
+    call.num = num;
+    call.next = next;
 
     qemu_syscall(&call.super);
 
@@ -3213,7 +3213,7 @@ void qemu__nextafter(struct qemu_syscall *call)
 struct qemu__ecvt
 {
     struct qemu_syscall super;
-    uint64_t number;
+    double number;
     uint64_t ndigits;
     uint64_t decpt;
     uint64_t sign;
@@ -3225,7 +3225,7 @@ WINBASEAPI char * CDECL MSVCRT__ecvt(double number, int ndigits, int *decpt, int
 {
     struct qemu__ecvt call;
     call.super.id = QEMU_SYSCALL_ID(CALL__ECVT);
-    call.number = (ULONG_PTR)number;
+    call.number = number;
     call.ndigits = (ULONG_PTR)ndigits;
     call.decpt = (ULONG_PTR)decpt;
     call.sign = (ULONG_PTR)sign;
@@ -3251,7 +3251,7 @@ struct qemu__ecvt_s
     struct qemu_syscall super;
     uint64_t buffer;
     uint64_t length;
-    uint64_t number;
+    double number;
     uint64_t ndigits;
     uint64_t decpt;
     uint64_t sign;
@@ -3264,9 +3264,9 @@ WINBASEAPI int CDECL MSVCRT__ecvt_s(char *buffer, size_t length, double number, 
     struct qemu__ecvt_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__ECVT_S);
     call.buffer = (ULONG_PTR)buffer;
-    call.length = (ULONG_PTR)length;
-    call.number = (ULONG_PTR)number;
-    call.ndigits = (ULONG_PTR)ndigits;
+    call.length = length;
+    call.number = number;
+    call.ndigits = ndigits;
     call.decpt = (ULONG_PTR)decpt;
     call.sign = (ULONG_PTR)sign;
 
@@ -3289,7 +3289,7 @@ void qemu__ecvt_s(struct qemu_syscall *call)
 struct qemu__fcvt
 {
     struct qemu_syscall super;
-    uint64_t number;
+    double number;
     uint64_t ndigits;
     uint64_t decpt;
     uint64_t sign;
@@ -3301,8 +3301,8 @@ WINBASEAPI char * CDECL MSVCRT__fcvt(double number, int ndigits, int *decpt, int
 {
     struct qemu__fcvt call;
     call.super.id = QEMU_SYSCALL_ID(CALL__FCVT);
-    call.number = (ULONG_PTR)number;
-    call.ndigits = (ULONG_PTR)ndigits;
+    call.number = number;
+    call.ndigits = ndigits;
     call.decpt = (ULONG_PTR)decpt;
     call.sign = (ULONG_PTR)sign;
 
@@ -3327,7 +3327,7 @@ struct qemu__fcvt_s
     struct qemu_syscall super;
     uint64_t outbuffer;
     uint64_t size;
-    uint64_t number;
+    double number;
     uint64_t ndigits;
     uint64_t decpt;
     uint64_t sign;
@@ -3340,9 +3340,9 @@ WINBASEAPI int CDECL MSVCRT__fcvt_s(char* outbuffer, size_t size, double number,
     struct qemu__fcvt_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__FCVT_S);
     call.outbuffer = (ULONG_PTR)outbuffer;
-    call.size = (ULONG_PTR)size;
-    call.number = (ULONG_PTR)number;
-    call.ndigits = (ULONG_PTR)ndigits;
+    call.size = size;
+    call.number = number;
+    call.ndigits = ndigits;
     call.decpt = (ULONG_PTR)decpt;
     call.sign = (ULONG_PTR)sign;
 
@@ -4105,7 +4105,7 @@ void qemu_cbrt(struct qemu_syscall *call)
 struct qemu_cbrtf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -4114,7 +4114,7 @@ WINBASEAPI float CDECL MSVCR120_cbrtf(float x)
 {
     struct qemu_cbrtf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CBRTF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -4195,7 +4195,7 @@ void qemu_exp2(struct qemu_syscall *call)
 struct qemu_exp2f
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -4204,7 +4204,7 @@ WINBASEAPI float CDECL MSVCR120_exp2f(float x)
 {
     struct qemu_exp2f call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXP2F);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -4285,7 +4285,7 @@ void qemu_expm1(struct qemu_syscall *call)
 struct qemu_expm1f
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -4294,7 +4294,7 @@ WINBASEAPI float CDECL MSVCR120_expm1f(float x)
 {
     struct qemu_expm1f call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXPM1F);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -4375,7 +4375,7 @@ void qemu_log1p(struct qemu_syscall *call)
 struct qemu_log1pf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -4384,7 +4384,7 @@ WINBASEAPI float CDECL MSVCR120_log1pf(float x)
 {
     struct qemu_log1pf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOG1PF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -4465,7 +4465,7 @@ void qemu_log2(struct qemu_syscall *call)
 struct qemu_log2f
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -4474,7 +4474,7 @@ WINBASEAPI float CDECL MSVCR120_log2f(float x)
 {
     struct qemu_log2f call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOG2F);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -4555,7 +4555,7 @@ void qemu_rint(struct qemu_syscall *call)
 struct qemu_rintf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -4564,7 +4564,7 @@ WINBASEAPI float CDECL MSVCR120_rintf(float x)
 {
     struct qemu_rintf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RINTF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -4645,7 +4645,7 @@ void qemu_lrint(struct qemu_syscall *call)
 struct qemu_lrintf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -4654,7 +4654,7 @@ WINBASEAPI int32_t CDECL MSVCR120_lrintf(float x)
 {
     struct qemu_lrintf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LRINTF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -4735,7 +4735,7 @@ void qemu_llrint(struct qemu_syscall *call)
 struct qemu_llrintf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -4744,7 +4744,7 @@ WINBASEAPI int64_t CDECL MSVCR120_llrintf(float x)
 {
     struct qemu_llrintf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LLRINTF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -4825,7 +4825,7 @@ void qemu_round(struct qemu_syscall *call)
 struct qemu_roundf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -4834,7 +4834,7 @@ WINBASEAPI float CDECL MSVCR120_roundf(float x)
 {
     struct qemu_roundf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ROUNDF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -4915,7 +4915,7 @@ void qemu_lround(struct qemu_syscall *call)
 struct qemu_lroundf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -4924,7 +4924,7 @@ WINBASEAPI int32_t CDECL MSVCR120_lroundf(float x)
 {
     struct qemu_lroundf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LROUNDF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -5005,7 +5005,7 @@ void qemu_llround(struct qemu_syscall *call)
 struct qemu_llroundf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -5014,7 +5014,7 @@ WINBASEAPI int64_t CDECL MSVCR120_llroundf(float x)
 {
     struct qemu_llroundf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LLROUNDF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -5095,7 +5095,7 @@ void qemu_trunc(struct qemu_syscall *call)
 struct qemu_truncf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -5104,7 +5104,7 @@ WINBASEAPI float CDECL MSVCR120_truncf(float x)
 {
     struct qemu_truncf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TRUNCF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -5185,7 +5185,7 @@ void qemu__dclass(struct qemu_syscall *call)
 struct qemu__fdclass
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -5194,7 +5194,7 @@ WINBASEAPI short CDECL MSVCR120__fdclass(float x)
 {
     struct qemu__fdclass call;
     call.super.id = QEMU_SYSCALL_ID(CALL__FDCLASS);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -5365,7 +5365,7 @@ void qemu_erf(struct qemu_syscall *call)
 struct qemu_erff
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -5374,7 +5374,7 @@ WINBASEAPI float CDECL MSVCR120_erff(float x)
 {
     struct qemu_erff call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ERFF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -5455,7 +5455,7 @@ void qemu_erfc(struct qemu_syscall *call)
 struct qemu_erfcf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -5464,7 +5464,7 @@ WINBASEAPI float CDECL MSVCR120_erfcf(float x)
 {
     struct qemu_erfcf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ERFCF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -5515,8 +5515,8 @@ void qemu_erfcl(struct qemu_syscall *call)
 struct qemu_fmaxf
 {
     struct qemu_syscall super;
-    uint64_t x;
-    uint64_t y;
+    double x;
+    double y;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -5525,8 +5525,8 @@ WINBASEAPI float CDECL MSVCR120_fmaxf(float x, float y)
 {
     struct qemu_fmaxf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FMAXF);
-    call.x = (ULONG_PTR)x;
-    call.y = (ULONG_PTR)y;
+    call.x = x;
+    call.y = y;
 
     qemu_syscall(&call.super);
 
@@ -5579,7 +5579,7 @@ void qemu_fmax(struct qemu_syscall *call)
 struct qemu__fdsign
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -5588,7 +5588,7 @@ WINBASEAPI int CDECL MSVCR120__fdsign(float x)
 {
     struct qemu__fdsign call;
     call.super.id = QEMU_SYSCALL_ID(CALL__FDSIGN);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -5671,8 +5671,8 @@ void qemu__dpcomp(struct qemu_syscall *call)
 struct qemu__fdpcomp
 {
     struct qemu_syscall super;
-    uint64_t x;
-    uint64_t y;
+    double x;
+    double y;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -5681,8 +5681,8 @@ WINBASEAPI int CDECL MSVCR120__fdpcomp(float x, float y)
 {
     struct qemu__fdpcomp call;
     call.super.id = QEMU_SYSCALL_ID(CALL__FDPCOMP);
-    call.x = (ULONG_PTR)x;
-    call.y = (ULONG_PTR)y;
+    call.x = x;
+    call.y = y;
 
     qemu_syscall(&call.super);
 
@@ -5703,8 +5703,8 @@ void qemu__fdpcomp(struct qemu_syscall *call)
 struct qemu_fminf
 {
     struct qemu_syscall super;
-    uint64_t x;
-    uint64_t y;
+    double x;
+    double y;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -5713,8 +5713,8 @@ WINBASEAPI float CDECL MSVCR120_fminf(float x, float y)
 {
     struct qemu_fminf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FMINF);
-    call.x = (ULONG_PTR)x;
-    call.y = (ULONG_PTR)y;
+    call.x = x;
+    call.y = y;
 
     qemu_syscall(&call.super);
 
@@ -5797,7 +5797,7 @@ void qemu_asinh(struct qemu_syscall *call)
 struct qemu_asinhf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -5806,7 +5806,7 @@ WINBASEAPI float CDECL MSVCR120_asinhf(float x)
 {
     struct qemu_asinhf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ASINHF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -5887,7 +5887,7 @@ void qemu_acosh(struct qemu_syscall *call)
 struct qemu_acoshf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -5896,7 +5896,7 @@ WINBASEAPI float CDECL MSVCR120_acoshf(float x)
 {
     struct qemu_acoshf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACOSHF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -5977,7 +5977,7 @@ void qemu_atanh(struct qemu_syscall *call)
 struct qemu_atanhf
 {
     struct qemu_syscall super;
-    uint64_t x;
+    double x;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -5986,7 +5986,7 @@ WINBASEAPI float CDECL MSVCR120_atanhf(float x)
 {
     struct qemu_atanhf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ATANHF);
-    call.x = (ULONG_PTR)x;
+    call.x = x;
 
     qemu_syscall(&call.super);
 
@@ -6069,7 +6069,7 @@ void qemu__scalb(struct qemu_syscall *call)
 struct qemu__scalbf
 {
     struct qemu_syscall super;
-    uint64_t num;
+    double num;
     uint64_t power;
 };
 
@@ -6079,7 +6079,7 @@ WINBASEAPI float CDECL MSVCRT__scalbf(float num, int32_t power)
 {
     struct qemu__scalbf call;
     call.super.id = QEMU_SYSCALL_ID(CALL__SCALBF);
-    call.num = (ULONG_PTR)num;
+    call.num = num;
     call.power = (ULONG_PTR)power;
 
     qemu_syscall(&call.super);
@@ -6165,8 +6165,8 @@ void qemu_remainder(struct qemu_syscall *call)
 struct qemu_remainderf
 {
     struct qemu_syscall super;
-    uint64_t x;
-    uint64_t y;
+    double x;
+    double y;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -6175,8 +6175,8 @@ WINBASEAPI float CDECL MSVCR120_remainderf(float x, float y)
 {
     struct qemu_remainderf call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REMAINDERF);
-    call.x = (ULONG_PTR)x;
-    call.y = (ULONG_PTR)y;
+    call.x = x;
+    call.y = y;
 
     qemu_syscall(&call.super);
 
