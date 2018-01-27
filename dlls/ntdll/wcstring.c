@@ -746,15 +746,19 @@ struct qemu_wcstol
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI LONG CDECL NTDLL_wcstol(LPCWSTR s, LPWSTR *end, INT base)
+WINBASEAPI LONG CDECL NTDLL_wcstol(LPCWSTR s, WCHAR **end, INT base)
 {
     struct qemu_wcstol call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WCSTOL);
     call.s = (ULONG_PTR)s;
-    call.end = (ULONG_PTR)end;
+    if (end)
+        call.end = (ULONG_PTR)*end;
     call.base = base;
 
     qemu_syscall(&call.super);
+
+    if (end)
+        *end = (WCHAR *)(ULONG_PTR)call.end;
 
     return call.super.iret;
 }
@@ -764,8 +768,12 @@ WINBASEAPI LONG CDECL NTDLL_wcstol(LPCWSTR s, LPWSTR *end, INT base)
 void qemu_wcstol(struct qemu_syscall *call)
 {
     struct qemu_wcstol *c = (struct qemu_wcstol *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_wcstol(QEMU_G2H(c->s), QEMU_G2H(c->end), c->base);
+    WCHAR *end;
+    WINE_TRACE("\n");
+
+    end = QEMU_G2H(c->end);
+    c->super.iret = p_wcstol(QEMU_G2H(c->s), &end, c->base);
+    c->end = QEMU_H2G(end);
 }
 
 #endif
