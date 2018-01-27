@@ -634,11 +634,11 @@
 #@ cdecl __p___wargv() MSVCRT___p___wargv
 #@ cdecl __p___winitenv()
 #@ cdecl __p__acmdln()
-#@ cdecl __p__commode()
+@ cdecl __p__commode()
 @ cdecl __p__daylight() MSVCRT___p__daylight
 @ cdecl __p__dstbias() MSVCRT___p__dstbias
 @ cdecl __p__environ() MSVCRT___p__environ
-#@ cdecl __p__fmode()
+@ cdecl __p__fmode()
 @ cdecl __p__iob() MSVCRT___iob_func
 @ stub __p__mbcasemap()
 @ cdecl __p__mbctype()

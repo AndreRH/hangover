@@ -48,6 +48,17 @@ void msvcrt_data_init(double huge, int argc, char **argv)
 {
     MSVCRT__HUGE = huge;
 }
+
+unsigned int* CDECL __p__commode(void)
+{
+    return &MSVCRT__commode;
+}
+
+unsigned int* CDECL __p__fmode(void)
+{
+    return &MSVCRT__fmode;
+}
+
 #endif
 
 struct qemu___getmainargs
