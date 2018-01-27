@@ -1477,7 +1477,7 @@
 # @ cdecl vprintf_s(str ptr) MSVCRT_vprintf_s FIXME
 @ cdecl vsnprintf(ptr long str ptr) MSVCRT__vsnprintf
 @ cdecl vsprintf(ptr str ptr) MSVCRT_vsprintf
-# @ cdecl vsprintf_s(ptr long str ptr) MSVCRT_vsprintf_s FIXME
+@ cdecl vsprintf_s(ptr long str ptr) MSVCRT_vsprintf_s
 # @ cdecl vswprintf(ptr wstr ptr) MSVCRT_vswprintf FIXME
 @ cdecl vswprintf_s(ptr long wstr ptr) MSVCRT_vswprintf_s
 # @ cdecl vwprintf(wstr ptr) MSVCRT_vwprintf FIXME

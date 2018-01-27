@@ -810,6 +810,15 @@ int CDECL MSVCRT_sprintf_s(char *str, size_t num, const char *format, ...)
     return ret;
 }
 
+int CDECL MSVCRT_vsprintf_s(char *str, size_t num, const char *format, va_list list)
+{
+    int ret;
+
+    ret = vsprintf_helper(QEMU_SYSCALL_ID(CALL_SPRINTF_S), str, num, format, list);
+
+    return ret;
+}
+
 int CDECL MSVCRT__snprintf(char *str, size_t len, const char *format, ...)
 {
     int ret;
