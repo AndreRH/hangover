@@ -166,9 +166,9 @@
 # stub _CrtSetReportMode
 @ stdcall _CxxThrowException(ptr ptr) MSVCRT__CxxThrowException
 # @ cdecl -arch=i386 -norelay _EH_prolog()
-# @ cdecl _Getdays()
-# @ cdecl _Getmonths()
-# @ cdecl _Gettnames()
+@ cdecl _Getdays()
+@ cdecl _Getmonths()
+@ cdecl _Gettnames()
 # @ extern _HUGE MSVCRT__HUGE
 @ cdecl _Strftime(ptr long str ptr ptr)
 @ cdecl _XcptFilter(long ptr) MSVCRT__XcptFilter
@@ -191,21 +191,21 @@
 # @ cdecl __RTDynamicCast(ptr long ptr ptr long) MSVCRT___RTDynamicCast
 # @ cdecl __RTtypeid(ptr) MSVCRT___RTtypeid
 @ cdecl __STRINGTOLD(ptr ptr str long)
-# @ cdecl ___lc_codepage_func()
-# @ cdecl ___lc_collate_cp_func()
-# @ cdecl ___lc_handle_func()
+@ cdecl ___lc_codepage_func()
+@ cdecl ___lc_collate_cp_func()
+@ cdecl ___lc_handle_func()
 @ cdecl ___mb_cur_max_func() MSVCRT____mb_cur_max_func
 @ cdecl ___setlc_active_func() MSVCRT____setlc_active_func
 @ cdecl ___unguarded_readlc_active_add_func() MSVCRT____unguarded_readlc_active_add_func
 # @ extern __argc MSVCRT___argc
 # @ extern __argv MSVCRT___argv
 @ extern __badioinfo msvcr100.__qemu_native_data__
-# @ cdecl __crtCompareStringA(long long str long str long)
-# @ cdecl __crtCompareStringW(long long wstr long wstr long)
-# @ cdecl __crtGetLocaleInfoW(long long ptr long)
-# @ cdecl __crtGetStringTypeW(long long wstr long ptr)
-# @ cdecl __crtLCMapStringA(long long str long ptr long long long)
-# @ cdecl __crtLCMapStringW(long long wstr long ptr long long long)
+@ cdecl __crtCompareStringA(long long str long str long)
+@ cdecl __crtCompareStringW(long long wstr long wstr long)
+@ cdecl __crtGetLocaleInfoW(long long ptr long)
+@ cdecl __crtGetStringTypeW(long long wstr long ptr)
+@ cdecl __crtLCMapStringA(long long str long ptr long long long)
+@ cdecl __crtLCMapStringW(long long wstr long ptr long long long)
 @ cdecl __daylight() MSVCRT___p__daylight
 @ cdecl __dllonexit(ptr ptr ptr)
 @ cdecl __doserrno() MSVCRT___doserrno
@@ -377,7 +377,7 @@
 @ cdecl _cputs(str)
 @ cdecl _cputws(wstr)
 @ cdecl _creat(str long) MSVCRT__creat
-# @ cdecl _create_locale(long str) MSVCRT__create_locale
+@ cdecl _create_locale(long str) MSVCRT__create_locale
 # stub _crtAssertBusy
 # stub _crtBreakAlloc
 # stub _crtDbgFlag
@@ -466,7 +466,7 @@
 @ cdecl _fputchar(long) MSVCRT__fputchar
 @ cdecl _fputwchar(long) MSVCRT__fputwchar
 # stub _free_dbg(ptr long)
-# @ cdecl _free_locale(ptr) MSVCRT__free_locale
+@ cdecl _free_locale(ptr) MSVCRT__free_locale
 # stub _freea(ptr)
 # stub _freea_s
 # @ varargs _fscanf_l(ptr str ptr) MSVCRT__fscanf_l
@@ -499,7 +499,7 @@
 # @ varargs _fwscanf_s_l(ptr wstr ptr) MSVCRT__fwscanf_s_l
 @ cdecl _gcvt(double long str) MSVCRT__gcvt
 @ cdecl _gcvt_s(ptr long  double long) MSVCRT__gcvt_s
-# @ cdecl _get_current_locale() MSVCRT__get_current_locale
+@ cdecl _get_current_locale() MSVCRT__get_current_locale
 @ cdecl _get_doserrno(ptr) MSVCRT__get_doserrno
 # stub _get_environ(ptr)
 @ cdecl _get_errno(ptr)
@@ -1202,7 +1202,7 @@
 # @ varargs _wscanf_s_l(wstr ptr) MSVCRT__wscanf_s_l
 @ cdecl _wsearchenv(wstr wstr ptr) MSVCRT__wsearchenv
 @ cdecl _wsearchenv_s(wstr wstr ptr long) MSVCRT__wsearchenv_s
-# @ cdecl _wsetlocale(long wstr) MSVCRT__wsetlocale
+@ cdecl _wsetlocale(long wstr) MSVCRT__wsetlocale
 # @ varargs _wsopen(wstr long long) MSVCRT__wsopen FIXME
 @ cdecl _wsopen_s(ptr wstr long long long) MSVCRT__wsopen_s
 # @ varargs _wspawnl(long wstr wstr)
@@ -1260,7 +1260,7 @@
 @ cdecl atol(str) ntdll.atol
 @ cdecl bsearch(ptr ptr long long ptr) MSVCRT_bsearch
 # @ cdecl bsearch_s(ptr ptr long long ptr ptr) MSVCRT_bsearch_s
-# @ cdecl btowc(long) MSVCRT_btowc
+@ cdecl btowc(long) MSVCRT_btowc
 @ cdecl calloc(long long) MSVCRT_calloc
 @ cdecl ceil(double) MSVCRT_ceil
 @ cdecl -arch=arm,x86_64,arm64 ceilf(float) MSVCRT_ceilf
@@ -1353,7 +1353,7 @@
 @ cdecl labs(long) MSVCRT_labs
 @ cdecl ldexp(double long) MSVCRT_ldexp
 @ cdecl ldiv(long long) MSVCRT_ldiv
-# @ cdecl localeconv() MSVCRT_localeconv
+@ cdecl localeconv() MSVCRT_localeconv
 @ cdecl localtime(ptr) MSVCRT_localtime
 @ cdecl log(double) MSVCRT_log
 @ cdecl log10(double) MSVCRT_log10

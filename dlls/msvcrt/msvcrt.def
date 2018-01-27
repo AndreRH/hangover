@@ -7,12 +7,23 @@ EXPORTS
   ??_U@YAPEAX_K@Z=MSVCRT_operator_new
   ??_V@YAXPEAX@Z=MSVCRT_operator_delete
   ?terminate@@YAXXZ=MSVCRT_terminate
+  ___lc_codepage_func
+  ___lc_collate_cp_func
+  ___lc_handle_func
+  ___lc_locale_name_func
   ___mb_cur_max_func=MSVCRT____mb_cur_max_func
   ___mb_cur_max_l_func
   __acrt_iob_func=MSVCRT___acrt_iob_func
   __badioinfo=msvcr100.__qemu_native_data__
   __C_specific_handler=ntdll.__C_specific_handler
   __control87_2
+  __crtCompareStringA
+  __crtCompareStringW
+  __crtGetLocaleInfoEx
+  __crtGetLocaleInfoW
+  __crtGetStringTypeW
+  __crtLCMapStringA
+  __crtLCMapStringW
   __CxxFrameHandler2=__CxxFrameHandler
   __CxxFrameHandler3=__CxxFrameHandler
   __CxxFrameHandler=__CxxFrameHandler
@@ -123,6 +134,7 @@ EXPORTS
   _close=MSVCRT__close
   _commit=MSVCRT__commit
   _commode=MSVCRT__commode
+  _configthreadlocale
   _configure_narrow_argv
   _configure_wide_argv
   _control87
@@ -252,14 +264,17 @@ EXPORTS
   _getche_nolock
   _GetConcurrency
   _getcwd=MSVCRT__getcwd
+  _Getdays
   _getdcwd=MSVCRT__getdcwd
   _getdiskfree=MSVCRT__getdiskfree
   _getdllprocaddr=MSVCRT__getdllprocaddr
   _getdrive=MSVCRT__getdrive
   _getmaxstdio=MSVCRT__getmaxstdio
   _getmbcp
+  _Getmonths
   _getpid
   _getptd=MSVCRT__getptd
+  _Gettnames
   _getw=MSVCRT__getw
   _getwch
   _getwch_nolock
@@ -344,6 +359,7 @@ EXPORTS
   _localtime64_s=MSVCRT__localtime64_s
   _lock
   _lock_file=MSVCRT__lock_file
+  _lock_locales
   _Lock_shared_ptr_spin_lock
   _locking=MSVCRT__locking
   _logb=MSVCRT__logb
@@ -569,12 +585,16 @@ EXPORTS
   _unloaddll
   _unlock
   _unlock_file=MSVCRT__unlock_file
+  _unlock_locales
   _Unlock_shared_ptr_spin_lock
   _utime32=MSVCRT__utime32
   _utime64=MSVCRT__utime64
   _utime=MSVCRT__utime
   _vsnprintf=MSVCRT__vsnprintf
   _vsnwprintf=MSVCRT__vsnwprintf
+  _W_Getdays
+  _W_Getmonths
+  _W_Gettnames
   _waccess=MSVCRT__waccess
   _waccess_s=MSVCRT__waccess_s
   _wasctime=MSVCRT__wasctime
@@ -886,9 +906,17 @@ EXPORTS
   MSVCRT____unguarded_readlc_active_add_func
   MSVCRT___p__environ
   MSVCRT___p__wenviron
+  MSVCRT__create_locale
+  MSVCRT__free_locale
+  MSVCRT__get_current_locale
   MSVCRT__get_fmode
   MSVCRT__get_osplatform
   MSVCRT__set_fmode
+  MSVCRT__wcreate_locale
+  MSVCRT__wsetlocale
+  MSVCRT_btowc
+  MSVCRT_localeconv
+  MSVCRT_setlocale
   nearbyint=MSVCRT_nearbyint
   nearbyintf=MSVCRT_nearbyintf
   operator_delete=MSVCRT_operator_delete

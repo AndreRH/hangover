@@ -99,6 +99,10 @@ static void qemu_set_iob(struct qemu_syscall *call)
 
 static const syscall_handler dll_functions[] =
 {
+    qemu____lc_codepage_func,
+    qemu____lc_collate_cp_func,
+    qemu____lc_handle_func,
+    qemu____lc_locale_name_func,
     qemu____mb_cur_max_func,
     qemu____mb_cur_max_l_func,
     qemu____setlc_active_func,
@@ -106,6 +110,13 @@ static const syscall_handler dll_functions[] =
     qemu___acrt_iob_func,
     qemu___control87_2,
     qemu___crt_debugger_hook,
+    qemu___crtCompareStringA,
+    qemu___crtCompareStringW,
+    qemu___crtGetLocaleInfoEx,
+    qemu___crtGetLocaleInfoW,
+    qemu___crtGetStringTypeW,
+    qemu___crtLCMapStringA,
+    qemu___crtLCMapStringW,
     qemu___cxxframehandler,
     qemu___doserrno,
     qemu___fpe_flt_rounds,
@@ -205,6 +216,7 @@ static const syscall_handler dll_functions[] =
     qemu__cputs,
     qemu__cputws,
     qemu__creat,
+    qemu__create_locale,
     qemu__crtTerminateProcess,
     qemu__ctime32,
     qemu__ctime32_s,
@@ -278,6 +290,7 @@ static const syscall_handler dll_functions[] =
     qemu__fread_nolock,
     qemu__fread_nolock_s,
     qemu__free_base,
+    qemu__free_locale,
     qemu__fseek_nolock,
     qemu__fseeki64,
     qemu__fseeki64_nolock,
@@ -304,6 +317,7 @@ static const syscall_handler dll_functions[] =
     qemu__fwrite_nolock,
     qemu__gcvt,
     qemu__gcvt_s,
+    qemu__get_current_locale,
     qemu__get_daylight,
     qemu__get_doserrno,
     qemu__get_dstbias,
@@ -331,14 +345,17 @@ static const syscall_handler dll_functions[] =
     qemu__getche_nolock,
     qemu__GetConcurrency,
     qemu__getcwd,
+    qemu__Getdays,
     qemu__getdcwd,
     qemu__getdiskfree,
     qemu__getdllprocaddr,
     qemu__getdrive,
     qemu__getmaxstdio,
     qemu__getmbcp,
+    qemu__Getmonths,
     qemu__getpid,
     qemu__getptd,
+    qemu__Gettnames,
     qemu__getw,
     qemu__getwch,
     qemu__getwch_nolock,
@@ -420,6 +437,7 @@ static const syscall_handler dll_functions[] =
     qemu__localtime64_s,
     qemu__lock,
     qemu__lock_file,
+    qemu__lock_locales,
     qemu__Lock_shared_ptr_spin_lock,
     qemu__locking,
     qemu__logb,
@@ -637,12 +655,16 @@ static const syscall_handler dll_functions[] =
     qemu__unloaddll,
     qemu__unlock,
     qemu__unlock_file,
+    qemu__unlock_locales,
     qemu__Unlock_shared_ptr_spin_lock,
     qemu__utime,
     qemu__utime32,
     qemu__utime64,
     qemu_sprintf,
     qemu_sprintf,
+    qemu__W_Getdays,
+    qemu__W_Getmonths,
+    qemu__W_Gettnames,
     qemu__waccess,
     qemu__waccess_s,
     qemu__wasctime,
@@ -650,6 +672,7 @@ static const syscall_handler dll_functions[] =
     qemu__wchdir,
     qemu__wchmod,
     qemu__wcreat,
+    qemu__wcreate_locale,
     qemu__wcscoll_l,
     qemu__wcsdup,
     qemu__wcserror,
@@ -736,6 +759,7 @@ static const syscall_handler dll_functions[] =
     qemu__wrmdir,
     qemu__wsearchenv,
     qemu__wsearchenv_s,
+    qemu__wsetlocale,
     qemu__wsopen_dispatch,
     qemu__wsopen_s,
     qemu__wspawnv,
@@ -801,6 +825,7 @@ static const syscall_handler dll_functions[] =
     qemu_atoi,
     qemu_atoll,
     qemu_bsearch,
+    qemu_btowc,
     qemu_calloc,
     qemu_cbrt,
     qemu_cbrtf,
@@ -942,6 +967,7 @@ static const syscall_handler dll_functions[] =
     qemu_llround,
     qemu_llroundf,
     qemu_llroundl,
+    qemu_localeconv,
     qemu_localtime,
     qemu_log,
     qemu_log10,
@@ -1140,12 +1166,23 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (!msvcrt)
         WINE_ERR("Cannot find %s.\n", dll_name);
 
+    p____lc_codepage_func = (void *)GetProcAddress(msvcrt, "___lc_codepage_func");
+    p____lc_collate_cp_func = (void *)GetProcAddress(msvcrt, "___lc_collate_cp_func");
+    p____lc_handle_func = (void *)GetProcAddress(msvcrt, "___lc_handle_func");
+    p____lc_locale_name_func = (void *)GetProcAddress(msvcrt, "___lc_locale_name_func");
     p____mb_cur_max_func = (void *)GetProcAddress(msvcrt, "___mb_cur_max_func");
     p____mb_cur_max_l_func = (void *)GetProcAddress(msvcrt, "___mb_cur_max_l_func");
     p____setlc_active_func = (void *)GetProcAddress(msvcrt, "___setlc_active_func");
     p____unguarded_readlc_active_add_func = (void *)GetProcAddress(msvcrt, "___unguarded_readlc_active_add_func");
     p___control87_2 = (void *)GetProcAddress(msvcrt, "__control87_2");
     p___crt_debugger_hook = (void *)GetProcAddress(msvcrt, "__crt_debugger_hook");
+    p___crtCompareStringA = (void *)GetProcAddress(msvcrt, "__crtCompareStringA");
+    p___crtCompareStringW = (void *)GetProcAddress(msvcrt, "__crtCompareStringW");
+    p___crtGetLocaleInfoEx = (void *)GetProcAddress(msvcrt, "__crtGetLocaleInfoEx");
+    p___crtGetLocaleInfoW = (void *)GetProcAddress(msvcrt, "__crtGetLocaleInfoW");
+    p___crtGetStringTypeW = (void *)GetProcAddress(msvcrt, "__crtGetStringTypeW");
+    p___crtLCMapStringA = (void *)GetProcAddress(msvcrt, "__crtLCMapStringA");
+    p___crtLCMapStringW = (void *)GetProcAddress(msvcrt, "__crtLCMapStringW");
     p___doserrno = (void *)GetProcAddress(msvcrt, "__doserrno");
     p___fpe_flt_rounds = (void *)GetProcAddress(msvcrt, "__fpe_flt_rounds");
     p___fpecode = (void *)GetProcAddress(msvcrt, "__fpecode");
@@ -1236,6 +1273,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__copysignf = (void *)GetProcAddress(msvcrt, "_copysignf");
     p__cputs = (void *)GetProcAddress(msvcrt, "_cputs");
     p__cputws = (void *)GetProcAddress(msvcrt, "_cputws");
+    p__create_locale = (void *)GetProcAddress(msvcrt, "_create_locale");
     p__crtTerminateProcess = (void *)GetProcAddress(msvcrt, "_crtTerminateProcess");
     p__ctime32 = (void *)GetProcAddress(msvcrt, "_ctime32");
     p__ctime32_s = (void *)GetProcAddress(msvcrt, "_ctime32_s");
@@ -1308,6 +1346,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__fread_nolock = (void *)GetProcAddress(msvcrt, "_fread_nolock");
     p__fread_nolock_s = (void *)GetProcAddress(msvcrt, "_fread_nolock_s");
     p__free_base = (void *)GetProcAddress(msvcrt, "_free_base");
+    p__free_locale = (void *)GetProcAddress(msvcrt, "MSVCRT__free_locale");
     p__fseek_nolock = (void *)GetProcAddress(msvcrt, "_fseek_nolock");
     p__fseeki64 = (void *)GetProcAddress(msvcrt, "_fseeki64");
     p__fseeki64_nolock = (void *)GetProcAddress(msvcrt, "_fseeki64_nolock");
@@ -1331,6 +1370,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__fwrite_nolock = (void *)GetProcAddress(msvcrt, "_fwrite_nolock");
     p__gcvt = (void *)GetProcAddress(msvcrt, "_gcvt");
     p__gcvt_s = (void *)GetProcAddress(msvcrt, "_gcvt_s");
+    p__get_current_locale = (void *)GetProcAddress(msvcrt, "MSVCRT__get_current_locale");
     p__get_daylight = (void *)GetProcAddress(msvcrt, "_get_daylight");
     p__get_doserrno = (void *)GetProcAddress(msvcrt, "_get_doserrno");
     p__get_dstbias = (void *)GetProcAddress(msvcrt, "_get_dstbias");
@@ -1358,14 +1398,17 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__getche_nolock = (void *)GetProcAddress(msvcrt, "_getche_nolock");
     p__GetConcurrency = (void *)GetProcAddress(msvcrt, "_GetConcurrency");
     p__getcwd = (void *)GetProcAddress(msvcrt, "_getcwd");
+    p__Getdays = (void *)GetProcAddress(msvcrt, "_Getdays");
     p__getdcwd = (void *)GetProcAddress(msvcrt, "_getdcwd");
     p__getdiskfree = (void *)GetProcAddress(msvcrt, "_getdiskfree");
     p__getdllprocaddr = (void *)GetProcAddress(msvcrt, "_getdllprocaddr");
     p__getdrive = (void *)GetProcAddress(msvcrt, "_getdrive");
     p__getmaxstdio = (void *)GetProcAddress(msvcrt, "_getmaxstdio");
     p__getmbcp = (void *)GetProcAddress(msvcrt, "_getmbcp");
+    p__Getmonths = (void *)GetProcAddress(msvcrt, "_Getmonths");
     p__getpid = (void *)GetProcAddress(msvcrt, "_getpid");
     p__getptd = (void *)GetProcAddress(msvcrt, "_getptd");
+    p__Gettnames = (void *)GetProcAddress(msvcrt, "_Gettnames");
     p__getw = (void *)GetProcAddress(msvcrt, "_getw");
     p__getwch = (void *)GetProcAddress(msvcrt, "_getwch");
     p__getwch_nolock = (void *)GetProcAddress(msvcrt, "_getwch_nolock");
@@ -1447,6 +1490,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__localtime64_s = (void *)GetProcAddress(msvcrt, "_localtime64_s");
     p__lock = (void *)GetProcAddress(msvcrt, "_lock");
     p__lock_file = (void *)GetProcAddress(msvcrt, "_lock_file");
+    p__lock_locales = (void *)GetProcAddress(msvcrt, "_lock_locales");
     p__Lock_shared_ptr_spin_lock = (void *)GetProcAddress(msvcrt, "_Lock_shared_ptr_spin_lock");
     p__locking = (void *)GetProcAddress(msvcrt, "_locking");
     p__logb = (void *)GetProcAddress(msvcrt, "_logb");
@@ -1661,9 +1705,13 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__unloaddll = (void *)GetProcAddress(msvcrt, "_unloaddll");
     p__unlock = (void *)GetProcAddress(msvcrt, "_unlock");
     p__unlock_file = (void *)GetProcAddress(msvcrt, "_unlock_file");
+    p__unlock_locales = (void *)GetProcAddress(msvcrt, "_unlock_locales");
     p__Unlock_shared_ptr_spin_lock = (void *)GetProcAddress(msvcrt, "_Unlock_shared_ptr_spin_lock");
     p__vsnprintf = (void *)GetProcAddress(msvcrt, "_vsnprintf");
     p__vsnwprintf = (void *)GetProcAddress(msvcrt, "_vsnwprintf");
+    p__W_Getdays = (void *)GetProcAddress(msvcrt, "_W_Getdays");
+    p__W_Getmonths = (void *)GetProcAddress(msvcrt, "_W_Getmonths");
+    p__W_Gettnames = (void *)GetProcAddress(msvcrt, "_W_Gettnames");
     p__waccess = (void *)GetProcAddress(msvcrt, "_waccess");
     p__waccess_s = (void *)GetProcAddress(msvcrt, "_waccess_s");
     p__wasctime = (void *)GetProcAddress(msvcrt, "_wasctime");
@@ -1671,6 +1719,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__wchdir = (void *)GetProcAddress(msvcrt, "_wchdir");
     p__wchmod = (void *)GetProcAddress(msvcrt, "_wchmod");
     p__wcreat = (void *)GetProcAddress(msvcrt, "_wcreat");
+    p__wcreate_locale = (void *)GetProcAddress(msvcrt, "_wcreate_locale");
     p__wcscoll_l = (void *)GetProcAddress(msvcrt, "_wcscoll_l");
     p__wcsdup = (void *)GetProcAddress(msvcrt, "_wcsdup");
     p__wcserror = (void *)GetProcAddress(msvcrt, "_wcserror");
@@ -1757,6 +1806,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__wrmdir = (void *)GetProcAddress(msvcrt, "_wrmdir");
     p__wsearchenv = (void *)GetProcAddress(msvcrt, "_wsearchenv");
     p__wsearchenv_s = (void *)GetProcAddress(msvcrt, "_wsearchenv_s");
+    p__wsetlocale = (void *)GetProcAddress(msvcrt, "_wsetlocale");
     p__wsopen_dispatch = (void *)GetProcAddress(msvcrt, "_wsopen_dispatch");
     p__wsopen_s = (void *)GetProcAddress(msvcrt, "_wsopen_s");
     p__wspawnv = (void *)GetProcAddress(msvcrt, "_wspawnv");
@@ -1818,6 +1868,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_atoi = (void *)GetProcAddress(msvcrt, "atoi");
     p_atoll = (void *)GetProcAddress(msvcrt, "atoll");
     p_bsearch = (void *)GetProcAddress(msvcrt, "bsearch");
+    p_btowc = (void *)GetProcAddress(msvcrt, "btowc");
     p_calloc = (void *)GetProcAddress(msvcrt, "calloc");
     p_cbrt = (void *)GetProcAddress(msvcrt, "cbrt");
     p_cbrtf = (void *)GetProcAddress(msvcrt, "cbrtf");
@@ -1957,6 +2008,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_llround = (void *)GetProcAddress(msvcrt, "llround");
     p_llroundf = (void *)GetProcAddress(msvcrt, "llroundf");
     p_llroundl = (void *)GetProcAddress(msvcrt, "llroundl");
+    p_localeconv = (void *)GetProcAddress(msvcrt, "MSVCRT_localeconv");
     p_localtime = (void *)GetProcAddress(msvcrt, "localtime");
     p_log = (void *)GetProcAddress(msvcrt, "log");
     p_log10 = (void *)GetProcAddress(msvcrt, "log10");
@@ -2037,6 +2089,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_sqrt = (void *)GetProcAddress(msvcrt, "sqrt");
     p_sqrtf = (void *)GetProcAddress(msvcrt, "sqrtf");
     p_srand = (void *)GetProcAddress(msvcrt, "srand");
+    p_sscanf = (void *)GetProcAddress(msvcrt, "sscanf");
     p_stat = (void *)GetProcAddress(msvcrt, "stat");
     p_stati64 = (void *)GetProcAddress(msvcrt, "_stati64");
     p_strcat_s = (void *)GetProcAddress(msvcrt, "strcat_s");
@@ -2071,7 +2124,6 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_strtoul_l = (void *)GetProcAddress(msvcrt, "strtoul_l");
     p_strxfrm = (void *)GetProcAddress(msvcrt, "strxfrm");
     p_swscanf_s = (void *)GetProcAddress(msvcrt, "swscanf_s");
-    p_sscanf = (void *)GetProcAddress(msvcrt, "sscanf");
     p_system = (void *)GetProcAddress(msvcrt, "system");
     p_tan = (void *)GetProcAddress(msvcrt, "tan");
     p_tanf = (void *)GetProcAddress(msvcrt, "tanf");

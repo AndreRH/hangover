@@ -7,13 +7,24 @@
 
 enum msvcrt_calls
 {
-    CALL____MB_CUR_MAX_FUNC = 0,
+    CALL____LC_CODEPAGE_FUNC = 0,
+    CALL____LC_COLLATE_CP_FUNC,
+    CALL____LC_HANDLE_FUNC,
+    CALL____LC_LOCALE_NAME_FUNC,
+    CALL____MB_CUR_MAX_FUNC,
     CALL____MB_CUR_MAX_L_FUNC,
     CALL____SETLC_ACTIVE_FUNC,
     CALL____UNGUARDED_READLC_ACTIVE_ADD_FUNC,
     CALL___ACRT_IOB_FUNC,
     CALL___CONTROL87_2,
     CALL___CRT_DEBUGGER_HOOK,
+    CALL___CRTCOMPARESTRINGA,
+    CALL___CRTCOMPARESTRINGW,
+    CALL___CRTGETLOCALEINFOEX,
+    CALL___CRTGETLOCALEINFOW,
+    CALL___CRTGETSTRINGTYPEW,
+    CALL___CRTLCMAPSTRINGA,
+    CALL___CRTLCMAPSTRINGW,
     CALL___CXXFRAMEHANDLER,
     CALL___DOSERRNO,
     CALL___FPE_FLT_ROUNDS,
@@ -113,6 +124,7 @@ enum msvcrt_calls
     CALL__CPUTS,
     CALL__CPUTWS,
     CALL__CREAT,
+    CALL__CREATE_LOCALE,
     CALL__CRTTERMINATEPROCESS,
     CALL__CTIME32,
     CALL__CTIME32_S,
@@ -186,6 +198,7 @@ enum msvcrt_calls
     CALL__FREAD_NOLOCK,
     CALL__FREAD_NOLOCK_S,
     CALL__FREE_BASE,
+    CALL__FREE_LOCALE,
     CALL__FSEEK_NOLOCK,
     CALL__FSEEKI64,
     CALL__FSEEKI64_NOLOCK,
@@ -212,6 +225,7 @@ enum msvcrt_calls
     CALL__FWRITE_NOLOCK,
     CALL__GCVT,
     CALL__GCVT_S,
+    CALL__GET_CURRENT_LOCALE,
     CALL__GET_DAYLIGHT,
     CALL__GET_DOSERRNO,
     CALL__GET_DSTBIAS,
@@ -239,14 +253,17 @@ enum msvcrt_calls
     CALL__GETCHE_NOLOCK,
     CALL__GETCONCURRENCY,
     CALL__GETCWD,
+    CALL__GETDAYS,
     CALL__GETDCWD,
     CALL__GETDISKFREE,
     CALL__GETDLLPROCADDR,
     CALL__GETDRIVE,
     CALL__GETMAXSTDIO,
     CALL__GETMBCP,
+    CALL__GETMONTHS,
     CALL__GETPID,
     CALL__GETPTD,
+    CALL__GETTNAMES,
     CALL__GETW,
     CALL__GETWCH,
     CALL__GETWCH_NOLOCK,
@@ -328,6 +345,7 @@ enum msvcrt_calls
     CALL__LOCALTIME64_S,
     CALL__LOCK,
     CALL__LOCK_FILE,
+    CALL__LOCK_LOCALES,
     CALL__LOCK_SHARED_PTR_SPIN_LOCK,
     CALL__LOCKING,
     CALL__LOGB,
@@ -545,12 +563,16 @@ enum msvcrt_calls
     CALL__UNLOADDLL,
     CALL__UNLOCK,
     CALL__UNLOCK_FILE,
+    CALL__UNLOCK_LOCALES,
     CALL__UNLOCK_SHARED_PTR_SPIN_LOCK,
     CALL__UTIME,
     CALL__UTIME32,
     CALL__UTIME64,
     CALL__VSNPRINTF,
     CALL__VSNWPRINTF,
+    CALL__W_GETDAYS,
+    CALL__W_GETMONTHS,
+    CALL__W_GETTNAMES,
     CALL__WACCESS,
     CALL__WACCESS_S,
     CALL__WASCTIME,
@@ -558,6 +580,7 @@ enum msvcrt_calls
     CALL__WCHDIR,
     CALL__WCHMOD,
     CALL__WCREAT,
+    CALL__WCREATE_LOCALE,
     CALL__WCSCOLL_L,
     CALL__WCSDUP,
     CALL__WCSERROR,
@@ -644,6 +667,7 @@ enum msvcrt_calls
     CALL__WRMDIR,
     CALL__WSEARCHENV,
     CALL__WSEARCHENV_S,
+    CALL__WSETLOCALE,
     CALL__WSOPEN_DISPATCH,
     CALL__WSOPEN_S,
     CALL__WSPAWNV,
@@ -709,6 +733,7 @@ enum msvcrt_calls
     CALL_ATOI,
     CALL_ATOLL,
     CALL_BSEARCH,
+    CALL_BTOWC,
     CALL_CALLOC,
     CALL_CBRT,
     CALL_CBRTF,
@@ -850,6 +875,7 @@ enum msvcrt_calls
     CALL_LLROUND,
     CALL_LLROUNDF,
     CALL_LLROUNDL,
+    CALL_LOCALECONV,
     CALL_LOCALTIME,
     CALL_LOG,
     CALL_LOG10,
@@ -1119,6 +1145,10 @@ extern FILE guest_iob[GUEST_IOB_SIZE];
 
 extern const struct qemu_ops *qemu_ops;
 
+void qemu____lc_codepage_func(struct qemu_syscall *call);
+void qemu____lc_collate_cp_func(struct qemu_syscall *call);
+void qemu____lc_handle_func(struct qemu_syscall *call);
+void qemu____lc_locale_name_func(struct qemu_syscall *call);
 void qemu____mb_cur_max_func(struct qemu_syscall *call);
 void qemu____mb_cur_max_l_func(struct qemu_syscall *call);
 void qemu____setlc_active_func(struct qemu_syscall *call);
@@ -1126,6 +1156,13 @@ void qemu____unguarded_readlc_active_add_func(struct qemu_syscall *call);
 void qemu___acrt_iob_func(struct qemu_syscall *c);
 void qemu___control87_2(struct qemu_syscall *call);
 void qemu___crt_debugger_hook(struct qemu_syscall *call);
+void qemu___crtCompareStringA(struct qemu_syscall *call);
+void qemu___crtCompareStringW(struct qemu_syscall *call);
+void qemu___crtGetLocaleInfoEx(struct qemu_syscall *call);
+void qemu___crtGetLocaleInfoW(struct qemu_syscall *call);
+void qemu___crtGetStringTypeW(struct qemu_syscall *call);
+void qemu___crtLCMapStringA(struct qemu_syscall *call);
+void qemu___crtLCMapStringW(struct qemu_syscall *call);
 void qemu___cxxframehandler(struct qemu_syscall *call);
 void qemu___doserrno(struct qemu_syscall *call);
 void qemu___fpe_flt_rounds(struct qemu_syscall *call);
@@ -1225,6 +1262,7 @@ void qemu__copysignf(struct qemu_syscall *call);
 void qemu__cputs(struct qemu_syscall *call);
 void qemu__cputws(struct qemu_syscall *call);
 void qemu__creat(struct qemu_syscall *c);
+void qemu__create_locale(struct qemu_syscall *call);
 void qemu__crtTerminateProcess(struct qemu_syscall *call);
 void qemu__ctime32(struct qemu_syscall *call);
 void qemu__ctime32_s(struct qemu_syscall *call);
@@ -1298,6 +1336,7 @@ void qemu__fputwchar(struct qemu_syscall *c);
 void qemu__fread_nolock(struct qemu_syscall *c);
 void qemu__fread_nolock_s(struct qemu_syscall *c);
 void qemu__free_base(struct qemu_syscall *call);
+void qemu__free_locale(struct qemu_syscall *call);
 void qemu__fseek_nolock(struct qemu_syscall *c);
 void qemu__fseeki64(struct qemu_syscall *c);
 void qemu__fseeki64_nolock(struct qemu_syscall *c);
@@ -1325,6 +1364,7 @@ void qemu__futime64(struct qemu_syscall *c);
 void qemu__fwrite_nolock(struct qemu_syscall *c);
 void qemu__gcvt(struct qemu_syscall *call);
 void qemu__gcvt_s(struct qemu_syscall *call);
+void qemu__get_current_locale(struct qemu_syscall *call);
 void qemu__get_daylight(struct qemu_syscall *call);
 void qemu__get_doserrno(struct qemu_syscall *call);
 void qemu__get_dstbias(struct qemu_syscall *call);
@@ -1352,14 +1392,17 @@ void qemu__getche(struct qemu_syscall *call);
 void qemu__getche_nolock(struct qemu_syscall *call);
 void qemu__GetConcurrency(struct qemu_syscall *call);
 void qemu__getcwd(struct qemu_syscall *call);
+void qemu__Getdays(struct qemu_syscall *call);
 void qemu__getdcwd(struct qemu_syscall *call);
 void qemu__getdiskfree(struct qemu_syscall *call);
 void qemu__getdllprocaddr(struct qemu_syscall *call);
 void qemu__getdrive(struct qemu_syscall *call);
 void qemu__getmaxstdio(struct qemu_syscall *c);
 void qemu__getmbcp(struct qemu_syscall *call);
+void qemu__Getmonths(struct qemu_syscall *call);
 void qemu__getpid(struct qemu_syscall *call);
 void qemu__getptd(struct qemu_syscall *call);
+void qemu__Gettnames(struct qemu_syscall *call);
 void qemu__getw(struct qemu_syscall *c);
 void qemu__getwch(struct qemu_syscall *call);
 void qemu__getwch_nolock(struct qemu_syscall *call);
@@ -1441,6 +1484,7 @@ void qemu__localtime64(struct qemu_syscall *call);
 void qemu__localtime64_s(struct qemu_syscall *call);
 void qemu__lock(struct qemu_syscall *call);
 void qemu__lock_file(struct qemu_syscall *c);
+void qemu__lock_locales(struct qemu_syscall *call);
 void qemu__Lock_shared_ptr_spin_lock(struct qemu_syscall *call);
 void qemu__locking(struct qemu_syscall *c);
 void qemu__logb(struct qemu_syscall *call);
@@ -1659,10 +1703,14 @@ void qemu__unlink(struct qemu_syscall *c);
 void qemu__unloaddll(struct qemu_syscall *call);
 void qemu__unlock(struct qemu_syscall *call);
 void qemu__unlock_file(struct qemu_syscall *c);
+void qemu__unlock_locales(struct qemu_syscall *call);
 void qemu__Unlock_shared_ptr_spin_lock(struct qemu_syscall *call);
 void qemu__utime(struct qemu_syscall *c);
 void qemu__utime32(struct qemu_syscall *c);
 void qemu__utime64(struct qemu_syscall *c);
+void qemu__W_Getdays(struct qemu_syscall *call);
+void qemu__W_Getmonths(struct qemu_syscall *call);
+void qemu__W_Gettnames(struct qemu_syscall *call);
 void qemu__waccess(struct qemu_syscall *c);
 void qemu__waccess_s(struct qemu_syscall *c);
 void qemu__wasctime(struct qemu_syscall *call);
@@ -1670,6 +1718,7 @@ void qemu__wasctime_s(struct qemu_syscall *call);
 void qemu__wchdir(struct qemu_syscall *call);
 void qemu__wchmod(struct qemu_syscall *c);
 void qemu__wcreat(struct qemu_syscall *c);
+void qemu__wcreate_locale(struct qemu_syscall *call);
 void qemu__wcscoll_l(struct qemu_syscall *call);
 void qemu__wcsdup(struct qemu_syscall *call);
 void qemu__wcserror(struct qemu_syscall *call);
@@ -1757,6 +1806,7 @@ void qemu__write(struct qemu_syscall *call);
 void qemu__wrmdir(struct qemu_syscall *call);
 void qemu__wsearchenv(struct qemu_syscall *call);
 void qemu__wsearchenv_s(struct qemu_syscall *call);
+void qemu__wsetlocale(struct qemu_syscall *call);
 void qemu__wsopen_dispatch(struct qemu_syscall *c);
 void qemu__wsopen_s(struct qemu_syscall *c);
 void qemu__wspawnv(struct qemu_syscall *call);
@@ -1822,6 +1872,7 @@ void qemu_atof(struct qemu_syscall *call);
 void qemu_atoi(struct qemu_syscall *call);
 void qemu_atoll(struct qemu_syscall *call);
 void qemu_bsearch(struct qemu_syscall *call);
+void qemu_btowc(struct qemu_syscall *call);
 void qemu_calloc(struct qemu_syscall *call);
 void qemu_cbrt(struct qemu_syscall *call);
 void qemu_cbrtf(struct qemu_syscall *call);
@@ -1965,6 +2016,7 @@ void qemu_llrintl(struct qemu_syscall *call);
 void qemu_llround(struct qemu_syscall *call);
 void qemu_llroundf(struct qemu_syscall *call);
 void qemu_llroundl(struct qemu_syscall *call);
+void qemu_localeconv(struct qemu_syscall *call);
 void qemu_localtime(struct qemu_syscall *call);
 void qemu_localtime(struct qemu_syscall *call);
 void qemu_log(struct qemu_syscall *call);
@@ -3188,6 +3240,33 @@ int (* CDECL p__configure_wide_argv)(int mode);
 int (* CDECL p__initialize_wide_environment)(void);
 char* (* CDECL p__get_narrow_winmain_command_line)(void);
 WCHAR* (* CDECL p__get_wide_winmain_command_line)(void);
+
+char* (* CDECL p__Getdays)(void);
+wchar_t* (* CDECL p__W_Getdays)(void);
+char* (* CDECL p__Getmonths)(void);
+wchar_t* (* CDECL p__W_Getmonths)(void);
+void* (* CDECL p__Gettnames)(void);
+void* (* CDECL p__W_Gettnames)(void);
+int (* CDECL p___crtLCMapStringA)(LCID lcid, DWORD mapflags, const char* src, int srclen, char* dst, int dstlen, unsigned int codepage, int xflag);
+int (* CDECL p___crtLCMapStringW)(LCID lcid, DWORD mapflags, const wchar_t *src, int srclen, wchar_t *dst, int dstlen, unsigned int codepage, int xflag);
+int (* CDECL p___crtCompareStringA)(LCID lcid, DWORD flags, const char *src1, int len1, const char *src2, int len2);
+int (* CDECL p___crtCompareStringW)(LCID lcid, DWORD flags, const wchar_t *src1, int len1, const wchar_t *src2, int len2);
+int (* CDECL p___crtGetLocaleInfoW)(LCID lcid, LCTYPE type, wchar_t *buffer, int len);
+int (* CDECL p___crtGetLocaleInfoEx)(const WCHAR *locale, LCTYPE type, wchar_t *buffer, int len);
+MSVCRT_wint_t (* CDECL p_btowc)(int c);
+BOOL (* CDECL p___crtGetStringTypeW)(DWORD unk, DWORD type, wchar_t *buffer, int len, WORD *out);
+struct MSVCRT_lconv * (* CDECL p_localeconv)(void);
+LCID* (* CDECL p____lc_handle_func)(void);
+wchar_t** (* CDECL p____lc_locale_name_func)(void);
+unsigned int (* CDECL p____lc_codepage_func)(void);
+int (* CDECL p____lc_collate_cp_func)(void);
+MSVCRT__locale_t (* CDECL p__get_current_locale)(void);
+void (* CDECL p__free_locale)(MSVCRT__locale_t locale);
+void (* CDECL p__lock_locales)(void);
+void (* CDECL p__unlock_locales)(void);
+MSVCRT__locale_t (* CDECL p__create_locale)(int category, const char *locale);
+MSVCRT__locale_t (* CDECL p__wcreate_locale)(int category, const wchar_t *locale);
+wchar_t* (* CDECL p__wsetlocale)(int category, const wchar_t* wlocale);
 
 DWORD msvcrt_tls;
 size_t guest_FILE_size;

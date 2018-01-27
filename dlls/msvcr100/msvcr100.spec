@@ -526,9 +526,9 @@
 @ stdcall _CxxThrowException(ptr ptr) MSVCRT__CxxThrowException
 #@ cdecl -arch=i386 -norelay _EH_prolog()
 #@ cdecl _FindAndUnlinkFrame(ptr)
-#@ cdecl _Getdays()
-#@ cdecl _Getmonths()
-#@ cdecl _Gettnames()
+@ cdecl _Getdays()
+@ cdecl _Getmonths()
+@ cdecl _Gettnames()
 #@ extern _HUGE MSVCRT__HUGE
 #@ cdecl _IsExceptionObjectToBeDestroyed(ptr)
 @ stub _NLG_Dispatch2
@@ -564,9 +564,9 @@
 @ cdecl __STRINGTOLD(ptr ptr str long)
 @ stub __STRINGTOLD_L
 @ stub __TypeMatch
-#@ cdecl ___lc_codepage_func()
-#@ cdecl ___lc_collate_cp_func()
-#@ cdecl ___lc_handle_func()
+@ cdecl ___lc_codepage_func()
+@ cdecl ___lc_collate_cp_func()
+@ cdecl ___lc_handle_func()
 @ cdecl ___mb_cur_max_func() MSVCRT____mb_cur_max_func
 @ cdecl ___mb_cur_max_l_func(ptr)
 @ cdecl ___setlc_active_func() MSVCRT____setlc_active_func
@@ -577,10 +577,10 @@
 #@ cdecl __clean_type_info_names_internal(ptr)
 @ cdecl -arch=i386 __control87_2(long long ptr ptr)
 @ stub __create_locale
-#@ cdecl __crtCompareStringA(long long str long str long)
-#@ cdecl __crtCompareStringW(long long wstr long wstr long)
-#@ cdecl __crtLCMapStringA(long long str long ptr long long long)
-#@ cdecl __crtLCMapStringW(long long wstr long ptr long long long)
+@ cdecl __crtCompareStringA(long long str long str long)
+@ cdecl __crtCompareStringW(long long wstr long wstr long)
+@ cdecl __crtLCMapStringA(long long str long ptr long long long)
+@ cdecl __crtLCMapStringW(long long wstr long ptr long long long)
 @ cdecl __daylight() MSVCRT___p__daylight
 @ cdecl __dllonexit(ptr ptr ptr)
 @ cdecl __doserrno() MSVCRT___doserrno
@@ -744,7 +744,7 @@
 @ cdecl _cputs(str)
 @ cdecl _cputws(wstr)
 @ cdecl _creat(str long) MSVCRT__creat
-#@ cdecl _create_locale(long str) MSVCRT__create_locale
+@ cdecl _create_locale(long str) MSVCRT__create_locale
 @ cdecl -arch=i386 _crt_debugger_hook(long) MSVCRT___crt_debugger_hook
 @ cdecl -arch=arm,win64 __crt_debugger_hook(long) MSVCRT___crt_debugger_hook
 #@ varargs _cscanf(str)
@@ -837,7 +837,7 @@
 @ cdecl _fputwchar(long) MSVCRT__fputwchar
 @ cdecl _fread_nolock(ptr long long ptr) MSVCRT__fread_nolock
 @ cdecl _fread_nolock_s(ptr long long long ptr) MSVCRT__fread_nolock_s
-#@ cdecl _free_locale(ptr) MSVCRT__free_locale
+@ cdecl _free_locale(ptr) MSVCRT__free_locale
 @ stub _freea
 @ stub _freea_s
 @ stub _freefls
@@ -871,7 +871,7 @@
 #@ varargs _fwscanf_s_l(ptr wstr ptr) MSVCRT__fwscanf_s_l
 @ cdecl _gcvt(double long str) MSVCRT__gcvt
 @ cdecl _gcvt_s(ptr long  double long) MSVCRT__gcvt_s
-#@ cdecl _get_current_locale() MSVCRT__get_current_locale
+@ cdecl _get_current_locale() MSVCRT__get_current_locale
 @ cdecl _get_daylight(ptr)
 @ cdecl _get_doserrno(ptr) MSVCRT__get_doserrno
 @ cdecl _get_dstbias(ptr) MSVCRT__get_dstbias
@@ -1586,7 +1586,7 @@
 #@ varargs _wscanf_s_l(wstr ptr) MSVCRT__wscanf_s_l
 @ cdecl _wsearchenv(wstr wstr ptr) MSVCRT__wsearchenv
 @ cdecl _wsearchenv_s(wstr wstr ptr long) MSVCRT__wsearchenv_s
-#@ cdecl _wsetlocale(long wstr) MSVCRT__wsetlocale
+@ cdecl _wsetlocale(long wstr) MSVCRT__wsetlocale
 #@ varargs _wsopen(wstr long long) MSVCRT__wsopen
 @ cdecl _wsopen_s(ptr wstr long long long) MSVCRT__wsopen_s
 #@ varargs _wspawnl(long wstr wstr)
@@ -1643,7 +1643,7 @@
 @ cdecl atol(str) ntdll.atol
 @ cdecl bsearch(ptr ptr long long ptr) MSVCRT_bsearch
 #@ cdecl bsearch_s(ptr ptr long long ptr ptr) MSVCRT_bsearch_s
-#@ cdecl btowc(long) MSVCRT_btowc
+@ cdecl btowc(long) MSVCRT_btowc
 @ cdecl calloc(long long) MSVCRT_calloc
 @ cdecl ceil(double) MSVCRT_ceil
 @ cdecl -arch=arm,x86_64,arm64 ceilf(float) MSVCRT_ceilf
@@ -1735,7 +1735,7 @@
 @ cdecl ldiv(long long) MSVCRT_ldiv
 @ cdecl -ret64 llabs(int64) MSVCRT_llabs
 #@ cdecl lldiv(int64 int64) MSVCRT_lldiv
-#@ cdecl localeconv() MSVCRT_localeconv
+@ cdecl localeconv() MSVCRT_localeconv
 @ cdecl log(double) MSVCRT_log
 @ cdecl -arch=arm,x86_64,arm64 logf(float) MSVCRT_logf
 @ cdecl log10(double) MSVCRT_log10
