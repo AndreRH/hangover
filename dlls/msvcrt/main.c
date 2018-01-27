@@ -238,6 +238,7 @@ static const syscall_handler dll_functions[] =
     qemu__dupenv_s,
     qemu__ecvt,
     qemu__ecvt_s,
+    qemu__encoded_null,
     qemu__endthread,
     qemu__endthreadex,
     qemu__eof,
@@ -859,8 +860,10 @@ static const syscall_handler dll_functions[] =
     qemu_CurrentScheduler_Id,
     qemu_CurrentScheduler_IsAvailableLocation,
     qemu_CurrentScheduler_RegisterShutdownEvent,
+    qemu_decode_pointer,
     qemu_difftime,
     qemu_div,
+    qemu_encode_pointer,
     qemu_erf,
     qemu_erfc,
     qemu_erfcf,
@@ -1294,6 +1297,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__dupenv_s = (void *)GetProcAddress(msvcrt, "_dupenv_s");
     p__ecvt = (void *)GetProcAddress(msvcrt, "_ecvt");
     p__ecvt_s = (void *)GetProcAddress(msvcrt, "_ecvt_s");
+    p__encoded_null = (void *)GetProcAddress(msvcrt, "_encoded_null");
     p__endthread = (void *)GetProcAddress(msvcrt, "_endthread");
     p__endthreadex = (void *)GetProcAddress(msvcrt, "_endthreadex");
     p__eof = (void *)GetProcAddress(msvcrt, "_eof");
@@ -1902,8 +1906,10 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_CurrentScheduler_Id = (void *)GetProcAddress(msvcrt, "CurrentScheduler_Id");
     p_CurrentScheduler_IsAvailableLocation = (void *)GetProcAddress(msvcrt, "CurrentScheduler_IsAvailableLocation");
     p_CurrentScheduler_RegisterShutdownEvent = (void *)GetProcAddress(msvcrt, "CurrentScheduler_RegisterShutdownEvent");
+    p_decode_pointer = (void *)GetProcAddress(msvcrt, "decode_pointer");
     p_difftime = (void *)GetProcAddress(msvcrt, "difftime");
     p_div = (void *)GetProcAddress(msvcrt, "div");
+    p_encode_pointer = (void *)GetProcAddress(msvcrt, "encode_pointer");
     p_erf = (void *)GetProcAddress(msvcrt, "erf");
     p_erfc = (void *)GetProcAddress(msvcrt, "erfc");
     p_erfcf = (void *)GetProcAddress(msvcrt, "erfcf");

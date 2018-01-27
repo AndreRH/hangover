@@ -431,7 +431,7 @@
 #@ varargs _cwscanf_s(wstr)
 #@ varargs _cwscanf_s_l(wstr ptr)
 #@ extern _daylight MSVCRT___daylight
-# @ cdecl _decode_pointer(ptr) MSVCRT_decode_pointer
+@ cdecl _decode_pointer(ptr) MSVCRT_decode_pointer
 @ cdecl _difftime32(long long) MSVCRT__difftime32
 @ cdecl _difftime64(int64 int64) MSVCRT__difftime64
 @ stub _dosmaperr
@@ -441,8 +441,8 @@
 @ cdecl _dupenv_s(ptr ptr str)
 @ cdecl _ecvt(double long ptr ptr) MSVCRT__ecvt
 @ cdecl _ecvt_s(str long double long ptr ptr) MSVCRT__ecvt_s
-# @ cdecl _encode_pointer(ptr) MSVCRT_encode_pointer
-#@ cdecl _encoded_null()
+@ cdecl _encode_pointer(ptr) MSVCRT_encode_pointer
+@ cdecl _encoded_null()
 @ cdecl _endthread() MSVCRT__endthread
 @ cdecl _endthreadex(long) MSVCRT__endthreadex
 @ extern _environ msvcr100.__qemu_native_data__

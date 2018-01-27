@@ -146,6 +146,7 @@ enum msvcrt_calls
     CALL__DUPENV_S,
     CALL__ECVT,
     CALL__ECVT_S,
+    CALL__ENCODED_NULL,
     CALL__ENDTHREAD,
     CALL__ENDTHREADEX,
     CALL__EOF,
@@ -767,8 +768,10 @@ enum msvcrt_calls
     CALL_CURRENTSCHEDULER_ID,
     CALL_CURRENTSCHEDULER_ISAVAILABLELOCATION,
     CALL_CURRENTSCHEDULER_REGISTERSHUTDOWNEVENT,
+    CALL_DECODE_POINTER,
     CALL_DIFFTIME,
     CALL_DIV,
+    CALL_ENCODE_POINTER,
     CALL_ERF,
     CALL_ERFC,
     CALL_ERFCF,
@@ -1284,6 +1287,7 @@ void qemu__dup2(struct qemu_syscall *c);
 void qemu__dupenv_s(struct qemu_syscall *call);
 void qemu__ecvt(struct qemu_syscall *call);
 void qemu__ecvt_s(struct qemu_syscall *call);
+void qemu__encoded_null(struct qemu_syscall *call);
 void qemu__endthread(struct qemu_syscall *call);
 void qemu__endthreadex(struct qemu_syscall *call);
 void qemu__eof(struct qemu_syscall *c);
@@ -1907,9 +1911,11 @@ void qemu_CurrentScheduler_GetPolicy(struct qemu_syscall *call);
 void qemu_CurrentScheduler_Id(struct qemu_syscall *call);
 void qemu_CurrentScheduler_IsAvailableLocation(struct qemu_syscall *call);
 void qemu_CurrentScheduler_RegisterShutdownEvent(struct qemu_syscall *call);
+void qemu_decode_pointer(struct qemu_syscall *call);
 void qemu_difftime(struct qemu_syscall *call);
 void qemu_difftime(struct qemu_syscall *call);
 void qemu_div(struct qemu_syscall *call);
+void qemu_encode_pointer(struct qemu_syscall *call);
 void qemu_erf(struct qemu_syscall *call);
 void qemu_erfc(struct qemu_syscall *call);
 void qemu_erfcf(struct qemu_syscall *call);
@@ -3267,6 +3273,9 @@ void (* CDECL p__unlock_locales)(void);
 MSVCRT__locale_t (* CDECL p__create_locale)(int category, const char *locale);
 MSVCRT__locale_t (* CDECL p__wcreate_locale)(int category, const wchar_t *locale);
 wchar_t* (* CDECL p__wsetlocale)(int category, const wchar_t* wlocale);
+void * (* CDECL p_decode_pointer)(void * ptr);
+void * (* CDECL p_encode_pointer)(void * ptr);
+void * (* CDECL p__encoded_null)(void);
 
 DWORD msvcrt_tls;
 size_t guest_FILE_size;

@@ -265,3 +265,85 @@ void qemu_srand(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_decode_pointer
+{
+    struct qemu_syscall super;
+    uint64_t ptr;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+void * CDECL MSVCRT_decode_pointer(void * ptr)
+{
+    struct qemu_decode_pointer call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DECODE_POINTER);
+    call.ptr = (ULONG_PTR)ptr;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_decode_pointer(struct qemu_syscall *call)
+{
+    struct qemu_decode_pointer *c = (struct qemu_decode_pointer *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(p_decode_pointer(QEMU_G2H(c->ptr)));
+}
+
+#endif
+
+struct qemu_encode_pointer
+{
+    struct qemu_syscall super;
+    uint64_t ptr;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+void * CDECL MSVCRT_encode_pointer(void * ptr)
+{
+    struct qemu_encode_pointer call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ENCODE_POINTER);
+    call.ptr = (ULONG_PTR)ptr;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_encode_pointer(struct qemu_syscall *call)
+{
+    struct qemu_encode_pointer *c = (struct qemu_encode_pointer *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(p_encode_pointer(QEMU_G2H(c->ptr)));
+}
+
+#endif
+
+struct qemu__encoded_null
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+void * CDECL _encoded_null(void)
+{
+    struct qemu__encoded_null call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__ENCODED_NULL);
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu__encoded_null(struct qemu_syscall *call)
+{
+    struct qemu__encoded_null *c = (struct qemu__encoded_null *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(p__encoded_null());
+}
+
+#endif

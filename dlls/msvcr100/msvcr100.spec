@@ -776,7 +776,7 @@
 @ cdecl _dupenv_s(ptr ptr str)
 @ cdecl _ecvt(double long ptr ptr) MSVCRT__ecvt
 @ cdecl _ecvt_s(str long double long ptr ptr) MSVCRT__ecvt_s
-#@ cdecl _encoded_null()
+@ cdecl _encoded_null()
 @ cdecl _endthread() MSVCRT__endthread
 @ cdecl _endthreadex(long) MSVCRT__endthreadex
 @ extern _environ msvcr100.__qemu_native_data__
