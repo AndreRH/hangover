@@ -208,7 +208,7 @@
 #@ extern __argc MSVCRT___argc
 #@ extern __argv MSVCRT___argv
 @ extern __badioinfo msvcr100.__qemu_native_data__
-#@ cdecl __clean_type_info_names_internal(ptr)
+@ cdecl __clean_type_info_names_internal(ptr)
 @ cdecl -arch=i386 __control87_2(long long ptr ptr)
 @ stub __create_locale
 @ cdecl __crtCompareStringA(long long str long str long)

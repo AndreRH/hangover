@@ -108,6 +108,7 @@ static const syscall_handler dll_functions[] =
     qemu____setlc_active_func,
     qemu____unguarded_readlc_active_add_func,
     qemu___acrt_iob_func,
+    qemu___clean_type_info_names_internal,
     qemu___control87_2,
     qemu___crt_debugger_hook,
     qemu___crtCompareStringA,
@@ -1179,6 +1180,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p____mb_cur_max_l_func = (void *)GetProcAddress(msvcrt, "___mb_cur_max_l_func");
     p____setlc_active_func = (void *)GetProcAddress(msvcrt, "___setlc_active_func");
     p____unguarded_readlc_active_add_func = (void *)GetProcAddress(msvcrt, "___unguarded_readlc_active_add_func");
+    p___clean_type_info_names_internal = (void *)GetProcAddress(msvcrt, "__clean_type_info_names_internal");
     p___control87_2 = (void *)GetProcAddress(msvcrt, "__control87_2");
     p___crt_debugger_hook = (void *)GetProcAddress(msvcrt, "__crt_debugger_hook");
     p___crtCompareStringA = (void *)GetProcAddress(msvcrt, "__crtCompareStringA");

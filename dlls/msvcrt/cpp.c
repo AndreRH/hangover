@@ -107,12 +107,41 @@ void __thiscall __thiscall_MSVCRT_type_info_dtor(void * _this)
 
 void qemu_type_info_dtor(struct qemu_syscall *call)
 {
-    struct qemu_type_info_dtor *c = (struct qemu_type_info_dtor *)(ULONG_PTR)call;
+    struct qemu_type_info_dtor *c = (struct qemu_type_info_dtor *)call;
     WINE_FIXME("Unverified!\n");
     p_type_info_dtor(QEMU_G2H(c->this));
 }
 
 #endif
+
+struct qemu___clean_type_info_names_internal
+{
+    struct qemu_syscall super;
+    uint64_t p;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+void __thiscall __clean_type_info_names_internal(void * p)
+{
+    struct qemu___clean_type_info_names_internal call;
+    call.super.id = QEMU_SYSCALL_ID(CALL___CLEAN_TYPE_INFO_NAMES_INTERNAL);
+    call.p = (ULONG_PTR)p;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu___clean_type_info_names_internal(struct qemu_syscall *call)
+{
+    struct qemu___clean_type_info_names_internal *c = (struct qemu___clean_type_info_names_internal *)call;
+    WINE_FIXME("Unverified!\n");
+    p___clean_type_info_names_internal(QEMU_G2H(c->p));
+}
+
+#endif
+
 
 #ifdef QEMU_DLL_GUEST
 

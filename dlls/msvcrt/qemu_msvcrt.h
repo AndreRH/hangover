@@ -16,6 +16,7 @@ enum msvcrt_calls
     CALL____SETLC_ACTIVE_FUNC,
     CALL____UNGUARDED_READLC_ACTIVE_ADD_FUNC,
     CALL___ACRT_IOB_FUNC,
+    CALL___CLEAN_TYPE_INFO_NAMES_INTERNAL,
     CALL___CONTROL87_2,
     CALL___CRT_DEBUGGER_HOOK,
     CALL___CRTCOMPARESTRINGA,
@@ -1174,6 +1175,7 @@ void qemu____mb_cur_max_l_func(struct qemu_syscall *call);
 void qemu____setlc_active_func(struct qemu_syscall *call);
 void qemu____unguarded_readlc_active_add_func(struct qemu_syscall *call);
 void qemu___acrt_iob_func(struct qemu_syscall *c);
+void qemu___clean_type_info_names_internal(struct qemu_syscall *call);
 void qemu___control87_2(struct qemu_syscall *call);
 void qemu___crt_debugger_hook(struct qemu_syscall *call);
 void qemu___crtCompareStringA(struct qemu_syscall *call);
@@ -2358,6 +2360,7 @@ int * (* CDECL p___fpecode)(void);
 double (* CDECL p_ldexp)(double num, int32_t exp);
 double (* CDECL p__cabs)(struct MSVCRT__complex num);
 double (* CDECL p__chgsign)(double num);
+void (* CDECL p___clean_type_info_names_internal)(void *p);
 int (* CDECL p___control87_2)(unsigned int newval, unsigned int mask, unsigned int *x86_cw, unsigned int *sse2_cw);
 unsigned int (* CDECL p__control87)(unsigned int newval, unsigned int mask);
 unsigned int (* CDECL p__controlfp)(unsigned int newval, unsigned int mask);
