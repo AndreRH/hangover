@@ -166,6 +166,7 @@ static const syscall_handler dll_functions[] =
     qemu___sys_errlist,
     qemu___sys_nerr,
     qemu___toascii,
+    qemu___uncaught_exception,
     qemu___unDName,
     qemu___unDNameEx,
     qemu___wcserror,
@@ -1235,6 +1236,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p___sys_errlist = (void *)GetProcAddress(msvcrt, "__sys_errlist");
     p___sys_nerr = (void *)GetProcAddress(msvcrt, "__sys_nerr");
     p___toascii = (void *)GetProcAddress(msvcrt, "__toascii");
+    p___uncaught_exception = (void *)GetProcAddress(msvcrt, "__uncaught_exception");
     p___unDName = (void *)GetProcAddress(msvcrt, "__unDName");
     p___unDNameEx = (void *)GetProcAddress(msvcrt, "__unDNameEx");
     p___wcserror = (void *)GetProcAddress(msvcrt, "__wcserror");

@@ -80,7 +80,7 @@
 @ stub -arch=win64 ?_ValidateRead@@YAHPEBXI@Z  # int __cdecl _ValidateRead(void const * __ptr64,unsigned int)
 @ stub -arch=win32 ?_ValidateWrite@@YAHPAXI@Z  # int __cdecl _ValidateWrite(void *,unsigned int)
 @ stub -arch=win64 ?_ValidateWrite@@YAHPEAXI@Z  # int __cdecl _ValidateWrite(void * __ptr64,unsigned int)
-#@ cdecl __uncaught_exception() MSVCRT___uncaught_exception
+@ cdecl __uncaught_exception() MSVCRT___uncaught_exception
 @ stub ?_inconsistency@@YAXXZ
 #@ cdecl -arch=win32 ?_invalid_parameter@@YAXPBG00II@Z(wstr wstr wstr long long) MSVCRT__invalid_parameter
 #@ cdecl -arch=win64 ?_invalid_parameter@@YAXPEBG00I_K@Z(wstr wstr wstr long long) MSVCRT__invalid_parameter

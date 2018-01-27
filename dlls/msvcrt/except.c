@@ -370,3 +370,25 @@ void qemu_raise(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+BOOL CDECL MSVCRT___uncaught_exception(void)
+{
+    struct qemu_syscall call;
+    call.id = CALL___UNCAUGHT_EXCEPTION;
+
+    qemu_syscall(&call);
+
+    return call.iret;
+}
+
+#else
+
+void qemu___uncaught_exception(struct qemu_syscall *call)
+{
+    WINE_FIXME("Unverified\n");
+    call->iret = p___uncaught_exception();
+}
+
+#endif

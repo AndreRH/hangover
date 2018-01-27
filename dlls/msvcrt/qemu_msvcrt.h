@@ -74,6 +74,7 @@ enum msvcrt_calls
     CALL___SYS_ERRLIST,
     CALL___SYS_NERR,
     CALL___TOASCII,
+    CALL___UNCAUGHT_EXCEPTION,
     CALL___UNDNAME,
     CALL___UNDNAMEEX,
     CALL___WCSERROR,
@@ -1231,6 +1232,7 @@ void qemu___STRINGTOLD(struct qemu_syscall *call);
 void qemu___sys_errlist(struct qemu_syscall *call);
 void qemu___sys_nerr(struct qemu_syscall *call);
 void qemu___toascii(struct qemu_syscall *call);
+void qemu___uncaught_exception(struct qemu_syscall *call);
 void qemu___unDName(struct qemu_syscall *call);
 void qemu___unDNameEx(struct qemu_syscall *call);
 void qemu___wcserror(struct qemu_syscall *call);
@@ -3293,6 +3295,7 @@ wchar_t* (* CDECL p__wsetlocale)(int category, const wchar_t* wlocale);
 void * (* CDECL p_decode_pointer)(void * ptr);
 void * (* CDECL p_encode_pointer)(void * ptr);
 void * (* CDECL p__encoded_null)(void);
+BOOL (* CDECL p___uncaught_exception)(void);
 
 DWORD msvcrt_tls;
 size_t guest_FILE_size;
