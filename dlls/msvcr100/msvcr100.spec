@@ -449,8 +449,8 @@
 #@ cdecl -arch=win64 ?_set_se_translator@@YAP6AXIPEAU_EXCEPTION_POINTERS@@@ZP6AXI0@Z@Z(ptr) MSVCRT__set_se_translator
 #@ cdecl -arch=win32 ?_sopen@@YAHPBDHHH@Z(str long long long) MSVCRT__sopen
 #@ cdecl -arch=win64 ?_sopen@@YAHPEBDHHH@Z(str long long long) MSVCRT__sopen
-@ stub -arch=win32 ?_type_info_dtor_internal_method@type_info@@QAEXXZ  # public: void __thiscall type_info::_type_info_dtor_internal_method(void)
-@ stub -arch=win64 ?_type_info_dtor_internal_method@type_info@@QEAAXXZ  # public: void __cdecl type_info::_type_info_dtor_internal_method(void) __ptr64
+@ cdecl -arch=win32 ?_type_info_dtor_internal_method@type_info@@QAEXXZ() MSVCRT_generic_stub  # public: void __thiscall type_info::_type_info_dtor_internal_method(void)
+@ cdecl -arch=win64 ?_type_info_dtor_internal_method@type_info@@QEAAXXZ() MSVCRT_generic_stub  # public: void __cdecl type_info::_type_info_dtor_internal_method(void) __ptr64
 #@ cdecl -arch=win32 ?_wopen@@YAHPB_WHH@Z(wstr long long) MSVCRT__wopen
 #@ cdecl -arch=win64 ?_wopen@@YAHPEB_WHH@Z(wstr long long) MSVCRT__wopen
 #@ cdecl -arch=win32 ?_wsopen@@YAHPB_WHHH@Z(wstr long long long) MSVCRT__wsopen
