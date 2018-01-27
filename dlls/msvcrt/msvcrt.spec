@@ -313,7 +313,7 @@
 # @ cdecl -arch=i386 _adj_fprem()
 # @ cdecl -arch=i386 _adj_fprem1()
 # @ cdecl -arch=i386 _adj_fptan()
-# @ extern -arch=i386 _adjust_fdiv MSVCRT__adjust_fdiv
+@ extern -arch=i386 _adjust_fdiv MSVCRT__adjust_fdiv
 # @ extern _aexit_rtn
 @ cdecl _aligned_free(ptr) MSVCRT__aligned_free
 # stub _aligned_free_dbg(ptr)

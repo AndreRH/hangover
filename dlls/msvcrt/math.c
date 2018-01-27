@@ -3307,6 +3307,10 @@ void qemu_ldiv(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+int MSVCRT__adjust_fdiv = 0;
+#endif
+
 struct qemu___libm_sse2_acos
 {
     struct qemu_syscall super;
