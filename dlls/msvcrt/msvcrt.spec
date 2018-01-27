@@ -1061,7 +1061,7 @@
 # stub _vprintf_p_l(str ptr ptr)
 # stub _vprintf_s_l(str ptr ptr)
 # @ cdecl _utime(str ptr)
-# @ cdecl _vscprintf(str ptr) MSVCRT__vscprintf
+@ cdecl _vscprintf(str ptr) MSVCRT__vscprintf
 # stub _vscprintf_l(str ptr ptr)
 # @ cdecl _vscprintf_p_l(str ptr ptr) MSVCRT__vscprintf_p_l
 # @ cdecl _vscwprintf(wstr ptr) MSVCRT__vscwprintf
