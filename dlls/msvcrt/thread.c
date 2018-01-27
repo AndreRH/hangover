@@ -142,7 +142,8 @@ uintptr_t CDECL MSVCRT__beginthreadex(void *security, unsigned int stack_size, M
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    return (uintptr_t)CreateThread(security, stack_size,
+            start_address, arglist, initflag, (DWORD *)thrdaddr);
 }
 
 #else
@@ -150,8 +151,8 @@ uintptr_t CDECL MSVCRT__beginthreadex(void *security, unsigned int stack_size, M
 void qemu__beginthreadex(struct qemu_syscall *call)
 {
     struct qemu__beginthreadex *c = (struct qemu__beginthreadex *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p__beginthreadex(QEMU_G2H(c->security), c->stack_size, QEMU_G2H(c->start_address), QEMU_G2H(c->arglist), c->initflag, QEMU_G2H(c->thrdaddr));
+    /* Only used for tracing. */
+    WINE_TRACE("\n");
 }
 
 #endif
