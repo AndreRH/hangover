@@ -1139,6 +1139,7 @@ extern WCHAR *MSVCRT__wcmdln;
 void msvcrt_data_init(double huge, int argc, char **argv);
 char * CDECL MSVCRT__strdup(const char *str);
 void * CDECL MSVCRT_calloc(size_t item_count,size_t size);
+int * CDECL MSVCRT__errno(void);
 CDECL DECLSPEC_NORETURN void __MINGW_NOTHROW MSVCRT_exit(int code);
 void CDECL MSVCRT_free(void *ptr);
 void * CDECL MSVCRT_malloc(size_t size);

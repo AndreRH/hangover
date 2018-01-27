@@ -43,6 +43,58 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 
 #define MSVCRT__SW_DENORMAL     0x00080000 /* denormal status bit */
 
+/* fpclass constants */
+#define MSVCRT__FPCLASS_SNAN 0x0001  /* Signaling "Not a Number" */
+#define MSVCRT__FPCLASS_QNAN 0x0002  /* Quiet "Not a Number" */
+#define MSVCRT__FPCLASS_NINF 0x0004  /* Negative Infinity */
+#define MSVCRT__FPCLASS_NN   0x0008  /* Negative Normal */
+#define MSVCRT__FPCLASS_ND   0x0010  /* Negative Denormal */
+#define MSVCRT__FPCLASS_NZ   0x0020  /* Negative Zero */
+#define MSVCRT__FPCLASS_PZ   0x0040  /* Positive Zero */
+#define MSVCRT__FPCLASS_PD   0x0080  /* Positive Denormal */
+#define MSVCRT__FPCLASS_PN   0x0100  /* Positive Normal */
+#define MSVCRT__FPCLASS_PINF 0x0200  /* Positive Infinity */
+
+#define MSVCRT__MCW_EM        0x0008001f
+#define MSVCRT__MCW_IC        0x00040000
+#define MSVCRT__MCW_RC        0x00000300
+#define MSVCRT__MCW_PC        0x00030000
+#define MSVCRT__MCW_DN        0x03000000
+
+#define MSVCRT__EM_INVALID    0x00000010
+#define MSVCRT__EM_DENORMAL   0x00080000
+#define MSVCRT__EM_ZERODIVIDE 0x00000008
+#define MSVCRT__EM_OVERFLOW   0x00000004
+#define MSVCRT__EM_UNDERFLOW  0x00000002
+#define MSVCRT__EM_INEXACT    0x00000001
+#define MSVCRT__IC_AFFINE     0x00040000
+#define MSVCRT__IC_PROJECTIVE 0x00000000
+#define MSVCRT__RC_CHOP       0x00000300
+#define MSVCRT__RC_UP         0x00000200
+#define MSVCRT__RC_DOWN       0x00000100
+#define MSVCRT__RC_NEAR       0x00000000
+#define MSVCRT__PC_24         0x00020000
+#define MSVCRT__PC_53         0x00010000
+#define MSVCRT__PC_64         0x00000000
+#define MSVCRT__DN_SAVE       0x00000000
+#define MSVCRT__DN_FLUSH      0x01000000
+#define MSVCRT__DN_FLUSH_OPERANDS_SAVE_RESULTS 0x02000000
+#define MSVCRT__DN_SAVE_OPERANDS_FLUSH_RESULTS 0x03000000
+#define MSVCRT__EM_AMBIGUOUS  0x80000000
+
+/* fpclassify constants */
+#define MSVCRT_FP_INFINITE   1
+#define MSVCRT_FP_NAN        2
+#define MSVCRT_FP_NORMAL    -1
+#define MSVCRT_FP_SUBNORMAL -2
+#define MSVCRT_FP_ZERO       0
+
+#define MSVCRT_EINVAL  22
+// MSVCRT__invalid_parameter(NULL, NULL, NULL, 0, 0)
+#define MSVCRT_INVALID_PMT(x,err)   (*MSVCRT__errno() = (err), ExitProcess(0))
+#define MSVCRT_CHECK_PMT_ERR(x,err) ((x) || (MSVCRT_INVALID_PMT( 0, (err) ), FALSE))
+#define MSVCRT_CHECK_PMT(x)         MSVCRT_CHECK_PMT_ERR((x), MSVCRT_EINVAL)
+
 #endif
 
 struct qemu___setusermatherr
@@ -2363,18 +2415,126 @@ struct qemu___control87_2
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI int CDECL __control87_2(unsigned int newval, unsigned int mask, unsigned int *x86_cw, unsigned int *sse2_cw)
+int CDECL __control87_2(unsigned int newval, unsigned int mask, unsigned int *x86_cw, unsigned int *sse2_cw)
 {
-    struct qemu___control87_2 call;
-    call.super.id = QEMU_SYSCALL_ID(CALL___CONTROL87_2);
-    call.newval = (ULONG_PTR)newval;
-    call.mask = (ULONG_PTR)mask;
-    call.x86_cw = (ULONG_PTR)x86_cw;
-    call.sse2_cw = (ULONG_PTR)sse2_cw;
+    unsigned long fpword;
+    unsigned int flags;
 
-    qemu_syscall(&call.super);
+    if (x86_cw)
+    {
+        __asm__ __volatile__( "fstcw %0" : "=m" (fpword) );
 
-    return call.super.iret;
+        /* Convert into mask constants */
+        flags = 0;
+        if (fpword & 0x1)  flags |= MSVCRT__EM_INVALID;
+        if (fpword & 0x2)  flags |= MSVCRT__EM_DENORMAL;
+        if (fpword & 0x4)  flags |= MSVCRT__EM_ZERODIVIDE;
+        if (fpword & 0x8)  flags |= MSVCRT__EM_OVERFLOW;
+        if (fpword & 0x10) flags |= MSVCRT__EM_UNDERFLOW;
+        if (fpword & 0x20) flags |= MSVCRT__EM_INEXACT;
+        switch (fpword & 0xc00)
+        {
+        case 0xc00: flags |= MSVCRT__RC_UP|MSVCRT__RC_DOWN; break;
+        case 0x800: flags |= MSVCRT__RC_UP; break;
+        case 0x400: flags |= MSVCRT__RC_DOWN; break;
+        }
+        switch (fpword & 0x300)
+        {
+        case 0x0:   flags |= MSVCRT__PC_24; break;
+        case 0x200: flags |= MSVCRT__PC_53; break;
+        case 0x300: flags |= MSVCRT__PC_64; break;
+        }
+        if (fpword & 0x1000) flags |= MSVCRT__IC_AFFINE;
+
+        if (mask)
+        {
+            flags = (flags & ~mask) | (newval & mask);
+
+            /* Convert (masked) value back to fp word */
+            fpword = 0;
+            if (flags & MSVCRT__EM_INVALID)    fpword |= 0x1;
+            if (flags & MSVCRT__EM_DENORMAL)   fpword |= 0x2;
+            if (flags & MSVCRT__EM_ZERODIVIDE) fpword |= 0x4;
+            if (flags & MSVCRT__EM_OVERFLOW)   fpword |= 0x8;
+            if (flags & MSVCRT__EM_UNDERFLOW)  fpword |= 0x10;
+            if (flags & MSVCRT__EM_INEXACT)    fpword |= 0x20;
+            switch (flags & MSVCRT__MCW_RC)
+            {
+            case MSVCRT__RC_UP|MSVCRT__RC_DOWN: fpword |= 0xc00; break;
+            case MSVCRT__RC_UP:                 fpword |= 0x800; break;
+            case MSVCRT__RC_DOWN:               fpword |= 0x400; break;
+            }
+            switch (flags & MSVCRT__MCW_PC)
+            {
+            case MSVCRT__PC_64: fpword |= 0x300; break;
+            case MSVCRT__PC_53: fpword |= 0x200; break;
+            case MSVCRT__PC_24: fpword |= 0x0; break;
+            }
+            if (flags & MSVCRT__IC_AFFINE) fpword |= 0x1000;
+
+            __asm__ __volatile__( "fldcw %0" : : "m" (fpword) );
+        }
+        *x86_cw = flags;
+    }
+
+    if (!sse2_cw) return 1;
+
+    if (1)
+    {
+        __asm__ __volatile__( "stmxcsr %0" : "=m" (fpword) );
+
+        /* Convert into mask constants */
+        flags = 0;
+        if (fpword & 0x80)   flags |= MSVCRT__EM_INVALID;
+        if (fpword & 0x100)  flags |= MSVCRT__EM_DENORMAL;
+        if (fpword & 0x200)  flags |= MSVCRT__EM_ZERODIVIDE;
+        if (fpword & 0x400)  flags |= MSVCRT__EM_OVERFLOW;
+        if (fpword & 0x800)  flags |= MSVCRT__EM_UNDERFLOW;
+        if (fpword & 0x1000) flags |= MSVCRT__EM_INEXACT;
+        switch (fpword & 0x6000)
+        {
+        case 0x6000: flags |= MSVCRT__RC_UP|MSVCRT__RC_DOWN; break;
+        case 0x4000: flags |= MSVCRT__RC_UP; break;
+        case 0x2000: flags |= MSVCRT__RC_DOWN; break;
+        }
+        switch (fpword & 0x8040)
+        {
+        case 0x0040: flags |= MSVCRT__DN_FLUSH_OPERANDS_SAVE_RESULTS; break;
+        case 0x8000: flags |= MSVCRT__DN_SAVE_OPERANDS_FLUSH_RESULTS; break;
+        case 0x8040: flags |= MSVCRT__DN_FLUSH; break;
+        }
+
+        if (mask)
+        {
+            flags = (flags & ~mask) | (newval & mask);
+
+            /* Convert (masked) value back to fp word */
+            fpword = 0;
+            if (flags & MSVCRT__EM_INVALID)    fpword |= 0x80;
+            if (flags & MSVCRT__EM_DENORMAL)   fpword |= 0x100;
+            if (flags & MSVCRT__EM_ZERODIVIDE) fpword |= 0x200;
+            if (flags & MSVCRT__EM_OVERFLOW)   fpword |= 0x400;
+            if (flags & MSVCRT__EM_UNDERFLOW)  fpword |= 0x800;
+            if (flags & MSVCRT__EM_INEXACT)    fpword |= 0x1000;
+            switch (flags & MSVCRT__MCW_RC)
+            {
+            case MSVCRT__RC_UP|MSVCRT__RC_DOWN: fpword |= 0x6000; break;
+            case MSVCRT__RC_UP:                 fpword |= 0x4000; break;
+            case MSVCRT__RC_DOWN:               fpword |= 0x2000; break;
+            }
+            switch (flags & MSVCRT__MCW_DN)
+            {
+            case MSVCRT__DN_FLUSH_OPERANDS_SAVE_RESULTS: fpword |= 0x0040; break;
+            case MSVCRT__DN_SAVE_OPERANDS_FLUSH_RESULTS: fpword |= 0x8000; break;
+            case MSVCRT__DN_FLUSH:                       fpword |= 0x8040; break;
+            }
+            __asm__ __volatile__( "ldmxcsr %0" : : "m" (fpword) );
+        }
+        *sse2_cw = flags;
+    }
+    else *sse2_cw = 0;
+
+    return 1;
 }
 
 #else
@@ -2397,16 +2557,14 @@ struct qemu__control87
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI unsigned int CDECL _control87(unsigned int newval, unsigned int mask)
+unsigned int CDECL _control87(unsigned int newval, unsigned int mask)
 {
-    struct qemu__control87 call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CONTROL87);
-    call.newval = (ULONG_PTR)newval;
-    call.mask = (ULONG_PTR)mask;
+    unsigned int x86_cw, sse2_cw;
 
-    qemu_syscall(&call.super);
+    __control87_2( newval, mask, &x86_cw, &sse2_cw );
 
-    return call.super.iret;
+    if ((x86_cw ^ sse2_cw) & (MSVCRT__MCW_EM | MSVCRT__MCW_RC)) x86_cw |= MSVCRT__EM_AMBIGUOUS;
+    return x86_cw;
 }
 
 #else
@@ -2429,16 +2587,9 @@ struct qemu__controlfp
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI unsigned int CDECL _controlfp(unsigned int newval, unsigned int mask)
+unsigned int CDECL _controlfp(unsigned int newval, unsigned int mask)
 {
-    struct qemu__controlfp call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CONTROLFP);
-    call.newval = (ULONG_PTR)newval;
-    call.mask = (ULONG_PTR)mask;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return _control87( newval, mask & ~MSVCRT__EM_DENORMAL );
 }
 
 #else
@@ -2494,15 +2645,18 @@ struct qemu__controlfp_s
 
 WINBASEAPI int CDECL _controlfp_s(unsigned int *cur, unsigned int newval, unsigned int mask)
 {
-    struct qemu__controlfp_s call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__CONTROLFP_S);
-    call.cur = (ULONG_PTR)cur;
-    call.newval = (ULONG_PTR)newval;
-    call.mask = (ULONG_PTR)mask;
+    static const unsigned int all_flags = (MSVCRT__MCW_EM | MSVCRT__MCW_IC | MSVCRT__MCW_RC |
+                                           MSVCRT__MCW_PC | MSVCRT__MCW_DN);
+    unsigned int val;
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    if (!MSVCRT_CHECK_PMT( !(newval & mask & ~all_flags) ))
+    {
+        if (cur) *cur = _controlfp( 0, 0 );  /* retrieve it anyway */
+        return MSVCRT_EINVAL;
+    }
+    val = _controlfp( newval, mask );
+    if (cur) *cur = val;
+    return 0;
 }
 
 #else
