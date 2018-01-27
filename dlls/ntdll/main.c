@@ -631,7 +631,6 @@ static const syscall_handler dll_functions[] =
     qemu_wcsncpy,
     qemu_wcspbrk,
     qemu_wcsrchr,
-    qemu_wcsrchr,
     qemu_wcsspn,
     qemu_wcsstr,
     qemu_wcstok,
