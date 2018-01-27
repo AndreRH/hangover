@@ -45,12 +45,12 @@
 #@ cdecl -arch=win64 ??4bad_typeid@std@@QEAAAEAV01@AEBV01@@Z(ptr ptr) MSVCRT_bad_typeid_opequals
 @ thiscall -arch=i386 ??4exception@std@@QAEAAV01@ABV01@@Z(ptr ptr) MSVCRT_exception_opequals
 @ cdecl -arch=win64 ??4exception@std@@QEAAAEAV01@AEBV01@@Z(ptr ptr) __thiscall_MSVCRT_exception_opequals
-#@ cdecl -arch=arm ??8type_info@@QBA_NABV0@@Z(ptr ptr) MSVCRT_type_info_opequals_equals
-#@ thiscall -arch=i386 ??8type_info@@QBE_NABV0@@Z(ptr ptr) MSVCRT_type_info_opequals_equals
-#@ cdecl -arch=win64 ??8type_info@@QEBA_NAEBV0@@Z(ptr ptr) MSVCRT_type_info_opequals_equals
-#@ cdecl -arch=arm ??9type_info@@QBA_NABV0@@Z(ptr ptr) MSVCRT_type_info_opnot_equals
-#@ thiscall -arch=i386 ??9type_info@@QBE_NABV0@@Z(ptr ptr) MSVCRT_type_info_opnot_equals
-#@ cdecl -arch=win64 ??9type_info@@QEBA_NAEBV0@@Z(ptr ptr) MSVCRT_type_info_opnot_equals
+@ cdecl -arch=arm ??8type_info@@QBA_NABV0@@Z(ptr ptr) __thiscall_MSVCRT_type_info_opequals_equals
+@ thiscall -arch=i386 ??8type_info@@QBE_NABV0@@Z(ptr ptr) MSVCRT_type_info_opequals_equals
+@ cdecl -arch=win64 ??8type_info@@QEBA_NAEBV0@@Z(ptr ptr) __thiscall_MSVCRT_type_info_opequals_equals
+@ cdecl -arch=arm ??9type_info@@QBA_NABV0@@Z(ptr ptr) __thiscall_MSVCRT_type_info_opnot_equals
+@ thiscall -arch=i386 ??9type_info@@QBE_NABV0@@Z(ptr ptr) MSVCRT_type_info_opnot_equals
+@ cdecl -arch=win64 ??9type_info@@QEBA_NAEBV0@@Z(ptr ptr) __thiscall_MSVCRT_type_info_opnot_equals
 #@ extern ??_7__non_rtti_object@std@@6B@ MSVCRT___non_rtti_object_vtable
 @ extern ??_7bad_cast@std@@6B@ MSVCRT_bad_cast_vtable
 #@ extern ??_7bad_typeid@std@@6B@ MSVCRT_bad_typeid_vtable
@@ -111,8 +111,8 @@
 #@ cdecl -arch=win64 ?_wopen@@YAHPEB_WHH@Z(wstr long long) MSVCRT__wopen
 #@ cdecl -arch=win32 ?_wsopen@@YAHPB_WHHH@Z(wstr long long long) MSVCRT__wsopen
 #@ cdecl -arch=win64 ?_wsopen@@YAHPEB_WHHH@Z(wstr long long long) MSVCRT__wsopen
-#@ thiscall -arch=i386 ?before@type_info@@QBEHABV1@@Z(ptr ptr) MSVCRT_type_info_before
-#@ cdecl -arch=win64 ?before@type_info@@QEBAHAEBV1@@Z(ptr ptr) MSVCRT_type_info_before
+@ thiscall -arch=i386 ?before@type_info@@QBEHABV1@@Z(ptr ptr) MSVCRT_type_info_before
+@ cdecl -arch=win64 ?before@type_info@@QEBAHAEBV1@@Z(ptr ptr) __thiscall_MSVCRT_type_info_before
 #@ thiscall -arch=win32 ?name@type_info@@QBEPBDPAU__type_info_node@@@Z(ptr ptr) type_info_name_internal_method
 #@ cdecl -arch=win64 ?name@type_info@@QEBAPEBDPEAU__type_info_node@@@Z(ptr ptr) type_info_name_internal_method
 #@ cdecl -arch=arm ?raw_name@type_info@@QBAPBDXZ(ptr) MSVCRT_type_info_raw_name

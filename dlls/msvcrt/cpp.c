@@ -396,6 +396,27 @@ void * __thiscall MSVCRT_type_info_vector_dtor(type_info * _this, unsigned int f
     return _this;
 }
 
+int __thiscall __thiscall_MSVCRT_type_info_opequals_equals(type_info * _this, const type_info * rhs)
+{
+    int ret = !MSVCRT_strcmp(_this->mangled + 1, rhs->mangled + 1);
+    TRACE("(%p %p) returning %d\n", _this, rhs, ret);
+    return ret;
+}
+
+int __thiscall __thiscall_MSVCRT_type_info_opnot_equals(type_info * _this, const type_info * rhs)
+{
+    int ret = !!MSVCRT_strcmp(_this->mangled + 1, rhs->mangled + 1);
+    TRACE("(%p %p) returning %d\n", _this, rhs, ret);
+    return ret;
+}
+
+int __thiscall __thiscall_MSVCRT_type_info_before(type_info * _this, const type_info * rhs)
+{
+    int ret = MSVCRT_strcmp(_this->mangled + 1, rhs->mangled + 1) < 0;
+    TRACE("(%p %p) returning %d\n", _this, rhs, ret);
+    return ret;
+}
+
 __ASM_VTABLE(type_info,
         VTABLE_ADD_FUNC(MSVCRT_type_info_vector_dtor));
 __ASM_VTABLE(exception,
