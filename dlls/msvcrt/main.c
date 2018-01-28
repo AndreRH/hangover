@@ -672,6 +672,7 @@ static const syscall_handler dll_functions[] =
     qemu__strtof_l,
     qemu__strtol_l,
     qemu__strtoui64,
+    qemu__strtoui64_l,
     qemu__strupr,
     qemu__strupr_l,
     qemu__strupr_s,
@@ -1140,8 +1141,6 @@ static const syscall_handler dll_functions[] =
     qemu_strtok,
     qemu_strtok_s,
     qemu_strtol,
-    qemu_strtoui64,
-    qemu_strtoui64_l,
     qemu_strtoul,
     qemu_strtoul_l,
     qemu_strxfrm,
@@ -1741,6 +1740,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__strtof_l = (void *)GetProcAddress(msvcrt, "_strtof_l");
     p__strtol_l = (void *)GetProcAddress(msvcrt, "_strtol_l");
     p__strtoui64 = (void *)GetProcAddress(msvcrt, "_strtoui64");
+    p__strtoui64_l = (void *)GetProcAddress(msvcrt, "strtoui64__l");
     p__strupr = (void *)GetProcAddress(msvcrt, "_strupr");
     p__strupr_l = (void *)GetProcAddress(msvcrt, "_strupr_l");
     p__strupr_s = (void *)GetProcAddress(msvcrt, "_strupr_s");
@@ -2193,8 +2193,6 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_strtok = (void *)GetProcAddress(msvcrt, "strtok");
     p_strtok_s = (void *)GetProcAddress(msvcrt, "strtok_s");
     p_strtol = (void *)GetProcAddress(msvcrt, "strtol");
-    p_strtoui64 = (void *)GetProcAddress(msvcrt, "strtoui64");
-    p_strtoui64_l = (void *)GetProcAddress(msvcrt, "strtoui64_l");
     p_strtoul = (void *)GetProcAddress(msvcrt, "strtoul");
     p_strtoul_l = (void *)GetProcAddress(msvcrt, "strtoul_l");
     p_strxfrm = (void *)GetProcAddress(msvcrt, "strxfrm");

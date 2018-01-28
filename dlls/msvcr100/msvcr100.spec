@@ -1370,8 +1370,8 @@
 @ cdecl -ret64 _strtoi64(str ptr long) MSVCRT_strtoi64
 @ cdecl -ret64 _strtoi64_l(str ptr long ptr) MSVCRT_strtoi64_l
 @ cdecl _strtol_l(str ptr long ptr) MSVCRT__strtol_l
-@ cdecl -ret64 _strtoui64(str ptr long) MSVCRT_strtoui64
-@ cdecl -ret64 _strtoui64_l(str ptr long ptr) MSVCRT_strtoui64_l
+@ cdecl -ret64 _strtoui64(str ptr long) MSVCRT__strtoui64
+@ cdecl -ret64 _strtoui64_l(str ptr long ptr) MSVCRT__strtoui64_l
 @ cdecl _strtoul_l(str ptr long ptr) MSVCRT_strtoul_l
 @ cdecl _strupr(str) MSVCRT__strupr
 @ cdecl _strupr_l(str ptr) MSVCRT__strupr_l

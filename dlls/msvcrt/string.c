@@ -1806,7 +1806,7 @@ void qemu_strtoul(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_strtoui64_l
+struct qemu__strtoui64_l
 {
     struct qemu_syscall super;
     uint64_t nptr;
@@ -1817,10 +1817,10 @@ struct qemu_strtoui64_l
 
 #ifdef QEMU_DLL_GUEST
 
-unsigned __int64 CDECL MSVCRT_strtoui64_l(const char *nptr, char **endptr, int base, MSVCRT__locale_t locale)
+unsigned __int64 CDECL MSVCRT__strtoui64_l(const char *nptr, char **endptr, int base, MSVCRT__locale_t locale)
 {
-    struct qemu_strtoui64_l call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_STRTOUI64_L);
+    struct qemu__strtoui64_l call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__STRTOUI64_L);
     call.nptr = (ULONG_PTR)nptr;
     call.endptr = (ULONG_PTR)endptr;
     call.base = base;
@@ -1833,45 +1833,11 @@ unsigned __int64 CDECL MSVCRT_strtoui64_l(const char *nptr, char **endptr, int b
 
 #else
 
-void qemu_strtoui64_l(struct qemu_syscall *call)
+void qemu__strtoui64_l(struct qemu_syscall *call)
 {
-    struct qemu_strtoui64_l *c = (struct qemu_strtoui64_l *)(ULONG_PTR)call;
+    struct qemu__strtoui64_l *c = (struct qemu__strtoui64_l *)(ULONG_PTR)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_strtoui64_l(QEMU_G2H(c->nptr), QEMU_G2H(c->endptr), c->base, QEMU_G2H(c->locale));
-}
-
-#endif
-
-struct qemu_strtoui64
-{
-    struct qemu_syscall super;
-    uint64_t nptr;
-    uint64_t endptr;
-    uint64_t base;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-unsigned __int64 CDECL MSVCRT_strtoui64(const char *nptr, char **endptr, int base)
-{
-    struct qemu_strtoui64 call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_STRTOUI64);
-    call.nptr = (ULONG_PTR)nptr;
-    call.endptr = (ULONG_PTR)endptr;
-    call.base = base;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_strtoui64(struct qemu_syscall *call)
-{
-    struct qemu_strtoui64 *c = (struct qemu_strtoui64 *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_strtoui64(QEMU_G2H(c->nptr), QEMU_G2H(c->endptr), c->base);
+    c->super.iret = p__strtoui64_l(QEMU_G2H(c->nptr), QEMU_G2H(c->endptr), c->base, QEMU_G2H(c->locale));
 }
 
 #endif

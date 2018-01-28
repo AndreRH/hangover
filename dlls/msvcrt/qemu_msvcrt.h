@@ -531,6 +531,7 @@ enum msvcrt_calls
     CALL__STRTOF_L,
     CALL__STRTOL_L,
     CALL__STRTOUI64,
+    CALL__STRTOUI64_L,
     CALL__STRUPR,
     CALL__STRUPR_L,
     CALL__STRUPR_S,
@@ -999,8 +1000,6 @@ enum msvcrt_calls
     CALL_STRTOK,
     CALL_STRTOK_S,
     CALL_STRTOL,
-    CALL_STRTOUI64,
-    CALL_STRTOUI64_L,
     CALL_STRTOUL,
     CALL_STRTOUL_L,
     CALL_STRXFRM,
@@ -1730,6 +1729,7 @@ void qemu__strtime_s(struct qemu_syscall *call);
 void qemu__strtof_l(struct qemu_syscall *call);
 void qemu__strtol_l(struct qemu_syscall *call);
 void qemu__strtoui64(struct qemu_syscall *call);
+void qemu__strtoui64_l(struct qemu_syscall *call);
 void qemu__strupr(struct qemu_syscall *call);
 void qemu__strupr_l(struct qemu_syscall *call);
 void qemu__strupr_s(struct qemu_syscall *call);
@@ -2197,8 +2197,6 @@ void qemu_strtoi64_l(struct qemu_syscall *call);
 void qemu_strtok(struct qemu_syscall *call);
 void qemu_strtok_s(struct qemu_syscall *call);
 void qemu_strtol(struct qemu_syscall *call);
-void qemu_strtoui64(struct qemu_syscall *call);
-void qemu_strtoui64_l(struct qemu_syscall *call);
 void qemu_strtoul(struct qemu_syscall *call);
 void qemu_strtoul_l(struct qemu_syscall *call);
 void qemu_strxfrm(struct qemu_syscall *call);
@@ -2701,7 +2699,8 @@ int (* CDECL p_mbsrtowcs_s)(size_t *ret, WCHAR *wcstr, size_t len, const char **
 unsigned int (* CDECL p__mbctohira)(unsigned int c);
 unsigned int (* CDECL p__mbctokata)(unsigned int c);
 void (* CDECL p_type_info_dtor)(void *_this); /* __thiscall */
-int (* CDECL p__strtoui64)(const char *nptr, char **endptr, int base);
+unsigned __int64 (* CDECL p__strtoui64)(const char *nptr, char **endptr, int base);
+unsigned __int64 (* CDECL p__strtoui64_l)(const char *nptr, char **endptr, int base, MSVCRT__locale_t locale);
 
 char * (* CDECL p_getenv)(const char *name);
 WCHAR * (* CDECL p__wgetenv)(const WCHAR *name);
@@ -3279,8 +3278,6 @@ LONG (* CDECL p__strtol_l)(const char* nptr, char** end, int base, MSVCRT__local
 LONG (* CDECL p_strtol)(const char* nptr, char** end, int base);
 ULONG (* CDECL p_strtoul_l)(const char* nptr, char** end, int base, MSVCRT__locale_t locale);
 ULONG (* CDECL p_strtoul)(const char* nptr, char** end, int base);
-unsigned __int64 (* CDECL p_strtoui64_l)(const char *nptr, char **endptr, int base, MSVCRT__locale_t locale);
-unsigned __int64 (* CDECL p_strtoui64)(const char *nptr, char **endptr, int base);
 int (* CDECL p__ltoa_s)(LONG value, char *str, size_t size, int radix);
 int (* CDECL p__ltow_s)(LONG value, WCHAR *str, size_t size, int radix);
 int (* CDECL p__itoa_s)(int value, char *str, size_t size, int radix);
