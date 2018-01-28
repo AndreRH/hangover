@@ -65,7 +65,7 @@ WINBASEAPI HRESULT WINAPI GetDeviceID(LPCGUID pGuidSrc, LPGUID pGuidDest)
 void qemu_GetDeviceID(struct qemu_syscall *call)
 {
     struct qemu_GetDeviceID *c = (struct qemu_GetDeviceID *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDeviceID(QEMU_G2H(c->pGuidSrc), QEMU_G2H(c->pGuidDest));
 }
 
