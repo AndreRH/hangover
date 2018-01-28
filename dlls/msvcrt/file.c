@@ -1654,7 +1654,7 @@ void CDECL MSVCRT__lock_file(FILE *file)
 void qemu__lock_file(struct qemu_syscall *call)
 {
     struct qemu__lock_file *c = (struct qemu__lock_file *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     p__lock_file(FILE_g2h(c->file));
 }
 
@@ -1682,7 +1682,7 @@ void CDECL MSVCRT__unlock_file(FILE *file)
 void qemu__unlock_file(struct qemu_syscall *call)
 {
     struct qemu__unlock_file *c = (struct qemu__unlock_file *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     p__unlock_file(FILE_g2h(c->file));
 }
 
@@ -3828,7 +3828,7 @@ int CDECL MSVCRT_fgetc(FILE* file)
 void qemu_fgetc(struct qemu_syscall *call)
 {
     struct qemu_fgetc *c = (struct qemu_fgetc *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_fgetc(FILE_g2h(c->file));
 }
 
@@ -4326,7 +4326,7 @@ FILE * CDECL MSVCRT__wfsopen(const WCHAR *path, const WCHAR *mode, int share)
 void qemu__wfsopen(struct qemu_syscall *call)
 {
     struct qemu__wfsopen *c = (struct qemu__wfsopen *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p__wfsopen(QEMU_G2H(c->path), QEMU_G2H(c->mode), c->share));
 }
 

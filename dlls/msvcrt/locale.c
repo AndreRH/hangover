@@ -530,7 +530,11 @@ WINBASEAPI struct MSVCRT_lconv * CDECL MSVCRT_localeconv(void)
 void qemu_localeconv(struct qemu_syscall *call)
 {
     struct qemu_localeconv *c = (struct qemu_localeconv *)call;
-    WINE_FIXME("Unverified!\n");
+#if GUEST_BIT == HOST_BIT
+    WINE_TRACE("\n");
+#else
+    WINE_FIXME("The output will need conversion.\n");
+#endif
     c->super.iret = QEMU_H2G(p_localeconv());
 }
 
