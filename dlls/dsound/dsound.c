@@ -43,14 +43,16 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_dsound);
 struct qemu_dsound
 {
     /* Guest fields */
-    IUnknown            IUnknown_inner;
-    IDirectSound8       IDirectSound8_iface;
-    IUnknown            *outer_unk;
-    LONG                ref, refds, numIfaces;
-    BOOL                has_ds8;
+    IUnknown                    IUnknown_inner;
+    IDirectSound8               IDirectSound8_iface;
+    IUnknown                    *outer_unk;
+    LONG                        ref, refds, numIfaces;
+    BOOL                        has_ds8;
 
     /* Host fields */
-    IDirectSound8       *host;
+    IDirectSound8               *host;
+    IDirectSoundBuffer8         *host_primary;
+    struct qemu_dsound_buffer   *guest_primary;
 };
 
 struct qemu_IDirectSound8Impl_Release
@@ -218,6 +220,7 @@ struct qemu_IDirectSound8Impl_CreateSoundBuffer
     uint64_t dsbd;
     uint64_t ppdsb;
     uint64_t lpunk;
+    uint64_t addref;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -257,7 +260,11 @@ static HRESULT WINAPI IDirectSound8Impl_CreateSoundBuffer(IDirectSound8 *iface, 
         return call.super.iret;
 
     buffer = (struct qemu_dsound_buffer *)(ULONG_PTR)call.ppdsb;
-    buffer_init_guest(buffer, dsbd->dwFlags);
+    if (call.addref)
+        IDirectSoundBuffer8_AddRef(&buffer->IDirectSoundBuffer8_iface);
+    else
+        buffer_init_guest(buffer, dsbd->dwFlags);
+
     *ppdsb = (IDirectSoundBuffer *)&buffer->IDirectSoundBuffer8_iface;
 
     return call.super.iret;
@@ -274,6 +281,7 @@ void qemu_IDirectSound8Impl_CreateSoundBuffer(struct qemu_syscall *call)
     WINE_TRACE("\n");
 
     dsound = QEMU_G2H(c->iface);
+    c->addref = 0;
 #if GUEST_BIT == HOST_BIT
     desc = QEMU_G2H(c->dsbd);
 #else
@@ -290,6 +298,16 @@ void qemu_IDirectSound8Impl_CreateSoundBuffer(struct qemu_syscall *call)
         return;
     }
 
+    if (buffer->host_buffer == dsound->host_primary)
+    {
+        WINE_WARN("Got my old primary buffer.\n");
+        IDirectSoundBuffer_Release(buffer->host_buffer);
+        HeapFree(GetProcessHeap(), 0, buffer);
+        c->ppdsb = QEMU_H2G(dsound->guest_primary);
+        c->addref = 1;
+        return;
+    }
+
     /* Fetch interfaces */
     IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
             &IID_IKsPropertySet, (void **)&buffer->host_property);
@@ -297,6 +315,8 @@ void qemu_IDirectSound8Impl_CreateSoundBuffer(struct qemu_syscall *call)
     {
         IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
                 &IID_IDirectSound3DListener, (void **)&buffer->host_3d_listener);
+        dsound->host_primary = buffer->host_buffer;
+        dsound->guest_primary = buffer;
     }
     else
     {
