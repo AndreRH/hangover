@@ -185,8 +185,8 @@
 @ cdecl -arch=i386,x86_64,arm,arm64 -norelay __CxxFrameHandler3(ptr ptr ptr ptr) __CxxFrameHandler
 # @ stdcall -arch=i386 __CxxLongjmpUnwind(ptr)
 # @ cdecl -arch=i386,x86_64,arm,arm64 __CxxQueryExceptionSize()
-# @ cdecl __CxxRegisterExceptionObject(ptr ptr)
-# @ cdecl __CxxUnregisterExceptionObject(ptr long)
+@ cdecl __CxxRegisterExceptionObject(ptr ptr)
+@ cdecl __CxxUnregisterExceptionObject(ptr long)
  @ cdecl __DestructExceptionObject(ptr)
 # @ cdecl __RTCastToVoid(ptr) MSVCRT___RTCastToVoid
 @ cdecl __RTDynamicCast(ptr long ptr ptr long) MSVCRT___RTDynamicCast

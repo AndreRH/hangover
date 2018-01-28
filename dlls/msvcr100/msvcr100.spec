@@ -522,16 +522,16 @@
 @ cdecl -arch=i386 _CItanh()
 #@ cdecl _CRT_RTC_INIT(ptr ptr long long long)
 #@ cdecl _CRT_RTC_INITW(ptr ptr long long long)
-#@ cdecl _CreateFrameInfo(ptr ptr)
+@ cdecl _CreateFrameInfo(ptr ptr)
 @ stdcall _CxxThrowException(ptr ptr) MSVCRT__CxxThrowException
 #@ cdecl -arch=i386 -norelay _EH_prolog()
-#@ cdecl _FindAndUnlinkFrame(ptr)
+@ cdecl _FindAndUnlinkFrame(ptr)
 @ cdecl _Getdays()
 @ cdecl _Getmonths()
 @ cdecl _Gettnames()
 @ extern -arch=i386 _HUGE MSVCRT__HUGE
 @ extern -arch=x86_64 _HUGE msvcr100.__qemu_native_data__
-#@ cdecl _IsExceptionObjectToBeDestroyed(ptr)
+@ cdecl _IsExceptionObjectToBeDestroyed(ptr)
 @ stub _NLG_Dispatch2
 @ stub _NLG_Return
 @ stub _NLG_Return2
@@ -555,8 +555,8 @@
 @ cdecl -arch=i386,x86_64,arm,arm64 -norelay __CxxFrameHandler3(ptr ptr ptr ptr) __CxxFrameHandler
 #@ stdcall -arch=i386 __CxxLongjmpUnwind(ptr)
 #@ cdecl -arch=i386,x86_64,arm,arm64 __CxxQueryExceptionSize()
-#@ cdecl __CxxRegisterExceptionObject(ptr ptr)
-#@ cdecl __CxxUnregisterExceptionObject(ptr long)
+@ cdecl __CxxRegisterExceptionObject(ptr ptr)
+@ cdecl __CxxUnregisterExceptionObject(ptr long)
 @ cdecl __DestructExceptionObject(ptr)
 @ stub __FrameUnwindFilter
 #@ cdecl __RTCastToVoid(ptr) MSVCRT___RTCastToVoid

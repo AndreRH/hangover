@@ -60,6 +60,27 @@ static WCHAR *msvcrt_wstrdupa(const char *str)
     return wstr;
 }
 
+DWORD msvcrt_tls_index;
+
+#define _RT_THREAD      16
+
+thread_data_t *msvcrt_get_thread_data(void)
+{
+    thread_data_t *ptr;
+    DWORD err = GetLastError();  /* need to preserve last error */
+
+    if (!(ptr = TlsGetValue( msvcrt_tls_index )))
+    {
+        if (!(ptr = HeapAlloc( GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ptr) )))
+            _amsg_exit( _RT_THREAD );
+        if (!TlsSetValue( msvcrt_tls_index, ptr )) _amsg_exit( _RT_THREAD );
+        ptr->tid = GetCurrentThreadId();
+        ptr->handle = INVALID_HANDLE_VALUE;
+    }
+    SetLastError( err );
+    return ptr;
+}
+
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_init_dll call;
@@ -67,6 +88,8 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
     switch (reason)
     {
         case DLL_PROCESS_ATTACH:
+            msvcrt_tls_index = TlsAlloc();
+
 #ifndef __x86_64__
             call.super.id = QEMU_SYSCALL_ID(CALL_INIT_DLL);
             call.iob = (ULONG_PTR)guest_iob;

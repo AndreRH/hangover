@@ -45,23 +45,46 @@ extern const vtable_ptr MSVCRT_exception_vtable;
 extern const vtable_ptr MSVCRT_type_info_vtable;
 extern const vtable_ptr MSVCRT_bad_cast_vtable;
 
+#define EH_NONCONTINUABLE   0x01
+
 #ifdef _WIN64
-void CDECL MSVCRT__CxxThrowException(void *object, const void *type)
-#else
-void WINAPI MSVCRT__CxxThrowException( void *object, const void *type )
-#endif
+void WINAPI MSVCRT__CxxThrowException( exception *object, const cxx_exception_type *type )
 {
+    ULONG_PTR args[3];
     struct qemu_syscall call;
     call.id = QEMU_SYSCALL_ID(CALL__CXXTHROWEXCEPTION);
 
     qemu_syscall(&call);
+
+    args[0] = CXX_FRAME_MAGIC_VC6;
+    args[1] = (ULONG_PTR)object;
+    args[2] = (ULONG_PTR)type;
+    RaiseException( CXX_EXCEPTION, EH_NONCONTINUABLE, 3, args );
 }
+#else
+void WINAPI MSVCRT__CxxThrowException( exception *object, const cxx_exception_type *type )
+{
+    ULONG_PTR args[4];
+    struct qemu_syscall call;
+    call.id = QEMU_SYSCALL_ID(CALL__CXXTHROWEXCEPTION);
+
+    qemu_syscall(&call);
+
+    args[0] = CXX_FRAME_MAGIC_VC6;
+    args[1] = (ULONG_PTR)object;
+    args[2] = (ULONG_PTR)type;
+    RtlPcToFileHeader( (void*)type, (void**)&args[3]);
+    RaiseException( CXX_EXCEPTION, EH_NONCONTINUABLE, 4, args );
+}
+
+#endif
 
 #else
 
 void qemu__CxxThrowException(struct qemu_syscall *c)
 {
-    WINE_FIXME("Stub!\n");
+    /* This is just for lgogging. */
+    WINE_FIXME("This may indicate trouble.\n");
 }
 
 #endif

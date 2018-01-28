@@ -1064,6 +1064,7 @@ enum msvcrt_calls
 };
 
 typedef int (__cdecl *MSVCRT__onexit_t)(void);
+typedef void (__cdecl *MSVCRT__se_translator_function)(unsigned int code, struct _EXCEPTION_POINTERS *info);
 
 struct MSVCRT__complex
 {
@@ -1114,7 +1115,6 @@ typedef unsigned short MSVCRT_wint_t;
 typedef void *MSVCRT_invalid_parameter_handler;
 typedef void *MSVCRT__beginthread_start_routine_t;
 typedef void *MSVCRT__beginthreadex_start_routine_t;
-typedef void thread_data_t;
 typedef void Context;
 typedef void Scheduler, _Scheduler;
 typedef void SchedulerPolicy;
@@ -1132,11 +1132,38 @@ typedef void *MSVCRT_new_handler_func;
 struct MSVCRT__heapinfo;
 struct _I10_OUTPUT_DATA;
 
+typedef struct _frame_info
+{
+    void *object;
+    struct _frame_info *next;
+} frame_info;
+
+typedef struct
+{
+    frame_info frame_info;
+    EXCEPTION_RECORD *rec;
+    void *unk;
+} cxx_frame_info;
+
+struct __thread_data
+{
+    DWORD                           tid;
+    HANDLE                          handle;
+    MSVCRT__se_translator_function  se_translator;
+    EXCEPTION_RECORD               *exc_record;
+    frame_info                     *frame_info_head;
+};
+
+typedef struct __thread_data thread_data_t;
+extern thread_data_t *msvcrt_get_thread_data(void);
+
 #ifdef QEMU_DLL_GUEST
 
 extern char *MSVCRT__acmdln;
 extern WCHAR *MSVCRT__wcmdln;
 void msvcrt_data_init(double huge, int argc, char **argv);
+
+CDECL void _amsg_exit(int errnum);
 char * CDECL MSVCRT__strdup(const char *str);
 void * CDECL MSVCRT_calloc(size_t item_count,size_t size);
 int * CDECL MSVCRT__errno(void);
@@ -1147,6 +1174,7 @@ void * CDECL MSVCRT_memcpy(void *dst, const void *src, size_t size);
 void * CDECL MSVCRT_realloc(void *ptr, size_t size);
 char * CDECL MSVCRT_strcmp(const char *str1, const char *str2);
 size_t CDECL MSVCRT_strlen(const char *str);
+void CDECL MSVCRT_terminate(void);
 void CDECL MSVCRT_operator_delete(void *mem);
 
 unsigned int count_printf_argsA(const char *format, char *fmts);
@@ -1160,12 +1188,14 @@ extern FILE guest_iob[GUEST_IOB_SIZE];
 #define __ASM_NAME(name) name
 #define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl " #name suffix "\n\t.def " #name suffix "; .scl 2; .type 32; .endef\n" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc");
 #define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
+#define __ASM_CFI(str) str
 
 #else
 
 #define __ASM_NAME(name) "_" name
 #define __ASM_DEFINE_FUNC(name,suffix,code) asm(".text\n\t.align 4\n\t.globl _" #name suffix "\n\t.def _" #name suffix "; .scl 2; .type 32; .endef\n_" #name suffix ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc");
 #define __ASM_GLOBAL_FUNC(name,code) __ASM_DEFINE_FUNC(name,"",code)
+#define __ASM_CFI(str) str
 
 #endif
 
