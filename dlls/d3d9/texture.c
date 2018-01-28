@@ -181,11 +181,16 @@ static HRESULT WINAPI d3d9_texture_2d_GetDevice(IDirect3DTexture9 *iface, IDirec
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DTexture9(iface);
     struct qemu_d3d9_texture_2d_GetDevice call;
+    struct qemu_d3d9_device_impl *dev_impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_2D_GETDEVICE);
     call.iface = (ULONG_PTR)texture;
-    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
+
+    dev_impl = (struct qemu_d3d9_device_impl *)(ULONG_PTR)call.device;
+    *device = (IDirect3DDevice9 *)&dev_impl->IDirect3DDevice9Ex_iface;
+    IDirect3DDevice9_AddRef(*device);
 
     return call.super.iret;
 }
@@ -197,10 +202,11 @@ void qemu_d3d9_texture_2d_GetDevice(struct qemu_syscall *call)
     struct qemu_d3d9_texture_2d_GetDevice *c = (struct qemu_d3d9_texture_2d_GetDevice *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DTexture9_GetDevice(texture->host, QEMU_G2H(c->device));
+    c->device = QEMU_H2G(texture->device);
+    c->super.iret = D3D_OK;
 }
 
 #endif
@@ -974,11 +980,16 @@ static HRESULT WINAPI d3d9_texture_cube_GetDevice(IDirect3DCubeTexture9 *iface, 
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DCubeTexture9(iface);
     struct qemu_d3d9_texture_cube_GetDevice call;
+    struct qemu_d3d9_device_impl *dev_impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_CUBE_GETDEVICE);
     call.iface = (ULONG_PTR)texture;
-    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
+
+    dev_impl = (struct qemu_d3d9_device_impl *)(ULONG_PTR)call.device;
+    *device = (IDirect3DDevice9 *)&dev_impl->IDirect3DDevice9Ex_iface;
+    IDirect3DDevice9_AddRef(*device);
 
     return call.super.iret;
 }
@@ -990,10 +1001,11 @@ void qemu_d3d9_texture_cube_GetDevice(struct qemu_syscall *call)
     struct qemu_d3d9_texture_cube_GetDevice *c = (struct qemu_d3d9_texture_cube_GetDevice *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DCubeTexture9_GetDevice(texture->host, QEMU_G2H(c->device));
+    c->device = QEMU_H2G(texture->device);
+    c->super.iret = D3D_OK;
 }
 
 #endif
@@ -1766,11 +1778,16 @@ static HRESULT WINAPI d3d9_texture_3d_GetDevice(IDirect3DVolumeTexture9 *iface, 
 {
     struct qemu_d3d9_texture_impl *texture = impl_from_IDirect3DVolumeTexture9(iface);
     struct qemu_d3d9_texture_3d_GetDevice call;
+    struct qemu_d3d9_device_impl *dev_impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D9_TEXTURE_3D_GETDEVICE);
     call.iface = (ULONG_PTR)texture;
-    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
+
+    dev_impl = (struct qemu_d3d9_device_impl *)(ULONG_PTR)call.device;
+    *device = (IDirect3DDevice9 *)&dev_impl->IDirect3DDevice9Ex_iface;
+    IDirect3DDevice9_AddRef(*device);
 
     return call.super.iret;
 }
@@ -1782,10 +1799,11 @@ void qemu_d3d9_texture_3d_GetDevice(struct qemu_syscall *call)
     struct qemu_d3d9_texture_3d_GetDevice *c = (struct qemu_d3d9_texture_3d_GetDevice *)call;
     struct qemu_d3d9_texture_impl *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DVolumeTexture9_GetDevice(texture->host, QEMU_G2H(c->device));
+    c->device = QEMU_H2G(texture->device);
+    c->super.iret = D3D_OK;
 }
 
 #endif
