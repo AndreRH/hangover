@@ -690,7 +690,7 @@ void qemu_IDirectSoundBufferImpl_SetPan(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_SetPan *c = (struct qemu_IDirectSoundBufferImpl_SetPan *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_SetPan(buffer->host_buffer, c->pan);
@@ -726,7 +726,7 @@ void qemu_IDirectSoundBufferImpl_GetPan(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_GetPan *c = (struct qemu_IDirectSoundBufferImpl_GetPan *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_GetPan(buffer->host_buffer, QEMU_G2H(c->pan));

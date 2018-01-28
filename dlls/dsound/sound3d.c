@@ -104,7 +104,7 @@ void qemu_IDirectSound3DBufferImpl_GetAllParameters(struct qemu_syscall *call)
     struct qemu_IDirectSound3DBufferImpl_GetAllParameters *c = (struct qemu_IDirectSound3DBufferImpl_GetAllParameters *)call;
     struct qemu_dsound_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectSound3DBuffer_GetAllParameters(buffer->host_3d_buffer, QEMU_G2H(c->lpDs3dBuffer));
@@ -875,7 +875,7 @@ void qemu_IDirectSound3DListenerImpl_GetAllParameter(struct qemu_syscall *call)
     struct qemu_IDirectSound3DListenerImpl_GetAllParameter *c = (struct qemu_IDirectSound3DListenerImpl_GetAllParameter *)call;
     struct qemu_dsound_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectSound3DListener_GetAllParameters(buffer->host_3d_listener, QEMU_G2H(c->lpDS3DL));
