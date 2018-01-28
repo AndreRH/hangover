@@ -4,7 +4,6 @@
 enum dsound_calls
 {
     CALL_DIRECTSOUNDCAPTURECREATE = 0,
-    CALL_DIRECTSOUNDCAPTURECREATE8,
     CALL_DIRECTSOUNDCAPTUREENUMERATEA,
     CALL_DIRECTSOUNDCAPTUREENUMERATEW,
     CALL_DIRECTSOUNDCREATE,
@@ -80,6 +79,23 @@ enum dsound_calls
     CALL_IDIRECTSOUNDBUFFERIMPL_SETVOLUME,
     CALL_IDIRECTSOUNDBUFFERIMPL_STOP,
     CALL_IDIRECTSOUNDBUFFERIMPL_UNLOCK,
+    CALL_IDIRECTSOUNDCAPTUREBUFFERIMPL_GETCAPS,
+    CALL_IDIRECTSOUNDCAPTUREBUFFERIMPL_GETCURRENTPOSITION,
+    CALL_IDIRECTSOUNDCAPTUREBUFFERIMPL_GETFORMAT,
+    CALL_IDIRECTSOUNDCAPTUREBUFFERIMPL_GETFXSTATUS,
+    CALL_IDIRECTSOUNDCAPTUREBUFFERIMPL_GETOBJECTINPATH,
+    CALL_IDIRECTSOUNDCAPTUREBUFFERIMPL_GETSTATUS,
+    CALL_IDIRECTSOUNDCAPTUREBUFFERIMPL_INITIALIZE,
+    CALL_IDIRECTSOUNDCAPTUREBUFFERIMPL_LOCK,
+    CALL_IDIRECTSOUNDCAPTUREBUFFERIMPL_RELEASE,
+    CALL_IDIRECTSOUNDCAPTUREBUFFERIMPL_START,
+    CALL_IDIRECTSOUNDCAPTUREBUFFERIMPL_STOP,
+    CALL_IDIRECTSOUNDCAPTUREBUFFERIMPL_UNLOCK,
+    CALL_IDIRECTSOUNDCAPTUREIMPL_CREATECAPTUREBUFFER,
+    CALL_IDIRECTSOUNDCAPTUREIMPL_GETCAPS,
+    CALL_IDIRECTSOUNDCAPTUREIMPL_INITIALIZE,
+    CALL_IDIRECTSOUNDCAPTUREIMPL_RELEASE,
+    CALL_IDIRECTSOUNDNOTIFYIMPL_CAPTURE_SETNOTIFICATIONPOSITIONS,
     CALL_IDIRECTSOUNDNOTIFYIMPL_SETNOTIFICATIONPOSITIONS,
     CALL_IKSPRIVATEPROPERTYSETIMPL_CREATE,
     CALL_IKSPRIVATEPROPERTYSETIMPL_GET,
@@ -154,9 +170,7 @@ LONG capped_refcount_dec(LONG *out);
 
 #else
 
-
 void qemu_DirectSoundCaptureCreate(struct qemu_syscall *call);
-void qemu_DirectSoundCaptureCreate8(struct qemu_syscall *call);
 void qemu_DirectSoundCaptureEnumerateA(struct qemu_syscall *call);
 void qemu_DirectSoundCaptureEnumerateW(struct qemu_syscall *call);
 void qemu_DirectSoundCreate(struct qemu_syscall *call);
@@ -231,6 +245,23 @@ void qemu_IDirectSoundBufferImpl_SetPan(struct qemu_syscall *call);
 void qemu_IDirectSoundBufferImpl_SetVolume(struct qemu_syscall *call);
 void qemu_IDirectSoundBufferImpl_Stop(struct qemu_syscall *call);
 void qemu_IDirectSoundBufferImpl_Unlock(struct qemu_syscall *call);
+void qemu_IDirectSoundCaptureBufferImpl_GetCaps(struct qemu_syscall *call);
+void qemu_IDirectSoundCaptureBufferImpl_GetCurrentPosition(struct qemu_syscall *call);
+void qemu_IDirectSoundCaptureBufferImpl_GetFXStatus(struct qemu_syscall *call);
+void qemu_IDirectSoundCaptureBufferImpl_GetFormat(struct qemu_syscall *call);
+void qemu_IDirectSoundCaptureBufferImpl_GetObjectInPath(struct qemu_syscall *call);
+void qemu_IDirectSoundCaptureBufferImpl_GetStatus(struct qemu_syscall *call);
+void qemu_IDirectSoundCaptureBufferImpl_Initialize(struct qemu_syscall *call);
+void qemu_IDirectSoundCaptureBufferImpl_Lock(struct qemu_syscall *call);
+void qemu_IDirectSoundCaptureBufferImpl_Release(struct qemu_syscall *call);
+void qemu_IDirectSoundCaptureBufferImpl_Start(struct qemu_syscall *call);
+void qemu_IDirectSoundCaptureBufferImpl_Stop(struct qemu_syscall *call);
+void qemu_IDirectSoundCaptureBufferImpl_Unlock(struct qemu_syscall *call);
+void qemu_IDirectSoundCaptureImpl_CreateCaptureBuffer(struct qemu_syscall *call);
+void qemu_IDirectSoundCaptureImpl_GetCaps(struct qemu_syscall *call);
+void qemu_IDirectSoundCaptureImpl_Initialize(struct qemu_syscall *call);
+void qemu_IDirectSoundCaptureImpl_Release(struct qemu_syscall *call);
+void qemu_IDirectSoundNotifyImpl_Capture_SetNotificationPositions(struct qemu_syscall *call);
 void qemu_IDirectSoundNotifyImpl_SetNotificationPositions(struct qemu_syscall *call);
 void qemu_IKsPrivatePropertySetImpl_Create(struct qemu_syscall *call);
 void qemu_IKsPrivatePropertySetImpl_Get(struct qemu_syscall *call);
@@ -240,6 +271,7 @@ void qemu_IKsPrivatePropertySetImpl_Set(struct qemu_syscall *call);
 void qemu_IKsPropertySetImpl_Get(struct qemu_syscall *call);
 void qemu_IKsPropertySetImpl_QuerySupport(struct qemu_syscall *call);
 void qemu_IKsPropertySetImpl_Set(struct qemu_syscall *call);
+
 extern const struct qemu_ops *qemu_ops;
 
 #endif
