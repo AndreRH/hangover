@@ -200,11 +200,11 @@ static cxx_exception_type type ##_exception_type = { \
 static void init_ ## type ## _cxx(char *base) \
 { \
     type ## _cxx_type_info.type_info  = (char *)&type ## _type_info - base; \
-    type ## _cxx_type_info.copy_ctor  = (char *)MSVCRT_ ## type ## _copy_ctor - base; \
+    type ## _cxx_type_info.copy_ctor  = (char *)__thiscall_MSVCRT_ ## type ## _copy_ctor - base; \
     type ## _type_info_table.info[0]   = (char *)&type ## _cxx_type_info - base; \
     type ## _type_info_table.info[1]   = (char *)cl1 - base; \
     type ## _type_info_table.info[2]   = (char *)cl2 - base; \
-    type ## _exception_type.destructor      = (char *)MSVCRT_ ## type ## _dtor - base; \
+    type ## _exception_type.destructor      = (char *)__thiscall_MSVCRT_ ## type ## _dtor - base; \
     type ## _exception_type.type_info_table = (char *)&type ## _type_info_table - base; \
 }
 #endif

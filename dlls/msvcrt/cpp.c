@@ -632,7 +632,7 @@ void* CDECL MSVCRT___RTDynamicCast(void *cppobj, int unknown,
             const char *msg = "Bad dynamic_cast!";
             bad_cast e;
             __thiscall_MSVCRT_bad_cast_ctor( &e, &msg );
-            _CxxThrowException( &e, &bad_cast_exception_type );
+            MSVCRT__CxxThrowException( &e, &bad_cast_exception_type );
         }
     }
     /*__EXCEPT_PAGE_FAULT
