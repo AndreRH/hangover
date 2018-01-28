@@ -130,7 +130,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
     argv = HeapAlloc(GetProcessHeap(), 0, sizeof(qemu_ptr) * c->argc);
     for (i = 0; i < c->argc; ++i)
     {
-        const char *orig = p___argv[i];
+        const char *orig = (*p___argv)[i];
         char *copy = NULL;
 
         if (orig)
@@ -1234,7 +1234,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p____setlc_active_func = (void *)GetProcAddress(msvcrt, "___setlc_active_func");
     p____unguarded_readlc_active_add_func = (void *)GetProcAddress(msvcrt, "___unguarded_readlc_active_add_func");
     p___argc = (int *)GetProcAddress(msvcrt, "__argc");
-    p___argv = (char **)GetProcAddress(msvcrt, "__argv");
+    p___argv = (char ***)GetProcAddress(msvcrt, "__argv");
     p___clean_type_info_names_internal = (void *)GetProcAddress(msvcrt, "__clean_type_info_names_internal");
     p___control87_2 = (void *)GetProcAddress(msvcrt, "__control87_2");
     p___crt_debugger_hook = (void *)GetProcAddress(msvcrt, "__crt_debugger_hook");

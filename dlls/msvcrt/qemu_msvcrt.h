@@ -3341,7 +3341,7 @@ void * (* CDECL p__encoded_null)(void);
 BOOL (* CDECL p___uncaught_exception)(void);
 double *p__HUGE;
 int *p___argc;
-char **p___argv;
+char ***p___argv;
 
 DWORD msvcrt_tls;
 size_t guest_FILE_size;
