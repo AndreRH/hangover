@@ -1295,7 +1295,7 @@ int CDECL MSVCRT__chmod(const char *path, int flags)
 void qemu__chmod(struct qemu_syscall *call)
 {
     struct qemu__chmod *c = (struct qemu__chmod *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__chmod(QEMU_G2H(c->path), c->flags);
 }
 
