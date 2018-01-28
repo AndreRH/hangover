@@ -71,53 +71,50 @@ void qemu_GetDeviceID(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_DirectSoundEnumerateA
+struct qemu_DirectSoundEnumerate
 {
     struct qemu_syscall super;
     uint64_t lpDSEnumCallback;
     uint64_t lpContext;
+    uint64_t wrapper;
+};
+
+struct qemu_DirectSoundEnumerate_cb
+{
+    uint64_t func;
+    uint64_t context;
+    uint64_t guid, description, module;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static BOOL __fastcall DirectSoundEnumerate_guest_cb(struct qemu_DirectSoundEnumerate_cb *data)
+{
+    LPDSENUMCALLBACKA cb = (LPDSENUMCALLBACKA)(ULONG_PTR)data->func;
+    cb((GUID *)(ULONG_PTR)data->guid, (const char *)(ULONG_PTR)data->description,
+            (const char *)(ULONG_PTR)data->module, (void *)(ULONG_PTR)data->context);
+}
 
 WINBASEAPI HRESULT WINAPI DirectSoundEnumerateA(LPDSENUMCALLBACKA lpDSEnumCallback, LPVOID lpContext)
 {
-    struct qemu_DirectSoundEnumerateA call;
+    struct qemu_DirectSoundEnumerate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DIRECTSOUNDENUMERATEA);
     call.lpDSEnumCallback = (ULONG_PTR)lpDSEnumCallback;
     call.lpContext = (ULONG_PTR)lpContext;
+    call.wrapper = (ULONG_PTR)DirectSoundEnumerate_guest_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
-
-#else
-
-void qemu_DirectSoundEnumerateA(struct qemu_syscall *call)
-{
-    struct qemu_DirectSoundEnumerateA *c = (struct qemu_DirectSoundEnumerateA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DirectSoundEnumerateA(QEMU_G2H(c->lpDSEnumCallback), QEMU_G2H(c->lpContext));
-}
-
-#endif
-
-struct qemu_DirectSoundEnumerateW
-{
-    struct qemu_syscall super;
-    uint64_t lpDSEnumCallback;
-    uint64_t lpContext;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 WINBASEAPI HRESULT WINAPI DirectSoundEnumerateW(LPDSENUMCALLBACKW lpDSEnumCallback, LPVOID lpContext)
 {
-    struct qemu_DirectSoundEnumerateW call;
+    struct qemu_DirectSoundEnumerate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DIRECTSOUNDENUMERATEW);
     call.lpDSEnumCallback = (ULONG_PTR)lpDSEnumCallback;
     call.lpContext = (ULONG_PTR)lpContext;
+    call.wrapper = (ULONG_PTR)DirectSoundEnumerate_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -126,11 +123,57 @@ WINBASEAPI HRESULT WINAPI DirectSoundEnumerateW(LPDSENUMCALLBACKW lpDSEnumCallba
 
 #else
 
-void qemu_DirectSoundEnumerateW(struct qemu_syscall *call)
+struct DirectSoundEnumerate_host_data
 {
-    struct qemu_DirectSoundEnumerateW *c = (struct qemu_DirectSoundEnumerateW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DirectSoundEnumerateW(QEMU_G2H(c->lpDSEnumCallback), QEMU_G2H(c->lpContext));
+    uint64_t func, guest_ctx, wrapper;
+};
+
+static BOOL WINAPI DirectSoundEnumerate_host_cb(GUID *guid, const char *description, const char *module, void *context)
+{
+    struct DirectSoundEnumerate_host_data *ctx = context;
+    struct qemu_DirectSoundEnumerate_cb call;
+    BOOL ret;
+    GUID copy;
+
+    call.func = ctx->func;
+    call.context = ctx->guest_ctx;
+    call.guid = QEMU_H2G(guid);
+#if HOST_BIT != GUEST_BIT
+    if (call.guid > ~0U)
+    {
+        copy = *guid;
+        call.guid = QEMU_H2G(&copy);
+    }
+#endif
+    call.description = QEMU_H2G(description);
+    call.module = QEMU_H2G(module);
+
+    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, %p, %p, 0x%lx)\n", call.func, call.guid, description, module, call.context);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned %u.\n", ret);
+
+    return ret;
+}
+
+void qemu_DirectSoundEnumerate(struct qemu_syscall *call)
+{
+    struct qemu_DirectSoundEnumerate *c = (struct qemu_DirectSoundEnumerate *)call;
+    struct DirectSoundEnumerate_host_data ctx;
+
+    WINE_TRACE("\n");
+    ctx.func = c->lpDSEnumCallback;
+    ctx.guest_ctx = c->lpContext;
+    ctx.wrapper = c->wrapper;
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_DIRECTSOUNDENUMERATEW))
+    {
+        c->super.iret = DirectSoundEnumerateW(c->lpDSEnumCallback ?
+                (LPDSENUMCALLBACKW)DirectSoundEnumerate_host_cb : NULL, &ctx);
+    }
+    else
+    {
+        c->super.iret = DirectSoundEnumerateA(c->lpDSEnumCallback ? DirectSoundEnumerate_host_cb : NULL, &ctx);
+    }
 }
 
 #endif
