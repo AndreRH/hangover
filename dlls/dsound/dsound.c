@@ -676,7 +676,7 @@ void qemu_IDirectSound8Impl_VerifyCertification(struct qemu_syscall *call)
 {
     struct qemu_IDirectSound8Impl_VerifyCertification *c = (struct qemu_IDirectSound8Impl_VerifyCertification *)call;
     struct qemu_dsound *dsound;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     dsound = QEMU_G2H(c->iface);
     c->super.iret = IDirectSound8_VerifyCertification(dsound->host, QEMU_G2H(c->certified));
