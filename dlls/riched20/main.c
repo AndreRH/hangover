@@ -474,7 +474,7 @@ static const struct IRichEditOleCallbackVtbl ole_callback_vtbl =
     RichEditOleCallback_GetContextMenu
 };
 
-WNDPROC orig_proc_w, orig_proc_a;
+WNDPROC orig_proc_w, orig_proc_a, orig_proc_10a;
 
 static LRESULT handle_set_ole_callback(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, BOOL unicode)
 {
@@ -756,9 +756,35 @@ LRESULT WINAPI wrap_proc_a(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     }
 }
 
+LRESULT WINAPI wrap_proc_10a(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    WINE_TRACE("Richedit 1.0 message %x\n", msg);
+    if (msg == WM_NCCREATE && !GetWindowLongPtrW(hWnd, 0))
+        return CallWindowProcA(orig_proc_10a, hWnd, msg, wParam, lParam);
+
+    return wrap_proc_a(hWnd, msg, wParam, lParam);
+}
+
 static inline BOOL is_version_nt(void)
 {
     return !(GetVersion() & 0x80000000);
+}
+
+void WINAPI qemu_riched20_hook_old(HMODULE riched32)
+{
+    HWND win;
+    WINE_TRACE("Called to hook riched 1.0 %p.\n", riched32);
+
+    win = CreateWindowExA(0, RICHEDIT_CLASS10A, NULL,
+            WS_POPUP, 0, 0, 200, 60, NULL, NULL, riched32, NULL);
+    if (!win)
+        WINE_ERR("Failed to instantiate a RICHEDIT_CLASS10A window.\n");
+
+    orig_proc_10a = (WNDPROC)SetClassLongPtrA(win, GCLP_WNDPROC, (ULONG_PTR)wrap_proc_10a);
+    if (!orig_proc_10a)
+        WINE_ERR("Failed to set WNDPROC of RICHEDIT_CLASS10A.\n");
+
+    DestroyWindow(win);
 }
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)

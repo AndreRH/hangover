@@ -94,8 +94,11 @@ extern LRESULT WINAPI RichEdit10ANSIWndProc(HWND hWnd, UINT msg, WPARAM wParam, 
 void qemu_RichEdit10ANSIWndProc(struct qemu_syscall *call)
 {
     struct qemu_RichEdit10ANSIWndProc *c = (struct qemu_RichEdit10ANSIWndProc *)call;
+    HWND window;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = RichEdit10ANSIWndProc(QEMU_G2H(c->hWnd), c->msg, c->wParam, c->lParam);
+
+    window = QEMU_G2H(c->hWnd);
+    c->super.iret = wrap_proc_10a(window, c->msg, c->wParam, c->lParam);
 }
 
 #endif
