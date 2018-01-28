@@ -35,16 +35,20 @@
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_dsound);
 
-struct qemu_IDirectSoundNotifyImpl_Release
+struct qemu_IDirectSoundBufferImpl_Release
 {
     struct qemu_syscall super;
+    uint64_t iface;
 };
 
 #ifdef QEMU_DLL_GUEST
 
 void secondarybuffer_destroy(struct qemu_dsound_buffer *buffer)
 {
-    WINE_FIXME("Implement me!\n");
+    struct qemu_IDirectSoundBufferImpl_Release call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTSOUNDBUFFERIMPL_RELEASE);
+    call.iface = (ULONG_PTR)buffer;
+    qemu_syscall(&call.super);
 }
 
 static HRESULT WINAPI IDirectSoundNotifyImpl_QueryInterface(IDirectSoundNotify *iface, REFIID riid, void **obj)
@@ -356,16 +360,6 @@ static ULONG WINAPI IDirectSoundBufferImpl_AddRef(IDirectSoundBuffer8 *iface)
     return ref;
 }
 
-#endif
-
-struct qemu_IDirectSoundBufferImpl_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 static inline BOOL is_primary_buffer(struct qemu_dsound_buffer *buffer)
 {
     return (buffer->flags & DSBCAPS_PRIMARYBUFFER) != 0;
@@ -392,7 +386,6 @@ static ULONG WINAPI IDirectSoundBufferImpl_Release(IDirectSoundBuffer8 *iface)
 
     if (is_primary_buffer(buffer))
     {
-        WINE_FIXME("Whut is this?\n");
         ref = capped_refcount_dec(&buffer->ref);
         if(!ref)
             capped_refcount_dec(&buffer->iface_count);
@@ -415,14 +408,24 @@ void qemu_IDirectSoundBufferImpl_Release(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_Release *c = (struct qemu_IDirectSoundBufferImpl_Release *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_Release(buffer->host_buffer);
-    /* Release host_notify */
-    /* release host_3d_listener if it exists */
-    /* release host_3d_buffer if it exists */
-    /* release host_property */
+    if (buffer->host_notify)
+        c->super.iret += IDirectSoundNotify_Release(buffer->host_notify);
+    if (buffer->host_3d_listener)
+        c->super.iret += IDirectSound3DListener_Release(buffer->host_3d_listener);
+    if (buffer->host_3d_buffer)
+        c->super.iret += IDirectSound3DBuffer_Release(buffer->host_3d_buffer);
+    if (buffer->host_property)
+        c->super.iret += IKsPropertySet_Release(buffer->host_property);
+
+    WINE_TRACE("Host interface count sum is %lu.\n", c->super.iret);
+    if (c->super.iret)
+        WINE_FIXME("Host interfaces not cleanly released\n");
+
+    HeapFree(GetProcessHeap(), 0, buffer);
 }
 
 #endif
