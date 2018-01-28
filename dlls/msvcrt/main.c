@@ -568,7 +568,6 @@ static const syscall_handler dll_functions[] =
     qemu__mbstok_s,
     qemu__mbstok_s_l,
     qemu__mbstowcs_l,
-    qemu__mbstowcs_s,
     qemu__mbstowcs_s_l,
     qemu__mbstrlen,
     qemu__mbstrlen_l,
@@ -1049,6 +1048,7 @@ static const syscall_handler dll_functions[] =
     qemu_mbsrtowcs,
     qemu_mbsrtowcs_s,
     qemu_mbstowcs,
+    qemu_mbstowcs_s,
     qemu_mbtowc,
     qemu_mbtowc_l,
     qemu_memchr,
@@ -1638,7 +1638,6 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__mbstok_s = (void *)GetProcAddress(msvcrt, "_mbstok_s");
     p__mbstok_s_l = (void *)GetProcAddress(msvcrt, "_mbstok_s_l");
     p__mbstowcs_l = (void *)GetProcAddress(msvcrt, "_mbstowcs_l");
-    p__mbstowcs_s = (void *)GetProcAddress(msvcrt, "_mbstowcs_s");
     p__mbstowcs_s_l = (void *)GetProcAddress(msvcrt, "_mbstowcs_s_l");
     p__mbstrlen = (void *)GetProcAddress(msvcrt, "_mbstrlen");
     p__mbstrlen_l = (void *)GetProcAddress(msvcrt, "_mbstrlen_l");
@@ -2106,6 +2105,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_mbsrtowcs = (void *)GetProcAddress(msvcrt, "mbsrtowcs");
     p_mbsrtowcs_s = (void *)GetProcAddress(msvcrt, "mbsrtowcs_s");
     p_mbstowcs = (void *)GetProcAddress(msvcrt, "mbstowcs");
+    p_mbstowcs_s = (void *)GetProcAddress(msvcrt, "mbstowcs_s");
     p_mbtowc = (void *)GetProcAddress(msvcrt, "mbtowc");
     p_mbtowc_l = (void *)GetProcAddress(msvcrt, "mbtowc_l");
     p_memchr = (void *)GetProcAddress(msvcrt, "memchr");

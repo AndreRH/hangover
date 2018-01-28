@@ -427,7 +427,6 @@ enum msvcrt_calls
     CALL__MBSTOK_S,
     CALL__MBSTOK_S_L,
     CALL__MBSTOWCS_L,
-    CALL__MBSTOWCS_S,
     CALL__MBSTOWCS_S_L,
     CALL__MBSTRLEN,
     CALL__MBSTRLEN_L,
@@ -908,6 +907,7 @@ enum msvcrt_calls
     CALL_MBSRTOWCS,
     CALL_MBSRTOWCS_S,
     CALL_MBSTOWCS,
+    CALL_MBSTOWCS_S,
     CALL_MBTOWC,
     CALL_MBTOWC_L,
     CALL_MEMCHR,
@@ -1625,7 +1625,6 @@ void qemu__mbstok_l(struct qemu_syscall *call);
 void qemu__mbstok_s(struct qemu_syscall *call);
 void qemu__mbstok_s_l(struct qemu_syscall *call);
 void qemu__mbstowcs_l(struct qemu_syscall *call);
-void qemu__mbstowcs_s(struct qemu_syscall *call);
 void qemu__mbstowcs_s_l(struct qemu_syscall *call);
 void qemu__mbstrlen(struct qemu_syscall *call);
 void qemu__mbstrlen_l(struct qemu_syscall *call);
@@ -2107,6 +2106,7 @@ void qemu_mbrtowc(struct qemu_syscall *call);
 void qemu_mbsrtowcs(struct qemu_syscall *call);
 void qemu_mbsrtowcs_s(struct qemu_syscall *call);
 void qemu_mbstowcs(struct qemu_syscall *call);
+void qemu_mbstowcs_s(struct qemu_syscall *call);
 void qemu_mbtowc(struct qemu_syscall *call);
 void qemu_mbtowc_l(struct qemu_syscall *call);
 void qemu_memchr(struct qemu_syscall *call);
@@ -2695,7 +2695,7 @@ size_t (* CDECL p_mbrtowc)(WCHAR *dst, const char *str, size_t n, void *state);
 size_t (* CDECL p__mbstowcs_l)(WCHAR *wcstr, const char *mbstr, size_t count, MSVCRT__locale_t locale);
 size_t (* CDECL p_mbstowcs)(WCHAR *wcstr, const char *mbstr, size_t count);
 int (* CDECL p__mbstowcs_s_l)(size_t *ret, WCHAR *wcstr, size_t size, const char *mbstr, size_t count, MSVCRT__locale_t locale);
-int (* CDECL p__mbstowcs_s)(size_t *ret, WCHAR *wcstr, size_t size, const char *mbstr, size_t count);
+int (* CDECL p_mbstowcs_s)(size_t *ret, WCHAR *wcstr, size_t size, const char *mbstr, size_t count);
 size_t (* CDECL p_mbsrtowcs)(WCHAR *wcstr, const char **pmbstr, size_t count, void *state);
 int (* CDECL p_mbsrtowcs_s)(size_t *ret, WCHAR *wcstr, size_t len, const char **mbstr, size_t count, void *state);
 unsigned int (* CDECL p__mbctohira)(unsigned int c);

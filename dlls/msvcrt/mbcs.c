@@ -3181,7 +3181,7 @@ void qemu__mbstowcs_s_l(struct qemu_syscall *call)
 
 #endif
 
-struct qemu__mbstowcs_s
+struct qemu_mbstowcs_s
 {
     struct qemu_syscall super;
     uint64_t ret;
@@ -3195,8 +3195,8 @@ struct qemu__mbstowcs_s
 
 int CDECL MSVCRT__mbstowcs_s(size_t *ret, WCHAR *wcstr, size_t size, const char *mbstr, size_t count)
 {
-    struct qemu__mbstowcs_s call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__MBSTOWCS_S);
+    struct qemu_mbstowcs_s call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_MBSTOWCS_S);
     call.ret = (ULONG_PTR)ret;
     call.wcstr = (ULONG_PTR)wcstr;
     call.size = (ULONG_PTR)size;
@@ -3210,11 +3210,11 @@ int CDECL MSVCRT__mbstowcs_s(size_t *ret, WCHAR *wcstr, size_t size, const char 
 
 #else
 
-void qemu__mbstowcs_s(struct qemu_syscall *call)
+void qemu_mbstowcs_s(struct qemu_syscall *call)
 {
-    struct qemu__mbstowcs_s *c = (struct qemu__mbstowcs_s *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p__mbstowcs_s(QEMU_G2H(c->ret), QEMU_G2H(c->wcstr), c->size, QEMU_G2H(c->mbstr), c->count);
+    struct qemu_mbstowcs_s *c = (struct qemu_mbstowcs_s *)(ULONG_PTR)call;
+    WINE_TRACE("\n");
+    c->super.iret = p_mbstowcs_s(QEMU_G2H(c->ret), QEMU_G2H(c->wcstr), c->size, QEMU_G2H(c->mbstr), c->count);
 }
 
 #endif
