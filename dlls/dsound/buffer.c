@@ -23,6 +23,9 @@
 #include <dsound.h>
 #include <dsconf.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_dsound.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_dsound.h"
@@ -118,10 +121,30 @@ void qemu_IDirectSoundNotifyImpl_SetNotificationPositions(struct qemu_syscall *c
 {
     struct qemu_IDirectSoundNotifyImpl_SetNotificationPositions *c = (struct qemu_IDirectSoundNotifyImpl_SetNotificationPositions *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    DSBPOSITIONNOTIFY *notify;
+    struct qemu_DSBPOSITIONNOTIFY *guest_notify;
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
-    c->super.iret = IDirectSoundNotify_SetNotificationPositions(buffer->host_notify, c->howmuch, QEMU_G2H(c->notify));
+
+#if GUEST_BIT == HOST_BIT
+    notify = QEMU_G2H(c->notify);
+#else
+    guest_notify = QEMU_G2H(c->notify);
+    if (guest_notify)
+    {
+        unsigned int i;
+        notify = alloca(sizeof(*notify) * c->howmuch);
+        for (i = 0; i < c->howmuch; i++)
+            DSBPOSITIONNOTIFY_g2h(&notify[i], &guest_notify[i]);
+    }
+    else
+    {
+        notify = NULL;
+    }
+#endif
+
+    c->super.iret = IDirectSoundNotify_SetNotificationPositions(buffer->host_notify, c->howmuch, notify);
 }
 
 #endif

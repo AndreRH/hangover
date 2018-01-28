@@ -33,4 +33,16 @@ static inline void DSBUFFERDESC_g2h(DSBUFFERDESC *host, const struct qemu_DSBUFF
         memset(&host->guid3DAlgorithm, 0, sizeof(host));
 }
 
+struct qemu_DSBPOSITIONNOTIFY
+{
+    DWORD       dwOffset;
+    qemu_ptr    hEventNotify;
+};
+
+static inline void DSBPOSITIONNOTIFY_g2h(DSBPOSITIONNOTIFY *host, const struct qemu_DSBPOSITIONNOTIFY *guest)
+{
+    host->dwOffset = guest->dwOffset;
+    host->hEventNotify = HANDLE_g2h(guest->hEventNotify);
+}
+
 #endif
