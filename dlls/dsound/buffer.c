@@ -1109,7 +1109,7 @@ static HRESULT WINAPI IDirectSoundBufferImpl_QueryInterface(IDirectSoundBuffer8 
 
 static HRESULT WINAPI IKsPropertySetImpl_QueryInterface(IKsPropertySet *iface, REFIID riid, void **obj)
 {
-    struct qemu_dsound_buffer *buffer = impl_from_IKsPropertySet(iface);
+    struct qemu_dsound_buffer *buffer = buffer_impl_from_IKsPropertySet(iface);
 
     WINE_TRACE("(%p,%s,%p)\n", buffer, wine_dbgstr_guid(riid), obj);
 
@@ -1118,7 +1118,7 @@ static HRESULT WINAPI IKsPropertySetImpl_QueryInterface(IKsPropertySet *iface, R
 
 static ULONG WINAPI IKsPropertySetImpl_AddRef(IKsPropertySet *iface)
 {
-    struct qemu_dsound_buffer *buffer = impl_from_IKsPropertySet(iface);
+    struct qemu_dsound_buffer *buffer = buffer_impl_from_IKsPropertySet(iface);
     ULONG ref = InterlockedIncrement(&buffer->refiks);
 
     WINE_TRACE("(%p) ref was %d\n", buffer, ref - 1);
@@ -1133,7 +1133,7 @@ static ULONG WINAPI IKsPropertySetImpl_AddRef(IKsPropertySet *iface)
 
 static ULONG WINAPI IKsPropertySetImpl_Release(IKsPropertySet *iface)
 {
-    struct qemu_dsound_buffer *buffer = impl_from_IKsPropertySet(iface);
+    struct qemu_dsound_buffer *buffer = buffer_impl_from_IKsPropertySet(iface);
     ULONG ref;
 
     if (is_primary_buffer(buffer))
@@ -1173,7 +1173,7 @@ struct qemu_IKsPropertySetImpl_Get
 
 static HRESULT WINAPI IKsPropertySetImpl_Get(IKsPropertySet *iface, REFGUID guidPropSet, ULONG dwPropID, void *pInstanceData, ULONG cbInstanceData, void *pPropData, ULONG cbPropData, ULONG *pcbReturned)
 {
-    struct qemu_dsound_buffer *buffer = impl_from_IKsPropertySet(iface);
+    struct qemu_dsound_buffer *buffer = buffer_impl_from_IKsPropertySet(iface);
     struct qemu_IKsPropertySetImpl_Get call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IKSPROPERTYSETIMPL_GET);
     call.iface = (ULONG_PTR)buffer;
@@ -1220,7 +1220,7 @@ struct qemu_IKsPropertySetImpl_Set
 
 static HRESULT WINAPI IKsPropertySetImpl_Set(IKsPropertySet *iface, REFGUID guidPropSet, ULONG dwPropID, void *pInstanceData, ULONG cbInstanceData, void *pPropData, ULONG cbPropData)
 {
-    struct qemu_dsound_buffer *buffer = impl_from_IKsPropertySet(iface);
+    struct qemu_dsound_buffer *buffer = buffer_impl_from_IKsPropertySet(iface);
     struct qemu_IKsPropertySetImpl_Set call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IKSPROPERTYSETIMPL_SET);
     call.iface = (ULONG_PTR)buffer;
@@ -1263,7 +1263,7 @@ struct qemu_IKsPropertySetImpl_QuerySupport
 
 static HRESULT WINAPI IKsPropertySetImpl_QuerySupport(IKsPropertySet *iface, REFGUID guidPropSet, ULONG dwPropID, ULONG *pTypeSupport)
 {
-    struct qemu_dsound_buffer *buffer = impl_from_IKsPropertySet(iface);
+    struct qemu_dsound_buffer *buffer = buffer_impl_from_IKsPropertySet(iface);
     struct qemu_IKsPropertySetImpl_QuerySupport call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IKSPROPERTYSETIMPL_QUERYSUPPORT);
     call.iface = (ULONG_PTR)buffer;

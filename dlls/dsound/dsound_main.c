@@ -279,12 +279,6 @@ static const IClassFactoryVtbl DSCF_Vtbl =
     DSCF_LockServer
 };
 
-HRESULT IKsPrivatePropertySetImpl_Create(REFIID riid, void **ppv)
-{
-    WINE_FIXME("Stub!\n");
-    return E_FAIL;
-}
-
 static IClassFactoryImpl DSOUND_CF[] = {
     { { &DSCF_Vtbl }, &CLSID_DirectSound, DSOUND_Create },
     { { &DSCF_Vtbl }, &CLSID_DirectSound8, DSOUND_Create8 },
