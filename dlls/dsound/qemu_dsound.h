@@ -15,6 +15,39 @@ enum dsound_calls
     CALL_DLLREGISTERSERVER,
     CALL_DLLUNREGISTERSERVER,
     CALL_GETDEVICEID,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_GETALLPARAMETERS,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_GETCONEANGLES,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_GETCONEORIENTATION,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_GETCONEOUTSIDEVOLUME,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_GETMAXDISTANCE,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_GETMINDISTANCE,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_GETMODE,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_GETPOSITION,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_GETVELOCITY,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_SETALLPARAMETERS,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_SETCONEANGLES,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_SETCONEORIENTATION,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_SETCONEOUTSIDEVOLUME,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_SETMAXDISTANCE,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_SETMINDISTANCE,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_SETMODE,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_SETPOSITION,
+    CALL_IDIRECTSOUND3DBUFFERIMPL_SETVELOCITY,
+    CALL_IDIRECTSOUND3DLISTENERIMPL_COMMITDEFERREDSETTINGS,
+    CALL_IDIRECTSOUND3DLISTENERIMPL_GETALLPARAMETER,
+    CALL_IDIRECTSOUND3DLISTENERIMPL_GETDISTANCEFACTOR,
+    CALL_IDIRECTSOUND3DLISTENERIMPL_GETDOPPLERFACTOR,
+    CALL_IDIRECTSOUND3DLISTENERIMPL_GETORIENTATION,
+    CALL_IDIRECTSOUND3DLISTENERIMPL_GETPOSITION,
+    CALL_IDIRECTSOUND3DLISTENERIMPL_GETROLLOFFFACTOR,
+    CALL_IDIRECTSOUND3DLISTENERIMPL_GETVELOCITY,
+    CALL_IDIRECTSOUND3DLISTENERIMPL_SETALLPARAMETERS,
+    CALL_IDIRECTSOUND3DLISTENERIMPL_SETDISTANCEFACTOR,
+    CALL_IDIRECTSOUND3DLISTENERIMPL_SETDOPPLERFACTOR,
+    CALL_IDIRECTSOUND3DLISTENERIMPL_SETORIENTATION,
+    CALL_IDIRECTSOUND3DLISTENERIMPL_SETPOSITION,
+    CALL_IDIRECTSOUND3DLISTENERIMPL_SETROLLOFFFACTOR,
+    CALL_IDIRECTSOUND3DLISTENERIMPL_SETVELOCITY,
     CALL_IDIRECTSOUND8IMPL_COMPACT,
     CALL_IDIRECTSOUND8IMPL_CREATESOUNDBUFFER,
     CALL_IDIRECTSOUND8IMPL_DUPLICATESOUNDBUFFER,
@@ -91,6 +124,16 @@ static inline struct qemu_dsound_buffer *impl_from_IDirectSoundBuffer8(IDirectSo
     return CONTAINING_RECORD(iface, struct qemu_dsound_buffer, IDirectSoundBuffer8_iface);
 }
 
+static inline struct qemu_dsound_buffer *impl_from_IDirectSound3DBuffer(IDirectSound3DBuffer *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_dsound_buffer, IDirectSound3DBuffer_iface);
+}
+
+static inline struct qemu_dsound_buffer *impl_from_IDirectSound3DListener(IDirectSound3DListener *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_dsound_buffer, IDirectSound3DListener_iface);
+}
+
 static inline struct qemu_dsound_buffer *buffer_impl_from_IKsPropertySet(IKsPropertySet *iface)
 {
     return CONTAINING_RECORD(iface, struct qemu_dsound_buffer, IKsPropertySet_iface);
@@ -103,9 +146,14 @@ HRESULT DSOUND_CaptureCreate8(REFIID riid, void **ppv);
 HRESULT DSOUND_FullDuplexCreate(REFIID riid, void **ppv);
 HRESULT IKsPrivatePropertySetImpl_Create(REFIID riid, void **ppv);
 
+extern const IDirectSound3DBufferVtbl buffer_3d_vtbl;
+extern const IDirectSound3DListenerVtbl listener_3d_vtbl;
 void buffer_init_guest(struct qemu_dsound_buffer *buffer, DWORD flags);
+void secondarybuffer_destroy(struct qemu_dsound_buffer *buffer);
+LONG capped_refcount_dec(LONG *out);
 
 #else
+
 
 void qemu_DirectSoundCaptureCreate(struct qemu_syscall *call);
 void qemu_DirectSoundCaptureCreate8(struct qemu_syscall *call);
@@ -118,6 +166,39 @@ void qemu_DllCanUnloadNow(struct qemu_syscall *call);
 void qemu_DllRegisterServer(struct qemu_syscall *call);
 void qemu_DllUnregisterServer(struct qemu_syscall *call);
 void qemu_GetDeviceID(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_GetAllParameters(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_GetConeAngles(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_GetConeOrientation(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_GetConeOutsideVolume(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_GetMaxDistance(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_GetMinDistance(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_GetMode(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_GetPosition(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_GetVelocity(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_SetAllParameters(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_SetConeAngles(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_SetConeOrientation(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_SetConeOutsideVolume(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_SetMaxDistance(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_SetMinDistance(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_SetMode(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_SetPosition(struct qemu_syscall *call);
+void qemu_IDirectSound3DBufferImpl_SetVelocity(struct qemu_syscall *call);
+void qemu_IDirectSound3DListenerImpl_CommitDeferredSettings(struct qemu_syscall *call);
+void qemu_IDirectSound3DListenerImpl_GetAllParameter(struct qemu_syscall *call);
+void qemu_IDirectSound3DListenerImpl_GetDistanceFactor(struct qemu_syscall *call);
+void qemu_IDirectSound3DListenerImpl_GetDopplerFactor(struct qemu_syscall *call);
+void qemu_IDirectSound3DListenerImpl_GetOrientation(struct qemu_syscall *call);
+void qemu_IDirectSound3DListenerImpl_GetPosition(struct qemu_syscall *call);
+void qemu_IDirectSound3DListenerImpl_GetRolloffFactor(struct qemu_syscall *call);
+void qemu_IDirectSound3DListenerImpl_GetVelocity(struct qemu_syscall *call);
+void qemu_IDirectSound3DListenerImpl_SetAllParameters(struct qemu_syscall *call);
+void qemu_IDirectSound3DListenerImpl_SetDistanceFactor(struct qemu_syscall *call);
+void qemu_IDirectSound3DListenerImpl_SetDopplerFactor(struct qemu_syscall *call);
+void qemu_IDirectSound3DListenerImpl_SetOrientation(struct qemu_syscall *call);
+void qemu_IDirectSound3DListenerImpl_SetPosition(struct qemu_syscall *call);
+void qemu_IDirectSound3DListenerImpl_SetRolloffFactor(struct qemu_syscall *call);
+void qemu_IDirectSound3DListenerImpl_SetVelocity(struct qemu_syscall *call);
 void qemu_IDirectSound8Impl_Compact(struct qemu_syscall *call);
 void qemu_IDirectSound8Impl_CreateSoundBuffer(struct qemu_syscall *call);
 void qemu_IDirectSound8Impl_DuplicateSoundBuffer(struct qemu_syscall *call);
@@ -152,14 +233,13 @@ void qemu_IDirectSoundBufferImpl_Stop(struct qemu_syscall *call);
 void qemu_IDirectSoundBufferImpl_Unlock(struct qemu_syscall *call);
 void qemu_IDirectSoundNotifyImpl_SetNotificationPositions(struct qemu_syscall *call);
 void qemu_IKsPrivatePropertySetImpl_Create(struct qemu_syscall *call);
-void qemu_IKsPrivatePropertySetImpl_Release(struct qemu_syscall *call);
 void qemu_IKsPrivatePropertySetImpl_Get(struct qemu_syscall *call);
-void qemu_IKsPrivatePropertySetImpl_Set(struct qemu_syscall *call);
 void qemu_IKsPrivatePropertySetImpl_QuerySupport(struct qemu_syscall *call);
+void qemu_IKsPrivatePropertySetImpl_Release(struct qemu_syscall *call);
+void qemu_IKsPrivatePropertySetImpl_Set(struct qemu_syscall *call);
 void qemu_IKsPropertySetImpl_Get(struct qemu_syscall *call);
 void qemu_IKsPropertySetImpl_QuerySupport(struct qemu_syscall *call);
 void qemu_IKsPropertySetImpl_Set(struct qemu_syscall *call);
-
 extern const struct qemu_ops *qemu_ops;
 
 #endif

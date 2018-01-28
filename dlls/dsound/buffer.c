@@ -1345,7 +1345,8 @@ void buffer_init_guest(struct qemu_dsound_buffer *buffer, DWORD flags)
 {
     buffer->IDirectSoundBuffer8_iface.lpVtbl = &buffer_vtbl;
     buffer->IDirectSoundNotify_iface.lpVtbl = &notify_vtbl;
-    /* buffer->IDirectSound3DBuffer_iface.lpVtbl = &ds3dbvt; */
+    buffer->IDirectSound3DBuffer_iface.lpVtbl = &buffer_3d_vtbl;
+    buffer->IDirectSound3DListener_iface.lpVtbl = &listener_3d_vtbl;
     buffer->IKsPropertySet_iface.lpVtbl = &property_set_vtbl;
 
     buffer->ref = 1;
