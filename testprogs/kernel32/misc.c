@@ -128,7 +128,7 @@ somelabel:
         rec.ExceptionRecord = NULL;
         rec.ExceptionAddress = (void *)context.Rip;
         rec.NumberParameters = 0;
-        RaiseException(&rec, &context2, TRUE);
+        pNtRaiseException(&rec, &context2, TRUE);
 
         __asm__ goto ( "jmp %l[stupid_manual_jump]\n" :::: stupid_manual_jump);
     }
