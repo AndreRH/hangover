@@ -529,6 +529,8 @@ enum msvcrt_calls
     CALL__STRTIME,
     CALL__STRTIME_S,
     CALL__STRTOF_L,
+    CALL__STRTOI64,
+    CALL__STRTOI64_L,
     CALL__STRTOL_L,
     CALL__STRTOUI64,
     CALL__STRTOUI64_L,
@@ -995,8 +997,6 @@ enum msvcrt_calls
     CALL_STRTOD,
     CALL_STRTOD_L,
     CALL_STRTOF,
-    CALL_STRTOI64,
-    CALL_STRTOI64_L,
     CALL_STRTOK,
     CALL_STRTOK_S,
     CALL_STRTOL,
@@ -1727,6 +1727,8 @@ void qemu__strset(struct qemu_syscall *call);
 void qemu__strtime(struct qemu_syscall *call);
 void qemu__strtime_s(struct qemu_syscall *call);
 void qemu__strtof_l(struct qemu_syscall *call);
+void qemu__strtoi64(struct qemu_syscall *call);
+void qemu__strtoi64_l(struct qemu_syscall *call);
 void qemu__strtol_l(struct qemu_syscall *call);
 void qemu__strtoui64(struct qemu_syscall *call);
 void qemu__strtoui64_l(struct qemu_syscall *call);
@@ -2192,8 +2194,6 @@ void qemu_strstr(struct qemu_syscall *call);
 void qemu_strtod(struct qemu_syscall *call);
 void qemu_strtod_l(struct qemu_syscall *call);
 void qemu_strtof(struct qemu_syscall *call);
-void qemu_strtoi64(struct qemu_syscall *call);
-void qemu_strtoi64_l(struct qemu_syscall *call);
 void qemu_strtok(struct qemu_syscall *call);
 void qemu_strtok_s(struct qemu_syscall *call);
 void qemu_strtol(struct qemu_syscall *call);
@@ -3269,8 +3269,8 @@ size_t (* CDECL p_strxfrm)(char *dest, const char *src, size_t len);
 int (* CDECL p__atoldbl)(long double *value, const char *str);
 int CDECL (* CDECL p___STRINGTOLD)(long double *value, char **endptr, const char *str, int flags);
 size_t (* CDECL p_strnlen)(const char *s, size_t maxlen);
-__int64 (* CDECL p_strtoi64_l)(const char *nptr, char **endptr, int base, MSVCRT__locale_t locale);
-__int64 (* CDECL p_strtoi64)(const char *nptr, char **endptr, int base);
+__int64 (* CDECL p__strtoi64_l)(const char *nptr, char **endptr, int base, MSVCRT__locale_t locale);
+__int64 (* CDECL p__strtoi64)(const char *nptr, char **endptr, int base);
 int (* CDECL p_atoi)(const char *str);
 LONGLONG (* CDECL p__atoll_l)(const char* str, MSVCRT__locale_t locale);
 LONGLONG (* CDECL p_atoll)(const char* str);

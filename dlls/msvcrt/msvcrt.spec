@@ -982,8 +982,8 @@
 @ cdecl _strtime(ptr) MSVCRT__strtime
 @ cdecl _strtime_s(ptr long)
 @ cdecl _strtod_l(str ptr ptr) MSVCRT_strtod_l
-@ cdecl -ret64 _strtoi64(str ptr long) MSVCRT_strtoi64
-@ cdecl -ret64 _strtoi64_l(str ptr long ptr) MSVCRT_strtoi64_l
+@ cdecl -ret64 _strtoi64(str ptr long) MSVCRT__strtoi64
+@ cdecl -ret64 _strtoi64_l(str ptr long ptr) MSVCRT__strtoi64_l
 @ cdecl _strtol_l(str ptr long ptr) MSVCRT__strtol_l
 @ cdecl -ret64 _strtoui64(str ptr long) MSVCRT__strtoui64
 @ cdecl -ret64 _strtoui64_l(str ptr long ptr) MSVCRT__strtoui64_l
