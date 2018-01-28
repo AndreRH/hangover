@@ -1414,7 +1414,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__fread_nolock = (void *)GetProcAddress(msvcrt, "_fread_nolock");
     p__fread_nolock_s = (void *)GetProcAddress(msvcrt, "_fread_nolock_s");
     p__free_base = (void *)GetProcAddress(msvcrt, "_free_base");
-    p__free_locale = (void *)GetProcAddress(msvcrt, "MSVCRT__free_locale");
+    p__free_locale = (void *)GetProcAddress(msvcrt, "_free_locale");
     p__fseek_nolock = (void *)GetProcAddress(msvcrt, "_fseek_nolock");
     p__fseeki64 = (void *)GetProcAddress(msvcrt, "_fseeki64");
     p__fseeki64_nolock = (void *)GetProcAddress(msvcrt, "_fseeki64_nolock");
@@ -1438,7 +1438,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__fwrite_nolock = (void *)GetProcAddress(msvcrt, "_fwrite_nolock");
     p__gcvt = (void *)GetProcAddress(msvcrt, "_gcvt");
     p__gcvt_s = (void *)GetProcAddress(msvcrt, "_gcvt_s");
-    p__get_current_locale = (void *)GetProcAddress(msvcrt, "MSVCRT__get_current_locale");
+    p__get_current_locale = (void *)GetProcAddress(msvcrt, "_get_current_locale");
     p__get_daylight = (void *)GetProcAddress(msvcrt, "_get_daylight");
     p__get_doserrno = (void *)GetProcAddress(msvcrt, "_get_doserrno");
     p__get_dstbias = (void *)GetProcAddress(msvcrt, "_get_dstbias");
@@ -2080,7 +2080,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_llround = (void *)GetProcAddress(msvcrt, "llround");
     p_llroundf = (void *)GetProcAddress(msvcrt, "llroundf");
     p_llroundl = (void *)GetProcAddress(msvcrt, "llroundl");
-    p_localeconv = (void *)GetProcAddress(msvcrt, "MSVCRT_localeconv");
+    p_localeconv = (void *)GetProcAddress(msvcrt, "localeconv");
     p_localtime = (void *)GetProcAddress(msvcrt, "localtime");
     p_log = (void *)GetProcAddress(msvcrt, "log");
     p_log10 = (void *)GetProcAddress(msvcrt, "log10");
