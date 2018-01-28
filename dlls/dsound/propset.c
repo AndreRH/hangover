@@ -409,7 +409,7 @@ void qemu_IKsPrivatePropertySetImpl_QuerySupport(struct qemu_syscall *call)
     struct qemu_IKsPrivatePropertySetImpl_QuerySupport *c = (struct qemu_IKsPrivatePropertySetImpl_QuerySupport *)call;
     struct qemu_propset *propset;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     propset = QEMU_G2H(c->iface);
 
     c->super.iret = IKsPropertySet_QuerySupport(propset->host, QEMU_G2H(c->guidPropSet),

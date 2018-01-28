@@ -1285,7 +1285,7 @@ void qemu_IKsPropertySetImpl_QuerySupport(struct qemu_syscall *call)
 {
     struct qemu_IKsPropertySetImpl_QuerySupport *c = (struct qemu_IKsPropertySetImpl_QuerySupport *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IKsPropertySet_QuerySupport(buffer->host_property, QEMU_G2H(c->guidPropSet), c->dwPropID, QEMU_G2H(c->pTypeSupport));
