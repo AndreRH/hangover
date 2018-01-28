@@ -48,7 +48,8 @@ struct qemu_SendMessageTimeoutW
 
 #ifdef QEMU_DLL_GUEST
 
-WINUSERAPI LRESULT WINAPI SendMessageTimeoutW(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, UINT flags, UINT timeout, PDWORD_PTR res_ptr)
+WINUSERAPI LRESULT WINAPI SendMessageTimeoutW(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, UINT flags,
+        UINT timeout, PDWORD_PTR res_ptr)
 {
     struct qemu_SendMessageTimeoutW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDMESSAGETIMEOUTW);
@@ -61,9 +62,10 @@ WINUSERAPI LRESULT WINAPI SendMessageTimeoutW(HWND hwnd, UINT msg, WPARAM wparam
     call.lparam = (ULONG_PTR)lparam;
     call.flags = (ULONG_PTR)flags;
     call.timeout = (ULONG_PTR)timeout;
-    call.res_ptr = (ULONG_PTR)res_ptr;
 
     qemu_syscall(&call.super);
+    if (res_ptr)
+        *res_ptr = call.res_ptr;
 
     return call.super.iret;
 }
@@ -75,6 +77,7 @@ void qemu_SendMessageTimeoutW(struct qemu_syscall *call)
     struct qemu_SendMessageTimeoutW *c = (struct qemu_SendMessageTimeoutW *)call;
     MSG msg_in;
     MSG msg_out;
+    DWORD_PTR res;
     WINE_TRACE("\n");
 
     msg_in.hwnd = QEMU_G2H(c->hwnd);
@@ -83,7 +86,8 @@ void qemu_SendMessageTimeoutW(struct qemu_syscall *call)
     msg_in.lParam = c->lparam;
     msg_guest_to_host(&msg_out, &msg_in);
 
-    c->super.iret = SendMessageTimeoutW(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam, c->flags, c->timeout, QEMU_G2H(c->res_ptr));
+    c->super.iret = SendMessageTimeoutW(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam, c->flags, c->timeout, &res);
+    c->res_ptr = res;
 
     msg_guest_to_host_return(&msg_in, &msg_out);
 }
@@ -104,7 +108,8 @@ struct qemu_SendMessageTimeoutA
 
 #ifdef QEMU_DLL_GUEST
 
-WINUSERAPI LRESULT WINAPI SendMessageTimeoutA(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, UINT flags, UINT timeout, PDWORD_PTR res_ptr)
+WINUSERAPI LRESULT WINAPI SendMessageTimeoutA(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, UINT flags,
+        UINT timeout, DWORD_PTR *res_ptr)
 {
     struct qemu_SendMessageTimeoutA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SENDMESSAGETIMEOUTA);
@@ -117,9 +122,10 @@ WINUSERAPI LRESULT WINAPI SendMessageTimeoutA(HWND hwnd, UINT msg, WPARAM wparam
     call.lparam = (ULONG_PTR)lparam;
     call.flags = (ULONG_PTR)flags;
     call.timeout = (ULONG_PTR)timeout;
-    call.res_ptr = (ULONG_PTR)res_ptr;
 
     qemu_syscall(&call.super);
+    if (res_ptr)
+        *res_ptr = call.res_ptr;
 
     return call.super.iret;
 }
@@ -131,6 +137,7 @@ void qemu_SendMessageTimeoutA(struct qemu_syscall *call)
     struct qemu_SendMessageTimeoutA *c = (struct qemu_SendMessageTimeoutA *)call;
     MSG msg_in;
     MSG msg_out;
+    DWORD_PTR res;
     WINE_TRACE("\n");
 
     msg_in.hwnd = QEMU_G2H(c->hwnd);
@@ -139,7 +146,8 @@ void qemu_SendMessageTimeoutA(struct qemu_syscall *call)
     msg_in.lParam = c->lparam;
     msg_guest_to_host(&msg_out, &msg_in);
 
-    c->super.iret = SendMessageTimeoutA(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam, c->flags, c->timeout, QEMU_G2H(c->res_ptr));
+    c->super.iret = SendMessageTimeoutA(QEMU_G2H(c->hwnd), c->msg, c->wparam, c->lparam, c->flags, c->timeout, &res);
+    c->res_ptr = res;
 
     msg_guest_to_host_return(&msg_in, &msg_out);
 }
