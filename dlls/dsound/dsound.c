@@ -359,7 +359,7 @@ void qemu_IDirectSound8Impl_GetCaps(struct qemu_syscall *call)
 {
     struct qemu_IDirectSound8Impl_GetCaps *c = (struct qemu_IDirectSound8Impl_GetCaps *)call;
     struct qemu_dsound *dsound;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     /* DSCAPS is the same in 32 and 64 bit. */
     dsound = QEMU_G2H(c->iface);
@@ -532,7 +532,7 @@ void qemu_IDirectSound8Impl_Compact(struct qemu_syscall *call)
 {
     struct qemu_IDirectSound8Impl_Compact *c = (struct qemu_IDirectSound8Impl_Compact *)call;
     struct qemu_dsound *dsound;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     dsound = QEMU_G2H(c->iface);
     c->super.iret = IDirectSound8_Compact(dsound->host);
@@ -568,7 +568,7 @@ void qemu_IDirectSound8Impl_GetSpeakerConfig(struct qemu_syscall *call)
 {
     struct qemu_IDirectSound8Impl_GetSpeakerConfig *c = (struct qemu_IDirectSound8Impl_GetSpeakerConfig *)call;
     struct qemu_dsound *dsound;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     dsound = QEMU_G2H(c->iface);
     c->super.iret = IDirectSound8_GetSpeakerConfig(dsound->host, QEMU_G2H(c->config));
@@ -604,7 +604,7 @@ void qemu_IDirectSound8Impl_SetSpeakerConfig(struct qemu_syscall *call)
 {
     struct qemu_IDirectSound8Impl_SetSpeakerConfig *c = (struct qemu_IDirectSound8Impl_SetSpeakerConfig *)call;
     struct qemu_dsound *dsound;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     dsound = QEMU_G2H(c->iface);
     c->super.iret = IDirectSound8_SetSpeakerConfig(dsound->host, c->config);

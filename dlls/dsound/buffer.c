@@ -191,7 +191,7 @@ void qemu_IDirectSoundBufferImpl_SetVolume(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_SetVolume *c = (struct qemu_IDirectSoundBufferImpl_SetVolume *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_SetVolume(buffer->host_buffer, c->vol);
@@ -227,7 +227,7 @@ void qemu_IDirectSoundBufferImpl_GetVolume(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_GetVolume *c = (struct qemu_IDirectSoundBufferImpl_GetVolume *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_GetVolume(buffer->host_buffer, QEMU_G2H(c->vol));
@@ -263,7 +263,7 @@ void qemu_IDirectSoundBufferImpl_SetFrequency(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_SetFrequency *c = (struct qemu_IDirectSoundBufferImpl_SetFrequency *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_SetFrequency(buffer->host_buffer, c->freq);
@@ -337,7 +337,7 @@ void qemu_IDirectSoundBufferImpl_Stop(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_Stop *c = (struct qemu_IDirectSoundBufferImpl_Stop *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_Stop(buffer->host_buffer);
@@ -496,7 +496,7 @@ void qemu_IDirectSoundBufferImpl_GetStatus(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_GetStatus *c = (struct qemu_IDirectSoundBufferImpl_GetStatus *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_GetStatus(buffer->host_buffer, QEMU_G2H(c->status));
@@ -515,7 +515,8 @@ struct qemu_IDirectSoundBufferImpl_GetFormat
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectSoundBufferImpl_GetFormat(IDirectSoundBuffer8 *iface, LPWAVEFORMATEX lpwf, DWORD wfsize, DWORD *wfwritten)
+static HRESULT WINAPI IDirectSoundBufferImpl_GetFormat(IDirectSoundBuffer8 *iface, LPWAVEFORMATEX lpwf,
+        DWORD wfsize, DWORD *wfwritten)
 {
     struct qemu_dsound_buffer *buffer = impl_from_IDirectSoundBuffer8(iface);
     struct qemu_IDirectSoundBufferImpl_GetFormat call;
@@ -536,7 +537,7 @@ void qemu_IDirectSoundBufferImpl_GetFormat(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_GetFormat *c = (struct qemu_IDirectSoundBufferImpl_GetFormat *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_GetFormat(buffer->host_buffer, QEMU_G2H(c->lpwf), c->wfsize, QEMU_G2H(c->wfwritten));
@@ -814,7 +815,7 @@ void qemu_IDirectSoundBufferImpl_GetFrequency(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_GetFrequency *c = (struct qemu_IDirectSoundBufferImpl_GetFrequency *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_GetFrequency(buffer->host_buffer, QEMU_G2H(c->freq));
@@ -1010,7 +1011,7 @@ void qemu_IDirectSoundBufferImpl_GetCaps(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_GetCaps *c = (struct qemu_IDirectSoundBufferImpl_GetCaps *)call;
     struct qemu_dsound_buffer *buffer;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
     c->super.iret = IDirectSoundBuffer8_GetCaps(buffer->host_buffer, QEMU_G2H(c->caps));
