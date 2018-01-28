@@ -328,10 +328,12 @@ WINBASEAPI BOOL WINAPI VerQueryValueA(LPCVOID pBlock, LPCSTR lpSubBlock, LPVOID 
     call.super.id = QEMU_SYSCALL_ID(CALL_VERQUERYVALUEA);
     call.pBlock = (ULONG_PTR)pBlock;
     call.lpSubBlock = (ULONG_PTR)lpSubBlock;
-    call.lplpBuffer = (ULONG_PTR)lplpBuffer;
+    call.lplpBuffer = !!lplpBuffer;
     call.puLen = (ULONG_PTR)puLen;
 
     qemu_syscall(&call.super);
+    if (lplpBuffer)
+        *lplpBuffer = (void *)(ULONG_PTR)call.lplpBuffer;
 
     return call.super.iret;
 }
@@ -341,8 +343,12 @@ WINBASEAPI BOOL WINAPI VerQueryValueA(LPCVOID pBlock, LPCSTR lpSubBlock, LPVOID 
 void qemu_VerQueryValueA(struct qemu_syscall *call)
 {
     struct qemu_VerQueryValueA *c = (struct qemu_VerQueryValueA *)call;
+    void *buffer;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = VerQueryValueA(QEMU_G2H(c->pBlock), QEMU_G2H(c->lpSubBlock), QEMU_G2H(c->lplpBuffer), QEMU_G2H(c->puLen));
+
+    c->super.iret = VerQueryValueA(QEMU_G2H(c->pBlock), QEMU_G2H(c->lpSubBlock), c->lplpBuffer ? &buffer : NULL,
+            QEMU_G2H(c->puLen));
+    c->lplpBuffer = QEMU_H2G(buffer);
 }
 
 #endif
