@@ -26,6 +26,10 @@
 #include <dsound.h>
 #include <dsconf.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_dsound.h"
+#include "thunk/qemu_dsconf.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_dsound.h"
@@ -130,9 +134,23 @@ struct qemu_IKsPrivatePropertySetImpl_Get
     uint64_t pPropData;
     uint64_t cbPropData;
     uint64_t pcbReturned;
+    uint64_t wrapper;
+};
+
+struct qemu_IKsPrivatePropertySetImpl_Get_cb
+{
+    uint64_t func;
+    uint64_t data;
+    uint64_t ctx;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static BOOL __fastcall qemu_IKsPrivatePropertySetImpl_Get_guest_cb(struct qemu_IKsPrivatePropertySetImpl_Get_cb *data)
+{
+    LPFNDIRECTSOUNDDEVICEENUMERATECALLBACK1 cb = (LPFNDIRECTSOUNDDEVICEENUMERATECALLBACK1)(ULONG_PTR)data->func;
+    return cb((void *)(ULONG_PTR)data->data, (void *)(ULONG_PTR)data->ctx);
+}
 
 static HRESULT WINAPI IKsPrivatePropertySetImpl_Get(IKsPropertySet *iface, REFGUID guidPropSet, ULONG dwPropID,
         void *pInstanceData, ULONG cbInstanceData, void *pPropData, ULONG cbPropData, ULONG *pcbReturned)
@@ -148,6 +166,7 @@ static HRESULT WINAPI IKsPrivatePropertySetImpl_Get(IKsPropertySet *iface, REFGU
     call.pPropData = (ULONG_PTR)pPropData;
     call.cbPropData = cbPropData;
     call.pcbReturned = (ULONG_PTR)pcbReturned;
+    call.wrapper = (ULONG_PTR)qemu_IKsPrivatePropertySetImpl_Get_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -156,17 +175,154 @@ static HRESULT WINAPI IKsPrivatePropertySetImpl_Get(IKsPropertySet *iface, REFGU
 
 #else
 
+struct qemu_property_enum_data
+{
+    uint64_t wrapper;
+    uint64_t guest_func;
+    uint64_t guest_ctx;
+    DWORD id;
+};
+
+static BOOL CALLBACK qemu_IKsPrivatePropertySetImpl_Get_host_cb(
+        DSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION_1_DATA *data, void *context)
+{
+    struct qemu_property_enum_data *ctx = context;
+    struct qemu_DSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION_DATA desc;
+    struct qemu_IKsPrivatePropertySetImpl_Get_cb call;
+    BOOL ret;
+    void *copy;
+
+    call.func = ctx->guest_func;
+    call.data = QEMU_H2G(data);
+    call.ctx = ctx->guest_ctx;
+
+#if HOST_BIT != GUEST_BIT
+    switch (ctx->id)
+    {
+        /*
+         * DSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION_1_DATA matches on 32 and 64 bit.
+        case DSPROPERTY_DIRECTSOUNDDEVICE_ENUMERATE_1:
+            break;
+         */
+
+        case DSPROPERTY_DIRECTSOUNDDEVICE_ENUMERATE_A:
+        {
+            /* The Interface string is hardcoded, so it's in the host library and above 4 GB. */
+            char *host_str = ((DSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION_A_DATA *)data)->Interface;
+
+            copy = alloca(strlen(host_str) + 1);
+            strcpy(copy, host_str);
+
+            DSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION_DATA_h2g(&desc, (void *)data);
+            desc.Interface = QEMU_H2G(copy);
+            call.data = QEMU_H2G(&desc);
+            break;
+        }
+
+        case DSPROPERTY_DIRECTSOUNDDEVICE_ENUMERATE_W:
+        {
+            WCHAR *host_str = ((DSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION_W_DATA *)data)->Interface;
+            size_t len = (lstrlenW(host_str) + 1) * sizeof(WCHAR);
+
+            copy = alloca(len);
+            memcpy(copy, host_str, len);
+
+            DSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION_DATA_h2g(&desc, (void *)data);
+            desc.Interface = QEMU_H2G(copy);
+            call.data = QEMU_H2G(&desc);
+            break;
+            break;
+        }
+    }
+#endif
+
+    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx).\n", call.func, call.data, call.ctx);
+    qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest wrapper returned %u.\n", ret);
+
+    return ret;
+}
+
 void qemu_IKsPrivatePropertySetImpl_Get(struct qemu_syscall *call)
 {
     struct qemu_propset *propset;
     struct qemu_IKsPrivatePropertySetImpl_Get *c = (struct qemu_IKsPrivatePropertySetImpl_Get *)call;
+    const GUID *guid;
+    void *instance_data, *prop_data;
+    ULONG *ret_size;
+    DWORD id;
+    BOOL conv_back = FALSE;
+    ULONG prop_data_size;
+    DSPROPERTY_DIRECTSOUNDDEVICE_ENUMERATE_1_DATA enumdata;
+    struct qemu_property_enum_data enum_host_data;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     propset = QEMU_G2H(c->iface);
+    guid = QEMU_G2H(c->guidPropSet);
+    instance_data = QEMU_G2H(c->pInstanceData);
+    prop_data = QEMU_G2H(c->pPropData);
+    prop_data_size = c->cbPropData;
+    ret_size = QEMU_G2H(c->pcbReturned);
+    id = c->dwPropID;
 
-    c->super.iret = IKsPropertySet_Get(propset->host, QEMU_G2H(c->guidPropSet), c->dwPropID,
-            QEMU_G2H(c->pInstanceData), c->cbInstanceData, QEMU_G2H(c->pPropData),
-            c->cbPropData, QEMU_G2H(c->pcbReturned));
+    if (IsEqualGUID( &DSPROPSETID_DirectSoundDevice, guid))
+    {
+        switch (id)
+        {
+            default:
+                WINE_FIXME("Forward unknown ID: %d\n", id);
+            case DSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION_1:
+                /* Just forward, structs are compatible, no callbacks. */
+                break;
+
+            case DSPROPERTY_DIRECTSOUNDDEVICE_WAVEDEVICEMAPPING_A:
+            case DSPROPERTY_DIRECTSOUNDDEVICE_WAVEDEVICEMAPPING_W:
+#if GUEST_BIT != HOST_BIT
+                WINE_FIXME("DSPROPERTY_DIRECTSOUNDDEVICE_WAVEDEVICEMAPPING\n");
+                //DSPROPERTY_DIRECTSOUNDDEVICE_WAVEDEVICEMAPPING_A_DATA
+                conv_back = TRUE;
+#endif
+                break;
+
+            case DSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION_A:
+            case DSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION_W:
+#if GUEST_BIT != HOST_BIT
+                WINE_FIXME("DSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION\n");
+                //_DSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION_A_DATA
+                conv_back = TRUE;
+#endif
+                break;
+
+            case DSPROPERTY_DIRECTSOUNDDEVICE_ENUMERATE_1:
+            case DSPROPERTY_DIRECTSOUNDDEVICE_ENUMERATE_A:
+            case DSPROPERTY_DIRECTSOUNDDEVICE_ENUMERATE_W:
+                if (!prop_data)
+                    break;
+#if GUEST_BIT == HOST_BIT
+                enumdata = *(DSPROPERTY_DIRECTSOUNDDEVICE_ENUMERATE_1_DATA *)prop_data;
+#else
+                DSPROPERTY_DIRECTSOUNDDEVICE_ENUMERATE_X_DATA_g2h(&enumdata, prop_data);
+#endif
+                enum_host_data.wrapper = c->wrapper;
+                enum_host_data.guest_func = (ULONG_PTR)enumdata.Callback;
+                enum_host_data.guest_ctx = (ULONG_PTR)enumdata.Context;
+                enum_host_data.id = id;
+
+                enumdata.Callback = enumdata.Callback ? qemu_IKsPrivatePropertySetImpl_Get_host_cb : NULL;
+                enumdata.Context = &enum_host_data;
+                prop_data = &enumdata;
+                prop_data_size = sizeof(enumdata);
+
+                /* No need to convert anything back, the enumerations don't write to prop or instance data. */
+        }
+    }
+    else
+    {
+        WINE_FIXME("Forward unknown property set.\n");
+    }
+
+    c->super.iret = IKsPropertySet_Get(propset->host, guid, id, instance_data, c->cbInstanceData,
+            prop_data, c->cbPropData, ret_size);
 }
 
 #endif
