@@ -373,7 +373,8 @@ struct qemu_IDirectSound8Impl_DuplicateSoundBuffer
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t psb;
-    uint64_t ppdsb;
+    uint64_t in_flags;
+    uint64_t buffer;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -382,12 +383,36 @@ static HRESULT WINAPI IDirectSound8Impl_DuplicateSoundBuffer(IDirectSound8 *ifac
 {
     struct qemu_dsound *dsound = impl_from_IDirectSound8(iface);
     struct qemu_IDirectSound8Impl_DuplicateSoundBuffer call;
+    struct qemu_dsound_buffer *buffer, *buffer_in;
+
+    if (!psb)
+    {
+        WINE_WARN("invalid parameter: psb == NULL\n");
+        return DSERR_INVALIDPARAM;
+    }
+
+    if (!ppdsb)
+    {
+        WINE_WARN("invalid parameter: ppdsb == NULL\n");
+        return DSERR_INVALIDPARAM;
+    }
+
+    buffer_in = impl_from_IDirectSoundBuffer8((IDirectSoundBuffer8 *)psb);
+    *ppdsb = NULL;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTSOUND8IMPL_DUPLICATESOUNDBUFFER);
     call.iface = (ULONG_PTR)dsound;
-    call.psb = (ULONG_PTR)psb;
-    call.ppdsb = (ULONG_PTR)ppdsb;
+    call.psb = (ULONG_PTR)buffer_in;
+    call.in_flags = buffer_in->flags;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    /* FIXME: I want to get the ctrl3D flag... */
+    buffer = (struct qemu_dsound_buffer *)(ULONG_PTR)call.buffer;
+    buffer_init_guest(buffer, buffer_in->flags);
+    *ppdsb = (IDirectSoundBuffer *)&buffer->IDirectSoundBuffer8_iface;
 
     return call.super.iret;
 }
@@ -398,10 +423,47 @@ void qemu_IDirectSound8Impl_DuplicateSoundBuffer(struct qemu_syscall *call)
 {
     struct qemu_IDirectSound8Impl_DuplicateSoundBuffer *c = (struct qemu_IDirectSound8Impl_DuplicateSoundBuffer *)call;
     struct qemu_dsound *dsound;
-    WINE_FIXME("Unverified!\n");
+    struct qemu_dsound_buffer *buffer, *buffer_in;
+    WINE_TRACE("\n");
 
     dsound = QEMU_G2H(c->iface);
-    c->super.iret = IDirectSound8_DuplicateSoundBuffer(dsound->host, QEMU_G2H(c->psb), QEMU_G2H(c->ppdsb));
+    buffer_in = QEMU_G2H(c->psb);
+    c->buffer = 0;
+
+    buffer = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*buffer));
+    if (!buffer)
+    {
+        c->super.iret = DSERR_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = IDirectSound8_DuplicateSoundBuffer(dsound->host, (IDirectSoundBuffer *)buffer_in->host_buffer,
+        (IDirectSoundBuffer **)&buffer->host_buffer);
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, buffer);
+        return;
+    }
+
+    /* Fetch interfaces */
+    IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
+            &IID_IKsPropertySet, (void **)&buffer->host_property);
+    if (c->in_flags & DSBCAPS_PRIMARYBUFFER)
+    {
+        IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
+                &IID_IDirectSound3DListener, (void **)&buffer->host_3d_listener);
+        dsound->host_primary = buffer->host_buffer;
+        dsound->guest_primary = buffer;
+    }
+    else
+    {
+        IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
+                &IID_IDirectSoundNotify, (void **)&buffer->host_notify);
+        IDirectSoundBuffer8_QueryInterface(buffer->host_buffer,
+                &IID_IDirectSound3DBuffer, (void **)&buffer->host_3d_buffer);
+    }
+
+    c->buffer = QEMU_H2G(buffer);
 }
 
 #endif
