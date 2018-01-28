@@ -730,7 +730,7 @@ static int CDECL vsprintf_helper(uint64_t op, char *str, size_t len, size_t char
     return ret;
 }
 
-static int CDECL vswprintf_helper(uint64_t op, WCHAR *str, size_t charcount, const WCHAR *format, va_list args)
+static int CDECL vswprintf_helper(uint64_t op, WCHAR *str, size_t len, size_t charcount, const WCHAR *format, va_list args)
 {
     struct qemu_sprintf *call;
     int ret;
@@ -746,6 +746,7 @@ static int CDECL vswprintf_helper(uint64_t op, WCHAR *str, size_t charcount, con
     call->super.id = op;
     call->argcount = count;
     call->str = (ULONG_PTR)str;
+    call->len = len;
     call->charcount = charcount;
     call->format = (ULONG_PTR)format;
     call->argcount_float = 0;
@@ -857,7 +858,7 @@ int CDECL MSVCRT__vscprintf(const char *format, va_list valist)
 
 int CDECL MSVCRT_vswprintf_s(WCHAR *str, size_t count, const WCHAR *format, va_list list)
 {
-    return vswprintf_helper(QEMU_SYSCALL_ID(CALL_SWPRINTF_S), str, count, format, list);
+    return vswprintf_helper(QEMU_SYSCALL_ID(CALL_SWPRINTF_S), str, 0, count, format, list);
 }
 
 int CDECL MSVCRT_swprintf_s(WCHAR *str, size_t count,
@@ -867,7 +868,7 @@ int CDECL MSVCRT_swprintf_s(WCHAR *str, size_t count,
     va_list list;
 
     va_start(list, format);
-    ret = vswprintf_helper(QEMU_SYSCALL_ID(CALL_SWPRINTF_S), str, count, format, list);
+    ret = vswprintf_helper(QEMU_SYSCALL_ID(CALL_SWPRINTF_S), str, 0, count, format, list);
     va_end(list);
 
     return ret;
@@ -875,7 +876,7 @@ int CDECL MSVCRT_swprintf_s(WCHAR *str, size_t count,
 
 int CDECL MSVCRT__vsnwprintf(WCHAR *str, size_t len, const WCHAR *format, va_list valist)
 {
-    return vswprintf_helper(QEMU_SYSCALL_ID(CALL__VSNWPRINTF), str, len, format, valist);
+    return vswprintf_helper(QEMU_SYSCALL_ID(CALL__VSNWPRINTF), str, len, 0, format, valist);
 }
 
 int CDECL MSVCRT__vscwprintf( const wchar_t *format, va_list args )
@@ -894,7 +895,7 @@ int CDECL MSVCRT__snwprintf(WCHAR *str, unsigned int len, const WCHAR *format, .
     va_list list;
 
     va_start(list, format);
-    ret = vswprintf_helper(QEMU_SYSCALL_ID(CALL__VSNWPRINTF), str, len, format, list);
+    ret = vswprintf_helper(QEMU_SYSCALL_ID(CALL__VSNWPRINTF), str, len, 0, format, list);
     va_end(list);
 
     return ret;
