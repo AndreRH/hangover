@@ -702,6 +702,7 @@ struct qemu_capture
     IDirectSoundCapture     IDirectSoundCapture_iface;
     LONG                    ref, refdsc, iface_count;
     IUnknown                 *outer_unk;
+    BOOL                    has_dsc8;
 
     /* Host fields */
     IDirectSoundCapture     *host;
@@ -954,93 +955,125 @@ void qemu_IDirectSoundCaptureImpl_Initialize(struct qemu_syscall *call)
 struct qemu_DirectSoundCaptureCreate
 {
     struct qemu_syscall super;
-    uint64_t lpcGUID;
-    uint64_t ppDSC;
-    uint64_t pUnkOuter;
+    uint64_t has_dsc8;
+    uint64_t capture;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-HRESULT IDirectSoundCaptureImpl_Create(IUnknown *outer_unk, REFIID riid, void **ppv, BOOL has_dsc8)
+HRESULT IDirectSoundCaptureImpl_Create(IUnknown *outer_unk, REFIID riid, void **out, BOOL has_dsc8)
 {
-}
-
-HRESULT DSOUND_CaptureCreate(REFIID riid, void **ppv)
-{
-    return IDirectSoundCaptureImpl_Create(NULL, riid, ppv, FALSE);
-}
-
-HRESULT DSOUND_CaptureCreate8(REFIID riid, void **ppv)
-{
-    return IDirectSoundCaptureImpl_Create(NULL, riid, ppv, TRUE);
-}
-
-WINBASEAPI HRESULT WINAPI DirectSoundCaptureCreate(LPCGUID lpcGUID, IDirectSoundCapture **ppDSC, IUnknown *pUnkOuter)
-{
+    struct qemu_DirectSoundCaptureCreate call;
+    struct qemu_capture *capture;
     HRESULT hr;
-    IDirectSoundCapture *pDSC;
+    WINE_TRACE("(%s, %p)\n", wine_dbgstr_guid(riid), out);
 
-    WINE_TRACE("(%s,%p,%p)\n", wine_dbgstr_guid(lpcGUID), ppDSC, pUnkOuter);
+    *out = NULL;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DIRECTSOUNDCAPTURECREATE);
+    call.has_dsc8 = has_dsc8;
 
-    if (ppDSC == NULL)
-    {
-        WINE_WARN("invalid parameter: ppDSC == NULL\n");
-        return DSERR_INVALIDPARAM;
-    }
+    qemu_syscall(&call.super);
 
-    if (pUnkOuter)
-    {
-        WINE_WARN("invalid parameter: pUnkOuter != NULL\n");
-        return DSERR_NOAGGREGATION;
-    }
+    if (FAILED(call.super.iret))
+        return call.super.iret;
 
-    hr = DSOUND_CaptureCreate(&IID_IDirectSoundCapture, (void**)&pDSC);
-    if (hr == DS_OK)
-    {
-        hr = IDirectSoundCapture_Initialize(pDSC, lpcGUID);
-        if (hr != DS_OK)
-        {
-            IDirectSoundCapture_Release(pDSC);
-            pDSC = 0;
-        }
-    }
+    capture = (struct qemu_capture *)(ULONG_PTR)call.capture;
 
-    *ppDSC = pDSC;
+    capture->IUnknown_inner.lpVtbl = &inner_unknown_vtbl;
+    capture->IDirectSoundCapture_iface.lpVtbl = &capture_vtbl;
+    capture->ref = 1;
+    capture->refdsc = 0;
+    capture->iface_count = 1;
+    capture->has_dsc8 = has_dsc8;
+
+    /* COM aggregation supported only internally */
+    if (outer_unk)
+        capture->outer_unk = outer_unk;
+    else
+        capture->outer_unk = &capture->IUnknown_inner;
+
+    hr = IUnknown_QueryInterface(&capture->IUnknown_inner, riid, out);
+    IUnknown_Release(&capture->IUnknown_inner);
 
     return hr;
 }
 
-WINBASEAPI HRESULT WINAPI DirectSoundCaptureCreate8(LPCGUID lpcGUID, LPDIRECTSOUNDCAPTURE8 *ppDSC8, LPUNKNOWN pUnkOuter)
+HRESULT DSOUND_CaptureCreate(REFIID riid, void **obj)
+{
+    return IDirectSoundCaptureImpl_Create(NULL, riid, obj, FALSE);
+}
+
+HRESULT DSOUND_CaptureCreate8(REFIID riid, void **obj)
+{
+    return IDirectSoundCaptureImpl_Create(NULL, riid, obj, TRUE);
+}
+
+WINBASEAPI HRESULT WINAPI DirectSoundCaptureCreate(LPCGUID guid, IDirectSoundCapture **obj, IUnknown *unk_outer)
 {
     HRESULT hr;
-    LPDIRECTSOUNDCAPTURE8 pDSC8;
-    WINE_TRACE("(%s,%p,%p)\n", wine_dbgstr_guid(lpcGUID), ppDSC8, pUnkOuter);
+    IDirectSoundCapture *capture;
 
-    if (ppDSC8 == NULL)
+    WINE_TRACE("(%s,%p,%p)\n", wine_dbgstr_guid(guid), obj, unk_outer);
+
+    if (obj == NULL)
     {
-        WINE_WARN("invalid parameter: ppDSC8 == NULL\n");
+        WINE_WARN("invalid parameter: obj == NULL\n");
         return DSERR_INVALIDPARAM;
     }
 
-    if (pUnkOuter)
+    if (unk_outer)
     {
-        WINE_WARN("invalid parameter: pUnkOuter != NULL\n");
-        *ppDSC8 = NULL;
+        WINE_WARN("invalid parameter: unk_outer != NULL\n");
         return DSERR_NOAGGREGATION;
     }
 
-    hr = DSOUND_CaptureCreate8(&IID_IDirectSoundCapture8, (void**)&pDSC8);
+    hr = DSOUND_CaptureCreate(&IID_IDirectSoundCapture, (void**)&capture);
     if (hr == DS_OK)
     {
-        hr = IDirectSoundCapture_Initialize(pDSC8, lpcGUID);
+        hr = IDirectSoundCapture_Initialize(capture, guid);
         if (hr != DS_OK)
         {
-            IDirectSoundCapture_Release(pDSC8);
-            pDSC8 = 0;
+            IDirectSoundCapture_Release(capture);
+            capture = NULL;
         }
     }
 
-    *ppDSC8 = pDSC8;
+    *obj = capture;
+
+    return hr;
+}
+
+WINBASEAPI HRESULT WINAPI DirectSoundCaptureCreate8(const GUID *guid, IDirectSoundCapture8 **obj, IUnknown *unk_outer)
+{
+    HRESULT hr;
+    IDirectSoundCapture8 *capture;
+    WINE_TRACE("(%s,%p,%p)\n", wine_dbgstr_guid(guid), obj, unk_outer);
+
+    if (obj == NULL)
+    {
+        WINE_WARN("invalid parameter: obj == NULL\n");
+        return DSERR_INVALIDPARAM;
+    }
+
+    if (unk_outer)
+    {
+        WINE_WARN("invalid parameter: unk_outer != NULL\n");
+        *obj = NULL;
+        return DSERR_NOAGGREGATION;
+    }
+
+    hr = DSOUND_CaptureCreate8(&IID_IDirectSoundCapture8, (void**)&capture);
+    if (hr == DS_OK)
+    {
+        hr = IDirectSoundCapture_Initialize(capture, guid);
+        if (hr != DS_OK)
+        {
+            IDirectSoundCapture_Release(capture);
+            capture = NULL;
+        }
+    }
+
+    *obj = capture;
 
     return hr;
 }
@@ -1050,10 +1083,52 @@ WINBASEAPI HRESULT WINAPI DirectSoundCaptureCreate8(LPCGUID lpcGUID, LPDIRECTSOU
 void qemu_DirectSoundCaptureCreate(struct qemu_syscall *call)
 {
     struct qemu_DirectSoundCaptureCreate *c = (struct qemu_DirectSoundCaptureCreate *)call;
+    struct qemu_capture *capture;
+    HRESULT hr;
+    HMODULE lib;
+    HRESULT (* WINAPI p_DllGetClassObject)(REFCLSID rclsid, REFIID riid, void **obj);
+    IClassFactory *factory;
+    WINE_TRACE("\n");
 
-    WINE_FIXME("Unverified!\n");
+    c->capture = 0;
 
-    c->super.iret = DirectSoundCaptureCreate(QEMU_G2H(c->lpcGUID), QEMU_G2H(c->ppDSC), QEMU_G2H(c->pUnkOuter));
+    /* Because we copypasted the init code from Wine we'll call Initialize with the
+     * desired device GUID later. Don't call DirectSoundCaptureCreate here and instead
+     * use CoCreateInstance to create an uninitialized object. We also need to be able
+     * to create uninitialized devices if the guest calls us through CoCreateInstance.
+     *
+     * Except that we can't use CoCreateInstance because the host-side ole32 is
+     * probably not initialized. So navigate out way through DllGetClassObject like
+     * ole32 would. */
+    lib = GetModuleHandleA("dsound");
+    p_DllGetClassObject = (void *)GetProcAddress(lib, "DllGetClassObject");
+
+    hr = p_DllGetClassObject(c->has_dsc8 ? &CLSID_DirectSoundCapture8 : &CLSID_DirectSoundCapture,
+            &IID_IClassFactory, (void *)&factory);
+    if (FAILED(hr))
+        WINE_ERR("Cannot create class factory\n");
+
+    capture = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*capture));
+    if (!capture)
+    {
+        WINE_WARN("Out of memory.\n");
+        c->super.iret = DSERR_OUTOFMEMORY;
+        IClassFactory_Release(factory);
+        return;
+    }
+
+    hr = IClassFactory_CreateInstance(factory, NULL,
+            c->has_dsc8 ? &IID_IDirectSoundCapture8 : &IID_IDirectSoundCapture, (void **)&capture->host);
+    if (FAILED(hr))
+    {
+        WINE_WARN("Failed to create an IDirectSoundCapture%s object.\n", c->has_dsc8 ? "8" : "");
+        HeapFree(GetProcessHeap(), 0, capture);
+        capture = NULL;
+    }
+
+    c->capture = QEMU_H2G(capture);
+    c->super.iret = hr;
+    IClassFactory_Release(factory);
 }
 
 #endif
