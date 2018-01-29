@@ -878,10 +878,39 @@ void qemu_IDirectSoundBufferImpl_SetFX(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_SetFX *c = (struct qemu_IDirectSoundBufferImpl_SetFX *)call;
     struct qemu_dsound_buffer *buffer;
+    HRESULT hr;
     WINE_FIXME("Unverified!\n");
 
     buffer = QEMU_G2H(c->iface);
+
+    /* Long story short: The tests just want the right failure. Unless an app calls this don't bother much.
+     *
+     * This method is a problem. It calls CoCreateInstance with a specified GUID, and dsound then uses this
+     * object for magic.
+     *
+     * Issue #1 is that ole32 in the guest and host is different. So the app might have called CoInitialize,
+     * but this won't help host-side dsound. So call it here, and turn it back off afterwards. Not sure if
+     * that's kosher if dsound successfully creates an object.
+     *
+     * If the object is registered by a Wine library we are fine for now. It will work with host's dsound.
+     * We may have to create wrapper interfaces in GetObjectInPath. This may be extra painful because this
+     * object may support object specific other interfaces that we'll have to wrap.
+     *
+     * If the application registered an effect GUID in one of it's libraries things are even worse. Dsound
+     * will fail to create it because host ole32 can't load the library. In this case we can register a
+     * few of our own GUIDs, replace the GUIDs we pass in and make host dsound create an object we implement.
+     * Then we need to remember which guest GUID matches the host GUID we used and create a wrapper object
+     * so that native dsound can call the guest effect filter. We'll have to recognize this wrapper in
+     * GetObjectInPath (hint: Implement a private interface that we can QI) and return the host object.
+     */
+    hr = CoInitialize(NULL);
+    if (FAILED(hr))
+        WINE_FIXME("Can't start up host side OLE\n");
+
     c->super.iret = IDirectSoundBuffer8_SetFX(buffer->host_buffer, c->dwEffectsCount, QEMU_G2H(c->pDSFXDesc), QEMU_G2H(c->pdwResultCodes));
+
+    if (SUCCEEDED(hr))
+        CoUninitialize();
 }
 
 #endif
