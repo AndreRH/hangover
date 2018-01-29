@@ -274,7 +274,7 @@ void qemu_IDirectSoundCaptureBufferImpl_GetCaps(struct qemu_syscall *call)
     struct qemu_IDirectSoundCaptureBufferImpl_GetCaps *c = (struct qemu_IDirectSoundCaptureBufferImpl_GetCaps *)call;
     struct qemu_capture_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectSoundCaptureBuffer_GetCaps(buffer->host_buffer, QEMU_G2H(c->lpDSCBCaps));
@@ -354,7 +354,7 @@ void qemu_IDirectSoundCaptureBufferImpl_GetFormat(struct qemu_syscall *call)
     struct qemu_IDirectSoundCaptureBufferImpl_GetFormat *c = (struct qemu_IDirectSoundCaptureBufferImpl_GetFormat *)call;
     struct qemu_capture_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectSoundCaptureBuffer_GetFormat(buffer->host_buffer, QEMU_G2H(c->lpwfxFormat), c->dwSizeAllocated, QEMU_G2H(c->lpdwSizeWritten));
@@ -391,7 +391,7 @@ void qemu_IDirectSoundCaptureBufferImpl_GetStatus(struct qemu_syscall *call)
     struct qemu_IDirectSoundCaptureBufferImpl_GetStatus *c = (struct qemu_IDirectSoundCaptureBufferImpl_GetStatus *)call;
     struct qemu_capture_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectSoundCaptureBuffer_GetStatus(buffer->host_buffer, QEMU_G2H(c->lpdwStatus));
@@ -516,7 +516,7 @@ void qemu_IDirectSoundCaptureBufferImpl_Start(struct qemu_syscall *call)
     struct qemu_IDirectSoundCaptureBufferImpl_Start *c = (struct qemu_IDirectSoundCaptureBufferImpl_Start *)call;
     struct qemu_capture_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectSoundCaptureBuffer_Start(buffer->host_buffer, c->dwFlags);
@@ -551,7 +551,7 @@ void qemu_IDirectSoundCaptureBufferImpl_Stop(struct qemu_syscall *call)
     struct qemu_IDirectSoundCaptureBufferImpl_Stop *c = (struct qemu_IDirectSoundCaptureBufferImpl_Stop *)call;
     struct qemu_capture_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectSoundCaptureBuffer_Stop(buffer->host_buffer);
