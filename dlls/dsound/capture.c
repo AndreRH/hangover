@@ -708,6 +708,12 @@ struct qemu_capture
     IDirectSoundCapture     *host;
 };
 
+struct qemu_IDirectSoundCaptureImpl_Release
+{
+    struct qemu_syscall super;
+    uint64_t capture;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 static inline struct qemu_capture *impl_from_IUnknown(IUnknown *iface)
@@ -722,7 +728,10 @@ static inline struct qemu_capture *impl_from_IDirectSoundCapture(IDirectSoundCap
 
 static void capture_destroy(struct qemu_capture *capture)
 {
-    WINE_FIXME("Implement me\n");
+    struct qemu_IDirectSoundCaptureImpl_Release call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTSOUNDCAPTUREIMPL_RELEASE);
+    call.capture = (ULONG_PTR)capture;
+    qemu_syscall(&call.super);
 }
 
 static HRESULT WINAPI IUnknownImpl_QueryInterface(IUnknown *iface, REFIID riid, void **ppv)
@@ -819,7 +828,14 @@ static ULONG WINAPI IDirectSoundCaptureImpl_Release(IDirectSoundCapture *iface)
 void qemu_IDirectSoundCaptureImpl_Release(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundCaptureImpl_Release *c = (struct qemu_IDirectSoundCaptureImpl_Release *)call;
-    WINE_FIXME("Unverified!\n");
+    struct qemu_capture *capture;
+
+    WINE_TRACE("\n");
+    capture = QEMU_G2H(c->capture);
+
+    c->super.iret = IDirectSoundCapture_Release(capture->host);
+    if (c->super.iret)
+        WINE_ERR("Got unexpected host refcount %lu\n", c->super.iret);
 }
 
 #endif
