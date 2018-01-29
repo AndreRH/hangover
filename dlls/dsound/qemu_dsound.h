@@ -10,6 +10,7 @@ enum dsound_calls
     CALL_DIRECTSOUNDENUMERATEA,
     CALL_DIRECTSOUNDENUMERATEW,
     CALL_DIRECTSOUNDFULLDUPLEXCREATE,
+    CALL_DIRECTSOUNDFULLDUPLEXRELEASE,
     CALL_DLLCANUNLOADNOW,
     CALL_DLLREGISTERSERVER,
     CALL_DLLUNREGISTERSERVER,
@@ -157,8 +158,10 @@ static inline struct qemu_dsound_buffer *buffer_impl_from_IKsPropertySet(IKsProp
 
 HRESULT DSOUND_Create(REFIID riid, void **ppv);
 HRESULT DSOUND_Create8(REFIID riid, void **ppv);
+HRESULT IDirectSoundImpl_Create(IUnknown *outer, REFIID riid, void **out, BOOL has_ds8);
 HRESULT DSOUND_CaptureCreate(REFIID riid, void **ppv);
 HRESULT DSOUND_CaptureCreate8(REFIID riid, void **ppv);
+HRESULT IDirectSoundCaptureImpl_Create(IUnknown *outer_unk, REFIID riid, void **out, BOOL has_dsc8);
 HRESULT DSOUND_FullDuplexCreate(REFIID riid, void **ppv);
 HRESULT IKsPrivatePropertySetImpl_Create(REFIID riid, void **ppv);
 
@@ -174,6 +177,7 @@ void qemu_DirectSoundCaptureCreate(struct qemu_syscall *call);
 void qemu_DirectSoundCreate(struct qemu_syscall *call);
 void qemu_DirectSoundEnumerate(struct qemu_syscall *call);
 void qemu_DirectSoundFullDuplexCreate(struct qemu_syscall *call);
+void qemu_DirectSoundFullDuplexRelease(struct qemu_syscall *call);
 void qemu_DllCanUnloadNow(struct qemu_syscall *call);
 void qemu_DllRegisterServer(struct qemu_syscall *call);
 void qemu_DllUnregisterServer(struct qemu_syscall *call);

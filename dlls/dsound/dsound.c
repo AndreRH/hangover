@@ -709,7 +709,7 @@ static const IDirectSound8Vtbl ds8_vtbl =
     IDirectSound8Impl_VerifyCertification
 };
 
-static HRESULT IDirectSoundImpl_Create(IUnknown *outer, REFIID riid, void **out, BOOL has_ds8)
+HRESULT IDirectSoundImpl_Create(IUnknown *outer, REFIID riid, void **out, BOOL has_ds8)
 {
     struct qemu_DirectSoundCreate call;
     struct qemu_dsound *dsound;
