@@ -74,7 +74,10 @@ static inline struct qemu_capture_buffer *capture_impl_from_IDirectSoundCaptureB
 
 static void capturebuffer_destroy(struct qemu_capture_buffer *buffer)
 {
-    WINE_FIXME("Implement me!\n");
+    struct qemu_IDirectSoundCaptureBufferImpl_Release call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTSOUNDCAPTUREBUFFERIMPL_RELEASE);
+    call.iface = (ULONG_PTR)buffer;
+    qemu_syscall(&call.super);
 }
 
 static HRESULT WINAPI IDirectSoundNotifyImpl_QueryInterface(IDirectSoundNotify *iface, REFIID riid, void **obj)
@@ -119,8 +122,14 @@ void qemu_IDirectSoundCaptureBufferImpl_Release(struct qemu_syscall *call)
     struct qemu_IDirectSoundCaptureBufferImpl_Release *c = (struct qemu_IDirectSoundCaptureBufferImpl_Release *)call;
     struct qemu_capture_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
+
+    c->super.iret = IDirectSoundCaptureBuffer8_Release(buffer->host_buffer);
+    c->super.iret += IDirectSoundNotify_Release(buffer->host_notify);
+
+    if (c->super.iret)
+        WINE_ERR("Unexpected refcount %lu.\n", c->super.iret);
 
 }
 
