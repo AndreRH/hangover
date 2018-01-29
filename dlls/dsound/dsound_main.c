@@ -121,6 +121,32 @@ WINBASEAPI HRESULT WINAPI DirectSoundEnumerateW(LPDSENUMCALLBACKW lpDSEnumCallba
     return call.super.iret;
 }
 
+WINBASEAPI HRESULT WINAPI DirectSoundCaptureEnumerateA(LPDSENUMCALLBACKA lpDSEnumCallback, LPVOID lpContext)
+{
+    struct qemu_DirectSoundEnumerate call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DIRECTSOUNDCAPTUREENUMERATEA);
+    call.lpDSEnumCallback = (ULONG_PTR)lpDSEnumCallback;
+    call.lpContext = (ULONG_PTR)lpContext;
+    call.wrapper = (ULONG_PTR)DirectSoundEnumerate_guest_cb;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+WINBASEAPI HRESULT WINAPI DirectSoundCaptureEnumerateW(LPDSENUMCALLBACKW lpDSEnumCallback, LPVOID lpContext)
+{
+    struct qemu_DirectSoundEnumerate call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DIRECTSOUNDCAPTUREENUMERATEW);
+    call.lpDSEnumCallback = (ULONG_PTR)lpDSEnumCallback;
+    call.lpContext = (ULONG_PTR)lpContext;
+    call.wrapper = (ULONG_PTR)DirectSoundEnumerate_guest_cb;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
 #else
 
 struct DirectSoundEnumerate_host_data
@@ -165,79 +191,27 @@ void qemu_DirectSoundEnumerate(struct qemu_syscall *call)
     ctx.guest_ctx = c->lpContext;
     ctx.wrapper = c->wrapper;
 
-    if (c->super.id == QEMU_SYSCALL_ID(CALL_DIRECTSOUNDENUMERATEW))
+    switch (c->super.id)
     {
-        c->super.iret = DirectSoundEnumerateW(c->lpDSEnumCallback ?
-                (LPDSENUMCALLBACKW)DirectSoundEnumerate_host_cb : NULL, &ctx);
+        case QEMU_SYSCALL_ID(CALL_DIRECTSOUNDENUMERATEW):
+            c->super.iret = DirectSoundEnumerateW(c->lpDSEnumCallback ?
+                    (LPDSENUMCALLBACKW)DirectSoundEnumerate_host_cb : NULL, &ctx);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DIRECTSOUNDENUMERATEA):
+            c->super.iret = DirectSoundEnumerateA(c->lpDSEnumCallback ? DirectSoundEnumerate_host_cb : NULL, &ctx);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DIRECTSOUNDCAPTUREENUMERATEW):
+            c->super.iret = DirectSoundCaptureEnumerateW(c->lpDSEnumCallback ?
+                    (LPDSENUMCALLBACKW)DirectSoundEnumerate_host_cb : NULL, &ctx);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DIRECTSOUNDCAPTUREENUMERATEA):
+            c->super.iret = DirectSoundCaptureEnumerateA(c->lpDSEnumCallback ?
+                    DirectSoundEnumerate_host_cb : NULL, &ctx);
+            break;
     }
-    else
-    {
-        c->super.iret = DirectSoundEnumerateA(c->lpDSEnumCallback ? DirectSoundEnumerate_host_cb : NULL, &ctx);
-    }
-}
-
-#endif
-
-struct qemu_DirectSoundCaptureEnumerateA
-{
-    struct qemu_syscall super;
-    uint64_t lpDSEnumCallback;
-    uint64_t lpContext;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI HRESULT WINAPI DirectSoundCaptureEnumerateA(LPDSENUMCALLBACKA lpDSEnumCallback, LPVOID lpContext)
-{
-    struct qemu_DirectSoundCaptureEnumerateA call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_DIRECTSOUNDCAPTUREENUMERATEA);
-    call.lpDSEnumCallback = (ULONG_PTR)lpDSEnumCallback;
-    call.lpContext = (ULONG_PTR)lpContext;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_DirectSoundCaptureEnumerateA(struct qemu_syscall *call)
-{
-    struct qemu_DirectSoundCaptureEnumerateA *c = (struct qemu_DirectSoundCaptureEnumerateA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DirectSoundCaptureEnumerateA(QEMU_G2H(c->lpDSEnumCallback), QEMU_G2H(c->lpContext));
-}
-
-#endif
-
-struct qemu_DirectSoundCaptureEnumerateW
-{
-    struct qemu_syscall super;
-    uint64_t lpDSEnumCallback;
-    uint64_t lpContext;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI HRESULT WINAPI DirectSoundCaptureEnumerateW(LPDSENUMCALLBACKW lpDSEnumCallback, LPVOID lpContext)
-{
-    struct qemu_DirectSoundCaptureEnumerateW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_DIRECTSOUNDCAPTUREENUMERATEW);
-    call.lpDSEnumCallback = (ULONG_PTR)lpDSEnumCallback;
-    call.lpContext = (ULONG_PTR)lpContext;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_DirectSoundCaptureEnumerateW(struct qemu_syscall *call)
-{
-    struct qemu_DirectSoundCaptureEnumerateW *c = (struct qemu_DirectSoundCaptureEnumerateW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DirectSoundCaptureEnumerateW(QEMU_G2H(c->lpDSEnumCallback), QEMU_G2H(c->lpContext));
 }
 
 #endif

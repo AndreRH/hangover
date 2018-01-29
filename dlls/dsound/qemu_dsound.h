@@ -171,8 +171,6 @@ LONG capped_refcount_dec(LONG *out);
 #else
 
 void qemu_DirectSoundCaptureCreate(struct qemu_syscall *call);
-void qemu_DirectSoundCaptureEnumerateA(struct qemu_syscall *call);
-void qemu_DirectSoundCaptureEnumerateW(struct qemu_syscall *call);
 void qemu_DirectSoundCreate(struct qemu_syscall *call);
 void qemu_DirectSoundEnumerate(struct qemu_syscall *call);
 void qemu_DirectSoundFullDuplexCreate(struct qemu_syscall *call);

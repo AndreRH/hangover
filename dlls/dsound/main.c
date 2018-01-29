@@ -44,8 +44,8 @@ const struct qemu_ops *qemu_ops;
 static const syscall_handler dll_functions[] =
 {
     qemu_DirectSoundCaptureCreate,
-    qemu_DirectSoundCaptureEnumerateA,
-    qemu_DirectSoundCaptureEnumerateW,
+    qemu_DirectSoundEnumerate,
+    qemu_DirectSoundEnumerate,
     qemu_DirectSoundCreate,
     qemu_DirectSoundEnumerate,
     qemu_DirectSoundEnumerate,
