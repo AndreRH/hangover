@@ -958,18 +958,18 @@ struct qemu_IDirectSoundCaptureImpl_GetCaps
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t lpDSCCaps;
+    uint64_t caps;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectSoundCaptureImpl_GetCaps(IDirectSoundCapture *iface, LPDSCCAPS lpDSCCaps)
+static HRESULT WINAPI IDirectSoundCaptureImpl_GetCaps(IDirectSoundCapture *iface, DSCCAPS *caps)
 {
     struct qemu_capture *capture = impl_from_IDirectSoundCapture(iface);
     struct qemu_IDirectSoundCaptureImpl_GetCaps call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTSOUNDCAPTUREIMPL_GETCAPS);
     call.iface = (ULONG_PTR)capture;
-    call.lpDSCCaps = (ULONG_PTR)lpDSCCaps;
+    call.caps = (ULONG_PTR)caps;
 
     qemu_syscall(&call.super);
 
@@ -983,10 +983,11 @@ void qemu_IDirectSoundCaptureImpl_GetCaps(struct qemu_syscall *call)
     struct qemu_IDirectSoundCaptureImpl_GetCaps *c = (struct qemu_IDirectSoundCaptureImpl_GetCaps *)call;
     struct qemu_capture *capture;
 
-    WINE_FIXME("Unverified!\n");
+    /* DSCCAPS has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     capture = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectSoundCapture_GetCaps(capture->host, QEMU_G2H(c->lpDSCCaps));
+    c->super.iret = IDirectSoundCapture_GetCaps(capture->host, QEMU_G2H(c->caps));
 }
 
 #endif
