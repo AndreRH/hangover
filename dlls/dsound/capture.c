@@ -922,18 +922,18 @@ struct qemu_IDirectSoundCaptureImpl_Initialize
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t lpcGUID;
+    uint64_t guid;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectSoundCaptureImpl_Initialize(IDirectSoundCapture *iface, LPCGUID lpcGUID)
+static HRESULT WINAPI IDirectSoundCaptureImpl_Initialize(IDirectSoundCapture *iface, const GUID *guid)
 {
     struct qemu_capture *capture = impl_from_IDirectSoundCapture(iface);
     struct qemu_IDirectSoundCaptureImpl_Initialize call;
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTSOUNDCAPTUREIMPL_INITIALIZE);
     call.iface = (ULONG_PTR)capture;
-    call.lpcGUID = (ULONG_PTR)lpcGUID;
+    call.guid = (ULONG_PTR)guid;
 
     qemu_syscall(&call.super);
 
@@ -960,10 +960,10 @@ void qemu_IDirectSoundCaptureImpl_Initialize(struct qemu_syscall *call)
     struct qemu_IDirectSoundCaptureImpl_Initialize *c = (struct qemu_IDirectSoundCaptureImpl_Initialize *)call;
     struct qemu_capture *capture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     capture = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectSoundCapture_Initialize(capture->host, QEMU_G2H(c->lpcGUID));
+    c->super.iret = IDirectSoundCapture_Initialize(capture->host, QEMU_G2H(c->guid));
 }
 
 #endif
