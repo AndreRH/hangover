@@ -26,6 +26,9 @@
 #include <dsound.h>
 #include <dsconf.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_dsound.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_dsound.h"
@@ -844,24 +847,57 @@ struct qemu_IDirectSoundCaptureImpl_CreateCaptureBuffer
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t lpcDSCBufferDesc;
-    uint64_t lplpDSCaptureBuffer;
-    uint64_t pUnk;
+    uint64_t desc;
+    uint64_t buffer;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectSoundCaptureImpl_CreateCaptureBuffer(IDirectSoundCapture *iface, LPCDSCBUFFERDESC lpcDSCBufferDesc, IDirectSoundCaptureBuffer **lplpDSCaptureBuffer, IUnknown *pUnk)
+static HRESULT WINAPI IDirectSoundCaptureImpl_CreateCaptureBuffer(IDirectSoundCapture *iface,
+        const DSCBUFFERDESC *desc, IDirectSoundCaptureBuffer **out, IUnknown *outer_unknown)
 {
     struct qemu_capture *capture = impl_from_IDirectSoundCapture(iface);
     struct qemu_IDirectSoundCaptureImpl_CreateCaptureBuffer call;
+    struct qemu_capture_buffer *buffer;
+
+    WINE_TRACE( "(%p,%p,%p,%p)\n", capture, desc, out, outer_unknown);
+
+    if (outer_unknown)
+    {
+        WINE_WARN("invalid parameter: outer_unknown != NULL\n");
+        return DSERR_NOAGGREGATION;
+    }
+
+    if (desc == NULL)
+    {
+        WINE_WARN("invalid parameter: desc == NULL)\n");
+        return DSERR_INVALIDPARAM;
+    }
+
+    if (out == NULL)
+    {
+        WINE_WARN("invalid parameter: out == NULL\n");
+        return DSERR_INVALIDPARAM;
+    }
+
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTSOUNDCAPTUREIMPL_CREATECAPTUREBUFFER);
     call.iface = (ULONG_PTR)capture;
-    call.lpcDSCBufferDesc = (ULONG_PTR)lpcDSCBufferDesc;
-    call.lplpDSCaptureBuffer = (ULONG_PTR)lplpDSCaptureBuffer;
-    call.pUnk = (ULONG_PTR)pUnk;
+    call.desc = (ULONG_PTR)desc;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+    {
+        *out = NULL;
+        return call.super.iret;
+    }
+
+    buffer = (struct qemu_capture_buffer *)(ULONG_PTR)call.buffer;
+    buffer->IDirectSoundCaptureBuffer8_iface.lpVtbl = &capture_buffer_vtbl;
+    buffer->IDirectSoundNotify_iface.lpVtbl = &capture_notify_vtbl;
+    buffer->ref = buffer->iface_count = 1;
+    buffer->has_dsc8 = capture->has_dsc8;
+
+    *out = (IDirectSoundCaptureBuffer *)&buffer->IDirectSoundCaptureBuffer8_iface;
 
     return call.super.iret;
 }
@@ -872,11 +908,39 @@ void qemu_IDirectSoundCaptureImpl_CreateCaptureBuffer(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundCaptureImpl_CreateCaptureBuffer *c = (struct qemu_IDirectSoundCaptureImpl_CreateCaptureBuffer *)call;
     struct qemu_capture *capture;
+    DSCBUFFERDESC stack, *desc = &stack;
+    struct qemu_capture_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     capture = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectSoundCapture_CreateCaptureBuffer(capture->host, QEMU_G2H(c->lpcDSCBufferDesc), QEMU_G2H(c->lplpDSCaptureBuffer), QEMU_G2H(c->pUnk));
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->desc);
+#else
+    DSCBUFFERDESC_g2h(desc, QEMU_G2H(c->desc));
+#endif
+
+    buffer = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*buffer));
+    if (!buffer)
+    {
+        c->super.iret = DSERR_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = IDirectSoundCapture_CreateCaptureBuffer(capture->host, desc,
+            (IDirectSoundCaptureBuffer **)&buffer->host_buffer, NULL);
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, buffer);
+        return;
+    }
+
+    IDirectSoundCaptureBuffer8_QueryInterface(buffer->host_buffer,
+            &IID_IDirectSoundNotify, (void **)&buffer->host_notify);
+    if (!buffer->host_notify)
+        WINE_ERR("Failed to get notify interface of host buffer.\n");
+
+    c->buffer = QEMU_H2G(buffer);
 }
 
 #endif
