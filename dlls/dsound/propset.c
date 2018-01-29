@@ -119,6 +119,7 @@ void qemu_IKsPrivatePropertySetImpl_Release(struct qemu_syscall *call)
     c->super.iret = IKsPropertySet_Release(propset->host);
     if (c->super.iret)
         WINE_ERR("Ref is %lu, expected 0.\n", c->super.iret);
+    HeapFree(GetProcessHeap(), 0, propset);
 }
 
 #endif

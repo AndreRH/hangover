@@ -130,6 +130,7 @@ void qemu_IDirectSoundCaptureBufferImpl_Release(struct qemu_syscall *call)
 
     if (c->super.iret)
         WINE_ERR("Unexpected refcount %lu.\n", c->super.iret);
+    HeapFree(GetProcessHeap(), 0, buffer);
 
 }
 
@@ -880,6 +881,7 @@ void qemu_IDirectSoundCaptureImpl_Release(struct qemu_syscall *call)
     c->super.iret = IDirectSoundCapture_Release(capture->host);
     if (c->super.iret)
         WINE_ERR("Got unexpected host refcount %lu\n", c->super.iret);
+    HeapFree(GetProcessHeap(), 0, capture);
 }
 
 #endif

@@ -209,6 +209,7 @@ void qemu_IDirectSound8Impl_Release(struct qemu_syscall *call)
     c->super.iret = IDirectSound8_Release(dsound->host);
     if (c->super.iret)
         WINE_ERR("Expected to release the only reference held on the host inteface.\n");
+    HeapFree(GetProcessHeap(), 0, dsound);
 }
 
 #endif
