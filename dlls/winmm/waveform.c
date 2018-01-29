@@ -27,6 +27,7 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <mmddk.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_winmm);
 #endif
 
@@ -155,7 +156,7 @@ WINBASEAPI UINT WINAPI waveOutGetErrorTextA(UINT uError, LPSTR lpText, UINT uSiz
 void qemu_waveOutGetErrorTextA(struct qemu_syscall *call)
 {
     struct qemu_waveOutGetErrorTextA *c = (struct qemu_waveOutGetErrorTextA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = waveOutGetErrorTextA(c->uError, QEMU_G2H(c->lpText), c->uSize);
 }
 
@@ -803,7 +804,7 @@ WINBASEAPI UINT WINAPI waveInGetNumDevs(void)
 void qemu_waveInGetNumDevs(struct qemu_syscall *call)
 {
     struct qemu_waveInGetNumDevs *c = (struct qemu_waveInGetNumDevs *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = waveInGetNumDevs();
 }
 
@@ -837,7 +838,9 @@ WINBASEAPI UINT WINAPI waveInGetDevCapsW(UINT_PTR uDeviceID, LPWAVEINCAPSW lpCap
 void qemu_waveInGetDevCapsW(struct qemu_syscall *call)
 {
     struct qemu_waveInGetDevCapsW *c = (struct qemu_waveInGetDevCapsW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* WAVEINCAPSW has the same size on 32 and 64 bit. */
     c->super.iret = waveInGetDevCapsW(c->uDeviceID, QEMU_G2H(c->lpCaps), c->uSize);
 }
 
@@ -871,7 +874,9 @@ WINBASEAPI UINT WINAPI waveInGetDevCapsA(UINT_PTR uDeviceID, LPWAVEINCAPSA lpCap
 void qemu_waveInGetDevCapsA(struct qemu_syscall *call)
 {
     struct qemu_waveInGetDevCapsA *c = (struct qemu_waveInGetDevCapsA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* WAVEINCAPSA has the same size on 32 and 64 bit. */
     c->super.iret = waveInGetDevCapsA(c->uDeviceID, QEMU_G2H(c->lpCaps), c->uSize);
 }
 
@@ -890,7 +895,8 @@ struct qemu_waveInOpen
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI MMRESULT WINAPI waveInOpen(HWAVEIN* lphWaveIn, UINT uDeviceID, LPCWAVEFORMATEX lpFormat, DWORD_PTR dwCallback, DWORD_PTR dwInstance, DWORD dwFlags)
+WINBASEAPI MMRESULT WINAPI waveInOpen(HWAVEIN* lphWaveIn, UINT uDeviceID, const WAVEFORMATEX *lpFormat,
+        DWORD_PTR dwCallback, DWORD_PTR dwInstance, DWORD dwFlags)
 {
     struct qemu_waveInOpen call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WAVEINOPEN);
@@ -902,6 +908,8 @@ WINBASEAPI MMRESULT WINAPI waveInOpen(HWAVEIN* lphWaveIn, UINT uDeviceID, LPCWAV
     call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == MMSYSERR_NOERROR)
+        *lphWaveIn = (HWAVEIN)(ULONG_PTR)call.lphWaveIn;
 
     return call.super.iret;
 }
@@ -911,8 +919,15 @@ WINBASEAPI MMRESULT WINAPI waveInOpen(HWAVEIN* lphWaveIn, UINT uDeviceID, LPCWAV
 void qemu_waveInOpen(struct qemu_syscall *call)
 {
     struct qemu_waveInOpen *c = (struct qemu_waveInOpen *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = waveInOpen(QEMU_G2H(c->lphWaveIn), c->uDeviceID, QEMU_G2H(c->lpFormat), c->dwCallback, c->dwInstance, c->dwFlags);
+    HWAVEIN h;
+
+    WINE_TRACE("\n");
+    if (c->dwCallback)
+        WINE_FIXME("dwCallback %lx.\n", c->dwCallback);
+
+    c->super.iret = waveInOpen(c->lphWaveIn ? &h : NULL, c->uDeviceID,
+            QEMU_G2H(c->lpFormat), c->dwCallback, c->dwInstance, c->dwFlags);
+    c->lphWaveIn = QEMU_H2G(h);
 }
 
 #endif
@@ -941,7 +956,7 @@ WINBASEAPI UINT WINAPI waveInClose(HWAVEIN hWaveIn)
 void qemu_waveInClose(struct qemu_syscall *call)
 {
     struct qemu_waveInClose *c = (struct qemu_waveInClose *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = waveInClose(QEMU_G2H(c->hWaveIn));
 }
 
@@ -1167,7 +1182,9 @@ WINBASEAPI UINT WINAPI waveInGetPosition(HWAVEIN hWaveIn, LPMMTIME lpTime, UINT 
 void qemu_waveInGetPosition(struct qemu_syscall *call)
 {
     struct qemu_waveInGetPosition *c = (struct qemu_waveInGetPosition *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* MMTIME has the same size on 32 and 64 bit. */
     c->super.iret = waveInGetPosition(QEMU_G2H(c->hWaveIn), QEMU_G2H(c->lpTime), c->uSize);
 }
 
@@ -1222,8 +1239,8 @@ WINBASEAPI UINT WINAPI waveInMessage(HWAVEIN hWaveIn, UINT uMessage, DWORD_PTR d
     call.super.id = QEMU_SYSCALL_ID(CALL_WAVEINMESSAGE);
     call.hWaveIn = (ULONG_PTR)hWaveIn;
     call.uMessage = (ULONG_PTR)uMessage;
-    call.dwParam1 = (ULONG_PTR)dwParam1;
-    call.dwParam2 = (ULONG_PTR)dwParam2;
+    call.dwParam1 = dwParam1;
+    call.dwParam2 = dwParam2;
 
     qemu_syscall(&call.super);
 
@@ -1235,7 +1252,13 @@ WINBASEAPI UINT WINAPI waveInMessage(HWAVEIN hWaveIn, UINT uMessage, DWORD_PTR d
 void qemu_waveInMessage(struct qemu_syscall *call)
 {
     struct qemu_waveInMessage *c = (struct qemu_waveInMessage *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+#if GUEST_BIT != HOST_BIT
+    /* DRV_QUERYFUNCTIONINSTANCEIDSIZE will need 32 / 64 translation, the others look OK */
+    if (c->uMessage == DRV_QUERYFUNCTIONINSTANCEIDSIZE)
+        WINE_FIXME("Handle DRV_QUERYFUNCTIONINSTANCEIDSIZE.\n");
+#endif
     c->super.iret = waveInMessage(QEMU_G2H(c->hWaveIn), c->uMessage, c->dwParam1, c->dwParam2);
 }
 
