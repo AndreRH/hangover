@@ -5678,6 +5678,38 @@ static const struct IUnknownVtbl d3d_device_inner_vtbl =
     d3d_device_inner_Release,
 };
 
+struct qemu_device *unsafe_impl_from_IDirect3DDevice7(IDirect3DDevice7 *iface)
+{
+    if (!iface) return NULL;
+    if ((iface->lpVtbl != &d3d_device7_vtbl))
+        WINE_ERR("Invalid IDirect3DDevice7 vtable\n");
+    return CONTAINING_RECORD(iface, struct qemu_device, IDirect3DDevice7_iface);
+}
+
+struct qemu_device *unsafe_impl_from_IDirect3DDevice3(IDirect3DDevice3 *iface)
+{
+    if (!iface) return NULL;
+    if ((iface->lpVtbl != &d3d_device3_vtbl))
+        WINE_ERR("Invalid IDirect3DDevice3 vtable\n");
+    return CONTAINING_RECORD(iface, struct qemu_device, IDirect3DDevice3_iface);
+}
+
+struct qemu_device *unsafe_impl_from_IDirect3DDevice2(IDirect3DDevice2 *iface)
+{
+    if (!iface) return NULL;
+    if ((iface->lpVtbl != &d3d_device2_vtbl))
+        WINE_ERR("Invalid IDirect3DDevice2 vtable\n");
+    return CONTAINING_RECORD(iface, struct qemu_device, IDirect3DDevice2_iface);
+}
+
+struct qemu_device *unsafe_impl_from_IDirect3DDevice(IDirect3DDevice *iface)
+{
+    if (!iface) return NULL;
+    if ((iface->lpVtbl != &d3d_device1_vtbl))
+        WINE_ERR("Invalid IDirect3DDevice vtable\n");
+    return CONTAINING_RECORD(iface, struct qemu_device, IDirect3DDevice_iface);
+}
+
 void ddraw_device_guest_init(struct qemu_device *device, struct qemu_ddraw *ddraw,
         UINT version, IUnknown *rt_iface, IUnknown *outer_unknown)
 {

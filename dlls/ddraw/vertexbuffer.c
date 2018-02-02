@@ -219,23 +219,34 @@ struct qemu_d3d_vertex_buffer7_ProcessVertices
     uint64_t src_idx;
     uint64_t device;
     uint64_t flags;
+    uint64_t version;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_vertex_buffer7_ProcessVertices(IDirect3DVertexBuffer7 *iface, DWORD vertex_op, DWORD dst_idx, DWORD count, IDirect3DVertexBuffer7 *src_buffer, DWORD src_idx, IDirect3DDevice7 *device, DWORD flags)
+static HRESULT WINAPI d3d_vertex_buffer7_ProcessVertices(IDirect3DVertexBuffer7 *iface, DWORD vertex_op, DWORD dst_idx,
+        DWORD count, IDirect3DVertexBuffer7 *src_buffer, DWORD src_idx, IDirect3DDevice7 *device, DWORD flags)
 {
     struct qemu_d3d_vertex_buffer7_ProcessVertices call;
     struct qemu_vertex_buffer *buffer = impl_from_IDirect3DVertexBuffer7(iface);
+    struct qemu_vertex_buffer *src = unsafe_impl_from_IDirect3DVertexBuffer7(src_buffer);
+    struct qemu_device *device_impl = unsafe_impl_from_IDirect3DDevice7(device);
+
+    if (buffer->version == 7)
+        device_impl = unsafe_impl_from_IDirect3DDevice7(device);
+    else
+        device_impl = unsafe_impl_from_IDirect3DDevice3((IDirect3DDevice3 *)device);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VERTEX_BUFFER7_PROCESSVERTICES);
     call.iface = (ULONG_PTR)buffer;
     call.vertex_op = vertex_op;
     call.dst_idx = dst_idx;
     call.count = count;
-    call.src_buffer = (ULONG_PTR)src_buffer;
+    call.src_buffer = (ULONG_PTR)src;
     call.src_idx = src_idx;
-    call.device = (ULONG_PTR)device;
+    call.device = (ULONG_PTR)device_impl;
     call.flags = flags;
+    call.version = buffer->version;
 
     qemu_syscall(&call.super);
 
@@ -248,11 +259,24 @@ void qemu_d3d_vertex_buffer7_ProcessVertices(struct qemu_syscall *call)
 {
     struct qemu_d3d_vertex_buffer7_ProcessVertices *c = (struct qemu_d3d_vertex_buffer7_ProcessVertices *)call;
     struct qemu_vertex_buffer *buffer;
+    struct qemu_vertex_buffer *src;
+    struct qemu_device *device;
+    void *device_iface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
+    src = QEMU_G2H(c->src_buffer);
+    device = QEMU_G2H(c->device);
 
-    c->super.iret = IDirect3DVertexBuffer7_ProcessVertices(buffer->host, c->vertex_op, c->dst_idx, c->count, QEMU_G2H(c->src_buffer), c->src_idx, QEMU_G2H(c->device), c->flags);
+    if (!device)
+        device_iface = NULL;
+    else if (c->version == 7)
+        device_iface = device->host7;
+    else
+        device_iface = device->host3;
+
+    c->super.iret = IDirect3DVertexBuffer7_ProcessVertices(buffer->host, c->vertex_op, c->dst_idx, c->count,
+            src ? src->host : NULL, c->src_idx, device_iface, c->flags);
 }
 
 #endif
@@ -396,6 +420,16 @@ static const struct IDirect3DVertexBuffer7Vtbl d3d_vertex_buffer7_vtbl =
     d3d_vertex_buffer7_Optimize,
     d3d_vertex_buffer7_ProcessVerticesStrided,
 };
+
+struct qemu_vertex_buffer *unsafe_impl_from_IDirect3DVertexBuffer7(IDirect3DVertexBuffer7 *iface)
+{
+    if (!iface)
+        return NULL;
+    if (iface->lpVtbl != &d3d_vertex_buffer7_vtbl)
+        WINE_ERR("Incorrect vertex buffer vtable!\n");
+
+    return impl_from_IDirect3DVertexBuffer7(iface);
+}
 
 void ddraw_vertex_buffer_guest_init(struct qemu_vertex_buffer *buffer, struct qemu_ddraw *ddraw, UINT version)
 {

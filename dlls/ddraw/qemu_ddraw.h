@@ -631,8 +631,13 @@ void __fastcall ddraw_surface_destroy_cb(struct qemu_surface *surface);
 
 void ddraw_device_guest_init(struct qemu_device *device, struct qemu_ddraw *ddraw,
         UINT version, IUnknown *rt_iface, IUnknown *outer_unknown);
+struct qemu_device *unsafe_impl_from_IDirect3DDevice7(IDirect3DDevice7 *iface);
+struct qemu_device *unsafe_impl_from_IDirect3DDevice3(IDirect3DDevice3 *iface);
+struct qemu_device *unsafe_impl_from_IDirect3DDevice2(IDirect3DDevice2 *iface);
+struct qemu_device *unsafe_impl_from_IDirect3DDevice(IDirect3DDevice *iface);
 
 void ddraw_vertex_buffer_guest_init(struct qemu_vertex_buffer *buffer, struct qemu_ddraw *ddraw, UINT version);
+struct qemu_vertex_buffer *unsafe_impl_from_IDirect3DVertexBuffer7(IDirect3DVertexBuffer7 *iface);
 
 #else
 
