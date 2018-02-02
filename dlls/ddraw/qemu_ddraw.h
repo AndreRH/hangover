@@ -49,6 +49,141 @@ enum ddraw_calls
     CALL_D3D7_ENUMDEVICES,
     CALL_D3D7_ENUMZBUFFERFORMATS,
     CALL_D3D7_EVICTMANAGEDTEXTURES,
+    CALL_D3D_DEVICE1_ADDVIEWPORT,
+    CALL_D3D_DEVICE1_BEGINSCENE,
+    CALL_D3D_DEVICE1_CREATEEXECUTEBUFFER,
+    CALL_D3D_DEVICE1_CREATEMATRIX,
+    CALL_D3D_DEVICE1_DELETEMATRIX,
+    CALL_D3D_DEVICE1_DELETEVIEWPORT,
+    CALL_D3D_DEVICE1_ENDSCENE,
+    CALL_D3D_DEVICE1_ENUMTEXTUREFORMATS,
+    CALL_D3D_DEVICE1_EXECUTE,
+    CALL_D3D_DEVICE1_GETCAPS,
+    CALL_D3D_DEVICE1_GETDIRECT3D,
+    CALL_D3D_DEVICE1_GETMATRIX,
+    CALL_D3D_DEVICE1_GETPICKRECORDS,
+    CALL_D3D_DEVICE1_GETSTATS,
+    CALL_D3D_DEVICE1_INITIALIZE,
+    CALL_D3D_DEVICE1_NEXTVIEWPORT,
+    CALL_D3D_DEVICE1_PICK,
+    CALL_D3D_DEVICE1_SETMATRIX,
+    CALL_D3D_DEVICE1_SWAPTEXTUREHANDLES,
+    CALL_D3D_DEVICE2_ADDVIEWPORT,
+    CALL_D3D_DEVICE2_BEGIN,
+    CALL_D3D_DEVICE2_BEGININDEXED,
+    CALL_D3D_DEVICE2_BEGINSCENE,
+    CALL_D3D_DEVICE2_DELETEVIEWPORT,
+    CALL_D3D_DEVICE2_DRAWINDEXEDPRIMITIVE,
+    CALL_D3D_DEVICE2_DRAWPRIMITIVE,
+    CALL_D3D_DEVICE2_END,
+    CALL_D3D_DEVICE2_ENDSCENE,
+    CALL_D3D_DEVICE2_ENUMTEXTUREFORMATS,
+    CALL_D3D_DEVICE2_GETCAPS,
+    CALL_D3D_DEVICE2_GETCLIPSTATUS,
+    CALL_D3D_DEVICE2_GETCURRENTVIEWPORT,
+    CALL_D3D_DEVICE2_GETDIRECT3D,
+    CALL_D3D_DEVICE2_GETLIGHTSTATE,
+    CALL_D3D_DEVICE2_GETRENDERSTATE,
+    CALL_D3D_DEVICE2_GETRENDERTARGET,
+    CALL_D3D_DEVICE2_GETSTATS,
+    CALL_D3D_DEVICE2_GETTRANSFORM,
+    CALL_D3D_DEVICE2_INDEX,
+    CALL_D3D_DEVICE2_MULTIPLYTRANSFORM,
+    CALL_D3D_DEVICE2_NEXTVIEWPORT,
+    CALL_D3D_DEVICE2_SETCLIPSTATUS,
+    CALL_D3D_DEVICE2_SETCURRENTVIEWPORT,
+    CALL_D3D_DEVICE2_SETLIGHTSTATE,
+    CALL_D3D_DEVICE2_SETRENDERSTATE,
+    CALL_D3D_DEVICE2_SETRENDERTARGET,
+    CALL_D3D_DEVICE2_SETTRANSFORM,
+    CALL_D3D_DEVICE2_SWAPTEXTUREHANDLES,
+    CALL_D3D_DEVICE2_VERTEX,
+    CALL_D3D_DEVICE3_ADDVIEWPORT,
+    CALL_D3D_DEVICE3_BEGIN,
+    CALL_D3D_DEVICE3_BEGININDEXED,
+    CALL_D3D_DEVICE3_BEGINSCENE,
+    CALL_D3D_DEVICE3_COMPUTESPHEREVISIBILITY,
+    CALL_D3D_DEVICE3_DELETEVIEWPORT,
+    CALL_D3D_DEVICE3_DRAWINDEXEDPRIMITIVE,
+    CALL_D3D_DEVICE3_DRAWINDEXEDPRIMITIVESTRIDED,
+    CALL_D3D_DEVICE3_DRAWINDEXEDPRIMITIVEVB,
+    CALL_D3D_DEVICE3_DRAWPRIMITIVE,
+    CALL_D3D_DEVICE3_DRAWPRIMITIVESTRIDED,
+    CALL_D3D_DEVICE3_DRAWPRIMITIVEVB,
+    CALL_D3D_DEVICE3_END,
+    CALL_D3D_DEVICE3_ENDSCENE,
+    CALL_D3D_DEVICE3_ENUMTEXTUREFORMATS,
+    CALL_D3D_DEVICE3_GETCAPS,
+    CALL_D3D_DEVICE3_GETCLIPSTATUS,
+    CALL_D3D_DEVICE3_GETCURRENTVIEWPORT,
+    CALL_D3D_DEVICE3_GETDIRECT3D,
+    CALL_D3D_DEVICE3_GETLIGHTSTATE,
+    CALL_D3D_DEVICE3_GETRENDERSTATE,
+    CALL_D3D_DEVICE3_GETRENDERTARGET,
+    CALL_D3D_DEVICE3_GETSTATS,
+    CALL_D3D_DEVICE3_GETTEXTURE,
+    CALL_D3D_DEVICE3_GETTEXTURESTAGESTATE,
+    CALL_D3D_DEVICE3_GETTRANSFORM,
+    CALL_D3D_DEVICE3_INDEX,
+    CALL_D3D_DEVICE3_MULTIPLYTRANSFORM,
+    CALL_D3D_DEVICE3_NEXTVIEWPORT,
+    CALL_D3D_DEVICE3_SETCLIPSTATUS,
+    CALL_D3D_DEVICE3_SETCURRENTVIEWPORT,
+    CALL_D3D_DEVICE3_SETLIGHTSTATE,
+    CALL_D3D_DEVICE3_SETRENDERSTATE,
+    CALL_D3D_DEVICE3_SETRENDERTARGET,
+    CALL_D3D_DEVICE3_SETTEXTURE,
+    CALL_D3D_DEVICE3_SETTEXTURESTAGESTATE,
+    CALL_D3D_DEVICE3_SETTRANSFORM,
+    CALL_D3D_DEVICE3_VALIDATEDEVICE,
+    CALL_D3D_DEVICE3_VERTEX,
+    CALL_D3D_DEVICE7_APPLYSTATEBLOCK,
+    CALL_D3D_DEVICE7_BEGINSCENE,
+    CALL_D3D_DEVICE7_BEGINSTATEBLOCK,
+    CALL_D3D_DEVICE7_CAPTURESTATEBLOCK,
+    CALL_D3D_DEVICE7_CLEAR,
+    CALL_D3D_DEVICE7_COMPUTESPHEREVISIBILITY,
+    CALL_D3D_DEVICE7_CREATESTATEBLOCK,
+    CALL_D3D_DEVICE7_DELETESTATEBLOCK,
+    CALL_D3D_DEVICE7_DRAWINDEXEDPRIMITIVE,
+    CALL_D3D_DEVICE7_DRAWINDEXEDPRIMITIVESTRIDED,
+    CALL_D3D_DEVICE7_DRAWINDEXEDPRIMITIVEVB,
+    CALL_D3D_DEVICE7_DRAWPRIMITIVE,
+    CALL_D3D_DEVICE7_DRAWPRIMITIVESTRIDED,
+    CALL_D3D_DEVICE7_DRAWPRIMITIVEVB,
+    CALL_D3D_DEVICE7_ENDSCENE,
+    CALL_D3D_DEVICE7_ENDSTATEBLOCK,
+    CALL_D3D_DEVICE7_ENUMTEXTUREFORMATS,
+    CALL_D3D_DEVICE7_GETCAPS,
+    CALL_D3D_DEVICE7_GETCLIPPLANE,
+    CALL_D3D_DEVICE7_GETCLIPSTATUS,
+    CALL_D3D_DEVICE7_GETDIRECT3D,
+    CALL_D3D_DEVICE7_GETINFO,
+    CALL_D3D_DEVICE7_GETLIGHT,
+    CALL_D3D_DEVICE7_GETLIGHTENABLE,
+    CALL_D3D_DEVICE7_GETMATERIAL,
+    CALL_D3D_DEVICE7_GETRENDERSTATE,
+    CALL_D3D_DEVICE7_GETRENDERTARGET,
+    CALL_D3D_DEVICE7_GETTEXTURE,
+    CALL_D3D_DEVICE7_GETTEXTURESTAGESTATE,
+    CALL_D3D_DEVICE7_GETTRANSFORM,
+    CALL_D3D_DEVICE7_GETVIEWPORT,
+    CALL_D3D_DEVICE7_LIGHTENABLE,
+    CALL_D3D_DEVICE7_LOAD,
+    CALL_D3D_DEVICE7_MULTIPLYTRANSFORM,
+    CALL_D3D_DEVICE7_PRELOAD,
+    CALL_D3D_DEVICE7_RELEASE,
+    CALL_D3D_DEVICE7_SETCLIPPLANE,
+    CALL_D3D_DEVICE7_SETCLIPSTATUS,
+    CALL_D3D_DEVICE7_SETLIGHT,
+    CALL_D3D_DEVICE7_SETMATERIAL,
+    CALL_D3D_DEVICE7_SETRENDERSTATE,
+    CALL_D3D_DEVICE7_SETRENDERTARGET,
+    CALL_D3D_DEVICE7_SETTEXTURE,
+    CALL_D3D_DEVICE7_SETTEXTURESTAGESTATE,
+    CALL_D3D_DEVICE7_SETTRANSFORM,
+    CALL_D3D_DEVICE7_SETVIEWPORT,
+    CALL_D3D_DEVICE7_VALIDATEDEVICE,
     CALL_D3D_TEXTURE1_GETHANDLE,
     CALL_D3D_TEXTURE1_INITIALIZE,
     CALL_D3D_TEXTURE1_LOAD,
@@ -435,6 +570,28 @@ struct qemu_surface
     LONG                    private_data_ref;
 };
 
+struct qemu_device
+{
+    /* Guest fields */
+    IDirect3DDevice7 IDirect3DDevice7_iface;
+    IDirect3DDevice3 IDirect3DDevice3_iface;
+    IDirect3DDevice2 IDirect3DDevice2_iface;
+    IDirect3DDevice IDirect3DDevice_iface;
+    IUnknown IUnknown_inner;
+    LONG ref;
+    UINT version;
+
+    IUnknown *outer_unknown;
+    struct qemu_ddraw *ddraw;
+    IUnknown *rt_iface;
+
+    /* Host fields */
+    IDirect3DDevice7 *host7;
+    IDirect3DDevice3 *host3;
+    IDirect3DDevice2 *host2;
+    IDirect3DDevice *host1;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 extern const GUID IID_D3DDEVICE_WineD3D;
@@ -447,8 +604,10 @@ HRESULT WINAPI qemu_guest_DirectDrawCreateClipper(DWORD flags, IDirectDrawClippe
 void ddraw_clipper_guest_init(struct qemu_clipper *clipper);
 
 void qemu_surface_guest_init(struct qemu_surface *surface, struct qemu_ddraw *ddraw, unsigned int version);
-
 void __fastcall ddraw_surface_destroy_cb(struct qemu_surface *surface);
+
+void ddraw_device_guest_init(struct qemu_device *device, struct qemu_ddraw *ddraw,
+        UINT version, IUnknown *outer_unknown);
 
 #else
 
@@ -476,8 +635,143 @@ void qemu_d3d3_FindDevice(struct qemu_syscall *call);
 void qemu_d3d7_CreateDevice(struct qemu_syscall *call);
 void qemu_d3d7_CreateVertexBuffer(struct qemu_syscall *call);
 void qemu_d3d7_EnumDevices(struct qemu_syscall *call);
-void qemu_d3d_EnumZBufferFormats(struct qemu_syscall *call);
 void qemu_d3d7_EvictManagedTextures(struct qemu_syscall *call);
+void qemu_d3d_EnumZBufferFormats(struct qemu_syscall *call);
+void qemu_d3d_device1_AddViewport(struct qemu_syscall *call);
+void qemu_d3d_device1_BeginScene(struct qemu_syscall *call);
+void qemu_d3d_device1_CreateExecuteBuffer(struct qemu_syscall *call);
+void qemu_d3d_device1_CreateMatrix(struct qemu_syscall *call);
+void qemu_d3d_device1_DeleteMatrix(struct qemu_syscall *call);
+void qemu_d3d_device1_DeleteViewport(struct qemu_syscall *call);
+void qemu_d3d_device1_EndScene(struct qemu_syscall *call);
+void qemu_d3d_device1_EnumTextureFormats(struct qemu_syscall *call);
+void qemu_d3d_device1_Execute(struct qemu_syscall *call);
+void qemu_d3d_device1_GetCaps(struct qemu_syscall *call);
+void qemu_d3d_device1_GetDirect3D(struct qemu_syscall *call);
+void qemu_d3d_device1_GetMatrix(struct qemu_syscall *call);
+void qemu_d3d_device1_GetPickRecords(struct qemu_syscall *call);
+void qemu_d3d_device1_GetStats(struct qemu_syscall *call);
+void qemu_d3d_device1_Initialize(struct qemu_syscall *call);
+void qemu_d3d_device1_NextViewport(struct qemu_syscall *call);
+void qemu_d3d_device1_Pick(struct qemu_syscall *call);
+void qemu_d3d_device1_SetMatrix(struct qemu_syscall *call);
+void qemu_d3d_device1_SwapTextureHandles(struct qemu_syscall *call);
+void qemu_d3d_device2_AddViewport(struct qemu_syscall *call);
+void qemu_d3d_device2_Begin(struct qemu_syscall *call);
+void qemu_d3d_device2_BeginIndexed(struct qemu_syscall *call);
+void qemu_d3d_device2_BeginScene(struct qemu_syscall *call);
+void qemu_d3d_device2_DeleteViewport(struct qemu_syscall *call);
+void qemu_d3d_device2_DrawIndexedPrimitive(struct qemu_syscall *call);
+void qemu_d3d_device2_DrawPrimitive(struct qemu_syscall *call);
+void qemu_d3d_device2_End(struct qemu_syscall *call);
+void qemu_d3d_device2_EndScene(struct qemu_syscall *call);
+void qemu_d3d_device2_EnumTextureFormats(struct qemu_syscall *call);
+void qemu_d3d_device2_GetCaps(struct qemu_syscall *call);
+void qemu_d3d_device2_GetClipStatus(struct qemu_syscall *call);
+void qemu_d3d_device2_GetCurrentViewport(struct qemu_syscall *call);
+void qemu_d3d_device2_GetDirect3D(struct qemu_syscall *call);
+void qemu_d3d_device2_GetLightState(struct qemu_syscall *call);
+void qemu_d3d_device2_GetRenderState(struct qemu_syscall *call);
+void qemu_d3d_device2_GetRenderTarget(struct qemu_syscall *call);
+void qemu_d3d_device2_GetStats(struct qemu_syscall *call);
+void qemu_d3d_device2_GetTransform(struct qemu_syscall *call);
+void qemu_d3d_device2_Index(struct qemu_syscall *call);
+void qemu_d3d_device2_MultiplyTransform(struct qemu_syscall *call);
+void qemu_d3d_device2_NextViewport(struct qemu_syscall *call);
+void qemu_d3d_device2_SetClipStatus(struct qemu_syscall *call);
+void qemu_d3d_device2_SetCurrentViewport(struct qemu_syscall *call);
+void qemu_d3d_device2_SetLightState(struct qemu_syscall *call);
+void qemu_d3d_device2_SetRenderState(struct qemu_syscall *call);
+void qemu_d3d_device2_SetRenderTarget(struct qemu_syscall *call);
+void qemu_d3d_device2_SetTransform(struct qemu_syscall *call);
+void qemu_d3d_device2_SwapTextureHandles(struct qemu_syscall *call);
+void qemu_d3d_device2_Vertex(struct qemu_syscall *call);
+void qemu_d3d_device3_AddViewport(struct qemu_syscall *call);
+void qemu_d3d_device3_Begin(struct qemu_syscall *call);
+void qemu_d3d_device3_BeginIndexed(struct qemu_syscall *call);
+void qemu_d3d_device3_BeginScene(struct qemu_syscall *call);
+void qemu_d3d_device3_ComputeSphereVisibility(struct qemu_syscall *call);
+void qemu_d3d_device3_DeleteViewport(struct qemu_syscall *call);
+void qemu_d3d_device3_DrawIndexedPrimitive(struct qemu_syscall *call);
+void qemu_d3d_device3_DrawIndexedPrimitiveStrided(struct qemu_syscall *call);
+void qemu_d3d_device3_DrawIndexedPrimitiveVB(struct qemu_syscall *call);
+void qemu_d3d_device3_DrawPrimitive(struct qemu_syscall *call);
+void qemu_d3d_device3_DrawPrimitiveStrided(struct qemu_syscall *call);
+void qemu_d3d_device3_DrawPrimitiveVB(struct qemu_syscall *call);
+void qemu_d3d_device3_End(struct qemu_syscall *call);
+void qemu_d3d_device3_EndScene(struct qemu_syscall *call);
+void qemu_d3d_device3_EnumTextureFormats(struct qemu_syscall *call);
+void qemu_d3d_device3_GetCaps(struct qemu_syscall *call);
+void qemu_d3d_device3_GetClipStatus(struct qemu_syscall *call);
+void qemu_d3d_device3_GetCurrentViewport(struct qemu_syscall *call);
+void qemu_d3d_device3_GetDirect3D(struct qemu_syscall *call);
+void qemu_d3d_device3_GetLightState(struct qemu_syscall *call);
+void qemu_d3d_device3_GetRenderState(struct qemu_syscall *call);
+void qemu_d3d_device3_GetRenderTarget(struct qemu_syscall *call);
+void qemu_d3d_device3_GetStats(struct qemu_syscall *call);
+void qemu_d3d_device3_GetTexture(struct qemu_syscall *call);
+void qemu_d3d_device3_GetTextureStageState(struct qemu_syscall *call);
+void qemu_d3d_device3_GetTransform(struct qemu_syscall *call);
+void qemu_d3d_device3_Index(struct qemu_syscall *call);
+void qemu_d3d_device3_MultiplyTransform(struct qemu_syscall *call);
+void qemu_d3d_device3_NextViewport(struct qemu_syscall *call);
+void qemu_d3d_device3_SetClipStatus(struct qemu_syscall *call);
+void qemu_d3d_device3_SetCurrentViewport(struct qemu_syscall *call);
+void qemu_d3d_device3_SetLightState(struct qemu_syscall *call);
+void qemu_d3d_device3_SetRenderState(struct qemu_syscall *call);
+void qemu_d3d_device3_SetRenderTarget(struct qemu_syscall *call);
+void qemu_d3d_device3_SetTexture(struct qemu_syscall *call);
+void qemu_d3d_device3_SetTextureStageState(struct qemu_syscall *call);
+void qemu_d3d_device3_SetTransform(struct qemu_syscall *call);
+void qemu_d3d_device3_ValidateDevice(struct qemu_syscall *call);
+void qemu_d3d_device3_Vertex(struct qemu_syscall *call);
+void qemu_d3d_device7_ApplyStateBlock(struct qemu_syscall *call);
+void qemu_d3d_device7_BeginScene(struct qemu_syscall *call);
+void qemu_d3d_device7_BeginStateBlock(struct qemu_syscall *call);
+void qemu_d3d_device7_CaptureStateBlock(struct qemu_syscall *call);
+void qemu_d3d_device7_Clear(struct qemu_syscall *call);
+void qemu_d3d_device7_ComputeSphereVisibility(struct qemu_syscall *call);
+void qemu_d3d_device7_CreateStateBlock(struct qemu_syscall *call);
+void qemu_d3d_device7_DeleteStateBlock(struct qemu_syscall *call);
+void qemu_d3d_device7_DrawIndexedPrimitive(struct qemu_syscall *call);
+void qemu_d3d_device7_DrawIndexedPrimitiveStrided(struct qemu_syscall *call);
+void qemu_d3d_device7_DrawIndexedPrimitiveVB(struct qemu_syscall *call);
+void qemu_d3d_device7_DrawPrimitive(struct qemu_syscall *call);
+void qemu_d3d_device7_DrawPrimitiveStrided(struct qemu_syscall *call);
+void qemu_d3d_device7_DrawPrimitiveVB(struct qemu_syscall *call);
+void qemu_d3d_device7_EndScene(struct qemu_syscall *call);
+void qemu_d3d_device7_EndStateBlock(struct qemu_syscall *call);
+void qemu_d3d_device7_EnumTextureFormats(struct qemu_syscall *call);
+void qemu_d3d_device7_GetCaps(struct qemu_syscall *call);
+void qemu_d3d_device7_GetClipPlane(struct qemu_syscall *call);
+void qemu_d3d_device7_GetClipStatus(struct qemu_syscall *call);
+void qemu_d3d_device7_GetDirect3D(struct qemu_syscall *call);
+void qemu_d3d_device7_GetInfo(struct qemu_syscall *call);
+void qemu_d3d_device7_GetLight(struct qemu_syscall *call);
+void qemu_d3d_device7_GetLightEnable(struct qemu_syscall *call);
+void qemu_d3d_device7_GetMaterial(struct qemu_syscall *call);
+void qemu_d3d_device7_GetRenderState(struct qemu_syscall *call);
+void qemu_d3d_device7_GetRenderTarget(struct qemu_syscall *call);
+void qemu_d3d_device7_GetTexture(struct qemu_syscall *call);
+void qemu_d3d_device7_GetTextureStageState(struct qemu_syscall *call);
+void qemu_d3d_device7_GetTransform(struct qemu_syscall *call);
+void qemu_d3d_device7_GetViewport(struct qemu_syscall *call);
+void qemu_d3d_device7_LightEnable(struct qemu_syscall *call);
+void qemu_d3d_device7_Load(struct qemu_syscall *call);
+void qemu_d3d_device7_MultiplyTransform(struct qemu_syscall *call);
+void qemu_d3d_device7_PreLoad(struct qemu_syscall *call);
+void qemu_d3d_device7_Release(struct qemu_syscall *call);
+void qemu_d3d_device7_SetClipPlane(struct qemu_syscall *call);
+void qemu_d3d_device7_SetClipStatus(struct qemu_syscall *call);
+void qemu_d3d_device7_SetLight(struct qemu_syscall *call);
+void qemu_d3d_device7_SetMaterial(struct qemu_syscall *call);
+void qemu_d3d_device7_SetRenderState(struct qemu_syscall *call);
+void qemu_d3d_device7_SetRenderTarget(struct qemu_syscall *call);
+void qemu_d3d_device7_SetTexture(struct qemu_syscall *call);
+void qemu_d3d_device7_SetTextureStageState(struct qemu_syscall *call);
+void qemu_d3d_device7_SetTransform(struct qemu_syscall *call);
+void qemu_d3d_device7_SetViewport(struct qemu_syscall *call);
+void qemu_d3d_device7_ValidateDevice(struct qemu_syscall *call);
 void qemu_d3d_texture1_GetHandle(struct qemu_syscall *call);
 void qemu_d3d_texture1_Initialize(struct qemu_syscall *call);
 void qemu_d3d_texture1_Load(struct qemu_syscall *call);
