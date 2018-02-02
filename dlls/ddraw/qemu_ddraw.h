@@ -63,6 +63,7 @@ enum ddraw_calls
     CALL_DDRAW1_GETSCANLINE,
     CALL_DDRAW1_GETVERTICALBLANKSTATUS,
     CALL_DDRAW1_INITIALIZE,
+    CALL_DDRAW1_QUERYINTERFACE,
     CALL_DDRAW1_RELEASE,
     CALL_DDRAW1_RESTOREDISPLAYMODE,
     CALL_DDRAW1_SETCOOPERATIVELEVEL,
@@ -243,6 +244,8 @@ void qemu_ddraw1_GetMonitorFrequency(struct qemu_syscall *call);
 void qemu_ddraw1_GetScanLine(struct qemu_syscall *call);
 void qemu_ddraw1_GetVerticalBlankStatus(struct qemu_syscall *call);
 void qemu_ddraw1_Initialize(struct qemu_syscall *call);
+void qemu_ddraw1_Release(struct qemu_syscall *call);
+void qemu_ddraw1_QueryInterface(struct qemu_syscall *call);
 void qemu_ddraw1_RestoreDisplayMode(struct qemu_syscall *call);
 void qemu_ddraw1_SetCooperativeLevel(struct qemu_syscall *call);
 void qemu_ddraw1_SetDisplayMode(struct qemu_syscall *call);
@@ -317,7 +320,6 @@ void qemu_ddraw7_SetDisplayMode(struct qemu_syscall *call);
 void qemu_ddraw7_StartModeTest(struct qemu_syscall *call);
 void qemu_ddraw7_TestCooperativeLevel(struct qemu_syscall *call);
 void qemu_ddraw7_WaitForVerticalBlank(struct qemu_syscall *call);
-void qemu_ddraw_Release(struct qemu_syscall *call);
 void qemu_ddraw_clipper_GetClipList(struct qemu_syscall *call);
 void qemu_ddraw_clipper_GetHWnd(struct qemu_syscall *call);
 void qemu_ddraw_clipper_Initialize(struct qemu_syscall *call);

@@ -38,10 +38,17 @@
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_ddraw);
 
-struct qemu_ddraw_Release
+struct qemu_ddraw1_Release
 {
     struct qemu_syscall super;
     uint64_t iface;
+};
+
+struct qemu_ddraw1_QueryInterface
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t iid;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -86,6 +93,17 @@ static inline struct qemu_ddraw *impl_from_IDirect3D7(IDirect3D7 *iface)
     return CONTAINING_RECORD(iface, struct qemu_ddraw, IDirect3D7_iface);
 }
 
+/* The purpose of this is to set the ddraw->d3dversion member in the host
+ * object approprietly for the right enumerated devices in EnumDevices. */
+static void d3d_set_version(struct qemu_ddraw *ddraw, REFIID iid)
+{
+    struct qemu_ddraw1_QueryInterface call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW1_QUERYINTERFACE);
+    call.iface = (ULONG_PTR)ddraw;
+    call.iid = (ULONG_PTR)iid;
+    qemu_syscall(&call.super);
+}
+
 static HRESULT WINAPI ddraw7_QueryInterface(IDirectDraw7 *iface, REFIID riid, void **out)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw7(iface);
@@ -127,21 +145,25 @@ static HRESULT WINAPI ddraw7_QueryInterface(IDirectDraw7 *iface, REFIID riid, vo
     }
     else if (IsEqualGUID(&IID_IDirect3D7, riid))
     {
+        d3d_set_version(ddraw, &IID_IDirect3D7);
         *out = &ddraw->IDirect3D7_iface;
         WINE_TRACE("Returning Direct3D7 interface %p.\n", *out);
     }
     else if (IsEqualGUID(&IID_IDirect3D3, riid))
     {
+        d3d_set_version(ddraw, &IID_IDirect3D3);
         *out = &ddraw->IDirect3D3_iface;
         WINE_TRACE("Returning Direct3D3 interface %p.\n", *out);
     }
     else if (IsEqualGUID(&IID_IDirect3D2, riid))
     {
+        d3d_set_version(ddraw, &IID_IDirect3D2);
         *out = &ddraw->IDirect3D2_iface;
         WINE_TRACE("Returning Direct3D2 interface %p.\n", *out);
     }
     else if (IsEqualGUID(&IID_IDirect3D, riid))
     {
+        d3d_set_version(ddraw, &IID_IDirect3D);
         *out = &ddraw->IDirect3D_iface;
         WINE_TRACE("Returning Direct3D interface %p.\n", *out);
     }
@@ -399,9 +421,22 @@ static ULONG WINAPI d3d1_Release(IDirect3D *iface)
 
 #else
 
-void qemu_ddraw_Release(struct qemu_syscall *call)
+void qemu_ddraw1_QueryInterface(struct qemu_syscall *call)
 {
-    struct qemu_ddraw_Release *c = (struct qemu_ddraw_Release *)call;
+    struct qemu_ddraw1_QueryInterface *c = (struct qemu_ddraw1_QueryInterface *)call;
+    struct qemu_ddraw *ddraw;
+    IUnknown *obj;
+
+    WINE_TRACE("\n");
+    ddraw = QEMU_G2H(c->iface);
+
+    IDirectDraw_QueryInterface(ddraw->host_ddraw1, QEMU_G2H(c->iid), (void **)&obj);
+    IUnknown_Release(obj);
+}
+
+void qemu_ddraw1_Release(struct qemu_syscall *call)
+{
+    struct qemu_ddraw1_Release *c = (struct qemu_ddraw1_Release *)call;
     WINE_FIXME("Unimplemented!\n");
 }
 
