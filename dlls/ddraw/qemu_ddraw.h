@@ -82,7 +82,6 @@ enum ddraw_calls
     CALL_D3D_DEVICE2_GETCURRENTVIEWPORT,
     CALL_D3D_DEVICE2_GETLIGHTSTATE,
     CALL_D3D_DEVICE2_GETRENDERSTATE,
-    CALL_D3D_DEVICE2_GETRENDERTARGET,
     CALL_D3D_DEVICE2_GETSTATS,
     CALL_D3D_DEVICE2_GETTRANSFORM,
     CALL_D3D_DEVICE2_INDEX,
@@ -116,7 +115,6 @@ enum ddraw_calls
     CALL_D3D_DEVICE3_GETCURRENTVIEWPORT,
     CALL_D3D_DEVICE3_GETLIGHTSTATE,
     CALL_D3D_DEVICE3_GETRENDERSTATE,
-    CALL_D3D_DEVICE3_GETRENDERTARGET,
     CALL_D3D_DEVICE3_GETSTATS,
     CALL_D3D_DEVICE3_GETTEXTURE,
     CALL_D3D_DEVICE3_GETTEXTURESTAGESTATE,
@@ -159,7 +157,6 @@ enum ddraw_calls
     CALL_D3D_DEVICE7_GETLIGHTENABLE,
     CALL_D3D_DEVICE7_GETMATERIAL,
     CALL_D3D_DEVICE7_GETRENDERSTATE,
-    CALL_D3D_DEVICE7_GETRENDERTARGET,
     CALL_D3D_DEVICE7_GETTEXTURE,
     CALL_D3D_DEVICE7_GETTEXTURESTAGESTATE,
     CALL_D3D_DEVICE7_GETTRANSFORM,
@@ -697,7 +694,6 @@ void qemu_d3d_device2_GetClipStatus(struct qemu_syscall *call);
 void qemu_d3d_device2_GetCurrentViewport(struct qemu_syscall *call);
 void qemu_d3d_device2_GetLightState(struct qemu_syscall *call);
 void qemu_d3d_device2_GetRenderState(struct qemu_syscall *call);
-void qemu_d3d_device2_GetRenderTarget(struct qemu_syscall *call);
 void qemu_d3d_device2_GetStats(struct qemu_syscall *call);
 void qemu_d3d_device2_GetTransform(struct qemu_syscall *call);
 void qemu_d3d_device2_Index(struct qemu_syscall *call);
@@ -731,7 +727,6 @@ void qemu_d3d_device3_GetClipStatus(struct qemu_syscall *call);
 void qemu_d3d_device3_GetCurrentViewport(struct qemu_syscall *call);
 void qemu_d3d_device3_GetLightState(struct qemu_syscall *call);
 void qemu_d3d_device3_GetRenderState(struct qemu_syscall *call);
-void qemu_d3d_device3_GetRenderTarget(struct qemu_syscall *call);
 void qemu_d3d_device3_GetStats(struct qemu_syscall *call);
 void qemu_d3d_device3_GetTexture(struct qemu_syscall *call);
 void qemu_d3d_device3_GetTextureStageState(struct qemu_syscall *call);
@@ -774,7 +769,6 @@ void qemu_d3d_device7_GetLight(struct qemu_syscall *call);
 void qemu_d3d_device7_GetLightEnable(struct qemu_syscall *call);
 void qemu_d3d_device7_GetMaterial(struct qemu_syscall *call);
 void qemu_d3d_device7_GetRenderState(struct qemu_syscall *call);
-void qemu_d3d_device7_GetRenderTarget(struct qemu_syscall *call);
 void qemu_d3d_device7_GetTexture(struct qemu_syscall *call);
 void qemu_d3d_device7_GetTextureStageState(struct qemu_syscall *call);
 void qemu_d3d_device7_GetTransform(struct qemu_syscall *call);
