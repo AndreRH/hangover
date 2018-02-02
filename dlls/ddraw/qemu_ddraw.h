@@ -358,6 +358,7 @@ enum ddraw_calls
     CALL_DIRECTDRAWENUMERATEEXW,
     CALL_DIRECTDRAWENUMERATEW,
     CALL_GETSURFACEFROMDC,
+    CALL_INIT_DLL,
 };
 
 struct qemu_clipper
@@ -418,6 +419,7 @@ struct qemu_surface
 
     /* FIXME: These fields need thread synchronization! */
     struct qemu_clipper     *clipper;
+    /* TODO: Palette */
 
     /* Host fields */
     IDirectDrawSurface7     *host_surface7;
@@ -429,7 +431,8 @@ struct qemu_surface
     IDirect3DTexture2       *host_texture2;
     IDirect3DTexture        *host_texture1;
 
-    /* TODO: Palette */
+    IUnknown                private_data;
+    LONG                    private_data_ref;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -444,6 +447,8 @@ HRESULT WINAPI qemu_guest_DirectDrawCreateClipper(DWORD flags, IDirectDrawClippe
 void ddraw_clipper_guest_init(struct qemu_clipper *clipper);
 
 void qemu_surface_guest_init(struct qemu_surface *surface, struct qemu_ddraw *ddraw, unsigned int version);
+
+void __fastcall ddraw_surface_destroy_cb(struct qemu_surface *surface);
 
 #else
 
@@ -771,6 +776,16 @@ void qemu_ddraw_surface7_UpdateOverlayDisplay(struct qemu_syscall *call);
 void qemu_ddraw_surface7_UpdateOverlayZOrder(struct qemu_syscall *call);
 void qemu_ddraw_surface_Lock(struct qemu_syscall *call);
 void qemu_ddraw_surface_SetClipper(struct qemu_syscall *call);
+
+extern uint64_t ddraw_surface_destroy_cb;
+
+const struct IUnknownVtbl surface_priv_vtbl;
+const GUID surface_priv_uuid;
+
+static inline struct qemu_surface *surface_impl_from_IUnknown(IUnknown *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_surface, private_data);
+}
 
 extern const struct qemu_ops *qemu_ops;
 

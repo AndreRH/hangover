@@ -272,6 +272,7 @@ static void ddraw_surface_add_iface(struct qemu_surface *surface)
 
     if (iface_count == 1)
     {
+        WINE_FIXME("Interface count raised from the dead, I should probably AddRef the host interface!\n");
         if (surface->ifaceToRelease)
             IUnknown_AddRef(surface->ifaceToRelease);
     }
@@ -394,6 +395,13 @@ static ULONG WINAPI d3d_texture1_AddRef(IDirect3DTexture *iface)
     return IUnknown_AddRef(surface->texture_outer);
 }
 
+void __fastcall ddraw_surface_destroy_cb(struct qemu_surface *surface)
+{
+    WINE_TRACE("Executing destroy cb!\n");
+    if (surface->clipper)
+        IDirectDrawClipper_Release(&surface->clipper->IDirectDrawClipper_iface);
+}
+
 static ULONG ddraw_surface_release_iface(struct qemu_surface *surface)
 {
     ULONG iface_count;
@@ -407,14 +415,11 @@ static ULONG ddraw_surface_release_iface(struct qemu_surface *surface)
 
     WINE_TRACE("%p decreasing iface count to %u.\n", surface, iface_count);
 
-    if (iface_count == 0)
+    if (!iface_count)
     {
-        /* FIXME: This should be delayed until the host interface is destroyed - use private data callbacks. */
-        if (surface->clipper)
-            IDirectDrawClipper_Release(&surface->clipper->IDirectDrawClipper_iface);
-
         call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_RELEASE);
         call.iface = (ULONG_PTR)surface;
+        qemu_syscall(&call.super);
     }
 
     return iface_count;
@@ -555,8 +560,7 @@ void qemu_ddraw_surface1_Release(struct qemu_syscall *call)
     if (c->super.iret)
         WINE_ERR("Unexpected host interface refcount sum %lu\n", c->super.iret);
 
-    /* FIXME: This should be delayed until the host interface is destroyed - use private data callbacks. */
-    HeapFree(GetProcessHeap(), 0, surface);
+    /* surface is released by the private data callback. */
 }
 
 #endif
@@ -8636,5 +8640,55 @@ void qemu_surface_guest_init(struct qemu_surface *surface, struct qemu_ddraw *dd
         surface->texture_outer = (IUnknown *)&surface->IDirectDrawSurface_iface;
     }
 }
+
+#else
+
+static HRESULT WINAPI qemu_surface_priv_QueryInterface(IUnknown *iface, REFIID riid, void **out)
+{
+    WINE_ERR("Unexpected call\n");
+    return E_NOINTERFACE;
+}
+
+static ULONG WINAPI qemu_surface_priv_AddRef(IUnknown *iface)
+{
+    struct qemu_surface *surface = surface_impl_from_IUnknown(iface);
+    ULONG refcount = InterlockedIncrement(&surface->private_data_ref);
+
+    WINE_TRACE("%p increasing refcount to %u.\n", surface, refcount);
+    return refcount;
+}
+
+static ULONG WINAPI qemu_surface_priv_Release(IUnknown *iface)
+{
+    struct qemu_surface *surface = surface_impl_from_IUnknown(iface);
+    ULONG refcount = InterlockedDecrement(&surface->private_data_ref);
+
+    WINE_TRACE("%p decreasing refcount to %u.\n", surface, refcount);
+    if (!refcount)
+    {
+        /* This means the private data has been released, which only happens
+         * when the real interface has been destroyed. */
+        qemu_ops->qemu_execute(QEMU_G2H(ddraw_surface_destroy_cb), QEMU_H2G(surface));
+        HeapFree(GetProcessHeap(), 0, surface);
+    }
+
+    return refcount;
+}
+
+const struct IUnknownVtbl surface_priv_vtbl =
+{
+    /* IUnknown */
+    qemu_surface_priv_QueryInterface,
+    qemu_surface_priv_AddRef,
+    qemu_surface_priv_Release,
+};
+
+const GUID surface_priv_uuid =
+{
+    0xa52c4f8a,
+    0xb032,
+    0x4d67,
+    { 0x88,0x5c,0x64,0x79,0x76,0xb1,0x00,0x05 }
+};
 
 #endif

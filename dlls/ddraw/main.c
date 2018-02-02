@@ -646,6 +646,12 @@ err:
 
 #endif
 
+struct qemu_init_dll
+{
+    struct qemu_syscall super;
+    uint64_t ddraw_surface_destroy_cb;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 struct object_creation_info
@@ -797,10 +803,27 @@ WINBASEAPI HRESULT WINAPI DllUnregisterServer(void)
 
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
+    struct qemu_init_dll call;
+
+    if (reason == DLL_PROCESS_ATTACH)
+    {
+        call.super.id = QEMU_SYSCALL_ID(CALL_INIT_DLL);
+        call.ddraw_surface_destroy_cb = (ULONG_PTR)ddraw_surface_destroy_cb;
+        qemu_syscall(&call.super);
+    }
+
     return TRUE;
 }
 
 #else
+
+uint64_t ddraw_surface_destroy_cb;
+
+static void qemu_init_dll(struct qemu_syscall *call)
+{
+    struct qemu_init_dll *c = (struct qemu_init_dll *)call;
+    ddraw_surface_destroy_cb = c->ddraw_surface_destroy_cb;
+}
 
 const struct qemu_ops *qemu_ops;
 
@@ -1142,6 +1165,7 @@ static const syscall_handler dll_functions[] =
     qemu_DirectDrawEnumerateEx,
     qemu_DirectDrawEnumerate,
     qemu_GetSurfaceFromDC,
+    qemu_init_dll,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)

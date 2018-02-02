@@ -3433,6 +3433,11 @@ void qemu_ddraw7_CreateSurface(struct qemu_syscall *call)
                 (void **)&object->host_gamma);
 
         c->object = QEMU_H2G(object);
+
+        object->private_data.lpVtbl = &surface_priv_vtbl;
+        IDirectDrawSurface7_SetPrivateData(object->host_surface7, &surface_priv_uuid,
+                (IUnknown *)&object->private_data.lpVtbl, sizeof(&object->private_data.lpVtbl),
+                DDSPD_IUNKNOWNPOINTER);
     }
     else
     {
@@ -3548,6 +3553,11 @@ void qemu_ddraw4_CreateSurface(struct qemu_syscall *call)
                 (void **)&object->host_texture2);
 
         c->object = QEMU_H2G(object);
+
+        object->private_data.lpVtbl = &surface_priv_vtbl;
+        IDirectDrawSurface7_SetPrivateData(object->host_surface7, &surface_priv_uuid,
+                (IUnknown *)&object->private_data.lpVtbl, sizeof(&object->private_data.lpVtbl),
+                DDSPD_IUNKNOWNPOINTER);
     }
     else
     {
@@ -3660,6 +3670,11 @@ void qemu_ddraw2_CreateSurface(struct qemu_syscall *call)
                 (void **)&object->host_texture2);
 
         c->object = QEMU_H2G(object);
+
+        object->private_data.lpVtbl = &surface_priv_vtbl;
+        IDirectDrawSurface7_SetPrivateData(object->host_surface7, &surface_priv_uuid,
+                (IUnknown *)&object->private_data.lpVtbl, sizeof(&object->private_data.lpVtbl),
+                DDSPD_IUNKNOWNPOINTER);
     }
     else
     {
@@ -3772,6 +3787,11 @@ void qemu_ddraw1_CreateSurface(struct qemu_syscall *call)
                 (void **)&object->host_texture2);
 
         c->object = QEMU_H2G(object);
+
+        object->private_data.lpVtbl = &surface_priv_vtbl;
+        IDirectDrawSurface7_SetPrivateData(object->host_surface7, &surface_priv_uuid,
+                (IUnknown *)&object->private_data.lpVtbl, sizeof(&object->private_data.lpVtbl),
+                DDSPD_IUNKNOWNPOINTER);
     }
     else
     {
