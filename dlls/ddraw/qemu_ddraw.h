@@ -22,7 +22,8 @@
 
 enum ddraw_calls
 {
-    CALL_D3D1_CREATELIGHT = 0,
+    CALL_CF_CREATEOBJECT = 0,
+    CALL_D3D1_CREATELIGHT,
     CALL_D3D1_CREATEMATERIAL,
     CALL_D3D1_CREATEVIEWPORT,
     CALL_D3D1_ENUMDEVICES,
@@ -195,10 +196,11 @@ struct qemu_ddraw
 #ifdef QEMU_DLL_GUEST
 
 struct qemu_ddraw *unsafe_impl_from_IDirectDraw(IDirectDraw *iface);
+void ddraw_guest_init(struct qemu_ddraw *ddraw);
 
+struct qemu_clipper *unsafe_impl_from_IDirectDrawClipper(IDirectDrawClipper *iface);
 HRESULT WINAPI qemu_guest_DirectDrawCreateClipper(DWORD flags, IDirectDrawClipper **clipper, IUnknown *outer_unknown);
 void ddraw_clipper_guest_init(struct qemu_clipper *clipper);
-struct qemu_clipper *unsafe_impl_from_IDirectDrawClipper(IDirectDrawClipper *iface);
 
 #else
 

@@ -9,10 +9,10 @@ VPATH=$(SRCDIR)
 all: ddraw.dll qemu_ddraw.dll.so
 
 ddraw.dll: clipper_g.o ddraw.spec ddraw_g.o main_g.o
-	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/ddraw.spec *_g.o -o ddraw.dll -nodefaultlibs -nostdlib -lwine -lmsvcrt -luuid -ldxguid -L../../$(WINE_DIR)/libs/wine
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/ddraw.spec *_g.o -o ddraw.dll -nodefaultlibs -nostdlib -lwine -lmsvcrt -luuid -ldxguid -lkernel32 -L../../$(WINE_DIR)/libs/wine
 
 qemu_ddraw.dll.so: clipper_h.o ddraw_h.o main_h.o qemu_ddraw.spec
-	$(WINEGCC) -shared $(SRCDIR)/qemu_ddraw.spec *_h.o -o qemu_ddraw.dll.so -lddraw
+	$(WINEGCC) -shared $(SRCDIR)/qemu_ddraw.spec *_h.o -o qemu_ddraw.dll.so -lddraw -luuid -ldxguid
 
 %_g.o: %.c qemu_ddraw.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -I../../../wine/include/wine -Wno-format

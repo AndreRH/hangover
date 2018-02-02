@@ -328,7 +328,10 @@ static ULONG WINAPI d3d1_AddRef(IDirect3D *iface)
 
 static void ddraw_destroy(struct qemu_ddraw *ddraw)
 {
-    WINE_FIXME("Implement me!\n");
+    struct qemu_ddraw1_Release call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW1_RELEASE);
+    call.iface = (ULONG_PTR)ddraw;
+    qemu_syscall(&call.super);
 }
 
 static ULONG WINAPI ddraw7_Release(IDirectDraw7 *iface)
@@ -437,7 +440,24 @@ void qemu_ddraw1_QueryInterface(struct qemu_syscall *call)
 void qemu_ddraw1_Release(struct qemu_syscall *call)
 {
     struct qemu_ddraw1_Release *c = (struct qemu_ddraw1_Release *)call;
-    WINE_FIXME("Unimplemented!\n");
+    struct qemu_ddraw *ddraw;
+
+    WINE_TRACE("\n");
+    ddraw = QEMU_G2H(c->iface);
+
+    if (ddraw->host_d3d7)
+        IDirect3D7_Release(ddraw->host_d3d7);
+    IDirect3D3_Release(ddraw->host_d3d3);
+    IDirect3D2_Release(ddraw->host_d3d2);
+    IDirect3D_Release(ddraw->host_d3d1);
+
+    c->super.iret = IDirectDraw_Release(ddraw->host_ddraw1);
+    c->super.iret += IDirectDraw2_Release(ddraw->host_ddraw2);
+    c->super.iret += IDirectDraw4_Release(ddraw->host_ddraw4);
+    c->super.iret += IDirectDraw7_Release(ddraw->host_ddraw7);
+
+    if (c->super.iret)
+        WINE_ERR("Unexpected host interface refcount sum %lu\n", c->super.iret);
 }
 
 #endif
@@ -5214,6 +5234,20 @@ struct qemu_ddraw *unsafe_impl_from_IDirectDraw(IDirectDraw *iface)
         WINE_ERR("Incorrect clipper vtable %p, expect %p.\n", iface->lpVtbl, &ddraw1_vtbl);
 
     return impl_from_IDirectDraw(iface);
+}
+
+void ddraw_guest_init(struct qemu_ddraw *ddraw)
+{
+    ddraw->IDirectDraw7_iface.lpVtbl = &ddraw7_vtbl;
+    ddraw->IDirectDraw_iface.lpVtbl = &ddraw1_vtbl;
+    ddraw->IDirectDraw2_iface.lpVtbl = &ddraw2_vtbl;
+    ddraw->IDirectDraw4_iface.lpVtbl = &ddraw4_vtbl;
+    ddraw->IDirect3D_iface.lpVtbl = &d3d1_vtbl;
+    ddraw->IDirect3D2_iface.lpVtbl = &d3d2_vtbl;
+    ddraw->IDirect3D3_iface.lpVtbl = &d3d3_vtbl;
+    ddraw->IDirect3D7_iface.lpVtbl = &d3d7_vtbl;
+    ddraw->numIfaces = 1;
+    ddraw->ref1 = 1;
 }
 
 #endif

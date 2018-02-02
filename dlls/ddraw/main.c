@@ -19,6 +19,8 @@
 
 /* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
 
+#define COBJMACROS
+
 #include <windows.h>
 #include <stdio.h>
 #include <ddraw.h>
@@ -420,12 +422,284 @@ static void qemu_DirectDrawEnumerateEx(struct qemu_syscall *call)
 
 #endif
 
+enum create_what
+{
+    CF_DDRAW,
+    CF_DDRAW7,
+    CF_CLIPPER,
+};
+
+struct qemu_CF_CreateObject
+{
+    struct qemu_syscall super;
+    uint64_t what;
+    uint64_t fac_id;
+    uint64_t object;
+};
+
 #ifdef QEMU_DLL_GUEST
+
+static HRESULT CF_CreateObject(IUnknown* UnkOuter, REFIID iid, void **obj, enum create_what what, const CLSID *fac_id)
+{
+    struct qemu_CF_CreateObject call;
+    struct qemu_ddraw *ddraw;
+    struct qemu_clipper *clipper;
+    IUnknown *unk;
+    HRESULT hr;
+
+    WINE_TRACE("outer_unknown %p, riid %s, object %p.\n", UnkOuter, wine_dbgstr_guid(iid), obj);
+
+    call.super.id = CALL_CF_CREATEOBJECT;
+    call.what = what;
+    call.fac_id = (ULONG_PTR)fac_id;
+
+    qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+    {
+        *obj = NULL;
+        return call.super.iret;
+    }
+
+    if (what == CF_CLIPPER)
+    {
+        clipper = (struct qemu_clipper *)(ULONG_PTR)call.object;
+        ddraw_clipper_guest_init(clipper);
+        unk = (IUnknown *)&clipper->IDirectDrawClipper_iface;
+    }
+    else
+    {
+        ddraw = (struct qemu_ddraw *)(ULONG_PTR)call.object;
+        ddraw_guest_init(ddraw);
+        unk = (IUnknown *)&ddraw->IDirectDraw_iface;
+    }
+
+    hr = IUnknown_QueryInterface(unk, iid, obj);
+    IUnknown_Release(unk);
+
+    return hr;
+}
+
+#else
+
+static void qemu_CF_CreateObject(struct qemu_syscall *call)
+{
+    struct qemu_CF_CreateObject *c = (struct qemu_CF_CreateObject *)call;
+    HRESULT hr;
+    HMODULE lib;
+    HRESULT (* WINAPI p_DllGetClassObject)(REFCLSID rclsid, REFIID riid, void **obj);
+    IClassFactory *factory;
+    struct qemu_ddraw *ddraw = NULL;
+    struct qemu_clipper *clipper = NULL;
+
+    WINE_TRACE("\n");
+
+    /* We can't use CoCreateInstance because the host-side ole32 is probably not initialized.
+     * So navigate out way through DllGetClassObject like ole32 would. */
+
+    lib = GetModuleHandleA("ddraw");
+    p_DllGetClassObject = (void *)GetProcAddress(lib, "DllGetClassObject");
+
+    hr = p_DllGetClassObject(QEMU_G2H(c->fac_id), &IID_IClassFactory, (void *)&factory);
+    if (FAILED(hr))
+        WINE_ERR("Cannot create class factory\n");
+
+    if (c->what == CF_DDRAW || c->what == CF_DDRAW7)
+    {
+
+        ddraw = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ddraw));
+        if (!ddraw)
+        {
+            WINE_WARN("Out of memory.\n");
+            hr = E_OUTOFMEMORY;
+            goto err;
+        }
+
+        if (c->what == CF_DDRAW)
+        {
+            hr = IClassFactory_CreateInstance(factory, NULL, &IID_IDirectDraw, (void **)&ddraw->host_ddraw1);
+            if (FAILED(hr))
+                goto err;
+            IDirectDraw_QueryInterface(ddraw->host_ddraw1, &IID_IDirectDraw7, (void **)&ddraw->host_ddraw7);
+        }
+        else
+        {
+            hr = IClassFactory_CreateInstance(factory, NULL, &IID_IDirectDraw7, (void **)&ddraw->host_ddraw7);
+            if (FAILED(hr))
+                goto err;
+
+            IDirectDraw7_QueryInterface(ddraw->host_ddraw7, &IID_IDirectDraw, (void **)&ddraw->host_ddraw1);
+            IDirectDraw7_QueryInterface(ddraw->host_ddraw7, &IID_IDirect3D7, (void **)&ddraw->host_d3d7);
+        }
+        IDirectDraw_QueryInterface(ddraw->host_ddraw1, &IID_IDirectDraw2, (void **)&ddraw->host_ddraw2);
+        IDirectDraw_QueryInterface(ddraw->host_ddraw1, &IID_IDirectDraw4, (void **)&ddraw->host_ddraw4);
+
+        IDirectDraw_QueryInterface(ddraw->host_ddraw1, &IID_IDirect3D, (void **)&ddraw->host_d3d1);
+        IDirectDraw_QueryInterface(ddraw->host_ddraw1, &IID_IDirect3D2, (void **)&ddraw->host_d3d2);
+        IDirectDraw_QueryInterface(ddraw->host_ddraw1, &IID_IDirect3D3, (void **)&ddraw->host_d3d3);
+
+        c->object = QEMU_H2G(ddraw);
+    }
+    else
+    {
+        clipper = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*clipper));
+        if (!clipper)
+        {
+            WINE_WARN("Out of memory.\n");
+            hr = E_OUTOFMEMORY;
+            goto err;
+        }
+
+        hr = IClassFactory_CreateInstance(factory, NULL, &IID_IDirectDrawClipper, (void **)&clipper->host);
+        if (FAILED(hr))
+            goto err;
+
+        c->object = QEMU_H2G(clipper);
+    }
+
+    IClassFactory_Release(factory);
+
+    c->super.iret = DD_OK;
+    return;
+
+err:
+    WINE_FIXME("Creating a host object failed.\n");
+    HeapFree(GetProcessHeap(), 0, ddraw);
+    HeapFree(GetProcessHeap(), 0, clipper);
+    IClassFactory_Release(factory);
+    c->super.iret = hr;
+}
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
+struct object_creation_info
+{
+    const CLSID *clsid;
+    enum create_what what;
+};
+
+static const struct object_creation_info object_creation[] =
+{
+    { &CLSID_DirectDraw,        CF_DDRAW },
+    { &CLSID_DirectDraw7,       CF_DDRAW7 },
+    { &CLSID_DirectDrawClipper, CF_CLIPPER }
+};
+
+struct ddraw_class_factory
+{
+    IClassFactory IClassFactory_iface;
+
+    LONG ref;
+    enum create_what what;
+    const CLSID *fac_id;
+};
+
+static inline struct ddraw_class_factory *impl_from_IClassFactory(IClassFactory *iface)
+{
+    return CONTAINING_RECORD(iface, struct ddraw_class_factory, IClassFactory_iface);
+}
+
+static HRESULT WINAPI ddraw_class_factory_QueryInterface(IClassFactory *iface, REFIID riid, void **out)
+{
+    WINE_TRACE("iface %p, riid %s, out %p.\n", iface, wine_dbgstr_guid(riid), out);
+
+    if (IsEqualGUID(riid, &IID_IUnknown) || IsEqualGUID(riid, &IID_IClassFactory))
+    {
+        IClassFactory_AddRef(iface);
+        *out = iface;
+        return S_OK;
+    }
+
+    WINE_WARN("%s not implemented, returning E_NOINTERFACE.\n", wine_dbgstr_guid(riid));
+
+    return E_NOINTERFACE;
+}
+
+static ULONG WINAPI ddraw_class_factory_AddRef(IClassFactory *iface)
+{
+    struct ddraw_class_factory *factory = impl_from_IClassFactory(iface);
+    ULONG ref = InterlockedIncrement(&factory->ref);
+
+    WINE_TRACE("%p increasing refcount to %u.\n", factory, ref);
+
+    return ref;
+}
+
+static ULONG WINAPI ddraw_class_factory_Release(IClassFactory *iface)
+{
+    struct ddraw_class_factory *factory = impl_from_IClassFactory(iface);
+    ULONG ref = InterlockedDecrement(&factory->ref);
+
+    WINE_TRACE("%p decreasing refcount to %u.\n", factory, ref);
+
+    if (!ref)
+        HeapFree(GetProcessHeap(), 0, factory);
+
+    return ref;
+}
+
+static HRESULT WINAPI ddraw_class_factory_CreateInstance(IClassFactory *iface,
+        IUnknown *outer_unknown, REFIID riid, void **out)
+{
+    struct ddraw_class_factory *factory = impl_from_IClassFactory(iface);
+
+    WINE_TRACE("iface %p, outer_unknown %p, riid %s, out %p.\n",
+            iface, outer_unknown, wine_dbgstr_guid(riid), out);
+
+    return CF_CreateObject(outer_unknown, riid, out, factory->what, factory->fac_id);
+}
+
+static HRESULT WINAPI ddraw_class_factory_LockServer(IClassFactory *iface, BOOL dolock)
+{
+    WINE_FIXME("iface %p, dolock %#x stub!\n", iface, dolock);
+
+    return S_OK;
+}
+
+static const IClassFactoryVtbl IClassFactory_Vtbl =
+{
+    ddraw_class_factory_QueryInterface,
+    ddraw_class_factory_AddRef,
+    ddraw_class_factory_Release,
+    ddraw_class_factory_CreateInstance,
+    ddraw_class_factory_LockServer
+};
 
 WINBASEAPI HRESULT WINAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, void **out)
 {
-    WINE_FIXME("Stub!\n");
-    return E_FAIL;
+    struct ddraw_class_factory *factory;
+    unsigned int i;
+
+    WINE_TRACE("rclsid %s, riid %s, out %p.\n", wine_dbgstr_guid(rclsid), wine_dbgstr_guid(riid), out);
+
+    if (!IsEqualGUID(&IID_IClassFactory, riid) && !IsEqualGUID(&IID_IUnknown, riid))
+        return E_NOINTERFACE;
+
+    for (i = 0; i < sizeof(object_creation) / sizeof(object_creation[0]); i++)
+    {
+        if (IsEqualGUID(object_creation[i].clsid, rclsid))
+            break;
+    }
+
+    if (i == sizeof(object_creation) / sizeof(object_creation[0]))
+    {
+        WINE_FIXME("%s: no class found.\n", wine_dbgstr_guid(rclsid));
+        return CLASS_E_CLASSNOTAVAILABLE;
+    }
+
+    factory = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*factory));
+    if (factory == NULL)
+        return E_OUTOFMEMORY;
+
+    factory->IClassFactory_iface.lpVtbl = &IClassFactory_Vtbl;
+    factory->ref = 1;
+
+    factory->what = object_creation[i].what;
+    factory->fac_id = object_creation[i].clsid;
+
+    *out = factory;
+    return S_OK;
 }
 
 WINBASEAPI HRESULT WINAPI DllCanUnloadNow(void)
@@ -457,6 +731,7 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu_CF_CreateObject,
     qemu_d3d1_CreateLight,
     qemu_d3d1_CreateMaterial,
     qemu_d3d1_CreateViewport,
