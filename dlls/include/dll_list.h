@@ -31,5 +31,6 @@
 #define DLL_DSOUND      0x1cLL
 #define DLL_MSVCR80     0x1dLL
 #define DLL_RICHED32    0x1eLL
+#define DLL_DDRAW       0x1fLL
 
 #endif
