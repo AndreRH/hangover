@@ -26,6 +26,9 @@
 #include <ddraw.h>
 #include <d3d.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_ddraw.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_ddraw.h"
@@ -746,7 +749,7 @@ void qemu_ddraw_surface1_GetAttachedSurface(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_ddraw_surface7_Lock
+struct qemu_ddraw_surface_Lock
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -760,7 +763,7 @@ struct qemu_ddraw_surface7_Lock
 
 static HRESULT WINAPI ddraw_surface7_Lock(IDirectDrawSurface7 *iface, RECT *rect, DDSURFACEDESC2 *surface_desc, DWORD flags, HANDLE h)
 {
-    struct qemu_ddraw_surface7_Lock call;
+    struct qemu_ddraw_surface_Lock call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_LOCK);
     call.iface = (ULONG_PTR)surface;
@@ -774,36 +777,9 @@ static HRESULT WINAPI ddraw_surface7_Lock(IDirectDrawSurface7 *iface, RECT *rect
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw_surface7_Lock(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface7_Lock *c = (struct qemu_ddraw_surface7_Lock *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface7_Lock(surface->host_surface7, QEMU_G2H(c->rect), QEMU_G2H(c->surface_desc), c->flags, QEMU_G2H(c->h));
-}
-
-#endif
-
-struct qemu_ddraw_surface4_Lock
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t rect;
-    uint64_t surface_desc;
-    uint64_t flags;
-    uint64_t h;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 static HRESULT WINAPI ddraw_surface4_Lock(IDirectDrawSurface4 *iface, RECT *rect, DDSURFACEDESC2 *surface_desc, DWORD flags, HANDLE h)
 {
-    struct qemu_ddraw_surface4_Lock call;
+    struct qemu_ddraw_surface_Lock call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_LOCK);
     call.iface = (ULONG_PTR)surface;
@@ -817,36 +793,9 @@ static HRESULT WINAPI ddraw_surface4_Lock(IDirectDrawSurface4 *iface, RECT *rect
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw_surface4_Lock(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface4_Lock *c = (struct qemu_ddraw_surface4_Lock *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface4_Lock(surface->host_surface4, QEMU_G2H(c->rect), QEMU_G2H(c->surface_desc), c->flags, QEMU_G2H(c->h));
-}
-
-#endif
-
-struct qemu_ddraw_surface3_Lock
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t rect;
-    uint64_t surface_desc;
-    uint64_t flags;
-    uint64_t h;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 static HRESULT WINAPI ddraw_surface3_Lock(IDirectDrawSurface3 *iface, RECT *rect, DDSURFACEDESC *surface_desc, DWORD flags, HANDLE h)
 {
-    struct qemu_ddraw_surface3_Lock call;
+    struct qemu_ddraw_surface_Lock call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface3(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE3_LOCK);
     call.iface = (ULONG_PTR)surface;
@@ -860,36 +809,9 @@ static HRESULT WINAPI ddraw_surface3_Lock(IDirectDrawSurface3 *iface, RECT *rect
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw_surface3_Lock(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface3_Lock *c = (struct qemu_ddraw_surface3_Lock *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface3_Lock(surface->host_surface3, QEMU_G2H(c->rect), QEMU_G2H(c->surface_desc), c->flags, QEMU_G2H(c->h));
-}
-
-#endif
-
-struct qemu_ddraw_surface2_Lock
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t rect;
-    uint64_t surface_desc;
-    uint64_t flags;
-    uint64_t h;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 static HRESULT WINAPI ddraw_surface2_Lock(IDirectDrawSurface2 *iface, RECT *rect, DDSURFACEDESC *surface_desc, DWORD flags, HANDLE h)
 {
-    struct qemu_ddraw_surface2_Lock call;
+    struct qemu_ddraw_surface_Lock call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface2(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE2_LOCK);
     call.iface = (ULONG_PTR)surface;
@@ -903,36 +825,9 @@ static HRESULT WINAPI ddraw_surface2_Lock(IDirectDrawSurface2 *iface, RECT *rect
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw_surface2_Lock(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface2_Lock *c = (struct qemu_ddraw_surface2_Lock *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface2_Lock(surface->host_surface2, QEMU_G2H(c->rect), QEMU_G2H(c->surface_desc), c->flags, QEMU_G2H(c->h));
-}
-
-#endif
-
-struct qemu_ddraw_surface1_Lock
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t rect;
-    uint64_t surface_desc;
-    uint64_t flags;
-    uint64_t h;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 static HRESULT WINAPI ddraw_surface1_Lock(IDirectDrawSurface *iface, RECT *rect, DDSURFACEDESC *surface_desc, DWORD flags, HANDLE h)
 {
-    struct qemu_ddraw_surface1_Lock call;
+    struct qemu_ddraw_surface_Lock call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_LOCK);
     call.iface = (ULONG_PTR)surface;
@@ -948,15 +843,73 @@ static HRESULT WINAPI ddraw_surface1_Lock(IDirectDrawSurface *iface, RECT *rect,
 
 #else
 
-void qemu_ddraw_surface1_Lock(struct qemu_syscall *call)
+void qemu_ddraw_surface_Lock(struct qemu_syscall *call)
 {
-    struct qemu_ddraw_surface1_Lock *c = (struct qemu_ddraw_surface1_Lock *)call;
+    struct qemu_ddraw_surface_Lock *c = (struct qemu_ddraw_surface_Lock *)call;
     struct qemu_surface *surface;
+    DDSURFACEDESC2 stack, *desc = &stack;
+    struct qemu_DDSURFACEDESC2 *desc32;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDrawSurface_Lock(surface->host_surface1, QEMU_G2H(c->rect), QEMU_G2H(c->surface_desc), c->flags, QEMU_G2H(c->h));
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->surface_desc);
+#else
+    desc32 = QEMU_G2H(c->surface_desc);
+    if (!desc32)
+        desc = NULL;
+    else if (desc32->dwSize == sizeof(*desc32))
+        desc->dwSize = sizeof(*desc);
+    else if (desc32->dwSize == sizeof(struct qemu_DDSURFACEDESC))
+        desc->dwSize = sizeof(DDSURFACEDESC);
+    else
+        desc->dwSize = 0;
+#endif
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_LOCK):
+            c->super.iret = IDirectDrawSurface7_Lock(surface->host_surface7, QEMU_G2H(c->rect),
+                    desc, c->flags, QEMU_G2H(c->h));
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_LOCK):
+            c->super.iret = IDirectDrawSurface4_Lock(surface->host_surface4, QEMU_G2H(c->rect),
+                    desc, c->flags, QEMU_G2H(c->h));
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE3_LOCK):
+            c->super.iret = IDirectDrawSurface3_Lock(surface->host_surface3, QEMU_G2H(c->rect),
+                    (DDSURFACEDESC *)desc, c->flags, QEMU_G2H(c->h));
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE2_LOCK):
+            c->super.iret = IDirectDrawSurface2_Lock(surface->host_surface2, QEMU_G2H(c->rect),
+                    (DDSURFACEDESC *)desc, c->flags, QEMU_G2H(c->h));
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_LOCK):
+            c->super.iret = IDirectDrawSurface_Lock(surface->host_surface1, QEMU_G2H(c->rect),
+                    (DDSURFACEDESC *)desc, c->flags, QEMU_G2H(c->h));
+            break;
+    }
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret))
+    {
+        if (desc32->dwSize == sizeof(*desc32))
+            DDSURFACEDESC2_h2g(desc32, desc);
+        else if(desc32->dwSize == sizeof(struct qemu_DDSURFACEDESC))
+            DDSURFACEDESC_h2g((struct qemu_DDSURFACEDESC *)desc32, (DDSURFACEDESC *)desc);
+        else
+            WINE_ERR("Lock succeeded despite invalid size.\n");
+    }
+    else if (desc32 && desc32->dwSize == sizeof(*desc32) || desc32->dwSize == sizeof(struct qemu_DDSURFACEDESC))
+    {
+        desc32->lpSurface = (ULONG_PTR)desc->lpSurface;
+    }
+#endif
 }
 
 #endif
@@ -990,7 +943,7 @@ void qemu_ddraw_surface7_Unlock(struct qemu_syscall *call)
     struct qemu_ddraw_surface7_Unlock *c = (struct qemu_ddraw_surface7_Unlock *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface7_Unlock(surface->host_surface7, QEMU_G2H(c->pRect));
@@ -1027,7 +980,7 @@ void qemu_ddraw_surface4_Unlock(struct qemu_syscall *call)
     struct qemu_ddraw_surface4_Unlock *c = (struct qemu_ddraw_surface4_Unlock *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface4_Unlock(surface->host_surface4, QEMU_G2H(c->pRect));
@@ -1064,7 +1017,7 @@ void qemu_ddraw_surface3_Unlock(struct qemu_syscall *call)
     struct qemu_ddraw_surface3_Unlock *c = (struct qemu_ddraw_surface3_Unlock *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface3_Unlock(surface->host_surface3, QEMU_G2H(c->data));
@@ -1101,7 +1054,7 @@ void qemu_ddraw_surface2_Unlock(struct qemu_syscall *call)
     struct qemu_ddraw_surface2_Unlock *c = (struct qemu_ddraw_surface2_Unlock *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface2_Unlock(surface->host_surface2, QEMU_G2H(c->data));
@@ -1138,7 +1091,7 @@ void qemu_ddraw_surface1_Unlock(struct qemu_syscall *call)
     struct qemu_ddraw_surface1_Unlock *c = (struct qemu_ddraw_surface1_Unlock *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface_Unlock(surface->host_surface1, QEMU_G2H(c->data));

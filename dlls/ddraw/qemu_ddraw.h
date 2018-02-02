@@ -445,7 +445,6 @@ void qemu_surface_guest_init(struct qemu_surface *surface, struct qemu_ddraw *dd
 
 #else
 
-
 void qemu_DirectDrawCreateClipper(struct qemu_syscall *call);
 void qemu_d3d1_CreateLight(struct qemu_syscall *call);
 void qemu_d3d1_CreateMaterial(struct qemu_syscall *call);
@@ -601,7 +600,6 @@ void qemu_ddraw_surface1_GetPixelFormat(struct qemu_syscall *call);
 void qemu_ddraw_surface1_GetSurfaceDesc(struct qemu_syscall *call);
 void qemu_ddraw_surface1_Initialize(struct qemu_syscall *call);
 void qemu_ddraw_surface1_IsLost(struct qemu_syscall *call);
-void qemu_ddraw_surface1_Lock(struct qemu_syscall *call);
 void qemu_ddraw_surface1_Release(struct qemu_syscall *call);
 void qemu_ddraw_surface1_ReleaseDC(struct qemu_syscall *call);
 void qemu_ddraw_surface1_Restore(struct qemu_syscall *call);
@@ -636,7 +634,6 @@ void qemu_ddraw_surface2_GetPixelFormat(struct qemu_syscall *call);
 void qemu_ddraw_surface2_GetSurfaceDesc(struct qemu_syscall *call);
 void qemu_ddraw_surface2_Initialize(struct qemu_syscall *call);
 void qemu_ddraw_surface2_IsLost(struct qemu_syscall *call);
-void qemu_ddraw_surface2_Lock(struct qemu_syscall *call);
 void qemu_ddraw_surface2_PageLock(struct qemu_syscall *call);
 void qemu_ddraw_surface2_PageUnlock(struct qemu_syscall *call);
 void qemu_ddraw_surface2_ReleaseDC(struct qemu_syscall *call);
@@ -672,7 +669,6 @@ void qemu_ddraw_surface3_GetPixelFormat(struct qemu_syscall *call);
 void qemu_ddraw_surface3_GetSurfaceDesc(struct qemu_syscall *call);
 void qemu_ddraw_surface3_Initialize(struct qemu_syscall *call);
 void qemu_ddraw_surface3_IsLost(struct qemu_syscall *call);
-void qemu_ddraw_surface3_Lock(struct qemu_syscall *call);
 void qemu_ddraw_surface3_PageLock(struct qemu_syscall *call);
 void qemu_ddraw_surface3_PageUnlock(struct qemu_syscall *call);
 void qemu_ddraw_surface3_ReleaseDC(struct qemu_syscall *call);
@@ -713,7 +709,6 @@ void qemu_ddraw_surface4_GetSurfaceDesc(struct qemu_syscall *call);
 void qemu_ddraw_surface4_GetUniquenessValue(struct qemu_syscall *call);
 void qemu_ddraw_surface4_Initialize(struct qemu_syscall *call);
 void qemu_ddraw_surface4_IsLost(struct qemu_syscall *call);
-void qemu_ddraw_surface4_Lock(struct qemu_syscall *call);
 void qemu_ddraw_surface4_PageLock(struct qemu_syscall *call);
 void qemu_ddraw_surface4_PageUnlock(struct qemu_syscall *call);
 void qemu_ddraw_surface4_ReleaseDC(struct qemu_syscall *call);
@@ -757,7 +752,6 @@ void qemu_ddraw_surface7_GetSurfaceDesc(struct qemu_syscall *call);
 void qemu_ddraw_surface7_GetUniquenessValue(struct qemu_syscall *call);
 void qemu_ddraw_surface7_Initialize(struct qemu_syscall *call);
 void qemu_ddraw_surface7_IsLost(struct qemu_syscall *call);
-void qemu_ddraw_surface7_Lock(struct qemu_syscall *call);
 void qemu_ddraw_surface7_PageLock(struct qemu_syscall *call);
 void qemu_ddraw_surface7_PageUnlock(struct qemu_syscall *call);
 void qemu_ddraw_surface7_ReleaseDC(struct qemu_syscall *call);
@@ -774,6 +768,7 @@ void qemu_ddraw_surface7_Unlock(struct qemu_syscall *call);
 void qemu_ddraw_surface7_UpdateOverlay(struct qemu_syscall *call);
 void qemu_ddraw_surface7_UpdateOverlayDisplay(struct qemu_syscall *call);
 void qemu_ddraw_surface7_UpdateOverlayZOrder(struct qemu_syscall *call);
+void qemu_ddraw_surface_Lock(struct qemu_syscall *call);
 
 extern const struct qemu_ops *qemu_ops;
 
