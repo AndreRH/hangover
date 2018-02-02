@@ -3341,6 +3341,11 @@ struct qemu_ddraw7_CreateSurface
     uint64_t object;
 };
 
+struct surface_guest_init_complex
+{
+    uint64_t ddraw, surface, version;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw7_CreateSurface(IDirectDraw7 *iface, DDSURFACEDESC2 *surface_desc,
@@ -3377,6 +3382,15 @@ static HRESULT WINAPI ddraw7_CreateSurface(IDirectDraw7 *iface, DDSURFACEDESC2 *
     return call.super.iret;
 }
 
+void __fastcall surface_guest_init_complex(void *call)
+{
+    struct surface_guest_init_complex *c = call;
+    struct qemu_ddraw *ddraw = (struct qemu_ddraw *)(ULONG_PTR)c->ddraw;
+    struct qemu_surface *surface = (struct qemu_surface *)(ULONG_PTR)c->surface;
+
+    qemu_surface_guest_init(surface, ddraw, c->version);
+}
+
 #else
 
 static void surface_host_init(struct qemu_surface *surface, IUnknown *host)
@@ -3397,12 +3411,45 @@ static void surface_host_init(struct qemu_surface *surface, IUnknown *host)
             DDSPD_IUNKNOWNPOINTER);
 }
 
+struct surface_guest_init_complex_host
+{
+    struct qemu_ddraw *ddraw;
+    UINT version;
+};
+
+static HRESULT enum_Callback(IDirectDrawSurface7 *surface, DDSURFACEDESC2 *desc, void *context)
+{
+    struct qemu_surface *object;
+    struct surface_guest_init_complex call;
+    struct surface_guest_init_complex_host *ctx = context;
+
+    object = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*object));
+    if (!object)
+        WINE_FIXME("Alloc failed, abort enumeration!\n");
+
+    surface_host_init(object, (IUnknown *)surface);
+
+    WINE_TRACE("Calling guest init on complex subsurface %p.\n", object);
+    call.ddraw = QEMU_H2G(ctx->ddraw);
+    call.surface = QEMU_H2G(object);
+    call.version = ctx->version;
+    qemu_ops->qemu_execute(QEMU_G2H(surface_guest_init_complex), QEMU_H2G(&call));
+
+    if FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(surface, context, enum_Callback))
+        WINE_ERR("Surface enumeration failed\n");
+
+    IDirectDrawSurface7_Release(surface);
+
+    return DDENUMRET_OK;
+}
+
 void qemu_ddraw7_CreateSurface(struct qemu_syscall *call)
 {
     struct qemu_ddraw7_CreateSurface *c = (struct qemu_ddraw7_CreateSurface *)call;
     IDirectDrawSurface7 *host;
     struct qemu_ddraw *ddraw;
     struct qemu_surface *object;
+    struct surface_guest_init_complex_host ctx;
 #if HOST_BIT == GUEST_BIT
     DDSURFACEDESC2 *desc = QEMU_G2H(c->surface_desc);
     ULONG_PTR *out_ptr;
@@ -3441,6 +3488,12 @@ void qemu_ddraw7_CreateSurface(struct qemu_syscall *call)
     {
         surface_host_init(object, (IUnknown *)host);
         IDirectDrawSurface7_Release(host);
+
+        ctx.ddraw = ddraw;
+        ctx.version = 7;
+        if (FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(object->host_surface7, object, enum_Callback)))
+            WINE_ERR("Surface enumeration failed!\n");
+
         c->object = QEMU_H2G(object);
     }
     else
@@ -3504,6 +3557,7 @@ void qemu_ddraw4_CreateSurface(struct qemu_syscall *call)
     IDirectDrawSurface4 *host;
     struct qemu_ddraw *ddraw;
     struct qemu_surface *object;
+    struct surface_guest_init_complex_host ctx;
 #if HOST_BIT == GUEST_BIT
     DDSURFACEDESC2 *desc = QEMU_G2H(c->surface_desc);
     ULONG_PTR *out_ptr;
@@ -3542,6 +3596,12 @@ void qemu_ddraw4_CreateSurface(struct qemu_syscall *call)
     {
         surface_host_init(object, (IUnknown *)host);
         IDirectDrawSurface4_Release(host);
+
+        ctx.ddraw = ddraw;
+        ctx.version = 4;
+        if (FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(object->host_surface7, object, enum_Callback)))
+            WINE_ERR("Surface enumeration failed!\n");
+
         c->object = QEMU_H2G(object);
     }
     else
@@ -3602,6 +3662,7 @@ void qemu_ddraw2_CreateSurface(struct qemu_syscall *call)
     IDirectDrawSurface *host;
     struct qemu_ddraw *ddraw;
     struct qemu_surface *object;
+    struct surface_guest_init_complex_host ctx;
 #if HOST_BIT == GUEST_BIT
     DDSURFACEDESC *desc = QEMU_G2H(c->surface_desc);
     ULONG_PTR *out_ptr;
@@ -3640,6 +3701,12 @@ void qemu_ddraw2_CreateSurface(struct qemu_syscall *call)
     {
         surface_host_init(object, (IUnknown *)host);
         IDirectDrawSurface_Release(host);
+
+        ctx.ddraw = ddraw;
+        ctx.version = 2;
+        if (FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(object->host_surface7, object, enum_Callback)))
+            WINE_ERR("Surface enumeration failed!\n");
+
         c->object = QEMU_H2G(object);
     }
     else
@@ -3700,6 +3767,7 @@ void qemu_ddraw1_CreateSurface(struct qemu_syscall *call)
     IDirectDrawSurface *host;
     struct qemu_ddraw *ddraw;
     struct qemu_surface *object;
+    struct surface_guest_init_complex_host ctx;
 #if HOST_BIT == GUEST_BIT
     DDSURFACEDESC *desc = QEMU_G2H(c->surface_desc);
     ULONG_PTR *out_ptr;
@@ -3738,6 +3806,12 @@ void qemu_ddraw1_CreateSurface(struct qemu_syscall *call)
     {
         surface_host_init(object, (IUnknown *)host);
         IDirectDrawSurface_Release(host);
+
+        ctx.ddraw = ddraw;
+        ctx.version = 7;
+        if (FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(object->host_surface7, object, enum_Callback)))
+            WINE_ERR("Surface enumeration failed!\n");
+
         c->object = QEMU_H2G(object);
     }
     else
