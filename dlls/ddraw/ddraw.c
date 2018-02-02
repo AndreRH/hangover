@@ -636,7 +636,7 @@ void qemu_ddraw7_SetCooperativeLevel(struct qemu_syscall *call)
     struct qemu_ddraw7_SetCooperativeLevel *c = (struct qemu_ddraw7_SetCooperativeLevel *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw7_SetCooperativeLevel(ddraw->host_ddraw7, QEMU_G2H(c->window), c->flags);
@@ -675,7 +675,7 @@ void qemu_ddraw4_SetCooperativeLevel(struct qemu_syscall *call)
     struct qemu_ddraw4_SetCooperativeLevel *c = (struct qemu_ddraw4_SetCooperativeLevel *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw4_SetCooperativeLevel(ddraw->host_ddraw4, QEMU_G2H(c->window), c->flags);
@@ -714,7 +714,7 @@ void qemu_ddraw2_SetCooperativeLevel(struct qemu_syscall *call)
     struct qemu_ddraw2_SetCooperativeLevel *c = (struct qemu_ddraw2_SetCooperativeLevel *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw2_SetCooperativeLevel(ddraw->host_ddraw2, QEMU_G2H(c->window), c->flags);
@@ -753,7 +753,7 @@ void qemu_ddraw1_SetCooperativeLevel(struct qemu_syscall *call)
     struct qemu_ddraw1_SetCooperativeLevel *c = (struct qemu_ddraw1_SetCooperativeLevel *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw_SetCooperativeLevel(ddraw->host_ddraw1, QEMU_G2H(c->window), c->flags);
@@ -3092,9 +3092,10 @@ void qemu_ddraw7_GetDeviceIdentifier(struct qemu_syscall *call)
     struct qemu_ddraw7_GetDeviceIdentifier *c = (struct qemu_ddraw7_GetDeviceIdentifier *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
+    /* DDDEVICEIDENTIFIER has the same size in 32 and 64 bit. */
     c->super.iret = IDirectDraw7_GetDeviceIdentifier(ddraw->host_ddraw7, QEMU_G2H(c->DDDI), c->Flags);
 }
 
@@ -3131,9 +3132,10 @@ void qemu_ddraw4_GetDeviceIdentifier(struct qemu_syscall *call)
     struct qemu_ddraw4_GetDeviceIdentifier *c = (struct qemu_ddraw4_GetDeviceIdentifier *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
+    /* DDDEVICEIDENTIFIER has the same size in 32 and 64 bit. */
     c->super.iret = IDirectDraw4_GetDeviceIdentifier(ddraw->host_ddraw4, QEMU_G2H(c->identifier), c->flags);
 }
 
