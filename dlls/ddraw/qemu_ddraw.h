@@ -53,7 +53,6 @@ enum ddraw_calls
     CALL_DDRAW1_CREATEPALETTE,
     CALL_DDRAW1_CREATESURFACE,
     CALL_DDRAW1_DUPLICATESURFACE,
-    CALL_DDRAW1_ENUMDISPLAYMODES,
     CALL_DDRAW1_ENUMSURFACES,
     CALL_DDRAW1_FLIPTOGDISURFACE,
     CALL_DDRAW1_GETCAPS,
@@ -94,7 +93,6 @@ enum ddraw_calls
     CALL_DDRAW4_CREATEPALETTE,
     CALL_DDRAW4_CREATESURFACE,
     CALL_DDRAW4_DUPLICATESURFACE,
-    CALL_DDRAW4_ENUMDISPLAYMODES,
     CALL_DDRAW4_ENUMSURFACES,
     CALL_DDRAW4_FLIPTOGDISURFACE,
     CALL_DDRAW4_GETAVAILABLEVIDMEM,
@@ -235,7 +233,6 @@ void qemu_ddraw1_Compact(struct qemu_syscall *call);
 void qemu_ddraw1_CreatePalette(struct qemu_syscall *call);
 void qemu_ddraw1_CreateSurface(struct qemu_syscall *call);
 void qemu_ddraw1_DuplicateSurface(struct qemu_syscall *call);
-void qemu_ddraw1_EnumDisplayModes(struct qemu_syscall *call);
 void qemu_ddraw1_EnumSurfaces(struct qemu_syscall *call);
 void qemu_ddraw1_FlipToGDISurface(struct qemu_syscall *call);
 void qemu_ddraw1_GetCaps(struct qemu_syscall *call);
@@ -276,7 +273,6 @@ void qemu_ddraw4_Compact(struct qemu_syscall *call);
 void qemu_ddraw4_CreatePalette(struct qemu_syscall *call);
 void qemu_ddraw4_CreateSurface(struct qemu_syscall *call);
 void qemu_ddraw4_DuplicateSurface(struct qemu_syscall *call);
-void qemu_ddraw4_EnumDisplayModes(struct qemu_syscall *call);
 void qemu_ddraw4_EnumSurfaces(struct qemu_syscall *call);
 void qemu_ddraw4_FlipToGDISurface(struct qemu_syscall *call);
 void qemu_ddraw4_GetAvailableVidMem(struct qemu_syscall *call);

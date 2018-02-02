@@ -26,6 +26,9 @@
 #include <ddraw.h>
 #include <d3d.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_ddraw.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_ddraw.h"
@@ -2804,84 +2807,113 @@ struct qemu_ddraw7_EnumDisplayModes
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t Flags;
-    uint64_t DDSD;
-    uint64_t Context;
+    uint64_t flags;
+    uint64_t surface_desc;
+    uint64_t context;
     uint64_t cb;
+    uint64_t wrapper;
+};
+
+struct qemu_ddraw_EnumDisplayModes_cb
+{
+    uint64_t func, desc, context;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw7_EnumDisplayModes(IDirectDraw7 *iface, DWORD Flags, DDSURFACEDESC2 *DDSD, void *Context, LPDDENUMMODESCALLBACK2 cb)
+static HRESULT __fastcall ddraw7_EnumDisplayModes_guest_cb(struct qemu_ddraw_EnumDisplayModes_cb *data)
+{
+    LPDDENUMMODESCALLBACK2 cb = (LPDDENUMMODESCALLBACK2)(ULONG_PTR)data->func;
+    return cb((DDSURFACEDESC2 *)(ULONG_PTR)data->desc, (void *)(ULONG_PTR)data->context);
+}
+
+static HRESULT WINAPI ddraw7_EnumDisplayModes(IDirectDraw7 *iface, DWORD flags, DDSURFACEDESC2 *surface_desc,
+            void *context, LPDDENUMMODESCALLBACK2 cb)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw7(iface);
     struct qemu_ddraw7_EnumDisplayModes call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW7_ENUMDISPLAYMODES);
     call.iface = (ULONG_PTR)ddraw;
-    call.Flags = Flags;
-    call.DDSD = (ULONG_PTR)DDSD;
-    call.Context = (ULONG_PTR)Context;
+    call.flags = flags;
+    call.surface_desc = (ULONG_PTR)surface_desc;
+    call.context = (ULONG_PTR)context;
     call.cb = (ULONG_PTR)cb;
+    call.wrapper = (ULONG_PTR)ddraw7_EnumDisplayModes_guest_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
+static HRESULT WINAPI ddraw4_EnumDisplayModes(IDirectDraw4 *iface, DWORD flags, DDSURFACEDESC2 *surface_desc, void *context, LPDDENUMMODESCALLBACK2 callback)
+{
+    struct qemu_ddraw *ddraw = impl_from_IDirectDraw4(iface);
+
+    WINE_TRACE("iface %p, flags %#x, surface_desc %p, context %p, callback %p.\n",
+            iface, flags, surface_desc, context, callback);
+
+    return ddraw7_EnumDisplayModes(&ddraw->IDirectDraw7_iface, flags, surface_desc, context, callback);
+}
+
 #else
+
+struct qemu_ddraw7_EnumDisplayModes_host_data
+{
+    uint64_t guest_cb, guest_ctx, wrapper;
+};
+
+static HRESULT WINAPI ddraw7_EnumDisplayModes_host_cb(DDSURFACEDESC2 *desc, void *context)
+{
+    struct qemu_ddraw7_EnumDisplayModes_host_data *ctx = context;
+    struct qemu_DDSURFACEDESC2 desc32;
+    struct qemu_ddraw_EnumDisplayModes_cb call;
+    HRESULT hr;
+
+    call.func = ctx->guest_cb;
+    call.context = ctx->guest_ctx;
+#if GUEST_BIT == HOST_BIT
+    call.desc = QEMU_H2G(desc);
+#else
+    desc32.dwSize = sizeof(desc32);
+    DDSURFACEDESC2_h2g(&desc32, desc);
+    call.desc = QEMU_H2G(&desc32);
+#endif
+
+    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx).\n", call.func, call.context, call.desc);
+    hr = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest function returned 0x%x.\n", hr);
+
+    return hr;
+}
 
 void qemu_ddraw7_EnumDisplayModes(struct qemu_syscall *call)
 {
     struct qemu_ddraw7_EnumDisplayModes *c = (struct qemu_ddraw7_EnumDisplayModes *)call;
     struct qemu_ddraw *ddraw;
+    DDSURFACEDESC2 stack, *desc = &stack;
+    struct qemu_DDSURFACEDESC2 *desc32;
+    struct qemu_ddraw7_EnumDisplayModes_host_data ctx;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDraw7_EnumDisplayModes(ddraw->host_ddraw7, c->Flags, QEMU_G2H(c->DDSD), QEMU_G2H(c->Context), QEMU_G2H(c->cb));
-}
-
+#if HOST_BIT == GUEST_BIT
+    desc = QEMU_G2H(c->surface_desc);
+#else
+    desc32 = QEMU_G2H(c->surface_desc);
+    /* Wine's implementation just assumes the size is right. */
+    if (desc32)
+        DDSURFACEDESC2_g2h(desc, desc32);
+    else
+        desc = NULL;
 #endif
 
-struct qemu_ddraw4_EnumDisplayModes
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t flags;
-    uint64_t surface_desc;
-    uint64_t context;
-    uint64_t callback;
-};
+    ctx.guest_cb = c->cb;
+    ctx.guest_ctx = c->context;
+    ctx.wrapper = c->wrapper;
 
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI ddraw4_EnumDisplayModes(IDirectDraw4 *iface, DWORD flags, DDSURFACEDESC2 *surface_desc, void *context, LPDDENUMMODESCALLBACK2 callback)
-{
-    struct qemu_ddraw *ddraw = impl_from_IDirectDraw4(iface);
-    struct qemu_ddraw4_EnumDisplayModes call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW4_ENUMDISPLAYMODES);
-    call.iface = (ULONG_PTR)ddraw;
-    call.flags = flags;
-    call.surface_desc = (ULONG_PTR)surface_desc;
-    call.context = (ULONG_PTR)context;
-    call.callback = (ULONG_PTR)callback;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_ddraw4_EnumDisplayModes(struct qemu_syscall *call)
-{
-    struct qemu_ddraw4_EnumDisplayModes *c = (struct qemu_ddraw4_EnumDisplayModes *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDraw4_EnumDisplayModes(ddraw->host_ddraw4, c->flags, QEMU_G2H(c->surface_desc), QEMU_G2H(c->context), QEMU_G2H(c->callback));
+    c->super.iret = IDirectDraw7_EnumDisplayModes(ddraw->host_ddraw7, c->flags, desc, &ctx,
+            c->cb ? ddraw7_EnumDisplayModes_host_cb : NULL);
 }
 
 #endif
@@ -2894,9 +2926,16 @@ struct qemu_ddraw2_EnumDisplayModes
     uint64_t surface_desc;
     uint64_t context;
     uint64_t callback;
+    uint64_t wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static HRESULT __fastcall ddraw2_EnumDisplayModes_guest_cb(struct qemu_ddraw_EnumDisplayModes_cb *data)
+{
+    LPDDENUMMODESCALLBACK cb = (LPDDENUMMODESCALLBACK)(ULONG_PTR)data->func;
+    return cb((DDSURFACEDESC *)(ULONG_PTR)data->desc, (void *)(ULONG_PTR)data->context);
+}
 
 static HRESULT WINAPI ddraw2_EnumDisplayModes(IDirectDraw2 *iface, DWORD flags, DDSURFACEDESC *surface_desc, void *context, LPDDENUMMODESCALLBACK callback)
 {
@@ -2908,66 +2947,77 @@ static HRESULT WINAPI ddraw2_EnumDisplayModes(IDirectDraw2 *iface, DWORD flags, 
     call.surface_desc = (ULONG_PTR)surface_desc;
     call.context = (ULONG_PTR)context;
     call.callback = (ULONG_PTR)callback;
+    call.wrapper = (ULONG_PTR)ddraw2_EnumDisplayModes_guest_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
+static HRESULT WINAPI ddraw1_EnumDisplayModes(IDirectDraw *iface, DWORD flags, DDSURFACEDESC *surface_desc, void *context, LPDDENUMMODESCALLBACK callback)
+{
+    struct qemu_ddraw *ddraw = impl_from_IDirectDraw(iface);
+
+    WINE_TRACE("iface %p, flags %#x, surface_desc %p, context %p, callback %p.\n",
+            iface, flags, surface_desc, context, callback);
+
+    return ddraw2_EnumDisplayModes(&ddraw->IDirectDraw2_iface, flags, surface_desc, context, callback);
+}
+
 #else
+
+static HRESULT WINAPI ddraw2_EnumDisplayModes_host_cb(DDSURFACEDESC *desc, void *context)
+{
+    struct qemu_ddraw7_EnumDisplayModes_host_data *ctx = context;
+    struct qemu_DDSURFACEDESC desc32;
+    struct qemu_ddraw_EnumDisplayModes_cb call;
+    HRESULT hr;
+
+    call.func = ctx->guest_cb;
+    call.context = ctx->guest_ctx;
+#if GUEST_BIT == HOST_BIT
+    call.desc = QEMU_H2G(desc);
+#else
+    desc32.dwSize = sizeof(desc32);
+    DDSURFACEDESC_h2g(&desc32, desc);
+    call.desc = QEMU_H2G(&desc32);
+#endif
+
+    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx).\n", call.func, call.context, call.desc);
+    hr = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest function returned 0x%x.\n", hr);
+
+    return hr;
+}
 
 void qemu_ddraw2_EnumDisplayModes(struct qemu_syscall *call)
 {
     struct qemu_ddraw2_EnumDisplayModes *c = (struct qemu_ddraw2_EnumDisplayModes *)call;
     struct qemu_ddraw *ddraw;
+    DDSURFACEDESC stack, *desc = &stack;
+    struct qemu_DDSURFACEDESC *desc32;
+    struct qemu_ddraw7_EnumDisplayModes_host_data ctx;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDraw2_EnumDisplayModes(ddraw->host_ddraw2, c->flags, QEMU_G2H(c->surface_desc), QEMU_G2H(c->context), QEMU_G2H(c->callback));
-}
-
+#if HOST_BIT == GUEST_BIT
+    desc = QEMU_G2H(c->surface_desc);
+#else
+    desc32 = QEMU_G2H(c->surface_desc);
+    /* Wine's implementation just assumes the size is right. */
+    if (desc32)
+        DDSURFACEDESC_g2h(desc, desc32);
+    else
+        desc = NULL;
 #endif
 
-struct qemu_ddraw1_EnumDisplayModes
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t flags;
-    uint64_t surface_desc;
-    uint64_t context;
-    uint64_t callback;
-};
+    ctx.guest_cb = c->callback;
+    ctx.guest_ctx = c->context;
+    ctx.wrapper = c->wrapper;
 
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI ddraw1_EnumDisplayModes(IDirectDraw *iface, DWORD flags, DDSURFACEDESC *surface_desc, void *context, LPDDENUMMODESCALLBACK callback)
-{
-    struct qemu_ddraw *ddraw = impl_from_IDirectDraw(iface);
-    struct qemu_ddraw1_EnumDisplayModes call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW1_ENUMDISPLAYMODES);
-    call.iface = (ULONG_PTR)ddraw;
-    call.flags = flags;
-    call.surface_desc = (ULONG_PTR)surface_desc;
-    call.context = (ULONG_PTR)context;
-    call.callback = (ULONG_PTR)callback;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_ddraw1_EnumDisplayModes(struct qemu_syscall *call)
-{
-    struct qemu_ddraw1_EnumDisplayModes *c = (struct qemu_ddraw1_EnumDisplayModes *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDraw_EnumDisplayModes(ddraw->host_ddraw1, c->flags, QEMU_G2H(c->surface_desc), QEMU_G2H(c->context), QEMU_G2H(c->callback));
+    c->super.iret = IDirectDraw2_EnumDisplayModes(ddraw->host_ddraw2, c->flags, desc, &ctx,
+            c->callback ? ddraw2_EnumDisplayModes_host_cb : NULL);
 }
 
 #endif
