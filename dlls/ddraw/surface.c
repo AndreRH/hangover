@@ -5469,7 +5469,7 @@ void qemu_ddraw_surface7_IsLost(struct qemu_syscall *call)
     struct qemu_ddraw_surface7_IsLost *c = (struct qemu_ddraw_surface7_IsLost *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface7_IsLost(surface->host_surface7);
@@ -5504,7 +5504,7 @@ void qemu_ddraw_surface4_IsLost(struct qemu_syscall *call)
     struct qemu_ddraw_surface4_IsLost *c = (struct qemu_ddraw_surface4_IsLost *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface4_IsLost(surface->host_surface4);
@@ -5539,7 +5539,7 @@ void qemu_ddraw_surface3_IsLost(struct qemu_syscall *call)
     struct qemu_ddraw_surface3_IsLost *c = (struct qemu_ddraw_surface3_IsLost *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface3_IsLost(surface->host_surface3);
@@ -5574,7 +5574,7 @@ void qemu_ddraw_surface2_IsLost(struct qemu_syscall *call)
     struct qemu_ddraw_surface2_IsLost *c = (struct qemu_ddraw_surface2_IsLost *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface2_IsLost(surface->host_surface2);
@@ -5609,7 +5609,7 @@ void qemu_ddraw_surface1_IsLost(struct qemu_syscall *call)
     struct qemu_ddraw_surface1_IsLost *c = (struct qemu_ddraw_surface1_IsLost *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface_IsLost(surface->host_surface1);
@@ -5644,7 +5644,7 @@ void qemu_ddraw_surface7_Restore(struct qemu_syscall *call)
     struct qemu_ddraw_surface7_Restore *c = (struct qemu_ddraw_surface7_Restore *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface7_Restore(surface->host_surface7);
@@ -5679,7 +5679,7 @@ void qemu_ddraw_surface4_Restore(struct qemu_syscall *call)
     struct qemu_ddraw_surface4_Restore *c = (struct qemu_ddraw_surface4_Restore *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface4_Restore(surface->host_surface4);
@@ -5714,7 +5714,7 @@ void qemu_ddraw_surface3_Restore(struct qemu_syscall *call)
     struct qemu_ddraw_surface3_Restore *c = (struct qemu_ddraw_surface3_Restore *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface3_Restore(surface->host_surface3);
@@ -5749,7 +5749,7 @@ void qemu_ddraw_surface2_Restore(struct qemu_syscall *call)
     struct qemu_ddraw_surface2_Restore *c = (struct qemu_ddraw_surface2_Restore *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface2_Restore(surface->host_surface2);
@@ -5784,7 +5784,7 @@ void qemu_ddraw_surface1_Restore(struct qemu_syscall *call)
     struct qemu_ddraw_surface1_Restore *c = (struct qemu_ddraw_surface1_Restore *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface_Restore(surface->host_surface1);

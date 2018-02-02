@@ -3247,7 +3247,7 @@ void qemu_ddraw7_RestoreAllSurfaces(struct qemu_syscall *call)
     struct qemu_ddraw7_RestoreAllSurfaces *c = (struct qemu_ddraw7_RestoreAllSurfaces *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw7_RestoreAllSurfaces(ddraw->host_ddraw7);
@@ -3282,7 +3282,7 @@ void qemu_ddraw4_RestoreAllSurfaces(struct qemu_syscall *call)
     struct qemu_ddraw4_RestoreAllSurfaces *c = (struct qemu_ddraw4_RestoreAllSurfaces *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw4_RestoreAllSurfaces(ddraw->host_ddraw4);

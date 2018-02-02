@@ -2517,7 +2517,7 @@ void qemu_d3d_device7_GetRenderState(struct qemu_syscall *call)
     struct qemu_d3d_device7_GetRenderState *c = (struct qemu_d3d_device7_GetRenderState *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_GetRenderState(device->host7, c->state, QEMU_G2H(c->value));
@@ -2556,7 +2556,7 @@ void qemu_d3d_device3_GetRenderState(struct qemu_syscall *call)
     struct qemu_d3d_device3_GetRenderState *c = (struct qemu_d3d_device3_GetRenderState *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice3_GetRenderState(device->host3, c->state, QEMU_G2H(c->value));
@@ -2595,7 +2595,7 @@ void qemu_d3d_device2_GetRenderState(struct qemu_syscall *call)
     struct qemu_d3d_device2_GetRenderState *c = (struct qemu_d3d_device2_GetRenderState *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice2_GetRenderState(device->host2, c->state, QEMU_G2H(c->value));
@@ -2634,7 +2634,7 @@ void qemu_d3d_device7_SetRenderState(struct qemu_syscall *call)
     struct qemu_d3d_device7_SetRenderState *c = (struct qemu_d3d_device7_SetRenderState *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_SetRenderState(device->host7, c->state, c->value);
@@ -2673,7 +2673,7 @@ void qemu_d3d_device3_SetRenderState(struct qemu_syscall *call)
     struct qemu_d3d_device3_SetRenderState *c = (struct qemu_d3d_device3_SetRenderState *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice3_SetRenderState(device->host3, c->state, c->value);
@@ -2712,7 +2712,7 @@ void qemu_d3d_device2_SetRenderState(struct qemu_syscall *call)
     struct qemu_d3d_device2_SetRenderState *c = (struct qemu_d3d_device2_SetRenderState *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice2_SetRenderState(device->host2, c->state, c->value);
@@ -4700,7 +4700,7 @@ void qemu_d3d_device7_Clear(struct qemu_syscall *call)
     struct qemu_d3d_device7_Clear *c = (struct qemu_d3d_device7_Clear *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_Clear(device->host7, c->count, QEMU_G2H(c->rects), c->flags, c->color, c->z, c->stencil);
