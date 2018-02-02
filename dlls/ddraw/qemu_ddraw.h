@@ -188,6 +188,13 @@ enum ddraw_calls
     CALL_D3D_TEXTURE2_GETHANDLE,
     CALL_D3D_TEXTURE2_LOAD,
     CALL_D3D_TEXTURE2_PALETTECHANGED,
+    CALL_D3D_VERTEX_BUFFER7_GETVERTEXBUFFERDESC,
+    CALL_D3D_VERTEX_BUFFER7_LOCK,
+    CALL_D3D_VERTEX_BUFFER7_OPTIMIZE,
+    CALL_D3D_VERTEX_BUFFER7_PROCESSVERTICES,
+    CALL_D3D_VERTEX_BUFFER7_PROCESSVERTICESSTRIDED,
+    CALL_D3D_VERTEX_BUFFER7_RELEASE,
+    CALL_D3D_VERTEX_BUFFER7_UNLOCK,
     CALL_DDRAW1_COMPACT,
     CALL_DDRAW1_CREATEPALETTE,
     CALL_DDRAW1_CREATESURFACE,
@@ -592,6 +599,18 @@ struct qemu_device
     IDirect3DDevice *host1;
 };
 
+struct qemu_vertex_buffer
+{
+    /* Guest fields */
+    IDirect3DVertexBuffer7 IDirect3DVertexBuffer7_iface;
+    LONG ref;
+    UINT version;
+    struct qemu_ddraw *ddraw;
+
+    /* Host fields */
+    IDirect3DVertexBuffer7 *host;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 extern const GUID IID_D3DDEVICE_WineD3D;
@@ -612,6 +631,8 @@ void __fastcall ddraw_surface_destroy_cb(struct qemu_surface *surface);
 
 void ddraw_device_guest_init(struct qemu_device *device, struct qemu_ddraw *ddraw,
         UINT version, IUnknown *rt_iface, IUnknown *outer_unknown);
+
+void ddraw_vertex_buffer_guest_init(struct qemu_vertex_buffer *buffer, struct qemu_ddraw *ddraw, UINT version);
 
 #else
 
@@ -778,6 +799,13 @@ void qemu_d3d_texture1_Unload(struct qemu_syscall *call);
 void qemu_d3d_texture2_GetHandle(struct qemu_syscall *call);
 void qemu_d3d_texture2_Load(struct qemu_syscall *call);
 void qemu_d3d_texture2_PaletteChanged(struct qemu_syscall *call);
+void qemu_d3d_vertex_buffer7_GetVertexBufferDesc(struct qemu_syscall *call);
+void qemu_d3d_vertex_buffer7_Lock(struct qemu_syscall *call);
+void qemu_d3d_vertex_buffer7_Optimize(struct qemu_syscall *call);
+void qemu_d3d_vertex_buffer7_ProcessVertices(struct qemu_syscall *call);
+void qemu_d3d_vertex_buffer7_ProcessVerticesStrided(struct qemu_syscall *call);
+void qemu_d3d_vertex_buffer7_Release(struct qemu_syscall *call);
+void qemu_d3d_vertex_buffer7_Unlock(struct qemu_syscall *call);
 void qemu_ddraw1_Compact(struct qemu_syscall *call);
 void qemu_ddraw1_CreatePalette(struct qemu_syscall *call);
 void qemu_ddraw1_CreateSurface(struct qemu_syscall *call);
