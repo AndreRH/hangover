@@ -394,6 +394,7 @@ static ULONG WINAPI d3d_texture1_AddRef(IDirect3DTexture *iface)
 static ULONG ddraw_surface_release_iface(struct qemu_surface *surface)
 {
     ULONG iface_count;
+    struct qemu_ddraw_surface1_Release call;
 
     /* Prevent the surface from being destroyed if it's still attached to
      * another surface. It will be destroyed when the root is destroyed. */
@@ -405,7 +406,8 @@ static ULONG ddraw_surface_release_iface(struct qemu_surface *surface)
 
     if (iface_count == 0)
     {
-        WINE_FIXME("Implement destroy!\n");
+        call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_RELEASE);
+        call.iface = (ULONG_PTR)surface;
     }
 
     return iface_count;
@@ -526,10 +528,25 @@ void qemu_ddraw_surface1_Release(struct qemu_syscall *call)
     struct qemu_ddraw_surface1_Release *c = (struct qemu_ddraw_surface1_Release *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("UnverifXied!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
+    if (surface->host_texture1)
+        IDirect3DTexture_Release(surface->host_texture1);
+    if (surface->host_texture2)
+        IDirect3DTexture_Release(surface->host_texture2);
+
     c->super.iret = IDirectDrawSurface_Release(surface->host_surface1);
+    c->super.iret += IDirectDrawSurface2_Release(surface->host_surface2);
+    c->super.iret += IDirectDrawSurface3_Release(surface->host_surface3);
+    c->super.iret += IDirectDrawSurface4_Release(surface->host_surface4);
+    c->super.iret += IDirectDrawSurface7_Release(surface->host_surface7);
+
+    if (surface->host_gamma)
+        c->super.iret += IDirectDrawGammaControl_Release(surface->host_gamma);
+
+    if (c->super.iret)
+        WINE_ERR("Unexpected host interface refcount sum %lu\n", c->super.iret);
 }
 
 #endif

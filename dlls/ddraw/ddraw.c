@@ -37,6 +37,7 @@
 #include <debug.h>
 #else
 #include <wine/debug.h>
+#include <wine/exception.h>
 #endif
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_ddraw);
@@ -3337,14 +3338,24 @@ struct qemu_ddraw7_CreateSurface
     uint64_t surface_desc;
     uint64_t surface;
     uint64_t outer_unknown;
+    uint64_t object;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw7_CreateSurface(IDirectDraw7 *iface, DDSURFACEDESC2 *surface_desc, IDirectDrawSurface7 **surface, IUnknown *outer_unknown)
+static HRESULT WINAPI ddraw7_CreateSurface(IDirectDraw7 *iface, DDSURFACEDESC2 *surface_desc,
+        IDirectDrawSurface7 **surface, IUnknown *outer_unknown)
 {
-    struct qemu_ddraw *ddraw = impl_from_IDirectDraw7(iface);
     struct qemu_ddraw7_CreateSurface call;
+    struct qemu_ddraw *ddraw = impl_from_IDirectDraw7(iface);
+    struct qemu_surface *object;
+
+    if(surface_desc == NULL || surface_desc->dwSize != sizeof(*surface_desc))
+    {
+        WINE_WARN("Application supplied invalid surface descriptor\n");
+        return DDERR_INVALIDPARAMS;
+    }
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW7_CREATESURFACE);
     call.iface = (ULONG_PTR)ddraw;
     call.surface_desc = (ULONG_PTR)surface_desc;
@@ -3352,6 +3363,16 @@ static HRESULT WINAPI ddraw7_CreateSurface(IDirectDraw7 *iface, DDSURFACEDESC2 *
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_surface *)(ULONG_PTR)call.object;
+        qemu_surface_guest_init(object, ddraw, 7);
+        *surface = &object->IDirectDrawSurface7_iface;
+
+        IDirectDraw7_AddRef(iface);
+        object->ifaceToRelease = (IUnknown *)iface;
+    }
 
     return call.super.iret;
 }
@@ -3362,11 +3383,61 @@ void qemu_ddraw7_CreateSurface(struct qemu_syscall *call)
 {
     struct qemu_ddraw7_CreateSurface *c = (struct qemu_ddraw7_CreateSurface *)call;
     struct qemu_ddraw *ddraw;
+    struct qemu_surface *object;
+#if HOST_BIT == GUEST_BIT
+    DDSURFACEDESC2 *desc = QEMU_G2H(c->surface_desc);
+    ULONG_PTR *out_ptr;
+#else
+    DDSURFACEDESC2 stack, *desc = &stack;
+    qemu_ptr *out_ptr;
+    DDSURFACEDESC2_g2h(desc, QEMU_G2H(c->surface_desc));
+#endif
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDraw7_CreateSurface(ddraw->host_ddraw7, QEMU_G2H(c->surface_desc), QEMU_G2H(c->surface), QEMU_G2H(c->outer_unknown));
+    out_ptr = QEMU_G2H(c->surface);
+    __TRY
+    {
+        *out_ptr = 0;
+    }
+    __EXCEPT_PAGE_FAULT
+    {
+        WINE_WARN("Surface pointer %p is invalid.\n", out_ptr);
+        c->super.iret = DDERR_INVALIDPARAMS;
+        return;
+    }
+    __ENDTRY;
+
+    object = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*object));
+    if (!object)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = IDirectDraw7_CreateSurface(ddraw->host_ddraw7, desc, &object->host_surface7,
+            QEMU_G2H(c->outer_unknown));
+
+    if (SUCCEEDED(c->super.iret))
+    {
+        IDirectDrawSurface7_QueryInterface(object->host_surface7, &IID_IDirectDrawSurface,
+                (void **)&object->host_surface1);
+        IDirectDrawSurface7_QueryInterface(object->host_surface7, &IID_IDirectDrawSurface2,
+                (void **)&object->host_surface2);
+        IDirectDrawSurface7_QueryInterface(object->host_surface7, &IID_IDirectDrawSurface3,
+                (void **)&object->host_surface3);
+        IDirectDrawSurface7_QueryInterface(object->host_surface7, &IID_IDirectDrawSurface4,
+                (void **)&object->host_surface4);
+        IDirectDrawSurface7_QueryInterface(object->host_surface7, &IID_IDirectDrawGammaControl,
+                (void **)&object->host_gamma);
+
+        c->object = QEMU_H2G(object);
+    }
+    else
+    {
+        HeapFree(GetProcessHeap(), 0, object);
+    }
 }
 
 #endif
@@ -3378,14 +3449,23 @@ struct qemu_ddraw4_CreateSurface
     uint64_t surface_desc;
     uint64_t surface;
     uint64_t outer_unknown;
+    uint64_t object;
 };
 
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw4_CreateSurface(IDirectDraw4 *iface, DDSURFACEDESC2 *surface_desc, IDirectDrawSurface4 **surface, IUnknown *outer_unknown)
 {
-    struct qemu_ddraw *ddraw = impl_from_IDirectDraw4(iface);
     struct qemu_ddraw4_CreateSurface call;
+    struct qemu_ddraw *ddraw = impl_from_IDirectDraw4(iface);
+    struct qemu_surface *object;
+
+    if(surface_desc == NULL || surface_desc->dwSize != sizeof(*surface_desc))
+    {
+        WINE_WARN("Application supplied invalid surface descriptor\n");
+        return DDERR_INVALIDPARAMS;
+    }
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW4_CREATESURFACE);
     call.iface = (ULONG_PTR)ddraw;
     call.surface_desc = (ULONG_PTR)surface_desc;
@@ -3393,6 +3473,16 @@ static HRESULT WINAPI ddraw4_CreateSurface(IDirectDraw4 *iface, DDSURFACEDESC2 *
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_surface *)(ULONG_PTR)call.object;
+        qemu_surface_guest_init(object, ddraw, 4);
+        *surface = &object->IDirectDrawSurface4_iface;
+
+        IDirectDraw7_AddRef(iface);
+        object->ifaceToRelease = (IUnknown *)iface;
+    }
 
     return call.super.iret;
 }
@@ -3403,11 +3493,66 @@ void qemu_ddraw4_CreateSurface(struct qemu_syscall *call)
 {
     struct qemu_ddraw4_CreateSurface *c = (struct qemu_ddraw4_CreateSurface *)call;
     struct qemu_ddraw *ddraw;
+    struct qemu_surface *object;
+#if HOST_BIT == GUEST_BIT
+    DDSURFACEDESC2 *desc = QEMU_G2H(c->surface_desc);
+    ULONG_PTR *out_ptr;
+#else
+    DDSURFACEDESC2 stack, *desc = &stack;
+    qemu_ptr *out_ptr;
+    DDSURFACEDESC2_g2h(desc, QEMU_G2H(c->surface_desc));
+#endif
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDraw4_CreateSurface(ddraw->host_ddraw4, QEMU_G2H(c->surface_desc), QEMU_G2H(c->surface), QEMU_G2H(c->outer_unknown));
+    out_ptr = QEMU_G2H(c->surface);
+    __TRY
+    {
+        *out_ptr = 0;
+    }
+    __EXCEPT_PAGE_FAULT
+    {
+        WINE_WARN("Surface pointer %p is invalid.\n", out_ptr);
+        c->super.iret = DDERR_INVALIDPARAMS;
+        return;
+    }
+    __ENDTRY;
+
+    object = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*object));
+    if (!object)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = IDirectDraw4_CreateSurface(ddraw->host_ddraw4, desc, &object->host_surface4,
+            QEMU_G2H(c->outer_unknown));
+
+    if (SUCCEEDED(c->super.iret))
+    {
+        IDirectDrawSurface4_QueryInterface(object->host_surface4, &IID_IDirectDrawSurface,
+                (void **)&object->host_surface1);
+        IDirectDrawSurface4_QueryInterface(object->host_surface4, &IID_IDirectDrawSurface2,
+                (void **)&object->host_surface2);
+        IDirectDrawSurface4_QueryInterface(object->host_surface4, &IID_IDirectDrawSurface3,
+                (void **)&object->host_surface3);
+        IDirectDrawSurface4_QueryInterface(object->host_surface4, &IID_IDirectDrawSurface7,
+                (void **)&object->host_surface7);
+        IDirectDrawSurface4_QueryInterface(object->host_surface4, &IID_IDirectDrawGammaControl,
+                (void **)&object->host_gamma);
+
+        IDirectDrawSurface4_QueryInterface(object->host_surface4, &IID_IDirect3DTexture,
+                (void **)&object->host_texture1);
+        IDirectDrawSurface4_QueryInterface(object->host_surface4, &IID_IDirect3DTexture,
+                (void **)&object->host_texture2);
+
+        c->object = QEMU_H2G(object);
+    }
+    else
+    {
+        HeapFree(GetProcessHeap(), 0, object);
+    }
 }
 
 #endif
@@ -3419,14 +3564,23 @@ struct qemu_ddraw2_CreateSurface
     uint64_t surface_desc;
     uint64_t surface;
     uint64_t outer_unknown;
+    uint64_t object;
 };
 
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw2_CreateSurface(IDirectDraw2 *iface, DDSURFACEDESC *surface_desc, IDirectDrawSurface **surface, IUnknown *outer_unknown)
 {
-    struct qemu_ddraw *ddraw = impl_from_IDirectDraw2(iface);
     struct qemu_ddraw2_CreateSurface call;
+    struct qemu_ddraw *ddraw = impl_from_IDirectDraw2(iface);
+    struct qemu_surface *object;
+
+    if(surface_desc == NULL || surface_desc->dwSize != sizeof(*surface_desc))
+    {
+        WINE_WARN("Application supplied invalid surface descriptor\n");
+        return DDERR_INVALIDPARAMS;
+    }
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW2_CREATESURFACE);
     call.iface = (ULONG_PTR)ddraw;
     call.surface_desc = (ULONG_PTR)surface_desc;
@@ -3434,6 +3588,13 @@ static HRESULT WINAPI ddraw2_CreateSurface(IDirectDraw2 *iface, DDSURFACEDESC *s
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_surface *)(ULONG_PTR)call.object;
+        qemu_surface_guest_init(object, ddraw, 2);
+        *surface = &object->IDirectDrawSurface_iface;
+    }
 
     return call.super.iret;
 }
@@ -3444,11 +3605,66 @@ void qemu_ddraw2_CreateSurface(struct qemu_syscall *call)
 {
     struct qemu_ddraw2_CreateSurface *c = (struct qemu_ddraw2_CreateSurface *)call;
     struct qemu_ddraw *ddraw;
+    struct qemu_surface *object;
+#if HOST_BIT == GUEST_BIT
+    DDSURFACEDESC *desc = QEMU_G2H(c->surface_desc);
+    ULONG_PTR *out_ptr;
+#else
+    DDSURFACEDESC stack, *desc = &stack;
+    qemu_ptr *out_ptr;
+    DDSURFACEDESC_g2h(desc, QEMU_G2H(c->surface_desc));
+#endif
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDraw2_CreateSurface(ddraw->host_ddraw2, QEMU_G2H(c->surface_desc), QEMU_G2H(c->surface), QEMU_G2H(c->outer_unknown));
+    out_ptr = QEMU_G2H(c->surface);
+    __TRY
+    {
+        *out_ptr = 0;
+    }
+    __EXCEPT_PAGE_FAULT
+    {
+        WINE_WARN("Surface pointer %p is invalid.\n", out_ptr);
+        c->super.iret = DDERR_INVALIDPARAMS;
+        return;
+    }
+    __ENDTRY;
+
+    object = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*object));
+    if (!object)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = IDirectDraw2_CreateSurface(ddraw->host_ddraw2, desc, &object->host_surface1,
+            QEMU_G2H(c->outer_unknown));
+
+    if (SUCCEEDED(c->super.iret))
+    {
+        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawSurface2,
+                (void **)&object->host_surface2);
+        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawSurface3,
+                (void **)&object->host_surface3);
+        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawSurface4,
+                (void **)&object->host_surface4);
+        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawSurface7,
+                (void **)&object->host_surface7);
+        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawGammaControl,
+                (void **)&object->host_gamma);
+
+        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirect3DTexture,
+                (void **)&object->host_texture1);
+        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirect3DTexture,
+                (void **)&object->host_texture2);
+
+        c->object = QEMU_H2G(object);
+    }
+    else
+    {
+        HeapFree(GetProcessHeap(), 0, object);
+    }
 }
 
 #endif
@@ -3460,6 +3676,7 @@ struct qemu_ddraw1_CreateSurface
     uint64_t surface_desc;
     uint64_t surface;
     uint64_t outer_unknown;
+    uint64_t object;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -3468,6 +3685,14 @@ static HRESULT WINAPI ddraw1_CreateSurface(IDirectDraw *iface, DDSURFACEDESC *su
 {
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw(iface);
     struct qemu_ddraw1_CreateSurface call;
+    struct qemu_surface *object;
+
+    if(surface_desc == NULL || surface_desc->dwSize != sizeof(*surface_desc))
+    {
+        WINE_WARN("Application supplied invalid surface descriptor\n");
+        return DDERR_INVALIDPARAMS;
+    }
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW1_CREATESURFACE);
     call.iface = (ULONG_PTR)ddraw;
     call.surface_desc = (ULONG_PTR)surface_desc;
@@ -3475,6 +3700,13 @@ static HRESULT WINAPI ddraw1_CreateSurface(IDirectDraw *iface, DDSURFACEDESC *su
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_surface *)(ULONG_PTR)call.object;
+        qemu_surface_guest_init(object, ddraw, 1);
+        *surface = &object->IDirectDrawSurface_iface;
+    }
 
     return call.super.iret;
 }
@@ -3485,11 +3717,66 @@ void qemu_ddraw1_CreateSurface(struct qemu_syscall *call)
 {
     struct qemu_ddraw1_CreateSurface *c = (struct qemu_ddraw1_CreateSurface *)call;
     struct qemu_ddraw *ddraw;
+    struct qemu_surface *object;
+#if HOST_BIT == GUEST_BIT
+    DDSURFACEDESC *desc = QEMU_G2H(c->surface_desc);
+    ULONG_PTR *out_ptr;
+#else
+    DDSURFACEDESC stack, *desc = &stack;
+    qemu_ptr *out_ptr;
+    DDSURFACEDESC_g2h(desc, QEMU_G2H(c->surface_desc));
+#endif
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDraw_CreateSurface(ddraw->host_ddraw1, QEMU_G2H(c->surface_desc), QEMU_G2H(c->surface), QEMU_G2H(c->outer_unknown));
+    out_ptr = QEMU_G2H(c->surface);
+    __TRY
+    {
+        *out_ptr = 0;
+    }
+    __EXCEPT_PAGE_FAULT
+    {
+        WINE_WARN("Surface pointer %p is invalid.\n", out_ptr);
+        c->super.iret = DDERR_INVALIDPARAMS;
+        return;
+    }
+    __ENDTRY;
+
+    object = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*object));
+    if (!object)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = IDirectDraw_CreateSurface(ddraw->host_ddraw1, desc, &object->host_surface1,
+            QEMU_G2H(c->outer_unknown));
+
+    if (SUCCEEDED(c->super.iret))
+    {
+        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawSurface2,
+                (void **)&object->host_surface2);
+        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawSurface3,
+                (void **)&object->host_surface3);
+        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawSurface4,
+                (void **)&object->host_surface4);
+        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawSurface7,
+                (void **)&object->host_surface7);
+        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawGammaControl,
+                (void **)&object->host_gamma);
+
+        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirect3DTexture,
+                (void **)&object->host_texture1);
+        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirect3DTexture,
+                (void **)&object->host_texture2);
+
+        c->object = QEMU_H2G(object);
+    }
+    else
+    {
+        HeapFree(GetProcessHeap(), 0, object);
+    }
 }
 
 #endif
