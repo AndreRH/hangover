@@ -3572,13 +3572,20 @@ struct qemu_DirectDrawCreateClipper
 WINBASEAPI HRESULT WINAPI DirectDrawCreateClipper(DWORD flags, IDirectDrawClipper **clipper, IUnknown *outer_unknown)
 {
     struct qemu_DirectDrawCreateClipper call;
+    struct qemu_clipper *object;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DIRECTDRAWCREATECLIPPER);
     call.flags = flags;
-    call.clipper = (ULONG_PTR)clipper;
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
 
+    object = (struct qemu_clipper *)(ULONG_PTR)call.clipper;
+    ddraw_clipper_guest_init(object);
+
+    *clipper = &object->IDirectDrawClipper_iface;
     return call.super.iret;
 }
 
@@ -3587,10 +3594,25 @@ WINBASEAPI HRESULT WINAPI DirectDrawCreateClipper(DWORD flags, IDirectDrawClippe
 void qemu_DirectDrawCreateClipper(struct qemu_syscall *call)
 {
     struct qemu_DirectDrawCreateClipper *c = (struct qemu_DirectDrawCreateClipper *)call;
+    struct qemu_clipper *clipper;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
-    c->super.iret = DirectDrawCreateClipper(c->flags, QEMU_G2H(c->clipper), QEMU_G2H(c->outer_unknown));
+    clipper = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*clipper));
+    if (!clipper)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = DirectDrawCreateClipper(c->flags, &clipper->host, QEMU_G2H(c->outer_unknown));
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, clipper);
+        clipper = NULL;
+    }
+
+    c->clipper = QEMU_H2G(clipper);
 }
 
 #endif

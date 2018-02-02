@@ -363,12 +363,10 @@ static const struct IDirectDrawClipperVtbl ddraw_clipper_vtbl =
     ddraw_clipper_SetHWnd,
 };
 
-HRESULT ddraw_clipper_guest_init(struct qemu_clipper *clipper)
+void ddraw_clipper_guest_init(struct qemu_clipper *clipper)
 {
     clipper->IDirectDrawClipper_iface.lpVtbl = &ddraw_clipper_vtbl;
     clipper->ref = 1;
-
-    return DD_OK;
 }
 
 struct qemu_clipper *unsafe_impl_from_IDirectDrawClipper(IDirectDrawClipper *iface)
