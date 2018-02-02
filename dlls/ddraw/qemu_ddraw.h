@@ -485,6 +485,7 @@ enum ddraw_calls
     CALL_DDRAW_SURFACE7_UPDATEOVERLAY,
     CALL_DDRAW_SURFACE7_UPDATEOVERLAYDISPLAY,
     CALL_DDRAW_SURFACE7_UPDATEOVERLAYZORDER,
+    CALL_DDRAW_SURFACE_QI_DEVICE,
     CALL_DIRECTDRAWCREATE,
     CALL_DIRECTDRAWCREATECLIPPER,
     CALL_DIRECTDRAWCREATEEX,
@@ -532,6 +533,8 @@ struct qemu_ddraw
     IDirectDraw *host_ddraw1;
 };
 
+struct qemu_device;
+
 struct qemu_surface
 {
     /* Guest fields */
@@ -551,6 +554,7 @@ struct qemu_surface
 
     int                     version;
     struct qemu_ddraw       *ddraw;
+    struct qemu_device      *device1;
 
     /* FIXME: These fields need thread synchronization! */
     struct qemu_clipper     *clipper;
@@ -1070,6 +1074,7 @@ void qemu_ddraw_surface7_UpdateOverlay(struct qemu_syscall *call);
 void qemu_ddraw_surface7_UpdateOverlayDisplay(struct qemu_syscall *call);
 void qemu_ddraw_surface7_UpdateOverlayZOrder(struct qemu_syscall *call);
 void qemu_ddraw_surface_Lock(struct qemu_syscall *call);
+void qemu_ddraw_surface_QI_Device(struct qemu_syscall *call);
 void qemu_ddraw_surface_SetClipper(struct qemu_syscall *call);
 
 extern uint64_t ddraw_surface_destroy_cb;

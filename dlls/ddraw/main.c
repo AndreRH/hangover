@@ -1292,6 +1292,7 @@ static const syscall_handler dll_functions[] =
     qemu_ddraw_surface7_UpdateOverlay,
     qemu_ddraw_surface7_UpdateOverlayDisplay,
     qemu_ddraw_surface7_UpdateOverlayZOrder,
+    qemu_ddraw_surface_QI_Device,
     qemu_DirectDrawCreate,
     qemu_DirectDrawCreateClipper,
     qemu_DirectDrawCreateEx,

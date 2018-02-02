@@ -47,6 +47,14 @@ struct qemu_ddraw_surface1_Release
     uint64_t iface;
 };
 
+struct qemu_ddraw_surface_QI_Device
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t iid;
+    uint64_t device;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 /* FIXME: This should not be hardcoded. We should query it from the first created device before the
@@ -176,9 +184,30 @@ static HRESULT WINAPI ddraw_surface7_QueryInterface(IDirectDrawSurface7 *iface, 
                 || IsEqualGUID(riid, &IID_IDirect3DHALDevice)
                 || IsEqualGUID(riid, &IID_IDirect3DRGBDevice))
         {
-            WINE_FIXME("Implement d3d device creation\n");
-            *obj = NULL;
-            return E_FAIL;
+            if (!surface->device1)
+            {
+                struct qemu_ddraw_surface_QI_Device call;
+                struct qemu_device *device;
+
+                call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE_QI_DEVICE);
+                call.iface = (ULONG_PTR)iface;
+                call.iid = (ULONG_PTR)riid;
+
+                qemu_syscall(&call.super);
+                if (FAILED(call.super.iret))
+                {
+                    *obj = NULL;
+                    return call.super.iret;
+                }
+
+                device = (struct qemu_device *)(ULONG_PTR)call.device;
+                ddraw_device_guest_init(device, surface->ddraw, 1, (IUnknown *)&surface->IDirectDrawSurface_iface,
+                        (IUnknown *)&surface->IDirectDrawSurface_iface);
+            }
+
+            IDirect3DDevice_AddRef(&surface->device1->IDirect3DDevice_iface);
+            *obj = &surface->device1->IDirect3DDevice_iface;
+            return S_OK;
         }
 
         if (IsEqualGUID(&IID_IDirect3DTexture2, riid))
@@ -420,6 +449,9 @@ static ULONG ddraw_surface_release_iface(struct qemu_surface *surface)
 
     if (!iface_count)
     {
+        if (surface->device1)
+            IUnknown_Release(&surface->device1->IUnknown_inner);
+
         call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_RELEASE);
         call.iface = (ULONG_PTR)surface;
         qemu_syscall(&call.super);
@@ -537,6 +569,33 @@ static ULONG WINAPI d3d_texture1_Release(IDirect3DTexture *iface)
 }
 
 #else
+
+void qemu_ddraw_surface_QI_Device(struct qemu_syscall *call)
+{
+    struct qemu_ddraw_surface_QI_Device *c = (struct qemu_ddraw_surface_QI_Device *)call;
+    struct qemu_surface *surface;
+    struct qemu_device *device;
+
+    WINE_TRACE("\n");
+    surface = QEMU_G2H(c->iface);
+
+    device = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*device));
+    if (!device)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = IDirectDrawSurface_QueryInterface(surface->host_surface1,
+            QEMU_G2H(c->iid), (void **)&device->host1);
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, device);
+        return;
+    }
+
+    c->device = QEMU_H2G(device);
+}
 
 void qemu_ddraw_surface1_Release(struct qemu_syscall *call)
 {
