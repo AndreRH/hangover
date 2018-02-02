@@ -1784,150 +1784,70 @@ void qemu_d3d_device1_EndScene(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d_device7_GetDirect3D
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t d3d;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d_device7_GetDirect3D(IDirect3DDevice7 *iface, IDirect3D7 **d3d)
 {
-    struct qemu_d3d_device7_GetDirect3D call;
     struct qemu_device *device = impl_from_IDirect3DDevice7(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE7_GETDIRECT3D);
-    call.iface = (ULONG_PTR)device;
-    call.d3d = (ULONG_PTR)d3d;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, d3d %p.\n", iface, d3d);
 
-    return call.super.iret;
+    if (!d3d)
+        return DDERR_INVALIDPARAMS;
+
+    *d3d = &device->ddraw->IDirect3D7_iface;
+    IDirect3D7_AddRef(*d3d);
+
+    WINE_TRACE("Returning interface %p.\n", *d3d);
+    return D3D_OK;
 }
-
-#else
-
-void qemu_d3d_device7_GetDirect3D(struct qemu_syscall *call)
-{
-    struct qemu_d3d_device7_GetDirect3D *c = (struct qemu_d3d_device7_GetDirect3D *)call;
-    struct qemu_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DDevice7_GetDirect3D(device->host7, QEMU_G2H(c->d3d));
-}
-
-#endif
-
-struct qemu_d3d_device3_GetDirect3D
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t d3d;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d_device3_GetDirect3D(IDirect3DDevice3 *iface, IDirect3D3 **d3d)
 {
-    struct qemu_d3d_device3_GetDirect3D call;
     struct qemu_device *device = impl_from_IDirect3DDevice3(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE3_GETDIRECT3D);
-    call.iface = (ULONG_PTR)device;
-    call.d3d = (ULONG_PTR)d3d;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, d3d %p.\n", iface, d3d);
 
-    return call.super.iret;
+    if (!d3d)
+        return DDERR_INVALIDPARAMS;
+
+    *d3d = &device->ddraw->IDirect3D3_iface;
+    IDirect3D3_AddRef(*d3d);
+
+    WINE_TRACE("Returning interface %p.\n", *d3d);
+    return D3D_OK;
 }
-
-#else
-
-void qemu_d3d_device3_GetDirect3D(struct qemu_syscall *call)
-{
-    struct qemu_d3d_device3_GetDirect3D *c = (struct qemu_d3d_device3_GetDirect3D *)call;
-    struct qemu_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DDevice3_GetDirect3D(device->host3, QEMU_G2H(c->d3d));
-}
-
-#endif
-
-struct qemu_d3d_device2_GetDirect3D
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t d3d;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d_device2_GetDirect3D(IDirect3DDevice2 *iface, IDirect3D2 **d3d)
 {
-    struct qemu_d3d_device2_GetDirect3D call;
     struct qemu_device *device = impl_from_IDirect3DDevice2(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE2_GETDIRECT3D);
-    call.iface = (ULONG_PTR)device;
-    call.d3d = (ULONG_PTR)d3d;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, d3d %p.\n", iface, d3d);
 
-    return call.super.iret;
+    if (!d3d)
+        return DDERR_INVALIDPARAMS;
+
+    *d3d = &device->ddraw->IDirect3D2_iface;
+    IDirect3D2_AddRef(*d3d);
+
+    WINE_TRACE("Returning interface %p.\n", *d3d);
+    return D3D_OK;
 }
-
-#else
-
-void qemu_d3d_device2_GetDirect3D(struct qemu_syscall *call)
-{
-    struct qemu_d3d_device2_GetDirect3D *c = (struct qemu_d3d_device2_GetDirect3D *)call;
-    struct qemu_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DDevice2_GetDirect3D(device->host2, QEMU_G2H(c->d3d));
-}
-
-#endif
-
-struct qemu_d3d_device1_GetDirect3D
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t d3d;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d_device1_GetDirect3D(IDirect3DDevice *iface, IDirect3D **d3d)
 {
-    struct qemu_d3d_device1_GetDirect3D call;
     struct qemu_device *device = impl_from_IDirect3DDevice(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE1_GETDIRECT3D);
-    call.iface = (ULONG_PTR)device;
-    call.d3d = (ULONG_PTR)d3d;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, d3d %p.\n", iface, d3d);
 
-    return call.super.iret;
-}
+    if (!d3d)
+        return DDERR_INVALIDPARAMS;
 
-#else
+    *d3d = &device->ddraw->IDirect3D_iface;
+    IDirect3D_AddRef(*d3d);
 
-void qemu_d3d_device1_GetDirect3D(struct qemu_syscall *call)
-{
-    struct qemu_d3d_device1_GetDirect3D *c = (struct qemu_d3d_device1_GetDirect3D *)call;
-    struct qemu_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DDevice_GetDirect3D(device->host1, QEMU_G2H(c->d3d));
+    WINE_TRACE("Returning interface %p.\n", *d3d);
+    return D3D_OK;
 }
 
 #endif

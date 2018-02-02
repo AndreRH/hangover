@@ -59,7 +59,6 @@ enum ddraw_calls
     CALL_D3D_DEVICE1_ENUMTEXTUREFORMATS,
     CALL_D3D_DEVICE1_EXECUTE,
     CALL_D3D_DEVICE1_GETCAPS,
-    CALL_D3D_DEVICE1_GETDIRECT3D,
     CALL_D3D_DEVICE1_GETMATRIX,
     CALL_D3D_DEVICE1_GETPICKRECORDS,
     CALL_D3D_DEVICE1_GETSTATS,
@@ -81,7 +80,6 @@ enum ddraw_calls
     CALL_D3D_DEVICE2_GETCAPS,
     CALL_D3D_DEVICE2_GETCLIPSTATUS,
     CALL_D3D_DEVICE2_GETCURRENTVIEWPORT,
-    CALL_D3D_DEVICE2_GETDIRECT3D,
     CALL_D3D_DEVICE2_GETLIGHTSTATE,
     CALL_D3D_DEVICE2_GETRENDERSTATE,
     CALL_D3D_DEVICE2_GETRENDERTARGET,
@@ -116,7 +114,6 @@ enum ddraw_calls
     CALL_D3D_DEVICE3_GETCAPS,
     CALL_D3D_DEVICE3_GETCLIPSTATUS,
     CALL_D3D_DEVICE3_GETCURRENTVIEWPORT,
-    CALL_D3D_DEVICE3_GETDIRECT3D,
     CALL_D3D_DEVICE3_GETLIGHTSTATE,
     CALL_D3D_DEVICE3_GETRENDERSTATE,
     CALL_D3D_DEVICE3_GETRENDERTARGET,
@@ -157,7 +154,6 @@ enum ddraw_calls
     CALL_D3D_DEVICE7_GETCAPS,
     CALL_D3D_DEVICE7_GETCLIPPLANE,
     CALL_D3D_DEVICE7_GETCLIPSTATUS,
-    CALL_D3D_DEVICE7_GETDIRECT3D,
     CALL_D3D_DEVICE7_GETINFO,
     CALL_D3D_DEVICE7_GETLIGHT,
     CALL_D3D_DEVICE7_GETLIGHTENABLE,
@@ -653,7 +649,6 @@ void qemu_d3d_device1_EndScene(struct qemu_syscall *call);
 void qemu_d3d_device1_EnumTextureFormats(struct qemu_syscall *call);
 void qemu_d3d_device1_Execute(struct qemu_syscall *call);
 void qemu_d3d_device1_GetCaps(struct qemu_syscall *call);
-void qemu_d3d_device1_GetDirect3D(struct qemu_syscall *call);
 void qemu_d3d_device1_GetMatrix(struct qemu_syscall *call);
 void qemu_d3d_device1_GetPickRecords(struct qemu_syscall *call);
 void qemu_d3d_device1_GetStats(struct qemu_syscall *call);
@@ -675,7 +670,6 @@ void qemu_d3d_device2_EnumTextureFormats(struct qemu_syscall *call);
 void qemu_d3d_device2_GetCaps(struct qemu_syscall *call);
 void qemu_d3d_device2_GetClipStatus(struct qemu_syscall *call);
 void qemu_d3d_device2_GetCurrentViewport(struct qemu_syscall *call);
-void qemu_d3d_device2_GetDirect3D(struct qemu_syscall *call);
 void qemu_d3d_device2_GetLightState(struct qemu_syscall *call);
 void qemu_d3d_device2_GetRenderState(struct qemu_syscall *call);
 void qemu_d3d_device2_GetRenderTarget(struct qemu_syscall *call);
@@ -710,7 +704,6 @@ void qemu_d3d_device3_EnumTextureFormats(struct qemu_syscall *call);
 void qemu_d3d_device3_GetCaps(struct qemu_syscall *call);
 void qemu_d3d_device3_GetClipStatus(struct qemu_syscall *call);
 void qemu_d3d_device3_GetCurrentViewport(struct qemu_syscall *call);
-void qemu_d3d_device3_GetDirect3D(struct qemu_syscall *call);
 void qemu_d3d_device3_GetLightState(struct qemu_syscall *call);
 void qemu_d3d_device3_GetRenderState(struct qemu_syscall *call);
 void qemu_d3d_device3_GetRenderTarget(struct qemu_syscall *call);
@@ -751,7 +744,6 @@ void qemu_d3d_device7_EnumTextureFormats(struct qemu_syscall *call);
 void qemu_d3d_device7_GetCaps(struct qemu_syscall *call);
 void qemu_d3d_device7_GetClipPlane(struct qemu_syscall *call);
 void qemu_d3d_device7_GetClipStatus(struct qemu_syscall *call);
-void qemu_d3d_device7_GetDirect3D(struct qemu_syscall *call);
 void qemu_d3d_device7_GetInfo(struct qemu_syscall *call);
 void qemu_d3d_device7_GetLight(struct qemu_syscall *call);
 void qemu_d3d_device7_GetLightEnable(struct qemu_syscall *call);
