@@ -5199,48 +5199,7 @@ void qemu_d3d_CreateDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d7_CreateVertexBuffer
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t desc;
-    uint64_t vertex_buffer;
-    uint64_t flags;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI d3d7_CreateVertexBuffer(IDirect3D7 *iface, D3DVERTEXBUFFERDESC *desc, IDirect3DVertexBuffer7 **vertex_buffer, DWORD flags)
-{
-    struct qemu_ddraw *ddraw = impl_from_IDirect3D7(iface);
-    struct qemu_d3d7_CreateVertexBuffer call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D7_CREATEVERTEXBUFFER);
-    call.iface = (ULONG_PTR)ddraw;
-    call.desc = (ULONG_PTR)desc;
-    call.vertex_buffer = (ULONG_PTR)vertex_buffer;
-    call.flags = flags;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d7_CreateVertexBuffer(struct qemu_syscall *call)
-{
-    struct qemu_d3d7_CreateVertexBuffer *c = (struct qemu_d3d7_CreateVertexBuffer *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3D7_CreateVertexBuffer(ddraw->host_d3d7, QEMU_G2H(c->desc), QEMU_G2H(c->vertex_buffer), c->flags);
-}
-
-#endif
-
-struct qemu_d3d3_CreateVertexBuffer
+struct qemu_d3d_CreateVertexBuffer
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -5252,33 +5211,104 @@ struct qemu_d3d3_CreateVertexBuffer
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d3_CreateVertexBuffer(IDirect3D3 *iface, D3DVERTEXBUFFERDESC *desc, IDirect3DVertexBuffer **vertex_buffer, DWORD flags, IUnknown *outer_unknown)
+static HRESULT WINAPI d3d7_CreateVertexBuffer(IDirect3D7 *iface, D3DVERTEXBUFFERDESC *desc,
+        IDirect3DVertexBuffer7 **vertex_buffer, DWORD flags)
 {
+    struct qemu_ddraw *ddraw = impl_from_IDirect3D7(iface);
+    struct qemu_d3d_CreateVertexBuffer call;
+    struct qemu_vertex_buffer *object;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_D3D7_CREATEVERTEXBUFFER);
+    call.iface = (ULONG_PTR)ddraw;
+    call.desc = (ULONG_PTR)desc;
+    call.flags = flags;
+
+    qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_vertex_buffer *)(ULONG_PTR)call.vertex_buffer;
+        ddraw_vertex_buffer_guest_init(object, ddraw, 7);
+        *vertex_buffer = &object->IDirect3DVertexBuffer7_iface;
+    }
+    else
+    {
+        *vertex_buffer = NULL;
+    }
+
+    return call.super.iret;
+}
+
+static HRESULT WINAPI d3d3_CreateVertexBuffer(IDirect3D3 *iface, D3DVERTEXBUFFERDESC *desc,
+        IDirect3DVertexBuffer **vertex_buffer, DWORD flags, IUnknown *outer_unknown)
+{
+    struct qemu_d3d_CreateVertexBuffer call;
     struct qemu_ddraw *ddraw = impl_from_IDirect3D3(iface);
-    struct qemu_d3d3_CreateVertexBuffer call;
+    struct qemu_vertex_buffer *object;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D3_CREATEVERTEXBUFFER);
     call.iface = (ULONG_PTR)ddraw;
     call.desc = (ULONG_PTR)desc;
-    call.vertex_buffer = (ULONG_PTR)vertex_buffer;
     call.flags = flags;
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_vertex_buffer *)(ULONG_PTR)call.vertex_buffer;
+        ddraw_vertex_buffer_guest_init(object, ddraw, 3);
+        *vertex_buffer = (IDirect3DVertexBuffer *)&object->IDirect3DVertexBuffer7_iface;
+    }
+    else
+    {
+        *vertex_buffer = NULL;
+    }
 
     return call.super.iret;
 }
 
 #else
 
-void qemu_d3d3_CreateVertexBuffer(struct qemu_syscall *call)
+void qemu_d3d_CreateVertexBuffer(struct qemu_syscall *call)
 {
-    struct qemu_d3d3_CreateVertexBuffer *c = (struct qemu_d3d3_CreateVertexBuffer *)call;
+    struct qemu_d3d_CreateVertexBuffer *c = (struct qemu_d3d_CreateVertexBuffer *)call;
     struct qemu_ddraw *ddraw;
+    struct qemu_vertex_buffer *object;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3D3_CreateVertexBuffer(ddraw->host_d3d3, QEMU_G2H(c->desc), QEMU_G2H(c->vertex_buffer), c->flags, QEMU_G2H(c->outer_unknown));
+    object = HeapAlloc(GetProcessHeap(), 0, sizeof(*object));
+    if (!object)
+    {
+        WINE_WARN("Out of memory.\n");
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    /* D3DVERTEXBUFFERDESC has the same size in 32 and 64 bit. */
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_D3D3_CREATEVERTEXBUFFER):
+            c->super.iret = IDirect3D3_CreateVertexBuffer(ddraw->host_d3d3,
+                    QEMU_G2H(c->desc), (IDirect3DVertexBuffer **)&object->host, c->flags,
+                    QEMU_G2H(c->outer_unknown));
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_D3D7_CREATEVERTEXBUFFER):
+            c->super.iret = IDirect3D7_CreateVertexBuffer(ddraw->host_d3d7,
+                    QEMU_G2H(c->desc), &object->host, c->flags);
+            break;
+    }
+
+    if (FAILED(c->super.id))
+    {
+        HeapFree(GetProcessHeap(), 0, object);
+        return;
+    }
+
+    c->vertex_buffer = QEMU_H2G(object);
 }
 
 #endif
