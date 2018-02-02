@@ -136,4 +136,82 @@ static inline void DDSURFACEDESC2_h2g(struct qemu_DDSURFACEDESC2 *guest, const D
 
 }
 
+struct qemu_DDBLTFX
+{
+    DWORD       dwSize;                         /* size of structure */
+    DWORD       dwDDFX;                         /* FX operations */
+    DWORD       dwROP;                          /* Win32 raster operations */
+    DWORD       dwDDROP;                        /* Raster operations new for DirectDraw */
+    DWORD       dwRotationAngle;                /* Rotation angle for blt */
+    DWORD       dwZBufferOpCode;                /* ZBuffer compares */
+    DWORD       dwZBufferLow;                   /* Low limit of Z buffer */
+    DWORD       dwZBufferHigh;                  /* High limit of Z buffer */
+    DWORD       dwZBufferBaseDest;              /* Destination base value */
+    DWORD       dwZDestConstBitDepth;           /* Bit depth used to specify Z constant for destination */
+    union
+    {
+        DWORD   dwZDestConst;                   /* Constant to use as Z buffer for dest */
+        qemu_ptr lpDDSZBufferDest; /* Surface to use as Z buffer for dest */
+    } DUMMYUNIONNAME1;
+    DWORD       dwZSrcConstBitDepth;            /* Bit depth used to specify Z constant for source */
+    union
+    {
+        DWORD   dwZSrcConst;                    /* Constant to use as Z buffer for src */
+        qemu_ptr lpDDSZBufferSrc; /* Surface to use as Z buffer for src */
+    } DUMMYUNIONNAME2;
+    DWORD       dwAlphaEdgeBlendBitDepth;       /* Bit depth used to specify constant for alpha edge blend */
+    DWORD       dwAlphaEdgeBlend;               /* Alpha for edge blending */
+    DWORD       dwReserved;
+    DWORD       dwAlphaDestConstBitDepth;       /* Bit depth used to specify alpha constant for destination */
+    union
+    {
+        DWORD   dwAlphaDestConst;               /* Constant to use as Alpha Channel */
+        qemu_ptr lpDDSAlphaDest; /* Surface to use as Alpha Channel */
+    } DUMMYUNIONNAME3;
+    DWORD       dwAlphaSrcConstBitDepth;        /* Bit depth used to specify alpha constant for source */
+    union
+    {
+        DWORD   dwAlphaSrcConst;                /* Constant to use as Alpha Channel */
+        qemu_ptr lpDDSAlphaSrc; /* Surface to use as Alpha Channel */
+    } DUMMYUNIONNAME4;
+    union
+    {
+        DWORD   dwFillColor;                    /* color in RGB or Palettized */
+        DWORD   dwFillDepth;                    /* depth value for z-buffer */
+        DWORD   dwFillPixel;                    /* pixel val for RGBA or RGBZ */
+        qemu_ptr lpDDSPattern; /* Surface to use as pattern */
+    } DUMMYUNIONNAME5;
+    DDCOLORKEY  ddckDestColorkey;               /* DestColorkey override */
+    DDCOLORKEY  ddckSrcColorkey;                /* SrcColorkey override */
+};
+
+static void DDBLTFX_g2h(DDBLTFX *host, const struct qemu_DDBLTFX *guest)
+{
+    host->dwSize = sizeof(*host);
+    host->dwDDFX = guest->dwDDFX;
+    host->dwROP = guest->dwROP;
+    host->dwDDROP = guest->dwDDROP;
+    host->dwRotationAngle = guest->dwRotationAngle;
+    host->dwZBufferOpCode = guest->dwZBufferOpCode;
+    host->dwZBufferLow = guest->dwZBufferLow;
+    host->dwZBufferHigh = guest->dwZBufferHigh;
+    host->dwZBufferBaseDest = guest->dwZBufferBaseDest;
+    host->dwZDestConstBitDepth = guest->dwZDestConstBitDepth;
+    host->lpDDSZBufferDest = (IDirectDrawSurface *)(ULONG_PTR)guest->lpDDSZBufferDest;
+    host->dwZSrcConstBitDepth = guest->dwZSrcConstBitDepth;
+    host->lpDDSZBufferSrc = (IDirectDrawSurface *)(ULONG_PTR)guest->lpDDSZBufferSrc;
+    host->dwAlphaEdgeBlendBitDepth = guest->dwAlphaEdgeBlendBitDepth;
+    host->dwAlphaEdgeBlend = guest->dwAlphaEdgeBlend;
+    host->dwReserved = guest->dwReserved;
+    host->dwAlphaDestConstBitDepth = guest->dwAlphaDestConstBitDepth;
+    host->lpDDSAlphaDest = (IDirectDrawSurface *)(ULONG_PTR)guest->lpDDSAlphaDest;
+    host->dwAlphaSrcConstBitDepth = guest->dwAlphaSrcConstBitDepth;
+    host->lpDDSAlphaSrc = (IDirectDrawSurface *)(ULONG_PTR)guest->lpDDSAlphaSrc;
+    host->dwFillColor = guest->dwFillColor;
+    host->dwFillDepth = guest->dwFillDepth;
+    host->dwFillPixel = guest->dwFillPixel;
+    host->ddckDestColorkey = guest->ddckDestColorkey;
+    host->ddckSrcColorkey = guest->ddckSrcColorkey;
+}
+
 #endif

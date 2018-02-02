@@ -1384,10 +1384,12 @@ static HRESULT WINAPI ddraw_surface7_Blt(IDirectDrawSurface7 *iface, RECT *dst_r
 {
     struct qemu_ddraw_surface7_Blt call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
+    struct qemu_surface *src = unsafe_impl_from_IDirectDrawSurface7(src_surface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_BLT);
     call.iface = (ULONG_PTR)surface;
     call.dst_rect = (ULONG_PTR)dst_rect;
-    call.src_surface = (ULONG_PTR)src_surface;
+    call.src_surface = (ULONG_PTR)src;
     call.src_rect = (ULONG_PTR)src_rect;
     call.flags = flags;
     call.fx = (ULONG_PTR)fx;
@@ -1403,11 +1405,27 @@ void qemu_ddraw_surface7_Blt(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface7_Blt *c = (struct qemu_ddraw_surface7_Blt *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *src;
+    DDBLTFX stack, *fx = &stack;
+    struct qemu_DDBLTFX *fx32;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    src = QEMU_G2H(c->src_surface);
 
-    c->super.iret = IDirectDrawSurface7_Blt(surface->host_surface7, QEMU_G2H(c->dst_rect), QEMU_G2H(c->src_surface), QEMU_G2H(c->src_rect), c->flags, QEMU_G2H(c->fx));
+#if HOST_BIT == GUEST_BIT
+    fx = QEMU_G2H(c->fx);
+#else
+    fx32 = QEMU_G2H(c->fx);
+
+    if (fx32)
+        DDBLTFX_g2h(fx, fx32);
+    else
+        fx = NULL;
+#endif
+
+    c->super.iret = IDirectDrawSurface7_Blt(surface->host_surface7, QEMU_G2H(c->dst_rect),
+            src ? src->host_surface7 : NULL, QEMU_G2H(c->src_rect), c->flags, fx);
 }
 
 #endif
@@ -1425,14 +1443,17 @@ struct qemu_ddraw_surface4_Blt
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw_surface4_Blt(IDirectDrawSurface4 *iface, RECT *dst_rect, IDirectDrawSurface4 *src_surface, RECT *src_rect, DWORD flags, DDBLTFX *fx)
+static HRESULT WINAPI ddraw_surface4_Blt(IDirectDrawSurface4 *iface, RECT *dst_rect, IDirectDrawSurface4 *src_surface,
+        RECT *src_rect, DWORD flags, DDBLTFX *fx)
 {
     struct qemu_ddraw_surface4_Blt call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
+    struct qemu_surface *src = unsafe_impl_from_IDirectDrawSurface4(src_surface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_BLT);
     call.iface = (ULONG_PTR)surface;
     call.dst_rect = (ULONG_PTR)dst_rect;
-    call.src_surface = (ULONG_PTR)src_surface;
+    call.src_surface = (ULONG_PTR)src;
     call.src_rect = (ULONG_PTR)src_rect;
     call.flags = flags;
     call.fx = (ULONG_PTR)fx;
@@ -1448,11 +1469,27 @@ void qemu_ddraw_surface4_Blt(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface4_Blt *c = (struct qemu_ddraw_surface4_Blt *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *src;
+    DDBLTFX stack, *fx = &stack;
+    struct qemu_DDBLTFX *fx32;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    src = QEMU_G2H(c->src_surface);
 
-    c->super.iret = IDirectDrawSurface4_Blt(surface->host_surface4, QEMU_G2H(c->dst_rect), QEMU_G2H(c->src_surface), QEMU_G2H(c->src_rect), c->flags, QEMU_G2H(c->fx));
+#if HOST_BIT == GUEST_BIT
+    fx = QEMU_G2H(c->fx);
+#else
+    fx32 = QEMU_G2H(c->fx);
+
+    if (fx32)
+        DDBLTFX_g2h(fx, fx32);
+    else
+        fx = NULL;
+#endif
+
+    c->super.iret = IDirectDrawSurface4_Blt(surface->host_surface4, QEMU_G2H(c->dst_rect),
+            src ? src->host_surface4 : NULL, QEMU_G2H(c->src_rect), c->flags, fx);
 }
 
 #endif
@@ -1470,14 +1507,17 @@ struct qemu_ddraw_surface3_Blt
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw_surface3_Blt(IDirectDrawSurface3 *iface, RECT *dst_rect, IDirectDrawSurface3 *src_surface, RECT *src_rect, DWORD flags, DDBLTFX *fx)
+static HRESULT WINAPI ddraw_surface3_Blt(IDirectDrawSurface3 *iface, RECT *dst_rect, IDirectDrawSurface3 *src_surface,
+        RECT *src_rect, DWORD flags, DDBLTFX *fx)
 {
     struct qemu_ddraw_surface3_Blt call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface3(iface);
+    struct qemu_surface *src = unsafe_impl_from_IDirectDrawSurface3(src_surface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE3_BLT);
     call.iface = (ULONG_PTR)surface;
     call.dst_rect = (ULONG_PTR)dst_rect;
-    call.src_surface = (ULONG_PTR)src_surface;
+    call.src_surface = (ULONG_PTR)src;
     call.src_rect = (ULONG_PTR)src_rect;
     call.flags = flags;
     call.fx = (ULONG_PTR)fx;
@@ -1493,11 +1533,27 @@ void qemu_ddraw_surface3_Blt(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface3_Blt *c = (struct qemu_ddraw_surface3_Blt *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *src;
+    DDBLTFX stack, *fx = &stack;
+    struct qemu_DDBLTFX *fx32;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    src = QEMU_G2H(c->src_surface);
 
-    c->super.iret = IDirectDrawSurface3_Blt(surface->host_surface3, QEMU_G2H(c->dst_rect), QEMU_G2H(c->src_surface), QEMU_G2H(c->src_rect), c->flags, QEMU_G2H(c->fx));
+#if HOST_BIT == GUEST_BIT
+    fx = QEMU_G2H(c->fx);
+#else
+    fx32 = QEMU_G2H(c->fx);
+
+    if (fx32)
+        DDBLTFX_g2h(fx, fx32);
+    else
+        fx = NULL;
+#endif
+
+    c->super.iret = IDirectDrawSurface3_Blt(surface->host_surface3, QEMU_G2H(c->dst_rect),
+            src ? src->host_surface3 : NULL, QEMU_G2H(c->src_rect), c->flags, fx);
 }
 
 #endif
@@ -1515,14 +1571,17 @@ struct qemu_ddraw_surface2_Blt
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw_surface2_Blt(IDirectDrawSurface2 *iface, RECT *dst_rect, IDirectDrawSurface2 *src_surface, RECT *src_rect, DWORD flags, DDBLTFX *fx)
+static HRESULT WINAPI ddraw_surface2_Blt(IDirectDrawSurface2 *iface, RECT *dst_rect, IDirectDrawSurface2 *src_surface,
+        RECT *src_rect, DWORD flags, DDBLTFX *fx)
 {
     struct qemu_ddraw_surface2_Blt call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface2(iface);
+    struct qemu_surface *src = unsafe_impl_from_IDirectDrawSurface2(src_surface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE2_BLT);
     call.iface = (ULONG_PTR)surface;
     call.dst_rect = (ULONG_PTR)dst_rect;
-    call.src_surface = (ULONG_PTR)src_surface;
+    call.src_surface = (ULONG_PTR)src;
     call.src_rect = (ULONG_PTR)src_rect;
     call.flags = flags;
     call.fx = (ULONG_PTR)fx;
@@ -1538,11 +1597,27 @@ void qemu_ddraw_surface2_Blt(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface2_Blt *c = (struct qemu_ddraw_surface2_Blt *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *src;
+    DDBLTFX stack, *fx = &stack;
+    struct qemu_DDBLTFX *fx32;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    src = QEMU_G2H(c->src_surface);
 
-    c->super.iret = IDirectDrawSurface2_Blt(surface->host_surface2, QEMU_G2H(c->dst_rect), QEMU_G2H(c->src_surface), QEMU_G2H(c->src_rect), c->flags, QEMU_G2H(c->fx));
+#if HOST_BIT == GUEST_BIT
+    fx = QEMU_G2H(c->fx);
+#else
+    fx32 = QEMU_G2H(c->fx);
+
+    if (fx32)
+        DDBLTFX_g2h(fx, fx32);
+    else
+        fx = NULL;
+#endif
+
+    c->super.iret = IDirectDrawSurface2_Blt(surface->host_surface2, QEMU_G2H(c->dst_rect),
+            src ? src->host_surface2 : NULL, QEMU_G2H(c->src_rect), c->flags, fx);
 }
 
 #endif
@@ -1560,14 +1635,17 @@ struct qemu_ddraw_surface1_Blt
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw_surface1_Blt(IDirectDrawSurface *iface, RECT *dst_rect, IDirectDrawSurface *src_surface, RECT *src_rect, DWORD flags, DDBLTFX *fx)
+static HRESULT WINAPI ddraw_surface1_Blt(IDirectDrawSurface *iface, RECT *dst_rect, IDirectDrawSurface *src_surface,
+        RECT *src_rect, DWORD flags, DDBLTFX *fx)
 {
     struct qemu_ddraw_surface1_Blt call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface(iface);
+    struct qemu_surface *src = unsafe_impl_from_IDirectDrawSurface(src_surface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_BLT);
     call.iface = (ULONG_PTR)surface;
     call.dst_rect = (ULONG_PTR)dst_rect;
-    call.src_surface = (ULONG_PTR)src_surface;
+    call.src_surface = (ULONG_PTR)src;
     call.src_rect = (ULONG_PTR)src_rect;
     call.flags = flags;
     call.fx = (ULONG_PTR)fx;
@@ -1583,11 +1661,27 @@ void qemu_ddraw_surface1_Blt(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface1_Blt *c = (struct qemu_ddraw_surface1_Blt *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *src;
+    DDBLTFX stack, *fx = &stack;
+    struct qemu_DDBLTFX *fx32;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    src = QEMU_G2H(c->src_surface);
 
-    c->super.iret = IDirectDrawSurface_Blt(surface->host_surface1, QEMU_G2H(c->dst_rect), QEMU_G2H(c->src_surface), QEMU_G2H(c->src_rect), c->flags, QEMU_G2H(c->fx));
+#if HOST_BIT == GUEST_BIT
+    fx = QEMU_G2H(c->fx);
+#else
+    fx32 = QEMU_G2H(c->fx);
+
+    if (fx32)
+        DDBLTFX_g2h(fx, fx32);
+    else
+        fx = NULL;
+#endif
+
+    c->super.iret = IDirectDrawSurface_Blt(surface->host_surface1, QEMU_G2H(c->dst_rect),
+            src ? src->host_surface1 : NULL, QEMU_G2H(c->src_rect), c->flags, fx);
 }
 
 #endif
