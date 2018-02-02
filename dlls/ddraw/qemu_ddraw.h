@@ -197,6 +197,8 @@ struct qemu_ddraw
 
 #ifdef QEMU_DLL_GUEST
 
+struct qemu_ddraw *unsafe_impl_from_IDirectDraw(IDirectDraw *iface);
+
 void ddraw_clipper_guest_init(struct qemu_clipper *clipper);
 struct qemu_clipper *unsafe_impl_from_IDirectDrawClipper(IDirectDrawClipper *iface);
 

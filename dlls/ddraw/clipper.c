@@ -286,9 +286,11 @@ static HRESULT WINAPI ddraw_clipper_Initialize(IDirectDrawClipper *iface, IDirec
 {
     struct qemu_ddraw_clipper_Initialize call;
     struct qemu_clipper *clipper = impl_from_IDirectDrawClipper(iface);
+    struct qemu_ddraw *ddraw_impl = unsafe_impl_from_IDirectDraw(ddraw);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_CLIPPER_INITIALIZE);
     call.iface = (ULONG_PTR)clipper;
-    call.ddraw = (ULONG_PTR)ddraw;
+    call.ddraw = (ULONG_PTR)ddraw_impl;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -302,11 +304,13 @@ void qemu_ddraw_clipper_Initialize(struct qemu_syscall *call)
 {
     struct qemu_ddraw_clipper_Initialize *c = (struct qemu_ddraw_clipper_Initialize *)call;
     struct qemu_clipper *clipper;
+    struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     clipper = QEMU_G2H(c->iface);
+    ddraw = QEMU_G2H(c->ddraw);
 
-    c->super.iret = IDirectDrawClipper_Initialize(clipper->host, QEMU_G2H(c->ddraw), c->flags);
+    c->super.iret = IDirectDrawClipper_Initialize(clipper->host, ddraw ? ddraw->host_ddraw1 : NULL, c->flags);
 }
 
 #endif

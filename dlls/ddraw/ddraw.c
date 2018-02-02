@@ -5295,4 +5295,14 @@ static const struct IDirect3DVtbl d3d1_vtbl =
     d3d1_FindDevice
 };
 
+struct qemu_ddraw *unsafe_impl_from_IDirectDraw(IDirectDraw *iface)
+{
+    if (!iface)
+        return NULL;
+    if (iface->lpVtbl != &ddraw1_vtbl)
+        WINE_ERR("Incorrect clipper vtable %p, expect %p.\n", iface->lpVtbl, &ddraw1_vtbl);
+
+    return impl_from_IDirectDraw(iface);
+}
+
 #endif
