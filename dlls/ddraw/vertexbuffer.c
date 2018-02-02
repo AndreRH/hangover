@@ -148,10 +148,10 @@ static HRESULT WINAPI d3d_vertex_buffer7_Lock(IDirect3DVertexBuffer7 *iface, DWO
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VERTEX_BUFFER7_LOCK);
     call.iface = (ULONG_PTR)buffer;
     call.flags = flags;
-    call.data = (ULONG_PTR)data;
     call.data_size = (ULONG_PTR)data_size;
 
     qemu_syscall(&call.super);
+    *data = (void *)(ULONG_PTR)call.data;
 
     return call.super.iret;
 }
@@ -162,11 +162,13 @@ void qemu_d3d_vertex_buffer7_Lock(struct qemu_syscall *call)
 {
     struct qemu_d3d_vertex_buffer7_Lock *c = (struct qemu_d3d_vertex_buffer7_Lock *)call;
     struct qemu_vertex_buffer *buffer;
+    void *data;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DVertexBuffer7_Lock(buffer->host, c->flags, QEMU_G2H(c->data), QEMU_G2H(c->data_size));
+    c->super.iret = IDirect3DVertexBuffer7_Lock(buffer->host, c->flags, &data, QEMU_G2H(c->data_size));
+    c->data = QEMU_H2G(data);
 }
 
 #endif
@@ -198,7 +200,7 @@ void qemu_d3d_vertex_buffer7_Unlock(struct qemu_syscall *call)
     struct qemu_d3d_vertex_buffer7_Unlock *c = (struct qemu_d3d_vertex_buffer7_Unlock *)call;
     struct qemu_vertex_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVertexBuffer7_Unlock(buffer->host);
