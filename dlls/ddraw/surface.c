@@ -627,46 +627,7 @@ void qemu_ddraw_surface1_Release(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_ddraw_surface7_GetAttachedSurface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t Caps;
-    uint64_t Surface;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI ddraw_surface7_GetAttachedSurface(IDirectDrawSurface7 *iface, DDSCAPS2 *Caps, IDirectDrawSurface7 **Surface)
-{
-    struct qemu_ddraw_surface7_GetAttachedSurface call;
-    struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_GETATTACHEDSURFACE);
-    call.iface = (ULONG_PTR)surface;
-    call.Caps = (ULONG_PTR)Caps;
-    call.Surface = (ULONG_PTR)Surface;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_ddraw_surface7_GetAttachedSurface(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface7_GetAttachedSurface *c = (struct qemu_ddraw_surface7_GetAttachedSurface *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface7_GetAttachedSurface(surface->host_surface7, QEMU_G2H(c->Caps), QEMU_G2H(c->Surface));
-}
-
-#endif
-
-struct qemu_ddraw_surface4_GetAttachedSurface
+struct qemu_ddraw_surface_GetAttachedSurface
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -676,9 +637,28 @@ struct qemu_ddraw_surface4_GetAttachedSurface
 
 #ifdef QEMU_DLL_GUEST
 
+static HRESULT WINAPI ddraw_surface7_GetAttachedSurface(IDirectDrawSurface7 *iface, DDSCAPS2 *caps, IDirectDrawSurface7 **Surface)
+{
+    struct qemu_ddraw_surface_GetAttachedSurface call;
+    struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
+    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_GETATTACHEDSURFACE);
+    call.iface = (ULONG_PTR)surface;
+    call.caps = (ULONG_PTR)caps;
+
+    qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+    {
+        struct qemu_surface *attach = (struct qemu_surface *)(ULONG_PTR)call.attachment;
+        *Surface = &attach->IDirectDrawSurface7_iface;
+        IDirectDrawSurface7_AddRef(*Surface);
+    }
+
+    return call.super.iret;
+}
+
 static HRESULT WINAPI ddraw_surface4_GetAttachedSurface(IDirectDrawSurface4 *iface, DDSCAPS2 *caps, IDirectDrawSurface4 **attachment)
 {
-    struct qemu_ddraw_surface4_GetAttachedSurface call;
+    struct qemu_ddraw_surface_GetAttachedSurface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_GETATTACHEDSURFACE);
     call.iface = (ULONG_PTR)surface;
@@ -686,38 +666,19 @@ static HRESULT WINAPI ddraw_surface4_GetAttachedSurface(IDirectDrawSurface4 *ifa
     call.attachment = (ULONG_PTR)attachment;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+    {
+        struct qemu_surface *attach = (struct qemu_surface *)(ULONG_PTR)call.attachment;
+        *attachment = &attach->IDirectDrawSurface4_iface;
+        IDirectDrawSurface4_AddRef(*attachment);
+    }
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw_surface4_GetAttachedSurface(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface4_GetAttachedSurface *c = (struct qemu_ddraw_surface4_GetAttachedSurface *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface4_GetAttachedSurface(surface->host_surface4, QEMU_G2H(c->caps), QEMU_G2H(c->attachment));
-}
-
-#endif
-
-struct qemu_ddraw_surface3_GetAttachedSurface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t caps;
-    uint64_t attachment;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 static HRESULT WINAPI ddraw_surface3_GetAttachedSurface(IDirectDrawSurface3 *iface, DDSCAPS *caps, IDirectDrawSurface3 **attachment)
 {
-    struct qemu_ddraw_surface3_GetAttachedSurface call;
+    struct qemu_ddraw_surface_GetAttachedSurface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface3(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE3_GETATTACHEDSURFACE);
     call.iface = (ULONG_PTR)surface;
@@ -725,38 +686,19 @@ static HRESULT WINAPI ddraw_surface3_GetAttachedSurface(IDirectDrawSurface3 *ifa
     call.attachment = (ULONG_PTR)attachment;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+    {
+        struct qemu_surface *attach = (struct qemu_surface *)(ULONG_PTR)call.attachment;
+        *attachment = &attach->IDirectDrawSurface3_iface;
+        IDirectDrawSurface3_AddRef(*attachment);
+    }
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw_surface3_GetAttachedSurface(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface3_GetAttachedSurface *c = (struct qemu_ddraw_surface3_GetAttachedSurface *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface3_GetAttachedSurface(surface->host_surface3, QEMU_G2H(c->caps), QEMU_G2H(c->attachment));
-}
-
-#endif
-
-struct qemu_ddraw_surface2_GetAttachedSurface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t caps;
-    uint64_t attachment;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 static HRESULT WINAPI ddraw_surface2_GetAttachedSurface(IDirectDrawSurface2 *iface, DDSCAPS *caps, IDirectDrawSurface2 **attachment)
 {
-    struct qemu_ddraw_surface2_GetAttachedSurface call;
+    struct qemu_ddraw_surface_GetAttachedSurface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface2(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE2_GETATTACHEDSURFACE);
     call.iface = (ULONG_PTR)surface;
@@ -764,38 +706,19 @@ static HRESULT WINAPI ddraw_surface2_GetAttachedSurface(IDirectDrawSurface2 *ifa
     call.attachment = (ULONG_PTR)attachment;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+    {
+        struct qemu_surface *attach = (struct qemu_surface *)(ULONG_PTR)call.attachment;
+        *attachment = &attach->IDirectDrawSurface2_iface;
+        IDirectDrawSurface2_AddRef(*attachment);
+    }
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw_surface2_GetAttachedSurface(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface2_GetAttachedSurface *c = (struct qemu_ddraw_surface2_GetAttachedSurface *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface2_GetAttachedSurface(surface->host_surface2, QEMU_G2H(c->caps), QEMU_G2H(c->attachment));
-}
-
-#endif
-
-struct qemu_ddraw_surface1_GetAttachedSurface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t caps;
-    uint64_t attachment;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 static HRESULT WINAPI ddraw_surface1_GetAttachedSurface(IDirectDrawSurface *iface, DDSCAPS *caps, IDirectDrawSurface **attachment)
 {
-    struct qemu_ddraw_surface1_GetAttachedSurface call;
+    struct qemu_ddraw_surface_GetAttachedSurface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_GETATTACHEDSURFACE);
     call.iface = (ULONG_PTR)surface;
@@ -803,21 +726,68 @@ static HRESULT WINAPI ddraw_surface1_GetAttachedSurface(IDirectDrawSurface *ifac
     call.attachment = (ULONG_PTR)attachment;
 
     qemu_syscall(&call.super);
+    {
+        struct qemu_surface *attach = (struct qemu_surface *)(ULONG_PTR)call.attachment;
+        *attachment = &attach->IDirectDrawSurface_iface;
+        IDirectDrawSurface_AddRef(*attachment);
+    }
 
     return call.super.iret;
 }
 
 #else
 
-void qemu_ddraw_surface1_GetAttachedSurface(struct qemu_syscall *call)
+void qemu_ddraw_surface_GetAttachedSurface(struct qemu_syscall *call)
 {
-    struct qemu_ddraw_surface1_GetAttachedSurface *c = (struct qemu_ddraw_surface1_GetAttachedSurface *)call;
-    struct qemu_surface *surface;
+    struct qemu_ddraw_surface_GetAttachedSurface *c = (struct qemu_ddraw_surface_GetAttachedSurface *)call;
+    struct qemu_surface *surface, *attach_impl;
+    IUnknown *attachment;
+    IDirectDrawSurface7 *host;
+    IUnknown *priv;
+    DWORD size = sizeof(priv);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDrawSurface_GetAttachedSurface(surface->host_surface1, QEMU_G2H(c->caps), QEMU_G2H(c->attachment));
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_GETATTACHEDSURFACE):
+            c->super.iret = IDirectDrawSurface7_GetAttachedSurface(surface->host_surface7, QEMU_G2H(c->caps),
+                    (IDirectDrawSurface7 **)&attachment);
+            break;
+        case QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_GETATTACHEDSURFACE):
+            c->super.iret = IDirectDrawSurface4_GetAttachedSurface(surface->host_surface4, QEMU_G2H(c->caps),
+                    (IDirectDrawSurface4 **)&attachment);
+            break;
+        case QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE3_GETATTACHEDSURFACE):
+            c->super.iret = IDirectDrawSurface3_GetAttachedSurface(surface->host_surface3, QEMU_G2H(c->caps),
+                    (IDirectDrawSurface3 **)&attachment);
+            break;
+        case QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE2_GETATTACHEDSURFACE):
+            c->super.iret = IDirectDrawSurface2_GetAttachedSurface(surface->host_surface2, QEMU_G2H(c->caps),
+                    (IDirectDrawSurface2 **)&attachment);
+            break;
+        case QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_GETATTACHEDSURFACE):
+            c->super.iret = IDirectDrawSurface_GetAttachedSurface(surface->host_surface1, QEMU_G2H(c->caps),
+                    (IDirectDrawSurface **)&attachment);
+            break;
+    }
+    if (FAILED(c->super.iret))
+        return;
+
+    IUnknown_QueryInterface(attachment, &IID_IDirectDrawSurface7, (void **)&host);
+    IUnknown_Release(attachment);
+
+    /* No, this does not addref the stored IUnknown interface. */
+    if (FAILED(IDirectDrawSurface7_GetPrivateData(host, &surface_priv_uuid, &priv, &size)))
+        WINE_ERR("Failed to get private data.n");
+
+    attach_impl = surface_impl_from_IUnknown(priv);
+    WINE_TRACE("Found surface implemention %p from host surface %p (v7 %p).\n", attach_impl, attachment, host);
+    c->attachment = QEMU_H2G(attach_impl);
+
+    /* Um, we really should addref the guest interface before releasing this here, but we can't easily. */
+    IDirectDrawSurface7_Release(host);
 }
 
 #endif
