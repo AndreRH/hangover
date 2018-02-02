@@ -78,7 +78,7 @@ struct qemu_DirectDrawCreate
 {
     struct qemu_syscall super;
     uint64_t driver_guid;
-    uint64_t ddraw;
+    uint64_t object;
     uint64_t outer;
 };
 
@@ -87,12 +87,22 @@ struct qemu_DirectDrawCreate
 WINBASEAPI HRESULT WINAPI DirectDrawCreate(GUID *driver_guid, IDirectDraw **ddraw, IUnknown *outer)
 {
     struct qemu_DirectDrawCreate call;
+    struct qemu_ddraw *object;
+
+    WINE_TRACE("driver_guid %s, ddraw %p, outer %p.\n", wine_dbgstr_guid(driver_guid), ddraw, outer);
+
+    *ddraw = NULL;
     call.super.id = QEMU_SYSCALL_ID(CALL_DIRECTDRAWCREATE);
     call.driver_guid = (ULONG_PTR)driver_guid;
-    call.ddraw = (ULONG_PTR)ddraw;
     call.outer = (ULONG_PTR)outer;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    object = (struct qemu_ddraw *)(ULONG_PTR)call.object;
+    ddraw_guest_init(object);
+    *ddraw = &object->IDirectDraw_iface;
 
     return call.super.iret;
 }
@@ -102,8 +112,32 @@ WINBASEAPI HRESULT WINAPI DirectDrawCreate(GUID *driver_guid, IDirectDraw **ddra
 static void qemu_DirectDrawCreate(struct qemu_syscall *call)
 {
     struct qemu_DirectDrawCreate *c = (struct qemu_DirectDrawCreate *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DirectDrawCreate(QEMU_G2H(c->driver_guid), QEMU_G2H(c->ddraw), QEMU_G2H(c->outer));
+    struct qemu_ddraw *object;
+    WINE_TRACE("\n");
+
+    object = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*object));
+    if (!object)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = DirectDrawCreate(QEMU_G2H(c->driver_guid), &object->host_ddraw1, QEMU_G2H(c->outer));
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, object);
+        return;
+    }
+
+    IDirectDraw_QueryInterface(object->host_ddraw1, &IID_IDirectDraw2, (void **)&object->host_ddraw2);
+    IDirectDraw_QueryInterface(object->host_ddraw1, &IID_IDirectDraw4, (void **)&object->host_ddraw4);
+    IDirectDraw_QueryInterface(object->host_ddraw1, &IID_IDirectDraw7, (void **)&object->host_ddraw7);
+
+    IDirectDraw_QueryInterface(object->host_ddraw1, &IID_IDirect3D, (void **)&object->host_d3d1);
+    IDirectDraw_QueryInterface(object->host_ddraw1, &IID_IDirect3D2, (void **)&object->host_d3d2);
+    IDirectDraw_QueryInterface(object->host_ddraw1, &IID_IDirect3D3, (void **)&object->host_d3d3);
+
+    c->object = QEMU_H2G(object);
 }
 
 #endif
@@ -112,8 +146,7 @@ struct qemu_DirectDrawCreateEx
 {
     struct qemu_syscall super;
     uint64_t driver_guid;
-    uint64_t ddraw;
-    uint64_t interface_iid;
+    uint64_t object;
     uint64_t outer;
 };
 
@@ -122,15 +155,31 @@ struct qemu_DirectDrawCreateEx
 WINBASEAPI HRESULT WINAPI DirectDrawCreateEx(GUID *driver_guid, void **ddraw, REFIID interface_iid, IUnknown *outer)
 {
     struct qemu_DirectDrawCreateEx call;
+    struct qemu_ddraw *object;
+    HRESULT hr;
+
+    WINE_TRACE("driver_guid %s, ddraw %p, interface_iid %s, outer %p.\n",
+            wine_dbgstr_guid(driver_guid), ddraw, wine_dbgstr_guid(interface_iid), outer);
+
+    if (!IsEqualGUID(interface_iid, &IID_IDirectDraw7))
+        return DDERR_INVALIDPARAMS;
+
+    *ddraw = NULL;
     call.super.id = QEMU_SYSCALL_ID(CALL_DIRECTDRAWCREATEEX);
     call.driver_guid = (ULONG_PTR)driver_guid;
-    call.ddraw = (ULONG_PTR)ddraw;
-    call.interface_iid = (ULONG_PTR)interface_iid;
     call.outer = (ULONG_PTR)outer;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
 
-    return call.super.iret;
+    object = (struct qemu_ddraw *)(ULONG_PTR)call.object;
+    ddraw_guest_init(object);
+
+    hr = IDirectDraw_QueryInterface(&object->IDirectDraw_iface, interface_iid, ddraw);
+    IDirectDraw_Release(&object->IDirectDraw_iface);
+
+    return hr;
 }
 
 #else
@@ -138,8 +187,34 @@ WINBASEAPI HRESULT WINAPI DirectDrawCreateEx(GUID *driver_guid, void **ddraw, RE
 static void qemu_DirectDrawCreateEx(struct qemu_syscall *call)
 {
     struct qemu_DirectDrawCreateEx *c = (struct qemu_DirectDrawCreateEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DirectDrawCreateEx(QEMU_G2H(c->driver_guid), QEMU_G2H(c->ddraw), QEMU_G2H(c->interface_iid), QEMU_G2H(c->outer));
+    struct qemu_ddraw *object;
+    WINE_TRACE("\n");
+
+    object = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*object));
+    if (!object)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = DirectDrawCreateEx(QEMU_G2H(c->driver_guid), (void **)&object->host_ddraw7,
+            &IID_IDirectDraw7, QEMU_G2H(c->outer));
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, object);
+        return;
+    }
+
+    IDirectDraw_QueryInterface(object->host_ddraw7, &IID_IDirectDraw, (void **)&object->host_ddraw1);
+    IDirectDraw_QueryInterface(object->host_ddraw7, &IID_IDirectDraw2, (void **)&object->host_ddraw2);
+    IDirectDraw_QueryInterface(object->host_ddraw7, &IID_IDirectDraw4, (void **)&object->host_ddraw4);
+
+    IDirectDraw_QueryInterface(object->host_ddraw7, &IID_IDirect3D, (void **)&object->host_d3d1);
+    IDirectDraw_QueryInterface(object->host_ddraw7, &IID_IDirect3D2, (void **)&object->host_d3d2);
+    IDirectDraw_QueryInterface(object->host_ddraw7, &IID_IDirect3D3, (void **)&object->host_d3d3);
+    IDirectDraw_QueryInterface(object->host_ddraw7, &IID_IDirect3D7, (void **)&object->host_d3d7);
+
+    c->object = QEMU_H2G(object);
 }
 
 #endif
