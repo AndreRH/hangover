@@ -5041,48 +5041,7 @@ void qemu_d3d1_FindDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d7_CreateDevice
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t surface;
-    uint64_t device;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI d3d7_CreateDevice(IDirect3D7 *iface, REFCLSID riid, IDirectDrawSurface7 *surface, IDirect3DDevice7 **device)
-{
-    struct qemu_ddraw *ddraw = impl_from_IDirect3D7(iface);
-    struct qemu_d3d7_CreateDevice call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D7_CREATEDEVICE);
-    call.iface = (ULONG_PTR)ddraw;
-    call.riid = (ULONG_PTR)riid;
-    call.surface = (ULONG_PTR)surface;
-    call.device = (ULONG_PTR)device;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d7_CreateDevice(struct qemu_syscall *call)
-{
-    struct qemu_d3d7_CreateDevice *c = (struct qemu_d3d7_CreateDevice *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3D7_CreateDevice(ddraw->host_d3d7, QEMU_G2H(c->riid), QEMU_G2H(c->surface), QEMU_G2H(c->device));
-}
-
-#endif
-
-struct qemu_d3d3_CreateDevice
+struct qemu_d3d_CreateDevice
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -5094,74 +5053,148 @@ struct qemu_d3d3_CreateDevice
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d3_CreateDevice(IDirect3D3 *iface, REFCLSID riid, IDirectDrawSurface4 *surface, IDirect3DDevice3 **device, IUnknown *outer_unknown)
+static HRESULT WINAPI d3d7_CreateDevice(IDirect3D7 *iface, REFCLSID riid, IDirectDrawSurface7 *surface,
+        IDirect3DDevice7 **device)
 {
+    struct qemu_d3d_CreateDevice call;
+    struct qemu_ddraw *ddraw = impl_from_IDirect3D7(iface);
+    struct qemu_surface *surface_impl = unsafe_impl_from_IDirectDrawSurface7(surface);
+    struct qemu_device *object;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_D3D7_CREATEDEVICE);
+    call.iface = (ULONG_PTR)ddraw;
+    call.riid = (ULONG_PTR)riid;
+    call.surface = (ULONG_PTR)surface_impl;
+    call.device = (ULONG_PTR)device;
+
+    qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_device *)(ULONG_PTR)call.device;
+        ddraw_device_guest_init(object, ddraw, 7, (IUnknown *)surface, NULL);
+        *device = &object->IDirect3DDevice7_iface;
+    }
+    else
+    {
+        *device = NULL;
+    }
+
+    return call.super.iret;
+}
+
+static HRESULT WINAPI d3d3_CreateDevice(IDirect3D3 *iface, REFCLSID riid, IDirectDrawSurface4 *surface,
+        IDirect3DDevice3 **device, IUnknown *outer_unknown)
+{
+    struct qemu_d3d_CreateDevice call;
     struct qemu_ddraw *ddraw = impl_from_IDirect3D3(iface);
-    struct qemu_d3d3_CreateDevice call;
+    struct qemu_surface *surface_impl = unsafe_impl_from_IDirectDrawSurface4(surface);
+    struct qemu_device *object;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D3_CREATEDEVICE);
     call.iface = (ULONG_PTR)ddraw;
     call.riid = (ULONG_PTR)riid;
-    call.surface = (ULONG_PTR)surface;
-    call.device = (ULONG_PTR)device;
+    call.surface = (ULONG_PTR)surface_impl;
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
 
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_device *)(ULONG_PTR)call.device;
+        ddraw_device_guest_init(object, ddraw, 3, (IUnknown *)surface, NULL);
+        *device = &object->IDirect3DDevice3_iface;
+    }
+    else
+    {
+        *device = NULL;
+    }
+
     return call.super.iret;
 }
 
-#else
-
-void qemu_d3d3_CreateDevice(struct qemu_syscall *call)
+static HRESULT WINAPI d3d2_CreateDevice(IDirect3D2 *iface, REFCLSID riid, IDirectDrawSurface *surface,
+        IDirect3DDevice2 **device)
 {
-    struct qemu_d3d3_CreateDevice *c = (struct qemu_d3d3_CreateDevice *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3D3_CreateDevice(ddraw->host_d3d3, QEMU_G2H(c->riid), QEMU_G2H(c->surface), QEMU_G2H(c->device), QEMU_G2H(c->outer_unknown));
-}
-
-#endif
-
-struct qemu_d3d2_CreateDevice
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t surface;
-    uint64_t device;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI d3d2_CreateDevice(IDirect3D2 *iface, REFCLSID riid, IDirectDrawSurface *surface, IDirect3DDevice2 **device)
-{
+    struct qemu_d3d_CreateDevice call;
     struct qemu_ddraw *ddraw = impl_from_IDirect3D2(iface);
-    struct qemu_d3d2_CreateDevice call;
+    struct qemu_surface *surface_impl = unsafe_impl_from_IDirectDrawSurface(surface);
+    struct qemu_device *object;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D2_CREATEDEVICE);
     call.iface = (ULONG_PTR)ddraw;
     call.riid = (ULONG_PTR)riid;
-    call.surface = (ULONG_PTR)surface;
-    call.device = (ULONG_PTR)device;
+    call.surface = (ULONG_PTR)surface_impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_device *)(ULONG_PTR)call.device;
+        ddraw_device_guest_init(object, ddraw, 2, (IUnknown *)surface, NULL);
+        *device = &object->IDirect3DDevice2_iface;
+    }
+    else
+    {
+        *device = NULL;
+    }
 
     return call.super.iret;
 }
 
 #else
 
-void qemu_d3d2_CreateDevice(struct qemu_syscall *call)
+void qemu_d3d_CreateDevice(struct qemu_syscall *call)
 {
-    struct qemu_d3d2_CreateDevice *c = (struct qemu_d3d2_CreateDevice *)call;
+    struct qemu_d3d_CreateDevice *c = (struct qemu_d3d_CreateDevice *)call;
     struct qemu_ddraw *ddraw;
+    struct qemu_device *object;
+    struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
+    surface = QEMU_G2H(c->surface);
 
-    c->super.iret = IDirect3D2_CreateDevice(ddraw->host_d3d2, QEMU_G2H(c->riid), QEMU_G2H(c->surface), QEMU_G2H(c->device));
+    object = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*object));
+    if (!object)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_D3D7_CREATEDEVICE):
+            c->super.iret = IDirect3D7_CreateDevice(ddraw->host_d3d7, QEMU_G2H(c->riid),
+                    surface ? surface->host_surface7 : NULL, &object->host7);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_D3D3_CREATEDEVICE):
+            c->super.iret = IDirect3D3_CreateDevice(ddraw->host_d3d3, QEMU_G2H(c->riid),
+                    surface ? surface->host_surface4 : NULL, &object->host3, QEMU_G2H(c->outer_unknown));
+            if (SUCCEEDED(c->super.iret))
+            {
+                IDirect3DDevice3_QueryInterface(object->host3, &IID_IDirect3DDevice, (void **)&object->host1);
+                IDirect3DDevice3_QueryInterface(object->host3, &IID_IDirect3DDevice2, (void **)&object->host2);
+            }
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_D3D2_CREATEDEVICE):
+            c->super.iret = IDirect3D2_CreateDevice(ddraw->host_d3d2, QEMU_G2H(c->riid),
+                    surface ? surface->host_surface1 : NULL, &object->host2);
+            if (SUCCEEDED(c->super.iret))
+            {
+                IDirect3DDevice2_QueryInterface(object->host2, &IID_IDirect3DDevice, (void **)&object->host1);
+            }
+            break;
+    }
+
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, object);
+        object = NULL;
+    }
+    c->device = QEMU_H2G(object);
 }
 
 #endif

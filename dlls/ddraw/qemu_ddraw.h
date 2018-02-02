@@ -603,11 +603,15 @@ struct qemu_clipper *unsafe_impl_from_IDirectDrawClipper(IDirectDrawClipper *ifa
 HRESULT WINAPI qemu_guest_DirectDrawCreateClipper(DWORD flags, IDirectDrawClipper **clipper, IUnknown *outer_unknown);
 void ddraw_clipper_guest_init(struct qemu_clipper *clipper);
 
+struct qemu_surface *unsafe_impl_from_IDirectDrawSurface(IDirectDrawSurface *iface);
+struct qemu_surface *unsafe_impl_from_IDirectDrawSurface4(IDirectDrawSurface4 *iface);
+struct qemu_surface *unsafe_impl_from_IDirectDrawSurface7(IDirectDrawSurface7 *iface);
+
 void qemu_surface_guest_init(struct qemu_surface *surface, struct qemu_ddraw *ddraw, unsigned int version);
 void __fastcall ddraw_surface_destroy_cb(struct qemu_surface *surface);
 
 void ddraw_device_guest_init(struct qemu_device *device, struct qemu_ddraw *ddraw,
-        UINT version, IUnknown *outer_unknown);
+        UINT version, IUnknown *rt_iface, IUnknown *outer_unknown);
 
 #else
 
@@ -618,13 +622,11 @@ void qemu_d3d1_CreateViewport(struct qemu_syscall *call);
 void qemu_d3d1_EnumDevices(struct qemu_syscall *call);
 void qemu_d3d1_FindDevice(struct qemu_syscall *call);
 void qemu_d3d1_Initialize(struct qemu_syscall *call);
-void qemu_d3d2_CreateDevice(struct qemu_syscall *call);
 void qemu_d3d2_CreateLight(struct qemu_syscall *call);
 void qemu_d3d2_CreateMaterial(struct qemu_syscall *call);
 void qemu_d3d2_CreateViewport(struct qemu_syscall *call);
 void qemu_d3d2_EnumDevices(struct qemu_syscall *call);
 void qemu_d3d2_FindDevice(struct qemu_syscall *call);
-void qemu_d3d3_CreateDevice(struct qemu_syscall *call);
 void qemu_d3d3_CreateLight(struct qemu_syscall *call);
 void qemu_d3d3_CreateMaterial(struct qemu_syscall *call);
 void qemu_d3d3_CreateVertexBuffer(struct qemu_syscall *call);
@@ -632,10 +634,10 @@ void qemu_d3d3_CreateViewport(struct qemu_syscall *call);
 void qemu_d3d3_EnumDevices(struct qemu_syscall *call);
 void qemu_d3d3_EvictManagedTextures(struct qemu_syscall *call);
 void qemu_d3d3_FindDevice(struct qemu_syscall *call);
-void qemu_d3d7_CreateDevice(struct qemu_syscall *call);
 void qemu_d3d7_CreateVertexBuffer(struct qemu_syscall *call);
 void qemu_d3d7_EnumDevices(struct qemu_syscall *call);
 void qemu_d3d7_EvictManagedTextures(struct qemu_syscall *call);
+void qemu_d3d_CreateDevice(struct qemu_syscall *call);
 void qemu_d3d_EnumZBufferFormats(struct qemu_syscall *call);
 void qemu_d3d_device1_AddViewport(struct qemu_syscall *call);
 void qemu_d3d_device1_BeginScene(struct qemu_syscall *call);
@@ -760,7 +762,6 @@ void qemu_d3d_device7_LightEnable(struct qemu_syscall *call);
 void qemu_d3d_device7_Load(struct qemu_syscall *call);
 void qemu_d3d_device7_MultiplyTransform(struct qemu_syscall *call);
 void qemu_d3d_device7_PreLoad(struct qemu_syscall *call);
-void qemu_d3d_device7_Release(struct qemu_syscall *call);
 void qemu_d3d_device7_SetClipPlane(struct qemu_syscall *call);
 void qemu_d3d_device7_SetClipStatus(struct qemu_syscall *call);
 void qemu_d3d_device7_SetLight(struct qemu_syscall *call);
@@ -772,6 +773,7 @@ void qemu_d3d_device7_SetTextureStageState(struct qemu_syscall *call);
 void qemu_d3d_device7_SetTransform(struct qemu_syscall *call);
 void qemu_d3d_device7_SetViewport(struct qemu_syscall *call);
 void qemu_d3d_device7_ValidateDevice(struct qemu_syscall *call);
+void qemu_d3d_device_Release(struct qemu_syscall *call);
 void qemu_d3d_texture1_GetHandle(struct qemu_syscall *call);
 void qemu_d3d_texture1_Initialize(struct qemu_syscall *call);
 void qemu_d3d_texture1_Load(struct qemu_syscall *call);

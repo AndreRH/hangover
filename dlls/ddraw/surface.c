@@ -59,11 +59,8 @@ const GUID IID_D3DDEVICE_WineD3D =
     { 0xb7,0x98,0xc6,0x8a,0x77,0x2d,0x72,0x2a }
 };
 
-static struct qemu_surface *unsafe_impl_from_IDirectDrawSurface(IDirectDrawSurface *iface);
 static struct qemu_surface *unsafe_impl_from_IDirectDrawSurface2(IDirectDrawSurface2 *iface);
 static struct qemu_surface *unsafe_impl_from_IDirectDrawSurface3(IDirectDrawSurface3 *iface);
-static struct qemu_surface *unsafe_impl_from_IDirectDrawSurface4(IDirectDrawSurface4 *iface);
-static struct qemu_surface *unsafe_impl_from_IDirectDrawSurface7(IDirectDrawSurface7 *iface);
 
 static inline struct qemu_surface *impl_from_IDirectDrawGammaControl(IDirectDrawGammaControl *iface)
 {
@@ -8704,7 +8701,7 @@ void qemu_surface_guest_init(struct qemu_surface *surface, struct qemu_ddraw *dd
 
 /* Some games (e.g. Tomb Raider 3) pass the wrong version of the
  * IDirectDrawSurface interface to ddraw methods. */
-static struct qemu_surface *unsafe_impl_from_IDirectDrawSurface7(IDirectDrawSurface7 *iface)
+struct qemu_surface *unsafe_impl_from_IDirectDrawSurface7(IDirectDrawSurface7 *iface)
 {
     if (!iface) return NULL;
     if (iface->lpVtbl != &ddraw_surface7_vtbl)
@@ -8720,7 +8717,7 @@ static struct qemu_surface *unsafe_impl_from_IDirectDrawSurface7(IDirectDrawSurf
     return CONTAINING_RECORD(iface, struct qemu_surface, IDirectDrawSurface7_iface);
 }
 
-static struct qemu_surface *unsafe_impl_from_IDirectDrawSurface4(IDirectDrawSurface4 *iface)
+struct qemu_surface *unsafe_impl_from_IDirectDrawSurface4(IDirectDrawSurface4 *iface)
 {
     if (!iface) return NULL;
     if (iface->lpVtbl != &ddraw_surface4_vtbl)
@@ -8768,7 +8765,7 @@ static struct qemu_surface *unsafe_impl_from_IDirectDrawSurface2(IDirectDrawSurf
     return CONTAINING_RECORD(iface, struct qemu_surface, IDirectDrawSurface2_iface);
 }
 
-static struct qemu_surface *unsafe_impl_from_IDirectDrawSurface(IDirectDrawSurface *iface)
+struct qemu_surface *unsafe_impl_from_IDirectDrawSurface(IDirectDrawSurface *iface)
 {
     if (!iface) return NULL;
     if (iface->lpVtbl != &ddraw_surface1_vtbl)

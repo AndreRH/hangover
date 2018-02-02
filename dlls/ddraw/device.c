@@ -41,7 +41,7 @@
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_ddraw);
 
-struct qemu_d3d_device7_Release
+struct qemu_d3d_device_Release
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -216,15 +216,23 @@ static ULONG WINAPI d3d_device1_AddRef(IDirect3DDevice *iface)
 
 static ULONG WINAPI d3d_device_inner_Release(IUnknown *iface)
 {
-    struct qemu_device *This = impl_from_IUnknown(iface);
-    ULONG ref = InterlockedDecrement(&This->ref);
+    struct qemu_device *device = impl_from_IUnknown(iface);
+    ULONG ref = InterlockedDecrement(&device->ref);
+    struct qemu_d3d_device_Release call;
+    IUnknown *rt_iface;
 
-    WINE_TRACE("%p decreasing refcount to %u.\n", This, ref);
+    WINE_TRACE("%p decreasing refcount to %u.\n", device, ref);
 
     if (!ref)
     {
-        /* FIXME: Don't forget to release the render target */
-        WINE_FIXME("Implement destruction.\n");
+        rt_iface = device->rt_iface;
+        device->rt_iface = NULL;
+        if (device->version != 1)
+            IUnknown_Release(rt_iface);
+
+        call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE7_RELEASE);
+        call.iface = (ULONG_PTR)device;
+        qemu_syscall(&call.super);
     }
 
     WINE_TRACE("Done\n");
@@ -269,15 +277,28 @@ static ULONG WINAPI d3d_device1_Release(IDirect3DDevice *iface)
 
 #else
 
-void qemu_d3d_device7_Release(struct qemu_syscall *call)
+void qemu_d3d_device_Release(struct qemu_syscall *call)
 {
-    struct qemu_d3d_device7_Release *c = (struct qemu_d3d_device7_Release *)call;
+    struct qemu_d3d_device_Release *c = (struct qemu_d3d_device_Release *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_FIXME("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice_Release(device->host7);
+    c->super.iret = 0;
+    if (device->host7)
+        c->super.iret += IDirect3DDevice7_Release(device->host7);
+    if (device->host3)
+        c->super.iret += IDirect3DDevice3_Release(device->host3);
+    if (device->host2)
+        c->super.iret += IDirect3DDevice2_Release(device->host2);
+    if (device->host1)
+        c->super.iret += IDirect3DDevice_Release(device->host1);
+
+    if (c->super.iret)
+        WINE_ERR("Unexpected combined host device refcount %lu.\n", c->super.iret);
+
+    HeapFree(GetProcessHeap(), 0, device);
 }
 
 #endif
@@ -5738,7 +5759,7 @@ static const struct IUnknownVtbl d3d_device_inner_vtbl =
 };
 
 void ddraw_device_guest_init(struct qemu_device *device, struct qemu_ddraw *ddraw,
-        UINT version, IUnknown *outer_unknown)
+        UINT version, IUnknown *rt_iface, IUnknown *outer_unknown)
 {
     device->IDirect3DDevice7_iface.lpVtbl = &d3d_device7_vtbl;
     device->IDirect3DDevice3_iface.lpVtbl = &d3d_device3_vtbl;
@@ -5754,6 +5775,9 @@ void ddraw_device_guest_init(struct qemu_device *device, struct qemu_ddraw *ddra
         device->outer_unknown = &device->IUnknown_inner;
 
     device->ddraw = ddraw;
+    device->rt_iface = rt_iface;
+    if (version != 1)
+        IUnknown_AddRef(rt_iface);
 }
 
 #endif
