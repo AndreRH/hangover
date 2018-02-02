@@ -4389,14 +4389,14 @@ static HRESULT WINAPI d3d7_EnumDevices(IDirect3D7 *iface, LPD3DENUMDEVICESCALLBA
 
 #else
 
-struct qemu_d3d7_EnumDevices_host_data
+struct qemu_d3d7_enum_host_data
 {
     uint64_t func, wrapper, context;
 };
 
 static HRESULT WINAPI qemu_d3d7_EnumDevices_host_cb(char *desc_str, char *name, D3DDEVICEDESC7 *desc, void *context)
 {
-    struct qemu_d3d7_EnumDevices_host_data *ctx = context;
+    struct qemu_d3d7_enum_host_data *ctx = context;
     struct qemu_d3d7_EnumDevices_cb call;
     HRESULT ret;
     void *copy_desc = NULL, *copy_name = NULL;
@@ -4442,7 +4442,7 @@ void qemu_d3d7_EnumDevices(struct qemu_syscall *call)
 {
     struct qemu_d3d7_EnumDevices *c = (struct qemu_d3d7_EnumDevices *)call;
     struct qemu_ddraw *ddraw;
-    struct qemu_d3d7_EnumDevices_host_data ctx;
+    struct qemu_d3d7_enum_host_data ctx;
 
     WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
@@ -5250,67 +5250,57 @@ void qemu_d3d3_CreateVertexBuffer(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d7_EnumZBufferFormats
+struct qemu_d3d_EnumZBufferFormats
 {
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t device_iid;
     uint64_t callback;
     uint64_t context;
+    uint64_t wrapper;
+};
+
+struct qemu_d3d_EnumZBufferFormats_cb
+{
+    uint64_t func;
+    uint64_t fmt;
+    uint64_t context;
 };
 
 #ifdef QEMU_DLL_GUEST
 
+static HRESULT __fastcall qemu_d3d_EnumZBufferFormats_host_cb(struct qemu_d3d_EnumZBufferFormats_cb *data)
+{
+    LPD3DENUMPIXELFORMATSCALLBACK func = (LPD3DENUMPIXELFORMATSCALLBACK)(ULONG_PTR)data->func;
+    return func((DDPIXELFORMAT *)(ULONG_PTR)data->fmt, (void *)(ULONG_PTR)data->context);
+}
+
 static HRESULT WINAPI d3d7_EnumZBufferFormats(IDirect3D7 *iface, REFCLSID device_iid, LPD3DENUMPIXELFORMATSCALLBACK callback, void *context)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirect3D7(iface);
-    struct qemu_d3d7_EnumZBufferFormats call;
+    struct qemu_d3d_EnumZBufferFormats call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D7_ENUMZBUFFERFORMATS);
     call.iface = (ULONG_PTR)ddraw;
     call.device_iid = (ULONG_PTR)device_iid;
     call.callback = (ULONG_PTR)callback;
     call.context = (ULONG_PTR)context;
+    call.wrapper = (ULONG_PTR)qemu_d3d_EnumZBufferFormats_host_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_d3d7_EnumZBufferFormats(struct qemu_syscall *call)
-{
-    struct qemu_d3d7_EnumZBufferFormats *c = (struct qemu_d3d7_EnumZBufferFormats *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3D7_EnumZBufferFormats(ddraw->host_d3d7, QEMU_G2H(c->device_iid), QEMU_G2H(c->callback), QEMU_G2H(c->context));
-}
-
-#endif
-
-struct qemu_d3d3_EnumZBufferFormats
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t device_iid;
-    uint64_t callback;
-    uint64_t context;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 static HRESULT WINAPI d3d3_EnumZBufferFormats(IDirect3D3 *iface, REFCLSID device_iid, LPD3DENUMPIXELFORMATSCALLBACK callback, void *context)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirect3D3(iface);
-    struct qemu_d3d3_EnumZBufferFormats call;
+    struct qemu_d3d_EnumZBufferFormats call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D3_ENUMZBUFFERFORMATS);
     call.iface = (ULONG_PTR)ddraw;
     call.device_iid = (ULONG_PTR)device_iid;
     call.callback = (ULONG_PTR)callback;
     call.context = (ULONG_PTR)context;
+    call.wrapper = (ULONG_PTR)qemu_d3d_EnumZBufferFormats_host_cb;
 
     qemu_syscall(&call.super);
 
@@ -5319,15 +5309,38 @@ static HRESULT WINAPI d3d3_EnumZBufferFormats(IDirect3D3 *iface, REFCLSID device
 
 #else
 
-void qemu_d3d3_EnumZBufferFormats(struct qemu_syscall *call)
+static HRESULT CALLBACK qemu_d3d_EnumZBufferFormats_host_cb(DDPIXELFORMAT *format, void *context)
 {
-    struct qemu_d3d3_EnumZBufferFormats *c = (struct qemu_d3d3_EnumZBufferFormats *)call;
-    struct qemu_ddraw *ddraw;
+    struct qemu_d3d7_enum_host_data *ctx = context;
+    struct qemu_d3d_EnumZBufferFormats_cb call;
+    HRESULT ret;
 
-    WINE_FIXME("Unverified!\n");
+    call.func = ctx->func;
+    call.fmt = QEMU_H2G(format);
+    call.context = ctx->context;
+
+    WINE_TRACE("Calling guest wrapper 0x%lx(0x%lx, 0x%lx).\n", call.func, call.fmt, call.context);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest wrapper returned 0x%x.\n", ret);
+
+    return ret;
+}
+
+void qemu_d3d_EnumZBufferFormats(struct qemu_syscall *call)
+{
+    struct qemu_d3d_EnumZBufferFormats *c = (struct qemu_d3d_EnumZBufferFormats *)call;
+    struct qemu_ddraw *ddraw;
+    struct qemu_d3d7_enum_host_data ctx;
+
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3D3_EnumZBufferFormats(ddraw->host_d3d3, QEMU_G2H(c->device_iid), QEMU_G2H(c->callback), QEMU_G2H(c->context));
+    ctx.func = c->callback;
+    ctx.wrapper = c->wrapper;
+    ctx.context = c->context;
+
+    c->super.iret = IDirect3D3_EnumZBufferFormats(ddraw->host_d3d7, QEMU_G2H(c->device_iid),
+            c->callback ? qemu_d3d_EnumZBufferFormats_host_cb : NULL, &ctx);
 }
 
 #endif
