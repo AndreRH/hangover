@@ -142,21 +142,52 @@ static void qemu_DirectDrawCreateEx(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_DirectDrawEnumerateA
+struct qemu_DirectDrawEnumerate
 {
     struct qemu_syscall super;
     uint64_t callback;
+    uint64_t context;
+    uint64_t wrapper;
+};
+
+struct qemu_DirectDrawEnumerate_cb
+{
+    uint64_t func;
+    uint64_t guid;
+    uint64_t desc;
+    uint64_t name;
     uint64_t context;
 };
 
 #ifdef QEMU_DLL_GUEST
 
+static BOOL __fastcall DirectDrawEnumerate_host_cb(struct qemu_DirectDrawEnumerate_cb *data)
+{
+    LPDDENUMCALLBACKA cb = (LPDDENUMCALLBACKA)(ULONG_PTR)data->func;
+    return cb((GUID *)(ULONG_PTR)data->guid, (char *)(ULONG_PTR)data->desc, (char *)(ULONG_PTR)data->name,
+            (void *)(ULONG_PTR)data->context);
+}
+
 WINBASEAPI HRESULT WINAPI DirectDrawEnumerateA(LPDDENUMCALLBACKA callback, void *context)
 {
-    struct qemu_DirectDrawEnumerateA call;
+    struct qemu_DirectDrawEnumerate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DIRECTDRAWENUMERATEA);
     call.callback = (ULONG_PTR)callback;
     call.context = (ULONG_PTR)context;
+    call.wrapper = (ULONG_PTR)DirectDrawEnumerate_host_cb;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+WINBASEAPI HRESULT WINAPI DirectDrawEnumerateW(LPDDENUMCALLBACKW callback, void *context)
+{
+    struct qemu_DirectDrawEnumerate call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DIRECTDRAWENUMERATEW);
+    call.callback = (ULONG_PTR)callback;
+    call.context = (ULONG_PTR)context;
+    call.wrapper = (ULONG_PTR)DirectDrawEnumerate_host_cb;
 
     qemu_syscall(&call.super);
 
@@ -165,11 +196,76 @@ WINBASEAPI HRESULT WINAPI DirectDrawEnumerateA(LPDDENUMCALLBACKA callback, void 
 
 #else
 
-static void qemu_DirectDrawEnumerateA(struct qemu_syscall *call)
+struct qemu_DirectDrawEnumerate_host_data
 {
-    struct qemu_DirectDrawEnumerateA *c = (struct qemu_DirectDrawEnumerateA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DirectDrawEnumerateA(QEMU_G2H(c->callback), QEMU_G2H(c->context));
+    uint64_t guest_func, wrapper, guest_context;
+    BOOL wchar;
+};
+
+static BOOL WINAPI qemu_DirectDrawEnumerate_host_cb(GUID *guid, char *desc, char *name, void *context)
+{
+    struct qemu_DirectDrawEnumerate_host_data *ctx = context;
+    struct qemu_DirectDrawEnumerate_cb call;
+    void *copy_desc = NULL;
+    BOOL ret;
+    size_t len;
+
+    call.func = ctx->guest_func;
+    call.context = ctx->guest_context;
+    call.guid = QEMU_H2G(guid);
+    call.desc = QEMU_H2G(desc);
+    call.name = QEMU_H2G(name);
+
+#if GUEST_BIT != HOST_BIT
+    if (call.desc > ~0U)
+    {
+        WINE_TRACE("Copying description string to guest-readable memory.\n");
+        if (ctx->wchar)
+            len = (lstrlenW((WCHAR *)desc) + 1) * sizeof(WCHAR);
+        else
+            len = strlen(desc) + 1;
+
+        copy_desc = HeapAlloc(GetProcessHeap(), 0, len);
+        memcpy(copy_desc, desc, len);
+        call.desc = QEMU_H2G(copy_desc);
+    }
+    if (call.guid > ~0U)
+        WINE_ERR("GUID is %p, unreachable.\n", guid);
+    if (call.name > ~0U)
+        WINE_ERR("Name is %p, unreachable.\n", name);
+#endif
+
+    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx, 0x%lx, 0x%lx).\n",
+            call.func, call.guid, call.desc, call.name, call.context);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned %u\n", ret);
+
+    HeapFree(GetProcessHeap(), 0, copy_desc);
+
+    return ret;
+}
+
+static void qemu_DirectDrawEnumerate(struct qemu_syscall *call)
+{
+    struct qemu_DirectDrawEnumerate *c = (struct qemu_DirectDrawEnumerate *)call;
+    struct qemu_DirectDrawEnumerate_host_data ctx;
+
+    WINE_TRACE("\n");
+    ctx.guest_func = c->callback;
+    ctx.wrapper = c->wrapper;
+    ctx.guest_context = c->context;
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_DIRECTDRAWENUMERATEA))
+    {
+        ctx.wchar = FALSE;
+        c->super.iret = DirectDrawEnumerateA(c->callback ? qemu_DirectDrawEnumerate_host_cb : NULL, &ctx);
+    }
+    else
+    {
+        ctx.wchar = TRUE;
+        c->super.iret = DirectDrawEnumerateW(c->callback ?
+                (LPDDENUMCALLBACKW)qemu_DirectDrawEnumerate_host_cb : NULL, &ctx);
+    }
 }
 
 #endif
@@ -204,38 +300,6 @@ static void qemu_DirectDrawEnumerateExA(struct qemu_syscall *call)
     struct qemu_DirectDrawEnumerateExA *c = (struct qemu_DirectDrawEnumerateExA *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = DirectDrawEnumerateExA(QEMU_G2H(c->callback), QEMU_G2H(c->context), c->flags);
-}
-
-#endif
-
-struct qemu_DirectDrawEnumerateW
-{
-    struct qemu_syscall super;
-    uint64_t callback;
-    uint64_t context;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI HRESULT WINAPI DirectDrawEnumerateW(LPDDENUMCALLBACKW callback, void *context)
-{
-    struct qemu_DirectDrawEnumerateW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_DIRECTDRAWENUMERATEW);
-    call.callback = (ULONG_PTR)callback;
-    call.context = (ULONG_PTR)context;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-static void qemu_DirectDrawEnumerateW(struct qemu_syscall *call)
-{
-    struct qemu_DirectDrawEnumerateW *c = (struct qemu_DirectDrawEnumerateW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DirectDrawEnumerateW(QEMU_G2H(c->callback), QEMU_G2H(c->context));
 }
 
 #endif
@@ -438,10 +502,10 @@ static const syscall_handler dll_functions[] =
     qemu_DirectDrawCreate,
     qemu_DirectDrawCreateClipper,
     qemu_DirectDrawCreateEx,
-    qemu_DirectDrawEnumerateA,
+    qemu_DirectDrawEnumerate,
     qemu_DirectDrawEnumerateExA,
     qemu_DirectDrawEnumerateExW,
-    qemu_DirectDrawEnumerateW,
+    qemu_DirectDrawEnumerate,
     qemu_GetSurfaceFromDC,
 };
 
