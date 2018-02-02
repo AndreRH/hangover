@@ -416,6 +416,9 @@ struct qemu_surface
     int                     version;
     struct qemu_ddraw       *ddraw;
 
+    /* FIXME: These fields need thread synchronization! */
+    struct qemu_clipper     *clipper;
+
     /* Host fields */
     IDirectDrawSurface7     *host_surface7;
     IDirectDrawSurface4     *host_surface4;
@@ -426,7 +429,6 @@ struct qemu_surface
     IDirect3DTexture2       *host_texture2;
     IDirect3DTexture        *host_texture1;
 
-    struct qemu_clipper     *clipper;
     /* TODO: Palette */
 };
 
@@ -603,7 +605,6 @@ void qemu_ddraw_surface1_IsLost(struct qemu_syscall *call);
 void qemu_ddraw_surface1_Release(struct qemu_syscall *call);
 void qemu_ddraw_surface1_ReleaseDC(struct qemu_syscall *call);
 void qemu_ddraw_surface1_Restore(struct qemu_syscall *call);
-void qemu_ddraw_surface1_SetClipper(struct qemu_syscall *call);
 void qemu_ddraw_surface1_SetColorKey(struct qemu_syscall *call);
 void qemu_ddraw_surface1_SetOverlayPosition(struct qemu_syscall *call);
 void qemu_ddraw_surface1_SetPalette(struct qemu_syscall *call);
@@ -769,6 +770,7 @@ void qemu_ddraw_surface7_UpdateOverlay(struct qemu_syscall *call);
 void qemu_ddraw_surface7_UpdateOverlayDisplay(struct qemu_syscall *call);
 void qemu_ddraw_surface7_UpdateOverlayZOrder(struct qemu_syscall *call);
 void qemu_ddraw_surface_Lock(struct qemu_syscall *call);
+void qemu_ddraw_surface_SetClipper(struct qemu_syscall *call);
 
 extern const struct qemu_ops *qemu_ops;
 
