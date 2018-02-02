@@ -311,6 +311,13 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
+    qemu_ddraw_clipper_GetClipList,
+    qemu_ddraw_clipper_GetHWnd,
+    qemu_ddraw_clipper_Initialize,
+    qemu_ddraw_clipper_IsClipListChanged,
+    qemu_ddraw_clipper_Release,
+    qemu_ddraw_clipper_SetClipList,
+    qemu_ddraw_clipper_SetHWnd,
     qemu_DirectDrawCreate,
     qemu_DirectDrawCreateEx,
     qemu_DirectDrawEnumerateA,
