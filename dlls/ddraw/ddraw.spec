@@ -4,7 +4,7 @@
 @ stub DDInternalUnlock
 @ stub DSoundHelp
 @ stdcall DirectDrawCreate(ptr ptr ptr)
-#@ stdcall DirectDrawCreateClipper(long ptr ptr)
+@ stdcall DirectDrawCreateClipper(long ptr ptr) qemu_guest_DirectDrawCreateClipper
 @ stdcall DirectDrawCreateEx(ptr ptr ptr ptr)
 @ stdcall DirectDrawEnumerateA(ptr ptr)
 @ stdcall DirectDrawEnumerateExA(ptr ptr long)

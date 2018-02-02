@@ -49,7 +49,6 @@ enum ddraw_calls
     CALL_D3D7_ENUMZBUFFERFORMATS,
     CALL_D3D7_EVICTMANAGEDTEXTURES,
     CALL_DDRAW1_COMPACT,
-    CALL_DDRAW1_CREATECLIPPER,
     CALL_DDRAW1_CREATEPALETTE,
     CALL_DDRAW1_CREATESURFACE,
     CALL_DDRAW1_DUPLICATESURFACE,
@@ -70,7 +69,6 @@ enum ddraw_calls
     CALL_DDRAW1_SETDISPLAYMODE,
     CALL_DDRAW1_WAITFORVERTICALBLANK,
     CALL_DDRAW2_COMPACT,
-    CALL_DDRAW2_CREATECLIPPER,
     CALL_DDRAW2_CREATEPALETTE,
     CALL_DDRAW2_CREATESURFACE,
     CALL_DDRAW2_DUPLICATESURFACE,
@@ -91,7 +89,6 @@ enum ddraw_calls
     CALL_DDRAW2_SETDISPLAYMODE,
     CALL_DDRAW2_WAITFORVERTICALBLANK,
     CALL_DDRAW4_COMPACT,
-    CALL_DDRAW4_CREATECLIPPER,
     CALL_DDRAW4_CREATEPALETTE,
     CALL_DDRAW4_CREATESURFACE,
     CALL_DDRAW4_DUPLICATESURFACE,
@@ -116,7 +113,6 @@ enum ddraw_calls
     CALL_DDRAW4_TESTCOOPERATIVELEVEL,
     CALL_DDRAW4_WAITFORVERTICALBLANK,
     CALL_DDRAW7_COMPACT,
-    CALL_DDRAW7_CREATECLIPPER,
     CALL_DDRAW7_CREATEPALETTE,
     CALL_DDRAW7_CREATESURFACE,
     CALL_DDRAW7_DUPLICATESURFACE,
@@ -199,6 +195,7 @@ struct qemu_ddraw
 
 struct qemu_ddraw *unsafe_impl_from_IDirectDraw(IDirectDraw *iface);
 
+HRESULT WINAPI qemu_guest_DirectDrawCreateClipper(DWORD flags, IDirectDrawClipper **clipper, IUnknown *outer_unknown);
 void ddraw_clipper_guest_init(struct qemu_clipper *clipper);
 struct qemu_clipper *unsafe_impl_from_IDirectDrawClipper(IDirectDrawClipper *iface);
 
@@ -232,7 +229,6 @@ void qemu_d3d7_EnumDevices(struct qemu_syscall *call);
 void qemu_d3d7_EnumZBufferFormats(struct qemu_syscall *call);
 void qemu_d3d7_EvictManagedTextures(struct qemu_syscall *call);
 void qemu_ddraw1_Compact(struct qemu_syscall *call);
-void qemu_ddraw1_CreateClipper(struct qemu_syscall *call);
 void qemu_ddraw1_CreatePalette(struct qemu_syscall *call);
 void qemu_ddraw1_CreateSurface(struct qemu_syscall *call);
 void qemu_ddraw1_DuplicateSurface(struct qemu_syscall *call);
@@ -252,7 +248,6 @@ void qemu_ddraw1_SetCooperativeLevel(struct qemu_syscall *call);
 void qemu_ddraw1_SetDisplayMode(struct qemu_syscall *call);
 void qemu_ddraw1_WaitForVerticalBlank(struct qemu_syscall *call);
 void qemu_ddraw2_Compact(struct qemu_syscall *call);
-void qemu_ddraw2_CreateClipper(struct qemu_syscall *call);
 void qemu_ddraw2_CreatePalette(struct qemu_syscall *call);
 void qemu_ddraw2_CreateSurface(struct qemu_syscall *call);
 void qemu_ddraw2_DuplicateSurface(struct qemu_syscall *call);
@@ -273,7 +268,6 @@ void qemu_ddraw2_SetCooperativeLevel(struct qemu_syscall *call);
 void qemu_ddraw2_SetDisplayMode(struct qemu_syscall *call);
 void qemu_ddraw2_WaitForVerticalBlank(struct qemu_syscall *call);
 void qemu_ddraw4_Compact(struct qemu_syscall *call);
-void qemu_ddraw4_CreateClipper(struct qemu_syscall *call);
 void qemu_ddraw4_CreatePalette(struct qemu_syscall *call);
 void qemu_ddraw4_CreateSurface(struct qemu_syscall *call);
 void qemu_ddraw4_DuplicateSurface(struct qemu_syscall *call);
@@ -298,7 +292,6 @@ void qemu_ddraw4_SetDisplayMode(struct qemu_syscall *call);
 void qemu_ddraw4_TestCooperativeLevel(struct qemu_syscall *call);
 void qemu_ddraw4_WaitForVerticalBlank(struct qemu_syscall *call);
 void qemu_ddraw7_Compact(struct qemu_syscall *call);
-void qemu_ddraw7_CreateClipper(struct qemu_syscall *call);
 void qemu_ddraw7_CreatePalette(struct qemu_syscall *call);
 void qemu_ddraw7_CreateSurface(struct qemu_syscall *call);
 void qemu_ddraw7_DuplicateSurface(struct qemu_syscall *call);

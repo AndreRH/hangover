@@ -3569,7 +3569,7 @@ struct qemu_DirectDrawCreateClipper
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI DirectDrawCreateClipper(DWORD flags, IDirectDrawClipper **clipper, IUnknown *outer_unknown)
+HRESULT WINAPI qemu_guest_DirectDrawCreateClipper(DWORD flags, IDirectDrawClipper **clipper, IUnknown *outer_unknown)
 {
     struct qemu_DirectDrawCreateClipper call;
     struct qemu_clipper *object;
@@ -3617,166 +3617,42 @@ void qemu_DirectDrawCreateClipper(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_ddraw7_CreateClipper
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t Flags;
-    uint64_t Clipper;
-    uint64_t UnkOuter;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI ddraw7_CreateClipper(IDirectDraw7 *iface, DWORD Flags, IDirectDrawClipper **Clipper, IUnknown *UnkOuter)
-{
-    struct qemu_ddraw *ddraw = impl_from_IDirectDraw7(iface);
-    struct qemu_ddraw7_CreateClipper call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW7_CREATECLIPPER);
-    call.iface = (ULONG_PTR)ddraw;
-    call.Flags = Flags;
-    call.Clipper = (ULONG_PTR)Clipper;
-    call.UnkOuter = (ULONG_PTR)UnkOuter;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_ddraw7_CreateClipper(struct qemu_syscall *call)
-{
-    struct qemu_ddraw7_CreateClipper *c = (struct qemu_ddraw7_CreateClipper *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDraw7_CreateClipper(ddraw->host_ddraw7, c->Flags, QEMU_G2H(c->Clipper), QEMU_G2H(c->UnkOuter));
-}
-
-#endif
-
-struct qemu_ddraw4_CreateClipper
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t flags;
-    uint64_t clipper;
-    uint64_t outer_unknown;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI ddraw4_CreateClipper(IDirectDraw4 *iface, DWORD flags, IDirectDrawClipper **clipper, IUnknown *outer_unknown)
-{
-    struct qemu_ddraw *ddraw = impl_from_IDirectDraw4(iface);
-    struct qemu_ddraw4_CreateClipper call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW4_CREATECLIPPER);
-    call.iface = (ULONG_PTR)ddraw;
-    call.flags = flags;
-    call.clipper = (ULONG_PTR)clipper;
-    call.outer_unknown = (ULONG_PTR)outer_unknown;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_ddraw4_CreateClipper(struct qemu_syscall *call)
-{
-    struct qemu_ddraw4_CreateClipper *c = (struct qemu_ddraw4_CreateClipper *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDraw4_CreateClipper(ddraw->host_ddraw4, c->flags, QEMU_G2H(c->clipper), QEMU_G2H(c->outer_unknown));
-}
-
-#endif
-
-struct qemu_ddraw2_CreateClipper
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t flags;
-    uint64_t clipper;
-    uint64_t outer_unknown;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI ddraw2_CreateClipper(IDirectDraw2 *iface, DWORD flags, IDirectDrawClipper **clipper, IUnknown *outer_unknown)
-{
-    struct qemu_ddraw *ddraw = impl_from_IDirectDraw2(iface);
-    struct qemu_ddraw2_CreateClipper call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW2_CREATECLIPPER);
-    call.iface = (ULONG_PTR)ddraw;
-    call.flags = flags;
-    call.clipper = (ULONG_PTR)clipper;
-    call.outer_unknown = (ULONG_PTR)outer_unknown;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_ddraw2_CreateClipper(struct qemu_syscall *call)
-{
-    struct qemu_ddraw2_CreateClipper *c = (struct qemu_ddraw2_CreateClipper *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDraw2_CreateClipper(ddraw->host_ddraw2, c->flags, QEMU_G2H(c->clipper), QEMU_G2H(c->outer_unknown));
-}
-
-#endif
-
-struct qemu_ddraw1_CreateClipper
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t flags;
-    uint64_t clipper;
-    uint64_t outer_unknown;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw1_CreateClipper(IDirectDraw *iface, DWORD flags, IDirectDrawClipper **clipper, IUnknown *outer_unknown)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw(iface);
-    struct qemu_ddraw1_CreateClipper call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW1_CREATECLIPPER);
-    call.iface = (ULONG_PTR)ddraw;
-    call.flags = flags;
-    call.clipper = (ULONG_PTR)clipper;
-    call.outer_unknown = (ULONG_PTR)outer_unknown;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, flags %#x, clipper %p, outer_unknown %p.\n", iface, flags, clipper, outer_unknown);
 
-    return call.super.iret;
+    return qemu_guest_DirectDrawCreateClipper(flags, clipper, outer_unknown);
 }
 
-#else
-
-void qemu_ddraw1_CreateClipper(struct qemu_syscall *call)
+static HRESULT WINAPI ddraw7_CreateClipper(IDirectDraw7 *iface, DWORD flags, IDirectDrawClipper **clipper, IUnknown *outer_unknown)
 {
-    struct qemu_ddraw1_CreateClipper *c = (struct qemu_ddraw1_CreateClipper *)call;
-    struct qemu_ddraw *ddraw;
+    struct qemu_ddraw *ddraw = impl_from_IDirectDraw7(iface);
 
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
+    WINE_TRACE("iface %p, flags %#x, clipper %p, outer_unknown %p.\n", iface, flags, clipper, outer_unknown);
 
-    c->super.iret = IDirectDraw_CreateClipper(ddraw->host_ddraw1, c->flags, QEMU_G2H(c->clipper), QEMU_G2H(c->outer_unknown));
+    return ddraw1_CreateClipper(&ddraw->IDirectDraw_iface, flags, clipper, outer_unknown);
+}
+
+static HRESULT WINAPI ddraw4_CreateClipper(IDirectDraw4 *iface, DWORD flags, IDirectDrawClipper **clipper, IUnknown *outer_unknown)
+{
+    struct qemu_ddraw *ddraw = impl_from_IDirectDraw4(iface);
+
+    WINE_TRACE("iface %p, flags %#x, clipper %p, outer_unknown %p.\n", iface, flags, clipper, outer_unknown);
+
+    return ddraw1_CreateClipper(&ddraw->IDirectDraw_iface, flags, clipper, outer_unknown);
+}
+
+static HRESULT WINAPI ddraw2_CreateClipper(IDirectDraw2 *iface, DWORD flags, IDirectDrawClipper **clipper, IUnknown *outer_unknown)
+{
+    struct qemu_ddraw *ddraw = impl_from_IDirectDraw2(iface);
+
+    WINE_TRACE("iface %p, flags %#x, clipper %p, outer_unknown %p.\n", iface, flags, clipper, outer_unknown);
+
+    return ddraw1_CreateClipper(&ddraw->IDirectDraw_iface, flags, clipper, outer_unknown);
 }
 
 #endif
