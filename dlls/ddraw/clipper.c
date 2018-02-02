@@ -147,7 +147,7 @@ void qemu_ddraw_clipper_SetHWnd(struct qemu_syscall *call)
     struct qemu_ddraw_clipper_SetHWnd *c = (struct qemu_ddraw_clipper_SetHWnd *)call;
     struct qemu_clipper *clipper;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     clipper = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawClipper_SetHWnd(clipper->host, c->flags, QEMU_G2H(c->window));
@@ -188,7 +188,8 @@ void qemu_ddraw_clipper_GetClipList(struct qemu_syscall *call)
     struct qemu_ddraw_clipper_GetClipList *c = (struct qemu_ddraw_clipper_GetClipList *)call;
     struct qemu_clipper *clipper;
 
-    WINE_FIXME("Unverified!\n");
+    /* RGNDATA has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     clipper = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawClipper_GetClipList(clipper->host, QEMU_G2H(c->rect), QEMU_G2H(c->clip_list), QEMU_G2H(c->clip_list_size));
@@ -227,7 +228,8 @@ void qemu_ddraw_clipper_SetClipList(struct qemu_syscall *call)
     struct qemu_ddraw_clipper_SetClipList *c = (struct qemu_ddraw_clipper_SetClipList *)call;
     struct qemu_clipper *clipper;
 
-    WINE_FIXME("Unverified!\n");
+    /* RGNDATA has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     clipper = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawClipper_SetClipList(clipper->host, QEMU_G2H(c->region), c->flags);

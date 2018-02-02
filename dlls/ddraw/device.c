@@ -2969,7 +2969,7 @@ void qemu_d3d_device7_SetTransform(struct qemu_syscall *call)
     struct qemu_d3d_device7_SetTransform *c = (struct qemu_d3d_device7_SetTransform *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_SetTransform(device->host7, c->state, QEMU_G2H(c->matrix));
@@ -3008,7 +3008,7 @@ void qemu_d3d_device3_SetTransform(struct qemu_syscall *call)
     struct qemu_d3d_device3_SetTransform *c = (struct qemu_d3d_device3_SetTransform *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice3_SetTransform(device->host3, c->state, QEMU_G2H(c->matrix));
@@ -3047,7 +3047,7 @@ void qemu_d3d_device2_SetTransform(struct qemu_syscall *call)
     struct qemu_d3d_device2_SetTransform *c = (struct qemu_d3d_device2_SetTransform *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice2_SetTransform(device->host2, c->state, QEMU_G2H(c->matrix));
@@ -4799,7 +4799,7 @@ void qemu_d3d_device7_SetViewport(struct qemu_syscall *call)
     struct qemu_d3d_device7_SetViewport *c = (struct qemu_d3d_device7_SetViewport *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_SetViewport(device->host7, QEMU_G2H(c->viewport));
