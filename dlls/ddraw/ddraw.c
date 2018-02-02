@@ -3379,9 +3379,28 @@ static HRESULT WINAPI ddraw7_CreateSurface(IDirectDraw7 *iface, DDSURFACEDESC2 *
 
 #else
 
+static void surface_host_init(struct qemu_surface *surface, IUnknown *host)
+{
+    IUnknown_QueryInterface(host, &IID_IDirectDrawSurface, (void **)&surface->host_surface1);
+    IUnknown_QueryInterface(host, &IID_IDirectDrawSurface2, (void **)&surface->host_surface2);
+    IUnknown_QueryInterface(host, &IID_IDirectDrawSurface3, (void **)&surface->host_surface3);
+    IUnknown_QueryInterface(host, &IID_IDirectDrawSurface4, (void **)&surface->host_surface4);
+    IUnknown_QueryInterface(host, &IID_IDirectDrawSurface7, (void **)&surface->host_surface7);
+    IUnknown_QueryInterface(host, &IID_IDirectDrawGammaControl, (void **)&surface->host_gamma);
+
+    IUnknown_QueryInterface(host, &IID_IDirect3DTexture, (void **)&surface->host_texture1);
+    IUnknown_QueryInterface(host, &IID_IDirect3DTexture, (void **)&surface->host_texture2);
+
+    surface->private_data.lpVtbl = &surface_priv_vtbl;
+    IDirectDrawSurface7_SetPrivateData(surface->host_surface7, &surface_priv_uuid,
+            (IUnknown *)&surface->private_data.lpVtbl, sizeof(&surface->private_data.lpVtbl),
+            DDSPD_IUNKNOWNPOINTER);
+}
+
 void qemu_ddraw7_CreateSurface(struct qemu_syscall *call)
 {
     struct qemu_ddraw7_CreateSurface *c = (struct qemu_ddraw7_CreateSurface *)call;
+    IDirectDrawSurface7 *host;
     struct qemu_ddraw *ddraw;
     struct qemu_surface *object;
 #if HOST_BIT == GUEST_BIT
@@ -3416,28 +3435,13 @@ void qemu_ddraw7_CreateSurface(struct qemu_syscall *call)
         return;
     }
 
-    c->super.iret = IDirectDraw7_CreateSurface(ddraw->host_ddraw7, desc, &object->host_surface7,
-            QEMU_G2H(c->outer_unknown));
+    c->super.iret = IDirectDraw7_CreateSurface(ddraw->host_ddraw7, desc, &host, QEMU_G2H(c->outer_unknown));
 
     if (SUCCEEDED(c->super.iret))
     {
-        IDirectDrawSurface7_QueryInterface(object->host_surface7, &IID_IDirectDrawSurface,
-                (void **)&object->host_surface1);
-        IDirectDrawSurface7_QueryInterface(object->host_surface7, &IID_IDirectDrawSurface2,
-                (void **)&object->host_surface2);
-        IDirectDrawSurface7_QueryInterface(object->host_surface7, &IID_IDirectDrawSurface3,
-                (void **)&object->host_surface3);
-        IDirectDrawSurface7_QueryInterface(object->host_surface7, &IID_IDirectDrawSurface4,
-                (void **)&object->host_surface4);
-        IDirectDrawSurface7_QueryInterface(object->host_surface7, &IID_IDirectDrawGammaControl,
-                (void **)&object->host_gamma);
-
+        surface_host_init(object, (IUnknown *)host);
+        IDirectDrawSurface7_Release(host);
         c->object = QEMU_H2G(object);
-
-        object->private_data.lpVtbl = &surface_priv_vtbl;
-        IDirectDrawSurface7_SetPrivateData(object->host_surface7, &surface_priv_uuid,
-                (IUnknown *)&object->private_data.lpVtbl, sizeof(&object->private_data.lpVtbl),
-                DDSPD_IUNKNOWNPOINTER);
     }
     else
     {
@@ -3497,6 +3501,7 @@ static HRESULT WINAPI ddraw4_CreateSurface(IDirectDraw4 *iface, DDSURFACEDESC2 *
 void qemu_ddraw4_CreateSurface(struct qemu_syscall *call)
 {
     struct qemu_ddraw4_CreateSurface *c = (struct qemu_ddraw4_CreateSurface *)call;
+    IDirectDrawSurface4 *host;
     struct qemu_ddraw *ddraw;
     struct qemu_surface *object;
 #if HOST_BIT == GUEST_BIT
@@ -3531,33 +3536,13 @@ void qemu_ddraw4_CreateSurface(struct qemu_syscall *call)
         return;
     }
 
-    c->super.iret = IDirectDraw4_CreateSurface(ddraw->host_ddraw4, desc, &object->host_surface4,
-            QEMU_G2H(c->outer_unknown));
+    c->super.iret = IDirectDraw4_CreateSurface(ddraw->host_ddraw4, desc, &host, QEMU_G2H(c->outer_unknown));
 
     if (SUCCEEDED(c->super.iret))
     {
-        IDirectDrawSurface4_QueryInterface(object->host_surface4, &IID_IDirectDrawSurface,
-                (void **)&object->host_surface1);
-        IDirectDrawSurface4_QueryInterface(object->host_surface4, &IID_IDirectDrawSurface2,
-                (void **)&object->host_surface2);
-        IDirectDrawSurface4_QueryInterface(object->host_surface4, &IID_IDirectDrawSurface3,
-                (void **)&object->host_surface3);
-        IDirectDrawSurface4_QueryInterface(object->host_surface4, &IID_IDirectDrawSurface7,
-                (void **)&object->host_surface7);
-        IDirectDrawSurface4_QueryInterface(object->host_surface4, &IID_IDirectDrawGammaControl,
-                (void **)&object->host_gamma);
-
-        IDirectDrawSurface4_QueryInterface(object->host_surface4, &IID_IDirect3DTexture,
-                (void **)&object->host_texture1);
-        IDirectDrawSurface4_QueryInterface(object->host_surface4, &IID_IDirect3DTexture,
-                (void **)&object->host_texture2);
-
+        surface_host_init(object, (IUnknown *)host);
+        IDirectDrawSurface4_Release(host);
         c->object = QEMU_H2G(object);
-
-        object->private_data.lpVtbl = &surface_priv_vtbl;
-        IDirectDrawSurface7_SetPrivateData(object->host_surface7, &surface_priv_uuid,
-                (IUnknown *)&object->private_data.lpVtbl, sizeof(&object->private_data.lpVtbl),
-                DDSPD_IUNKNOWNPOINTER);
     }
     else
     {
@@ -3614,6 +3599,7 @@ static HRESULT WINAPI ddraw2_CreateSurface(IDirectDraw2 *iface, DDSURFACEDESC *s
 void qemu_ddraw2_CreateSurface(struct qemu_syscall *call)
 {
     struct qemu_ddraw2_CreateSurface *c = (struct qemu_ddraw2_CreateSurface *)call;
+    IDirectDrawSurface *host;
     struct qemu_ddraw *ddraw;
     struct qemu_surface *object;
 #if HOST_BIT == GUEST_BIT
@@ -3648,33 +3634,13 @@ void qemu_ddraw2_CreateSurface(struct qemu_syscall *call)
         return;
     }
 
-    c->super.iret = IDirectDraw2_CreateSurface(ddraw->host_ddraw2, desc, &object->host_surface1,
-            QEMU_G2H(c->outer_unknown));
+    c->super.iret = IDirectDraw2_CreateSurface(ddraw->host_ddraw2, desc, &host, QEMU_G2H(c->outer_unknown));
 
     if (SUCCEEDED(c->super.iret))
     {
-        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawSurface2,
-                (void **)&object->host_surface2);
-        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawSurface3,
-                (void **)&object->host_surface3);
-        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawSurface4,
-                (void **)&object->host_surface4);
-        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawSurface7,
-                (void **)&object->host_surface7);
-        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawGammaControl,
-                (void **)&object->host_gamma);
-
-        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirect3DTexture,
-                (void **)&object->host_texture1);
-        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirect3DTexture,
-                (void **)&object->host_texture2);
-
+        surface_host_init(object, (IUnknown *)host);
+        IDirectDrawSurface_Release(host);
         c->object = QEMU_H2G(object);
-
-        object->private_data.lpVtbl = &surface_priv_vtbl;
-        IDirectDrawSurface7_SetPrivateData(object->host_surface7, &surface_priv_uuid,
-                (IUnknown *)&object->private_data.lpVtbl, sizeof(&object->private_data.lpVtbl),
-                DDSPD_IUNKNOWNPOINTER);
     }
     else
     {
@@ -3731,6 +3697,7 @@ static HRESULT WINAPI ddraw1_CreateSurface(IDirectDraw *iface, DDSURFACEDESC *su
 void qemu_ddraw1_CreateSurface(struct qemu_syscall *call)
 {
     struct qemu_ddraw1_CreateSurface *c = (struct qemu_ddraw1_CreateSurface *)call;
+    IDirectDrawSurface *host;
     struct qemu_ddraw *ddraw;
     struct qemu_surface *object;
 #if HOST_BIT == GUEST_BIT
@@ -3765,33 +3732,13 @@ void qemu_ddraw1_CreateSurface(struct qemu_syscall *call)
         return;
     }
 
-    c->super.iret = IDirectDraw_CreateSurface(ddraw->host_ddraw1, desc, &object->host_surface1,
-            QEMU_G2H(c->outer_unknown));
+    c->super.iret = IDirectDraw_CreateSurface(ddraw->host_ddraw1, desc, &host, QEMU_G2H(c->outer_unknown));
 
     if (SUCCEEDED(c->super.iret))
     {
-        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawSurface2,
-                (void **)&object->host_surface2);
-        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawSurface3,
-                (void **)&object->host_surface3);
-        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawSurface4,
-                (void **)&object->host_surface4);
-        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawSurface7,
-                (void **)&object->host_surface7);
-        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirectDrawGammaControl,
-                (void **)&object->host_gamma);
-
-        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirect3DTexture,
-                (void **)&object->host_texture1);
-        IDirectDrawSurface_QueryInterface(object->host_surface1, &IID_IDirect3DTexture,
-                (void **)&object->host_texture2);
-
+        surface_host_init(object, (IUnknown *)host);
+        IDirectDrawSurface_Release(host);
         c->object = QEMU_H2G(object);
-
-        object->private_data.lpVtbl = &surface_priv_vtbl;
-        IDirectDrawSurface7_SetPrivateData(object->host_surface7, &surface_priv_uuid,
-                (IUnknown *)&object->private_data.lpVtbl, sizeof(&object->private_data.lpVtbl),
-                DDSPD_IUNKNOWNPOINTER);
     }
     else
     {
