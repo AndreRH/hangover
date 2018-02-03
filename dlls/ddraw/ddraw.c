@@ -1340,17 +1340,47 @@ void qemu_ddraw_GetDisplayMode(struct qemu_syscall *call)
         desc->dwSize = 0;
 #endif
 
-    c->super.iret = IDirectDraw7_GetDisplayMode(ddraw->host_ddraw7, desc);
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_DDRAW7_GETDISPLAYMODE):
+            c->super.iret = IDirectDraw7_GetDisplayMode(ddraw->host_ddraw7, desc);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DDRAW4_GETDISPLAYMODE):
+            c->super.iret = IDirectDraw4_GetDisplayMode(ddraw->host_ddraw4, desc);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DDRAW2_GETDISPLAYMODE):
+            c->super.iret = IDirectDraw2_GetDisplayMode(ddraw->host_ddraw2, (DDSURFACEDESC *)desc);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DDRAW1_GETDISPLAYMODE):
+            c->super.iret = IDirectDraw_GetDisplayMode(ddraw->host_ddraw1, (DDSURFACEDESC *)desc);
+            break;
+    }
 
 #if GUEST_BIT != HOST_BIT
     if (SUCCEEDED(c->super.iret))
     {
+        /* Input sizes that don't match either DDSURFACEDESC or DDSURFACEDESC2 are rejected
+         * and should not go here.
+         * The call clears the input size, then sets dwSize matching the COM version called
+         * (v4 and v7 set sizeof(DDSURFACEDESC2), v1 and v2 sizeof(DDSURFACEDESC) regardless
+         * of the input side.
+         *
+         * So call the conversion function matching the input func, but set a dwSize that
+         * matches the dwSize of the struct we got back. */
         if (desc32->dwSize == sizeof(*desc32))
             DDSURFACEDESC2_h2g(desc32, desc);
         else if (desc32->dwSize == sizeof(struct qemu_DDSURFACEDESC))
             DDSURFACEDESC_h2g((struct qemu_DDSURFACEDESC *)desc32, (DDSURFACEDESC *)desc);
         else
             WINE_ERR("Unexpected DDSURFACEDESC size %u after success.\n", desc32->dwSize);
+
+        if (desc->dwSize == sizeof(*desc))
+            desc32->dwSize = sizeof(*desc32);
+        else
+            desc32->dwSize = sizeof(struct qemu_DDSURFACEDESC);
     }
 #endif
 }
