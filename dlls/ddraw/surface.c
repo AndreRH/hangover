@@ -2327,9 +2327,19 @@ static HRESULT WINAPI ddraw_surface7_GetDC(IDirectDrawSurface7 *iface, HDC *dc)
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_GETDC);
     call.iface = (ULONG_PTR)surface;
-    call.dc = (ULONG_PTR)dc;
+
+    /* This call is tricky. It zeroes *dc on some error conditions, but not
+     * all of them. Try to pass the decision on to the host implementation. */
+    if (!dc)
+    {
+        WINE_WARN("dc is NULL.\n");
+        return DDERR_INVALIDPARAMS;
+    }
+    call.dc = guest_HANDLE_g2h(*dc);
 
     qemu_syscall(&call.super);
+
+    *dc = (HANDLE)(ULONG_PTR)call.dc;
 
     return call.super.iret;
 }
@@ -2340,11 +2350,15 @@ void qemu_ddraw_surface7_GetDC(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface7_GetDC *c = (struct qemu_ddraw_surface7_GetDC *)call;
     struct qemu_surface *surface;
+    HDC dc;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    dc = QEMU_G2H(c->dc);
 
-    c->super.iret = IDirectDrawSurface7_GetDC(surface->host_surface7, QEMU_G2H(c->dc));
+    c->super.iret = IDirectDrawSurface7_GetDC(surface->host_surface7, &dc);
+
+    c->dc = QEMU_H2G(dc);
 }
 
 #endif
@@ -2364,9 +2378,17 @@ static HRESULT WINAPI ddraw_surface4_GetDC(IDirectDrawSurface4 *iface, HDC *dc)
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_GETDC);
     call.iface = (ULONG_PTR)surface;
-    call.dc = (ULONG_PTR)dc;
+
+    if (!dc)
+    {
+        WINE_WARN("dc is NULL.\n");
+        return DDERR_INVALIDPARAMS;
+    }
+    call.dc = guest_HANDLE_g2h(*dc);
 
     qemu_syscall(&call.super);
+
+    *dc = (HANDLE)(ULONG_PTR)call.dc;
 
     return call.super.iret;
 }
@@ -2377,11 +2399,15 @@ void qemu_ddraw_surface4_GetDC(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface4_GetDC *c = (struct qemu_ddraw_surface4_GetDC *)call;
     struct qemu_surface *surface;
+    HDC dc;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    dc = QEMU_G2H(c->dc);
 
-    c->super.iret = IDirectDrawSurface4_GetDC(surface->host_surface4, QEMU_G2H(c->dc));
+    c->super.iret = IDirectDrawSurface4_GetDC(surface->host_surface4, &dc);
+
+    c->dc = QEMU_H2G(dc);
 }
 
 #endif
@@ -2401,9 +2427,17 @@ static HRESULT WINAPI ddraw_surface3_GetDC(IDirectDrawSurface3 *iface, HDC *dc)
     struct qemu_surface *surface = impl_from_IDirectDrawSurface3(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE3_GETDC);
     call.iface = (ULONG_PTR)surface;
-    call.dc = (ULONG_PTR)dc;
+
+    if (!dc)
+    {
+        WINE_WARN("dc is NULL.\n");
+        return DDERR_INVALIDPARAMS;
+    }
+    call.dc = guest_HANDLE_g2h(*dc);
 
     qemu_syscall(&call.super);
+
+    *dc = (HANDLE)(ULONG_PTR)call.dc;
 
     return call.super.iret;
 }
@@ -2414,11 +2448,15 @@ void qemu_ddraw_surface3_GetDC(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface3_GetDC *c = (struct qemu_ddraw_surface3_GetDC *)call;
     struct qemu_surface *surface;
+    HDC dc;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    dc = QEMU_G2H(c->dc);
 
-    c->super.iret = IDirectDrawSurface3_GetDC(surface->host_surface3, QEMU_G2H(c->dc));
+    c->super.iret = IDirectDrawSurface3_GetDC(surface->host_surface3, &dc);
+
+    c->dc = QEMU_H2G(dc);
 }
 
 #endif
@@ -2438,9 +2476,17 @@ static HRESULT WINAPI ddraw_surface2_GetDC(IDirectDrawSurface2 *iface, HDC *dc)
     struct qemu_surface *surface = impl_from_IDirectDrawSurface2(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE2_GETDC);
     call.iface = (ULONG_PTR)surface;
-    call.dc = (ULONG_PTR)dc;
+
+    if (!dc)
+    {
+        WINE_WARN("dc is NULL.\n");
+        return DDERR_INVALIDPARAMS;
+    }
+    call.dc = guest_HANDLE_g2h(*dc);
 
     qemu_syscall(&call.super);
+
+    *dc = (HANDLE)(ULONG_PTR)call.dc;
 
     return call.super.iret;
 }
@@ -2451,11 +2497,15 @@ void qemu_ddraw_surface2_GetDC(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface2_GetDC *c = (struct qemu_ddraw_surface2_GetDC *)call;
     struct qemu_surface *surface;
+    HDC dc;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    dc = QEMU_G2H(c->dc);
 
-    c->super.iret = IDirectDrawSurface2_GetDC(surface->host_surface2, QEMU_G2H(c->dc));
+    c->super.iret = IDirectDrawSurface2_GetDC(surface->host_surface2, &dc);
+
+    c->dc = QEMU_H2G(dc);
 }
 
 #endif
@@ -2475,9 +2525,17 @@ static HRESULT WINAPI ddraw_surface1_GetDC(IDirectDrawSurface *iface, HDC *dc)
     struct qemu_surface *surface = impl_from_IDirectDrawSurface(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_GETDC);
     call.iface = (ULONG_PTR)surface;
-    call.dc = (ULONG_PTR)dc;
+
+    if (!dc)
+    {
+        WINE_WARN("dc is NULL.\n");
+        return DDERR_INVALIDPARAMS;
+    }
+    call.dc = guest_HANDLE_g2h(*dc);
 
     qemu_syscall(&call.super);
+
+    *dc = (HANDLE)(ULONG_PTR)call.dc;
 
     return call.super.iret;
 }
@@ -2488,11 +2546,15 @@ void qemu_ddraw_surface1_GetDC(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface1_GetDC *c = (struct qemu_ddraw_surface1_GetDC *)call;
     struct qemu_surface *surface;
+    HDC dc;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    dc = QEMU_G2H(c->dc);
 
-    c->super.iret = IDirectDrawSurface_GetDC(surface->host_surface1, QEMU_G2H(c->dc));
+    c->super.iret = IDirectDrawSurface_GetDC(surface->host_surface1, &dc);
+
+    c->dc = QEMU_H2G(dc);
 }
 
 #endif
