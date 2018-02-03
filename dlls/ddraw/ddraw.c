@@ -1942,7 +1942,7 @@ void qemu_ddraw7_Initialize(struct qemu_syscall *call)
     struct qemu_ddraw7_Initialize *c = (struct qemu_ddraw7_Initialize *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw7_Initialize(ddraw->host_ddraw7, QEMU_G2H(c->guid));
@@ -1979,7 +1979,7 @@ void qemu_ddraw4_Initialize(struct qemu_syscall *call)
     struct qemu_ddraw4_Initialize *c = (struct qemu_ddraw4_Initialize *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw4_Initialize(ddraw->host_ddraw4, QEMU_G2H(c->guid));
@@ -2016,7 +2016,7 @@ void qemu_ddraw2_Initialize(struct qemu_syscall *call)
     struct qemu_ddraw2_Initialize *c = (struct qemu_ddraw2_Initialize *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw2_Initialize(ddraw->host_ddraw2, QEMU_G2H(c->guid));
@@ -2053,7 +2053,7 @@ void qemu_ddraw1_Initialize(struct qemu_syscall *call)
     struct qemu_ddraw1_Initialize *c = (struct qemu_ddraw1_Initialize *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw_Initialize(ddraw->host_ddraw1, QEMU_G2H(c->guid));
