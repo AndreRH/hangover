@@ -449,12 +449,20 @@ static ULONG ddraw_surface_release_iface(struct qemu_surface *surface)
 
     if (!iface_count)
     {
+        IUnknown *release_iface = surface->ifaceToRelease;
+
         if (surface->device1)
             IUnknown_Release(&surface->device1->IUnknown_inner);
 
         call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_RELEASE);
         call.iface = (ULONG_PTR)surface;
         qemu_syscall(&call.super);
+
+        /* Release this after destroying the host surface to make sure we hold the last reference
+         * to the host ddraw object. Otherwise we'll get false warnings about an unexpected host
+         * refcount. */
+        if (release_iface)
+            IUnknown_Release(release_iface);
     }
 
     return iface_count;
