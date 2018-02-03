@@ -1951,12 +1951,20 @@ static HRESULT WINAPI ddraw_surface7_DeleteAttachedSurface(IDirectDrawSurface7 *
 {
     struct qemu_ddraw_surface7_DeleteAttachedSurface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
+    struct qemu_surface *attach = unsafe_impl_from_IDirectDrawSurface7(attachment);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_DELETEATTACHEDSURFACE);
     call.iface = (ULONG_PTR)surface;
     call.flags = flags;
-    call.attachment = (ULONG_PTR)attachment;
+    call.attachment = (ULONG_PTR)attach;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        IUnknown_Release(attach->attached_iface);
+        attach->attached_iface = NULL;
+    }
 
     return call.super.iret;
 }
@@ -1967,11 +1975,14 @@ void qemu_ddraw_surface7_DeleteAttachedSurface(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface7_DeleteAttachedSurface *c = (struct qemu_ddraw_surface7_DeleteAttachedSurface *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *attachment;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    attachment = QEMU_G2H(c->attachment);
 
-    c->super.iret = IDirectDrawSurface7_DeleteAttachedSurface(surface->host_surface7, c->flags, QEMU_G2H(c->attachment));
+    c->super.iret = IDirectDrawSurface7_DeleteAttachedSurface(surface->host_surface7, c->flags,
+            attachment ? attachment->host_surface7 : NULL);
 }
 
 #endif
@@ -1990,12 +2001,20 @@ static HRESULT WINAPI ddraw_surface4_DeleteAttachedSurface(IDirectDrawSurface4 *
 {
     struct qemu_ddraw_surface4_DeleteAttachedSurface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
+    struct qemu_surface *attach = unsafe_impl_from_IDirectDrawSurface4(attachment);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_DELETEATTACHEDSURFACE);
     call.iface = (ULONG_PTR)surface;
     call.flags = flags;
-    call.attachment = (ULONG_PTR)attachment;
+    call.attachment = (ULONG_PTR)attach;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        IUnknown_Release(attach->attached_iface);
+        attach->attached_iface = NULL;
+    }
 
     return call.super.iret;
 }
@@ -2006,11 +2025,14 @@ void qemu_ddraw_surface4_DeleteAttachedSurface(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface4_DeleteAttachedSurface *c = (struct qemu_ddraw_surface4_DeleteAttachedSurface *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *attachment;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    attachment = QEMU_G2H(c->attachment);
 
-    c->super.iret = IDirectDrawSurface4_DeleteAttachedSurface(surface->host_surface4, c->flags, QEMU_G2H(c->attachment));
+    c->super.iret = IDirectDrawSurface4_DeleteAttachedSurface(surface->host_surface4, c->flags,
+            attachment ? attachment->host_surface4 : NULL);
 }
 
 #endif
@@ -2028,13 +2050,21 @@ struct qemu_ddraw_surface3_DeleteAttachedSurface
 static HRESULT WINAPI ddraw_surface3_DeleteAttachedSurface(IDirectDrawSurface3 *iface, DWORD flags, IDirectDrawSurface3 *attachment)
 {
     struct qemu_ddraw_surface3_DeleteAttachedSurface call;
+    struct qemu_surface *attach = unsafe_impl_from_IDirectDrawSurface3(attachment);
+
     struct qemu_surface *surface = impl_from_IDirectDrawSurface3(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE3_DELETEATTACHEDSURFACE);
     call.iface = (ULONG_PTR)surface;
     call.flags = flags;
-    call.attachment = (ULONG_PTR)attachment;
+    call.attachment = (ULONG_PTR)attach;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        IUnknown_Release(attach->attached_iface);
+        attach->attached_iface = NULL;
+    }
 
     return call.super.iret;
 }
@@ -2045,11 +2075,14 @@ void qemu_ddraw_surface3_DeleteAttachedSurface(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface3_DeleteAttachedSurface *c = (struct qemu_ddraw_surface3_DeleteAttachedSurface *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *attachment;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    attachment = QEMU_G2H(c->attachment);
 
-    c->super.iret = IDirectDrawSurface3_DeleteAttachedSurface(surface->host_surface3, c->flags, QEMU_G2H(c->attachment));
+    c->super.iret = IDirectDrawSurface3_DeleteAttachedSurface(surface->host_surface3, c->flags,
+            attachment ? attachment->host_surface3 : NULL);
 }
 
 #endif
@@ -2068,12 +2101,20 @@ static HRESULT WINAPI ddraw_surface2_DeleteAttachedSurface(IDirectDrawSurface2 *
 {
     struct qemu_ddraw_surface2_DeleteAttachedSurface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface2(iface);
+    struct qemu_surface *attach = unsafe_impl_from_IDirectDrawSurface2(attachment);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE2_DELETEATTACHEDSURFACE);
     call.iface = (ULONG_PTR)surface;
     call.flags = flags;
-    call.attachment = (ULONG_PTR)attachment;
+    call.attachment = (ULONG_PTR)attach;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        IUnknown_Release(attach->attached_iface);
+        attach->attached_iface = NULL;
+    }
 
     return call.super.iret;
 }
@@ -2084,11 +2125,14 @@ void qemu_ddraw_surface2_DeleteAttachedSurface(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface2_DeleteAttachedSurface *c = (struct qemu_ddraw_surface2_DeleteAttachedSurface *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *attachment;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    attachment = QEMU_G2H(c->attachment);
 
-    c->super.iret = IDirectDrawSurface2_DeleteAttachedSurface(surface->host_surface2, c->flags, QEMU_G2H(c->attachment));
+    c->super.iret = IDirectDrawSurface2_DeleteAttachedSurface(surface->host_surface2, c->flags,
+            attachment ? attachment->host_surface2 : NULL);
 }
 
 #endif
@@ -2107,12 +2151,20 @@ static HRESULT WINAPI ddraw_surface1_DeleteAttachedSurface(IDirectDrawSurface *i
 {
     struct qemu_ddraw_surface1_DeleteAttachedSurface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface(iface);
+    struct qemu_surface *attach = unsafe_impl_from_IDirectDrawSurface(attachment);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_DELETEATTACHEDSURFACE);
     call.iface = (ULONG_PTR)surface;
     call.flags = flags;
-    call.attachment = (ULONG_PTR)attachment;
+    call.attachment = (ULONG_PTR)attach;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        IUnknown_Release(attach->attached_iface);
+        attach->attached_iface = NULL;
+    }
 
     return call.super.iret;
 }
@@ -2123,11 +2175,14 @@ void qemu_ddraw_surface1_DeleteAttachedSurface(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface1_DeleteAttachedSurface *c = (struct qemu_ddraw_surface1_DeleteAttachedSurface *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *attachment;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    attachment = QEMU_G2H(c->attachment);
 
-    c->super.iret = IDirectDrawSurface_DeleteAttachedSurface(surface->host_surface1, c->flags, QEMU_G2H(c->attachment));
+    c->super.iret = IDirectDrawSurface_DeleteAttachedSurface(surface->host_surface1, c->flags,
+            attachment ? attachment->host_surface1 : NULL);
 }
 
 #endif
