@@ -3423,6 +3423,14 @@ static HRESULT enum_Callback(IDirectDrawSurface7 *surface, DDSURFACEDESC2 *desc,
     struct surface_guest_init_complex call;
     struct surface_guest_init_complex_host *ctx = context;
 
+    /* The primary surface chain loops, i.e. the front buffer is attached to the last back
+     * buffer. Don't recurse forever. */
+    if (desc->ddsCaps.dwCaps & DDSCAPS_FRONTBUFFER)
+    {
+        IDirectDrawSurface7_Release(surface);
+        return DDENUMRET_OK;
+    }
+
     object = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*object));
     if (!object)
         WINE_FIXME("Alloc failed, abort enumeration!\n");
