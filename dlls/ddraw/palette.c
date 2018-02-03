@@ -79,6 +79,7 @@ static ULONG WINAPI ddraw_palette_AddRef(IDirectDrawPalette *iface)
 
 static ULONG WINAPI ddraw_palette_Release(IDirectDrawPalette *iface)
 {
+    struct qemu_ddraw_palette_Release call;
     struct qemu_palette *palette = impl_from_IDirectDrawPalette(iface);
     ULONG ref = InterlockedDecrement(&palette->ref);
 
@@ -86,7 +87,8 @@ static ULONG WINAPI ddraw_palette_Release(IDirectDrawPalette *iface)
 
     if (ref == 0)
     {
-        WINE_FIXME("Implement destroy\n");
+        call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_PALETTE_RELEASE);
+        call.iface = (ULONG_PTR)palette;
     }
 
     return ref;
@@ -99,10 +101,13 @@ void qemu_ddraw_palette_Release(struct qemu_syscall *call)
     struct qemu_ddraw_palette_Release *c = (struct qemu_ddraw_palette_Release *)call;
     struct qemu_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawPalette_Release(palette->host);
+    if (c->super.iret)
+        WINE_ERR("Unexpected palette refcount %lu.\n", c->super.iret);
+    HeapFree(GetProcessHeap(), 0, palette);
 }
 
 #endif
@@ -299,6 +304,8 @@ struct qemu_palette *unsafe_impl_from_IDirectDrawPalette(IDirectDrawPalette *ifa
 
 void ddraw_palette_init(struct qemu_palette *palette)
 {
+    palette->IDirectDrawPalette_iface.lpVtbl = &ddraw_palette_vtbl;
+    palette->ref = 1;
 }
 
 #endif

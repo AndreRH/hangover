@@ -4099,50 +4099,7 @@ static HRESULT WINAPI ddraw2_CreateClipper(IDirectDraw2 *iface, DWORD flags, IDi
 
 #endif
 
-struct qemu_ddraw7_CreatePalette
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t Flags;
-    uint64_t ColorTable;
-    uint64_t Palette;
-    uint64_t pUnkOuter;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI ddraw7_CreatePalette(IDirectDraw7 *iface, DWORD Flags, PALETTEENTRY *ColorTable, IDirectDrawPalette **Palette, IUnknown *pUnkOuter)
-{
-    struct qemu_ddraw *ddraw = impl_from_IDirectDraw7(iface);
-    struct qemu_ddraw7_CreatePalette call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW7_CREATEPALETTE);
-    call.iface = (ULONG_PTR)ddraw;
-    call.Flags = Flags;
-    call.ColorTable = (ULONG_PTR)ColorTable;
-    call.Palette = (ULONG_PTR)Palette;
-    call.pUnkOuter = (ULONG_PTR)pUnkOuter;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_ddraw7_CreatePalette(struct qemu_syscall *call)
-{
-    struct qemu_ddraw7_CreatePalette *c = (struct qemu_ddraw7_CreatePalette *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDraw7_CreatePalette(ddraw->host_ddraw7, c->Flags, QEMU_G2H(c->ColorTable), QEMU_G2H(c->Palette), QEMU_G2H(c->pUnkOuter));
-}
-
-#endif
-
-struct qemu_ddraw4_CreatePalette
+struct qemu_ddraw_CreatePalette
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -4154,119 +4111,155 @@ struct qemu_ddraw4_CreatePalette
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw4_CreatePalette(IDirectDraw4 *iface, DWORD flags, PALETTEENTRY *entries, IDirectDrawPalette **palette, IUnknown *outer_unknown)
+static HRESULT WINAPI ddraw7_CreatePalette(IDirectDraw7 *iface, DWORD flags, PALETTEENTRY *entries,
+        IDirectDrawPalette **out, IUnknown *outer_unknown)
 {
+    struct qemu_ddraw_CreatePalette call;
+    struct qemu_ddraw *ddraw = impl_from_IDirectDraw7(iface);
+    struct qemu_palette *object;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW7_CREATEPALETTE);
+    call.iface = (ULONG_PTR)ddraw;
+    call.flags = flags;
+    call.entries = (ULONG_PTR)entries;
+    call.outer_unknown = (ULONG_PTR)outer_unknown;
+
+    qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_palette *)(ULONG_PTR)call.palette;
+        ddraw_palette_init(object);
+        *out = &object->IDirectDrawPalette_iface;
+    }
+
+    return call.super.iret;
+}
+
+static HRESULT WINAPI ddraw4_CreatePalette(IDirectDraw4 *iface, DWORD flags, PALETTEENTRY *entries,
+        IDirectDrawPalette **out, IUnknown *outer_unknown)
+{
+    struct qemu_ddraw_CreatePalette call;
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw4(iface);
-    struct qemu_ddraw4_CreatePalette call;
+    struct qemu_palette *object;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW4_CREATEPALETTE);
     call.iface = (ULONG_PTR)ddraw;
     call.flags = flags;
     call.entries = (ULONG_PTR)entries;
-    call.palette = (ULONG_PTR)palette;
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
 
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_palette *)(ULONG_PTR)call.palette;
+        ddraw_palette_init(object);
+        *out = &object->IDirectDrawPalette_iface;
+    }
+
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw4_CreatePalette(struct qemu_syscall *call)
+static HRESULT WINAPI ddraw2_CreatePalette(IDirectDraw2 *iface, DWORD flags, PALETTEENTRY *entries,
+        IDirectDrawPalette **out, IUnknown *outer_unknown)
 {
-    struct qemu_ddraw4_CreatePalette *c = (struct qemu_ddraw4_CreatePalette *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDraw4_CreatePalette(ddraw->host_ddraw4, c->flags, QEMU_G2H(c->entries), QEMU_G2H(c->palette), QEMU_G2H(c->outer_unknown));
-}
-
-#endif
-
-struct qemu_ddraw2_CreatePalette
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t flags;
-    uint64_t entries;
-    uint64_t palette;
-    uint64_t outer_unknown;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI ddraw2_CreatePalette(IDirectDraw2 *iface, DWORD flags, PALETTEENTRY *entries, IDirectDrawPalette **palette, IUnknown *outer_unknown)
-{
+    struct qemu_ddraw_CreatePalette call;
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw2(iface);
-    struct qemu_ddraw2_CreatePalette call;
+    struct qemu_palette *object;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW2_CREATEPALETTE);
     call.iface = (ULONG_PTR)ddraw;
     call.flags = flags;
     call.entries = (ULONG_PTR)entries;
-    call.palette = (ULONG_PTR)palette;
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
 
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_palette *)(ULONG_PTR)call.palette;
+        ddraw_palette_init(object);
+        *out = &object->IDirectDrawPalette_iface;
+    }
+
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw2_CreatePalette(struct qemu_syscall *call)
+static HRESULT WINAPI ddraw1_CreatePalette(IDirectDraw *iface, DWORD flags, PALETTEENTRY *entries,
+        IDirectDrawPalette **out, IUnknown *outer_unknown)
 {
-    struct qemu_ddraw2_CreatePalette *c = (struct qemu_ddraw2_CreatePalette *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDraw2_CreatePalette(ddraw->host_ddraw2, c->flags, QEMU_G2H(c->entries), QEMU_G2H(c->palette), QEMU_G2H(c->outer_unknown));
-}
-
-#endif
-
-struct qemu_ddraw1_CreatePalette
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t flags;
-    uint64_t entries;
-    uint64_t palette;
-    uint64_t outer_unknown;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI ddraw1_CreatePalette(IDirectDraw *iface, DWORD flags, PALETTEENTRY *entries, IDirectDrawPalette **palette, IUnknown *outer_unknown)
-{
+    struct qemu_ddraw_CreatePalette call;
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw(iface);
-    struct qemu_ddraw1_CreatePalette call;
+    struct qemu_palette *object;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW1_CREATEPALETTE);
     call.iface = (ULONG_PTR)ddraw;
     call.flags = flags;
     call.entries = (ULONG_PTR)entries;
-    call.palette = (ULONG_PTR)palette;
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_palette *)(ULONG_PTR)call.palette;
+        ddraw_palette_init(object);
+        *out = &object->IDirectDrawPalette_iface;
+    }
 
     return call.super.iret;
 }
 
 #else
 
-void qemu_ddraw1_CreatePalette(struct qemu_syscall *call)
+void qemu_ddraw_CreatePalette(struct qemu_syscall *call)
 {
-    struct qemu_ddraw1_CreatePalette *c = (struct qemu_ddraw1_CreatePalette *)call;
+    struct qemu_ddraw_CreatePalette *c = (struct qemu_ddraw_CreatePalette *)call;
     struct qemu_ddraw *ddraw;
+    struct qemu_palette *object;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDraw_CreatePalette(ddraw->host_ddraw1, c->flags, QEMU_G2H(c->entries), QEMU_G2H(c->palette), QEMU_G2H(c->outer_unknown));
+    object = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*object));
+    if (!object)
+    {
+        WINE_ERR("Out of memory.\n");
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_DDRAW7_CREATEPALETTE):
+            c->super.iret = IDirectDraw7_CreatePalette(ddraw->host_ddraw7, c->flags,
+                    QEMU_G2H(c->entries), &object->host, QEMU_G2H(c->outer_unknown));
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DDRAW4_CREATEPALETTE):
+            c->super.iret = IDirectDraw_CreatePalette(ddraw->host_ddraw4, c->flags,
+                    QEMU_G2H(c->entries), &object->host, QEMU_G2H(c->outer_unknown));
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DDRAW2_CREATEPALETTE):
+            c->super.iret = IDirectDraw_CreatePalette(ddraw->host_ddraw2, c->flags,
+                    QEMU_G2H(c->entries), &object->host, QEMU_G2H(c->outer_unknown));
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DDRAW1_CREATEPALETTE):
+            c->super.iret = IDirectDraw_CreatePalette(ddraw->host_ddraw1, c->flags,
+                    QEMU_G2H(c->entries), &object->host, QEMU_G2H(c->outer_unknown));
+            break;
+    }
+
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, object);
+        return;
+    }
+
+    c->palette = QEMU_H2G(object);
 }
 
 #endif
