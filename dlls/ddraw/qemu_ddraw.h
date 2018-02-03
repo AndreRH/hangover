@@ -543,6 +543,7 @@ struct qemu_palette
     IDirectDrawPalette IDirectDrawPalette_iface;
     LONG ref;
     struct qemu_ddraw *ddraw;
+    IUnknown *iface_to_release;
 
     /* Host fields */
     IDirectDrawPalette *host;
@@ -652,7 +653,7 @@ struct qemu_device *unsafe_impl_from_IDirect3DDevice(IDirect3DDevice *iface);
 void ddraw_vertex_buffer_guest_init(struct qemu_vertex_buffer *buffer, struct qemu_ddraw *ddraw, UINT version);
 struct qemu_vertex_buffer *unsafe_impl_from_IDirect3DVertexBuffer7(IDirect3DVertexBuffer7 *iface);
 
-void ddraw_palette_init(struct qemu_palette *palette, struct qemu_ddraw *ddraw);
+void ddraw_palette_init(struct qemu_palette *palette, struct qemu_ddraw *ddraw, IUnknown *iface_to_release);
 struct qemu_palette *unsafe_impl_from_IDirectDrawPalette(IDirectDrawPalette *iface);
 
 

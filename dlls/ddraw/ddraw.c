@@ -4129,7 +4129,7 @@ static HRESULT WINAPI ddraw7_CreatePalette(IDirectDraw7 *iface, DWORD flags, PAL
     if (SUCCEEDED(call.super.iret))
     {
         object = (struct qemu_palette *)(ULONG_PTR)call.palette;
-        ddraw_palette_init(object, ddraw);
+        ddraw_palette_init(object, ddraw, (IUnknown *)iface);
         *out = &object->IDirectDrawPalette_iface;
     }
 
@@ -4154,7 +4154,7 @@ static HRESULT WINAPI ddraw4_CreatePalette(IDirectDraw4 *iface, DWORD flags, PAL
     if (SUCCEEDED(call.super.iret))
     {
         object = (struct qemu_palette *)(ULONG_PTR)call.palette;
-        ddraw_palette_init(object, ddraw);
+        ddraw_palette_init(object, ddraw, (IUnknown *)iface);
         *out = &object->IDirectDrawPalette_iface;
     }
 
@@ -4179,7 +4179,7 @@ static HRESULT WINAPI ddraw2_CreatePalette(IDirectDraw2 *iface, DWORD flags, PAL
     if (SUCCEEDED(call.super.iret))
     {
         object = (struct qemu_palette *)(ULONG_PTR)call.palette;
-        ddraw_palette_init(object, ddraw);
+        ddraw_palette_init(object, ddraw, NULL);
         *out = &object->IDirectDrawPalette_iface;
     }
 
@@ -4204,7 +4204,7 @@ static HRESULT WINAPI ddraw1_CreatePalette(IDirectDraw *iface, DWORD flags, PALE
     if (SUCCEEDED(call.super.iret))
     {
         object = (struct qemu_palette *)(ULONG_PTR)call.palette;
-        ddraw_palette_init(object, ddraw);
+        ddraw_palette_init(object, ddraw, NULL);
         *out = &object->IDirectDrawPalette_iface;
     }
 

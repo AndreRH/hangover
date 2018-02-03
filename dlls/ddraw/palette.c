@@ -19,6 +19,8 @@
 
 /* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
 
+#define COBJMACROS
+
 #include <windows.h>
 #include <stdio.h>
 #include <ddraw.h>
@@ -84,12 +86,15 @@ static ULONG WINAPI ddraw_palette_Release(IDirectDrawPalette *iface)
     struct qemu_ddraw_palette_Release call;
     struct qemu_palette *palette = impl_from_IDirectDrawPalette(iface);
     struct qemu_ddraw *ddraw;
+    IUnknown *release;
     ULONG ref = InterlockedDecrement(&palette->ref);
 
     WINE_TRACE("%p decreasing refcount to %u.\n", palette, ref);
 
     if (ref == 0)
     {
+        release = palette->iface_to_release;
+
         call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_PALETTE_RELEASE);
         call.iface = (ULONG_PTR)palette;
         call.ddraw = (ULONG_PTR)palette->ddraw;
@@ -100,6 +105,8 @@ static ULONG WINAPI ddraw_palette_Release(IDirectDrawPalette *iface)
             struct qemu_surface *primary = (struct qemu_surface *)(ULONG_PTR)call.primary;
             primary->palette = NULL;
         }
+        if (release)
+            IUnknown_Release(release);
     }
 
     return ref;
@@ -353,11 +360,17 @@ struct qemu_palette *unsafe_impl_from_IDirectDrawPalette(IDirectDrawPalette *ifa
     return CONTAINING_RECORD(iface, struct qemu_palette, IDirectDrawPalette_iface);
 }
 
-void ddraw_palette_init(struct qemu_palette *palette, struct qemu_ddraw *ddraw)
+void ddraw_palette_init(struct qemu_palette *palette, struct qemu_ddraw *ddraw, IUnknown *iface_to_release)
 {
     palette->IDirectDrawPalette_iface.lpVtbl = &ddraw_palette_vtbl;
     palette->ref = 1;
     palette->ddraw = ddraw;
+
+    if (iface_to_release)
+    {
+        IUnknown_AddRef(iface_to_release);
+        palette->iface_to_release = iface_to_release;
+    }
 }
 
 #endif
