@@ -1202,141 +1202,88 @@ void qemu_d3d_device1_GetPickRecords(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d_device7_EnumTextureFormats
+struct qemu_d3d_device_EnumTextureFormats
 {
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t callback;
     uint64_t context;
+    uint64_t wrapper;
+};
+
+struct qemu_d3d_device_EnumTextureFormats_cb
+{
+    uint64_t func;
+    uint64_t format;
+    uint64_t context;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_device7_EnumTextureFormats(IDirect3DDevice7 *iface, LPD3DENUMPIXELFORMATSCALLBACK callback, void *context)
+static HRESULT __fastcall d3d_device_EnumTextureFormats_host_cb(struct qemu_d3d_device_EnumTextureFormats_cb *data)
 {
-    struct qemu_d3d_device7_EnumTextureFormats call;
+    LPD3DENUMPIXELFORMATSCALLBACK cb = (LPD3DENUMPIXELFORMATSCALLBACK)(ULONG_PTR)data->func;
+    return cb((DDPIXELFORMAT *)(ULONG_PTR)data->format, (void *)(ULONG_PTR)data->context);
+}
+
+static HRESULT WINAPI d3d_device7_EnumTextureFormats(IDirect3DDevice7 *iface,
+        LPD3DENUMPIXELFORMATSCALLBACK callback, void *context)
+{
+    struct qemu_d3d_device_EnumTextureFormats call;
     struct qemu_device *device = impl_from_IDirect3DDevice7(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE7_ENUMTEXTUREFORMATS);
     call.iface = (ULONG_PTR)device;
     call.callback = (ULONG_PTR)callback;
     call.context = (ULONG_PTR)context;
+    call.wrapper = (ULONG_PTR)d3d_device_EnumTextureFormats_host_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_d3d_device7_EnumTextureFormats(struct qemu_syscall *call)
+static HRESULT WINAPI d3d_device3_EnumTextureFormats(IDirect3DDevice3 *iface,
+        LPD3DENUMPIXELFORMATSCALLBACK callback, void *context)
 {
-    struct qemu_d3d_device7_EnumTextureFormats *c = (struct qemu_d3d_device7_EnumTextureFormats *)call;
-    struct qemu_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DDevice7_EnumTextureFormats(device->host7, QEMU_G2H(c->callback), QEMU_G2H(c->context));
-}
-
-#endif
-
-struct qemu_d3d_device3_EnumTextureFormats
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t callback;
-    uint64_t context;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI d3d_device3_EnumTextureFormats(IDirect3DDevice3 *iface, LPD3DENUMPIXELFORMATSCALLBACK callback, void *context)
-{
-    struct qemu_d3d_device3_EnumTextureFormats call;
+    struct qemu_d3d_device_EnumTextureFormats call;
     struct qemu_device *device = impl_from_IDirect3DDevice3(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE3_ENUMTEXTUREFORMATS);
     call.iface = (ULONG_PTR)device;
     call.callback = (ULONG_PTR)callback;
     call.context = (ULONG_PTR)context;
+    call.wrapper = (ULONG_PTR)d3d_device_EnumTextureFormats_host_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_d3d_device3_EnumTextureFormats(struct qemu_syscall *call)
+static HRESULT WINAPI d3d_device2_EnumTextureFormats(IDirect3DDevice2 *iface,
+        LPD3DENUMTEXTUREFORMATSCALLBACK callback, void *context)
 {
-    struct qemu_d3d_device3_EnumTextureFormats *c = (struct qemu_d3d_device3_EnumTextureFormats *)call;
-    struct qemu_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DDevice3_EnumTextureFormats(device->host3, QEMU_G2H(c->callback), QEMU_G2H(c->context));
-}
-
-#endif
-
-struct qemu_d3d_device2_EnumTextureFormats
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t callback;
-    uint64_t context;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI d3d_device2_EnumTextureFormats(IDirect3DDevice2 *iface, LPD3DENUMTEXTUREFORMATSCALLBACK callback, void *context)
-{
-    struct qemu_d3d_device2_EnumTextureFormats call;
+    struct qemu_d3d_device_EnumTextureFormats call;
     struct qemu_device *device = impl_from_IDirect3DDevice2(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE2_ENUMTEXTUREFORMATS);
     call.iface = (ULONG_PTR)device;
     call.callback = (ULONG_PTR)callback;
     call.context = (ULONG_PTR)context;
+    call.wrapper = (ULONG_PTR)d3d_device_EnumTextureFormats_host_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_d3d_device2_EnumTextureFormats(struct qemu_syscall *call)
+static HRESULT WINAPI d3d_device1_EnumTextureFormats(IDirect3DDevice *iface,
+        LPD3DENUMTEXTUREFORMATSCALLBACK callback, void *context)
 {
-    struct qemu_d3d_device2_EnumTextureFormats *c = (struct qemu_d3d_device2_EnumTextureFormats *)call;
-    struct qemu_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DDevice2_EnumTextureFormats(device->host2, QEMU_G2H(c->callback), QEMU_G2H(c->context));
-}
-
-#endif
-
-struct qemu_d3d_device1_EnumTextureFormats
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t callback;
-    uint64_t context;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI d3d_device1_EnumTextureFormats(IDirect3DDevice *iface, LPD3DENUMTEXTUREFORMATSCALLBACK callback, void *context)
-{
-    struct qemu_d3d_device1_EnumTextureFormats call;
+    struct qemu_d3d_device_EnumTextureFormats call;
     struct qemu_device *device = impl_from_IDirect3DDevice(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE1_ENUMTEXTUREFORMATS);
     call.iface = (ULONG_PTR)device;
     call.callback = (ULONG_PTR)callback;
     call.context = (ULONG_PTR)context;
+    call.wrapper = (ULONG_PTR)d3d_device_EnumTextureFormats_host_cb;
 
     qemu_syscall(&call.super);
 
@@ -1345,15 +1292,89 @@ static HRESULT WINAPI d3d_device1_EnumTextureFormats(IDirect3DDevice *iface, LPD
 
 #else
 
-void qemu_d3d_device1_EnumTextureFormats(struct qemu_syscall *call)
+struct qemu_d3d_device_EnumTextureFormats_host_data
 {
-    struct qemu_d3d_device1_EnumTextureFormats *c = (struct qemu_d3d_device1_EnumTextureFormats *)call;
-    struct qemu_device *device;
+    uint64_t guest_func, guest_ctx;
+    uint64_t wrapper;
+};
 
-    WINE_FIXME("Unverified!\n");
+static HRESULT qemu_d3d_device3_EnumTextureFormats_host_cb(DDPIXELFORMAT *fmt, void *context)
+{
+    struct qemu_d3d_device_EnumTextureFormats_host_data *ctx = context;
+    struct qemu_d3d_device_EnumTextureFormats_cb call;
+    HRESULT hr;
+
+    call.func = ctx->guest_func;
+    call.format = QEMU_H2G(fmt);
+    call.context = ctx->guest_ctx;
+
+    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx).\n", call.func, call.format, call.context);
+    hr = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned 0x%x.\n", hr);
+
+    return hr;
+}
+
+static HRESULT qemu_d3d_device1_EnumTextureFormats_host_cb(DDSURFACEDESC *desc, void *context)
+{
+    struct qemu_d3d_device_EnumTextureFormats_host_data *ctx = context;
+    struct qemu_d3d_device_EnumTextureFormats_cb call;
+    HRESULT hr;
+    struct qemu_DDSURFACEDESC conv;
+
+    call.func = ctx->guest_func;
+    call.context = ctx->guest_ctx;
+
+#if HOST_BIT == GUEST_BIT
+    call.format = QEMU_H2G(fmt);
+#else
+    conv.dwSize = sizeof(conv);
+    DDSURFACEDESC_h2g(&conv, desc);
+    call.format = QEMU_H2G(&conv);
+#endif
+
+    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx).\n", call.func, call.format, call.context);
+    hr = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned 0x%x.\n", hr);
+
+    return hr;
+}
+
+void qemu_d3d_device_EnumTextureFormats(struct qemu_syscall *call)
+{
+    struct qemu_d3d_device_EnumTextureFormats *c = (struct qemu_d3d_device_EnumTextureFormats *)call;
+    struct qemu_device *device;
+    struct qemu_d3d_device_EnumTextureFormats_host_data ctx;
+
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice_EnumTextureFormats(device->host1, QEMU_G2H(c->callback), QEMU_G2H(c->context));
+    ctx.guest_func = c->callback;
+    ctx.guest_ctx = c->context;
+    ctx.wrapper = c->wrapper;
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_D3D_DEVICE7_ENUMTEXTUREFORMATS):
+            c->super.iret = IDirect3DDevice7_EnumTextureFormats(device->host7,
+                    c->callback ? qemu_d3d_device3_EnumTextureFormats_host_cb : NULL, &ctx);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_D3D_DEVICE3_ENUMTEXTUREFORMATS):
+            c->super.iret = IDirect3DDevice3_EnumTextureFormats(device->host3,
+                    c->callback ? qemu_d3d_device3_EnumTextureFormats_host_cb : NULL, &ctx);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_D3D_DEVICE2_ENUMTEXTUREFORMATS):
+            c->super.iret = IDirect3DDevice2_EnumTextureFormats(device->host2,
+                    c->callback ? qemu_d3d_device1_EnumTextureFormats_host_cb : NULL, &ctx);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_D3D_DEVICE1_ENUMTEXTUREFORMATS):
+            c->super.iret = IDirect3DDevice_EnumTextureFormats(device->host1,
+                    c->callback ? qemu_d3d_device1_EnumTextureFormats_host_cb : NULL, &ctx);
+            break;
+    }
 }
 
 #endif
