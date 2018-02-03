@@ -3416,10 +3416,11 @@ void qemu_d3d_device7_DrawIndexedPrimitive(struct qemu_syscall *call)
     struct qemu_d3d_device7_DrawIndexedPrimitive *c = (struct qemu_d3d_device7_DrawIndexedPrimitive *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice7_DrawIndexedPrimitive(device->host7, c->primitive_type, c->fvf, QEMU_G2H(c->vertices), c->vertex_count, QEMU_G2H(c->indices), c->index_count, c->flags);
+    c->super.iret = IDirect3DDevice7_DrawIndexedPrimitive(device->host7, c->primitive_type, c->fvf,
+            QEMU_G2H(c->vertices), c->vertex_count, QEMU_G2H(c->indices), c->index_count, c->flags);
 }
 
 #endif
@@ -3439,7 +3440,8 @@ struct qemu_d3d_device3_DrawIndexedPrimitive
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_device3_DrawIndexedPrimitive(IDirect3DDevice3 *iface, D3DPRIMITIVETYPE primitive_type, DWORD fvf, void *vertices, DWORD vertex_count, WORD *indices, DWORD index_count, DWORD flags)
+static HRESULT WINAPI d3d_device3_DrawIndexedPrimitive(IDirect3DDevice3 *iface, D3DPRIMITIVETYPE primitive_type,
+        DWORD fvf, void *vertices, DWORD vertex_count, WORD *indices, DWORD index_count, DWORD flags)
 {
     struct qemu_d3d_device3_DrawIndexedPrimitive call;
     struct qemu_device *device = impl_from_IDirect3DDevice3(iface);
@@ -3465,10 +3467,11 @@ void qemu_d3d_device3_DrawIndexedPrimitive(struct qemu_syscall *call)
     struct qemu_d3d_device3_DrawIndexedPrimitive *c = (struct qemu_d3d_device3_DrawIndexedPrimitive *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice3_DrawIndexedPrimitive(device->host3, c->primitive_type, c->fvf, QEMU_G2H(c->vertices), c->vertex_count, QEMU_G2H(c->indices), c->index_count, c->flags);
+    c->super.iret = IDirect3DDevice3_DrawIndexedPrimitive(device->host3, c->primitive_type, c->fvf,
+            QEMU_G2H(c->vertices), c->vertex_count, QEMU_G2H(c->indices), c->index_count, c->flags);
 }
 
 #endif
@@ -3488,7 +3491,8 @@ struct qemu_d3d_device2_DrawIndexedPrimitive
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_device2_DrawIndexedPrimitive(IDirect3DDevice2 *iface, D3DPRIMITIVETYPE primitive_type, D3DVERTEXTYPE vertex_type, void *vertices, DWORD vertex_count, WORD *indices, DWORD index_count, DWORD flags)
+static HRESULT WINAPI d3d_device2_DrawIndexedPrimitive(IDirect3DDevice2 *iface, D3DPRIMITIVETYPE primitive_type,
+        D3DVERTEXTYPE vertex_type, void *vertices, DWORD vertex_count, WORD *indices, DWORD index_count, DWORD flags)
 {
     struct qemu_d3d_device2_DrawIndexedPrimitive call;
     struct qemu_device *device = impl_from_IDirect3DDevice2(iface);
@@ -3514,10 +3518,11 @@ void qemu_d3d_device2_DrawIndexedPrimitive(struct qemu_syscall *call)
     struct qemu_d3d_device2_DrawIndexedPrimitive *c = (struct qemu_d3d_device2_DrawIndexedPrimitive *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice2_DrawIndexedPrimitive(device->host2, c->primitive_type, c->vertex_type, QEMU_G2H(c->vertices), c->vertex_count, QEMU_G2H(c->indices), c->index_count, c->flags);
+    c->super.iret = IDirect3DDevice2_DrawIndexedPrimitive(device->host2, c->primitive_type, c->vertex_type,
+            QEMU_G2H(c->vertices), c->vertex_count, QEMU_G2H(c->indices), c->index_count, c->flags);
 }
 
 #endif
@@ -4869,7 +4874,7 @@ void qemu_d3d_device7_SetMaterial(struct qemu_syscall *call)
     struct qemu_d3d_device7_SetMaterial *c = (struct qemu_d3d_device7_SetMaterial *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_SetMaterial(device->host7, QEMU_G2H(c->material));
@@ -4945,7 +4950,8 @@ void qemu_d3d_device7_SetLight(struct qemu_syscall *call)
     struct qemu_d3d_device7_SetLight *c = (struct qemu_d3d_device7_SetLight *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* D3DLIGHT7 has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_SetLight(device->host7, c->light_idx, QEMU_G2H(c->light));
@@ -5335,7 +5341,7 @@ void qemu_d3d_device7_LightEnable(struct qemu_syscall *call)
     struct qemu_d3d_device7_LightEnable *c = (struct qemu_d3d_device7_LightEnable *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_LightEnable(device->host7, c->light_idx, c->enabled);

@@ -493,7 +493,7 @@ void qemu_ddraw7_RestoreDisplayMode(struct qemu_syscall *call)
     struct qemu_ddraw7_RestoreDisplayMode *c = (struct qemu_ddraw7_RestoreDisplayMode *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw7_RestoreDisplayMode(ddraw->host_ddraw7);
@@ -528,7 +528,7 @@ void qemu_ddraw4_RestoreDisplayMode(struct qemu_syscall *call)
     struct qemu_ddraw4_RestoreDisplayMode *c = (struct qemu_ddraw4_RestoreDisplayMode *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw4_RestoreDisplayMode(ddraw->host_ddraw4);
@@ -563,7 +563,7 @@ void qemu_ddraw2_RestoreDisplayMode(struct qemu_syscall *call)
     struct qemu_ddraw2_RestoreDisplayMode *c = (struct qemu_ddraw2_RestoreDisplayMode *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw2_RestoreDisplayMode(ddraw->host_ddraw2);
@@ -598,7 +598,7 @@ void qemu_ddraw1_RestoreDisplayMode(struct qemu_syscall *call)
     struct qemu_ddraw1_RestoreDisplayMode *c = (struct qemu_ddraw1_RestoreDisplayMode *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw_RestoreDisplayMode(ddraw->host_ddraw1);
@@ -787,7 +787,8 @@ struct qemu_ddraw7_SetDisplayMode
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw7_SetDisplayMode(IDirectDraw7 *iface, DWORD width, DWORD height, DWORD bpp, DWORD refresh_rate, DWORD flags)
+static HRESULT WINAPI ddraw7_SetDisplayMode(IDirectDraw7 *iface, DWORD width, DWORD height, DWORD bpp,
+        DWORD refresh_rate, DWORD flags)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw7(iface);
     struct qemu_ddraw7_SetDisplayMode call;
@@ -811,10 +812,11 @@ void qemu_ddraw7_SetDisplayMode(struct qemu_syscall *call)
     struct qemu_ddraw7_SetDisplayMode *c = (struct qemu_ddraw7_SetDisplayMode *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDraw7_SetDisplayMode(ddraw->host_ddraw7, c->width, c->height, c->bpp, c->refresh_rate, c->flags);
+    c->super.iret = IDirectDraw7_SetDisplayMode(ddraw->host_ddraw7, c->width, c->height, c->bpp, c->refresh_rate,
+            c->flags);
 }
 
 #endif
@@ -832,7 +834,8 @@ struct qemu_ddraw4_SetDisplayMode
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw4_SetDisplayMode(IDirectDraw4 *iface, DWORD width, DWORD height, DWORD bpp, DWORD refresh_rate, DWORD flags)
+static HRESULT WINAPI ddraw4_SetDisplayMode(IDirectDraw4 *iface, DWORD width, DWORD height, DWORD bpp,
+        DWORD refresh_rate, DWORD flags)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw4(iface);
     struct qemu_ddraw4_SetDisplayMode call;
@@ -856,10 +859,11 @@ void qemu_ddraw4_SetDisplayMode(struct qemu_syscall *call)
     struct qemu_ddraw4_SetDisplayMode *c = (struct qemu_ddraw4_SetDisplayMode *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDraw4_SetDisplayMode(ddraw->host_ddraw4, c->width, c->height, c->bpp, c->refresh_rate, c->flags);
+    c->super.iret = IDirectDraw4_SetDisplayMode(ddraw->host_ddraw4, c->width, c->height, c->bpp, c->refresh_rate,
+            c->flags);
 }
 
 #endif
@@ -877,7 +881,8 @@ struct qemu_ddraw2_SetDisplayMode
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw2_SetDisplayMode(IDirectDraw2 *iface, DWORD width, DWORD height, DWORD bpp, DWORD refresh_rate, DWORD flags)
+static HRESULT WINAPI ddraw2_SetDisplayMode(IDirectDraw2 *iface, DWORD width, DWORD height, DWORD bpp,
+        DWORD refresh_rate, DWORD flags)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw2(iface);
     struct qemu_ddraw2_SetDisplayMode call;
@@ -901,10 +906,11 @@ void qemu_ddraw2_SetDisplayMode(struct qemu_syscall *call)
     struct qemu_ddraw2_SetDisplayMode *c = (struct qemu_ddraw2_SetDisplayMode *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDraw2_SetDisplayMode(ddraw->host_ddraw2, c->width, c->height, c->bpp, c->refresh_rate, c->flags);
+    c->super.iret = IDirectDraw2_SetDisplayMode(ddraw->host_ddraw2, c->width, c->height, c->bpp, c->refresh_rate,
+            c->flags);
 }
 
 #endif
@@ -942,7 +948,7 @@ void qemu_ddraw1_SetDisplayMode(struct qemu_syscall *call)
     struct qemu_ddraw1_SetDisplayMode *c = (struct qemu_ddraw1_SetDisplayMode *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw_SetDisplayMode(ddraw->host_ddraw1, c->width, c->height, c->bpp);
@@ -981,7 +987,8 @@ void qemu_ddraw7_GetCaps(struct qemu_syscall *call)
     struct qemu_ddraw7_GetCaps *c = (struct qemu_ddraw7_GetCaps *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    /* DDCAPS has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw7_GetCaps(ddraw->host_ddraw7, QEMU_G2H(c->DriverCaps), QEMU_G2H(c->HELCaps));
