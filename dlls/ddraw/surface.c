@@ -434,6 +434,13 @@ void __fastcall ddraw_surface_destroy_cb(struct qemu_surface *surface)
         IDirectDrawClipper_Release(&surface->clipper->IDirectDrawClipper_iface);
 }
 
+void __fastcall ddraw_delete_detach_cb(struct qemu_surface *surface)
+{
+    WINE_TRACE("Surface %p was attached to a surface that is now gone.\n");
+    IUnknown_Release(surface->attached_iface);
+    surface->attached_iface = NULL;
+}
+
 static ULONG ddraw_surface_release_iface(struct qemu_surface *surface)
 {
     ULONG iface_count;
@@ -610,6 +617,34 @@ void qemu_ddraw_surface_QI_Device(struct qemu_syscall *call)
     c->device = QEMU_H2G(device);
 }
 
+uint64_t ddraw_delete_detach_cb;
+
+static HRESULT WINAPI ddraw_delete_detach(IDirectDrawSurface7 *surface, DDSURFACEDESC2 *desc, void *context)
+{
+    IUnknown *priv;
+    DWORD size = sizeof(priv);
+    struct qemu_surface *impl;
+
+    /* We only care about things attached with AddAttachedSurface. */
+    if (desc->ddsCaps.dwCaps & DDSCAPS_COMPLEX)
+    {
+        IDirectDrawSurface7_Release(surface);
+        return DDENUMRET_OK;
+    }
+
+    if (FAILED(IDirectDrawSurface7_GetPrivateData(surface, &surface_priv_uuid, &priv, &size)))
+        WINE_ERR("Failed to get private data.\n");
+
+    impl = surface_impl_from_IUnknown(priv);
+    WINE_TRACE("Found surface implemention %p from host surface %p.\n", impl, surface);
+
+    qemu_ops->qemu_execute(QEMU_G2H(ddraw_delete_detach_cb), QEMU_H2G(impl));
+
+    IDirectDrawSurface7_Release(surface);
+
+    return DDENUMRET_OK;
+}
+
 void qemu_ddraw_surface1_Release(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface1_Release *c = (struct qemu_ddraw_surface1_Release *)call;
@@ -617,6 +652,9 @@ void qemu_ddraw_surface1_Release(struct qemu_syscall *call)
 
     WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+
+    if (FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(surface->host_surface7, NULL, ddraw_delete_detach)))
+        WINE_ERR("Failed to enumerate attached surfaces.\n");
 
     if (surface->host_texture1)
         IDirect3DTexture_Release(surface->host_texture1);

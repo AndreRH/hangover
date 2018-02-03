@@ -650,6 +650,7 @@ struct qemu_init_dll
 {
     struct qemu_syscall super;
     uint64_t ddraw_surface_destroy_cb;
+    uint64_t ddraw_delete_detach_cb;
     uint64_t surface_guest_init_complex;
 };
 
@@ -810,6 +811,7 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
     {
         call.super.id = QEMU_SYSCALL_ID(CALL_INIT_DLL);
         call.ddraw_surface_destroy_cb = (ULONG_PTR)ddraw_surface_destroy_cb;
+        call.ddraw_delete_detach_cb = (ULONG_PTR)ddraw_delete_detach_cb;
         call.surface_guest_init_complex = (ULONG_PTR)surface_guest_init_complex;
         qemu_syscall(&call.super);
     }
@@ -826,6 +828,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
 {
     struct qemu_init_dll *c = (struct qemu_init_dll *)call;
     ddraw_surface_destroy_cb = c->ddraw_surface_destroy_cb;
+    ddraw_delete_detach_cb = c->ddraw_delete_detach_cb;
     surface_guest_init_complex = c->surface_guest_init_complex;
 }
 

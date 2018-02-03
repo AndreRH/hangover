@@ -641,6 +641,7 @@ struct qemu_surface *unsafe_impl_from_IDirect3DTexture(IDirect3DTexture *iface);
 
 void qemu_surface_guest_init(struct qemu_surface *surface, struct qemu_ddraw *ddraw, unsigned int version);
 void __fastcall ddraw_surface_destroy_cb(struct qemu_surface *surface);
+void __fastcall ddraw_delete_detach_cb(struct qemu_surface *surface);
 void __fastcall surface_guest_init_complex(void *call);
 
 void ddraw_device_guest_init(struct qemu_device *device, struct qemu_ddraw *ddraw,
@@ -1102,6 +1103,7 @@ void qemu_ddraw_surface_QI_Device(struct qemu_syscall *call);
 void qemu_ddraw_surface_SetClipper(struct qemu_syscall *call);
 
 extern uint64_t ddraw_surface_destroy_cb;
+extern uint64_t ddraw_delete_detach_cb;
 extern uint64_t surface_guest_init_complex;
 
 const struct IUnknownVtbl surface_priv_vtbl;
