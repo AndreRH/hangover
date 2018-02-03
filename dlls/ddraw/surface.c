@@ -975,6 +975,8 @@ void qemu_ddraw_surface_Lock(struct qemu_syscall *call)
         desc->dwSize = sizeof(*desc);
     else if (desc32->dwSize == sizeof(struct qemu_DDSURFACEDESC))
         desc->dwSize = sizeof(DDSURFACEDESC);
+    else if (c->version == 7 && desc32->dwSize > sizeof(*desc32))
+        desc->dwSize = sizeof(*desc) + 1;
     else
         desc->dwSize = 0;
 #endif
@@ -1010,11 +1012,16 @@ void qemu_ddraw_surface_Lock(struct qemu_syscall *call)
 #if GUEST_BIT != HOST_BIT
     if (SUCCEEDED(c->super.iret))
     {
-        /* Managed (and sysmem) textures accept invalid lock sizes in IDirectDrawSurface7. Assume those are
-         * DDSURFACEDESC2 sized. */
-        if (desc32->dwSize == sizeof(*desc32) || c->version == 7)
+        /* Managed (and sysmem) textures accept invalid lock sizes in IDirectDrawSurface7. Take it
+         * as DDSURFACEDESC2 if they are larger than it, otherwise DDSURFACEDESC even if they are
+         * smaller. */
+        if (desc32->dwSize == sizeof(*desc32))
             DDSURFACEDESC2_h2g(desc32, desc);
         else if(desc32->dwSize == sizeof(struct qemu_DDSURFACEDESC))
+            DDSURFACEDESC_h2g((struct qemu_DDSURFACEDESC *)desc32, (DDSURFACEDESC *)desc);
+        else if (c->version == 7 && desc32->dwSize > sizeof(*desc32))
+            DDSURFACEDESC2_h2g(desc32, desc);
+        else if (c->version == 7)
             DDSURFACEDESC_h2g((struct qemu_DDSURFACEDESC *)desc32, (DDSURFACEDESC *)desc);
         else
             WINE_ERR("Lock succeeded despite invalid size.\n");
