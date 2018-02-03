@@ -5206,15 +5206,19 @@ struct qemu_d3d_device7_Load
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_device7_Load(IDirect3DDevice7 *iface, IDirectDrawSurface7 *dst_texture, POINT *dst_pos, IDirectDrawSurface7 *src_texture, RECT *src_rect, DWORD flags)
+static HRESULT WINAPI d3d_device7_Load(IDirect3DDevice7 *iface, IDirectDrawSurface7 *dst_texture, POINT *dst_pos,
+        IDirectDrawSurface7 *src_texture, RECT *src_rect, DWORD flags)
 {
     struct qemu_d3d_device7_Load call;
     struct qemu_device *device = impl_from_IDirect3DDevice7(iface);
+    struct qemu_surface *dst = unsafe_impl_from_IDirectDrawSurface7(dst_texture);
+    struct qemu_surface *src = unsafe_impl_from_IDirectDrawSurface7(src_texture);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE7_LOAD);
     call.iface = (ULONG_PTR)device;
-    call.dst_texture = (ULONG_PTR)dst_texture;
+    call.dst_texture = (ULONG_PTR)dst;
     call.dst_pos = (ULONG_PTR)dst_pos;
-    call.src_texture = (ULONG_PTR)src_texture;
+    call.src_texture = (ULONG_PTR)src;
     call.src_rect = (ULONG_PTR)src_rect;
     call.flags = flags;
 
@@ -5229,11 +5233,15 @@ void qemu_d3d_device7_Load(struct qemu_syscall *call)
 {
     struct qemu_d3d_device7_Load *c = (struct qemu_d3d_device7_Load *)call;
     struct qemu_device *device;
+    struct qemu_surface *dst, *src;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    dst = QEMU_G2H(c->dst_texture);
+    src = QEMU_G2H(c->src_texture);
 
-    c->super.iret = IDirect3DDevice7_Load(device->host7, QEMU_G2H(c->dst_texture), QEMU_G2H(c->dst_pos), QEMU_G2H(c->src_texture), QEMU_G2H(c->src_rect), c->flags);
+    c->super.iret = IDirect3DDevice7_Load(device->host7, dst ? dst->host_surface7 : NULL, QEMU_G2H(c->dst_pos),
+            src ? src->host_surface7 : NULL, QEMU_G2H(c->src_rect), c->flags);
 }
 
 #endif
