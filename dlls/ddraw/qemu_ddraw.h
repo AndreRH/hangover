@@ -290,6 +290,11 @@ enum ddraw_calls
     CALL_DDRAW_CLIPPER_SETHWND,
     CALL_DDRAW_GAMMA_CONTROL_GETGAMMARAMP,
     CALL_DDRAW_GAMMA_CONTROL_SETGAMMARAMP,
+    CALL_DDRAW_PALETTE_GETCAPS,
+    CALL_DDRAW_PALETTE_GETENTRIES,
+    CALL_DDRAW_PALETTE_INITIALIZE,
+    CALL_DDRAW_PALETTE_RELEASE,
+    CALL_DDRAW_PALETTE_SETENTRIES,
     CALL_DDRAW_SURFACE1_ADDATTACHEDSURFACE,
     CALL_DDRAW_SURFACE1_ADDOVERLAYDIRTYRECT,
     CALL_DDRAW_SURFACE1_BLT,
@@ -507,6 +512,16 @@ struct qemu_clipper
     IDirectDrawClipper *host;
 };
 
+struct qemu_palette
+{
+    /* Guest fields */
+    IDirectDrawPalette IDirectDrawPalette_iface;
+    LONG ref;
+
+    /* Host fields */
+    IDirectDrawPalette *host;
+};
+
 struct qemu_ddraw
 {
     /* Guest fields */
@@ -640,6 +655,10 @@ struct qemu_device *unsafe_impl_from_IDirect3DDevice(IDirect3DDevice *iface);
 
 void ddraw_vertex_buffer_guest_init(struct qemu_vertex_buffer *buffer, struct qemu_ddraw *ddraw, UINT version);
 struct qemu_vertex_buffer *unsafe_impl_from_IDirect3DVertexBuffer7(IDirect3DVertexBuffer7 *iface);
+
+void ddraw_palette_init(struct qemu_palette *palette);
+struct qemu_palette *unsafe_impl_from_IDirectDrawPalette(IDirectDrawPalette *iface);
+
 
 #else
 
@@ -901,6 +920,11 @@ void qemu_ddraw_clipper_SetClipList(struct qemu_syscall *call);
 void qemu_ddraw_clipper_SetHWnd(struct qemu_syscall *call);
 void qemu_ddraw_gamma_control_GetGammaRamp(struct qemu_syscall *call);
 void qemu_ddraw_gamma_control_SetGammaRamp(struct qemu_syscall *call);
+void qemu_ddraw_palette_GetCaps(struct qemu_syscall *call);
+void qemu_ddraw_palette_GetEntries(struct qemu_syscall *call);
+void qemu_ddraw_palette_Initialize(struct qemu_syscall *call);
+void qemu_ddraw_palette_Release(struct qemu_syscall *call);
+void qemu_ddraw_palette_SetEntries(struct qemu_syscall *call);
 void qemu_ddraw_surface1_AddAttachedSurface(struct qemu_syscall *call);
 void qemu_ddraw_surface1_AddOverlayDirtyRect(struct qemu_syscall *call);
 void qemu_ddraw_surface1_Blt(struct qemu_syscall *call);
