@@ -524,7 +524,7 @@ static HRESULT CF_CreateObject(IUnknown* UnkOuter, REFIID iid, void **obj, enum 
 
     WINE_TRACE("outer_unknown %p, riid %s, object %p.\n", UnkOuter, wine_dbgstr_guid(iid), obj);
 
-    call.super.id = CALL_CF_CREATEOBJECT;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CF_CREATEOBJECT);
     call.what = what;
     call.fac_id = (ULONG_PTR)fac_id;
 
