@@ -4198,14 +4198,18 @@ struct qemu_d3d_device7_DrawIndexedPrimitiveVB
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_device7_DrawIndexedPrimitiveVB(IDirect3DDevice7 *iface, D3DPRIMITIVETYPE PrimitiveType, IDirect3DVertexBuffer7 *D3DVertexBuf, DWORD StartVertex, DWORD NumVertices, WORD *Indices, DWORD IndexCount, DWORD Flags)
+static HRESULT WINAPI d3d_device7_DrawIndexedPrimitiveVB(IDirect3DDevice7 *iface, D3DPRIMITIVETYPE PrimitiveType,
+        IDirect3DVertexBuffer7 *D3DVertexBuf, DWORD StartVertex, DWORD NumVertices, WORD *Indices, DWORD IndexCount,
+        DWORD Flags)
 {
     struct qemu_d3d_device7_DrawIndexedPrimitiveVB call;
     struct qemu_device *device = impl_from_IDirect3DDevice7(iface);
+    struct qemu_vertex_buffer *buffer = unsafe_impl_from_IDirect3DVertexBuffer7(D3DVertexBuf);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE7_DRAWINDEXEDPRIMITIVEVB);
     call.iface = (ULONG_PTR)device;
     call.PrimitiveType = PrimitiveType;
-    call.D3DVertexBuf = (ULONG_PTR)D3DVertexBuf;
+    call.D3DVertexBuf = (ULONG_PTR)buffer;
     call.StartVertex = StartVertex;
     call.NumVertices = NumVertices;
     call.Indices = (ULONG_PTR)Indices;
@@ -4223,11 +4227,14 @@ void qemu_d3d_device7_DrawIndexedPrimitiveVB(struct qemu_syscall *call)
 {
     struct qemu_d3d_device7_DrawIndexedPrimitiveVB *c = (struct qemu_d3d_device7_DrawIndexedPrimitiveVB *)call;
     struct qemu_device *device;
+    struct qemu_vertex_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    buffer = QEMU_G2H(c->D3DVertexBuf);
 
-    c->super.iret = IDirect3DDevice7_DrawIndexedPrimitiveVB(device->host7, c->PrimitiveType, QEMU_G2H(c->D3DVertexBuf), c->StartVertex, c->NumVertices, QEMU_G2H(c->Indices), c->IndexCount, c->Flags);
+    c->super.iret = IDirect3DDevice7_DrawIndexedPrimitiveVB(device->host7, c->PrimitiveType,
+            buffer ? buffer->host : NULL, c->StartVertex, c->NumVertices, QEMU_G2H(c->Indices), c->IndexCount, c->Flags);
 }
 
 #endif
@@ -4245,14 +4252,17 @@ struct qemu_d3d_device3_DrawIndexedPrimitiveVB
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_device3_DrawIndexedPrimitiveVB(IDirect3DDevice3 *iface, D3DPRIMITIVETYPE PrimitiveType, IDirect3DVertexBuffer *D3DVertexBuf, WORD *Indices, DWORD IndexCount, DWORD Flags)
+static HRESULT WINAPI d3d_device3_DrawIndexedPrimitiveVB(IDirect3DDevice3 *iface, D3DPRIMITIVETYPE PrimitiveType,
+        IDirect3DVertexBuffer *D3DVertexBuf, WORD *Indices, DWORD IndexCount, DWORD Flags)
 {
     struct qemu_d3d_device3_DrawIndexedPrimitiveVB call;
     struct qemu_device *device = impl_from_IDirect3DDevice3(iface);
+    struct qemu_vertex_buffer *buffer = unsafe_impl_from_IDirect3DVertexBuffer7((IDirect3DVertexBuffer7 *)D3DVertexBuf);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE3_DRAWINDEXEDPRIMITIVEVB);
     call.iface = (ULONG_PTR)device;
     call.PrimitiveType = PrimitiveType;
-    call.D3DVertexBuf = (ULONG_PTR)D3DVertexBuf;
+    call.D3DVertexBuf = (ULONG_PTR)buffer;
     call.Indices = (ULONG_PTR)Indices;
     call.IndexCount = IndexCount;
     call.Flags = Flags;
@@ -4268,11 +4278,14 @@ void qemu_d3d_device3_DrawIndexedPrimitiveVB(struct qemu_syscall *call)
 {
     struct qemu_d3d_device3_DrawIndexedPrimitiveVB *c = (struct qemu_d3d_device3_DrawIndexedPrimitiveVB *)call;
     struct qemu_device *device;
+    struct qemu_vertex_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    buffer = QEMU_G2H(c->D3DVertexBuf);
 
-    c->super.iret = IDirect3DDevice3_DrawIndexedPrimitiveVB(device->host3, c->PrimitiveType, QEMU_G2H(c->D3DVertexBuf), QEMU_G2H(c->Indices), c->IndexCount, c->Flags);
+    c->super.iret = IDirect3DDevice3_DrawIndexedPrimitiveVB(device->host3, c->PrimitiveType,
+            buffer ? (IDirect3DVertexBuffer *)buffer->host : NULL, QEMU_G2H(c->Indices), c->IndexCount, c->Flags);
 }
 
 #endif
