@@ -3751,180 +3751,128 @@ void qemu_ddraw_surface1_BltBatch(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_ddraw_surface7_EnumAttachedSurfaces
+struct qemu_ddraw_surface_EnumAttachedSurfaces
 {
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t context;
-    uint64_t cb;
+    uint64_t callback;
+    uint64_t wrapper;
+};
+
+struct qemu_ddraw_surface_EnumAttachedSurfaces_cb
+{
+    uint64_t func;
+    uint64_t surface;
+    uint64_t desc;
+    uint64_t context;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw_surface7_EnumAttachedSurfaces(IDirectDrawSurface7 *iface, void *context, LPDDENUMSURFACESCALLBACK7 cb)
+static HRESULT __fastcall ddraw_surface7_EnumAttachedSurfaces_guest_cb(
+        struct qemu_ddraw_surface_EnumAttachedSurfaces_cb *data)
 {
-    struct qemu_ddraw_surface7_EnumAttachedSurfaces call;
+    LPDDENUMSURFACESCALLBACK7 cb = (LPDDENUMSURFACESCALLBACK7)(ULONG_PTR)data->func;
+    struct qemu_surface *surface = (struct qemu_surface *)(ULONG_PTR)data->surface;
+
+    IDirectDrawSurface7_AddRef(&surface->IDirectDrawSurface7_iface);
+    return cb(&surface->IDirectDrawSurface7_iface, (DDSURFACEDESC2 *)(ULONG_PTR)data->desc,
+            (void *)(ULONG_PTR)data->context);
+}
+
+static HRESULT WINAPI ddraw_surface7_EnumAttachedSurfaces(IDirectDrawSurface7 *iface, void *context,
+        LPDDENUMSURFACESCALLBACK7 callback)
+{
+    struct qemu_ddraw_surface_EnumAttachedSurfaces call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_ENUMATTACHEDSURFACES);
     call.iface = (ULONG_PTR)surface;
     call.context = (ULONG_PTR)context;
-    call.cb = (ULONG_PTR)cb;
+    call.callback = (ULONG_PTR)callback;
+    call.wrapper = (ULONG_PTR)ddraw_surface7_EnumAttachedSurfaces_guest_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw_surface7_EnumAttachedSurfaces(struct qemu_syscall *call)
+static HRESULT __fastcall ddraw_surface4_EnumAttachedSurfaces_guest_cb(
+        struct qemu_ddraw_surface_EnumAttachedSurfaces_cb *data)
 {
-    struct qemu_ddraw_surface7_EnumAttachedSurfaces *c = (struct qemu_ddraw_surface7_EnumAttachedSurfaces *)call;
-    struct qemu_surface *surface;
+    LPDDENUMSURFACESCALLBACK2 cb = (LPDDENUMSURFACESCALLBACK2)(ULONG_PTR)data->func;
+    struct qemu_surface *surface = (struct qemu_surface *)(ULONG_PTR)data->surface;
 
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface7_EnumAttachedSurfaces(surface->host_surface7, QEMU_G2H(c->context), QEMU_G2H(c->cb));
+    IDirectDrawSurface4_AddRef(&surface->IDirectDrawSurface4_iface);
+    return cb(&surface->IDirectDrawSurface4_iface, (DDSURFACEDESC2 *)(ULONG_PTR)data->desc,
+            (void *)(ULONG_PTR)data->context);
 }
-
-#endif
-
-struct qemu_ddraw_surface4_EnumAttachedSurfaces
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t context;
-    uint64_t callback;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface4_EnumAttachedSurfaces(IDirectDrawSurface4 *iface, void *context, LPDDENUMSURFACESCALLBACK2 callback)
 {
-    struct qemu_ddraw_surface4_EnumAttachedSurfaces call;
+    struct qemu_ddraw_surface_EnumAttachedSurfaces call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_ENUMATTACHEDSURFACES);
     call.iface = (ULONG_PTR)surface;
     call.context = (ULONG_PTR)context;
     call.callback = (ULONG_PTR)callback;
+    call.wrapper = (ULONG_PTR)ddraw_surface4_EnumAttachedSurfaces_guest_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw_surface4_EnumAttachedSurfaces(struct qemu_syscall *call)
+static HRESULT __fastcall ddraw_surface1_EnumAttachedSurfaces_guest_cb(
+        struct qemu_ddraw_surface_EnumAttachedSurfaces_cb *data)
 {
-    struct qemu_ddraw_surface4_EnumAttachedSurfaces *c = (struct qemu_ddraw_surface4_EnumAttachedSurfaces *)call;
-    struct qemu_surface *surface;
+    LPDDENUMSURFACESCALLBACK cb = (LPDDENUMSURFACESCALLBACK)(ULONG_PTR)data->func;
+    struct qemu_surface *surface = (struct qemu_surface *)(ULONG_PTR)data->surface;
 
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface4_EnumAttachedSurfaces(surface->host_surface4, QEMU_G2H(c->context), QEMU_G2H(c->callback));
+    IDirectDrawSurface_AddRef(&surface->IDirectDrawSurface_iface);
+    return cb(&surface->IDirectDrawSurface_iface, (DDSURFACEDESC *)(ULONG_PTR)data->desc,
+            (void *)(ULONG_PTR)data->context);
 }
-
-#endif
-
-struct qemu_ddraw_surface3_EnumAttachedSurfaces
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t context;
-    uint64_t callback;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface3_EnumAttachedSurfaces(IDirectDrawSurface3 *iface, void *context, LPDDENUMSURFACESCALLBACK callback)
 {
-    struct qemu_ddraw_surface3_EnumAttachedSurfaces call;
+    struct qemu_ddraw_surface_EnumAttachedSurfaces call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface3(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE3_ENUMATTACHEDSURFACES);
     call.iface = (ULONG_PTR)surface;
     call.context = (ULONG_PTR)context;
     call.callback = (ULONG_PTR)callback;
+    call.wrapper = (ULONG_PTR)ddraw_surface1_EnumAttachedSurfaces_guest_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw_surface3_EnumAttachedSurfaces(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface3_EnumAttachedSurfaces *c = (struct qemu_ddraw_surface3_EnumAttachedSurfaces *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface3_EnumAttachedSurfaces(surface->host_surface3, QEMU_G2H(c->context), QEMU_G2H(c->callback));
-}
-
-#endif
-
-struct qemu_ddraw_surface2_EnumAttachedSurfaces
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t context;
-    uint64_t callback;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 static HRESULT WINAPI ddraw_surface2_EnumAttachedSurfaces(IDirectDrawSurface2 *iface, void *context, LPDDENUMSURFACESCALLBACK callback)
 {
-    struct qemu_ddraw_surface2_EnumAttachedSurfaces call;
+    struct qemu_ddraw_surface_EnumAttachedSurfaces call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface2(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE2_ENUMATTACHEDSURFACES);
     call.iface = (ULONG_PTR)surface;
     call.context = (ULONG_PTR)context;
     call.callback = (ULONG_PTR)callback;
+    call.wrapper = (ULONG_PTR)ddraw_surface1_EnumAttachedSurfaces_guest_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw_surface2_EnumAttachedSurfaces(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface2_EnumAttachedSurfaces *c = (struct qemu_ddraw_surface2_EnumAttachedSurfaces *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface2_EnumAttachedSurfaces(surface->host_surface2, QEMU_G2H(c->context), QEMU_G2H(c->callback));
-}
-
-#endif
-
-struct qemu_ddraw_surface1_EnumAttachedSurfaces
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t context;
-    uint64_t callback;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 static HRESULT WINAPI ddraw_surface1_EnumAttachedSurfaces(IDirectDrawSurface *iface, void *context, LPDDENUMSURFACESCALLBACK callback)
 {
-    struct qemu_ddraw_surface1_EnumAttachedSurfaces call;
+    struct qemu_ddraw_surface_EnumAttachedSurfaces call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_ENUMATTACHEDSURFACES);
     call.iface = (ULONG_PTR)surface;
     call.context = (ULONG_PTR)context;
     call.callback = (ULONG_PTR)callback;
+    call.wrapper = (ULONG_PTR)ddraw_surface1_EnumAttachedSurfaces_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -3933,15 +3881,161 @@ static HRESULT WINAPI ddraw_surface1_EnumAttachedSurfaces(IDirectDrawSurface *if
 
 #else
 
-void qemu_ddraw_surface1_EnumAttachedSurfaces(struct qemu_syscall *call)
+struct ddraw_surface7_EnumAttachedSurfaces_host_data
 {
-    struct qemu_ddraw_surface1_EnumAttachedSurfaces *c = (struct qemu_ddraw_surface1_EnumAttachedSurfaces *)call;
-    struct qemu_surface *surface;
+    uint64_t guest_func;
+    uint64_t guest_ctx;
+    uint64_t wrapper;
+};
 
-    WINE_FIXME("Unverified!\n");
+static HRESULT common_EnumAttachedSurfaces_host_cb(struct qemu_surface *surface, DDSURFACEDESC2 *desc, void *context)
+{
+    struct ddraw_surface7_EnumAttachedSurfaces_host_data *ctx = context;
+    struct qemu_ddraw_surface_EnumAttachedSurfaces_cb call;
+    struct qemu_DDSURFACEDESC2 desc32;
+    HRESULT ret;
+
+    call.func = ctx->guest_func;
+    call.context = ctx->guest_ctx;
+    call.surface = QEMU_H2G(surface);
+#if GUEST_BIT == HOST_BIT
+    call.desc = QEMU_H2G(desc);
+#else
+    if (desc->dwSize == sizeof(*desc))
+    {
+        desc32.dwSize = sizeof(desc32);
+        DDSURFACEDESC2_h2g(&desc32, desc);
+    }
+    else
+    {
+        desc32.dwSize = sizeof(struct qemu_DDSURFACEDESC);
+        DDSURFACEDESC_h2g((struct qemu_DDSURFACEDESC *)&desc32, (const DDSURFACEDESC *)desc);
+    }
+    call.desc = QEMU_H2G(&desc32);
+#endif
+
+    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx, 0x%lx).\n",
+            call.func, call.surface, call.desc, call.context);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned 0x%x.\n", ret);
+
+    return ret;
+}
+
+static HRESULT WINAPI ddraw_surface7_EnumAttachedSurfaces_host_cb(IDirectDrawSurface7 *surface,
+        DDSURFACEDESC2 *desc, void *context)
+{
+    IUnknown *priv;
+    DWORD size = sizeof(priv);
+    struct qemu_surface *impl;
+    HRESULT ret;
+
+    if (FAILED(IDirectDrawSurface7_GetPrivateData(surface, &surface_priv_uuid, &priv, &size)))
+        WINE_ERR("Failed to get private data.\n");
+
+    impl = surface_impl_from_IUnknown(priv);
+    WINE_TRACE("Found surface implemention %p from host surface %p.\n", impl, surface);
+
+    ret = common_EnumAttachedSurfaces_host_cb(impl, desc, context);
+    IDirectDrawSurface7_Release(surface);
+    return ret;
+}
+
+void qemu_ddraw_surface7_EnumAttachedSurfaces(struct qemu_syscall *call)
+{
+    struct qemu_ddraw_surface_EnumAttachedSurfaces *c = (struct qemu_ddraw_surface_EnumAttachedSurfaces *)call;
+    struct qemu_surface *surface;
+    struct ddraw_surface7_EnumAttachedSurfaces_host_data ctx;
+
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDrawSurface_EnumAttachedSurfaces(surface->host_surface1, QEMU_G2H(c->context), QEMU_G2H(c->callback));
+    ctx.guest_func = c->callback;
+    ctx.guest_ctx = c->context;
+    ctx.wrapper = c->wrapper;
+
+    c->super.iret = IDirectDrawSurface7_EnumAttachedSurfaces(surface->host_surface7, &ctx,
+            c->callback ? ddraw_surface7_EnumAttachedSurfaces_host_cb : NULL);
+}
+
+static HRESULT WINAPI ddraw_surface4_EnumAttachedSurfaces_host_cb(IDirectDrawSurface4 *surface,
+        DDSURFACEDESC2 *desc, void *context)
+{
+    IUnknown *priv;
+    DWORD size = sizeof(priv);
+    struct qemu_surface *impl;
+    HRESULT ret;
+
+    if (FAILED(IDirectDrawSurface4_GetPrivateData(surface, &surface_priv_uuid, &priv, &size)))
+        WINE_ERR("Failed to get private data.\n");
+
+    impl = surface_impl_from_IUnknown(priv);
+    WINE_TRACE("Found surface implemention %p from host surface %p.\n", impl, surface);
+
+    ret = common_EnumAttachedSurfaces_host_cb(impl, desc, context);
+    IDirectDrawSurface4_Release(surface);
+    return ret;
+}
+
+void qemu_ddraw_surface4_EnumAttachedSurfaces(struct qemu_syscall *call)
+{
+    struct qemu_ddraw_surface_EnumAttachedSurfaces *c = (struct qemu_ddraw_surface_EnumAttachedSurfaces *)call;
+    struct qemu_surface *surface;
+    struct ddraw_surface7_EnumAttachedSurfaces_host_data ctx;
+
+    WINE_TRACE("\n");
+    surface = QEMU_G2H(c->iface);
+
+    ctx.guest_func = c->callback;
+    ctx.guest_ctx = c->context;
+    ctx.wrapper = c->wrapper;
+
+    c->super.iret = IDirectDrawSurface4_EnumAttachedSurfaces(surface->host_surface4, &ctx,
+            c->callback ? ddraw_surface4_EnumAttachedSurfaces_host_cb : NULL);
+}
+
+static HRESULT WINAPI ddraw_surface1_EnumAttachedSurfaces_host_cb(IDirectDrawSurface *surface,
+        DDSURFACEDESC *desc, void *context)
+{
+    IDirectDrawSurface7 *s7;
+    HRESULT ret;
+
+    IDirectDrawSurface_QueryInterface(surface, &IID_IDirectDrawSurface7, (void **)&s7);
+    IDirectDrawSurface_Release(surface);
+
+    return ddraw_surface7_EnumAttachedSurfaces_host_cb(s7, (DDSURFACEDESC2 *)desc, context);
+}
+
+void qemu_ddraw_surface1_EnumAttachedSurfaces(struct qemu_syscall *call)
+{
+    struct qemu_ddraw_surface_EnumAttachedSurfaces *c = (struct qemu_ddraw_surface_EnumAttachedSurfaces *)call;
+    struct qemu_surface *surface;
+    struct ddraw_surface7_EnumAttachedSurfaces_host_data ctx;
+
+    WINE_TRACE("\n");
+    surface = QEMU_G2H(c->iface);
+
+    ctx.guest_func = c->callback;
+    ctx.guest_ctx = c->context;
+    ctx.wrapper = c->wrapper;
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE3_ENUMATTACHEDSURFACES):
+            c->super.iret = IDirectDrawSurface3_EnumAttachedSurfaces(surface->host_surface3, &ctx,
+                    c->callback ? ddraw_surface1_EnumAttachedSurfaces_host_cb : NULL);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE2_ENUMATTACHEDSURFACES):
+            c->super.iret = IDirectDrawSurface2_EnumAttachedSurfaces(surface->host_surface2, &ctx,
+                    c->callback ? ddraw_surface1_EnumAttachedSurfaces_host_cb : NULL);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_ENUMATTACHEDSURFACES):
+            c->super.iret = IDirectDrawSurface_EnumAttachedSurfaces(surface->host_surface1, &ctx,
+                    c->callback ? ddraw_surface1_EnumAttachedSurfaces_host_cb : NULL);
+            break;
+    }
 }
 
 #endif
