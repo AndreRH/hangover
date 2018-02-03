@@ -1172,9 +1172,11 @@ static HRESULT WINAPI ddraw_surface7_Flip(IDirectDrawSurface7 *iface, IDirectDra
 {
     struct qemu_ddraw_surface7_Flip call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
+    struct qemu_surface *src_impl = unsafe_impl_from_IDirectDrawSurface7(src);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_FLIP);
     call.iface = (ULONG_PTR)surface;
-    call.src = (ULONG_PTR)src;
+    call.src = (ULONG_PTR)src_impl;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -1188,11 +1190,13 @@ void qemu_ddraw_surface7_Flip(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface7_Flip *c = (struct qemu_ddraw_surface7_Flip *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *src;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    src = QEMU_G2H(c->src);
 
-    c->super.iret = IDirectDrawSurface7_Flip(surface->host_surface7, QEMU_G2H(c->src), c->flags);
+    c->super.iret = IDirectDrawSurface7_Flip(surface->host_surface7, src ? src->host_surface7 : NULL, c->flags);
 }
 
 #endif
@@ -1211,9 +1215,11 @@ static HRESULT WINAPI ddraw_surface4_Flip(IDirectDrawSurface4 *iface, IDirectDra
 {
     struct qemu_ddraw_surface4_Flip call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
+    struct qemu_surface *src_impl = unsafe_impl_from_IDirectDrawSurface4(src);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_FLIP);
     call.iface = (ULONG_PTR)surface;
-    call.src = (ULONG_PTR)src;
+    call.src = (ULONG_PTR)src_impl;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -1227,11 +1233,13 @@ void qemu_ddraw_surface4_Flip(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface4_Flip *c = (struct qemu_ddraw_surface4_Flip *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *src;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    src = QEMU_G2H(c->src);
 
-    c->super.iret = IDirectDrawSurface4_Flip(surface->host_surface4, QEMU_G2H(c->src), c->flags);
+    c->super.iret = IDirectDrawSurface4_Flip(surface->host_surface4, src ? src->host_surface4 : NULL, c->flags);
 }
 
 #endif
@@ -1250,9 +1258,11 @@ static HRESULT WINAPI ddraw_surface3_Flip(IDirectDrawSurface3 *iface, IDirectDra
 {
     struct qemu_ddraw_surface3_Flip call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface3(iface);
+    struct qemu_surface *src_impl = unsafe_impl_from_IDirectDrawSurface3(src);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE3_FLIP);
     call.iface = (ULONG_PTR)surface;
-    call.src = (ULONG_PTR)src;
+    call.src = (ULONG_PTR)src_impl;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -1266,11 +1276,13 @@ void qemu_ddraw_surface3_Flip(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface3_Flip *c = (struct qemu_ddraw_surface3_Flip *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *src;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    src = QEMU_G2H(c->src);
 
-    c->super.iret = IDirectDrawSurface3_Flip(surface->host_surface3, QEMU_G2H(c->src), c->flags);
+    c->super.iret = IDirectDrawSurface3_Flip(surface->host_surface3, src ? src->host_surface3 : NULL, c->flags);
 }
 
 #endif
@@ -1289,9 +1301,11 @@ static HRESULT WINAPI ddraw_surface2_Flip(IDirectDrawSurface2 *iface, IDirectDra
 {
     struct qemu_ddraw_surface2_Flip call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface2(iface);
+    struct qemu_surface *src_impl = unsafe_impl_from_IDirectDrawSurface2(src);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE2_FLIP);
     call.iface = (ULONG_PTR)surface;
-    call.src = (ULONG_PTR)src;
+    call.src = (ULONG_PTR)src_impl;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -1305,11 +1319,13 @@ void qemu_ddraw_surface2_Flip(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface2_Flip *c = (struct qemu_ddraw_surface2_Flip *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *src;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    src = QEMU_G2H(c->src);
 
-    c->super.iret = IDirectDrawSurface2_Flip(surface->host_surface2, QEMU_G2H(c->src), c->flags);
+    c->super.iret = IDirectDrawSurface2_Flip(surface->host_surface2, src ? src->host_surface2 : NULL, c->flags);
 }
 
 #endif
@@ -1328,9 +1344,11 @@ static HRESULT WINAPI ddraw_surface1_Flip(IDirectDrawSurface *iface, IDirectDraw
 {
     struct qemu_ddraw_surface1_Flip call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface(iface);
+    struct qemu_surface *src_impl = unsafe_impl_from_IDirectDrawSurface(src);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_FLIP);
     call.iface = (ULONG_PTR)surface;
-    call.src = (ULONG_PTR)src;
+    call.src = (ULONG_PTR)src_impl;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -1344,11 +1362,13 @@ void qemu_ddraw_surface1_Flip(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface1_Flip *c = (struct qemu_ddraw_surface1_Flip *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *src;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    src = QEMU_G2H(c->src);
 
-    c->super.iret = IDirectDrawSurface_Flip(surface->host_surface1, QEMU_G2H(c->src), c->flags);
+    c->super.iret = IDirectDrawSurface_Flip(surface->host_surface1, src ? src->host_surface1 : NULL, c->flags);
 }
 
 #endif
