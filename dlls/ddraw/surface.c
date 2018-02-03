@@ -7704,20 +7704,21 @@ struct qemu_ddraw_surface7_SetSurfaceDesc
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t DDSD;
-    uint64_t Flags;
+    uint64_t surface_desc;
+    uint64_t flags;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw_surface7_SetSurfaceDesc(IDirectDrawSurface7 *iface, DDSURFACEDESC2 *DDSD, DWORD Flags)
+static HRESULT WINAPI ddraw_surface7_SetSurfaceDesc(IDirectDrawSurface7 *iface,
+        DDSURFACEDESC2 *surface_desc, DWORD flags)
 {
     struct qemu_ddraw_surface7_SetSurfaceDesc call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_SETSURFACEDESC);
     call.iface = (ULONG_PTR)surface;
-    call.DDSD = (ULONG_PTR)DDSD;
-    call.Flags = Flags;
+    call.surface_desc = (ULONG_PTR)surface_desc;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -7730,11 +7731,22 @@ void qemu_ddraw_surface7_SetSurfaceDesc(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface7_SetSurfaceDesc *c = (struct qemu_ddraw_surface7_SetSurfaceDesc *)call;
     struct qemu_surface *surface;
+    DDSURFACEDESC2 stack, *surface_desc = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDrawSurface7_SetSurfaceDesc(surface->host_surface7, QEMU_G2H(c->DDSD), c->Flags);
+    /* Wine assumes a DDSURFACEDESC2 size. */
+#if HOST_BIT == GUEST_BIT
+    surface_desc = QEMU_G2H(c->surface_desc);
+#else
+    if (c->surface_desc)
+        DDSURFACEDESC2_g2h(surface_desc, QEMU_G2H(c->surface_desc));
+    else
+        surface_desc = NULL;
+#endif
+
+    c->super.iret = IDirectDrawSurface7_SetSurfaceDesc(surface->host_surface7, surface_desc, c->flags);
 }
 
 #endif
@@ -7769,11 +7781,22 @@ void qemu_ddraw_surface4_SetSurfaceDesc(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface4_SetSurfaceDesc *c = (struct qemu_ddraw_surface4_SetSurfaceDesc *)call;
     struct qemu_surface *surface;
+    DDSURFACEDESC2 stack, *surface_desc = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDrawSurface4_SetSurfaceDesc(surface->host_surface4, QEMU_G2H(c->surface_desc), c->flags);
+    /* Wine assumes a DDSURFACEDESC2 size. */
+#if HOST_BIT == GUEST_BIT
+    surface_desc = QEMU_G2H(c->surface_desc);
+#else
+    if (c->surface_desc)
+        DDSURFACEDESC2_g2h(surface_desc, QEMU_G2H(c->surface_desc));
+    else
+        surface_desc = NULL;
+#endif
+
+    c->super.iret = IDirectDrawSurface4_SetSurfaceDesc(surface->host_surface4, surface_desc, c->flags);
 }
 
 #endif
@@ -7808,11 +7831,22 @@ void qemu_ddraw_surface3_SetSurfaceDesc(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface3_SetSurfaceDesc *c = (struct qemu_ddraw_surface3_SetSurfaceDesc *)call;
     struct qemu_surface *surface;
+    DDSURFACEDESC stack, *surface_desc = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDrawSurface3_SetSurfaceDesc(surface->host_surface3, QEMU_G2H(c->surface_desc), c->flags);
+    /* Wine assumes a DDSURFACEDESC size. */
+#if HOST_BIT == GUEST_BIT
+    surface_desc = QEMU_G2H(c->surface_desc);
+#else
+    if (c->surface_desc)
+        DDSURFACEDESC_g2h(surface_desc, QEMU_G2H(c->surface_desc));
+    else
+        surface_desc = NULL;
+#endif
+
+    c->super.iret = IDirectDrawSurface3_SetSurfaceDesc(surface->host_surface3, surface_desc, c->flags);
 }
 
 #endif
