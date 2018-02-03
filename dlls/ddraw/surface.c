@@ -454,6 +454,11 @@ static ULONG ddraw_surface_release_iface(struct qemu_surface *surface)
         if (surface->device1)
             IUnknown_Release(&surface->device1->IUnknown_inner);
 
+        if (surface->palette)
+        {
+            IDirectDrawSurface7_SetPalette(&surface->IDirectDrawSurface7_iface, NULL);
+        }
+
         call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_RELEASE);
         call.iface = (ULONG_PTR)surface;
         qemu_syscall(&call.super);
