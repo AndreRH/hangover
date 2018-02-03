@@ -6367,14 +6367,17 @@ struct qemu_ddraw_surface7_UpdateOverlay
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw_surface7_UpdateOverlay(IDirectDrawSurface7 *iface, RECT *src_rect, IDirectDrawSurface7 *dst_surface, RECT *dst_rect, DWORD flags, DDOVERLAYFX *fx)
+static HRESULT WINAPI ddraw_surface7_UpdateOverlay(IDirectDrawSurface7 *iface, RECT *src_rect,
+        IDirectDrawSurface7 *dst_surface, RECT *dst_rect, DWORD flags, DDOVERLAYFX *fx)
 {
     struct qemu_ddraw_surface7_UpdateOverlay call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
+    struct qemu_surface *dst = unsafe_impl_from_IDirectDrawSurface7(dst_surface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_UPDATEOVERLAY);
     call.iface = (ULONG_PTR)surface;
     call.src_rect = (ULONG_PTR)src_rect;
-    call.dst_surface = (ULONG_PTR)dst_surface;
+    call.dst_surface = (ULONG_PTR)dst;
     call.dst_rect = (ULONG_PTR)dst_rect;
     call.flags = flags;
     call.fx = (ULONG_PTR)fx;
@@ -6390,11 +6393,14 @@ void qemu_ddraw_surface7_UpdateOverlay(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface7_UpdateOverlay *c = (struct qemu_ddraw_surface7_UpdateOverlay *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *dst;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    dst = QEMU_G2H(c->dst_surface);
 
-    c->super.iret = IDirectDrawSurface7_UpdateOverlay(surface->host_surface7, QEMU_G2H(c->src_rect), QEMU_G2H(c->dst_surface), QEMU_G2H(c->dst_rect), c->flags, QEMU_G2H(c->fx));
+    c->super.iret = IDirectDrawSurface7_UpdateOverlay(surface->host_surface7, QEMU_G2H(c->src_rect),
+            dst ? dst->host_surface7 : NULL, QEMU_G2H(c->dst_rect), c->flags, QEMU_G2H(c->fx));
 }
 
 #endif
@@ -6412,14 +6418,17 @@ struct qemu_ddraw_surface4_UpdateOverlay
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw_surface4_UpdateOverlay(IDirectDrawSurface4 *iface, RECT *src_rect, IDirectDrawSurface4 *dst_surface, RECT *dst_rect, DWORD flags, DDOVERLAYFX *fx)
+static HRESULT WINAPI ddraw_surface4_UpdateOverlay(IDirectDrawSurface4 *iface, RECT *src_rect,
+        IDirectDrawSurface4 *dst_surface, RECT *dst_rect, DWORD flags, DDOVERLAYFX *fx)
 {
     struct qemu_ddraw_surface4_UpdateOverlay call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
+    struct qemu_surface *dst = unsafe_impl_from_IDirectDrawSurface4(dst_surface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_UPDATEOVERLAY);
     call.iface = (ULONG_PTR)surface;
     call.src_rect = (ULONG_PTR)src_rect;
-    call.dst_surface = (ULONG_PTR)dst_surface;
+    call.dst_surface = (ULONG_PTR)dst;
     call.dst_rect = (ULONG_PTR)dst_rect;
     call.flags = flags;
     call.fx = (ULONG_PTR)fx;
@@ -6435,11 +6444,14 @@ void qemu_ddraw_surface4_UpdateOverlay(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface4_UpdateOverlay *c = (struct qemu_ddraw_surface4_UpdateOverlay *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *dst;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    dst = QEMU_G2H(c->dst_surface);
 
-    c->super.iret = IDirectDrawSurface4_UpdateOverlay(surface->host_surface4, QEMU_G2H(c->src_rect), QEMU_G2H(c->dst_surface), QEMU_G2H(c->dst_rect), c->flags, QEMU_G2H(c->fx));
+    c->super.iret = IDirectDrawSurface4_UpdateOverlay(surface->host_surface4, QEMU_G2H(c->src_rect),
+            dst ? dst->host_surface4 : NULL, QEMU_G2H(c->dst_rect), c->flags, QEMU_G2H(c->fx));
 }
 
 #endif
@@ -6457,14 +6469,17 @@ struct qemu_ddraw_surface3_UpdateOverlay
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw_surface3_UpdateOverlay(IDirectDrawSurface3 *iface, RECT *src_rect, IDirectDrawSurface3 *dst_surface, RECT *dst_rect, DWORD flags, DDOVERLAYFX *fx)
+static HRESULT WINAPI ddraw_surface3_UpdateOverlay(IDirectDrawSurface3 *iface, RECT *src_rect,
+        IDirectDrawSurface3 *dst_surface, RECT *dst_rect, DWORD flags, DDOVERLAYFX *fx)
 {
     struct qemu_ddraw_surface3_UpdateOverlay call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface3(iface);
+    struct qemu_surface *dst = unsafe_impl_from_IDirectDrawSurface3(dst_surface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE3_UPDATEOVERLAY);
     call.iface = (ULONG_PTR)surface;
     call.src_rect = (ULONG_PTR)src_rect;
-    call.dst_surface = (ULONG_PTR)dst_surface;
+    call.dst_surface = (ULONG_PTR)dst;
     call.dst_rect = (ULONG_PTR)dst_rect;
     call.flags = flags;
     call.fx = (ULONG_PTR)fx;
@@ -6480,11 +6495,14 @@ void qemu_ddraw_surface3_UpdateOverlay(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface3_UpdateOverlay *c = (struct qemu_ddraw_surface3_UpdateOverlay *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *dst;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    dst = QEMU_G2H(c->dst_surface);
 
-    c->super.iret = IDirectDrawSurface3_UpdateOverlay(surface->host_surface3, QEMU_G2H(c->src_rect), QEMU_G2H(c->dst_surface), QEMU_G2H(c->dst_rect), c->flags, QEMU_G2H(c->fx));
+    c->super.iret = IDirectDrawSurface3_UpdateOverlay(surface->host_surface3, QEMU_G2H(c->src_rect),
+            dst ? dst->host_surface3 : NULL, QEMU_G2H(c->dst_rect), c->flags, QEMU_G2H(c->fx));
 }
 
 #endif
@@ -6502,14 +6520,17 @@ struct qemu_ddraw_surface2_UpdateOverlay
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw_surface2_UpdateOverlay(IDirectDrawSurface2 *iface, RECT *src_rect, IDirectDrawSurface2 *dst_surface, RECT *dst_rect, DWORD flags, DDOVERLAYFX *fx)
+static HRESULT WINAPI ddraw_surface2_UpdateOverlay(IDirectDrawSurface2 *iface, RECT *src_rect,
+        IDirectDrawSurface2 *dst_surface, RECT *dst_rect, DWORD flags, DDOVERLAYFX *fx)
 {
     struct qemu_ddraw_surface2_UpdateOverlay call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface2(iface);
+    struct qemu_surface *dst = unsafe_impl_from_IDirectDrawSurface2(dst_surface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE2_UPDATEOVERLAY);
     call.iface = (ULONG_PTR)surface;
     call.src_rect = (ULONG_PTR)src_rect;
-    call.dst_surface = (ULONG_PTR)dst_surface;
+    call.dst_surface = (ULONG_PTR)dst;
     call.dst_rect = (ULONG_PTR)dst_rect;
     call.flags = flags;
     call.fx = (ULONG_PTR)fx;
@@ -6525,11 +6546,14 @@ void qemu_ddraw_surface2_UpdateOverlay(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface2_UpdateOverlay *c = (struct qemu_ddraw_surface2_UpdateOverlay *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *dst;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    dst = QEMU_G2H(c->dst_surface);
 
-    c->super.iret = IDirectDrawSurface2_UpdateOverlay(surface->host_surface2, QEMU_G2H(c->src_rect), QEMU_G2H(c->dst_surface), QEMU_G2H(c->dst_rect), c->flags, QEMU_G2H(c->fx));
+    c->super.iret = IDirectDrawSurface2_UpdateOverlay(surface->host_surface2, QEMU_G2H(c->src_rect),
+            dst ? dst->host_surface2 : NULL, QEMU_G2H(c->dst_rect), c->flags, QEMU_G2H(c->fx));
 }
 
 #endif
@@ -6547,14 +6571,17 @@ struct qemu_ddraw_surface1_UpdateOverlay
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw_surface1_UpdateOverlay(IDirectDrawSurface *iface, RECT *src_rect, IDirectDrawSurface *dst_surface, RECT *dst_rect, DWORD flags, DDOVERLAYFX *fx)
+static HRESULT WINAPI ddraw_surface1_UpdateOverlay(IDirectDrawSurface *iface, RECT *src_rect,
+        IDirectDrawSurface *dst_surface, RECT *dst_rect, DWORD flags, DDOVERLAYFX *fx)
 {
     struct qemu_ddraw_surface1_UpdateOverlay call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface(iface);
+    struct qemu_surface *dst = unsafe_impl_from_IDirectDrawSurface(dst_surface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_UPDATEOVERLAY);
     call.iface = (ULONG_PTR)surface;
     call.src_rect = (ULONG_PTR)src_rect;
-    call.dst_surface = (ULONG_PTR)dst_surface;
+    call.dst_surface = (ULONG_PTR)dst;
     call.dst_rect = (ULONG_PTR)dst_rect;
     call.flags = flags;
     call.fx = (ULONG_PTR)fx;
@@ -6570,11 +6597,14 @@ void qemu_ddraw_surface1_UpdateOverlay(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface1_UpdateOverlay *c = (struct qemu_ddraw_surface1_UpdateOverlay *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *dst;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    dst = QEMU_G2H(c->dst_surface);
 
-    c->super.iret = IDirectDrawSurface_UpdateOverlay(surface->host_surface1, QEMU_G2H(c->src_rect), QEMU_G2H(c->dst_surface), QEMU_G2H(c->dst_rect), c->flags, QEMU_G2H(c->fx));
+    c->super.iret = IDirectDrawSurface_UpdateOverlay(surface->host_surface1, QEMU_G2H(c->src_rect),
+            dst ? dst->host_surface1 : NULL, QEMU_G2H(c->dst_rect), c->flags, QEMU_G2H(c->fx));
 }
 
 #endif
