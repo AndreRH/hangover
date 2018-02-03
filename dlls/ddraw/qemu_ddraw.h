@@ -622,6 +622,8 @@ void ddraw_clipper_guest_init(struct qemu_clipper *clipper);
 struct qemu_surface *unsafe_impl_from_IDirectDrawSurface(IDirectDrawSurface *iface);
 struct qemu_surface *unsafe_impl_from_IDirectDrawSurface4(IDirectDrawSurface4 *iface);
 struct qemu_surface *unsafe_impl_from_IDirectDrawSurface7(IDirectDrawSurface7 *iface);
+struct qemu_surface *unsafe_impl_from_IDirect3DTexture2(IDirect3DTexture2 *iface);
+struct qemu_surface *unsafe_impl_from_IDirect3DTexture(IDirect3DTexture *iface);
 
 void qemu_surface_guest_init(struct qemu_surface *surface, struct qemu_ddraw *ddraw, unsigned int version);
 void __fastcall ddraw_surface_destroy_cb(struct qemu_surface *surface);

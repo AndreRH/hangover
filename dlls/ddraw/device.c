@@ -4370,10 +4370,12 @@ static HRESULT WINAPI d3d_device7_SetTexture(IDirect3DDevice7 *iface, DWORD stag
 {
     struct qemu_d3d_device7_SetTexture call;
     struct qemu_device *device = impl_from_IDirect3DDevice7(iface);
+    struct qemu_surface *surface = unsafe_impl_from_IDirectDrawSurface7(texture);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE7_SETTEXTURE);
     call.iface = (ULONG_PTR)device;
     call.stage = stage;
-    call.texture = (ULONG_PTR)texture;
+    call.texture = (ULONG_PTR)surface;
 
     qemu_syscall(&call.super);
 
@@ -4386,11 +4388,13 @@ void qemu_d3d_device7_SetTexture(struct qemu_syscall *call)
 {
     struct qemu_d3d_device7_SetTexture *c = (struct qemu_d3d_device7_SetTexture *)call;
     struct qemu_device *device;
+    struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    surface = QEMU_G2H(c->texture);
 
-    c->super.iret = IDirect3DDevice7_SetTexture(device->host7, c->stage, QEMU_G2H(c->texture));
+    c->super.iret = IDirect3DDevice7_SetTexture(device->host7, c->stage, surface ? surface->host_surface7 : NULL);
 }
 
 #endif
@@ -4409,10 +4413,12 @@ static HRESULT WINAPI d3d_device3_SetTexture(IDirect3DDevice3 *iface, DWORD stag
 {
     struct qemu_d3d_device3_SetTexture call;
     struct qemu_device *device = impl_from_IDirect3DDevice3(iface);
+    struct qemu_surface *surface = unsafe_impl_from_IDirect3DTexture2(texture);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE3_SETTEXTURE);
     call.iface = (ULONG_PTR)device;
     call.stage = stage;
-    call.texture = (ULONG_PTR)texture;
+    call.texture = (ULONG_PTR)surface;
 
     qemu_syscall(&call.super);
 
@@ -4425,11 +4431,13 @@ void qemu_d3d_device3_SetTexture(struct qemu_syscall *call)
 {
     struct qemu_d3d_device3_SetTexture *c = (struct qemu_d3d_device3_SetTexture *)call;
     struct qemu_device *device;
+    struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    surface = QEMU_G2H(c->texture);
 
-    c->super.iret = IDirect3DDevice3_SetTexture(device->host3, c->stage, QEMU_G2H(c->texture));
+    c->super.iret = IDirect3DDevice3_SetTexture(device->host3, c->stage, surface ? surface->host_texture2 : NULL);
 }
 
 #endif
