@@ -1234,44 +1234,7 @@ void qemu_ddraw1_Compact(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_ddraw7_GetDisplayMode
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t DDSD;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI ddraw7_GetDisplayMode(IDirectDraw7 *iface, DDSURFACEDESC2 *DDSD)
-{
-    struct qemu_ddraw *ddraw = impl_from_IDirectDraw7(iface);
-    struct qemu_ddraw7_GetDisplayMode call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW7_GETDISPLAYMODE);
-    call.iface = (ULONG_PTR)ddraw;
-    call.DDSD = (ULONG_PTR)DDSD;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_ddraw7_GetDisplayMode(struct qemu_syscall *call)
-{
-    struct qemu_ddraw7_GetDisplayMode *c = (struct qemu_ddraw7_GetDisplayMode *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDraw7_GetDisplayMode(ddraw->host_ddraw7, QEMU_G2H(c->DDSD));
-}
-
-#endif
-
-struct qemu_ddraw4_GetDisplayMode
+struct qemu_ddraw_GetDisplayMode
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -1280,10 +1243,23 @@ struct qemu_ddraw4_GetDisplayMode
 
 #ifdef QEMU_DLL_GUEST
 
+static HRESULT WINAPI ddraw7_GetDisplayMode(IDirectDraw7 *iface, DDSURFACEDESC2 *surface_desc)
+{
+    struct qemu_ddraw *ddraw = impl_from_IDirectDraw7(iface);
+    struct qemu_ddraw_GetDisplayMode call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW7_GETDISPLAYMODE);
+    call.iface = (ULONG_PTR)ddraw;
+    call.surface_desc = (ULONG_PTR)surface_desc;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
 static HRESULT WINAPI ddraw4_GetDisplayMode(IDirectDraw4 *iface, DDSURFACEDESC2 *surface_desc)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw4(iface);
-    struct qemu_ddraw4_GetDisplayMode call;
+    struct qemu_ddraw_GetDisplayMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW4_GETDISPLAYMODE);
     call.iface = (ULONG_PTR)ddraw;
     call.surface_desc = (ULONG_PTR)surface_desc;
@@ -1293,34 +1269,10 @@ static HRESULT WINAPI ddraw4_GetDisplayMode(IDirectDraw4 *iface, DDSURFACEDESC2 
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw4_GetDisplayMode(struct qemu_syscall *call)
-{
-    struct qemu_ddraw4_GetDisplayMode *c = (struct qemu_ddraw4_GetDisplayMode *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDraw4_GetDisplayMode(ddraw->host_ddraw4, QEMU_G2H(c->surface_desc));
-}
-
-#endif
-
-struct qemu_ddraw2_GetDisplayMode
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t surface_desc;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 static HRESULT WINAPI ddraw2_GetDisplayMode(IDirectDraw2 *iface, DDSURFACEDESC *surface_desc)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw2(iface);
-    struct qemu_ddraw2_GetDisplayMode call;
+    struct qemu_ddraw_GetDisplayMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW2_GETDISPLAYMODE);
     call.iface = (ULONG_PTR)ddraw;
     call.surface_desc = (ULONG_PTR)surface_desc;
@@ -1330,34 +1282,10 @@ static HRESULT WINAPI ddraw2_GetDisplayMode(IDirectDraw2 *iface, DDSURFACEDESC *
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw2_GetDisplayMode(struct qemu_syscall *call)
-{
-    struct qemu_ddraw2_GetDisplayMode *c = (struct qemu_ddraw2_GetDisplayMode *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDraw2_GetDisplayMode(ddraw->host_ddraw2, QEMU_G2H(c->surface_desc));
-}
-
-#endif
-
-struct qemu_ddraw1_GetDisplayMode
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t surface_desc;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 static HRESULT WINAPI ddraw1_GetDisplayMode(IDirectDraw *iface, DDSURFACEDESC *surface_desc)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw(iface);
-    struct qemu_ddraw1_GetDisplayMode call;
+    struct qemu_ddraw_GetDisplayMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW1_GETDISPLAYMODE);
     call.iface = (ULONG_PTR)ddraw;
     call.surface_desc = (ULONG_PTR)surface_desc;
@@ -1369,15 +1297,43 @@ static HRESULT WINAPI ddraw1_GetDisplayMode(IDirectDraw *iface, DDSURFACEDESC *s
 
 #else
 
-void qemu_ddraw1_GetDisplayMode(struct qemu_syscall *call)
+void qemu_ddraw_GetDisplayMode(struct qemu_syscall *call)
 {
-    struct qemu_ddraw1_GetDisplayMode *c = (struct qemu_ddraw1_GetDisplayMode *)call;
+    struct qemu_ddraw_GetDisplayMode *c = (struct qemu_ddraw_GetDisplayMode *)call;
     struct qemu_ddraw *ddraw;
+    DDSURFACEDESC2 stack, *desc = &stack;
+    struct qemu_DDSURFACEDESC2 *desc32;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDraw_GetDisplayMode(ddraw->host_ddraw1, QEMU_G2H(c->surface_desc));
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->surface_desc);
+#else
+    desc32 = QEMU_G2H(c->surface_desc);
+    if (!desc32)
+        desc = NULL;
+    else if (desc32->dwSize == sizeof(*desc32))
+        desc->dwSize = sizeof(*desc);
+    else if (desc32->dwSize == sizeof(struct qemu_DDSURFACEDESC))
+        desc->dwSize = sizeof(DDSURFACEDESC);
+    else
+        desc->dwSize = 0;
+#endif
+
+    c->super.iret = IDirectDraw7_GetDisplayMode(ddraw->host_ddraw7, desc);
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret))
+    {
+        if (desc32->dwSize == sizeof(*desc32))
+            DDSURFACEDESC2_h2g(desc32, desc);
+        else if (desc32->dwSize == sizeof(struct qemu_DDSURFACEDESC))
+            DDSURFACEDESC_h2g((struct qemu_DDSURFACEDESC *)desc32, (DDSURFACEDESC *)desc);
+        else
+            WINE_ERR("Unexpected DDSURFACEDESC size %u after success.\n", desc32->dwSize);
+    }
+#endif
 }
 
 #endif
