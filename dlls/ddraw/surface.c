@@ -2563,18 +2563,18 @@ struct qemu_ddraw_surface7_ReleaseDC
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t hdc;
+    uint64_t dc;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw_surface7_ReleaseDC(IDirectDrawSurface7 *iface, HDC hdc)
+static HRESULT WINAPI ddraw_surface7_ReleaseDC(IDirectDrawSurface7 *iface, HDC dc)
 {
     struct qemu_ddraw_surface7_ReleaseDC call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_RELEASEDC);
     call.iface = (ULONG_PTR)surface;
-    call.hdc = (ULONG_PTR)hdc;
+    call.dc = guest_HANDLE_g2h(dc);
 
     qemu_syscall(&call.super);
 
@@ -2588,10 +2588,10 @@ void qemu_ddraw_surface7_ReleaseDC(struct qemu_syscall *call)
     struct qemu_ddraw_surface7_ReleaseDC *c = (struct qemu_ddraw_surface7_ReleaseDC *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDrawSurface7_ReleaseDC(surface->host_surface7, QEMU_G2H(c->hdc));
+    c->super.iret = IDirectDrawSurface7_ReleaseDC(surface->host_surface7, QEMU_G2H(c->dc));
 }
 
 #endif
@@ -2611,7 +2611,7 @@ static HRESULT WINAPI ddraw_surface4_ReleaseDC(IDirectDrawSurface4 *iface, HDC d
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_RELEASEDC);
     call.iface = (ULONG_PTR)surface;
-    call.dc = (ULONG_PTR)dc;
+    call.dc = guest_HANDLE_g2h(dc);
 
     qemu_syscall(&call.super);
 
@@ -2625,7 +2625,7 @@ void qemu_ddraw_surface4_ReleaseDC(struct qemu_syscall *call)
     struct qemu_ddraw_surface4_ReleaseDC *c = (struct qemu_ddraw_surface4_ReleaseDC *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface4_ReleaseDC(surface->host_surface4, QEMU_G2H(c->dc));
@@ -2648,7 +2648,7 @@ static HRESULT WINAPI ddraw_surface3_ReleaseDC(IDirectDrawSurface3 *iface, HDC d
     struct qemu_surface *surface = impl_from_IDirectDrawSurface3(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE3_RELEASEDC);
     call.iface = (ULONG_PTR)surface;
-    call.dc = (ULONG_PTR)dc;
+    call.dc = guest_HANDLE_g2h(dc);
 
     qemu_syscall(&call.super);
 
@@ -2662,7 +2662,7 @@ void qemu_ddraw_surface3_ReleaseDC(struct qemu_syscall *call)
     struct qemu_ddraw_surface3_ReleaseDC *c = (struct qemu_ddraw_surface3_ReleaseDC *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface3_ReleaseDC(surface->host_surface3, QEMU_G2H(c->dc));
@@ -2685,7 +2685,7 @@ static HRESULT WINAPI ddraw_surface2_ReleaseDC(IDirectDrawSurface2 *iface, HDC d
     struct qemu_surface *surface = impl_from_IDirectDrawSurface2(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE2_RELEASEDC);
     call.iface = (ULONG_PTR)surface;
-    call.dc = (ULONG_PTR)dc;
+    call.dc = guest_HANDLE_g2h(dc);
 
     qemu_syscall(&call.super);
 
@@ -2699,7 +2699,7 @@ void qemu_ddraw_surface2_ReleaseDC(struct qemu_syscall *call)
     struct qemu_ddraw_surface2_ReleaseDC *c = (struct qemu_ddraw_surface2_ReleaseDC *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface2_ReleaseDC(surface->host_surface2, QEMU_G2H(c->dc));
@@ -2722,7 +2722,7 @@ static HRESULT WINAPI ddraw_surface1_ReleaseDC(IDirectDrawSurface *iface, HDC dc
     struct qemu_surface *surface = impl_from_IDirectDrawSurface(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_RELEASEDC);
     call.iface = (ULONG_PTR)surface;
-    call.dc = (ULONG_PTR)dc;
+    call.dc = guest_HANDLE_g2h(dc);
 
     qemu_syscall(&call.super);
 
@@ -2736,7 +2736,7 @@ void qemu_ddraw_surface1_ReleaseDC(struct qemu_syscall *call)
     struct qemu_ddraw_surface1_ReleaseDC *c = (struct qemu_ddraw_surface1_ReleaseDC *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface_ReleaseDC(surface->host_surface1, QEMU_G2H(c->dc));
