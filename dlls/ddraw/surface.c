@@ -4264,7 +4264,7 @@ void qemu_ddraw_surface7_GetColorKey(struct qemu_syscall *call)
     struct qemu_ddraw_surface7_GetColorKey *c = (struct qemu_ddraw_surface7_GetColorKey *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface7_GetColorKey(surface->host_surface7, c->Flags, QEMU_G2H(c->CKey));
@@ -4303,7 +4303,7 @@ void qemu_ddraw_surface4_GetColorKey(struct qemu_syscall *call)
     struct qemu_ddraw_surface4_GetColorKey *c = (struct qemu_ddraw_surface4_GetColorKey *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface4_GetColorKey(surface->host_surface4, c->flags, QEMU_G2H(c->color_key));
@@ -4342,7 +4342,7 @@ void qemu_ddraw_surface3_GetColorKey(struct qemu_syscall *call)
     struct qemu_ddraw_surface3_GetColorKey *c = (struct qemu_ddraw_surface3_GetColorKey *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface3_GetColorKey(surface->host_surface3, c->flags, QEMU_G2H(c->color_key));
@@ -4381,7 +4381,7 @@ void qemu_ddraw_surface2_GetColorKey(struct qemu_syscall *call)
     struct qemu_ddraw_surface2_GetColorKey *c = (struct qemu_ddraw_surface2_GetColorKey *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface2_GetColorKey(surface->host_surface2, c->flags, QEMU_G2H(c->color_key));
@@ -4420,7 +4420,7 @@ void qemu_ddraw_surface1_GetColorKey(struct qemu_syscall *call)
     struct qemu_ddraw_surface1_GetColorKey *c = (struct qemu_ddraw_surface1_GetColorKey *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface_GetColorKey(surface->host_surface1, c->flags, QEMU_G2H(c->color_key));
@@ -7935,7 +7935,7 @@ void qemu_ddraw_surface7_SetColorKey(struct qemu_syscall *call)
     struct qemu_ddraw_surface7_SetColorKey *c = (struct qemu_ddraw_surface7_SetColorKey *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface7_SetColorKey(surface->host_surface7, c->flags, QEMU_G2H(c->color_key));
@@ -7974,7 +7974,7 @@ void qemu_ddraw_surface4_SetColorKey(struct qemu_syscall *call)
     struct qemu_ddraw_surface4_SetColorKey *c = (struct qemu_ddraw_surface4_SetColorKey *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface4_SetColorKey(surface->host_surface4, c->flags, QEMU_G2H(c->color_key));
@@ -8013,7 +8013,7 @@ void qemu_ddraw_surface3_SetColorKey(struct qemu_syscall *call)
     struct qemu_ddraw_surface3_SetColorKey *c = (struct qemu_ddraw_surface3_SetColorKey *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface3_SetColorKey(surface->host_surface3, c->flags, QEMU_G2H(c->color_key));
@@ -8052,7 +8052,7 @@ void qemu_ddraw_surface2_SetColorKey(struct qemu_syscall *call)
     struct qemu_ddraw_surface2_SetColorKey *c = (struct qemu_ddraw_surface2_SetColorKey *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface2_SetColorKey(surface->host_surface2, c->flags, QEMU_G2H(c->color_key));
@@ -8091,7 +8091,7 @@ void qemu_ddraw_surface1_SetColorKey(struct qemu_syscall *call)
     struct qemu_ddraw_surface1_SetColorKey *c = (struct qemu_ddraw_surface1_SetColorKey *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface_SetColorKey(surface->host_surface1, c->flags, QEMU_G2H(c->color_key));
