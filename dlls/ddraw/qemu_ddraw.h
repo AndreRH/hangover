@@ -497,6 +497,8 @@ enum ddraw_calls
     CALL_INIT_DLL,
 };
 
+struct qemu_device;
+
 struct qemu_clipper
 {
     /* Guest fields */
@@ -505,16 +507,6 @@ struct qemu_clipper
 
     /* Host fields */
     IDirectDrawClipper *host;
-};
-
-struct qemu_palette
-{
-    /* Guest fields */
-    IDirectDrawPalette IDirectDrawPalette_iface;
-    LONG ref;
-
-    /* Host fields */
-    IDirectDrawPalette *host;
 };
 
 struct qemu_ddraw
@@ -545,7 +537,16 @@ struct qemu_ddraw
     IDirectDraw *host_ddraw1;
 };
 
-struct qemu_device;
+struct qemu_palette
+{
+    /* Guest fields */
+    IDirectDrawPalette IDirectDrawPalette_iface;
+    LONG ref;
+    struct qemu_ddraw *ddraw;
+
+    /* Host fields */
+    IDirectDrawPalette *host;
+};
 
 struct qemu_surface
 {
@@ -651,7 +652,7 @@ struct qemu_device *unsafe_impl_from_IDirect3DDevice(IDirect3DDevice *iface);
 void ddraw_vertex_buffer_guest_init(struct qemu_vertex_buffer *buffer, struct qemu_ddraw *ddraw, UINT version);
 struct qemu_vertex_buffer *unsafe_impl_from_IDirect3DVertexBuffer7(IDirect3DVertexBuffer7 *iface);
 
-void ddraw_palette_init(struct qemu_palette *palette);
+void ddraw_palette_init(struct qemu_palette *palette, struct qemu_ddraw *ddraw);
 struct qemu_palette *unsafe_impl_from_IDirectDrawPalette(IDirectDrawPalette *iface);
 
 

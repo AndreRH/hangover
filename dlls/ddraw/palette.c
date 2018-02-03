@@ -41,6 +41,8 @@ struct qemu_ddraw_palette_Release
 {
     struct qemu_syscall super;
     uint64_t iface;
+    uint64_t ddraw;
+    uint64_t primary;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -81,6 +83,7 @@ static ULONG WINAPI ddraw_palette_Release(IDirectDrawPalette *iface)
 {
     struct qemu_ddraw_palette_Release call;
     struct qemu_palette *palette = impl_from_IDirectDrawPalette(iface);
+    struct qemu_ddraw *ddraw;
     ULONG ref = InterlockedDecrement(&palette->ref);
 
     WINE_TRACE("%p decreasing refcount to %u.\n", palette, ref);
@@ -89,6 +92,14 @@ static ULONG WINAPI ddraw_palette_Release(IDirectDrawPalette *iface)
     {
         call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_PALETTE_RELEASE);
         call.iface = (ULONG_PTR)palette;
+        call.ddraw = (ULONG_PTR)palette->ddraw;
+        qemu_syscall(&call.super);
+
+        if (call.primary)
+        {
+            struct qemu_surface *primary = (struct qemu_surface *)(ULONG_PTR)call.primary;
+            primary->palette = NULL;
+        }
     }
 
     return ref;
@@ -96,17 +107,57 @@ static ULONG WINAPI ddraw_palette_Release(IDirectDrawPalette *iface)
 
 #else
 
+static HRESULT CALLBACK find_primary(IDirectDrawSurface7 *surface, DDSURFACEDESC2 *desc, void *context)
+{
+    uint64_t *primary = context;
+    IUnknown *priv;
+    DWORD size = sizeof(*priv);
+    struct qemu_surface *impl;
+
+    if (!(desc->ddsCaps.dwCaps & DDSCAPS_PRIMARYSURFACE))
+    {
+        IDirectDrawSurface7_Release(surface);
+        return DDENUMRET_OK;
+    }
+
+    if (FAILED(IDirectDrawSurface7_GetPrivateData(surface, &surface_priv_uuid, &priv, &size)))
+        WINE_ERR("Failed to get private data\n");
+
+    impl = surface_impl_from_IUnknown(priv);
+    WINE_TRACE("Found primary implementation struct %p.\n", impl);
+    *primary = QEMU_H2G(impl);
+
+    IDirectDrawSurface7_Release(surface);
+    return DDENUMRET_CANCEL;
+}
+
 void qemu_ddraw_palette_Release(struct qemu_syscall *call)
 {
     struct qemu_ddraw_palette_Release *c = (struct qemu_ddraw_palette_Release *)call;
     struct qemu_palette *palette;
+    struct qemu_ddraw *ddraw;
+    DWORD caps;
 
     WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
+    ddraw = QEMU_G2H(c->ddraw);
+    c->primary = 0;
+
+    IDirectDrawPalette_GetCaps(palette->host, &caps);
+    if (caps & DDPCAPS_PRIMARYSURFACE)
+    {
+        DDSURFACEDESC2 desc;
+        WINE_WARN("Primary surface palette was forcefully released, trying to unset it.\n");
+
+        IDirectDraw7_EnumSurfaces(ddraw->host_ddraw7, DDENUMSURFACES_ALL, NULL, &c->primary, find_primary);
+    }
 
     c->super.iret = IDirectDrawPalette_Release(palette->host);
-    if (c->super.iret)
+
+    /* This is expected if the application stole the primary surface's reference. */
+    if (c->super.iret && !c->primary)
         WINE_ERR("Unexpected palette refcount %lu.\n", c->super.iret);
+
     HeapFree(GetProcessHeap(), 0, palette);
 }
 
@@ -302,10 +353,11 @@ struct qemu_palette *unsafe_impl_from_IDirectDrawPalette(IDirectDrawPalette *ifa
     return CONTAINING_RECORD(iface, struct qemu_palette, IDirectDrawPalette_iface);
 }
 
-void ddraw_palette_init(struct qemu_palette *palette)
+void ddraw_palette_init(struct qemu_palette *palette, struct qemu_ddraw *ddraw)
 {
     palette->IDirectDrawPalette_iface.lpVtbl = &ddraw_palette_vtbl;
     palette->ref = 1;
+    palette->ddraw = ddraw;
 }
 
 #endif
