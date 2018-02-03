@@ -7851,187 +7851,72 @@ void qemu_ddraw_surface3_SetSurfaceDesc(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_ddraw_surface7_GetPalette
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t palette;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface7_GetPalette(IDirectDrawSurface7 *iface, IDirectDrawPalette **palette)
 {
-    struct qemu_ddraw_surface7_GetPalette call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_GETPALETTE);
-    call.iface = (ULONG_PTR)surface;
-    call.palette = (ULONG_PTR)palette;
+    struct qemu_palette *palette_impl;
+    HRESULT hr = DD_OK;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, palette %p.\n", iface, palette);
 
-    return call.super.iret;
+    if (!palette)
+        return DDERR_INVALIDPARAMS;
+    if (IDirectDrawSurface7_IsLost(iface) == DDERR_SURFACELOST)
+    {
+        WINE_WARN("Surface lost, returning DDERR_SURFACELOST.\n");
+        return DDERR_SURFACELOST;
+    }
+
+    if ((palette_impl = surface->palette))
+    {
+        *palette = &palette_impl->IDirectDrawPalette_iface;
+        IDirectDrawPalette_AddRef(*palette);
+    }
+    else
+    {
+        *palette = NULL;
+        hr = DDERR_NOPALETTEATTACHED;
+    }
+
+    return hr;
 }
-
-#else
-
-void qemu_ddraw_surface7_GetPalette(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface7_GetPalette *c = (struct qemu_ddraw_surface7_GetPalette *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface7_GetPalette(surface->host_surface7, QEMU_G2H(c->palette));
-}
-
-#endif
-
-struct qemu_ddraw_surface4_GetPalette
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t palette;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface4_GetPalette(IDirectDrawSurface4 *iface, IDirectDrawPalette **palette)
 {
-    struct qemu_ddraw_surface4_GetPalette call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_GETPALETTE);
-    call.iface = (ULONG_PTR)surface;
-    call.palette = (ULONG_PTR)palette;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, palette %p.\n", iface, palette);
 
-    return call.super.iret;
+    return ddraw_surface7_GetPalette(&surface->IDirectDrawSurface7_iface, palette);
 }
-
-#else
-
-void qemu_ddraw_surface4_GetPalette(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface4_GetPalette *c = (struct qemu_ddraw_surface4_GetPalette *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface4_GetPalette(surface->host_surface4, QEMU_G2H(c->palette));
-}
-
-#endif
-
-struct qemu_ddraw_surface3_GetPalette
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t palette;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface3_GetPalette(IDirectDrawSurface3 *iface, IDirectDrawPalette **palette)
 {
-    struct qemu_ddraw_surface3_GetPalette call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface3(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE3_GETPALETTE);
-    call.iface = (ULONG_PTR)surface;
-    call.palette = (ULONG_PTR)palette;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, palette %p.\n", iface, palette);
 
-    return call.super.iret;
+    return ddraw_surface7_GetPalette(&surface->IDirectDrawSurface7_iface, palette);
 }
-
-#else
-
-void qemu_ddraw_surface3_GetPalette(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface3_GetPalette *c = (struct qemu_ddraw_surface3_GetPalette *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface3_GetPalette(surface->host_surface3, QEMU_G2H(c->palette));
-}
-
-#endif
-
-struct qemu_ddraw_surface2_GetPalette
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t palette;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface2_GetPalette(IDirectDrawSurface2 *iface, IDirectDrawPalette **palette)
 {
-    struct qemu_ddraw_surface2_GetPalette call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface2(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE2_GETPALETTE);
-    call.iface = (ULONG_PTR)surface;
-    call.palette = (ULONG_PTR)palette;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, palette %p.\n", iface, palette);
 
-    return call.super.iret;
+    return ddraw_surface7_GetPalette(&surface->IDirectDrawSurface7_iface, palette);
 }
-
-#else
-
-void qemu_ddraw_surface2_GetPalette(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface2_GetPalette *c = (struct qemu_ddraw_surface2_GetPalette *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface2_GetPalette(surface->host_surface2, QEMU_G2H(c->palette));
-}
-
-#endif
-
-struct qemu_ddraw_surface1_GetPalette
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t palette;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface1_GetPalette(IDirectDrawSurface *iface, IDirectDrawPalette **palette)
 {
-    struct qemu_ddraw_surface1_GetPalette call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_GETPALETTE);
-    call.iface = (ULONG_PTR)surface;
-    call.palette = (ULONG_PTR)palette;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, palette %p.\n", iface, palette);
 
-    return call.super.iret;
-}
-
-#else
-
-void qemu_ddraw_surface1_GetPalette(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface1_GetPalette *c = (struct qemu_ddraw_surface1_GetPalette *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface_GetPalette(surface->host_surface1, QEMU_G2H(c->palette));
+    return ddraw_surface7_GetPalette(&surface->IDirectDrawSurface7_iface, palette);
 }
 
 #endif
