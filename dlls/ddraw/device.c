@@ -377,7 +377,8 @@ void qemu_d3d_device7_GetCaps(struct qemu_syscall *call)
     struct qemu_d3d_device7_GetCaps *c = (struct qemu_d3d_device7_GetCaps *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* D3DDEVICEDESC7 has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_GetCaps(device->host7, QEMU_G2H(c->desc));
