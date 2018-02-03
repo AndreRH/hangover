@@ -225,14 +225,18 @@ static ULONG WINAPI d3d_device_inner_Release(IUnknown *iface)
 
     if (!ref)
     {
-        rt_iface = device->rt_iface;
+        rt_iface = device->version != 1 ? device->rt_iface : NULL;
         device->rt_iface = NULL;
-        if (device->version != 1)
-            IUnknown_Release(rt_iface);
 
         call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE7_RELEASE);
         call.iface = (ULONG_PTR)device;
         qemu_syscall(&call.super);
+
+        /* Release this after destroying the host device. Otherwise we will get a misleading warning
+         * that the host surface has an unexpected refcount because the host device holds the last
+         * reference. */
+        if (rt_iface)
+            IUnknown_Release(rt_iface);
     }
 
     WINE_TRACE("Done\n");
