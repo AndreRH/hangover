@@ -3161,12 +3161,30 @@ static HRESULT WINAPI ddraw7_GetSurfaceFromDC(IDirectDraw7 *iface, HDC dc, IDire
 {
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw7(iface);
     struct qemu_ddraw7_GetSurfaceFromDC call;
+    struct qemu_surface *impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW7_GETSURFACEFROMDC);
     call.iface = (ULONG_PTR)ddraw;
     call.dc = (ULONG_PTR)dc;
-    call.surface = (ULONG_PTR)surface;
+
+    if (!surface)
+    {
+        WINE_WARN("Surface is NULL.\n");
+        return E_INVALIDARG;
+    }
 
     qemu_syscall(&call.super);
+
+    impl = (struct qemu_surface *)(ULONG_PTR)call.surface;
+    if (impl)
+    {
+        *surface = &impl->IDirectDrawSurface7_iface;
+        IDirectDrawSurface7_AddRef(*surface);
+    }
+    else
+    {
+        *surface = NULL;
+    }
 
     return call.super.iret;
 }
@@ -3177,11 +3195,32 @@ void qemu_ddraw7_GetSurfaceFromDC(struct qemu_syscall *call)
 {
     struct qemu_ddraw7_GetSurfaceFromDC *c = (struct qemu_ddraw7_GetSurfaceFromDC *)call;
     struct qemu_ddraw *ddraw;
+    struct qemu_surface *impl;
+    IDirectDrawSurface7 *surface;
+    IUnknown *priv;
+    DWORD size = sizeof(priv);
 
     WINE_FIXME("Unverified!\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDraw7_GetSurfaceFromDC(ddraw->host_ddraw7, QEMU_G2H(c->dc), QEMU_G2H(c->surface));
+    c->super.iret = IDirectDraw7_GetSurfaceFromDC(ddraw->host_ddraw7, QEMU_G2H(c->dc), &surface);
+
+    if (surface)
+    {
+        if (FAILED(IDirectDrawSurface7_GetPrivateData(surface, &surface_priv_uuid, &priv, &size)))
+            WINE_ERR("Failed to get private data.\n");
+
+        impl = surface_impl_from_IUnknown(priv);
+        WINE_ERR("Found surface implemention %p from host surface %p.\n", impl, surface);
+
+        IDirectDrawSurface7_Release(surface);
+    }
+    else
+    {
+        impl = NULL;
+    }
+
+    c->surface = QEMU_H2G(impl);
 }
 
 #endif
@@ -3198,14 +3237,27 @@ struct qemu_ddraw4_GetSurfaceFromDC
 
 static HRESULT WINAPI ddraw4_GetSurfaceFromDC(IDirectDraw4 *iface, HDC dc, IDirectDrawSurface4 **surface)
 {
-    struct qemu_ddraw *ddraw = impl_from_IDirectDraw4(iface);
     struct qemu_ddraw4_GetSurfaceFromDC call;
+    struct qemu_ddraw *ddraw = impl_from_IDirectDraw4(iface);
+    struct qemu_surface *impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW4_GETSURFACEFROMDC);
     call.iface = (ULONG_PTR)ddraw;
     call.dc = (ULONG_PTR)dc;
     call.surface = (ULONG_PTR)surface;
 
     qemu_syscall(&call.super);
+
+    impl = (struct qemu_surface *)(ULONG_PTR)call.surface;
+    if (impl)
+    {
+        *surface = (IDirectDrawSurface4 *)&impl->IDirectDrawSurface_iface;
+        IDirectDrawSurface_AddRef(&impl->IDirectDrawSurface_iface);
+    }
+    else
+    {
+        *surface = NULL;
+    }
 
     return call.super.iret;
 }
@@ -3216,11 +3268,36 @@ void qemu_ddraw4_GetSurfaceFromDC(struct qemu_syscall *call)
 {
     struct qemu_ddraw4_GetSurfaceFromDC *c = (struct qemu_ddraw4_GetSurfaceFromDC *)call;
     struct qemu_ddraw *ddraw;
+    struct qemu_surface *impl;
+    IDirectDrawSurface *surface;
+    IUnknown *priv;
+    DWORD size = sizeof(priv);
 
     WINE_FIXME("Unverified!\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDraw4_GetSurfaceFromDC(ddraw->host_ddraw4, QEMU_G2H(c->dc), QEMU_G2H(c->surface));
+    c->super.iret = IDirectDraw4_GetSurfaceFromDC(ddraw->host_ddraw4, QEMU_G2H(c->dc),
+            (IDirectDrawSurface4 **)&surface);
+
+    if (surface)
+    {
+        IDirectDrawSurface7 *surface7;
+        IDirectDrawSurface_QueryInterface(surface, &IID_IDirectDrawSurface7, (void **)&surface7);
+        IDirectDrawSurface_Release(surface);
+        if (FAILED(IDirectDrawSurface7_GetPrivateData(surface7, &surface_priv_uuid, &priv, &size)))
+            WINE_ERR("Failed to get private data.\n");
+
+        impl = surface_impl_from_IUnknown(priv);
+        WINE_ERR("Found surface implemention %p from host surface %p.\n", impl, surface);
+
+        IDirectDrawSurface7_Release(surface7);
+    }
+    else
+    {
+        impl = NULL;
+    }
+
+    c->surface = QEMU_H2G(impl);
 }
 
 #endif
