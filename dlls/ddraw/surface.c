@@ -457,18 +457,30 @@ static ULONG ddraw_surface_release_iface(struct qemu_surface *surface)
     if (!iface_count)
     {
         IUnknown *release_iface = surface->ifaceToRelease;
+        IDirectDrawPalette *release_pal = NULL;
 
         if (surface->device1)
             IUnknown_Release(&surface->device1->IUnknown_inner);
 
         if (surface->palette)
         {
-            IDirectDrawSurface7_SetPalette(&surface->IDirectDrawSurface7_iface, NULL);
+            if (FAILED(IDirectDrawSurface7_SetPalette(&surface->IDirectDrawSurface7_iface, NULL)))
+            {
+                /* Well, SetPalette in the host refuses to touch anything if the surface is lost.
+                 * Do it manually on our side. Delay the final release until after the host surface
+                 * has been destroyed to supress unexpected host object refcount warnings if this
+                 * is the last reference to the guest palette. */
+                release_pal = &surface->palette->IDirectDrawPalette_iface;
+                surface->palette = NULL;
+            }
         }
 
         call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_RELEASE);
         call.iface = (ULONG_PTR)surface;
         qemu_syscall(&call.super);
+
+        if (release_pal)
+            IDirectDrawPalette_Release(release_pal);
 
         /* Release this after destroying the host surface to make sure we hold the last reference
          * to the host ddraw object. Otherwise we'll get false warnings about an unexpected host
