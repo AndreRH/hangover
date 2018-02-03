@@ -788,7 +788,7 @@ void qemu_ddraw_surface_GetAttachedSurface(struct qemu_syscall *call)
 
     /* No, this does not addref the stored IUnknown interface. */
     if (FAILED(IDirectDrawSurface7_GetPrivateData(host, &surface_priv_uuid, &priv, &size)))
-        WINE_ERR("Failed to get private data.n");
+        WINE_ERR("Failed to get private data.\n");
 
     attach_impl = surface_impl_from_IUnknown(priv);
     WINE_TRACE("Found surface implemention %p from host surface %p (v7 %p).\n", attach_impl, attachment, host);
