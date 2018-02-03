@@ -48,15 +48,42 @@ struct qemu_GetSurfaceFromDC
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI GetSurfaceFromDC(HDC dc, IDirectDrawSurface4 **surface, HDC *device_dc)
+/* Note that some header pretends this returns an IDirectDrawSurface4, but in fact it returns an
+ * IDirectDrawSurface1. */
+HRESULT WINAPI GetSurfaceFromDC(HDC dc, IDirectDrawSurface **surface, HDC *device_dc)
 {
     struct qemu_GetSurfaceFromDC call;
+    struct qemu_surface *impl;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSURFACEFROMDC);
     call.dc = (ULONG_PTR)dc;
-    call.surface = (ULONG_PTR)surface;
-    call.device_dc = (ULONG_PTR)device_dc;
+
+    if (!surface)
+    {
+        WINE_WARN("surface is NULL.\n");
+        return E_INVALIDARG;
+    }
+    if (!device_dc)
+    {
+        WINE_WARN("device_dc is NULL.\n");
+        *surface = NULL;
+        return E_INVALIDARG;
+    }
 
     qemu_syscall(&call.super);
+
+    *device_dc = (HDC)(ULONG_PTR)call.device_dc;
+    impl = (struct qemu_surface *)(ULONG_PTR)call.surface;
+
+    if (impl)
+    {
+        *surface = &impl->IDirectDrawSurface_iface;
+        IDirectDrawSurface_AddRef(*surface);
+    }
+    else
+    {
+        *surface = NULL;
+    }
 
     return call.super.iret;
 }
@@ -68,8 +95,32 @@ extern HRESULT WINAPI GetSurfaceFromDC(HDC dc, struct IDirectDrawSurface **surfa
 static void qemu_GetSurfaceFromDC(struct qemu_syscall *call)
 {
     struct qemu_GetSurfaceFromDC *c = (struct qemu_GetSurfaceFromDC *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetSurfaceFromDC(QEMU_G2H(c->dc), QEMU_G2H(c->surface), QEMU_G2H(c->device_dc));
+    HDC device_dc;
+    IUnknown *priv;
+    DWORD size = sizeof(priv);
+    IDirectDrawSurface *surface;
+    struct qemu_surface *impl = NULL;
+
+    WINE_TRACE("\n");
+
+    c->super.iret = GetSurfaceFromDC(QEMU_G2H(c->dc), &surface, &device_dc);
+
+    if (surface)
+    {
+        IDirectDrawSurface7 *surface7;
+        IDirectDrawSurface_QueryInterface(surface, &IID_IDirectDrawSurface7, (void **)&surface7);
+        IDirectDrawSurface_Release(surface);
+        if (FAILED(IDirectDrawSurface7_GetPrivateData(surface7, &surface_priv_uuid, &priv, &size)))
+            WINE_ERR("Failed to get private data.\n");
+
+        impl = surface_impl_from_IUnknown(priv);
+        WINE_TRACE("Found surface implemention %p from host surface %p.\n", impl, surface);
+
+        IDirectDrawSurface7_Release(surface7);
+    }
+
+    c->device_dc = QEMU_H2G(device_dc);
+    c->surface = QEMU_H2G(impl);
 }
 
 #endif
