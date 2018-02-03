@@ -575,7 +575,7 @@ struct qemu_surface
 
     /* FIXME: These fields need thread synchronization! */
     struct qemu_clipper     *clipper;
-    /* TODO: Palette */
+    struct qemu_palette     *palette;
 
     /* Host fields */
     IDirectDrawSurface7     *host_surface7;

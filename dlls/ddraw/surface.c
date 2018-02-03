@@ -8120,11 +8120,22 @@ static HRESULT WINAPI ddraw_surface7_SetPalette(IDirectDrawSurface7 *iface, IDir
 {
     struct qemu_ddraw_surface7_SetPalette call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
+    struct qemu_palette *pal_impl = unsafe_impl_from_IDirectDrawPalette(palette);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_SETPALETTE);
     call.iface = (ULONG_PTR)surface;
-    call.palette = (ULONG_PTR)palette;
+    call.palette = (ULONG_PTR)pal_impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret) && pal_impl != surface->palette)
+    {
+        if (palette)
+            IDirectDrawPalette_AddRef(palette);
+        if (surface->palette)
+            IDirectDrawPalette_Release(&surface->palette->IDirectDrawPalette_iface);
+        surface->palette = pal_impl;
+    }
 
     return call.super.iret;
 }
@@ -8135,11 +8146,13 @@ void qemu_ddraw_surface7_SetPalette(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface7_SetPalette *c = (struct qemu_ddraw_surface7_SetPalette *)call;
     struct qemu_surface *surface;
+    struct qemu_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    palette = QEMU_G2H(c->palette);
 
-    c->super.iret = IDirectDrawSurface7_SetPalette(surface->host_surface7, QEMU_G2H(c->palette));
+    c->super.iret = IDirectDrawSurface7_SetPalette(surface->host_surface7, palette ? palette->host : NULL);
 }
 
 #endif
@@ -8157,11 +8170,22 @@ static HRESULT WINAPI ddraw_surface4_SetPalette(IDirectDrawSurface4 *iface, IDir
 {
     struct qemu_ddraw_surface4_SetPalette call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
+    struct qemu_palette *pal_impl = unsafe_impl_from_IDirectDrawPalette(palette);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_SETPALETTE);
     call.iface = (ULONG_PTR)surface;
-    call.palette = (ULONG_PTR)palette;
+    call.palette = (ULONG_PTR)pal_impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret) && pal_impl != surface->palette)
+    {
+        if (palette)
+            IDirectDrawPalette_AddRef(palette);
+        if (surface->palette)
+            IDirectDrawPalette_Release(&surface->palette->IDirectDrawPalette_iface);
+        surface->palette = pal_impl;
+    }
 
     return call.super.iret;
 }
@@ -8172,11 +8196,13 @@ void qemu_ddraw_surface4_SetPalette(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface4_SetPalette *c = (struct qemu_ddraw_surface4_SetPalette *)call;
     struct qemu_surface *surface;
+    struct qemu_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    palette = QEMU_G2H(c->palette);
 
-    c->super.iret = IDirectDrawSurface4_SetPalette(surface->host_surface4, QEMU_G2H(c->palette));
+    c->super.iret = IDirectDrawSurface4_SetPalette(surface->host_surface4, palette ? palette->host : NULL);
 }
 
 #endif
@@ -8194,11 +8220,22 @@ static HRESULT WINAPI ddraw_surface3_SetPalette(IDirectDrawSurface3 *iface, IDir
 {
     struct qemu_ddraw_surface3_SetPalette call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface3(iface);
+    struct qemu_palette *pal_impl = unsafe_impl_from_IDirectDrawPalette(palette);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE3_SETPALETTE);
     call.iface = (ULONG_PTR)surface;
-    call.palette = (ULONG_PTR)palette;
+    call.palette = (ULONG_PTR)pal_impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret) && pal_impl != surface->palette)
+    {
+        if (palette)
+            IDirectDrawPalette_AddRef(palette);
+        if (surface->palette)
+            IDirectDrawPalette_Release(&surface->palette->IDirectDrawPalette_iface);
+        surface->palette = pal_impl;
+    }
 
     return call.super.iret;
 }
@@ -8209,11 +8246,13 @@ void qemu_ddraw_surface3_SetPalette(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface3_SetPalette *c = (struct qemu_ddraw_surface3_SetPalette *)call;
     struct qemu_surface *surface;
+    struct qemu_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    palette = QEMU_G2H(c->palette);
 
-    c->super.iret = IDirectDrawSurface3_SetPalette(surface->host_surface3, QEMU_G2H(c->palette));
+    c->super.iret = IDirectDrawSurface3_SetPalette(surface->host_surface3, palette ? palette->host : NULL);
 }
 
 #endif
@@ -8231,11 +8270,22 @@ static HRESULT WINAPI ddraw_surface2_SetPalette(IDirectDrawSurface2 *iface, IDir
 {
     struct qemu_ddraw_surface2_SetPalette call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface2(iface);
+    struct qemu_palette *pal_impl = unsafe_impl_from_IDirectDrawPalette(palette);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE2_SETPALETTE);
     call.iface = (ULONG_PTR)surface;
-    call.palette = (ULONG_PTR)palette;
+    call.palette = (ULONG_PTR)pal_impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret) && pal_impl != surface->palette)
+    {
+        if (palette)
+            IDirectDrawPalette_AddRef(palette);
+        if (surface->palette)
+            IDirectDrawPalette_Release(&surface->palette->IDirectDrawPalette_iface);
+        surface->palette = pal_impl;
+    }
 
     return call.super.iret;
 }
@@ -8246,11 +8296,13 @@ void qemu_ddraw_surface2_SetPalette(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface2_SetPalette *c = (struct qemu_ddraw_surface2_SetPalette *)call;
     struct qemu_surface *surface;
+    struct qemu_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    palette = QEMU_G2H(c->palette);
 
-    c->super.iret = IDirectDrawSurface2_SetPalette(surface->host_surface2, QEMU_G2H(c->palette));
+    c->super.iret = IDirectDrawSurface2_SetPalette(surface->host_surface2, palette ? palette->host : NULL);
 }
 
 #endif
@@ -8268,11 +8320,22 @@ static HRESULT WINAPI ddraw_surface1_SetPalette(IDirectDrawSurface *iface, IDire
 {
     struct qemu_ddraw_surface1_SetPalette call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface(iface);
+    struct qemu_palette *pal_impl = unsafe_impl_from_IDirectDrawPalette(palette);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_SETPALETTE);
     call.iface = (ULONG_PTR)surface;
-    call.palette = (ULONG_PTR)palette;
+    call.palette = (ULONG_PTR)pal_impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret) && pal_impl != surface->palette)
+    {
+        if (palette)
+            IDirectDrawPalette_AddRef(palette);
+        if (surface->palette)
+            IDirectDrawPalette_Release(&surface->palette->IDirectDrawPalette_iface);
+        surface->palette = pal_impl;
+    }
 
     return call.super.iret;
 }
@@ -8283,11 +8346,13 @@ void qemu_ddraw_surface1_SetPalette(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface1_SetPalette *c = (struct qemu_ddraw_surface1_SetPalette *)call;
     struct qemu_surface *surface;
+    struct qemu_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    palette = QEMU_G2H(c->palette);
 
-    c->super.iret = IDirectDrawSurface_SetPalette(surface->host_surface1, QEMU_G2H(c->palette));
+    c->super.iret = IDirectDrawSurface_SetPalette(surface->host_surface1, palette ? palette->host : NULL);
 }
 
 #endif
