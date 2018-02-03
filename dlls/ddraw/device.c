@@ -3881,7 +3881,8 @@ struct qemu_d3d_device7_DrawPrimitiveStrided
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_device7_DrawPrimitiveStrided(IDirect3DDevice7 *iface, D3DPRIMITIVETYPE PrimitiveType, DWORD VertexType, D3DDRAWPRIMITIVESTRIDEDDATA *D3DDrawPrimStrideData, DWORD VertexCount, DWORD Flags)
+static HRESULT WINAPI d3d_device7_DrawPrimitiveStrided(IDirect3DDevice7 *iface, D3DPRIMITIVETYPE PrimitiveType,
+        DWORD VertexType, D3DDRAWPRIMITIVESTRIDEDDATA *D3DDrawPrimStrideData, DWORD VertexCount, DWORD Flags)
 {
     struct qemu_d3d_device7_DrawPrimitiveStrided call;
     struct qemu_device *device = impl_from_IDirect3DDevice7(iface);
@@ -3904,11 +3905,22 @@ void qemu_d3d_device7_DrawPrimitiveStrided(struct qemu_syscall *call)
 {
     struct qemu_d3d_device7_DrawPrimitiveStrided *c = (struct qemu_d3d_device7_DrawPrimitiveStrided *)call;
     struct qemu_device *device;
+    D3DDRAWPRIMITIVESTRIDEDDATA stack, *data = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice7_DrawPrimitiveStrided(device->host7, c->PrimitiveType, c->VertexType, QEMU_G2H(c->D3DDrawPrimStrideData), c->VertexCount, c->Flags);
+#if GUEST_BIT == HOST_BIT
+    data = QEMU_G2H(c->D3DDrawPrimStrideData);
+#else
+    if (c->D3DDrawPrimStrideData)
+        D3DDRAWPRIMITIVESTRIDEDDATA_g2h(data, QEMU_G2H(c->D3DDrawPrimStrideData));
+    else
+        data = NULL;
+#endif
+
+    c->super.iret = IDirect3DDevice7_DrawPrimitiveStrided(device->host7, c->PrimitiveType, c->VertexType,
+            data, c->VertexCount, c->Flags);
 }
 
 #endif
@@ -3926,7 +3938,8 @@ struct qemu_d3d_device3_DrawPrimitiveStrided
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_device3_DrawPrimitiveStrided(IDirect3DDevice3 *iface, D3DPRIMITIVETYPE PrimitiveType, DWORD VertexType, D3DDRAWPRIMITIVESTRIDEDDATA *D3DDrawPrimStrideData, DWORD VertexCount, DWORD Flags)
+static HRESULT WINAPI d3d_device3_DrawPrimitiveStrided(IDirect3DDevice3 *iface, D3DPRIMITIVETYPE PrimitiveType,
+        DWORD VertexType, D3DDRAWPRIMITIVESTRIDEDDATA *D3DDrawPrimStrideData, DWORD VertexCount, DWORD Flags)
 {
     struct qemu_d3d_device3_DrawPrimitiveStrided call;
     struct qemu_device *device = impl_from_IDirect3DDevice3(iface);
@@ -3949,11 +3962,22 @@ void qemu_d3d_device3_DrawPrimitiveStrided(struct qemu_syscall *call)
 {
     struct qemu_d3d_device3_DrawPrimitiveStrided *c = (struct qemu_d3d_device3_DrawPrimitiveStrided *)call;
     struct qemu_device *device;
+    D3DDRAWPRIMITIVESTRIDEDDATA stack, *data = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice3_DrawPrimitiveStrided(device->host3, c->PrimitiveType, c->VertexType, QEMU_G2H(c->D3DDrawPrimStrideData), c->VertexCount, c->Flags);
+#if GUEST_BIT == HOST_BIT
+    data = QEMU_G2H(c->D3DDrawPrimStrideData);
+#else
+    if (c->D3DDrawPrimStrideData)
+        D3DDRAWPRIMITIVESTRIDEDDATA_g2h(data, QEMU_G2H(c->D3DDrawPrimStrideData));
+    else
+        data = NULL;
+#endif
+
+    c->super.iret = IDirect3DDevice3_DrawPrimitiveStrided(device->host3, c->PrimitiveType, c->VertexType,
+            data, c->VertexCount, c->Flags);
 }
 
 #endif
@@ -4036,7 +4060,9 @@ struct qemu_d3d_device3_DrawIndexedPrimitiveStrided
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_device3_DrawIndexedPrimitiveStrided(IDirect3DDevice3 *iface, D3DPRIMITIVETYPE PrimitiveType, DWORD VertexType, D3DDRAWPRIMITIVESTRIDEDDATA *D3DDrawPrimStrideData, DWORD VertexCount, WORD *Indices, DWORD IndexCount, DWORD Flags)
+static HRESULT WINAPI d3d_device3_DrawIndexedPrimitiveStrided(IDirect3DDevice3 *iface, D3DPRIMITIVETYPE PrimitiveType,
+        DWORD VertexType, D3DDRAWPRIMITIVESTRIDEDDATA *D3DDrawPrimStrideData, DWORD VertexCount, WORD *Indices,
+        DWORD IndexCount, DWORD Flags)
 {
     struct qemu_d3d_device3_DrawIndexedPrimitiveStrided call;
     struct qemu_device *device = impl_from_IDirect3DDevice3(iface);
