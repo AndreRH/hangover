@@ -521,6 +521,8 @@ struct qemu_ddraw
 
     LONG ref7, ref4, ref2, ref3, ref1, numIfaces;
 
+    BOOL coop_set;
+
     /* Host fields */
     IDirect3D7 *host_d3d7;
     IDirect3D3 *host_d3d3;

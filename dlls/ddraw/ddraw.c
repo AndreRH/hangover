@@ -627,6 +627,9 @@ static HRESULT WINAPI ddraw7_SetCooperativeLevel(IDirectDraw7 *iface, HWND windo
 
     qemu_syscall(&call.super);
 
+    if (SUCCEEDED(call.super.iret) && flags & (DDSCL_NORMAL | DDSCL_EXCLUSIVE))
+        ddraw->coop_set = TRUE;
+
     return call.super.iret;
 }
 
@@ -665,6 +668,9 @@ static HRESULT WINAPI ddraw4_SetCooperativeLevel(IDirectDraw4 *iface, HWND windo
     call.flags = flags;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret) && flags & (DDSCL_NORMAL | DDSCL_EXCLUSIVE))
+        ddraw->coop_set = TRUE;
 
     return call.super.iret;
 }
@@ -705,6 +711,9 @@ static HRESULT WINAPI ddraw2_SetCooperativeLevel(IDirectDraw2 *iface, HWND windo
 
     qemu_syscall(&call.super);
 
+    if (SUCCEEDED(call.super.iret) && flags & (DDSCL_NORMAL | DDSCL_EXCLUSIVE))
+        ddraw->coop_set = TRUE;
+
     return call.super.iret;
 }
 
@@ -743,6 +752,9 @@ static HRESULT WINAPI ddraw1_SetCooperativeLevel(IDirectDraw *iface, HWND window
     call.flags = flags;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret) && flags & (DDSCL_NORMAL | DDSCL_EXCLUSIVE))
+        ddraw->coop_set = TRUE;
 
     return call.super.iret;
 }
@@ -3311,6 +3323,12 @@ static HRESULT WINAPI ddraw7_CreateSurface(IDirectDraw7 *iface, DDSURFACEDESC2 *
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw7(iface);
     struct qemu_surface *object;
 
+    if (!ddraw->coop_set)
+    {
+        WINE_WARN("Cooperative level not set.\n");
+        return DDERR_NOCOOPERATIVELEVELSET;
+    }
+
     if(surface_desc == NULL || surface_desc->dwSize != sizeof(*surface_desc))
     {
         WINE_WARN("Application supplied invalid surface descriptor\n");
@@ -3486,6 +3504,12 @@ static HRESULT WINAPI ddraw4_CreateSurface(IDirectDraw4 *iface, DDSURFACEDESC2 *
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw4(iface);
     struct qemu_surface *object;
 
+    if (!ddraw->coop_set)
+    {
+        WINE_WARN("Cooperative level not set.\n");
+        return DDERR_NOCOOPERATIVELEVELSET;
+    }
+
     if(surface_desc == NULL || surface_desc->dwSize != sizeof(*surface_desc))
     {
         WINE_WARN("Application supplied invalid surface descriptor\n");
@@ -3594,6 +3618,12 @@ static HRESULT WINAPI ddraw2_CreateSurface(IDirectDraw2 *iface, DDSURFACEDESC *s
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw2(iface);
     struct qemu_surface *object;
 
+    if (!ddraw->coop_set)
+    {
+        WINE_WARN("Cooperative level not set.\n");
+        return DDERR_NOCOOPERATIVELEVELSET;
+    }
+
     if(surface_desc == NULL || surface_desc->dwSize != sizeof(*surface_desc))
     {
         WINE_WARN("Application supplied invalid surface descriptor\n");
@@ -3698,6 +3728,12 @@ static HRESULT WINAPI ddraw1_CreateSurface(IDirectDraw *iface, DDSURFACEDESC *su
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw(iface);
     struct qemu_ddraw1_CreateSurface call;
     struct qemu_surface *object;
+
+    if (!ddraw->coop_set)
+    {
+        WINE_WARN("Cooperative level not set.\n");
+        return DDERR_NOCOOPERATIVELEVELSET;
+    }
 
     if(surface_desc == NULL || surface_desc->dwSize != sizeof(*surface_desc))
     {
