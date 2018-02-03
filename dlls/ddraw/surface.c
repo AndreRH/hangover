@@ -808,6 +808,7 @@ struct qemu_ddraw_surface_Lock
     uint64_t surface_desc;
     uint64_t flags;
     uint64_t h;
+    uint64_t version;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -822,6 +823,7 @@ static HRESULT WINAPI ddraw_surface7_Lock(IDirectDrawSurface7 *iface, RECT *rect
     call.surface_desc = (ULONG_PTR)surface_desc;
     call.flags = flags;
     call.h = (ULONG_PTR)h;
+    call.version = surface->version;
 
     qemu_syscall(&call.super);
 
@@ -838,6 +840,7 @@ static HRESULT WINAPI ddraw_surface4_Lock(IDirectDrawSurface4 *iface, RECT *rect
     call.surface_desc = (ULONG_PTR)surface_desc;
     call.flags = flags;
     call.h = (ULONG_PTR)h;
+    call.version = surface->version;
 
     qemu_syscall(&call.super);
 
@@ -854,6 +857,7 @@ static HRESULT WINAPI ddraw_surface3_Lock(IDirectDrawSurface3 *iface, RECT *rect
     call.surface_desc = (ULONG_PTR)surface_desc;
     call.flags = flags;
     call.h = (ULONG_PTR)h;
+    call.version = surface->version;
 
     qemu_syscall(&call.super);
 
@@ -870,6 +874,7 @@ static HRESULT WINAPI ddraw_surface2_Lock(IDirectDrawSurface2 *iface, RECT *rect
     call.surface_desc = (ULONG_PTR)surface_desc;
     call.flags = flags;
     call.h = (ULONG_PTR)h;
+    call.version = surface->version;
 
     qemu_syscall(&call.super);
 
@@ -886,6 +891,7 @@ static HRESULT WINAPI ddraw_surface1_Lock(IDirectDrawSurface *iface, RECT *rect,
     call.surface_desc = (ULONG_PTR)surface_desc;
     call.flags = flags;
     call.h = (ULONG_PTR)h;
+    call.version = surface->version;
 
     qemu_syscall(&call.super);
 
@@ -949,7 +955,9 @@ void qemu_ddraw_surface_Lock(struct qemu_syscall *call)
 #if GUEST_BIT != HOST_BIT
     if (SUCCEEDED(c->super.iret))
     {
-        if (desc32->dwSize == sizeof(*desc32))
+        /* Managed (and sysmem) textures accept invalid lock sizes in IDirectDrawSurface7. Assume those are
+         * DDSURFACEDESC2 sized. */
+        if (desc32->dwSize == sizeof(*desc32) || c->version == 7)
             DDSURFACEDESC2_h2g(desc32, desc);
         else if(desc32->dwSize == sizeof(struct qemu_DDSURFACEDESC))
             DDSURFACEDESC_h2g((struct qemu_DDSURFACEDESC *)desc32, (DDSURFACEDESC *)desc);
