@@ -232,7 +232,7 @@ static HRESULT WINAPI d3d_vertex_buffer7_ProcessVertices(IDirect3DVertexBuffer7 
     struct qemu_d3d_vertex_buffer7_ProcessVertices call;
     struct qemu_vertex_buffer *buffer = impl_from_IDirect3DVertexBuffer7(iface);
     struct qemu_vertex_buffer *src = unsafe_impl_from_IDirect3DVertexBuffer7(src_buffer);
-    struct qemu_device *device_impl = unsafe_impl_from_IDirect3DDevice7(device);
+    struct qemu_device *device_impl;
 
     if (buffer->version == 7)
         device_impl = unsafe_impl_from_IDirect3DDevice7(device);
