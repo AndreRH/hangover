@@ -19,6 +19,8 @@
 
 /* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
 
+#define COBJMACROS
+
 #include <windows.h>
 #include <stdio.h>
 #include <ddraw.h>

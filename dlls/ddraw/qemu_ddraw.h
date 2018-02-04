@@ -20,6 +20,10 @@
 #ifndef QEMU_DDRAW_H
 #define QEMU_DDRAW_H
 
+#define D3DSPD_IUNKNOWN DDSPD_IUNKNOWNPOINTER
+#define D3DERR_INVALIDCALL DDERR_INVALIDPARAMS
+#include "private_data.h"
+
 enum ddraw_calls
 {
     CALL_CF_CREATEOBJECT = 0,
@@ -409,7 +413,6 @@ enum ddraw_calls
     CALL_DDRAW_SURFACE4_ENUMATTACHEDSURFACES,
     CALL_DDRAW_SURFACE4_ENUMOVERLAYZORDERS,
     CALL_DDRAW_SURFACE4_FLIP,
-    CALL_DDRAW_SURFACE4_FREEPRIVATEDATA,
     CALL_DDRAW_SURFACE4_GETATTACHEDSURFACE,
     CALL_DDRAW_SURFACE4_GETBLTSTATUS,
     CALL_DDRAW_SURFACE4_GETCAPS,
@@ -420,7 +423,6 @@ enum ddraw_calls
     CALL_DDRAW_SURFACE4_GETFLIPSTATUS,
     CALL_DDRAW_SURFACE4_GETOVERLAYPOSITION,
     CALL_DDRAW_SURFACE4_GETPIXELFORMAT,
-    CALL_DDRAW_SURFACE4_GETPRIVATEDATA,
     CALL_DDRAW_SURFACE4_GETSURFACEDESC,
     CALL_DDRAW_SURFACE4_GETUNIQUENESSVALUE,
     CALL_DDRAW_SURFACE4_INITIALIZE,
@@ -434,7 +436,6 @@ enum ddraw_calls
     CALL_DDRAW_SURFACE4_SETCOLORKEY,
     CALL_DDRAW_SURFACE4_SETOVERLAYPOSITION,
     CALL_DDRAW_SURFACE4_SETPALETTE,
-    CALL_DDRAW_SURFACE4_SETPRIVATEDATA,
     CALL_DDRAW_SURFACE4_SETSURFACEDESC,
     CALL_DDRAW_SURFACE4_UNLOCK,
     CALL_DDRAW_SURFACE4_UPDATEOVERLAY,
@@ -450,7 +451,6 @@ enum ddraw_calls
     CALL_DDRAW_SURFACE7_ENUMATTACHEDSURFACES,
     CALL_DDRAW_SURFACE7_ENUMOVERLAYZORDERS,
     CALL_DDRAW_SURFACE7_FLIP,
-    CALL_DDRAW_SURFACE7_FREEPRIVATEDATA,
     CALL_DDRAW_SURFACE7_GETATTACHEDSURFACE,
     CALL_DDRAW_SURFACE7_GETBLTSTATUS,
     CALL_DDRAW_SURFACE7_GETCAPS,
@@ -463,7 +463,6 @@ enum ddraw_calls
     CALL_DDRAW_SURFACE7_GETOVERLAYPOSITION,
     CALL_DDRAW_SURFACE7_GETPIXELFORMAT,
     CALL_DDRAW_SURFACE7_GETPRIORITY,
-    CALL_DDRAW_SURFACE7_GETPRIVATEDATA,
     CALL_DDRAW_SURFACE7_GETSURFACEDESC,
     CALL_DDRAW_SURFACE7_GETUNIQUENESSVALUE,
     CALL_DDRAW_SURFACE7_INITIALIZE,
@@ -479,7 +478,6 @@ enum ddraw_calls
     CALL_DDRAW_SURFACE7_SETOVERLAYPOSITION,
     CALL_DDRAW_SURFACE7_SETPALETTE,
     CALL_DDRAW_SURFACE7_SETPRIORITY,
-    CALL_DDRAW_SURFACE7_SETPRIVATEDATA,
     CALL_DDRAW_SURFACE7_SETSURFACEDESC,
     CALL_DDRAW_SURFACE7_UNLOCK,
     CALL_DDRAW_SURFACE7_UPDATEOVERLAY,
@@ -573,6 +571,7 @@ struct qemu_surface
     /* FIXME: These fields need thread synchronization! */
     struct qemu_clipper     *clipper;
     struct qemu_palette     *palette;
+    struct wined3d_private_store private_store;
 
     /* Host fields */
     IDirectDrawSurface7     *host_surface7;
@@ -1025,7 +1024,6 @@ void qemu_ddraw_surface4_DeleteAttachedSurface(struct qemu_syscall *call);
 void qemu_ddraw_surface4_EnumAttachedSurfaces(struct qemu_syscall *call);
 void qemu_ddraw_surface4_EnumOverlayZOrders(struct qemu_syscall *call);
 void qemu_ddraw_surface4_Flip(struct qemu_syscall *call);
-void qemu_ddraw_surface4_FreePrivateData(struct qemu_syscall *call);
 void qemu_ddraw_surface4_GetBltStatus(struct qemu_syscall *call);
 void qemu_ddraw_surface4_GetCaps(struct qemu_syscall *call);
 void qemu_ddraw_surface4_GetClipper(struct qemu_syscall *call);
@@ -1035,7 +1033,6 @@ void qemu_ddraw_surface4_GetDDInterface(struct qemu_syscall *call);
 void qemu_ddraw_surface4_GetFlipStatus(struct qemu_syscall *call);
 void qemu_ddraw_surface4_GetOverlayPosition(struct qemu_syscall *call);
 void qemu_ddraw_surface4_GetPixelFormat(struct qemu_syscall *call);
-void qemu_ddraw_surface4_GetPrivateData(struct qemu_syscall *call);
 void qemu_ddraw_surface4_GetSurfaceDesc(struct qemu_syscall *call);
 void qemu_ddraw_surface4_GetUniquenessValue(struct qemu_syscall *call);
 void qemu_ddraw_surface4_Initialize(struct qemu_syscall *call);
@@ -1048,7 +1045,6 @@ void qemu_ddraw_surface4_SetClipper(struct qemu_syscall *call);
 void qemu_ddraw_surface4_SetColorKey(struct qemu_syscall *call);
 void qemu_ddraw_surface4_SetOverlayPosition(struct qemu_syscall *call);
 void qemu_ddraw_surface4_SetPalette(struct qemu_syscall *call);
-void qemu_ddraw_surface4_SetPrivateData(struct qemu_syscall *call);
 void qemu_ddraw_surface4_SetSurfaceDesc(struct qemu_syscall *call);
 void qemu_ddraw_surface4_Unlock(struct qemu_syscall *call);
 void qemu_ddraw_surface4_UpdateOverlay(struct qemu_syscall *call);
@@ -1064,7 +1060,6 @@ void qemu_ddraw_surface7_DeleteAttachedSurface(struct qemu_syscall *call);
 void qemu_ddraw_surface7_EnumAttachedSurfaces(struct qemu_syscall *call);
 void qemu_ddraw_surface7_EnumOverlayZOrders(struct qemu_syscall *call);
 void qemu_ddraw_surface7_Flip(struct qemu_syscall *call);
-void qemu_ddraw_surface7_FreePrivateData(struct qemu_syscall *call);
 void qemu_ddraw_surface7_GetBltStatus(struct qemu_syscall *call);
 void qemu_ddraw_surface7_GetCaps(struct qemu_syscall *call);
 void qemu_ddraw_surface7_GetClipper(struct qemu_syscall *call);
@@ -1076,7 +1071,6 @@ void qemu_ddraw_surface7_GetLOD(struct qemu_syscall *call);
 void qemu_ddraw_surface7_GetOverlayPosition(struct qemu_syscall *call);
 void qemu_ddraw_surface7_GetPixelFormat(struct qemu_syscall *call);
 void qemu_ddraw_surface7_GetPriority(struct qemu_syscall *call);
-void qemu_ddraw_surface7_GetPrivateData(struct qemu_syscall *call);
 void qemu_ddraw_surface7_GetSurfaceDesc(struct qemu_syscall *call);
 void qemu_ddraw_surface7_GetUniquenessValue(struct qemu_syscall *call);
 void qemu_ddraw_surface7_Initialize(struct qemu_syscall *call);
@@ -1091,7 +1085,6 @@ void qemu_ddraw_surface7_SetLOD(struct qemu_syscall *call);
 void qemu_ddraw_surface7_SetOverlayPosition(struct qemu_syscall *call);
 void qemu_ddraw_surface7_SetPalette(struct qemu_syscall *call);
 void qemu_ddraw_surface7_SetPriority(struct qemu_syscall *call);
-void qemu_ddraw_surface7_SetPrivateData(struct qemu_syscall *call);
 void qemu_ddraw_surface7_SetSurfaceDesc(struct qemu_syscall *call);
 void qemu_ddraw_surface7_Unlock(struct qemu_syscall *call);
 void qemu_ddraw_surface7_UpdateOverlay(struct qemu_syscall *call);

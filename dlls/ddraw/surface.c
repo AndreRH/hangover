@@ -432,6 +432,7 @@ void __fastcall ddraw_surface_destroy_cb(struct qemu_surface *surface)
     WINE_TRACE("Executing destroy cb!\n");
     if (surface->clipper)
         IDirectDrawClipper_Release(&surface->clipper->IDirectDrawClipper_iface);
+    wined3d_private_store_cleanup(&surface->private_store);
 }
 
 void __fastcall ddraw_delete_detach_cb(struct qemu_surface *surface)
@@ -3120,244 +3121,113 @@ void qemu_ddraw_surface7_GetPriority(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_ddraw_surface7_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t tag;
-    uint64_t data;
-    uint64_t size;
-    uint64_t flags;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw_surface7_SetPrivateData(IDirectDrawSurface7 *iface, REFGUID tag, void *data, DWORD size, DWORD flags)
+static HRESULT WINAPI ddraw_surface7_SetPrivateData(IDirectDrawSurface7 *iface,
+        REFGUID tag, void *data, DWORD size, DWORD flags)
 {
-    struct qemu_ddraw_surface7_SetPrivateData call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)surface;
-    call.tag = (ULONG_PTR)tag;
-    call.data = (ULONG_PTR)data;
-    call.size = size;
-    call.flags = flags;
+    HRESULT hr;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, tag %s, data %p, data_size %u, flags %#x.\n",
+            iface, wine_dbgstr_guid(tag), data, size, flags);
 
-    return call.super.iret;
+    if (!data)
+    {
+        WINE_WARN("data is NULL, returning DDERR_INVALIDPARAMS.\n");
+        return DDERR_INVALIDPARAMS;
+    }
+
+    hr = wined3d_private_store_set_private_data(&surface->private_store, tag, data, size, flags);
+    return hr;
 }
 
-#else
-
-void qemu_ddraw_surface7_SetPrivateData(struct qemu_syscall *call)
+static HRESULT WINAPI ddraw_surface4_SetPrivateData(IDirectDrawSurface4 *iface,
+        REFGUID tag, void *data, DWORD size, DWORD flags)
 {
-    struct qemu_ddraw_surface7_SetPrivateData *c = (struct qemu_ddraw_surface7_SetPrivateData *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface7_SetPrivateData(surface->host_surface7, QEMU_G2H(c->tag), QEMU_G2H(c->data), c->size, c->flags);
-}
-
-#endif
-
-struct qemu_ddraw_surface4_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t tag;
-    uint64_t data;
-    uint64_t size;
-    uint64_t flags;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI ddraw_surface4_SetPrivateData(IDirectDrawSurface4 *iface, REFGUID tag, void *data, DWORD size, DWORD flags)
-{
-    struct qemu_ddraw_surface4_SetPrivateData call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)surface;
-    call.tag = (ULONG_PTR)tag;
-    call.data = (ULONG_PTR)data;
-    call.size = size;
-    call.flags = flags;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, tag %s, data %p, data_size %u, flags %#x.\n",
+                iface, wine_dbgstr_guid(tag), data, size, flags);
 
-    return call.super.iret;
+    return ddraw_surface7_SetPrivateData(&surface->IDirectDrawSurface7_iface, tag, data, size, flags);
 }
-
-#else
-
-void qemu_ddraw_surface4_SetPrivateData(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface4_SetPrivateData *c = (struct qemu_ddraw_surface4_SetPrivateData *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface4_SetPrivateData(surface->host_surface4, QEMU_G2H(c->tag), QEMU_G2H(c->data), c->size, c->flags);
-}
-
-#endif
-
-struct qemu_ddraw_surface7_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t tag;
-    uint64_t data;
-    uint64_t size;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface7_GetPrivateData(IDirectDrawSurface7 *iface, REFGUID tag, void *data, DWORD *size)
 {
-    struct qemu_ddraw_surface7_GetPrivateData call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)surface;
-    call.tag = (ULONG_PTR)tag;
-    call.data = (ULONG_PTR)data;
-    call.size = (ULONG_PTR)size;
+    const struct wined3d_private_data *stored_data;
+    HRESULT hr;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, tag %s, data %p, data_size %p.\n",
+            iface, wine_dbgstr_guid(tag), data, size);
 
-    return call.super.iret;
+    stored_data = wined3d_private_store_get_private_data(&surface->private_store, tag);
+    if (!stored_data)
+    {
+        hr = DDERR_NOTFOUND;
+        goto done;
+    }
+    if (!size)
+    {
+        hr = DDERR_INVALIDPARAMS;
+        goto done;
+    }
+    if (*size < stored_data->size)
+    {
+        *size = stored_data->size;
+        hr = DDERR_MOREDATA;
+        goto done;
+    }
+    if (!data)
+    {
+        hr = DDERR_INVALIDPARAMS;
+        goto done;
+    }
+
+    *size = stored_data->size;
+    memcpy(data, stored_data->content.data, stored_data->size);
+    hr = DD_OK;
+
+done:
+    return hr;
 }
-
-#else
-
-void qemu_ddraw_surface7_GetPrivateData(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface7_GetPrivateData *c = (struct qemu_ddraw_surface7_GetPrivateData *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface7_GetPrivateData(surface->host_surface7, QEMU_G2H(c->tag), QEMU_G2H(c->data), QEMU_G2H(c->size));
-}
-
-#endif
-
-struct qemu_ddraw_surface4_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t tag;
-    uint64_t data;
-    uint64_t size;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface4_GetPrivateData(IDirectDrawSurface4 *iface, REFGUID tag, void *data, DWORD *size)
 {
-    struct qemu_ddraw_surface4_GetPrivateData call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)surface;
-    call.tag = (ULONG_PTR)tag;
-    call.data = (ULONG_PTR)data;
-    call.size = (ULONG_PTR)size;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, tag %s, data %p, data_size %p.\n",
+                iface, wine_dbgstr_guid(tag), data, size);
 
-    return call.super.iret;
+    return ddraw_surface7_GetPrivateData(&surface->IDirectDrawSurface7_iface, tag, data, size);
 }
-
-#else
-
-void qemu_ddraw_surface4_GetPrivateData(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface4_GetPrivateData *c = (struct qemu_ddraw_surface4_GetPrivateData *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface4_GetPrivateData(surface->host_surface4, QEMU_G2H(c->tag), QEMU_G2H(c->data), QEMU_G2H(c->size));
-}
-
-#endif
-
-struct qemu_ddraw_surface7_FreePrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t tag;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface7_FreePrivateData(IDirectDrawSurface7 *iface, REFGUID tag)
 {
-    struct qemu_ddraw_surface7_FreePrivateData call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_FREEPRIVATEDATA);
-    call.iface = (ULONG_PTR)surface;
-    call.tag = (ULONG_PTR)tag;
+    struct wined3d_private_data *entry;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, tag %s.\n", iface, wine_dbgstr_guid(tag));
 
-    return call.super.iret;
+    entry = wined3d_private_store_get_private_data(&surface->private_store, tag);
+    if (!entry)
+    {
+        return DDERR_NOTFOUND;
+    }
+
+    wined3d_private_store_free_private_data(&surface->private_store, entry);
+
+    return DD_OK;
 }
-
-#else
-
-void qemu_ddraw_surface7_FreePrivateData(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface7_FreePrivateData *c = (struct qemu_ddraw_surface7_FreePrivateData *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface7_FreePrivateData(surface->host_surface7, QEMU_G2H(c->tag));
-}
-
-#endif
-
-struct qemu_ddraw_surface4_FreePrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t tag;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface4_FreePrivateData(IDirectDrawSurface4 *iface, REFGUID tag)
 {
-    struct qemu_ddraw_surface4_FreePrivateData call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_FREEPRIVATEDATA);
-    call.iface = (ULONG_PTR)surface;
-    call.tag = (ULONG_PTR)tag;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, tag %s.\n", iface, wine_dbgstr_guid(tag));
 
-    return call.super.iret;
-}
-
-#else
-
-void qemu_ddraw_surface4_FreePrivateData(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface4_FreePrivateData *c = (struct qemu_ddraw_surface4_FreePrivateData *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface4_FreePrivateData(surface->host_surface4, QEMU_G2H(c->tag));
+    return ddraw_surface7_FreePrivateData(&surface->IDirectDrawSurface7_iface, tag);
 }
 
 #endif
@@ -9261,6 +9131,8 @@ void qemu_surface_guest_init(struct qemu_surface *surface, struct qemu_ddraw *dd
         surface->ref1 = 1;
         surface->texture_outer = (IUnknown *)&surface->IDirectDrawSurface_iface;
     }
+
+    wined3d_private_store_init(&surface->private_store);
 }
 
 /* Some games (e.g. Tomb Raider 3) pass the wrong version of the
