@@ -179,6 +179,19 @@ enum ddraw_calls
     CALL_D3D_DEVICE7_SETTRANSFORM,
     CALL_D3D_DEVICE7_SETVIEWPORT,
     CALL_D3D_DEVICE7_VALIDATEDEVICE,
+    CALL_D3D_MATERIAL1_GETHANDLE,
+    CALL_D3D_MATERIAL1_GETMATERIAL,
+    CALL_D3D_MATERIAL1_INITIALIZE,
+    CALL_D3D_MATERIAL1_RELEASE,
+    CALL_D3D_MATERIAL1_RESERVE,
+    CALL_D3D_MATERIAL1_SETMATERIAL,
+    CALL_D3D_MATERIAL1_UNRESERVE,
+    CALL_D3D_MATERIAL2_GETHANDLE,
+    CALL_D3D_MATERIAL2_GETMATERIAL,
+    CALL_D3D_MATERIAL2_SETMATERIAL,
+    CALL_D3D_MATERIAL3_GETHANDLE,
+    CALL_D3D_MATERIAL3_GETMATERIAL,
+    CALL_D3D_MATERIAL3_SETMATERIAL,
     CALL_D3D_TEXTURE1_GETHANDLE,
     CALL_D3D_TEXTURE1_INITIALIZE,
     CALL_D3D_TEXTURE1_LOAD,
@@ -653,6 +666,20 @@ struct qemu_vertex_buffer
     IDirect3DVertexBuffer7 *host;
 };
 
+struct qemu_material
+{
+    /* Guest fields. */
+    IDirect3DMaterial3 IDirect3DMaterial3_iface;
+    IDirect3DMaterial2 IDirect3DMaterial2_iface;
+    IDirect3DMaterial IDirect3DMaterial_iface;
+    LONG  ref;
+
+    /* Host fields. */
+    IDirect3DMaterial3 *host3;
+    IDirect3DMaterial2 *host2;
+    IDirect3DMaterial *host1;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 extern const GUID IID_D3DDEVICE_WineD3D;
@@ -847,6 +874,19 @@ void qemu_d3d_device7_SetViewport(struct qemu_syscall *call);
 void qemu_d3d_device7_ValidateDevice(struct qemu_syscall *call);
 void qemu_d3d_device_EnumTextureFormats(struct qemu_syscall *call);
 void qemu_d3d_device_Release(struct qemu_syscall *call);
+void qemu_d3d_material1_GetHandle(struct qemu_syscall *call);
+void qemu_d3d_material1_GetMaterial(struct qemu_syscall *call);
+void qemu_d3d_material1_Initialize(struct qemu_syscall *call);
+void qemu_d3d_material1_Release(struct qemu_syscall *call);
+void qemu_d3d_material1_Reserve(struct qemu_syscall *call);
+void qemu_d3d_material1_SetMaterial(struct qemu_syscall *call);
+void qemu_d3d_material1_Unreserve(struct qemu_syscall *call);
+void qemu_d3d_material2_GetHandle(struct qemu_syscall *call);
+void qemu_d3d_material2_GetMaterial(struct qemu_syscall *call);
+void qemu_d3d_material2_SetMaterial(struct qemu_syscall *call);
+void qemu_d3d_material3_GetHandle(struct qemu_syscall *call);
+void qemu_d3d_material3_GetMaterial(struct qemu_syscall *call);
+void qemu_d3d_material3_SetMaterial(struct qemu_syscall *call);
 void qemu_d3d_texture1_GetHandle(struct qemu_syscall *call);
 void qemu_d3d_texture1_Initialize(struct qemu_syscall *call);
 void qemu_d3d_texture1_Load(struct qemu_syscall *call);
