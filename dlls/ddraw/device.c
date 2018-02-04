@@ -1905,20 +1905,24 @@ struct qemu_d3d_device3_SetCurrentViewport
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t Direct3DViewport3;
+    uint64_t viewport;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_device3_SetCurrentViewport(IDirect3DDevice3 *iface, IDirect3DViewport3 *Direct3DViewport3)
+static HRESULT WINAPI d3d_device3_SetCurrentViewport(IDirect3DDevice3 *iface, IDirect3DViewport3 *viewport)
 {
     struct qemu_d3d_device3_SetCurrentViewport call;
     struct qemu_device *device = impl_from_IDirect3DDevice3(iface);
+    struct qemu_viewport *impl = unsafe_impl_from_IDirect3DViewport3(viewport);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE3_SETCURRENTVIEWPORT);
     call.iface = (ULONG_PTR)device;
-    call.Direct3DViewport3 = (ULONG_PTR)Direct3DViewport3;
+    call.viewport = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+        device->current_viewport = impl;
 
     return call.super.iret;
 }
@@ -1929,11 +1933,13 @@ void qemu_d3d_device3_SetCurrentViewport(struct qemu_syscall *call)
 {
     struct qemu_d3d_device3_SetCurrentViewport *c = (struct qemu_d3d_device3_SetCurrentViewport *)call;
     struct qemu_device *device;
+    struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    viewport = QEMU_G2H(c->viewport);
 
-    c->super.iret = IDirect3DDevice3_SetCurrentViewport(device->host3, QEMU_G2H(c->Direct3DViewport3));
+    c->super.iret = IDirect3DDevice3_SetCurrentViewport(device->host3, viewport ? viewport->host : NULL);
 }
 
 #endif
@@ -1950,12 +1956,16 @@ struct qemu_d3d_device2_SetCurrentViewport
 static HRESULT WINAPI d3d_device2_SetCurrentViewport(IDirect3DDevice2 *iface, IDirect3DViewport2 *viewport)
 {
     struct qemu_d3d_device2_SetCurrentViewport call;
+    struct qemu_viewport *impl = unsafe_impl_from_IDirect3DViewport2(viewport);
+
     struct qemu_device *device = impl_from_IDirect3DDevice2(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE2_SETCURRENTVIEWPORT);
     call.iface = (ULONG_PTR)device;
-    call.viewport = (ULONG_PTR)viewport;
+    call.viewport = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+        device->current_viewport = impl;
 
     return call.super.iret;
 }
@@ -1966,85 +1976,46 @@ void qemu_d3d_device2_SetCurrentViewport(struct qemu_syscall *call)
 {
     struct qemu_d3d_device2_SetCurrentViewport *c = (struct qemu_d3d_device2_SetCurrentViewport *)call;
     struct qemu_device *device;
+    struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    viewport = QEMU_G2H(c->viewport);
 
-    c->super.iret = IDirect3DDevice2_SetCurrentViewport(device->host2, QEMU_G2H(c->viewport));
+    c->super.iret = IDirect3DDevice2_SetCurrentViewport(device->host2,
+            viewport ? (IDirect3DViewport2 *)viewport->host : NULL);
 }
 
 #endif
-
-struct qemu_d3d_device3_GetCurrentViewport
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t viewport;
-};
 
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d_device3_GetCurrentViewport(IDirect3DDevice3 *iface, IDirect3DViewport3 **viewport)
 {
-    struct qemu_d3d_device3_GetCurrentViewport call;
     struct qemu_device *device = impl_from_IDirect3DDevice3(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE3_GETCURRENTVIEWPORT);
-    call.iface = (ULONG_PTR)device;
-    call.viewport = (ULONG_PTR)viewport;
+    WINE_TRACE("iface %p, viewport %p.\n", iface, viewport);
 
-    qemu_syscall(&call.super);
+    if (!device->current_viewport)
+    {
+        WINE_WARN("No current viewport, returning D3DERR_NOCURRENTVIEWPORT\n");
+        return D3DERR_NOCURRENTVIEWPORT;
+    }
 
-    return call.super.iret;
+    *viewport = &device->current_viewport->IDirect3DViewport3_iface;
+    IDirect3DViewport3_AddRef(*viewport);
+
+    WINE_TRACE("Returning interface %p.\n", *viewport);
+    return D3D_OK;
 }
-
-#else
-
-void qemu_d3d_device3_GetCurrentViewport(struct qemu_syscall *call)
-{
-    struct qemu_d3d_device3_GetCurrentViewport *c = (struct qemu_d3d_device3_GetCurrentViewport *)call;
-    struct qemu_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DDevice3_GetCurrentViewport(device->host3, QEMU_G2H(c->viewport));
-}
-
-#endif
-
-struct qemu_d3d_device2_GetCurrentViewport
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t viewport;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d_device2_GetCurrentViewport(IDirect3DDevice2 *iface, IDirect3DViewport2 **viewport)
 {
-    struct qemu_d3d_device2_GetCurrentViewport call;
     struct qemu_device *device = impl_from_IDirect3DDevice2(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE2_GETCURRENTVIEWPORT);
-    call.iface = (ULONG_PTR)device;
-    call.viewport = (ULONG_PTR)viewport;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, viewport %p.\n", iface, viewport);
 
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d_device2_GetCurrentViewport(struct qemu_syscall *call)
-{
-    struct qemu_d3d_device2_GetCurrentViewport *c = (struct qemu_d3d_device2_GetCurrentViewport *)call;
-    struct qemu_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3DDevice2_GetCurrentViewport(device->host2, QEMU_G2H(c->viewport));
+    return d3d_device3_GetCurrentViewport(&device->IDirect3DDevice3_iface,
+            (IDirect3DViewport3 **)viewport);
 }
 
 #endif

@@ -83,7 +83,6 @@ enum ddraw_calls
     CALL_D3D_DEVICE2_ENUMTEXTUREFORMATS,
     CALL_D3D_DEVICE2_GETCAPS,
     CALL_D3D_DEVICE2_GETCLIPSTATUS,
-    CALL_D3D_DEVICE2_GETCURRENTVIEWPORT,
     CALL_D3D_DEVICE2_GETLIGHTSTATE,
     CALL_D3D_DEVICE2_GETRENDERSTATE,
     CALL_D3D_DEVICE2_GETSTATS,
@@ -116,7 +115,6 @@ enum ddraw_calls
     CALL_D3D_DEVICE3_ENUMTEXTUREFORMATS,
     CALL_D3D_DEVICE3_GETCAPS,
     CALL_D3D_DEVICE3_GETCLIPSTATUS,
-    CALL_D3D_DEVICE3_GETCURRENTVIEWPORT,
     CALL_D3D_DEVICE3_GETLIGHTSTATE,
     CALL_D3D_DEVICE3_GETRENDERSTATE,
     CALL_D3D_DEVICE3_GETSTATS,
@@ -607,6 +605,16 @@ struct qemu_surface
     LONG                    private_data_ref;
 };
 
+struct qemu_viewport
+{
+    /* Guest fields */
+    IDirect3DViewport3 IDirect3DViewport3_iface;
+    LONG ref;
+
+    /* Host fields */
+    IDirect3DViewport3 *host;
+};
+
 struct qemu_device
 {
     /* Guest fields */
@@ -620,7 +628,11 @@ struct qemu_device
 
     IUnknown *outer_unknown;
     struct qemu_ddraw *ddraw;
+
+    /* FIXME: These need synchronization. */
     IUnknown *rt_iface;
+    struct qemu_viewport *current_viewport;
+    /* TODO: Viewport list. */
 
     /* Host fields */
     IDirect3DDevice7 *host7;
@@ -639,16 +651,6 @@ struct qemu_vertex_buffer
 
     /* Host fields */
     IDirect3DVertexBuffer7 *host;
-};
-
-struct qemu_viewport
-{
-    /* Guest fields */
-    IDirect3DViewport3 IDirect3DViewport3_iface;
-    LONG ref;
-
-    /* Host fields */
-    IDirect3DViewport3 *host;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -750,7 +752,6 @@ void qemu_d3d_device2_End(struct qemu_syscall *call);
 void qemu_d3d_device2_EndScene(struct qemu_syscall *call);
 void qemu_d3d_device2_GetCaps(struct qemu_syscall *call);
 void qemu_d3d_device2_GetClipStatus(struct qemu_syscall *call);
-void qemu_d3d_device2_GetCurrentViewport(struct qemu_syscall *call);
 void qemu_d3d_device2_GetLightState(struct qemu_syscall *call);
 void qemu_d3d_device2_GetRenderState(struct qemu_syscall *call);
 void qemu_d3d_device2_GetStats(struct qemu_syscall *call);
@@ -782,7 +783,6 @@ void qemu_d3d_device3_End(struct qemu_syscall *call);
 void qemu_d3d_device3_EndScene(struct qemu_syscall *call);
 void qemu_d3d_device3_GetCaps(struct qemu_syscall *call);
 void qemu_d3d_device3_GetClipStatus(struct qemu_syscall *call);
-void qemu_d3d_device3_GetCurrentViewport(struct qemu_syscall *call);
 void qemu_d3d_device3_GetLightState(struct qemu_syscall *call);
 void qemu_d3d_device3_GetRenderState(struct qemu_syscall *call);
 void qemu_d3d_device3_GetStats(struct qemu_syscall *call);
