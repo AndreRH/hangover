@@ -921,11 +921,15 @@ static HRESULT WINAPI d3d_device3_DeleteViewport(IDirect3DDevice3 *iface, IDirec
 {
     struct qemu_d3d_device3_DeleteViewport call;
     struct qemu_device *device = impl_from_IDirect3DDevice3(iface);
+    struct qemu_viewport *impl = unsafe_impl_from_IDirect3DViewport3(viewport);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE3_DELETEVIEWPORT);
     call.iface = (ULONG_PTR)device;
-    call.viewport = (ULONG_PTR)viewport;
+    call.viewport = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+        IDirect3DViewport3_Release(viewport);
 
     return call.super.iret;
 }
@@ -936,11 +940,13 @@ void qemu_d3d_device3_DeleteViewport(struct qemu_syscall *call)
 {
     struct qemu_d3d_device3_DeleteViewport *c = (struct qemu_d3d_device3_DeleteViewport *)call;
     struct qemu_device *device;
+    struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    viewport = QEMU_G2H(c->viewport);
 
-    c->super.iret = IDirect3DDevice3_DeleteViewport(device->host3, QEMU_G2H(c->viewport));
+    c->super.iret = IDirect3DDevice3_DeleteViewport(device->host3, viewport ? viewport->host : NULL);
 }
 
 #endif
@@ -958,11 +964,15 @@ static HRESULT WINAPI d3d_device2_DeleteViewport(IDirect3DDevice2 *iface, IDirec
 {
     struct qemu_d3d_device2_DeleteViewport call;
     struct qemu_device *device = impl_from_IDirect3DDevice2(iface);
+    struct qemu_viewport *impl = unsafe_impl_from_IDirect3DViewport2(viewport);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE2_DELETEVIEWPORT);
     call.iface = (ULONG_PTR)device;
-    call.viewport = (ULONG_PTR)viewport;
+    call.viewport = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+        IDirect3DViewport2_Release(viewport);
 
     return call.super.iret;
 }
@@ -973,11 +983,14 @@ void qemu_d3d_device2_DeleteViewport(struct qemu_syscall *call)
 {
     struct qemu_d3d_device2_DeleteViewport *c = (struct qemu_d3d_device2_DeleteViewport *)call;
     struct qemu_device *device;
+    struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    viewport = QEMU_G2H(c->viewport);
 
-    c->super.iret = IDirect3DDevice2_DeleteViewport(device->host2, QEMU_G2H(c->viewport));
+    c->super.iret = IDirect3DDevice2_DeleteViewport(device->host2,
+            viewport ? (IDirect3DViewport2 *)viewport->host : NULL);
 }
 
 #endif
@@ -995,11 +1008,15 @@ static HRESULT WINAPI d3d_device1_DeleteViewport(IDirect3DDevice *iface, IDirect
 {
     struct qemu_d3d_device1_DeleteViewport call;
     struct qemu_device *device = impl_from_IDirect3DDevice(iface);
+    struct qemu_viewport *impl = unsafe_impl_from_IDirect3DViewport(viewport);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE1_DELETEVIEWPORT);
     call.iface = (ULONG_PTR)device;
-    call.viewport = (ULONG_PTR)viewport;
+    call.viewport = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+        IDirect3DViewport_Release(viewport);
 
     return call.super.iret;
 }
@@ -1010,11 +1027,14 @@ void qemu_d3d_device1_DeleteViewport(struct qemu_syscall *call)
 {
     struct qemu_d3d_device1_DeleteViewport *c = (struct qemu_d3d_device1_DeleteViewport *)call;
     struct qemu_device *device;
+    struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    viewport = QEMU_G2H(c->viewport);
 
-    c->super.iret = IDirect3DDevice_DeleteViewport(device->host1, QEMU_G2H(c->viewport));
+    c->super.iret = IDirect3DDevice_DeleteViewport(device->host1,
+            viewport ? (IDirect3DViewport *)viewport->host : NULL);
 }
 
 #endif
