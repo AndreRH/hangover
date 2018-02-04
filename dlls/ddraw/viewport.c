@@ -81,6 +81,7 @@ static ULONG WINAPI d3d_viewport_AddRef(IDirect3DViewport3 *iface)
 
 static ULONG WINAPI d3d_viewport_Release(IDirect3DViewport3 *iface)
 {
+    struct qemu_d3d_viewport_Release call;
     struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
     ULONG ref = InterlockedDecrement(&viewport->ref);
 
@@ -88,7 +89,9 @@ static ULONG WINAPI d3d_viewport_Release(IDirect3DViewport3 *iface)
 
     if (!ref)
     {
-        WINE_FIXME("Implement destroy!\n");
+        call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_RELEASE);
+        call.iface = (ULONG_PTR)viewport;
+        qemu_syscall(&call.super);
     }
 
     return ref;
@@ -101,10 +104,12 @@ void qemu_d3d_viewport_Release(struct qemu_syscall *call)
     struct qemu_d3d_viewport_Release *c = (struct qemu_d3d_viewport_Release *)call;
     struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     viewport = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DViewport3_Release(viewport->host);
+    if (c->super.iret)
+        WINE_ERR("Unexpected host viewport refcount %lu.\n", c->super.iret);
 
     HeapFree(GetProcessHeap(), 0, viewport);
 }

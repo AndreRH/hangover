@@ -4966,7 +4966,7 @@ void qemu_d3d1_CreateMaterial(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d3_CreateViewport
+struct qemu_d3d_CreateViewport
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -4978,107 +4978,116 @@ struct qemu_d3d3_CreateViewport
 
 static HRESULT WINAPI d3d3_CreateViewport(IDirect3D3 *iface, IDirect3DViewport3 **viewport, IUnknown *outer_unknown)
 {
+    struct qemu_d3d_CreateViewport call;
     struct qemu_ddraw *ddraw = impl_from_IDirect3D3(iface);
-    struct qemu_d3d3_CreateViewport call;
+    struct qemu_viewport *object;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D3_CREATEVIEWPORT);
     call.iface = (ULONG_PTR)ddraw;
-    call.viewport = (ULONG_PTR)viewport;
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
 
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_viewport *)(ULONG_PTR)call.viewport;
+        d3d_viewport_guest_init(object);
+        *viewport = &object->IDirect3DViewport3_iface;
+    }
+
     return call.super.iret;
 }
-
-#else
-
-void qemu_d3d3_CreateViewport(struct qemu_syscall *call)
-{
-    struct qemu_d3d3_CreateViewport *c = (struct qemu_d3d3_CreateViewport *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3D3_CreateViewport(ddraw->host_d3d3, QEMU_G2H(c->viewport), QEMU_G2H(c->outer_unknown));
-}
-
-#endif
-
-struct qemu_d3d2_CreateViewport
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t viewport;
-    uint64_t outer_unknown;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d2_CreateViewport(IDirect3D2 *iface, IDirect3DViewport2 **viewport, IUnknown *outer_unknown)
 {
+    struct qemu_d3d_CreateViewport call;
     struct qemu_ddraw *ddraw = impl_from_IDirect3D2(iface);
-    struct qemu_d3d2_CreateViewport call;
+    struct qemu_viewport *object;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D2_CREATEVIEWPORT);
     call.iface = (ULONG_PTR)ddraw;
-    call.viewport = (ULONG_PTR)viewport;
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
 
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_viewport *)(ULONG_PTR)call.viewport;
+        d3d_viewport_guest_init(object);
+        *viewport = (IDirect3DViewport2 *)&object->IDirect3DViewport3_iface;
+    }
+
     return call.super.iret;
 }
-
-#else
-
-void qemu_d3d2_CreateViewport(struct qemu_syscall *call)
-{
-    struct qemu_d3d2_CreateViewport *c = (struct qemu_d3d2_CreateViewport *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3D2_CreateViewport(ddraw->host_d3d2, QEMU_G2H(c->viewport), QEMU_G2H(c->outer_unknown));
-}
-
-#endif
-
-struct qemu_d3d1_CreateViewport
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t viewport;
-    uint64_t outer_unknown;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d1_CreateViewport(IDirect3D *iface, IDirect3DViewport **viewport, IUnknown *outer_unknown)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirect3D(iface);
-    struct qemu_d3d1_CreateViewport call;
+    struct qemu_d3d_CreateViewport call;
+    struct qemu_viewport *object;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D1_CREATEVIEWPORT);
     call.iface = (ULONG_PTR)ddraw;
-    call.viewport = (ULONG_PTR)viewport;
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_viewport *)(ULONG_PTR)call.viewport;
+        d3d_viewport_guest_init(object);
+        *viewport = (IDirect3DViewport *)&object->IDirect3DViewport3_iface;
+    }
 
     return call.super.iret;
 }
 
 #else
 
-void qemu_d3d1_CreateViewport(struct qemu_syscall *call)
+void qemu_d3d_CreateViewport(struct qemu_syscall *call)
 {
-    struct qemu_d3d1_CreateViewport *c = (struct qemu_d3d1_CreateViewport *)call;
+    struct qemu_d3d_CreateViewport *c = (struct qemu_d3d_CreateViewport *)call;
     struct qemu_ddraw *ddraw;
+    struct qemu_viewport *object;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3D_CreateViewport(ddraw->host_d3d1, QEMU_G2H(c->viewport), QEMU_G2H(c->outer_unknown));
+    object = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*object));
+    if (!object)
+    {
+        WINE_WARN("Out of memory.\n");
+        c->super.iret = E_OUTOFMEMORY;
+        c->viewport = 0;
+        return;
+    }
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_D3D3_CREATEVIEWPORT):
+            c->super.iret = IDirect3D_CreateViewport(ddraw->host_d3d3, &object->host,
+                    QEMU_G2H(c->outer_unknown));
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_D3D2_CREATEVIEWPORT):
+            c->super.iret = IDirect3D_CreateViewport(ddraw->host_d3d2, (IDirect3DViewport2 **)&object->host,
+                    QEMU_G2H(c->outer_unknown));
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_D3D1_CREATEVIEWPORT):
+            c->super.iret = IDirect3D_CreateViewport(ddraw->host_d3d1, (IDirect3DViewport **)&object->host,
+                    QEMU_G2H(c->outer_unknown));
+            break;
+    }
+
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, object);
+        object = NULL;
+    }
+
+    c->viewport = QEMU_H2G(object);
+    return;
 }
 
 #endif
