@@ -4849,7 +4849,7 @@ void qemu_d3d1_CreateLight(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d3_CreateMaterial
+struct qemu_d3d_CreateMaterial
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -4861,107 +4861,133 @@ struct qemu_d3d3_CreateMaterial
 
 static HRESULT WINAPI d3d3_CreateMaterial(IDirect3D3 *iface, IDirect3DMaterial3 **material, IUnknown *outer_unknown)
 {
+    struct qemu_d3d_CreateMaterial call;
     struct qemu_ddraw *ddraw = impl_from_IDirect3D3(iface);
-    struct qemu_d3d3_CreateMaterial call;
+    struct qemu_material *object;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D3_CREATEMATERIAL);
     call.iface = (ULONG_PTR)ddraw;
-    call.material = (ULONG_PTR)material;
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_material *)(ULONG_PTR)call.material;
+        d3d_material_guest_init(object);
+        *material = &object->IDirect3DMaterial3_iface;
+    }
+    else
+    {
+        *material = NULL;
+    }
 
     return call.super.iret;
 }
-
-#else
-
-void qemu_d3d3_CreateMaterial(struct qemu_syscall *call)
-{
-    struct qemu_d3d3_CreateMaterial *c = (struct qemu_d3d3_CreateMaterial *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3D3_CreateMaterial(ddraw->host_d3d3, QEMU_G2H(c->material), QEMU_G2H(c->outer_unknown));
-}
-
-#endif
-
-struct qemu_d3d2_CreateMaterial
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t material;
-    uint64_t outer_unknown;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d2_CreateMaterial(IDirect3D2 *iface, IDirect3DMaterial2 **material, IUnknown *outer_unknown)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirect3D2(iface);
-    struct qemu_d3d2_CreateMaterial call;
+    struct qemu_material *object;
+
+    struct qemu_d3d_CreateMaterial call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D2_CREATEMATERIAL);
     call.iface = (ULONG_PTR)ddraw;
-    call.material = (ULONG_PTR)material;
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_material *)(ULONG_PTR)call.material;
+        d3d_material_guest_init(object);
+        *material = &object->IDirect3DMaterial2_iface;
+    }
+    else
+    {
+        *material = NULL;
+    }
 
     return call.super.iret;
 }
-
-#else
-
-void qemu_d3d2_CreateMaterial(struct qemu_syscall *call)
-{
-    struct qemu_d3d2_CreateMaterial *c = (struct qemu_d3d2_CreateMaterial *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3D2_CreateMaterial(ddraw->host_d3d2, QEMU_G2H(c->material), QEMU_G2H(c->outer_unknown));
-}
-
-#endif
-
-struct qemu_d3d1_CreateMaterial
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t material;
-    uint64_t outer_unknown;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d1_CreateMaterial(IDirect3D *iface, IDirect3DMaterial **material, IUnknown *outer_unknown)
 {
+    struct qemu_d3d_CreateMaterial call;
     struct qemu_ddraw *ddraw = impl_from_IDirect3D(iface);
-    struct qemu_d3d1_CreateMaterial call;
+    struct qemu_material *object;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D1_CREATEMATERIAL);
     call.iface = (ULONG_PTR)ddraw;
-    call.material = (ULONG_PTR)material;
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_material *)(ULONG_PTR)call.material;
+        d3d_material_guest_init(object);
+        *material = &object->IDirect3DMaterial_iface;
+    }
+    else
+    {
+        *material = NULL;
+    }
 
     return call.super.iret;
 }
 
 #else
 
-void qemu_d3d1_CreateMaterial(struct qemu_syscall *call)
+void qemu_d3d_CreateMaterial(struct qemu_syscall *call)
 {
-    struct qemu_d3d1_CreateMaterial *c = (struct qemu_d3d1_CreateMaterial *)call;
+    struct qemu_d3d_CreateMaterial *c = (struct qemu_d3d_CreateMaterial *)call;
     struct qemu_ddraw *ddraw;
+    struct qemu_material *object;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3D_CreateMaterial(ddraw->host_d3d1, QEMU_G2H(c->material), QEMU_G2H(c->outer_unknown));
+    object = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*object));
+    if (!object)
+    {
+        WINE_WARN("Out of memory!\n");
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_D3D3_CREATEMATERIAL):
+            c->super.iret = IDirect3D3_CreateMaterial(ddraw->host_d3d3, &object->host3, QEMU_G2H(c->outer_unknown));
+            if (FAILED(c->super.iret))
+                break;
+            IDirect3DMaterial3_QueryInterface(object->host3, &IID_IDirect3DMaterial2, (void **)&object->host2);
+            IDirect3DMaterial3_QueryInterface(object->host3, &IID_IDirect3DMaterial, (void **)&object->host1);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_D3D2_CREATEMATERIAL):
+            c->super.iret = IDirect3D2_CreateMaterial(ddraw->host_d3d2, &object->host2, QEMU_G2H(c->outer_unknown));
+            if (FAILED(c->super.iret))
+                break;
+            IDirect3DMaterial2_QueryInterface(object->host2, &IID_IDirect3DMaterial3, (void **)&object->host3);
+            IDirect3DMaterial2_QueryInterface(object->host2, &IID_IDirect3DMaterial, (void **)&object->host1);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_D3D1_CREATEMATERIAL):
+            c->super.iret = IDirect3D_CreateMaterial(ddraw->host_d3d1, &object->host1, QEMU_G2H(c->outer_unknown));
+            if (FAILED(c->super.iret))
+                break;
+            IDirect3DMaterial_QueryInterface(object->host1, &IID_IDirect3DMaterial3, (void **)&object->host3);
+            IDirect3DMaterial_QueryInterface(object->host1, &IID_IDirect3DMaterial2, (void **)&object->host2);
+            break;
+    }
+
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, object);
+        object = NULL;
+    }
+
+    c->material = QEMU_H2G(object);
+    return;
 }
 
 #endif

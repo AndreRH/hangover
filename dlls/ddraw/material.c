@@ -150,6 +150,7 @@ static ULONG WINAPI d3d_material1_AddRef(IDirect3DMaterial *iface)
 
 static ULONG WINAPI d3d_material3_Release(IDirect3DMaterial3 *iface)
 {
+    struct qemu_d3d_material_Release call;
     struct qemu_material *material = impl_from_IDirect3DMaterial3(iface);
     ULONG ref = InterlockedDecrement(&material->ref);
 
@@ -157,7 +158,9 @@ static ULONG WINAPI d3d_material3_Release(IDirect3DMaterial3 *iface)
 
     if (!ref)
     {
-        WINE_FIXME("Implement destroy\n");
+        call.super.id = QEMU_SYSCALL_ID(CALL_D3D_MATERIAL1_RELEASE);
+        call.iface = (ULONG_PTR)material;
+        qemu_syscall(&call.super);
     }
 
     return ref;
@@ -188,10 +191,17 @@ void qemu_d3d_material1_Release(struct qemu_syscall *call)
     struct qemu_d3d_material_Release *c = (struct qemu_d3d_material_Release *)call;
     struct qemu_material *material;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     material = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DMaterial3_Release(material->host3);
+    IDirect3DMaterial3_Release(material->host3);
+    IDirect3DMaterial2_Release(material->host2);
+    c->super.iret = IDirect3DMaterial_Release(material->host1);
+
+    if (c->super.iret)
+        WINE_ERR("Unexpected material refcount %lu.\n", c->super.iret);
+
+    HeapFree(GetProcessHeap(), 0, material);
 }
 
 #endif
