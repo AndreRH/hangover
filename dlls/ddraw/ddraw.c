@@ -3493,7 +3493,7 @@ static void surface_host_init(struct qemu_surface *surface, IUnknown *host)
     IUnknown_QueryInterface(host, &IID_IDirectDrawGammaControl, (void **)&surface->host_gamma);
 
     IUnknown_QueryInterface(host, &IID_IDirect3DTexture, (void **)&surface->host_texture1);
-    IUnknown_QueryInterface(host, &IID_IDirect3DTexture, (void **)&surface->host_texture2);
+    IUnknown_QueryInterface(host, &IID_IDirect3DTexture2, (void **)&surface->host_texture2);
 
     surface->private_data.lpVtbl = &surface_priv_vtbl;
     IDirectDrawSurface7_SetPrivateData(surface->host_surface7, &surface_priv_uuid,

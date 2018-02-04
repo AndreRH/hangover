@@ -678,7 +678,7 @@ void qemu_ddraw_surface1_Release(struct qemu_syscall *call)
     if (surface->host_texture1)
         IDirect3DTexture_Release(surface->host_texture1);
     if (surface->host_texture2)
-        IDirect3DTexture_Release(surface->host_texture2);
+        IDirect3DTexture2_Release(surface->host_texture2);
 
     c->super.iret = IDirectDrawSurface_Release(surface->host_surface1);
     c->super.iret += IDirectDrawSurface2_Release(surface->host_surface2);
@@ -8758,9 +8758,11 @@ static HRESULT WINAPI d3d_texture2_Load(IDirect3DTexture2 *iface, IDirect3DTextu
 {
     struct qemu_d3d_texture2_Load call;
     struct qemu_surface *surface = impl_from_IDirect3DTexture2(iface);
+    struct qemu_surface *src = unsafe_impl_from_IDirect3DTexture2(src_texture);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_TEXTURE2_LOAD);
     call.iface = (ULONG_PTR)surface;
-    call.src_texture = (ULONG_PTR)src_texture;
+    call.src_texture = (ULONG_PTR)src;
 
     qemu_syscall(&call.super);
 
@@ -8773,11 +8775,13 @@ void qemu_d3d_texture2_Load(struct qemu_syscall *call)
 {
     struct qemu_d3d_texture2_Load *c = (struct qemu_d3d_texture2_Load *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *src;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    src = QEMU_G2H(c->src_texture);
 
-    c->super.iret = IDirect3DTexture2_Load(surface->host_texture2, QEMU_G2H(c->src_texture));
+    c->super.iret = IDirect3DTexture2_Load(surface->host_texture2, src ? src->host_texture2 : NULL);
 }
 
 #endif
@@ -8795,9 +8799,11 @@ static HRESULT WINAPI d3d_texture1_Load(IDirect3DTexture *iface, IDirect3DTextur
 {
     struct qemu_d3d_texture1_Load call;
     struct qemu_surface *surface = impl_from_IDirect3DTexture(iface);
+    struct qemu_surface *src = unsafe_impl_from_IDirect3DTexture(src_texture);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_TEXTURE1_LOAD);
     call.iface = (ULONG_PTR)surface;
-    call.src_texture = (ULONG_PTR)src_texture;
+    call.src_texture = (ULONG_PTR)src;
 
     qemu_syscall(&call.super);
 
@@ -8810,11 +8816,13 @@ void qemu_d3d_texture1_Load(struct qemu_syscall *call)
 {
     struct qemu_d3d_texture1_Load *c = (struct qemu_d3d_texture1_Load *)call;
     struct qemu_surface *surface;
+    struct qemu_surface *src;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    src = QEMU_G2H(c->src_texture);
 
-    c->super.iret = IDirect3DTexture_Load(surface->host_texture1, QEMU_G2H(c->src_texture));
+    c->super.iret = IDirect3DTexture_Load(surface->host_texture1, src ? src->host_texture1 : NULL);
 }
 
 #endif
