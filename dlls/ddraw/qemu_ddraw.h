@@ -196,6 +196,25 @@ enum ddraw_calls
     CALL_D3D_VERTEX_BUFFER7_PROCESSVERTICESSTRIDED,
     CALL_D3D_VERTEX_BUFFER7_RELEASE,
     CALL_D3D_VERTEX_BUFFER7_UNLOCK,
+    CALL_D3D_VIEWPORT_ADDLIGHT,
+    CALL_D3D_VIEWPORT_CLEAR,
+    CALL_D3D_VIEWPORT_CLEAR2,
+    CALL_D3D_VIEWPORT_DELETELIGHT,
+    CALL_D3D_VIEWPORT_GETBACKGROUND,
+    CALL_D3D_VIEWPORT_GETBACKGROUNDDEPTH,
+    CALL_D3D_VIEWPORT_GETBACKGROUNDDEPTH2,
+    CALL_D3D_VIEWPORT_GETVIEWPORT,
+    CALL_D3D_VIEWPORT_GETVIEWPORT2,
+    CALL_D3D_VIEWPORT_INITIALIZE,
+    CALL_D3D_VIEWPORT_LIGHTELEMENTS,
+    CALL_D3D_VIEWPORT_NEXTLIGHT,
+    CALL_D3D_VIEWPORT_RELEASE,
+    CALL_D3D_VIEWPORT_SETBACKGROUND,
+    CALL_D3D_VIEWPORT_SETBACKGROUNDDEPTH,
+    CALL_D3D_VIEWPORT_SETBACKGROUNDDEPTH2,
+    CALL_D3D_VIEWPORT_SETVIEWPORT,
+    CALL_D3D_VIEWPORT_SETVIEWPORT2,
+    CALL_D3D_VIEWPORT_TRANSFORMVERTICES,
     CALL_DDRAW1_COMPACT,
     CALL_DDRAW1_CREATEPALETTE,
     CALL_DDRAW1_CREATESURFACE,
@@ -622,6 +641,16 @@ struct qemu_vertex_buffer
     IDirect3DVertexBuffer7 *host;
 };
 
+struct qemu_viewport
+{
+    /* Guest fields */
+    IDirect3DViewport3 IDirect3DViewport3_iface;
+    LONG ref;
+
+    /* Host fields */
+    IDirect3DViewport3 *host;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 extern const GUID IID_D3DDEVICE_WineD3D;
@@ -665,8 +694,10 @@ struct qemu_vertex_buffer *unsafe_impl_from_IDirect3DVertexBuffer7(IDirect3DVert
 void ddraw_palette_init(struct qemu_palette *palette, struct qemu_ddraw *ddraw, IUnknown *iface_to_release);
 struct qemu_palette *unsafe_impl_from_IDirectDrawPalette(IDirectDrawPalette *iface);
 
+void d3d_viewport_guest_init(struct qemu_viewport *viewport);
 
 #else
+
 
 void qemu_DirectDrawCreateClipper(struct qemu_syscall *call);
 void qemu_d3d1_CreateLight(struct qemu_syscall *call);
@@ -831,6 +862,25 @@ void qemu_d3d_vertex_buffer7_ProcessVertices(struct qemu_syscall *call);
 void qemu_d3d_vertex_buffer7_ProcessVerticesStrided(struct qemu_syscall *call);
 void qemu_d3d_vertex_buffer7_Release(struct qemu_syscall *call);
 void qemu_d3d_vertex_buffer7_Unlock(struct qemu_syscall *call);
+void qemu_d3d_viewport_AddLight(struct qemu_syscall *call);
+void qemu_d3d_viewport_Clear(struct qemu_syscall *call);
+void qemu_d3d_viewport_Clear2(struct qemu_syscall *call);
+void qemu_d3d_viewport_DeleteLight(struct qemu_syscall *call);
+void qemu_d3d_viewport_GetBackground(struct qemu_syscall *call);
+void qemu_d3d_viewport_GetBackgroundDepth(struct qemu_syscall *call);
+void qemu_d3d_viewport_GetBackgroundDepth2(struct qemu_syscall *call);
+void qemu_d3d_viewport_GetViewport(struct qemu_syscall *call);
+void qemu_d3d_viewport_GetViewport2(struct qemu_syscall *call);
+void qemu_d3d_viewport_Initialize(struct qemu_syscall *call);
+void qemu_d3d_viewport_LightElements(struct qemu_syscall *call);
+void qemu_d3d_viewport_NextLight(struct qemu_syscall *call);
+void qemu_d3d_viewport_Release(struct qemu_syscall *call);
+void qemu_d3d_viewport_SetBackground(struct qemu_syscall *call);
+void qemu_d3d_viewport_SetBackgroundDepth(struct qemu_syscall *call);
+void qemu_d3d_viewport_SetBackgroundDepth2(struct qemu_syscall *call);
+void qemu_d3d_viewport_SetViewport(struct qemu_syscall *call);
+void qemu_d3d_viewport_SetViewport2(struct qemu_syscall *call);
+void qemu_d3d_viewport_TransformVertices(struct qemu_syscall *call);
 void qemu_ddraw1_Compact(struct qemu_syscall *call);
 void qemu_ddraw1_CreateSurface(struct qemu_syscall *call);
 void qemu_ddraw1_DuplicateSurface(struct qemu_syscall *call);
