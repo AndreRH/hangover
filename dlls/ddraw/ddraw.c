@@ -5491,7 +5491,7 @@ struct qemu_d3d_EnumZBufferFormats_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT __fastcall qemu_d3d_EnumZBufferFormats_host_cb(struct qemu_d3d_EnumZBufferFormats_cb *data)
+static HRESULT __fastcall qemu_d3d_EnumZBufferFormats_guest_cb(struct qemu_d3d_EnumZBufferFormats_cb *data)
 {
     LPD3DENUMPIXELFORMATSCALLBACK func = (LPD3DENUMPIXELFORMATSCALLBACK)(ULONG_PTR)data->func;
     return func((DDPIXELFORMAT *)(ULONG_PTR)data->fmt, (void *)(ULONG_PTR)data->context);
@@ -5506,7 +5506,7 @@ static HRESULT WINAPI d3d7_EnumZBufferFormats(IDirect3D7 *iface, REFCLSID device
     call.device_iid = (ULONG_PTR)device_iid;
     call.callback = (ULONG_PTR)callback;
     call.context = (ULONG_PTR)context;
-    call.wrapper = (ULONG_PTR)qemu_d3d_EnumZBufferFormats_host_cb;
+    call.wrapper = (ULONG_PTR)qemu_d3d_EnumZBufferFormats_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -5522,7 +5522,7 @@ static HRESULT WINAPI d3d3_EnumZBufferFormats(IDirect3D3 *iface, REFCLSID device
     call.device_iid = (ULONG_PTR)device_iid;
     call.callback = (ULONG_PTR)callback;
     call.context = (ULONG_PTR)context;
-    call.wrapper = (ULONG_PTR)qemu_d3d_EnumZBufferFormats_host_cb;
+    call.wrapper = (ULONG_PTR)qemu_d3d_EnumZBufferFormats_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -5561,8 +5561,18 @@ void qemu_d3d_EnumZBufferFormats(struct qemu_syscall *call)
     ctx.wrapper = c->wrapper;
     ctx.context = c->context;
 
-    c->super.iret = IDirect3D3_EnumZBufferFormats(ddraw->host_d3d7, QEMU_G2H(c->device_iid),
-            c->callback ? qemu_d3d_EnumZBufferFormats_host_cb : NULL, &ctx);
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_D3D7_ENUMZBUFFERFORMATS):
+            c->super.iret = IDirect3D7_EnumZBufferFormats(ddraw->host_d3d7, QEMU_G2H(c->device_iid),
+                    c->callback ? qemu_d3d_EnumZBufferFormats_host_cb : NULL, &ctx);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_D3D3_ENUMZBUFFERFORMATS):
+            c->super.iret = IDirect3D3_EnumZBufferFormats(ddraw->host_d3d3, QEMU_G2H(c->device_iid),
+                    c->callback ? qemu_d3d_EnumZBufferFormats_host_cb : NULL, &ctx);
+            break;
+    }
 }
 
 #endif
