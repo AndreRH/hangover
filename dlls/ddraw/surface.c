@@ -460,6 +460,12 @@ static ULONG ddraw_surface_release_iface(struct qemu_surface *surface)
         IUnknown *release_iface = surface->ifaceToRelease;
         IDirectDrawPalette *release_pal = NULL;
 
+        if(!surface->is_complex_root)
+        {
+            WINE_WARN("(%p) Attempt to destroy a surface that is not a complex root\n", surface);
+            return iface_count;
+        }
+
         if (surface->device1)
             IUnknown_Release(&surface->device1->IUnknown_inner);
 
@@ -9108,6 +9114,7 @@ void qemu_surface_guest_init(struct qemu_surface *surface, struct qemu_ddraw *dd
     surface->iface_count = 1;
     surface->version = version;
     surface->ddraw = ddraw;
+    surface->is_complex_root = TRUE;
 
     if (version == 7)
     {

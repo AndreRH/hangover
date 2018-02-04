@@ -3477,6 +3477,8 @@ void __fastcall surface_guest_init_complex(void *call)
     struct qemu_surface *surface = (struct qemu_surface *)(ULONG_PTR)c->surface;
 
     qemu_surface_guest_init(surface, ddraw, c->version);
+
+    surface->is_complex_root = FALSE;
 }
 
 #else
@@ -3587,7 +3589,7 @@ void qemu_ddraw7_CreateSurface(struct qemu_syscall *call)
 
         ctx.ddraw = ddraw;
         ctx.version = 7;
-        if (FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(object->host_surface7, object, enum_Callback)))
+        if (FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(object->host_surface7, &ctx, enum_Callback)))
             WINE_ERR("Surface enumeration failed!\n");
 
         c->object = QEMU_H2G(object);
@@ -3701,7 +3703,7 @@ void qemu_ddraw4_CreateSurface(struct qemu_syscall *call)
 
         ctx.ddraw = ddraw;
         ctx.version = 4;
-        if (FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(object->host_surface7, object, enum_Callback)))
+        if (FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(object->host_surface7, &ctx, enum_Callback)))
             WINE_ERR("Surface enumeration failed!\n");
 
         c->object = QEMU_H2G(object);
@@ -3812,7 +3814,7 @@ void qemu_ddraw2_CreateSurface(struct qemu_syscall *call)
 
         ctx.ddraw = ddraw;
         ctx.version = 2;
-        if (FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(object->host_surface7, object, enum_Callback)))
+        if (FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(object->host_surface7, &ctx, enum_Callback)))
             WINE_ERR("Surface enumeration failed!\n");
 
         c->object = QEMU_H2G(object);
@@ -3923,7 +3925,7 @@ void qemu_ddraw1_CreateSurface(struct qemu_syscall *call)
 
         ctx.ddraw = ddraw;
         ctx.version = 7;
-        if (FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(object->host_surface7, object, enum_Callback)))
+        if (FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(object->host_surface7, &ctx, enum_Callback)))
             WINE_ERR("Surface enumeration failed!\n");
 
         c->object = QEMU_H2G(object);

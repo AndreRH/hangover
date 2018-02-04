@@ -565,6 +565,7 @@ struct qemu_surface
     IUnknown                *attached_iface;
 
     int                     version;
+    BOOL                    is_complex_root;
     struct qemu_ddraw       *ddraw;
     struct qemu_device      *device1;
 
