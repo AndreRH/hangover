@@ -1418,7 +1418,7 @@ void qemu_ddraw7_GetFourCCCodes(struct qemu_syscall *call)
     struct qemu_ddraw7_GetFourCCCodes *c = (struct qemu_ddraw7_GetFourCCCodes *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw7_GetFourCCCodes(ddraw->host_ddraw7, QEMU_G2H(c->NumCodes), QEMU_G2H(c->Codes));
@@ -1457,7 +1457,7 @@ void qemu_ddraw4_GetFourCCCodes(struct qemu_syscall *call)
     struct qemu_ddraw4_GetFourCCCodes *c = (struct qemu_ddraw4_GetFourCCCodes *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw4_GetFourCCCodes(ddraw->host_ddraw4, QEMU_G2H(c->codes_count), QEMU_G2H(c->codes));
@@ -1496,7 +1496,7 @@ void qemu_ddraw2_GetFourCCCodes(struct qemu_syscall *call)
     struct qemu_ddraw2_GetFourCCCodes *c = (struct qemu_ddraw2_GetFourCCCodes *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw2_GetFourCCCodes(ddraw->host_ddraw2, QEMU_G2H(c->codes_count), QEMU_G2H(c->codes));
@@ -1535,7 +1535,7 @@ void qemu_ddraw1_GetFourCCCodes(struct qemu_syscall *call)
     struct qemu_ddraw1_GetFourCCCodes *c = (struct qemu_ddraw1_GetFourCCCodes *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw_GetFourCCCodes(ddraw->host_ddraw1, QEMU_G2H(c->codes_count), QEMU_G2H(c->codes));
@@ -2618,7 +2618,7 @@ void qemu_ddraw7_TestCooperativeLevel(struct qemu_syscall *call)
     struct qemu_ddraw7_TestCooperativeLevel *c = (struct qemu_ddraw7_TestCooperativeLevel *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw7_TestCooperativeLevel(ddraw->host_ddraw7);
@@ -2653,7 +2653,7 @@ void qemu_ddraw4_TestCooperativeLevel(struct qemu_syscall *call)
     struct qemu_ddraw4_TestCooperativeLevel *c = (struct qemu_ddraw4_TestCooperativeLevel *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw4_TestCooperativeLevel(ddraw->host_ddraw4);
@@ -3200,7 +3200,7 @@ void qemu_ddraw7_GetSurfaceFromDC(struct qemu_syscall *call)
     IUnknown *priv;
     DWORD size = sizeof(priv);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw7_GetSurfaceFromDC(ddraw->host_ddraw7, QEMU_G2H(c->dc), &surface);
@@ -3273,7 +3273,7 @@ void qemu_ddraw4_GetSurfaceFromDC(struct qemu_syscall *call)
     IUnknown *priv;
     DWORD size = sizeof(priv);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw4_GetSurfaceFromDC(ddraw->host_ddraw4, QEMU_G2H(c->dc),

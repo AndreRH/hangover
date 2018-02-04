@@ -3076,7 +3076,7 @@ void qemu_ddraw_surface7_SetPriority(struct qemu_syscall *call)
     struct qemu_ddraw_surface7_SetPriority *c = (struct qemu_ddraw_surface7_SetPriority *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface7_SetPriority(surface->host_surface7, c->priority);
@@ -3113,7 +3113,7 @@ void qemu_ddraw_surface7_GetPriority(struct qemu_syscall *call)
     struct qemu_ddraw_surface7_GetPriority *c = (struct qemu_ddraw_surface7_GetPriority *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface7_GetPriority(surface->host_surface7, QEMU_G2H(c->priority));
@@ -4816,7 +4816,7 @@ void qemu_ddraw_surface7_GetOverlayPosition(struct qemu_syscall *call)
     struct qemu_ddraw_surface7_GetOverlayPosition *c = (struct qemu_ddraw_surface7_GetOverlayPosition *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface7_GetOverlayPosition(surface->host_surface7, QEMU_G2H(c->x), QEMU_G2H(c->y));
@@ -4855,7 +4855,7 @@ void qemu_ddraw_surface4_GetOverlayPosition(struct qemu_syscall *call)
     struct qemu_ddraw_surface4_GetOverlayPosition *c = (struct qemu_ddraw_surface4_GetOverlayPosition *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface4_GetOverlayPosition(surface->host_surface4, QEMU_G2H(c->x), QEMU_G2H(c->y));
@@ -4894,7 +4894,7 @@ void qemu_ddraw_surface3_GetOverlayPosition(struct qemu_syscall *call)
     struct qemu_ddraw_surface3_GetOverlayPosition *c = (struct qemu_ddraw_surface3_GetOverlayPosition *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface3_GetOverlayPosition(surface->host_surface3, QEMU_G2H(c->x), QEMU_G2H(c->y));
@@ -4933,7 +4933,7 @@ void qemu_ddraw_surface2_GetOverlayPosition(struct qemu_syscall *call)
     struct qemu_ddraw_surface2_GetOverlayPosition *c = (struct qemu_ddraw_surface2_GetOverlayPosition *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface2_GetOverlayPosition(surface->host_surface2, QEMU_G2H(c->x), QEMU_G2H(c->y));
@@ -4972,7 +4972,7 @@ void qemu_ddraw_surface1_GetOverlayPosition(struct qemu_syscall *call)
     struct qemu_ddraw_surface1_GetOverlayPosition *c = (struct qemu_ddraw_surface1_GetOverlayPosition *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface_GetOverlayPosition(surface->host_surface1, QEMU_G2H(c->x), QEMU_G2H(c->y));
@@ -5009,7 +5009,7 @@ void qemu_ddraw_surface7_GetPixelFormat(struct qemu_syscall *call)
     struct qemu_ddraw_surface7_GetPixelFormat *c = (struct qemu_ddraw_surface7_GetPixelFormat *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface7_GetPixelFormat(surface->host_surface7, QEMU_G2H(c->PixelFormat));

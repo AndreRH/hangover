@@ -241,7 +241,7 @@ void qemu_ddraw_palette_GetCaps(struct qemu_syscall *call)
     struct qemu_ddraw_palette_GetCaps *c = (struct qemu_ddraw_palette_GetCaps *)call;
     struct qemu_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawPalette_GetCaps(palette->host, QEMU_G2H(c->caps));
@@ -285,7 +285,7 @@ void qemu_ddraw_palette_SetEntries(struct qemu_syscall *call)
     struct qemu_ddraw_palette_SetEntries *c = (struct qemu_ddraw_palette_SetEntries *)call;
     struct qemu_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawPalette_SetEntries(palette->host, c->flags, c->start, c->count, QEMU_G2H(c->entries));
@@ -329,7 +329,7 @@ void qemu_ddraw_palette_GetEntries(struct qemu_syscall *call)
     struct qemu_ddraw_palette_GetEntries *c = (struct qemu_ddraw_palette_GetEntries *)call;
     struct qemu_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawPalette_GetEntries(palette->host, c->flags, c->start, c->count, QEMU_G2H(c->entries));

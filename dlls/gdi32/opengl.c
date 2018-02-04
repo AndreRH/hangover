@@ -123,7 +123,7 @@ WINBASEAPI INT WINAPI GetPixelFormat(HDC hdc)
 void qemu_GetPixelFormat(struct qemu_syscall *call)
 {
     struct qemu_GetPixelFormat *c = (struct qemu_GetPixelFormat *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetPixelFormat(QEMU_G2H(c->hdc));
 }
 

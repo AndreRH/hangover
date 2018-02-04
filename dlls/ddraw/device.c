@@ -4329,7 +4329,8 @@ struct qemu_d3d_device7_ComputeSphereVisibility
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_device7_ComputeSphereVisibility(IDirect3DDevice7 *iface, D3DVECTOR *centers, D3DVALUE *radii, DWORD sphere_count, DWORD flags, DWORD *return_values)
+static HRESULT WINAPI d3d_device7_ComputeSphereVisibility(IDirect3DDevice7 *iface, D3DVECTOR *centers, D3DVALUE *radii,
+        DWORD sphere_count, DWORD flags, DWORD *return_values)
 {
     struct qemu_d3d_device7_ComputeSphereVisibility call;
     struct qemu_device *device = impl_from_IDirect3DDevice7(iface);
@@ -4353,10 +4354,11 @@ void qemu_d3d_device7_ComputeSphereVisibility(struct qemu_syscall *call)
     struct qemu_d3d_device7_ComputeSphereVisibility *c = (struct qemu_d3d_device7_ComputeSphereVisibility *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice7_ComputeSphereVisibility(device->host7, QEMU_G2H(c->centers), QEMU_G2H(c->radii), c->sphere_count, c->flags, QEMU_G2H(c->return_values));
+    c->super.iret = IDirect3DDevice7_ComputeSphereVisibility(device->host7, QEMU_G2H(c->centers), QEMU_G2H(c->radii),
+            c->sphere_count, c->flags, QEMU_G2H(c->return_values));
 }
 
 #endif
@@ -4603,7 +4605,7 @@ void qemu_d3d_device7_GetTextureStageState(struct qemu_syscall *call)
     struct qemu_d3d_device7_GetTextureStageState *c = (struct qemu_d3d_device7_GetTextureStageState *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_GetTextureStageState(device->host7, c->stage, c->state, QEMU_G2H(c->value));
@@ -4644,7 +4646,7 @@ void qemu_d3d_device3_GetTextureStageState(struct qemu_syscall *call)
     struct qemu_d3d_device3_GetTextureStageState *c = (struct qemu_d3d_device3_GetTextureStageState *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice3_GetTextureStageState(device->host3, c->stage, c->state, QEMU_G2H(c->value));
@@ -4685,7 +4687,7 @@ void qemu_d3d_device7_SetTextureStageState(struct qemu_syscall *call)
     struct qemu_d3d_device7_SetTextureStageState *c = (struct qemu_d3d_device7_SetTextureStageState *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_SetTextureStageState(device->host7, c->stage, c->state, c->value);
@@ -4726,7 +4728,7 @@ void qemu_d3d_device3_SetTextureStageState(struct qemu_syscall *call)
     struct qemu_d3d_device3_SetTextureStageState *c = (struct qemu_d3d_device3_SetTextureStageState *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice3_SetTextureStageState(device->host3, c->stage, c->state, c->value);
@@ -4921,7 +4923,7 @@ void qemu_d3d_device7_GetViewport(struct qemu_syscall *call)
     struct qemu_d3d_device7_GetViewport *c = (struct qemu_d3d_device7_GetViewport *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_GetViewport(device->host7, QEMU_G2H(c->viewport));
@@ -4995,7 +4997,7 @@ void qemu_d3d_device7_GetMaterial(struct qemu_syscall *call)
     struct qemu_d3d_device7_GetMaterial *c = (struct qemu_d3d_device7_GetMaterial *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_GetMaterial(device->host7, QEMU_G2H(c->material));
@@ -5503,7 +5505,7 @@ void qemu_d3d_device7_SetClipPlane(struct qemu_syscall *call)
     struct qemu_d3d_device7_SetClipPlane *c = (struct qemu_d3d_device7_SetClipPlane *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_SetClipPlane(device->host7, c->idx, QEMU_G2H(c->plane));
@@ -5542,7 +5544,7 @@ void qemu_d3d_device7_GetClipPlane(struct qemu_syscall *call)
     struct qemu_d3d_device7_GetClipPlane *c = (struct qemu_d3d_device7_GetClipPlane *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_GetClipPlane(device->host7, c->idx, QEMU_G2H(c->plane));
