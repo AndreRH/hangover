@@ -401,9 +401,11 @@ static HRESULT WINAPI d3d_material3_GetHandle(IDirect3DMaterial3 *iface, IDirect
 {
     struct qemu_d3d_material3_GetHandle call;
     struct qemu_material *material = impl_from_IDirect3DMaterial3(iface);
+    struct qemu_device *dev_impl = unsafe_impl_from_IDirect3DDevice3(device);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_MATERIAL3_GETHANDLE);
     call.iface = (ULONG_PTR)material;
-    call.device = (ULONG_PTR)device;
+    call.device = (ULONG_PTR)dev_impl;
     call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
@@ -417,11 +419,13 @@ void qemu_d3d_material3_GetHandle(struct qemu_syscall *call)
 {
     struct qemu_d3d_material3_GetHandle *c = (struct qemu_d3d_material3_GetHandle *)call;
     struct qemu_material *material;
+    struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     material = QEMU_G2H(c->iface);
+    device = QEMU_G2H(c->device);
 
-    c->super.iret = IDirect3DMaterial3_GetHandle(material->host3, QEMU_G2H(c->device), QEMU_G2H(c->handle));
+    c->super.iret = IDirect3DMaterial3_GetHandle(material->host3, device ? device->host3 : NULL, QEMU_G2H(c->handle));
 }
 
 #endif
@@ -440,9 +444,11 @@ static HRESULT WINAPI d3d_material2_GetHandle(IDirect3DMaterial2 *iface, IDirect
 {
     struct qemu_d3d_material2_GetHandle call;
     struct qemu_material *material = impl_from_IDirect3DMaterial2(iface);
+    struct qemu_device *dev_impl = unsafe_impl_from_IDirect3DDevice2(device);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_MATERIAL2_GETHANDLE);
     call.iface = (ULONG_PTR)material;
-    call.device = (ULONG_PTR)device;
+    call.device = (ULONG_PTR)dev_impl;
     call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
@@ -456,11 +462,13 @@ void qemu_d3d_material2_GetHandle(struct qemu_syscall *call)
 {
     struct qemu_d3d_material2_GetHandle *c = (struct qemu_d3d_material2_GetHandle *)call;
     struct qemu_material *material;
+    struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     material = QEMU_G2H(c->iface);
+    device = QEMU_G2H(c->device);
 
-    c->super.iret = IDirect3DMaterial2_GetHandle(material->host2, QEMU_G2H(c->device), QEMU_G2H(c->handle));
+    c->super.iret = IDirect3DMaterial2_GetHandle(material->host2, device ? device->host2 : NULL, QEMU_G2H(c->handle));
 }
 
 #endif
@@ -479,6 +487,8 @@ static HRESULT WINAPI d3d_material1_GetHandle(IDirect3DMaterial *iface, IDirect3
 {
     struct qemu_d3d_material1_GetHandle call;
     struct qemu_material *material = impl_from_IDirect3DMaterial(iface);
+    struct qemu_device *dev_impl = unsafe_impl_from_IDirect3DDevice(device);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_MATERIAL1_GETHANDLE);
     call.iface = (ULONG_PTR)material;
     call.device = (ULONG_PTR)device;
@@ -495,11 +505,13 @@ void qemu_d3d_material1_GetHandle(struct qemu_syscall *call)
 {
     struct qemu_d3d_material1_GetHandle *c = (struct qemu_d3d_material1_GetHandle *)call;
     struct qemu_material *material;
+    struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     material = QEMU_G2H(c->iface);
+    device = QEMU_G2H(c->device);
 
-    c->super.iret = IDirect3DMaterial_GetHandle(material->host1, QEMU_G2H(c->device), QEMU_G2H(c->handle));
+    c->super.iret = IDirect3DMaterial_GetHandle(material->host1, device ? device->host1 : NULL, QEMU_G2H(c->handle));
 }
 
 #endif
