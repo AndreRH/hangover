@@ -695,6 +695,9 @@ void ddraw_palette_init(struct qemu_palette *palette, struct qemu_ddraw *ddraw, 
 struct qemu_palette *unsafe_impl_from_IDirectDrawPalette(IDirectDrawPalette *iface);
 
 void d3d_viewport_guest_init(struct qemu_viewport *viewport);
+struct qemu_viewport *unsafe_impl_from_IDirect3DViewport3(IDirect3DViewport3 *iface);
+struct qemu_viewport *unsafe_impl_from_IDirect3DViewport2(IDirect3DViewport2 *iface);
+struct qemu_viewport *unsafe_impl_from_IDirect3DViewport(IDirect3DViewport *iface);
 
 #else
 

@@ -827,6 +827,32 @@ static const struct IDirect3DViewport3Vtbl d3d_viewport_vtbl =
     d3d_viewport_Clear2,
 };
 
+struct qemu_viewport *unsafe_impl_from_IDirect3DViewport3(IDirect3DViewport3 *iface)
+{
+    if (!iface) return NULL;
+    if (iface->lpVtbl != &d3d_viewport_vtbl)
+        WINE_ERR("Invalid IDirect3DViewport3 vtable!\n");
+    return CONTAINING_RECORD(iface, struct qemu_viewport, IDirect3DViewport3_iface);
+}
+
+struct qemu_viewport *unsafe_impl_from_IDirect3DViewport2(IDirect3DViewport2 *iface)
+{
+    /* IDirect3DViewport and IDirect3DViewport3 use the same iface. */
+    if (!iface) return NULL;
+    if (iface->lpVtbl != (IDirect3DViewport2Vtbl *)&d3d_viewport_vtbl)
+        WINE_ERR("Invalid IDirect3DViewport2 vtable!\n");
+    return CONTAINING_RECORD(iface, struct qemu_viewport, IDirect3DViewport3_iface);
+}
+
+struct qemu_viewport *unsafe_impl_from_IDirect3DViewport(IDirect3DViewport *iface)
+{
+    /* IDirect3DViewport and IDirect3DViewport3 use the same iface. */
+    if (!iface) return NULL;
+    if (iface->lpVtbl != (IDirect3DViewportVtbl *)&d3d_viewport_vtbl)
+        WINE_ERR("Invalid IDirect3DViewport vtable!\n");
+    return CONTAINING_RECORD(iface, struct qemu_viewport, IDirect3DViewport3_iface);
+}
+
 void d3d_viewport_guest_init(struct qemu_viewport *viewport)
 {
     viewport->IDirect3DViewport3_iface.lpVtbl = &d3d_viewport_vtbl;

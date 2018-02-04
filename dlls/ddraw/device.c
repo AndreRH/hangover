@@ -788,11 +788,17 @@ static HRESULT WINAPI d3d_device3_AddViewport(IDirect3DDevice3 *iface, IDirect3D
 {
     struct qemu_d3d_device3_AddViewport call;
     struct qemu_device *device = impl_from_IDirect3DDevice3(iface);
+    struct qemu_viewport *impl = unsafe_impl_from_IDirect3DViewport3(viewport);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE3_ADDVIEWPORT);
     call.iface = (ULONG_PTR)device;
-    call.viewport = (ULONG_PTR)viewport;
+    call.viewport = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
+
+    /* FIXME: I'll have to keep a list of viewport to Release them when the device is destroyed. */
+    if (SUCCEEDED(call.super.iret))
+        IDirect3DViewport3_AddRef(viewport);
 
     return call.super.iret;
 }
@@ -803,11 +809,13 @@ void qemu_d3d_device3_AddViewport(struct qemu_syscall *call)
 {
     struct qemu_d3d_device3_AddViewport *c = (struct qemu_d3d_device3_AddViewport *)call;
     struct qemu_device *device;
+    struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    viewport = QEMU_G2H(c->viewport);
 
-    c->super.iret = IDirect3DDevice3_AddViewport(device->host3, QEMU_G2H(c->viewport));
+    c->super.iret = IDirect3DDevice3_AddViewport(device->host3, viewport ? viewport->host : NULL);
 }
 
 #endif
@@ -825,11 +833,16 @@ static HRESULT WINAPI d3d_device2_AddViewport(IDirect3DDevice2 *iface, IDirect3D
 {
     struct qemu_d3d_device2_AddViewport call;
     struct qemu_device *device = impl_from_IDirect3DDevice2(iface);
+    struct qemu_viewport *impl = unsafe_impl_from_IDirect3DViewport2(viewport);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE2_ADDVIEWPORT);
     call.iface = (ULONG_PTR)device;
-    call.viewport = (ULONG_PTR)viewport;
+    call.viewport = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+        IDirect3DViewport2_AddRef(viewport);
 
     return call.super.iret;
 }
@@ -840,11 +853,13 @@ void qemu_d3d_device2_AddViewport(struct qemu_syscall *call)
 {
     struct qemu_d3d_device2_AddViewport *c = (struct qemu_d3d_device2_AddViewport *)call;
     struct qemu_device *device;
+    struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    viewport = QEMU_G2H(c->viewport);
 
-    c->super.iret = IDirect3DDevice2_AddViewport(device->host2, QEMU_G2H(c->viewport));
+    c->super.iret = IDirect3DDevice2_AddViewport(device->host2, viewport ? (IDirect3DViewport2 *)viewport->host : NULL);
 }
 
 #endif
@@ -862,11 +877,16 @@ static HRESULT WINAPI d3d_device1_AddViewport(IDirect3DDevice *iface, IDirect3DV
 {
     struct qemu_d3d_device1_AddViewport call;
     struct qemu_device *device = impl_from_IDirect3DDevice(iface);
+    struct qemu_viewport *impl = unsafe_impl_from_IDirect3DViewport(viewport);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE1_ADDVIEWPORT);
     call.iface = (ULONG_PTR)device;
-    call.viewport = (ULONG_PTR)viewport;
+    call.viewport = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+        IDirect3DViewport_AddRef(viewport);
 
     return call.super.iret;
 }
@@ -877,11 +897,13 @@ void qemu_d3d_device1_AddViewport(struct qemu_syscall *call)
 {
     struct qemu_d3d_device1_AddViewport *c = (struct qemu_d3d_device1_AddViewport *)call;
     struct qemu_device *device;
+    struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    viewport = QEMU_G2H(c->viewport);
 
-    c->super.iret = IDirect3DDevice_AddViewport(device->host1, QEMU_G2H(c->viewport));
+    c->super.iret = IDirect3DDevice_AddViewport(device->host1, viewport ? (IDirect3DViewport *)viewport->host : NULL);
 }
 
 #endif
