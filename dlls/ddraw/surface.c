@@ -3752,7 +3752,7 @@ struct qemu_ddraw_surface_EnumAttachedSurfaces_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT __fastcall ddraw_surface7_EnumAttachedSurfaces_guest_cb(
+HRESULT __fastcall ddraw_surface7_EnumAttachedSurfaces_guest_cb(
         struct qemu_ddraw_surface_EnumAttachedSurfaces_cb *data)
 {
     LPDDENUMSURFACESCALLBACK7 cb = (LPDDENUMSURFACESCALLBACK7)(ULONG_PTR)data->func;
@@ -3779,7 +3779,7 @@ static HRESULT WINAPI ddraw_surface7_EnumAttachedSurfaces(IDirectDrawSurface7 *i
     return call.super.iret;
 }
 
-static HRESULT __fastcall ddraw_surface4_EnumAttachedSurfaces_guest_cb(
+HRESULT __fastcall ddraw_surface4_EnumAttachedSurfaces_guest_cb(
         struct qemu_ddraw_surface_EnumAttachedSurfaces_cb *data)
 {
     LPDDENUMSURFACESCALLBACK2 cb = (LPDDENUMSURFACESCALLBACK2)(ULONG_PTR)data->func;
@@ -3805,7 +3805,7 @@ static HRESULT WINAPI ddraw_surface4_EnumAttachedSurfaces(IDirectDrawSurface4 *i
     return call.super.iret;
 }
 
-static HRESULT __fastcall ddraw_surface1_EnumAttachedSurfaces_guest_cb(
+HRESULT __fastcall ddraw_surface1_EnumAttachedSurfaces_guest_cb(
         struct qemu_ddraw_surface_EnumAttachedSurfaces_cb *data)
 {
     LPDDENUMSURFACESCALLBACK cb = (LPDDENUMSURFACESCALLBACK)(ULONG_PTR)data->func;
@@ -3863,16 +3863,9 @@ static HRESULT WINAPI ddraw_surface1_EnumAttachedSurfaces(IDirectDrawSurface *if
 
 #else
 
-struct ddraw_surface7_EnumAttachedSurfaces_host_data
-{
-    uint64_t guest_func;
-    uint64_t guest_ctx;
-    uint64_t wrapper;
-};
-
 static HRESULT common_EnumAttachedSurfaces_host_cb(struct qemu_surface *surface, DDSURFACEDESC2 *desc, void *context)
 {
-    struct ddraw_surface7_EnumAttachedSurfaces_host_data *ctx = context;
+    struct ddraw_surface_EnumAttachedSurfaces_host_data *ctx = context;
     struct qemu_ddraw_surface_EnumAttachedSurfaces_cb call;
     struct qemu_DDSURFACEDESC2 desc32;
     HRESULT ret;
@@ -3904,7 +3897,7 @@ static HRESULT common_EnumAttachedSurfaces_host_cb(struct qemu_surface *surface,
     return ret;
 }
 
-static HRESULT WINAPI ddraw_surface7_EnumAttachedSurfaces_host_cb(IDirectDrawSurface7 *surface,
+HRESULT WINAPI ddraw_surface7_EnumAttachedSurfaces_host_cb(IDirectDrawSurface7 *surface,
         DDSURFACEDESC2 *desc, void *context)
 {
     IUnknown *priv;
@@ -3927,7 +3920,7 @@ void qemu_ddraw_surface7_EnumAttachedSurfaces(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface_EnumAttachedSurfaces *c = (struct qemu_ddraw_surface_EnumAttachedSurfaces *)call;
     struct qemu_surface *surface;
-    struct ddraw_surface7_EnumAttachedSurfaces_host_data ctx;
+    struct ddraw_surface_EnumAttachedSurfaces_host_data ctx;
 
     WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
@@ -3940,7 +3933,7 @@ void qemu_ddraw_surface7_EnumAttachedSurfaces(struct qemu_syscall *call)
             c->callback ? ddraw_surface7_EnumAttachedSurfaces_host_cb : NULL);
 }
 
-static HRESULT WINAPI ddraw_surface4_EnumAttachedSurfaces_host_cb(IDirectDrawSurface4 *surface,
+HRESULT WINAPI ddraw_surface4_EnumAttachedSurfaces_host_cb(IDirectDrawSurface4 *surface,
         DDSURFACEDESC2 *desc, void *context)
 {
     IUnknown *priv;
@@ -3963,7 +3956,7 @@ void qemu_ddraw_surface4_EnumAttachedSurfaces(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface_EnumAttachedSurfaces *c = (struct qemu_ddraw_surface_EnumAttachedSurfaces *)call;
     struct qemu_surface *surface;
-    struct ddraw_surface7_EnumAttachedSurfaces_host_data ctx;
+    struct ddraw_surface_EnumAttachedSurfaces_host_data ctx;
 
     WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
@@ -3976,7 +3969,7 @@ void qemu_ddraw_surface4_EnumAttachedSurfaces(struct qemu_syscall *call)
             c->callback ? ddraw_surface4_EnumAttachedSurfaces_host_cb : NULL);
 }
 
-static HRESULT WINAPI ddraw_surface1_EnumAttachedSurfaces_host_cb(IDirectDrawSurface *surface,
+HRESULT WINAPI ddraw_surface1_EnumAttachedSurfaces_host_cb(IDirectDrawSurface *surface,
         DDSURFACEDESC *desc, void *context)
 {
     IDirectDrawSurface7 *s7;
@@ -3992,7 +3985,7 @@ void qemu_ddraw_surface1_EnumAttachedSurfaces(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface_EnumAttachedSurfaces *c = (struct qemu_ddraw_surface_EnumAttachedSurfaces *)call;
     struct qemu_surface *surface;
-    struct ddraw_surface7_EnumAttachedSurfaces_host_data ctx;
+    struct ddraw_surface_EnumAttachedSurfaces_host_data ctx;
 
     WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);

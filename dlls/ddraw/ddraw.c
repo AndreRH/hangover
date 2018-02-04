@@ -3936,50 +3936,7 @@ void qemu_ddraw1_CreateSurface(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_ddraw7_EnumSurfaces
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t Flags;
-    uint64_t DDSD;
-    uint64_t Context;
-    uint64_t Callback;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI ddraw7_EnumSurfaces(IDirectDraw7 *iface, DWORD Flags, DDSURFACEDESC2 *DDSD, void *Context, LPDDENUMSURFACESCALLBACK7 Callback)
-{
-    struct qemu_ddraw *ddraw = impl_from_IDirectDraw7(iface);
-    struct qemu_ddraw7_EnumSurfaces call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW7_ENUMSURFACES);
-    call.iface = (ULONG_PTR)ddraw;
-    call.Flags = Flags;
-    call.DDSD = (ULONG_PTR)DDSD;
-    call.Context = (ULONG_PTR)Context;
-    call.Callback = (ULONG_PTR)Callback;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_ddraw7_EnumSurfaces(struct qemu_syscall *call)
-{
-    struct qemu_ddraw7_EnumSurfaces *c = (struct qemu_ddraw7_EnumSurfaces *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDraw7_EnumSurfaces(ddraw->host_ddraw7, c->Flags, QEMU_G2H(c->DDSD), QEMU_G2H(c->Context), QEMU_G2H(c->Callback));
-}
-
-#endif
-
-struct qemu_ddraw4_EnumSurfaces
+struct qemu_ddraw_EnumSurfaces
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -3987,106 +3944,82 @@ struct qemu_ddraw4_EnumSurfaces
     uint64_t surface_desc;
     uint64_t context;
     uint64_t callback;
+    uint64_t wrapper;
+};
+
+struct qemu_ddraw_EnumSurfaces_cb
+{
+    uint64_t func;
+    uint64_t surface;
+    uint64_t desc;
+    uint64_t context;
 };
 
 #ifdef QEMU_DLL_GUEST
 
+static HRESULT WINAPI ddraw7_EnumSurfaces(IDirectDraw7 *iface, DWORD flags, DDSURFACEDESC2 *surface_desc,
+        void *context, LPDDENUMSURFACESCALLBACK7 callback)
+{
+    struct qemu_ddraw_EnumSurfaces call;
+    struct qemu_ddraw *ddraw = impl_from_IDirectDraw7(iface);
+    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW7_ENUMSURFACES);
+    call.iface = (ULONG_PTR)ddraw;
+    call.flags = flags;
+    call.surface_desc = (ULONG_PTR)surface_desc;
+    call.context = (ULONG_PTR)context;
+    call.callback = (ULONG_PTR)callback;
+    call.wrapper = (ULONG_PTR)ddraw_surface7_EnumAttachedSurfaces_guest_cb;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
 static HRESULT WINAPI ddraw4_EnumSurfaces(IDirectDraw4 *iface, DWORD flags, DDSURFACEDESC2 *surface_desc, void *context, LPDDENUMSURFACESCALLBACK2 callback)
 {
+    struct qemu_ddraw_EnumSurfaces call;
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw4(iface);
-    struct qemu_ddraw4_EnumSurfaces call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW4_ENUMSURFACES);
     call.iface = (ULONG_PTR)ddraw;
     call.flags = flags;
     call.surface_desc = (ULONG_PTR)surface_desc;
     call.context = (ULONG_PTR)context;
     call.callback = (ULONG_PTR)callback;
+    call.wrapper = (ULONG_PTR)ddraw_surface4_EnumAttachedSurfaces_guest_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw4_EnumSurfaces(struct qemu_syscall *call)
-{
-    struct qemu_ddraw4_EnumSurfaces *c = (struct qemu_ddraw4_EnumSurfaces *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDraw4_EnumSurfaces(ddraw->host_ddraw4, c->flags, QEMU_G2H(c->surface_desc), QEMU_G2H(c->context), QEMU_G2H(c->callback));
-}
-
-#endif
-
-struct qemu_ddraw2_EnumSurfaces
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t flags;
-    uint64_t surface_desc;
-    uint64_t context;
-    uint64_t callback;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 static HRESULT WINAPI ddraw2_EnumSurfaces(IDirectDraw2 *iface, DWORD flags, DDSURFACEDESC *surface_desc, void *context, LPDDENUMSURFACESCALLBACK callback)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw2(iface);
-    struct qemu_ddraw2_EnumSurfaces call;
+    struct qemu_ddraw_EnumSurfaces call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW2_ENUMSURFACES);
     call.iface = (ULONG_PTR)ddraw;
     call.flags = flags;
     call.surface_desc = (ULONG_PTR)surface_desc;
     call.context = (ULONG_PTR)context;
     call.callback = (ULONG_PTR)callback;
+    call.wrapper = (ULONG_PTR)ddraw_surface1_EnumAttachedSurfaces_guest_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_ddraw2_EnumSurfaces(struct qemu_syscall *call)
-{
-    struct qemu_ddraw2_EnumSurfaces *c = (struct qemu_ddraw2_EnumSurfaces *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDraw2_EnumSurfaces(ddraw->host_ddraw2, c->flags, QEMU_G2H(c->surface_desc), QEMU_G2H(c->context), QEMU_G2H(c->callback));
-}
-
-#endif
-
-struct qemu_ddraw1_EnumSurfaces
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t flags;
-    uint64_t surface_desc;
-    uint64_t context;
-    uint64_t callback;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 static HRESULT WINAPI ddraw1_EnumSurfaces(IDirectDraw *iface, DWORD flags, DDSURFACEDESC *surface_desc, void *context, LPDDENUMSURFACESCALLBACK callback)
 {
+    struct qemu_ddraw_EnumSurfaces call;
     struct qemu_ddraw *ddraw = impl_from_IDirectDraw(iface);
-    struct qemu_ddraw1_EnumSurfaces call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW1_ENUMSURFACES);
     call.iface = (ULONG_PTR)ddraw;
     call.flags = flags;
     call.surface_desc = (ULONG_PTR)surface_desc;
     call.context = (ULONG_PTR)context;
     call.callback = (ULONG_PTR)callback;
+    call.wrapper = (ULONG_PTR)ddraw_surface1_EnumAttachedSurfaces_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -4095,15 +4028,58 @@ static HRESULT WINAPI ddraw1_EnumSurfaces(IDirectDraw *iface, DWORD flags, DDSUR
 
 #else
 
-void qemu_ddraw1_EnumSurfaces(struct qemu_syscall *call)
+void qemu_ddraw_EnumSurfaces(struct qemu_syscall *call)
 {
-    struct qemu_ddraw1_EnumSurfaces *c = (struct qemu_ddraw1_EnumSurfaces *)call;
+    struct qemu_ddraw_EnumSurfaces *c = (struct qemu_ddraw_EnumSurfaces *)call;
     struct qemu_ddraw *ddraw;
+    struct ddraw_surface_EnumAttachedSurfaces_host_data ctx;
+    DDSURFACEDESC2 stack, *surface_desc = &stack;
+    struct qemu_DDSURFACEDESC2 *desc32;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDraw_EnumSurfaces(ddraw->host_ddraw1, c->flags, QEMU_G2H(c->surface_desc), QEMU_G2H(c->context), QEMU_G2H(c->callback));
+    ctx.guest_func = c->callback;
+    ctx.guest_ctx = c->context;
+    ctx.wrapper = c->wrapper;
+
+#if GUEST_BIT == HOST_BIT
+    surface_desc = QEMU_G2H(c->surface_desc);
+#else
+    desc32 = QEMU_G2H(c->surface_desc);
+    if (!desc32)
+        surface_desc = NULL;
+    else if (desc32->dwSize == sizeof(*desc32))
+        DDSURFACEDESC2_g2h(surface_desc, desc32);
+    else if (desc32->dwSize == sizeof(DDSURFACEDESC))
+        DDSURFACEDESC_g2h((DDSURFACEDESC *)surface_desc, (struct qemu_DDSURFACEDESC *)desc32);
+    else
+        memset(surface_desc, 0, sizeof(surface_desc));
+#endif
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_DDRAW7_ENUMSURFACES):
+            c->super.iret = IDirectDraw7_EnumSurfaces(ddraw->host_ddraw7, c->flags, surface_desc, &ctx,
+                    c->callback ? ddraw_surface7_EnumAttachedSurfaces_host_cb : NULL);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DDRAW4_ENUMSURFACES):
+            c->super.iret = IDirectDraw4_EnumSurfaces(ddraw->host_ddraw4, c->flags, surface_desc, &ctx,
+                    c->callback ? ddraw_surface4_EnumAttachedSurfaces_host_cb : NULL);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DDRAW2_ENUMSURFACES):
+            c->super.iret = IDirectDraw_EnumSurfaces(ddraw->host_ddraw1, c->flags, (DDSURFACEDESC *)surface_desc, &ctx,
+                    c->callback ? ddraw_surface1_EnumAttachedSurfaces_host_cb : NULL);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_DDRAW1_ENUMSURFACES):
+            c->super.iret = IDirectDraw_EnumSurfaces(ddraw->host_ddraw1, c->flags, (DDSURFACEDESC *)surface_desc, &ctx,
+                    c->callback ? ddraw_surface1_EnumAttachedSurfaces_host_cb : NULL);
+            break;
+
+    }
 }
 
 #endif

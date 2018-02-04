@@ -643,6 +643,14 @@ void __fastcall ddraw_surface_destroy_cb(struct qemu_surface *surface);
 void __fastcall ddraw_delete_detach_cb(struct qemu_surface *surface);
 void __fastcall surface_guest_init_complex(void *call);
 
+struct qemu_ddraw_surface_EnumAttachedSurfaces_cb;
+HRESULT __fastcall ddraw_surface7_EnumAttachedSurfaces_guest_cb(
+        struct qemu_ddraw_surface_EnumAttachedSurfaces_cb *data);
+HRESULT __fastcall ddraw_surface4_EnumAttachedSurfaces_guest_cb(
+        struct qemu_ddraw_surface_EnumAttachedSurfaces_cb *data);
+HRESULT __fastcall ddraw_surface1_EnumAttachedSurfaces_guest_cb(
+        struct qemu_ddraw_surface_EnumAttachedSurfaces_cb *data);
+
 void ddraw_device_guest_init(struct qemu_device *device, struct qemu_ddraw *ddraw,
         UINT version, IUnknown *rt_iface, IUnknown *outer_unknown);
 struct qemu_device *unsafe_impl_from_IDirect3DDevice7(IDirect3DDevice7 *iface);
@@ -825,7 +833,6 @@ void qemu_d3d_vertex_buffer7_Unlock(struct qemu_syscall *call);
 void qemu_ddraw1_Compact(struct qemu_syscall *call);
 void qemu_ddraw1_CreateSurface(struct qemu_syscall *call);
 void qemu_ddraw1_DuplicateSurface(struct qemu_syscall *call);
-void qemu_ddraw1_EnumSurfaces(struct qemu_syscall *call);
 void qemu_ddraw1_FlipToGDISurface(struct qemu_syscall *call);
 void qemu_ddraw1_GetCaps(struct qemu_syscall *call);
 void qemu_ddraw1_GetFourCCCodes(struct qemu_syscall *call);
@@ -844,7 +851,6 @@ void qemu_ddraw2_Compact(struct qemu_syscall *call);
 void qemu_ddraw2_CreateSurface(struct qemu_syscall *call);
 void qemu_ddraw2_DuplicateSurface(struct qemu_syscall *call);
 void qemu_ddraw2_EnumDisplayModes(struct qemu_syscall *call);
-void qemu_ddraw2_EnumSurfaces(struct qemu_syscall *call);
 void qemu_ddraw2_FlipToGDISurface(struct qemu_syscall *call);
 void qemu_ddraw2_GetAvailableVidMem(struct qemu_syscall *call);
 void qemu_ddraw2_GetCaps(struct qemu_syscall *call);
@@ -861,7 +867,6 @@ void qemu_ddraw2_WaitForVerticalBlank(struct qemu_syscall *call);
 void qemu_ddraw4_Compact(struct qemu_syscall *call);
 void qemu_ddraw4_CreateSurface(struct qemu_syscall *call);
 void qemu_ddraw4_DuplicateSurface(struct qemu_syscall *call);
-void qemu_ddraw4_EnumSurfaces(struct qemu_syscall *call);
 void qemu_ddraw4_FlipToGDISurface(struct qemu_syscall *call);
 void qemu_ddraw4_GetAvailableVidMem(struct qemu_syscall *call);
 void qemu_ddraw4_GetCaps(struct qemu_syscall *call);
@@ -883,7 +888,6 @@ void qemu_ddraw7_Compact(struct qemu_syscall *call);
 void qemu_ddraw7_CreateSurface(struct qemu_syscall *call);
 void qemu_ddraw7_DuplicateSurface(struct qemu_syscall *call);
 void qemu_ddraw7_EnumDisplayModes(struct qemu_syscall *call);
-void qemu_ddraw7_EnumSurfaces(struct qemu_syscall *call);
 void qemu_ddraw7_EvaluateMode(struct qemu_syscall *call);
 void qemu_ddraw7_FlipToGDISurface(struct qemu_syscall *call);
 void qemu_ddraw7_GetAvailableVidMem(struct qemu_syscall *call);
@@ -904,6 +908,7 @@ void qemu_ddraw7_StartModeTest(struct qemu_syscall *call);
 void qemu_ddraw7_TestCooperativeLevel(struct qemu_syscall *call);
 void qemu_ddraw7_WaitForVerticalBlank(struct qemu_syscall *call);
 void qemu_ddraw_CreatePalette(struct qemu_syscall *call);
+void qemu_ddraw_EnumSurfaces(struct qemu_syscall *call);
 void qemu_ddraw_GetDisplayMode(struct qemu_syscall *call);
 void qemu_ddraw_clipper_GetClipList(struct qemu_syscall *call);
 void qemu_ddraw_clipper_GetHWnd(struct qemu_syscall *call);
@@ -1106,6 +1111,20 @@ static inline struct qemu_surface *surface_impl_from_IUnknown(IUnknown *iface)
 {
     return CONTAINING_RECORD(iface, struct qemu_surface, private_data);
 }
+
+struct ddraw_surface_EnumAttachedSurfaces_host_data
+{
+    uint64_t guest_func;
+    uint64_t guest_ctx;
+    uint64_t wrapper;
+};
+
+HRESULT WINAPI ddraw_surface4_EnumAttachedSurfaces_host_cb(IDirectDrawSurface4 *surface,
+        DDSURFACEDESC2 *desc, void *context);
+HRESULT WINAPI ddraw_surface1_EnumAttachedSurfaces_host_cb(IDirectDrawSurface *surface,
+        DDSURFACEDESC *desc, void *context);
+HRESULT WINAPI ddraw_surface7_EnumAttachedSurfaces_host_cb(IDirectDrawSurface7 *surface,
+        DDSURFACEDESC2 *desc, void *context);
 
 extern const struct qemu_ops *qemu_ops;
 
