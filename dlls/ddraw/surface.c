@@ -437,9 +437,12 @@ void __fastcall ddraw_surface_destroy_cb(struct qemu_surface *surface)
 
 void __fastcall ddraw_delete_detach_cb(struct qemu_surface *surface)
 {
-    WINE_TRACE("Surface %p was attached to a surface that is now gone.\n");
-    IUnknown_Release(surface->attached_iface);
+    IUnknown *release = surface->attached_iface;
+    WINE_TRACE("Surface %p was attached to a surface that is now gone.\n", surface);
+
+    release = surface->attached_iface;
     surface->attached_iface = NULL;
+    IUnknown_Release(release);
 }
 
 static ULONG ddraw_surface_release_iface(struct qemu_surface *surface)
