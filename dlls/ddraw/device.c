@@ -2110,6 +2110,7 @@ struct qemu_d3d_device3_SetRenderTarget
     uint64_t iface;
     uint64_t target;
     uint64_t flags;
+    uint64_t change;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -2118,12 +2119,21 @@ static HRESULT WINAPI d3d_device3_SetRenderTarget(IDirect3DDevice3 *iface, IDire
 {
     struct qemu_d3d_device3_SetRenderTarget call;
     struct qemu_device *device = impl_from_IDirect3DDevice3(iface);
+    struct qemu_surface *target_impl = unsafe_impl_from_IDirectDrawSurface4(target);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE3_SETRENDERTARGET);
     call.iface = (ULONG_PTR)device;
-    call.target = (ULONG_PTR)target;
+    call.target = (ULONG_PTR)target_impl;
     call.flags = flags;
 
     qemu_syscall(&call.super);
+
+    if (call.change)
+    {
+        IDirectDrawSurface4_AddRef(target);
+        IUnknown_Release(device->rt_iface);
+        device->rt_iface = (IUnknown *)target;
+    }
 
     return call.super.iret;
 }
@@ -2134,11 +2144,24 @@ void qemu_d3d_device3_SetRenderTarget(struct qemu_syscall *call)
 {
     struct qemu_d3d_device3_SetRenderTarget *c = (struct qemu_d3d_device3_SetRenderTarget *)call;
     struct qemu_device *device;
+    struct qemu_surface *target, *old;
+    BOOL z_accept = FALSE;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    target = QEMU_G2H(c->target);
 
-    c->super.iret = IDirect3DDevice3_SetRenderTarget(device->host3, QEMU_G2H(c->target), c->flags);
+    c->super.iret = IDirect3DDevice3_SetRenderTarget(device->host3, target ? target->host_surface4 : NULL, c->flags);
+
+    if (c->super.iret == DDERR_INVALIDPIXELFORMAT)
+    {
+        DDSURFACEDESC2 desc;
+        desc.dwSize = sizeof(desc);
+        IDirectDrawSurface4_GetSurfaceDesc(target->host_surface4, &desc);
+        z_accept = desc.ddsCaps.dwCaps & DDSCAPS_ZBUFFER;
+    }
+
+    c->change = SUCCEEDED(c->super.iret) || z_accept;
 }
 
 #endif
