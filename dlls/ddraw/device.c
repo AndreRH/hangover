@@ -736,17 +736,26 @@ struct qemu_d3d_device1_CreateExecuteBuffer
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_device1_CreateExecuteBuffer(IDirect3DDevice *iface, D3DEXECUTEBUFFERDESC *buffer_desc, IDirect3DExecuteBuffer **ExecuteBuffer, IUnknown *outer_unknown)
+static HRESULT WINAPI d3d_device1_CreateExecuteBuffer(IDirect3DDevice *iface, D3DEXECUTEBUFFERDESC *buffer_desc,
+        IDirect3DExecuteBuffer **ExecuteBuffer, IUnknown *outer_unknown)
 {
     struct qemu_d3d_device1_CreateExecuteBuffer call;
     struct qemu_device *device = impl_from_IDirect3DDevice(iface);
+    struct qemu_execute_buffer *object;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE1_CREATEEXECUTEBUFFER);
     call.iface = (ULONG_PTR)device;
     call.buffer_desc = (ULONG_PTR)buffer_desc;
-    call.ExecuteBuffer = (ULONG_PTR)ExecuteBuffer;
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_execute_buffer *)(ULONG_PTR)call.ExecuteBuffer;
+        d3d_execute_buffer_guest_init(object);
+        *ExecuteBuffer = &object->IDirect3DExecuteBuffer_iface;
+    }
 
     return call.super.iret;
 }
@@ -757,11 +766,43 @@ void qemu_d3d_device1_CreateExecuteBuffer(struct qemu_syscall *call)
 {
     struct qemu_d3d_device1_CreateExecuteBuffer *c = (struct qemu_d3d_device1_CreateExecuteBuffer *)call;
     struct qemu_device *device;
+    struct qemu_execute_buffer *object;
+    D3DEXECUTEBUFFERDESC stack, *desc = &stack;
+    struct qemu_D3DEXECUTEBUFFERDESC *desc32;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice_CreateExecuteBuffer(device->host1, QEMU_G2H(c->buffer_desc), QEMU_G2H(c->ExecuteBuffer), QEMU_G2H(c->outer_unknown));
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->buffer_desc);
+#else
+    desc32 = QEMU_G2H(c->buffer_desc);
+    if (!desc32)
+        desc = NULL;
+    else if (desc32->dwSize == sizeof(*desc32))
+        D3DEXECUTEBUFFERDESC_g2h(desc, desc32);
+    else
+        desc->dwSize = 0;
+#endif
+
+    object = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*object));
+    if (!object)
+    {
+        WINE_WARN("Out of memory\n");
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = IDirect3DDevice_CreateExecuteBuffer(device->host1, desc,
+            &object->host, QEMU_G2H(c->outer_unknown));
+
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, object);
+        object = NULL;
+    }
+
+    c->ExecuteBuffer = QEMU_H2G(object);
 }
 
 #endif

@@ -80,6 +80,7 @@ static ULONG WINAPI d3d_execute_buffer_AddRef(IDirect3DExecuteBuffer *iface)
 
 static ULONG WINAPI d3d_execute_buffer_Release(IDirect3DExecuteBuffer *iface)
 {
+    struct qemu_d3d_execute_buffer_Release call;
     struct qemu_execute_buffer *buffer = impl_from_IDirect3DExecuteBuffer(iface);
     ULONG ref = InterlockedDecrement(&buffer->ref);
 
@@ -87,7 +88,9 @@ static ULONG WINAPI d3d_execute_buffer_Release(IDirect3DExecuteBuffer *iface)
 
     if (!ref)
     {
-        WINE_FIXME("Implement destroy\n");
+        call.super.id = QEMU_SYSCALL_ID(CALL_D3D_EXECUTE_BUFFER_RELEASE);
+        call.iface = (ULONG_PTR)buffer;
+        qemu_syscall(&call.super);
     }
 
     return ref;
@@ -100,10 +103,15 @@ void qemu_d3d_execute_buffer_Release(struct qemu_syscall *call)
     struct qemu_d3d_execute_buffer_Release *c = (struct qemu_d3d_execute_buffer_Release *)call;
     struct qemu_execute_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DExecuteBuffer_Release(buffer->host);
+
+    if (c->super.iret)
+        WINE_ERR("Unexpected host executebuffer refcount %lu.\n", c->super.iret);
+
+    HeapFree(GetProcessHeap(), 0, buffer);
 }
 
 #endif
