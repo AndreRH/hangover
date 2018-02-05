@@ -4732,7 +4732,7 @@ void qemu_d3d1_EnumDevices(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d3_CreateLight
+struct qemu_d3d_CreateLight
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -4744,107 +4744,121 @@ struct qemu_d3d3_CreateLight
 
 static HRESULT WINAPI d3d3_CreateLight(IDirect3D3 *iface, IDirect3DLight **light, IUnknown *outer_unknown)
 {
+    struct qemu_d3d_CreateLight call;
     struct qemu_ddraw *ddraw = impl_from_IDirect3D3(iface);
-    struct qemu_d3d3_CreateLight call;
+    struct qemu_light *object;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D3_CREATELIGHT);
     call.iface = (ULONG_PTR)ddraw;
-    call.light = (ULONG_PTR)light;
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_light *)(ULONG_PTR)call.light;
+        d3d_light_guest_init(object);
+        *light = &object->IDirect3DLight_iface;
+    }
+    else
+    {
+        *light = NULL;
+    }
 
     return call.super.iret;
 }
-
-#else
-
-void qemu_d3d3_CreateLight(struct qemu_syscall *call)
-{
-    struct qemu_d3d3_CreateLight *c = (struct qemu_d3d3_CreateLight *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3D3_CreateLight(ddraw->host_d3d3, QEMU_G2H(c->light), QEMU_G2H(c->outer_unknown));
-}
-
-#endif
-
-struct qemu_d3d2_CreateLight
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t light;
-    uint64_t outer_unknown;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d2_CreateLight(IDirect3D2 *iface, IDirect3DLight **light, IUnknown *outer_unknown)
 {
+    struct qemu_d3d_CreateLight call;
     struct qemu_ddraw *ddraw = impl_from_IDirect3D2(iface);
-    struct qemu_d3d2_CreateLight call;
+    struct qemu_light *object;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D2_CREATELIGHT);
     call.iface = (ULONG_PTR)ddraw;
-    call.light = (ULONG_PTR)light;
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_light *)(ULONG_PTR)call.light;
+        d3d_light_guest_init(object);
+        *light = &object->IDirect3DLight_iface;
+    }
+    else
+    {
+        *light = NULL;
+    }
 
     return call.super.iret;
 }
-
-#else
-
-void qemu_d3d2_CreateLight(struct qemu_syscall *call)
-{
-    struct qemu_d3d2_CreateLight *c = (struct qemu_d3d2_CreateLight *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3D2_CreateLight(ddraw->host_d3d2, QEMU_G2H(c->light), QEMU_G2H(c->outer_unknown));
-}
-
-#endif
-
-struct qemu_d3d1_CreateLight
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t light;
-    uint64_t outer_unknown;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d1_CreateLight(IDirect3D *iface, IDirect3DLight **light, IUnknown *outer_unknown)
 {
+    struct qemu_d3d_CreateLight call;
     struct qemu_ddraw *ddraw = impl_from_IDirect3D(iface);
-    struct qemu_d3d1_CreateLight call;
+    struct qemu_light *object;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D1_CREATELIGHT);
     call.iface = (ULONG_PTR)ddraw;
-    call.light = (ULONG_PTR)light;
     call.outer_unknown = (ULONG_PTR)outer_unknown;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+    {
+        object = (struct qemu_light *)(ULONG_PTR)call.light;
+        d3d_light_guest_init(object);
+        *light = &object->IDirect3DLight_iface;
+    }
+    else
+    {
+        *light = NULL;
+    }
 
     return call.super.iret;
 }
 
 #else
 
-void qemu_d3d1_CreateLight(struct qemu_syscall *call)
+void qemu_d3d_CreateLight(struct qemu_syscall *call)
 {
-    struct qemu_d3d1_CreateLight *c = (struct qemu_d3d1_CreateLight *)call;
+    struct qemu_d3d_CreateLight *c = (struct qemu_d3d_CreateLight *)call;
     struct qemu_ddraw *ddraw;
+    struct qemu_light *object;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3D_CreateLight(ddraw->host_d3d1, QEMU_G2H(c->light), QEMU_G2H(c->outer_unknown));
+    object = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*object));
+    if (!object)
+    {
+        WINE_WARN("Out of memory!\n");
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_D3D3_CREATELIGHT):
+            c->super.iret = IDirect3D3_CreateLight(ddraw->host_d3d3, &object->host, QEMU_G2H(c->outer_unknown));
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_D3D2_CREATELIGHT):
+            c->super.iret = IDirect3D2_CreateLight(ddraw->host_d3d2, &object->host, QEMU_G2H(c->outer_unknown));
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_D3D1_CREATELIGHT):
+            c->super.iret = IDirect3D_CreateLight(ddraw->host_d3d1, &object->host, QEMU_G2H(c->outer_unknown));
+            break;
+    }
+
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, object);
+        object = NULL;
+    }
+
+    c->light = QEMU_H2G(object);
+    return;
 }
 
 #endif

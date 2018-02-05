@@ -71,6 +71,7 @@ static ULONG WINAPI d3d_light_AddRef(IDirect3DLight *iface)
 
 static ULONG WINAPI d3d_light_Release(IDirect3DLight *iface)
 {
+    struct qemu_d3d_light_Release call;
     struct qemu_light *light = impl_from_IDirect3DLight(iface);
     ULONG ref = InterlockedDecrement(&light->ref);
 
@@ -78,7 +79,9 @@ static ULONG WINAPI d3d_light_Release(IDirect3DLight *iface)
 
     if (!ref)
     {
-        WINE_FIXME("Implement destroy\n");
+        call.super.id = QEMU_SYSCALL_ID(CALL_D3D_LIGHT_RELEASE);
+        call.iface = (ULONG_PTR)light;
+        qemu_syscall(&call.super);
     }
     return ref;
 }
@@ -90,10 +93,15 @@ void qemu_d3d_light_Release(struct qemu_syscall *call)
     struct qemu_d3d_light_Release *c = (struct qemu_d3d_light_Release *)call;
     struct qemu_light *light;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     light = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DLight_Release(light->host);
+
+    if (c->super.iret)
+        WINE_ERR("Unexpected light refcount %lu.\n", c->super.iret);
+
+    HeapFree(GetProcessHeap(), 0, light);
 }
 
 #endif
