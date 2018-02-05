@@ -816,6 +816,7 @@ static HRESULT WINAPI ddraw_surface1_GetAttachedSurface(IDirectDrawSurface *ifac
     call.attachment = (ULONG_PTR)attachment;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
     {
         struct qemu_surface *attach = (struct qemu_surface *)(ULONG_PTR)call.attachment;
         *attachment = &attach->IDirectDrawSurface_iface;
