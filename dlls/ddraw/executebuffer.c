@@ -130,7 +130,8 @@ struct qemu_d3d_execute_buffer_Initialize
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_execute_buffer_Initialize(IDirect3DExecuteBuffer *iface, IDirect3DDevice *device, D3DEXECUTEBUFFERDESC *desc)
+static HRESULT WINAPI d3d_execute_buffer_Initialize(IDirect3DExecuteBuffer *iface, IDirect3DDevice *device,
+        D3DEXECUTEBUFFERDESC *desc)
 {
     struct qemu_d3d_execute_buffer_Initialize call;
     struct qemu_execute_buffer *buffer = impl_from_IDirect3DExecuteBuffer(iface);
@@ -242,7 +243,7 @@ void qemu_d3d_execute_buffer_Unlock(struct qemu_syscall *call)
     struct qemu_d3d_execute_buffer_Unlock *c = (struct qemu_d3d_execute_buffer_Unlock *)call;
     struct qemu_execute_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DExecuteBuffer_Unlock(buffer->host);
@@ -279,7 +280,8 @@ void qemu_d3d_execute_buffer_SetExecuteData(struct qemu_syscall *call)
     struct qemu_d3d_execute_buffer_SetExecuteData *c = (struct qemu_d3d_execute_buffer_SetExecuteData *)call;
     struct qemu_execute_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    /* D3DEXECUTEDATA has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DExecuteBuffer_SetExecuteData(buffer->host, QEMU_G2H(c->data));
@@ -336,7 +338,8 @@ struct qemu_d3d_execute_buffer_Validate
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_execute_buffer_Validate(IDirect3DExecuteBuffer *iface, DWORD *offset, LPD3DVALIDATECALLBACK callback, void *context, DWORD reserved)
+static HRESULT WINAPI d3d_execute_buffer_Validate(IDirect3DExecuteBuffer *iface, DWORD *offset,
+        LPD3DVALIDATECALLBACK callback, void *context, DWORD reserved)
 {
     struct qemu_d3d_execute_buffer_Validate call;
     struct qemu_execute_buffer *buffer = impl_from_IDirect3DExecuteBuffer(iface);
@@ -362,7 +365,8 @@ void qemu_d3d_execute_buffer_Validate(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     buffer = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DExecuteBuffer_Validate(buffer->host, QEMU_G2H(c->offset), QEMU_G2H(c->callback), QEMU_G2H(c->context), c->reserved);
+    c->super.iret = IDirect3DExecuteBuffer_Validate(buffer->host, QEMU_G2H(c->offset), QEMU_G2H(c->callback),
+            QEMU_G2H(c->context), c->reserved);
 }
 
 #endif
