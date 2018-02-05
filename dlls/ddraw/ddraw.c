@@ -3166,6 +3166,7 @@ static HRESULT WINAPI ddraw7_GetSurfaceFromDC(IDirectDraw7 *iface, HDC dc, IDire
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW7_GETSURFACEFROMDC);
     call.iface = (ULONG_PTR)ddraw;
     call.dc = (ULONG_PTR)dc;
+    call.surface = (ULONG_PTR)surface;
 
     if (!surface)
     {
@@ -3181,7 +3182,7 @@ static HRESULT WINAPI ddraw7_GetSurfaceFromDC(IDirectDraw7 *iface, HDC dc, IDire
         *surface = &impl->IDirectDrawSurface7_iface;
         IDirectDrawSurface7_AddRef(*surface);
     }
-    else
+    else if (surface)
     {
         *surface = NULL;
     }
@@ -3196,14 +3197,15 @@ void qemu_ddraw7_GetSurfaceFromDC(struct qemu_syscall *call)
     struct qemu_ddraw7_GetSurfaceFromDC *c = (struct qemu_ddraw7_GetSurfaceFromDC *)call;
     struct qemu_ddraw *ddraw;
     struct qemu_surface *impl;
-    IDirectDrawSurface7 *surface;
+    IDirectDrawSurface7 *surface = NULL;
     IUnknown *priv;
     DWORD size = sizeof(priv);
 
     WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDraw7_GetSurfaceFromDC(ddraw->host_ddraw7, QEMU_G2H(c->dc), &surface);
+    c->super.iret = IDirectDraw7_GetSurfaceFromDC(ddraw->host_ddraw7, QEMU_G2H(c->dc),
+            c->surface ? &surface : NULL);
 
     if (surface)
     {
@@ -3254,7 +3256,7 @@ static HRESULT WINAPI ddraw4_GetSurfaceFromDC(IDirectDraw4 *iface, HDC dc, IDire
         *surface = (IDirectDrawSurface4 *)&impl->IDirectDrawSurface_iface;
         IDirectDrawSurface_AddRef(&impl->IDirectDrawSurface_iface);
     }
-    else
+    else if (surface)
     {
         *surface = NULL;
     }
@@ -3269,7 +3271,7 @@ void qemu_ddraw4_GetSurfaceFromDC(struct qemu_syscall *call)
     struct qemu_ddraw4_GetSurfaceFromDC *c = (struct qemu_ddraw4_GetSurfaceFromDC *)call;
     struct qemu_ddraw *ddraw;
     struct qemu_surface *impl;
-    IDirectDrawSurface *surface;
+    IDirectDrawSurface *surface = NULL;
     IUnknown *priv;
     DWORD size = sizeof(priv);
 
@@ -3277,7 +3279,7 @@ void qemu_ddraw4_GetSurfaceFromDC(struct qemu_syscall *call)
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw4_GetSurfaceFromDC(ddraw->host_ddraw4, QEMU_G2H(c->dc),
-            (IDirectDrawSurface4 **)&surface);
+            c->surface ? (IDirectDrawSurface4 **)&surface : NULL);
 
     if (surface)
     {
@@ -3288,7 +3290,7 @@ void qemu_ddraw4_GetSurfaceFromDC(struct qemu_syscall *call)
             WINE_ERR("Failed to get private data.\n");
 
         impl = surface_impl_from_IUnknown(priv);
-        WINE_ERR("Found surface implemention %p from host surface %p.\n", impl, surface);
+        WINE_TRACE("Found surface implemention %p from host surface %p.\n", impl, surface);
 
         IDirectDrawSurface7_Release(surface7);
     }
