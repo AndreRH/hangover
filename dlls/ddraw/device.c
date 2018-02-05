@@ -818,14 +818,18 @@ struct qemu_d3d_device1_Execute
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_device1_Execute(IDirect3DDevice *iface, IDirect3DExecuteBuffer *ExecuteBuffer, IDirect3DViewport *viewport, DWORD flags)
+static HRESULT WINAPI d3d_device1_Execute(IDirect3DDevice *iface, IDirect3DExecuteBuffer *ExecuteBuffer,
+        IDirect3DViewport *viewport, DWORD flags)
 {
     struct qemu_d3d_device1_Execute call;
     struct qemu_device *device = impl_from_IDirect3DDevice(iface);
+    struct qemu_execute_buffer *buffer = unsafe_impl_from_IDirect3DExecuteBuffer(ExecuteBuffer);
+    struct qemu_viewport *vp = unsafe_impl_from_IDirect3DViewport(viewport);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE1_EXECUTE);
     call.iface = (ULONG_PTR)device;
-    call.ExecuteBuffer = (ULONG_PTR)ExecuteBuffer;
-    call.viewport = (ULONG_PTR)viewport;
+    call.ExecuteBuffer = (ULONG_PTR)buffer;
+    call.viewport = (ULONG_PTR)vp;
     call.flags = flags;
 
     qemu_syscall(&call.super);
@@ -839,11 +843,16 @@ void qemu_d3d_device1_Execute(struct qemu_syscall *call)
 {
     struct qemu_d3d_device1_Execute *c = (struct qemu_d3d_device1_Execute *)call;
     struct qemu_device *device;
+    struct qemu_execute_buffer *buffer;
+    struct qemu_viewport *vp;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    buffer = QEMU_G2H(c->ExecuteBuffer);
+    vp = QEMU_G2H(c->viewport);
 
-    c->super.iret = IDirect3DDevice_Execute(device->host1, QEMU_G2H(c->ExecuteBuffer), QEMU_G2H(c->viewport), c->flags);
+    c->super.iret = IDirect3DDevice_Execute(device->host1,
+            buffer ? buffer->host : NULL, vp ? (IDirect3DViewport *)vp->host : NULL, c->flags);
 }
 
 #endif
