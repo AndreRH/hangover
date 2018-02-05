@@ -226,7 +226,7 @@ void qemu_d3d_viewport_SetViewport(struct qemu_syscall *call)
     struct qemu_d3d_viewport_SetViewport *c = (struct qemu_d3d_viewport_SetViewport *)call;
     struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     viewport = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DViewport3_SetViewport(viewport->host, QEMU_G2H(c->lpData));
@@ -364,7 +364,7 @@ void qemu_d3d_viewport_SetBackground(struct qemu_syscall *call)
     struct qemu_d3d_viewport_SetBackground *c = (struct qemu_d3d_viewport_SetBackground *)call;
     struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     viewport = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DViewport3_SetBackground(viewport->host, c->material);
@@ -404,7 +404,7 @@ void qemu_d3d_viewport_GetBackground(struct qemu_syscall *call)
     struct qemu_d3d_viewport_GetBackground *c = (struct qemu_d3d_viewport_GetBackground *)call;
     struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     viewport = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DViewport3_GetBackground(viewport->host, QEMU_G2H(c->material), QEMU_G2H(c->valid));
@@ -524,7 +524,7 @@ void qemu_d3d_viewport_Clear(struct qemu_syscall *call)
     struct qemu_d3d_viewport_Clear *c = (struct qemu_d3d_viewport_Clear *)call;
     struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     viewport = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DViewport3_Clear(viewport->host, c->rect_count, QEMU_G2H(c->rects), c->flags);
@@ -729,7 +729,7 @@ void qemu_d3d_viewport_SetViewport2(struct qemu_syscall *call)
     struct qemu_d3d_viewport_SetViewport2 *c = (struct qemu_d3d_viewport_SetViewport2 *)call;
     struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     viewport = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DViewport3_SetViewport2(viewport->host, QEMU_G2H(c->lpData));
@@ -829,7 +829,8 @@ struct qemu_d3d_viewport_Clear2
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_viewport_Clear2(IDirect3DViewport3 *iface, DWORD rect_count, D3DRECT *rects, DWORD flags, DWORD color, D3DVALUE depth, DWORD stencil)
+static HRESULT WINAPI d3d_viewport_Clear2(IDirect3DViewport3 *iface, DWORD rect_count, D3DRECT *rects, DWORD flags,
+        DWORD color, D3DVALUE depth, DWORD stencil)
 {
     struct qemu_d3d_viewport_Clear2 call;
     struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
@@ -855,10 +856,11 @@ void qemu_d3d_viewport_Clear2(struct qemu_syscall *call)
     struct qemu_d3d_viewport_Clear2 *c = (struct qemu_d3d_viewport_Clear2 *)call;
     struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     viewport = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DViewport3_Clear2(viewport->host, c->rect_count, QEMU_G2H(c->rects), c->flags, c->color, c->depth, c->stencil);
+    c->super.iret = IDirect3DViewport3_Clear2(viewport->host, c->rect_count, QEMU_G2H(c->rects), c->flags,
+            c->color, c->depth, c->stencil);
 }
 
 #endif

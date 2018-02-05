@@ -1027,7 +1027,8 @@ void qemu_ddraw4_GetCaps(struct qemu_syscall *call)
     struct qemu_ddraw4_GetCaps *c = (struct qemu_ddraw4_GetCaps *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    /* DDCAPS has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw4_GetCaps(ddraw->host_ddraw4, QEMU_G2H(c->driver_caps), QEMU_G2H(c->hel_caps));
@@ -1066,7 +1067,8 @@ void qemu_ddraw2_GetCaps(struct qemu_syscall *call)
     struct qemu_ddraw2_GetCaps *c = (struct qemu_ddraw2_GetCaps *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    /* DDCAPS has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw2_GetCaps(ddraw->host_ddraw2, QEMU_G2H(c->driver_caps), QEMU_G2H(c->hel_caps));
@@ -1105,7 +1107,8 @@ void qemu_ddraw1_GetCaps(struct qemu_syscall *call)
     struct qemu_ddraw1_GetCaps *c = (struct qemu_ddraw1_GetCaps *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    /* DDCAPS has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDraw_GetCaps(ddraw->host_ddraw1, QEMU_G2H(c->driver_caps), QEMU_G2H(c->hel_caps));

@@ -172,7 +172,7 @@ void qemu_d3d_light_SetLight(struct qemu_syscall *call)
     struct qemu_d3d_light_SetLight *c = (struct qemu_d3d_light_SetLight *)call;
     struct qemu_light *light;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     light = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DLight_SetLight(light->host, QEMU_G2H(c->data));

@@ -401,6 +401,7 @@ struct qemu_d3d_device3_GetCaps
     uint64_t iface;
     uint64_t HWDesc;
     uint64_t HelDesc;
+    uint64_t size;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -413,6 +414,7 @@ static HRESULT WINAPI d3d_device3_GetCaps(IDirect3DDevice3 *iface, D3DDEVICEDESC
     call.iface = (ULONG_PTR)device;
     call.HWDesc = (ULONG_PTR)HWDesc;
     call.HelDesc = (ULONG_PTR)HelDesc;
+    call.size = sizeof(D3DDEVICEDESC);
 
     qemu_syscall(&call.super);
 
@@ -426,7 +428,8 @@ void qemu_d3d_device3_GetCaps(struct qemu_syscall *call)
     struct qemu_d3d_device3_GetCaps *c = (struct qemu_d3d_device3_GetCaps *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* D3DDEVICEDESC has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice3_GetCaps(device->host3, QEMU_G2H(c->HWDesc), QEMU_G2H(c->HelDesc));
@@ -465,7 +468,8 @@ void qemu_d3d_device2_GetCaps(struct qemu_syscall *call)
     struct qemu_d3d_device2_GetCaps *c = (struct qemu_d3d_device2_GetCaps *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* D3DDEVICEDESC has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice2_GetCaps(device->host2, QEMU_G2H(c->hw_desc), QEMU_G2H(c->hel_desc));
@@ -504,7 +508,8 @@ void qemu_d3d_device1_GetCaps(struct qemu_syscall *call)
     struct qemu_d3d_device1_GetCaps *c = (struct qemu_d3d_device1_GetCaps *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* D3DDEVICEDESC has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice_GetCaps(device->host1, QEMU_G2H(c->hw_desc), QEMU_G2H(c->hel_desc));
@@ -2885,7 +2890,7 @@ void qemu_d3d_device3_SetLightState(struct qemu_syscall *call)
     struct qemu_d3d_device3_SetLightState *c = (struct qemu_d3d_device3_SetLightState *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice3_SetLightState(device->host3, c->state, c->value);
@@ -2963,7 +2968,7 @@ void qemu_d3d_device3_GetLightState(struct qemu_syscall *call)
     struct qemu_d3d_device3_GetLightState *c = (struct qemu_d3d_device3_GetLightState *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice3_GetLightState(device->host3, c->state, QEMU_G2H(c->value));
@@ -3254,7 +3259,8 @@ struct qemu_d3d_device7_MultiplyTransform
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_device7_MultiplyTransform(IDirect3DDevice7 *iface, D3DTRANSFORMSTATETYPE state, D3DMATRIX *matrix)
+static HRESULT WINAPI d3d_device7_MultiplyTransform(IDirect3DDevice7 *iface, D3DTRANSFORMSTATETYPE state,
+        D3DMATRIX *matrix)
 {
     struct qemu_d3d_device7_MultiplyTransform call;
     struct qemu_device *device = impl_from_IDirect3DDevice7(iface);
@@ -3275,7 +3281,7 @@ void qemu_d3d_device7_MultiplyTransform(struct qemu_syscall *call)
     struct qemu_d3d_device7_MultiplyTransform *c = (struct qemu_d3d_device7_MultiplyTransform *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_MultiplyTransform(device->host7, c->state, QEMU_G2H(c->matrix));
@@ -3293,7 +3299,8 @@ struct qemu_d3d_device3_MultiplyTransform
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_device3_MultiplyTransform(IDirect3DDevice3 *iface, D3DTRANSFORMSTATETYPE state, D3DMATRIX *matrix)
+static HRESULT WINAPI d3d_device3_MultiplyTransform(IDirect3DDevice3 *iface, D3DTRANSFORMSTATETYPE state,
+        D3DMATRIX *matrix)
 {
     struct qemu_d3d_device3_MultiplyTransform call;
     struct qemu_device *device = impl_from_IDirect3DDevice3(iface);
@@ -3314,7 +3321,7 @@ void qemu_d3d_device3_MultiplyTransform(struct qemu_syscall *call)
     struct qemu_d3d_device3_MultiplyTransform *c = (struct qemu_d3d_device3_MultiplyTransform *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice3_MultiplyTransform(device->host3, c->state, QEMU_G2H(c->matrix));
@@ -4459,7 +4466,8 @@ struct qemu_d3d_device3_ComputeSphereVisibility
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_device3_ComputeSphereVisibility(IDirect3DDevice3 *iface, D3DVECTOR *centers, D3DVALUE *radii, DWORD sphere_count, DWORD flags, DWORD *return_values)
+static HRESULT WINAPI d3d_device3_ComputeSphereVisibility(IDirect3DDevice3 *iface, D3DVECTOR *centers, D3DVALUE *radii,
+        DWORD sphere_count, DWORD flags, DWORD *return_values)
 {
     struct qemu_d3d_device3_ComputeSphereVisibility call;
     struct qemu_device *device = impl_from_IDirect3DDevice3(iface);
@@ -4483,10 +4491,11 @@ void qemu_d3d_device3_ComputeSphereVisibility(struct qemu_syscall *call)
     struct qemu_d3d_device3_ComputeSphereVisibility *c = (struct qemu_d3d_device3_ComputeSphereVisibility *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DDevice3_ComputeSphereVisibility(device->host3, QEMU_G2H(c->centers), QEMU_G2H(c->radii), c->sphere_count, c->flags, QEMU_G2H(c->return_values));
+    c->super.iret = IDirect3DDevice3_ComputeSphereVisibility(device->host3, QEMU_G2H(c->centers), QEMU_G2H(c->radii),
+            c->sphere_count, c->flags, QEMU_G2H(c->return_values));
 }
 
 #endif
