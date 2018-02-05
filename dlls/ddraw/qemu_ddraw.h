@@ -627,6 +627,7 @@ struct qemu_viewport
     /* Guest fields */
     IDirect3DViewport3 IDirect3DViewport3_iface;
     LONG ref;
+    struct list vp_list_entry;
 
     /* Host fields */
     IDirect3DViewport3 *host;
@@ -649,7 +650,7 @@ struct qemu_device
     /* FIXME: These need synchronization. */
     IUnknown *rt_iface;
     struct qemu_viewport *current_viewport;
-    /* TODO: Viewport list. */
+    struct list viewport_list;
 
     /* Host fields */
     IDirect3DDevice7 *host7;

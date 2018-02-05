@@ -221,6 +221,7 @@ static ULONG WINAPI d3d_device_inner_Release(IUnknown *iface)
     ULONG ref = InterlockedDecrement(&device->ref);
     struct qemu_d3d_device_Release call;
     IUnknown *rt_iface;
+    struct list *vp_entry, *vp_entry2;
 
     WINE_TRACE("%p decreasing refcount to %u.\n", device, ref);
 
@@ -228,6 +229,12 @@ static ULONG WINAPI d3d_device_inner_Release(IUnknown *iface)
     {
         rt_iface = device->version != 1 ? device->rt_iface : NULL;
         device->rt_iface = NULL;
+
+        LIST_FOR_EACH_SAFE(vp_entry, vp_entry2, &device->viewport_list)
+        {
+            struct qemu_viewport *vp = LIST_ENTRY(vp_entry, struct qemu_viewport, vp_list_entry);
+            IDirect3DDevice3_DeleteViewport(&device->IDirect3DDevice3_iface, &vp->IDirect3DViewport3_iface);
+        }
 
         call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE7_RELEASE);
         call.iface = (ULONG_PTR)device;
@@ -797,9 +804,11 @@ static HRESULT WINAPI d3d_device3_AddViewport(IDirect3DDevice3 *iface, IDirect3D
 
     qemu_syscall(&call.super);
 
-    /* FIXME: I'll have to keep a list of viewport to Release them when the device is destroyed. */
     if (SUCCEEDED(call.super.iret))
+    {
         IDirect3DViewport3_AddRef(viewport);
+        list_add_head(&device->viewport_list, &impl->vp_list_entry);
+    }
 
     return call.super.iret;
 }
@@ -843,7 +852,10 @@ static HRESULT WINAPI d3d_device2_AddViewport(IDirect3DDevice2 *iface, IDirect3D
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
+    {
         IDirect3DViewport2_AddRef(viewport);
+        list_add_head(&device->viewport_list, &impl->vp_list_entry);
+    }
 
     return call.super.iret;
 }
@@ -887,7 +899,10 @@ static HRESULT WINAPI d3d_device1_AddViewport(IDirect3DDevice *iface, IDirect3DV
     qemu_syscall(&call.super);
 
     if (SUCCEEDED(call.super.iret))
+    {
         IDirect3DViewport_AddRef(viewport);
+        list_add_head(&device->viewport_list, &impl->vp_list_entry);
+    }
 
     return call.super.iret;
 }
@@ -930,7 +945,10 @@ static HRESULT WINAPI d3d_device3_DeleteViewport(IDirect3DDevice3 *iface, IDirec
 
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
+    {
+        list_remove(&impl->vp_list_entry);
         IDirect3DViewport3_Release(viewport);
+    }
 
     return call.super.iret;
 }
@@ -973,7 +991,10 @@ static HRESULT WINAPI d3d_device2_DeleteViewport(IDirect3DDevice2 *iface, IDirec
 
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
+    {
+        list_remove(&impl->vp_list_entry);
         IDirect3DViewport2_Release(viewport);
+    }
 
     return call.super.iret;
 }
@@ -1017,7 +1038,10 @@ static HRESULT WINAPI d3d_device1_DeleteViewport(IDirect3DDevice *iface, IDirect
 
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
+    {
+        list_remove(&impl->vp_list_entry);
         IDirect3DViewport_Release(viewport);
+    }
 
     return call.super.iret;
 }
@@ -5853,6 +5877,8 @@ void ddraw_device_guest_init(struct qemu_device *device, struct qemu_ddraw *ddra
     device->IUnknown_inner.lpVtbl = &d3d_device_inner_vtbl;
     device->ref = 1;
     device->version = version;
+
+    list_init(&device->viewport_list);
 
     if (outer_unknown)
         device->outer_unknown = outer_unknown;
