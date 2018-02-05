@@ -203,6 +203,7 @@ static HRESULT WINAPI ddraw_surface7_QueryInterface(IDirectDrawSurface7 *iface, 
                 device = (struct qemu_device *)(ULONG_PTR)call.device;
                 ddraw_device_guest_init(device, surface->ddraw, 1, (IUnknown *)&surface->IDirectDrawSurface_iface,
                         (IUnknown *)&surface->IDirectDrawSurface_iface);
+                surface->device1 = device;
             }
 
             IDirect3DDevice_AddRef(&surface->device1->IDirect3DDevice_iface);
