@@ -19,4 +19,12 @@ static inline void D3DEXECUTEBUFFERDESC_g2h(D3DEXECUTEBUFFERDESC *host, const st
     host->lpData = (void *)(ULONG_PTR)guest->lpData;
 }
 
+static inline void D3DEXECUTEBUFFERDESC_h2g(struct qemu_D3DEXECUTEBUFFERDESC *guest, const D3DEXECUTEBUFFERDESC *host)
+{
+    guest->dwFlags = host->dwFlags;
+    guest->dwCaps = host->dwCaps;
+    guest->dwBufferSize = host->dwBufferSize;
+    guest->lpData = (ULONG_PTR)host->lpData;
+}
+
 #endif

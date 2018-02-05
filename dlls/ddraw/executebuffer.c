@@ -26,6 +26,10 @@
 #include <ddraw.h>
 #include <d3d.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_ddraw.h"
+#include "thunk/qemu_d3d.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_ddraw.h"
@@ -183,11 +187,30 @@ void qemu_d3d_execute_buffer_Lock(struct qemu_syscall *call)
 {
     struct qemu_d3d_execute_buffer_Lock *c = (struct qemu_d3d_execute_buffer_Lock *)call;
     struct qemu_execute_buffer *buffer;
+    D3DEXECUTEBUFFERDESC stack, *desc = &stack;
+    struct qemu_D3DEXECUTEBUFFERDESC *desc32;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DExecuteBuffer_Lock(buffer->host, QEMU_G2H(c->desc));
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->desc);
+#else
+    desc32 = QEMU_G2H(c->desc);
+    if (!desc32)
+        desc = NULL;
+    else if (desc32->dwSize == sizeof(*desc32))
+        desc->dwSize = sizeof(*desc);
+    else
+        desc->dwSize = 0;
+#endif
+
+    c->super.iret = IDirect3DExecuteBuffer_Lock(buffer->host, desc);
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret))
+        D3DEXECUTEBUFFERDESC_h2g(desc32, desc);
+#endif
 }
 
 #endif
