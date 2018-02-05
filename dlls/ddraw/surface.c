@@ -1033,7 +1033,7 @@ void qemu_ddraw_surface_Lock(struct qemu_syscall *call)
         else
             WINE_ERR("Lock succeeded despite invalid size.\n");
     }
-    else if (desc32 && desc32->dwSize == sizeof(*desc32) || desc32->dwSize == sizeof(struct qemu_DDSURFACEDESC))
+    else if (desc32 && (desc32->dwSize == sizeof(*desc32) || desc32->dwSize == sizeof(struct qemu_DDSURFACEDESC)))
     {
         desc32->lpSurface = (ULONG_PTR)desc->lpSurface;
     }
