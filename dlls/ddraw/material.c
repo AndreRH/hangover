@@ -495,7 +495,7 @@ static HRESULT WINAPI d3d_material1_GetHandle(IDirect3DMaterial *iface, IDirect3
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_MATERIAL1_GETHANDLE);
     call.iface = (ULONG_PTR)material;
-    call.device = (ULONG_PTR)device;
+    call.device = (ULONG_PTR)dev_impl;
     call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
