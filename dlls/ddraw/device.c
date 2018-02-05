@@ -947,6 +947,14 @@ static HRESULT WINAPI d3d_device3_DeleteViewport(IDirect3DDevice3 *iface, IDirec
     if (SUCCEEDED(call.super.iret))
     {
         list_remove(&impl->vp_list_entry);
+
+        /* For the CurrentViewport AddRef. */
+        if (impl == device->current_viewport)
+        {
+            IDirect3DViewport3_Release(viewport);
+            device->current_viewport = NULL;
+        }
+        /* For the AddViewport AddRef. */
         IDirect3DViewport3_Release(viewport);
     }
 
@@ -992,6 +1000,8 @@ static HRESULT WINAPI d3d_device2_DeleteViewport(IDirect3DDevice2 *iface, IDirec
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
     {
+        /* Note that this version of DeleteViewport forgets to release the reference added by
+         * SetCurrentViewport. */
         list_remove(&impl->vp_list_entry);
         IDirect3DViewport2_Release(viewport);
     }
@@ -1967,7 +1977,13 @@ static HRESULT WINAPI d3d_device3_SetCurrentViewport(IDirect3DDevice3 *iface, ID
 
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
+    {
+        if (viewport)
+            IDirect3DViewport3_AddRef(viewport);
+        if (device->current_viewport)
+            IDirect3DViewport3_Release(&device->current_viewport->IDirect3DViewport3_iface);
         device->current_viewport = impl;
+    }
 
     return call.super.iret;
 }
@@ -2010,7 +2026,13 @@ static HRESULT WINAPI d3d_device2_SetCurrentViewport(IDirect3DDevice2 *iface, ID
 
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
+    {
+        if (viewport)
+            IDirect3DViewport3_AddRef(viewport);
+        if (device->current_viewport)
+            IDirect3DViewport3_Release(&device->current_viewport->IDirect3DViewport3_iface);
         device->current_viewport = impl;
+    }
 
     return call.super.iret;
 }
