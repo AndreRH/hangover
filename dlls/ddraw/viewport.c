@@ -525,12 +525,16 @@ static HRESULT WINAPI d3d_viewport_AddLight(IDirect3DViewport3 *iface, IDirect3D
 {
     struct qemu_d3d_viewport_AddLight call;
     struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+    struct qemu_light *light = unsafe_impl_from_IDirect3DLight(lpDirect3DLight);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_ADDLIGHT);
     call.iface = (ULONG_PTR)viewport;
-    call.lpDirect3DLight = (ULONG_PTR)lpDirect3DLight;
+    call.lpDirect3DLight = (ULONG_PTR)light;
 
+    /* FIXME: Release them on viewport destroy. */
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+        IDirect3DLight_AddRef(lpDirect3DLight);
 
     return call.super.iret;
 }
@@ -541,11 +545,13 @@ void qemu_d3d_viewport_AddLight(struct qemu_syscall *call)
 {
     struct qemu_d3d_viewport_AddLight *c = (struct qemu_d3d_viewport_AddLight *)call;
     struct qemu_viewport *viewport;
+    struct qemu_light *light;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     viewport = QEMU_G2H(c->iface);
+    light = QEMU_G2H(c->lpDirect3DLight);
 
-    c->super.iret = IDirect3DViewport3_AddLight(viewport->host, QEMU_G2H(c->lpDirect3DLight));
+    c->super.iret = IDirect3DViewport3_AddLight(viewport->host, light ? light->host : NULL);
 }
 
 #endif
@@ -563,12 +569,15 @@ static HRESULT WINAPI d3d_viewport_DeleteLight(IDirect3DViewport3 *iface, IDirec
 {
     struct qemu_d3d_viewport_DeleteLight call;
     struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+    struct qemu_light *light = unsafe_impl_from_IDirect3DLight(lpDirect3DLight);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_DELETELIGHT);
     call.iface = (ULONG_PTR)viewport;
-    call.lpDirect3DLight = (ULONG_PTR)lpDirect3DLight;
+    call.lpDirect3DLight = (ULONG_PTR)light;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+        IDirect3DLight_Release(lpDirect3DLight);
 
     return call.super.iret;
 }
@@ -579,11 +588,13 @@ void qemu_d3d_viewport_DeleteLight(struct qemu_syscall *call)
 {
     struct qemu_d3d_viewport_DeleteLight *c = (struct qemu_d3d_viewport_DeleteLight *)call;
     struct qemu_viewport *viewport;
+    struct qemu_light *light;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     viewport = QEMU_G2H(c->iface);
+    light = QEMU_G2H(c->lpDirect3DLight);
 
-    c->super.iret = IDirect3DViewport3_DeleteLight(viewport->host, QEMU_G2H(c->lpDirect3DLight));
+    c->super.iret = IDirect3DViewport3_DeleteLight(viewport->host, light ? light->host : NULL);
 }
 
 #endif
