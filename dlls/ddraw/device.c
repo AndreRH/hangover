@@ -233,7 +233,26 @@ static ULONG WINAPI d3d_device_inner_Release(IUnknown *iface)
         LIST_FOR_EACH_SAFE(vp_entry, vp_entry2, &device->viewport_list)
         {
             struct qemu_viewport *vp = LIST_ENTRY(vp_entry, struct qemu_viewport, vp_list_entry);
-            IDirect3DDevice3_DeleteViewport(&device->IDirect3DDevice3_iface, &vp->IDirect3DViewport3_iface);
+            /* Note that we may not have host device2 or device3 available, so call the appropriate
+             * version. Don't just call V1 because it screws up refcounting of the current viewport. */
+            if (device->version == 3)
+            {
+                IDirect3DDevice3_DeleteViewport(&device->IDirect3DDevice3_iface, &vp->IDirect3DViewport3_iface);
+            }
+            else if (device->version == 2)
+            {
+                IDirect3DDevice2_DeleteViewport(&device->IDirect3DDevice2_iface,
+                        (IDirect3DViewport2 *)&vp->IDirect3DViewport3_iface);
+            }
+            else if (device->version == 1)
+            {
+                IDirect3DDevice_DeleteViewport(&device->IDirect3DDevice_iface,
+                        (IDirect3DViewport *)&vp->IDirect3DViewport3_iface);
+            }
+            else
+            {
+                WINE_ERR("Device version %u has viewports?\n", device->version);
+            }
         }
 
         call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE7_RELEASE);
@@ -1005,9 +1024,15 @@ static HRESULT WINAPI d3d_device2_DeleteViewport(IDirect3DDevice2 *iface, IDirec
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
     {
-        /* Note that this version of DeleteViewport forgets to release the reference added by
-         * SetCurrentViewport. */
         list_remove(&impl->vp_list_entry);
+        if (impl == device->current_viewport)
+        {
+            /* For the CurrentViewport AddRef. Note that the Windows version of device2 does not do
+             * this, but Wine does. To pass the todo_wine do the same. */
+            IDirect3DViewport3_Release(viewport);
+            /* Windows DOES unset the viewport though. */
+            device->current_viewport = NULL;
+        }
         IDirect3DViewport2_Release(viewport);
     }
 
