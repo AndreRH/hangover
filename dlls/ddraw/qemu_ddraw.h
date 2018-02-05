@@ -179,6 +179,10 @@ enum ddraw_calls
     CALL_D3D_DEVICE7_SETTRANSFORM,
     CALL_D3D_DEVICE7_SETVIEWPORT,
     CALL_D3D_DEVICE7_VALIDATEDEVICE,
+    CALL_D3D_LIGHT_GETLIGHT,
+    CALL_D3D_LIGHT_INITIALIZE,
+    CALL_D3D_LIGHT_RELEASE,
+    CALL_D3D_LIGHT_SETLIGHT,
     CALL_D3D_MATERIAL1_GETHANDLE,
     CALL_D3D_MATERIAL1_GETMATERIAL,
     CALL_D3D_MATERIAL1_INITIALIZE,
@@ -680,6 +684,16 @@ struct qemu_material
     IDirect3DMaterial *host1;
 };
 
+struct qemu_light
+{
+    /* Guest fields. */
+    IDirect3DLight IDirect3DLight_iface;
+    LONG ref;
+
+    /* Host fields. */
+    IDirect3DLight *host;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 extern const GUID IID_D3DDEVICE_WineD3D;
@@ -729,6 +743,9 @@ struct qemu_viewport *unsafe_impl_from_IDirect3DViewport2(IDirect3DViewport2 *if
 struct qemu_viewport *unsafe_impl_from_IDirect3DViewport(IDirect3DViewport *iface);
 
 struct qemu_material *d3d_material_guest_init(struct qemu_material *material);
+
+void d3d_light_guest_init(struct qemu_light *light);
+struct qemu_light *unsafe_impl_from_IDirect3DLight(IDirect3DLight *iface);
 
 #else
 
@@ -874,6 +891,10 @@ void qemu_d3d_device7_SetViewport(struct qemu_syscall *call);
 void qemu_d3d_device7_ValidateDevice(struct qemu_syscall *call);
 void qemu_d3d_device_EnumTextureFormats(struct qemu_syscall *call);
 void qemu_d3d_device_Release(struct qemu_syscall *call);
+void qemu_d3d_light_GetLight(struct qemu_syscall *call);
+void qemu_d3d_light_Initialize(struct qemu_syscall *call);
+void qemu_d3d_light_Release(struct qemu_syscall *call);
+void qemu_d3d_light_SetLight(struct qemu_syscall *call);
 void qemu_d3d_material1_GetHandle(struct qemu_syscall *call);
 void qemu_d3d_material1_GetMaterial(struct qemu_syscall *call);
 void qemu_d3d_material1_Initialize(struct qemu_syscall *call);
