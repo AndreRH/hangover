@@ -8697,13 +8697,16 @@ struct qemu_d3d_texture2_GetHandle
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_texture2_GetHandle(IDirect3DTexture2 *iface, IDirect3DDevice2 *device, D3DTEXTUREHANDLE *handle)
+static HRESULT WINAPI d3d_texture2_GetHandle(IDirect3DTexture2 *iface, IDirect3DDevice2 *device,
+            D3DTEXTUREHANDLE *handle)
 {
     struct qemu_d3d_texture2_GetHandle call;
     struct qemu_surface *surface = impl_from_IDirect3DTexture2(iface);
+    struct qemu_device *dev_impl = unsafe_impl_from_IDirect3DDevice2(device);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_TEXTURE2_GETHANDLE);
     call.iface = (ULONG_PTR)surface;
-    call.device = (ULONG_PTR)device;
+    call.device = (ULONG_PTR)dev_impl;
     call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
@@ -8717,11 +8720,14 @@ void qemu_d3d_texture2_GetHandle(struct qemu_syscall *call)
 {
     struct qemu_d3d_texture2_GetHandle *c = (struct qemu_d3d_texture2_GetHandle *)call;
     struct qemu_surface *surface;
+    struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    device = QEMU_G2H(c->device);
 
-    c->super.iret = IDirect3DTexture2_GetHandle(surface->host_texture2, QEMU_G2H(c->device), QEMU_G2H(c->handle));
+    c->super.iret = IDirect3DTexture2_GetHandle(surface->host_texture2,
+            device ? device->host2 : NULL, QEMU_G2H(c->handle));
 }
 
 #endif
@@ -8736,13 +8742,16 @@ struct qemu_d3d_texture1_GetHandle
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_texture1_GetHandle(IDirect3DTexture *iface, IDirect3DDevice *device, D3DTEXTUREHANDLE *handle)
+static HRESULT WINAPI d3d_texture1_GetHandle(IDirect3DTexture *iface, IDirect3DDevice *device,
+        D3DTEXTUREHANDLE *handle)
 {
     struct qemu_d3d_texture1_GetHandle call;
     struct qemu_surface *surface = impl_from_IDirect3DTexture(iface);
+    struct qemu_device *dev_impl = unsafe_impl_from_IDirect3DDevice(device);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_TEXTURE1_GETHANDLE);
     call.iface = (ULONG_PTR)surface;
-    call.device = (ULONG_PTR)device;
+    call.device = (ULONG_PTR)dev_impl;
     call.handle = (ULONG_PTR)handle;
 
     qemu_syscall(&call.super);
@@ -8756,11 +8765,14 @@ void qemu_d3d_texture1_GetHandle(struct qemu_syscall *call)
 {
     struct qemu_d3d_texture1_GetHandle *c = (struct qemu_d3d_texture1_GetHandle *)call;
     struct qemu_surface *surface;
+    struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    device = QEMU_G2H(c->device);
 
-    c->super.iret = IDirect3DTexture_GetHandle(surface->host_texture1, QEMU_G2H(c->device), QEMU_G2H(c->handle));
+    c->super.iret = IDirect3DTexture_GetHandle(surface->host_texture1,
+            device ? device->host1 : NULL, QEMU_G2H(c->handle));
 }
 
 #endif

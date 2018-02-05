@@ -398,7 +398,8 @@ struct qemu_d3d_material3_GetHandle
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_material3_GetHandle(IDirect3DMaterial3 *iface, IDirect3DDevice3 *device, D3DMATERIALHANDLE *handle)
+static HRESULT WINAPI d3d_material3_GetHandle(IDirect3DMaterial3 *iface, IDirect3DDevice3 *device,
+        D3DMATERIALHANDLE *handle)
 {
     struct qemu_d3d_material3_GetHandle call;
     struct qemu_material *material = impl_from_IDirect3DMaterial3(iface);
@@ -441,7 +442,8 @@ struct qemu_d3d_material2_GetHandle
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_material2_GetHandle(IDirect3DMaterial2 *iface, IDirect3DDevice2 *device, D3DMATERIALHANDLE *handle)
+static HRESULT WINAPI d3d_material2_GetHandle(IDirect3DMaterial2 *iface, IDirect3DDevice2 *device,
+        D3DMATERIALHANDLE *handle)
 {
     struct qemu_d3d_material2_GetHandle call;
     struct qemu_material *material = impl_from_IDirect3DMaterial2(iface);
@@ -484,7 +486,8 @@ struct qemu_d3d_material1_GetHandle
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_material1_GetHandle(IDirect3DMaterial *iface, IDirect3DDevice *device, D3DMATERIALHANDLE *handle)
+static HRESULT WINAPI d3d_material1_GetHandle(IDirect3DMaterial *iface, IDirect3DDevice *device,
+        D3DMATERIALHANDLE *handle)
 {
     struct qemu_d3d_material1_GetHandle call;
     struct qemu_material *material = impl_from_IDirect3DMaterial(iface);
