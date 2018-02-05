@@ -291,14 +291,15 @@ void qemu_d3d_device_Release(struct qemu_syscall *call)
     device = QEMU_G2H(c->iface);
 
     c->super.iret = 0;
+    /* The interfaces share one refcount. Whatever is deleted last (7 or 1) counts. */
     if (device->host7)
-        c->super.iret += IDirect3DDevice7_Release(device->host7);
+        c->super.iret = IDirect3DDevice7_Release(device->host7);
     if (device->host3)
-        c->super.iret += IDirect3DDevice3_Release(device->host3);
+        c->super.iret = IDirect3DDevice3_Release(device->host3);
     if (device->host2)
-        c->super.iret += IDirect3DDevice2_Release(device->host2);
+        c->super.iret = IDirect3DDevice2_Release(device->host2);
     if (device->host1)
-        c->super.iret += IDirect3DDevice_Release(device->host1);
+        c->super.iret = IDirect3DDevice_Release(device->host1);
 
     if (c->super.iret)
         WINE_ERR("Unexpected combined host device refcount %lu.\n", c->super.iret);
