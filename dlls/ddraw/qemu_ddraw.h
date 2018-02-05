@@ -179,6 +179,14 @@ enum ddraw_calls
     CALL_D3D_DEVICE7_SETTRANSFORM,
     CALL_D3D_DEVICE7_SETVIEWPORT,
     CALL_D3D_DEVICE7_VALIDATEDEVICE,
+    CALL_D3D_EXECUTE_BUFFER_GETEXECUTEDATA,
+    CALL_D3D_EXECUTE_BUFFER_INITIALIZE,
+    CALL_D3D_EXECUTE_BUFFER_LOCK,
+    CALL_D3D_EXECUTE_BUFFER_OPTIMIZE,
+    CALL_D3D_EXECUTE_BUFFER_RELEASE,
+    CALL_D3D_EXECUTE_BUFFER_SETEXECUTEDATA,
+    CALL_D3D_EXECUTE_BUFFER_UNLOCK,
+    CALL_D3D_EXECUTE_BUFFER_VALIDATE,
     CALL_D3D_LIGHT_GETLIGHT,
     CALL_D3D_LIGHT_INITIALIZE,
     CALL_D3D_LIGHT_RELEASE,
@@ -695,6 +703,16 @@ struct qemu_light
     IDirect3DLight *host;
 };
 
+struct qemu_execute_buffer
+{
+    /* Guest fields. */
+    IDirect3DExecuteBuffer IDirect3DExecuteBuffer_iface;
+    LONG ref;
+
+    /* Host fields. */
+    IDirect3DExecuteBuffer *host;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 extern const GUID IID_D3DDEVICE_WineD3D;
@@ -747,6 +765,9 @@ struct qemu_material *d3d_material_guest_init(struct qemu_material *material);
 
 void d3d_light_guest_init(struct qemu_light *light);
 struct qemu_light *unsafe_impl_from_IDirect3DLight(IDirect3DLight *iface);
+
+void d3d_execute_buffer_guest_init(struct qemu_execute_buffer *execute_buffer);
+struct qemu_execute_buffer *unsafe_impl_from_IDirect3DExecuteBuffer(IDirect3DExecuteBuffer *iface);
 
 #else
 
@@ -892,6 +913,14 @@ void qemu_d3d_device7_SetViewport(struct qemu_syscall *call);
 void qemu_d3d_device7_ValidateDevice(struct qemu_syscall *call);
 void qemu_d3d_device_EnumTextureFormats(struct qemu_syscall *call);
 void qemu_d3d_device_Release(struct qemu_syscall *call);
+void qemu_d3d_execute_buffer_GetExecuteData(struct qemu_syscall *call);
+void qemu_d3d_execute_buffer_Initialize(struct qemu_syscall *call);
+void qemu_d3d_execute_buffer_Lock(struct qemu_syscall *call);
+void qemu_d3d_execute_buffer_Optimize(struct qemu_syscall *call);
+void qemu_d3d_execute_buffer_Release(struct qemu_syscall *call);
+void qemu_d3d_execute_buffer_SetExecuteData(struct qemu_syscall *call);
+void qemu_d3d_execute_buffer_Unlock(struct qemu_syscall *call);
+void qemu_d3d_execute_buffer_Validate(struct qemu_syscall *call);
 void qemu_d3d_light_GetLight(struct qemu_syscall *call);
 void qemu_d3d_light_Initialize(struct qemu_syscall *call);
 void qemu_d3d_light_Release(struct qemu_syscall *call);
