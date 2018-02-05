@@ -128,8 +128,10 @@ struct qemu_d3d_viewport_Initialize
 static HRESULT WINAPI d3d_viewport_Initialize(IDirect3DViewport3 *iface, IDirect3D *d3d)
 {
     struct qemu_d3d_viewport_Initialize call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_INITIALIZE);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.d3d = (ULONG_PTR)d3d;
 
     qemu_syscall(&call.super);
@@ -164,8 +166,10 @@ struct qemu_d3d_viewport_GetViewport
 static HRESULT WINAPI d3d_viewport_GetViewport(IDirect3DViewport3 *iface, D3DVIEWPORT *lpData)
 {
     struct qemu_d3d_viewport_GetViewport call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_GETVIEWPORT);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.lpData = (ULONG_PTR)lpData;
 
     qemu_syscall(&call.super);
@@ -200,8 +204,10 @@ struct qemu_d3d_viewport_SetViewport
 static HRESULT WINAPI d3d_viewport_SetViewport(IDirect3DViewport3 *iface, D3DVIEWPORT *lpData)
 {
     struct qemu_d3d_viewport_SetViewport call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_SETVIEWPORT);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.lpData = (ULONG_PTR)lpData;
 
     qemu_syscall(&call.super);
@@ -239,8 +245,10 @@ struct qemu_d3d_viewport_TransformVertices
 static HRESULT WINAPI d3d_viewport_TransformVertices(IDirect3DViewport3 *iface, DWORD dwVertexCount, D3DTRANSFORMDATA *data, DWORD dwFlags, DWORD *offscreen)
 {
     struct qemu_d3d_viewport_TransformVertices call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_TRANSFORMVERTICES);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.dwVertexCount = dwVertexCount;
     call.data = (ULONG_PTR)data;
     call.dwFlags = dwFlags;
@@ -279,8 +287,10 @@ struct qemu_d3d_viewport_LightElements
 static HRESULT WINAPI d3d_viewport_LightElements(IDirect3DViewport3 *iface, DWORD element_count, D3DLIGHTDATA *data)
 {
     struct qemu_d3d_viewport_LightElements call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_LIGHTELEMENTS);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.element_count = element_count;
     call.data = (ULONG_PTR)data;
 
@@ -316,8 +326,10 @@ struct qemu_d3d_viewport_SetBackground
 static HRESULT WINAPI d3d_viewport_SetBackground(IDirect3DViewport3 *iface, D3DMATERIALHANDLE material)
 {
     struct qemu_d3d_viewport_SetBackground call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_SETBACKGROUND);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.material = material;
 
     qemu_syscall(&call.super);
@@ -353,8 +365,10 @@ struct qemu_d3d_viewport_GetBackground
 static HRESULT WINAPI d3d_viewport_GetBackground(IDirect3DViewport3 *iface, D3DMATERIALHANDLE *material, BOOL *valid)
 {
     struct qemu_d3d_viewport_GetBackground call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_GETBACKGROUND);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.material = (ULONG_PTR)material;
     call.valid = (ULONG_PTR)valid;
 
@@ -390,8 +404,10 @@ struct qemu_d3d_viewport_SetBackgroundDepth
 static HRESULT WINAPI d3d_viewport_SetBackgroundDepth(IDirect3DViewport3 *iface, IDirectDrawSurface *surface)
 {
     struct qemu_d3d_viewport_SetBackgroundDepth call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_SETBACKGROUNDDEPTH);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.surface = (ULONG_PTR)surface;
 
     qemu_syscall(&call.super);
@@ -427,8 +443,10 @@ struct qemu_d3d_viewport_GetBackgroundDepth
 static HRESULT WINAPI d3d_viewport_GetBackgroundDepth(IDirect3DViewport3 *iface, IDirectDrawSurface **surface, BOOL *valid)
 {
     struct qemu_d3d_viewport_GetBackgroundDepth call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_GETBACKGROUNDDEPTH);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.surface = (ULONG_PTR)surface;
     call.valid = (ULONG_PTR)valid;
 
@@ -466,8 +484,10 @@ struct qemu_d3d_viewport_Clear
 static HRESULT WINAPI d3d_viewport_Clear(IDirect3DViewport3 *iface, DWORD rect_count, D3DRECT *rects, DWORD flags)
 {
     struct qemu_d3d_viewport_Clear call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_CLEAR);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.rect_count = rect_count;
     call.rects = (ULONG_PTR)rects;
     call.flags = flags;
@@ -504,8 +524,10 @@ struct qemu_d3d_viewport_AddLight
 static HRESULT WINAPI d3d_viewport_AddLight(IDirect3DViewport3 *iface, IDirect3DLight *lpDirect3DLight)
 {
     struct qemu_d3d_viewport_AddLight call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_ADDLIGHT);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.lpDirect3DLight = (ULONG_PTR)lpDirect3DLight;
 
     qemu_syscall(&call.super);
@@ -540,8 +562,10 @@ struct qemu_d3d_viewport_DeleteLight
 static HRESULT WINAPI d3d_viewport_DeleteLight(IDirect3DViewport3 *iface, IDirect3DLight *lpDirect3DLight)
 {
     struct qemu_d3d_viewport_DeleteLight call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_DELETELIGHT);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.lpDirect3DLight = (ULONG_PTR)lpDirect3DLight;
 
     qemu_syscall(&call.super);
@@ -578,8 +602,10 @@ struct qemu_d3d_viewport_NextLight
 static HRESULT WINAPI d3d_viewport_NextLight(IDirect3DViewport3 *iface, IDirect3DLight *lpDirect3DLight, IDirect3DLight **lplpDirect3DLight, DWORD flags)
 {
     struct qemu_d3d_viewport_NextLight call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_NEXTLIGHT);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.lpDirect3DLight = (ULONG_PTR)lpDirect3DLight;
     call.lplpDirect3DLight = (ULONG_PTR)lplpDirect3DLight;
     call.flags = flags;
@@ -616,8 +642,10 @@ struct qemu_d3d_viewport_GetViewport2
 static HRESULT WINAPI d3d_viewport_GetViewport2(IDirect3DViewport3 *iface, D3DVIEWPORT2 *lpData)
 {
     struct qemu_d3d_viewport_GetViewport2 call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_GETVIEWPORT2);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.lpData = (ULONG_PTR)lpData;
 
     qemu_syscall(&call.super);
@@ -652,8 +680,10 @@ struct qemu_d3d_viewport_SetViewport2
 static HRESULT WINAPI d3d_viewport_SetViewport2(IDirect3DViewport3 *iface, D3DVIEWPORT2 *lpData)
 {
     struct qemu_d3d_viewport_SetViewport2 call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_SETVIEWPORT2);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.lpData = (ULONG_PTR)lpData;
 
     qemu_syscall(&call.super);
@@ -688,8 +718,10 @@ struct qemu_d3d_viewport_SetBackgroundDepth2
 static HRESULT WINAPI d3d_viewport_SetBackgroundDepth2(IDirect3DViewport3 *iface, IDirectDrawSurface4 *surface)
 {
     struct qemu_d3d_viewport_SetBackgroundDepth2 call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_SETBACKGROUNDDEPTH2);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.surface = (ULONG_PTR)surface;
 
     qemu_syscall(&call.super);
@@ -725,8 +757,10 @@ struct qemu_d3d_viewport_GetBackgroundDepth2
 static HRESULT WINAPI d3d_viewport_GetBackgroundDepth2(IDirect3DViewport3 *iface, IDirectDrawSurface4 **surface, BOOL *valid)
 {
     struct qemu_d3d_viewport_GetBackgroundDepth2 call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_GETBACKGROUNDDEPTH2);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.surface = (ULONG_PTR)surface;
     call.valid = (ULONG_PTR)valid;
 
@@ -767,8 +801,10 @@ struct qemu_d3d_viewport_Clear2
 static HRESULT WINAPI d3d_viewport_Clear2(IDirect3DViewport3 *iface, DWORD rect_count, D3DRECT *rects, DWORD flags, DWORD color, D3DVALUE depth, DWORD stencil)
 {
     struct qemu_d3d_viewport_Clear2 call;
+    struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_CLEAR2);
-    call.iface = (ULONG_PTR)iface;
+    call.iface = (ULONG_PTR)viewport;
     call.rect_count = rect_count;
     call.rects = (ULONG_PTR)rects;
     call.flags = flags;
