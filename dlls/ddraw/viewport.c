@@ -26,6 +26,10 @@
 #include <ddraw.h>
 #include <d3d.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_ddraw.h"
+#include "thunk/qemu_d3d.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_ddraw.h"
@@ -242,7 +246,8 @@ struct qemu_d3d_viewport_TransformVertices
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_viewport_TransformVertices(IDirect3DViewport3 *iface, DWORD dwVertexCount, D3DTRANSFORMDATA *data, DWORD dwFlags, DWORD *offscreen)
+static HRESULT WINAPI d3d_viewport_TransformVertices(IDirect3DViewport3 *iface, DWORD dwVertexCount,
+        D3DTRANSFORMDATA *data, DWORD dwFlags, DWORD *offscreen)
 {
     struct qemu_d3d_viewport_TransformVertices call;
     struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
@@ -265,11 +270,26 @@ void qemu_d3d_viewport_TransformVertices(struct qemu_syscall *call)
 {
     struct qemu_d3d_viewport_TransformVertices *c = (struct qemu_d3d_viewport_TransformVertices *)call;
     struct qemu_viewport *viewport;
+    D3DTRANSFORMDATA stack, *data = &stack;
+    struct qemu_D3DTRANSFORMDATA *data32;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     viewport = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DViewport3_TransformVertices(viewport->host, c->dwVertexCount, QEMU_G2H(c->data), c->dwFlags, QEMU_G2H(c->offscreen));
+#if GUEST_BIT == HOST_BIT
+    data = QEMU_G2H(c->data);
+#else
+    data32 = QEMU_G2H(c->data);
+    if (!data32)
+        data = NULL;
+    else if (data32->dwSize != sizeof(*data32))
+        data->dwSize = 0;
+    else
+        D3DTRANSFORMDATA_g2h(data, data32);
+#endif
+
+    c->super.iret = IDirect3DViewport3_TransformVertices(viewport->host, c->dwVertexCount, data,
+            c->dwFlags, QEMU_G2H(c->offscreen));
 }
 
 #endif

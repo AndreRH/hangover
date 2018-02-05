@@ -36,4 +36,32 @@ static inline void D3DDRAWPRIMITIVESTRIDEDDATA_g2h(D3DDRAWPRIMITIVESTRIDEDDATA *
         D3DDP_PTRSTRIDE_g2h(&host->textureCoords[i], &guest->textureCoords[i]);
 }
 
+struct qemu_D3DTRANSFORMDATA
+{
+    DWORD           dwSize;
+    qemu_ptr        lpIn;
+    DWORD           dwInSize;
+    qemu_ptr        lpOut;
+    DWORD           dwOutSize;
+    qemu_ptr        lpHOut;
+    DWORD           dwClip;
+    DWORD           dwClipIntersection;
+    DWORD           dwClipUnion;
+    D3DRECT         drExtent;
+};
+
+static inline void D3DTRANSFORMDATA_g2h(D3DTRANSFORMDATA *host, const struct qemu_D3DTRANSFORMDATA *guest)
+{
+    host->dwSize = sizeof(*host);
+    host->lpIn = (void *)(ULONG_PTR)guest->lpIn;
+    host->dwInSize = guest->dwInSize;
+    host->lpOut = (void *)(ULONG_PTR)guest->lpOut;
+    host->dwOutSize = guest->dwOutSize;
+    host->lpHOut = (D3DHVERTEX *)(ULONG_PTR)guest->lpHOut;
+    host->dwClip = guest->dwClip;
+    host->dwClipIntersection = guest->dwClipIntersection;
+    host->dwClipUnion = guest->dwClipUnion;
+    host->drExtent = guest->drExtent;
+}
+
 #endif
