@@ -1368,7 +1368,7 @@ static HRESULT qemu_d3d_device1_EnumTextureFormats_host_cb(DDSURFACEDESC *desc, 
     call.context = ctx->guest_ctx;
 
 #if HOST_BIT == GUEST_BIT
-    call.format = QEMU_H2G(fmt);
+    call.format = QEMU_H2G(desc);
 #else
     conv.dwSize = sizeof(conv);
     DDSURFACEDESC_h2g(&conv, desc);
