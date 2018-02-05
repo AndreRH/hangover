@@ -432,6 +432,20 @@ void __fastcall ddraw_surface_destroy_cb(struct qemu_surface *surface)
     WINE_TRACE("Executing destroy cb!\n");
     if (surface->clipper)
         IDirectDrawClipper_Release(&surface->clipper->IDirectDrawClipper_iface);
+
+    if (surface->palette)
+    {
+        /* This is for palettes on mipmap sublevels, which is valid in ddraw4 but not 7. Use
+         * v4 here. Still account for the possibility of lost surfaces and unset just on our
+         * side if it fails. The host will mirror this in the host surface destroy code. */
+        if (FAILED(IDirectDrawSurface4_SetPalette(&surface->IDirectDrawSurface4_iface, NULL)))
+        {
+            IDirectDrawPalette *release_pal = &surface->palette->IDirectDrawPalette_iface;
+            surface->palette = NULL;
+            IDirectDrawPalette_Release(release_pal);
+        }
+    }
+
     wined3d_private_store_cleanup(&surface->private_store);
 }
 
@@ -472,6 +486,9 @@ static ULONG ddraw_surface_release_iface(struct qemu_surface *surface)
         if (surface->device1)
             IUnknown_Release(&surface->device1->IUnknown_inner);
 
+        /* This will reduce the palette refcount if the surface ref goes to zero even if the surface
+         * survives through some other means inside the host ddraw. This won't take care of palettes
+         * attached to mipmap sublevels, which is valid in some d3d versions. */
         if (surface->palette)
         {
             if (FAILED(IDirectDrawSurface7_SetPalette(&surface->IDirectDrawSurface7_iface, NULL)))
