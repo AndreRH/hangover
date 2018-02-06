@@ -3929,7 +3929,7 @@ void qemu_ddraw1_CreateSurface(struct qemu_syscall *call)
         IDirectDrawSurface_Release(host);
 
         ctx.ddraw = ddraw;
-        ctx.version = 7;
+        ctx.version = 1;
         if (FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(object->host_surface7, &ctx, enum_Callback)))
             WINE_ERR("Surface enumeration failed!\n");
 
@@ -5365,6 +5365,8 @@ struct qemu_d3d1_FindDevice
     uint64_t iface;
     uint64_t fds;
     uint64_t fdr;
+    uint64_t size1;
+    uint64_t size2;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -5377,6 +5379,8 @@ static HRESULT WINAPI d3d1_FindDevice(IDirect3D *iface, D3DFINDDEVICESEARCH *fds
     call.iface = (ULONG_PTR)ddraw;
     call.fds = (ULONG_PTR)fds;
     call.fdr = (ULONG_PTR)fdr;
+    call.size1 = sizeof(*fds);
+    call.size2 = sizeof(*fdr);
 
     qemu_syscall(&call.super);
 
@@ -5390,7 +5394,7 @@ void qemu_d3d1_FindDevice(struct qemu_syscall *call)
     struct qemu_d3d1_FindDevice *c = (struct qemu_d3d1_FindDevice *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_FIXME("Unverified! %lx==%lx, %lx==%lx\n", sizeof(D3DFINDDEVICESEARCH), c->size1, sizeof(D3DFINDDEVICERESULT), c->size2);
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D_FindDevice(ddraw->host_d3d1, QEMU_G2H(c->fds), QEMU_G2H(c->fdr));
