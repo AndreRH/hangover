@@ -772,12 +772,9 @@ struct qemu_execute_buffer *unsafe_impl_from_IDirect3DExecuteBuffer(IDirect3DExe
 #else
 
 void qemu_DirectDrawCreateClipper(struct qemu_syscall *call);
-void qemu_d3d1_EnumDevices(struct qemu_syscall *call);
 void qemu_d3d1_FindDevice(struct qemu_syscall *call);
 void qemu_d3d1_Initialize(struct qemu_syscall *call);
-void qemu_d3d2_EnumDevices(struct qemu_syscall *call);
 void qemu_d3d2_FindDevice(struct qemu_syscall *call);
-void qemu_d3d3_EnumDevices(struct qemu_syscall *call);
 void qemu_d3d3_EvictManagedTextures(struct qemu_syscall *call);
 void qemu_d3d3_FindDevice(struct qemu_syscall *call);
 void qemu_d3d7_EnumDevices(struct qemu_syscall *call);
@@ -789,6 +786,7 @@ void qemu_d3d_CreateLight(struct qemu_syscall *call);
 void qemu_d3d_CreateMaterial(struct qemu_syscall *call);
 void qemu_d3d_CreateVertexBuffer(struct qemu_syscall *call);
 void qemu_d3d_CreateViewport(struct qemu_syscall *call);
+void qemu_d3d_EnumDevices(struct qemu_syscall *call);
 void qemu_d3d_EnumZBufferFormats(struct qemu_syscall *call);
 void qemu_d3d_device1_AddViewport(struct qemu_syscall *call);
 void qemu_d3d_device1_BeginScene(struct qemu_syscall *call);

@@ -4555,7 +4555,7 @@ static HRESULT WINAPI d3d7_EnumDevices(IDirect3D7 *iface, LPD3DENUMDEVICESCALLBA
 
 struct qemu_d3d7_enum_host_data
 {
-    uint64_t func, wrapper, context, i;
+    uint64_t func, wrapper, context, i, ver;
 };
 
 /* The strings are tricky: The pointers remain the same over invocations of EnumDevices,
@@ -4661,102 +4661,73 @@ void qemu_d3d7_EnumDevices(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d3_EnumDevices
+struct qemu_d3d_EnumDevices
 {
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t callback;
     uint64_t context;
+    uint64_t wrapper;
+};
+
+struct qemu_d3d_EnumDevices_cb
+{
+    uint64_t func;
+    uint64_t context;
+    uint64_t guid;
+    uint64_t desc_str, name;
+    uint64_t hal_desc, hel_desc;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static HRESULT __fastcall d3d3_EnumDevices_guest_cb(struct qemu_d3d_EnumDevices_cb *data)
+{
+    LPD3DENUMDEVICESCALLBACK func = (LPD3DENUMDEVICESCALLBACK)(ULONG_PTR)data->func;
+    return func((GUID *)(ULONG_PTR)data->guid, (char *)(ULONG_PTR)data->desc_str, (char *)(ULONG_PTR)data->name,
+            (D3DDEVICEDESC *)(ULONG_PTR)data->hal_desc, (D3DDEVICEDESC *)(ULONG_PTR)data->hel_desc,
+            (void *)(ULONG_PTR)data->context);
+}
 
 static HRESULT WINAPI d3d3_EnumDevices(IDirect3D3 *iface, LPD3DENUMDEVICESCALLBACK callback, void *context)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirect3D3(iface);
-    struct qemu_d3d3_EnumDevices call;
+    struct qemu_d3d_EnumDevices call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D3_ENUMDEVICES);
     call.iface = (ULONG_PTR)ddraw;
     call.callback = (ULONG_PTR)callback;
     call.context = (ULONG_PTR)context;
+    call.wrapper = (ULONG_PTR)d3d3_EnumDevices_guest_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
-
-#else
-
-void qemu_d3d3_EnumDevices(struct qemu_syscall *call)
-{
-    struct qemu_d3d3_EnumDevices *c = (struct qemu_d3d3_EnumDevices *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3D3_EnumDevices(ddraw->host_d3d3, QEMU_G2H(c->callback), QEMU_G2H(c->context));
-}
-
-#endif
-
-struct qemu_d3d2_EnumDevices
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t callback;
-    uint64_t context;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d2_EnumDevices(IDirect3D2 *iface, LPD3DENUMDEVICESCALLBACK callback, void *context)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirect3D2(iface);
-    struct qemu_d3d2_EnumDevices call;
+    struct qemu_d3d_EnumDevices call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D2_ENUMDEVICES);
     call.iface = (ULONG_PTR)ddraw;
     call.callback = (ULONG_PTR)callback;
     call.context = (ULONG_PTR)context;
+    call.wrapper = (ULONG_PTR)d3d3_EnumDevices_guest_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
-
-#else
-
-void qemu_d3d2_EnumDevices(struct qemu_syscall *call)
-{
-    struct qemu_d3d2_EnumDevices *c = (struct qemu_d3d2_EnumDevices *)call;
-    struct qemu_ddraw *ddraw;
-
-    WINE_FIXME("Unverified!\n");
-    ddraw = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirect3D2_EnumDevices(ddraw->host_d3d2, QEMU_G2H(c->callback), QEMU_G2H(c->context));
-}
-
-#endif
-
-struct qemu_d3d1_EnumDevices
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t callback;
-    uint64_t context;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI d3d1_EnumDevices(IDirect3D *iface, LPD3DENUMDEVICESCALLBACK callback, void *context)
 {
     struct qemu_ddraw *ddraw = impl_from_IDirect3D(iface);
-    struct qemu_d3d1_EnumDevices call;
+    struct qemu_d3d_EnumDevices call;
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D1_ENUMDEVICES);
     call.iface = (ULONG_PTR)ddraw;
     call.callback = (ULONG_PTR)callback;
     call.context = (ULONG_PTR)context;
+    call.wrapper = (ULONG_PTR)d3d3_EnumDevices_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -4765,15 +4736,147 @@ static HRESULT WINAPI d3d1_EnumDevices(IDirect3D *iface, LPD3DENUMDEVICESCALLBAC
 
 #else
 
-void qemu_d3d1_EnumDevices(struct qemu_syscall *call)
+/* Don't assume names and enumeration order matches between versions. Note that the GUID needs
+ * to be HeapAlloc'ed too because qemu_ddraw.dll.so is most likely loaded > 4 GB. */
+static struct
 {
-    struct qemu_d3d1_EnumDevices *c = (struct qemu_d3d1_EnumDevices *)call;
-    struct qemu_ddraw *ddraw;
+    BOOL initialized;
+    char *desc_copies[8], *name_copies[8];
+    GUID *guid_copies[8];
+} d3d3_data[3];
 
-    WINE_FIXME("Unverified!\n");
+#if GUEST_BIT != HOST_BIT
+static HRESULT WINAPI qemu_d3d_EnumDevices_copy_strings(GUID *guid, char *desc_str, char *name,
+        D3DDEVICEDESC *hal_desc, D3DDEVICEDESC *hel_desc, void *context)
+{
+    struct qemu_d3d7_enum_host_data *ctx = context;
+    size_t len;
+
+    if (ctx->i == sizeof(d3d3_data[0].desc_copies) / sizeof(*d3d3_data[0].desc_copies))
+    {
+        WINE_FIXME("Too many devices enumerated.\n");
+        return DDENUMRET_CANCEL;
+    }
+
+    if ((ULONG_PTR)guid > ~0U)
+    {
+        WINE_TRACE("Copying GUID to guest-readable memory.\n");
+        d3d3_data[ctx->ver].guid_copies[ctx->i] = HeapAlloc(GetProcessHeap(), 0, sizeof(GUID));
+        memcpy(d3d3_data[ctx->ver].guid_copies[ctx->i], guid, sizeof(*guid));
+    }
+    if ((ULONG_PTR)desc_str > ~0U)
+    {
+        WINE_TRACE("Copying description string to guest-readable memory.\n");
+        len = strlen(desc_str) + 1;
+        d3d3_data[ctx->ver].desc_copies[ctx->i] = HeapAlloc(GetProcessHeap(), 0, len);
+        memcpy(d3d3_data[ctx->ver].desc_copies[ctx->i], desc_str, len);
+    }
+    if ((ULONG_PTR)name > ~0U)
+    {
+        WINE_TRACE("Copying name string to guest-readable memory.\n");
+        len = strlen(name) + 1;
+        d3d3_data[ctx->ver].name_copies[ctx->i] = HeapAlloc(GetProcessHeap(), 0, len);
+        memcpy(d3d3_data[ctx->ver].name_copies[ctx->i], name, len);
+    }
+    ctx->i++;
+    return DDENUMRET_OK;
+}
+#endif
+
+static HRESULT WINAPI qemu_d3d_EnumDevices_host_cb(GUID *guid, char *desc_str, char *name,
+        D3DDEVICEDESC *hal_desc, D3DDEVICEDESC *hel_desc, void *context)
+{
+    struct qemu_d3d7_enum_host_data *ctx = context;
+    struct qemu_d3d_EnumDevices_cb call;
+    HRESULT ret;
+
+    call.func = ctx->func;
+    call.context = ctx->context;
+    call.guid = QEMU_H2G(guid);
+    call.desc_str = QEMU_H2G(desc_str);
+    call.name = QEMU_H2G(name);
+    call.hal_desc = QEMU_H2G(hal_desc);
+    call.hel_desc = QEMU_H2G(hel_desc);
+
+#if HOST_BIT != GUEST_BIT
+    if (call.desc_str > ~0U)
+        call.desc_str = QEMU_H2G(d3d3_data[ctx->ver].desc_copies[ctx->i]);
+    if (call.name > ~0U)
+        call.name = QEMU_H2G(d3d3_data[ctx->ver].name_copies[ctx->i]);
+    if (call.guid > ~0U)
+        call.guid = QEMU_H2G(d3d3_data[ctx->ver].guid_copies[ctx->i]);
+
+    if (call.hal_desc > ~0U)
+        WINE_ERR("hal_desc is %p, unreachable.\n", hal_desc);
+    if (call.hel_desc > ~0U)
+        WINE_ERR("hel_desc is %p, unreachable.\n", hel_desc);
+#endif
+
+    WINE_TRACE("Calling guest callback 0x%lx(0x%lx(%s), 0x%lx(\"%s\"), 0x%lx(\"%s\"), 0x%lx, 0x%lx, 0x%lx).\n",
+            call.func, call.guid, wine_dbgstr_guid(guid), call.desc_str, desc_str, call.name, name,
+            call.hal_desc, call.hel_desc, call.context);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest wrapper returned 0x%x.\n", ret);
+
+    ctx->i++;
+
+    return ret;
+}
+
+void qemu_d3d_EnumDevices(struct qemu_syscall *call)
+{
+    struct qemu_d3d_EnumDevices *c = (struct qemu_d3d_EnumDevices *)call;
+    struct qemu_ddraw *ddraw;
+    struct qemu_d3d7_enum_host_data ctx;
+
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3D_EnumDevices(ddraw->host_d3d1, QEMU_G2H(c->callback), QEMU_G2H(c->context));
+    ctx.func = c->callback;
+    ctx.wrapper = c->wrapper;
+    ctx.context = c->context;
+    ctx.i = 0;
+
+#if HOST_BIT != GUEST_BIT
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_D3D1_ENUMDEVICES):
+            ctx.ver = 0;
+            break;
+        case QEMU_SYSCALL_ID(CALL_D3D2_ENUMDEVICES):
+            ctx.ver = 1;
+            break;
+        case QEMU_SYSCALL_ID(CALL_D3D3_ENUMDEVICES):
+            ctx.ver = 2;
+            break;
+    }
+    if (!d3d3_data[ctx.ver].initialized)
+    {
+        c->super.iret = IDirect3D3_EnumDevices(ddraw->host_d3d3, qemu_d3d_EnumDevices_copy_strings, &ctx);
+        if (FAILED(c->super.iret))
+            WINE_ERR("Failed to enumerate devices.\n");
+        d3d3_data[ctx.ver].initialized = TRUE;
+        ctx.i = 0;
+    }
+#endif
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_D3D3_ENUMDEVICES):
+            c->super.iret = IDirect3D3_EnumDevices(ddraw->host_d3d3,
+                    c->callback ? qemu_d3d_EnumDevices_host_cb : NULL, &ctx);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_D3D2_ENUMDEVICES):
+            c->super.iret = IDirect3D2_EnumDevices(ddraw->host_d3d2,
+                    c->callback ? qemu_d3d_EnumDevices_host_cb : NULL, &ctx);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_D3D1_ENUMDEVICES):
+            c->super.iret = IDirect3D_EnumDevices(ddraw->host_d3d1,
+                    c->callback ? qemu_d3d_EnumDevices_host_cb : NULL, &ctx);
+            break;
+    }
 }
 
 #endif
