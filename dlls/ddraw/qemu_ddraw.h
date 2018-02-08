@@ -634,6 +634,7 @@ struct qemu_viewport
     IDirect3DViewport3 IDirect3DViewport3_iface;
     LONG ref;
     struct list vp_list_entry;
+    struct list light_list;
 
     /* Host fields */
     IDirect3DViewport3 *host;
@@ -696,6 +697,7 @@ struct qemu_light
     /* Guest fields. */
     IDirect3DLight IDirect3DLight_iface;
     LONG ref;
+    struct list entry;
 
     /* Host fields. */
     IDirect3DLight *host;

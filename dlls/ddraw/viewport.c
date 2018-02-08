@@ -554,7 +554,10 @@ static HRESULT WINAPI d3d_viewport_AddLight(IDirect3DViewport3 *iface, IDirect3D
     /* FIXME: Release them on viewport destroy. */
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
+    {
+        list_add_head(&viewport->light_list, &light->entry);
         IDirect3DLight_AddRef(lpDirect3DLight);
+    }
 
     return call.super.iret;
 }
@@ -624,24 +627,63 @@ struct qemu_d3d_viewport_NextLight
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t lpDirect3DLight;
-    uint64_t lplpDirect3DLight;
     uint64_t flags;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI d3d_viewport_NextLight(IDirect3DViewport3 *iface, IDirect3DLight *lpDirect3DLight, IDirect3DLight **lplpDirect3DLight, DWORD flags)
+static HRESULT WINAPI d3d_viewport_NextLight(IDirect3DViewport3 *iface, IDirect3DLight *lpDirect3DLight,
+        IDirect3DLight **lplpDirect3DLight, DWORD flags)
 {
     struct qemu_d3d_viewport_NextLight call;
     struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+    struct qemu_light *l = unsafe_impl_from_IDirect3DLight(lpDirect3DLight);
+    struct qemu_light *out;
+    struct list *entry;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_NEXTLIGHT);
     call.iface = (ULONG_PTR)viewport;
-    call.lpDirect3DLight = (ULONG_PTR)lpDirect3DLight;
-    call.lplpDirect3DLight = (ULONG_PTR)lplpDirect3DLight;
+    call.lpDirect3DLight = (ULONG_PTR)l;
     call.flags = flags;
 
+    WINE_TRACE("iface %p, light %p, next_light %p, flags %#x.\n",
+            iface, lpDirect3DLight, lplpDirect3DLight, flags);
+
+    if (!lplpDirect3DLight)
+        return DDERR_INVALIDPARAMS;
+
+    /* Call the host to figure out if the light is part of the viewport. */
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+    {
+        *lplpDirect3DLight = NULL;
+        return call.super.iret;
+    }
+
+    switch (flags)
+    {
+        case D3DNEXT_NEXT:
+            entry = list_next(&viewport->light_list, &l->entry);
+            break;
+
+        case D3DNEXT_HEAD:
+            entry = list_head(&viewport->light_list);
+            break;
+
+        case D3DNEXT_TAIL:
+            entry = list_tail(&viewport->light_list);
+            break;
+
+        default:
+            /* The host should have returned an error. */
+            entry = NULL;
+            WINE_ERR("Invalid flags %#x.\n", flags);
+            break;
+    }
+
+    out = LIST_ENTRY(entry, struct qemu_light, entry);
+    *lplpDirect3DLight = &out->IDirect3DLight_iface;
+    IDirect3DLight_AddRef(*lplpDirect3DLight);
 
     return call.super.iret;
 }
@@ -652,11 +694,16 @@ void qemu_d3d_viewport_NextLight(struct qemu_syscall *call)
 {
     struct qemu_d3d_viewport_NextLight *c = (struct qemu_d3d_viewport_NextLight *)call;
     struct qemu_viewport *viewport;
+    struct qemu_light *light;
+    IDirect3DLight *out;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     viewport = QEMU_G2H(c->iface);
+    light = QEMU_G2H(c->lpDirect3DLight);
 
-    c->super.iret = IDirect3DViewport3_NextLight(viewport->host, QEMU_G2H(c->lpDirect3DLight), QEMU_G2H(c->lplpDirect3DLight), c->flags);
+    c->super.iret = IDirect3DViewport3_NextLight(viewport->host, light ? light->host : NULL, &out, c->flags);
+    if (SUCCEEDED(c->super.iret))
+        IDirect3DLight_Release(out);
 }
 
 #endif
@@ -926,6 +973,7 @@ void d3d_viewport_guest_init(struct qemu_viewport *viewport)
 {
     viewport->IDirect3DViewport3_iface.lpVtbl = &d3d_viewport_vtbl;
     viewport->ref = 1;
+    list_init(&viewport->light_list);
 }
 
 #endif
