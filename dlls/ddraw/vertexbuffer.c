@@ -312,7 +312,7 @@ void qemu_d3d_vertex_buffer7_GetVertexBufferDesc(struct qemu_syscall *call)
     struct qemu_d3d_vertex_buffer7_GetVertexBufferDesc *c = (struct qemu_d3d_vertex_buffer7_GetVertexBufferDesc *)call;
     struct qemu_vertex_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVertexBuffer7_GetVertexBufferDesc(buffer->host, QEMU_G2H(c->desc));

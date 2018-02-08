@@ -1568,7 +1568,7 @@ void qemu_d3d_device1_CreateMatrix(struct qemu_syscall *call)
     struct qemu_d3d_device1_CreateMatrix *c = (struct qemu_d3d_device1_CreateMatrix *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice_CreateMatrix(device->host1, QEMU_G2H(c->D3DMatHandle));
@@ -1607,7 +1607,7 @@ void qemu_d3d_device1_SetMatrix(struct qemu_syscall *call)
     struct qemu_d3d_device1_SetMatrix *c = (struct qemu_d3d_device1_SetMatrix *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice_SetMatrix(device->host1, c->D3DMatHandle, QEMU_G2H(c->D3DMatrix));
@@ -1683,7 +1683,7 @@ void qemu_d3d_device1_DeleteMatrix(struct qemu_syscall *call)
     struct qemu_d3d_device1_DeleteMatrix *c = (struct qemu_d3d_device1_DeleteMatrix *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice_DeleteMatrix(device->host1, c->D3DMatHandle);
@@ -3034,7 +3034,7 @@ void qemu_d3d_device2_SetLightState(struct qemu_syscall *call)
     struct qemu_d3d_device2_SetLightState *c = (struct qemu_d3d_device2_SetLightState *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice2_SetLightState(device->host2, c->state, c->value);
@@ -3112,7 +3112,7 @@ void qemu_d3d_device2_GetLightState(struct qemu_syscall *call)
     struct qemu_d3d_device2_GetLightState *c = (struct qemu_d3d_device2_GetLightState *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice2_GetLightState(device->host2, c->state, QEMU_G2H(c->value));
@@ -5273,7 +5273,7 @@ void qemu_d3d_device7_GetLight(struct qemu_syscall *call)
     struct qemu_d3d_device7_GetLight *c = (struct qemu_d3d_device7_GetLight *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_GetLight(device->host7, c->light_idx, QEMU_G2H(c->light));
@@ -5308,7 +5308,7 @@ void qemu_d3d_device7_BeginStateBlock(struct qemu_syscall *call)
     struct qemu_d3d_device7_BeginStateBlock *c = (struct qemu_d3d_device7_BeginStateBlock *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_FIXME("Stateblocks will probably not handle refcounts correctly.\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_BeginStateBlock(device->host7);
@@ -5345,7 +5345,7 @@ void qemu_d3d_device7_EndStateBlock(struct qemu_syscall *call)
     struct qemu_d3d_device7_EndStateBlock *c = (struct qemu_d3d_device7_EndStateBlock *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_EndStateBlock(device->host7, QEMU_G2H(c->stateblock));
@@ -5493,7 +5493,7 @@ void qemu_d3d_device7_DeleteStateBlock(struct qemu_syscall *call)
     struct qemu_d3d_device7_DeleteStateBlock *c = (struct qemu_d3d_device7_DeleteStateBlock *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_DeleteStateBlock(device->host7, c->stateblock);
@@ -5663,7 +5663,7 @@ void qemu_d3d_device7_GetLightEnable(struct qemu_syscall *call)
     struct qemu_d3d_device7_GetLightEnable *c = (struct qemu_d3d_device7_GetLightEnable *)call;
     struct qemu_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DDevice7_GetLightEnable(device->host7, c->light_idx, QEMU_G2H(c->enabled));

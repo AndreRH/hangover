@@ -380,7 +380,7 @@ void qemu_d3d_material3_GetMaterial(struct qemu_syscall *call)
     struct qemu_d3d_material3_GetMaterial *c = (struct qemu_d3d_material3_GetMaterial *)call;
     struct qemu_material *material;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     material = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DMaterial3_GetMaterial(material->host3, QEMU_G2H(c->mat));
@@ -549,7 +549,7 @@ void qemu_d3d_material2_SetMaterial(struct qemu_syscall *call)
     struct qemu_d3d_material2_SetMaterial *c = (struct qemu_d3d_material2_SetMaterial *)call;
     struct qemu_material *material;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     material = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DMaterial2_SetMaterial(material->host2, QEMU_G2H(c->mat));
@@ -586,7 +586,7 @@ void qemu_d3d_material1_SetMaterial(struct qemu_syscall *call)
     struct qemu_d3d_material1_SetMaterial *c = (struct qemu_d3d_material1_SetMaterial *)call;
     struct qemu_material *material;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     material = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DMaterial_SetMaterial(material->host1, QEMU_G2H(c->mat));
@@ -623,7 +623,7 @@ void qemu_d3d_material2_GetMaterial(struct qemu_syscall *call)
     struct qemu_d3d_material2_GetMaterial *c = (struct qemu_d3d_material2_GetMaterial *)call;
     struct qemu_material *material;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     material = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DMaterial2_GetMaterial(material->host2, QEMU_G2H(c->mat));

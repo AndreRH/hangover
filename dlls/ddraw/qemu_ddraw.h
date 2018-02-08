@@ -718,6 +718,7 @@ struct qemu_execute_buffer
 extern const GUID IID_D3DDEVICE_WineD3D;
 
 struct qemu_ddraw *unsafe_impl_from_IDirectDraw(IDirectDraw *iface);
+struct qemu_ddraw *unsafe_impl_from_IDirect3D(IDirect3D *iface);
 void ddraw_guest_init(struct qemu_ddraw *ddraw);
 
 struct qemu_clipper *unsafe_impl_from_IDirectDrawClipper(IDirectDrawClipper *iface);

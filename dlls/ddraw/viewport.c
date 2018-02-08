@@ -133,10 +133,11 @@ static HRESULT WINAPI d3d_viewport_Initialize(IDirect3DViewport3 *iface, IDirect
 {
     struct qemu_d3d_viewport_Initialize call;
     struct qemu_viewport *viewport = impl_from_IDirect3DViewport3(iface);
+    struct qemu_ddraw *ddraw = unsafe_impl_from_IDirect3D(d3d);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D_VIEWPORT_INITIALIZE);
     call.iface = (ULONG_PTR)viewport;
-    call.d3d = (ULONG_PTR)d3d;
+    call.d3d = (ULONG_PTR)ddraw;
 
     qemu_syscall(&call.super);
 
@@ -149,11 +150,13 @@ void qemu_d3d_viewport_Initialize(struct qemu_syscall *call)
 {
     struct qemu_d3d_viewport_Initialize *c = (struct qemu_d3d_viewport_Initialize *)call;
     struct qemu_viewport *viewport;
+    struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     viewport = QEMU_G2H(c->iface);
+    ddraw = QEMU_G2H(c->d3d);
 
-    c->super.iret = IDirect3DViewport3_Initialize(viewport->host, QEMU_G2H(c->d3d));
+    c->super.iret = IDirect3DViewport3_Initialize(viewport->host, ddraw ? ddraw->host_d3d1 : NULL);
 }
 
 #endif
@@ -188,7 +191,7 @@ void qemu_d3d_viewport_GetViewport(struct qemu_syscall *call)
     struct qemu_d3d_viewport_GetViewport *c = (struct qemu_d3d_viewport_GetViewport *)call;
     struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     viewport = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DViewport3_GetViewport(viewport->host, QEMU_G2H(c->lpData));
@@ -738,7 +741,7 @@ void qemu_d3d_viewport_GetViewport2(struct qemu_syscall *call)
     struct qemu_d3d_viewport_GetViewport2 *c = (struct qemu_d3d_viewport_GetViewport2 *)call;
     struct qemu_viewport *viewport;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     viewport = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DViewport3_GetViewport2(viewport->host, QEMU_G2H(c->lpData));

@@ -2142,7 +2142,7 @@ void qemu_d3d1_Initialize(struct qemu_syscall *call)
     struct qemu_d3d1_Initialize *c = (struct qemu_d3d1_Initialize *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D_Initialize(ddraw->host_d3d1, QEMU_G2H(c->riid));
@@ -5312,7 +5312,7 @@ void qemu_d3d3_FindDevice(struct qemu_syscall *call)
     struct qemu_d3d3_FindDevice *c = (struct qemu_d3d3_FindDevice *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D3_FindDevice(ddraw->host_d3d3, QEMU_G2H(c->fds), QEMU_G2H(c->fdr));
@@ -5351,7 +5351,7 @@ void qemu_d3d2_FindDevice(struct qemu_syscall *call)
     struct qemu_d3d2_FindDevice *c = (struct qemu_d3d2_FindDevice *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D2_FindDevice(ddraw->host_d3d2, QEMU_G2H(c->fds), QEMU_G2H(c->fdr));
@@ -5365,8 +5365,6 @@ struct qemu_d3d1_FindDevice
     uint64_t iface;
     uint64_t fds;
     uint64_t fdr;
-    uint64_t size1;
-    uint64_t size2;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -5379,8 +5377,6 @@ static HRESULT WINAPI d3d1_FindDevice(IDirect3D *iface, D3DFINDDEVICESEARCH *fds
     call.iface = (ULONG_PTR)ddraw;
     call.fds = (ULONG_PTR)fds;
     call.fdr = (ULONG_PTR)fdr;
-    call.size1 = sizeof(*fds);
-    call.size2 = sizeof(*fdr);
 
     qemu_syscall(&call.super);
 
@@ -5394,7 +5390,7 @@ void qemu_d3d1_FindDevice(struct qemu_syscall *call)
     struct qemu_d3d1_FindDevice *c = (struct qemu_d3d1_FindDevice *)call;
     struct qemu_ddraw *ddraw;
 
-    WINE_FIXME("Unverified! %lx==%lx, %lx==%lx\n", sizeof(D3DFINDDEVICESEARCH), c->size1, sizeof(D3DFINDDEVICERESULT), c->size2);
+    WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3D_FindDevice(ddraw->host_d3d1, QEMU_G2H(c->fds), QEMU_G2H(c->fdr));
@@ -6055,9 +6051,19 @@ struct qemu_ddraw *unsafe_impl_from_IDirectDraw(IDirectDraw *iface)
     if (!iface)
         return NULL;
     if (iface->lpVtbl != &ddraw1_vtbl)
-        WINE_ERR("Incorrect clipper vtable %p, expect %p.\n", iface->lpVtbl, &ddraw1_vtbl);
+        WINE_ERR("Incorrect IDirectDraw vtable %p, expect %p.\n", iface->lpVtbl, &ddraw1_vtbl);
 
     return impl_from_IDirectDraw(iface);
+}
+
+struct qemu_ddraw *unsafe_impl_from_IDirect3D(IDirect3D *iface)
+{
+    if (!iface)
+        return NULL;
+    if (iface->lpVtbl != &d3d1_vtbl)
+        WINE_ERR("Incorrect IDirect3D vtable %p, expect %p.\n", iface->lpVtbl, &ddraw1_vtbl);
+
+    return impl_from_IDirect3D(iface);
 }
 
 void ddraw_guest_init(struct qemu_ddraw *ddraw)
