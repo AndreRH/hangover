@@ -27,6 +27,7 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <wine/list.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_winmm);
 #endif
 
@@ -71,9 +72,26 @@ struct qemu_timeSetEvent
     uint64_t lpFunc;
     uint64_t dwUser;
     uint64_t wFlags;
+    uint64_t wrapper;
+};
+
+struct qemu_timeSetEvent_cb
+{
+    uint64_t func;
+    uint64_t id;
+    uint64_t msg;
+    uint64_t user;
+    uint64_t dw1;
+    uint64_t dw2;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static void __fastcall qemu_timeSetEvent_guest_proc(struct qemu_timeSetEvent_cb *data)
+{
+    LPTIMECALLBACK func = (LPTIMECALLBACK)(ULONG_PTR)data->func;
+    func(data->id, data->msg, data->user, data->dw1, data->dw2);
+}
 
 WINBASEAPI MMRESULT WINAPI timeSetEvent(UINT wDelay, UINT wResol, LPTIMECALLBACK lpFunc, DWORD_PTR dwUser, UINT wFlags)
 {
@@ -84,6 +102,7 @@ WINBASEAPI MMRESULT WINAPI timeSetEvent(UINT wDelay, UINT wResol, LPTIMECALLBACK
     call.lpFunc = (ULONG_PTR)lpFunc;
     call.dwUser = (ULONG_PTR)dwUser;
     call.wFlags = (ULONG_PTR)wFlags;
+    call.wrapper = (ULONG_PTR)qemu_timeSetEvent_guest_proc;
 
     qemu_syscall(&call.super);
 
@@ -92,11 +111,65 @@ WINBASEAPI MMRESULT WINAPI timeSetEvent(UINT wDelay, UINT wResol, LPTIMECALLBACK
 
 #else
 
+static CRITICAL_SECTION timeSetEvent_cs = {0, -1, 0, 0, 0, 0};
+static struct list timeSetEvent_list = LIST_INIT(timeSetEvent_list);
+
+struct qemu_qemu_timeSetEvent_host_data
+{
+    uint64_t guest_func, guest_data;
+    uint64_t wrapper;
+    UINT id;
+    struct list entry;
+};
+
+static void CALLBACK qemu_timeSetEvent_host_proc(UINT id, UINT msg, DWORD_PTR user, DWORD_PTR dw1, DWORD_PTR dw2)
+{
+    struct qemu_qemu_timeSetEvent_host_data *ctx = (struct qemu_qemu_timeSetEvent_host_data *)user;
+    struct qemu_timeSetEvent_cb call;
+
+    call.func = ctx->guest_func;
+    call.id = id;
+    call.msg = msg;
+    call.user = ctx->guest_data;
+    call.dw1 = dw1;
+    call.dw2 = dw2;
+
+    WINE_TRACE("Calling guest function 0x%lx(%lu, %lu, 0x%lx, 0x%lx, 0x%lx).\n", call.func, call.id,
+            call.msg, call.user, call.dw1, call.dw2);
+    qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest function returned.\n");
+}
+
 void qemu_timeSetEvent(struct qemu_syscall *call)
 {
     struct qemu_timeSetEvent *c = (struct qemu_timeSetEvent *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = timeSetEvent(c->wDelay, c->wResol, QEMU_G2H(c->lpFunc), c->dwUser, c->wFlags);
+    struct qemu_qemu_timeSetEvent_host_data *ctx;
+
+    WINE_TRACE("\n");
+    if (c->wFlags & (TIME_CALLBACK_EVENT_SET | TIME_CALLBACK_EVENT_PULSE))
+    {
+        WINE_TRACE("Event based timer.\n");
+        c->super.iret = timeSetEvent(c->wDelay, c->wResol,
+                QEMU_G2H(c->lpFunc), (DWORD_PTR)ctx, c->wFlags);
+        return;
+    }
+
+    ctx = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ctx));
+    ctx->guest_func = c->lpFunc;
+    ctx->guest_data = c->dwUser;
+    ctx->wrapper = c->wrapper;
+
+    EnterCriticalSection(&timeSetEvent_cs);
+    c->super.iret = timeSetEvent(c->wDelay, c->wResol,
+            c->lpFunc ? qemu_timeSetEvent_host_proc : NULL, (DWORD_PTR)ctx,
+            c->wFlags | TIME_KILL_SYNCHRONOUS);
+
+    if (c->super.iret)
+    {
+        ctx->id = c->super.iret;
+        list_add_tail(&timeSetEvent_list, &ctx->entry);
+    }
+    LeaveCriticalSection(&timeSetEvent_cs);
 }
 
 #endif
@@ -125,8 +198,28 @@ WINBASEAPI MMRESULT WINAPI timeKillEvent(UINT wID)
 void qemu_timeKillEvent(struct qemu_syscall *call)
 {
     struct qemu_timeKillEvent *c = (struct qemu_timeKillEvent *)call;
-    WINE_FIXME("Unverified!\n");
+    struct qemu_qemu_timeSetEvent_host_data *event;
+
+    WINE_TRACE("\n");
+    EnterCriticalSection(&timeSetEvent_cs);
     c->super.iret = timeKillEvent(c->wID);
+
+    if (c->super.iret == TIMERR_NOERROR)
+    {
+        LIST_FOR_EACH_ENTRY(event, &timeSetEvent_list, struct qemu_qemu_timeSetEvent_host_data, entry)
+        {
+            if (event->id == c->wID)
+            {
+                WINE_TRACE("Deleting existing callback data %p / id %u.\n", event, event->id);
+                list_remove(&event->entry);
+                HeapFree(GetProcessHeap(), 0, event);
+                return;
+            }
+        }
+        /* This happens when the timer is using an event instead of a callback. */
+        WINE_WARN("Did not find structure for deleted event %lu.\n", c->wID);
+    }
+    LeaveCriticalSection(&timeSetEvent_cs);
 }
 
 #endif
