@@ -663,7 +663,7 @@ static HRESULT WINAPI ddraw_delete_detach(IDirectDrawSurface7 *surface, DDSURFAC
 {
     IUnknown *priv;
     DWORD size = sizeof(priv);
-    struct qemu_surface *impl;
+    struct qemu_surface *impl, *attached = context;
 
     /* We only care about things attached with AddAttachedSurface. */
     if (desc->ddsCaps.dwCaps & DDSCAPS_COMPLEX)
@@ -678,9 +678,35 @@ static HRESULT WINAPI ddraw_delete_detach(IDirectDrawSurface7 *surface, DDSURFAC
     impl = surface_impl_from_IUnknown(priv);
     WINE_TRACE("Found surface implemention %p from host surface %p.\n", impl, surface);
 
+    /* Detach it, otherwise we'll have an unexpected host refcount when we're deleting
+     * the wrapper. */
+    switch (impl->attach_version)
+    {
+        case 7:
+            IDirectDrawSurface7_DeleteAttachedSurface(attached->host_surface7, 0, impl->host_surface7);
+            break;
+        case 4:
+            IDirectDrawSurface4_DeleteAttachedSurface(attached->host_surface4, 0, impl->host_surface4);
+            break;
+        case 3:
+            IDirectDrawSurface3_DeleteAttachedSurface(attached->host_surface3, 0, impl->host_surface3);
+            break;
+        case 2:
+            IDirectDrawSurface2_DeleteAttachedSurface(attached->host_surface2, 0, impl->host_surface2);
+            break;
+        case 1:
+            IDirectDrawSurface_DeleteAttachedSurface(attached->host_surface1, 0, impl->host_surface1);
+            break;
+    }
+
+    /* Release this reference now, otherwise it will cause a warning in
+     * the attached surface's qemu_ddraw_surface1_Release about an unexpected host refcount.
+     * We do hold one last reference to the host surface through the wrapper, which we'll
+     * release below. */
+    IDirectDrawSurface7_Release(surface);
+
     qemu_ops->qemu_execute(QEMU_G2H(ddraw_delete_detach_cb), QEMU_H2G(impl));
 
-    IDirectDrawSurface7_Release(surface);
 
     return DDENUMRET_OK;
 }
@@ -693,7 +719,7 @@ void qemu_ddraw_surface1_Release(struct qemu_syscall *call)
     WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
-    if (FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(surface->host_surface7, NULL, ddraw_delete_detach)))
+    if (FAILED(IDirectDrawSurface7_EnumAttachedSurfaces(surface->host_surface7, surface, ddraw_delete_detach)))
         WINE_ERR("Failed to enumerate attached surfaces.\n");
 
     if (surface->host_texture1)
@@ -1827,6 +1853,8 @@ void qemu_ddraw_surface7_AddAttachedSurface(struct qemu_syscall *call)
 
     c->super.iret = IDirectDrawSurface7_AddAttachedSurface(surface->host_surface7,
             attachment ? attachment->host_surface7 : NULL);
+    if (SUCCEEDED(c->super.iret))
+        attachment->attach_version = 7;
 }
 
 #endif
@@ -1875,6 +1903,8 @@ void qemu_ddraw_surface4_AddAttachedSurface(struct qemu_syscall *call)
 
     c->super.iret = IDirectDrawSurface4_AddAttachedSurface(surface->host_surface4,
             attachment ? attachment->host_surface4 : NULL);
+    if (SUCCEEDED(c->super.iret))
+        attachment->attach_version = 4;
 }
 
 #endif
@@ -1923,6 +1953,8 @@ void qemu_ddraw_surface3_AddAttachedSurface(struct qemu_syscall *call)
 
     c->super.iret = IDirectDrawSurface3_AddAttachedSurface(surface->host_surface3,
             attachment ? attachment->host_surface3 : NULL);
+    if (SUCCEEDED(c->super.iret))
+        attachment->attach_version = 3;
 }
 
 #endif
@@ -1971,6 +2003,8 @@ void qemu_ddraw_surface2_AddAttachedSurface(struct qemu_syscall *call)
 
     c->super.iret = IDirectDrawSurface4_AddAttachedSurface(surface->host_surface2,
             attachment ? attachment->host_surface2 : NULL);
+    if (SUCCEEDED(c->super.iret))
+        attachment->attach_version = 2;
 }
 
 #endif
@@ -2019,6 +2053,8 @@ void qemu_ddraw_surface1_AddAttachedSurface(struct qemu_syscall *call)
 
     c->super.iret = IDirectDrawSurface_AddAttachedSurface(surface->host_surface1,
             attachment ? attachment->host_surface1 : NULL);
+    if (SUCCEEDED(c->super.iret))
+        attachment->attach_version = 1;
 }
 
 #endif

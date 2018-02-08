@@ -628,6 +628,8 @@ struct qemu_surface
 
     IUnknown                private_data;
     LONG                    private_data_ref;
+
+    UINT                    attach_version;
 };
 
 struct qemu_viewport

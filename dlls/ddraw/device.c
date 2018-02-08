@@ -327,8 +327,11 @@ void qemu_d3d_device_Release(struct qemu_syscall *call)
     if (device->host1)
         c->super.iret = IDirect3DDevice_Release(device->host1);
 
-    if (c->super.iret)
-        WINE_ERR("Unexpected combined host device refcount %lu.\n", c->super.iret);
+    /* A pure device 1 device is part of a surface. If we are a surface, so is the host device, and
+     * a non-zero refcount is expected because the host surface hasn't been released yet. The host
+     * device will be destroyed together with the host (and guest) surface. */
+    if (c->super.iret && !device->outer_unknown)
+        WINE_ERR("Unexpected combined host device %p refcount %lu.\n", device->host1, c->super.iret);
 
     HeapFree(GetProcessHeap(), 0, device);
 }
