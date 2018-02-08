@@ -6923,150 +6923,66 @@ void qemu_ddraw_surface1_UpdateOverlayZOrder(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_ddraw_surface7_GetDDInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t DD;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface7_GetDDInterface(IDirectDrawSurface7 *iface, void **DD)
 {
-    struct qemu_ddraw_surface7_GetDDInterface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_GETDDINTERFACE);
-    call.iface = (ULONG_PTR)surface;
-    call.DD = (ULONG_PTR)DD;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, ddraw %p.\n", iface, DD);
 
-    return call.super.iret;
+    if(!DD)
+        return DDERR_INVALIDPARAMS;
+
+    switch(surface->version)
+    {
+        case 7:
+            *DD = &surface->ddraw->IDirectDraw7_iface;
+            break;
+
+        case 4:
+            *DD = &surface->ddraw->IDirectDraw4_iface;
+            break;
+
+        case 2:
+            *DD = &surface->ddraw->IDirectDraw2_iface;
+            break;
+
+        case 1:
+            *DD = &surface->ddraw->IDirectDraw_iface;
+            break;
+
+    }
+    IUnknown_AddRef((IUnknown *)*DD);
+
+    return DD_OK;
 }
-
-#else
-
-void qemu_ddraw_surface7_GetDDInterface(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface7_GetDDInterface *c = (struct qemu_ddraw_surface7_GetDDInterface *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface7_GetDDInterface(surface->host_surface7, QEMU_G2H(c->DD));
-}
-
-#endif
-
-struct qemu_ddraw_surface4_GetDDInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t ddraw;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface4_GetDDInterface(IDirectDrawSurface4 *iface, void **ddraw)
 {
-    struct qemu_ddraw_surface4_GetDDInterface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_GETDDINTERFACE);
-    call.iface = (ULONG_PTR)surface;
-    call.ddraw = (ULONG_PTR)ddraw;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, ddraw %p.\n", iface, ddraw);
 
-    return call.super.iret;
+    return ddraw_surface7_GetDDInterface(&surface->IDirectDrawSurface7_iface, ddraw);
 }
-
-#else
-
-void qemu_ddraw_surface4_GetDDInterface(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface4_GetDDInterface *c = (struct qemu_ddraw_surface4_GetDDInterface *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface4_GetDDInterface(surface->host_surface4, QEMU_G2H(c->ddraw));
-}
-
-#endif
-
-struct qemu_ddraw_surface3_GetDDInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t ddraw;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface3_GetDDInterface(IDirectDrawSurface3 *iface, void **ddraw)
 {
-    struct qemu_ddraw_surface3_GetDDInterface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface3(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE3_GETDDINTERFACE);
-    call.iface = (ULONG_PTR)surface;
-    call.ddraw = (ULONG_PTR)ddraw;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, ddraw %p.\n", iface, ddraw);
 
-    return call.super.iret;
+    return ddraw_surface7_GetDDInterface(&surface->IDirectDrawSurface7_iface, ddraw);
 }
-
-#else
-
-void qemu_ddraw_surface3_GetDDInterface(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface3_GetDDInterface *c = (struct qemu_ddraw_surface3_GetDDInterface *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface3_GetDDInterface(surface->host_surface3, QEMU_G2H(c->ddraw));
-}
-
-#endif
-
-struct qemu_ddraw_surface2_GetDDInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t ddraw;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface2_GetDDInterface(IDirectDrawSurface2 *iface, void **ddraw)
 {
-    struct qemu_ddraw_surface2_GetDDInterface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface2(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE2_GETDDINTERFACE);
-    call.iface = (ULONG_PTR)surface;
-    call.ddraw = (ULONG_PTR)ddraw;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, ddraw %p.\n", iface, ddraw);
 
-    return call.super.iret;
-}
-
-#else
-
-void qemu_ddraw_surface2_GetDDInterface(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface2_GetDDInterface *c = (struct qemu_ddraw_surface2_GetDDInterface *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface2_GetDDInterface(surface->host_surface2, QEMU_G2H(c->ddraw));
+    return ddraw_surface7_GetDDInterface(&surface->IDirectDrawSurface7_iface, ddraw);
 }
 
 #endif

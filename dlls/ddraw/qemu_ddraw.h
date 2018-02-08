@@ -389,7 +389,6 @@ enum ddraw_calls
     CALL_DDRAW_SURFACE2_GETCLIPPER,
     CALL_DDRAW_SURFACE2_GETCOLORKEY,
     CALL_DDRAW_SURFACE2_GETDC,
-    CALL_DDRAW_SURFACE2_GETDDINTERFACE,
     CALL_DDRAW_SURFACE2_GETFLIPSTATUS,
     CALL_DDRAW_SURFACE2_GETOVERLAYPOSITION,
     CALL_DDRAW_SURFACE2_GETPIXELFORMAT,
@@ -424,7 +423,6 @@ enum ddraw_calls
     CALL_DDRAW_SURFACE3_GETCLIPPER,
     CALL_DDRAW_SURFACE3_GETCOLORKEY,
     CALL_DDRAW_SURFACE3_GETDC,
-    CALL_DDRAW_SURFACE3_GETDDINTERFACE,
     CALL_DDRAW_SURFACE3_GETFLIPSTATUS,
     CALL_DDRAW_SURFACE3_GETOVERLAYPOSITION,
     CALL_DDRAW_SURFACE3_GETPIXELFORMAT,
@@ -461,7 +459,6 @@ enum ddraw_calls
     CALL_DDRAW_SURFACE4_GETCLIPPER,
     CALL_DDRAW_SURFACE4_GETCOLORKEY,
     CALL_DDRAW_SURFACE4_GETDC,
-    CALL_DDRAW_SURFACE4_GETDDINTERFACE,
     CALL_DDRAW_SURFACE4_GETFLIPSTATUS,
     CALL_DDRAW_SURFACE4_GETOVERLAYPOSITION,
     CALL_DDRAW_SURFACE4_GETPIXELFORMAT,
@@ -499,7 +496,6 @@ enum ddraw_calls
     CALL_DDRAW_SURFACE7_GETCLIPPER,
     CALL_DDRAW_SURFACE7_GETCOLORKEY,
     CALL_DDRAW_SURFACE7_GETDC,
-    CALL_DDRAW_SURFACE7_GETDDINTERFACE,
     CALL_DDRAW_SURFACE7_GETFLIPSTATUS,
     CALL_DDRAW_SURFACE7_GETLOD,
     CALL_DDRAW_SURFACE7_GETOVERLAYPOSITION,
@@ -1109,7 +1105,6 @@ void qemu_ddraw_surface2_GetCaps(struct qemu_syscall *call);
 void qemu_ddraw_surface2_GetClipper(struct qemu_syscall *call);
 void qemu_ddraw_surface2_GetColorKey(struct qemu_syscall *call);
 void qemu_ddraw_surface2_GetDC(struct qemu_syscall *call);
-void qemu_ddraw_surface2_GetDDInterface(struct qemu_syscall *call);
 void qemu_ddraw_surface2_GetFlipStatus(struct qemu_syscall *call);
 void qemu_ddraw_surface2_GetOverlayPosition(struct qemu_syscall *call);
 void qemu_ddraw_surface2_GetPixelFormat(struct qemu_syscall *call);
@@ -1141,7 +1136,6 @@ void qemu_ddraw_surface3_GetCaps(struct qemu_syscall *call);
 void qemu_ddraw_surface3_GetClipper(struct qemu_syscall *call);
 void qemu_ddraw_surface3_GetColorKey(struct qemu_syscall *call);
 void qemu_ddraw_surface3_GetDC(struct qemu_syscall *call);
-void qemu_ddraw_surface3_GetDDInterface(struct qemu_syscall *call);
 void qemu_ddraw_surface3_GetFlipStatus(struct qemu_syscall *call);
 void qemu_ddraw_surface3_GetOverlayPosition(struct qemu_syscall *call);
 void qemu_ddraw_surface3_GetPixelFormat(struct qemu_syscall *call);
@@ -1176,7 +1170,6 @@ void qemu_ddraw_surface4_GetCaps(struct qemu_syscall *call);
 void qemu_ddraw_surface4_GetClipper(struct qemu_syscall *call);
 void qemu_ddraw_surface4_GetColorKey(struct qemu_syscall *call);
 void qemu_ddraw_surface4_GetDC(struct qemu_syscall *call);
-void qemu_ddraw_surface4_GetDDInterface(struct qemu_syscall *call);
 void qemu_ddraw_surface4_GetFlipStatus(struct qemu_syscall *call);
 void qemu_ddraw_surface4_GetOverlayPosition(struct qemu_syscall *call);
 void qemu_ddraw_surface4_GetPixelFormat(struct qemu_syscall *call);
@@ -1212,7 +1205,6 @@ void qemu_ddraw_surface7_GetCaps(struct qemu_syscall *call);
 void qemu_ddraw_surface7_GetClipper(struct qemu_syscall *call);
 void qemu_ddraw_surface7_GetColorKey(struct qemu_syscall *call);
 void qemu_ddraw_surface7_GetDC(struct qemu_syscall *call);
-void qemu_ddraw_surface7_GetDDInterface(struct qemu_syscall *call);
 void qemu_ddraw_surface7_GetFlipStatus(struct qemu_syscall *call);
 void qemu_ddraw_surface7_GetLOD(struct qemu_syscall *call);
 void qemu_ddraw_surface7_GetOverlayPosition(struct qemu_syscall *call);
