@@ -86,7 +86,7 @@ WINBASEAPI LPVOID WINAPI VirtualAllocEx(HANDLE hProcess, LPVOID addr, SIZE_T siz
 {
     struct qemu_VirtualAllocEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VIRTUALALLOCEX);
-    call.hProcess = (ULONG_PTR)hProcess;
+    call.hProcess = guest_HANDLE_g2h(hProcess);
     call.addr = (ULONG_PTR)addr;
     call.size = (ULONG_PTR)size;
     call.type = (ULONG_PTR)type;
@@ -157,7 +157,7 @@ WINBASEAPI BOOL WINAPI VirtualFreeEx(HANDLE process, LPVOID addr, SIZE_T size, D
 {
     struct qemu_VirtualFreeEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VIRTUALFREEEX);
-    call.process = (ULONG_PTR)process;
+    call.process = guest_HANDLE_g2h(process);
     call.addr = (ULONG_PTR)addr;
     call.size = (ULONG_PTR)size;
     call.type = (ULONG_PTR)type;
@@ -295,7 +295,7 @@ WINBASEAPI BOOL WINAPI VirtualProtectEx(HANDLE process, LPVOID addr, SIZE_T size
 {
     struct qemu_VirtualProtectEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VIRTUALPROTECTEX);
-    call.process = (ULONG_PTR)process;
+    call.process = guest_HANDLE_g2h(process);
     call.addr = (ULONG_PTR)addr;
     call.size = (ULONG_PTR)size;
     call.new_prot = (ULONG_PTR)new_prot;
@@ -385,7 +385,7 @@ WINBASEAPI SIZE_T WINAPI VirtualQueryEx(HANDLE process, LPCVOID addr, PMEMORY_BA
 {
     struct qemu_VirtualQueryEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VIRTUALQUERYEX);
-    call.process = (ULONG_PTR)process;
+    call.process = guest_HANDLE_g2h(process);
     call.addr = (ULONG_PTR)addr;
     call.info = (ULONG_PTR)info;
     call.len = (ULONG_PTR)len;
@@ -423,7 +423,7 @@ WINBASEAPI HANDLE WINAPI CreateFileMappingA(HANDLE hFile, SECURITY_ATTRIBUTES *s
 {
     struct qemu_CreateFileMappingA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEFILEMAPPINGA);
-    call.hFile = (ULONG_PTR)hFile;
+    call.hFile = guest_HANDLE_g2h(hFile);
     call.sa = (ULONG_PTR)sa;
     call.protect = (ULONG_PTR)protect;
     call.size_high = (ULONG_PTR)size_high;
@@ -478,7 +478,7 @@ WINBASEAPI HANDLE WINAPI CreateFileMappingW(HANDLE hFile, LPSECURITY_ATTRIBUTES 
 {
     struct qemu_CreateFileMappingW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEFILEMAPPINGW);
-    call.hFile = (ULONG_PTR)hFile;
+    call.hFile = guest_HANDLE_g2h(hFile);
     call.sa = (ULONG_PTR)sa;
     call.protect = (ULONG_PTR)protect;
     call.size_high = (ULONG_PTR)size_high;
@@ -600,7 +600,7 @@ WINBASEAPI LPVOID WINAPI MapViewOfFile(HANDLE mapping, DWORD access, DWORD offse
 {
     struct qemu_MapViewOfFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MAPVIEWOFFILE);
-    call.mapping = (ULONG_PTR)mapping;
+    call.mapping = guest_HANDLE_g2h(mapping);
     call.access = (ULONG_PTR)access;
     call.offset_high = (ULONG_PTR)offset_high;
     call.offset_low = (ULONG_PTR)offset_low;
@@ -639,7 +639,7 @@ WINBASEAPI LPVOID WINAPI MapViewOfFileEx(HANDLE handle, DWORD access, DWORD offs
 {
     struct qemu_MapViewOfFileEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MAPVIEWOFFILEEX);
-    call.handle = (ULONG_PTR)handle;
+    call.handle = guest_HANDLE_g2h(handle);
     call.access = access;
     call.offset_high = offset_high;
     call.offset_low = offset_low;
@@ -1033,7 +1033,7 @@ WINBASEAPI DWORD WINAPI K32GetMappedFileNameA(HANDLE process, LPVOID lpv, LPSTR 
 {
     struct qemu_K32GetMappedFileNameA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32GETMAPPEDFILENAMEA);
-    call.process = (ULONG_PTR)process;
+    call.process = guest_HANDLE_g2h(process);
     call.lpv = (ULONG_PTR)lpv;
     call.file_name = (ULONG_PTR)file_name;
     call.size = (ULONG_PTR)size;
@@ -1069,7 +1069,7 @@ WINBASEAPI DWORD WINAPI K32GetMappedFileNameW(HANDLE process, LPVOID lpv, LPWSTR
 {
     struct qemu_K32GetMappedFileNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32GETMAPPEDFILENAMEW);
-    call.process = (ULONG_PTR)process;
+    call.process = guest_HANDLE_g2h(process);
     call.lpv = (ULONG_PTR)lpv;
     call.file_name = (ULONG_PTR)file_name;
     call.size = (ULONG_PTR)size;
@@ -1168,7 +1168,7 @@ WINBASEAPI BOOL WINAPI K32GetWsChanges(HANDLE process, PPSAPI_WS_WATCH_INFORMATI
 {
     struct qemu_K32GetWsChanges call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32GETWSCHANGES);
-    call.process = (ULONG_PTR)process;
+    call.process = guest_HANDLE_g2h(process);
     call.watchinfo = (ULONG_PTR)watchinfo;
     call.size = (ULONG_PTR)size;
 
@@ -1200,7 +1200,7 @@ WINBASEAPI BOOL WINAPI K32InitializeProcessForWsWatch(HANDLE process)
 {
     struct qemu_K32InitializeProcessForWsWatch call;
     call.super.id = QEMU_SYSCALL_ID(CALL_K32INITIALIZEPROCESSFORWSWATCH);
-    call.process = (ULONG_PTR)process;
+    call.process = guest_HANDLE_g2h(process);
 
     qemu_syscall(&call.super);
 
