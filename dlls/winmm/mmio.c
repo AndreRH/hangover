@@ -623,7 +623,8 @@ WINBASEAPI MMRESULT WINAPI mmioDescend(HMMIO hmmio, LPMMCKINFO lpck, const MMCKI
 void qemu_mmioDescend(struct qemu_syscall *call)
 {
     struct qemu_mmioDescend *c = (struct qemu_mmioDescend *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+    /* MMCKINFO has the same size in 32 and 64 bit. */
     c->super.iret = mmioDescend(QEMU_G2H(c->hmmio), QEMU_G2H(c->lpck), QEMU_G2H(c->lpckParent), c->uFlags);
 }
 
