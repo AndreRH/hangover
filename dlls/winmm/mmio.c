@@ -353,7 +353,7 @@ WINBASEAPI MMRESULT WINAPI mmioSetBuffer(HMMIO hmmio, LPSTR pchBuffer, LONG cchB
 void qemu_mmioSetBuffer(struct qemu_syscall *call)
 {
     struct qemu_mmioSetBuffer *c = (struct qemu_mmioSetBuffer *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = mmioSetBuffer(QEMU_G2H(c->hmmio), QEMU_G2H(c->pchBuffer), c->cchBuffer, c->uFlags);
 }
 
