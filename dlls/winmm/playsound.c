@@ -59,7 +59,8 @@ WINBASEAPI BOOL WINAPI PlaySoundA(LPCSTR pszSoundA, HMODULE hmod, DWORD fdwSound
 void qemu_PlaySoundA(struct qemu_syscall *call)
 {
     struct qemu_PlaySoundA *c = (struct qemu_PlaySoundA *)call;
-    WINE_FIXME("Unverified!\n");
+    /* FIXME: This may need some HMODULE adjustments. */
+    WINE_TRACE("\n");
     c->super.iret = PlaySoundA(QEMU_G2H(c->pszSoundA), QEMU_G2H(c->hmod), c->fdwSound);
 }
 
@@ -93,7 +94,8 @@ WINBASEAPI BOOL WINAPI PlaySoundW(LPCWSTR pszSoundW, HMODULE hmod, DWORD fdwSoun
 void qemu_PlaySoundW(struct qemu_syscall *call)
 {
     struct qemu_PlaySoundW *c = (struct qemu_PlaySoundW *)call;
-    WINE_FIXME("Unverified!\n");
+    /* FIXME: This may need some HMODULE adjustments. */
+    WINE_TRACE("\n");
     c->super.iret = PlaySoundW(QEMU_G2H(c->pszSoundW), QEMU_G2H(c->hmod), c->fdwSound);
 }
 
@@ -125,7 +127,7 @@ WINBASEAPI BOOL WINAPI sndPlaySoundA(LPCSTR pszSoundA, UINT uFlags)
 void qemu_sndPlaySoundA(struct qemu_syscall *call)
 {
     struct qemu_sndPlaySoundA *c = (struct qemu_sndPlaySoundA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = sndPlaySoundA(QEMU_G2H(c->pszSoundA), c->uFlags);
 }
 
@@ -157,7 +159,7 @@ WINBASEAPI BOOL WINAPI sndPlaySoundW(LPCWSTR pszSound, UINT uFlags)
 void qemu_sndPlaySoundW(struct qemu_syscall *call)
 {
     struct qemu_sndPlaySoundW *c = (struct qemu_sndPlaySoundW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = sndPlaySoundW(QEMU_G2H(c->pszSound), c->uFlags);
 }
 

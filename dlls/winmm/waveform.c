@@ -631,7 +631,7 @@ WINBASEAPI UINT WINAPI waveOutPause(HWAVEOUT hWaveOut)
 void qemu_waveOutPause(struct qemu_syscall *call)
 {
     struct qemu_waveOutPause *c = (struct qemu_waveOutPause *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = waveOutPause(QEMU_G2H(c->hWaveOut));
 }
 
@@ -691,7 +691,7 @@ WINBASEAPI UINT WINAPI waveOutRestart(HWAVEOUT hWaveOut)
 void qemu_waveOutRestart(struct qemu_syscall *call)
 {
     struct qemu_waveOutRestart *c = (struct qemu_waveOutRestart *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = waveOutRestart(QEMU_G2H(c->hWaveOut));
 }
 
@@ -987,7 +987,14 @@ WINBASEAPI UINT WINAPI waveOutMessage(HWAVEOUT hWaveOut, UINT uMessage, DWORD_PT
 void qemu_waveOutMessage(struct qemu_syscall *call)
 {
     struct qemu_waveOutMessage *c = (struct qemu_waveOutMessage *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+#if GUEST_BIT != HOST_BIT
+    /* There's a DWORD_PTR * in dwParam1. */
+    if (c->uMessage == DRV_QUERYFUNCTIONINSTANCEIDSIZE)
+        WINE_FIXME("DRV_QUERYFUNCTIONINSTANCEIDSIZE may need 32/64 bit conversion.\n");
+#endif
+
     c->super.iret = waveOutMessage(QEMU_G2H(c->hWaveOut), c->uMessage, c->dwParam1, c->dwParam2);
 }
 

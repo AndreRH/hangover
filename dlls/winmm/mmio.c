@@ -125,7 +125,7 @@ WINBASEAPI MMRESULT WINAPI mmioClose(HMMIO hmmio, UINT uFlags)
 void qemu_mmioClose(struct qemu_syscall *call)
 {
     struct qemu_mmioClose *c = (struct qemu_mmioClose *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = mmioClose(QEMU_G2H(c->hmmio), c->uFlags);
 }
 
@@ -193,7 +193,7 @@ WINBASEAPI LONG WINAPI mmioWrite(HMMIO hmmio, LPCSTR pch, LONG cch)
 void qemu_mmioWrite(struct qemu_syscall *call)
 {
     struct qemu_mmioWrite *c = (struct qemu_mmioWrite *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = mmioWrite(QEMU_G2H(c->hmmio), QEMU_G2H(c->pch), c->cch);
 }
 
