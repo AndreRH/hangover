@@ -954,8 +954,8 @@ void qemu_waveInOpen(struct qemu_syscall *call)
     HWAVEIN h;
 
     WINE_TRACE("\n");
-    if (c->dwCallback)
-        WINE_FIXME("dwCallback %lx.\n", c->dwCallback);
+    if (c->dwCallback && ((c->dwFlags & CALLBACK_TYPEMASK) == CALLBACK_FUNCTION))
+        WINE_FIXME("Wrap function callback 0x%lx!\n", c->dwCallback);
 
     c->super.iret = waveInOpen(c->lphWaveIn ? &h : NULL, c->uDeviceID,
             QEMU_G2H(c->lpFormat), c->dwCallback, c->dwInstance, c->dwFlags);
