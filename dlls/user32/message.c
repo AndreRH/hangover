@@ -1487,8 +1487,22 @@ WINUSERAPI UINT WINAPI RegisterWindowMessageA(LPCSTR str)
 void qemu_RegisterWindowMessageA(struct qemu_syscall *call)
 {
     struct qemu_RegisterWindowMessageA *c = (struct qemu_RegisterWindowMessageA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RegisterWindowMessageA(QEMU_G2H(c->str));
+    ATOM ret;
+    WINE_TRACE("\n");
+    ret = RegisterWindowMessageA(QEMU_G2H(c->str));
+
+    if (ret)
+    {
+        if (!strcmp(QEMU_G2H(c->str), FINDMSGSTRINGA))
+        {
+            if (msg_FINDMSGSTRING && msg_FINDMSGSTRING != ret)
+                WINE_ERR("FINDMSGSTRINGW already has atom %x, now I got %x.\n",
+                        msg_FINDMSGSTRING, ret);
+            msg_FINDMSGSTRING = ret;
+        }
+    }
+
+    c->super.iret = ret;
 }
 
 #endif
