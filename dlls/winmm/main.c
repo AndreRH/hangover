@@ -21,23 +21,67 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_winmm.h"
 
+struct qemu_dll_init
+{
+    struct qemu_syscall super;
+    uint64_t ioproc_guest_wrapper;
+};
+
+struct ioproc_callback
+{
+    uint64_t func;
+    uint64_t info;
+    uint64_t msg;
+    uint64_t param1, param2;
+};
+
 #ifdef QEMU_DLL_GUEST
+
+static LRESULT __fastcall ioproc_guest_wrapper(struct ioproc_callback *data)
+{
+    LPMMIOPROC func = (LPMMIOPROC)(ULONG_PTR)data->func;
+    return func((char *)(ULONG_PTR)data->info, data->msg, data->param1, data->param2);
+}
 
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
+    struct qemu_dll_init call;
+
+    switch (reason)
+    {
+        case DLL_PROCESS_ATTACH:
+            call.super.id = QEMU_SYSCALL_ID(CALL_DLL_INIT);
+            call.ioproc_guest_wrapper = (ULONG_PTR)ioproc_guest_wrapper;
+            qemu_syscall(&call.super);
+            break;
+    }
     return TRUE;
 }
 
 #else
 
 #include <wine/debug.h>
+#include <assert.h>
+
+#include "callback_helper_impl.h"
+
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_winmm);
 
 const struct qemu_ops *qemu_ops;
+
+static uint64_t ioproc_guest_wrapper;
+
+static void qemu_dll_init(struct qemu_syscall *call)
+{
+    struct qemu_dll_init *c = (struct qemu_dll_init *)call;
+    ioproc_guest_wrapper = c->ioproc_guest_wrapper;
+}
 
 static const syscall_handler dll_functions[] =
 {
@@ -49,6 +93,7 @@ static const syscall_handler dll_functions[] =
     qemu_auxSetVolume,
     qemu_CloseDriver,
     qemu_DefDriverProc,
+    qemu_dll_init,
     qemu_DriverCallback,
     qemu_GetDriverFlags,
     qemu_GetDriverModuleHandle,
@@ -216,6 +261,34 @@ static const syscall_handler dll_functions[] =
     qemu_waveHeaderOp,
 };
 
+struct callback_entry_table *ioproc_wrappers;
+unsigned int ioproc_wrapper_count;
+
+LRESULT WINAPI ioproc_wrapper(LPSTR info, UINT msg, LPARAM param1, LPARAM param2, struct callback_entry *wrapper)
+{
+    struct ioproc_callback call;
+    LRESULT ret;
+    struct qemu_MMIOINFO info32;
+
+    call.func = callback_get_guest_proc(wrapper);
+#if GUEST_BIT == HOST_BIT
+    call.info = QEMU_H2G(info);
+#else
+    MMIOINFO_h2g(&info32, (MMIOINFO *)info);
+    call.info = QEMU_H2G(&info32);
+#endif
+    call.msg = msg;
+    call.param1 = param1;
+    call.param2 = param2;
+
+    WINE_TRACE("Calling guest function 0x%lx(0x%lx, 0x%x, 0x%lx, 0x%lx).\n", call.func,
+               call.info, msg, param1, param2);
+    qemu_ops->qemu_execute(QEMU_G2H(ioproc_guest_wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned %ld\n", ret);
+
+    return ret;
+}
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     WINE_TRACE("Loading host-side winmm wrapper.\n");
@@ -223,7 +296,59 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
 
+    ioproc_wrapper_count = 128;
+    if (!callback_alloc_table(&ioproc_wrappers, ioproc_wrapper_count, sizeof(struct callback_entry),
+            ioproc_wrapper, 4))
+    {
+        WINE_ERR("Failed to allocate memory for class ioproc wrappers.\n");
+        return NULL;
+    }
+
     return dll_functions;
+}
+
+LPMMIOPROC ioproc_guest_to_host(uint64_t guest_proc)
+{
+    unsigned int i;
+    struct callback_entry *entry;
+    BOOL is_new;
+
+    if (!guest_proc)
+        return (LPMMIOPROC)guest_proc;
+
+    entry = callback_get(ioproc_wrappers, guest_proc, &is_new);
+    if (!entry)
+    {
+        WINE_FIXME("Out of guest -> host IOPROC wrappers.\n");
+        assert(0);
+    }
+    if (is_new)
+    {
+        WINE_TRACE("Creating host IOPROC %p for guest func 0x%lx.\n",
+                entry, (unsigned long)guest_proc);
+    }
+    return (LPMMIOPROC)entry;
+}
+
+uint64_t ioproc_host_to_guest(LPMMIOPROC host_proc)
+{
+    unsigned int i;
+
+    if (!host_proc)
+        return (ULONG_PTR)host_proc;
+
+    if (callback_is_in_table(ioproc_wrappers, (struct callback_entry *)host_proc))
+    {
+        uint64_t ret = callback_get_guest_proc((struct callback_entry *)host_proc);
+        WINE_TRACE("Host wndproc %p is a wrapper function. Returning guest wndproc 0x%lx.\n",
+                host_proc, (unsigned long)ret);
+        return ret;
+    }
+
+    WINE_ERR("Did not expect a host-provided IO proc.\n");
+
+    /* Out of reverse wrappers. */
+    assert(0);
 }
 
 #endif

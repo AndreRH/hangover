@@ -13,6 +13,7 @@ enum winmm_calls
     CALL_AUXSETVOLUME,
     CALL_CLOSEDRIVER,
     CALL_DEFDRIVERPROC,
+    CALL_DLL_INIT,
     CALL_DRIVERCALLBACK,
     CALL_GETDRIVERFLAGS,
     CALL_GETDRIVERMODULEHANDLE,
@@ -353,6 +354,9 @@ void qemu_waveOutRestart(struct qemu_syscall *call);
 void qemu_waveOutSetPitch(struct qemu_syscall *call);
 void qemu_waveOutSetPlaybackRate(struct qemu_syscall *call);
 void qemu_waveOutSetVolume(struct qemu_syscall *call);
+
+LPMMIOPROC ioproc_guest_to_host(uint64_t guest_func);
+uint64_t ioproc_host_to_guest(LPMMIOPROC host_func);
 
 #endif
 

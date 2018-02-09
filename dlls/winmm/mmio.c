@@ -101,7 +101,7 @@ void qemu_mmioOpen(struct qemu_syscall *call)
     }
 
 #if GUEST_BIT != HOST_BIT
-    if (c->super.iret)
+    if (c->super.iret && info)
         MMIOINFO_h2g(QEMU_G2H(c->lpmmioinfo), info);
 #endif
 }
@@ -520,8 +520,12 @@ WINBASEAPI LPMMIOPROC WINAPI mmioInstallIOProcA(FOURCC fccIOProc, LPMMIOPROC pIO
 void qemu_mmioInstallIOProcA(struct qemu_syscall *call)
 {
     struct qemu_mmioInstallIOProcA *c = (struct qemu_mmioInstallIOProcA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)mmioInstallIOProcA(c->fccIOProc, QEMU_G2H(c->pIOProc), c->dwFlags);
+    LPMMIOPROC host_proc;
+
+    WINE_TRACE("\n");
+    host_proc = ioproc_guest_to_host(c->pIOProc);
+    host_proc = mmioInstallIOProcA(c->fccIOProc, host_proc, c->dwFlags);
+    c->super.iret = ioproc_host_to_guest(host_proc);
 }
 
 #endif
