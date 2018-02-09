@@ -86,6 +86,9 @@ void qemu_mmioOpen(struct qemu_syscall *call)
         info = NULL;
 #endif
 
+    if (info && info->pIOProc)
+        WINE_FIXME("pIOProc not handled, expect problems.\n");
+
     switch (c->super.id)
     {
         case QEMU_SYSCALL_ID(CALL_MMIOOPENA):
