@@ -56,7 +56,7 @@ WINBASEAPI UINT WINAPI waveOutGetNumDevs(void)
 void qemu_waveOutGetNumDevs(struct qemu_syscall *call)
 {
     struct qemu_waveOutGetNumDevs *c = (struct qemu_waveOutGetNumDevs *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = waveOutGetNumDevs();
 }
 
@@ -90,7 +90,9 @@ WINBASEAPI UINT WINAPI waveOutGetDevCapsA(UINT_PTR uDeviceID, LPWAVEOUTCAPSA lpC
 void qemu_waveOutGetDevCapsA(struct qemu_syscall *call)
 {
     struct qemu_waveOutGetDevCapsA *c = (struct qemu_waveOutGetDevCapsA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* WAVEOUTCAPSA has the same size on 32 and 64 bit. */
     c->super.iret = waveOutGetDevCapsA(c->uDeviceID, QEMU_G2H(c->lpCaps), c->uSize);
 }
 
@@ -124,7 +126,9 @@ WINBASEAPI UINT WINAPI waveOutGetDevCapsW(UINT_PTR uDeviceID, LPWAVEOUTCAPSW lpC
 void qemu_waveOutGetDevCapsW(struct qemu_syscall *call)
 {
     struct qemu_waveOutGetDevCapsW *c = (struct qemu_waveOutGetDevCapsW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* WAVEOUTCAPSW has the same size on 32 and 64 bit. */
     c->super.iret = waveOutGetDevCapsW(c->uDeviceID, QEMU_G2H(c->lpCaps), c->uSize);
 }
 
@@ -272,7 +276,7 @@ WINBASEAPI UINT WINAPI waveOutClose(HWAVEOUT hWaveOut)
 void qemu_waveOutClose(struct qemu_syscall *call)
 {
     struct qemu_waveOutClose *c = (struct qemu_waveOutClose *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = waveOutClose(QEMU_G2H(c->hWaveOut));
 }
 
@@ -382,22 +386,27 @@ void qemu_waveHeaderOp(struct qemu_syscall *call)
     switch (c->super.id)
     {
         case QEMU_SYSCALL_ID(CALL_WAVEOUTPREPAREHEADER):
+            WINE_TRACE("waveOutPrepareHeader\n");
             c->super.iret = waveOutPrepareHeader(QEMU_G2H(c->handle), hdr, size);
             break;
 
         case QEMU_SYSCALL_ID(CALL_WAVEOUTUNPREPAREHEADER):
+            WINE_TRACE("waveOutUnprepareHeader\n");
             c->super.iret = waveOutUnprepareHeader(QEMU_G2H(c->handle), hdr, size);
             break;
 
         case QEMU_SYSCALL_ID(CALL_WAVEINPREPAREHEADER):
+            WINE_TRACE("waveInPrepareHeader\n");
             c->super.iret = waveInPrepareHeader(QEMU_G2H(c->handle), hdr, size);
             break;
 
         case QEMU_SYSCALL_ID(CALL_WAVEINUNPREPAREHEADER):
+            WINE_TRACE("waveInUnprepareHeader\n");
             c->super.iret = waveInUnprepareHeader(QEMU_G2H(c->handle), hdr, size);
             break;
 
         case QEMU_SYSCALL_ID(CALL_WAVEOUTWRITE):
+            WINE_TRACE("waveOutWrite\n");
             c->super.iret = waveOutWrite(QEMU_G2H(c->handle), hdr, size);
             break;
    }
@@ -558,7 +567,9 @@ WINBASEAPI UINT WINAPI waveOutGetPosition(HWAVEOUT hWaveOut, LPMMTIME lpTime, UI
 void qemu_waveOutGetPosition(struct qemu_syscall *call)
 {
     struct qemu_waveOutGetPosition *c = (struct qemu_waveOutGetPosition *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* MMTIME has the same size on 32 and 64 bit. */
     c->super.iret = waveOutGetPosition(QEMU_G2H(c->hWaveOut), QEMU_G2H(c->lpTime), c->uSize);
 }
 
@@ -718,7 +729,7 @@ WINBASEAPI UINT WINAPI waveOutGetVolume(HWAVEOUT hWaveOut, DWORD *out)
 void qemu_waveOutGetVolume(struct qemu_syscall *call)
 {
     struct qemu_waveOutGetVolume *c = (struct qemu_waveOutGetVolume *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = waveOutGetVolume(QEMU_G2H(c->hWaveOut), QEMU_G2H(c->out));
 }
 
@@ -750,7 +761,7 @@ WINBASEAPI UINT WINAPI waveOutSetVolume(HWAVEOUT hWaveOut, DWORD in)
 void qemu_waveOutSetVolume(struct qemu_syscall *call)
 {
     struct qemu_waveOutSetVolume *c = (struct qemu_waveOutSetVolume *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = waveOutSetVolume(QEMU_G2H(c->hWaveOut), c->in);
 }
 
