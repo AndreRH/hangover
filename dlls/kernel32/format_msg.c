@@ -269,14 +269,14 @@ static uint64_t CDECL call_FormatMessage_va_list(void *data, ...)
 {
     const struct format_message_data *d = data;
     uint64_t ret;
-    va_list list;
+    __ms_va_list list;
 
-    va_start(list, data);
+    __ms_va_start(list, data);
     if (d->unicode)
         ret = FormatMessageW(d->flags, d->src, d->msg_id, d->lang_id, d->buffer, d->size, (void *)&list);
     else
         ret = FormatMessageA(d->flags, d->src, d->msg_id, d->lang_id, d->buffer, d->size, (void *)&list);
-    va_end(list);
+    __ms_va_end(list);
 
     return ret;
 }
