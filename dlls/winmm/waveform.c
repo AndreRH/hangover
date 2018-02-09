@@ -1621,22 +1621,35 @@ void qemu_mixerGetID(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_mixerGetControlDetailsW
+struct qemu_mixerGetControlDetails
 {
     struct qemu_syscall super;
     uint64_t hmix;
-    uint64_t lpmcdW;
+    uint64_t lpmcd;
     uint64_t fdwDetails;
 };
 
 #ifdef QEMU_DLL_GUEST
 
+WINBASEAPI UINT WINAPI mixerGetControlDetailsA(HMIXEROBJ hmix, LPMIXERCONTROLDETAILS lpmcdA, DWORD fdwDetails)
+{
+    struct qemu_mixerGetControlDetails call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_MIXERGETCONTROLDETAILSA);
+    call.hmix = (ULONG_PTR)hmix;
+    call.lpmcd = (ULONG_PTR)lpmcdA;
+    call.fdwDetails = (ULONG_PTR)fdwDetails;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
 WINBASEAPI UINT WINAPI mixerGetControlDetailsW(HMIXEROBJ hmix, LPMIXERCONTROLDETAILS lpmcdW, DWORD fdwDetails)
 {
-    struct qemu_mixerGetControlDetailsW call;
+    struct qemu_mixerGetControlDetails call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIXERGETCONTROLDETAILSW);
     call.hmix = (ULONG_PTR)hmix;
-    call.lpmcdW = (ULONG_PTR)lpmcdW;
+    call.lpmcd = (ULONG_PTR)lpmcdW;
     call.fdwDetails = (ULONG_PTR)fdwDetails;
 
     qemu_syscall(&call.super);
@@ -1646,11 +1659,41 @@ WINBASEAPI UINT WINAPI mixerGetControlDetailsW(HMIXEROBJ hmix, LPMIXERCONTROLDET
 
 #else
 
-void qemu_mixerGetControlDetailsW(struct qemu_syscall *call)
+void qemu_mixerGetControlDetails(struct qemu_syscall *call)
 {
-    struct qemu_mixerGetControlDetailsW *c = (struct qemu_mixerGetControlDetailsW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = mixerGetControlDetailsW(QEMU_G2H(c->hmix), QEMU_G2H(c->lpmcdW), c->fdwDetails);
+    struct qemu_mixerGetControlDetails *c = (struct qemu_mixerGetControlDetails *)call;
+    struct qemu_MIXERCONTROLDETAILS *details32;
+    MIXERCONTROLDETAILS stack, *details = &stack;
+
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+    details = QEMU_G2H(c->lpmcd);
+#else
+    details32 = QEMU_G2H(c->lpmcd);
+    if (!details32)
+        details = NULL;
+    else if (details32->cbStruct != sizeof(*details32))
+        details->cbStruct = 0;
+    else
+        MIXERCONTROLDETAILS_g2h(details, details32);
+#endif
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_MIXERGETCONTROLDETAILSA):
+            c->super.iret = mixerGetControlDetailsA(QEMU_G2H(c->hmix), details, c->fdwDetails);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_MIXERGETCONTROLDETAILSW):
+            c->super.iret = mixerGetControlDetailsA(QEMU_G2H(c->hmix), details, c->fdwDetails);
+            break;
+    }
+
+#if HOST_BIT != GUEST_BIT
+    if (c->super.iret == MMSYSERR_NOERROR)
+        MIXERCONTROLDETAILS_h2g(details32, details);
+#endif
 }
 
 #endif
@@ -1662,32 +1705,6 @@ struct qemu_mixerGetControlDetailsA
     uint64_t lpmcdA;
     uint64_t fdwDetails;
 };
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI UINT WINAPI mixerGetControlDetailsA(HMIXEROBJ hmix, LPMIXERCONTROLDETAILS lpmcdA, DWORD fdwDetails)
-{
-    struct qemu_mixerGetControlDetailsA call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_MIXERGETCONTROLDETAILSA);
-    call.hmix = (ULONG_PTR)hmix;
-    call.lpmcdA = (ULONG_PTR)lpmcdA;
-    call.fdwDetails = (ULONG_PTR)fdwDetails;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_mixerGetControlDetailsA(struct qemu_syscall *call)
-{
-    struct qemu_mixerGetControlDetailsA *c = (struct qemu_mixerGetControlDetailsA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = mixerGetControlDetailsA(QEMU_G2H(c->hmix), QEMU_G2H(c->lpmcdA), c->fdwDetails);
-}
-
-#endif
 
 struct qemu_mixerGetLineControls
 {

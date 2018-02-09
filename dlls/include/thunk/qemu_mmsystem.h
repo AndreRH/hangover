@@ -210,4 +210,37 @@ static inline void MIXERLINECONTROLS_h2g(struct qemu_MIXERLINECONTROLS *guest, c
     guest->pamxctrl = (ULONG_PTR)host->pamxctrl;
 }
 
+struct qemu_MIXERCONTROLDETAILS
+{
+    DWORD           cbStruct;
+    DWORD           dwControlID;
+    DWORD           cChannels;
+    union
+    {
+        qemu_ptr    hwndOwner;
+        DWORD       cMultipleItems;
+    } DUMMYUNIONNAME;
+    DWORD           cbDetails;
+    qemu_ptr        paDetails; /* This can hold pointers to different structs, but they are all compatible. */
+};
+
+static inline void MIXERCONTROLDETAILS_g2h(MIXERCONTROLDETAILS *host, const struct qemu_MIXERCONTROLDETAILS *guest)
+{
+    host->cbStruct = sizeof(*host);
+    host->dwControlID = guest->dwControlID;
+    host->cChannels = guest->cChannels;
+    host->hwndOwner = (HWND)(ULONG_PTR)guest->hwndOwner;
+    host->cbDetails = guest->cbDetails;
+    host->paDetails = (void *)(ULONG_PTR)guest->paDetails;
+}
+
+static inline void MIXERCONTROLDETAILS_h2g(struct qemu_MIXERCONTROLDETAILS *guest, const MIXERCONTROLDETAILS *host)
+{
+    guest->dwControlID = host->dwControlID;
+    guest->cChannels = host->cChannels;
+    guest->hwndOwner = (ULONG_PTR)host->hwndOwner;
+    guest->cbDetails = host->cbDetails;
+    guest->paDetails = (ULONG_PTR)host->paDetails;
+}
+
 #endif
