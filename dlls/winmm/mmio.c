@@ -422,8 +422,24 @@ WINBASEAPI MMRESULT WINAPI mmioAdvance(HMMIO hmmio, MMIOINFO* lpmmioinfo, UINT u
 void qemu_mmioAdvance(struct qemu_syscall *call)
 {
     struct qemu_mmioAdvance *c = (struct qemu_mmioAdvance *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = mmioAdvance(QEMU_G2H(c->hmmio), QEMU_G2H(c->lpmmioinfo), c->uFlags);
+    MMIOINFO stack, *info = &stack;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->lpmmioinfo);
+#else
+    if (c->lpmmioinfo)
+        MMIOINFO_g2h(info, QEMU_G2H(c->lpmmioinfo));
+    else
+        info = NULL;
+#endif
+
+    c->super.iret = mmioAdvance(QEMU_G2H(c->hmmio), info, c->uFlags);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret && info)
+        MMIOINFO_h2g(QEMU_G2H(c->lpmmioinfo), info);
+#endif
 }
 
 #endif
