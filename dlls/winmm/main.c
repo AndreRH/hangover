@@ -286,6 +286,10 @@ LRESULT WINAPI ioproc_wrapper(LPSTR info, UINT msg, LPARAM param1, LPARAM param2
     qemu_ops->qemu_execute(QEMU_G2H(ioproc_guest_wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned %ld\n", ret);
 
+#if GUEST_BIT != HOST_BIT
+    MMIOINFO_g2h((MMIOINFO *)info, &info32);
+#endif
+
     return ret;
 }
 

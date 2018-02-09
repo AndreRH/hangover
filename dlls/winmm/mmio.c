@@ -101,7 +101,8 @@ void qemu_mmioOpen(struct qemu_syscall *call)
     }
 
 #if GUEST_BIT != HOST_BIT
-    if (c->super.iret && info)
+    /* Note that this function also writes on error. */
+    if (info)
         MMIOINFO_h2g(QEMU_G2H(c->lpmmioinfo), info);
 #endif
 }
@@ -168,7 +169,7 @@ WINBASEAPI LONG WINAPI mmioRead(HMMIO hmmio, HPSTR pch, LONG cch)
 void qemu_mmioRead(struct qemu_syscall *call)
 {
     struct qemu_mmioRead *c = (struct qemu_mmioRead *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = mmioRead(QEMU_G2H(c->hmmio), QEMU_G2H(c->pch), c->cch);
 }
 
@@ -320,8 +321,19 @@ WINBASEAPI MMRESULT WINAPI mmioSetInfo(HMMIO hmmio, const MMIOINFO* lpmmioinfo, 
 void qemu_mmioSetInfo(struct qemu_syscall *call)
 {
     struct qemu_mmioSetInfo *c = (struct qemu_mmioSetInfo *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = mmioSetInfo(QEMU_G2H(c->hmmio), QEMU_G2H(c->lpmmioinfo), c->uFlags);
+    MMIOINFO stack, *info = &stack;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->lpmmioinfo);
+#else
+    if (c->lpmmioinfo)
+        MMIOINFO_g2h(info, QEMU_G2H(c->lpmmioinfo));
+    else
+        info = NULL;
+#endif
+
+    c->super.iret = mmioSetInfo(QEMU_G2H(c->hmmio), info, c->uFlags);
 }
 
 #endif
@@ -437,7 +449,7 @@ void qemu_mmioAdvance(struct qemu_syscall *call)
     c->super.iret = mmioAdvance(QEMU_G2H(c->hmmio), info, c->uFlags);
 
 #if GUEST_BIT != HOST_BIT
-    if (c->super.iret && info)
+    if (c->super.iret == MMSYSERR_NOERROR)
         MMIOINFO_h2g(QEMU_G2H(c->lpmmioinfo), info);
 #endif
 }
@@ -574,8 +586,12 @@ WINBASEAPI LPMMIOPROC WINAPI mmioInstallIOProcW(FOURCC fccIOProc, LPMMIOPROC pIO
 void qemu_mmioInstallIOProcW(struct qemu_syscall *call)
 {
     struct qemu_mmioInstallIOProcW *c = (struct qemu_mmioInstallIOProcW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)mmioInstallIOProcW(c->fccIOProc, QEMU_G2H(c->pIOProc), c->dwFlags);
+    LPMMIOPROC host_proc;
+
+    WINE_TRACE("\n");
+    host_proc = ioproc_guest_to_host(c->pIOProc);
+    host_proc = mmioInstallIOProcW(c->fccIOProc, host_proc, c->dwFlags);
+    c->super.iret = ioproc_host_to_guest(host_proc);
 }
 
 #endif
@@ -681,7 +697,8 @@ WINBASEAPI MMRESULT WINAPI mmioAscend(HMMIO hmmio, LPMMCKINFO lpck, UINT uFlags)
 void qemu_mmioAscend(struct qemu_syscall *call)
 {
     struct qemu_mmioAscend *c = (struct qemu_mmioAscend *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+    /* MMCKINFO has the same size on 32 and 64 bit. */
     c->super.iret = mmioAscend(QEMU_G2H(c->hmmio), QEMU_G2H(c->lpck), c->uFlags);
 }
 
@@ -715,7 +732,8 @@ WINBASEAPI MMRESULT WINAPI mmioCreateChunk(HMMIO hmmio, MMCKINFO* lpck, UINT uFl
 void qemu_mmioCreateChunk(struct qemu_syscall *call)
 {
     struct qemu_mmioCreateChunk *c = (struct qemu_mmioCreateChunk *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+    /* MMCKINFO has the same size on 32 and 64 bit. */
     c->super.iret = mmioCreateChunk(QEMU_G2H(c->hmmio), QEMU_G2H(c->lpck), c->uFlags);
 }
 
