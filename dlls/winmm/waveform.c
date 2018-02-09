@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_winmm.h"
@@ -266,11 +268,11 @@ void qemu_waveOutClose(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_waveOutPrepareHeader
+struct qemu_waveHeaderOp
 {
     struct qemu_syscall super;
-    uint64_t hWaveOut;
-    uint64_t lpWaveOutHdr;
+    uint64_t handle;
+    uint64_t header;
     uint64_t uSize;
 };
 
@@ -278,10 +280,10 @@ struct qemu_waveOutPrepareHeader
 
 WINBASEAPI UINT WINAPI waveOutPrepareHeader(HWAVEOUT hWaveOut, WAVEHDR* lpWaveOutHdr, UINT uSize)
 {
-    struct qemu_waveOutPrepareHeader call;
+    struct qemu_waveHeaderOp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WAVEOUTPREPAREHEADER);
-    call.hWaveOut = (ULONG_PTR)hWaveOut;
-    call.lpWaveOutHdr = (ULONG_PTR)lpWaveOutHdr;
+    call.handle = (ULONG_PTR)hWaveOut;
+    call.header = (ULONG_PTR)lpWaveOutHdr;
     call.uSize = (ULONG_PTR)uSize;
 
     qemu_syscall(&call.super);
@@ -289,33 +291,12 @@ WINBASEAPI UINT WINAPI waveOutPrepareHeader(HWAVEOUT hWaveOut, WAVEHDR* lpWaveOu
     return call.super.iret;
 }
 
-#else
-
-void qemu_waveOutPrepareHeader(struct qemu_syscall *call)
+WINBASEAPI UINT WINAPI waveInPrepareHeader(HWAVEIN hWaveIn, WAVEHDR* lpWaveInHdr, UINT uSize)
 {
-    struct qemu_waveOutPrepareHeader *c = (struct qemu_waveOutPrepareHeader *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = waveOutPrepareHeader(QEMU_G2H(c->hWaveOut), QEMU_G2H(c->lpWaveOutHdr), c->uSize);
-}
-
-#endif
-
-struct qemu_waveOutUnprepareHeader
-{
-    struct qemu_syscall super;
-    uint64_t hWaveOut;
-    uint64_t lpWaveOutHdr;
-    uint64_t uSize;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI UINT WINAPI waveOutUnprepareHeader(HWAVEOUT hWaveOut, LPWAVEHDR lpWaveOutHdr, UINT uSize)
-{
-    struct qemu_waveOutUnprepareHeader call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_WAVEOUTUNPREPAREHEADER);
-    call.hWaveOut = (ULONG_PTR)hWaveOut;
-    call.lpWaveOutHdr = (ULONG_PTR)lpWaveOutHdr;
+    struct qemu_waveHeaderOp call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WAVEINPREPAREHEADER);
+    call.handle = (ULONG_PTR)hWaveIn;
+    call.header = (ULONG_PTR)lpWaveInHdr;
     call.uSize = (ULONG_PTR)uSize;
 
     qemu_syscall(&call.super);
@@ -323,32 +304,24 @@ WINBASEAPI UINT WINAPI waveOutUnprepareHeader(HWAVEOUT hWaveOut, LPWAVEHDR lpWav
     return call.super.iret;
 }
 
-#else
-
-void qemu_waveOutUnprepareHeader(struct qemu_syscall *call)
+WINBASEAPI UINT WINAPI waveInUnprepareHeader(HWAVEIN hWaveIn, WAVEHDR* lpWaveInHdr, UINT uSize)
 {
-    struct qemu_waveOutUnprepareHeader *c = (struct qemu_waveOutUnprepareHeader *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = waveOutUnprepareHeader(QEMU_G2H(c->hWaveOut), QEMU_G2H(c->lpWaveOutHdr), c->uSize);
+    struct qemu_waveHeaderOp call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WAVEINUNPREPAREHEADER);
+    call.handle = (ULONG_PTR)hWaveIn;
+    call.header = (ULONG_PTR)lpWaveInHdr;
+    call.uSize = (ULONG_PTR)uSize;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
 }
-
-#endif
-
-struct qemu_waveOutWrite
-{
-    struct qemu_syscall super;
-    uint64_t hWaveOut;
-    uint64_t header;
-    uint64_t uSize;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 WINBASEAPI UINT WINAPI waveOutWrite(HWAVEOUT hWaveOut, WAVEHDR *header, UINT uSize)
 {
-    struct qemu_waveOutWrite call;
+    struct qemu_waveHeaderOp call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WAVEOUTWRITE);
-    call.hWaveOut = (ULONG_PTR)hWaveOut;
+    call.handle = (ULONG_PTR)hWaveOut;
     call.header = (ULONG_PTR)header;
     call.uSize = (ULONG_PTR)uSize;
 
@@ -357,13 +330,72 @@ WINBASEAPI UINT WINAPI waveOutWrite(HWAVEOUT hWaveOut, WAVEHDR *header, UINT uSi
     return call.super.iret;
 }
 
+WINBASEAPI UINT WINAPI waveOutUnprepareHeader(HWAVEOUT hWaveOut, LPWAVEHDR lpWaveOutHdr, UINT uSize)
+{
+    struct qemu_waveHeaderOp call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WAVEOUTUNPREPAREHEADER);
+    call.handle = (ULONG_PTR)hWaveOut;
+    call.header = (ULONG_PTR)lpWaveOutHdr;
+    call.uSize = (ULONG_PTR)uSize;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
 #else
 
-void qemu_waveOutWrite(struct qemu_syscall *call)
+void qemu_waveHeaderOp(struct qemu_syscall *call)
 {
-    struct qemu_waveOutWrite *c = (struct qemu_waveOutWrite *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = waveOutWrite(QEMU_G2H(c->hWaveOut), QEMU_G2H(c->header), c->uSize);
+    struct qemu_waveHeaderOp *c = (struct qemu_waveHeaderOp *)call;
+    WAVEHDR stack, *hdr = &stack;
+    struct qemu_WAVEHDR *hdr32;
+    UINT size;
+    WINE_TRACE("\n");
+
+    size = c->uSize;
+#if GUEST_BIT == HOST_BIT
+    hdr = QEMU_G2H(c->header);
+#else
+    hdr32 = QEMU_G2H(c->header);
+    if (!hdr32)
+        hdr = NULL;
+    else if (size < sizeof(*hdr32))
+        size = 0;
+    else
+    {
+        WAVEHDR_g2h(hdr, hdr32);
+        size = sizeof(*hdr);
+    }
+#endif
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_WAVEOUTPREPAREHEADER):
+            c->super.iret = waveOutPrepareHeader(QEMU_G2H(c->handle), hdr, size);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_WAVEOUTUNPREPAREHEADER):
+            c->super.iret = waveOutUnprepareHeader(QEMU_G2H(c->handle), hdr, size);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_WAVEINPREPAREHEADER):
+            c->super.iret = waveInPrepareHeader(QEMU_G2H(c->handle), hdr, size);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_WAVEINUNPREPAREHEADER):
+            c->super.iret = waveInUnprepareHeader(QEMU_G2H(c->handle), hdr, size);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_WAVEOUTWRITE):
+            c->super.iret = waveOutWrite(QEMU_G2H(c->handle), hdr, size);
+            break;
+   }
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret == MMSYSERR_NOERROR)
+        WAVEHDR_h2g(hdr32, hdr);
+#endif
 }
 
 #endif
@@ -958,74 +990,6 @@ void qemu_waveInClose(struct qemu_syscall *call)
     struct qemu_waveInClose *c = (struct qemu_waveInClose *)call;
     WINE_TRACE("\n");
     c->super.iret = waveInClose(QEMU_G2H(c->hWaveIn));
-}
-
-#endif
-
-struct qemu_waveInPrepareHeader
-{
-    struct qemu_syscall super;
-    uint64_t hWaveIn;
-    uint64_t lpWaveInHdr;
-    uint64_t uSize;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI UINT WINAPI waveInPrepareHeader(HWAVEIN hWaveIn, WAVEHDR* lpWaveInHdr, UINT uSize)
-{
-    struct qemu_waveInPrepareHeader call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_WAVEINPREPAREHEADER);
-    call.hWaveIn = (ULONG_PTR)hWaveIn;
-    call.lpWaveInHdr = (ULONG_PTR)lpWaveInHdr;
-    call.uSize = (ULONG_PTR)uSize;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_waveInPrepareHeader(struct qemu_syscall *call)
-{
-    struct qemu_waveInPrepareHeader *c = (struct qemu_waveInPrepareHeader *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = waveInPrepareHeader(QEMU_G2H(c->hWaveIn), QEMU_G2H(c->lpWaveInHdr), c->uSize);
-}
-
-#endif
-
-struct qemu_waveInUnprepareHeader
-{
-    struct qemu_syscall super;
-    uint64_t hWaveIn;
-    uint64_t lpWaveInHdr;
-    uint64_t uSize;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI UINT WINAPI waveInUnprepareHeader(HWAVEIN hWaveIn, WAVEHDR* lpWaveInHdr, UINT uSize)
-{
-    struct qemu_waveInUnprepareHeader call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_WAVEINUNPREPAREHEADER);
-    call.hWaveIn = (ULONG_PTR)hWaveIn;
-    call.lpWaveInHdr = (ULONG_PTR)lpWaveInHdr;
-    call.uSize = (ULONG_PTR)uSize;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_waveInUnprepareHeader(struct qemu_syscall *call)
-{
-    struct qemu_waveInUnprepareHeader *c = (struct qemu_waveInUnprepareHeader *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = waveInUnprepareHeader(QEMU_G2H(c->hWaveIn), QEMU_G2H(c->lpWaveInHdr), c->uSize);
 }
 
 #endif

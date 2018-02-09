@@ -9,6 +9,9 @@
 #include "thunk/qemu_winuser.h"
 #include "thunk/qemu_commdlg.h"
 #include "thunk/qemu_winnls.h"
+
+#include "thunk/qemu_mmsystem.h"
+
 #include "thunk/qemu_winsock.h"
 
 #endif
