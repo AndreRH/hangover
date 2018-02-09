@@ -246,7 +246,7 @@ WINBASEAPI MMRESULT WINAPI waveOutOpen(LPHWAVEOUT lphWaveOut, UINT uDeviceID, LP
     call.wrapper = (ULONG_PTR)wave_guest_cb;
 
     qemu_syscall(&call.super);
-    if (call.super.iret == MMSYSERR_NOERROR)
+    if (call.super.iret == MMSYSERR_NOERROR && !(dwFlags & WAVE_FORMAT_QUERY))
         *lphWaveOut = (HWAVEOUT)(ULONG_PTR)call.lphWaveOut;
 
     return call.super.iret;
@@ -334,6 +334,13 @@ void qemu_waveOutOpen(struct qemu_syscall *call)
     struct qemu_wave_host *wrapper;
     DWORD flags;
     WINE_TRACE("\n");
+
+    if (c->dwFlags & WAVE_FORMAT_QUERY)
+    {
+        c->super.iret = waveOutOpen(c->lphWaveOut ? &handle : NULL, c->uDeviceID, QEMU_G2H(c->lpFormat),
+                c->dwCallback, c->dwInstance, c->dwFlags);
+        return;
+    }
 
     wrapper = HeapAlloc(GetProcessHeap(), 0, sizeof(*wrapper));
     if (!wrapper)
