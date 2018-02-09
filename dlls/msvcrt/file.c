@@ -2160,7 +2160,9 @@ int CDECL MSVCRT__fstati64(int fd, struct _stati64* buf)
 void qemu__fstati64(struct qemu_syscall *call)
 {
     struct qemu__fstati64 *c = (struct qemu__fstati64 *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    /* stati64 has the same size on 32 and 64 bit, apparently because stati64 is
+     * strategically defined on 32 bit to have this property :-) . */
+    WINE_TRACE("\n");
     c->super.iret = p__fstati64(c->fd, QEMU_G2H(c->buf));
 }
 
@@ -2982,7 +2984,8 @@ int CDECL MSVCRT_stati64(const char* path, struct _stati64 * buf)
 void qemu_stati64(struct qemu_syscall *call)
 {
     struct qemu_stati64 *c = (struct qemu_stati64 *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    /* stati64 has the same size on 32 and 64 bit, apparently because stati64 is
+     * strategically defined on 32 bit to have this property :-) . */
     c->super.iret = p_stati64(QEMU_G2H(c->path), QEMU_G2H(c->buf));
 }
 
