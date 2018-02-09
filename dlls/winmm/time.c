@@ -310,7 +310,7 @@ WINBASEAPI MMRESULT WINAPI timeEndPeriod(UINT wPeriod)
 void qemu_timeEndPeriod(struct qemu_syscall *call)
 {
     struct qemu_timeEndPeriod *c = (struct qemu_timeEndPeriod *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = timeEndPeriod(c->wPeriod);
 }
 
