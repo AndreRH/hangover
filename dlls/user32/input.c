@@ -1172,7 +1172,7 @@ WINUSERAPI UINT WINAPI MapVirtualKeyA(UINT code, UINT maptype)
 void qemu_MapVirtualKeyA(struct qemu_syscall *call)
 {
     struct qemu_MapVirtualKeyA *c = (struct qemu_MapVirtualKeyA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = MapVirtualKeyA(c->code, c->maptype);
 }
 
