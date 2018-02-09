@@ -243,4 +243,79 @@ static inline void MIXERCONTROLDETAILS_h2g(struct qemu_MIXERCONTROLDETAILS *gues
     guest->paDetails = (ULONG_PTR)host->paDetails;
 }
 
+struct qemu_MMIOINFO
+{
+    DWORD       dwFlags;
+    FOURCC      fccIOProc;
+    qemu_ptr    pIOProc;
+    UINT        wErrorRet;
+    qemu_ptr    hTask;
+    /* fields maintained by MMIO functions during buffered I/O */
+    LONG        cchBuffer;
+    qemu_ptr    pchBuffer;
+    qemu_ptr    pchNext;
+    qemu_ptr    pchEndRead;
+    qemu_ptr    pchEndWrite;
+    LONG        lBufOffset;
+    /* fields maintained by I/O procedure */
+    LONG        lDiskOffset;
+    DWORD       adwInfo[3];
+    /* other fields maintained by MMIO */
+    DWORD       dwReserved1;
+    DWORD       dwReserved2;
+    qemu_ptr    hmmio;
+};
+
+static inline void MMIOINFO_g2h(MMIOINFO *host, const struct qemu_MMIOINFO *guest)
+{
+    host->dwFlags = guest->dwFlags;
+    host->fccIOProc = guest->fccIOProc;
+    host->pIOProc = (LPMMIOPROC)(ULONG_PTR)guest->pIOProc;
+    host->wErrorRet = guest->wErrorRet;
+#ifdef QEMU_DLL_GUEST
+    host->htask = (HTASK)(ULONG_PTR)guest->hTask;
+#else
+    host->hTask = (HTASK)(ULONG_PTR)guest->hTask;
+#endif
+    host->cchBuffer = guest->cchBuffer;
+    host->pchBuffer = (HPSTR)(ULONG_PTR)guest->pchBuffer;
+    host->pchNext = (HPSTR)(ULONG_PTR)guest->pchNext;
+    host->pchEndRead = (HPSTR)(ULONG_PTR)guest->pchEndRead;
+    host->pchEndWrite = (HPSTR)(ULONG_PTR)guest->pchEndWrite;
+    host->lBufOffset = guest->lBufOffset;
+    host->lDiskOffset = guest->lDiskOffset;
+    host->adwInfo[0] = guest->adwInfo[0];
+    host->adwInfo[1] = guest->adwInfo[1];
+    host->adwInfo[2] = guest->adwInfo[2];
+    host->dwReserved1 = guest->dwReserved1;
+    host->dwReserved2 = guest->dwReserved2;
+    host->hmmio = (HMMIO)(ULONG_PTR)guest->hmmio;
+}
+
+static inline void MMIOINFO_h2g(struct qemu_MMIOINFO *guest, const MMIOINFO *host)
+{
+    guest->dwFlags = host->dwFlags;
+    guest->fccIOProc = host->fccIOProc;
+    guest->pIOProc = (ULONG_PTR)host->pIOProc;
+    guest->wErrorRet = host->wErrorRet;
+#ifdef QEMU_DLL_GUEST
+    guest->hTask = (ULONG_PTR)host->htask;
+#else
+    guest->hTask = (ULONG_PTR)host->hTask;
+#endif
+    guest->cchBuffer = host->cchBuffer;
+    guest->pchBuffer = (ULONG_PTR)host->pchBuffer;
+    guest->pchNext = (ULONG_PTR)host->pchNext;
+    guest->pchEndRead = (ULONG_PTR)host->pchEndRead;
+    guest->pchEndWrite = (ULONG_PTR)host->pchEndWrite;
+    guest->lBufOffset = host->lBufOffset;
+    guest->lDiskOffset = host->lDiskOffset;
+    guest->adwInfo[0] = host->adwInfo[0];
+    guest->adwInfo[1] = host->adwInfo[1];
+    guest->adwInfo[2] = host->adwInfo[2];
+    guest->dwReserved1 = host->dwReserved1;
+    guest->dwReserved2 = host->dwReserved2;
+    guest->hmmio = (ULONG_PTR)host->hmmio;
+}
+
 #endif

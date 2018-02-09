@@ -1,5 +1,6 @@
 /*
  * Copyright 2017 André Hentschel
+ * Copyright 2018 Stefan Dösinger for CodeWeavers
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +22,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_winmm.h"
@@ -30,8 +33,7 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_winmm);
 #endif
 
-
-struct qemu_mmioOpenW
+struct qemu_mmioOpen
 {
     struct qemu_syscall super;
     uint64_t szFileName;
@@ -43,7 +45,7 @@ struct qemu_mmioOpenW
 
 WINBASEAPI HMMIO WINAPI mmioOpenW(LPWSTR szFileName, MMIOINFO* lpmmioinfo, DWORD dwOpenFlags)
 {
-    struct qemu_mmioOpenW call;
+    struct qemu_mmioOpen call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOOPENW);
     call.szFileName = (ULONG_PTR)szFileName;
     call.lpmmioinfo = (ULONG_PTR)lpmmioinfo;
@@ -54,30 +56,9 @@ WINBASEAPI HMMIO WINAPI mmioOpenW(LPWSTR szFileName, MMIOINFO* lpmmioinfo, DWORD
     return (HMMIO)(ULONG_PTR)call.super.iret;
 }
 
-#else
-
-void qemu_mmioOpenW(struct qemu_syscall *call)
-{
-    struct qemu_mmioOpenW *c = (struct qemu_mmioOpenW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)mmioOpenW(QEMU_G2H(c->szFileName), QEMU_G2H(c->lpmmioinfo), c->dwOpenFlags);
-}
-
-#endif
-
-struct qemu_mmioOpenA
-{
-    struct qemu_syscall super;
-    uint64_t szFileName;
-    uint64_t lpmmioinfo;
-    uint64_t dwOpenFlags;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI HMMIO WINAPI mmioOpenA(LPSTR szFileName, MMIOINFO* lpmmioinfo, DWORD dwOpenFlags)
 {
-    struct qemu_mmioOpenA call;
+    struct qemu_mmioOpen call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MMIOOPENA);
     call.szFileName = (ULONG_PTR)szFileName;
     call.lpmmioinfo = (ULONG_PTR)lpmmioinfo;
@@ -90,11 +71,36 @@ WINBASEAPI HMMIO WINAPI mmioOpenA(LPSTR szFileName, MMIOINFO* lpmmioinfo, DWORD 
 
 #else
 
-void qemu_mmioOpenA(struct qemu_syscall *call)
+void qemu_mmioOpen(struct qemu_syscall *call)
 {
-    struct qemu_mmioOpenA *c = (struct qemu_mmioOpenA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)mmioOpenA(QEMU_G2H(c->szFileName), QEMU_G2H(c->lpmmioinfo), c->dwOpenFlags);
+    struct qemu_mmioOpen *c = (struct qemu_mmioOpen *)call;
+    MMIOINFO stack, *info = &stack;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->lpmmioinfo);
+#else
+    if (c->lpmmioinfo)
+        MMIOINFO_g2h(info, QEMU_G2H(c->lpmmioinfo));
+    else
+        info = NULL;
+#endif
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_MMIOOPENA):
+            c->super.iret = (ULONG_PTR)mmioOpenA(QEMU_G2H(c->szFileName), info, c->dwOpenFlags);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_MMIOOPENW):
+            c->super.iret = (ULONG_PTR)mmioOpenW(QEMU_G2H(c->szFileName), info, c->dwOpenFlags);
+            break;
+    }
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret)
+        MMIOINFO_h2g(QEMU_G2H(c->lpmmioinfo), info);
+#endif
 }
 
 #endif
@@ -261,8 +267,24 @@ WINBASEAPI MMRESULT WINAPI mmioGetInfo(HMMIO hmmio, MMIOINFO* lpmmioinfo, UINT u
 void qemu_mmioGetInfo(struct qemu_syscall *call)
 {
     struct qemu_mmioGetInfo *c = (struct qemu_mmioGetInfo *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = mmioGetInfo(QEMU_G2H(c->hmmio), QEMU_G2H(c->lpmmioinfo), c->uFlags);
+    MMIOINFO stack, *info = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->lpmmioinfo);
+#else
+    if (c->lpmmioinfo)
+        MMIOINFO_g2h(info, QEMU_G2H(c->lpmmioinfo));
+    else
+        info = NULL;
+#endif
+
+    c->super.iret = mmioGetInfo(QEMU_G2H(c->hmmio), info, c->uFlags);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret == MMSYSERR_NOERROR)
+        MMIOINFO_h2g(QEMU_G2H(c->lpmmioinfo), info);
+#endif
 }
 
 #endif
