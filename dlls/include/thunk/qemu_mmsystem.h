@@ -177,4 +177,37 @@ static inline void MIXERLINEW_h2g(struct qemu_MIXERLINEW *guest, const MIXERLINE
     memcpy(guest->Target.szPname, host->Target.szPname, sizeof(guest->Target.szPname));
 }
 
+struct qemu_MIXERLINECONTROLS
+{
+    DWORD       cbStruct;
+    DWORD       dwLineID;
+    union
+    {
+        DWORD   dwControlID;
+        DWORD   dwControlType;
+    } DUMMYUNIONNAME;
+    DWORD       cControls;
+    DWORD       cbmxctrl;
+    qemu_ptr    pamxctrl;
+};
+
+static inline void MIXERLINECONTROLS_g2h(MIXERLINECONTROLSW *host, const struct qemu_MIXERLINECONTROLS *guest)
+{
+    host->cbStruct = sizeof(*host);
+    host->dwLineID = guest->dwLineID;
+    host->dwControlID = guest->dwControlID;
+    host->cControls = guest->cControls;
+    host->cbmxctrl = guest->cbmxctrl;
+    host->pamxctrl = (MIXERCONTROLW *)(ULONG_PTR)guest->pamxctrl;
+}
+
+static inline void MIXERLINECONTROLS_h2g(struct qemu_MIXERLINECONTROLS *guest, const MIXERLINECONTROLSW *host)
+{
+    guest->dwLineID = host->dwLineID;
+    guest->dwControlID = host->dwControlID;
+    guest->cControls = host->cControls;
+    guest->cbmxctrl = host->cbmxctrl;
+    guest->pamxctrl = (ULONG_PTR)host->pamxctrl;
+}
+
 #endif

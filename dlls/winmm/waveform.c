@@ -1689,11 +1689,11 @@ void qemu_mixerGetControlDetailsA(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_mixerGetLineControlsA
+struct qemu_mixerGetLineControls
 {
     struct qemu_syscall super;
     uint64_t hmix;
-    uint64_t lpmlcA;
+    uint64_t lpmlc;
     uint64_t fdwControls;
 };
 
@@ -1701,44 +1701,23 @@ struct qemu_mixerGetLineControlsA
 
 WINBASEAPI UINT WINAPI mixerGetLineControlsA(HMIXEROBJ hmix, LPMIXERLINECONTROLSA lpmlcA, DWORD fdwControls)
 {
-    struct qemu_mixerGetLineControlsA call;
+    struct qemu_mixerGetLineControls call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIXERGETLINECONTROLSA);
     call.hmix = (ULONG_PTR)hmix;
-    call.lpmlcA = (ULONG_PTR)lpmlcA;
+    call.lpmlc = (ULONG_PTR)lpmlcA;
     call.fdwControls = (ULONG_PTR)fdwControls;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
-
-#else
-
-void qemu_mixerGetLineControlsA(struct qemu_syscall *call)
-{
-    struct qemu_mixerGetLineControlsA *c = (struct qemu_mixerGetLineControlsA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = mixerGetLineControlsA(QEMU_G2H(c->hmix), QEMU_G2H(c->lpmlcA), c->fdwControls);
-}
-
-#endif
-
-struct qemu_mixerGetLineControlsW
-{
-    struct qemu_syscall super;
-    uint64_t hmix;
-    uint64_t lpmlcW;
-    uint64_t fdwControls;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 WINBASEAPI UINT WINAPI mixerGetLineControlsW(HMIXEROBJ hmix, LPMIXERLINECONTROLSW lpmlcW, DWORD fdwControls)
 {
-    struct qemu_mixerGetLineControlsW call;
+    struct qemu_mixerGetLineControls call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MIXERGETLINECONTROLSW);
     call.hmix = (ULONG_PTR)hmix;
-    call.lpmlcW = (ULONG_PTR)lpmlcW;
+    call.lpmlc = (ULONG_PTR)lpmlcW;
     call.fdwControls = (ULONG_PTR)fdwControls;
 
     qemu_syscall(&call.super);
@@ -1748,11 +1727,39 @@ WINBASEAPI UINT WINAPI mixerGetLineControlsW(HMIXEROBJ hmix, LPMIXERLINECONTROLS
 
 #else
 
-void qemu_mixerGetLineControlsW(struct qemu_syscall *call)
+void qemu_mixerGetLineControls(struct qemu_syscall *call)
 {
-    struct qemu_mixerGetLineControlsW *c = (struct qemu_mixerGetLineControlsW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = mixerGetLineControlsW(QEMU_G2H(c->hmix), QEMU_G2H(c->lpmlcW), c->fdwControls);
+    struct qemu_mixerGetLineControls *c = (struct qemu_mixerGetLineControls *)call;
+    MIXERLINECONTROLSW stack, *ctrl = &stack;
+    struct qemu_MIXERLINECONTROLS *ctrl32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    ctrl = QEMU_G2H(c->lpmlc);
+#else
+    ctrl32 = QEMU_G2H(c->lpmlc);
+    if (!ctrl32)
+        ctrl = NULL;
+    else if (ctrl32->cbStruct != sizeof(*ctrl32))
+        ctrl->cbStruct = 0;
+    else
+        MIXERLINECONTROLS_g2h(ctrl, ctrl32);
+#endif
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_MIXERGETLINECONTROLSA):
+            c->super.iret = mixerGetLineControlsA(QEMU_G2H(c->hmix), (MIXERLINECONTROLSA *)ctrl, c->fdwControls);
+            break;
+        case QEMU_SYSCALL_ID(CALL_MIXERGETLINECONTROLSW):
+            c->super.iret = mixerGetLineControlsW(QEMU_G2H(c->hmix), ctrl, c->fdwControls);
+            break;
+    }
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret == MMSYSERR_NOERROR)
+        MIXERLINECONTROLS_h2g(ctrl32, ctrl);
+#endif
 }
 
 #endif
