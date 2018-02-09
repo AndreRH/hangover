@@ -1132,6 +1132,15 @@ void qemu_waveInOpen(struct qemu_syscall *call)
     struct qemu_waveInOpen *c = (struct qemu_waveInOpen *)call;
     HWAVEIN h;
 
+    /* FIXME: WaveOutOpen has code for some things that might be required here as well, but
+     * Wine has no equivalent Wave In tests. Those things are:
+     *
+     * -> CALLBACK_FUNCTION
+     * -> Keeping 32 bit wave out data structs alive until after they are done playing
+     * -> WAVE_FORMAT_QUERY
+     *
+     * The second case may not be necessary depending on how waveInAddBuffer works. If that
+     * is the case this would simplify wave in handling a bit. */
     WINE_TRACE("\n");
     if (c->dwCallback && ((c->dwFlags & CALLBACK_TYPEMASK) == CALLBACK_FUNCTION))
         WINE_FIXME("Wrap function callback 0x%lx!\n", c->dwCallback);
