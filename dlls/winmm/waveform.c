@@ -29,6 +29,7 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <wine/list.h>
 #include <mmddk.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_winmm);
 #endif
@@ -236,18 +237,102 @@ WINBASEAPI MMRESULT WINAPI waveOutOpen(LPHWAVEOUT lphWaveOut, UINT uDeviceID, LP
 
 #else
 
+struct qemu_wave_host
+{
+    HWAVEOUT wave;
+    uint64_t guest_cb, guest_instance;
+    DWORD guest_flags;
+    struct list entry;
+};
+
+static CRITICAL_SECTION wave_out_list_cs = {0, -1, 0, 0, 0, 0};
+static struct list wave_out_list = LIST_INIT(wave_out_list);
+
+struct extended_WAVEHDR
+{
+    WAVEHDR super;
+    struct qemu_WAVEHDR *hdr32;
+};
+
+static void CALLBACK qemu_wave_host_cb(HWAVEOUT wave, UINT msg,
+        DWORD_PTR user, DWORD_PTR param1, DWORD_PTR param2)
+{
+    struct qemu_wave_host *wrapper = (struct qemu_wave_host *)user;
+    struct extended_WAVEHDR *hdr;
+    HANDLE event;
+
+#if HOST_BIT != GUEST_BIT
+    switch (msg)
+    {
+        case WOM_DONE:
+            hdr = (struct extended_WAVEHDR *)param1;
+            WAVEHDR_h2g(hdr->hdr32, &hdr->super);
+            param1 = (DWORD_PTR)hdr->hdr32;
+            HeapFree(GetProcessHeap(), 0, hdr);
+            break;
+    }
+#endif
+
+    switch (wrapper->guest_flags & CALLBACK_TYPEMASK)
+    {
+        case CALLBACK_NULL:
+            WINE_FIXME("Unimplemented callback type CALLBACK_NULL.\n");
+            break;
+        case CALLBACK_WINDOW:
+            WINE_FIXME("Unimplemented callback type CALLBACK_WINDOW.\n");
+            break;
+        case CALLBACK_TASK: /* == CALLBACK_THREAD. */
+            WINE_FIXME("Unimplemented callback type CALLBACK_TASK.\n");
+            break;
+        case CALLBACK_FUNCTION:
+            WINE_FIXME("Unimplemented callback type CALLBACK_FUNCTION.\n");
+            break;
+        case CALLBACK_EVENT:
+            event = (HANDLE)wrapper->guest_cb;
+            SetEvent(event);
+            break;
+    }
+}
+
 void qemu_waveOutOpen(struct qemu_syscall *call)
 {
     struct qemu_waveOutOpen *c = (struct qemu_waveOutOpen *)call;
     HWAVEOUT handle;
+    struct qemu_wave_host *wrapper;
+    DWORD flags;
     WINE_TRACE("\n");
 
-    if (c->dwCallback && ((c->dwFlags & CALLBACK_TYPEMASK) == CALLBACK_FUNCTION))
-        WINE_FIXME("Wrap function callback 0x%lx!\n", c->dwCallback);
+    wrapper = HeapAlloc(GetProcessHeap(), 0, sizeof(*wrapper));
+    if (!wrapper)
+    {
+        WINE_WARN("Out of memory\n");
+        c->super.iret = MMSYSERR_ERROR;
+        return;
+    }
 
-    c->super.iret = waveOutOpen(c->lphWaveOut ? &handle : NULL, c->uDeviceID, QEMU_G2H(c->lpFormat), c->dwCallback,
-            c->dwInstance, c->dwFlags);
-    c->lphWaveOut = QEMU_H2G(handle);
+    wrapper->guest_cb = c->dwCallback;
+    wrapper->guest_instance = c->dwInstance;
+    wrapper->guest_flags = c->dwFlags;
+
+    flags = c->dwFlags;
+    flags &= ~CALLBACK_TYPEMASK;
+    flags |= CALLBACK_FUNCTION;
+
+    c->super.iret = waveOutOpen(c->lphWaveOut ? &handle : NULL, c->uDeviceID, QEMU_G2H(c->lpFormat),
+            (DWORD_PTR)qemu_wave_host_cb, (ULONG_PTR)wrapper, flags);
+
+    if (c->super.iret == MMSYSERR_NOERROR)
+    {
+        c->lphWaveOut = QEMU_H2G(handle);
+        wrapper->wave = handle;
+        EnterCriticalSection(&wave_out_list_cs);
+        list_add_head(&wave_out_list, &wrapper->entry);
+        LeaveCriticalSection(&wave_out_list_cs);
+    }
+    else
+    {
+        HeapFree(GetProcessHeap(), 0, wrapper);
+    }
 }
 
 #endif
@@ -276,8 +361,32 @@ WINBASEAPI UINT WINAPI waveOutClose(HWAVEOUT hWaveOut)
 void qemu_waveOutClose(struct qemu_syscall *call)
 {
     struct qemu_waveOutClose *c = (struct qemu_waveOutClose *)call;
+    struct qemu_wave_host *wrapper;
+    HWAVEOUT wave;
+
     WINE_TRACE("\n");
-    c->super.iret = waveOutClose(QEMU_G2H(c->hWaveOut));
+    wave = QEMU_G2H(c->hWaveOut);
+
+    EnterCriticalSection(&wave_out_list_cs);
+    c->super.iret = waveOutClose(wave);
+
+    if (c->super.iret != MMSYSERR_NOERROR)
+        goto done;
+
+    LIST_FOR_EACH_ENTRY(wrapper, &wave_out_list, struct qemu_wave_host, entry)
+    {
+        if (wrapper->wave == wave)
+        {
+            WINE_TRACE("Deleting wrapper struct of HWAVEOUT handle %p.\n", wrapper, wave);
+            list_remove(&wrapper->entry);
+            HeapFree(GetProcessHeap(), 0, wrapper);
+            goto done;
+        }
+    }
+    WINE_ERR("Could not find wrapper structure for successfully closed HWAVEOUT %p.\n", wave);
+
+done:
+    LeaveCriticalSection(&wave_out_list_cs);
 }
 
 #endif
@@ -376,6 +485,14 @@ void qemu_waveHeaderOp(struct qemu_syscall *call)
         hdr = NULL;
     else if (size < sizeof(*hdr32))
         size = 0;
+    else if (c->super.id == QEMU_SYSCALL_ID(CALL_WAVEOUTWRITE))
+    {
+        struct extended_WAVEHDR *hdrex = HeapAlloc(GetProcessHeap(), 0, sizeof(*hdrex));
+        hdr = &hdrex->super;
+        WAVEHDR_g2h(hdr, hdr32);
+        size = sizeof(*hdr);
+        hdrex->hdr32 = hdr32;
+    }
     else
     {
         WAVEHDR_g2h(hdr, hdr32);
