@@ -1445,7 +1445,7 @@ WINBASEAPI UINT WINAPI mixerGetNumDevs(void)
 void qemu_mixerGetNumDevs(struct qemu_syscall *call)
 {
     struct qemu_mixerGetNumDevs *c = (struct qemu_mixerGetNumDevs *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = mixerGetNumDevs();
 }
 
@@ -1479,7 +1479,9 @@ WINBASEAPI UINT WINAPI mixerGetDevCapsA(UINT_PTR uDeviceID, LPMIXERCAPSA lpCaps,
 void qemu_mixerGetDevCapsA(struct qemu_syscall *call)
 {
     struct qemu_mixerGetDevCapsA *c = (struct qemu_mixerGetDevCapsA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* MIXERCAPSA has the same size in 32 and 64 bit. */
     c->super.iret = mixerGetDevCapsA(c->uDeviceID, QEMU_G2H(c->lpCaps), c->uSize);
 }
 
@@ -1513,7 +1515,9 @@ WINBASEAPI UINT WINAPI mixerGetDevCapsW(UINT_PTR uDeviceID, LPMIXERCAPSW lpCaps,
 void qemu_mixerGetDevCapsW(struct qemu_syscall *call)
 {
     struct qemu_mixerGetDevCapsW *c = (struct qemu_mixerGetDevCapsW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* MIXERCAPSW has the same size in 32 and 64 bit. */
     c->super.iret = mixerGetDevCapsW(c->uDeviceID, QEMU_G2H(c->lpCaps), c->uSize);
 }
 
@@ -1551,7 +1555,9 @@ WINBASEAPI UINT WINAPI mixerOpen(LPHMIXER lphMix, UINT uDeviceID, DWORD_PTR dwCa
 void qemu_mixerOpen(struct qemu_syscall *call)
 {
     struct qemu_mixerOpen *c = (struct qemu_mixerOpen *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* CALLBACK_FUNCTION is not valid for mixers. */
     c->super.iret = mixerOpen(QEMU_G2H(c->lphMix), c->uDeviceID, c->dwCallback, c->dwInstance, c->fdwOpen);
 }
 
@@ -1581,7 +1587,7 @@ WINBASEAPI UINT WINAPI mixerClose(HMIXER hMix)
 void qemu_mixerClose(struct qemu_syscall *call)
 {
     struct qemu_mixerClose *c = (struct qemu_mixerClose *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = mixerClose(QEMU_G2H(c->hMix));
 }
 
