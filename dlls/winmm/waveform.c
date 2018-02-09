@@ -1785,8 +1785,28 @@ WINBASEAPI UINT WINAPI mixerGetLineInfoW(HMIXEROBJ hmix, LPMIXERLINEW lpmliW, DW
 void qemu_mixerGetLineInfoW(struct qemu_syscall *call)
 {
     struct qemu_mixerGetLineInfoW *c = (struct qemu_mixerGetLineInfoW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = mixerGetLineInfoW(QEMU_G2H(c->hmix), QEMU_G2H(c->lpmliW), c->fdwInfo);
+    MIXERLINEW stack, *line = &stack;
+    struct qemu_MIXERLINEW *line32;
+
+    WINE_TRACE("\n");
+#if HOST_BIT == GUEST_BIT
+    line = QEMU_G2H(c->lpmliW);
+#else
+    line32 = QEMU_G2H(c->lpmliW);
+    if (!line32)
+        line = NULL;
+    else if (line32->cbStruct != sizeof(*line32))
+        line->cbStruct = 0;
+    else
+        MIXERLINEW_g2h(line, line32);
+#endif
+
+    c->super.iret = mixerGetLineInfoW(QEMU_G2H(c->hmix), line, c->fdwInfo);
+
+#if HOST_BIT != GUEST_BIT
+    if (c->super.iret == MMSYSERR_NOERROR)
+        MIXERLINEW_h2g(line32, line);
+#endif
 }
 
 #endif
@@ -1819,8 +1839,28 @@ WINBASEAPI UINT WINAPI mixerGetLineInfoA(HMIXEROBJ hmix, LPMIXERLINEA lpmliA, DW
 void qemu_mixerGetLineInfoA(struct qemu_syscall *call)
 {
     struct qemu_mixerGetLineInfoA *c = (struct qemu_mixerGetLineInfoA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = mixerGetLineInfoA(QEMU_G2H(c->hmix), QEMU_G2H(c->lpmliA), c->fdwInfo);
+    MIXERLINEA stack, *line = &stack;
+    struct qemu_MIXERLINEA *line32;
+
+    WINE_TRACE("\n");
+#if HOST_BIT == GUEST_BIT
+    line = QEMU_G2H(c->lpmliA);
+#else
+    line32 = QEMU_G2H(c->lpmliA);
+    if (!line32)
+        line = NULL;
+    else if (line32->cbStruct != sizeof(*line32))
+        line->cbStruct = 0;
+    else
+        MIXERLINEA_g2h(line, line32);
+#endif
+
+    c->super.iret = mixerGetLineInfoA(QEMU_G2H(c->hmix), line, c->fdwInfo);
+
+#if HOST_BIT != GUEST_BIT
+    if (c->super.iret == MMSYSERR_NOERROR)
+        MIXERLINEA_h2g(line32, line);
+#endif
 }
 
 #endif
