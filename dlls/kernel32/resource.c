@@ -61,8 +61,14 @@ WINBASEAPI HRSRC WINAPI FindResourceExA(HMODULE hModule, LPCSTR type, LPCSTR nam
 void qemu_FindResourceExA(struct qemu_syscall *call)
 {
     struct qemu_FindResourceExA *c = (struct qemu_FindResourceExA *)call;
+    HMODULE mod;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)FindResourceExA(QEMU_G2H(c->hModule), QEMU_G2H(c->type), QEMU_G2H(c->name), c->lang);
+    mod = QEMU_G2H(c->hModule);
+    if (!mod)
+        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = (ULONG_PTR)FindResourceExA(mod, QEMU_G2H(c->type), QEMU_G2H(c->name), c->lang);
 }
 
 #endif
@@ -95,8 +101,14 @@ WINBASEAPI HRSRC WINAPI FindResourceA(HMODULE hModule, LPCSTR name, LPCSTR type)
 void qemu_FindResourceA(struct qemu_syscall *call)
 {
     struct qemu_FindResourceA *c = (struct qemu_FindResourceA *)call;
+    HMODULE mod;
+
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)FindResourceA(QEMU_G2H(c->hModule), QEMU_G2H(c->name), QEMU_G2H(c->type));
+    mod = QEMU_G2H(c->hModule);
+    if (!mod)
+        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = (ULONG_PTR)FindResourceA(mod, QEMU_G2H(c->name), QEMU_G2H(c->type));
 }
 
 #endif
@@ -131,8 +143,14 @@ WINBASEAPI HRSRC WINAPI FindResourceExW(HMODULE hModule, LPCWSTR type, LPCWSTR n
 void qemu_FindResourceExW(struct qemu_syscall *call)
 {
     struct qemu_FindResourceExW *c = (struct qemu_FindResourceExW *)call;
+    HMODULE mod;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)FindResourceExW(QEMU_G2H(c->hModule), QEMU_G2H(c->type), QEMU_G2H(c->name), c->lang);
+    mod = QEMU_G2H(c->hModule);
+    if (!mod)
+        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = (ULONG_PTR)FindResourceExW(mod, QEMU_G2H(c->type), QEMU_G2H(c->name), c->lang);
 }
 
 #endif
@@ -165,8 +183,14 @@ WINBASEAPI HRSRC WINAPI FindResourceW(HINSTANCE hModule, LPCWSTR name, LPCWSTR t
 void qemu_FindResourceW(struct qemu_syscall *call)
 {
     struct qemu_FindResourceW *c = (struct qemu_FindResourceW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)FindResourceW(QEMU_G2H(c->hModule), QEMU_G2H(c->name), QEMU_G2H(c->type));
+    HMODULE mod;
+
+    WINE_TRACE("\n");
+    mod = QEMU_G2H(c->hModule);
+    if (!mod)
+        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = (ULONG_PTR)FindResourceW(mod, QEMU_G2H(c->name), QEMU_G2H(c->type));
 }
 
 #endif
@@ -199,8 +223,14 @@ WINBASEAPI BOOL WINAPI EnumResourceTypesA(HMODULE hmod, ENUMRESTYPEPROCA lpfun, 
 void qemu_EnumResourceTypesA(struct qemu_syscall *call)
 {
     struct qemu_EnumResourceTypesA *c = (struct qemu_EnumResourceTypesA *)call;
+    HMODULE mod;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumResourceTypesA(QEMU_G2H(c->hmod), QEMU_G2H(c->lpfun), c->lparam);
+    mod = QEMU_G2H(c->hmod);
+    if (!mod)
+        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = EnumResourceTypesA(mod, QEMU_G2H(c->lpfun), c->lparam);
 }
 
 #endif
@@ -233,8 +263,14 @@ WINBASEAPI BOOL WINAPI EnumResourceTypesW(HMODULE hmod, ENUMRESTYPEPROCW lpfun, 
 void qemu_EnumResourceTypesW(struct qemu_syscall *call)
 {
     struct qemu_EnumResourceTypesW *c = (struct qemu_EnumResourceTypesW *)call;
+    HMODULE mod;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumResourceTypesW(QEMU_G2H(c->hmod), QEMU_G2H(c->lpfun), c->lparam);
+    mod = QEMU_G2H(c->hmod);
+    if (!mod)
+        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = EnumResourceTypesW(mod, QEMU_G2H(c->lpfun), c->lparam);
 }
 
 #endif
@@ -269,8 +305,14 @@ WINBASEAPI BOOL WINAPI EnumResourceNamesA(HMODULE hmod, LPCSTR type, ENUMRESNAME
 void qemu_EnumResourceNamesA(struct qemu_syscall *call)
 {
     struct qemu_EnumResourceNamesA *c = (struct qemu_EnumResourceNamesA *)call;
+    HMODULE mod;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumResourceNamesA(QEMU_G2H(c->hmod), QEMU_G2H(c->type), QEMU_G2H(c->lpfun), c->lparam);
+    mod = QEMU_G2H(c->hmod);
+    if (!mod)
+        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = EnumResourceNamesA(mod, QEMU_G2H(c->type), QEMU_G2H(c->lpfun), c->lparam);
 }
 
 #endif
@@ -305,8 +347,14 @@ WINBASEAPI BOOL WINAPI EnumResourceNamesW(HMODULE hmod, LPCWSTR type, ENUMRESNAM
 void qemu_EnumResourceNamesW(struct qemu_syscall *call)
 {
     struct qemu_EnumResourceNamesW *c = (struct qemu_EnumResourceNamesW *)call;
+    HMODULE mod;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumResourceNamesW(QEMU_G2H(c->hmod), QEMU_G2H(c->type), QEMU_G2H(c->lpfun), c->lparam);
+    mod = QEMU_G2H(c->hmod);
+    if (!mod)
+        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = EnumResourceNamesW(mod, QEMU_G2H(c->type), QEMU_G2H(c->lpfun), c->lparam);
 }
 
 #endif
@@ -325,7 +373,8 @@ struct qemu_EnumResourceLanguagesExA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI EnumResourceLanguagesExA(HMODULE hmod, LPCSTR type, LPCSTR name, ENUMRESLANGPROCA lpfun, LONG_PTR lparam, DWORD flags, LANGID lang)
+WINBASEAPI BOOL WINAPI EnumResourceLanguagesExA(HMODULE hmod, LPCSTR type, LPCSTR name,
+        ENUMRESLANGPROCA lpfun, LONG_PTR lparam, DWORD flags, LANGID lang)
 {
     struct qemu_EnumResourceLanguagesExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMRESOURCELANGUAGESEXA);
@@ -347,8 +396,15 @@ WINBASEAPI BOOL WINAPI EnumResourceLanguagesExA(HMODULE hmod, LPCSTR type, LPCST
 void qemu_EnumResourceLanguagesExA(struct qemu_syscall *call)
 {
     struct qemu_EnumResourceLanguagesExA *c = (struct qemu_EnumResourceLanguagesExA *)call;
+    HMODULE mod;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumResourceLanguagesExA(QEMU_G2H(c->hmod), QEMU_G2H(c->type), QEMU_G2H(c->name), QEMU_G2H(c->lpfun), c->lparam, c->flags, c->lang);
+    mod = QEMU_G2H(c->hmod);
+    if (!mod)
+        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = EnumResourceLanguagesExA(mod, QEMU_G2H(c->type), QEMU_G2H(c->name),
+            QEMU_G2H(c->lpfun), c->lparam, c->flags, c->lang);
 }
 
 #endif
@@ -365,7 +421,8 @@ struct qemu_EnumResourceLanguagesA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI EnumResourceLanguagesA(HMODULE hmod, LPCSTR type, LPCSTR name, ENUMRESLANGPROCA lpfun, LONG_PTR lparam)
+WINBASEAPI BOOL WINAPI EnumResourceLanguagesA(HMODULE hmod, LPCSTR type, LPCSTR name,
+        ENUMRESLANGPROCA lpfun, LONG_PTR lparam)
 {
     struct qemu_EnumResourceLanguagesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMRESOURCELANGUAGESA);
@@ -385,8 +442,14 @@ WINBASEAPI BOOL WINAPI EnumResourceLanguagesA(HMODULE hmod, LPCSTR type, LPCSTR 
 void qemu_EnumResourceLanguagesA(struct qemu_syscall *call)
 {
     struct qemu_EnumResourceLanguagesA *c = (struct qemu_EnumResourceLanguagesA *)call;
+    HMODULE mod;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumResourceLanguagesA(QEMU_G2H(c->hmod), QEMU_G2H(c->type), QEMU_G2H(c->name), QEMU_G2H(c->lpfun), c->lparam);
+    mod = QEMU_G2H(c->hmod);
+    if (!mod)
+        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = EnumResourceLanguagesA(mod, QEMU_G2H(c->type), QEMU_G2H(c->name), QEMU_G2H(c->lpfun), c->lparam);
 }
 
 #endif
@@ -405,7 +468,8 @@ struct qemu_EnumResourceLanguagesExW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI EnumResourceLanguagesExW(HMODULE hmod, LPCWSTR type, LPCWSTR name, ENUMRESLANGPROCW lpfun, LONG_PTR lparam, DWORD flags, LANGID lang)
+WINBASEAPI BOOL WINAPI EnumResourceLanguagesExW(HMODULE hmod, LPCWSTR type, LPCWSTR name,
+        ENUMRESLANGPROCW lpfun, LONG_PTR lparam, DWORD flags, LANGID lang)
 {
     struct qemu_EnumResourceLanguagesExW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMRESOURCELANGUAGESEXW);
@@ -427,8 +491,15 @@ WINBASEAPI BOOL WINAPI EnumResourceLanguagesExW(HMODULE hmod, LPCWSTR type, LPCW
 void qemu_EnumResourceLanguagesExW(struct qemu_syscall *call)
 {
     struct qemu_EnumResourceLanguagesExW *c = (struct qemu_EnumResourceLanguagesExW *)call;
+    HMODULE mod;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumResourceLanguagesExW(QEMU_G2H(c->hmod), QEMU_G2H(c->type), QEMU_G2H(c->name), QEMU_G2H(c->lpfun), c->lparam, c->flags, c->lang);
+    mod = QEMU_G2H(c->hmod);
+    if (!mod)
+        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = EnumResourceLanguagesExW(mod, QEMU_G2H(c->type), QEMU_G2H(c->name),
+            QEMU_G2H(c->lpfun), c->lparam, c->flags, c->lang);
 }
 
 #endif
@@ -445,7 +516,8 @@ struct qemu_EnumResourceLanguagesW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI EnumResourceLanguagesW(HMODULE hmod, LPCWSTR type, LPCWSTR name, ENUMRESLANGPROCW lpfun, LONG_PTR lparam)
+WINBASEAPI BOOL WINAPI EnumResourceLanguagesW(HMODULE hmod, LPCWSTR type, LPCWSTR name,
+            ENUMRESLANGPROCW lpfun, LONG_PTR lparam)
 {
     struct qemu_EnumResourceLanguagesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMRESOURCELANGUAGESW);
@@ -465,8 +537,14 @@ WINBASEAPI BOOL WINAPI EnumResourceLanguagesW(HMODULE hmod, LPCWSTR type, LPCWST
 void qemu_EnumResourceLanguagesW(struct qemu_syscall *call)
 {
     struct qemu_EnumResourceLanguagesW *c = (struct qemu_EnumResourceLanguagesW *)call;
+    HMODULE mod;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumResourceLanguagesW(QEMU_G2H(c->hmod), QEMU_G2H(c->type), QEMU_G2H(c->name), QEMU_G2H(c->lpfun), c->lparam);
+    mod = QEMU_G2H(c->hmod);
+    if (!mod)
+        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = EnumResourceLanguagesW(mod, QEMU_G2H(c->type), QEMU_G2H(c->name), QEMU_G2H(c->lpfun), c->lparam);
 }
 
 #endif
@@ -497,8 +575,14 @@ WINBASEAPI HGLOBAL WINAPI LoadResource(HINSTANCE hModule, HRSRC hRsrc)
 void qemu_LoadResource(struct qemu_syscall *call)
 {
     struct qemu_LoadResource *c = (struct qemu_LoadResource *)call;
+    HMODULE mod;
+
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)LoadResource(QEMU_G2H(c->hModule), QEMU_G2H(c->hRsrc));
+    mod = QEMU_G2H(c->hModule);
+    if (!mod)
+        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = (ULONG_PTR)LoadResource(mod, QEMU_G2H(c->hRsrc));
 }
 
 #endif
@@ -589,8 +673,14 @@ WINBASEAPI DWORD WINAPI SizeofResource(HINSTANCE hModule, HRSRC hRsrc)
 void qemu_SizeofResource(struct qemu_syscall *call)
 {
     struct qemu_SizeofResource *c = (struct qemu_SizeofResource *)call;
+    HMODULE mod;
     WINE_TRACE("\n");
-    c->super.iret = SizeofResource(QEMU_G2H(c->hModule), QEMU_G2H(c->hRsrc));
+
+    mod = QEMU_G2H(c->hModule);
+    if (!mod)
+        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+
+    c->super.iret = SizeofResource(mod, QEMU_G2H(c->hRsrc));
 }
 
 #endif
