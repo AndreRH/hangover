@@ -205,7 +205,7 @@ WINBASEAPI ATOM WINAPI GlobalDeleteAtom(ATOM atom)
 void qemu_GlobalDeleteAtom(struct qemu_syscall *call)
 {
     struct qemu_GlobalDeleteAtom *c = (struct qemu_GlobalDeleteAtom *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GlobalDeleteAtom(c->atom);
 }
 

@@ -121,7 +121,7 @@ WINUSERAPI HANDLE WINAPI GetPropA(HWND hwnd, LPCSTR str)
 void qemu_GetPropA(struct qemu_syscall *call)
 {
     struct qemu_GetPropA *c = (struct qemu_GetPropA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)GetPropA(QEMU_G2H(c->hwnd), QEMU_G2H(c->str));
 }
 
@@ -187,7 +187,7 @@ WINUSERAPI BOOL WINAPI SetPropA(HWND hwnd, LPCSTR str, HANDLE handle)
 void qemu_SetPropA(struct qemu_syscall *call)
 {
     struct qemu_SetPropA *c = (struct qemu_SetPropA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetPropA(QEMU_G2H(c->hwnd), QEMU_G2H(c->str), QEMU_G2H(c->handle));
 }
 
@@ -253,7 +253,7 @@ WINUSERAPI HANDLE WINAPI RemovePropA(HWND hwnd, LPCSTR str)
 void qemu_RemovePropA(struct qemu_syscall *call)
 {
     struct qemu_RemovePropA *c = (struct qemu_RemovePropA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)RemovePropA(QEMU_G2H(c->hwnd), QEMU_G2H(c->str));
 }
 

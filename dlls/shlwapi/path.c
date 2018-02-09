@@ -312,7 +312,7 @@ WINBASEAPI LPSTR WINAPI PathFindFileNameA(LPCSTR lpszPath)
 void qemu_PathFindFileNameA(struct qemu_syscall *call)
 {
     struct qemu_PathFindFileNameA *c = (struct qemu_PathFindFileNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)PathFindFileNameA(QEMU_G2H(c->lpszPath));
 }
 
@@ -372,7 +372,7 @@ WINBASEAPI LPSTR WINAPI PathFindExtensionA(LPCSTR lpszPath)
 void qemu_PathFindExtensionA(struct qemu_syscall *call)
 {
     struct qemu_PathFindExtensionA *c = (struct qemu_PathFindExtensionA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)PathFindExtensionA(QEMU_G2H(c->lpszPath));
 }
 
@@ -668,7 +668,7 @@ WINBASEAPI BOOL WINAPI PathStripToRootA(LPSTR lpszPath)
 void qemu_PathStripToRootA(struct qemu_syscall *call)
 {
     struct qemu_PathStripToRootA *c = (struct qemu_PathStripToRootA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PathStripToRootA(QEMU_G2H(c->lpszPath));
 }
 
@@ -698,7 +698,7 @@ WINBASEAPI BOOL WINAPI PathStripToRootW(LPWSTR lpszPath)
 void qemu_PathStripToRootW(struct qemu_syscall *call)
 {
     struct qemu_PathStripToRootW *c = (struct qemu_PathStripToRootW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PathStripToRootW(QEMU_G2H(c->lpszPath));
 }
 
@@ -2088,7 +2088,7 @@ WINBASEAPI BOOL WINAPI PathIsUNCA(LPCSTR lpszPath)
 void qemu_PathIsUNCA(struct qemu_syscall *call)
 {
     struct qemu_PathIsUNCA *c = (struct qemu_PathIsUNCA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PathIsUNCA(QEMU_G2H(c->lpszPath));
 }
 
@@ -2118,7 +2118,7 @@ WINBASEAPI BOOL WINAPI PathIsUNCW(LPCWSTR lpszPath)
 void qemu_PathIsUNCW(struct qemu_syscall *call)
 {
     struct qemu_PathIsUNCW *c = (struct qemu_PathIsUNCW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PathIsUNCW(QEMU_G2H(c->lpszPath));
 }
 

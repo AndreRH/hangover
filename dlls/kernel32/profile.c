@@ -59,7 +59,7 @@ WINBASEAPI UINT WINAPI GetProfileIntA(LPCSTR section, LPCSTR entry, INT def_val)
 void qemu_GetProfileIntA(struct qemu_syscall *call)
 {
     struct qemu_GetProfileIntA *c = (struct qemu_GetProfileIntA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetProfileIntA(QEMU_G2H(c->section), QEMU_G2H(c->entry), c->def_val);
 }
 
@@ -93,7 +93,7 @@ WINBASEAPI UINT WINAPI GetProfileIntW(LPCWSTR section, LPCWSTR entry, INT def_va
 void qemu_GetProfileIntW(struct qemu_syscall *call)
 {
     struct qemu_GetProfileIntW *c = (struct qemu_GetProfileIntW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetProfileIntW(QEMU_G2H(c->section), QEMU_G2H(c->entry), c->def_val);
 }
 
@@ -211,7 +211,7 @@ WINBASEAPI DWORD WINAPI GetProfileStringA(LPCSTR section, LPCSTR entry, LPCSTR d
 void qemu_GetProfileStringA(struct qemu_syscall *call)
 {
     struct qemu_GetProfileStringA *c = (struct qemu_GetProfileStringA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetProfileStringA(QEMU_G2H(c->section), QEMU_G2H(c->entry), QEMU_G2H(c->def_val), QEMU_G2H(c->buffer), c->len);
 }
 
