@@ -233,7 +233,7 @@ WINBASEAPI LONG WINAPI mmioSeek(HMMIO hmmio, LONG lOffset, INT iOrigin)
 void qemu_mmioSeek(struct qemu_syscall *call)
 {
     struct qemu_mmioSeek *c = (struct qemu_mmioSeek *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = mmioSeek(QEMU_G2H(c->hmmio), c->lOffset, c->iOrigin);
 }
 
