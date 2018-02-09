@@ -212,9 +212,25 @@ struct qemu_waveOutOpen
     uint64_t dwCallback;
     uint64_t dwInstance;
     uint64_t dwFlags;
+    uint64_t wrapper;
+};
+
+struct wave_guest_cb_data
+{
+    uint64_t func;
+    uint64_t wave;
+    uint64_t msg;
+    uint64_t user;
+    uint64_t param1, param2;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static void __fastcall wave_guest_cb(struct wave_guest_cb_data *data)
+{
+    LPWAVECALLBACK func = (LPWAVECALLBACK)(ULONG_PTR)data->func;
+    func((void *)(ULONG_PTR)data->wave, data->msg, data->user, data->param1, data->param2);
+}
 
 WINBASEAPI MMRESULT WINAPI waveOutOpen(LPHWAVEOUT lphWaveOut, UINT uDeviceID, LPCWAVEFORMATEX lpFormat,
         DWORD_PTR dwCallback, DWORD_PTR dwInstance, DWORD dwFlags)
@@ -227,6 +243,7 @@ WINBASEAPI MMRESULT WINAPI waveOutOpen(LPHWAVEOUT lphWaveOut, UINT uDeviceID, LP
     call.dwCallback = (ULONG_PTR)dwCallback;
     call.dwInstance = (ULONG_PTR)dwInstance;
     call.dwFlags = (ULONG_PTR)dwFlags;
+    call.wrapper = (ULONG_PTR)wave_guest_cb;
 
     qemu_syscall(&call.super);
     if (call.super.iret == MMSYSERR_NOERROR)
@@ -240,7 +257,7 @@ WINBASEAPI MMRESULT WINAPI waveOutOpen(LPHWAVEOUT lphWaveOut, UINT uDeviceID, LP
 struct qemu_wave_host
 {
     HWAVEOUT wave;
-    uint64_t guest_cb, guest_instance;
+    uint64_t guest_cb, guest_instance, wrapper;
     DWORD guest_flags;
     struct list entry;
 };
@@ -260,6 +277,7 @@ static void CALLBACK qemu_wave_host_cb(HWAVEOUT wave, UINT msg,
     struct qemu_wave_host *wrapper = (struct qemu_wave_host *)user;
     struct extended_WAVEHDR *hdr;
     HANDLE event;
+    struct wave_guest_cb_data call;
 
 #if HOST_BIT != GUEST_BIT
     switch (msg)
@@ -276,19 +294,34 @@ static void CALLBACK qemu_wave_host_cb(HWAVEOUT wave, UINT msg,
     switch (wrapper->guest_flags & CALLBACK_TYPEMASK)
     {
         case CALLBACK_NULL:
-            WINE_FIXME("Unimplemented callback type CALLBACK_NULL.\n");
             break;
+
         case CALLBACK_WINDOW:
             WINE_FIXME("Unimplemented callback type CALLBACK_WINDOW.\n");
             break;
+
         case CALLBACK_TASK: /* == CALLBACK_THREAD. */
-            WINE_FIXME("Unimplemented callback type CALLBACK_TASK.\n");
+            WINE_TRACE("Posting a message to thread %lx.\n", wrapper->guest_cb);
+            PostThreadMessageA(wrapper->guest_cb, msg, (WPARAM)wave, param1);
             break;
+
         case CALLBACK_FUNCTION:
-            WINE_FIXME("Unimplemented callback type CALLBACK_FUNCTION.\n");
+            call.func = wrapper->guest_cb;
+            call.wave = QEMU_H2G(wave);
+            call.msg = msg;
+            call.user = wrapper->guest_instance;
+            call.param1 = param1;
+            call.param2 = param2;
+
+            WINE_TRACE("Calling guest callback 0x%lx.\n", call.func);
+            qemu_ops->qemu_execute(QEMU_G2H(wrapper->wrapper), QEMU_H2G(&call));
+            WINE_TRACE("Guest callback returned.\n");
+
             break;
+
         case CALLBACK_EVENT:
             event = (HANDLE)wrapper->guest_cb;
+            WINE_TRACE("Setting event %p.\n", event);
             SetEvent(event);
             break;
     }
@@ -313,6 +346,7 @@ void qemu_waveOutOpen(struct qemu_syscall *call)
     wrapper->guest_cb = c->dwCallback;
     wrapper->guest_instance = c->dwInstance;
     wrapper->guest_flags = c->dwFlags;
+    wrapper->wrapper = c->wrapper;
 
     flags = c->dwFlags;
     flags &= ~CALLBACK_TYPEMASK;

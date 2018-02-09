@@ -12,7 +12,7 @@ winmm.dll: driver_g.o joystick_g.o main_g.o mci_g.o mmio_g.o playsound_g.o time_
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/winmm.spec *_g.o -o winmm.dll -nodefaultlibs -nostdlib
 
 qemu_winmm.dll.so: driver_h.o joystick_h.o main_h.o mci_h.o mmio_h.o playsound_h.o time_h.o waveform_h.o winmm_h.o
-	$(WINEGCC) -shared $(SRCDIR)/qemu_winmm.spec *_h.o -o qemu_winmm.dll.so -lwinmm
+	$(WINEGCC) -shared $(SRCDIR)/qemu_winmm.spec *_h.o -o qemu_winmm.dll.so -lwinmm -luser32
 
 %_g.o: %.c qemu_winmm.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
