@@ -211,7 +211,8 @@ struct qemu_waveOutOpen
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI MMRESULT WINAPI waveOutOpen(LPHWAVEOUT lphWaveOut, UINT uDeviceID, LPCWAVEFORMATEX lpFormat, DWORD_PTR dwCallback, DWORD_PTR dwInstance, DWORD dwFlags)
+WINBASEAPI MMRESULT WINAPI waveOutOpen(LPHWAVEOUT lphWaveOut, UINT uDeviceID, LPCWAVEFORMATEX lpFormat,
+        DWORD_PTR dwCallback, DWORD_PTR dwInstance, DWORD dwFlags)
 {
     struct qemu_waveOutOpen call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WAVEOUTOPEN);
@@ -223,6 +224,8 @@ WINBASEAPI MMRESULT WINAPI waveOutOpen(LPHWAVEOUT lphWaveOut, UINT uDeviceID, LP
     call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == MMSYSERR_NOERROR)
+        *lphWaveOut = (HWAVEOUT)(ULONG_PTR)call.lphWaveOut;
 
     return call.super.iret;
 }
@@ -232,8 +235,15 @@ WINBASEAPI MMRESULT WINAPI waveOutOpen(LPHWAVEOUT lphWaveOut, UINT uDeviceID, LP
 void qemu_waveOutOpen(struct qemu_syscall *call)
 {
     struct qemu_waveOutOpen *c = (struct qemu_waveOutOpen *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = waveOutOpen(QEMU_G2H(c->lphWaveOut), c->uDeviceID, QEMU_G2H(c->lpFormat), c->dwCallback, c->dwInstance, c->dwFlags);
+    HWAVEOUT handle;
+    WINE_TRACE("\n");
+
+    if (c->dwCallback && ((c->dwFlags & CALLBACK_TYPEMASK) == CALLBACK_FUNCTION))
+        WINE_FIXME("Wrap function callback 0x%lx!\n", c->dwCallback);
+
+    c->super.iret = waveOutOpen(c->lphWaveOut ? &handle : NULL, c->uDeviceID, QEMU_G2H(c->lpFormat), c->dwCallback,
+            c->dwInstance, c->dwFlags);
+    c->lphWaveOut = QEMU_H2G(handle);
 }
 
 #endif
