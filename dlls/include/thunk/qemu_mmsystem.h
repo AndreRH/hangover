@@ -325,18 +325,36 @@ struct qemu_MCI_GETDEVCAPS_PARMS
     DWORD       dwItem;
 };
 
-static void MCI_GETDEVCAPS_PARMS_g2h(MCI_GETDEVCAPS_PARMS *host, const struct qemu_MCI_GETDEVCAPS_PARMS *guest)
+static inline void MCI_GETDEVCAPS_PARMS_g2h(MCI_GETDEVCAPS_PARMS *host, const struct qemu_MCI_GETDEVCAPS_PARMS *guest)
 {
     host->dwCallback = guest->dwCallback;
     host->dwReturn = guest->dwReturn;
     host->dwItem = guest->dwItem;
 }
 
-static void MCI_GETDEVCAPS_PARMS_h2g(struct qemu_MCI_GETDEVCAPS_PARMS *guest, const MCI_GETDEVCAPS_PARMS *host)
+static inline void MCI_GETDEVCAPS_PARMS_h2g(struct qemu_MCI_GETDEVCAPS_PARMS *guest, const MCI_GETDEVCAPS_PARMS *host)
 {
     guest->dwCallback = host->dwCallback;
     guest->dwReturn = host->dwReturn;
     guest->dwItem = host->dwItem;
+}
+
+struct qemu_MCI_SAVE_PARMS
+{
+    qemu_ptr  dwCallback;
+    qemu_ptr  lpfilename;
+};
+
+static inline void MCI_SAVE_PARMS_g2h(MCI_SAVE_PARMSW *host, const struct qemu_MCI_SAVE_PARMS *guest)
+{
+    host->dwCallback = guest->dwCallback;
+    host->lpfilename = (WCHAR *)(ULONG_PTR)guest->lpfilename;
+}
+
+static inline void MCI_SAVE_PARMS_h2g(struct qemu_MCI_SAVE_PARMS *guest, const MCI_SAVE_PARMSW *host)
+{
+    guest->dwCallback = host->dwCallback;
+    guest->lpfilename = (ULONG_PTR)host->lpfilename;
 }
 
 #endif

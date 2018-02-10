@@ -421,6 +421,7 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
     UINT msg;
     DWORD_PTR param1, param2;
     MCI_GETDEVCAPS_PARMS getdevcaps_parms;
+    MCI_SAVE_PARMSW save_parms;
 
     WINE_TRACE("\n");
 
@@ -464,10 +465,10 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
             break;
         case MCI_GETDEVCAPS:
             WINE_TRACE("Translating MCI_GETDEVCAPS.\n");
-            /* FIXME: What about dwCallback? */
             MCI_GETDEVCAPS_PARMS_g2h(&getdevcaps_parms, (void *)param2);
             param2 = (DWORD_PTR)&getdevcaps_parms;
             break;
+
         case MCI_SPIN:
             WINE_FIXME("Unhandled command MCI_SPIN.\n");
             break;
@@ -490,8 +491,11 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
             WINE_FIXME("Unhandled command MCI_SOUND.\n");
             break;
         case MCI_SAVE:
-            WINE_FIXME("Unhandled command MCI_SAVE.\n");
+            WINE_TRACE("Translating MCI_SAVE.\n");
+            MCI_SAVE_PARMS_g2h(&save_parms, (void *)param2);
+            param2 = (DWORD_PTR)&save_parms;
             break;
+
         case MCI_STATUS:
             WINE_FIXME("Unhandled command MCI_STATUS.\n");
             break;
@@ -544,6 +548,8 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
     }
 #endif
 
+    /* FIXME: What about dwCallback? */
+
     switch (c->super.id)
     {
         case QEMU_SYSCALL_ID(CALL_MCISENDCOMMANDA):
@@ -560,6 +566,10 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
         case MCI_GETDEVCAPS:
             WINE_TRACE("Translating MCI_GETDEVCAPS back.\n");
             MCI_GETDEVCAPS_PARMS_h2g((void *)c->dwParam2, &getdevcaps_parms);
+            break;
+        case MCI_SAVE:
+            WINE_TRACE("Translating MCI_SAVE back.\n");
+            MCI_SAVE_PARMS_h2g((void *)c->dwParam2, &save_parms);
             break;
     }
 #endif
