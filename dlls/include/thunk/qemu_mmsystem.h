@@ -357,4 +357,25 @@ static inline void MCI_SAVE_PARMS_h2g(struct qemu_MCI_SAVE_PARMS *guest, const M
     guest->lpfilename = (ULONG_PTR)host->lpfilename;
 }
 
+struct qemu_MCI_RECORD_PARMS
+{
+    qemu_ptr    dwCallback;
+    DWORD       dwFrom;
+    DWORD       dwTo;
+};
+
+static inline void MCI_RECORD_PARMS_g2h(MCI_RECORD_PARMS *host, const struct qemu_MCI_RECORD_PARMS *guest)
+{
+    host->dwCallback = guest->dwCallback;
+    host->dwFrom = guest->dwFrom;
+    host->dwTo = guest->dwTo;
+}
+
+static inline void MCI_RECORD_PARMS_h2g(struct qemu_MCI_RECORD_PARMS *guest, const MCI_RECORD_PARMS *host)
+{
+    guest->dwCallback = host->dwCallback;
+    guest->dwFrom = host->dwFrom;
+    guest->dwTo = host->dwTo;
+}
+
 #endif
