@@ -318,4 +318,25 @@ static inline void MMIOINFO_h2g(struct qemu_MMIOINFO *guest, const MMIOINFO *hos
     guest->hmmio = (ULONG_PTR)host->hmmio;
 }
 
+struct qemu_MCI_GETDEVCAPS_PARMS
+{
+    qemu_ptr    dwCallback;
+    DWORD       dwReturn;
+    DWORD       dwItem;
+};
+
+static void MCI_GETDEVCAPS_PARMS_g2h(MCI_GETDEVCAPS_PARMS *host, const struct qemu_MCI_GETDEVCAPS_PARMS *guest)
+{
+    host->dwCallback = guest->dwCallback;
+    host->dwReturn = guest->dwReturn;
+    host->dwItem = guest->dwItem;
+}
+
+static void MCI_GETDEVCAPS_PARMS_h2g(struct qemu_MCI_GETDEVCAPS_PARMS *guest, const MCI_GETDEVCAPS_PARMS *host)
+{
+    guest->dwCallback = host->dwCallback;
+    guest->dwReturn = host->dwReturn;
+    guest->dwItem = host->dwItem;
+}
+
 #endif

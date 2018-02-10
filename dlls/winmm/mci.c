@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_winmm.h"
@@ -418,8 +420,10 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
     MCIDEVICEID dev;
     UINT msg;
     DWORD_PTR param1, param2;
+    MCI_GETDEVCAPS_PARMS getdevcaps_parms;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
     dev = c->wDevID;
     msg = c->wMsg;
     param1 = c->dwParam1;
@@ -459,7 +463,10 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
             WINE_FIXME("Unhandled command MCI_INFO.\n");
             break;
         case MCI_GETDEVCAPS:
-            WINE_FIXME("Unhandled command MCI_GETDEVCAPS.\n");
+            WINE_TRACE("Translating MCI_GETDEVCAPS.\n");
+            /* FIXME: What about dwCallback? */
+            MCI_GETDEVCAPS_PARMS_g2h(&getdevcaps_parms, (void *)param2);
+            param2 = (DWORD_PTR)&getdevcaps_parms;
             break;
         case MCI_SPIN:
             WINE_FIXME("Unhandled command MCI_SPIN.\n");
@@ -547,6 +554,15 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
             c->super.iret = mciSendCommandW(dev, msg, param1, param2);
             break;
     }
+#if HOST_BIT != GUEST_BIT
+    switch (msg)
+    {
+        case MCI_GETDEVCAPS:
+            WINE_TRACE("Translating MCI_GETDEVCAPS back.\n");
+            MCI_GETDEVCAPS_PARMS_h2g((void *)c->dwParam2, &getdevcaps_parms);
+            break;
+    }
+#endif
 }
 
 #endif
