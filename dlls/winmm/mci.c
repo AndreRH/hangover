@@ -371,7 +371,7 @@ void qemu_mciSetDriverData(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_mciSendCommandW
+struct qemu_mciSendCommand
 {
     struct qemu_syscall super;
     uint64_t wDevID;
@@ -384,7 +384,7 @@ struct qemu_mciSendCommandW
 
 WINBASEAPI DWORD WINAPI mciSendCommandW(MCIDEVICEID wDevID, UINT wMsg, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
 {
-    struct qemu_mciSendCommandW call;
+    struct qemu_mciSendCommand call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCISENDCOMMANDW);
     call.wDevID = (ULONG_PTR)wDevID;
     call.wMsg = (ULONG_PTR)wMsg;
@@ -396,31 +396,9 @@ WINBASEAPI DWORD WINAPI mciSendCommandW(MCIDEVICEID wDevID, UINT wMsg, DWORD_PTR
     return call.super.iret;
 }
 
-#else
-
-void qemu_mciSendCommandW(struct qemu_syscall *call)
-{
-    struct qemu_mciSendCommandW *c = (struct qemu_mciSendCommandW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = mciSendCommandW(c->wDevID, c->wMsg, c->dwParam1, c->dwParam2);
-}
-
-#endif
-
-struct qemu_mciSendCommandA
-{
-    struct qemu_syscall super;
-    uint64_t wDevID;
-    uint64_t wMsg;
-    uint64_t dwParam1;
-    uint64_t dwParam2;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI DWORD WINAPI mciSendCommandA(MCIDEVICEID wDevID, UINT wMsg, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
 {
-    struct qemu_mciSendCommandA call;
+    struct qemu_mciSendCommand call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MCISENDCOMMANDA);
     call.wDevID = (ULONG_PTR)wDevID;
     call.wMsg = (ULONG_PTR)wMsg;
@@ -434,11 +412,141 @@ WINBASEAPI DWORD WINAPI mciSendCommandA(MCIDEVICEID wDevID, UINT wMsg, DWORD_PTR
 
 #else
 
-void qemu_mciSendCommandA(struct qemu_syscall *call)
+void qemu_mciSendCommand(struct qemu_syscall *call)
 {
-    struct qemu_mciSendCommandA *c = (struct qemu_mciSendCommandA *)call;
+    struct qemu_mciSendCommand *c = (struct qemu_mciSendCommand *)call;
+    MCIDEVICEID dev;
+    UINT msg;
+    DWORD_PTR param1, param2;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = mciSendCommandA(c->wDevID, c->wMsg, c->dwParam1, c->dwParam2);
+    dev = c->wDevID;
+    msg = c->wMsg;
+    param1 = c->dwParam1;
+    param2 = c->dwParam2;
+
+#if HOST_BIT != GUEST_BIT
+    switch (msg)
+    {
+        case MCI_OPEN_DRIVER:
+            WINE_FIXME("Unhandled command MCI_OPEN_DRIVER.\n");
+            break;
+        case MCI_CLOSE_DRIVER:
+            WINE_FIXME("Unhandled command MCI_CLOSE_DRIVER.\n");
+            break;
+        case MCI_OPEN:
+            WINE_FIXME("Unhandled command MCI_OPEN.\n");
+            break;
+        case MCI_CLOSE:
+            WINE_FIXME("Unhandled command MCI_CLOSE.\n");
+            break;
+        case MCI_ESCAPE:
+            WINE_FIXME("Unhandled command MCI_ESCAPE.\n");
+            break;
+        case MCI_PLAY:
+            WINE_FIXME("Unhandled command MCI_PLAY.\n");
+            break;
+        case MCI_SEEK:
+            WINE_FIXME("Unhandled command MCI_SEEK.\n");
+            break;
+        case MCI_STOP:
+            WINE_FIXME("Unhandled command MCI_STOP.\n");
+            break;
+        case MCI_PAUSE:
+            WINE_FIXME("Unhandled command MCI_PAUSE.\n");
+            break;
+        case MCI_INFO:
+            WINE_FIXME("Unhandled command MCI_INFO.\n");
+            break;
+        case MCI_GETDEVCAPS:
+            WINE_FIXME("Unhandled command MCI_GETDEVCAPS.\n");
+            break;
+        case MCI_SPIN:
+            WINE_FIXME("Unhandled command MCI_SPIN.\n");
+            break;
+        case MCI_SET:
+            WINE_FIXME("Unhandled command MCI_SET.\n");
+            break;
+        case MCI_STEP:
+            WINE_FIXME("Unhandled command MCI_STEP.\n");
+            break;
+        case MCI_RECORD:
+            WINE_FIXME("Unhandled command MCI_RECORD.\n");
+            break;
+        case MCI_SYSINFO:
+            WINE_FIXME("Unhandled command MCI_SYSINFO.\n");
+            break;
+        case MCI_BREAK:
+            WINE_FIXME("Unhandled command MCI_BREAK.\n");
+            break;
+        case MCI_SOUND:
+            WINE_FIXME("Unhandled command MCI_SOUND.\n");
+            break;
+        case MCI_SAVE:
+            WINE_FIXME("Unhandled command MCI_SAVE.\n");
+            break;
+        case MCI_STATUS:
+            WINE_FIXME("Unhandled command MCI_STATUS.\n");
+            break;
+        case MCI_CUE:
+            WINE_FIXME("Unhandled command MCI_CUE.\n");
+            break;
+        case MCI_REALIZE:
+            WINE_FIXME("Unhandled command MCI_REALIZE.\n");
+            break;
+        case MCI_WINDOW:
+            WINE_FIXME("Unhandled command MCI_WINDOW.\n");
+            break;
+        case MCI_PUT:
+            WINE_FIXME("Unhandled command MCI_PUT.\n");
+            break;
+        case MCI_WHERE:
+            WINE_FIXME("Unhandled command MCI_WHERE.\n");
+            break;
+        case MCI_FREEZE:
+            WINE_FIXME("Unhandled command MCI_FREEZE.\n");
+            break;
+        case MCI_UNFREEZE:
+            WINE_FIXME("Unhandled command MCI_UNFREEZE.\n");
+            break;
+        case MCI_LOAD:
+            WINE_FIXME("Unhandled command MCI_LOAD.\n");
+            break;
+        case MCI_CUT:
+            WINE_FIXME("Unhandled command MCI_CUT.\n");
+            break;
+        case MCI_COPY:
+            WINE_FIXME("Unhandled command MCI_COPY.\n");
+            break;
+        case MCI_PASTE:
+            WINE_FIXME("Unhandled command MCI_PASTE.\n");
+            break;
+        case MCI_UPDATE:
+            WINE_FIXME("Unhandled command MCI_UPDATE.\n");
+            break;
+        case MCI_RESUME:
+            WINE_FIXME("Unhandled command MCI_RESUME.\n");
+            break;
+        case MCI_DELETE:
+            WINE_FIXME("Unhandled command MCI_DELETE.\n");
+            break;
+
+        default:
+            WINE_FIXME("Unknown mci command 0x%x.\n", msg);
+            break;
+    }
+#endif
+
+    switch (c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_MCISENDCOMMANDA):
+            c->super.iret = mciSendCommandA(dev, msg, param1, param2);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_MCISENDCOMMANDW):
+            c->super.iret = mciSendCommandW(dev, msg, param1, param2);
+            break;
+    }
 }
 
 #endif
