@@ -434,13 +434,24 @@ struct qemu_MCI_SET_PARMS
     qemu_ptr    dwCallback;
     DWORD       dwTimeFormat;
     DWORD       dwAudio;
+    DWORD       extras[8]; /* See qemu_mciSendCommand in dlls/winmm/mci.c. */
 };
 
 static inline void MCI_SET_PARMS_g2h(MCI_SET_PARMS *host, const struct qemu_MCI_SET_PARMS *guest)
 {
+    unsigned int i;
+    struct
+    {
+        MCI_SET_PARMS base;
+        DWORD extras[8];
+    } *host_ext = (void *)host;
+
     host->dwCallback = guest->dwCallback;
     host->dwTimeFormat = guest->dwTimeFormat;
     host->dwAudio = guest->dwAudio;
+
+    for (i = 0; i < sizeof(guest->extras) / sizeof(*guest->extras); ++i)
+        host_ext->extras[i] = guest->extras[i];
 }
 
 static inline void MCI_SET_PARMS_h2g(struct qemu_MCI_SET_PARMS *guest, const MCI_SET_PARMS *host)

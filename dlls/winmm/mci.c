@@ -425,10 +425,15 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
     MCI_RECORD_PARMS record_parms;
     MCI_STATUS_PARMS status_parms;
     MCI_OPEN_PARMSW open_parms;
-    MCI_SET_PARMS set_parms;
     MCI_PLAY_PARMS play_parms;
     MCI_SYSINFO_PARMSW sysinfo_parms;
     MCI_INFO_PARMSW info_parms;
+
+    struct
+    {
+        MCI_SET_PARMS base;
+        DWORD extras[8];
+    } set_parms;
 
     WINE_TRACE("\n");
 
@@ -488,8 +493,13 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
             WINE_FIXME("Unhandled command MCI_SPIN.\n");
             break;
         case MCI_SET:
-            WINE_TRACE("Translating MCI_SET.\n");
-            MCI_SET_PARMS_g2h(&set_parms, (void *)param2);
+            /* The structure is device specific, and I don't see a way to know which
+             * struct I have without keeping track of how the device was opened.
+             *
+             * MCI_SET_PARMS_g2h reads 8 extra DWORDs (MCI_WAVE_SET_PARMS). It's a
+             * really ugly hack, let's see how far this gets us. */
+            WINE_FIXME("Translating MCI_SET, but I don't know what struct I have.\n");
+            MCI_SET_PARMS_g2h(&set_parms.base, (void *)param2);
             param2 = (DWORD_PTR)&set_parms;
             break;
 
@@ -617,7 +627,7 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
 
         case MCI_SET:
             WINE_TRACE("Translating MCI_SET back.\n");
-            MCI_SET_PARMS_h2g((void *)c->dwParam2, &set_parms);
+            MCI_SET_PARMS_h2g((void *)c->dwParam2, &set_parms.base);
             break;
 
         case MCI_PLAY:
