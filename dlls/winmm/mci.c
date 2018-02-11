@@ -423,6 +423,7 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
     MCI_GETDEVCAPS_PARMS getdevcaps_parms;
     MCI_SAVE_PARMSW save_parms;
     MCI_RECORD_PARMS record_parms;
+    MCI_STATUS_PARMS status_parms;
 
     WINE_TRACE("\n");
 
@@ -501,8 +502,11 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
             break;
 
         case MCI_STATUS:
-            WINE_FIXME("Unhandled command MCI_STATUS.\n");
+            WINE_TRACE("Translating MCI_STATUS.\n");
+            MCI_STATUS_PARMS_g2h(&status_parms, (void *)param2);
+            param2 = (DWORD_PTR)&status_parms;
             break;
+
         case MCI_CUE:
             WINE_FIXME("Unhandled command MCI_CUE.\n");
             break;
@@ -580,6 +584,11 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
         case MCI_RECORD:
             WINE_TRACE("Translating MCI_RECORD back.\n");
             MCI_RECORD_PARMS_h2g((void *)c->dwParam2, &record_parms);
+            break;
+
+        case MCI_STATUS:
+            WINE_TRACE("Translating MCI_STATUS back.\n");
+            MCI_STATUS_PARMS_h2g((void *)c->dwParam2, &status_parms);
             break;
     }
 #endif

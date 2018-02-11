@@ -378,4 +378,28 @@ static inline void MCI_RECORD_PARMS_h2g(struct qemu_MCI_RECORD_PARMS *guest, con
     guest->dwTo = host->dwTo;
 }
 
+struct qemu_MCI_STATUS_PARMS
+{
+    qemu_ptr    dwCallback;
+    qemu_ptr    dwReturn;
+    DWORD       dwItem;
+    DWORD       dwTrack;
+};
+
+static inline void MCI_STATUS_PARMS_g2h(MCI_STATUS_PARMS *host, const struct qemu_MCI_STATUS_PARMS *guest)
+{
+    host->dwCallback = guest->dwCallback;
+    host->dwReturn = guest->dwReturn;
+    host->dwItem = guest->dwItem;
+    host->dwTrack = guest->dwTrack;
+}
+
+static inline void MCI_STATUS_PARMS_h2g(struct qemu_MCI_STATUS_PARMS *guest, const MCI_STATUS_PARMS *host)
+{
+    guest->dwCallback = host->dwCallback;
+    guest->dwReturn = host->dwReturn;
+    guest->dwItem = host->dwItem;
+    guest->dwTrack = host->dwTrack;
+}
+
 #endif
