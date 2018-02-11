@@ -427,6 +427,8 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
     MCI_OPEN_PARMSW open_parms;
     MCI_SET_PARMS set_parms;
     MCI_PLAY_PARMS play_parms;
+    MCI_SYSINFO_PARMSW sysinfo_parms;
+    MCI_INFO_PARMSW info_parms;
 
     WINE_TRACE("\n");
 
@@ -471,8 +473,11 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
             WINE_FIXME("Unhandled command MCI_PAUSE.\n");
             break;
         case MCI_INFO:
-            WINE_FIXME("Unhandled command MCI_INFO.\n");
+            WINE_TRACE("MCI_INFO MCI_PLAY.\n");
+            MCI_INFO_PARMS_g2h(&info_parms, (void *)param2);
+            param2 = (DWORD_PTR)&info_parms;
             break;
+
         case MCI_GETDEVCAPS:
             WINE_TRACE("Translating MCI_GETDEVCAPS.\n");
             MCI_GETDEVCAPS_PARMS_g2h(&getdevcaps_parms, (void *)param2);
@@ -498,8 +503,11 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
             break;
 
         case MCI_SYSINFO:
-            WINE_FIXME("Unhandled command MCI_SYSINFO.\n");
+            WINE_TRACE("Translating MCI_SYSINFO.\n");
+            MCI_SYSINFO_PARMS_g2h(&sysinfo_parms, (void *)param2);
+            param2 = (DWORD_PTR)&sysinfo_parms;
             break;
+
         case MCI_BREAK:
             WINE_FIXME("Unhandled command MCI_BREAK.\n");
             break;
@@ -615,6 +623,16 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
         case MCI_PLAY:
             WINE_TRACE("Translating MCI_PLAY back.\n");
             MCI_PLAY_PARMS_h2g((void *)c->dwParam2, &play_parms);
+            break;
+
+        case MCI_SYSINFO:
+            WINE_TRACE("Translating MCI_SYSINFO back.\n");
+            MCI_SYSINFO_PARMS_h2g((void *)c->dwParam2, &sysinfo_parms);
+            break;
+
+        case MCI_INFO:
+            WINE_TRACE("Translating MCI_INFO back.\n");
+            MCI_INFO_PARMS_h2g((void *)c->dwParam2, &info_parms);
             break;
     }
 #endif

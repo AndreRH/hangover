@@ -471,4 +471,52 @@ static inline void MCI_PLAY_PARMS_h2g(struct qemu_MCI_PLAY_PARMS *guest, const M
     guest->dwTo = host->dwTo;
 }
 
+struct qemu_MCI_SYSINFO_PARMS
+{
+    qemu_ptr    dwCallback;
+    qemu_ptr    lpstrReturn;
+    DWORD       dwRetSize;
+    DWORD       dwNumber;
+    UINT        wDeviceType;
+};
+
+static inline void MCI_SYSINFO_PARMS_g2h(MCI_SYSINFO_PARMSW *host, const struct qemu_MCI_SYSINFO_PARMS *guest)
+{
+    host->dwCallback = guest->dwCallback;
+    host->lpstrReturn = (WCHAR *)(ULONG_PTR)guest->lpstrReturn;
+    host->dwRetSize = guest->dwRetSize;
+    host->dwNumber = guest->dwNumber;
+    host->wDeviceType = guest->wDeviceType;
+}
+
+static inline void MCI_SYSINFO_PARMS_h2g(struct qemu_MCI_SYSINFO_PARMS *guest, const MCI_SYSINFO_PARMSW *host)
+{
+    guest->dwCallback = host->dwCallback;
+    guest->lpstrReturn = (ULONG_PTR)host->lpstrReturn;
+    guest->dwRetSize = host->dwRetSize;
+    guest->dwNumber = host->dwNumber;
+    guest->wDeviceType = host->wDeviceType;
+}
+
+struct qemu_MCI_INFO_PARMS
+{
+    qemu_ptr    dwCallback;
+    qemu_ptr    lpstrReturn;
+    DWORD       dwRetSize;
+};
+
+static inline void MCI_INFO_PARMS_g2h(MCI_INFO_PARMSW *host, const struct qemu_MCI_INFO_PARMS *guest)
+{
+    host->dwCallback = guest->dwCallback;
+    host->lpstrReturn = (WCHAR *)(ULONG_PTR)guest->lpstrReturn;
+    host->dwRetSize = guest->dwRetSize;
+}
+
+static inline void MCI_INFO_PARMS_h2g(struct qemu_MCI_INFO_PARMS *guest, const MCI_INFO_PARMSW *host)
+{
+    guest->dwCallback = host->dwCallback;
+    guest->lpstrReturn = (ULONG_PTR)host->lpstrReturn;
+    guest->dwRetSize = host->dwRetSize;
+}
+
 #endif
