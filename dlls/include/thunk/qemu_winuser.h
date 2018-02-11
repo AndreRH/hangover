@@ -871,6 +871,42 @@ static inline void ICONINFOEXW_g2h(ICONINFOEXW *host, const struct qemu_ICONINFO
     memcpy(host->szResName, guest->szResName, sizeof(host->szResName));
 }
 
+struct qemu_COMPAREITEMSTRUCT
+{
+    UINT      CtlType;
+    UINT      CtlID;
+    qemu_ptr  hwndItem;
+    UINT      itemID1;
+    qemu_ptr  itemData1;
+    UINT      itemID2;
+    qemu_ptr  itemData2;
+    DWORD     dwLocaleId;
+};
+
+static inline void COMPAREITEMSTRUCT_h2g(struct qemu_COMPAREITEMSTRUCT *guest, const COMPAREITEMSTRUCT *host)
+{
+    guest->CtlType = host->CtlType;
+    guest->CtlID = host->CtlID;
+    guest->hwndItem = (ULONG_PTR)host->hwndItem;
+    guest->itemID1 = host->itemID1;
+    guest->itemData1 = host->itemData1;
+    guest->itemID2 = host->itemID2;
+    guest->itemData2 = host->itemData2;
+    guest->dwLocaleId = host->dwLocaleId;
+}
+
+static inline void COMPAREITEMSTRUCT_g2h(COMPAREITEMSTRUCT *host, const struct qemu_COMPAREITEMSTRUCT *guest)
+{
+    host->CtlType = guest->CtlType;
+    host->CtlID = guest->CtlID;
+    host->hwndItem = (HWND)(ULONG_PTR)guest->hwndItem;
+    host->itemID1 = guest->itemID1;
+    host->itemData1 = guest->itemData1;
+    host->itemID2 = guest->itemID2;
+    host->itemData2 = guest->itemData2;
+    host->dwLocaleId = guest->dwLocaleId;
+}
+
 #endif
 
 #endif

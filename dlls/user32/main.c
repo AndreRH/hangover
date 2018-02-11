@@ -1114,6 +1114,15 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             break;
         }
 
+        case WM_COMPAREITEM:
+        {
+            struct qemu_COMPAREITEMSTRUCT *guest = (struct qemu_COMPAREITEMSTRUCT *)msg_in->lParam;
+            COMPAREITEMSTRUCT *host = HeapAlloc(GetProcessHeap(), 0, sizeof(*host));
+            COMPAREITEMSTRUCT_g2h(host, guest);
+            msg_out->lParam = (LPARAM)host;
+            break;
+        }
+
         case WM_STYLECHANGING:
         case WM_STYLECHANGED:
             /* The generic code expanded the (most likely) negative numbers wrong. Fix it up!. */
@@ -1378,6 +1387,7 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
         }
 
         case WM_DRAWITEM:
+        case WM_COMPAREITEM:
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
 
@@ -1604,6 +1614,15 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             break;
         }
 
+        case WM_COMPAREITEM:
+        {
+            COMPAREITEMSTRUCT *host = (COMPAREITEMSTRUCT *)msg_in->lParam;
+            struct qemu_COMPAREITEMSTRUCT *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
+            COMPAREITEMSTRUCT_h2g(guest, host);
+            msg_out->lParam = (LPARAM)guest;
+            break;
+        }
+
         case WM_NOTIFY:
         {
             int i;
@@ -1767,6 +1786,7 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
         }
 
         case WM_DRAWITEM:
+        case WM_COMPAREITEM:
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
 
