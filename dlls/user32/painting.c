@@ -624,18 +624,19 @@ struct qemu_ScrollWindowEx
 
 #ifdef QEMU_DLL_GUEST
 
-WINUSERAPI INT WINAPI ScrollWindowEx(HWND hwnd, INT dx, INT dy, const RECT *rect, const RECT *clipRect, HRGN hrgnUpdate, LPRECT rcUpdate, UINT flags)
+WINUSERAPI INT WINAPI ScrollWindowEx(HWND hwnd, INT dx, INT dy, const RECT *rect, const RECT *clipRect,
+        HRGN hrgnUpdate, LPRECT rcUpdate, UINT flags)
 {
     struct qemu_ScrollWindowEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCROLLWINDOWEX);
     call.hwnd = (ULONG_PTR)hwnd;
-    call.dx = (ULONG_PTR)dx;
-    call.dy = (ULONG_PTR)dy;
+    call.dx = dx;
+    call.dy = dy;
     call.rect = (ULONG_PTR)rect;
     call.clipRect = (ULONG_PTR)clipRect;
     call.hrgnUpdate = (ULONG_PTR)hrgnUpdate;
     call.rcUpdate = (ULONG_PTR)rcUpdate;
-    call.flags = (ULONG_PTR)flags;
+    call.flags = flags;
 
     qemu_syscall(&call.super);
 
@@ -670,8 +671,8 @@ WINUSERAPI BOOL WINAPI ScrollWindow(HWND hwnd, INT dx, INT dy, const RECT *rect,
     struct qemu_ScrollWindow call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCROLLWINDOW);
     call.hwnd = (ULONG_PTR)hwnd;
-    call.dx = (ULONG_PTR)dx;
-    call.dy = (ULONG_PTR)dy;
+    call.dx = dx;
+    call.dy = dy;
     call.rect = (ULONG_PTR)rect;
     call.clipRect = (ULONG_PTR)clipRect;
 
@@ -685,7 +686,7 @@ WINUSERAPI BOOL WINAPI ScrollWindow(HWND hwnd, INT dx, INT dy, const RECT *rect,
 void qemu_ScrollWindow(struct qemu_syscall *call)
 {
     struct qemu_ScrollWindow *c = (struct qemu_ScrollWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ScrollWindow(QEMU_G2H(c->hwnd), c->dx, c->dy, QEMU_G2H(c->rect), QEMU_G2H(c->clipRect));
 }
 
