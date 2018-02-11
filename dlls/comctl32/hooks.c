@@ -728,6 +728,176 @@ static void tabcontrol_notify(MSG *guest, MSG *host, BOOL ret)
     }
 }
 
+static void listview_notify(MSG *guest, MSG *host, BOOL ret)
+{
+    NMHDR *hdr = (NMHDR *)host->lParam;
+    struct qemu_NMLISTVIEW *nm_listview;
+    struct qemu_NMHDR *guest_hdr;
+    struct qemu_NMLVCUSTOMDRAW *customdraw;
+    struct qemu_NMLVKEYDOWN *keydown;
+    struct qemu_NMLVDISPINFO *dispinfo;
+
+    WINE_TRACE("Handling a listview notify message\n");
+    if (ret)
+    {
+        switch (hdr->code)
+        {
+            case NM_CLICK:
+            case NM_DBLCLK:
+            case NM_RDBLCLK:
+            case NM_RCLICK:
+                nmmouse_notify(guest, host, ret);
+                break;
+
+            case LVN_ITEMACTIVATE:
+            case NM_RETURN:
+            case NM_KILLFOCUS:
+            case NM_RELEASEDCAPTURE:
+            case NM_SETFOCUS:
+                guest_hdr = (struct qemu_NMHDR *)guest->lParam;
+                NMHDR_g2h(hdr, guest_hdr);
+                break;
+
+            case NM_CUSTOMDRAW:
+                customdraw = (struct qemu_NMLVCUSTOMDRAW *)guest->lParam;
+                NMLVCUSTOMDRAW_g2h((NMLVCUSTOMDRAW *)hdr, customdraw);
+                break;
+        }
+
+        if (guest->lParam != host->lParam)
+            HeapFree(GetProcessHeap(), 0, (void *)guest->lParam);
+        return;
+    }
+
+    switch (hdr->code)
+    {
+        case LVN_DELETEITEM:
+        case LVN_BEGINDRAG:
+        case LVN_ITEMCHANGING:
+        case LVN_ITEMCHANGED:
+        case LVN_DELETEALLITEMS:
+        case LVN_INSERTITEM:
+        case LVN_COLUMNCLICK:
+        case LVN_BEGINRDRAG:
+            WINE_TRACE("Handling NMLISTVIEW notify message %d.\n", hdr->code);
+            nm_listview = HeapAlloc(GetProcessHeap(), 0, sizeof(*nm_listview));
+            NMLISTVIEW_h2g(nm_listview, (NMLISTVIEW *)hdr);
+            guest->lParam = (LPARAM)nm_listview;
+            break;
+
+        case LVN_ODCACHEHINT:
+            WINE_FIXME("Unhandled listview notify message LVN_ODCACHEHINT.\n");
+            break;
+        case LVN_ODSTATECHANGED:
+            WINE_FIXME("Unhandled listview notify message LVN_ODSTATECHANGED.\n");
+            break;
+        case LVN_HOTTRACK:
+            WINE_FIXME("Unhandled listview notify message LVN_HOTTRACK.\n");
+            break;
+        case LVN_ODFINDITEMA:
+            WINE_FIXME("Unhandled listview notify message LVN_ODFINDITEMA.\n");
+            break;
+        case LVN_ODFINDITEMW:
+            WINE_FIXME("Unhandled listview notify message LVN_ODFINDITEMW.\n");
+            break;
+        case LVN_SETDISPINFOA:
+            WINE_FIXME("Unhandled listview notify message LVN_SETDISPINFOA.\n");
+            break;
+        case LVN_SETDISPINFOW:
+            WINE_FIXME("Unhandled listview notify message LVN_SETDISPINFOW.\n");
+            break;
+
+        case LVN_KEYDOWN:
+            WINE_TRACE("Handling LVN_KEYDOWN notify message %d.\n", hdr->code);
+            keydown = HeapAlloc(GetProcessHeap(), 0, sizeof(*keydown));
+            NMLVKEYDOWN_h2g(keydown, (NMLVKEYDOWN *)hdr);
+            guest->lParam = (LPARAM)keydown;
+            break;
+
+        case LVN_MARQUEEBEGIN:
+            WINE_FIXME("Unhandled listview notify message LVN_MARQUEEBEGIN.\n");
+            break;
+        case LVN_GETINFOTIPA:
+            WINE_FIXME("Unhandled listview notify message LVN_GETINFOTIPA.\n");
+            break;
+        case LVN_GETINFOTIPW:
+            WINE_FIXME("Unhandled listview notify message LVN_GETINFOTIPW.\n");
+            break;
+        case LVN_INCREMENTALSEARCHA:
+            WINE_FIXME("Unhandled listview notify message LVN_INCREMENTALSEARCHA.\n");
+            break;
+        case LVN_INCREMENTALSEARCHW:
+            WINE_FIXME("Unhandled listview notify message LVN_INCREMENTALSEARCHW.\n");
+            break;
+        case LVN_COLUMNDROPDOWN:
+            WINE_FIXME("Unhandled listview notify message LVN_COLUMNDROPDOWN.\n");
+            break;
+        case LVN_COLUMNOVERFLOWCLICK:
+            WINE_FIXME("Unhandled listview notify message LVN_COLUMNOVERFLOWCLICK.\n");
+            break;
+        case LVN_BEGINSCROLL:
+            WINE_FIXME("Unhandled listview notify message LVN_BEGINSCROLL.\n");
+            break;
+        case LVN_ENDSCROLL:
+            WINE_FIXME("Unhandled listview notify message LVN_ENDSCROLL.\n");
+            break;
+        case LVN_LINKCLICK:
+            WINE_FIXME("Unhandled listview notify message LVN_LINKCLICK.\n");
+            break;
+        case LVN_ASYNCDRAWN:
+            WINE_FIXME("Unhandled listview notify message LVN_ASYNCDRAWN.\n");
+            break;
+        case LVN_GETEMPTYMARKUP:
+            WINE_FIXME("Unhandled listview notify message LVN_GETEMPTYMARKUP.\n");
+            break;
+
+        case NM_CLICK:
+        case NM_DBLCLK:
+        case NM_RDBLCLK:
+        case NM_RCLICK:
+            WINE_TRACE("Handing NMMOUSE notify message %x.\n", hdr->code);
+            nmmouse_notify(guest, host, ret);
+            break;
+
+        case NM_CUSTOMDRAW:
+            WINE_TRACE("Handling notify message NM_CUSTOMDRAW.\n");
+            customdraw = HeapAlloc(GetProcessHeap(), 0, sizeof(*customdraw));
+            NMLVCUSTOMDRAW_h2g(customdraw, (NMLVCUSTOMDRAW *)hdr);
+            guest->lParam = (LPARAM)customdraw;
+            break;
+
+        case NM_HOVER:
+            WINE_FIXME("Unhandled listview notify message NM_HOVER.\n");
+            break;
+
+        case LVN_ITEMACTIVATE:
+        case NM_RETURN:
+        case NM_KILLFOCUS:
+        case NM_RELEASEDCAPTURE:
+        case NM_SETFOCUS:
+            WINE_TRACE("Handling notify message %d.\n", hdr->code);
+            guest_hdr = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest_hdr));
+            NMHDR_h2g(guest_hdr, hdr);
+            guest->lParam = (LPARAM)guest_hdr;
+            break;
+
+        case LVN_GETDISPINFOA:
+        case LVN_GETDISPINFOW:
+        case LVN_BEGINLABELEDITA:
+        case LVN_BEGINLABELEDITW:
+        case LVN_ENDLABELEDITA:
+        case LVN_ENDLABELEDITW:
+            WINE_TRACE("Handling dispinfo message %d.\n", hdr->code);
+            dispinfo = HeapAlloc(GetProcessHeap(), 0, sizeof(*dispinfo));
+            NMLVDISPINFO_h2g(dispinfo, (NMLVDISPINFOW *)hdr);
+            guest->lParam = (LPARAM)dispinfo;
+            break;
+
+        default:
+            WINE_ERR("Unexpected notify message from %p id %lx code %x.\n", hdr->hwndFrom, hdr->idFrom, hdr->code);
+    }
+}
+
 static WNDPROC hook_class(const WCHAR *name, WNDPROC replace)
 {
     WNDPROC ret;
@@ -781,6 +951,7 @@ void register_notify_callbacks(void)
     register_notify(TOOLTIPS_CLASSW, tooltips_notify);
     register_notify(STATUSCLASSNAMEW, status_notify);
     register_notify(WC_TABCONTROLW, tabcontrol_notify);
+    register_notify(WC_LISTVIEWW, listview_notify);
 }
 
 #endif

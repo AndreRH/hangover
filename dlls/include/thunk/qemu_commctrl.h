@@ -1025,4 +1025,129 @@ static inline void LVITEM_h2g(struct qemu_LVITEM *guest, const LVITEMW *host)
     guest->iGroup = host->iGroup;
 }
 
+struct qemu_NMLISTVIEW
+{
+    struct qemu_NMHDR hdr;
+    INT iItem;
+    INT iSubItem;
+    UINT uNewState;
+    UINT uOldState;
+    UINT uChanged;
+    POINT ptAction;
+    qemu_ptr  lParam;
+};
+
+static inline void NMLISTVIEW_g2h(NMLISTVIEW *host, const struct qemu_NMLISTVIEW *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->iItem = guest->iItem;
+    host->iSubItem = guest->iSubItem;
+    host->uNewState = guest->uNewState;
+    host->uOldState = guest->uOldState;
+    host->uChanged = guest->uChanged;
+    host->ptAction = guest->ptAction;
+    host->lParam = guest->lParam;
+}
+
+static inline void NMLISTVIEW_h2g(struct qemu_NMLISTVIEW *guest, const NMLISTVIEW *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->iItem = host->iItem;
+    guest->iSubItem = host->iSubItem;
+    guest->uNewState = host->uNewState;
+    guest->uOldState = host->uOldState;
+    guest->uChanged = host->uChanged;
+    guest->ptAction = host->ptAction;
+    guest->lParam = host->lParam;
+}
+
+struct qemu_NMLVCUSTOMDRAW
+{
+    struct qemu_NMCUSTOMDRAW nmcd;
+    COLORREF clrText;
+    COLORREF clrTextBk;
+    int iSubItem;	/* (_WIN32_IE >= 0x0400) */
+    DWORD dwItemType;	/* (_WIN32_IE >= 0x560) */
+    COLORREF clrFace;   /* (_WIN32_IE >= 0x560) */
+    int iIconEffect;	/* (_WIN32_IE >= 0x560) */
+    int iIconPhase;	/* (_WIN32_IE >= 0x560) */
+    int iPartId;	/* (_WIN32_IE >= 0x560) */
+    int iStateId;	/* (_WIN32_IE >= 0x560) */
+    RECT rcText;	/* (_WIN32_IE >= 0x560) */
+    UINT uAlign;	/* (_WIN32_IE >= 0x560) */
+};
+
+static inline void NMLVCUSTOMDRAW_g2h(NMLVCUSTOMDRAW *host, const struct qemu_NMLVCUSTOMDRAW *guest)
+{
+    NMCUSTOMDRAW_g2h(&host->nmcd, &guest->nmcd);
+    host->clrText = guest->clrText;
+    host->clrTextBk = guest->clrTextBk;
+    host->iSubItem = guest->iSubItem;
+    host->dwItemType = guest->dwItemType;
+    host->clrFace = guest->clrFace;
+    host->iIconEffect = guest->iIconEffect;
+    host->iIconPhase = guest->iIconPhase;
+    host->iPartId = guest->iPartId;
+    host->iStateId = guest->iStateId;
+    host->rcText = guest->rcText;
+    host->uAlign = guest->uAlign;
+}
+
+static inline void NMLVCUSTOMDRAW_h2g(struct qemu_NMLVCUSTOMDRAW *guest, const NMLVCUSTOMDRAW *host)
+{
+    NMCUSTOMDRAW_h2g(&guest->nmcd, &host->nmcd);
+    guest->clrText = host->clrText;
+    guest->clrTextBk = host->clrTextBk;
+    guest->iSubItem = host->iSubItem;
+    guest->dwItemType = host->dwItemType;
+    guest->clrFace = host->clrFace;
+    guest->iIconEffect = host->iIconEffect;
+    guest->iIconPhase = host->iIconPhase;
+    guest->iPartId = host->iPartId;
+    guest->iStateId = host->iStateId;
+    guest->rcText = host->rcText;
+    guest->uAlign = host->uAlign;
+}
+
+#include <pshpack1.h>
+struct qemu_NMLVKEYDOWN
+{
+    struct qemu_NMHDR hdr;
+    WORD  wVKey;
+    UINT flags;
+};
+#include <poppack.h>
+
+static inline void NMLVKEYDOWN_g2h(NMLVKEYDOWN *host, const struct qemu_NMLVKEYDOWN *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->wVKey = guest->wVKey;
+    host->flags = guest->flags;
+}
+
+static inline void NMLVKEYDOWN_h2g(struct qemu_NMLVKEYDOWN *guest, const NMLVKEYDOWN *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->wVKey = host->wVKey;
+    guest->flags = host->flags;
+}
+
+struct qemu_NMLVDISPINFO
+{
+    struct qemu_NMHDR hdr;
+    struct qemu_LVITEM item;
+};
+
+static inline void NMLVDISPINFO_g2h(NMLVDISPINFOW *host, const struct qemu_NMLVDISPINFO *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    LVITEM_g2h(&host->item, &guest->item);
+}
+
+static inline void NMLVDISPINFO_h2g(struct qemu_NMLVDISPINFO *guest, const NMLVDISPINFOW *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    LVITEM_h2g(&guest->item, &host->item);
+}
+
 #endif
