@@ -1510,8 +1510,6 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
                 struct qemu_NMHEADER *guest = (struct qemu_NMHEADER *)orig->lParam;
                 NMHEADERW *host = (NMHEADERW *)conv->lParam;
 
-                WINE_ERR("Big mess %lx %lx\n", conv->lParam, orig->lParam);
-
                 NMHEADER_h2g(guest, host);
                 HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             }
