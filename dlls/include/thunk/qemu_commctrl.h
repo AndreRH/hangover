@@ -1197,4 +1197,31 @@ static inline void LVCOLUMN_h2g(struct qemu_LVCOLUMN *guest, const LVCOLUMNW *ho
     guest->cxIdeal = host->cxIdeal;
 }
 
+struct qemu_LVFINDINFO
+{
+    UINT flags;
+    qemu_ptr psz;
+    qemu_ptr lParam;
+    POINT pt;
+    UINT vkDirection;
+};
+
+static inline void LVFINDINFO_g2h(LVFINDINFOW *host, const struct qemu_LVFINDINFO *guest)
+{
+    host->flags = guest->flags;
+    host->psz = (WCHAR *)(ULONG_PTR)guest->psz;
+    host->lParam = guest->lParam;
+    host->pt = guest->pt;
+    host->vkDirection = guest->vkDirection;
+}
+
+static inline void LVFINDINFO_h2g(struct qemu_LVFINDINFO *guest, const LVFINDINFOW *host)
+{
+    guest->flags = host->flags;
+    guest->psz = (ULONG_PTR)host->psz;
+    guest->lParam = host->lParam;
+    guest->pt = host->pt;
+    guest->vkDirection = host->vkDirection;
+}
+
 #endif
