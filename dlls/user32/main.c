@@ -1389,9 +1389,6 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
         }
 
         case LVM_SETITEMSTATE:
-            if (!msg_in->lParam)
-                break;
-            /* Drop through */
         case LVM_SETITEMA:
         case LVM_SETITEMW:
         case LVM_GETITEMA:
@@ -1402,39 +1399,42 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
         case LVM_SETITEMTEXTW:
         case LVM_GETITEMTEXTA:
         case LVM_GETITEMTEXTW:
-        {
-            struct qemu_LVITEM *guest_item = (struct qemu_LVITEM *)msg_in->lParam;
-            LVITEMW *host_item;
-            WINE_TRACE("Translating LVM_*ITEM message at %p.\n", guest_item);
-            host_item = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_item));
-            LVITEM_g2h(host_item, guest_item);
-            msg_out->lParam = (LPARAM)host_item;
+            if (msg_in->lParam)
+            {
+                struct qemu_LVITEM *guest_item = (struct qemu_LVITEM *)msg_in->lParam;
+                LVITEMW *host_item;
+                WINE_TRACE("Translating LVM_*ITEM message at %p.\n", guest_item);
+                host_item = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_item));
+                LVITEM_g2h(host_item, guest_item);
+                msg_out->lParam = (LPARAM)host_item;
+            }
             break;
-        }
 
         case LVM_INSERTCOLUMNA:
         case LVM_INSERTCOLUMNW:
-        {
-            struct qemu_LVCOLUMN *guest_item = (struct qemu_LVCOLUMN *)msg_in->lParam;
-            LVCOLUMNW *host_item;
-            WINE_TRACE("Translating LVM_*COLUMN message at %p.\n", guest_item);
-            host_item = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_item));
-            LVCOLUMN_g2h(host_item, guest_item);
-            msg_out->lParam = (LPARAM)host_item;
+            if (msg_in->lParam)
+            {
+                struct qemu_LVCOLUMN *guest_item = (struct qemu_LVCOLUMN *)msg_in->lParam;
+                LVCOLUMNW *host_item;
+                WINE_TRACE("Translating LVM_*COLUMN message at %p.\n", guest_item);
+                host_item = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_item));
+                LVCOLUMN_g2h(host_item, guest_item);
+                msg_out->lParam = (LPARAM)host_item;
+            }
             break;
-        }
 
         case LVM_FINDITEMA:
         case LVM_FINDITEMW:
-        {
-            struct qemu_LVFINDINFO *guest_item = (struct qemu_LVFINDINFO *)msg_in->lParam;
-            LVFINDINFOW *host_item;
-            WINE_TRACE("Translating LVM_FINDITEM message at %p.\n", guest_item);
-            host_item = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_item));
-            LVFINDINFO_g2h(host_item, guest_item);
-            msg_out->lParam = (LPARAM)host_item;
+            if (msg_in->lParam)
+            {
+                struct qemu_LVFINDINFO *guest_item = (struct qemu_LVFINDINFO *)msg_in->lParam;
+                LVFINDINFOW *host_item;
+                WINE_TRACE("Translating LVM_FINDITEM message at %p.\n", guest_item);
+                host_item = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_item));
+                LVFINDINFO_g2h(host_item, guest_item);
+                msg_out->lParam = (LPARAM)host_item;
+            }
             break;
-        }
 
 #endif
 
@@ -1591,9 +1591,6 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
             break;
 
         case LVM_SETITEMSTATE:
-            if (!orig->lParam)
-                break;
-            /* Drop through */
         case LVM_SETITEMA:
         case LVM_SETITEMW:
         case LVM_GETITEMA:
@@ -1857,9 +1854,6 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
         }
 
         case LVM_SETITEMSTATE:
-            if (!msg_in->lParam)
-                break;
-            /* Drop through */
         case LVM_SETITEMA:
         case LVM_SETITEMW:
         case LVM_GETITEMA:
@@ -1870,33 +1864,36 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
         case LVM_SETITEMTEXTW:
         case LVM_GETITEMTEXTA:
         case LVM_GETITEMTEXTW:
-        {
-            LVITEMW *host = (LVITEMW *)msg_in->lParam;
-            struct qemu_LVITEM *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
-            LVITEM_h2g(guest, host);
-            msg_out->lParam = (LPARAM)guest;
+            if (msg_in->lParam)
+            {
+                LVITEMW *host = (LVITEMW *)msg_in->lParam;
+                struct qemu_LVITEM *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
+                LVITEM_h2g(guest, host);
+                msg_out->lParam = (LPARAM)guest;
+            }
             break;
-        }
 
         case LVM_INSERTCOLUMNA:
         case LVM_INSERTCOLUMNW:
-        {
-            LVCOLUMNW *host = (LVCOLUMNW *)msg_in->lParam;
-            struct qemu_LVCOLUMN *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
-            LVCOLUMN_h2g(guest, host);
-            msg_out->lParam = (LPARAM)guest;
+            if (msg_in->lParam)
+            {
+                LVCOLUMNW *host = (LVCOLUMNW *)msg_in->lParam;
+                struct qemu_LVCOLUMN *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
+                LVCOLUMN_h2g(guest, host);
+                msg_out->lParam = (LPARAM)guest;
+            }
             break;
-        }
 
         case LVM_FINDITEMA:
         case LVM_FINDITEMW:
-        {
-            LVFINDINFOW *host = (LVFINDINFOW *)msg_in->lParam;
-            struct qemu_LVFINDINFO *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
-            LVFINDINFO_h2g(guest, host);
-            msg_out->lParam = (LPARAM)guest;
+            if (msg_in->lParam)
+            {
+                LVFINDINFOW *host = (LVFINDINFOW *)msg_in->lParam;
+                struct qemu_LVFINDINFO *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
+                LVFINDINFO_h2g(guest, host);
+                msg_out->lParam = (LPARAM)guest;
+            }
             break;
-        }
 
         default:
             /* Not constant numbers */
@@ -2010,9 +2007,6 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
         }
 
         case LVM_SETITEMSTATE:
-            if (!orig->lParam)
-                break;
-            /* Drop through */
         case LVM_SETITEMA:
         case LVM_SETITEMW:
         case LVM_GETITEMA:
@@ -2023,39 +2017,42 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
         case LVM_SETITEMTEXTW:
         case LVM_GETITEMTEXTA:
         case LVM_GETITEMTEXTW:
-        {
-            LVITEMW *host = (LVITEMW *)orig->lParam;
-            struct qemu_LVITEM *guest = (struct qemu_LVITEM *)conv->lParam;
+            if (orig->lParam)
+            {
+                LVITEMW *host = (LVITEMW *)orig->lParam;
+                struct qemu_LVITEM *guest = (struct qemu_LVITEM *)conv->lParam;
 
-            LVITEM_g2h(host, guest);
+                LVITEM_g2h(host, guest);
 
-            HeapFree(GetProcessHeap(), 0, guest);
+                HeapFree(GetProcessHeap(), 0, guest);
+            }
             break;
-        }
 
         case LVM_INSERTCOLUMNA:
         case LVM_INSERTCOLUMNW:
-        {
-            LVCOLUMNW *host = (LVCOLUMNW *)orig->lParam;
-            struct qemu_LVCOLUMN *guest = (struct qemu_LVCOLUMN *)conv->lParam;
+            if (orig->lParam)
+            {
+                LVCOLUMNW *host = (LVCOLUMNW *)orig->lParam;
+                struct qemu_LVCOLUMN *guest = (struct qemu_LVCOLUMN *)conv->lParam;
 
-            LVCOLUMN_g2h(host, guest);
+                LVCOLUMN_g2h(host, guest);
 
-            HeapFree(GetProcessHeap(), 0, guest);
+                HeapFree(GetProcessHeap(), 0, guest);
+            }
             break;
-        }
 
         case LVM_FINDITEMA:
         case LVM_FINDITEMW:
-        {
-            LVFINDINFOW *host = (LVFINDINFOW *)orig->lParam;
-            struct qemu_LVFINDINFO *guest = (struct qemu_LVFINDINFO *)conv->lParam;
+            if (orig->lParam)
+            {
+                LVFINDINFOW *host = (LVFINDINFOW *)orig->lParam;
+                struct qemu_LVFINDINFO *guest = (struct qemu_LVFINDINFO *)conv->lParam;
 
-            LVFINDINFO_g2h(host, guest);
+                LVFINDINFO_g2h(host, guest);
 
-            HeapFree(GetProcessHeap(), 0, guest);
+                HeapFree(GetProcessHeap(), 0, guest);
+            }
             break;
-        }
 
         default:
             if (conv->message == msg_FINDMSGSTRING)
