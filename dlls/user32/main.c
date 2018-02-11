@@ -37,12 +37,19 @@ struct qemu_set_callbacks
     uint64_t wndproc_wrapper;
     uint64_t guest_mod;
     uint64_t guest_win_event_wrapper;
+    uint64_t LVM_SORTITEMS_guest_cb;
 };
 
 struct wndproc_call
 {
     uint64_t wndproc;
     uint64_t win, msg, wparam, lparam;
+};
+
+struct LVM_SORTITEMS_cb_data
+{
+    uint64_t func;
+    uint64_t p1, p2, param;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -78,6 +85,13 @@ static LRESULT __fastcall wndproc_wrapper(const struct wndproc_call *call)
     return ret;
 }
 
+INT __fastcall LVM_SORTITEMS_guest_cb(void *data)
+{
+    struct LVM_SORTITEMS_cb_data *d = data;
+    PFNLVCOMPARE func = (PFNLVCOMPARE)(ULONG_PTR)d->func;
+    return func(d->p1, d->p2, d->param);
+}
+
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_set_callbacks call;
@@ -90,6 +104,7 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
             call.wndproc_wrapper = (ULONG_PTR)wndproc_wrapper;
             call.guest_mod = (ULONG_PTR)mod;
             call.guest_win_event_wrapper = (ULONG_PTR)guest_win_event_wrapper;
+            call.LVM_SORTITEMS_guest_cb = (ULONG_PTR)LVM_SORTITEMS_guest_cb;
             qemu_syscall(&call.super);
             break;
     }
@@ -184,6 +199,7 @@ static void qemu_set_callbacks(struct qemu_syscall *call)
     guest_wndproc_wrapper = c->wndproc_wrapper;
     guest_mod = (HMODULE)c->guest_mod;
     guest_win_event_wrapper = c->guest_win_event_wrapper;
+    LVM_SORTITEMS_guest_cb = c->LVM_SORTITEMS_guest_cb;
 
     /* This needs to be guest accessible, so delay allocation until the address space
      * is set up. */
@@ -1049,6 +1065,28 @@ uint64_t wndproc_host_to_guest(WNDPROC host_proc)
     assert(0);
 }
 
+uint64_t LVM_SORTITEMS_guest_cb;
+
+static INT CALLBACK LVM_SORTITEMS_host_cb(LPARAM first, LPARAM second, LPARAM lParam)
+{
+    struct LVM_SORTITEMS_cb_data call;
+    uint64_t *guest_func = TlsGetValue(user32_tls);
+    INT ret;
+
+    call.func = *guest_func;
+    call.p1 = first;
+    call.p2 = second;
+    call.param = lParam;
+
+    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx, 0x%lx).\n", call.func, call.p1, call.p2, call.param);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(LVM_SORTITEMS_guest_cb), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned %d.\n", ret);
+
+    return ret;
+}
+
+uint64_t *LVM_SORTITEMS_old_tls;
+
 void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
 {
     *msg_out = *msg_in;
@@ -1064,6 +1102,23 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
         case WM_SYSTIMER:
             msg_out->lParam = (LPARAM)wndproc_guest_to_host(msg_in->lParam);
             break;
+
+        case LVM_SORTITEMS:
+        {
+            WINE_TRACE("Wrapping callback of LVM_SORTITEMS.\n");
+            LVM_SORTITEMS_old_tls = TlsGetValue(user32_tls);
+#if HOST_BIT == GUEST_BIT
+            if (msg_in->lParam == (uint64_t)LVM_SORTITEMS_host_cb)
+#else
+            if ((msg_in->lParam & ~0U) == (((uint64_t)LVM_SORTITEMS_host_cb) & ~0U))
+#endif
+            {
+                WINE_ERR("Found my own callback. Subclassing gone bad?\n");
+            }
+            TlsSetValue(user32_tls, (uint64_t *)&msg_in->lParam);
+            msg_out->lParam = (LPARAM)LVM_SORTITEMS_host_cb;
+            break;
+        }
 
 #if HOST_BIT != GUEST_BIT
         case WM_CREATE:
@@ -1375,9 +1430,13 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
 
 void msg_guest_to_host_return(MSG *orig, MSG *conv)
 {
-#if HOST_BIT != GUEST_BIT
     switch (conv->message)
     {
+        case LVM_SORTITEMS:
+            TlsSetValue(user32_tls, LVM_SORTITEMS_old_tls);
+            break;
+
+#if HOST_BIT != GUEST_BIT
         case WM_NULL:
             break;
 
@@ -1549,8 +1608,8 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
                 break;
             }
             break;
-    }
 #endif
+    }
 }
 
 struct notify_record
@@ -1573,6 +1632,20 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
         case WM_TIMER:
         case WM_SYSTIMER:
             msg_out->lParam = wndproc_host_to_guest((WNDPROC)msg_in->lParam);
+            break;
+
+        case LVM_SORTITEMS:
+            if (msg_in->lParam != (LPARAM)LVM_SORTITEMS_host_cb)
+            {
+                WINE_FIXME("LVM_SORTITEMS message is converted from host to guest.\n");
+            }
+            else
+            {
+                uint64_t *guest_cb = TlsGetValue(user32_tls);
+                if (!guest_cb)
+                    WINE_ERR("Converting a LVM_SORTITEMS back, but user32_tls is NULL?\n");
+                msg_out->lParam = *guest_cb;
+            }
             break;
 
 #if HOST_BIT != GUEST_BIT

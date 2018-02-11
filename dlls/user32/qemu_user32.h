@@ -728,6 +728,7 @@ static inline BOOL wndproc_is_handle(ULONG_PTR proc)
 
 LRESULT CALLBACK reverse_wndproc_func(HWND win, UINT msg, WPARAM wp, LPARAM lp, void *data);
 void __fastcall guest_win_event_wrapper(struct qemu_SetWinEventHook_cb *data);
+extern INT __fastcall LVM_SORTITEMS_guest_cb(void *data);
 
 #else
 
@@ -1436,6 +1437,7 @@ void qemu_UnregisterTouchWindow(struct qemu_syscall *call);
 void qemu_UserRegisterWowHandlers(struct qemu_syscall *call);
 
 extern uint64_t reverse_wndproc_func;
+extern uint64_t LVM_SORTITEMS_guest_cb;
 
 extern unsigned int wndproc_wrapper_count;
 
