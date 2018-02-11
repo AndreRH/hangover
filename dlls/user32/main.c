@@ -1104,6 +1104,7 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             break;
 
         case LVM_SORTITEMS:
+        case LVM_SORTITEMSEX:
         {
             WINE_TRACE("Wrapping callback of LVM_SORTITEMS.\n");
             LVM_SORTITEMS_old_tls = TlsGetValue(user32_tls);
@@ -1412,6 +1413,10 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
 
         case LVM_INSERTCOLUMNA:
         case LVM_INSERTCOLUMNW:
+        case LVM_GETCOLUMNA:
+        case LVM_GETCOLUMNW:
+        case LVM_SETCOLUMNA:
+        case LVM_SETCOLUMNW:
             if (msg_in->lParam)
             {
                 struct qemu_LVCOLUMN *guest_item = (struct qemu_LVCOLUMN *)msg_in->lParam;
@@ -1458,6 +1463,7 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
     switch (conv->message)
     {
         case LVM_SORTITEMS:
+        case LVM_SORTITEMSEX:
             TlsSetValue(user32_tls, LVM_SORTITEMS_old_tls);
             break;
 
@@ -1620,6 +1626,10 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
 
         case LVM_INSERTCOLUMNA:
         case LVM_INSERTCOLUMNW:
+        case LVM_GETCOLUMNA:
+        case LVM_GETCOLUMNW:
+        case LVM_SETCOLUMNA:
+        case LVM_SETCOLUMNW:
             if (conv->lParam != orig->lParam)
             {
                 struct qemu_LVCOLUMN *guest_item = (struct qemu_LVCOLUMN *)orig->lParam;
@@ -1679,6 +1689,7 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             break;
 
         case LVM_SORTITEMS:
+        case LVM_SORTITEMSEX:
             if (msg_in->lParam != (LPARAM)LVM_SORTITEMS_host_cb)
             {
                 WINE_FIXME("LVM_SORTITEMS message is converted from host to guest.\n");
@@ -1880,6 +1891,10 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
 
         case LVM_INSERTCOLUMNA:
         case LVM_INSERTCOLUMNW:
+        case LVM_GETCOLUMNA:
+        case LVM_GETCOLUMNW:
+        case LVM_SETCOLUMNA:
+        case LVM_SETCOLUMNW:
             if (msg_in->lParam)
             {
                 LVCOLUMNW *host = (LVCOLUMNW *)msg_in->lParam;
@@ -2035,6 +2050,10 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
 
         case LVM_INSERTCOLUMNA:
         case LVM_INSERTCOLUMNW:
+        case LVM_GETCOLUMNA:
+        case LVM_GETCOLUMNW:
+        case LVM_SETCOLUMNA:
+        case LVM_SETCOLUMNW:
             if (orig->lParam)
             {
                 LVCOLUMNW *host = (LVCOLUMNW *)orig->lParam;
