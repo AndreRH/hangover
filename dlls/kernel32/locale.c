@@ -703,7 +703,7 @@ WINBASEAPI UINT WINAPI GetOEMCP(void)
 void qemu_GetOEMCP(struct qemu_syscall *call)
 {
     struct qemu_GetOEMCP *c = (struct qemu_GetOEMCP *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetOEMCP();
 }
 

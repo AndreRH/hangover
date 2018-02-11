@@ -718,7 +718,7 @@ WINBASEAPI BOOL WINAPI FlushViewOfFile(LPCVOID base, SIZE_T size)
 void qemu_FlushViewOfFile(struct qemu_syscall *call)
 {
     struct qemu_FlushViewOfFile *c = (struct qemu_FlushViewOfFile *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FlushViewOfFile(QEMU_G2H(c->base), c->size);
 }
 

@@ -708,7 +708,7 @@ WINBASEAPI DWORD_PTR WINAPI SetThreadAffinityMask(HANDLE hThread, DWORD_PTR dwTh
     struct qemu_SetThreadAffinityMask call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADAFFINITYMASK);
     call.hThread = guest_HANDLE_g2h(hThread);
-    call.dwThreadAffinityMask = (ULONG_PTR)dwThreadAffinityMask;
+    call.dwThreadAffinityMask = dwThreadAffinityMask;
 
     qemu_syscall(&call.super);
 
@@ -720,7 +720,7 @@ WINBASEAPI DWORD_PTR WINAPI SetThreadAffinityMask(HANDLE hThread, DWORD_PTR dwTh
 void qemu_SetThreadAffinityMask(struct qemu_syscall *call)
 {
     struct qemu_SetThreadAffinityMask *c = (struct qemu_SetThreadAffinityMask *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetThreadAffinityMask(QEMU_G2H(c->hThread), c->dwThreadAffinityMask);
 }
 

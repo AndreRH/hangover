@@ -57,7 +57,7 @@ WINBASEAPI LPSTR WINAPI lstrcatA(LPSTR dst, LPCSTR src)
 void qemu_lstrcatA(struct qemu_syscall *call)
 {
     struct qemu_lstrcatA *c = (struct qemu_lstrcatA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)lstrcatA(QEMU_G2H(c->dst), QEMU_G2H(c->src));
 }
 

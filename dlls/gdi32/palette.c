@@ -475,7 +475,7 @@ WINBASEAPI UINT WINAPI RealizePalette(HDC hDC)
 void qemu_RealizePalette(struct qemu_syscall *call)
 {
     struct qemu_RealizePalette *c = (struct qemu_RealizePalette *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RealizePalette(QEMU_G2H(c->hDC));
 }
 

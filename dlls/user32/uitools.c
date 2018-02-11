@@ -197,7 +197,7 @@ WINUSERAPI BOOL WINAPI CopyRect(RECT *dest, const RECT *src)
 void qemu_CopyRect(struct qemu_syscall *call)
 {
     struct qemu_CopyRect *c = (struct qemu_CopyRect *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CopyRect(QEMU_G2H(c->dest), QEMU_G2H(c->src));
 }
 

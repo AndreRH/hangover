@@ -117,7 +117,7 @@ WINBASEAPI INT WINAPI ImageList_AddMasked (HIMAGELIST himl, HBITMAP hBitmap, COL
     call.super.id = QEMU_SYSCALL_ID(CALL_IMAGELIST_ADDMASKED);
     call.himl = (ULONG_PTR)himl;
     call.hBitmap = (ULONG_PTR)hBitmap;
-    call.clrMask = (ULONG_PTR)clrMask;
+    call.clrMask = clrMask;
 
     qemu_syscall(&call.super);
 
@@ -129,7 +129,7 @@ WINBASEAPI INT WINAPI ImageList_AddMasked (HIMAGELIST himl, HBITMAP hBitmap, COL
 void qemu_ImageList_AddMasked(struct qemu_syscall *call)
 {
     struct qemu_ImageList_AddMasked *c = (struct qemu_ImageList_AddMasked *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ImageList_AddMasked(QEMU_G2H(c->himl), QEMU_G2H(c->hBitmap), c->clrMask);
 }
 

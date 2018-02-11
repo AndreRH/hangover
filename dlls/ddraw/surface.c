@@ -4313,7 +4313,7 @@ void qemu_ddraw_surface7_GetBltStatus(struct qemu_syscall *call)
     struct qemu_ddraw_surface7_GetBltStatus *c = (struct qemu_ddraw_surface7_GetBltStatus *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface7_GetBltStatus(surface->host_surface7, c->Flags);
@@ -4350,7 +4350,7 @@ void qemu_ddraw_surface4_GetBltStatus(struct qemu_syscall *call)
     struct qemu_ddraw_surface4_GetBltStatus *c = (struct qemu_ddraw_surface4_GetBltStatus *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface4_GetBltStatus(surface->host_surface4, c->flags);
@@ -4387,7 +4387,7 @@ void qemu_ddraw_surface3_GetBltStatus(struct qemu_syscall *call)
     struct qemu_ddraw_surface3_GetBltStatus *c = (struct qemu_ddraw_surface3_GetBltStatus *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface3_GetBltStatus(surface->host_surface3, c->flags);
@@ -4424,7 +4424,7 @@ void qemu_ddraw_surface2_GetBltStatus(struct qemu_syscall *call)
     struct qemu_ddraw_surface2_GetBltStatus *c = (struct qemu_ddraw_surface2_GetBltStatus *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface2_GetBltStatus(surface->host_surface2, c->flags);
@@ -4461,7 +4461,7 @@ void qemu_ddraw_surface1_GetBltStatus(struct qemu_syscall *call)
     struct qemu_ddraw_surface1_GetBltStatus *c = (struct qemu_ddraw_surface1_GetBltStatus *)call;
     struct qemu_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectDrawSurface_GetBltStatus(surface->host_surface1, c->flags);

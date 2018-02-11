@@ -620,7 +620,8 @@ struct qemu_RegEnumKeyExA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI LSTATUS WINAPI RegEnumKeyExA(HKEY hkey, DWORD index, LPSTR name, LPDWORD name_len, LPDWORD reserved, LPSTR class, LPDWORD class_len, FILETIME *ft)
+WINBASEAPI LSTATUS WINAPI RegEnumKeyExA(HKEY hkey, DWORD index, char *name, DWORD *name_len, DWORD *reserved,
+        char *class, DWORD *class_len, FILETIME *ft)
 {
     struct qemu_RegEnumKeyExA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGENUMKEYEXA);
@@ -643,8 +644,9 @@ WINBASEAPI LSTATUS WINAPI RegEnumKeyExA(HKEY hkey, DWORD index, LPSTR name, LPDW
 void qemu_RegEnumKeyExA(struct qemu_syscall *call)
 {
     struct qemu_RegEnumKeyExA *c = (struct qemu_RegEnumKeyExA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RegEnumKeyExA(QEMU_G2H(c->hkey), c->index, QEMU_G2H(c->name), QEMU_G2H(c->name_len), QEMU_G2H(c->reserved), QEMU_G2H(c->class), QEMU_G2H(c->class_len), QEMU_G2H(c->ft));
+    WINE_TRACE("\n");
+    c->super.iret = RegEnumKeyExA(QEMU_G2H(c->hkey), c->index, QEMU_G2H(c->name), QEMU_G2H(c->name_len),
+            QEMU_G2H(c->reserved), QEMU_G2H(c->class), QEMU_G2H(c->class_len), QEMU_G2H(c->ft));
 }
 
 #endif
