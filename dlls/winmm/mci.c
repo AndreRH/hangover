@@ -63,7 +63,7 @@ WINBASEAPI DWORD WINAPI mciSendStringW(LPCWSTR lpstrCommand, LPWSTR lpstrRet, UI
 void qemu_mciSendStringW(struct qemu_syscall *call)
 {
     struct qemu_mciSendStringW *c = (struct qemu_mciSendStringW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = mciSendStringW(QEMU_G2H(c->lpstrCommand), QEMU_G2H(c->lpstrRet), c->uRetLen, QEMU_G2H(c->hwndCallback));
 }
 
@@ -99,7 +99,7 @@ WINBASEAPI DWORD WINAPI mciSendStringA(LPCSTR lpstrCommand, LPSTR lpstrRet, UINT
 void qemu_mciSendStringA(struct qemu_syscall *call)
 {
     struct qemu_mciSendStringA *c = (struct qemu_mciSendStringA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = mciSendStringA(QEMU_G2H(c->lpstrCommand), QEMU_G2H(c->lpstrRet), c->uRetLen, QEMU_G2H(c->hwndCallback));
 }
 
