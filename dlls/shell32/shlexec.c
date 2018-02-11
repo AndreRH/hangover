@@ -134,8 +134,42 @@ WINBASEAPI HINSTANCE WINAPI ShellExecuteA(HWND hWnd, LPCSTR lpVerb, LPCSTR lpFil
 void qemu_ShellExecuteA(struct qemu_syscall *call)
 {
     struct qemu_ShellExecuteA *c = (struct qemu_ShellExecuteA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)ShellExecuteA(QEMU_G2H(c->hWnd), QEMU_G2H(c->lpVerb), QEMU_G2H(c->lpFile), QEMU_G2H(c->lpParameters), QEMU_G2H(c->lpDirectory), c->iShowCmd);
+    char *params, *file, *params_in, *dir, *qemu = NULL;
+    unsigned int len;
+
+    file = QEMU_G2H(c->lpFile);
+    params_in = QEMU_G2H(c->lpParameters);
+    dir = QEMU_G2H(c->lpDirectory);
+
+    WINE_TRACE("\"%s\" \"%s\" \"%s\" \"%s\"\n", (char *)QEMU_G2H(c->lpVerb), file, params_in, dir);
+
+    /* Note that we aren't necessarily opening a program. It could also be an URL, document, etc. */
+    c->super.iret = (ULONG_PTR)ShellExecuteA(QEMU_G2H(c->hWnd), QEMU_G2H(c->lpVerb),
+            file, params_in, dir, c->iShowCmd);
+    if (c->super.iret > 32)
+        return;
+
+    len = strlen(file) + strlen(params_in) + 2;
+    params = HeapAlloc(GetProcessHeap(), 0, len);
+    sprintf(params, "%s %s", file, params_in);
+
+    len = MAX_PATH;
+    do
+    {
+        HeapFree(GetProcessHeap(), 0, qemu);
+        len *= 2;
+        qemu = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*qemu) + 3);
+        SetLastError(0);
+        GetModuleFileNameA(NULL, qemu, len);
+    } while(GetLastError());
+
+    strcat(qemu, ".so");
+
+    c->super.iret = (ULONG_PTR)ShellExecuteA(QEMU_G2H(c->hWnd), QEMU_G2H(c->lpVerb),
+            qemu, params, dir, c->iShowCmd);
+
+    HeapFree(GetProcessHeap(), 0, params);
+    HeapFree(GetProcessHeap(), 0, qemu);
 }
 
 #endif
