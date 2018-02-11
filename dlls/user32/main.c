@@ -1129,6 +1129,29 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             msg_out->wParam = (LONG)msg_in->wParam;
             break;
 
+        case WM_NOTIFY:
+        {
+            /* We do not want to convert NMHDRs in general. The guest controls will send WM_NOTIFY messages
+             * between each other. If we don't touch them here, the host->guest code won't recognize the
+             * notify code and not touch them.
+             *
+             * Keep in mind that all messages go through the host because the guest side doesn't know how
+             * to route them. Also beware of subclassing... */
+            len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
+            if (len < 0 || len == 256)
+                break;
+
+            /* As soon as a second class is added add callbacks similarly to the host->guest case... */
+            if (!strcmpW(class, WC_LISTVIEWW))
+            {
+                struct qemu_NMHEADER *guest = (struct qemu_NMHEADER *)msg_in->lParam;
+                NMHEADERW *host = HeapAlloc(GetProcessHeap(), 0, sizeof(*host));
+                NMHEADER_g2h(host, guest);
+                msg_out->lParam = (LPARAM)host;
+            }
+            break;
+        }
+
         case CB_GETCOMBOBOXINFO:
         {
             struct qemu_COMBOBOXINFO *guest = (struct qemu_COMBOBOXINFO *)msg_in->lParam;
@@ -1389,6 +1412,19 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
         case WM_DRAWITEM:
         case WM_COMPAREITEM:
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
+
+        case WM_NOTIFY:
+            if (conv->lParam != orig->lParam)
+            {
+                struct qemu_NMHEADER *guest = (struct qemu_NMHEADER *)orig->lParam;
+                NMHEADERW *host = (NMHEADERW *)conv->lParam;
+
+                WINE_ERR("Big mess %lx %lx\n", conv->lParam, orig->lParam);
+
+                NMHEADER_h2g(guest, host);
+                HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            }
             break;
 
         case CB_GETCOMBOBOXINFO:
