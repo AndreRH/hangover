@@ -1388,12 +1388,20 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             break;
         }
 
+        case LVM_SETITEMSTATE:
+            if (!msg_in->lParam)
+                break;
+            /* Drop through */
         case LVM_SETITEMA:
         case LVM_SETITEMW:
         case LVM_GETITEMA:
         case LVM_GETITEMW:
         case LVM_INSERTITEMA:
         case LVM_INSERTITEMW:
+        case LVM_SETITEMTEXTA:
+        case LVM_SETITEMTEXTW:
+        case LVM_GETITEMTEXTA:
+        case LVM_GETITEMTEXTW:
         {
             struct qemu_LVITEM *guest_item = (struct qemu_LVITEM *)msg_in->lParam;
             LVITEMW *host_item;
@@ -1570,12 +1578,20 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
             }
             break;
 
+        case LVM_SETITEMSTATE:
+            if (!orig->lParam)
+                break;
+            /* Drop through */
         case LVM_SETITEMA:
         case LVM_SETITEMW:
         case LVM_GETITEMA:
         case LVM_GETITEMW:
         case LVM_INSERTITEMA:
         case LVM_INSERTITEMW:
+        case LVM_SETITEMTEXTA:
+        case LVM_SETITEMTEXTW:
+        case LVM_GETITEMTEXTA:
+        case LVM_GETITEMTEXTW:
             if (conv->lParam != orig->lParam)
             {
                 struct qemu_LVITEM *guest_item = (struct qemu_LVITEM *)orig->lParam;
@@ -1814,12 +1830,20 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             break;
         }
 
+        case LVM_SETITEMSTATE:
+            if (!msg_in->lParam)
+                break;
+            /* Drop through */
         case LVM_SETITEMA:
         case LVM_SETITEMW:
         case LVM_GETITEMA:
         case LVM_GETITEMW:
         case LVM_INSERTITEMA:
         case LVM_INSERTITEMW:
+        case LVM_SETITEMTEXTA:
+        case LVM_SETITEMTEXTW:
+        case LVM_GETITEMTEXTA:
+        case LVM_GETITEMTEXTW:
         {
             LVITEMW *host = (LVITEMW *)msg_in->lParam;
             struct qemu_LVITEM *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
@@ -1949,12 +1973,20 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
             break;
         }
 
+        case LVM_SETITEMSTATE:
+            if (!orig->lParam)
+                break;
+            /* Drop through */
         case LVM_SETITEMA:
         case LVM_SETITEMW:
         case LVM_GETITEMA:
         case LVM_GETITEMW:
         case LVM_INSERTITEMA:
         case LVM_INSERTITEMW:
+        case LVM_SETITEMTEXTA:
+        case LVM_SETITEMTEXTW:
+        case LVM_GETITEMTEXTA:
+        case LVM_GETITEMTEXTW:
         {
             LVITEMW *host = (LVITEMW *)orig->lParam;
             struct qemu_LVITEM *guest = (struct qemu_LVITEM *)conv->lParam;
