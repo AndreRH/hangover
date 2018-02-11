@@ -963,4 +963,66 @@ static inline void NMTBRESTORE_h2g(struct qemu_NMTBRESTORE *guest, const NMTBRES
     TBBUTTON_h2g(&guest->tbButton, &host->tbButton);
 }
 
+struct qemu_LVITEM
+{
+    UINT mask;
+    INT  iItem;
+    INT  iSubItem;
+    UINT state;
+    UINT stateMask;
+    qemu_ptr  pszText;
+    INT  cchTextMax;
+    INT  iImage;
+    qemu_ptr lParam;
+    /* (_WIN32_IE >= 0x0300) */
+    INT  iIndent;
+    /* (_WIN32_IE >= 0x0560) */
+    INT iGroupId;
+    UINT cColumns;
+    qemu_ptr puColumns;
+    /* (_WIN32_WINNT >= 0x0600) */
+    qemu_ptr piColFmt;
+    INT iGroup;
+};
+
+static inline void LVITEM_g2h(LVITEMW *host, const struct qemu_LVITEM *guest)
+{
+    host->mask = guest->mask;
+    host->iItem = guest->iItem;
+    host->iSubItem = guest->iSubItem;
+    host->state = guest->state;
+    host->stateMask = guest->stateMask;
+    host->pszText = (WCHAR *)(ULONG_PTR)guest->pszText;
+    host->cchTextMax = guest->cchTextMax;
+    host->iImage = guest->iImage;
+    host->lParam = guest->lParam;
+    host->iIndent = guest->iIndent;
+    host->iGroupId = guest->iGroupId;
+    host->iIndent = guest->iIndent;
+    host->cColumns = guest->cColumns;
+    host->puColumns = (UINT *)(ULONG_PTR)guest->puColumns;
+    host->piColFmt = (UINT *)(ULONG_PTR)guest->piColFmt;
+    host->iGroup = guest->iGroup;
+}
+
+static inline void LVITEM_h2g(struct qemu_LVITEM *guest, const LVITEMW *host)
+{
+    guest->mask = host->mask;
+    guest->iItem = host->iItem;
+    guest->iSubItem = host->iSubItem;
+    guest->state = host->state;
+    guest->stateMask = host->stateMask;
+    guest->pszText = (ULONG_PTR)host->pszText;
+    guest->cchTextMax = host->cchTextMax;
+    guest->iImage = host->iImage;
+    guest->lParam = host->lParam;
+    guest->iIndent = host->iIndent;
+    guest->iGroupId = host->iGroupId;
+    guest->iIndent = host->iIndent;
+    guest->cColumns = host->cColumns;
+    guest->puColumns = (ULONG_PTR)host->puColumns;
+    guest->piColFmt = (ULONG_PTR)host->piColFmt;
+    guest->iGroup = host->iGroup;
+}
+
 #endif

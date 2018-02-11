@@ -1300,6 +1300,22 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             }
             break;
         }
+
+        case LVM_SETITEMA:
+        case LVM_SETITEMW:
+        case LVM_GETITEMA:
+        case LVM_GETITEMW:
+        case LVM_INSERTITEMA:
+        case LVM_INSERTITEMW:
+        {
+            struct qemu_LVITEM *guest_item = (struct qemu_LVITEM *)msg_in->lParam;
+            LVITEMW *host_item;
+            WINE_TRACE("Translating LVM_*ITEM message at %p.\n", guest_item);
+            host_item = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_item));
+            LVITEM_g2h(host_item, guest_item);
+            msg_out->lParam = (LPARAM)host_item;
+            break;
+        }
 #endif
 
         default:
@@ -1431,6 +1447,24 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
                 WINE_TRACE("Reverse translating TCM_*ITEM message.\n");
 
                 TCITEM_h2g(guest_item, host_item);
+
+                HeapFree(GetProcessHeap(), 0, host_item);
+            }
+            break;
+
+        case LVM_SETITEMA:
+        case LVM_SETITEMW:
+        case LVM_GETITEMA:
+        case LVM_GETITEMW:
+        case LVM_INSERTITEMA:
+        case LVM_INSERTITEMW:
+            if (conv->lParam != orig->lParam)
+            {
+                struct qemu_LVITEM *guest_item = (struct qemu_LVITEM *)orig->lParam;
+                LVITEMW *host_item = (LVITEMW *)conv->lParam;
+                WINE_TRACE("Reverse translating LVM_*ITEM message.\n");
+
+                LVITEM_h2g(guest_item, host_item);
 
                 HeapFree(GetProcessHeap(), 0, host_item);
             }
@@ -1625,6 +1659,20 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             break;
         }
 
+        case LVM_SETITEMA:
+        case LVM_SETITEMW:
+        case LVM_GETITEMA:
+        case LVM_GETITEMW:
+        case LVM_INSERTITEMA:
+        case LVM_INSERTITEMW:
+        {
+            LVITEMW *host = (LVITEMW *)msg_in->lParam;
+            struct qemu_LVITEM *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
+            LVITEM_h2g(guest, host);
+            msg_out->lParam = (LPARAM)guest;
+            break;
+        }
+
         default:
             /* Not constant numbers */
             if (msg_in->message == msg_FINDMSGSTRING)
@@ -1730,6 +1778,22 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
             struct qemu_TCITEM *guest = (struct qemu_TCITEM *)conv->lParam;
 
             TCITEM_g2h(host, guest);
+
+            HeapFree(GetProcessHeap(), 0, guest);
+            break;
+        }
+
+        case LVM_SETITEMA:
+        case LVM_SETITEMW:
+        case LVM_GETITEMA:
+        case LVM_GETITEMW:
+        case LVM_INSERTITEMA:
+        case LVM_INSERTITEMW:
+        {
+            LVITEMW *host = (LVITEMW *)orig->lParam;
+            struct qemu_LVITEM *guest = (struct qemu_LVITEM *)conv->lParam;
+
+            LVITEM_g2h(host, guest);
 
             HeapFree(GetProcessHeap(), 0, guest);
             break;
