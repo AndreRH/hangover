@@ -428,6 +428,8 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
     MCI_PLAY_PARMS play_parms;
     MCI_SYSINFO_PARMSW sysinfo_parms;
     MCI_INFO_PARMSW info_parms;
+    MCI_SEEK_PARMS seek_parms;
+    MCI_GENERIC_PARMS generic_parms;
 
     struct
     {
@@ -443,149 +445,155 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
     param2 = c->dwParam2;
 
 #if HOST_BIT != GUEST_BIT
-    switch (msg)
+    if (param2)
     {
-        case MCI_STOP:
-        case MCI_CLOSE:
-            /* Nothing to do. */
-            break;
+        switch (msg)
+        {
+            case MCI_STOP:
+            case MCI_CLOSE:
+            case MCI_STEP:
+            case MCI_RESUME:
+                WINE_TRACE("Translating generic.\n");
+                MCI_GENERIC_PARMS_g2h(&generic_parms, (void *)param2);
+                param2 = (DWORD_PTR)&generic_parms;
+                break;
 
-        case MCI_OPEN_DRIVER:
-            WINE_FIXME("Unhandled command MCI_OPEN_DRIVER.\n");
-            break;
-        case MCI_CLOSE_DRIVER:
-            WINE_FIXME("Unhandled command MCI_CLOSE_DRIVER.\n");
-            break;
-        case MCI_OPEN:
-            WINE_TRACE("Translating MCI_OPEN.\n");
-            MCI_OPEN_PARMS_g2h(&open_parms, (void *)param2);
-            param2 = (DWORD_PTR)&open_parms;
-            break;
+            case MCI_OPEN_DRIVER:
+                WINE_FIXME("Unhandled command MCI_OPEN_DRIVER.\n");
+                break;
+            case MCI_CLOSE_DRIVER:
+                WINE_FIXME("Unhandled command MCI_CLOSE_DRIVER.\n");
+                break;
+            case MCI_OPEN:
+                WINE_TRACE("Translating MCI_OPEN.\n");
+                MCI_OPEN_PARMS_g2h(&open_parms, (void *)param2);
+                param2 = (DWORD_PTR)&open_parms;
+                break;
 
-        case MCI_ESCAPE:
-            WINE_FIXME("Unhandled command MCI_ESCAPE.\n");
-            break;
-        case MCI_PLAY:
-            WINE_TRACE("Translating MCI_PLAY.\n");
-            MCI_PLAY_PARMS_g2h(&play_parms, (void *)param2);
-            param2 = (DWORD_PTR)&play_parms;
-            break;
+            case MCI_ESCAPE:
+                WINE_FIXME("Unhandled command MCI_ESCAPE.\n");
+                break;
+            case MCI_PLAY:
+                WINE_TRACE("Translating MCI_PLAY.\n");
+                MCI_PLAY_PARMS_g2h(&play_parms, (void *)param2);
+                param2 = (DWORD_PTR)&play_parms;
+                break;
 
-        case MCI_SEEK:
-            WINE_FIXME("Unhandled command MCI_SEEK.\n");
-            break;
-        case MCI_PAUSE:
-            WINE_FIXME("Unhandled command MCI_PAUSE.\n");
-            break;
-        case MCI_INFO:
-            WINE_TRACE("MCI_INFO MCI_PLAY.\n");
-            MCI_INFO_PARMS_g2h(&info_parms, (void *)param2);
-            param2 = (DWORD_PTR)&info_parms;
-            break;
+            case MCI_SEEK:
+                WINE_TRACE("Translating MCI_SEEK.\n");
+                MCI_SEEK_PARMS_g2h(&seek_parms, (void *)param2);
+                param2 = (DWORD_PTR)&seek_parms;
+                break;
 
-        case MCI_GETDEVCAPS:
-            WINE_TRACE("Translating MCI_GETDEVCAPS.\n");
-            MCI_GETDEVCAPS_PARMS_g2h(&getdevcaps_parms, (void *)param2);
-            param2 = (DWORD_PTR)&getdevcaps_parms;
-            break;
+            case MCI_PAUSE:
+                WINE_FIXME("Unhandled command MCI_PAUSE.\n");
+                break;
+            case MCI_INFO:
+                WINE_TRACE("MCI_INFO MCI_PLAY.\n");
+                MCI_INFO_PARMS_g2h(&info_parms, (void *)param2);
+                param2 = (DWORD_PTR)&info_parms;
+                break;
 
-        case MCI_SPIN:
-            WINE_FIXME("Unhandled command MCI_SPIN.\n");
-            break;
-        case MCI_SET:
-            /* The structure is device specific, and I don't see a way to know which
-             * struct I have without keeping track of how the device was opened.
-             *
-             * MCI_SET_PARMS_g2h reads 8 extra DWORDs (MCI_WAVE_SET_PARMS). It's a
-             * really ugly hack, let's see how far this gets us. */
-            WINE_FIXME("Translating MCI_SET, but I don't know what struct I have.\n");
-            MCI_SET_PARMS_g2h(&set_parms.base, (void *)param2);
-            param2 = (DWORD_PTR)&set_parms;
-            break;
+            case MCI_GETDEVCAPS:
+                WINE_TRACE("Translating MCI_GETDEVCAPS.\n");
+                MCI_GETDEVCAPS_PARMS_g2h(&getdevcaps_parms, (void *)param2);
+                param2 = (DWORD_PTR)&getdevcaps_parms;
+                break;
 
-        case MCI_STEP:
-            WINE_FIXME("Unhandled command MCI_STEP.\n");
-            break;
-        case MCI_RECORD:
-            WINE_TRACE("Translating MCI_RECORD.\n");
-            MCI_RECORD_PARMS_g2h(&record_parms, (void *)param2);
-            param2 = (DWORD_PTR)&record_parms;
-            break;
+            case MCI_SPIN:
+                WINE_FIXME("Unhandled command MCI_SPIN.\n");
+                break;
+            case MCI_SET:
+                /* The structure is device specific, and I don't see a way to know which
+                * struct I have without keeping track of how the device was opened.
+                *
+                * MCI_SET_PARMS_g2h reads 8 extra DWORDs (MCI_WAVE_SET_PARMS). It's a
+                * really ugly hack, let's see how far this gets us. */
+                WINE_FIXME("Translating MCI_SET, but I don't know what struct I have.\n");
+                MCI_SET_PARMS_g2h(&set_parms.base, (void *)param2);
+                param2 = (DWORD_PTR)&set_parms;
+                break;
 
-        case MCI_SYSINFO:
-            WINE_TRACE("Translating MCI_SYSINFO.\n");
-            MCI_SYSINFO_PARMS_g2h(&sysinfo_parms, (void *)param2);
-            param2 = (DWORD_PTR)&sysinfo_parms;
-            break;
+                WINE_FIXME("Unhandled command MCI_STEP.\n");
+                break;
+            case MCI_RECORD:
+                WINE_TRACE("Translating MCI_RECORD.\n");
+                MCI_RECORD_PARMS_g2h(&record_parms, (void *)param2);
+                param2 = (DWORD_PTR)&record_parms;
+                break;
 
-        case MCI_BREAK:
-            WINE_FIXME("Unhandled command MCI_BREAK.\n");
-            break;
-        case MCI_SOUND:
-            WINE_FIXME("Unhandled command MCI_SOUND.\n");
-            break;
-        case MCI_SAVE:
-            WINE_TRACE("Translating MCI_SAVE.\n");
-            MCI_SAVE_PARMS_g2h(&save_parms, (void *)param2);
-            param2 = (DWORD_PTR)&save_parms;
-            break;
+            case MCI_SYSINFO:
+                WINE_TRACE("Translating MCI_SYSINFO.\n");
+                MCI_SYSINFO_PARMS_g2h(&sysinfo_parms, (void *)param2);
+                param2 = (DWORD_PTR)&sysinfo_parms;
+                break;
 
-        case MCI_STATUS:
-            WINE_TRACE("Translating MCI_STATUS.\n");
-            MCI_STATUS_PARMS_g2h(&status_parms, (void *)param2);
-            param2 = (DWORD_PTR)&status_parms;
-            break;
+            case MCI_BREAK:
+                WINE_FIXME("Unhandled command MCI_BREAK.\n");
+                break;
+            case MCI_SOUND:
+                WINE_FIXME("Unhandled command MCI_SOUND.\n");
+                break;
+            case MCI_SAVE:
+                WINE_TRACE("Translating MCI_SAVE.\n");
+                MCI_SAVE_PARMS_g2h(&save_parms, (void *)param2);
+                param2 = (DWORD_PTR)&save_parms;
+                break;
 
-        case MCI_CUE:
-            WINE_FIXME("Unhandled command MCI_CUE.\n");
-            break;
-        case MCI_REALIZE:
-            WINE_FIXME("Unhandled command MCI_REALIZE.\n");
-            break;
-        case MCI_WINDOW:
-            WINE_FIXME("Unhandled command MCI_WINDOW.\n");
-            break;
-        case MCI_PUT:
-            WINE_FIXME("Unhandled command MCI_PUT.\n");
-            break;
-        case MCI_WHERE:
-            WINE_FIXME("Unhandled command MCI_WHERE.\n");
-            break;
-        case MCI_FREEZE:
-            WINE_FIXME("Unhandled command MCI_FREEZE.\n");
-            break;
-        case MCI_UNFREEZE:
-            WINE_FIXME("Unhandled command MCI_UNFREEZE.\n");
-            break;
-        case MCI_LOAD:
-            WINE_FIXME("Unhandled command MCI_LOAD.\n");
-            break;
-        case MCI_CUT:
-            WINE_FIXME("Unhandled command MCI_CUT.\n");
-            break;
-        case MCI_COPY:
-            WINE_FIXME("Unhandled command MCI_COPY.\n");
-            break;
-        case MCI_PASTE:
-            WINE_FIXME("Unhandled command MCI_PASTE.\n");
-            break;
-        case MCI_UPDATE:
-            WINE_FIXME("Unhandled command MCI_UPDATE.\n");
-            break;
-        case MCI_RESUME:
-            WINE_FIXME("Unhandled command MCI_RESUME.\n");
-            break;
-        case MCI_DELETE:
-            WINE_FIXME("Unhandled command MCI_DELETE.\n");
-            break;
+            case MCI_STATUS:
+                WINE_TRACE("Translating MCI_STATUS.\n");
+                MCI_STATUS_PARMS_g2h(&status_parms, (void *)param2);
+                param2 = (DWORD_PTR)&status_parms;
+                break;
 
-        default:
-            WINE_FIXME("Unknown mci command 0x%x.\n", msg);
-            break;
+            case MCI_CUE:
+                WINE_FIXME("Unhandled command MCI_CUE.\n");
+                break;
+            case MCI_REALIZE:
+                WINE_FIXME("Unhandled command MCI_REALIZE.\n");
+                break;
+            case MCI_WINDOW:
+                WINE_FIXME("Unhandled command MCI_WINDOW.\n");
+                break;
+            case MCI_PUT:
+                WINE_FIXME("Unhandled command MCI_PUT.\n");
+                break;
+            case MCI_WHERE:
+                WINE_FIXME("Unhandled command MCI_WHERE.\n");
+                break;
+            case MCI_FREEZE:
+                WINE_FIXME("Unhandled command MCI_FREEZE.\n");
+                break;
+            case MCI_UNFREEZE:
+                WINE_FIXME("Unhandled command MCI_UNFREEZE.\n");
+                break;
+            case MCI_LOAD:
+                WINE_FIXME("Unhandled command MCI_LOAD.\n");
+                break;
+            case MCI_CUT:
+                WINE_FIXME("Unhandled command MCI_CUT.\n");
+                break;
+            case MCI_COPY:
+                WINE_FIXME("Unhandled command MCI_COPY.\n");
+                break;
+            case MCI_PASTE:
+                WINE_FIXME("Unhandled command MCI_PASTE.\n");
+                break;
+            case MCI_UPDATE:
+                WINE_FIXME("Unhandled command MCI_UPDATE.\n");
+                break;
+            case MCI_DELETE:
+                WINE_FIXME("Unhandled command MCI_DELETE.\n");
+                break;
+
+            default:
+                WINE_FIXME("Unknown mci command 0x%x.\n", msg);
+                break;
+        }
     }
 #endif
 
-    /* FIXME: What about dwCallback? */
+    /* What about dwCallback? MSDN says it is a Window handle.*/
 
     switch (c->super.id)
     {
@@ -598,52 +606,68 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
             break;
     }
 #if HOST_BIT != GUEST_BIT
-    switch (msg)
+    if (param2)
     {
-        case MCI_GETDEVCAPS:
-            WINE_TRACE("Translating MCI_GETDEVCAPS back.\n");
-            MCI_GETDEVCAPS_PARMS_h2g((void *)c->dwParam2, &getdevcaps_parms);
-            break;
+        switch (msg)
+        {
+            case MCI_GETDEVCAPS:
+                WINE_TRACE("Translating MCI_GETDEVCAPS back.\n");
+                MCI_GETDEVCAPS_PARMS_h2g((void *)c->dwParam2, &getdevcaps_parms);
+                break;
 
-        case MCI_SAVE:
-            WINE_TRACE("Translating MCI_SAVE back.\n");
-            MCI_SAVE_PARMS_h2g((void *)c->dwParam2, &save_parms);
-            break;
+            case MCI_SAVE:
+                WINE_TRACE("Translating MCI_SAVE back.\n");
+                MCI_SAVE_PARMS_h2g((void *)c->dwParam2, &save_parms);
+                break;
 
-        case MCI_RECORD:
-            WINE_TRACE("Translating MCI_RECORD back.\n");
-            MCI_RECORD_PARMS_h2g((void *)c->dwParam2, &record_parms);
-            break;
+            case MCI_RECORD:
+                WINE_TRACE("Translating MCI_RECORD back.\n");
+                MCI_RECORD_PARMS_h2g((void *)c->dwParam2, &record_parms);
+                break;
 
-        case MCI_STATUS:
-            WINE_TRACE("Translating MCI_STATUS back.\n");
-            MCI_STATUS_PARMS_h2g((void *)c->dwParam2, &status_parms);
-            break;
+            case MCI_STATUS:
+                WINE_TRACE("Translating MCI_STATUS back.\n");
+                MCI_STATUS_PARMS_h2g((void *)c->dwParam2, &status_parms);
+                break;
 
-        case MCI_OPEN:
-            WINE_TRACE("Translating MCI_OPEN back.\n");
-            MCI_OPEN_PARMS_h2g((void *)c->dwParam2, &open_parms);
-            break;
+            case MCI_OPEN:
+                WINE_TRACE("Translating MCI_OPEN back.\n");
+                MCI_OPEN_PARMS_h2g((void *)c->dwParam2, &open_parms);
+                break;
 
-        case MCI_SET:
-            WINE_TRACE("Translating MCI_SET back.\n");
-            MCI_SET_PARMS_h2g((void *)c->dwParam2, &set_parms.base);
-            break;
+            case MCI_SET:
+                WINE_TRACE("Translating MCI_SET back.\n");
+                MCI_SET_PARMS_h2g((void *)c->dwParam2, &set_parms.base);
+                break;
 
-        case MCI_PLAY:
-            WINE_TRACE("Translating MCI_PLAY back.\n");
-            MCI_PLAY_PARMS_h2g((void *)c->dwParam2, &play_parms);
-            break;
+            case MCI_PLAY:
+                WINE_TRACE("Translating MCI_PLAY back.\n");
+                MCI_PLAY_PARMS_h2g((void *)c->dwParam2, &play_parms);
+                break;
 
-        case MCI_SYSINFO:
-            WINE_TRACE("Translating MCI_SYSINFO back.\n");
-            MCI_SYSINFO_PARMS_h2g((void *)c->dwParam2, &sysinfo_parms);
-            break;
+            case MCI_SYSINFO:
+                WINE_TRACE("Translating MCI_SYSINFO back.\n");
+                MCI_SYSINFO_PARMS_h2g((void *)c->dwParam2, &sysinfo_parms);
+                break;
 
-        case MCI_INFO:
-            WINE_TRACE("Translating MCI_INFO back.\n");
-            MCI_INFO_PARMS_h2g((void *)c->dwParam2, &info_parms);
-            break;
+            case MCI_INFO:
+                WINE_TRACE("Translating MCI_INFO back.\n");
+                MCI_INFO_PARMS_h2g((void *)c->dwParam2, &info_parms);
+                break;
+
+            case MCI_SEEK:
+                WINE_TRACE("Translating MCI_SEEK back.\n");
+                MCI_SEEK_PARMS_h2g((void *)c->dwParam2, &seek_parms);
+                break;
+
+            case MCI_STOP:
+            case MCI_CLOSE:
+            case MCI_STEP:
+            case MCI_RESUME:
+                WINE_TRACE("Translating generic parameter back.\n");
+                MCI_GENERIC_PARMS_h2g((void *)c->dwParam2, &generic_parms);
+                break;
+        }
     }
 #endif
 }

@@ -530,4 +530,37 @@ static inline void MCI_INFO_PARMS_h2g(struct qemu_MCI_INFO_PARMS *guest, const M
     guest->dwRetSize = host->dwRetSize;
 }
 
+struct qemu_MCI_SEEK_PARMS
+{
+    qemu_ptr    dwCallback;
+    DWORD       dwTo;
+};
+
+static inline void MCI_SEEK_PARMS_g2h(MCI_SEEK_PARMS *host, const struct qemu_MCI_SEEK_PARMS *guest)
+{
+    host->dwCallback = guest->dwCallback;
+    host->dwTo = guest->dwTo;
+}
+
+static inline void MCI_SEEK_PARMS_h2g(struct qemu_MCI_SEEK_PARMS *guest, const MCI_SEEK_PARMS *host)
+{
+    guest->dwCallback = host->dwCallback;
+    guest->dwTo = host->dwTo;
+}
+
+struct qemu_MCI_GENERIC_PARMS
+{
+    DWORD_PTR dwCallback;
+};
+
+static inline void MCI_GENERIC_PARMS_g2h(MCI_GENERIC_PARMS *host, const struct qemu_MCI_GENERIC_PARMS *guest)
+{
+    host->dwCallback = guest->dwCallback;
+}
+
+static inline void MCI_GENERIC_PARMS_h2g(struct qemu_MCI_GENERIC_PARMS *guest, const MCI_GENERIC_PARMS *host)
+{
+    guest->dwCallback = host->dwCallback;
+}
+
 #endif
