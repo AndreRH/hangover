@@ -1316,6 +1316,19 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             msg_out->lParam = (LPARAM)host_item;
             break;
         }
+
+        case LVM_INSERTCOLUMNA:
+        case LVM_INSERTCOLUMNW:
+        {
+            struct qemu_LVCOLUMN *guest_item = (struct qemu_LVCOLUMN *)msg_in->lParam;
+            LVCOLUMNW *host_item;
+            WINE_TRACE("Translating LVM_*COLUMN message at %p.\n", guest_item);
+            host_item = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_item));
+            LVCOLUMN_g2h(host_item, guest_item);
+            msg_out->lParam = (LPARAM)host_item;
+            break;
+        }
+
 #endif
 
         default:
@@ -1465,6 +1478,20 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
                 WINE_TRACE("Reverse translating LVM_*ITEM message.\n");
 
                 LVITEM_h2g(guest_item, host_item);
+
+                HeapFree(GetProcessHeap(), 0, host_item);
+            }
+            break;
+
+        case LVM_INSERTCOLUMNA:
+        case LVM_INSERTCOLUMNW:
+            if (conv->lParam != orig->lParam)
+            {
+                struct qemu_LVCOLUMN *guest_item = (struct qemu_LVCOLUMN *)orig->lParam;
+                LVCOLUMNW *host_item = (LVCOLUMNW *)conv->lParam;
+                WINE_TRACE("Reverse translating LVM_*COLUMN message.\n");
+
+                LVCOLUMN_h2g(guest_item, host_item);
 
                 HeapFree(GetProcessHeap(), 0, host_item);
             }
@@ -1673,6 +1700,16 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             break;
         }
 
+        case LVM_INSERTCOLUMNA:
+        case LVM_INSERTCOLUMNW:
+        {
+            LVCOLUMNW *host = (LVCOLUMNW *)msg_in->lParam;
+            struct qemu_LVCOLUMN *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
+            LVCOLUMN_h2g(guest, host);
+            msg_out->lParam = (LPARAM)guest;
+            break;
+        }
+
         default:
             /* Not constant numbers */
             if (msg_in->message == msg_FINDMSGSTRING)
@@ -1794,6 +1831,18 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
             struct qemu_LVITEM *guest = (struct qemu_LVITEM *)conv->lParam;
 
             LVITEM_g2h(host, guest);
+
+            HeapFree(GetProcessHeap(), 0, guest);
+            break;
+        }
+
+        case LVM_INSERTCOLUMNA:
+        case LVM_INSERTCOLUMNW:
+        {
+            LVCOLUMNW *host = (LVCOLUMNW *)orig->lParam;
+            struct qemu_LVCOLUMN *guest = (struct qemu_LVCOLUMN *)conv->lParam;
+
+            LVCOLUMN_g2h(host, guest);
 
             HeapFree(GetProcessHeap(), 0, guest);
             break;

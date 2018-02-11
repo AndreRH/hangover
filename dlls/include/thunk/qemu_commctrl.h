@@ -1150,4 +1150,51 @@ static inline void NMLVDISPINFO_h2g(struct qemu_NMLVDISPINFO *guest, const NMLVD
     LVITEM_h2g(&guest->item, &host->item);
 }
 
+struct qemu_LVCOLUMN
+{
+    UINT mask;
+    INT  fmt;
+    INT  cx;
+    qemu_ptr pszText;
+    INT  cchTextMax;
+    INT  iSubItem;
+    /* (_WIN32_IE >= 0x0300) */
+    INT  iImage;
+    INT  iOrder;
+    /* (_WIN32_WINNT >= 0x0600) */
+    INT  cxMin;
+    INT  cxDefault;
+    INT  cxIdeal;
+};
+
+static inline void LVCOLUMN_g2h(LVCOLUMNW *host, const struct qemu_LVCOLUMN *guest)
+{
+    host->mask = guest->mask;
+    host->fmt = guest->fmt;
+    host->cx = guest->cx;
+    host->pszText = (WCHAR *)(ULONG_PTR)guest->pszText;
+    host->cchTextMax = guest->cchTextMax;
+    host->iSubItem = guest->iSubItem;
+    host->iImage = guest->iImage;
+    host->iOrder = guest->iOrder;
+    host->cxMin = guest->cxMin;
+    host->cxDefault = guest->cxDefault;
+    host->cxIdeal = guest->cxIdeal;
+}
+
+static inline void LVCOLUMN_h2g(struct qemu_LVCOLUMN *guest, const LVCOLUMNW *host)
+{
+    guest->mask = host->mask;
+    guest->fmt = host->fmt;
+    guest->cx = host->cx;
+    guest->pszText = (ULONG_PTR)host->pszText;
+    guest->cchTextMax = host->cchTextMax;
+    guest->iSubItem = host->iSubItem;
+    guest->iImage = host->iImage;
+    guest->iOrder = host->iOrder;
+    guest->cxMin = host->cxMin;
+    guest->cxDefault = host->cxDefault;
+    guest->cxIdeal = host->cxIdeal;
+}
+
 #endif
