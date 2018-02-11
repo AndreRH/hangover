@@ -763,6 +763,16 @@ static void listview_notify(MSG *guest, MSG *host, BOOL ret)
                 customdraw = (struct qemu_NMLVCUSTOMDRAW *)guest->lParam;
                 NMLVCUSTOMDRAW_g2h((NMLVCUSTOMDRAW *)hdr, customdraw);
                 break;
+
+            case LVN_GETDISPINFOA:
+            case LVN_GETDISPINFOW:
+            case LVN_BEGINLABELEDITA:
+            case LVN_BEGINLABELEDITW:
+            case LVN_ENDLABELEDITA:
+            case LVN_ENDLABELEDITW:
+                dispinfo = (struct qemu_NMLVDISPINFO *)guest->lParam;
+                NMLVDISPINFO_g2h((NMLVDISPINFOW *)hdr, dispinfo);
+                break;
         }
 
         if (guest->lParam != host->lParam)
