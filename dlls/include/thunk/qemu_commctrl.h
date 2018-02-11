@@ -992,7 +992,10 @@ static inline void LVITEM_g2h(LVITEMW *host, const struct qemu_LVITEM *guest)
     host->iSubItem = guest->iSubItem;
     host->state = guest->state;
     host->stateMask = guest->stateMask;
-    host->pszText = (WCHAR *)(ULONG_PTR)guest->pszText;
+    if ((LONG)guest->pszText == (LONG_PTR)LPSTR_TEXTCALLBACKW)
+        host->pszText = LPSTR_TEXTCALLBACKW;
+    else
+        host->pszText = (WCHAR *)(ULONG_PTR)guest->pszText;
     host->cchTextMax = guest->cchTextMax;
     host->iImage = guest->iImage;
     host->lParam = guest->lParam;
