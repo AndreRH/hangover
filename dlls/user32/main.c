@@ -1436,6 +1436,11 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             }
             break;
 
+        case LVM_SETICONSPACING:
+            /* The generic code expanded the (most likely) negative numbers wrong. Fix it up!. */
+            msg_out->lParam = (LONG)msg_in->lParam;
+            break;
+
 #endif
 
         default:
