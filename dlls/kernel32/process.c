@@ -1043,15 +1043,17 @@ struct qemu_GetProcessAffinityMask
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetProcessAffinityMask(HANDLE hProcess, PDWORD_PTR process_mask, PDWORD_PTR system_mask)
+WINBASEAPI BOOL WINAPI GetProcessAffinityMask(HANDLE hProcess, DWORD_PTR *process_mask, DWORD_PTR *system_mask)
 {
     struct qemu_GetProcessAffinityMask call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCESSAFFINITYMASK);
     call.hProcess = guest_HANDLE_g2h(hProcess);
-    call.process_mask = (ULONG_PTR)process_mask;
-    call.system_mask = (ULONG_PTR)system_mask;
 
     qemu_syscall(&call.super);
+    if (process_mask)
+        *process_mask = call.process_mask;
+    if (system_mask)
+        *system_mask = call.system_mask;
 
     return call.super.iret;
 }
@@ -1061,8 +1063,12 @@ WINBASEAPI BOOL WINAPI GetProcessAffinityMask(HANDLE hProcess, PDWORD_PTR proces
 void qemu_GetProcessAffinityMask(struct qemu_syscall *call)
 {
     struct qemu_GetProcessAffinityMask *c = (struct qemu_GetProcessAffinityMask *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetProcessAffinityMask(QEMU_G2H(c->hProcess), QEMU_G2H(c->process_mask), QEMU_G2H(c->system_mask));
+    DWORD_PTR process_mask, system_mask;
+
+    WINE_TRACE("\n");
+    c->super.iret = GetProcessAffinityMask(QEMU_G2H(c->hProcess), &process_mask, &system_mask);
+    c->process_mask = process_mask;
+    c->system_mask = system_mask;
 }
 
 #endif
