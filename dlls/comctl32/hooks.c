@@ -906,6 +906,139 @@ static void listview_notify(MSG *guest, MSG *host, BOOL ret)
     }
 }
 
+static void header_notify(MSG *guest, MSG *host, BOOL ret)
+{
+    NMHDR *hdr = (NMHDR *)host->lParam;
+    struct qemu_NMHEADER *header;
+    struct qemu_NMCUSTOMDRAW *customdraw;
+    struct qemu_NMHDR *guest_hdr;
+
+    WINE_TRACE("Handling a header control notify message\n");
+    if (ret)
+    {
+        switch (hdr->code)
+        {
+            case NM_CUSTOMDRAW:
+                customdraw = (struct qemu_NMCUSTOMDRAW *)guest->lParam;
+                NMCUSTOMDRAW_g2h((NMCUSTOMDRAW *)hdr, customdraw);
+                break;
+
+            case NM_RELEASEDCAPTURE:
+                guest_hdr = (struct qemu_NMHDR *)guest->lParam;
+                NMHDR_g2h(hdr, guest_hdr);
+                break;
+
+            case HDN_ITEMCHANGINGA:
+            case HDN_ITEMCHANGINGW:
+            case HDN_ITEMCHANGEDA:
+            case HDN_ITEMCHANGEDW:
+            case HDN_ITEMDBLCLICKA:
+            case HDN_ITEMDBLCLICKW:
+            case HDN_DIVIDERDBLCLICKW:
+            case HDN_BEGINTRACKW:
+            case HDN_ENDDRAG:
+            case HDN_ITEMCLICKA:
+            case HDN_ITEMCLICKW:
+            case HDN_ENDTRACKA:
+            case HDN_ENDTRACKW:
+            case HDN_BEGINDRAG:
+            case HDN_TRACKA:
+            case HDN_TRACKW:
+                header = (struct qemu_NMHEADER *)guest->lParam;
+                NMHEADER_g2h((NMHEADERW *)hdr, header);
+                break;
+        }
+
+        if (guest->lParam != host->lParam)
+            HeapFree(GetProcessHeap(), 0, (void *)guest->lParam);
+        return;
+    }
+
+    switch (hdr->code)
+    {
+        case HDN_ITEMCHANGINGA:
+        case HDN_ITEMCHANGINGW:
+        case HDN_ITEMCHANGEDA:
+        case HDN_ITEMCHANGEDW:
+        case HDN_ITEMDBLCLICKA:
+        case HDN_ITEMDBLCLICKW:
+        case HDN_DIVIDERDBLCLICKW:
+        case HDN_BEGINTRACKW:
+        case HDN_ENDDRAG:
+        case HDN_ITEMCLICKA:
+        case HDN_ITEMCLICKW:
+        case HDN_ENDTRACKA:
+        case HDN_ENDTRACKW:
+        case HDN_BEGINDRAG:
+        case HDN_TRACKA:
+        case HDN_TRACKW:
+            WINE_TRACE("Handling qemu_NMHEADER message %d.\n", hdr->code);
+            header = HeapAlloc(GetProcessHeap(), 0, sizeof(*header));
+            NMHEADER_h2g(header, (NMHEADERW *)hdr);
+            guest->lParam = (LPARAM)header;
+            /* FIXME: pitem needs more fixup. */
+            break;
+
+        case HDN_DIVIDERDBLCLICKA:
+            WINE_FIXME("Unhandled header notify message HDN_DIVIDERDBLCLICKA.\n");
+            break;
+        case HDN_BEGINTRACKA:
+            WINE_FIXME("Unhandled header notify message HDN_BEGINTRACKA.\n");
+            break;
+        case HDN_GETDISPINFOA:
+            WINE_FIXME("Unhandled header notify message HDN_GETDISPINFOA.\n");
+            break;
+        case HDN_GETDISPINFOW:
+            WINE_FIXME("Unhandled header notify message HDN_GETDISPINFOW.\n");
+            break;
+        case HDN_FILTERCHANGE:
+            WINE_FIXME("Unhandled header notify message HDN_FILTERCHANGE.\n");
+            break;
+        case HDN_FILTERBTNCLICK:
+            WINE_FIXME("Unhandled header notify message HDN_FILTERBTNCLICK.\n");
+            break;
+        case HDN_BEGINFILTEREDIT:
+            WINE_FIXME("Unhandled header notify message HDN_BEGINFILTEREDIT.\n");
+            break;
+        case HDN_ENDFILTEREDIT:
+            WINE_FIXME("Unhandled header notify message HDN_ENDFILTEREDIT.\n");
+            break;
+        case HDN_ITEMSTATEICONCLICK:
+            WINE_FIXME("Unhandled header notify message HDN_ITEMSTATEICONCLICK.\n");
+            break;
+        case HDN_ITEMKEYDOWN:
+            WINE_FIXME("Unhandled header notify message HDN_ITEMKEYDOWN.\n");
+            break;
+        case HDN_DROPDOWN:
+            WINE_FIXME("Unhandled header notify message HDN_DROPDOWN.\n");
+            break;
+        case HDN_OVERFLOWCLICK:
+            WINE_FIXME("Unhandled header notify message HDN_OVERFLOWCLICK.\n");
+            break;
+
+        case NM_CUSTOMDRAW:
+            WINE_TRACE("Handling header notify message NM_CUSTOMDRAW.\n");
+            customdraw = HeapAlloc(GetProcessHeap(), 0, sizeof(*customdraw));
+            NMCUSTOMDRAW_h2g(customdraw, (NMCUSTOMDRAW *)hdr);
+            guest->lParam = (LPARAM)customdraw;
+            break;
+
+        case NM_RCLICK:
+            WINE_FIXME("Unhandled header notify message NM_RCLICK.\n");
+            break;
+
+        case NM_RELEASEDCAPTURE:
+            WINE_TRACE("Handling header notify message %d.\n", hdr->code);
+            guest_hdr = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest_hdr));
+            NMHDR_h2g(guest_hdr, hdr);
+            guest->lParam = (LPARAM)guest_hdr;
+            break;
+
+        default:
+            WINE_ERR("Unexpected notify message from %p id %lx code %x.\n", hdr->hwndFrom, hdr->idFrom, hdr->code);
+    }
+}
+
 static WNDPROC hook_class(const WCHAR *name, WNDPROC replace)
 {
     WNDPROC ret;
@@ -960,6 +1093,7 @@ void register_notify_callbacks(void)
     register_notify(STATUSCLASSNAMEW, status_notify);
     register_notify(WC_TABCONTROLW, tabcontrol_notify);
     register_notify(WC_LISTVIEWW, listview_notify);
+    register_notify(WC_HEADERW, header_notify);
 }
 
 #endif

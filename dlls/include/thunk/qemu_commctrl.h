@@ -1227,4 +1227,28 @@ static inline void LVFINDINFO_h2g(struct qemu_LVFINDINFO *guest, const LVFINDINF
     guest->vkDirection = host->vkDirection;
 }
 
+struct qemu_NMHEADER
+{
+    struct qemu_NMHDR     hdr;
+    INT     iItem;
+    INT     iButton;
+    qemu_ptr pitem;
+};
+
+static inline void NMHEADER_g2h(NMHEADERW *host, const struct qemu_NMHEADER *guest)
+{
+    NMHDR_g2h(&host->hdr, &guest->hdr);
+    host->iItem = guest->iItem;
+    host->iButton = guest->iButton;
+    host->pitem = (HDITEMW *)(ULONG_PTR)guest->pitem;
+}
+
+static inline void NMHEADER_h2g(struct qemu_NMHEADER *guest, const NMHEADERW *host)
+{
+    NMHDR_h2g(&guest->hdr, &host->hdr);
+    guest->iItem = host->iItem;
+    guest->iButton = host->iButton;
+    guest->pitem = (ULONG_PTR)host->pitem;
+}
+
 #endif
