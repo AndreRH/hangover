@@ -754,6 +754,7 @@ static void listview_notify(MSG *guest, MSG *host, BOOL ret)
             case NM_KILLFOCUS:
             case NM_RELEASEDCAPTURE:
             case NM_SETFOCUS:
+            case NM_HOVER:
                 guest_hdr = (struct qemu_NMHDR *)guest->lParam;
                 NMHDR_g2h(hdr, guest_hdr);
                 break;
@@ -866,15 +867,12 @@ static void listview_notify(MSG *guest, MSG *host, BOOL ret)
             guest->lParam = (LPARAM)customdraw;
             break;
 
-        case NM_HOVER:
-            WINE_FIXME("Unhandled listview notify message NM_HOVER.\n");
-            break;
-
         case LVN_ITEMACTIVATE:
         case NM_RETURN:
         case NM_KILLFOCUS:
         case NM_RELEASEDCAPTURE:
         case NM_SETFOCUS:
+        case NM_HOVER:
             WINE_TRACE("Handling notify message %d.\n", hdr->code);
             guest_hdr = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest_hdr));
             NMHDR_h2g(guest_hdr, hdr);
