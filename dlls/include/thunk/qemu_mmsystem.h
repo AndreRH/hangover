@@ -429,4 +429,46 @@ static inline void MCI_OPEN_PARMS_h2g(struct qemu_MCI_OPEN_PARMS *guest, const M
     guest->lpstrAlias = (ULONG_PTR)host->lpstrAlias;
 }
 
+struct qemu_MCI_SET_PARMS
+{
+    qemu_ptr    dwCallback;
+    DWORD       dwTimeFormat;
+    DWORD       dwAudio;
+};
+
+static inline void MCI_SET_PARMS_g2h(MCI_SET_PARMS *host, const struct qemu_MCI_SET_PARMS *guest)
+{
+    host->dwCallback = guest->dwCallback;
+    host->dwTimeFormat = guest->dwTimeFormat;
+    host->dwAudio = guest->dwAudio;
+}
+
+static inline void MCI_SET_PARMS_h2g(struct qemu_MCI_SET_PARMS *guest, const MCI_SET_PARMS *host)
+{
+    guest->dwCallback = host->dwCallback;
+    guest->dwTimeFormat = host->dwTimeFormat;
+    guest->dwAudio = host->dwAudio;
+}
+
+struct qemu_MCI_PLAY_PARMS
+{
+    qemu_ptr    dwCallback;
+    DWORD       dwFrom;
+    DWORD       dwTo;
+};
+
+static inline void MCI_PLAY_PARMS_g2h(MCI_PLAY_PARMS *host, const struct qemu_MCI_PLAY_PARMS *guest)
+{
+    host->dwCallback = guest->dwCallback;
+    host->dwFrom = guest->dwFrom;
+    host->dwTo = guest->dwTo;
+}
+
+static inline void MCI_PLAY_PARMS_h2g(struct qemu_MCI_PLAY_PARMS *guest, const MCI_PLAY_PARMS *host)
+{
+    guest->dwCallback = host->dwCallback;
+    guest->dwFrom = host->dwFrom;
+    guest->dwTo = host->dwTo;
+}
+
 #endif

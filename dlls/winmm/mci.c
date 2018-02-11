@@ -425,6 +425,8 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
     MCI_RECORD_PARMS record_parms;
     MCI_STATUS_PARMS status_parms;
     MCI_OPEN_PARMSW open_parms;
+    MCI_SET_PARMS set_parms;
+    MCI_PLAY_PARMS play_parms;
 
     WINE_TRACE("\n");
 
@@ -436,6 +438,11 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
 #if HOST_BIT != GUEST_BIT
     switch (msg)
     {
+        case MCI_STOP:
+        case MCI_CLOSE:
+            /* Nothing to do. */
+            break;
+
         case MCI_OPEN_DRIVER:
             WINE_FIXME("Unhandled command MCI_OPEN_DRIVER.\n");
             break;
@@ -448,20 +455,17 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
             param2 = (DWORD_PTR)&open_parms;
             break;
 
-        case MCI_CLOSE:
-            WINE_FIXME("Unhandled command MCI_CLOSE.\n");
-            break;
         case MCI_ESCAPE:
             WINE_FIXME("Unhandled command MCI_ESCAPE.\n");
             break;
         case MCI_PLAY:
-            WINE_FIXME("Unhandled command MCI_PLAY.\n");
+            WINE_TRACE("Translating MCI_PLAY.\n");
+            MCI_PLAY_PARMS_g2h(&play_parms, (void *)param2);
+            param2 = (DWORD_PTR)&play_parms;
             break;
+
         case MCI_SEEK:
             WINE_FIXME("Unhandled command MCI_SEEK.\n");
-            break;
-        case MCI_STOP:
-            WINE_FIXME("Unhandled command MCI_STOP.\n");
             break;
         case MCI_PAUSE:
             WINE_FIXME("Unhandled command MCI_PAUSE.\n");
@@ -479,8 +483,11 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
             WINE_FIXME("Unhandled command MCI_SPIN.\n");
             break;
         case MCI_SET:
-            WINE_FIXME("Unhandled command MCI_SET.\n");
+            WINE_TRACE("Translating MCI_SET.\n");
+            MCI_SET_PARMS_g2h(&set_parms, (void *)param2);
+            param2 = (DWORD_PTR)&set_parms;
             break;
+
         case MCI_STEP:
             WINE_FIXME("Unhandled command MCI_STEP.\n");
             break;
@@ -598,6 +605,16 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
         case MCI_OPEN:
             WINE_TRACE("Translating MCI_OPEN back.\n");
             MCI_OPEN_PARMS_h2g((void *)c->dwParam2, &open_parms);
+            break;
+
+        case MCI_SET:
+            WINE_TRACE("Translating MCI_SET back.\n");
+            MCI_SET_PARMS_h2g((void *)c->dwParam2, &set_parms);
+            break;
+
+        case MCI_PLAY:
+            WINE_TRACE("Translating MCI_PLAY back.\n");
+            MCI_PLAY_PARMS_h2g((void *)c->dwParam2, &play_parms);
             break;
     }
 #endif
