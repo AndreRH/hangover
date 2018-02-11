@@ -78,7 +78,8 @@ done
 # Link Wine libraries.
 declare -a wine_dlls=("dbghelp" "ole32" "oleaut32" "propsys" "rpcrt4" "urlmon" "windowscodecs" "netapi32" "dnsapi" "msimg32"
         "crypt32" "dwmapi" "uxtheme" "setupapi" "wintrust" "wtsapi32" "pdh" "avrt" "cryptnet" "imagehlp" "cryptui" "sensapi"
-        "msvcp80" "msvcp100" "lz32" "cabinet" "msi" "dplay" "dplayx")
+        "msvcp80" "msvcp100" "lz32" "cabinet" "msi" "dplay" "dplayx" "dpwsockx" "dpnet" "dpnaddr" "dpnhpast" "dpnlobby"
+        "dpvoice")
 ln -sf $DESTDIR/build/wine-guest/libs/wine/libwine.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll64
 ln -sf $DESTDIR/build/wine-guest32/libs/wine/libwine.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
 
