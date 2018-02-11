@@ -424,6 +424,7 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
     MCI_SAVE_PARMSW save_parms;
     MCI_RECORD_PARMS record_parms;
     MCI_STATUS_PARMS status_parms;
+    MCI_OPEN_PARMSW open_parms;
 
     WINE_TRACE("\n");
 
@@ -442,8 +443,11 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
             WINE_FIXME("Unhandled command MCI_CLOSE_DRIVER.\n");
             break;
         case MCI_OPEN:
-            WINE_FIXME("Unhandled command MCI_OPEN.\n");
+            WINE_TRACE("Translating MCI_OPEN.\n");
+            MCI_OPEN_PARMS_g2h(&open_parms, (void *)param2);
+            param2 = (DWORD_PTR)&open_parms;
             break;
+
         case MCI_CLOSE:
             WINE_FIXME("Unhandled command MCI_CLOSE.\n");
             break;
@@ -589,6 +593,11 @@ void qemu_mciSendCommand(struct qemu_syscall *call)
         case MCI_STATUS:
             WINE_TRACE("Translating MCI_STATUS back.\n");
             MCI_STATUS_PARMS_h2g((void *)c->dwParam2, &status_parms);
+            break;
+
+        case MCI_OPEN:
+            WINE_TRACE("Translating MCI_OPEN back.\n");
+            MCI_OPEN_PARMS_h2g((void *)c->dwParam2, &open_parms);
             break;
     }
 #endif

@@ -402,4 +402,31 @@ static inline void MCI_STATUS_PARMS_h2g(struct qemu_MCI_STATUS_PARMS *guest, con
     guest->dwTrack = host->dwTrack;
 }
 
+struct qemu_MCI_OPEN_PARMS
+{
+    qemu_ptr    dwCallback;
+    MCIDEVICEID wDeviceID;
+    qemu_ptr    lpstrDeviceType;
+    qemu_ptr    lpstrElementName;
+    qemu_ptr    lpstrAlias;
+};
+
+static inline void MCI_OPEN_PARMS_g2h(MCI_OPEN_PARMSW *host, const struct qemu_MCI_OPEN_PARMS *guest)
+{
+    host->dwCallback = guest->dwCallback;
+    host->wDeviceID = guest->wDeviceID;
+    host->lpstrDeviceType = (WCHAR *)(ULONG_PTR)guest->lpstrDeviceType;
+    host->lpstrElementName = (WCHAR *)(ULONG_PTR)guest->lpstrElementName;
+    host->lpstrAlias = (WCHAR *)(ULONG_PTR)guest->lpstrAlias;
+}
+
+static inline void MCI_OPEN_PARMS_h2g(struct qemu_MCI_OPEN_PARMS *guest, const MCI_OPEN_PARMSW *host)
+{
+    guest->dwCallback = host->dwCallback;
+    guest->wDeviceID = host->wDeviceID;
+    guest->lpstrDeviceType = (ULONG_PTR)host->lpstrDeviceType;
+    guest->lpstrElementName = (ULONG_PTR)host->lpstrElementName;
+    guest->lpstrAlias = (ULONG_PTR)host->lpstrAlias;
+}
+
 #endif
