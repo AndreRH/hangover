@@ -59,7 +59,7 @@ void qemu_DSA_Create(struct qemu_syscall *call)
 {
     struct qemu_DSA_Create *c = (struct qemu_DSA_Create *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)DSA_Create(c->nSize, c->nGrow);
+    c->super.iret = (ULONG_PTR)p_DSA_Create(c->nSize, c->nGrow);
 }
 
 #endif
@@ -89,7 +89,7 @@ void qemu_DSA_Destroy(struct qemu_syscall *call)
 {
     struct qemu_DSA_Destroy *c = (struct qemu_DSA_Destroy *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DSA_Destroy(QEMU_G2H(c->hdsa));
+    c->super.iret = p_DSA_Destroy(QEMU_G2H(c->hdsa));
 }
 
 #endif
@@ -124,7 +124,7 @@ void qemu_DSA_GetItem(struct qemu_syscall *call)
 {
     struct qemu_DSA_GetItem *c = (struct qemu_DSA_GetItem *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DSA_GetItem(QEMU_G2H(c->hdsa), c->nIndex, QEMU_G2H(c->pDest));
+    c->super.iret = p_DSA_GetItem(QEMU_G2H(c->hdsa), c->nIndex, QEMU_G2H(c->pDest));
 }
 
 #endif
@@ -156,7 +156,7 @@ void qemu_DSA_GetItemPtr(struct qemu_syscall *call)
 {
     struct qemu_DSA_GetItemPtr *c = (struct qemu_DSA_GetItemPtr *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)DSA_GetItemPtr(QEMU_G2H(c->hdsa), c->nIndex);
+    c->super.iret = (ULONG_PTR)p_DSA_GetItemPtr(QEMU_G2H(c->hdsa), c->nIndex);
 }
 
 #endif
@@ -191,7 +191,7 @@ void qemu_DSA_SetItem(struct qemu_syscall *call)
 {
     struct qemu_DSA_SetItem *c = (struct qemu_DSA_SetItem *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DSA_SetItem(QEMU_G2H(c->hdsa), c->nIndex, QEMU_G2H(c->pSrc));
+    c->super.iret = p_DSA_SetItem(QEMU_G2H(c->hdsa), c->nIndex, QEMU_G2H(c->pSrc));
 }
 
 #endif
@@ -225,7 +225,7 @@ void qemu_DSA_InsertItem(struct qemu_syscall *call)
 {
     struct qemu_DSA_InsertItem *c = (struct qemu_DSA_InsertItem *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DSA_InsertItem(QEMU_G2H(c->hdsa), c->nIndex, QEMU_G2H(c->pSrc));
+    c->super.iret = p_DSA_InsertItem(QEMU_G2H(c->hdsa), c->nIndex, QEMU_G2H(c->pSrc));
 }
 
 #endif
@@ -258,7 +258,7 @@ void qemu_DSA_DeleteItem(struct qemu_syscall *call)
 {
     struct qemu_DSA_DeleteItem *c = (struct qemu_DSA_DeleteItem *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DSA_DeleteItem(QEMU_G2H(c->hdsa), c->nIndex);
+    c->super.iret = p_DSA_DeleteItem(QEMU_G2H(c->hdsa), c->nIndex);
 }
 
 #endif
@@ -289,7 +289,7 @@ void qemu_DSA_DeleteAllItems(struct qemu_syscall *call)
 {
     struct qemu_DSA_DeleteAllItems *c = (struct qemu_DSA_DeleteAllItems *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DSA_DeleteAllItems(QEMU_G2H(c->hdsa));
+    c->super.iret = p_DSA_DeleteAllItems(QEMU_G2H(c->hdsa));
 }
 
 #endif
@@ -322,7 +322,7 @@ void qemu_DSA_EnumCallback(struct qemu_syscall *call)
 {
     struct qemu_DSA_EnumCallback *c = (struct qemu_DSA_EnumCallback *)call;
     WINE_FIXME("Unverified!\n");
-    DSA_EnumCallback(QEMU_G2H(c->hdsa), QEMU_G2H(c->enumProc), QEMU_G2H(c->lParam));
+    p_DSA_EnumCallback(QEMU_G2H(c->hdsa), QEMU_G2H(c->enumProc), QEMU_G2H(c->lParam));
 }
 
 #endif
@@ -354,7 +354,7 @@ void qemu_DSA_DestroyCallback(struct qemu_syscall *call)
 {
     struct qemu_DSA_DestroyCallback *c = (struct qemu_DSA_DestroyCallback *)call;
     WINE_FIXME("Unverified!\n");
-    DSA_DestroyCallback(QEMU_G2H(c->hdsa), QEMU_G2H(c->enumProc), QEMU_G2H(c->lParam));
+    p_DSA_DestroyCallback(QEMU_G2H(c->hdsa), QEMU_G2H(c->enumProc), QEMU_G2H(c->lParam));
 }
 
 #endif
@@ -385,7 +385,7 @@ void qemu_DSA_Clone(struct qemu_syscall *call)
 {
     struct qemu_DSA_Clone *c = (struct qemu_DSA_Clone *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)DSA_Clone(QEMU_G2H(c->hdsa));
+    c->super.iret = (ULONG_PTR)p_DSA_Clone(QEMU_G2H(c->hdsa));
 }
 
 #endif
@@ -416,7 +416,7 @@ void qemu_DSA_GetSize(struct qemu_syscall *call)
 {
     struct qemu_DSA_GetSize *c = (struct qemu_DSA_GetSize *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DSA_GetSize(QEMU_G2H(c->hdsa));
+    c->super.iret = p_DSA_GetSize(QEMU_G2H(c->hdsa));
 }
 
 #endif

@@ -66,7 +66,7 @@ void qemu_Str_GetPtrA(struct qemu_syscall *call)
 {
     struct qemu_Str_GetPtrA *c = (struct qemu_Str_GetPtrA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = Str_GetPtrA(QEMU_G2H(c->lpSrc), QEMU_G2H(c->lpDest), c->nMaxLen);
+     c->super.iret = p_Str_GetPtrA(QEMU_G2H(c->lpSrc), QEMU_G2H(c->lpDest), c->nMaxLen);
 }
 
 #endif
@@ -99,7 +99,7 @@ void qemu_Str_SetPtrA(struct qemu_syscall *call)
 {
     struct qemu_Str_SetPtrA *c = (struct qemu_Str_SetPtrA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = Str_SetPtrA(QEMU_G2H(c->lppDest), QEMU_G2H(c->lpSrc));
+     c->super.iret = p_Str_SetPtrA(QEMU_G2H(c->lppDest), QEMU_G2H(c->lpSrc));
 }
 
 #endif
@@ -134,7 +134,7 @@ void qemu_Str_GetPtrW(struct qemu_syscall *call)
 {
     struct qemu_Str_GetPtrW *c = (struct qemu_Str_GetPtrW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = Str_GetPtrW(QEMU_G2H(c->lpSrc), QEMU_G2H(c->lpDest), c->nMaxLen);
+     c->super.iret = p_Str_GetPtrW(QEMU_G2H(c->lpSrc), QEMU_G2H(c->lpDest), c->nMaxLen);
 }
 
 #endif
@@ -166,7 +166,7 @@ void qemu_Str_SetPtrW(struct qemu_syscall *call)
 {
     struct qemu_Str_SetPtrW *c = (struct qemu_Str_SetPtrW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = Str_SetPtrW(QEMU_G2H(c->lppDest), QEMU_G2H(c->lpSrc));
+     c->super.iret = p_Str_SetPtrW(QEMU_G2H(c->lppDest), QEMU_G2H(c->lpSrc));
 }
 
 #endif
@@ -232,7 +232,7 @@ void qemu_StrCmpNIA(struct qemu_syscall *call)
 {
     struct qemu_StrCmpNIA *c = (struct qemu_StrCmpNIA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = StrCmpNIA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszComp), c->iLen);
+     c->super.iret = p_StrCmpNIA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszComp), c->iLen);
 }
 
 #endif
@@ -266,7 +266,7 @@ void qemu_StrCmpNIW(struct qemu_syscall *call)
 {
     struct qemu_StrCmpNIW *c = (struct qemu_StrCmpNIW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = StrCmpNIW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszComp), c->iLen);
+     c->super.iret = p_StrCmpNIW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszComp), c->iLen);
 }
 
 #endif
@@ -328,7 +328,7 @@ void qemu_StrToIntA(struct qemu_syscall *call)
 {
     struct qemu_StrToIntA *c = (struct qemu_StrToIntA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = StrToIntA(QEMU_G2H(c->lpszStr));
+     c->super.iret = p_StrToIntA(QEMU_G2H(c->lpszStr));
 }
 
 #endif
@@ -390,7 +390,7 @@ void qemu_StrToIntW(struct qemu_syscall *call)
 {
     struct qemu_StrToIntW *c = (struct qemu_StrToIntW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = StrToIntW(QEMU_G2H(c->lpString));
+     c->super.iret = p_StrToIntW(QEMU_G2H(c->lpString));
 }
 
 #endif
@@ -422,7 +422,7 @@ void qemu_StrCSpnA(struct qemu_syscall *call)
 {
     struct qemu_StrCSpnA *c = (struct qemu_StrCSpnA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = StrCSpnA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszMatch));
+     c->super.iret = p_StrCSpnA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszMatch));
 }
 
 #endif
@@ -488,7 +488,7 @@ void qemu_StrCmpNA(struct qemu_syscall *call)
 {
     struct qemu_StrCmpNA *c = (struct qemu_StrCmpNA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = StrCmpNA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszComp), c->iLen);
+     c->super.iret = p_StrCmpNA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszComp), c->iLen);
 }
 
 #endif
@@ -522,7 +522,7 @@ void qemu_StrCmpNW(struct qemu_syscall *call)
 {
     struct qemu_StrCmpNW *c = (struct qemu_StrCmpNW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = StrCmpNW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszComp), c->iLen);
+     c->super.iret = p_StrCmpNW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszComp), c->iLen);
 }
 
 #endif
@@ -818,7 +818,7 @@ void qemu_StrCSpnIA(struct qemu_syscall *call)
 {
     struct qemu_StrCSpnIA *c = (struct qemu_StrCSpnIA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = StrCSpnIA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszMatch));
+     c->super.iret = p_StrCSpnIA(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszMatch));
 }
 
 #endif
@@ -850,7 +850,7 @@ void qemu_StrCSpnIW(struct qemu_syscall *call)
 {
     struct qemu_StrCSpnIW *c = (struct qemu_StrCSpnIW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = StrCSpnIW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszMatch));
+     c->super.iret = p_StrCSpnIW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszMatch));
 }
 
 #endif
@@ -950,7 +950,7 @@ void qemu_StrCSpnW(struct qemu_syscall *call)
 {
     struct qemu_StrCSpnW *c = (struct qemu_StrCSpnW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = StrCSpnW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszMatch));
+     c->super.iret = p_StrCSpnW(QEMU_G2H(c->lpszStr), QEMU_G2H(c->lpszMatch));
 }
 
 #endif

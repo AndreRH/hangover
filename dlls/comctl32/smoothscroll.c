@@ -31,8 +31,6 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_comctl32);
 #endif
 
-typedef void SMOOTHSCROLLSTRUCT;
-
 struct qemu_SmoothScrollWindow
 {
     struct qemu_syscall super;
@@ -59,7 +57,7 @@ void qemu_SmoothScrollWindow(struct qemu_syscall *call)
 {
     struct qemu_SmoothScrollWindow *c = (struct qemu_SmoothScrollWindow *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SmoothScrollWindow(QEMU_G2H(c->smooth));
+    c->super.iret = p_SmoothScrollWindow(QEMU_G2H(c->smooth));
 }
 
 #endif

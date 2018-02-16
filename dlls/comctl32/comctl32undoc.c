@@ -26,8 +26,6 @@
 #include "dll_list.h"
 #include "qemu_comctl32.h"
 
-typedef void MRUINFOA, MRUINFOW;
-
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_comctl32);
@@ -59,7 +57,7 @@ void qemu_Alloc(struct qemu_syscall *call)
 {
     struct qemu_Alloc *c = (struct qemu_Alloc *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)Alloc(c->dwSize);
+    c->super.iret = (ULONG_PTR)p_Alloc(c->dwSize);
 }
 
 #endif
@@ -92,7 +90,7 @@ void qemu_ReAlloc(struct qemu_syscall *call)
 {
     struct qemu_ReAlloc *c = (struct qemu_ReAlloc *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)ReAlloc(QEMU_G2H(c->lpSrc), c->dwSize);
+    c->super.iret = (ULONG_PTR)p_ReAlloc(QEMU_G2H(c->lpSrc), c->dwSize);
 }
 
 #endif
@@ -123,7 +121,7 @@ void qemu_Free(struct qemu_syscall *call)
 {
     struct qemu_Free *c = (struct qemu_Free *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = Free(QEMU_G2H(c->lpMem));
+    c->super.iret = p_Free(QEMU_G2H(c->lpMem));
 }
 
 #endif
@@ -154,7 +152,7 @@ void qemu_GetSize(struct qemu_syscall *call)
 {
     struct qemu_GetSize *c = (struct qemu_GetSize *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = GetSize(QEMU_G2H(c->lpMem));
+    c->super.iret = p_GetSize(QEMU_G2H(c->lpMem));
 }
 
 #endif
@@ -183,7 +181,7 @@ void qemu_FreeMRUList(struct qemu_syscall *call)
 {
     struct qemu_FreeMRUList *c = (struct qemu_FreeMRUList *)call;
     WINE_FIXME("Unverified!\n");
-    FreeMRUList(QEMU_G2H(c->hMRUList));
+    p_FreeMRUList(QEMU_G2H(c->hMRUList));
 }
 
 #endif
@@ -220,7 +218,7 @@ void qemu_FindMRUData(struct qemu_syscall *call)
 {
     struct qemu_FindMRUData *c = (struct qemu_FindMRUData *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FindMRUData(QEMU_G2H(c->hList), QEMU_G2H(c->lpData), c->cbData, QEMU_G2H(c->lpRegNum));
+    c->super.iret = p_FindMRUData(QEMU_G2H(c->hList), QEMU_G2H(c->lpData), c->cbData, QEMU_G2H(c->lpRegNum));
 }
 
 #endif
@@ -255,7 +253,7 @@ void qemu_AddMRUData(struct qemu_syscall *call)
 {
     struct qemu_AddMRUData *c = (struct qemu_AddMRUData *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AddMRUData(QEMU_G2H(c->hList), QEMU_G2H(c->lpData), c->cbData);
+    c->super.iret = p_AddMRUData(QEMU_G2H(c->hList), QEMU_G2H(c->lpData), c->cbData);
 }
 
 #endif
@@ -288,7 +286,7 @@ void qemu_AddMRUStringW(struct qemu_syscall *call)
 {
     struct qemu_AddMRUStringW *c = (struct qemu_AddMRUStringW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AddMRUStringW(QEMU_G2H(c->hList), QEMU_G2H(c->lpszString));
+    c->super.iret = p_AddMRUStringW(QEMU_G2H(c->hList), QEMU_G2H(c->lpszString));
 }
 
 #endif
@@ -321,7 +319,7 @@ void qemu_AddMRUStringA(struct qemu_syscall *call)
 {
     struct qemu_AddMRUStringA *c = (struct qemu_AddMRUStringA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AddMRUStringA(QEMU_G2H(c->hList), QEMU_G2H(c->lpszString));
+    c->super.iret = p_AddMRUStringA(QEMU_G2H(c->hList), QEMU_G2H(c->lpszString));
 }
 
 #endif
@@ -354,7 +352,7 @@ void qemu_DelMRUString(struct qemu_syscall *call)
 {
     struct qemu_DelMRUString *c = (struct qemu_DelMRUString *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DelMRUString(QEMU_G2H(c->hList), c->nItemPos);
+    c->super.iret = p_DelMRUString(QEMU_G2H(c->hList), c->nItemPos);
 }
 
 #endif
@@ -389,7 +387,7 @@ void qemu_FindMRUStringW(struct qemu_syscall *call)
 {
     struct qemu_FindMRUStringW *c = (struct qemu_FindMRUStringW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FindMRUStringW(QEMU_G2H(c->hList), QEMU_G2H(c->lpszString), QEMU_G2H(c->lpRegNum));
+    c->super.iret = p_FindMRUStringW(QEMU_G2H(c->hList), QEMU_G2H(c->lpszString), QEMU_G2H(c->lpRegNum));
 }
 
 #endif
@@ -424,7 +422,7 @@ void qemu_FindMRUStringA(struct qemu_syscall *call)
 {
     struct qemu_FindMRUStringA *c = (struct qemu_FindMRUStringA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FindMRUStringA(QEMU_G2H(c->hList), QEMU_G2H(c->lpszString), QEMU_G2H(c->lpRegNum));
+    c->super.iret = p_FindMRUStringA(QEMU_G2H(c->hList), QEMU_G2H(c->lpszString), QEMU_G2H(c->lpRegNum));
 }
 
 #endif
@@ -461,7 +459,7 @@ void qemu_CreateMRUListLazyW(struct qemu_syscall *call)
 {
     struct qemu_CreateMRUListLazyW *c = (struct qemu_CreateMRUListLazyW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)CreateMRUListLazyW(QEMU_G2H(c->infoW), c->dwParam2, c->dwParam3, c->dwParam4);
+    c->super.iret = (ULONG_PTR)p_CreateMRUListLazyW(QEMU_G2H(c->infoW), c->dwParam2, c->dwParam3, c->dwParam4);
 }
 
 #endif
@@ -498,7 +496,7 @@ void qemu_CreateMRUListLazyA(struct qemu_syscall *call)
 {
     struct qemu_CreateMRUListLazyA *c = (struct qemu_CreateMRUListLazyA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)CreateMRUListLazyA(QEMU_G2H(c->lpcml), c->dwParam2, c->dwParam3, c->dwParam4);
+    c->super.iret = (ULONG_PTR)p_CreateMRUListLazyA(QEMU_G2H(c->lpcml), c->dwParam2, c->dwParam3, c->dwParam4);
 }
 
 #endif
@@ -529,7 +527,7 @@ void qemu_CreateMRUListW(struct qemu_syscall *call)
 {
     struct qemu_CreateMRUListW *c = (struct qemu_CreateMRUListW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)CreateMRUListW(QEMU_G2H(c->infoW));
+    c->super.iret = (ULONG_PTR)p_CreateMRUListW(QEMU_G2H(c->infoW));
 }
 
 #endif
@@ -560,7 +558,7 @@ void qemu_CreateMRUListA(struct qemu_syscall *call)
 {
     struct qemu_CreateMRUListA *c = (struct qemu_CreateMRUListA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)CreateMRUListA(QEMU_G2H(c->lpcml));
+    c->super.iret = (ULONG_PTR)p_CreateMRUListA(QEMU_G2H(c->lpcml));
 }
 
 #endif
@@ -597,7 +595,7 @@ void qemu_EnumMRUListW(struct qemu_syscall *call)
 {
     struct qemu_EnumMRUListW *c = (struct qemu_EnumMRUListW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumMRUListW(QEMU_G2H(c->hList), c->nItemPos, QEMU_G2H(c->lpBuffer), c->nBufferSize);
+    c->super.iret = p_EnumMRUListW(QEMU_G2H(c->hList), c->nItemPos, QEMU_G2H(c->lpBuffer), c->nBufferSize);
 }
 
 #endif
@@ -634,7 +632,7 @@ void qemu_EnumMRUListA(struct qemu_syscall *call)
 {
     struct qemu_EnumMRUListA *c = (struct qemu_EnumMRUListA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumMRUListA(QEMU_G2H(c->hList), c->nItemPos, QEMU_G2H(c->lpBuffer), c->nBufferSize);
+    c->super.iret = p_EnumMRUListA(QEMU_G2H(c->hList), c->nItemPos, QEMU_G2H(c->lpBuffer), c->nBufferSize);
 }
 
 #endif
@@ -671,7 +669,7 @@ void qemu_SendNotify(struct qemu_syscall *call)
 {
     struct qemu_SendNotify *c = (struct qemu_SendNotify *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SendNotify(QEMU_G2H(c->hwndTo), QEMU_G2H(c->hwndFrom), c->uCode, QEMU_G2H(c->lpHdr));
+    c->super.iret = p_SendNotify(QEMU_G2H(c->hwndTo), QEMU_G2H(c->hwndFrom), c->uCode, QEMU_G2H(c->lpHdr));
 }
 
 #endif
@@ -710,7 +708,7 @@ void qemu_SendNotifyEx(struct qemu_syscall *call)
 {
     struct qemu_SendNotifyEx *c = (struct qemu_SendNotifyEx *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SendNotifyEx(QEMU_G2H(c->hwndTo), QEMU_G2H(c->hwndFrom), c->uCode, QEMU_G2H(c->lpHdr), c->dwParam5);
+    c->super.iret = p_SendNotifyEx(QEMU_G2H(c->hwndTo), QEMU_G2H(c->hwndFrom), c->uCode, QEMU_G2H(c->lpHdr), c->dwParam5);
 }
 
 #endif

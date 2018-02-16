@@ -64,7 +64,7 @@ void qemu_ImageList_Add(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Add *c = (struct qemu_ImageList_Add *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_Add(QEMU_G2H(c->himl), QEMU_G2H(c->hbmImage), QEMU_G2H(c->hbmMask));
+    c->super.iret = p_ImageList_Add(QEMU_G2H(c->himl), QEMU_G2H(c->hbmImage), QEMU_G2H(c->hbmMask));
 }
 
 #endif
@@ -96,7 +96,7 @@ void qemu_ImageList_AddIcon(struct qemu_syscall *call)
 {
     struct qemu_ImageList_AddIcon *c = (struct qemu_ImageList_AddIcon *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_AddIcon(QEMU_G2H(c->himl), QEMU_G2H(c->hIcon));
+    c->super.iret = p_ImageList_AddIcon(QEMU_G2H(c->himl), QEMU_G2H(c->hIcon));
 }
 
 #endif
@@ -130,7 +130,7 @@ void qemu_ImageList_AddMasked(struct qemu_syscall *call)
 {
     struct qemu_ImageList_AddMasked *c = (struct qemu_ImageList_AddMasked *)call;
     WINE_TRACE("\n");
-    c->super.iret = ImageList_AddMasked(QEMU_G2H(c->himl), QEMU_G2H(c->hBitmap), c->clrMask);
+    c->super.iret = p_ImageList_AddMasked(QEMU_G2H(c->himl), QEMU_G2H(c->hBitmap), c->clrMask);
 }
 
 #endif
@@ -166,7 +166,7 @@ void qemu_ImageList_BeginDrag(struct qemu_syscall *call)
 {
     struct qemu_ImageList_BeginDrag *c = (struct qemu_ImageList_BeginDrag *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_BeginDrag(QEMU_G2H(c->himlTrack), c->iTrack, c->dxHotspot, c->dyHotspot);
+    c->super.iret = p_ImageList_BeginDrag(QEMU_G2H(c->himlTrack), c->iTrack, c->dxHotspot, c->dyHotspot);
 }
 
 #endif
@@ -204,7 +204,7 @@ void qemu_ImageList_Copy(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Copy *c = (struct qemu_ImageList_Copy *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_Copy(QEMU_G2H(c->himlDst), c->iDst, QEMU_G2H(c->himlSrc), c->iSrc, c->uFlags);
+    c->super.iret = p_ImageList_Copy(QEMU_G2H(c->himlDst), c->iDst, QEMU_G2H(c->himlSrc), c->iSrc, c->uFlags);
 }
 
 #endif
@@ -242,7 +242,7 @@ void qemu_ImageList_Create(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Create *c = (struct qemu_ImageList_Create *)call;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)ImageList_Create(c->cx, c->cy, c->flags, c->cInitial, c->cGrow);
+    c->super.iret = (ULONG_PTR)p_ImageList_Create(c->cx, c->cy, c->flags, c->cInitial, c->cGrow);
 }
 
 #endif
@@ -272,7 +272,7 @@ void qemu_ImageList_Destroy(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Destroy *c = (struct qemu_ImageList_Destroy *)call;
     WINE_TRACE("\n");
-    c->super.iret = ImageList_Destroy(QEMU_G2H(c->himl));
+    c->super.iret = p_ImageList_Destroy(QEMU_G2H(c->himl));
 }
 
 #endif
@@ -306,7 +306,7 @@ void qemu_ImageList_DragEnter(struct qemu_syscall *call)
 {
     struct qemu_ImageList_DragEnter *c = (struct qemu_ImageList_DragEnter *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_DragEnter(QEMU_G2H(c->hwndLock), c->x, c->y);
+    c->super.iret = p_ImageList_DragEnter(QEMU_G2H(c->hwndLock), c->x, c->y);
 }
 
 #endif
@@ -336,7 +336,7 @@ void qemu_ImageList_DragLeave(struct qemu_syscall *call)
 {
     struct qemu_ImageList_DragLeave *c = (struct qemu_ImageList_DragLeave *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_DragLeave(QEMU_G2H(c->hwndLock));
+    c->super.iret = p_ImageList_DragLeave(QEMU_G2H(c->hwndLock));
 }
 
 #endif
@@ -368,7 +368,7 @@ void qemu_ImageList_DragMove(struct qemu_syscall *call)
 {
     struct qemu_ImageList_DragMove *c = (struct qemu_ImageList_DragMove *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_DragMove(c->x, c->y);
+    c->super.iret = p_ImageList_DragMove(c->x, c->y);
 }
 
 #endif
@@ -398,7 +398,7 @@ void qemu_ImageList_DragShowNolock(struct qemu_syscall *call)
 {
     struct qemu_ImageList_DragShowNolock *c = (struct qemu_ImageList_DragShowNolock *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_DragShowNolock(c->bShow);
+    c->super.iret = p_ImageList_DragShowNolock(c->bShow);
 }
 
 #endif
@@ -438,7 +438,7 @@ void qemu_ImageList_Draw(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Draw *c = (struct qemu_ImageList_Draw *)call;
     WINE_TRACE("\n");
-    c->super.iret = ImageList_Draw(QEMU_G2H(c->himl), c->i, QEMU_G2H(c->hdc), c->x, c->y, c->fStyle);
+    c->super.iret = p_ImageList_Draw(QEMU_G2H(c->himl), c->i, QEMU_G2H(c->hdc), c->x, c->y, c->fStyle);
 }
 
 #endif
@@ -486,7 +486,7 @@ void qemu_ImageList_DrawEx(struct qemu_syscall *call)
 {
     struct qemu_ImageList_DrawEx *c = (struct qemu_ImageList_DrawEx *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_DrawEx(QEMU_G2H(c->himl), c->i, QEMU_G2H(c->hdc), c->x, c->y, c->dx, c->dy, c->rgbBk, c->rgbFg, c->fStyle);
+    c->super.iret = p_ImageList_DrawEx(QEMU_G2H(c->himl), c->i, QEMU_G2H(c->hdc), c->x, c->y, c->dx, c->dy, c->rgbBk, c->rgbFg, c->fStyle);
 }
 
 #endif
@@ -527,7 +527,7 @@ void qemu_ImageList_DrawIndirect(struct qemu_syscall *call)
         param = NULL;
 #endif
 
-    c->super.iret = ImageList_DrawIndirect(param);
+    c->super.iret = p_ImageList_DrawIndirect(param);
 }
 
 #endif
@@ -557,7 +557,7 @@ void qemu_ImageList_Duplicate(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Duplicate *c = (struct qemu_ImageList_Duplicate *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)ImageList_Duplicate(QEMU_G2H(c->himlSrc));
+    c->super.iret = (ULONG_PTR)p_ImageList_Duplicate(QEMU_G2H(c->himlSrc));
 }
 
 #endif
@@ -583,7 +583,7 @@ void qemu_ImageList_EndDrag(struct qemu_syscall *call)
 {
     struct qemu_ImageList_EndDrag *c = (struct qemu_ImageList_EndDrag *)call;
     WINE_FIXME("Unverified!\n");
-    ImageList_EndDrag();
+    p_ImageList_EndDrag();
 }
 
 #endif
@@ -613,7 +613,7 @@ void qemu_ImageList_GetBkColor(struct qemu_syscall *call)
 {
     struct qemu_ImageList_GetBkColor *c = (struct qemu_ImageList_GetBkColor *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_GetBkColor(QEMU_G2H(c->himl));
+    c->super.iret = p_ImageList_GetBkColor(QEMU_G2H(c->himl));
 }
 
 #endif
@@ -645,7 +645,7 @@ void qemu_ImageList_GetDragImage(struct qemu_syscall *call)
 {
     struct qemu_ImageList_GetDragImage *c = (struct qemu_ImageList_GetDragImage *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)ImageList_GetDragImage(QEMU_G2H(c->ppt), QEMU_G2H(c->pptHotspot));
+    c->super.iret = (ULONG_PTR)p_ImageList_GetDragImage(QEMU_G2H(c->ppt), QEMU_G2H(c->pptHotspot));
 }
 
 #endif
@@ -677,7 +677,7 @@ void qemu_ImageList_GetFlags(struct qemu_syscall *call)
 {
     struct qemu_ImageList_GetFlags *c = (struct qemu_ImageList_GetFlags *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_GetFlags(QEMU_G2H(c->himl));
+    c->super.iret = p_ImageList_GetFlags(QEMU_G2H(c->himl));
 }
 
 #endif
@@ -711,7 +711,7 @@ void qemu_ImageList_GetIcon(struct qemu_syscall *call)
 {
     struct qemu_ImageList_GetIcon *c = (struct qemu_ImageList_GetIcon *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)ImageList_GetIcon(QEMU_G2H(c->himl), c->i, c->fStyle);
+    c->super.iret = (ULONG_PTR)p_ImageList_GetIcon(QEMU_G2H(c->himl), c->i, c->fStyle);
 }
 
 #endif
@@ -745,7 +745,7 @@ void qemu_ImageList_GetIconSize(struct qemu_syscall *call)
 {
     struct qemu_ImageList_GetIconSize *c = (struct qemu_ImageList_GetIconSize *)call;
     WINE_TRACE("\n");
-    c->super.iret = ImageList_GetIconSize(QEMU_G2H(c->himl), QEMU_G2H(c->cx), QEMU_G2H(c->cy));
+    c->super.iret = p_ImageList_GetIconSize(QEMU_G2H(c->himl), QEMU_G2H(c->cx), QEMU_G2H(c->cy));
 }
 
 #endif
@@ -775,7 +775,7 @@ void qemu_ImageList_GetImageCount(struct qemu_syscall *call)
 {
     struct qemu_ImageList_GetImageCount *c = (struct qemu_ImageList_GetImageCount *)call;
     WINE_TRACE("\n");
-    c->super.iret = ImageList_GetImageCount(QEMU_G2H(c->himl));
+    c->super.iret = p_ImageList_GetImageCount(QEMU_G2H(c->himl));
 }
 
 #endif
@@ -819,7 +819,7 @@ void qemu_ImageList_GetImageInfo(struct qemu_syscall *call)
         info = NULL;
 #endif
 
-    c->super.iret = ImageList_GetImageInfo(QEMU_G2H(c->himl), c->i, info);
+    c->super.iret = p_ImageList_GetImageInfo(QEMU_G2H(c->himl), c->i, info);
 
 #if GUEST_BIT != HOST_BIT
     if (c->super.iret)
@@ -858,7 +858,7 @@ void qemu_ImageList_GetImageRect(struct qemu_syscall *call)
 {
     struct qemu_ImageList_GetImageRect *c = (struct qemu_ImageList_GetImageRect *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_GetImageRect(QEMU_G2H(c->himl), c->i, QEMU_G2H(c->lpRect));
+    c->super.iret = p_ImageList_GetImageRect(QEMU_G2H(c->himl), c->i, QEMU_G2H(c->lpRect));
 }
 
 #endif
@@ -900,7 +900,7 @@ void qemu_ImageList_LoadImageA(struct qemu_syscall *call)
 {
     struct qemu_ImageList_LoadImageA *c = (struct qemu_ImageList_LoadImageA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)ImageList_LoadImageA(QEMU_G2H(c->hi), QEMU_G2H(c->lpbmp), c->cx, c->cGrow, c->clrMask, c->uType, c->uFlags);
+    c->super.iret = (ULONG_PTR)p_ImageList_LoadImageA(QEMU_G2H(c->hi), QEMU_G2H(c->lpbmp), c->cx, c->cGrow, c->clrMask, c->uType, c->uFlags);
 }
 
 #endif
@@ -942,7 +942,7 @@ void qemu_ImageList_LoadImageW(struct qemu_syscall *call)
 {
     struct qemu_ImageList_LoadImageW *c = (struct qemu_ImageList_LoadImageW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)ImageList_LoadImageW(QEMU_G2H(c->hi), QEMU_G2H(c->lpbmp), c->cx, c->cGrow, c->clrMask, c->uType, c->uFlags);
+    c->super.iret = (ULONG_PTR)p_ImageList_LoadImageW(QEMU_G2H(c->hi), QEMU_G2H(c->lpbmp), c->cx, c->cGrow, c->clrMask, c->uType, c->uFlags);
 }
 
 #endif
@@ -982,7 +982,7 @@ void qemu_ImageList_Merge(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Merge *c = (struct qemu_ImageList_Merge *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)ImageList_Merge(QEMU_G2H(c->himl1), c->i1, QEMU_G2H(c->himl2), c->i2, c->dx, c->dy);
+    c->super.iret = (ULONG_PTR)p_ImageList_Merge(QEMU_G2H(c->himl1), c->i1, QEMU_G2H(c->himl2), c->i2, c->dx, c->dy);
 }
 
 #endif
@@ -1012,7 +1012,7 @@ void qemu_ImageList_Read(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Read *c = (struct qemu_ImageList_Read *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)ImageList_Read(QEMU_G2H(c->pstm));
+    c->super.iret = (ULONG_PTR)p_ImageList_Read(QEMU_G2H(c->pstm));
 }
 
 #endif
@@ -1044,7 +1044,7 @@ void qemu_ImageList_Remove(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Remove *c = (struct qemu_ImageList_Remove *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_Remove(QEMU_G2H(c->himl), c->i);
+    c->super.iret = p_ImageList_Remove(QEMU_G2H(c->himl), c->i);
 }
 
 #endif
@@ -1080,7 +1080,7 @@ void qemu_ImageList_Replace(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Replace *c = (struct qemu_ImageList_Replace *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_Replace(QEMU_G2H(c->himl), c->i, QEMU_G2H(c->hbmImage), QEMU_G2H(c->hbmMask));
+    c->super.iret = p_ImageList_Replace(QEMU_G2H(c->himl), c->i, QEMU_G2H(c->hbmImage), QEMU_G2H(c->hbmMask));
 }
 
 #endif
@@ -1114,7 +1114,7 @@ void qemu_ImageList_ReplaceIcon(struct qemu_syscall *call)
 {
     struct qemu_ImageList_ReplaceIcon *c = (struct qemu_ImageList_ReplaceIcon *)call;
     WINE_TRACE("\n");
-    c->super.iret = ImageList_ReplaceIcon(QEMU_G2H(c->himl), c->nIndex, QEMU_G2H(c->hIcon));
+    c->super.iret = p_ImageList_ReplaceIcon(QEMU_G2H(c->himl), c->nIndex, QEMU_G2H(c->hIcon));
 }
 
 #endif
@@ -1146,7 +1146,7 @@ void qemu_ImageList_SetBkColor(struct qemu_syscall *call)
 {
     struct qemu_ImageList_SetBkColor *c = (struct qemu_ImageList_SetBkColor *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_SetBkColor(QEMU_G2H(c->himl), c->clrBk);
+    c->super.iret = p_ImageList_SetBkColor(QEMU_G2H(c->himl), c->clrBk);
 }
 
 #endif
@@ -1182,7 +1182,7 @@ void qemu_ImageList_SetDragCursorImage(struct qemu_syscall *call)
 {
     struct qemu_ImageList_SetDragCursorImage *c = (struct qemu_ImageList_SetDragCursorImage *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_SetDragCursorImage(QEMU_G2H(c->himlDrag), c->iDrag, c->dxHotspot, c->dyHotspot);
+    c->super.iret = p_ImageList_SetDragCursorImage(QEMU_G2H(c->himlDrag), c->iDrag, c->dxHotspot, c->dyHotspot);
 }
 
 #endif
@@ -1218,7 +1218,7 @@ void qemu_ImageList_SetFilter(struct qemu_syscall *call)
 {
     struct qemu_ImageList_SetFilter *c = (struct qemu_ImageList_SetFilter *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_SetFilter(QEMU_G2H(c->himl), c->i, c->dwFilter);
+    c->super.iret = p_ImageList_SetFilter(QEMU_G2H(c->himl), c->i, c->dwFilter);
 }
 
 #endif
@@ -1252,7 +1252,7 @@ void qemu_ImageList_SetFlags(struct qemu_syscall *call)
 {
     struct qemu_ImageList_SetFlags *c = (struct qemu_ImageList_SetFlags *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_SetFlags(QEMU_G2H(c->himl), c->flags);
+    c->super.iret = p_ImageList_SetFlags(QEMU_G2H(c->himl), c->flags);
 }
 
 #endif
@@ -1286,7 +1286,7 @@ void qemu_ImageList_SetIconSize(struct qemu_syscall *call)
 {
     struct qemu_ImageList_SetIconSize *c = (struct qemu_ImageList_SetIconSize *)call;
     WINE_TRACE("\n");
-    c->super.iret = ImageList_SetIconSize(QEMU_G2H(c->himl), c->cx, c->cy);
+    c->super.iret = p_ImageList_SetIconSize(QEMU_G2H(c->himl), c->cx, c->cy);
 }
 
 #endif
@@ -1318,7 +1318,7 @@ void qemu_ImageList_SetImageCount(struct qemu_syscall *call)
 {
     struct qemu_ImageList_SetImageCount *c = (struct qemu_ImageList_SetImageCount *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_SetImageCount(QEMU_G2H(c->himl), c->iImageCount);
+    c->super.iret = p_ImageList_SetImageCount(QEMU_G2H(c->himl), c->iImageCount);
 }
 
 #endif
@@ -1352,7 +1352,7 @@ void qemu_ImageList_SetOverlayImage(struct qemu_syscall *call)
 {
     struct qemu_ImageList_SetOverlayImage *c = (struct qemu_ImageList_SetOverlayImage *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_SetOverlayImage(QEMU_G2H(c->himl), c->iImage, c->iOverlay);
+    c->super.iret = p_ImageList_SetOverlayImage(QEMU_G2H(c->himl), c->iImage, c->iOverlay);
 }
 
 #endif
@@ -1384,7 +1384,7 @@ void qemu_ImageList_Write(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Write *c = (struct qemu_ImageList_Write *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_Write(QEMU_G2H(c->himl), QEMU_G2H(c->pstm));
+    c->super.iret = p_ImageList_Write(QEMU_G2H(c->himl), QEMU_G2H(c->pstm));
 }
 
 #endif
@@ -1458,7 +1458,7 @@ void qemu_ImageList_CoCreateInstance(struct qemu_syscall *call)
 {
     struct qemu_ImageList_CoCreateInstance *c = (struct qemu_ImageList_CoCreateInstance *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ImageList_CoCreateInstance(QEMU_G2H(c->rclsid), QEMU_G2H(c->punkOuter), QEMU_G2H(c->riid), QEMU_G2H(c->ppv));
+    c->super.iret = p_ImageList_CoCreateInstance(QEMU_G2H(c->rclsid), QEMU_G2H(c->punkOuter), QEMU_G2H(c->riid), QEMU_G2H(c->ppv));
 }
 
 #endif
@@ -1492,7 +1492,7 @@ void qemu_HIMAGELIST_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_HIMAGELIST_QueryInterface *c = (struct qemu_HIMAGELIST_QueryInterface *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = HIMAGELIST_QueryInterface(QEMU_G2H(c->himl), QEMU_G2H(c->riid), QEMU_G2H(c->ppv));
+    c->super.iret = p_HIMAGELIST_QueryInterface(QEMU_G2H(c->himl), QEMU_G2H(c->riid), QEMU_G2H(c->ppv));
 }
 
 #endif

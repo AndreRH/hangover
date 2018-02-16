@@ -63,7 +63,7 @@ void qemu_TaskDialogIndirect(struct qemu_syscall *call)
 {
     struct qemu_TaskDialogIndirect *c = (struct qemu_TaskDialogIndirect *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = TaskDialogIndirect(QEMU_G2H(c->taskconfig), QEMU_G2H(c->button), QEMU_G2H(c->radio_button), QEMU_G2H(c->verification_flag_checked));
+    c->super.iret = p_TaskDialogIndirect(QEMU_G2H(c->taskconfig), QEMU_G2H(c->button), QEMU_G2H(c->radio_button), QEMU_G2H(c->verification_flag_checked));
 }
 
 #endif
@@ -107,7 +107,7 @@ void qemu_TaskDialog(struct qemu_syscall *call)
 {
     struct qemu_TaskDialog *c = (struct qemu_TaskDialog *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = TaskDialog(QEMU_G2H(c->owner), QEMU_G2H(c->hinst), QEMU_G2H(c->title), QEMU_G2H(c->main_instruction), QEMU_G2H(c->content), c->common_buttons, QEMU_G2H(c->icon), QEMU_G2H(c->button));
+    c->super.iret = p_TaskDialog(QEMU_G2H(c->owner), QEMU_G2H(c->hinst), QEMU_G2H(c->title), QEMU_G2H(c->main_instruction), QEMU_G2H(c->content), c->common_buttons, QEMU_G2H(c->icon), QEMU_G2H(c->button));
 }
 
 #endif

@@ -171,9 +171,9 @@ void qemu_PropertySheet(struct qemu_syscall *call)
     if (!c->lppsh)
     {
         if (c->super.id == QEMU_SYSCALL_ID(CALL_PROPERTYSHEETA))
-            c->super.iret = PropertySheetA(NULL);
+            c->super.iret = p_PropertySheetA(NULL);
         else
-            c->super.iret = PropertySheetW(NULL);
+            c->super.iret = p_PropertySheetW(NULL);
         return;
     }
 
@@ -245,9 +245,9 @@ void qemu_PropertySheet(struct qemu_syscall *call)
     }
 
     if (c->super.id == QEMU_SYSCALL_ID(CALL_PROPERTYSHEETA))
-        c->super.iret = PropertySheetA((PROPSHEETHEADERA *)&data->header);
+        c->super.iret = p_PropertySheetA((PROPSHEETHEADERA *)&data->header);
     else
-        c->super.iret = PropertySheetW(&data->header);
+        c->super.iret = p_PropertySheetW(&data->header);
 
     if (data->header.dwFlags & PSH_PROPSHEETPAGE)
     {
@@ -283,7 +283,7 @@ void qemu_CreatePropertySheetPageA(struct qemu_syscall *call)
 {
     struct qemu_CreatePropertySheetPageA *c = (struct qemu_CreatePropertySheetPageA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)CreatePropertySheetPageA(QEMU_G2H(c->lpPropSheetPage));
+    c->super.iret = (ULONG_PTR)p_CreatePropertySheetPageA(QEMU_G2H(c->lpPropSheetPage));
 }
 
 #endif
@@ -313,7 +313,7 @@ void qemu_CreatePropertySheetPageW(struct qemu_syscall *call)
 {
     struct qemu_CreatePropertySheetPageW *c = (struct qemu_CreatePropertySheetPageW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)CreatePropertySheetPageW(QEMU_G2H(c->lpPropSheetPage));
+    c->super.iret = (ULONG_PTR)p_CreatePropertySheetPageW(QEMU_G2H(c->lpPropSheetPage));
 }
 
 #endif
@@ -343,7 +343,7 @@ void qemu_DestroyPropertySheetPage(struct qemu_syscall *call)
 {
     struct qemu_DestroyPropertySheetPage *c = (struct qemu_DestroyPropertySheetPage *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DestroyPropertySheetPage(QEMU_G2H(c->hPropPage));
+    c->super.iret = p_DestroyPropertySheetPage(QEMU_G2H(c->hPropPage));
 }
 
 #endif

@@ -63,7 +63,7 @@ void qemu_DPA_LoadStream(struct qemu_syscall *call)
 {
     struct qemu_DPA_LoadStream *c = (struct qemu_DPA_LoadStream *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DPA_LoadStream(QEMU_G2H(c->phDpa), QEMU_G2H(c->loadProc), QEMU_G2H(c->pStream), QEMU_G2H(c->pData));
+    c->super.iret = p_DPA_LoadStream(QEMU_G2H(c->phDpa), QEMU_G2H(c->loadProc), QEMU_G2H(c->pStream), QEMU_G2H(c->pData));
 }
 
 #endif
@@ -99,7 +99,7 @@ void qemu_DPA_SaveStream(struct qemu_syscall *call)
 {
     struct qemu_DPA_SaveStream *c = (struct qemu_DPA_SaveStream *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DPA_SaveStream(QEMU_G2H(c->hDpa), QEMU_G2H(c->saveProc), QEMU_G2H(c->pStream), QEMU_G2H(c->pData));
+    c->super.iret = p_DPA_SaveStream(QEMU_G2H(c->hDpa), QEMU_G2H(c->saveProc), QEMU_G2H(c->pStream), QEMU_G2H(c->pData));
 }
 
 #endif
@@ -139,7 +139,7 @@ void qemu_DPA_Merge(struct qemu_syscall *call)
 {
     struct qemu_DPA_Merge *c = (struct qemu_DPA_Merge *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DPA_Merge(QEMU_G2H(c->hdpa1), QEMU_G2H(c->hdpa2), c->dwFlags, QEMU_G2H(c->pfnCompare), QEMU_G2H(c->pfnMerge), c->lParam);
+    c->super.iret = p_DPA_Merge(QEMU_G2H(c->hdpa1), QEMU_G2H(c->hdpa2), c->dwFlags, QEMU_G2H(c->pfnCompare), QEMU_G2H(c->pfnMerge), c->lParam);
 }
 
 #endif
@@ -169,7 +169,7 @@ void qemu_DPA_Destroy(struct qemu_syscall *call)
 {
     struct qemu_DPA_Destroy *c = (struct qemu_DPA_Destroy *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DPA_Destroy(QEMU_G2H(c->hdpa));
+    c->super.iret = p_DPA_Destroy(QEMU_G2H(c->hdpa));
 }
 
 #endif
@@ -201,7 +201,7 @@ void qemu_DPA_Grow(struct qemu_syscall *call)
 {
     struct qemu_DPA_Grow *c = (struct qemu_DPA_Grow *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DPA_Grow(QEMU_G2H(c->hdpa), c->nGrow);
+    c->super.iret = p_DPA_Grow(QEMU_G2H(c->hdpa), c->nGrow);
 }
 
 #endif
@@ -234,7 +234,7 @@ void qemu_DPA_Clone(struct qemu_syscall *call)
 {
     struct qemu_DPA_Clone *c = (struct qemu_DPA_Clone *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(DPA_Clone(QEMU_G2H(c->hdpa), QEMU_G2H(c->hdpaNew)));
+    c->super.iret = QEMU_H2G(p_DPA_Clone(QEMU_G2H(c->hdpa), QEMU_G2H(c->hdpaNew)));
 }
 
 #endif
@@ -266,7 +266,7 @@ void qemu_DPA_GetPtr(struct qemu_syscall *call)
 {
     struct qemu_DPA_GetPtr *c = (struct qemu_DPA_GetPtr *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)DPA_GetPtr(QEMU_G2H(c->hdpa), c->nIndex);
+    c->super.iret = (ULONG_PTR)p_DPA_GetPtr(QEMU_G2H(c->hdpa), c->nIndex);
 }
 
 #endif
@@ -298,7 +298,7 @@ void qemu_DPA_GetPtrIndex(struct qemu_syscall *call)
 {
     struct qemu_DPA_GetPtrIndex *c = (struct qemu_DPA_GetPtrIndex *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DPA_GetPtrIndex(QEMU_G2H(c->hdpa), QEMU_G2H(c->p));
+    c->super.iret = p_DPA_GetPtrIndex(QEMU_G2H(c->hdpa), QEMU_G2H(c->p));
 }
 
 #endif
@@ -332,7 +332,7 @@ void qemu_DPA_InsertPtr(struct qemu_syscall *call)
 {
     struct qemu_DPA_InsertPtr *c = (struct qemu_DPA_InsertPtr *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DPA_InsertPtr(QEMU_G2H(c->hdpa), c->i, QEMU_G2H(c->p));
+    c->super.iret = p_DPA_InsertPtr(QEMU_G2H(c->hdpa), c->i, QEMU_G2H(c->p));
 }
 
 #endif
@@ -366,7 +366,7 @@ void qemu_DPA_SetPtr(struct qemu_syscall *call)
 {
     struct qemu_DPA_SetPtr *c = (struct qemu_DPA_SetPtr *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DPA_SetPtr(QEMU_G2H(c->hdpa), c->i, QEMU_G2H(c->p));
+    c->super.iret = p_DPA_SetPtr(QEMU_G2H(c->hdpa), c->i, QEMU_G2H(c->p));
 }
 
 #endif
@@ -398,7 +398,7 @@ void qemu_DPA_DeletePtr(struct qemu_syscall *call)
 {
     struct qemu_DPA_DeletePtr *c = (struct qemu_DPA_DeletePtr *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)DPA_DeletePtr(QEMU_G2H(c->hdpa), c->i);
+    c->super.iret = (ULONG_PTR)p_DPA_DeletePtr(QEMU_G2H(c->hdpa), c->i);
 }
 
 #endif
@@ -428,7 +428,7 @@ void qemu_DPA_DeleteAllPtrs(struct qemu_syscall *call)
 {
     struct qemu_DPA_DeleteAllPtrs *c = (struct qemu_DPA_DeleteAllPtrs *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DPA_DeleteAllPtrs(QEMU_G2H(c->hdpa));
+    c->super.iret = p_DPA_DeleteAllPtrs(QEMU_G2H(c->hdpa));
 }
 
 #endif
@@ -462,7 +462,7 @@ void qemu_DPA_Sort(struct qemu_syscall *call)
 {
     struct qemu_DPA_Sort *c = (struct qemu_DPA_Sort *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DPA_Sort(QEMU_G2H(c->hdpa), QEMU_G2H(c->pfnCompare), c->lParam);
+    c->super.iret = p_DPA_Sort(QEMU_G2H(c->hdpa), QEMU_G2H(c->pfnCompare), c->lParam);
 }
 
 #endif
@@ -502,7 +502,7 @@ void qemu_DPA_Search(struct qemu_syscall *call)
 {
     struct qemu_DPA_Search *c = (struct qemu_DPA_Search *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DPA_Search(QEMU_G2H(c->hdpa), QEMU_G2H(c->pFind), c->nStart, QEMU_G2H(c->pfnCompare), c->lParam, c->uOptions);
+    c->super.iret = p_DPA_Search(QEMU_G2H(c->hdpa), QEMU_G2H(c->pFind), c->nStart, QEMU_G2H(c->pfnCompare), c->lParam, c->uOptions);
 }
 
 #endif
@@ -535,7 +535,7 @@ void qemu_DPA_CreateEx(struct qemu_syscall *call)
 {
     struct qemu_DPA_CreateEx *c = (struct qemu_DPA_CreateEx *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(DPA_CreateEx(c->nGrow, QEMU_G2H(c->hHeap)));
+    c->super.iret = QEMU_H2G(p_DPA_CreateEx(c->nGrow, QEMU_G2H(c->hHeap)));
 }
 
 #endif
@@ -565,7 +565,7 @@ void qemu_DPA_Create(struct qemu_syscall *call)
 {
     struct qemu_DPA_Create *c = (struct qemu_DPA_Create *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(DPA_Create(c->nGrow));
+    c->super.iret = QEMU_H2G(p_DPA_Create(c->nGrow));
 }
 
 #endif
@@ -597,7 +597,7 @@ void qemu_DPA_EnumCallback(struct qemu_syscall *call)
 {
     struct qemu_DPA_EnumCallback *c = (struct qemu_DPA_EnumCallback *)call;
     WINE_FIXME("Unverified!\n");
-    DPA_EnumCallback(QEMU_G2H(c->hdpa), QEMU_G2H(c->enumProc), QEMU_G2H(c->lParam));
+    p_DPA_EnumCallback(QEMU_G2H(c->hdpa), QEMU_G2H(c->enumProc), QEMU_G2H(c->lParam));
 }
 
 #endif
@@ -629,7 +629,7 @@ void qemu_DPA_DestroyCallback(struct qemu_syscall *call)
 {
     struct qemu_DPA_DestroyCallback *c = (struct qemu_DPA_DestroyCallback *)call;
     WINE_FIXME("Unverified!\n");
-    DPA_DestroyCallback(QEMU_G2H(c->hdpa), QEMU_G2H(c->enumProc), QEMU_G2H(c->lParam));
+    p_DPA_DestroyCallback(QEMU_G2H(c->hdpa), QEMU_G2H(c->enumProc), QEMU_G2H(c->lParam));
 }
 
 #endif
@@ -659,7 +659,7 @@ void qemu_DPA_GetSize(struct qemu_syscall *call)
 {
     struct qemu_DPA_GetSize *c = (struct qemu_DPA_GetSize *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DPA_GetSize(QEMU_G2H(c->hdpa));
+    c->super.iret = p_DPA_GetSize(QEMU_G2H(c->hdpa));
 }
 
 #endif

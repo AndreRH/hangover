@@ -57,7 +57,7 @@ void qemu_InitializeFlatSB(struct qemu_syscall *call)
 {
     struct qemu_InitializeFlatSB *c = (struct qemu_InitializeFlatSB *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = InitializeFlatSB(QEMU_G2H(c->hwnd));
+    c->super.iret = p_InitializeFlatSB(QEMU_G2H(c->hwnd));
 }
 
 #endif
@@ -87,7 +87,7 @@ void qemu_UninitializeFlatSB(struct qemu_syscall *call)
 {
     struct qemu_UninitializeFlatSB *c = (struct qemu_UninitializeFlatSB *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = UninitializeFlatSB(QEMU_G2H(c->hwnd));
+    c->super.iret = p_UninitializeFlatSB(QEMU_G2H(c->hwnd));
 }
 
 #endif
@@ -121,7 +121,7 @@ void qemu_FlatSB_GetScrollProp(struct qemu_syscall *call)
 {
     struct qemu_FlatSB_GetScrollProp *c = (struct qemu_FlatSB_GetScrollProp *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FlatSB_GetScrollProp(QEMU_G2H(c->hwnd), c->propIndex, QEMU_G2H(c->prop));
+    c->super.iret = p_FlatSB_GetScrollProp(QEMU_G2H(c->hwnd), c->propIndex, QEMU_G2H(c->prop));
 }
 
 #endif
@@ -157,7 +157,7 @@ void qemu_FlatSB_SetScrollProp(struct qemu_syscall *call)
 {
     struct qemu_FlatSB_SetScrollProp *c = (struct qemu_FlatSB_SetScrollProp *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FlatSB_SetScrollProp(QEMU_G2H(c->hwnd), c->index, c->newValue, c->flag);
+    c->super.iret = p_FlatSB_SetScrollProp(QEMU_G2H(c->hwnd), c->index, c->newValue, c->flag);
 }
 
 #endif
@@ -191,7 +191,7 @@ void qemu_FlatSB_EnableScrollBar(struct qemu_syscall *call)
 {
     struct qemu_FlatSB_EnableScrollBar *c = (struct qemu_FlatSB_EnableScrollBar *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FlatSB_EnableScrollBar(QEMU_G2H(c->hwnd), c->nBar, c->flags);
+    c->super.iret = p_FlatSB_EnableScrollBar(QEMU_G2H(c->hwnd), c->nBar, c->flags);
 }
 
 #endif
@@ -225,7 +225,7 @@ void qemu_FlatSB_ShowScrollBar(struct qemu_syscall *call)
 {
     struct qemu_FlatSB_ShowScrollBar *c = (struct qemu_FlatSB_ShowScrollBar *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FlatSB_ShowScrollBar(QEMU_G2H(c->hwnd), c->nBar, c->fShow);
+    c->super.iret = p_FlatSB_ShowScrollBar(QEMU_G2H(c->hwnd), c->nBar, c->fShow);
 }
 
 #endif
@@ -261,7 +261,7 @@ void qemu_FlatSB_GetScrollRange(struct qemu_syscall *call)
 {
     struct qemu_FlatSB_GetScrollRange *c = (struct qemu_FlatSB_GetScrollRange *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FlatSB_GetScrollRange(QEMU_G2H(c->hwnd), c->nBar, QEMU_G2H(c->min), QEMU_G2H(c->max));
+    c->super.iret = p_FlatSB_GetScrollRange(QEMU_G2H(c->hwnd), c->nBar, QEMU_G2H(c->min), QEMU_G2H(c->max));
 }
 
 #endif
@@ -295,7 +295,7 @@ void qemu_FlatSB_GetScrollInfo(struct qemu_syscall *call)
 {
     struct qemu_FlatSB_GetScrollInfo *c = (struct qemu_FlatSB_GetScrollInfo *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FlatSB_GetScrollInfo(QEMU_G2H(c->hwnd), c->nBar, QEMU_G2H(c->info));
+    c->super.iret = p_FlatSB_GetScrollInfo(QEMU_G2H(c->hwnd), c->nBar, QEMU_G2H(c->info));
 }
 
 #endif
@@ -327,7 +327,7 @@ void qemu_FlatSB_GetScrollPos(struct qemu_syscall *call)
 {
     struct qemu_FlatSB_GetScrollPos *c = (struct qemu_FlatSB_GetScrollPos *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FlatSB_GetScrollPos(QEMU_G2H(c->hwnd), c->nBar);
+    c->super.iret = p_FlatSB_GetScrollPos(QEMU_G2H(c->hwnd), c->nBar);
 }
 
 #endif
@@ -363,7 +363,7 @@ void qemu_FlatSB_SetScrollPos(struct qemu_syscall *call)
 {
     struct qemu_FlatSB_SetScrollPos *c = (struct qemu_FlatSB_SetScrollPos *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FlatSB_SetScrollPos(QEMU_G2H(c->hwnd), c->nBar, c->pos, c->bRedraw);
+    c->super.iret = p_FlatSB_SetScrollPos(QEMU_G2H(c->hwnd), c->nBar, c->pos, c->bRedraw);
 }
 
 #endif
@@ -399,7 +399,7 @@ void qemu_FlatSB_SetScrollInfo(struct qemu_syscall *call)
 {
     struct qemu_FlatSB_SetScrollInfo *c = (struct qemu_FlatSB_SetScrollInfo *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FlatSB_SetScrollInfo(QEMU_G2H(c->hwnd), c->nBar, QEMU_G2H(c->info), c->bRedraw);
+    c->super.iret = p_FlatSB_SetScrollInfo(QEMU_G2H(c->hwnd), c->nBar, QEMU_G2H(c->info), c->bRedraw);
 }
 
 #endif
@@ -437,7 +437,7 @@ void qemu_FlatSB_SetScrollRange(struct qemu_syscall *call)
 {
     struct qemu_FlatSB_SetScrollRange *c = (struct qemu_FlatSB_SetScrollRange *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FlatSB_SetScrollRange(QEMU_G2H(c->hwnd), c->nBar, c->min, c->max, c->bRedraw);
+    c->super.iret = p_FlatSB_SetScrollRange(QEMU_G2H(c->hwnd), c->nBar, c->min, c->max, c->bRedraw);
 }
 
 #endif

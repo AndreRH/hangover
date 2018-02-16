@@ -70,7 +70,7 @@ void qemu_MenuHelp(struct qemu_syscall *call)
 {
     struct qemu_MenuHelp *c = (struct qemu_MenuHelp *)call;
     WINE_FIXME("Unverified!\n");
-    MenuHelp(c->uMsg, c->wParam, c->lParam, QEMU_G2H(c->hMainMenu), QEMU_G2H(c->hInst), QEMU_G2H(c->hwndStatus), QEMU_G2H(c->lpwIDs));
+    p_MenuHelp(c->uMsg, c->wParam, c->lParam, QEMU_G2H(c->hMainMenu), QEMU_G2H(c->hInst), QEMU_G2H(c->hwndStatus), QEMU_G2H(c->lpwIDs));
 }
 
 #endif
@@ -104,7 +104,7 @@ void qemu_ShowHideMenuCtl(struct qemu_syscall *call)
 {
     struct qemu_ShowHideMenuCtl *c = (struct qemu_ShowHideMenuCtl *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ShowHideMenuCtl(QEMU_G2H(c->hwnd), c->uFlags, QEMU_G2H(c->lpInfo));
+    c->super.iret = p_ShowHideMenuCtl(QEMU_G2H(c->hwnd), c->uFlags, QEMU_G2H(c->lpInfo));
 }
 
 #endif
@@ -136,7 +136,7 @@ void qemu_GetEffectiveClientRect(struct qemu_syscall *call)
 {
     struct qemu_GetEffectiveClientRect *c = (struct qemu_GetEffectiveClientRect *)call;
     WINE_FIXME("Unverified!\n");
-    GetEffectiveClientRect(QEMU_G2H(c->hwnd), QEMU_G2H(c->lpRect), QEMU_G2H(c->lpInfo));
+    p_GetEffectiveClientRect(QEMU_G2H(c->hwnd), QEMU_G2H(c->lpRect), QEMU_G2H(c->lpInfo));
 }
 
 #endif
@@ -170,7 +170,7 @@ void qemu_DrawStatusTextW(struct qemu_syscall *call)
 {
     struct qemu_DrawStatusTextW *c = (struct qemu_DrawStatusTextW *)call;
     WINE_FIXME("Unverified!\n");
-    DrawStatusTextW(QEMU_G2H(c->hdc), QEMU_G2H(c->lprc), QEMU_G2H(c->text), c->style);
+    p_DrawStatusTextW(QEMU_G2H(c->hdc), QEMU_G2H(c->lprc), QEMU_G2H(c->text), c->style);
 }
 
 #endif
@@ -204,7 +204,7 @@ void qemu_DrawStatusTextA(struct qemu_syscall *call)
 {
     struct qemu_DrawStatusTextA *c = (struct qemu_DrawStatusTextA *)call;
     WINE_FIXME("Unverified!\n");
-    DrawStatusTextA(QEMU_G2H(c->hdc), QEMU_G2H(c->lprc), QEMU_G2H(c->text), c->style);
+    p_DrawStatusTextA(QEMU_G2H(c->hdc), QEMU_G2H(c->lprc), QEMU_G2H(c->text), c->style);
 }
 
 #endif
@@ -240,7 +240,7 @@ void qemu_CreateStatusWindowA(struct qemu_syscall *call)
 {
     struct qemu_CreateStatusWindowA *c = (struct qemu_CreateStatusWindowA *)call;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)CreateStatusWindowA(c->style, QEMU_G2H(c->text), QEMU_G2H(c->parent), c->wid);
+    c->super.iret = (ULONG_PTR)p_CreateStatusWindowA(c->style, QEMU_G2H(c->text), QEMU_G2H(c->parent), c->wid);
 }
 
 #endif
@@ -276,7 +276,7 @@ void qemu_CreateStatusWindowW(struct qemu_syscall *call)
 {
     struct qemu_CreateStatusWindowW *c = (struct qemu_CreateStatusWindowW *)call;
     WINE_TRACE("\n");
-    c->super.iret = (ULONG_PTR)CreateStatusWindowW(c->style, QEMU_G2H(c->text), QEMU_G2H(c->parent), c->wid);
+    c->super.iret = (ULONG_PTR)p_CreateStatusWindowW(c->style, QEMU_G2H(c->text), QEMU_G2H(c->parent), c->wid);
 }
 
 #endif
@@ -328,7 +328,7 @@ void qemu_CreateUpDownControl(struct qemu_syscall *call)
 {
     struct qemu_CreateUpDownControl *c = (struct qemu_CreateUpDownControl *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)CreateUpDownControl(c->style, c->x, c->y, c->cx, c->cy, QEMU_G2H(c->parent), c->id, QEMU_G2H(c->inst), QEMU_G2H(c->buddy), c->maxVal, c->minVal, c->curVal);
+    c->super.iret = (ULONG_PTR)p_CreateUpDownControl(c->style, c->x, c->y, c->cx, c->cy, QEMU_G2H(c->parent), c->id, QEMU_G2H(c->inst), QEMU_G2H(c->buddy), c->maxVal, c->minVal, c->curVal);
 }
 
 #endif
@@ -354,7 +354,7 @@ void qemu_InitCommonControls(struct qemu_syscall *call)
 {
     struct qemu_InitCommonControls *c = (struct qemu_InitCommonControls *)call;
     WINE_TRACE("\n");
-    InitCommonControls();
+    p_InitCommonControls();
 }
 
 #endif
@@ -384,7 +384,7 @@ void qemu_InitCommonControlsEx(struct qemu_syscall *call)
 {
     struct qemu_InitCommonControlsEx *c = (struct qemu_InitCommonControlsEx *)call;
     WINE_TRACE("\n");
-    c->super.iret = InitCommonControlsEx(QEMU_G2H(c->lpInitCtrls));
+    c->super.iret = p_InitCommonControlsEx(QEMU_G2H(c->lpInitCtrls));
 }
 
 #endif
@@ -462,7 +462,7 @@ void qemu_CreateToolbarEx(struct qemu_syscall *call)
     }
 #endif
 
-    c->super.iret = (ULONG_PTR)CreateToolbarEx(QEMU_G2H(c->hwnd), c->style, c->wID, c->nBitmaps, QEMU_G2H(c->hBMInst),
+    c->super.iret = (ULONG_PTR)p_CreateToolbarEx(QEMU_G2H(c->hwnd), c->style, c->wID, c->nBitmaps, QEMU_G2H(c->hBMInst),
             c->wBMID, buttons, count, c->dxButton, c->dyButton, c->dxBitmap, c->dyBitmap, sizeof(*buttons));
 
 #if GUEST_BIT != HOST_BIT
@@ -506,7 +506,7 @@ void qemu_CreateMappedBitmap(struct qemu_syscall *call)
 {
     struct qemu_CreateMappedBitmap *c = (struct qemu_CreateMappedBitmap *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)CreateMappedBitmap(QEMU_G2H(c->hInstance), c->idBitmap, c->wFlags, QEMU_G2H(c->lpColorMap), c->iNumMaps);
+    c->super.iret = (ULONG_PTR)p_CreateMappedBitmap(QEMU_G2H(c->hInstance), c->idBitmap, c->wFlags, QEMU_G2H(c->lpColorMap), c->iNumMaps);
 }
 
 #endif
@@ -550,7 +550,7 @@ void qemu_CreateToolbar(struct qemu_syscall *call)
 {
     struct qemu_CreateToolbar *c = (struct qemu_CreateToolbar *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)CreateToolbar(QEMU_G2H(c->hwnd), c->style, c->wID, c->nBitmaps, QEMU_G2H(c->hBMInst), c->wBMID, QEMU_G2H(c->lpButtons), c->iNumButtons);
+    c->super.iret = (ULONG_PTR)p_CreateToolbar(QEMU_G2H(c->hwnd), c->style, c->wID, c->nBitmaps, QEMU_G2H(c->hBMInst), c->wBMID, QEMU_G2H(c->lpButtons), c->iNumButtons);
 }
 
 #endif
@@ -657,7 +657,7 @@ void qemu__TrackMouseEvent(struct qemu_syscall *call)
         track->cbSize = 0;
 #endif
 
-    c->super.iret = _TrackMouseEvent(track);
+    c->super.iret = p__TrackMouseEvent(track);
 
 #if GUEST_BIT != HOST_BIT
     if (track32 && track32->cbSize == sizeof(*track32))
@@ -690,7 +690,7 @@ void qemu_GetMUILanguage(struct qemu_syscall *call)
 {
     struct qemu_GetMUILanguage *c = (struct qemu_GetMUILanguage *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = GetMUILanguage();
+    c->super.iret = p_GetMUILanguage();
 }
 
 #endif
@@ -718,7 +718,7 @@ void qemu_InitMUILanguage(struct qemu_syscall *call)
 {
     struct qemu_InitMUILanguage *c = (struct qemu_InitMUILanguage *)call;
     WINE_FIXME("Unverified!\n");
-    InitMUILanguage(c->uiLang);
+    p_InitMUILanguage(c->uiLang);
 }
 
 #endif
@@ -754,7 +754,7 @@ void qemu_SetWindowSubclass(struct qemu_syscall *call)
 {
     struct qemu_SetWindowSubclass *c = (struct qemu_SetWindowSubclass *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetWindowSubclass(QEMU_G2H(c->hWnd), QEMU_G2H(c->pfnSubclass), c->uIDSubclass, c->dwRef);
+    c->super.iret = p_SetWindowSubclass(QEMU_G2H(c->hWnd), QEMU_G2H(c->pfnSubclass), c->uIDSubclass, c->dwRef);
 }
 
 #endif
@@ -790,7 +790,7 @@ void qemu_GetWindowSubclass(struct qemu_syscall *call)
 {
     struct qemu_GetWindowSubclass *c = (struct qemu_GetWindowSubclass *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = GetWindowSubclass(QEMU_G2H(c->hWnd), QEMU_G2H(c->pfnSubclass), c->uID, QEMU_G2H(c->pdwRef));
+    c->super.iret = p_GetWindowSubclass(QEMU_G2H(c->hWnd), QEMU_G2H(c->pfnSubclass), c->uID, QEMU_G2H(c->pdwRef));
 }
 
 #endif
@@ -824,7 +824,7 @@ void qemu_RemoveWindowSubclass(struct qemu_syscall *call)
 {
     struct qemu_RemoveWindowSubclass *c = (struct qemu_RemoveWindowSubclass *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = RemoveWindowSubclass(QEMU_G2H(c->hWnd), QEMU_G2H(c->pfnSubclass), c->uID);
+    c->super.iret = p_RemoveWindowSubclass(QEMU_G2H(c->hWnd), QEMU_G2H(c->pfnSubclass), c->uID);
 }
 
 #endif
@@ -860,7 +860,7 @@ void qemu_DefSubclassProc(struct qemu_syscall *call)
 {
     struct qemu_DefSubclassProc *c = (struct qemu_DefSubclassProc *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DefSubclassProc(QEMU_G2H(c->hWnd), c->uMsg, c->wParam, c->lParam);
+    c->super.iret = p_DefSubclassProc(QEMU_G2H(c->hWnd), c->uMsg, c->wParam, c->lParam);
 }
 
 #endif
@@ -894,7 +894,7 @@ void qemu_MirrorIcon(struct qemu_syscall *call)
 {
     struct qemu_MirrorIcon *c = (struct qemu_MirrorIcon *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = MirrorIcon(QEMU_G2H(c->phicon1), QEMU_G2H(c->phicon2));
+    c->super.iret = p_MirrorIcon(QEMU_G2H(c->phicon1), QEMU_G2H(c->phicon2));
 }
 
 #endif
@@ -928,7 +928,7 @@ void qemu_SetPathWordBreakProc(struct qemu_syscall *call)
 {
     struct qemu_SetPathWordBreakProc *c = (struct qemu_SetPathWordBreakProc *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetPathWordBreakProc(QEMU_G2H(c->hwnd), c->bSet);
+    c->super.iret = p_SetPathWordBreakProc(QEMU_G2H(c->hwnd), c->bSet);
 }
 
 #endif
@@ -974,7 +974,7 @@ void qemu_DrawShadowText(struct qemu_syscall *call)
 {
     struct qemu_DrawShadowText *c = (struct qemu_DrawShadowText *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DrawShadowText(QEMU_G2H(c->hdc), QEMU_G2H(c->text), c->length, QEMU_G2H(c->rect), c->flags, c->crText, c->crShadow, c->offset_x, c->offset_y);
+    c->super.iret = p_DrawShadowText(QEMU_G2H(c->hdc), QEMU_G2H(c->text), c->length, QEMU_G2H(c->rect), c->flags, c->crText, c->crShadow, c->offset_x, c->offset_y);
 }
 
 #endif
@@ -1012,7 +1012,7 @@ void qemu_LoadIconWithScaleDown(struct qemu_syscall *call)
 {
     struct qemu_LoadIconWithScaleDown *c = (struct qemu_LoadIconWithScaleDown *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = LoadIconWithScaleDown(QEMU_G2H(c->hinst), QEMU_G2H(c->name), c->cx, c->cy, QEMU_G2H(c->icon));
+    c->super.iret = p_LoadIconWithScaleDown(QEMU_G2H(c->hinst), QEMU_G2H(c->name), c->cx, c->cy, QEMU_G2H(c->icon));
 }
 
 #endif
@@ -1048,7 +1048,7 @@ void qemu_LoadIconMetric(struct qemu_syscall *call)
 {
     struct qemu_LoadIconMetric *c = (struct qemu_LoadIconMetric *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = LoadIconMetric(QEMU_G2H(c->hinst), QEMU_G2H(c->name), c->size, QEMU_G2H(c->icon));
+    c->super.iret = p_LoadIconMetric(QEMU_G2H(c->hinst), QEMU_G2H(c->name), c->size, QEMU_G2H(c->icon));
 }
 
 #endif

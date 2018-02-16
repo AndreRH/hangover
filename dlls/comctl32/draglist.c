@@ -57,7 +57,7 @@ void qemu_MakeDragList(struct qemu_syscall *call)
 {
     struct qemu_MakeDragList *c = (struct qemu_MakeDragList *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = MakeDragList(QEMU_G2H(c->hwndLB));
+    c->super.iret = p_MakeDragList(QEMU_G2H(c->hwndLB));
 }
 
 #endif
@@ -89,7 +89,7 @@ void qemu_DrawInsert(struct qemu_syscall *call)
 {
     struct qemu_DrawInsert *c = (struct qemu_DrawInsert *)call;
     WINE_FIXME("Unverified!\n");
-    DrawInsert(QEMU_G2H(c->hwndParent), QEMU_G2H(c->hwndLB), c->nItem);
+    p_DrawInsert(QEMU_G2H(c->hwndParent), QEMU_G2H(c->hwndLB), c->nItem);
 }
 
 #endif
@@ -128,7 +128,7 @@ void qemu_LBItemFromPt(struct qemu_syscall *call)
 
     pt.x = c->ptX;
     pt.y = c->ptY;
-    c->super.iret = LBItemFromPt(QEMU_G2H(c->hwndLB), pt, c->bAutoScroll);
+    c->super.iret = p_LBItemFromPt(QEMU_G2H(c->hwndLB), pt, c->bAutoScroll);
 }
 
 #endif
