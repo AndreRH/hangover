@@ -1917,14 +1917,9 @@ void qemu_TrackMouseEvent(struct qemu_syscall *call)
     if (event32)
     {
         if (event32->cbSize == sizeof(*event32))
-        {
-            event->cbSize = sizeof(*event);
             TRACKMOUSEEVENT_g2h(event, event32);
-        }
         else
-        {
             event->cbSize = 0;
-        }
     }
     else
     {

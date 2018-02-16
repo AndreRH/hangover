@@ -652,7 +652,7 @@ void qemu__TrackMouseEvent(struct qemu_syscall *call)
     if (!track32)
         track = NULL;
     else if(track32->cbSize == sizeof(*track32))
-        TRACKMOUSEEVENT_g2h(track, QEMU_G2H(c->ptme));
+        TRACKMOUSEEVENT_g2h(track, QEMU_G2H(track32));
     else
         track->cbSize = 0;
 #endif

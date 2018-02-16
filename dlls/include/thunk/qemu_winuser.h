@@ -744,6 +744,7 @@ struct qemu_TRACKMOUSEEVENT
 
 static inline void TRACKMOUSEEVENT_g2h(TRACKMOUSEEVENT *host, const struct qemu_TRACKMOUSEEVENT *guest)
 {
+    host->cbSize = sizeof(*host);
     host->dwFlags = guest->dwFlags;
     host->hwndTrack = HANDLE_g2h(guest->hwndTrack);
     host->dwHoverTime = guest->dwHoverTime;
