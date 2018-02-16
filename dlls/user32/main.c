@@ -1446,6 +1446,22 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             msg_out->lParam = (LONG)msg_in->lParam;
             break;
 
+        case HDM_LAYOUT:
+            if (msg_in->lParam)
+            {
+                struct qemu_HD_LAYOUT *guest_item = (struct qemu_HD_LAYOUT *)msg_in->lParam;
+                struct
+                {
+                    HD_LAYOUT layout;
+                    WINDOWPOS wp;
+                } *host;
+                WINE_TRACE("Translating HDM_LAYOUT message at %p.\n", guest_item);
+                host = HeapAlloc(GetProcessHeap(), 0, sizeof(*host));
+                HD_LAYOUT_g2h(&host->layout, &host->wp, guest_item);
+                msg_out->lParam = (LPARAM)host;
+            }
+            break;
+            break;
 #endif
 
         default:
@@ -1651,6 +1667,19 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
                 LVFINDINFO_h2g(guest_item, host_item);
 
                 HeapFree(GetProcessHeap(), 0, host_item);
+            }
+            break;
+
+        case HDM_LAYOUT:
+            if (conv->lParam != orig->lParam)
+            {
+                struct qemu_HD_LAYOUT *guest = (struct qemu_HD_LAYOUT *)orig->lParam;
+                HD_LAYOUT *host = (HD_LAYOUT *)conv->lParam;
+                WINE_TRACE("Reverse translating HDM_LAYOUT message.\n");
+
+                HD_LAYOUT_h2g(guest, (struct qemu_WINDOWPOS *)(ULONG_PTR)guest->pwpos, host);
+
+                HeapFree(GetProcessHeap(), 0, host);
             }
             break;
 
@@ -1913,6 +1942,20 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             }
             break;
 
+        case HDM_LAYOUT:
+            if (msg_in->lParam)
+            {
+                HD_LAYOUT *host = (HD_LAYOUT *)msg_in->lParam;
+                struct
+                {
+                    struct qemu_HD_LAYOUT layout;
+                    struct qemu_WINDOWPOS wp;
+                } *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
+                HD_LAYOUT_h2g(&guest->layout, &guest->wp, host);
+                msg_out->lParam = (LPARAM)&guest->layout;
+            }
+            break;
+
         default:
             /* Not constant numbers */
             if (msg_in->message == msg_FINDMSGSTRING)
@@ -2071,6 +2114,18 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
                 struct qemu_LVFINDINFO *guest = (struct qemu_LVFINDINFO *)conv->lParam;
 
                 LVFINDINFO_g2h(host, guest);
+
+                HeapFree(GetProcessHeap(), 0, guest);
+            }
+            break;
+
+        case HDM_LAYOUT:
+            if (orig->lParam)
+            {
+                HD_LAYOUT *host = (HD_LAYOUT *)orig->lParam;
+                struct qemu_HD_LAYOUT *guest = (struct qemu_HD_LAYOUT *)conv->lParam;
+
+                HD_LAYOUT_g2h(host, host->pwpos, guest);
 
                 HeapFree(GetProcessHeap(), 0, guest);
             }

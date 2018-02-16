@@ -1251,4 +1251,24 @@ static inline void NMHEADER_h2g(struct qemu_NMHEADER *guest, const NMHEADERW *ho
     guest->pitem = (ULONG_PTR)host->pitem;
 }
 
+struct qemu_HD_LAYOUT
+{
+    qemu_ptr    prc;        /* RECT * */
+    qemu_ptr    pwpos;      /* WINDOWPOS * */
+};
+
+static inline void HD_LAYOUT_g2h(HD_LAYOUT *host, WINDOWPOS *wp, const struct qemu_HD_LAYOUT *guest)
+{
+    host->prc = (RECT *)(ULONG_PTR)guest->prc;
+    host->pwpos = wp;
+    WINDOWPOS_g2h(wp, (struct qemu_WINDOWPOS *)(ULONG_PTR)guest->pwpos);
+}
+
+static inline void HD_LAYOUT_h2g(struct qemu_HD_LAYOUT *guest, struct qemu_WINDOWPOS *wp, const HD_LAYOUT *host)
+{
+    guest->prc = (ULONG_PTR)host->prc;
+    guest->pwpos = (ULONG_PTR)wp;
+    WINDOWPOS_h2g((struct qemu_WINDOWPOS *)(ULONG_PTR)wp, host->pwpos);
+}
+
 #endif
