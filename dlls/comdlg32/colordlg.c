@@ -112,7 +112,7 @@ void qemu_ChooseColorW(struct qemu_syscall *call)
     old_tls = TlsGetValue(comdlg32_tls);
     TlsSetValue(comdlg32_tls, &guest_proc);
 
-    c->super.iret = ChooseColorW(&choose);
+    c->super.iret = p_ChooseColorW(&choose);
 
     choose.hInstance = instance;
     choose.lpfnHook = (void *)guest_proc;
@@ -171,7 +171,7 @@ void qemu_ChooseColorA(struct qemu_syscall *call)
     old_tls = TlsGetValue(comdlg32_tls);
     TlsSetValue(comdlg32_tls, &guest_proc);
 
-    c->super.iret = ChooseColorA(&choose);
+    c->super.iret = p_ChooseColorA(&choose);
 
     choose.hInstance = instance;
     choose.lpfnHook = (void *)guest_proc;

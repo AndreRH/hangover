@@ -107,7 +107,7 @@ void qemu_PrintDlgA(struct qemu_syscall *call)
 
     if (!c->lppd)
     {
-        c->super.iret = PrintDlgA(NULL);
+        c->super.iret = p_PrintDlgA(NULL);
         return;
     }
 
@@ -128,7 +128,7 @@ void qemu_PrintDlgA(struct qemu_syscall *call)
     if (copy.lpfnSetupHook)
         WINE_FIXME("Implement a setup hook wrapper.\n");
 
-    c->super.iret = PrintDlgA(&copy);
+    c->super.iret = p_PrintDlgA(&copy);
 
     TlsSetValue(comdlg32_tls, &old_hook);
     copy.lpfnPrintHook = (LPPRINTHOOKPROC)print_hook;
@@ -174,7 +174,7 @@ void qemu_PrintDlgW(struct qemu_syscall *call)
 
     if (!c->lppd)
     {
-        c->super.iret = PrintDlgW(NULL);
+        c->super.iret = p_PrintDlgW(NULL);
         return;
     }
 
@@ -195,7 +195,7 @@ void qemu_PrintDlgW(struct qemu_syscall *call)
     if (copy.lpfnSetupHook)
         WINE_FIXME("Implement a setup hook wrapper.\n");
 
-    c->super.iret = PrintDlgW(&copy);
+    c->super.iret = p_PrintDlgW(&copy);
 
     TlsSetValue(comdlg32_tls, old_hook);
     copy.lpfnPrintHook = (LPPRINTHOOKPROC)print_hook;
@@ -244,7 +244,7 @@ void qemu_PageSetupDlgA(struct qemu_syscall *call)
         if (dlg32->lStructSize != sizeof(*dlg32))
         {
             dlg->lStructSize = 0;
-            c->super.iret = PageSetupDlgA(dlg);
+            c->super.iret = p_PageSetupDlgA(dlg);
             return;
         }
         PAGESETUPDLG_g2h((PAGESETUPDLGW *)dlg, dlg32);
@@ -254,7 +254,7 @@ void qemu_PageSetupDlgA(struct qemu_syscall *call)
     if (dlg->lpfnPageSetupHook || dlg->lpfnPagePaintHook)
         WINE_FIXME("Handle page setup dialog hooks.\n");
 
-    c->super.iret = PageSetupDlgA(dlg);
+    c->super.iret = p_PageSetupDlgA(dlg);
 
 #if HOST_BIT != GUEST_BIT
     PAGESETUPDLG_h2g(QEMU_G2H(c->setupdlg), (PAGESETUPDLGW *)dlg);
@@ -298,7 +298,7 @@ void qemu_PageSetupDlgW(struct qemu_syscall *call)
         if (dlg32->lStructSize != sizeof(*dlg32))
         {
             dlg->lStructSize = 0;
-            c->super.iret = PageSetupDlgW(dlg);
+            c->super.iret = p_PageSetupDlgW(dlg);
             return;
         }
         PAGESETUPDLG_g2h((PAGESETUPDLGW *)dlg, dlg32);
@@ -308,7 +308,7 @@ void qemu_PageSetupDlgW(struct qemu_syscall *call)
     if (dlg->lpfnPageSetupHook || dlg->lpfnPagePaintHook)
         WINE_FIXME("Handle page setup dialog hooks.\n");
 
-    c->super.iret = PageSetupDlgW(dlg);
+    c->super.iret = p_PageSetupDlgW(dlg);
 
 #if HOST_BIT != GUEST_BIT
     PAGESETUPDLG_h2g(QEMU_G2H(c->setupdlg), dlg);
@@ -353,7 +353,7 @@ void qemu_PrintDlgExA(struct qemu_syscall *call)
     if (dlg->lpCallback || dlg->lpCallback)
         WINE_FIXME("Implement wrappers for print dialog hooks.\n");
 
-    c->super.iret = PrintDlgExA(dlg);
+    c->super.iret = p_PrintDlgExA(dlg);
 
 #if HOST_BIT != GUEST_BIT
     /* TODO */
@@ -398,7 +398,7 @@ void qemu_PrintDlgExW(struct qemu_syscall *call)
     if (dlg->lpCallback || dlg->lpCallback)
         WINE_FIXME("Implement wrappers for print dialog hooks.\n");
 
-    c->super.iret = PrintDlgExW(dlg);
+    c->super.iret = p_PrintDlgExW(dlg);
 
 #if HOST_BIT != GUEST_BIT
     /* TODO */

@@ -55,7 +55,7 @@ void qemu_CommDlgExtendedError(struct qemu_syscall *call)
 {
     struct qemu_CommDlgExtendedError *c = (struct qemu_CommDlgExtendedError *)call;
     WINE_TRACE("\n");
-    c->super.iret = CommDlgExtendedError();
+    c->super.iret = p_CommDlgExtendedError();
 }
 
 #endif

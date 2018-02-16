@@ -192,19 +192,19 @@ void qemu_GetOpenSaveFileName(struct qemu_syscall *call)
     switch (c->super.id)
     {
         case QEMU_SYSCALL_ID(CALL_GETOPENFILENAMEA):
-            c->super.iret = GetOpenFileNameA(&a);
+            c->super.iret = p_GetOpenFileNameA(&a);
             break;
 
         case QEMU_SYSCALL_ID(CALL_GETOPENFILENAMEW):
-            c->super.iret = GetOpenFileNameW(&w);
+            c->super.iret = p_GetOpenFileNameW(&w);
             break;
 
         case QEMU_SYSCALL_ID(CALL_GETSAVEFILENAMEA):
-            c->super.iret = GetSaveFileNameA(&a);
+            c->super.iret = p_GetSaveFileNameA(&a);
             break;
 
         case QEMU_SYSCALL_ID(CALL_GETSAVEFILENAMEW):
-            c->super.iret = GetSaveFileNameW(&w);
+            c->super.iret = p_GetSaveFileNameW(&w);
             break;
     }
 }
@@ -254,7 +254,7 @@ void qemu_GetFileTitleA(struct qemu_syscall *call)
 {
     struct qemu_GetFileTitleA *c = (struct qemu_GetFileTitleA *)call;
     WINE_TRACE("\n");
-    c->super.iret = GetFileTitleA(QEMU_G2H(c->lpFile), QEMU_G2H(c->lpTitle), c->cbBuf);
+    c->super.iret = p_GetFileTitleA(QEMU_G2H(c->lpFile), QEMU_G2H(c->lpTitle), c->cbBuf);
 }
 
 #endif
@@ -288,7 +288,7 @@ void qemu_GetFileTitleW(struct qemu_syscall *call)
 {
     struct qemu_GetFileTitleW *c = (struct qemu_GetFileTitleW *)call;
     WINE_TRACE("\n");
-    c->super.iret = GetFileTitleW(QEMU_G2H(c->lpFile), QEMU_G2H(c->lpTitle), c->cbBuf);
+    c->super.iret = p_GetFileTitleW(QEMU_G2H(c->lpFile), QEMU_G2H(c->lpTitle), c->cbBuf);
 }
 
 #endif

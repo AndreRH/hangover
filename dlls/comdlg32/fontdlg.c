@@ -132,7 +132,7 @@ void qemu_ChooseFontW(struct qemu_syscall *call)
     TlsSetValue(comdlg32_tls, &guest_proc);
     cf.lpfnHook = hook_proc_wrapper;
 
-    c->super.iret = ChooseFontW(QEMU_G2H(&cf));
+    c->super.iret = p_ChooseFontW(QEMU_G2H(&cf));
 
     TlsSetValue(comdlg32_tls, old_proc);
 
@@ -202,7 +202,7 @@ void qemu_ChooseFontA(struct qemu_syscall *call)
     TlsSetValue(comdlg32_tls, &guest_proc);
     cf.lpfnHook = hook_proc_wrapper;
 
-    c->super.iret = ChooseFontA(&cf);
+    c->super.iret = p_ChooseFontA(&cf);
 
     TlsSetValue(comdlg32_tls, old_proc);
 

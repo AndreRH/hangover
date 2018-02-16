@@ -67,7 +67,7 @@ void qemu_FindTextA(struct qemu_syscall *call)
     dlg->lCustData = (LPARAM)QEMU_G2H(c->pfr);
 #endif
 
-    c->super.iret = (ULONG_PTR)FindTextA(dlg);
+    c->super.iret = (ULONG_PTR)p_FindTextA(dlg);
     if (!c->super.iret && dlg != QEMU_G2H(c->pfr))
         HeapFree(GetProcessHeap(), 0, dlg);
 }
@@ -109,7 +109,7 @@ void qemu_ReplaceTextA(struct qemu_syscall *call)
     dlg->lCustData = (LPARAM)QEMU_G2H(c->pfr);
 #endif
 
-    c->super.iret = (ULONG_PTR)ReplaceTextA(dlg);
+    c->super.iret = (ULONG_PTR)p_ReplaceTextA(dlg);
     if (!c->super.iret && dlg != QEMU_G2H(c->pfr))
         HeapFree(GetProcessHeap(), 0, dlg);
 }
@@ -151,7 +151,7 @@ void qemu_FindTextW(struct qemu_syscall *call)
     dlg->lCustData = (LPARAM)QEMU_G2H(c->pfr);
 #endif
 
-    c->super.iret = (ULONG_PTR)FindTextW(dlg);
+    c->super.iret = (ULONG_PTR)p_FindTextW(dlg);
     if (!c->super.iret && dlg != QEMU_G2H(c->pfr))
         HeapFree(GetProcessHeap(), 0, dlg);
 }
@@ -193,7 +193,7 @@ void qemu_ReplaceTextW(struct qemu_syscall *call)
     dlg->lCustData = (LPARAM)QEMU_G2H(c->pfr);
 #endif
 
-    c->super.iret = (ULONG_PTR)ReplaceTextW(dlg);
+    c->super.iret = (ULONG_PTR)p_ReplaceTextW(dlg);
     if (!c->super.iret && dlg != QEMU_G2H(c->pfr))
         HeapFree(GetProcessHeap(), 0, dlg);
 }
