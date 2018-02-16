@@ -1227,6 +1227,57 @@ static inline void LVFINDINFO_h2g(struct qemu_LVFINDINFO *guest, const LVFINDINF
     guest->vkDirection = host->vkDirection;
 }
 
+struct qemu_HDITEM
+{
+    UINT        mask;
+    INT         cxy;
+    qemu_ptr    pszText;
+    qemu_ptr    hbm;
+    INT         cchTextMax;
+    INT         fmt;
+    qemu_ptr    lParam;
+    INT         iImage;
+    INT         iOrder;
+    UINT        type;
+    qemu_ptr    pvFilter;
+    UINT        state;
+};
+
+static inline void HDITEM_g2h(HDITEMW *host, const struct qemu_HDITEM *guest)
+{
+    host->mask = guest->mask;
+    host->cxy = guest->cxy;
+    if ((LONG)guest->pszText == (LONG_PTR)LPSTR_TEXTCALLBACKW)
+        host->pszText = LPSTR_TEXTCALLBACKW;
+    else
+        host->pszText = (WCHAR *)(ULONG_PTR)guest->pszText;
+    host->hbm = HANDLE_g2h(guest->hbm);
+    host->cchTextMax = guest->cchTextMax;
+    host->fmt = guest->fmt;
+    host->lParam = guest->lParam;
+    host->iImage = guest->iImage;
+    host->iOrder = guest->iOrder;
+    host->type = guest->type;
+    host->pvFilter = (void *)(ULONG_PTR)guest->pvFilter;
+    host->state = guest->state;
+}
+
+static inline void HDITEM_h2g(struct qemu_HDITEM *guest, const HDITEMW *host)
+{
+    guest->mask = host->mask;
+    guest->cxy = host->cxy;
+    guest->pszText = (ULONG_PTR)host->pszText;
+    guest->hbm = (ULONG_PTR)host->hbm;
+    guest->cchTextMax = host->cchTextMax;
+    guest->fmt = host->fmt;
+    guest->lParam = host->lParam;
+    guest->iImage = host->iImage;
+    guest->iOrder = host->iOrder;
+    guest->type = host->type;
+    guest->pvFilter = (ULONG_PTR)host->pvFilter;
+    guest->state = host->state;
+}
+
 struct qemu_NMHEADER
 {
     struct qemu_NMHDR     hdr;

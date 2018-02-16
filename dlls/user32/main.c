@@ -1461,7 +1461,24 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
                 msg_out->lParam = (LPARAM)host;
             }
             break;
+
+        case HDM_INSERTITEMA:
+        case HDM_INSERTITEMW:
+        case HDM_GETITEMA:
+        case HDM_GETITEMW:
+        case HDM_SETITEMA:
+        case HDM_SETITEMW:
+            if (msg_in->lParam)
+            {
+                struct qemu_HDITEM *guest_item = (struct qemu_HDITEM *)msg_in->lParam;
+                HDITEMW *host_item;
+                WINE_TRACE("Translating HDM_*ITEM message at %p.\n", guest_item);
+                host_item = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_item));
+                HDITEM_g2h(host_item, guest_item);
+                msg_out->lParam = (LPARAM)host_item;
+            }
             break;
+
 #endif
 
         default:
@@ -1680,6 +1697,24 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
                 HD_LAYOUT_h2g(guest, (struct qemu_WINDOWPOS *)(ULONG_PTR)guest->pwpos, host);
 
                 HeapFree(GetProcessHeap(), 0, host);
+            }
+            break;
+
+        case HDM_INSERTITEMA:
+        case HDM_INSERTITEMW:
+        case HDM_GETITEMA:
+        case HDM_GETITEMW:
+        case HDM_SETITEMA:
+        case HDM_SETITEMW:
+            if (conv->lParam != orig->lParam)
+            {
+                struct qemu_HDITEM *guest_item = (struct qemu_HDITEM *)orig->lParam;
+                HDITEMW *host_item = (HDITEMW *)conv->lParam;
+                WINE_TRACE("Reverse translating HDM_*ITEM message.\n");
+
+                HDITEM_h2g(guest_item, host_item);
+
+                HeapFree(GetProcessHeap(), 0, host_item);
             }
             break;
 
@@ -1956,6 +1991,21 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             }
             break;
 
+        case HDM_INSERTITEMA:
+        case HDM_INSERTITEMW:
+        case HDM_GETITEMA:
+        case HDM_GETITEMW:
+        case HDM_SETITEMA:
+        case HDM_SETITEMW:
+            if (msg_in->lParam)
+            {
+                HDITEMW *host = (HDITEMW *)msg_in->lParam;
+                struct qemu_HDITEM *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
+                HDITEM_h2g(guest, host);
+                msg_out->lParam = (LPARAM)guest;
+            }
+            break;
+
         default:
             /* Not constant numbers */
             if (msg_in->message == msg_FINDMSGSTRING)
@@ -2126,6 +2176,23 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
                 struct qemu_HD_LAYOUT *guest = (struct qemu_HD_LAYOUT *)conv->lParam;
 
                 HD_LAYOUT_g2h(host, host->pwpos, guest);
+
+                HeapFree(GetProcessHeap(), 0, guest);
+            }
+            break;
+
+        case HDM_INSERTITEMA:
+        case HDM_INSERTITEMW:
+        case HDM_GETITEMA:
+        case HDM_GETITEMW:
+        case HDM_SETITEMA:
+        case HDM_SETITEMW:
+            if (orig->lParam)
+            {
+                HDITEMW *host = (HDITEMW *)orig->lParam;
+                struct qemu_HDITEM *guest = (struct qemu_HDITEM *)conv->lParam;
+
+                HDITEM_g2h(host, guest);
 
                 HeapFree(GetProcessHeap(), 0, guest);
             }
