@@ -32,71 +32,6 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 #endif
 
-
-struct qemu_SetWindowsHookA
-{
-    struct qemu_syscall super;
-    uint64_t id;
-    uint64_t proc;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINUSERAPI HHOOK WINAPI SetWindowsHookA(INT id, HOOKPROC proc)
-{
-    struct qemu_SetWindowsHookA call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWSHOOKA);
-    call.id = (ULONG_PTR)id;
-    call.proc = (ULONG_PTR)proc;
-
-    qemu_syscall(&call.super);
-
-    return (HHOOK)(ULONG_PTR)call.super.iret;
-}
-
-#else
-
-void qemu_SetWindowsHookA(struct qemu_syscall *call)
-{
-    struct qemu_SetWindowsHookA *c = (struct qemu_SetWindowsHookA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)SetWindowsHookA(c->id, QEMU_G2H(c->proc));
-}
-
-#endif
-
-struct qemu_SetWindowsHookW
-{
-    struct qemu_syscall super;
-    uint64_t id;
-    uint64_t proc;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINUSERAPI HHOOK WINAPI SetWindowsHookW(INT id, HOOKPROC proc)
-{
-    struct qemu_SetWindowsHookW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWSHOOKW);
-    call.id = (ULONG_PTR)id;
-    call.proc = (ULONG_PTR)proc;
-
-    qemu_syscall(&call.super);
-
-    return (HHOOK)(ULONG_PTR)call.super.iret;
-}
-
-#else
-
-void qemu_SetWindowsHookW(struct qemu_syscall *call)
-{
-    struct qemu_SetWindowsHookW *c = (struct qemu_SetWindowsHookW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)SetWindowsHookW(c->id, QEMU_G2H(c->proc));
-}
-
-#endif
-
 struct qemu_SetWindowsHookEx
 {
     struct qemu_syscall super;
@@ -104,6 +39,14 @@ struct qemu_SetWindowsHookEx
     uint64_t proc;
     uint64_t inst;
     uint64_t tid;
+    uint64_t wrapper;
+};
+
+struct qemu_SetWindowsHookA
+{
+    struct qemu_syscall super;
+    uint64_t id;
+    uint64_t proc;
     uint64_t wrapper;
 };
 
@@ -121,6 +64,86 @@ static uint64_t __fastcall qemu_hook_guest_cb(struct qemu_cbt_hook_cb *call)
     HOOKPROC proc = (HOOKPROC)(ULONG_PTR)call->func;
     return proc(call->code, call->wp, call->lp);
 }
+
+WINUSERAPI HHOOK WINAPI SetWindowsHookA(INT id, HOOKPROC proc)
+{
+    struct qemu_SetWindowsHookA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWSHOOKA);
+    call.id = (ULONG_PTR)id;
+    call.proc = (ULONG_PTR)proc;
+    call.wrapper = (ULONG_PTR)qemu_hook_guest_cb;
+
+    qemu_syscall(&call.super);
+
+    return (HHOOK)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+void qemu_SetWindowsHookA(struct qemu_syscall *call)
+{
+    struct qemu_SetWindowsHookA *c = (struct qemu_SetWindowsHookA *)call;
+    struct qemu_SetWindowsHookEx fwd;
+
+    /* I had some problems importing GetCurrentProcessId from the guest-side kernel32.dll.
+     * Do the forward on the host side, it is faster anyway. */
+    WINE_TRACE("Host side forward.\n");
+    fwd.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWSHOOKEXA);
+    fwd.id = c->id;
+    fwd.proc = c->proc;
+    fwd.inst = 0;
+    fwd.tid = GetCurrentThreadId();
+    fwd.wrapper = c->wrapper;
+    qemu_SetWindowsHookExA(&fwd.super);
+    c->super.iret = fwd.super.iret;
+}
+
+#endif
+
+struct qemu_SetWindowsHookW
+{
+    struct qemu_syscall super;
+    uint64_t id;
+    uint64_t proc;
+    uint64_t wrapper;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINUSERAPI HHOOK WINAPI SetWindowsHookW(INT id, HOOKPROC proc)
+{
+    struct qemu_SetWindowsHookW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWSHOOKW);
+    call.id = (ULONG_PTR)id;
+    call.proc = (ULONG_PTR)proc;
+    call.wrapper = (ULONG_PTR)qemu_hook_guest_cb;
+
+    qemu_syscall(&call.super);
+
+    return (HHOOK)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+void qemu_SetWindowsHookW(struct qemu_syscall *call)
+{
+    struct qemu_SetWindowsHookW *c = (struct qemu_SetWindowsHookW *)call;
+    struct qemu_SetWindowsHookEx fwd;
+
+    WINE_TRACE("Host side forward.\n");
+    fwd.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWSHOOKEXW);
+    fwd.id = c->id;
+    fwd.proc = c->proc;
+    fwd.inst = 0;
+    fwd.tid = GetCurrentThreadId();
+    fwd.wrapper = c->wrapper;
+    qemu_SetWindowsHookExW(&fwd.super);
+    c->super.iret = fwd.super.iret;
+}
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
 
 WINUSERAPI HHOOK WINAPI SetWindowsHookExA(INT id, HOOKPROC proc, HINSTANCE inst, DWORD tid)
 {
@@ -149,6 +172,7 @@ struct qemu_hook_data
     INT type;
     uint64_t client_cb;
     uint64_t client_inst;
+    HOOKPROC real_proc;
 };
 
 static struct qemu_hook_data *installed_hooks[WH_MAXHOOK + 1 - WH_MIN][2];
@@ -424,6 +448,7 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
         hook_data->hook_id = ret;
         hook_data->client_cb = proc;
         hook_data->client_inst = inst;
+        hook_data->real_proc = real_proc;
         installed_hooks[id - WH_MIN][hook_no] = hook_data;
     }
 
@@ -498,8 +523,29 @@ WINUSERAPI BOOL WINAPI UnhookWindowsHook(INT id, HOOKPROC proc)
 void qemu_UnhookWindowsHook(struct qemu_syscall *call)
 {
     struct qemu_UnhookWindowsHook *c = (struct qemu_UnhookWindowsHook *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = UnhookWindowsHook(c->id, QEMU_G2H(c->proc));
+    const unsigned int max_hooks = sizeof(installed_hooks[0]) / sizeof(installed_hooks[0][0]);
+    INT id = c->id, found = WH_MIN - 1, hook_no;
+
+    WINE_TRACE("\n");
+
+    EnterCriticalSection(&hook_cs);
+    for (hook_no = 0; hook_no < max_hooks; ++hook_no)
+    {
+        if (installed_hooks[id - WH_MIN][hook_no] && installed_hooks[id - WH_MIN][hook_no]->client_cb == c->proc)
+        {
+            if (found != WH_MIN - 1)
+                WINE_ERR("Hook 0x%lx found in %d and %d.\n", c->proc, found, id);
+
+            c->super.iret = UnhookWindowsHook(id, installed_hooks[id - WH_MIN][hook_no]->real_proc);
+            if (!c->super.iret)
+                WINE_ERR("Failed to uninstall host side hook.\n");
+            HeapFree(GetProcessHeap(), 0, installed_hooks[id - WH_MIN][hook_no]);
+            installed_hooks[id - WH_MIN][hook_no] = NULL;
+            found = TRUE;
+        }
+    }
+    LeaveCriticalSection(&hook_cs);
+
 }
 
 #endif
