@@ -30,6 +30,7 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <wine/list.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_usp10);
 #endif
 
@@ -55,21 +56,63 @@ WINBASEAPI HRESULT WINAPI ScriptFreeCache(SCRIPT_CACHE *psc)
 
 #else
 
+struct qemu_SCRIPT_CACHE
+{
+    SCRIPT_CACHE host;
+    struct list entry;
+    DWORD refcount;
+};
+
+/* The Wine library uses a list, but it has a different data structure. Since we just have
+ * pointers we could also use an rbtree quite easily. If this makes sense depends on the
+ * amount of caches the average app has. */
+static struct list cache_list = LIST_INIT(cache_list);
+static CRITICAL_SECTION cache_cs = {0, -1, 0, 0, 0, 0};
+
+static void SCRIPT_CACHE_create(qemu_ptr *guest, SCRIPT_CACHE host)
+{
+    struct qemu_SCRIPT_CACHE *cache;
+    if (!host)
+        return;
+
+    EnterCriticalSection(&cache_cs);
+    LIST_FOR_EACH_ENTRY(cache, &cache_list, struct qemu_SCRIPT_CACHE, entry)
+    {
+        if (cache->host == host)
+        {
+            cache->refcount++;
+            LeaveCriticalSection(&cache_cs);
+
+            WINE_TRACE("Found existing wrapper %p for host cache %p.\n", cache, host);
+            *guest = (ULONG_PTR)cache;
+
+            return;
+        }
+    }
+
+    cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
+    cache->host = host;
+    cache->refcount = 1;
+    list_add_head(&cache_list, &cache->entry);
+    WINE_TRACE("Created cache wrapper %p for host cache %p.\n", cache, host);
+
+    LeaveCriticalSection(&cache_cs);
+
+    *guest = (ULONG_PTR)cache;
+}
+
 void qemu_ScriptFreeCache(struct qemu_syscall *call)
 {
     struct qemu_ScriptFreeCache *c = (struct qemu_ScriptFreeCache *)call;
     qemu_ptr *ptr32;
-    SCRIPT_CACHE *host;
+    struct qemu_SCRIPT_CACHE *wrapper;
+    SCRIPT_CACHE host;
     WINE_TRACE("\n");
 
     /* Note: Functions that create the cache sometimes do not touch it, e.g. if they fail. In this
      * case we should not touch the guest pointer either. So my attempt to have a general wrapper
      * function that handles the translation or allocation in one go before calling the host usp10
-     * functions was vetoed by the tests.
-     *
-     * FIXME 2: The tests expect some operations to return the same cache value. Consider having a
-     * cache of caches and searching for an existing wrapper that contains the same host cache ptr
-     * before allocating a new one. The host lib stores them in a linked list fwiw. */
+     * functions was vetoed by the tests. */
 #if HOST_BIT == GUEST_BIT
     c->super.iret = ScriptFreeCache(QEMU_G2H(c->psc));
 #endif
@@ -79,12 +122,21 @@ void qemu_ScriptFreeCache(struct qemu_syscall *call)
     if (!ptr32 || !*ptr32)
         return;
 
-    host = QEMU_G2H((uint64_t)*ptr32);
-    c->super.iret = ScriptFreeCache(host);
+    wrapper = QEMU_G2H((uint64_t)*ptr32);
+    host = wrapper->host; /* Protect against zeroing if we have more than one ref. */
+    c->super.iret = ScriptFreeCache(&host);
     if (FAILED(c->super.iret))
-        WINE_ERR("Failed to free host cache.\n");
+        WINE_ERR("Failed to free host cache %p.\n", wrapper->host);
 
-    HeapFree(GetProcessHeap(), 0, host);
+    EnterCriticalSection(&cache_cs);
+    if (!--wrapper->refcount)
+    {
+        list_remove(&wrapper->entry);
+        WINE_TRACE("Destroyed cache wrapper %p, host cache %p.\n", wrapper, wrapper->host);
+        HeapFree(GetProcessHeap(), 0, wrapper);
+    }
+    LeaveCriticalSection(&cache_cs);
+
     *ptr32 = 0;
 }
 
@@ -213,18 +265,13 @@ void qemu_ScriptGetFontProperties(struct qemu_syscall *call)
     if (!cache32)
         cache = NULL;
     else if (*cache32)
-        cache = QEMU_G2H((uint64_t)*cache32);
+        cache = &((struct qemu_SCRIPT_CACHE *)QEMU_G2H((uint64_t)*cache32))->host;
 #endif
 
     c->super.iret = ScriptGetFontProperties(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->sfp));
 
 #if HOST_BIT != GUEST_BIT
-    if (stack)
-    {
-        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
-        *cache = stack;
-        *cache32 = (ULONG_PTR)cache;
-    }
+    SCRIPT_CACHE_create(cache32, stack);
 #endif
 }
 
@@ -861,7 +908,7 @@ void qemu_ScriptShapeOpenType(struct qemu_syscall *call)
     if (!cache32)
         cache = NULL;
     else if (*cache32)
-        cache = QEMU_G2H((uint64_t)*cache32);
+        cache = &((struct qemu_SCRIPT_CACHE *)QEMU_G2H((uint64_t)*cache32))->host;
 #endif
 
     c->super.iret = ScriptShapeOpenType(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->psa), c->tagScript, c->tagLangSys,
@@ -870,12 +917,7 @@ void qemu_ScriptShapeOpenType(struct qemu_syscall *call)
             QEMU_G2H(c->pOutGlyphProps), QEMU_G2H(c->pcGlyphs));
 
 #if HOST_BIT != GUEST_BIT
-    if (stack)
-    {
-        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
-        *cache = stack;
-        *cache32 = (ULONG_PTR)cache;
-    }
+    SCRIPT_CACHE_create(cache32, stack);
 #endif
 }
 
@@ -935,7 +977,7 @@ void qemu_ScriptShape(struct qemu_syscall *call)
     if (!cache32)
         cache = NULL;
     else if (*cache32)
-        cache = QEMU_G2H((uint64_t)*cache32);
+        cache = &((struct qemu_SCRIPT_CACHE *)QEMU_G2H((uint64_t)*cache32))->host;
 #endif
 
     c->super.iret = ScriptShape(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->pwcChars), c->cChars, c->cMaxGlyphs,
@@ -943,12 +985,7 @@ void qemu_ScriptShape(struct qemu_syscall *call)
             QEMU_G2H(c->pcGlyphs));
 
 #if HOST_BIT != GUEST_BIT
-    if (stack)
-    {
-        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
-        *cache = stack;
-        *cache32 = (ULONG_PTR)cache;
-    }
+    SCRIPT_CACHE_create(cache32, stack);
 #endif
 }
 
@@ -1034,7 +1071,7 @@ void qemu_ScriptPlaceOpenType(struct qemu_syscall *call)
     if (!cache32)
         cache = NULL;
     else if (*cache32)
-        cache = QEMU_G2H((uint64_t)*cache32);
+        cache = &((struct qemu_SCRIPT_CACHE *)QEMU_G2H((uint64_t)*cache32))->host;
 #endif
 
     c->super.iret = ScriptPlaceOpenType(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->psa),
@@ -1043,12 +1080,7 @@ void qemu_ScriptPlaceOpenType(struct qemu_syscall *call)
             QEMU_G2H(c->pGlyphProps), c->cGlyphs, QEMU_G2H(c->piAdvance), QEMU_G2H(c->pGoffset), QEMU_G2H(c->pABC));
 
 #if HOST_BIT != GUEST_BIT
-    if (stack)
-    {
-        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
-        *cache = stack;
-        *cache32 = (ULONG_PTR)cache;
-    }
+    SCRIPT_CACHE_create(cache32, stack);
 #endif
 }
 
@@ -1106,19 +1138,14 @@ void qemu_ScriptPlace(struct qemu_syscall *call)
     if (!cache32)
         cache = NULL;
     else if (*cache32)
-        cache = QEMU_G2H((uint64_t)*cache32);
+        cache = &((struct qemu_SCRIPT_CACHE *)QEMU_G2H((uint64_t)*cache32))->host;
 #endif
 
     c->super.iret = ScriptPlace(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->pwGlyphs), c->cGlyphs, QEMU_G2H(c->psva),
             QEMU_G2H(c->psa), QEMU_G2H(c->piAdvance), QEMU_G2H(c->pGoffset), QEMU_G2H(c->pABC));
 
 #if HOST_BIT != GUEST_BIT
-    if (stack)
-    {
-        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
-        *cache = stack;
-        *cache32 = (ULONG_PTR)cache;
-    }
+    SCRIPT_CACHE_create(cache32, stack);
 #endif
 }
 
@@ -1170,19 +1197,14 @@ void qemu_ScriptGetCMap(struct qemu_syscall *call)
     if (!cache32)
         cache = NULL;
     else if (*cache32)
-        cache = QEMU_G2H((uint64_t)*cache32);
+        cache = &((struct qemu_SCRIPT_CACHE *)QEMU_G2H((uint64_t)*cache32))->host;
 #endif
 
     c->super.iret = ScriptGetCMap(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->pwcInChars), c->cChars,
             c->dwFlags, QEMU_G2H(c->pwOutGlyphs));
 
 #if HOST_BIT != GUEST_BIT
-    if (stack)
-    {
-        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
-        *cache = stack;
-        *cache32 = (ULONG_PTR)cache;
-    }
+    SCRIPT_CACHE_create(cache32, stack);
 #endif
 }
 
@@ -1252,7 +1274,7 @@ void qemu_ScriptTextOut(struct qemu_syscall *call)
     if (!cache32)
         cache = NULL;
     else if (*cache32)
-        cache = QEMU_G2H((uint64_t)*cache32);
+        cache = &((struct qemu_SCRIPT_CACHE *)QEMU_G2H((uint64_t)*cache32))->host;
 #endif
 
     c->super.iret = ScriptTextOut((HDC)c->hdc, cache, c->x, c->y, c->fuOptions,
@@ -1260,12 +1282,7 @@ void qemu_ScriptTextOut(struct qemu_syscall *call)
             c->cGlyphs, QEMU_G2H(c->piAdvance), QEMU_G2H(c->piJustify), QEMU_G2H(c->pGoffset));
 
 #if HOST_BIT != GUEST_BIT
-    if (stack)
-    {
-        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
-        *cache = stack;
-        *cache32 = (ULONG_PTR)cache;
-    }
+    SCRIPT_CACHE_create(cache32, stack);
 #endif
 }
 
@@ -1310,18 +1327,13 @@ void qemu_ScriptCacheGetHeight(struct qemu_syscall *call)
     if (!cache32)
         cache = NULL;
     else if (*cache32)
-        cache = QEMU_G2H((uint64_t)*cache32);
+        cache = &((struct qemu_SCRIPT_CACHE *)QEMU_G2H((uint64_t)*cache32))->host;
 #endif
 
     c->super.iret = ScriptCacheGetHeight(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->height));
 
 #if HOST_BIT != GUEST_BIT
-    if (stack)
-    {
-        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
-        *cache = stack;
-        *cache32 = (ULONG_PTR)cache;
-    }
+    SCRIPT_CACHE_create(cache32, stack);
 #endif
 }
 
@@ -1368,18 +1380,13 @@ void qemu_ScriptGetGlyphABCWidth(struct qemu_syscall *call)
     if (!cache32)
         cache = NULL;
     else if (*cache32)
-        cache = QEMU_G2H((uint64_t)*cache32);
+        cache = &((struct qemu_SCRIPT_CACHE *)QEMU_G2H((uint64_t)*cache32))->host;
 #endif
 
     c->super.iret = ScriptGetGlyphABCWidth(QEMU_G2H(c->hdc), cache, c->glyph, QEMU_G2H(c->abc));
 
 #if HOST_BIT != GUEST_BIT
-    if (stack)
-    {
-        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
-        *cache = stack;
-        *cache32 = (ULONG_PTR)cache;
-    }
+    SCRIPT_CACHE_create(cache32, stack);
 #endif
 }
 
@@ -1789,19 +1796,14 @@ void qemu_ScriptGetFontScriptTags(struct qemu_syscall *call)
     if (!cache32)
         cache = NULL;
     else if (*cache32)
-        cache = QEMU_G2H((uint64_t)*cache32);
+        cache = &((struct qemu_SCRIPT_CACHE *)QEMU_G2H((uint64_t)*cache32))->host;
 #endif
 
     c->super.iret = ScriptGetFontScriptTags(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->psa), c->cMaxTags,
             QEMU_G2H(c->pScriptTags), QEMU_G2H(c->pcTags));
 
 #if HOST_BIT != GUEST_BIT
-    if (stack)
-    {
-        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
-        *cache = stack;
-        *cache32 = (ULONG_PTR)cache;
-    }
+    SCRIPT_CACHE_create(cache32, stack);
 #endif
 }
 
@@ -1858,19 +1860,14 @@ void qemu_ScriptGetFontLanguageTags(struct qemu_syscall *call)
     if (!cache32)
         cache = NULL;
     else if (*cache32)
-        cache = QEMU_G2H((uint64_t)*cache32);
+        cache = &((struct qemu_SCRIPT_CACHE *)QEMU_G2H((uint64_t)*cache32))->host;
 #endif
 
     c->super.iret = ScriptGetFontLanguageTags(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->psa), c->tagScript,
             c->cMaxTags, QEMU_G2H(c->pLangSysTags), QEMU_G2H(c->pcTags));
 
 #if HOST_BIT != GUEST_BIT
-    if (stack)
-    {
-        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
-        *cache = stack;
-        *cache32 = (ULONG_PTR)cache;
-    }
+    SCRIPT_CACHE_create(cache32, stack);
 #endif
 }
 
@@ -1929,19 +1926,14 @@ void qemu_ScriptGetFontFeatureTags(struct qemu_syscall *call)
     if (!cache32)
         cache = NULL;
     else if (*cache32)
-        cache = QEMU_G2H((uint64_t)*cache32);
+        cache = &((struct qemu_SCRIPT_CACHE *)QEMU_G2H((uint64_t)*cache32))->host;
 #endif
 
     c->super.iret = ScriptGetFontFeatureTags(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->psa), c->tagScript,
             c->tagLangSys, c->cMaxTags, QEMU_G2H(c->pFeatureTags), QEMU_G2H(c->pcTags));
 
 #if HOST_BIT != GUEST_BIT
-    if (stack)
-    {
-        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
-        *cache = stack;
-        *cache32 = (ULONG_PTR)cache;
-    }
+    SCRIPT_CACHE_create(cache32, stack);
 #endif
 }
 
