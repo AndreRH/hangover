@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <usp10.h>
 
+#include "thunk/qemu_usp10.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_usp10.h"
@@ -241,7 +243,7 @@ WINBASEAPI HRESULT WINAPI ScriptRecordDigitSubstitution(LCID locale, SCRIPT_DIGI
 {
     struct qemu_ScriptRecordDigitSubstitution call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTRECORDDIGITSUBSTITUTION);
-    call.locale = (ULONG_PTR)locale;
+    call.locale = locale;
     call.sds = (ULONG_PTR)sds;
 
     qemu_syscall(&call.super);
@@ -270,7 +272,8 @@ struct qemu_ScriptApplyDigitSubstitution
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptApplyDigitSubstitution(const SCRIPT_DIGITSUBSTITUTE *sds, SCRIPT_CONTROL *sc, SCRIPT_STATE *ss)
+WINBASEAPI HRESULT WINAPI ScriptApplyDigitSubstitution(const SCRIPT_DIGITSUBSTITUTE *sds, SCRIPT_CONTROL *sc,
+        SCRIPT_STATE *ss)
 {
     struct qemu_ScriptApplyDigitSubstitution call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTAPPLYDIGITSUBSTITUTION);
@@ -309,13 +312,15 @@ struct qemu_ScriptItemizeOpenType
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptItemizeOpenType(const WCHAR *pwcInChars, int cInChars, int cMaxItems, const SCRIPT_CONTROL *psControl, const SCRIPT_STATE *psState, SCRIPT_ITEM *pItems, OPENTYPE_TAG *pScriptTags, int *pcItems)
+WINBASEAPI HRESULT WINAPI ScriptItemizeOpenType(const WCHAR *pwcInChars, int cInChars, int cMaxItems,
+        const SCRIPT_CONTROL *psControl, const SCRIPT_STATE *psState, SCRIPT_ITEM *pItems,
+        OPENTYPE_TAG *pScriptTags, int *pcItems)
 {
     struct qemu_ScriptItemizeOpenType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTITEMIZEOPENTYPE);
     call.pwcInChars = (ULONG_PTR)pwcInChars;
-    call.cInChars = (ULONG_PTR)cInChars;
-    call.cMaxItems = (ULONG_PTR)cMaxItems;
+    call.cInChars = cInChars;
+    call.cMaxItems = cMaxItems;
     call.psControl = (ULONG_PTR)psControl;
     call.psState = (ULONG_PTR)psState;
     call.pItems = (ULONG_PTR)pItems;
@@ -330,12 +335,15 @@ WINBASEAPI HRESULT WINAPI ScriptItemizeOpenType(const WCHAR *pwcInChars, int cIn
 #else
 
 /* TODO: Add ScriptItemizeOpenType to Wine headers? */
-extern HRESULT WINAPI ScriptItemizeOpenType(const WCHAR *pwcInChars, int cInChars, int cMaxItems, const SCRIPT_CONTROL *psControl, const SCRIPT_STATE *psState, SCRIPT_ITEM *pItems, OPENTYPE_TAG *pScriptTags, int *pcItems);
+extern HRESULT WINAPI ScriptItemizeOpenType(const WCHAR *pwcInChars, int cInChars, int cMaxItems,
+        const SCRIPT_CONTROL *psControl, const SCRIPT_STATE *psState, SCRIPT_ITEM *pItems, OPENTYPE_TAG *pScriptTags,
+        int *pcItems);
 void qemu_ScriptItemizeOpenType(struct qemu_syscall *call)
 {
     struct qemu_ScriptItemizeOpenType *c = (struct qemu_ScriptItemizeOpenType *)call;
     WINE_TRACE("\n");
-    c->super.iret = ScriptItemizeOpenType(QEMU_G2H(c->pwcInChars), c->cInChars, c->cMaxItems, QEMU_G2H(c->psControl), QEMU_G2H(c->psState), QEMU_G2H(c->pItems), QEMU_G2H(c->pScriptTags), QEMU_G2H(c->pcItems));
+    c->super.iret = ScriptItemizeOpenType(QEMU_G2H(c->pwcInChars), c->cInChars, c->cMaxItems, QEMU_G2H(c->psControl),
+            QEMU_G2H(c->psState), QEMU_G2H(c->pItems), QEMU_G2H(c->pScriptTags), QEMU_G2H(c->pcItems));
 }
 
 #endif
@@ -354,13 +362,14 @@ struct qemu_ScriptItemize
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptItemize(const WCHAR *pwcInChars, int cInChars, int cMaxItems, const SCRIPT_CONTROL *psControl, const SCRIPT_STATE *psState, SCRIPT_ITEM *pItems, int *pcItems)
+WINBASEAPI HRESULT WINAPI ScriptItemize(const WCHAR *pwcInChars, int cInChars, int cMaxItems,
+        const SCRIPT_CONTROL *psControl, const SCRIPT_STATE *psState, SCRIPT_ITEM *pItems, int *pcItems)
 {
     struct qemu_ScriptItemize call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTITEMIZE);
     call.pwcInChars = (ULONG_PTR)pwcInChars;
-    call.cInChars = (ULONG_PTR)cInChars;
-    call.cMaxItems = (ULONG_PTR)cMaxItems;
+    call.cInChars = cInChars;
+    call.cMaxItems = cMaxItems;
     call.psControl = (ULONG_PTR)psControl;
     call.psState = (ULONG_PTR)psState;
     call.pItems = (ULONG_PTR)pItems;
@@ -377,7 +386,8 @@ void qemu_ScriptItemize(struct qemu_syscall *call)
 {
     struct qemu_ScriptItemize *c = (struct qemu_ScriptItemize *)call;
     WINE_TRACE("\n");
-    c->super.iret = ScriptItemize(QEMU_G2H(c->pwcInChars), c->cInChars, c->cMaxItems, QEMU_G2H(c->psControl), QEMU_G2H(c->psState), QEMU_G2H(c->pItems), QEMU_G2H(c->pcItems));
+    c->super.iret = ScriptItemize(QEMU_G2H(c->pwcInChars), c->cInChars, c->cMaxItems, QEMU_G2H(c->psControl),
+            QEMU_G2H(c->psState), QEMU_G2H(c->pItems), QEMU_G2H(c->pcItems));
 }
 
 #endif
@@ -410,11 +420,11 @@ WINBASEAPI HRESULT WINAPI ScriptStringAnalyse(HDC hdc, const void *pString, int 
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTSTRINGANALYSE);
     call.hdc = (ULONG_PTR)hdc;
     call.pString = (ULONG_PTR)pString;
-    call.cString = (ULONG_PTR)cString;
-    call.cGlyphs = (ULONG_PTR)cGlyphs;
-    call.iCharset = (ULONG_PTR)iCharset;
-    call.dwFlags = (ULONG_PTR)dwFlags;
-    call.iReqWidth = (ULONG_PTR)iReqWidth;
+    call.cString = cString;
+    call.cGlyphs = cGlyphs;
+    call.iCharset = iCharset;
+    call.dwFlags = dwFlags;
+    call.iReqWidth = iReqWidth;
     call.psControl = (ULONG_PTR)psControl;
     call.psState = (ULONG_PTR)psState;
     call.piDx = (ULONG_PTR)piDx;
@@ -435,11 +445,21 @@ void qemu_ScriptStringAnalyse(struct qemu_syscall *call)
 {
     struct qemu_ScriptStringAnalyse *c = (struct qemu_ScriptStringAnalyse *)call;
     SCRIPT_STRING_ANALYSIS host;
+    SCRIPT_TABDEF stack, *tabdef = &stack;
     WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+    tabdef = QEMU_G2H(c->pTabdef);
+#else
+    if (c->pTabdef)
+        SCRIPT_TABDEF_g2h(tabdef, QEMU_G2H(c->pTabdef));
+    else
+        tabdef = NULL;
+#endif
 
     c->super.iret = ScriptStringAnalyse(QEMU_G2H(c->hdc), QEMU_G2H(c->pString), c->cString, c->cGlyphs,
             c->iCharset, c->dwFlags, c->iReqWidth, QEMU_G2H(c->psControl), QEMU_G2H(c->psState),
-            QEMU_G2H(c->piDx), QEMU_G2H(c->pTabdef), QEMU_G2H(c->pbInClass), c->pssa ? &host : NULL);
+            QEMU_G2H(c->piDx), tabdef, QEMU_G2H(c->pbInClass), c->pssa ? &host : NULL);
     c->pssa = QEMU_H2G(host);
 }
 
@@ -460,18 +480,19 @@ struct qemu_ScriptStringOut
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptStringOut(SCRIPT_STRING_ANALYSIS ssa, int iX, int iY, UINT uOptions, const RECT *prc, int iMinSel, int iMaxSel, BOOL fDisabled)
+WINBASEAPI HRESULT WINAPI ScriptStringOut(SCRIPT_STRING_ANALYSIS ssa, int iX, int iY, UINT uOptions, const RECT *prc,
+        int iMinSel, int iMaxSel, BOOL fDisabled)
 {
     struct qemu_ScriptStringOut call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTSTRINGOUT);
     call.ssa = (ULONG_PTR)ssa;
-    call.iX = (ULONG_PTR)iX;
-    call.iY = (ULONG_PTR)iY;
-    call.uOptions = (ULONG_PTR)uOptions;
+    call.iX = iX;
+    call.iY = iY;
+    call.uOptions = uOptions;
     call.prc = (ULONG_PTR)prc;
-    call.iMinSel = (ULONG_PTR)iMinSel;
-    call.iMaxSel = (ULONG_PTR)iMaxSel;
-    call.fDisabled = (ULONG_PTR)fDisabled;
+    call.iMinSel = iMinSel;
+    call.iMaxSel = iMaxSel;
+    call.fDisabled = fDisabled;
 
     qemu_syscall(&call.super);
 
@@ -484,7 +505,8 @@ void qemu_ScriptStringOut(struct qemu_syscall *call)
 {
     struct qemu_ScriptStringOut *c = (struct qemu_ScriptStringOut *)call;
     WINE_TRACE("\n");
-    c->super.iret = ScriptStringOut(QEMU_G2H(c->ssa), c->iX, c->iY, c->uOptions, QEMU_G2H(c->prc), c->iMinSel, c->iMaxSel, c->fDisabled);
+    c->super.iret = ScriptStringOut(QEMU_G2H(c->ssa), c->iX, c->iY, c->uOptions, QEMU_G2H(c->prc), c->iMinSel,
+            c->iMaxSel, c->fDisabled);
 }
 
 #endif
@@ -505,8 +527,8 @@ WINBASEAPI HRESULT WINAPI ScriptStringCPtoX(SCRIPT_STRING_ANALYSIS ssa, int icp,
     struct qemu_ScriptStringCPtoX call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTSTRINGCPTOX);
     call.ssa = (ULONG_PTR)ssa;
-    call.icp = (ULONG_PTR)icp;
-    call.fTrailing = (ULONG_PTR)fTrailing;
+    call.icp = icp;
+    call.fTrailing = fTrailing;
     call.pX = (ULONG_PTR)pX;
 
     qemu_syscall(&call.super);
@@ -541,7 +563,7 @@ WINBASEAPI HRESULT WINAPI ScriptStringXtoCP(SCRIPT_STRING_ANALYSIS ssa, int iX, 
     struct qemu_ScriptStringXtoCP call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTSTRINGXTOCP);
     call.ssa = (ULONG_PTR)ssa;
-    call.iX = (ULONG_PTR)iX;
+    call.iX = iX;
     call.piCh = (ULONG_PTR)piCh;
     call.piTrailing = (ULONG_PTR)piTrailing;
 
@@ -612,14 +634,15 @@ struct qemu_ScriptCPtoX
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptCPtoX(int iCP, BOOL fTrailing, int cChars, int cGlyphs, const WORD *pwLogClust, const SCRIPT_VISATTR *psva, const int *piAdvance, const SCRIPT_ANALYSIS *psa, int *piX)
+WINBASEAPI HRESULT WINAPI ScriptCPtoX(int iCP, BOOL fTrailing, int cChars, int cGlyphs, const WORD *pwLogClust,
+        const SCRIPT_VISATTR *psva, const int *piAdvance, const SCRIPT_ANALYSIS *psa, int *piX)
 {
     struct qemu_ScriptCPtoX call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTCPTOX);
     call.iCP = (ULONG_PTR)iCP;
-    call.fTrailing = (ULONG_PTR)fTrailing;
-    call.cChars = (ULONG_PTR)cChars;
-    call.cGlyphs = (ULONG_PTR)cGlyphs;
+    call.fTrailing = fTrailing;
+    call.cChars = cChars;
+    call.cGlyphs = cGlyphs;
     call.pwLogClust = (ULONG_PTR)pwLogClust;
     call.psva = (ULONG_PTR)psva;
     call.piAdvance = (ULONG_PTR)piAdvance;
@@ -637,7 +660,8 @@ void qemu_ScriptCPtoX(struct qemu_syscall *call)
 {
     struct qemu_ScriptCPtoX *c = (struct qemu_ScriptCPtoX *)call;
     WINE_TRACE("\n");
-    c->super.iret = ScriptCPtoX(c->iCP, c->fTrailing, c->cChars, c->cGlyphs, QEMU_G2H(c->pwLogClust), QEMU_G2H(c->psva), QEMU_G2H(c->piAdvance), QEMU_G2H(c->psa), QEMU_G2H(c->piX));
+    c->super.iret = ScriptCPtoX(c->iCP, c->fTrailing, c->cChars, c->cGlyphs, QEMU_G2H(c->pwLogClust),
+            QEMU_G2H(c->psva), QEMU_G2H(c->piAdvance), QEMU_G2H(c->psa), QEMU_G2H(c->piX));
 }
 
 #endif
@@ -658,13 +682,14 @@ struct qemu_ScriptXtoCP
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptXtoCP(int iX, int cChars, int cGlyphs, const WORD *pwLogClust, const SCRIPT_VISATTR *psva, const int *piAdvance, const SCRIPT_ANALYSIS *psa, int *piCP, int *piTrailing)
+WINBASEAPI HRESULT WINAPI ScriptXtoCP(int iX, int cChars, int cGlyphs, const WORD *pwLogClust,
+        const SCRIPT_VISATTR *psva, const int *piAdvance, const SCRIPT_ANALYSIS *psa, int *piCP, int *piTrailing)
 {
     struct qemu_ScriptXtoCP call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTXTOCP);
-    call.iX = (ULONG_PTR)iX;
-    call.cChars = (ULONG_PTR)cChars;
-    call.cGlyphs = (ULONG_PTR)cGlyphs;
+    call.iX = iX;
+    call.cChars = cChars;
+    call.cGlyphs = cGlyphs;
     call.pwLogClust = (ULONG_PTR)pwLogClust;
     call.psva = (ULONG_PTR)psva;
     call.piAdvance = (ULONG_PTR)piAdvance;
@@ -683,7 +708,8 @@ void qemu_ScriptXtoCP(struct qemu_syscall *call)
 {
     struct qemu_ScriptXtoCP *c = (struct qemu_ScriptXtoCP *)call;
     WINE_TRACE("\n");
-    c->super.iret = ScriptXtoCP(c->iX, c->cChars, c->cGlyphs, QEMU_G2H(c->pwLogClust), QEMU_G2H(c->psva), QEMU_G2H(c->piAdvance), QEMU_G2H(c->psa), QEMU_G2H(c->piCP), QEMU_G2H(c->piTrailing));
+    c->super.iret = ScriptXtoCP(c->iX, c->cChars, c->cGlyphs, QEMU_G2H(c->pwLogClust), QEMU_G2H(c->psva),
+            QEMU_G2H(c->piAdvance), QEMU_G2H(c->psa), QEMU_G2H(c->piCP), QEMU_G2H(c->piTrailing));
 }
 
 #endif
@@ -704,7 +730,7 @@ WINBASEAPI HRESULT WINAPI ScriptBreak(const WCHAR *chars, int count, const SCRIP
     struct qemu_ScriptBreak call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTBREAK);
     call.chars = (ULONG_PTR)chars;
-    call.count = (ULONG_PTR)count;
+    call.count = count;
     call.sa = (ULONG_PTR)sa;
     call.la = (ULONG_PTR)la;
 
@@ -739,8 +765,8 @@ WINBASEAPI HRESULT WINAPI ScriptIsComplex(const WCHAR *chars, int len, DWORD fla
     struct qemu_ScriptIsComplex call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTISCOMPLEX);
     call.chars = (ULONG_PTR)chars;
-    call.len = (ULONG_PTR)len;
-    call.flag = (ULONG_PTR)flag;
+    call.len = len;
+    call.flag = flag;
 
     qemu_syscall(&call.super);
 
@@ -791,14 +817,14 @@ WINBASEAPI HRESULT WINAPI ScriptShapeOpenType(HDC hdc, SCRIPT_CACHE *psc, SCRIPT
     call.hdc = (ULONG_PTR)hdc;
     call.psc = (ULONG_PTR)psc;
     call.psa = (ULONG_PTR)psa;
-    call.tagScript = (ULONG_PTR)tagScript;
-    call.tagLangSys = (ULONG_PTR)tagLangSys;
+    call.tagScript = tagScript;
+    call.tagLangSys = tagLangSys;
     call.rcRangeChars = (ULONG_PTR)rcRangeChars;
     call.rpRangeProperties = (ULONG_PTR)rpRangeProperties;
-    call.cRanges = (ULONG_PTR)cRanges;
+    call.cRanges = cRanges;
     call.pwcChars = (ULONG_PTR)pwcChars;
-    call.cChars = (ULONG_PTR)cChars;
-    call.cMaxGlyphs = (ULONG_PTR)cMaxGlyphs;
+    call.cChars = cChars;
+    call.cMaxGlyphs = cMaxGlyphs;
     call.pwLogClust = (ULONG_PTR)pwLogClust;
     call.pCharProps = (ULONG_PTR)pCharProps;
     call.pwOutGlyphs = (ULONG_PTR)pwOutGlyphs;
@@ -828,6 +854,9 @@ void qemu_ScriptShapeOpenType(struct qemu_syscall *call)
 #if HOST_BIT == GUEST_BIT
     cache = QEMU_G2H(c->psc);
 #else
+    if (c->rpRangeProperties)
+        WINE_FIXME("Translate TEXTRANGE_PROPERTIES\n");
+
     cache32 = QEMU_G2H(c->psc);
     if (!cache32)
         cache = NULL;
@@ -877,8 +906,8 @@ WINBASEAPI HRESULT WINAPI ScriptShape(HDC hdc, SCRIPT_CACHE *psc, const WCHAR *p
     call.hdc = (ULONG_PTR)hdc;
     call.psc = (ULONG_PTR)psc;
     call.pwcChars = (ULONG_PTR)pwcChars;
-    call.cChars = (ULONG_PTR)cChars;
-    call.cMaxGlyphs = (ULONG_PTR)cMaxGlyphs;
+    call.cChars = cChars;
+    call.cMaxGlyphs = cMaxGlyphs;
     call.psa = (ULONG_PTR)psa;
     call.pwOutGlyphs = (ULONG_PTR)pwOutGlyphs;
     call.pwLogClust = (ULONG_PTR)pwLogClust;
@@ -910,7 +939,8 @@ void qemu_ScriptShape(struct qemu_syscall *call)
 #endif
 
     c->super.iret = ScriptShape(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->pwcChars), c->cChars, c->cMaxGlyphs,
-            QEMU_G2H(c->psa), QEMU_G2H(c->pwOutGlyphs), QEMU_G2H(c->pwLogClust), QEMU_G2H(c->psva), QEMU_G2H(c->pcGlyphs));
+            QEMU_G2H(c->psa), QEMU_G2H(c->pwOutGlyphs), QEMU_G2H(c->pwLogClust), QEMU_G2H(c->psva),
+            QEMU_G2H(c->pcGlyphs));
 
 #if HOST_BIT != GUEST_BIT
     if (stack)
@@ -959,18 +989,18 @@ WINBASEAPI HRESULT WINAPI ScriptPlaceOpenType(HDC hdc, SCRIPT_CACHE *psc, SCRIPT
     call.hdc = (ULONG_PTR)hdc;
     call.psc = (ULONG_PTR)psc;
     call.psa = (ULONG_PTR)psa;
-    call.tagScript = (ULONG_PTR)tagScript;
-    call.tagLangSys = (ULONG_PTR)tagLangSys;
+    call.tagScript = tagScript;
+    call.tagLangSys = tagLangSys;
     call.rcRangeChars = (ULONG_PTR)rcRangeChars;
     call.rpRangeProperties = (ULONG_PTR)rpRangeProperties;
-    call.cRanges = (ULONG_PTR)cRanges;
+    call.cRanges = cRanges;
     call.pwcChars = (ULONG_PTR)pwcChars;
     call.pwLogClust = (ULONG_PTR)pwLogClust;
     call.pCharProps = (ULONG_PTR)pCharProps;
-    call.cChars = (ULONG_PTR)cChars;
+    call.cChars = cChars;
     call.pwGlyphs = (ULONG_PTR)pwGlyphs;
     call.pGlyphProps = (ULONG_PTR)pGlyphProps;
-    call.cGlyphs = (ULONG_PTR)cGlyphs;
+    call.cGlyphs = cGlyphs;
     call.piAdvance = (ULONG_PTR)piAdvance;
     call.pGoffset = (ULONG_PTR)pGoffset;
     call.pABC = (ULONG_PTR)pABC;
@@ -997,6 +1027,9 @@ void qemu_ScriptPlaceOpenType(struct qemu_syscall *call)
 #if HOST_BIT == GUEST_BIT
     cache = QEMU_G2H(c->psc);
 #else
+    if (c->rpRangeProperties)
+        WINE_FIXME("Translate TEXTRANGE_PROPERTIES\n");
+
     cache32 = QEMU_G2H(c->psc);
     if (!cache32)
         cache = NULL;
@@ -1045,7 +1078,7 @@ WINBASEAPI HRESULT WINAPI ScriptPlace(HDC hdc, SCRIPT_CACHE *psc, const WORD *pw
     call.hdc = (ULONG_PTR)hdc;
     call.psc = (ULONG_PTR)psc;
     call.pwGlyphs = (ULONG_PTR)pwGlyphs;
-    call.cGlyphs = (ULONG_PTR)cGlyphs;
+    call.cGlyphs = cGlyphs;
     call.psva = (ULONG_PTR)psva;
     call.psa = (ULONG_PTR)psa;
     call.piAdvance = (ULONG_PTR)piAdvance;
@@ -1112,8 +1145,8 @@ WINBASEAPI HRESULT WINAPI ScriptGetCMap(HDC hdc, SCRIPT_CACHE *psc, const WCHAR 
     call.hdc = (ULONG_PTR)hdc;
     call.psc = (ULONG_PTR)psc;
     call.pwcInChars = (ULONG_PTR)pwcInChars;
-    call.cChars = (ULONG_PTR)cChars;
-    call.dwFlags = (ULONG_PTR)dwFlags;
+    call.cChars = cChars;
+    call.dwFlags = dwFlags;
     call.pwOutGlyphs = (ULONG_PTR)pwOutGlyphs;
 
     qemu_syscall(&call.super);
@@ -1184,15 +1217,15 @@ WINBASEAPI HRESULT WINAPI ScriptTextOut(const HDC hdc, SCRIPT_CACHE *psc, int x,
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTTEXTOUT);
     call.hdc = (ULONG_PTR)hdc;
     call.psc = (ULONG_PTR)psc;
-    call.x = (ULONG_PTR)x;
-    call.y = (ULONG_PTR)y;
-    call.fuOptions = (ULONG_PTR)fuOptions;
+    call.x = x;
+    call.y = y;
+    call.fuOptions = fuOptions;
     call.lprc = (ULONG_PTR)lprc;
     call.psa = (ULONG_PTR)psa;
     call.pwcReserved = (ULONG_PTR)pwcReserved;
-    call.iReserved = (ULONG_PTR)iReserved;
+    call.iReserved = iReserved;
     call.pwGlyphs = (ULONG_PTR)pwGlyphs;
-    call.cGlyphs = (ULONG_PTR)cGlyphs;
+    call.cGlyphs = cGlyphs;
     call.piAdvance = (ULONG_PTR)piAdvance;
     call.piJustify = (ULONG_PTR)piJustify;
     call.pGoffset = (ULONG_PTR)pGoffset;
@@ -1311,7 +1344,7 @@ WINBASEAPI HRESULT WINAPI ScriptGetGlyphABCWidth(HDC hdc, SCRIPT_CACHE *psc, WOR
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTGETGLYPHABCWIDTH);
     call.hdc = (ULONG_PTR)hdc;
     call.psc = (ULONG_PTR)psc;
-    call.glyph = (ULONG_PTR)glyph;
+    call.glyph = glyph;
     call.abc = (ULONG_PTR)abc;
 
     qemu_syscall(&call.super);
@@ -1367,7 +1400,7 @@ WINBASEAPI HRESULT WINAPI ScriptLayout(int runs, const BYTE *level, int *vistolo
 {
     struct qemu_ScriptLayout call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTLAYOUT);
-    call.runs = (ULONG_PTR)runs;
+    call.runs = runs;
     call.level = (ULONG_PTR)level;
     call.vistolog = (ULONG_PTR)vistolog;
     call.logtovis = (ULONG_PTR)logtovis;
@@ -1474,7 +1507,8 @@ WINBASEAPI const SIZE * WINAPI ScriptString_pSize(SCRIPT_STRING_ANALYSIS ssa)
 void qemu_ScriptString_pSize(struct qemu_syscall *call)
 {
     struct qemu_ScriptString_pSize *c = (struct qemu_ScriptString_pSize *)call;
-    WINE_FIXME("Unverified!\n");
+    /* Note that the return SIZE is a struct consisting of two LONGs, nothing size_t related. */
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(ScriptString_pSize(QEMU_G2H(c->ssa)));
 }
 
@@ -1586,13 +1620,14 @@ struct qemu_ScriptGetLogicalWidths
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptGetLogicalWidths(const SCRIPT_ANALYSIS *sa, int nbchars, int nbglyphs, const int *advances, const WORD *log_clust, const SCRIPT_VISATTR *sva, int *widths)
+WINBASEAPI HRESULT WINAPI ScriptGetLogicalWidths(const SCRIPT_ANALYSIS *sa, int nbchars, int nbglyphs,
+        const int *advances, const WORD *log_clust, const SCRIPT_VISATTR *sva, int *widths)
 {
     struct qemu_ScriptGetLogicalWidths call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTGETLOGICALWIDTHS);
     call.sa = (ULONG_PTR)sa;
     call.nbchars = (ULONG_PTR)nbchars;
-    call.nbglyphs = (ULONG_PTR)nbglyphs;
+    call.nbglyphs = nbglyphs;
     call.advances = (ULONG_PTR)advances;
     call.log_clust = (ULONG_PTR)log_clust;
     call.sva = (ULONG_PTR)sva;
@@ -1609,7 +1644,8 @@ void qemu_ScriptGetLogicalWidths(struct qemu_syscall *call)
 {
     struct qemu_ScriptGetLogicalWidths *c = (struct qemu_ScriptGetLogicalWidths *)call;
     WINE_TRACE("\n");
-    c->super.iret = ScriptGetLogicalWidths(QEMU_G2H(c->sa), c->nbchars, c->nbglyphs, QEMU_G2H(c->advances), QEMU_G2H(c->log_clust), QEMU_G2H(c->sva), QEMU_G2H(c->widths));
+    c->super.iret = ScriptGetLogicalWidths(QEMU_G2H(c->sa), c->nbchars, c->nbglyphs, QEMU_G2H(c->advances),
+            QEMU_G2H(c->log_clust), QEMU_G2H(c->sva), QEMU_G2H(c->widths));
 }
 
 #endif
@@ -1630,13 +1666,14 @@ struct qemu_ScriptApplyLogicalWidth
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptApplyLogicalWidth(const int *dx, int num_chars, int num_glyphs, const WORD *log_clust, const SCRIPT_VISATTR *sva, const int *advance, const SCRIPT_ANALYSIS *sa, ABC *abc, int *justify)
+WINBASEAPI HRESULT WINAPI ScriptApplyLogicalWidth(const int *dx, int num_chars, int num_glyphs, const WORD *log_clust,
+        const SCRIPT_VISATTR *sva, const int *advance, const SCRIPT_ANALYSIS *sa, ABC *abc, int *justify)
 {
     struct qemu_ScriptApplyLogicalWidth call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTAPPLYLOGICALWIDTH);
     call.dx = (ULONG_PTR)dx;
-    call.num_chars = (ULONG_PTR)num_chars;
-    call.num_glyphs = (ULONG_PTR)num_glyphs;
+    call.num_chars = num_chars;
+    call.num_glyphs = num_glyphs;
     call.log_clust = (ULONG_PTR)log_clust;
     call.sva = (ULONG_PTR)sva;
     call.advance = (ULONG_PTR)advance;
@@ -1655,7 +1692,8 @@ void qemu_ScriptApplyLogicalWidth(struct qemu_syscall *call)
 {
     struct qemu_ScriptApplyLogicalWidth *c = (struct qemu_ScriptApplyLogicalWidth *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ScriptApplyLogicalWidth(QEMU_G2H(c->dx), c->num_chars, c->num_glyphs, QEMU_G2H(c->log_clust), QEMU_G2H(c->sva), QEMU_G2H(c->advance), QEMU_G2H(c->sa), QEMU_G2H(c->abc), QEMU_G2H(c->justify));
+    c->super.iret = ScriptApplyLogicalWidth(QEMU_G2H(c->dx), c->num_chars, c->num_glyphs, QEMU_G2H(c->log_clust),
+            QEMU_G2H(c->sva), QEMU_G2H(c->advance), QEMU_G2H(c->sa), QEMU_G2H(c->abc), QEMU_G2H(c->justify));
 }
 
 #endif
@@ -1673,15 +1711,16 @@ struct qemu_ScriptJustify
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptJustify(const SCRIPT_VISATTR *sva, const int *advance, int num_glyphs, int dx, int min_kashida, int *justify)
+WINBASEAPI HRESULT WINAPI ScriptJustify(const SCRIPT_VISATTR *sva, const int *advance, int num_glyphs, int dx,
+        int min_kashida, int *justify)
 {
     struct qemu_ScriptJustify call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTJUSTIFY);
     call.sva = (ULONG_PTR)sva;
     call.advance = (ULONG_PTR)advance;
-    call.num_glyphs = (ULONG_PTR)num_glyphs;
-    call.dx = (ULONG_PTR)dx;
-    call.min_kashida = (ULONG_PTR)min_kashida;
+    call.num_glyphs = num_glyphs;
+    call.dx = dx;
+    call.min_kashida = min_kashida;
     call.justify = (ULONG_PTR)justify;
 
     qemu_syscall(&call.super);
@@ -1695,7 +1734,8 @@ void qemu_ScriptJustify(struct qemu_syscall *call)
 {
     struct qemu_ScriptJustify *c = (struct qemu_ScriptJustify *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ScriptJustify(QEMU_G2H(c->sva), QEMU_G2H(c->advance), c->num_glyphs, c->dx, c->min_kashida, QEMU_G2H(c->justify));
+    c->super.iret = ScriptJustify(QEMU_G2H(c->sva), QEMU_G2H(c->advance), c->num_glyphs, c->dx,
+            c->min_kashida, QEMU_G2H(c->justify));
 }
 
 #endif
@@ -1713,14 +1753,15 @@ struct qemu_ScriptGetFontScriptTags
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptGetFontScriptTags(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa, int cMaxTags, OPENTYPE_TAG *pScriptTags, int *pcTags)
+WINBASEAPI HRESULT WINAPI ScriptGetFontScriptTags(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa, int cMaxTags,
+        OPENTYPE_TAG *pScriptTags, int *pcTags)
 {
     struct qemu_ScriptGetFontScriptTags call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTGETFONTSCRIPTTAGS);
     call.hdc = (ULONG_PTR)hdc;
     call.psc = (ULONG_PTR)psc;
     call.psa = (ULONG_PTR)psa;
-    call.cMaxTags = (ULONG_PTR)cMaxTags;
+    call.cMaxTags = cMaxTags;
     call.pScriptTags = (ULONG_PTR)pScriptTags;
     call.pcTags = (ULONG_PTR)pcTags;
 
@@ -1789,7 +1830,7 @@ WINBASEAPI HRESULT WINAPI ScriptGetFontLanguageTags(HDC hdc, SCRIPT_CACHE *psc, 
     call.psc = (ULONG_PTR)psc;
     call.psa = (ULONG_PTR)psa;
     call.tagScript = (ULONG_PTR)tagScript;
-    call.cMaxTags = (ULONG_PTR)cMaxTags;
+    call.cMaxTags = cMaxTags;
     call.pLangSysTags = (ULONG_PTR)pLangSysTags;
     call.pcTags = (ULONG_PTR)pcTags;
 
@@ -1858,9 +1899,9 @@ WINBASEAPI HRESULT WINAPI ScriptGetFontFeatureTags(HDC hdc, SCRIPT_CACHE *psc, S
     call.hdc = (ULONG_PTR)hdc;
     call.psc = (ULONG_PTR)psc;
     call.psa = (ULONG_PTR)psa;
-    call.tagScript = (ULONG_PTR)tagScript;
-    call.tagLangSys = (ULONG_PTR)tagLangSys;
-    call.cMaxTags = (ULONG_PTR)cMaxTags;
+    call.tagScript = tagScript;
+    call.tagLangSys = tagLangSys;
+    call.cMaxTags = cMaxTags;
     call.pFeatureTags = (ULONG_PTR)pFeatureTags;
     call.pcTags = (ULONG_PTR)pcTags;
 
