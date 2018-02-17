@@ -79,6 +79,8 @@ WINBASEAPI HRESULT WINAPI ScriptGetProperties(const SCRIPT_PROPERTIES ***props, 
     call.num = (ULONG_PTR)num;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret) && props)
+        *props = (void *)(ULONG_PTR)call.props;
 
     return call.super.iret;
 }
@@ -88,8 +90,58 @@ WINBASEAPI HRESULT WINAPI ScriptGetProperties(const SCRIPT_PROPERTIES ***props, 
 void qemu_ScriptGetProperties(struct qemu_syscall *call)
 {
     struct qemu_ScriptGetProperties *c = (struct qemu_ScriptGetProperties *)call;
+    const SCRIPT_PROPERTIES **props;
+    SCRIPT_PROPERTIES *copy;
+    static qemu_ptr *guest_props;
+    int num, i;
     WINE_TRACE("\n");
-    c->super.iret = ScriptGetProperties(QEMU_G2H(c->props), QEMU_G2H(c->num));
+
+#if HOST_BIT == GUEST_BIT
+    c->super.iret = ScriptGetProperties(QEMU_G2H(c->props)), QEMU_G2H(c->num));
+    return;
+#endif
+
+    if (!c->props)
+    {
+        c->super.iret = ScriptGetProperties(NULL, QEMU_G2H(c->num));
+        return;
+    }
+
+    c->super.iret = ScriptGetProperties(&props, &num);
+    if (FAILED(c->super.iret))
+        return;
+
+    /* SCRIPT_PROPERTIES is compatible. But we have to repack the pointers,
+     * and since this is static const data in the host lib we have to copy it
+     * below 32 bit. */
+    if (!guest_props)
+    {
+        guest_props = HeapAlloc(GetProcessHeap(), 0, num * sizeof(*guest_props));
+        if (!guest_props)
+        {
+            WINE_WARN("Out of memory\n");
+            c->super.iret = E_OUTOFMEMORY;
+            return;
+        }
+        copy = HeapAlloc(GetProcessHeap(), 0, num * sizeof(*copy));
+        if (!copy)
+        {
+            WINE_WARN("Out of memory\n");
+            HeapFree(GetProcessHeap(), 0, guest_props);
+            guest_props = NULL;
+            c->super.iret = E_OUTOFMEMORY;
+        }
+
+        for (i = 0; i < num; ++i)
+        {
+            copy[i] = *props[i];
+            guest_props[i] = (ULONG_PTR)&copy[i];
+        }
+    }
+
+    c->props = QEMU_H2G(guest_props);
+    if (c->num)
+        *(int *)(QEMU_G2H(c->num)) = num;
 }
 
 #endif
