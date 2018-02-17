@@ -53,33 +53,6 @@ WINBASEAPI HRESULT WINAPI ScriptFreeCache(SCRIPT_CACHE *psc)
 
 #else
 
-/* FIXME: This function doesn't exactly do the right thing. Sometimes the host implementation
- * does not touch the cache pointer, in which case we shouldn't do it either. This was attempt
- * #1 to handle caches, vetoed by the tests, but left in place for gradual introduction of 32
- * bit support. */
-static SCRIPT_CACHE SCRIPT_CACHE_g2h(uint64_t guest)
-{
-#if HOST_BIT == GUEST_BIT
-    return QEMU_G2H(guest);
-#else
-    qemu_ptr *ptr32 = QEMU_G2H(guest);
-    void **host;
-    if (!guest)
-        return NULL;
-
-    if (*ptr32)
-    {
-        WINE_TRACE("Guest ptr %p already has host cache 0x%x.\n", ptr32, *ptr32);
-        return QEMU_G2H((uint64_t)*ptr32);
-    }
-
-    WINE_TRACE("Allocating new script cache for guest ptr %p.\n", ptr32);
-    host = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*host));
-    *ptr32 = (ULONG_PTR)host;
-    return host;
-#endif
-}
-
 void qemu_ScriptFreeCache(struct qemu_syscall *call)
 {
     struct qemu_ScriptFreeCache *c = (struct qemu_ScriptFreeCache *)call;
@@ -87,6 +60,14 @@ void qemu_ScriptFreeCache(struct qemu_syscall *call)
     SCRIPT_CACHE *host;
     WINE_TRACE("\n");
 
+    /* Note: Functions that create the cache sometimes do not touch it, e.g. if they fail. In this
+     * case we should not touch the guest pointer either. So my attempt to have a general wrapper
+     * function that handles the translation or allocation in one go before calling the host usp10
+     * functions was vetoed by the tests.
+     *
+     * FIXME 2: The tests expect some operations to return the same cache value. Consider having a
+     * cache of caches and searching for an existing wrapper that contains the same host cache ptr
+     * before allocating a new one. The host lib stores them in a linked list fwiw. */
 #if HOST_BIT == GUEST_BIT
     c->super.iret = ScriptFreeCache(QEMU_G2H(c->psc));
 #endif
@@ -800,7 +781,10 @@ struct qemu_ScriptShapeOpenType
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptShapeOpenType(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa, OPENTYPE_TAG tagScript, OPENTYPE_TAG tagLangSys, int *rcRangeChars, TEXTRANGE_PROPERTIES **rpRangeProperties, int cRanges, const WCHAR *pwcChars, int cChars, int cMaxGlyphs, WORD *pwLogClust, SCRIPT_CHARPROP *pCharProps, WORD *pwOutGlyphs, SCRIPT_GLYPHPROP *pOutGlyphProps, int *pcGlyphs)
+WINBASEAPI HRESULT WINAPI ScriptShapeOpenType(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa, OPENTYPE_TAG tagScript,
+        OPENTYPE_TAG tagLangSys, int *rcRangeChars, TEXTRANGE_PROPERTIES **rpRangeProperties, int cRanges,
+        const WCHAR *pwcChars, int cChars, int cMaxGlyphs, WORD *pwLogClust, SCRIPT_CHARPROP *pCharProps,
+        WORD *pwOutGlyphs, SCRIPT_GLYPHPROP *pOutGlyphProps, int *pcGlyphs)
 {
     struct qemu_ScriptShapeOpenType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTSHAPEOPENTYPE);
@@ -829,12 +813,41 @@ WINBASEAPI HRESULT WINAPI ScriptShapeOpenType(HDC hdc, SCRIPT_CACHE *psc, SCRIPT
 #else
 
 /* TODO: Add ScriptShapeOpenType to Wine headers? */
-extern HRESULT WINAPI ScriptShapeOpenType(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa, OPENTYPE_TAG tagScript, OPENTYPE_TAG tagLangSys, int *rcRangeChars, TEXTRANGE_PROPERTIES **rpRangeProperties, int cRanges, const WCHAR *pwcChars, int cChars, int cMaxGlyphs, WORD *pwLogClust, SCRIPT_CHARPROP *pCharProps, WORD *pwOutGlyphs, SCRIPT_GLYPHPROP *pOutGlyphProps, int *pcGlyphs);
+extern HRESULT WINAPI ScriptShapeOpenType(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa, OPENTYPE_TAG tagScript,
+        OPENTYPE_TAG tagLangSys, int *rcRangeChars, TEXTRANGE_PROPERTIES **rpRangeProperties, int cRanges,
+        const WCHAR *pwcChars, int cChars, int cMaxGlyphs, WORD *pwLogClust, SCRIPT_CHARPROP *pCharProps,
+        WORD *pwOutGlyphs, SCRIPT_GLYPHPROP *pOutGlyphProps, int *pcGlyphs);
+
 void qemu_ScriptShapeOpenType(struct qemu_syscall *call)
 {
     struct qemu_ScriptShapeOpenType *c = (struct qemu_ScriptShapeOpenType *)call;
+    SCRIPT_CACHE stack = NULL, *cache = &stack;
+    qemu_ptr *cache32;
     WINE_TRACE("\n");
-    c->super.iret = ScriptShapeOpenType(QEMU_G2H(c->hdc), SCRIPT_CACHE_g2h(c->psc), QEMU_G2H(c->psa), c->tagScript, c->tagLangSys, QEMU_G2H(c->rcRangeChars), QEMU_G2H(c->rpRangeProperties), c->cRanges, QEMU_G2H(c->pwcChars), c->cChars, c->cMaxGlyphs, QEMU_G2H(c->pwLogClust), QEMU_G2H(c->pCharProps), QEMU_G2H(c->pwOutGlyphs), QEMU_G2H(c->pOutGlyphProps), QEMU_G2H(c->pcGlyphs));
+
+#if HOST_BIT == GUEST_BIT
+    cache = QEMU_G2H(c->psc);
+#else
+    cache32 = QEMU_G2H(c->psc);
+    if (!cache32)
+        cache = NULL;
+    else if (*cache32)
+        cache = QEMU_G2H((uint64_t)*cache32);
+#endif
+
+    c->super.iret = ScriptShapeOpenType(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->psa), c->tagScript, c->tagLangSys,
+            QEMU_G2H(c->rcRangeChars), QEMU_G2H(c->rpRangeProperties), c->cRanges, QEMU_G2H(c->pwcChars), c->cChars,
+            c->cMaxGlyphs, QEMU_G2H(c->pwLogClust), QEMU_G2H(c->pCharProps), QEMU_G2H(c->pwOutGlyphs),
+            QEMU_G2H(c->pOutGlyphProps), QEMU_G2H(c->pcGlyphs));
+
+#if HOST_BIT != GUEST_BIT
+    if (stack)
+    {
+        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
+        *cache = stack;
+        *cache32 = (ULONG_PTR)cache;
+    }
+#endif
 }
 
 #endif
@@ -856,7 +869,8 @@ struct qemu_ScriptShape
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptShape(HDC hdc, SCRIPT_CACHE *psc, const WCHAR *pwcChars, int cChars, int cMaxGlyphs, SCRIPT_ANALYSIS *psa, WORD *pwOutGlyphs, WORD *pwLogClust, SCRIPT_VISATTR *psva, int *pcGlyphs)
+WINBASEAPI HRESULT WINAPI ScriptShape(HDC hdc, SCRIPT_CACHE *psc, const WCHAR *pwcChars, int cChars, int cMaxGlyphs,
+        SCRIPT_ANALYSIS *psa, WORD *pwOutGlyphs, WORD *pwLogClust, SCRIPT_VISATTR *psva, int *pcGlyphs)
 {
     struct qemu_ScriptShape call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTSHAPE);
@@ -881,8 +895,31 @@ WINBASEAPI HRESULT WINAPI ScriptShape(HDC hdc, SCRIPT_CACHE *psc, const WCHAR *p
 void qemu_ScriptShape(struct qemu_syscall *call)
 {
     struct qemu_ScriptShape *c = (struct qemu_ScriptShape *)call;
+    SCRIPT_CACHE stack = NULL, *cache = &stack;
+    qemu_ptr *cache32;
     WINE_TRACE("\n");
-    c->super.iret = ScriptShape(QEMU_G2H(c->hdc), SCRIPT_CACHE_g2h(c->psc), QEMU_G2H(c->pwcChars), c->cChars, c->cMaxGlyphs, QEMU_G2H(c->psa), QEMU_G2H(c->pwOutGlyphs), QEMU_G2H(c->pwLogClust), QEMU_G2H(c->psva), QEMU_G2H(c->pcGlyphs));
+
+#if HOST_BIT == GUEST_BIT
+    cache = QEMU_G2H(c->psc);
+#else
+    cache32 = QEMU_G2H(c->psc);
+    if (!cache32)
+        cache = NULL;
+    else if (*cache32)
+        cache = QEMU_G2H((uint64_t)*cache32);
+#endif
+
+    c->super.iret = ScriptShape(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->pwcChars), c->cChars, c->cMaxGlyphs,
+            QEMU_G2H(c->psa), QEMU_G2H(c->pwOutGlyphs), QEMU_G2H(c->pwLogClust), QEMU_G2H(c->psva), QEMU_G2H(c->pcGlyphs));
+
+#if HOST_BIT != GUEST_BIT
+    if (stack)
+    {
+        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
+        *cache = stack;
+        *cache32 = (ULONG_PTR)cache;
+    }
+#endif
 }
 
 #endif
@@ -912,7 +949,10 @@ struct qemu_ScriptPlaceOpenType
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptPlaceOpenType(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa, OPENTYPE_TAG tagScript, OPENTYPE_TAG tagLangSys, int *rcRangeChars, TEXTRANGE_PROPERTIES **rpRangeProperties, int cRanges, const WCHAR *pwcChars, WORD *pwLogClust, SCRIPT_CHARPROP *pCharProps, int cChars, const WORD *pwGlyphs, const SCRIPT_GLYPHPROP *pGlyphProps, int cGlyphs, int *piAdvance, GOFFSET *pGoffset, ABC *pABC)
+WINBASEAPI HRESULT WINAPI ScriptPlaceOpenType(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa, OPENTYPE_TAG tagScript,
+        OPENTYPE_TAG tagLangSys, int *rcRangeChars, TEXTRANGE_PROPERTIES **rpRangeProperties, int cRanges,
+        const WCHAR *pwcChars, WORD *pwLogClust, SCRIPT_CHARPROP *pCharProps, int cChars, const WORD *pwGlyphs,
+        const SCRIPT_GLYPHPROP *pGlyphProps, int cGlyphs, int *piAdvance, GOFFSET *pGoffset, ABC *pABC)
 {
     struct qemu_ScriptPlaceOpenType call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTPLACEOPENTYPE);
@@ -943,12 +983,40 @@ WINBASEAPI HRESULT WINAPI ScriptPlaceOpenType(HDC hdc, SCRIPT_CACHE *psc, SCRIPT
 #else
 
 /* TODO: Add ScriptPlaceOpenType to Wine headers? */
-extern HRESULT WINAPI ScriptPlaceOpenType(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa, OPENTYPE_TAG tagScript, OPENTYPE_TAG tagLangSys, int *rcRangeChars, TEXTRANGE_PROPERTIES **rpRangeProperties, int cRanges, const WCHAR *pwcChars, WORD *pwLogClust, SCRIPT_CHARPROP *pCharProps, int cChars, const WORD *pwGlyphs, const SCRIPT_GLYPHPROP *pGlyphProps, int cGlyphs, int *piAdvance, GOFFSET *pGoffset, ABC *pABC);
+extern HRESULT WINAPI ScriptPlaceOpenType(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa, OPENTYPE_TAG tagScript,
+        OPENTYPE_TAG tagLangSys, int *rcRangeChars, TEXTRANGE_PROPERTIES **rpRangeProperties, int cRanges,
+        const WCHAR *pwcChars, WORD *pwLogClust, SCRIPT_CHARPROP *pCharProps, int cChars, const WORD *pwGlyphs,
+        const SCRIPT_GLYPHPROP *pGlyphProps, int cGlyphs, int *piAdvance, GOFFSET *pGoffset, ABC *pABC);
 void qemu_ScriptPlaceOpenType(struct qemu_syscall *call)
 {
     struct qemu_ScriptPlaceOpenType *c = (struct qemu_ScriptPlaceOpenType *)call;
+    SCRIPT_CACHE stack = NULL, *cache = &stack;
+    qemu_ptr *cache32;
     WINE_TRACE("\n");
-    c->super.iret = ScriptPlaceOpenType(QEMU_G2H(c->hdc), SCRIPT_CACHE_g2h(c->psc), QEMU_G2H(c->psa), c->tagScript, c->tagLangSys, QEMU_G2H(c->rcRangeChars), QEMU_G2H(c->rpRangeProperties), c->cRanges, QEMU_G2H(c->pwcChars), QEMU_G2H(c->pwLogClust), QEMU_G2H(c->pCharProps), c->cChars, QEMU_G2H(c->pwGlyphs), QEMU_G2H(c->pGlyphProps), c->cGlyphs, QEMU_G2H(c->piAdvance), QEMU_G2H(c->pGoffset), QEMU_G2H(c->pABC));
+
+#if HOST_BIT == GUEST_BIT
+    cache = QEMU_G2H(c->psc);
+#else
+    cache32 = QEMU_G2H(c->psc);
+    if (!cache32)
+        cache = NULL;
+    else if (*cache32)
+        cache = QEMU_G2H((uint64_t)*cache32);
+#endif
+
+    c->super.iret = ScriptPlaceOpenType(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->psa),
+            c->tagScript, c->tagLangSys, QEMU_G2H(c->rcRangeChars), QEMU_G2H(c->rpRangeProperties), c->cRanges,
+            QEMU_G2H(c->pwcChars), QEMU_G2H(c->pwLogClust), QEMU_G2H(c->pCharProps), c->cChars, QEMU_G2H(c->pwGlyphs),
+            QEMU_G2H(c->pGlyphProps), c->cGlyphs, QEMU_G2H(c->piAdvance), QEMU_G2H(c->pGoffset), QEMU_G2H(c->pABC));
+
+#if HOST_BIT != GUEST_BIT
+    if (stack)
+    {
+        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
+        *cache = stack;
+        *cache32 = (ULONG_PTR)cache;
+    }
+#endif
 }
 
 #endif
@@ -969,7 +1037,8 @@ struct qemu_ScriptPlace
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptPlace(HDC hdc, SCRIPT_CACHE *psc, const WORD *pwGlyphs, int cGlyphs, const SCRIPT_VISATTR *psva, SCRIPT_ANALYSIS *psa, int *piAdvance, GOFFSET *pGoffset, ABC *pABC)
+WINBASEAPI HRESULT WINAPI ScriptPlace(HDC hdc, SCRIPT_CACHE *psc, const WORD *pwGlyphs, int cGlyphs,
+        const SCRIPT_VISATTR *psva, SCRIPT_ANALYSIS *psa, int *piAdvance, GOFFSET *pGoffset, ABC *pABC)
 {
     struct qemu_ScriptPlace call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTPLACE);
@@ -993,8 +1062,31 @@ WINBASEAPI HRESULT WINAPI ScriptPlace(HDC hdc, SCRIPT_CACHE *psc, const WORD *pw
 void qemu_ScriptPlace(struct qemu_syscall *call)
 {
     struct qemu_ScriptPlace *c = (struct qemu_ScriptPlace *)call;
+    SCRIPT_CACHE stack = NULL, *cache = &stack;
+    qemu_ptr *cache32;
     WINE_TRACE("\n");
-    c->super.iret = ScriptPlace(QEMU_G2H(c->hdc), SCRIPT_CACHE_g2h(c->psc), QEMU_G2H(c->pwGlyphs), c->cGlyphs, QEMU_G2H(c->psva), QEMU_G2H(c->psa), QEMU_G2H(c->piAdvance), QEMU_G2H(c->pGoffset), QEMU_G2H(c->pABC));
+
+#if HOST_BIT == GUEST_BIT
+    cache = QEMU_G2H(c->psc);
+#else
+    cache32 = QEMU_G2H(c->psc);
+    if (!cache32)
+        cache = NULL;
+    else if (*cache32)
+        cache = QEMU_G2H((uint64_t)*cache32);
+#endif
+
+    c->super.iret = ScriptPlace(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->pwGlyphs), c->cGlyphs, QEMU_G2H(c->psva),
+            QEMU_G2H(c->psa), QEMU_G2H(c->piAdvance), QEMU_G2H(c->pGoffset), QEMU_G2H(c->pABC));
+
+#if HOST_BIT != GUEST_BIT
+    if (stack)
+    {
+        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
+        *cache = stack;
+        *cache32 = (ULONG_PTR)cache;
+    }
+#endif
 }
 
 #endif
@@ -1174,8 +1266,30 @@ WINBASEAPI HRESULT WINAPI ScriptCacheGetHeight(HDC hdc, SCRIPT_CACHE *psc, LONG 
 void qemu_ScriptCacheGetHeight(struct qemu_syscall *call)
 {
     struct qemu_ScriptCacheGetHeight *c = (struct qemu_ScriptCacheGetHeight *)call;
+    SCRIPT_CACHE stack = NULL, *cache = &stack;
+    qemu_ptr *cache32;
     WINE_TRACE("\n");
-    c->super.iret = ScriptCacheGetHeight(QEMU_G2H(c->hdc), SCRIPT_CACHE_g2h(c->psc), QEMU_G2H(c->height));
+
+#if HOST_BIT == GUEST_BIT
+    cache = QEMU_G2H(c->psc);
+#else
+    cache32 = QEMU_G2H(c->psc);
+    if (!cache32)
+        cache = NULL;
+    else if (*cache32)
+        cache = QEMU_G2H((uint64_t)*cache32);
+#endif
+
+    c->super.iret = ScriptCacheGetHeight(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->height));
+
+#if HOST_BIT != GUEST_BIT
+    if (stack)
+    {
+        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
+        *cache = stack;
+        *cache32 = (ULONG_PTR)cache;
+    }
+#endif
 }
 
 #endif
@@ -1210,8 +1324,30 @@ WINBASEAPI HRESULT WINAPI ScriptGetGlyphABCWidth(HDC hdc, SCRIPT_CACHE *psc, WOR
 void qemu_ScriptGetGlyphABCWidth(struct qemu_syscall *call)
 {
     struct qemu_ScriptGetGlyphABCWidth *c = (struct qemu_ScriptGetGlyphABCWidth *)call;
+    SCRIPT_CACHE stack = NULL, *cache = &stack;
+    qemu_ptr *cache32;
     WINE_TRACE("\n");
-    c->super.iret = ScriptGetGlyphABCWidth(QEMU_G2H(c->hdc), SCRIPT_CACHE_g2h(c->psc), c->glyph, QEMU_G2H(c->abc));
+
+#if HOST_BIT == GUEST_BIT
+    cache = QEMU_G2H(c->psc);
+#else
+    cache32 = QEMU_G2H(c->psc);
+    if (!cache32)
+        cache = NULL;
+    else if (*cache32)
+        cache = QEMU_G2H((uint64_t)*cache32);
+#endif
+
+    c->super.iret = ScriptGetGlyphABCWidth(QEMU_G2H(c->hdc), cache, c->glyph, QEMU_G2H(c->abc));
+
+#if HOST_BIT != GUEST_BIT
+    if (stack)
+    {
+        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
+        *cache = stack;
+        *cache32 = (ULONG_PTR)cache;
+    }
+#endif
 }
 
 #endif
@@ -1596,12 +1732,36 @@ WINBASEAPI HRESULT WINAPI ScriptGetFontScriptTags(HDC hdc, SCRIPT_CACHE *psc, SC
 #else
 
 /* TODO: Add ScriptGetFontScriptTags to Wine headers? */
-extern HRESULT WINAPI ScriptGetFontScriptTags(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa, int cMaxTags, OPENTYPE_TAG *pScriptTags, int *pcTags);
+extern HRESULT WINAPI ScriptGetFontScriptTags(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa, int cMaxTags,
+        OPENTYPE_TAG *pScriptTags, int *pcTags);
 void qemu_ScriptGetFontScriptTags(struct qemu_syscall *call)
 {
     struct qemu_ScriptGetFontScriptTags *c = (struct qemu_ScriptGetFontScriptTags *)call;
+    SCRIPT_CACHE stack = NULL, *cache = &stack;
+    qemu_ptr *cache32;
     WINE_TRACE("\n");
-    c->super.iret = ScriptGetFontScriptTags(QEMU_G2H(c->hdc), SCRIPT_CACHE_g2h(c->psc), QEMU_G2H(c->psa), c->cMaxTags, QEMU_G2H(c->pScriptTags), QEMU_G2H(c->pcTags));
+
+#if HOST_BIT == GUEST_BIT
+    cache = QEMU_G2H(c->psc);
+#else
+    cache32 = QEMU_G2H(c->psc);
+    if (!cache32)
+        cache = NULL;
+    else if (*cache32)
+        cache = QEMU_G2H((uint64_t)*cache32);
+#endif
+
+    c->super.iret = ScriptGetFontScriptTags(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->psa), c->cMaxTags,
+            QEMU_G2H(c->pScriptTags), QEMU_G2H(c->pcTags));
+
+#if HOST_BIT != GUEST_BIT
+    if (stack)
+    {
+        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
+        *cache = stack;
+        *cache32 = (ULONG_PTR)cache;
+    }
+#endif
 }
 
 #endif
@@ -1620,7 +1780,8 @@ struct qemu_ScriptGetFontLanguageTags
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptGetFontLanguageTags(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa, OPENTYPE_TAG tagScript, int cMaxTags, OPENTYPE_TAG *pLangSysTags, int *pcTags)
+WINBASEAPI HRESULT WINAPI ScriptGetFontLanguageTags(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa,
+        OPENTYPE_TAG tagScript, int cMaxTags, OPENTYPE_TAG *pLangSysTags, int *pcTags)
 {
     struct qemu_ScriptGetFontLanguageTags call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTGETFONTLANGUAGETAGS);
@@ -1640,12 +1801,36 @@ WINBASEAPI HRESULT WINAPI ScriptGetFontLanguageTags(HDC hdc, SCRIPT_CACHE *psc, 
 #else
 
 /* TODO: Add ScriptGetFontLanguageTags to Wine headers? */
-extern HRESULT WINAPI ScriptGetFontLanguageTags(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa, OPENTYPE_TAG tagScript, int cMaxTags, OPENTYPE_TAG *pLangSysTags, int *pcTags);
+extern HRESULT WINAPI ScriptGetFontLanguageTags(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa,
+        OPENTYPE_TAG tagScript, int cMaxTags, OPENTYPE_TAG *pLangSysTags, int *pcTags);
 void qemu_ScriptGetFontLanguageTags(struct qemu_syscall *call)
 {
     struct qemu_ScriptGetFontLanguageTags *c = (struct qemu_ScriptGetFontLanguageTags *)call;
+    SCRIPT_CACHE stack = NULL, *cache = &stack;
+    qemu_ptr *cache32;
     WINE_TRACE("\n");
-    c->super.iret = ScriptGetFontLanguageTags(QEMU_G2H(c->hdc), SCRIPT_CACHE_g2h(c->psc), QEMU_G2H(c->psa), c->tagScript, c->cMaxTags, QEMU_G2H(c->pLangSysTags), QEMU_G2H(c->pcTags));
+
+#if HOST_BIT == GUEST_BIT
+    cache = QEMU_G2H(c->psc);
+#else
+    cache32 = QEMU_G2H(c->psc);
+    if (!cache32)
+        cache = NULL;
+    else if (*cache32)
+        cache = QEMU_G2H((uint64_t)*cache32);
+#endif
+
+    c->super.iret = ScriptGetFontLanguageTags(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->psa), c->tagScript,
+            c->cMaxTags, QEMU_G2H(c->pLangSysTags), QEMU_G2H(c->pcTags));
+
+#if HOST_BIT != GUEST_BIT
+    if (stack)
+    {
+        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
+        *cache = stack;
+        *cache32 = (ULONG_PTR)cache;
+    }
+#endif
 }
 
 #endif
@@ -1665,7 +1850,8 @@ struct qemu_ScriptGetFontFeatureTags
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptGetFontFeatureTags(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa, OPENTYPE_TAG tagScript, OPENTYPE_TAG tagLangSys, int cMaxTags, OPENTYPE_TAG *pFeatureTags, int *pcTags)
+WINBASEAPI HRESULT WINAPI ScriptGetFontFeatureTags(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa,
+        OPENTYPE_TAG tagScript, OPENTYPE_TAG tagLangSys, int cMaxTags, OPENTYPE_TAG *pFeatureTags, int *pcTags)
 {
     struct qemu_ScriptGetFontFeatureTags call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTGETFONTFEATURETAGS);
@@ -1686,12 +1872,36 @@ WINBASEAPI HRESULT WINAPI ScriptGetFontFeatureTags(HDC hdc, SCRIPT_CACHE *psc, S
 #else
 
 /* TODO: Add ScriptGetFontFeatureTags to Wine headers? */
-extern HRESULT WINAPI ScriptGetFontFeatureTags(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa, OPENTYPE_TAG tagScript, OPENTYPE_TAG tagLangSys, int cMaxTags, OPENTYPE_TAG *pFeatureTags, int *pcTags);
+extern HRESULT WINAPI ScriptGetFontFeatureTags(HDC hdc, SCRIPT_CACHE *psc, SCRIPT_ANALYSIS *psa,
+        OPENTYPE_TAG tagScript, OPENTYPE_TAG tagLangSys, int cMaxTags, OPENTYPE_TAG *pFeatureTags, int *pcTags);
 void qemu_ScriptGetFontFeatureTags(struct qemu_syscall *call)
 {
     struct qemu_ScriptGetFontFeatureTags *c = (struct qemu_ScriptGetFontFeatureTags *)call;
+    SCRIPT_CACHE stack = NULL, *cache = &stack;
+    qemu_ptr *cache32;
     WINE_TRACE("\n");
-    c->super.iret = ScriptGetFontFeatureTags(QEMU_G2H(c->hdc), SCRIPT_CACHE_g2h(c->psc), QEMU_G2H(c->psa), c->tagScript, c->tagLangSys, c->cMaxTags, QEMU_G2H(c->pFeatureTags), QEMU_G2H(c->pcTags));
+
+#if HOST_BIT == GUEST_BIT
+    cache = QEMU_G2H(c->psc);
+#else
+    cache32 = QEMU_G2H(c->psc);
+    if (!cache32)
+        cache = NULL;
+    else if (*cache32)
+        cache = QEMU_G2H((uint64_t)*cache32);
+#endif
+
+    c->super.iret = ScriptGetFontFeatureTags(QEMU_G2H(c->hdc), cache, QEMU_G2H(c->psa), c->tagScript,
+            c->tagLangSys, c->cMaxTags, QEMU_G2H(c->pFeatureTags), QEMU_G2H(c->pcTags));
+
+#if HOST_BIT != GUEST_BIT
+    if (stack)
+    {
+        cache = HeapAlloc(GetProcessHeap(), 0, sizeof(*cache));
+        *cache = stack;
+        *cache32 = (ULONG_PTR)cache;
+    }
+#endif
 }
 
 #endif
