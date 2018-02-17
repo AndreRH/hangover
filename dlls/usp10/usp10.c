@@ -421,7 +421,9 @@ struct qemu_ScriptStringAnalyse
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI ScriptStringAnalyse(HDC hdc, const void *pString, int cString, int cGlyphs, int iCharset, DWORD dwFlags, int iReqWidth, SCRIPT_CONTROL *psControl, SCRIPT_STATE *psState, const int *piDx, SCRIPT_TABDEF *pTabdef, const BYTE *pbInClass, SCRIPT_STRING_ANALYSIS *pssa)
+WINBASEAPI HRESULT WINAPI ScriptStringAnalyse(HDC hdc, const void *pString, int cString, int cGlyphs,
+        int iCharset, DWORD dwFlags, int iReqWidth, SCRIPT_CONTROL *psControl, SCRIPT_STATE *psState,
+        const int *piDx, SCRIPT_TABDEF *pTabdef, const BYTE *pbInClass, SCRIPT_STRING_ANALYSIS *pssa)
 {
     struct qemu_ScriptStringAnalyse call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTSTRINGANALYSE);
@@ -440,6 +442,8 @@ WINBASEAPI HRESULT WINAPI ScriptStringAnalyse(HDC hdc, const void *pString, int 
     call.pssa = (ULONG_PTR)pssa;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+        *pssa = (SCRIPT_STRING_ANALYSIS)(ULONG_PTR)call.pssa;
 
     return call.super.iret;
 }
@@ -449,8 +453,13 @@ WINBASEAPI HRESULT WINAPI ScriptStringAnalyse(HDC hdc, const void *pString, int 
 void qemu_ScriptStringAnalyse(struct qemu_syscall *call)
 {
     struct qemu_ScriptStringAnalyse *c = (struct qemu_ScriptStringAnalyse *)call;
+    SCRIPT_STRING_ANALYSIS host;
     WINE_TRACE("\n");
-    c->super.iret = ScriptStringAnalyse(QEMU_G2H(c->hdc), QEMU_G2H(c->pString), c->cString, c->cGlyphs, c->iCharset, c->dwFlags, c->iReqWidth, QEMU_G2H(c->psControl), QEMU_G2H(c->psState), QEMU_G2H(c->piDx), QEMU_G2H(c->pTabdef), QEMU_G2H(c->pbInClass), QEMU_G2H(c->pssa));
+
+    c->super.iret = ScriptStringAnalyse(QEMU_G2H(c->hdc), QEMU_G2H(c->pString), c->cString, c->cGlyphs,
+            c->iCharset, c->dwFlags, c->iReqWidth, QEMU_G2H(c->psControl), QEMU_G2H(c->psState),
+            QEMU_G2H(c->piDx), QEMU_G2H(c->pTabdef), QEMU_G2H(c->pbInClass), c->pssa ? &host : NULL);
+    c->pssa = QEMU_H2G(host);
 }
 
 #endif
@@ -575,6 +584,7 @@ struct qemu_ScriptStringFree
 {
     struct qemu_syscall super;
     uint64_t pssa;
+    uint64_t has_ptr;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -583,7 +593,8 @@ WINBASEAPI HRESULT WINAPI ScriptStringFree(SCRIPT_STRING_ANALYSIS *pssa)
 {
     struct qemu_ScriptStringFree call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SCRIPTSTRINGFREE);
-    call.pssa = (ULONG_PTR)pssa;
+    call.pssa = (ULONG_PTR)(pssa ? *pssa : NULL);
+    call.has_ptr = !!pssa;
 
     qemu_syscall(&call.super);
 
@@ -595,8 +606,11 @@ WINBASEAPI HRESULT WINAPI ScriptStringFree(SCRIPT_STRING_ANALYSIS *pssa)
 void qemu_ScriptStringFree(struct qemu_syscall *call)
 {
     struct qemu_ScriptStringFree *c = (struct qemu_ScriptStringFree *)call;
+    SCRIPT_STRING_ANALYSIS ptr;
     WINE_TRACE("\n");
-    c->super.iret = ScriptStringFree(QEMU_G2H(c->pssa));
+
+    ptr = QEMU_G2H(c->pssa);
+    c->super.iret = ScriptStringFree(c->has_ptr ? &ptr : NULL);
 }
 
 #endif
