@@ -177,7 +177,7 @@ void qemu_ScriptGetProperties(struct qemu_syscall *call)
     WINE_TRACE("\n");
 
 #if HOST_BIT == GUEST_BIT
-    c->super.iret = ScriptGetProperties(QEMU_G2H(c->props)), QEMU_G2H(c->num));
+    c->super.iret = ScriptGetProperties(QEMU_G2H(c->props), QEMU_G2H(c->num));
     return;
 #endif
 
