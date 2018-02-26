@@ -166,6 +166,7 @@ void qemu_PropertySheet(struct qemu_syscall *call)
     PROPSHEETHEADERW copy, *header_in = &copy;
     size_t offset;
     HPROPSHEETPAGE *handle_array = NULL;
+    BOOL create_pages;
 
     /* FIXME: My god is this ugly and complicated. Is there some easier way? */
     WINE_TRACE("\n");
@@ -195,7 +196,8 @@ void qemu_PropertySheet(struct qemu_syscall *call)
      * Why do you ask, of course it doesn't... */
     callback_init(&data->callback_entry, 3, propsheet_header_host_cb);
 
-    if (data->header.dwFlags & PSH_PROPSHEETPAGE)
+    create_pages = data->header.dwFlags & PSH_PROPSHEETPAGE;
+    if (create_pages)
     {
         data->pages = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, page_count * sizeof(*data->pages));
         if (!data->pages)
@@ -266,7 +268,7 @@ void qemu_PropertySheet(struct qemu_syscall *call)
     else
         c->super.iret = p_PropertySheetW(&data->header);
 
-    if (data->header.dwFlags & PSH_PROPSHEETPAGE)
+    if (create_pages)
     {
         /* Release our own reference. */
         propsheet_host_cb(NULL, PSPCB_RELEASE, &data->pages[0]);
