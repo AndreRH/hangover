@@ -372,8 +372,16 @@ void qemu_CreatePropertySheetPage(struct qemu_syscall *call)
     else
         c->super.iret = (ULONG_PTR)p_CreatePropertySheetPageW(&data->pages[0]);
 
-    /* Release our own reference. */
-    propsheet_host_cb(NULL, PSPCB_RELEASE, &data->pages[0]);
+    /* Release our own reference if we have a page with refcounting. Otherwise destroy it on failure. */
+    if (page->dwSize > PROPSHEETPAGEA_V1_SIZE)
+    {
+        propsheet_host_cb(NULL, PSPCB_RELEASE, &data->pages[0]);
+    }
+    else if (!c->super.iret)
+    {
+        HeapFree(GetProcessHeap(), 0, data->pages);
+        VirtualFree(data, 0, MEM_RELEASE);
+    }
 }
 
 #endif

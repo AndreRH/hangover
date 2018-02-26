@@ -90,9 +90,33 @@ struct qemu_PROPSHEETPAGE
     } u_3;
 };
 
+#define QEMU_GUEST_PROPSHEETPAGEW_V1_SIZE CCSIZEOF_STRUCT(struct qemu_PROPSHEETPAGE, pcRefParent)
+#define QEMU_GUEST_PROPSHEETPAGEW_V2_SIZE CCSIZEOF_STRUCT(struct qemu_PROPSHEETPAGE, pszHeaderSubTitle)
+#define QEMU_GUEST_PROPSHEETPAGEW_V3_SIZE CCSIZEOF_STRUCT(struct qemu_PROPSHEETPAGE, hActCtx)
+#define QEMU_GUEST_PROPSHEETPAGEW_V4_SIZE sizeof(struct qemu_PROPSHEETPAGE)
+
+#define QEMU_HOST_PROPSHEETPAGEW_V1_SIZE CCSIZEOF_STRUCT(PROPSHEETPAGEW, pcRefParent)
+#define QEMU_HOST_PROPSHEETPAGEW_V2_SIZE CCSIZEOF_STRUCT(PROPSHEETPAGEW, pszHeaderSubTitle)
+#define QEMU_HOST_PROPSHEETPAGEW_V3_SIZE CCSIZEOF_STRUCT(PROPSHEETPAGEW, hActCtx)
+#define QEMU_HOST_PROPSHEETPAGEW_V4_SIZE sizeof(PROPSHEETPAGEW)
+
 static inline void PROPSHEETPAGE_g2h(PROPSHEETPAGEW *host, const struct qemu_PROPSHEETPAGE *guest)
 {
-    host->dwSize = sizeof(*host);
+    memset(host, 0, sizeof(*host));
+
+    if (guest->dwSize >= sizeof(*guest))
+        host->dwSize = sizeof(*host);
+    else if (guest->dwSize >= QEMU_GUEST_PROPSHEETPAGEW_V3_SIZE)
+        host->dwSize = QEMU_HOST_PROPSHEETPAGEW_V3_SIZE;
+    else if (guest->dwSize >= QEMU_GUEST_PROPSHEETPAGEW_V2_SIZE)
+        host->dwSize = QEMU_HOST_PROPSHEETPAGEW_V2_SIZE;
+    else if (guest->dwSize >= QEMU_GUEST_PROPSHEETPAGEW_V1_SIZE + 1) /* Needed for Addref handling. */
+        host->dwSize = QEMU_HOST_PROPSHEETPAGEW_V1_SIZE + 1;
+    else if (guest->dwSize >= QEMU_GUEST_PROPSHEETPAGEW_V1_SIZE)
+        host->dwSize = QEMU_HOST_PROPSHEETPAGEW_V1_SIZE;
+    else
+        host->dwSize = 0;
+
     host->dwFlags = guest->dwFlags;
     host->hInstance = HANDLE_g2h(guest->hInstance);
     host->pResource = (void *)(ULONG_PTR)guest->u_1.pResource;
@@ -103,9 +127,18 @@ static inline void PROPSHEETPAGE_g2h(PROPSHEETPAGEW *host, const struct qemu_PRO
     host->lParam = guest->lParam;
     host->pfnCallback = (void *)(ULONG_PTR)guest->pfnCallback;
     host->pcRefParent = (void *)(ULONG_PTR)guest->pcRefParent;
+    if (guest->dwSize <= QEMU_GUEST_PROPSHEETPAGEW_V1_SIZE)
+        return;
+
     host->pszHeaderTitle = (void *)(ULONG_PTR)guest->pszHeaderTitle;
     host->pszHeaderSubTitle = (void *)(ULONG_PTR)guest->pszHeaderSubTitle;
+    if (guest->dwSize <= QEMU_GUEST_PROPSHEETPAGEW_V2_SIZE)
+        return;
+
     host->hActCtx = HANDLE_g2h(guest->hActCtx);
+    if (guest->dwSize <= QEMU_GUEST_PROPSHEETPAGEW_V3_SIZE)
+        return;
+
     /* Why does this not exist??? */
     /* host->pszbmHeader = (void *)(ULONG_PTR)guest->u_3.pszbmHeader; */
 }
