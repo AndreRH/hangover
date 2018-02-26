@@ -90,6 +90,7 @@ struct propsheet_data
     PROPSHEETHEADERW header;
     ULONG ref;
     uint64_t guest_wrapper;
+    struct propsheet_data *old;
 
     /* I need to pass this array to PropertySheetW(), so I can't interleave it with my own data. */
     PROPSHEETPAGEW *pages;
@@ -111,6 +112,10 @@ static UINT CALLBACK propsheet_host_cb(HWND hwnd, UINT msg, PROPSHEETPAGEW *page
     if (!data)
         return 0;
 
+    /* Note: If the property sheet is created with PSH_PROPSHEETPAGE, only the first
+     * page currently has data->header set. If the pages are created individually and
+     * oassed to CreatePropertySheet by HANDLE all of them have a header structure
+     * for memory management purposes. */
     switch (msg)
     {
         case PSPCB_ADDREF:
@@ -121,7 +126,10 @@ static UINT CALLBACK propsheet_host_cb(HWND hwnd, UINT msg, PROPSHEETPAGEW *page
         case PSPCB_RELEASE:
             if (!--data->ref)
             {
+                WINE_TRACE("Release data %p.\n", data);
                 HeapFree(GetProcessHeap(), 0, data->pages);
+                if (data->old)
+                    VirtualFree(data->old, 0, MEM_RELEASE);
                 VirtualFree(data, 0, MEM_RELEASE);
             }
             return 0;
@@ -134,25 +142,18 @@ static UINT CALLBACK propsheet_host_cb(HWND hwnd, UINT msg, PROPSHEETPAGEW *page
 static INT CALLBACK propsheet_header_host_cb(HWND hwnd, UINT msg, LPARAM lparam, struct callback_entry *entry)
 {
     struct propsheet_data *data = CONTAINING_RECORD(entry, struct propsheet_data, callback_entry);
-    struct qemu_PropertySheet_cb stack, *call = &stack;
+    struct qemu_PropertySheet_cb call;
     INT ret;
 
-#if GUEST_BIT != HOST_BIT
-    call = HeapAlloc(GetProcessHeap(), 0, sizeof(*call));
-#endif
+    call.cb = data->callback_entry.guest_proc;
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.msg = msg;
+    call.lparam = lparam;
 
-    call->cb = data->callback_entry.guest_proc;
-    call->hwnd = (ULONG_PTR)hwnd;
-    call->msg = msg;
-    call->lparam = lparam;
-
-    WINE_TRACE("Calling guest callback 0x%lx(%p, 0x%x, 0x%lx).\n", (unsigned long)call->cb,
+    WINE_TRACE("Calling guest callback 0x%lx(%p, 0x%x, 0x%lx).\n", (unsigned long)call.cb,
             hwnd, msg, lparam);
-    ret = qemu_ops->qemu_execute(QEMU_G2H(data->guest_wrapper), QEMU_H2G(call));
+    ret = qemu_ops->qemu_execute(QEMU_G2H(data->guest_wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned %u.\n", ret);
-
-    if (call != &stack)
-        HeapFree(GetProcessHeap(), 0, call);
 
     return ret;
 }
@@ -164,6 +165,7 @@ void qemu_PropertySheet(struct qemu_syscall *call)
     unsigned int i, page_count;
     PROPSHEETHEADERW copy, *header_in = &copy;
     size_t offset;
+    HPROPSHEETPAGE *handle_array = NULL;
 
     /* FIXME: My god is this ugly and complicated. Is there some easier way? */
     WINE_TRACE("\n");
@@ -192,8 +194,6 @@ void qemu_PropertySheet(struct qemu_syscall *call)
     /* Does the top level callback (PFNPROPSHEETCALLBACK) allow us to pass a custom pointer somewhere?
      * Why do you ask, of course it doesn't... */
     callback_init(&data->callback_entry, 3, propsheet_header_host_cb);
-
-    /* FIXME: What about phpage? How does it choose between the two? */
 
     if (data->header.dwFlags & PSH_PROPSHEETPAGE)
     {
@@ -231,10 +231,27 @@ void qemu_PropertySheet(struct qemu_syscall *call)
     }
     else
     {
-        /* The main magic for this would be in the CreatePropertySheetPage wrapper. It should
-         * set up the propery sheets with the right callbacks. This function here would have
-         * to set page_data.header and addref the header. */
-        WINE_FIXME("Property page handles not handled yet.\n");
+        PROPSHEETPAGEW *page0;
+        struct page_data *page_data;
+
+#if HOST_BIT == GUEST_BIT
+        handle_array = header_in->phpage;
+#else
+        qemu_ptr *array32 = QEMU_G2H(header_in->phpage);
+        handle_array = HeapAlloc(GetProcessHeap(), 0, sizeof(*handle_array) * page_count);
+        for (i = 0; i < page_count; ++i)
+            handle_array[i] = QEMU_G2H((uint64_t)array32[i]);
+        data->header.phpage = handle_array;
+#endif
+
+        page0 = (PROPSHEETPAGEW *)handle_array[0];
+        page_data = (struct page_data *)page0->lParam;
+
+        /* We can't release the old header here because the page data is a part of it.
+         * Remember to destroy it later. */
+        data->old = page_data->header;
+        page_data->header = data;
+        data->pages = data->old->pages;
     }
 
     if ((data->header.dwFlags & PSH_USECALLBACK) && data->header.pfnCallback)
@@ -254,11 +271,15 @@ void qemu_PropertySheet(struct qemu_syscall *call)
         /* Release our own reference. */
         propsheet_host_cb(NULL, PSPCB_RELEASE, &data->pages[0]);
     }
+
+#if HOST_BIT != GUEST_BIT
+    HeapFree(GetProcessHeap(), 0, handle_array);
+#endif
 }
 
 #endif
 
-struct qemu_CreatePropertySheetPageA
+struct qemu_CreatePropertySheetPage
 {
     struct qemu_syscall super;
     uint64_t lpPropSheetPage;
@@ -268,7 +289,7 @@ struct qemu_CreatePropertySheetPageA
 
 WINBASEAPI HPROPSHEETPAGE WINAPI CreatePropertySheetPageA(LPCPROPSHEETPAGEA lpPropSheetPage)
 {
-    struct qemu_CreatePropertySheetPageA call;
+    struct qemu_CreatePropertySheetPage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPROPERTYSHEETPAGEA);
     call.lpPropSheetPage = (ULONG_PTR)lpPropSheetPage;
 
@@ -277,28 +298,9 @@ WINBASEAPI HPROPSHEETPAGE WINAPI CreatePropertySheetPageA(LPCPROPSHEETPAGEA lpPr
     return (HPROPSHEETPAGE)(ULONG_PTR)call.super.iret;
 }
 
-#else
-
-void qemu_CreatePropertySheetPageA(struct qemu_syscall *call)
-{
-    struct qemu_CreatePropertySheetPageA *c = (struct qemu_CreatePropertySheetPageA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)p_CreatePropertySheetPageA(QEMU_G2H(c->lpPropSheetPage));
-}
-
-#endif
-
-struct qemu_CreatePropertySheetPageW
-{
-    struct qemu_syscall super;
-    uint64_t lpPropSheetPage;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI HPROPSHEETPAGE WINAPI CreatePropertySheetPageW(LPCPROPSHEETPAGEW lpPropSheetPage)
 {
-    struct qemu_CreatePropertySheetPageW call;
+    struct qemu_CreatePropertySheetPage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPROPERTYSHEETPAGEW);
     call.lpPropSheetPage = (ULONG_PTR)lpPropSheetPage;
 
@@ -309,11 +311,67 @@ WINBASEAPI HPROPSHEETPAGE WINAPI CreatePropertySheetPageW(LPCPROPSHEETPAGEW lpPr
 
 #else
 
-void qemu_CreatePropertySheetPageW(struct qemu_syscall *call)
+void qemu_CreatePropertySheetPage(struct qemu_syscall *call)
 {
-    struct qemu_CreatePropertySheetPageW *c = (struct qemu_CreatePropertySheetPageW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)p_CreatePropertySheetPageW(QEMU_G2H(c->lpPropSheetPage));
+    struct qemu_CreatePropertySheetPage *c = (struct qemu_CreatePropertySheetPage *)call;
+    PROPSHEETPAGEW stack, *page = &stack;
+    struct propsheet_data *data;
+    WINE_TRACE("\n");
+
+    if (!c->lpPropSheetPage)
+    {
+        if (c->super.id == QEMU_SYSCALL_ID(CALL_CREATEPROPERTYSHEETPAGEA))
+            c->super.iret = (ULONG_PTR)p_CreatePropertySheetPageA(NULL);
+        else
+            c->super.iret = (ULONG_PTR)p_CreatePropertySheetPageW(NULL);
+        return;
+    }
+
+#if GUEST_BIT == HOST_BIT
+    page = QEMU_G2H(c->lpPropSheetPage);
+#else
+    PROPSHEETPAGE_g2h(page, QEMU_G2H(c->lpPropSheetPage));
+#endif
+
+    data = VirtualAlloc(NULL, FIELD_OFFSET(struct propsheet_data, page_data[1]), MEM_COMMIT,
+            PAGE_EXECUTE_READWRITE);
+    data->ref = 1;
+
+    /* The callback code should not need initialization. This is just a dummy and will not be
+     * called. CreatePropertySheet may later replace it with one that is actually called. */
+
+    data->pages = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*data->pages));
+    if (!data->pages)
+    {
+        VirtualFree(data, 0, MEM_RELEASE);
+        c->super.iret = -1;
+        return;
+    }
+
+    memcpy(&data->pages[0], page, min(page->dwSize, sizeof(data->pages[0])));
+
+    if (data->pages[0].pfnDlgProc)
+        data->pages[0].pfnDlgProc = (DLGPROC)wndproc_guest_to_host((ULONG_PTR)data->pages[0].pfnDlgProc);
+
+    if (data->pages[0].pfnCallback && (data->pages[0].dwFlags & PSP_USECALLBACK))
+        WINE_FIXME("Handle property sheet page callbacks.\n");
+
+    data->page_data[0].guest_lparam = data->pages[0].lParam;
+    data->page_data[0].guest_cb = (ULONG_PTR)data->pages[0].pfnCallback;
+    data->pages[0].lParam = (LPARAM)&data->page_data[0];
+
+    data->header.ppsp = data->pages;
+    data->pages[0].dwFlags |= PSP_USECALLBACK;
+    data->pages[0].pfnCallback = propsheet_host_cb;
+    data->page_data[0].header = data;
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_CREATEPROPERTYSHEETPAGEA))
+        c->super.iret = (ULONG_PTR)p_CreatePropertySheetPageA((PROPSHEETPAGEA *)&data->pages[0]);
+    else
+        c->super.iret = (ULONG_PTR)p_CreatePropertySheetPageW(&data->pages[0]);
+
+    /* Release our own reference. */
+    propsheet_host_cb(NULL, PSPCB_RELEASE, &data->pages[0]);
 }
 
 #endif
