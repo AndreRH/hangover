@@ -55,7 +55,7 @@ WINUSERAPI LPSTR WINAPI CharNextA(LPCSTR ptr)
 void qemu_CharNextA(struct qemu_syscall *call)
 {
     struct qemu_CharNextA *c = (struct qemu_CharNextA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)CharNextA(QEMU_G2H(c->ptr));
 }
 
