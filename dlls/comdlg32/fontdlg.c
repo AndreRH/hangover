@@ -126,7 +126,7 @@ void qemu_ChooseFontW(struct qemu_syscall *call)
 
     orig_instance = cf.hInstance;
     if ((cf.Flags & (CF_ENABLETEMPLATEHANDLE | CF_ENABLETEMPLATE)) == CF_ENABLETEMPLATE && !cf.hInstance)
-        cf.hInstance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+        cf.hInstance = qemu_ops->qemu_module_g2h((uint64_t)orig_instance);
 
     guest_proc = (ULONG_PTR)cf.lpfnHook;
     TlsSetValue(comdlg32_tls, &guest_proc);

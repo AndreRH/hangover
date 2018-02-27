@@ -103,11 +103,8 @@ void qemu_ChooseColorW(struct qemu_syscall *call)
     guest_wrapper = c->guest_wrapper;
 
     instance = choose.hInstance;
-    if ((choose.Flags & (CC_ENABLETEMPLATEHANDLE | CC_ENABLETEMPLATE)) == CC_ENABLETEMPLATE && !choose.hInstance)
-    {
-        choose.hInstance = (void *)qemu_ops->qemu_GetModuleHandleEx(
-                GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
-    }
+    if ((choose.Flags & (CC_ENABLETEMPLATEHANDLE | CC_ENABLETEMPLATE)) == CC_ENABLETEMPLATE)
+        choose.hInstance = (HWND)qemu_ops->qemu_module_g2h((uint64_t)instance);
 
     old_tls = TlsGetValue(comdlg32_tls);
     TlsSetValue(comdlg32_tls, &guest_proc);
@@ -162,11 +159,8 @@ void qemu_ChooseColorA(struct qemu_syscall *call)
     guest_wrapper = c->guest_wrapper;
 
     instance = choose.hInstance;
-    if ((choose.Flags & (CC_ENABLETEMPLATEHANDLE | CC_ENABLETEMPLATE)) == CC_ENABLETEMPLATE && !choose.hInstance)
-    {
-        choose.hInstance = (void *)qemu_ops->qemu_GetModuleHandleEx(
-                GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
-    }
+    if ((choose.Flags & (CC_ENABLETEMPLATEHANDLE | CC_ENABLETEMPLATE)) == CC_ENABLETEMPLATE)
+        choose.hInstance = (HWND)qemu_ops->qemu_module_g2h((uint64_t)instance);
 
     old_tls = TlsGetValue(comdlg32_tls);
     TlsSetValue(comdlg32_tls, &guest_proc);

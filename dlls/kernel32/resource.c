@@ -64,9 +64,7 @@ void qemu_FindResourceExA(struct qemu_syscall *call)
     HMODULE mod;
 
     WINE_FIXME("Unverified!\n");
-    mod = QEMU_G2H(c->hModule);
-    if (!mod)
-        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    mod = qemu_ops->qemu_module_g2h(c->hModule);
 
     c->super.iret = (ULONG_PTR)FindResourceExA(mod, QEMU_G2H(c->type), QEMU_G2H(c->name), c->lang);
 }
@@ -104,9 +102,7 @@ void qemu_FindResourceA(struct qemu_syscall *call)
     HMODULE mod;
 
     WINE_TRACE("\n");
-    mod = QEMU_G2H(c->hModule);
-    if (!mod)
-        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    mod = qemu_ops->qemu_module_g2h(c->hModule);
 
     c->super.iret = (ULONG_PTR)FindResourceA(mod, QEMU_G2H(c->name), QEMU_G2H(c->type));
 }
@@ -146,9 +142,7 @@ void qemu_FindResourceExW(struct qemu_syscall *call)
     HMODULE mod;
 
     WINE_FIXME("Unverified!\n");
-    mod = QEMU_G2H(c->hModule);
-    if (!mod)
-        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    mod = qemu_ops->qemu_module_g2h(c->hModule);
 
     c->super.iret = (ULONG_PTR)FindResourceExW(mod, QEMU_G2H(c->type), QEMU_G2H(c->name), c->lang);
 }
@@ -186,9 +180,7 @@ void qemu_FindResourceW(struct qemu_syscall *call)
     HMODULE mod;
 
     WINE_TRACE("\n");
-    mod = QEMU_G2H(c->hModule);
-    if (!mod)
-        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    mod = qemu_ops->qemu_module_g2h(c->hModule);
 
     c->super.iret = (ULONG_PTR)FindResourceW(mod, QEMU_G2H(c->name), QEMU_G2H(c->type));
 }
@@ -226,9 +218,7 @@ void qemu_EnumResourceTypesA(struct qemu_syscall *call)
     HMODULE mod;
 
     WINE_FIXME("Unverified!\n");
-    mod = QEMU_G2H(c->hmod);
-    if (!mod)
-        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    mod = qemu_ops->qemu_module_g2h(c->hmod);
 
     c->super.iret = EnumResourceTypesA(mod, QEMU_G2H(c->lpfun), c->lparam);
 }
@@ -266,9 +256,7 @@ void qemu_EnumResourceTypesW(struct qemu_syscall *call)
     HMODULE mod;
 
     WINE_FIXME("Unverified!\n");
-    mod = QEMU_G2H(c->hmod);
-    if (!mod)
-        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    mod = qemu_ops->qemu_module_g2h(c->hmod);
 
     c->super.iret = EnumResourceTypesW(mod, QEMU_G2H(c->lpfun), c->lparam);
 }
@@ -308,9 +296,7 @@ void qemu_EnumResourceNamesA(struct qemu_syscall *call)
     HMODULE mod;
 
     WINE_FIXME("Unverified!\n");
-    mod = QEMU_G2H(c->hmod);
-    if (!mod)
-        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    mod = qemu_ops->qemu_module_g2h(c->hmod);
 
     c->super.iret = EnumResourceNamesA(mod, QEMU_G2H(c->type), QEMU_G2H(c->lpfun), c->lparam);
 }
@@ -350,9 +336,7 @@ void qemu_EnumResourceNamesW(struct qemu_syscall *call)
     HMODULE mod;
 
     WINE_FIXME("Unverified!\n");
-    mod = QEMU_G2H(c->hmod);
-    if (!mod)
-        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    mod = qemu_ops->qemu_module_g2h(c->hmod);
 
     c->super.iret = EnumResourceNamesW(mod, QEMU_G2H(c->type), QEMU_G2H(c->lpfun), c->lparam);
 }
@@ -399,9 +383,7 @@ void qemu_EnumResourceLanguagesExA(struct qemu_syscall *call)
     HMODULE mod;
 
     WINE_FIXME("Unverified!\n");
-    mod = QEMU_G2H(c->hmod);
-    if (!mod)
-        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    mod = qemu_ops->qemu_module_g2h(c->hmod);
 
     c->super.iret = EnumResourceLanguagesExA(mod, QEMU_G2H(c->type), QEMU_G2H(c->name),
             QEMU_G2H(c->lpfun), c->lparam, c->flags, c->lang);
@@ -445,9 +427,7 @@ void qemu_EnumResourceLanguagesA(struct qemu_syscall *call)
     HMODULE mod;
 
     WINE_FIXME("Unverified!\n");
-    mod = QEMU_G2H(c->hmod);
-    if (!mod)
-        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    mod = qemu_ops->qemu_module_g2h(c->hmod);
 
     c->super.iret = EnumResourceLanguagesA(mod, QEMU_G2H(c->type), QEMU_G2H(c->name), QEMU_G2H(c->lpfun), c->lparam);
 }
@@ -494,9 +474,7 @@ void qemu_EnumResourceLanguagesExW(struct qemu_syscall *call)
     HMODULE mod;
 
     WINE_FIXME("Unverified!\n");
-    mod = QEMU_G2H(c->hmod);
-    if (!mod)
-        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    mod = qemu_ops->qemu_module_g2h(c->hmod);
 
     c->super.iret = EnumResourceLanguagesExW(mod, QEMU_G2H(c->type), QEMU_G2H(c->name),
             QEMU_G2H(c->lpfun), c->lparam, c->flags, c->lang);
@@ -540,9 +518,7 @@ void qemu_EnumResourceLanguagesW(struct qemu_syscall *call)
     HMODULE mod;
 
     WINE_FIXME("Unverified!\n");
-    mod = QEMU_G2H(c->hmod);
-    if (!mod)
-        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    mod = qemu_ops->qemu_module_g2h(c->hmod);
 
     c->super.iret = EnumResourceLanguagesW(mod, QEMU_G2H(c->type), QEMU_G2H(c->name), QEMU_G2H(c->lpfun), c->lparam);
 }
@@ -578,9 +554,7 @@ void qemu_LoadResource(struct qemu_syscall *call)
     HMODULE mod;
 
     WINE_TRACE("\n");
-    mod = QEMU_G2H(c->hModule);
-    if (!mod)
-        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    mod = qemu_ops->qemu_module_g2h(c->hModule);
 
     c->super.iret = (ULONG_PTR)LoadResource(mod, QEMU_G2H(c->hRsrc));
 }
@@ -676,9 +650,7 @@ void qemu_SizeofResource(struct qemu_syscall *call)
     HMODULE mod;
     WINE_TRACE("\n");
 
-    mod = QEMU_G2H(c->hModule);
-    if (!mod)
-        mod = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    mod = qemu_ops->qemu_module_g2h(c->hModule);
 
     c->super.iret = SizeofResource(mod, QEMU_G2H(c->hRsrc));
 }

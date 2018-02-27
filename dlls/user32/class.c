@@ -138,9 +138,7 @@ void qemu_RegisterClassEx(struct qemu_syscall *call)
 
         guest_proc = (ULONG_PTR)exw.lpfnWndProc;
         exw.lpfnWndProc = wndproc_guest_to_host(guest_proc);
-
-        if (!exw.hInstance)
-            exw.hInstance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+        exw.hInstance = qemu_ops->qemu_module_g2h((uint64_t)exw.hInstance);
 
         c->super.iret = RegisterClassExW(&exw);
     }
@@ -156,9 +154,7 @@ void qemu_RegisterClassEx(struct qemu_syscall *call)
 
         guest_proc = (ULONG_PTR)exa.lpfnWndProc;
         exa.lpfnWndProc = wndproc_guest_to_host(guest_proc);
-
-        if (!exa.hInstance)
-            exa.hInstance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+        exa.hInstance = qemu_ops->qemu_module_g2h((uint64_t)exa.hInstance);
 
         c->super.iret = RegisterClassExA(&exa);
     }
@@ -209,9 +205,7 @@ void qemu_UnregisterClass(struct qemu_syscall *call)
     ULONG_PTR proc;
     WINE_TRACE("\n");
 
-    inst = (HINSTANCE)c->hInstance;
-    if (!inst)
-        inst = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    inst = qemu_ops->qemu_module_g2h(c->hInstance);
 
     if (c->super.id == QEMU_SYSCALL_ID(CALL_UNREGISTERCLASSA))
         c->super.iret = UnregisterClassA(QEMU_G2H(c->className), inst);

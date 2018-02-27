@@ -60,9 +60,7 @@ void qemu_LoadAcceleratorsW(struct qemu_syscall *call)
     HINSTANCE instance;
     WINE_TRACE("\n");
 
-    instance = (HINSTANCE)c->instance;
-    if (!instance)
-        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    instance = qemu_ops->qemu_module_g2h(c->instance);
 
     c->super.iret = (ULONG_PTR)LoadAcceleratorsW(instance, QEMU_G2H(c->name));
 }
@@ -98,9 +96,7 @@ void qemu_LoadAcceleratorsA(struct qemu_syscall *call)
     HINSTANCE instance;
     WINE_TRACE("\n");
 
-    instance = (HINSTANCE)c->instance;
-    if (!instance)
-        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    instance = qemu_ops->qemu_module_g2h(c->instance);
 
     c->super.iret = (ULONG_PTR)LoadAcceleratorsA(instance, QEMU_G2H(c->lpTableName));
 }
@@ -302,9 +298,7 @@ void qemu_LoadStringW(struct qemu_syscall *call)
     HINSTANCE instance;
     WINE_TRACE("\n");
 
-    instance = (HINSTANCE)c->instance;
-    if (!instance)
-        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    instance = qemu_ops->qemu_module_g2h(c->instance);
 
     c->super.iret = LoadStringW(instance, c->resource_id, QEMU_G2H(c->buffer), c->buflen);
 }
@@ -344,9 +338,7 @@ void qemu_LoadStringA(struct qemu_syscall *call)
     HINSTANCE instance;
     WINE_TRACE("\n");
 
-    instance = (HINSTANCE)c->instance;
-    if (!instance)
-        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    instance = qemu_ops->qemu_module_g2h(c->instance);
 
     c->super.iret = LoadStringA(instance, c->resource_id, QEMU_G2H(c->buffer), c->buflen);
 }

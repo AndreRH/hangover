@@ -71,10 +71,7 @@ void qemu_CreateDialogParamA(struct qemu_syscall *call)
 
     WINE_TRACE("\n");
 
-    /* test/msg.c wants us to look in the main .exe file if instance = NULL. */
-    inst = QEMU_G2H(c->hInst);
-    if (!inst)
-        inst = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    inst = qemu_ops->qemu_module_g2h(c->hInst);
 
     wrapper = wndproc_guest_to_host(c->dlgProc);
     c->super.iret = (ULONG_PTR)CreateDialogParamA(inst, QEMU_G2H(c->name), QEMU_G2H(c->owner),
@@ -121,10 +118,7 @@ void qemu_CreateDialogParamW(struct qemu_syscall *call)
 
     WINE_TRACE("\n");
 
-    /* test/msg.c wants us to look in the main .exe file if instance = NULL. */
-    inst = QEMU_G2H(c->hInst);
-    if (!inst)
-        inst = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    inst = qemu_ops->qemu_module_g2h(c->hInst);
 
     wrapper = wndproc_guest_to_host(c->dlgProc);
     c->super.iret = (ULONG_PTR)CreateDialogParamW(inst, QEMU_G2H(c->name), QEMU_G2H(c->owner),
@@ -314,9 +308,7 @@ void qemu_DialogBoxParam(struct qemu_syscall *call)
     DLGPROC dlgproc;
     WINE_TRACE("\n");
 
-    instance = (HINSTANCE)c->hInst;
-    if (!instance)
-        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    instance = qemu_ops->qemu_module_g2h(c->hInst);
 
     /* Note that we could use a static dlgproc wrapper and communicate the necessary data via TLS because
      * DialogBoxParam waits until the dialog is dismissed. This breaks SetWindowLongPtr(DWLP_DLGPROC)
@@ -436,9 +428,7 @@ void qemu_DialogBoxIndirectParam(struct qemu_syscall *call)
     DLGPROC dlgproc;
 
     WINE_TRACE("\n");
-    instance = (HINSTANCE)c->hInstance;
-    if (!instance)
-        instance = qemu_ops->qemu_GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, NULL);
+    instance = qemu_ops->qemu_module_g2h(c->hInstance);
 
     dlgproc = wndproc_guest_to_host(c->dlgProc);
 
