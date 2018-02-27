@@ -1479,6 +1479,21 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             }
             break;
 
+        case PSM_ISDIALOGMESSAGE:
+            if (msg_in->lParam)
+            {
+                struct qemu_MSG *guest_msg = (struct qemu_MSG *)msg_in->lParam;
+                MSG *host_msg, copy;
+                WINE_TRACE("Translating PSM_ISDIALOGMESSAGE message at %p.\n", guest_msg);
+                host_msg = HeapAlloc(GetProcessHeap(), 0, sizeof(*host_msg));
+                MSG_g2h(&copy, guest_msg);
+
+                msg_guest_to_host(host_msg, &copy);
+
+                msg_out->lParam = (LPARAM)host_msg;
+            }
+            break;
+
 #endif
 
         default:
@@ -1715,6 +1730,20 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
                 HDITEM_h2g(guest_item, host_item);
 
                 HeapFree(GetProcessHeap(), 0, host_item);
+            }
+            break;
+
+        case PSM_ISDIALOGMESSAGE:
+            if (conv->lParam != orig->lParam)
+            {
+                struct qemu_MSG *guest_msg = (struct qemu_MSG *)orig->lParam;
+                MSG *host_msg = (MSG *)conv->lParam, copy;
+
+                MSG_g2h(&copy, guest_msg);
+                msg_host_to_guest_return(&copy, host_msg);
+
+                HeapFree(GetProcessHeap(), 0, host_msg);
+                MSG_h2g(guest_msg, &copy);
             }
             break;
 
@@ -2004,6 +2033,11 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
                 HDITEM_h2g(guest, host);
                 msg_out->lParam = (LPARAM)guest;
             }
+            break;
+
+        case PSM_ISDIALOGMESSAGE:
+            /* Probably subclassing shenanigans. Just convert if this is ever hit. */
+            WINE_FIXME("PSM_ISDIALOGMESSAGE sent from host to guest.\n");
             break;
 
         default:
