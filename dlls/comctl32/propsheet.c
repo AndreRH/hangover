@@ -230,6 +230,7 @@ void qemu_PropertySheet(struct qemu_syscall *call)
     data = VirtualAlloc(NULL, FIELD_OFFSET(struct propsheet_data, page_data[page_count]), MEM_COMMIT,
             PAGE_EXECUTE_READWRITE);
     memcpy(&data->header, header_in, min(header_in->dwSize, sizeof(data->header)));
+    data->header.hInstance = qemu_ops->qemu_module_g2h((uint64_t)header_in->hInstance);
     data->ref = 1;
 
     /* Does the top level callback (PFNPROPSHEETCALLBACK) allow us to pass a custom pointer somewhere?
@@ -256,6 +257,7 @@ void qemu_PropertySheet(struct qemu_syscall *call)
             PROPSHEETPAGE_g2h(&data->pages[i], &((struct qemu_PROPSHEETPAGE *)header_in->ppsp)[i]);
 #endif
 
+            data->pages[i].hInstance = qemu_ops->qemu_module_g2h((uint64_t)data->pages[i].hInstance);
             data->page_data[i].guest_dlgproc = (ULONG_PTR)data->pages[i].pfnDlgProc;
             if (data->pages[i].pfnDlgProc)
                 data->pages[i].pfnDlgProc = (DLGPROC)wndproc_guest_to_host((ULONG_PTR)data->pages[i].pfnDlgProc);
@@ -399,6 +401,7 @@ void qemu_CreatePropertySheetPage(struct qemu_syscall *call)
 
     memcpy(&data->pages[0], page, min(page->dwSize, sizeof(data->pages[0])));
 
+    data->pages[0].hInstance = qemu_ops->qemu_module_g2h((uint64_t)page->hInstance);
     data->page_data[0].guest_dlgproc = (ULONG_PTR)data->pages[0].pfnDlgProc;
     if (data->pages[0].pfnDlgProc)
         data->pages[0].pfnDlgProc = (DLGPROC)wndproc_guest_to_host((ULONG_PTR)data->pages[0].pfnDlgProc);
