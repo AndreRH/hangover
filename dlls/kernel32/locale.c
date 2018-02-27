@@ -795,7 +795,7 @@ WINBASEAPI BOOL WINAPI IsDBCSLeadByte(BYTE testchar)
 void qemu_IsDBCSLeadByte(struct qemu_syscall *call)
 {
     struct qemu_IsDBCSLeadByte *c = (struct qemu_IsDBCSLeadByte *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsDBCSLeadByte(c->testchar);
 }
 
