@@ -240,6 +240,10 @@ void qemu_PropertySheet(struct qemu_syscall *call)
     create_pages = data->header.dwFlags & PSH_PROPSHEETPAGE;
     if (create_pages)
     {
+        const BYTE *page_in;
+        BYTE *page_out;
+        PROPSHEETPAGEW *cur;
+
         data->pages = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, page_count * sizeof(*data->pages));
         if (!data->pages)
         {
@@ -247,27 +251,37 @@ void qemu_PropertySheet(struct qemu_syscall *call)
             c->super.iret = -1;
             return;
         }
+        /* If we have a smaller input struct we have to read it with the correct offsets, and pack it
+         * with the correct size. We can't just adjust dwSize in the output struct to always be the
+         * full PROPSHEETPAGEW struct because dwSize affects the behavior regarding pfnCallback. */
+        page_in = (const BYTE *)header_in->ppsp;
+        page_out = (BYTE *)data->pages;
 
         for (i = 0; i < page_count; ++i)
         {
+            cur = (PROPSHEETPAGEW *)page_out;
+
 #if GUEST_BIT == HOST_BIT
-            memcpy(&data->pages[i], &header_in->ppsp[i],
-                    min(header_in->ppsp[i].dwSize, sizeof(data->pages[i])));
+            memcpy(cur, page_in, min(header_in->ppsp[i].dwSize, sizeof(data->pages[i])));
+            page_in += ((PROPSHEETPAGEW *)page_in)->dwSize;
 #else
-            PROPSHEETPAGE_g2h(&data->pages[i], &((struct qemu_PROPSHEETPAGE *)header_in->ppsp)[i]);
+            PROPSHEETPAGE_g2h(cur, (struct qemu_PROPSHEETPAGE *)page_in);
+            page_in += ((struct qemu_PROPSHEETPAGE *)page_in)->dwSize;
 #endif
 
-            data->pages[i].hInstance = qemu_ops->qemu_module_g2h((uint64_t)data->pages[i].hInstance);
-            data->page_data[i].guest_dlgproc = (ULONG_PTR)data->pages[i].pfnDlgProc;
-            if (data->pages[i].pfnDlgProc)
-                data->pages[i].pfnDlgProc = (DLGPROC)wndproc_guest_to_host((ULONG_PTR)data->pages[i].pfnDlgProc);
+            page_out += cur->dwSize;
 
-            if (data->pages[i].pfnCallback && (data->pages[i].dwFlags & PSP_USECALLBACK))
-                data->page_data[i].guest_cb = (ULONG_PTR)data->pages[i].pfnCallback;
+            cur->hInstance = qemu_ops->qemu_module_g2h((uint64_t)cur->hInstance);
+            data->page_data[i].guest_dlgproc = (ULONG_PTR)cur->pfnDlgProc;
+            if (cur->pfnDlgProc)
+                cur->pfnDlgProc = (DLGPROC)wndproc_guest_to_host((ULONG_PTR)cur->pfnDlgProc);
 
-            data->pages[i].pfnCallback = propsheet_host_cb;
-            data->page_data[i].guest_lparam = data->pages[i].lParam;
-            data->pages[i].lParam = (LPARAM)&data->page_data[i];
+            if (cur->pfnCallback && (cur->dwFlags & PSP_USECALLBACK))
+                data->page_data[i].guest_cb = (ULONG_PTR)cur->pfnCallback;
+
+            cur->pfnCallback = propsheet_host_cb;
+            data->page_data[i].guest_lparam = cur->lParam;
+            cur->lParam = (LPARAM)&data->page_data[i];
         }
         data->header.ppsp = data->pages;
         data->pages[0].dwFlags |= PSP_USECALLBACK;
