@@ -33,6 +33,7 @@ struct qemu_set_callbacks
 {
     struct qemu_syscall super;
     uint64_t wndproc_wrapper;
+    uint64_t PropertySheetPage_guest_cb;
 };
 
 struct wndproc_call
@@ -62,12 +63,14 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
         case DLL_PROCESS_ATTACH:
             call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
             call.wndproc_wrapper = (ULONG_PTR)wndproc_wrapper;
+            call.PropertySheetPage_guest_cb = (ULONG_PTR)PropertySheetPage_guest_cb;
             qemu_syscall(&call.super);
             break;
 
         case DLL_PROCESS_DETACH:
             call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
             call.wndproc_wrapper = 0;
+            call.PropertySheetPage_guest_cb = 0;
             qemu_syscall(&call.super);
             break;
     }
@@ -84,12 +87,14 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_comctl32);
 const struct qemu_ops *qemu_ops;
 static uint64_t guest_wndproc_wrapper;
 static HMODULE comctl32;
+uint64_t PropertySheetPage_guest_cb;
 
 static void qemu_set_callbacks(struct qemu_syscall *call)
 {
     struct qemu_set_callbacks *c = (struct qemu_set_callbacks *)call;
 
     guest_wndproc_wrapper = c->wndproc_wrapper;
+    PropertySheetPage_guest_cb = c->PropertySheetPage_guest_cb;
 
     if (c->wndproc_wrapper)
     {

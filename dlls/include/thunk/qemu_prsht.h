@@ -120,7 +120,6 @@ static inline void PROPSHEETPAGE_g2h(PROPSHEETPAGEW *host, const struct qemu_PRO
     host->dwFlags = guest->dwFlags;
     host->hInstance = HANDLE_g2h(guest->hInstance);
     host->pResource = (void *)(ULONG_PTR)guest->u_1.pResource;
-    /* FIXME: Flags. */
     host->pszIcon = (void *)(ULONG_PTR)guest->u_2.pszIcon;
     host->pszTitle = (void *)(ULONG_PTR)guest->pszTitle;
     host->pfnDlgProc = (void *)(ULONG_PTR)guest->pfnDlgProc;
@@ -141,6 +140,24 @@ static inline void PROPSHEETPAGE_g2h(PROPSHEETPAGEW *host, const struct qemu_PRO
 
     /* Why does this not exist??? */
     /* host->pszbmHeader = (void *)(ULONG_PTR)guest->u_3.pszbmHeader; */
+}
+
+static inline void PROPSHEETPAGE_h2g(struct qemu_PROPSHEETPAGE *guest, const PROPSHEETPAGEW *host)
+{
+    guest->dwFlags = host->dwFlags;
+    guest->hInstance = (ULONG_PTR)host->hInstance;
+    guest->u_1.pResource = (ULONG_PTR)host->pResource;
+    guest->u_2.pszIcon = (ULONG_PTR)host->pszIcon;
+    guest->pszTitle = (ULONG_PTR)host->pszTitle;
+    guest->pfnDlgProc = (ULONG_PTR)host->pfnDlgProc;
+    guest->lParam = host->lParam;
+    guest->pfnCallback = (ULONG_PTR)host->pfnCallback;
+    guest->pcRefParent = (ULONG_PTR)host->pcRefParent;
+    guest->pszHeaderTitle = (ULONG_PTR)host->pszHeaderTitle;
+    guest->pszHeaderSubTitle = (ULONG_PTR)host->pszHeaderSubTitle;
+    guest->hActCtx = (ULONG_PTR)host->hActCtx;
+    /* Why does this not exist??? */
+    /* guest->pszbmHeader = (ULONG_PTR)host->u_3.pszbmHeader; */
 }
 
 struct qemu_PSHNOTIFY

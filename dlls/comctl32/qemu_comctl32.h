@@ -184,7 +184,12 @@ enum comctl32_calls
 typedef void MRUINFOA, MRUINFOW;
 typedef void SMOOTHSCROLLSTRUCT;
 
-#ifndef QEMU_DLL_GUEST
+#ifdef QEMU_DLL_GUEST
+
+struct qemu_PropertySheetPage_cb;
+UINT __fastcall PropertySheetPage_guest_cb(struct qemu_PropertySheetPage_cb *data);
+
+#else
 
 extern const struct qemu_ops *qemu_ops;
 
@@ -543,9 +548,11 @@ void register_notify_callbacks(void);
 struct qemu_NMHDR *propsheet_notify_h2g(NMHDR *host);
 void propsheet_notify_g2h(NMHDR *host, NMHDR *guest);
 
+extern uint64_t PropertySheetPage_guest_cb;
+
 struct page_data
 {
-    uint64_t guest_lparam, guest_cb;
+    uint64_t guest_lparam, guest_cb, guest_dlgproc;
     struct propsheet_data *header;
 };
 
