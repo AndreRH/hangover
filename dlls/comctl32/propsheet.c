@@ -462,7 +462,7 @@ WINBASEAPI BOOL WINAPI DestroyPropertySheetPage(HPROPSHEETPAGE hPropPage)
 void qemu_DestroyPropertySheetPage(struct qemu_syscall *call)
 {
     struct qemu_DestroyPropertySheetPage *c = (struct qemu_DestroyPropertySheetPage *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_DestroyPropertySheetPage(QEMU_G2H(c->hPropPage));
 }
 
