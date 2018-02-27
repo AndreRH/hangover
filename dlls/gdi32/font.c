@@ -624,6 +624,7 @@ struct qemu_EnumFontsA
     uint64_t lpName;
     uint64_t efproc;
     uint64_t lpData;
+    uint64_t wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -636,6 +637,7 @@ WINGDIAPI INT WINAPI EnumFontsA(HDC hDC, LPCSTR lpName, FONTENUMPROCA efproc, LP
     call.lpName = (ULONG_PTR)lpName;
     call.efproc = (ULONG_PTR)efproc;
     call.lpData = (ULONG_PTR)lpData;
+    call.wrapper = (ULONG_PTR)EnumFontFamiliesW_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -647,8 +649,15 @@ WINGDIAPI INT WINAPI EnumFontsA(HDC hDC, LPCSTR lpName, FONTENUMPROCA efproc, LP
 void qemu_EnumFontsA(struct qemu_syscall *call)
 {
     struct qemu_EnumFontsA *c = (struct qemu_EnumFontsA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumFontsA(QEMU_G2H(c->hDC), QEMU_G2H(c->lpName), QEMU_G2H(c->efproc), c->lpData);
+    struct qemu_EnumFontFamilies_host_data data;
+
+    WINE_TRACE("\n");
+    data.wrapper = c->wrapper;
+    data.guest_func = c->efproc;
+    data.guest_data = c->lpData;
+
+    c->super.iret = EnumFontsA(QEMU_G2H(c->hDC), QEMU_G2H(c->lpName),
+            c->efproc ? qemu_EnumFontFamiliesA_host_proc : NULL, (LPARAM)&data);
 }
 
 #endif
@@ -660,6 +669,7 @@ struct qemu_EnumFontsW
     uint64_t lpName;
     uint64_t efproc;
     uint64_t lpData;
+    uint64_t wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -672,6 +682,7 @@ WINGDIAPI INT WINAPI EnumFontsW(HDC hDC, LPCWSTR lpName, FONTENUMPROCW efproc, L
     call.lpName = (ULONG_PTR)lpName;
     call.efproc = (ULONG_PTR)efproc;
     call.lpData = (ULONG_PTR)lpData;
+    call.wrapper = (ULONG_PTR)EnumFontFamiliesW_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -683,8 +694,15 @@ WINGDIAPI INT WINAPI EnumFontsW(HDC hDC, LPCWSTR lpName, FONTENUMPROCW efproc, L
 void qemu_EnumFontsW(struct qemu_syscall *call)
 {
     struct qemu_EnumFontsW *c = (struct qemu_EnumFontsW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumFontsW(QEMU_G2H(c->hDC), QEMU_G2H(c->lpName), QEMU_G2H(c->efproc), c->lpData);
+    struct qemu_EnumFontFamilies_host_data data;
+
+    WINE_TRACE("\n");
+    data.wrapper = c->wrapper;
+    data.guest_func = c->efproc;
+    data.guest_data = c->lpData;
+
+    c->super.iret = EnumFontsW(QEMU_G2H(c->hDC), QEMU_G2H(c->lpName),
+            c->efproc ? qemu_EnumFontFamiliesW_host_proc : NULL, (LPARAM)&data);
 }
 
 #endif
