@@ -63,7 +63,7 @@ WINBASEAPI HRESULT WINAPI AddDelBackupEntryA(LPCSTR lpcszFileList, LPCSTR lpcszB
 void qemu_AddDelBackupEntryA(struct qemu_syscall *call)
 {
     struct qemu_AddDelBackupEntryA *c = (struct qemu_AddDelBackupEntryA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AddDelBackupEntryA(QEMU_G2H(c->lpcszFileList), QEMU_G2H(c->lpcszBackupDir), QEMU_G2H(c->lpcszBaseName), c->dwFlags);
 }
 
@@ -141,7 +141,7 @@ WINBASEAPI HRESULT WINAPI AdvInstallFileA(HWND hwnd, LPCSTR lpszSourceDir, LPCST
 void qemu_AdvInstallFileA(struct qemu_syscall *call)
 {
     struct qemu_AdvInstallFileA *c = (struct qemu_AdvInstallFileA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AdvInstallFileA(QEMU_G2H(c->hwnd), QEMU_G2H(c->lpszSourceDir), QEMU_G2H(c->lpszSourceFile), QEMU_G2H(c->lpszDestDir), QEMU_G2H(c->lpszDestFile), c->dwFlags, c->dwReserved);
 }
 
@@ -215,7 +215,7 @@ WINBASEAPI HRESULT WINAPI DelNodeA(LPCSTR pszFileOrDirName, DWORD dwFlags)
 void qemu_DelNodeA(struct qemu_syscall *call)
 {
     struct qemu_DelNodeA *c = (struct qemu_DelNodeA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DelNodeA(QEMU_G2H(c->pszFileOrDirName), c->dwFlags);
 }
 
@@ -359,7 +359,7 @@ WINBASEAPI HRESULT WINAPI ExtractFilesA(LPCSTR CabName, LPCSTR ExpandDir, DWORD 
 void qemu_ExtractFilesA(struct qemu_syscall *call)
 {
     struct qemu_ExtractFilesA *c = (struct qemu_ExtractFilesA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ExtractFilesA(QEMU_G2H(c->CabName), QEMU_G2H(c->ExpandDir), c->Flags, QEMU_G2H(c->FileList), QEMU_G2H(c->LReserved), c->Reserved);
 }
 
@@ -399,7 +399,7 @@ WINBASEAPI HRESULT WINAPI ExtractFilesW(LPCWSTR CabName, LPCWSTR ExpandDir, DWOR
 void qemu_ExtractFilesW(struct qemu_syscall *call)
 {
     struct qemu_ExtractFilesW *c = (struct qemu_ExtractFilesW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ExtractFilesW(QEMU_G2H(c->CabName), QEMU_G2H(c->ExpandDir), c->Flags, QEMU_G2H(c->FileList), QEMU_G2H(c->LReserved), c->Reserved);
 }
 
@@ -663,7 +663,7 @@ WINBASEAPI HRESULT WINAPI GetVersionFromFileA(LPCSTR Filename, LPDWORD MajorVer,
 void qemu_GetVersionFromFileA(struct qemu_syscall *call)
 {
     struct qemu_GetVersionFromFileA *c = (struct qemu_GetVersionFromFileA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetVersionFromFileA(QEMU_G2H(c->Filename), QEMU_G2H(c->MajorVer), QEMU_G2H(c->MinorVer), c->Version);
 }
 

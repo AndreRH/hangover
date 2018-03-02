@@ -64,7 +64,7 @@ WINBASEAPI HRESULT WINAPI CloseINFEngine(HINF hInf)
 void qemu_CloseINFEngine(struct qemu_syscall *call)
 {
     struct qemu_CloseINFEngine *c = (struct qemu_CloseINFEngine *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CloseINFEngine(QEMU_G2H(c->hInf));
 }
 
@@ -96,7 +96,7 @@ WINBASEAPI BOOL WINAPI IsNTAdmin(DWORD reserved, LPDWORD pReserved)
 void qemu_IsNTAdmin(struct qemu_syscall *call)
 {
     struct qemu_IsNTAdmin *c = (struct qemu_IsNTAdmin *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsNTAdmin(c->reserved, QEMU_G2H(c->pReserved));
 }
 
@@ -192,7 +192,7 @@ WINBASEAPI HRESULT WINAPI OpenINFEngineA(LPCSTR pszInfFilename, LPCSTR pszInstal
 void qemu_OpenINFEngineA(struct qemu_syscall *call)
 {
     struct qemu_OpenINFEngineA *c = (struct qemu_OpenINFEngineA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = OpenINFEngineA(QEMU_G2H(c->pszInfFilename), QEMU_G2H(c->pszInstallSection), c->dwFlags, QEMU_G2H(c->phInf), QEMU_G2H(c->pvReserved));
 }
 
@@ -370,7 +370,7 @@ WINBASEAPI HRESULT WINAPI SetPerUserSecValuesA(PERUSERSECTIONA* pPerUser)
 void qemu_SetPerUserSecValuesA(struct qemu_syscall *call)
 {
     struct qemu_SetPerUserSecValuesA *c = (struct qemu_SetPerUserSecValuesA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SetPerUserSecValuesA(QEMU_G2H(c->pPerUser));
 }
 
@@ -444,7 +444,7 @@ WINBASEAPI HRESULT WINAPI TranslateInfStringA(LPCSTR pszInfFilename, LPCSTR pszI
 void qemu_TranslateInfStringA(struct qemu_syscall *call)
 {
     struct qemu_TranslateInfStringA *c = (struct qemu_TranslateInfStringA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = TranslateInfStringA(QEMU_G2H(c->pszInfFilename), QEMU_G2H(c->pszInstallSection), QEMU_G2H(c->pszTranslateSection), QEMU_G2H(c->pszTranslateKey), QEMU_G2H(c->pszBuffer), c->dwBufferSize, QEMU_G2H(c->pdwRequiredSize), QEMU_G2H(c->pvReserved));
 }
 
@@ -532,7 +532,7 @@ WINBASEAPI HRESULT WINAPI TranslateInfStringExA(HINF hInf, LPCSTR pszInfFilename
 void qemu_TranslateInfStringExA(struct qemu_syscall *call)
 {
     struct qemu_TranslateInfStringExA *c = (struct qemu_TranslateInfStringExA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = TranslateInfStringExA(QEMU_G2H(c->hInf), QEMU_G2H(c->pszInfFilename), QEMU_G2H(c->pszTranslateSection), QEMU_G2H(c->pszTranslateKey), QEMU_G2H(c->pszBuffer), c->dwBufferSize, QEMU_G2H(c->pdwRequiredSize), QEMU_G2H(c->pvReserved));
 }
 
