@@ -3512,7 +3512,7 @@ struct surface_guest_init_complex_host
     UINT version;
 };
 
-static HRESULT enum_Callback(IDirectDrawSurface7 *surface, DDSURFACEDESC2 *desc, void *context)
+static HRESULT CALLBACK enum_Callback(IDirectDrawSurface7 *surface, DDSURFACEDESC2 *desc, void *context)
 {
     struct qemu_surface *object;
     struct surface_guest_init_complex call;
