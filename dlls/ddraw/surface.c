@@ -715,6 +715,7 @@ void qemu_ddraw_surface1_Release(struct qemu_syscall *call)
 {
     struct qemu_ddraw_surface1_Release *c = (struct qemu_ddraw_surface1_Release *)call;
     struct qemu_surface *surface;
+    ULONG ref;
 
     WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
@@ -727,19 +728,20 @@ void qemu_ddraw_surface1_Release(struct qemu_syscall *call)
     if (surface->host_texture2)
         IDirect3DTexture2_Release(surface->host_texture2);
 
-    c->super.iret = IDirectDrawSurface_Release(surface->host_surface1);
-    c->super.iret += IDirectDrawSurface2_Release(surface->host_surface2);
-    c->super.iret += IDirectDrawSurface3_Release(surface->host_surface3);
-    c->super.iret += IDirectDrawSurface4_Release(surface->host_surface4);
-    c->super.iret += IDirectDrawSurface7_Release(surface->host_surface7);
+    ref = IDirectDrawSurface_Release(surface->host_surface1);
+    ref += IDirectDrawSurface2_Release(surface->host_surface2);
+    ref += IDirectDrawSurface3_Release(surface->host_surface3);
+    ref += IDirectDrawSurface4_Release(surface->host_surface4);
+    ref += IDirectDrawSurface7_Release(surface->host_surface7);
 
     if (surface->host_gamma)
         c->super.iret += IDirectDrawGammaControl_Release(surface->host_gamma);
 
-    if (c->super.iret)
-        WINE_ERR("Unexpected host interface refcount sum %lu\n", c->super.iret);
+    if (ref)
+        WINE_ERR("Unexpected host interface refcount sum %u\n", ref);
 
     /* surface is released by the private data callback. */
+    c->super.iret = ref;
 }
 
 #endif
@@ -3953,8 +3955,8 @@ static HRESULT common_EnumAttachedSurfaces_host_cb(struct qemu_surface *surface,
     call.desc = QEMU_H2G(&desc32);
 #endif
 
-    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx, 0x%lx).\n",
-            call.func, call.surface, call.desc, call.context);
+    WINE_TRACE("Calling guest callback %p(%p, %p, %p).\n",
+            (void *)call.func, (void *)call.surface, (void *)call.desc, (void *)call.context);
     ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned 0x%x.\n", ret);
 

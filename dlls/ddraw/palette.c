@@ -144,6 +144,7 @@ void qemu_ddraw_palette_Release(struct qemu_syscall *call)
     struct qemu_palette *palette;
     struct qemu_ddraw *ddraw;
     DWORD caps;
+    ULONG ref;
 
     WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
@@ -162,10 +163,11 @@ void qemu_ddraw_palette_Release(struct qemu_syscall *call)
     c->super.iret = IDirectDrawPalette_Release(palette->host);
 
     /* This is expected if the application stole the primary surface's reference. */
-    if (c->super.iret && !c->primary)
-        WINE_ERR("Unexpected palette refcount %lu.\n", c->super.iret);
+    if (ref && !c->primary)
+        WINE_ERR("Unexpected palette refcount %u.\n", ref);
 
     HeapFree(GetProcessHeap(), 0, palette);
+    c->super.iret = ref;
 }
 
 #endif

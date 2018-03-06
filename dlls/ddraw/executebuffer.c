@@ -106,16 +106,17 @@ void qemu_d3d_execute_buffer_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d_execute_buffer_Release *c = (struct qemu_d3d_execute_buffer_Release *)call;
     struct qemu_execute_buffer *buffer;
+    ULONG ref;
 
     WINE_TRACE("Unverified!\n");
     buffer = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DExecuteBuffer_Release(buffer->host);
-
-    if (c->super.iret)
-        WINE_ERR("Unexpected host executebuffer refcount %lu.\n", c->super.iret);
+    ref = IDirect3DExecuteBuffer_Release(buffer->host);
+    if (ref)
+        WINE_ERR("Unexpected host executebuffer refcount %u.\n", ref);
 
     HeapFree(GetProcessHeap(), 0, buffer);
+    c->super.iret = ref;
 }
 
 #endif

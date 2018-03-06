@@ -92,16 +92,17 @@ void qemu_d3d_light_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d_light_Release *c = (struct qemu_d3d_light_Release *)call;
     struct qemu_light *light;
+    ULONG ref;
 
     WINE_TRACE("\n");
     light = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DLight_Release(light->host);
-
-    if (c->super.iret)
-        WINE_ERR("Unexpected light refcount %lu.\n", c->super.iret);
+    ref = IDirect3DLight_Release(light->host);
+    if (ref)
+        WINE_ERR("Unexpected light refcount %u.\n", ref);
 
     HeapFree(GetProcessHeap(), 0, light);
+    c->super.iret = ref;
 }
 
 #endif

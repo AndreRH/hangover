@@ -445,6 +445,7 @@ void qemu_ddraw1_Release(struct qemu_syscall *call)
 {
     struct qemu_ddraw1_Release *c = (struct qemu_ddraw1_Release *)call;
     struct qemu_ddraw *ddraw;
+    ULONG ref;
 
     WINE_TRACE("\n");
     ddraw = QEMU_G2H(c->iface);
@@ -455,13 +456,14 @@ void qemu_ddraw1_Release(struct qemu_syscall *call)
     IDirect3D2_Release(ddraw->host_d3d2);
     IDirect3D_Release(ddraw->host_d3d1);
 
-    c->super.iret = IDirectDraw_Release(ddraw->host_ddraw1);
-    c->super.iret += IDirectDraw2_Release(ddraw->host_ddraw2);
-    c->super.iret += IDirectDraw4_Release(ddraw->host_ddraw4);
-    c->super.iret += IDirectDraw7_Release(ddraw->host_ddraw7);
+    ref = IDirectDraw_Release(ddraw->host_ddraw1);
+    ref += IDirectDraw2_Release(ddraw->host_ddraw2);
+    ref += IDirectDraw4_Release(ddraw->host_ddraw4);
+    ref += IDirectDraw7_Release(ddraw->host_ddraw7);
 
-    if (c->super.iret)
-        WINE_ERR("Unexpected host interface refcount sum %lu\n", c->super.iret);
+    if (ref)
+        WINE_ERR("Unexpected host interface refcount sum %u\n", ref);
+    c->super.iret = ref;
 }
 
 #endif
@@ -2888,7 +2890,7 @@ static HRESULT WINAPI ddraw7_EnumDisplayModes_host_cb(DDSURFACEDESC2 *desc, void
     call.desc = QEMU_H2G(&desc32);
 #endif
 
-    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx).\n", call.func, call.context, call.desc);
+    WINE_TRACE("Calling guest callback %p(%p, %p).\n", (void *)call.func, (void *)call.context, (void *)call.desc);
     hr = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest function returned 0x%x.\n", hr);
 
@@ -2992,7 +2994,7 @@ static HRESULT WINAPI ddraw2_EnumDisplayModes_host_cb(DDSURFACEDESC *desc, void 
     call.desc = QEMU_H2G(&desc32);
 #endif
 
-    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx).\n", call.func, call.context, call.desc);
+    WINE_TRACE("Calling guest callback %p(%p, %p).\n", (void *)call.func, (void *)call.context, (void *)call.desc);
     hr = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest function returned 0x%x.\n", hr);
 
@@ -4061,7 +4063,7 @@ void qemu_ddraw_EnumSurfaces(struct qemu_syscall *call)
     else if (desc32->dwSize == sizeof(DDSURFACEDESC))
         DDSURFACEDESC_g2h((DDSURFACEDESC *)surface_desc, (struct qemu_DDSURFACEDESC *)desc32);
     else
-        memset(surface_desc, 0, sizeof(surface_desc));
+        memset(surface_desc, 0, sizeof(*surface_desc));
 #endif
 
     switch (c->super.id)
@@ -4621,8 +4623,9 @@ static HRESULT WINAPI qemu_d3d7_EnumDevices_host_cb(char *desc_str, char *name, 
     if (call.desc > ~0U)
         WINE_ERR("D3DDEVICEDESC7 is %p, unreachable.\n", desc);
 
-    WINE_TRACE("Calling guest callback 0x%lx(0x%lx(\"%s\"), 0x%lx(\"%s\"), 0x%lx, 0x%lx).\n",
-            call.func, call.desc_str, desc_str, call.name, name, call.desc, call.context);
+    WINE_TRACE("Calling guest callback %p(%p(\"%s\"), %p\"%s\"), %p, %p).\n",
+            (void *)call.func, (void *)call.desc_str, desc_str, (void *)call.name, name,
+            (void *)call.desc, (void *)call.context);
     ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest wrapper returned 0x%x.\n", ret);
 
@@ -4812,9 +4815,9 @@ static HRESULT WINAPI qemu_d3d_EnumDevices_host_cb(GUID *guid, char *desc_str, c
         WINE_ERR("hel_desc is %p, unreachable.\n", hel_desc);
 #endif
 
-    WINE_TRACE("Calling guest callback 0x%lx(0x%lx(%s), 0x%lx(\"%s\"), 0x%lx(\"%s\"), 0x%lx, 0x%lx, 0x%lx).\n",
-            call.func, call.guid, wine_dbgstr_guid(guid), call.desc_str, desc_str, call.name, name,
-            call.hal_desc, call.hel_desc, call.context);
+    WINE_TRACE("Calling guest callback %p(%px(%s), %p(\"%s\"), %p(\"%s\"), %p, %p, %p).\n",
+            (void *)call.func, (void *)call.guid, wine_dbgstr_guid(guid), (void *)call.desc_str, desc_str,
+            (void *)call.name, name, (void *)call.hal_desc, (void *)call.hel_desc, (void *)call.context);
     ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest wrapper returned 0x%x.\n", ret);
 
@@ -5739,7 +5742,7 @@ static HRESULT CALLBACK qemu_d3d_EnumZBufferFormats_host_cb(DDPIXELFORMAT *forma
     call.fmt = QEMU_H2G(format);
     call.context = ctx->context;
 
-    WINE_TRACE("Calling guest wrapper 0x%lx(0x%lx, 0x%lx).\n", call.func, call.fmt, call.context);
+    WINE_TRACE("Calling guest wrapper %p(%p, %p).\n", (void *)call.func, (void *)call.fmt, (void *)call.context);
     ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest wrapper returned 0x%x.\n", ret);
 

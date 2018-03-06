@@ -105,15 +105,17 @@ void qemu_ddraw_clipper_Release(struct qemu_syscall *call)
 {
     struct qemu_ddraw_clipper_Release *c = (struct qemu_ddraw_clipper_Release *)call;
     struct qemu_clipper *clipper;
+    ULONG ref;
 
     WINE_TRACE("\n");
     clipper = QEMU_G2H(c->iface);
-    c->super.iret = IDirectDrawClipper_Release(clipper->host);
+    ref = IDirectDrawClipper_Release(clipper->host);
 
     /* The wrapper object is also addref'ed when assigned to a surface, so when we end up here
      * the host ddraw shouldn't have any internal references either. */
-    if (c->super.iret)
-        WINE_ERR("Unexpected host refcount %lu.\n", c->super.iret);
+    if (ref)
+        WINE_ERR("Unexpected host refcount %u.\n", ref);
+    c->super.iret = ref;
 }
 
 #endif

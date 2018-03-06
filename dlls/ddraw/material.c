@@ -191,6 +191,7 @@ void qemu_d3d_material1_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d_material_Release *c = (struct qemu_d3d_material_Release *)call;
     struct qemu_material *material;
+    ULONG ref;
 
     WINE_TRACE("\n");
     material = QEMU_G2H(c->iface);
@@ -199,10 +200,11 @@ void qemu_d3d_material1_Release(struct qemu_syscall *call)
     IDirect3DMaterial2_Release(material->host2);
     c->super.iret = IDirect3DMaterial_Release(material->host1);
 
-    if (c->super.iret)
-        WINE_ERR("Unexpected material refcount %lu.\n", c->super.iret);
+    if (ref)
+        WINE_ERR("Unexpected material refcount %u.\n", ref);
 
     HeapFree(GetProcessHeap(), 0, material);
+    c->super.iret = ref;
 }
 
 #endif

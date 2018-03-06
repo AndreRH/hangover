@@ -373,8 +373,9 @@ static BOOL WINAPI qemu_DirectDrawEnumerate_host_cb(GUID *guid, char *desc, char
         WINE_ERR("GUID is %p, unreachable.\n", guid);
 #endif
 
-    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx, 0x%lx, 0x%lx).\n",
-            call.func, call.guid, call.desc, call.name, call.context);
+    WINE_TRACE("Calling guest callback %p(%p, %p, %p, %p).\n",
+            (void *)call.func, (void *)call.guid, (void *)call.desc,
+            (void *)call.name, (void *)call.context);
     ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned %u\n", ret);
 
@@ -512,8 +513,9 @@ static BOOL WINAPI qemu_DirectDrawEnumerateEx_host_cb(GUID *guid, char *desc, ch
         WINE_ERR("GUID is %p, unreachable.\n", guid);
 #endif
 
-    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx, 0x%lx, 0x%lx, 0x%lx).\n",
-            call.func, call.guid, call.desc, call.name, call.context, call.monitor);
+    WINE_TRACE("Calling guest callback %p(%p, %p, %p, %p, %p).\n",
+            (void *)call.func, (void *)call.guid, (void *)call.desc, (void *)call.name,
+            (void *)call.context, (void *)call.monitor);
     ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned %u\n", ret);
 

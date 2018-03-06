@@ -107,15 +107,17 @@ void qemu_d3d_viewport_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d_viewport_Release *c = (struct qemu_d3d_viewport_Release *)call;
     struct qemu_viewport *viewport;
+    ULONG ref;
 
     WINE_TRACE("\n");
     viewport = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DViewport3_Release(viewport->host);
-    if (c->super.iret)
-        WINE_ERR("Unexpected host viewport refcount %lu.\n", c->super.iret);
+    ref = IDirect3DViewport3_Release(viewport->host);
+    if (ref)
+        WINE_ERR("Unexpected host viewport refcount %u.\n", ref);
 
     HeapFree(GetProcessHeap(), 0, viewport);
+    c->super.iret = ref;
 }
 
 #endif

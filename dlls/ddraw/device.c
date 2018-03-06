@@ -312,28 +312,30 @@ void qemu_d3d_device_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d_device_Release *c = (struct qemu_d3d_device_Release *)call;
     struct qemu_device *device;
+    ULONG ref = 0;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = 0;
     /* The interfaces share one refcount. Whatever is deleted last (7 or 1) counts. */
     if (device->host7)
-        c->super.iret = IDirect3DDevice7_Release(device->host7);
+        ref = IDirect3DDevice7_Release(device->host7);
     if (device->host3)
-        c->super.iret = IDirect3DDevice3_Release(device->host3);
+        ref = IDirect3DDevice3_Release(device->host3);
     if (device->host2)
-        c->super.iret = IDirect3DDevice2_Release(device->host2);
+        ref = IDirect3DDevice2_Release(device->host2);
     if (device->host1)
-        c->super.iret = IDirect3DDevice_Release(device->host1);
+        ref = IDirect3DDevice_Release(device->host1);
 
     /* A pure device 1 device is part of a surface. If we are a surface, so is the host device, and
      * a non-zero refcount is expected because the host surface hasn't been released yet. The host
      * device will be destroyed together with the host (and guest) surface. */
     if (c->super.iret && !device->outer_unknown)
-        WINE_ERR("Unexpected combined host device %p refcount %lu.\n", device->host1, c->super.iret);
+        WINE_ERR("Unexpected combined host device %p refcount %u.\n", device->host1, ref);
 
     HeapFree(GetProcessHeap(), 0, device);
+
+    c->super.iret = ref;
 }
 
 #endif
@@ -1458,7 +1460,7 @@ struct qemu_d3d_device_EnumTextureFormats_host_data
     uint64_t wrapper;
 };
 
-static HRESULT qemu_d3d_device3_EnumTextureFormats_host_cb(DDPIXELFORMAT *fmt, void *context)
+static HRESULT CALLBACK qemu_d3d_device3_EnumTextureFormats_host_cb(DDPIXELFORMAT *fmt, void *context)
 {
     struct qemu_d3d_device_EnumTextureFormats_host_data *ctx = context;
     struct qemu_d3d_device_EnumTextureFormats_cb call;
@@ -1468,14 +1470,15 @@ static HRESULT qemu_d3d_device3_EnumTextureFormats_host_cb(DDPIXELFORMAT *fmt, v
     call.format = QEMU_H2G(fmt);
     call.context = ctx->guest_ctx;
 
-    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx).\n", call.func, call.format, call.context);
+    WINE_TRACE("Calling guest callback %p(%p, %p).\n", (void *)call.func, (void *)call.format,
+            (void *)call.context);
     hr = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned 0x%x.\n", hr);
 
     return hr;
 }
 
-static HRESULT qemu_d3d_device1_EnumTextureFormats_host_cb(DDSURFACEDESC *desc, void *context)
+static HRESULT CALLBACK qemu_d3d_device1_EnumTextureFormats_host_cb(DDSURFACEDESC *desc, void *context)
 {
     struct qemu_d3d_device_EnumTextureFormats_host_data *ctx = context;
     struct qemu_d3d_device_EnumTextureFormats_cb call;
@@ -1493,7 +1496,7 @@ static HRESULT qemu_d3d_device1_EnumTextureFormats_host_cb(DDSURFACEDESC *desc, 
     call.format = QEMU_H2G(&conv);
 #endif
 
-    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx).\n", call.func, call.format, call.context);
+    WINE_TRACE("Calling guest callback %p(%p, %p).\n", (void *)call.func, (void *)call.format, (void *)call.context);
     hr = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned 0x%x.\n", hr);
 

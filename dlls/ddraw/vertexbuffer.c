@@ -119,15 +119,17 @@ void qemu_d3d_vertex_buffer7_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d_vertex_buffer7_Release *c = (struct qemu_d3d_vertex_buffer7_Release *)call;
     struct qemu_vertex_buffer *buffer;
+    ULONG ref;
 
     WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirect3DVertexBuffer7_Release(buffer->host);
-    if (c->super.iret)
-        WINE_ERR("Unexpected host vertex buffer ref %lu.\n", c->super.iret);
+    ref = IDirect3DVertexBuffer7_Release(buffer->host);
+    if (ref)
+        WINE_ERR("Unexpected host vertex buffer ref %u.\n", ref);
 
     HeapFree(GetProcessHeap(), 0, buffer);
+    c->super.iret = ref;
 }
 
 #endif
