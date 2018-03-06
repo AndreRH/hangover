@@ -534,7 +534,7 @@ void qemu_UnhookWindowsHook(struct qemu_syscall *call)
         if (installed_hooks[id - WH_MIN][hook_no] && installed_hooks[id - WH_MIN][hook_no]->client_cb == c->proc)
         {
             if (found != WH_MIN - 1)
-                WINE_ERR("Hook 0x%lx found in %d and %d.\n", c->proc, found, id);
+                WINE_ERR("Hook %p found in %d and %d.\n", (void *)c->proc, found, id);
 
             c->super.iret = UnhookWindowsHook(id, installed_hooks[id - WH_MIN][hook_no]->real_proc);
             if (!c->super.iret)

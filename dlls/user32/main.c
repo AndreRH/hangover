@@ -1078,7 +1078,8 @@ static INT CALLBACK LVM_SORTITEMS_host_cb(LPARAM first, LPARAM second, LPARAM lP
     call.p2 = second;
     call.param = lParam;
 
-    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx, 0x%lx).\n", call.func, call.p1, call.p2, call.param);
+    WINE_TRACE("Calling guest callback %p(%p, %p, %p).\n", (void *)call.func, (void *)call.p1,
+            (void *)call.p2, (void *)call.param);
     ret = qemu_ops->qemu_execute(QEMU_G2H(LVM_SORTITEMS_guest_cb), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned %d.\n", ret);
 

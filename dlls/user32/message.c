@@ -405,7 +405,7 @@ static void CALLBACK SendMessageCallback_host_cb(HWND hwnd, UINT msg, ULONG_PTR 
     struct qemu_SendMessageCallback_cb call;
     MSG msg_in;
 
-    WINE_TRACE("callback, guest cb 0x%lx\n", data->guest_cb);
+    WINE_TRACE("callback, guest cb %p\n", (void *)data->guest_cb);
     call.func = data->guest_cb;
     call.hwnd = QEMU_H2G(hwnd);
     call.msg = msg;
@@ -419,7 +419,8 @@ static void CALLBACK SendMessageCallback_host_cb(HWND hwnd, UINT msg, ULONG_PTR 
 
     if (call.func)
     {
-        WINE_TRACE("Calling guest callback 0x%lx(%p, 0x%x 0x%lx, %ld.\n", call.func, hwnd, msg, arg, result);
+        WINE_TRACE("Calling guest callback %p(%p, 0x%x 0x%lx, %ld.\n", (void *)call.func, hwnd,
+                msg, arg, result);
         qemu_ops->qemu_execute(QEMU_G2H(wrapper), QEMU_H2G(&call));
         WINE_TRACE("Callback returned.\n");
     }
@@ -434,9 +435,10 @@ void qemu_SendMessageCallback(struct qemu_syscall *call)
     WPARAM conv_wparam;
     LPARAM conv_lparam;
     BOOL ascii = c->super.id == QEMU_SYSCALL_ID(CALL_SENDMESSAGECALLBACKA), free = FALSE;
-    WINE_TRACE("%s(0x%lx, 0x%lx, 0x%lx, 0x%lx, 0x%lx, %lx)\n",
+    WINE_TRACE("%s(%p, 0x%x, 0x%lx, 0x%lx, %p, %p)\n",
             ascii ? "SendMessageCallbackA" : "SendMessageCallbackW",
-            c->hwnd, c->msg, c->wparam, c->lparam, c->callback, c->data);
+            (HWND)c->hwnd, (unsigned int)c->msg, (WPARAM)c->wparam, (LPARAM)c->lparam,
+            (void *)c->callback, (void *)c->data);
 
     data = HeapAlloc(GetProcessHeap(), 0, sizeof(*data));
     data->wrapper = c->wrapper;
