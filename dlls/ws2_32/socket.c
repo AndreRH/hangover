@@ -1394,7 +1394,7 @@ void qemu_WSAIoctl(struct qemu_syscall *call)
     switch (c->code)
     {
         default:
-            WINE_FIXME("Unknown Ioctl code 0x%lx.\n", c->code);
+            WINE_FIXME("Unknown Ioctl code 0x%x.\n", (unsigned int)c->code);
             /* Drop through */
         case 0x667e: /* Netscape tries hard to use bogus ioctl 0x667e */
         case WS_FIONBIO:
@@ -3532,6 +3532,9 @@ static uint64_t call_op(uint64_t op, SOCKET s, WSABUF *buffers, DWORD buffer_cou
             return WSASend(s, buffers, buffer_count, bytes_transfered, dwFlags, ov, completion);
         case QEMU_SYSCALL_ID(CALL_WSASENDTO):
             return WSASendTo(s, buffers, buffer_count, bytes_transfered, dwFlags, addr, addr_len, ov, completion);
+        default:
+            WINE_ERR("Unexpected op\n");
+            return 0;
     }
 }
 
@@ -3566,7 +3569,7 @@ void qemu_WSABufOp(struct qemu_syscall *call)
             flags = c->dwFlags;
             break;
         default:
-            WINE_ERR("Unexpected op 0x%lx\n", c->super.id);
+            WINE_ERR("Unexpected op.\n");
     }
 
     buf_count = c->dwBufferCount;
@@ -3797,7 +3800,7 @@ static int CALLBACK WSAAccept_host_proc(WSABUF *callerId, WSABUF *callerData, QO
     call.data = data->data;
     call.func = data->func;
 
-    WINE_TRACE("Calling guest callback 0x%lx.\n", call.func);
+    WINE_TRACE("Calling guest callback %p.\n", (void *)call.func);
     ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned %d.\n", ret);
 
@@ -4017,7 +4020,7 @@ void qemu_WS_inet_ntop(struct qemu_syscall *call)
 
 #if GUEST_BIT != HOST_BIT
     if (c->family != WS_AF_INET && c->family != WS_AF_INET6 && c->family != WS_AF_UNSPEC)
-        WINE_FIXME("Untested family %lx.\n", c->family);
+        WINE_FIXME("Untested family %x.\n", (unsigned int)c->family);
 #endif
 
     c->super.iret = QEMU_H2G(p_inet_ntop(c->family, QEMU_G2H(c->addr), QEMU_G2H(c->buffer), c->len));
@@ -4057,7 +4060,7 @@ void qemu_WS_inet_pton(struct qemu_syscall *call)
 
 #if GUEST_BIT != HOST_BIT
     if (c->family != WS_AF_INET && c->family != WS_AF_INET6 && c->family != WS_AF_UNSPEC)
-        WINE_FIXME("Untested family %lx.\n", c->family);
+        WINE_FIXME("Untested family %x.\n", (unsigned int)c->family);
 #endif
 
     c->super.iret = p_inet_pton(c->family, QEMU_G2H(c->addr), QEMU_G2H(c->buffer));
@@ -4097,7 +4100,7 @@ void qemu_InetPtonW(struct qemu_syscall *call)
 
 #if GUEST_BIT != HOST_BIT
     if (c->family != WS_AF_INET && c->family != WS_AF_INET6 && c->family != WS_AF_UNSPEC)
-        WINE_FIXME("Untested family %lx.\n", c->family);
+        WINE_FIXME("Untested family %x.\n", (unsigned int)c->family);
 #endif
 
     c->super.iret = InetPtonW(c->family, QEMU_G2H(c->addr), QEMU_G2H(c->buffer));
@@ -4139,7 +4142,7 @@ void qemu_InetNtopW(struct qemu_syscall *call)
 
 #if GUEST_BIT != HOST_BIT
     if (c->family != WS_AF_INET && c->family != WS_AF_INET6 && c->family != WS_AF_UNSPEC)
-        WINE_FIXME("Untested family %lx.\n", c->family);
+        WINE_FIXME("Untested family %x.\n", (unsigned int)c->family);
 #endif
 
     c->super.iret = (ULONG_PTR)InetNtopW(c->family, QEMU_G2H(c->addr), QEMU_G2H(c->buffer), c->len);
