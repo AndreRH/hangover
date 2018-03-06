@@ -1,7 +1,7 @@
 #ifndef HAVE_QEMU_THUNK_WINSPOOL_H
 #define HAVE_QEMU_THUNK_WINSPOOL_H
 
-struct PRINTER_INFO_2
+struct qemu_PRINTER_INFO_2
 {
   qemu_ptr  pServerName;
   qemu_ptr  pPrinterName;
@@ -26,7 +26,7 @@ struct PRINTER_INFO_2
   DWORD     AveragePPM;
 };
 
-static inline void PRINTER_INFO_2_h2g(struct PRINTER_INFO_2 *guest, const PRINTER_INFO_2W *host)
+static inline void PRINTER_INFO_2_h2g(struct qemu_PRINTER_INFO_2 *guest, const PRINTER_INFO_2W *host)
 {
     guest->pServerName = (ULONG_PTR)host->pServerName;
     guest->pPrinterName = (ULONG_PTR)host->pPrinterName;
@@ -72,7 +72,7 @@ static inline void MONITOR_INFO_2_g2h(MONITOR_INFO_2W *host, const struct MONITO
     host->pDLLName = (WCHAR *)(ULONG_PTR)guest->pDLLName;
 }
 
-struct PORT_INFO_2
+struct qemu_PORT_INFO_2
 {
     qemu_ptr    pPortName;
     qemu_ptr    pMonitorName;
@@ -81,7 +81,7 @@ struct PORT_INFO_2
     DWORD       Reserved;
 };
 
-static inline void PORT_INFO_2_h2g(struct PORT_INFO_2 *guest, const PORT_INFO_2W *host)
+static inline void PORT_INFO_2_h2g(struct qemu_PORT_INFO_2 *guest, const PORT_INFO_2W *host)
 {
     guest->pPortName = (ULONG_PTR)host->pPortName;
     guest->pMonitorName = (ULONG_PTR)host->pMonitorName;
@@ -90,13 +90,34 @@ static inline void PORT_INFO_2_h2g(struct PORT_INFO_2 *guest, const PORT_INFO_2W
     guest->Reserved = host->Reserved;
 }
 
-static inline void PORT_INFO_2_g2h(PORT_INFO_2W *host, const struct PORT_INFO_2 *guest)
+static inline void PORT_INFO_2_g2h(PORT_INFO_2W *host, const struct qemu_PORT_INFO_2 *guest)
 {
     host->pPortName = (WCHAR *)(ULONG_PTR)guest->pPortName;
     host->pMonitorName = (WCHAR *)(ULONG_PTR)guest->pMonitorName;
     host->pDescription = (WCHAR *)(ULONG_PTR)guest->pDescription;
     host->fPortType = guest->fPortType;
     host->Reserved = guest->Reserved;
+}
+
+struct qemu_PRINTER_DEFAULTS
+{
+    qemu_ptr    pDatatype;
+    qemu_ptr    pDevMode;
+    ACCESS_MASK DesiredAccess;
+};
+
+static inline void PRINTER_DEFAULTS_h2g(struct qemu_PRINTER_DEFAULTS *guest, const PRINTER_DEFAULTSW *host)
+{
+    guest->pDatatype = (ULONG_PTR)host->pDatatype;
+    guest->pDevMode = (ULONG_PTR)host->pDevMode;
+    guest->DesiredAccess = host->DesiredAccess;
+}
+
+static inline void PRINTER_DEFAULTS_g2h(PRINTER_DEFAULTSW *host, const struct qemu_PRINTER_DEFAULTS *guest)
+{
+    host->pDatatype = (WCHAR *)(ULONG_PTR)guest->pDatatype;
+    host->pDevMode = (DEVMODEW *)(ULONG_PTR)guest->pDevMode;
+    host->DesiredAccess = guest->DesiredAccess;
 }
 
 #endif

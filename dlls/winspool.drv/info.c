@@ -255,7 +255,7 @@ void qemu_IsValidDevmodeW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_OpenPrinterA
+struct qemu_OpenPrinter
 {
     struct qemu_syscall super;
     uint64_t lpPrinterName;
@@ -267,58 +267,63 @@ struct qemu_OpenPrinterA
 
 WINBASEAPI BOOL WINAPI OpenPrinterA(LPSTR lpPrinterName,HANDLE *phPrinter, LPPRINTER_DEFAULTSA pDefault)
 {
-    struct qemu_OpenPrinterA call;
+    struct qemu_OpenPrinter call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENPRINTERA);
     call.lpPrinterName = (ULONG_PTR)lpPrinterName;
     call.phPrinter = (ULONG_PTR)phPrinter;
     call.pDefault = (ULONG_PTR)pDefault;
 
     qemu_syscall(&call.super);
+    if (call.super.iret)
+        *phPrinter = (HANDLE)(ULONG_PTR)call.phPrinter;
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_OpenPrinterA(struct qemu_syscall *call)
-{
-    struct qemu_OpenPrinterA *c = (struct qemu_OpenPrinterA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = OpenPrinterA(QEMU_G2H(c->lpPrinterName), QEMU_G2H(c->phPrinter), QEMU_G2H(c->pDefault));
-}
-
-#endif
-
-struct qemu_OpenPrinterW
-{
-    struct qemu_syscall super;
-    uint64_t lpPrinterName;
-    uint64_t phPrinter;
-    uint64_t pDefault;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI BOOL WINAPI OpenPrinterW(LPWSTR lpPrinterName,HANDLE *phPrinter, LPPRINTER_DEFAULTSW pDefault)
 {
-    struct qemu_OpenPrinterW call;
+    struct qemu_OpenPrinter call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENPRINTERW);
     call.lpPrinterName = (ULONG_PTR)lpPrinterName;
     call.phPrinter = (ULONG_PTR)phPrinter;
     call.pDefault = (ULONG_PTR)pDefault;
 
     qemu_syscall(&call.super);
+    if (call.super.iret)
+        *phPrinter = (HANDLE)(ULONG_PTR)call.phPrinter;
 
     return call.super.iret;
 }
 
 #else
 
-void qemu_OpenPrinterW(struct qemu_syscall *call)
+void qemu_OpenPrinter(struct qemu_syscall *call)
 {
-    struct qemu_OpenPrinterW *c = (struct qemu_OpenPrinterW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = OpenPrinterW(QEMU_G2H(c->lpPrinterName), QEMU_G2H(c->phPrinter), QEMU_G2H(c->pDefault));
+    struct qemu_OpenPrinter *c = (struct qemu_OpenPrinter *)call;
+    HANDLE printer;
+    PRINTER_DEFAULTSW stack, *def;
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+    def = QEMU_G2H(c->pDefault);
+#else
+    if (!c->pDefault)
+        def = NULL;
+    else
+        PRINTER_DEFAULTS_g2h(def, QEMU_G2H(c->pDefault));
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_OPENPRINTERA))
+    {
+        c->super.iret = OpenPrinterA(QEMU_G2H(c->lpPrinterName), c->phPrinter ? &printer : NULL,
+                (PRINTER_DEFAULTSA *)def);
+    }
+    else
+    {
+        c->super.iret = OpenPrinterW(QEMU_G2H(c->lpPrinterName), c->phPrinter ? &printer : NULL, def);
+    }
+
+    c->phPrinter = QEMU_H2G(printer);
 }
 
 #endif
