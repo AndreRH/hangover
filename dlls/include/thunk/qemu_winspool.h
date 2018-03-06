@@ -72,4 +72,31 @@ static inline void MONITOR_INFO_2_g2h(MONITOR_INFO_2W *host, const struct MONITO
     host->pDLLName = (WCHAR *)(ULONG_PTR)guest->pDLLName;
 }
 
+struct PORT_INFO_2
+{
+    qemu_ptr    pPortName;
+    qemu_ptr    pMonitorName;
+    qemu_ptr    pDescription;
+    DWORD       fPortType;
+    DWORD       Reserved;
+};
+
+static inline void PORT_INFO_2_h2g(struct PORT_INFO_2 *guest, const PORT_INFO_2W *host)
+{
+    guest->pPortName = (ULONG_PTR)host->pPortName;
+    guest->pMonitorName = (ULONG_PTR)host->pMonitorName;
+    guest->pDescription = (ULONG_PTR)host->pDescription;
+    guest->fPortType = host->fPortType;
+    guest->Reserved = host->Reserved;
+}
+
+static inline void PORT_INFO_2_g2h(PORT_INFO_2W *host, const struct PORT_INFO_2 *guest)
+{
+    host->pPortName = (WCHAR *)(ULONG_PTR)guest->pPortName;
+    host->pMonitorName = (WCHAR *)(ULONG_PTR)guest->pMonitorName;
+    host->pDescription = (WCHAR *)(ULONG_PTR)guest->pDescription;
+    host->fPortType = guest->fPortType;
+    host->Reserved = guest->Reserved;
+}
+
 #endif

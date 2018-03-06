@@ -3141,7 +3141,7 @@ void qemu_AddPortW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_AddPortExA
+struct qemu_AddPortEx
 {
     struct qemu_syscall super;
     uint64_t pName;
@@ -3154,7 +3154,7 @@ struct qemu_AddPortExA
 
 WINBASEAPI BOOL WINAPI AddPortExA(LPSTR pName, DWORD level, LPBYTE pBuffer, LPSTR pMonitorName)
 {
-    struct qemu_AddPortExA call;
+    struct qemu_AddPortEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDPORTEXA);
     call.pName = (ULONG_PTR)pName;
     call.level = level;
@@ -3166,31 +3166,9 @@ WINBASEAPI BOOL WINAPI AddPortExA(LPSTR pName, DWORD level, LPBYTE pBuffer, LPST
     return call.super.iret;
 }
 
-#else
-
-void qemu_AddPortExA(struct qemu_syscall *call)
-{
-    struct qemu_AddPortExA *c = (struct qemu_AddPortExA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AddPortExA(QEMU_G2H(c->pName), c->level, QEMU_G2H(c->pBuffer), QEMU_G2H(c->pMonitorName));
-}
-
-#endif
-
-struct qemu_AddPortExW
-{
-    struct qemu_syscall super;
-    uint64_t pName;
-    uint64_t level;
-    uint64_t pBuffer;
-    uint64_t pMonitorName;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI BOOL WINAPI AddPortExW(LPWSTR pName, DWORD level, LPBYTE pBuffer, LPWSTR pMonitorName)
 {
-    struct qemu_AddPortExW call;
+    struct qemu_AddPortEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDPORTEXW);
     call.pName = (ULONG_PTR)pName;
     call.level = level;
@@ -3204,11 +3182,25 @@ WINBASEAPI BOOL WINAPI AddPortExW(LPWSTR pName, DWORD level, LPBYTE pBuffer, LPW
 
 #else
 
-void qemu_AddPortExW(struct qemu_syscall *call)
+void qemu_AddPortEx(struct qemu_syscall *call)
 {
-    struct qemu_AddPortExW *c = (struct qemu_AddPortExW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AddPortExW(QEMU_G2H(c->pName), c->level, QEMU_G2H(c->pBuffer), QEMU_G2H(c->pMonitorName));
+    struct qemu_AddPortEx *c = (struct qemu_AddPortEx *)call;
+    PORT_INFO_2W stack, *port = &stack;
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+    port = QEMU_G2H(c->pBuffer);
+#else
+    if (!c->pBuffer)
+        port = NULL;
+    else
+        PORT_INFO_2_g2h(port, QEMU_G2H(c->pBuffer));
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_ADDPORTEXA))
+        c->super.iret = AddPortExA(QEMU_G2H(c->pName), c->level, (BYTE *)port, QEMU_G2H(c->pMonitorName));
+    else
+        c->super.iret = AddPortExW(QEMU_G2H(c->pName), c->level, (BYTE *)port, QEMU_G2H(c->pMonitorName));
 }
 
 #endif
