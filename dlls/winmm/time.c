@@ -134,8 +134,9 @@ static void CALLBACK qemu_timeSetEvent_host_proc(UINT id, UINT msg, DWORD_PTR us
     call.dw1 = dw1;
     call.dw2 = dw2;
 
-    WINE_TRACE("Calling guest function 0x%lx(%lu, %lu, 0x%lx, 0x%lx, 0x%lx).\n", call.func, call.id,
-            call.msg, call.user, call.dw1, call.dw2);
+    WINE_TRACE("Calling guest function %p(%u, %u, %p, %p, %p).\n", (void *)call.func,
+            (unsigned int)call.id, (unsigned int)call.msg, (void *)call.user,
+            (void *)call.dw1, (void *)call.dw2);
     qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest function returned.\n");
 }
@@ -217,7 +218,7 @@ void qemu_timeKillEvent(struct qemu_syscall *call)
             }
         }
         /* This happens when the timer is using an event instead of a callback. */
-        WINE_WARN("Did not find structure for deleted event %lu.\n", c->wID);
+        WINE_WARN("Did not find structure for deleted event %u.\n", (unsigned int)c->wID);
     }
     LeaveCriticalSection(&timeSetEvent_cs);
 }

@@ -301,7 +301,7 @@ static void CALLBACK qemu_wave_host_cb(HWAVEOUT wave, UINT msg,
             break;
 
         case CALLBACK_TASK: /* == CALLBACK_THREAD. */
-            WINE_TRACE("Posting a message to thread %lx.\n", wrapper->guest_cb);
+            WINE_TRACE("Posting a message to thread %p.\n", (void *)wrapper->guest_cb);
             PostThreadMessageA(wrapper->guest_cb, msg, (WPARAM)wave, param1);
             break;
 
@@ -313,7 +313,7 @@ static void CALLBACK qemu_wave_host_cb(HWAVEOUT wave, UINT msg,
             call.param1 = param1;
             call.param2 = param2;
 
-            WINE_TRACE("Calling guest callback 0x%lx.\n", call.func);
+            WINE_TRACE("Calling guest callback %p.\n", (void *)call.func);
             qemu_ops->qemu_execute(QEMU_G2H(wrapper->wrapper), QEMU_H2G(&call));
             WINE_TRACE("Guest callback returned.\n");
 
@@ -418,7 +418,7 @@ void qemu_waveOutClose(struct qemu_syscall *call)
     {
         if (wrapper->wave == wave)
         {
-            WINE_TRACE("Deleting wrapper struct of HWAVEOUT handle %p.\n", wrapper, wave);
+            WINE_TRACE("Deleting wrapper struct %p of HWAVEOUT handle %p.\n", wrapper, wave);
             list_remove(&wrapper->entry);
             HeapFree(GetProcessHeap(), 0, wrapper);
             goto done;
@@ -1150,7 +1150,7 @@ void qemu_waveInOpen(struct qemu_syscall *call)
      * is the case this would simplify wave in handling a bit. */
     WINE_TRACE("\n");
     if (c->dwCallback && ((c->dwFlags & CALLBACK_TYPEMASK) == CALLBACK_FUNCTION))
-        WINE_FIXME("Wrap function callback 0x%lx!\n", c->dwCallback);
+        WINE_FIXME("Wrap function callback %p!\n", (void *)c->dwCallback);
 
     c->super.iret = waveInOpen(c->lphWaveIn ? &h : NULL, c->uDeviceID,
             QEMU_G2H(c->lpFormat), c->dwCallback, c->dwInstance, c->dwFlags);

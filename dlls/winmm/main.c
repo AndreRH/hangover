@@ -281,8 +281,8 @@ LRESULT WINAPI ioproc_wrapper(LPSTR info, UINT msg, LPARAM param1, LPARAM param2
     call.param1 = param1;
     call.param2 = param2;
 
-    WINE_TRACE("Calling guest function 0x%lx(0x%lx, 0x%x, 0x%lx, 0x%lx).\n", call.func,
-               call.info, msg, param1, param2);
+    WINE_TRACE("Calling guest function %p(%p, 0x%x, 0x%lx, 0x%lx).\n", (void *)call.func,
+               (void *)call.info, msg, param1, param2);
     qemu_ops->qemu_execute(QEMU_G2H(ioproc_guest_wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned %ld\n", ret);
 
