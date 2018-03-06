@@ -98,7 +98,8 @@ void qemu_NtQueryObject(struct qemu_syscall *call)
                 *len_out = 0;
             if (c->len < sizeof(struct qemu_OBJECT_NAME_INFORMATION))
             {
-                WINE_WARN("Expect %lu, got %lu\n", c->len, sizeof(struct qemu_OBJECT_NAME_INFORMATION));
+                WINE_WARN("Expect %u, got %lu\n", (unsigned int)c->len,
+                        sizeof(struct qemu_OBJECT_NAME_INFORMATION));
                 c->super.iret = STATUS_INFO_LENGTH_MISMATCH;
                 return;
             }
@@ -125,7 +126,7 @@ void qemu_NtQueryObject(struct qemu_syscall *call)
             break;
 
         default:
-            WINE_FIXME("Unsupported info class 0x%lx\n", c->info_class);
+            WINE_FIXME("Unsupported info class 0x%x\n", (unsigned int)c->info_class);
             c->super.iret = NtQueryObject((HANDLE)c->handle, c->info_class, QEMU_G2H(c->ptr), c->len, len_out);
     }
 }
