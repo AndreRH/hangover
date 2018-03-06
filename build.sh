@@ -37,7 +37,8 @@ mkdir -p $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll32
 # TODO: Figure out dependencies between them better.
 declare -a dlls=("ntdll" "kernel32" "msvcrt" "advapi32" "comctl32" "comdlg32" "ddraw" "d3d9" "d3dx10_43" "d3dx9_43"
         "gdi32" "imm32" "msvcr80" "msvcr100" "opengl32" "shell32" "shlwapi" "user32" "version" "xinput1_3" "winmm"
-        "wsock32" "ws2_32" "iphlpapi" "secur32" "wininet" "advpack" "usp10" "riched20" "riched32" "dsound")
+        "wsock32" "ws2_32" "iphlpapi" "secur32" "wininet" "advpack" "usp10" "riched20" "riched32" "dsound"
+        "winspool.drv")
 
 mkdir -p $DESTDIR/build/dlls32
 mkdir -p $DESTDIR/build/dlls64
@@ -74,6 +75,10 @@ do
     ln -sf $PWD/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
     ln -sf $PWD/qemu_$dll.dll.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll32
 done
+ln -sf $DESTDIR/build/dlls64/winspool.drv/winspool.drv $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll64
+ln -sf $DESTDIR/build/dlls32/winspool.drv/winspool.drv $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
+ln -sf $DESTDIR/build/dlls64/winspool.drv/qemu_winspool.drv.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll64
+ln -sf $DESTDIR/build/dlls32/winspool.drv/qemu_winspool.drv.so $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll32
 
 # Link Wine libraries.
 declare -a wine_dlls=("dbghelp" "ole32" "oleaut32" "propsys" "rpcrt4" "urlmon" "windowscodecs" "netapi32" "dnsapi" "msimg32"
@@ -88,8 +93,6 @@ do
     ln -sf $DESTDIR/build/wine-guest/dlls/$dll/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll64
     ln -sf $DESTDIR/build/wine-guest32/dlls/$dll/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
 done
-ln -sf $DESTDIR/build/wine-guest/dlls/winspool.drv/winspool.drv $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll64
-ln -sf $DESTDIR/build/wine-guest32/dlls/winspool.drv/winspool.drv $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
 
 # Build the test progs. FIXME: automate this better.
 cd $DESTDIR/testprogs/advapi32
