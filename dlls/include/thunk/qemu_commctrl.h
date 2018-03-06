@@ -1004,7 +1004,7 @@ static inline void LVITEM_g2h(LVITEMW *host, const struct qemu_LVITEM *guest)
     host->iIndent = guest->iIndent;
     host->cColumns = guest->cColumns;
     host->puColumns = (UINT *)(ULONG_PTR)guest->puColumns;
-    host->piColFmt = (UINT *)(ULONG_PTR)guest->piColFmt;
+    host->piColFmt = (INT *)(ULONG_PTR)guest->piColFmt;
     host->iGroup = guest->iGroup;
 }
 

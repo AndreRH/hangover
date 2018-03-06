@@ -145,7 +145,8 @@ static UINT CALLBACK propsheet_host_cb(HWND hwnd, UINT msg, PROPSHEETPAGEW *page
         call.page = QEMU_H2G(&copy32);
 #endif
 
-        WINE_TRACE("Calling guest callback 0x%lx(%p, 0x%x, 0x%lx).\n", page_data->guest_cb, hwnd, msg, call.page);
+        WINE_TRACE("Calling guest callback %p(%p, 0x%x, %p).\n", (void *)page_data->guest_cb,
+                hwnd, msg, (void *)call.page);
         ret = qemu_ops->qemu_execute(QEMU_G2H(PropertySheetPage_guest_cb), QEMU_H2G(&call));
         WINE_TRACE("Guest callback returned %u.\n", ret);
     }

@@ -450,7 +450,7 @@ void qemu_CreateToolbarEx(struct qemu_syscall *call)
     if (buttons32)
     {
         if (c->uStructSize != sizeof(*buttons32))
-            WINE_FIXME("Handle custom struct size %lu.\n", c->uStructSize);
+            WINE_FIXME("Handle custom struct size %lu.\n", (unsigned long)c->uStructSize);
 
         buttons = HeapAlloc(GetProcessHeap(), 0, count * sizeof(*buttons));
         for (i = 0; i < count; i++)
