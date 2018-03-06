@@ -296,7 +296,7 @@ void qemu_GetObject(struct qemu_syscall *call)
             }
             if (c->count < convert.guest_size)
             {
-                WINE_WARN("Size %lu too small, want %lu\n", c->count, convert.guest_size);
+                WINE_WARN("Size %u too small, want %lu\n", (unsigned int)c->count, convert.guest_size);
                 c->super.iret = 0;
                 return;
             }
@@ -341,7 +341,7 @@ void qemu_GetObject(struct qemu_syscall *call)
 
     if (c->count < convert.guest_size)
     {
-        WINE_WARN("Size %lu too small, want %lu\n", c->count, convert.guest_size);
+        WINE_WARN("Size %u too small, want %lu\n", (unsigned int)c->count, convert.guest_size);
         c->super.iret = 0;
         return;
     }

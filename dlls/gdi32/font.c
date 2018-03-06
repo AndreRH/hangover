@@ -1286,7 +1286,7 @@ void qemu_GetOutlineTextMetricsA(struct qemu_syscall *call)
     else
     {
         size = c->cbData + sizeof(*metric) - sizeof(*metric32);
-        WINE_TRACE("size in %lu, size out %u\n", c->cbData, size);
+        WINE_TRACE("Size in %u, size out %u.\n", (unsigned int)c->cbData, size);
         metric = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size);
         metric->otmSize = size;
     }
@@ -1375,7 +1375,7 @@ void qemu_GetOutlineTextMetricsW(struct qemu_syscall *call)
     else
     {
         size = c->cbData + sizeof(*metric) - sizeof(*metric32);
-        WINE_TRACE("size in %lu, size out %u\n", c->cbData, size);
+        WINE_TRACE("size in %u, size out %u\n", (unsigned int)c->cbData, size);
         metric = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size);
         metric->otmSize = size;
     }
