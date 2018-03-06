@@ -548,7 +548,7 @@ WINBASEAPI BOOL WINAPI DeletePortA (LPSTR pName, HWND hWnd, LPSTR pPortName)
 void qemu_DeletePortA(struct qemu_syscall *call)
 {
     struct qemu_DeletePortA *c = (struct qemu_DeletePortA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DeletePortA(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pPortName));
 }
 
@@ -582,7 +582,7 @@ WINBASEAPI BOOL WINAPI DeletePortW (LPWSTR pName, HWND hWnd, LPWSTR pPortName)
 void qemu_DeletePortW(struct qemu_syscall *call)
 {
     struct qemu_DeletePortW *c = (struct qemu_DeletePortW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DeletePortW(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pPortName));
 }
 
@@ -3101,7 +3101,7 @@ WINBASEAPI BOOL WINAPI AddPortA(LPSTR pName, HWND hWnd, LPSTR pMonitorName)
 void qemu_AddPortA(struct qemu_syscall *call)
 {
     struct qemu_AddPortA *c = (struct qemu_AddPortA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AddPortA(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pMonitorName));
 }
 
@@ -3135,7 +3135,7 @@ WINBASEAPI BOOL WINAPI AddPortW(LPWSTR pName, HWND hWnd, LPWSTR pMonitorName)
 void qemu_AddPortW(struct qemu_syscall *call)
 {
     struct qemu_AddPortW *c = (struct qemu_AddPortW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AddPortW(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pMonitorName));
 }
 
