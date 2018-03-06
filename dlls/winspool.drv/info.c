@@ -942,7 +942,7 @@ WINBASEAPI BOOL WINAPI ClosePrinter(HANDLE hPrinter)
 void qemu_ClosePrinter(struct qemu_syscall *call)
 {
     struct qemu_ClosePrinter *c = (struct qemu_ClosePrinter *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ClosePrinter(QEMU_G2H(c->hPrinter));
 }
 
@@ -3365,7 +3365,7 @@ WINBASEAPI BOOL WINAPI ConfigurePortA(LPSTR pName, HWND hWnd, LPSTR pPortName)
 void qemu_ConfigurePortA(struct qemu_syscall *call)
 {
     struct qemu_ConfigurePortA *c = (struct qemu_ConfigurePortA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ConfigurePortA(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pPortName));
 }
 
@@ -3399,7 +3399,7 @@ WINBASEAPI BOOL WINAPI ConfigurePortW(LPWSTR pName, HWND hWnd, LPWSTR pPortName)
 void qemu_ConfigurePortW(struct qemu_syscall *call)
 {
     struct qemu_ConfigurePortW *c = (struct qemu_ConfigurePortW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ConfigurePortW(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pPortName));
 }
 
