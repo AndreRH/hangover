@@ -1277,7 +1277,7 @@ static BOOL CALLBACK EnumSystemLocales_host_cb(WCHAR *str)
     call.func = *guest_func;
     call.str = QEMU_H2G(str);
 
-    WINE_TRACE("Calling guest function 0x%lx(%p).\n", call.func, str);
+    WINE_TRACE("Calling guest function %p(%p).\n", (void *)call.func, str);
     ret = qemu_ops->qemu_execute(QEMU_G2H(EnumSystemLocales_guest_cb), QEMU_H2G(&call));
     WINE_TRACE("Guest function returned %u.\n", ret);
 

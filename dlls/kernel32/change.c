@@ -239,7 +239,7 @@ void qemu_ReadDirectoryChangesW(struct qemu_syscall *call)
     WINE_TRACE("Async operation\n");
     c->super.iret = ReadDirectoryChangesW(QEMU_G2H(c->handle), QEMU_G2H(c->buffer), c->len, c->subtree,
             c->filter, QEMU_G2H(c->returned), &ov_wrapper->ov, NULL);
-    WINE_TRACE("result %lx\n", c->super.iret);
+    WINE_TRACE("result %x\n", (unsigned int)c->super.iret);
 
     OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
     ov32->hEvent = (ULONG_PTR)guest_event;

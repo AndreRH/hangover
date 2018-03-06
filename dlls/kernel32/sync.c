@@ -2763,7 +2763,6 @@ void qemu_ConnectNamedPipe(struct qemu_syscall *call)
 
     WINE_TRACE("Async operation\n");
     c->super.iret = ConnectNamedPipe(QEMU_G2H(c->hPipe), &ov_wrapper->ov);
-    WINE_TRACE("result %lx\n", c->super.iret);
 
     OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
     ov32->hEvent = (ULONG_PTR)guest_event;
@@ -3379,7 +3378,7 @@ void qemu_GetQueuedCompletionStatus(struct qemu_syscall *call)
     WINE_FIXME("This probably reads freed memory.\n");
     ov_data = CONTAINING_RECORD(ov, struct OVERLAPPED_data, ov);
     c->lpOverlapped = QEMU_H2G(ov_data->guest_ov);
-    WINE_FIXME("Got guest OVERLAPPED pointer 0x%lx from host pointer %p.\n", c->lpOverlapped, ov);
+    WINE_FIXME("Got guest OVERLAPPED pointer %p from host pointer %p.\n", (void *)c->lpOverlapped, ov);
 }
 
 #endif

@@ -207,7 +207,7 @@ void qemu_ReadFileEx(struct qemu_syscall *call)
     WINE_TRACE("Async operation\n");
     c->super.iret = ReadFileEx(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToRead, &ov_wrapper->ov,
             ReadWriteFileEx_host_cb);
-    WINE_TRACE("result %lx\n", c->super.iret);
+    WINE_TRACE("result %x\n", (unsigned int)c->super.iret);
 
     OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
 
@@ -285,7 +285,7 @@ void qemu_ReadFileScatter(struct qemu_syscall *call)
     WINE_TRACE("Async operation\n");
     c->super.iret = ReadFileScatter(QEMU_G2H(c->file), QEMU_G2H(c->segments), c->count, QEMU_G2H(c->reserved),
             &ov_wrapper->ov);
-    WINE_TRACE("result %lx\n", c->super.iret);
+    WINE_TRACE("result %x\n", (unsigned int)c->super.iret);
 
     OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
     ov32->hEvent = (ULONG_PTR)guest_event;
@@ -353,7 +353,7 @@ void qemu_ReadFile(struct qemu_syscall *call)
     WINE_TRACE("Async operation\n");
     c->super.iret = ReadFile(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToRead, QEMU_G2H(c->bytesRead),
             &ov_wrapper->ov);
-    WINE_TRACE("result %lx\n", c->super.iret);
+    WINE_TRACE("result %x\n", (unsigned int)c->super.iret);
 
     OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
     ov32->hEvent = (ULONG_PTR)guest_event;
@@ -434,7 +434,7 @@ void qemu_WriteFileEx(struct qemu_syscall *call)
     WINE_TRACE("Async operation\n");
     c->super.iret = WriteFileEx(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToWrite, &ov_wrapper->ov,
             ReadWriteFileEx_host_cb);
-    WINE_TRACE("result %lx\n", c->super.iret);
+    WINE_TRACE("result %x\n", (unsigned int)c->super.iret);
 
     OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
 
@@ -512,7 +512,7 @@ void qemu_WriteFileGather(struct qemu_syscall *call)
     WINE_TRACE("Async operation\n");
     c->super.iret = WriteFileGather(QEMU_G2H(c->file), QEMU_G2H(c->segments), c->count, QEMU_G2H(c->reserved),
             &ov_wrapper->ov);
-    WINE_TRACE("result %lx\n", c->super.iret);
+    WINE_TRACE("result %x\n", (unsigned int)c->super.iret);
 
     OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
     ov32->hEvent = (ULONG_PTR)guest_event;
@@ -581,7 +581,7 @@ void qemu_WriteFile(struct qemu_syscall *call)
     WINE_TRACE("Async operation\n");
     c->super.iret = WriteFile(QEMU_G2H(c->hFile), QEMU_G2H(c->buffer), c->bytesToWrite, QEMU_G2H(c->bytesWritten),
             &ov_wrapper->ov);
-    WINE_TRACE("result %lx\n", c->super.iret);
+    WINE_TRACE("result %x\n", (unsigned int)c->super.iret);
 
     OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
     ov32->hEvent = (ULONG_PTR)guest_event;
@@ -635,7 +635,7 @@ void qemu_GetOverlappedResult(struct qemu_syscall *call)
      * when the event is notified. Also we don't want to search for the 64 bit copy... */
     ov32 = QEMU_G2H(c->lpOverlapped);
     file = QEMU_G2H(c->hFile);
-    WINE_TRACE( "(%p %p 0x%lx %lx)\n", file, ov32, c->lpTransferred, c->bWait );
+    WINE_TRACE("(%p %p 0x%x %x)\n", file, ov32, (unsigned int)c->lpTransferred, (unsigned int)c->bWait);
 
     status = ov32->Internal;
     if (status == STATUS_PENDING)
@@ -1613,7 +1613,7 @@ void qemu_LockFileEx(struct qemu_syscall *call)
 
     WINE_TRACE("Async operation\n");
     c->super.iret = LockFileEx((HANDLE)c->hFile, c->flags, c->reserved, c->count_low, c->count_high, &ov_wrapper->ov);
-    WINE_TRACE("result %lx\n", c->super.iret);
+    WINE_TRACE("result %x\n", (unsigned int)c->super.iret);
 
     OVERLAPPED_h2g(ov32, &ov_wrapper->ov);
     ov32->hEvent = (ULONG_PTR)guest_event;
@@ -1729,7 +1729,7 @@ void qemu_UnlockFileEx(struct qemu_syscall *call)
     c->super.iret = UnlockFileEx(QEMU_G2H(c->hFile), c->reserved, c->count_low, c->count_high, ov);
 
 #if GUEST_BIT != HOST_BIT
-    if (ov32);
+    if (ov32)
         OVERLAPPED_h2g(ov32, ov);
 #endif
 }
