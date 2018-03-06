@@ -7,6 +7,7 @@
 #include "thunk/qemu_winbase.h"
 #include "thunk/qemu_wingdi.h"
 #include "thunk/qemu_winuser.h"
+#include "thunk/qemu_winspool.h"
 #include "thunk/qemu_commdlg.h"
 #include "thunk/qemu_winnls.h"
 

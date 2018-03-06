@@ -22,6 +22,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_winspool.drv.h"
@@ -1613,6 +1615,7 @@ struct qemu_GetPrinterW
     uint64_t pPrinter;
     uint64_t cbBuf;
     uint64_t pcbNeeded;
+    uint64_t size;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1626,6 +1629,7 @@ WINBASEAPI BOOL WINAPI GetPrinterW(HANDLE hPrinter, DWORD Level, LPBYTE pPrinter
     call.pPrinter = (ULONG_PTR)pPrinter;
     call.cbBuf = cbBuf;
     call.pcbNeeded = (ULONG_PTR)pcbNeeded;
+    call.size = sizeof(PRINTER_INFO_9W);
 
     qemu_syscall(&call.super);
 
@@ -1637,8 +1641,37 @@ WINBASEAPI BOOL WINAPI GetPrinterW(HANDLE hPrinter, DWORD Level, LPBYTE pPrinter
 void qemu_GetPrinterW(struct qemu_syscall *call)
 {
     struct qemu_GetPrinterW *c = (struct qemu_GetPrinterW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+    /* The pPrinter buffer is a struct header + strings that the struct header points to. The application has to deal
+     * with different sizes due to the strings. This code here hopes that they don't notice the size difference of
+     * the 32 vs 64 bit struct headers and the gap between the 32 bit struct header and first string. */
     c->super.iret = GetPrinterW(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pPrinter), c->cbBuf, QEMU_G2H(c->pcbNeeded));
+#if HOST_BIT == GUEST_BIT
+    return;
+#endif
+
+    if (!c->super.iret)
+        return;
+
+    switch (c->Level)
+    {
+        case 2:
+            PRINTER_INFO_2_h2g(QEMU_G2H(c->pPrinter), QEMU_G2H(c->pPrinter));
+            break;
+
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+            WINE_FIXME("Unhandled info level %u.\n", (DWORD)c->Level);
+            break;
+
+        default:
+            WINE_FIXME("Unexpected info level %u.\n", (DWORD)c->Level);
+    }
 }
 
 #endif
