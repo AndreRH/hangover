@@ -121,16 +121,18 @@ void qemu_IDirectSoundCaptureBufferImpl_Release(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundCaptureBufferImpl_Release *c = (struct qemu_IDirectSoundCaptureBufferImpl_Release *)call;
     struct qemu_capture_buffer *buffer;
+    ULONG ref;
 
     WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectSoundCaptureBuffer8_Release(buffer->host_buffer);
-    c->super.iret += IDirectSoundNotify_Release(buffer->host_notify);
+    ref = IDirectSoundCaptureBuffer8_Release(buffer->host_buffer);
+    ref += IDirectSoundNotify_Release(buffer->host_notify);
 
-    if (c->super.iret)
-        WINE_ERR("Unexpected refcount %lu.\n", c->super.iret);
+    if (ref)
+        WINE_ERR("Unexpected refcount %u.\n", ref);
     HeapFree(GetProcessHeap(), 0, buffer);
+    c->super.iret = ref;
 
 }
 
@@ -874,14 +876,16 @@ void qemu_IDirectSoundCaptureImpl_Release(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundCaptureImpl_Release *c = (struct qemu_IDirectSoundCaptureImpl_Release *)call;
     struct qemu_capture *capture;
+    ULONG ref;
 
     WINE_TRACE("\n");
     capture = QEMU_G2H(c->capture);
 
-    c->super.iret = IDirectSoundCapture_Release(capture->host);
-    if (c->super.iret)
-        WINE_ERR("Got unexpected host refcount %lu\n", c->super.iret);
+    ref = IDirectSoundCapture_Release(capture->host);
+    if (ref)
+        WINE_ERR("Got unexpected host refcount %u.\n", ref);
     HeapFree(GetProcessHeap(), 0, capture);
+    c->super.iret = ref;
 }
 
 #endif

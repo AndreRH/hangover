@@ -174,7 +174,8 @@ static BOOL WINAPI DirectSoundEnumerate_host_cb(GUID *guid, const char *descript
     call.description = QEMU_H2G(description);
     call.module = QEMU_H2G(module);
 
-    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, %p, %p, 0x%lx)\n", call.func, call.guid, description, module, call.context);
+    WINE_TRACE("Calling guest callback %p(%p, %p, %p, %p)\n", (void *)call.func, (void *)call.guid,
+            description, module, (void *)call.context);
     ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned %u.\n", ret);
 

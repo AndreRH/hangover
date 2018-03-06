@@ -431,24 +431,26 @@ void qemu_IDirectSoundBufferImpl_Release(struct qemu_syscall *call)
 {
     struct qemu_IDirectSoundBufferImpl_Release *c = (struct qemu_IDirectSoundBufferImpl_Release *)call;
     struct qemu_dsound_buffer *buffer;
+    ULONG ref;
     WINE_TRACE("\n");
 
     buffer = QEMU_G2H(c->iface);
-    c->super.iret = IDirectSoundBuffer8_Release(buffer->host_buffer);
+    ref = IDirectSoundBuffer8_Release(buffer->host_buffer);
     if (buffer->host_notify)
-        c->super.iret += IDirectSoundNotify_Release(buffer->host_notify);
+        ref += IDirectSoundNotify_Release(buffer->host_notify);
     if (buffer->host_3d_listener)
-        c->super.iret += IDirectSound3DListener_Release(buffer->host_3d_listener);
+        ref += IDirectSound3DListener_Release(buffer->host_3d_listener);
     if (buffer->host_3d_buffer)
-        c->super.iret += IDirectSound3DBuffer_Release(buffer->host_3d_buffer);
+        ref += IDirectSound3DBuffer_Release(buffer->host_3d_buffer);
     if (buffer->host_property)
-        c->super.iret += IKsPropertySet_Release(buffer->host_property);
+        ref += IKsPropertySet_Release(buffer->host_property);
 
-    WINE_TRACE("Host interface count sum is %lu.\n", c->super.iret);
-    if (c->super.iret)
+    WINE_TRACE("Host interface count sum is %u.\n", ref);
+    if (ref)
         WINE_FIXME("Host interfaces not cleanly released\n");
 
     HeapFree(GetProcessHeap(), 0, buffer);
+    c->super.iret = ref;
 }
 
 #endif

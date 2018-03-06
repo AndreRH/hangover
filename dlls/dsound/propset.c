@@ -112,14 +112,16 @@ void qemu_IKsPrivatePropertySetImpl_Release(struct qemu_syscall *call)
 {
     struct qemu_propset *propset;
     struct qemu_IKsPrivatePropertySetImpl_Release *c = (struct qemu_IKsPrivatePropertySetImpl_Release *)call;
+    ULONG ref;
 
     WINE_TRACE("\n");
     propset = QEMU_G2H(c->iface);
 
-    c->super.iret = IKsPropertySet_Release(propset->host);
-    if (c->super.iret)
-        WINE_ERR("Ref is %lu, expected 0.\n", c->super.iret);
+    ref = IKsPropertySet_Release(propset->host);
+    if (ref)
+        WINE_ERR("Ref is %u, expected 0.\n", ref);
     HeapFree(GetProcessHeap(), 0, propset);
+    c->super.iret = ref;
 }
 
 #endif
@@ -232,12 +234,12 @@ static BOOL CALLBACK qemu_IKsPrivatePropertySetImpl_Get_host_cb(
             desc.Interface = QEMU_H2G(copy);
             call.data = QEMU_H2G(&desc);
             break;
-            break;
         }
     }
 #endif
 
-    WINE_TRACE("Calling guest callback 0x%lx(0x%lx, 0x%lx).\n", call.func, call.data, call.ctx);
+    WINE_TRACE("Calling guest callback %p(%p, %p).\n", (void *)call.func, (void *)call.data,
+            (void *)call.ctx);
     qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest wrapper returned %u.\n", ret);
 

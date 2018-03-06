@@ -437,13 +437,15 @@ void qemu_DirectSoundFullDuplexRelease(struct qemu_syscall *call)
 {
     struct qemu_DirectSoundFullDuplexOp *c = (struct qemu_DirectSoundFullDuplexOp *)call;
     IDirectSoundFullDuplexImpl *This;
+    ULONG ref;
 
     WINE_TRACE("\n");
     This = QEMU_G2H(c->duplex);
-    c->super.iret = IDirectSoundFullDuplex_Release(This->host);
-    if (c->super.iret)
-        WINE_ERR("Got unexpected host refcount %lu.\n", c->super.iret);
+    ref = IDirectSoundFullDuplex_Release(This->host);
+    if (ref)
+        WINE_ERR("Got unexpected host refcount %u.\n", ref);
     HeapFree(GetProcessHeap(), 0, This);
+    c->super.iret = ref;
 }
 
 #endif
