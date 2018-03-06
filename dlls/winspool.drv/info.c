@@ -323,7 +323,7 @@ void qemu_OpenPrinterW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_AddMonitorA
+struct qemu_AddMonitor
 {
     struct qemu_syscall super;
     uint64_t pName;
@@ -335,7 +335,7 @@ struct qemu_AddMonitorA
 
 WINBASEAPI BOOL WINAPI AddMonitorA(LPSTR pName, DWORD Level, LPBYTE pMonitors)
 {
-    struct qemu_AddMonitorA call;
+    struct qemu_AddMonitor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDMONITORA);
     call.pName = (ULONG_PTR)pName;
     call.Level = Level;
@@ -346,30 +346,9 @@ WINBASEAPI BOOL WINAPI AddMonitorA(LPSTR pName, DWORD Level, LPBYTE pMonitors)
     return call.super.iret;
 }
 
-#else
-
-void qemu_AddMonitorA(struct qemu_syscall *call)
-{
-    struct qemu_AddMonitorA *c = (struct qemu_AddMonitorA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AddMonitorA(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pMonitors));
-}
-
-#endif
-
-struct qemu_AddMonitorW
-{
-    struct qemu_syscall super;
-    uint64_t pName;
-    uint64_t Level;
-    uint64_t pMonitors;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI BOOL WINAPI AddMonitorW(LPWSTR pName, DWORD Level, LPBYTE pMonitors)
 {
-    struct qemu_AddMonitorW call;
+    struct qemu_AddMonitor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDMONITORW);
     call.pName = (ULONG_PTR)pName;
     call.Level = Level;
@@ -382,11 +361,25 @@ WINBASEAPI BOOL WINAPI AddMonitorW(LPWSTR pName, DWORD Level, LPBYTE pMonitors)
 
 #else
 
-void qemu_AddMonitorW(struct qemu_syscall *call)
+void qemu_AddMonitor(struct qemu_syscall *call)
 {
-    struct qemu_AddMonitorW *c = (struct qemu_AddMonitorW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AddMonitorW(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pMonitors));
+    struct qemu_AddMonitor *c = (struct qemu_AddMonitor *)call;
+    MONITOR_INFO_2W stack, *monitor = &stack;
+    WINE_TRACE("\n");
+
+#if HOST_BIT == GUEST_BIT
+    monitor = QEMU_G2H(c->pMonitors);
+#else
+    if (!c->pMonitors)
+        monitor = NULL;
+    else
+        MONITOR_INFO_2_g2h(monitor, QEMU_G2H(c->pMonitors));
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_ADDMONITORA))
+        c->super.iret = AddMonitorA(QEMU_G2H(c->pName), c->Level, (BYTE *)monitor);
+    else
+        c->super.iret = AddMonitorW(QEMU_G2H(c->pName), c->Level, (BYTE *)monitor);
 }
 
 #endif
@@ -487,7 +480,7 @@ WINBASEAPI BOOL WINAPI DeleteMonitorA (LPSTR pName, LPSTR pEnvironment, LPSTR pM
 void qemu_DeleteMonitorA(struct qemu_syscall *call)
 {
     struct qemu_DeleteMonitorA *c = (struct qemu_DeleteMonitorA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DeleteMonitorA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pMonitorName));
 }
 

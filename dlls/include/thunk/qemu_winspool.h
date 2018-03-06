@@ -51,4 +51,25 @@ static inline void PRINTER_INFO_2_h2g(struct PRINTER_INFO_2 *guest, const PRINTE
     guest->AveragePPM = host->AveragePPM;
 }
 
+struct MONITOR_INFO_2
+{
+    qemu_ptr pName;
+    qemu_ptr pEnvironment;
+    qemu_ptr pDLLName;
+};
+
+static inline void MONITOR_INFO_2_h2g(struct MONITOR_INFO_2 *guest, const MONITOR_INFO_2W *host)
+{
+    guest->pName = (ULONG_PTR)host->pName;
+    guest->pEnvironment = (ULONG_PTR)host->pEnvironment;
+    guest->pDLLName = (ULONG_PTR)host->pDLLName;
+}
+
+static inline void MONITOR_INFO_2_g2h(MONITOR_INFO_2W *host, const struct MONITOR_INFO_2 *guest)
+{
+    host->pName = (WCHAR *)(ULONG_PTR)guest->pName;
+    host->pEnvironment = (WCHAR *)(ULONG_PTR)guest->pEnvironment;
+    host->pDLLName = (WCHAR *)(ULONG_PTR)guest->pDLLName;
+}
+
 #endif
