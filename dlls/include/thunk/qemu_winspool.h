@@ -120,4 +120,327 @@ static inline void PRINTER_DEFAULTS_g2h(PRINTER_DEFAULTSW *host, const struct qe
     host->DesiredAccess = guest->DesiredAccess;
 }
 
+struct qemu_DRIVER_INFO_1
+{
+  qemu_ptr  pName;
+};
+
+static inline void DRIVER_INFO_1_h2g(struct qemu_DRIVER_INFO_1 *guest, const DRIVER_INFO_1W *host)
+{
+    guest->pName = (ULONG_PTR)host->pName;
+}
+
+static inline void DRIVER_INFO_1_g2h(DRIVER_INFO_1W *host, const struct qemu_DRIVER_INFO_1 *guest)
+{
+    host->pName = (WCHAR *)(ULONG_PTR)guest->pName;
+}
+
+struct qemu_DRIVER_INFO_2
+{
+    DWORD     cVersion;
+    qemu_ptr  pName;
+    qemu_ptr  pEnvironment;
+    qemu_ptr  pDriverPath;
+    qemu_ptr  pDataFile;
+    qemu_ptr  pConfigFile;
+};
+
+static inline void DRIVER_INFO_2_h2g(struct qemu_DRIVER_INFO_2 *guest, const DRIVER_INFO_2W *host)
+{
+    guest->cVersion = host->cVersion;
+    guest->pName = (ULONG_PTR)host->pName;
+    guest->pEnvironment = (ULONG_PTR)host->pEnvironment;
+    guest->pDriverPath = (ULONG_PTR)host->pDriverPath;
+    guest->pDataFile = (ULONG_PTR)host->pDataFile;
+    guest->pConfigFile = (ULONG_PTR)host->pConfigFile;
+}
+
+static inline void DRIVER_INFO_2_g2h(DRIVER_INFO_2W *host, const struct qemu_DRIVER_INFO_2 *guest)
+{
+    host->cVersion = guest->cVersion;
+    host->pName = (WCHAR *)(ULONG_PTR)guest->pName;
+    host->pEnvironment = (WCHAR *)(ULONG_PTR)guest->pEnvironment;
+    host->pDriverPath = (WCHAR *)(ULONG_PTR)guest->pDriverPath;
+    host->pDataFile = (WCHAR *)(ULONG_PTR)guest->pDataFile;
+    host->pConfigFile = (WCHAR *)(ULONG_PTR)guest->pConfigFile;
+}
+
+struct qemu_DRIVER_INFO_3
+{
+    DWORD    cVersion;
+    qemu_ptr pName;
+    qemu_ptr pEnvironment;
+    qemu_ptr pDriverPath;
+    qemu_ptr pDataFile;
+    qemu_ptr pConfigFile;
+    qemu_ptr pHelpFile;
+    qemu_ptr pDependentFiles;
+    qemu_ptr pMonitorName;
+    qemu_ptr pDefaultDataType;
+};
+
+static inline void DRIVER_INFO_3_h2g(struct qemu_DRIVER_INFO_3 *guest, const DRIVER_INFO_3W *host)
+{
+    guest->cVersion = host->cVersion;
+    guest->pName = (ULONG_PTR)host->pName;
+    guest->pEnvironment = (ULONG_PTR)host->pEnvironment;
+    guest->pDriverPath = (ULONG_PTR)host->pDriverPath;
+    guest->pDataFile = (ULONG_PTR)host->pDataFile;
+    guest->pConfigFile = (ULONG_PTR)host->pConfigFile;
+    guest->pHelpFile = (ULONG_PTR)host->pHelpFile;
+    guest->pDependentFiles = (ULONG_PTR)host->pDependentFiles;
+    guest->pMonitorName = (ULONG_PTR)host->pMonitorName;
+    guest->pDefaultDataType = (ULONG_PTR)host->pDefaultDataType;
+}
+
+static inline void DRIVER_INFO_3_g2h(DRIVER_INFO_3W *host, const struct qemu_DRIVER_INFO_3 *guest)
+{
+    host->cVersion = guest->cVersion;
+    host->pName = (WCHAR *)(ULONG_PTR)guest->pName;
+    host->pEnvironment = (WCHAR *)(ULONG_PTR)guest->pEnvironment;
+    host->pDriverPath = (WCHAR *)(ULONG_PTR)guest->pDriverPath;
+    host->pDataFile = (WCHAR *)(ULONG_PTR)guest->pDataFile;
+    host->pConfigFile = (WCHAR *)(ULONG_PTR)guest->pConfigFile;
+    host->pHelpFile = (WCHAR *)(ULONG_PTR)guest->pHelpFile;
+    host->pDependentFiles = (WCHAR *)(ULONG_PTR)guest->pDependentFiles;
+    host->pMonitorName = (WCHAR *)(ULONG_PTR)guest->pMonitorName;
+    host->pDefaultDataType = (WCHAR *)(ULONG_PTR)guest->pDefaultDataType;
+}
+
+struct qemu_DRIVER_INFO_4
+{
+    DWORD    cVersion;
+    qemu_ptr pName;
+    qemu_ptr pEnvironment;
+    qemu_ptr pDriverPath;
+    qemu_ptr pDataFile;
+    qemu_ptr pConfigFile;
+    qemu_ptr pHelpFile;
+    qemu_ptr pDependentFiles;
+    qemu_ptr pMonitorName;
+    qemu_ptr pDefaultDataType;
+    qemu_ptr pszzPreviousNames;
+};
+
+static inline void DRIVER_INFO_4_h2g(struct qemu_DRIVER_INFO_4 *guest, const DRIVER_INFO_4W *host)
+{
+    guest->cVersion = host->cVersion;
+    guest->pName = (ULONG_PTR)host->pName;
+    guest->pEnvironment = (ULONG_PTR)host->pEnvironment;
+    guest->pDriverPath = (ULONG_PTR)host->pDriverPath;
+    guest->pDataFile = (ULONG_PTR)host->pDataFile;
+    guest->pConfigFile = (ULONG_PTR)host->pConfigFile;
+    guest->pHelpFile = (ULONG_PTR)host->pHelpFile;
+    guest->pDependentFiles = (ULONG_PTR)host->pDependentFiles;
+    guest->pMonitorName = (ULONG_PTR)host->pMonitorName;
+    guest->pDefaultDataType = (ULONG_PTR)host->pDefaultDataType;
+    guest->pszzPreviousNames = (ULONG_PTR)host->pszzPreviousNames;
+}
+
+static inline void DRIVER_INFO_4_g2h(DRIVER_INFO_4W *host, const struct qemu_DRIVER_INFO_4 *guest)
+{
+    host->cVersion = guest->cVersion;
+    host->pName = (WCHAR *)(ULONG_PTR)guest->pName;
+    host->pEnvironment = (WCHAR *)(ULONG_PTR)guest->pEnvironment;
+    host->pDriverPath = (WCHAR *)(ULONG_PTR)guest->pDriverPath;
+    host->pDataFile = (WCHAR *)(ULONG_PTR)guest->pDataFile;
+    host->pConfigFile = (WCHAR *)(ULONG_PTR)guest->pConfigFile;
+    host->pHelpFile = (WCHAR *)(ULONG_PTR)guest->pHelpFile;
+    host->pDependentFiles = (WCHAR *)(ULONG_PTR)guest->pDependentFiles;
+    host->pMonitorName = (WCHAR *)(ULONG_PTR)guest->pMonitorName;
+    host->pDefaultDataType = (WCHAR *)(ULONG_PTR)guest->pDefaultDataType;
+    host->pszzPreviousNames = (WCHAR *)(ULONG_PTR)guest->pszzPreviousNames;
+}
+
+struct qemu_DRIVER_INFO_5
+{
+    DWORD    cVersion;
+    qemu_ptr pName;
+    qemu_ptr pEnvironment;
+    qemu_ptr pDriverPath;
+    qemu_ptr pDataFile;
+    qemu_ptr pConfigFile;
+    DWORD dwDriverAttributes;
+    DWORD dwConfigVersion;
+    DWORD dwDriverVersion;
+};
+
+static inline void DRIVER_INFO_5_h2g(struct qemu_DRIVER_INFO_5 *guest, const DRIVER_INFO_5W *host)
+{
+    guest->cVersion = host->cVersion;
+    guest->pName = (ULONG_PTR)host->pName;
+    guest->pEnvironment = (ULONG_PTR)host->pEnvironment;
+    guest->pDriverPath = (ULONG_PTR)host->pDriverPath;
+    guest->pDataFile = (ULONG_PTR)host->pDataFile;
+    guest->pConfigFile = (ULONG_PTR)host->pConfigFile;
+    guest->dwDriverAttributes = host->dwDriverAttributes;
+    guest->dwConfigVersion = host->dwConfigVersion;
+    guest->dwDriverVersion = host->dwDriverVersion;
+}
+
+static inline void DRIVER_INFO_5_g2h(DRIVER_INFO_5W *host, const struct qemu_DRIVER_INFO_5 *guest)
+{
+    host->cVersion = guest->cVersion;
+    host->pName = (WCHAR *)(ULONG_PTR)guest->pName;
+    host->pEnvironment = (WCHAR *)(ULONG_PTR)guest->pEnvironment;
+    host->pDriverPath = (WCHAR *)(ULONG_PTR)guest->pDriverPath;
+    host->pDataFile = (WCHAR *)(ULONG_PTR)guest->pDataFile;
+    host->pConfigFile = (WCHAR *)(ULONG_PTR)guest->pConfigFile;
+    host->dwDriverAttributes = guest->dwDriverAttributes;
+    host->dwConfigVersion = guest->dwConfigVersion;
+    host->dwDriverVersion = guest->dwDriverVersion;
+}
+
+struct qemu_DRIVER_INFO_6
+{
+    DWORD    cVersion;
+    qemu_ptr pName;
+    qemu_ptr pEnvironment;
+    qemu_ptr pDriverPath;
+    qemu_ptr pDataFile;
+    qemu_ptr pConfigFile;
+    qemu_ptr pHelpFile;
+    qemu_ptr pDependentFiles;
+    qemu_ptr pMonitorName;
+    qemu_ptr pDefaultDataType;
+    qemu_ptr pszzPreviousNames;
+    FILETIME ftDriverDate;
+    qemu_ptr dwlDriverVersion;
+    qemu_ptr pszMfgName;
+    qemu_ptr pszOEMUrl;
+    qemu_ptr pszHardwareID;
+    qemu_ptr pszProvider;
+};
+
+static inline void DRIVER_INFO_6_h2g(struct qemu_DRIVER_INFO_6 *guest, const DRIVER_INFO_6W *host)
+{
+    guest->cVersion = host->cVersion;
+    guest->pName = (ULONG_PTR)host->pName;
+    guest->pEnvironment = (ULONG_PTR)host->pEnvironment;
+    guest->pDriverPath = (ULONG_PTR)host->pDriverPath;
+    guest->pDataFile = (ULONG_PTR)host->pDataFile;
+    guest->pConfigFile = (ULONG_PTR)host->pConfigFile;
+    guest->pHelpFile = (ULONG_PTR)host->pHelpFile;
+    guest->pDependentFiles = (ULONG_PTR)host->pDependentFiles;
+    guest->pMonitorName = (ULONG_PTR)host->pMonitorName;
+    guest->pDefaultDataType = (ULONG_PTR)host->pDefaultDataType;
+    guest->pszzPreviousNames = (ULONG_PTR)host->pszzPreviousNames;
+    guest->ftDriverDate = host->ftDriverDate;
+    guest->dwlDriverVersion = host->dwlDriverVersion;
+    guest->pszMfgName = (ULONG_PTR)host->pszMfgName;
+    guest->pszOEMUrl = (ULONG_PTR)host->pszOEMUrl;
+    guest->pszHardwareID = (ULONG_PTR)host->pszHardwareID;
+    guest->pszProvider = (ULONG_PTR)host->pszProvider;
+}
+
+static inline void DRIVER_INFO_6_g2h(DRIVER_INFO_6W *host, const struct qemu_DRIVER_INFO_6 *guest)
+{
+    host->cVersion = guest->cVersion;
+    host->pName = (WCHAR *)(ULONG_PTR)guest->pName;
+    host->pEnvironment = (WCHAR *)(ULONG_PTR)guest->pEnvironment;
+    host->pDriverPath = (WCHAR *)(ULONG_PTR)guest->pDriverPath;
+    host->pDataFile = (WCHAR *)(ULONG_PTR)guest->pDataFile;
+    host->pConfigFile = (WCHAR *)(ULONG_PTR)guest->pConfigFile;
+    host->pHelpFile = (WCHAR *)(ULONG_PTR)guest->pHelpFile;
+    host->pDependentFiles = (WCHAR *)(ULONG_PTR)guest->pDependentFiles;
+    host->pMonitorName = (WCHAR *)(ULONG_PTR)guest->pMonitorName;
+    host->pDefaultDataType = (WCHAR *)(ULONG_PTR)guest->pDefaultDataType;
+    host->pszzPreviousNames = (WCHAR *)(ULONG_PTR)guest->pszzPreviousNames;
+    host->ftDriverDate = guest->ftDriverDate;
+    host->dwlDriverVersion = guest->dwlDriverVersion;
+    host->pszMfgName = (WCHAR *)(ULONG_PTR)guest->pszMfgName;
+    host->pszOEMUrl = (WCHAR *)(ULONG_PTR)guest->pszOEMUrl;
+    host->pszHardwareID = (WCHAR *)(ULONG_PTR)guest->pszHardwareID;
+    host->pszProvider = (WCHAR *)(ULONG_PTR)guest->pszProvider;
+}
+
+struct qemu_DRIVER_INFO_8
+{
+    DWORD    cVersion;
+    qemu_ptr pName;
+    qemu_ptr pEnvironment;
+    qemu_ptr pDriverPath;
+    qemu_ptr pDataFile;
+    qemu_ptr pConfigFile;
+    qemu_ptr pHelpFile;
+    qemu_ptr pDependentFiles;
+    qemu_ptr pMonitorName;
+    qemu_ptr pDefaultDataType;
+    qemu_ptr pszzPreviousNames;
+    FILETIME ftDriverDate;
+    qemu_ptr dwlDriverVersion;
+    qemu_ptr pszMfgName;
+    qemu_ptr pszOEMUrl;
+    qemu_ptr pszHardwareID;
+    qemu_ptr pszProvider;
+    qemu_ptr pszPrintProcessor;
+    qemu_ptr pszVendorSetup;
+    qemu_ptr pszzColorProfiles;
+    qemu_ptr pszInfPath;
+    DWORD    dwPrinterDriverAttributes;
+    qemu_ptr pszzCoreDriverDependencies;
+    FILETIME ftMinInboxDriverVerDate;
+    DWORDLONG dwlMinInboxDriverVerVersion;
+};
+
+#ifndef QEMU_DLL_GUEST
+static inline void DRIVER_INFO_8_h2g(struct qemu_DRIVER_INFO_8 *guest, const DRIVER_INFO_8W *host)
+{
+    guest->cVersion = host->cVersion;
+    guest->pName = (ULONG_PTR)host->pName;
+    guest->pEnvironment = (ULONG_PTR)host->pEnvironment;
+    guest->pDriverPath = (ULONG_PTR)host->pDriverPath;
+    guest->pDataFile = (ULONG_PTR)host->pDataFile;
+    guest->pConfigFile = (ULONG_PTR)host->pConfigFile;
+    guest->pHelpFile = (ULONG_PTR)host->pHelpFile;
+    guest->pDependentFiles = (ULONG_PTR)host->pDependentFiles;
+    guest->pMonitorName = (ULONG_PTR)host->pMonitorName;
+    guest->pDefaultDataType = (ULONG_PTR)host->pDefaultDataType;
+    guest->pszzPreviousNames = (ULONG_PTR)host->pszzPreviousNames;
+    guest->ftDriverDate = host->ftDriverDate;
+    guest->dwlDriverVersion = host->dwlDriverVersion;
+    guest->pszMfgName = (ULONG_PTR)host->pszMfgName;
+    guest->pszOEMUrl = (ULONG_PTR)host->pszOEMUrl;
+    guest->pszHardwareID = (ULONG_PTR)host->pszHardwareID;
+    guest->pszProvider = (ULONG_PTR)host->pszProvider;
+    guest->pszPrintProcessor = (ULONG_PTR)host->pszPrintProcessor;
+    guest->pszVendorSetup = (ULONG_PTR)host->pszVendorSetup;
+    guest->pszzColorProfiles = (ULONG_PTR)host->pszzColorProfiles;
+    guest->pszInfPath = (ULONG_PTR)host->pszInfPath;
+    guest->dwPrinterDriverAttributes = host->dwPrinterDriverAttributes;
+    guest->pszzCoreDriverDependencies = (ULONG_PTR)host->pszzCoreDriverDependencies;
+    guest->ftMinInboxDriverVerDate = host->ftMinInboxDriverVerDate;
+    guest->dwlMinInboxDriverVerVersion = host->dwlMinInboxDriverVerVersion;
+}
+
+static inline void DRIVER_INFO_8_g2h(DRIVER_INFO_8W *host, const struct qemu_DRIVER_INFO_8 *guest)
+{
+    host->cVersion = guest->cVersion;
+    host->pName = (WCHAR *)(ULONG_PTR)guest->pName;
+    host->pEnvironment = (WCHAR *)(ULONG_PTR)guest->pEnvironment;
+    host->pDriverPath = (WCHAR *)(ULONG_PTR)guest->pDriverPath;
+    host->pDataFile = (WCHAR *)(ULONG_PTR)guest->pDataFile;
+    host->pConfigFile = (WCHAR *)(ULONG_PTR)guest->pConfigFile;
+    host->pHelpFile = (WCHAR *)(ULONG_PTR)guest->pHelpFile;
+    host->pDependentFiles = (WCHAR *)(ULONG_PTR)guest->pDependentFiles;
+    host->pMonitorName = (WCHAR *)(ULONG_PTR)guest->pMonitorName;
+    host->pDefaultDataType = (WCHAR *)(ULONG_PTR)guest->pDefaultDataType;
+    host->pszzPreviousNames = (WCHAR *)(ULONG_PTR)guest->pszzPreviousNames;
+    host->ftDriverDate = guest->ftDriverDate;
+    host->dwlDriverVersion = guest->dwlDriverVersion;
+    host->pszMfgName = (WCHAR *)(ULONG_PTR)guest->pszMfgName;
+    host->pszOEMUrl = (WCHAR *)(ULONG_PTR)guest->pszOEMUrl;
+    host->pszHardwareID = (WCHAR *)(ULONG_PTR)guest->pszHardwareID;
+    host->pszProvider = (WCHAR *)(ULONG_PTR)guest->pszProvider;
+    host->pszPrintProcessor = (WCHAR *)(ULONG_PTR)guest->pszPrintProcessor;
+    host->pszVendorSetup = (WCHAR *)(ULONG_PTR)guest->pszVendorSetup;
+    host->pszzColorProfiles = (WCHAR *)(ULONG_PTR)guest->pszzColorProfiles;
+    host->pszInfPath = (WCHAR *)(ULONG_PTR)guest->pszInfPath;
+    host->dwPrinterDriverAttributes = guest->dwPrinterDriverAttributes;
+    host->pszzCoreDriverDependencies = (WCHAR *)(ULONG_PTR)guest->pszzCoreDriverDependencies;
+    host->ftMinInboxDriverVerDate = guest->ftMinInboxDriverVerDate;
+    host->dwlMinInboxDriverVerVersion = guest->dwlMinInboxDriverVerVersion;
+}
+#endif
+
 #endif

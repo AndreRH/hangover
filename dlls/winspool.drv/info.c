@@ -2360,7 +2360,7 @@ void qemu_EnumJobsW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_EnumPrinterDriversW
+struct qemu_EnumPrinterDrivers
 {
     struct qemu_syscall super;
     uint64_t pName;
@@ -2374,9 +2374,10 @@ struct qemu_EnumPrinterDriversW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI EnumPrinterDriversW(LPWSTR pName, LPWSTR pEnvironment, DWORD Level, LPBYTE pDriverInfo, DWORD cbBuf, LPDWORD pcbNeeded, LPDWORD pcReturned)
+WINBASEAPI BOOL WINAPI EnumPrinterDriversW(LPWSTR pName, LPWSTR pEnvironment, DWORD Level, LPBYTE pDriverInfo,
+        DWORD cbBuf, LPDWORD pcbNeeded, LPDWORD pcReturned)
 {
-    struct qemu_EnumPrinterDriversW call;
+    struct qemu_EnumPrinterDrivers call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMPRINTERDRIVERSW);
     call.pName = (ULONG_PTR)pName;
     call.pEnvironment = (ULONG_PTR)pEnvironment;
@@ -2391,34 +2392,10 @@ WINBASEAPI BOOL WINAPI EnumPrinterDriversW(LPWSTR pName, LPWSTR pEnvironment, DW
     return call.super.iret;
 }
 
-#else
-
-void qemu_EnumPrinterDriversW(struct qemu_syscall *call)
+WINBASEAPI BOOL WINAPI EnumPrinterDriversA(LPSTR pName, LPSTR pEnvironment, DWORD Level, LPBYTE pDriverInfo,
+        DWORD cbBuf, LPDWORD pcbNeeded, LPDWORD pcReturned)
 {
-    struct qemu_EnumPrinterDriversW *c = (struct qemu_EnumPrinterDriversW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumPrinterDriversW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), c->Level, QEMU_G2H(c->pDriverInfo), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
-}
-
-#endif
-
-struct qemu_EnumPrinterDriversA
-{
-    struct qemu_syscall super;
-    uint64_t pName;
-    uint64_t pEnvironment;
-    uint64_t Level;
-    uint64_t pDriverInfo;
-    uint64_t cbBuf;
-    uint64_t pcbNeeded;
-    uint64_t pcReturned;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI BOOL WINAPI EnumPrinterDriversA(LPSTR pName, LPSTR pEnvironment, DWORD Level, LPBYTE pDriverInfo, DWORD cbBuf, LPDWORD pcbNeeded, LPDWORD pcReturned)
-{
-    struct qemu_EnumPrinterDriversA call;
+    struct qemu_EnumPrinterDrivers call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMPRINTERDRIVERSA);
     call.pName = (ULONG_PTR)pName;
     call.pEnvironment = (ULONG_PTR)pEnvironment;
@@ -2435,11 +2412,79 @@ WINBASEAPI BOOL WINAPI EnumPrinterDriversA(LPSTR pName, LPSTR pEnvironment, DWOR
 
 #else
 
-void qemu_EnumPrinterDriversA(struct qemu_syscall *call)
+void qemu_EnumPrinterDrivers(struct qemu_syscall *call)
 {
-    struct qemu_EnumPrinterDriversA *c = (struct qemu_EnumPrinterDriversA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumPrinterDriversA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), c->Level, QEMU_G2H(c->pDriverInfo), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    struct qemu_EnumPrinterDrivers *c = (struct qemu_EnumPrinterDrivers *)call;
+    DWORD returned, i, level;
+    BYTE *conv_in, *conv_out;
+    WINE_TRACE("\n");
+
+    level = c->Level;
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_ENUMPRINTERDRIVERSA))
+    {
+        c->super.iret = EnumPrinterDriversA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), level,
+                QEMU_G2H(c->pDriverInfo), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    }
+    else
+    {
+        c->super.iret = EnumPrinterDriversW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), level,
+                QEMU_G2H(c->pDriverInfo), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    }
+
+#if GUEST_BIT == HOST_BIT
+    return;
+#endif
+    if (!c->super.iret)
+        return;
+
+    returned = *(DWORD *)QEMU_G2H(c->pcReturned);
+    conv_in = conv_out = QEMU_G2H(c->pDriverInfo);
+    WINE_TRACE("returned %u lvl %u\n", returned, level);
+    for (i = 0; i < returned; ++i)
+    {
+        switch (level)
+        {
+            case 1:
+                DRIVER_INFO_1_h2g((void *)conv_out, (void *)conv_in);
+                conv_in += sizeof(DRIVER_INFO_1W);
+                conv_out += sizeof(struct qemu_DRIVER_INFO_1);
+                break;
+            case 2:
+                DRIVER_INFO_2_h2g((void *)conv_out, (void *)conv_in);
+                conv_in += sizeof(DRIVER_INFO_2W);
+                conv_out += sizeof(struct qemu_DRIVER_INFO_2);
+                break;
+            case 3:
+                DRIVER_INFO_3_h2g((void *)conv_out, (void *)conv_in);
+                conv_in += sizeof(DRIVER_INFO_3W);
+                conv_out += sizeof(struct qemu_DRIVER_INFO_3);
+                break;
+            case 4:
+                DRIVER_INFO_4_h2g((void *)conv_out, (void *)conv_in);
+                conv_in += sizeof(DRIVER_INFO_4W);
+                conv_out += sizeof(struct qemu_DRIVER_INFO_4);
+                break;
+            case 5:
+                DRIVER_INFO_5_h2g((void *)conv_out, (void *)conv_in);
+                conv_in += sizeof(DRIVER_INFO_5W);
+                conv_out += sizeof(struct qemu_DRIVER_INFO_5);
+                break;
+            case 6:
+                DRIVER_INFO_6_h2g((void *)conv_out, (void *)conv_in);
+                conv_in += sizeof(DRIVER_INFO_6W);
+                conv_out += sizeof(struct qemu_DRIVER_INFO_6);
+                break;
+            case 8:
+                DRIVER_INFO_8_h2g((void *)conv_out, (void *)conv_in);
+                conv_in += sizeof(DRIVER_INFO_8W);
+                conv_out += sizeof(struct qemu_DRIVER_INFO_8);
+                break;
+            default:
+                WINE_ERR("Unexpected driver level %u.\n", level);
+                break;
+        }
+    }
 }
 
 #endif
