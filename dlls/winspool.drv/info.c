@@ -65,7 +65,9 @@ WINBASEAPI INT WINAPI DeviceCapabilitiesA(LPCSTR pDevice,LPCSTR pPort, WORD cap,
 void qemu_DeviceCapabilitiesA(struct qemu_syscall *call)
 {
     struct qemu_DeviceCapabilitiesA *c = (struct qemu_DeviceCapabilitiesA *)call;
-    WINE_FIXME("Unverified!\n");
+    /* Juding by wineps.drv/driver.c, PSDRV_DeviceCapabilities, all data passed in pOutput an array of WORD, char
+     * or LONG, so we should be fine. */
+    WINE_TRACE("\n");
     c->super.iret = DeviceCapabilitiesA(QEMU_G2H(c->pDevice), QEMU_G2H(c->pPort), c->cap, QEMU_G2H(c->pOutput), QEMU_G2H(c->lpdm));
 }
 
@@ -103,7 +105,9 @@ WINBASEAPI INT WINAPI DeviceCapabilitiesW(LPCWSTR pDevice, LPCWSTR pPort, WORD f
 void qemu_DeviceCapabilitiesW(struct qemu_syscall *call)
 {
     struct qemu_DeviceCapabilitiesW *c = (struct qemu_DeviceCapabilitiesW *)call;
-    WINE_FIXME("Unverified!\n");
+    /* Juding by wineps.drv/driver.c, PSDRV_DeviceCapabilities, all data passed in pOutput an array of WORD, char
+     * or LONG, so we should be fine. */
+    WINE_TRACE("\n");
     c->super.iret = DeviceCapabilitiesW(QEMU_G2H(c->pDevice), QEMU_G2H(c->pPort), c->fwCapability, QEMU_G2H(c->pOutput), QEMU_G2H(c->pDevMode));
 }
 
@@ -122,7 +126,8 @@ struct qemu_DocumentPropertiesA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI LONG WINAPI DocumentPropertiesA(HWND hWnd,HANDLE hPrinter, LPSTR pDeviceName, LPDEVMODEA pDevModeOutput, LPDEVMODEA pDevModeInput,DWORD fMode)
+WINBASEAPI LONG WINAPI DocumentPropertiesA(HWND hWnd,HANDLE hPrinter, LPSTR pDeviceName, LPDEVMODEA pDevModeOutput,
+        LPDEVMODEA pDevModeInput,DWORD fMode)
 {
     struct qemu_DocumentPropertiesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DOCUMENTPROPERTIESA);
@@ -143,8 +148,10 @@ WINBASEAPI LONG WINAPI DocumentPropertiesA(HWND hWnd,HANDLE hPrinter, LPSTR pDev
 void qemu_DocumentPropertiesA(struct qemu_syscall *call)
 {
     struct qemu_DocumentPropertiesA *c = (struct qemu_DocumentPropertiesA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DocumentPropertiesA(QEMU_G2H(c->hWnd), QEMU_G2H(c->hPrinter), QEMU_G2H(c->pDeviceName), QEMU_G2H(c->pDevModeOutput), QEMU_G2H(c->pDevModeInput), c->fMode);
+    WINE_TRACE("\n");
+    /* DEVMODEA has the same size in 32 and 64 bit. */
+    c->super.iret = DocumentPropertiesA(QEMU_G2H(c->hWnd), QEMU_G2H(c->hPrinter), QEMU_G2H(c->pDeviceName),
+            QEMU_G2H(c->pDevModeOutput), QEMU_G2H(c->pDevModeInput), c->fMode);
 }
 
 #endif
@@ -162,7 +169,8 @@ struct qemu_DocumentPropertiesW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI LONG WINAPI DocumentPropertiesW(HWND hWnd, HANDLE hPrinter, LPWSTR pDeviceName, LPDEVMODEW pDevModeOutput, LPDEVMODEW pDevModeInput, DWORD fMode)
+WINBASEAPI LONG WINAPI DocumentPropertiesW(HWND hWnd, HANDLE hPrinter, LPWSTR pDeviceName, LPDEVMODEW pDevModeOutput,
+        LPDEVMODEW pDevModeInput, DWORD fMode)
 {
     struct qemu_DocumentPropertiesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DOCUMENTPROPERTIESW);
@@ -183,8 +191,10 @@ WINBASEAPI LONG WINAPI DocumentPropertiesW(HWND hWnd, HANDLE hPrinter, LPWSTR pD
 void qemu_DocumentPropertiesW(struct qemu_syscall *call)
 {
     struct qemu_DocumentPropertiesW *c = (struct qemu_DocumentPropertiesW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DocumentPropertiesW(QEMU_G2H(c->hWnd), QEMU_G2H(c->hPrinter), QEMU_G2H(c->pDeviceName), QEMU_G2H(c->pDevModeOutput), QEMU_G2H(c->pDevModeInput), c->fMode);
+    WINE_TRACE("\n");
+    /* DEVMODEW has the same size in 32 and 64 bit. */
+    c->super.iret = DocumentPropertiesW(QEMU_G2H(c->hWnd), QEMU_G2H(c->hPrinter), QEMU_G2H(c->pDeviceName),
+            QEMU_G2H(c->pDevModeOutput), QEMU_G2H(c->pDevModeInput), c->fMode);
 }
 
 #endif
@@ -216,7 +226,8 @@ extern BOOL WINAPI IsValidDevmodeA(PDEVMODEA pDevMode, size_t size);
 void qemu_IsValidDevmodeA(struct qemu_syscall *call)
 {
     struct qemu_IsValidDevmodeA *c = (struct qemu_IsValidDevmodeA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+    /* DEVMODEA has the same size in 32 and 64 bit. */
     c->super.iret = IsValidDevmodeA(QEMU_G2H(c->pDevMode), c->size);
 }
 
@@ -249,7 +260,8 @@ extern BOOL WINAPI IsValidDevmodeW(PDEVMODEW pDevMode, size_t size);
 void qemu_IsValidDevmodeW(struct qemu_syscall *call)
 {
     struct qemu_IsValidDevmodeW *c = (struct qemu_IsValidDevmodeW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+    /* DEVMODEW has the same size in 32 and 64 bit. */
     c->super.iret = IsValidDevmodeW(QEMU_G2H(c->pDevMode), c->size);
 }
 
@@ -786,7 +798,8 @@ struct qemu_GetPrintProcessorDirectoryA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetPrintProcessorDirectoryA(LPSTR server, LPSTR env, DWORD level, LPBYTE Info, DWORD cbBuf, LPDWORD pcbNeeded)
+WINBASEAPI BOOL WINAPI GetPrintProcessorDirectoryA(LPSTR server, LPSTR env, DWORD level, LPBYTE Info,
+        DWORD cbBuf, LPDWORD pcbNeeded)
 {
     struct qemu_GetPrintProcessorDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRINTPROCESSORDIRECTORYA);
@@ -807,8 +820,10 @@ WINBASEAPI BOOL WINAPI GetPrintProcessorDirectoryA(LPSTR server, LPSTR env, DWOR
 void qemu_GetPrintProcessorDirectoryA(struct qemu_syscall *call)
 {
     struct qemu_GetPrintProcessorDirectoryA *c = (struct qemu_GetPrintProcessorDirectoryA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetPrintProcessorDirectoryA(QEMU_G2H(c->server), QEMU_G2H(c->env), c->level, QEMU_G2H(c->Info), c->cbBuf, QEMU_G2H(c->pcbNeeded));
+    WINE_TRACE("\n");
+    /* pDriverDirectory is just a char * */
+    c->super.iret = GetPrintProcessorDirectoryA(QEMU_G2H(c->server), QEMU_G2H(c->env), c->level,
+            QEMU_G2H(c->Info), c->cbBuf, QEMU_G2H(c->pcbNeeded));
 }
 
 #endif
@@ -826,7 +841,8 @@ struct qemu_GetPrintProcessorDirectoryW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetPrintProcessorDirectoryW(LPWSTR server, LPWSTR env, DWORD level, LPBYTE Info, DWORD cbBuf, LPDWORD pcbNeeded)
+WINBASEAPI BOOL WINAPI GetPrintProcessorDirectoryW(LPWSTR server, LPWSTR env, DWORD level, LPBYTE Info,
+        DWORD cbBuf, LPDWORD pcbNeeded)
 {
     struct qemu_GetPrintProcessorDirectoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRINTPROCESSORDIRECTORYW);
@@ -848,7 +864,10 @@ void qemu_GetPrintProcessorDirectoryW(struct qemu_syscall *call)
 {
     struct qemu_GetPrintProcessorDirectoryW *c = (struct qemu_GetPrintProcessorDirectoryW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = GetPrintProcessorDirectoryW(QEMU_G2H(c->server), QEMU_G2H(c->env), c->level, QEMU_G2H(c->Info), c->cbBuf, QEMU_G2H(c->pcbNeeded));
+    WINE_TRACE("\n");
+    /* pDriverDirectory is just a WCHAR * */
+    c->super.iret = GetPrintProcessorDirectoryW(QEMU_G2H(c->server), QEMU_G2H(c->env), c->level,
+            QEMU_G2H(c->Info), c->cbBuf, QEMU_G2H(c->pcbNeeded));
 }
 
 #endif
@@ -1890,7 +1909,8 @@ struct qemu_GetPrinterDriverDirectoryW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetPrinterDriverDirectoryW(LPWSTR pName, LPWSTR pEnvironment, DWORD Level, LPBYTE pDriverDirectory, DWORD cbBuf, LPDWORD pcbNeeded)
+WINBASEAPI BOOL WINAPI GetPrinterDriverDirectoryW(LPWSTR pName, LPWSTR pEnvironment, DWORD Level,
+        LPBYTE pDriverDirectory, DWORD cbBuf, LPDWORD pcbNeeded)
 {
     struct qemu_GetPrinterDriverDirectoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRINTERDRIVERDIRECTORYW);
@@ -1911,8 +1931,10 @@ WINBASEAPI BOOL WINAPI GetPrinterDriverDirectoryW(LPWSTR pName, LPWSTR pEnvironm
 void qemu_GetPrinterDriverDirectoryW(struct qemu_syscall *call)
 {
     struct qemu_GetPrinterDriverDirectoryW *c = (struct qemu_GetPrinterDriverDirectoryW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetPrinterDriverDirectoryW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), c->Level, QEMU_G2H(c->pDriverDirectory), c->cbBuf, QEMU_G2H(c->pcbNeeded));
+    WINE_TRACE("\n");
+    /* pDriverDirectory is just a WCHAR * */
+    c->super.iret = GetPrinterDriverDirectoryW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), c->Level,
+            QEMU_G2H(c->pDriverDirectory), c->cbBuf, QEMU_G2H(c->pcbNeeded));
 }
 
 #endif
@@ -1930,7 +1952,8 @@ struct qemu_GetPrinterDriverDirectoryA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetPrinterDriverDirectoryA(LPSTR pName, LPSTR pEnvironment, DWORD Level, LPBYTE pDriverDirectory, DWORD cbBuf, LPDWORD pcbNeeded)
+WINBASEAPI BOOL WINAPI GetPrinterDriverDirectoryA(LPSTR pName, LPSTR pEnvironment, DWORD Level,
+        LPBYTE pDriverDirectory, DWORD cbBuf, LPDWORD pcbNeeded)
 {
     struct qemu_GetPrinterDriverDirectoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRINTERDRIVERDIRECTORYA);
@@ -1951,8 +1974,10 @@ WINBASEAPI BOOL WINAPI GetPrinterDriverDirectoryA(LPSTR pName, LPSTR pEnvironmen
 void qemu_GetPrinterDriverDirectoryA(struct qemu_syscall *call)
 {
     struct qemu_GetPrinterDriverDirectoryA *c = (struct qemu_GetPrinterDriverDirectoryA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetPrinterDriverDirectoryA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), c->Level, QEMU_G2H(c->pDriverDirectory), c->cbBuf, QEMU_G2H(c->pcbNeeded));
+    WINE_TRACE("\n");
+    /* pDriverDirectory is just a char * */
+    c->super.iret = GetPrinterDriverDirectoryA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), c->Level,
+            QEMU_G2H(c->pDriverDirectory), c->cbBuf, QEMU_G2H(c->pcbNeeded));
 }
 
 #endif
@@ -2596,7 +2621,7 @@ WINBASEAPI BOOL WINAPI GetDefaultPrinterW(LPWSTR name, LPDWORD namesize)
 void qemu_GetDefaultPrinterW(struct qemu_syscall *call)
 {
     struct qemu_GetDefaultPrinterW *c = (struct qemu_GetDefaultPrinterW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDefaultPrinterW(QEMU_G2H(c->name), QEMU_G2H(c->namesize));
 }
 
@@ -2628,7 +2653,7 @@ WINBASEAPI BOOL WINAPI GetDefaultPrinterA(LPSTR name, LPDWORD namesize)
 void qemu_GetDefaultPrinterA(struct qemu_syscall *call)
 {
     struct qemu_GetDefaultPrinterA *c = (struct qemu_GetDefaultPrinterA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDefaultPrinterA(QEMU_G2H(c->name), QEMU_G2H(c->namesize));
 }
 
