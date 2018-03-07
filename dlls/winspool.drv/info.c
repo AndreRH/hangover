@@ -3888,8 +3888,11 @@ WINBASEAPI BOOL WINAPI EnumFormsA(HANDLE hPrinter, DWORD Level, LPBYTE pForm, DW
 void qemu_EnumFormsA(struct qemu_syscall *call)
 {
     struct qemu_EnumFormsA *c = (struct qemu_EnumFormsA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_WARN("Not handling because not implemented in Wine.\n");
+    /* This function is not implemented in Wine. */
     c->super.iret = EnumFormsA(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pForm), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    if (c->super.iret)
+        WINE_FIXME("EnumFormsA succeeded, implement a proper wrapper.\n");
 }
 
 #endif
@@ -3928,8 +3931,11 @@ WINBASEAPI BOOL WINAPI EnumFormsW(HANDLE hPrinter, DWORD Level, LPBYTE pForm, DW
 void qemu_EnumFormsW(struct qemu_syscall *call)
 {
     struct qemu_EnumFormsW *c = (struct qemu_EnumFormsW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_WARN("Not handling because not implemented in Wine.\n");
+    /* This function is not implemented in Wine. */
     c->super.iret = EnumFormsW(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pForm), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    if (c->super.iret)
+        WINE_FIXME("EnumFormsA succeeded, implement a proper wrapper.\n");
 }
 
 #endif
