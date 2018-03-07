@@ -162,8 +162,7 @@ enum winspool_calls
 void qemu_AbortPrinter(struct qemu_syscall *call);
 void qemu_AddFormA(struct qemu_syscall *call);
 void qemu_AddFormW(struct qemu_syscall *call);
-void qemu_AddJobA(struct qemu_syscall *call);
-void qemu_AddJobW(struct qemu_syscall *call);
+void qemu_AddJob(struct qemu_syscall *call);
 void qemu_AddMonitor(struct qemu_syscall *call);
 void qemu_AddPortA(struct qemu_syscall *call);
 void qemu_AddPortEx(struct qemu_syscall *call);

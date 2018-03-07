@@ -709,7 +709,7 @@ void qemu_AddFormW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_AddJobA
+struct qemu_AddJob
 {
     struct qemu_syscall super;
     uint64_t hPrinter;
@@ -723,7 +723,7 @@ struct qemu_AddJobA
 
 WINBASEAPI BOOL WINAPI AddJobA(HANDLE hPrinter, DWORD Level, LPBYTE pData, DWORD cbBuf, LPDWORD pcbNeeded)
 {
-    struct qemu_AddJobA call;
+    struct qemu_AddJob call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDJOBA);
     call.hPrinter = (ULONG_PTR)hPrinter;
     call.Level = Level;
@@ -736,32 +736,9 @@ WINBASEAPI BOOL WINAPI AddJobA(HANDLE hPrinter, DWORD Level, LPBYTE pData, DWORD
     return call.super.iret;
 }
 
-#else
-
-void qemu_AddJobA(struct qemu_syscall *call)
-{
-    struct qemu_AddJobA *c = (struct qemu_AddJobA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AddJobA(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pData), c->cbBuf, QEMU_G2H(c->pcbNeeded));
-}
-
-#endif
-
-struct qemu_AddJobW
-{
-    struct qemu_syscall super;
-    uint64_t hPrinter;
-    uint64_t Level;
-    uint64_t pData;
-    uint64_t cbBuf;
-    uint64_t pcbNeeded;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI BOOL WINAPI AddJobW(HANDLE hPrinter, DWORD Level, LPBYTE pData, DWORD cbBuf, LPDWORD pcbNeeded)
 {
-    struct qemu_AddJobW call;
+    struct qemu_AddJob call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDJOBW);
     call.hPrinter = (ULONG_PTR)hPrinter;
     call.Level = Level;
@@ -776,11 +753,25 @@ WINBASEAPI BOOL WINAPI AddJobW(HANDLE hPrinter, DWORD Level, LPBYTE pData, DWORD
 
 #else
 
-void qemu_AddJobW(struct qemu_syscall *call)
+void qemu_AddJob(struct qemu_syscall *call)
 {
-    struct qemu_AddJobW *c = (struct qemu_AddJobW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AddJobW(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pData), c->cbBuf, QEMU_G2H(c->pcbNeeded));
+    struct qemu_AddJob *c = (struct qemu_AddJob *)call;
+    WINE_TRACE("\n");
+
+    /* FIXME: The tests suggest that there's a maximum size of sizeof(ADDJOB_INFO_1W) + sizeof(WCHAR) * MAX_PATH.
+     * So it may be necessary to pass our own struct to Wine and calculate proper sizes for the guest. */
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_ADDJOBA))
+        c->super.iret = AddJobA(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pData), c->cbBuf, QEMU_G2H(c->pcbNeeded));
+    else
+        c->super.iret = AddJobW(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pData), c->cbBuf, QEMU_G2H(c->pcbNeeded));
+
+#if GUEST_BIT == HOST_BIT
+    return;
+#endif
+    if (!c->super.iret || !QEMU_G2H(c->pData))
+        return;
+
+    ADDJOB_INFO_1_h2g(QEMU_G2H(c->pData), QEMU_G2H(c->pData));
 }
 
 #endif

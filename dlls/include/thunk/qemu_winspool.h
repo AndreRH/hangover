@@ -533,4 +533,16 @@ static inline void DRIVER_INFO_8_g2h(DRIVER_INFO_8W *host, const struct qemu_DRI
 }
 #endif
 
+struct qemu_ADDJOB_INFO_1
+{
+    qemu_ptr Path;
+    DWORD  JobId;
+};
+
+static inline void ADDJOB_INFO_1_h2g(struct qemu_ADDJOB_INFO_1 *guest, const ADDJOB_INFO_1W *host)
+{
+    guest->Path = (ULONG_PTR)host->Path;
+    guest->JobId = host->JobId;
+}
+
 #endif
