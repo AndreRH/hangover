@@ -301,7 +301,7 @@ void qemu_OpenPrinter(struct qemu_syscall *call)
 {
     struct qemu_OpenPrinter *c = (struct qemu_OpenPrinter *)call;
     HANDLE printer;
-    PRINTER_DEFAULTSW stack, *def;
+    PRINTER_DEFAULTSW stack, *def = &stack;
     WINE_TRACE("\n");
 
 #if HOST_BIT == GUEST_BIT
