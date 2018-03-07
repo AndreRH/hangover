@@ -1,29 +1,45 @@
 #ifndef HAVE_QEMU_THUNK_WINSPOOL_H
 #define HAVE_QEMU_THUNK_WINSPOOL_H
 
+struct qemu_PRINTER_INFO_1
+{
+    DWORD       Flags;
+    qemu_ptr    pDescription;
+    qemu_ptr    pName;
+    qemu_ptr    pComment;
+};
+
+static inline void PRINTER_INFO_1_h2g(struct qemu_PRINTER_INFO_1 *guest, const PRINTER_INFO_1W *host)
+{
+    guest->Flags = host->Flags;
+    guest->pDescription = (ULONG_PTR)host->pDescription;
+    guest->pName = (ULONG_PTR)host->pName;
+    guest->pComment = (ULONG_PTR)host->pComment;
+}
+
 struct qemu_PRINTER_INFO_2
 {
-  qemu_ptr  pServerName;
-  qemu_ptr  pPrinterName;
-  qemu_ptr  pShareName;
-  qemu_ptr  pPortName;
-  qemu_ptr  pDriverName;
-  qemu_ptr  pComment;
-  qemu_ptr  pLocation;
-  qemu_ptr  pDevMode;
-  qemu_ptr  pSepFile;
-  qemu_ptr  pPrintProcessor;
-  qemu_ptr  pDatatype;
-  qemu_ptr  pParameters;
-  qemu_ptr  pSecurityDescriptor;
-  DWORD     Attributes;
-  DWORD     Priority;
-  DWORD     DefaultPriority;
-  DWORD     StartTime;
-  DWORD     UntilTime;
-  DWORD     Status;
-  DWORD     cJobs;
-  DWORD     AveragePPM;
+    qemu_ptr  pServerName;
+    qemu_ptr  pPrinterName;
+    qemu_ptr  pShareName;
+    qemu_ptr  pPortName;
+    qemu_ptr  pDriverName;
+    qemu_ptr  pComment;
+    qemu_ptr  pLocation;
+    qemu_ptr  pDevMode;
+    qemu_ptr  pSepFile;
+    qemu_ptr  pPrintProcessor;
+    qemu_ptr  pDatatype;
+    qemu_ptr  pParameters;
+    qemu_ptr  pSecurityDescriptor;
+    DWORD     Attributes;
+    DWORD     Priority;
+    DWORD     DefaultPriority;
+    DWORD     StartTime;
+    DWORD     UntilTime;
+    DWORD     Status;
+    DWORD     cJobs;
+    DWORD     AveragePPM;
 };
 
 static inline void PRINTER_INFO_2_h2g(struct qemu_PRINTER_INFO_2 *guest, const PRINTER_INFO_2W *host)
@@ -49,6 +65,80 @@ static inline void PRINTER_INFO_2_h2g(struct qemu_PRINTER_INFO_2 *guest, const P
     guest->Status = host->Status;
     guest->cJobs = host->cJobs;
     guest->AveragePPM = host->AveragePPM;
+}
+
+struct qemu_PRINTER_INFO_3
+{
+    qemu_ptr pSecurityDescriptor;
+};
+
+static inline void PRINTER_INFO_3_h2g(struct qemu_PRINTER_INFO_3 *guest, const PRINTER_INFO_3 *host)
+{
+    guest->pSecurityDescriptor = (ULONG_PTR)host->pSecurityDescriptor;
+}
+
+struct qemu_PRINTER_INFO_4
+{
+    qemu_ptr    pPrinterName;
+    qemu_ptr    pServerName;
+    DWORD       Attributes;
+};
+
+static inline void PRINTER_INFO_4_h2g(struct qemu_PRINTER_INFO_4 *guest, const PRINTER_INFO_4 *host)
+{
+    guest->pPrinterName = (ULONG_PTR)host->pPrinterName;
+    guest->pServerName = (ULONG_PTR)host->pServerName;
+    guest->Attributes = host->Attributes;
+}
+
+struct qemu_PRINTER_INFO_5
+{
+    qemu_ptr    pPrinterName;
+    qemu_ptr    pPortName;
+    DWORD       Attributes;
+    DWORD       DeviceNotSelectedTimeout;
+    DWORD       TransmissionRetryTimeout;
+};
+
+static inline void PRINTER_INFO_5_h2g(struct qemu_PRINTER_INFO_5 *guest, const PRINTER_INFO_5 *host)
+{
+    guest->pPrinterName = (ULONG_PTR)host->pPrinterName;
+    guest->pPortName = (ULONG_PTR)host->pPortName;
+    guest->Attributes = host->Attributes;
+    guest->DeviceNotSelectedTimeout = host->DeviceNotSelectedTimeout;
+    guest->TransmissionRetryTimeout = host->TransmissionRetryTimeout;
+}
+
+struct qemu_PRINTER_INFO_7
+{
+    qemu_ptr    pszObjectGUID;
+    DWORD       dwAction;
+};
+
+static inline void PRINTER_INFO_7_h2g(struct qemu_PRINTER_INFO_7 *guest, const PRINTER_INFO_7W *host)
+{
+    guest->pszObjectGUID = (ULONG_PTR)host->pszObjectGUID;
+    guest->dwAction = host->dwAction;
+}
+
+struct qemu_PRINTER_INFO_8
+{
+    qemu_ptr    pDevMode;
+};
+
+static inline void PRINTER_INFO_8_h2g(struct qemu_PRINTER_INFO_8 *guest, const PRINTER_INFO_8W *host)
+{
+    guest->pDevMode = (ULONG_PTR)host->pDevMode;
+}
+
+struct qemu_PRINTER_INFO_9
+{
+    qemu_ptr    pDevMode;
+};
+
+static inline void PRINTER_INFO_9_h2g(struct qemu_PRINTER_INFO_9 *guest, const PRINTER_INFO_9W *host)
+{
+    guest->pDevMode = (ULONG_PTR)host->pDevMode;
 }
 
 struct MONITOR_INFO_2
