@@ -1319,7 +1319,7 @@ WINUSERAPI BOOL WINAPI WaitMessage(void)
 void qemu_WaitMessage(struct qemu_syscall *call)
 {
     struct qemu_WaitMessage *c = (struct qemu_WaitMessage *)call;
-    WINE_TRACE("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WaitMessage();
 }
 
