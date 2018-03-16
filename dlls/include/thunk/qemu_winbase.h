@@ -452,4 +452,28 @@ static inline void OVERLAPPED_h2g(struct qemu_OVERLAPPED *guest, const OVERLAPPE
     guest->hEvent = (ULONG_PTR)host->hEvent;
 }
 
+struct qemu_MEMORYSTATUS
+{
+    DWORD       dwLength;
+    DWORD       dwMemoryLoad;
+    qemu_ptr    dwTotalPhys;
+    qemu_ptr    dwAvailPhys;
+    qemu_ptr    dwTotalPageFile;
+    qemu_ptr    dwAvailPageFile;
+    qemu_ptr    dwTotalVirtual;
+    qemu_ptr    dwAvailVirtual;
+};
+
+static inline void MEMORYSTATUS_h2g(struct qemu_MEMORYSTATUS *guest, const MEMORYSTATUS *host)
+{
+    guest->dwLength = sizeof(*guest);
+    guest->dwMemoryLoad = host->dwMemoryLoad;
+    guest->dwTotalPhys = host->dwTotalPhys;
+    guest->dwAvailPhys = host->dwAvailPhys;
+    guest->dwTotalPageFile = host->dwTotalPageFile;
+    guest->dwAvailPageFile = host->dwAvailPageFile;
+    guest->dwTotalVirtual = host->dwTotalVirtual;
+    guest->dwAvailVirtual = host->dwAvailVirtual;
+}
+
 #endif

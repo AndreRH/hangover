@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_kernel32.h"
@@ -1249,8 +1251,18 @@ WINBASEAPI VOID WINAPI GlobalMemoryStatus(LPMEMORYSTATUS lpBuffer)
 void qemu_GlobalMemoryStatus(struct qemu_syscall *call)
 {
     struct qemu_GlobalMemoryStatus *c = (struct qemu_GlobalMemoryStatus *)call;
-    WINE_FIXME("Unverified!\n");
-    GlobalMemoryStatus(QEMU_G2H(c->lpBuffer));
+    MEMORYSTATUS stack, *status = &stack;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    status = QEMU_G2H(c->lpBuffer);
+#endif
+
+    GlobalMemoryStatus(status);
+
+#if HOST_BIT != GUEST_BIT
+    MEMORYSTATUS_h2g(QEMU_G2H(c->lpBuffer), status);
+#endif
 }
 
 #endif
