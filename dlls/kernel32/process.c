@@ -260,8 +260,39 @@ WINBASEAPI UINT WINAPI WinExec(LPCSTR lpCmdLine, UINT nCmdShow)
 void qemu_WinExec(struct qemu_syscall *call)
 {
     struct qemu_WinExec *c = (struct qemu_WinExec *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = WinExec(QEMU_G2H(c->lpCmdLine), c->nCmdShow);
+    char *newcmd, *qemu = NULL;
+    unsigned int len = 1;
+
+    /* This implementation will fail to execute host binaries (e.g. wine-provided stuff in
+     * C:\Windows, and argv[0] will be wrong. */
+    WINE_FIXME("Somewhat incorrect.\n");
+
+    do
+    {
+        HeapFree(GetProcessHeap(), 0, qemu);
+        len *= 2;
+        qemu = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*qemu) + 3);
+        SetLastError(0);
+        GetModuleFileNameA(NULL, qemu, len);
+    } while(GetLastError());
+
+    strcat(qemu, ".so");
+    len = strlen(QEMU_G2H(c->lpCmdLine)) + strlen(qemu);
+
+    newcmd = HeapAlloc(GetProcessHeap(), 0, len + 2);
+    if (!newcmd)
+    {
+        HeapFree(GetProcessHeap(), 0, qemu);
+        c->super.iret = 11;
+        return;
+    }
+
+    sprintf(newcmd, "%s %s", qemu, QEMU_G2H(c->lpCmdLine));
+
+    c->super.iret = WinExec(newcmd, c->nCmdShow);
+
+    HeapFree(GetProcessHeap(), 0, qemu);
+    HeapFree(GetProcessHeap(), 0, newcmd);
 }
 
 #endif
