@@ -97,6 +97,9 @@ WINBASEAPI BOOL WINAPI OpenThreadToken(HANDLE ThreadHandle, DWORD DesiredAccess,
 
     qemu_syscall(&call.super);
 
+    if (TokenHandle)
+        *TokenHandle = (HANDLE)(ULONG_PTR)call.TokenHandle;
+    
     return call.super.iret;
 }
 
@@ -105,8 +108,11 @@ WINBASEAPI BOOL WINAPI OpenThreadToken(HANDLE ThreadHandle, DWORD DesiredAccess,
 void qemu_OpenThreadToken(struct qemu_syscall *call)
 {
     struct qemu_OpenThreadToken *c = (struct qemu_OpenThreadToken *)call;
+    HANDLE h;
     WINE_TRACE("\n");
-    c->super.iret = OpenThreadToken(QEMU_G2H(c->ThreadHandle), c->DesiredAccess, c->OpenAsSelf, QEMU_G2H(c->TokenHandle));
+
+    c->super.iret = OpenThreadToken(QEMU_G2H(c->ThreadHandle), c->DesiredAccess, c->OpenAsSelf, c->TokenHandle ? &h : NULL);
+    c->TokenHandle = QEMU_H2G(h);
 }
 
 #endif
