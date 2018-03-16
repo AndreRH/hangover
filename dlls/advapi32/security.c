@@ -24,6 +24,8 @@
 #include <winsafer.h>
 #include <aclapi.h>
 
+#include "thunk/qemu_winnt.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_advapi32.h"
@@ -1055,8 +1057,18 @@ WINBASEAPI BOOL WINAPI InitializeSecurityDescriptor(PSECURITY_DESCRIPTOR pDescr,
 void qemu_InitializeSecurityDescriptor(struct qemu_syscall *call)
 {
     struct qemu_InitializeSecurityDescriptor *c = (struct qemu_InitializeSecurityDescriptor *)call;
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
     WINE_TRACE("\n");
-    c->super.iret = InitializeSecurityDescriptor(QEMU_G2H(c->pDescr), c->revision);
+
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->pDescr);
+#endif
+
+    c->super.iret = InitializeSecurityDescriptor(desc, c->revision);
+
+#if GUEST_BIT != HOST_BIT
+    SECURITY_DESCRIPTOR_h2g(QEMU_G2H(c->pDescr), desc);
+#endif
 }
 
 #endif
