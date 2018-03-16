@@ -420,6 +420,8 @@ WINBASEAPI BOOL WINAPI AllocateAndInitializeSid(PSID_IDENTIFIER_AUTHORITY pIdent
     call.pSid = (ULONG_PTR)pSid;
 
     qemu_syscall(&call.super);
+    if (pSid)
+        *pSid = (PSID)(ULONG_PTR)call.pSid;
 
     return call.super.iret;
 }
@@ -429,8 +431,11 @@ WINBASEAPI BOOL WINAPI AllocateAndInitializeSid(PSID_IDENTIFIER_AUTHORITY pIdent
 void qemu_AllocateAndInitializeSid(struct qemu_syscall *call)
 {
     struct qemu_AllocateAndInitializeSid *c = (struct qemu_AllocateAndInitializeSid *)call;
+    PSID sid;
+
     WINE_TRACE("\n");
-    c->super.iret = AllocateAndInitializeSid(QEMU_G2H(c->pIdentifierAuthority), c->nSubAuthorityCount, c->nSubAuthority0, c->nSubAuthority1, c->nSubAuthority2, c->nSubAuthority3, c->nSubAuthority4, c->nSubAuthority5, c->nSubAuthority6, c->nSubAuthority7, QEMU_G2H(c->pSid));
+    c->super.iret = AllocateAndInitializeSid(QEMU_G2H(c->pIdentifierAuthority), c->nSubAuthorityCount, c->nSubAuthority0, c->nSubAuthority1, c->nSubAuthority2, c->nSubAuthority3, c->nSubAuthority4, c->nSubAuthority5, c->nSubAuthority6, c->nSubAuthority7, c->pSid ? &sid : NULL);
+    c->pSid = QEMU_H2G(sid);
 }
 
 #endif
