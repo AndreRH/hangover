@@ -187,7 +187,7 @@ WINUSERAPI LPSTR WINAPI CharPrevA(LPCSTR start, LPCSTR ptr)
 void qemu_CharPrevA(struct qemu_syscall *call)
 {
     struct qemu_CharPrevA *c = (struct qemu_CharPrevA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)CharPrevA(QEMU_G2H(c->start), QEMU_G2H(c->ptr));
 }
 
