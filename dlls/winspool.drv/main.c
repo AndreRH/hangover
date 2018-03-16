@@ -146,6 +146,7 @@ static const syscall_handler dll_functions[] =
     qemu_IsValidDevmodeA,
     qemu_IsValidDevmodeW,
     qemu_OpenPrinter,
+    qemu_OpenPrinter,
     qemu_PrinterProperties,
     qemu_ReadPrinter,
     qemu_ResetPrinterA,
