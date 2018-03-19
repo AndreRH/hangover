@@ -499,17 +499,19 @@ struct qemu_NtAllocateUuids
     uint64_t Time;
     uint64_t Range;
     uint64_t Sequence;
+    uint64_t seed;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI NtAllocateUuids(PULARGE_INTEGER Time, PULONG Range, PULONG Sequence)
+WINBASEAPI NTSTATUS WINAPI NtAllocateUuids(PULARGE_INTEGER Time, PULONG Range, PULONG Sequence, UCHAR *seed)
 {
     struct qemu_NtAllocateUuids call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTALLOCATEUUIDS);
     call.Time = (ULONG_PTR)Time;
     call.Range = (ULONG_PTR)Range;
     call.Sequence = (ULONG_PTR)Sequence;
+    call.seed = (ULONG_PTR)seed;
 
     qemu_syscall(&call.super);
 
@@ -522,7 +524,8 @@ void qemu_NtAllocateUuids(struct qemu_syscall *call)
 {
     struct qemu_NtAllocateUuids *c = (struct qemu_NtAllocateUuids *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = NtAllocateUuids(QEMU_G2H(c->Time), QEMU_G2H(c->Range), QEMU_G2H(c->Sequence));
+    c->super.iret = NtAllocateUuids(QEMU_G2H(c->Time), QEMU_G2H(c->Range), QEMU_G2H(c->Sequence),
+            QEMU_G2H(c->seed));
 }
 
 #endif
