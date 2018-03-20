@@ -1433,6 +1433,8 @@ DWORD CALLBACK overlapped32_wait_func(void *ctx)
         WINE_TRACE("Just freeing data %p, guest data %p\n", ov, ov->guest_ov);
         free_OVERLAPPED(ov);
     }
+
+    return 0;
 }
 
 struct OVERLAPPED_data * WINAPI alloc_OVERLAPPED_data(void *ov32, uint64_t guest_completion_cb, BOOL event)
