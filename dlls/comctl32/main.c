@@ -24,6 +24,7 @@
 #include <assert.h>
 
 #include "thunk/qemu_windows.h"
+#include "thunk/qemu_commctrl.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -1010,7 +1011,8 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
     LRESULT ret;
     LPARAM orig_param;
     PROPSHEETPAGEW *page;
-    PROPSHEETPAGEW stack_copy, *page_copy = &stack_copy;
+    PROPSHEETPAGEW stack_copy, page_copy;
+    struct qemu_PROPSHEETPAGE page_copy32;
 
     WINE_TRACE("Processing meesage %x.\n", msg);
 
@@ -1032,14 +1034,18 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
         page = (PROPSHEETPAGEW *)lparam;
         page_data = (struct page_data *)page->lParam;
 
-#if HOST_BIT != GUEST_BIT
-        page_copy = HeapAlloc(GetProcessHeap(), 0, sizeof(*page_copy));
-#endif
+        orig_param = page->lParam;
 
-        *page_copy = *page;
-        orig_param = page_copy->lParam;
-        page_copy->lParam = page_data->guest_lparam;
-        call->lparam = QEMU_H2G(page_copy);
+#if HOST_BIT == GUEST_BIT
+        page_copy = *page;
+        page_copy.lParam = page_data->guest_lparam;
+        call->lparam = QEMU_H2G(&page_copy);
+#else
+        page_copy32.dwSize = sizeof(page_copy32);
+        PROPSHEETPAGE_h2g(&page_copy32, page);
+        page_copy32.lParam = page_data->guest_lparam;
+        call->lparam = QEMU_H2G(&page_copy32);
+#endif
     }
 #if HOST_BIT != GUEST_BIT
     else if (msg == WM_NCCREATE)
@@ -1098,7 +1104,11 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
 
     if (msg == WM_INITDIALOG)
     {
-        *page = *page_copy;
+#if HOST_BIT == GUEST_BIT
+        *page = page_copy;
+#else
+        PROPSHEETPAGE_g2h(page, &page_copy32);
+#endif
         page->lParam = orig_param;
     }
 #if HOST_BIT != GUEST_BIT
@@ -1129,8 +1139,6 @@ LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam,
 
     if (call != &stack_call)
         HeapFree(GetProcessHeap(), 0, call);
-    if (page_copy != &stack_copy)
-        HeapFree(GetProcessHeap(), 0, page_copy);
 
     return ret;
 }

@@ -1481,6 +1481,7 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             break;
 
         case PSM_ISDIALOGMESSAGE:
+        case TTM_RELAYEVENT:
             if (msg_in->lParam)
             {
                 struct qemu_MSG *guest_msg = (struct qemu_MSG *)msg_in->lParam;
@@ -1735,6 +1736,7 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
             break;
 
         case PSM_ISDIALOGMESSAGE:
+        case TTM_RELAYEVENT:
             if (conv->lParam != orig->lParam)
             {
                 struct qemu_MSG *guest_msg = (struct qemu_MSG *)orig->lParam;
@@ -2037,8 +2039,9 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             break;
 
         case PSM_ISDIALOGMESSAGE:
+        case TTM_RELAYEVENT:
             /* Probably subclassing shenanigans. Just convert if this is ever hit. */
-            WINE_FIXME("PSM_ISDIALOGMESSAGE sent from host to guest.\n");
+            WINE_FIXME("PSM_ISDIALOGMESSAGE or TTM_RELAYEVENT sent from host to guest.\n");
             break;
 
         default:
