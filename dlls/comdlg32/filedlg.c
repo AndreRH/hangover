@@ -137,6 +137,11 @@ static UINT_PTR CALLBACK hook_proc_wrapper(HWND dlg, UINT msg, WPARAM wp, LPARAM
 
         call->lp = QEMU_H2G(notify);
     }
+    else if (msg == WM_INITDIALOG)
+    {
+        OPENFILENAMEW *dlg = (OPENFILENAMEW *)lp;
+        call->lp = dlg->lCustData;
+    }
 #endif
 
     ret = qemu_ops->qemu_execute(QEMU_G2H(guest_wrapper), QEMU_H2G(call));
