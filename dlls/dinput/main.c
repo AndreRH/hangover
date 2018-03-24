@@ -281,11 +281,12 @@ void qemu_IDirectInputImpl_Release(struct qemu_syscall *call)
     struct qemu_IDirectInputImpl_Release *c = (struct qemu_IDirectInputImpl_Release *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     c->super.iret = IDirectInput_Release(dinput->host_7a);
     if (!c->super.iret)
     {
+        WINE_TRACE("Destroying dinput wrapper %p.\n", dinput);
         HeapFree(GetProcessHeap(), 0, dinput);
     }
 }
@@ -296,23 +297,52 @@ struct qemu_IDirectInputAImpl_QueryInterface
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t riid;
-    uint64_t ppobj;
+    uint64_t iid;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInputAImpl_QueryInterface(IDirectInput7A *iface, REFIID riid, LPVOID *ppobj)
+static HRESULT WINAPI IDirectInputAImpl_QueryInterface(IDirectInput7A *iface, const IID *iid, void **obj)
 {
     struct qemu_IDirectInputAImpl_QueryInterface call;
     struct qemu_dinput *dinput = impl_from_IDirectInput7A(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTAIMPL_QUERYINTERFACE);
     call.iface = (ULONG_PTR)dinput;
-    call.riid = (ULONG_PTR)riid;
-    call.ppobj = (ULONG_PTR)ppobj;
+    call.iid = (ULONG_PTR)iid;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+    {
+        /* Don't AddRef, the host call took care of this already. */
+        if (IsEqualGUID(&IID_IUnknown, iid)
+                || IsEqualGUID(&IID_IDirectInputA,  iid)
+                || IsEqualGUID(&IID_IDirectInput2A, iid)
+                || IsEqualGUID(&IID_IDirectInput7A, iid))
+        {
+            *obj = &dinput->IDirectInput7A_iface;
+        }
+        else if (IsEqualGUID(&IID_IDirectInputW,  iid)
+                || IsEqualGUID(&IID_IDirectInput2W, iid)
+                || IsEqualGUID(&IID_IDirectInput7W, iid))
+        {
+            *obj = &dinput->IDirectInput7W_iface;
+        }
+        else if (IsEqualGUID(&IID_IDirectInput8A, iid))
+        {
+            *obj = &dinput->IDirectInput8A_iface;
+        }
+        else if (IsEqualGUID(&IID_IDirectInput8W, iid))
+        {
+            *obj = &dinput->IDirectInput8W_iface;
+        }
+        /*
+        else if (IsEqualGUID(&IID_IDirectInputJoyConfig8, iid))
+        {
+            *obj = &dinput->IDirectInputJoyConfig8_iface;
+        }
+        */
+    }
 
     return call.super.iret;
 }
@@ -323,10 +353,11 @@ void qemu_IDirectInputAImpl_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_IDirectInputAImpl_QueryInterface *c = (struct qemu_IDirectInputAImpl_QueryInterface *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
+    void *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
-    c->super.iret = IDirectInput_QueryInterface(dinput->host_7a, QEMU_G2H(c->riid), QEMU_G2H(c->ppobj));
+    c->super.iret = IDirectInput_QueryInterface(dinput->host_7a, QEMU_G2H(c->iid), &obj);
 }
 
 #endif
