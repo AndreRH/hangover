@@ -33,5 +33,6 @@
 #define DLL_RICHED32    0x1eLL
 #define DLL_DDRAW       0x1fLL
 #define DLL_WINSPOOL    0x20LL
+#define DLL_DINPUT      0x21LL
 
 #endif

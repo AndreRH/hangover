@@ -38,7 +38,7 @@ mkdir -p $DESTDIR/build/qemu/x86_64-windows-user/qemu_host_dll32
 declare -a dlls=("ntdll" "kernel32" "msvcrt" "advapi32" "comctl32" "comdlg32" "ddraw" "d3d9" "d3dx10_43" "d3dx9_43"
         "gdi32" "imm32" "msvcr80" "msvcr100" "opengl32" "shell32" "shlwapi" "user32" "version" "xinput1_3" "winmm"
         "wsock32" "ws2_32" "iphlpapi" "secur32" "wininet" "advpack" "usp10" "riched20" "riched32" "dsound"
-        "winspool.drv")
+        "winspool.drv" "dinput")
 
 mkdir -p $DESTDIR/build/dlls32
 mkdir -p $DESTDIR/build/dlls64
