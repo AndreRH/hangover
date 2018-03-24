@@ -56,6 +56,29 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
     return TRUE;
 }
 
+HRESULT WINAPI DllCanUnloadNow(void)
+{
+    return S_FALSE;
+}
+
+HRESULT WINAPI DllGetClassObject(const CLSID *rclsid, const IID *iid, void **obj)
+{
+    WINE_FIXME("(%s,%s,%p): Stub!\n", wine_dbgstr_guid(rclsid), wine_dbgstr_guid(iid), obj);
+    return CLASS_E_CLASSNOTAVAILABLE;
+}
+
+HRESULT WINAPI DllRegisterServer(void)
+{
+    WINE_ERR("Not expected to be called on guest DLLs.\n");
+    return E_FAIL;
+}
+
+HRESULT WINAPI DllUnregisterServer(void)
+{
+    WINE_ERR("Not expected to be called on guest DLLs.\n");
+    return E_FAIL;
+}
+
 #else
 
 static void qemu_init_dll(struct qemu_syscall *call)
