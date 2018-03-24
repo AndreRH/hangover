@@ -106,10 +106,12 @@ static void qemu_set_callbacks(struct qemu_syscall *call)
         WINE_TRACE("Loading comctl32.dll\n");
 
         /* Of course this means that I have to load any library that links to comctl32 at runtime too,
-         * e.g. comdlg32. This DllMain function should be called first by the loader. */
+         * e.g. comdlg32 or dinput. However, depending on which library the guest program loads first
+         * this function may or may not be the first one to load guest comctl32. Check if it is there,
+         * but only write a WARN if that is the case. */
         comctl32 = GetModuleHandleA("comctl32");
         if (comctl32)
-            WINE_ERR("Comctl32 already loaded!\n");
+            WINE_WARN("Comctl32 already loaded!\n");
 
         comctl32 = LoadLibraryA("comctl32");
 
