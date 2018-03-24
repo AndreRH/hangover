@@ -25,6 +25,25 @@ enum dinput_calls
     CALL_INIT_DLL = 0,
 };
 
+struct qemu_dinput
+{
+    /* Guest fields */
+    IDirectInput7A              IDirectInput7A_iface;
+    IDirectInput7W              IDirectInput7W_iface;
+    IDirectInput8A              IDirectInput8A_iface;
+    IDirectInput8W              IDirectInput8W_iface;
+    /*IDirectInputJoyConfig8      IDirectInputJoyConfig8_iface;*/
+
+    LONG                        ref;
+
+    /* Host fields */
+    IDirectInput7A              *host_7a;
+    IDirectInput7W              *host_7w;
+    IDirectInput8A              *host_8a;
+    IDirectInput8W              *host_8w;
+    /*IDirectInputJoyConfig8      *host_joy_config;*/
+};
+
 #ifdef QEMU_DLL_GUEST
 
 #else

@@ -23,6 +23,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <dinput.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -54,6 +55,81 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
     }
 
     return TRUE;
+}
+
+static HRESULT create_directinput_instance(REFIID riid, void **iface_out, struct qemu_dinput **impl)
+{
+    WINE_FIXME("Not yet implemented.\"n");
+#if 0
+    struct qemu_dinput *This = HeapAlloc( GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(struct qemu_dinput) );
+    HRESULT hr;
+
+    if (!This)
+        return E_OUTOFMEMORY;
+
+    This->IDirectInput7A_iface.lpVtbl = &ddi7avt;
+    This->IDirectInput7W_iface.lpVtbl = &ddi7wvt;
+    This->IDirectInput8A_iface.lpVtbl = &ddi8avt;
+    This->IDirectInput8W_iface.lpVtbl = &ddi8wvt;
+    This->IDirectInputJoyConfig8_iface.lpVtbl = &JoyConfig8vt;
+
+    hr = IDirectInput_QueryInterface( &This->IDirectInput7A_iface, riid, ppDI );
+    if (FAILED(hr))
+    {
+        HeapFree( GetProcessHeap(), 0, This );
+        return hr;
+    }
+
+    if (out) *out = This;
+    return DI_OK;
+#endif
+}
+
+/******************************************************************************
+ *	DirectInputCreateEx (DINPUT.@)
+ */
+HRESULT WINAPI DirectInputCreateEx(HINSTANCE inst, DWORD version, const IID *iid, void **out, IUnknown *outer)
+{
+    struct qemu_dinput *dinput;
+    HRESULT hr;
+
+    WINE_TRACE("(%p,%04x,%s,%p,%p)\n", inst, version, wine_dbgstr_guid(iid), out, outer);
+
+    if (IsEqualGUID(&IID_IDirectInputA, iid) ||
+            IsEqualGUID(&IID_IDirectInput2A, iid) ||
+            IsEqualGUID(&IID_IDirectInput7A, iid) ||
+            IsEqualGUID(&IID_IDirectInputW,  iid) ||
+            IsEqualGUID(&IID_IDirectInput2W, iid) ||
+            IsEqualGUID(&IID_IDirectInput7W, iid))
+    {
+        hr = create_directinput_instance(iid, out, &dinput);
+        if (FAILED(hr))
+            return hr;
+    }
+    else
+    {
+        return DIERR_NOINTERFACE;
+    }
+
+    hr = IDirectInput_Initialize(&dinput->IDirectInput7A_iface, inst, version);
+    if (FAILED(hr))
+    {
+        IDirectInput_Release(&dinput->IDirectInput7A_iface);
+        *out = NULL;
+        return hr;
+    }
+
+    return DI_OK;
+}
+
+HRESULT WINAPI DirectInputCreateA(HINSTANCE inst, DWORD version, IDirectInputA *out, IUnknown *outer)
+{
+    return DirectInputCreateEx(inst, version, &IID_IDirectInput7A, (void **)out, outer);
+}
+
+HRESULT WINAPI DirectInputCreateW(HINSTANCE inst, DWORD version, IDirectInputW *out, IUnknown *outer)
+{
+    return DirectInputCreateEx(inst, version, &IID_IDirectInput7W, (void **)out, outer);
 }
 
 HRESULT WINAPI DllCanUnloadNow(void)
