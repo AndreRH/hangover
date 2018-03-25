@@ -359,6 +359,27 @@ static HRESULT WINAPI IDirectInputAImpl_QueryInterface(IDirectInput7A *iface, co
     return call.super.iret;
 }
 
+static HRESULT WINAPI IDirectInput8WImpl_QueryInterface(IDirectInput8W *iface, REFIID riid, LPVOID *ppobj)
+{
+    struct qemu_dinput *dinput = impl_from_IDirectInput8W(iface);
+
+    return IDirectInputAImpl_QueryInterface(&dinput->IDirectInput7A_iface, riid, ppobj);
+}
+
+static HRESULT WINAPI IDirectInput8AImpl_QueryInterface(IDirectInput8A *iface, REFIID riid, LPVOID *ppobj)
+{
+    struct qemu_dinput *dinput = impl_from_IDirectInput8A(iface);
+
+    return IDirectInputAImpl_QueryInterface(&dinput->IDirectInput7A_iface, riid, ppobj);
+}
+
+static HRESULT WINAPI IDirectInputWImpl_QueryInterface(IDirectInput7W *iface, REFIID riid, LPVOID *ppobj)
+{
+    struct qemu_dinput *dinput = impl_from_IDirectInput7W(iface);
+
+    return IDirectInputAImpl_QueryInterface(&dinput->IDirectInput7A_iface, riid, ppobj);
+}
+
 #else
 
 void qemu_IDirectInputAImpl_QueryInterface(struct qemu_syscall *call)
@@ -370,45 +391,6 @@ void qemu_IDirectInputAImpl_QueryInterface(struct qemu_syscall *call)
     WINE_TRACE("\n");
 
     c->super.iret = IDirectInput_QueryInterface(dinput->host_7a, QEMU_G2H(c->iid), c->obj ? &obj : NULL);
-}
-
-#endif
-
-struct qemu_IDirectInputWImpl_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t ppobj;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI IDirectInputWImpl_QueryInterface(IDirectInput7W *iface, REFIID riid, LPVOID *ppobj)
-{
-    struct qemu_IDirectInputWImpl_QueryInterface call;
-    struct qemu_dinput *dinput = impl_from_IDirectInput7W(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTWIMPL_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)dinput;
-    call.riid = (ULONG_PTR)riid;
-    call.ppobj = (ULONG_PTR)ppobj;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_IDirectInputWImpl_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_IDirectInputWImpl_QueryInterface *c = (struct qemu_IDirectInputWImpl_QueryInterface *)call;
-    struct qemu_dinput *dinput = QEMU_G2H(c->iface);
-
-    WINE_FIXME("Unverified!\n");
-
-    c->super.iret = IDirectInput_QueryInterface(dinput->host_7w, QEMU_G2H(c->riid), QEMU_G2H(c->ppobj));
 }
 
 #endif
@@ -992,84 +974,6 @@ void qemu_IDirectInput8WImpl_AddRef(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
 
     c->super.iret = IDirectInput8_AddRef(dinput->host_8w);
-}
-
-#endif
-
-struct qemu_IDirectInput8AImpl_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t ppobj;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI IDirectInput8AImpl_QueryInterface(IDirectInput8A *iface, REFIID riid, LPVOID *ppobj)
-{
-    struct qemu_IDirectInput8AImpl_QueryInterface call;
-    struct qemu_dinput *dinput = impl_from_IDirectInput8A(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUT8AIMPL_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)dinput;
-    call.riid = (ULONG_PTR)riid;
-    call.ppobj = (ULONG_PTR)ppobj;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_IDirectInput8AImpl_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_IDirectInput8AImpl_QueryInterface *c = (struct qemu_IDirectInput8AImpl_QueryInterface *)call;
-    struct qemu_dinput *dinput = QEMU_G2H(c->iface);
-
-    WINE_FIXME("Unverified!\n");
-
-    c->super.iret = IDirectInput8_QueryInterface(dinput->host_8a, QEMU_G2H(c->riid), QEMU_G2H(c->ppobj));
-}
-
-#endif
-
-struct qemu_IDirectInput8WImpl_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t ppobj;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI IDirectInput8WImpl_QueryInterface(IDirectInput8W *iface, REFIID riid, LPVOID *ppobj)
-{
-    struct qemu_IDirectInput8WImpl_QueryInterface call;
-    struct qemu_dinput *dinput = impl_from_IDirectInput8W(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUT8WIMPL_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)dinput;
-    call.riid = (ULONG_PTR)riid;
-    call.ppobj = (ULONG_PTR)ppobj;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_IDirectInput8WImpl_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_IDirectInput8WImpl_QueryInterface *c = (struct qemu_IDirectInput8WImpl_QueryInterface *)call;
-    struct qemu_dinput *dinput = QEMU_G2H(c->iface);
-
-    WINE_FIXME("Unverified!\n");
-
-    c->super.iret = IDirectInput8_QueryInterface(dinput->host_8w, QEMU_G2H(c->riid), QEMU_G2H(c->ppobj));
 }
 
 #endif
@@ -2829,7 +2733,6 @@ static const syscall_handler dll_functions[] =
     qemu_IDirectInput8AImpl_FindDevice,
     qemu_IDirectInput8AImpl_GetDeviceStatus,
     qemu_IDirectInput8AImpl_Initialize,
-    qemu_IDirectInput8AImpl_QueryInterface,
     qemu_IDirectInputImpl_Release,
     qemu_IDirectInput8AImpl_RunControlPanel,
     qemu_IDirectInput8WImpl_AddRef,
@@ -2840,7 +2743,6 @@ static const syscall_handler dll_functions[] =
     qemu_IDirectInput8WImpl_FindDevice,
     qemu_IDirectInput8WImpl_GetDeviceStatus,
     qemu_IDirectInput8WImpl_Initialize,
-    qemu_IDirectInput8WImpl_QueryInterface,
     qemu_IDirectInputImpl_Release,
     qemu_IDirectInput8WImpl_RunControlPanel,
     qemu_IDirectInputAImpl_AddRef,
@@ -2920,7 +2822,6 @@ static const syscall_handler dll_functions[] =
     qemu_IDirectInputWImpl_EnumDevices,
     qemu_IDirectInputWImpl_GetDeviceStatus,
     qemu_IDirectInputWImpl_Initialize,
-    qemu_IDirectInputWImpl_QueryInterface,
     qemu_IDirectInputImpl_Release,
     qemu_IDirectInputWImpl_RunControlPanel,
     qemu_init_dll,
