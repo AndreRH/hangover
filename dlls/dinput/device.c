@@ -72,7 +72,7 @@ void qemu_IDirectInputDeviceWImpl_Unacquire(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceWImpl_Unacquire *c = (struct qemu_IDirectInputDeviceWImpl_Unacquire *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_Unacquire(device->host_w);
@@ -108,7 +108,7 @@ void qemu_IDirectInputDeviceAImpl_Unacquire(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceAImpl_Unacquire *c = (struct qemu_IDirectInputDeviceAImpl_Unacquire *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_Unacquire(device->host_a);
@@ -2393,7 +2393,7 @@ void qemu_IDirectInputDeviceWImpl_Acquire(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceWImpl_Acquire *c = (struct qemu_IDirectInputDeviceWImpl_Acquire *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_Acquire(device->host_w);
@@ -2429,7 +2429,7 @@ void qemu_IDirectInputDeviceAImpl_Acquire(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceAImpl_Acquire *c = (struct qemu_IDirectInputDeviceAImpl_Acquire *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_Acquire(device->host_a);
