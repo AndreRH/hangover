@@ -179,6 +179,8 @@ struct qemu_dinput_device
     /* Host fields */
     IDirectInputDevice8A        *host_a;
     IDirectInputDevice8W        *host_w;
+
+    struct qemu_dinput          *parent;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -250,6 +252,8 @@ void qemu_IDirectInputDeviceWImpl_SetEventNotification(struct qemu_syscall *call
 void qemu_IDirectInputDeviceWImpl_SetProperty(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceWImpl_Unacquire(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceWImpl_WriteEffectToFile(struct qemu_syscall *call);
+
+ULONG qemu_IDirectInputImpl_Release_internal(struct qemu_dinput *dinput);
 
 #endif
 

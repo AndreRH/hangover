@@ -405,12 +405,14 @@ void qemu_IDirectInputDeviceImpl_Release(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceImpl_Release *c = (struct qemu_IDirectInputDeviceImpl_Release *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    /* TODO: AddRef the IDirectInput parent */
+    /* Make sure that our IDirectInput_Release function releases the last
+     * reference to the IDirectInput parent to destroy the wrapper object. */
+    IDirectInput_AddRef(device->parent->host_7a);
     c->super.iret = IDirectInputDevice8_Release(device->host_w);
-    /* TODO: Release the parent via our own release function. */
+    qemu_IDirectInputImpl_Release_internal(device->parent);
 
     if (!c->super.iret)
     {

@@ -276,19 +276,25 @@ static ULONG WINAPI IDirectInput8WImpl_Release(IDirectInput8W *iface)
 
 #else
 
+ULONG qemu_IDirectInputImpl_Release_internal(struct qemu_dinput *dinput)
+{
+    ULONG ref = IDirectInput_Release(dinput->host_7a);
+
+    if (!ref)
+    {
+        WINE_TRACE("Destroying dinput wrapper %p.\n", dinput);
+        HeapFree(GetProcessHeap(), 0, dinput);
+    }
+    return ref;
+}
+
 void qemu_IDirectInputImpl_Release(struct qemu_syscall *call)
 {
     struct qemu_IDirectInputImpl_Release *c = (struct qemu_IDirectInputImpl_Release *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
 
     WINE_TRACE("\n");
-
-    c->super.iret = IDirectInput_Release(dinput->host_7a);
-    if (!c->super.iret)
-    {
-        WINE_TRACE("Destroying dinput wrapper %p.\n", dinput);
-        HeapFree(GetProcessHeap(), 0, dinput);
-    }
+    c->super.iret = qemu_IDirectInputImpl_Release_internal(dinput);
 }
 
 #endif
@@ -876,6 +882,7 @@ void qemu_IDirectInputImpl_CreateDevice(struct qemu_syscall *call)
         c->super.iret = E_OUTOFMEMORY;
         return;
     }
+    device->parent = dinput;
 
     if (c->super.id == QEMU_SYSCALL_ID(CALL_IDIRECTINPUTWIMPL_CREATEDEVICE))
     {
