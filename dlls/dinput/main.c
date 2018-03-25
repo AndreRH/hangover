@@ -445,7 +445,8 @@ void qemu_IDirectInputAImpl_Initialize(struct qemu_syscall *call)
     struct qemu_IDirectInputAImpl_Initialize *c = (struct qemu_IDirectInputAImpl_Initialize *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
 
-    WINE_FIXME("Unverified!\n");
+    /* hinst needs to be non-NULL, but is not otherwise used by Wine. */
+    WINE_TRACE("\n");
 
     c->super.iret = IDirectInput_Initialize(dinput->host_7a, QEMU_G2H(c->hinst), c->version);
 }
@@ -484,7 +485,8 @@ void qemu_IDirectInputWImpl_Initialize(struct qemu_syscall *call)
     struct qemu_IDirectInputWImpl_Initialize *c = (struct qemu_IDirectInputWImpl_Initialize *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
 
-    WINE_FIXME("Unverified!\n");
+    /* hinst needs to be non-NULL, but is not otherwise used by Wine. */
+    WINE_TRACE("\n");
 
     c->super.iret = IDirectInput_Initialize(dinput->host_7w, QEMU_G2H(c->hinst), c->x);
 }
