@@ -2216,7 +2216,8 @@ void qemu_IDirectInputDeviceAImpl_GetObjectInfo(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceAImpl_GetObjectInfo *c = (struct qemu_IDirectInputDeviceAImpl_GetObjectInfo *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* DIDEVICEOBJECTINSTANCEA has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_GetObjectInfo(device->host_a, QEMU_G2H(c->pdidoi), c->dwObj, c->dwHow);
@@ -2258,7 +2259,8 @@ void qemu_IDirectInputDeviceWImpl_GetObjectInfo(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceWImpl_GetObjectInfo *c = (struct qemu_IDirectInputDeviceWImpl_GetObjectInfo *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* DIDEVICEOBJECTINSTANCEW has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_GetObjectInfo(device->host_w, QEMU_G2H(c->pdidoi), c->dwObj, c->dwHow);
