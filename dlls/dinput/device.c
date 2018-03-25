@@ -23,6 +23,9 @@
 #include <stdio.h>
 #include <dinput.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_dinput.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_dinput.h"
@@ -113,7 +116,7 @@ void qemu_IDirectInputDeviceAImpl_Unacquire(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_IDirectInputDeviceWImpl_SetDataFormat
+struct qemu_IDirectInputDeviceImpl_SetDataFormat
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -124,7 +127,7 @@ struct qemu_IDirectInputDeviceWImpl_SetDataFormat
 
 static HRESULT WINAPI IDirectInputDeviceWImpl_SetDataFormat(IDirectInputDevice8W *iface, LPCDIDATAFORMAT df)
 {
-    struct qemu_IDirectInputDeviceWImpl_SetDataFormat call;
+    struct qemu_IDirectInputDeviceImpl_SetDataFormat call;
     struct qemu_dinput_device *device = impl_from_IDirectInputDevice8W(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTDEVICEWIMPL_SETDATAFORMAT);
@@ -136,33 +139,9 @@ static HRESULT WINAPI IDirectInputDeviceWImpl_SetDataFormat(IDirectInputDevice8W
     return call.super.iret;
 }
 
-#else
-
-void qemu_IDirectInputDeviceWImpl_SetDataFormat(struct qemu_syscall *call)
-{
-    struct qemu_IDirectInputDeviceWImpl_SetDataFormat *c = (struct qemu_IDirectInputDeviceWImpl_SetDataFormat *)call;
-    struct qemu_dinput_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectInputDevice8_SetDataFormat(device->host_w, QEMU_G2H(c->df));
-}
-
-#endif
-
-struct qemu_IDirectInputDeviceAImpl_SetDataFormat
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t df;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 static HRESULT WINAPI IDirectInputDeviceAImpl_SetDataFormat(IDirectInputDevice8A *iface, LPCDIDATAFORMAT df)
 {
-    struct qemu_IDirectInputDeviceAImpl_SetDataFormat call;
+    struct qemu_IDirectInputDeviceImpl_SetDataFormat call;
     struct qemu_dinput_device *device = impl_from_IDirectInputDevice8A(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTDEVICEAIMPL_SETDATAFORMAT);
@@ -176,15 +155,56 @@ static HRESULT WINAPI IDirectInputDeviceAImpl_SetDataFormat(IDirectInputDevice8A
 
 #else
 
-void qemu_IDirectInputDeviceAImpl_SetDataFormat(struct qemu_syscall *call)
+void qemu_IDirectInputDeviceImpl_SetDataFormat(struct qemu_syscall *call)
 {
-    struct qemu_IDirectInputDeviceAImpl_SetDataFormat *c = (struct qemu_IDirectInputDeviceAImpl_SetDataFormat *)call;
+    struct qemu_IDirectInputDeviceImpl_SetDataFormat *c = (struct qemu_IDirectInputDeviceImpl_SetDataFormat *)call;
     struct qemu_dinput_device *device;
+    DIOBJECTDATAFORMAT *obj_fmt = NULL;
+    struct qemu_DIOBJECTDATAFORMAT *obj_fmt32;
+    DIDATAFORMAT stack, *fmt = &stack;
+    struct qemu_DIDATAFORMAT *fmt32;
+    DWORD i;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    fmt = QEMU_G2H(c->df);
+#else
+    fmt32 = QEMU_G2H(c->df);
+    if (!fmt32)
+    {
+        fmt = NULL;
+    }
+    else if (fmt32->dwSize != sizeof(*fmt32))
+    {
+        fmt->dwSize = 0;
+    }
+    else
+    {
+        DIDATAFORMAT_g2h(fmt, fmt32);
+        obj_fmt32 = (struct qemu_DIOBJECTDATAFORMAT *)fmt->rgodf;
+        if (obj_fmt32)
+        {
+            obj_fmt = HeapAlloc(GetProcessHeap(), 0, fmt->dwNumObjs * sizeof(*fmt->rgodf));
+            if (!obj_fmt)
+                WINE_ERR("Out of memory.\n");
 
-    c->super.iret = IDirectInputDevice8_SetDataFormat(device->host_a, QEMU_G2H(c->df));
+            for (i = 0; i < fmt->dwNumObjs; ++i)
+                DIOBJECTDATAFORMAT_g2h(&obj_fmt[i], &obj_fmt32[i]);
+
+            fmt->rgodf = obj_fmt;
+        }
+    }
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_IDIRECTINPUTDEVICEWIMPL_SETDATAFORMAT))
+        c->super.iret = IDirectInputDevice8_SetDataFormat(device->host_w, fmt);
+    else
+        c->super.iret = IDirectInputDevice8_SetDataFormat(device->host_a, fmt);
+
+#if GUEST_BIT != HOST_BIT
+    HeapFree(GetProcessHeap(), 0, obj_fmt);
+#endif
 }
 
 #endif
