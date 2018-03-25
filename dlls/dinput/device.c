@@ -689,7 +689,8 @@ void qemu_IDirectInputDeviceWImpl_SetProperty(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceWImpl_SetProperty *c = (struct qemu_IDirectInputDeviceWImpl_SetProperty *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* All DIPROPHEADER based structs have the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_SetProperty(device->host_w, QEMU_G2H(c->rguid), QEMU_G2H(c->pdiph));
@@ -729,7 +730,8 @@ void qemu_IDirectInputDeviceAImpl_SetProperty(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceAImpl_SetProperty *c = (struct qemu_IDirectInputDeviceAImpl_SetProperty *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* All DIPROPHEADER based structs have the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_SetProperty(device->host_a, QEMU_G2H(c->rguid), QEMU_G2H(c->pdiph));
@@ -2313,7 +2315,8 @@ void qemu_IDirectInputDeviceWImpl_GetProperty(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceWImpl_GetProperty *c = (struct qemu_IDirectInputDeviceWImpl_GetProperty *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* All DIPROPHEADER based structs have the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_GetProperty(device->host_w, QEMU_G2H(c->rguid), QEMU_G2H(c->pdiph));
@@ -2353,7 +2356,8 @@ void qemu_IDirectInputDeviceAImpl_GetProperty(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceAImpl_GetProperty *c = (struct qemu_IDirectInputDeviceAImpl_GetProperty *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* All DIPROPHEADER based structs have the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_GetProperty(device->host_a, QEMU_G2H(c->rguid), QEMU_G2H(c->pdiph));
