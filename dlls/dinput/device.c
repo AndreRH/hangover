@@ -1999,7 +1999,8 @@ void qemu_IDirectInputDeviceWImpl_GetDeviceState(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceWImpl_GetDeviceState *c = (struct qemu_IDirectInputDeviceWImpl_GetDeviceState *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* DIMOUSESTATE2 and DIJOYSTATE2 have the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_GetDeviceState(device->host_w, c->len, QEMU_G2H(c->ptr));
@@ -2039,7 +2040,8 @@ void qemu_IDirectInputDeviceAImpl_GetDeviceState(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceAImpl_GetDeviceState *c = (struct qemu_IDirectInputDeviceAImpl_GetDeviceState *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* DIMOUSESTATE2 and DIJOYSTATE2 have the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_GetDeviceState(device->host_a, c->len, QEMU_G2H(c->ptr));
