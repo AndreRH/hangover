@@ -57,4 +57,31 @@ static inline void DIDATAFORMAT_h2g(struct qemu_DIDATAFORMAT *guest, const DIDAT
     guest->rgodf = (ULONG_PTR)host->rgodf;
 }
 
+struct qemu_DIDEVICEOBJECTDATA
+{
+    DWORD       dwOfs;
+    DWORD       dwData;
+    DWORD       dwTimeStamp;
+    DWORD       dwSequence;
+    qemu_ptr    uAppData;
+};
+
+static inline void DIDEVICEOBJECTDATA_g2h(DIDEVICEOBJECTDATA *host, const struct qemu_DIDEVICEOBJECTDATA *guest)
+{
+    host->dwOfs = guest->dwOfs;
+    host->dwData = guest->dwData;
+    host->dwTimeStamp = guest->dwTimeStamp;
+    host->dwSequence = guest->dwSequence;
+    host->uAppData = guest->uAppData;
+}
+
+static inline void DIDEVICEOBJECTDATA_h2g(struct qemu_DIDEVICEOBJECTDATA *guest, const DIDEVICEOBJECTDATA *host)
+{
+    guest->dwOfs = host->dwOfs;
+    guest->dwData = host->dwData;
+    guest->dwTimeStamp = host->dwTimeStamp;
+    guest->dwSequence = host->dwSequence;
+    guest->uAppData = host->uAppData;
+}
+
 #endif

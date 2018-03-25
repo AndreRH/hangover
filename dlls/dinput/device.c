@@ -739,7 +739,7 @@ void qemu_IDirectInputDeviceAImpl_SetProperty(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_IDirectInputDeviceWImpl_GetDeviceData
+struct qemu_IDirectInputDeviceImpl_GetDeviceData
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -751,9 +751,10 @@ struct qemu_IDirectInputDeviceWImpl_GetDeviceData
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInputDeviceWImpl_GetDeviceData(IDirectInputDevice8W *iface, DWORD dodsize, LPDIDEVICEOBJECTDATA dod, LPDWORD entries, DWORD flags)
+static HRESULT WINAPI IDirectInputDeviceWImpl_GetDeviceData(IDirectInputDevice8W *iface, DWORD dodsize,
+        DIDEVICEOBJECTDATA *dod, DWORD *entries, DWORD flags)
 {
-    struct qemu_IDirectInputDeviceWImpl_GetDeviceData call;
+    struct qemu_IDirectInputDeviceImpl_GetDeviceData call;
     struct qemu_dinput_device *device = impl_from_IDirectInputDevice8W(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTDEVICEWIMPL_GETDEVICEDATA);
@@ -768,36 +769,10 @@ static HRESULT WINAPI IDirectInputDeviceWImpl_GetDeviceData(IDirectInputDevice8W
     return call.super.iret;
 }
 
-#else
-
-void qemu_IDirectInputDeviceWImpl_GetDeviceData(struct qemu_syscall *call)
+static HRESULT WINAPI IDirectInputDeviceAImpl_GetDeviceData(IDirectInputDevice8A *iface, DWORD dodsize,
+        DIDEVICEOBJECTDATA *dod, DWORD *entries, DWORD flags)
 {
-    struct qemu_IDirectInputDeviceWImpl_GetDeviceData *c = (struct qemu_IDirectInputDeviceWImpl_GetDeviceData *)call;
-    struct qemu_dinput_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectInputDevice8_GetDeviceData(device->host_w, c->dodsize, QEMU_G2H(c->dod), QEMU_G2H(c->entries), c->flags);
-}
-
-#endif
-
-struct qemu_IDirectInputDeviceAImpl_GetDeviceData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t dodsize;
-    uint64_t dod;
-    uint64_t entries;
-    uint64_t flags;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI IDirectInputDeviceAImpl_GetDeviceData(IDirectInputDevice8A *iface, DWORD dodsize, LPDIDEVICEOBJECTDATA dod, LPDWORD entries, DWORD flags)
-{
-    struct qemu_IDirectInputDeviceAImpl_GetDeviceData call;
+    struct qemu_IDirectInputDeviceImpl_GetDeviceData call;
     struct qemu_dinput_device *device = impl_from_IDirectInputDevice8A(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTDEVICEAIMPL_GETDEVICEDATA);
@@ -814,15 +789,67 @@ static HRESULT WINAPI IDirectInputDeviceAImpl_GetDeviceData(IDirectInputDevice8A
 
 #else
 
-void qemu_IDirectInputDeviceAImpl_GetDeviceData(struct qemu_syscall *call)
+void qemu_IDirectInputDeviceImpl_GetDeviceData(struct qemu_syscall *call)
 {
-    struct qemu_IDirectInputDeviceAImpl_GetDeviceData *c = (struct qemu_IDirectInputDeviceAImpl_GetDeviceData *)call;
+    struct qemu_IDirectInputDeviceImpl_GetDeviceData *c = (struct qemu_IDirectInputDeviceImpl_GetDeviceData *)call;
     struct qemu_dinput_device *device;
+    DIDEVICEOBJECTDATA stack[10], *data = stack;
+    struct qemu_DIDEVICEOBJECTDATA *data32;
+    DWORD size;
+    DWORD entries, i;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    size = c->dodsize;
 
-    c->super.iret = IDirectInputDevice8_GetDeviceData(device->host_a, c->dodsize, QEMU_G2H(c->dod), QEMU_G2H(c->entries), c->flags);
+#if GUEST_BIT == HOST_BIT
+    data = QEMU_G2H(c->dod);
+#else
+    /* A NULL entries pointer will crash on success case, but return an error value on some error cases. */
+    entries = c->entries ? *(DWORD *)(QEMU_G2H(c->entries)) : 0;
+    data32 = QEMU_G2H(c->dod);
+
+    if (!data32)
+        data = NULL;
+    else if (size == sizeof(DIDEVICEOBJECTDATA_DX3))
+        data = (DIDEVICEOBJECTDATA *)data32;
+    else if (size < sizeof(*data32))
+        size = 0;
+    else if (size > sizeof(*data32))
+        WINE_FIXME("Unexpected input size %u\n", size);
+    else
+    {
+        size = sizeof(*data);
+        /* MSDN says INFINITE is only valid with dod = NULL. It seems that Wine will try to write any length
+         * to the array, so if needed we could query the actual length first, allocate what we get and then
+         * retrieve and convert that amount. For now just forward things 1:1 and be noisy. */
+        if (entries == INFINITE)
+            WINE_FIXME("Infinite entries and output data = %p. What to do?\n", data32);
+        else if (entries > sizeof(stack) / sizeof(*stack))
+            data = HeapAlloc(GetProcessHeap(), 0, sizeof(*data) * entries);
+    }
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_IDIRECTINPUTDEVICEWIMPL_GETDEVICEDATA))
+    {
+        c->super.iret = IDirectInputDevice8_GetDeviceData(device->host_w, size, data,
+                QEMU_G2H(c->entries), c->flags);
+    }
+    else
+    {
+        c->super.iret = IDirectInputDevice8_GetDeviceData(device->host_w, size, data,
+                QEMU_G2H(c->entries), c->flags);
+    }
+
+#if GUEST_BIT != HOST_BIT
+    entries = *(DWORD *)(QEMU_G2H(c->entries));
+
+    for (i = 0; i < entries; ++i)
+        DIDEVICEOBJECTDATA_h2g(&data32[i], &data[i]);
+
+    if (data != stack)
+        HeapFree(GetProcessHeap(), 0, data);
+#endif
 }
 
 #endif
