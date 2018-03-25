@@ -2082,19 +2082,19 @@ struct qemu_IDirectInputDeviceWImpl_GetCapabilities
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t lpDIDevCaps;
+    uint64_t caps;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInputDeviceWImpl_GetCapabilities(IDirectInputDevice8W *iface, LPDIDEVCAPS lpDIDevCaps)
+static HRESULT WINAPI IDirectInputDeviceWImpl_GetCapabilities(IDirectInputDevice8W *iface, DIDEVCAPS *caps)
 {
     struct qemu_IDirectInputDeviceWImpl_GetCapabilities call;
     struct qemu_dinput_device *device = impl_from_IDirectInputDevice8W(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTDEVICEWIMPL_GETCAPABILITIES);
     call.iface = (ULONG_PTR)device;
-    call.lpDIDevCaps = (ULONG_PTR)lpDIDevCaps;
+    call.caps = (ULONG_PTR)caps;
 
     qemu_syscall(&call.super);
 
@@ -2108,10 +2108,11 @@ void qemu_IDirectInputDeviceWImpl_GetCapabilities(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceWImpl_GetCapabilities *c = (struct qemu_IDirectInputDeviceWImpl_GetCapabilities *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* DIDEVCAPS has the same size on 32 and 64 bit. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectInputDevice8_GetCapabilities(device->host_w, QEMU_G2H(c->lpDIDevCaps));
+    c->super.iret = IDirectInputDevice8_GetCapabilities(device->host_w, QEMU_G2H(c->caps));
 }
 
 #endif
@@ -2120,19 +2121,19 @@ struct qemu_IDirectInputDeviceAImpl_GetCapabilities
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t lpDIDevCaps;
+    uint64_t caps;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInputDeviceAImpl_GetCapabilities(IDirectInputDevice8A *iface, LPDIDEVCAPS lpDIDevCaps)
+static HRESULT WINAPI IDirectInputDeviceAImpl_GetCapabilities(IDirectInputDevice8A *iface, DIDEVCAPS *caps)
 {
     struct qemu_IDirectInputDeviceAImpl_GetCapabilities call;
     struct qemu_dinput_device *device = impl_from_IDirectInputDevice8A(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTDEVICEAIMPL_GETCAPABILITIES);
     call.iface = (ULONG_PTR)device;
-    call.lpDIDevCaps = (ULONG_PTR)lpDIDevCaps;
+    call.caps = (ULONG_PTR)caps;
 
     qemu_syscall(&call.super);
 
@@ -2146,10 +2147,11 @@ void qemu_IDirectInputDeviceAImpl_GetCapabilities(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceAImpl_GetCapabilities *c = (struct qemu_IDirectInputDeviceAImpl_GetCapabilities *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* DIDEVCAPS has the same size on 32 and 64 bit. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectInputDevice8_GetCapabilities(device->host_a, QEMU_G2H(c->lpDIDevCaps));
+    c->super.iret = IDirectInputDevice8_GetCapabilities(device->host_a, QEMU_G2H(c->caps));
 }
 
 #endif
