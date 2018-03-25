@@ -826,8 +826,10 @@ static HRESULT WINAPI IDirectInputAImpl_CreateDevice(IDirectInput7A *iface, cons
     call.iface = (ULONG_PTR)dinput;
     call.rguid = (ULONG_PTR)rguid;
     call.punk = (ULONG_PTR)punk;
+    call.pdev = (ULONG_PTR)pdev;
 
-    /* FIXME: NULL ptr check */
+    if (pdev)
+        *pdev = NULL;
 
     qemu_syscall(&call.super);
     device = (struct qemu_dinput_device *)(ULONG_PTR)call.pdev;
@@ -851,8 +853,10 @@ static HRESULT WINAPI IDirectInputWImpl_CreateDevice(IDirectInput7W *iface, cons
     call.iface = (ULONG_PTR)dinput;
     call.rguid = (ULONG_PTR)rguid;
     call.punk = (ULONG_PTR)punk;
+    call.pdev = (ULONG_PTR)pdev;
 
-    /* FIXME: NULL ptr check */
+    if (pdev)
+        *pdev = NULL;
 
     qemu_syscall(&call.super);
     device = (struct qemu_dinput_device *)(ULONG_PTR)call.pdev;
@@ -887,12 +891,12 @@ void qemu_IDirectInputImpl_CreateDevice(struct qemu_syscall *call)
     if (c->super.id == QEMU_SYSCALL_ID(CALL_IDIRECTINPUTWIMPL_CREATEDEVICE))
     {
         c->super.iret = IDirectInput_CreateDevice(dinput->host_7w, QEMU_G2H(c->rguid),
-                (IDirectInputDeviceW **)&device->host_w, QEMU_G2H(c->punk));
+                c->pdev ? (IDirectInputDeviceW **)&device->host_w : NULL, QEMU_G2H(c->punk));
     }
     else
     {
         c->super.iret = IDirectInput_CreateDevice(dinput->host_7a, QEMU_G2H(c->rguid),
-                (IDirectInputDeviceA **)&device->host_a, QEMU_G2H(c->punk));
+                c->pdev ? (IDirectInputDeviceA **)&device->host_a : NULL, QEMU_G2H(c->punk));
     }
 
     if (FAILED(c->super.iret))
