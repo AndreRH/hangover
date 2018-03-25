@@ -30,10 +30,13 @@
 #include "dll_list.h"
 #include "qemu_dinput.h"
 
-#ifndef QEMU_DLL_GUEST
+#ifdef QEMU_DLL_GUEST
+#include <debug.h>
+#else
 #include <wine/debug.h>
-WINE_DEFAULT_DEBUG_CHANNEL(qemu_dinput);
 #endif
+
+WINE_DEFAULT_DEBUG_CHANNEL(qemu_dinput);
 
 struct qemu_IDirectInputDeviceWImpl_Unacquire
 {
@@ -423,82 +426,78 @@ void qemu_IDirectInputDeviceImpl_Release(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_IDirectInputDeviceWImpl_QueryInterface
+struct qemu_IDirectInputDeviceImpl_QueryInterface
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t riid;
-    uint64_t ppobj;
+    uint64_t iid;
+    uint64_t obj;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInputDeviceWImpl_QueryInterface(IDirectInputDevice8W *iface, REFIID riid, LPVOID *ppobj)
+static HRESULT WINAPI IDirectInputDeviceWImpl_QueryInterface(IDirectInputDevice8W *iface, const IID *iid, void **obj)
 {
-    struct qemu_IDirectInputDeviceWImpl_QueryInterface call;
+    struct qemu_IDirectInputDeviceImpl_QueryInterface call;
     struct qemu_dinput_device *device = impl_from_IDirectInputDevice8W(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTDEVICEWIMPL_QUERYINTERFACE);
     call.iface = (ULONG_PTR)device;
-    call.riid = (ULONG_PTR)riid;
-    call.ppobj = (ULONG_PTR)ppobj;
+    call.iid = (ULONG_PTR)iid;
+    call.obj = (ULONG_PTR)obj;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        if (IsEqualGUID(&IID_IUnknown, iid)
+                || IsEqualGUID(&IID_IDirectInputDeviceA,  iid)
+                || IsEqualGUID(&IID_IDirectInputDevice2A, iid)
+                || IsEqualGUID(&IID_IDirectInputDevice7A, iid)
+                || IsEqualGUID(&IID_IDirectInputDevice8A, iid))
+        {
+            *obj = &device->IDirectInputDevice8A_iface;
+        }
+        else if (IsEqualGUID(&IID_IDirectInputDeviceW,  iid)
+                || IsEqualGUID(&IID_IDirectInputDevice2W, iid)
+                || IsEqualGUID(&IID_IDirectInputDevice7W, iid)
+                || IsEqualGUID(&IID_IDirectInputDevice8W, iid))
+        {
+            *obj = &device->IDirectInputDevice8W_iface;
+        }
+        else
+        {
+            WINE_FIXME("Unknown interface, but host side QI succeeded.\n");
+        }
+        /* Do not AddRef, the host side QI call did this for us. */
+    }
+    else if(obj)
+    {
+        *obj = NULL;
+    }
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_IDirectInputDeviceWImpl_QueryInterface(struct qemu_syscall *call)
+static HRESULT WINAPI IDirectInputDeviceAImpl_QueryInterface(IDirectInputDevice8A *iface, const IID *iid, void **obj)
 {
-    struct qemu_IDirectInputDeviceWImpl_QueryInterface *c = (struct qemu_IDirectInputDeviceWImpl_QueryInterface *)call;
-    struct qemu_dinput_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectInputDevice8_QueryInterface(device->host_w, QEMU_G2H(c->riid), QEMU_G2H(c->ppobj));
-}
-
-#endif
-
-struct qemu_IDirectInputDeviceAImpl_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t ppobj;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI IDirectInputDeviceAImpl_QueryInterface(IDirectInputDevice8A *iface, REFIID riid, LPVOID *ppobj)
-{
-    struct qemu_IDirectInputDeviceAImpl_QueryInterface call;
     struct qemu_dinput_device *device = impl_from_IDirectInputDevice8A(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTDEVICEAIMPL_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)device;
-    call.riid = (ULONG_PTR)riid;
-    call.ppobj = (ULONG_PTR)ppobj;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IDirectInputDeviceWImpl_QueryInterface(&device->IDirectInputDevice8W_iface, iid, obj);
 }
 
 #else
 
-void qemu_IDirectInputDeviceAImpl_QueryInterface(struct qemu_syscall *call)
+void qemu_IDirectInputDeviceImpl_QueryInterface(struct qemu_syscall *call)
 {
-    struct qemu_IDirectInputDeviceAImpl_QueryInterface *c = (struct qemu_IDirectInputDeviceAImpl_QueryInterface *)call;
+    struct qemu_IDirectInputDeviceImpl_QueryInterface *c = (struct qemu_IDirectInputDeviceImpl_QueryInterface *)call;
     struct qemu_dinput_device *device;
+    void *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectInputDevice8_QueryInterface(device->host_a, QEMU_G2H(c->riid), QEMU_G2H(c->ppobj));
+    c->super.iret = IDirectInputDevice8_QueryInterface(device->host_w, QEMU_G2H(c->iid), c->obj ? &obj : NULL);
 }
 
 #endif

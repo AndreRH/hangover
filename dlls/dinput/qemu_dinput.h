@@ -75,7 +75,6 @@ enum dinput_calls
     CALL_IDIRECTINPUTDEVICEAIMPL_GETPROPERTY,
     CALL_IDIRECTINPUTDEVICEAIMPL_INITIALIZE,
     CALL_IDIRECTINPUTDEVICEAIMPL_POLL,
-    CALL_IDIRECTINPUTDEVICEAIMPL_QUERYINTERFACE,
     CALL_IDIRECTINPUTDEVICEAIMPL_RELEASE,
     CALL_IDIRECTINPUTDEVICEAIMPL_RUNCONTROLPANEL,
     CALL_IDIRECTINPUTDEVICEAIMPL_SENDDEVICEDATA,
@@ -207,7 +206,6 @@ void qemu_IDirectInputDeviceAImpl_GetObjectInfo(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceAImpl_GetProperty(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceAImpl_Initialize(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceAImpl_Poll(struct qemu_syscall *call);
-void qemu_IDirectInputDeviceAImpl_QueryInterface(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceAImpl_RunControlPanel(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceAImpl_SendDeviceData(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceAImpl_SendForceFeedbackCommand(struct qemu_syscall *call);
@@ -218,6 +216,7 @@ void qemu_IDirectInputDeviceAImpl_SetProperty(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceAImpl_Unacquire(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceAImpl_WriteEffectToFile(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceImpl_GetDeviceData(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceImpl_QueryInterface(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceImpl_Release(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceImpl_SetDataFormat(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceWImpl_Acquire(struct qemu_syscall *call);
@@ -239,7 +238,6 @@ void qemu_IDirectInputDeviceWImpl_GetObjectInfo(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceWImpl_GetProperty(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceWImpl_Initialize(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceWImpl_Poll(struct qemu_syscall *call);
-void qemu_IDirectInputDeviceWImpl_QueryInterface(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceWImpl_RunControlPanel(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceWImpl_SendDeviceData(struct qemu_syscall *call);
 void qemu_IDirectInputDeviceWImpl_SendForceFeedbackCommand(struct qemu_syscall *call);
