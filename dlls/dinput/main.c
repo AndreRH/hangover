@@ -304,6 +304,7 @@ struct qemu_IDirectInputAImpl_QueryInterface
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t iid;
+    uint64_t obj;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -316,6 +317,7 @@ static HRESULT WINAPI IDirectInputAImpl_QueryInterface(IDirectInput7A *iface, co
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTAIMPL_QUERYINTERFACE);
     call.iface = (ULONG_PTR)dinput;
     call.iid = (ULONG_PTR)iid;
+    call.obj = (ULONG_PTR)obj;
 
     qemu_syscall(&call.super);
     if (SUCCEEDED(call.super.iret))
@@ -349,6 +351,10 @@ static HRESULT WINAPI IDirectInputAImpl_QueryInterface(IDirectInput7A *iface, co
         }
         */
     }
+    else if (obj)
+    {
+        *obj = NULL;
+    }
 
     return call.super.iret;
 }
@@ -363,7 +369,7 @@ void qemu_IDirectInputAImpl_QueryInterface(struct qemu_syscall *call)
 
     WINE_TRACE("\n");
 
-    c->super.iret = IDirectInput_QueryInterface(dinput->host_7a, QEMU_G2H(c->iid), &obj);
+    c->super.iret = IDirectInput_QueryInterface(dinput->host_7a, QEMU_G2H(c->iid), c->obj ? &obj : NULL);
 }
 
 #endif
@@ -2538,6 +2544,12 @@ static HRESULT create_directinput_instance(const IID *iid, void **iface_out, str
     struct qemu_dinput *object;
     HRESULT hr;
     ULONG ref;
+
+    if (!iid || !iface_out)
+    {
+        WINE_WARN("Invalid pointer.\n");
+        return E_POINTER;
+    }
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DIRECTINPUT_CREATE);
     qemu_syscall(&call.super);
