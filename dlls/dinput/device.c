@@ -1638,7 +1638,7 @@ void qemu_IDirectInputDeviceWImpl_Poll(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceWImpl_Poll *c = (struct qemu_IDirectInputDeviceWImpl_Poll *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_Poll(device->host_w);
@@ -1674,7 +1674,7 @@ void qemu_IDirectInputDeviceAImpl_Poll(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceAImpl_Poll *c = (struct qemu_IDirectInputDeviceAImpl_Poll *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_Poll(device->host_a);
