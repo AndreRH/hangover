@@ -799,7 +799,7 @@ void qemu_IDirectInput7WImpl_CreateDeviceEx(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_IDirectInputAImpl_CreateDevice
+struct qemu_IDirectInputImpl_CreateDevice
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -810,73 +810,99 @@ struct qemu_IDirectInputAImpl_CreateDevice
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInputAImpl_CreateDevice(IDirectInput7A *iface, REFGUID rguid, LPDIRECTINPUTDEVICEA* pdev, LPUNKNOWN punk)
+static HRESULT WINAPI IDirectInputAImpl_CreateDevice(IDirectInput7A *iface, const GUID *rguid, IDirectInputDeviceA **pdev, LPUNKNOWN punk)
 {
-    struct qemu_IDirectInputAImpl_CreateDevice call;
+    struct qemu_IDirectInputImpl_CreateDevice call;
     struct qemu_dinput *dinput = impl_from_IDirectInput7A(iface);
+    struct qemu_dinput_device *device;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTAIMPL_CREATEDEVICE);
     call.iface = (ULONG_PTR)dinput;
     call.rguid = (ULONG_PTR)rguid;
-    call.pdev = (ULONG_PTR)pdev;
     call.punk = (ULONG_PTR)punk;
 
+    /* FIXME: NULL ptr check */
+
     qemu_syscall(&call.super);
+    device = (struct qemu_dinput_device *)(ULONG_PTR)call.pdev;
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        qemu_dinput_device_guest_init(device);
+        *pdev = (IDirectInputDeviceA *)&device->IDirectInputDevice8A_iface;
+    }
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_IDirectInputAImpl_CreateDevice(struct qemu_syscall *call)
+static HRESULT WINAPI IDirectInputWImpl_CreateDevice(IDirectInput7W *iface, const GUID *rguid, IDirectInputDeviceW **pdev, LPUNKNOWN punk)
 {
-    struct qemu_IDirectInputAImpl_CreateDevice *c = (struct qemu_IDirectInputAImpl_CreateDevice *)call;
-    struct qemu_dinput *dinput = QEMU_G2H(c->iface);
-
-    WINE_FIXME("Unverified!\n");
-
-    c->super.iret = IDirectInput_CreateDevice(dinput->host_7a, QEMU_G2H(c->rguid), QEMU_G2H(c->pdev), QEMU_G2H(c->punk));
-}
-
-#endif
-
-struct qemu_IDirectInputWImpl_CreateDevice
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t rguid;
-    uint64_t pdev;
-    uint64_t punk;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI IDirectInputWImpl_CreateDevice(IDirectInput7W *iface, REFGUID rguid, LPDIRECTINPUTDEVICEW* pdev, LPUNKNOWN punk)
-{
-    struct qemu_IDirectInputWImpl_CreateDevice call;
+    struct qemu_IDirectInputImpl_CreateDevice call;
     struct qemu_dinput *dinput = impl_from_IDirectInput7W(iface);
+    struct qemu_dinput_device *device;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTWIMPL_CREATEDEVICE);
     call.iface = (ULONG_PTR)dinput;
     call.rguid = (ULONG_PTR)rguid;
-    call.pdev = (ULONG_PTR)pdev;
     call.punk = (ULONG_PTR)punk;
 
+    /* FIXME: NULL ptr check */
+
     qemu_syscall(&call.super);
+    device = (struct qemu_dinput_device *)(ULONG_PTR)call.pdev;
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        qemu_dinput_device_guest_init(device);
+        *pdev = (IDirectInputDeviceW *)&device->IDirectInputDevice8W_iface;
+    }
 
     return call.super.iret;
 }
 
 #else
 
-void qemu_IDirectInputWImpl_CreateDevice(struct qemu_syscall *call)
+void qemu_IDirectInputImpl_CreateDevice(struct qemu_syscall *call)
 {
-    struct qemu_IDirectInputWImpl_CreateDevice *c = (struct qemu_IDirectInputWImpl_CreateDevice *)call;
+    struct qemu_IDirectInputImpl_CreateDevice *c = (struct qemu_IDirectInputImpl_CreateDevice *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
+    struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
-    c->super.iret = IDirectInput_CreateDevice(dinput->host_7w, QEMU_G2H(c->rguid), QEMU_G2H(c->pdev), QEMU_G2H(c->punk));
+    device = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*device));
+    if (!device)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_IDIRECTINPUTWIMPL_CREATEDEVICE))
+    {
+        c->super.iret = IDirectInput_CreateDevice(dinput->host_7w, QEMU_G2H(c->rguid),
+                (IDirectInputDeviceW **)&device->host_w, QEMU_G2H(c->punk));
+    }
+    else
+    {
+        c->super.iret = IDirectInput_CreateDevice(dinput->host_7a, QEMU_G2H(c->rguid),
+                (IDirectInputDeviceA **)&device->host_a, QEMU_G2H(c->punk));
+    }
+
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, device);
+        return;
+    }
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_IDIRECTINPUTWIMPL_CREATEDEVICE))
+        IDirectInputDevice8_QueryInterface(device->host_w, &IID_IDirectInputDevice8A, (void **)&device->host_a);
+    else
+        IDirectInputDevice8_QueryInterface(device->host_a, &IID_IDirectInputDevice8W, (void **)&device->host_w);
+
+    /* We want to return a device with refcount 1. */
+    IDirectInputDevice8_Release(device->host_a);
+
+    c->pdev = QEMU_H2G(device);
 }
 
 #endif
@@ -2793,15 +2819,79 @@ static const syscall_handler dll_functions[] =
     qemu_IDirectInputImpl_Release,
     qemu_IDirectInput8WImpl_RunControlPanel,
     qemu_IDirectInputAImpl_AddRef,
-    qemu_IDirectInputAImpl_CreateDevice,
+    qemu_IDirectInputImpl_CreateDevice,
     qemu_IDirectInputAImpl_EnumDevices,
     qemu_IDirectInputAImpl_GetDeviceStatus,
     qemu_IDirectInputAImpl_Initialize,
     qemu_IDirectInputAImpl_QueryInterface,
     qemu_IDirectInputImpl_Release,
     qemu_IDirectInputAImpl_RunControlPanel,
+    qemu_IDirectInputDeviceAImpl_Acquire,
+    qemu_IDirectInputDeviceAImpl_AddRef,
+    qemu_IDirectInputDeviceAImpl_BuildActionMap,
+    qemu_IDirectInputDeviceAImpl_CreateEffect,
+    qemu_IDirectInputDeviceAImpl_EnumCreatedEffectObjects,
+    qemu_IDirectInputDeviceAImpl_EnumEffects,
+    qemu_IDirectInputDeviceAImpl_EnumEffectsInFile,
+    qemu_IDirectInputDeviceAImpl_EnumObjects,
+    qemu_IDirectInputDeviceAImpl_Escape,
+    qemu_IDirectInputDeviceAImpl_GetCapabilities,
+    qemu_IDirectInputDeviceAImpl_GetDeviceData,
+    qemu_IDirectInputDeviceAImpl_GetDeviceInfo,
+    qemu_IDirectInputDeviceAImpl_GetDeviceState,
+    qemu_IDirectInputDeviceAImpl_GetEffectInfo,
+    qemu_IDirectInputDeviceAImpl_GetForceFeedbackState,
+    qemu_IDirectInputDeviceAImpl_GetImageInfo,
+    qemu_IDirectInputDeviceAImpl_GetObjectInfo,
+    qemu_IDirectInputDeviceAImpl_GetProperty,
+    qemu_IDirectInputDeviceAImpl_Initialize,
+    qemu_IDirectInputDeviceAImpl_Poll,
+    qemu_IDirectInputDeviceAImpl_QueryInterface,
+    qemu_IDirectInputDeviceImpl_Release,
+    qemu_IDirectInputDeviceAImpl_RunControlPanel,
+    qemu_IDirectInputDeviceAImpl_SendDeviceData,
+    qemu_IDirectInputDeviceAImpl_SendForceFeedbackCommand,
+    qemu_IDirectInputDeviceAImpl_SetActionMap,
+    qemu_IDirectInputDeviceAImpl_SetCooperativeLevel,
+    qemu_IDirectInputDeviceAImpl_SetDataFormat,
+    qemu_IDirectInputDeviceAImpl_SetEventNotification,
+    qemu_IDirectInputDeviceAImpl_SetProperty,
+    qemu_IDirectInputDeviceAImpl_Unacquire,
+    qemu_IDirectInputDeviceAImpl_WriteEffectToFile,
+    qemu_IDirectInputDeviceWImpl_Acquire,
+    qemu_IDirectInputDeviceWImpl_AddRef,
+    qemu_IDirectInputDeviceWImpl_BuildActionMap,
+    qemu_IDirectInputDeviceWImpl_CreateEffect,
+    qemu_IDirectInputDeviceWImpl_EnumCreatedEffectObjects,
+    qemu_IDirectInputDeviceWImpl_EnumEffects,
+    qemu_IDirectInputDeviceWImpl_EnumEffectsInFile,
+    qemu_IDirectInputDeviceWImpl_EnumObjects,
+    qemu_IDirectInputDeviceWImpl_Escape,
+    qemu_IDirectInputDeviceWImpl_GetCapabilities,
+    qemu_IDirectInputDeviceWImpl_GetDeviceData,
+    qemu_IDirectInputDeviceWImpl_GetDeviceInfo,
+    qemu_IDirectInputDeviceWImpl_GetDeviceState,
+    qemu_IDirectInputDeviceWImpl_GetEffectInfo,
+    qemu_IDirectInputDeviceWImpl_GetForceFeedbackState,
+    qemu_IDirectInputDeviceWImpl_GetImageInfo,
+    qemu_IDirectInputDeviceWImpl_GetObjectInfo,
+    qemu_IDirectInputDeviceWImpl_GetProperty,
+    qemu_IDirectInputDeviceWImpl_Initialize,
+    qemu_IDirectInputDeviceWImpl_Poll,
+    qemu_IDirectInputDeviceWImpl_QueryInterface,
+    qemu_IDirectInputDeviceImpl_Release,
+    qemu_IDirectInputDeviceWImpl_RunControlPanel,
+    qemu_IDirectInputDeviceWImpl_SendDeviceData,
+    qemu_IDirectInputDeviceWImpl_SendForceFeedbackCommand,
+    qemu_IDirectInputDeviceWImpl_SetActionMap,
+    qemu_IDirectInputDeviceWImpl_SetCooperativeLevel,
+    qemu_IDirectInputDeviceWImpl_SetDataFormat,
+    qemu_IDirectInputDeviceWImpl_SetEventNotification,
+    qemu_IDirectInputDeviceWImpl_SetProperty,
+    qemu_IDirectInputDeviceWImpl_Unacquire,
+    qemu_IDirectInputDeviceWImpl_WriteEffectToFile,
     qemu_IDirectInputWImpl_AddRef,
-    qemu_IDirectInputWImpl_CreateDevice,
+    qemu_IDirectInputImpl_CreateDevice,
     qemu_IDirectInputWImpl_EnumDevices,
     qemu_IDirectInputWImpl_GetDeviceStatus,
     qemu_IDirectInputWImpl_Initialize,

@@ -8,10 +8,10 @@ VPATH=$(SRCDIR)
 
 all: dinput.dll qemu_dinput.dll.so
 
-dinput.dll: dinput.spec main_g.o
+dinput.dll: device_g.o dinput.spec main_g.o
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/dinput.spec *_g.o -o dinput.dll -nodefaultlibs -nostdlib -lwine -lmsvcrt -luuid -ldxguid -lkernel32 -L../../$(WINE_DIR)/libs/wine
 
-qemu_dinput.dll.so: main_h.o qemu_dinput.spec
+qemu_dinput.dll.so: device_h.o main_h.o qemu_dinput.spec
 	$(WINEGCC) -shared $(SRCDIR)/qemu_dinput.spec *_h.o -o qemu_dinput.dll.so
 
 %_g.o: %.c qemu_dinput.h Makefile $(SRCDIR)/Makefile

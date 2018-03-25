@@ -57,6 +57,70 @@ enum dinput_calls
     CALL_IDIRECTINPUTAIMPL_QUERYINTERFACE,
     CALL_IDIRECTINPUTAIMPL_RELEASE,
     CALL_IDIRECTINPUTAIMPL_RUNCONTROLPANEL,
+    CALL_IDIRECTINPUTDEVICEAIMPL_ACQUIRE,
+    CALL_IDIRECTINPUTDEVICEAIMPL_ADDREF,
+    CALL_IDIRECTINPUTDEVICEAIMPL_BUILDACTIONMAP,
+    CALL_IDIRECTINPUTDEVICEAIMPL_CREATEEFFECT,
+    CALL_IDIRECTINPUTDEVICEAIMPL_ENUMCREATEDEFFECTOBJECTS,
+    CALL_IDIRECTINPUTDEVICEAIMPL_ENUMEFFECTS,
+    CALL_IDIRECTINPUTDEVICEAIMPL_ENUMEFFECTSINFILE,
+    CALL_IDIRECTINPUTDEVICEAIMPL_ENUMOBJECTS,
+    CALL_IDIRECTINPUTDEVICEAIMPL_ESCAPE,
+    CALL_IDIRECTINPUTDEVICEAIMPL_GETCAPABILITIES,
+    CALL_IDIRECTINPUTDEVICEAIMPL_GETDEVICEDATA,
+    CALL_IDIRECTINPUTDEVICEAIMPL_GETDEVICEINFO,
+    CALL_IDIRECTINPUTDEVICEAIMPL_GETDEVICESTATE,
+    CALL_IDIRECTINPUTDEVICEAIMPL_GETEFFECTINFO,
+    CALL_IDIRECTINPUTDEVICEAIMPL_GETFORCEFEEDBACKSTATE,
+    CALL_IDIRECTINPUTDEVICEAIMPL_GETIMAGEINFO,
+    CALL_IDIRECTINPUTDEVICEAIMPL_GETOBJECTINFO,
+    CALL_IDIRECTINPUTDEVICEAIMPL_GETPROPERTY,
+    CALL_IDIRECTINPUTDEVICEAIMPL_INITIALIZE,
+    CALL_IDIRECTINPUTDEVICEAIMPL_POLL,
+    CALL_IDIRECTINPUTDEVICEAIMPL_QUERYINTERFACE,
+    CALL_IDIRECTINPUTDEVICEAIMPL_RELEASE,
+    CALL_IDIRECTINPUTDEVICEAIMPL_RUNCONTROLPANEL,
+    CALL_IDIRECTINPUTDEVICEAIMPL_SENDDEVICEDATA,
+    CALL_IDIRECTINPUTDEVICEAIMPL_SENDFORCEFEEDBACKCOMMAND,
+    CALL_IDIRECTINPUTDEVICEAIMPL_SETACTIONMAP,
+    CALL_IDIRECTINPUTDEVICEAIMPL_SETCOOPERATIVELEVEL,
+    CALL_IDIRECTINPUTDEVICEAIMPL_SETDATAFORMAT,
+    CALL_IDIRECTINPUTDEVICEAIMPL_SETEVENTNOTIFICATION,
+    CALL_IDIRECTINPUTDEVICEAIMPL_SETPROPERTY,
+    CALL_IDIRECTINPUTDEVICEAIMPL_UNACQUIRE,
+    CALL_IDIRECTINPUTDEVICEAIMPL_WRITEEFFECTTOFILE,
+    CALL_IDIRECTINPUTDEVICEWIMPL_ACQUIRE,
+    CALL_IDIRECTINPUTDEVICEWIMPL_ADDREF,
+    CALL_IDIRECTINPUTDEVICEWIMPL_BUILDACTIONMAP,
+    CALL_IDIRECTINPUTDEVICEWIMPL_CREATEEFFECT,
+    CALL_IDIRECTINPUTDEVICEWIMPL_ENUMCREATEDEFFECTOBJECTS,
+    CALL_IDIRECTINPUTDEVICEWIMPL_ENUMEFFECTS,
+    CALL_IDIRECTINPUTDEVICEWIMPL_ENUMEFFECTSINFILE,
+    CALL_IDIRECTINPUTDEVICEWIMPL_ENUMOBJECTS,
+    CALL_IDIRECTINPUTDEVICEWIMPL_ESCAPE,
+    CALL_IDIRECTINPUTDEVICEWIMPL_GETCAPABILITIES,
+    CALL_IDIRECTINPUTDEVICEWIMPL_GETDEVICEDATA,
+    CALL_IDIRECTINPUTDEVICEWIMPL_GETDEVICEINFO,
+    CALL_IDIRECTINPUTDEVICEWIMPL_GETDEVICESTATE,
+    CALL_IDIRECTINPUTDEVICEWIMPL_GETEFFECTINFO,
+    CALL_IDIRECTINPUTDEVICEWIMPL_GETFORCEFEEDBACKSTATE,
+    CALL_IDIRECTINPUTDEVICEWIMPL_GETIMAGEINFO,
+    CALL_IDIRECTINPUTDEVICEWIMPL_GETOBJECTINFO,
+    CALL_IDIRECTINPUTDEVICEWIMPL_GETPROPERTY,
+    CALL_IDIRECTINPUTDEVICEWIMPL_INITIALIZE,
+    CALL_IDIRECTINPUTDEVICEWIMPL_POLL,
+    CALL_IDIRECTINPUTDEVICEWIMPL_QUERYINTERFACE,
+    CALL_IDIRECTINPUTDEVICEWIMPL_RELEASE,
+    CALL_IDIRECTINPUTDEVICEWIMPL_RUNCONTROLPANEL,
+    CALL_IDIRECTINPUTDEVICEWIMPL_SENDDEVICEDATA,
+    CALL_IDIRECTINPUTDEVICEWIMPL_SENDFORCEFEEDBACKCOMMAND,
+    CALL_IDIRECTINPUTDEVICEWIMPL_SETACTIONMAP,
+    CALL_IDIRECTINPUTDEVICEWIMPL_SETCOOPERATIVELEVEL,
+    CALL_IDIRECTINPUTDEVICEWIMPL_SETDATAFORMAT,
+    CALL_IDIRECTINPUTDEVICEWIMPL_SETEVENTNOTIFICATION,
+    CALL_IDIRECTINPUTDEVICEWIMPL_SETPROPERTY,
+    CALL_IDIRECTINPUTDEVICEWIMPL_UNACQUIRE,
+    CALL_IDIRECTINPUTDEVICEWIMPL_WRITEEFFECTTOFILE,
     CALL_IDIRECTINPUTWIMPL_ADDREF,
     CALL_IDIRECTINPUTWIMPL_CREATEDEVICE,
     CALL_IDIRECTINPUTWIMPL_ENUMDEVICES,
@@ -106,11 +170,88 @@ struct qemu_dinput
     /*IDirectInputJoyConfig8      *host_joy_config;*/
 };
 
+struct qemu_dinput_device
+{
+    /* Guest fields */
+    IDirectInputDevice8A        IDirectInputDevice8A_iface;
+    IDirectInputDevice8W        IDirectInputDevice8W_iface;
+
+    /* Host fields */
+    IDirectInputDevice8A        *host_a;
+    IDirectInputDevice8W        *host_w;
+};
+
 #ifdef QEMU_DLL_GUEST
+
+void qemu_dinput_device_guest_init(struct qemu_dinput_device *device);
 
 #else
 
 extern const struct qemu_ops *qemu_ops;
+
+void qemu_IDirectInputDeviceAImpl_Acquire(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_AddRef(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_BuildActionMap(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_CreateEffect(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_EnumCreatedEffectObjects(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_EnumEffects(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_EnumEffectsInFile(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_EnumObjects(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_Escape(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_GetCapabilities(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_GetDeviceData(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_GetDeviceInfo(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_GetDeviceState(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_GetEffectInfo(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_GetForceFeedbackState(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_GetImageInfo(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_GetObjectInfo(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_GetProperty(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_Initialize(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_Poll(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_QueryInterface(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_RunControlPanel(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_SendDeviceData(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_SendForceFeedbackCommand(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_SetActionMap(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_SetCooperativeLevel(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_SetDataFormat(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_SetEventNotification(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_SetProperty(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_Unacquire(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceAImpl_WriteEffectToFile(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceImpl_Release(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_Acquire(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_AddRef(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_BuildActionMap(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_CreateEffect(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_EnumCreatedEffectObjects(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_EnumEffects(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_EnumEffectsInFile(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_EnumObjects(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_Escape(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_GetCapabilities(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_GetDeviceData(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_GetDeviceInfo(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_GetDeviceState(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_GetEffectInfo(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_GetForceFeedbackState(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_GetImageInfo(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_GetObjectInfo(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_GetProperty(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_Initialize(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_Poll(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_QueryInterface(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_RunControlPanel(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_SendDeviceData(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_SendForceFeedbackCommand(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_SetActionMap(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_SetCooperativeLevel(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_SetDataFormat(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_SetEventNotification(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_SetProperty(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_Unacquire(struct qemu_syscall *call);
+void qemu_IDirectInputDeviceWImpl_WriteEffectToFile(struct qemu_syscall *call);
 
 #endif
 
