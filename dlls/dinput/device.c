@@ -574,69 +574,61 @@ void qemu_IDirectInputDeviceAImpl_AddRef(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_IDirectInputDeviceAImpl_EnumObjects
+struct qemu_IDirectInputDeviceImpl_EnumObjects
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t lpCallback;
-    uint64_t lpvRef;
-    uint64_t dwFlags;
+    uint64_t callback;
+    uint64_t ref;
+    uint64_t flags;
+    uint64_t wrapper;
+};
+
+struct qemu_IDirectInputDeviceImpl_EnumObjects_cb
+{
+    uint64_t cb;
+    uint64_t obj;
+    uint64_t ctx;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInputDeviceAImpl_EnumObjects(IDirectInputDevice8A *iface, LPDIENUMDEVICEOBJECTSCALLBACKA lpCallback, LPVOID lpvRef, DWORD dwFlags)
+static BOOL __fastcall EnumObjects_guest_cb(struct qemu_IDirectInputDeviceImpl_EnumObjects_cb *data)
 {
-    struct qemu_IDirectInputDeviceAImpl_EnumObjects call;
+    LPDIENUMDEVICEOBJECTSCALLBACKW cb = (LPDIENUMDEVICEOBJECTSCALLBACKW)(ULONG_PTR)data->cb;
+    return cb((const DIDEVICEOBJECTINSTANCEW *)(ULONG_PTR)data->obj, (void *)(ULONG_PTR)data->ctx);
+}
+
+static HRESULT WINAPI IDirectInputDeviceAImpl_EnumObjects(IDirectInputDevice8A *iface,
+        LPDIENUMDEVICEOBJECTSCALLBACKA callback, void *ref, DWORD flags)
+{
+    struct qemu_IDirectInputDeviceImpl_EnumObjects call;
     struct qemu_dinput_device *device = impl_from_IDirectInputDevice8A(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTDEVICEAIMPL_ENUMOBJECTS);
     call.iface = (ULONG_PTR)device;
-    call.lpCallback = (ULONG_PTR)lpCallback;
-    call.lpvRef = (ULONG_PTR)lpvRef;
-    call.dwFlags = dwFlags;
+    call.callback = (ULONG_PTR)callback;
+    call.ref = (ULONG_PTR)ref;
+    call.flags = flags;
+    call.wrapper = (ULONG_PTR)EnumObjects_guest_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_IDirectInputDeviceAImpl_EnumObjects(struct qemu_syscall *call)
+static HRESULT WINAPI IDirectInputDeviceWImpl_EnumObjects(IDirectInputDevice8W *iface,
+        LPDIENUMDEVICEOBJECTSCALLBACKW callback, LPVOID ref, DWORD flags)
 {
-    struct qemu_IDirectInputDeviceAImpl_EnumObjects *c = (struct qemu_IDirectInputDeviceAImpl_EnumObjects *)call;
-    struct qemu_dinput_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectInputDevice8_EnumObjects(device->host_a, QEMU_G2H(c->lpCallback), QEMU_G2H(c->lpvRef), c->dwFlags);
-}
-
-#endif
-
-struct qemu_IDirectInputDeviceWImpl_EnumObjects
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t lpCallback;
-    uint64_t lpvRef;
-    uint64_t dwFlags;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI IDirectInputDeviceWImpl_EnumObjects(IDirectInputDevice8W *iface, LPDIENUMDEVICEOBJECTSCALLBACKW lpCallback, LPVOID lpvRef, DWORD dwFlags)
-{
-    struct qemu_IDirectInputDeviceWImpl_EnumObjects call;
+    struct qemu_IDirectInputDeviceImpl_EnumObjects call;
     struct qemu_dinput_device *device = impl_from_IDirectInputDevice8W(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTDEVICEWIMPL_ENUMOBJECTS);
     call.iface = (ULONG_PTR)device;
-    call.lpCallback = (ULONG_PTR)lpCallback;
-    call.lpvRef = (ULONG_PTR)lpvRef;
-    call.dwFlags = dwFlags;
+    call.callback = (ULONG_PTR)callback;
+    call.ref = (ULONG_PTR)ref;
+    call.flags = flags;
+    call.wrapper = (ULONG_PTR)EnumObjects_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -645,15 +637,50 @@ static HRESULT WINAPI IDirectInputDeviceWImpl_EnumObjects(IDirectInputDevice8W *
 
 #else
 
-void qemu_IDirectInputDeviceWImpl_EnumObjects(struct qemu_syscall *call)
+struct EnumObjects_host_ctx
 {
-    struct qemu_IDirectInputDeviceWImpl_EnumObjects *c = (struct qemu_IDirectInputDeviceWImpl_EnumObjects *)call;
+    uint64_t guest_cb, guest_ctx, wrapper;
+};
+
+static BOOL CALLBACK EnumObjects_host_cb(const DIDEVICEOBJECTINSTANCEW *obj, void *data)
+{
+    struct EnumObjects_host_ctx *ctx = data;
+    struct qemu_IDirectInputDeviceImpl_EnumObjects_cb call;
+    BOOL ret;
+
+    call.cb = ctx->guest_cb;
+    call.obj = QEMU_H2G(obj);
+    call.ctx = ctx->guest_ctx;
+
+    WINE_TRACE("Calling guest callback %p(%p, %p).\n", (void *)call.cb, obj, (void *)call.ctx);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned %u.\n", ret);
+
+    return ret;
+}
+
+void qemu_IDirectInputDeviceImpl_EnumObjects(struct qemu_syscall *call)
+{
+    struct qemu_IDirectInputDeviceImpl_EnumObjects *c = (struct qemu_IDirectInputDeviceImpl_EnumObjects *)call;
     struct qemu_dinput_device *device;
+    struct EnumObjects_host_ctx ctx;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    ctx.guest_cb = c->callback;
+    ctx.guest_ctx = c->ref;
+    ctx.wrapper = c->wrapper;
 
-    c->super.iret = IDirectInputDevice8_EnumObjects(device->host_w, QEMU_G2H(c->lpCallback), QEMU_G2H(c->lpvRef), c->dwFlags);
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_IDIRECTINPUTDEVICEWIMPL_ENUMOBJECTS))
+    {
+        c->super.iret = IDirectInputDevice8_EnumObjects(device->host_w,
+                c->callback ? EnumObjects_host_cb : NULL, &ctx, c->flags);
+    }
+    else
+    {
+        c->super.iret = IDirectInputDevice8_EnumObjects(device->host_a,
+                c->callback ? (LPDIENUMDEVICEOBJECTSCALLBACKA)EnumObjects_host_cb : NULL, &ctx, c->flags);
+    }
 }
 
 #endif
