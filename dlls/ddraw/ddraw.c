@@ -5662,7 +5662,7 @@ void qemu_d3d_CreateVertexBuffer(struct qemu_syscall *call)
             break;
     }
 
-    if (FAILED(c->super.id))
+    if (FAILED(c->super.iret))
     {
         HeapFree(GetProcessHeap(), 0, object);
         return;
