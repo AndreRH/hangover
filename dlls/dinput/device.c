@@ -914,7 +914,8 @@ void qemu_IDirectInputDeviceWImpl_RunControlPanel(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceWImpl_RunControlPanel *c = (struct qemu_IDirectInputDeviceWImpl_RunControlPanel *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* This is a stub in Wine. The parameters look OK, but there may be window message issues. */
+    WINE_WARN("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_RunControlPanel(device->host_w, QEMU_G2H(c->hwndOwner), c->dwFlags);
@@ -954,7 +955,8 @@ void qemu_IDirectInputDeviceAImpl_RunControlPanel(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceAImpl_RunControlPanel *c = (struct qemu_IDirectInputDeviceAImpl_RunControlPanel *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* This is a stub in Wine. The parameters look OK, but there may be window message issues. */
+    WINE_WARN("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_RunControlPanel(device->host_a, QEMU_G2H(c->hwndOwner), c->dwFlags);
