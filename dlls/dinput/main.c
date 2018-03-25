@@ -509,19 +509,19 @@ struct qemu_IDirectInputAImpl_GetDeviceStatus
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t rguid;
+    uint64_t guid;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInputAImpl_GetDeviceStatus(IDirectInput7A *iface, REFGUID rguid)
+static HRESULT WINAPI IDirectInputAImpl_GetDeviceStatus(IDirectInput7A *iface, const GUID *guid)
 {
     struct qemu_IDirectInputAImpl_GetDeviceStatus call;
     struct qemu_dinput *dinput = impl_from_IDirectInput7A(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTAIMPL_GETDEVICESTATUS);
     call.iface = (ULONG_PTR)dinput;
-    call.rguid = (ULONG_PTR)rguid;
+    call.guid = (ULONG_PTR)guid;
 
     qemu_syscall(&call.super);
 
@@ -535,9 +535,9 @@ void qemu_IDirectInputAImpl_GetDeviceStatus(struct qemu_syscall *call)
     struct qemu_IDirectInputAImpl_GetDeviceStatus *c = (struct qemu_IDirectInputAImpl_GetDeviceStatus *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
-    c->super.iret = IDirectInput_GetDeviceStatus(dinput->host_7a, QEMU_G2H(c->rguid));
+    c->super.iret = IDirectInput_GetDeviceStatus(dinput->host_7a, QEMU_G2H(c->guid));
 }
 
 #endif
@@ -546,19 +546,19 @@ struct qemu_IDirectInputWImpl_GetDeviceStatus
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t rguid;
+    uint64_t guid;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInputWImpl_GetDeviceStatus(IDirectInput7W *iface, REFGUID rguid)
+static HRESULT WINAPI IDirectInputWImpl_GetDeviceStatus(IDirectInput7W *iface, const GUID *guid)
 {
     struct qemu_IDirectInputWImpl_GetDeviceStatus call;
     struct qemu_dinput *dinput = impl_from_IDirectInput7W(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUTWIMPL_GETDEVICESTATUS);
     call.iface = (ULONG_PTR)dinput;
-    call.rguid = (ULONG_PTR)rguid;
+    call.guid = (ULONG_PTR)guid;
 
     qemu_syscall(&call.super);
 
@@ -572,9 +572,9 @@ void qemu_IDirectInputWImpl_GetDeviceStatus(struct qemu_syscall *call)
     struct qemu_IDirectInputWImpl_GetDeviceStatus *c = (struct qemu_IDirectInputWImpl_GetDeviceStatus *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
-    c->super.iret = IDirectInput_GetDeviceStatus(dinput->host_7w, QEMU_G2H(c->rguid));
+    c->super.iret = IDirectInput_GetDeviceStatus(dinput->host_7w, QEMU_G2H(c->guid));
 }
 
 #endif
