@@ -381,7 +381,7 @@ static HRESULT WINAPI IDirectInputAImpl_QueryInterface(IDirectInput7A *iface, co
         }
         */
     }
-    else if (obj)
+    else if (call.super.iret != E_POINTER)
     {
         *obj = NULL;
     }
