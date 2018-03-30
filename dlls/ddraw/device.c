@@ -5018,7 +5018,7 @@ struct qemu_d3d_device7_Clear
     uint64_t rects;
     uint64_t flags;
     uint64_t color;
-    uint64_t z;
+    double z;
     uint64_t stencil;
 };
 

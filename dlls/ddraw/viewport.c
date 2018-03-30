@@ -875,7 +875,7 @@ struct qemu_d3d_viewport_Clear2
     uint64_t rects;
     uint64_t flags;
     uint64_t color;
-    uint64_t depth;
+    double depth;
     uint64_t stencil;
 };
 
