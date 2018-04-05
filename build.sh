@@ -93,13 +93,3 @@ do
     ln -sf $DESTDIR/build/wine-guest/dlls/$dll/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll64
     ln -sf $DESTDIR/build/wine-guest32/dlls/$dll/$dll.dll $DESTDIR/build/qemu/x86_64-windows-user/qemu_guest_dll32
 done
-
-# Build the test progs. FIXME: automate this better.
-cd $DESTDIR/testprogs/advapi32
-make -j4
-
-cd $DESTDIR/testprogs/kernel32
-make -j4
-
-cd $DESTDIR/testprogs/msvcrt
-make -j4
