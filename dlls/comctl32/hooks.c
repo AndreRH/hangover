@@ -50,6 +50,7 @@ void register_notify_callbacks(void)
 #else
 
 static WNDPROC orig_rebar_wndproc;
+static WNDPROC orig_combo_wndproc;
 
 static LRESULT WINAPI rebar_wndproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -88,6 +89,37 @@ static LRESULT WINAPI rebar_wndproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
     }
 
     ret = CallWindowProcW(orig_rebar_wndproc, hWnd, msg, wParam, lParam);
+
+    return ret;
+}
+
+static LRESULT WINAPI combo_wndproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    LRESULT ret;
+    struct qemu_COMBOBOXEXITEM *guest_item;
+    COMBOBOXEXITEMW host_item;
+
+    WINE_TRACE("Message %x\n", msg);
+
+    switch (msg)
+    {
+        case WM_USER+1:
+        case WM_USER+4:
+        case WM_USER+5:
+        case WM_USER+11:
+        case WM_USER+12:
+        case WM_USER+13:
+            WINE_TRACE("Translating CBEM_[GET|INSERT][A|W] message.\n");
+            guest_item = (struct qemu_COMBOBOXEXITEM *)lParam;
+            COMBOBOXEXITEM_g2h(&host_item, guest_item);
+            ret = CallWindowProcW(orig_combo_wndproc, hWnd, msg, wParam, (LPARAM)&host_item);
+            COMBOBOXEXITEM_h2g(guest_item, &host_item);
+            break;
+
+        default:
+            ret = CallWindowProcW(orig_combo_wndproc, hWnd, msg, wParam, lParam);
+            break;
+    }
 
     return ret;
 }
@@ -1073,6 +1105,7 @@ void hook_wndprocs(void)
 
     orig_rebar_wndproc = hook_class(REBARCLASSNAMEW, rebar_wndproc);
     /* Toolbars: Used by Wine's comdlg32, and internal messages from comctl32. */
+    orig_combo_wndproc = hook_class(WC_COMBOBOXEXW, combo_wndproc);
 }
 
 void register_notify_callbacks(void)
