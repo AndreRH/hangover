@@ -22,6 +22,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <dinput.h>
+#include "dinputd.h"
 
 #include "thunk/qemu_windows.h"
 #include "thunk/qemu_dinput.h"

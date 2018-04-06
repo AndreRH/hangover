@@ -25,6 +25,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <dinput.h>
+#include "dinputd.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -58,24 +59,29 @@ struct qemu_IDirectInputImpl_EnumDevices_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static inline struct qemu_dinput *impl_from_IDirectInput7A( IDirectInput7A *iface )
+static inline struct qemu_dinput *impl_from_IDirectInput7A(IDirectInput7A *iface)
 {
-    return CONTAINING_RECORD( iface, struct qemu_dinput, IDirectInput7A_iface );
+    return CONTAINING_RECORD(iface, struct qemu_dinput, IDirectInput7A_iface);
 }
 
-static inline struct qemu_dinput *impl_from_IDirectInput7W( IDirectInput7W *iface )
+static inline struct qemu_dinput *impl_from_IDirectInput7W(IDirectInput7W *iface)
 {
-    return CONTAINING_RECORD( iface, struct qemu_dinput, IDirectInput7W_iface );
+    return CONTAINING_RECORD(iface, struct qemu_dinput, IDirectInput7W_iface);
 }
 
-static inline struct qemu_dinput *impl_from_IDirectInput8A( IDirectInput8A *iface )
+static inline struct qemu_dinput *impl_from_IDirectInput8A(IDirectInput8A *iface)
 {
-    return CONTAINING_RECORD( iface, struct qemu_dinput, IDirectInput8A_iface );
+    return CONTAINING_RECORD(iface, struct qemu_dinput, IDirectInput8A_iface);
 }
 
-static inline struct qemu_dinput *impl_from_IDirectInput8W( IDirectInput8W *iface )
+static inline struct qemu_dinput *impl_from_IDirectInput8W(IDirectInput8W *iface)
 {
-    return CONTAINING_RECORD( iface, struct qemu_dinput, IDirectInput8W_iface );
+    return CONTAINING_RECORD(iface, struct qemu_dinput, IDirectInput8W_iface);
+}
+
+static inline struct qemu_dinput *impl_from_IDirectInputJoyConfig8(IDirectInputJoyConfig8 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_dinput, IDirectInputJoyConfig8_iface);
 }
 
 /* FIXME: Native dinput has a hand-written assembler callback wrapper for whatever reasons. */
@@ -374,12 +380,10 @@ static HRESULT WINAPI IDirectInputAImpl_QueryInterface(IDirectInput7A *iface, co
         {
             *obj = &dinput->IDirectInput8W_iface;
         }
-        /*
         else if (IsEqualGUID(&IID_IDirectInputJoyConfig8, iid))
         {
             *obj = &dinput->IDirectInputJoyConfig8_iface;
         }
-        */
     }
     else if (call.super.iret != E_POINTER)
     {
@@ -1664,8 +1668,6 @@ void qemu_IDirectInput8AImpl_ConfigureDevices(struct qemu_syscall *call)
 
 #endif
 
-#if 0
-
 struct qemu_JoyConfig8Impl_QueryInterface
 {
     struct qemu_syscall super;
@@ -1700,7 +1702,7 @@ void qemu_JoyConfig8Impl_QueryInterface(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_QueryInterface(dinput->host_joy_config, QEMU_G2H(c->riid), QEMU_G2H(c->ppobj));
+    c->super.iret = IDirectInputJoyConfig8_QueryInterface(dinput->host_joy_config, QEMU_G2H(c->riid), QEMU_G2H(c->ppobj));
 }
 
 #endif
@@ -1716,6 +1718,8 @@ struct qemu_JoyConfig8Impl_AddRef
 static ULONG WINAPI JoyConfig8Impl_AddRef(IDirectInputJoyConfig8 *iface)
 {
     struct qemu_JoyConfig8Impl_AddRef call;
+    struct qemu_dinput *dinput = impl_from_IDirectInputJoyConfig8(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_JOYCONFIG8IMPL_ADDREF);
     call.iface = (ULONG_PTR)dinput;
 
@@ -1733,7 +1737,7 @@ void qemu_JoyConfig8Impl_AddRef(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_AddRef(dinput->host_joy_config);
+    c->super.iret = IDirectInputJoyConfig8_AddRef(dinput->host_joy_config);
 }
 
 #endif
@@ -1749,6 +1753,8 @@ struct qemu_JoyConfig8Impl_Release
 static ULONG WINAPI JoyConfig8Impl_Release(IDirectInputJoyConfig8 *iface)
 {
     struct qemu_JoyConfig8Impl_Release call;
+    struct qemu_dinput *dinput = impl_from_IDirectInputJoyConfig8(iface);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_JOYCONFIG8IMPL_RELEASE);
     call.iface = (ULONG_PTR)dinput;
 
@@ -1764,9 +1770,9 @@ void qemu_JoyConfig8Impl_Release(struct qemu_syscall *call)
     struct qemu_JoyConfig8Impl_Release *c = (struct qemu_JoyConfig8Impl_Release *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
-    c->super.iret = JoyConfig8Impl_Release(dinput->host_joy_config);
+    c->super.iret = qemu_IDirectInputImpl_Release_internal(dinput);
 }
 
 #endif
@@ -1801,7 +1807,7 @@ void qemu_JoyConfig8Impl_Acquire(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_Acquire(dinput->host_joy_config);
+    c->super.iret = IDirectInputJoyConfig8_Acquire(dinput->host_joy_config);
 }
 
 #endif
@@ -1836,7 +1842,7 @@ void qemu_JoyConfig8Impl_Unacquire(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_Unacquire(dinput->host_joy_config);
+    c->super.iret = IDirectInputJoyConfig8_Unacquire(dinput->host_joy_config);
 }
 
 #endif
@@ -1875,7 +1881,7 @@ void qemu_JoyConfig8Impl_SetCooperativeLevel(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_SetCooperativeLevel(dinput->host_joy_config, QEMU_G2H(c->hwnd), c->flags);
+    c->super.iret = IDirectInputJoyConfig8_SetCooperativeLevel(dinput->host_joy_config, QEMU_G2H(c->hwnd), c->flags);
 }
 
 #endif
@@ -1910,7 +1916,7 @@ void qemu_JoyConfig8Impl_SendNotify(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_SendNotify(dinput->host_joy_config);
+    c->super.iret = IDirectInputJoyConfig8_SendNotify(dinput->host_joy_config);
 }
 
 #endif
@@ -1949,7 +1955,7 @@ void qemu_JoyConfig8Impl_EnumTypes(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_EnumTypes(dinput->host_joy_config, QEMU_G2H(c->cb), QEMU_G2H(c->ref));
+    c->super.iret = IDirectInputJoyConfig8_EnumTypes(dinput->host_joy_config, QEMU_G2H(c->cb), QEMU_G2H(c->ref));
 }
 
 #endif
@@ -1990,7 +1996,7 @@ void qemu_JoyConfig8Impl_GetTypeInfo(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_GetTypeInfo(dinput->host_joy_config, QEMU_G2H(c->name), QEMU_G2H(c->info), c->flags);
+    c->super.iret = IDirectInputJoyConfig8_GetTypeInfo(dinput->host_joy_config, QEMU_G2H(c->name), QEMU_G2H(c->info), c->flags);
 }
 
 #endif
@@ -2033,7 +2039,7 @@ void qemu_JoyConfig8Impl_SetTypeInfo(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_SetTypeInfo(dinput->host_joy_config, QEMU_G2H(c->name), QEMU_G2H(c->info), c->flags, QEMU_G2H(c->new_name));
+    c->super.iret = IDirectInputJoyConfig8_SetTypeInfo(dinput->host_joy_config, QEMU_G2H(c->name), QEMU_G2H(c->info), c->flags, QEMU_G2H(c->new_name));
 }
 
 #endif
@@ -2070,7 +2076,7 @@ void qemu_JoyConfig8Impl_DeleteType(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_DeleteType(dinput->host_joy_config, QEMU_G2H(c->name));
+    c->super.iret = IDirectInputJoyConfig8_DeleteType(dinput->host_joy_config, QEMU_G2H(c->name));
 }
 
 #endif
@@ -2111,7 +2117,7 @@ void qemu_JoyConfig8Impl_GetConfig(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_GetConfig(dinput->host_joy_config, c->id, QEMU_G2H(c->info), c->flags);
+    c->super.iret = IDirectInputJoyConfig8_GetConfig(dinput->host_joy_config, c->id, QEMU_G2H(c->info), c->flags);
 }
 
 #endif
@@ -2152,7 +2158,7 @@ void qemu_JoyConfig8Impl_SetConfig(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_SetConfig(dinput->host_joy_config, c->id, QEMU_G2H(c->info), c->flags);
+    c->super.iret = IDirectInputJoyConfig8_SetConfig(dinput->host_joy_config, c->id, QEMU_G2H(c->info), c->flags);
 }
 
 #endif
@@ -2189,7 +2195,7 @@ void qemu_JoyConfig8Impl_DeleteConfig(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_DeleteConfig(dinput->host_joy_config, c->id);
+    c->super.iret = IDirectInputJoyConfig8_DeleteConfig(dinput->host_joy_config, c->id);
 }
 
 #endif
@@ -2228,7 +2234,7 @@ void qemu_JoyConfig8Impl_GetUserValues(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_GetUserValues(dinput->host_joy_config, QEMU_G2H(c->info), c->flags);
+    c->super.iret = IDirectInputJoyConfig8_GetUserValues(dinput->host_joy_config, QEMU_G2H(c->info), c->flags);
 }
 
 #endif
@@ -2267,7 +2273,7 @@ void qemu_JoyConfig8Impl_SetUserValues(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_SetUserValues(dinput->host_joy_config, QEMU_G2H(c->info), c->flags);
+    c->super.iret = IDirectInputJoyConfig8_SetUserValues(dinput->host_joy_config, QEMU_G2H(c->info), c->flags);
 }
 
 #endif
@@ -2290,7 +2296,7 @@ static HRESULT WINAPI JoyConfig8Impl_AddNewHardware(IDirectInputJoyConfig8 *ifac
     call.super.id = QEMU_SYSCALL_ID(CALL_JOYCONFIG8IMPL_ADDNEWHARDWARE);
     call.iface = (ULONG_PTR)dinput;
     call.hwnd = (ULONG_PTR)hwnd;
-    call.guid = guid;
+    call.guid = (ULONG_PTR)guid;
 
     qemu_syscall(&call.super);
 
@@ -2306,7 +2312,7 @@ void qemu_JoyConfig8Impl_AddNewHardware(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_AddNewHardware(dinput->host_joy_config, QEMU_G2H(c->hwnd), c->guid);
+    c->super.iret = IDirectInputJoyConfig8_AddNewHardware(dinput->host_joy_config, QEMU_G2H(c->hwnd), QEMU_G2H(c->guid));
 }
 
 #endif
@@ -2331,7 +2337,7 @@ static HRESULT WINAPI JoyConfig8Impl_OpenTypeKey(IDirectInputJoyConfig8 *iface, 
     call.iface = (ULONG_PTR)dinput;
     call.name = (ULONG_PTR)name;
     call.security = security;
-    call.key = key;
+    call.key = (ULONG_PTR)key;
 
     qemu_syscall(&call.super);
 
@@ -2347,7 +2353,7 @@ void qemu_JoyConfig8Impl_OpenTypeKey(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_OpenTypeKey(dinput->host_joy_config, QEMU_G2H(c->name), c->security, c->key);
+    c->super.iret = IDirectInputJoyConfig8_OpenTypeKey(dinput->host_joy_config, QEMU_G2H(c->name), c->security, QEMU_G2H(c->key));
 }
 
 #endif
@@ -2368,7 +2374,7 @@ static HRESULT WINAPI JoyConfig8Impl_OpenAppStatusKey(IDirectInputJoyConfig8 *if
 
     call.super.id = QEMU_SYSCALL_ID(CALL_JOYCONFIG8IMPL_OPENAPPSTATUSKEY);
     call.iface = (ULONG_PTR)dinput;
-    call.key = key;
+    call.key = (ULONG_PTR)key;
 
     qemu_syscall(&call.super);
 
@@ -2384,10 +2390,8 @@ void qemu_JoyConfig8Impl_OpenAppStatusKey(struct qemu_syscall *call)
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = JoyConfig8Impl_OpenAppStatusKey(dinput->host_joy_config, c->key);
+    c->super.iret = IDirectInputJoyConfig8_OpenAppStatusKey(dinput->host_joy_config, QEMU_G2H(c->key));
 }
-
-#endif
 
 #endif
 
@@ -2474,6 +2478,29 @@ static const IDirectInput8WVtbl ddi8wvt =
     IDirectInput8WImpl_ConfigureDevices
 };
 
+static const IDirectInputJoyConfig8Vtbl JoyConfig8vt =
+{
+    JoyConfig8Impl_QueryInterface,
+    JoyConfig8Impl_AddRef,
+    JoyConfig8Impl_Release,
+    JoyConfig8Impl_Acquire,
+    JoyConfig8Impl_Unacquire,
+    JoyConfig8Impl_SetCooperativeLevel,
+    JoyConfig8Impl_SendNotify,
+    JoyConfig8Impl_EnumTypes,
+    JoyConfig8Impl_GetTypeInfo,
+    JoyConfig8Impl_SetTypeInfo,
+    JoyConfig8Impl_DeleteType,
+    JoyConfig8Impl_GetConfig,
+    JoyConfig8Impl_SetConfig,
+    JoyConfig8Impl_DeleteConfig,
+    JoyConfig8Impl_GetUserValues,
+    JoyConfig8Impl_SetUserValues,
+    JoyConfig8Impl_AddNewHardware,
+    JoyConfig8Impl_OpenTypeKey,
+    JoyConfig8Impl_OpenAppStatusKey
+};
+
 static HRESULT create_directinput_instance(const IID *iid, void **iface_out, struct qemu_dinput **impl)
 {
     struct qemu_directinput_create call;
@@ -2498,7 +2525,7 @@ static HRESULT create_directinput_instance(const IID *iid, void **iface_out, str
     object->IDirectInput7W_iface.lpVtbl = &ddi7wvt;
     object->IDirectInput8A_iface.lpVtbl = &ddi8avt;
     object->IDirectInput8W_iface.lpVtbl = &ddi8wvt;
-    /* object->IDirectInputJoyConfig8_iface.lpVtbl = &JoyConfig8vt; */
+    object->IDirectInputJoyConfig8_iface.lpVtbl = &JoyConfig8vt;
 
     hr = IDirectInput7_QueryInterface(&object->IDirectInput7A_iface, iid, iface_out);
     if (FAILED(hr))
@@ -2733,14 +2760,15 @@ static void qemu_directinput_create(struct qemu_syscall *call)
     IDirectInput7_QueryInterface(object->host_7a, &IID_IDirectInput7W, (void **)&object->host_7w);
     IDirectInput7_QueryInterface(object->host_7a, &IID_IDirectInput8A, (void **)&object->host_8a);
     IDirectInput7_QueryInterface(object->host_7a, &IID_IDirectInput8W, (void **)&object->host_8w);
-    /* Todo: JoyConfig8. */
+    IDirectInput7_QueryInterface(object->host_7a, &IID_IDirectInputJoyConfig8,
+            (void **)&object->host_joy_config);
 
     /* We need all 4 interfaces, but because host ref == guest ref we want to leave only 1 reference
      * behind. */
     IDirectInput7_Release(object->host_7w);
     IDirectInput8_Release(object->host_8a);
     IDirectInput8_Release(object->host_8w);
-    /* Todo: JoyConfig8. */
+    IDirectInput8_Release(object->host_joy_config);
 
     c->object = QEMU_H2G(object);
     c->super.iret = hr;
@@ -2854,7 +2882,6 @@ static const syscall_handler dll_functions[] =
     qemu_IDirectInputImpl_Release,
     qemu_IDirectInputWImpl_RunControlPanel,
     qemu_init_dll,
-#if 0
     qemu_JoyConfig8Impl_Acquire,
     qemu_JoyConfig8Impl_AddNewHardware,
     qemu_JoyConfig8Impl_AddRef,
@@ -2874,7 +2901,6 @@ static const syscall_handler dll_functions[] =
     qemu_JoyConfig8Impl_SetTypeInfo,
     qemu_JoyConfig8Impl_SetUserValues,
     qemu_JoyConfig8Impl_Unacquire,
-#endif
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)

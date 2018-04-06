@@ -126,7 +126,6 @@ enum dinput_calls
     CALL_IDIRECTINPUTWIMPL_RELEASE,
     CALL_IDIRECTINPUTWIMPL_RUNCONTROLPANEL,
     CALL_INIT_DLL,
-#if 0
     CALL_JOYCONFIG8IMPL_ACQUIRE,
     CALL_JOYCONFIG8IMPL_ADDNEWHARDWARE,
     CALL_JOYCONFIG8IMPL_ADDREF,
@@ -146,7 +145,6 @@ enum dinput_calls
     CALL_JOYCONFIG8IMPL_SETTYPEINFO,
     CALL_JOYCONFIG8IMPL_SETUSERVALUES,
     CALL_JOYCONFIG8IMPL_UNACQUIRE,
-#endif
 };
 
 struct qemu_dinput
@@ -156,14 +154,14 @@ struct qemu_dinput
     IDirectInput7W              IDirectInput7W_iface;
     IDirectInput8A              IDirectInput8A_iface;
     IDirectInput8W              IDirectInput8W_iface;
-    /*IDirectInputJoyConfig8      IDirectInputJoyConfig8_iface;*/
+    IDirectInputJoyConfig8      IDirectInputJoyConfig8_iface;
 
     /* Host fields */
     IDirectInput7A              *host_7a;
     IDirectInput7W              *host_7w;
     IDirectInput8A              *host_8a;
     IDirectInput8W              *host_8w;
-    /*IDirectInputJoyConfig8      *host_joy_config;*/
+    IDirectInputJoyConfig8      *host_joy_config;
 };
 
 struct qemu_dinput_device
