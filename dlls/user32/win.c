@@ -614,8 +614,9 @@ static inline INT GWL_OFFSET_g2h(uint64_t guest)
         return DWLP_DLGPROC;
     else if (val == 8)
         return DWLP_USER;
-    WINE_FIXME("Unknown offset %d\n", val);
-    return val;
+
+    /* DWLP_USER values: Shift by the size increase of the two pointer values. */
+    return val + 2 * (sizeof(void *) - sizeof(qemu_ptr));
 #endif
 }
 
