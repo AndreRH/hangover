@@ -134,6 +134,12 @@ void qemu_RegisterClassEx(struct qemu_syscall *call)
 #else
         /* FIXME: Verify cbSize */
         WNDCLASSEX_g2h(&exw, QEMU_G2H(c->wc));
+
+        /* DLGPROC and LPARAM are 8 bytes in Wine. DLGWINDOWEXTRA may cause issues,
+         * but it seems to be a "comdlg32 needs this much" value, and not a "read from
+         * resources" marker. */
+        if (exw.cbWndExtra > 0)
+            exw.cbWndExtra += 2 * (sizeof(void *) - sizeof(qemu_ptr));
 #endif
 
         guest_proc = (ULONG_PTR)exw.lpfnWndProc;
@@ -150,6 +156,12 @@ void qemu_RegisterClassEx(struct qemu_syscall *call)
 #else
         /* FIXME: Verify cbSize */
         WNDCLASSEX_g2h((WNDCLASSEXW *)&exa, QEMU_G2H(c->wc));
+
+        /* DLGPROC and LPARAM are 8 bytes in Wine. DLGWINDOWEXTRA may cause issues,
+         * but it seems to be a "comdlg32 needs this much" value, and not a "read from
+         * resources" marker. */
+        if (exa.cbWndExtra > 0)
+            exa.cbWndExtra += 2 * (sizeof(void *) - sizeof(qemu_ptr));
 #endif
 
         guest_proc = (ULONG_PTR)exa.lpfnWndProc;
@@ -297,6 +309,11 @@ void qemu_GetClassLongW(struct qemu_syscall *call)
             c->super.iret = get_class_wndproc(win, TRUE);
             break;
 
+#if 0
+        case GCL_CBWNDEXTRA:
+            WINE_FIXME("Check correct return value for GCL_CBWNDEXTRA.\n");
+            /* Drop through */
+#endif
         default:
             c->super.iret = GetClassLongW(win, c->offset);
     }
@@ -340,6 +357,11 @@ void qemu_GetClassLongA(struct qemu_syscall *call)
             c->super.iret = get_class_wndproc(win, FALSE);
             break;
 
+#if 0
+        case GCL_CBWNDEXTRA:
+            WINE_FIXME("Check correct return value for GCL_CBWNDEXTRA.\n");
+            /* Drop through */
+#endif
         default:
             c->super.iret = GetClassLongA(win, c->offset);
     }
@@ -441,6 +463,11 @@ void qemu_SetClassLongW(struct qemu_syscall *call)
             c->super.iret = set_class_wndproc(win, TRUE, c->newval);
             break;
 
+#if 0
+        case GCL_CBWNDEXTRA:
+            WINE_FIXME("Check correct return value for GCL_CBWNDEXTRA.\n");
+            /* Drop through */
+#endif
         default:
             c->super.iret = SetClassLongW(win, c->offset, c->newval);
             break;
@@ -488,6 +515,11 @@ void qemu_SetClassLongA(struct qemu_syscall *call)
             c->super.iret = set_class_wndproc(win, FALSE, c->newval);
             break;
 
+#if 0
+        case GCL_CBWNDEXTRA:
+            WINE_FIXME("Check correct return value for GCL_CBWNDEXTRA.\n");
+            /* Drop through */
+#endif
         default:
             c->super.iret = SetClassLongA(win, c->offset, c->newval);
             break;
