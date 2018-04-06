@@ -1101,11 +1101,25 @@ void hook_wndprocs(void)
      * don't have to bother the user32 mapper with comctl32 internals and that we don't
      * have to inspect the window class on every WM_USER + x message. The disadvantage
      * is that the hook wndproc will also run when the message is received from another
-     * Wine DLL, in which case translation will break things. */
+     * Wine DLL, in which case translation will break things.
+     *
+     * FIXME: This is rather fragile. Wine changes may introduce more internal uses of
+     * common controls, at which point assumptions here break. Also the control may send
+     * itself messages.
+     *
+     * TODO 2: Contemplate injecting the replacement wndproc in CreateWindow / GetClassLong,
+     * but keep in mind that this will be difficult for windows created from resources. It'd
+     * also be possible to un-hook child windows of comctl32 controls, e.g. tab controls in
+     * propsheets. */
 
     orig_rebar_wndproc = hook_class(REBARCLASSNAMEW, rebar_wndproc);
     /* Toolbars: Used by Wine's comdlg32, and internal messages from comctl32. */
     orig_combo_wndproc = hook_class(WC_COMBOBOXEXW, combo_wndproc);
+    /* Tooltips: Used by a number of comctl32 controls, mshtml, etc. Probably solvable if need be. */
+    /* Status: Used by shell32, probably only for the control panel. */
+    /* Tab Control: Used by comctl32 propsheet. */
+    /* Listview: Used by shell32. */
+    /* Header: Used by listview. */
 }
 
 void register_notify_callbacks(void)
