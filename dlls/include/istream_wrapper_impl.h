@@ -26,24 +26,53 @@ struct istream_wrapper
 
 struct istream_wrapper_funcs
 {
-    
+    uint64_t seek;
+    uint64_t read;
+};
+
+struct istream_wrapper_Seek
+{
+    uint64_t iface;
+    uint64_t offset, origin, new_pos;
+};
+
+struct istream_wrapper_Read
+{
+    uint64_t iface;
+    uint64_t pv, cb, read;
 };
 
 #ifdef QEMU_DLL_GUEST
 
+static HRESULT __fastcall istream_wrapper_Seek(struct istream_wrapper_Seek *call)
+{
+    IStream *stream = (IStream *)(ULONG_PTR)call->iface;
+    LARGE_INTEGER li;
+    li.QuadPart = call->offset;
+    return stream->lpVtbl->Seek(stream, li, call->origin, (ULARGE_INTEGER *)(ULONG_PTR)call->new_pos);
+}
+
+static HRESULT __fastcall istream_wrapper_Read(struct istream_wrapper_Read *call)
+{
+    IStream *stream = (IStream *)(ULONG_PTR)call->iface;
+    return stream->lpVtbl->Read(stream, (void *)(ULONG_PTR)call->pv, call->cb, (ULONG *)(ULONG_PTR)call->read);
+}
+
 static void istream_wrapper_get_funcs(struct istream_wrapper_funcs *funcs)
 {
-    
+    funcs->seek = (ULONG_PTR)istream_wrapper_Seek;
+    funcs->read = (ULONG_PTR)istream_wrapper_Read;
 }
 
 #else
 
-#include <wine/debug.h>
-WINE_DECLARE_DEBUG_CHANNEL(istream_wrapper);
+static uint64_t istream_wrapper_Seek_guest;
+static uint64_t istream_wrapper_Read_guest;
 
 static void istream_wrapper_set_funcs(const struct istream_wrapper_funcs *funcs)
 {
-    
+    istream_wrapper_Seek_guest = funcs->seek;
+    istream_wrapper_Read_guest = funcs->read;
 }
 
 struct istream_wrapper *istream_wrapper_from_IStream(IStream *iface)
@@ -54,19 +83,19 @@ struct istream_wrapper *istream_wrapper_from_IStream(IStream *iface)
 static HRESULT STDMETHODCALLTYPE istream_wrapper_QueryInterface(IStream *iface, const IID *iid,
         void **out)
 {
-    WINE_FIXME_(istream_wrapper)("Not implemented.\n");
+    WINE_FIXME("Not implemented.\n");
     return E_NOTIMPL;
 }
 
 static ULONG STDMETHODCALLTYPE istream_wrapper_AddRef(IStream *iface)
 {
-    WINE_FIXME_(istream_wrapper)("Not implemented.\n");
+    WINE_FIXME("Not implemented.\n");
     return 2;
 }
 
 static ULONG STDMETHODCALLTYPE istream_wrapper_Release(IStream *iface)
 {
-    WINE_FIXME_(istream_wrapper)("Not implemented.\n");
+    WINE_FIXME("Not implemented.\n");
     return 1;
 }
 
@@ -74,15 +103,27 @@ static HRESULT STDMETHODCALLTYPE istream_wrapper_Read(IStream *iface, void *pv, 
         ULONG *read)
 {
     struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
-    WINE_FIXME_(istream_wrapper)("Not implemented.\n");
-    return E_FAIL;
+    struct istream_wrapper_Read call;
+    HRESULT hr;
+
+    WINE_TRACE("\n");
+    call.iface = istream_wrapper_guest_iface(stream);
+    call.pv = QEMU_H2G(pv);
+    call.cb = cb;
+    call.read = QEMU_H2G(read);
+
+    WINE_TRACE("Calling guest callback %p.\n", (void *)istream_wrapper_Read_guest);
+    hr = qemu_ops->qemu_execute(QEMU_G2H(istream_wrapper_Read_guest), QEMU_H2G(&call));
+    WINE_TRACE("Guest CB returned 0x%x.\n", hr);
+
+    return hr;
 }
 
 static HRESULT STDMETHODCALLTYPE istream_wrapper_Write(IStream *iface, const void *pv, ULONG cb,
         ULONG *written)
 {
     struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
-    WINE_FIXME_(istream_wrapper)("Not implemented.\n");
+    WINE_FIXME("Not implemented.\n");
     return E_FAIL;
 }
 
@@ -90,14 +131,26 @@ static HRESULT STDMETHODCALLTYPE istream_wrapper_Seek(IStream *iface, LARGE_INTE
         ULARGE_INTEGER *new_pos)
 {
     struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
-    WINE_FIXME_(istream_wrapper)("Not implemented.\n");
-    return E_FAIL;
+    struct istream_wrapper_Seek call;
+    HRESULT hr;
+
+    WINE_TRACE("\n");
+    call.iface = istream_wrapper_guest_iface(stream);
+    call.offset = offset.QuadPart;
+    call.origin = origin;
+    call.new_pos = QEMU_H2G(new_pos);
+
+    WINE_TRACE("Calling guest callback %p.\n", (void *)istream_wrapper_Seek_guest);
+    hr = qemu_ops->qemu_execute(QEMU_G2H(istream_wrapper_Seek_guest), QEMU_H2G(&call));
+    WINE_TRACE("Guest CB returned 0x%x.\n", hr);
+
+    return hr;
 }
 
 static HRESULT STDMETHODCALLTYPE istream_wrapper_SetSize(IStream *iface, ULARGE_INTEGER libNewSize)
 {
     struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
-    WINE_FIXME_(istream_wrapper)("Not implemented.\n");
+    WINE_FIXME("Not implemented.\n");
     return E_FAIL;
 }
 
@@ -106,21 +159,21 @@ static HRESULT STDMETHODCALLTYPE istream_wrapper_CopyTo(IStream *iface, IStream 
                                                     ULARGE_INTEGER *pcbWritten)
 {
     struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
-    WINE_FIXME_(istream_wrapper)("Not implemented.\n");
+    WINE_FIXME("Not implemented.\n");
     return E_FAIL;
 }
 
 static HRESULT STDMETHODCALLTYPE istream_wrapper_Commit(IStream *iface, DWORD grfCommitFlags)
 {
     struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
-    WINE_FIXME_(istream_wrapper)("Not implemented.\n");
+    WINE_FIXME("Not implemented.\n");
     return E_FAIL;
 }
 
 static HRESULT STDMETHODCALLTYPE istream_wrapper_Revert(IStream *iface)
 {
     struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
-    WINE_FIXME_(istream_wrapper)("Not implemented.\n");
+    WINE_FIXME("Not implemented.\n");
     return E_FAIL;
 }
 
@@ -128,7 +181,7 @@ static HRESULT STDMETHODCALLTYPE istream_wrapper_LockRegion(IStream *iface, ULAR
                                                         ULARGE_INTEGER cb, DWORD dwLockType)
 {
     struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
-    WINE_FIXME_(istream_wrapper)("Not implemented.\n");
+    WINE_FIXME("Not implemented.\n");
     return E_FAIL;
 }
 
@@ -136,7 +189,7 @@ static HRESULT STDMETHODCALLTYPE istream_wrapper_UnlockRegion(IStream *iface, UL
                                                           ULARGE_INTEGER cb, DWORD dwLockType)
 {
     struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
-    WINE_FIXME_(istream_wrapper)("Not implemented.\n");
+    WINE_FIXME("Not implemented.\n");
     return E_FAIL;
 }
 
@@ -144,14 +197,14 @@ static HRESULT STDMETHODCALLTYPE istream_wrapper_Stat(IStream *iface, STATSTG *p
                                                   DWORD grfStatFlag)
 {
     struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
-    WINE_FIXME_(istream_wrapper)("Not implemented.\n");
+    WINE_FIXME("Not implemented.\n");
     return E_FAIL;
 }
 
 static HRESULT STDMETHODCALLTYPE istream_wrapper_Clone(IStream *iface, IStream **ppstm)
 {
     struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
-    WINE_FIXME_(istream_wrapper)("Not implemented.\n");
+    WINE_FIXME("Not implemented.\n");
     return E_FAIL;
 }
 
@@ -176,6 +229,10 @@ static const IStreamVtbl istream_wrapper_Vtbl =
 struct istream_wrapper *istream_wrapper_create(uint64_t guest_iface)
 {
     struct istream_wrapper *ret;
+    
+    if (!guest_iface)
+        return NULL;
+
     ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
     if (!ret)
         return NULL;

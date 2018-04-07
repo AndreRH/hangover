@@ -29,7 +29,6 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_comctl32.h"
-#include "istream_wrapper_impl.h"
 
 struct qemu_set_callbacks
 {
@@ -46,6 +45,8 @@ struct wndproc_call
 };
 
 #ifdef QEMU_DLL_GUEST
+
+#include "istream_wrapper_impl.h"
 
 static LRESULT __fastcall wndproc_wrapper(const struct wndproc_call *call)
 {
@@ -89,6 +90,7 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_comctl32);
 
+#include "istream_wrapper_impl.h"
 #include "callback_helper_impl.h"
 
 const struct qemu_ops *qemu_ops;

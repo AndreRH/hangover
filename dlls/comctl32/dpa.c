@@ -26,6 +26,7 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_comctl32.h"
+#include "istream_wrapper.h"
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
@@ -62,8 +63,21 @@ WINBASEAPI HRESULT WINAPI DPA_LoadStream (HDPA *phDpa, PFNDPASTREAM loadProc, IS
 void qemu_DPA_LoadStream(struct qemu_syscall *call)
 {
     struct qemu_DPA_LoadStream *c = (struct qemu_DPA_LoadStream *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_DPA_LoadStream(QEMU_G2H(c->phDpa), QEMU_G2H(c->loadProc), QEMU_G2H(c->pStream), QEMU_G2H(c->pData));
+    struct istream_wrapper *wrapper;
+
+    WINE_FIXME("\n"); /* loadProc is not handled yet. */
+    wrapper = istream_wrapper_create(c->pStream);
+    if (!wrapper && c->pStream)
+    {
+        WINE_WARN("Out of memory\n");
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = p_DPA_LoadStream(QEMU_G2H(c->phDpa), QEMU_G2H(c->loadProc),
+            istream_wrapper_host_iface(wrapper), QEMU_G2H(c->pData));
+
+    istream_wrapper_destroy(wrapper);
 }
 
 #endif
