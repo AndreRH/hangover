@@ -1477,7 +1477,13 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
 
         case PSM_ISDIALOGMESSAGE:
         case TTM_RELAYEVENT:
-            if (msg_in->lParam)
+            len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
+            if (len < 0 || len == 256)
+                break;
+
+            if (((msg_in->message == PSM_ISDIALOGMESSAGE && !strcmpW(class, WC_PROPSHEETW))
+                    || (msg_in->message == TTM_RELAYEVENT && !strcmpW(class, TOOLTIPS_CLASSW)))
+                    && msg_in->lParam)
             {
                 struct qemu_MSG *guest_msg = (struct qemu_MSG *)msg_in->lParam;
                 MSG *host_msg, copy;
