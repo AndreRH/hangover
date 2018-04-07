@@ -23,6 +23,9 @@
 #include <stdio.h>
 #include <commctrl.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_commctrl.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_comctl32.h"
@@ -40,9 +43,24 @@ struct qemu_DPA_LoadStream
     uint64_t loadProc;
     uint64_t pStream;
     uint64_t pData;
+    uint64_t wrapper;
+};
+
+struct qemu_DPA_LoadStream_cb
+{
+    uint64_t cb;
+    uint64_t info;
+    uint64_t stream;
+    uint64_t data;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static HRESULT __fastcall qemu_DPA_Stream_guest_cb(struct qemu_DPA_LoadStream_cb *call)
+{
+    PFNDPASTREAM cb = (PFNDPASTREAM)(ULONG_PTR)call->cb;
+    return cb((DPASTREAMINFO *)(ULONG_PTR)call->info, (IStream *)(ULONG_PTR)call->stream, (void *)(ULONG_PTR)call->data);
+}
 
 WINBASEAPI HRESULT WINAPI DPA_LoadStream (HDPA *phDpa, PFNDPASTREAM loadProc, IStream *pStream, LPVOID pData)
 {
@@ -52,32 +70,79 @@ WINBASEAPI HRESULT WINAPI DPA_LoadStream (HDPA *phDpa, PFNDPASTREAM loadProc, IS
     call.loadProc = (ULONG_PTR)loadProc;
     call.pStream = (ULONG_PTR)pStream;
     call.pData = (ULONG_PTR)pData;
+    call.wrapper = (ULONG_PTR)qemu_DPA_Stream_guest_cb;
+
+    if (!phDpa || !loadProc || !pStream)
+        return E_INVALIDARG;
 
     qemu_syscall(&call.super);
+    *phDpa = (HDPA)(ULONG_PTR)call.phDpa;
 
     return call.super.iret;
 }
 
 #else
 
+struct qemu_DPA_Stream_host_data
+{
+    uint64_t guest_cb, guest_data, wrapper;
+};
+
+static HRESULT CALLBACK qemu_DPA_Stream_host_cb(DPASTREAMINFO *info, IStream *stream, void *data)
+{
+    struct qemu_DPA_Stream_host_data *ctx = data;
+    struct istream_wrapper *wrapper = istream_wrapper_from_IStream(stream);
+    struct qemu_DPA_LoadStream_cb call;
+    struct qemu_DPASTREAMINFO info32;
+    HRESULT hr;
+
+    call.cb = ctx->guest_cb;
+#if GUEST_BIT == HOST_BIT
+    call.info = QEMU_H2G(info);
+#else
+    DPASTREAMINFO_h2g(&info32, info);
+    call.info = QEMU_H2G(&info32);
+#endif
+    call.stream = istream_wrapper_guest_iface(wrapper);
+    call.data = ctx->guest_data;
+
+    WINE_TRACE("Calling guest callback %p(%p, %p, %p).\n", (void *)call.cb, (void *)call.info,
+            (void *)call.stream, (void *)call.data);
+    hr = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned 0x%x.\n", hr);
+
+#if GUEST_BIT != HOST_BIT
+    DPASTREAMINFO_g2h(info, &info32);
+#endif
+
+    return hr;
+}
+
 void qemu_DPA_LoadStream(struct qemu_syscall *call)
 {
     struct qemu_DPA_LoadStream *c = (struct qemu_DPA_LoadStream *)call;
     struct istream_wrapper *wrapper;
+    struct qemu_DPA_Stream_host_data ctx;
+    HDPA dpa;
 
-    WINE_FIXME("\n"); /* loadProc is not handled yet. */
+    WINE_TRACE("\n");
     wrapper = istream_wrapper_create(c->pStream);
-    if (!wrapper && c->pStream)
+    if (!wrapper)
     {
         WINE_WARN("Out of memory\n");
         c->super.iret = E_OUTOFMEMORY;
         return;
     }
+    ctx.guest_cb = c->loadProc;
+    ctx.guest_data = c->pData;
+    ctx.wrapper = c->wrapper;
 
-    c->super.iret = p_DPA_LoadStream(QEMU_G2H(c->phDpa), QEMU_G2H(c->loadProc),
-            istream_wrapper_host_iface(wrapper), QEMU_G2H(c->pData));
+    c->super.iret = p_DPA_LoadStream(&dpa, qemu_DPA_Stream_host_cb,
+            istream_wrapper_host_iface(wrapper), &ctx);
 
     istream_wrapper_destroy(wrapper);
+
+    c->phDpa = QEMU_H2G(dpa);
 }
 
 #endif
@@ -89,6 +154,7 @@ struct qemu_DPA_SaveStream
     uint64_t saveProc;
     uint64_t pStream;
     uint64_t pData;
+    uint64_t wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -101,6 +167,7 @@ WINBASEAPI HRESULT WINAPI DPA_SaveStream (HDPA hDpa, PFNDPASTREAM saveProc, IStr
     call.saveProc = (ULONG_PTR)saveProc;
     call.pStream = (ULONG_PTR)pStream;
     call.pData = (ULONG_PTR)pData;
+    call.wrapper = (ULONG_PTR)qemu_DPA_Stream_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -112,8 +179,25 @@ WINBASEAPI HRESULT WINAPI DPA_SaveStream (HDPA hDpa, PFNDPASTREAM saveProc, IStr
 void qemu_DPA_SaveStream(struct qemu_syscall *call)
 {
     struct qemu_DPA_SaveStream *c = (struct qemu_DPA_SaveStream *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_DPA_SaveStream(QEMU_G2H(c->hDpa), QEMU_G2H(c->saveProc), QEMU_G2H(c->pStream), QEMU_G2H(c->pData));
+    struct istream_wrapper *wrapper;
+    struct qemu_DPA_Stream_host_data ctx;
+
+    WINE_TRACE("\n");
+    wrapper = istream_wrapper_create(c->pStream);
+    if (!wrapper && c->pStream)
+    {
+        WINE_WARN("Out of memory\n");
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+    ctx.guest_cb = c->saveProc;
+    ctx.guest_data = c->pData;
+    ctx.wrapper = c->wrapper;
+
+    c->super.iret = p_DPA_SaveStream(QEMU_G2H(c->hDpa), c->saveProc ? qemu_DPA_Stream_host_cb : NULL,
+            istream_wrapper_host_iface(wrapper), &ctx);
+
+    istream_wrapper_destroy(wrapper);
 }
 
 #endif

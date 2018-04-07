@@ -28,6 +28,7 @@ struct istream_wrapper_funcs
 {
     uint64_t seek;
     uint64_t read;
+    uint64_t write;
 };
 
 struct istream_wrapper_Seek
@@ -36,10 +37,10 @@ struct istream_wrapper_Seek
     uint64_t offset, origin, new_pos;
 };
 
-struct istream_wrapper_Read
+struct istream_wrapper_ReadWrite
 {
     uint64_t iface;
-    uint64_t pv, cb, read;
+    uint64_t pv, cb, count;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -52,27 +53,45 @@ static HRESULT __fastcall istream_wrapper_Seek(struct istream_wrapper_Seek *call
     return stream->lpVtbl->Seek(stream, li, call->origin, (ULARGE_INTEGER *)(ULONG_PTR)call->new_pos);
 }
 
-static HRESULT __fastcall istream_wrapper_Read(struct istream_wrapper_Read *call)
+static HRESULT __fastcall istream_wrapper_Read(struct istream_wrapper_ReadWrite *call)
 {
     IStream *stream = (IStream *)(ULONG_PTR)call->iface;
-    return stream->lpVtbl->Read(stream, (void *)(ULONG_PTR)call->pv, call->cb, (ULONG *)(ULONG_PTR)call->read);
+    return stream->lpVtbl->Read(stream, (void *)(ULONG_PTR)call->pv, call->cb, (ULONG *)(ULONG_PTR)call->count);
+}
+
+static HRESULT __fastcall istream_wrapper_Write(struct istream_wrapper_ReadWrite *call)
+{
+    IStream *stream = (IStream *)(ULONG_PTR)call->iface;
+    return stream->lpVtbl->Write(stream, (void *)(ULONG_PTR)call->pv, call->cb, (ULONG *)(ULONG_PTR)call->count);
 }
 
 static void istream_wrapper_get_funcs(struct istream_wrapper_funcs *funcs)
 {
     funcs->seek = (ULONG_PTR)istream_wrapper_Seek;
     funcs->read = (ULONG_PTR)istream_wrapper_Read;
+    funcs->write = (ULONG_PTR)istream_wrapper_Write;
 }
 
 #else
 
 static uint64_t istream_wrapper_Seek_guest;
 static uint64_t istream_wrapper_Read_guest;
+static uint64_t istream_wrapper_Write_guest;
 
 static void istream_wrapper_set_funcs(const struct istream_wrapper_funcs *funcs)
 {
-    istream_wrapper_Seek_guest = funcs->seek;
-    istream_wrapper_Read_guest = funcs->read;
+    if (funcs)
+    {
+        istream_wrapper_Seek_guest = funcs->seek;
+        istream_wrapper_Read_guest = funcs->read;
+        istream_wrapper_Write_guest = funcs->write;
+    }
+    else
+    {
+        istream_wrapper_Seek_guest = 0;
+        istream_wrapper_Read_guest = 0;
+        istream_wrapper_Write_guest = 0;
+    }
 }
 
 struct istream_wrapper *istream_wrapper_from_IStream(IStream *iface)
@@ -103,14 +122,14 @@ static HRESULT STDMETHODCALLTYPE istream_wrapper_Read(IStream *iface, void *pv, 
         ULONG *read)
 {
     struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
-    struct istream_wrapper_Read call;
+    struct istream_wrapper_ReadWrite call;
     HRESULT hr;
 
     WINE_TRACE("\n");
     call.iface = istream_wrapper_guest_iface(stream);
     call.pv = QEMU_H2G(pv);
     call.cb = cb;
-    call.read = QEMU_H2G(read);
+    call.count = QEMU_H2G(read);
 
     WINE_TRACE("Calling guest callback %p.\n", (void *)istream_wrapper_Read_guest);
     hr = qemu_ops->qemu_execute(QEMU_G2H(istream_wrapper_Read_guest), QEMU_H2G(&call));
@@ -123,8 +142,20 @@ static HRESULT STDMETHODCALLTYPE istream_wrapper_Write(IStream *iface, const voi
         ULONG *written)
 {
     struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
-    WINE_FIXME("Not implemented.\n");
-    return E_FAIL;
+    struct istream_wrapper_ReadWrite call;
+    HRESULT hr;
+
+    WINE_TRACE("\n");
+    call.iface = istream_wrapper_guest_iface(stream);
+    call.pv = QEMU_H2G(pv);
+    call.cb = cb;
+    call.count = QEMU_H2G(written);
+
+    WINE_TRACE("Calling guest callback %p.\n", (void *)istream_wrapper_Write_guest);
+    hr = qemu_ops->qemu_execute(QEMU_G2H(istream_wrapper_Write_guest), QEMU_H2G(&call));
+    WINE_TRACE("Guest CB returned 0x%x.\n", hr);
+
+    return hr;
 }
 
 static HRESULT STDMETHODCALLTYPE istream_wrapper_Seek(IStream *iface, LARGE_INTEGER offset, DWORD origin,
@@ -250,12 +281,12 @@ void istream_wrapper_destroy(struct istream_wrapper *wrapper)
 
 uint64_t istream_wrapper_guest_iface(struct istream_wrapper *wrapper)
 {
-    return wrapper->guest_iface;
+    return wrapper ? wrapper->guest_iface : 0;
 }
 
 IStream *istream_wrapper_host_iface(struct istream_wrapper *wrapper)
 {
-    return &wrapper->IStream_iface;
+    return wrapper ? &wrapper->IStream_iface : NULL;
 }
 
 #endif

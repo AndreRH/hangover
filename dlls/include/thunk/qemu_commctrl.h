@@ -1322,4 +1322,22 @@ static inline void HD_LAYOUT_h2g(struct qemu_HD_LAYOUT *guest, struct qemu_WINDO
     WINDOWPOS_h2g((struct qemu_WINDOWPOS *)(ULONG_PTR)wp, host->pwpos);
 }
 
+struct qemu_DPASTREAMINFO
+{
+    INT    iPos;
+    qemu_ptr pvItem;
+};
+
+static inline void DPASTREAMINFO_g2h(DPASTREAMINFO *host, const struct qemu_DPASTREAMINFO *guest)
+{
+    host->iPos = guest->iPos;
+    host->pvItem = (void *)(ULONG_PTR)guest->pvItem;
+}
+
+static inline void DPASTREAMINFO_h2g(struct qemu_DPASTREAMINFO *guest, const DPASTREAMINFO *host)
+{
+    guest->iPos = host->iPos;
+    guest->pvItem = (ULONG_PTR)host->pvItem;
+}
+
 #endif
