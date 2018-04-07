@@ -1011,8 +1011,20 @@ WINBASEAPI HIMAGELIST WINAPI ImageList_Read(IStream *pstm)
 void qemu_ImageList_Read(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Read *c = (struct qemu_ImageList_Read *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)p_ImageList_Read(QEMU_G2H(c->pstm));
+    struct istream_wrapper *wrapper;
+    
+    WINE_TRACE("\n");
+    wrapper = istream_wrapper_create(c->pstm);
+    if (c->pstm && !wrapper)
+    {
+        WINE_WARN("Out of memory\n");
+        c->super.iret = FALSE;
+        return;
+    }
+
+    c->super.iret = (ULONG_PTR)p_ImageList_Read(istream_wrapper_host_iface(wrapper));
+
+    istream_wrapper_destroy(wrapper);
 }
 
 #endif
