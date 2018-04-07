@@ -1012,7 +1012,7 @@ void qemu_ImageList_Read(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Read *c = (struct qemu_ImageList_Read *)call;
     struct istream_wrapper *wrapper;
-    
+
     WINE_TRACE("\n");
     wrapper = istream_wrapper_create(c->pstm);
     if (c->pstm && !wrapper)
@@ -1407,7 +1407,7 @@ void qemu_ImageList_Write(struct qemu_syscall *call)
     }
 
     c->super.iret = p_ImageList_Write(QEMU_G2H(c->himl), istream_wrapper_host_iface(wrapper));
-    
+
     istream_wrapper_destroy(wrapper);
 }
 
