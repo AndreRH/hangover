@@ -113,9 +113,33 @@ struct qemu_DPA_Merge
     uint64_t pfnCompare;
     uint64_t pfnMerge;
     uint64_t lParam;
+    uint64_t cmp_wrapper;
+    uint64_t merge_wrapper;
+};
+
+struct qemu_DPA_Merge_cb
+{
+    uint64_t cb, whut, p1, p2, ctx;
+};
+
+struct qemu_DPA_Search_cb
+{
+    uint64_t cb, p1, p2, ctx;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static void * __fastcall DPA_Merge_guest_cb(struct qemu_DPA_Merge_cb *call)
+{
+    PFNDPAMERGE cb = (PFNDPAMERGE)(ULONG_PTR)call->cb;
+    return cb(call->whut, (void *)(ULONG_PTR)call->p1, (void *)(ULONG_PTR)call->p2, call->ctx);
+}
+
+static INT __fastcall DPA_Search_guest_cb(struct qemu_DPA_Search_cb *call)
+{
+    PFNDPACOMPARE cb = (PFNDPACOMPARE)(ULONG_PTR)call->cb;
+    return cb((void *)(ULONG_PTR)call->p1, (void *)(ULONG_PTR)call->p2, call->ctx);
+}
 
 WINBASEAPI BOOL WINAPI DPA_Merge (HDPA hdpa1, HDPA hdpa2, DWORD dwFlags, PFNDPACOMPARE pfnCompare, PFNDPAMERGE pfnMerge, LPARAM lParam)
 {
@@ -127,6 +151,8 @@ WINBASEAPI BOOL WINAPI DPA_Merge (HDPA hdpa1, HDPA hdpa2, DWORD dwFlags, PFNDPAC
     call.pfnCompare = (ULONG_PTR)pfnCompare;
     call.pfnMerge = (ULONG_PTR)pfnMerge;
     call.lParam = lParam;
+    call.cmp_wrapper = (ULONG_PTR)DPA_Search_guest_cb;
+    call.merge_wrapper = (ULONG_PTR)DPA_Merge_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -135,11 +161,63 @@ WINBASEAPI BOOL WINAPI DPA_Merge (HDPA hdpa1, HDPA hdpa2, DWORD dwFlags, PFNDPAC
 
 #else
 
+struct qemu_DPA_Search_ctx
+{
+    uint64_t guest_search_cb, guest_merge_cb, guest_ctx, search_wrapper, merge_wrapper;
+};
+
+static INT CALLBACK DPA_Search_host_cb(void *p1, void *p2, LPARAM param)
+{
+    struct qemu_DPA_Search_ctx *ctx = (struct qemu_DPA_Search_ctx *)param;
+    struct qemu_DPA_Search_cb call;
+    INT ret;
+    
+    call.cb = ctx->guest_search_cb;
+    call.p1 = QEMU_H2G(p1);
+    call.p2 = QEMU_H2G(p2);
+    call.ctx = ctx->guest_ctx;
+    
+    WINE_TRACE("Calling guest callback %p(%p, %p, %lx).\n", (void *)call.cb, p1, p2, param);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->search_wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned %d.\n", ret);
+    
+    return ret;
+}
+
+static void * CALLBACK DPA_Merge_host_cb(UINT whut, void *p1, void *p2, LPARAM param)
+{
+    struct qemu_DPA_Search_ctx *ctx = (struct qemu_DPA_Search_ctx *)param;
+    struct qemu_DPA_Merge_cb call;
+    void *ret;
+    
+    call.cb = ctx->guest_merge_cb;
+    call.whut = whut;
+    call.p1 = QEMU_H2G(p1);
+    call.p2 = QEMU_H2G(p2);
+    call.ctx = ctx->guest_ctx;
+    
+    WINE_TRACE("Calling guest callback %p(%u, %p, %p, %lx).\n", (void *)call.cb, whut, p1, p2, param);
+    ret = QEMU_G2H(qemu_ops->qemu_execute(QEMU_G2H(ctx->merge_wrapper), QEMU_H2G(&call)));
+    WINE_TRACE("Guest callback returned %p.\n", ret);
+    
+    return ret;
+}
+
 void qemu_DPA_Merge(struct qemu_syscall *call)
 {
     struct qemu_DPA_Merge *c = (struct qemu_DPA_Merge *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_DPA_Merge(QEMU_G2H(c->hdpa1), QEMU_G2H(c->hdpa2), c->dwFlags, QEMU_G2H(c->pfnCompare), QEMU_G2H(c->pfnMerge), c->lParam);
+    struct qemu_DPA_Search_ctx ctx;
+
+    WINE_TRACE("\n");
+    ctx.guest_search_cb = c->pfnCompare;
+    ctx.guest_merge_cb = c->pfnMerge;
+    ctx.guest_ctx = c->lParam;
+    ctx.search_wrapper = c->cmp_wrapper;
+    ctx.merge_wrapper = c->merge_wrapper;
+
+    c->super.iret = p_DPA_Merge(QEMU_G2H(c->hdpa1), QEMU_G2H(c->hdpa2), c->dwFlags,
+            c->pfnCompare ? DPA_Search_host_cb : NULL, c->pfnMerge ? DPA_Merge_host_cb : NULL,
+            (LPARAM)&ctx);
 }
 
 #endif
@@ -439,6 +517,7 @@ struct qemu_DPA_Sort
     uint64_t hdpa;
     uint64_t pfnCompare;
     uint64_t lParam;
+    uint64_t wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -450,6 +529,7 @@ WINBASEAPI BOOL WINAPI DPA_Sort (HDPA hdpa, PFNDPACOMPARE pfnCompare, LPARAM lPa
     call.hdpa = (ULONG_PTR)hdpa;
     call.pfnCompare = (ULONG_PTR)pfnCompare;
     call.lParam = lParam;
+    call.wrapper = (ULONG_PTR)DPA_Search_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -461,8 +541,14 @@ WINBASEAPI BOOL WINAPI DPA_Sort (HDPA hdpa, PFNDPACOMPARE pfnCompare, LPARAM lPa
 void qemu_DPA_Sort(struct qemu_syscall *call)
 {
     struct qemu_DPA_Sort *c = (struct qemu_DPA_Sort *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_DPA_Sort(QEMU_G2H(c->hdpa), QEMU_G2H(c->pfnCompare), c->lParam);
+    struct qemu_DPA_Search_ctx ctx;
+    WINE_TRACE("\n");
+
+    ctx.guest_search_cb = c->pfnCompare;
+    ctx.guest_ctx = c->lParam;
+    ctx.search_wrapper = c->wrapper;
+
+    c->super.iret = p_DPA_Sort(QEMU_G2H(c->hdpa), c->pfnCompare ? DPA_Search_host_cb : NULL, (LPARAM)&ctx);
 }
 
 #endif
@@ -476,6 +562,7 @@ struct qemu_DPA_Search
     uint64_t pfnCompare;
     uint64_t lParam;
     uint64_t uOptions;
+    uint64_t wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -490,6 +577,7 @@ WINBASEAPI INT WINAPI DPA_Search (HDPA hdpa, LPVOID pFind, INT nStart, PFNDPACOM
     call.pfnCompare = (ULONG_PTR)pfnCompare;
     call.lParam = lParam;
     call.uOptions = uOptions;
+    call.wrapper = (ULONG_PTR)DPA_Search_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -501,8 +589,15 @@ WINBASEAPI INT WINAPI DPA_Search (HDPA hdpa, LPVOID pFind, INT nStart, PFNDPACOM
 void qemu_DPA_Search(struct qemu_syscall *call)
 {
     struct qemu_DPA_Search *c = (struct qemu_DPA_Search *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_DPA_Search(QEMU_G2H(c->hdpa), QEMU_G2H(c->pFind), c->nStart, QEMU_G2H(c->pfnCompare), c->lParam, c->uOptions);
+    struct qemu_DPA_Search_ctx ctx;
+    WINE_TRACE("\n");
+
+    ctx.guest_search_cb = c->pfnCompare;
+    ctx.guest_ctx = c->lParam;
+    ctx.search_wrapper = c->wrapper;
+
+    c->super.iret = p_DPA_Search(QEMU_G2H(c->hdpa), QEMU_G2H(c->pFind), c->nStart,
+            c->pfnCompare ? DPA_Search_host_cb : NULL, (LPARAM)&ctx, c->uOptions);
 }
 
 #endif
