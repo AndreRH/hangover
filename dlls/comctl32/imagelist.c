@@ -28,12 +28,12 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_comctl32.h"
+#include "istream_wrapper.h"
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_comctl32);
 #endif
-
 
 struct qemu_ImageList_Add
 {
@@ -1383,8 +1383,20 @@ WINBASEAPI BOOL WINAPI ImageList_Write(HIMAGELIST himl, IStream *pstm)
 void qemu_ImageList_Write(struct qemu_syscall *call)
 {
     struct qemu_ImageList_Write *c = (struct qemu_ImageList_Write *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_ImageList_Write(QEMU_G2H(c->himl), QEMU_G2H(c->pstm));
+    struct istream_wrapper *wrapper;
+
+    WINE_TRACE("\n");
+    wrapper = istream_wrapper_create(c->pstm);
+    if (c->pstm && !wrapper)
+    {
+        WINE_WARN("Out of memory\n");
+        c->super.iret = FALSE;
+        return;
+    }
+
+    c->super.iret = p_ImageList_Write(QEMU_G2H(c->himl), istream_wrapper_host_iface(wrapper));
+    
+    istream_wrapper_destroy(wrapper);
 }
 
 #endif
