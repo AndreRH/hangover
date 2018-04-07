@@ -29,12 +29,14 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_comctl32.h"
+#include "istream_wrapper_impl.h"
 
 struct qemu_set_callbacks
 {
     struct qemu_syscall super;
     uint64_t wndproc_wrapper;
     uint64_t PropertySheetPage_guest_cb;
+    uint64_t istream_funcs;
 };
 
 struct wndproc_call
@@ -58,6 +60,7 @@ static LRESULT __fastcall wndproc_wrapper(const struct wndproc_call *call)
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_set_callbacks call;
+    struct istream_wrapper_funcs istream_funcs;
 
     switch (reason)
     {
@@ -65,6 +68,8 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
             call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
             call.wndproc_wrapper = (ULONG_PTR)wndproc_wrapper;
             call.PropertySheetPage_guest_cb = (ULONG_PTR)PropertySheetPage_guest_cb;
+            call.istream_funcs = (ULONG_PTR)&istream_funcs;
+            istream_wrapper_get_funcs(&istream_funcs);
             qemu_syscall(&call.super);
             break;
 
@@ -72,6 +77,7 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
             call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
             call.wndproc_wrapper = 0;
             call.PropertySheetPage_guest_cb = 0;
+            call.istream_funcs = 0;
             qemu_syscall(&call.super);
             break;
     }
@@ -96,6 +102,7 @@ static void qemu_set_callbacks(struct qemu_syscall *call)
 
     guest_wndproc_wrapper = c->wndproc_wrapper;
     PropertySheetPage_guest_cb = c->PropertySheetPage_guest_cb;
+    istream_wrapper_set_funcs(QEMU_G2H(c->istream_funcs));
 
     if (c->wndproc_wrapper)
     {
