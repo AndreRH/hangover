@@ -31,6 +31,7 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <wine/list.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_comctl32);
 #endif
 
@@ -730,9 +731,21 @@ struct qemu_SetWindowSubclass
     uint64_t pfnSubclass;
     uint64_t uIDSubclass;
     uint64_t dwRef;
+    uint64_t wrapper;
+};
+
+struct qemu_SetWindowSubclass_cb
+{
+    uint64_t cb, win, msg, wp, lp, id, ref;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static LRESULT __fastcall SetWindowSubclass_host_cb(struct qemu_SetWindowSubclass_cb *call)
+{
+    SUBCLASSPROC cb = (SUBCLASSPROC)(ULONG_PTR)call->cb;
+    return cb((HWND)(ULONG_PTR)call->win, call->msg, call->wp, call->lp, call->id, call->ref);
+}
 
 WINBASEAPI BOOL WINAPI SetWindowSubclass (HWND hWnd, SUBCLASSPROC pfnSubclass, UINT_PTR uIDSubclass, DWORD_PTR dwRef)
 {
@@ -742,6 +755,7 @@ WINBASEAPI BOOL WINAPI SetWindowSubclass (HWND hWnd, SUBCLASSPROC pfnSubclass, U
     call.pfnSubclass = (ULONG_PTR)pfnSubclass;
     call.uIDSubclass = (ULONG_PTR)uIDSubclass;
     call.dwRef = (ULONG_PTR)dwRef;
+    call.wrapper = (ULONG_PTR)SetWindowSubclass_host_cb;
 
     qemu_syscall(&call.super);
 
@@ -750,11 +764,93 @@ WINBASEAPI BOOL WINAPI SetWindowSubclass (HWND hWnd, SUBCLASSPROC pfnSubclass, U
 
 #else
 
+struct subclass_entry
+{
+    struct list entry;
+    uint64_t guest_cb, guest_data;
+    uint64_t guest_id;
+    uint64_t wrapper;
+};
+
+static struct list subclass_list = LIST_INIT(subclass_list);
+static CRITICAL_SECTION subclass_cs = {0, -1, 0, 0, 0, 0};
+
+static LRESULT CALLBACK SetWindowSubclass_host_cb(HWND win, UINT msg, WPARAM wp, LPARAM lp,
+        UINT_PTR id, DWORD_PTR data)
+{
+    struct subclass_entry *entry = (struct subclass_entry *)data;
+    struct qemu_SetWindowSubclass_cb call;
+    LRESULT ret;
+    
+    EnterCriticalSection(&subclass_cs);
+    call.cb = entry->guest_cb;
+    call.win = QEMU_H2G(win);
+    call.msg = msg;
+    call.wp = wp;
+    call.lp = lp;
+    call.id = entry->guest_id;
+    call.ref = entry->guest_data;
+    LeaveCriticalSection(&subclass_cs);
+
+    /* FIXME: Convert wp and lp. */
+    WINE_TRACE("Calling guest callback %p(xxx) %p.\n", (void *)call.cb, (void *)entry->wrapper);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(entry->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned %lx.\n", ret);
+
+    return ret;
+}
+
 void qemu_SetWindowSubclass(struct qemu_syscall *call)
 {
     struct qemu_SetWindowSubclass *c = (struct qemu_SetWindowSubclass *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_SetWindowSubclass(QEMU_G2H(c->hWnd), QEMU_G2H(c->pfnSubclass), c->uIDSubclass, c->dwRef);
+    struct subclass_entry *entry;
+    static BOOL once;
+
+    /* FIXME: Check if the entry already exists. */
+
+    if (!once)
+    {
+        WINE_FIXME("Msg params not converted.\n");
+        once = TRUE;
+    }
+    else
+    {
+        WINE_WARN("Msg params not converted.\n");
+    }
+
+    EnterCriticalSection(&subclass_cs);
+
+    LIST_FOR_EACH_ENTRY(entry, &subclass_list, struct subclass_entry, entry)
+    {
+        if (entry->guest_cb == c->pfnSubclass && entry->guest_id == c->uIDSubclass)
+        {
+            WINE_WARN("Subclass func %p, id %lx already registered.\n", (void *)c->pfnSubclass, (UINT_PTR)entry->guest_id);
+            c->super.iret = p_SetWindowSubclass(QEMU_G2H(c->hWnd), c->pfnSubclass ? SetWindowSubclass_host_cb : 0,
+                    (UINT_PTR)entry, (DWORD_PTR)entry);
+            entry->guest_data = c->dwRef;
+            LeaveCriticalSection(&subclass_cs);
+
+            if (!c->super.iret)
+                WINE_ERR("SetWindowSubclass failed unexpectedly.\n");
+            return;
+        }
+    }
+
+    entry = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*entry));
+    entry->guest_cb = c->pfnSubclass;
+    entry->guest_data = c->dwRef;
+    entry->guest_id = c->uIDSubclass;
+    entry->wrapper = c->wrapper;
+
+    c->super.iret = p_SetWindowSubclass(QEMU_G2H(c->hWnd), c->pfnSubclass ? SetWindowSubclass_host_cb : 0,
+            (UINT_PTR)entry, (DWORD_PTR)entry);
+    
+    if (c->super.iret)
+        list_add_head(&subclass_list, &entry->entry);
+    else
+        HeapFree(GetProcessHeap(), 0, entry);
+    
+    LeaveCriticalSection(&subclass_cs);
 }
 
 #endif
@@ -823,8 +919,33 @@ WINBASEAPI BOOL WINAPI RemoveWindowSubclass(HWND hWnd, SUBCLASSPROC pfnSubclass,
 void qemu_RemoveWindowSubclass(struct qemu_syscall *call)
 {
     struct qemu_RemoveWindowSubclass *c = (struct qemu_RemoveWindowSubclass *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_RemoveWindowSubclass(QEMU_G2H(c->hWnd), QEMU_G2H(c->pfnSubclass), c->uID);
+    struct subclass_entry *entry;
+    WINE_TRACE("\n");
+    
+    EnterCriticalSection(&subclass_cs);
+
+    LIST_FOR_EACH_ENTRY(entry, &subclass_list, struct subclass_entry, entry)
+    {
+        if (entry->guest_cb == c->pfnSubclass && entry->guest_id == c->uID)
+        {
+            c->super.iret = p_RemoveWindowSubclass(QEMU_G2H(c->hWnd), SetWindowSubclass_host_cb, (UINT_PTR)entry);
+            list_remove(&entry->entry);
+            LeaveCriticalSection(&subclass_cs);
+
+            HeapFree(GetProcessHeap(), 0, entry);
+
+            if (!c->super.iret)
+                WINE_ERR("RemoveWindowSubclass failed unexpectedly.\n");
+            return;
+        }
+    }
+
+    /* Remove a nonexistent one. */
+    c->super.iret = p_RemoveWindowSubclass(QEMU_G2H(c->hWnd), SetWindowSubclass_host_cb, 0);
+    if (c->super.iret)
+        WINE_ERR("RemoveWindowSubclass succeeded unexpectedly.\n");
+
+    LeaveCriticalSection(&subclass_cs);
 }
 
 #endif
@@ -859,7 +980,18 @@ WINBASEAPI LRESULT WINAPI DefSubclassProc (HWND hWnd, UINT uMsg, WPARAM wParam, 
 void qemu_DefSubclassProc(struct qemu_syscall *call)
 {
     struct qemu_DefSubclassProc *c = (struct qemu_DefSubclassProc *)call;
-    WINE_FIXME("Unverified!\n");
+    static BOOL once;
+
+    if (!once)
+    {
+        WINE_FIXME("Msg params not converted.\n");
+        once = TRUE;
+    }
+    else
+    {
+        WINE_WARN("Msg params not converted.\n");
+    }
+
     c->super.iret = p_DefSubclassProc(QEMU_G2H(c->hWnd), c->uMsg, c->wParam, c->lParam);
 }
 
