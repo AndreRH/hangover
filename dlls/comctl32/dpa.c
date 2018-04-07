@@ -1,5 +1,6 @@
 /*
  * Copyright 2017 André Hentschel
+ * Copyright 2018 Stefan Dösinger for CodeWeavers
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,7 +31,6 @@
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_comctl32);
 #endif
-
 
 struct qemu_DPA_LoadStream
 {
@@ -671,9 +671,21 @@ struct qemu_DPA_EnumCallback
     uint64_t hdpa;
     uint64_t enumProc;
     uint64_t lParam;
+    uint64_t wrapper;
+};
+
+struct qemu_DPA_EnumCallback_cb
+{
+    uint64_t cb, item, ctx;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static INT __fastcall DPA_EnumCallback_guest_cb(struct qemu_DPA_EnumCallback_cb *call)
+{
+    PFNDPAENUMCALLBACK cb = (PFNDPAENUMCALLBACK)(ULONG_PTR)call->cb;
+    return cb((void *)(ULONG_PTR)call->item, (void *)(ULONG_PTR)call->ctx);
+}
 
 WINBASEAPI VOID WINAPI DPA_EnumCallback (HDPA hdpa, PFNDPAENUMCALLBACK enumProc, LPVOID lParam)
 {
@@ -682,17 +694,46 @@ WINBASEAPI VOID WINAPI DPA_EnumCallback (HDPA hdpa, PFNDPAENUMCALLBACK enumProc,
     call.hdpa = (ULONG_PTR)hdpa;
     call.enumProc = (ULONG_PTR)enumProc;
     call.lParam = (ULONG_PTR)lParam;
+    call.wrapper = (ULONG_PTR)DPA_EnumCallback_guest_cb;
 
     qemu_syscall(&call.super);
 }
 
 #else
 
+struct qemu_DPA_EnumCallback_host_ctx
+{
+    uint64_t guest_cb, guest_ctx, wrapper;
+};
+
+static INT CALLBACK qemu_DPA_EnumCallback_host_cb(void *item, void *param)
+{
+    struct qemu_DPA_EnumCallback_host_ctx *ctx = param;
+    struct qemu_DPA_EnumCallback_cb call;
+    INT ret;
+
+    call.cb = ctx->guest_cb;
+    call.item = QEMU_H2G(item);
+    call.ctx = ctx->guest_ctx;
+
+    WINE_TRACE("Calling guest callback %p(%p, %p).\n", (void *)call.cb, item, (void *)call.ctx);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned %d.\n", ret);
+
+    return ret;
+}
+
 void qemu_DPA_EnumCallback(struct qemu_syscall *call)
 {
     struct qemu_DPA_EnumCallback *c = (struct qemu_DPA_EnumCallback *)call;
-    WINE_FIXME("Unverified!\n");
-    p_DPA_EnumCallback(QEMU_G2H(c->hdpa), QEMU_G2H(c->enumProc), QEMU_G2H(c->lParam));
+    struct qemu_DPA_EnumCallback_host_ctx ctx;
+
+    WINE_TRACE("\n");
+    ctx.guest_cb = c->enumProc;
+    ctx.guest_ctx = c->lParam;
+    ctx.wrapper = c->wrapper;
+
+    p_DPA_EnumCallback(QEMU_G2H(c->hdpa), c->enumProc ? qemu_DPA_EnumCallback_host_cb : NULL, &ctx);
 }
 
 #endif
@@ -703,6 +744,7 @@ struct qemu_DPA_DestroyCallback
     uint64_t hdpa;
     uint64_t enumProc;
     uint64_t lParam;
+    uint64_t wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -714,6 +756,7 @@ WINBASEAPI void WINAPI DPA_DestroyCallback (HDPA hdpa, PFNDPAENUMCALLBACK enumPr
     call.hdpa = (ULONG_PTR)hdpa;
     call.enumProc = (ULONG_PTR)enumProc;
     call.lParam = (ULONG_PTR)lParam;
+    call.wrapper = (ULONG_PTR)DPA_EnumCallback_guest_cb;
 
     qemu_syscall(&call.super);
 }
@@ -723,8 +766,14 @@ WINBASEAPI void WINAPI DPA_DestroyCallback (HDPA hdpa, PFNDPAENUMCALLBACK enumPr
 void qemu_DPA_DestroyCallback(struct qemu_syscall *call)
 {
     struct qemu_DPA_DestroyCallback *c = (struct qemu_DPA_DestroyCallback *)call;
-    WINE_FIXME("Unverified!\n");
-    p_DPA_DestroyCallback(QEMU_G2H(c->hdpa), QEMU_G2H(c->enumProc), QEMU_G2H(c->lParam));
+    struct qemu_DPA_EnumCallback_host_ctx ctx;
+
+    WINE_TRACE("\n");
+    ctx.guest_cb = c->enumProc;
+    ctx.guest_ctx = c->lParam;
+    ctx.wrapper = c->wrapper;
+
+    p_DPA_DestroyCallback(QEMU_G2H(c->hdpa), c->enumProc ? qemu_DPA_EnumCallback_host_cb : NULL, &ctx);
 }
 
 #endif
