@@ -1377,7 +1377,11 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
         case LVM_SETITEMTEXTW:
         case LVM_GETITEMTEXTA:
         case LVM_GETITEMTEXTW:
-            if (msg_in->lParam)
+            len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
+            if (len < 0 || len == 256)
+                break;
+            
+            if (!strcmpW(class, WC_LISTVIEWW) && msg_in->lParam)
             {
                 struct qemu_LVITEM *guest_item = (struct qemu_LVITEM *)msg_in->lParam;
                 LVITEMW *host_item;
@@ -1394,7 +1398,11 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
         case LVM_GETCOLUMNW:
         case LVM_SETCOLUMNA:
         case LVM_SETCOLUMNW:
-            if (msg_in->lParam)
+            len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
+            if (len < 0 || len == 256)
+                break;
+
+            if (!strcmpW(class, WC_LISTVIEWW) && msg_in->lParam)
             {
                 struct qemu_LVCOLUMN *guest_item = (struct qemu_LVCOLUMN *)msg_in->lParam;
                 LVCOLUMNW *host_item;
@@ -1407,7 +1415,11 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
 
         case LVM_FINDITEMA:
         case LVM_FINDITEMW:
-            if (msg_in->lParam)
+            len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
+            if (len < 0 || len == 256)
+                break;
+
+            if (!strcmpW(class, WC_LISTVIEWW) && msg_in->lParam)
             {
                 struct qemu_LVFINDINFO *guest_item = (struct qemu_LVFINDINFO *)msg_in->lParam;
                 LVFINDINFOW *host_item;
@@ -1419,8 +1431,15 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             break;
 
         case LVM_SETICONSPACING:
-            /* The generic code expanded the (most likely) negative numbers wrong. Fix it up!. */
-            msg_out->lParam = (LONG)msg_in->lParam;
+            len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
+            if (len < 0 || len == 256)
+                break;
+
+            if (!strcmpW(class, WC_LISTVIEWW))
+            {
+                /* The generic code expanded the (most likely) negative numbers wrong. Fix it up!. */
+                msg_out->lParam = (LONG)msg_in->lParam;
+            }
             break;
 
         case HDM_LAYOUT:
@@ -1728,6 +1747,9 @@ static struct notify_record notify_callbacks[64];
 
 void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
 {
+    WCHAR class[256];
+    INT len;
+
     *msg_out = *msg_in;
 
     switch (msg_in->message)
@@ -1842,7 +1864,6 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
         case WM_NOTIFY:
         {
             int i;
-            WCHAR class[256];
             NMHDR *hdr = (NMHDR *)msg_in->lParam;
 
             /* We can't get WM_NOTIFY messages right :-( . They can be sent from Wine controls in comctl32
@@ -1932,7 +1953,11 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
         case LVM_SETITEMTEXTW:
         case LVM_GETITEMTEXTA:
         case LVM_GETITEMTEXTW:
-            if (msg_in->lParam)
+            len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
+            if (len < 0 || len == 256)
+                break;
+
+            if (!strcmpW(class, WC_LISTVIEWW) && msg_in->lParam)
             {
                 LVITEMW *host = (LVITEMW *)msg_in->lParam;
                 struct qemu_LVITEM *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
@@ -1947,7 +1972,11 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
         case LVM_GETCOLUMNW:
         case LVM_SETCOLUMNA:
         case LVM_SETCOLUMNW:
-            if (msg_in->lParam)
+            len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
+            if (len < 0 || len == 256)
+                break;
+
+            if (!strcmpW(class, WC_LISTVIEWW) && msg_in->lParam)
             {
                 LVCOLUMNW *host = (LVCOLUMNW *)msg_in->lParam;
                 struct qemu_LVCOLUMN *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
@@ -1958,7 +1987,11 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
 
         case LVM_FINDITEMA:
         case LVM_FINDITEMW:
-            if (msg_in->lParam)
+            len = GetClassNameW(msg_in->hwnd, class, sizeof(class) / sizeof(*class));
+            if (len < 0 || len == 256)
+                break;
+
+            if (!strcmpW(class, WC_LISTVIEWW) && msg_in->lParam)
             {
                 LVFINDINFOW *host = (LVFINDINFOW *)msg_in->lParam;
                 struct qemu_LVFINDINFO *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
@@ -2124,7 +2157,7 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
         case LVM_SETITEMTEXTW:
         case LVM_GETITEMTEXTA:
         case LVM_GETITEMTEXTW:
-            if (orig->lParam)
+            if (conv->lParam != orig->lParam)
             {
                 LVITEMW *host = (LVITEMW *)orig->lParam;
                 struct qemu_LVITEM *guest = (struct qemu_LVITEM *)conv->lParam;
@@ -2141,7 +2174,7 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
         case LVM_GETCOLUMNW:
         case LVM_SETCOLUMNA:
         case LVM_SETCOLUMNW:
-            if (orig->lParam)
+            if (conv->lParam != orig->lParam)
             {
                 LVCOLUMNW *host = (LVCOLUMNW *)orig->lParam;
                 struct qemu_LVCOLUMN *guest = (struct qemu_LVCOLUMN *)conv->lParam;
@@ -2154,7 +2187,7 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
 
         case LVM_FINDITEMA:
         case LVM_FINDITEMW:
-            if (orig->lParam)
+            if (conv->lParam != orig->lParam)
             {
                 LVFINDINFOW *host = (LVFINDINFOW *)orig->lParam;
                 struct qemu_LVFINDINFO *guest = (struct qemu_LVFINDINFO *)conv->lParam;
@@ -2166,7 +2199,7 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
             break;
 
         case HDM_LAYOUT:
-            if (orig->lParam)
+            if (conv->lParam != orig->lParam)
             {
                 HD_LAYOUT *host = (HD_LAYOUT *)orig->lParam;
                 struct qemu_HD_LAYOUT *guest = (struct qemu_HD_LAYOUT *)conv->lParam;
