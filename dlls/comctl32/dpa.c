@@ -344,7 +344,7 @@ WINBASEAPI BOOL WINAPI DPA_Destroy (HDPA hdpa)
 void qemu_DPA_Destroy(struct qemu_syscall *call)
 {
     struct qemu_DPA_Destroy *c = (struct qemu_DPA_Destroy *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_DPA_Destroy(QEMU_G2H(c->hdpa));
 }
 
@@ -376,7 +376,7 @@ WINBASEAPI BOOL WINAPI DPA_Grow (HDPA hdpa, INT nGrow)
 void qemu_DPA_Grow(struct qemu_syscall *call)
 {
     struct qemu_DPA_Grow *c = (struct qemu_DPA_Grow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_DPA_Grow(QEMU_G2H(c->hdpa), c->nGrow);
 }
 
@@ -405,11 +405,10 @@ WINBASEAPI HDPA WINAPI DPA_Clone (const HDPA hdpa, HDPA hdpaNew)
 
 #else
 
-extern HDPA WINAPI DPA_Clone (const HDPA hdpa, HDPA hdpaNew);
 void qemu_DPA_Clone(struct qemu_syscall *call)
 {
     struct qemu_DPA_Clone *c = (struct qemu_DPA_Clone *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_DPA_Clone(QEMU_G2H(c->hdpa), QEMU_G2H(c->hdpaNew)));
 }
 
@@ -441,7 +440,7 @@ WINBASEAPI LPVOID WINAPI DPA_GetPtr (HDPA hdpa, INT_PTR nIndex)
 void qemu_DPA_GetPtr(struct qemu_syscall *call)
 {
     struct qemu_DPA_GetPtr *c = (struct qemu_DPA_GetPtr *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)p_DPA_GetPtr(QEMU_G2H(c->hdpa), c->nIndex);
 }
 
@@ -473,7 +472,7 @@ WINBASEAPI INT WINAPI DPA_GetPtrIndex (HDPA hdpa, LPCVOID p)
 void qemu_DPA_GetPtrIndex(struct qemu_syscall *call)
 {
     struct qemu_DPA_GetPtrIndex *c = (struct qemu_DPA_GetPtrIndex *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_DPA_GetPtrIndex(QEMU_G2H(c->hdpa), QEMU_G2H(c->p));
 }
 
@@ -507,7 +506,7 @@ WINBASEAPI INT WINAPI DPA_InsertPtr (HDPA hdpa, INT i, LPVOID p)
 void qemu_DPA_InsertPtr(struct qemu_syscall *call)
 {
     struct qemu_DPA_InsertPtr *c = (struct qemu_DPA_InsertPtr *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_DPA_InsertPtr(QEMU_G2H(c->hdpa), c->i, QEMU_G2H(c->p));
 }
 
@@ -541,7 +540,7 @@ WINBASEAPI BOOL WINAPI DPA_SetPtr (HDPA hdpa, INT i, LPVOID p)
 void qemu_DPA_SetPtr(struct qemu_syscall *call)
 {
     struct qemu_DPA_SetPtr *c = (struct qemu_DPA_SetPtr *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_DPA_SetPtr(QEMU_G2H(c->hdpa), c->i, QEMU_G2H(c->p));
 }
 
@@ -573,7 +572,7 @@ WINBASEAPI LPVOID WINAPI DPA_DeletePtr (HDPA hdpa, INT i)
 void qemu_DPA_DeletePtr(struct qemu_syscall *call)
 {
     struct qemu_DPA_DeletePtr *c = (struct qemu_DPA_DeletePtr *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)p_DPA_DeletePtr(QEMU_G2H(c->hdpa), c->i);
 }
 
@@ -603,7 +602,7 @@ WINBASEAPI BOOL WINAPI DPA_DeleteAllPtrs (HDPA hdpa)
 void qemu_DPA_DeleteAllPtrs(struct qemu_syscall *call)
 {
     struct qemu_DPA_DeleteAllPtrs *c = (struct qemu_DPA_DeleteAllPtrs *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_DPA_DeleteAllPtrs(QEMU_G2H(c->hdpa));
 }
 
@@ -723,11 +722,10 @@ WINBASEAPI HDPA WINAPI DPA_CreateEx (INT nGrow, HANDLE hHeap)
 
 #else
 
-extern HDPA WINAPI DPA_CreateEx (INT nGrow, HANDLE hHeap);
 void qemu_DPA_CreateEx(struct qemu_syscall *call)
 {
     struct qemu_DPA_CreateEx *c = (struct qemu_DPA_CreateEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_DPA_CreateEx(c->nGrow, QEMU_G2H(c->hHeap)));
 }
 
@@ -757,7 +755,7 @@ WINBASEAPI HDPA WINAPI DPA_Create (INT nGrow)
 void qemu_DPA_Create(struct qemu_syscall *call)
 {
     struct qemu_DPA_Create *c = (struct qemu_DPA_Create *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_DPA_Create(c->nGrow));
 }
 
@@ -900,7 +898,7 @@ WINBASEAPI ULONGLONG WINAPI DPA_GetSize(HDPA hdpa)
 void qemu_DPA_GetSize(struct qemu_syscall *call)
 {
     struct qemu_DPA_GetSize *c = (struct qemu_DPA_GetSize *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_DPA_GetSize(QEMU_G2H(c->hdpa));
 }
 
