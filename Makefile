@@ -30,11 +30,11 @@ $(BUILD_DIR)/wine-host/Makefile: $(SOURCE_DIR)/wine/configure
 	@mkdir -p $(@D)
 	cd $(BUILD_DIR)/wine-host ; $(SOURCE_DIR)/wine/configure --prefix=$(BUILD_DIR)/build/install --enable-win64
 
-wine-host $(BUILD_DIR)/wine-host/tools/winegcc/winegcc $(BUILD_DIR)/wine-host/tools/winebuild/winebuild: $(BUILD_DIR)/wine-host/Makefile
+wine-host $(BUILD_DIR)/wine-host/tools/winegcc/winegcc $(BUILD_DIR)/wine-host/tools/winebuild/winebuild $(BUILD_DIR)/wine-host/tools/wmc/wmc $(BUILD_DIR)/wine-host/tools/wrc/wrc $(BUILD_DIR)/wine-host/tools/widl/widl $(BUILD_DIR)/wine-host/tools/sfnt2fon/sfnt2fon: $(BUILD_DIR)/wine-host/Makefile
 	+$(MAKE) -C $(BUILD_DIR)/wine-host
 
 # Cross-Compile Wine for the guest platform to copy higher level DLLs from.
-$(BUILD_DIR)/wine-guest/Makefile: $(SOURCE_DIR)/wine/configure
+$(BUILD_DIR)/wine-guest/Makefile: $(BUILD_DIR)/wine-host/tools/winegcc/winegcc $(BUILD_DIR)/wine-host/tools/winebuild/winebuild $(BUILD_DIR)/wine-host/tools/wmc/wmc $(BUILD_DIR)/wine-host/tools/wrc/wrc $(BUILD_DIR)/wine-host/tools/widl/widl $(BUILD_DIR)/wine-host/tools/sfnt2fon/sfnt2fon $(SOURCE_DIR)/wine/configure
 	@mkdir -p $(@D)
 	cd $(BUILD_DIR)/wine-guest ; $(SOURCE_DIR)/wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-host --without-freetype
 
@@ -42,7 +42,7 @@ wine-guest: $(BUILD_DIR)/wine-guest/Makefile
 	+$(MAKE) -C $(BUILD_DIR)/wine-guest
 
 # Cross-Compile Wine for the guest32 platform to copy higher level DLLs from.
-$(BUILD_DIR)/wine-guest32/Makefile: $(SOURCE_DIR)/wine/configure
+$(BUILD_DIR)/wine-guest32/Makefile: $(BUILD_DIR)/wine-host/tools/winegcc/winegcc $(BUILD_DIR)/wine-host/tools/winebuild/winebuild $(BUILD_DIR)/wine-host/tools/wmc/wmc $(BUILD_DIR)/wine-host/tools/wrc/wrc $(BUILD_DIR)/wine-host/tools/widl/widl $(BUILD_DIR)/wine-host/tools/sfnt2fon/sfnt2fon $(SOURCE_DIR)/wine/configure
 	@mkdir -p $(@D)
 	cd $(BUILD_DIR)/wine-guest32 ; $(SOURCE_DIR)/wine/configure --host=i686-w64-mingw32 --with-wine-tools=../wine-host --without-freetype
 
