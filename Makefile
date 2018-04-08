@@ -28,7 +28,7 @@ all: wine-host wine-guest wine-guest32 qemu $(DLL_TARGET32) $(DLL_TARGET64) $(DR
 # Build the Host (e.g. arm64) wine
 $(BUILD_DIR)/wine-host/Makefile: $(SOURCE_DIR)/wine/configure
 	@mkdir -p $(@D)
-	cd $(BUILD_DIR)/wine-host ; $(SOURCE_DIR)/wine/configure --prefix=$(BUILD_DIR)/build/install --enable-win64 --disable-tests
+	cd $(BUILD_DIR)/wine-host ; $(SOURCE_DIR)/wine/configure --prefix=$(BUILD_DIR)/build/install --enable-win64
 
 wine-host $(BUILD_DIR)/wine-host/tools/winegcc/winegcc $(BUILD_DIR)/wine-host/tools/winebuild/winebuild: $(BUILD_DIR)/wine-host/Makefile
 	+$(MAKE) -C $(BUILD_DIR)/wine-host
@@ -36,7 +36,7 @@ wine-host $(BUILD_DIR)/wine-host/tools/winegcc/winegcc $(BUILD_DIR)/wine-host/to
 # Cross-Compile Wine for the guest platform to copy higher level DLLs from.
 $(BUILD_DIR)/wine-guest/Makefile: $(SOURCE_DIR)/wine/configure
 	@mkdir -p $(@D)
-	cd $(BUILD_DIR)/wine-guest ; $(SOURCE_DIR)/wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-host --without-freetype --disable-tests
+	cd $(BUILD_DIR)/wine-guest ; $(SOURCE_DIR)/wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-host --without-freetype
 
 wine-guest: $(BUILD_DIR)/wine-guest/Makefile
 	+$(MAKE) -C $(BUILD_DIR)/wine-guest
@@ -44,7 +44,7 @@ wine-guest: $(BUILD_DIR)/wine-guest/Makefile
 # Cross-Compile Wine for the guest32 platform to copy higher level DLLs from.
 $(BUILD_DIR)/wine-guest32/Makefile: $(SOURCE_DIR)/wine/configure
 	@mkdir -p $(@D)
-	cd $(BUILD_DIR)/wine-guest32 ; $(SOURCE_DIR)/wine/configure --host=i686-w64-mingw32 --with-wine-tools=../wine-host --without-freetype --disable-tests
+	cd $(BUILD_DIR)/wine-guest32 ; $(SOURCE_DIR)/wine/configure --host=i686-w64-mingw32 --with-wine-tools=../wine-host --without-freetype
 
 wine-guest32: $(BUILD_DIR)/wine-guest32/Makefile
 	+$(MAKE) -C $(BUILD_DIR)/wine-guest32
