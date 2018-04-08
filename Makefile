@@ -62,7 +62,40 @@ $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so: $(BUILD_DIR)/qemu/Make
 	@mkdir -p $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll32
 
 # Build the wrapper DLLs.
-# TODO: Figure out dependencies between them better.
+
+# with known dependencies (32-bit):
+$(BUILD_DIR)/dlls32/gdi32/gdi32.dll: $(BUILD_DIR)/dlls32/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls32/comctl32/comctl32.dll: $(BUILD_DIR)/dlls32/shlwapi/shlwapi.dll $(BUILD_DIR)/dlls32/user32/user32.dll
+$(BUILD_DIR)/dlls32/d3d9/d3d9.dll: $(BUILD_DIR)/dlls32/kernel32/kernel32.dll $(BUILD_DIR)/dlls32/msvcrt/msvcrt.dll
+$(BUILD_DIR)/dlls32/ddraw/ddraw.dll: $(BUILD_DIR)/dlls32/msvcrt/msvcrt.dll $(BUILD_DIR)/dlls32/kernel32/kernel32.dll
+$(BUILD_DIR)/dlls32/dinput/dinput.dll: $(BUILD_DIR)/dlls32/msvcrt/msvcrt.dll $(BUILD_DIR)/dlls32/kernel32/kernel32.dll
+$(BUILD_DIR)/dlls32/dsound/dsound.dll: $(BUILD_DIR)/dlls32/msvcrt/msvcrt.dll
+$(BUILD_DIR)/dlls32/gdi32/gdi32.dll: $(BUILD_DIR)/dlls32/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls32/kernel32/kernel32.dll: $(BUILD_DIR)/dlls32/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls32/msvcr100/msvcr100.dll: $(BUILD_DIR)/dlls32/kernel32/kernel32.dll $(BUILD_DIR)/dlls32/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls32/msvcr80/msvcr80.dll: $(BUILD_DIR)/dlls32/kernel32/kernel32.dll $(BUILD_DIR)/dlls32/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls32/msvcrt/msvcrt.dll: $(BUILD_DIR)/dlls32/kernel32/kernel32.dll $(BUILD_DIR)/dlls32/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls32/riched20/riched20.dll: $(BUILD_DIR)/dlls32/user32/user32.dll
+$(BUILD_DIR)/dlls32/riched32/riched32.dll: $(BUILD_DIR)/dlls32/riched20/riched20.dll
+$(BUILD_DIR)/dlls32/user32/user32.dll: $(BUILD_DIR)/dlls32/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls32/winmm/winmm.dll: $(BUILD_DIR)/dlls32/user32/user32.dll
+
+# with known dependencies (64-bit):
+$(BUILD_DIR)/dlls64/gdi32/gdi32.dll: $(BUILD_DIR)/dlls64/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls64/comctl32/comctl32.dll: $(BUILD_DIR)/dlls64/shlwapi/shlwapi.dll $(BUILD_DIR)/dlls64/user32/user32.dll
+$(BUILD_DIR)/dlls64/d3d9/d3d9.dll: $(BUILD_DIR)/dlls64/kernel32/kernel32.dll $(BUILD_DIR)/dlls64/msvcrt/msvcrt.dll
+$(BUILD_DIR)/dlls64/ddraw/ddraw.dll: $(BUILD_DIR)/dlls64/msvcrt/msvcrt.dll $(BUILD_DIR)/dlls64/kernel32/kernel32.dll
+$(BUILD_DIR)/dlls64/dinput/dinput.dll: $(BUILD_DIR)/dlls64/msvcrt/msvcrt.dll $(BUILD_DIR)/dlls64/kernel32/kernel32.dll
+$(BUILD_DIR)/dlls64/dsound/dsound.dll: $(BUILD_DIR)/dlls64/msvcrt/msvcrt.dll
+$(BUILD_DIR)/dlls64/gdi32/gdi32.dll: $(BUILD_DIR)/dlls64/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls64/kernel32/kernel32.dll: $(BUILD_DIR)/dlls64/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls64/msvcr100/msvcr100.dll: $(BUILD_DIR)/dlls64/kernel32/kernel32.dll $(BUILD_DIR)/dlls64/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls64/msvcr80/msvcr80.dll: $(BUILD_DIR)/dlls64/kernel32/kernel32.dll $(BUILD_DIR)/dlls64/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls64/msvcrt/msvcrt.dll: $(BUILD_DIR)/dlls64/kernel32/kernel32.dll $(BUILD_DIR)/dlls64/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls64/riched20/riched20.dll: $(BUILD_DIR)/dlls64/user32/user32.dll
+$(BUILD_DIR)/dlls64/riched32/riched32.dll: $(BUILD_DIR)/dlls64/riched20/riched20.dll
+$(BUILD_DIR)/dlls64/user32/user32.dll: $(BUILD_DIR)/dlls64/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls64/winmm/winmm.dll: $(BUILD_DIR)/dlls64/user32/user32.dll
 
 $(BUILD_DIR)/dlls64/%/Makefile:
 	mkdir -p $(@D)
