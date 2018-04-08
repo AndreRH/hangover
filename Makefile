@@ -1,5 +1,6 @@
 SOURCE_DIR=$(CURDIR)
 BUILD_DIR=$(CURDIR)/build
+TESTS := $(if $(NOTESTS),--disable-tests,)
 
 WINEDLLS = dbghelp ole32 oleaut32 propsys rpcrt4 urlmon windowscodecs netapi32 dnsapi msimg32 crypt32 dwmapi uxtheme setupapi wintrust wtsapi32 pdh avrt cryptnet imagehlp cryptui sensapi msvcp80 msvcp100 lz32 cabinet msi dplay dplayx dpwsockx dpnet dpnaddr dpnhpast dpnlobby dpvoice mpr oledlg
 
@@ -28,7 +29,7 @@ all: wine-host wine-guest wine-guest32 qemu $(DLL_TARGET32) $(DLL_TARGET64) $(DR
 # Build the Host (e.g. arm64) wine
 $(BUILD_DIR)/wine-host/Makefile: $(SOURCE_DIR)/wine/configure
 	@mkdir -p $(@D)
-	cd $(BUILD_DIR)/wine-host ; $(SOURCE_DIR)/wine/configure --prefix=$(BUILD_DIR)/build/install --enable-win64
+	cd $(BUILD_DIR)/wine-host ; $(SOURCE_DIR)/wine/configure --prefix=$(BUILD_DIR)/build/install --enable-win64 $(TESTS)
 
 wine-host $(BUILD_DIR)/wine-host/tools/winegcc/winegcc $(BUILD_DIR)/wine-host/tools/winebuild/winebuild $(BUILD_DIR)/wine-host/tools/wmc/wmc $(BUILD_DIR)/wine-host/tools/wrc/wrc $(BUILD_DIR)/wine-host/tools/widl/widl $(BUILD_DIR)/wine-host/tools/sfnt2fon/sfnt2fon: $(BUILD_DIR)/wine-host/Makefile
 	+$(MAKE) -C $(BUILD_DIR)/wine-host
@@ -36,7 +37,7 @@ wine-host $(BUILD_DIR)/wine-host/tools/winegcc/winegcc $(BUILD_DIR)/wine-host/to
 # Cross-Compile Wine for the guest platform to copy higher level DLLs from.
 $(BUILD_DIR)/wine-guest/Makefile: $(BUILD_DIR)/wine-host/tools/winegcc/winegcc $(BUILD_DIR)/wine-host/tools/winebuild/winebuild $(BUILD_DIR)/wine-host/tools/wmc/wmc $(BUILD_DIR)/wine-host/tools/wrc/wrc $(BUILD_DIR)/wine-host/tools/widl/widl $(BUILD_DIR)/wine-host/tools/sfnt2fon/sfnt2fon $(SOURCE_DIR)/wine/configure
 	@mkdir -p $(@D)
-	cd $(BUILD_DIR)/wine-guest ; $(SOURCE_DIR)/wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-host --without-freetype
+	cd $(BUILD_DIR)/wine-guest ; $(SOURCE_DIR)/wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-host --without-freetype $(TESTS)
 
 wine-guest: $(BUILD_DIR)/wine-guest/Makefile
 	+$(MAKE) -C $(BUILD_DIR)/wine-guest
@@ -44,7 +45,7 @@ wine-guest: $(BUILD_DIR)/wine-guest/Makefile
 # Cross-Compile Wine for the guest32 platform to copy higher level DLLs from.
 $(BUILD_DIR)/wine-guest32/Makefile: $(BUILD_DIR)/wine-host/tools/winegcc/winegcc $(BUILD_DIR)/wine-host/tools/winebuild/winebuild $(BUILD_DIR)/wine-host/tools/wmc/wmc $(BUILD_DIR)/wine-host/tools/wrc/wrc $(BUILD_DIR)/wine-host/tools/widl/widl $(BUILD_DIR)/wine-host/tools/sfnt2fon/sfnt2fon $(SOURCE_DIR)/wine/configure
 	@mkdir -p $(@D)
-	cd $(BUILD_DIR)/wine-guest32 ; $(SOURCE_DIR)/wine/configure --host=i686-w64-mingw32 --with-wine-tools=../wine-host --without-freetype
+	cd $(BUILD_DIR)/wine-guest32 ; $(SOURCE_DIR)/wine/configure --host=i686-w64-mingw32 --with-wine-tools=../wine-host --without-freetype $(TESTS)
 
 wine-guest32: $(BUILD_DIR)/wine-guest32/Makefile
 	+$(MAKE) -C $(BUILD_DIR)/wine-guest32
