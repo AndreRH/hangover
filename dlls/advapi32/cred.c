@@ -434,7 +434,7 @@ WINBASEAPI WINADVAPI BOOL WINAPI CredGetSessionTypes(DWORD persistCount, LPDWORD
 void qemu_CredGetSessionTypes(struct qemu_syscall *call)
 {
     struct qemu_CredGetSessionTypes *c = (struct qemu_CredGetSessionTypes *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CredGetSessionTypes(c->persistCount, QEMU_G2H(c->persists));
 }
 
