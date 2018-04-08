@@ -83,7 +83,7 @@ $(BUILD_DIR)/dlls32/%/Makefile:
 	echo "SRCDIR=../../../dlls/$(DLL)" >> $@
 	echo "DESTDIR?=../../.." >> $@
 	echo "GUEST_BIT=32" >> $@
-	echo "HOST_BIT=32" >> $@
+	echo "HOST_BIT=64" >> $@
 	echo "WINE_DIR=wine-guest32" >> $@
 	echo >> $@
 	echo "include $(SOURCE_DIR)/dlls/$(DLL)/Makefile" >> $@
