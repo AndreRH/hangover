@@ -63,7 +63,7 @@ WINBASEAPI BOOL WINAPI CredDeleteA(LPCSTR TargetName, DWORD Type, DWORD Flags)
 void qemu_CredDeleteA(struct qemu_syscall *call)
 {
     struct qemu_CredDeleteA *c = (struct qemu_CredDeleteA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CredDeleteA(QEMU_G2H(c->TargetName), c->Type, c->Flags);
 }
 
@@ -97,7 +97,7 @@ WINBASEAPI BOOL WINAPI CredDeleteW(LPCWSTR TargetName, DWORD Type, DWORD Flags)
 void qemu_CredDeleteW(struct qemu_syscall *call)
 {
     struct qemu_CredDeleteW *c = (struct qemu_CredDeleteW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CredDeleteW(QEMU_G2H(c->TargetName), c->Type, c->Flags);
 }
 
@@ -197,7 +197,8 @@ WINBASEAPI VOID WINAPI CredFree(PVOID Buffer)
 void qemu_CredFree(struct qemu_syscall *call)
 {
     struct qemu_CredFree *c = (struct qemu_CredFree *)call;
-    WINE_FIXME("Unverified!\n");
+    /* Don't thunk 32 bit creds here as long as CredRead & friends convert in place. */
+    WINE_TRACE("\n");
     CredFree(QEMU_G2H(c->Buffer));
 }
 
