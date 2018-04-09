@@ -203,7 +203,7 @@ void qemu_CredFree(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_CredReadA
+struct qemu_CredRead
 {
     struct qemu_syscall super;
     uint64_t TargetName;
@@ -216,25 +216,53 @@ struct qemu_CredReadA
 
 WINBASEAPI BOOL WINAPI CredReadA(LPCSTR TargetName, DWORD Type, DWORD Flags, PCREDENTIALA *Credential)
 {
-    struct qemu_CredReadA call;
+    struct qemu_CredRead call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREDREADA);
     call.TargetName = (ULONG_PTR)TargetName;
     call.Type = Type;
     call.Flags = Flags;
-    call.Credential = (ULONG_PTR)Credential;
 
     qemu_syscall(&call.super);
+    if (call.super.iret)
+        *Credential = (CREDENTIALA *)(ULONG_PTR)call.Credential;
 
+    return call.super.iret;
+}
+
+WINBASEAPI BOOL WINAPI CredReadW(LPCWSTR TargetName, DWORD Type, DWORD Flags, PCREDENTIALW *Credential)
+{
+    struct qemu_CredRead call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CREDREADW);
+    call.TargetName = (ULONG_PTR)TargetName;
+    call.Type = Type;
+    call.Flags = Flags;
+    
+    qemu_syscall(&call.super);
+    if (call.super.iret)
+        *Credential = (CREDENTIALW *)(ULONG_PTR)call.Credential;
+    
     return call.super.iret;
 }
 
 #else
 
-void qemu_CredReadA(struct qemu_syscall *call)
+void qemu_CredRead(struct qemu_syscall *call)
 {
-    struct qemu_CredReadA *c = (struct qemu_CredReadA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CredReadA(QEMU_G2H(c->TargetName), c->Type, c->Flags, QEMU_G2H(c->Credential));
+    struct qemu_CredRead *c = (struct qemu_CredRead *)call;
+    CREDENTIALW *cred;
+
+    WINE_TRACE("\n");
+    
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_CREDREADW))
+        c->super.iret = CredReadW(QEMU_G2H(c->TargetName), c->Type, c->Flags, &cred);
+    else
+        c->super.iret = CredReadA(QEMU_G2H(c->TargetName), c->Type, c->Flags, (CREDENTIALA **)&cred);
+    
+#if HOST_BIT != GUEST_BIT
+    /* Convert in place, leave empty space between the 32 bit struct and the data. */
+    CREDENTIAL_h2g((struct qemu_CREDENTIAL *)cred, cred);
+#endif
+    c->Credential = QEMU_H2G(cred);
 }
 
 #endif
@@ -250,19 +278,6 @@ struct qemu_CredReadW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CredReadW(LPCWSTR TargetName, DWORD Type, DWORD Flags, PCREDENTIALW *Credential)
-{
-    struct qemu_CredReadW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_CREDREADW);
-    call.TargetName = (ULONG_PTR)TargetName;
-    call.Type = Type;
-    call.Flags = Flags;
-    call.Credential = (ULONG_PTR)Credential;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
 
 #else
 
