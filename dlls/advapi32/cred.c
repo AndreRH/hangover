@@ -22,6 +22,9 @@
 #include <stdio.h>
 #include <wincred.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_wincred.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_advapi32.h"
@@ -344,7 +347,7 @@ void qemu_CredReadDomainCredentialsW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_CredWriteA
+struct qemu_CredWrite
 {
     struct qemu_syscall super;
     uint64_t Credential;
@@ -355,7 +358,7 @@ struct qemu_CredWriteA
 
 WINBASEAPI BOOL WINAPI CredWriteA(PCREDENTIALA Credential, DWORD Flags)
 {
-    struct qemu_CredWriteA call;
+    struct qemu_CredWrite call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREDWRITEA);
     call.Credential = (ULONG_PTR)Credential;
     call.Flags = Flags;
@@ -365,29 +368,9 @@ WINBASEAPI BOOL WINAPI CredWriteA(PCREDENTIALA Credential, DWORD Flags)
     return call.super.iret;
 }
 
-#else
-
-void qemu_CredWriteA(struct qemu_syscall *call)
-{
-    struct qemu_CredWriteA *c = (struct qemu_CredWriteA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CredWriteA(QEMU_G2H(c->Credential), c->Flags);
-}
-
-#endif
-
-struct qemu_CredWriteW
-{
-    struct qemu_syscall super;
-    uint64_t Credential;
-    uint64_t Flags;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI BOOL WINAPI CredWriteW(PCREDENTIALW Credential, DWORD Flags)
 {
-    struct qemu_CredWriteW call;
+    struct qemu_CredWrite call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREDWRITEW);
     call.Credential = (ULONG_PTR)Credential;
     call.Flags = Flags;
@@ -399,11 +382,27 @@ WINBASEAPI BOOL WINAPI CredWriteW(PCREDENTIALW Credential, DWORD Flags)
 
 #else
 
-void qemu_CredWriteW(struct qemu_syscall *call)
+void qemu_CredWrite(struct qemu_syscall *call)
 {
-    struct qemu_CredWriteW *c = (struct qemu_CredWriteW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CredWriteW(QEMU_G2H(c->Credential), c->Flags);
+    struct qemu_CredWrite *c = (struct qemu_CredWrite *)call;
+    struct qemu_CREDENTIAL *cred32;
+    CREDENTIALW stack, *cred = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    cred = QEMU_G2H(c->Credential);
+#else
+    cred32 = QEMU_G2H(c->Credential);
+    if (cred32)
+        CREDENTIAL_g2h(cred, cred32);
+    else
+        cred = NULL;
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_CREDWRITEW))
+        c->super.iret = CredWriteW(cred, c->Flags);
+    else
+        c->super.iret = CredWriteA((CREDENTIALA *)cred, c->Flags);
 }
 
 #endif
