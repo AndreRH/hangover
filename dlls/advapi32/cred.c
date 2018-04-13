@@ -103,7 +103,7 @@ void qemu_CredDeleteW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_CredEnumerateA
+struct qemu_CredEnumerate
 {
     struct qemu_syscall super;
     uint64_t Filter;
@@ -116,7 +116,7 @@ struct qemu_CredEnumerateA
 
 WINBASEAPI BOOL WINAPI CredEnumerateA(LPCSTR Filter, DWORD Flags, DWORD *Count, PCREDENTIALA **Credentials)
 {
-    struct qemu_CredEnumerateA call;
+    struct qemu_CredEnumerate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREDENUMERATEA);
     call.Filter = (ULONG_PTR)Filter;
     call.Flags = Flags;
@@ -124,35 +124,15 @@ WINBASEAPI BOOL WINAPI CredEnumerateA(LPCSTR Filter, DWORD Flags, DWORD *Count, 
     call.Credentials = (ULONG_PTR)Credentials;
 
     qemu_syscall(&call.super);
+    if (call.super.iret)
+        *Credentials = (CREDENTIALA **)(ULONG_PTR)call.Credentials;
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_CredEnumerateA(struct qemu_syscall *call)
-{
-    struct qemu_CredEnumerateA *c = (struct qemu_CredEnumerateA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CredEnumerateA(QEMU_G2H(c->Filter), c->Flags, QEMU_G2H(c->Count), QEMU_G2H(c->Credentials));
-}
-
-#endif
-
-struct qemu_CredEnumerateW
-{
-    struct qemu_syscall super;
-    uint64_t Filter;
-    uint64_t Flags;
-    uint64_t Count;
-    uint64_t Credentials;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI BOOL WINAPI CredEnumerateW(LPCWSTR Filter, DWORD Flags, DWORD *Count, PCREDENTIALW **Credentials)
 {
-    struct qemu_CredEnumerateW call;
+    struct qemu_CredEnumerate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREDENUMERATEW);
     call.Filter = (ULONG_PTR)Filter;
     call.Flags = Flags;
@@ -160,17 +140,48 @@ WINBASEAPI BOOL WINAPI CredEnumerateW(LPCWSTR Filter, DWORD Flags, DWORD *Count,
     call.Credentials = (ULONG_PTR)Credentials;
 
     qemu_syscall(&call.super);
+    if (call.super.iret)
+        *Credentials = (CREDENTIALW **)(ULONG_PTR)call.Credentials;
 
     return call.super.iret;
 }
 
 #else
 
-void qemu_CredEnumerateW(struct qemu_syscall *call)
+void qemu_CredEnumerate(struct qemu_syscall *call)
 {
-    struct qemu_CredEnumerateW *c = (struct qemu_CredEnumerateW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CredEnumerateW(QEMU_G2H(c->Filter), c->Flags, QEMU_G2H(c->Count), QEMU_G2H(c->Credentials));
+    struct qemu_CredEnumerate *c = (struct qemu_CredEnumerate *)call;
+    CREDENTIALW **creds;
+    qemu_ptr *ptr32;
+    DWORD *count, i;
+
+    WINE_TRACE("\n");
+    count = QEMU_G2H(c->Count);
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_CREDENUMERATEA))
+    {
+            c->super.iret = CredEnumerateA(QEMU_G2H(c->Filter), c->Flags, count,
+                    (CREDENTIALA ***)&creds);
+    }
+    else
+    {
+        c->super.iret = CredEnumerateW(QEMU_G2H(c->Filter), c->Flags, count, &creds);
+    }
+
+#if HOST_BIT != GUEST_BIT
+    /* Convert in place, leave empty space between the 32 bit struct and the data. */
+    ptr32 = (qemu_ptr *)creds;
+
+    if (c->super.iret)
+    {
+        for (i = 0; i < *count; ++i)
+        {
+            CREDENTIAL_h2g((struct qemu_CREDENTIAL *)creds[i], creds[i]);
+            ptr32[i] = QEMU_H2G(creds[i]);
+        }
+    }
+#endif
+    c->Credentials = QEMU_H2G(creds);
 }
 
 #endif
