@@ -237,11 +237,11 @@ WINBASEAPI BOOL WINAPI CredReadW(LPCWSTR TargetName, DWORD Type, DWORD Flags, PC
     call.TargetName = (ULONG_PTR)TargetName;
     call.Type = Type;
     call.Flags = Flags;
-    
+
     qemu_syscall(&call.super);
     if (call.super.iret)
         *Credential = (CREDENTIALW *)(ULONG_PTR)call.Credential;
-    
+
     return call.super.iret;
 }
 
@@ -253,12 +253,12 @@ void qemu_CredRead(struct qemu_syscall *call)
     CREDENTIALW *cred;
 
     WINE_TRACE("\n");
-    
+
     if (c->super.id == QEMU_SYSCALL_ID(CALL_CREDREADW))
         c->super.iret = CredReadW(QEMU_G2H(c->TargetName), c->Type, c->Flags, &cred);
     else
         c->super.iret = CredReadA(QEMU_G2H(c->TargetName), c->Type, c->Flags, (CREDENTIALA **)&cred);
-    
+
 #if HOST_BIT != GUEST_BIT
     /* Convert in place, leave empty space between the 32 bit struct and the data. */
     CREDENTIAL_h2g((struct qemu_CREDENTIAL *)cred, cred);
@@ -291,7 +291,7 @@ void qemu_CredReadW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_CredReadDomainCredentialsA
+struct qemu_CredReadDomainCredentials
 {
     struct qemu_syscall super;
     uint64_t TargetInformation;
@@ -302,16 +302,34 @@ struct qemu_CredReadDomainCredentialsA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CredReadDomainCredentialsA(PCREDENTIAL_TARGET_INFORMATIONA TargetInformation, DWORD Flags, DWORD *Size, PCREDENTIALA **Credentials)
+WINBASEAPI BOOL WINAPI CredReadDomainCredentialsA(PCREDENTIAL_TARGET_INFORMATIONA TargetInformation, DWORD Flags,
+        DWORD *Size, PCREDENTIALA **Credentials)
 {
-    struct qemu_CredReadDomainCredentialsA call;
+    struct qemu_CredReadDomainCredentials call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREDREADDOMAINCREDENTIALSA);
     call.TargetInformation = (ULONG_PTR)TargetInformation;
     call.Flags = Flags;
     call.Size = (ULONG_PTR)Size;
-    call.Credentials = (ULONG_PTR)Credentials;
 
+    /* *Credentials is written unconditionally. */
     qemu_syscall(&call.super);
+    *Credentials = (CREDENTIALA **)(ULONG_PTR)call.Credentials;
+
+    return call.super.iret;
+}
+
+WINBASEAPI BOOL WINAPI CredReadDomainCredentialsW(PCREDENTIAL_TARGET_INFORMATIONW TargetInformation, DWORD Flags,
+        DWORD *Size, PCREDENTIALW **Credentials)
+{
+    struct qemu_CredReadDomainCredentials call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CREDREADDOMAINCREDENTIALSW);
+    call.TargetInformation = (ULONG_PTR)TargetInformation;
+    call.Flags = Flags;
+    call.Size = (ULONG_PTR)Size;
+
+    /* *Credentials is written unconditionally. */
+    qemu_syscall(&call.super);
+    *Credentials = (CREDENTIALW **)(ULONG_PTR)call.Credentials;
 
     return call.super.iret;
 }
@@ -320,9 +338,40 @@ WINBASEAPI BOOL WINAPI CredReadDomainCredentialsA(PCREDENTIAL_TARGET_INFORMATION
 
 void qemu_CredReadDomainCredentialsA(struct qemu_syscall *call)
 {
-    struct qemu_CredReadDomainCredentialsA *c = (struct qemu_CredReadDomainCredentialsA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CredReadDomainCredentialsA(QEMU_G2H(c->TargetInformation), c->Flags, QEMU_G2H(c->Size), QEMU_G2H(c->Credentials));
+    struct qemu_CredReadDomainCredentials *c = (struct qemu_CredReadDomainCredentials *)call;
+    CREDENTIALW **creds;
+    qemu_ptr *ptr32;
+    DWORD *size, i;
+
+    /* I noticed the Wine function is a stub after writing the wrapper. Keep it, but keep in mind that I
+     * never tested it with non-NULL output data from CredReadDomainCredentialsW... */
+    WINE_FIXME("Untested\n");
+    size = QEMU_G2H(c->Size);
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_CREDREADDOMAINCREDENTIALSW))
+    {
+        c->super.iret = CredReadDomainCredentialsW(QEMU_G2H(c->TargetInformation), c->Flags, QEMU_G2H(c->Size),
+                &creds);
+    }
+    else
+    {
+        c->super.iret = CredReadDomainCredentialsA(QEMU_G2H(c->TargetInformation), c->Flags, QEMU_G2H(c->Size),
+                (CREDENTIALA ***)&creds);
+    }
+
+#if HOST_BIT != GUEST_BIT
+    /* Convert in place, leave empty space between the 32 bit struct and the data.
+     * Size is written unconditionally by Wine, if it is invalid we crashed already. */
+    ptr32 = (qemu_ptr *)creds;
+
+    for (i = 0; i < *size; ++i)
+    {
+        CREDENTIAL_h2g((struct qemu_CREDENTIAL *)creds[i], creds[i]);
+        ptr32[i] = QEMU_H2G(creds[i]);
+    }
+#endif
+
+    c->Credentials = QEMU_H2G(creds);
 }
 
 #endif
@@ -338,19 +387,6 @@ struct qemu_CredReadDomainCredentialsW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CredReadDomainCredentialsW(PCREDENTIAL_TARGET_INFORMATIONW TargetInformation, DWORD Flags, DWORD *Size, PCREDENTIALW **Credentials)
-{
-    struct qemu_CredReadDomainCredentialsW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_CREDREADDOMAINCREDENTIALSW);
-    call.TargetInformation = (ULONG_PTR)TargetInformation;
-    call.Flags = Flags;
-    call.Size = (ULONG_PTR)Size;
-    call.Credentials = (ULONG_PTR)Credentials;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
 
 #else
 
