@@ -681,7 +681,7 @@ WINBASEAPI LSTATUS WINAPI RegEnumKeyW(HKEY hkey, DWORD index, LPWSTR name, DWORD
 void qemu_RegEnumKeyW(struct qemu_syscall *call)
 {
     struct qemu_RegEnumKeyW *c = (struct qemu_RegEnumKeyW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RegEnumKeyW(QEMU_G2H(c->hkey), c->index, QEMU_G2H(c->name), c->name_len);
 }
 
@@ -717,7 +717,7 @@ WINBASEAPI LSTATUS WINAPI RegEnumKeyA(HKEY hkey, DWORD index, LPSTR name, DWORD 
 void qemu_RegEnumKeyA(struct qemu_syscall *call)
 {
     struct qemu_RegEnumKeyA *c = (struct qemu_RegEnumKeyA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("!\n");
     c->super.iret = RegEnumKeyA(QEMU_G2H(c->hkey), c->index, QEMU_G2H(c->name), c->name_len);
 }
 
