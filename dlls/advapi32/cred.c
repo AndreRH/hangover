@@ -502,7 +502,7 @@ void qemu_CredGetSessionTypes(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_CredMarshalCredentialA
+struct qemu_CredMarshalCredential
 {
     struct qemu_syscall super;
     uint64_t type;
@@ -514,7 +514,7 @@ struct qemu_CredMarshalCredentialA
 
 WINBASEAPI BOOL WINAPI CredMarshalCredentialA(CRED_MARSHAL_TYPE type, PVOID cred, LPSTR *out)
 {
-    struct qemu_CredMarshalCredentialA call;
+    struct qemu_CredMarshalCredential call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREDMARSHALCREDENTIALA);
     call.type = type;
     call.cred = (ULONG_PTR)cred;
@@ -525,30 +525,9 @@ WINBASEAPI BOOL WINAPI CredMarshalCredentialA(CRED_MARSHAL_TYPE type, PVOID cred
     return call.super.iret;
 }
 
-#else
-
-void qemu_CredMarshalCredentialA(struct qemu_syscall *call)
-{
-    struct qemu_CredMarshalCredentialA *c = (struct qemu_CredMarshalCredentialA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CredMarshalCredentialA(c->type, QEMU_G2H(c->cred), QEMU_G2H(c->out));
-}
-
-#endif
-
-struct qemu_CredMarshalCredentialW
-{
-    struct qemu_syscall super;
-    uint64_t type;
-    uint64_t cred;
-    uint64_t out;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI BOOL WINAPI CredMarshalCredentialW(CRED_MARSHAL_TYPE type, PVOID cred, LPWSTR *out)
 {
-    struct qemu_CredMarshalCredentialW call;
+    struct qemu_CredMarshalCredential call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREDMARSHALCREDENTIALW);
     call.type = type;
     call.cred = (ULONG_PTR)cred;
@@ -561,11 +540,49 @@ WINBASEAPI BOOL WINAPI CredMarshalCredentialW(CRED_MARSHAL_TYPE type, PVOID cred
 
 #else
 
-void qemu_CredMarshalCredentialW(struct qemu_syscall *call)
+void qemu_CredMarshalCredential(struct qemu_syscall *call)
 {
-    struct qemu_CredMarshalCredentialW *c = (struct qemu_CredMarshalCredentialW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CredMarshalCredentialW(c->type, QEMU_G2H(c->cred), QEMU_G2H(c->out));
+    struct qemu_CredMarshalCredential *c = (struct qemu_CredMarshalCredential *)call;
+    void *cred32, *conv;
+    USERNAME_TARGET_CREDENTIAL_INFO username;
+    BINARY_BLOB_CREDENTIAL_INFO blob;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    conv = QEMU_G2H(c->cred);
+#else
+    cred32 = QEMU_G2H(c->cred);
+    if (cred32 && c->type == CertCredential)
+    {
+        /* Size is compatible. */
+        conv = cred32;
+    }
+    else if (cred32 && c->type == UsernameTargetCredential)
+    {
+        USERNAME_TARGET_CREDENTIAL_INFO_g2h(&username, cred32);
+        conv = &username;
+    }
+    else if (cred32 && c->type == BinaryBlobCredential)
+    {
+        WINE_FIXME("BinaryBlobCredential untested.\n");
+        BINARY_BLOB_CREDENTIAL_INFO_g2h(&blob, cred32);
+        conv = &blob;
+    }
+    else if (!cred32)
+    {
+        conv = NULL;
+    }
+    else
+    {
+        WINE_FIXME("Unhandled credential type 0x%x.\n", (CRED_MARSHAL_TYPE)c->type);
+        conv = cred32;
+    }
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_CREDMARSHALCREDENTIALW))
+        c->super.iret = CredMarshalCredentialW(c->type, conv, QEMU_G2H(c->out));
+    else
+        c->super.iret = CredMarshalCredentialA(c->type, conv, QEMU_G2H(c->out));
 }
 
 #endif

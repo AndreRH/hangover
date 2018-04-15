@@ -49,4 +49,43 @@ static inline void CREDENTIAL_h2g(struct qemu_CREDENTIAL *guest, CREDENTIALW *ho
     guest->UserName = (ULONG_PTR)host->UserName;
 }
 
+struct qemu_USERNAME_TARGET_CREDENTIAL_INFO
+{
+    qemu_ptr UserName;
+};
+
+static inline void USERNAME_TARGET_CREDENTIAL_INFO_g2h(USERNAME_TARGET_CREDENTIAL_INFO *host,
+        const struct qemu_USERNAME_TARGET_CREDENTIAL_INFO *guest)
+{
+    host->UserName = (WCHAR *)(ULONG_PTR)guest->UserName;
+}
+
+static inline void USERNAME_TARGET_CREDENTIAL_INFO_h2g(struct qemu_USERNAME_TARGET_CREDENTIAL_INFO *guest,
+        USERNAME_TARGET_CREDENTIAL_INFO *host)
+{
+    guest->UserName = (ULONG_PTR)host->UserName;
+}
+
+#ifndef QEMU_DLL_GUEST
+struct qemu_BINARY_BLOB_CREDENTIAL_INFO
+{
+    ULONG cbBlob;
+    qemu_ptr pbBlob;
+};
+
+static inline void BINARY_BLOB_CREDENTIAL_INFO_g2h(BINARY_BLOB_CREDENTIAL_INFO *host,
+        const struct qemu_BINARY_BLOB_CREDENTIAL_INFO *guest)
+{
+    host->cbBlob = guest->cbBlob;
+    host->pbBlob = (void *)(ULONG_PTR)guest->pbBlob;
+}
+
+static inline void BINARY_BLOB_CREDENTIAL_INFO_h2g(struct qemu_BINARY_BLOB_CREDENTIAL_INFO *guest,
+        BINARY_BLOB_CREDENTIAL_INFO *host)
+{
+    guest->cbBlob = host->cbBlob;
+    guest->pbBlob = (ULONG_PTR)host->pbBlob;
+}
+#endif
+
 #endif
