@@ -462,6 +462,7 @@ WINBASEAPI LSTATUS WINAPI RegOpenKeyW(HKEY hkey, LPCWSTR name, PHKEY retkey)
     call.super.id = QEMU_SYSCALL_ID(CALL_REGOPENKEYW);
     call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
+    call.retkey = (ULONG_PTR)retkey;
 
     qemu_syscall(&call.super);
 
@@ -479,7 +480,7 @@ void qemu_RegOpenKeyW(struct qemu_syscall *call)
     HKEY retkey = 0;
     WINE_TRACE("\n");
 
-    c->super.iret = RegOpenKeyW(QEMU_G2H(c->hkey), QEMU_G2H(c->name), &retkey);
+    c->super.iret = RegOpenKeyW(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->retkey ? &retkey : NULL);
     c->retkey = (ULONG_PTR)retkey;
 }
 
@@ -501,6 +502,7 @@ WINBASEAPI LSTATUS WINAPI RegOpenKeyA(HKEY hkey, LPCSTR name, PHKEY retkey)
     call.super.id = QEMU_SYSCALL_ID(CALL_REGOPENKEYA);
     call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
+    call.retkey = (ULONG_PTR)retkey;
 
     qemu_syscall(&call.super);
 
@@ -518,7 +520,7 @@ void qemu_RegOpenKeyA(struct qemu_syscall *call)
     HKEY retkey = 0;
     WINE_TRACE("\n");
 
-    c->super.iret = RegOpenKeyA((HKEY)c->hkey, QEMU_G2H(c->name), &retkey);
+    c->super.iret = RegOpenKeyA((HKEY)c->hkey, QEMU_G2H(c->name), c->retkey ? &retkey : NULL);
     c->retkey = (ULONG_PTR)retkey;
 }
 
