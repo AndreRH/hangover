@@ -679,7 +679,7 @@ WINBASEAPI BOOL WINAPI CredIsMarshaledCredentialW(LPCWSTR name)
 void qemu_CredIsMarshaledCredentialW(struct qemu_syscall *call)
 {
     struct qemu_CredIsMarshaledCredentialW *c = (struct qemu_CredIsMarshaledCredentialW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CredIsMarshaledCredentialW(QEMU_G2H(c->name));
 }
 
@@ -709,7 +709,7 @@ WINBASEAPI BOOL WINAPI CredIsMarshaledCredentialA(LPCSTR name)
 void qemu_CredIsMarshaledCredentialA(struct qemu_syscall *call)
 {
     struct qemu_CredIsMarshaledCredentialA *c = (struct qemu_CredIsMarshaledCredentialA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CredIsMarshaledCredentialA(QEMU_G2H(c->name));
 }
 
