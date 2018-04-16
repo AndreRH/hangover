@@ -1330,8 +1330,24 @@ WINBASEAPI NTSTATUS WINAPI RtlFormatCurrentUserKeyPath(PUNICODE_STRING KeyPath)
 void qemu_RtlFormatCurrentUserKeyPath(struct qemu_syscall *call)
 {
     struct qemu_RtlFormatCurrentUserKeyPath *c = (struct qemu_RtlFormatCurrentUserKeyPath *)call;
+    struct qemu_UNICODE_STRING *path32;
+    UNICODE_STRING stack, *path = &stack;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlFormatCurrentUserKeyPath(QEMU_G2H(c->KeyPath));
+#if HOST_BIT == GUEST_BIT
+    path = QEMU_G2H(c->KeyPath);
+#else
+    path32 = QEMU_G2H(c->KeyPath);
+    if (!path32)
+        path = NULL;
+#endif
+
+    c->super.iret = RtlFormatCurrentUserKeyPath(path);
+
+#if HOST_BIT != GUEST_BIT
+    if (c->super.iret == STATUS_SUCCESS)
+        UNICODE_STRING_h2g(path32, path);
+#endif
 }
 
 #endif
