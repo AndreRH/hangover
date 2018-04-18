@@ -1228,7 +1228,7 @@
 @ stub -arch=i386 _outpd(long long)
 @ stub -arch=i386 _outpw(long long)
 @ cdecl _pclose(ptr) MSVCRT__pclose
-#@ extern _pctype MSVCRT__pctype
+@ extern _pctype msvcr100.__qemu_native_data__
 #@ extern _pgmptr MSVCRT__pgmptr
 @ cdecl _pipe(ptr long long) MSVCRT__pipe
 @ cdecl _popen(str str) MSVCRT__popen
