@@ -1562,31 +1562,28 @@ void qemu_tanh(struct qemu_syscall *call)
 
 #endif
 
-struct qemu__ftol
-{
-    struct qemu_syscall super;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI LONGLONG CDECL MSVCRT__ftol(void)
-{
-    struct qemu__ftol call;
-    call.super.id = QEMU_SYSCALL_ID(CALL__FTOL);
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu__ftol(struct qemu_syscall *call)
-{
-    struct qemu__ftol *c = (struct qemu__ftol *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p__ftol();
-}
+__ASM_GLOBAL_FUNC(MSVCRT__ftol,
+        "pushl   %ebp\n\t"
+        __ASM_CFI(".cfi_adjust_cfa_offset 4\n\t")
+        __ASM_CFI(".cfi_rel_offset %ebp,0\n\t")
+        "movl    %esp, %ebp\n\t"
+        __ASM_CFI(".cfi_def_cfa_register %ebp\n\t")
+        "subl    $12, %esp\n\t"     /* sizeof(LONGLONG) + 2*sizeof(WORD) */
+        "fnstcw  (%esp)\n\t"
+        "mov     (%esp), %ax\n\t"
+        "or      $0xc00, %ax\n\t"
+        "mov     %ax, 2(%esp)\n\t"
+        "fldcw   2(%esp)\n\t"
+        "fistpq  4(%esp)\n\t"
+        "fldcw   (%esp)\n\t"
+        "movl    4(%esp), %eax\n\t"
+        "movl    8(%esp), %edx\n\t"
+        "leave\n\t"
+        __ASM_CFI(".cfi_def_cfa %esp,4\n\t")
+        __ASM_CFI(".cfi_same_value %ebp\n\t")
+        "ret")
 
 #endif
 

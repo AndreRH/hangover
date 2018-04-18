@@ -361,7 +361,6 @@ static const syscall_handler dll_functions[] =
     qemu__ftime32_s,
     qemu__ftime64,
     qemu__ftime64_s,
-    qemu__ftol,
     qemu__fullpath,
     qemu__futime,
     qemu__futime32,
@@ -1432,7 +1431,6 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__ftime32_s = (void *)GetProcAddress(msvcrt, "_ftime32_s");
     p__ftime64 = (void *)GetProcAddress(msvcrt, "_ftime64");
     p__ftime64_s = (void *)GetProcAddress(msvcrt, "_ftime64_s");
-    p__ftol = (void *)GetProcAddress(msvcrt, "_ftol");
     p__fullpath = (void *)GetProcAddress(msvcrt, "_fullpath");
     p__fwrite_nolock = (void *)GetProcAddress(msvcrt, "_fwrite_nolock");
     p__gcvt = (void *)GetProcAddress(msvcrt, "_gcvt");

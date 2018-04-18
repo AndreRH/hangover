@@ -220,7 +220,6 @@ enum msvcrt_calls
     CALL__FTIME32_S,
     CALL__FTIME64,
     CALL__FTIME64_S,
-    CALL__FTOL,
     CALL__FULLPATH,
     CALL__FUTIME,
     CALL__FUTIME32,
@@ -1417,7 +1416,6 @@ void qemu__ftime32(struct qemu_syscall *call);
 void qemu__ftime32_s(struct qemu_syscall *call);
 void qemu__ftime64(struct qemu_syscall *call);
 void qemu__ftime64_s(struct qemu_syscall *call);
-void qemu__ftol(struct qemu_syscall *call);
 void qemu__fullpath(struct qemu_syscall *call);
 void qemu__futime(struct qemu_syscall *c);
 void qemu__futime32(struct qemu_syscall *c);
@@ -2369,7 +2367,6 @@ double (* CDECL p_sinh)(double x);
 double (* CDECL p_sqrt)(double x);
 double (* CDECL p_tan)(double x);
 double (* CDECL p_tanh)(double x);
-LONGLONG (* CDECL p__ftol)(void);
 int (* CDECL p__fpclass)(double num);
 unsigned int (* CDECL p__rotl)(unsigned int num, int shift);
 uint32_t (* CDECL p__lrotl)(uint32_t num, int shift);
