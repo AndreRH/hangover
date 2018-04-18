@@ -1,0 +1,287 @@
+# environment needs to be setup before the Makefile can run, e.g.:
+#export PATH=/home/$USER/src/ndk/aarch64-linux-android/bin/:$PATH
+#export ANDROID_HOME=/home/$USER/src/ANDROID/android-sdk-linux
+#export NDK_SYSROOT=/home/$USER/src/ndk/aarch64-linux-android/sysroot
+
+SOURCE_DIR=$(CURDIR)
+BUILD_DIR=$(CURDIR)/build.android
+
+WINEDLLS = dbghelp ole32 oleaut32 propsys rpcrt4 urlmon windowscodecs netapi32 dnsapi msimg32 crypt32 dwmapi uxtheme setupapi wintrust wtsapi32 pdh avrt cryptnet imagehlp cryptui sensapi msvcp80 msvcp100 lz32 cabinet msi dplay dplayx dpwsockx dpnet dpnaddr dpnhpast dpnlobby dpvoice mpr oledlg
+
+WINEDLL_TARGET32 = $(patsubst %,$(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/%.dll,$(WINEDLLS))
+WINEDLL_TARGET64 = $(patsubst %,$(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/%.dll,$(WINEDLLS))
+
+DLLS = $(strip $(subst include,,$(notdir $(shell find $(SOURCE_DIR)/dlls/ -maxdepth 1 -type d | grep -v opengl32 | grep -v "\.drv"))))
+DRVS = $(strip $(subst include,,$(notdir $(shell find $(SOURCE_DIR)/dlls/ -maxdepth 1 -type d | grep "\.drv"))))
+
+DLL_GUEST = $(patsubst %,%.dll,$(DLLS))
+DLL__HOST = $(patsubst %,qemu_%.dll.so,$(DLLS))
+DLL___DIRS32 = $(patsubst %,$(BUILD_DIR)/dlls32/%/,$(DLLS))
+DLL_TARGET32 = $(join $(DLL___DIRS32), $(DLL_GUEST)) $(join $(DLL___DIRS32), $(DLL__HOST))
+DLL___DIRS64 = $(patsubst %,$(BUILD_DIR)/dlls64/%/,$(DLLS))
+DLL_TARGET64 = $(join $(DLL___DIRS64), $(DLL_GUEST)) $(join $(DLL___DIRS64), $(DLL__HOST))
+
+DRV__HOST = $(patsubst %,qemu_%.so,$(DRVS))
+DRV___DIRS32 = $(patsubst %,$(BUILD_DIR)/dlls32/%/,$(DRVS))
+DRV_TARGET32 = $(join $(DRV___DIRS32), $(DRVS)) $(join $(DRV___DIRS32), $(DRV__HOST))
+DRV___DIRS64 = $(patsubst %,$(BUILD_DIR)/dlls64/%/,$(DRVS))
+DRV_TARGET64 = $(join $(DRV___DIRS64), $(DRVS)) $(join $(DRV___DIRS64), $(DRV__HOST))
+
+all: $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/hangover-debug.apk
+.PHONY: all
+
+# Build libs
+$(BUILD_DIR)/libpng-1.5.30.tar.gz:
+	@mkdir -p $(@D)
+	cd $(BUILD_DIR) ; wget -c ftp://ftp-osl.osuosl.org/pub/libpng/src/libpng15/libpng-1.5.30.tar.gz
+
+$(BUILD_DIR)/libpng-1.5.30/configure: $(BUILD_DIR)/libpng-1.5.30.tar.gz
+	cd $(BUILD_DIR) ; rm -rf libpng-1.5.30 ; tar -xzf libpng-1.5.30.tar.gz ; touch $@
+
+$(BUILD_DIR)/libpng-1.5.30/Makefile: $(BUILD_DIR)/libpng-1.5.30/configure
+	@mkdir -p $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a
+	cd $(@D) ; ./configure --host=aarch64-linux-android --prefix=$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang
+
+$(BUILD_DIR)/libpng-1.5.30/.libs/libpng15.so: $(BUILD_DIR)/libpng-1.5.30/Makefile
+	+$(MAKE) -C $(BUILD_DIR)/libpng-1.5.30/ install
+
+
+$(BUILD_DIR)/freetype-2.8.tar.gz:
+	@mkdir -p $(@D)
+	cd $(BUILD_DIR) ; wget -c https://download.savannah.gnu.org/releases/freetype/freetype-2.8.tar.gz
+
+$(BUILD_DIR)/freetype-2.8/configure: $(BUILD_DIR)/freetype-2.8.tar.gz
+	cd $(BUILD_DIR) ; rm -rf freetype-2.8 ; tar -xzf freetype-2.8.tar.gz ; touch $@
+
+$(BUILD_DIR)/freetype-2.8/config.mk: $(BUILD_DIR)/freetype-2.8/configure $(BUILD_DIR)/libpng-1.5.30/.libs/libpng15.so
+	@mkdir -p $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a
+	cd $(@D) ; ./configure --host=aarch64-linux-android --prefix=$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a LIBPNG_CFLAGS="-I$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/include/libpng15" LIBPNG_LIBS="-L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib -lpng15" CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang
+
+$(BUILD_DIR)/freetype-2.8/objs/.libs/libfreetype.so: $(BUILD_DIR)/freetype-2.8/config.mk
+	+$(MAKE) -C $(BUILD_DIR)/freetype-2.8/ install
+
+
+$(SOURCE_DIR)/glib/configure: $(SOURCE_DIR)/glib/autogen.sh
+	cd $(@D) ; ./autogen.sh --help
+
+$(BUILD_DIR)/glib/Makefile: $(SOURCE_DIR)/glib/configure
+	@mkdir -p $(@D)
+	cd $(@D) ; $(SOURCE_DIR)/glib/configure --with-pcre=internal --host=aarch64-linux-android CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang --disable-libmount --prefix=$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a
+
+$(BUILD_DIR)/glib/glib/.libs/libglib-2.0.so: $(BUILD_DIR)/glib/Makefile
+	+$(MAKE) -C $(BUILD_DIR)/glib/ install
+
+
+# Build the wine tools for crosscompilation
+$(BUILD_DIR)/wine-tools/Makefile: $(SOURCE_DIR)/wine/configure $(BUILD_DIR)/freetype-2.8/objs/.libs/libfreetype.so
+	@mkdir -p $(@D)
+	cd $(@D) ; $(SOURCE_DIR)/wine/configure --enable-win64 --with-freetype --with-gettext --disable-tests --disable-win16 --without-alsa --without-capi --without-cms --without-coreaudio --without-cups --without-curses --without-dbus --without-fontconfig --without-gphoto --without-glu --without-gnutls --without-gsm --without-gstreamer --without-hal --without-jpeg --without-krb5 --without-ldap --without-mpg123 --without-netapi --without-openal --without-opencl --without-opengl --without-osmesa --without-oss --without-pcap --without-pulse --without-png --without-sane --without-tiff --without-v4l --without-x --without-xcomposite --without-xcursor --without-xinerama --without-xinput --without-xinput2 --without-xml --without-xrandr --without-xrender --without-xshape --without-xshm --without-xslt --without-xxf86vm --without-zlib
+
+$(BUILD_DIR)/wine-tools/tools/sfnt2fon/sfnt2fon $(BUILD_DIR)/wine-tools/tools/widl/widl $(BUILD_DIR)/wine-tools/tools/winebuild/winebuild $(BUILD_DIR)/wine-tools/tools/winegcc/winegcc $(BUILD_DIR)/wine-tools/tools/wmc/wmc $(BUILD_DIR)/wine-tools/tools/wrc/wrc: $(BUILD_DIR)/wine-tools/Makefile
+	+$(MAKE) -C $(BUILD_DIR)/wine-tools tools tools/sfnt2fon tools/widl tools/winebuild tools/winegcc tools/wmc tools/wrc
+	@mkdir -p $(BUILD_DIR)/../build
+	ln -sf $(BUILD_DIR)/wine-host $(BUILD_DIR)/../build/wine-host
+	ln -sf $(BUILD_DIR)/wine-tools/tools $(BUILD_DIR)/wine-host/
+
+
+# Build the Host (e.g. arm64) wine
+$(BUILD_DIR)/wine-host/Makefile: $(BUILD_DIR)/wine-tools/tools/winegcc/winegcc $(BUILD_DIR)/wine-tools/tools/winebuild/winebuild $(BUILD_DIR)/wine-tools/tools/wmc/wmc $(BUILD_DIR)/wine-tools/tools/wrc/wrc $(BUILD_DIR)/wine-tools/tools/widl/widl $(BUILD_DIR)/wine-tools/tools/sfnt2fon/sfnt2fon $(SOURCE_DIR)/wine/configure
+	@mkdir -p $(@D)
+	cd $(@D) ; $(SOURCE_DIR)/wine/configure --host=aarch64-linux-android --with-wine-tools=../wine-tools --prefix=$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/ --libdir=$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang LIBPNG_CFLAGS="-I$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/include/libpng15" LIBPNG_LIBS="-L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib -lpng15" FREETYPE_CFLAGS="-I$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/include/freetype2" FREETYPE_LIBS="-L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib -lm -lz -lpng15 -lfreetype" --disable-tests
+
+wine-host $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/wine-debug.apk: $(BUILD_DIR)/wine-host/Makefile
+	+$(MAKE) -C $(BUILD_DIR)/wine-host
+
+# Cross-Compile Wine for the guest platform to copy higher level DLLs from.
+$(BUILD_DIR)/wine-guest/Makefile: $(BUILD_DIR)/wine-tools/tools/winegcc/winegcc $(BUILD_DIR)/wine-tools/tools/winebuild/winebuild $(BUILD_DIR)/wine-tools/tools/wmc/wmc $(BUILD_DIR)/wine-tools/tools/wrc/wrc $(BUILD_DIR)/wine-tools/tools/widl/widl $(BUILD_DIR)/wine-tools/tools/sfnt2fon/sfnt2fon $(SOURCE_DIR)/wine/configure
+	@mkdir -p $(@D)
+	cd $(@D) ; $(SOURCE_DIR)/wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-tools --without-freetype --disable-tests
+
+wine-guest: $(BUILD_DIR)/wine-guest/Makefile
+	+$(MAKE) -C $(BUILD_DIR)/wine-guest $(patsubst %,dlls/%,$(WINEDLLS))
+
+# Cross-Compile Wine for the guest32 platform to copy higher level DLLs from.
+$(BUILD_DIR)/wine-guest32/Makefile: $(BUILD_DIR)/wine-tools/tools/winegcc/winegcc $(BUILD_DIR)/wine-tools/tools/winebuild/winebuild $(BUILD_DIR)/wine-tools/tools/wmc/wmc $(BUILD_DIR)/wine-tools/tools/wrc/wrc $(BUILD_DIR)/wine-tools/tools/widl/widl $(BUILD_DIR)/wine-tools/tools/sfnt2fon/sfnt2fon $(SOURCE_DIR)/wine/configure
+	@mkdir -p $(@D)
+	cd $(@D) ; $(SOURCE_DIR)/wine/configure --host=i686-w64-mingw32 --with-wine-tools=../wine-tools --without-freetype --disable-tests
+
+wine-guest32: $(BUILD_DIR)/wine-guest32/Makefile
+	+$(MAKE) -C $(BUILD_DIR)/wine-guest32 $(patsubst %,dlls/%,$(WINEDLLS))
+
+# Build qemu
+$(BUILD_DIR)/qemu/Makefile: $(BUILD_DIR)/glib/glib/.libs/libglib-2.0.so $(BUILD_DIR)/wine-tools/tools/winegcc/winegcc $(BUILD_DIR)/wine-tools/tools/winebuild/winebuild $(SOURCE_DIR)/qemu/configure wine-host
+	@mkdir -p $(@D)
+	+$(MAKE) -C $(BUILD_DIR)/glib/ install
+	cd $(@D) ; CC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -D__ANDROID_API__=22 -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include -DWINE_NOWINSOCK" CXX="$(BUILD_DIR)/wine-host/tools/winegcc/wineg++ -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include  -DWINE_NOWINSOCK" $(SOURCE_DIR)/qemu/configure --disable-bzip2 --disable-libusb --disable-sdl --disable-snappy --disable-virtfs --disable-opengl --python=/usr/bin/python2.7 --disable-xen --disable-lzo --disable-qom-cast-debug --disable-vnc --disable-seccomp --disable-strip --disable-hax --disable-gnutls --disable-nettle --disable-replication --disable-tpm --disable-gtk --disable-gcrypt --disable-linux-aio --disable-system --disable-tools --disable-linux-user --disable-guest-agent --enable-windows-user --disable-fdt --disable-capstone
+
+$(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so: $(BUILD_DIR)/qemu/Makefile
+	+$(MAKE) -C $(BUILD_DIR)/qemu
+	@mkdir -p $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64
+	@mkdir -p $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll64
+	@mkdir -p $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32
+	@mkdir -p $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll32
+
+# Build the wrapper DLLs.
+
+# with known dependencies (32-bit):
+$(BUILD_DIR)/dlls32/gdi32/gdi32.dll: $(BUILD_DIR)/dlls32/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls32/comctl32/comctl32.dll: $(BUILD_DIR)/dlls32/shlwapi/shlwapi.dll $(BUILD_DIR)/dlls32/user32/user32.dll
+$(BUILD_DIR)/dlls32/d3d9/d3d9.dll: $(BUILD_DIR)/dlls32/kernel32/kernel32.dll $(BUILD_DIR)/dlls32/msvcrt/msvcrt.dll
+$(BUILD_DIR)/dlls32/ddraw/ddraw.dll: $(BUILD_DIR)/dlls32/msvcrt/msvcrt.dll $(BUILD_DIR)/dlls32/kernel32/kernel32.dll
+$(BUILD_DIR)/dlls32/dinput/dinput.dll: $(BUILD_DIR)/dlls32/msvcrt/msvcrt.dll $(BUILD_DIR)/dlls32/kernel32/kernel32.dll
+$(BUILD_DIR)/dlls32/dsound/dsound.dll: $(BUILD_DIR)/dlls32/msvcrt/msvcrt.dll
+$(BUILD_DIR)/dlls32/gdi32/gdi32.dll: $(BUILD_DIR)/dlls32/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls32/kernel32/kernel32.dll: $(BUILD_DIR)/dlls32/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls32/msvcr100/msvcr100.dll: $(BUILD_DIR)/dlls32/kernel32/kernel32.dll $(BUILD_DIR)/dlls32/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls32/msvcr80/msvcr80.dll: $(BUILD_DIR)/dlls32/kernel32/kernel32.dll $(BUILD_DIR)/dlls32/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls32/msvcrt/msvcrt.dll: $(BUILD_DIR)/dlls32/kernel32/kernel32.dll $(BUILD_DIR)/dlls32/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls32/riched20/riched20.dll: $(BUILD_DIR)/dlls32/user32/user32.dll
+$(BUILD_DIR)/dlls32/riched32/riched32.dll: $(BUILD_DIR)/dlls32/riched20/riched20.dll
+$(BUILD_DIR)/dlls32/user32/user32.dll: $(BUILD_DIR)/dlls32/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls32/winmm/winmm.dll: $(BUILD_DIR)/dlls32/user32/user32.dll
+
+# with known dependencies (64-bit):
+$(BUILD_DIR)/dlls64/gdi32/gdi32.dll: $(BUILD_DIR)/dlls64/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls64/comctl32/comctl32.dll: $(BUILD_DIR)/dlls64/shlwapi/shlwapi.dll $(BUILD_DIR)/dlls64/user32/user32.dll
+$(BUILD_DIR)/dlls64/d3d9/d3d9.dll: $(BUILD_DIR)/dlls64/kernel32/kernel32.dll $(BUILD_DIR)/dlls64/msvcrt/msvcrt.dll
+$(BUILD_DIR)/dlls64/ddraw/ddraw.dll: $(BUILD_DIR)/dlls64/msvcrt/msvcrt.dll $(BUILD_DIR)/dlls64/kernel32/kernel32.dll
+$(BUILD_DIR)/dlls64/dinput/dinput.dll: $(BUILD_DIR)/dlls64/msvcrt/msvcrt.dll $(BUILD_DIR)/dlls64/kernel32/kernel32.dll
+$(BUILD_DIR)/dlls64/dsound/dsound.dll: $(BUILD_DIR)/dlls64/msvcrt/msvcrt.dll
+$(BUILD_DIR)/dlls64/gdi32/gdi32.dll: $(BUILD_DIR)/dlls64/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls64/kernel32/kernel32.dll: $(BUILD_DIR)/dlls64/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls64/msvcr100/msvcr100.dll: $(BUILD_DIR)/dlls64/kernel32/kernel32.dll $(BUILD_DIR)/dlls64/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls64/msvcr80/msvcr80.dll: $(BUILD_DIR)/dlls64/kernel32/kernel32.dll $(BUILD_DIR)/dlls64/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls64/msvcrt/msvcrt.dll: $(BUILD_DIR)/dlls64/kernel32/kernel32.dll $(BUILD_DIR)/dlls64/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls64/riched20/riched20.dll: $(BUILD_DIR)/dlls64/user32/user32.dll
+$(BUILD_DIR)/dlls64/riched32/riched32.dll: $(BUILD_DIR)/dlls64/riched20/riched20.dll
+$(BUILD_DIR)/dlls64/user32/user32.dll: $(BUILD_DIR)/dlls64/ntdll/ntdll.dll
+$(BUILD_DIR)/dlls64/winmm/winmm.dll: $(BUILD_DIR)/dlls64/user32/user32.dll
+
+$(BUILD_DIR)/dlls64/%/Makefile:
+	mkdir -p $(@D)
+	$(eval DLL := $(lastword $(subst /, ,$(@D))))
+	echo "GUEST_CC=x86_64-w64-mingw32" > $@
+	echo "SRCDIR=../../../dlls/$(DLL)" >> $@
+	echo "DESTDIR?=../../.." >> $@
+	echo "GUEST_BIT=64" >> $@
+	echo "HOST_BIT=64" >> $@
+	echo "WINE_DIR=wine-guest" >> $@
+	echo >> $@
+	echo "include $(SOURCE_DIR)/dlls/$(DLL)/Makefile" >> $@
+
+$(BUILD_DIR)/dlls32/%/Makefile:
+	mkdir -p $(@D)
+	$(eval DLL := $(lastword $(subst /, ,$(@D))))
+	echo "GUEST_CC=i686-w64-mingw32" > $@
+	echo "SRCDIR=../../../dlls/$(DLL)" >> $@
+	echo "DESTDIR?=../../.." >> $@
+	echo "GUEST_BIT=32" >> $@
+	echo "HOST_BIT=64" >> $@
+	echo "WINE_DIR=wine-guest32" >> $@
+	echo >> $@
+	echo "include $(SOURCE_DIR)/dlls/$(DLL)/Makefile" >> $@
+
+define DLLS32_RULE
+$(BUILD_DIR)/dlls32/$(1)/$(1).dll $(BUILD_DIR)/dlls32/$(1)/qemu_$(1).dll.so: $(BUILD_DIR)/dlls32/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	+$(MAKE) -C $(BUILD_DIR)/dlls32/$(1) WINEGCC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include"
+	cp -lf $(BUILD_DIR)/dlls32/$(1)/$(1).dll         $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/
+	cp -lf $(BUILD_DIR)/dlls32/$(1)/qemu_$(1).dll.so $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll32/
+endef
+$(foreach mod,$(DLLS),$(eval $(call DLLS32_RULE,$(mod))))
+
+define DLLS64_RULE
+$(BUILD_DIR)/dlls64/$(1)/$(1).dll $(BUILD_DIR)/dlls64/$(1)/qemu_$(1).dll.so: $(BUILD_DIR)/dlls64/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	+$(MAKE) -C $(BUILD_DIR)/dlls64/$(1) WINEGCC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include"
+	cp -lf $(BUILD_DIR)/dlls64/$(1)/$(1).dll         $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/
+	cp -lf $(BUILD_DIR)/dlls64/$(1)/qemu_$(1).dll.so $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll64/
+endef
+$(foreach mod,$(DLLS),$(eval $(call DLLS64_RULE,$(mod))))
+
+define DRVS32_RULE
+$(BUILD_DIR)/dlls32/$(1)/$(1) $(BUILD_DIR)/dlls32/$(1)/qemu_$(1).so: $(BUILD_DIR)/dlls32/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	+$(MAKE) -C $(BUILD_DIR)/dlls32/$(1) WINEGCC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include"
+	cp -lf $(BUILD_DIR)/dlls32/$(1)/$(1)         $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/
+	cp -lf $(BUILD_DIR)/dlls32/$(1)/qemu_$(1).so $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll32/
+endef
+$(foreach mod,$(DRVS),$(eval $(call DRVS32_RULE,$(mod))))
+
+define DRVS64_RULE
+$(BUILD_DIR)/dlls64/$(1)/$(1) $(BUILD_DIR)/dlls64/$(1)/qemu_$(1).so: $(BUILD_DIR)/dlls64/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	+$(MAKE) -C $(BUILD_DIR)/dlls64/$(1) WINEGCC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include"
+	cp -lf $(BUILD_DIR)/dlls64/$(1)/$(1)         $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/
+	cp -lf $(BUILD_DIR)/dlls64/$(1)/qemu_$(1).so $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll64/
+endef
+$(foreach mod,$(DRVS),$(eval $(call DRVS64_RULE,$(mod))))
+
+# Link Wine libraries.
+
+define WINEDLLS_RULE
+$(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/$(1).dll $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/$(1).dll: wine-guest32 wine-guest $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	cp -lf $(BUILD_DIR)/wine-guest32/dlls/$(1)/$(1).dll $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/
+	cp -lf $(BUILD_DIR)/wine-guest/dlls/$(1)/$(1).dll   $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/
+endef
+$(foreach mod,$(WINEDLLS),$(eval $(call WINEDLLS_RULE,$(mod))))
+
+# Link libwine
+$(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll: wine-guest32
+	cp -lf $(BUILD_DIR)/wine-guest32/libs/wine/libwine.dll $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll
+$(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll: wine-guest
+	cp -lf $(BUILD_DIR)/wine-guest/libs/wine/libwine.dll $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
+
+# Resetup the apk with qemu
+$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/hangover-debug.apk: $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/wine-debug.apk $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so wine-guest wine-guest32 $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
+	+$(MAKE) -C $(BUILD_DIR)/libpng-1.5.30/ install
+	+$(MAKE) -C $(BUILD_DIR)/freetype-2.8/ install
+	+$(MAKE) -C $(BUILD_DIR)/glib/ install
+	+$(MAKE) -C $(BUILD_DIR)/wine-host install
+	@mkdir -p $(BUILD_DIR)/npp
+	cd $(BUILD_DIR)/npp ; rm -rf * ; wget https://notepad-plus-plus.org/repository/7.x/7.5.1/npp.7.5.1.bin.x64.7z ; 7z x npp.7.5.1.bin.x64.7z ; rm -f npp.7.5.1.bin.x64.7z
+	rm -rf $(BUILD_DIR)/npp/themes/Bl* $(BUILD_DIR)/npp/themes/De* $(BUILD_DIR)/npp/themes/He* $(BUILD_DIR)/npp/themes/Mo* $(BUILD_DIR)/npp/themes/Pl* $(BUILD_DIR)/npp/themes/Ru* $(BUILD_DIR)/npp/themes/Vi* $(BUILD_DIR)/npp/themes/vi*
+	@mkdir -p $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/prefix/drive_c/x86
+	cp -rf $(BUILD_DIR)/npp $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/prefix/drive_c/x86/
+	cp -lf $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/prefix/drive_c/x86/
+	cp -rf $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host* $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/prefix/drive_c/x86/
+	cp -rf $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest* $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/prefix/drive_c/x86/
+	mkdir -p $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/lib/arm64-v8a
+	rm -f $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib/libpng.so
+	cp -f $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib/libpng15.so $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib/libpng.so
+	cp -rf $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib/* $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/lib/arm64-v8a/
+	rm -rf $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/include
+	rm -rf $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/include
+	rm -f $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/wine-debug.apk
+	@mkdir -p $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/prefix/drive_c
+	echo wineconsole.exe >  $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/prefix/drive_c/winestart.cmd
+	echo "c:\ncd c:\\\\x86" >> $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/prefix/drive_c/winestart.cmd
+	echo "c:\\\\x86\\\\qemu-x86_64.exe.so c:\\\\x86\\\\npp\\\\notepad++.exe" >> $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/prefix/drive_c/winestart.cmd
+	+$(MAKE) -C $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/
+	cp -f $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/wine-debug.apk $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/hangover-debug.apk
+
+# TODO:
+#configure: OpenCL development files not found, OpenCL won't be supported.
+#configure: pcap development files not found, wpcap won't be supported.
+#configure: libdbus development files not found, no dynamic device support.
+#configure: lib(n)curses development files not found, curses won't be supported.
+#configure: libsane development files not found, scanners won't be supported.
+#configure: libv4l development files not found.
+#configure: libgphoto2 development files not found, digital cameras won't be supported.
+#configure: libgphoto2_port development files not found, digital cameras won't be auto-detected.
+#configure: liblcms2 development files not found, Color Management won't be supported.
+#configure: gstreamer-1.0 base plugins development files not found, GStreamer won't be supported.
+#configure: libudev development files not found, plug and play won't be supported.
+#configure: libSDL2 development files not found, SDL2 won't be supported.
+#configure: libcapi20 development files not found, ISDN won't be supported.
+#configure: libcups development files not found, CUPS won't be supported.
+#configure: fontconfig development files not found, fontconfig won't be supported.
+#configure: libgsm development files not found, gsm 06.10 codec won't be supported.
+#configure: libkrb5 development files not found, Kerberos won't be supported.
+#configure: libgssapi_krb5 development files not found (or too old), no Kerberos SSP support.
+#configure: libtiff development files not found, TIFF won't be supported.
+#configure: libmpg123 development files not found (or too old), mp3 codec won't be supported.
+#configure: libopenal development files not found (or too old), OpenAL won't be supported.
+#configure: openal-soft development files not found (or too old), XAudio2 won't be supported.
+#configure: libvulkan development files not found, Vulkan won't be supported.
+#configure: libldap (OpenLDAP) development files not found, LDAP won't be supported.
+#configure: WARNING: libxml2 development files not found (or too old), XML won't be supported.
+#configure: WARNING: libxslt development files not found, xslt won't be supported.
+#configure: WARNING: libgnutls development files not found, no schannel support.
+#configure: WARNING: libjpeg development files not found, JPEG won't be supported.
