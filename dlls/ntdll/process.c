@@ -55,7 +55,7 @@ NTSTATUS WINAPI ntdll_NtTerminateProcess(HANDLE handle, LONG exit_code)
 {
     struct qemu_NtTerminateProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTTERMINATEPROCESS);
-    call.handle = (ULONG_PTR)handle;
+    call.handle = guest_HANDLE_g2h(handle);
     call.exit_code = (ULONG_PTR)exit_code;
 
     qemu_syscall(&call.super);
@@ -118,7 +118,7 @@ WINBASEAPI NTSTATUS WINAPI NtQueryInformationProcess(IN HANDLE ProcessHandle, IN
 {
     struct qemu_NtQueryInformationProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTQUERYINFORMATIONPROCESS);
-    call.ProcessHandle = (ULONG_PTR)ProcessHandle;
+    call.ProcessHandle = guest_HANDLE_g2h(ProcessHandle);
     call.ProcessInformationClass = (ULONG_PTR)ProcessInformationClass;
     call.ProcessInformation = (ULONG_PTR)ProcessInformation;
     call.ProcessInformationLength = (ULONG_PTR)ProcessInformationLength;
@@ -155,7 +155,7 @@ WINBASEAPI NTSTATUS WINAPI NtSetInformationProcess(IN HANDLE ProcessHandle, IN P
 {
     struct qemu_NtSetInformationProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTSETINFORMATIONPROCESS);
-    call.ProcessHandle = (ULONG_PTR)ProcessHandle;
+    call.ProcessHandle = guest_HANDLE_g2h(ProcessHandle);
     call.ProcessInformationClass = (ULONG_PTR)ProcessInformationClass;
     call.ProcessInformation = (ULONG_PTR)ProcessInformation;
     call.ProcessInformationLength = (ULONG_PTR)ProcessInformationLength;
@@ -190,7 +190,7 @@ WINBASEAPI NTSTATUS WINAPI NtFlushInstructionCache(IN HANDLE ProcessHandle, IN L
 {
     struct qemu_NtFlushInstructionCache call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTFLUSHINSTRUCTIONCACHE);
-    call.ProcessHandle = (ULONG_PTR)ProcessHandle;
+    call.ProcessHandle = guest_HANDLE_g2h(ProcessHandle);
     call.BaseAddress = (ULONG_PTR)BaseAddress;
     call.Size = (ULONG_PTR)Size;
 
@@ -258,7 +258,7 @@ WINBASEAPI NTSTATUS WINAPI NtResumeProcess(HANDLE handle)
 {
     struct qemu_NtResumeProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTRESUMEPROCESS);
-    call.handle = (ULONG_PTR)handle;
+    call.handle = guest_HANDLE_g2h(handle);
 
     qemu_syscall(&call.super);
 
@@ -290,7 +290,7 @@ WINBASEAPI NTSTATUS WINAPI NtSuspendProcess(HANDLE handle)
 {
     struct qemu_NtSuspendProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTSUSPENDPROCESS);
-    call.handle = (ULONG_PTR)handle;
+    call.handle = guest_HANDLE_g2h(handle);
 
     qemu_syscall(&call.super);
 
