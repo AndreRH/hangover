@@ -418,7 +418,7 @@ WINBASEAPI BOOL WINAPI CryptDestroyKey (HCRYPTKEY hKey)
 void qemu_CryptDestroyKey(struct qemu_syscall *call)
 {
     struct qemu_CryptDestroyKey *c = (struct qemu_CryptDestroyKey *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CryptDestroyKey(c->hKey);
 }
 
