@@ -30,8 +30,6 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_advapi32);
 #endif
 
-struct ustring;
-
 struct qemu_SystemFunction032
 {
     struct qemu_syscall super;
@@ -59,8 +57,46 @@ extern NTSTATUS WINAPI SystemFunction032(struct ustring *data, const struct ustr
 void qemu_SystemFunction032(struct qemu_syscall *call)
 {
     struct qemu_SystemFunction032 *c = (struct qemu_SystemFunction032 *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SystemFunction032(QEMU_G2H(c->data), QEMU_G2H(c->key));
+    struct ustring key_stack, *key = &key_stack;
+    struct ustring data_stack, *data = &data_stack;
+    struct qemu_ustring *key32, *data32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    key = QEMU_G2H(c->key);
+    data = QEMU_G2H(c->data);
+#else
+    key32 = QEMU_G2H(c->key);
+    if (key32)
+    {
+        key->Length = key32->Length;
+        key->MaximumLength = key32->MaximumLength;
+        key->Buffer = (unsigned char *)(ULONG_PTR)key32->Buffer;
+    }
+    else
+    {
+        key = NULL;
+    }
+
+    data32 = QEMU_G2H(c->data);
+    if (data32)
+    {
+        data->Length = data32->Length;
+        data->MaximumLength = data32->MaximumLength;
+        data->Buffer = (unsigned char *)(ULONG_PTR)data32->Buffer;
+    }
+    else
+    {
+        data = NULL;
+    }
+#endif
+
+    c->super.iret = SystemFunction032(data, key);
+
+#if GUEST_BIT != HOST_BIT
+    if (data32)
+        data32->Length = data->Length;
+#endif
 }
 
 #endif

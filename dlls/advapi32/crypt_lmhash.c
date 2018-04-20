@@ -248,13 +248,6 @@ struct qemu_SystemFunction004_5
     uint64_t out;
 };
 
-struct ustring
-{
-    DWORD Length;
-    DWORD MaximumLength;
-    unsigned char *Buffer;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 WINBASEAPI NTSTATUS WINAPI SystemFunction004(const struct ustring *in, const struct ustring *key, struct ustring *out)
@@ -284,14 +277,6 @@ WINBASEAPI NTSTATUS WINAPI SystemFunction005(const struct ustring *in, const str
 }
 
 #else
-
-/* Not a public struct, so it is here instead of the thunk headers. */
-struct qemu_ustring
-{
-    DWORD Length;
-    DWORD MaximumLength;
-    qemu_ptr Buffer;
-};
 
 extern NTSTATUS WINAPI SystemFunction004(const struct ustring *in, const struct ustring *key, struct ustring *out);
 extern NTSTATUS WINAPI SystemFunction005(const struct ustring *in, const struct ustring *key, struct ustring *out);

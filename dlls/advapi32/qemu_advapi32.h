@@ -490,6 +490,13 @@ enum advapi32_calls
     CALL_WRITEENCRYPTEDFILERAW,
 };
 
+struct ustring
+{
+    DWORD Length;
+    DWORD MaximumLength;
+    unsigned char *Buffer;
+};
+
 #ifndef QEMU_DLL_GUEST
 
 extern const struct qemu_ops *qemu_ops;
@@ -971,6 +978,14 @@ void qemu_WmiSetSingleInstanceW(struct qemu_syscall *call);
 void qemu_WmiSetSingleItemA(struct qemu_syscall *call);
 void qemu_WmiSetSingleItemW(struct qemu_syscall *call);
 void qemu_WriteEncryptedFileRaw(struct qemu_syscall *call);
+
+/* Not a public struct, so it is here instead of the thunk headers. */
+struct qemu_ustring
+{
+    DWORD Length;
+    DWORD MaximumLength;
+    qemu_ptr Buffer;
+};
 
 #endif
 
