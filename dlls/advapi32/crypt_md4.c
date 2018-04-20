@@ -22,6 +22,9 @@
 #include <stdio.h>
 #include <ntdef.h>
 #include <ntsecapi.h>
+#include <winternl.h>
+
+#include <thunk/qemu_winternl.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -57,7 +60,7 @@ extern VOID WINAPI MD4Init( MD4_CTX *ctx );
 void qemu_MD4Init(struct qemu_syscall *call)
 {
     struct qemu_MD4Init *c = (struct qemu_MD4Init *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     MD4Init(QEMU_G2H(c->ctx));
 }
 
@@ -90,7 +93,7 @@ extern VOID WINAPI MD4Update( MD4_CTX *ctx, const unsigned char *buf, unsigned i
 void qemu_MD4Update(struct qemu_syscall *call)
 {
     struct qemu_MD4Update *c = (struct qemu_MD4Update *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     MD4Update(QEMU_G2H(c->ctx), QEMU_G2H(c->buf), c->len);
 }
 
@@ -119,7 +122,7 @@ extern VOID WINAPI MD4Final( MD4_CTX *ctx );
 void qemu_MD4Final(struct qemu_syscall *call)
 {
     struct qemu_MD4Final *c = (struct qemu_MD4Final *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     MD4Final(QEMU_G2H(c->ctx));
 }
 
@@ -152,8 +155,19 @@ extern NTSTATUS WINAPI SystemFunction007(const UNICODE_STRING *string, LPBYTE ha
 void qemu_SystemFunction007(struct qemu_syscall *call)
 {
     struct qemu_SystemFunction007 *c = (struct qemu_SystemFunction007 *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SystemFunction007(QEMU_G2H(c->string), QEMU_G2H(c->hash));
+    UNICODE_STRING stack, *string = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    string = QEMU_G2H(c->string);
+#else
+    if (c->string)
+        UNICODE_STRING_g2h(string, QEMU_G2H(c->string));
+    else
+        string = NULL;
+#endif
+
+    c->super.iret = SystemFunction007(string, QEMU_G2H(c->hash));
 }
 
 #endif
@@ -187,7 +201,7 @@ extern NTSTATUS WINAPI SystemFunction010(LPVOID unknown, const BYTE *data, LPBYT
 void qemu_SystemFunction010(struct qemu_syscall *call)
 {
     struct qemu_SystemFunction010 *c = (struct qemu_SystemFunction010 *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SystemFunction010(QEMU_G2H(c->unknown), QEMU_G2H(c->data), QEMU_G2H(c->hash));
 }
 
