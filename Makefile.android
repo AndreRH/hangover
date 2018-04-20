@@ -228,9 +228,9 @@ endef
 $(foreach mod,$(WINEDLLS),$(eval $(call WINEDLLS_RULE,$(mod))))
 
 # Link libwine
-$(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll: wine-guest32
+$(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll: wine-guest32 $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
 	cp -lf $(BUILD_DIR)/wine-guest32/libs/wine/libwine.dll $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll
-$(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll: wine-guest
+$(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll: wine-guest $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
 	cp -lf $(BUILD_DIR)/wine-guest/libs/wine/libwine.dll $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
 
 # Resetup the apk with qemu
