@@ -186,37 +186,61 @@ $(BUILD_DIR)/dlls32/%/Makefile:
 	echo >> $@
 	echo "include $(SOURCE_DIR)/dlls/$(DLL)/Makefile" >> $@
 
-define DLLS32_RULE
-$(BUILD_DIR)/dlls32/$(1)/$(1).dll $(BUILD_DIR)/dlls32/$(1)/qemu_$(1).dll.so: $(BUILD_DIR)/dlls32/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-	+$(MAKE) -C $(BUILD_DIR)/dlls32/$(1) WINEGCC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include"
-	cp -lf $(BUILD_DIR)/dlls32/$(1)/$(1).dll         $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/
+define DLLS32_RULE_G
+$(BUILD_DIR)/dlls32/$(1)/$(1).dll: $(BUILD_DIR)/dlls32/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	+$(MAKE) -C $(BUILD_DIR)/dlls32/$(1) WINEGCC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include" $(1).dll
+	cp -lf $(BUILD_DIR)/dlls32/$(1)/$(1).dll $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/
+endef
+$(foreach mod,$(DLLS),$(eval $(call DLLS32_RULE_G,$(mod))))
+
+define DLLS64_RULE_G
+$(BUILD_DIR)/dlls64/$(1)/$(1).dll: $(BUILD_DIR)/dlls64/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	+$(MAKE) -C $(BUILD_DIR)/dlls64/$(1) WINEGCC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include" $(1).dll
+	cp -lf $(BUILD_DIR)/dlls64/$(1)/$(1).dll $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/
+endef
+$(foreach mod,$(DLLS),$(eval $(call DLLS64_RULE_G,$(mod))))
+
+define DRVS32_RULE_G
+$(BUILD_DIR)/dlls32/$(1)/$(1): $(BUILD_DIR)/dlls32/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	+$(MAKE) -C $(BUILD_DIR)/dlls32/$(1) WINEGCC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include" $(1)
+	cp -lf $(BUILD_DIR)/dlls32/$(1)/$(1) $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/
+endef
+$(foreach mod,$(DRVS),$(eval $(call DRVS32_RULE_G,$(mod))))
+
+define DRVS64_RULE_G
+$(BUILD_DIR)/dlls64/$(1)/$(1): $(BUILD_DIR)/dlls64/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	+$(MAKE) -C $(BUILD_DIR)/dlls64/$(1) WINEGCC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include" $(1)
+	cp -lf $(BUILD_DIR)/dlls64/$(1)/$(1) $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/
+endef
+$(foreach mod,$(DRVS),$(eval $(call DRVS64_RULE_G,$(mod))))
+
+define DLLS32_RULE_H
+$(BUILD_DIR)/dlls32/$(1)/qemu_$(1).dll.so: $(BUILD_DIR)/dlls32/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	+$(MAKE) -C $(BUILD_DIR)/dlls32/$(1) WINEGCC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include" qemu_$(1).dll.so
 	cp -lf $(BUILD_DIR)/dlls32/$(1)/qemu_$(1).dll.so $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll32/
 endef
-$(foreach mod,$(DLLS),$(eval $(call DLLS32_RULE,$(mod))))
+$(foreach mod,$(DLLS),$(eval $(call DLLS32_RULE_H,$(mod))))
 
-define DLLS64_RULE
-$(BUILD_DIR)/dlls64/$(1)/$(1).dll $(BUILD_DIR)/dlls64/$(1)/qemu_$(1).dll.so: $(BUILD_DIR)/dlls64/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-	+$(MAKE) -C $(BUILD_DIR)/dlls64/$(1) WINEGCC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include"
-	cp -lf $(BUILD_DIR)/dlls64/$(1)/$(1).dll         $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/
+define DLLS64_RULE_H
+$(BUILD_DIR)/dlls64/$(1)/qemu_$(1).dll.so: $(BUILD_DIR)/dlls64/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	+$(MAKE) -C $(BUILD_DIR)/dlls64/$(1) WINEGCC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include" qemu_$(1).dll.so
 	cp -lf $(BUILD_DIR)/dlls64/$(1)/qemu_$(1).dll.so $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll64/
 endef
-$(foreach mod,$(DLLS),$(eval $(call DLLS64_RULE,$(mod))))
+$(foreach mod,$(DLLS),$(eval $(call DLLS64_RULE_H,$(mod))))
 
-define DRVS32_RULE
-$(BUILD_DIR)/dlls32/$(1)/$(1) $(BUILD_DIR)/dlls32/$(1)/qemu_$(1).so: $(BUILD_DIR)/dlls32/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-	+$(MAKE) -C $(BUILD_DIR)/dlls32/$(1) WINEGCC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include"
-	cp -lf $(BUILD_DIR)/dlls32/$(1)/$(1)         $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/
+define DRVS32_RULE_H
+$(BUILD_DIR)/dlls32/$(1)/qemu_$(1).so: $(BUILD_DIR)/dlls32/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	+$(MAKE) -C $(BUILD_DIR)/dlls32/$(1) WINEGCC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include" qemu_$(1).so
 	cp -lf $(BUILD_DIR)/dlls32/$(1)/qemu_$(1).so $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll32/
 endef
-$(foreach mod,$(DRVS),$(eval $(call DRVS32_RULE,$(mod))))
+$(foreach mod,$(DRVS),$(eval $(call DRVS32_RULE_H,$(mod))))
 
-define DRVS64_RULE
-$(BUILD_DIR)/dlls64/$(1)/$(1) $(BUILD_DIR)/dlls64/$(1)/qemu_$(1).so: $(BUILD_DIR)/dlls64/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-	+$(MAKE) -C $(BUILD_DIR)/dlls64/$(1) WINEGCC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include"
-	cp -lf $(BUILD_DIR)/dlls64/$(1)/$(1)         $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/
+define DRVS64_RULE_H
+$(BUILD_DIR)/dlls64/$(1)/qemu_$(1).so: $(BUILD_DIR)/dlls64/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	+$(MAKE) -C $(BUILD_DIR)/dlls64/$(1) WINEGCC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include" qemu_$(1).so
 	cp -lf $(BUILD_DIR)/dlls64/$(1)/qemu_$(1).so $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll64/
 endef
-$(foreach mod,$(DRVS),$(eval $(call DRVS64_RULE,$(mod))))
+$(foreach mod,$(DRVS),$(eval $(call DRVS64_RULE_H,$(mod))))
 
 # Link Wine libraries.
 

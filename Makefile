@@ -127,37 +127,61 @@ $(BUILD_DIR)/dlls32/%/Makefile:
 	echo >> $@
 	echo "include $(SOURCE_DIR)/dlls/$(DLL)/Makefile" >> $@
 
-define DLLS32_RULE
-$(BUILD_DIR)/dlls32/$(1)/$(1).dll $(BUILD_DIR)/dlls32/$(1)/qemu_$(1).dll.so: $(BUILD_DIR)/dlls32/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+define DLLS32_RULE_G
+$(BUILD_DIR)/dlls32/$(1)/$(1).dll: $(BUILD_DIR)/dlls32/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
 	ln -sf $(BUILD_DIR)/dlls32/$(1)/$(1).dll         $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/
-	ln -sf $(BUILD_DIR)/dlls32/$(1)/qemu_$(1).dll.so $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll32/
-	+$(MAKE) -C $(BUILD_DIR)/dlls32/$(1)
+	+$(MAKE) -C $(BUILD_DIR)/dlls32/$(1) $(1).dll
 endef
-$(foreach mod,$(DLLS),$(eval $(call DLLS32_RULE,$(mod))))
+$(foreach mod,$(DLLS),$(eval $(call DLLS32_RULE_G,$(mod))))
 
-define DLLS64_RULE
-$(BUILD_DIR)/dlls64/$(1)/$(1).dll $(BUILD_DIR)/dlls64/$(1)/qemu_$(1).dll.so: $(BUILD_DIR)/dlls64/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+define DLLS64_RULE_G
+$(BUILD_DIR)/dlls64/$(1)/$(1).dll: $(BUILD_DIR)/dlls64/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
 	ln -sf $(BUILD_DIR)/dlls64/$(1)/$(1).dll         $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/
-	ln -sf $(BUILD_DIR)/dlls64/$(1)/qemu_$(1).dll.so $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll64/
-	+$(MAKE) -C $(BUILD_DIR)/dlls64/$(1)
+	+$(MAKE) -C $(BUILD_DIR)/dlls64/$(1) $(1).dll
 endef
-$(foreach mod,$(DLLS),$(eval $(call DLLS64_RULE,$(mod))))
+$(foreach mod,$(DLLS),$(eval $(call DLLS64_RULE_G,$(mod))))
 
-define DRVS32_RULE
-$(BUILD_DIR)/dlls32/$(1)/$(1) $(BUILD_DIR)/dlls32/$(1)/qemu_$(1).so: $(BUILD_DIR)/dlls32/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+define DRVS32_RULE_G
+$(BUILD_DIR)/dlls32/$(1)/$(1): $(BUILD_DIR)/dlls32/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
 	ln -sf $(BUILD_DIR)/dlls32/$(1)/$(1)         $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/
-	ln -sf $(BUILD_DIR)/dlls32/$(1)/qemu_$(1).so $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll32/
-	+$(MAKE) -C $(BUILD_DIR)/dlls32/$(1)
+	+$(MAKE) -C $(BUILD_DIR)/dlls32/$(1) $(1)
 endef
-$(foreach mod,$(DRVS),$(eval $(call DRVS32_RULE,$(mod))))
+$(foreach mod,$(DRVS),$(eval $(call DRVS32_RULE_G,$(mod))))
 
-define DRVS64_RULE
-$(BUILD_DIR)/dlls64/$(1)/$(1) $(BUILD_DIR)/dlls64/$(1)/qemu_$(1).so: $(BUILD_DIR)/dlls64/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+define DRVS64_RULE_G
+$(BUILD_DIR)/dlls64/$(1)/$(1): $(BUILD_DIR)/dlls64/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
 	ln -sf $(BUILD_DIR)/dlls64/$(1)/$(1)         $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/
-	ln -sf $(BUILD_DIR)/dlls64/$(1)/qemu_$(1).so $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll64/
-	+$(MAKE) -C $(BUILD_DIR)/dlls64/$(1)
+	+$(MAKE) -C $(BUILD_DIR)/dlls64/$(1) $(1)
 endef
-$(foreach mod,$(DRVS),$(eval $(call DRVS64_RULE,$(mod))))
+$(foreach mod,$(DRVS),$(eval $(call DRVS64_RULE_G,$(mod))))
+
+define DLLS32_RULE_H
+$(BUILD_DIR)/dlls32/$(1)/qemu_$(1).dll.so: $(BUILD_DIR)/dlls32/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	ln -sf $(BUILD_DIR)/dlls32/$(1)/qemu_$(1).dll.so $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll32/
+	+$(MAKE) -C $(BUILD_DIR)/dlls32/$(1) qemu_$(1).dll.so
+endef
+$(foreach mod,$(DLLS),$(eval $(call DLLS32_RULE_H,$(mod))))
+
+define DLLS64_RULE_H
+$(BUILD_DIR)/dlls64/$(1)/qemu_$(1).dll.so: $(BUILD_DIR)/dlls64/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	ln -sf $(BUILD_DIR)/dlls64/$(1)/qemu_$(1).dll.so $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll64/
+	+$(MAKE) -C $(BUILD_DIR)/dlls64/$(1) qemu_$(1).dll.so
+endef
+$(foreach mod,$(DLLS),$(eval $(call DLLS64_RULE_H,$(mod))))
+
+define DRVS32_RULE_H
+$(BUILD_DIR)/dlls32/$(1)/qemu_$(1).so: $(BUILD_DIR)/dlls32/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	ln -sf $(BUILD_DIR)/dlls32/$(1)/qemu_$(1).so $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll32/
+	+$(MAKE) -C $(BUILD_DIR)/dlls32/$(1) qemu_$(1).so
+endef
+$(foreach mod,$(DRVS),$(eval $(call DRVS32_RULE_H,$(mod))))
+
+define DRVS64_RULE_H
+$(BUILD_DIR)/dlls64/$(1)/qemu_$(1).so: $(BUILD_DIR)/dlls64/$(1)/Makefile $(BUILD_DIR)/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	ln -sf $(BUILD_DIR)/dlls64/$(1)/qemu_$(1).so $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_host_dll64/
+	+$(MAKE) -C $(BUILD_DIR)/dlls64/$(1) qemu_$(1).so
+endef
+$(foreach mod,$(DRVS),$(eval $(call DRVS64_RULE_H,$(mod))))
 
 # Link Wine libraries.
 
