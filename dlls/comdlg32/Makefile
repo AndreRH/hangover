@@ -12,13 +12,13 @@ comdlg32.dll: cdlg32_g.o colordlg_g.o comdlg32.spec filedlg_g.o finddlg_g.o font
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/comdlg32.spec *_g.o -o comdlg32.dll -nodefaultlibs -nostdlib
 
 qemu_comdlg32.dll.so: cdlg32_h.o colordlg_h.o filedlg_h.o finddlg_h.o fontdlg_h.o main_h.o printdlg_h.o qemu_comdlg32.spec
-	$(WINEGCC) -shared $(SRCDIR)/qemu_comdlg32.spec *_h.o -o qemu_comdlg32.dll.so
+	$(WINEGCC) -shared -b $(HOST_CC) $(SRCDIR)/qemu_comdlg32.spec *_h.o -o qemu_comdlg32.dll.so
 
 %_g.o: %.c qemu_comdlg32.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
 %_h.o: %.c qemu_comdlg32.h Makefile $(SRCDIR)/Makefile
-	$(WINEGCC) $< -c -o $@ $(CFLAGS)
+	$(WINEGCC) -b $(HOST_CC) $< -c -o $@ $(CFLAGS)
 
 clean:
 	rm -rf *o *.dll *.so

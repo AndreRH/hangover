@@ -12,13 +12,13 @@ ddraw.dll: clipper_g.o ddraw.spec ddraw_g.o device_g.o executebuffer_g.o light_g
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/ddraw.spec *_g.o -o ddraw.dll -nodefaultlibs -nostdlib -lwine -lmsvcrt -luuid -ldxguid -lkernel32 -L../../$(WINE_DIR)/libs/wine
 
 qemu_ddraw.dll.so: clipper_h.o ddraw_h.o device_h.o executebuffer_h.o light_h.o main_h.o material_h.o palette_h.o qemu_ddraw.spec surface_h.o vertexbuffer_h.o viewport_h.o
-	$(WINEGCC) -shared $(SRCDIR)/qemu_ddraw.spec *_h.o -o qemu_ddraw.dll.so -lddraw -luuid -ldxguid
+	$(WINEGCC) -shared -b $(HOST_CC) $(SRCDIR)/qemu_ddraw.spec *_h.o -o qemu_ddraw.dll.so -lddraw -luuid -ldxguid
 
 %_g.o: %.c qemu_ddraw.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -I../../../wine/include/wine -Wno-format
 
 %_h.o: %.c qemu_ddraw.h Makefile $(SRCDIR)/Makefile
-	$(WINEGCC) $< -c -o $@ $(CFLAGS)
+	$(WINEGCC) -b $(HOST_CC) $< -c -o $@ $(CFLAGS)
 
 clean:
 	rm -rf *o *.dll *.so

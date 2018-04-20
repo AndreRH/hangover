@@ -12,13 +12,13 @@ imm32.dll: imm32.spec imm_g.o main_g.o
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/imm32.spec *_g.o -o imm32.dll -nodefaultlibs -nostdlib -Wl,--image-base,0xe0000000
 
 qemu_imm32.dll.so: imm_h.o main_h.o
-	$(WINEGCC) -shared $(SRCDIR)/qemu_imm32.spec *_h.o -o qemu_imm32.dll.so -limm32
+	$(WINEGCC) -shared -b $(HOST_CC) $(SRCDIR)/qemu_imm32.spec *_h.o -o qemu_imm32.dll.so -limm32
 
 %_g.o: %.c qemu_imm32.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
 %_h.o: %.c qemu_imm32.h Makefile $(SRCDIR)/Makefile
-	$(WINEGCC) $< -c -o $@ $(CFLAGS)
+	$(WINEGCC) -b $(HOST_CC) $< -c -o $@ $(CFLAGS)
 
 clean:
 	rm -rf *o *.dll *.so

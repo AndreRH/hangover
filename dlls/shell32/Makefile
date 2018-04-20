@@ -12,13 +12,13 @@ shell32.dll: appbar_g.o assoc_g.o brsfolder_g.o changenotify_g.o control_g.o dde
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/shell32.spec *_g.o -o shell32.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x80000000
 
 qemu_shell32.dll.so: appbar_h.o assoc_h.o brsfolder_h.o changenotify_h.o control_h.o dde_h.o dialogs_h.o iconcache_h.o main_h.o pidl_h.o recyclebin_h.o shell32_main_h.o shellitem_h.o shellole_h.o shellord_h.o shellpath_h.o shellreg_h.o shellstring_h.o shlexec_h.o shlfileop_h.o shlfolder_h.o shlmenu_h.o shlview_h.o shpolicy_h.o systray_h.o
-	$(WINEGCC) -shared $(SRCDIR)/qemu_shell32.spec *_h.o -o qemu_shell32.dll.so -lshell32
+	$(WINEGCC) -shared -b $(HOST_CC) $(SRCDIR)/qemu_shell32.spec *_h.o -o qemu_shell32.dll.so -lshell32
 
 %_g.o: %.c qemu_shell32.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
 %_h.o: %.c qemu_shell32.h Makefile $(SRCDIR)/Makefile
-	$(WINEGCC) $< -c -o $@ $(CFLAGS)
+	$(WINEGCC) -b $(HOST_CC) $< -c -o $@ $(CFLAGS)
 
 clean:
 	rm -rf *o *.dll *.so

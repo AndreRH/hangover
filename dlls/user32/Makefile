@@ -12,13 +12,13 @@ user32.dll: caret_g.o class_g.o clipboard_g.o combo_g.o cursoricon_g.o dde_g.o d
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/user32.spec *_g.o -o user32.dll -L../ntdll -lntdll -lgcc -nodefaultlibs -nostdlib -Wl,--image-base,0x70000000
 
 qemu_user32.dll.so: caret_h.o class_h.o clipboard_h.o combo_h.o cursoricon_h.o dde_h.o defdlg_h.o defwnd_h.o desktop_h.o dialog_h.o exticon_h.o focus_h.o hook_h.o input_h.o listbox_h.o lstr_h.o main_h.o mdi_h.o menu_h.o message_h.o misc_h.o msgbox_h.o nonclient_h.o painting_h.o property_h.o qemu_user32.spec resource_h.o scroll_h.o sysparams_h.o text_h.o uitools_h.o user_h.o win_h.o winhelp_h.o winpos_h.o winproc_h.o winstation_h.o wsprintf_h.o
-	$(WINEGCC) -shared $(SRCDIR)/qemu_user32.spec *_h.o -o qemu_user32.dll.so -luser32
+	$(WINEGCC) -shared -b $(HOST_CC) $(SRCDIR)/qemu_user32.spec *_h.o -o qemu_user32.dll.so -luser32
 
 %_g.o: %.c qemu_user32.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
 %_h.o: %.c qemu_user32.h Makefile $(SRCDIR)/Makefile
-	$(WINEGCC) $< -c -o $@ $(CFLAGS)
+	$(WINEGCC) -b $(HOST_CC) $< -c -o $@ $(CFLAGS)
 
 clean:
 	rm -rf *o *.dll *.so

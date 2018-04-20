@@ -12,13 +12,13 @@ wininet.dll: cookie_g.o dialogs_g.o ftp_g.o gopher_g.o http_g.o internet_g.o mai
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/wininet.spec *_g.o -o wininet.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x1a0000000
 
 qemu_wininet.dll.so: cookie_h.o dialogs_h.o ftp_h.o gopher_h.o http_h.o internet_h.o main_h.o urlcache_h.o
-	$(WINEGCC) -shared $(SRCDIR)/qemu_wininet.spec *_h.o -o qemu_wininet.dll.so -lwininet
+	$(WINEGCC) -shared -b $(HOST_CC) $(SRCDIR)/qemu_wininet.spec *_h.o -o qemu_wininet.dll.so -lwininet
 
 %_g.o: %.c qemu_wininet.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
 %_h.o: %.c qemu_wininet.h Makefile $(SRCDIR)/Makefile
-	$(WINEGCC) $< -c -o $@ $(CFLAGS) -DUSE_WS_PREFIX
+	$(WINEGCC) -b $(HOST_CC) $< -c -o $@ $(CFLAGS) -DUSE_WS_PREFIX
 
 clean:
 	rm -rf *o *.dll *.so

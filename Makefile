@@ -23,6 +23,8 @@ DRV_TARGET32 = $(join $(DRV___DIRS32), $(DRVS)) $(join $(DRV___DIRS32), $(DRV__H
 DRV___DIRS64 = $(patsubst %,$(BUILD_DIR)/dlls64/%/,$(DRVS))
 DRV_TARGET64 = $(join $(DRV___DIRS64), $(DRVS)) $(join $(DRV___DIRS64), $(DRV__HOST))
 
+TRIPLE = $(shell $(CC) -v 2>&1 | grep "Target: " | sed "s/Target: //")
+
 all: wine-host wine-guest wine-guest32 qemu $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
 .PHONY: all
 
@@ -102,6 +104,7 @@ $(BUILD_DIR)/dlls64/%/Makefile:
 	mkdir -p $(@D)
 	$(eval DLL := $(lastword $(subst /, ,$(@D))))
 	echo "GUEST_CC=x86_64-w64-mingw32" > $@
+	echo "HOST_CC=$(TRIPLE)" >> $@
 	echo "SRCDIR=../../../dlls/$(DLL)" >> $@
 	echo "DESTDIR?=../../.." >> $@
 	echo "GUEST_BIT=64" >> $@
@@ -114,6 +117,7 @@ $(BUILD_DIR)/dlls32/%/Makefile:
 	mkdir -p $(@D)
 	$(eval DLL := $(lastword $(subst /, ,$(@D))))
 	echo "GUEST_CC=i686-w64-mingw32" > $@
+	echo "HOST_CC=$(TRIPLE)" >> $@
 	echo "SRCDIR=../../../dlls/$(DLL)" >> $@
 	echo "DESTDIR?=../../.." >> $@
 	echo "GUEST_BIT=32" >> $@

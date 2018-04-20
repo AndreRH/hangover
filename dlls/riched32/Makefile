@@ -12,13 +12,13 @@ riched32.dll: main_g.o riched32.spec
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/riched32.spec *_g.o -o riched32.dll -nodefaultlibs -nostdlib -lriched20 -L../riched20
 
 qemu_riched32.dll.so: main_h.o
-	$(WINEGCC) -shared $(SRCDIR)/qemu_riched32.spec *_h.o -o qemu_riched32.dll.so
+	$(WINEGCC) -shared -b $(HOST_CC) $(SRCDIR)/qemu_riched32.spec *_h.o -o qemu_riched32.dll.so
 
 %_g.o: %.c qemu_riched32.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
 %_h.o: %.c qemu_riched32.h Makefile $(SRCDIR)/Makefile
-	$(WINEGCC) $< -c -o $@ $(CFLAGS)
+	$(WINEGCC) -b $(HOST_CC) $< -c -o $@ $(CFLAGS)
 
 clean:
 	rm -rf *o *.dll *.so
