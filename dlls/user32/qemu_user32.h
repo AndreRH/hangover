@@ -884,7 +884,6 @@ void qemu_DestroyIcon(struct qemu_syscall *call);
 void qemu_DestroyMenu(struct qemu_syscall *call);
 void qemu_DestroyWindow(struct qemu_syscall *call);
 void qemu_DialogBoxIndirectParam(struct qemu_syscall *call);
-void qemu_DialogBoxIndirectParamAorW(struct qemu_syscall *call);
 void qemu_DialogBoxParam(struct qemu_syscall *call);
 void qemu_DialogBoxParam(struct qemu_syscall *call);
 void qemu_DisableProcessWindowsGhosting(struct qemu_syscall *call);

@@ -367,7 +367,7 @@ static const syscall_handler dll_functions[] =
     qemu_DestroyWindow,
     qemu_DialogBoxIndirectParam,
     qemu_DialogBoxIndirectParam,
-    qemu_DialogBoxIndirectParamAorW,
+    qemu_DialogBoxIndirectParam,
     qemu_DialogBoxParam,
     qemu_DialogBoxParam,
     qemu_DisableProcessWindowsGhosting,

@@ -345,11 +345,23 @@ struct qemu_DialogBoxIndirectParamAorW
     uint64_t flags;
 };
 
+struct qemu_DialogBoxIndirectParam
+{
+    struct qemu_syscall super;
+    uint64_t hInstance;
+    uint64_t template;
+    uint64_t owner;
+    uint64_t dlgProc;
+    uint64_t param;
+    uint64_t flags;
+    uint64_t guest_wrapper;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 WINUSERAPI INT_PTR WINAPI DialogBoxIndirectParamAorW(HINSTANCE hInstance, LPCVOID template, HWND owner, DLGPROC dlgProc, LPARAM param, DWORD flags)
 {
-    struct qemu_DialogBoxIndirectParamAorW call;
+    struct qemu_DialogBoxIndirectParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DIALOGBOXINDIRECTPARAMAORW);
     call.hInstance = (ULONG_PTR)hInstance;
     call.template = (ULONG_PTR)template;
@@ -363,32 +375,6 @@ WINUSERAPI INT_PTR WINAPI DialogBoxIndirectParamAorW(HINSTANCE hInstance, LPCVOI
     return call.super.iret;
 }
 
-#else
-
-/* TODO: Add DialogBoxIndirectParamAorW to Wine headers? */
-extern INT_PTR WINAPI DialogBoxIndirectParamAorW(HINSTANCE hInstance, LPCVOID template, HWND owner, DLGPROC dlgProc, LPARAM param, DWORD flags);
-void qemu_DialogBoxIndirectParamAorW(struct qemu_syscall *call)
-{
-    struct qemu_DialogBoxIndirectParamAorW *c = (struct qemu_DialogBoxIndirectParamAorW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DialogBoxIndirectParamAorW(QEMU_G2H(c->hInstance), QEMU_G2H(c->template), QEMU_G2H(c->owner), QEMU_G2H(c->dlgProc), c->param, c->flags);
-}
-
-#endif
-
-struct qemu_DialogBoxIndirectParam
-{
-    struct qemu_syscall super;
-    uint64_t hInstance;
-    uint64_t template;
-    uint64_t owner;
-    uint64_t dlgProc;
-    uint64_t param;
-    uint64_t guest_wrapper;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINUSERAPI INT_PTR WINAPI DialogBoxIndirectParamA(HINSTANCE hInstance, LPCDLGTEMPLATEA template, HWND owner, DLGPROC dlgProc, LPARAM param)
 {
     struct qemu_DialogBoxIndirectParam call;
@@ -398,6 +384,7 @@ WINUSERAPI INT_PTR WINAPI DialogBoxIndirectParamA(HINSTANCE hInstance, LPCDLGTEM
     call.owner = (ULONG_PTR)owner;
     call.dlgProc = (ULONG_PTR)dlgProc;
     call.param = (ULONG_PTR)param;
+    call.flags = ~0U;
 
     qemu_syscall(&call.super);
 
@@ -413,6 +400,7 @@ WINUSERAPI INT_PTR WINAPI DialogBoxIndirectParamW(HINSTANCE hInstance, LPCDLGTEM
     call.owner = (ULONG_PTR)owner;
     call.dlgProc = (ULONG_PTR)dlgProc;
     call.param = (ULONG_PTR)param;
+    call.flags = ~0U;
 
     qemu_syscall(&call.super);
 
@@ -420,6 +408,8 @@ WINUSERAPI INT_PTR WINAPI DialogBoxIndirectParamW(HINSTANCE hInstance, LPCDLGTEM
 }
 
 #else
+
+extern INT_PTR WINAPI DialogBoxIndirectParamAorW(HINSTANCE hInstance, LPCVOID template, HWND owner, DLGPROC dlgProc, LPARAM param, DWORD flags);
 
 void qemu_DialogBoxIndirectParam(struct qemu_syscall *call)
 {
@@ -434,12 +424,19 @@ void qemu_DialogBoxIndirectParam(struct qemu_syscall *call)
 
     switch (c->super.id)
     {
+        case QEMU_SYSCALL_ID(CALL_DIALOGBOXINDIRECTPARAMAORW):
+            c->super.iret = DialogBoxIndirectParamAorW(QEMU_G2H(c->hInstance), QEMU_G2H(c->template),
+                    QEMU_G2H(c->owner), dlgproc, c->param, c->flags);
+            break;
+
         case QEMU_SYSCALL_ID(CALL_DIALOGBOXINDIRECTPARAMA):
-            c->super.iret = DialogBoxIndirectParamA(QEMU_G2H(c->hInstance), QEMU_G2H(c->template), QEMU_G2H(c->owner), dlgproc, c->param);
+            c->super.iret = DialogBoxIndirectParamA(QEMU_G2H(c->hInstance), QEMU_G2H(c->template), QEMU_G2H(c->owner),
+                    dlgproc, c->param);
             break;
 
         case QEMU_SYSCALL_ID(CALL_DIALOGBOXINDIRECTPARAMW):
-            c->super.iret = DialogBoxIndirectParamW(QEMU_G2H(c->hInstance), QEMU_G2H(c->template), QEMU_G2H(c->owner), dlgproc, c->param);
+            c->super.iret = DialogBoxIndirectParamW(QEMU_G2H(c->hInstance), QEMU_G2H(c->template), QEMU_G2H(c->owner),
+                    dlgproc, c->param);
             break;
 
         default:
