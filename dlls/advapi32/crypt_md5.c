@@ -59,7 +59,7 @@ extern VOID WINAPI MD5Init(MD5_CTX *ctx);
 void qemu_MD5Init(struct qemu_syscall *call)
 {
     struct qemu_MD5Init *c = (struct qemu_MD5Init *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     MD5Init(QEMU_G2H(c->ctx));
 }
 
@@ -92,7 +92,7 @@ extern VOID WINAPI MD5Update(MD5_CTX *ctx, const unsigned char *buf, unsigned in
 void qemu_MD5Update(struct qemu_syscall *call)
 {
     struct qemu_MD5Update *c = (struct qemu_MD5Update *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     MD5Update(QEMU_G2H(c->ctx), QEMU_G2H(c->buf), c->len);
 }
 
@@ -121,7 +121,7 @@ extern VOID WINAPI MD5Final(MD5_CTX *ctx);
 void qemu_MD5Final(struct qemu_syscall *call)
 {
     struct qemu_MD5Final *c = (struct qemu_MD5Final *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     MD5Final(QEMU_G2H(c->ctx));
 }
 
