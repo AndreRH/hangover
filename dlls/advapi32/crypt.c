@@ -59,7 +59,7 @@ void qemu_CloseEncryptedFileRaw(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_CryptAcquireContextW
+struct qemu_CryptAcquireContext
 {
     struct qemu_syscall super;
     uint64_t phProv;
@@ -73,7 +73,7 @@ struct qemu_CryptAcquireContextW
 
 WINBASEAPI BOOL WINAPI CryptAcquireContextW (HCRYPTPROV *phProv, LPCWSTR pszContainer, LPCWSTR pszProvider, DWORD dwProvType, DWORD dwFlags)
 {
-    struct qemu_CryptAcquireContextW call;
+    struct qemu_CryptAcquireContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTACQUIRECONTEXTW);
     call.phProv = (ULONG_PTR)phProv;
     call.pszContainer = (ULONG_PTR)pszContainer;
@@ -82,36 +82,15 @@ WINBASEAPI BOOL WINAPI CryptAcquireContextW (HCRYPTPROV *phProv, LPCWSTR pszCont
     call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
+    if (call.super.iret)
+        *phProv = (HCRYPTPROV)(ULONG_PTR)call.phProv;
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_CryptAcquireContextW(struct qemu_syscall *call)
-{
-    struct qemu_CryptAcquireContextW *c = (struct qemu_CryptAcquireContextW *)call;
-    WINE_TRACE("\n");
-    c->super.iret = CryptAcquireContextW(QEMU_G2H(c->phProv), QEMU_G2H(c->pszContainer), QEMU_G2H(c->pszProvider), c->dwProvType, c->dwFlags);
-}
-
-#endif
-
-struct qemu_CryptAcquireContextA
-{
-    struct qemu_syscall super;
-    uint64_t phProv;
-    uint64_t pszContainer;
-    uint64_t pszProvider;
-    uint64_t dwProvType;
-    uint64_t dwFlags;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI BOOL WINAPI CryptAcquireContextA (HCRYPTPROV *phProv, LPCSTR pszContainer, LPCSTR pszProvider, DWORD dwProvType, DWORD dwFlags)
 {
-    struct qemu_CryptAcquireContextA call;
+    struct qemu_CryptAcquireContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTACQUIRECONTEXTA);
     call.phProv = (ULONG_PTR)phProv;
     call.pszContainer = (ULONG_PTR)pszContainer;
@@ -120,17 +99,32 @@ WINBASEAPI BOOL WINAPI CryptAcquireContextA (HCRYPTPROV *phProv, LPCSTR pszConta
     call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
+    if (call.super.iret)
+        *phProv = (HCRYPTPROV)(ULONG_PTR)call.phProv;
 
     return call.super.iret;
 }
 
 #else
 
-void qemu_CryptAcquireContextA(struct qemu_syscall *call)
+void qemu_CryptAcquireContext(struct qemu_syscall *call)
 {
-    struct qemu_CryptAcquireContextA *c = (struct qemu_CryptAcquireContextA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptAcquireContextA(QEMU_G2H(c->phProv), QEMU_G2H(c->pszContainer), QEMU_G2H(c->pszProvider), c->dwProvType, c->dwFlags);
+    struct qemu_CryptAcquireContext *c = (struct qemu_CryptAcquireContext *)call;
+    HCRYPTPROV prov;
+
+    WINE_TRACE("\n");
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_CRYPTACQUIRECONTEXTA))
+    {
+        c->super.iret = CryptAcquireContextA(c->phProv ? &prov : NULL, QEMU_G2H(c->pszContainer),
+                QEMU_G2H(c->pszProvider), c->dwProvType, c->dwFlags);
+    }
+    else
+    {
+        c->super.iret = CryptAcquireContextW(c->phProv ? &prov : NULL, QEMU_G2H(c->pszContainer),
+                QEMU_G2H(c->pszProvider), c->dwProvType, c->dwFlags);
+    }
+
+    c->phProv = QEMU_H2G(prov);
 }
 
 #endif
