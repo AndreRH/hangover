@@ -759,6 +759,8 @@ WINBASEAPI BOOL WINAPI CryptGenKey (HCRYPTPROV hProv, ALG_ID Algid, DWORD dwFlag
     call.phKey = (ULONG_PTR)phKey;
 
     qemu_syscall(&call.super);
+    if (call.super.iret)
+        *phKey = (HCRYPTKEY)(ULONG_PTR)call.phKey;
 
     return call.super.iret;
 }
@@ -768,8 +770,12 @@ WINBASEAPI BOOL WINAPI CryptGenKey (HCRYPTPROV hProv, ALG_ID Algid, DWORD dwFlag
 void qemu_CryptGenKey(struct qemu_syscall *call)
 {
     struct qemu_CryptGenKey *c = (struct qemu_CryptGenKey *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptGenKey(c->hProv, c->Algid, c->dwFlags, QEMU_G2H(c->phKey));
+    HCRYPTKEY key;
+
+    WINE_TRACE("\n");
+
+    c->super.iret = CryptGenKey(c->hProv, c->Algid, c->dwFlags, c->phKey ? &key : NULL);
+    c->phKey = QEMU_H2G(key);
 }
 
 #endif
