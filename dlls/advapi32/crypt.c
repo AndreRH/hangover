@@ -1674,7 +1674,7 @@ extern BOOL WINAPI SystemFunction030(LPCVOID b1, LPCVOID b2);
 void qemu_SystemFunction030(struct qemu_syscall *call)
 {
     struct qemu_SystemFunction030 *c = (struct qemu_SystemFunction030 *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SystemFunction030(QEMU_G2H(c->b1), QEMU_G2H(c->b2));
 }
 
