@@ -935,8 +935,7 @@ void qemu_SynchronizeWindows31FilesAndWindowsNTRegistry(struct qemu_syscall *cal
 void qemu_SystemFunction001(struct qemu_syscall *call);
 void qemu_SystemFunction002(struct qemu_syscall *call);
 void qemu_SystemFunction003(struct qemu_syscall *call);
-void qemu_SystemFunction004(struct qemu_syscall *call);
-void qemu_SystemFunction005(struct qemu_syscall *call);
+void qemu_SystemFunction004_5(struct qemu_syscall *call);
 void qemu_SystemFunction006(struct qemu_syscall *call);
 void qemu_SystemFunction007(struct qemu_syscall *call);
 void qemu_SystemFunction008(struct qemu_syscall *call);

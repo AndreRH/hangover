@@ -240,7 +240,7 @@ void qemu_SystemFunction003(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_SystemFunction004
+struct qemu_SystemFunction004_5
 {
     struct qemu_syscall super;
     uint64_t in;
@@ -248,13 +248,18 @@ struct qemu_SystemFunction004
     uint64_t out;
 };
 
-struct ustring;
+struct ustring
+{
+    DWORD Length;
+    DWORD MaximumLength;
+    unsigned char *Buffer;
+};
 
 #ifdef QEMU_DLL_GUEST
 
 WINBASEAPI NTSTATUS WINAPI SystemFunction004(const struct ustring *in, const struct ustring *key, struct ustring *out)
 {
-    struct qemu_SystemFunction004 call;
+    struct qemu_SystemFunction004_5 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMFUNCTION004);
     call.in = (ULONG_PTR)in;
     call.key = (ULONG_PTR)key;
@@ -265,33 +270,9 @@ WINBASEAPI NTSTATUS WINAPI SystemFunction004(const struct ustring *in, const str
     return call.super.iret;
 }
 
-#else
-
-extern NTSTATUS WINAPI SystemFunction004(const struct ustring *in,
-        const struct ustring *key,
-        struct ustring *out);
-void qemu_SystemFunction004(struct qemu_syscall *call)
-{
-    struct qemu_SystemFunction004 *c = (struct qemu_SystemFunction004 *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SystemFunction004(QEMU_G2H(c->in), QEMU_G2H(c->key), QEMU_G2H(c->out));
-}
-
-#endif
-
-struct qemu_SystemFunction005
-{
-    struct qemu_syscall super;
-    uint64_t in;
-    uint64_t key;
-    uint64_t out;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI NTSTATUS WINAPI SystemFunction005(const struct ustring *in, const struct ustring *key, struct ustring *out)
 {
-    struct qemu_SystemFunction005 call;
+    struct qemu_SystemFunction004_5 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMFUNCTION005);
     call.in = (ULONG_PTR)in;
     call.key = (ULONG_PTR)key;
@@ -304,12 +285,76 @@ WINBASEAPI NTSTATUS WINAPI SystemFunction005(const struct ustring *in, const str
 
 #else
 
-extern NTSTATUS WINAPI SystemFunction005(const struct ustring *in, const struct ustring *key, struct ustring *out);
-void qemu_SystemFunction005(struct qemu_syscall *call)
+/* Not a public struct, so it is here instead of the thunk headers. */
+struct qemu_ustring
 {
-    struct qemu_SystemFunction005 *c = (struct qemu_SystemFunction005 *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SystemFunction005(QEMU_G2H(c->in), QEMU_G2H(c->key), QEMU_G2H(c->out));
+    DWORD Length;
+    DWORD MaximumLength;
+    qemu_ptr Buffer;
+};
+
+extern NTSTATUS WINAPI SystemFunction004(const struct ustring *in, const struct ustring *key, struct ustring *out);
+extern NTSTATUS WINAPI SystemFunction005(const struct ustring *in, const struct ustring *key, struct ustring *out);
+void qemu_SystemFunction004_5(struct qemu_syscall *call)
+{
+    struct qemu_SystemFunction004_5 *c = (struct qemu_SystemFunction004_5 *)call;
+    struct ustring key_stack, *key = &key_stack;
+    struct ustring out_stack, *out = &out_stack;
+    struct ustring in_stack, *in = &in_stack;
+    struct qemu_ustring *key32, *out32, *in32;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    key = QEMU_G2H(c->key);
+    out = QEMU_G2H(c->out);
+    in = QEMU_G2H(c->in);
+#else
+    in32 = QEMU_G2H(c->in);
+    if (in32)
+    {
+        in->Length = in32->Length;
+        in->MaximumLength = in32->MaximumLength;
+        in->Buffer = (unsigned char *)(ULONG_PTR)in32->Buffer;
+    }
+    else
+    {
+        in = NULL;
+    }
+
+    key32 = QEMU_G2H(c->key);
+    if (key32)
+    {
+        key->Length = key32->Length;
+        key->MaximumLength = key32->MaximumLength;
+        key->Buffer = (unsigned char *)(ULONG_PTR)key32->Buffer;
+    }
+    else
+    {
+        key = NULL;
+    }
+
+    out32 = QEMU_G2H(c->out);
+    if (out32)
+    {
+        out->Length = out32->Length;
+        out->MaximumLength = out32->MaximumLength;
+        out->Buffer = (unsigned char *)(ULONG_PTR)out32->Buffer;
+    }
+    else
+    {
+        out = NULL;
+    }
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_SYSTEMFUNCTION004))
+        c->super.iret = SystemFunction004(in, key, out);
+    else
+        c->super.iret = SystemFunction005(in, key, out);
+
+#if GUEST_BIT != HOST_BIT
+    if (out32)
+        out32->Length = out->Length;
+#endif
 }
 
 #endif
