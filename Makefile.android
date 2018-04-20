@@ -79,15 +79,16 @@ $(BUILD_DIR)/wine-tools/Makefile: $(SOURCE_DIR)/wine/configure $(BUILD_DIR)/free
 	@mkdir -p $(@D)
 	cd $(@D) ; $(SOURCE_DIR)/wine/configure --enable-win64 --with-freetype --with-gettext --disable-tests --disable-win16 --without-alsa --without-capi --without-cms --without-coreaudio --without-cups --without-curses --without-dbus --without-fontconfig --without-gphoto --without-glu --without-gnutls --without-gsm --without-gstreamer --without-hal --without-jpeg --without-krb5 --without-ldap --without-mpg123 --without-netapi --without-openal --without-opencl --without-opengl --without-osmesa --without-oss --without-pcap --without-pulse --without-png --without-sane --without-tiff --without-v4l --without-x --without-xcomposite --without-xcursor --without-xinerama --without-xinput --without-xinput2 --without-xml --without-xrandr --without-xrender --without-xshape --without-xshm --without-xslt --without-xxf86vm --without-zlib
 
-$(BUILD_DIR)/wine-tools/tools/sfnt2fon/sfnt2fon $(BUILD_DIR)/wine-tools/tools/widl/widl $(BUILD_DIR)/wine-tools/tools/winebuild/winebuild $(BUILD_DIR)/wine-tools/tools/winegcc/winegcc $(BUILD_DIR)/wine-tools/tools/wmc/wmc $(BUILD_DIR)/wine-tools/tools/wrc/wrc: $(BUILD_DIR)/wine-tools/Makefile
+$(BUILD_DIR)/wine-tools/.built: $(BUILD_DIR)/wine-tools/Makefile
 	+$(MAKE) -C $(BUILD_DIR)/wine-tools tools tools/sfnt2fon tools/widl tools/winebuild tools/winegcc tools/wmc tools/wrc
 	@mkdir -p $(BUILD_DIR)/../build
 	ln -sf $(BUILD_DIR)/wine-host $(BUILD_DIR)/../build/wine-host
 	ln -sf $(BUILD_DIR)/wine-tools/tools $(BUILD_DIR)/wine-host/
+	@touch $(BUILD_DIR)/wine-tools/.built
 
 
 # Build the Host (e.g. arm64) wine
-$(BUILD_DIR)/wine-host/Makefile: $(BUILD_DIR)/wine-tools/tools/winegcc/winegcc $(BUILD_DIR)/wine-tools/tools/winebuild/winebuild $(BUILD_DIR)/wine-tools/tools/wmc/wmc $(BUILD_DIR)/wine-tools/tools/wrc/wrc $(BUILD_DIR)/wine-tools/tools/widl/widl $(BUILD_DIR)/wine-tools/tools/sfnt2fon/sfnt2fon $(SOURCE_DIR)/wine/configure
+$(BUILD_DIR)/wine-host/Makefile: $(BUILD_DIR)/wine-tools/.built $(SOURCE_DIR)/wine/configure
 	@mkdir -p $(@D)
 	cd $(@D) ; $(SOURCE_DIR)/wine/configure --host=aarch64-linux-android --with-wine-tools=../wine-tools --prefix=$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/ --libdir=$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang LIBPNG_CFLAGS="-I$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/include/libpng15" LIBPNG_LIBS="-L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib -lpng15" FREETYPE_CFLAGS="-I$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/include/freetype2" FREETYPE_LIBS="-L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib -lm -lz -lpng15 -lfreetype" --disable-tests
 
@@ -95,7 +96,7 @@ wine-host $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/wine-debug.apk: $(BUILD_DI
 	+$(MAKE) -C $(BUILD_DIR)/wine-host
 
 # Cross-Compile Wine for the guest platform to copy higher level DLLs from.
-$(BUILD_DIR)/wine-guest/Makefile: $(BUILD_DIR)/wine-tools/tools/winegcc/winegcc $(BUILD_DIR)/wine-tools/tools/winebuild/winebuild $(BUILD_DIR)/wine-tools/tools/wmc/wmc $(BUILD_DIR)/wine-tools/tools/wrc/wrc $(BUILD_DIR)/wine-tools/tools/widl/widl $(BUILD_DIR)/wine-tools/tools/sfnt2fon/sfnt2fon $(SOURCE_DIR)/wine/configure
+$(BUILD_DIR)/wine-guest/Makefile: $(BUILD_DIR)/wine-tools/.built $(SOURCE_DIR)/wine/configure
 	@mkdir -p $(@D)
 	cd $(@D) ; $(SOURCE_DIR)/wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-tools --without-freetype --disable-tests
 
@@ -103,7 +104,7 @@ wine-guest: $(BUILD_DIR)/wine-guest/Makefile
 	+$(MAKE) -C $(BUILD_DIR)/wine-guest $(patsubst %,dlls/%,$(WINEDLLS))
 
 # Cross-Compile Wine for the guest32 platform to copy higher level DLLs from.
-$(BUILD_DIR)/wine-guest32/Makefile: $(BUILD_DIR)/wine-tools/tools/winegcc/winegcc $(BUILD_DIR)/wine-tools/tools/winebuild/winebuild $(BUILD_DIR)/wine-tools/tools/wmc/wmc $(BUILD_DIR)/wine-tools/tools/wrc/wrc $(BUILD_DIR)/wine-tools/tools/widl/widl $(BUILD_DIR)/wine-tools/tools/sfnt2fon/sfnt2fon $(SOURCE_DIR)/wine/configure
+$(BUILD_DIR)/wine-guest32/Makefile: $(BUILD_DIR)/wine-tools/.built $(SOURCE_DIR)/wine/configure
 	@mkdir -p $(@D)
 	cd $(@D) ; $(SOURCE_DIR)/wine/configure --host=i686-w64-mingw32 --with-wine-tools=../wine-tools --without-freetype --disable-tests
 
@@ -111,7 +112,7 @@ wine-guest32: $(BUILD_DIR)/wine-guest32/Makefile
 	+$(MAKE) -C $(BUILD_DIR)/wine-guest32 $(patsubst %,dlls/%,$(WINEDLLS))
 
 # Build qemu
-$(BUILD_DIR)/qemu/Makefile: $(BUILD_DIR)/glib/glib/.libs/libglib-2.0.so $(BUILD_DIR)/wine-tools/tools/winegcc/winegcc $(BUILD_DIR)/wine-tools/tools/winebuild/winebuild $(SOURCE_DIR)/qemu/configure wine-host
+$(BUILD_DIR)/qemu/Makefile: $(BUILD_DIR)/glib/glib/.libs/libglib-2.0.so $(BUILD_DIR)/wine-tools/.built $(SOURCE_DIR)/qemu/configure wine-host
 	@mkdir -p $(@D)
 	+$(MAKE) -C $(BUILD_DIR)/glib/ install
 	cd $(@D) ; CC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -D__ANDROID_API__=22 -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include -DWINE_NOWINSOCK" CXX="$(BUILD_DIR)/wine-host/tools/winegcc/wineg++ -I$(NDK_SYSROOT)/usr/include -L$(BUILD_DIR)/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib --sysroot=$(BUILD_DIR)/wine-host -b aarch64-linux-android -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include  -DWINE_NOWINSOCK" $(SOURCE_DIR)/qemu/configure --disable-bzip2 --disable-libusb --disable-sdl --disable-snappy --disable-virtfs --disable-opengl --python=/usr/bin/python2.7 --disable-xen --disable-lzo --disable-qom-cast-debug --disable-vnc --disable-seccomp --disable-strip --disable-hax --disable-gnutls --disable-nettle --disable-replication --disable-tpm --disable-gtk --disable-gcrypt --disable-linux-aio --disable-system --disable-tools --disable-linux-user --disable-guest-agent --enable-windows-user --disable-fdt --disable-capstone

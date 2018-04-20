@@ -25,7 +25,7 @@ DRV_TARGET64 = $(join $(DRV___DIRS64), $(DRVS)) $(join $(DRV___DIRS64), $(DRV__H
 
 TRIPLE = $(shell $(CC) -v 2>&1 | grep "Target: " | sed "s/Target: //")
 
-all: wine-host wine-guest wine-guest32 qemu $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
+all: $(BUILD_DIR)/wine-host/.built wine-guest wine-guest32 qemu $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll $(BUILD_DIR)/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
 .PHONY: all
 
 # Build the Host (e.g. arm64) wine
@@ -33,11 +33,12 @@ $(BUILD_DIR)/wine-host/Makefile: $(SOURCE_DIR)/wine/configure
 	@mkdir -p $(@D)
 	cd $(BUILD_DIR)/wine-host ; $(SOURCE_DIR)/wine/configure --prefix=$(BUILD_DIR)/build/install --enable-win64 $(TESTS)
 
-wine-host $(BUILD_DIR)/wine-host/tools/winegcc/winegcc $(BUILD_DIR)/wine-host/tools/winebuild/winebuild $(BUILD_DIR)/wine-host/tools/wmc/wmc $(BUILD_DIR)/wine-host/tools/wrc/wrc $(BUILD_DIR)/wine-host/tools/widl/widl $(BUILD_DIR)/wine-host/tools/sfnt2fon/sfnt2fon: $(BUILD_DIR)/wine-host/Makefile
+wine-host $(BUILD_DIR)/wine-host/.built: $(BUILD_DIR)/wine-host/Makefile
 	+$(MAKE) -C $(BUILD_DIR)/wine-host
+	@touch $(BUILD_DIR)/wine-host/.built
 
 # Cross-Compile Wine for the guest platform to copy higher level DLLs from.
-$(BUILD_DIR)/wine-guest/Makefile: $(BUILD_DIR)/wine-host/tools/winegcc/winegcc $(BUILD_DIR)/wine-host/tools/winebuild/winebuild $(BUILD_DIR)/wine-host/tools/wmc/wmc $(BUILD_DIR)/wine-host/tools/wrc/wrc $(BUILD_DIR)/wine-host/tools/widl/widl $(BUILD_DIR)/wine-host/tools/sfnt2fon/sfnt2fon $(SOURCE_DIR)/wine/configure
+$(BUILD_DIR)/wine-guest/Makefile: $(BUILD_DIR)/wine-host/.built $(SOURCE_DIR)/wine/configure
 	@mkdir -p $(@D)
 	cd $(BUILD_DIR)/wine-guest ; $(SOURCE_DIR)/wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-host --without-freetype $(TESTS)
 
@@ -45,7 +46,7 @@ wine-guest: $(BUILD_DIR)/wine-guest/Makefile
 	+$(MAKE) -C $(BUILD_DIR)/wine-guest
 
 # Cross-Compile Wine for the guest32 platform to copy higher level DLLs from.
-$(BUILD_DIR)/wine-guest32/Makefile: $(BUILD_DIR)/wine-host/tools/winegcc/winegcc $(BUILD_DIR)/wine-host/tools/winebuild/winebuild $(BUILD_DIR)/wine-host/tools/wmc/wmc $(BUILD_DIR)/wine-host/tools/wrc/wrc $(BUILD_DIR)/wine-host/tools/widl/widl $(BUILD_DIR)/wine-host/tools/sfnt2fon/sfnt2fon $(SOURCE_DIR)/wine/configure
+$(BUILD_DIR)/wine-guest32/Makefile: $(BUILD_DIR)/wine-host/.built $(SOURCE_DIR)/wine/configure
 	@mkdir -p $(@D)
 	cd $(BUILD_DIR)/wine-guest32 ; $(SOURCE_DIR)/wine/configure --host=i686-w64-mingw32 --with-wine-tools=../wine-host --without-freetype $(TESTS)
 
@@ -53,7 +54,7 @@ wine-guest32: $(BUILD_DIR)/wine-guest32/Makefile
 	+$(MAKE) -C $(BUILD_DIR)/wine-guest32
 
 # Build qemu
-$(BUILD_DIR)/qemu/Makefile: $(BUILD_DIR)/wine-host/tools/winegcc/winegcc $(BUILD_DIR)/wine-host/tools/winebuild/winebuild $(SOURCE_DIR)/qemu/configure
+$(BUILD_DIR)/qemu/Makefile: $(BUILD_DIR)/wine-host/.built $(SOURCE_DIR)/qemu/configure
 	@mkdir -p $(@D)
 	cd $(BUILD_DIR)/qemu ; CC="$(BUILD_DIR)/wine-host/tools/winegcc/winegcc -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include -lpthread -DWINE_NOWINSOCK" CXX="$(BUILD_DIR)/wine-host/tools/winegcc/wineg++ -B$(BUILD_DIR)/wine-host/tools/winebuild -I$(BUILD_DIR)/wine-host/include -I$(SOURCE_DIR)/wine/include -lpthread -DWINE_NOWINSOCK" $(SOURCE_DIR)/qemu/configure --disable-bzip2 --disable-libusb --disable-sdl --disable-snappy --disable-virtfs --disable-opengl --python=/usr/bin/python2.7 --disable-xen --disable-lzo --disable-qom-cast-debug --disable-vnc --disable-seccomp --disable-strip --disable-hax --disable-gnutls --disable-nettle --disable-replication --disable-tpm --disable-gtk --disable-gcrypt --disable-linux-aio --disable-system --disable-tools --disable-linux-user --disable-guest-agent --enable-windows-user --disable-fdt --disable-capstone
 
