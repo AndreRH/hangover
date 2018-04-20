@@ -557,7 +557,8 @@ struct qemu_CryptEnumProvidersW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptEnumProvidersW (DWORD dwIndex, DWORD *pdwReserved, DWORD dwFlags, DWORD *pdwProvType, LPWSTR pszProvName, DWORD *pcbProvName)
+WINBASEAPI BOOL WINAPI CryptEnumProvidersW (DWORD dwIndex, DWORD *pdwReserved, DWORD dwFlags, DWORD *pdwProvType,
+        LPWSTR pszProvName, DWORD *pcbProvName)
 {
     struct qemu_CryptEnumProvidersW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTENUMPROVIDERSW);
@@ -578,8 +579,9 @@ WINBASEAPI BOOL WINAPI CryptEnumProvidersW (DWORD dwIndex, DWORD *pdwReserved, D
 void qemu_CryptEnumProvidersW(struct qemu_syscall *call)
 {
     struct qemu_CryptEnumProvidersW *c = (struct qemu_CryptEnumProvidersW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptEnumProvidersW(c->dwIndex, QEMU_G2H(c->pdwReserved), c->dwFlags, QEMU_G2H(c->pdwProvType), QEMU_G2H(c->pszProvName), QEMU_G2H(c->pcbProvName));
+    WINE_TRACE("\n");
+    c->super.iret = CryptEnumProvidersW(c->dwIndex, QEMU_G2H(c->pdwReserved), c->dwFlags, QEMU_G2H(c->pdwProvType),
+            QEMU_G2H(c->pszProvName), QEMU_G2H(c->pcbProvName));
 }
 
 #endif
@@ -597,7 +599,8 @@ struct qemu_CryptEnumProvidersA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptEnumProvidersA (DWORD dwIndex, DWORD *pdwReserved, DWORD dwFlags, DWORD *pdwProvType, LPSTR pszProvName, DWORD *pcbProvName)
+WINBASEAPI BOOL WINAPI CryptEnumProvidersA (DWORD dwIndex, DWORD *pdwReserved, DWORD dwFlags, DWORD *pdwProvType,
+        LPSTR pszProvName, DWORD *pcbProvName)
 {
     struct qemu_CryptEnumProvidersA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTENUMPROVIDERSA);
@@ -618,8 +621,9 @@ WINBASEAPI BOOL WINAPI CryptEnumProvidersA (DWORD dwIndex, DWORD *pdwReserved, D
 void qemu_CryptEnumProvidersA(struct qemu_syscall *call)
 {
     struct qemu_CryptEnumProvidersA *c = (struct qemu_CryptEnumProvidersA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptEnumProvidersA(c->dwIndex, QEMU_G2H(c->pdwReserved), c->dwFlags, QEMU_G2H(c->pdwProvType), QEMU_G2H(c->pszProvName), QEMU_G2H(c->pcbProvName));
+    WINE_TRACE("\n");
+    c->super.iret = CryptEnumProvidersA(c->dwIndex, QEMU_G2H(c->pdwReserved), c->dwFlags, QEMU_G2H(c->pdwProvType),
+            QEMU_G2H(c->pszProvName), QEMU_G2H(c->pcbProvName));
 }
 
 #endif
@@ -637,7 +641,8 @@ struct qemu_CryptEnumProviderTypesW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptEnumProviderTypesW (DWORD dwIndex, DWORD *pdwReserved, DWORD dwFlags, DWORD *pdwProvType, LPWSTR pszTypeName, DWORD *pcbTypeName)
+WINBASEAPI BOOL WINAPI CryptEnumProviderTypesW (DWORD dwIndex, DWORD *pdwReserved, DWORD dwFlags, DWORD *pdwProvType,
+        LPWSTR pszTypeName, DWORD *pcbTypeName)
 {
     struct qemu_CryptEnumProviderTypesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTENUMPROVIDERTYPESW);
@@ -658,8 +663,9 @@ WINBASEAPI BOOL WINAPI CryptEnumProviderTypesW (DWORD dwIndex, DWORD *pdwReserve
 void qemu_CryptEnumProviderTypesW(struct qemu_syscall *call)
 {
     struct qemu_CryptEnumProviderTypesW *c = (struct qemu_CryptEnumProviderTypesW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptEnumProviderTypesW(c->dwIndex, QEMU_G2H(c->pdwReserved), c->dwFlags, QEMU_G2H(c->pdwProvType), QEMU_G2H(c->pszTypeName), QEMU_G2H(c->pcbTypeName));
+    WINE_TRACE("\n");
+    c->super.iret = CryptEnumProviderTypesW(c->dwIndex, QEMU_G2H(c->pdwReserved), c->dwFlags, QEMU_G2H(c->pdwProvType),
+            QEMU_G2H(c->pszTypeName), QEMU_G2H(c->pcbTypeName));
 }
 
 #endif
@@ -677,7 +683,8 @@ struct qemu_CryptEnumProviderTypesA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptEnumProviderTypesA (DWORD dwIndex, DWORD *pdwReserved, DWORD dwFlags, DWORD *pdwProvType, LPSTR pszTypeName, DWORD *pcbTypeName)
+WINBASEAPI BOOL WINAPI CryptEnumProviderTypesA (DWORD dwIndex, DWORD *pdwReserved, DWORD dwFlags, DWORD *pdwProvType,
+        LPSTR pszTypeName, DWORD *pcbTypeName)
 {
     struct qemu_CryptEnumProviderTypesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTENUMPROVIDERTYPESA);
@@ -698,8 +705,9 @@ WINBASEAPI BOOL WINAPI CryptEnumProviderTypesA (DWORD dwIndex, DWORD *pdwReserve
 void qemu_CryptEnumProviderTypesA(struct qemu_syscall *call)
 {
     struct qemu_CryptEnumProviderTypesA *c = (struct qemu_CryptEnumProviderTypesA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptEnumProviderTypesA(c->dwIndex, QEMU_G2H(c->pdwReserved), c->dwFlags, QEMU_G2H(c->pdwProvType), QEMU_G2H(c->pszTypeName), QEMU_G2H(c->pcbTypeName));
+    WINE_TRACE("\n");
+    c->super.iret = CryptEnumProviderTypesA(c->dwIndex, QEMU_G2H(c->pdwReserved), c->dwFlags, QEMU_G2H(c->pdwProvType),
+            QEMU_G2H(c->pszTypeName), QEMU_G2H(c->pcbTypeName));
 }
 
 #endif
@@ -798,7 +806,8 @@ struct qemu_CryptGetDefaultProviderW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptGetDefaultProviderW (DWORD dwProvType, DWORD *pdwReserved, DWORD dwFlags, LPWSTR pszProvName, DWORD *pcbProvName)
+WINBASEAPI BOOL WINAPI CryptGetDefaultProviderW (DWORD dwProvType, DWORD *pdwReserved, DWORD dwFlags,
+        LPWSTR pszProvName, DWORD *pcbProvName)
 {
     struct qemu_CryptGetDefaultProviderW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTGETDEFAULTPROVIDERW);
@@ -818,8 +827,9 @@ WINBASEAPI BOOL WINAPI CryptGetDefaultProviderW (DWORD dwProvType, DWORD *pdwRes
 void qemu_CryptGetDefaultProviderW(struct qemu_syscall *call)
 {
     struct qemu_CryptGetDefaultProviderW *c = (struct qemu_CryptGetDefaultProviderW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptGetDefaultProviderW(c->dwProvType, QEMU_G2H(c->pdwReserved), c->dwFlags, QEMU_G2H(c->pszProvName), QEMU_G2H(c->pcbProvName));
+    WINE_TRACE("\n");
+    c->super.iret = CryptGetDefaultProviderW(c->dwProvType, QEMU_G2H(c->pdwReserved), c->dwFlags,
+            QEMU_G2H(c->pszProvName), QEMU_G2H(c->pcbProvName));
 }
 
 #endif
@@ -836,7 +846,8 @@ struct qemu_CryptGetDefaultProviderA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptGetDefaultProviderA (DWORD dwProvType, DWORD *pdwReserved, DWORD dwFlags, LPSTR pszProvName, DWORD *pcbProvName)
+WINBASEAPI BOOL WINAPI CryptGetDefaultProviderA (DWORD dwProvType, DWORD *pdwReserved, DWORD dwFlags,
+        LPSTR pszProvName, DWORD *pcbProvName)
 {
     struct qemu_CryptGetDefaultProviderA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTGETDEFAULTPROVIDERA);
@@ -856,8 +867,9 @@ WINBASEAPI BOOL WINAPI CryptGetDefaultProviderA (DWORD dwProvType, DWORD *pdwRes
 void qemu_CryptGetDefaultProviderA(struct qemu_syscall *call)
 {
     struct qemu_CryptGetDefaultProviderA *c = (struct qemu_CryptGetDefaultProviderA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptGetDefaultProviderA(c->dwProvType, QEMU_G2H(c->pdwReserved), c->dwFlags, QEMU_G2H(c->pszProvName), QEMU_G2H(c->pcbProvName));
+    WINE_TRACE("\n");
+    c->super.iret = CryptGetDefaultProviderA(c->dwProvType, QEMU_G2H(c->pdwReserved), c->dwFlags,
+            QEMU_G2H(c->pszProvName), QEMU_G2H(c->pcbProvName));
 }
 
 #endif
@@ -1306,7 +1318,7 @@ WINBASEAPI BOOL WINAPI CryptSetProviderA (LPCSTR pszProvName, DWORD dwProvType)
 void qemu_CryptSetProviderA(struct qemu_syscall *call)
 {
     struct qemu_CryptSetProviderA *c = (struct qemu_CryptSetProviderA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CryptSetProviderA(QEMU_G2H(c->pszProvName), c->dwProvType);
 }
 
@@ -1338,7 +1350,7 @@ WINBASEAPI BOOL WINAPI CryptSetProviderW (LPCWSTR pszProvName, DWORD dwProvType)
 void qemu_CryptSetProviderW(struct qemu_syscall *call)
 {
     struct qemu_CryptSetProviderW *c = (struct qemu_CryptSetProviderW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CryptSetProviderW(QEMU_G2H(c->pszProvName), c->dwProvType);
 }
 
