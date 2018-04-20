@@ -55,7 +55,7 @@ extern VOID WINAPI A_SHAInit(PSHA_CTX Context);
 void qemu_A_SHAInit(struct qemu_syscall *call)
 {
     struct qemu_A_SHAInit *c = (struct qemu_A_SHAInit *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     A_SHAInit(QEMU_G2H(c->Context));
 }
 
@@ -88,7 +88,7 @@ extern VOID WINAPI A_SHAUpdate(PSHA_CTX Context, const unsigned char *Buffer, UI
 void qemu_A_SHAUpdate(struct qemu_syscall *call)
 {
     struct qemu_A_SHAUpdate *c = (struct qemu_A_SHAUpdate *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     A_SHAUpdate(QEMU_G2H(c->Context), QEMU_G2H(c->Buffer), c->BufferSize);
 }
 
@@ -119,7 +119,7 @@ extern VOID WINAPI A_SHAFinal(PSHA_CTX Context, PULONG Result);
 void qemu_A_SHAFinal(struct qemu_syscall *call)
 {
     struct qemu_A_SHAFinal *c = (struct qemu_A_SHAFinal *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     A_SHAFinal(QEMU_G2H(c->Context), QEMU_G2H(c->Result));
 }
 
