@@ -1093,6 +1093,8 @@ WINBASEAPI BOOL WINAPI CryptImportKey (HCRYPTPROV hProv, const BYTE *pbData, DWO
     call.phKey = (ULONG_PTR)phKey;
 
     qemu_syscall(&call.super);
+    if (call.super.iret)
+        *phKey = (HCRYPTKEY)(ULONG_PTR)call.phKey;
 
     return call.super.iret;
 }
@@ -1102,8 +1104,14 @@ WINBASEAPI BOOL WINAPI CryptImportKey (HCRYPTPROV hProv, const BYTE *pbData, DWO
 void qemu_CryptImportKey(struct qemu_syscall *call)
 {
     struct qemu_CryptImportKey *c = (struct qemu_CryptImportKey *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptImportKey(c->hProv, QEMU_G2H(c->pbData), c->dwDataLen, c->hPubKey, c->dwFlags, QEMU_G2H(c->phKey));
+    HCRYPTKEY key;
+
+    /* pbData has a struct BLOBHEADER followed by a DWORD. Both of them are the same in 32 and 64 bit. There
+     * may be key-specific other structs though. */
+    WINE_TRACE("\n");
+    c->super.iret = CryptImportKey(c->hProv, QEMU_G2H(c->pbData), c->dwDataLen, c->hPubKey, c->dwFlags,
+            c->phKey ? &key : NULL);
+    c->phKey = QEMU_H2G(key);
 }
 
 #endif
