@@ -1,5 +1,6 @@
 /*
  * Copyright 2017 André Hentschel
+ * Copyright 2018 Stefan Dösinger for CodeWeavers
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +26,9 @@
 #include <evntrace.h>
 #include <evntprov.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_evntrace.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_advapi32.h"
@@ -33,7 +37,6 @@
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_advapi32);
 #endif
-
 
 struct qemu_BackupEventLogA
 {
@@ -61,7 +64,7 @@ WINBASEAPI BOOL WINAPI BackupEventLogA(HANDLE hEventLog, LPCSTR lpBackupFileName
 void qemu_BackupEventLogA(struct qemu_syscall *call)
 {
     struct qemu_BackupEventLogA *c = (struct qemu_BackupEventLogA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = BackupEventLogA(QEMU_G2H(c->hEventLog), QEMU_G2H(c->lpBackupFileName));
 }
 
@@ -93,7 +96,7 @@ WINBASEAPI BOOL WINAPI BackupEventLogW(HANDLE hEventLog, LPCWSTR lpBackupFileNam
 void qemu_BackupEventLogW(struct qemu_syscall *call)
 {
     struct qemu_BackupEventLogW *c = (struct qemu_BackupEventLogW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = BackupEventLogW(QEMU_G2H(c->hEventLog), QEMU_G2H(c->lpBackupFileName));
 }
 
@@ -125,7 +128,7 @@ WINBASEAPI BOOL WINAPI ClearEventLogA(HANDLE hEventLog, LPCSTR lpBackupFileName)
 void qemu_ClearEventLogA(struct qemu_syscall *call)
 {
     struct qemu_ClearEventLogA *c = (struct qemu_ClearEventLogA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ClearEventLogA(QEMU_G2H(c->hEventLog), QEMU_G2H(c->lpBackupFileName));
 }
 
@@ -157,7 +160,7 @@ WINBASEAPI BOOL WINAPI ClearEventLogW(HANDLE hEventLog, LPCWSTR lpBackupFileName
 void qemu_ClearEventLogW(struct qemu_syscall *call)
 {
     struct qemu_ClearEventLogW *c = (struct qemu_ClearEventLogW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ClearEventLogW(QEMU_G2H(c->hEventLog), QEMU_G2H(c->lpBackupFileName));
 }
 
@@ -187,13 +190,13 @@ WINBASEAPI BOOL WINAPI CloseEventLog(HANDLE hEventLog)
 void qemu_CloseEventLog(struct qemu_syscall *call)
 {
     struct qemu_CloseEventLog *c = (struct qemu_CloseEventLog *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CloseEventLog(QEMU_G2H(c->hEventLog));
 }
 
 #endif
 
-struct qemu_ControlTraceW
+struct qemu_ControlTrace
 {
     struct qemu_syscall super;
     uint64_t hSession;
@@ -204,9 +207,10 @@ struct qemu_ControlTraceW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI ULONG WINAPI ControlTraceW(TRACEHANDLE hSession, LPCWSTR SessionName, PEVENT_TRACE_PROPERTIES Properties, ULONG control)
+WINBASEAPI ULONG WINAPI ControlTraceW(TRACEHANDLE hSession, LPCWSTR SessionName, EVENT_TRACE_PROPERTIES *Properties,
+        ULONG control)
 {
-    struct qemu_ControlTraceW call;
+    struct qemu_ControlTrace call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONTROLTRACEW);
     call.hSession = (ULONG_PTR)hSession;
     call.SessionName = (ULONG_PTR)SessionName;
@@ -218,31 +222,10 @@ WINBASEAPI ULONG WINAPI ControlTraceW(TRACEHANDLE hSession, LPCWSTR SessionName,
     return call.super.iret;
 }
 
-#else
-
-void qemu_ControlTraceW(struct qemu_syscall *call)
+WINBASEAPI ULONG WINAPI ControlTraceA(TRACEHANDLE hSession, LPCSTR SessionName, EVENT_TRACE_PROPERTIES *Properties,
+        ULONG control)
 {
-    struct qemu_ControlTraceW *c = (struct qemu_ControlTraceW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ControlTraceW(c->hSession, QEMU_G2H(c->SessionName), QEMU_G2H(c->Properties), c->control);
-}
-
-#endif
-
-struct qemu_ControlTraceA
-{
-    struct qemu_syscall super;
-    uint64_t hSession;
-    uint64_t SessionName;
-    uint64_t Properties;
-    uint64_t control;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI ULONG WINAPI ControlTraceA(TRACEHANDLE hSession, LPCSTR SessionName, PEVENT_TRACE_PROPERTIES Properties, ULONG control)
-{
-    struct qemu_ControlTraceA call;
+    struct qemu_ControlTrace call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONTROLTRACEA);
     call.hSession = (ULONG_PTR)hSession;
     call.SessionName = (ULONG_PTR)SessionName;
@@ -256,16 +239,30 @@ WINBASEAPI ULONG WINAPI ControlTraceA(TRACEHANDLE hSession, LPCSTR SessionName, 
 
 #else
 
-void qemu_ControlTraceA(struct qemu_syscall *call)
+void qemu_ControlTrace(struct qemu_syscall *call)
 {
-    struct qemu_ControlTraceA *c = (struct qemu_ControlTraceA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ControlTraceA(c->hSession, QEMU_G2H(c->SessionName), QEMU_G2H(c->Properties), c->control);
+    struct qemu_ControlTrace *c = (struct qemu_ControlTrace *)call;
+    EVENT_TRACE_PROPERTIES stack, *props = &stack;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HSOT_BIT
+    props = QEMU_G2H(c->Properties);
+#else
+    if (c->Properties)
+        EVENT_TRACE_PROPERTIES_g2h(props, QEMU_G2H(c->Properties));
+    else
+        props = NULL;
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_CONTROLTRACEW))
+        c->super.iret = ControlTraceW(c->hSession, QEMU_G2H(c->SessionName), props, c->control);
+    else
+        c->super.iret = ControlTraceA(c->hSession, QEMU_G2H(c->SessionName), props, c->control);
 }
 
 #endif
 
-struct qemu_FlushTraceA
+struct qemu_FlushTrace
 {
     struct qemu_syscall super;
     uint64_t hSession;
@@ -275,9 +272,9 @@ struct qemu_FlushTraceA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI ULONG WINAPI FlushTraceA (TRACEHANDLE hSession, LPCSTR SessionName, PEVENT_TRACE_PROPERTIES Properties)
+WINBASEAPI ULONG WINAPI FlushTraceA (TRACEHANDLE hSession, LPCSTR SessionName, EVENT_TRACE_PROPERTIES *Properties)
 {
-    struct qemu_FlushTraceA call;
+    struct qemu_FlushTrace call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FLUSHTRACEA);
     call.hSession = (ULONG_PTR)hSession;
     call.SessionName = (ULONG_PTR)SessionName;
@@ -288,30 +285,9 @@ WINBASEAPI ULONG WINAPI FlushTraceA (TRACEHANDLE hSession, LPCSTR SessionName, P
     return call.super.iret;
 }
 
-#else
-
-void qemu_FlushTraceA(struct qemu_syscall *call)
+WINBASEAPI ULONG WINAPI FlushTraceW (TRACEHANDLE hSession, LPCWSTR SessionName, EVENT_TRACE_PROPERTIES *Properties)
 {
-    struct qemu_FlushTraceA *c = (struct qemu_FlushTraceA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = FlushTraceA(c->hSession, QEMU_G2H(c->SessionName), QEMU_G2H(c->Properties));
-}
-
-#endif
-
-struct qemu_FlushTraceW
-{
-    struct qemu_syscall super;
-    uint64_t hSession;
-    uint64_t SessionName;
-    uint64_t Properties;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI ULONG WINAPI FlushTraceW (TRACEHANDLE hSession, LPCWSTR SessionName, PEVENT_TRACE_PROPERTIES Properties)
-{
-    struct qemu_FlushTraceW call;
+    struct qemu_FlushTrace call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FLUSHTRACEW);
     call.hSession = (ULONG_PTR)hSession;
     call.SessionName = (ULONG_PTR)SessionName;
@@ -324,11 +300,25 @@ WINBASEAPI ULONG WINAPI FlushTraceW (TRACEHANDLE hSession, LPCWSTR SessionName, 
 
 #else
 
-void qemu_FlushTraceW(struct qemu_syscall *call)
+void qemu_FlushTrace(struct qemu_syscall *call)
 {
-    struct qemu_FlushTraceW *c = (struct qemu_FlushTraceW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = FlushTraceW(c->hSession, QEMU_G2H(c->SessionName), QEMU_G2H(c->Properties));
+    struct qemu_FlushTrace *c = (struct qemu_FlushTrace *)call;
+    EVENT_TRACE_PROPERTIES stack, *props = &stack;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HSOT_BIT
+    props = QEMU_G2H(c->Properties);
+#else
+    if (c->Properties)
+        EVENT_TRACE_PROPERTIES_g2h(props, QEMU_G2H(c->Properties));
+    else
+        props = NULL;
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_FLUSHTRACEW))
+        c->super.iret = FlushTraceW(c->hSession, QEMU_G2H(c->SessionName), props);
+    else
+        c->super.iret = FlushTraceA(c->hSession, QEMU_G2H(c->SessionName), props);
 }
 
 #endif
@@ -357,7 +347,7 @@ WINBASEAPI BOOL WINAPI DeregisterEventSource(HANDLE hEventLog)
 void qemu_DeregisterEventSource(struct qemu_syscall *call)
 {
     struct qemu_DeregisterEventSource *c = (struct qemu_DeregisterEventSource *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DeregisterEventSource(QEMU_G2H(c->hEventLog));
 }
 
@@ -379,7 +369,8 @@ struct qemu_EnableTraceEx
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI ULONG WINAPI EnableTraceEx(LPCGUID provider, LPCGUID source, TRACEHANDLE hSession, ULONG enable, UCHAR level, ULONGLONG anykeyword, ULONGLONG allkeyword, ULONG enableprop, PEVENT_FILTER_DESCRIPTOR filterdesc)
+WINBASEAPI ULONG WINAPI EnableTraceEx(LPCGUID provider, LPCGUID source, TRACEHANDLE hSession, ULONG enable,
+        UCHAR level, ULONGLONG anykeyword, ULONGLONG allkeyword, ULONG enableprop, PEVENT_FILTER_DESCRIPTOR filterdesc)
 {
     struct qemu_EnableTraceEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENABLETRACEEX);
@@ -401,7 +392,8 @@ WINBASEAPI ULONG WINAPI EnableTraceEx(LPCGUID provider, LPCGUID source, TRACEHAN
 #else
 
 /* TODO: Add EnableTraceEx to Wine headers? */
-extern ULONG WINAPI EnableTraceEx(LPCGUID provider, LPCGUID source, TRACEHANDLE hSession, ULONG enable, UCHAR level, ULONGLONG anykeyword, ULONGLONG allkeyword, ULONG enableprop, PEVENT_FILTER_DESCRIPTOR filterdesc);
+extern ULONG WINAPI EnableTraceEx(LPCGUID provider, LPCGUID source, TRACEHANDLE hSession, ULONG enable, UCHAR level,
+        ULONGLONG anykeyword, ULONGLONG allkeyword, ULONG enableprop, PEVENT_FILTER_DESCRIPTOR filterdesc);
 void qemu_EnableTraceEx(struct qemu_syscall *call)
 {
     struct qemu_EnableTraceEx *c = (struct qemu_EnableTraceEx *)call;
@@ -426,7 +418,8 @@ struct qemu_EnableTraceEx2
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI ULONG WINAPI EnableTraceEx2(TRACEHANDLE handle, LPCGUID provider, ULONG control, UCHAR level, ULONGLONG match_any, ULONGLONG match_all, ULONG timeout, PENABLE_TRACE_PARAMETERS params)
+WINBASEAPI ULONG WINAPI EnableTraceEx2(TRACEHANDLE handle, LPCGUID provider, ULONG control, UCHAR level,
+        ULONGLONG match_any, ULONGLONG match_all, ULONG timeout, PENABLE_TRACE_PARAMETERS params)
 {
     struct qemu_EnableTraceEx2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENABLETRACEEX2);
@@ -450,7 +443,8 @@ void qemu_EnableTraceEx2(struct qemu_syscall *call)
 {
     struct qemu_EnableTraceEx2 *c = (struct qemu_EnableTraceEx2 *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnableTraceEx2(c->handle, QEMU_G2H(c->provider), c->control, c->level, c->match_any, c->match_all, c->timeout, QEMU_G2H(c->params));
+    c->super.iret = EnableTraceEx2(c->handle, QEMU_G2H(c->provider), c->control, c->level, c->match_any, c->match_all,
+            c->timeout, QEMU_G2H(c->params));
 }
 
 #endif
@@ -487,7 +481,7 @@ WINBASEAPI ULONG WINAPI EnableTrace(ULONG enable, ULONG flag, ULONG level, LPCGU
 void qemu_EnableTrace(struct qemu_syscall *call)
 {
     struct qemu_EnableTrace *c = (struct qemu_EnableTrace *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EnableTrace(c->enable, c->flag, c->level, QEMU_G2H(c->guid), c->hSession);
 }
 
@@ -505,7 +499,8 @@ struct qemu_GetEventLogInformation
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetEventLogInformation(HANDLE hEventLog, DWORD dwInfoLevel, LPVOID lpBuffer, DWORD cbBufSize, LPDWORD pcbBytesNeeded)
+WINBASEAPI BOOL WINAPI GetEventLogInformation(HANDLE hEventLog, DWORD dwInfoLevel, LPVOID lpBuffer, DWORD cbBufSize,
+        LPDWORD pcbBytesNeeded)
 {
     struct qemu_GetEventLogInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETEVENTLOGINFORMATION);
@@ -525,8 +520,11 @@ WINBASEAPI BOOL WINAPI GetEventLogInformation(HANDLE hEventLog, DWORD dwInfoLeve
 void qemu_GetEventLogInformation(struct qemu_syscall *call)
 {
     struct qemu_GetEventLogInformation *c = (struct qemu_GetEventLogInformation *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetEventLogInformation(QEMU_G2H(c->hEventLog), c->dwInfoLevel, QEMU_G2H(c->lpBuffer), c->cbBufSize, QEMU_G2H(c->pcbBytesNeeded));
+
+    /* The only supported info level is EVENTLOG_FULL_INFORMATION, which is a struct that contains 1 DWORD. */
+    WINE_TRACE("\n");
+    c->super.iret = GetEventLogInformation(QEMU_G2H(c->hEventLog), c->dwInfoLevel, QEMU_G2H(c->lpBuffer),
+            c->cbBufSize, QEMU_G2H(c->pcbBytesNeeded));
 }
 
 #endif
@@ -557,7 +555,7 @@ WINBASEAPI BOOL WINAPI GetNumberOfEventLogRecords(HANDLE hEventLog, PDWORD Numbe
 void qemu_GetNumberOfEventLogRecords(struct qemu_syscall *call)
 {
     struct qemu_GetNumberOfEventLogRecords *c = (struct qemu_GetNumberOfEventLogRecords *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetNumberOfEventLogRecords(QEMU_G2H(c->hEventLog), QEMU_G2H(c->NumberOfRecords));
 }
 
@@ -589,7 +587,7 @@ WINBASEAPI BOOL WINAPI GetOldestEventLogRecord(HANDLE hEventLog, PDWORD OldestRe
 void qemu_GetOldestEventLogRecord(struct qemu_syscall *call)
 {
     struct qemu_GetOldestEventLogRecord *c = (struct qemu_GetOldestEventLogRecord *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetOldestEventLogRecord(QEMU_G2H(c->hEventLog), QEMU_G2H(c->OldestRecord));
 }
 
@@ -619,7 +617,7 @@ WINBASEAPI ULONG WINAPI GetTraceEnableFlags(TRACEHANDLE handle)
 void qemu_GetTraceEnableFlags(struct qemu_syscall *call)
 {
     struct qemu_GetTraceEnableFlags *c = (struct qemu_GetTraceEnableFlags *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTraceEnableFlags(c->handle);
 }
 
@@ -649,7 +647,7 @@ WINBASEAPI UCHAR WINAPI GetTraceEnableLevel(TRACEHANDLE handle)
 void qemu_GetTraceEnableLevel(struct qemu_syscall *call)
 {
     struct qemu_GetTraceEnableLevel *c = (struct qemu_GetTraceEnableLevel *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetTraceEnableLevel(c->handle);
 }
 
@@ -679,6 +677,7 @@ WINBASEAPI TRACEHANDLE WINAPI GetTraceLoggerHandle(PVOID buf)
 void qemu_GetTraceLoggerHandle(struct qemu_syscall *call)
 {
     struct qemu_GetTraceLoggerHandle *c = (struct qemu_GetTraceLoggerHandle *)call;
+    /* At the time of the writing of this comment this function is a stub in Wine. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = GetTraceLoggerHandle(QEMU_G2H(c->buf));
 }
@@ -711,7 +710,7 @@ WINBASEAPI BOOL WINAPI NotifyChangeEventLog(HANDLE hEventLog, HANDLE hEvent)
 void qemu_NotifyChangeEventLog(struct qemu_syscall *call)
 {
     struct qemu_NotifyChangeEventLog *c = (struct qemu_NotifyChangeEventLog *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = NotifyChangeEventLog(QEMU_G2H(c->hEventLog), QEMU_G2H(c->hEvent));
 }
 
@@ -743,7 +742,7 @@ WINBASEAPI HANDLE WINAPI OpenBackupEventLogA(LPCSTR lpUNCServerName, LPCSTR lpFi
 void qemu_OpenBackupEventLogA(struct qemu_syscall *call)
 {
     struct qemu_OpenBackupEventLogA *c = (struct qemu_OpenBackupEventLogA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)OpenBackupEventLogA(QEMU_G2H(c->lpUNCServerName), QEMU_G2H(c->lpFileName));
 }
 
@@ -775,7 +774,7 @@ WINBASEAPI HANDLE WINAPI OpenBackupEventLogW(LPCWSTR lpUNCServerName, LPCWSTR lp
 void qemu_OpenBackupEventLogW(struct qemu_syscall *call)
 {
     struct qemu_OpenBackupEventLogW *c = (struct qemu_OpenBackupEventLogW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)OpenBackupEventLogW(QEMU_G2H(c->lpUNCServerName), QEMU_G2H(c->lpFileName));
 }
 
@@ -807,7 +806,7 @@ WINBASEAPI HANDLE WINAPI OpenEventLogA(LPCSTR uncname, LPCSTR source)
 void qemu_OpenEventLogA(struct qemu_syscall *call)
 {
     struct qemu_OpenEventLogA *c = (struct qemu_OpenEventLogA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)OpenEventLogA(QEMU_G2H(c->uncname), QEMU_G2H(c->source));
 }
 
@@ -839,7 +838,7 @@ WINBASEAPI HANDLE WINAPI OpenEventLogW(LPCWSTR uncname, LPCWSTR source)
 void qemu_OpenEventLogW(struct qemu_syscall *call)
 {
     struct qemu_OpenEventLogW *c = (struct qemu_OpenEventLogW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)OpenEventLogW(QEMU_G2H(c->uncname), QEMU_G2H(c->source));
 }
 
@@ -873,6 +872,7 @@ WINBASEAPI ULONG WINAPI QueryAllTracesW(PEVENT_TRACE_PROPERTIES * parray, ULONG 
 void qemu_QueryAllTracesW(struct qemu_syscall *call)
 {
     struct qemu_QueryAllTracesW *c = (struct qemu_QueryAllTracesW *)call;
+    /* At the time of the writing of this comment this function is a stub in Wine. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = QueryAllTracesW(QEMU_G2H(c->parray), c->arraycount, QEMU_G2H(c->psessioncount));
 }
@@ -907,6 +907,7 @@ WINBASEAPI ULONG WINAPI QueryAllTracesA(PEVENT_TRACE_PROPERTIES * parray, ULONG 
 void qemu_QueryAllTracesA(struct qemu_syscall *call)
 {
     struct qemu_QueryAllTracesA *c = (struct qemu_QueryAllTracesA *)call;
+    /* At the time of the writing of this comment this function is a stub in Wine. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = QueryAllTracesA(QEMU_G2H(c->parray), c->arraycount, QEMU_G2H(c->psessioncount));
 }
@@ -927,7 +928,8 @@ struct qemu_ReadEventLogA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI ReadEventLogA(HANDLE hEventLog, DWORD dwReadFlags, DWORD dwRecordOffset, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, DWORD *pnBytesRead, DWORD *pnMinNumberOfBytesNeeded)
+WINBASEAPI BOOL WINAPI ReadEventLogA(HANDLE hEventLog, DWORD dwReadFlags, DWORD dwRecordOffset, LPVOID lpBuffer,
+        DWORD nNumberOfBytesToRead, DWORD *pnBytesRead, DWORD *pnMinNumberOfBytesNeeded)
 {
     struct qemu_ReadEventLogA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_READEVENTLOGA);
@@ -950,7 +952,9 @@ void qemu_ReadEventLogA(struct qemu_syscall *call)
 {
     struct qemu_ReadEventLogA *c = (struct qemu_ReadEventLogA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ReadEventLogA(QEMU_G2H(c->hEventLog), c->dwReadFlags, c->dwRecordOffset, QEMU_G2H(c->lpBuffer), c->nNumberOfBytesToRead, QEMU_G2H(c->pnBytesRead), QEMU_G2H(c->pnMinNumberOfBytesNeeded));
+    /* At the time of the writing of this comment this function is a stub in Wine. */
+    c->super.iret = ReadEventLogA(QEMU_G2H(c->hEventLog), c->dwReadFlags, c->dwRecordOffset, QEMU_G2H(c->lpBuffer),
+            c->nNumberOfBytesToRead, QEMU_G2H(c->pnBytesRead), QEMU_G2H(c->pnMinNumberOfBytesNeeded));
 }
 
 #endif
@@ -992,7 +996,9 @@ void qemu_ReadEventLogW(struct qemu_syscall *call)
 {
     struct qemu_ReadEventLogW *c = (struct qemu_ReadEventLogW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ReadEventLogW(QEMU_G2H(c->hEventLog), c->dwReadFlags, c->dwRecordOffset, QEMU_G2H(c->lpBuffer), c->nNumberOfBytesToRead, QEMU_G2H(c->pnBytesRead), QEMU_G2H(c->pnMinNumberOfBytesNeeded));
+    /* At the time of the writing of this comment this function is a stub in Wine. */
+    c->super.iret = ReadEventLogW(QEMU_G2H(c->hEventLog), c->dwReadFlags, c->dwRecordOffset, QEMU_G2H(c->lpBuffer),
+            c->nNumberOfBytesToRead, QEMU_G2H(c->pnBytesRead), QEMU_G2H(c->pnMinNumberOfBytesNeeded));
 }
 
 #endif
@@ -1023,7 +1029,7 @@ WINBASEAPI HANDLE WINAPI RegisterEventSourceA(LPCSTR lpUNCServerName, LPCSTR lpS
 void qemu_RegisterEventSourceA(struct qemu_syscall *call)
 {
     struct qemu_RegisterEventSourceA *c = (struct qemu_RegisterEventSourceA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)RegisterEventSourceA(QEMU_G2H(c->lpUNCServerName), QEMU_G2H(c->lpSourceName));
 }
 
@@ -1055,13 +1061,13 @@ WINBASEAPI HANDLE WINAPI RegisterEventSourceW(LPCWSTR lpUNCServerName, LPCWSTR l
 void qemu_RegisterEventSourceW(struct qemu_syscall *call)
 {
     struct qemu_RegisterEventSourceW *c = (struct qemu_RegisterEventSourceW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)RegisterEventSourceW(QEMU_G2H(c->lpUNCServerName), QEMU_G2H(c->lpSourceName));
 }
 
 #endif
 
-struct qemu_ReportEventA
+struct qemu_ReportEvent
 {
     struct qemu_syscall super;
     uint64_t hEventLog;
@@ -1077,9 +1083,30 @@ struct qemu_ReportEventA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI ReportEventA (HANDLE hEventLog, WORD wType, WORD wCategory, DWORD dwEventID, PSID lpUserSid, WORD wNumStrings, DWORD dwDataSize, LPCSTR *lpStrings, LPVOID lpRawData)
+WINBASEAPI BOOL WINAPI ReportEventW(HANDLE hEventLog, WORD wType, WORD wCategory, DWORD dwEventID, PSID lpUserSid,
+        WORD wNumStrings, DWORD dwDataSize, LPCWSTR *lpStrings, LPVOID lpRawData)
 {
-    struct qemu_ReportEventA call;
+    struct qemu_ReportEvent call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_REPORTEVENTW);
+    call.hEventLog = (ULONG_PTR)hEventLog;
+    call.wType = (ULONG_PTR)wType;
+    call.wCategory = (ULONG_PTR)wCategory;
+    call.dwEventID = (ULONG_PTR)dwEventID;
+    call.lpUserSid = (ULONG_PTR)lpUserSid;
+    call.wNumStrings = (ULONG_PTR)wNumStrings;
+    call.dwDataSize = (ULONG_PTR)dwDataSize;
+    call.lpStrings = (ULONG_PTR)lpStrings;
+    call.lpRawData = (ULONG_PTR)lpRawData;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+WINBASEAPI BOOL WINAPI ReportEventA (HANDLE hEventLog, WORD wType, WORD wCategory, DWORD dwEventID, PSID lpUserSid,
+        WORD wNumStrings, DWORD dwDataSize, LPCSTR *lpStrings, LPVOID lpRawData)
+{
+    struct qemu_ReportEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REPORTEVENTA);
     call.hEventLog = (ULONG_PTR)hEventLog;
     call.wType = (ULONG_PTR)wType;
@@ -1098,57 +1125,55 @@ WINBASEAPI BOOL WINAPI ReportEventA (HANDLE hEventLog, WORD wType, WORD wCategor
 
 #else
 
-void qemu_ReportEventA(struct qemu_syscall *call)
+void qemu_ReportEvent(struct qemu_syscall *call)
 {
-    struct qemu_ReportEventA *c = (struct qemu_ReportEventA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ReportEventA(QEMU_G2H(c->hEventLog), c->wType, c->wCategory, c->dwEventID, QEMU_G2H(c->lpUserSid), c->wNumStrings, c->dwDataSize, QEMU_G2H(c->lpStrings), QEMU_G2H(c->lpRawData));
-}
+    struct qemu_ReportEvent *c = (struct qemu_ReportEvent *)call;
+    WCHAR **strings;
+    qemu_ptr *strings32;
+    WORD i;
 
+    /* This function is a semi-stub in Wine, so the wrapper is poorly tested. */
+    WINE_WARN("\n");
+
+#if GUEST_BIT == HOST_BIT
+    strings = QEMU_G2H(c->lpStrings);
+#else
+    strings32 = QEMU_G2H(c->lpStrings);
+    if (strings32)
+    {
+        strings = HeapAlloc(GetProcessHeap(), 0, sizeof(*strings) * c->wNumStrings);
+        if (!strings)
+        {
+            WINE_ERR("Out of memory\n");
+            c->super.iret = 0;
+            return;
+        }
+
+        for (i = 0; i < c->wNumStrings; ++i)
+            strings[i] = (WCHAR *)(ULONG_PTR)strings32[i];
+    }
+    else
+    {
+        strings = NULL;
+    }
 #endif
 
-struct qemu_ReportEventW
-{
-    struct qemu_syscall super;
-    uint64_t hEventLog;
-    uint64_t wType;
-    uint64_t wCategory;
-    uint64_t dwEventID;
-    uint64_t lpUserSid;
-    uint64_t wNumStrings;
-    uint64_t dwDataSize;
-    uint64_t lpStrings;
-    uint64_t lpRawData;
-};
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_REPORTEVENTW))
+    {
+        c->super.iret = ReportEventW(QEMU_G2H(c->hEventLog), c->wType, c->wCategory, c->dwEventID,
+                QEMU_G2H(c->lpUserSid), c->wNumStrings, c->dwDataSize, (const WCHAR **)strings,
+                QEMU_G2H(c->lpRawData));
+    }
+    else
+    {
+        c->super.iret = ReportEventA(QEMU_G2H(c->hEventLog), c->wType, c->wCategory, c->dwEventID,
+                QEMU_G2H(c->lpUserSid), c->wNumStrings, c->dwDataSize, (const char **)strings,
+                QEMU_G2H(c->lpRawData));
+    }
 
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI BOOL WINAPI ReportEventW(HANDLE hEventLog, WORD wType, WORD wCategory, DWORD dwEventID, PSID lpUserSid, WORD wNumStrings, DWORD dwDataSize, LPCWSTR *lpStrings, LPVOID lpRawData)
-{
-    struct qemu_ReportEventW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_REPORTEVENTW);
-    call.hEventLog = (ULONG_PTR)hEventLog;
-    call.wType = (ULONG_PTR)wType;
-    call.wCategory = (ULONG_PTR)wCategory;
-    call.dwEventID = (ULONG_PTR)dwEventID;
-    call.lpUserSid = (ULONG_PTR)lpUserSid;
-    call.wNumStrings = (ULONG_PTR)wNumStrings;
-    call.dwDataSize = (ULONG_PTR)dwDataSize;
-    call.lpStrings = (ULONG_PTR)lpStrings;
-    call.lpRawData = (ULONG_PTR)lpRawData;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_ReportEventW(struct qemu_syscall *call)
-{
-    struct qemu_ReportEventW *c = (struct qemu_ReportEventW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ReportEventW(QEMU_G2H(c->hEventLog), c->wType, c->wCategory, c->dwEventID, QEMU_G2H(c->lpUserSid), c->wNumStrings, c->dwDataSize, QEMU_G2H(c->lpStrings), QEMU_G2H(c->lpRawData));
+#if GUEST_BIT != HOST_BIT
+    HeapFree(GetProcessHeap(), 0, strings);
+#endif
 }
 
 #endif
@@ -1163,7 +1188,7 @@ struct qemu_StartTraceW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI ULONG WINAPI StartTraceW(PTRACEHANDLE pSessionHandle, LPCWSTR SessionName, PEVENT_TRACE_PROPERTIES Properties)
+WINBASEAPI ULONG WINAPI StartTraceW(TRACEHANDLE *pSessionHandle, LPCWSTR SessionName, PEVENT_TRACE_PROPERTIES Properties)
 {
     struct qemu_StartTraceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_STARTTRACEW);
@@ -1172,6 +1197,8 @@ WINBASEAPI ULONG WINAPI StartTraceW(PTRACEHANDLE pSessionHandle, LPCWSTR Session
     call.Properties = (ULONG_PTR)Properties;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == ERROR_SUCCESS && pSessionHandle)
+        *pSessionHandle = (TRACEHANDLE)(ULONG_PTR)call.pSessionHandle;
 
     return call.super.iret;
 }
@@ -1181,8 +1208,13 @@ WINBASEAPI ULONG WINAPI StartTraceW(PTRACEHANDLE pSessionHandle, LPCWSTR Session
 void qemu_StartTraceW(struct qemu_syscall *call)
 {
     struct qemu_StartTraceW *c = (struct qemu_StartTraceW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = StartTraceW(QEMU_G2H(c->pSessionHandle), QEMU_G2H(c->SessionName), QEMU_G2H(c->Properties));
+    TRACEHANDLE handle;
+
+    /* At the time of the writing of this comment this function is a semi-stub in Wine. */
+    WINE_WARN("\n");
+
+    c->super.iret = StartTraceW(c->pSessionHandle ? &handle : NULL, QEMU_G2H(c->SessionName), QEMU_G2H(c->Properties));
+    c->pSessionHandle = QEMU_H2G(handle);
 }
 
 #endif
@@ -1206,6 +1238,8 @@ WINBASEAPI ULONG WINAPI StartTraceA(PTRACEHANDLE pSessionHandle, LPCSTR SessionN
     call.Properties = (ULONG_PTR)Properties;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == ERROR_SUCCESS && pSessionHandle)
+        *pSessionHandle = (TRACEHANDLE)(ULONG_PTR)call.pSessionHandle;
 
     return call.super.iret;
 }
@@ -1215,8 +1249,13 @@ WINBASEAPI ULONG WINAPI StartTraceA(PTRACEHANDLE pSessionHandle, LPCSTR SessionN
 void qemu_StartTraceA(struct qemu_syscall *call)
 {
     struct qemu_StartTraceA *c = (struct qemu_StartTraceA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = StartTraceA(QEMU_G2H(c->pSessionHandle), QEMU_G2H(c->SessionName), QEMU_G2H(c->Properties));
+    TRACEHANDLE handle;
+
+    /* At the time of the writing of this comment this function is a semi-stub in Wine. */
+    WINE_WARN("\n");
+
+    c->super.iret = StartTraceA(c->pSessionHandle ? &handle : NULL, QEMU_G2H(c->SessionName), QEMU_G2H(c->Properties));
+    c->pSessionHandle = QEMU_H2G(handle);
 }
 
 #endif
@@ -1251,6 +1290,7 @@ extern ULONG WINAPI StopTraceW(TRACEHANDLE session, LPCWSTR session_name, PEVENT
 void qemu_StopTraceW(struct qemu_syscall *call)
 {
     struct qemu_StopTraceW *c = (struct qemu_StopTraceW *)call;
+    /* At the time of the writing of this comment this function is a stub in Wine. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = StopTraceW(c->session, QEMU_G2H(c->session_name), QEMU_G2H(c->properties));
 }
@@ -1287,6 +1327,7 @@ extern ULONG WINAPI StopTraceA(TRACEHANDLE session, LPCSTR session_name, PEVENT_
 void qemu_StopTraceA(struct qemu_syscall *call)
 {
     struct qemu_StopTraceA *c = (struct qemu_StopTraceA *)call;
+    /* At the time of the writing of this comment this function is a stub in Wine. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = StopTraceA(c->session, QEMU_G2H(c->session_name), QEMU_G2H(c->properties));
 }
@@ -1319,6 +1360,7 @@ WINBASEAPI ULONG WINAPI TraceEvent(TRACEHANDLE SessionHandle, PEVENT_TRACE_HEADE
 void qemu_TraceEvent(struct qemu_syscall *call)
 {
     struct qemu_TraceEvent *c = (struct qemu_TraceEvent *)call;
+    /* At the time of the writing of this comment this function is a stub in Wine. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = TraceEvent(c->SessionHandle, QEMU_G2H(c->EventTrace));
 }
@@ -1353,7 +1395,7 @@ WINBASEAPI BOOLEAN WINAPI EventProviderEnabled(REGHANDLE handle, UCHAR level, UL
 void qemu_EventProviderEnabled(struct qemu_syscall *call)
 {
     struct qemu_EventProviderEnabled *c = (struct qemu_EventProviderEnabled *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EventProviderEnabled(c->handle, c->level, c->keyword);
 }
 
@@ -1387,7 +1429,7 @@ extern ULONG WINAPI EventActivityIdControl(ULONG code, GUID *guid);
 void qemu_EventActivityIdControl(struct qemu_syscall *call)
 {
     struct qemu_EventActivityIdControl *c = (struct qemu_EventActivityIdControl *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EventActivityIdControl(c->code, QEMU_G2H(c->guid));
 }
 
@@ -1406,7 +1448,8 @@ struct qemu_EventWriteTransfer
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI ULONG WINAPI EventWriteTransfer(REGHANDLE handle, PCEVENT_DESCRIPTOR descriptor, LPCGUID activity, LPCGUID related, ULONG count, PEVENT_DATA_DESCRIPTOR data)
+WINBASEAPI ULONG WINAPI EventWriteTransfer(REGHANDLE handle, PCEVENT_DESCRIPTOR descriptor, LPCGUID activity,
+            LPCGUID related, ULONG count, PEVENT_DATA_DESCRIPTOR data)
 {
     struct qemu_EventWriteTransfer call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EVENTWRITETRANSFER);
@@ -1428,7 +1471,9 @@ void qemu_EventWriteTransfer(struct qemu_syscall *call)
 {
     struct qemu_EventWriteTransfer *c = (struct qemu_EventWriteTransfer *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EventWriteTransfer(c->handle, QEMU_G2H(c->descriptor), QEMU_G2H(c->activity), QEMU_G2H(c->related), c->count, QEMU_G2H(c->data));
+    /* At the time of the writing of this comment this function is a stub in Wine. */
+    c->super.iret = EventWriteTransfer(c->handle, QEMU_G2H(c->descriptor), QEMU_G2H(c->activity),
+            QEMU_G2H(c->related), c->count, QEMU_G2H(c->data));
 }
 
 #endif
@@ -1463,6 +1508,7 @@ extern ULONG WINAPI QueryTraceW(TRACEHANDLE handle, LPCWSTR sessionname, PEVENT_
 void qemu_QueryTraceW(struct qemu_syscall *call)
 {
     struct qemu_QueryTraceW *c = (struct qemu_QueryTraceW *)call;
+    /* At the time of the writing of this comment this function is a stub in Wine. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = QueryTraceW(c->handle, QEMU_G2H(c->sessionname), QEMU_G2H(c->properties));
 }
@@ -1495,7 +1541,8 @@ extern TRACEHANDLE WINAPI OpenTraceA(PEVENT_TRACE_LOGFILEA logfile);
 void qemu_OpenTraceA(struct qemu_syscall *call)
 {
     struct qemu_OpenTraceA *c = (struct qemu_OpenTraceA *)call;
-    WINE_FIXME("Unverified!\n");
+    /* At the time of the writing of this comment this function is a stub in Wine, with a silenced FIXME. */
+    WINE_WARN("Unverified!\n");
     c->super.iret = OpenTraceA(QEMU_G2H(c->logfile));
 }
 
@@ -1527,7 +1574,8 @@ extern TRACEHANDLE WINAPI OpenTraceW(PEVENT_TRACE_LOGFILEW logfile);
 void qemu_OpenTraceW(struct qemu_syscall *call)
 {
     struct qemu_OpenTraceW *c = (struct qemu_OpenTraceW *)call;
-    WINE_FIXME("Unverified!\n");
+    /* At the time of the writing of this comment this function is a stub in Wine, with a silenced FIXME. */
+    WINE_WARN("Unverified!\n");
     c->super.iret = OpenTraceW(QEMU_G2H(c->logfile));
 }
 
@@ -1565,6 +1613,7 @@ extern ULONG WINAPI ProcessTrace(PTRACEHANDLE HandleArray, ULONG HandleCount, LP
 void qemu_ProcessTrace(struct qemu_syscall *call)
 {
     struct qemu_ProcessTrace *c = (struct qemu_ProcessTrace *)call;
+    /* At the time of the writing of this comment this function is a stub in Wine. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = ProcessTrace(QEMU_G2H(c->HandleArray), c->HandleCount, QEMU_G2H(c->StartTime), QEMU_G2H(c->EndTime));
 }
@@ -1613,6 +1662,7 @@ ULONG CDECL TraceMessage(TRACEHANDLE handle, ULONG flags, LPCGUID guid, USHORT n
 void qemu_TraceMessageVa(struct qemu_syscall *call)
 {
     struct qemu_TraceMessageVa *c = (struct qemu_TraceMessageVa *)call;
+    /* Just FYI, this is also a stub in Wine, so don't worry too much. */
     WINE_FIXME("Stub!\n");
     c->super.iret = 0;
 }
@@ -1643,7 +1693,7 @@ WINBASEAPI ULONG WINAPI CloseTrace(TRACEHANDLE handle)
 void qemu_CloseTrace(struct qemu_syscall *call)
 {
     struct qemu_CloseTrace *c = (struct qemu_CloseTrace *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CloseTrace(c->handle);
 }
 
@@ -1679,6 +1729,7 @@ extern ULONG WINAPI EnumerateTraceGuids(PTRACE_GUID_PROPERTIES *propertiesarray,
 void qemu_EnumerateTraceGuids(struct qemu_syscall *call)
 {
     struct qemu_EnumerateTraceGuids *c = (struct qemu_EnumerateTraceGuids *)call;
+    /* At the time of the writing of this comment this function is a stub in Wine. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = EnumerateTraceGuids(QEMU_G2H(c->propertiesarray), c->arraycount, QEMU_G2H(c->guidcount));
 }
