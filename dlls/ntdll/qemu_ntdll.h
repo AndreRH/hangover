@@ -118,6 +118,7 @@ enum ntdll_calls
     CALL_NTFLUSHKEY,
     CALL_NTFSCONTROLFILE,
     CALL_NTGETCURRENTPROCESSORNUMBER,
+    CALL_NTGETTICKCOUNT,
     CALL_NTIMPERSONATEANONYMOUSTOKEN,
     CALL_NTINITIATEPOWERACTION,
     CALL_NTISPROCESSINJOB,
@@ -168,11 +169,13 @@ enum ntdll_calls
     CALL_NTQUERYMULTIPLEVALUEKEY,
     CALL_NTQUERYMUTANT,
     CALL_NTQUERYOBJECT,
+    CALL_NTQUERYPERFORMANCECOUNTER,
     CALL_NTQUERYSECURITYOBJECT,
     CALL_NTQUERYSEMAPHORE,
     CALL_NTQUERYSYMBOLICLINKOBJECT,
     CALL_NTQUERYSYSTEMINFORMATION,
     CALL_NTQUERYSYSTEMINFORMATIONEX,
+    CALL_NTQUERYSYSTEMTIME,
     CALL_NTQUERYTIMER,
     CALL_NTQUERYTIMERRESOLUTION,
     CALL_NTQUERYVALUEKEY,
@@ -212,6 +215,7 @@ enum ntdll_calls
     CALL_NTSETLDTENTRIES,
     CALL_NTSETSECURITYOBJECT,
     CALL_NTSETSYSTEMINFORMATION,
+    CALL_NTSETSYSTEMTIME,
     CALL_NTSETTIMER,
     CALL_NTSETTIMERRESOLUTION,
     CALL_NTSETVALUEKEY,
@@ -408,6 +412,7 @@ enum ntdll_calls
     CALL_RTLLENGTHREQUIREDSID,
     CALL_RTLLENGTHSECURITYDESCRIPTOR,
     CALL_RTLLENGTHSID,
+    CALL_RTLLOCALTIMETOSYSTEMTIME,
     CALL_RTLLOCKHEAP,
     CALL_RTLLOOKUPFUNCTIONENTRY,
     CALL_RTLMAKESELFRELATIVESD,
@@ -434,10 +439,13 @@ enum ntdll_calls
     CALL_RTLPUNWAITCRITICALSECTION,
     CALL_RTLPWAITFORCRITICALSECTION,
     CALL_RTLQUERYDEPTHSLIST,
+    CALL_RTLQUERYDYNAMICTIMEZONEINFORMATION,
     CALL_RTLQUERYHEAPINFORMATION,
     CALL_RTLQUERYINFORMATIONACL,
     CALL_RTLQUERYINFORMATIONACTIVATIONCONTEXT,
     CALL_RTLQUERYREGISTRYVALUES,
+    CALL_RTLQUERYTIMEZONEINFORMATION,
+    CALL_RTLQUERYUNBIASEDINTERRUPTTIME,
     CALL_RTLQUEUEWORKITEM,
     CALL_RTLRAISESTATUS,
     CALL_RTLRANDOM,
@@ -455,6 +463,8 @@ enum ntdll_calls
     CALL_RTLRUNONCECOMPLETE,
     CALL_RTLRUNONCEEXECUTEONCE,
     CALL_RTLRUNONCEINITIALIZE,
+    CALL_RTLSECONDSSINCE1970TOTIME,
+    CALL_RTLSECONDSSINCE1980TOTIME,
     CALL_RTLSELFRELATIVETOABSOLUTESD,
     CALL_RTLSETCONTROLSECURITYDESCRIPTOR,
     CALL_RTLSETCRITICALSECTIONSPINCOUNT,
@@ -469,12 +479,19 @@ enum ntdll_calls
     CALL_RTLSETOWNERSECURITYDESCRIPTOR,
     CALL_RTLSETSACLSECURITYDESCRIPTOR,
     CALL_RTLSETTHREADERRORMODE,
+    CALL_RTLSETTIMEZONEINFORMATION,
     CALL_RTLSIZEHEAP,
     CALL_RTLSLEEPCONDITIONVARIABLECS,
     CALL_RTLSLEEPCONDITIONVARIABLESRW,
     CALL_RTLSTRINGFROMGUID,
     CALL_RTLSUBAUTHORITYCOUNTSID,
     CALL_RTLSUBAUTHORITYSID,
+    CALL_RTLSYSTEMTIMETOLOCALTIME,
+    CALL_RTLTIMEFIELDSTOTIME,
+    CALL_RTLTIMETOELAPSEDTIMEFIELDS,
+    CALL_RTLTIMETOSECONDSSINCE1970,
+    CALL_RTLTIMETOSECONDSSINCE1980,
+    CALL_RTLTIMETOTIMEFIELDS,
     CALL_RTLTRYACQUIRESRWLOCKEXCLUSIVE,
     CALL_RTLTRYACQUIRESRWLOCKSHARED,
     CALL_RTLTRYENTERCRITICALSECTION,
@@ -718,6 +735,7 @@ void qemu_NtFlushInstructionCache(struct qemu_syscall *call);
 void qemu_NtFlushKey(struct qemu_syscall *call);
 void qemu_NtFsControlFile(struct qemu_syscall *call);
 void qemu_NtGetCurrentProcessorNumber(struct qemu_syscall *call);
+void qemu_NtGetTickCount(struct qemu_syscall *call);
 void qemu_NtImpersonateAnonymousToken(struct qemu_syscall *call);
 void qemu_NtInitiatePowerAction(struct qemu_syscall *call);
 void qemu_NtIsProcessInJob(struct qemu_syscall *call);
@@ -768,11 +786,13 @@ void qemu_NtQueryLicenseValue(struct qemu_syscall *call);
 void qemu_NtQueryMultipleValueKey(struct qemu_syscall *call);
 void qemu_NtQueryMutant(struct qemu_syscall *call);
 void qemu_NtQueryObject(struct qemu_syscall *call);
+void qemu_NtQueryPerformanceCounter(struct qemu_syscall *call);
 void qemu_NtQuerySecurityObject(struct qemu_syscall *call);
 void qemu_NtQuerySemaphore(struct qemu_syscall *call);
 void qemu_NtQuerySymbolicLinkObject(struct qemu_syscall *call);
 void qemu_NtQuerySystemInformation(struct qemu_syscall *call);
 void qemu_NtQuerySystemInformationEx(struct qemu_syscall *call);
+void qemu_NtQuerySystemTime(struct qemu_syscall *call);
 void qemu_NtQueryTimer(struct qemu_syscall *call);
 void qemu_NtQueryTimerResolution(struct qemu_syscall *call);
 void qemu_NtQueryValueKey(struct qemu_syscall *call);
@@ -812,6 +832,7 @@ void qemu_NtSetIoCompletion(struct qemu_syscall *call);
 void qemu_NtSetLdtEntries(struct qemu_syscall *call);
 void qemu_NtSetSecurityObject(struct qemu_syscall *call);
 void qemu_NtSetSystemInformation(struct qemu_syscall *call);
+void qemu_NtSetSystemTime(struct qemu_syscall *call);
 void qemu_NtSetTimer(struct qemu_syscall *call);
 void qemu_NtSetTimerResolution(struct qemu_syscall *call);
 void qemu_NtSetValueKey(struct qemu_syscall *call);
@@ -1008,6 +1029,7 @@ void qemu_RtlLeaveCriticalSection(struct qemu_syscall *call);
 void qemu_RtlLengthRequiredSid(struct qemu_syscall *call);
 void qemu_RtlLengthSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlLengthSid(struct qemu_syscall *call);
+void qemu_RtlLocalTimeToSystemTime(struct qemu_syscall *call);
 void qemu_RtlLockHeap(struct qemu_syscall *call);
 void qemu_RtlLookupFunctionEntry(struct qemu_syscall *call);
 void qemu_RtlMakeSelfRelativeSD(struct qemu_syscall *call);
@@ -1034,10 +1056,13 @@ void qemu_RtlPrefixUnicodeString(struct qemu_syscall *call);
 void qemu_RtlpUnWaitCriticalSection(struct qemu_syscall *call);
 void qemu_RtlpWaitForCriticalSection(struct qemu_syscall *call);
 void qemu_RtlQueryDepthSList(struct qemu_syscall *call);
+void qemu_RtlQueryDynamicTimeZoneInformation(struct qemu_syscall *call);
 void qemu_RtlQueryHeapInformation(struct qemu_syscall *call);
 void qemu_RtlQueryInformationAcl(struct qemu_syscall *call);
 void qemu_RtlQueryInformationActivationContext(struct qemu_syscall *call);
 void qemu_RtlQueryRegistryValues(struct qemu_syscall *call);
+void qemu_RtlQueryTimeZoneInformation(struct qemu_syscall *call);
+void qemu_RtlQueryUnbiasedInterruptTime(struct qemu_syscall *call);
 void qemu_RtlQueueWorkItem(struct qemu_syscall *call);
 void qemu_RtlRaiseStatus(struct qemu_syscall *call);
 void qemu_RtlRandom(struct qemu_syscall *call);
@@ -1055,6 +1080,8 @@ void qemu_RtlRunOnceBeginInitialize(struct qemu_syscall *call);
 void qemu_RtlRunOnceComplete(struct qemu_syscall *call);
 void qemu_RtlRunOnceExecuteOnce(struct qemu_syscall *call);
 void qemu_RtlRunOnceInitialize(struct qemu_syscall *call);
+void qemu_RtlSecondsSince1970ToTime(struct qemu_syscall *call);
+void qemu_RtlSecondsSince1980ToTime(struct qemu_syscall *call);
 void qemu_RtlSelfRelativeToAbsoluteSD(struct qemu_syscall *call);
 void qemu_RtlSetControlSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlSetCriticalSectionSpinCount(struct qemu_syscall *call);
@@ -1069,12 +1096,19 @@ void qemu_RtlSetLastWin32ErrorAndNtStatusFromNtStatus(struct qemu_syscall *call)
 void qemu_RtlSetOwnerSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlSetSaclSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlSetThreadErrorMode(struct qemu_syscall *call);
+void qemu_RtlSetTimeZoneInformation(struct qemu_syscall *call);
 void qemu_RtlSizeHeap(struct qemu_syscall *call);
 void qemu_RtlSleepConditionVariableCS(struct qemu_syscall *call);
 void qemu_RtlSleepConditionVariableSRW(struct qemu_syscall *call);
 void qemu_RtlStringFromGUID(struct qemu_syscall *call);
 void qemu_RtlSubAuthorityCountSid(struct qemu_syscall *call);
 void qemu_RtlSubAuthoritySid(struct qemu_syscall *call);
+void qemu_RtlSystemTimeToLocalTime(struct qemu_syscall *call);
+void qemu_RtlTimeFieldsToTime(struct qemu_syscall *call);
+void qemu_RtlTimeToElapsedTimeFields(struct qemu_syscall *call);
+void qemu_RtlTimeToSecondsSince1970(struct qemu_syscall *call);
+void qemu_RtlTimeToSecondsSince1980(struct qemu_syscall *call);
+void qemu_RtlTimeToTimeFields(struct qemu_syscall *call);
 void qemu_RtlTryAcquireSRWLockExclusive(struct qemu_syscall *call);
 void qemu_RtlTryAcquireSRWLockShared(struct qemu_syscall *call);
 void qemu_RtlTryEnterCriticalSection(struct qemu_syscall *call);

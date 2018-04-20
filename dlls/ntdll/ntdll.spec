@@ -156,6 +156,9 @@
 @ stdcall NtGetCurrentProcessorNumber()
 # @ stub NtGetDevicePowerState
 @ stub NtGetPlugPlayEvent
+@ stdcall NtGetTickCount()
+# @ stdcall NtGetWriteWatch(long long ptr long ptr ptr ptr)
+# @ stdcall NtImpersonateAnonymousToken(long)
 @ stub NtImpersonateClientOfPort
 @ stub NtImpersonateThread
 @ stub NtInitializeRegistry
@@ -232,7 +235,7 @@
 @ stdcall NtQueryMutant(long long ptr long ptr)
 @ stdcall NtQueryObject(long long ptr long ptr)
 @ stub NtQueryOpenSubKeys
-# @ stdcall NtQueryPerformanceCounter(ptr ptr)
+@ stdcall NtQueryPerformanceCounter(ptr ptr)
 # @ stub NtQueryPortInformationProcess
 # @ stub NtQueryQuotaInformationFile
 # @ stdcall NtQuerySection(long long ptr long ptr)
@@ -243,7 +246,7 @@
 # @ stdcall NtQuerySystemEnvironmentValueEx(ptr ptr ptr ptr ptr)
 @ stdcall NtQuerySystemInformation(long ptr long ptr)
 @ stdcall NtQuerySystemInformationEx(long ptr long ptr long ptr)
-# @ stdcall NtQuerySystemTime(ptr)
+@ stdcall NtQuerySystemTime(ptr)
 @ stdcall NtQueryTimer(ptr long ptr long ptr)
 @ stdcall NtQueryTimerResolution(ptr ptr ptr)
 @ stdcall NtQueryValueKey(long ptr long ptr long ptr)
@@ -316,7 +319,7 @@
 # @ stub NtSetSystemEnvironmentValueEx
 @ stdcall NtSetSystemInformation(long ptr long)
 @ stub NtSetSystemPowerState
-# @ stdcall NtSetSystemTime(ptr ptr)
+@ stdcall NtSetSystemTime(ptr ptr)
 # @ stub NtSetThreadExecutionState
 @ stdcall NtSetTimer(long ptr ptr ptr long long ptr)
 @ stdcall NtSetTimerResolution(long long ptr)
@@ -719,7 +722,7 @@
 @ stdcall RtlLengthRequiredSid(long)
 @ stdcall RtlLengthSecurityDescriptor(ptr)
 @ stdcall RtlLengthSid(ptr)
-# @ stdcall RtlLocalTimeToSystemTime(ptr ptr)
+@ stdcall RtlLocalTimeToSystemTime(ptr ptr)
 # @ stub RtlLockBootStatusData
 @ stdcall RtlLockHeap(long)
 # @ stub RtlLockMemoryStreamRegion
@@ -763,7 +766,7 @@
 # @ stub RtlPushFrame
 # @ stdcall RtlQueryAtomInAtomTable(ptr long ptr ptr ptr ptr)
 @ stdcall RtlQueryDepthSList(ptr)
-# @ stdcall RtlQueryDynamicTimeZoneInformation(ptr)
+@ stdcall RtlQueryDynamicTimeZoneInformation(ptr)
 # @ stdcall RtlQueryEnvironmentVariable_U(ptr ptr ptr)
 @ stdcall RtlQueryHeapInformation(long long ptr long ptr)
 @ stdcall RtlQueryInformationAcl(ptr ptr long long)
@@ -780,8 +783,8 @@
 @ stdcall RtlQueryRegistryValues(long ptr ptr ptr ptr)
 @ stub RtlQuerySecurityObject
 @ stub RtlQueryTagHeap
-# @ stdcall RtlQueryTimeZoneInformation(ptr)
-# @ stdcall RtlQueryUnbiasedInterruptTime(ptr)
+@ stdcall RtlQueryTimeZoneInformation(ptr)
+@ stdcall RtlQueryUnbiasedInterruptTime(ptr)
 @ stub RtlQueueApcWow64Thread
 @ stdcall RtlQueueWorkItem(ptr ptr long)
 @ stdcall -norelay RtlRaiseException(ptr)
@@ -814,8 +817,8 @@
 @ stdcall RtlRunOnceComplete(ptr long ptr)
 @ stdcall RtlRunOnceExecuteOnce(ptr ptr ptr ptr)
 @ stdcall RtlRunOnceInitialize(ptr)
-# @ stdcall RtlSecondsSince1970ToTime(long ptr)
-# @ stdcall RtlSecondsSince1980ToTime(long ptr)
+@ stdcall RtlSecondsSince1970ToTime(long ptr)
+@ stdcall RtlSecondsSince1980ToTime(long ptr)
 # @ stub RtlSeekMemoryStream
 # @ stub RtlSelfRelativeToAbsoluteSD2
 @ stdcall RtlSelfRelativeToAbsoluteSD(ptr ptr ptr ptr ptr ptr ptr ptr ptr ptr ptr)
@@ -849,7 +852,7 @@
 @ stdcall RtlSetThreadErrorMode(long ptr)
 # @ stub RtlSetThreadIsCritical
 # @ stub RtlSetThreadPoolStartFunc
-# @ stdcall RtlSetTimeZoneInformation(ptr)
+@ stdcall RtlSetTimeZoneInformation(ptr)
 # @ stub RtlSetTimer
 @ stub RtlSetUnicodeCallouts
 @ stub RtlSetUserFlagsHeap
@@ -865,12 +868,12 @@
 @ stdcall RtlSubAuthoritySid(ptr long)
 @ stub RtlSubtreePredecessor
 @ stub RtlSubtreeSuccessor
-# @ stdcall RtlSystemTimeToLocalTime(ptr ptr)
-# @ stdcall RtlTimeFieldsToTime(ptr ptr)
-# @ stdcall RtlTimeToElapsedTimeFields(ptr ptr)
-# @ stdcall RtlTimeToSecondsSince1970(ptr ptr)
-# @ stdcall RtlTimeToSecondsSince1980(ptr ptr)
-# @ stdcall RtlTimeToTimeFields (ptr ptr)
+@ stdcall RtlSystemTimeToLocalTime(ptr ptr)
+@ stdcall RtlTimeFieldsToTime(ptr ptr)
+@ stdcall RtlTimeToElapsedTimeFields(ptr ptr)
+@ stdcall RtlTimeToSecondsSince1970(ptr ptr)
+@ stdcall RtlTimeToSecondsSince1980(ptr ptr)
+@ stdcall RtlTimeToTimeFields (ptr ptr)
 # @ stub RtlTraceDatabaseAdd
 # @ stub RtlTraceDatabaseCreate
 # @ stub RtlTraceDatabaseDestroy
