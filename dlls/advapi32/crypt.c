@@ -223,7 +223,7 @@ WINBASEAPI BOOL WINAPI CryptGenRandom (HCRYPTPROV hProv, DWORD dwLen, BYTE *pbBu
 void qemu_CryptGenRandom(struct qemu_syscall *call)
 {
     struct qemu_CryptGenRandom *c = (struct qemu_CryptGenRandom *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CryptGenRandom(c->hProv, c->dwLen, QEMU_G2H(c->pbBuffer));
 }
 
@@ -320,7 +320,7 @@ WINBASEAPI BOOL WINAPI CryptDecrypt (HCRYPTKEY hKey, HCRYPTHASH hHash, BOOL Fina
 void qemu_CryptDecrypt(struct qemu_syscall *call)
 {
     struct qemu_CryptDecrypt *c = (struct qemu_CryptDecrypt *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CryptDecrypt(c->hKey, c->hHash, c->Final, c->dwFlags, QEMU_G2H(c->pbData), QEMU_G2H(c->pdwDataLen));
 }
 
@@ -532,7 +532,7 @@ WINBASEAPI BOOL WINAPI CryptEncrypt (HCRYPTKEY hKey, HCRYPTHASH hHash, BOOL Fina
 void qemu_CryptEncrypt(struct qemu_syscall *call)
 {
     struct qemu_CryptEncrypt *c = (struct qemu_CryptEncrypt *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CryptEncrypt(c->hKey, c->hHash, c->Final, c->dwFlags, QEMU_G2H(c->pbData), QEMU_G2H(c->pdwDataLen), c->dwBufLen);
 }
 
