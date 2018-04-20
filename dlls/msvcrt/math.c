@@ -1562,7 +1562,7 @@ void qemu_tanh(struct qemu_syscall *call)
 
 #endif
 
-#ifdef QEMU_DLL_GUEST
+#if defined(QEMU_DLL_GUEST) && defined(__i386__)
 
 __ASM_GLOBAL_FUNC(MSVCRT__ftol,
         "pushl   %ebp\n\t"
