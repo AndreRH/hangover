@@ -1,5 +1,6 @@
 /*
  * Copyright 2017 André Hentschel
+ * Copyright 2018 Stefan Dösinger for CodeWeavers
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +22,11 @@
 #include <windows.h>
 #include <stdio.h>
 #include <ntsecapi.h>
+#include <winternl.h>
+
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_winternl.h"
+#include "thunk/qemu_ntsecapi.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -62,8 +68,19 @@ WINBASEAPI NTSTATUS WINAPI LsaAddAccountRights(LSA_HANDLE policy, PSID sid, PLSA
 void qemu_LsaAddAccountRights(struct qemu_syscall *call)
 {
     struct qemu_LsaAddAccountRights *c = (struct qemu_LsaAddAccountRights *)call;
+    LSA_UNICODE_STRING stack, *rights = &stack;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = LsaAddAccountRights(QEMU_G2H(c->policy), QEMU_G2H(c->sid), QEMU_G2H(c->rights), c->count);
+#if GUEST_BIT == HOST_BIT
+    rights = QEMU_G2H(c->rights);
+#else
+    if (c->rights)
+        UNICODE_STRING_g2h(rights, QEMU_G2H(c->rights));
+    else
+        rights = NULL;
+#endif
+
+    c->super.iret = LsaAddAccountRights(QEMU_G2H(c->policy), QEMU_G2H(c->sid), rights, c->count);
 }
 
 #endif
@@ -76,7 +93,7 @@ struct qemu_LsaClose
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI LsaClose(IN LSA_HANDLE ObjectHandle)
+WINBASEAPI NTSTATUS WINAPI LsaClose(LSA_HANDLE ObjectHandle)
 {
     struct qemu_LsaClose call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LSACLOSE);
@@ -92,7 +109,7 @@ WINBASEAPI NTSTATUS WINAPI LsaClose(IN LSA_HANDLE ObjectHandle)
 void qemu_LsaClose(struct qemu_syscall *call)
 {
     struct qemu_LsaClose *c = (struct qemu_LsaClose *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LsaClose(QEMU_G2H(c->ObjectHandle));
 }
 
@@ -179,7 +196,8 @@ struct qemu_LsaEnumerateAccountRights
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI LsaEnumerateAccountRights(LSA_HANDLE policy, PSID sid, PLSA_UNICODE_STRING *rights, PULONG count)
+WINBASEAPI NTSTATUS WINAPI LsaEnumerateAccountRights(LSA_HANDLE policy, PSID sid,
+        PLSA_UNICODE_STRING *rights, PULONG count)
 {
     struct qemu_LsaEnumerateAccountRights call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LSAENUMERATEACCOUNTRIGHTS);
@@ -189,6 +207,7 @@ WINBASEAPI NTSTATUS WINAPI LsaEnumerateAccountRights(LSA_HANDLE policy, PSID sid
     call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
+    *rights = (LSA_UNICODE_STRING *)(ULONG_PTR)call.rights;
 
     return call.super.iret;
 }
@@ -198,8 +217,13 @@ WINBASEAPI NTSTATUS WINAPI LsaEnumerateAccountRights(LSA_HANDLE policy, PSID sid
 void qemu_LsaEnumerateAccountRights(struct qemu_syscall *call)
 {
     struct qemu_LsaEnumerateAccountRights *c = (struct qemu_LsaEnumerateAccountRights *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LsaEnumerateAccountRights(QEMU_G2H(c->policy), QEMU_G2H(c->sid), QEMU_G2H(c->rights), QEMU_G2H(c->count));
+    LSA_UNICODE_STRING *rights;
+
+    /* This function is a stub in Wine, but we still need to be careful about the pointer to a pointer it zeroes. */
+    WINE_WARN("Unverified!\n");
+    c->super.iret = LsaEnumerateAccountRights(QEMU_G2H(c->policy), QEMU_G2H(c->sid), c->rights ? &rights : NULL,
+            QEMU_G2H(c->count));
+    c->rights = QEMU_H2G(rights);
 }
 
 #endif
@@ -234,8 +258,18 @@ WINBASEAPI NTSTATUS WINAPI LsaEnumerateAccountsWithUserRight(LSA_HANDLE policy, 
 void qemu_LsaEnumerateAccountsWithUserRight(struct qemu_syscall *call)
 {
     struct qemu_LsaEnumerateAccountsWithUserRight *c = (struct qemu_LsaEnumerateAccountsWithUserRight *)call;
+    LSA_UNICODE_STRING stack, *rights = &stack;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = LsaEnumerateAccountsWithUserRight(QEMU_G2H(c->policy), QEMU_G2H(c->rights), QEMU_G2H(c->buffer), QEMU_G2H(c->count));
+#if GUEST_BIT == HOST_BIT
+    rights = QEMU_G2H(c->rights);
+#else
+    if (c->rights)
+        UNICODE_STRING_g2h(rights, QEMU_G2H(c->rights));
+    else
+        rights = NULL;
+#endif
+    c->super.iret = LsaEnumerateAccountsWithUserRight(QEMU_G2H(c->policy), rights, QEMU_G2H(c->buffer), QEMU_G2H(c->count));
 }
 
 #endif
@@ -340,7 +374,7 @@ WINBASEAPI NTSTATUS WINAPI LsaFreeMemory(PVOID Buffer)
 void qemu_LsaFreeMemory(struct qemu_syscall *call)
 {
     struct qemu_LsaFreeMemory *c = (struct qemu_LsaFreeMemory *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LsaFreeMemory(QEMU_G2H(c->Buffer));
 }
 
@@ -378,8 +412,20 @@ WINBASEAPI NTSTATUS WINAPI LsaLookupNames(LSA_HANDLE PolicyHandle, ULONG Count, 
 void qemu_LsaLookupNames(struct qemu_syscall *call)
 {
     struct qemu_LsaLookupNames *c = (struct qemu_LsaLookupNames *)call;
+    LSA_UNICODE_STRING stack, *names = &stack;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = LsaLookupNames(QEMU_G2H(c->PolicyHandle), c->Count, QEMU_G2H(c->Names), QEMU_G2H(c->ReferencedDomains), QEMU_G2H(c->Sids));
+#if GUEST_BIT == HOST_BIT
+    names = QEMU_G2H(c->Names);
+#else
+    if (c->Names)
+        UNICODE_STRING_g2h(names, QEMU_G2H(c->Names));
+    else
+        names = NULL;
+#endif
+
+    c->super.iret = LsaLookupNames(QEMU_G2H(c->PolicyHandle), c->Count, names, QEMU_G2H(c->ReferencedDomains),
+            QEMU_G2H(c->Sids));
 }
 
 #endif
@@ -409,6 +455,8 @@ WINBASEAPI NTSTATUS WINAPI LsaLookupNames2(LSA_HANDLE policy, ULONG flags, ULONG
     call.sids = (ULONG_PTR)sids;
 
     qemu_syscall(&call.super);
+    *domains = (LSA_REFERENCED_DOMAIN_LIST *)(ULONG_PTR)call.domains;
+    *sids = (LSA_TRANSLATED_SID2 *)(ULONG_PTR)call.sids;
 
     return call.super.iret;
 }
@@ -418,8 +466,47 @@ WINBASEAPI NTSTATUS WINAPI LsaLookupNames2(LSA_HANDLE policy, ULONG flags, ULONG
 void qemu_LsaLookupNames2(struct qemu_syscall *call)
 {
     struct qemu_LsaLookupNames2 *c = (struct qemu_LsaLookupNames2 *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LsaLookupNames2(QEMU_G2H(c->policy), c->flags, c->count, QEMU_G2H(c->names), QEMU_G2H(c->domains), QEMU_G2H(c->sids));
+    LSA_UNICODE_STRING stack[10], *names = stack;
+    struct qemu_UNICODE_STRING *names32;
+    unsigned int i;
+    LSA_REFERENCED_DOMAIN_LIST *domains;
+    LSA_TRANSLATED_SID2 *sids;
+    struct qemu_LSA_TRANSLATED_SID2 *sids32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    names = QEMU_G2H(c->names);
+#else
+    names32 = QEMU_G2H(c->names);
+    if (names32)
+    {
+        if (c->count > sizeof(stack) / sizeof(stack[0]))
+            names = HeapAlloc(GetProcessHeap(), 0, sizeof(*names));
+
+        for (i = 0; i < c->count; ++i)
+            UNICODE_STRING_g2h(&names[i], &names32[i]);
+    }
+    else
+    {
+        names = NULL;
+    }
+#endif
+
+    c->super.iret = LsaLookupNames2(QEMU_G2H(c->policy), c->flags, c->count, names, &domains, &sids);
+
+#if GUEST_BIT != HOST_BIT
+    if (names && names != stack)
+        HeapFree(GetProcessHeap(), 0, names);
+
+    sids32 = (struct qemu_LSA_TRANSLATED_SID2 *)sids;
+    for (i = 0; i < c->count; ++i)
+        LSA_TRANSLATED_SID2_h2g(&sids32[i], &sids[i]);
+
+    LSA_REFERENCED_DOMAIN_LIST_h2g((struct qemu_LSA_REFERENCED_DOMAIN_LIST *)domains, domains);
+#endif
+
+    c->domains = QEMU_H2G(domains);
+    c->sids = QEMU_H2G(sids);
 }
 
 #endif
@@ -503,7 +590,8 @@ struct qemu_LsaOpenPolicy
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI LsaOpenPolicy(PLSA_UNICODE_STRING SystemName, PLSA_OBJECT_ATTRIBUTES ObjectAttributes, ACCESS_MASK DesiredAccess, PLSA_HANDLE PolicyHandle)
+WINBASEAPI NTSTATUS WINAPI LsaOpenPolicy(PLSA_UNICODE_STRING SystemName, PLSA_OBJECT_ATTRIBUTES ObjectAttributes,
+        ACCESS_MASK DesiredAccess, PLSA_HANDLE PolicyHandle)
 {
     struct qemu_LsaOpenPolicy call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LSAOPENPOLICY);
@@ -513,6 +601,8 @@ WINBASEAPI NTSTATUS WINAPI LsaOpenPolicy(PLSA_UNICODE_STRING SystemName, PLSA_OB
     call.PolicyHandle = (ULONG_PTR)PolicyHandle;
 
     qemu_syscall(&call.super);
+    if (PolicyHandle)
+        *PolicyHandle = (LSA_HANDLE)(ULONG_PTR)call.PolicyHandle;
 
     return call.super.iret;
 }
@@ -522,8 +612,22 @@ WINBASEAPI NTSTATUS WINAPI LsaOpenPolicy(PLSA_UNICODE_STRING SystemName, PLSA_OB
 void qemu_LsaOpenPolicy(struct qemu_syscall *call)
 {
     struct qemu_LsaOpenPolicy *c = (struct qemu_LsaOpenPolicy *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LsaOpenPolicy(QEMU_G2H(c->SystemName), QEMU_G2H(c->ObjectAttributes), c->DesiredAccess, QEMU_G2H(c->PolicyHandle));
+    LSA_UNICODE_STRING stack, *string = &stack;
+    LSA_HANDLE policy;
+
+    /* This is a semi-stub in Wine. */
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    string = QEMU_G2H(c->SystemName);
+#else
+    if (c->SystemName)
+        UNICODE_STRING_g2h(string, QEMU_G2H(c->SystemName));
+    else
+        string = NULL;
+#endif
+
+    c->super.iret = LsaOpenPolicy(string, QEMU_G2H(c->ObjectAttributes), c->DesiredAccess, &policy);
+    c->PolicyHandle = QEMU_H2G(policy);
 }
 
 #endif
@@ -558,8 +662,19 @@ WINBASEAPI NTSTATUS WINAPI LsaOpenTrustedDomainByName(LSA_HANDLE policy, PLSA_UN
 void qemu_LsaOpenTrustedDomainByName(struct qemu_syscall *call)
 {
     struct qemu_LsaOpenTrustedDomainByName *c = (struct qemu_LsaOpenTrustedDomainByName *)call;
+    LSA_UNICODE_STRING stack, *name = &stack;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = LsaOpenTrustedDomainByName(QEMU_G2H(c->policy), QEMU_G2H(c->name), c->access, QEMU_G2H(c->handle));
+#if GUEST_BIT == HOST_BIT
+    name = QEMU_G2H(c->name);
+#else
+    if (c->name)
+        UNICODE_STRING_g2h(name, QEMU_G2H(c->name));
+    else
+        name = NULL;
+#endif
+
+    c->super.iret = LsaOpenTrustedDomainByName(QEMU_G2H(c->policy), name, c->access, QEMU_G2H(c->handle));
 }
 
 #endif
@@ -574,7 +689,8 @@ struct qemu_LsaQueryInformationPolicy
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI LsaQueryInformationPolicy(IN LSA_HANDLE PolicyHandle, IN POLICY_INFORMATION_CLASS InformationClass, OUT PVOID *Buffer)
+WINBASEAPI NTSTATUS WINAPI LsaQueryInformationPolicy(LSA_HANDLE PolicyHandle,
+        POLICY_INFORMATION_CLASS InformationClass, void **Buffer)
 {
     struct qemu_LsaQueryInformationPolicy call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LSAQUERYINFORMATIONPOLICY);
@@ -583,6 +699,8 @@ WINBASEAPI NTSTATUS WINAPI LsaQueryInformationPolicy(IN LSA_HANDLE PolicyHandle,
     call.Buffer = (ULONG_PTR)Buffer;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == ERROR_SUCCESS)
+        *Buffer = (void *)(ULONG_PTR)call.Buffer;
 
     return call.super.iret;
 }
@@ -592,8 +710,14 @@ WINBASEAPI NTSTATUS WINAPI LsaQueryInformationPolicy(IN LSA_HANDLE PolicyHandle,
 void qemu_LsaQueryInformationPolicy(struct qemu_syscall *call)
 {
     struct qemu_LsaQueryInformationPolicy *c = (struct qemu_LsaQueryInformationPolicy *)call;
+    void *buffer;
+
+    /* Wine allocates memory for the returned data. All info classes need conversions because there
+     * are pointers stored in the structs. We can probably convert this in place. */
     WINE_FIXME("Unverified!\n");
-    c->super.iret = LsaQueryInformationPolicy(QEMU_G2H(c->PolicyHandle), c->InformationClass, QEMU_G2H(c->Buffer));
+    c->super.iret = LsaQueryInformationPolicy(QEMU_G2H(c->PolicyHandle), c->InformationClass,
+            c->Buffer ? &buffer : NULL);
+    c->Buffer = QEMU_H2G(buffer);
 }
 
 #endif
@@ -664,8 +788,19 @@ WINBASEAPI NTSTATUS WINAPI LsaQueryTrustedDomainInfoByName(LSA_HANDLE policy, PL
 void qemu_LsaQueryTrustedDomainInfoByName(struct qemu_syscall *call)
 {
     struct qemu_LsaQueryTrustedDomainInfoByName *c = (struct qemu_LsaQueryTrustedDomainInfoByName *)call;
+    LSA_UNICODE_STRING stack, *name = &stack;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = LsaQueryTrustedDomainInfoByName(QEMU_G2H(c->policy), QEMU_G2H(c->name), c->class, QEMU_G2H(c->buffer));
+#if GUEST_BIT == HOST_BIT
+    name = QEMU_G2H(c->name);
+#else
+    if (c->name)
+        UNICODE_STRING_g2h(name, QEMU_G2H(c->name));
+    else
+        name = NULL;
+#endif
+
+    c->super.iret = LsaQueryTrustedDomainInfoByName(QEMU_G2H(c->policy), name, c->class, QEMU_G2H(c->buffer));
 }
 
 #endif
@@ -734,8 +869,19 @@ WINBASEAPI NTSTATUS WINAPI LsaRemoveAccountRights(LSA_HANDLE policy, PSID sid, B
 void qemu_LsaRemoveAccountRights(struct qemu_syscall *call)
 {
     struct qemu_LsaRemoveAccountRights *c = (struct qemu_LsaRemoveAccountRights *)call;
+    LSA_UNICODE_STRING stack, *rights = &stack;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = LsaRemoveAccountRights(QEMU_G2H(c->policy), QEMU_G2H(c->sid), c->all, QEMU_G2H(c->rights), c->count);
+#if GUEST_BIT == HOST_BIT
+    rights = QEMU_G2H(c->rights);
+#else
+    if (c->rights)
+        UNICODE_STRING_g2h(rights, QEMU_G2H(c->rights));
+    else
+        rights = NULL;
+#endif
+
+    c->super.iret = LsaRemoveAccountRights(QEMU_G2H(c->policy), QEMU_G2H(c->sid), c->all, rights, c->count);
 }
 
 #endif
@@ -768,8 +914,19 @@ WINBASEAPI NTSTATUS WINAPI LsaRetrievePrivateData(IN LSA_HANDLE PolicyHandle, IN
 void qemu_LsaRetrievePrivateData(struct qemu_syscall *call)
 {
     struct qemu_LsaRetrievePrivateData *c = (struct qemu_LsaRetrievePrivateData *)call;
+    LSA_UNICODE_STRING stack, *key_name = &stack;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = LsaRetrievePrivateData(QEMU_G2H(c->PolicyHandle), QEMU_G2H(c->KeyName), QEMU_G2H(c->PrivateData));
+#if GUEST_BIT == HOST_BIT
+    key_name = QEMU_G2H(c->KeyName);
+#else
+    if (c->KeyName)
+        UNICODE_STRING_g2h(key_name, QEMU_G2H(c->KeyName));
+    else
+        key_name = NULL;
+#endif
+
+    c->super.iret = LsaRetrievePrivateData(QEMU_G2H(c->PolicyHandle), key_name, QEMU_G2H(c->PrivateData));
 }
 
 #endif
@@ -837,8 +994,25 @@ extern NTSTATUS WINAPI LsaSetSecret(LSA_HANDLE SecretHandle, PLSA_UNICODE_STRING
 void qemu_LsaSetSecret(struct qemu_syscall *call)
 {
     struct qemu_LsaSetSecret *c = (struct qemu_LsaSetSecret *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LsaSetSecret(QEMU_G2H(c->SecretHandle), QEMU_G2H(c->EncryptedCurrentValue), QEMU_G2H(c->EncryptedOldValue));
+    LSA_UNICODE_STRING stack, *cur_value = &stack;
+    LSA_UNICODE_STRING stack2, *old_value = &stack2;
+
+#if GUEST_BIT == HOST_BIT
+    cur_value = QEMU_G2H(c->EncryptedCurrentValue);
+    old_value = QEMU_G2H(c->EncryptedOldValue);
+#else
+    if (c->EncryptedCurrentValue)
+        UNICODE_STRING_g2h(cur_value, QEMU_G2H(c->EncryptedCurrentValue));
+    else
+        cur_value = NULL;
+
+    if (c->EncryptedCurrentValue)
+        UNICODE_STRING_g2h(old_value, QEMU_G2H(c->EncryptedCurrentValue));
+    else
+        old_value = NULL;
+#endif
+
+    c->super.iret = LsaSetSecret(QEMU_G2H(c->SecretHandle), cur_value, old_value);
 }
 
 #endif
@@ -873,8 +1047,19 @@ WINBASEAPI NTSTATUS WINAPI LsaSetTrustedDomainInfoByName(LSA_HANDLE policy, PLSA
 void qemu_LsaSetTrustedDomainInfoByName(struct qemu_syscall *call)
 {
     struct qemu_LsaSetTrustedDomainInfoByName *c = (struct qemu_LsaSetTrustedDomainInfoByName *)call;
+    LSA_UNICODE_STRING stack, *name = &stack;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = LsaSetTrustedDomainInfoByName(QEMU_G2H(c->policy), QEMU_G2H(c->name), c->class, QEMU_G2H(c->buffer));
+#if GUEST_BIT == HOST_BIT
+    name = QEMU_G2H(c->name);
+#else
+    if (c->name)
+        UNICODE_STRING_g2h(name, QEMU_G2H(c->name));
+    else
+        name = NULL;
+#endif
+
+    c->super.iret = LsaSetTrustedDomainInfoByName(QEMU_G2H(c->policy), name, c->class, QEMU_G2H(c->buffer));
 }
 
 #endif
@@ -943,8 +1128,19 @@ WINBASEAPI NTSTATUS WINAPI LsaStorePrivateData(IN LSA_HANDLE PolicyHandle, IN PL
 void qemu_LsaStorePrivateData(struct qemu_syscall *call)
 {
     struct qemu_LsaStorePrivateData *c = (struct qemu_LsaStorePrivateData *)call;
+    LSA_UNICODE_STRING stack, *key_name = &stack;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = LsaStorePrivateData(QEMU_G2H(c->PolicyHandle), QEMU_G2H(c->KeyName), QEMU_G2H(c->PrivateData));
+#if GUEST_BIT == HOST_BIT
+    key_name = QEMU_G2H(c->KeyName);
+#else
+    if (c->KeyName)
+        UNICODE_STRING_g2h(key_name, QEMU_G2H(c->KeyName));
+    else
+        key_name = NULL;
+#endif
+
+    c->super.iret = LsaStorePrivateData(QEMU_G2H(c->PolicyHandle), key_name, QEMU_G2H(c->PrivateData));
 }
 
 #endif
