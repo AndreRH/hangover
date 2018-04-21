@@ -96,4 +96,96 @@ static inline void LSA_TRANSLATED_NAME_h2g(struct qemu_LSA_TRANSLATED_NAME *gues
     guest->DomainIndex = host->DomainIndex;
 }
 
+struct qemu_POLICY_AUDIT_EVENTS_INFO
+{
+    BOOLEAN AuditingMode;
+    qemu_ptr EventAuditingOptions; /* POLICY_AUDIT_EVENT_OPTIONS *, aka ULONG * */
+    ULONG MaximumAuditEventCount;
+};
+
+static inline void POLICY_AUDIT_EVENTS_INFO_g2h(POLICY_AUDIT_EVENTS_INFO *host,
+        const struct qemu_POLICY_AUDIT_EVENTS_INFO *guest)
+{
+    host->AuditingMode = guest->AuditingMode;
+    host->EventAuditingOptions = (POLICY_AUDIT_EVENT_OPTIONS *)(ULONG_PTR)guest->EventAuditingOptions;
+    host->MaximumAuditEventCount = guest->MaximumAuditEventCount;
+}
+
+static inline void POLICY_AUDIT_EVENTS_INFO_h2g(struct qemu_POLICY_AUDIT_EVENTS_INFO *guest,
+        const POLICY_AUDIT_EVENTS_INFO *host)
+{
+    guest->AuditingMode = host->AuditingMode;
+    guest->EventAuditingOptions = (ULONG_PTR)host->EventAuditingOptions;
+    guest->MaximumAuditEventCount = host->MaximumAuditEventCount;
+}
+
+struct qemu_POLICY_PRIMARY_DOMAIN_INFO
+{
+    struct qemu_UNICODE_STRING Name;
+    qemu_ptr Sid;
+};
+
+static inline void POLICY_PRIMARY_DOMAIN_INFO_g2h(POLICY_PRIMARY_DOMAIN_INFO *host,
+        const struct qemu_POLICY_PRIMARY_DOMAIN_INFO *guest)
+{
+    UNICODE_STRING_g2h(&host->Name, &guest->Name);
+    host->Sid = (PSID)(ULONG_PTR)guest->Sid;
+}
+
+static inline void POLICY_PRIMARY_DOMAIN_INFO_h2g(struct qemu_POLICY_PRIMARY_DOMAIN_INFO *guest,
+        const POLICY_PRIMARY_DOMAIN_INFO *host)
+{
+    UNICODE_STRING_h2g(&guest->Name, &host->Name);
+    guest->Sid = (ULONG_PTR)host->Sid;
+}
+
+struct qemu_POLICY_DNS_DOMAIN_INFO
+{
+    struct qemu_UNICODE_STRING Name;
+    struct qemu_UNICODE_STRING DnsDomainName;
+    struct qemu_UNICODE_STRING DnsForestName;
+    GUID DomainGuid;
+    qemu_ptr Sid;
+};
+
+static inline void POLICY_DNS_DOMAIN_INFO_g2h(POLICY_DNS_DOMAIN_INFO *host,
+        const struct qemu_POLICY_DNS_DOMAIN_INFO *guest)
+{
+    UNICODE_STRING_g2h(&host->Name, &guest->Name);
+    UNICODE_STRING_g2h(&host->DnsDomainName, &guest->DnsDomainName);
+    UNICODE_STRING_g2h(&host->DnsForestName, &guest->DnsForestName);
+    host->DomainGuid = guest->DomainGuid;
+    host->Sid = (PSID)(ULONG_PTR)guest->Sid;
+}
+
+static inline void POLICY_DNS_DOMAIN_INFO_h2g(struct qemu_POLICY_DNS_DOMAIN_INFO *guest,
+        const POLICY_DNS_DOMAIN_INFO *host)
+{
+    UNICODE_STRING_h2g(&guest->Name, &host->Name);
+    UNICODE_STRING_h2g(&guest->DnsDomainName, &host->DnsDomainName);
+    UNICODE_STRING_h2g(&guest->DnsForestName, &host->DnsForestName);
+    guest->DomainGuid = host->DomainGuid;
+    guest->Sid = (ULONG_PTR)host->Sid;
+}
+
+struct qemu_POLICY_ACCOUNT_DOMAIN_INFO
+{
+    struct qemu_UNICODE_STRING DomainName;
+    qemu_ptr DomainSid;
+};
+
+static inline void POLICY_ACCOUNT_DOMAIN_INFO_g2h(POLICY_ACCOUNT_DOMAIN_INFO *host,
+        const struct qemu_POLICY_ACCOUNT_DOMAIN_INFO *guest)
+{
+    UNICODE_STRING_g2h(&host->DomainName, &guest->DomainName);
+    host->DomainSid = (PSID)(ULONG_PTR)guest->DomainSid;
+}
+
+static inline void POLICY_ACCOUNT_DOMAIN_INFO_h2g(struct qemu_POLICY_ACCOUNT_DOMAIN_INFO *guest,
+        const POLICY_ACCOUNT_DOMAIN_INFO *host)
+{
+    UNICODE_STRING_h2g(&guest->DomainName, &host->DomainName);
+    guest->DomainSid = (ULONG_PTR)host->DomainSid;
+}
+
 #endif

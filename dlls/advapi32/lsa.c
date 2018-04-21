@@ -754,9 +754,45 @@ void qemu_LsaQueryInformationPolicy(struct qemu_syscall *call)
 
     /* Wine allocates memory for the returned data. All info classes need conversions because there
      * are pointers stored in the structs. We can probably convert this in place. */
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LsaQueryInformationPolicy(QEMU_G2H(c->PolicyHandle), c->InformationClass,
             c->Buffer ? &buffer : NULL);
+
+#if GUEST_BIT != HOST_BIT
+    switch (c->InformationClass)
+    {
+        case PolicyAuditEventsInformation:
+            POLICY_AUDIT_EVENTS_INFO_h2g(buffer, buffer);
+            break;
+
+        case PolicyPrimaryDomainInformation:
+            POLICY_PRIMARY_DOMAIN_INFO_h2g(buffer, buffer);
+            break;
+
+        case PolicyAccountDomainInformation:
+            POLICY_ACCOUNT_DOMAIN_INFO_h2g(buffer, buffer);
+            break;
+
+        case PolicyDnsDomainInformation:
+            POLICY_DNS_DOMAIN_INFO_h2g(buffer, buffer);
+            break;
+
+        case PolicyAuditLogInformation:
+        case PolicyPdAccountInformation:
+        case PolicyLsaServerRoleInformation:
+        case PolicyReplicaSourceInformation:
+        case PolicyDefaultQuotaInformation:
+        case PolicyModificationInformation:
+        case PolicyAuditFullSetInformation:
+        case PolicyAuditFullQueryInformation:
+            WINE_FIXME("Unhandled information class %u.\n", (unsigned int)c->InformationClass);
+            break;
+
+        default:
+            WINE_FIXME("Unexpected information class %u.\n", (unsigned int)c->InformationClass);
+    }
+#endif
+
     c->Buffer = QEMU_H2G(buffer);
 }
 
@@ -1236,6 +1272,8 @@ WINBASEAPI NTSTATUS WINAPI LsaLookupPrivilegeName(LSA_HANDLE handle, LUID *luid,
     call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
+    if (luid && handle) /* Logic copied from the Wine implementation - not nice. */
+        *name = (UNICODE_STRING *)(ULONG_PTR)call.name;
 
     return call.super.iret;
 }
@@ -1246,8 +1284,16 @@ extern NTSTATUS WINAPI LsaLookupPrivilegeName(LSA_HANDLE handle, LUID *luid, UNI
 void qemu_LsaLookupPrivilegeName(struct qemu_syscall *call)
 {
     struct qemu_LsaLookupPrivilegeName *c = (struct qemu_LsaLookupPrivilegeName *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LsaLookupPrivilegeName(QEMU_G2H(c->handle), QEMU_G2H(c->luid), QEMU_G2H(c->name));
+    UNICODE_STRING *name = NULL;
+
+    WINE_TRACE("\n");
+    c->super.iret = LsaLookupPrivilegeName(QEMU_G2H(c->handle), QEMU_G2H(c->luid), c->name ? &name : NULL);
+
+#if GUEST_BIT != HOST_BIT
+    if (name)
+        UNICODE_STRING_h2g((struct qemu_UNICODE_STRING *)name, name);
+#endif
+    c->name = QEMU_H2G(name);
 }
 
 #endif
