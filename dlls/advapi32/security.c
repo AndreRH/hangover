@@ -5061,6 +5061,8 @@ WINBASEAPI BOOL WINAPI ConvertStringSidToSidW(LPCWSTR StringSid, PSID* Sid)
     call.Sid = (ULONG_PTR)Sid;
 
     qemu_syscall(&call.super);
+    if (call.super.iret)
+        *Sid = (PSID)(ULONG_PTR)call.Sid;
 
     return call.super.iret;
 }
@@ -5072,8 +5074,11 @@ extern BOOL WINAPI ConvertStringSidToSidW(LPCWSTR StringSid, PSID* Sid);
 void qemu_ConvertStringSidToSidW(struct qemu_syscall *call)
 {
     struct qemu_ConvertStringSidToSidW *c = (struct qemu_ConvertStringSidToSidW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ConvertStringSidToSidW(QEMU_G2H(c->StringSid), QEMU_G2H(c->Sid));
+    PSID sid;
+
+    WINE_TRACE("\n");
+    c->super.iret = ConvertStringSidToSidW(QEMU_G2H(c->StringSid), c->Sid ? &sid : NULL);
+    c->Sid = QEMU_H2G(sid);
 }
 
 #endif
@@ -5095,6 +5100,8 @@ WINBASEAPI BOOL WINAPI ConvertStringSidToSidA(LPCSTR StringSid, PSID* Sid)
     call.Sid = (ULONG_PTR)Sid;
 
     qemu_syscall(&call.super);
+    if (call.super.iret)
+        *Sid = (PSID)(ULONG_PTR)call.Sid;
 
     return call.super.iret;
 }
@@ -5106,8 +5113,11 @@ extern BOOL WINAPI ConvertStringSidToSidA(LPCSTR StringSid, PSID* Sid);
 void qemu_ConvertStringSidToSidA(struct qemu_syscall *call)
 {
     struct qemu_ConvertStringSidToSidA *c = (struct qemu_ConvertStringSidToSidA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ConvertStringSidToSidA(QEMU_G2H(c->StringSid), QEMU_G2H(c->Sid));
+    PSID sid;
+
+    WINE_TRACE("\n");
+    c->super.iret = ConvertStringSidToSidA(QEMU_G2H(c->StringSid), c->Sid ? &sid : NULL);
+    c->Sid = QEMU_H2G(sid);
 }
 
 #endif
