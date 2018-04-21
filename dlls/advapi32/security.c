@@ -2564,7 +2564,8 @@ struct qemu_LookupAccountSidA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI LookupAccountSidA(IN LPCSTR system, IN PSID sid, OUT LPSTR account, IN OUT LPDWORD accountSize, OUT LPSTR domain, IN OUT LPDWORD domainSize, OUT PSID_NAME_USE name_use)
+WINBASEAPI BOOL WINAPI LookupAccountSidA(IN LPCSTR system, IN PSID sid, OUT LPSTR account,
+        IN OUT LPDWORD accountSize, OUT LPSTR domain, IN OUT LPDWORD domainSize, OUT PSID_NAME_USE name_use)
 {
     struct qemu_LookupAccountSidA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPACCOUNTSIDA);
@@ -2586,8 +2587,9 @@ WINBASEAPI BOOL WINAPI LookupAccountSidA(IN LPCSTR system, IN PSID sid, OUT LPST
 void qemu_LookupAccountSidA(struct qemu_syscall *call)
 {
     struct qemu_LookupAccountSidA *c = (struct qemu_LookupAccountSidA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LookupAccountSidA(QEMU_G2H(c->system), QEMU_G2H(c->sid), QEMU_G2H(c->account), QEMU_G2H(c->accountSize), QEMU_G2H(c->domain), QEMU_G2H(c->domainSize), QEMU_G2H(c->name_use));
+    WINE_TRACE("\n");
+    c->super.iret = LookupAccountSidA(QEMU_G2H(c->system), QEMU_G2H(c->sid), QEMU_G2H(c->account),
+            QEMU_G2H(c->accountSize), QEMU_G2H(c->domain), QEMU_G2H(c->domainSize), QEMU_G2H(c->name_use));
 }
 
 #endif
@@ -2606,7 +2608,8 @@ struct qemu_LookupAccountSidW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI LookupAccountSidW(IN LPCWSTR system, IN PSID sid, OUT LPWSTR account, IN OUT LPDWORD accountSize, OUT LPWSTR domain, IN OUT LPDWORD domainSize, OUT PSID_NAME_USE name_use)
+WINBASEAPI BOOL WINAPI LookupAccountSidW(IN LPCWSTR system, IN PSID sid, OUT LPWSTR account,
+        IN OUT LPDWORD accountSize, OUT LPWSTR domain, IN OUT LPDWORD domainSize, OUT PSID_NAME_USE name_use)
 {
     struct qemu_LookupAccountSidW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPACCOUNTSIDW);
@@ -2628,8 +2631,9 @@ WINBASEAPI BOOL WINAPI LookupAccountSidW(IN LPCWSTR system, IN PSID sid, OUT LPW
 void qemu_LookupAccountSidW(struct qemu_syscall *call)
 {
     struct qemu_LookupAccountSidW *c = (struct qemu_LookupAccountSidW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LookupAccountSidW(QEMU_G2H(c->system), QEMU_G2H(c->sid), QEMU_G2H(c->account), QEMU_G2H(c->accountSize), QEMU_G2H(c->domain), QEMU_G2H(c->domainSize), QEMU_G2H(c->name_use));
+    WINE_TRACE("\n");
+    c->super.iret = LookupAccountSidW(QEMU_G2H(c->system), QEMU_G2H(c->sid), QEMU_G2H(c->account),
+            QEMU_G2H(c->accountSize), QEMU_G2H(c->domain), QEMU_G2H(c->domainSize), QEMU_G2H(c->name_use));
 }
 
 #endif
