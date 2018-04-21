@@ -73,4 +73,27 @@ static inline void LSA_REFERENCED_DOMAIN_LIST_h2g(struct qemu_LSA_REFERENCED_DOM
         LSA_TRUST_INFORMATION_h2g(&((struct qemu_LSA_TRUST_INFORMATION *)host->Domains)[i], &host->Domains[i]);
 }
 
+struct qemu_LSA_TRANSLATED_NAME
+{
+    SID_NAME_USE Use;
+    struct qemu_UNICODE_STRING Name;
+    LONG DomainIndex;
+};
+
+static inline void LSA_TRANSLATED_NAME_g2h(LSA_TRANSLATED_NAME *host,
+        const struct qemu_LSA_TRANSLATED_NAME *guest)
+{
+    host->Use = guest->Use;
+    UNICODE_STRING_g2h(&host->Name, &guest->Name);
+    host->DomainIndex = guest->DomainIndex;
+}
+
+static inline void LSA_TRANSLATED_NAME_h2g(struct qemu_LSA_TRANSLATED_NAME *guest,
+        const LSA_TRANSLATED_NAME *host)
+{
+    guest->Use = host->Use;
+    UNICODE_STRING_h2g(&guest->Name, &host->Name);
+    guest->DomainIndex = host->DomainIndex;
+}
+
 #endif

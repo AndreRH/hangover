@@ -481,7 +481,7 @@ void qemu_LsaLookupNames2(struct qemu_syscall *call)
     if (names32)
     {
         if (c->count > sizeof(stack) / sizeof(stack[0]))
-            names = HeapAlloc(GetProcessHeap(), 0, sizeof(*names));
+            names = HeapAlloc(GetProcessHeap(), 0, c->count * sizeof(*names));
 
         for (i = 0; i < c->count; ++i)
             UNICODE_STRING_g2h(&names[i], &names32[i]);
@@ -530,10 +530,11 @@ WINBASEAPI NTSTATUS WINAPI LsaLookupSids(LSA_HANDLE PolicyHandle, ULONG Count, P
     call.PolicyHandle = (ULONG_PTR)PolicyHandle;
     call.Count = Count;
     call.Sids = (ULONG_PTR)Sids;
-    call.ReferencedDomains = (ULONG_PTR)ReferencedDomains;
-    call.Names = (ULONG_PTR)Names;
 
+    /* Names and ReferencedDomains are written unconditionally. */
     qemu_syscall(&call.super);
+    *ReferencedDomains = (LSA_REFERENCED_DOMAIN_LIST *)(ULONG_PTR)call.ReferencedDomains;
+    *Names = (LSA_TRANSLATED_NAME *)(ULONG_PTR)call.Names;
 
     return call.super.iret;
 }
@@ -543,8 +544,47 @@ WINBASEAPI NTSTATUS WINAPI LsaLookupSids(LSA_HANDLE PolicyHandle, ULONG Count, P
 void qemu_LsaLookupSids(struct qemu_syscall *call)
 {
     struct qemu_LsaLookupSids *c = (struct qemu_LsaLookupSids *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LsaLookupSids(QEMU_G2H(c->PolicyHandle), c->Count, QEMU_G2H(c->Sids), QEMU_G2H(c->ReferencedDomains), QEMU_G2H(c->Names));
+    PSID stack[10], *sids = stack;
+    qemu_ptr *sids32;
+    unsigned int i;
+    LSA_TRANSLATED_NAME *names;
+    LSA_REFERENCED_DOMAIN_LIST *list;
+    struct qemu_LSA_TRANSLATED_NAME *names32;
+
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    sids = QEMU_G2H(c->Sids);
+#else
+    sids32 = QEMU_G2H(c->Sids);
+    if (sids32)
+    {
+        if (c->Count > sizeof(stack) / sizeof(stack[0]))
+            sids = HeapAlloc(GetProcessHeap(), 0, c->Count * sizeof(*sids));
+
+        for (i = 0; i < c->Count; ++i)
+            sids[i] = (PSID)(ULONG_PTR)sids32[i];
+    }
+    else
+    {
+        sids = NULL;
+    }
+#endif
+
+    c->super.iret = LsaLookupSids(QEMU_G2H(c->PolicyHandle), c->Count, sids, &list, &names);
+
+#if GUEST_BIT != HOST_BIT
+    if (sids && sids != stack)
+        HeapFree(GetProcessHeap(), 0, sids);
+
+    LSA_REFERENCED_DOMAIN_LIST_h2g((struct qemu_LSA_REFERENCED_DOMAIN_LIST *)list, list);
+
+    names32 = (struct qemu_LSA_TRANSLATED_NAME *)names;
+    for (i = 0; i < c->Count; ++i)
+        LSA_TRANSLATED_NAME_h2g(&names32[i], &names[i]);
+#endif
+    c->ReferencedDomains = QEMU_H2G(list);
+    c->Names = QEMU_H2G(names);
 }
 
 #endif
