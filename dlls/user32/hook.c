@@ -306,7 +306,7 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
      * and this won't work with VirtualAlloc'ed code. So far this function supports only one or
      * teo hooks of a kind. The arbitrary limit is whatever makes the tests happy. */
 
-    hook_data = HeapAlloc(GetProcessHeap(), 0, sizeof(hook_data));
+    hook_data = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*hook_data));
     if (!hook_data)
         return NULL;
     hook_data->type = id;
