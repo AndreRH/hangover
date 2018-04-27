@@ -1627,8 +1627,22 @@ WINBASEAPI BOOL WINAPI SetSecurityDescriptorDacl (PSECURITY_DESCRIPTOR lpsd, BOO
 void qemu_SetSecurityDescriptorDacl(struct qemu_syscall *call)
 {
     struct qemu_SetSecurityDescriptorDacl *c = (struct qemu_SetSecurityDescriptorDacl *)call;
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+
+    /* This function fails on self-relative SDs. */
     WINE_TRACE("\n");
-    c->super.iret = SetSecurityDescriptorDacl(QEMU_G2H(c->lpsd), c->daclpresent, QEMU_G2H(c->dacl), c->dacldefaulted);
+#if HOST_BIT == GUEST_BIT
+    desc = QEMU_G2H(c->lpsd);
+#else
+    SECURITY_DESCRIPTOR_g2h(desc, QEMU_G2H(c->lpsd));
+#endif
+
+    c->super.iret = SetSecurityDescriptorDacl(desc, c->daclpresent, QEMU_G2H(c->dacl), c->dacldefaulted);
+
+#if HOST_BIT != GUEST_BIT
+    if (c->super.iret)
+        SECURITY_DESCRIPTOR_h2g(QEMU_G2H(c->lpsd), desc);
+#endif
 }
 
 #endif
@@ -1680,7 +1694,8 @@ struct qemu_SetSecurityDescriptorSacl
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI SetSecurityDescriptorSacl (PSECURITY_DESCRIPTOR lpsd, BOOL saclpresent, PACL lpsacl, BOOL sacldefaulted)
+WINBASEAPI BOOL WINAPI SetSecurityDescriptorSacl (PSECURITY_DESCRIPTOR lpsd, BOOL saclpresent, PACL lpsacl,
+        BOOL sacldefaulted)
 {
     struct qemu_SetSecurityDescriptorSacl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSECURITYDESCRIPTORSACL);
@@ -1699,8 +1714,22 @@ WINBASEAPI BOOL WINAPI SetSecurityDescriptorSacl (PSECURITY_DESCRIPTOR lpsd, BOO
 void qemu_SetSecurityDescriptorSacl(struct qemu_syscall *call)
 {
     struct qemu_SetSecurityDescriptorSacl *c = (struct qemu_SetSecurityDescriptorSacl *)call;
-    WINE_FIXME("Unverified!\n");
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+
+    /* This function fails on self-relative SDs. */
+    WINE_TRACE("\n");
+#if HOST_BIT == GUEST_BIT
+    desc = QEMU_G2H(c->lpsd);
+#else
+    SECURITY_DESCRIPTOR_g2h(desc, QEMU_G2H(c->lpsd));
+#endif
+
     c->super.iret = SetSecurityDescriptorSacl(QEMU_G2H(c->lpsd), c->saclpresent, QEMU_G2H(c->lpsacl), c->sacldefaulted);
+
+#if HOST_BIT != GUEST_BIT
+    if (c->super.iret)
+        SECURITY_DESCRIPTOR_h2g(QEMU_G2H(c->lpsd), desc);
+#endif
 }
 
 #endif
