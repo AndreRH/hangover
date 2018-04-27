@@ -1027,7 +1027,7 @@ WINBASEAPI DWORD WINAPI GetLengthSid (PSID pSid)
 void qemu_GetLengthSid(struct qemu_syscall *call)
 {
     struct qemu_GetLengthSid *c = (struct qemu_GetLengthSid *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetLengthSid(QEMU_G2H(c->pSid));
 }
 
