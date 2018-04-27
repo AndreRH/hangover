@@ -2995,7 +2995,7 @@ WINBASEAPI BOOL WINAPI ImpersonateSelf(SECURITY_IMPERSONATION_LEVEL Impersonatio
 void qemu_ImpersonateSelf(struct qemu_syscall *call)
 {
     struct qemu_ImpersonateSelf *c = (struct qemu_ImpersonateSelf *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ImpersonateSelf(c->ImpersonationLevel);
 }
 
