@@ -1846,14 +1846,16 @@ void qemu_MakeSelfRelativeSD(struct qemu_syscall *call)
 {
     struct qemu_MakeSelfRelativeSD *c = (struct qemu_MakeSelfRelativeSD *)call;
     SECURITY_DESCRIPTOR in_stack, *input = &in_stack;
+    struct qemu_SECURITY_DESCRIPTOR *input32;
 
     WINE_FIXME("Unverified!\n");
 #if GUEST_BIT == HOST_BIT
     input = QEMU_G2H(c->pAbsoluteSecurityDescriptor);
 #else
-    if (input->Control & SE_SELF_RELATIVE)
+    input32 = QEMU_G2H(c->pAbsoluteSecurityDescriptor);
+    if (input32->Control & SE_SELF_RELATIVE)
         WINE_FIXME("Input desc is already self relative.\n");
-    SECURITY_DESCRIPTOR_g2h(input, QEMU_G2H(c->pAbsoluteSecurityDescriptor));
+    SECURITY_DESCRIPTOR_g2h(input, input32);
 #endif
 
     c->super.iret = MakeSelfRelativeSD(input, QEMU_G2H(c->pSelfRelativeSecurityDescriptor),
