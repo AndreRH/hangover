@@ -5618,6 +5618,8 @@ WINBASEAPI BOOL WINAPI DuplicateTokenEx(HANDLE ExistingTokenHandle, DWORD dwDesi
     call.DuplicateTokenHandle = (ULONG_PTR)DuplicateTokenHandle;
 
     qemu_syscall(&call.super);
+    if (DuplicateTokenHandle)
+        *DuplicateTokenHandle = (HANDLE)(ULONG_PTR)call.DuplicateTokenHandle;
 
     return call.super.iret;
 }
@@ -5627,9 +5629,13 @@ WINBASEAPI BOOL WINAPI DuplicateTokenEx(HANDLE ExistingTokenHandle, DWORD dwDesi
 void qemu_DuplicateTokenEx(struct qemu_syscall *call)
 {
     struct qemu_DuplicateTokenEx *c = (struct qemu_DuplicateTokenEx *)call;
+    HANDLE dup;
+
     WINE_TRACE("\n");
     c->super.iret = DuplicateTokenEx(QEMU_G2H(c->ExistingTokenHandle), c->dwDesiredAccess,
-            QEMU_G2H(c->lpTokenAttributes), c->ImpersonationLevel, c->TokenType, QEMU_G2H(c->DuplicateTokenHandle));
+            QEMU_G2H(c->lpTokenAttributes), c->ImpersonationLevel, c->TokenType,
+            c->DuplicateTokenHandle ? & dup : NULL);
+    c->DuplicateTokenHandle = QEMU_H2G(&dup);
 }
 
 #endif
@@ -5644,7 +5650,8 @@ struct qemu_DuplicateToken
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI DuplicateToken(HANDLE ExistingTokenHandle, SECURITY_IMPERSONATION_LEVEL ImpersonationLevel, PHANDLE DuplicateTokenHandle)
+WINBASEAPI BOOL WINAPI DuplicateToken(HANDLE ExistingTokenHandle, SECURITY_IMPERSONATION_LEVEL ImpersonationLevel,
+        HANDLE *DuplicateTokenHandle)
 {
     struct qemu_DuplicateToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DUPLICATETOKEN);
@@ -5653,6 +5660,8 @@ WINBASEAPI BOOL WINAPI DuplicateToken(HANDLE ExistingTokenHandle, SECURITY_IMPER
     call.DuplicateTokenHandle = (ULONG_PTR)DuplicateTokenHandle;
 
     qemu_syscall(&call.super);
+    if (DuplicateTokenHandle)
+        *DuplicateTokenHandle = (HANDLE)(ULONG_PTR)call.DuplicateTokenHandle;
 
     return call.super.iret;
 }
@@ -5662,8 +5671,12 @@ WINBASEAPI BOOL WINAPI DuplicateToken(HANDLE ExistingTokenHandle, SECURITY_IMPER
 void qemu_DuplicateToken(struct qemu_syscall *call)
 {
     struct qemu_DuplicateToken *c = (struct qemu_DuplicateToken *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DuplicateToken(QEMU_G2H(c->ExistingTokenHandle), c->ImpersonationLevel, QEMU_G2H(c->DuplicateTokenHandle));
+    HANDLE dup;
+
+    WINE_TRACE("\n");
+    c->super.iret = DuplicateToken(QEMU_G2H(c->ExistingTokenHandle), c->ImpersonationLevel,
+            c->DuplicateTokenHandle ? &dup : NULL);
+    c->DuplicateTokenHandle = QEMU_H2G(dup);
 }
 
 #endif
