@@ -4326,7 +4326,7 @@ void qemu_GetTrusteeFormW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_GetTrusteeNameA
+struct qemu_GetTrusteeName
 {
     struct qemu_syscall super;
     uint64_t pTrustee;
@@ -4336,7 +4336,7 @@ struct qemu_GetTrusteeNameA
 
 WINBASEAPI LPSTR WINAPI GetTrusteeNameA(PTRUSTEEA pTrustee)
 {
-    struct qemu_GetTrusteeNameA call;
+    struct qemu_GetTrusteeName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTRUSTEENAMEA);
     call.pTrustee = (ULONG_PTR)pTrustee;
 
@@ -4345,28 +4345,9 @@ WINBASEAPI LPSTR WINAPI GetTrusteeNameA(PTRUSTEEA pTrustee)
     return (LPSTR)(ULONG_PTR)call.super.iret;
 }
 
-#else
-
-void qemu_GetTrusteeNameA(struct qemu_syscall *call)
-{
-    struct qemu_GetTrusteeNameA *c = (struct qemu_GetTrusteeNameA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)GetTrusteeNameA(QEMU_G2H(c->pTrustee));
-}
-
-#endif
-
-struct qemu_GetTrusteeNameW
-{
-    struct qemu_syscall super;
-    uint64_t pTrustee;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI LPWSTR WINAPI GetTrusteeNameW(PTRUSTEEW pTrustee)
 {
-    struct qemu_GetTrusteeNameW call;
+    struct qemu_GetTrusteeName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTRUSTEENAMEW);
     call.pTrustee = (ULONG_PTR)pTrustee;
 
@@ -4377,11 +4358,22 @@ WINBASEAPI LPWSTR WINAPI GetTrusteeNameW(PTRUSTEEW pTrustee)
 
 #else
 
-void qemu_GetTrusteeNameW(struct qemu_syscall *call)
+void qemu_GetTrusteeName(struct qemu_syscall *call)
 {
-    struct qemu_GetTrusteeNameW *c = (struct qemu_GetTrusteeNameW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)GetTrusteeNameW(QEMU_G2H(c->pTrustee));
+    struct qemu_GetTrusteeName *c = (struct qemu_GetTrusteeName *)call;
+    TRUSTEE_W stack, *trustee = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    trustee = QEMU_G2H(c->pTrustee);
+#else
+    TRUSTEE_g2h(trustee, QEMU_G2H(c->pTrustee));
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_GETTRUSTEENAMEW))
+        c->super.iret = (ULONG_PTR)GetTrusteeNameW(trustee);
+    else
+        c->super.iret = (ULONG_PTR)GetTrusteeNameA((TRUSTEEA *)trustee);
 }
 
 #endif
