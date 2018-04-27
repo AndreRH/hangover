@@ -535,7 +535,7 @@ WINBASEAPI BOOL WINAPI CreateWellKnownSid(WELL_KNOWN_SID_TYPE WellKnownSidType, 
 void qemu_CreateWellKnownSid(struct qemu_syscall *call)
 {
     struct qemu_CreateWellKnownSid *c = (struct qemu_CreateWellKnownSid *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CreateWellKnownSid(c->WellKnownSidType, QEMU_G2H(c->DomainSid), QEMU_G2H(c->pSid), QEMU_G2H(c->cbSid));
 }
 
@@ -567,7 +567,7 @@ WINBASEAPI BOOL WINAPI IsWellKnownSid(PSID pSid, WELL_KNOWN_SID_TYPE WellKnownSi
 void qemu_IsWellKnownSid(struct qemu_syscall *call)
 {
     struct qemu_IsWellKnownSid *c = (struct qemu_IsWellKnownSid *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsWellKnownSid(QEMU_G2H(c->pSid), c->WellKnownSidType);
 }
 
@@ -627,7 +627,7 @@ WINBASEAPI BOOL WINAPI IsValidSid(PSID pSid)
 void qemu_IsValidSid(struct qemu_syscall *call)
 {
     struct qemu_IsValidSid *c = (struct qemu_IsValidSid *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsValidSid(QEMU_G2H(c->pSid));
 }
 
@@ -721,7 +721,7 @@ WINBASEAPI DWORD WINAPI GetSidLengthRequired(BYTE nSubAuthorityCount)
 void qemu_GetSidLengthRequired(struct qemu_syscall *call)
 {
     struct qemu_GetSidLengthRequired *c = (struct qemu_GetSidLengthRequired *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetSidLengthRequired(c->nSubAuthorityCount);
 }
 
@@ -915,7 +915,7 @@ WINBASEAPI PUCHAR WINAPI GetSidSubAuthorityCount (PSID pSid)
 void qemu_GetSidSubAuthorityCount(struct qemu_syscall *call)
 {
     struct qemu_GetSidSubAuthorityCount *c = (struct qemu_GetSidSubAuthorityCount *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)GetSidSubAuthorityCount(QEMU_G2H(c->pSid));
 }
 
