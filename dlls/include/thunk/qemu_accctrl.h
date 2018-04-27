@@ -52,5 +52,32 @@ static inline void OBJECTS_AND_SID_h2g(struct qemu_OBJECTS_AND_SID *guest, const
     guest->pSid = (ULONG_PTR)host->pSid;
 }
 
+struct qemu_OBJECTS_AND_NAME
+{
+    DWORD          ObjectsPresent;
+    SE_OBJECT_TYPE ObjectType;
+    qemu_ptr       ObjectTypeName;
+    qemu_ptr       InheritedObjectTypeName;
+    qemu_ptr       ptstrName;
+};
+
+static inline void OBJECTS_AND_NAME_g2h(OBJECTS_AND_NAME_W *host, const struct qemu_OBJECTS_AND_NAME *guest)
+{
+    host->ObjectsPresent = guest->ObjectsPresent;
+    host->ObjectType = guest->ObjectType;
+    host->ObjectTypeName = (WCHAR *)(ULONG_PTR)guest->ObjectTypeName;
+    host->InheritedObjectTypeName = (WCHAR *)(ULONG_PTR)guest->InheritedObjectTypeName;
+    host->ptstrName = (WCHAR *)(ULONG_PTR)guest->ptstrName;
+}
+
+static inline void OBJECTS_AND_NAME_h2g(struct qemu_OBJECTS_AND_NAME *guest, const OBJECTS_AND_NAME_W *host)
+{
+    guest->ObjectsPresent = host->ObjectsPresent;
+    guest->ObjectType = host->ObjectType;
+    guest->ObjectTypeName = (ULONG_PTR)host->ObjectTypeName;
+    guest->InheritedObjectTypeName = (ULONG_PTR)host->InheritedObjectTypeName;
+    guest->ptstrName = (ULONG_PTR)host->ptstrName;
+}
+
 #endif
 

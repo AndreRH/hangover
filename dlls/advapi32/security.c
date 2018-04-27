@@ -4003,7 +4003,7 @@ void qemu_BuildExplicitAccessWithNameW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_BuildTrusteeWithObjectsAndNameA
+struct qemu_BuildTrusteeWithObjectsAndName
 {
     struct qemu_syscall super;
     uint64_t pTrustee;
@@ -4016,9 +4016,10 @@ struct qemu_BuildTrusteeWithObjectsAndNameA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI VOID WINAPI BuildTrusteeWithObjectsAndNameA(PTRUSTEEA pTrustee, POBJECTS_AND_NAME_A pObjName, SE_OBJECT_TYPE ObjectType, LPSTR ObjectTypeName, LPSTR InheritedObjectTypeName, LPSTR Name)
+WINBASEAPI VOID WINAPI BuildTrusteeWithObjectsAndNameA(PTRUSTEEA pTrustee, POBJECTS_AND_NAME_A pObjName,
+        SE_OBJECT_TYPE ObjectType, LPSTR ObjectTypeName, LPSTR InheritedObjectTypeName, LPSTR Name)
 {
-    struct qemu_BuildTrusteeWithObjectsAndNameA call;
+    struct qemu_BuildTrusteeWithObjectsAndName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHOBJECTSANDNAMEA);
     call.pTrustee = (ULONG_PTR)pTrustee;
     call.pObjName = (ULONG_PTR)pObjName;
@@ -4030,33 +4031,10 @@ WINBASEAPI VOID WINAPI BuildTrusteeWithObjectsAndNameA(PTRUSTEEA pTrustee, POBJE
     qemu_syscall(&call.super);
 }
 
-#else
-
-void qemu_BuildTrusteeWithObjectsAndNameA(struct qemu_syscall *call)
+WINBASEAPI VOID WINAPI BuildTrusteeWithObjectsAndNameW(PTRUSTEEW pTrustee, POBJECTS_AND_NAME_W pObjName,
+        SE_OBJECT_TYPE ObjectType, LPWSTR ObjectTypeName, LPWSTR InheritedObjectTypeName, LPWSTR Name)
 {
-    struct qemu_BuildTrusteeWithObjectsAndNameA *c = (struct qemu_BuildTrusteeWithObjectsAndNameA *)call;
-    WINE_FIXME("Unverified!\n");
-    BuildTrusteeWithObjectsAndNameA(QEMU_G2H(c->pTrustee), QEMU_G2H(c->pObjName), c->ObjectType, QEMU_G2H(c->ObjectTypeName), QEMU_G2H(c->InheritedObjectTypeName), QEMU_G2H(c->Name));
-}
-
-#endif
-
-struct qemu_BuildTrusteeWithObjectsAndNameW
-{
-    struct qemu_syscall super;
-    uint64_t pTrustee;
-    uint64_t pObjName;
-    uint64_t ObjectType;
-    uint64_t ObjectTypeName;
-    uint64_t InheritedObjectTypeName;
-    uint64_t Name;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI VOID WINAPI BuildTrusteeWithObjectsAndNameW(PTRUSTEEW pTrustee, POBJECTS_AND_NAME_W pObjName, SE_OBJECT_TYPE ObjectType, LPWSTR ObjectTypeName, LPWSTR InheritedObjectTypeName, LPWSTR Name)
-{
-    struct qemu_BuildTrusteeWithObjectsAndNameW call;
+    struct qemu_BuildTrusteeWithObjectsAndName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHOBJECTSANDNAMEW);
     call.pTrustee = (ULONG_PTR)pTrustee;
     call.pObjName = (ULONG_PTR)pObjName;
@@ -4070,11 +4048,34 @@ WINBASEAPI VOID WINAPI BuildTrusteeWithObjectsAndNameW(PTRUSTEEW pTrustee, POBJE
 
 #else
 
-void qemu_BuildTrusteeWithObjectsAndNameW(struct qemu_syscall *call)
+void qemu_BuildTrusteeWithObjectsAndName(struct qemu_syscall *call)
 {
-    struct qemu_BuildTrusteeWithObjectsAndNameW *c = (struct qemu_BuildTrusteeWithObjectsAndNameW *)call;
-    WINE_FIXME("Unverified!\n");
-    BuildTrusteeWithObjectsAndNameW(QEMU_G2H(c->pTrustee), QEMU_G2H(c->pObjName), c->ObjectType, QEMU_G2H(c->ObjectTypeName), QEMU_G2H(c->InheritedObjectTypeName), QEMU_G2H(c->Name));
+    struct qemu_BuildTrusteeWithObjectsAndName *c = (struct qemu_BuildTrusteeWithObjectsAndName *)call;
+    TRUSTEE_W stack, *trustee = &stack;
+    OBJECTS_AND_NAME_W stack_name, *obj_name = &stack_name;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    trustee = QEMU_G2H(c->pTrustee);
+    obj_name = QEMU_G2H(c->pObjName);
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHOBJECTSANDNAMEW))
+    {
+        BuildTrusteeWithObjectsAndNameW(trustee, obj_name, c->ObjectType,
+                QEMU_G2H(c->ObjectTypeName), QEMU_G2H(c->InheritedObjectTypeName), QEMU_G2H(c->Name));
+    }
+    else
+    {
+        BuildTrusteeWithObjectsAndNameA((TRUSTEE_A *)trustee, (OBJECTS_AND_NAME_A *)obj_name, c->ObjectType,
+                QEMU_G2H(c->ObjectTypeName), QEMU_G2H(c->InheritedObjectTypeName), QEMU_G2H(c->Name));
+    }
+
+#if GUEST_BIT != HOST_BIT
+    trustee->ptstrName = QEMU_G2H(c->pObjName);
+    TRUSTEE_h2g(QEMU_G2H(c->pTrustee), trustee);
+    OBJECTS_AND_NAME_h2g(QEMU_G2H(c->pObjName), obj_name);
+#endif
 }
 
 #endif
