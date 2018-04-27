@@ -3159,7 +3159,7 @@ WINBASEAPI BOOL WINAPI ImpersonateLoggedOnUser(HANDLE hToken)
 void qemu_ImpersonateLoggedOnUser(struct qemu_syscall *call)
 {
     struct qemu_ImpersonateLoggedOnUser *c = (struct qemu_ImpersonateLoggedOnUser *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ImpersonateLoggedOnUser(QEMU_G2H(c->hToken));
 }
 
