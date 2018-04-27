@@ -1126,7 +1126,7 @@ WINBASEAPI MMRESULT WINAPI waveInOpen(HWAVEIN* lphWaveIn, UINT uDeviceID, const 
     call.dwFlags = (ULONG_PTR)dwFlags;
 
     qemu_syscall(&call.super);
-    if (call.super.iret == MMSYSERR_NOERROR)
+    if (call.super.iret == MMSYSERR_NOERROR && !(dwFlags & WAVE_FORMAT_QUERY))
         *lphWaveIn = (HWAVEIN)(ULONG_PTR)call.lphWaveIn;
 
     return call.super.iret;
@@ -1144,7 +1144,6 @@ void qemu_waveInOpen(struct qemu_syscall *call)
      *
      * -> CALLBACK_FUNCTION
      * -> Keeping 32 bit wave out data structs alive until after they are done playing
-     * -> WAVE_FORMAT_QUERY
      *
      * The second case may not be necessary depending on how waveInAddBuffer works. If that
      * is the case this would simplify wave in handling a bit. */
