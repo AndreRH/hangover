@@ -544,7 +544,7 @@ WINBASEAPI HANDLE WINAPI OpenFileMappingA(DWORD access, BOOL inherit, LPCSTR nam
 void qemu_OpenFileMappingA(struct qemu_syscall *call)
 {
     struct qemu_OpenFileMappingA *c = (struct qemu_OpenFileMappingA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     c->super.iret = (ULONG_PTR)OpenFileMappingA(c->access, c->inherit, QEMU_G2H(c->name));
 }
 
@@ -578,7 +578,7 @@ WINBASEAPI HANDLE WINAPI OpenFileMappingW(DWORD access, BOOL inherit, LPCWSTR na
 void qemu_OpenFileMappingW(struct qemu_syscall *call)
 {
     struct qemu_OpenFileMappingW *c = (struct qemu_OpenFileMappingW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     c->super.iret = (ULONG_PTR)OpenFileMappingW(c->access, c->inherit, QEMU_G2H(c->name));
 }
 
