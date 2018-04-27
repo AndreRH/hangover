@@ -272,7 +272,7 @@ WINBASEAPI BOOL WINAPI TerminateThread(HANDLE handle, DWORD exit_code)
 void qemu_TerminateThread(struct qemu_syscall *call)
 {
     struct qemu_TerminateThread *c = (struct qemu_TerminateThread *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = TerminateThread(QEMU_G2H(c->handle), c->exit_code);
 }
 
