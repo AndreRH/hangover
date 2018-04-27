@@ -2253,7 +2253,7 @@ WINBASEAPI BOOL WINAPI AllocateLocallyUniqueId(PLUID lpLuid)
 void qemu_AllocateLocallyUniqueId(struct qemu_syscall *call)
 {
     struct qemu_AllocateLocallyUniqueId *c = (struct qemu_AllocateLocallyUniqueId *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AllocateLocallyUniqueId(QEMU_G2H(c->lpLuid));
 }
 
