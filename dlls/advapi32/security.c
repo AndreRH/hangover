@@ -2433,8 +2433,9 @@ WINBASEAPI BOOL WINAPI LookupPrivilegeNameA(LPCSTR lpSystemName, PLUID lpLuid, L
 void qemu_LookupPrivilegeNameA(struct qemu_syscall *call)
 {
     struct qemu_LookupPrivilegeNameA *c = (struct qemu_LookupPrivilegeNameA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LookupPrivilegeNameA(QEMU_G2H(c->lpSystemName), QEMU_G2H(c->lpLuid), QEMU_G2H(c->lpName), QEMU_G2H(c->cchName));
+    WINE_TRACE("\n");
+    c->super.iret = LookupPrivilegeNameA(QEMU_G2H(c->lpSystemName), QEMU_G2H(c->lpLuid),
+            QEMU_G2H(c->lpName), QEMU_G2H(c->cchName));
 }
 
 #endif
@@ -2469,8 +2470,9 @@ WINBASEAPI BOOL WINAPI LookupPrivilegeNameW(LPCWSTR lpSystemName, PLUID lpLuid, 
 void qemu_LookupPrivilegeNameW(struct qemu_syscall *call)
 {
     struct qemu_LookupPrivilegeNameW *c = (struct qemu_LookupPrivilegeNameW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LookupPrivilegeNameW(QEMU_G2H(c->lpSystemName), QEMU_G2H(c->lpLuid), QEMU_G2H(c->lpName), QEMU_G2H(c->cchName));
+    WINE_TRACE("\n");
+    c->super.iret = LookupPrivilegeNameW(QEMU_G2H(c->lpSystemName), QEMU_G2H(c->lpLuid),
+            QEMU_G2H(c->lpName), QEMU_G2H(c->cchName));
 }
 
 #endif
