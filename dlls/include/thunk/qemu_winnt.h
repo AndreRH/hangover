@@ -58,6 +58,7 @@ struct qemu_SECURITY_DESCRIPTOR
     BYTE Revision;
     BYTE Sbz1;
     SECURITY_DESCRIPTOR_CONTROL Control;    /* USHORT */
+    /* The following fields are DWORDs in self-relative SDs. */
     qemu_ptr Owner; /* Should be fine without conversion. Needs double-checking. */
     qemu_ptr Group;
     qemu_ptr Sacl;  /* PACL, no conversion needed. */
@@ -66,6 +67,7 @@ struct qemu_SECURITY_DESCRIPTOR
 
 static inline void SECURITY_DESCRIPTOR_g2h(SECURITY_DESCRIPTOR *host, const struct qemu_SECURITY_DESCRIPTOR *guest)
 {
+    /* Relative SDs are handled by the caller because it needs to know if it needs a new struct. */
     host->Revision = guest->Revision;
     host->Sbz1 = guest->Sbz1;
     host->Control = guest->Control;
@@ -77,6 +79,7 @@ static inline void SECURITY_DESCRIPTOR_g2h(SECURITY_DESCRIPTOR *host, const stru
 
 static inline void SECURITY_DESCRIPTOR_h2g(struct qemu_SECURITY_DESCRIPTOR *guest, const SECURITY_DESCRIPTOR *host)
 {
+    /* Relative SDs are handled by the caller because it needs to know if it needs a new struct. */
     guest->Revision = host->Revision;
     guest->Sbz1 = host->Sbz1;
     guest->Control = host->Control;

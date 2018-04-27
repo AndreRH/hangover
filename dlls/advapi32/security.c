@@ -100,7 +100,7 @@ WINBASEAPI BOOL WINAPI OpenThreadToken(HANDLE ThreadHandle, DWORD DesiredAccess,
 
     if (TokenHandle)
         *TokenHandle = (HANDLE)(ULONG_PTR)call.TokenHandle;
-    
+
     return call.super.iret;
 }
 
@@ -951,7 +951,7 @@ void qemu_GetLengthSid(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_BuildSecurityDescriptorA
+struct qemu_BuildSecurityDescriptor
 {
     struct qemu_syscall super;
     uint64_t pOwner;
@@ -967,9 +967,12 @@ struct qemu_BuildSecurityDescriptorA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI BuildSecurityDescriptorA(IN PTRUSTEEA pOwner, IN PTRUSTEEA pGroup, IN ULONG cCountOfAccessEntries, IN PEXPLICIT_ACCESSA pListOfAccessEntries, IN ULONG cCountOfAuditEntries, IN PEXPLICIT_ACCESSA pListofAuditEntries, IN PSECURITY_DESCRIPTOR pOldSD, IN OUT PULONG lpdwBufferLength, OUT PSECURITY_DESCRIPTOR* pNewSD)
+WINBASEAPI DWORD WINAPI BuildSecurityDescriptorA(IN PTRUSTEEA pOwner, IN PTRUSTEEA pGroup,
+        IN ULONG cCountOfAccessEntries, IN PEXPLICIT_ACCESSA pListOfAccessEntries, IN ULONG cCountOfAuditEntries,
+        IN PEXPLICIT_ACCESSA pListofAuditEntries, IN PSECURITY_DESCRIPTOR pOldSD, IN OUT PULONG lpdwBufferLength,
+        OUT PSECURITY_DESCRIPTOR* pNewSD)
 {
-    struct qemu_BuildSecurityDescriptorA call;
+    struct qemu_BuildSecurityDescriptor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDSECURITYDESCRIPTORA);
     call.pOwner = (ULONG_PTR)pOwner;
     call.pGroup = (ULONG_PTR)pGroup;
@@ -986,36 +989,12 @@ WINBASEAPI DWORD WINAPI BuildSecurityDescriptorA(IN PTRUSTEEA pOwner, IN PTRUSTE
     return call.super.iret;
 }
 
-#else
-
-void qemu_BuildSecurityDescriptorA(struct qemu_syscall *call)
+WINBASEAPI DWORD WINAPI BuildSecurityDescriptorW(IN PTRUSTEEW pOwner, IN PTRUSTEEW pGroup,
+        IN ULONG cCountOfAccessEntries, IN PEXPLICIT_ACCESSW pListOfAccessEntries, IN ULONG cCountOfAuditEntries,
+        IN PEXPLICIT_ACCESSW pListofAuditEntries, IN PSECURITY_DESCRIPTOR pOldSD, IN OUT PULONG lpdwBufferLength,
+        OUT PSECURITY_DESCRIPTOR* pNewSD)
 {
-    struct qemu_BuildSecurityDescriptorA *c = (struct qemu_BuildSecurityDescriptorA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = BuildSecurityDescriptorA(QEMU_G2H(c->pOwner), QEMU_G2H(c->pGroup), c->cCountOfAccessEntries, QEMU_G2H(c->pListOfAccessEntries), c->cCountOfAuditEntries, QEMU_G2H(c->pListofAuditEntries), QEMU_G2H(c->pOldSD), QEMU_G2H(c->lpdwBufferLength), QEMU_G2H(c->pNewSD));
-}
-
-#endif
-
-struct qemu_BuildSecurityDescriptorW
-{
-    struct qemu_syscall super;
-    uint64_t pOwner;
-    uint64_t pGroup;
-    uint64_t cCountOfAccessEntries;
-    uint64_t pListOfAccessEntries;
-    uint64_t cCountOfAuditEntries;
-    uint64_t pListofAuditEntries;
-    uint64_t pOldSD;
-    uint64_t lpdwBufferLength;
-    uint64_t pNewSD;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI DWORD WINAPI BuildSecurityDescriptorW(IN PTRUSTEEW pOwner, IN PTRUSTEEW pGroup, IN ULONG cCountOfAccessEntries, IN PEXPLICIT_ACCESSW pListOfAccessEntries, IN ULONG cCountOfAuditEntries, IN PEXPLICIT_ACCESSW pListofAuditEntries, IN PSECURITY_DESCRIPTOR pOldSD, IN OUT PULONG lpdwBufferLength, OUT PSECURITY_DESCRIPTOR* pNewSD)
-{
-    struct qemu_BuildSecurityDescriptorW call;
+    struct qemu_BuildSecurityDescriptor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDSECURITYDESCRIPTORW);
     call.pOwner = (ULONG_PTR)pOwner;
     call.pGroup = (ULONG_PTR)pGroup;
@@ -1034,11 +1013,42 @@ WINBASEAPI DWORD WINAPI BuildSecurityDescriptorW(IN PTRUSTEEW pOwner, IN PTRUSTE
 
 #else
 
-void qemu_BuildSecurityDescriptorW(struct qemu_syscall *call)
+void qemu_BuildSecurityDescriptor(struct qemu_syscall *call)
 {
-    struct qemu_BuildSecurityDescriptorW *c = (struct qemu_BuildSecurityDescriptorW *)call;
+    struct qemu_BuildSecurityDescriptor *c = (struct qemu_BuildSecurityDescriptor *)call;
+    SECURITY_DESCRIPTOR old_stack, *old = &old_stack;
+    PSECURITY_DESCRIPTOR newsd;
+    struct qemu_SECURITY_DESCRIPTOR *sd32;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = BuildSecurityDescriptorW(QEMU_G2H(c->pOwner), QEMU_G2H(c->pGroup), c->cCountOfAccessEntries, QEMU_G2H(c->pListOfAccessEntries), c->cCountOfAuditEntries, QEMU_G2H(c->pListofAuditEntries), QEMU_G2H(c->pOldSD), QEMU_G2H(c->lpdwBufferLength), QEMU_G2H(c->pNewSD));
+    newsd = QEMU_G2H(c->pNewSD);
+#if GUEST_BIT == HOST_BIT
+    old = QEMU_G2H(c->pOldSD);
+#else
+    sd32 = QEMU_G2H(c->pOldSD);
+    if (sd32->Control & SE_SELF_RELATIVE)
+        old = (SECURITY_DESCRIPTOR *)sd32;
+    else
+        SECURITY_DESCRIPTOR_g2h(old, sd32);
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_BUILDSECURITYDESCRIPTORW))
+    {
+        c->super.iret = BuildSecurityDescriptorA(QEMU_G2H(c->pOwner), QEMU_G2H(c->pGroup), c->cCountOfAccessEntries,
+                QEMU_G2H(c->pListOfAccessEntries), c->cCountOfAuditEntries, QEMU_G2H(c->pListofAuditEntries),
+                old, QEMU_G2H(c->lpdwBufferLength), newsd);
+    }
+    else
+    {
+        c->super.iret = BuildSecurityDescriptorA(QEMU_G2H(c->pOwner), QEMU_G2H(c->pGroup), c->cCountOfAccessEntries,
+                QEMU_G2H(c->pListOfAccessEntries), c->cCountOfAuditEntries, QEMU_G2H(c->pListofAuditEntries),
+                old, QEMU_G2H(c->lpdwBufferLength), newsd);
+    }
+
+#if GUEST_BIT != HOST_BIT
+    if (!(((SECURITY_DESCRIPTOR *)newsd)->Control & SE_SELF_RELATIVE))
+        SECURITY_DESCRIPTOR_h2g(newsd, newsd);
+#endif
 }
 
 #endif
@@ -1103,7 +1113,10 @@ struct qemu_MakeAbsoluteSD
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI MakeAbsoluteSD (IN PSECURITY_DESCRIPTOR pSelfRelativeSecurityDescriptor, OUT PSECURITY_DESCRIPTOR pAbsoluteSecurityDescriptor, OUT LPDWORD lpdwAbsoluteSecurityDescriptorSize, OUT PACL pDacl, OUT LPDWORD lpdwDaclSize, OUT PACL pSacl, OUT LPDWORD lpdwSaclSize, OUT PSID pOwner, OUT LPDWORD lpdwOwnerSize, OUT PSID pPrimaryGroup, OUT LPDWORD lpdwPrimaryGroupSize)
+WINBASEAPI BOOL WINAPI MakeAbsoluteSD (IN PSECURITY_DESCRIPTOR pSelfRelativeSecurityDescriptor,
+        OUT PSECURITY_DESCRIPTOR pAbsoluteSecurityDescriptor, OUT LPDWORD lpdwAbsoluteSecurityDescriptorSize,
+        OUT PACL pDacl, OUT LPDWORD lpdwDaclSize, OUT PACL pSacl, OUT LPDWORD lpdwSaclSize, OUT PSID pOwner,
+        OUT LPDWORD lpdwOwnerSize, OUT PSID pPrimaryGroup, OUT LPDWORD lpdwPrimaryGroupSize)
 {
     struct qemu_MakeAbsoluteSD call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MAKEABSOLUTESD);
@@ -1129,8 +1142,16 @@ WINBASEAPI BOOL WINAPI MakeAbsoluteSD (IN PSECURITY_DESCRIPTOR pSelfRelativeSecu
 void qemu_MakeAbsoluteSD(struct qemu_syscall *call)
 {
     struct qemu_MakeAbsoluteSD *c = (struct qemu_MakeAbsoluteSD *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = MakeAbsoluteSD(QEMU_G2H(c->pSelfRelativeSecurityDescriptor), QEMU_G2H(c->pAbsoluteSecurityDescriptor), QEMU_G2H(c->lpdwAbsoluteSecurityDescriptorSize), QEMU_G2H(c->pDacl), QEMU_G2H(c->lpdwDaclSize), QEMU_G2H(c->pSacl), QEMU_G2H(c->lpdwSaclSize), QEMU_G2H(c->pOwner), QEMU_G2H(c->lpdwOwnerSize), QEMU_G2H(c->pPrimaryGroup), QEMU_G2H(c->lpdwPrimaryGroupSize));
+
+    /* It is not as simple as creating a 64 bit copy because the pointers in the input are relative to the
+     * head structure. */
+    WINE_FIXME("This won't work yet.\n");
+
+    c->super.iret = MakeAbsoluteSD(QEMU_G2H(c->pSelfRelativeSecurityDescriptor),
+            QEMU_G2H(c->pAbsoluteSecurityDescriptor), QEMU_G2H(c->lpdwAbsoluteSecurityDescriptorSize),
+            QEMU_G2H(c->pDacl), QEMU_G2H(c->lpdwDaclSize), QEMU_G2H(c->pSacl), QEMU_G2H(c->lpdwSaclSize),
+            QEMU_G2H(c->pOwner), QEMU_G2H(c->lpdwOwnerSize), QEMU_G2H(c->pPrimaryGroup),
+            QEMU_G2H(c->lpdwPrimaryGroupSize));
 }
 
 #endif
@@ -1147,7 +1168,8 @@ struct qemu_GetKernelObjectSecurity
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetKernelObjectSecurity(HANDLE Handle, SECURITY_INFORMATION RequestedInformation, PSECURITY_DESCRIPTOR pSecurityDescriptor, DWORD nLength, LPDWORD lpnLengthNeeded)
+WINBASEAPI BOOL WINAPI GetKernelObjectSecurity(HANDLE Handle, SECURITY_INFORMATION RequestedInformation,
+        PSECURITY_DESCRIPTOR pSecurityDescriptor, DWORD nLength, LPDWORD lpnLengthNeeded)
 {
     struct qemu_GetKernelObjectSecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETKERNELOBJECTSECURITY);
@@ -1167,8 +1189,17 @@ WINBASEAPI BOOL WINAPI GetKernelObjectSecurity(HANDLE Handle, SECURITY_INFORMATI
 void qemu_GetKernelObjectSecurity(struct qemu_syscall *call)
 {
     struct qemu_GetKernelObjectSecurity *c = (struct qemu_GetKernelObjectSecurity *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetKernelObjectSecurity(QEMU_G2H(c->Handle), c->RequestedInformation, QEMU_G2H(c->pSecurityDescriptor), c->nLength, QEMU_G2H(c->lpnLengthNeeded));
+    PSECURITY_DESCRIPTOR sd;
+
+    sd = QEMU_G2H(c->pSecurityDescriptor);
+    WINE_TRACE("\n");
+    c->super.iret = GetKernelObjectSecurity(QEMU_G2H(c->Handle), c->RequestedInformation,
+            sd, c->nLength, QEMU_G2H(c->lpnLengthNeeded));
+
+#if GUEST_BIT != HOST_BIT
+    if (sd && !(((SECURITY_DESCRIPTOR *)sd)->Control & SE_SELF_RELATIVE))
+        SECURITY_DESCRIPTOR_h2g(sd, sd);
+#endif
 }
 
 #endif
@@ -1185,7 +1216,9 @@ struct qemu_GetPrivateObjectSecurity
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetPrivateObjectSecurity(PSECURITY_DESCRIPTOR ObjectDescriptor, SECURITY_INFORMATION SecurityInformation, PSECURITY_DESCRIPTOR ResultantDescriptor, DWORD DescriptorLength, PDWORD ReturnLength)
+WINBASEAPI BOOL WINAPI GetPrivateObjectSecurity(PSECURITY_DESCRIPTOR ObjectDescriptor,
+        SECURITY_INFORMATION SecurityInformation, PSECURITY_DESCRIPTOR ResultantDescriptor,
+        DWORD DescriptorLength, PDWORD ReturnLength)
 {
     struct qemu_GetPrivateObjectSecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPRIVATEOBJECTSECURITY);
@@ -1205,8 +1238,29 @@ WINBASEAPI BOOL WINAPI GetPrivateObjectSecurity(PSECURITY_DESCRIPTOR ObjectDescr
 void qemu_GetPrivateObjectSecurity(struct qemu_syscall *call)
 {
     struct qemu_GetPrivateObjectSecurity *c = (struct qemu_GetPrivateObjectSecurity *)call;
+    SECURITY_DESCRIPTOR stack, *object = &stack;
+    PSECURITY_DESCRIPTOR result;
+    struct qemu_SECURITY_DESCRIPTOR *sd32;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = GetPrivateObjectSecurity(QEMU_G2H(c->ObjectDescriptor), c->SecurityInformation, QEMU_G2H(c->ResultantDescriptor), c->DescriptorLength, QEMU_G2H(c->ReturnLength));
+    result = QEMU_G2H(c->ResultantDescriptor);
+#if GUEST_BIT == HOST_BIT
+    object = QEMU_G2H(c->ObjectDescriptor);
+#else
+    sd32 = QEMU_G2H(c->ObjectDescriptor);
+    if (sd32->Control & SE_SELF_RELATIVE)
+        object = (SECURITY_DESCRIPTOR *)sd32;
+    else
+        SECURITY_DESCRIPTOR_g2h(object, sd32);
+#endif
+
+    c->super.iret = GetPrivateObjectSecurity(object, c->SecurityInformation,
+            QEMU_G2H(c->ResultantDescriptor), c->DescriptorLength, QEMU_G2H(c->ReturnLength));
+
+#if GUEST_BIT != HOST_BIT
+    if (result && !(((SECURITY_DESCRIPTOR *)result)->Control & SE_SELF_RELATIVE))
+        SECURITY_DESCRIPTOR_h2g(result, result);
+#endif
 }
 
 #endif
@@ -1235,8 +1289,21 @@ WINBASEAPI DWORD WINAPI GetSecurityDescriptorLength(PSECURITY_DESCRIPTOR pDescr)
 void qemu_GetSecurityDescriptorLength(struct qemu_syscall *call)
 {
     struct qemu_GetSecurityDescriptorLength *c = (struct qemu_GetSecurityDescriptorLength *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetSecurityDescriptorLength(QEMU_G2H(c->pDescr));
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+    struct qemu_SECURITY_DESCRIPTOR *sd32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->pDescr);
+#else
+    sd32 = QEMU_G2H(c->pDescr);
+    if (sd32->Control & SE_SELF_RELATIVE)
+        desc = (SECURITY_DESCRIPTOR *)sd32;
+    else
+        SECURITY_DESCRIPTOR_g2h(desc, sd32);
+#endif
+
+    c->super.iret = GetSecurityDescriptorLength(desc);
 }
 
 #endif
@@ -1256,10 +1323,10 @@ WINBASEAPI BOOL WINAPI GetSecurityDescriptorOwner(PSECURITY_DESCRIPTOR pDescr, P
     struct qemu_GetSecurityDescriptorOwner call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSECURITYDESCRIPTOROWNER);
     call.pDescr = (ULONG_PTR)pDescr;
-    call.pOwner = (ULONG_PTR)pOwner;
     call.lpbOwnerDefaulted = (ULONG_PTR)lpbOwnerDefaulted;
 
     qemu_syscall(&call.super);
+    *pOwner = (PSID)(ULONG_PTR)call.pOwner;
 
     return call.super.iret;
 }
@@ -1269,8 +1336,23 @@ WINBASEAPI BOOL WINAPI GetSecurityDescriptorOwner(PSECURITY_DESCRIPTOR pDescr, P
 void qemu_GetSecurityDescriptorOwner(struct qemu_syscall *call)
 {
     struct qemu_GetSecurityDescriptorOwner *c = (struct qemu_GetSecurityDescriptorOwner *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetSecurityDescriptorOwner(QEMU_G2H(c->pDescr), QEMU_G2H(c->pOwner), QEMU_G2H(c->lpbOwnerDefaulted));
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+    struct qemu_SECURITY_DESCRIPTOR *sd32;
+    PSID owner;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->pDescr);
+#else
+    sd32 = QEMU_G2H(c->pDescr);
+    if (sd32->Control & SE_SELF_RELATIVE)
+        desc = (SECURITY_DESCRIPTOR *)sd32;
+    else
+        SECURITY_DESCRIPTOR_g2h(desc, sd32);
+#endif
+
+    c->super.iret = GetSecurityDescriptorOwner(desc, &owner, QEMU_G2H(c->lpbOwnerDefaulted));
+    c->pOwner = QEMU_H2G(owner);
 }
 
 #endif
@@ -1324,10 +1406,10 @@ WINBASEAPI BOOL WINAPI GetSecurityDescriptorGroup(PSECURITY_DESCRIPTOR SecurityD
     struct qemu_GetSecurityDescriptorGroup call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSECURITYDESCRIPTORGROUP);
     call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
-    call.Group = (ULONG_PTR)Group;
     call.GroupDefaulted = (ULONG_PTR)GroupDefaulted;
 
     qemu_syscall(&call.super);
+    *Group = (PSID)(ULONG_PTR)call.Group;
 
     return call.super.iret;
 }
@@ -1337,8 +1419,23 @@ WINBASEAPI BOOL WINAPI GetSecurityDescriptorGroup(PSECURITY_DESCRIPTOR SecurityD
 void qemu_GetSecurityDescriptorGroup(struct qemu_syscall *call)
 {
     struct qemu_GetSecurityDescriptorGroup *c = (struct qemu_GetSecurityDescriptorGroup *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetSecurityDescriptorGroup(QEMU_G2H(c->SecurityDescriptor), QEMU_G2H(c->Group), QEMU_G2H(c->GroupDefaulted));
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+    struct qemu_SECURITY_DESCRIPTOR *sd32;
+    PSID group;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->SecurityDescriptor);
+#else
+    sd32 = QEMU_G2H(c->SecurityDescriptor);
+    if (sd32->Control & SE_SELF_RELATIVE)
+        desc = (SECURITY_DESCRIPTOR *)sd32;
+    else
+        SECURITY_DESCRIPTOR_g2h(desc, sd32);
+#endif
+
+    c->super.iret = GetSecurityDescriptorGroup(desc, &group, QEMU_G2H(c->GroupDefaulted));
+    c->Group = QEMU_H2G(group);
 }
 
 #endif
@@ -1401,8 +1498,21 @@ WINBASEAPI BOOL WINAPI IsValidSecurityDescriptor(PSECURITY_DESCRIPTOR SecurityDe
 void qemu_IsValidSecurityDescriptor(struct qemu_syscall *call)
 {
     struct qemu_IsValidSecurityDescriptor *c = (struct qemu_IsValidSecurityDescriptor *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = IsValidSecurityDescriptor(QEMU_G2H(c->SecurityDescriptor));
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+    struct qemu_SECURITY_DESCRIPTOR *sd32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->SecurityDescriptor);
+#else
+    sd32 = QEMU_G2H(c->SecurityDescriptor);
+    if (sd32->Control & SE_SELF_RELATIVE)
+        desc = (SECURITY_DESCRIPTOR *)sd32;
+    else
+        SECURITY_DESCRIPTOR_g2h(desc, sd32);
+#endif
+
+    c->super.iret = IsValidSecurityDescriptor(desc);
 }
 
 #endif
@@ -1418,16 +1528,17 @@ struct qemu_GetSecurityDescriptorDacl
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetSecurityDescriptorDacl(IN PSECURITY_DESCRIPTOR pSecurityDescriptor, OUT LPBOOL lpbDaclPresent, OUT PACL *pDacl, OUT LPBOOL lpbDaclDefaulted)
+WINBASEAPI BOOL WINAPI GetSecurityDescriptorDacl(IN PSECURITY_DESCRIPTOR pSecurityDescriptor,
+        OUT LPBOOL lpbDaclPresent, OUT PACL *pDacl, OUT LPBOOL lpbDaclDefaulted)
 {
     struct qemu_GetSecurityDescriptorDacl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSECURITYDESCRIPTORDACL);
     call.pSecurityDescriptor = (ULONG_PTR)pSecurityDescriptor;
     call.lpbDaclPresent = (ULONG_PTR)lpbDaclPresent;
-    call.pDacl = (ULONG_PTR)pDacl;
     call.lpbDaclDefaulted = (ULONG_PTR)lpbDaclDefaulted;
 
     qemu_syscall(&call.super);
+    *pDacl = (ACL *)(ULONG_PTR)call.pDacl;
 
     return call.super.iret;
 }
@@ -1437,8 +1548,23 @@ WINBASEAPI BOOL WINAPI GetSecurityDescriptorDacl(IN PSECURITY_DESCRIPTOR pSecuri
 void qemu_GetSecurityDescriptorDacl(struct qemu_syscall *call)
 {
     struct qemu_GetSecurityDescriptorDacl *c = (struct qemu_GetSecurityDescriptorDacl *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetSecurityDescriptorDacl(QEMU_G2H(c->pSecurityDescriptor), QEMU_G2H(c->lpbDaclPresent), QEMU_G2H(c->pDacl), QEMU_G2H(c->lpbDaclDefaulted));
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+    struct qemu_SECURITY_DESCRIPTOR *sd32;
+    ACL *acl;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->pSecurityDescriptor);
+#else
+    sd32 = QEMU_G2H(c->pSecurityDescriptor);
+    if (sd32->Control & SE_SELF_RELATIVE)
+        desc = (SECURITY_DESCRIPTOR *)sd32;
+    else
+        SECURITY_DESCRIPTOR_g2h(desc, sd32);
+#endif
+
+    c->super.iret = GetSecurityDescriptorDacl(desc, QEMU_G2H(c->lpbDaclPresent), &acl, QEMU_G2H(c->lpbDaclDefaulted));
+    c->pDacl = QEMU_H2G(acl);
 }
 
 #endif
@@ -1561,7 +1687,8 @@ struct qemu_MakeSelfRelativeSD
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI MakeSelfRelativeSD(IN PSECURITY_DESCRIPTOR pAbsoluteSecurityDescriptor, IN PSECURITY_DESCRIPTOR pSelfRelativeSecurityDescriptor, IN OUT LPDWORD lpdwBufferLength)
+WINBASEAPI BOOL WINAPI MakeSelfRelativeSD(IN PSECURITY_DESCRIPTOR pAbsoluteSecurityDescriptor,
+        IN PSECURITY_DESCRIPTOR pSelfRelativeSecurityDescriptor, IN OUT LPDWORD lpdwBufferLength)
 {
     struct qemu_MakeSelfRelativeSD call;
     call.super.id = QEMU_SYSCALL_ID(CALL_MAKESELFRELATIVESD);
@@ -1579,8 +1706,21 @@ WINBASEAPI BOOL WINAPI MakeSelfRelativeSD(IN PSECURITY_DESCRIPTOR pAbsoluteSecur
 void qemu_MakeSelfRelativeSD(struct qemu_syscall *call)
 {
     struct qemu_MakeSelfRelativeSD *c = (struct qemu_MakeSelfRelativeSD *)call;
+    SECURITY_DESCRIPTOR in_stack, *input = &in_stack;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = MakeSelfRelativeSD(QEMU_G2H(c->pAbsoluteSecurityDescriptor), QEMU_G2H(c->pSelfRelativeSecurityDescriptor), QEMU_G2H(c->lpdwBufferLength));
+#if GUEST_BIT == HOST_BIT
+    input = QEMU_G2H(c->pAbsoluteSecurityDescriptor);
+#else
+    if (input->Control & SE_SELF_RELATIVE)
+        WINE_FIXME("Input desc is already self relative.\n");
+    SECURITY_DESCRIPTOR_g2h(input, QEMU_G2H(c->pAbsoluteSecurityDescriptor));
+#endif
+
+    c->super.iret = MakeSelfRelativeSD(input, QEMU_G2H(c->pSelfRelativeSecurityDescriptor),
+            QEMU_G2H(c->lpdwBufferLength));
+
+    /* Self-Relative SDs have the same layout in 32 and 64 bit because the pointers are replaced with DWORDs. */
 }
 
 #endif
@@ -2477,7 +2617,7 @@ void qemu_LookupPrivilegeNameW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_GetFileSecurityA
+struct qemu_GetFileSecurity
 {
     struct qemu_syscall super;
     uint64_t lpFileName;
@@ -2489,9 +2629,10 @@ struct qemu_GetFileSecurityA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetFileSecurityA(LPCSTR lpFileName, SECURITY_INFORMATION RequestedInformation, PSECURITY_DESCRIPTOR pSecurityDescriptor, DWORD nLength, LPDWORD lpnLengthNeeded)
+WINBASEAPI BOOL WINAPI GetFileSecurityA(LPCSTR lpFileName, SECURITY_INFORMATION RequestedInformation,
+        PSECURITY_DESCRIPTOR pSecurityDescriptor, DWORD nLength, LPDWORD lpnLengthNeeded)
 {
-    struct qemu_GetFileSecurityA call;
+    struct qemu_GetFileSecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILESECURITYA);
     call.lpFileName = (ULONG_PTR)lpFileName;
     call.RequestedInformation = (ULONG_PTR)RequestedInformation;
@@ -2504,32 +2645,10 @@ WINBASEAPI BOOL WINAPI GetFileSecurityA(LPCSTR lpFileName, SECURITY_INFORMATION 
     return call.super.iret;
 }
 
-#else
-
-void qemu_GetFileSecurityA(struct qemu_syscall *call)
+WINBASEAPI BOOL WINAPI GetFileSecurityW(LPCWSTR lpFileName, SECURITY_INFORMATION RequestedInformation,
+        PSECURITY_DESCRIPTOR pSecurityDescriptor, DWORD nLength, LPDWORD lpnLengthNeeded)
 {
-    struct qemu_GetFileSecurityA *c = (struct qemu_GetFileSecurityA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetFileSecurityA(QEMU_G2H(c->lpFileName), c->RequestedInformation, QEMU_G2H(c->pSecurityDescriptor), c->nLength, QEMU_G2H(c->lpnLengthNeeded));
-}
-
-#endif
-
-struct qemu_GetFileSecurityW
-{
-    struct qemu_syscall super;
-    uint64_t lpFileName;
-    uint64_t RequestedInformation;
-    uint64_t pSecurityDescriptor;
-    uint64_t nLength;
-    uint64_t lpnLengthNeeded;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI BOOL WINAPI GetFileSecurityW(LPCWSTR lpFileName, SECURITY_INFORMATION RequestedInformation, PSECURITY_DESCRIPTOR pSecurityDescriptor, DWORD nLength, LPDWORD lpnLengthNeeded)
-{
-    struct qemu_GetFileSecurityW call;
+    struct qemu_GetFileSecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETFILESECURITYW);
     call.lpFileName = (ULONG_PTR)lpFileName;
     call.RequestedInformation = (ULONG_PTR)RequestedInformation;
@@ -2544,11 +2663,28 @@ WINBASEAPI BOOL WINAPI GetFileSecurityW(LPCWSTR lpFileName, SECURITY_INFORMATION
 
 #else
 
-void qemu_GetFileSecurityW(struct qemu_syscall *call)
+void qemu_GetFileSecurity(struct qemu_syscall *call)
 {
-    struct qemu_GetFileSecurityW *c = (struct qemu_GetFileSecurityW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetFileSecurityW(QEMU_G2H(c->lpFileName), c->RequestedInformation, QEMU_G2H(c->pSecurityDescriptor), c->nLength, QEMU_G2H(c->lpnLengthNeeded));
+    struct qemu_GetFileSecurity *c = (struct qemu_GetFileSecurity *)call;
+    SECURITY_DESCRIPTOR *desc;
+    WINE_TRACE("\n");
+
+    desc = QEMU_G2H(c->pSecurityDescriptor);
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_GETFILESECURITYW))
+    {
+        c->super.iret = GetFileSecurityW(QEMU_G2H(c->lpFileName), c->RequestedInformation,
+                desc, c->nLength, QEMU_G2H(c->lpnLengthNeeded));
+    }
+    else
+    {
+        c->super.iret = GetFileSecurityA(QEMU_G2H(c->lpFileName), c->RequestedInformation,
+                desc, c->nLength, QEMU_G2H(c->lpnLengthNeeded));
+    }
+
+#if GUEST_BIT != HOST_BIT
+    if (desc && !(desc->Control & SE_SELF_RELATIVE))
+        SECURITY_DESCRIPTOR_h2g(QEMU_G2H(c->pSecurityDescriptor), QEMU_G2H(c->pSecurityDescriptor));
+#endif
 }
 
 #endif
@@ -2641,7 +2777,7 @@ void qemu_LookupAccountSidW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_SetFileSecurityA
+struct qemu_SetFileSecurity
 {
     struct qemu_syscall super;
     uint64_t lpFileName;
@@ -2651,9 +2787,10 @@ struct qemu_SetFileSecurityA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI SetFileSecurityA(LPCSTR lpFileName, SECURITY_INFORMATION RequestedInformation, PSECURITY_DESCRIPTOR pSecurityDescriptor)
+WINBASEAPI BOOL WINAPI SetFileSecurityA(LPCSTR lpFileName, SECURITY_INFORMATION RequestedInformation,
+        PSECURITY_DESCRIPTOR pSecurityDescriptor)
 {
-    struct qemu_SetFileSecurityA call;
+    struct qemu_SetFileSecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFILESECURITYA);
     call.lpFileName = (ULONG_PTR)lpFileName;
     call.RequestedInformation = (ULONG_PTR)RequestedInformation;
@@ -2664,30 +2801,10 @@ WINBASEAPI BOOL WINAPI SetFileSecurityA(LPCSTR lpFileName, SECURITY_INFORMATION 
     return call.super.iret;
 }
 
-#else
-
-void qemu_SetFileSecurityA(struct qemu_syscall *call)
+WINBASEAPI BOOL WINAPI SetFileSecurityW(LPCWSTR lpFileName, SECURITY_INFORMATION RequestedInformation,
+        PSECURITY_DESCRIPTOR pSecurityDescriptor)
 {
-    struct qemu_SetFileSecurityA *c = (struct qemu_SetFileSecurityA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetFileSecurityA(QEMU_G2H(c->lpFileName), c->RequestedInformation, QEMU_G2H(c->pSecurityDescriptor));
-}
-
-#endif
-
-struct qemu_SetFileSecurityW
-{
-    struct qemu_syscall super;
-    uint64_t lpFileName;
-    uint64_t RequestedInformation;
-    uint64_t pSecurityDescriptor;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI BOOL WINAPI SetFileSecurityW(LPCWSTR lpFileName, SECURITY_INFORMATION RequestedInformation, PSECURITY_DESCRIPTOR pSecurityDescriptor)
-{
-    struct qemu_SetFileSecurityW call;
+    struct qemu_SetFileSecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETFILESECURITYW);
     call.lpFileName = (ULONG_PTR)lpFileName;
     call.RequestedInformation = (ULONG_PTR)RequestedInformation;
@@ -2700,11 +2817,28 @@ WINBASEAPI BOOL WINAPI SetFileSecurityW(LPCWSTR lpFileName, SECURITY_INFORMATION
 
 #else
 
-void qemu_SetFileSecurityW(struct qemu_syscall *call)
+void qemu_SetFileSecurity(struct qemu_syscall *call)
 {
-    struct qemu_SetFileSecurityW *c = (struct qemu_SetFileSecurityW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetFileSecurityW(QEMU_G2H(c->lpFileName), c->RequestedInformation, QEMU_G2H(c->pSecurityDescriptor));
+    struct qemu_SetFileSecurity *c = (struct qemu_SetFileSecurity *)call;
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+    struct qemu_SECURITY_DESCRIPTOR *sd32;
+
+    /* PRIVILEGE_SET and GENERIC_MAPPING have the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->pSecurityDescriptor);
+#else
+    sd32 = QEMU_G2H(c->pSecurityDescriptor);
+    if (sd32->Control & SE_SELF_RELATIVE)
+        desc = (SECURITY_DESCRIPTOR *)sd32;
+    else
+        SECURITY_DESCRIPTOR_g2h(desc, sd32);
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_SETFILESECURITYW))
+        c->super.iret = SetFileSecurityW(QEMU_G2H(c->lpFileName), c->RequestedInformation, desc);
+    else
+        c->super.iret = SetFileSecurityA(QEMU_G2H(c->lpFileName), c->RequestedInformation, desc);
 }
 
 #endif
@@ -2944,7 +3078,9 @@ struct qemu_AccessCheck
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI AccessCheck(PSECURITY_DESCRIPTOR SecurityDescriptor, HANDLE ClientToken, DWORD DesiredAccess, PGENERIC_MAPPING GenericMapping, PPRIVILEGE_SET PrivilegeSet, LPDWORD PrivilegeSetLength, LPDWORD GrantedAccess, LPBOOL AccessStatus)
+WINBASEAPI BOOL WINAPI AccessCheck(PSECURITY_DESCRIPTOR SecurityDescriptor, HANDLE ClientToken, DWORD DesiredAccess,
+        PGENERIC_MAPPING GenericMapping, PPRIVILEGE_SET PrivilegeSet, LPDWORD PrivilegeSetLength,
+        LPDWORD GrantedAccess, LPBOOL AccessStatus)
 {
     struct qemu_AccessCheck call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACCESSCHECK);
@@ -2967,8 +3103,24 @@ WINBASEAPI BOOL WINAPI AccessCheck(PSECURITY_DESCRIPTOR SecurityDescriptor, HAND
 void qemu_AccessCheck(struct qemu_syscall *call)
 {
     struct qemu_AccessCheck *c = (struct qemu_AccessCheck *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AccessCheck(QEMU_G2H(c->SecurityDescriptor), QEMU_G2H(c->ClientToken), c->DesiredAccess, QEMU_G2H(c->GenericMapping), QEMU_G2H(c->PrivilegeSet), QEMU_G2H(c->PrivilegeSetLength), QEMU_G2H(c->GrantedAccess), QEMU_G2H(c->AccessStatus));
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+    struct qemu_SECURITY_DESCRIPTOR *sd32;
+
+    /* PRIVILEGE_SET and GENERIC_MAPPING have the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->SecurityDescriptor);
+#else
+    sd32 = QEMU_G2H(c->SecurityDescriptor);
+    if (sd32->Control & SE_SELF_RELATIVE)
+        desc = (SECURITY_DESCRIPTOR *)sd32;
+    else
+        SECURITY_DESCRIPTOR_g2h(desc, sd32);
+#endif
+
+    c->super.iret = AccessCheck(desc, QEMU_G2H(c->ClientToken), c->DesiredAccess, QEMU_G2H(c->GenericMapping),
+            QEMU_G2H(c->PrivilegeSet), QEMU_G2H(c->PrivilegeSetLength),
+            QEMU_G2H(c->GrantedAccess), QEMU_G2H(c->AccessStatus));
 }
 
 #endif
@@ -5374,7 +5526,8 @@ WINBASEAPI BOOL WINAPI DestroyPrivateObjectSecurity(PSECURITY_DESCRIPTOR* Object
 void qemu_DestroyPrivateObjectSecurity(struct qemu_syscall *call)
 {
     struct qemu_DestroyPrivateObjectSecurity *c = (struct qemu_DestroyPrivateObjectSecurity *)call;
-    WINE_FIXME("Unverified!\n");
+    /* This is a semi-stub in Wine, it will just call HeapFree. Don't create a converted stack copy. */
+    WINE_TRACE("\n");
     c->super.iret = DestroyPrivateObjectSecurity(QEMU_G2H(c->ObjectDescriptor));
 }
 
@@ -5666,51 +5819,7 @@ void qemu_DuplicateToken(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_GetNamedSecurityInfoA
-{
-    struct qemu_syscall super;
-    uint64_t pObjectName;
-    uint64_t ObjectType;
-    uint64_t SecurityInfo;
-    uint64_t ppsidOwner;
-    uint64_t ppsidGroup;
-    uint64_t ppDacl;
-    uint64_t ppSacl;
-    uint64_t ppSecurityDescriptor;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI DWORD WINAPI GetNamedSecurityInfoA(LPCSTR pObjectName, SE_OBJECT_TYPE ObjectType, SECURITY_INFORMATION SecurityInfo, PSID* ppsidOwner, PSID* ppsidGroup, PACL* ppDacl, PACL* ppSacl, PSECURITY_DESCRIPTOR* ppSecurityDescriptor)
-{
-    struct qemu_GetNamedSecurityInfoA call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_GETNAMEDSECURITYINFOA);
-    call.pObjectName = (ULONG_PTR)pObjectName;
-    call.ObjectType = (ULONG_PTR)ObjectType;
-    call.SecurityInfo = (ULONG_PTR)SecurityInfo;
-    call.ppsidOwner = (ULONG_PTR)ppsidOwner;
-    call.ppsidGroup = (ULONG_PTR)ppsidGroup;
-    call.ppDacl = (ULONG_PTR)ppDacl;
-    call.ppSacl = (ULONG_PTR)ppSacl;
-    call.ppSecurityDescriptor = (ULONG_PTR)ppSecurityDescriptor;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_GetNamedSecurityInfoA(struct qemu_syscall *call)
-{
-    struct qemu_GetNamedSecurityInfoA *c = (struct qemu_GetNamedSecurityInfoA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetNamedSecurityInfoA(QEMU_G2H(c->pObjectName), c->ObjectType, c->SecurityInfo, QEMU_G2H(c->ppsidOwner), QEMU_G2H(c->ppsidGroup), QEMU_G2H(c->ppDacl), QEMU_G2H(c->ppSacl), QEMU_G2H(c->ppSecurityDescriptor));
-}
-
-#endif
-
-struct qemu_GetNamedSecurityInfoW
+struct qemu_GetNamedSecurityInfo
 {
     struct qemu_syscall super;
     uint64_t name;
@@ -5725,9 +5834,32 @@ struct qemu_GetNamedSecurityInfoW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI GetNamedSecurityInfoW(LPCWSTR name, SE_OBJECT_TYPE type, SECURITY_INFORMATION info, PSID* owner, PSID* group, PACL* dacl, PACL* sacl, PSECURITY_DESCRIPTOR* descriptor)
+WINBASEAPI DWORD WINAPI GetNamedSecurityInfoA(LPCSTR name, SE_OBJECT_TYPE type,
+        SECURITY_INFORMATION info, PSID* owner, PSID* group, PACL* dacl, PACL* sacl,
+        PSECURITY_DESCRIPTOR* descriptor)
 {
-    struct qemu_GetNamedSecurityInfoW call;
+    struct qemu_GetNamedSecurityInfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETNAMEDSECURITYINFOA);
+    call.name = (ULONG_PTR)name;
+    call.type = (ULONG_PTR)type;
+    call.info = (ULONG_PTR)info;
+    call.owner = (ULONG_PTR)owner;
+    call.group = (ULONG_PTR)group;
+    call.dacl = (ULONG_PTR)dacl;
+    call.sacl = (ULONG_PTR)sacl;
+    call.descriptor = (ULONG_PTR)descriptor;
+
+    qemu_syscall(&call.super);
+    if (descriptor)
+        *descriptor = (SECURITY_DESCRIPTOR *)(ULONG_PTR)call.descriptor;
+
+    return call.super.iret;
+}
+
+WINBASEAPI DWORD WINAPI GetNamedSecurityInfoW(LPCWSTR name, SE_OBJECT_TYPE type, SECURITY_INFORMATION info,
+        PSID* owner, PSID* group, PACL* dacl, PACL* sacl, PSECURITY_DESCRIPTOR* descriptor)
+{
+    struct qemu_GetNamedSecurityInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNAMEDSECURITYINFOW);
     call.name = (ULONG_PTR)name;
     call.type = (ULONG_PTR)type;
@@ -5739,17 +5871,38 @@ WINBASEAPI DWORD WINAPI GetNamedSecurityInfoW(LPCWSTR name, SE_OBJECT_TYPE type,
     call.descriptor = (ULONG_PTR)descriptor;
 
     qemu_syscall(&call.super);
+    if (descriptor)
+        *descriptor = (SECURITY_DESCRIPTOR *)(ULONG_PTR)call.descriptor;
 
     return call.super.iret;
 }
 
 #else
 
-void qemu_GetNamedSecurityInfoW(struct qemu_syscall *call)
+void qemu_GetNamedSecurityInfo(struct qemu_syscall *call)
 {
-    struct qemu_GetNamedSecurityInfoW *c = (struct qemu_GetNamedSecurityInfoW *)call;
+    struct qemu_GetNamedSecurityInfo *c = (struct qemu_GetNamedSecurityInfo *)call;
+    PSECURITY_DESCRIPTOR desc = NULL;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = GetNamedSecurityInfoW(QEMU_G2H(c->name), c->type, c->info, QEMU_G2H(c->owner), QEMU_G2H(c->group), QEMU_G2H(c->dacl), QEMU_G2H(c->sacl), QEMU_G2H(c->descriptor));
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_GETNAMEDSECURITYINFOW))
+    {
+        c->super.iret = GetNamedSecurityInfoW(QEMU_G2H(c->name), c->type, c->info, QEMU_G2H(c->owner),
+                QEMU_G2H(c->group), QEMU_G2H(c->dacl), QEMU_G2H(c->sacl),
+                c->descriptor ? &desc : NULL);
+    }
+    else
+    {
+        c->super.iret = GetNamedSecurityInfoA(QEMU_G2H(c->name), c->type, c->info, QEMU_G2H(c->owner),
+                QEMU_G2H(c->group), QEMU_G2H(c->dacl), QEMU_G2H(c->sacl),
+                c->descriptor ? &desc : NULL);
+    }
+
+#if GUEST_BIT != HOST_BIT
+    if (desc && !(((SECURITY_DESCRIPTOR *)desc)->Control & SE_SELF_RELATIVE))
+        SECURITY_DESCRIPTOR_h2g(desc, desc);
+#endif
+    c->descriptor = QEMU_H2G(desc);
 }
 
 #endif
@@ -6332,7 +6485,9 @@ struct qemu_LookupSecurityDescriptorPartsA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI LookupSecurityDescriptorPartsA(PTRUSTEE_A *owner, PTRUSTEE_A *group, PULONG access_count, PEXPLICIT_ACCESS_A *access_list, PULONG audit_count, PEXPLICIT_ACCESS_A *audit_list, PSECURITY_DESCRIPTOR descriptor)
+WINBASEAPI DWORD WINAPI LookupSecurityDescriptorPartsA(PTRUSTEE_A *owner, PTRUSTEE_A *group, PULONG access_count,
+        PEXPLICIT_ACCESS_A *access_list, PULONG audit_count, PEXPLICIT_ACCESS_A *audit_list,
+        PSECURITY_DESCRIPTOR descriptor)
 {
     struct qemu_LookupSecurityDescriptorPartsA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPSECURITYDESCRIPTORPARTSA);
@@ -6352,12 +6507,17 @@ WINBASEAPI DWORD WINAPI LookupSecurityDescriptorPartsA(PTRUSTEE_A *owner, PTRUST
 #else
 
 /* TODO: Add LookupSecurityDescriptorPartsA to Wine headers? */
-extern DWORD WINAPI LookupSecurityDescriptorPartsA(TRUSTEEA *owner, TRUSTEEA *group, ULONG *access_count, EXPLICIT_ACCESSA *access_list, ULONG *audit_count, EXPLICIT_ACCESSA *audit_list, SECURITY_DESCRIPTOR *descriptor);
+extern DWORD WINAPI LookupSecurityDescriptorPartsA(TRUSTEEA *owner, TRUSTEEA *group, ULONG *access_count,
+        EXPLICIT_ACCESSA *access_list, ULONG *audit_count, EXPLICIT_ACCESSA *audit_list,
+        SECURITY_DESCRIPTOR *descriptor);
 void qemu_LookupSecurityDescriptorPartsA(struct qemu_syscall *call)
 {
     struct qemu_LookupSecurityDescriptorPartsA *c = (struct qemu_LookupSecurityDescriptorPartsA *)call;
+    /* This call is a stub in Wine. */
     WINE_FIXME("Unverified!\n");
-    c->super.iret = LookupSecurityDescriptorPartsA(QEMU_G2H(c->owner), QEMU_G2H(c->group), QEMU_G2H(c->access_count), QEMU_G2H(c->access_list), QEMU_G2H(c->audit_count), QEMU_G2H(c->audit_list), QEMU_G2H(c->descriptor));
+    c->super.iret = LookupSecurityDescriptorPartsA(QEMU_G2H(c->owner), QEMU_G2H(c->group),
+            QEMU_G2H(c->access_count), QEMU_G2H(c->access_list), QEMU_G2H(c->audit_count), QEMU_G2H(c->audit_list),
+            QEMU_G2H(c->descriptor));
 }
 
 #endif
@@ -6376,7 +6536,9 @@ struct qemu_LookupSecurityDescriptorPartsW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI LookupSecurityDescriptorPartsW(PTRUSTEE_W *owner, PTRUSTEE_W *group, PULONG access_count, PEXPLICIT_ACCESS_W *access_list, PULONG audit_count, PEXPLICIT_ACCESS_W *audit_list, PSECURITY_DESCRIPTOR descriptor)
+WINBASEAPI DWORD WINAPI LookupSecurityDescriptorPartsW(PTRUSTEE_W *owner, PTRUSTEE_W *group, PULONG access_count,
+        PEXPLICIT_ACCESS_W *access_list, PULONG audit_count, PEXPLICIT_ACCESS_W *audit_list,
+        PSECURITY_DESCRIPTOR descriptor)
 {
     struct qemu_LookupSecurityDescriptorPartsW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOOKUPSECURITYDESCRIPTORPARTSW);
@@ -6396,12 +6558,17 @@ WINBASEAPI DWORD WINAPI LookupSecurityDescriptorPartsW(PTRUSTEE_W *owner, PTRUST
 #else
 
 /* TODO: Add LookupSecurityDescriptorPartsW to Wine headers? */
-extern DWORD WINAPI LookupSecurityDescriptorPartsW(TRUSTEEW *owner, TRUSTEEW *group, ULONG *access_count, EXPLICIT_ACCESSW *access_list, ULONG *audit_count, EXPLICIT_ACCESSW *audit_list, SECURITY_DESCRIPTOR *descriptor);
+extern DWORD WINAPI LookupSecurityDescriptorPartsW(TRUSTEEW *owner, TRUSTEEW *group, ULONG *access_count,
+        EXPLICIT_ACCESSW *access_list, ULONG *audit_count, EXPLICIT_ACCESSW *audit_list,
+        SECURITY_DESCRIPTOR *descriptor);
 void qemu_LookupSecurityDescriptorPartsW(struct qemu_syscall *call)
 {
     struct qemu_LookupSecurityDescriptorPartsW *c = (struct qemu_LookupSecurityDescriptorPartsW *)call;
+    /* This call is a stub in Wine. */
     WINE_FIXME("Unverified!\n");
-    c->super.iret = LookupSecurityDescriptorPartsW(QEMU_G2H(c->owner), QEMU_G2H(c->group), QEMU_G2H(c->access_count), QEMU_G2H(c->access_list), QEMU_G2H(c->audit_count), QEMU_G2H(c->audit_list), QEMU_G2H(c->descriptor));
+    c->super.iret = LookupSecurityDescriptorPartsW(QEMU_G2H(c->owner), QEMU_G2H(c->group),
+            QEMU_G2H(c->access_count), QEMU_G2H(c->access_list), QEMU_G2H(c->audit_count),
+            QEMU_G2H(c->audit_list), QEMU_G2H(c->descriptor));
 }
 
 #endif
