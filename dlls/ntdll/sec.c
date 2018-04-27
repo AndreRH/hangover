@@ -24,6 +24,10 @@
 #include <stdio.h>
 #include <winternl.h>
 #include <ntdef.h>
+#include <aclapi.h>
+
+#include "thunk/qemu_winnt.h"
+#include "thunk/qemu_aclapi.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -1765,7 +1769,9 @@ struct qemu_NtAccessCheck
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI NtAccessCheck(PSECURITY_DESCRIPTOR SecurityDescriptor, HANDLE ClientToken, ACCESS_MASK DesiredAccess, PGENERIC_MAPPING GenericMapping, PPRIVILEGE_SET PrivilegeSet, PULONG ReturnLength, PULONG GrantedAccess, NTSTATUS *AccessStatus)
+WINBASEAPI NTSTATUS WINAPI NtAccessCheck(PSECURITY_DESCRIPTOR SecurityDescriptor, HANDLE ClientToken,
+        ACCESS_MASK DesiredAccess, PGENERIC_MAPPING GenericMapping, PPRIVILEGE_SET PrivilegeSet, PULONG ReturnLength,
+        PULONG GrantedAccess, NTSTATUS *AccessStatus)
 {
     struct qemu_NtAccessCheck call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTACCESSCHECK);
@@ -1788,8 +1794,24 @@ WINBASEAPI NTSTATUS WINAPI NtAccessCheck(PSECURITY_DESCRIPTOR SecurityDescriptor
 void qemu_NtAccessCheck(struct qemu_syscall *call)
 {
     struct qemu_NtAccessCheck *c = (struct qemu_NtAccessCheck *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NtAccessCheck(QEMU_G2H(c->SecurityDescriptor), QEMU_G2H(c->ClientToken), c->DesiredAccess, QEMU_G2H(c->GenericMapping), QEMU_G2H(c->PrivilegeSet), QEMU_G2H(c->ReturnLength), QEMU_G2H(c->GrantedAccess), QEMU_G2H(c->AccessStatus));
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+    struct qemu_SECURITY_DESCRIPTOR *sd32;
+
+    /* PRIVILEGE_SET and GENERIC_MAPPING have the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->SecurityDescriptor);
+#else
+    sd32 = QEMU_G2H(c->SecurityDescriptor);
+    if (sd32->Control & SE_SELF_RELATIVE)
+        desc = (SECURITY_DESCRIPTOR *)sd32;
+    else
+        SECURITY_DESCRIPTOR_g2h(desc, sd32);
+#endif
+
+    c->super.iret = NtAccessCheck(desc, QEMU_G2H(c->ClientToken), c->DesiredAccess,
+            QEMU_G2H(c->GenericMapping), QEMU_G2H(c->PrivilegeSet), QEMU_G2H(c->ReturnLength),
+            QEMU_G2H(c->GrantedAccess), QEMU_G2H(c->AccessStatus));
 }
 
 #endif
