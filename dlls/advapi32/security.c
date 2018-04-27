@@ -265,9 +265,86 @@ WINBASEAPI BOOL WINAPI GetTokenInformation(HANDLE token, TOKEN_INFORMATION_CLASS
 void qemu_GetTokenInformation(struct qemu_syscall *call)
 {
     struct qemu_GetTokenInformation *c = (struct qemu_GetTokenInformation *)call;
+
     WINE_TRACE("\n");
+
     c->super.iret = GetTokenInformation(QEMU_G2H(c->token), c->tokeninfoclass, QEMU_G2H(c->tokeninfo),
             c->tokeninfolength, QEMU_G2H(c->retlen));
+
+#if GUEST_BIT == HOST_BIT
+    return;
+#endif
+
+    if (!c->tokeninfo || !c->super.iret)
+        return;
+
+    switch (c->tokeninfoclass)
+    {
+        case TokenUser:
+            WINE_FIXME("Unhandled token class TokenUser.\n");
+            break;
+
+        case TokenLogonSid:
+        case TokenGroups:
+            TOKEN_GROUPS_h2g(QEMU_G2H(c->tokeninfo), QEMU_G2H(c->tokeninfo));
+            break;
+
+        case TokenPrivileges:
+            WINE_FIXME("Unhandled token class TokenPrivileges.\n");
+            break;
+
+        case TokenOwner:
+            WINE_FIXME("Unhandled token class TokenOwner.\n");
+            break;
+
+        case TokenPrimaryGroup:
+            WINE_FIXME("Unhandled token class TokenPrimaryGroup.\n");
+            break;
+
+        case TokenDefaultDacl:
+            WINE_FIXME("Unhandled token class TokenDefaultDacl.\n");
+            break;
+
+        case TokenSource:
+            WINE_FIXME("Unhandled token class TokenSource.\n");
+            break;
+
+        case TokenType:
+            WINE_FIXME("Unhandled token class TokenType.\n");
+            break;
+
+        case TokenImpersonationLevel:
+            WINE_FIXME("Unhandled token class TokenImpersonationLevel.\n");
+            break;
+
+        case TokenStatistics:
+            WINE_FIXME("Unhandled token class TokenStatistics.\n");
+            break;
+
+        case TokenRestrictedSids:
+            WINE_FIXME("Unhandled token class TokenRestrictedSids.\n");
+            break;
+
+        case TokenSessionId:
+            WINE_FIXME("Unhandled token class TokenSessionId.\n");
+            break;
+
+        case TokenGroupsAndPrivileges:
+            WINE_FIXME("Unhandled token class TokenGroupsAndPrivileges.\n");
+            break;
+
+        case TokenSessionReference:
+            WINE_FIXME("Unhandled token class TokenSessionReference.\n");
+            break;
+
+        case TokenSandBoxInert:
+            WINE_FIXME("Unhandled token class TokenSandBoxInert.\n");
+            break;
+
+        default:
+            WINE_FIXME("Unexpected token class %d.\n", (UINT)c->tokeninfoclass);
+            break;
+    }
 }
 
 #endif

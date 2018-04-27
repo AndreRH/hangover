@@ -89,4 +89,44 @@ static inline void SECURITY_DESCRIPTOR_h2g(struct qemu_SECURITY_DESCRIPTOR *gues
     guest->Dacl = (ULONG_PTR)host->Dacl;
 }
 
+struct qemu_SID_AND_ATTRIBUTES
+{
+    qemu_ptr Sid;
+    DWORD Attributes;
+};
+
+static inline void SID_AND_ATTRIBUTES_g2h(SID_AND_ATTRIBUTES *host, const struct qemu_SID_AND_ATTRIBUTES *guest)
+{
+    host->Sid = (SID *)(ULONG_PTR)guest->Sid;
+    host->Attributes = guest->Attributes;
+}
+
+static inline void SID_AND_ATTRIBUTES_h2g(struct qemu_SID_AND_ATTRIBUTES *guest, const SID_AND_ATTRIBUTES *host)
+{
+    guest->Sid = (ULONG_PTR)host->Sid;
+    guest->Attributes = host->Attributes;
+}
+
+struct qemu_TOKEN_GROUPS
+{
+    DWORD GroupCount;
+    struct qemu_SID_AND_ATTRIBUTES Groups[ANYSIZE_ARRAY];
+};
+
+static inline void TOKEN_GROUPS_g2h(TOKEN_GROUPS *host, const struct qemu_TOKEN_GROUPS *guest)
+{
+    DWORD i;
+    host->GroupCount = guest->GroupCount;
+    for (i = 0; i < guest->GroupCount; ++i)
+        SID_AND_ATTRIBUTES_g2h(&host->Groups[i], &guest->Groups[i]);
+}
+
+static inline void TOKEN_GROUPS_h2g(struct qemu_TOKEN_GROUPS *guest, const TOKEN_GROUPS *host)
+{
+    DWORD i;
+    guest->GroupCount = host->GroupCount;
+    for (i = 0; i < guest->GroupCount; ++i)
+        SID_AND_ATTRIBUTES_h2g(&guest->Groups[i], &host->Groups[i]);
+}
+
 #endif
