@@ -91,6 +91,11 @@ void qemu_NtQueryObject(struct qemu_syscall *call)
     len_out = QEMU_G2H(c->used_len);
     switch (c->info_class)
     {
+        case ObjectBasicInformation:
+            /* OBJECT_BASIC_INFORMATION is the same in 32 and 64 bit */
+            c->super.iret = NtQueryObject((HANDLE)c->handle, c->info_class, QEMU_G2H(c->ptr), c->len, len_out);
+            break;
+
         case ObjectNameInformation:
             WINE_TRACE("Translating OBJECT_NAME_INFORMATION\n");
 
