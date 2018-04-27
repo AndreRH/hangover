@@ -4079,7 +4079,7 @@ void qemu_BuildTrusteeWithObjectsAndNameW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_BuildTrusteeWithObjectsAndSidA
+struct qemu_BuildTrusteeWithObjectsAndSid
 {
     struct qemu_syscall super;
     uint64_t pTrustee;
@@ -4091,9 +4091,10 @@ struct qemu_BuildTrusteeWithObjectsAndSidA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI VOID WINAPI BuildTrusteeWithObjectsAndSidA(PTRUSTEEA pTrustee, POBJECTS_AND_SID pObjSid, GUID* pObjectGuid, GUID* pInheritedObjectGuid, PSID pSid)
+WINBASEAPI VOID WINAPI BuildTrusteeWithObjectsAndSidA(PTRUSTEEA pTrustee, POBJECTS_AND_SID pObjSid,
+        GUID* pObjectGuid, GUID* pInheritedObjectGuid, PSID pSid)
 {
-    struct qemu_BuildTrusteeWithObjectsAndSidA call;
+    struct qemu_BuildTrusteeWithObjectsAndSid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHOBJECTSANDSIDA);
     call.pTrustee = (ULONG_PTR)pTrustee;
     call.pObjSid = (ULONG_PTR)pObjSid;
@@ -4104,32 +4105,10 @@ WINBASEAPI VOID WINAPI BuildTrusteeWithObjectsAndSidA(PTRUSTEEA pTrustee, POBJEC
     qemu_syscall(&call.super);
 }
 
-#else
-
-void qemu_BuildTrusteeWithObjectsAndSidA(struct qemu_syscall *call)
+WINBASEAPI VOID WINAPI BuildTrusteeWithObjectsAndSidW(PTRUSTEEW pTrustee, POBJECTS_AND_SID pObjSid,
+        GUID* pObjectGuid, GUID* pInheritedObjectGuid, PSID pSid)
 {
-    struct qemu_BuildTrusteeWithObjectsAndSidA *c = (struct qemu_BuildTrusteeWithObjectsAndSidA *)call;
-    WINE_FIXME("Unverified!\n");
-    BuildTrusteeWithObjectsAndSidA(QEMU_G2H(c->pTrustee), QEMU_G2H(c->pObjSid), QEMU_G2H(c->pObjectGuid), QEMU_G2H(c->pInheritedObjectGuid), QEMU_G2H(c->pSid));
-}
-
-#endif
-
-struct qemu_BuildTrusteeWithObjectsAndSidW
-{
-    struct qemu_syscall super;
-    uint64_t pTrustee;
-    uint64_t pObjSid;
-    uint64_t pObjectGuid;
-    uint64_t pInheritedObjectGuid;
-    uint64_t pSid;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI VOID WINAPI BuildTrusteeWithObjectsAndSidW(PTRUSTEEW pTrustee, POBJECTS_AND_SID pObjSid, GUID* pObjectGuid, GUID* pInheritedObjectGuid, PSID pSid)
-{
-    struct qemu_BuildTrusteeWithObjectsAndSidW call;
+    struct qemu_BuildTrusteeWithObjectsAndSid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHOBJECTSANDSIDW);
     call.pTrustee = (ULONG_PTR)pTrustee;
     call.pObjSid = (ULONG_PTR)pObjSid;
@@ -4142,11 +4121,34 @@ WINBASEAPI VOID WINAPI BuildTrusteeWithObjectsAndSidW(PTRUSTEEW pTrustee, POBJEC
 
 #else
 
-void qemu_BuildTrusteeWithObjectsAndSidW(struct qemu_syscall *call)
+void qemu_BuildTrusteeWithObjectsAndSid(struct qemu_syscall *call)
 {
-    struct qemu_BuildTrusteeWithObjectsAndSidW *c = (struct qemu_BuildTrusteeWithObjectsAndSidW *)call;
-    WINE_FIXME("Unverified!\n");
-    BuildTrusteeWithObjectsAndSidW(QEMU_G2H(c->pTrustee), QEMU_G2H(c->pObjSid), QEMU_G2H(c->pObjectGuid), QEMU_G2H(c->pInheritedObjectGuid), QEMU_G2H(c->pSid));
+    struct qemu_BuildTrusteeWithObjectsAndSid *c = (struct qemu_BuildTrusteeWithObjectsAndSid *)call;
+    TRUSTEE_W stack, *trustee = &stack;
+    OBJECTS_AND_SID stack_sid, *obj_sid = &stack_sid;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    trustee = QEMU_G2H(c->pTrustee);
+    obj_sid = QEMU_G2H(c->pObjSid);
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHOBJECTSANDSIDW))
+    {
+        BuildTrusteeWithObjectsAndSidW(trustee, obj_sid, QEMU_G2H(c->pObjectGuid),
+                QEMU_G2H(c->pInheritedObjectGuid), QEMU_G2H(c->pSid));
+    }
+    else
+    {
+        BuildTrusteeWithObjectsAndSidA((TRUSTEE_A *)trustee, obj_sid, QEMU_G2H(c->pObjectGuid),
+                QEMU_G2H(c->pInheritedObjectGuid), QEMU_G2H(c->pSid));
+    }
+
+#if GUEST_BIT != HOST_BIT
+    trustee->ptstrName = (WCHAR *)QEMU_G2H(c->pObjSid); /* Wine does this too. */
+    TRUSTEE_h2g(QEMU_G2H(c->pTrustee), trustee);
+    OBJECTS_AND_SID_h2g(QEMU_G2H(c->pObjSid), obj_sid);
+#endif
 }
 
 #endif

@@ -28,6 +28,29 @@ static inline void TRUSTEE_h2g(struct qemu_TRUSTEE *guest, const TRUSTEE_W *host
     guest->ptstrName = (ULONG_PTR)host->ptstrName;
 }
 
+struct qemu_OBJECTS_AND_SID
+{
+    DWORD   ObjectsPresent;
+    GUID    ObjectTypeGuid;
+    GUID    InheritedObjectTypeGuid;
+    qemu_ptr pSid;
+};
+
+static inline void OBJECTS_AND_SID_g2h(OBJECTS_AND_SID *host, const struct qemu_OBJECTS_AND_SID *guest)
+{
+    host->ObjectsPresent = guest->ObjectsPresent;
+    host->ObjectTypeGuid = guest->ObjectTypeGuid;
+    host->InheritedObjectTypeGuid = guest->InheritedObjectTypeGuid;
+    host->pSid = (SID *)(ULONG_PTR)guest->pSid;
+}
+
+static inline void OBJECTS_AND_SID_h2g(struct qemu_OBJECTS_AND_SID *guest, const OBJECTS_AND_SID *host)
+{
+    guest->ObjectsPresent = host->ObjectsPresent;
+    guest->ObjectTypeGuid = host->ObjectTypeGuid;
+    guest->InheritedObjectTypeGuid = host->InheritedObjectTypeGuid;
+    guest->pSid = (ULONG_PTR)host->pSid;
+}
 
 #endif
 
