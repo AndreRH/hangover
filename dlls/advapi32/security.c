@@ -265,28 +265,33 @@ WINBASEAPI BOOL WINAPI GetTokenInformation(HANDLE token, TOKEN_INFORMATION_CLASS
 void qemu_GetTokenInformation(struct qemu_syscall *call)
 {
     struct qemu_GetTokenInformation *c = (struct qemu_GetTokenInformation *)call;
+    TOKEN_DEFAULT_DACL dacl;
+    void *info;
+    DWORD len, *retlen;
 
     WINE_TRACE("\n");
 
-    c->super.iret = GetTokenInformation(QEMU_G2H(c->token), c->tokeninfoclass, QEMU_G2H(c->tokeninfo),
-            c->tokeninfolength, QEMU_G2H(c->retlen));
+    info = QEMU_G2H(c->tokeninfo);
+    len = c->tokeninfolength;
+    retlen = QEMU_G2H(c->retlen);
+
+    c->super.iret = GetTokenInformation(QEMU_G2H(c->token), c->tokeninfoclass, info, len, retlen);
 
 #if GUEST_BIT == HOST_BIT
     return;
 #endif
 
-    if (!c->tokeninfo || !c->super.iret)
-        return;
-
     switch (c->tokeninfoclass)
     {
         case TokenUser:
-            WINE_FIXME("Unhandled token class TokenUser.\n");
+            if (info && c->super.iret)
+                TOKEN_USER_h2g(info, info);
             break;
 
         case TokenLogonSid:
         case TokenGroups:
-            TOKEN_GROUPS_h2g(QEMU_G2H(c->tokeninfo), QEMU_G2H(c->tokeninfo));
+            if (info && c->super.iret)
+                TOKEN_GROUPS_h2g(info, info);
             break;
 
         case TokenPrivileges:
@@ -310,11 +315,11 @@ void qemu_GetTokenInformation(struct qemu_syscall *call)
             break;
 
         case TokenType:
-            WINE_FIXME("Unhandled token class TokenType.\n");
+            /* Nothing to do. */
             break;
 
         case TokenImpersonationLevel:
-            WINE_FIXME("Unhandled token class TokenImpersonationLevel.\n");
+            /* Nothing to do. */
             break;
 
         case TokenStatistics:

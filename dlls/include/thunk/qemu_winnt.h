@@ -129,4 +129,34 @@ static inline void TOKEN_GROUPS_h2g(struct qemu_TOKEN_GROUPS *guest, const TOKEN
         SID_AND_ATTRIBUTES_h2g(&guest->Groups[i], &host->Groups[i]);
 }
 
+struct qemu_TOKEN_USER
+{
+    struct qemu_SID_AND_ATTRIBUTES User;
+};
+
+static inline void TOKEN_USER_g2h(TOKEN_USER *host, const struct qemu_TOKEN_USER *guest)
+{
+    SID_AND_ATTRIBUTES_g2h(&host->User, &guest->User);
+}
+
+static inline void TOKEN_USER_h2g(struct qemu_TOKEN_USER *guest, const TOKEN_USER *host)
+{
+    SID_AND_ATTRIBUTES_h2g(&guest->User, &host->User);
+}
+
+struct qemu_TOKEN_DEFAULT_DACL
+{
+    qemu_ptr DefaultDacl;
+};
+
+static inline void TOKEN_DEFAULT_DACL_g2h(TOKEN_DEFAULT_DACL *host, const struct qemu_TOKEN_DEFAULT_DACL *guest)
+{
+    host->DefaultDacl = (PACL)(ULONG_PTR)guest->DefaultDacl;
+}
+
+static inline void TOKEN_DEFAULT_DACL_h2g(struct qemu_TOKEN_DEFAULT_DACL *guest, const TOKEN_DEFAULT_DACL *host)
+{
+    guest->DefaultDacl = (ULONG_PTR)host->DefaultDacl;
+}
+
 #endif
