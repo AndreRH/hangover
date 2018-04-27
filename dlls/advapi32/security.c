@@ -1385,8 +1385,22 @@ WINBASEAPI BOOL WINAPI SetSecurityDescriptorOwner(PSECURITY_DESCRIPTOR pSecurity
 void qemu_SetSecurityDescriptorOwner(struct qemu_syscall *call)
 {
     struct qemu_SetSecurityDescriptorOwner *c = (struct qemu_SetSecurityDescriptorOwner *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetSecurityDescriptorOwner(QEMU_G2H(c->pSecurityDescriptor), QEMU_G2H(c->pOwner), c->bOwnerDefaulted);
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+
+    /* This function fails on self-relative SDs. */
+    WINE_TRACE("\n");
+#if HOST_BIT == GUEST_BIT
+    desc = QEMU_G2H(c->pSecurityDescriptor);
+#else
+    SECURITY_DESCRIPTOR_g2h(desc, QEMU_G2H(c->pSecurityDescriptor));
+#endif
+
+    c->super.iret = SetSecurityDescriptorOwner(desc, QEMU_G2H(c->pOwner), c->bOwnerDefaulted);
+
+#if HOST_BIT != GUEST_BIT
+    if (c->super.iret)
+        SECURITY_DESCRIPTOR_h2g(QEMU_G2H(c->pSecurityDescriptor), desc);
+#endif
 }
 
 #endif
@@ -1468,8 +1482,22 @@ WINBASEAPI BOOL WINAPI SetSecurityDescriptorGroup (PSECURITY_DESCRIPTOR Security
 void qemu_SetSecurityDescriptorGroup(struct qemu_syscall *call)
 {
     struct qemu_SetSecurityDescriptorGroup *c = (struct qemu_SetSecurityDescriptorGroup *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetSecurityDescriptorGroup(QEMU_G2H(c->SecurityDescriptor), QEMU_G2H(c->Group), c->GroupDefaulted);
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+
+    /* This function fails on self-relative SDs. */
+    WINE_TRACE("\n");
+#if HOST_BIT == GUEST_BIT
+    desc = QEMU_G2H(c->SecurityDescriptor);
+#else
+    SECURITY_DESCRIPTOR_g2h(desc, QEMU_G2H(c->SecurityDescriptor));
+#endif
+
+    c->super.iret = SetSecurityDescriptorGroup(desc, QEMU_G2H(c->Group), c->GroupDefaulted);
+
+#if HOST_BIT != GUEST_BIT
+    if (c->super.iret)
+        SECURITY_DESCRIPTOR_h2g(QEMU_G2H(c->SecurityDescriptor), desc);
+#endif
 }
 
 #endif
