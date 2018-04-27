@@ -25,6 +25,7 @@
 #include <aclapi.h>
 
 #include "thunk/qemu_winnt.h"
+#include "thunk/qemu_aclapi.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -4150,7 +4151,7 @@ void qemu_BuildTrusteeWithObjectsAndSidW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_BuildTrusteeWithSidA
+struct qemu_BuildTrusteeWithSid
 {
     struct qemu_syscall super;
     uint64_t pTrustee;
@@ -4161,7 +4162,7 @@ struct qemu_BuildTrusteeWithSidA
 
 WINBASEAPI VOID WINAPI BuildTrusteeWithSidA(PTRUSTEEA pTrustee, PSID pSid)
 {
-    struct qemu_BuildTrusteeWithSidA call;
+    struct qemu_BuildTrusteeWithSid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHSIDA);
     call.pTrustee = (ULONG_PTR)pTrustee;
     call.pSid = (ULONG_PTR)pSid;
@@ -4169,29 +4170,9 @@ WINBASEAPI VOID WINAPI BuildTrusteeWithSidA(PTRUSTEEA pTrustee, PSID pSid)
     qemu_syscall(&call.super);
 }
 
-#else
-
-void qemu_BuildTrusteeWithSidA(struct qemu_syscall *call)
-{
-    struct qemu_BuildTrusteeWithSidA *c = (struct qemu_BuildTrusteeWithSidA *)call;
-    WINE_FIXME("Unverified!\n");
-    BuildTrusteeWithSidA(QEMU_G2H(c->pTrustee), QEMU_G2H(c->pSid));
-}
-
-#endif
-
-struct qemu_BuildTrusteeWithSidW
-{
-    struct qemu_syscall super;
-    uint64_t pTrustee;
-    uint64_t pSid;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI VOID WINAPI BuildTrusteeWithSidW(PTRUSTEEW pTrustee, PSID pSid)
 {
-    struct qemu_BuildTrusteeWithSidW call;
+    struct qemu_BuildTrusteeWithSid call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHSIDW);
     call.pTrustee = (ULONG_PTR)pTrustee;
     call.pSid = (ULONG_PTR)pSid;
@@ -4201,11 +4182,24 @@ WINBASEAPI VOID WINAPI BuildTrusteeWithSidW(PTRUSTEEW pTrustee, PSID pSid)
 
 #else
 
-void qemu_BuildTrusteeWithSidW(struct qemu_syscall *call)
+void qemu_BuildTrusteeWithSid(struct qemu_syscall *call)
 {
-    struct qemu_BuildTrusteeWithSidW *c = (struct qemu_BuildTrusteeWithSidW *)call;
-    WINE_FIXME("Unverified!\n");
-    BuildTrusteeWithSidW(QEMU_G2H(c->pTrustee), QEMU_G2H(c->pSid));
+    struct qemu_BuildTrusteeWithSid *c = (struct qemu_BuildTrusteeWithSid *)call;
+    TRUSTEE_W stack, *trustee = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    trustee = QEMU_G2H(c->pTrustee);
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_BUILDTRUSTEEWITHSIDW))
+        BuildTrusteeWithSidW(trustee, QEMU_G2H(c->pSid));
+    else
+        BuildTrusteeWithSidA((TRUSTEE_A *)trustee, QEMU_G2H(c->pSid));
+
+#if HOST_BIT != GUEST_BIT
+    TRUSTEE_h2g(QEMU_G2H(c->pTrustee), trustee);
+#endif
 }
 
 #endif
