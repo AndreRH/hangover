@@ -1225,15 +1225,17 @@ void qemu_MakeAbsoluteSD(struct qemu_syscall *call)
 {
     struct qemu_MakeAbsoluteSD *c = (struct qemu_MakeAbsoluteSD *)call;
 
-    /* It is not as simple as creating a 64 bit copy because the pointers in the input are relative to the
-     * head structure. */
-    WINE_FIXME("This won't work yet.\n");
-
+    WINE_TRACE("\n");
     c->super.iret = MakeAbsoluteSD(QEMU_G2H(c->pSelfRelativeSecurityDescriptor),
             QEMU_G2H(c->pAbsoluteSecurityDescriptor), QEMU_G2H(c->lpdwAbsoluteSecurityDescriptorSize),
             QEMU_G2H(c->pDacl), QEMU_G2H(c->lpdwDaclSize), QEMU_G2H(c->pSacl), QEMU_G2H(c->lpdwSaclSize),
             QEMU_G2H(c->pOwner), QEMU_G2H(c->lpdwOwnerSize), QEMU_G2H(c->pPrimaryGroup),
             QEMU_G2H(c->lpdwPrimaryGroupSize));
+
+#if GUEST_BIT != HOST_BIT
+    if (c->pAbsoluteSecurityDescriptor && c->super.iret)
+        SECURITY_DESCRIPTOR_h2g(QEMU_G2H(c->pAbsoluteSecurityDescriptor), QEMU_G2H(c->pAbsoluteSecurityDescriptor));
+#endif
 }
 
 #endif
@@ -1854,8 +1856,9 @@ void qemu_MakeSelfRelativeSD(struct qemu_syscall *call)
 #else
     input32 = QEMU_G2H(c->pAbsoluteSecurityDescriptor);
     if (input32->Control & SE_SELF_RELATIVE)
-        WINE_FIXME("Input desc is already self relative.\n");
-    SECURITY_DESCRIPTOR_g2h(input, input32);
+        input = (SECURITY_DESCRIPTOR *)input32;
+    else
+        SECURITY_DESCRIPTOR_g2h(input, input32);
 #endif
 
     c->super.iret = MakeSelfRelativeSD(input, QEMU_G2H(c->pSelfRelativeSecurityDescriptor),
