@@ -60,7 +60,7 @@ WINBASEAPI BOOL WINAPI GetUserNameA(LPSTR lpszName, LPDWORD lpSize)
 void qemu_GetUserNameA(struct qemu_syscall *call)
 {
     struct qemu_GetUserNameA *c = (struct qemu_GetUserNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetUserNameA(QEMU_G2H(c->lpszName), QEMU_G2H(c->lpSize));
 }
 
@@ -92,7 +92,7 @@ WINBASEAPI BOOL WINAPI GetUserNameW(LPWSTR lpszName, LPDWORD lpSize)
 void qemu_GetUserNameW(struct qemu_syscall *call)
 {
     struct qemu_GetUserNameW *c = (struct qemu_GetUserNameW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetUserNameW(QEMU_G2H(c->lpszName), QEMU_G2H(c->lpSize));
 }
 
