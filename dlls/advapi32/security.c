@@ -24,6 +24,7 @@
 #include <winsafer.h>
 #include <aclapi.h>
 
+#include "thunk/qemu_windows.h"
 #include "thunk/qemu_winnt.h"
 #include "thunk/qemu_aclapi.h"
 
@@ -6094,11 +6095,21 @@ void qemu_DuplicateTokenEx(struct qemu_syscall *call)
 {
     struct qemu_DuplicateTokenEx *c = (struct qemu_DuplicateTokenEx *)call;
     HANDLE dup;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
 
     WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->lpTokenAttributes);
+#else
+    if (c->lpTokenAttributes)
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->lpTokenAttributes));
+    else
+        sa = NULL;
+#endif
+
     c->super.iret = DuplicateTokenEx(QEMU_G2H(c->ExistingTokenHandle), c->dwDesiredAccess,
-            QEMU_G2H(c->lpTokenAttributes), c->ImpersonationLevel, c->TokenType,
-            c->DuplicateTokenHandle ? & dup : NULL);
+            sa, c->ImpersonationLevel, c->TokenType, c->DuplicateTokenHandle ? & dup : NULL);
     c->DuplicateTokenHandle = QEMU_H2G(dup);
 }
 
