@@ -53,7 +53,7 @@ WINBASEAPI BOOL WINAPI OpenProcessToken(HANDLE ProcessHandle, DWORD DesiredAcces
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENPROCESSTOKEN);
     call.ProcessHandle = guest_HANDLE_g2h(ProcessHandle);
     call.DesiredAccess = DesiredAccess;
-    call.TokenHandle = (ULONG_PTR)TokenHandle;
+    call.TokenHandle = guest_HANDLE_g2h(TokenHandle);
 
     qemu_syscall(&call.super);
     if (TokenHandle)
@@ -94,7 +94,7 @@ WINBASEAPI BOOL WINAPI OpenThreadToken(HANDLE ThreadHandle, DWORD DesiredAccess,
     call.ThreadHandle = guest_HANDLE_g2h(ThreadHandle);
     call.DesiredAccess = DesiredAccess;
     call.OpenAsSelf = OpenAsSelf;
-    call.TokenHandle = (ULONG_PTR)TokenHandle;
+    call.TokenHandle = guest_HANDLE_g2h(TokenHandle);
 
     qemu_syscall(&call.super);
 
@@ -135,7 +135,7 @@ WINBASEAPI BOOL WINAPI AdjustTokenGroups(HANDLE TokenHandle, BOOL ResetToDefault
 {
     struct qemu_AdjustTokenGroups call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADJUSTTOKENGROUPS);
-    call.TokenHandle = (ULONG_PTR)TokenHandle;
+    call.TokenHandle = guest_HANDLE_g2h(TokenHandle);
     call.ResetToDefault = (ULONG_PTR)ResetToDefault;
     call.NewState = (ULONG_PTR)NewState;
     call.BufferLength = (ULONG_PTR)BufferLength;
@@ -175,7 +175,7 @@ WINBASEAPI BOOL WINAPI AdjustTokenPrivileges(HANDLE TokenHandle, BOOL DisableAll
 {
     struct qemu_AdjustTokenPrivileges call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADJUSTTOKENPRIVILEGES);
-    call.TokenHandle = (ULONG_PTR)TokenHandle;
+    call.TokenHandle = guest_HANDLE_g2h(TokenHandle);
     call.DisableAllPrivileges = DisableAllPrivileges;
     call.NewState = (ULONG_PTR)NewState;
     call.BufferLength = BufferLength;
@@ -213,7 +213,7 @@ WINBASEAPI BOOL WINAPI CheckTokenMembership(HANDLE token, PSID sid_to_check, PBO
 {
     struct qemu_CheckTokenMembership call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CHECKTOKENMEMBERSHIP);
-    call.token = (ULONG_PTR)token;
+    call.token = guest_HANDLE_g2h(token);
     call.sid_to_check = (ULONG_PTR)sid_to_check;
     call.is_member = (ULONG_PTR)is_member;
 
@@ -245,11 +245,12 @@ struct qemu_GetTokenInformation
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetTokenInformation(HANDLE token, TOKEN_INFORMATION_CLASS tokeninfoclass, LPVOID tokeninfo, DWORD tokeninfolength, LPDWORD retlen)
+WINBASEAPI BOOL WINAPI GetTokenInformation(HANDLE token, TOKEN_INFORMATION_CLASS tokeninfoclass, LPVOID tokeninfo,
+        DWORD tokeninfolength, LPDWORD retlen)
 {
     struct qemu_GetTokenInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTOKENINFORMATION);
-    call.token = (ULONG_PTR)token;
+    call.token = guest_HANDLE_g2h(token);
     call.tokeninfoclass = tokeninfoclass;
     call.tokeninfo = (ULONG_PTR)tokeninfo;
     call.tokeninfolength = tokeninfolength;
@@ -315,15 +316,9 @@ void qemu_GetTokenInformation(struct qemu_syscall *call)
             break;
 
         case TokenType:
-            /* Nothing to do. */
-            break;
-
         case TokenImpersonationLevel:
-            /* Nothing to do. */
-            break;
-
         case TokenStatistics:
-            WINE_FIXME("Unhandled token class TokenStatistics.\n");
+            /* Nothing to do. */
             break;
 
         case TokenRestrictedSids:
@@ -374,7 +369,7 @@ WINBASEAPI BOOL WINAPI SetTokenInformation(HANDLE token, TOKEN_INFORMATION_CLASS
 {
     struct qemu_SetTokenInformation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTOKENINFORMATION);
-    call.token = (ULONG_PTR)token;
+    call.token = guest_HANDLE_g2h(token);
     call.tokeninfoclass = (ULONG_PTR)tokeninfoclass;
     call.tokeninfo = (ULONG_PTR)tokeninfo;
     call.tokeninfolength = (ULONG_PTR)tokeninfolength;
@@ -409,7 +404,7 @@ WINBASEAPI BOOL WINAPI SetThreadToken(PHANDLE thread, HANDLE token)
     struct qemu_SetThreadToken call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADTOKEN);
     call.thread = (ULONG_PTR)thread;
-    call.token = (ULONG_PTR)token;
+    call.token = guest_HANDLE_g2h(token);
 
     qemu_syscall(&call.super);
 
@@ -672,7 +667,7 @@ WINBASEAPI BOOL WINAPI IsTokenRestricted(HANDLE TokenHandle)
 {
     struct qemu_IsTokenRestricted call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISTOKENRESTRICTED);
-    call.TokenHandle = (ULONG_PTR)TokenHandle;
+    call.TokenHandle = guest_HANDLE_g2h(TokenHandle);
 
     qemu_syscall(&call.super);
 
@@ -4994,7 +4989,7 @@ WINBASEAPI BOOL WINAPI SetPrivateObjectSecurity(SECURITY_INFORMATION SecurityInf
     call.ModificationDescriptor = (ULONG_PTR)ModificationDescriptor;
     call.ObjectsSecurityDescriptor = (ULONG_PTR)ObjectsSecurityDescriptor;
     call.GenericMapping = (ULONG_PTR)GenericMapping;
-    call.Token = (ULONG_PTR)Token;
+    call.Token = guest_HANDLE_g2h(Token);
 
     qemu_syscall(&call.super);
 
@@ -5661,7 +5656,7 @@ WINBASEAPI BOOL WINAPI CreatePrivateObjectSecurityEx(PSECURITY_DESCRIPTOR parent
     call.objtype = (ULONG_PTR)objtype;
     call.is_directory = (ULONG_PTR)is_directory;
     call.flags = (ULONG_PTR)flags;
-    call.token = (ULONG_PTR)token;
+    call.token = guest_HANDLE_g2h(token);
     call.mapping = (ULONG_PTR)mapping;
 
     qemu_syscall(&call.super);
@@ -5701,7 +5696,7 @@ WINBASEAPI BOOL WINAPI CreatePrivateObjectSecurity(PSECURITY_DESCRIPTOR parent, 
     call.creator = (ULONG_PTR)creator;
     call.out = (ULONG_PTR)out;
     call.is_container = (ULONG_PTR)is_container;
-    call.token = (ULONG_PTR)token;
+    call.token = guest_HANDLE_g2h(token);
     call.mapping = (ULONG_PTR)mapping;
 
     qemu_syscall(&call.super);
@@ -5747,7 +5742,7 @@ WINBASEAPI BOOL WINAPI CreatePrivateObjectSecurityWithMultipleInheritance(PSECUR
     call.count = (ULONG_PTR)count;
     call.is_container = (ULONG_PTR)is_container;
     call.flags = (ULONG_PTR)flags;
-    call.token = (ULONG_PTR)token;
+    call.token = guest_HANDLE_g2h(token);
     call.mapping = (ULONG_PTR)mapping;
 
     qemu_syscall(&call.super);
@@ -5967,7 +5962,7 @@ WINBASEAPI BOOL WINAPI CreateProcessWithTokenW(HANDLE token, DWORD logon_flags, 
 {
     struct qemu_CreateProcessWithTokenW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEPROCESSWITHTOKENW);
-    call.token = (ULONG_PTR)token;
+    call.token = guest_HANDLE_g2h(token);
     call.logon_flags = (ULONG_PTR)logon_flags;
     call.application_name = (ULONG_PTR)application_name;
     call.command_line = (ULONG_PTR)command_line;
@@ -6574,7 +6569,7 @@ WINBASEAPI BOOL WINAPI SaferComputeTokenFromLevel(SAFER_LEVEL_HANDLE handle, HAN
     struct qemu_SaferComputeTokenFromLevel call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SAFERCOMPUTETOKENFROMLEVEL);
     call.handle = (ULONG_PTR)handle;
-    call.token = (ULONG_PTR)token;
+    call.token = guest_HANDLE_g2h(token);
     call.access_token = (ULONG_PTR)access_token;
     call.flags = (ULONG_PTR)flags;
     call.reserved = (ULONG_PTR)reserved;
