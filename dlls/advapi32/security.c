@@ -4816,7 +4816,7 @@ void qemu_SetAclInformation(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_SetEntriesInAclA
+struct qemu_SetEntriesInAcl
 {
     struct qemu_syscall super;
     uint64_t count;
@@ -4829,7 +4829,7 @@ struct qemu_SetEntriesInAclA
 
 WINBASEAPI DWORD WINAPI SetEntriesInAclA(ULONG count, PEXPLICIT_ACCESSA pEntries, PACL OldAcl, PACL* NewAcl)
 {
-    struct qemu_SetEntriesInAclA call;
+    struct qemu_SetEntriesInAcl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETENTRIESINACLA);
     call.count = (ULONG_PTR)count;
     call.pEntries = (ULONG_PTR)pEntries;
@@ -4837,35 +4837,15 @@ WINBASEAPI DWORD WINAPI SetEntriesInAclA(ULONG count, PEXPLICIT_ACCESSA pEntries
     call.NewAcl = (ULONG_PTR)NewAcl;
 
     qemu_syscall(&call.super);
+    if (NewAcl)
+        *NewAcl = (ACL *)(ULONG_PTR)call.NewAcl;
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_SetEntriesInAclA(struct qemu_syscall *call)
-{
-    struct qemu_SetEntriesInAclA *c = (struct qemu_SetEntriesInAclA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetEntriesInAclA(c->count, QEMU_G2H(c->pEntries), QEMU_G2H(c->OldAcl), QEMU_G2H(c->NewAcl));
-}
-
-#endif
-
-struct qemu_SetEntriesInAclW
-{
-    struct qemu_syscall super;
-    uint64_t count;
-    uint64_t pEntries;
-    uint64_t OldAcl;
-    uint64_t NewAcl;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI DWORD WINAPI SetEntriesInAclW(ULONG count, PEXPLICIT_ACCESSW pEntries, PACL OldAcl, PACL* NewAcl)
 {
-    struct qemu_SetEntriesInAclW call;
+    struct qemu_SetEntriesInAcl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETENTRIESINACLW);
     call.count = (ULONG_PTR)count;
     call.pEntries = (ULONG_PTR)pEntries;
@@ -4873,17 +4853,63 @@ WINBASEAPI DWORD WINAPI SetEntriesInAclW(ULONG count, PEXPLICIT_ACCESSW pEntries
     call.NewAcl = (ULONG_PTR)NewAcl;
 
     qemu_syscall(&call.super);
+    if (NewAcl)
+        *NewAcl = (ACL *)(ULONG_PTR)call.NewAcl;
 
     return call.super.iret;
 }
 
 #else
 
-void qemu_SetEntriesInAclW(struct qemu_syscall *call)
+void qemu_SetEntriesInAcl(struct qemu_syscall *call)
 {
-    struct qemu_SetEntriesInAclW *c = (struct qemu_SetEntriesInAclW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetEntriesInAclW(c->count, QEMU_G2H(c->pEntries), QEMU_G2H(c->OldAcl), QEMU_G2H(c->NewAcl));
+    struct qemu_SetEntriesInAcl *c = (struct qemu_SetEntriesInAcl *)call;
+    ACL *newacl;
+    EXPLICIT_ACCESSW stack[10], *entries = stack;
+    struct qemu_EXPLICIT_ACCESS *entries32;
+    DWORD i, count;
+    WINE_TRACE("\n");
+
+    count = c->count;
+#if GUEST_BIT == HOST_BIT
+    entries = QEMU_G2H(c->pEntries);
+#else
+    entries32 = QEMU_G2H(c->pEntries);
+    if (!entries32)
+    {
+        entries = NULL;
+    }
+    else
+    {
+        if (count > (sizeof(stack) / sizeof(*stack)))
+        {
+            entries = HeapAlloc(GetProcessHeap(), 0, count * sizeof(*entries));
+            if (!entries)
+                WINE_ERR("Out of memory\n");
+        }
+
+        for (i = 0; i < count; ++i)
+            EXPLICIT_ACCESS_g2h(&entries[i], &entries32[i]);
+    }
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_SETENTRIESINACLW))
+    {
+        c->super.iret = SetEntriesInAclW(count, entries, QEMU_G2H(c->OldAcl),
+                c->NewAcl ? &newacl : NULL);
+    }
+    else
+    {
+        c->super.iret = SetEntriesInAclA(count, (EXPLICIT_ACCESSA *)entries, QEMU_G2H(c->OldAcl),
+                c->NewAcl ? &newacl : NULL);
+    }
+
+    c->NewAcl = QEMU_H2G(newacl);
+
+#if GUEST_BIT != HOST_BIT
+    if (entries != stack)
+        HeapFree(GetProcessHeap(), 0, entries);
+#endif
 }
 
 #endif

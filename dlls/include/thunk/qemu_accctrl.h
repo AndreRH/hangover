@@ -79,5 +79,29 @@ static inline void OBJECTS_AND_NAME_h2g(struct qemu_OBJECTS_AND_NAME *guest, con
     guest->ptstrName = (ULONG_PTR)host->ptstrName;
 }
 
+struct qemu_EXPLICIT_ACCESS
+{
+    DWORD               grfAccessPermissions;
+    ACCESS_MODE         grfAccessMode;
+    DWORD               grfInheritance;
+    struct qemu_TRUSTEE Trustee;
+};
+
+static inline void EXPLICIT_ACCESS_g2h(EXPLICIT_ACCESS_W *host, const struct qemu_EXPLICIT_ACCESS *guest)
+{
+    host->grfAccessPermissions = guest->grfAccessPermissions;
+    host->grfAccessMode = guest->grfAccessMode;
+    host->grfInheritance = guest->grfInheritance;
+    TRUSTEE_g2h(&host->Trustee, &guest->Trustee);
+}
+
+static inline void EXPLICIT_ACCESS_h2g(struct qemu_EXPLICIT_ACCESS *guest, const EXPLICIT_ACCESS_W *host)
+{
+    guest->grfAccessPermissions = host->grfAccessPermissions;
+    guest->grfAccessMode = host->grfAccessMode;
+    guest->grfInheritance = host->grfInheritance;
+    TRUSTEE_h2g(&guest->Trustee, &host->Trustee);
+}
+
 #endif
 
