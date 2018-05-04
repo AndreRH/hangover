@@ -1089,6 +1089,8 @@ WINBASEAPI DWORD WINAPI BuildSecurityDescriptorW(IN PTRUSTEEW pOwner, IN PTRUSTE
     call.pNewSD = (ULONG_PTR)pNewSD;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == ERROR_SUCCESS)
+        *pNewSD = (PSECURITY_DESCRIPTOR)(ULONG_PTR)call.pNewSD;
 
     return call.super.iret;
 }
@@ -1101,35 +1103,97 @@ void qemu_BuildSecurityDescriptor(struct qemu_syscall *call)
     SECURITY_DESCRIPTOR old_stack, *old = &old_stack;
     PSECURITY_DESCRIPTOR newsd;
     struct qemu_SECURITY_DESCRIPTOR *sd32;
+    struct qemu_EXPLICIT_ACCESS *entries32;
+    EXPLICIT_ACCESS_W *access;
+    EXPLICIT_ACCESS_W *audit;
+    TRUSTEEW owner_stack, *owner = &owner_stack;
+    TRUSTEEW group_stack, *group = &group_stack;
+    struct qemu_TRUSTEE *trustee32;
+    DWORD i;
 
-    WINE_FIXME("Unverified!\n");
-    newsd = QEMU_G2H(c->pNewSD);
+    WINE_TRACE("\n");
 #if GUEST_BIT == HOST_BIT
     old = QEMU_G2H(c->pOldSD);
+    access = QEMU_G2H(c->pListOfAccessEntries);
+    audit = QEMU_G2H(c->pListofAuditEntries);
+    owner = QEMU_G2H(c->pOwner);
+    group = QEMU_G2H(c->pGroup);
 #else
     sd32 = QEMU_G2H(c->pOldSD);
-    if (sd32->Control & SE_SELF_RELATIVE)
-        old = (SECURITY_DESCRIPTOR *)sd32;
+    if (sd32)
+    {
+        if (sd32->Control & SE_SELF_RELATIVE)
+            old = (SECURITY_DESCRIPTOR *)sd32;
+        else
+            SECURITY_DESCRIPTOR_g2h(old, sd32);
+    }
     else
-        SECURITY_DESCRIPTOR_g2h(old, sd32);
+    {
+        old = NULL;
+    }
+
+    entries32 = QEMU_G2H(c->pListOfAccessEntries);
+    if (entries32)
+    {
+        WINE_ERR("%lu access entries at %p\n", c->cCountOfAccessEntries, entries32);
+        access = HeapAlloc(GetProcessHeap(), 0, sizeof(*access) * c->cCountOfAccessEntries);
+        if (!access)
+            WINE_ERR("Out of memory!\n");
+        for (i = 0; i < c->cCountOfAccessEntries; ++i)
+            EXPLICIT_ACCESS_g2h(&access[i], &entries32[i]);
+    }
+    else
+    {
+        access = NULL;
+    }
+
+    entries32 = QEMU_G2H(c->pListofAuditEntries);
+    if (entries32)
+    {
+        WINE_ERR("%lu audit entries at %p\n", c->cCountOfAuditEntries, entries32);
+        audit = HeapAlloc(GetProcessHeap(), 0, sizeof(*audit) * c->cCountOfAuditEntries);
+        if (!audit)
+            WINE_ERR("Out of memory!\n");
+        for (i = 0; i < c->cCountOfAuditEntries; ++i)
+            EXPLICIT_ACCESS_g2h(&audit[i], &entries32[i]);
+    }
+    else
+    {
+        audit = NULL;
+    }
+
+    trustee32 = QEMU_G2H(c->pOwner);
+    if (trustee32)
+        TRUSTEE_g2h(owner, trustee32);
+    else
+        owner = NULL;
+
+    trustee32 = QEMU_G2H(c->pGroup);
+    if (trustee32)
+        TRUSTEE_g2h(group, trustee32);
+    else
+        group = NULL;
 #endif
 
     if (c->super.id == QEMU_SYSCALL_ID(CALL_BUILDSECURITYDESCRIPTORW))
     {
-        c->super.iret = BuildSecurityDescriptorA(QEMU_G2H(c->pOwner), QEMU_G2H(c->pGroup), c->cCountOfAccessEntries,
-                QEMU_G2H(c->pListOfAccessEntries), c->cCountOfAuditEntries, QEMU_G2H(c->pListofAuditEntries),
-                old, QEMU_G2H(c->lpdwBufferLength), newsd);
+        c->super.iret = BuildSecurityDescriptorW(owner, group, c->cCountOfAccessEntries,
+                access, c->cCountOfAuditEntries, audit, old, QEMU_G2H(c->lpdwBufferLength), &newsd);
     }
     else
     {
-        c->super.iret = BuildSecurityDescriptorA(QEMU_G2H(c->pOwner), QEMU_G2H(c->pGroup), c->cCountOfAccessEntries,
-                QEMU_G2H(c->pListOfAccessEntries), c->cCountOfAuditEntries, QEMU_G2H(c->pListofAuditEntries),
-                old, QEMU_G2H(c->lpdwBufferLength), newsd);
+        c->super.iret = BuildSecurityDescriptorA((TRUSTEE_A *)owner, (TRUSTEE_A *)group, c->cCountOfAccessEntries,
+                (EXPLICIT_ACCESS_A *)access, c->cCountOfAuditEntries,
+                (EXPLICIT_ACCESS_A *)audit, old, QEMU_G2H(c->lpdwBufferLength), &newsd);
     }
+
+    c->pNewSD = QEMU_H2G(newsd);
 
 #if GUEST_BIT != HOST_BIT
     if (!(((SECURITY_DESCRIPTOR *)newsd)->Control & SE_SELF_RELATIVE))
         SECURITY_DESCRIPTOR_h2g(newsd, newsd);
+    HeapFree(GetProcessHeap(), 0, access);
+    HeapFree(GetProcessHeap(), 0, audit);
 #endif
 }
 
