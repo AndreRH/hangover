@@ -1415,7 +1415,7 @@ void qemu_GetPrivateObjectSecurity(struct qemu_syscall *call)
     PSECURITY_DESCRIPTOR result;
     struct qemu_SECURITY_DESCRIPTOR *sd32;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     result = QEMU_G2H(c->ResultantDescriptor);
 #if GUEST_BIT == HOST_BIT
     object = QEMU_G2H(c->ObjectDescriptor);
@@ -1427,8 +1427,8 @@ void qemu_GetPrivateObjectSecurity(struct qemu_syscall *call)
         SECURITY_DESCRIPTOR_g2h(object, sd32);
 #endif
 
-    c->super.iret = GetPrivateObjectSecurity(object, c->SecurityInformation,
-            QEMU_G2H(c->ResultantDescriptor), c->DescriptorLength, QEMU_G2H(c->ReturnLength));
+    c->super.iret = GetPrivateObjectSecurity(object, c->SecurityInformation, result,
+            c->DescriptorLength, QEMU_G2H(c->ReturnLength));
 
 #if GUEST_BIT != HOST_BIT
     if (result && !(((SECURITY_DESCRIPTOR *)result)->Control & SE_SELF_RELATIVE))
