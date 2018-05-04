@@ -2035,8 +2035,26 @@ WINBASEAPI BOOL WINAPI SetSecurityDescriptorControl(PSECURITY_DESCRIPTOR pSecuri
 void qemu_SetSecurityDescriptorControl(struct qemu_syscall *call)
 {
     struct qemu_SetSecurityDescriptorControl *c = (struct qemu_SetSecurityDescriptorControl *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetSecurityDescriptorControl(QEMU_G2H(c->pSecurityDescriptor), c->ControlBitsOfInterest, c->ControlBitsToSet);
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+    struct qemu_SECURITY_DESCRIPTOR *sd32;
+
+    WINE_TRACE("\n");
+#if HOST_BIT == GUEST_BIT
+    desc = QEMU_G2H(c->pSecurityDescriptor);
+#else
+    sd32 = QEMU_G2H(c->pSecurityDescriptor);
+    if (sd32->Control & SE_SELF_RELATIVE)
+        desc = (SECURITY_DESCRIPTOR *)sd32;
+    else
+        SECURITY_DESCRIPTOR_g2h(desc, sd32);
+#endif
+
+    c->super.iret = SetSecurityDescriptorControl(desc, c->ControlBitsOfInterest, c->ControlBitsToSet);
+
+#if HOST_BIT != GUEST_BIT
+    if (c->super.iret && desc != (SECURITY_DESCRIPTOR *)sd32)
+        SECURITY_DESCRIPTOR_h2g(sd32, desc);
+#endif
 }
 
 #endif
