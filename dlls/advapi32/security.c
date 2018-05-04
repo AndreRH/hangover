@@ -581,7 +581,7 @@ WINBASEAPI BOOL WINAPI CopySid(DWORD nDestinationSidLength, PSID pDestinationSid
 void qemu_CopySid(struct qemu_syscall *call)
 {
     struct qemu_CopySid *c = (struct qemu_CopySid *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CopySid(c->nDestinationSidLength, QEMU_G2H(c->pDestinationSid), QEMU_G2H(c->pSourceSid));
 }
 
@@ -2099,7 +2099,7 @@ WINBASEAPI BOOL WINAPI AddAccessAllowedAce(IN OUT PACL pAcl, IN DWORD dwAceRevis
 void qemu_AddAccessAllowedAce(struct qemu_syscall *call)
 {
     struct qemu_AddAccessAllowedAce *c = (struct qemu_AddAccessAllowedAce *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AddAccessAllowedAce(QEMU_G2H(c->pAcl), c->dwAceRevision, c->AccessMask, QEMU_G2H(c->pSid));
 }
 
@@ -2117,7 +2117,8 @@ struct qemu_AddAccessAllowedAceEx
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI AddAccessAllowedAceEx(IN OUT PACL pAcl, IN DWORD dwAceRevision, IN DWORD AceFlags, IN DWORD AccessMask, IN PSID pSid)
+WINBASEAPI BOOL WINAPI AddAccessAllowedAceEx(IN OUT PACL pAcl, IN DWORD dwAceRevision, IN DWORD AceFlags,
+        IN DWORD AccessMask, IN PSID pSid)
 {
     struct qemu_AddAccessAllowedAceEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDACCESSALLOWEDACEEX);
@@ -2137,8 +2138,9 @@ WINBASEAPI BOOL WINAPI AddAccessAllowedAceEx(IN OUT PACL pAcl, IN DWORD dwAceRev
 void qemu_AddAccessAllowedAceEx(struct qemu_syscall *call)
 {
     struct qemu_AddAccessAllowedAceEx *c = (struct qemu_AddAccessAllowedAceEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AddAccessAllowedAceEx(QEMU_G2H(c->pAcl), c->dwAceRevision, c->AceFlags, c->AccessMask, QEMU_G2H(c->pSid));
+    WINE_TRACE("\n");
+    c->super.iret = AddAccessAllowedAceEx(QEMU_G2H(c->pAcl), c->dwAceRevision, c->AceFlags, c->AccessMask,
+            QEMU_G2H(c->pSid));
 }
 
 #endif
@@ -2217,7 +2219,7 @@ WINBASEAPI BOOL WINAPI AddAccessDeniedAce(IN OUT PACL pAcl, IN DWORD dwAceRevisi
 void qemu_AddAccessDeniedAce(struct qemu_syscall *call)
 {
     struct qemu_AddAccessDeniedAce *c = (struct qemu_AddAccessDeniedAce *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = AddAccessDeniedAce(QEMU_G2H(c->pAcl), c->dwAceRevision, c->AccessMask, QEMU_G2H(c->pSid));
 }
 
@@ -2461,9 +2463,10 @@ WINBASEAPI BOOL WINAPI GetAce(PACL pAcl,DWORD dwAceIndex,LPVOID *pAce)
     call.super.id = QEMU_SYSCALL_ID(CALL_GETACE);
     call.pAcl = (ULONG_PTR)pAcl;
     call.dwAceIndex = (ULONG_PTR)dwAceIndex;
-    call.pAce = (ULONG_PTR)pAce;
 
     qemu_syscall(&call.super);
+    if (call.super.iret)
+        *pAce = (void *)(ULONG_PTR)call.pAce;
 
     return call.super.iret;
 }
@@ -2473,8 +2476,11 @@ WINBASEAPI BOOL WINAPI GetAce(PACL pAcl,DWORD dwAceIndex,LPVOID *pAce)
 void qemu_GetAce(struct qemu_syscall *call)
 {
     struct qemu_GetAce *c = (struct qemu_GetAce *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetAce(QEMU_G2H(c->pAcl), c->dwAceIndex, QEMU_G2H(c->pAce));
+    void *ace;
+
+    WINE_TRACE("\n");
+    c->super.iret = GetAce(QEMU_G2H(c->pAcl), c->dwAceIndex, &ace);
+    c->pAce = QEMU_H2G(ace);
 }
 
 #endif
@@ -2542,7 +2548,7 @@ WINBASEAPI BOOL WINAPI IsValidAcl(IN PACL pAcl)
 void qemu_IsValidAcl(struct qemu_syscall *call)
 {
     struct qemu_IsValidAcl *c = (struct qemu_IsValidAcl *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsValidAcl(QEMU_G2H(c->pAcl));
 }
 
@@ -3674,7 +3680,8 @@ WINBASEAPI BOOL WINAPI PrivilegeCheck(HANDLE ClientToken, PPRIVILEGE_SET Require
 void qemu_PrivilegeCheck(struct qemu_syscall *call)
 {
     struct qemu_PrivilegeCheck *c = (struct qemu_PrivilegeCheck *)call;
-    WINE_FIXME("Unverified!\n");
+    /* PRIVILEGE_SET has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = PrivilegeCheck(QEMU_G2H(c->ClientToken), QEMU_G2H(c->RequiredPrivileges), QEMU_G2H(c->pfResult));
 }
 
@@ -6098,6 +6105,14 @@ WINBASEAPI DWORD WINAPI GetNamedSecurityInfoA(LPCSTR name, SE_OBJECT_TYPE type,
     qemu_syscall(&call.super);
     if (descriptor)
         *descriptor = (SECURITY_DESCRIPTOR *)(ULONG_PTR)call.descriptor;
+    if (owner)
+        *owner = (PSID)(ULONG_PTR)call.owner;
+    if (group)
+        *group = (PSID)(ULONG_PTR)call.group;
+    if (dacl)
+        *dacl = (PACL)(ULONG_PTR)call.dacl;
+    if (sacl)
+        *sacl = (PACL)(ULONG_PTR)call.sacl;
 
     return call.super.iret;
 }
@@ -6119,6 +6134,14 @@ WINBASEAPI DWORD WINAPI GetNamedSecurityInfoW(LPCWSTR name, SE_OBJECT_TYPE type,
     qemu_syscall(&call.super);
     if (descriptor)
         *descriptor = (SECURITY_DESCRIPTOR *)(ULONG_PTR)call.descriptor;
+    if (owner)
+        *owner = (PSID)(ULONG_PTR)call.owner;
+    if (group)
+        *group = (PSID)(ULONG_PTR)call.group;
+    if (dacl)
+        *dacl = (PACL)(ULONG_PTR)call.dacl;
+    if (sacl)
+        *sacl = (PACL)(ULONG_PTR)call.sacl;
 
     return call.super.iret;
 }
@@ -6129,18 +6152,20 @@ void qemu_GetNamedSecurityInfo(struct qemu_syscall *call)
 {
     struct qemu_GetNamedSecurityInfo *c = (struct qemu_GetNamedSecurityInfo *)call;
     PSECURITY_DESCRIPTOR desc = NULL;
+    PSID owner, group;
+    PACL dacl, sacl;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     if (c->super.id == QEMU_SYSCALL_ID(CALL_GETNAMEDSECURITYINFOW))
     {
-        c->super.iret = GetNamedSecurityInfoW(QEMU_G2H(c->name), c->type, c->info, QEMU_G2H(c->owner),
-                QEMU_G2H(c->group), QEMU_G2H(c->dacl), QEMU_G2H(c->sacl),
+        c->super.iret = GetNamedSecurityInfoW(QEMU_G2H(c->name), c->type, c->info, c->owner ? &owner : NULL,
+                c->group ? &group : NULL, c->dacl ? &dacl : NULL, c->sacl ? &sacl : NULL,
                 c->descriptor ? &desc : NULL);
     }
     else
     {
-        c->super.iret = GetNamedSecurityInfoA(QEMU_G2H(c->name), c->type, c->info, QEMU_G2H(c->owner),
-                QEMU_G2H(c->group), QEMU_G2H(c->dacl), QEMU_G2H(c->sacl),
+        c->super.iret = GetNamedSecurityInfoA(QEMU_G2H(c->name), c->type, c->info, c->owner ? &owner : NULL,
+                c->group ? &group : NULL, c->dacl ? &dacl : NULL, c->sacl ? &sacl : NULL,
                 c->descriptor ? &desc : NULL);
     }
 
@@ -6149,6 +6174,10 @@ void qemu_GetNamedSecurityInfo(struct qemu_syscall *call)
         SECURITY_DESCRIPTOR_h2g(desc, desc);
 #endif
     c->descriptor = QEMU_H2G(desc);
+    c->owner = QEMU_H2G(owner);
+    c->group = QEMU_H2G(group);
+    c->dacl = QEMU_H2G(dacl);
+    c->sacl = QEMU_H2G(sacl);
 }
 
 #endif
