@@ -118,7 +118,7 @@ void qemu_CreateProcessA(struct qemu_syscall *call)
         {
             HeapFree(GetProcessHeap(), 0, qemu);
             len *= 2;
-            qemu = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*qemu) + 3);
+            qemu = HeapAlloc(GetProcessHeap(), 0, (len + 3) * sizeof(*qemu));
             SetLastError(0);
             GetModuleFileNameA(NULL, qemu, len);
         } while(GetLastError());
@@ -134,7 +134,7 @@ void qemu_CreateProcessA(struct qemu_syscall *call)
                  * CreateProcess(executable, argv0, argv1, argv2, ...). What we're making
                  * here is CreateProcess(qemu, executable, argv0, argv1, ...), but we want
                  * CreateProcess(qemu, argv0, executable, argv1, argv2, ...) */
-                len = strlen(app_name) + strlen(cmd_line) + 5;
+                len = strlen(app_name) + strlen(cmd_line) + 6;
                 combined = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*combined));
                 sprintf(combined, "\"%s\" %s", app_name, cmd_line);
                 cmd_line = combined;
@@ -142,7 +142,7 @@ void qemu_CreateProcessA(struct qemu_syscall *call)
             else
             {
                 /* Add a dummy argv[0] for qemu. */
-                len = strlen(app_name) + 5;
+                len = strlen(app_name) + 6;
                 combined = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*combined));
                 sprintf(combined, "qemu %s", app_name);
                 cmd_line = combined;
@@ -153,7 +153,7 @@ void qemu_CreateProcessA(struct qemu_syscall *call)
             /* The first parameter is argv[0], so if we want qemu to execute the file
              * we pass as first argument in cmdline we have to add an argv[0] to the
              * command line. */
-            len = strlen(cmd_line) + 5;
+            len = strlen(cmd_line) + 6;
             combined = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*combined));
             sprintf(combined, "qemu %s", cmd_line);
             cmd_line = combined;
@@ -287,7 +287,7 @@ void qemu_WinExec(struct qemu_syscall *call)
         return;
     }
 
-    sprintf(newcmd, "%s %s", qemu, QEMU_G2H(c->lpCmdLine));
+    sprintf(newcmd, "%s %s", qemu, (char *)QEMU_G2H(c->lpCmdLine));
 
     c->super.iret = WinExec(newcmd, c->nCmdShow);
 
