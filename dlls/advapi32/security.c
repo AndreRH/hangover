@@ -4272,6 +4272,19 @@ WINBASEAPI DWORD WINAPI GetSecurityInfo(HANDLE hObject, SE_OBJECT_TYPE ObjectTyp
     call.ppSecurityDescriptor = (ULONG_PTR)ppSecurityDescriptor;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == ERROR_SUCCESS)
+    {
+        if (ppSecurityDescriptor)
+            *ppSecurityDescriptor = (SECURITY_DESCRIPTOR *)(ULONG_PTR)call.ppSecurityDescriptor;
+        if (ppsidOwner)
+            *ppsidOwner = (PSID)(ULONG_PTR)call.ppsidOwner;
+        if (ppsidGroup)
+            *ppsidGroup = (PSID)(ULONG_PTR)call.ppsidGroup;
+        if (ppDacl)
+            *ppDacl = (PACL)(ULONG_PTR)call.ppDacl;
+        if (ppSacl)
+            *ppSacl = (PACL)(ULONG_PTR)call.ppSacl;
+    }
 
     return call.super.iret;
 }
@@ -4281,8 +4294,26 @@ WINBASEAPI DWORD WINAPI GetSecurityInfo(HANDLE hObject, SE_OBJECT_TYPE ObjectTyp
 void qemu_GetSecurityInfo(struct qemu_syscall *call)
 {
     struct qemu_GetSecurityInfo *c = (struct qemu_GetSecurityInfo *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetSecurityInfo(QEMU_G2H(c->hObject), c->ObjectType, c->SecurityInfo, QEMU_G2H(c->ppsidOwner), QEMU_G2H(c->ppsidGroup), QEMU_G2H(c->ppDacl), QEMU_G2H(c->ppSacl), QEMU_G2H(c->ppSecurityDescriptor));
+    PSECURITY_DESCRIPTOR desc = NULL;
+    PSID owner, group;
+    PACL dacl, sacl;
+
+    WINE_TRACE("\n");
+
+    c->super.iret = GetSecurityInfo(QEMU_G2H(c->hObject), c->ObjectType, c->SecurityInfo,
+            c->ppsidOwner ? &owner : NULL, c->ppsidGroup ? &group : NULL,
+            c->ppDacl ? &dacl : NULL, c->ppSacl ? &sacl : NULL,
+            c->ppSecurityDescriptor ? &desc : NULL);
+
+#if GUEST_BIT != HOST_BIT
+    if (desc && !(((SECURITY_DESCRIPTOR *)desc)->Control & SE_SELF_RELATIVE))
+        SECURITY_DESCRIPTOR_h2g(desc, desc);
+#endif
+    c->ppSecurityDescriptor = QEMU_H2G(desc);
+    c->ppsidOwner = QEMU_H2G(owner);
+    c->ppsidGroup = QEMU_H2G(group);
+    c->ppDacl = QEMU_H2G(dacl);
+    c->ppSacl = QEMU_H2G(sacl);
 }
 
 #endif
