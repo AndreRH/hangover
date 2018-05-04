@@ -3554,7 +3554,8 @@ struct qemu_AddAuditAccessAce
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI AddAuditAccessAce(IN OUT PACL pAcl, IN DWORD dwAceRevision, IN DWORD dwAccessMask, IN PSID pSid, IN BOOL bAuditSuccess, IN BOOL bAuditFailure)
+WINBASEAPI BOOL WINAPI AddAuditAccessAce(IN OUT PACL pAcl, IN DWORD dwAceRevision, IN DWORD dwAccessMask,
+            IN PSID pSid, IN BOOL bAuditSuccess, IN BOOL bAuditFailure)
 {
     struct qemu_AddAuditAccessAce call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDAUDITACCESSACE);
@@ -3575,8 +3576,9 @@ WINBASEAPI BOOL WINAPI AddAuditAccessAce(IN OUT PACL pAcl, IN DWORD dwAceRevisio
 void qemu_AddAuditAccessAce(struct qemu_syscall *call)
 {
     struct qemu_AddAuditAccessAce *c = (struct qemu_AddAuditAccessAce *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AddAuditAccessAce(QEMU_G2H(c->pAcl), c->dwAceRevision, c->dwAccessMask, QEMU_G2H(c->pSid), c->bAuditSuccess, c->bAuditFailure);
+    WINE_TRACE("\n");
+    c->super.iret = AddAuditAccessAce(QEMU_G2H(c->pAcl), c->dwAceRevision, c->dwAccessMask, QEMU_G2H(c->pSid),
+            c->bAuditSuccess, c->bAuditFailure);
 }
 
 #endif
@@ -3595,7 +3597,8 @@ struct qemu_AddAuditAccessAceEx
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI AddAuditAccessAceEx(IN OUT PACL pAcl, IN DWORD dwAceRevision, IN DWORD dwAceFlags, IN DWORD dwAccessMask, IN PSID pSid, IN BOOL bAuditSuccess, IN BOOL bAuditFailure)
+WINBASEAPI BOOL WINAPI AddAuditAccessAceEx(IN OUT PACL pAcl, IN DWORD dwAceRevision, IN DWORD dwAceFlags,
+        IN DWORD dwAccessMask, IN PSID pSid, IN BOOL bAuditSuccess, IN BOOL bAuditFailure)
 {
     struct qemu_AddAuditAccessAceEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDAUDITACCESSACEEX);
@@ -3617,8 +3620,9 @@ WINBASEAPI BOOL WINAPI AddAuditAccessAceEx(IN OUT PACL pAcl, IN DWORD dwAceRevis
 void qemu_AddAuditAccessAceEx(struct qemu_syscall *call)
 {
     struct qemu_AddAuditAccessAceEx *c = (struct qemu_AddAuditAccessAceEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AddAuditAccessAceEx(QEMU_G2H(c->pAcl), c->dwAceRevision, c->dwAceFlags, c->dwAccessMask, QEMU_G2H(c->pSid), c->bAuditSuccess, c->bAuditFailure);
+    WINE_TRACE("\n");
+    c->super.iret = AddAuditAccessAceEx(QEMU_G2H(c->pAcl), c->dwAceRevision, c->dwAceFlags, c->dwAccessMask,
+            QEMU_G2H(c->pSid), c->bAuditSuccess, c->bAuditFailure);
 }
 
 #endif
