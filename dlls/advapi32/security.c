@@ -741,7 +741,7 @@ WINBASEAPI BOOL WINAPI EqualSid(PSID pSid1, PSID pSid2)
 void qemu_EqualSid(struct qemu_syscall *call)
 {
     struct qemu_EqualSid *c = (struct qemu_EqualSid *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = EqualSid(QEMU_G2H(c->pSid1), QEMU_G2H(c->pSid2));
 }
 
