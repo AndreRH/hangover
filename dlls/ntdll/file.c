@@ -136,6 +136,8 @@ void qemu_NtCreateFile(struct qemu_syscall *call)
     OBJECT_ATTRIBUTES attr_stack, *attr = &attr_stack;
     struct qemu_OBJECT_ATTRIBUTES *guest_attr;
     UNICODE_STRING name;
+    SECURITY_DESCRIPTOR sd_stack;
+    struct qemu_SECURITY_DESCRIPTOR *sd32;
     WINE_TRACE("\n");
 
 #if GUEST_BIT == HOST_BIT
@@ -144,6 +146,12 @@ void qemu_NtCreateFile(struct qemu_syscall *call)
 #else
     guest_attr = QEMU_G2H(c->attr);
     OBJECT_ATTRIBUTES_g2h(attr, guest_attr, &name);
+    sd32 = (struct qemu_SECURITY_DESCRIPTOR *)attr->SecurityDescriptor;
+    if (sd32 && !(sd32->Control & SE_SELF_RELATIVE))
+    {
+        SECURITY_DESCRIPTOR_g2h(&sd_stack, sd32);
+        attr->SecurityDescriptor = &sd_stack;
+    }
 #endif
 
     c->super.iret = NtCreateFile(&handle, c->access, attr, status,
