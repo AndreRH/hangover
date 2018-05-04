@@ -5946,7 +5946,7 @@ void qemu_DuplicateTokenEx(struct qemu_syscall *call)
     c->super.iret = DuplicateTokenEx(QEMU_G2H(c->ExistingTokenHandle), c->dwDesiredAccess,
             QEMU_G2H(c->lpTokenAttributes), c->ImpersonationLevel, c->TokenType,
             c->DuplicateTokenHandle ? & dup : NULL);
-    c->DuplicateTokenHandle = QEMU_H2G(&dup);
+    c->DuplicateTokenHandle = QEMU_H2G(dup);
 }
 
 #endif
