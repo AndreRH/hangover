@@ -267,7 +267,6 @@ WINBASEAPI BOOL WINAPI GetTokenInformation(HANDLE token, TOKEN_INFORMATION_CLASS
 void qemu_GetTokenInformation(struct qemu_syscall *call)
 {
     struct qemu_GetTokenInformation *c = (struct qemu_GetTokenInformation *)call;
-    TOKEN_DEFAULT_DACL dacl;
     void *info;
     DWORD len, *retlen;
 
@@ -309,7 +308,8 @@ void qemu_GetTokenInformation(struct qemu_syscall *call)
             break;
 
         case TokenDefaultDacl:
-            WINE_FIXME("Unhandled token class TokenDefaultDacl.\n");
+            if (info && c->super.iret)
+                TOKEN_DEFAULT_DACL_g2h(info, info);
             break;
 
         case TokenSource:
