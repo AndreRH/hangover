@@ -3549,7 +3549,7 @@ WINBASEAPI BOOL WINAPI LookupAccountNameA(IN LPCSTR system, IN LPCSTR account, O
 void qemu_LookupAccountNameA(struct qemu_syscall *call)
 {
     struct qemu_LookupAccountNameA *c = (struct qemu_LookupAccountNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LookupAccountNameA(QEMU_G2H(c->system), QEMU_G2H(c->account), QEMU_G2H(c->sid), QEMU_G2H(c->cbSid), QEMU_G2H(c->ReferencedDomainName), QEMU_G2H(c->cbReferencedDomainName), QEMU_G2H(c->name_use));
 }
 
@@ -3591,7 +3591,7 @@ WINBASEAPI BOOL WINAPI LookupAccountNameW(LPCWSTR lpSystemName, LPCWSTR lpAccoun
 void qemu_LookupAccountNameW(struct qemu_syscall *call)
 {
     struct qemu_LookupAccountNameW *c = (struct qemu_LookupAccountNameW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LookupAccountNameW(QEMU_G2H(c->lpSystemName), QEMU_G2H(c->lpAccountName), QEMU_G2H(c->Sid), QEMU_G2H(c->cbSid), QEMU_G2H(c->ReferencedDomainName), QEMU_G2H(c->cchReferencedDomainName), QEMU_G2H(c->peUse));
 }
 
