@@ -346,6 +346,11 @@ void qemu_GetTokenInformation(struct qemu_syscall *call)
             WINE_FIXME("Unhandled token class TokenSandBoxInert.\n");
             break;
 
+        case TokenIntegrityLevel:
+            if (info && c->super.iret)
+                TOKEN_MANDATORY_LABEL_h2g(info, info);
+            break;
+
         default:
             WINE_FIXME("Unexpected token class %d.\n", (UINT)c->tokeninfoclass);
             break;

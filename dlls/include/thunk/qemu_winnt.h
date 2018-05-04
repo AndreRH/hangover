@@ -159,4 +159,19 @@ static inline void TOKEN_DEFAULT_DACL_h2g(struct qemu_TOKEN_DEFAULT_DACL *guest,
     guest->DefaultDacl = (ULONG_PTR)host->DefaultDacl;
 }
 
+struct qemu_TOKEN_MANDATORY_LABEL
+{
+    struct qemu_SID_AND_ATTRIBUTES Label;
+};
+
+static inline void TOKEN_MANDATORY_LABEL_g2h(TOKEN_MANDATORY_LABEL *host, const struct qemu_TOKEN_MANDATORY_LABEL *guest)
+{
+    SID_AND_ATTRIBUTES_g2h(&host->Label, &guest->Label);
+}
+
+static inline void TOKEN_MANDATORY_LABEL_h2g(struct qemu_TOKEN_MANDATORY_LABEL *guest, const TOKEN_MANDATORY_LABEL *host)
+{
+    SID_AND_ATTRIBUTES_h2g(&guest->Label, &host->Label);
+}
+
 #endif
