@@ -3374,7 +3374,8 @@ struct qemu_SetKernelObjectSecurity
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI SetKernelObjectSecurity (IN HANDLE Handle, IN SECURITY_INFORMATION SecurityInformation, IN PSECURITY_DESCRIPTOR SecurityDescriptor)
+WINBASEAPI BOOL WINAPI SetKernelObjectSecurity (HANDLE Handle, SECURITY_INFORMATION SecurityInformation,
+        PSECURITY_DESCRIPTOR SecurityDescriptor)
 {
     struct qemu_SetKernelObjectSecurity call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETKERNELOBJECTSECURITY);
@@ -3392,8 +3393,21 @@ WINBASEAPI BOOL WINAPI SetKernelObjectSecurity (IN HANDLE Handle, IN SECURITY_IN
 void qemu_SetKernelObjectSecurity(struct qemu_syscall *call)
 {
     struct qemu_SetKernelObjectSecurity *c = (struct qemu_SetKernelObjectSecurity *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetKernelObjectSecurity((HANDLE)c->Handle, c->SecurityInformation, QEMU_G2H(c->SecurityDescriptor));
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+    struct qemu_SECURITY_DESCRIPTOR *sd32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->SecurityDescriptor);
+#else
+    sd32 = QEMU_G2H(c->SecurityDescriptor);
+    if (sd32->Control & SE_SELF_RELATIVE)
+        desc = (SECURITY_DESCRIPTOR *)sd32;
+    else
+        SECURITY_DESCRIPTOR_g2h(desc, sd32);
+#endif
+
+    c->super.iret = SetKernelObjectSecurity((HANDLE)c->Handle, c->SecurityInformation, desc);
 }
 
 #endif
