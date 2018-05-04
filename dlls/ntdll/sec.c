@@ -1844,8 +1844,21 @@ WINBASEAPI NTSTATUS WINAPI NtSetSecurityObject(HANDLE Handle, SECURITY_INFORMATI
 void qemu_NtSetSecurityObject(struct qemu_syscall *call)
 {
     struct qemu_NtSetSecurityObject *c = (struct qemu_NtSetSecurityObject *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NtSetSecurityObject(QEMU_G2H(c->Handle), c->SecurityInformation, QEMU_G2H(c->SecurityDescriptor));
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+    struct qemu_SECURITY_DESCRIPTOR *sd32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->SecurityDescriptor);
+#else
+    sd32 = QEMU_G2H(c->SecurityDescriptor);
+    if (sd32->Control & SE_SELF_RELATIVE)
+        desc = (SECURITY_DESCRIPTOR *)sd32;
+    else
+        SECURITY_DESCRIPTOR_g2h(desc, sd32);
+#endif
+
+    c->super.iret = NtSetSecurityObject(QEMU_G2H(c->Handle), c->SecurityInformation, desc);
 }
 
 #endif
