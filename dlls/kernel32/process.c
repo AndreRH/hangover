@@ -664,7 +664,7 @@ WINBASEAPI HANDLE WINAPI OpenProcess(DWORD access, BOOL inherit, DWORD id)
 void qemu_OpenProcess(struct qemu_syscall *call)
 {
     struct qemu_OpenProcess *c = (struct qemu_OpenProcess *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)OpenProcess(c->access, c->inherit, c->id);
 }
 
