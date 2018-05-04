@@ -2336,7 +2336,8 @@ struct qemu_AddAccessDeniedAceEx
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI AddAccessDeniedAceEx(IN OUT PACL pAcl, IN DWORD dwAceRevision, IN DWORD AceFlags, IN DWORD AccessMask, IN PSID pSid)
+WINBASEAPI BOOL WINAPI AddAccessDeniedAceEx(IN OUT PACL pAcl, IN DWORD dwAceRevision, IN DWORD AceFlags,
+        IN DWORD AccessMask, IN PSID pSid)
 {
     struct qemu_AddAccessDeniedAceEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDACCESSDENIEDACEEX);
@@ -2356,8 +2357,9 @@ WINBASEAPI BOOL WINAPI AddAccessDeniedAceEx(IN OUT PACL pAcl, IN DWORD dwAceRevi
 void qemu_AddAccessDeniedAceEx(struct qemu_syscall *call)
 {
     struct qemu_AddAccessDeniedAceEx *c = (struct qemu_AddAccessDeniedAceEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AddAccessDeniedAceEx(QEMU_G2H(c->pAcl), c->dwAceRevision, c->AceFlags, c->AccessMask, QEMU_G2H(c->pSid));
+    WINE_TRACE("\n");
+    c->super.iret = AddAccessDeniedAceEx(QEMU_G2H(c->pAcl), c->dwAceRevision, c->AceFlags, c->AccessMask,
+            QEMU_G2H(c->pSid));
 }
 
 #endif
