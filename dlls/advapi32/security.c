@@ -1427,10 +1427,12 @@ WINBASEAPI BOOL WINAPI GetSecurityDescriptorOwner(PSECURITY_DESCRIPTOR pDescr, P
     struct qemu_GetSecurityDescriptorOwner call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSECURITYDESCRIPTOROWNER);
     call.pDescr = (ULONG_PTR)pDescr;
+    call.pOwner = (ULONG_PTR)pOwner;
     call.lpbOwnerDefaulted = (ULONG_PTR)lpbOwnerDefaulted;
 
     qemu_syscall(&call.super);
-    *pOwner = (PSID)(ULONG_PTR)call.pOwner;
+    if (call.super.iret)
+        *pOwner = (PSID)(ULONG_PTR)call.pOwner;
 
     return call.super.iret;
 }
@@ -1455,7 +1457,7 @@ void qemu_GetSecurityDescriptorOwner(struct qemu_syscall *call)
         SECURITY_DESCRIPTOR_g2h(desc, sd32);
 #endif
 
-    c->super.iret = GetSecurityDescriptorOwner(desc, &owner, QEMU_G2H(c->lpbOwnerDefaulted));
+    c->super.iret = GetSecurityDescriptorOwner(desc, c->pOwner ? &owner : NULL, QEMU_G2H(c->lpbOwnerDefaulted));
     c->pOwner = QEMU_H2G(owner);
 }
 
@@ -1524,10 +1526,12 @@ WINBASEAPI BOOL WINAPI GetSecurityDescriptorGroup(PSECURITY_DESCRIPTOR SecurityD
     struct qemu_GetSecurityDescriptorGroup call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSECURITYDESCRIPTORGROUP);
     call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
+    call.Group = (ULONG_PTR)Group;
     call.GroupDefaulted = (ULONG_PTR)GroupDefaulted;
 
     qemu_syscall(&call.super);
-    *Group = (PSID)(ULONG_PTR)call.Group;
+    if (call.super.iret)
+        *Group = (PSID)(ULONG_PTR)call.Group;
 
     return call.super.iret;
 }
@@ -1552,7 +1556,7 @@ void qemu_GetSecurityDescriptorGroup(struct qemu_syscall *call)
         SECURITY_DESCRIPTOR_g2h(desc, sd32);
 #endif
 
-    c->super.iret = GetSecurityDescriptorGroup(desc, &group, QEMU_G2H(c->GroupDefaulted));
+    c->super.iret = GetSecurityDescriptorGroup(desc, c->Group ? &group : NULL, QEMU_G2H(c->GroupDefaulted));
     c->Group = QEMU_H2G(group);
 }
 
@@ -1670,7 +1674,8 @@ WINBASEAPI BOOL WINAPI GetSecurityDescriptorDacl(IN PSECURITY_DESCRIPTOR pSecuri
     call.lpbDaclDefaulted = (ULONG_PTR)lpbDaclDefaulted;
 
     qemu_syscall(&call.super);
-    *pDacl = (ACL *)(ULONG_PTR)call.pDacl;
+    if (call.super.iret)
+        *pDacl = (ACL *)(ULONG_PTR)call.pDacl;
 
     return call.super.iret;
 }
@@ -1772,7 +1777,8 @@ WINBASEAPI BOOL WINAPI GetSecurityDescriptorSacl(IN PSECURITY_DESCRIPTOR lpsd, O
     call.lpbSaclDefaulted = (ULONG_PTR)lpbSaclDefaulted;
 
     qemu_syscall(&call.super);
-    *pSacl = (PACL)(ULONG_PTR)call.pSacl;
+    if (*lpbSaclPresent)
+        *pSacl = (PACL)(ULONG_PTR)call.pSacl;
 
     return call.super.iret;
 }
