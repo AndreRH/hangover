@@ -720,7 +720,7 @@ void qemu_CreateEventW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_CreateEventExA
+struct qemu_CreateEventEx
 {
     struct qemu_syscall super;
     uint64_t sa;
@@ -733,7 +733,7 @@ struct qemu_CreateEventExA
 
 WINBASEAPI HANDLE WINAPI CreateEventExA(SECURITY_ATTRIBUTES *sa, LPCSTR name, DWORD flags, DWORD access)
 {
-    struct qemu_CreateEventExA call;
+    struct qemu_CreateEventEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEEVENTEXA);
     call.sa = (ULONG_PTR)sa;
     call.name = (ULONG_PTR)name;
@@ -745,31 +745,9 @@ WINBASEAPI HANDLE WINAPI CreateEventExA(SECURITY_ATTRIBUTES *sa, LPCSTR name, DW
     return (HANDLE)(ULONG_PTR)call.super.iret;
 }
 
-#else
-
-void qemu_CreateEventExA(struct qemu_syscall *call)
-{
-    struct qemu_CreateEventExA *c = (struct qemu_CreateEventExA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)CreateEventExA(QEMU_G2H(c->sa), QEMU_G2H(c->name), c->flags, c->access);
-}
-
-#endif
-
-struct qemu_CreateEventExW
-{
-    struct qemu_syscall super;
-    uint64_t sa;
-    uint64_t name;
-    uint64_t flags;
-    uint64_t access;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI HANDLE WINAPI CreateEventExW(SECURITY_ATTRIBUTES *sa, LPCWSTR name, DWORD flags, DWORD access)
 {
-    struct qemu_CreateEventExW call;
+    struct qemu_CreateEventEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEEVENTEXW);
     call.sa = (ULONG_PTR)sa;
     call.name = (ULONG_PTR)name;
@@ -783,11 +761,26 @@ WINBASEAPI HANDLE WINAPI CreateEventExW(SECURITY_ATTRIBUTES *sa, LPCWSTR name, D
 
 #else
 
-void qemu_CreateEventExW(struct qemu_syscall *call)
+void qemu_CreateEventEx(struct qemu_syscall *call)
 {
-    struct qemu_CreateEventExW *c = (struct qemu_CreateEventExW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)CreateEventExW(QEMU_G2H(c->sa), QEMU_G2H(c->name), c->flags, c->access);
+    struct qemu_CreateEventEx *c = (struct qemu_CreateEventEx *)call;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
+    if (c->sa)
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_CREATEEVENTEXW))
+        c->super.iret = (ULONG_PTR)CreateEventExW(sa, QEMU_G2H(c->name), c->flags, c->access);
+    else
+        c->super.iret = (ULONG_PTR)CreateEventExA(sa, QEMU_G2H(c->name), c->flags, c->access);
 }
 
 #endif
