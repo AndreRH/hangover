@@ -1757,16 +1757,17 @@ struct qemu_GetSecurityDescriptorSacl
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetSecurityDescriptorSacl(IN PSECURITY_DESCRIPTOR lpsd, OUT LPBOOL lpbSaclPresent, OUT PACL *pSacl, OUT LPBOOL lpbSaclDefaulted)
+WINBASEAPI BOOL WINAPI GetSecurityDescriptorSacl(IN PSECURITY_DESCRIPTOR lpsd, OUT LPBOOL lpbSaclPresent,
+            OUT PACL *pSacl, OUT LPBOOL lpbSaclDefaulted)
 {
     struct qemu_GetSecurityDescriptorSacl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSECURITYDESCRIPTORSACL);
     call.lpsd = (ULONG_PTR)lpsd;
     call.lpbSaclPresent = (ULONG_PTR)lpbSaclPresent;
-    call.pSacl = (ULONG_PTR)pSacl;
     call.lpbSaclDefaulted = (ULONG_PTR)lpbSaclDefaulted;
 
     qemu_syscall(&call.super);
+    *pSacl = (PACL)(ULONG_PTR)call.pSacl;
 
     return call.super.iret;
 }
@@ -1776,8 +1777,24 @@ WINBASEAPI BOOL WINAPI GetSecurityDescriptorSacl(IN PSECURITY_DESCRIPTOR lpsd, O
 void qemu_GetSecurityDescriptorSacl(struct qemu_syscall *call)
 {
     struct qemu_GetSecurityDescriptorSacl *c = (struct qemu_GetSecurityDescriptorSacl *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetSecurityDescriptorSacl(QEMU_G2H(c->lpsd), QEMU_G2H(c->lpbSaclPresent), QEMU_G2H(c->pSacl), QEMU_G2H(c->lpbSaclDefaulted));
+    PACL sacl;
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+    struct qemu_SECURITY_DESCRIPTOR *desc32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->lpsd);
+#else
+    desc32 = QEMU_G2H(c->lpsd);
+    if (desc32->Control & SE_SELF_RELATIVE)
+        desc = (SECURITY_DESCRIPTOR *)desc32;
+    else
+        SECURITY_DESCRIPTOR_g2h(desc, desc32);
+#endif
+
+    WINE_TRACE("\n");
+    c->super.iret = GetSecurityDescriptorSacl(desc, QEMU_G2H(c->lpbSaclPresent), &sacl, QEMU_G2H(c->lpbSaclDefaulted));
+    c->pSacl = QEMU_H2G(sacl);
 }
 
 #endif
