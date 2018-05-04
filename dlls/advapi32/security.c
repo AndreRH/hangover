@@ -1865,7 +1865,7 @@ void qemu_MakeSelfRelativeSD(struct qemu_syscall *call)
     SECURITY_DESCRIPTOR in_stack, *input = &in_stack;
     struct qemu_SECURITY_DESCRIPTOR *input32;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 #if GUEST_BIT == HOST_BIT
     input = QEMU_G2H(c->pAbsoluteSecurityDescriptor);
 #else
