@@ -2509,8 +2509,11 @@ WINBASEAPI BOOL WINAPI GetAclInformation(PACL pAcl, LPVOID pAclInformation, DWOR
 void qemu_GetAclInformation(struct qemu_syscall *call)
 {
     struct qemu_GetAclInformation *c = (struct qemu_GetAclInformation *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetAclInformation(QEMU_G2H(c->pAcl), QEMU_G2H(c->pAclInformation), c->nAclInformationLength, c->dwAclInformationClass);
+
+    /* Both ACL_REVISION_INFORMATION and ACL_SIZE_INFORMATION are compatible. */
+    WINE_TRACE("\n");
+    c->super.iret = GetAclInformation(QEMU_G2H(c->pAcl), QEMU_G2H(c->pAclInformation),
+            c->nAclInformationLength, c->dwAclInformationClass);
 }
 
 #endif
