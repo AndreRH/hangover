@@ -1224,17 +1224,32 @@ WINBASEAPI BOOL WINAPI MakeAbsoluteSD (IN PSECURITY_DESCRIPTOR pSelfRelativeSecu
 void qemu_MakeAbsoluteSD(struct qemu_syscall *call)
 {
     struct qemu_MakeAbsoluteSD *c = (struct qemu_MakeAbsoluteSD *)call;
+    SECURITY_DESCRIPTOR stack, *desc_abs = &stack;
+    DWORD stack_dword = sizeof(stack), *size_abs;
 
-    WINE_TRACE("\n");
+    size_abs = QEMU_G2H(c->lpdwAbsoluteSecurityDescriptorSize);
+#if GUEST_BIT == HOST_BIT
+    desc_abs = QEMU_G2H(c->pAbsoluteSecurityDescriptor);
+#else
+    /* We give the 32 bit app the size of a 64 bit SECURITY_DESCRIPTOR, so the allocated memory should be
+     * big enough to temporarily hold the 64 bit struct. If not, the call will fail with INSUFFICIENT_BUFFER.
+     * However, the application may try to place the other pointers right after the descriptor, in which
+     * case MakeAbsoluteSD might overwrite its own data. So we have to use a temporary buffer. */
+    if (!c->pAbsoluteSecurityDescriptor)
+        desc_abs = NULL;
+    else if (size_abs && *size_abs > sizeof(SECURITY_DESCRIPTOR))
+        size_abs = &stack_dword;
+#endif
+
+    WINE_WARN("This can break in many ways.\n");
     c->super.iret = MakeAbsoluteSD(QEMU_G2H(c->pSelfRelativeSecurityDescriptor),
-            QEMU_G2H(c->pAbsoluteSecurityDescriptor), QEMU_G2H(c->lpdwAbsoluteSecurityDescriptorSize),
-            QEMU_G2H(c->pDacl), QEMU_G2H(c->lpdwDaclSize), QEMU_G2H(c->pSacl), QEMU_G2H(c->lpdwSaclSize),
-            QEMU_G2H(c->pOwner), QEMU_G2H(c->lpdwOwnerSize), QEMU_G2H(c->pPrimaryGroup),
+            desc_abs, size_abs, QEMU_G2H(c->pDacl), QEMU_G2H(c->lpdwDaclSize), QEMU_G2H(c->pSacl),
+            QEMU_G2H(c->lpdwSaclSize), QEMU_G2H(c->pOwner), QEMU_G2H(c->lpdwOwnerSize), QEMU_G2H(c->pPrimaryGroup),
             QEMU_G2H(c->lpdwPrimaryGroupSize));
 
 #if GUEST_BIT != HOST_BIT
     if (c->pAbsoluteSecurityDescriptor && c->super.iret)
-        SECURITY_DESCRIPTOR_h2g(QEMU_G2H(c->pAbsoluteSecurityDescriptor), QEMU_G2H(c->pAbsoluteSecurityDescriptor));
+        SECURITY_DESCRIPTOR_h2g(QEMU_G2H(c->pAbsoluteSecurityDescriptor), desc_abs);
 #endif
 }
 
