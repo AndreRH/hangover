@@ -454,6 +454,8 @@ WINBASEAPI BOOL WINAPI CreateRestrictedToken(HANDLE baseToken, DWORD flags, DWOR
     call.newToken = (ULONG_PTR)newToken;
 
     qemu_syscall(&call.super);
+    if (newToken)
+        *newToken = (HANDLE)(ULONG_PTR)call.newToken;
 
     return call.super.iret;
 }
@@ -463,8 +465,15 @@ WINBASEAPI BOOL WINAPI CreateRestrictedToken(HANDLE baseToken, DWORD flags, DWOR
 void qemu_CreateRestrictedToken(struct qemu_syscall *call)
 {
     struct qemu_CreateRestrictedToken *c = (struct qemu_CreateRestrictedToken *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CreateRestrictedToken(QEMU_G2H(c->baseToken), c->flags, c->nDisableSids, QEMU_G2H(c->disableSids), c->nDeletePrivs, QEMU_G2H(c->deletePrivs), c->nRestrictSids, QEMU_G2H(c->restrictSids), QEMU_G2H(c->newToken));
+    HANDLE new_token;
+
+    WINE_WARN("Partially implemented because it is a stub in Wine.\n");
+
+    c->super.iret = CreateRestrictedToken(QEMU_G2H(c->baseToken), c->flags, c->nDisableSids,
+            QEMU_G2H(c->disableSids), c->nDeletePrivs, QEMU_G2H(c->deletePrivs), c->nRestrictSids,
+            QEMU_G2H(c->restrictSids), c->newToken ? &new_token : NULL);
+
+    c->newToken = QEMU_H2G(new_token);
 }
 
 #endif
