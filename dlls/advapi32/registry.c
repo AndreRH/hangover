@@ -1024,7 +1024,7 @@ WINBASEAPI LSTATUS WINAPI RegDeleteKeyW(HKEY hkey, LPCWSTR name)
 void qemu_RegDeleteKeyW(struct qemu_syscall *call)
 {
     struct qemu_RegDeleteKeyW *c = (struct qemu_RegDeleteKeyW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RegDeleteKeyW(QEMU_G2H(c->hkey), QEMU_G2H(c->name));
 }
 

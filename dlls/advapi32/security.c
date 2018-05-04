@@ -838,7 +838,7 @@ WINBASEAPI BOOL WINAPI InitializeSid (PSID pSid, PSID_IDENTIFIER_AUTHORITY pIden
 void qemu_InitializeSid(struct qemu_syscall *call)
 {
     struct qemu_InitializeSid *c = (struct qemu_InitializeSid *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = InitializeSid(QEMU_G2H(c->pSid), QEMU_G2H(c->pIdentifierAuthority), c->nSubAuthorityCount);
 }
 
@@ -936,7 +936,7 @@ WINBASEAPI PSID_IDENTIFIER_AUTHORITY WINAPI GetSidIdentifierAuthority(PSID pSid)
 void qemu_GetSidIdentifierAuthority(struct qemu_syscall *call)
 {
     struct qemu_GetSidIdentifierAuthority *c = (struct qemu_GetSidIdentifierAuthority *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)GetSidIdentifierAuthority(QEMU_G2H(c->pSid));
 }
 
@@ -968,7 +968,7 @@ WINBASEAPI PDWORD WINAPI GetSidSubAuthority(PSID pSid, DWORD nSubAuthority)
 void qemu_GetSidSubAuthority(struct qemu_syscall *call)
 {
     struct qemu_GetSidSubAuthority *c = (struct qemu_GetSidSubAuthority *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)GetSidSubAuthority(QEMU_G2H(c->pSid), c->nSubAuthority);
 }
 
@@ -1982,7 +1982,8 @@ struct qemu_GetSecurityDescriptorControl
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetSecurityDescriptorControl (PSECURITY_DESCRIPTOR pSecurityDescriptor, PSECURITY_DESCRIPTOR_CONTROL pControl, LPDWORD lpdwRevision)
+WINBASEAPI BOOL WINAPI GetSecurityDescriptorControl (PSECURITY_DESCRIPTOR pSecurityDescriptor,
+        PSECURITY_DESCRIPTOR_CONTROL pControl, LPDWORD lpdwRevision)
 {
     struct qemu_GetSecurityDescriptorControl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETSECURITYDESCRIPTORCONTROL);
@@ -2000,7 +2001,7 @@ WINBASEAPI BOOL WINAPI GetSecurityDescriptorControl (PSECURITY_DESCRIPTOR pSecur
 void qemu_GetSecurityDescriptorControl(struct qemu_syscall *call)
 {
     struct qemu_GetSecurityDescriptorControl *c = (struct qemu_GetSecurityDescriptorControl *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetSecurityDescriptorControl(QEMU_G2H(c->pSecurityDescriptor), QEMU_G2H(c->pControl), QEMU_G2H(c->lpdwRevision));
 }
 
@@ -2070,7 +2071,7 @@ extern BOOL WINAPI GetWindowsAccountDomainSid(PSID sid, PSID domain_sid, DWORD *
 void qemu_GetWindowsAccountDomainSid(struct qemu_syscall *call)
 {
     struct qemu_GetWindowsAccountDomainSid *c = (struct qemu_GetWindowsAccountDomainSid *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetWindowsAccountDomainSid(QEMU_G2H(c->sid), QEMU_G2H(c->domain_sid), QEMU_G2H(c->size));
 }
 
@@ -2390,7 +2391,8 @@ struct qemu_AddAce
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI AddAce(IN OUT PACL pAcl, IN DWORD dwAceRevision, IN DWORD dwStartingAceIndex, LPVOID pAceList, DWORD nAceListLength)
+WINBASEAPI BOOL WINAPI AddAce(IN OUT PACL pAcl, IN DWORD dwAceRevision, IN DWORD dwStartingAceIndex,
+        LPVOID pAceList, DWORD nAceListLength)
 {
     struct qemu_AddAce call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDACE);
@@ -2410,8 +2412,9 @@ WINBASEAPI BOOL WINAPI AddAce(IN OUT PACL pAcl, IN DWORD dwAceRevision, IN DWORD
 void qemu_AddAce(struct qemu_syscall *call)
 {
     struct qemu_AddAce *c = (struct qemu_AddAce *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AddAce(QEMU_G2H(c->pAcl), c->dwAceRevision, c->dwStartingAceIndex, QEMU_G2H(c->pAceList), c->nAceListLength);
+    WINE_TRACE("\n");
+    c->super.iret = AddAce(QEMU_G2H(c->pAcl), c->dwAceRevision, c->dwStartingAceIndex,
+            QEMU_G2H(c->pAceList), c->nAceListLength);
 }
 
 #endif
@@ -2428,7 +2431,8 @@ struct qemu_AddMandatoryAce
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI AddMandatoryAce(ACL *acl, DWORD ace_revision, DWORD ace_flags, DWORD mandatory_policy, PSID label_sid)
+WINBASEAPI BOOL WINAPI AddMandatoryAce(ACL *acl, DWORD ace_revision, DWORD ace_flags,
+        DWORD mandatory_policy, PSID label_sid)
 {
     struct qemu_AddMandatoryAce call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ADDMANDATORYACE);
@@ -2448,8 +2452,9 @@ WINBASEAPI BOOL WINAPI AddMandatoryAce(ACL *acl, DWORD ace_revision, DWORD ace_f
 void qemu_AddMandatoryAce(struct qemu_syscall *call)
 {
     struct qemu_AddMandatoryAce *c = (struct qemu_AddMandatoryAce *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AddMandatoryAce(QEMU_G2H(c->acl), c->ace_revision, c->ace_flags, c->mandatory_policy, QEMU_G2H(c->label_sid));
+    WINE_TRACE("\n");
+    c->super.iret = AddMandatoryAce(QEMU_G2H(c->acl), c->ace_revision, c->ace_flags,
+            c->mandatory_policy, QEMU_G2H(c->label_sid));
 }
 
 #endif
