@@ -6633,7 +6633,8 @@ struct qemu_SetSecurityInfo
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI SetSecurityInfo(HANDLE handle, SE_OBJECT_TYPE ObjectType, SECURITY_INFORMATION SecurityInfo, PSID psidOwner, PSID psidGroup, PACL pDacl, PACL pSacl)
+WINBASEAPI DWORD WINAPI SetSecurityInfo(HANDLE handle, SE_OBJECT_TYPE ObjectType, SECURITY_INFORMATION SecurityInfo,
+        PSID psidOwner, PSID psidGroup, PACL pDacl, PACL pSacl)
 {
     struct qemu_SetSecurityInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETSECURITYINFO);
@@ -6655,8 +6656,9 @@ WINBASEAPI DWORD WINAPI SetSecurityInfo(HANDLE handle, SE_OBJECT_TYPE ObjectType
 void qemu_SetSecurityInfo(struct qemu_syscall *call)
 {
     struct qemu_SetSecurityInfo *c = (struct qemu_SetSecurityInfo *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetSecurityInfo(QEMU_G2H(c->handle), c->ObjectType, c->SecurityInfo, QEMU_G2H(c->psidOwner), QEMU_G2H(c->psidGroup), QEMU_G2H(c->pDacl), QEMU_G2H(c->pSacl));
+    WINE_TRACE("\n");
+    c->super.iret = SetSecurityInfo(QEMU_G2H(c->handle), c->ObjectType, c->SecurityInfo,
+            QEMU_G2H(c->psidOwner), QEMU_G2H(c->psidGroup), QEMU_G2H(c->pDacl), QEMU_G2H(c->pSacl));
 }
 
 #endif
