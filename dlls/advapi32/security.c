@@ -5177,7 +5177,7 @@ void qemu_SetNamedSecurityInfoW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_GetExplicitEntriesFromAclA
+struct qemu_GetExplicitEntriesFromAcl
 {
     struct qemu_syscall super;
     uint64_t pacl;
@@ -5187,60 +5187,63 @@ struct qemu_GetExplicitEntriesFromAclA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI GetExplicitEntriesFromAclA(PACL pacl, PULONG pcCountOfExplicitEntries, PEXPLICIT_ACCESSA* pListOfExplicitEntries)
+WINBASEAPI DWORD WINAPI GetExplicitEntriesFromAclA(PACL pacl, PULONG pcCountOfExplicitEntries,
+        PEXPLICIT_ACCESSA* pListOfExplicitEntries)
 {
-    struct qemu_GetExplicitEntriesFromAclA call;
+    struct qemu_GetExplicitEntriesFromAcl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETEXPLICITENTRIESFROMACLA);
     call.pacl = (ULONG_PTR)pacl;
     call.pcCountOfExplicitEntries = (ULONG_PTR)pcCountOfExplicitEntries;
     call.pListOfExplicitEntries = (ULONG_PTR)pListOfExplicitEntries;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == ERROR_SUCCESS)
+        *pListOfExplicitEntries = (EXPLICIT_ACCESS_A *)(ULONG_PTR)call.pListOfExplicitEntries;
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_GetExplicitEntriesFromAclA(struct qemu_syscall *call)
+WINBASEAPI DWORD WINAPI GetExplicitEntriesFromAclW(PACL pacl, PULONG pcCountOfExplicitEntries,
+        PEXPLICIT_ACCESSW* pListOfExplicitEntries)
 {
-    struct qemu_GetExplicitEntriesFromAclA *c = (struct qemu_GetExplicitEntriesFromAclA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetExplicitEntriesFromAclA(QEMU_G2H(c->pacl), QEMU_G2H(c->pcCountOfExplicitEntries), QEMU_G2H(c->pListOfExplicitEntries));
-}
-
-#endif
-
-struct qemu_GetExplicitEntriesFromAclW
-{
-    struct qemu_syscall super;
-    uint64_t pacl;
-    uint64_t pcCountOfExplicitEntries;
-    uint64_t pListOfExplicitEntries;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI DWORD WINAPI GetExplicitEntriesFromAclW(PACL pacl, PULONG pcCountOfExplicitEntries, PEXPLICIT_ACCESSW* pListOfExplicitEntries)
-{
-    struct qemu_GetExplicitEntriesFromAclW call;
+    struct qemu_GetExplicitEntriesFromAcl call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETEXPLICITENTRIESFROMACLW);
     call.pacl = (ULONG_PTR)pacl;
     call.pcCountOfExplicitEntries = (ULONG_PTR)pcCountOfExplicitEntries;
     call.pListOfExplicitEntries = (ULONG_PTR)pListOfExplicitEntries;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == ERROR_SUCCESS)
+        *pListOfExplicitEntries = (EXPLICIT_ACCESS_W *)(ULONG_PTR)call.pListOfExplicitEntries;
 
     return call.super.iret;
 }
 
 #else
 
-void qemu_GetExplicitEntriesFromAclW(struct qemu_syscall *call)
+void qemu_GetExplicitEntriesFromAcl(struct qemu_syscall *call)
 {
-    struct qemu_GetExplicitEntriesFromAclW *c = (struct qemu_GetExplicitEntriesFromAclW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetExplicitEntriesFromAclW(QEMU_G2H(c->pacl), QEMU_G2H(c->pcCountOfExplicitEntries), QEMU_G2H(c->pListOfExplicitEntries));
+    struct qemu_GetExplicitEntriesFromAcl *c = (struct qemu_GetExplicitEntriesFromAcl *)call;
+    EXPLICIT_ACCESSW *list;
+
+    WINE_TRACE("\n");
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_GETEXPLICITENTRIESFROMACLW))
+    {
+        c->super.iret = GetExplicitEntriesFromAclW(QEMU_G2H(c->pacl), QEMU_G2H(c->pcCountOfExplicitEntries),
+                c->pListOfExplicitEntries ? &list : NULL);
+    }
+    else
+    {
+        c->super.iret = GetExplicitEntriesFromAclA(QEMU_G2H(c->pacl), QEMU_G2H(c->pcCountOfExplicitEntries),
+                c->pListOfExplicitEntries ? (EXPLICIT_ACCESSA **)&list : NULL);
+    }
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret == ERROR_SUCCESS && list)
+        EXPLICIT_ACCESS_h2g((struct qemu_EXPLICIT_ACCESS *)list, list);
+#endif
+    c->pListOfExplicitEntries = QEMU_H2G(list);
 }
 
 #endif
