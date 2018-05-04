@@ -1840,7 +1840,7 @@ void qemu_SetSecurityDescriptorSacl(struct qemu_syscall *call)
     SECURITY_DESCRIPTOR_g2h(desc, QEMU_G2H(c->lpsd));
 #endif
 
-    c->super.iret = SetSecurityDescriptorSacl(QEMU_G2H(c->lpsd), c->saclpresent, QEMU_G2H(c->lpsacl), c->sacldefaulted);
+    c->super.iret = SetSecurityDescriptorSacl(desc, c->saclpresent, QEMU_G2H(c->lpsacl), c->sacldefaulted);
 
 #if HOST_BIT != GUEST_BIT
     if (c->super.iret)
