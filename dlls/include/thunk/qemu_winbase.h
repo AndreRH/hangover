@@ -398,8 +398,17 @@ static inline void SECURITY_ATTRIBUTES_g2h(struct SA_conv_struct *host, const st
     host->sa.nLength = sizeof(host->sa.nLength);
     if (guest->lpSecurityDescriptor)
     {
-        host->sa.lpSecurityDescriptor = &host->sd;
-        SECURITY_DESCRIPTOR_g2h(&host->sd, (struct qemu_SECURITY_DESCRIPTOR *)(ULONG_PTR)guest->lpSecurityDescriptor);
+        struct qemu_SECURITY_DESCRIPTOR *sd32;
+        sd32 = (struct qemu_SECURITY_DESCRIPTOR *)(ULONG_PTR)guest->lpSecurityDescriptor;
+        if (sd32->Control & SE_SELF_RELATIVE)
+        {
+            host->sa.lpSecurityDescriptor = sd32;
+        }
+        else
+        {
+            host->sa.lpSecurityDescriptor = &host->sd;
+            SECURITY_DESCRIPTOR_g2h(&host->sd, sd32);
+        }
     }
     else
     {
