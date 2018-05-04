@@ -5294,7 +5294,7 @@ void qemu_ConvertStringSecurityDescriptorToSecurityDescriptorW(struct qemu_sysca
 
 #endif
 
-struct qemu_ConvertSecurityDescriptorToStringSecurityDescriptorW
+struct qemu_ConvertSecurityDescriptorToStringSecurityDescriptor
 {
     struct qemu_syscall super;
     uint64_t SecurityDescriptor;
@@ -5306,9 +5306,10 @@ struct qemu_ConvertSecurityDescriptorToStringSecurityDescriptorW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI ConvertSecurityDescriptorToStringSecurityDescriptorW(PSECURITY_DESCRIPTOR SecurityDescriptor, DWORD SDRevision, SECURITY_INFORMATION RequestedInformation, LPWSTR *OutputString, PULONG OutputLen)
+WINBASEAPI BOOL WINAPI ConvertSecurityDescriptorToStringSecurityDescriptorW(PSECURITY_DESCRIPTOR SecurityDescriptor,
+        DWORD SDRevision, SECURITY_INFORMATION RequestedInformation, LPWSTR *OutputString, PULONG OutputLen)
 {
-    struct qemu_ConvertSecurityDescriptorToStringSecurityDescriptorW call;
+    struct qemu_ConvertSecurityDescriptorToStringSecurityDescriptor call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTSECURITYDESCRIPTORTOSTRINGSECURITYDESCRIPTORW);
     call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
     call.SDRevision = (ULONG_PTR)SDRevision;
@@ -5317,6 +5318,23 @@ WINBASEAPI BOOL WINAPI ConvertSecurityDescriptorToStringSecurityDescriptorW(PSEC
     call.OutputLen = (ULONG_PTR)OutputLen;
 
     qemu_syscall(&call.super);
+    *OutputString = (WCHAR *)(ULONG_PTR)call.OutputString;
+
+    return call.super.iret;
+}
+
+WINBASEAPI BOOL WINAPI ConvertSecurityDescriptorToStringSecurityDescriptorA(PSECURITY_DESCRIPTOR SecurityDescriptor,
+        DWORD SDRevision, SECURITY_INFORMATION Information, LPSTR *OutputString, PULONG OutputLen)
+{
+    struct qemu_ConvertSecurityDescriptorToStringSecurityDescriptor call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTSECURITYDESCRIPTORTOSTRINGSECURITYDESCRIPTORA);
+    call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
+    call.SDRevision = (ULONG_PTR)SDRevision;
+    call.RequestedInformation = (ULONG_PTR)Information;
+    call.OutputLen = (ULONG_PTR)OutputLen;
+
+    qemu_syscall(&call.super);
+    *OutputString = (char *)(ULONG_PTR)call.OutputString;
 
     return call.super.iret;
 }
@@ -5324,52 +5342,41 @@ WINBASEAPI BOOL WINAPI ConvertSecurityDescriptorToStringSecurityDescriptorW(PSEC
 #else
 
 /* TODO: Add ConvertSecurityDescriptorToStringSecurityDescriptorW to Wine headers? */
-extern BOOL WINAPI ConvertSecurityDescriptorToStringSecurityDescriptorW(PSECURITY_DESCRIPTOR SecurityDescriptor, DWORD SDRevision, SECURITY_INFORMATION RequestedInformation, LPWSTR *OutputString, PULONG OutputLen);
-void qemu_ConvertSecurityDescriptorToStringSecurityDescriptorW(struct qemu_syscall *call)
+extern BOOL WINAPI ConvertSecurityDescriptorToStringSecurityDescriptorA(PSECURITY_DESCRIPTOR SecurityDescriptor,
+        DWORD SDRevision, SECURITY_INFORMATION Information, LPSTR *OutputString, PULONG OutputLen);
+extern BOOL WINAPI ConvertSecurityDescriptorToStringSecurityDescriptorW(PSECURITY_DESCRIPTOR SecurityDescriptor,
+        DWORD SDRevision, SECURITY_INFORMATION RequestedInformation, LPWSTR *OutputString, PULONG OutputLen);
+void qemu_ConvertSecurityDescriptorToStringSecurityDescriptor(struct qemu_syscall *call)
 {
-    struct qemu_ConvertSecurityDescriptorToStringSecurityDescriptorW *c = (struct qemu_ConvertSecurityDescriptorToStringSecurityDescriptorW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ConvertSecurityDescriptorToStringSecurityDescriptorW(QEMU_G2H(c->SecurityDescriptor), c->SDRevision, c->RequestedInformation, QEMU_G2H(c->OutputString), QEMU_G2H(c->OutputLen));
-}
+    struct qemu_ConvertSecurityDescriptorToStringSecurityDescriptor *c =
+            (struct qemu_ConvertSecurityDescriptorToStringSecurityDescriptor *)call;
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+    struct qemu_SECURITY_DESCRIPTOR *sd32;
+    WCHAR *str;
 
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->SecurityDescriptor);
+#else
+    sd32 = QEMU_G2H(c->SecurityDescriptor);
+    if (sd32->Control & SE_SELF_RELATIVE)
+        desc = (SECURITY_DESCRIPTOR *)sd32;
+    else
+        SECURITY_DESCRIPTOR_g2h(desc, sd32);
 #endif
 
-struct qemu_ConvertSecurityDescriptorToStringSecurityDescriptorA
-{
-    struct qemu_syscall super;
-    uint64_t SecurityDescriptor;
-    uint64_t SDRevision;
-    uint64_t Information;
-    uint64_t OutputString;
-    uint64_t OutputLen;
-};
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_CONVERTSECURITYDESCRIPTORTOSTRINGSECURITYDESCRIPTORW))
+    {
+        c->super.iret = ConvertSecurityDescriptorToStringSecurityDescriptorW(desc, c->SDRevision,
+                c->RequestedInformation, &str, QEMU_G2H(c->OutputLen));
+    }
+    else
+    {
+        c->super.iret = ConvertSecurityDescriptorToStringSecurityDescriptorA(desc, c->SDRevision,
+                c->RequestedInformation, (char **)&str, QEMU_G2H(c->OutputLen));
+    }
 
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI BOOL WINAPI ConvertSecurityDescriptorToStringSecurityDescriptorA(PSECURITY_DESCRIPTOR SecurityDescriptor, DWORD SDRevision, SECURITY_INFORMATION Information, LPSTR *OutputString, PULONG OutputLen)
-{
-    struct qemu_ConvertSecurityDescriptorToStringSecurityDescriptorA call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTSECURITYDESCRIPTORTOSTRINGSECURITYDESCRIPTORA);
-    call.SecurityDescriptor = (ULONG_PTR)SecurityDescriptor;
-    call.SDRevision = (ULONG_PTR)SDRevision;
-    call.Information = (ULONG_PTR)Information;
-    call.OutputString = (ULONG_PTR)OutputString;
-    call.OutputLen = (ULONG_PTR)OutputLen;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-/* TODO: Add ConvertSecurityDescriptorToStringSecurityDescriptorA to Wine headers? */
-extern BOOL WINAPI ConvertSecurityDescriptorToStringSecurityDescriptorA(PSECURITY_DESCRIPTOR SecurityDescriptor, DWORD SDRevision, SECURITY_INFORMATION Information, LPSTR *OutputString, PULONG OutputLen);
-void qemu_ConvertSecurityDescriptorToStringSecurityDescriptorA(struct qemu_syscall *call)
-{
-    struct qemu_ConvertSecurityDescriptorToStringSecurityDescriptorA *c = (struct qemu_ConvertSecurityDescriptorToStringSecurityDescriptorA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ConvertSecurityDescriptorToStringSecurityDescriptorA(QEMU_G2H(c->SecurityDescriptor), c->SDRevision, c->Information, QEMU_G2H(c->OutputString), QEMU_G2H(c->OutputLen));
+    c->OutputString = QEMU_H2G(str);
 }
 
 #endif
