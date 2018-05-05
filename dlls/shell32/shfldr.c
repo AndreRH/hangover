@@ -428,13 +428,14 @@ struct qemu_IShellFolder2_CompareIDs
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t lParam;
-    uint64_t pidl1;
-    uint64_t pidl2;
+    uint64_t list1;
+    uint64_t list2;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI qemu_shellfolder_CompareIDs (IShellFolder2 *iface, LPARAM lParam, LPCITEMIDLIST pidl1, LPCITEMIDLIST pidl2)
+static HRESULT WINAPI qemu_shellfolder_CompareIDs (IShellFolder2 *iface, LPARAM lParam,
+        const ITEMIDLIST *list1, const ITEMIDLIST *list2)
 {
     struct qemu_IShellFolder2_CompareIDs call;
     struct qemu_shellfolder *folder = impl_from_IShellFolder2(iface);
@@ -442,8 +443,8 @@ static HRESULT WINAPI qemu_shellfolder_CompareIDs (IShellFolder2 *iface, LPARAM 
     call.super.id = QEMU_SYSCALL_ID(CALL_ISHELLFOLDER2_COMPAREIDS);
     call.iface = (ULONG_PTR)folder;
     call.lParam = lParam;
-    call.pidl1 = (ULONG_PTR)pidl1;
-    call.pidl2 = (ULONG_PTR)pidl2;
+    call.list1 = (ULONG_PTR)list1;
+    call.list2 = (ULONG_PTR)list2;
 
     qemu_syscall(&call.super);
 
@@ -457,10 +458,10 @@ void qemu_IShellFolder2_CompareIDs(struct qemu_syscall *call)
     struct qemu_IShellFolder2_CompareIDs *c = (struct qemu_IShellFolder2_CompareIDs *)call;
     struct qemu_shellfolder *folder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     folder = QEMU_G2H(c->iface);
 
-    c->super.iret = IShellFolder2_CompareIDs(folder->host_sf, c->lParam, QEMU_G2H(c->pidl1), QEMU_G2H(c->pidl2));
+    c->super.iret = IShellFolder2_CompareIDs(folder->host_sf, c->lParam, QEMU_G2H(c->list1), QEMU_G2H(c->list2));
 }
 
 #endif
