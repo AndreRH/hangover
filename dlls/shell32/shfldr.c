@@ -519,7 +519,8 @@ struct qemu_IShellFolder2_GetAttributesOf
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI qemu_shellfolder_GetAttributesOf (IShellFolder2 *iface, UINT cidl, LPCITEMIDLIST * apidl, DWORD * rgfInOut)
+static HRESULT WINAPI qemu_shellfolder_GetAttributesOf (IShellFolder2 *iface, UINT cidl,
+        LPCITEMIDLIST *apidl, DWORD *rgfInOut)
 {
     struct qemu_IShellFolder2_GetAttributesOf call;
     struct qemu_shellfolder *folder = impl_from_IShellFolder2(iface);
@@ -541,11 +542,41 @@ void qemu_IShellFolder2_GetAttributesOf(struct qemu_syscall *call)
 {
     struct qemu_IShellFolder2_GetAttributesOf *c = (struct qemu_IShellFolder2_GetAttributesOf *)call;
     struct qemu_shellfolder *folder;
+    ITEMIDLIST *stack[16], **list = stack;
+    qemu_ptr *list32;
+    UINT i;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    list = QEMU_G2H(c->apidl);
+#else
+    list32 = QEMU_G2H(c->apidl);
+    if (!list32)
+    {
+        list = NULL;
+    }
+    else
+    {
+        if (c->cidl > sizeof(stack) / sizeof(*stack))
+        {
+            list = HeapAlloc(GetProcessHeap(), 0, sizeof(*list) * c->cidl);
+            if (!list)
+                WINE_ERR("Out of memory\n");
+        }
+
+        for (i = 0; i < c->cidl; ++i)
+            list[i] = QEMU_G2H((uint64_t)list32[i]);
+    }
+#endif
     folder = QEMU_G2H(c->iface);
 
-    c->super.iret = IShellFolder2_GetAttributesOf(folder->host_sf, c->cidl, QEMU_G2H(c->apidl), QEMU_G2H(c->rgfInOut));
+    c->super.iret = IShellFolder2_GetAttributesOf(folder->host_sf, c->cidl, (const ITEMIDLIST **)list,
+            QEMU_G2H(c->rgfInOut));
+
+#if GUEST_BIT != HOST_BIT
+    if (list != stack)
+        HeapFree(GetProcessHeap(), 0, list);
+#endif
 }
 
 #endif
