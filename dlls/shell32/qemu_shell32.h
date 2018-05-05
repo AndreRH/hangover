@@ -79,6 +79,13 @@ enum shell32_calls
     CALL_GETCURRENTPROCESSEXPLICITAPPUSERMODELID,
     CALL_GETFILENAMEFROMBROWSE,
     CALL_GUIDFROMSTRINGW,
+    CALL_IENUMIDLIST_ADDREF,
+    CALL_IENUMIDLIST_CLONE,
+    CALL_IENUMIDLIST_NEXT,
+    CALL_IENUMIDLIST_QUERYINTERFACE,
+    CALL_IENUMIDLIST_RELEASE,
+    CALL_IENUMIDLIST_RESET,
+    CALL_IENUMIDLIST_SKIP,
     CALL_ILAPPENDID,
     CALL_ILCLONE,
     CALL_ILCLONEFIRST,
@@ -387,9 +394,19 @@ struct qemu_shellfolder
     IPersistFolder2     *host_pf;
 };
 
+struct qemu_enumidlist
+{
+    /* Guest fields */
+    IEnumIDList         IEnumIDList_iface;
+
+    /* Host fields */
+    IEnumIDList         *host;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 void qemu_shellfolder_guest_init(struct qemu_shellfolder *folder);
+void qemu_enumidlist_guest_init(struct qemu_enumidlist *folder);
 
 #else
 
@@ -469,6 +486,13 @@ void qemu_FreeIconList(struct qemu_syscall *call);
 void qemu_GUIDFromStringW(struct qemu_syscall *call);
 void qemu_GetCurrentProcessExplicitAppUserModelID(struct qemu_syscall *call);
 void qemu_GetFileNameFromBrowse(struct qemu_syscall *call);
+void qemu_IEnumIDList_AddRef(struct qemu_syscall *call);
+void qemu_IEnumIDList_Clone(struct qemu_syscall *call);
+void qemu_IEnumIDList_Next(struct qemu_syscall *call);
+void qemu_IEnumIDList_QueryInterface(struct qemu_syscall *call);
+void qemu_IEnumIDList_Release(struct qemu_syscall *call);
+void qemu_IEnumIDList_Reset(struct qemu_syscall *call);
+void qemu_IEnumIDList_Skip(struct qemu_syscall *call);
 void qemu_ILAppendID(struct qemu_syscall *call);
 void qemu_ILClone(struct qemu_syscall *call);
 void qemu_ILCloneFirst(struct qemu_syscall *call);
@@ -807,6 +831,7 @@ BOOL (* WINAPI p_PathRemoveFileSpec)(LPVOID lpszPath);
 void (* WINAPI p_PathStripPath)(LPVOID lpszPath);
 
 struct qemu_shellfolder *qemu_shellfolder_host_create(IShellFolder2 *host);
+struct qemu_enumidlist *qemu_enumidlist_host_create(IEnumIDList *host);
 
 #endif
 

@@ -253,23 +253,31 @@ struct qemu_IShellFolder2_EnumObjects
     uint64_t iface;
     uint64_t hwndOwner;
     uint64_t dwFlags;
-    uint64_t ppEnumIDList;
+    uint64_t list;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI qemu_shellfolder_EnumObjects (IShellFolder2 *iface, HWND hwndOwner, DWORD dwFlags, LPENUMIDLIST * ppEnumIDList)
+static HRESULT WINAPI qemu_shellfolder_EnumObjects (IShellFolder2 *iface, HWND hwndOwner, DWORD dwFlags,
+        IEnumIDList **list)
 {
     struct qemu_IShellFolder2_EnumObjects call;
     struct qemu_shellfolder *folder = impl_from_IShellFolder2(iface);
+    struct qemu_enumidlist *list_obj;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_ISHELLFOLDER2_ENUMOBJECTS);
     call.iface = (ULONG_PTR)folder;
     call.hwndOwner = (ULONG_PTR)hwndOwner;
     call.dwFlags = dwFlags;
-    call.ppEnumIDList = (ULONG_PTR)ppEnumIDList;
+    call.list = (ULONG_PTR)list;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+    {
+        list_obj = (struct qemu_enumidlist *)(ULONG_PTR)call.list;
+        qemu_enumidlist_guest_init(list_obj);
+        *list = &list_obj->IEnumIDList_iface;
+    }
 
     return call.super.iret;
 }
@@ -280,11 +288,25 @@ void qemu_IShellFolder2_EnumObjects(struct qemu_syscall *call)
 {
     struct qemu_IShellFolder2_EnumObjects *c = (struct qemu_IShellFolder2_EnumObjects *)call;
     struct qemu_shellfolder *folder;
+    struct qemu_enumidlist *list;
+    IEnumIDList *host_list;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     folder = QEMU_G2H(c->iface);
 
-    c->super.iret = IShellFolder2_EnumObjects(folder->host_sf, QEMU_G2H(c->hwndOwner), c->dwFlags, QEMU_G2H(c->ppEnumIDList));
+    c->super.iret = IShellFolder2_EnumObjects(folder->host_sf, QEMU_G2H(c->hwndOwner), c->dwFlags,
+            c->list ? &host_list : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    list = qemu_enumidlist_host_create(host_list);
+    if (!list)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->list = QEMU_H2G(list);
 }
 
 #endif
