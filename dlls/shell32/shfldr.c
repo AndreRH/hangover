@@ -149,10 +149,15 @@ void qemu_IShellFolder2_Release(struct qemu_syscall *call)
     struct qemu_IShellFolder2_Release *c = (struct qemu_IShellFolder2_Release *)call;
     struct qemu_shellfolder *folder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     folder = QEMU_G2H(c->iface);
 
     c->super.iret = IShellFolder2_Release(folder->host_sf);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Freeing Shell folder wrapper %p.\n", folder);
+        HeapFree(GetProcessHeap(), 0, folder);
+    }
 }
 
 #endif
@@ -991,10 +996,15 @@ void qemu_IPersistFolder2_Release(struct qemu_syscall *call)
     struct qemu_IPersistFolder2_Release *c = (struct qemu_IPersistFolder2_Release *)call;
     struct qemu_shellfolder *folder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     folder = QEMU_G2H(c->iface);
 
     c->super.iret = IPersistFolder2_Release(folder->host_pf);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Freeing Shell folder wrapper %p.\n", folder);
+        HeapFree(GetProcessHeap(), 0, folder);
+    }
 }
 
 #endif
