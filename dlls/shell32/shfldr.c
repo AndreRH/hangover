@@ -26,6 +26,8 @@
 #define COBJMACROS
 #include <shlobj.h>
 
+#include "thunk/qemu_shtypes.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_shell32.h"
@@ -644,7 +646,8 @@ struct qemu_IShellFolder2_GetDisplayNameOf
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI qemu_shellfolder_GetDisplayNameOf (IShellFolder2 *iface, LPCITEMIDLIST pidl, DWORD dwFlags, LPSTRRET strRet)
+static HRESULT WINAPI qemu_shellfolder_GetDisplayNameOf (IShellFolder2 *iface, LPCITEMIDLIST pidl,
+        DWORD dwFlags, LPSTRRET strRet)
 {
     struct qemu_IShellFolder2_GetDisplayNameOf call;
     struct qemu_shellfolder *folder = impl_from_IShellFolder2(iface);
@@ -666,11 +669,22 @@ void qemu_IShellFolder2_GetDisplayNameOf(struct qemu_syscall *call)
 {
     struct qemu_IShellFolder2_GetDisplayNameOf *c = (struct qemu_IShellFolder2_GetDisplayNameOf *)call;
     struct qemu_shellfolder *folder;
+    STRRET stack, *ret = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     folder = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    ret = QEMU_G2H(c->strRet);
+#else
+    if (!c->strRet)
+        ret = NULL;
+#endif
 
-    c->super.iret = IShellFolder2_GetDisplayNameOf(folder->host_sf, QEMU_G2H(c->pidl), c->dwFlags, QEMU_G2H(c->strRet));
+    c->super.iret = IShellFolder2_GetDisplayNameOf(folder->host_sf, QEMU_G2H(c->pidl), c->dwFlags, ret);
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret))
+        STRRET_h2g(QEMU_G2H(c->strRet), ret);
+#endif
 }
 
 #endif
