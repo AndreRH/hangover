@@ -418,7 +418,7 @@ WINBASEAPI BOOL WINAPI ILIsEqual(LPCITEMIDLIST pidl1, LPCITEMIDLIST pidl2)
 void qemu_ILIsEqual(struct qemu_syscall *call)
 {
     struct qemu_ILIsEqual *c = (struct qemu_ILIsEqual *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ILIsEqual(QEMU_G2H(c->pidl1), QEMU_G2H(c->pidl2));
 }
 
