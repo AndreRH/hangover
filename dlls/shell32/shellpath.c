@@ -351,7 +351,7 @@ WINBASEAPI BOOL WINAPI SHGetSpecialFolderPathA (HWND hwndOwner, LPSTR szPath, in
 void qemu_SHGetSpecialFolderPathA(struct qemu_syscall *call)
 {
     struct qemu_SHGetSpecialFolderPathA *c = (struct qemu_SHGetSpecialFolderPathA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SHGetSpecialFolderPathA(QEMU_G2H(c->hwndOwner), QEMU_G2H(c->szPath), c->nFolder, c->bCreate);
 }
 
@@ -387,7 +387,7 @@ WINBASEAPI BOOL WINAPI SHGetSpecialFolderPathW (HWND hwndOwner, LPWSTR szPath, i
 void qemu_SHGetSpecialFolderPathW(struct qemu_syscall *call)
 {
     struct qemu_SHGetSpecialFolderPathW *c = (struct qemu_SHGetSpecialFolderPathW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SHGetSpecialFolderPathW(QEMU_G2H(c->hwndOwner), QEMU_G2H(c->szPath), c->nFolder, c->bCreate);
 }
 
