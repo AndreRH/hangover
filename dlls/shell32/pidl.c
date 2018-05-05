@@ -21,6 +21,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <shtypes.h>
+#define COBJMACROS
 #include <shlobj.h>
 #include <shlwapi.h>
 
@@ -1040,7 +1041,6 @@ struct qemu_SHBindToParent
 {
     struct qemu_syscall super;
     uint64_t pidl;
-    uint64_t riid;
     uint64_t ppv;
     uint64_t ppidlLast;
 };
@@ -1050,13 +1050,24 @@ struct qemu_SHBindToParent
 WINBASEAPI HRESULT WINAPI SHBindToParent(LPCITEMIDLIST pidl, REFIID riid, LPVOID *ppv, LPCITEMIDLIST *ppidlLast)
 {
     struct qemu_SHBindToParent call;
+    struct qemu_shellfolder *folder;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_SHBINDTOPARENT);
     call.pidl = (ULONG_PTR)pidl;
-    call.riid = (ULONG_PTR)riid;
     call.ppv = (ULONG_PTR)ppv;
     call.ppidlLast = (ULONG_PTR)ppidlLast;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+    {
+        folder = (struct qemu_shellfolder *)(ULONG_PTR)call.ppv;
+        qemu_shellfolder_guest_init(folder);
+
+        call.super.iret = IShellFolder2_QueryInterface(&folder->IShellFolder2_iface, riid, ppv);
+        IShellFolder2_Release(&folder->IShellFolder2_iface);
+    }
+    if (ppidlLast)
+        *ppidlLast = (LPCITEMIDLIST)(ULONG_PTR)call.ppidlLast;
 
     return call.super.iret;
 }
@@ -1066,8 +1077,19 @@ WINBASEAPI HRESULT WINAPI SHBindToParent(LPCITEMIDLIST pidl, REFIID riid, LPVOID
 void qemu_SHBindToParent(struct qemu_syscall *call)
 {
     struct qemu_SHBindToParent *c = (struct qemu_SHBindToParent *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SHBindToParent(QEMU_G2H(c->pidl), QEMU_G2H(c->riid), QEMU_G2H(c->ppv), QEMU_G2H(c->ppidlLast));
+    IShellFolder2 *host;
+    struct qemu_shellfolder *folder;
+    LPCITEMIDLIST last;
+
+    WINE_TRACE("\n");
+    c->super.iret = SHBindToParent(QEMU_G2H(c->pidl), &IID_IShellFolder2,
+            c->ppv ? (void **)&host : NULL, c->ppidlLast ? &last : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    folder = qemu_shellfolder_host_create(host);
+    c->ppv = QEMU_H2G(folder);
+    c->ppidlLast = QEMU_H2G(last);
 }
 
 #endif
