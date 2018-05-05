@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <shlwapi.h>
 
+#include "thunk/qemu_shtypes.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_shlwapi.h"
@@ -1736,8 +1738,19 @@ extern HRESULT WINAPI StrRetToBufW (LPSTRRET src, const ITEMIDLIST *pidl, LPWSTR
 void qemu_StrRetToBufW(struct qemu_syscall *call)
 {
     struct qemu_StrRetToBufW *c = (struct qemu_StrRetToBufW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = StrRetToBufW(QEMU_G2H(c->src), QEMU_G2H(c->pidl), QEMU_G2H(c->dest), c->len);
+    STRRET stack, *src = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    src = QEMU_G2H(c->src);
+#else
+    if (!c->src)
+        src = NULL;
+    else
+        STRRET_g2h(src, QEMU_G2H(c->src));
+#endif
+
+    c->super.iret = StrRetToBufW(src, QEMU_G2H(c->pidl), QEMU_G2H(c->dest), c->len);
 }
 
 #endif
