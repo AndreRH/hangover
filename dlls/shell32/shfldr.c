@@ -171,7 +171,8 @@ struct qemu_IShellFolder2_ParseDisplayName
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI qemu_shellfolder_ParseDisplayName (IShellFolder2 *iface, HWND hwndOwner, LPBC pbc, LPOLESTR lpszDisplayName, DWORD * pchEaten, LPITEMIDLIST * ppidl, DWORD * pdwAttributes)
+static HRESULT WINAPI qemu_shellfolder_ParseDisplayName (IShellFolder2 *iface, HWND hwndOwner, LPBC pbc,
+        LPOLESTR lpszDisplayName, DWORD *pchEaten, LPITEMIDLIST *ppidl, DWORD *pdwAttributes)
 {
     struct qemu_IShellFolder2_ParseDisplayName call;
     struct qemu_shellfolder *folder = impl_from_IShellFolder2(iface);
@@ -186,6 +187,8 @@ static HRESULT WINAPI qemu_shellfolder_ParseDisplayName (IShellFolder2 *iface, H
     call.pdwAttributes = (ULONG_PTR)pdwAttributes;
 
     qemu_syscall(&call.super);
+    if (ppidl)
+        *ppidl = (ITEMIDLIST *)(ULONG_PTR)call.ppidl;
 
     return call.super.iret;
 }
@@ -196,11 +199,16 @@ void qemu_IShellFolder2_ParseDisplayName(struct qemu_syscall *call)
 {
     struct qemu_IShellFolder2_ParseDisplayName *c = (struct qemu_IShellFolder2_ParseDisplayName *)call;
     struct qemu_shellfolder *folder;
+    ITEMIDLIST *list;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     folder = QEMU_G2H(c->iface);
+    if (c->pbc)
+        WINE_FIXME("Bind Context not handled yet.\n");
 
-    c->super.iret = IShellFolder2_ParseDisplayName(folder->host_sf, QEMU_G2H(c->hwndOwner), QEMU_G2H(c->pbc), QEMU_G2H(c->lpszDisplayName), QEMU_G2H(c->pchEaten), QEMU_G2H(c->ppidl), QEMU_G2H(c->pdwAttributes));
+    c->super.iret = IShellFolder2_ParseDisplayName(folder->host_sf, QEMU_G2H(c->hwndOwner), QEMU_G2H(c->pbc),
+            QEMU_G2H(c->lpszDisplayName), QEMU_G2H(c->pchEaten), c->ppidl ? &list : NULL, QEMU_G2H(c->pdwAttributes));
+    c->ppidl = QEMU_H2G(list);
 }
 
 #endif
