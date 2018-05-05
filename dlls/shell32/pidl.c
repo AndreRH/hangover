@@ -704,7 +704,7 @@ WINBASEAPI void WINAPI ILFree(LPITEMIDLIST pidl)
 void qemu_ILFree(struct qemu_syscall *call)
 {
     struct qemu_ILFree *c = (struct qemu_ILFree *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     ILFree(QEMU_G2H(c->pidl));
 }
 
