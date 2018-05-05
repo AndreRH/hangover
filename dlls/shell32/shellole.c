@@ -161,7 +161,6 @@ void qemu_SHCLSIDFromString(struct qemu_syscall *call)
 struct qemu_SHGetMalloc
 {
     struct qemu_syscall super;
-    uint64_t lpmal;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -170,11 +169,19 @@ WINBASEAPI HRESULT WINAPI SHGetMalloc(LPMALLOC *lpmal)
 {
     struct qemu_SHGetMalloc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETMALLOC);
-    call.lpmal = (ULONG_PTR)lpmal;
 
+    /* This forwards to ole32.dll, and this call is also used internally in the shell32 implementation.
+     * We have two ole32 implementations (host and guest), so there are 2 different IMalloc instances.
+     *
+     * IMalloc wraps around HeapAlloc(GetProcessHeap()), so having the two different implementations
+     * works. However, it also has hooking functionality. If an application depends on the hooks being
+     * called for shell32-internal allocs and frees we'll have to merge those two implementations, most
+     * likely by hooking ole32's CoGetMalloc. */
+
+    /* For logging. */
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    return CoGetMalloc(MEMCTX_TASK, lpmal);
 }
 
 #else
@@ -182,8 +189,7 @@ WINBASEAPI HRESULT WINAPI SHGetMalloc(LPMALLOC *lpmal)
 void qemu_SHGetMalloc(struct qemu_syscall *call)
 {
     struct qemu_SHGetMalloc *c = (struct qemu_SHGetMalloc *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SHGetMalloc(QEMU_G2H(c->lpmal));
+    WINE_TRACE("Handled on the guest side.\n");
 }
 
 #endif
