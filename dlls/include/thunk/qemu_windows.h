@@ -15,4 +15,6 @@
 
 #include "thunk/qemu_winsock.h"
 
+#include "thunk/qemu_shellapi.h"
+
 #endif

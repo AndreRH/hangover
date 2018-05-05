@@ -23,6 +23,8 @@
 #include <shlwapi.h>
 #include <shlobj.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_shell32.h"
@@ -58,8 +60,19 @@ WINBASEAPI BOOL WINAPI Shell_NotifyIconA(DWORD dwMessage, PNOTIFYICONDATAA pnid)
 void qemu_Shell_NotifyIconA(struct qemu_syscall *call)
 {
     struct qemu_Shell_NotifyIconA *c = (struct qemu_Shell_NotifyIconA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = Shell_NotifyIconA(c->dwMessage, QEMU_G2H(c->pnid));
+    NOTIFYICONDATAA stack, *data = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    data = QEMU_G2H(c->pnid);
+#else
+    if (c->pnid)
+        NOTIFYICONDATAA_g2h(data, QEMU_G2H(c->pnid));
+    else
+        data = NULL;
+#endif
+
+    c->super.iret = Shell_NotifyIconA(c->dwMessage, data);
 }
 
 #endif
@@ -90,8 +103,19 @@ WINBASEAPI BOOL WINAPI Shell_NotifyIconW(DWORD dwMessage, PNOTIFYICONDATAW nid)
 void qemu_Shell_NotifyIconW(struct qemu_syscall *call)
 {
     struct qemu_Shell_NotifyIconW *c = (struct qemu_Shell_NotifyIconW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = Shell_NotifyIconW(c->dwMessage, QEMU_G2H(c->nid));
+    NOTIFYICONDATAW stack, *data = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    data = QEMU_G2H(c->nid);
+#else
+    if (c->nid)
+        NOTIFYICONDATAW_g2h(data, QEMU_G2H(c->nid));
+    else
+        data = NULL;
+#endif
+
+    c->super.iret = Shell_NotifyIconW(c->dwMessage, data);
 }
 
 #endif
