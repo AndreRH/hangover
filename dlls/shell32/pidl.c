@@ -109,16 +109,16 @@ void qemu_ILGetDisplayName(struct qemu_syscall *call)
 struct qemu_ILFindLastID
 {
     struct qemu_syscall super;
-    uint64_t pidl;
+    uint64_t idl;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI LPITEMIDLIST WINAPI ILFindLastID(LPCITEMIDLIST pidl)
+WINBASEAPI LPITEMIDLIST WINAPI ILFindLastID(const ITEMIDLIST *idl)
 {
     struct qemu_ILFindLastID call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ILFINDLASTID);
-    call.pidl = (ULONG_PTR)pidl;
+    call.idl = (ULONG_PTR)idl;
 
     qemu_syscall(&call.super);
 
@@ -130,8 +130,8 @@ WINBASEAPI LPITEMIDLIST WINAPI ILFindLastID(LPCITEMIDLIST pidl)
 void qemu_ILFindLastID(struct qemu_syscall *call)
 {
     struct qemu_ILFindLastID *c = (struct qemu_ILFindLastID *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)ILFindLastID(QEMU_G2H(c->pidl));
+    WINE_TRACE("\n");
+    c->super.iret = (ULONG_PTR)ILFindLastID(QEMU_G2H(c->idl));
 }
 
 #endif
