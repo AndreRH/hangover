@@ -1031,7 +1031,7 @@ WINBASEAPI BOOL WINAPI SHGetPathFromIDListEx(LPCITEMIDLIST pidl, WCHAR *path, DW
 void qemu_SHGetPathFromIDListEx(struct qemu_syscall *call)
 {
     struct qemu_SHGetPathFromIDListEx *c = (struct qemu_SHGetPathFromIDListEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SHGetPathFromIDListEx(QEMU_G2H(c->pidl), QEMU_G2H(c->path), c->path_size, c->flags);
 }
 
