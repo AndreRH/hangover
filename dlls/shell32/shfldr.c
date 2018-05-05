@@ -39,8 +39,7 @@ struct qemu_IShellFolder2_QueryInterface
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t riid;
-    uint64_t obj;
+    uint64_t iid;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -55,17 +54,39 @@ static inline struct qemu_shellfolder *impl_from_IPersistFolder2( IPersistFolder
     return CONTAINING_RECORD(iface, struct qemu_shellfolder, IPersistFolder2_iface);
 }
 
-static HRESULT WINAPI qemu_shellfolder_QueryInterface(IShellFolder2 *iface, REFIID riid, void **obj)
+static HRESULT WINAPI qemu_shellfolder_QueryInterface(IShellFolder2 *iface, const IID *iid, void **obj)
 {
     struct qemu_IShellFolder2_QueryInterface call;
     struct qemu_shellfolder *folder = impl_from_IShellFolder2(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_ISHELLFOLDER2_QUERYINTERFACE);
     call.iface = (ULONG_PTR)folder;
-    call.riid = (ULONG_PTR)riid;
-    call.obj = (ULONG_PTR)obj;
+    call.iid = (ULONG_PTR)iid;
 
     qemu_syscall(&call.super);
+
+    if (IsEqualGUID(iid, &IID_IUnknown)
+            || IsEqualGUID(iid, &IID_IShellFolder)
+            || IsEqualGUID(iid, &IID_IShellFolder2))
+    {
+        *obj = &folder->IShellFolder2_iface;
+    }
+    else if (IsEqualGUID(iid, &IID_IPersistFolder)
+            || IsEqualGUID(iid, &IID_IPersistFolder2))
+    {
+        *obj = &folder->IPersistFolder2_iface;
+    }
+    else if (SUCCEEDED(call.super.iret))
+    {
+        call.iface = 0;
+        qemu_syscall(&call.super);
+    }
+    else
+    {
+        *obj = NULL;
+    }
+
+    /* AddRef is handled by the host QI call. */
 
     return call.super.iret;
 }
@@ -76,11 +97,19 @@ void qemu_IShellFolder2_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_IShellFolder2_QueryInterface *c = (struct qemu_IShellFolder2_QueryInterface *)call;
     struct qemu_shellfolder *folder;
+    void *out;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     folder = QEMU_G2H(c->iface);
 
-    c->super.iret = IShellFolder2_QueryInterface(folder->host_sf, QEMU_G2H(c->riid), QEMU_G2H(c->obj));
+    if (!folder)
+    {
+        WINE_FIXME("Host handled IID %s, but it is not handled by the wrapper.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->iid)));
+        DebugBreak();
+    }
+
+    c->super.iret = IShellFolder2_QueryInterface(folder->host_sf, QEMU_G2H(c->iid), &out);
 }
 
 #endif
@@ -266,13 +295,14 @@ struct qemu_IShellFolder2_BindToObject
     uint64_t iface;
     uint64_t pidl;
     uint64_t pbcReserved;
-    uint64_t riid;
-    uint64_t ppvOut;
+    uint64_t iid;
+    uint64_t out;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI qemu_shellfolder_BindToObject (IShellFolder2 *iface, LPCITEMIDLIST pidl, LPBC pbcReserved, REFIID riid, LPVOID * ppvOut)
+static HRESULT WINAPI qemu_shellfolder_BindToObject (IShellFolder2 *iface, LPCITEMIDLIST pidl, LPBC pbcReserved,
+        const IID *iid, void **out)
 {
     struct qemu_IShellFolder2_BindToObject call;
     struct qemu_shellfolder *folder = impl_from_IShellFolder2(iface);
@@ -281,10 +311,18 @@ static HRESULT WINAPI qemu_shellfolder_BindToObject (IShellFolder2 *iface, LPCIT
     call.iface = (ULONG_PTR)folder;
     call.pidl = (ULONG_PTR)pidl;
     call.pbcReserved = (ULONG_PTR)pbcReserved;
-    call.riid = (ULONG_PTR)riid;
-    call.ppvOut = (ULONG_PTR)ppvOut;
+    call.iid = (ULONG_PTR)iid;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        struct qemu_shellfolder *retobj = (struct qemu_shellfolder *)(ULONG_PTR)call.out;
+        qemu_shellfolder_guest_init(retobj);
+        IShellFolder2_QueryInterface(&retobj->IShellFolder2_iface, iid, out);
+        IShellFolder2_Release(&retobj->IShellFolder2_iface);
+    }
 
     return call.super.iret;
 }
@@ -294,12 +332,27 @@ static HRESULT WINAPI qemu_shellfolder_BindToObject (IShellFolder2 *iface, LPCIT
 void qemu_IShellFolder2_BindToObject(struct qemu_syscall *call)
 {
     struct qemu_IShellFolder2_BindToObject *c = (struct qemu_IShellFolder2_BindToObject *)call;
-    struct qemu_shellfolder *folder;
+    struct qemu_shellfolder *folder, *retobj;
+    IShellFolder2 *out;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     folder = QEMU_G2H(c->iface);
+    if (c->pbcReserved)
+        WINE_FIXME("Bind context not handled yet.\n");
 
-    c->super.iret = IShellFolder2_BindToObject(folder->host_sf, QEMU_G2H(c->pidl), QEMU_G2H(c->pbcReserved), QEMU_G2H(c->riid), QEMU_G2H(c->ppvOut));
+    c->super.iret = IShellFolder2_BindToObject(folder->host_sf, QEMU_G2H(c->pidl), QEMU_G2H(c->pbcReserved),
+            &IID_IShellFolder2, (void **)&out);
+    if (FAILED(c->super.iret))
+        return;
+
+    retobj = qemu_shellfolder_host_create(out);
+    if (!retobj)
+    {
+        IShellFolder2_Release(out);
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+    c->out = QEMU_H2G(retobj);
 }
 
 #endif
