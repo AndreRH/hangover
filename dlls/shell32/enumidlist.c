@@ -158,7 +158,7 @@ struct qemu_IEnumIDList_Next
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI qemu_enumidlist_Next(IEnumIDList *iface, ULONG celt, LPITEMIDLIST *rgelt, ULONG *fetched)
+static HRESULT WINAPI qemu_enumidlist_Next(IEnumIDList *iface, ULONG celt, ITEMIDLIST **rgelt, ULONG *fetched)
 {
     struct qemu_IEnumIDList_Next call;
     struct qemu_enumidlist *list = impl_from_IEnumIDList(iface);
@@ -166,10 +166,10 @@ static HRESULT WINAPI qemu_enumidlist_Next(IEnumIDList *iface, ULONG celt, LPITE
     call.super.id = QEMU_SYSCALL_ID(CALL_IENUMIDLIST_NEXT);
     call.iface = (ULONG_PTR)iface;
     call.celt = celt;
-    call.rgelt = (ULONG_PTR)rgelt;
     call.fetched = (ULONG_PTR)fetched;
 
     qemu_syscall(&call.super);
+    *rgelt = (ITEMIDLIST *)(ULONG_PTR)call.rgelt;
 
     return call.super.iret;
 }
@@ -180,11 +180,13 @@ void qemu_IEnumIDList_Next(struct qemu_syscall *call)
 {
     struct qemu_IEnumIDList_Next *c = (struct qemu_IEnumIDList_Next *)call;
     struct qemu_enumidlist *list;
+    ITEMIDLIST *ret;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     list = QEMU_G2H(c->iface);
 
-    c->super.iret = IEnumIDList_Next(list->host, c->celt, QEMU_G2H(c->rgelt), QEMU_G2H(c->fetched));
+    c->super.iret = IEnumIDList_Next(list->host, c->celt, &ret, QEMU_G2H(c->fetched));
+    c->rgelt = QEMU_H2G(ret);
 }
 
 #endif
