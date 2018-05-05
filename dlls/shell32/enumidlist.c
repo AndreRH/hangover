@@ -168,10 +168,10 @@ static HRESULT WINAPI qemu_enumidlist_Next(IEnumIDList *iface, ULONG celt, ITEMI
     call.super.id = QEMU_SYSCALL_ID(CALL_IENUMIDLIST_NEXT);
     call.iface = (ULONG_PTR)iface;
     call.celt = celt;
+    call.rgelt = (ULONG_PTR)rgelt;
     call.fetched = (ULONG_PTR)fetched;
 
     qemu_syscall(&call.super);
-    *rgelt = (ITEMIDLIST *)(ULONG_PTR)call.rgelt;
 
     return call.super.iret;
 }
@@ -182,13 +182,38 @@ void qemu_IEnumIDList_Next(struct qemu_syscall *call)
 {
     struct qemu_IEnumIDList_Next *c = (struct qemu_IEnumIDList_Next *)call;
     struct qemu_enumidlist *list;
-    ITEMIDLIST *ret;
+    ITEMIDLIST *stack[32], **ret = stack;
+    qemu_ptr *ret32;
+    ULONG fetched = 0, i;
 
     WINE_TRACE("\n");
     list = QEMU_G2H(c->iface);
 
-    c->super.iret = IEnumIDList_Next(list->host, c->celt, &ret, QEMU_G2H(c->fetched));
-    c->rgelt = QEMU_H2G(ret);
+#if GUEST_BIT == HOST_BIT
+    ret = QEMU_G2H(c->rgelt);
+#else
+    ret32 = QEMU_G2H(c->rgelt);
+    if (c->celt > sizeof(stack) / sizeof(*stack))
+    {
+        ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret) * c->celt);
+        if (!ret)
+            WINE_ERR("Out of memory.\n");
+    }
+#endif
+
+    /* Make sure to provoke an error if celt > 1 and fetched = NULL */
+    c->super.iret = IEnumIDList_Next(list->host, c->celt, ret, (c->celt > 1 && !c->fetched) ? NULL : &fetched);
+
+    if (c->fetched)
+        *((ULONG *)QEMU_G2H(c->fetched)) = fetched;
+
+#if GUEST_BIT != HOST_BIT
+    for (i = 0; i < fetched; ++i)
+        ret32[i] = QEMU_H2G(ret[i]);
+
+    if (ret != stack)
+        HeapFree(GetProcessHeap(), 0, ret);
+#endif
 }
 
 #endif
