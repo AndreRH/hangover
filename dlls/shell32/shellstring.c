@@ -23,6 +23,8 @@
 #include <shlwapi.h>
 #include <shlobj.h>
 
+#include "thunk/qemu_shtypes.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_shell32.h"
@@ -62,8 +64,21 @@ WINBASEAPI BOOL WINAPI StrRetToStrNAW(LPVOID dest, DWORD len, LPSTRRET src, cons
 void qemu_StrRetToStrNAW(struct qemu_syscall *call)
 {
     struct qemu_StrRetToStrNAW *c = (struct qemu_StrRetToStrNAW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_StrRetToStrNAW(QEMU_G2H(c->dest), c->len, QEMU_G2H(c->src), QEMU_G2H(c->pidl));
+    STRRET stack, *src = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    src = QEMU_G2H(c->src);
+#else
+    if (c->src)
+        STRRET_g2h(src, QEMU_G2H(c->src));
+    else
+        src = NULL;
+
+    /* The ITEMIDLIST ist just cast to a char * by the implementation. */
+#endif
+
+    c->super.iret = p_StrRetToStrNAW(QEMU_G2H(c->dest), c->len, src, QEMU_G2H(c->pidl));
 }
 
 #endif
