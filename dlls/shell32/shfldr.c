@@ -688,7 +688,8 @@ struct qemu_IShellFolder2_SetNameOf
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI qemu_shellfolder_SetNameOf (IShellFolder2 *iface, HWND hwndOwner, LPCITEMIDLIST pidl, LPCOLESTR lpName, DWORD dwFlags, LPITEMIDLIST * pPidlOut)
+static HRESULT WINAPI qemu_shellfolder_SetNameOf (IShellFolder2 *iface, HWND hwndOwner,
+        LPCITEMIDLIST pidl, LPCOLESTR lpName, DWORD dwFlags, LPITEMIDLIST * pPidlOut)
 {
     struct qemu_IShellFolder2_SetNameOf call;
     struct qemu_shellfolder *folder = impl_from_IShellFolder2(iface);
@@ -702,6 +703,8 @@ static HRESULT WINAPI qemu_shellfolder_SetNameOf (IShellFolder2 *iface, HWND hwn
     call.pPidlOut = (ULONG_PTR)pPidlOut;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret) && pPidlOut)
+        *pPidlOut = (ITEMIDLIST *)(ULONG_PTR)call.pPidlOut;
 
     return call.super.iret;
 }
@@ -712,11 +715,14 @@ void qemu_IShellFolder2_SetNameOf(struct qemu_syscall *call)
 {
     struct qemu_IShellFolder2_SetNameOf *c = (struct qemu_IShellFolder2_SetNameOf *)call;
     struct qemu_shellfolder *folder;
+    ITEMIDLIST *out;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     folder = QEMU_G2H(c->iface);
 
-    c->super.iret = IShellFolder2_SetNameOf(folder->host_sf, QEMU_G2H(c->hwndOwner), QEMU_G2H(c->pidl), QEMU_G2H(c->lpName), c->dwFlags, QEMU_G2H(c->pPidlOut));
+    c->super.iret = IShellFolder2_SetNameOf(folder->host_sf, QEMU_G2H(c->hwndOwner), QEMU_G2H(c->pidl),
+            QEMU_G2H(c->lpName), c->dwFlags, c->pPidlOut ? &out : NULL);
+    c->pPidlOut = QEMU_H2G(out);
 }
 
 #endif
