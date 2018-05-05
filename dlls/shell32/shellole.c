@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#define COBJMACROS
 #include <shlobj.h>
 
 #include "windows-user-services.h"
@@ -623,10 +624,18 @@ struct qemu_SHGetDesktopFolder
 WINBASEAPI HRESULT WINAPI SHGetDesktopFolder(IShellFolder **psf)
 {
     struct qemu_SHGetDesktopFolder call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_SHGETDESKTOPFOLDER);
-    call.psf = (ULONG_PTR)psf;
+    struct qemu_shellfolder *desktop_folder;
 
+    call.super.id = QEMU_SYSCALL_ID(CALL_SHGETDESKTOPFOLDER);
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        desktop_folder = (struct qemu_shellfolder *)(ULONG_PTR)call.psf;
+        if (!desktop_folder->IShellFolder2_iface.lpVtbl)
+            qemu_shellfolder_guest_init(desktop_folder);
+        *psf = (IShellFolder *)&desktop_folder->IShellFolder2_iface;
+    }
 
     return call.super.iret;
 }
@@ -636,8 +645,34 @@ WINBASEAPI HRESULT WINAPI SHGetDesktopFolder(IShellFolder **psf)
 void qemu_SHGetDesktopFolder(struct qemu_syscall *call)
 {
     struct qemu_SHGetDesktopFolder *c = (struct qemu_SHGetDesktopFolder *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SHGetDesktopFolder(QEMU_G2H(c->psf));
+    IShellFolder *sf;
+    static struct qemu_shellfolder *desktop_folder;
+
+    WINE_TRACE("\n");
+    if (desktop_folder)
+    {
+        WINE_TRACE("Desktop folder %p already constructed.\n", desktop_folder);
+        IShellFolder2_AddRef(desktop_folder->host_sf);
+        c->psf = QEMU_H2G(desktop_folder);
+        c->super.iret = S_OK;
+        return;
+    }
+
+    c->psf = 0;
+    c->super.iret = SHGetDesktopFolder(&sf);
+    if (FAILED(c->super.iret))
+        return;
+
+    desktop_folder = qemu_shellfolder_host_create((IShellFolder2 *)sf);
+    if (!desktop_folder)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        IShellFolder2_Release(sf);
+        return;
+    }
+
+    WINE_TRACE("Constructed new desktop folder wrapper %p.\n", desktop_folder);
+    c->psf = QEMU_H2G(desktop_folder);
 }
 
 #endif

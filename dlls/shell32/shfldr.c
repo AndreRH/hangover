@@ -24,7 +24,7 @@
 #include <shlwapi.h>
 
 #define COBJMACROS
-#include <shobjidl.h>
+#include <shlobj.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
