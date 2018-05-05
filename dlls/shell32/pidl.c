@@ -1084,17 +1084,18 @@ struct qemu_SHParseDisplayName
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI SHParseDisplayName(LPCWSTR name, IBindCtx *bindctx, LPITEMIDLIST *pidlist, SFGAOF attr_in, SFGAOF *attr_out)
+WINBASEAPI HRESULT WINAPI SHParseDisplayName(LPCWSTR name, IBindCtx *bindctx, LPITEMIDLIST *pidlist,
+        SFGAOF attr_in, SFGAOF *attr_out)
 {
     struct qemu_SHParseDisplayName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHPARSEDISPLAYNAME);
     call.name = (ULONG_PTR)name;
     call.bindctx = (ULONG_PTR)bindctx;
-    call.pidlist = (ULONG_PTR)pidlist;
     call.attr_in = (ULONG_PTR)attr_in;
     call.attr_out = (ULONG_PTR)attr_out;
 
     qemu_syscall(&call.super);
+    *pidlist = (ITEMIDLIST *)(ULONG_PTR)call.pidlist;
 
     return call.super.iret;
 }
@@ -1104,8 +1105,17 @@ WINBASEAPI HRESULT WINAPI SHParseDisplayName(LPCWSTR name, IBindCtx *bindctx, LP
 void qemu_SHParseDisplayName(struct qemu_syscall *call)
 {
     struct qemu_SHParseDisplayName *c = (struct qemu_SHParseDisplayName *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SHParseDisplayName(QEMU_G2H(c->name), QEMU_G2H(c->bindctx), QEMU_G2H(c->pidlist), c->attr_in, QEMU_G2H(c->attr_out));
+    ITEMIDLIST *list;
+
+    /* SFGAOF is a ULONG, *pidlist is written unconditionally */
+    WINE_TRACE("\n");
+
+    if (c->bindctx)
+        WINE_FIXME("Bind Context not handled yet.\n");
+
+    c->super.iret = SHParseDisplayName(QEMU_G2H(c->name), QEMU_G2H(c->bindctx), &list,
+            c->attr_in, QEMU_G2H(c->attr_out));
+    c->pidlist = QEMU_H2G(list);
 }
 
 #endif
