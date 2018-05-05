@@ -93,6 +93,8 @@ static HRESULT WINAPI qemu_shellfolder_QueryInterface(IShellFolder2 *iface, cons
 
 #else
 
+static struct qemu_shellfolder *shellfolder_desktop;
+
 void qemu_IShellFolder2_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_IShellFolder2_QueryInterface *c = (struct qemu_IShellFolder2_QueryInterface *)call;
@@ -185,6 +187,8 @@ void qemu_IShellFolder2_Release(struct qemu_syscall *call)
     if (!c->super.iret)
     {
         WINE_TRACE("Freeing Shell folder wrapper %p.\n", folder);
+        if (folder == shellfolder_desktop)
+            WINE_ERR("Destroying desktop wrapper.\n");
         HeapFree(GetProcessHeap(), 0, folder);
     }
 }
@@ -1279,6 +1283,12 @@ struct qemu_shellfolder *qemu_shellfolder_host_create(IShellFolder2 *host)
 {
     struct qemu_shellfolder *folder;
 
+    if (shellfolder_desktop && host == shellfolder_desktop->host_sf)
+    {
+        WINE_TRACE("Returning existing Desktop IShellFolder %p.\n", shellfolder_desktop);
+        return shellfolder_desktop;
+    }
+
     folder = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*folder));
     if (!folder)
         return NULL;
@@ -1287,6 +1297,18 @@ struct qemu_shellfolder *qemu_shellfolder_host_create(IShellFolder2 *host)
     IShellFolder2_QueryInterface(host, &IID_IPersistFolder2, (void **)&folder->host_pf);
     /* The wrapper does not have its own refcount, don't hold references to the inteface ourselves. */
     IPersistFolder2_Release(folder->host_pf);
+
+    if (!shellfolder_desktop)
+    {
+        IShellFolder *desktop;
+        SHGetDesktopFolder(&desktop);
+        if (host == (IShellFolder2 *)desktop)
+        {
+            WINE_TRACE("Caching desktop wrapper object %p.\n", folder);
+            shellfolder_desktop = folder;
+        }
+        IShellFolder_Release(desktop);
+    }
 
     return folder;
 }

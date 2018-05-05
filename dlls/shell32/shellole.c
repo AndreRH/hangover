@@ -646,33 +646,25 @@ void qemu_SHGetDesktopFolder(struct qemu_syscall *call)
 {
     struct qemu_SHGetDesktopFolder *c = (struct qemu_SHGetDesktopFolder *)call;
     IShellFolder *sf;
-    static struct qemu_shellfolder *desktop_folder;
+    struct qemu_shellfolder *folder;
 
     WINE_TRACE("\n");
-    if (desktop_folder)
-    {
-        WINE_TRACE("Desktop folder %p already constructed.\n", desktop_folder);
-        IShellFolder2_AddRef(desktop_folder->host_sf);
-        c->psf = QEMU_H2G(desktop_folder);
-        c->super.iret = S_OK;
-        return;
-    }
 
     c->psf = 0;
     c->super.iret = SHGetDesktopFolder(&sf);
     if (FAILED(c->super.iret))
         return;
 
-    desktop_folder = qemu_shellfolder_host_create((IShellFolder2 *)sf);
-    if (!desktop_folder)
+    folder = qemu_shellfolder_host_create((IShellFolder2 *)sf);
+    if (!folder)
     {
         c->super.iret = E_OUTOFMEMORY;
         IShellFolder2_Release(sf);
         return;
     }
 
-    WINE_TRACE("Constructed new desktop folder wrapper %p.\n", desktop_folder);
-    c->psf = QEMU_H2G(desktop_folder);
+    WINE_TRACE("Constructed / retrieved desktop folder wrapper %p.\n", folder);
+    c->psf = QEMU_H2G(folder);
 }
 
 #endif
