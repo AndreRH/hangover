@@ -102,6 +102,32 @@ enum shell32_calls
     CALL_ILSAVETOSTREAM,
     CALL_INITNETWORKADDRESSCONTROL,
     CALL_INVALIDATEDRIVETYPE,
+    CALL_IPERSISTFOLDER2_ADDREF,
+    CALL_IPERSISTFOLDER2_GETCLASSID,
+    CALL_IPERSISTFOLDER2_GETCURFOLDER,
+    CALL_IPERSISTFOLDER2_INITIALIZE,
+    CALL_IPERSISTFOLDER2_QUERYINTERFACE,
+    CALL_IPERSISTFOLDER2_RELEASE,
+    CALL_ISHELLFOLDER2_ADDREF,
+    CALL_ISHELLFOLDER2_BINDTOOBJECT,
+    CALL_ISHELLFOLDER2_BINDTOSTORAGE,
+    CALL_ISHELLFOLDER2_COMPAREIDS,
+    CALL_ISHELLFOLDER2_CREATEVIEWOBJECT,
+    CALL_ISHELLFOLDER2_ENUMOBJECTS,
+    CALL_ISHELLFOLDER2_ENUMSEARCHES,
+    CALL_ISHELLFOLDER2_GETATTRIBUTESOF,
+    CALL_ISHELLFOLDER2_GETDEFAULTCOLUMN,
+    CALL_ISHELLFOLDER2_GETDEFAULTCOLUMNSTATE,
+    CALL_ISHELLFOLDER2_GETDEFAULTSEARCHGUID,
+    CALL_ISHELLFOLDER2_GETDETAILSEX,
+    CALL_ISHELLFOLDER2_GETDETAILSOF,
+    CALL_ISHELLFOLDER2_GETDISPLAYNAMEOF,
+    CALL_ISHELLFOLDER2_GETUIOBJECTOF,
+    CALL_ISHELLFOLDER2_MAPCOLUMNTOSCID,
+    CALL_ISHELLFOLDER2_PARSEDISPLAYNAME,
+    CALL_ISHELLFOLDER2_QUERYINTERFACE,
+    CALL_ISHELLFOLDER2_RELEASE,
+    CALL_ISHELLFOLDER2_SETNAMEOF,
     CALL_ISLFNDRIVEA,
     CALL_ISLFNDRIVEAW,
     CALL_ISLFNDRIVEW,
@@ -350,16 +376,31 @@ enum shell32_calls
     CALL_WRITECABINETSTATE,
 };
 
-#ifndef QEMU_DLL_GUEST
+struct qemu_shellfolder
+{
+    /* Guest fields */
+    IShellFolder2       IShellFolder2_iface;
+    IPersistFolder2     IPersistFolder2_iface;
+
+    /* Host fields */
+    IShellFolder2       *host_sf;
+    IPersistFolder2     *host_pf;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+void qemu_shellfolder_guest_init(struct qemu_shellfolder *folder);
+
+#else
 
 extern const struct qemu_ops *qemu_ops;
 
 void qemu_ArrangeWindows(struct qemu_syscall *call);
-void qemu_CallCPLEntry16(struct qemu_syscall *call);
 void qemu_CDefFolderMenu_Create2(struct qemu_syscall *call);
+void qemu_CIDLData_CreateFromIDArray(struct qemu_syscall *call);
+void qemu_CallCPLEntry16(struct qemu_syscall *call);
 void qemu_CheckEscapesA(struct qemu_syscall *call);
 void qemu_CheckEscapesW(struct qemu_syscall *call);
-void qemu_CIDLData_CreateFromIDArray(struct qemu_syscall *call);
 void qemu_CommandLineToArgvW(struct qemu_syscall *call);
 void qemu_Control_FillCache_RunDLLA(struct qemu_syscall *call);
 void qemu_Control_FillCache_RunDLLW(struct qemu_syscall *call);
@@ -425,9 +466,9 @@ void qemu_FileMenu_TrackPopupMenuEx(struct qemu_syscall *call);
 void qemu_FindExecutableA(struct qemu_syscall *call);
 void qemu_FindExecutableW(struct qemu_syscall *call);
 void qemu_FreeIconList(struct qemu_syscall *call);
+void qemu_GUIDFromStringW(struct qemu_syscall *call);
 void qemu_GetCurrentProcessExplicitAppUserModelID(struct qemu_syscall *call);
 void qemu_GetFileNameFromBrowse(struct qemu_syscall *call);
-void qemu_GUIDFromStringW(struct qemu_syscall *call);
 void qemu_ILAppendID(struct qemu_syscall *call);
 void qemu_ILClone(struct qemu_syscall *call);
 void qemu_ILCloneFirst(struct qemu_syscall *call);
@@ -449,6 +490,32 @@ void qemu_ILIsParent(struct qemu_syscall *call);
 void qemu_ILLoadFromStream(struct qemu_syscall *call);
 void qemu_ILRemoveLastID(struct qemu_syscall *call);
 void qemu_ILSaveToStream(struct qemu_syscall *call);
+void qemu_IPersistFolder2_AddRef(struct qemu_syscall *call);
+void qemu_IPersistFolder2_GetClassID(struct qemu_syscall *call);
+void qemu_IPersistFolder2_GetCurFolder(struct qemu_syscall *call);
+void qemu_IPersistFolder2_Initialize(struct qemu_syscall *call);
+void qemu_IPersistFolder2_QueryInterface(struct qemu_syscall *call);
+void qemu_IPersistFolder2_Release(struct qemu_syscall *call);
+void qemu_IShellFolder2_AddRef(struct qemu_syscall *call);
+void qemu_IShellFolder2_BindToObject(struct qemu_syscall *call);
+void qemu_IShellFolder2_BindToStorage(struct qemu_syscall *call);
+void qemu_IShellFolder2_CompareIDs(struct qemu_syscall *call);
+void qemu_IShellFolder2_CreateViewObject(struct qemu_syscall *call);
+void qemu_IShellFolder2_EnumObjects(struct qemu_syscall *call);
+void qemu_IShellFolder2_EnumSearches(struct qemu_syscall *call);
+void qemu_IShellFolder2_GetAttributesOf(struct qemu_syscall *call);
+void qemu_IShellFolder2_GetDefaultColumn(struct qemu_syscall *call);
+void qemu_IShellFolder2_GetDefaultColumnState(struct qemu_syscall *call);
+void qemu_IShellFolder2_GetDefaultSearchGUID(struct qemu_syscall *call);
+void qemu_IShellFolder2_GetDetailsEx(struct qemu_syscall *call);
+void qemu_IShellFolder2_GetDetailsOf(struct qemu_syscall *call);
+void qemu_IShellFolder2_GetDisplayNameOf(struct qemu_syscall *call);
+void qemu_IShellFolder2_GetUIObjectOf(struct qemu_syscall *call);
+void qemu_IShellFolder2_MapColumnToSCID(struct qemu_syscall *call);
+void qemu_IShellFolder2_ParseDisplayName(struct qemu_syscall *call);
+void qemu_IShellFolder2_QueryInterface(struct qemu_syscall *call);
+void qemu_IShellFolder2_Release(struct qemu_syscall *call);
+void qemu_IShellFolder2_SetNameOf(struct qemu_syscall *call);
 void qemu_InitNetworkAddressControl(struct qemu_syscall *call);
 void qemu_InvalidateDriveType(struct qemu_syscall *call);
 void qemu_IsLFNDriveA(struct qemu_syscall *call);
@@ -503,16 +570,14 @@ void qemu_PickIconDlg(struct qemu_syscall *call);
 void qemu_Printer_LoadIconsW(struct qemu_syscall *call);
 void qemu_Printers_RegisterWindowW(struct qemu_syscall *call);
 void qemu_Printers_UnregisterWindow(struct qemu_syscall *call);
+void qemu_RLBuildListOfPaths(struct qemu_syscall *call);
 void qemu_ReadCabinetState(struct qemu_syscall *call);
 void qemu_RealDriveType(struct qemu_syscall *call);
 void qemu_RegenerateUserEnvironment(struct qemu_syscall *call);
 void qemu_RegisterShellHook(struct qemu_syscall *call);
 void qemu_RestartDialog(struct qemu_syscall *call);
 void qemu_RestartDialogEx(struct qemu_syscall *call);
-void qemu_RLBuildListOfPaths(struct qemu_syscall *call);
 void qemu_RunFileDlgAW(struct qemu_syscall *call);
-void qemu_SetAppStartingCursor(struct qemu_syscall *call);
-void qemu_SetCurrentProcessExplicitAppUserModelID(struct qemu_syscall *call);
 void qemu_SHAbortInvokeCommand(struct qemu_syscall *call);
 void qemu_SHAddFromPropSheetExtArray(struct qemu_syscall *call);
 void qemu_SHAddToRecentDocs(struct qemu_syscall *call);
@@ -523,6 +588,7 @@ void qemu_SHAssocEnumHandlers(struct qemu_syscall *call);
 void qemu_SHBindToParent(struct qemu_syscall *call);
 void qemu_SHBrowseForFolderA(struct qemu_syscall *call);
 void qemu_SHBrowseForFolderW(struct qemu_syscall *call);
+void qemu_SHCLSIDFromString(struct qemu_syscall *call);
 void qemu_SHChangeNotification_Lock(struct qemu_syscall *call);
 void qemu_SHChangeNotification_Unlock(struct qemu_syscall *call);
 void qemu_SHChangeNotify(struct qemu_syscall *call);
@@ -530,10 +596,9 @@ void qemu_SHChangeNotifyDeregister(struct qemu_syscall *call);
 void qemu_SHChangeNotifyRegister(struct qemu_syscall *call);
 void qemu_SHChangeNotifyUpdateEntryList(struct qemu_syscall *call);
 void qemu_SHCloneSpecialIDList(struct qemu_syscall *call);
-void qemu_SHCLSIDFromString(struct qemu_syscall *call);
 void qemu_SHCoCreateInstance(struct qemu_syscall *call);
-void qemu_SHCreateDefaultContextMenu(struct qemu_syscall *call);
 void qemu_SHCreateDefClassObject(struct qemu_syscall *call);
+void qemu_SHCreateDefaultContextMenu(struct qemu_syscall *call);
 void qemu_SHCreateDirectory(struct qemu_syscall *call);
 void qemu_SHCreateDirectoryExA(struct qemu_syscall *call);
 void qemu_SHCreateDirectoryExW(struct qemu_syscall *call);
@@ -559,34 +624,13 @@ void qemu_SHDefExtractIconA(struct qemu_syscall *call);
 void qemu_SHDefExtractIconW(struct qemu_syscall *call);
 void qemu_SHDestroyPropSheetExtArray(struct qemu_syscall *call);
 void qemu_SHDoDragDrop(struct qemu_syscall *call);
-void qemu_SheChangeDirA(struct qemu_syscall *call);
-void qemu_SheChangeDirW(struct qemu_syscall *call);
-void qemu_SheGetDirA(struct qemu_syscall *call);
-void qemu_SheGetDirW(struct qemu_syscall *call);
-void qemu_shell32_243(struct qemu_syscall *call);
-void qemu_Shell_GetCachedImageIndexAW(struct qemu_syscall *call);
-void qemu_Shell_GetImageLists(struct qemu_syscall *call);
-void qemu_Shell_MergeMenus(struct qemu_syscall *call);
-void qemu_Shell_NotifyIconA(struct qemu_syscall *call);
-void qemu_Shell_NotifyIconW(struct qemu_syscall *call);
-void qemu_ShellAboutA(struct qemu_syscall *call);
-void qemu_ShellAboutW(struct qemu_syscall *call);
-void qemu_ShellDDEInit(struct qemu_syscall *call);
-void qemu_ShellExec_RunDLLA(struct qemu_syscall *call);
-void qemu_ShellExec_RunDLLW(struct qemu_syscall *call);
-void qemu_ShellExecuteA(struct qemu_syscall *call);
-void qemu_ShellExecuteExA(struct qemu_syscall *call);
-void qemu_ShellExecuteExW(struct qemu_syscall *call);
-void qemu_ShellExecuteW(struct qemu_syscall *call);
-void qemu_ShellHookProc(struct qemu_syscall *call);
-void qemu_ShellMessageBox(struct qemu_syscall *call);
 void qemu_SHEmptyRecycleBinA(struct qemu_syscall *call);
 void qemu_SHEmptyRecycleBinW(struct qemu_syscall *call);
 void qemu_SHEnumerateUnreadMailAccountsW(struct qemu_syscall *call);
 void qemu_SHFileOperationA(struct qemu_syscall *call);
 void qemu_SHFileOperationW(struct qemu_syscall *call);
-void qemu_SHFind_InitMenuPopup(struct qemu_syscall *call);
 void qemu_SHFindFiles(struct qemu_syscall *call);
+void qemu_SHFind_InitMenuPopup(struct qemu_syscall *call);
 void qemu_SHFlushClipboard(struct qemu_syscall *call);
 void qemu_SHFlushSFCache(struct qemu_syscall *call);
 void qemu_SHFormatDrive(struct qemu_syscall *call);
@@ -605,9 +649,9 @@ void qemu_SHGetFolderPathAndSubDirA(struct qemu_syscall *call);
 void qemu_SHGetFolderPathAndSubDirW(struct qemu_syscall *call);
 void qemu_SHGetFolderPathEx(struct qemu_syscall *call);
 void qemu_SHGetFolderPathW(struct qemu_syscall *call);
+void qemu_SHGetIDListFromObject(struct qemu_syscall *call);
 void qemu_SHGetIconOverlayIndexA(struct qemu_syscall *call);
 void qemu_SHGetIconOverlayIndexW(struct qemu_syscall *call);
-void qemu_SHGetIDListFromObject(struct qemu_syscall *call);
 void qemu_SHGetImageList(struct qemu_syscall *call);
 void qemu_SHGetInstanceExplorer(struct qemu_syscall *call);
 void qemu_SHGetItemFromDataObject(struct qemu_syscall *call);
@@ -663,13 +707,13 @@ void qemu_SHQueryRecycleBinW(struct qemu_syscall *call);
 void qemu_SHQueryUserNotificationState(struct qemu_syscall *call);
 void qemu_SHRegCloseKey(struct qemu_syscall *call);
 void qemu_SHRegDeleteKeyW(struct qemu_syscall *call);
-void qemu_SHRegisterDragDrop(struct qemu_syscall *call);
 void qemu_SHRegOpenKeyA(struct qemu_syscall *call);
 void qemu_SHRegOpenKeyW(struct qemu_syscall *call);
 void qemu_SHRegQueryValueA(struct qemu_syscall *call);
 void qemu_SHRegQueryValueExA(struct qemu_syscall *call);
 void qemu_SHRegQueryValueExW(struct qemu_syscall *call);
 void qemu_SHRegQueryValueW(struct qemu_syscall *call);
+void qemu_SHRegisterDragDrop(struct qemu_syscall *call);
 void qemu_SHRemoveLocalizedName(struct qemu_syscall *call);
 void qemu_SHReplaceFromPropSheetExtArray(struct qemu_syscall *call);
 void qemu_SHRestricted(struct qemu_syscall *call);
@@ -688,17 +732,40 @@ void qemu_SHUpdateRecycleBinIcon(struct qemu_syscall *call);
 void qemu_SHValidateUNC(struct qemu_syscall *call);
 void qemu_SHWaitForFileToOpen(struct qemu_syscall *call);
 void qemu_SHWinHelp(struct qemu_syscall *call);
+void qemu_SetAppStartingCursor(struct qemu_syscall *call);
+void qemu_SetCurrentProcessExplicitAppUserModelID(struct qemu_syscall *call);
+void qemu_SheChangeDirA(struct qemu_syscall *call);
+void qemu_SheChangeDirW(struct qemu_syscall *call);
+void qemu_SheGetDirA(struct qemu_syscall *call);
+void qemu_SheGetDirW(struct qemu_syscall *call);
+void qemu_ShellAboutA(struct qemu_syscall *call);
+void qemu_ShellAboutW(struct qemu_syscall *call);
+void qemu_ShellDDEInit(struct qemu_syscall *call);
+void qemu_ShellExec_RunDLLA(struct qemu_syscall *call);
+void qemu_ShellExec_RunDLLW(struct qemu_syscall *call);
+void qemu_ShellExecuteA(struct qemu_syscall *call);
+void qemu_ShellExecuteExA(struct qemu_syscall *call);
+void qemu_ShellExecuteExW(struct qemu_syscall *call);
+void qemu_ShellExecuteW(struct qemu_syscall *call);
+void qemu_ShellHookProc(struct qemu_syscall *call);
+void qemu_ShellMessageBox(struct qemu_syscall *call);
+void qemu_Shell_GetCachedImageIndexAW(struct qemu_syscall *call);
+void qemu_Shell_GetImageLists(struct qemu_syscall *call);
+void qemu_Shell_MergeMenus(struct qemu_syscall *call);
+void qemu_Shell_NotifyIconA(struct qemu_syscall *call);
+void qemu_Shell_NotifyIconW(struct qemu_syscall *call);
 void qemu_SignalFileOpen(struct qemu_syscall *call);
 void qemu_StrRetToStrNA(struct qemu_syscall *call);
 void qemu_StrRetToStrNAW(struct qemu_syscall *call);
 void qemu_StrRetToStrNW(struct qemu_syscall *call);
 void qemu_StrToOleStrAW(struct qemu_syscall *call);
 void qemu_StrToOleStrNAW(struct qemu_syscall *call);
+void qemu_WOWShellExecute(struct qemu_syscall *call);
 void qemu_Win32CreateDirectory(struct qemu_syscall *call);
 void qemu_Win32DeleteFile(struct qemu_syscall *call);
 void qemu_Win32RemoveDirectory(struct qemu_syscall *call);
-void qemu_WOWShellExecute(struct qemu_syscall *call);
 void qemu_WriteCabinetState(struct qemu_syscall *call);
+void qemu_shell32_243(struct qemu_syscall *call);
 
 DWORD (* WINAPI p_SHCLSIDFromString)(const void *clsid, CLSID *id);
 HRESULT (* WINAPI p_DllGetClassObject)(REFCLSID rclsid, REFIID iid, LPVOID *ppv);
@@ -738,6 +805,8 @@ BOOL (* WINAPI p_PathMatchSpec)(LPVOID name, LPVOID mask);
 void (* WINAPI p_PathRemoveExtension)(LPVOID lpszPath);
 BOOL (* WINAPI p_PathRemoveFileSpec)(LPVOID lpszPath);
 void (* WINAPI p_PathStripPath)(LPVOID lpszPath);
+
+struct qemu_shellfolder *qemu_shellfolder_host_create(IShellFolder2 *host);
 
 #endif
 
