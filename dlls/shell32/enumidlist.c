@@ -105,7 +105,7 @@ void qemu_IEnumIDList_AddRef(struct qemu_syscall *call)
     struct qemu_IEnumIDList_AddRef *c = (struct qemu_IEnumIDList_AddRef *)call;
     struct qemu_enumidlist *list;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     list = QEMU_G2H(c->iface);
 
     c->super.iret = IEnumIDList_AddRef(list->host);
@@ -139,10 +139,12 @@ void qemu_IEnumIDList_Release(struct qemu_syscall *call)
     struct qemu_IEnumIDList_Release *c = (struct qemu_IEnumIDList_Release *)call;
     struct qemu_enumidlist *list;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     list = QEMU_G2H(c->iface);
 
     c->super.iret = IEnumIDList_Release(list->host);
+    if (!c->super.iret)
+        HeapFree(GetProcessHeap(), 0, list);
 }
 
 #endif
