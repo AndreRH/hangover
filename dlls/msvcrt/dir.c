@@ -1338,7 +1338,7 @@ char * CDECL MSVCRT__fullpath(char * absPath, const char* relPath, unsigned int 
 void qemu__fullpath(struct qemu_syscall *call)
 {
     struct qemu__fullpath *c = (struct qemu__fullpath *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p__fullpath(QEMU_G2H(c->absPath), QEMU_G2H(c->relPath), c->size));
 }
 
