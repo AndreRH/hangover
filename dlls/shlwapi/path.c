@@ -218,7 +218,7 @@ WINBASEAPI LPWSTR WINAPI PathAddBackslashW(LPWSTR lpszPath)
 void qemu_PathAddBackslashW(struct qemu_syscall *call)
 {
     struct qemu_PathAddBackslashW *c = (struct qemu_PathAddBackslashW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)PathAddBackslashW(QEMU_G2H(c->lpszPath));
 }
 
@@ -1434,7 +1434,7 @@ WINBASEAPI BOOL WINAPI PathIsRelativeW (LPCWSTR lpszPath)
 void qemu_PathIsRelativeW(struct qemu_syscall *call)
 {
     struct qemu_PathIsRelativeW *c = (struct qemu_PathIsRelativeW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PathIsRelativeW(QEMU_G2H(c->lpszPath));
 }
 
@@ -2302,7 +2302,7 @@ WINBASEAPI BOOL WINAPI PathCanonicalizeW(LPWSTR lpszBuf, LPCWSTR lpszPath)
 void qemu_PathCanonicalizeW(struct qemu_syscall *call)
 {
     struct qemu_PathCanonicalizeW *c = (struct qemu_PathCanonicalizeW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = PathCanonicalizeW(QEMU_G2H(c->lpszBuf), QEMU_G2H(c->lpszPath));
 }
 
@@ -2332,7 +2332,7 @@ WINBASEAPI LPSTR WINAPI PathFindNextComponentA(LPCSTR lpszPath)
 void qemu_PathFindNextComponentA(struct qemu_syscall *call)
 {
     struct qemu_PathFindNextComponentA *c = (struct qemu_PathFindNextComponentA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)PathFindNextComponentA(QEMU_G2H(c->lpszPath));
 }
 
