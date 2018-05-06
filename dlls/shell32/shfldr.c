@@ -31,6 +31,7 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_shell32.h"
+#include "propertybag_wrapper.h"
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
@@ -1562,11 +1563,24 @@ void qemu_PersistPropertyBag_Load(struct qemu_syscall *call)
 {
     struct qemu_PersistPropertyBag_Load *c = (struct qemu_PersistPropertyBag_Load *)call;
     struct qemu_shellfolder *folder;
+    struct propertybag_wrapper *wrapper;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     folder = QEMU_G2H(c->iface);
 
-    c->super.iret = IPersistPropertyBag_Load(folder->host_bag, QEMU_G2H(c->pPropertyBag), QEMU_G2H(c->pErrorLog));
+    wrapper = propertybag_wrapper_create(c->pPropertyBag);
+    if (!wrapper)
+    {
+        WINE_WARN("Out of memory\n");
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+    if (c->pErrorLog)
+        WINE_FIXME("Error log %p not handled yet.\n", QEMU_G2H(c->pErrorLog));
+
+    c->super.iret = IPersistPropertyBag_Load(folder->host_bag, propertybag_wrapper_host_iface(wrapper), NULL);
+
+    propertybag_wrapper_destroy(wrapper);
 }
 
 #endif
