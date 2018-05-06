@@ -69,8 +69,40 @@ WINUSERAPI UINT WINAPI PrivateExtractIconsW (LPCWSTR lpwstrFile, int nIndex, int
 void qemu_PrivateExtractIconsW(struct qemu_syscall *call)
 {
     struct qemu_PrivateExtractIconsW *c = (struct qemu_PrivateExtractIconsW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = PrivateExtractIconsW(QEMU_G2H(c->lpwstrFile), c->nIndex, c->sizeX, c->sizeY, QEMU_G2H(c->phicon), QEMU_G2H(c->pIconId), c->nIcons, c->flags);
+    HICON stack[16], *icons = stack;
+    qemu_ptr *icons32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    icons = QEMU_G2H(c->phicon);
+#else
+    icons32 = QEMU_G2H(c->phicon);
+
+    if (!icons32)
+    {
+        icons = NULL;
+    }
+    else if (c->nIcons > sizeof(stack) / sizeof(*stack))
+    {
+        icons = HeapAlloc(GetProcessHeap(), 0, sizeof(*icons) * c->nIcons);
+    }
+#endif
+
+    c->super.iret = PrivateExtractIconsW(QEMU_G2H(c->lpwstrFile), c->nIndex, c->sizeX, c->sizeY,
+            icons, QEMU_G2H(c->pIconId), c->nIcons, c->flags);
+
+#if GUEST_BIT != HOST_BIT
+    if (icons)
+    {
+        UINT i;
+
+        for (i = 0; i < c->super.iret; ++i)
+            icons32[i] = QEMU_H2G(icons[i]);
+
+        if (icons != stack)
+            HeapFree(GetProcessHeap(), 0, icons);
+    }
+#endif
 }
 
 #endif
