@@ -18,9 +18,9 @@
 
 /* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
 
+#define COBJMACROS
 #include <windows.h>
 #include <stdio.h>
-#define COBJMACROS
 #include <shlobj.h>
 
 #include "windows-user-services.h"
@@ -31,8 +31,6 @@
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_shell32);
 #endif
-
-typedef void *LPFNCREATEINSTANCE;
 
 struct qemu_SHCoCreateInstance
 {
@@ -80,7 +78,238 @@ struct qemu_DllGetClassObject
     uint64_t ppv;
 };
 
+enum obj_init
+{
+    SHELLFOLDER,
+};
+
+typedef void * (*LPFNCREATEINSTANCE)(IUnknown *host);
+
+struct qemu_shell_cf
+{
+    /* Shared fields */
+    uint64_t            init_type;
+
+    /* Guest fields */
+    IClassFactory       IClassFactory_iface;
+
+    /* Host fields */
+    IClassFactory       *host;
+    LPFNCREATEINSTANCE  create;
+};
+
+struct qemu_cf_QueryInterface
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t iid;
+    uint64_t obj;
+};
+
 #ifdef QEMU_DLL_GUEST
+
+static inline struct qemu_shell_cf *impl_from_IClassFactory(IClassFactory *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_shell_cf, IClassFactory_iface);
+}
+
+WINBASEAPI HRESULT WINAPI qemu_cf_QueryInterface(IClassFactory *iface, const IID *iid, void **obj)
+{
+    struct qemu_cf_QueryInterface call;
+    struct qemu_shell_cf *cf = impl_from_IClassFactory(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_CF_QUERYINTERFACE);
+    call.iface = (ULONG_PTR)cf;
+    call.iid = (ULONG_PTR)iid;
+    call.obj = (ULONG_PTR)obj;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_cf_QueryInterface(struct qemu_syscall *call)
+{
+    struct qemu_cf_QueryInterface *c = (struct qemu_cf_QueryInterface *)call;
+    struct qemu_shell_cf *cf;
+
+    WINE_FIXME("Unverified!\n");
+    cf = QEMU_G2H(c->iface);
+
+    c->super.iret = IClassFactory_QueryInterface(cf->host, QEMU_G2H(c->iid), QEMU_G2H(c->obj));
+}
+
+#endif
+
+struct qemu_cf_AddRef
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI ULONG WINAPI qemu_cf_AddRef(IClassFactory *iface)
+{
+    struct qemu_cf_AddRef call;
+    struct qemu_shell_cf *cf = impl_from_IClassFactory(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_CF_ADDREF);
+    call.iface = (ULONG_PTR)cf;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_cf_AddRef(struct qemu_syscall *call)
+{
+    struct qemu_cf_AddRef *c = (struct qemu_cf_AddRef *)call;
+    struct qemu_shell_cf *cf;
+
+    WINE_TRACE("\n");
+    cf = QEMU_G2H(c->iface);
+
+    c->super.iret = IClassFactory_AddRef(cf->host);
+}
+
+#endif
+
+struct qemu_cf_Release
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI ULONG WINAPI qemu_cf_Release(IClassFactory *iface)
+{
+    struct qemu_cf_Release call;
+    struct qemu_shell_cf *cf = impl_from_IClassFactory(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_CF_RELEASE);
+    call.iface = (ULONG_PTR)cf;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_cf_Release(struct qemu_syscall *call)
+{
+    struct qemu_cf_Release *c = (struct qemu_cf_Release *)call;
+    struct qemu_shell_cf *cf;
+
+    WINE_TRACE("\n");
+    cf = QEMU_G2H(c->iface);
+
+    c->super.iret = IClassFactory_Release(cf->host);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying class factory %p.\n", cf);
+        HeapFree(GetProcessHeap(), 0, cf);
+    }
+}
+
+#endif
+
+struct qemu_cf_CreateInstance
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t unk_outer;
+    uint64_t iid;
+    uint64_t obj;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HRESULT WINAPI qemu_cf_CreateInstance(IClassFactory *iface, IUnknown *unk_outer, const IID *iid, void **obj)
+{
+    struct qemu_cf_CreateInstance call;
+    struct qemu_shell_cf *cf = impl_from_IClassFactory(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_CF_CREATEINSTANCE);
+    call.iface = (ULONG_PTR)cf;
+    call.unk_outer = (ULONG_PTR)unk_outer;
+    call.iid = (ULONG_PTR)iid;
+    call.obj = (ULONG_PTR)obj;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_cf_CreateInstance(struct qemu_syscall *call)
+{
+    struct qemu_cf_CreateInstance *c = (struct qemu_cf_CreateInstance *)call;
+    struct qemu_shell_cf *cf;
+
+    WINE_FIXME("Unverified!\n");
+    cf = QEMU_G2H(c->iface);
+
+    c->super.iret = IClassFactory_CreateInstance(cf->host, QEMU_G2H(c->unk_outer), QEMU_G2H(c->iid), QEMU_G2H(c->obj));
+}
+
+#endif
+
+struct qemu_cf_LockServer
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t lock;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HRESULT WINAPI qemu_cf_LockServer(IClassFactory *iface, BOOL lock)
+{
+    struct qemu_cf_LockServer call;
+    struct qemu_shell_cf *cf = impl_from_IClassFactory(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_CF_LOCKSERVER);
+    call.iface = (ULONG_PTR)cf;
+    call.lock = lock;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_cf_LockServer(struct qemu_syscall *call)
+{
+    struct qemu_cf_LockServer *c = (struct qemu_cf_LockServer *)call;
+    struct qemu_shell_cf *cf;
+
+    WINE_FIXME("Unverified!\n");
+    cf = QEMU_G2H(c->iface);
+
+    c->super.iret = IClassFactory_LockServer(cf->host, c->lock);
+}
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
+ const IClassFactoryVtbl class_factory_vtbl =
+{
+    qemu_cf_QueryInterface,
+    qemu_cf_AddRef,
+    qemu_cf_Release,
+    qemu_cf_CreateInstance,
+    qemu_cf_LockServer
+};
 
 WINBASEAPI HRESULT WINAPI DllGetClassObject(REFCLSID rclsid, REFIID iid, LPVOID *ppv)
 {
@@ -92,36 +321,109 @@ WINBASEAPI HRESULT WINAPI DllGetClassObject(REFCLSID rclsid, REFIID iid, LPVOID 
 
     qemu_syscall(&call.super);
 
+    if (SUCCEEDED(call.super.iret))
+    {
+        struct qemu_shell_cf *cf = (struct qemu_shell_cf *)(ULONG_PTR)call.ppv;
+        cf->IClassFactory_iface.lpVtbl = &class_factory_vtbl;
+        *ppv = &cf->IClassFactory_iface;
+    }
+
     return call.super.iret;
 }
 
 #else
+
+/* FIXME: Query them from host Shell32 somehow. */
+#include <initguid.h>
+DEFINE_GUID( CLSID_UnixFolder, 0xcc702eb2, 0x7dc5, 0x11d9, 0xc6, 0x87, 0x00, 0x04, 0x23, 0x8a, 0x01, 0xcd );
+DEFINE_GUID( CLSID_UnixDosFolder, 0x9d20aae8, 0x0625, 0x44b0, 0x9c, 0xa7, 0x71, 0x88, 0x9c, 0x22, 0x54, 0xd9 );
+
+static void *IShellFolder_Constructor(IUnknown *host)
+{
+}
+
+ const struct
+{
+    REFIID              clsid;
+    LPFNCREATEINSTANCE  lpfnCI;
+    enum obj_init       init;
+}
+InterfaceTable[] =
+{
+//     {&CLSID_ApplicationAssociationRegistration, ApplicationAssociationRegistration_Constructor},
+//     {&CLSID_ApplicationDestinations,            ApplicationDestinations_Constructor},
+//     {&CLSID_AutoComplete,                       IAutoComplete_Constructor},
+//     {&CLSID_ControlPanel,                       IControlPanel_Constructor},
+//     {&CLSID_DragDropHelper,                     IDropTargetHelper_Constructor},
+
+    {&CLSID_FolderShortcut,                     IShellFolder_Constructor,                           SHELLFOLDER},
+
+//     {&CLSID_MyComputer,                         ISF_MyComputer_Constructor},
+    {&CLSID_MyDocuments,                        IShellFolder_Constructor,                           SHELLFOLDER},
+//     {&CLSID_NetworkPlaces,                      ISF_NetworkPlaces_Constructor},
+//     {&CLSID_Printers,                           Printers_Constructor},
+//     {&CLSID_QueryAssociations,                  QueryAssociations_Constructor},
+//     {&CLSID_RecycleBin,                         RecycleBin_Constructor},
+    {&CLSID_ShellDesktop,                       IShellFolder_Constructor,                           SHELLFOLDER},
+//     {&CLSID_ShellFSFolder,                      IFSFolder_Constructor},
+//     {&CLSID_ShellItem,                          IShellItem_Constructor},
+//     {&CLSID_ShellLink,                          IShellLink_Constructor},
+    {&CLSID_UnixDosFolder,                      IShellFolder_Constructor,                           SHELLFOLDER},
+    {&CLSID_UnixFolder,                         IShellFolder_Constructor,                           SHELLFOLDER},
+//     {&CLSID_ExplorerBrowser,                    ExplorerBrowser_Constructor},
+//     {&CLSID_KnownFolderManager,                 KnownFolderManager_Constructor},
+//     {&CLSID_Shell,                              IShellDispatch_Constructor},
+//     {&CLSID_DestinationList,                    CustomDestinationList_Constructor},
+//     {&CLSID_ShellImageDataFactory,              ShellImageDataFactory_Constructor},
+    {NULL, NULL, 0}
+};
 
 void qemu_DllGetClassObject(struct qemu_syscall *call)
 {
     struct qemu_DllGetClassObject *c = (struct qemu_DllGetClassObject *)call;
     HRESULT hr;
     CLSID *rclsid;
-    IID *iid;
-    IUnknown *unk = NULL;
+    const IID *iid;
+    IClassFactory *host = NULL;
+    struct qemu_shell_cf *cf = NULL;
+    unsigned int i;
 
     WINE_TRACE("\n");
     rclsid = QEMU_G2H(c->rclsid);
     iid = QEMU_G2H(c->iid);
 
-    hr = p_DllGetClassObject(rclsid, iid, c->ppv ? (void **)&unk : NULL);
+    hr = p_DllGetClassObject(rclsid, &IID_IClassFactory, c->ppv ? (void **)&host : NULL);
+    c->super.iret = hr;
     if (FAILED(hr))
     {
-        c->super.iret = hr;
-        if (c->ppv)
-            *(uint64_t *)QEMU_G2H(c->ppv) = QEMU_H2G(unk);
+        c->ppv = 0;
         return;
     }
 
-    WINE_FIXME("Implement a wrapper for object %s!\n", wine_dbgstr_guid(QEMU_G2H(c->rclsid)));
+    for(i = 0; InterfaceTable[i].clsid; ++i)
+    {
+        if(IsEqualIID(InterfaceTable[i].clsid, rclsid))
+        {
+            WINE_TRACE("index[%u]\n", i);
+            cf = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*cf));
+            cf->host = host;
+            cf->init_type = InterfaceTable[i].init;
+            cf->create = InterfaceTable[i].lpfnCI;
+            break;
+        }
+    }
 
-    c->super.iret = E_FAIL;
-    *(uint64_t *)QEMU_G2H(c->ppv) = 0;
+    if (!cf)
+    {
+        WINE_FIXME("Implement wrapper for interface %p.\n", wine_dbgstr_guid(rclsid));
+        c->super.iret = CLASS_E_CLASSNOTAVAILABLE;
+        c->ppv = 0;
+        IClassFactory_Release(host);
+        return;
+    }
+
+    WINE_TRACE("Created class factory %p.\n", cf);
+    c->ppv = QEMU_H2G(cf);
     return;
 }
 

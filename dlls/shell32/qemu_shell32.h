@@ -8,6 +8,11 @@ enum shell32_calls
     CALL_ARRANGEWINDOWS = 0,
     CALL_CALLCPLENTRY16,
     CALL_CDEFFOLDERMENU_CREATE2,
+    CALL_CF_ADDREF,
+    CALL_CF_CREATEINSTANCE,
+    CALL_CF_LOCKSERVER,
+    CALL_CF_QUERYINTERFACE,
+    CALL_CF_RELEASE,
     CALL_CHECKESCAPESA,
     CALL_CHECKESCAPESW,
     CALL_CIDLDATA_CREATEFROMIDARRAY,
@@ -789,6 +794,11 @@ void qemu_Win32CreateDirectory(struct qemu_syscall *call);
 void qemu_Win32DeleteFile(struct qemu_syscall *call);
 void qemu_Win32RemoveDirectory(struct qemu_syscall *call);
 void qemu_WriteCabinetState(struct qemu_syscall *call);
+void qemu_cf_AddRef(struct qemu_syscall *call);
+void qemu_cf_CreateInstance(struct qemu_syscall *call);
+void qemu_cf_LockServer(struct qemu_syscall *call);
+void qemu_cf_QueryInterface(struct qemu_syscall *call);
+void qemu_cf_Release(struct qemu_syscall *call);
 void qemu_shell32_243(struct qemu_syscall *call);
 
 DWORD (* WINAPI p_SHCLSIDFromString)(const void *clsid, CLSID *id);
