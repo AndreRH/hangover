@@ -114,12 +114,14 @@ enum shell32_calls
     CALL_ILSAVETOSTREAM,
     CALL_INITNETWORKADDRESSCONTROL,
     CALL_INVALIDATEDRIVETYPE,
-    CALL_IPERSISTFOLDER2_ADDREF,
-    CALL_IPERSISTFOLDER2_GETCLASSID,
-    CALL_IPERSISTFOLDER2_GETCURFOLDER,
-    CALL_IPERSISTFOLDER2_INITIALIZE,
-    CALL_IPERSISTFOLDER2_QUERYINTERFACE,
-    CALL_IPERSISTFOLDER2_RELEASE,
+    CALL_IPERSISTFOLDER3_ADDREF,
+    CALL_IPERSISTFOLDER3_GETCLASSID,
+    CALL_IPERSISTFOLDER3_GETCURFOLDER,
+    CALL_IPERSISTFOLDER3_GETFOLDERTARGETINFO,
+    CALL_IPERSISTFOLDER3_INITIALIZE,
+    CALL_IPERSISTFOLDER3_INITIALIZEEX,
+    CALL_IPERSISTFOLDER3_QUERYINTERFACE,
+    CALL_IPERSISTFOLDER3_RELEASE,
     CALL_ISHELLFOLDER2_ADDREF,
     CALL_ISHELLFOLDER2_BINDTOOBJECT,
     CALL_ISHELLFOLDER2_BINDTOSTORAGE,
@@ -388,15 +390,20 @@ enum shell32_calls
     CALL_WRITECABINETSTATE,
 };
 
+#define SHELLFOLDER_HAS_PERSISTFOLDER3      0x1
+
 struct qemu_shellfolder
 {
+    /* Shared fields */
+    uint64_t            flags;
+
     /* Guest fields */
     IShellFolder2       IShellFolder2_iface;
-    IPersistFolder2     IPersistFolder2_iface;
+    IPersistFolder3     IPersistFolder3_iface;
 
     /* Host fields */
     IShellFolder2       *host_sf;
-    IPersistFolder2     *host_pf;
+    IPersistFolder3     *host_pf;
 };
 
 struct qemu_enumidlist
@@ -519,12 +526,14 @@ void qemu_ILIsParent(struct qemu_syscall *call);
 void qemu_ILLoadFromStream(struct qemu_syscall *call);
 void qemu_ILRemoveLastID(struct qemu_syscall *call);
 void qemu_ILSaveToStream(struct qemu_syscall *call);
-void qemu_IPersistFolder2_AddRef(struct qemu_syscall *call);
-void qemu_IPersistFolder2_GetClassID(struct qemu_syscall *call);
-void qemu_IPersistFolder2_GetCurFolder(struct qemu_syscall *call);
-void qemu_IPersistFolder2_Initialize(struct qemu_syscall *call);
-void qemu_IPersistFolder2_QueryInterface(struct qemu_syscall *call);
-void qemu_IPersistFolder2_Release(struct qemu_syscall *call);
+void qemu_IPersistFolder3_AddRef(struct qemu_syscall *call);
+void qemu_IPersistFolder3_GetClassID(struct qemu_syscall *call);
+void qemu_IPersistFolder3_GetCurFolder(struct qemu_syscall *call);
+void qemu_IPersistFolder3_GetFolderTargetInfo(struct qemu_syscall *call);
+void qemu_IPersistFolder3_Initialize(struct qemu_syscall *call);
+void qemu_IPersistFolder3_InitializeEx(struct qemu_syscall *call);
+void qemu_IPersistFolder3_QueryInterface(struct qemu_syscall *call);
+void qemu_IPersistFolder3_Release(struct qemu_syscall *call);
 void qemu_IShellFolder2_AddRef(struct qemu_syscall *call);
 void qemu_IShellFolder2_BindToObject(struct qemu_syscall *call);
 void qemu_IShellFolder2_BindToStorage(struct qemu_syscall *call);

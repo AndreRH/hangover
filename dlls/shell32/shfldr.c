@@ -51,9 +51,9 @@ static inline struct qemu_shellfolder *impl_from_IShellFolder2(IShellFolder2 *if
     return CONTAINING_RECORD(iface, struct qemu_shellfolder, IShellFolder2_iface);
 }
 
-static inline struct qemu_shellfolder *impl_from_IPersistFolder2( IPersistFolder2 *iface )
+static inline struct qemu_shellfolder *impl_from_IPersistFolder3( IPersistFolder3 *iface )
 {
-    return CONTAINING_RECORD(iface, struct qemu_shellfolder, IPersistFolder2_iface);
+    return CONTAINING_RECORD(iface, struct qemu_shellfolder, IPersistFolder3_iface);
 }
 
 static HRESULT WINAPI qemu_shellfolder_QueryInterface(IShellFolder2 *iface, const IID *iid, void **obj)
@@ -67,16 +67,17 @@ static HRESULT WINAPI qemu_shellfolder_QueryInterface(IShellFolder2 *iface, cons
 
     qemu_syscall(&call.super);
 
-    if (IsEqualGUID(iid, &IID_IUnknown)
-            || IsEqualGUID(iid, &IID_IShellFolder)
-            || IsEqualGUID(iid, &IID_IShellFolder2))
+    if (IsEqualGUID(iid, &IID_IUnknown) || IsEqualGUID(iid, &IID_IShellFolder) || IsEqualGUID(iid, &IID_IShellFolder2))
     {
         *obj = &folder->IShellFolder2_iface;
     }
-    else if (IsEqualGUID(iid, &IID_IPersistFolder)
-            || IsEqualGUID(iid, &IID_IPersistFolder2))
+    else if (IsEqualGUID(iid, &IID_IPersistFolder) || IsEqualGUID(iid, &IID_IPersistFolder2))
     {
-        *obj = &folder->IPersistFolder2_iface;
+        *obj = &folder->IPersistFolder3_iface;
+    }
+    else if (IsEqualGUID(iid, &IID_IPersistFolder3) && folder->flags & SHELLFOLDER_HAS_PERSISTFOLDER3)
+    {
+        *obj = &folder->IPersistFolder3_iface;
     }
     else if (SUCCEEDED(call.super.iret))
     {
@@ -1023,7 +1024,7 @@ void qemu_IShellFolder2_MapColumnToSCID(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_IPersistFolder2_QueryInterface
+struct qemu_IPersistFolder3_QueryInterface
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -1033,12 +1034,12 @@ struct qemu_IPersistFolder2_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI qemu_persistfolder_QueryInterface(IPersistFolder2 *iface, REFIID riid, LPVOID *ppvObj)
+static HRESULT WINAPI qemu_persistfolder_QueryInterface(IPersistFolder3 *iface, REFIID riid, LPVOID *ppvObj)
 {
-    struct qemu_IPersistFolder2_QueryInterface call;
-    struct qemu_shellfolder *folder = impl_from_IPersistFolder2(iface);
+    struct qemu_IPersistFolder3_QueryInterface call;
+    struct qemu_shellfolder *folder = impl_from_IPersistFolder3(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_IPERSISTFOLDER2_QUERYINTERFACE);
+    call.super.id = QEMU_SYSCALL_ID(CALL_IPERSISTFOLDER3_QUERYINTERFACE);
     call.iface = (ULONG_PTR)folder;
     call.riid = (ULONG_PTR)riid;
     call.ppvObj = (ULONG_PTR)ppvObj;
@@ -1050,20 +1051,20 @@ static HRESULT WINAPI qemu_persistfolder_QueryInterface(IPersistFolder2 *iface, 
 
 #else
 
-void qemu_IPersistFolder2_QueryInterface(struct qemu_syscall *call)
+void qemu_IPersistFolder3_QueryInterface(struct qemu_syscall *call)
 {
-    struct qemu_IPersistFolder2_QueryInterface *c = (struct qemu_IPersistFolder2_QueryInterface *)call;
+    struct qemu_IPersistFolder3_QueryInterface *c = (struct qemu_IPersistFolder3_QueryInterface *)call;
     struct qemu_shellfolder *folder;
 
     WINE_FIXME("Unverified!\n");
     folder = QEMU_G2H(c->iface);
 
-    c->super.iret = IPersistFolder2_QueryInterface(folder->host_pf, QEMU_G2H(c->riid), QEMU_G2H(c->ppvObj));
+    c->super.iret = IPersistFolder3_QueryInterface(folder->host_pf, QEMU_G2H(c->riid), QEMU_G2H(c->ppvObj));
 }
 
 #endif
 
-struct qemu_IPersistFolder2_AddRef
+struct qemu_IPersistFolder3_AddRef
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -1071,12 +1072,12 @@ struct qemu_IPersistFolder2_AddRef
 
 #ifdef QEMU_DLL_GUEST
 
-static ULONG WINAPI qemu_persistfolder_AddRef(IPersistFolder2 *iface)
+static ULONG WINAPI qemu_persistfolder_AddRef(IPersistFolder3 *iface)
 {
-    struct qemu_IPersistFolder2_AddRef call;
-    struct qemu_shellfolder *folder = impl_from_IPersistFolder2(iface);
+    struct qemu_IPersistFolder3_AddRef call;
+    struct qemu_shellfolder *folder = impl_from_IPersistFolder3(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_IPERSISTFOLDER2_ADDREF);
+    call.super.id = QEMU_SYSCALL_ID(CALL_IPERSISTFOLDER3_ADDREF);
     call.iface = (ULONG_PTR)folder;
 
     qemu_syscall(&call.super);
@@ -1086,20 +1087,20 @@ static ULONG WINAPI qemu_persistfolder_AddRef(IPersistFolder2 *iface)
 
 #else
 
-void qemu_IPersistFolder2_AddRef(struct qemu_syscall *call)
+void qemu_IPersistFolder3_AddRef(struct qemu_syscall *call)
 {
-    struct qemu_IPersistFolder2_AddRef *c = (struct qemu_IPersistFolder2_AddRef *)call;
+    struct qemu_IPersistFolder3_AddRef *c = (struct qemu_IPersistFolder3_AddRef *)call;
     struct qemu_shellfolder *folder;
 
     WINE_FIXME("Unverified!\n");
     folder = QEMU_G2H(c->iface);
 
-    c->super.iret = IPersistFolder2_AddRef(folder->host_pf);
+    c->super.iret = IPersistFolder3_AddRef(folder->host_pf);
 }
 
 #endif
 
-struct qemu_IPersistFolder2_Release
+struct qemu_IPersistFolder3_Release
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -1107,12 +1108,12 @@ struct qemu_IPersistFolder2_Release
 
 #ifdef QEMU_DLL_GUEST
 
-static ULONG WINAPI qemu_persistfolder_Release(IPersistFolder2 *iface)
+static ULONG WINAPI qemu_persistfolder_Release(IPersistFolder3 *iface)
 {
-    struct qemu_IPersistFolder2_Release call;
-    struct qemu_shellfolder *folder = impl_from_IPersistFolder2(iface);
+    struct qemu_IPersistFolder3_Release call;
+    struct qemu_shellfolder *folder = impl_from_IPersistFolder3(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_IPERSISTFOLDER2_RELEASE);
+    call.super.id = QEMU_SYSCALL_ID(CALL_IPERSISTFOLDER3_RELEASE);
     call.iface = (ULONG_PTR)folder;
 
     qemu_syscall(&call.super);
@@ -1122,15 +1123,15 @@ static ULONG WINAPI qemu_persistfolder_Release(IPersistFolder2 *iface)
 
 #else
 
-void qemu_IPersistFolder2_Release(struct qemu_syscall *call)
+void qemu_IPersistFolder3_Release(struct qemu_syscall *call)
 {
-    struct qemu_IPersistFolder2_Release *c = (struct qemu_IPersistFolder2_Release *)call;
+    struct qemu_IPersistFolder3_Release *c = (struct qemu_IPersistFolder3_Release *)call;
     struct qemu_shellfolder *folder;
 
     WINE_TRACE("\n");
     folder = QEMU_G2H(c->iface);
 
-    c->super.iret = IPersistFolder2_Release(folder->host_pf);
+    c->super.iret = IPersistFolder3_Release(folder->host_pf);
     if (!c->super.iret)
     {
         WINE_TRACE("Freeing Shell folder wrapper %p.\n", folder);
@@ -1140,7 +1141,7 @@ void qemu_IPersistFolder2_Release(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_IPersistFolder2_GetClassID
+struct qemu_IPersistFolder3_GetClassID
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -1149,12 +1150,12 @@ struct qemu_IPersistFolder2_GetClassID
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI qemu_persistfolder_GetClassID(IPersistFolder2 *iface, CLSID *clsid)
+static HRESULT WINAPI qemu_persistfolder_GetClassID(IPersistFolder3 *iface, CLSID *clsid)
 {
-    struct qemu_IPersistFolder2_GetClassID call;
-    struct qemu_shellfolder *folder = impl_from_IPersistFolder2(iface);
+    struct qemu_IPersistFolder3_GetClassID call;
+    struct qemu_shellfolder *folder = impl_from_IPersistFolder3(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_IPERSISTFOLDER2_GETCLASSID);
+    call.super.id = QEMU_SYSCALL_ID(CALL_IPERSISTFOLDER3_GETCLASSID);
     call.iface = (ULONG_PTR)folder;
     call.clsid = (ULONG_PTR)clsid;
 
@@ -1165,20 +1166,20 @@ static HRESULT WINAPI qemu_persistfolder_GetClassID(IPersistFolder2 *iface, CLSI
 
 #else
 
-void qemu_IPersistFolder2_GetClassID(struct qemu_syscall *call)
+void qemu_IPersistFolder3_GetClassID(struct qemu_syscall *call)
 {
-    struct qemu_IPersistFolder2_GetClassID *c = (struct qemu_IPersistFolder2_GetClassID *)call;
+    struct qemu_IPersistFolder3_GetClassID *c = (struct qemu_IPersistFolder3_GetClassID *)call;
     struct qemu_shellfolder *folder;
 
     WINE_FIXME("Unverified!\n");
     folder = QEMU_G2H(c->iface);
 
-    c->super.iret = IPersistFolder2_GetClassID(folder->host_pf, QEMU_G2H(c->clsid));
+    c->super.iret = IPersistFolder3_GetClassID(folder->host_pf, QEMU_G2H(c->clsid));
 }
 
 #endif
 
-struct qemu_IPersistFolder2_Initialize
+struct qemu_IPersistFolder3_Initialize
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -1187,12 +1188,12 @@ struct qemu_IPersistFolder2_Initialize
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI qemu_persistfolder_Initialize(IPersistFolder2 *iface, LPCITEMIDLIST pidl)
+static HRESULT WINAPI qemu_persistfolder_Initialize(IPersistFolder3 *iface, LPCITEMIDLIST pidl)
 {
-    struct qemu_IPersistFolder2_Initialize call;
-    struct qemu_shellfolder *folder = impl_from_IPersistFolder2(iface);
+    struct qemu_IPersistFolder3_Initialize call;
+    struct qemu_shellfolder *folder = impl_from_IPersistFolder3(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_IPERSISTFOLDER2_INITIALIZE);
+    call.super.id = QEMU_SYSCALL_ID(CALL_IPERSISTFOLDER3_INITIALIZE);
     call.iface = (ULONG_PTR)folder;
     call.pidl = (ULONG_PTR)pidl;
 
@@ -1203,20 +1204,20 @@ static HRESULT WINAPI qemu_persistfolder_Initialize(IPersistFolder2 *iface, LPCI
 
 #else
 
-void qemu_IPersistFolder2_Initialize(struct qemu_syscall *call)
+void qemu_IPersistFolder3_Initialize(struct qemu_syscall *call)
 {
-    struct qemu_IPersistFolder2_Initialize *c = (struct qemu_IPersistFolder2_Initialize *)call;
+    struct qemu_IPersistFolder3_Initialize *c = (struct qemu_IPersistFolder3_Initialize *)call;
     struct qemu_shellfolder *folder;
 
     WINE_FIXME("Unverified!\n");
     folder = QEMU_G2H(c->iface);
 
-    c->super.iret = IPersistFolder2_Initialize(folder->host_pf, QEMU_G2H(c->pidl));
+    c->super.iret = IPersistFolder3_Initialize(folder->host_pf, QEMU_G2H(c->pidl));
 }
 
 #endif
 
-struct qemu_IPersistFolder2_GetCurFolder
+struct qemu_IPersistFolder3_GetCurFolder
 {
     struct qemu_syscall super;
     uint64_t iface;
@@ -1225,12 +1226,12 @@ struct qemu_IPersistFolder2_GetCurFolder
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI qemu_persistfolder_GetCurFolder(IPersistFolder2 *iface, LPITEMIDLIST *ppidl)
+static HRESULT WINAPI qemu_persistfolder_GetCurFolder(IPersistFolder3 *iface, LPITEMIDLIST *ppidl)
 {
-    struct qemu_IPersistFolder2_GetCurFolder call;
-    struct qemu_shellfolder *folder = impl_from_IPersistFolder2(iface);
+    struct qemu_IPersistFolder3_GetCurFolder call;
+    struct qemu_shellfolder *folder = impl_from_IPersistFolder3(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_IPERSISTFOLDER2_GETCURFOLDER);
+    call.super.id = QEMU_SYSCALL_ID(CALL_IPERSISTFOLDER3_GETCURFOLDER);
     call.iface = (ULONG_PTR)folder;
     call.ppidl = (ULONG_PTR)ppidl;
 
@@ -1241,15 +1242,96 @@ static HRESULT WINAPI qemu_persistfolder_GetCurFolder(IPersistFolder2 *iface, LP
 
 #else
 
-void qemu_IPersistFolder2_GetCurFolder(struct qemu_syscall *call)
+void qemu_IPersistFolder3_GetCurFolder(struct qemu_syscall *call)
 {
-    struct qemu_IPersistFolder2_GetCurFolder *c = (struct qemu_IPersistFolder2_GetCurFolder *)call;
+    struct qemu_IPersistFolder3_GetCurFolder *c = (struct qemu_IPersistFolder3_GetCurFolder *)call;
     struct qemu_shellfolder *folder;
 
     WINE_FIXME("Unverified!\n");
     folder = QEMU_G2H(c->iface);
 
-    c->super.iret = IPersistFolder2_GetCurFolder(folder->host_pf, QEMU_G2H(c->ppidl));
+    c->super.iret = IPersistFolder3_GetCurFolder(folder->host_pf, QEMU_G2H(c->ppidl));
+}
+
+#endif
+
+struct qemu_IPersistFolder3_InitializeEx
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t pbc;
+    uint64_t pidlRoot;
+    uint64_t ppfti;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static HRESULT WINAPI qemu_persistfolder_InitializeEx(IPersistFolder3 *iface, IBindCtx *pbc,
+        LPCITEMIDLIST pidlRoot, const PERSIST_FOLDER_TARGET_INFO *ppfti)
+{
+    struct qemu_IPersistFolder3_InitializeEx call;
+    struct qemu_shellfolder *folder = impl_from_IPersistFolder3(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_IPERSISTFOLDER3_INITIALIZEEX);
+    call.iface = (ULONG_PTR)folder;
+    call.pbc = (ULONG_PTR)pbc;
+    call.pidlRoot = (ULONG_PTR)pidlRoot;
+    call.ppfti = (ULONG_PTR)ppfti;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_IPersistFolder3_InitializeEx(struct qemu_syscall *call)
+{
+    struct qemu_IPersistFolder3_InitializeEx *c = (struct qemu_IPersistFolder3_InitializeEx *)call;
+    struct qemu_shellfolder *folder;
+
+    WINE_FIXME("Unverified!\n");
+    folder = QEMU_G2H(c->iface);
+
+    c->super.iret = IPersistFolder3_InitializeEx(folder->host_pf, QEMU_G2H(c->pbc), QEMU_G2H(c->pidlRoot), QEMU_G2H(c->ppfti));
+}
+
+#endif
+
+struct qemu_IPersistFolder3_GetFolderTargetInfo
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t ppfti;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static HRESULT WINAPI qemu_persistfolder_GetFolderTargetInfo(IPersistFolder3 *iface, PERSIST_FOLDER_TARGET_INFO *ppfti)
+{
+    struct qemu_IPersistFolder3_GetFolderTargetInfo call;
+    struct qemu_shellfolder *folder = impl_from_IPersistFolder3(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_IPERSISTFOLDER3_GETFOLDERTARGETINFO);
+    call.iface = (ULONG_PTR)folder;
+    call.ppfti = (ULONG_PTR)ppfti;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_IPersistFolder3_GetFolderTargetInfo(struct qemu_syscall *call)
+{
+    struct qemu_IPersistFolder3_GetFolderTargetInfo *c = (struct qemu_IPersistFolder3_GetFolderTargetInfo *)call;
+    struct qemu_shellfolder *folder;
+
+    WINE_FIXME("Unverified!\n");
+    folder = QEMU_G2H(c->iface);
+
+    c->super.iret = IPersistFolder3_GetFolderTargetInfo(folder->host_pf, QEMU_G2H(c->ppfti));
 }
 
 #endif
@@ -1281,20 +1363,22 @@ static const IShellFolder2Vtbl vtbl_ShellFolder2 =
     qemu_shellfolder_MapColumnToSCID
 };
 
-static const IPersistFolder2Vtbl vtbl_PersistFolder2 =
+static const IPersistFolder3Vtbl vtbl_PersistFolder3 =
 {
     qemu_persistfolder_QueryInterface,
     qemu_persistfolder_AddRef,
     qemu_persistfolder_Release,
     qemu_persistfolder_GetClassID,
     qemu_persistfolder_Initialize,
-    qemu_persistfolder_GetCurFolder
+    qemu_persistfolder_GetCurFolder,
+    qemu_persistfolder_InitializeEx,
+    qemu_persistfolder_GetFolderTargetInfo,
 };
 
 void qemu_shellfolder_guest_init(struct qemu_shellfolder *folder)
 {
     folder->IShellFolder2_iface.lpVtbl = &vtbl_ShellFolder2;
-    folder->IPersistFolder2_iface.lpVtbl = &vtbl_PersistFolder2;
+    folder->IPersistFolder3_iface.lpVtbl = &vtbl_PersistFolder3;
 }
 
 #else
@@ -1314,9 +1398,16 @@ struct qemu_shellfolder *qemu_shellfolder_host_create(IShellFolder2 *host)
         return NULL;
 
     folder->host_sf = host;
-    IShellFolder2_QueryInterface(host, &IID_IPersistFolder2, (void **)&folder->host_pf);
+    IShellFolder2_QueryInterface(host, &IID_IPersistFolder3, (void **)&folder->host_pf);
+
+    /* Not all host shell folders implement IPersistFolder3. */
+    if (!folder->host_pf)
+        IShellFolder2_QueryInterface(host, &IID_IPersistFolder2, (void **)&folder->host_pf);
+    else
+        folder->flags |= SHELLFOLDER_HAS_PERSISTFOLDER3;
+
     /* The wrapper does not have its own refcount, don't hold references to the inteface ourselves. */
-    IPersistFolder2_Release(folder->host_pf);
+    IPersistFolder3_Release(folder->host_pf);
 
     if (!shellfolder_desktop)
     {
