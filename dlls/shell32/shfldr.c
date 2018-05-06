@@ -1181,7 +1181,7 @@ void qemu_IPersistFolder3_GetClassID(struct qemu_syscall *call)
     struct qemu_IPersistFolder3_GetClassID *c = (struct qemu_IPersistFolder3_GetClassID *)call;
     struct qemu_shellfolder *folder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     folder = QEMU_G2H(c->iface);
 
     c->super.iret = IPersistFolder3_GetClassID(folder->host_pf, QEMU_G2H(c->clsid));
