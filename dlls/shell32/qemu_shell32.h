@@ -190,12 +190,9 @@ enum shell32_calls
     CALL_PATHSTRIPTOROOTAW,
     CALL_PATHUNQUOTESPACESAW,
     CALL_PATHYETANOTHERMAKEUNIQUENAME,
-    CALL_PERSISTPROPERTYBAG_ADDREF,
     CALL_PERSISTPROPERTYBAG_GETCLASSID,
     CALL_PERSISTPROPERTYBAG_INITNEW,
     CALL_PERSISTPROPERTYBAG_LOAD,
-    CALL_PERSISTPROPERTYBAG_QUERYINTERFACE,
-    CALL_PERSISTPROPERTYBAG_RELEASE,
     CALL_PERSISTPROPERTYBAG_SAVE,
     CALL_PICKICONDLG,
     CALL_PRINTER_LOADICONSW,
@@ -615,12 +612,9 @@ void qemu_PathStripPathAW(struct qemu_syscall *call);
 void qemu_PathStripToRootAW(struct qemu_syscall *call);
 void qemu_PathUnquoteSpacesAW(struct qemu_syscall *call);
 void qemu_PathYetAnotherMakeUniqueName(struct qemu_syscall *call);
-void qemu_PersistPropertyBag_AddRef(struct qemu_syscall *call);
 void qemu_PersistPropertyBag_GetClassID(struct qemu_syscall *call);
 void qemu_PersistPropertyBag_InitNew(struct qemu_syscall *call);
 void qemu_PersistPropertyBag_Load(struct qemu_syscall *call);
-void qemu_PersistPropertyBag_QueryInterface(struct qemu_syscall *call);
-void qemu_PersistPropertyBag_Release(struct qemu_syscall *call);
 void qemu_PersistPropertyBag_Save(struct qemu_syscall *call);
 void qemu_PickIconDlg(struct qemu_syscall *call);
 void qemu_Printer_LoadIconsW(struct qemu_syscall *call);

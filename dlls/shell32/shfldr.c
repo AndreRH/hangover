@@ -1346,114 +1346,24 @@ void qemu_IPersistFolder3_GetFolderTargetInfo(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_PersistPropertyBag_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t iid;
-    uint64_t obj;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI qemu_property_bag_QueryInterface(IPersistPropertyBag* iface, REFIID iid, void **obj)
 {
-    struct qemu_PersistPropertyBag_QueryInterface call;
     struct qemu_shellfolder *folder = impl_from_IPersistPropertyBag(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_PERSISTPROPERTYBAG_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)folder;
-    call.iid = (ULONG_PTR)iid;
-    call.obj = (ULONG_PTR)obj;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_shellfolder_QueryInterface(&folder->IShellFolder2_iface, iid, obj);
 }
-
-#else
-
-void qemu_PersistPropertyBag_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_PersistPropertyBag_QueryInterface *c = (struct qemu_PersistPropertyBag_QueryInterface *)call;
-    struct qemu_shellfolder *folder;
-
-    WINE_FIXME("Unverified!\n");
-    folder = QEMU_G2H(c->iface);
-
-    c->super.iret = IPersistPropertyBag_QueryInterface(folder->host_bag, QEMU_G2H(c->iid), QEMU_G2H(c->obj));
-}
-
-#endif
-
-struct qemu_PersistPropertyBag_AddRef
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI qemu_property_bag_AddRef(IPersistPropertyBag* iface)
 {
-    struct qemu_PersistPropertyBag_AddRef call;
     struct qemu_shellfolder *folder = impl_from_IPersistPropertyBag(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_PERSISTPROPERTYBAG_ADDREF);
-    call.iface = (ULONG_PTR)folder;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return qemu_shellfolder_AddRef(&folder->IShellFolder2_iface);
 }
-
-#else
-
-void qemu_PersistPropertyBag_AddRef(struct qemu_syscall *call)
-{
-    struct qemu_PersistPropertyBag_AddRef *c = (struct qemu_PersistPropertyBag_AddRef *)call;
-    struct qemu_shellfolder *folder;
-
-    WINE_FIXME("Unverified!\n");
-    folder = QEMU_G2H(c->iface);
-
-    c->super.iret = IPersistPropertyBag_AddRef(folder->host_bag);
-}
-
-#endif
-
-struct qemu_PersistPropertyBag_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI qemu_property_bag_Release(IPersistPropertyBag* iface)
 {
-    struct qemu_PersistPropertyBag_Release call;
     struct qemu_shellfolder *folder = impl_from_IPersistPropertyBag(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_PERSISTPROPERTYBAG_RELEASE);
-    call.iface = (ULONG_PTR)folder;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_PersistPropertyBag_Release(struct qemu_syscall *call)
-{
-    struct qemu_PersistPropertyBag_Release *c = (struct qemu_PersistPropertyBag_Release *)call;
-    struct qemu_shellfolder *folder;
-
-    WINE_FIXME("Unverified!\n");
-    folder = QEMU_G2H(c->iface);
-
-    c->super.iret = IPersistPropertyBag_Release(folder->host_bag);
+    return qemu_shellfolder_Release(&folder->IShellFolder2_iface);
 }
 
 #endif
