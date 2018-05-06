@@ -1104,6 +1104,7 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             msg_out->lParam = (LPARAM)wndproc_guest_to_host(msg_in->lParam);
             break;
 
+#if 0
         case LVM_SORTITEMS:
         case LVM_SORTITEMSEX:
         {
@@ -1121,6 +1122,7 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             msg_out->lParam = (LPARAM)LVM_SORTITEMS_host_cb;
             break;
         }
+#endif
 
 #if HOST_BIT != GUEST_BIT
         case WM_CREATE:
@@ -1186,6 +1188,7 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             msg_out->wParam = (LONG)msg_in->wParam;
             break;
 
+#if 0
         case WM_NOTIFY:
         {
             /* We do not want to convert NMHDRs in general. The guest controls will send WM_NOTIFY messages
@@ -1496,6 +1499,7 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
                 msg_out->lParam = (LPARAM)host_msg;
             }
             break;
+#endif
 
 #endif
 
@@ -1513,10 +1517,12 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
 {
     switch (conv->message)
     {
+#if 0
         case LVM_SORTITEMS:
         case LVM_SORTITEMSEX:
             TlsSetValue(user32_tls, LVM_SORTITEMS_old_tls);
             break;
+#endif
 
 #if HOST_BIT != GUEST_BIT
         case WM_NULL:
@@ -1555,6 +1561,7 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
 
+#if 0
         case WM_NOTIFY:
             if (conv->lParam != orig->lParam)
             {
@@ -1732,6 +1739,7 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
                 MSG_h2g(guest_msg, &copy);
             }
             break;
+#endif
 
         default:
             if (conv->message == msg_FINDMSGSTRING)
@@ -1768,6 +1776,7 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             msg_out->lParam = wndproc_host_to_guest((WNDPROC)msg_in->lParam);
             break;
 
+#if 0
         case LVM_SORTITEMS:
         case LVM_SORTITEMSEX:
             if (msg_in->lParam != (LPARAM)LVM_SORTITEMS_host_cb)
@@ -1782,6 +1791,7 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
                 msg_out->lParam = *guest_cb;
             }
             break;
+#endif
 
 #if HOST_BIT != GUEST_BIT
         case WM_CREATE:
@@ -1867,6 +1877,7 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             break;
         }
 
+#if 0
         case WM_NOTIFY:
         {
             int i;
@@ -2054,6 +2065,8 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             }
             break;
 #endif
+
+#endif
     }
 }
 
@@ -2102,6 +2115,7 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
 
+#if 0
         case WM_NOTIFY:
         {
             int i;
@@ -2243,6 +2257,7 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
                     FINDREPLACE_g2h(host, (struct qemu_FINDREPLACE *)conv->lParam);
             }
             break;
+#endif
     }
 #endif
 }
