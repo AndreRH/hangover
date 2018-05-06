@@ -1246,6 +1246,8 @@ static HRESULT WINAPI qemu_persistfolder_GetCurFolder(IPersistFolder3 *iface, LP
     call.ppidl = (ULONG_PTR)ppidl;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+        *ppidl = (ITEMIDLIST *)(ULONG_PTR)call.ppidl;
 
     return call.super.iret;
 }
@@ -1256,11 +1258,13 @@ void qemu_IPersistFolder3_GetCurFolder(struct qemu_syscall *call)
 {
     struct qemu_IPersistFolder3_GetCurFolder *c = (struct qemu_IPersistFolder3_GetCurFolder *)call;
     struct qemu_shellfolder *folder;
+    ITEMIDLIST *ret;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     folder = QEMU_G2H(c->iface);
 
-    c->super.iret = IPersistFolder3_GetCurFolder(folder->host_pf, QEMU_G2H(c->ppidl));
+    c->super.iret = IPersistFolder3_GetCurFolder(folder->host_pf, c->ppidl ? &ret : NULL);
+    c->ppidl = QEMU_H2G(ret);
 }
 
 #endif
