@@ -498,6 +498,7 @@ static HRESULT WINAPI qemu_shellfolder_CreateViewObject(IShellFolder2 *iface, HW
 {
     struct qemu_IShellFolder2_CreateViewObject call;
     struct qemu_shellfolder *folder = impl_from_IShellFolder2(iface);
+    struct qemu_shellview *view = NULL;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_ISHELLFOLDER2_CREATEVIEWOBJECT);
     call.iface = (ULONG_PTR)folder;
@@ -505,7 +506,18 @@ static HRESULT WINAPI qemu_shellfolder_CreateViewObject(IShellFolder2 *iface, HW
     call.riid = (ULONG_PTR)riid;
     call.out = (ULONG_PTR)out;
 
+    if (out)
+        *out = NULL;
+
     qemu_syscall(&call.super);
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        view = (struct qemu_shellview *)(ULONG_PTR)call.out;
+        qemu_shellview_guest_init(view);
+        IShellView3_QueryInterface(&view->IShellView3_iface, riid, out);
+        IShellView3_Release(&view->IShellView3_iface);
+    }
 
     return call.super.iret;
 }
@@ -516,11 +528,32 @@ void qemu_IShellFolder2_CreateViewObject(struct qemu_syscall *call)
 {
     struct qemu_IShellFolder2_CreateViewObject *c = (struct qemu_IShellFolder2_CreateViewObject *)call;
     struct qemu_shellfolder *folder;
+    IShellView *host;
+    IShellView3 *host3 = NULL;
+    struct qemu_shellview *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     folder = QEMU_G2H(c->iface);
 
-    c->super.iret = IShellFolder2_CreateViewObject(folder->host_sf, QEMU_G2H(c->hwndOwner), QEMU_G2H(c->riid), QEMU_G2H(c->out));
+    c->super.iret = IShellFolder2_CreateViewObject(folder->host_sf, QEMU_G2H(c->hwndOwner),
+            &IID_IShellView, c->out ? (void **)&host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    IShellView_QueryInterface(host, &IID_IShellView3, (void **)&host3);
+    if (!host3)
+        WINE_ERR("Cannot get IShellView3.\n");
+    IShellView_Release(host);
+
+    view = qemu_shellview_host_create(host3);
+    IShellView3_Release(host3);
+    if (!view)
+    {
+        WINE_ERR("Fail 2\n");
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+    c->out = QEMU_H2G(view);
 }
 
 #endif

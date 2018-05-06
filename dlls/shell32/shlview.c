@@ -18,6 +18,7 @@
 
 /* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
 
+#define CINTERFACE
 #define COBJMACROS
 #include <windows.h>
 #include <stdio.h>
@@ -32,6 +33,15 @@
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_shell32);
 #endif
+
+/* I somehow have troubles with IID_IShellFolderView on mingw. */
+const GUID IID_myIShellFolderView = 
+{
+    0x37a378c0,
+    0xf82d,
+    0x11ce,
+    { 0xae,0x65,0x08,0x00,0x2b,0x2e,0x12,0x62 }
+};
 
 struct qemu_IShellView_QueryInterface
 {
@@ -95,6 +105,45 @@ static HRESULT WINAPI qemu_shellview_QueryInterface(IShellView3 *iface, REFIID r
 
     qemu_syscall(&call.super);
 
+    if(IsEqualIID(riid, &IID_IUnknown) || IsEqualIID(riid, &IID_IShellView) ||
+            IsEqualIID(riid, &IID_IShellView2) || IsEqualIID(riid, &IID_IShellView3) || IsEqualIID(riid, &IID_CDefView))
+    {
+        *ppvObj = &view->IShellView3_iface;
+    }
+    else if(IsEqualIID(riid, &IID_myIShellFolderView))
+    {
+        *ppvObj = &view->IShellFolderView_iface;
+    }
+    else if(IsEqualIID(riid, &IID_IFolderView) || IsEqualIID(riid, &IID_IFolderView2))
+    {
+        *ppvObj = &view->IFolderView2_iface;
+    }
+    else if(IsEqualIID(riid, &IID_IOleCommandTarget))
+    {
+        *ppvObj = &view->IOleCommandTarget_iface;
+    }
+    else if(IsEqualIID(riid, &IID_IDropTarget))
+    {
+        *ppvObj = &view->IDropTarget_iface;
+    }
+    else if(IsEqualIID(riid, &IID_IDropSource))
+    {
+        *ppvObj = &view->IDropSource_iface;
+    }
+    else if(IsEqualIID(riid, &IID_IViewObject))
+    {
+        *ppvObj = &view->IViewObject_iface;
+    }
+    else if(SUCCEEDED(call.super.iret))
+    {
+        call.iface = 0;
+        qemu_syscall(&call.super);
+    }
+    else
+    {
+        *ppvObj = NULL;
+    }
+
     return call.super.iret;
 }
 
@@ -105,8 +154,15 @@ void qemu_IShellView_QueryInterface(struct qemu_syscall *call)
     struct qemu_IShellView_QueryInterface *c = (struct qemu_IShellView_QueryInterface *)call;
     struct qemu_shellview *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
+
+    if (!view)
+    {
+        WINE_FIXME("Host handled IID %s, but it is not handled by the wrapper.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->riid)));
+        DebugBreak();
+    }
 
     c->super.iret = IShellView_QueryInterface(view->host_shellview, QEMU_G2H(c->riid), QEMU_G2H(c->ppvObj));
 }
@@ -141,7 +197,7 @@ void qemu_IShellView_AddRef(struct qemu_syscall *call)
     struct qemu_IShellView_AddRef *c = (struct qemu_IShellView_AddRef *)call;
     struct qemu_shellview *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = IShellView_AddRef(view->host_shellview);
@@ -177,10 +233,15 @@ void qemu_IShellView_Release(struct qemu_syscall *call)
     struct qemu_IShellView_Release *c = (struct qemu_IShellView_Release *)call;
     struct qemu_shellview *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = IShellView_Release(view->host_shellview);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying shell view wrapper %p.\n", view);
+        HeapFree(GetProcessHeap(), 0, view);
+    }
 }
 
 #endif
@@ -701,7 +762,7 @@ struct qemu_IShellView2_GetView
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IShellView2_fnGetView(IShellView3 *iface, SHELLVIEWID *view_guid, ULONG view_type)
+static HRESULT WINAPI qemu_shellview_GetView(IShellView3 *iface, SHELLVIEWID *view_guid, ULONG view_type)
 {
     struct qemu_IShellView2_GetView call;
     struct qemu_shellview *view = impl_from_IShellView3(iface);
@@ -740,7 +801,7 @@ struct qemu_IShellView2_CreateViewWindow2
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IShellView2_fnCreateViewWindow2(IShellView3 *iface, SV2CVW2_PARAMS *view_params)
+static HRESULT WINAPI qemu_shellview_CreateViewWindow2(IShellView3 *iface, SV2CVW2_PARAMS *view_params)
 {
     struct qemu_IShellView2_CreateViewWindow2 call;
     struct qemu_shellview *view = impl_from_IShellView3(iface);
@@ -778,7 +839,7 @@ struct qemu_IShellView2_HandleRename
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IShellView2_fnHandleRename(IShellView3 *iface, LPCITEMIDLIST new_pidl)
+static HRESULT WINAPI qemu_shellview_HandleRename(IShellView3 *iface, LPCITEMIDLIST new_pidl)
 {
     struct qemu_IShellView2_HandleRename call;
     struct qemu_shellview *view = impl_from_IShellView3(iface);
@@ -818,7 +879,7 @@ struct qemu_IShellView2_SelectAndPositionItem
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IShellView2_fnSelectAndPositionItem(IShellView3 *iface, LPCITEMIDLIST item, UINT flags, POINT *point)
+static HRESULT WINAPI qemu_shellview_SelectAndPositionItem(IShellView3 *iface, LPCITEMIDLIST item, UINT flags, POINT *point)
 {
     struct qemu_IShellView2_SelectAndPositionItem call;
     struct qemu_shellview *view = impl_from_IShellView3(iface);
@@ -866,7 +927,7 @@ struct qemu_IShellView3_CreateViewWindow3
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IShellView3_fnCreateViewWindow3(IShellView3 *iface, IShellBrowser *owner, IShellView *prev_view, SV3CVW3_FLAGS view_flags, FOLDERFLAGS mask, FOLDERFLAGS flags, FOLDERVIEWMODE mode, const SHELLVIEWID *view_id, const RECT *rect, HWND *hwnd)
+static HRESULT WINAPI qemu_shellview_CreateViewWindow3(IShellView3 *iface, IShellBrowser *owner, IShellView *prev_view, SV3CVW3_FLAGS view_flags, FOLDERFLAGS mask, FOLDERFLAGS flags, FOLDERVIEWMODE mode, const SHELLVIEWID *view_id, const RECT *rect, HWND *hwnd)
 {
     struct qemu_IShellView3_CreateViewWindow3 call;
     struct qemu_shellview *view = impl_from_IShellView3(iface);
@@ -5972,3 +6033,265 @@ void qemu_SHCreateShellFolderViewEx(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+static const IShellView3Vtbl shellviewvtbl =
+{
+    qemu_shellview_QueryInterface,
+    qemu_shellview_AddRef,
+    qemu_shellview_Release,
+    qemu_shellview_GetWindow,
+    qemu_shellview_ContextSensitiveHelp,
+    qemu_shellview_TranslateAccelerator,
+    qemu_shellview_EnableModeless,
+    qemu_shellview_UIActivate,
+    qemu_shellview_Refresh,
+    qemu_shellview_CreateViewWindow,
+    qemu_shellview_DestroyViewWindow,
+    qemu_shellview_GetCurrentInfo,
+    qemu_shellview_AddPropertySheetPages,
+    qemu_shellview_SaveViewState,
+    qemu_shellview_SelectItem,
+    qemu_shellview_GetItemObject,
+    qemu_shellview_GetView,
+    qemu_shellview_CreateViewWindow2,
+    qemu_shellview_HandleRename,
+    qemu_shellview_SelectAndPositionItem,
+    qemu_shellview_CreateViewWindow3
+};
+
+static const IOleCommandTargetVtbl olecommandtargetvtbl =
+{
+    ISVOleCmdTarget_QueryInterface,
+    ISVOleCmdTarget_AddRef,
+    ISVOleCmdTarget_Release,
+    ISVOleCmdTarget_QueryStatus,
+    ISVOleCmdTarget_Exec
+};
+
+static const IDropTargetVtbl droptargetvtbl =
+{
+    ISVDropTarget_QueryInterface,
+    ISVDropTarget_AddRef,
+    ISVDropTarget_Release,
+    ISVDropTarget_DragEnter,
+    ISVDropTarget_DragOver,
+    ISVDropTarget_DragLeave,
+    ISVDropTarget_Drop
+};
+
+static const IDropSourceVtbl dropsourcevtbl =
+{
+    ISVDropSource_QueryInterface,
+    ISVDropSource_AddRef,
+    ISVDropSource_Release,
+    ISVDropSource_QueryContinueDrag,
+    ISVDropSource_GiveFeedback
+};
+
+static const IViewObjectVtbl viewobjectvtbl =
+{
+    ISVViewObject_QueryInterface,
+    ISVViewObject_AddRef,
+    ISVViewObject_Release,
+    ISVViewObject_Draw,
+    ISVViewObject_GetColorSet,
+    ISVViewObject_Freeze,
+    ISVViewObject_Unfreeze,
+    ISVViewObject_SetAdvise,
+    ISVViewObject_GetAdvise
+};
+
+static const IFolderView2Vtbl folderviewvtbl =
+{
+    FolderView_QueryInterface,
+    FolderView_AddRef,
+    FolderView_Release,
+    FolderView_GetCurrentViewMode,
+    FolderView_SetCurrentViewMode,
+    FolderView_GetFolder,
+    FolderView_Item,
+    FolderView_ItemCount,
+    FolderView_Items,
+    FolderView_GetSelectionMarkedItem,
+    FolderView_GetFocusedItem,
+    FolderView_GetItemPosition,
+    FolderView_GetSpacing,
+    FolderView_GetDefaultSpacing,
+    FolderView_GetAutoArrange,
+    FolderView_SelectItem,
+    FolderView_SelectAndPositionItems,
+    FolderView2_SetGroupBy,
+    FolderView2_GetGroupBy,
+    FolderView2_SetViewProperty,
+    FolderView2_GetViewProperty,
+    FolderView2_SetTileViewProperties,
+    FolderView2_SetExtendedTileViewProperties,
+    FolderView2_SetText,
+    FolderView2_SetCurrentFolderFlags,
+    FolderView2_GetCurrentFolderFlags,
+    FolderView2_GetSortColumnCount,
+    FolderView2_SetSortColumns,
+    FolderView2_GetSortColumns,
+    FolderView2_GetItem,
+    FolderView2_GetVisibleItem,
+    FolderView2_GetSelectedItem,
+    FolderView2_GetSelection,
+    FolderView2_GetSelectionState,
+    FolderView2_InvokeVerbOnSelection,
+    FolderView2_SetViewModeAndIconSize,
+    FolderView2_GetViewModeAndIconSize,
+    FolderView2_SetGroupSubsetCount,
+    FolderView2_GetGroupSubsetCount,
+    FolderView2_SetRedraw,
+    FolderView2_IsMoveInSameFolder,
+    FolderView2_DoRename
+};
+
+/* Mingw's header is broken for C, the vtbl does not include the IUnknown functions. */
+static const struct
+{
+    void *qi;
+    void *addref;
+    void *release;
+    IShellFolderViewVtbl shellfolderviewvtbl;
+}
+shellfolderviewvtbl =
+{
+    IShellFolderView_fnQueryInterface,
+    IShellFolderView_fnAddRef,
+    IShellFolderView_fnRelease,
+    {
+        IShellFolderView_fnRearrange,
+        IShellFolderView_fnGetArrangeParam,
+        IShellFolderView_fnArrangeGrid,
+        IShellFolderView_fnAutoArrange,
+        IShellFolderView_fnGetAutoArrange,
+        IShellFolderView_fnAddObject,
+        IShellFolderView_fnGetObject,
+        IShellFolderView_fnRemoveObject,
+        IShellFolderView_fnGetObjectCount,
+        IShellFolderView_fnSetObjectCount,
+        IShellFolderView_fnUpdateObject,
+        IShellFolderView_fnRefreshObject,
+        IShellFolderView_fnSetRedraw,
+        IShellFolderView_fnGetSelectedCount,
+        IShellFolderView_fnGetSelectedObjects,
+        IShellFolderView_fnIsDropOnSource,
+        IShellFolderView_fnGetDragPoint,
+        IShellFolderView_fnGetDropPoint,
+        IShellFolderView_fnMoveIcons,
+        IShellFolderView_fnSetItemPos,
+        IShellFolderView_fnIsBkDropTarget,
+        IShellFolderView_fnSetClipboard,
+        IShellFolderView_fnSetPoints,
+        IShellFolderView_fnGetItemSpacing,
+        IShellFolderView_fnSetCallback,
+        IShellFolderView_fnSelect,
+        IShellFolderView_fnQuerySupport,
+        IShellFolderView_fnSetAutomationObject
+    }
+};
+
+static const IShellFolderViewDual3Vtbl shellfolderviewdualvtbl =
+{
+    shellfolderviewdual_QueryInterface,
+    shellfolderviewdual_AddRef,
+    shellfolderviewdual_Release,
+    shellfolderviewdual_GetTypeInfoCount,
+    shellfolderviewdual_GetTypeInfo,
+    shellfolderviewdual_GetIDsOfNames,
+    shellfolderviewdual_Invoke,
+    shellfolderviewdual_get_Application,
+    shellfolderviewdual_get_Parent,
+    shellfolderviewdual_get_Folder,
+    shellfolderviewdual_SelectedItems,
+    shellfolderviewdual_get_FocusedItem,
+    shellfolderviewdual_SelectItem,
+    shellfolderviewdual_PopupItemMenu,
+    shellfolderviewdual_get_Script,
+    shellfolderviewdual_get_ViewOptions,
+    shellfolderviewdual_get_CurrentViewMode,
+    shellfolderviewdual_put_CurrentViewMode,
+    shellfolderviewdual_SelectItemRelative,
+    shellfolderviewdual_get_GroupBy,
+    shellfolderviewdual_put_GroupBy,
+    shellfolderviewdual_get_FolderFlags,
+    shellfolderviewdual_put_FolderFlags,
+    shellfolderviewdual_get_SortColumns,
+    shellfolderviewdual_put_SortColumns,
+    shellfolderviewdual_put_IconSize,
+    shellfolderviewdual_get_IconSize,
+    shellfolderviewdual_FilterView
+};
+
+void qemu_shellview_guest_init(struct qemu_shellview *view)
+{
+    view->IShellView3_iface.lpVtbl = &shellviewvtbl;
+    view->IOleCommandTarget_iface.lpVtbl = &olecommandtargetvtbl;
+    view->IDropTarget_iface.lpVtbl = &droptargetvtbl;
+    view->IDropSource_iface.lpVtbl = &dropsourcevtbl;
+    view->IViewObject_iface.lpVtbl = &viewobjectvtbl;
+    view->IFolderView2_iface.lpVtbl = &folderviewvtbl;
+    view->IShellFolderView_iface.lpVtbl = (const void *)&shellfolderviewvtbl;
+    view->IShellFolderViewDual3_iface.lpVtbl = &shellfolderviewdualvtbl;
+}
+
+#else
+
+struct qemu_shellview *qemu_shellview_host_create(IShellView3 *host)
+{
+    struct qemu_shellview *view;
+
+    view = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*view));
+    if (!view)
+    {
+        WINE_FIXME("Out of memory.\n");
+        return NULL;
+    }
+
+    view->host_shellview = host;
+    IShellView3_AddRef(host);
+
+    /* The wrapper does not have its own referecen count and relies on the host refcount. */
+    IShellView3_QueryInterface(host, &IID_IOleCommandTarget, (void **)&view->host_cmd_target);
+    if (!view->host_cmd_target)
+        WINE_ERR("Cannot get IOleCommandTarget.\n");
+    IOleCommandTarget_Release(view->host_cmd_target);
+
+    IShellView3_QueryInterface(host, &IID_IDropTarget, (void **)&view->host_drop_target);
+    if (!view->host_drop_target)
+        WINE_ERR("Cannot get IDropTarget.\n");
+    IDropTarget_Release(view->host_drop_target);
+
+    IShellView3_QueryInterface(host, &IID_IDropSource, (void **)&view->host_drop_source);
+    IDropSource_Release(view->host_drop_source);
+    if (!view->host_drop_source)
+        WINE_ERR("Cannot get IDropSource.\n");
+
+    IShellView3_QueryInterface(host, &IID_IViewObject, (void **)&view->host_view_object);
+    if (!view->host_view_object)
+        WINE_ERR("Cannot get IViewObject.\n");
+    IViewObject_Release(view->host_view_object);
+
+    IShellView3_QueryInterface(host, &IID_IFolderView2, (void **)&view->host_folder_view);
+    if (!view->host_folder_view)
+        WINE_ERR("Cannot get IFolderView2.\n");
+    IFolderView2_Release(view->host_folder_view);
+
+    IShellView3_QueryInterface(host, &IID_myIShellFolderView, (void **)&view->host_shell_folder_view);
+    if (!view->host_shell_folder_view)
+        WINE_ERR("Cannot get IShellFolderView.\n");
+    IShellFolderView_Release(view->host_shell_folder_view);
+
+    IShellView3_GetItemObject(host, SVGIO_BACKGROUND, &IID_IDispatch, (void **)&view->host_dual_view);
+    if (!view->host_dual_view)
+        WINE_ERR("Cannot get IShellFolderViewDual3.\n");
+    IShellFolderViewDual3_Release(view->host_dual_view);
+
+    WINE_TRACE("Created shell view wrapper %p.\n", view);
+
+    return view;
+}
+
+#endif

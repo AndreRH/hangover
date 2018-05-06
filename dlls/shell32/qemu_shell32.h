@@ -595,6 +595,7 @@ struct qemu_shellview
 
 void qemu_shellfolder_guest_init(struct qemu_shellfolder *folder);
 void qemu_enumidlist_guest_init(struct qemu_enumidlist *folder);
+void qemu_shellview_guest_init(struct qemu_shellview *folder);
 
 #else
 
@@ -1176,6 +1177,7 @@ void (* WINAPI p_PathStripPath)(LPVOID lpszPath);
 
 struct qemu_shellfolder *qemu_shellfolder_host_create(IShellFolder2 *host);
 struct qemu_enumidlist *qemu_enumidlist_host_create(IEnumIDList *host);
+struct qemu_shellview *qemu_shellview_host_create(IShellView3 *host);
 
 #endif
 
