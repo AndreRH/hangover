@@ -197,7 +197,7 @@ void qemu_RegCreateKeyW(struct qemu_syscall *call)
 {
     struct qemu_RegCreateKeyW *c = (struct qemu_RegCreateKeyW *)call;
     HKEY retkey;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     c->super.iret = RegCreateKeyW(QEMU_G2H(c->hkey), QEMU_G2H(c->lpSubKey), &retkey);
     c->phkResult = (ULONG_PTR)retkey;
