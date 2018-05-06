@@ -485,7 +485,8 @@ struct qemu_IShellView_CreateViewWindow
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI qemu_shellview_CreateViewWindow(IShellView3 *iface, IShellView *prev_view, const FOLDERSETTINGS *settings, IShellBrowser *owner, RECT *rect, HWND *hWnd)
+static HRESULT WINAPI qemu_shellview_CreateViewWindow(IShellView3 *iface, IShellView *prev_view,
+        const FOLDERSETTINGS *settings, IShellBrowser *owner, RECT *rect, HWND *hWnd)
 {
     struct qemu_IShellView_CreateViewWindow call;
     struct qemu_shellview *view = impl_from_IShellView3(iface);
@@ -499,6 +500,7 @@ static HRESULT WINAPI qemu_shellview_CreateViewWindow(IShellView3 *iface, IShell
     call.hWnd = (ULONG_PTR)hWnd;
 
     qemu_syscall(&call.super);
+    *hWnd = (HWND)(ULONG_PTR)call.hWnd;
 
     return call.super.iret;
 }
@@ -509,11 +511,27 @@ void qemu_IShellView_CreateViewWindow(struct qemu_syscall *call)
 {
     struct qemu_IShellView_CreateViewWindow *c = (struct qemu_IShellView_CreateViewWindow *)call;
     struct qemu_shellview *view;
+    struct shellbrowser_wrapper *shellbrowser_wrapper;
+    IShellBrowser *browser = NULL;
+    HWND hwnd;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
-    c->super.iret = IShellView_CreateViewWindow(view->host_shellview, QEMU_G2H(c->prev_view), QEMU_G2H(c->settings), QEMU_G2H(c->owner), QEMU_G2H(c->rect), QEMU_G2H(c->hWnd));
+    if (c->prev_view)
+        WINE_FIXME("prev_view not handled yet.\n");
+    if (c->owner)
+    {
+        shellbrowser_wrapper = shellbrowser_wrapper_create(c->owner);
+        browser = shellbrowser_wrapper_host_iface(shellbrowser_wrapper);
+    }
+
+    c->super.iret = IShellView_CreateViewWindow(view->host_shellview, QEMU_G2H(c->prev_view),
+            QEMU_G2H(c->settings), browser, QEMU_G2H(c->rect), &hwnd);
+    c->hWnd = QEMU_H2G(hwnd);
+
+    if (browser)
+        WINE_TRACE("Browser has ref %u\n", IShellBrowser_Release(browser));
 }
 
 #endif

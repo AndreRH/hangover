@@ -260,7 +260,7 @@ static const IStreamVtbl istream_wrapper_Vtbl =
 struct istream_wrapper *istream_wrapper_create(uint64_t guest_iface)
 {
     struct istream_wrapper *ret;
-    
+
     if (!guest_iface)
         return NULL;
 

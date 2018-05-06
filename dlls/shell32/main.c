@@ -30,6 +30,7 @@ struct qemu_set_callbacks
 {
     struct qemu_syscall super;
     uint64_t propertybag_funcs;
+    uint64_t shellbrowser_funcs;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -40,19 +41,26 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_set_callbacks call;
     struct propertybag_wrapper_funcs propertybag_funcs;
+    struct shellbrowser_funcs shellbrowser_funcs;
 
     switch (reason)
     {
         case DLL_PROCESS_ATTACH:
             call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
+
             call.propertybag_funcs = (ULONG_PTR)&propertybag_funcs;
+            call.shellbrowser_funcs = (ULONG_PTR)&shellbrowser_funcs;
+
             propertybag_wrapper_get_funcs(&propertybag_funcs);
+            shellbrowser_wrapper_get_funcs(&shellbrowser_funcs);
+
             qemu_syscall(&call.super);
             break;
 
         case DLL_PROCESS_DETACH:
             call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
             call.propertybag_funcs = 0;
+            call.shellbrowser_funcs = 0;
             qemu_syscall(&call.super);
             break;
     }
@@ -74,6 +82,7 @@ static void qemu_set_callbacks(struct qemu_syscall *call)
 {
     struct qemu_set_callbacks *c = (struct qemu_set_callbacks *)call;
     propertybag_wrapper_set_funcs(QEMU_G2H(c->propertybag_funcs));
+    shellbrowser_wrapper_wrapper_set_funcs(QEMU_G2H(c->shellbrowser_funcs));
 }
 
 static const syscall_handler dll_functions[] =

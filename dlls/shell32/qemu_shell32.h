@@ -591,11 +591,21 @@ struct qemu_shellview
     IShellFolderViewDual3   *host_dual_view;
 };
 
+struct shellbrowser_wrapper;
+struct shellbrowser_funcs
+{
+    uint64_t AddRef;
+    uint64_t Release;
+    uint64_t GetWindow;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 void qemu_shellfolder_guest_init(struct qemu_shellfolder *folder);
 void qemu_enumidlist_guest_init(struct qemu_enumidlist *folder);
 void qemu_shellview_guest_init(struct qemu_shellview *folder);
+
+void shellbrowser_wrapper_get_funcs(struct shellbrowser_funcs *funcs);
 
 #else
 
@@ -1178,6 +1188,11 @@ void (* WINAPI p_PathStripPath)(LPVOID lpszPath);
 struct qemu_shellfolder *qemu_shellfolder_host_create(IShellFolder2 *host);
 struct qemu_enumidlist *qemu_enumidlist_host_create(IEnumIDList *host);
 struct qemu_shellview *qemu_shellview_host_create(IShellView3 *host);
+
+void shellbrowser_wrapper_wrapper_set_funcs(const struct shellbrowser_funcs *funcs);
+struct shellbrowser_wrapper *shellbrowser_wrapper_create(uint64_t guest_iface);
+uint64_t shellbrowser_wrapper_guest_iface(struct shellbrowser_wrapper *wrapper);
+IShellBrowser * shellbrowser_wrapper_host_iface(struct shellbrowser_wrapper *wrapper);
 
 #endif
 
