@@ -216,7 +216,8 @@ struct qemu_SHGetFolderPathAndSubDirA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI SHGetFolderPathAndSubDirA(HWND hwndOwner, int nFolder, HANDLE hToken, DWORD dwFlags, LPCSTR pszSubPath, LPSTR pszPath)
+WINBASEAPI HRESULT WINAPI SHGetFolderPathAndSubDirA(HWND hwndOwner, int nFolder, HANDLE hToken, DWORD dwFlags,
+        LPCSTR pszSubPath, LPSTR pszPath)
 {
     struct qemu_SHGetFolderPathAndSubDirA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETFOLDERPATHANDSUBDIRA);
@@ -237,8 +238,9 @@ WINBASEAPI HRESULT WINAPI SHGetFolderPathAndSubDirA(HWND hwndOwner, int nFolder,
 void qemu_SHGetFolderPathAndSubDirA(struct qemu_syscall *call)
 {
     struct qemu_SHGetFolderPathAndSubDirA *c = (struct qemu_SHGetFolderPathAndSubDirA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SHGetFolderPathAndSubDirA(QEMU_G2H(c->hwndOwner), c->nFolder, QEMU_G2H(c->hToken), c->dwFlags, QEMU_G2H(c->pszSubPath), QEMU_G2H(c->pszPath));
+    WINE_TRACE("\n");
+    c->super.iret = SHGetFolderPathAndSubDirA(QEMU_G2H(c->hwndOwner), c->nFolder, QEMU_G2H(c->hToken), c->dwFlags,
+            QEMU_G2H(c->pszSubPath), QEMU_G2H(c->pszPath));
 }
 
 #endif
@@ -256,7 +258,8 @@ struct qemu_SHGetFolderPathAndSubDirW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI SHGetFolderPathAndSubDirW(HWND hwndOwner, int nFolder, HANDLE hToken, DWORD dwFlags, LPCWSTR pszSubPath, LPWSTR pszPath)
+WINBASEAPI HRESULT WINAPI SHGetFolderPathAndSubDirW(HWND hwndOwner, int nFolder, HANDLE hToken, DWORD dwFlags,
+        LPCWSTR pszSubPath, LPWSTR pszPath)
 {
     struct qemu_SHGetFolderPathAndSubDirW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SHGETFOLDERPATHANDSUBDIRW);
@@ -277,8 +280,9 @@ WINBASEAPI HRESULT WINAPI SHGetFolderPathAndSubDirW(HWND hwndOwner, int nFolder,
 void qemu_SHGetFolderPathAndSubDirW(struct qemu_syscall *call)
 {
     struct qemu_SHGetFolderPathAndSubDirW *c = (struct qemu_SHGetFolderPathAndSubDirW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SHGetFolderPathAndSubDirW(QEMU_G2H(c->hwndOwner), c->nFolder, QEMU_G2H(c->hToken), c->dwFlags, QEMU_G2H(c->pszSubPath), QEMU_G2H(c->pszPath));
+    WINE_TRACE("\n");
+    c->super.iret = SHGetFolderPathAndSubDirW(QEMU_G2H(c->hwndOwner), c->nFolder, QEMU_G2H(c->hToken), c->dwFlags,
+            QEMU_G2H(c->pszSubPath), QEMU_G2H(c->pszPath));
 }
 
 #endif
