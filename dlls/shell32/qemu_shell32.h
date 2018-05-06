@@ -597,6 +597,7 @@ struct shellbrowser_funcs
     uint64_t AddRef;
     uint64_t Release;
     uint64_t GetWindow;
+    uint64_t SetMenuSB;
 };
 
 #ifdef QEMU_DLL_GUEST

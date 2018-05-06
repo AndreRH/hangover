@@ -47,6 +47,12 @@ struct shellbrowser_wrapper_GetWindow
     uint64_t hwnd;
 };
 
+struct shellbrowser_wrapper_SetMenuSB
+{
+    uint64_t iface;
+    uint64_t hmenuShared, holemenuReserved, hwndActiveObject;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 static ULONG __fastcall shellbrowser_wrapper_AddRef(struct shellbrowser_wrapper_Refcnt *call)
@@ -72,11 +78,20 @@ static HRESULT __fastcall shellbrowser_wrapper_GetWindow(struct shellbrowser_wra
     return hr;
 }
 
+static HRESULT __fastcall shellbrowser_wrapper_SetMenuSB(struct shellbrowser_wrapper_SetMenuSB *call)
+{
+    IShellBrowser *browser = (IShellBrowser *)(ULONG_PTR)call->iface;
+
+    return IShellBrowser_SetMenuSB(browser, (HMENU)(ULONG_PTR)call->hmenuShared,
+            (HWND)(ULONG_PTR)call->holemenuReserved, (HWND)(ULONG_PTR)call->hwndActiveObject);
+}
+
 void shellbrowser_wrapper_get_funcs(struct shellbrowser_funcs *funcs)
 {
     funcs->AddRef = (ULONG_PTR)shellbrowser_wrapper_AddRef;
     funcs->Release = (ULONG_PTR)shellbrowser_wrapper_Release;
     funcs->GetWindow = (ULONG_PTR)shellbrowser_wrapper_GetWindow;
+    funcs->SetMenuSB = (ULONG_PTR)shellbrowser_wrapper_SetMenuSB;
 }
 
 #else
@@ -87,6 +102,7 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_shell32);
 static uint64_t shellbrowser_AddRef;
 static uint64_t shellbrowser_Release;
 static uint64_t shellbrowser_GetWindow;
+static uint64_t shellbrowser_SetMenuSB;
 
 void shellbrowser_wrapper_wrapper_set_funcs(const struct shellbrowser_funcs *funcs)
 {
@@ -95,12 +111,14 @@ void shellbrowser_wrapper_wrapper_set_funcs(const struct shellbrowser_funcs *fun
         shellbrowser_AddRef = funcs->AddRef;
         shellbrowser_Release = funcs->Release;
         shellbrowser_GetWindow = funcs->GetWindow;
+        shellbrowser_SetMenuSB = funcs->SetMenuSB;
     }
     else
     {
         shellbrowser_AddRef = 0;
         shellbrowser_Release = 0;
         shellbrowser_GetWindow = 0;
+        shellbrowser_SetMenuSB = 0;
     }
 }
 
@@ -257,8 +275,20 @@ static HRESULT WINAPI IShellBrowserImpl_SendControlMsg(IShellBrowser *iface, UIN
 static HRESULT WINAPI IShellBrowserImpl_SetMenuSB(IShellBrowser *iface,
         HMENU hmenuShared, HOLEMENU holemenuReserved, HWND hwndActiveObject)
 {
-    WINE_FIXME("Not implemented\n");
-    return E_NOTIMPL;
+    struct shellbrowser_wrapper *browser = shellbrowser_wrapper_from_IShellBrowser(iface);
+    struct shellbrowser_wrapper_SetMenuSB call;
+    HRESULT hr;
+
+    call.iface = browser->guest_iface;
+    call.hmenuShared = QEMU_H2G(hmenuShared);
+    call.holemenuReserved = QEMU_H2G(holemenuReserved);
+    call.hwndActiveObject = QEMU_H2G(hwndActiveObject);
+
+    WINE_TRACE("Calling guest callback %p.\n", (void *)shellbrowser_SetMenuSB);
+    hr = qemu_ops->qemu_execute(QEMU_G2H(shellbrowser_SetMenuSB), QEMU_H2G(&call));
+    WINE_TRACE("Guest CB returned 0x%x.\n", hr);
+
+    return hr;
 }
 
 static HRESULT WINAPI IShellBrowserImpl_SetStatusTextSB(IShellBrowser *iface,
