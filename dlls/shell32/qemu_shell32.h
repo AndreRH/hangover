@@ -80,6 +80,48 @@ enum shell32_calls
     CALL_FILEMENU_TRACKPOPUPMENUEX,
     CALL_FINDEXECUTABLEA,
     CALL_FINDEXECUTABLEW,
+    CALL_FOLDERVIEW2_DORENAME,
+    CALL_FOLDERVIEW2_GETCURRENTFOLDERFLAGS,
+    CALL_FOLDERVIEW2_GETGROUPBY,
+    CALL_FOLDERVIEW2_GETGROUPSUBSETCOUNT,
+    CALL_FOLDERVIEW2_GETITEM,
+    CALL_FOLDERVIEW2_GETSELECTEDITEM,
+    CALL_FOLDERVIEW2_GETSELECTION,
+    CALL_FOLDERVIEW2_GETSELECTIONSTATE,
+    CALL_FOLDERVIEW2_GETSORTCOLUMNCOUNT,
+    CALL_FOLDERVIEW2_GETSORTCOLUMNS,
+    CALL_FOLDERVIEW2_GETVIEWMODEANDICONSIZE,
+    CALL_FOLDERVIEW2_GETVIEWPROPERTY,
+    CALL_FOLDERVIEW2_GETVISIBLEITEM,
+    CALL_FOLDERVIEW2_INVOKEVERBONSELECTION,
+    CALL_FOLDERVIEW2_ISMOVEINSAMEFOLDER,
+    CALL_FOLDERVIEW2_SETCURRENTFOLDERFLAGS,
+    CALL_FOLDERVIEW2_SETEXTENDEDTILEVIEWPROPERTIES,
+    CALL_FOLDERVIEW2_SETGROUPBY,
+    CALL_FOLDERVIEW2_SETGROUPSUBSETCOUNT,
+    CALL_FOLDERVIEW2_SETREDRAW,
+    CALL_FOLDERVIEW2_SETSORTCOLUMNS,
+    CALL_FOLDERVIEW2_SETTEXT,
+    CALL_FOLDERVIEW2_SETTILEVIEWPROPERTIES,
+    CALL_FOLDERVIEW2_SETVIEWMODEANDICONSIZE,
+    CALL_FOLDERVIEW2_SETVIEWPROPERTY,
+    CALL_FOLDERVIEW_ADDREF,
+    CALL_FOLDERVIEW_GETAUTOARRANGE,
+    CALL_FOLDERVIEW_GETCURRENTVIEWMODE,
+    CALL_FOLDERVIEW_GETDEFAULTSPACING,
+    CALL_FOLDERVIEW_GETFOCUSEDITEM,
+    CALL_FOLDERVIEW_GETFOLDER,
+    CALL_FOLDERVIEW_GETITEMPOSITION,
+    CALL_FOLDERVIEW_GETSELECTIONMARKEDITEM,
+    CALL_FOLDERVIEW_GETSPACING,
+    CALL_FOLDERVIEW_ITEM,
+    CALL_FOLDERVIEW_ITEMCOUNT,
+    CALL_FOLDERVIEW_ITEMS,
+    CALL_FOLDERVIEW_QUERYINTERFACE,
+    CALL_FOLDERVIEW_RELEASE,
+    CALL_FOLDERVIEW_SELECTANDPOSITIONITEMS,
+    CALL_FOLDERVIEW_SELECTITEM,
+    CALL_FOLDERVIEW_SETCURRENTVIEWMODE,
     CALL_FREEICONLIST,
     CALL_GETCURRENTPROCESSEXPLICITAPPUSERMODELID,
     CALL_GETFILENAMEFROMBROWSE,
@@ -139,11 +181,89 @@ enum shell32_calls
     CALL_ISHELLFOLDER2_QUERYINTERFACE,
     CALL_ISHELLFOLDER2_RELEASE,
     CALL_ISHELLFOLDER2_SETNAMEOF,
+    CALL_ISHELLFOLDERVIEW_ADDOBJECT,
+    CALL_ISHELLFOLDERVIEW_ADDREF,
+    CALL_ISHELLFOLDERVIEW_ARRANGEGRID,
+    CALL_ISHELLFOLDERVIEW_AUTOARRANGE,
+    CALL_ISHELLFOLDERVIEW_GETARRANGEPARAM,
+    CALL_ISHELLFOLDERVIEW_GETAUTOARRANGE,
+    CALL_ISHELLFOLDERVIEW_GETDRAGPOINT,
+    CALL_ISHELLFOLDERVIEW_GETDROPPOINT,
+    CALL_ISHELLFOLDERVIEW_GETITEMSPACING,
+    CALL_ISHELLFOLDERVIEW_GETOBJECT,
+    CALL_ISHELLFOLDERVIEW_GETOBJECTCOUNT,
+    CALL_ISHELLFOLDERVIEW_GETSELECTEDCOUNT,
+    CALL_ISHELLFOLDERVIEW_GETSELECTEDOBJECTS,
+    CALL_ISHELLFOLDERVIEW_ISBKDROPTARGET,
+    CALL_ISHELLFOLDERVIEW_ISDROPONSOURCE,
+    CALL_ISHELLFOLDERVIEW_MOVEICONS,
+    CALL_ISHELLFOLDERVIEW_QUERYINTERFACE,
+    CALL_ISHELLFOLDERVIEW_QUERYSUPPORT,
+    CALL_ISHELLFOLDERVIEW_REARRANGE,
+    CALL_ISHELLFOLDERVIEW_REFRESHOBJECT,
+    CALL_ISHELLFOLDERVIEW_RELEASE,
+    CALL_ISHELLFOLDERVIEW_REMOVEOBJECT,
+    CALL_ISHELLFOLDERVIEW_SELECT,
+    CALL_ISHELLFOLDERVIEW_SETAUTOMATIONOBJECT,
+    CALL_ISHELLFOLDERVIEW_SETCALLBACK,
+    CALL_ISHELLFOLDERVIEW_SETCLIPBOARD,
+    CALL_ISHELLFOLDERVIEW_SETITEMPOS,
+    CALL_ISHELLFOLDERVIEW_SETOBJECTCOUNT,
+    CALL_ISHELLFOLDERVIEW_SETPOINTS,
+    CALL_ISHELLFOLDERVIEW_SETREDRAW,
+    CALL_ISHELLFOLDERVIEW_UPDATEOBJECT,
+    CALL_ISHELLVIEW2_CREATEVIEWWINDOW2,
+    CALL_ISHELLVIEW2_GETVIEW,
+    CALL_ISHELLVIEW2_HANDLERENAME,
+    CALL_ISHELLVIEW2_SELECTANDPOSITIONITEM,
+    CALL_ISHELLVIEW3_CREATEVIEWWINDOW3,
+    CALL_ISHELLVIEW_ADDPROPERTYSHEETPAGES,
+    CALL_ISHELLVIEW_ADDREF,
+    CALL_ISHELLVIEW_CONTEXTSENSITIVEHELP,
+    CALL_ISHELLVIEW_CREATEVIEWWINDOW,
+    CALL_ISHELLVIEW_DESTROYVIEWWINDOW,
+    CALL_ISHELLVIEW_ENABLEMODELESS,
+    CALL_ISHELLVIEW_GETCURRENTINFO,
+    CALL_ISHELLVIEW_GETITEMOBJECT,
+    CALL_ISHELLVIEW_GETWINDOW,
+    CALL_ISHELLVIEW_QUERYINTERFACE,
+    CALL_ISHELLVIEW_REFRESH,
+    CALL_ISHELLVIEW_RELEASE,
+    CALL_ISHELLVIEW_SAVEVIEWSTATE,
+    CALL_ISHELLVIEW_SELECTITEM,
+    CALL_ISHELLVIEW_TRANSLATEACCELERATOR,
+    CALL_ISHELLVIEW_UIACTIVATE,
     CALL_ISLFNDRIVEA,
     CALL_ISLFNDRIVEAW,
     CALL_ISLFNDRIVEW,
     CALL_ISNETDRIVE,
     CALL_ISUSERANADMIN,
+    CALL_ISVDROPSOURCE_ADDREF,
+    CALL_ISVDROPSOURCE_GIVEFEEDBACK,
+    CALL_ISVDROPSOURCE_QUERYCONTINUEDRAG,
+    CALL_ISVDROPSOURCE_QUERYINTERFACE,
+    CALL_ISVDROPSOURCE_RELEASE,
+    CALL_ISVDROPTARGET_ADDREF,
+    CALL_ISVDROPTARGET_DRAGENTER,
+    CALL_ISVDROPTARGET_DRAGLEAVE,
+    CALL_ISVDROPTARGET_DRAGOVER,
+    CALL_ISVDROPTARGET_DROP,
+    CALL_ISVDROPTARGET_QUERYINTERFACE,
+    CALL_ISVDROPTARGET_RELEASE,
+    CALL_ISVOLECMDTARGET_ADDREF,
+    CALL_ISVOLECMDTARGET_EXEC,
+    CALL_ISVOLECMDTARGET_QUERYINTERFACE,
+    CALL_ISVOLECMDTARGET_QUERYSTATUS,
+    CALL_ISVOLECMDTARGET_RELEASE,
+    CALL_ISVVIEWOBJECT_ADDREF,
+    CALL_ISVVIEWOBJECT_DRAW,
+    CALL_ISVVIEWOBJECT_FREEZE,
+    CALL_ISVVIEWOBJECT_GETADVISE,
+    CALL_ISVVIEWOBJECT_GETCOLORSET,
+    CALL_ISVVIEWOBJECT_QUERYINTERFACE,
+    CALL_ISVVIEWOBJECT_RELEASE,
+    CALL_ISVVIEWOBJECT_SETADVISE,
+    CALL_ISVVIEWOBJECT_UNFREEZE,
     CALL_LINKWINDOW_REGISTERCLASS,
     CALL_LINKWINDOW_UNREGISTERCLASS,
     CALL_NTSHCHANGENOTIFYDEREGISTER,
@@ -271,6 +391,34 @@ enum shell32_calls
     CALL_SHELLEXECUTEEXA,
     CALL_SHELLEXECUTEEXW,
     CALL_SHELLEXECUTEW,
+    CALL_SHELLFOLDERVIEWDUAL_ADDREF,
+    CALL_SHELLFOLDERVIEWDUAL_FILTERVIEW,
+    CALL_SHELLFOLDERVIEWDUAL_GET_APPLICATION,
+    CALL_SHELLFOLDERVIEWDUAL_GET_CURRENTVIEWMODE,
+    CALL_SHELLFOLDERVIEWDUAL_GET_FOCUSEDITEM,
+    CALL_SHELLFOLDERVIEWDUAL_GET_FOLDER,
+    CALL_SHELLFOLDERVIEWDUAL_GET_FOLDERFLAGS,
+    CALL_SHELLFOLDERVIEWDUAL_GET_GROUPBY,
+    CALL_SHELLFOLDERVIEWDUAL_GET_ICONSIZE,
+    CALL_SHELLFOLDERVIEWDUAL_GET_PARENT,
+    CALL_SHELLFOLDERVIEWDUAL_GET_SCRIPT,
+    CALL_SHELLFOLDERVIEWDUAL_GET_SORTCOLUMNS,
+    CALL_SHELLFOLDERVIEWDUAL_GET_VIEWOPTIONS,
+    CALL_SHELLFOLDERVIEWDUAL_GETIDSOFNAMES,
+    CALL_SHELLFOLDERVIEWDUAL_GETTYPEINFO,
+    CALL_SHELLFOLDERVIEWDUAL_GETTYPEINFOCOUNT,
+    CALL_SHELLFOLDERVIEWDUAL_INVOKE,
+    CALL_SHELLFOLDERVIEWDUAL_POPUPITEMMENU,
+    CALL_SHELLFOLDERVIEWDUAL_PUT_CURRENTVIEWMODE,
+    CALL_SHELLFOLDERVIEWDUAL_PUT_FOLDERFLAGS,
+    CALL_SHELLFOLDERVIEWDUAL_PUT_GROUPBY,
+    CALL_SHELLFOLDERVIEWDUAL_PUT_ICONSIZE,
+    CALL_SHELLFOLDERVIEWDUAL_PUT_SORTCOLUMNS,
+    CALL_SHELLFOLDERVIEWDUAL_QUERYINTERFACE,
+    CALL_SHELLFOLDERVIEWDUAL_RELEASE,
+    CALL_SHELLFOLDERVIEWDUAL_SELECTEDITEMS,
+    CALL_SHELLFOLDERVIEWDUAL_SELECTITEM,
+    CALL_SHELLFOLDERVIEWDUAL_SELECTITEMRELATIVE,
     CALL_SHELLHOOKPROC,
     CALL_SHELLMESSAGEBOX,
     CALL_SHEMPTYRECYCLEBINA,
@@ -420,6 +568,29 @@ struct qemu_enumidlist
     IEnumIDList         *host;
 };
 
+struct qemu_shellview
+{
+    /* Guest fields */
+    IShellView3             IShellView3_iface;
+    IOleCommandTarget       IOleCommandTarget_iface;
+    IDropTarget             IDropTarget_iface;
+    IDropSource             IDropSource_iface;
+    IViewObject             IViewObject_iface;
+    IFolderView2            IFolderView2_iface;
+    IShellFolderView        IShellFolderView_iface;
+    IShellFolderViewDual3   IShellFolderViewDual3_iface;
+
+    /* Host fields */
+    IShellView3             *host_shellview;
+    IOleCommandTarget       *host_cmd_target;
+    IDropTarget             *host_drop_target;
+    IDropSource             *host_drop_source;
+    IViewObject             *host_view_object;
+    IFolderView2            *host_folder_view;
+    IShellFolderView        *host_shell_folder_view;
+    IShellFolderViewDual3   *host_dual_view;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 void qemu_shellfolder_guest_init(struct qemu_shellfolder *folder);
@@ -499,6 +670,48 @@ void qemu_FileMenu_ReplaceUsingPidl(struct qemu_syscall *call);
 void qemu_FileMenu_TrackPopupMenuEx(struct qemu_syscall *call);
 void qemu_FindExecutableA(struct qemu_syscall *call);
 void qemu_FindExecutableW(struct qemu_syscall *call);
+void qemu_FolderView2_DoRename(struct qemu_syscall *call);
+void qemu_FolderView2_GetCurrentFolderFlags(struct qemu_syscall *call);
+void qemu_FolderView2_GetGroupBy(struct qemu_syscall *call);
+void qemu_FolderView2_GetGroupSubsetCount(struct qemu_syscall *call);
+void qemu_FolderView2_GetItem(struct qemu_syscall *call);
+void qemu_FolderView2_GetSelectedItem(struct qemu_syscall *call);
+void qemu_FolderView2_GetSelection(struct qemu_syscall *call);
+void qemu_FolderView2_GetSelectionState(struct qemu_syscall *call);
+void qemu_FolderView2_GetSortColumnCount(struct qemu_syscall *call);
+void qemu_FolderView2_GetSortColumns(struct qemu_syscall *call);
+void qemu_FolderView2_GetViewModeAndIconSize(struct qemu_syscall *call);
+void qemu_FolderView2_GetViewProperty(struct qemu_syscall *call);
+void qemu_FolderView2_GetVisibleItem(struct qemu_syscall *call);
+void qemu_FolderView2_InvokeVerbOnSelection(struct qemu_syscall *call);
+void qemu_FolderView2_IsMoveInSameFolder(struct qemu_syscall *call);
+void qemu_FolderView2_SetCurrentFolderFlags(struct qemu_syscall *call);
+void qemu_FolderView2_SetExtendedTileViewProperties(struct qemu_syscall *call);
+void qemu_FolderView2_SetGroupBy(struct qemu_syscall *call);
+void qemu_FolderView2_SetGroupSubsetCount(struct qemu_syscall *call);
+void qemu_FolderView2_SetRedraw(struct qemu_syscall *call);
+void qemu_FolderView2_SetSortColumns(struct qemu_syscall *call);
+void qemu_FolderView2_SetText(struct qemu_syscall *call);
+void qemu_FolderView2_SetTileViewProperties(struct qemu_syscall *call);
+void qemu_FolderView2_SetViewModeAndIconSize(struct qemu_syscall *call);
+void qemu_FolderView2_SetViewProperty(struct qemu_syscall *call);
+void qemu_FolderView_AddRef(struct qemu_syscall *call);
+void qemu_FolderView_GetAutoArrange(struct qemu_syscall *call);
+void qemu_FolderView_GetCurrentViewMode(struct qemu_syscall *call);
+void qemu_FolderView_GetDefaultSpacing(struct qemu_syscall *call);
+void qemu_FolderView_GetFocusedItem(struct qemu_syscall *call);
+void qemu_FolderView_GetFolder(struct qemu_syscall *call);
+void qemu_FolderView_GetItemPosition(struct qemu_syscall *call);
+void qemu_FolderView_GetSelectionMarkedItem(struct qemu_syscall *call);
+void qemu_FolderView_GetSpacing(struct qemu_syscall *call);
+void qemu_FolderView_Item(struct qemu_syscall *call);
+void qemu_FolderView_ItemCount(struct qemu_syscall *call);
+void qemu_FolderView_Items(struct qemu_syscall *call);
+void qemu_FolderView_QueryInterface(struct qemu_syscall *call);
+void qemu_FolderView_Release(struct qemu_syscall *call);
+void qemu_FolderView_SelectAndPositionItems(struct qemu_syscall *call);
+void qemu_FolderView_SelectItem(struct qemu_syscall *call);
+void qemu_FolderView_SetCurrentViewMode(struct qemu_syscall *call);
 void qemu_FreeIconList(struct qemu_syscall *call);
 void qemu_GUIDFromStringW(struct qemu_syscall *call);
 void qemu_GetCurrentProcessExplicitAppUserModelID(struct qemu_syscall *call);
@@ -536,6 +749,32 @@ void qemu_IPersistFolder3_GetCurFolder(struct qemu_syscall *call);
 void qemu_IPersistFolder3_GetFolderTargetInfo(struct qemu_syscall *call);
 void qemu_IPersistFolder3_Initialize(struct qemu_syscall *call);
 void qemu_IPersistFolder3_InitializeEx(struct qemu_syscall *call);
+void qemu_ISVDropSource_AddRef(struct qemu_syscall *call);
+void qemu_ISVDropSource_GiveFeedback(struct qemu_syscall *call);
+void qemu_ISVDropSource_QueryContinueDrag(struct qemu_syscall *call);
+void qemu_ISVDropSource_QueryInterface(struct qemu_syscall *call);
+void qemu_ISVDropSource_Release(struct qemu_syscall *call);
+void qemu_ISVDropTarget_AddRef(struct qemu_syscall *call);
+void qemu_ISVDropTarget_DragEnter(struct qemu_syscall *call);
+void qemu_ISVDropTarget_DragLeave(struct qemu_syscall *call);
+void qemu_ISVDropTarget_DragOver(struct qemu_syscall *call);
+void qemu_ISVDropTarget_Drop(struct qemu_syscall *call);
+void qemu_ISVDropTarget_QueryInterface(struct qemu_syscall *call);
+void qemu_ISVDropTarget_Release(struct qemu_syscall *call);
+void qemu_ISVOleCmdTarget_AddRef(struct qemu_syscall *call);
+void qemu_ISVOleCmdTarget_Exec(struct qemu_syscall *call);
+void qemu_ISVOleCmdTarget_QueryInterface(struct qemu_syscall *call);
+void qemu_ISVOleCmdTarget_QueryStatus(struct qemu_syscall *call);
+void qemu_ISVOleCmdTarget_Release(struct qemu_syscall *call);
+void qemu_ISVViewObject_AddRef(struct qemu_syscall *call);
+void qemu_ISVViewObject_Draw(struct qemu_syscall *call);
+void qemu_ISVViewObject_Freeze(struct qemu_syscall *call);
+void qemu_ISVViewObject_GetAdvise(struct qemu_syscall *call);
+void qemu_ISVViewObject_GetColorSet(struct qemu_syscall *call);
+void qemu_ISVViewObject_QueryInterface(struct qemu_syscall *call);
+void qemu_ISVViewObject_Release(struct qemu_syscall *call);
+void qemu_ISVViewObject_SetAdvise(struct qemu_syscall *call);
+void qemu_ISVViewObject_Unfreeze(struct qemu_syscall *call);
 void qemu_IShellFolder2_AddRef(struct qemu_syscall *call);
 void qemu_IShellFolder2_BindToObject(struct qemu_syscall *call);
 void qemu_IShellFolder2_BindToStorage(struct qemu_syscall *call);
@@ -556,6 +795,58 @@ void qemu_IShellFolder2_ParseDisplayName(struct qemu_syscall *call);
 void qemu_IShellFolder2_QueryInterface(struct qemu_syscall *call);
 void qemu_IShellFolder2_Release(struct qemu_syscall *call);
 void qemu_IShellFolder2_SetNameOf(struct qemu_syscall *call);
+void qemu_IShellFolderView_AddObject(struct qemu_syscall *call);
+void qemu_IShellFolderView_AddRef(struct qemu_syscall *call);
+void qemu_IShellFolderView_ArrangeGrid(struct qemu_syscall *call);
+void qemu_IShellFolderView_AutoArrange(struct qemu_syscall *call);
+void qemu_IShellFolderView_GetArrangeParam(struct qemu_syscall *call);
+void qemu_IShellFolderView_GetAutoArrange(struct qemu_syscall *call);
+void qemu_IShellFolderView_GetDragPoint(struct qemu_syscall *call);
+void qemu_IShellFolderView_GetDropPoint(struct qemu_syscall *call);
+void qemu_IShellFolderView_GetItemSpacing(struct qemu_syscall *call);
+void qemu_IShellFolderView_GetObject(struct qemu_syscall *call);
+void qemu_IShellFolderView_GetObjectCount(struct qemu_syscall *call);
+void qemu_IShellFolderView_GetSelectedCount(struct qemu_syscall *call);
+void qemu_IShellFolderView_GetSelectedObjects(struct qemu_syscall *call);
+void qemu_IShellFolderView_IsBkDropTarget(struct qemu_syscall *call);
+void qemu_IShellFolderView_IsDropOnSource(struct qemu_syscall *call);
+void qemu_IShellFolderView_MoveIcons(struct qemu_syscall *call);
+void qemu_IShellFolderView_QueryInterface(struct qemu_syscall *call);
+void qemu_IShellFolderView_QuerySupport(struct qemu_syscall *call);
+void qemu_IShellFolderView_Rearrange(struct qemu_syscall *call);
+void qemu_IShellFolderView_RefreshObject(struct qemu_syscall *call);
+void qemu_IShellFolderView_Release(struct qemu_syscall *call);
+void qemu_IShellFolderView_RemoveObject(struct qemu_syscall *call);
+void qemu_IShellFolderView_Select(struct qemu_syscall *call);
+void qemu_IShellFolderView_SetAutomationObject(struct qemu_syscall *call);
+void qemu_IShellFolderView_SetCallback(struct qemu_syscall *call);
+void qemu_IShellFolderView_SetClipboard(struct qemu_syscall *call);
+void qemu_IShellFolderView_SetItemPos(struct qemu_syscall *call);
+void qemu_IShellFolderView_SetObjectCount(struct qemu_syscall *call);
+void qemu_IShellFolderView_SetPoints(struct qemu_syscall *call);
+void qemu_IShellFolderView_SetRedraw(struct qemu_syscall *call);
+void qemu_IShellFolderView_UpdateObject(struct qemu_syscall *call);
+void qemu_IShellView2_CreateViewWindow2(struct qemu_syscall *call);
+void qemu_IShellView2_GetView(struct qemu_syscall *call);
+void qemu_IShellView2_HandleRename(struct qemu_syscall *call);
+void qemu_IShellView2_SelectAndPositionItem(struct qemu_syscall *call);
+void qemu_IShellView3_CreateViewWindow3(struct qemu_syscall *call);
+void qemu_IShellView_AddPropertySheetPages(struct qemu_syscall *call);
+void qemu_IShellView_AddRef(struct qemu_syscall *call);
+void qemu_IShellView_ContextSensitiveHelp(struct qemu_syscall *call);
+void qemu_IShellView_CreateViewWindow(struct qemu_syscall *call);
+void qemu_IShellView_DestroyViewWindow(struct qemu_syscall *call);
+void qemu_IShellView_EnableModeless(struct qemu_syscall *call);
+void qemu_IShellView_GetCurrentInfo(struct qemu_syscall *call);
+void qemu_IShellView_GetItemObject(struct qemu_syscall *call);
+void qemu_IShellView_GetWindow(struct qemu_syscall *call);
+void qemu_IShellView_QueryInterface(struct qemu_syscall *call);
+void qemu_IShellView_Refresh(struct qemu_syscall *call);
+void qemu_IShellView_Release(struct qemu_syscall *call);
+void qemu_IShellView_SaveViewState(struct qemu_syscall *call);
+void qemu_IShellView_SelectItem(struct qemu_syscall *call);
+void qemu_IShellView_TranslateAccelerator(struct qemu_syscall *call);
+void qemu_IShellView_UIActivate(struct qemu_syscall *call);
 void qemu_InitNetworkAddressControl(struct qemu_syscall *call);
 void qemu_InvalidateDriveType(struct qemu_syscall *call);
 void qemu_IsLFNDriveA(struct qemu_syscall *call);
@@ -815,6 +1106,34 @@ void qemu_cf_LockServer(struct qemu_syscall *call);
 void qemu_cf_QueryInterface(struct qemu_syscall *call);
 void qemu_cf_Release(struct qemu_syscall *call);
 void qemu_shell32_243(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_AddRef(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_FilterView(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_GetIDsOfNames(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_GetTypeInfo(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_GetTypeInfoCount(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_Invoke(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_PopupItemMenu(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_QueryInterface(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_Release(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_SelectItem(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_SelectItemRelative(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_SelectedItems(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_get_Application(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_get_CurrentViewMode(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_get_FocusedItem(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_get_Folder(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_get_FolderFlags(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_get_GroupBy(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_get_IconSize(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_get_Parent(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_get_Script(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_get_SortColumns(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_get_ViewOptions(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_put_CurrentViewMode(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_put_FolderFlags(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_put_GroupBy(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_put_IconSize(struct qemu_syscall *call);
+void qemu_shellfolderviewdual_put_SortColumns(struct qemu_syscall *call);
 
 DWORD (* WINAPI p_SHCLSIDFromString)(const void *clsid, CLSID *id);
 HRESULT (* WINAPI p_DllGetClassObject)(REFCLSID rclsid, REFIID iid, LPVOID *ppv);

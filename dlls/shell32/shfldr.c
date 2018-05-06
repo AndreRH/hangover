@@ -489,12 +489,12 @@ struct qemu_IShellFolder2_CreateViewObject
     uint64_t iface;
     uint64_t hwndOwner;
     uint64_t riid;
-    uint64_t ppvOut;
+    uint64_t out;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI qemu_shellfolder_CreateViewObject (IShellFolder2 *iface, HWND hwndOwner, REFIID riid, LPVOID * ppvOut)
+static HRESULT WINAPI qemu_shellfolder_CreateViewObject(IShellFolder2 *iface, HWND hwndOwner, REFIID riid, void **out)
 {
     struct qemu_IShellFolder2_CreateViewObject call;
     struct qemu_shellfolder *folder = impl_from_IShellFolder2(iface);
@@ -503,7 +503,7 @@ static HRESULT WINAPI qemu_shellfolder_CreateViewObject (IShellFolder2 *iface, H
     call.iface = (ULONG_PTR)folder;
     call.hwndOwner = (ULONG_PTR)hwndOwner;
     call.riid = (ULONG_PTR)riid;
-    call.ppvOut = (ULONG_PTR)ppvOut;
+    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
@@ -520,7 +520,7 @@ void qemu_IShellFolder2_CreateViewObject(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     folder = QEMU_G2H(c->iface);
 
-    c->super.iret = IShellFolder2_CreateViewObject(folder->host_sf, QEMU_G2H(c->hwndOwner), QEMU_G2H(c->riid), QEMU_G2H(c->ppvOut));
+    c->super.iret = IShellFolder2_CreateViewObject(folder->host_sf, QEMU_G2H(c->hwndOwner), QEMU_G2H(c->riid), QEMU_G2H(c->out));
 }
 
 #endif
