@@ -1521,3 +1521,7 @@
 # @ varargs wprintf_s(wstr) MSVCRT_wprintf_s FIXME
 # @ varargs wscanf(wstr) MSVCRT_wscanf FIXME
 # @ varargs wscanf_s(wstr) MSVCRT_wscanf_s FIXME
+
+@ cdecl __hangover_realpath(str str)
+@ cdecl __hangover_getpwuid(long)
+@ cdecl __hangover_getgrgid(long)

@@ -838,6 +838,8 @@ enum msvcrt_calls
     CALL_GETCHAR,
     CALL_GETENV,
     CALL_GETENV_S,
+    CALL_GETGRGID,
+    CALL_GETPWUID,
     CALL_GETS,
     CALL_GETWC,
     CALL_GETWCHAR,
@@ -940,6 +942,7 @@ enum msvcrt_calls
     CALL_RAISE,
     CALL_RAND,
     CALL_REALLOC,
+    CALL_REALPATH,
     CALL_REMAINDER,
     CALL_REMAINDERF,
     CALL_REMAINDERL,
@@ -2034,6 +2037,8 @@ void qemu_getc(struct qemu_syscall *c);
 void qemu_getchar(struct qemu_syscall *c);
 void qemu_getenv(struct qemu_syscall *call);
 void qemu_getenv_s(struct qemu_syscall *call);
+void qemu_getgrgid(struct qemu_syscall *call);
+void qemu_getpwuid(struct qemu_syscall *call);
 void qemu_gets(struct qemu_syscall *c);
 void qemu_getwc(struct qemu_syscall *c);
 void qemu_getwchar(struct qemu_syscall *c);
@@ -2137,6 +2142,7 @@ void qemu_qsort(struct qemu_syscall *call);
 void qemu_raise(struct qemu_syscall *call);
 void qemu_rand(struct qemu_syscall *call);
 void qemu_realloc(struct qemu_syscall *call);
+void qemu_realpath(struct qemu_syscall *call);
 void qemu_remainder(struct qemu_syscall *call);
 void qemu_remainderf(struct qemu_syscall *call);
 void qemu_remainderl(struct qemu_syscall *call);

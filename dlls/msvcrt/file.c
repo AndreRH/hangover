@@ -5912,3 +5912,100 @@ void qemu__open(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_realpath
+{
+    struct qemu_syscall super;
+    uint64_t path;
+    uint64_t resolved_path;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+char * CDECL __hangover_realpath(const char *path, char *resolved_path)
+{
+    struct qemu_realpath call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_REALPATH);
+    call.path = (ULONG_PTR)path;
+    call.resolved_path = (ULONG_PTR)resolved_path;
+
+    qemu_syscall(&call.super);
+
+    return (char *)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+void qemu_realpath(struct qemu_syscall *call)
+{
+    struct qemu_realpath *c = (struct qemu_realpath *)(ULONG_PTR)call;
+    WINE_FIXME("Unverified!\n");
+    /* This deliberately calls Unix libc. */
+    c->super.iret = QEMU_H2G(realpath(QEMU_G2H(c->path), QEMU_G2H(c->resolved_path)));
+}
+
+#endif
+
+struct qemu_getgrgid
+{
+    struct qemu_syscall super;
+    uint64_t gid;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+/* Not quite right, but should be compatible. */
+void * CDECL __hangover_getgrgid(int gid)
+{
+    struct qemu_getgrgid call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETGRGID);
+    call.gid = (ULONG_PTR)gid;
+
+    qemu_syscall(&call.super);
+
+    return (char *)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+void qemu_getgrgid(struct qemu_syscall *call)
+{
+    struct qemu_getgrgid *c = (struct qemu_getgrgid *)(ULONG_PTR)call;
+    WINE_FIXME("Unverified!\n");
+    /* This deliberately calls Unix libc. */
+    c->super.iret = QEMU_H2G(getgrgid(c->gid));
+}
+
+#endif
+
+struct qemu_getpwuid
+{
+    struct qemu_syscall super;
+    uint64_t uid;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+/* Not quite right, but should be compatible. */
+void * CDECL __hangover_getpwuid(int uid)
+{
+    struct qemu_getpwuid call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETPWUID);
+    call.uid = (ULONG_PTR)uid;
+
+    qemu_syscall(&call.super);
+
+    return (char *)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+void qemu_getpwuid(struct qemu_syscall *call)
+{
+    struct qemu_getpwuid *c = (struct qemu_getpwuid *)(ULONG_PTR)call;
+    WINE_FIXME("Unverified!\n");
+    /* This deliberately calls Unix libc. */
+    c->super.iret = QEMU_H2G(getpwuid(c->uid));
+}
+
+#endif

@@ -1,6 +1,8 @@
 #ifndef HAVE_QEMU_THUNK_SHELLAPI_H
 #define HAVE_QEMU_THUNK_SHELLAPI_H
 
+#ifndef QEMU_DLL_GUEST
+
 struct qemu_NOTIFYICONDATAA
 {
     DWORD cbSize;
@@ -128,6 +130,8 @@ static inline void NOTIFYICONDATAW_g2h(NOTIFYICONDATAW *host, const struct qemu_
 
     host->hBalloonIcon = (HICON)(ULONG_PTR)guest->hBalloonIcon;
 }
+
+#endif
 
 struct qemu_SHFILEINFOA
 {
