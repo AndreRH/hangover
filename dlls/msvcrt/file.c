@@ -5968,6 +5968,9 @@ void * CDECL __hangover_getgrgid(int gid)
 
 #else
 
+#include <pwd.h>
+#include <grp.h>
+
 void qemu_getgrgid(struct qemu_syscall *call)
 {
     struct qemu_getgrgid *c = (struct qemu_getgrgid *)(ULONG_PTR)call;
