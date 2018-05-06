@@ -647,7 +647,7 @@ WINUSERAPI LPWSTR WINAPI CharLowerW(LPWSTR str)
 void qemu_CharLowerW(struct qemu_syscall *call)
 {
     struct qemu_CharLowerW *c = (struct qemu_CharLowerW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)CharLowerW(QEMU_G2H(c->str));
 }
 
