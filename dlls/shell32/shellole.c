@@ -235,29 +235,81 @@ WINBASEAPI HRESULT WINAPI qemu_cf_CreateInstance(IClassFactory *iface, IUnknown 
 {
     struct qemu_cf_CreateInstance call;
     struct qemu_shell_cf *cf = impl_from_IClassFactory(iface);
+    struct qemu_shellfolder *folder;
+    HRESULT hr;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_CF_CREATEINSTANCE);
     call.iface = (ULONG_PTR)cf;
     call.unk_outer = (ULONG_PTR)unk_outer;
     call.iid = (ULONG_PTR)iid;
-    call.obj = (ULONG_PTR)obj;
 
+    *obj = NULL;
     qemu_syscall(&call.super);
+    hr = call.super.iret;
 
-    return call.super.iret;
+    if (FAILED(hr))
+        return hr;
+
+    switch (cf->init_type)
+    {
+        case SHELLFOLDER:
+            folder = (struct qemu_shellfolder *)(ULONG_PTR)call.obj;
+            qemu_shellfolder_guest_init(folder);
+            hr = IShellFolder2_QueryInterface(&folder->IShellFolder2_iface, iid, obj);
+            IShellFolder2_Release(&folder->IShellFolder2_iface);
+            break;
+    }
+
+    return hr;
 }
 
 #else
+
+static void *IShellFolder_Constructor(IUnknown *host)
+{
+    IShellFolder2 *sf;
+    struct qemu_shellfolder *folder;
+    HRESULT hr;
+
+    hr = IUnknown_QueryInterface(host, &IID_IShellFolder2, (void **)&sf);
+    if (FAILED(hr))
+        WINE_ERR("Cannot query IShellFolder2 inteface.\n");
+
+    folder = qemu_shellfolder_host_create(sf);
+    if (!folder)
+        IShellFolder2_Release(sf);
+
+    return folder;
+}
 
 void qemu_cf_CreateInstance(struct qemu_syscall *call)
 {
     struct qemu_cf_CreateInstance *c = (struct qemu_cf_CreateInstance *)call;
     struct qemu_shell_cf *cf;
+    IUnknown *obj;
 
     WINE_FIXME("Unverified!\n");
     cf = QEMU_G2H(c->iface);
 
-    c->super.iret = IClassFactory_CreateInstance(cf->host, QEMU_G2H(c->unk_outer), QEMU_G2H(c->iid), QEMU_G2H(c->obj));
+    c->obj = 0;
+
+    /* This will have to be handled in the guest side of our wrappers. */
+    if (c->unk_outer)
+        WINE_FIXME("Outer unknown interface not handled yet.\n");
+
+    c->super.iret = IClassFactory_CreateInstance(cf->host, NULL, QEMU_G2H(c->iid), (void **)&obj);
+    if (FAILED(c->super.iret))
+    {
+        /* Did we do something wrong? */
+        WINE_FIXME("Host-side CreateInstance failed.\n");
+        return;
+    }
+
+    c->obj = QEMU_H2G(cf->create(obj));
+    if (!c->obj)
+        c->super.iret = E_FAIL;
+
+    IUnknown_Release(obj);
 }
 
 #endif
@@ -338,11 +390,7 @@ WINBASEAPI HRESULT WINAPI DllGetClassObject(REFCLSID rclsid, REFIID iid, LPVOID 
 DEFINE_GUID( CLSID_UnixFolder, 0xcc702eb2, 0x7dc5, 0x11d9, 0xc6, 0x87, 0x00, 0x04, 0x23, 0x8a, 0x01, 0xcd );
 DEFINE_GUID( CLSID_UnixDosFolder, 0x9d20aae8, 0x0625, 0x44b0, 0x9c, 0xa7, 0x71, 0x88, 0x9c, 0x22, 0x54, 0xd9 );
 
-static void *IShellFolder_Constructor(IUnknown *host)
-{
-}
-
- const struct
+const struct
 {
     REFIID              clsid;
     LPFNCREATEINSTANCE  lpfnCI;
