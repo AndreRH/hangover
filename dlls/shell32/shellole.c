@@ -288,7 +288,7 @@ void qemu_cf_CreateInstance(struct qemu_syscall *call)
     struct qemu_shell_cf *cf;
     IUnknown *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     cf = QEMU_G2H(c->iface);
 
     c->obj = 0;
