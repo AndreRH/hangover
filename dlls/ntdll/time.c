@@ -232,6 +232,7 @@ struct qemu_RtlSecondsSince1970ToTime
     struct qemu_syscall super;
     uint64_t Seconds;
     uint64_t Time;
+    uint64_t size;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -242,6 +243,7 @@ WINBASEAPI void WINAPI RtlSecondsSince1970ToTime(DWORD Seconds, LARGE_INTEGER *T
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLSECONDSSINCE1970TOTIME);
     call.Seconds = Seconds;
     call.Time = (ULONG_PTR)Time;
+    call.size = sizeof(LARGE_INTEGER);
 
     qemu_syscall(&call.super);
 }
@@ -251,7 +253,7 @@ WINBASEAPI void WINAPI RtlSecondsSince1970ToTime(DWORD Seconds, LARGE_INTEGER *T
 void qemu_RtlSecondsSince1970ToTime(struct qemu_syscall *call)
 {
     struct qemu_RtlSecondsSince1970ToTime *c = (struct qemu_RtlSecondsSince1970ToTime *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     RtlSecondsSince1970ToTime(c->Seconds, QEMU_G2H(c->Time));
 }
 

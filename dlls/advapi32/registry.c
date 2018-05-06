@@ -2466,7 +2466,8 @@ struct qemu_RegLoadMUIStringW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI LSTATUS WINAPI RegLoadMUIStringW(HKEY hKey, LPCWSTR pwszValue, LPWSTR pwszBuffer, DWORD cbBuffer, LPDWORD pcbData, DWORD dwFlags, LPCWSTR pwszBaseDir)
+WINBASEAPI LSTATUS WINAPI RegLoadMUIStringW(HKEY hKey, LPCWSTR pwszValue, LPWSTR pwszBuffer, DWORD cbBuffer,
+        LPDWORD pcbData, DWORD dwFlags, LPCWSTR pwszBaseDir)
 {
     struct qemu_RegLoadMUIStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGLOADMUISTRINGW);
@@ -2488,8 +2489,9 @@ WINBASEAPI LSTATUS WINAPI RegLoadMUIStringW(HKEY hKey, LPCWSTR pwszValue, LPWSTR
 void qemu_RegLoadMUIStringW(struct qemu_syscall *call)
 {
     struct qemu_RegLoadMUIStringW *c = (struct qemu_RegLoadMUIStringW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RegLoadMUIStringW(QEMU_G2H(c->hKey), QEMU_G2H(c->pwszValue), QEMU_G2H(c->pwszBuffer), c->cbBuffer, QEMU_G2H(c->pcbData), c->dwFlags, QEMU_G2H(c->pwszBaseDir));
+    WINE_TRACE("\n");
+    c->super.iret = RegLoadMUIStringW(QEMU_G2H(c->hKey), QEMU_G2H(c->pwszValue), QEMU_G2H(c->pwszBuffer),
+            c->cbBuffer, QEMU_G2H(c->pcbData), c->dwFlags, QEMU_G2H(c->pwszBaseDir));
 }
 
 #endif
@@ -2508,7 +2510,8 @@ struct qemu_RegLoadMUIStringA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI LSTATUS WINAPI RegLoadMUIStringA(HKEY hKey, LPCSTR pszValue, LPSTR pszBuffer, DWORD cbBuffer, LPDWORD pcbData, DWORD dwFlags, LPCSTR pszBaseDir)
+WINBASEAPI LSTATUS WINAPI RegLoadMUIStringA(HKEY hKey, LPCSTR pszValue, LPSTR pszBuffer, DWORD cbBuffer,
+        LPDWORD pcbData, DWORD dwFlags, LPCSTR pszBaseDir)
 {
     struct qemu_RegLoadMUIStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGLOADMUISTRINGA);
@@ -2530,8 +2533,9 @@ WINBASEAPI LSTATUS WINAPI RegLoadMUIStringA(HKEY hKey, LPCSTR pszValue, LPSTR ps
 void qemu_RegLoadMUIStringA(struct qemu_syscall *call)
 {
     struct qemu_RegLoadMUIStringA *c = (struct qemu_RegLoadMUIStringA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RegLoadMUIStringA(QEMU_G2H(c->hKey), QEMU_G2H(c->pszValue), QEMU_G2H(c->pszBuffer), c->cbBuffer, QEMU_G2H(c->pcbData), c->dwFlags, QEMU_G2H(c->pszBaseDir));
+    WINE_TRACE("\n");
+    c->super.iret = RegLoadMUIStringA(QEMU_G2H(c->hKey), QEMU_G2H(c->pszValue), QEMU_G2H(c->pszBuffer),
+            c->cbBuffer, QEMU_G2H(c->pcbData), c->dwFlags, QEMU_G2H(c->pszBaseDir));
 }
 
 #endif

@@ -341,7 +341,7 @@ WINGDIAPI BOOL WINAPI OffsetWindowOrgEx(HDC hdc, INT x, INT y, LPPOINT pt)
 void qemu_OffsetWindowOrgEx(struct qemu_syscall *call)
 {
     struct qemu_OffsetWindowOrgEx *c = (struct qemu_OffsetWindowOrgEx *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = OffsetWindowOrgEx(QEMU_G2H(c->hdc), c->x, c->y, QEMU_G2H(c->pt));
 }
 
