@@ -315,7 +315,7 @@ WINBASEAPI HRESULT WINAPI SHGetFolderPathA(HWND hwndOwner, int nFolder, HANDLE h
 void qemu_SHGetFolderPathA(struct qemu_syscall *call)
 {
     struct qemu_SHGetFolderPathA *c = (struct qemu_SHGetFolderPathA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SHGetFolderPathA(QEMU_G2H(c->hwndOwner), c->nFolder, QEMU_G2H(c->hToken), c->dwFlags, QEMU_G2H(c->pszPath));
 }
 
