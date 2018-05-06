@@ -5939,7 +5939,7 @@ char * CDECL __hangover_realpath(const char *path, char *resolved_path)
 void qemu_realpath(struct qemu_syscall *call)
 {
     struct qemu_realpath *c = (struct qemu_realpath *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     /* This deliberately calls Unix libc. */
     c->super.iret = QEMU_H2G(realpath(QEMU_G2H(c->path), QEMU_G2H(c->resolved_path)));
 }
