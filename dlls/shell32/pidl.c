@@ -161,7 +161,7 @@ WINBASEAPI BOOL WINAPI ILRemoveLastID(LPITEMIDLIST pidl)
 void qemu_ILRemoveLastID(struct qemu_syscall *call)
 {
     struct qemu_ILRemoveLastID *c = (struct qemu_ILRemoveLastID *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ILRemoveLastID(QEMU_G2H(c->pidl));
 }
 
