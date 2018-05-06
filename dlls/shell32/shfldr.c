@@ -1398,7 +1398,7 @@ void qemu_PersistPropertyBag_GetClassID(struct qemu_syscall *call)
     struct qemu_PersistPropertyBag_GetClassID *c = (struct qemu_PersistPropertyBag_GetClassID *)call;
     struct qemu_shellfolder *folder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     folder = QEMU_G2H(c->iface);
 
     c->super.iret = IPersistPropertyBag_GetClassID(folder->host_bag, QEMU_G2H(c->pClassID));
