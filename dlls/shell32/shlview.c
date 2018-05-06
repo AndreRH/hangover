@@ -522,7 +522,7 @@ void qemu_IShellView_CreateViewWindow(struct qemu_syscall *call)
         WINE_FIXME("prev_view not handled yet.\n");
     if (c->owner)
     {
-        shellbrowser_wrapper = shellbrowser_wrapper_create(c->owner);
+        shellbrowser_wrapper = shellbrowser_wrapper_create(c->owner, view);
         browser = shellbrowser_wrapper_host_iface(shellbrowser_wrapper);
     }
 

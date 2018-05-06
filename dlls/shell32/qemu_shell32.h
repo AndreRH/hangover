@@ -598,6 +598,13 @@ struct shellbrowser_funcs
     uint64_t Release;
     uint64_t GetWindow;
     uint64_t SetMenuSB;
+    uint64_t SendControlMsg;
+    uint64_t QI;
+    uint64_t IncludeObject;
+    uint64_t OnViewWindowActive;
+    uint64_t OnStateChange;
+    uint64_t RemoveMenusSB;
+    uint64_t InsertMenusSB;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1191,7 +1198,7 @@ struct qemu_enumidlist *qemu_enumidlist_host_create(IEnumIDList *host);
 struct qemu_shellview *qemu_shellview_host_create(IShellView3 *host);
 
 void shellbrowser_wrapper_wrapper_set_funcs(const struct shellbrowser_funcs *funcs);
-struct shellbrowser_wrapper *shellbrowser_wrapper_create(uint64_t guest_iface);
+struct shellbrowser_wrapper *shellbrowser_wrapper_create(uint64_t guest_iface, struct qemu_shellview *shellview);
 uint64_t shellbrowser_wrapper_guest_iface(struct shellbrowser_wrapper *wrapper);
 IShellBrowser * shellbrowser_wrapper_host_iface(struct shellbrowser_wrapper *wrapper);
 
