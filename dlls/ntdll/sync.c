@@ -1258,7 +1258,7 @@ struct qemu_NtCreateKeyedEvent
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI NtCreateKeyedEvent(HANDLE *handle, ACCESS_MASK access, const OBJECT_ATTRIBUTES *attr, ULONG flags)
+NTSTATUS WINAPI ntdll_NtCreateKeyedEvent(HANDLE *handle, ACCESS_MASK access, const OBJECT_ATTRIBUTES *attr, ULONG flags)
 {
     struct qemu_NtCreateKeyedEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCREATEKEYEDEVENT);
@@ -1268,6 +1268,8 @@ WINBASEAPI NTSTATUS WINAPI NtCreateKeyedEvent(HANDLE *handle, ACCESS_MASK access
     call.flags = (ULONG_PTR)flags;
 
     qemu_syscall(&call.super);
+    if (handle)
+        *handle = (HANDLE)(ULONG_PTR)call.handle;
 
     return call.super.iret;
 }
@@ -1277,8 +1279,11 @@ WINBASEAPI NTSTATUS WINAPI NtCreateKeyedEvent(HANDLE *handle, ACCESS_MASK access
 void qemu_NtCreateKeyedEvent(struct qemu_syscall *call)
 {
     struct qemu_NtCreateKeyedEvent *c = (struct qemu_NtCreateKeyedEvent *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NtCreateKeyedEvent(QEMU_G2H(c->handle), c->access, QEMU_G2H(c->attr), c->flags);
+    HANDLE event;
+
+    WINE_TRACE("\n");
+    c->super.iret = NtCreateKeyedEvent(c->handle ? &event : NULL, c->access, QEMU_G2H(c->attr), c->flags);
+    c->handle = QEMU_H2G(event);
 }
 
 #endif
@@ -1328,7 +1333,7 @@ struct qemu_NtWaitForKeyedEvent
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI NtWaitForKeyedEvent(HANDLE handle, const void *key, BOOLEAN alertable, const LARGE_INTEGER *timeout)
+NTSTATUS WINAPI ntdll_NtWaitForKeyedEvent(HANDLE handle, const void *key, BOOLEAN alertable, const LARGE_INTEGER *timeout)
 {
     struct qemu_NtWaitForKeyedEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTWAITFORKEYEDEVENT);
@@ -1364,7 +1369,7 @@ struct qemu_NtReleaseKeyedEvent
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI NtReleaseKeyedEvent(HANDLE handle, const void *key, BOOLEAN alertable, const LARGE_INTEGER *timeout)
+NTSTATUS WINAPI ntdll_NtReleaseKeyedEvent(HANDLE handle, const void *key, BOOLEAN alertable, const LARGE_INTEGER *timeout)
 {
     struct qemu_NtReleaseKeyedEvent call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTRELEASEKEYEDEVENT);
@@ -1611,17 +1616,62 @@ struct qemu_RtlRunOnceBeginInitialize
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI RtlRunOnceBeginInitialize(RTL_RUN_ONCE *once, ULONG flags, void **context)
+static inline void *interlocked_cmpxchg_ptr( void **dest, void *xchg, void *compare )
 {
-    struct qemu_RtlRunOnceBeginInitialize call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_RTLRUNONCEBEGININITIALIZE);
-    call.once = (ULONG_PTR)once;
-    call.flags = (ULONG_PTR)flags;
-    call.context = (ULONG_PTR)context;
+    void *ret;
+#ifdef __x86_64__
+    __asm__ __volatile__( "lock; cmpxchgq %2,(%1)"
+                          : "=a" (ret) : "r" (dest), "r" (xchg), "0" (compare) : "memory" );
+#else
+    __asm__ __volatile__( "lock; cmpxchgl %2,(%1)"
+                          : "=a" (ret) : "r" (dest), "r" (xchg), "0" (compare) : "memory" );
+#endif
+    return ret;
+}
 
-    qemu_syscall(&call.super);
+HANDLE keyed_event = NULL;
 
-    return call.super.iret;
+DWORD WINAPI ntdll_RtlRunOnceBeginInitialize(RTL_RUN_ONCE *once, ULONG flags, void **context)
+{
+    if (flags & RTL_RUN_ONCE_CHECK_ONLY)
+    {
+        ULONG_PTR val = (ULONG_PTR)once->Ptr;
+
+        if (flags & RTL_RUN_ONCE_ASYNC) return STATUS_INVALID_PARAMETER;
+        if ((val & 3) != 2) return STATUS_UNSUCCESSFUL;
+        if (context) *context = (void *)(val & ~3);
+        return STATUS_SUCCESS;
+    }
+
+    for (;;)
+    {
+        ULONG_PTR next, val = (ULONG_PTR)once->Ptr;
+
+        switch (val & 3)
+        {
+        case 0:  /* first time */
+            if (!interlocked_cmpxchg_ptr( &once->Ptr,
+                                          (flags & RTL_RUN_ONCE_ASYNC) ? (void *)3 : (void *)1, 0 ))
+                return STATUS_PENDING;
+            break;
+
+        case 1:  /* in progress, wait */
+            if (flags & RTL_RUN_ONCE_ASYNC) return STATUS_INVALID_PARAMETER;
+            next = val & ~3;
+            if (interlocked_cmpxchg_ptr( &once->Ptr, (void *)((ULONG_PTR)&next | 1),
+                                         (void *)val ) == (void *)val)
+                ntdll_NtWaitForKeyedEvent( keyed_event, &next, FALSE, NULL );
+            break;
+
+        case 2:  /* done */
+            if (context) *context = (void *)(val & ~3);
+            return STATUS_SUCCESS;
+
+        case 3:  /* in progress, async */
+            if (!(flags & RTL_RUN_ONCE_ASYNC)) return STATUS_INVALID_PARAMETER;
+            return STATUS_PENDING;
+        }
+    }
 }
 
 #else
@@ -1645,17 +1695,43 @@ struct qemu_RtlRunOnceComplete
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI RtlRunOnceComplete(RTL_RUN_ONCE *once, ULONG flags, void *context)
+DWORD WINAPI ntdll_RtlRunOnceComplete(RTL_RUN_ONCE *once, ULONG flags, void *context)
 {
-    struct qemu_RtlRunOnceComplete call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_RTLRUNONCECOMPLETE);
-    call.once = (ULONG_PTR)once;
-    call.flags = (ULONG_PTR)flags;
-    call.context = (ULONG_PTR)context;
+    if ((ULONG_PTR)context & 3) return STATUS_INVALID_PARAMETER;
 
-    qemu_syscall(&call.super);
+    if (flags & RTL_RUN_ONCE_INIT_FAILED)
+    {
+        if (context) return STATUS_INVALID_PARAMETER;
+        if (flags & RTL_RUN_ONCE_ASYNC) return STATUS_INVALID_PARAMETER;
+    }
+    else context = (void *)((ULONG_PTR)context | 2);
 
-    return call.super.iret;
+    for (;;)
+    {
+        ULONG_PTR val = (ULONG_PTR)once->Ptr;
+
+        switch (val & 3)
+        {
+        case 1:  /* in progress */
+            if (interlocked_cmpxchg_ptr( &once->Ptr, context, (void *)val ) != (void *)val) break;
+            val &= ~3;
+            while (val)
+            {
+                ULONG_PTR next = *(ULONG_PTR *)val;
+                ntdll_NtReleaseKeyedEvent( keyed_event, (void *)val, FALSE, NULL );
+                val = next;
+            }
+            return STATUS_SUCCESS;
+
+        case 3:  /* in progress, async */
+            if (!(flags & RTL_RUN_ONCE_ASYNC)) return STATUS_INVALID_PARAMETER;
+            if (interlocked_cmpxchg_ptr( &once->Ptr, context, (void *)val ) != (void *)val) break;
+            return STATUS_SUCCESS;
+
+        default:
+            return STATUS_UNSUCCESSFUL;
+        }
+    }
 }
 
 #else
@@ -1672,10 +1748,6 @@ void qemu_RtlRunOnceComplete(struct qemu_syscall *call)
 struct qemu_RtlRunOnceExecuteOnce
 {
     struct qemu_syscall super;
-    uint64_t once;
-    uint64_t func;
-    uint64_t param;
-    uint64_t context;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1684,14 +1756,23 @@ WINBASEAPI DWORD WINAPI RtlRunOnceExecuteOnce(RTL_RUN_ONCE *once, PRTL_RUN_ONCE_
 {
     struct qemu_RtlRunOnceExecuteOnce call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLRUNONCEEXECUTEONCE);
-    call.once = (ULONG_PTR)once;
-    call.func = (ULONG_PTR)func;
-    call.param = (ULONG_PTR)param;
-    call.context = (ULONG_PTR)context;
 
+    /* For logging */
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    {
+        DWORD ret = ntdll_RtlRunOnceBeginInitialize( once, 0, context );
+
+        if (ret != STATUS_PENDING) return ret;
+
+        if (!func( once, param, context ))
+        {
+            ntdll_RtlRunOnceComplete( once, RTL_RUN_ONCE_INIT_FAILED, NULL );
+            return STATUS_UNSUCCESSFUL;
+        }
+
+        return ntdll_RtlRunOnceComplete( once, 0, context ? *context : NULL );
+    }
 }
 
 #else
@@ -1699,8 +1780,7 @@ WINBASEAPI DWORD WINAPI RtlRunOnceExecuteOnce(RTL_RUN_ONCE *once, PRTL_RUN_ONCE_
 void qemu_RtlRunOnceExecuteOnce(struct qemu_syscall *call)
 {
     struct qemu_RtlRunOnceExecuteOnce *c = (struct qemu_RtlRunOnceExecuteOnce *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlRunOnceExecuteOnce(QEMU_G2H(c->once), QEMU_G2H(c->func), QEMU_G2H(c->param), QEMU_G2H(c->context));
+    WINE_TRACE("\n");
 }
 
 #endif

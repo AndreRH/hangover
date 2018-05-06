@@ -112,7 +112,7 @@
 # @ stub NtCreateJobSet
 @ stdcall NtCreateKey(ptr long ptr long ptr long ptr)
 @ stdcall NtCreateKeyTransacted(ptr long ptr long ptr long long ptr)
-@ stdcall NtCreateKeyedEvent(ptr long ptr long)
+@ stdcall NtCreateKeyedEvent(ptr long ptr long) ntdll_NtCreateKeyedEvent
 @ stdcall NtCreateMailslotFile(ptr long ptr ptr long long long ptr)
 @ stdcall NtCreateMutant(ptr long ptr long)
 @ stdcall NtCreateNamedPipeFile(ptr long ptr ptr long long long long long long long long long ptr)
@@ -261,7 +261,7 @@
 # @ stdcall NtReadVirtualMemory(long ptr ptr long ptr)
 @ stub NtRegisterNewDevice
 @ stdcall NtRegisterThreadTerminatePort(ptr)
-@ stdcall NtReleaseKeyedEvent(long ptr long ptr)
+@ stdcall NtReleaseKeyedEvent(long ptr long ptr) ntdll_NtReleaseKeyedEvent
 @ stdcall NtReleaseMutant(long ptr)
 @ stub NtReleaseProcessMutant
 @ stdcall NtReleaseSemaphore(long long ptr)
@@ -348,7 +348,7 @@
 @ stub NtVdmControl
 @ stub NtW32Call
 # @ stub NtWaitForDebugEvent
-@ stdcall NtWaitForKeyedEvent(long ptr long ptr)
+@ stdcall NtWaitForKeyedEvent(long ptr long ptr) ntdll_NtWaitForKeyedEvent
 @ stdcall NtWaitForMultipleObjects(long ptr long long ptr)
 @ stub NtWaitForProcessMutant
 @ stdcall NtWaitForSingleObject(long long ptr)
@@ -813,8 +813,8 @@
 @ stub RtlRevertMemoryStream
 @ stub RtlRunDecodeUnicodeString
 @ stub RtlRunEncodeUnicodeString
-@ stdcall RtlRunOnceBeginInitialize(ptr long ptr)
-@ stdcall RtlRunOnceComplete(ptr long ptr)
+@ stdcall RtlRunOnceBeginInitialize(ptr long ptr) ntdll_RtlRunOnceBeginInitialize
+@ stdcall RtlRunOnceComplete(ptr long ptr) ntdll_RtlRunOnceComplete
 @ stdcall RtlRunOnceExecuteOnce(ptr ptr ptr ptr)
 @ stdcall RtlRunOnceInitialize(ptr)
 @ stdcall RtlSecondsSince1970ToTime(long ptr)
@@ -1028,7 +1028,7 @@
 # @ stub ZwCreateJobSet
 @ stdcall -private ZwCreateKey(ptr long ptr long ptr long ptr) NtCreateKey
 @ stdcall -private ZwCreateKeyTransacted(ptr long ptr long ptr long long ptr) NtCreateKeyTransacted
-@ stdcall -private ZwCreateKeyedEvent(ptr long ptr long) NtCreateKeyedEvent
+@ stdcall -private ZwCreateKeyedEvent(ptr long ptr long) ntdll_NtCreateKeyedEvent
 @ stdcall -private ZwCreateMailslotFile(ptr long ptr ptr long long long ptr) NtCreateMailslotFile
 @ stdcall -private ZwCreateMutant(ptr long ptr long) NtCreateMutant
 @ stdcall -private ZwCreateNamedPipeFile(ptr long ptr ptr long long long long long long long long long ptr) NtCreateNamedPipeFile
@@ -1174,7 +1174,7 @@
 # @ stdcall -private ZwReadVirtualMemory(long ptr ptr long ptr) NtReadVirtualMemory
 @ stub ZwRegisterNewDevice
 @ stdcall -private ZwRegisterThreadTerminatePort(ptr) NtRegisterThreadTerminatePort
-@ stdcall -private ZwReleaseKeyedEvent(long ptr long ptr) NtReleaseKeyedEvent
+@ stdcall -private ZwReleaseKeyedEvent(long ptr long ptr) ntdll_NtReleaseKeyedEvent
 @ stdcall -private ZwReleaseMutant(long ptr) NtReleaseMutant
 @ stub ZwReleaseProcessMutant
 @ stdcall -private ZwReleaseSemaphore(long long ptr) NtReleaseSemaphore
@@ -1261,7 +1261,7 @@
 @ stub ZwVdmControl
 @ stub ZwW32Call
 # @ stub ZwWaitForDebugEvent
-@ stdcall -private ZwWaitForKeyedEvent(long ptr long ptr) NtWaitForKeyedEvent
+@ stdcall -private ZwWaitForKeyedEvent(long ptr long ptr) ntdll_NtWaitForKeyedEvent
 @ stdcall -private ZwWaitForMultipleObjects(long ptr long long ptr) NtWaitForMultipleObjects
 @ stub ZwWaitForProcessMutant
 @ stdcall -private ZwWaitForSingleObject(long long ptr) NtWaitForSingleObject

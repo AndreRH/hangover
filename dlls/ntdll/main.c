@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <ntdef.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -42,6 +43,7 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
             call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
             call.exception_handler = (ULONG_PTR)qemu_exception_handler;
             qemu_syscall(&call.super);
+            ntdll_NtCreateKeyedEvent( &keyed_event, GENERIC_READ | GENERIC_WRITE, NULL, 0 );
             break;
     }
     return TRUE;

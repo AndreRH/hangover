@@ -3581,84 +3581,30 @@ void qemu_InitOnceComplete(struct qemu_syscall *call)
 struct qemu_InitOnceExecuteOnce
 {
     struct qemu_syscall super;
-    uint64_t once;
-    uint64_t func;
-    uint64_t param;
-    uint64_t context;
-    uint64_t wrapper;
-};
-
-struct qemu_InitOnceExecuteOnce_cb
-{
-    uint64_t func;
-    uint64_t once;
-    uint64_t param;
-    uint64_t context;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static uint64_t __fastcall InitOnceExecuteOnce_guest_cb(struct qemu_InitOnceExecuteOnce_cb *data)
-{
-    PINIT_ONCE_FN func = (PINIT_ONCE_FN)(ULONG_PTR)data->func;
-    return func((INIT_ONCE *)(ULONG_PTR)data->once, (void *)(ULONG_PTR)data->param, (void **)(ULONG_PTR)data->context);
-}
+extern DWORD WINAPI RtlRunOnceExecuteOnce(PRTL_RUN_ONCE,PRTL_RUN_ONCE_INIT_FN,PVOID,PVOID*);
 
-WINBASEAPI BOOL WINAPI InitOnceExecuteOnce(INIT_ONCE *once, PINIT_ONCE_FN func, void *param, void **context)
+WINBASEAPI BOOL WINAPI InitOnceExecuteOnce( INIT_ONCE *once, PINIT_ONCE_FN func, void *param, void **context )
 {
     struct qemu_InitOnceExecuteOnce call;
     call.super.id = QEMU_SYSCALL_ID(CALL_INITONCEEXECUTEONCE);
-    call.once = (ULONG_PTR)once;
-    call.func = (ULONG_PTR)func;
-    call.param = (ULONG_PTR)param;
-    call.context = (ULONG_PTR)context;
-    call.wrapper = (ULONG_PTR)InitOnceExecuteOnce_guest_cb;
 
+    /* For logging */
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    return !RtlRunOnceExecuteOnce( once, (PRTL_RUN_ONCE_INIT_FN)func, param, context );
 }
 
 #else
 
-struct qemu_InitOnceExecuteOnce_host_data
-{
-    uint64_t func;
-    uint64_t wrapper;
-    uint64_t param;
-};
-
-static BOOL WINAPI InitOnceExecuteOnce_host_cb( INIT_ONCE *once, void *param, void **context )
-{
-    struct qemu_InitOnceExecuteOnce_host_data *data = param;
-    struct qemu_InitOnceExecuteOnce_cb call;
-    BOOL ret;
-
-    call.func = data->func;
-    call.once = QEMU_H2G(once);
-    call.param = data->param;
-    call.context = QEMU_H2G(context);
-
-    WINE_TRACE("Calling guest callback 0x%lx(%p, 0x%lx, %p).\n", (unsigned long)call.func, once,
-            (unsigned long)call.param, context);
-    ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&call));
-    WINE_TRACE("Guest callback returned %u.\n", ret);
-
-    return ret;
-}
-
 void qemu_InitOnceExecuteOnce(struct qemu_syscall *call)
 {
     struct qemu_InitOnceExecuteOnce *c = (struct qemu_InitOnceExecuteOnce *)call;
-    struct qemu_InitOnceExecuteOnce_host_data data;
 
     WINE_TRACE("\n");
-    data.func = c->func;
-    data.wrapper = c->wrapper;
-    data.param = c->param;
-
-    c->super.iret = InitOnceExecuteOnce(QEMU_G2H(c->once), c->func ? InitOnceExecuteOnce_host_cb : NULL,
-            &data, QEMU_G2H(c->context));
 }
 
 #endif

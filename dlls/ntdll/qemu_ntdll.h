@@ -606,6 +606,9 @@ typedef void LDR_MODULE;
 NTSTATUS WINAPI ntdll_LdrFindEntryForAddress(const void *addr, LDR_MODULE **mod);
 PVOID WINAPI ntdll_RtlImageDirectoryEntryToData( HMODULE module, BOOL image, WORD dir, ULONG *size );
 NTSTATUS WINAPI ntdll_NtTerminateProcess(HANDLE handle, LONG exit_code);
+NTSTATUS WINAPI ntdll_NtCreateKeyedEvent(HANDLE *handle, ACCESS_MASK access, const OBJECT_ATTRIBUTES *attr, ULONG flags);
+
+extern HANDLE keyed_event;
 
 #ifdef _WIN64
 PRUNTIME_FUNCTION NTAPI ntdll_RtlLookupFunctionEntry(DWORD64 pc, DWORD64 *base, UNWIND_HISTORY_TABLE *history);
