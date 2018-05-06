@@ -185,8 +185,12 @@ intptr_t CDECL MSVCRT__findfirst(const char * fspec, struct _finddata_t* ft)
 void qemu__findfirst(struct qemu_syscall *call)
 {
     struct qemu__findfirst *c = (struct qemu__findfirst *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+#if GUEST_BIT == 32
+    c->super.iret = p__findfirst32(QEMU_G2H(c->fspec), QEMU_G2H(c->ft));
+#else
     c->super.iret = p__findfirst(QEMU_G2H(c->fspec), QEMU_G2H(c->ft));
+#endif
 }
 
 #endif
@@ -506,8 +510,12 @@ int CDECL MSVCRT__findnext(intptr_t hand, struct _finddata_t * ft)
 void qemu__findnext(struct qemu_syscall *call)
 {
     struct qemu__findnext *c = (struct qemu__findnext *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+#if GUEST_BIT == 32
+    c->super.iret = p__findnext32(c->hand, QEMU_G2H(c->ft));
+#else
     c->super.iret = p__findnext(c->hand, QEMU_G2H(c->ft));
+#endif
 }
 
 #endif
