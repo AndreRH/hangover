@@ -191,7 +191,7 @@ WINBASEAPI LPITEMIDLIST WINAPI ILClone (LPCITEMIDLIST pidl)
 void qemu_ILClone(struct qemu_syscall *call)
 {
     struct qemu_ILClone *c = (struct qemu_ILClone *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)ILClone(QEMU_G2H(c->pidl));
 }
 
@@ -643,7 +643,7 @@ WINBASEAPI LPITEMIDLIST WINAPI ILGetNext(LPCITEMIDLIST pidl)
 void qemu_ILGetNext(struct qemu_syscall *call)
 {
     struct qemu_ILGetNext *c = (struct qemu_ILGetNext *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)ILGetNext(QEMU_G2H(c->pidl));
 }
 
