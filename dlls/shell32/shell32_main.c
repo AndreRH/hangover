@@ -23,6 +23,8 @@
 #include <shlwapi.h>
 #include <shlobj.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_shell32.h"
@@ -97,8 +99,34 @@ WINBASEAPI DWORD_PTR WINAPI SHGetFileInfoW(LPCWSTR path,DWORD dwFileAttributes, 
 void qemu_SHGetFileInfoW(struct qemu_syscall *call)
 {
     struct qemu_SHGetFileInfoW *c = (struct qemu_SHGetFileInfoW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SHGetFileInfoW(QEMU_G2H(c->path), c->dwFileAttributes, QEMU_G2H(c->psfi), c->sizeofpsfi, c->flags);
+    SHFILEINFOW stack, *info = &stack;
+    struct qemu_SHFILEINFOW *info32;
+    UINT size;
+
+    WINE_TRACE("\n");
+    size = c->sizeofpsfi;
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->psfi);
+#else
+    info32 = QEMU_G2H(c->psfi);
+    if (info32)
+        SHFILEINFOW_g2h(info, info32);
+    else
+        info = NULL;
+
+    /* Just in case, but the Wine implementation ignores this. */
+    if (size != sizeof(*info32))
+        size = 0;
+    else
+        size = sizeof(*info);
+#endif
+
+    c->super.iret = SHGetFileInfoW(QEMU_G2H(c->path), c->dwFileAttributes, info, size, c->flags);
+
+#if GUEST_BIT != HOST_BIT
+    if (info32 && c->path)
+        SHFILEINFOW_h2g(info32, info);
+#endif
 }
 
 #endif

@@ -129,4 +129,58 @@ static inline void NOTIFYICONDATAW_g2h(NOTIFYICONDATAW *host, const struct qemu_
     host->hBalloonIcon = (HICON)(ULONG_PTR)guest->hBalloonIcon;
 }
 
+struct qemu_SHFILEINFOA
+{
+    qemu_ptr    hIcon;
+    int         iIcon;
+    DWORD       dwAttributes;
+    CHAR        szDisplayName[MAX_PATH];
+    CHAR        szTypeName[80];
+};
+
+static inline void SHFILEINFOA_g2h(SHFILEINFOA *host, const struct qemu_SHFILEINFOA *guest)
+{
+    host->hIcon = (HICON)(ULONG_PTR)guest->hIcon;
+    host->iIcon = guest->iIcon;
+    host->dwAttributes = guest->dwAttributes;
+    memcpy(host->szDisplayName, guest->szDisplayName, sizeof(host->szDisplayName));
+    memcpy(host->szTypeName, guest->szTypeName, sizeof(host->szTypeName));
+}
+
+static inline void SHFILEINFOA_h2g(struct qemu_SHFILEINFOA *guest, const SHFILEINFOA *host)
+{
+    guest->hIcon = (ULONG_PTR)host->hIcon;
+    guest->iIcon = host->iIcon;
+    guest->dwAttributes = host->dwAttributes;
+    memcpy(guest->szDisplayName, host->szDisplayName, sizeof(guest->szDisplayName));
+    memcpy(guest->szTypeName, host->szTypeName, sizeof(guest->szTypeName));
+}
+
+struct qemu_SHFILEINFOW
+{
+    qemu_ptr    hIcon;
+    int         iIcon;
+    DWORD	dwAttributes;
+    WCHAR	szDisplayName[MAX_PATH];
+    WCHAR	szTypeName[80];
+};
+
+static inline void SHFILEINFOW_g2h(SHFILEINFOW *host, const struct qemu_SHFILEINFOW *guest)
+{
+    host->hIcon = (HICON)(ULONG_PTR)guest->hIcon;
+    host->iIcon = guest->iIcon;
+    host->dwAttributes = guest->dwAttributes;
+    memcpy(host->szDisplayName, guest->szDisplayName, sizeof(host->szDisplayName));
+    memcpy(host->szTypeName, guest->szTypeName, sizeof(host->szTypeName));
+}
+
+static inline void SHFILEINFOW_h2g(struct qemu_SHFILEINFOW *guest, const SHFILEINFOW *host)
+{
+    guest->hIcon = (ULONG_PTR)host->hIcon;
+    guest->iIcon = host->iIcon;
+    guest->dwAttributes = host->dwAttributes;
+    memcpy(guest->szDisplayName, host->szDisplayName, sizeof(guest->szDisplayName));
+    memcpy(guest->szTypeName, host->szTypeName, sizeof(guest->szTypeName));
+}
+
 #endif
