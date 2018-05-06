@@ -602,7 +602,7 @@ void qemu_IShellView_GetCurrentInfo(struct qemu_syscall *call)
     struct qemu_IShellView_GetCurrentInfo *c = (struct qemu_IShellView_GetCurrentInfo *)call;
     struct qemu_shellview *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = IShellView_GetCurrentInfo(view->host_shellview, QEMU_G2H(c->lpfs));
