@@ -934,6 +934,8 @@ enum kernel32_calls
     CALL_WERSETFLAGS,
     CALL_WERUNREGISTERMEMORYBLOCK,
     CALL_WIDECHARTOMULTIBYTE,
+    CALL_WINE_GET_DOS_FILE_NAME,
+    CALL_WINE_GET_UNIX_FILE_NAME,
     CALL_WINEXEC,
     CALL_WOW64DISABLEWOW64FSREDIRECTION,
     CALL_WOW64ENABLEWOW64FSREDIRECTION,
@@ -1936,6 +1938,8 @@ void qemu_WerRegisterRuntimeExceptionModule(struct qemu_syscall *call);
 void qemu_WerSetFlags(struct qemu_syscall *call);
 void qemu_WerUnregisterMemoryBlock(struct qemu_syscall *call);
 void qemu_WideCharToMultiByte(struct qemu_syscall *call);
+void qemu_wine_get_unix_file_name(struct qemu_syscall *call);
+void qemu_wine_get_dos_file_name(struct qemu_syscall *call);
 void qemu_WinExec(struct qemu_syscall *call);
 void qemu_Wow64DisableWow64FsRedirection(struct qemu_syscall *call);
 void qemu_Wow64EnableWow64FsRedirection(struct qemu_syscall *call);

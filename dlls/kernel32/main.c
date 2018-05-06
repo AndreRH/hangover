@@ -1146,6 +1146,8 @@ static const syscall_handler dll_functions[] =
     qemu_WerSetFlags,
     qemu_WerUnregisterMemoryBlock,
     qemu_WideCharToMultiByte,
+    qemu_wine_get_dos_file_name,
+    qemu_wine_get_unix_file_name,
     qemu_WinExec,
     qemu_Wow64DisableWow64FsRedirection,
     qemu_Wow64EnableWow64FsRedirection,

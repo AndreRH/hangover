@@ -1664,3 +1664,13 @@
 @ stdcall lstrlen(str) lstrlenA
 @ stdcall lstrlenA(str)
 @ stdcall lstrlenW(wstr)
+
+################################################################
+# Wine internal extensions
+#
+# These are exported in hangover for PE builds of lowish-level DLLs
+# like shell32.
+
+# Unix files
+@ cdecl wine_get_unix_file_name(wstr)
+@ cdecl wine_get_dos_file_name(str)

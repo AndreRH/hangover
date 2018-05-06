@@ -1944,3 +1944,62 @@ void qemu_SetDefaultDllDirectories(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_wine_get_unix_file_name
+{
+    struct qemu_syscall super;
+    uint64_t dosW;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+char * CDECL wine_get_unix_file_name(LPCWSTR dosW)
+{
+    struct qemu_wine_get_unix_file_name call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WINE_GET_UNIX_FILE_NAME);
+    call.dosW = (ULONG_PTR)dosW;
+
+    qemu_syscall(&call.super);
+
+    return (char *)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+void qemu_wine_get_unix_file_name(struct qemu_syscall *call)
+{
+    struct qemu_wine_get_unix_file_name *c = (struct qemu_wine_get_unix_file_name *)call;
+    WINE_TRACE("\n");
+    c->super.iret = QEMU_H2G(wine_get_unix_file_name(QEMU_G2H(c->dosW)));
+}
+
+#endif
+
+struct qemu_wine_get_dos_file_name
+{
+    struct qemu_syscall super;
+    uint64_t str;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WCHAR * CDECL wine_get_dos_file_name(LPCSTR str)
+{
+    struct qemu_wine_get_dos_file_name call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WINE_GET_DOS_FILE_NAME);
+    call.str = (ULONG_PTR)str;
+
+    qemu_syscall(&call.super);
+
+    return (WCHAR *)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+void qemu_wine_get_dos_file_name(struct qemu_syscall *call)
+{
+    struct qemu_wine_get_dos_file_name *c = (struct qemu_wine_get_dos_file_name *)call;
+    WINE_TRACE("\n");
+    c->super.iret = QEMU_H2G(wine_get_dos_file_name(QEMU_G2H(c->str)));
+}
+
+#endif
