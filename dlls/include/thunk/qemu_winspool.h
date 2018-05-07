@@ -84,7 +84,7 @@ struct qemu_PRINTER_INFO_4
     DWORD       Attributes;
 };
 
-static inline void PRINTER_INFO_4_h2g(struct qemu_PRINTER_INFO_4 *guest, const PRINTER_INFO_4 *host)
+static inline void PRINTER_INFO_4_h2g(struct qemu_PRINTER_INFO_4 *guest, const PRINTER_INFO_4W *host)
 {
     guest->pPrinterName = (ULONG_PTR)host->pPrinterName;
     guest->pServerName = (ULONG_PTR)host->pServerName;
@@ -100,7 +100,7 @@ struct qemu_PRINTER_INFO_5
     DWORD       TransmissionRetryTimeout;
 };
 
-static inline void PRINTER_INFO_5_h2g(struct qemu_PRINTER_INFO_5 *guest, const PRINTER_INFO_5 *host)
+static inline void PRINTER_INFO_5_h2g(struct qemu_PRINTER_INFO_5 *guest, const PRINTER_INFO_5W *host)
 {
     guest->pPrinterName = (ULONG_PTR)host->pPrinterName;
     guest->pPortName = (ULONG_PTR)host->pPortName;

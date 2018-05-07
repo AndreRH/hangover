@@ -1723,7 +1723,7 @@ void qemu_GetPrinter(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_EnumPrintersW
+struct qemu_EnumPrinters
 {
     struct qemu_syscall super;
     uint64_t dwType;
@@ -1737,10 +1737,29 @@ struct qemu_EnumPrintersW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI EnumPrintersW(DWORD dwType, LPWSTR lpszName, DWORD dwLevel, LPBYTE lpbPrinters, DWORD cbBuf, LPDWORD lpdwNeeded, LPDWORD lpdwReturned)
+WINBASEAPI BOOL WINAPI EnumPrintersW(DWORD dwType, LPWSTR lpszName, DWORD dwLevel, LPBYTE lpbPrinters, DWORD cbBuf,
+        LPDWORD lpdwNeeded, LPDWORD lpdwReturned)
 {
-    struct qemu_EnumPrintersW call;
+    struct qemu_EnumPrinters call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMPRINTERSW);
+    call.dwType = dwType;
+    call.lpszName = (ULONG_PTR)lpszName;
+    call.dwLevel = dwLevel;
+    call.lpbPrinters = (ULONG_PTR)lpbPrinters;
+    call.cbBuf = cbBuf;
+    call.lpdwNeeded = (ULONG_PTR)lpdwNeeded;
+    call.lpdwReturned = (ULONG_PTR)lpdwReturned;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+WINBASEAPI BOOL WINAPI EnumPrintersA(DWORD dwType, LPSTR lpszName, DWORD dwLevel, LPBYTE lpbPrinters, DWORD cbBuf,
+        LPDWORD lpdwNeeded, LPDWORD lpdwReturned)
+{
+    struct qemu_EnumPrinters call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ENUMPRINTERSA);
     call.dwType = dwType;
     call.lpszName = (ULONG_PTR)lpszName;
     call.dwLevel = dwLevel;
@@ -1756,53 +1775,83 @@ WINBASEAPI BOOL WINAPI EnumPrintersW(DWORD dwType, LPWSTR lpszName, DWORD dwLeve
 
 #else
 
-void qemu_EnumPrintersW(struct qemu_syscall *call)
+void qemu_EnumPrinters(struct qemu_syscall *call)
 {
-    struct qemu_EnumPrintersW *c = (struct qemu_EnumPrintersW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumPrintersW(c->dwType, QEMU_G2H(c->lpszName), c->dwLevel, QEMU_G2H(c->lpbPrinters), c->cbBuf, QEMU_G2H(c->lpdwNeeded), QEMU_G2H(c->lpdwReturned));
-}
+    struct qemu_EnumPrinters *c = (struct qemu_EnumPrinters *)call;
+    DWORD returned, i;
+    void *data = QEMU_G2H(c->lpbPrinters);
 
+    WINE_TRACE("Unverified!\n");
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_ENUMPRINTERSW))
+    {
+        c->super.iret = EnumPrintersW(c->dwType, QEMU_G2H(c->lpszName), c->dwLevel, data,
+                c->cbBuf, QEMU_G2H(c->lpdwNeeded), &returned);
+    }
+    else
+    {
+        c->super.iret = EnumPrintersW(c->dwType, QEMU_G2H(c->lpszName), c->dwLevel, data,
+                c->cbBuf, QEMU_G2H(c->lpdwNeeded), &returned);
+    }
+
+    if (c->lpdwReturned)
+        *((DWORD *)(QEMU_G2H(c->lpdwReturned))) = returned;
+
+    if (!c->super.iret)
+        return;
+
+#if GUEST_BIT != HOST_BIT
+    switch (c->dwLevel)
+    {
+        case 1:
+            for (i = 0; i < returned; ++i)
+                PRINTER_INFO_1_h2g(&((struct qemu_PRINTER_INFO_1 *)data)[i], &((PRINTER_INFO_1W *)data)[i]);
+            break;
+
+        case 2:
+            for (i = 0; i < returned; ++i)
+                PRINTER_INFO_2_h2g(&((struct qemu_PRINTER_INFO_2 *)data)[i], &((PRINTER_INFO_2W *)data)[i]);
+            break;
+
+        case 3:
+            WINE_FIXME("check SECURITY_DESCRIPTOR size.\n");
+            for (i = 0; i < returned; ++i)
+                PRINTER_INFO_3_h2g(&((struct qemu_PRINTER_INFO_3 *)data)[i], &((PRINTER_INFO_3 *)data)[i]);
+            break;
+
+        case 4:
+            for (i = 0; i < returned; ++i)
+                PRINTER_INFO_4_h2g(&((struct qemu_PRINTER_INFO_4 *)data)[i], &((PRINTER_INFO_4W *)data)[i]);
+            break;
+
+        case 5:
+            for (i = 0; i < returned; ++i)
+                PRINTER_INFO_5_h2g(&((struct qemu_PRINTER_INFO_5 *)data)[i], &((PRINTER_INFO_5W *)data)[i]);
+            break;
+
+        case 6:
+            /* Just a DWORD, nothing to do. */
+            break;
+
+        case 7:
+            for (i = 0; i < returned; ++i)
+                PRINTER_INFO_7_h2g(&((struct qemu_PRINTER_INFO_7 *)data)[i], &((PRINTER_INFO_7W *)data)[i]);
+            break;
+
+        case 8:
+            for (i = 0; i < returned; ++i)
+                PRINTER_INFO_8_h2g(&((struct qemu_PRINTER_INFO_8 *)data)[i], &((PRINTER_INFO_8W *)data)[i]);
+            break;
+
+        case 9:
+            /* Both 8 and 9 contain just a DEVMODE * struct */
+            for (i = 0; i < returned; ++i)
+                PRINTER_INFO_8_h2g(&((struct qemu_PRINTER_INFO_8 *)data)[i], &((PRINTER_INFO_8W *)data)[i]);
+            break;
+
+        default:
+            WINE_FIXME("Unexpected info level %u.\n", (DWORD)c->dwLevel);
+    }
 #endif
-
-struct qemu_EnumPrintersA
-{
-    struct qemu_syscall super;
-    uint64_t flags;
-    uint64_t pName;
-    uint64_t level;
-    uint64_t pPrinters;
-    uint64_t cbBuf;
-    uint64_t pcbNeeded;
-    uint64_t pcReturned;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI BOOL WINAPI EnumPrintersA(DWORD flags, LPSTR pName, DWORD level, LPBYTE pPrinters, DWORD cbBuf, LPDWORD pcbNeeded, LPDWORD pcReturned)
-{
-    struct qemu_EnumPrintersA call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_ENUMPRINTERSA);
-    call.flags = flags;
-    call.pName = (ULONG_PTR)pName;
-    call.level = level;
-    call.pPrinters = (ULONG_PTR)pPrinters;
-    call.cbBuf = cbBuf;
-    call.pcbNeeded = (ULONG_PTR)pcbNeeded;
-    call.pcReturned = (ULONG_PTR)pcReturned;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_EnumPrintersA(struct qemu_syscall *call)
-{
-    struct qemu_EnumPrintersA *c = (struct qemu_EnumPrintersA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumPrintersA(c->flags, QEMU_G2H(c->pName), c->level, QEMU_G2H(c->pPrinters), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
 }
 
 #endif
