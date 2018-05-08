@@ -12,13 +12,13 @@ wsock32.dll: main_g.o protocol_g.o service_g.o socket_g.o wsock32.spec
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/wsock32.spec *_g.o -o wsock32.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x160000000
 
 qemu_wsock32.dll.so: main_h.o protocol_h.o service_h.o socket_h.o
-	$(WINEGCC) -shared -b $(HOST_CC) $(SRCDIR)/qemu_wsock32.spec *_h.o -o qemu_wsock32.dll.so -lwsock32
+	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_wsock32.spec *_h.o -o qemu_wsock32.dll.so -lwsock32
 
 %_g.o: %.c qemu_wsock32.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
 %_h.o: %.c qemu_wsock32.h Makefile $(SRCDIR)/Makefile
-	$(WINEGCC) -b $(HOST_CC) $< -c -o $@ $(CFLAGS)
+	$(WINEGCC) $(HOST_CC) $< -c -o $@ $(CFLAGS)
 
 clean:
 	rm -rf *o *.dll *.so

@@ -27,7 +27,7 @@ DRV_TARGET32 = $(join $(DRV___DIRS32), $(DRVS)) $(join $(DRV___DIRS32), $(DRV__H
 DRV___DIRS64 = $(patsubst %,$(BUILD_DIR)/dlls64/%/,$(DRVS))
 DRV_TARGET64 = $(join $(DRV___DIRS64), $(DRVS)) $(join $(DRV___DIRS64), $(DRV__HOST))
 
-TRIPLE = aarch64-linux-android
+TRIPLE = -b aarch64-linux-android
 
 all: $(BUILD_DIR)/wine-host/dlls/wineandroid.drv/hangover-debug.apk
 .PHONY: all

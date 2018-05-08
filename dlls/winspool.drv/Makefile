@@ -12,13 +12,13 @@ winspool.drv: winspool.drv.spec main_g.o info_g.o
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/winspool.drv.spec *_g.o -o winspool.drv -nodefaultlibs -nostdlib
 
 qemu_winspool.drv.so: main_h.o info_h.o qemu_winspool.drv.spec
-	$(WINEGCC) -shared -b $(HOST_CC) $(SRCDIR)/qemu_winspool.drv.spec *_h.o -o qemu_winspool.drv.so -lwinspool
+	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_winspool.drv.spec *_h.o -o qemu_winspool.drv.so -lwinspool
 
 %_g.o: %.c qemu_winspool.drv.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -I../../../wine/include/wine
 
 %_h.o: %.c qemu_winspool.drv.h Makefile $(SRCDIR)/Makefile
-	$(WINEGCC) -b $(HOST_CC) $< -c -o $@ $(CFLAGS)
+	$(WINEGCC) $(HOST_CC) $< -c -o $@ $(CFLAGS)
 
 clean:
 	rm -rf *o *.dll *.so

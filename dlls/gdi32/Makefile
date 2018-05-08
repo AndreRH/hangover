@@ -12,13 +12,13 @@ gdi32.dll: bitblt_g.o bitmap_g.o brush_g.o clipping_g.o dc_g.o dib_g.o driver_g.
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/gdi32.spec *_g.o -o gdi32.dll -L../ntdll -lntdll -nodefaultlibs -nostdlib -Wl,--image-base,0x60000000
 
 qemu_gdi32.dll.so: bitblt_h.o bitmap_h.o brush_h.o clipping_h.o dc_h.o dib_h.o driver_h.o enhmetafile_h.o enhmfdrv_h.o font_h.o freetype_h.o gdiobj_h.o icm_h.o main_h.o mapping_h.o metafile_h.o mfdrv_h.o opengl_h.o painting_h.o palette_h.o path_h.o pen_h.o printdrv_h.o qemu_gdi32.spec region_h.o
-	$(WINEGCC) -shared -b $(HOST_CC) $(SRCDIR)/qemu_gdi32.spec *_h.o -o qemu_gdi32.dll.so -lgdi32
+	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_gdi32.spec *_h.o -o qemu_gdi32.dll.so -lgdi32
 
 %_g.o: %.c qemu_gdi32.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
 %_h.o: %.c qemu_gdi32.h Makefile $(SRCDIR)/Makefile
-	$(WINEGCC) -b $(HOST_CC) $< -c -o $@ $(CFLAGS)
+	$(WINEGCC) $(HOST_CC) $< -c -o $@ $(CFLAGS)
 
 clean:
 	rm -rf *o *.dll *.so
