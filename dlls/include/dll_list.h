@@ -29,5 +29,6 @@
 #define DLL_DDRAW       0x1aLL
 #define DLL_WINSPOOL    0x1bLL
 #define DLL_DINPUT      0x1cLL
+#define DLL_BCRYPT      0x1dLL
 
 #endif
