@@ -128,56 +128,56 @@ build/dlls32/%/Makefile:
 
 define DLLS32_RULE_G
 build/dlls32/$(1)/$(1).dll: build/dlls32/$(1)/Makefile build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-	ln -sf build/dlls32/$(1)/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll32/
+	ln -sf ../../../dlls32/$(1)/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll32/
 	+$(MAKE) -C build/dlls32/$(1) $(1).dll
 endef
 $(foreach mod,$(DLLS),$(eval $(call DLLS32_RULE_G,$(mod))))
 
 define DLLS64_RULE_G
 build/dlls64/$(1)/$(1).dll: build/dlls64/$(1)/Makefile build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-	ln -sf build/dlls64/$(1)/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll64/
+	ln -sf ../../../dlls64/$(1)/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll64/
 	+$(MAKE) -C build/dlls64/$(1) $(1).dll
 endef
 $(foreach mod,$(DLLS),$(eval $(call DLLS64_RULE_G,$(mod))))
 
 define DRVS32_RULE_G
 build/dlls32/$(1)/$(1): build/dlls32/$(1)/Makefile build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-	ln -sf build/dlls32/$(1)/$(1) build/qemu/x86_64-windows-user/qemu_guest_dll32/
+	ln -sf ../../../dlls32/$(1)/$(1) build/qemu/x86_64-windows-user/qemu_guest_dll32/
 	+$(MAKE) -C build/dlls32/$(1) $(1)
 endef
 $(foreach mod,$(DRVS),$(eval $(call DRVS32_RULE_G,$(mod))))
 
 define DRVS64_RULE_G
 build/dlls64/$(1)/$(1): build/dlls64/$(1)/Makefile build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-	ln -sf build/dlls64/$(1)/$(1) build/qemu/x86_64-windows-user/qemu_guest_dll64/
+	ln -sf ../../../dlls64/$(1)/$(1) build/qemu/x86_64-windows-user/qemu_guest_dll64/
 	+$(MAKE) -C build/dlls64/$(1) $(1)
 endef
 $(foreach mod,$(DRVS),$(eval $(call DRVS64_RULE_G,$(mod))))
 
 define DLLS32_RULE_H
 build/dlls32/$(1)/qemu_$(1).dll.so: build/dlls32/$(1)/Makefile build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-	ln -sf build/dlls32/$(1)/qemu_$(1).dll.so build/qemu/x86_64-windows-user/qemu_host_dll32/
+	ln -sf ../../../dlls32/$(1)/qemu_$(1).dll.so build/qemu/x86_64-windows-user/qemu_host_dll32/
 	+$(MAKE) -C build/dlls32/$(1) qemu_$(1).dll.so
 endef
 $(foreach mod,$(DLLS),$(eval $(call DLLS32_RULE_H,$(mod))))
 
 define DLLS64_RULE_H
 build/dlls64/$(1)/qemu_$(1).dll.so: build/dlls64/$(1)/Makefile build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-	ln -sf build/dlls64/$(1)/qemu_$(1).dll.so build/qemu/x86_64-windows-user/qemu_host_dll64/
+	ln -sf ../../../dlls64/$(1)/qemu_$(1).dll.so build/qemu/x86_64-windows-user/qemu_host_dll64/
 	+$(MAKE) -C build/dlls64/$(1) qemu_$(1).dll.so
 endef
 $(foreach mod,$(DLLS),$(eval $(call DLLS64_RULE_H,$(mod))))
 
 define DRVS32_RULE_H
 build/dlls32/$(1)/qemu_$(1).so: build/dlls32/$(1)/Makefile build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-	ln -sf build/dlls32/$(1)/qemu_$(1).so build/qemu/x86_64-windows-user/qemu_host_dll32/
+	ln -sf ../../../dlls32/$(1)/qemu_$(1).so build/qemu/x86_64-windows-user/qemu_host_dll32/
 	+$(MAKE) -C build/dlls32/$(1) qemu_$(1).so
 endef
 $(foreach mod,$(DRVS),$(eval $(call DRVS32_RULE_H,$(mod))))
 
 define DRVS64_RULE_H
 build/dlls64/$(1)/qemu_$(1).so: build/dlls64/$(1)/Makefile build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-	ln -sf build/dlls64/$(1)/qemu_$(1).so build/qemu/x86_64-windows-user/qemu_host_dll64/
+	ln -sf ../../../dlls64/$(1)/qemu_$(1).so build/qemu/x86_64-windows-user/qemu_host_dll64/
 	+$(MAKE) -C build/dlls64/$(1) qemu_$(1).so
 endef
 $(foreach mod,$(DRVS),$(eval $(call DRVS64_RULE_H,$(mod))))
@@ -186,13 +186,13 @@ $(foreach mod,$(DRVS),$(eval $(call DRVS64_RULE_H,$(mod))))
 
 define WINEDLLS_RULE
 build/qemu/x86_64-windows-user/qemu_guest_dll32/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll64/$(1).dll: wine-guest32 wine-guest build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-	ln -sf build/wine-guest32/dlls/$(1)/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll32/
-	ln -sf build/wine-guest/dlls/$(1)/$(1).dll   build/qemu/x86_64-windows-user/qemu_guest_dll64/
+	ln -sf ../../../wine-guest32/dlls/$(1)/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll32/
+	ln -sf ../../../wine-guest/dlls/$(1)/$(1).dll   build/qemu/x86_64-windows-user/qemu_guest_dll64/
 endef
 $(foreach mod,$(WINEDLLS),$(eval $(call WINEDLLS_RULE,$(mod))))
 
 # Link libwine
 build/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll: wine-guest32
-	ln -sf build/wine-guest32/libs/wine/libwine.dll build/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll
+	ln -sf ../../../wine-guest32/libs/wine/libwine.dll build/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll
 build/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll: wine-guest
-	ln -sf build/wine-guest/libs/wine/libwine.dll build/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
+	ln -sf ../../../wine-guest/libs/wine/libwine.dll build/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
