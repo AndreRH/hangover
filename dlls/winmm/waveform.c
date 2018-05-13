@@ -661,7 +661,7 @@ WINBASEAPI UINT WINAPI waveOutReset(HWAVEOUT hWaveOut)
 void qemu_waveOutReset(struct qemu_syscall *call)
 {
     struct qemu_waveOutReset *c = (struct qemu_waveOutReset *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = waveOutReset(QEMU_G2H(c->hWaveOut));
 }
 
