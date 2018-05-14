@@ -120,12 +120,14 @@ struct qemu_qemu_timeSetEvent_host_data
     uint64_t wrapper;
     UINT id;
     struct list entry;
+    WORD flags;
 };
 
 static void CALLBACK qemu_timeSetEvent_host_proc(UINT id, UINT msg, DWORD_PTR user, DWORD_PTR dw1, DWORD_PTR dw2)
 {
     struct qemu_qemu_timeSetEvent_host_data *ctx = (struct qemu_qemu_timeSetEvent_host_data *)user;
     struct qemu_timeSetEvent_cb call;
+    uint64_t wrapper;
 
     call.func = ctx->guest_func;
     call.id = id;
@@ -133,11 +135,22 @@ static void CALLBACK qemu_timeSetEvent_host_proc(UINT id, UINT msg, DWORD_PTR us
     call.user = ctx->guest_data;
     call.dw1 = dw1;
     call.dw2 = dw2;
+    wrapper = ctx->wrapper;
+
+    if (!(ctx->flags & TIME_PERIODIC))
+    {
+        EnterCriticalSection(&timeSetEvent_cs);
+        list_remove(&ctx->entry);
+        LeaveCriticalSection(&timeSetEvent_cs);
+
+        WINE_TRACE("Deleting existing callback data %p / id %u.\n", ctx, ctx->id);
+        HeapFree(GetProcessHeap(), 0, ctx);
+    }
 
     WINE_TRACE("Calling guest function %p(%u, %u, %p, %p, %p).\n", (void *)call.func,
             (unsigned int)call.id, (unsigned int)call.msg, (void *)call.user,
             (void *)call.dw1, (void *)call.dw2);
-    qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
+    qemu_ops->qemu_execute(QEMU_G2H(wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest function returned.\n");
 }
 
@@ -156,21 +169,30 @@ void qemu_timeSetEvent(struct qemu_syscall *call)
     }
 
     ctx = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ctx));
+    WINE_TRACE("Alloc timer %p\n", ctx);
+
     ctx->guest_func = c->lpFunc;
     ctx->guest_data = c->dwUser;
     ctx->wrapper = c->wrapper;
+    ctx->flags = c->wFlags;
 
     EnterCriticalSection(&timeSetEvent_cs);
+    list_add_tail(&timeSetEvent_list, &ctx->entry);
+    LeaveCriticalSection(&timeSetEvent_cs);
+
     c->super.iret = timeSetEvent(c->wDelay, c->wResol,
             c->lpFunc ? qemu_timeSetEvent_host_proc : NULL, (DWORD_PTR)ctx,
             c->wFlags | TIME_KILL_SYNCHRONOUS);
+    ctx->id = c->super.iret;
 
-    if (c->super.iret)
+    if (!c->super.iret)
     {
-        ctx->id = c->super.iret;
-        list_add_tail(&timeSetEvent_list, &ctx->entry);
+        WINE_WARN("Creating the host timer failed.\n");
+        EnterCriticalSection(&timeSetEvent_cs);
+        list_remove(&ctx->entry);
+        LeaveCriticalSection(&timeSetEvent_cs);
+        HeapFree(GetProcessHeap(), 0, ctx);
     }
-    LeaveCriticalSection(&timeSetEvent_cs);
 }
 
 #endif
@@ -213,6 +235,7 @@ void qemu_timeKillEvent(struct qemu_syscall *call)
             {
                 WINE_TRACE("Deleting existing callback data %p / id %u.\n", event, event->id);
                 list_remove(&event->entry);
+                LeaveCriticalSection(&timeSetEvent_cs);
                 HeapFree(GetProcessHeap(), 0, event);
                 return;
             }
