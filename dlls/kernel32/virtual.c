@@ -918,7 +918,7 @@ WINBASEAPI BOOL WINAPI IsBadHugeWritePtr(LPVOID ptr, UINT_PTR size)
 void qemu_IsBadHugeWritePtr(struct qemu_syscall *call)
 {
     struct qemu_IsBadHugeWritePtr *c = (struct qemu_IsBadHugeWritePtr *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsBadHugeWritePtr(QEMU_G2H(c->ptr), c->size);
 }
 
