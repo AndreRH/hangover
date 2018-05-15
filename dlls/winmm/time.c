@@ -154,11 +154,20 @@ static void CALLBACK qemu_timeSetEvent_host_proc(UINT id, UINT msg, DWORD_PTR us
     WINE_TRACE("Guest function returned.\n");
 }
 
+static HANDLE hack;
+
 void qemu_timeSetEvent(struct qemu_syscall *call)
 {
     struct qemu_timeSetEvent *c = (struct qemu_timeSetEvent *)call;
     struct qemu_qemu_timeSetEvent_host_data *ctx;
 
+    if (!hack)
+    {
+        MMRESULT hack_timer;
+        hack = CreateEventA(NULL, FALSE, FALSE, NULL);
+        hack_timer = timeSetEvent(65534, 1, hack, 0, TIME_CALLBACK_EVENT_SET | TIME_PERIODIC);
+        WINE_ERR("hack timer %x\n", hack_timer);
+    }
     WINE_TRACE("\n");
     if (c->wFlags & (TIME_CALLBACK_EVENT_SET | TIME_CALLBACK_EVENT_PULSE))
     {
