@@ -458,11 +458,14 @@ void qemu_FDITruncateCabinet(struct qemu_syscall *call)
 {
     struct qemu_FDITruncateCabinet *c = (struct qemu_FDITruncateCabinet *)call;
     struct qemu_fxi *fdi;
+    struct qemu_fxi *old_tls = cabinet_tls;
 
     WINE_FIXME("Unverified!\n");
     fdi = QEMU_G2H(c->hfdi);
 
+    cabinet_tls = fdi;
     c->super.iret = FDITruncateCabinet(fdi->host.fdi, QEMU_G2H(c->pszCabinetName), c->iFolderToDelete);
+    cabinet_tls = old_tls;
 }
 
 #endif
