@@ -102,6 +102,16 @@ struct qemu_dll_init
 {
     struct qemu_syscall super;
     uint64_t fci_alloc_guest;
+    uint64_t fci_free_guest;
+    uint64_t fci_open_info_guest;
+    uint64_t fci_readwrite_guest;
+    uint64_t fci_close_guest;
+    uint64_t fci_progress_guest;
+    uint64_t fci_dest_guest;
+    uint64_t fci_open_guest;
+    uint64_t fci_temp_guest;
+    uint64_t fci_delete_guest;
+    uint64_t fci_seek_guest;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -114,6 +124,16 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
     {
         call.super.id = QEMU_SYSCALL_ID(CALL_INIT_DLL);
         call.fci_alloc_guest = (ULONG_PTR)fci_alloc_guest;
+        call.fci_free_guest = (ULONG_PTR)fci_free_guest;
+        call.fci_open_info_guest = (ULONG_PTR)fci_open_info_guest;
+        call.fci_readwrite_guest = (ULONG_PTR)fci_readwrite_guest;
+        call.fci_close_guest = (ULONG_PTR)fci_close_guest;
+        call.fci_progress_guest = (ULONG_PTR)fci_progress_guest;
+        call.fci_dest_guest = (ULONG_PTR)fci_dest_guest;
+        call.fci_open_guest = (ULONG_PTR)fci_open_guest;
+        call.fci_temp_guest = (ULONG_PTR)fci_temp_guest;
+        call.fci_delete_guest = (ULONG_PTR)fci_delete_guest;
+        call.fci_seek_guest = (ULONG_PTR)fci_seek_guest;
         qemu_syscall(&call.super);
     }
 
@@ -126,17 +146,29 @@ uint64_t fci_dest_guest;
 uint64_t fci_alloc_guest;
 uint64_t fci_free_guest;
 uint64_t fci_open_guest;
-uint64_t fci_read_guest;
+uint64_t fci_readwrite_guest;
 uint64_t fci_write_guest;
 uint64_t fci_close_guest;
 uint64_t fci_seek_guest;
 uint64_t fci_delete_guest;
 uint64_t fci_temp_guest;
+uint64_t fci_open_info_guest;
+uint64_t fci_progress_guest;
 
 static void qemu_init_dll(struct qemu_syscall *call)
 {
     struct qemu_dll_init *c = (struct qemu_dll_init *)call;
     fci_alloc_guest = c->fci_alloc_guest;
+    fci_free_guest = c->fci_free_guest;
+    fci_open_info_guest = c->fci_open_info_guest;
+    fci_readwrite_guest = c->fci_readwrite_guest;
+    fci_close_guest = c->fci_close_guest;
+    fci_progress_guest = c->fci_progress_guest;
+    fci_dest_guest = c->fci_dest_guest;
+    fci_open_guest = c->fci_open_guest;
+    fci_temp_guest = c->fci_temp_guest;
+    fci_delete_guest = c->fci_delete_guest;
+    fci_seek_guest = c->fci_seek_guest;
 }
 
 const struct qemu_ops *qemu_ops;

@@ -60,8 +60,28 @@ typedef struct
 #ifdef QEMU_DLL_GUEST
 
 struct FCI_alloc_cb;
+struct FCI_free_cb;
+struct FCI_open_info_cb;
+struct FCI_read_cb;
+struct FCI_close_cb;
+struct FCI_progress_cb;
+struct FCI_dest_cb;
+struct FCI_open_cb;
+struct FCI_temp_cb;
+struct FCI_delete_cb;
+struct FCI_seek_cb;
 
 void * __fastcall fci_alloc_guest(struct FCI_alloc_cb *call);
+INT_PTR __fastcall fci_open_info_guest(struct FCI_open_info_cb *call);
+UINT __fastcall fci_readwrite_guest(struct FCI_read_cb *call);
+int __fastcall fci_close_guest(struct FCI_close_cb *call);
+LONG __fastcall fci_progress_guest(struct FCI_progress_cb *call);
+int __fastcall fci_dest_guest(struct FCI_dest_cb *call);
+INT_PTR __fastcall fci_open_guest(struct FCI_open_cb *call);
+void __fastcall fci_free_guest(struct FCI_free_cb *call);
+BOOL __fastcall fci_temp_guest(struct FCI_temp_cb *call);
+int __fastcall fci_delete_guest(struct FCI_delete_cb *call);
+LONG __fastcall fci_seek_guest(struct FCI_seek_cb *call);
 
 #else
 
@@ -71,12 +91,13 @@ extern uint64_t fci_dest_guest;
 extern uint64_t fci_alloc_guest;
 extern uint64_t fci_free_guest;
 extern uint64_t fci_open_guest;
-extern uint64_t fci_read_guest;
-extern uint64_t fci_write_guest;
+extern uint64_t fci_readwrite_guest;
 extern uint64_t fci_close_guest;
 extern uint64_t fci_seek_guest;
 extern uint64_t fci_delete_guest;
 extern uint64_t fci_temp_guest;
+extern uint64_t fci_open_info_guest;
+extern uint64_t fci_progress_guest;
 
 void qemu_FCIAddFile(struct qemu_syscall *call);
 void qemu_FCICreate(struct qemu_syscall *call);
@@ -92,7 +113,7 @@ void qemu_FDITruncateCabinet(struct qemu_syscall *call);
 struct qemu_fci
 {
     HFCI host;
-    uint64_t dest, alloc, free, open, read, write, close, seek, del, temp;
+    uint64_t dest, alloc, free, open, read, write, close, seek, del, temp, open_info, progress;
 };
 
 DWORD cabinet_tls;
