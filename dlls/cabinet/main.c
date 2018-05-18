@@ -199,6 +199,8 @@ static const syscall_handler dll_functions[] =
     qemu_init_dll,
 };
 
+__thread struct qemu_fxi *cabinet_tls;
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     WINE_TRACE("Loading host-side cabinet wrapper.\n");
@@ -206,10 +208,6 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
-
-    cabinet_tls = TlsAlloc();
-    if (cabinet_tls == TLS_OUT_OF_INDEXES)
-        WINE_ERR("Out of TLS indices\n");
 
     p_Extract = (void *)GetProcAddress(cabinet, "Extract");
     if (!p_Extract)

@@ -130,7 +130,8 @@ struct qemu_fxi
     uint64_t dest, alloc, free, open, read, write, close, seek, del, temp, open_info, progress;
 };
 
-DWORD cabinet_tls;
+/* Use Linux / Mac TLS because TlsGetValue and TlsSetValue mess with the last error. */
+extern __thread struct qemu_fxi *cabinet_tls;
 
 #endif
 
