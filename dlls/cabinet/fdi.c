@@ -46,7 +46,19 @@ struct qemu_FDICreate
     uint64_t perf;
 };
 
+struct FDI_read_cb
+{
+    uint64_t func;
+    uint64_t hf, pv, cb;
+};
+
 #ifdef QEMU_DLL_GUEST
+
+UINT __fastcall fdi_readwrite_guest(struct FDI_read_cb *call)
+{
+    PFNREAD fn = (PFNREAD)(ULONG_PTR)call->func;
+    return fn(call->hf, (void *)(ULONG_PTR)call->pv, call->cb);
+}
 
 WINBASEAPI HFDI CDECL FDICreate(PFNALLOC pfnalloc, PFNFREE pfnfree, PFNOPEN pfnopen, PFNREAD pfnread, PFNWRITE pfnwrite, PFNCLOSE pfnclose, PFNSEEK pfnseek, int cpuType, PERF perf)
 {
@@ -77,8 +89,20 @@ static INT_PTR CDECL host_open(char *pszFile, int oflag, int pmode)
 
 static UINT CDECL host_read(INT_PTR hf, void *pv, UINT cb)
 {
-    WINE_FIXME("Not implemented.\n");
-    return 0;
+    struct qemu_fxi *fdi = TlsGetValue(cabinet_tls);
+    struct FDI_read_cb call;
+    UINT ret;
+
+    call.func = fdi->read;
+    call.hf = hf;
+    call.pv = QEMU_H2G(pv);
+    call.cb = cb;
+
+    WINE_TRACE("Calling guest\n");
+    ret = qemu_ops->qemu_execute(QEMU_G2H(fdi_readwrite_guest), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned 0x%x.\n", ret);
+
+    return ret;
 }
 
 static UINT CDECL host_write(INT_PTR hf, void *pv, UINT cb)
@@ -194,7 +218,8 @@ struct qemu_FDICopy
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL CDECL FDICopy(HFDI hfdi, char *pszCabinet, char *pszCabPath, int flags, PFNFDINOTIFY pfnfdin, PFNFDIDECRYPT pfnfdid, void *pvUser)
+WINBASEAPI BOOL CDECL FDICopy(HFDI hfdi, char *pszCabinet, char *pszCabPath, int flags, PFNFDINOTIFY pfnfdin,
+        PFNFDIDECRYPT pfnfdid, void *pvUser)
 {
     struct qemu_FDICopy call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FDICOPY);
@@ -217,11 +242,15 @@ void qemu_FDICopy(struct qemu_syscall *call)
 {
     struct qemu_FDICopy *c = (struct qemu_FDICopy *)call;
     struct qemu_fxi *fdi;
+    struct qemu_fxi *old_tls = TlsGetValue(cabinet_tls);
 
     WINE_FIXME("Unverified!\n");
     fdi = QEMU_G2H(c->hfdi);
 
-    c->super.iret = FDICopy(fdi->host.fdi, QEMU_G2H(c->pszCabinet), QEMU_G2H(c->pszCabPath), c->flags, QEMU_G2H(c->pfnfdin), QEMU_G2H(c->pfnfdid), QEMU_G2H(c->pvUser));
+    TlsSetValue(cabinet_tls, fdi);
+    c->super.iret = FDICopy(fdi->host.fdi, QEMU_G2H(c->pszCabinet), QEMU_G2H(c->pszCabPath), c->flags,
+            QEMU_G2H(c->pfnfdin), QEMU_G2H(c->pfnfdid), QEMU_G2H(c->pvUser));
+    TlsSetValue(cabinet_tls, old_tls);
 }
 
 #endif
