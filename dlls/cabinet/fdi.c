@@ -52,12 +52,36 @@ struct FDI_read_cb
     uint64_t hf, pv, cb;
 };
 
+struct FDI_open_cb
+{
+    uint64_t func;
+    uint64_t file, flag, mode;
+};
+
+struct FDI_close_cb
+{
+    uint64_t func;
+    uint64_t hf;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 UINT __fastcall fdi_readwrite_guest(struct FDI_read_cb *call)
 {
     PFNREAD fn = (PFNREAD)(ULONG_PTR)call->func;
     return fn(call->hf, (void *)(ULONG_PTR)call->pv, call->cb);
+}
+
+INT_PTR __fastcall fdi_open_guest(struct FDI_open_cb *call)
+{
+    PFNOPEN fn = (PFNOPEN)(ULONG_PTR)call->func;
+    return fn((char *)(ULONG_PTR)call->file, call->flag, call->mode);
+}
+
+int __fastcall fdi_close_guest(struct FDI_close_cb *call)
+{
+    PFNCLOSE fn = (PFNCLOSE)(ULONG_PTR)call->func;
+    return fn(call->hf);
 }
 
 WINBASEAPI HFDI CDECL FDICreate(PFNALLOC pfnalloc, PFNFREE pfnfree, PFNOPEN pfnopen, PFNREAD pfnread, PFNWRITE pfnwrite, PFNCLOSE pfnclose, PFNSEEK pfnseek, int cpuType, PERF perf)
@@ -83,8 +107,20 @@ WINBASEAPI HFDI CDECL FDICreate(PFNALLOC pfnalloc, PFNFREE pfnfree, PFNOPEN pfno
 
 static INT_PTR CDECL host_open(char *pszFile, int oflag, int pmode)
 {
-    WINE_FIXME("Not implemented.\n");
-    return 0;
+    struct qemu_fxi *fdi = cabinet_tls;
+    struct FDI_open_cb call;
+    INT_PTR ret;
+
+    call.func = fdi->open;
+    call.file = QEMU_H2G(pszFile);
+    call.flag = oflag;
+    call.mode = pmode;
+
+    WINE_TRACE("Calling guest\n");
+    ret = qemu_ops->qemu_execute(QEMU_G2H(fdi_open_guest), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned %p.\n", (void *)ret);
+
+    return ret;
 }
 
 static UINT CDECL host_read(INT_PTR hf, void *pv, UINT cb)
@@ -107,14 +143,36 @@ static UINT CDECL host_read(INT_PTR hf, void *pv, UINT cb)
 
 static UINT CDECL host_write(INT_PTR hf, void *pv, UINT cb)
 {
-    WINE_FIXME("Not implemented.\n");
-    return 0;
+    struct qemu_fxi *fdi = cabinet_tls;
+    struct FDI_read_cb call;
+    UINT ret;
+
+    call.func = fdi->write;
+    call.hf = hf;
+    call.pv = QEMU_H2G(pv);
+    call.cb = cb;
+
+    WINE_TRACE("Calling guest\n");
+    ret = qemu_ops->qemu_execute(QEMU_G2H(fdi_readwrite_guest), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned 0x%x.\n", ret);
+
+    return ret;
 }
 
 static int CDECL host_close(INT_PTR hf)
 {
-    WINE_FIXME("Not implemented.\n");
-    return 0;
+    struct qemu_fxi *fdi = cabinet_tls;
+    struct FDI_close_cb call;
+    int ret;
+
+    call.func = fdi->close;
+    call.hf = hf;
+
+    WINE_TRACE("Calling guest\n");
+    ret = qemu_ops->qemu_execute(QEMU_G2H(fdi_close_guest), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned 0x%x.\n", ret);
+
+    return ret;
 }
 
 static LONG CDECL host_seek(INT_PTR hf, LONG dist, int seektype)

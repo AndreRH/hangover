@@ -114,6 +114,8 @@ struct qemu_dll_init
     uint64_t fci_seek_guest;
 
     uint64_t fdi_readwrite_guest;
+    uint64_t fdi_open_guest;
+    uint64_t fdi_close_guest;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -138,6 +140,8 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
         call.fci_seek_guest = (ULONG_PTR)fci_seek_guest;
 
         call.fdi_readwrite_guest = (ULONG_PTR)fdi_readwrite_guest;
+        call.fdi_open_guest = (ULONG_PTR)fdi_open_guest;
+        call.fdi_close_guest = (ULONG_PTR)fdi_close_guest;
         qemu_syscall(&call.super);
     }
 
@@ -160,6 +164,8 @@ uint64_t fci_open_info_guest;
 uint64_t fci_progress_guest;
 
 uint64_t fdi_readwrite_guest;
+uint64_t fdi_open_guest;
+uint64_t fdi_close_guest;
 
 static void qemu_init_dll(struct qemu_syscall *call)
 {
@@ -177,6 +183,8 @@ static void qemu_init_dll(struct qemu_syscall *call)
     fci_seek_guest = c->fci_seek_guest;
 
     fdi_readwrite_guest = c->fdi_readwrite_guest;
+    fdi_open_guest = c->fdi_open_guest;
+    fdi_close_guest = c->fdi_close_guest;
 }
 
 const struct qemu_ops *qemu_ops;
