@@ -23,6 +23,9 @@
 #include <fci.h>
 #include <fdi.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_fdi.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_cabinet.h"
@@ -64,6 +67,14 @@ struct FDI_close_cb
     uint64_t hf;
 };
 
+struct FDI_seek_cb
+{
+    uint64_t func;
+    uint64_t hf;
+    uint64_t dist;
+    uint64_t seektype;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 UINT __fastcall fdi_readwrite_guest(struct FDI_read_cb *call)
@@ -84,7 +95,14 @@ int __fastcall fdi_close_guest(struct FDI_close_cb *call)
     return fn(call->hf);
 }
 
-WINBASEAPI HFDI CDECL FDICreate(PFNALLOC pfnalloc, PFNFREE pfnfree, PFNOPEN pfnopen, PFNREAD pfnread, PFNWRITE pfnwrite, PFNCLOSE pfnclose, PFNSEEK pfnseek, int cpuType, PERF perf)
+LONG __fastcall fdi_seek_guest(struct FDI_seek_cb *call)
+{
+    PFNSEEK fn = (PFNSEEK)(ULONG_PTR)call->func;
+    return fn(call->hf, call->dist, call->seektype);
+}
+
+WINBASEAPI HFDI CDECL FDICreate(PFNALLOC pfnalloc, PFNFREE pfnfree, PFNOPEN pfnopen, PFNREAD pfnread,
+        PFNWRITE pfnwrite, PFNCLOSE pfnclose, PFNSEEK pfnseek, int cpuType, PERF perf)
 {
     struct qemu_FDICreate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_FDICREATE);
@@ -177,8 +195,20 @@ static int CDECL host_close(INT_PTR hf)
 
 static LONG CDECL host_seek(INT_PTR hf, LONG dist, int seektype)
 {
-    WINE_FIXME("Not implemented.\n");
-    return 0;
+    struct qemu_fxi *fdi = cabinet_tls;
+    struct FDI_seek_cb call;
+    int ret;
+
+    call.func = fdi->seek;
+    call.hf = hf;
+    call.dist = dist;
+    call.seektype = seektype;
+
+    WINE_TRACE("Calling guest\n");
+    ret = qemu_ops->qemu_execute(QEMU_G2H(fdi_seek_guest), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned 0x%x.\n", ret);
+
+    return ret;
 }
 
 void qemu_FDICreate(struct qemu_syscall *call)
@@ -274,7 +304,19 @@ struct qemu_FDICopy
     uint64_t pvUser;
 };
 
+struct FDI_progress_cb
+{
+    uint64_t func;
+    uint64_t fdint, fdin;
+};
+
 #ifdef QEMU_DLL_GUEST
+
+INT_PTR __fastcall fdi_progress_guest(struct FDI_progress_cb *call)
+{
+    PFNFDINOTIFY fn = (PFNFDINOTIFY)(ULONG_PTR)call->func;
+    return fn(call->fdint, (FDINOTIFICATION *)(ULONG_PTR)call->fdin);
+}
 
 WINBASEAPI BOOL CDECL FDICopy(HFDI hfdi, char *pszCabinet, char *pszCabPath, int flags, PFNFDINOTIFY pfnfdin,
         PFNFDIDECRYPT pfnfdid, void *pvUser)
@@ -296,19 +338,53 @@ WINBASEAPI BOOL CDECL FDICopy(HFDI hfdi, char *pszCabinet, char *pszCabPath, int
 
 #else
 
+static INT_PTR CDECL host_progress(FDINOTIFICATIONTYPE fdint, FDINOTIFICATION *pfdin)
+{
+    struct qemu_fxi *fdi = cabinet_tls;
+    struct FDI_progress_cb call;
+    INT_PTR ret;
+    struct qemu_FDINOTIFICATION fdin32;
+
+    call.func = fdi->progress;
+    call.fdint = fdint;
+#if GUEST_BIT == HOST_BIT
+    call.fdin = QEMU_H2G(pfdin);
+#else
+    FDINOTIFICATION_h2g(&fdin32, pfdin);
+    call.fdin = QEMU_H2G(&fdin32);
+#endif
+
+    WINE_TRACE("Calling guest\n");
+    ret = qemu_ops->qemu_execute(QEMU_G2H(fdi_progress_guest), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned %p.\n", (void *)ret);
+
+    return ret;
+}
+
+static int CDECL host_decrypt(FDIDECRYPT *did)
+{
+    WINE_FIXME("Unimplemented\n");
+    return 0;
+}
+
 void qemu_FDICopy(struct qemu_syscall *call)
 {
     struct qemu_FDICopy *c = (struct qemu_FDICopy *)call;
     struct qemu_fxi *fdi;
     struct qemu_fxi *old_tls = cabinet_tls;
+    uint64_t old_progress;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     fdi = QEMU_G2H(c->hfdi);
+    old_progress = fdi->progress;
+    fdi->progress = c->pfnfdin;
 
     cabinet_tls = fdi;
     c->super.iret = FDICopy(fdi->host.fdi, QEMU_G2H(c->pszCabinet), QEMU_G2H(c->pszCabPath), c->flags,
-            QEMU_G2H(c->pfnfdin), QEMU_G2H(c->pfnfdid), QEMU_G2H(c->pvUser));
+            c->pfnfdin ? host_progress : NULL, c->pfnfdid ? host_decrypt : NULL, QEMU_G2H(c->pvUser));
     cabinet_tls = old_tls;
+
+    fdi->progress = old_progress;
 }
 
 #endif

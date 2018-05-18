@@ -74,6 +74,8 @@ struct FCI_seek_cb;
 struct FDI_read_cb;
 struct FDI_open_cb;
 struct FDI_close_cb;
+struct FDI_progress_cb;
+struct FDI_seek_cb;
 
 void * __fastcall fci_alloc_guest(struct FCI_alloc_cb *call);
 INT_PTR __fastcall fci_open_info_guest(struct FCI_open_info_cb *call);
@@ -90,6 +92,8 @@ LONG __fastcall fci_seek_guest(struct FCI_seek_cb *call);
 UINT __fastcall fdi_readwrite_guest(struct FDI_read_cb *call);
 INT_PTR __fastcall fdi_open_guest(struct FDI_open_cb *call);
 int __fastcall fdi_close_guest(struct FDI_close_cb *call);
+INT_PTR __fastcall fdi_progress_guest(struct FDI_progress_cb *call);
+LONG __fastcall fdi_seek_guest(struct FDI_seek_cb *call);
 
 #else
 
@@ -110,6 +114,8 @@ extern uint64_t fci_progress_guest;
 extern uint64_t fdi_readwrite_guest;
 extern uint64_t fdi_open_guest;
 extern uint64_t fdi_close_guest;
+extern uint64_t fdi_progress_guest;
+extern uint64_t fdi_seek_guest;
 
 void qemu_FCIAddFile(struct qemu_syscall *call);
 void qemu_FCICreate(struct qemu_syscall *call);
