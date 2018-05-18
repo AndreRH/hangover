@@ -34,6 +34,7 @@ enum cabinet_calls
     CALL_FDIDESTROY,
     CALL_FDIISCABINET,
     CALL_FDITRUNCATECABINET,
+    CALL_INIT_DLL,
 };
 
 struct FILELIST
@@ -58,9 +59,24 @@ typedef struct
 
 #ifdef QEMU_DLL_GUEST
 
+struct FCI_alloc_cb;
+
+void * __fastcall fci_alloc_guest(struct FCI_alloc_cb *call);
+
 #else
 
 extern const struct qemu_ops *qemu_ops;
+
+extern uint64_t fci_dest_guest;
+extern uint64_t fci_alloc_guest;
+extern uint64_t fci_free_guest;
+extern uint64_t fci_open_guest;
+extern uint64_t fci_read_guest;
+extern uint64_t fci_write_guest;
+extern uint64_t fci_close_guest;
+extern uint64_t fci_seek_guest;
+extern uint64_t fci_delete_guest;
+extern uint64_t fci_temp_guest;
 
 void qemu_FCIAddFile(struct qemu_syscall *call);
 void qemu_FCICreate(struct qemu_syscall *call);
@@ -72,6 +88,14 @@ void qemu_FDICreate(struct qemu_syscall *call);
 void qemu_FDIDestroy(struct qemu_syscall *call);
 void qemu_FDIIsCabinet(struct qemu_syscall *call);
 void qemu_FDITruncateCabinet(struct qemu_syscall *call);
+
+struct qemu_fci
+{
+    HFCI host;
+    uint64_t dest, alloc, free, open, read, write, close, seek, del, temp;
+};
+
+DWORD cabinet_tls;
 
 #endif
 

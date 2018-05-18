@@ -98,14 +98,46 @@ static void qemu_Extract(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_dll_init
+{
+    struct qemu_syscall super;
+    uint64_t fci_alloc_guest;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
+    struct qemu_dll_init call;
+
+    if (reason == DLL_PROCESS_ATTACH)
+    {
+        call.super.id = QEMU_SYSCALL_ID(CALL_INIT_DLL);
+        call.fci_alloc_guest = (ULONG_PTR)fci_alloc_guest;
+        qemu_syscall(&call.super);
+    }
+
     return TRUE;
 }
 
 #else
+
+uint64_t fci_dest_guest;
+uint64_t fci_alloc_guest;
+uint64_t fci_free_guest;
+uint64_t fci_open_guest;
+uint64_t fci_read_guest;
+uint64_t fci_write_guest;
+uint64_t fci_close_guest;
+uint64_t fci_seek_guest;
+uint64_t fci_delete_guest;
+uint64_t fci_temp_guest;
+
+static void qemu_init_dll(struct qemu_syscall *call)
+{
+    struct qemu_dll_init *c = (struct qemu_dll_init *)call;
+    fci_alloc_guest = c->fci_alloc_guest;
+}
 
 const struct qemu_ops *qemu_ops;
 
@@ -124,6 +156,7 @@ static const syscall_handler dll_functions[] =
     qemu_FDIDestroy,
     qemu_FDIIsCabinet,
     qemu_FDITruncateCabinet,
+    qemu_init_dll,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
@@ -132,6 +165,10 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
+
+    cabinet_tls = TlsAlloc();
+    if (cabinet_tls == TLS_OUT_OF_INDEXES)
+        WINE_ERR("Out of TLS indices\n");
 
     return dll_functions;
 }
