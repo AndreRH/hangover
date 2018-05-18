@@ -167,11 +167,15 @@ void qemu_FDIIsCabinet(struct qemu_syscall *call)
 {
     struct qemu_FDIIsCabinet *c = (struct qemu_FDIIsCabinet *)call;
     struct qemu_fxi *fdi;
+    struct qemu_fxi *old_tls = TlsGetValue(cabinet_tls);
 
-    WINE_FIXME("Unverified!\n");
+    /* FDICABINETINFO has the same size on 32 and 64 bit. */
+    WINE_TRACE("\n");
     fdi = QEMU_G2H(c->hfdi);
 
+    TlsSetValue(cabinet_tls, fdi);
     c->super.iret = FDIIsCabinet(fdi->host.fdi, c->hf, QEMU_G2H(c->pfdici));
+    TlsSetValue(cabinet_tls, old_tls);
 }
 
 #endif
