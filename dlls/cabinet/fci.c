@@ -581,8 +581,22 @@ WINBASEAPI BOOL CDECL FCIFlushFolder(HFCI hfci, PFNFCIGETNEXTCABINET pfnfcignc, 
 void qemu_FCIFlushFolder(struct qemu_syscall *call)
 {
     struct qemu_FCIFlushFolder *c = (struct qemu_FCIFlushFolder *)call;
+    struct qemu_fxi *fci;
+    struct qemu_fxi *old_tls = cabinet_tls;
+    uint64_t old_progress;
+
+    /* Implemented without having code that calls it. */
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FCIFlushFolder(QEMU_G2H(c->hfci), QEMU_G2H(c->pfnfcignc), QEMU_G2H(c->pfnfcis));
+    fci = QEMU_G2H(c->hfci);
+    old_progress = fci->progress;
+    fci->progress = c->pfnfcis;
+
+    cabinet_tls = fci;
+    c->super.iret = FCIFlushFolder(fci->host.fci, c->pfnfcignc ? host_next : NULL,
+            c->pfnfcis ? host_progress : NULL);
+    cabinet_tls = old_tls;
+
+    fci->progress = old_progress;
 }
 
 #endif
