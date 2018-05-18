@@ -110,9 +110,17 @@ void qemu_FDIDestroy(struct qemu_syscall *call);
 void qemu_FDIIsCabinet(struct qemu_syscall *call);
 void qemu_FDITruncateCabinet(struct qemu_syscall *call);
 
-struct qemu_fci
+void * CDECL host_alloc(ULONG cb);
+void CDECL host_free(void *memory);
+
+struct qemu_fxi
 {
-    HFCI host;
+    union
+    {
+        HFCI fci;
+        HFDI fdi;
+    } host;
+
     uint64_t dest, alloc, free, open, read, write, close, seek, del, temp, open_info, progress;
 };
 

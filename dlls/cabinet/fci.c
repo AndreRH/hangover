@@ -195,7 +195,7 @@ WINBASEAPI HFCI CDECL FCICreate(PERF perf, PFNFCIFILEPLACED pfnfiledest, PFNFCIA
 static int CDECL host_dest(PCCAB pccab, char *pszFile, LONG cbFile,
         BOOL fContinuation, void *pv)
 {
-    struct qemu_fci *fci = TlsGetValue(cabinet_tls);
+    struct qemu_fxi *fci = TlsGetValue(cabinet_tls);
     struct FCI_dest_cb call;
     int ret;
 
@@ -213,9 +213,9 @@ static int CDECL host_dest(PCCAB pccab, char *pszFile, LONG cbFile,
     return ret;
 }
 
-static void * CDECL host_alloc(ULONG cb)
+void * CDECL host_alloc(ULONG cb)
 {
-    struct qemu_fci *fci = TlsGetValue(cabinet_tls);
+    struct qemu_fxi *fci = TlsGetValue(cabinet_tls);
     uint64_t ret;
     struct FCI_alloc_cb call;
 
@@ -228,9 +228,9 @@ static void * CDECL host_alloc(ULONG cb)
     return QEMU_G2H(ret);
 }
 
-static void CDECL host_free(void *memory)
+void CDECL host_free(void *memory)
 {
-    struct qemu_fci *fci = TlsGetValue(cabinet_tls);
+    struct qemu_fxi *fci = TlsGetValue(cabinet_tls);
     struct FCI_free_cb call;
 
     WINE_TRACE("Calling guest callback %p(%p).\n", (void *)fci->free, memory);
@@ -242,7 +242,7 @@ static void CDECL host_free(void *memory)
 
 static INT_PTR CDECL host_open(char *pszFile, int oflag, int pmode, int *err, void *pv)
 {
-    struct qemu_fci *fci = TlsGetValue(cabinet_tls);
+    struct qemu_fxi *fci = TlsGetValue(cabinet_tls);
     struct FCI_open_cb call;
     UINT ret;
 
@@ -262,7 +262,7 @@ static INT_PTR CDECL host_open(char *pszFile, int oflag, int pmode, int *err, vo
 
 static UINT CDECL host_read(INT_PTR hf, void *memory, UINT cb, int *err, void *pv)
 {
-    struct qemu_fci *fci = TlsGetValue(cabinet_tls);
+    struct qemu_fxi *fci = TlsGetValue(cabinet_tls);
     struct FCI_read_cb call;
     UINT ret;
 
@@ -282,7 +282,7 @@ static UINT CDECL host_read(INT_PTR hf, void *memory, UINT cb, int *err, void *p
 
 static UINT CDECL host_write(INT_PTR hf, void *memory, UINT cb, int *err, void *pv)
 {
-    struct qemu_fci *fci = TlsGetValue(cabinet_tls);
+    struct qemu_fxi *fci = TlsGetValue(cabinet_tls);
     struct FCI_read_cb call;
     UINT ret;
 
@@ -302,7 +302,7 @@ static UINT CDECL host_write(INT_PTR hf, void *memory, UINT cb, int *err, void *
 
 static int CDECL host_close(INT_PTR hf, int *err, void *pv)
 {
-    struct qemu_fci *fci = TlsGetValue(cabinet_tls);
+    struct qemu_fxi *fci = TlsGetValue(cabinet_tls);
     struct FCI_close_cb call;
     int ret;
 
@@ -320,7 +320,7 @@ static int CDECL host_close(INT_PTR hf, int *err, void *pv)
 
 static LONG CDECL host_seek(INT_PTR hf, LONG dist, int seektype, int *err, void *pv)
 {
-    struct qemu_fci *fci = TlsGetValue(cabinet_tls);
+    struct qemu_fxi *fci = TlsGetValue(cabinet_tls);
     struct FCI_seek_cb call;
     LONG ret;
 
@@ -340,7 +340,7 @@ static LONG CDECL host_seek(INT_PTR hf, LONG dist, int seektype, int *err, void 
 
 static int CDECL host_delete(char *pszFile, int *err, void *pv)
 {
-    struct qemu_fci *fci = TlsGetValue(cabinet_tls);
+    struct qemu_fxi *fci = TlsGetValue(cabinet_tls);
     struct FCI_delete_cb call;
     BOOL ret;
 
@@ -358,7 +358,7 @@ static int CDECL host_delete(char *pszFile, int *err, void *pv)
 
 static BOOL CDECL host_temp(char *pszTempName, int cbTempName, void *pv)
 {
-    struct qemu_fci *fci = TlsGetValue(cabinet_tls);
+    struct qemu_fxi *fci = TlsGetValue(cabinet_tls);
     struct FCI_temp_cb call;
     BOOL ret;
 
@@ -377,8 +377,8 @@ static BOOL CDECL host_temp(char *pszTempName, int cbTempName, void *pv)
 void qemu_FCICreate(struct qemu_syscall *call)
 {
     struct qemu_FCICreate *c = (struct qemu_FCICreate *)call;
-    struct qemu_fci *fci;
-    struct qemu_fci *old_tls = TlsGetValue(cabinet_tls);
+    struct qemu_fxi *fci;
+    struct qemu_fxi *old_tls = TlsGetValue(cabinet_tls);
 
     WINE_TRACE("\n");
     fci = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*fci));
@@ -399,14 +399,14 @@ void qemu_FCICreate(struct qemu_syscall *call)
     TlsSetValue(cabinet_tls, fci);
 
     /* ERF and CCAB are compatible between 32 and 64 bit. */
-    fci->host = FCICreate(QEMU_G2H(c->perf), c->pfnfiledest ? host_dest : NULL, c->pfnalloc ? host_alloc : NULL,
+    fci->host.fci = FCICreate(QEMU_G2H(c->perf), c->pfnfiledest ? host_dest : NULL, c->pfnalloc ? host_alloc : NULL,
             c->pfnfree ? host_free : NULL, c->pfnopen ? host_open : NULL, c->pfnread ? host_read : NULL,
             c->pfnwrite ? host_write : NULL, c->pfnclose ? host_close : NULL, c->pfnseek ? host_seek : NULL,
             c->pfndelete ? host_delete : NULL, c->pfnfcigtf ? host_temp : NULL, QEMU_G2H(c->pccab), QEMU_G2H(c->pv));
 
     TlsSetValue(cabinet_tls, old_tls);
 
-    if (!fci->host)
+    if (!fci->host.fci)
     {
         HeapFree(GetProcessHeap(), 0, fci);
         fci = NULL;
@@ -486,7 +486,7 @@ static BOOL CDECL host_next(PCCAB pccab, ULONG  cbPrevCab, void *pv)
 
 static LONG CDECL host_progress(UINT typeStatus, ULONG cb1, ULONG cb2, void *pv)
 {
-    struct qemu_fci *fci = TlsGetValue(cabinet_tls);
+    struct qemu_fxi *fci = TlsGetValue(cabinet_tls);
     struct FCI_progress_cb call;
     LONG ret;
 
@@ -507,7 +507,7 @@ static INT_PTR CDECL host_open_info(char *pszName, USHORT *pdate, USHORT *ptime,
         USHORT *pattribs, int *err, void *pv)
 {
     struct FCI_open_info_cb call;
-    struct qemu_fci *fci = TlsGetValue(cabinet_tls);
+    struct qemu_fxi *fci = TlsGetValue(cabinet_tls);
     INT_PTR ret;
 
     call.func = fci->open_info;
@@ -528,8 +528,8 @@ static INT_PTR CDECL host_open_info(char *pszName, USHORT *pdate, USHORT *ptime,
 void qemu_FCIAddFile(struct qemu_syscall *call)
 {
     struct qemu_FCIAddFile *c = (struct qemu_FCIAddFile *)call;
-    struct qemu_fci *fci;
-    struct qemu_fci *old_tls = TlsGetValue(cabinet_tls);
+    struct qemu_fxi *fci;
+    struct qemu_fxi *old_tls = TlsGetValue(cabinet_tls);
     uint64_t old_open_info, old_progress;
 
     WINE_TRACE("\n");
@@ -542,7 +542,7 @@ void qemu_FCIAddFile(struct qemu_syscall *call)
 
     TlsSetValue(cabinet_tls, fci);
 
-    c->super.iret = FCIAddFile(fci->host, QEMU_G2H(c->pszSourceFile), QEMU_G2H(c->pszFileName), c->fExecute, 
+    c->super.iret = FCIAddFile(fci->host.fci, QEMU_G2H(c->pszSourceFile), QEMU_G2H(c->pszFileName), c->fExecute, 
             c->pfnfcignc ? host_next : NULL, c->pfnfcis ? host_progress : NULL,
             c->pfnfcigoi ? host_open_info : NULL, c->typeCompress);
 
@@ -617,8 +617,8 @@ WINBASEAPI BOOL CDECL FCIFlushCabinet(HFCI hfci, BOOL fGetNextCab, PFNFCIGETNEXT
 void qemu_FCIFlushCabinet(struct qemu_syscall *call)
 {
     struct qemu_FCIFlushCabinet *c = (struct qemu_FCIFlushCabinet *)call;
-    struct qemu_fci *fci;
-    struct qemu_fci *old_tls = TlsGetValue(cabinet_tls);
+    struct qemu_fxi *fci;
+    struct qemu_fxi *old_tls = TlsGetValue(cabinet_tls);
     uint64_t old_progress;
 
     WINE_TRACE("\n");
@@ -628,7 +628,7 @@ void qemu_FCIFlushCabinet(struct qemu_syscall *call)
 
     TlsSetValue(cabinet_tls, fci);
 
-    c->super.iret = FCIFlushCabinet(fci->host, c->fGetNextCab, c->pfnfcignc ? host_next : NULL,
+    c->super.iret = FCIFlushCabinet(fci->host.fci, c->fGetNextCab, c->pfnfcignc ? host_next : NULL,
             c->pfnfcis ? host_progress : NULL);
 
     TlsSetValue(cabinet_tls, old_tls);
@@ -662,15 +662,15 @@ WINBASEAPI BOOL CDECL FCIDestroy(HFCI hfci)
 void qemu_FCIDestroy(struct qemu_syscall *call)
 {
     struct qemu_FCIDestroy *c = (struct qemu_FCIDestroy *)call;
-    struct qemu_fci *fci;
-    struct qemu_fci *old_tls = TlsGetValue(cabinet_tls);
+    struct qemu_fxi *fci;
+    struct qemu_fxi *old_tls = TlsGetValue(cabinet_tls);
 
     WINE_TRACE("\n");
     fci = QEMU_G2H(c->hfci);
 
     TlsSetValue(cabinet_tls, fci);
 
-    c->super.iret = FCIDestroy(fci->host);
+    c->super.iret = FCIDestroy(fci->host.fci);
     if (c->super.iret)
         HeapFree(GetProcessHeap(), 0, fci);
 

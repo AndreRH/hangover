@@ -32,7 +32,6 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_cabinet);
 #endif
 
-
 struct qemu_FDICreate
 {
     struct qemu_syscall super;
@@ -70,11 +69,71 @@ WINBASEAPI HFDI CDECL FDICreate(PFNALLOC pfnalloc, PFNFREE pfnfree, PFNOPEN pfno
 
 #else
 
+static INT_PTR CDECL host_open(char *pszFile, int oflag, int pmode)
+{
+    WINE_FIXME("Not implemented.\n");
+    return 0;
+}
+
+static UINT CDECL host_read(INT_PTR hf, void *pv, UINT cb)
+{
+    WINE_FIXME("Not implemented.\n");
+    return 0;
+}
+
+static UINT CDECL host_write(INT_PTR hf, void *pv, UINT cb)
+{
+    WINE_FIXME("Not implemented.\n");
+    return 0;
+}
+
+static int CDECL host_close(INT_PTR hf)
+{
+    WINE_FIXME("Not implemented.\n");
+    return 0;
+}
+
+static LONG CDECL host_seek(INT_PTR hf, LONG dist, int seektype)
+{
+    WINE_FIXME("Not implemented.\n");
+    return 0;
+}
+
 void qemu_FDICreate(struct qemu_syscall *call)
 {
     struct qemu_FDICreate *c = (struct qemu_FDICreate *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(FDICreate(QEMU_G2H(c->pfnalloc), QEMU_G2H(c->pfnfree), QEMU_G2H(c->pfnopen), QEMU_G2H(c->pfnread), QEMU_G2H(c->pfnwrite), QEMU_G2H(c->pfnclose), QEMU_G2H(c->pfnseek), c->cpuType, QEMU_G2H(c->perf)));
+    struct qemu_fxi *fdi;
+    struct qemu_fxi *old_tls = TlsGetValue(cabinet_tls);
+
+    WINE_TRACE("\n");
+    fdi = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*fdi));
+    if (!fdi)
+        WINE_ERR("Out of memory\n");
+
+    fdi->alloc = c->pfnalloc;
+    fdi->free = c->pfnfree;
+    fdi->open = c->pfnopen;
+    fdi->read = c->pfnread;
+    fdi->write = c->pfnwrite;
+    fdi->close = c->pfnclose;
+    fdi->seek = c->pfnseek;
+
+    TlsSetValue(cabinet_tls, fdi);
+
+    fdi->host.fdi = FDICreate(c->pfnalloc ? host_alloc : NULL, c->pfnfree ? host_free : NULL,
+            c->pfnopen ? host_open : NULL, c->pfnread ? host_read : NULL, c->pfnwrite ? host_write : NULL,
+            c->pfnclose ? host_close : NULL, c->pfnseek ? host_seek : NULL, c->cpuType, QEMU_G2H(c->perf));
+
+    TlsSetValue(cabinet_tls, old_tls);
+
+    if (!fdi->host.fdi)
+    {
+        HeapFree(GetProcessHeap(), 0, fdi);
+        fdi = NULL;
+    }
+
+    c->super.iret = QEMU_H2G(fdi);
+
 }
 
 #endif
@@ -107,8 +166,12 @@ WINBASEAPI BOOL CDECL FDIIsCabinet(HFDI hfdi, INT_PTR hf, PFDICABINETINFO pfdici
 void qemu_FDIIsCabinet(struct qemu_syscall *call)
 {
     struct qemu_FDIIsCabinet *c = (struct qemu_FDIIsCabinet *)call;
+    struct qemu_fxi *fdi;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FDIIsCabinet(QEMU_G2H(c->hfdi), c->hf, QEMU_G2H(c->pfdici));
+    fdi = QEMU_G2H(c->hfdi);
+
+    c->super.iret = FDIIsCabinet(fdi->host.fdi, c->hf, QEMU_G2H(c->pfdici));
 }
 
 #endif
@@ -149,8 +212,12 @@ WINBASEAPI BOOL CDECL FDICopy(HFDI hfdi, char *pszCabinet, char *pszCabPath, int
 void qemu_FDICopy(struct qemu_syscall *call)
 {
     struct qemu_FDICopy *c = (struct qemu_FDICopy *)call;
+    struct qemu_fxi *fdi;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FDICopy(QEMU_G2H(c->hfdi), QEMU_G2H(c->pszCabinet), QEMU_G2H(c->pszCabPath), c->flags, QEMU_G2H(c->pfnfdin), QEMU_G2H(c->pfnfdid), QEMU_G2H(c->pvUser));
+    fdi = QEMU_G2H(c->hfdi);
+
+    c->super.iret = FDICopy(fdi->host.fdi, QEMU_G2H(c->pszCabinet), QEMU_G2H(c->pszCabPath), c->flags, QEMU_G2H(c->pfnfdin), QEMU_G2H(c->pfnfdid), QEMU_G2H(c->pvUser));
 }
 
 #endif
@@ -179,8 +246,18 @@ WINBASEAPI BOOL CDECL FDIDestroy(HFDI hfdi)
 void qemu_FDIDestroy(struct qemu_syscall *call)
 {
     struct qemu_FDIDestroy *c = (struct qemu_FDIDestroy *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = FDIDestroy(QEMU_G2H(c->hfdi));
+    struct qemu_fxi *fdi;
+    struct qemu_fxi *old_tls = TlsGetValue(cabinet_tls);
+
+    WINE_TRACE("\n");
+    fdi = QEMU_G2H(c->hfdi);
+
+    TlsSetValue(cabinet_tls, fdi);
+    c->super.iret = FDIDestroy(fdi->host.fdi);
+    TlsSetValue(cabinet_tls, old_tls);
+
+    if (c->super.iret)
+        HeapFree(GetProcessHeap(), 0, fdi);
 }
 
 #endif
@@ -213,8 +290,12 @@ WINBASEAPI BOOL CDECL FDITruncateCabinet(HFDI hfdi, char *pszCabinetName, USHORT
 void qemu_FDITruncateCabinet(struct qemu_syscall *call)
 {
     struct qemu_FDITruncateCabinet *c = (struct qemu_FDITruncateCabinet *)call;
+    struct qemu_fxi *fdi;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FDITruncateCabinet(QEMU_G2H(c->hfdi), QEMU_G2H(c->pszCabinetName), c->iFolderToDelete);
+    fdi = QEMU_G2H(c->hfdi);
+
+    c->super.iret = FDITruncateCabinet(fdi->host.fdi, QEMU_G2H(c->pszCabinetName), c->iFolderToDelete);
 }
 
 #endif
