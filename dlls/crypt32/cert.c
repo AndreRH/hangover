@@ -428,8 +428,17 @@ WINBASEAPI DWORD WINAPI CertEnumCertificateContextProperties(PCCERT_CONTEXT pCer
 void qemu_CertEnumCertificateContextProperties(struct qemu_syscall *call)
 {
     struct qemu_CertEnumCertificateContextProperties *c = (struct qemu_CertEnumCertificateContextProperties *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertEnumCertificateContextProperties(QEMU_G2H(c->pCertContext), c->dwPropId);
+    const CERT_CONTEXT *context;
+    struct qemu_cert_context *context32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    context = QEMU_G2H(c->pCertContext);
+#else
+    context32 = context_impl_from_context32(QEMU_G2H(c->pCertContext));
+    context = context32 ? context32->cert64 : NULL;
+#endif
+    c->super.iret = CertEnumCertificateContextProperties(context, c->dwPropId);
 }
 
 #endif
