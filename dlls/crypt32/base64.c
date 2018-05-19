@@ -43,7 +43,8 @@ struct qemu_CryptBinaryToStringA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptBinaryToStringA(const BYTE *pbBinary, DWORD cbBinary, DWORD dwFlags, LPSTR pszString, DWORD *pcchString)
+WINBASEAPI BOOL WINAPI CryptBinaryToStringA(const BYTE *pbBinary, DWORD cbBinary, DWORD dwFlags, LPSTR pszString,
+        DWORD *pcchString)
 {
     struct qemu_CryptBinaryToStringA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTBINARYTOSTRINGA);
@@ -63,8 +64,9 @@ WINBASEAPI BOOL WINAPI CryptBinaryToStringA(const BYTE *pbBinary, DWORD cbBinary
 void qemu_CryptBinaryToStringA(struct qemu_syscall *call)
 {
     struct qemu_CryptBinaryToStringA *c = (struct qemu_CryptBinaryToStringA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptBinaryToStringA(QEMU_G2H(c->pbBinary), c->cbBinary, c->dwFlags, QEMU_G2H(c->pszString), QEMU_G2H(c->pcchString));
+    WINE_TRACE("\n");
+    c->super.iret = CryptBinaryToStringA(QEMU_G2H(c->pbBinary), c->cbBinary, c->dwFlags, QEMU_G2H(c->pszString),
+            QEMU_G2H(c->pcchString));
 }
 
 #endif
@@ -81,7 +83,8 @@ struct qemu_CryptBinaryToStringW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptBinaryToStringW(const BYTE *pbBinary, DWORD cbBinary, DWORD dwFlags, LPWSTR pszString, DWORD *pcchString)
+WINBASEAPI BOOL WINAPI CryptBinaryToStringW(const BYTE *pbBinary, DWORD cbBinary, DWORD dwFlags, LPWSTR pszString,
+        DWORD *pcchString)
 {
     struct qemu_CryptBinaryToStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTBINARYTOSTRINGW);
@@ -101,8 +104,9 @@ WINBASEAPI BOOL WINAPI CryptBinaryToStringW(const BYTE *pbBinary, DWORD cbBinary
 void qemu_CryptBinaryToStringW(struct qemu_syscall *call)
 {
     struct qemu_CryptBinaryToStringW *c = (struct qemu_CryptBinaryToStringW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptBinaryToStringW(QEMU_G2H(c->pbBinary), c->cbBinary, c->dwFlags, QEMU_G2H(c->pszString), QEMU_G2H(c->pcchString));
+    WINE_TRACE("\n");
+    c->super.iret = CryptBinaryToStringW(QEMU_G2H(c->pbBinary), c->cbBinary, c->dwFlags, QEMU_G2H(c->pszString),
+            QEMU_G2H(c->pcchString));
 }
 
 #endif
@@ -121,7 +125,8 @@ struct qemu_CryptStringToBinaryA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptStringToBinaryA(LPCSTR pszString, DWORD cchString, DWORD dwFlags, BYTE *pbBinary, DWORD *pcbBinary, DWORD *pdwSkip, DWORD *pdwFlags)
+WINBASEAPI BOOL WINAPI CryptStringToBinaryA(LPCSTR pszString, DWORD cchString, DWORD dwFlags, BYTE *pbBinary,
+        DWORD *pcbBinary, DWORD *pdwSkip, DWORD *pdwFlags)
 {
     struct qemu_CryptStringToBinaryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSTRINGTOBINARYA);
@@ -143,8 +148,9 @@ WINBASEAPI BOOL WINAPI CryptStringToBinaryA(LPCSTR pszString, DWORD cchString, D
 void qemu_CryptStringToBinaryA(struct qemu_syscall *call)
 {
     struct qemu_CryptStringToBinaryA *c = (struct qemu_CryptStringToBinaryA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptStringToBinaryA(QEMU_G2H(c->pszString), c->cchString, c->dwFlags, QEMU_G2H(c->pbBinary), QEMU_G2H(c->pcbBinary), QEMU_G2H(c->pdwSkip), QEMU_G2H(c->pdwFlags));
+    WINE_TRACE("\n");
+    c->super.iret = CryptStringToBinaryA(QEMU_G2H(c->pszString), c->cchString, c->dwFlags, QEMU_G2H(c->pbBinary),
+            QEMU_G2H(c->pcbBinary), QEMU_G2H(c->pdwSkip), QEMU_G2H(c->pdwFlags));
 }
 
 #endif
@@ -163,7 +169,8 @@ struct qemu_CryptStringToBinaryW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptStringToBinaryW(LPCWSTR pszString, DWORD cchString, DWORD dwFlags, BYTE *pbBinary, DWORD *pcbBinary, DWORD *pdwSkip, DWORD *pdwFlags)
+WINBASEAPI BOOL WINAPI CryptStringToBinaryW(LPCWSTR pszString, DWORD cchString, DWORD dwFlags, BYTE *pbBinary,
+        DWORD *pcbBinary, DWORD *pdwSkip, DWORD *pdwFlags)
 {
     struct qemu_CryptStringToBinaryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSTRINGTOBINARYW);
@@ -185,8 +192,9 @@ WINBASEAPI BOOL WINAPI CryptStringToBinaryW(LPCWSTR pszString, DWORD cchString, 
 void qemu_CryptStringToBinaryW(struct qemu_syscall *call)
 {
     struct qemu_CryptStringToBinaryW *c = (struct qemu_CryptStringToBinaryW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptStringToBinaryW(QEMU_G2H(c->pszString), c->cchString, c->dwFlags, QEMU_G2H(c->pbBinary), QEMU_G2H(c->pcbBinary), QEMU_G2H(c->pdwSkip), QEMU_G2H(c->pdwFlags));
+    WINE_TRACE("\n");
+    c->super.iret = CryptStringToBinaryW(QEMU_G2H(c->pszString), c->cchString, c->dwFlags, QEMU_G2H(c->pbBinary),
+            QEMU_G2H(c->pcbBinary), QEMU_G2H(c->pdwSkip), QEMU_G2H(c->pdwFlags));
 }
 
 #endif
