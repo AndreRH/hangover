@@ -202,8 +202,32 @@ WINBASEAPI PCCERT_CONTEXT WINAPI CertEnumCertificatesInStore(HCERTSTORE hCertSto
 void qemu_CertEnumCertificatesInStore(struct qemu_syscall *call)
 {
     struct qemu_CertEnumCertificatesInStore *c = (struct qemu_CertEnumCertificatesInStore *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(CertEnumCertificatesInStore(QEMU_G2H(c->hCertStore), QEMU_G2H(c->pPrev)));
+    const CERT_CONTEXT *context, *prev;
+    struct qemu_cert_context *prev32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    prev = QEMU_G2H(c->pPrev);
+#else
+    prev32 = context_impl_from_context32(QEMU_G2H(c->pPrev));
+    prev = prev32 ? prev32->cert64 : NULL;
+#endif
+
+    WINE_FIXME("calling %p\n", QEMU_G2H(c->hCertStore));
+    context = CertEnumCertificatesInStore(QEMU_G2H(c->hCertStore), prev);
+    WINE_FIXME("ret %p\n", context);
+
+#if GUEST_BIT != HOST_BIT
+    if (context)
+    {
+        /* This allocates new wrapper contexts for the enumerated ones. The test never frees the
+         * enumerated contexts. */
+        context = (CERT_CONTEXT *)context32_create(context);
+        WINE_FIXME("This probably leaks memory?\n");
+    }
+#endif
+
+    c->super.iret = QEMU_H2G(context);
 }
 
 #endif
