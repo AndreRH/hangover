@@ -434,6 +434,7 @@ static inline struct qemu_cert_context *context_impl_from_context32(struct qemu_
     return CONTAINING_RECORD(cert32, struct qemu_cert_context, cert32);
 }
 
+HCERTSTORE cert_store_g2h(uint64_t store);
 
 #endif
 

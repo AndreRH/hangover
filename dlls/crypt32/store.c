@@ -213,9 +213,7 @@ void qemu_CertEnumCertificatesInStore(struct qemu_syscall *call)
     prev = prev32 ? prev32->cert64 : NULL;
 #endif
 
-    WINE_FIXME("calling %p\n", QEMU_G2H(c->hCertStore));
-    context = CertEnumCertificatesInStore(QEMU_G2H(c->hCertStore), prev);
-    WINE_FIXME("ret %p\n", context);
+    context = CertEnumCertificatesInStore(cert_store_g2h(c->hCertStore), prev);
 
 #if GUEST_BIT != HOST_BIT
     if (context)
@@ -301,7 +299,7 @@ void qemu_CertAddCRLContextToStore(struct qemu_syscall *call)
 {
     struct qemu_CertAddCRLContextToStore *c = (struct qemu_CertAddCRLContextToStore *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = CertAddCRLContextToStore(QEMU_G2H(c->hCertStore), QEMU_G2H(c->pCrlContext), c->dwAddDisposition, QEMU_G2H(c->ppStoreContext));
+    c->super.iret = CertAddCRLContextToStore(cert_store_g2h(c->hCertStore), QEMU_G2H(c->pCrlContext), c->dwAddDisposition, QEMU_G2H(c->ppStoreContext));
 }
 
 #endif
@@ -363,7 +361,7 @@ void qemu_CertEnumCRLsInStore(struct qemu_syscall *call)
 {
     struct qemu_CertEnumCRLsInStore *c = (struct qemu_CertEnumCRLsInStore *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(CertEnumCRLsInStore(QEMU_G2H(c->hCertStore), QEMU_G2H(c->pPrev)));
+    c->super.iret = QEMU_H2G(CertEnumCRLsInStore(cert_store_g2h(c->hCertStore), QEMU_G2H(c->pPrev)));
 }
 
 #endif
@@ -393,7 +391,7 @@ void qemu_CertDuplicateStore(struct qemu_syscall *call)
 {
     struct qemu_CertDuplicateStore *c = (struct qemu_CertDuplicateStore *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(CertDuplicateStore(QEMU_G2H(c->hCertStore)));
+    c->super.iret = QEMU_H2G(CertDuplicateStore(cert_store_g2h(c->hCertStore)));
 }
 
 #endif
@@ -431,7 +429,7 @@ void qemu_CertCloseStore(struct qemu_syscall *call)
         WINE_FIXME("CERT_CLOSE_STORE_FORCE_FLAG may lead to memory leaks\n");
 #endif
 
-    c->super.iret = CertCloseStore(QEMU_G2H(c->hCertStore), c->dwFlags);
+    c->super.iret = CertCloseStore(cert_store_g2h(c->hCertStore), c->dwFlags);
 }
 
 #endif
@@ -467,7 +465,7 @@ void qemu_CertControlStore(struct qemu_syscall *call)
 {
     struct qemu_CertControlStore *c = (struct qemu_CertControlStore *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = CertControlStore(QEMU_G2H(c->hCertStore), c->dwFlags, c->dwCtrlType, QEMU_G2H(c->pvCtrlPara));
+    c->super.iret = CertControlStore(cert_store_g2h(c->hCertStore), c->dwFlags, c->dwCtrlType, QEMU_G2H(c->pvCtrlPara));
 }
 
 #endif
@@ -503,7 +501,7 @@ void qemu_CertGetStoreProperty(struct qemu_syscall *call)
 {
     struct qemu_CertGetStoreProperty *c = (struct qemu_CertGetStoreProperty *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = CertGetStoreProperty(QEMU_G2H(c->hCertStore), c->dwPropId, QEMU_G2H(c->pvData), QEMU_G2H(c->pcbData));
+    c->super.iret = CertGetStoreProperty(cert_store_g2h(c->hCertStore), c->dwPropId, QEMU_G2H(c->pvData), QEMU_G2H(c->pcbData));
 }
 
 #endif
@@ -539,7 +537,7 @@ void qemu_CertSetStoreProperty(struct qemu_syscall *call)
 {
     struct qemu_CertSetStoreProperty *c = (struct qemu_CertSetStoreProperty *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = CertSetStoreProperty(QEMU_G2H(c->hCertStore), c->dwPropId, c->dwFlags, QEMU_G2H(c->pvData));
+    c->super.iret = CertSetStoreProperty(cert_store_g2h(c->hCertStore), c->dwPropId, c->dwFlags, QEMU_G2H(c->pvData));
 }
 
 #endif

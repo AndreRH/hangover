@@ -67,18 +67,6 @@ WINBASEAPI BOOL WINAPI CertAddEncodedCertificateToStore(HCERTSTORE hCertStore, D
 
 #else
 
-struct qemu_cert_context *context32_create(const CERT_CONTEXT *cert64)
-{
-    struct qemu_cert_context *ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
-    if (!ret)
-        WINE_ERR("Out of memory\n");
-    ret->cert64 = cert64;
-    ret->ref = 1;
-    CERT_CONTEXT_h2g(&ret->cert32, cert64);
-
-    return ret;
-}
-
 void qemu_CertAddEncodedCertificateToStore(struct qemu_syscall *call)
 {
     struct qemu_CertAddEncodedCertificateToStore *c = (struct qemu_CertAddEncodedCertificateToStore *)call;
@@ -86,7 +74,7 @@ void qemu_CertAddEncodedCertificateToStore(struct qemu_syscall *call)
     struct qemu_cert_context *context32;
 
     WINE_TRACE("\n");
-    c->super.iret = CertAddEncodedCertificateToStore(QEMU_G2H(c->hCertStore), c->dwCertEncodingType,
+    c->super.iret = CertAddEncodedCertificateToStore(cert_store_g2h(c->hCertStore), c->dwCertEncodingType,
             QEMU_G2H(c->pbCertEncoded), c->cbCertEncoded, c->dwAddDisposition, c->ppCertContext ? &context : NULL);
 
 #if GUEST_BIT != HOST_BIT
@@ -205,14 +193,14 @@ void qemu_CertAddCertificateContextToStore(struct qemu_syscall *call)
 
     WINE_TRACE("\n");
 #if GUEST_BIT == HOST_BIT
-    c->super.iret = CertAddCertificateContextToStore(QEMU_G2H(c->hCertStore), QEMU_G2H(c->pCertContext),
+    c->super.iret = CertAddCertificateContextToStore(cert_store_g2h(c->hCertStore), QEMU_G2H(c->pCertContext),
             c->dwAddDisposition, c->ppStoreContext ? &context : NULL);
     c->ppStoreContext = QEMU_H2G(context);
     return;
 #endif
 
     cert_in = context_impl_from_context32(QEMU_G2H(c->pCertContext));
-    c->super.iret = CertAddCertificateContextToStore(QEMU_G2H(c->hCertStore), cert_in ? cert_in->cert64 : NULL,
+    c->super.iret = CertAddCertificateContextToStore(cert_store_g2h(c->hCertStore), cert_in ? cert_in->cert64 : NULL,
             c->dwAddDisposition, c->ppStoreContext ? &context : NULL);
 
     if (context)
@@ -254,7 +242,7 @@ void qemu_CertAddCertificateLinkToStore(struct qemu_syscall *call)
 {
     struct qemu_CertAddCertificateLinkToStore *c = (struct qemu_CertAddCertificateLinkToStore *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = CertAddCertificateLinkToStore(QEMU_G2H(c->hCertStore), QEMU_G2H(c->pCertContext), c->dwAddDisposition, QEMU_G2H(c->ppCertContext));
+    c->super.iret = CertAddCertificateLinkToStore(cert_store_g2h(c->hCertStore), QEMU_G2H(c->pCertContext), c->dwAddDisposition, QEMU_G2H(c->ppCertContext));
 }
 
 #endif
@@ -884,7 +872,8 @@ struct qemu_CertFindCertificateInStore
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI PCCERT_CONTEXT WINAPI CertFindCertificateInStore(HCERTSTORE hCertStore, DWORD dwCertEncodingType, DWORD dwFlags, DWORD dwType, const void *pvPara, PCCERT_CONTEXT pPrevCertContext)
+WINBASEAPI PCCERT_CONTEXT WINAPI CertFindCertificateInStore(HCERTSTORE hCertStore, DWORD dwCertEncodingType,
+        DWORD dwFlags, DWORD dwType, const void *pvPara, PCCERT_CONTEXT pPrevCertContext)
 {
     struct qemu_CertFindCertificateInStore call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTFINDCERTIFICATEINSTORE);
@@ -906,7 +895,7 @@ void qemu_CertFindCertificateInStore(struct qemu_syscall *call)
 {
     struct qemu_CertFindCertificateInStore *c = (struct qemu_CertFindCertificateInStore *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(CertFindCertificateInStore(QEMU_G2H(c->hCertStore), c->dwCertEncodingType, c->dwFlags, c->dwType, QEMU_G2H(c->pvPara), QEMU_G2H(c->pPrevCertContext)));
+    c->super.iret = QEMU_H2G(CertFindCertificateInStore(cert_store_g2h(c->hCertStore), c->dwCertEncodingType, c->dwFlags, c->dwType, QEMU_G2H(c->pvPara), QEMU_G2H(c->pPrevCertContext)));
 }
 
 #endif
@@ -940,7 +929,7 @@ void qemu_CertGetSubjectCertificateFromStore(struct qemu_syscall *call)
 {
     struct qemu_CertGetSubjectCertificateFromStore *c = (struct qemu_CertGetSubjectCertificateFromStore *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(CertGetSubjectCertificateFromStore(QEMU_G2H(c->hCertStore), c->dwCertEncodingType, QEMU_G2H(c->pCertId)));
+    c->super.iret = QEMU_H2G(CertGetSubjectCertificateFromStore(cert_store_g2h(c->hCertStore), c->dwCertEncodingType, QEMU_G2H(c->pCertId)));
 }
 
 #endif
@@ -1010,7 +999,7 @@ void qemu_CertGetIssuerCertificateFromStore(struct qemu_syscall *call)
 {
     struct qemu_CertGetIssuerCertificateFromStore *c = (struct qemu_CertGetIssuerCertificateFromStore *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(CertGetIssuerCertificateFromStore(QEMU_G2H(c->hCertStore), QEMU_G2H(c->pSubjectContext), QEMU_G2H(c->pPrevIssuerContext), QEMU_G2H(c->pdwFlags)));
+    c->super.iret = QEMU_H2G(CertGetIssuerCertificateFromStore(cert_store_g2h(c->hCertStore), QEMU_G2H(c->pSubjectContext), QEMU_G2H(c->pPrevIssuerContext), QEMU_G2H(c->pdwFlags)));
 }
 
 #endif
