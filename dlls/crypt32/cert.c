@@ -269,7 +269,8 @@ struct qemu_CertCreateCertificateContext
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI PCCERT_CONTEXT WINAPI CertCreateCertificateContext(DWORD dwCertEncodingType, const BYTE *pbCertEncoded, DWORD cbCertEncoded)
+WINBASEAPI PCCERT_CONTEXT WINAPI CertCreateCertificateContext(DWORD dwCertEncodingType, const BYTE *pbCertEncoded,
+        DWORD cbCertEncoded)
 {
     struct qemu_CertCreateCertificateContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTCREATECERTIFICATECONTEXT);
@@ -287,8 +288,16 @@ WINBASEAPI PCCERT_CONTEXT WINAPI CertCreateCertificateContext(DWORD dwCertEncodi
 void qemu_CertCreateCertificateContext(struct qemu_syscall *call)
 {
     struct qemu_CertCreateCertificateContext *c = (struct qemu_CertCreateCertificateContext *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(CertCreateCertificateContext(c->dwCertEncodingType, QEMU_G2H(c->pbCertEncoded), c->cbCertEncoded));
+    const CERT_CONTEXT *context;
+
+    WINE_TRACE("\n");
+    context = CertCreateCertificateContext(c->dwCertEncodingType, QEMU_G2H(c->pbCertEncoded), c->cbCertEncoded);
+
+#if GUEST_BIT != HOST_BIT
+    if (context)
+        context = (CERT_CONTEXT *)context32_create(context);
+#endif
+    c->super.iret = QEMU_H2G(context);
 }
 
 #endif
