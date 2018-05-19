@@ -8,10 +8,10 @@ VPATH=$(SRCDIR)
 
 all: crypt32.dll qemu_crypt32.dll.so
 
-crypt32.dll: base64_g.o cert_g.o chain_g.o collectionstore_g.o crypt32.spec ctl_g.o encode_g.o main_g.o object_g.o serialize_g.o sip_g.o
+crypt32.dll: base64_g.o cert_g.o chain_g.o collectionstore_g.o crl_g.o crypt32.spec ctl_g.o encode_g.o main_g.o object_g.o serialize_g.o sip_g.o
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/crypt32.spec *_g.o -o crypt32.dll -nodefaultlibs -nostdlib -lwine -lmsvcrt -luuid -ldxguid -lkernel32 -L../../$(WINE_DIR)/libs/wine
 
-qemu_crypt32.dll.so: base64_h.o cert_h.o chain_h.o collectionstore_h.o ctl_h.o encode_h.o main_h.o object_h.o qemu_crypt32.spec serialize_h.o sip_h.o
+qemu_crypt32.dll.so: base64_h.o cert_h.o chain_h.o collectionstore_h.o crl_h.o ctl_h.o encode_h.o main_h.o object_h.o qemu_crypt32.spec serialize_h.o sip_h.o
 	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_crypt32.spec *_h.o -o qemu_crypt32.dll.so -lcrypt32
 
 %_g.o: %.c qemu_crypt32.h Makefile $(SRCDIR)/Makefile

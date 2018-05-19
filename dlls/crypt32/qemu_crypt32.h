@@ -28,6 +28,7 @@ enum crypt32_calls
     CALL_CERTADDENCODEDCERTIFICATETOSTORE,
     CALL_CERTADDENCODEDCERTIFICATETOSYSTEMSTOREA,
     CALL_CERTADDENCODEDCERTIFICATETOSYSTEMSTOREW,
+    CALL_CERTADDENCODEDCRLTOSTORE,
     CALL_CERTADDENCODEDCTLTOSTORE,
     CALL_CERTADDENHANCEDKEYUSAGEIDENTIFIER,
     CALL_CERTADDSERIALIZEDELEMENTTOSTORE,
@@ -39,27 +40,35 @@ enum crypt32_calls
     CALL_CERTCREATECERTIFICATECHAINENGINE,
     CALL_CERTCREATECERTIFICATECONTEXT,
     CALL_CERTCREATECONTEXT,
+    CALL_CERTCREATECRLCONTEXT,
     CALL_CERTCREATECTLCONTEXT,
     CALL_CERTCREATESELFSIGNCERTIFICATE,
     CALL_CERTDELETECTLFROMSTORE,
     CALL_CERTDUPLICATECERTIFICATECHAIN,
     CALL_CERTDUPLICATECERTIFICATECONTEXT,
+    CALL_CERTDUPLICATECRLCONTEXT,
     CALL_CERTDUPLICATECTLCONTEXT,
     CALL_CERTENUMCERTIFICATECONTEXTPROPERTIES,
+    CALL_CERTENUMCRLCONTEXTPROPERTIES,
     CALL_CERTENUMCTLCONTEXTPROPERTIES,
     CALL_CERTENUMCTLSINSTORE,
     CALL_CERTFINDATTRIBUTE,
+    CALL_CERTFINDCERTIFICATEINCRL,
     CALL_CERTFINDCERTIFICATEINSTORE,
     CALL_CERTFINDCHAININSTORE,
+    CALL_CERTFINDCRLINSTORE,
     CALL_CERTFINDCTLINSTORE,
     CALL_CERTFINDEXTENSION,
     CALL_CERTFINDRDNATTR,
     CALL_CERTFREECERTIFICATECHAIN,
     CALL_CERTFREECERTIFICATECHAINENGINE,
     CALL_CERTFREECERTIFICATECONTEXT,
+    CALL_CERTFREECRLCONTEXT,
     CALL_CERTFREECTLCONTEXT,
     CALL_CERTGETCERTIFICATECHAIN,
     CALL_CERTGETCERTIFICATECONTEXTPROPERTY,
+    CALL_CERTGETCRLCONTEXTPROPERTY,
+    CALL_CERTGETCRLFROMSTORE,
     CALL_CERTGETCTLCONTEXTPROPERTY,
     CALL_CERTGETENHANCEDKEYUSAGE,
     CALL_CERTGETINTENDEDKEYUSAGE,
@@ -68,6 +77,7 @@ enum crypt32_calls
     CALL_CERTGETSUBJECTCERTIFICATEFROMSTORE,
     CALL_CERTGETVALIDUSAGES,
     CALL_CERTISRDNATTRSINCERTIFICATENAME,
+    CALL_CERTISVALIDCRLFORCERTIFICATE,
     CALL_CERTREMOVEENHANCEDKEYUSAGEIDENTIFIER,
     CALL_CERTREMOVESTOREFROMCOLLECTION,
     CALL_CERTSAVESTORE,
@@ -75,9 +85,12 @@ enum crypt32_calls
     CALL_CERTSERIALIZECRLSTOREELEMENT,
     CALL_CERTSERIALIZECTLSTOREELEMENT,
     CALL_CERTSETCERTIFICATECONTEXTPROPERTY,
+    CALL_CERTSETCRLCONTEXTPROPERTY,
     CALL_CERTSETCTLCONTEXTPROPERTY,
     CALL_CERTSETENHANCEDKEYUSAGE,
     CALL_CERTVERIFYCERTIFICATECHAINPOLICY,
+    CALL_CERTVERIFYCRLREVOCATION,
+    CALL_CERTVERIFYCRLTIMEVALIDITY,
     CALL_CERTVERIFYCTLUSAGE,
     CALL_CERTVERIFYREVOCATION,
     CALL_CERTVERIFYSUBJECTCERTIFICATECONTEXT,
@@ -152,6 +165,7 @@ extern const struct qemu_ops *qemu_ops;
 void qemu_CertAddCTLContextToStore(struct qemu_syscall *call);
 void qemu_CertAddCertificateContextToStore(struct qemu_syscall *call);
 void qemu_CertAddCertificateLinkToStore(struct qemu_syscall *call);
+void qemu_CertAddEncodedCRLToStore(struct qemu_syscall *call);
 void qemu_CertAddEncodedCTLToStore(struct qemu_syscall *call);
 void qemu_CertAddEncodedCertificateToStore(struct qemu_syscall *call);
 void qemu_CertAddEncodedCertificateToSystemStoreA(struct qemu_syscall *call);
@@ -163,28 +177,36 @@ void qemu_CertCompareCertificate(struct qemu_syscall *call);
 void qemu_CertCompareCertificateName(struct qemu_syscall *call);
 void qemu_CertCompareIntegerBlob(struct qemu_syscall *call);
 void qemu_CertComparePublicKeyInfo(struct qemu_syscall *call);
+void qemu_CertCreateCRLContext(struct qemu_syscall *call);
 void qemu_CertCreateCTLContext(struct qemu_syscall *call);
 void qemu_CertCreateCertificateChainEngine(struct qemu_syscall *call);
 void qemu_CertCreateCertificateContext(struct qemu_syscall *call);
 void qemu_CertCreateContext(struct qemu_syscall *call);
 void qemu_CertCreateSelfSignCertificate(struct qemu_syscall *call);
 void qemu_CertDeleteCTLFromStore(struct qemu_syscall *call);
+void qemu_CertDuplicateCRLContext(struct qemu_syscall *call);
 void qemu_CertDuplicateCTLContext(struct qemu_syscall *call);
 void qemu_CertDuplicateCertificateChain(struct qemu_syscall *call);
 void qemu_CertDuplicateCertificateContext(struct qemu_syscall *call);
+void qemu_CertEnumCRLContextProperties(struct qemu_syscall *call);
 void qemu_CertEnumCTLContextProperties(struct qemu_syscall *call);
 void qemu_CertEnumCTLsInStore(struct qemu_syscall *call);
 void qemu_CertEnumCertificateContextProperties(struct qemu_syscall *call);
 void qemu_CertFindAttribute(struct qemu_syscall *call);
+void qemu_CertFindCRLInStore(struct qemu_syscall *call);
 void qemu_CertFindCTLInStore(struct qemu_syscall *call);
+void qemu_CertFindCertificateInCRL(struct qemu_syscall *call);
 void qemu_CertFindCertificateInStore(struct qemu_syscall *call);
 void qemu_CertFindChainInStore(struct qemu_syscall *call);
 void qemu_CertFindExtension(struct qemu_syscall *call);
 void qemu_CertFindRDNAttr(struct qemu_syscall *call);
+void qemu_CertFreeCRLContext(struct qemu_syscall *call);
 void qemu_CertFreeCTLContext(struct qemu_syscall *call);
 void qemu_CertFreeCertificateChain(struct qemu_syscall *call);
 void qemu_CertFreeCertificateChainEngine(struct qemu_syscall *call);
 void qemu_CertFreeCertificateContext(struct qemu_syscall *call);
+void qemu_CertGetCRLContextProperty(struct qemu_syscall *call);
+void qemu_CertGetCRLFromStore(struct qemu_syscall *call);
 void qemu_CertGetCTLContextProperty(struct qemu_syscall *call);
 void qemu_CertGetCertificateChain(struct qemu_syscall *call);
 void qemu_CertGetCertificateContextProperty(struct qemu_syscall *call);
@@ -195,15 +217,19 @@ void qemu_CertGetPublicKeyLength(struct qemu_syscall *call);
 void qemu_CertGetSubjectCertificateFromStore(struct qemu_syscall *call);
 void qemu_CertGetValidUsages(struct qemu_syscall *call);
 void qemu_CertIsRDNAttrsInCertificateName(struct qemu_syscall *call);
+void qemu_CertIsValidCRLForCertificate(struct qemu_syscall *call);
 void qemu_CertRemoveEnhancedKeyUsageIdentifier(struct qemu_syscall *call);
 void qemu_CertRemoveStoreFromCollection(struct qemu_syscall *call);
 void qemu_CertSaveStore(struct qemu_syscall *call);
 void qemu_CertSerializeCRLStoreElement(struct qemu_syscall *call);
 void qemu_CertSerializeCTLStoreElement(struct qemu_syscall *call);
 void qemu_CertSerializeCertificateStoreElement(struct qemu_syscall *call);
+void qemu_CertSetCRLContextProperty(struct qemu_syscall *call);
 void qemu_CertSetCTLContextProperty(struct qemu_syscall *call);
 void qemu_CertSetCertificateContextProperty(struct qemu_syscall *call);
 void qemu_CertSetEnhancedKeyUsage(struct qemu_syscall *call);
+void qemu_CertVerifyCRLRevocation(struct qemu_syscall *call);
+void qemu_CertVerifyCRLTimeValidity(struct qemu_syscall *call);
 void qemu_CertVerifyCTLUsage(struct qemu_syscall *call);
 void qemu_CertVerifyCertificateChainPolicy(struct qemu_syscall *call);
 void qemu_CertVerifyRevocation(struct qemu_syscall *call);
