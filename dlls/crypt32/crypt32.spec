@@ -114,15 +114,15 @@
 #@ stdcall CryptDecodeObjectEx(long str ptr long long ptr ptr ptr)
 @ stub CryptDecryptAndVerifyMessageSignature
 @ stub CryptDecryptMessage
-#@ stdcall CryptEncodeObject(long str ptr ptr ptr)
-#@ stdcall CryptEncodeObjectEx(long str ptr long ptr ptr ptr)
+@ stdcall CryptEncodeObject(long str ptr ptr ptr)
+@ stdcall CryptEncodeObjectEx(long str ptr long ptr ptr ptr)
 #@ stdcall CryptEncryptMessage(ptr long ptr ptr long ptr ptr)
 @ stub CryptEnumOIDFunction
 #@ stdcall CryptEnumOIDInfo(long long ptr ptr)
 @ stub CryptEnumProvidersU
 @ stub CryptExportPKCS8
-#@ stdcall CryptExportPublicKeyInfo(long long long ptr ptr)
-#@ stdcall CryptExportPublicKeyInfoEx(long long long str long ptr ptr ptr)
+@ stdcall CryptExportPublicKeyInfo(long long long ptr ptr)
+@ stdcall CryptExportPublicKeyInfoEx(long long long str long ptr ptr ptr)
 #@ stdcall CryptFindCertificateKeyProvInfo(ptr long ptr)
 #@ stdcall CryptFindLocalizedName(wstr)
 #@ stdcall CryptFindOIDInfo(long ptr long)
@@ -140,8 +140,8 @@
 #@ stdcall CryptHashPublicKeyInfo(long long long long ptr ptr ptr)
 #@ stdcall CryptHashToBeSigned(ptr long ptr long ptr ptr)
 @ stub CryptImportPKCS8
-#@ stdcall CryptImportPublicKeyInfo(long long ptr ptr)
-#@ stdcall CryptImportPublicKeyInfoEx(long long ptr long long ptr ptr)
+@ stdcall CryptImportPublicKeyInfo(long long ptr ptr)
+@ stdcall CryptImportPublicKeyInfoEx(long long ptr long long ptr ptr)
 #@ stdcall CryptInitOIDFunctionSet(str long)
 #@ stdcall CryptInstallOIDFunctionAddress(ptr long str long ptr long)
 @ stub CryptLoadSip
@@ -227,8 +227,8 @@
 @ stdcall I_CryptSetTls(long ptr)
 @ stdcall I_CryptUninstallAsn1Module(long)
 @ stub I_CryptUninstallOssGlobal
-#@ stdcall PFXExportCertStore(ptr ptr ptr long)
-#@ stdcall PFXExportCertStoreEx(ptr ptr ptr ptr long)
+@ stdcall PFXExportCertStore(ptr ptr ptr long)
+@ stdcall PFXExportCertStoreEx(ptr ptr ptr ptr long)
 #@ stdcall PFXImportCertStore(ptr ptr long)
 #@ stdcall PFXIsPFXBlob(ptr)
 #@ stdcall PFXVerifyPassword(ptr wstr long)

@@ -26,6 +26,12 @@ enum crypt32_calls
     CALL_CERTREMOVESTOREFROMCOLLECTION,
     CALL_CRYPTBINARYTOSTRINGA,
     CALL_CRYPTBINARYTOSTRINGW,
+    CALL_CRYPTENCODEOBJECT,
+    CALL_CRYPTENCODEOBJECTEX,
+    CALL_CRYPTEXPORTPUBLICKEYINFO,
+    CALL_CRYPTEXPORTPUBLICKEYINFOEX,
+    CALL_CRYPTIMPORTPUBLICKEYINFO,
+    CALL_CRYPTIMPORTPUBLICKEYINFOEX,
     CALL_CRYPTMEMALLOC,
     CALL_CRYPTMEMFREE,
     CALL_CRYPTMEMREALLOC,
@@ -53,6 +59,8 @@ enum crypt32_calls
     CALL_I_CRYPTSETTLS,
     CALL_I_CRYPTUNINSTALLASN1MODULE,
     CALL_INIT_DLL,
+    CALL_PFXEXPORTCERTSTORE,
+    CALL_PFXEXPORTCERTSTOREEX,
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -65,8 +73,16 @@ void qemu_CertAddStoreToCollection(struct qemu_syscall *call);
 void qemu_CertRemoveStoreFromCollection(struct qemu_syscall *call);
 void qemu_CryptBinaryToStringA(struct qemu_syscall *call);
 void qemu_CryptBinaryToStringW(struct qemu_syscall *call);
+void qemu_CryptEncodeObject(struct qemu_syscall *call);
+void qemu_CryptEncodeObjectEx(struct qemu_syscall *call);
+void qemu_CryptExportPublicKeyInfo(struct qemu_syscall *call);
+void qemu_CryptExportPublicKeyInfoEx(struct qemu_syscall *call);
+void qemu_CryptImportPublicKeyInfo(struct qemu_syscall *call);
+void qemu_CryptImportPublicKeyInfoEx(struct qemu_syscall *call);
 void qemu_CryptStringToBinaryA(struct qemu_syscall *call);
 void qemu_CryptStringToBinaryW(struct qemu_syscall *call);
+void qemu_PFXExportCertStore(struct qemu_syscall *call);
+void qemu_PFXExportCertStoreEx(struct qemu_syscall *call);
 
 #endif
 

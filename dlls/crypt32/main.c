@@ -848,6 +848,12 @@ static const syscall_handler dll_functions[] =
     qemu_CertRemoveStoreFromCollection,
     qemu_CryptBinaryToStringA,
     qemu_CryptBinaryToStringW,
+    qemu_CryptEncodeObject,
+    qemu_CryptEncodeObjectEx,
+    qemu_CryptExportPublicKeyInfo,
+    qemu_CryptExportPublicKeyInfoEx,
+    qemu_CryptImportPublicKeyInfo,
+    qemu_CryptImportPublicKeyInfoEx,
     qemu_CryptMemAlloc,
     qemu_CryptMemFree,
     qemu_CryptMemRealloc,
@@ -875,6 +881,8 @@ static const syscall_handler dll_functions[] =
     qemu_I_CryptSetTls,
     qemu_I_CryptUninstallAsn1Module,
     qemu_init_dll,
+    qemu_PFXExportCertStore,
+    qemu_PFXExportCertStoreEx,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
