@@ -493,7 +493,12 @@ WINBASEAPI DWORD WINAPI TlsAlloc(void)
     struct qemu_TlsAlloc call;
     call.super.id = QEMU_SYSCALL_ID(CALL_TLSALLOC);
 
-    /* This should be done on the guest side using the guest TEB. */
+    /* Note that some wrapped DLLs like crypt32 have their own TLS functions and their
+     * implementation calls the kernel32 Tls functions. So it is possible that an application
+     * needs the guest TLS and host TLS to match.
+     *
+     * It may be necessary to have a 32 bit copy of the TLS array in the 32 bit TEB and sync
+     * the pointers when TLS functions are called. */
     qemu_syscall(&call.super);
 
     return call.super.iret;
@@ -534,7 +539,7 @@ WINBASEAPI BOOL WINAPI TlsFree(DWORD index)
 void qemu_TlsFree(struct qemu_syscall *call)
 {
     struct qemu_TlsFree *c = (struct qemu_TlsFree *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = TlsFree(c->index);
 }
 
@@ -554,7 +559,6 @@ WINBASEAPI LPVOID WINAPI TlsGetValue(DWORD index)
     call.super.id = QEMU_SYSCALL_ID(CALL_TLSGETVALUE);
     call.index = (ULONG_PTR)index;
 
-    /* This should be done on the guest side using the guest TEB. */
     qemu_syscall(&call.super);
 
     return (LPVOID)(ULONG_PTR)call.super.iret;
@@ -587,7 +591,6 @@ WINBASEAPI BOOL WINAPI TlsSetValue(DWORD index, LPVOID value)
     call.index = (ULONG_PTR)index;
     call.value = (ULONG_PTR)value;
 
-    /* This should be done on the guest side using the guest TEB. */
     qemu_syscall(&call.super);
 
     return call.super.iret;
