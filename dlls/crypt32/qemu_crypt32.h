@@ -30,12 +30,14 @@ enum crypt32_calls
     CALL_CRYPTENCODEOBJECTEX,
     CALL_CRYPTEXPORTPUBLICKEYINFO,
     CALL_CRYPTEXPORTPUBLICKEYINFOEX,
+    CALL_CRYPTFORMATOBJECT,
     CALL_CRYPTIMPORTPUBLICKEYINFO,
     CALL_CRYPTIMPORTPUBLICKEYINFOEX,
     CALL_CRYPTMEMALLOC,
     CALL_CRYPTMEMFREE,
     CALL_CRYPTMEMREALLOC,
     CALL_CRYPTPROTECTMEMORY,
+    CALL_CRYPTQUERYOBJECT,
     CALL_CRYPTSTRINGTOBINARYA,
     CALL_CRYPTSTRINGTOBINARYW,
     CALL_CRYPTUNPROTECTMEMORY,
@@ -77,8 +79,10 @@ void qemu_CryptEncodeObject(struct qemu_syscall *call);
 void qemu_CryptEncodeObjectEx(struct qemu_syscall *call);
 void qemu_CryptExportPublicKeyInfo(struct qemu_syscall *call);
 void qemu_CryptExportPublicKeyInfoEx(struct qemu_syscall *call);
+void qemu_CryptFormatObject(struct qemu_syscall *call);
 void qemu_CryptImportPublicKeyInfo(struct qemu_syscall *call);
 void qemu_CryptImportPublicKeyInfoEx(struct qemu_syscall *call);
+void qemu_CryptQueryObject(struct qemu_syscall *call);
 void qemu_CryptStringToBinaryA(struct qemu_syscall *call);
 void qemu_CryptStringToBinaryW(struct qemu_syscall *call);
 void qemu_PFXExportCertStore(struct qemu_syscall *call);

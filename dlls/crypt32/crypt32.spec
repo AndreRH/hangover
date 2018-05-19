@@ -126,7 +126,7 @@
 #@ stdcall CryptFindCertificateKeyProvInfo(ptr long ptr)
 #@ stdcall CryptFindLocalizedName(wstr)
 #@ stdcall CryptFindOIDInfo(long ptr long)
-#@ stdcall CryptFormatObject(long long long ptr str ptr long ptr ptr)
+@ stdcall CryptFormatObject(long long long ptr str ptr long ptr ptr)
 #@ stdcall CryptFreeOIDFunctionAddress(long long)
 @ stub CryptGetAsyncParam
 #@ stdcall CryptGetDefaultOIDDllList(long long ptr ptr)
@@ -165,7 +165,7 @@
 #@ stdcall CryptMsgVerifyCountersignatureEncodedEx(ptr long ptr long ptr long long ptr long ptr)
 #@ stdcall CryptProtectData(ptr wstr ptr ptr ptr long ptr)
 @ stdcall CryptProtectMemory(ptr long long)
-#@ stdcall CryptQueryObject(long ptr long long long ptr ptr ptr ptr ptr ptr)
+@ stdcall CryptQueryObject(long ptr long long long ptr ptr ptr ptr ptr ptr)
 #@ stdcall CryptRegisterDefaultOIDFunction(long str long wstr)
 #@ stdcall CryptRegisterOIDFunction(long str str wstr str)
 #@ stdcall CryptRegisterOIDInfo(ptr long)
