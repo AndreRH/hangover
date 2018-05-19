@@ -400,7 +400,13 @@ WINBASEAPI BOOL WINAPI CertCloseStore(HCERTSTORE hCertStore, DWORD dwFlags)
 void qemu_CertCloseStore(struct qemu_syscall *call)
 {
     struct qemu_CertCloseStore *c = (struct qemu_CertCloseStore *)call;
-    WINE_FIXME("Unverified!\n");
+
+    WINE_TRACE("\n");
+#if GUEST_BIT != HOST_BIT
+    if (c->dwFlags & CERT_CLOSE_STORE_FORCE_FLAG)
+        WINE_FIXME("CERT_CLOSE_STORE_FORCE_FLAG may lead to memory leaks\n");
+#endif
+
     c->super.iret = CertCloseStore(QEMU_G2H(c->hCertStore), c->dwFlags);
 }
 
