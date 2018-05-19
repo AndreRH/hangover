@@ -25,6 +25,8 @@
 #include <fdi.h>
 #include <shlwapi.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_cabinet.h"
@@ -92,8 +94,123 @@ static HRESULT (WINAPI *p_Extract)(SESSION *, const char *);
 static void qemu_Extract(struct qemu_syscall *call)
 {
     struct qemu_Extract *c = (struct qemu_Extract *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_Extract(QEMU_G2H(c->dest), QEMU_G2H(c->szCabName));
+    SESSION stack, *dest = &stack;
+    struct qemu_SESSION *dest32;
+    struct FILELIST *list, *last;
+    struct qemu_FILELIST *list32, *last32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    dest = QEMU_G2H(c->dest);
+#else
+    dest32 = QEMU_G2H(c->dest);
+    if (dest32)
+    {
+        SESSION_g2h(dest, dest32);
+
+        last = NULL;
+        for (list32 = (struct qemu_FILELIST *)dest->FilterList; list32;
+                list32 = (struct qemu_FILELIST *)(ULONG_PTR)list32->next)
+        {
+            list = HeapAlloc(GetProcessHeap(), 0, sizeof(*list));
+            if (!list)
+                WINE_ERR("Out of memory\n");
+
+            FILELIST_g2h(list, list32);
+            if (last)
+                last->next = list;
+            else
+                dest->FilterList = list;
+            last = list;
+        }
+
+        if (!(dest->Operation & EXTRACT_FILLFILELIST))
+        {
+            last = NULL;
+            for (list32 = (struct qemu_FILELIST *)dest->FileList; list32;
+                    list32 = (struct qemu_FILELIST *)(ULONG_PTR)list32->next)
+            {
+                list = HeapAlloc(GetProcessHeap(), 0, sizeof(*list));
+                if (!list)
+                    WINE_ERR("Out of memory\n");
+
+                FILELIST_g2h(list, list32);
+                if (last)
+                    last->next = list;
+                else
+                    dest->FileList = list;
+                last = list;
+            }
+        }
+    }
+    else
+    {
+        dest = NULL;
+    }
+#endif
+
+    c->super.iret = p_Extract(dest, QEMU_G2H(c->szCabName));
+
+#if GUEST_BIT != HOST_BIT
+    if (!dest)
+        return;
+
+    list = dest->FilterList;
+    while (list)
+    {
+        /* Don't free the names, we reused the input strings. */
+        last = list;
+        list = list->next;
+        HeapFree(GetProcessHeap(), 0, last);
+    }
+    dest->FilterList = (struct FILELIST *)(ULONG_PTR)dest32->FilterList;
+
+    if (dest->Operation & EXTRACT_FILLFILELIST)
+    {
+        last32 = NULL;
+        for (list = dest->FileList; list; list = list->next)
+        {
+            list32 = HeapAlloc(GetProcessHeap(), 0, sizeof(*list32));
+            if (!list32)
+                WINE_ERR("Out of memory\n");
+
+            FILELIST_h2g(list32, list);
+            if (last32)
+                last32->next = QEMU_H2G(list32);
+            else
+                dest32->FileList = QEMU_H2G(list32);
+            last32 = list32;
+        }
+    }
+    else
+    {
+        /* Apparently Extract() sets DoExtract of handled files to FALSE. Copy it back to the input
+         * list. */
+        for (list = dest->FileList, list32 = (struct qemu_FILELIST *)(ULONG_PTR)dest32->FileList;
+                list;
+                list = list->next, list32 = (struct qemu_FILELIST *)(ULONG_PTR)list32->next)
+        {
+            list32->DoExtract = list->DoExtract;
+        }
+
+    }
+    list32 = (struct qemu_FILELIST *)(ULONG_PTR)dest32->FileList;
+
+    /* Free the FileList in either case. If we passed it in we need to free it. If it is used as output
+     * the data is now in the 32 bit list, which the caller will free, so we are responsible for the 64
+     * bit copy. */
+    list = dest->FileList;
+    while (list)
+    {
+        /* Don't free the names, we passed them back to the application in the 32 bit list. */
+        last = list;
+        list = list->next;
+        HeapFree(GetProcessHeap(), 0, last);
+    }
+
+    dest->FileList = (struct FILELIST *)list32;
+    SESSION_h2g(dest32, dest);
+#endif
 }
 
 #endif

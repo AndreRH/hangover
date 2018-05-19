@@ -37,12 +37,15 @@ enum cabinet_calls
     CALL_INIT_DLL,
 };
 
+/* Taken from dlls/cabinet/cabinet.h */
 struct FILELIST
 {
-    LPSTR FileName;
+    char *FileName;
     struct FILELIST *next;
     BOOL DoExtract;
 };
+
+#define EXTRACT_FILLFILELIST  0x00000001
 
 typedef struct
 {
@@ -56,6 +59,67 @@ typedef struct
     CHAR Reserved[MAX_PATH];
     struct FILELIST *FilterList;
 } SESSION;
+
+struct qemu_FILELIST
+{
+    qemu_ptr FileName;
+    qemu_ptr next;
+    BOOL DoExtract;
+};
+
+/* The chaining is handled by the caller. */
+static inline void FILELIST_g2h(struct FILELIST *host, const struct qemu_FILELIST *guest)
+{
+    host->FileName = (char *)(ULONG_PTR)guest->FileName;
+    host->next = (struct FILELIST *)(ULONG_PTR)guest->next;
+    host->DoExtract = guest->DoExtract;
+}
+
+static inline void FILELIST_h2g(struct qemu_FILELIST *guest, const struct FILELIST *host)
+{
+    guest->FileName = (ULONG_PTR)host->FileName;
+    guest->next = (ULONG_PTR)host->next;
+    guest->DoExtract = host->DoExtract;
+}
+
+struct qemu_SESSION
+{
+    INT FileSize;
+    ERF Error;
+    qemu_ptr FileList;
+    INT FileCount;
+    INT Operation;
+    CHAR Destination[MAX_PATH];
+    CHAR CurrentFile[MAX_PATH];
+    CHAR Reserved[MAX_PATH];
+    qemu_ptr FilterList;
+};
+
+static inline void SESSION_g2h(SESSION *host, const struct qemu_SESSION *guest)
+{
+    host->FileSize = guest->FileSize;
+    host->Error = guest->Error;
+    host->FileList = (struct FILELIST *)(ULONG_PTR)guest->FileList;
+    host->FileCount = guest->FileCount;
+    host->Operation = guest->Operation;
+    memcpy(host->Destination, guest->Destination, sizeof(host->Destination));
+    memcpy(host->CurrentFile, guest->CurrentFile, sizeof(host->CurrentFile));
+    memcpy(host->Reserved, guest->Reserved, sizeof(host->Reserved));
+    host->FilterList = (struct FILELIST *)(ULONG_PTR)guest->FilterList;
+}
+
+static inline void SESSION_h2g(struct qemu_SESSION *guest, const SESSION *host)
+{
+    guest->FileSize = host->FileSize;
+    guest->Error = host->Error;
+    guest->FileList = (ULONG_PTR)host->FileList;
+    guest->FileCount = host->FileCount;
+    guest->Operation = host->Operation;
+    memcpy(guest->Destination, host->Destination, sizeof(guest->Destination));
+    memcpy(guest->CurrentFile, host->CurrentFile, sizeof(guest->CurrentFile));
+    memcpy(guest->Reserved, host->Reserved, sizeof(guest->Reserved));
+    guest->FilterList = (ULONG_PTR)host->FilterList;
+}
 
 #ifdef QEMU_DLL_GUEST
 
