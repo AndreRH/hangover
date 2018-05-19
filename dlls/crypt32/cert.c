@@ -518,8 +518,20 @@ void qemu_CertGetCertificateContextProperty(struct qemu_syscall *call)
             }
             break;
 
+        case CERT_KEY_PROV_INFO_PROP_ID:
+            WINE_FIXME("Unhandled CERT_KEY_PROV_INFO_PROP_ID.\n");
+            break;
+
+        case CERT_SHA1_HASH_PROP_ID: /* Apparently fixed size */
+        case CERT_MD5_HASH_PROP_ID: /* Apparently fixed size */
+        case CERT_ACCESS_STATE_PROP_ID: /* DWORD */
+        case CERT_SIGNATURE_HASH_PROP_ID: /* Apparently fixed size */
+        case CERT_ARCHIVED_PROP_ID: /* No data */
+        case CERT_KEY_IDENTIFIER_PROP_ID: /* Dynamic size */
+            break;
+
         default:
-            WINE_FIXME("Unchecked property %x.\n", property);
+            WINE_FIXME("Unchecked property %u.\n", property);
     }
 #endif
 
