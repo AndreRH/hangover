@@ -97,6 +97,16 @@ enum crypt32_calls
     CALL_CRYPTQUERYOBJECT,
     CALL_CRYPTSIGNANDENCODECERTIFICATE,
     CALL_CRYPTSIGNCERTIFICATE,
+    CALL_CRYPTSIPADDPROVIDER,
+    CALL_CRYPTSIPCREATEINDIRECTDATA,
+    CALL_CRYPTSIPGETSIGNEDDATAMSG,
+    CALL_CRYPTSIPLOAD,
+    CALL_CRYPTSIPPUTSIGNEDDATAMSG,
+    CALL_CRYPTSIPREMOVEPROVIDER,
+    CALL_CRYPTSIPREMOVESIGNEDDATAMSG,
+    CALL_CRYPTSIPRETRIEVESUBJECTGUID,
+    CALL_CRYPTSIPRETRIEVESUBJECTGUIDFORCATALOGFILE,
+    CALL_CRYPTSIPVERIFYINDIRECTDATA,
     CALL_CRYPTSTRINGTOBINARYA,
     CALL_CRYPTSTRINGTOBINARYW,
     CALL_CRYPTUNPROTECTMEMORY,
@@ -201,6 +211,16 @@ void qemu_CryptHashToBeSigned(struct qemu_syscall *call);
 void qemu_CryptImportPublicKeyInfo(struct qemu_syscall *call);
 void qemu_CryptImportPublicKeyInfoEx(struct qemu_syscall *call);
 void qemu_CryptQueryObject(struct qemu_syscall *call);
+void qemu_CryptSIPAddProvider(struct qemu_syscall *call);
+void qemu_CryptSIPCreateIndirectData(struct qemu_syscall *call);
+void qemu_CryptSIPGetSignedDataMsg(struct qemu_syscall *call);
+void qemu_CryptSIPLoad(struct qemu_syscall *call);
+void qemu_CryptSIPPutSignedDataMsg(struct qemu_syscall *call);
+void qemu_CryptSIPRemoveProvider(struct qemu_syscall *call);
+void qemu_CryptSIPRemoveSignedDataMsg(struct qemu_syscall *call);
+void qemu_CryptSIPRetrieveSubjectGuid(struct qemu_syscall *call);
+void qemu_CryptSIPRetrieveSubjectGuidForCatalogFile(struct qemu_syscall *call);
+void qemu_CryptSIPVerifyIndirectData(struct qemu_syscall *call);
 void qemu_CryptSignAndEncodeCertificate(struct qemu_syscall *call);
 void qemu_CryptSignCertificate(struct qemu_syscall *call);
 void qemu_CryptStringToBinaryA(struct qemu_syscall *call);
