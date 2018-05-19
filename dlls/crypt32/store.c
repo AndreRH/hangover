@@ -80,7 +80,8 @@ struct qemu_CertOpenStore
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HCERTSTORE WINAPI CertOpenStore(LPCSTR lpszStoreProvider, DWORD dwMsgAndCertEncodingType, HCRYPTPROV_LEGACY hCryptProv, DWORD dwFlags, const void* pvPara)
+WINBASEAPI HCERTSTORE WINAPI CertOpenStore(LPCSTR lpszStoreProvider, DWORD dwMsgAndCertEncodingType,
+        HCRYPTPROV_LEGACY hCryptProv, DWORD dwFlags, const void* pvPara)
 {
     struct qemu_CertOpenStore call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTOPENSTORE);
@@ -100,8 +101,11 @@ WINBASEAPI HCERTSTORE WINAPI CertOpenStore(LPCSTR lpszStoreProvider, DWORD dwMsg
 void qemu_CertOpenStore(struct qemu_syscall *call)
 {
     struct qemu_CertOpenStore *c = (struct qemu_CertOpenStore *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(CertOpenStore(QEMU_G2H(c->lpszStoreProvider), c->dwMsgAndCertEncodingType, c->hCryptProv, c->dwFlags, QEMU_G2H(c->pvPara)));
+
+    /* pvPara looks like either a HANDLE or filename, depending on the store type. */
+    WINE_TRACE("\n");
+    c->super.iret = QEMU_H2G(CertOpenStore(QEMU_G2H(c->lpszStoreProvider), c->dwMsgAndCertEncodingType,
+            c->hCryptProv, c->dwFlags, QEMU_G2H(c->pvPara)));
 }
 
 #endif
