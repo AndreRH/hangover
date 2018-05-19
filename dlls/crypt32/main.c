@@ -921,6 +921,8 @@ static const syscall_handler dll_functions[] =
     qemu_CryptAcquireCertificatePrivateKey,
     qemu_CryptBinaryToStringA,
     qemu_CryptBinaryToStringW,
+    qemu_CryptDecodeObject,
+    qemu_CryptDecodeObjectEx,
     qemu_CryptEncodeObject,
     qemu_CryptEncodeObjectEx,
     qemu_CryptExportPublicKeyInfo,
@@ -976,6 +978,9 @@ static const syscall_handler dll_functions[] =
     qemu_init_dll,
     qemu_PFXExportCertStore,
     qemu_PFXExportCertStoreEx,
+    qemu_PFXImportCertStore,
+    qemu_PFXIsPFXBlob,
+    qemu_PFXVerifyPassword,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)

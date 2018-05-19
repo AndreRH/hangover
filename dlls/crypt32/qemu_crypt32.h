@@ -99,6 +99,8 @@ enum crypt32_calls
     CALL_CRYPTACQUIRECERTIFICATEPRIVATEKEY,
     CALL_CRYPTBINARYTOSTRINGA,
     CALL_CRYPTBINARYTOSTRINGW,
+    CALL_CRYPTDECODEOBJECT,
+    CALL_CRYPTDECODEOBJECTEX,
     CALL_CRYPTENCODEOBJECT,
     CALL_CRYPTENCODEOBJECTEX,
     CALL_CRYPTEXPORTPUBLICKEYINFO,
@@ -154,6 +156,9 @@ enum crypt32_calls
     CALL_INIT_DLL,
     CALL_PFXEXPORTCERTSTORE,
     CALL_PFXEXPORTCERTSTOREEX,
+    CALL_PFXIMPORTCERTSTORE,
+    CALL_PFXISPFXBLOB,
+    CALL_PFXVERIFYPASSWORD,
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -239,6 +244,8 @@ void qemu_CertVerifyValidityNesting(struct qemu_syscall *call);
 void qemu_CryptAcquireCertificatePrivateKey(struct qemu_syscall *call);
 void qemu_CryptBinaryToStringA(struct qemu_syscall *call);
 void qemu_CryptBinaryToStringW(struct qemu_syscall *call);
+void qemu_CryptDecodeObject(struct qemu_syscall *call);
+void qemu_CryptDecodeObjectEx(struct qemu_syscall *call);
 void qemu_CryptEncodeObject(struct qemu_syscall *call);
 void qemu_CryptEncodeObjectEx(struct qemu_syscall *call);
 void qemu_CryptExportPublicKeyInfo(struct qemu_syscall *call);
@@ -269,6 +276,9 @@ void qemu_CryptVerifyCertificateSignature(struct qemu_syscall *call);
 void qemu_CryptVerifyCertificateSignatureEx(struct qemu_syscall *call);
 void qemu_PFXExportCertStore(struct qemu_syscall *call);
 void qemu_PFXExportCertStoreEx(struct qemu_syscall *call);
+void qemu_PFXImportCertStore(struct qemu_syscall *call);
+void qemu_PFXIsPFXBlob(struct qemu_syscall *call);
+void qemu_PFXVerifyPassword(struct qemu_syscall *call);
 
 #endif
 
