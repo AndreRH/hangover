@@ -23,6 +23,8 @@
 #include <stdio.h>
 #include <wincon.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_crypt32.h"

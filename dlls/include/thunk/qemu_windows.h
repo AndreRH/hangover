@@ -14,6 +14,7 @@
 #include "thunk/qemu_mmsystem.h"
 
 #include "thunk/qemu_winsock.h"
+#include "thunk/qemu_wincrypt.h"
 
 #include "thunk/qemu_shellapi.h"
 

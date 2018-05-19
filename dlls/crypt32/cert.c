@@ -22,6 +22,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_crypt32.h"
@@ -44,7 +46,8 @@ struct qemu_CertAddEncodedCertificateToStore
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CertAddEncodedCertificateToStore(HCERTSTORE hCertStore, DWORD dwCertEncodingType, const BYTE *pbCertEncoded, DWORD cbCertEncoded, DWORD dwAddDisposition, PCCERT_CONTEXT *ppCertContext)
+WINBASEAPI BOOL WINAPI CertAddEncodedCertificateToStore(HCERTSTORE hCertStore, DWORD dwCertEncodingType,
+        const BYTE *pbCertEncoded, DWORD cbCertEncoded, DWORD dwAddDisposition, PCCERT_CONTEXT *ppCertContext)
 {
     struct qemu_CertAddEncodedCertificateToStore call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTADDENCODEDCERTIFICATETOSTORE);
@@ -56,17 +59,42 @@ WINBASEAPI BOOL WINAPI CertAddEncodedCertificateToStore(HCERTSTORE hCertStore, D
     call.ppCertContext = (ULONG_PTR)ppCertContext;
 
     qemu_syscall(&call.super);
+    if (call.super.iret && ppCertContext)
+        *ppCertContext = (PCCERT_CONTEXT)(ULONG_PTR)call.ppCertContext;
 
     return call.super.iret;
 }
 
 #else
 
+struct qemu_cert_context *context32_create(const CERT_CONTEXT *cert64)
+{
+    struct qemu_cert_context *ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+    if (!ret)
+        WINE_ERR("Out of memory\n");
+    ret->cert64 = cert64;
+    ret->ref = 1;
+    CERT_CONTEXT_h2g(&ret->cert32, cert64);
+
+    return ret;
+}
+
 void qemu_CertAddEncodedCertificateToStore(struct qemu_syscall *call)
 {
     struct qemu_CertAddEncodedCertificateToStore *c = (struct qemu_CertAddEncodedCertificateToStore *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertAddEncodedCertificateToStore(QEMU_G2H(c->hCertStore), c->dwCertEncodingType, QEMU_G2H(c->pbCertEncoded), c->cbCertEncoded, c->dwAddDisposition, QEMU_G2H(c->ppCertContext));
+    const CERT_CONTEXT *context = NULL;
+    struct qemu_cert_context *context32;
+
+    WINE_TRACE("\n");
+    c->super.iret = CertAddEncodedCertificateToStore(QEMU_G2H(c->hCertStore), c->dwCertEncodingType,
+            QEMU_G2H(c->pbCertEncoded), c->cbCertEncoded, c->dwAddDisposition, c->ppCertContext ? &context : NULL);
+
+#if GUEST_BIT != HOST_BIT
+    if (context)
+        context = (CERT_CONTEXT *)context32_create(context);
+#endif
+
+    c->ppCertContext = QEMU_H2G(context);
 }
 
 #endif
@@ -150,7 +178,8 @@ struct qemu_CertAddCertificateContextToStore
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CertAddCertificateContextToStore(HCERTSTORE hCertStore, PCCERT_CONTEXT pCertContext, DWORD dwAddDisposition, PCCERT_CONTEXT *ppStoreContext)
+WINBASEAPI BOOL WINAPI CertAddCertificateContextToStore(HCERTSTORE hCertStore, PCCERT_CONTEXT pCertContext,
+        DWORD dwAddDisposition, PCCERT_CONTEXT *ppStoreContext)
 {
     struct qemu_CertAddCertificateContextToStore call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTADDCERTIFICATECONTEXTTOSTORE);
@@ -160,6 +189,8 @@ WINBASEAPI BOOL WINAPI CertAddCertificateContextToStore(HCERTSTORE hCertStore, P
     call.ppStoreContext = (ULONG_PTR)ppStoreContext;
 
     qemu_syscall(&call.super);
+    if (call.super.iret && ppStoreContext)
+        *ppStoreContext = (const CERT_CONTEXT *)(ULONG_PTR)call.ppStoreContext;
 
     return call.super.iret;
 }
@@ -169,8 +200,25 @@ WINBASEAPI BOOL WINAPI CertAddCertificateContextToStore(HCERTSTORE hCertStore, P
 void qemu_CertAddCertificateContextToStore(struct qemu_syscall *call)
 {
     struct qemu_CertAddCertificateContextToStore *c = (struct qemu_CertAddCertificateContextToStore *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertAddCertificateContextToStore(QEMU_G2H(c->hCertStore), QEMU_G2H(c->pCertContext), c->dwAddDisposition, QEMU_G2H(c->ppStoreContext));
+    const CERT_CONTEXT *context = NULL;
+    struct qemu_cert_context *cert_in;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    c->super.iret = CertAddCertificateContextToStore(QEMU_G2H(c->hCertStore), QEMU_G2H(c->pCertContext),
+            c->dwAddDisposition, c->ppStoreContext ? &context : NULL);
+    c->ppStoreContext = QEMU_H2G(context);
+    return;
+#endif
+
+    cert_in = context_impl_from_context32(QEMU_G2H(c->pCertContext));
+    c->super.iret = CertAddCertificateContextToStore(QEMU_G2H(c->hCertStore), cert_in ? cert_in->cert64 : NULL,
+            c->dwAddDisposition, c->ppStoreContext ? &context : NULL);
+
+    if (context)
+        context = (CERT_CONTEXT *)context32_create(context);
+
+    c->ppStoreContext = QEMU_H2G(context);
 }
 
 #endif
@@ -269,8 +317,28 @@ WINBASEAPI PCCERT_CONTEXT WINAPI CertDuplicateCertificateContext(PCCERT_CONTEXT 
 void qemu_CertDuplicateCertificateContext(struct qemu_syscall *call)
 {
     struct qemu_CertDuplicateCertificateContext *c = (struct qemu_CertDuplicateCertificateContext *)call;
-    WINE_FIXME("Unverified!\n");
+    struct qemu_cert_context *context32;
+    const CERT_CONTEXT *context64;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
     c->super.iret = QEMU_H2G(CertDuplicateCertificateContext(QEMU_G2H(c->pCertContext)));
+    return;
+#endif
+
+    context32 = context_impl_from_context32(QEMU_G2H(c->pCertContext));
+    if (!context32)
+    {
+        c->super.iret = QEMU_H2G(CertDuplicateCertificateContext(NULL));
+        return;
+    }
+
+    context64 = CertDuplicateCertificateContext(context32->cert64);
+    if (context64 != context32->cert64)
+        WINE_FIXME("Unexpected host library behavior.\n");
+    InterlockedIncrement(&context32->ref);
+
+    c->super.iret = QEMU_H2G(&context32->cert32);
 }
 
 #endif
@@ -299,8 +367,28 @@ WINBASEAPI BOOL WINAPI CertFreeCertificateContext(PCCERT_CONTEXT pCertContext)
 void qemu_CertFreeCertificateContext(struct qemu_syscall *call)
 {
     struct qemu_CertFreeCertificateContext *c = (struct qemu_CertFreeCertificateContext *)call;
-    WINE_FIXME("Unverified!\n");
+    struct qemu_cert_context *context32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
     c->super.iret = CertFreeCertificateContext(QEMU_G2H(c->pCertContext));
+    return;
+#endif
+
+    context32 = context_impl_from_context32(QEMU_G2H(c->pCertContext));
+    if (!context32)
+    {
+        c->super.iret = CertFreeCertificateContext(NULL);
+        return;
+    }
+
+    c->super.iret = CertFreeCertificateContext(context32->cert64);
+
+    if (InterlockedDecrement(&context32->ref) == 0)
+    {
+        WINE_TRACE("Freeing CERT_CONTEXT wrapper %p.\n", context32);
+        HeapFree(GetProcessHeap(), 0, context32);
+    }
 }
 
 #endif
@@ -403,8 +491,18 @@ WINBASEAPI BOOL WINAPI CertSetCertificateContextProperty(PCCERT_CONTEXT pCertCon
 void qemu_CertSetCertificateContextProperty(struct qemu_syscall *call)
 {
     struct qemu_CertSetCertificateContextProperty *c = (struct qemu_CertSetCertificateContextProperty *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertSetCertificateContextProperty(QEMU_G2H(c->pCertContext), c->dwPropId, c->dwFlags, QEMU_G2H(c->pvData));
+    struct qemu_cert_context *context32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    c->super.iret = CertSetCertificateContextProperty(QEMU_G2H(c->pCertContext), c->dwPropId, c->dwFlags,
+            QEMU_G2H(c->pvData));
+    return;
+#endif
+
+    context32 = context_impl_from_context32(QEMU_G2H(c->pCertContext));
+    c->super.iret = CertSetCertificateContextProperty(context32 ? context32->cert64 : NULL, c->dwPropId, c->dwFlags,
+            QEMU_G2H(c->pvData));
 }
 
 #endif

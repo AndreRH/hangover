@@ -22,6 +22,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_crypt32.h"
@@ -230,8 +232,16 @@ WINBASEAPI BOOL WINAPI CertDeleteCertificateFromStore(PCCERT_CONTEXT pCertContex
 void qemu_CertDeleteCertificateFromStore(struct qemu_syscall *call)
 {
     struct qemu_CertDeleteCertificateFromStore *c = (struct qemu_CertDeleteCertificateFromStore *)call;
-    WINE_FIXME("Unverified!\n");
+    struct qemu_cert_context *context32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
     c->super.iret = CertDeleteCertificateFromStore(QEMU_G2H(c->pCertContext));
+    return;
+#endif
+
+    context32 = context_impl_from_context32(QEMU_G2H(c->pCertContext));
+    c->super.iret = CertDeleteCertificateFromStore(context32 ? context32->cert64 : NULL);
 }
 
 #endif

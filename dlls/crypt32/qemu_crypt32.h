@@ -418,6 +418,23 @@ void qemu_PFXImportCertStore(struct qemu_syscall *call);
 void qemu_PFXIsPFXBlob(struct qemu_syscall *call);
 void qemu_PFXVerifyPassword(struct qemu_syscall *call);
 
+struct qemu_cert_context
+{
+    struct qemu_CERT_CONTEXT cert32;
+    const CERT_CONTEXT *cert64;
+    ULONG ref;
+};
+
+struct qemu_cert_context *context32_create(const CERT_CONTEXT *cert64);
+
+static inline struct qemu_cert_context *context_impl_from_context32(struct qemu_CERT_CONTEXT *cert32)
+{
+    if (!cert32)
+        return NULL;
+    return CONTAINING_RECORD(cert32, struct qemu_cert_context, cert32);
+}
+
+
 #endif
 
 #endif
