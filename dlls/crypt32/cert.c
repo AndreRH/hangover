@@ -472,7 +472,8 @@ struct qemu_CertSetCertificateContextProperty
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CertSetCertificateContextProperty(PCCERT_CONTEXT pCertContext, DWORD dwPropId, DWORD dwFlags, const void *pvData)
+WINBASEAPI BOOL WINAPI CertSetCertificateContextProperty(PCCERT_CONTEXT pCertContext, DWORD dwPropId, DWORD dwFlags,
+        const void *pvData)
 {
     struct qemu_CertSetCertificateContextProperty call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTSETCERTIFICATECONTEXTPROPERTY);
@@ -492,6 +493,8 @@ void qemu_CertSetCertificateContextProperty(struct qemu_syscall *call)
 {
     struct qemu_CertSetCertificateContextProperty *c = (struct qemu_CertSetCertificateContextProperty *)call;
     struct qemu_cert_context *context32;
+    CRYPT_DATA_BLOB stack, *blob = &stack;
+    void *data;
 
     WINE_TRACE("\n");
 #if GUEST_BIT == HOST_BIT
@@ -500,9 +503,24 @@ void qemu_CertSetCertificateContextProperty(struct qemu_syscall *call)
     return;
 #endif
 
+    data = QEMU_G2H(c->pvData);
+    if (data)
+    {
+        switch (c->dwPropId)
+        {
+            case CERT_HASH_PROP_ID:
+                CRYPT_DATA_BLOB_g2h(blob, data);
+                data = blob;
+                break;
+
+            default:
+                WINE_FIXME("Unknown prop id %x.\n", (DWORD)c->dwPropId);
+        }
+    }
+
     context32 = context_impl_from_context32(QEMU_G2H(c->pCertContext));
     c->super.iret = CertSetCertificateContextProperty(context32 ? context32->cert64 : NULL, c->dwPropId, c->dwFlags,
-            QEMU_G2H(c->pvData));
+            data);
 }
 
 #endif
