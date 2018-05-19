@@ -45,7 +45,8 @@ struct qemu_CertAddStoreToCollection
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CertAddStoreToCollection(HCERTSTORE hCollectionStore, HCERTSTORE hSiblingStore, DWORD dwUpdateFlags, DWORD dwPriority)
+WINBASEAPI BOOL WINAPI CertAddStoreToCollection(HCERTSTORE hCollectionStore, HCERTSTORE hSiblingStore,
+        DWORD dwUpdateFlags, DWORD dwPriority)
 {
     struct qemu_CertAddStoreToCollection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTADDSTORETOCOLLECTION);
@@ -64,8 +65,9 @@ WINBASEAPI BOOL WINAPI CertAddStoreToCollection(HCERTSTORE hCollectionStore, HCE
 void qemu_CertAddStoreToCollection(struct qemu_syscall *call)
 {
     struct qemu_CertAddStoreToCollection *c = (struct qemu_CertAddStoreToCollection *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertAddStoreToCollection(QEMU_G2H(c->hCollectionStore), QEMU_G2H(c->hSiblingStore), c->dwUpdateFlags, c->dwPriority);
+    WINE_TRACE("\n");
+    c->super.iret = CertAddStoreToCollection(QEMU_G2H(c->hCollectionStore), QEMU_G2H(c->hSiblingStore),
+            c->dwUpdateFlags, c->dwPriority);
 }
 
 #endif
