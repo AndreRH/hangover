@@ -1201,7 +1201,8 @@ struct qemu_CryptHashCertificate
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptHashCertificate(HCRYPTPROV_LEGACY hCryptProv, ALG_ID Algid, DWORD dwFlags, const BYTE *pbEncoded, DWORD cbEncoded, BYTE *pbComputedHash, DWORD *pcbComputedHash)
+WINBASEAPI BOOL WINAPI CryptHashCertificate(HCRYPTPROV_LEGACY hCryptProv, ALG_ID Algid, DWORD dwFlags,
+        const BYTE *pbEncoded, DWORD cbEncoded, BYTE *pbComputedHash, DWORD *pcbComputedHash)
 {
     struct qemu_CryptHashCertificate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTHASHCERTIFICATE);
@@ -1223,8 +1224,9 @@ WINBASEAPI BOOL WINAPI CryptHashCertificate(HCRYPTPROV_LEGACY hCryptProv, ALG_ID
 void qemu_CryptHashCertificate(struct qemu_syscall *call)
 {
     struct qemu_CryptHashCertificate *c = (struct qemu_CryptHashCertificate *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptHashCertificate(c->hCryptProv, c->Algid, c->dwFlags, QEMU_G2H(c->pbEncoded), c->cbEncoded, QEMU_G2H(c->pbComputedHash), QEMU_G2H(c->pcbComputedHash));
+    WINE_TRACE("\n");
+    c->super.iret = CryptHashCertificate(c->hCryptProv, c->Algid, c->dwFlags, QEMU_G2H(c->pbEncoded), c->cbEncoded,
+            QEMU_G2H(c->pbComputedHash), QEMU_G2H(c->pcbComputedHash));
 }
 
 #endif
