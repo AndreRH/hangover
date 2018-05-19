@@ -105,8 +105,8 @@
 #@ stdcall CreateFileU(wstr long long ptr long long ptr) kernel32.CreateFileW
 #@ stdcall CryptAcquireCertificatePrivateKey(ptr long ptr ptr ptr ptr)
 #@ stdcall CryptAcquireContextU(ptr wstr wstr long long) advapi32.CryptAcquireContextW
-#@ stdcall CryptBinaryToStringA(ptr long long ptr ptr)
-#@ stdcall CryptBinaryToStringW(ptr long long ptr ptr)
+@ stdcall CryptBinaryToStringA(ptr long long ptr ptr)
+@ stdcall CryptBinaryToStringW(ptr long long ptr ptr)
 @ stub CryptCloseAsyncHandle
 @ stub CryptCreateAsyncHandle
 @ stub CryptDecodeMessage
@@ -188,8 +188,8 @@
 @ stub CryptSignHashU
 #@ stdcall CryptSignMessage(ptr long long ptr ptr ptr ptr)
 @ stub CryptSignMessageWithKey
-#@ stdcall CryptStringToBinaryA(str long long ptr ptr ptr ptr)
-#@ stdcall CryptStringToBinaryW (wstr long long ptr ptr ptr ptr)
+@ stdcall CryptStringToBinaryA(str long long ptr ptr ptr ptr)
+@ stdcall CryptStringToBinaryW (wstr long long ptr ptr ptr ptr)
 #@ stdcall CryptUnprotectData(ptr ptr ptr ptr ptr long ptr)
 @ stdcall CryptUnprotectMemory(ptr long long)
 #@ stdcall CryptUnregisterDefaultOIDFunction(long str wstr)

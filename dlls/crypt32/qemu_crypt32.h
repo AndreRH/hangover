@@ -24,10 +24,14 @@ enum crypt32_calls
 {
     CALL_CERTADDSTORETOCOLLECTION = 0,
     CALL_CERTREMOVESTOREFROMCOLLECTION,
+    CALL_CRYPTBINARYTOSTRINGA,
+    CALL_CRYPTBINARYTOSTRINGW,
     CALL_CRYPTMEMALLOC,
     CALL_CRYPTMEMFREE,
     CALL_CRYPTMEMREALLOC,
     CALL_CRYPTPROTECTMEMORY,
+    CALL_CRYPTSTRINGTOBINARYA,
+    CALL_CRYPTSTRINGTOBINARYW,
     CALL_CRYPTUNPROTECTMEMORY,
     CALL_I_CRYPTALLOCTLS,
     CALL_I_CRYPTCREATELRUCACHE,
@@ -59,6 +63,10 @@ extern const struct qemu_ops *qemu_ops;
 
 void qemu_CertAddStoreToCollection(struct qemu_syscall *call);
 void qemu_CertRemoveStoreFromCollection(struct qemu_syscall *call);
+void qemu_CryptBinaryToStringA(struct qemu_syscall *call);
+void qemu_CryptBinaryToStringW(struct qemu_syscall *call);
+void qemu_CryptStringToBinaryA(struct qemu_syscall *call);
+void qemu_CryptStringToBinaryW(struct qemu_syscall *call);
 
 #endif
 
