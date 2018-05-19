@@ -31,5 +31,6 @@
 #define DLL_DINPUT      0x1cLL
 #define DLL_BCRYPT      0x1dLL
 #define DLL_CABINET     0x1eLL
+#define DLL_CRYPT32     0x1fLL
 
 #endif

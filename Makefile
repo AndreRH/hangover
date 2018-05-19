@@ -1,6 +1,6 @@
 TESTS := $(if $(NOTESTS),--disable-tests,)
 
-WINEDLLS = dbghelp ole32 oleaut32 propsys rpcrt4 urlmon windowscodecs netapi32 dnsapi msimg32 crypt32 dwmapi uxtheme setupapi wintrust wtsapi32 pdh avrt cryptnet imagehlp cryptui sensapi msvcp80 msvcp100 lz32 msi dplay dplayx dpwsockx dpnet dpnaddr dpnhpast dpnlobby dpvoice mpr oledlg shdocvw msacm32 mlang gdiplus shell32 shlwapi wininet comctl32 comdlg32
+WINEDLLS = dbghelp ole32 oleaut32 propsys rpcrt4 urlmon windowscodecs netapi32 dnsapi msimg32 dwmapi uxtheme setupapi wintrust wtsapi32 pdh avrt cryptnet imagehlp cryptui sensapi msvcp80 msvcp100 lz32 msi dplay dplayx dpwsockx dpnet dpnaddr dpnhpast dpnlobby dpvoice mpr oledlg shdocvw msacm32 mlang gdiplus shell32 shlwapi wininet comctl32 comdlg32
 
 WINEDLL_TARGET32 = $(patsubst %,build/qemu/x86_64-windows-user/qemu_guest_dll32/%.dll,$(WINEDLLS))
 WINEDLL_TARGET64 = $(patsubst %,build/qemu/x86_64-windows-user/qemu_guest_dll64/%.dll,$(WINEDLLS))
