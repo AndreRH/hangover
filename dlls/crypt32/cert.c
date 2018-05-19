@@ -473,8 +473,26 @@ WINBASEAPI BOOL WINAPI CertGetCertificateContextProperty(PCCERT_CONTEXT pCertCon
 void qemu_CertGetCertificateContextProperty(struct qemu_syscall *call)
 {
     struct qemu_CertGetCertificateContextProperty *c = (struct qemu_CertGetCertificateContextProperty *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertGetCertificateContextProperty(QEMU_G2H(c->pCertContext), c->dwPropId, QEMU_G2H(c->pvData), QEMU_G2H(c->pcbData));
+    const CERT_CONTEXT *context;
+    struct qemu_cert_context *context32;
+    DWORD property;
+
+    WINE_TRACE("\n");
+    property = c->dwPropId;
+#if GUEST_BIT == HOST_BIT
+    context = QEMU_G2H(c->pCertContext);
+#else
+    context32 = context_impl_from_context32(QEMU_G2H(c->pCertContext));
+    context = context32 ? context32->cert64 : NULL;
+
+    switch (c->dwPropId)
+    {
+        default:
+            WINE_FIXME("Unchecked property %x.\n", property);
+    }
+#endif
+
+    c->super.iret = CertGetCertificateContextProperty(context, property, QEMU_G2H(c->pvData), QEMU_G2H(c->pcbData));
 }
 
 #endif
