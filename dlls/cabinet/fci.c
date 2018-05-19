@@ -23,6 +23,8 @@
 #include <fci.h>
 #include <fdi.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_cabinet.h"
@@ -306,7 +308,7 @@ static int CDECL host_close(INT_PTR hf, int *err, void *pv)
     struct FCI_close_cb call;
     int ret;
 
-    call.func = fci->read;
+    call.func = fci->close;
     call.hf = hf;
     call.err = QEMU_H2G(err);
     call.pv = QEMU_H2G(pv);
@@ -344,7 +346,7 @@ static int CDECL host_delete(char *pszFile, int *err, void *pv)
     struct FCI_delete_cb call;
     BOOL ret;
 
-    call.func = fci->temp;
+    call.func = fci->del;
     call.name = QEMU_H2G(pszFile);
     call.err = QEMU_H2G(err);
     call.pv = QEMU_H2G(pv);
