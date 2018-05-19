@@ -143,6 +143,7 @@ enum crypt32_calls
     CALL_CRYPTMSGUPDATE,
     CALL_CRYPTMSGVERIFYCOUNTERSIGNATUREENCODED,
     CALL_CRYPTMSGVERIFYCOUNTERSIGNATUREENCODEDEX,
+    CALL_CRYPTPROTECTDATA,
     CALL_CRYPTPROTECTMEMORY,
     CALL_CRYPTQUERYOBJECT,
     CALL_CRYPTREGISTERDEFAULTOIDFUNCTION,
@@ -164,6 +165,7 @@ enum crypt32_calls
     CALL_CRYPTSIPVERIFYINDIRECTDATA,
     CALL_CRYPTSTRINGTOBINARYA,
     CALL_CRYPTSTRINGTOBINARYW,
+    CALL_CRYPTUNPROTECTDATA,
     CALL_CRYPTUNPROTECTMEMORY,
     CALL_CRYPTUNREGISTERDEFAULTOIDFUNCTION,
     CALL_CRYPTUNREGISTEROIDFUNCTION,
@@ -324,6 +326,7 @@ void qemu_CryptMsgSignCTL(struct qemu_syscall *call);
 void qemu_CryptMsgUpdate(struct qemu_syscall *call);
 void qemu_CryptMsgVerifyCountersignatureEncoded(struct qemu_syscall *call);
 void qemu_CryptMsgVerifyCountersignatureEncodedEx(struct qemu_syscall *call);
+void qemu_CryptProtectData(struct qemu_syscall *call);
 void qemu_CryptQueryObject(struct qemu_syscall *call);
 void qemu_CryptRegisterDefaultOIDFunction(struct qemu_syscall *call);
 void qemu_CryptRegisterOIDFunction(struct qemu_syscall *call);
@@ -344,6 +347,7 @@ void qemu_CryptSignCertificate(struct qemu_syscall *call);
 void qemu_CryptSignMessage(struct qemu_syscall *call);
 void qemu_CryptStringToBinaryA(struct qemu_syscall *call);
 void qemu_CryptStringToBinaryW(struct qemu_syscall *call);
+void qemu_CryptUnprotectData(struct qemu_syscall *call);
 void qemu_CryptUnregisterDefaultOIDFunction(struct qemu_syscall *call);
 void qemu_CryptUnregisterOIDFunction(struct qemu_syscall *call);
 void qemu_CryptVerifyCertificateSignature(struct qemu_syscall *call);

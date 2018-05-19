@@ -163,7 +163,7 @@
 @ stdcall CryptMsgUpdate(ptr ptr long long)
 @ stdcall CryptMsgVerifyCountersignatureEncoded(ptr long ptr long ptr long ptr)
 @ stdcall CryptMsgVerifyCountersignatureEncodedEx(ptr long ptr long ptr long long ptr long ptr)
-#@ stdcall CryptProtectData(ptr wstr ptr ptr ptr long ptr)
+@ stdcall CryptProtectData(ptr wstr ptr ptr ptr long ptr)
 @ stdcall CryptProtectMemory(ptr long long)
 @ stdcall CryptQueryObject(long ptr long long long ptr ptr ptr ptr ptr ptr)
 @ stdcall CryptRegisterDefaultOIDFunction(long str long wstr)
@@ -190,7 +190,7 @@
 @ stub CryptSignMessageWithKey
 @ stdcall CryptStringToBinaryA(str long long ptr ptr ptr ptr)
 @ stdcall CryptStringToBinaryW (wstr long long ptr ptr ptr ptr)
-#@ stdcall CryptUnprotectData(ptr ptr ptr ptr ptr long ptr)
+@ stdcall CryptUnprotectData(ptr ptr ptr ptr ptr long ptr)
 @ stdcall CryptUnprotectMemory(ptr long long)
 @ stdcall CryptUnregisterDefaultOIDFunction(long str wstr)
 @ stdcall CryptUnregisterOIDFunction(long str str)
