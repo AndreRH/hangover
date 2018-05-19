@@ -33,6 +33,7 @@ enum crypt32_calls
     CALL_CERTADDENHANCEDKEYUSAGEIDENTIFIER,
     CALL_CERTADDSERIALIZEDELEMENTTOSTORE,
     CALL_CERTADDSTORETOCOLLECTION,
+    CALL_CERTALGIDTOOID,
     CALL_CERTCOMPARECERTIFICATE,
     CALL_CERTCOMPARECERTIFICATENAME,
     CALL_CERTCOMPAREINTEGERBLOB,
@@ -78,6 +79,7 @@ enum crypt32_calls
     CALL_CERTGETVALIDUSAGES,
     CALL_CERTISRDNATTRSINCERTIFICATENAME,
     CALL_CERTISVALIDCRLFORCERTIFICATE,
+    CALL_CERTOIDTOALGID,
     CALL_CERTREMOVEENHANCEDKEYUSAGEIDENTIFIER,
     CALL_CERTREMOVESTOREFROMCOLLECTION,
     CALL_CERTSAVESTORE,
@@ -104,18 +106,28 @@ enum crypt32_calls
     CALL_CRYPTENCODEOBJECT,
     CALL_CRYPTENCODEOBJECTEX,
     CALL_CRYPTENCRYPTMESSAGE,
+    CALL_CRYPTENUMOIDINFO,
     CALL_CRYPTEXPORTPUBLICKEYINFO,
     CALL_CRYPTEXPORTPUBLICKEYINFOEX,
     CALL_CRYPTFINDCERTIFICATEKEYPROVINFO,
+    CALL_CRYPTFINDLOCALIZEDNAME,
+    CALL_CRYPTFINDOIDINFO,
     CALL_CRYPTFORMATOBJECT,
+    CALL_CRYPTFREEOIDFUNCTIONADDRESS,
+    CALL_CRYPTGETDEFAULTOIDDLLLIST,
+    CALL_CRYPTGETDEFAULTOIDFUNCTIONADDRESS,
     CALL_CRYPTGETMESSAGECERTIFICATES,
     CALL_CRYPTGETMESSAGESIGNERCOUNT,
+    CALL_CRYPTGETOIDFUNCTIONADDRESS,
+    CALL_CRYPTGETOIDFUNCTIONVALUE,
     CALL_CRYPTHASHCERTIFICATE,
     CALL_CRYPTHASHMESSAGE,
     CALL_CRYPTHASHPUBLICKEYINFO,
     CALL_CRYPTHASHTOBESIGNED,
     CALL_CRYPTIMPORTPUBLICKEYINFO,
     CALL_CRYPTIMPORTPUBLICKEYINFOEX,
+    CALL_CRYPTINITOIDFUNCTIONSET,
+    CALL_CRYPTINSTALLOIDFUNCTIONADDRESS,
     CALL_CRYPTMEMALLOC,
     CALL_CRYPTMEMFREE,
     CALL_CRYPTMEMREALLOC,
@@ -133,6 +145,10 @@ enum crypt32_calls
     CALL_CRYPTMSGVERIFYCOUNTERSIGNATUREENCODEDEX,
     CALL_CRYPTPROTECTMEMORY,
     CALL_CRYPTQUERYOBJECT,
+    CALL_CRYPTREGISTERDEFAULTOIDFUNCTION,
+    CALL_CRYPTREGISTEROIDFUNCTION,
+    CALL_CRYPTREGISTEROIDINFO,
+    CALL_CRYPTSETOIDFUNCTIONVALUE,
     CALL_CRYPTSIGNANDENCODECERTIFICATE,
     CALL_CRYPTSIGNCERTIFICATE,
     CALL_CRYPTSIGNMESSAGE,
@@ -149,6 +165,8 @@ enum crypt32_calls
     CALL_CRYPTSTRINGTOBINARYA,
     CALL_CRYPTSTRINGTOBINARYW,
     CALL_CRYPTUNPROTECTMEMORY,
+    CALL_CRYPTUNREGISTERDEFAULTOIDFUNCTION,
+    CALL_CRYPTUNREGISTEROIDFUNCTION,
     CALL_CRYPTVERIFYCERTIFICATESIGNATURE,
     CALL_CRYPTVERIFYCERTIFICATESIGNATUREEX,
     CALL_CRYPTVERIFYDETACHEDMESSAGEHASH,
@@ -199,6 +217,7 @@ void qemu_CertAddEncodedCertificateToSystemStoreW(struct qemu_syscall *call);
 void qemu_CertAddEnhancedKeyUsageIdentifier(struct qemu_syscall *call);
 void qemu_CertAddSerializedElementToStore(struct qemu_syscall *call);
 void qemu_CertAddStoreToCollection(struct qemu_syscall *call);
+void qemu_CertAlgIdToOID(struct qemu_syscall *call);
 void qemu_CertCompareCertificate(struct qemu_syscall *call);
 void qemu_CertCompareCertificateName(struct qemu_syscall *call);
 void qemu_CertCompareIntegerBlob(struct qemu_syscall *call);
@@ -244,6 +263,7 @@ void qemu_CertGetSubjectCertificateFromStore(struct qemu_syscall *call);
 void qemu_CertGetValidUsages(struct qemu_syscall *call);
 void qemu_CertIsRDNAttrsInCertificateName(struct qemu_syscall *call);
 void qemu_CertIsValidCRLForCertificate(struct qemu_syscall *call);
+void qemu_CertOIDToAlgId(struct qemu_syscall *call);
 void qemu_CertRemoveEnhancedKeyUsageIdentifier(struct qemu_syscall *call);
 void qemu_CertRemoveStoreFromCollection(struct qemu_syscall *call);
 void qemu_CertSaveStore(struct qemu_syscall *call);
@@ -270,18 +290,28 @@ void qemu_CryptDecodeObjectEx(struct qemu_syscall *call);
 void qemu_CryptEncodeObject(struct qemu_syscall *call);
 void qemu_CryptEncodeObjectEx(struct qemu_syscall *call);
 void qemu_CryptEncryptMessage(struct qemu_syscall *call);
+void qemu_CryptEnumOIDInfo(struct qemu_syscall *call);
 void qemu_CryptExportPublicKeyInfo(struct qemu_syscall *call);
 void qemu_CryptExportPublicKeyInfoEx(struct qemu_syscall *call);
 void qemu_CryptFindCertificateKeyProvInfo(struct qemu_syscall *call);
+void qemu_CryptFindLocalizedName(struct qemu_syscall *call);
+void qemu_CryptFindOIDInfo(struct qemu_syscall *call);
 void qemu_CryptFormatObject(struct qemu_syscall *call);
+void qemu_CryptFreeOIDFunctionAddress(struct qemu_syscall *call);
+void qemu_CryptGetDefaultOIDDllList(struct qemu_syscall *call);
+void qemu_CryptGetDefaultOIDFunctionAddress(struct qemu_syscall *call);
 void qemu_CryptGetMessageCertificates(struct qemu_syscall *call);
 void qemu_CryptGetMessageSignerCount(struct qemu_syscall *call);
+void qemu_CryptGetOIDFunctionAddress(struct qemu_syscall *call);
+void qemu_CryptGetOIDFunctionValue(struct qemu_syscall *call);
 void qemu_CryptHashCertificate(struct qemu_syscall *call);
 void qemu_CryptHashMessage(struct qemu_syscall *call);
 void qemu_CryptHashPublicKeyInfo(struct qemu_syscall *call);
 void qemu_CryptHashToBeSigned(struct qemu_syscall *call);
 void qemu_CryptImportPublicKeyInfo(struct qemu_syscall *call);
 void qemu_CryptImportPublicKeyInfoEx(struct qemu_syscall *call);
+void qemu_CryptInitOIDFunctionSet(struct qemu_syscall *call);
+void qemu_CryptInstallOIDFunctionAddress(struct qemu_syscall *call);
 void qemu_CryptMsgClose(struct qemu_syscall *call);
 void qemu_CryptMsgControl(struct qemu_syscall *call);
 void qemu_CryptMsgDuplicate(struct qemu_syscall *call);
@@ -295,6 +325,9 @@ void qemu_CryptMsgUpdate(struct qemu_syscall *call);
 void qemu_CryptMsgVerifyCountersignatureEncoded(struct qemu_syscall *call);
 void qemu_CryptMsgVerifyCountersignatureEncodedEx(struct qemu_syscall *call);
 void qemu_CryptQueryObject(struct qemu_syscall *call);
+void qemu_CryptRegisterDefaultOIDFunction(struct qemu_syscall *call);
+void qemu_CryptRegisterOIDFunction(struct qemu_syscall *call);
+void qemu_CryptRegisterOIDInfo(struct qemu_syscall *call);
 void qemu_CryptSIPAddProvider(struct qemu_syscall *call);
 void qemu_CryptSIPCreateIndirectData(struct qemu_syscall *call);
 void qemu_CryptSIPGetSignedDataMsg(struct qemu_syscall *call);
@@ -305,11 +338,14 @@ void qemu_CryptSIPRemoveSignedDataMsg(struct qemu_syscall *call);
 void qemu_CryptSIPRetrieveSubjectGuid(struct qemu_syscall *call);
 void qemu_CryptSIPRetrieveSubjectGuidForCatalogFile(struct qemu_syscall *call);
 void qemu_CryptSIPVerifyIndirectData(struct qemu_syscall *call);
+void qemu_CryptSetOIDFunctionValue(struct qemu_syscall *call);
 void qemu_CryptSignAndEncodeCertificate(struct qemu_syscall *call);
 void qemu_CryptSignCertificate(struct qemu_syscall *call);
 void qemu_CryptSignMessage(struct qemu_syscall *call);
 void qemu_CryptStringToBinaryA(struct qemu_syscall *call);
 void qemu_CryptStringToBinaryW(struct qemu_syscall *call);
+void qemu_CryptUnregisterDefaultOIDFunction(struct qemu_syscall *call);
+void qemu_CryptUnregisterOIDFunction(struct qemu_syscall *call);
 void qemu_CryptVerifyCertificateSignature(struct qemu_syscall *call);
 void qemu_CryptVerifyCertificateSignatureEx(struct qemu_syscall *call);
 void qemu_CryptVerifyDetachedMessageHash(struct qemu_syscall *call);
