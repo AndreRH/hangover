@@ -30,6 +30,7 @@ enum crypt32_calls
     CALL_CERTADDENCODEDCERTIFICATETOSYSTEMSTOREW,
     CALL_CERTADDENCODEDCTLTOSTORE,
     CALL_CERTADDENHANCEDKEYUSAGEIDENTIFIER,
+    CALL_CERTADDSERIALIZEDELEMENTTOSTORE,
     CALL_CERTADDSTORETOCOLLECTION,
     CALL_CERTCOMPARECERTIFICATE,
     CALL_CERTCOMPARECERTIFICATENAME,
@@ -63,6 +64,10 @@ enum crypt32_calls
     CALL_CERTISRDNATTRSINCERTIFICATENAME,
     CALL_CERTREMOVEENHANCEDKEYUSAGEIDENTIFIER,
     CALL_CERTREMOVESTOREFROMCOLLECTION,
+    CALL_CERTSAVESTORE,
+    CALL_CERTSERIALIZECERTIFICATESTOREELEMENT,
+    CALL_CERTSERIALIZECRLSTOREELEMENT,
+    CALL_CERTSERIALIZECTLSTOREELEMENT,
     CALL_CERTSETCERTIFICATECONTEXTPROPERTY,
     CALL_CERTSETCTLCONTEXTPROPERTY,
     CALL_CERTSETENHANCEDKEYUSAGE,
@@ -135,6 +140,7 @@ void qemu_CertAddEncodedCertificateToStore(struct qemu_syscall *call);
 void qemu_CertAddEncodedCertificateToSystemStoreA(struct qemu_syscall *call);
 void qemu_CertAddEncodedCertificateToSystemStoreW(struct qemu_syscall *call);
 void qemu_CertAddEnhancedKeyUsageIdentifier(struct qemu_syscall *call);
+void qemu_CertAddSerializedElementToStore(struct qemu_syscall *call);
 void qemu_CertAddStoreToCollection(struct qemu_syscall *call);
 void qemu_CertCompareCertificate(struct qemu_syscall *call);
 void qemu_CertCompareCertificateName(struct qemu_syscall *call);
@@ -168,6 +174,10 @@ void qemu_CertGetValidUsages(struct qemu_syscall *call);
 void qemu_CertIsRDNAttrsInCertificateName(struct qemu_syscall *call);
 void qemu_CertRemoveEnhancedKeyUsageIdentifier(struct qemu_syscall *call);
 void qemu_CertRemoveStoreFromCollection(struct qemu_syscall *call);
+void qemu_CertSaveStore(struct qemu_syscall *call);
+void qemu_CertSerializeCRLStoreElement(struct qemu_syscall *call);
+void qemu_CertSerializeCTLStoreElement(struct qemu_syscall *call);
+void qemu_CertSerializeCertificateStoreElement(struct qemu_syscall *call);
 void qemu_CertSetCTLContextProperty(struct qemu_syscall *call);
 void qemu_CertSetCertificateContextProperty(struct qemu_syscall *call);
 void qemu_CertSetEnhancedKeyUsage(struct qemu_syscall *call);
