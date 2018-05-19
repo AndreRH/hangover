@@ -115,6 +115,18 @@ enum crypt32_calls
     CALL_CRYPTMEMALLOC,
     CALL_CRYPTMEMFREE,
     CALL_CRYPTMEMREALLOC,
+    CALL_CRYPTMSGCLOSE,
+    CALL_CRYPTMSGCONTROL,
+    CALL_CRYPTMSGDUPLICATE,
+    CALL_CRYPTMSGENCODEANDSIGNCTL,
+    CALL_CRYPTMSGGETANDVERIFYSIGNER,
+    CALL_CRYPTMSGGETPARAM,
+    CALL_CRYPTMSGOPENTODECODE,
+    CALL_CRYPTMSGOPENTOENCODE,
+    CALL_CRYPTMSGSIGNCTL,
+    CALL_CRYPTMSGUPDATE,
+    CALL_CRYPTMSGVERIFYCOUNTERSIGNATUREENCODED,
+    CALL_CRYPTMSGVERIFYCOUNTERSIGNATUREENCODEDEX,
     CALL_CRYPTPROTECTMEMORY,
     CALL_CRYPTQUERYOBJECT,
     CALL_CRYPTSIGNANDENCODECERTIFICATE,
@@ -257,6 +269,18 @@ void qemu_CryptHashPublicKeyInfo(struct qemu_syscall *call);
 void qemu_CryptHashToBeSigned(struct qemu_syscall *call);
 void qemu_CryptImportPublicKeyInfo(struct qemu_syscall *call);
 void qemu_CryptImportPublicKeyInfoEx(struct qemu_syscall *call);
+void qemu_CryptMsgClose(struct qemu_syscall *call);
+void qemu_CryptMsgControl(struct qemu_syscall *call);
+void qemu_CryptMsgDuplicate(struct qemu_syscall *call);
+void qemu_CryptMsgEncodeAndSignCTL(struct qemu_syscall *call);
+void qemu_CryptMsgGetAndVerifySigner(struct qemu_syscall *call);
+void qemu_CryptMsgGetParam(struct qemu_syscall *call);
+void qemu_CryptMsgOpenToDecode(struct qemu_syscall *call);
+void qemu_CryptMsgOpenToEncode(struct qemu_syscall *call);
+void qemu_CryptMsgSignCTL(struct qemu_syscall *call);
+void qemu_CryptMsgUpdate(struct qemu_syscall *call);
+void qemu_CryptMsgVerifyCountersignatureEncoded(struct qemu_syscall *call);
+void qemu_CryptMsgVerifyCountersignatureEncodedEx(struct qemu_syscall *call);
 void qemu_CryptQueryObject(struct qemu_syscall *call);
 void qemu_CryptSIPAddProvider(struct qemu_syscall *call);
 void qemu_CryptSIPCreateIndirectData(struct qemu_syscall *call);
