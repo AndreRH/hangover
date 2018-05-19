@@ -46,4 +46,24 @@ static inline void CRYPT_DATA_BLOB_h2g(struct qemu_CRYPT_DATA_BLOB *guest, const
     guest->pbData = (ULONG_PTR)host->pbData;
 }
 
+struct qemu_CERT_KEY_CONTEXT
+{
+    DWORD       cbSize;
+    qemu_ptr    hCryptProv;
+    DWORD       dwKeySpec;
+};
+
+static inline void CERT_KEY_CONTEXT_g2h(CERT_KEY_CONTEXT *host, const struct qemu_CERT_KEY_CONTEXT *guest)
+{
+    host->cbSize = sizeof(*host);
+    host->hCryptProv = (HCRYPTPROV)(ULONG_PTR)guest->hCryptProv;
+    host->dwKeySpec = guest->dwKeySpec;
+}
+
+static inline void CERT_KEY_CONTEXT_h2g(struct qemu_CERT_KEY_CONTEXT *guest, const CERT_KEY_CONTEXT *host)
+{
+    guest->hCryptProv = (ULONG_PTR)host->hCryptProv;
+    guest->dwKeySpec = host->dwKeySpec;
+}
+
 #endif

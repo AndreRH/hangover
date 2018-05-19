@@ -476,9 +476,16 @@ void qemu_CertGetCertificateContextProperty(struct qemu_syscall *call)
     const CERT_CONTEXT *context;
     struct qemu_cert_context *context32;
     DWORD property;
+    void *data;
+    DWORD *size, my_size = 0;
+    CERT_KEY_CONTEXT key_ctx;
+    HANDLE handle;
 
     WINE_TRACE("\n");
     property = c->dwPropId;
+    data = QEMU_G2H(c->pvData);
+    size = QEMU_G2H(c->pcbData);
+
 #if GUEST_BIT == HOST_BIT
     context = QEMU_G2H(c->pCertContext);
 #else
@@ -487,12 +494,52 @@ void qemu_CertGetCertificateContextProperty(struct qemu_syscall *call)
 
     switch (c->dwPropId)
     {
+        case CERT_KEY_PROV_HANDLE_PROP_ID:
+            if (data)
+                data = &handle;
+            if (size)
+            {
+                if (*size == sizeof(qemu_ptr))
+                    my_size = sizeof(handle);
+                *size = sizeof(qemu_ptr);
+                size = &my_size;
+            }
+            break;
+
+        case CERT_KEY_CONTEXT_PROP_ID:
+            if (data)
+                data = &key_ctx;
+            if (size)
+            {
+                if (*size == sizeof(struct qemu_CERT_KEY_CONTEXT))
+                    my_size = sizeof(key_ctx);
+                *size = sizeof(key_ctx);
+                size = &my_size;
+            }
+            break;
+
         default:
             WINE_FIXME("Unchecked property %x.\n", property);
     }
 #endif
 
-    c->super.iret = CertGetCertificateContextProperty(context, property, QEMU_G2H(c->pvData), QEMU_G2H(c->pcbData));
+    c->super.iret = CertGetCertificateContextProperty(context, property, data, size);
+
+    /* FIXME: Report the correct size */
+#if GUEST_BIT != HOST_BIT
+    if (!c->super.iret)
+        return;
+
+    switch (c->dwPropId)
+    {
+        case CERT_KEY_PROV_HANDLE_PROP_ID:
+            *((qemu_ptr *)data) = QEMU_H2G(handle);
+            break;
+
+        case CERT_KEY_CONTEXT_PROP_ID:
+            CERT_KEY_CONTEXT_h2g(data, &key_ctx);
+    }
+#endif
 }
 
 #endif
@@ -530,6 +577,8 @@ void qemu_CertSetCertificateContextProperty(struct qemu_syscall *call)
     struct qemu_CertSetCertificateContextProperty *c = (struct qemu_CertSetCertificateContextProperty *)call;
     struct qemu_cert_context *context32;
     CRYPT_DATA_BLOB stack, *blob = &stack;
+    CERT_KEY_CONTEXT key_ctx;
+    struct qemu_CERT_KEY_CONTEXT *key_ctx32;
     void *data;
 
     WINE_TRACE("\n");
@@ -547,6 +596,15 @@ void qemu_CertSetCertificateContextProperty(struct qemu_syscall *call)
             case CERT_HASH_PROP_ID:
                 CRYPT_DATA_BLOB_g2h(blob, data);
                 data = blob;
+                break;
+
+            case CERT_KEY_CONTEXT_PROP_ID:
+                key_ctx32 = data;
+                if (key_ctx32->cbSize == sizeof(*key_ctx32))
+                    CERT_KEY_CONTEXT_g2h(&key_ctx, data);
+                else
+                    key_ctx.cbSize = 0;
+                data = &key_ctx;
                 break;
 
             default:
