@@ -22,7 +22,9 @@
 
 enum crypt32_calls
 {
-    CALL_CRYPTMEMALLOC = 0,
+    CALL_CERTADDSTORETOCOLLECTION = 0,
+    CALL_CERTREMOVESTOREFROMCOLLECTION,
+    CALL_CRYPTMEMALLOC,
     CALL_CRYPTMEMFREE,
     CALL_CRYPTMEMREALLOC,
     CALL_CRYPTPROTECTMEMORY,
@@ -54,6 +56,9 @@ enum crypt32_calls
 #else
 
 extern const struct qemu_ops *qemu_ops;
+
+void qemu_CertAddStoreToCollection(struct qemu_syscall *call);
+void qemu_CertRemoveStoreFromCollection(struct qemu_syscall *call);
 
 #endif
 

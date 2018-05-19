@@ -844,6 +844,8 @@ const struct qemu_ops *qemu_ops;
 static const syscall_handler dll_functions[] =
 {
 
+    qemu_CertAddStoreToCollection,
+    qemu_CertRemoveStoreFromCollection,
     qemu_CryptMemAlloc,
     qemu_CryptMemFree,
     qemu_CryptMemRealloc,
