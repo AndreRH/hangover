@@ -300,7 +300,9 @@ struct qemu_CryptExportPublicKeyInfoEx
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptExportPublicKeyInfoEx(HCRYPTPROV_OR_NCRYPT_KEY_HANDLE hCryptProv, DWORD dwKeySpec, DWORD dwCertEncodingType, LPSTR pszPublicKeyObjId, DWORD dwFlags, void *pvAuxInfo, PCERT_PUBLIC_KEY_INFO pInfo, DWORD *pcbInfo)
+WINBASEAPI BOOL WINAPI CryptExportPublicKeyInfoEx(HCRYPTPROV_OR_NCRYPT_KEY_HANDLE hCryptProv, DWORD dwKeySpec,
+        DWORD dwCertEncodingType, LPSTR pszPublicKeyObjId, DWORD dwFlags, void *pvAuxInfo,
+        PCERT_PUBLIC_KEY_INFO pInfo, DWORD *pcbInfo)
 {
     struct qemu_CryptExportPublicKeyInfoEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTEXPORTPUBLICKEYINFOEX);
@@ -323,8 +325,24 @@ WINBASEAPI BOOL WINAPI CryptExportPublicKeyInfoEx(HCRYPTPROV_OR_NCRYPT_KEY_HANDL
 void qemu_CryptExportPublicKeyInfoEx(struct qemu_syscall *call)
 {
     struct qemu_CryptExportPublicKeyInfoEx *c = (struct qemu_CryptExportPublicKeyInfoEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptExportPublicKeyInfoEx(c->hCryptProv, c->dwKeySpec, c->dwCertEncodingType, QEMU_G2H(c->pszPublicKeyObjId), c->dwFlags, QEMU_G2H(c->pvAuxInfo), QEMU_G2H(c->pInfo), QEMU_G2H(c->pcbInfo));
+    CERT_PUBLIC_KEY_INFO *info;
+
+    WINE_TRACE("\n");
+    info = QEMU_G2H(c->pInfo);
+#if GUEST_BIT == HOST_BIT
+#else
+    if (c->pvAuxInfo)
+        WINE_FIXME("Aux info not handled yet.\n");
+#endif
+
+    c->super.iret = CryptExportPublicKeyInfoEx(c->hCryptProv, c->dwKeySpec, c->dwCertEncodingType,
+            QEMU_G2H(c->pszPublicKeyObjId), c->dwFlags, QEMU_G2H(c->pvAuxInfo), info, QEMU_G2H(c->pcbInfo));
+
+#if GUEST_BIT != HOST_BIT
+    /* Convert in place, hope no app depends on the exact size and the gap between header and data. */
+    if (c->super.iret && info)
+        CERT_PUBLIC_KEY_INFO_h2g((struct qemu_CERT_PUBLIC_KEY_INFO *)info, info);
+#endif
 }
 
 #endif
