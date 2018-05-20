@@ -737,7 +737,8 @@ struct qemu_CertCompareCertificateName
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CertCompareCertificateName(DWORD dwCertEncodingType, PCERT_NAME_BLOB pCertName1, PCERT_NAME_BLOB pCertName2)
+WINBASEAPI BOOL WINAPI CertCompareCertificateName(DWORD dwCertEncodingType, PCERT_NAME_BLOB pCertName1,
+        PCERT_NAME_BLOB pCertName2)
 {
     struct qemu_CertCompareCertificateName call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTCOMPARECERTIFICATENAME);
@@ -755,8 +756,25 @@ WINBASEAPI BOOL WINAPI CertCompareCertificateName(DWORD dwCertEncodingType, PCER
 void qemu_CertCompareCertificateName(struct qemu_syscall *call)
 {
     struct qemu_CertCompareCertificateName *c = (struct qemu_CertCompareCertificateName *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertCompareCertificateName(c->dwCertEncodingType, QEMU_G2H(c->pCertName1), QEMU_G2H(c->pCertName2));
+    CERT_NAME_BLOB stack1, stack2, *name1 = &stack1, *name2 = &stack2;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    name1 = QEMU_G2H(c->pCertName1);
+    name2 = QEMU_G2H(c->pCertName2);
+#else
+    if (c->pCertName1)
+        CRYPT_DATA_BLOB_g2h(name1, QEMU_G2H(c->pCertName1));
+    else
+        name1 = NULL;
+
+    if (c->pCertName2)
+        CRYPT_DATA_BLOB_g2h(name2, QEMU_G2H(c->pCertName2));
+    else
+        name2 = NULL;
+#endif
+
+    c->super.iret = CertCompareCertificateName(c->dwCertEncodingType, name1, name2);
 }
 
 #endif
