@@ -1660,7 +1660,8 @@ struct qemu_CryptVerifyCertificateSignature
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptVerifyCertificateSignature(HCRYPTPROV_LEGACY hCryptProv, DWORD dwCertEncodingType, const BYTE *pbEncoded, DWORD cbEncoded, PCERT_PUBLIC_KEY_INFO pPublicKey)
+WINBASEAPI BOOL WINAPI CryptVerifyCertificateSignature(HCRYPTPROV_LEGACY hCryptProv, DWORD dwCertEncodingType,
+        const BYTE *pbEncoded, DWORD cbEncoded, PCERT_PUBLIC_KEY_INFO pPublicKey)
 {
     struct qemu_CryptVerifyCertificateSignature call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTVERIFYCERTIFICATESIGNATURE);
@@ -1680,8 +1681,15 @@ WINBASEAPI BOOL WINAPI CryptVerifyCertificateSignature(HCRYPTPROV_LEGACY hCryptP
 void qemu_CryptVerifyCertificateSignature(struct qemu_syscall *call)
 {
     struct qemu_CryptVerifyCertificateSignature *c = (struct qemu_CryptVerifyCertificateSignature *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptVerifyCertificateSignature(c->hCryptProv, c->dwCertEncodingType, QEMU_G2H(c->pbEncoded), c->cbEncoded, QEMU_G2H(c->pPublicKey));
+
+    WINE_TRACE("\n");
+#if GUEST_BIT != HOST_BIT
+    if (c->pPublicKey)
+        WINE_FIXME("pPublicKey not handled yet.\n");
+#endif
+
+    c->super.iret = CryptVerifyCertificateSignature(c->hCryptProv, c->dwCertEncodingType,
+            QEMU_G2H(c->pbEncoded), c->cbEncoded, QEMU_G2H(c->pPublicKey));
 }
 
 #endif
