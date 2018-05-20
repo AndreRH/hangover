@@ -1958,7 +1958,8 @@ struct qemu_CertGetEnhancedKeyUsage
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CertGetEnhancedKeyUsage(PCCERT_CONTEXT pCertContext, DWORD dwFlags, PCERT_ENHKEY_USAGE pUsage, DWORD *pcbUsage)
+WINBASEAPI BOOL WINAPI CertGetEnhancedKeyUsage(PCCERT_CONTEXT pCertContext, DWORD dwFlags,
+        PCERT_ENHKEY_USAGE pUsage, DWORD *pcbUsage)
 {
     struct qemu_CertGetEnhancedKeyUsage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTGETENHANCEDKEYUSAGE);
@@ -1977,8 +1978,20 @@ WINBASEAPI BOOL WINAPI CertGetEnhancedKeyUsage(PCCERT_CONTEXT pCertContext, DWOR
 void qemu_CertGetEnhancedKeyUsage(struct qemu_syscall *call)
 {
     struct qemu_CertGetEnhancedKeyUsage *c = (struct qemu_CertGetEnhancedKeyUsage *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertGetEnhancedKeyUsage(QEMU_G2H(c->pCertContext), c->dwFlags, QEMU_G2H(c->pUsage), QEMU_G2H(c->pcbUsage));
+    const CERT_CONTEXT *context;
+    struct qemu_cert_context *context32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    context = QEMU_G2H(c->pCertContext);
+#else
+    context32 = context_impl_from_context32(QEMU_G2H(c->pCertContext));
+    context = context32 ? context32->cert64 : NULL;
+    WINE_FIXME("Output not handled yet.\n");
+#endif
+
+    /* No cheating with the size here, the test depends on the exact size */
+    c->super.iret = CertGetEnhancedKeyUsage(context, c->dwFlags, QEMU_G2H(c->pUsage), QEMU_G2H(c->pcbUsage));
 }
 
 #endif
