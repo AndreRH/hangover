@@ -727,7 +727,8 @@ struct qemu_CryptExportKey
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptExportKey (HCRYPTKEY hKey, HCRYPTKEY hExpKey, DWORD dwBlobType, DWORD dwFlags, BYTE *pbData, DWORD *pdwDataLen)
+WINBASEAPI BOOL WINAPI CryptExportKey (HCRYPTKEY hKey, HCRYPTKEY hExpKey, DWORD dwBlobType,
+        DWORD dwFlags, BYTE *pbData, DWORD *pdwDataLen)
 {
     struct qemu_CryptExportKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTEXPORTKEY);
@@ -748,8 +749,9 @@ WINBASEAPI BOOL WINAPI CryptExportKey (HCRYPTKEY hKey, HCRYPTKEY hExpKey, DWORD 
 void qemu_CryptExportKey(struct qemu_syscall *call)
 {
     struct qemu_CryptExportKey *c = (struct qemu_CryptExportKey *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptExportKey(c->hKey, c->hExpKey, c->dwBlobType, c->dwFlags, QEMU_G2H(c->pbData), QEMU_G2H(c->pdwDataLen));
+    WINE_TRACE("\n");
+    c->super.iret = CryptExportKey(c->hKey, c->hExpKey, c->dwBlobType, c->dwFlags, QEMU_G2H(c->pbData),
+            QEMU_G2H(c->pdwDataLen));
 }
 
 #endif
@@ -964,7 +966,8 @@ struct qemu_CryptGetProvParam
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptGetProvParam (HCRYPTPROV hProv, DWORD dwParam, BYTE *pbData, DWORD *pdwDataLen, DWORD dwFlags)
+WINBASEAPI BOOL WINAPI CryptGetProvParam (HCRYPTPROV hProv, DWORD dwParam, BYTE *pbData, DWORD *pdwDataLen,
+            DWORD dwFlags)
 {
     struct qemu_CryptGetProvParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTGETPROVPARAM);
@@ -984,8 +987,23 @@ WINBASEAPI BOOL WINAPI CryptGetProvParam (HCRYPTPROV hProv, DWORD dwParam, BYTE 
 void qemu_CryptGetProvParam(struct qemu_syscall *call)
 {
     struct qemu_CryptGetProvParam *c = (struct qemu_CryptGetProvParam *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptGetProvParam(c->hProv, c->dwParam, QEMU_G2H(c->pbData), QEMU_G2H(c->pdwDataLen), c->dwFlags);
+    WINE_TRACE("\n");
+
+#if GUEST_BIT != HOST_BIT
+    /* List looked up in rsaenh/rsaenh.c */
+    switch (c->dwParam)
+    {
+        case PP_KEYSET_SEC_DESCR:
+        case PP_CRYPT_COUNT_KEY_USE:
+        case PP_ENUMALGS:
+        case PP_ENUMALGS_EX:
+            WINE_FIXME("Potentially problematic parameter queried\n");
+            break;
+    }
+#endif
+
+    c->super.iret = CryptGetProvParam(c->hProv, c->dwParam, QEMU_G2H(c->pbData), QEMU_G2H(c->pdwDataLen),
+            c->dwFlags);
 }
 
 #endif
