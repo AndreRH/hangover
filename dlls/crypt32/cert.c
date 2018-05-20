@@ -30,6 +30,7 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <wine/exception.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_crypt32);
 #endif
 
@@ -1618,7 +1619,9 @@ struct qemu_CryptSignAndEncodeCertificate
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptSignAndEncodeCertificate(HCRYPTPROV_OR_NCRYPT_KEY_HANDLE hCryptProv, DWORD dwKeySpec, DWORD dwCertEncodingType, LPCSTR lpszStructType, const void *pvStructInfo, PCRYPT_ALGORITHM_IDENTIFIER pSignatureAlgorithm, const void *pvHashAuxInfo, BYTE *pbEncoded, DWORD *pcbEncoded)
+WINBASEAPI BOOL WINAPI CryptSignAndEncodeCertificate(HCRYPTPROV_OR_NCRYPT_KEY_HANDLE hCryptProv, DWORD dwKeySpec,
+        DWORD dwCertEncodingType, LPCSTR lpszStructType, const void *pvStructInfo,
+        PCRYPT_ALGORITHM_IDENTIFIER pSignatureAlgorithm, const void *pvHashAuxInfo, BYTE *pbEncoded, DWORD *pcbEncoded)
 {
     struct qemu_CryptSignAndEncodeCertificate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSIGNANDENCODECERTIFICATE);
@@ -1642,8 +1645,78 @@ WINBASEAPI BOOL WINAPI CryptSignAndEncodeCertificate(HCRYPTPROV_OR_NCRYPT_KEY_HA
 void qemu_CryptSignAndEncodeCertificate(struct qemu_syscall *call)
 {
     struct qemu_CryptSignAndEncodeCertificate *c = (struct qemu_CryptSignAndEncodeCertificate *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptSignAndEncodeCertificate(c->hCryptProv, c->dwKeySpec, c->dwCertEncodingType, QEMU_G2H(c->lpszStructType), QEMU_G2H(c->pvStructInfo), QEMU_G2H(c->pSignatureAlgorithm), QEMU_G2H(c->pvHashAuxInfo), QEMU_G2H(c->pbEncoded), QEMU_G2H(c->pcbEncoded));
+    CRYPT_ALGORITHM_IDENTIFIER alg_stack, *alg = &alg_stack;
+    CERT_SIGNED_CONTENT_INFO signed_cert_info;
+    CERT_INFO cert_info;
+    BOOL success = FALSE;
+    const char *type;
+    void *info;
+
+    WINE_TRACE("\n");
+    type = QEMU_G2H(c->lpszStructType);
+    info = QEMU_G2H(c->pvStructInfo);
+
+#if GUEST_BIT == HOST_BIT
+    alg = QEMU_G2H(c->pSignatureAlgorithm);
+#else
+    if (c->pSignatureAlgorithm)
+        CRYPT_ALGORITHM_IDENTIFIER_g2h(alg, QEMU_G2H(c->pSignatureAlgorithm));
+    else
+        alg = NULL;
+
+    if (info)
+    {
+        __TRY
+        {
+            if (IS_INTOID(type))
+            {
+                switch (LOWORD(type))
+                {
+                    case 0:
+                        success = TRUE;
+                        break;
+
+                    case LOWORD(X509_CERT):
+                        CERT_SIGNED_CONTENT_INFO_g2h(&signed_cert_info, info);
+                        info = &signed_cert_info;
+                        success = TRUE;
+                        break;
+
+                    case LOWORD(X509_CERT_TO_BE_SIGNED):
+                        CERT_INFO_g2h(&cert_info, info);
+                        info = &cert_info;
+                        success = TRUE;
+                        break;
+
+                    default:
+                        WINE_FIXME("Unhandled struct type %x.\n", LOWORD(type));
+                        success = TRUE; /* Try my luck */
+                }
+            }
+            else
+            {
+                WINE_FIXME("String struct types not handled yet.\n");
+                WINE_FIXME("Type is \"%s\"\n", type);
+                success = TRUE; /* Try my luck */
+            }
+        }
+        __EXCEPT_PAGE_FAULT
+        {
+            SetLastError(STATUS_ACCESS_VIOLATION);
+            c->super.iret = FALSE;
+        }
+        __ENDTRY
+
+        if (!success)
+            return;
+    }
+
+    if (c->pvHashAuxInfo)
+        WINE_FIXME("Hash aux info not handled yet.\n");
+#endif
+
+    c->super.iret = CryptSignAndEncodeCertificate(c->hCryptProv, c->dwKeySpec, c->dwCertEncodingType,
+            type, info, alg, QEMU_G2H(c->pvHashAuxInfo), QEMU_G2H(c->pbEncoded), QEMU_G2H(c->pcbEncoded));
 }
 
 #endif

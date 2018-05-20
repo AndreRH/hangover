@@ -115,7 +115,8 @@ void qemu_CryptEncodeObjectEx(struct qemu_syscall *call)
     void *encoded, *info;
     const char *type;
     BOOL success = FALSE;
-    CERT_SIGNED_CONTENT_INFO cert_info;
+    CERT_SIGNED_CONTENT_INFO signed_cert_info;
+    CERT_INFO cert_info;
 
     WINE_TRACE("\n");
     info = QEMU_G2H(c->pvStructInfo);
@@ -137,7 +138,13 @@ void qemu_CryptEncodeObjectEx(struct qemu_syscall *call)
             switch (LOWORD(type))
             {
                 case LOWORD(X509_CERT):
-                    CERT_SIGNED_CONTENT_INFO_g2h(&cert_info, info);
+                    CERT_SIGNED_CONTENT_INFO_g2h(&signed_cert_info, info);
+                    info = &signed_cert_info;
+                    success = TRUE;
+                    break;
+
+                case LOWORD(X509_CERT_TO_BE_SIGNED):
+                    CERT_INFO_g2h(&cert_info, info);
                     info = &cert_info;
                     success = TRUE;
                     break;
