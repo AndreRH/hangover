@@ -516,7 +516,8 @@ struct qemu_CryptEncrypt
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptEncrypt (HCRYPTKEY hKey, HCRYPTHASH hHash, BOOL Final, DWORD dwFlags, BYTE *pbData, DWORD *pdwDataLen, DWORD dwBufLen)
+WINBASEAPI BOOL WINAPI CryptEncrypt (HCRYPTKEY hKey, HCRYPTHASH hHash, BOOL Final, DWORD dwFlags, BYTE *pbData,
+        DWORD *pdwDataLen, DWORD dwBufLen)
 {
     struct qemu_CryptEncrypt call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTENCRYPT);
@@ -539,7 +540,8 @@ void qemu_CryptEncrypt(struct qemu_syscall *call)
 {
     struct qemu_CryptEncrypt *c = (struct qemu_CryptEncrypt *)call;
     WINE_TRACE("\n");
-    c->super.iret = CryptEncrypt(c->hKey, c->hHash, c->Final, c->dwFlags, QEMU_G2H(c->pbData), QEMU_G2H(c->pdwDataLen), c->dwBufLen);
+    c->super.iret = CryptEncrypt(c->hKey, c->hHash, c->Final, c->dwFlags, QEMU_G2H(c->pbData),
+            QEMU_G2H(c->pdwDataLen), c->dwBufLen);
 }
 
 #endif
@@ -1481,7 +1483,8 @@ struct qemu_CryptVerifySignatureW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptVerifySignatureW (HCRYPTHASH hHash, const BYTE *pbSignature, DWORD dwSigLen, HCRYPTKEY hPubKey, LPCWSTR sDescription, DWORD dwFlags)
+WINBASEAPI BOOL WINAPI CryptVerifySignatureW (HCRYPTHASH hHash, const BYTE *pbSignature, DWORD dwSigLen,
+        HCRYPTKEY hPubKey, LPCWSTR sDescription, DWORD dwFlags)
 {
     struct qemu_CryptVerifySignatureW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTVERIFYSIGNATUREW);
@@ -1502,8 +1505,9 @@ WINBASEAPI BOOL WINAPI CryptVerifySignatureW (HCRYPTHASH hHash, const BYTE *pbSi
 void qemu_CryptVerifySignatureW(struct qemu_syscall *call)
 {
     struct qemu_CryptVerifySignatureW *c = (struct qemu_CryptVerifySignatureW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptVerifySignatureW(c->hHash, QEMU_G2H(c->pbSignature), c->dwSigLen, c->hPubKey, QEMU_G2H(c->sDescription), c->dwFlags);
+    WINE_TRACE("\n");
+    c->super.iret = CryptVerifySignatureW(c->hHash, QEMU_G2H(c->pbSignature), c->dwSigLen, c->hPubKey,
+            QEMU_G2H(c->sDescription), c->dwFlags);
 }
 
 #endif
@@ -1521,7 +1525,8 @@ struct qemu_CryptVerifySignatureA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptVerifySignatureA (HCRYPTHASH hHash, const BYTE *pbSignature, DWORD dwSigLen, HCRYPTKEY hPubKey, LPCSTR sDescription, DWORD dwFlags)
+WINBASEAPI BOOL WINAPI CryptVerifySignatureA (HCRYPTHASH hHash, const BYTE *pbSignature, DWORD dwSigLen,
+        HCRYPTKEY hPubKey, LPCSTR sDescription, DWORD dwFlags)
 {
     struct qemu_CryptVerifySignatureA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTVERIFYSIGNATUREA);
@@ -1542,8 +1547,9 @@ WINBASEAPI BOOL WINAPI CryptVerifySignatureA (HCRYPTHASH hHash, const BYTE *pbSi
 void qemu_CryptVerifySignatureA(struct qemu_syscall *call)
 {
     struct qemu_CryptVerifySignatureA *c = (struct qemu_CryptVerifySignatureA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptVerifySignatureA(c->hHash, QEMU_G2H(c->pbSignature), c->dwSigLen, c->hPubKey, QEMU_G2H(c->sDescription), c->dwFlags);
+    WINE_TRACE("\n");
+    c->super.iret = CryptVerifySignatureA(c->hHash, QEMU_G2H(c->pbSignature), c->dwSigLen, c->hPubKey,
+            QEMU_G2H(c->sDescription), c->dwFlags);
 }
 
 #endif
