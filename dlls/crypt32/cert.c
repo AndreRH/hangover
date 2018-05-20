@@ -1714,7 +1714,8 @@ struct qemu_CryptVerifyCertificateSignatureEx
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptVerifyCertificateSignatureEx(HCRYPTPROV_LEGACY hCryptProv, DWORD dwCertEncodingType, DWORD dwSubjectType, void *pvSubject, DWORD dwIssuerType, void *pvIssuer, DWORD dwFlags, void *pvReserved)
+WINBASEAPI BOOL WINAPI CryptVerifyCertificateSignatureEx(HCRYPTPROV_LEGACY hCryptProv, DWORD dwCertEncodingType,
+        DWORD dwSubjectType, void *pvSubject, DWORD dwIssuerType, void *pvIssuer, DWORD dwFlags, void *pvReserved)
 {
     struct qemu_CryptVerifyCertificateSignatureEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTVERIFYCERTIFICATESIGNATUREEX);
@@ -1737,8 +1738,70 @@ WINBASEAPI BOOL WINAPI CryptVerifyCertificateSignatureEx(HCRYPTPROV_LEGACY hCryp
 void qemu_CryptVerifyCertificateSignatureEx(struct qemu_syscall *call)
 {
     struct qemu_CryptVerifyCertificateSignatureEx *c = (struct qemu_CryptVerifyCertificateSignatureEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptVerifyCertificateSignatureEx(c->hCryptProv, c->dwCertEncodingType, c->dwSubjectType, QEMU_G2H(c->pvSubject), c->dwIssuerType, QEMU_G2H(c->pvIssuer), c->dwFlags, QEMU_G2H(c->pvReserved));
+    CERT_PUBLIC_KEY_INFO pubkey;
+    CRYPT_DATA_BLOB blob;
+    void *issuer, *subject;
+
+    WINE_TRACE("\n");
+    issuer = QEMU_G2H(c->pvIssuer);
+    subject = QEMU_G2H(c->pvSubject);
+#if GUEST_BIT == HOST_BIT
+    /* Nothing to do */
+#else
+    if (issuer)
+    {
+        switch (c->dwIssuerType)
+        {
+            case CRYPT_VERIFY_CERT_SIGN_ISSUER_PUBKEY:
+                CERT_PUBLIC_KEY_INFO_g2h(&pubkey, issuer);
+                issuer = &pubkey;
+                break;
+
+            case CRYPT_VERIFY_CERT_SIGN_ISSUER_CERT:
+                WINE_FIXME("Unimplemented CRYPT_VERIFY_CERT_SIGN_ISSUER_CERT.\n");
+                break;
+
+            case CRYPT_VERIFY_CERT_SIGN_ISSUER_CHAIN:
+                WINE_FIXME("Unimplemented CRYPT_VERIFY_CERT_SIGN_ISSUER_CHAIN.\n");
+                break;
+
+            case CRYPT_VERIFY_CERT_SIGN_ISSUER_NULL:
+                WINE_FIXME("Unimplemented CRYPT_VERIFY_CERT_SIGN_ISSUER_NULL.\n");
+                break;
+
+            default:
+                WINE_FIXME("Unimplemented issuer type %x.\n", (DWORD)c->dwIssuerType);
+        }
+    }
+
+    if (subject)
+    {
+        switch (c->dwSubjectType)
+        {
+            case CRYPT_VERIFY_CERT_SIGN_SUBJECT_BLOB:
+                CRYPT_DATA_BLOB_g2h(&blob, subject);
+                subject = &blob;
+                break;
+
+            case CRYPT_VERIFY_CERT_SIGN_SUBJECT_CERT:
+                WINE_FIXME("Unimplemented CRYPT_VERIFY_CERT_SIGN_SUBJECT_CERT.\n");
+                break;
+
+            case CRYPT_VERIFY_CERT_SIGN_SUBJECT_CRL:
+                WINE_FIXME("Unimplemented CRYPT_VERIFY_CERT_SIGN_SUBJECT_CRL.\n");
+                break;
+
+            default:
+                WINE_FIXME("Unimplemented subject type %x.\n", (DWORD)c->dwSubjectType);
+        }
+    }
+    if (c->pvReserved)
+        WINE_FIXME("Unhandled pvReserved.\n");
+
+#endif
+
+    c->super.iret = CryptVerifyCertificateSignatureEx(c->hCryptProv, c->dwCertEncodingType, c->dwSubjectType,
+            subject, c->dwIssuerType, issuer, c->dwFlags, QEMU_G2H(c->pvReserved));
 }
 
 #endif
