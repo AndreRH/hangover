@@ -1331,6 +1331,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__chgsignf = (void *)GetProcAddress(msvcrt, "_chgsignf");
     p__chmod = (void *)GetProcAddress(msvcrt, "_chmod");
     p__clearfp = (void *)GetProcAddress(msvcrt, "_clearfp");
+    p__close = (void *)GetProcAddress(msvcrt, "_close");
     p__configthreadlocale = (void *)GetProcAddress(msvcrt, "_configthreadlocale");
     p__configure_narrow_argv = (void *)GetProcAddress(msvcrt, "_configure_narrow_argv");
     p__configure_wide_argv = (void *)GetProcAddress(msvcrt, "_configure_wide_argv");
