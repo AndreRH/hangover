@@ -2594,7 +2594,7 @@ WINBASEAPI LSTATUS WINAPI RegDeleteTreeW(HKEY hkey, const WCHAR *subkey)
 void qemu_RegDeleteTreeW(struct qemu_syscall *call)
 {
     struct qemu_RegDeleteTreeW *c = (struct qemu_RegDeleteTreeW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RegDeleteTreeW(QEMU_G2H(c->hkey), QEMU_G2H(c->subkey));
 }
 
@@ -2626,7 +2626,7 @@ WINBASEAPI LSTATUS WINAPI RegDeleteTreeA(HKEY hkey, const char *subkey)
 void qemu_RegDeleteTreeA(struct qemu_syscall *call)
 {
     struct qemu_RegDeleteTreeA *c = (struct qemu_RegDeleteTreeA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RegDeleteTreeA(QEMU_G2H(c->hkey), QEMU_G2H(c->subkey));
 }
 
