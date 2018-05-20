@@ -1096,7 +1096,8 @@ struct qemu_CertGetIssuerCertificateFromStore
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI PCCERT_CONTEXT WINAPI CertGetIssuerCertificateFromStore(HCERTSTORE hCertStore, PCCERT_CONTEXT pSubjectContext, PCCERT_CONTEXT pPrevIssuerContext, DWORD *pdwFlags)
+WINBASEAPI PCCERT_CONTEXT WINAPI CertGetIssuerCertificateFromStore(HCERTSTORE hCertStore,
+        PCCERT_CONTEXT pSubjectContext, PCCERT_CONTEXT pPrevIssuerContext, DWORD *pdwFlags)
 {
     struct qemu_CertGetIssuerCertificateFromStore call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTGETISSUERCERTIFICATEFROMSTORE);
@@ -1115,8 +1116,28 @@ WINBASEAPI PCCERT_CONTEXT WINAPI CertGetIssuerCertificateFromStore(HCERTSTORE hC
 void qemu_CertGetIssuerCertificateFromStore(struct qemu_syscall *call)
 {
     struct qemu_CertGetIssuerCertificateFromStore *c = (struct qemu_CertGetIssuerCertificateFromStore *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(CertGetIssuerCertificateFromStore(cert_store_g2h(c->hCertStore), QEMU_G2H(c->pSubjectContext), QEMU_G2H(c->pPrevIssuerContext), QEMU_G2H(c->pdwFlags)));
+    const CERT_CONTEXT *context, stack1, *subject = &stack1, stack2, *issuer = &stack2;
+    struct qemu_cert_context *context32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    subject = QEMU_G2H(pSubjectContext);
+    issuer = QEMU_G2H(pPrevIssuerContext);
+#else
+    context32 = context_impl_from_context32(QEMU_G2H(c->pSubjectContext));
+    subject = context32 ? context32->cert64 : NULL;
+    context32 = context_impl_from_context32(QEMU_G2H(c->pPrevIssuerContext));
+    issuer = context32 ? context32->cert64 : NULL;
+#endif
+
+    context = CertGetIssuerCertificateFromStore(cert_store_g2h(c->hCertStore), subject, issuer, QEMU_G2H(c->pdwFlags));
+
+#if GUEST_BIT != HOST_BIT
+    if (context)
+        context = (CERT_CONTEXT *)context32_create(context);
+#endif
+
+    c->super.iret = QEMU_H2G(context);
 }
 
 #endif
