@@ -410,6 +410,7 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
     ntdll_RtlCaptureContext( context );
     new_context = *context;
 
+#error here
     /* build an exception record, if we do not have one */
     if (!rec)
     {
@@ -565,6 +566,7 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
 void WINAPI ntdll_RtlUnwind( void *frame, void *target_ip, EXCEPTION_RECORD *rec, void *retval )
 {
     CONTEXT context;
+#error 32
     ntdll_RtlUnwindEx( frame, target_ip, rec, retval, &context, NULL );
 }
 
@@ -716,19 +718,159 @@ __ASM_STDCALL_FUNC( ntdll_RtlCaptureContext, 4,
                     __ASM_CFI(".cfi_adjust_cfa_offset -4\n\t")
                     "ret $4" )
 
-void WINAPI ntdll_RtlUnwind( void *frame, void *target_ip, EXCEPTION_RECORD *rec, void *retval )
+static void raise_status(NTSTATUS status, EXCEPTION_RECORD *record)
 {
     struct qemu_ExceptDebug call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLUNWINDEX);
+    call.string = (ULONG_PTR)"Bad status=%lx\n";
+    call.p1 = (ULONG_PTR)status;
+    call.num_params = 1;
+
+    qemu_syscall(&call.super);
+}
+
+typedef struct
+{
+    EXCEPTION_REGISTRATION_RECORD frame;
+    EXCEPTION_REGISTRATION_RECORD *prevFrame;
+} EXC_NESTED_FRAME;
+
+extern DWORD EXC_CallHandler( EXCEPTION_RECORD *record, EXCEPTION_REGISTRATION_RECORD *frame,
+                              CONTEXT *context, EXCEPTION_REGISTRATION_RECORD **dispatcher,
+                              PEXCEPTION_ROUTINE handler, PEXCEPTION_HANDLER nested_handler );
+
+static inline BOOL is_valid_frame( void *frame )
+{
+    if ((ULONG_PTR)frame & 3) return FALSE;
+    return (frame >= ((NT_TIB *)NtCurrentTeb())->StackLimit &&
+            (void **)frame < (void **)((NT_TIB *)NtCurrentTeb())->StackBase - 1);
+}
+
+static int unwind_handler( EXCEPTION_RECORD *rec, void *shutup,
+                             CONTEXT *context, void *compiler )
+{
+    EXCEPTION_REGISTRATION_RECORD *frame = shutup;
+    EXCEPTION_REGISTRATION_RECORD **dispatcher = compiler;
+
+    if (!(rec->ExceptionFlags & (EH_UNWINDING | EH_EXIT_UNWIND)))
+        return ExceptionContinueSearch;
+    /* We shouldn't get here so we store faulty frame in dispatcher */
+    *dispatcher = ((EXC_NESTED_FRAME*)frame)->prevFrame;
+    return ExceptionCollidedUnwind;
+}
+
+static inline EXCEPTION_REGISTRATION_RECORD *__wine_pop_frame( EXCEPTION_REGISTRATION_RECORD *frame )
+{
+#if defined(__GNUC__) && defined(__i386__)
+    __asm__ __volatile__(".byte 0x64\n\tmovl %0,(0)"
+                         : : "r" (frame->prev) : "memory" );
+    return frame->prev;
+
+#else
+    NT_TIB *teb = (NT_TIB *)NtCurrentTeb();
+    teb->ExceptionList = frame->prev;
+    return frame->prev;
+#endif
+}
+
+NTSTATUS WINAPI NtSetContextThread( HANDLE handle, const CONTEXT *context );
+
+void WINAPI __regs_RtlUnwind( EXCEPTION_REGISTRATION_RECORD* pEndFrame, PVOID targetIp,
+                                              PEXCEPTION_RECORD pRecord, PVOID retval, CONTEXT *context )
+{
+    EXCEPTION_RECORD record;
+    EXCEPTION_REGISTRATION_RECORD *frame, *dispatch;
+    DWORD res;
+    struct qemu_ExceptDebug call;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLUNWINDEX);
     call.string = (ULONG_PTR)"Frame=%lx, target=%lx, exception %lx, retval %lx\n";
     call.p1 = (ULONG_PTR)frame;
-    call.p2 = (ULONG_PTR)target_ip;
-    call.p3 = (ULONG_PTR)rec;
+    call.p2 = (ULONG_PTR)targetIp;
+    call.p3 = (ULONG_PTR)pRecord;
     call.p4 = (ULONG_PTR)retval;
     call.num_params = 4;
 
     qemu_syscall(&call.super);
+
+    context->Eax = (DWORD)retval;
+
+    /* build an exception record, if we do not have one */
+    if (!pRecord)
+    {
+        record.ExceptionCode    = STATUS_UNWIND;
+        record.ExceptionFlags   = 0;
+        record.ExceptionRecord  = NULL;
+        record.ExceptionAddress = (void *)context->Eip;
+        record.NumberParameters = 0;
+        pRecord = &record;
+    }
+
+    pRecord->ExceptionFlags |= EH_UNWINDING | (pEndFrame ? 0 : EH_EXIT_UNWIND);
+
+    /*TRACE( "code=%x flags=%x\n", pRecord->ExceptionCode, pRecord->ExceptionFlags );
+    TRACE( "eax=%08x ebx=%08x ecx=%08x edx=%08x esi=%08x edi=%08x\n",
+           context->Eax, context->Ebx, context->Ecx, context->Edx, context->Esi, context->Edi );
+    TRACE( "ebp=%08x esp=%08x eip=%08x cs=%04x ds=%04x fs=%04x gs=%04x flags=%08x\n",
+           context->Ebp, context->Esp, context->Eip, LOWORD(context->SegCs), LOWORD(context->SegDs),
+           LOWORD(context->SegFs), LOWORD(context->SegGs), context->EFlags );*/
+
+    /* get chain of exception frames */
+    frame = ((NT_TIB *)NtCurrentTeb())->ExceptionList;
+    while ((frame != (EXCEPTION_REGISTRATION_RECORD*)~0UL) && (frame != pEndFrame))
+    {
+        /* Check frame address */
+        if (pEndFrame && (frame > pEndFrame))
+            raise_status( STATUS_INVALID_UNWIND_TARGET, pRecord );
+
+        if (!is_valid_frame( frame )) raise_status( STATUS_BAD_STACK, pRecord );
+
+        /* Call handler */
+        /*TRACE( "calling handler at %p code=%x flags=%x\n",
+               frame->Handler, pRecord->ExceptionCode, pRecord->ExceptionFlags );*/
+        res = EXC_CallHandler( pRecord, frame, context, &dispatch, frame->Handler, unwind_handler );
+        /*TRACE( "handler at %p returned %x\n", frame->Handler, res );*/
+
+        switch(res)
+        {
+        case ExceptionContinueSearch:
+            break;
+        case ExceptionCollidedUnwind:
+            frame = dispatch;
+            break;
+        default:
+            raise_status( STATUS_INVALID_DISPOSITION, pRecord );
+            break;
+        }
+        frame = __wine_pop_frame( frame );
+    }
+
+    /* FIXME: It seems that GetCurrentThread() is a function in mingw and not a macro as Wine's code expects. */
+    NtSetContextThread( ((HANDLE)~(ULONG_PTR)1), context );
 }
+__ASM_STDCALL_FUNC( RtlUnwind, 16,
+                    "pushl %ebp\n\t"
+                    __ASM_CFI(".cfi_adjust_cfa_offset 4\n\t")
+                    __ASM_CFI(".cfi_rel_offset %ebp,0\n\t")
+                    "movl %esp,%ebp\n\t"
+                    __ASM_CFI(".cfi_def_cfa_register %ebp\n\t")
+                    "leal -(0x2cc+8)(%esp),%esp\n\t" /* sizeof(CONTEXT) + alignment */
+                    "pushl %eax\n\t"
+                    "leal 4(%esp),%eax\n\t"          /* context */
+                    "xchgl %eax,(%esp)\n\t"
+                    "call " __ASM_NAME("ntdll_RtlCaptureContext") __ASM_STDCALL(4) "\n\t"
+                    "leal 24(%ebp),%eax\n\t"
+                    "movl %eax,0xc4(%esp)\n\t"       /* context->Esp */
+                    "pushl %esp\n\t"
+                    "pushl 20(%ebp)\n\t"
+                    "pushl 16(%ebp)\n\t"
+                    "pushl 12(%ebp)\n\t"
+                    "pushl 8(%ebp)\n\t"
+                    "call " __ASM_NAME("__regs_RtlUnwind") __ASM_STDCALL(20) "\n\t"
+                    "leave\n\t"
+                    __ASM_CFI(".cfi_def_cfa %esp,4\n\t")
+                    __ASM_CFI(".cfi_same_value %ebp\n\t")
+                    "ret $16" )  /* actually never returns */
 
 #endif /* _WIN64 */
 
@@ -1537,19 +1679,6 @@ NTSTATUS WINAPI NtSetContextThread( HANDLE handle, const CONTEXT *context )
     return call.super.iret;
 }
 
-static inline BOOL is_valid_frame( void *frame )
-{
-    if ((ULONG_PTR)frame & 3) return FALSE;
-    return (frame >= ((NT_TIB *)NtCurrentTeb())->StackLimit &&
-            (void **)frame < (void **)((NT_TIB *)NtCurrentTeb())->StackBase - 1);
-}
-
-typedef struct
-{
-    EXCEPTION_REGISTRATION_RECORD frame;
-    EXCEPTION_REGISTRATION_RECORD *prevFrame;
-} EXC_NESTED_FRAME;
-
 static int raise_handler( EXCEPTION_RECORD *rec, void *shutup,
                             CONTEXT *context, void *compiler )
 {
@@ -1562,9 +1691,6 @@ static int raise_handler( EXCEPTION_RECORD *rec, void *shutup,
     return ExceptionNestedException;
 }
 
-extern DWORD EXC_CallHandler( EXCEPTION_RECORD *record, EXCEPTION_REGISTRATION_RECORD *frame,
-                              CONTEXT *context, EXCEPTION_REGISTRATION_RECORD **dispatcher,
-                              PEXCEPTION_ROUTINE handler, PEXCEPTION_HANDLER nested_handler );
 __ASM_GLOBAL_FUNC( EXC_CallHandler,
                   "pushl %ebp\n\t"
                   __ASM_CFI(".cfi_adjust_cfa_offset 4\n\t")
