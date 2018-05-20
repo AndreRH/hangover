@@ -421,6 +421,7 @@ void qemu_PFXVerifyPassword(struct qemu_syscall *call);
 struct qemu_cert_context
 {
     struct qemu_CERT_CONTEXT cert32;
+    struct qemu_CERT_INFO cert_info;
     const CERT_CONTEXT *cert64;
     ULONG ref;
 };

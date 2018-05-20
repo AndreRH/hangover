@@ -1124,6 +1124,8 @@ struct qemu_cert_context *context32_create(const CERT_CONTEXT *cert64)
     if (cert64->hCertStore == empty_store)
         ret->cert32.hCertStore = empty_store_replace;
 
+    CERT_INFO_h2g(&ret->cert_info, cert64->pCertInfo);
+    ret->cert32.pCertInfo = QEMU_H2G(&ret->cert_info);
     return ret;
 }
 

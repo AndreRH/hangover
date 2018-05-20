@@ -157,4 +157,20 @@ static inline void CERT_INFO_g2h(CERT_INFO *host, const struct qemu_CERT_INFO *g
     host->rgExtension = (PCERT_EXTENSION)(ULONG_PTR)guest->rgExtension; /* FIXME */
 }
 
+static inline void CERT_INFO_h2g(struct qemu_CERT_INFO *guest, const CERT_INFO *host)
+{
+    guest->dwVersion = host->dwVersion;
+    CRYPT_DATA_BLOB_h2g(&guest->SerialNumber, &host->SerialNumber);
+    CRYPT_ALGORITHM_IDENTIFIER_h2g(&guest->SignatureAlgorithm, &host->SignatureAlgorithm);
+    CRYPT_DATA_BLOB_h2g(&guest->Issuer, &host->Issuer);
+    guest->NotBefore = host->NotBefore;
+    guest->NotAfter = host->NotAfter;
+    CRYPT_DATA_BLOB_h2g(&guest->Subject, &host->Subject);
+    CERT_PUBLIC_KEY_INFO_h2g(&guest->SubjectPublicKeyInfo, &host->SubjectPublicKeyInfo);
+    CRYPT_BIT_BLOB_h2g(&guest->IssuerUniqueId, &host->IssuerUniqueId);
+    CRYPT_BIT_BLOB_h2g(&guest->SubjectUniqueId, &host->SubjectUniqueId);
+    guest->cExtension = host->cExtension;
+    guest->rgExtension = (ULONG_PTR)host->rgExtension; /* FIXME */
+}
+
 #endif
