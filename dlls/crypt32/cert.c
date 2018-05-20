@@ -805,8 +805,25 @@ WINBASEAPI BOOL WINAPI CertCompareIntegerBlob(PCRYPT_INTEGER_BLOB pInt1, PCRYPT_
 void qemu_CertCompareIntegerBlob(struct qemu_syscall *call)
 {
     struct qemu_CertCompareIntegerBlob *c = (struct qemu_CertCompareIntegerBlob *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertCompareIntegerBlob(QEMU_G2H(c->pInt1), QEMU_G2H(c->pInt2));
+    CRYPT_INTEGER_BLOB stack1, stack2, *int1 = &stack1, *int2 = &stack2;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    int1 = QEMU_G2H(c->pInt1);
+    int2 = QEMU_G2H(c->pInt2);
+#else
+    if (c->pInt1)
+        CRYPT_DATA_BLOB_g2h(int1, QEMU_G2H(c->pInt1));
+    else
+        int1 = NULL;
+
+    if (c->pInt2)
+        CRYPT_DATA_BLOB_g2h(int2, QEMU_G2H(c->pInt2));
+    else
+        int2 = NULL;
+#endif
+
+    c->super.iret = CertCompareIntegerBlob(int1, int2);
 }
 
 #endif
