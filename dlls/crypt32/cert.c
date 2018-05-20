@@ -1547,7 +1547,10 @@ struct qemu_CryptSignCertificate
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptSignCertificate(HCRYPTPROV_OR_NCRYPT_KEY_HANDLE hCryptProv, DWORD dwKeySpec, DWORD dwCertEncodingType, const BYTE *pbEncodedToBeSigned, DWORD cbEncodedToBeSigned, PCRYPT_ALGORITHM_IDENTIFIER pSignatureAlgorithm, const void *pvHashAuxInfo, BYTE *pbSignature, DWORD *pcbSignature)
+WINBASEAPI BOOL WINAPI CryptSignCertificate(HCRYPTPROV_OR_NCRYPT_KEY_HANDLE hCryptProv, DWORD dwKeySpec,
+        DWORD dwCertEncodingType, const BYTE *pbEncodedToBeSigned, DWORD cbEncodedToBeSigned,
+        PCRYPT_ALGORITHM_IDENTIFIER pSignatureAlgorithm, const void *pvHashAuxInfo, BYTE *pbSignature,
+        DWORD *pcbSignature)
 {
     struct qemu_CryptSignCertificate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSIGNCERTIFICATE);
@@ -1571,8 +1574,24 @@ WINBASEAPI BOOL WINAPI CryptSignCertificate(HCRYPTPROV_OR_NCRYPT_KEY_HANDLE hCry
 void qemu_CryptSignCertificate(struct qemu_syscall *call)
 {
     struct qemu_CryptSignCertificate *c = (struct qemu_CryptSignCertificate *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptSignCertificate(c->hCryptProv, c->dwKeySpec, c->dwCertEncodingType, QEMU_G2H(c->pbEncodedToBeSigned), c->cbEncodedToBeSigned, QEMU_G2H(c->pSignatureAlgorithm), QEMU_G2H(c->pvHashAuxInfo), QEMU_G2H(c->pbSignature), QEMU_G2H(c->pcbSignature));
+    CRYPT_ALGORITHM_IDENTIFIER stack, *alg = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    alg = QEMU_G2H(c->pSignatureAlgorithm);
+#else
+    if (c->pvHashAuxInfo)
+        WINE_FIXME("Aux info not handled yet.\n");
+
+    if (c->pSignatureAlgorithm)
+        CRYPT_ALGORITHM_IDENTIFIER_g2h(alg, QEMU_G2H(c->pSignatureAlgorithm));
+    else
+        alg = NULL;
+#endif
+
+    c->super.iret = CryptSignCertificate(c->hCryptProv, c->dwKeySpec, c->dwCertEncodingType,
+            QEMU_G2H(c->pbEncodedToBeSigned), c->cbEncodedToBeSigned, alg,
+            QEMU_G2H(c->pvHashAuxInfo), QEMU_G2H(c->pbSignature), QEMU_G2H(c->pcbSignature));
 }
 
 #endif
