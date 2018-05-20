@@ -1681,15 +1681,20 @@ WINBASEAPI BOOL WINAPI CryptVerifyCertificateSignature(HCRYPTPROV_LEGACY hCryptP
 void qemu_CryptVerifyCertificateSignature(struct qemu_syscall *call)
 {
     struct qemu_CryptVerifyCertificateSignature *c = (struct qemu_CryptVerifyCertificateSignature *)call;
+    CERT_PUBLIC_KEY_INFO stack, *info = &stack;
 
     WINE_TRACE("\n");
-#if GUEST_BIT != HOST_BIT
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->pPublicKey);
+#else
     if (c->pPublicKey)
-        WINE_FIXME("pPublicKey not handled yet.\n");
+        CERT_PUBLIC_KEY_INFO_g2h(info, QEMU_G2H(c->pPublicKey));
+    else
+        info = NULL;
 #endif
 
     c->super.iret = CryptVerifyCertificateSignature(c->hCryptProv, c->dwCertEncodingType,
-            QEMU_G2H(c->pbEncoded), c->cbEncoded, QEMU_G2H(c->pPublicKey));
+            QEMU_G2H(c->pbEncoded), c->cbEncoded, info);
 }
 
 #endif
