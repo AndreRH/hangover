@@ -173,4 +173,61 @@ static inline void CERT_INFO_h2g(struct qemu_CERT_INFO *guest, const CERT_INFO *
     guest->rgExtension = (ULONG_PTR)host->rgExtension; /* FIXME */
 }
 
+struct qemu_CRYPT_KEY_PROV_PARAM
+{
+    DWORD       dwParam;
+    qemu_ptr    pbData;
+    DWORD       cbData;
+    DWORD       dwFlags;
+};
+
+static inline void CRYPT_KEY_PROV_PARAM_g2h(CRYPT_KEY_PROV_PARAM *host, const struct qemu_CRYPT_KEY_PROV_PARAM *guest)
+{
+    host->dwParam = guest->dwParam;
+    host->pbData = (BYTE *)(ULONG_PTR)guest->pbData;
+    host->cbData = guest->cbData;
+    host->dwFlags = guest->dwFlags;
+}
+
+static inline void CRYPT_KEY_PROV_PARAM_h2g(struct qemu_CRYPT_KEY_PROV_PARAM *guest, const CRYPT_KEY_PROV_PARAM *host)
+{
+    guest->dwParam = host->dwParam;
+    guest->pbData = (ULONG_PTR)host->pbData;
+    guest->cbData = host->cbData;
+    guest->dwFlags = host->dwFlags;
+}
+
+struct qemu_CRYPT_KEY_PROV_INFO
+{
+    qemu_ptr            pwszContainerName;
+    qemu_ptr            pwszProvName;
+    DWORD               dwProvType;
+    DWORD               dwFlags;
+    DWORD               cProvParam;
+    qemu_ptr            rgProvParam;
+    DWORD               dwKeySpec;
+};
+
+static inline void CRYPT_KEY_PROV_INFO_g2h(CRYPT_KEY_PROV_INFO *host, const struct qemu_CRYPT_KEY_PROV_INFO *guest)
+{
+    host->pwszContainerName = (WCHAR *)(ULONG_PTR)guest->pwszContainerName;
+    host->pwszProvName = (WCHAR *)(ULONG_PTR)guest->pwszProvName;
+    host->dwProvType = guest->dwProvType;
+    host->dwFlags = guest->dwFlags;
+    host->cProvParam = guest->cProvParam;
+    host->rgProvParam = (CRYPT_KEY_PROV_PARAM *)(ULONG_PTR)guest->rgProvParam;
+    host->dwKeySpec = guest->dwKeySpec;
+}
+
+static inline void CRYPT_KEY_PROV_INFO_h2g(struct qemu_CRYPT_KEY_PROV_INFO *guest, const CRYPT_KEY_PROV_INFO *host)
+{
+    guest->pwszContainerName = (ULONG_PTR)host->pwszContainerName;
+    guest->pwszProvName = (ULONG_PTR)host->pwszProvName;
+    guest->dwProvType = host->dwProvType;
+    guest->dwFlags = host->dwFlags;
+    guest->cProvParam = host->cProvParam;
+    guest->rgProvParam = (ULONG_PTR)host->rgProvParam;
+    guest->dwKeySpec = host->dwKeySpec;
+}
+
 #endif

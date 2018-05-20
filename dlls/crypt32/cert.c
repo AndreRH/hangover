@@ -1905,7 +1905,10 @@ struct qemu_CertCreateSelfSignCertificate
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI PCCERT_CONTEXT WINAPI CertCreateSelfSignCertificate(HCRYPTPROV_OR_NCRYPT_KEY_HANDLE hProv, PCERT_NAME_BLOB pSubjectIssuerBlob, DWORD dwFlags, PCRYPT_KEY_PROV_INFO pKeyProvInfo, PCRYPT_ALGORITHM_IDENTIFIER pSignatureAlgorithm, PSYSTEMTIME pStartTime, PSYSTEMTIME pEndTime, PCERT_EXTENSIONS pExtensions)
+WINBASEAPI PCCERT_CONTEXT WINAPI CertCreateSelfSignCertificate(HCRYPTPROV_OR_NCRYPT_KEY_HANDLE hProv,
+        PCERT_NAME_BLOB pSubjectIssuerBlob, DWORD dwFlags, PCRYPT_KEY_PROV_INFO pKeyProvInfo,
+        PCRYPT_ALGORITHM_IDENTIFIER pSignatureAlgorithm, PSYSTEMTIME pStartTime, PSYSTEMTIME pEndTime,
+        PCERT_EXTENSIONS pExtensions)
 {
     struct qemu_CertCreateSelfSignCertificate call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTCREATESELFSIGNCERTIFICATE);
@@ -1928,8 +1931,51 @@ WINBASEAPI PCCERT_CONTEXT WINAPI CertCreateSelfSignCertificate(HCRYPTPROV_OR_NCR
 void qemu_CertCreateSelfSignCertificate(struct qemu_syscall *call)
 {
     struct qemu_CertCreateSelfSignCertificate *c = (struct qemu_CertCreateSelfSignCertificate *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(CertCreateSelfSignCertificate(c->hProv, QEMU_G2H(c->pSubjectIssuerBlob), c->dwFlags, QEMU_G2H(c->pKeyProvInfo), QEMU_G2H(c->pSignatureAlgorithm), QEMU_G2H(c->pStartTime), QEMU_G2H(c->pEndTime), QEMU_G2H(c->pExtensions)));
+    const CERT_CONTEXT *context;
+    CERT_NAME_BLOB stack, *issuer = &stack;
+    CRYPT_ALGORITHM_IDENTIFIER alg_s, *alg = &alg_s;
+    CRYPT_KEY_PROV_INFO info_s, *info = &info_s;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    issuer = QEMU_G2H(c->pSubjectIssuerBlob);
+    alg = QEMU_G2H(c->pSignatureAlgorithm);
+    info = QEMU_G2H(c->pKeyProvInfo);
+#else
+    if (c->pSubjectIssuerBlob)
+        CRYPT_DATA_BLOB_g2h(issuer, QEMU_G2H(c->pSubjectIssuerBlob));
+    else
+        issuer = NULL;
+
+    if (c->pSignatureAlgorithm)
+        CRYPT_ALGORITHM_IDENTIFIER_g2h(alg, QEMU_G2H(c->pSignatureAlgorithm));
+    else
+        alg = NULL;
+
+    if (c->pKeyProvInfo)
+    {
+        CRYPT_KEY_PROV_INFO_g2h(info, QEMU_G2H(c->pKeyProvInfo));
+        if (info->cProvParam || info->rgProvParam)
+            WINE_FIXME("Convert info parameters\n");
+    }
+    else
+    {
+        info = NULL;
+    }
+
+    if (c->pExtensions)
+        WINE_FIXME("Extension pointer not handled yet.\n");
+#endif
+
+    context = CertCreateSelfSignCertificate(c->hProv, issuer, c->dwFlags, info, alg,
+            QEMU_G2H(c->pStartTime), QEMU_G2H(c->pEndTime), QEMU_G2H(c->pExtensions));
+
+#if GUEST_BIT != HOST_BIT
+    if (context)
+        context = (CERT_CONTEXT *)context32_create(context);
+#endif
+
+    c->super.iret = QEMU_H2G(context);
 }
 
 #endif
