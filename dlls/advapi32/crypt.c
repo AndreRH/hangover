@@ -157,7 +157,7 @@ WINBASEAPI BOOL WINAPI CryptContextAddRef (HCRYPTPROV hProv, DWORD *pdwReserved,
 void qemu_CryptContextAddRef(struct qemu_syscall *call)
 {
     struct qemu_CryptContextAddRef *c = (struct qemu_CryptContextAddRef *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CryptContextAddRef(c->hProv, QEMU_G2H(c->pdwReserved), c->dwFlags);
 }
 
