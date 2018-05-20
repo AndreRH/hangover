@@ -125,6 +125,27 @@ static inline void CERT_PUBLIC_KEY_INFO_h2g(struct qemu_CERT_PUBLIC_KEY_INFO *gu
     CRYPT_BIT_BLOB_h2g(&guest->PublicKey, &host->PublicKey);
 }
 
+struct qemu_CERT_EXTENSION
+{
+    qemu_ptr                        pszObjId;
+    BOOL                            fCritical;
+    struct qemu_CRYPT_DATA_BLOB     Value;
+};
+
+static inline void CERT_EXTENSION_g2h(CERT_EXTENSION *host, const struct qemu_CERT_EXTENSION *guest)
+{
+    host->pszObjId = (char *)(ULONG_PTR)guest->pszObjId;
+    host->fCritical = guest->fCritical;
+    CRYPT_DATA_BLOB_g2h(&host->Value, &guest->Value);
+}
+
+static inline void CERT_EXTENSION_h2g(struct qemu_CERT_EXTENSION *guest, const CERT_EXTENSION *host)
+{
+    guest->pszObjId = (ULONG_PTR)host->pszObjId;
+    guest->fCritical = host->fCritical;
+    CRYPT_DATA_BLOB_h2g(&guest->Value, &host->Value);
+}
+
 struct qemu_CERT_INFO
 {
     DWORD                                   dwVersion;

@@ -1896,7 +1896,8 @@ struct qemu_CertGetIntendedKeyUsage
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CertGetIntendedKeyUsage(DWORD dwCertEncodingType, PCERT_INFO pCertInfo, BYTE *pbKeyUsage, DWORD cbKeyUsage)
+WINBASEAPI BOOL WINAPI CertGetIntendedKeyUsage(DWORD dwCertEncodingType, PCERT_INFO pCertInfo,
+        BYTE *pbKeyUsage, DWORD cbKeyUsage)
 {
     struct qemu_CertGetIntendedKeyUsage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTGETINTENDEDKEYUSAGE);
@@ -1915,8 +1916,33 @@ WINBASEAPI BOOL WINAPI CertGetIntendedKeyUsage(DWORD dwCertEncodingType, PCERT_I
 void qemu_CertGetIntendedKeyUsage(struct qemu_syscall *call)
 {
     struct qemu_CertGetIntendedKeyUsage *c = (struct qemu_CertGetIntendedKeyUsage *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertGetIntendedKeyUsage(c->dwCertEncodingType, QEMU_G2H(c->pCertInfo), QEMU_G2H(c->pbKeyUsage), c->cbKeyUsage);
+    CERT_INFO stack, *info = &stack;
+    CERT_EXTENSION *exts = NULL;
+    DWORD count, i;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->pCertInfo);
+#else
+    if (c->pCertInfo)
+    {
+        CERT_INFO_g2h(info, QEMU_G2H(c->pCertInfo));
+
+        count = info->cExtension;
+        if (count && info->rgExtension)
+        {
+            exts = HeapAlloc(GetProcessHeap(), 0, sizeof(*exts) * count);
+            for (i = 0; i < count; ++i)
+                CERT_EXTENSION_g2h(&exts[i], &((struct qemu_CERT_EXTENSION *)info->rgExtension)[i]);
+            info->rgExtension = exts;
+        }
+    }
+    else
+        info = NULL;
+#endif
+
+    c->super.iret = CertGetIntendedKeyUsage(c->dwCertEncodingType, info, QEMU_G2H(c->pbKeyUsage), c->cbKeyUsage);
+    HeapFree(GetProcessHeap(), 0, exts);
 }
 
 #endif
