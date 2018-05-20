@@ -1506,7 +1506,7 @@ int CDECL MSVCRT__close(int fd)
 void qemu__close(struct qemu_syscall *call)
 {
     struct qemu__close *c = (struct qemu__close *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__close(c->fd);
 }
 
@@ -3923,7 +3923,7 @@ char * CDECL MSVCRT_fgets(char *s, int size, FILE* file)
 void qemu_fgets(struct qemu_syscall *call)
 {
     struct qemu_fgets *c = (struct qemu_fgets *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_fgets(QEMU_G2H(c->s), c->size, FILE_g2h(c->file)));
 }
 
@@ -5900,7 +5900,7 @@ void qemu__open(struct qemu_syscall *call)
 {
     struct qemu__open *c = (struct qemu__open *)(ULONG_PTR)call;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     if (c->flags & MSVCRT__O_CREAT)
     {
         c->super.iret = p__open(QEMU_G2H(c->path), c->flags, c->mode);
