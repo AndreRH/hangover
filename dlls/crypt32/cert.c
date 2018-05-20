@@ -529,16 +529,13 @@ void qemu_CertGetCertificateContextProperty(struct qemu_syscall *call)
             }
             break;
 
-        case CERT_KEY_PROV_INFO_PROP_ID:
-            WINE_FIXME("Unhandled CERT_KEY_PROV_INFO_PROP_ID.\n");
-            break;
-
         case CERT_SHA1_HASH_PROP_ID: /* Apparently fixed size */
         case CERT_MD5_HASH_PROP_ID: /* Apparently fixed size */
         case CERT_ACCESS_STATE_PROP_ID: /* DWORD */
         case CERT_SIGNATURE_HASH_PROP_ID: /* Apparently fixed size */
         case CERT_ARCHIVED_PROP_ID: /* No data */
         case CERT_KEY_IDENTIFIER_PROP_ID: /* Dynamic size */
+        case CERT_KEY_PROV_INFO_PROP_ID: /* Dynamic size */
             break;
 
         default:
@@ -553,14 +550,23 @@ void qemu_CertGetCertificateContextProperty(struct qemu_syscall *call)
     if (!c->super.iret)
         return;
 
-    switch (c->dwPropId)
+    if (data)
     {
-        case CERT_KEY_PROV_HANDLE_PROP_ID:
-            *((qemu_ptr *)data) = QEMU_H2G(handle);
-            break;
+        switch (c->dwPropId)
+        {
+            case CERT_KEY_PROV_HANDLE_PROP_ID:
+                *((qemu_ptr *)data) = QEMU_H2G(handle);
+                break;
 
-        case CERT_KEY_CONTEXT_PROP_ID:
-            CERT_KEY_CONTEXT_h2g(data, &key_ctx);
+            case CERT_KEY_CONTEXT_PROP_ID:
+                CERT_KEY_CONTEXT_h2g(data, &key_ctx);
+                break;
+
+            case CERT_KEY_PROV_INFO_PROP_ID:
+                WINE_WARN("Leaving a hole in the struct.\n");
+                CRYPT_KEY_PROV_INFO_h2g(data, data);
+                break;
+        }
     }
 #endif
 }
