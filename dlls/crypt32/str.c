@@ -237,7 +237,8 @@ struct qemu_CertStrToNameW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CertStrToNameW(DWORD dwCertEncodingType, LPCWSTR pszX500, DWORD dwStrType, void *pvReserved, BYTE *pbEncoded, DWORD *pcbEncoded, LPCWSTR *ppszError)
+WINBASEAPI BOOL WINAPI CertStrToNameW(DWORD dwCertEncodingType, LPCWSTR pszX500, DWORD dwStrType, void *pvReserved,
+        BYTE *pbEncoded, DWORD *pcbEncoded, LPCWSTR *ppszError)
 {
     struct qemu_CertStrToNameW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTSTRTONAMEW);
@@ -250,6 +251,8 @@ WINBASEAPI BOOL WINAPI CertStrToNameW(DWORD dwCertEncodingType, LPCWSTR pszX500,
     call.ppszError = (ULONG_PTR)ppszError;
 
     qemu_syscall(&call.super);
+    if (ppszError)
+        *ppszError = (const WCHAR *)(ULONG_PTR)call.ppszError;
 
     return call.super.iret;
 }
@@ -259,8 +262,13 @@ WINBASEAPI BOOL WINAPI CertStrToNameW(DWORD dwCertEncodingType, LPCWSTR pszX500,
 void qemu_CertStrToNameW(struct qemu_syscall *call)
 {
     struct qemu_CertStrToNameW *c = (struct qemu_CertStrToNameW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertStrToNameW(c->dwCertEncodingType, QEMU_G2H(c->pszX500), c->dwStrType, QEMU_G2H(c->pvReserved), QEMU_G2H(c->pbEncoded), QEMU_G2H(c->pcbEncoded), QEMU_G2H(c->ppszError));
+    const WCHAR *error;
+
+    WINE_TRACE("\n");
+    c->super.iret = CertStrToNameW(c->dwCertEncodingType, QEMU_G2H(c->pszX500), c->dwStrType,
+            QEMU_G2H(c->pvReserved), QEMU_G2H(c->pbEncoded), QEMU_G2H(c->pcbEncoded),
+            c->ppszError ? &error : NULL);
+    c->ppszError = QEMU_H2G(error);
 }
 
 #endif
