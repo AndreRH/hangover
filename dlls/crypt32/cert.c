@@ -1015,7 +1015,8 @@ struct qemu_CertGetSubjectCertificateFromStore
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI PCCERT_CONTEXT WINAPI CertGetSubjectCertificateFromStore(HCERTSTORE hCertStore, DWORD dwCertEncodingType, PCERT_INFO pCertId)
+WINBASEAPI PCCERT_CONTEXT WINAPI CertGetSubjectCertificateFromStore(HCERTSTORE hCertStore, DWORD dwCertEncodingType,
+        PCERT_INFO pCertId)
 {
     struct qemu_CertGetSubjectCertificateFromStore call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTGETSUBJECTCERTIFICATEFROMSTORE);
@@ -1033,8 +1034,30 @@ WINBASEAPI PCCERT_CONTEXT WINAPI CertGetSubjectCertificateFromStore(HCERTSTORE h
 void qemu_CertGetSubjectCertificateFromStore(struct qemu_syscall *call)
 {
     struct qemu_CertGetSubjectCertificateFromStore *c = (struct qemu_CertGetSubjectCertificateFromStore *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(CertGetSubjectCertificateFromStore(cert_store_g2h(c->hCertStore), c->dwCertEncodingType, QEMU_G2H(c->pCertId)));
+    CERT_INFO stack, *info = &stack;
+    const CERT_CONTEXT *context;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->pCertId);
+#else
+    if (c->pCertId)
+        CERT_INFO_g2h(info, QEMU_G2H(c->pCertId));
+    else
+        info = NULL;
+#endif
+
+    context = CertGetSubjectCertificateFromStore(cert_store_g2h(c->hCertStore), c->dwCertEncodingType, info);
+
+#if GUEST_BIT != HOST_BIT
+    if (context)
+    {
+        WINE_FIXME("This probably leaks memory\n");
+        context = (CERT_CONTEXT *)context32_create(context);
+    }
+#endif
+
+    c->super.iret = QEMU_H2G(context);
 }
 
 #endif
