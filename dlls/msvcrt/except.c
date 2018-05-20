@@ -588,14 +588,21 @@ void qemu___cxxframehandler(struct qemu_syscall *c)
 
 #endif
 
+struct qemu__setjmp
+{
+    struct qemu_syscall super;
+    uint64_t str;
+};
+
 #ifdef QEMU_DLL_GUEST
 
-void CDECL MSVCRT__setjmp_log()
+void CDECL MSVCRT__setjmp_log(const char *str)
 {
-    struct qemu_syscall call;
-    call.id = QEMU_SYSCALL_ID(CALL__SETJMP);
+    struct qemu__setjmp call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__SETJMP);
+    call.str = (ULONG_PTR)str;
 
-    qemu_syscall(&call);
+    qemu_syscall(&call.super);
 }
 
 #ifdef _WIN64
@@ -727,6 +734,7 @@ __ASM_GLOBAL_FUNC( longjmp_set_regs,
 DEFINE_SETJMP_ENTRYPOINT(MSVCRT__setjmp)
 int CDECL __regs_MSVCRT__setjmp(struct MSVCRT___JUMP_BUFFER *jmp)
 {
+    MSVCRT__setjmp_log("setjmp");
     jmp->Registration = (unsigned long)((NT_TIB *)NtCurrentTeb())->ExceptionList;
     if (jmp->Registration == ~0UL)
         jmp->TryLevel = TRYLEVEL_END;
@@ -739,12 +747,15 @@ int CDECL __regs_MSVCRT__setjmp(struct MSVCRT___JUMP_BUFFER *jmp)
     return 0;
 }
 
+int CDECL MSVCRT_sprintf(char *str, const char *format, ...);
+
 /*******************************************************************
  *        _setjmp3 (MSVCRT.@)
  */
 DEFINE_SETJMP_ENTRYPOINT( MSVCRT__setjmp3 )
 int WINAPIV __regs_MSVCRT__setjmp3(struct MSVCRT___JUMP_BUFFER *jmp, int nb_args, ...)
 {
+    static char blob[4096];
     jmp->Cookie = MSVCRT_JMP_MAGIC;
     jmp->UnwindFunc = 0;
     jmp->Registration = (unsigned long)((NT_TIB *)NtCurrentTeb())->ExceptionList;
@@ -766,8 +777,9 @@ int WINAPIV __regs_MSVCRT__setjmp3(struct MSVCRT___JUMP_BUFFER *jmp, int nb_args
         va_end( args );
     }
 
-    /*TRACE("buf=%p ebx=%08lx esi=%08lx edi=%08lx ebp=%08lx esp=%08lx eip=%08lx frame=%08lx\n",
-          jmp, jmp->Ebx, jmp->Esi, jmp->Edi, jmp->Ebp, jmp->Esp, jmp->Eip, jmp->Registration );*/
+    MSVCRT_sprintf(blob, "setjmp3 buf=%p ebx=%08lx esi=%08lx edi=%08lx ebp=%08lx esp=%08lx eip=%08lx frame=%08lx, unwind=%08lx\n",
+           jmp, jmp->Ebx, jmp->Esi, jmp->Edi, jmp->Ebp, jmp->Esp, jmp->Eip, jmp->Registration, jmp->UnwindFunc);
+    MSVCRT__setjmp_log(blob);
 
     return 0;
 }
@@ -776,10 +788,11 @@ int WINAPIV __regs_MSVCRT__setjmp3(struct MSVCRT___JUMP_BUFFER *jmp, int nb_args
 
 #else
 
-void qemu__setjmp(struct qemu_syscall *c)
+void qemu__setjmp(struct qemu_syscall *call)
 {
+    struct qemu__setjmp *c = (struct qemu__setjmp *)call;
     /* Only called for the purpose of writing something in the trace. */
-    WINE_TRACE("\n");
+    WINE_TRACE("%s\n", (char *)QEMU_G2H(c->str));
 }
 
 #endif
@@ -812,6 +825,12 @@ void qemu__xcptfilter(struct qemu_syscall *c)
 
 #endif
 
+struct qemu_longjmp
+{
+    struct qemu_syscall super;
+    uint64_t str;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 #ifdef _WIN64
@@ -843,12 +862,17 @@ __ASM_GLOBAL_FUNC( longjmp_set_regs,
 
 #endif
 
-void __cdecl MSVCRT_longjmp(void *jmp, int retval)
+void __cdecl MSVCRT_longjmp(struct MSVCRT___JUMP_BUFFER *jmp, int retval)
 {
-    struct qemu_syscall call;
-    call.id = QEMU_SYSCALL_ID(CALL_LONGJMP);
+    struct qemu_longjmp call;
+    static char blob[4096];
 
-    qemu_syscall(&call);
+    MSVCRT_sprintf(blob, "buf=%p ebx=%08lx esi=%08lx edi=%08lx ebp=%08lx esp=%08lx eip=%08lx frame=%08lx, unwind=%08lx\n",
+           jmp, jmp->Ebx, jmp->Esi, jmp->Edi, jmp->Ebp, jmp->Esp, jmp->Eip, jmp->Registration, jmp->UnwindFunc);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_LONGJMP);
+    call.str = (ULONG_PTR)blob;
+    qemu_syscall(&call.super);
 
     /* FIXME: jmp->frame. */
 
@@ -859,10 +883,11 @@ void __cdecl MSVCRT_longjmp(void *jmp, int retval)
 
 #else
 
-void qemu_longjmp(struct qemu_syscall *c)
+void qemu_longjmp(struct qemu_syscall *call)
 {
+    struct qemu_longjmp *c = (struct qemu_longjmp *)call;
     /* Only called for the purpose of writing something in the trace. */
-    WINE_FIXME("\n");
+    WINE_FIXME("%s\n", (char *)QEMU_G2H(c->str));
 }
 
 #endif
