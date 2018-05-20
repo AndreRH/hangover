@@ -1220,7 +1220,8 @@ struct qemu_CertVerifyRevocation
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI WINBOOL WINAPI CertVerifyRevocation(DWORD dwEncodingType, DWORD dwRevType, DWORD cContext, PVOID rgpvContext[], DWORD dwFlags, PCERT_REVOCATION_PARA pRevPara, PCERT_REVOCATION_STATUS pRevStatus)
+WINBASEAPI WINBOOL WINAPI CertVerifyRevocation(DWORD dwEncodingType, DWORD dwRevType, DWORD cContext,
+        PVOID rgpvContext[], DWORD dwFlags, PCERT_REVOCATION_PARA pRevPara, PCERT_REVOCATION_STATUS pRevStatus)
 {
     struct qemu_CertVerifyRevocation call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTVERIFYREVOCATION);
@@ -1242,8 +1243,39 @@ WINBASEAPI WINBOOL WINAPI CertVerifyRevocation(DWORD dwEncodingType, DWORD dwRev
 void qemu_CertVerifyRevocation(struct qemu_syscall *call)
 {
     struct qemu_CertVerifyRevocation *c = (struct qemu_CertVerifyRevocation *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertVerifyRevocation(c->dwEncodingType, c->dwRevType, c->cContext, QEMU_G2H(c->rgpvContext), c->dwFlags, QEMU_G2H(c->pRevPara), QEMU_G2H(c->pRevStatus));
+    const CERT_CONTEXT **certs = NULL;
+    struct qemu_cert_context *context32;
+    qemu_ptr *certs32;
+    DWORD count, i;
+
+    WINE_FIXME("unfinished\n");
+    count = c->cContext;
+
+#if GUEST_BIT == HOST_BIT
+    certs = QEMU_G2H(c->rgpvContext);
+#else
+    /* FIXME: Is it always an array of contexts? The actual implementation looks up DLLs in the registry... */
+    certs32 = QEMU_G2H(c->rgpvContext);
+    if (certs32)
+    {
+        certs = HeapAlloc(GetProcessHeap(), 0, sizeof(*certs) * count);
+        if (!certs)
+            WINE_ERR("Out of memory\n");
+
+        for (i = 0; i < count; ++i)
+        {
+            context32 = context_impl_from_context32((uint64_t)certs32[i]);
+            certs[i] = context32 ? context32->cert64 : NULL;
+        }
+    }
+#endif
+
+    c->super.iret = CertVerifyRevocation(c->dwEncodingType, c->dwRevType, count, (void **)certs,
+            c->dwFlags, QEMU_G2H(c->pRevPara), QEMU_G2H(c->pRevStatus));
+
+#if GUEST_BIT != HOST_BIT
+    HeapFree(GetProcessHeap(), 0, certs);
+#endif
 }
 
 #endif
