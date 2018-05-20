@@ -234,6 +234,8 @@ enum crypt32_calls
 
 #else
 
+#include <wine/rbtree.h>
+
 extern const struct qemu_ops *qemu_ops;
 
 void qemu_CertAddCRLContextToStore(struct qemu_syscall *call);
@@ -424,9 +426,11 @@ struct qemu_cert_context
     struct qemu_CERT_INFO cert_info;
     const CERT_CONTEXT *cert64;
     ULONG ref;
+    struct wine_rb_entry entry;
 };
 
 struct qemu_cert_context *context32_create(const CERT_CONTEXT *cert64);
+void context32_decref(struct qemu_cert_context *context);
 
 static inline struct qemu_cert_context *context_impl_from_context32(struct qemu_CERT_CONTEXT *cert32)
 {

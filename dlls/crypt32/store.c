@@ -217,12 +217,7 @@ void qemu_CertEnumCertificatesInStore(struct qemu_syscall *call)
 
 #if GUEST_BIT != HOST_BIT
     if (context)
-    {
-        /* This allocates new wrapper contexts for the enumerated ones. The test never frees the
-         * enumerated contexts. */
         context = (CERT_CONTEXT *)context32_create(context);
-        WINE_FIXME("This probably leaks memory?\n");
-    }
 #endif
 
     c->super.iret = QEMU_H2G(context);

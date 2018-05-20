@@ -1083,6 +1083,21 @@ static const BYTE selfSignedCert[] =
     0xa8, 0x76, 0x57, 0x92, 0x36
 };
 
+static CRITICAL_SECTION ctx_cs;
+static struct wine_rb_tree ctx_tree;
+
+static int ctx_compare(const void *key, const struct wine_rb_entry *entry)
+{
+    const struct qemu_cert_context *cert = WINE_RB_ENTRY_VALUE(entry, struct qemu_cert_context, entry);
+
+    if ((ULONG_PTR)cert->cert64 < (ULONG_PTR)key)
+        return -1;
+    else if ((ULONG_PTR)cert->cert64 == (ULONG_PTR)key)
+        return 0;
+    else
+        return 1;
+}
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     WINE_TRACE("Loading host-side crypt32 wrapper.\n");
@@ -1107,6 +1122,9 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     empty_store_replace = (ULONG_PTR)HeapAlloc(GetProcessHeap(), 0, 0);
 
     CertFreeCertificateContext(context);
+
+    InitializeCriticalSection(&ctx_cs);
+    wine_rb_init(&ctx_tree, ctx_compare);
 #endif
 
     return dll_functions;
@@ -1114,7 +1132,23 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
 
 struct qemu_cert_context *context32_create(const CERT_CONTEXT *cert64)
 {
-    struct qemu_cert_context *ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+    struct qemu_cert_context *ret;
+    struct wine_rb_entry *entry;
+
+    EnterCriticalSection(&ctx_cs);
+    entry = wine_rb_get(&ctx_tree, cert64);
+    if (entry)
+    {
+        ret = WINE_RB_ENTRY_VALUE(entry, struct qemu_cert_context, entry);
+        LeaveCriticalSection(&ctx_cs);
+
+        InterlockedIncrement(&ret->ref);
+
+        WINE_TRACE("Found existing wrapper %p for ctx %p.\n", ret, cert64);
+        return ret;
+    }
+
+    ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
     if (!ret)
         WINE_ERR("Out of memory\n");
     ret->cert64 = cert64;
@@ -1126,7 +1160,32 @@ struct qemu_cert_context *context32_create(const CERT_CONTEXT *cert64)
 
     CERT_INFO_h2g(&ret->cert_info, cert64->pCertInfo);
     ret->cert32.pCertInfo = QEMU_H2G(&ret->cert_info);
+
+    /* We have to be able to recognize pointers we already passed to the app, (a) because the tests
+     * check for equality and (b) because many getters return pointers into key stores that the
+     * caller doesn't release.
+     *
+     * Unfortunately we cannot use CERT_FIRST_USER_PROP_ID (or higher values) because Wine doesn't
+     * implement them and my simple attempt at implementing them lead them to be serialized into
+     * certificate blobs, breaking the tests. */
+    WINE_TRACE("Put wrapper %p for ctx %p.\n", ret, cert64);
+    wine_rb_put(&ctx_tree, cert64, &ret->entry);
+
+    LeaveCriticalSection(&ctx_cs);
     return ret;
+}
+
+void context32_decref(struct qemu_cert_context *context)
+{
+    if (InterlockedDecrement(&context->ref) == 0)
+    {
+        WINE_TRACE("Freeing CERT_CONTEXT wrapper %p.\n", context);
+        EnterCriticalSection(&ctx_cs);
+        wine_rb_remove(&ctx_tree, &context->entry);
+        LeaveCriticalSection(&ctx_cs);
+
+        HeapFree(GetProcessHeap(), 0, context);
+    }
 }
 
 HCERTSTORE cert_store_g2h(uint64_t store)

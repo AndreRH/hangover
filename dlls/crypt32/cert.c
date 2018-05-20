@@ -380,12 +380,7 @@ void qemu_CertFreeCertificateContext(struct qemu_syscall *call)
     }
 
     c->super.iret = CertFreeCertificateContext(context32->cert64);
-
-    if (InterlockedDecrement(&context32->ref) == 0)
-    {
-        WINE_TRACE("Freeing CERT_CONTEXT wrapper %p.\n", context32);
-        HeapFree(GetProcessHeap(), 0, context32);
-    }
+    context32_decref(context32);
 }
 
 #endif
@@ -994,10 +989,7 @@ void qemu_CertFindCertificateInStore(struct qemu_syscall *call)
 
 #if GUEST_BIT != HOST_BIT
     if (context)
-    {
-        WINE_FIXME("This probably leaks memory\n");
         context = (CERT_CONTEXT *)context32_create(context);
-    }
 #endif
 
     c->super.iret = QEMU_H2G(context);
@@ -1051,10 +1043,7 @@ void qemu_CertGetSubjectCertificateFromStore(struct qemu_syscall *call)
 
 #if GUEST_BIT != HOST_BIT
     if (context)
-    {
-        WINE_FIXME("This probably leaks memory\n");
         context = (CERT_CONTEXT *)context32_create(context);
-    }
 #endif
 
     c->super.iret = QEMU_H2G(context);
