@@ -1009,6 +1009,8 @@ WINBASEAPI BOOL WINAPI CryptGetUserKey (HCRYPTPROV hProv, DWORD dwKeySpec, HCRYP
     call.phUserKey = (ULONG_PTR)phUserKey;
 
     qemu_syscall(&call.super);
+    if (call.super.iret)
+        *phUserKey = (HCRYPTKEY)(ULONG_PTR)call.phUserKey;
 
     return call.super.iret;
 }
@@ -1018,8 +1020,11 @@ WINBASEAPI BOOL WINAPI CryptGetUserKey (HCRYPTPROV hProv, DWORD dwKeySpec, HCRYP
 void qemu_CryptGetUserKey(struct qemu_syscall *call)
 {
     struct qemu_CryptGetUserKey *c = (struct qemu_CryptGetUserKey *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptGetUserKey(c->hProv, c->dwKeySpec, QEMU_G2H(c->phUserKey));
+    HCRYPTKEY key;
+
+    WINE_TRACE("\n");
+    c->super.iret = CryptGetUserKey(c->hProv, c->dwKeySpec, c->phUserKey ? &key : NULL);
+    c->phUserKey = QEMU_H2G(key);
 }
 
 #endif
