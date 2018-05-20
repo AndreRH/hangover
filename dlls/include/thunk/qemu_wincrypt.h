@@ -230,4 +230,27 @@ static inline void CRYPT_KEY_PROV_INFO_h2g(struct qemu_CRYPT_KEY_PROV_INFO *gues
     guest->dwKeySpec = host->dwKeySpec;
 }
 
+struct qemu_CERT_SIGNED_CONTENT_INFO
+{
+    struct qemu_CRYPT_DATA_BLOB             ToBeSigned;
+    struct qemu_CRYPT_ALGORITHM_IDENTIFIER  SignatureAlgorithm;
+    struct qemu_CRYPT_BIT_BLOB              Signature;
+};
+
+static inline void CERT_SIGNED_CONTENT_INFO_g2h(CERT_SIGNED_CONTENT_INFO *host,
+        const struct qemu_CERT_SIGNED_CONTENT_INFO *guest)
+{
+    CRYPT_DATA_BLOB_g2h(&host->ToBeSigned, &guest->ToBeSigned);
+    CRYPT_ALGORITHM_IDENTIFIER_g2h(&host->SignatureAlgorithm, &guest->SignatureAlgorithm);
+    CRYPT_BIT_BLOB_g2h(&host->Signature, &guest->Signature);
+}
+
+static inline void CERT_SIGNED_CONTENT_INFO_h2g(struct qemu_CERT_SIGNED_CONTENT_INFO *guest,
+        const CERT_SIGNED_CONTENT_INFO *host)
+{
+    CRYPT_DATA_BLOB_h2g(&guest->ToBeSigned, &host->ToBeSigned);
+    CRYPT_ALGORITHM_IDENTIFIER_h2g(&guest->SignatureAlgorithm, &host->SignatureAlgorithm);
+    CRYPT_BIT_BLOB_h2g(&guest->Signature, &host->Signature);
+}
+
 #endif

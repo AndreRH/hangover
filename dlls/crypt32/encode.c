@@ -30,6 +30,7 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <wine/exception.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_crypt32);
 #endif
 
@@ -85,7 +86,8 @@ struct qemu_CryptEncodeObjectEx
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptEncodeObjectEx(DWORD dwCertEncodingType, LPCSTR lpszStructType, const void *pvStructInfo, DWORD dwFlags, PCRYPT_ENCODE_PARA pEncodePara, void *pvEncoded, DWORD *pcbEncoded)
+WINBASEAPI BOOL WINAPI CryptEncodeObjectEx(DWORD dwCertEncodingType, LPCSTR lpszStructType, const void *pvStructInfo,
+        DWORD dwFlags, PCRYPT_ENCODE_PARA pEncodePara, void *pvEncoded, DWORD *pcbEncoded)
 {
     struct qemu_CryptEncodeObjectEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTENCODEOBJECTEX);
@@ -98,6 +100,8 @@ WINBASEAPI BOOL WINAPI CryptEncodeObjectEx(DWORD dwCertEncodingType, LPCSTR lpsz
     call.pcbEncoded = (ULONG_PTR)pcbEncoded;
 
     qemu_syscall(&call.super);
+    if (pvEncoded && dwFlags & CRYPT_ENCODE_ALLOC_FLAG)
+        *(BYTE **)pvEncoded = (BYTE *)(ULONG_PTR)call.pvEncoded;
 
     return call.super.iret;
 }
@@ -107,8 +111,64 @@ WINBASEAPI BOOL WINAPI CryptEncodeObjectEx(DWORD dwCertEncodingType, LPCSTR lpsz
 void qemu_CryptEncodeObjectEx(struct qemu_syscall *call)
 {
     struct qemu_CryptEncodeObjectEx *c = (struct qemu_CryptEncodeObjectEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptEncodeObjectEx(c->dwCertEncodingType, QEMU_G2H(c->lpszStructType), QEMU_G2H(c->pvStructInfo), c->dwFlags, QEMU_G2H(c->pEncodePara), QEMU_G2H(c->pvEncoded), QEMU_G2H(c->pcbEncoded));
+    BYTE *encode_dst;
+    void *encoded, *info;
+    const char *type;
+    BOOL success = FALSE;
+    CERT_SIGNED_CONTENT_INFO cert_info;
+
+    WINE_TRACE("\n");
+    info = QEMU_G2H(c->pvStructInfo);
+    type = QEMU_G2H(c->lpszStructType);
+    encoded = QEMU_G2H(c->pvEncoded);
+    if (c->dwFlags & CRYPT_ENCODE_ALLOC_FLAG && encoded)
+        encoded = &encode_dst;
+
+#if GUEST_BIT == HOST_BIT
+    /* Boring */
+#else
+    if (c->pEncodePara)
+        WINE_FIXME("Encode parameter not supported yet\n");
+
+    __TRY
+    {
+        if (IS_INTOID(type))
+        {
+            switch (LOWORD(type))
+            {
+                case LOWORD(X509_CERT):
+                    CERT_SIGNED_CONTENT_INFO_g2h(&cert_info, info);
+                    info = &cert_info;
+                    success = TRUE;
+                    break;
+
+                default:
+                    WINE_FIXME("Unhandled struct type.\n");
+                    success = TRUE; /* Try my luck */
+            }
+        }
+        else
+        {
+            WINE_FIXME("String struct types not handled yet.\n");
+            WINE_FIXME("Type is \"%s\"\n", type);
+            success = TRUE; /* Try my luck */
+        }
+    }
+    __EXCEPT_PAGE_FAULT
+    {
+        SetLastError(STATUS_ACCESS_VIOLATION);
+        c->super.iret = FALSE;
+    }
+    __ENDTRY
+    if (!success)
+        return;
+#endif
+
+    c->super.iret = CryptEncodeObjectEx(c->dwCertEncodingType, QEMU_G2H(c->lpszStructType),
+            info, c->dwFlags, QEMU_G2H(c->pEncodePara), encoded,
+            QEMU_G2H(c->pcbEncoded));
+
+    c->pvEncoded = QEMU_H2G(encode_dst);
 }
 
 #endif

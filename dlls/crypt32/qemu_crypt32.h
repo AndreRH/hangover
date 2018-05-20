@@ -230,6 +230,9 @@ enum crypt32_calls
     CALL_PFXVERIFYPASSWORD,
 };
 
+/* Taken from crypt32_private.h */
+#define IS_INTOID(x)    (((ULONG_PTR)(x) >> 16) == 0)
+
 #ifdef QEMU_DLL_GUEST
 
 #else
