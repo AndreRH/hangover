@@ -2114,7 +2114,8 @@ struct qemu_CertGetValidUsages
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CertGetValidUsages(DWORD cCerts, PCCERT_CONTEXT *rghCerts, int *cNumOIDs, LPSTR *rghOIDs, DWORD *pcbOIDs)
+WINBASEAPI BOOL WINAPI CertGetValidUsages(DWORD cCerts, PCCERT_CONTEXT *rghCerts, int *cNumOIDs,
+        LPSTR *rghOIDs, DWORD *pcbOIDs)
 {
     struct qemu_CertGetValidUsages call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTGETVALIDUSAGES);
@@ -2134,8 +2135,46 @@ WINBASEAPI BOOL WINAPI CertGetValidUsages(DWORD cCerts, PCCERT_CONTEXT *rghCerts
 void qemu_CertGetValidUsages(struct qemu_syscall *call)
 {
     struct qemu_CertGetValidUsages *c = (struct qemu_CertGetValidUsages *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertGetValidUsages(c->cCerts, QEMU_G2H(c->rghCerts), QEMU_G2H(c->cNumOIDs), QEMU_G2H(c->rghOIDs), QEMU_G2H(c->pcbOIDs));
+    const CERT_CONTEXT **contexts = NULL;
+    struct qemu_cert_context *context32;
+    qemu_ptr *contexts32;
+    DWORD count, i;
+    char **oids;
+
+    WINE_TRACE("\n");
+    count = c->cCerts;
+    oids = QEMU_G2H(c->rghOIDs);
+#if GUEST_BIT == HOST_BIT
+    contexts = QEMU_G2H(c->rghCerts);
+#else
+    contexts32 = QEMU_G2H(c->rghCerts);
+
+    if (count && contexts32)
+    {
+        contexts = HeapAlloc(GetProcessHeap(), 0, sizeof(*contexts) * count);
+        if (!contexts)
+            WINE_ERR("Out of memory\n");
+
+        for (i = 0; i < count; ++i)
+        {
+            context32 = context_impl_from_context32(QEMU_G2H((uint64_t)contexts32[i]));
+            contexts[i] = context32 ? context32->cert64 : NULL;
+        }
+    }
+#endif
+
+    c->super.iret = CertGetValidUsages(count, contexts, QEMU_G2H(c->cNumOIDs), oids, QEMU_G2H(c->pcbOIDs));
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret && oids)
+    {
+        qemu_ptr *array32 = (void *)oids;
+        count = *((DWORD *)QEMU_G2H(c->cNumOIDs));
+        for (i = 0; i < count; ++i)
+            array32[i] = QEMU_H2G(oids[i]);
+    }
+    HeapFree(GetProcessHeap(), 0, contexts);
+#endif
 }
 
 #endif
