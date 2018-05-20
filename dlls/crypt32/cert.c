@@ -929,12 +929,12 @@ WINBASEAPI PCCERT_CONTEXT WINAPI CertFindCertificateInStore(HCERTSTORE hCertStor
 void qemu_CertFindCertificateInStore(struct qemu_syscall *call)
 {
     struct qemu_CertFindCertificateInStore *c = (struct qemu_CertFindCertificateInStore *)call;
-    void *param;
+    const void *param;
     DWORD type;
     CRYPT_DATA_BLOB blob;
     CERT_INFO ci;
     const CERT_CONTEXT *context;
-    struct qemu_cert_context *context32;
+    struct qemu_cert_context *context32, *compare32;
 
     WINE_TRACE("\n");
 
@@ -978,7 +978,8 @@ void qemu_CertFindCertificateInStore(struct qemu_syscall *call)
 
             case CERT_COMPARE_ISSUER_OF:
             case CERT_COMPARE_EXISTING:
-                WINE_FIXME("CERT_CONTEXT conversion not implemented\n");
+                context32 = QEMU_G2H(param);
+                param = context32->cert64;
                 break;
 
             default:
