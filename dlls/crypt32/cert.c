@@ -222,7 +222,8 @@ struct qemu_CertAddCertificateLinkToStore
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CertAddCertificateLinkToStore(HCERTSTORE hCertStore, PCCERT_CONTEXT pCertContext, DWORD dwAddDisposition, PCCERT_CONTEXT *ppCertContext)
+WINBASEAPI BOOL WINAPI CertAddCertificateLinkToStore(HCERTSTORE hCertStore, PCCERT_CONTEXT pCertContext,
+        DWORD dwAddDisposition, PCCERT_CONTEXT *ppCertContext)
 {
     struct qemu_CertAddCertificateLinkToStore call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTADDCERTIFICATELINKTOSTORE);
@@ -232,6 +233,8 @@ WINBASEAPI BOOL WINAPI CertAddCertificateLinkToStore(HCERTSTORE hCertStore, PCCE
     call.ppCertContext = (ULONG_PTR)ppCertContext;
 
     qemu_syscall(&call.super);
+    if (call.super.iret && ppCertContext)
+        *ppCertContext = (const CERT_CONTEXT *)(ULONG_PTR)call.ppCertContext;
 
     return call.super.iret;
 }
@@ -241,8 +244,26 @@ WINBASEAPI BOOL WINAPI CertAddCertificateLinkToStore(HCERTSTORE hCertStore, PCCE
 void qemu_CertAddCertificateLinkToStore(struct qemu_syscall *call)
 {
     struct qemu_CertAddCertificateLinkToStore *c = (struct qemu_CertAddCertificateLinkToStore *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertAddCertificateLinkToStore(cert_store_g2h(c->hCertStore), QEMU_G2H(c->pCertContext), c->dwAddDisposition, QEMU_G2H(c->ppCertContext));
+    const CERT_CONTEXT *cert_in, *cert_out = NULL;
+    struct qemu_cert_context *cert32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    cert_in = QEMU_G2H(c->pCertContext);
+#else
+    cert32 = QEMU_G2H(c->pCertContext);
+    cert_in = cert32 ? cert32->cert64 : NULL;
+#endif
+
+    c->super.iret = CertAddCertificateLinkToStore(cert_store_g2h(c->hCertStore), cert_in,
+            c->dwAddDisposition, c->ppCertContext ? &cert_out : NULL);
+
+#if GUEST_BIT != HOST_BIT
+    if (cert_out)
+        cert_out = (CERT_CONTEXT *)context32_create(cert_out);
+#endif
+
+    c->ppCertContext = QEMU_H2G(cert_out);
 }
 
 #endif
