@@ -1153,7 +1153,8 @@ struct qemu_CryptSignHashW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptSignHashW (HCRYPTHASH hHash, DWORD dwKeySpec, LPCWSTR sDescription, DWORD dwFlags, BYTE *pbSignature, DWORD *pdwSigLen)
+WINBASEAPI BOOL WINAPI CryptSignHashW (HCRYPTHASH hHash, DWORD dwKeySpec, LPCWSTR sDescription, DWORD dwFlags,
+        BYTE *pbSignature, DWORD *pdwSigLen)
 {
     struct qemu_CryptSignHashW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSIGNHASHW);
@@ -1174,8 +1175,9 @@ WINBASEAPI BOOL WINAPI CryptSignHashW (HCRYPTHASH hHash, DWORD dwKeySpec, LPCWST
 void qemu_CryptSignHashW(struct qemu_syscall *call)
 {
     struct qemu_CryptSignHashW *c = (struct qemu_CryptSignHashW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptSignHashW(c->hHash, c->dwKeySpec, QEMU_G2H(c->sDescription), c->dwFlags, QEMU_G2H(c->pbSignature), QEMU_G2H(c->pdwSigLen));
+    WINE_TRACE("\n");
+    c->super.iret = CryptSignHashW(c->hHash, c->dwKeySpec, QEMU_G2H(c->sDescription), c->dwFlags,
+            QEMU_G2H(c->pbSignature), QEMU_G2H(c->pdwSigLen));
 }
 
 #endif
@@ -1193,7 +1195,8 @@ struct qemu_CryptSignHashA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptSignHashA (HCRYPTHASH hHash, DWORD dwKeySpec, LPCSTR sDescription, DWORD dwFlags, BYTE *pbSignature, DWORD *pdwSigLen)
+WINBASEAPI BOOL WINAPI CryptSignHashA (HCRYPTHASH hHash, DWORD dwKeySpec, LPCSTR sDescription,
+        DWORD dwFlags, BYTE *pbSignature, DWORD *pdwSigLen)
 {
     struct qemu_CryptSignHashA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSIGNHASHA);
@@ -1214,8 +1217,9 @@ WINBASEAPI BOOL WINAPI CryptSignHashA (HCRYPTHASH hHash, DWORD dwKeySpec, LPCSTR
 void qemu_CryptSignHashA(struct qemu_syscall *call)
 {
     struct qemu_CryptSignHashA *c = (struct qemu_CryptSignHashA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptSignHashA(c->hHash, c->dwKeySpec, QEMU_G2H(c->sDescription), c->dwFlags, QEMU_G2H(c->pbSignature), QEMU_G2H(c->pdwSigLen));
+    WINE_TRACE("\n");
+    c->super.iret = CryptSignHashA(c->hHash, c->dwKeySpec, QEMU_G2H(c->sDescription), c->dwFlags,
+            QEMU_G2H(c->pbSignature), QEMU_G2H(c->pdwSigLen));
 }
 
 #endif
