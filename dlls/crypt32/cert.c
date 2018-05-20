@@ -750,8 +750,38 @@ WINBASEAPI BOOL WINAPI CertCompareCertificate(DWORD dwCertEncodingType, PCERT_IN
 void qemu_CertCompareCertificate(struct qemu_syscall *call)
 {
     struct qemu_CertCompareCertificate *c = (struct qemu_CertCompareCertificate *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertCompareCertificate(c->dwCertEncodingType, QEMU_G2H(c->pCertId1), QEMU_G2H(c->pCertId2));
+    CERT_INFO s1, *info1 = &s1;
+    CERT_INFO s2, *info2 = &s2;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    info1 = QEMU_G2H(c->pCertId1);
+    info2 = QEMU_G2H(c->pCertId2);
+#else
+    if (c->pCertId1)
+    {
+        CERT_INFO_g2h(info1, QEMU_G2H(c->pCertId1));
+        if (info1->cExtension && info1->rgExtension)
+            WINE_FIXME("Extension not handled\n");
+    }
+    else
+    {
+        info1 = NULL;
+    }
+
+    if (c->pCertId2)
+    {
+        CERT_INFO_g2h(info2, QEMU_G2H(c->pCertId2));
+        if (info2->cExtension && info2->rgExtension)
+            WINE_FIXME("Extension not handled\n");
+    }
+    else
+    {
+        info2 = NULL;
+    }
+#endif
+
+    c->super.iret = CertCompareCertificate(c->dwCertEncodingType, info1, info2);
 }
 
 #endif
