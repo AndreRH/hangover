@@ -245,7 +245,7 @@ void qemu_CertAddCertificateLinkToStore(struct qemu_syscall *call)
 {
     struct qemu_CertAddCertificateLinkToStore *c = (struct qemu_CertAddCertificateLinkToStore *)call;
     const CERT_CONTEXT *cert_in, *cert_out = NULL;
-    struct qemu_cert_context *cert32;
+    struct qemu_cert_context *cert32, *cert_out32;
 
     WINE_TRACE("\n");
 #if GUEST_BIT == HOST_BIT
@@ -260,7 +260,13 @@ void qemu_CertAddCertificateLinkToStore(struct qemu_syscall *call)
 
 #if GUEST_BIT != HOST_BIT
     if (cert_out)
-        cert_out = (CERT_CONTEXT *)context32_create(cert_out);
+    {
+        cert_out32 = context32_create(cert_out);
+        if (cert_out->pCertInfo == cert_in->pCertInfo)
+            cert_out32->cert32.pCertInfo = cert32->cert32.pCertInfo;
+
+        cert_out = (CERT_CONTEXT *)cert_out32;
+    }
 #endif
 
     c->ppCertContext = QEMU_H2G(cert_out);
