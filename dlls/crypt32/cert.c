@@ -894,8 +894,77 @@ WINBASEAPI PCCERT_CONTEXT WINAPI CertFindCertificateInStore(HCERTSTORE hCertStor
 void qemu_CertFindCertificateInStore(struct qemu_syscall *call)
 {
     struct qemu_CertFindCertificateInStore *c = (struct qemu_CertFindCertificateInStore *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(CertFindCertificateInStore(cert_store_g2h(c->hCertStore), c->dwCertEncodingType, c->dwFlags, c->dwType, QEMU_G2H(c->pvPara), QEMU_G2H(c->pPrevCertContext)));
+    void *param;
+    DWORD type;
+    CRYPT_DATA_BLOB blob;
+    CERT_INFO ci;
+    const CERT_CONTEXT *context;
+    struct qemu_cert_context *context32;
+
+    WINE_TRACE("\n");
+
+    type = c->dwType;
+    param = QEMU_G2H(c->pvPara);
+#if GUEST_BIT == HOST_BIT
+    context = QEMU_G2H(c->pPrevCertContext);
+#else
+    context32 = QEMU_G2H(c->pPrevCertContext);
+    context = context32 ? context32->cert64 : NULL;
+
+    if (param)
+    {
+        switch (type >> CERT_COMPARE_SHIFT)
+        {
+            case CERT_COMPARE_ANY: /* param ignored or a simple type */
+            case CERT_COMPARE_NAME_STR_A:
+            case CERT_COMPARE_NAME_STR_W:
+                break;
+
+            case CERT_COMPARE_MD5_HASH:
+            case CERT_COMPARE_SHA1_HASH:
+            case CERT_COMPARE_NAME:
+            case CERT_COMPARE_SIGNATURE_HASH:
+                CRYPT_DATA_BLOB_g2h(&blob, param);
+                param = &blob;
+                break;
+
+            case CERT_COMPARE_PUBLIC_KEY:
+                WINE_FIXME("CERT_COMPARE_PUBLIC_KEY conversion not implemented\n");
+                break;
+
+            case CERT_COMPARE_SUBJECT_CERT:
+                CERT_INFO_g2h(&ci, param);
+                param = &ci;
+                break;
+
+            case CERT_COMPARE_CERT_ID:
+                WINE_FIXME("CERT_ID conversion not implemented\n");
+                break;
+
+            case CERT_COMPARE_ISSUER_OF:
+            case CERT_COMPARE_EXISTING:
+                WINE_FIXME("CERT_CONTEXT conversion not implemented\n");
+                break;
+
+            default:
+                WINE_FIXME("Unknown compare type %x\n", type);
+                break;
+        }
+    }
+#endif
+
+    context = CertFindCertificateInStore(cert_store_g2h(c->hCertStore), c->dwCertEncodingType,
+            c->dwFlags, type, param, context);
+
+#if GUEST_BIT != HOST_BIT
+    if (context)
+    {
+        WINE_FIXME("This probably leaks memory\n");
+        context = (CERT_CONTEXT *)context32_create(context);
+    }
+#endif
+
+    c->super.iret = QEMU_H2G(context);
 }
 
 #endif
