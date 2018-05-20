@@ -2054,8 +2054,18 @@ WINBASEAPI BOOL WINAPI CertAddEnhancedKeyUsageIdentifier(PCCERT_CONTEXT pCertCon
 void qemu_CertAddEnhancedKeyUsageIdentifier(struct qemu_syscall *call)
 {
     struct qemu_CertAddEnhancedKeyUsageIdentifier *c = (struct qemu_CertAddEnhancedKeyUsageIdentifier *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertAddEnhancedKeyUsageIdentifier(QEMU_G2H(c->pCertContext), QEMU_G2H(c->pszUsageIdentifier));
+    const CERT_CONTEXT *context;
+    struct qemu_cert_context *context32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    context = QEMU_G2H(c->pCertContext);
+#else
+    context32 = context_impl_from_context32(QEMU_G2H(c->pCertContext));
+    context = context32 ? context32->cert64 : NULL;
+#endif
+
+    c->super.iret = CertAddEnhancedKeyUsageIdentifier(context, QEMU_G2H(c->pszUsageIdentifier));
 }
 
 #endif
