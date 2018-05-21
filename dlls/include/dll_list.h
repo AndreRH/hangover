@@ -32,6 +32,7 @@
 #define DLL_BCRYPT      0x1dLL
 #define DLL_CABINET     0x1eLL
 #define DLL_CRYPT32     0x1fLL
-#define DLL_D3D11       0x20LL
+#define DLL_DXGI        0x20LL
+#define DLL_D3D11       0x21LL
 
 #endif
