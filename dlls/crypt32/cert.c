@@ -1185,8 +1185,8 @@ void qemu_CertGetIssuerCertificateFromStore(struct qemu_syscall *call)
 
     WINE_TRACE("\n");
 #if GUEST_BIT == HOST_BIT
-    subject = QEMU_G2H(pSubjectContext);
-    issuer = QEMU_G2H(pPrevIssuerContext);
+    subject = QEMU_G2H(c->pSubjectContext);
+    issuer = QEMU_G2H(c->pPrevIssuerContext);
 #else
     context32 = context_impl_from_context32(QEMU_G2H(c->pSubjectContext));
     subject = context32 ? context32->cert64 : NULL;
