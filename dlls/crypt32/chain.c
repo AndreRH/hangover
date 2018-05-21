@@ -42,25 +42,59 @@ struct qemu_CertCreateCertificateChainEngine
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CertCreateCertificateChainEngine(PCERT_CHAIN_ENGINE_CONFIG pConfig, HCERTCHAINENGINE *phChainEngine)
+WINBASEAPI BOOL WINAPI CertCreateCertificateChainEngine(PCERT_CHAIN_ENGINE_CONFIG pConfig,
+        HCERTCHAINENGINE *phChainEngine)
 {
     struct qemu_CertCreateCertificateChainEngine call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTCREATECERTIFICATECHAINENGINE);
     call.pConfig = (ULONG_PTR)pConfig;
-    call.phChainEngine = (ULONG_PTR)phChainEngine;
 
     qemu_syscall(&call.super);
+    if (call.phChainEngine != 1)
+        *phChainEngine = (HCERTCHAINENGINE)(ULONG_PTR)call.phChainEngine;
 
     return call.super.iret;
 }
 
 #else
 
+struct qemu_CERT_CHAIN_ENGINE_CONFIG_NO_EXCLUSIVE_ROOT
+{
+    DWORD       cbSize;
+    qemu_ptr    hRestrictedRoot;
+    qemu_ptr    hRestrictedTrust;
+    qemu_ptr    hRestrictedOther;
+    DWORD       cAdditionalStore;
+    qemu_ptr    rghAdditionalStore;
+    DWORD       dwFlags;
+    DWORD       dwUrlRetrievalTimeout;
+    DWORD       MaximumCachedCertificates;
+    DWORD       CycleDetectionModulus;
+};
+
 void qemu_CertCreateCertificateChainEngine(struct qemu_syscall *call)
 {
     struct qemu_CertCreateCertificateChainEngine *c = (struct qemu_CertCreateCertificateChainEngine *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertCreateCertificateChainEngine(QEMU_G2H(c->pConfig), QEMU_G2H(c->phChainEngine));
+    HCERTCHAINENGINE engine = (HCERTCHAINENGINE)1; /* Assume we're not getting unaligned pointers */
+    CERT_CHAIN_ENGINE_CONFIG stack, *cfg = &stack;
+    struct qemu_CERT_CHAIN_ENGINE_CONFIG *cfg32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    cfg = QEMU_G2H(c->pConfig);
+#else
+    cfg32 = QEMU_G2H(c->pConfig);
+    if (!cfg32)
+        cfg = NULL;
+    else if(cfg32->cbSize != sizeof(*cfg32)
+            && cfg32->cbSize != sizeof(struct qemu_CERT_CHAIN_ENGINE_CONFIG_NO_EXCLUSIVE_ROOT))
+        cfg->cbSize = 0;
+    else
+        CERT_CHAIN_ENGINE_CONFIG_g2h(cfg, cfg32);
+#endif
+
+    c->super.iret = CertCreateCertificateChainEngine(cfg, &engine);
+    c->phChainEngine = QEMU_H2G(engine);
 }
 
 #endif
@@ -87,7 +121,7 @@ WINBASEAPI void WINAPI CertFreeCertificateChainEngine(HCERTCHAINENGINE hChainEng
 void qemu_CertFreeCertificateChainEngine(struct qemu_syscall *call)
 {
     struct qemu_CertFreeCertificateChainEngine *c = (struct qemu_CertFreeCertificateChainEngine *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     CertFreeCertificateChainEngine(QEMU_G2H(c->hChainEngine));
 }
 
@@ -108,7 +142,9 @@ struct qemu_CertGetCertificateChain
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CertGetCertificateChain(HCERTCHAINENGINE hChainEngine, PCCERT_CONTEXT pCertContext, LPFILETIME pTime, HCERTSTORE hAdditionalStore, PCERT_CHAIN_PARA pChainPara, DWORD dwFlags, LPVOID pvReserved, PCCERT_CHAIN_CONTEXT* ppChainContext)
+WINBASEAPI BOOL WINAPI CertGetCertificateChain(HCERTCHAINENGINE hChainEngine, PCCERT_CONTEXT pCertContext,
+        LPFILETIME pTime, HCERTSTORE hAdditionalStore, PCERT_CHAIN_PARA pChainPara, DWORD dwFlags,
+        LPVOID pvReserved, PCCERT_CHAIN_CONTEXT* ppChainContext)
 {
     struct qemu_CertGetCertificateChain call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTGETCERTIFICATECHAIN);
@@ -131,8 +167,31 @@ WINBASEAPI BOOL WINAPI CertGetCertificateChain(HCERTCHAINENGINE hChainEngine, PC
 void qemu_CertGetCertificateChain(struct qemu_syscall *call)
 {
     struct qemu_CertGetCertificateChain *c = (struct qemu_CertGetCertificateChain *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertGetCertificateChain(QEMU_G2H(c->hChainEngine), QEMU_G2H(c->pCertContext), QEMU_G2H(c->pTime), QEMU_G2H(c->hAdditionalStore), QEMU_G2H(c->pChainPara), c->dwFlags, QEMU_G2H(c->pvReserved), QEMU_G2H(c->ppChainContext));
+    const CERT_CONTEXT *context;
+    struct qemu_cert_context *context32;
+    struct qemu_CERT_CHAIN_PARA *para32;
+    CERT_CHAIN_PARA para_stack, *para = &para_stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    context = QEMU_G2H(c->pCertContext);
+    para = QEMU_G2H(c->pChainPara);
+#else
+    context32 = context_impl_from_context32(QEMU_G2H(c->pCertContext));
+    context = context32 ? context32->cert64 : NULL;
+
+    para32 = QEMU_G2H(c->pChainPara);
+    if (!para32)
+        para = NULL;
+    else if (para32->cbSize != sizeof(*para32))
+        para->cbSize = 0;
+    else
+        CERT_CHAIN_PARA_g2h(para, para32);
+#endif
+
+    c->super.iret = CertGetCertificateChain(QEMU_G2H(c->hChainEngine), context,
+            QEMU_G2H(c->pTime), QEMU_G2H(c->hAdditionalStore), para, c->dwFlags,
+            QEMU_G2H(c->pvReserved), QEMU_G2H(c->ppChainContext));
 }
 
 #endif
@@ -246,7 +305,8 @@ struct qemu_CertVerifyCertificateChainPolicy
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CertVerifyCertificateChainPolicy(LPCSTR szPolicyOID, PCCERT_CHAIN_CONTEXT pChainContext, PCERT_CHAIN_POLICY_PARA pPolicyPara, PCERT_CHAIN_POLICY_STATUS pPolicyStatus)
+WINBASEAPI BOOL WINAPI CertVerifyCertificateChainPolicy(LPCSTR szPolicyOID, PCCERT_CHAIN_CONTEXT pChainContext,
+        PCERT_CHAIN_POLICY_PARA pPolicyPara, PCERT_CHAIN_POLICY_STATUS pPolicyStatus)
 {
     struct qemu_CertVerifyCertificateChainPolicy call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTVERIFYCERTIFICATECHAINPOLICY);

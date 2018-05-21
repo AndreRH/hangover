@@ -274,4 +274,105 @@ static inline void CERT_SIGNED_CONTENT_INFO_h2g(struct qemu_CERT_SIGNED_CONTENT_
     CRYPT_BIT_BLOB_h2g(&guest->Signature, &host->Signature);
 }
 
+#ifndef QEMU_DLL_GUEST
+struct qemu_CERT_CHAIN_ENGINE_CONFIG
+{
+    DWORD       cbSize;
+    qemu_ptr    hRestrictedRoot;
+    qemu_ptr    hRestrictedTrust;
+    qemu_ptr    hRestrictedOther;
+    DWORD       cAdditionalStore;
+    qemu_ptr    *rghAdditionalStore;
+    DWORD       dwFlags;
+    DWORD       dwUrlRetrievalTimeout;
+    DWORD       MaximumCachedCertificates;
+    DWORD       CycleDetectionModulus;
+    qemu_ptr    hExclusiveRoot;
+    qemu_ptr    hExclusiveRootTrustedPeople;
+};
+
+static inline void CERT_CHAIN_ENGINE_CONFIG_g2h(CERT_CHAIN_ENGINE_CONFIG *host,
+        const struct qemu_CERT_CHAIN_ENGINE_CONFIG *guest)
+{
+    host->cbSize = sizeof(*host);
+    host->hRestrictedRoot = (HCERTSTORE)(ULONG_PTR)guest->hRestrictedRoot;
+    host->hRestrictedTrust = (HCERTSTORE)(ULONG_PTR)guest->hRestrictedTrust;
+    host->hRestrictedOther = (HCERTSTORE)(ULONG_PTR)guest->hRestrictedOther;
+    host->cAdditionalStore = guest->cAdditionalStore;
+    host->rghAdditionalStore = (HCERTSTORE)(ULONG_PTR)guest->rghAdditionalStore;
+    host->dwFlags = guest->dwFlags;
+    host->dwUrlRetrievalTimeout = guest->dwUrlRetrievalTimeout;
+    host->MaximumCachedCertificates = guest->MaximumCachedCertificates;
+    host->CycleDetectionModulus = guest->CycleDetectionModulus;
+    if (guest->cbSize == sizeof(*guest))
+    {
+        host->hExclusiveRoot = (HCERTSTORE)(ULONG_PTR)guest->hExclusiveRoot;
+        host->hExclusiveRootTrustedPeople = (HCERTSTORE)(ULONG_PTR)guest->hExclusiveRootTrustedPeople;
+    }
+    else
+    {
+        host->hExclusiveRoot = NULL;
+        host->hExclusiveRootTrustedPeople = NULL;
+    }
+}
+
+struct qemu_CTL_USAGE
+{
+    DWORD       cUsageIdentifier;
+    qemu_ptr    rgpszUsageIdentifier;
+};
+
+static inline void CTL_USAGE_g2h(CTL_USAGE *host, const struct qemu_CTL_USAGE *guest)
+{
+    host->cUsageIdentifier = guest->cUsageIdentifier;
+    host->rgpszUsageIdentifier = (char **)(ULONG_PTR)guest->rgpszUsageIdentifier;
+}
+
+static inline void CTL_USAGE_h2g(struct qemu_CTL_USAGE *guest, const CTL_USAGE *host)
+{
+    guest->cUsageIdentifier = host->cUsageIdentifier;
+    guest->rgpszUsageIdentifier = (ULONG_PTR)host->rgpszUsageIdentifier;
+}
+
+struct qemu_CERT_USAGE_MATCH
+{
+    DWORD                   dwType;
+    struct qemu_CTL_USAGE   Usage;
+};
+
+static inline void CERT_USAGE_MATCH_g2h(CERT_USAGE_MATCH *host, const struct qemu_CERT_USAGE_MATCH *guest)
+{
+    host->dwType = guest->dwType;
+    CTL_USAGE_g2h(&host->Usage, &guest->Usage);
+}
+
+static inline void CERT_USAGE_MATCH_h2g(struct qemu_CERT_USAGE_MATCH *guest, const CERT_USAGE_MATCH *host)
+{
+    guest->dwType = host->dwType;
+    CTL_USAGE_h2g(&guest->Usage, &host->Usage);
+}
+
+struct qemu_CERT_CHAIN_PARA
+{
+    DWORD                           cbSize;
+    struct qemu_CERT_USAGE_MATCH    RequestedUsage;
+    struct qemu_CERT_USAGE_MATCH    RequestedIssuancePolicy;
+    DWORD                           dwUrlRetrievalTimeout;
+    BOOL                            fCheckRevocationFreshnessTime;
+    DWORD                           dwRevocationFreshnessTime;
+    qemu_ptr                        pftCacheResync;
+};
+
+static inline void CERT_CHAIN_PARA_g2h(CERT_CHAIN_PARA *host, const struct qemu_CERT_CHAIN_PARA *guest)
+{
+    host->cbSize = sizeof(*host);
+    CERT_USAGE_MATCH_g2h(&host->RequestedUsage, &guest->RequestedUsage);
+    CERT_USAGE_MATCH_g2h(&host->RequestedIssuancePolicy, &guest->RequestedIssuancePolicy);
+    host->dwUrlRetrievalTimeout = guest->dwUrlRetrievalTimeout;
+    host->fCheckRevocationFreshnessTime = guest->fCheckRevocationFreshnessTime;
+    host->dwRevocationFreshnessTime = guest->dwRevocationFreshnessTime;
+    host->pftCacheResync = (FILETIME *)(ULONG_PTR)guest->pftCacheResync;
+}
+#endif
+
 #endif
