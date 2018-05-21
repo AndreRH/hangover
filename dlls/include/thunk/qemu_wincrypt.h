@@ -356,22 +356,26 @@ struct qemu_CERT_CHAIN_PARA
 {
     DWORD                           cbSize;
     struct qemu_CERT_USAGE_MATCH    RequestedUsage;
+#ifdef CERT_CHAIN_PARA_HAS_EXTRA_FIELDS
     struct qemu_CERT_USAGE_MATCH    RequestedIssuancePolicy;
     DWORD                           dwUrlRetrievalTimeout;
     BOOL                            fCheckRevocationFreshnessTime;
     DWORD                           dwRevocationFreshnessTime;
     qemu_ptr                        pftCacheResync;
+#endif
 };
 
 static inline void CERT_CHAIN_PARA_g2h(CERT_CHAIN_PARA *host, const struct qemu_CERT_CHAIN_PARA *guest)
 {
     host->cbSize = sizeof(*host);
     CERT_USAGE_MATCH_g2h(&host->RequestedUsage, &guest->RequestedUsage);
+#ifdef CERT_CHAIN_PARA_HAS_EXTRA_FIELDS
     CERT_USAGE_MATCH_g2h(&host->RequestedIssuancePolicy, &guest->RequestedIssuancePolicy);
     host->dwUrlRetrievalTimeout = guest->dwUrlRetrievalTimeout;
     host->fCheckRevocationFreshnessTime = guest->fCheckRevocationFreshnessTime;
     host->dwRevocationFreshnessTime = guest->dwRevocationFreshnessTime;
     host->pftCacheResync = (FILETIME *)(ULONG_PTR)guest->pftCacheResync;
+#endif
 }
 #endif
 
