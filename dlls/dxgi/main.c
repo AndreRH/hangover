@@ -19,26 +19,30 @@
 
 /* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
 
+#define COBJMACROS
+
 #include <windows.h>
 #include <stdio.h>
 #include <d3d10_1.h>
-#include <dxgi1_2.h>
 
 #include "thunk/qemu_windows.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "qemu_dxgi.h"
 
 #ifdef QEMU_DLL_GUEST
+#include <dxgi1_2.h>
 #include <debug.h>
 #else
+#include <dxgi1_5.h>
 #include <wine/debug.h>
 #endif
 
+#include "qemu_dxgi.h"
+
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_dxgi);
 
-struct qemu_CreateDXGIFactory2
+struct qemu_CreateDXGIFactory
 {
     struct qemu_syscall super;
     uint64_t flags;
@@ -48,82 +52,41 @@ struct qemu_CreateDXGIFactory2
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI CreateDXGIFactory2(UINT flags, REFIID iid, void **factory)
+static HRESULT factory_create(DWORD flags, const IID *iid, void **factory)
 {
-    struct qemu_CreateDXGIFactory2 call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDXGIFACTORY2);
+    struct qemu_CreateDXGIFactory call;
+    struct qemu_dxgi_factory *obj;
+    HRESULT hr;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDXGIFACTORY);
     call.flags = flags;
     call.iid = (ULONG_PTR)iid;
-    call.factory = (ULONG_PTR)factory;
-
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    obj = (struct qemu_dxgi_factory *)(ULONG_PTR)call.factory;
+    qemu_dxgi_factory_guest_init(obj);
+
+    hr = IDXGIFactory_QueryInterface(&obj->IDXGIFactory5_iface, iid, factory);
+    IDXGIFactory_Release(&obj->IDXGIFactory5_iface);
+    return hr;
 }
-
-#else
-
-extern HRESULT WINAPI CreateDXGIFactory2(UINT flags, REFIID iid, void **factory);
-void qemu_CreateDXGIFactory2(struct qemu_syscall *call)
-{
-    struct qemu_CreateDXGIFactory2 *c = (struct qemu_CreateDXGIFactory2 *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CreateDXGIFactory2(c->flags, QEMU_G2H(c->iid), QEMU_G2H(c->factory));
-}
-
-#endif
-
-struct qemu_CreateDXGIFactory1
-{
-    struct qemu_syscall super;
-    uint64_t iid;
-    uint64_t factory;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI HRESULT WINAPI CreateDXGIFactory1(REFIID iid, void **factory)
-{
-    struct qemu_CreateDXGIFactory1 call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDXGIFACTORY1);
-    call.iid = (ULONG_PTR)iid;
-    call.factory = (ULONG_PTR)factory;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_CreateDXGIFactory1(struct qemu_syscall *call)
-{
-    struct qemu_CreateDXGIFactory1 *c = (struct qemu_CreateDXGIFactory1 *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CreateDXGIFactory1(QEMU_G2H(c->iid), QEMU_G2H(c->factory));
-}
-
-#endif
-
-struct qemu_CreateDXGIFactory
-{
-    struct qemu_syscall super;
-    uint64_t iid;
-    uint64_t factory;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 WINBASEAPI HRESULT WINAPI CreateDXGIFactory(REFIID iid, void **factory)
 {
-    struct qemu_CreateDXGIFactory call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDXGIFACTORY);
-    call.iid = (ULONG_PTR)iid;
-    call.factory = (ULONG_PTR)factory;
+    return factory_create(0, iid, factory);
+}
 
-    qemu_syscall(&call.super);
+WINBASEAPI HRESULT WINAPI CreateDXGIFactory1(REFIID iid, void **factory)
+{
+    return factory_create(0, iid, factory);
+}
 
-    return call.super.iret;
+WINBASEAPI HRESULT WINAPI CreateDXGIFactory2(UINT flags, REFIID iid, void **factory)
+{
+    return factory_create(flags, iid, factory);
 }
 
 #else
@@ -131,8 +94,11 @@ WINBASEAPI HRESULT WINAPI CreateDXGIFactory(REFIID iid, void **factory)
 void qemu_CreateDXGIFactory(struct qemu_syscall *call)
 {
     struct qemu_CreateDXGIFactory *c = (struct qemu_CreateDXGIFactory *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CreateDXGIFactory(QEMU_G2H(c->iid), QEMU_G2H(c->factory));
+    struct qemu_dxgi_factory *factory;
+
+    WINE_FIXME("Verbose on purpose\n");
+    c->super.iret = qemu_dxgi_factory_create(c->flags, &factory);
+    c->factory = QEMU_H2G(factory);
 }
 
 #endif
@@ -248,8 +214,35 @@ const struct qemu_ops *qemu_ops;
 static const syscall_handler dll_functions[] =
 {
     qemu_CreateDXGIFactory,
-    qemu_CreateDXGIFactory1,
-    qemu_CreateDXGIFactory2,
+    qemu_dxgi_factory_AddRef,
+    qemu_dxgi_factory_CheckFeatureSupport,
+    qemu_dxgi_factory_CreateSoftwareAdapter,
+    qemu_dxgi_factory_CreateSwapChain,
+    qemu_dxgi_factory_CreateSwapChainForComposition,
+    qemu_dxgi_factory_CreateSwapChainForCoreWindow,
+    qemu_dxgi_factory_CreateSwapChainForHwnd,
+    qemu_dxgi_factory_EnumAdapterByLuid,
+    qemu_dxgi_factory_EnumAdapters,
+    qemu_dxgi_factory_EnumAdapters1,
+    qemu_dxgi_factory_EnumWarpAdapter,
+    qemu_dxgi_factory_GetCreationFlags,
+    qemu_dxgi_factory_GetParent,
+    qemu_dxgi_factory_GetPrivateData,
+    qemu_dxgi_factory_GetSharedResourceAdapterLuid,
+    qemu_dxgi_factory_GetWindowAssociation,
+    qemu_dxgi_factory_IsCurrent,
+    qemu_dxgi_factory_IsWindowedStereoEnabled,
+    qemu_dxgi_factory_MakeWindowAssociation,
+    qemu_dxgi_factory_QueryInterface,
+    qemu_dxgi_factory_RegisterOcclusionStatusEvent,
+    qemu_dxgi_factory_RegisterOcclusionStatusWindow,
+    qemu_dxgi_factory_RegisterStereoStatusEvent,
+    qemu_dxgi_factory_RegisterStereoStatusWindow,
+    qemu_dxgi_factory_Release,
+    qemu_dxgi_factory_SetPrivateData,
+    qemu_dxgi_factory_SetPrivateDataInterface,
+    qemu_dxgi_factory_UnregisterOcclusionStatus,
+    qemu_dxgi_factory_UnregisterStereoStatus,
     qemu_DXGID3D10CreateDevice,
     qemu_DXGID3D10RegisterLayers,
     qemu_init_dll,
