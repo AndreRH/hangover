@@ -47,12 +47,13 @@ struct qemu_CreateDXGIFactory
     struct qemu_syscall super;
     uint64_t flags;
     uint64_t iid;
+    uint64_t version;
     uint64_t factory;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT factory_create(DWORD flags, const IID *iid, void **factory)
+static HRESULT factory_create(DWORD flags, const IID *iid, DWORD version, void **factory)
 {
     struct qemu_CreateDXGIFactory call;
     struct qemu_dxgi_factory *obj;
@@ -60,6 +61,7 @@ static HRESULT factory_create(DWORD flags, const IID *iid, void **factory)
 
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEDXGIFACTORY);
     call.flags = flags;
+    call.version = version;
     call.iid = (ULONG_PTR)iid;
     qemu_syscall(&call.super);
 
@@ -76,17 +78,17 @@ static HRESULT factory_create(DWORD flags, const IID *iid, void **factory)
 
 WINBASEAPI HRESULT WINAPI CreateDXGIFactory(REFIID iid, void **factory)
 {
-    return factory_create(0, iid, factory);
+    return factory_create(0, iid, 0, factory);
 }
 
 WINBASEAPI HRESULT WINAPI CreateDXGIFactory1(REFIID iid, void **factory)
 {
-    return factory_create(0, iid, factory);
+    return factory_create(0, iid, 1, factory);
 }
 
 WINBASEAPI HRESULT WINAPI CreateDXGIFactory2(UINT flags, REFIID iid, void **factory)
 {
-    return factory_create(flags, iid, factory);
+    return factory_create(flags, iid, 2, factory);
 }
 
 #else
@@ -96,8 +98,8 @@ void qemu_CreateDXGIFactory(struct qemu_syscall *call)
     struct qemu_CreateDXGIFactory *c = (struct qemu_CreateDXGIFactory *)call;
     struct qemu_dxgi_factory *factory;
 
-    WINE_FIXME("Verbose on purpose\n");
-    c->super.iret = qemu_dxgi_factory_create(c->flags, &factory);
+    WINE_TRACE("\n");
+    c->super.iret = qemu_dxgi_factory_create(c->flags, c->version, &factory);
     c->factory = QEMU_H2G(factory);
 }
 

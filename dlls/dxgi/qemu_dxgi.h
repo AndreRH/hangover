@@ -115,7 +115,7 @@ void qemu_dxgi_factory_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_dxgi_factory_UnregisterOcclusionStatus(struct qemu_syscall *call);
 void qemu_dxgi_factory_UnregisterStereoStatus(struct qemu_syscall *call);
 
-HRESULT qemu_dxgi_factory_create(DWORD flags, struct qemu_dxgi_factory **factory);
+HRESULT qemu_dxgi_factory_create(DWORD flags, DWORD version, struct qemu_dxgi_factory **factory);
 
 #endif
 

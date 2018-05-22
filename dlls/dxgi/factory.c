@@ -28,11 +28,21 @@
 #include "dll_list.h"
 
 #ifdef QEMU_DLL_GUEST
+#include <initguid.h>
+
 #include <dxgi1_2.h>
 #include <debug.h>
+
+DEFINE_GUID(IID_IDXGIFactory3, 0x25483823, 0xcd46, 0x4c7d, 0x86,0xca, 0x47,0xaa,0x95,0xb8,0x37,0xbd);
+DEFINE_GUID(IID_IDXGIFactory4, 0x1bc6ea02, 0xef36, 0x464f, 0xbf,0x0c, 0x21,0xca,0x39,0xe5,0x16,0x8a);
+DEFINE_GUID(IID_IDXGIFactory5, 0x7632e1f5, 0xee65, 0x4dca, 0x87,0xfd, 0x84,0xcd,0x75,0xf8,0x83,0x8d);
+
+
 #else
+
 #include <dxgi1_5.h>
 #include <wine/debug.h>
+
 #endif
 
 #include "qemu_dxgi.h"
@@ -66,7 +76,32 @@ static HRESULT STDMETHODCALLTYPE dxgi_factory_QueryInterface(IDXGIFactory5 *ifac
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    if (FAILED(call.super.iret))
+    {
+        *out = NULL;
+        return call.super.iret;
+    }
+
+    if (IsEqualGUID(iid, &IID_IDXGIFactory5)
+            || IsEqualGUID(iid, &IID_IDXGIFactory4)
+            || IsEqualGUID(iid, &IID_IDXGIFactory3)
+            || IsEqualGUID(iid, &IID_IDXGIFactory2)
+            || IsEqualGUID(iid, &IID_IDXGIFactory1) /* extended filter handled via failure from host side */
+            || IsEqualGUID(iid, &IID_IDXGIFactory)
+            || IsEqualGUID(iid, &IID_IDXGIObject)
+            || IsEqualGUID(iid, &IID_IUnknown))
+    {
+        /* AddRef was handled on the host side. */
+        *out = iface;
+        return call.super.iret;
+    }
+
+    WINE_FIXME("The host returned an interface for IID %s but this wrapper does not know about it.\n",
+            wine_dbgstr_guid(iid));
+    IDXGIFactory_Release(iface);
+    *out = NULL;
+
+    return E_NOINTERFACE;
 }
 
 #else
@@ -75,11 +110,13 @@ void qemu_dxgi_factory_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_dxgi_factory_QueryInterface *c = (struct qemu_dxgi_factory_QueryInterface *)call;
     struct qemu_dxgi_factory *factory;
+    void *out = NULL;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGIFactory5_QueryInterface(factory->host, QEMU_G2H(c->iid), QEMU_G2H(c->out));
+    c->super.iret = IDXGIFactory5_QueryInterface(factory->host, QEMU_G2H(c->iid), &out);
+    c->out = QEMU_H2G(out);
 }
 
 #endif
@@ -112,7 +149,7 @@ void qemu_dxgi_factory_AddRef(struct qemu_syscall *call)
     struct qemu_dxgi_factory_AddRef *c = (struct qemu_dxgi_factory_AddRef *)call;
     struct qemu_dxgi_factory *factory;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGIFactory5_AddRef(factory->host);
@@ -148,10 +185,15 @@ void qemu_dxgi_factory_Release(struct qemu_syscall *call)
     struct qemu_dxgi_factory_Release *c = (struct qemu_dxgi_factory_Release *)call;
     struct qemu_dxgi_factory *factory;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGIFactory5_Release(factory->host);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying dxgi factory wrapper %p (host factory %p).\n", factory, factory->host);
+        HeapFree(GetProcessHeap(), 0, factory);
+    }
 }
 
 #endif
@@ -1283,7 +1325,7 @@ void qemu_dxgi_factory_guest_init(struct qemu_dxgi_factory *factory)
 
 #else
 
-HRESULT qemu_dxgi_factory_create(DWORD flags, struct qemu_dxgi_factory **factory)
+HRESULT qemu_dxgi_factory_create(DWORD flags, DWORD version, struct qemu_dxgi_factory **factory)
 {
     struct qemu_dxgi_factory *out;
     HRESULT hr;
@@ -1296,13 +1338,25 @@ HRESULT qemu_dxgi_factory_create(DWORD flags, struct qemu_dxgi_factory **factory
         return E_OUTOFMEMORY;
     }
 
-    hr = CreateDXGIFactory2(flags, &IID_IDXGIFactory5, (void **)&out->host);
+    switch (version)
+    {
+        case 0:
+            hr = CreateDXGIFactory(&IID_IDXGIFactory5, (void **)&out->host);
+            break;
+        case 1:
+            hr = CreateDXGIFactory1(&IID_IDXGIFactory5, (void **)&out->host);
+            break;
+        case 2:
+            hr = CreateDXGIFactory2(flags, &IID_IDXGIFactory5, (void **)&out->host);
+            break;
+    }
     if (FAILED(hr))
     {
         WINE_FIXME("Creating the host factory failed: %#x.\n", hr);
         HeapFree(GetProcessHeap(), 0, out);
         out = NULL;
     }
+    WINE_TRACE("Created factory wrapper %p, host factory %p.\n", out, out->host);
 
     *factory = out;
     return hr;
