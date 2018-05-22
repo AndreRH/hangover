@@ -243,7 +243,6 @@ static const syscall_handler dll_functions[] =
     qemu_dxgi_factory_CreateSwapChainForHwnd,
     qemu_dxgi_factory_EnumAdapterByLuid,
     qemu_dxgi_factory_EnumAdapters,
-    qemu_dxgi_factory_EnumAdapters1,
     qemu_dxgi_factory_EnumWarpAdapter,
     qemu_dxgi_factory_GetCreationFlags,
     qemu_dxgi_factory_GetParent,

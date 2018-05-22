@@ -180,6 +180,19 @@ static ULONG STDMETHODCALLTYPE dxgi_factory_Release(IDXGIFactory5 *iface)
 
 #else
 
+ULONG qemu_dxgi_factory_Release_internal(struct qemu_dxgi_factory *factory)
+{
+    ULONG ret;
+
+    ret = IDXGIFactory5_Release(factory->host);
+    if (!ret)
+    {
+        WINE_TRACE("Destroying dxgi factory wrapper %p (host factory %p).\n", factory, factory->host);
+        HeapFree(GetProcessHeap(), 0, factory);
+    }
+    return ret;
+}
+
 void qemu_dxgi_factory_Release(struct qemu_syscall *call)
 {
     struct qemu_dxgi_factory_Release *c = (struct qemu_dxgi_factory_Release *)call;
@@ -188,12 +201,7 @@ void qemu_dxgi_factory_Release(struct qemu_syscall *call)
     WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGIFactory5_Release(factory->host);
-    if (!c->super.iret)
-    {
-        WINE_TRACE("Destroying dxgi factory wrapper %p (host factory %p).\n", factory, factory->host);
-        HeapFree(GetProcessHeap(), 0, factory);
-    }
+    c->super.iret = qemu_dxgi_factory_Release_internal(factory);
 }
 
 #endif
@@ -362,46 +370,6 @@ void qemu_dxgi_factory_GetParent(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_dxgi_factory_EnumAdapters1
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t adapter_idx;
-    uint64_t adapter;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE dxgi_factory_EnumAdapters1(IDXGIFactory5 *iface, UINT adapter_idx, IDXGIAdapter1 **adapter)
-{
-    struct qemu_dxgi_factory_EnumAdapters1 call;
-    struct qemu_dxgi_factory *factory = impl_from_IDXGIFactory5(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_FACTORY_ENUMADAPTERS1);
-    call.iface = (ULONG_PTR)factory;
-    call.adapter_idx = adapter_idx;
-    call.adapter = (ULONG_PTR)adapter;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_dxgi_factory_EnumAdapters1(struct qemu_syscall *call)
-{
-    struct qemu_dxgi_factory_EnumAdapters1 *c = (struct qemu_dxgi_factory_EnumAdapters1 *)call;
-    struct qemu_dxgi_factory *factory;
-
-    WINE_FIXME("Unverified!\n");
-    factory = QEMU_G2H(c->iface);
-
-    c->super.iret = IDXGIFactory5_EnumAdapters1(factory->host, c->adapter_idx, QEMU_G2H(c->adapter));
-}
-
-#endif
-
 struct qemu_dxgi_factory_EnumAdapters
 {
     struct qemu_syscall super;
@@ -412,10 +380,12 @@ struct qemu_dxgi_factory_EnumAdapters
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_factory_EnumAdapters(IDXGIFactory5 *iface, UINT adapter_idx, IDXGIAdapter **adapter)
+static HRESULT STDMETHODCALLTYPE dxgi_factory_EnumAdapters1(IDXGIFactory5 *iface, UINT adapter_idx,
+        IDXGIAdapter1 **adapter)
 {
     struct qemu_dxgi_factory_EnumAdapters call;
     struct qemu_dxgi_factory *factory = impl_from_IDXGIFactory5(iface);
+    struct qemu_dxgi_adapter *obj;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_FACTORY_ENUMADAPTERS);
     call.iface = (ULONG_PTR)factory;
@@ -423,9 +393,27 @@ static HRESULT STDMETHODCALLTYPE dxgi_factory_EnumAdapters(IDXGIFactory5 *iface,
     call.adapter = (ULONG_PTR)adapter;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+    {
+        if (adapter)
+            *adapter = NULL;
+        return call.super.iret;
+    }
+
+    obj = (struct qemu_dxgi_adapter *)(ULONG_PTR)call.adapter;
+    qemu_dxgi_adapter_guest_init(obj);
+    *adapter = (IDXGIAdapter1 *)&obj->IDXGIAdapter3_iface;
 
     return call.super.iret;
 }
+
+static HRESULT STDMETHODCALLTYPE dxgi_factory_EnumAdapters(IDXGIFactory5 *iface, UINT adapter_idx, IDXGIAdapter **adapter)
+{
+    WINE_TRACE("iface %p, adapter_idx %u, adapter %p.\n", iface, adapter_idx, adapter);
+
+    return dxgi_factory_EnumAdapters1(iface, adapter_idx, (IDXGIAdapter1 **)adapter);
+}
+
 
 #else
 
@@ -433,11 +421,19 @@ void qemu_dxgi_factory_EnumAdapters(struct qemu_syscall *call)
 {
     struct qemu_dxgi_factory_EnumAdapters *c = (struct qemu_dxgi_factory_EnumAdapters *)call;
     struct qemu_dxgi_factory *factory;
+    struct qemu_dxgi_adapter *adapter;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGIFactory5_EnumAdapters(factory->host, c->adapter_idx, QEMU_G2H(c->adapter));
+    if (!c->adapter)
+    {
+        c->super.iret = IDXGIFactory5_EnumAdapters1(factory->host, c->adapter_idx, NULL);
+        return;
+    }
+
+    c->super.iret = qemu_dxgi_adapter_create(factory, c->adapter_idx, &adapter);
+    c->adapter = QEMU_H2G(adapter);
 }
 
 #endif

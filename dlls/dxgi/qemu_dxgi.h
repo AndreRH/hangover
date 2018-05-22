@@ -50,7 +50,6 @@ enum dxgi_calls
     CALL_DXGI_FACTORY_CREATESWAPCHAINFORHWND,
     CALL_DXGI_FACTORY_ENUMADAPTERBYLUID,
     CALL_DXGI_FACTORY_ENUMADAPTERS,
-    CALL_DXGI_FACTORY_ENUMADAPTERS1,
     CALL_DXGI_FACTORY_ENUMWARPADAPTER,
     CALL_DXGI_FACTORY_GETCREATIONFLAGS,
     CALL_DXGI_FACTORY_GETPARENT,
@@ -108,12 +107,13 @@ struct qemu_dxgi_adapter
 
     /* Host fields */
     IDXGIAdapter3 *host;
+    struct qemu_dxgi_factory *factory;
 };
 
 #ifdef QEMU_DLL_GUEST
 
 void qemu_dxgi_factory_guest_init(struct qemu_dxgi_factory *factory);
-void qemu_dxgi_adapter_guest_init(struct qemu_dxgi_adapter *factory);
+void qemu_dxgi_adapter_guest_init(struct qemu_dxgi_adapter *adapter);
 
 #else
 
@@ -146,7 +146,6 @@ void qemu_dxgi_factory_CreateSwapChainForCoreWindow(struct qemu_syscall *call);
 void qemu_dxgi_factory_CreateSwapChainForHwnd(struct qemu_syscall *call);
 void qemu_dxgi_factory_EnumAdapterByLuid(struct qemu_syscall *call);
 void qemu_dxgi_factory_EnumAdapters(struct qemu_syscall *call);
-void qemu_dxgi_factory_EnumAdapters1(struct qemu_syscall *call);
 void qemu_dxgi_factory_EnumWarpAdapter(struct qemu_syscall *call);
 void qemu_dxgi_factory_GetCreationFlags(struct qemu_syscall *call);
 void qemu_dxgi_factory_GetParent(struct qemu_syscall *call);
@@ -168,7 +167,8 @@ void qemu_dxgi_factory_UnregisterOcclusionStatus(struct qemu_syscall *call);
 void qemu_dxgi_factory_UnregisterStereoStatus(struct qemu_syscall *call);
 
 HRESULT qemu_dxgi_factory_create(DWORD flags, DWORD version, struct qemu_dxgi_factory **factory);
-HRESULT qemu_dxgi_adapter_create(struct qemu_dxgi_adapter **adapter);
+HRESULT qemu_dxgi_adapter_create(struct qemu_dxgi_factory *factory, UINT idx, struct qemu_dxgi_adapter **adapter);
+ULONG qemu_dxgi_factory_Release_internal(struct qemu_dxgi_factory *factory);
 
 #endif
 

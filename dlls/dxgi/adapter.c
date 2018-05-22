@@ -118,7 +118,7 @@ void qemu_dxgi_adapter_AddRef(struct qemu_syscall *call)
     struct qemu_dxgi_adapter_AddRef *c = (struct qemu_dxgi_adapter_AddRef *)call;
     struct qemu_dxgi_adapter *adapter;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     adapter = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGIAdapter3_AddRef(adapter->host);
@@ -149,15 +149,33 @@ static ULONG STDMETHODCALLTYPE dxgi_adapter_Release(IDXGIAdapter3 *iface)
 
 #else
 
+static ULONG qemu_dxgi_adapter_Release_internal(struct qemu_dxgi_adapter *adapter)
+{
+    struct qemu_dxgi_factory *factory = adapter->factory;
+    ULONG ret;
+
+    /* AddRef the parent factory and release it afterwards to make sure the last ref gets released through
+     * our code so we destroy the wrapper. */
+    IDXGIFactory5_AddRef(factory->host);
+    ret = IDXGIAdapter3_Release(adapter->host);
+    if (!ret)
+    {
+        WINE_TRACE("Destroying dxgi adapter wrapper %p (host adapter %p).\n", adapter, adapter->host);
+        HeapFree(GetProcessHeap(), 0, adapter);
+    }
+    qemu_dxgi_factory_Release_internal(factory);
+    return ret;
+}
+
 void qemu_dxgi_adapter_Release(struct qemu_syscall *call)
 {
     struct qemu_dxgi_adapter_Release *c = (struct qemu_dxgi_adapter_Release *)call;
     struct qemu_dxgi_adapter *adapter;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     adapter = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGIAdapter3_Release(adapter->host);
+    c->super.iret = qemu_dxgi_adapter_Release_internal(adapter);
 }
 
 #endif
@@ -756,3 +774,74 @@ void qemu_dxgi_adapter_UnregisterVideoMemoryBudgetChangeNotification(struct qemu
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+static const struct
+{
+    IDXGIAdapter2Vtbl vtbl2;
+    void *RegisterHardwareContentProtectionTeardownStatusEvent;
+    void *UnregisterHardwareContentProtectionTeardownStatus;
+    void *QueryVideoMemoryInfo;
+    void *SetVideoMemoryReservation;
+    void *RegisterVideoMemoryBudgetChangeNotificationEvent;
+    void *UnregisterVideoMemoryBudgetChangeNotification;
+
+}
+dxgi_adapter_vtbl =
+{
+    {
+        dxgi_adapter_QueryInterface,
+        dxgi_adapter_AddRef,
+        dxgi_adapter_Release,
+        dxgi_adapter_SetPrivateData,
+        dxgi_adapter_SetPrivateDataInterface,
+        dxgi_adapter_GetPrivateData,
+        dxgi_adapter_GetParent,
+        /* IDXGIAdapter methods */
+        dxgi_adapter_EnumOutputs,
+        dxgi_adapter_GetDesc,
+        dxgi_adapter_CheckInterfaceSupport,
+        /* IDXGIAdapter1 methods */
+        dxgi_adapter_GetDesc1,
+        /* IDXGIAdapter2 methods */
+        dxgi_adapter_GetDesc2,
+    },
+    /* IDXGIAdapter3 methods */
+    dxgi_adapter_RegisterHardwareContentProtectionTeardownStatusEvent,
+    dxgi_adapter_UnregisterHardwareContentProtectionTeardownStatus,
+    dxgi_adapter_QueryVideoMemoryInfo,
+    dxgi_adapter_SetVideoMemoryReservation,
+    dxgi_adapter_RegisterVideoMemoryBudgetChangeNotificationEvent,
+    dxgi_adapter_UnregisterVideoMemoryBudgetChangeNotification,
+};
+
+void qemu_dxgi_adapter_guest_init(struct qemu_dxgi_adapter *factory)
+{
+    factory->IDXGIAdapter3_iface.lpVtbl = &dxgi_adapter_vtbl.vtbl2;
+}
+
+#else
+
+HRESULT qemu_dxgi_adapter_create(struct qemu_dxgi_factory *factory, UINT idx, struct qemu_dxgi_adapter **adapter)
+{
+    struct qemu_dxgi_adapter *obj;
+    HRESULT hr;
+
+    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
+    if (!obj)
+    {
+        WINE_WARN("Out of memory\n");
+        return E_OUTOFMEMORY;
+    }
+
+    obj->factory = factory;
+
+    hr = IDXGIFactory5_EnumAdapters1(factory->host, idx, (IDXGIAdapter1 **)&obj->host);
+    if (FAILED(hr))
+        HeapFree(GetProcessHeap(), 0, obj);
+
+    *adapter = obj;
+    return hr;
+}
+
+#endif
