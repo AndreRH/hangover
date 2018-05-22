@@ -1178,6 +1178,7 @@ char * CDECL MSVCRT_strcmp(const char *str1, const char *str2);
 size_t CDECL MSVCRT_strlen(const char *str);
 void CDECL MSVCRT_terminate(void);
 void CDECL MSVCRT_operator_delete(void *mem);
+int CDECL MSVCRT_sprintf(char *str, const char *format, ...);
 
 unsigned int count_printf_argsA(const char *format, char *fmts);
 unsigned int count_printf_argsW(const WCHAR *format, WCHAR *fmts);

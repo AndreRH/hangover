@@ -747,8 +747,6 @@ int CDECL __regs_MSVCRT__setjmp(struct MSVCRT___JUMP_BUFFER *jmp)
     return 0;
 }
 
-int CDECL MSVCRT_sprintf(char *str, const char *format, ...);
-
 /*******************************************************************
  *        _setjmp3 (MSVCRT.@)
  */
@@ -835,7 +833,7 @@ struct qemu_longjmp
 
 #ifdef _WIN64
 
-extern void DECLSPEC_NORETURN CDECL longjmp_set_regs( jmp_buf jmp, int retval );
+extern void DECLSPEC_NORETURN CDECL longjmp_set_regs( void *jmp, int retval );
 __ASM_GLOBAL_FUNC( longjmp_set_regs,
                    "movq %rdx,%rax\n\t"            /* retval */
                    "movq 0x8(%rcx),%rbx\n\t"       /* jmp_buf->Rbx */
@@ -862,13 +860,18 @@ __ASM_GLOBAL_FUNC( longjmp_set_regs,
 
 #endif
 
-void __cdecl MSVCRT_longjmp(struct MSVCRT___JUMP_BUFFER *jmp, int retval)
+void __cdecl MSVCRT_longjmp(void *jmp, int retval)
 {
     struct qemu_longjmp call;
     static char blob[4096];
 
+#ifdef _WIN64
+    MSVCRT_sprintf(blob, "longjmp, buf=%p\n", jmp);
+#else
+    struct MSVCRT___JUMP_BUFFER *jmp32 = jmp;
     MSVCRT_sprintf(blob, "buf=%p ebx=%08lx esi=%08lx edi=%08lx ebp=%08lx esp=%08lx eip=%08lx frame=%08lx, unwind=%08lx\n",
-           jmp, jmp->Ebx, jmp->Esi, jmp->Edi, jmp->Ebp, jmp->Esp, jmp->Eip, jmp->Registration, jmp->UnwindFunc);
+           jmp32, jmp32->Ebx, jmp32->Esi, jmp32->Edi, jmp32->Ebp, jmp32->Esp, jmp32->Eip, jmp32->Registration, jmp32->UnwindFunc);
+#endif
 
     call.super.id = QEMU_SYSCALL_ID(CALL_LONGJMP);
     call.str = (ULONG_PTR)blob;
