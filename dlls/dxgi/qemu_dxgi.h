@@ -23,6 +23,24 @@
 enum dxgi_calls
 {
     CALL_CREATEDXGIFACTORY = 0,
+    CALL_DXGI_ADAPTER_ADDREF,
+    CALL_DXGI_ADAPTER_CHECKINTERFACESUPPORT,
+    CALL_DXGI_ADAPTER_ENUMOUTPUTS,
+    CALL_DXGI_ADAPTER_GETDESC,
+    CALL_DXGI_ADAPTER_GETDESC1,
+    CALL_DXGI_ADAPTER_GETDESC2,
+    CALL_DXGI_ADAPTER_GETPARENT,
+    CALL_DXGI_ADAPTER_GETPRIVATEDATA,
+    CALL_DXGI_ADAPTER_QUERYINTERFACE,
+    CALL_DXGI_ADAPTER_QUERYVIDEOMEMORYINFO,
+    CALL_DXGI_ADAPTER_REGISTERHARDWARECONTENTPROTECTIONTEARDOWNSTATUSEVENT,
+    CALL_DXGI_ADAPTER_REGISTERVIDEOMEMORYBUDGETCHANGENOTIFICATIONEVENT,
+    CALL_DXGI_ADAPTER_RELEASE,
+    CALL_DXGI_ADAPTER_SETPRIVATEDATA,
+    CALL_DXGI_ADAPTER_SETPRIVATEDATAINTERFACE,
+    CALL_DXGI_ADAPTER_SETVIDEOMEMORYRESERVATION,
+    CALL_DXGI_ADAPTER_UNREGISTERHARDWARECONTENTPROTECTIONTEARDOWNSTATUS,
+    CALL_DXGI_ADAPTER_UNREGISTERVIDEOMEMORYBUDGETCHANGENOTIFICATION,
     CALL_DXGI_FACTORY_ADDREF,
     CALL_DXGI_FACTORY_CHECKFEATURESUPPORT,
     CALL_DXGI_FACTORY_CREATESOFTWAREADAPTER,
@@ -61,10 +79,16 @@ enum dxgi_calls
 
 /* Hacks for missing dxgi1_5 headers in mingw. */
 typedef IDXGIFactory2 IDXGIFactory5;
+typedef IDXGIAdapter2 IDXGIAdapter3;
 typedef enum DXGI_FEATURE
 {
     DXGI_FEATURE_PRESENT_ALLOW_TEARING = 0x0
 } DXGI_FEATURE;
+typedef void DXGI_QUERY_VIDEO_MEMORY_INFO;
+typedef enum DXGI_MEMORY_SEGMENT_GROUP {
+    DXGI_MEMORY_SEGMENT_GROUP_LOCAL = 0x0,
+    DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL = 0x1
+} DXGI_MEMORY_SEGMENT_GROUP;
 
 #endif
 
@@ -77,14 +101,42 @@ struct qemu_dxgi_factory
     IDXGIFactory5 *host;
 };
 
+struct qemu_dxgi_adapter
+{
+    /* Guest fields */
+    IDXGIAdapter3 IDXGIAdapter3_iface;
+
+    /* Host fields */
+    IDXGIAdapter3 *host;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 void qemu_dxgi_factory_guest_init(struct qemu_dxgi_factory *factory);
+void qemu_dxgi_adapter_guest_init(struct qemu_dxgi_adapter *factory);
 
 #else
 
 extern const struct qemu_ops *qemu_ops;
 
+void qemu_dxgi_adapter_AddRef(struct qemu_syscall *call);
+void qemu_dxgi_adapter_CheckInterfaceSupport(struct qemu_syscall *call);
+void qemu_dxgi_adapter_EnumOutputs(struct qemu_syscall *call);
+void qemu_dxgi_adapter_GetDesc(struct qemu_syscall *call);
+void qemu_dxgi_adapter_GetDesc1(struct qemu_syscall *call);
+void qemu_dxgi_adapter_GetDesc2(struct qemu_syscall *call);
+void qemu_dxgi_adapter_GetParent(struct qemu_syscall *call);
+void qemu_dxgi_adapter_GetPrivateData(struct qemu_syscall *call);
+void qemu_dxgi_adapter_QueryInterface(struct qemu_syscall *call);
+void qemu_dxgi_adapter_QueryVideoMemoryInfo(struct qemu_syscall *call);
+void qemu_dxgi_adapter_RegisterHardwareContentProtectionTeardownStatusEvent(struct qemu_syscall *call);
+void qemu_dxgi_adapter_RegisterVideoMemoryBudgetChangeNotificationEvent(struct qemu_syscall *call);
+void qemu_dxgi_adapter_Release(struct qemu_syscall *call);
+void qemu_dxgi_adapter_SetPrivateData(struct qemu_syscall *call);
+void qemu_dxgi_adapter_SetPrivateDataInterface(struct qemu_syscall *call);
+void qemu_dxgi_adapter_SetVideoMemoryReservation(struct qemu_syscall *call);
+void qemu_dxgi_adapter_UnregisterHardwareContentProtectionTeardownStatus(struct qemu_syscall *call);
+void qemu_dxgi_adapter_UnregisterVideoMemoryBudgetChangeNotification(struct qemu_syscall *call);
 void qemu_dxgi_factory_AddRef(struct qemu_syscall *call);
 void qemu_dxgi_factory_CheckFeatureSupport(struct qemu_syscall *call);
 void qemu_dxgi_factory_CreateSoftwareAdapter(struct qemu_syscall *call);
@@ -116,6 +168,7 @@ void qemu_dxgi_factory_UnregisterOcclusionStatus(struct qemu_syscall *call);
 void qemu_dxgi_factory_UnregisterStereoStatus(struct qemu_syscall *call);
 
 HRESULT qemu_dxgi_factory_create(DWORD flags, DWORD version, struct qemu_dxgi_factory **factory);
+HRESULT qemu_dxgi_adapter_create(struct qemu_dxgi_adapter **adapter);
 
 #endif
 

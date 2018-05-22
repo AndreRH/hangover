@@ -8,10 +8,10 @@ VPATH=$(SRCDIR)
 
 all: dxgi.dll qemu_dxgi.dll.so
 
-dxgi.dll: dxgi.spec factory_g.o main_g.o
+dxgi.dll: adapter_g.o dxgi.spec factory_g.o main_g.o
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/dxgi.spec *_g.o -o dxgi.dll -nodefaultlibs -nostdlib -lwine -lmsvcrt -ldxguid -lkernel32 -L../../$(WINE_DIR)/libs/wine
 
-qemu_dxgi.dll.so: factory_h.o main_h.o qemu_dxgi.spec
+qemu_dxgi.dll.so: adapter_h.o factory_h.o main_h.o qemu_dxgi.spec
 	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_dxgi.spec *_h.o -o qemu_dxgi.dll.so -ldxgi -ldxguid
 
 %_g.o: %.c qemu_dxgi.h Makefile $(SRCDIR)/Makefile
