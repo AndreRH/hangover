@@ -69,6 +69,32 @@ enum dxgi_calls
     CALL_DXGI_FACTORY_SETPRIVATEDATAINTERFACE,
     CALL_DXGI_FACTORY_UNREGISTEROCCLUSIONSTATUS,
     CALL_DXGI_FACTORY_UNREGISTERSTEREOSTATUS,
+    CALL_DXGI_OUTPUT_ADDREF,
+    CALL_DXGI_OUTPUT_CHECKOVERLAYCOLORSPACESUPPORT,
+    CALL_DXGI_OUTPUT_CHECKOVERLAYSUPPORT,
+    CALL_DXGI_OUTPUT_DUPLICATEOUTPUT,
+    CALL_DXGI_OUTPUT_FINDCLOSESTMATCHINGMODE,
+    CALL_DXGI_OUTPUT_FINDCLOSESTMATCHINGMODE1,
+    CALL_DXGI_OUTPUT_GETDESC,
+    CALL_DXGI_OUTPUT_GETDISPLAYMODELIST,
+    CALL_DXGI_OUTPUT_GETDISPLAYMODELIST1,
+    CALL_DXGI_OUTPUT_GETDISPLAYSURFACEDATA,
+    CALL_DXGI_OUTPUT_GETDISPLAYSURFACEDATA1,
+    CALL_DXGI_OUTPUT_GETFRAMESTATISTICS,
+    CALL_DXGI_OUTPUT_GETGAMMACONTROL,
+    CALL_DXGI_OUTPUT_GETGAMMACONTROLCAPABILITIES,
+    CALL_DXGI_OUTPUT_GETPARENT,
+    CALL_DXGI_OUTPUT_GETPRIVATEDATA,
+    CALL_DXGI_OUTPUT_QUERYINTERFACE,
+    CALL_DXGI_OUTPUT_RELEASE,
+    CALL_DXGI_OUTPUT_RELEASEOWNERSHIP,
+    CALL_DXGI_OUTPUT_SETDISPLAYSURFACE,
+    CALL_DXGI_OUTPUT_SETGAMMACONTROL,
+    CALL_DXGI_OUTPUT_SETPRIVATEDATA,
+    CALL_DXGI_OUTPUT_SETPRIVATEDATAINTERFACE,
+    CALL_DXGI_OUTPUT_SUPPORTSOVERLAYS,
+    CALL_DXGI_OUTPUT_TAKEOWNERSHIP,
+    CALL_DXGI_OUTPUT_WAITFORVBLANK,
     CALL_DXGID3D10CREATEDEVICE,
     CALL_DXGID3D10REGISTERLAYERS,
     CALL_INIT_DLL,
@@ -79,6 +105,7 @@ enum dxgi_calls
 /* Hacks for missing dxgi1_5 headers in mingw. */
 typedef IDXGIFactory2 IDXGIFactory5;
 typedef IDXGIAdapter2 IDXGIAdapter3;
+typedef IDXGIOutput IDXGIOutput4;
 typedef enum DXGI_FEATURE
 {
     DXGI_FEATURE_PRESENT_ALLOW_TEARING = 0x0
@@ -88,6 +115,32 @@ typedef enum DXGI_MEMORY_SEGMENT_GROUP {
     DXGI_MEMORY_SEGMENT_GROUP_LOCAL = 0x0,
     DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL = 0x1
 } DXGI_MEMORY_SEGMENT_GROUP;
+typedef void DXGI_MODE_DESC1;
+typedef enum DXGI_COLOR_SPACE_TYPE
+{
+    DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709             = 0x00,
+    DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709             = 0x01,
+    DXGI_COLOR_SPACE_RGB_STUDIO_G22_NONE_P709           = 0x02,
+    DXGI_COLOR_SPACE_RGB_STUDIO_G22_NONE_P2020          = 0x03,
+    DXGI_COLOR_SPACE_RESERVED                           = 0x04,
+    DXGI_COLOR_SPACE_YCBCR_FULL_G22_NONE_P709_X601      = 0x05,
+    DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P601         = 0x06,
+    DXGI_COLOR_SPACE_YCBCR_FULL_G22_LEFT_P601           = 0x07,
+    DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709         = 0x08,
+    DXGI_COLOR_SPACE_YCBCR_FULL_G22_LEFT_P709           = 0x09,
+    DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P2020        = 0x0a,
+    DXGI_COLOR_SPACE_YCBCR_FULL_G22_LEFT_P2020          = 0x0b,
+    DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020          = 0x0c,
+    DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_LEFT_P2020      = 0x0d,
+    DXGI_COLOR_SPACE_RGB_STUDIO_G2084_NONE_P2020        = 0x0e,
+    DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_TOPLEFT_P2020     = 0x0f,
+    DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_TOPLEFT_P2020   = 0x10,
+    DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P2020            = 0x11,
+    DXGI_COLOR_SPACE_YCBCR_STUDIO_GHLG_TOPLEFT_P2020    = 0x12,
+    DXGI_COLOR_SPACE_YCBCR_FULL_GHLG_TOPLEFT_P2020      = 0x13,
+    DXGI_COLOR_SPACE_CUSTOM                             = 0xffffffff,
+} DXGI_COLOR_SPACE_TYPE;
+typedef void IDXGIOutputDuplication;
 
 #endif
 
@@ -108,6 +161,15 @@ struct qemu_dxgi_adapter
     /* Host fields */
     IDXGIAdapter3 *host;
     struct qemu_dxgi_factory *factory;
+};
+
+struct qemu_dxgi_output
+{
+    /* Guest fields */
+    IDXGIOutput4 IDXGIOutput4_iface;
+
+    /* Host fields */
+    IDXGIOutput4 *host;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -165,6 +227,32 @@ void qemu_dxgi_factory_SetPrivateData(struct qemu_syscall *call);
 void qemu_dxgi_factory_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_dxgi_factory_UnregisterOcclusionStatus(struct qemu_syscall *call);
 void qemu_dxgi_factory_UnregisterStereoStatus(struct qemu_syscall *call);
+void qemu_dxgi_output_AddRef(struct qemu_syscall *call);
+void qemu_dxgi_output_CheckOverlayColorSpaceSupport(struct qemu_syscall *call);
+void qemu_dxgi_output_CheckOverlaySupport(struct qemu_syscall *call);
+void qemu_dxgi_output_DuplicateOutput(struct qemu_syscall *call);
+void qemu_dxgi_output_FindClosestMatchingMode(struct qemu_syscall *call);
+void qemu_dxgi_output_FindClosestMatchingMode1(struct qemu_syscall *call);
+void qemu_dxgi_output_GetDesc(struct qemu_syscall *call);
+void qemu_dxgi_output_GetDisplayModeList(struct qemu_syscall *call);
+void qemu_dxgi_output_GetDisplayModeList1(struct qemu_syscall *call);
+void qemu_dxgi_output_GetDisplaySurfaceData(struct qemu_syscall *call);
+void qemu_dxgi_output_GetDisplaySurfaceData1(struct qemu_syscall *call);
+void qemu_dxgi_output_GetFrameStatistics(struct qemu_syscall *call);
+void qemu_dxgi_output_GetGammaControl(struct qemu_syscall *call);
+void qemu_dxgi_output_GetGammaControlCapabilities(struct qemu_syscall *call);
+void qemu_dxgi_output_GetParent(struct qemu_syscall *call);
+void qemu_dxgi_output_GetPrivateData(struct qemu_syscall *call);
+void qemu_dxgi_output_QueryInterface(struct qemu_syscall *call);
+void qemu_dxgi_output_Release(struct qemu_syscall *call);
+void qemu_dxgi_output_ReleaseOwnership(struct qemu_syscall *call);
+void qemu_dxgi_output_SetDisplaySurface(struct qemu_syscall *call);
+void qemu_dxgi_output_SetGammaControl(struct qemu_syscall *call);
+void qemu_dxgi_output_SetPrivateData(struct qemu_syscall *call);
+void qemu_dxgi_output_SetPrivateDataInterface(struct qemu_syscall *call);
+void qemu_dxgi_output_SupportsOverlays(struct qemu_syscall *call);
+void qemu_dxgi_output_TakeOwnership(struct qemu_syscall *call);
+void qemu_dxgi_output_WaitForVBlank(struct qemu_syscall *call);
 
 HRESULT qemu_dxgi_factory_create(DWORD flags, DWORD version, struct qemu_dxgi_factory **factory);
 HRESULT qemu_dxgi_adapter_create(struct qemu_dxgi_factory *factory, UINT idx, struct qemu_dxgi_adapter **adapter);

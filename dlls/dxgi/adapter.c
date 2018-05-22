@@ -23,7 +23,6 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include <wincon.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
