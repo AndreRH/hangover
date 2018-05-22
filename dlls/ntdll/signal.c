@@ -410,7 +410,6 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
     ntdll_RtlCaptureContext( context );
     new_context = *context;
 
-#error here
     /* build an exception record, if we do not have one */
     if (!rec)
     {
@@ -563,10 +562,9 @@ void WINAPI ntdll_RtlUnwindEx( PVOID end_frame, PVOID target_ip, EXCEPTION_RECOR
     ntdll_RtlRestoreContext(context, rec);
 }
 
-void WINAPI ntdll_RtlUnwind( void *frame, void *target_ip, EXCEPTION_RECORD *rec, void *retval )
+void WINAPI RtlUnwind( void *frame, void *target_ip, EXCEPTION_RECORD *rec, void *retval )
 {
     CONTEXT context;
-#error 32
     ntdll_RtlUnwindEx( frame, target_ip, rec, retval, &context, NULL );
 }
 
