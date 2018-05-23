@@ -317,15 +317,15 @@ static HRESULT STDMETHODCALLTYPE dxgi_adapter_GetParent(IDXGIAdapter3 *iface, RE
 {
     struct qemu_dxgi_adapter_GetParent call;
     struct qemu_dxgi_adapter *adapter = impl_from_IDXGIAdapter3(iface);
+    struct qemu_dxgi_factory *factory;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_ADAPTER_GETPARENT);
     call.iface = (ULONG_PTR)adapter;
-    call.iid = (ULONG_PTR)iid;
-    call.parent = (ULONG_PTR)parent;
 
     qemu_syscall(&call.super);
+    factory = (struct qemu_dxgi_factory *)(ULONG_PTR)call.parent;
 
-    return call.super.iret;
+    return IDXGIFactory_QueryInterface(&factory->IDXGIFactory5_iface, iid, parent);
 }
 
 #else
@@ -335,10 +335,9 @@ void qemu_dxgi_adapter_GetParent(struct qemu_syscall *call)
     struct qemu_dxgi_adapter_GetParent *c = (struct qemu_dxgi_adapter_GetParent *)call;
     struct qemu_dxgi_adapter *adapter;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     adapter = QEMU_G2H(c->iface);
-
-    c->super.iret = IDXGIAdapter3_GetParent(adapter->host, QEMU_G2H(c->iid), QEMU_G2H(c->parent));
+    c->parent = QEMU_H2G(adapter->factory);
 }
 
 #endif
