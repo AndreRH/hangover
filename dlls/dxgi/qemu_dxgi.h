@@ -208,6 +208,9 @@ void qemu_dxgi_adapter_guest_init(struct qemu_dxgi_adapter *adapter);
 void qemu_dxgi_output_guest_init(struct qemu_dxgi_output *output);
 void qemu_dxgi_device_guest_init(struct qemu_dxgi_device *device);
 
+struct qemu_dxgi_factory *unsafe_impl_from_IDXGIFactory(IDXGIFactory *iface);
+struct qemu_dxgi_adapter *unsafe_impl_from_IDXGIAdapter(IDXGIAdapter *iface);
+
 #else
 
 extern const struct qemu_ops *qemu_ops;

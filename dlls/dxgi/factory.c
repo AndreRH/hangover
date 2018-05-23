@@ -1319,6 +1319,26 @@ void qemu_dxgi_factory_guest_init(struct qemu_dxgi_factory *factory)
     factory->IDXGIFactory5_iface.lpVtbl = &dxgi_factory_vtbl.vtbl2;
 }
 
+struct qemu_dxgi_factory *unsafe_impl_from_IDXGIFactory(IDXGIFactory *iface)
+{
+    struct qemu_dxgi_factory *factory;
+    HRESULT hr;
+
+    if (!iface)
+        return NULL;
+    if (iface->lpVtbl != (void *)&dxgi_factory_vtbl)
+    {
+        /* FIXME: The reason of IWineDXGIFactory is apparently to QI our own factory interface through an
+         * application-provided proxy... */
+        WINE_FIXME("Handle other people's factory interfaces.\n");
+        return NULL;
+    }
+
+    factory = impl_from_IDXGIFactory5((IDXGIFactory5 *)iface);
+    return factory;
+}
+
+
 #else
 
 HRESULT qemu_dxgi_factory_create(DWORD flags, DWORD version, struct qemu_dxgi_factory **factory)

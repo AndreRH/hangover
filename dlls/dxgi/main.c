@@ -125,11 +125,12 @@ WINBASEAPI HRESULT WINAPI DXGID3D10CreateDevice(HMODULE d3d10core, IDXGIFactory 
 {
     struct qemu_DXGID3D10CreateDevice call;
     struct qemu_dxgi_device *obj;
-    struct qemu_dxgi_adapter *adapter_impl;
-    struct qemu_dxgi_factory *factory_impl;
+    struct qemu_dxgi_adapter *adapter_impl = unsafe_impl_from_IDXGIAdapter(adapter);
+    struct qemu_dxgi_factory *factory_impl = unsafe_impl_from_IDXGIFactory(factory);
 
     /* FIXME: Register the d3d10 layer and fetch the proper layer size */
 
+    WINE_ERR("%p %p -> %p %p\n", factory, adapter, factory_impl, adapter_impl);
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGID3D10CREATEDEVICE);
     call.d3d10core = (ULONG_PTR)d3d10core;
     call.factory = (ULONG_PTR)factory_impl;
@@ -166,10 +167,12 @@ void qemu_DXGID3D10CreateDevice(struct qemu_syscall *call)
     WINE_FIXME("Unfinished!\n");
     factory = QEMU_G2H(c->factory);
     adapter = QEMU_G2H(c->adapter);
+    WINE_FIXME("%p %p\n", factory, adapter);
     mod = qemu_ops->qemu_module_g2h(c->d3d10core);
 
     c->super.iret = qemu_dxgi_device_create(mod, adapter, factory, c->flags, QEMU_G2H(c->feature_levels),
             c->level_count, c->layer_size, &obj);
+    c->device = QEMU_H2G(obj);
 }
 
 #endif

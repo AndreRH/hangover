@@ -34,6 +34,8 @@
 #include <dxgi1_2.h>
 #include <debug.h>
 
+DEFINE_GUID(IID_IDXGIAdapter3, 0x645967a4, 0x1392, 0x4310, 0xa7,0x98, 0x80,0x53,0xce,0x3e,0x93,0xfd);
+
 #else
 
 #include <dxgi1_5.h>
@@ -829,6 +831,32 @@ dxgi_adapter_vtbl =
 void qemu_dxgi_adapter_guest_init(struct qemu_dxgi_adapter *factory)
 {
     factory->IDXGIAdapter3_iface.lpVtbl = &dxgi_adapter_vtbl.vtbl2;
+}
+
+struct qemu_dxgi_adapter *unsafe_impl_from_IDXGIAdapter(IDXGIAdapter *iface)
+{
+    IDXGIAdapter *qemu_adapter;
+    struct qemu_dxgi_adapter *adapter;
+    HRESULT hr;
+
+    if (!iface)
+        return NULL;
+    if (FAILED(hr = IDXGIAdapter_QueryInterface(iface, &IID_IDXGIAdapter3, (void **)&qemu_adapter)))
+    {
+        WINE_ERR("Failed to get IDXGIAdapter3 interface, hr %#x.\n", hr);
+        return NULL;
+    }
+    if (qemu_adapter->lpVtbl != (void *)&dxgi_adapter_vtbl)
+    {
+        WINE_ERR("Handle other people's adapter interfaces.\n");
+        adapter =  NULL;
+    }
+    else
+    {
+        adapter = CONTAINING_RECORD(qemu_adapter, struct qemu_dxgi_adapter, IDXGIAdapter3_iface);
+    }
+    IDXGIAdapter_Release(qemu_adapter);
+    return adapter;
 }
 
 #else
