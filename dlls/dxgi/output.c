@@ -40,6 +40,8 @@
 
 #endif
 
+#include "thunk/qemu_dxgi.h"
+
 #include "qemu_dxgi.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_dxgi);
@@ -364,11 +366,24 @@ void qemu_dxgi_output_GetDesc(struct qemu_syscall *call)
 {
     struct qemu_dxgi_output_GetDesc *c = (struct qemu_dxgi_output_GetDesc *)call;
     struct qemu_dxgi_output *output;
+    DXGI_OUTPUT_DESC stack, *desc = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     output = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGIOutput4_GetDesc(output->host, QEMU_G2H(c->desc));
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->desc);
+#else
+    if (!c->desc)
+        desc = NULL;
+#endif
+
+    c->super.iret = IDXGIOutput4_GetDesc(output->host, desc);
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret))
+        DXGI_OUTPUT_DESC_h2g(QEMU_G2H(c->desc), desc);
+#endif
 }
 
 #endif
