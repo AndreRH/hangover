@@ -29,6 +29,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
+#include "qemudxgi.h"
 #include "qemu_d3d11.h"
 
 #ifdef QEMU_DLL_GUEST
@@ -39,31 +40,102 @@
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_d3d11);
 
-struct qemu_D3D11CoreRegisterLayers
-{
-    struct qemu_syscall super;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI D3D11CoreRegisterLayers(void)
+static const char *debug_d3d_driver_type(D3D_DRIVER_TYPE driver_type)
 {
-    struct qemu_D3D11CoreRegisterLayers call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11COREREGISTERLAYERS);
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    switch (driver_type)
+    {
+#define D3D11_TO_STR(x) case x: return #x
+        D3D11_TO_STR(D3D_DRIVER_TYPE_UNKNOWN);
+        D3D11_TO_STR(D3D_DRIVER_TYPE_HARDWARE);
+        D3D11_TO_STR(D3D_DRIVER_TYPE_REFERENCE);
+        D3D11_TO_STR(D3D_DRIVER_TYPE_NULL);
+        D3D11_TO_STR(D3D_DRIVER_TYPE_SOFTWARE);
+        D3D11_TO_STR(D3D_DRIVER_TYPE_WARP);
+#undef D3D11_TO_STR
+        default:
+            return wine_dbg_sprintf("Unrecognized D3D_DRIVER_TYPE %#x\n", driver_type);
+    }
 }
 
-#else
-
-extern HRESULT WINAPI D3D11CoreRegisterLayers(void);
-static void qemu_D3D11CoreRegisterLayers(struct qemu_syscall *call)
+static HRESULT WINAPI layer_init(enum dxgi_device_layer_id id, DWORD *count, DWORD *values)
 {
-    struct qemu_D3D11CoreRegisterLayers *c = (struct qemu_D3D11CoreRegisterLayers *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = D3D11CoreRegisterLayers();
+    WINE_TRACE("id %#x, count %p, values %p\n", id, count, values);
+
+    if (id != DXGI_DEVICE_LAYER_D3D10_DEVICE)
+    {
+        WINE_WARN("Unknown layer id %#x\n", id);
+        return E_NOTIMPL;
+    }
+
+    return S_OK;
+}
+
+static UINT WINAPI layer_get_size(enum dxgi_device_layer_id id, struct layer_get_size_args *args, DWORD unknown0)
+{
+    WINE_FIXME("id %#x, args %p, unknown0 %#x\n", id, args, unknown0);
+
+    if (id != DXGI_DEVICE_LAYER_D3D10_DEVICE)
+    {
+        WINE_WARN("Unknown layer id %#x\n", id);
+        return 0;
+    }
+
+    return 0;
+}
+
+static HRESULT WINAPI layer_create(enum dxgi_device_layer_id id, void **layer_base, DWORD unknown0,
+        void *device_object, REFIID riid, void **device_layer)
+{
+    struct d3d_device *object;
+
+    WINE_FIXME("id %#x, layer_base %p, unknown0 %#x, device_object %p, riid %s, device_layer %p\n",
+            id, layer_base, unknown0, device_object, wine_dbgstr_guid(riid), device_layer);
+
+    if (id != DXGI_DEVICE_LAYER_D3D10_DEVICE)
+    {
+        WINE_WARN("Unknown layer id %#x\n", id);
+        *device_layer = NULL;
+        return E_NOTIMPL;
+    }
+
+//     object = *layer_base;
+//     d3d_device_init(object, device_object);
+//     *device_layer = &object->IUnknown_inner;
+
+    WINE_TRACE("Created d3d10 device at %p\n", object);
+
+    return S_OK;
+}
+
+static void WINAPI layer_set_feature_level(enum dxgi_device_layer_id id, void *device,
+        D3D_FEATURE_LEVEL feature_level)
+{
+//     struct d3d_device *d3d_device = device;
+
+    WINE_FIXME("id %#x, device %p, feature_level %#x.\n", id, device, feature_level);
+
+    if (id != DXGI_DEVICE_LAYER_D3D10_DEVICE)
+    {
+        WINE_WARN("Unknown layer id %#x.\n", id);
+        return;
+    }
+
+//     d3d_device->feature_level = feature_level;
+}
+
+extern HRESULT WINAPI DXGID3D10RegisterLayers(const struct dxgi_device_layer *layers, UINT layer_count);
+WINBASEAPI HRESULT WINAPI D3D11CoreRegisterLayers(void)
+{
+    static const struct dxgi_device_layer layers[] =
+    {
+        {DXGI_DEVICE_LAYER_D3D10_DEVICE, layer_init, layer_get_size, layer_create, layer_set_feature_level},
+    };
+
+    DXGID3D10RegisterLayers(layers, sizeof(layers) / sizeof(*layers));
+
+    return S_OK;
 }
 
 #endif
@@ -252,7 +324,6 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
-    qemu_D3D11CoreRegisterLayers,
     qemu_D3D11CreateDevice,
     qemu_D3D11CreateDeviceAndSwapChain,
     qemu_init_dll,

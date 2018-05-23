@@ -1,4 +1,5 @@
 /*
+ * Copyright 2008 Henri Verbeet for CodeWeavers
  * Copyright 2017 André Hentschel
  * Copyright 2018 Stefan Dösinger for CodeWeavers
  *
@@ -29,6 +30,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
+#include "qemudxgi.h"
 
 #ifdef QEMU_DLL_GUEST
 #include <dxgi1_2.h>
@@ -120,6 +122,78 @@ struct qemu_DXGID3D10CreateDevice
 
 #ifdef QEMU_DLL_GUEST
 
+struct dxgi_main
+{
+    HMODULE d3d10core;
+    struct dxgi_device_layer *device_layers;
+    UINT layer_count;
+};
+static struct dxgi_main dxgi_main;
+
+static void dxgi_main_cleanup(void)
+{
+    HeapFree(GetProcessHeap(), 0, dxgi_main.device_layers);
+    FreeLibrary(dxgi_main.d3d10core);
+}
+
+void wined3d_mutex_lock() {} /* FIXME */
+void wined3d_mutex_unlock() {} /* FIXME */
+
+static BOOL get_layer(enum dxgi_device_layer_id id, struct dxgi_device_layer *layer)
+{
+    UINT i;
+
+    wined3d_mutex_lock();
+
+    for (i = 0; i < dxgi_main.layer_count; ++i)
+    {
+        if (dxgi_main.device_layers[i].id == id)
+        {
+            *layer = dxgi_main.device_layers[i];
+            wined3d_mutex_unlock();
+            return TRUE;
+        }
+    }
+
+    wined3d_mutex_unlock();
+    return FALSE;
+}
+
+static HRESULT register_d3d10core_layers(HMODULE d3d10core)
+{
+    wined3d_mutex_lock();
+
+    if (!dxgi_main.d3d10core)
+    {
+        HRESULT hr;
+        HRESULT (WINAPI *d3d11core_register_layers)(void);
+        HMODULE mod;
+        BOOL ret;
+
+        if (!(ret = GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (const char *)d3d10core, &mod)))
+        {
+            wined3d_mutex_unlock();
+            return E_FAIL;
+        }
+
+        d3d11core_register_layers = (void *)GetProcAddress(mod, "D3D11CoreRegisterLayers");
+        hr = d3d11core_register_layers();
+        if (FAILED(hr))
+        {
+            WINE_ERR("Failed to register d3d11 layers, returning %#x.\n", hr);
+            FreeLibrary(mod);
+            wined3d_mutex_unlock();
+            return hr;
+        }
+
+        dxgi_main.d3d10core = mod;
+    }
+
+    wined3d_mutex_unlock();
+
+    return S_OK;
+}
+
 WINBASEAPI HRESULT WINAPI DXGID3D10CreateDevice(HMODULE d3d10core, IDXGIFactory *factory, IDXGIAdapter *adapter,
         unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, void **device)
 {
@@ -127,8 +201,44 @@ WINBASEAPI HRESULT WINAPI DXGID3D10CreateDevice(HMODULE d3d10core, IDXGIFactory 
     struct qemu_dxgi_device *obj;
     struct qemu_dxgi_adapter *adapter_impl = unsafe_impl_from_IDXGIAdapter(adapter);
     struct qemu_dxgi_factory *factory_impl = unsafe_impl_from_IDXGIFactory(factory);
+    struct dxgi_device_layer d3d10_layer;
+    struct layer_get_size_args get_size_args;
+    void *layer_base;
+    HRESULT hr;
+    DWORD count;
 
-    /* FIXME: Register the d3d10 layer and fetch the proper layer size */
+    hr = register_d3d10core_layers(d3d10core);
+    if (FAILED(hr))
+    {
+        WINE_ERR("Failed to register d3d10core layers, returning %#x.\n", hr);
+        return hr;
+    }
+
+    if (!get_layer(DXGI_DEVICE_LAYER_D3D10_DEVICE, &d3d10_layer))
+    {
+        WINE_ERR("Failed to get D3D10 device layer.\n");
+        return E_FAIL;
+    }
+
+    count = 0;
+    hr = d3d10_layer.init(d3d10_layer.id, &count, NULL);
+    if (FAILED(hr))
+    {
+        WINE_WARN("Failed to initialize D3D10 device layer.\n");
+        return E_FAIL;
+    }
+
+    get_size_args.unknown0 = 0;
+    get_size_args.unknown1 = 0;
+    get_size_args.unknown2 = NULL;
+    get_size_args.unknown3 = NULL;
+    get_size_args.adapter = adapter;
+    get_size_args.interface_major = 10;
+    get_size_args.interface_minor = 1;
+    get_size_args.version_build = 4;
+    get_size_args.version_revision = 6000;
+
+    call.layer_size = d3d10_layer.get_size(d3d10_layer.id, &get_size_args, 0);
 
     WINE_ERR("%p %p -> %p %p\n", factory, adapter, factory_impl, adapter_impl);
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGID3D10CREATEDEVICE);
@@ -138,7 +248,6 @@ WINBASEAPI HRESULT WINAPI DXGID3D10CreateDevice(HMODULE d3d10core, IDXGIFactory 
     call.flags = flags;
     call.feature_levels = (ULONG_PTR)feature_levels;
     call.level_count = level_count;
-    call.layer_size = 0;
 
     qemu_syscall(&call.super);
 
@@ -149,9 +258,20 @@ WINBASEAPI HRESULT WINAPI DXGID3D10CreateDevice(HMODULE d3d10core, IDXGIFactory 
     }
 
     obj = (struct qemu_dxgi_device *)(ULONG_PTR)call.device;
+    *device = &obj->IDXGIDevice2_iface;
     qemu_dxgi_device_guest_init(obj);
 
-    /* FIXME: Call layer init and store the inner unknown. */
+    layer_base = device + 1;
+    if (FAILED(hr = d3d10_layer.create(d3d10_layer.id, &layer_base, 0,
+            *device, &IID_IUnknown, (void **)&obj->child_layer)))
+    {
+        /* TODO: This leaks... */
+        WINE_FIXME("Failed to create device, returning %#x.\n", hr);
+        *device = NULL;
+        return hr;
+    }
+
+    d3d10_layer.set_feature_level(d3d10_layer.id, obj->child_layer, 0); /* Should not be necessary */
 }
 
 #else
@@ -164,10 +284,9 @@ void qemu_DXGID3D10CreateDevice(struct qemu_syscall *call)
     struct qemu_dxgi_factory *factory;
     HMODULE mod;
 
-    WINE_FIXME("Unfinished!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->factory);
     adapter = QEMU_G2H(c->adapter);
-    WINE_FIXME("%p %p\n", factory, adapter);
     mod = qemu_ops->qemu_module_g2h(c->d3d10core);
 
     c->super.iret = qemu_dxgi_device_create(mod, adapter, factory, c->flags, QEMU_G2H(c->feature_levels),
@@ -177,35 +296,46 @@ void qemu_DXGID3D10CreateDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_DXGID3D10RegisterLayers
-{
-    struct qemu_syscall super;
-    uint64_t layers;
-    uint64_t layer_count;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI DXGID3D10RegisterLayers(const void *layers, UINT layer_count)
+WINBASEAPI HRESULT WINAPI DXGID3D10RegisterLayers(const struct dxgi_device_layer *layers, UINT layer_count)
 {
-    struct qemu_DXGID3D10RegisterLayers call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_DXGID3D10REGISTERLAYERS);
-    call.layers = (ULONG_PTR)layers;
-    call.layer_count = layer_count;
+    UINT i;
+    struct dxgi_device_layer *new_layers;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("layers %p, layer_count %u\n", layers, layer_count);
 
-    return call.super.iret;
-}
+    wined3d_mutex_lock();
 
-#else
+    if (!dxgi_main.layer_count)
+        new_layers = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, layer_count * sizeof(*new_layers));
+    else
+        new_layers = HeapReAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, dxgi_main.device_layers,
+                (dxgi_main.layer_count + layer_count) * sizeof(*new_layers));
 
-extern HRESULT WINAPI DXGID3D10RegisterLayers(const void *layers, UINT layer_count);
-void qemu_DXGID3D10RegisterLayers(struct qemu_syscall *call)
-{
-    struct qemu_DXGID3D10RegisterLayers *c = (struct qemu_DXGID3D10RegisterLayers *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DXGID3D10RegisterLayers(QEMU_G2H(c->layers), c->layer_count);
+    if (!new_layers)
+    {
+        wined3d_mutex_unlock();
+        WINE_ERR("Failed to allocate layer memory\n");
+        return E_OUTOFMEMORY;
+    }
+
+    for (i = 0; i < layer_count; ++i)
+    {
+        const struct dxgi_device_layer *layer = &layers[i];
+
+        WINE_TRACE("layer %d: id %#x, init %p, get_size %p, create %p\n",
+                i, layer->id, layer->init, layer->get_size, layer->create);
+
+        new_layers[dxgi_main.layer_count + i] = *layer;
+    }
+
+    dxgi_main.device_layers = new_layers;
+    dxgi_main.layer_count += layer_count;
+
+    wined3d_mutex_unlock();
+
+    return S_OK;
 }
 
 #endif
@@ -225,6 +355,10 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
     {
         call.super.id = QEMU_SYSCALL_ID(CALL_INIT_DLL);
         qemu_syscall(&call.super);
+    } else if (reason == DLL_PROCESS_DETACH)
+    {
+        if (!reserved)
+            dxgi_main_cleanup();
     }
 
     return TRUE;
@@ -332,7 +466,6 @@ static const syscall_handler dll_functions[] =
     qemu_dxgi_output_TakeOwnership,
     qemu_dxgi_output_WaitForVBlank,
     qemu_DXGID3D10CreateDevice,
-    qemu_DXGID3D10RegisterLayers,
     qemu_init_dll,
 };
 
