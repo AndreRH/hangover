@@ -22,14 +22,16 @@
 
 enum d3d11_calls
 {
-    CALL_D3D11CORECREATEDEVICE = 0,
-    CALL_D3D11COREREGISTERLAYERS,
+    CALL_D3D11COREREGISTERLAYERS = 0,
     CALL_D3D11CREATEDEVICE,
     CALL_D3D11CREATEDEVICEANDSWAPCHAIN,
     CALL_INIT_DLL,
 };
 
 #ifdef QEMU_DLL_GUEST
+
+extern HRESULT (* WINAPI p_DXGID3D10CreateDevice)(HMODULE d3d10core, IDXGIFactory *factory, IDXGIAdapter *adapter,
+        unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, void **device);
 
 #else
 

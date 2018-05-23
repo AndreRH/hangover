@@ -19,6 +19,8 @@
 
 /* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
 
+#define COBJMACROS
+
 #include <windows.h>
 #include <stdio.h>
 #include <d3d11.h>
@@ -29,10 +31,13 @@
 #include "dll_list.h"
 #include "qemu_d3d11.h"
 
-#ifndef QEMU_DLL_GUEST
+#ifdef QEMU_DLL_GUEST
+#include <debug.h>
+#else
 #include <wine/debug.h>
-WINE_DEFAULT_DEBUG_CHANNEL(qemu_d3d11);
 #endif
+
+WINE_DEFAULT_DEBUG_CHANNEL(qemu_d3d11);
 
 struct qemu_D3D11CoreRegisterLayers
 {
@@ -63,47 +68,38 @@ static void qemu_D3D11CoreRegisterLayers(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_D3D11CoreCreateDevice
-{
-    struct qemu_syscall super;
-    uint64_t factory;
-    uint64_t adapter;
-    uint64_t flags;
-    uint64_t feature_levels;
-    uint64_t levels;
-    uint64_t device;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 WINBASEAPI HRESULT WINAPI D3D11CoreCreateDevice(IDXGIFactory *factory, IDXGIAdapter *adapter, UINT flags,
         const D3D_FEATURE_LEVEL *feature_levels, UINT levels, ID3D11Device **device)
 {
-    struct qemu_D3D11CoreCreateDevice call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11CORECREATEDEVICE);
-    call.factory = (ULONG_PTR)factory;
-    call.adapter = (ULONG_PTR)adapter;
-    call.flags = flags;
-    call.feature_levels = (ULONG_PTR)feature_levels;
-    call.levels = levels;
-    call.device = (ULONG_PTR)device;
+    IUnknown *dxgi_device;
+    HMODULE d3d11;
+    HRESULT hr;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("factory %p, adapter %p, flags %#x, feature_levels %p, levels %u, device %p.\n",
+            factory, adapter, flags, feature_levels, levels, device);
 
-    return call.super.iret;
+    d3d11 = GetModuleHandleA("d3d11.dll");
+    hr = p_DXGID3D10CreateDevice(d3d11, factory, adapter, flags, feature_levels, levels, (void **)&dxgi_device);
+    if (FAILED(hr))
+    {
+        WINE_WARN("Failed to create device, returning %#x.\n", hr);
+        return hr;
+    }
+
+    hr = IUnknown_QueryInterface(dxgi_device, &IID_ID3D11Device, (void **)device);
+    IUnknown_Release(dxgi_device);
+    if (FAILED(hr))
+    {
+        WINE_ERR("Failed to query ID3D11Device interface, returning E_FAIL.\n");
+        return E_FAIL;
+    }
+
+    return S_OK;
 }
 
 #else
-
-extern HRESULT WINAPI D3D11CoreCreateDevice(IDXGIFactory *factory, IDXGIAdapter *adapter, UINT flags,
-        const D3D_FEATURE_LEVEL *feature_levels, UINT levels, ID3D11Device **device);
-static void qemu_D3D11CoreCreateDevice(struct qemu_syscall *call)
-{
-    struct qemu_D3D11CoreCreateDevice *c = (struct qemu_D3D11CoreCreateDevice *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = D3D11CoreCreateDevice(QEMU_G2H(c->factory), QEMU_G2H(c->adapter), c->flags,
-            QEMU_G2H(c->feature_levels), c->levels, QEMU_G2H(c->device));
-}
 
 #endif
 
@@ -223,14 +219,23 @@ struct qemu_dll_init
 
 #ifdef QEMU_DLL_GUEST
 
+HRESULT (* WINAPI p_DXGID3D10CreateDevice)(HMODULE d3d10core, IDXGIFactory *factory, IDXGIAdapter *adapter,
+        unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, void **device);
+
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_dll_init call;
+    HMODULE dxgi;
 
     if (reason == DLL_PROCESS_ATTACH)
     {
         call.super.id = QEMU_SYSCALL_ID(CALL_INIT_DLL);
         qemu_syscall(&call.super);
+
+        dxgi = GetModuleHandleA("dxgi");
+        if (!dxgi)
+            WINE_ERR("Cannot get dxgi.dll.\n");
+        p_DXGID3D10CreateDevice = (void *)GetProcAddress(dxgi, "DXGID3D10CreateDevice");
     }
 
     return TRUE;
@@ -247,7 +252,6 @@ const struct qemu_ops *qemu_ops;
 
 static const syscall_handler dll_functions[] =
 {
-    qemu_D3D11CoreCreateDevice,
     qemu_D3D11CoreRegisterLayers,
     qemu_D3D11CreateDevice,
     qemu_D3D11CreateDeviceAndSwapChain,
