@@ -60,14 +60,34 @@ static HRESULT STDMETHODCALLTYPE dxgi_device_QueryInterface(IDXGIDevice2 *iface,
     struct qemu_dxgi_device_QueryInterface call;
     struct qemu_dxgi_device *device = impl_from_IDXGIDevice2(iface);
 
+    WINE_TRACE("iface %p, riid %s, object %p\n", iface, wine_dbgstr_guid(riid), object);
+
+    if (IsEqualGUID(riid, &IID_IUnknown)
+            || IsEqualGUID(riid, &IID_IDXGIObject)
+            || IsEqualGUID(riid, &IID_IDXGIDevice)
+            || IsEqualGUID(riid, &IID_IDXGIDevice1)
+            || IsEqualGUID(riid, &IID_IDXGIDevice2))
+    {
+        IUnknown_AddRef(iface);
+        *object = iface;
+        return S_OK;
+    }
+
+    if (device->child_layer)
+    {
+        WINE_TRACE("forwarding to child layer %p.\n", device->child_layer);
+        return IUnknown_QueryInterface(device->child_layer, riid, object);
+    }
+
+    /* Test if we're supposed to know about it. */
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_DEVICE_QUERYINTERFACE);
     call.iface = (ULONG_PTR)device;
     call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
 
     qemu_syscall(&call.super);
+    *object = NULL;
 
-    return call.super.iret;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -76,11 +96,16 @@ void qemu_dxgi_device_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_dxgi_device_QueryInterface *c = (struct qemu_dxgi_device_QueryInterface *)call;
     struct qemu_dxgi_device *device;
+    IUnknown *obj;
 
-    WINE_FIXME("Unverified!\n");
     device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDXGIDevice2_QueryInterface(device->host, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    c->super.iret = IDXGIDevice2_QueryInterface(device->host, QEMU_G2H(c->riid), (void **)&obj);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host device returned IID %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->riid)));
+        IUnknown_Release(obj);
+    }
 }
 
 #endif
