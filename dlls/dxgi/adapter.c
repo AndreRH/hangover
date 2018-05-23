@@ -148,7 +148,7 @@ static ULONG STDMETHODCALLTYPE dxgi_adapter_Release(IDXGIAdapter3 *iface)
 
 #else
 
-static ULONG qemu_dxgi_adapter_Release_internal(struct qemu_dxgi_adapter *adapter)
+ULONG qemu_dxgi_adapter_Release_internal(struct qemu_dxgi_adapter *adapter)
 {
     struct qemu_dxgi_factory *factory = adapter->factory;
     ULONG ret;
@@ -357,13 +357,23 @@ static HRESULT STDMETHODCALLTYPE dxgi_adapter_EnumOutputs(IDXGIAdapter3 *iface, 
 {
     struct qemu_dxgi_adapter_EnumOutputs call;
     struct qemu_dxgi_adapter *adapter = impl_from_IDXGIAdapter3(iface);
+    struct qemu_dxgi_output *obj;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_ADAPTER_ENUMOUTPUTS);
     call.iface = (ULONG_PTR)adapter;
     call.output_idx = output_idx;
-    call.output = (ULONG_PTR)output;
 
     qemu_syscall(&call.super);
+    obj = (struct qemu_dxgi_output *)(ULONG_PTR)call.output;
+    if (obj)
+    {
+        qemu_dxgi_output_guest_init(obj);
+        *output = (IDXGIOutput *)&obj->IDXGIOutput4_iface;
+    }
+    else
+    {
+        *output = NULL;
+    }
 
     return call.super.iret;
 }
@@ -374,11 +384,13 @@ void qemu_dxgi_adapter_EnumOutputs(struct qemu_syscall *call)
 {
     struct qemu_dxgi_adapter_EnumOutputs *c = (struct qemu_dxgi_adapter_EnumOutputs *)call;
     struct qemu_dxgi_adapter *adapter;
+    struct qemu_dxgi_output *output;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     adapter = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGIAdapter3_EnumOutputs(adapter->host, c->output_idx, QEMU_G2H(c->output));
+    c->super.iret = qemu_dxgi_output_create(adapter, c->output_idx, &output);
+    c->output = QEMU_H2G(output);
 }
 
 #endif

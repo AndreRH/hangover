@@ -117,7 +117,7 @@ void qemu_dxgi_output_AddRef(struct qemu_syscall *call)
     struct qemu_dxgi_output_AddRef *c = (struct qemu_dxgi_output_AddRef *)call;
     struct qemu_dxgi_output *output;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     output = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGIOutput4_AddRef(output->host);
@@ -152,11 +152,21 @@ void qemu_dxgi_output_Release(struct qemu_syscall *call)
 {
     struct qemu_dxgi_output_Release *c = (struct qemu_dxgi_output_Release *)call;
     struct qemu_dxgi_output *output;
+    struct qemu_dxgi_adapter *adapter;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     output = QEMU_G2H(c->iface);
+    adapter = output->adapter;
 
+    IDXGIAdapter3_AddRef(adapter->host);
     c->super.iret = IDXGIOutput4_Release(output->host);
+    qemu_dxgi_adapter_Release_internal(adapter);
+
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying dxgi output wrapper %p (host output %p).\n", output, output->host);
+        HeapFree(GetProcessHeap(), 0, output);
+    }
 }
 
 #endif
@@ -1073,3 +1083,84 @@ void qemu_dxgi_output_CheckOverlayColorSpaceSupport(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+static const struct
+{
+    IDXGIOutputVtbl vtbl1;
+    void *GetDisplayModeList1;
+    void *FindClosestMatchingMode1;
+    void *GetDisplaySurfaceData1;
+    void *DuplicateOutput;
+    void *SupportsOverlays;
+    void *CheckOverlaySupport;
+    void *CheckOverlayColorSpaceSupport;
+}
+dxgi_output_vtbl =
+{
+    {
+        dxgi_output_QueryInterface,
+        dxgi_output_AddRef,
+        dxgi_output_Release,
+        /* IDXGIObject methods */
+        dxgi_output_SetPrivateData,
+        dxgi_output_SetPrivateDataInterface,
+        dxgi_output_GetPrivateData,
+        dxgi_output_GetParent,
+        /* IDXGIOutput methods */
+        dxgi_output_GetDesc,
+        dxgi_output_GetDisplayModeList,
+        dxgi_output_FindClosestMatchingMode,
+        dxgi_output_WaitForVBlank,
+        dxgi_output_TakeOwnership,
+        dxgi_output_ReleaseOwnership,
+        dxgi_output_GetGammaControlCapabilities,
+        dxgi_output_SetGammaControl,
+        dxgi_output_GetGammaControl,
+        dxgi_output_SetDisplaySurface,
+        dxgi_output_GetDisplaySurfaceData,
+        dxgi_output_GetFrameStatistics,
+    },
+    /* IDXGIOutput1 methods */
+    dxgi_output_GetDisplayModeList1,
+    dxgi_output_FindClosestMatchingMode1,
+    dxgi_output_GetDisplaySurfaceData1,
+    dxgi_output_DuplicateOutput,
+    /* IDXGIOutput2 methods */
+    dxgi_output_SupportsOverlays,
+    /* IDXGIOutput3 methods */
+    dxgi_output_CheckOverlaySupport,
+    /* IDXGIOutput4 methods */
+    dxgi_output_CheckOverlayColorSpaceSupport,
+};
+
+void qemu_dxgi_output_guest_init(struct qemu_dxgi_output *output)
+{
+    output->IDXGIOutput4_iface.lpVtbl = &dxgi_output_vtbl.vtbl1;
+}
+
+#else
+
+HRESULT qemu_dxgi_output_create(struct qemu_dxgi_adapter *adapter, UINT idx, struct qemu_dxgi_output **output)
+{
+    HRESULT hr;
+    struct qemu_dxgi_output *obj;
+
+    *output = NULL;
+    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
+    if (!obj)
+    {
+        WINE_WARN("Out of memory\n");
+        return E_OUTOFMEMORY;
+    }
+    obj->adapter = adapter;
+
+    hr = IDXGIAdapter3_EnumOutputs(adapter->host, idx, (IDXGIOutput **)&obj->host);
+    if (SUCCEEDED(hr))
+        *output = obj;
+    else
+        HeapFree(GetProcessHeap(), 0, obj);
+    return hr;
+}
+
+#endif

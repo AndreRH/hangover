@@ -170,12 +170,14 @@ struct qemu_dxgi_output
 
     /* Host fields */
     IDXGIOutput4 *host;
+    struct qemu_dxgi_adapter *adapter;
 };
 
 #ifdef QEMU_DLL_GUEST
 
 void qemu_dxgi_factory_guest_init(struct qemu_dxgi_factory *factory);
 void qemu_dxgi_adapter_guest_init(struct qemu_dxgi_adapter *adapter);
+void qemu_dxgi_output_guest_init(struct qemu_dxgi_output *output);
 
 #else
 
@@ -256,7 +258,9 @@ void qemu_dxgi_output_WaitForVBlank(struct qemu_syscall *call);
 
 HRESULT qemu_dxgi_factory_create(DWORD flags, DWORD version, struct qemu_dxgi_factory **factory);
 HRESULT qemu_dxgi_adapter_create(struct qemu_dxgi_factory *factory, UINT idx, struct qemu_dxgi_adapter **adapter);
+HRESULT qemu_dxgi_output_create(struct qemu_dxgi_adapter *adapter, UINT idx, struct qemu_dxgi_output **output);
 ULONG qemu_dxgi_factory_Release_internal(struct qemu_dxgi_factory *factory);
+ULONG qemu_dxgi_adapter_Release_internal(struct qemu_dxgi_adapter *adapter);
 
 #endif
 
