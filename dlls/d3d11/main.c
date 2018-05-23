@@ -23,22 +23,37 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include <d3d11.h>
+#include <initguid.h>
 
 #include "thunk/qemu_windows.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "qemudxgi.h"
-#include "qemu_d3d11.h"
 
 #ifdef QEMU_DLL_GUEST
+#include <d3d11.h>
 #include <debug.h>
 #else
+#include <d3d11_2.h>
 #include <wine/debug.h>
 #endif
 
+#include "qemudxgi.h"
+#include "qemu_d3d11.h"
+
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_d3d11);
+
+struct qemu_layer_get_size
+{
+    struct qemu_syscall super;
+};
+
+struct qemu_layer_create
+{
+    struct qemu_syscall super;
+    uint64_t device;
+    uint64_t host_device;
+};
 
 #ifdef QEMU_DLL_GUEST
 
@@ -74,7 +89,8 @@ static HRESULT WINAPI layer_init(enum dxgi_device_layer_id id, DWORD *count, DWO
 
 static UINT WINAPI layer_get_size(enum dxgi_device_layer_id id, struct layer_get_size_args *args, DWORD unknown0)
 {
-    WINE_FIXME("id %#x, args %p, unknown0 %#x\n", id, args, unknown0);
+    struct qemu_layer_get_size call;
+    WINE_TRACE("id %#x, args %p, unknown0 %#x\n", id, args, unknown0);
 
     if (id != DXGI_DEVICE_LAYER_D3D10_DEVICE)
     {
@@ -82,13 +98,17 @@ static UINT WINAPI layer_get_size(enum dxgi_device_layer_id id, struct layer_get
         return 0;
     }
 
-    return 0;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LAYER_GET_SIZE);
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
 }
 
 static HRESULT WINAPI layer_create(enum dxgi_device_layer_id id, void **layer_base, DWORD unknown0,
-        void *device_object, REFIID riid, void **device_layer)
+        void *device_object, REFIID riid, void **device_layer, uint64_t host_dxgi_device)
 {
-    struct d3d_device *object;
+    struct qemu_layer_create call;
+    struct qemu_d3d11_device *object;
 
     WINE_FIXME("id %#x, layer_base %p, unknown0 %#x, device_object %p, riid %s, device_layer %p\n",
             id, layer_base, unknown0, device_object, wine_dbgstr_guid(riid), device_layer);
@@ -100,9 +120,14 @@ static HRESULT WINAPI layer_create(enum dxgi_device_layer_id id, void **layer_ba
         return E_NOTIMPL;
     }
 
-//     object = *layer_base;
-//     d3d_device_init(object, device_object);
-//     *device_layer = &object->IUnknown_inner;
+    object = *layer_base;
+    //d3d_device_guest_init(object, device_object);
+    *device_layer = &object->IUnknown_inner;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_LAYER_CREATE);
+    call.device = (ULONG_PTR)object;
+    call.host_device = host_dxgi_device;
+    qemu_syscall(&call.super);
 
     WINE_TRACE("Created d3d10 device at %p\n", object);
 
@@ -112,17 +137,13 @@ static HRESULT WINAPI layer_create(enum dxgi_device_layer_id id, void **layer_ba
 static void WINAPI layer_set_feature_level(enum dxgi_device_layer_id id, void *device,
         D3D_FEATURE_LEVEL feature_level)
 {
-//     struct d3d_device *d3d_device = device;
-
-    WINE_FIXME("id %#x, device %p, feature_level %#x.\n", id, device, feature_level);
+    WINE_TRACE("id %#x, device %p, feature_level %#x.\n", id, device, feature_level);
 
     if (id != DXGI_DEVICE_LAYER_D3D10_DEVICE)
     {
         WINE_WARN("Unknown layer id %#x.\n", id);
         return;
     }
-
-//     d3d_device->feature_level = feature_level;
 }
 
 extern HRESULT WINAPI DXGID3D10RegisterLayers(const struct dxgi_device_layer *layers, UINT layer_count);
@@ -136,6 +157,42 @@ WINBASEAPI HRESULT WINAPI D3D11CoreRegisterLayers(void)
     DXGID3D10RegisterLayers(layers, sizeof(layers) / sizeof(*layers));
 
     return S_OK;
+}
+
+#else
+
+static void qemu_layer_get_size(struct qemu_syscall *call)
+{
+    WINE_TRACE("\n");
+    call->iret = sizeof(struct qemu_d3d11_device);
+}
+
+static void qemu_layer_create(struct qemu_syscall *call)
+{
+    struct qemu_layer_create *c = (struct qemu_layer_create *)call;
+    struct qemu_d3d11_device *device;
+    IUnknown *host_device;
+    HRESULT hr;
+
+    device = QEMU_G2H(c->device);
+    host_device = QEMU_G2H(c->host_device);
+    WINE_TRACE("Initializing device %p host side.\n", device);
+
+    /* Do not hold references, the wrapper shares the refcount with the host device. */
+    hr = IUnknown_QueryInterface(host_device, &IID_ID3D11Device2, (void **)&device->host_d3d11);
+    if (FAILED(hr))
+        WINE_ERR("Could not get ID3D11Device2 host interface.\n");
+    ID3D11Device2_Release(device->host_d3d11);
+
+    hr = IUnknown_QueryInterface(host_device, &IID_ID3D10Device1, (void **)&device->host_d3d10);
+    if (FAILED(hr))
+        WINE_ERR("Could not get ID3D10Device1 host interface.\n");
+    ID3D10Device1_Release(device->host_d3d10);
+
+    hr = IUnknown_QueryInterface(host_device, &IID_ID3D10Multithread, (void **)&device->host_mt);
+    if (FAILED(hr))
+        WINE_ERR("Could not get ID3D10Multithread host interface.\n");
+    ID3D10Multithread_Release(device->host_mt);
 }
 
 #endif
@@ -327,6 +384,8 @@ static const syscall_handler dll_functions[] =
     qemu_D3D11CreateDevice,
     qemu_D3D11CreateDeviceAndSwapChain,
     qemu_init_dll,
+    qemu_layer_create,
+    qemu_layer_get_size,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)

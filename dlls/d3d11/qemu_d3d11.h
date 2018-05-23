@@ -25,6 +25,29 @@ enum d3d11_calls
     CALL_D3D11CREATEDEVICE = 0,
     CALL_D3D11CREATEDEVICEANDSWAPCHAIN,
     CALL_INIT_DLL,
+    CALL_LAYER_CREATE,
+    CALL_LAYER_GET_SIZE,
+};
+
+#ifdef QEMU_DLL_GUEST
+
+typedef ID3D11Device ID3D11Device2;
+
+#endif
+
+struct qemu_d3d11_device
+{
+    /* Guest fields */
+    IUnknown IUnknown_inner;
+    ID3D11Device2 ID3D11Device2_iface;
+    ID3D10Device1 ID3D10Device1_iface;
+    ID3D10Multithread ID3D10Multithread_iface;
+    IUnknown *outer_unk;
+
+    /* Host fields */
+    ID3D11Device2 *host_d3d11;
+    ID3D10Device1 *host_d3d10;
+    ID3D10Multithread *host_mt;
 };
 
 #ifdef QEMU_DLL_GUEST

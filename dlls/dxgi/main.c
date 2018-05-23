@@ -118,6 +118,7 @@ struct qemu_DXGID3D10CreateDevice
     uint64_t level_count;
     uint64_t layer_size;
     uint64_t device;
+    uint64_t host_device;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -240,7 +241,6 @@ WINBASEAPI HRESULT WINAPI DXGID3D10CreateDevice(HMODULE d3d10core, IDXGIFactory 
 
     call.layer_size = d3d10_layer.get_size(d3d10_layer.id, &get_size_args, 0);
 
-    WINE_ERR("%p %p -> %p %p\n", factory, adapter, factory_impl, adapter_impl);
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGID3D10CREATEDEVICE);
     call.d3d10core = (ULONG_PTR)d3d10core;
     call.factory = (ULONG_PTR)factory_impl;
@@ -263,7 +263,7 @@ WINBASEAPI HRESULT WINAPI DXGID3D10CreateDevice(HMODULE d3d10core, IDXGIFactory 
 
     layer_base = device + 1;
     if (FAILED(hr = d3d10_layer.create(d3d10_layer.id, &layer_base, 0,
-            *device, &IID_IUnknown, (void **)&obj->child_layer)))
+            *device, &IID_IUnknown, (void **)&obj->child_layer, call.host_device)))
     {
         /* TODO: This leaks... */
         WINE_FIXME("Failed to create device, returning %#x.\n", hr);
@@ -292,6 +292,7 @@ void qemu_DXGID3D10CreateDevice(struct qemu_syscall *call)
     c->super.iret = qemu_dxgi_device_create(mod, adapter, factory, c->flags, QEMU_G2H(c->feature_levels),
             c->level_count, c->layer_size, &obj);
     c->device = QEMU_H2G(obj);
+    c->host_device = QEMU_H2G(obj->host);
 }
 
 #endif

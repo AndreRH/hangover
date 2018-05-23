@@ -50,7 +50,7 @@ struct dxgi_device_layer
     HRESULT (WINAPI *init)(enum dxgi_device_layer_id id, DWORD *count, DWORD *values);
     UINT (WINAPI *get_size)(enum dxgi_device_layer_id id, struct layer_get_size_args *args, DWORD unknown0);
     HRESULT (WINAPI *create)(enum dxgi_device_layer_id id, void **layer_base, DWORD unknown0,
-            void *device_object, REFIID riid, void **device_layer);
+            void *device_object, REFIID riid, void **device_layer, uint64_t host_dxgi_device);
     void (WINAPI *set_feature_level)(enum dxgi_device_layer_id id, void *device,
             D3D_FEATURE_LEVEL feature_level);
 };
