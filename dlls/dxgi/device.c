@@ -23,6 +23,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <d3d11_1.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -754,5 +755,43 @@ void qemu_dxgi_device_guest_init(struct qemu_dxgi_device *device)
 }
 
 #else
+
+extern HRESULT WINAPI DXGID3D10CreateDevice(HMODULE d3d10core, IDXGIFactory *factory, IDXGIAdapter *adapter,
+        unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, void **device);
+HRESULT qemu_dxgi_device_create(HMODULE mod, struct qemu_dxgi_adapter *adapter, struct qemu_dxgi_factory *factory,
+        unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, size_t layer_size,
+        struct qemu_dxgi_device **device)
+{
+    struct qemu_dxgi_device *obj;
+    HRESULT hr;
+    IUnknown *unk_device;
+
+    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj) + layer_size);
+    if (!obj)
+    {
+        WINE_WARN("Out of memory\n");
+        return E_OUTOFMEMORY;
+    }
+
+    /* Note that calling DXGID3D10CreateDevice here assumes that D3D11CreateDevice doesn't do any
+     * magic on its own, beyond passing the upper layer HMODULE to dxgi. */
+    hr = DXGID3D10CreateDevice(mod, factory ? (IDXGIFactory *)factory->host : NULL,
+            adapter ? (IDXGIAdapter *)adapter->host : NULL,
+            flags, feature_levels, level_count, (void **)&unk_device);
+    if (FAILED(hr))
+    {
+        WINE_FIXME("Host D3D11CoreCreateDevice failed.\n");
+        HeapFree(GetProcessHeap(), 0, obj);
+        return hr;
+    }
+
+    hr = IUnknown_QueryInterface(unk_device, &IID_IDXGIDevice2, (void **)&obj->host);
+    if (FAILED(hr))
+        WINE_ERR("QI for IDXGIDevice2 failed.\n");
+    IUnknown_Release(unk_device);
+
+    *device = obj;
+    return hr;
+}
 
 #endif

@@ -23,7 +23,7 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include <d3d10_1.h>
+#include <d3d11_1.h>
 
 #include "thunk/qemu_windows.h"
 
@@ -114,6 +114,7 @@ struct qemu_DXGID3D10CreateDevice
     uint64_t flags;
     uint64_t feature_levels;
     uint64_t level_count;
+    uint64_t layer_size;
     uint64_t device;
 };
 
@@ -123,30 +124,52 @@ WINBASEAPI HRESULT WINAPI DXGID3D10CreateDevice(HMODULE d3d10core, IDXGIFactory 
         unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, void **device)
 {
     struct qemu_DXGID3D10CreateDevice call;
+    struct qemu_dxgi_device *obj;
+    struct qemu_dxgi_adapter *adapter_impl;
+    struct qemu_dxgi_factory *factory_impl;
+
+    /* FIXME: Register the d3d10 layer and fetch the proper layer size */
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGID3D10CREATEDEVICE);
     call.d3d10core = (ULONG_PTR)d3d10core;
-    call.factory = (ULONG_PTR)factory;
-    call.adapter = (ULONG_PTR)adapter;
+    call.factory = (ULONG_PTR)factory_impl;
+    call.adapter = (ULONG_PTR)adapter_impl;
     call.flags = flags;
     call.feature_levels = (ULONG_PTR)feature_levels;
     call.level_count = level_count;
-    call.device = (ULONG_PTR)device;
+    call.layer_size = 0;
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    if (FAILED(call.super.iret))
+    {
+        *device = NULL;
+        return call.super.iret;
+    }
+
+    obj = (struct qemu_dxgi_device *)(ULONG_PTR)call.device;
+    qemu_dxgi_device_guest_init(obj);
+
+    /* FIXME: Call layer init and store the inner unknown. */
 }
 
 #else
 
-extern HRESULT WINAPI DXGID3D10CreateDevice(HMODULE d3d10core, IDXGIFactory *factory, IDXGIAdapter *adapter,
-        unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, void **device);
 void qemu_DXGID3D10CreateDevice(struct qemu_syscall *call)
 {
     struct qemu_DXGID3D10CreateDevice *c = (struct qemu_DXGID3D10CreateDevice *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DXGID3D10CreateDevice(QEMU_G2H(c->d3d10core), QEMU_G2H(c->factory), QEMU_G2H(c->adapter),
-            c->flags, QEMU_G2H(c->feature_levels), c->level_count, QEMU_G2H(c->device));
+    struct qemu_dxgi_device *obj;
+    struct qemu_dxgi_adapter *adapter;
+    struct qemu_dxgi_factory *factory;
+    HMODULE mod;
+
+    WINE_FIXME("Unfinished!\n");
+    factory = QEMU_G2H(c->factory);
+    adapter = QEMU_G2H(c->adapter);
+    mod = qemu_ops->qemu_module_g2h(c->d3d10core);
+
+    c->super.iret = qemu_dxgi_device_create(mod, adapter, factory, c->flags, QEMU_G2H(c->feature_levels),
+            c->level_count, c->layer_size, &obj);
 }
 
 #endif
