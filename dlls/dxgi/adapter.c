@@ -74,7 +74,30 @@ static HRESULT STDMETHODCALLTYPE dxgi_adapter_QueryInterface(IDXGIAdapter3 *ifac
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    if (FAILED(call.super.iret))
+    {
+        *out = NULL;
+        return call.super.iret;
+    }
+
+    if (IsEqualGUID(iid, &IID_IDXGIAdapter3)
+            || IsEqualGUID(iid, &IID_IDXGIAdapter2)
+            || IsEqualGUID(iid, &IID_IDXGIAdapter1)
+            || IsEqualGUID(iid, &IID_IDXGIAdapter)
+            || IsEqualGUID(iid, &IID_IDXGIObject)
+            || IsEqualGUID(iid, &IID_IUnknown))
+    {
+        /* AddRef was handled on the host side. */
+        *out = iface;
+        return S_OK;
+    }
+
+    WINE_FIXME("The host returned an interface for IID %s but this wrapper does not know about it.\n",
+            wine_dbgstr_guid(iid));
+    IDXGIAdapter_Release(iface);
+    *out = NULL;
+
+    return E_NOINTERFACE;
 }
 
 #else
@@ -83,11 +106,13 @@ void qemu_dxgi_adapter_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_dxgi_adapter_QueryInterface *c = (struct qemu_dxgi_adapter_QueryInterface *)call;
     struct qemu_dxgi_adapter *adapter;
+    void *out;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     adapter = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGIAdapter3_QueryInterface(adapter->host, QEMU_G2H(c->iid), QEMU_G2H(c->out));
+    c->super.iret = IDXGIAdapter3_QueryInterface(adapter->host, QEMU_G2H(c->iid), &out);
+    c->out = QEMU_H2G(out);
 }
 
 #endif
