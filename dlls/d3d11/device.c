@@ -1,4 +1,5 @@
 /*
+ * Copyright 2008-2012 Henri Verbeet for CodeWeavers
  * Copyright 2017 André Hentschel
  * Copyright 2018 Stefan Dösinger for CodeWeavers
  *
@@ -30,11 +31,20 @@
 #include "dll_list.h"
 
 #ifdef QEMU_DLL_GUEST
+
 #include <d3d11.h>
 #include <debug.h>
+
+#include <initguid.h>
+
+DEFINE_GUID(IID_ID3D11Device2, 0x9d06dffa, 0xd1e5, 0x4d07, 0x83,0xa8, 0x1b,0xb1,0x23,0xf2,0xf8,0x41);
+DEFINE_GUID(IID_ID3D11Device1, 0xa04bfb29, 0x08ef, 0x43d6, 0xa4,0x9c, 0xa9,0xbd,0xbd,0xcb,0xe6,0x86);
+
 #else
+
 #include <d3d11_2.h>
 #include <wine/debug.h>
+
 #endif
 
 #include "qemudxgi.h"
@@ -7575,14 +7585,39 @@ static HRESULT STDMETHODCALLTYPE d3d_device_inner_QueryInterface(IUnknown *iface
     struct qemu_d3d_device_inner_QueryInterface call;
     struct qemu_d3d11_device *device = impl_from_IUnknown(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE_INNER_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)device;
-    call.riid = (ULONG_PTR)riid;
-    call.out = (ULONG_PTR)out;
+    WINE_TRACE("iface %p, riid %s, out %p.\n", iface, wine_dbgstr_guid(riid), out);
 
-    qemu_syscall(&call.super);
+    if (IsEqualGUID(riid, &IID_ID3D11Device2)
+            || IsEqualGUID(riid, &IID_ID3D11Device1)
+            || IsEqualGUID(riid, &IID_ID3D11Device)
+            || IsEqualGUID(riid, &IID_IUnknown))
+    {
+        *out = &device->ID3D11Device2_iface;
+    }
+    else if (IsEqualGUID(riid, &IID_ID3D10Device1)
+            || IsEqualGUID(riid, &IID_ID3D10Device))
+    {
+        *out = &device->ID3D10Device1_iface;
+    }
+    else if (IsEqualGUID(riid, &IID_ID3D10Multithread))
+    {
+        *out = &device->ID3D10Multithread_iface;
+    }
+    else
+    {
+        /* Test if we're supposed to know about it. */
+        call.super.id = QEMU_SYSCALL_ID(CALL_D3D_DEVICE_INNER_QUERYINTERFACE);
+        call.iface = (ULONG_PTR)device;
+        call.riid = (ULONG_PTR)riid;
 
-    return call.super.iret;
+        qemu_syscall(&call.super);
+
+        *out = NULL;
+        return E_NOINTERFACE;
+    }
+
+    IUnknown_AddRef((IUnknown *)*out);
+    return S_OK;
 }
 
 #else
@@ -7591,11 +7626,18 @@ void qemu_d3d_device_inner_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d_device_inner_QueryInterface *c = (struct qemu_d3d_device_inner_QueryInterface *)call;
     struct qemu_d3d11_device *device;
+    IUnknown *out;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IUnknown_QueryInterface(device->host_inner, QEMU_G2H(c->riid), QEMU_G2H(c->out));
+    c->super.iret = IUnknown_QueryInterface(device->host_inner, QEMU_G2H(c->riid), (void **)&out);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host device returned IID %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->riid)));
+        IUnknown_Release(out);
+    }
 }
 
 #endif
