@@ -119,6 +119,7 @@ struct qemu_DXGID3D10CreateDevice
     uint64_t layer_size;
     uint64_t device;
     uint64_t host_device;
+    uint64_t dxgi_size;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -261,7 +262,7 @@ WINBASEAPI HRESULT WINAPI DXGID3D10CreateDevice(HMODULE d3d10core, IDXGIFactory 
     *device = &obj->IDXGIDevice2_iface;
     qemu_dxgi_device_guest_init(obj);
 
-    layer_base = device + 1;
+    layer_base = ((BYTE *)obj) + call.dxgi_size;
     if (FAILED(hr = d3d10_layer.create(d3d10_layer.id, &layer_base, 0,
             *device, &IID_IUnknown, (void **)&obj->child_layer, call.host_device)))
     {
@@ -293,6 +294,7 @@ void qemu_DXGID3D10CreateDevice(struct qemu_syscall *call)
             c->level_count, c->layer_size, &obj);
     c->device = QEMU_H2G(obj);
     c->host_device = QEMU_H2G(obj->host);
+    c->dxgi_size = sizeof(*obj);
 }
 
 #endif
