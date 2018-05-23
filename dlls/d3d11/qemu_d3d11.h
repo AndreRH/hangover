@@ -22,8 +22,7 @@
 
 enum d3d11_calls
 {
-    CALL_D3D10_DEVICE_ADDREF = 0,
-    CALL_D3D10_DEVICE_CHECKCOUNTER,
+    CALL_D3D10_DEVICE_CHECKCOUNTER = 0,
     CALL_D3D10_DEVICE_CHECKCOUNTERINFO,
     CALL_D3D10_DEVICE_CHECKFORMATSUPPORT,
     CALL_D3D10_DEVICE_CHECKMULTISAMPLEQUALITYLEVELS,
@@ -98,8 +97,6 @@ enum d3d11_calls
     CALL_D3D10_DEVICE_PSSETSAMPLERS,
     CALL_D3D10_DEVICE_PSSETSHADER,
     CALL_D3D10_DEVICE_PSSETSHADERRESOURCES,
-    CALL_D3D10_DEVICE_QUERYINTERFACE,
-    CALL_D3D10_DEVICE_RELEASE,
     CALL_D3D10_DEVICE_RESOLVESUBRESOURCE,
     CALL_D3D10_DEVICE_RSGETSCISSORRECTS,
     CALL_D3D10_DEVICE_RSGETSTATE,
@@ -123,14 +120,10 @@ enum d3d11_calls
     CALL_D3D10_DEVICE_VSSETSAMPLERS,
     CALL_D3D10_DEVICE_VSSETSHADER,
     CALL_D3D10_DEVICE_VSSETSHADERRESOURCES,
-    CALL_D3D10_MULTITHREAD_ADDREF,
     CALL_D3D10_MULTITHREAD_ENTER,
     CALL_D3D10_MULTITHREAD_GETMULTITHREADPROTECTED,
     CALL_D3D10_MULTITHREAD_LEAVE,
-    CALL_D3D10_MULTITHREAD_QUERYINTERFACE,
-    CALL_D3D10_MULTITHREAD_RELEASE,
     CALL_D3D10_MULTITHREAD_SETMULTITHREADPROTECTED,
-    CALL_D3D11_DEVICE_ADDREF,
     CALL_D3D11_DEVICE_CHECKCOUNTER,
     CALL_D3D11_DEVICE_CHECKCOUNTERINFO,
     CALL_D3D11_DEVICE_CHECKFEATURESUPPORT,
@@ -179,8 +172,6 @@ enum d3d11_calls
     CALL_D3D11_DEVICE_OPENSHAREDRESOURCE,
     CALL_D3D11_DEVICE_OPENSHAREDRESOURCE1,
     CALL_D3D11_DEVICE_OPENSHAREDRESOURCEBYNAME,
-    CALL_D3D11_DEVICE_QUERYINTERFACE,
-    CALL_D3D11_DEVICE_RELEASE,
     CALL_D3D11_DEVICE_SETEXCEPTIONMODE,
     CALL_D3D11_DEVICE_SETPRIVATEDATA,
     CALL_D3D11_DEVICE_SETPRIVATEDATAINTERFACE,
@@ -387,7 +378,6 @@ void qemu_d3d11_device_guest_init(struct qemu_d3d11_device *device, void *outer_
 
 extern const struct qemu_ops *qemu_ops;
 
-void qemu_d3d10_device_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_device_CheckCounter(struct qemu_syscall *call);
 void qemu_d3d10_device_CheckCounterInfo(struct qemu_syscall *call);
 void qemu_d3d10_device_CheckFormatSupport(struct qemu_syscall *call);
@@ -463,14 +453,12 @@ void qemu_d3d10_device_PSSetConstantBuffers(struct qemu_syscall *call);
 void qemu_d3d10_device_PSSetSamplers(struct qemu_syscall *call);
 void qemu_d3d10_device_PSSetShader(struct qemu_syscall *call);
 void qemu_d3d10_device_PSSetShaderResources(struct qemu_syscall *call);
-void qemu_d3d10_device_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_device_RSGetScissorRects(struct qemu_syscall *call);
 void qemu_d3d10_device_RSGetState(struct qemu_syscall *call);
 void qemu_d3d10_device_RSGetViewports(struct qemu_syscall *call);
 void qemu_d3d10_device_RSSetScissorRects(struct qemu_syscall *call);
 void qemu_d3d10_device_RSSetState(struct qemu_syscall *call);
 void qemu_d3d10_device_RSSetViewports(struct qemu_syscall *call);
-void qemu_d3d10_device_Release(struct qemu_syscall *call);
 void qemu_d3d10_device_ResolveSubresource(struct qemu_syscall *call);
 void qemu_d3d10_device_SOGetTargets(struct qemu_syscall *call);
 void qemu_d3d10_device_SOSetTargets(struct qemu_syscall *call);
@@ -488,14 +476,10 @@ void qemu_d3d10_device_VSSetConstantBuffers(struct qemu_syscall *call);
 void qemu_d3d10_device_VSSetSamplers(struct qemu_syscall *call);
 void qemu_d3d10_device_VSSetShader(struct qemu_syscall *call);
 void qemu_d3d10_device_VSSetShaderResources(struct qemu_syscall *call);
-void qemu_d3d10_multithread_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_multithread_Enter(struct qemu_syscall *call);
 void qemu_d3d10_multithread_GetMultithreadProtected(struct qemu_syscall *call);
 void qemu_d3d10_multithread_Leave(struct qemu_syscall *call);
-void qemu_d3d10_multithread_QueryInterface(struct qemu_syscall *call);
-void qemu_d3d10_multithread_Release(struct qemu_syscall *call);
 void qemu_d3d10_multithread_SetMultithreadProtected(struct qemu_syscall *call);
-void qemu_d3d11_device_AddRef(struct qemu_syscall *call);
 void qemu_d3d11_device_CheckCounter(struct qemu_syscall *call);
 void qemu_d3d11_device_CheckCounterInfo(struct qemu_syscall *call);
 void qemu_d3d11_device_CheckFeatureSupport(struct qemu_syscall *call);
@@ -544,8 +528,6 @@ void qemu_d3d11_device_GetResourceTiling(struct qemu_syscall *call);
 void qemu_d3d11_device_OpenSharedResource(struct qemu_syscall *call);
 void qemu_d3d11_device_OpenSharedResource1(struct qemu_syscall *call);
 void qemu_d3d11_device_OpenSharedResourceByName(struct qemu_syscall *call);
-void qemu_d3d11_device_QueryInterface(struct qemu_syscall *call);
-void qemu_d3d11_device_Release(struct qemu_syscall *call);
 void qemu_d3d11_device_SetExceptionMode(struct qemu_syscall *call);
 void qemu_d3d11_device_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d11_device_SetPrivateDataInterface(struct qemu_syscall *call);

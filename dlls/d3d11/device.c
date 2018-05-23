@@ -5417,114 +5417,24 @@ void qemu_d3d11_immediate_context_DiscardView1(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d11_device_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t out;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT STDMETHODCALLTYPE d3d11_device_QueryInterface(ID3D11Device2 *iface, REFIID riid, void **out)
 {
-    struct qemu_d3d11_device_QueryInterface call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)device;
-    call.riid = (ULONG_PTR)riid;
-    call.out = (ULONG_PTR)out;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IUnknown_QueryInterface(device->outer_unk, riid, out);
 }
-
-#else
-
-void qemu_d3d11_device_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d11_device_QueryInterface *c = (struct qemu_d3d11_device_QueryInterface *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11Device2_QueryInterface(device->host_d3d11, QEMU_G2H(c->riid), QEMU_G2H(c->out));
-}
-
-#endif
-
-struct qemu_d3d11_device_AddRef
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG STDMETHODCALLTYPE d3d11_device_AddRef(ID3D11Device2 *iface)
 {
-    struct qemu_d3d11_device_AddRef call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_ADDREF);
-    call.iface = (ULONG_PTR)device;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IUnknown_AddRef(device->outer_unk);
 }
-
-#else
-
-void qemu_d3d11_device_AddRef(struct qemu_syscall *call)
-{
-    struct qemu_d3d11_device_AddRef *c = (struct qemu_d3d11_device_AddRef *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11Device2_AddRef(device->host_d3d11);
-}
-
-#endif
-
-struct qemu_d3d11_device_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG STDMETHODCALLTYPE d3d11_device_Release(ID3D11Device2 *iface)
 {
-    struct qemu_d3d11_device_Release call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_RELEASE);
-    call.iface = (ULONG_PTR)device;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d11_device_Release(struct qemu_syscall *call)
-{
-    struct qemu_d3d11_device_Release *c = (struct qemu_d3d11_device_Release *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11Device2_Release(device->host_d3d11);
+    return IUnknown_Release(device->outer_unk);
 }
 
 #endif
@@ -7762,114 +7672,25 @@ void qemu_d3d_device_inner_Release(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_device_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t ppv;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_device_QueryInterface(ID3D10Device1 *iface, REFIID riid, void **ppv)
+static HRESULT STDMETHODCALLTYPE d3d10_device_QueryInterface(ID3D10Device1 *iface, REFIID riid,
+        void **ppv)
 {
-    struct qemu_d3d10_device_QueryInterface call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)device;
-    call.riid = (ULONG_PTR)riid;
-    call.ppv = (ULONG_PTR)ppv;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IUnknown_QueryInterface(device->outer_unk, riid, ppv);
 }
-
-#else
-
-void qemu_d3d10_device_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_QueryInterface *c = (struct qemu_d3d10_device_QueryInterface *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_QueryInterface(device->host_d3d10, QEMU_G2H(c->riid), QEMU_G2H(c->ppv));
-}
-
-#endif
-
-struct qemu_d3d10_device_AddRef
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG STDMETHODCALLTYPE d3d10_device_AddRef(ID3D10Device1 *iface)
 {
-    struct qemu_d3d10_device_AddRef call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_ADDREF);
-    call.iface = (ULONG_PTR)device;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IUnknown_AddRef(device->outer_unk);
 }
-
-#else
-
-void qemu_d3d10_device_AddRef(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_AddRef *c = (struct qemu_d3d10_device_AddRef *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_AddRef(device->host_d3d10);
-}
-
-#endif
-
-struct qemu_d3d10_device_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG STDMETHODCALLTYPE d3d10_device_Release(ID3D10Device1 *iface)
 {
-    struct qemu_d3d10_device_Release call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_RELEASE);
-    call.iface = (ULONG_PTR)device;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_device_Release(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_Release *c = (struct qemu_d3d10_device_Release *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_Release(device->host_d3d10);
+    return IUnknown_Release(device->outer_unk);
 }
 
 #endif
@@ -11770,14 +11591,6 @@ void qemu_d3d10_device_GetFeatureLevel(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_multithread_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t iid;
-    uint64_t out;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static inline struct qemu_d3d11_device *impl_from_ID3D10Multithread(ID3D10Multithread *iface)
@@ -11787,102 +11600,29 @@ static inline struct qemu_d3d11_device *impl_from_ID3D10Multithread(ID3D10Multit
 
 static HRESULT STDMETHODCALLTYPE d3d10_multithread_QueryInterface(ID3D10Multithread *iface, REFIID iid, void **out)
 {
-    struct qemu_d3d10_multithread_QueryInterface call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Multithread(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_MULTITHREAD_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)device;
-    call.iid = (ULONG_PTR)iid;
-    call.out = (ULONG_PTR)out;
+    WINE_TRACE("iface %p, iid %s, out %p.\n", iface, wine_dbgstr_guid(iid), out);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IUnknown_QueryInterface(device->outer_unk, iid, out);
 }
-
-#else
-
-void qemu_d3d10_multithread_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_multithread_QueryInterface *c = (struct qemu_d3d10_multithread_QueryInterface *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Multithread_QueryInterface(device->host_mt, QEMU_G2H(c->iid), QEMU_G2H(c->out));
-}
-
-#endif
-
-struct qemu_d3d10_multithread_AddRef
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG STDMETHODCALLTYPE d3d10_multithread_AddRef(ID3D10Multithread *iface)
 {
-    struct qemu_d3d10_multithread_AddRef call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Multithread(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_MULTITHREAD_ADDREF);
-    call.iface = (ULONG_PTR)device;
+    WINE_TRACE("iface %p.\n", iface);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IUnknown_AddRef(device->outer_unk);
 }
-
-#else
-
-void qemu_d3d10_multithread_AddRef(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_multithread_AddRef *c = (struct qemu_d3d10_multithread_AddRef *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Multithread_AddRef(device->host_mt);
-}
-
-#endif
-
-struct qemu_d3d10_multithread_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG STDMETHODCALLTYPE d3d10_multithread_Release(ID3D10Multithread *iface)
 {
-    struct qemu_d3d10_multithread_Release call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Multithread(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_MULTITHREAD_RELEASE);
-    call.iface = (ULONG_PTR)device;
+    WINE_TRACE("iface %p.\n", iface);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_multithread_Release(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_multithread_Release *c = (struct qemu_d3d10_multithread_Release *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Multithread_Release(device->host_mt);
+    return IUnknown_Release(device->outer_unk);
 }
 
 #endif
