@@ -41,6 +41,23 @@ enum dxgi_calls
     CALL_DXGI_ADAPTER_SETVIDEOMEMORYRESERVATION,
     CALL_DXGI_ADAPTER_UNREGISTERHARDWARECONTENTPROTECTIONTEARDOWNSTATUS,
     CALL_DXGI_ADAPTER_UNREGISTERVIDEOMEMORYBUDGETCHANGENOTIFICATION,
+    CALL_DXGI_DEVICE_ADDREF,
+    CALL_DXGI_DEVICE_CREATESURFACE,
+    CALL_DXGI_DEVICE_ENQUEUESETEVENT,
+    CALL_DXGI_DEVICE_GETADAPTER,
+    CALL_DXGI_DEVICE_GETGPUTHREADPRIORITY,
+    CALL_DXGI_DEVICE_GETMAXIMUMFRAMELATENCY,
+    CALL_DXGI_DEVICE_GETPARENT,
+    CALL_DXGI_DEVICE_GETPRIVATEDATA,
+    CALL_DXGI_DEVICE_OFFERRESOURCES,
+    CALL_DXGI_DEVICE_QUERYINTERFACE,
+    CALL_DXGI_DEVICE_QUERYRESOURCERESIDENCY,
+    CALL_DXGI_DEVICE_RECLAIMRESOURCES,
+    CALL_DXGI_DEVICE_RELEASE,
+    CALL_DXGI_DEVICE_SETGPUTHREADPRIORITY,
+    CALL_DXGI_DEVICE_SETMAXIMUMFRAMELATENCY,
+    CALL_DXGI_DEVICE_SETPRIVATEDATA,
+    CALL_DXGI_DEVICE_SETPRIVATEDATAINTERFACE,
     CALL_DXGI_FACTORY_ADDREF,
     CALL_DXGI_FACTORY_CHECKFEATURESUPPORT,
     CALL_DXGI_FACTORY_CREATESOFTWAREADAPTER,
@@ -173,11 +190,23 @@ struct qemu_dxgi_output
     struct qemu_dxgi_adapter *adapter;
 };
 
+struct qemu_dxgi_device
+{
+    /* Guest fields */
+    IDXGIDevice2 IDXGIDevice2_iface;
+    IUnknown *child_layer;
+
+    /* Host fields */
+    IDXGIDevice2 *host;
+    struct qemu_dxgi_adapter *adapter;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 void qemu_dxgi_factory_guest_init(struct qemu_dxgi_factory *factory);
 void qemu_dxgi_adapter_guest_init(struct qemu_dxgi_adapter *adapter);
 void qemu_dxgi_output_guest_init(struct qemu_dxgi_output *output);
+void qemu_dxgi_device_guest_init(struct qemu_dxgi_device *device);
 
 #else
 
@@ -201,6 +230,23 @@ void qemu_dxgi_adapter_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_dxgi_adapter_SetVideoMemoryReservation(struct qemu_syscall *call);
 void qemu_dxgi_adapter_UnregisterHardwareContentProtectionTeardownStatus(struct qemu_syscall *call);
 void qemu_dxgi_adapter_UnregisterVideoMemoryBudgetChangeNotification(struct qemu_syscall *call);
+void qemu_dxgi_device_AddRef(struct qemu_syscall *call);
+void qemu_dxgi_device_CreateSurface(struct qemu_syscall *call);
+void qemu_dxgi_device_EnqueueSetEvent(struct qemu_syscall *call);
+void qemu_dxgi_device_GetAdapter(struct qemu_syscall *call);
+void qemu_dxgi_device_GetGPUThreadPriority(struct qemu_syscall *call);
+void qemu_dxgi_device_GetMaximumFrameLatency(struct qemu_syscall *call);
+void qemu_dxgi_device_GetParent(struct qemu_syscall *call);
+void qemu_dxgi_device_GetPrivateData(struct qemu_syscall *call);
+void qemu_dxgi_device_OfferResources(struct qemu_syscall *call);
+void qemu_dxgi_device_QueryInterface(struct qemu_syscall *call);
+void qemu_dxgi_device_QueryResourceResidency(struct qemu_syscall *call);
+void qemu_dxgi_device_ReclaimResources(struct qemu_syscall *call);
+void qemu_dxgi_device_Release(struct qemu_syscall *call);
+void qemu_dxgi_device_SetGPUThreadPriority(struct qemu_syscall *call);
+void qemu_dxgi_device_SetMaximumFrameLatency(struct qemu_syscall *call);
+void qemu_dxgi_device_SetPrivateData(struct qemu_syscall *call);
+void qemu_dxgi_device_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_dxgi_factory_AddRef(struct qemu_syscall *call);
 void qemu_dxgi_factory_CheckFeatureSupport(struct qemu_syscall *call);
 void qemu_dxgi_factory_CreateSoftwareAdapter(struct qemu_syscall *call);
