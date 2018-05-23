@@ -121,7 +121,7 @@ static HRESULT WINAPI layer_create(enum dxgi_device_layer_id id, void **layer_ba
     }
 
     object = *layer_base;
-    //d3d_device_guest_init(object, device_object);
+    qemu_d3d11_device_guest_init(object, device_object);
     *device_layer = &object->IUnknown_inner;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_LAYER_CREATE);

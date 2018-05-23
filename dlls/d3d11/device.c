@@ -12028,3 +12028,392 @@ void qemu_d3d10_multithread_GetMultithreadProtected(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+static const struct
+{
+    ID3D11DeviceContextVtbl vtbl1;
+    void *CopySubresourceRegion1;
+    void *UpdateSubresource1;
+    void *DiscardResource;
+    void *DiscardView;
+    void *VSSetConstantBuffers1;
+    void *HSSetConstantBuffers1;
+    void *DSSetConstantBuffers1;
+    void *GSSetConstantBuffers1;
+    void *PSSetConstantBuffers1;
+    void *CSSetConstantBuffers1;
+    void *VSGetConstantBuffers1;
+    void *HSGetConstantBuffers1;
+    void *DSGetConstantBuffers1;
+    void *GSGetConstantBuffers1;
+    void *PSGetConstantBuffers1;
+    void *CSGetConstantBuffers1;
+    void *SwapDeviceContextState;
+    void *ClearView;
+    void *DiscardView1;
+}
+d3d11_immediate_context_vtbl =
+{
+    {
+        /* IUnknown methods */
+        d3d11_immediate_context_QueryInterface,
+        d3d11_immediate_context_AddRef,
+        d3d11_immediate_context_Release,
+        /* ID3D11DeviceChild methods */
+        d3d11_immediate_context_GetDevice,
+        d3d11_immediate_context_GetPrivateData,
+        d3d11_immediate_context_SetPrivateData,
+        d3d11_immediate_context_SetPrivateDataInterface,
+        /* ID3D11DeviceContext methods */
+        d3d11_immediate_context_VSSetConstantBuffers,
+        d3d11_immediate_context_PSSetShaderResources,
+        d3d11_immediate_context_PSSetShader,
+        d3d11_immediate_context_PSSetSamplers,
+        d3d11_immediate_context_VSSetShader,
+        d3d11_immediate_context_DrawIndexed,
+        d3d11_immediate_context_Draw,
+        d3d11_immediate_context_Map,
+        d3d11_immediate_context_Unmap,
+        d3d11_immediate_context_PSSetConstantBuffers,
+        d3d11_immediate_context_IASetInputLayout,
+        d3d11_immediate_context_IASetVertexBuffers,
+        d3d11_immediate_context_IASetIndexBuffer,
+        d3d11_immediate_context_DrawIndexedInstanced,
+        d3d11_immediate_context_DrawInstanced,
+        d3d11_immediate_context_GSSetConstantBuffers,
+        d3d11_immediate_context_GSSetShader,
+        d3d11_immediate_context_IASetPrimitiveTopology,
+        d3d11_immediate_context_VSSetShaderResources,
+        d3d11_immediate_context_VSSetSamplers,
+        d3d11_immediate_context_Begin,
+        d3d11_immediate_context_End,
+        d3d11_immediate_context_GetData,
+        d3d11_immediate_context_SetPredication,
+        d3d11_immediate_context_GSSetShaderResources,
+        d3d11_immediate_context_GSSetSamplers,
+        d3d11_immediate_context_OMSetRenderTargets,
+        d3d11_immediate_context_OMSetRenderTargetsAndUnorderedAccessViews,
+        d3d11_immediate_context_OMSetBlendState,
+        d3d11_immediate_context_OMSetDepthStencilState,
+        d3d11_immediate_context_SOSetTargets,
+        d3d11_immediate_context_DrawAuto,
+        d3d11_immediate_context_DrawIndexedInstancedIndirect,
+        d3d11_immediate_context_DrawInstancedIndirect,
+        d3d11_immediate_context_Dispatch,
+        d3d11_immediate_context_DispatchIndirect,
+        d3d11_immediate_context_RSSetState,
+        d3d11_immediate_context_RSSetViewports,
+        d3d11_immediate_context_RSSetScissorRects,
+        d3d11_immediate_context_CopySubresourceRegion,
+        d3d11_immediate_context_CopyResource,
+        d3d11_immediate_context_UpdateSubresource,
+        d3d11_immediate_context_CopyStructureCount,
+        d3d11_immediate_context_ClearRenderTargetView,
+        d3d11_immediate_context_ClearUnorderedAccessViewUint,
+        d3d11_immediate_context_ClearUnorderedAccessViewFloat,
+        d3d11_immediate_context_ClearDepthStencilView,
+        d3d11_immediate_context_GenerateMips,
+        d3d11_immediate_context_SetResourceMinLOD,
+        d3d11_immediate_context_GetResourceMinLOD,
+        d3d11_immediate_context_ResolveSubresource,
+        d3d11_immediate_context_ExecuteCommandList,
+        d3d11_immediate_context_HSSetShaderResources,
+        d3d11_immediate_context_HSSetShader,
+        d3d11_immediate_context_HSSetSamplers,
+        d3d11_immediate_context_HSSetConstantBuffers,
+        d3d11_immediate_context_DSSetShaderResources,
+        d3d11_immediate_context_DSSetShader,
+        d3d11_immediate_context_DSSetSamplers,
+        d3d11_immediate_context_DSSetConstantBuffers,
+        d3d11_immediate_context_CSSetShaderResources,
+        d3d11_immediate_context_CSSetUnorderedAccessViews,
+        d3d11_immediate_context_CSSetShader,
+        d3d11_immediate_context_CSSetSamplers,
+        d3d11_immediate_context_CSSetConstantBuffers,
+        d3d11_immediate_context_VSGetConstantBuffers,
+        d3d11_immediate_context_PSGetShaderResources,
+        d3d11_immediate_context_PSGetShader,
+        d3d11_immediate_context_PSGetSamplers,
+        d3d11_immediate_context_VSGetShader,
+        d3d11_immediate_context_PSGetConstantBuffers,
+        d3d11_immediate_context_IAGetInputLayout,
+        d3d11_immediate_context_IAGetVertexBuffers,
+        d3d11_immediate_context_IAGetIndexBuffer,
+        d3d11_immediate_context_GSGetConstantBuffers,
+        d3d11_immediate_context_GSGetShader,
+        d3d11_immediate_context_IAGetPrimitiveTopology,
+        d3d11_immediate_context_VSGetShaderResources,
+        d3d11_immediate_context_VSGetSamplers,
+        d3d11_immediate_context_GetPredication,
+        d3d11_immediate_context_GSGetShaderResources,
+        d3d11_immediate_context_GSGetSamplers,
+        d3d11_immediate_context_OMGetRenderTargets,
+        d3d11_immediate_context_OMGetRenderTargetsAndUnorderedAccessViews,
+        d3d11_immediate_context_OMGetBlendState,
+        d3d11_immediate_context_OMGetDepthStencilState,
+        d3d11_immediate_context_SOGetTargets,
+        d3d11_immediate_context_RSGetState,
+        d3d11_immediate_context_RSGetViewports,
+        d3d11_immediate_context_RSGetScissorRects,
+        d3d11_immediate_context_HSGetShaderResources,
+        d3d11_immediate_context_HSGetShader,
+        d3d11_immediate_context_HSGetSamplers,
+        d3d11_immediate_context_HSGetConstantBuffers,
+        d3d11_immediate_context_DSGetShaderResources,
+        d3d11_immediate_context_DSGetShader,
+        d3d11_immediate_context_DSGetSamplers,
+        d3d11_immediate_context_DSGetConstantBuffers,
+        d3d11_immediate_context_CSGetShaderResources,
+        d3d11_immediate_context_CSGetUnorderedAccessViews,
+        d3d11_immediate_context_CSGetShader,
+        d3d11_immediate_context_CSGetSamplers,
+        d3d11_immediate_context_CSGetConstantBuffers,
+        d3d11_immediate_context_ClearState,
+        d3d11_immediate_context_Flush,
+        d3d11_immediate_context_GetType,
+        d3d11_immediate_context_GetContextFlags,
+        d3d11_immediate_context_FinishCommandList,
+    },
+    /* ID3D11DeviceContext1 methods */
+    d3d11_immediate_context_CopySubresourceRegion1,
+    d3d11_immediate_context_UpdateSubresource1,
+    d3d11_immediate_context_DiscardResource,
+    d3d11_immediate_context_DiscardView,
+    d3d11_immediate_context_VSSetConstantBuffers1,
+    d3d11_immediate_context_HSSetConstantBuffers1,
+    d3d11_immediate_context_DSSetConstantBuffers1,
+    d3d11_immediate_context_GSSetConstantBuffers1,
+    d3d11_immediate_context_PSSetConstantBuffers1,
+    d3d11_immediate_context_CSSetConstantBuffers1,
+    d3d11_immediate_context_VSGetConstantBuffers1,
+    d3d11_immediate_context_HSGetConstantBuffers1,
+    d3d11_immediate_context_DSGetConstantBuffers1,
+    d3d11_immediate_context_GSGetConstantBuffers1,
+    d3d11_immediate_context_PSGetConstantBuffers1,
+    d3d11_immediate_context_CSGetConstantBuffers1,
+    d3d11_immediate_context_SwapDeviceContextState,
+    d3d11_immediate_context_ClearView,
+    d3d11_immediate_context_DiscardView1,
+};
+
+static const struct
+{
+    ID3D11DeviceVtbl vtbl1;
+    /* ID3D11Device1 methods */
+    void *GetImmediateContext1;
+    void *CreateDeferredContext1;
+    void *CreateBlendState1;
+    void *CreateRasterizerState1;
+    void *CreateDeviceContextState;
+    void *OpenSharedResource1;
+    void *OpenSharedResourceByName;
+    /* ID3D11Device2 methods */
+    void *GetImmediateContext2;
+    void *CreateDeferredContext2;
+    void *GetResourceTiling;
+    void *CheckMultisampleQualityLevels1;
+}
+d3d11_device_vtbl =
+{
+    {
+    /* IUnknown methods */
+        d3d11_device_QueryInterface,
+        d3d11_device_AddRef,
+        d3d11_device_Release,
+        /* ID3D11Device methods */
+        d3d11_device_CreateBuffer,
+        d3d11_device_CreateTexture1D,
+        d3d11_device_CreateTexture2D,
+        d3d11_device_CreateTexture3D,
+        d3d11_device_CreateShaderResourceView,
+        d3d11_device_CreateUnorderedAccessView,
+        d3d11_device_CreateRenderTargetView,
+        d3d11_device_CreateDepthStencilView,
+        d3d11_device_CreateInputLayout,
+        d3d11_device_CreateVertexShader,
+        d3d11_device_CreateGeometryShader,
+        d3d11_device_CreateGeometryShaderWithStreamOutput,
+        d3d11_device_CreatePixelShader,
+        d3d11_device_CreateHullShader,
+        d3d11_device_CreateDomainShader,
+        d3d11_device_CreateComputeShader,
+        d3d11_device_CreateClassLinkage,
+        d3d11_device_CreateBlendState,
+        d3d11_device_CreateDepthStencilState,
+        d3d11_device_CreateRasterizerState,
+        d3d11_device_CreateSamplerState,
+        d3d11_device_CreateQuery,
+        d3d11_device_CreatePredicate,
+        d3d11_device_CreateCounter,
+        d3d11_device_CreateDeferredContext,
+        d3d11_device_OpenSharedResource,
+        d3d11_device_CheckFormatSupport,
+        d3d11_device_CheckMultisampleQualityLevels,
+        d3d11_device_CheckCounterInfo,
+        d3d11_device_CheckCounter,
+        d3d11_device_CheckFeatureSupport,
+        d3d11_device_GetPrivateData,
+        d3d11_device_SetPrivateData,
+        d3d11_device_SetPrivateDataInterface,
+        d3d11_device_GetFeatureLevel,
+        d3d11_device_GetCreationFlags,
+        d3d11_device_GetDeviceRemovedReason,
+        d3d11_device_GetImmediateContext,
+        d3d11_device_SetExceptionMode,
+        d3d11_device_GetExceptionMode,
+    },
+    /* ID3D11Device1 methods */
+    d3d11_device_GetImmediateContext1,
+    d3d11_device_CreateDeferredContext1,
+    d3d11_device_CreateBlendState1,
+    d3d11_device_CreateRasterizerState1,
+    d3d11_device_CreateDeviceContextState,
+    d3d11_device_OpenSharedResource1,
+    d3d11_device_OpenSharedResourceByName,
+    /* ID3D11Device2 methods */
+    d3d11_device_GetImmediateContext2,
+    d3d11_device_CreateDeferredContext2,
+    d3d11_device_GetResourceTiling,
+    d3d11_device_CheckMultisampleQualityLevels1,
+};
+
+static const struct ID3D10Device1Vtbl d3d10_device1_vtbl =
+{
+    /* IUnknown methods */
+    d3d10_device_QueryInterface,
+    d3d10_device_AddRef,
+    d3d10_device_Release,
+    /* ID3D10Device methods */
+    d3d10_device_VSSetConstantBuffers,
+    d3d10_device_PSSetShaderResources,
+    d3d10_device_PSSetShader,
+    d3d10_device_PSSetSamplers,
+    d3d10_device_VSSetShader,
+    d3d10_device_DrawIndexed,
+    d3d10_device_Draw,
+    d3d10_device_PSSetConstantBuffers,
+    d3d10_device_IASetInputLayout,
+    d3d10_device_IASetVertexBuffers,
+    d3d10_device_IASetIndexBuffer,
+    d3d10_device_DrawIndexedInstanced,
+    d3d10_device_DrawInstanced,
+    d3d10_device_GSSetConstantBuffers,
+    d3d10_device_GSSetShader,
+    d3d10_device_IASetPrimitiveTopology,
+    d3d10_device_VSSetShaderResources,
+    d3d10_device_VSSetSamplers,
+    d3d10_device_SetPredication,
+    d3d10_device_GSSetShaderResources,
+    d3d10_device_GSSetSamplers,
+    d3d10_device_OMSetRenderTargets,
+    d3d10_device_OMSetBlendState,
+    d3d10_device_OMSetDepthStencilState,
+    d3d10_device_SOSetTargets,
+    d3d10_device_DrawAuto,
+    d3d10_device_RSSetState,
+    d3d10_device_RSSetViewports,
+    d3d10_device_RSSetScissorRects,
+    d3d10_device_CopySubresourceRegion,
+    d3d10_device_CopyResource,
+    d3d10_device_UpdateSubresource,
+    d3d10_device_ClearRenderTargetView,
+    d3d10_device_ClearDepthStencilView,
+    d3d10_device_GenerateMips,
+    d3d10_device_ResolveSubresource,
+    d3d10_device_VSGetConstantBuffers,
+    d3d10_device_PSGetShaderResources,
+    d3d10_device_PSGetShader,
+    d3d10_device_PSGetSamplers,
+    d3d10_device_VSGetShader,
+    d3d10_device_PSGetConstantBuffers,
+    d3d10_device_IAGetInputLayout,
+    d3d10_device_IAGetVertexBuffers,
+    d3d10_device_IAGetIndexBuffer,
+    d3d10_device_GSGetConstantBuffers,
+    d3d10_device_GSGetShader,
+    d3d10_device_IAGetPrimitiveTopology,
+    d3d10_device_VSGetShaderResources,
+    d3d10_device_VSGetSamplers,
+    d3d10_device_GetPredication,
+    d3d10_device_GSGetShaderResources,
+    d3d10_device_GSGetSamplers,
+    d3d10_device_OMGetRenderTargets,
+    d3d10_device_OMGetBlendState,
+    d3d10_device_OMGetDepthStencilState,
+    d3d10_device_SOGetTargets,
+    d3d10_device_RSGetState,
+    d3d10_device_RSGetViewports,
+    d3d10_device_RSGetScissorRects,
+    d3d10_device_GetDeviceRemovedReason,
+    d3d10_device_SetExceptionMode,
+    d3d10_device_GetExceptionMode,
+    d3d10_device_GetPrivateData,
+    d3d10_device_SetPrivateData,
+    d3d10_device_SetPrivateDataInterface,
+    d3d10_device_ClearState,
+    d3d10_device_Flush,
+    d3d10_device_CreateBuffer,
+    d3d10_device_CreateTexture1D,
+    d3d10_device_CreateTexture2D,
+    d3d10_device_CreateTexture3D,
+    d3d10_device_CreateShaderResourceView,
+    d3d10_device_CreateRenderTargetView,
+    d3d10_device_CreateDepthStencilView,
+    d3d10_device_CreateInputLayout,
+    d3d10_device_CreateVertexShader,
+    d3d10_device_CreateGeometryShader,
+    d3d10_device_CreateGeometryShaderWithStreamOutput,
+    d3d10_device_CreatePixelShader,
+    d3d10_device_CreateBlendState,
+    d3d10_device_CreateDepthStencilState,
+    d3d10_device_CreateRasterizerState,
+    d3d10_device_CreateSamplerState,
+    d3d10_device_CreateQuery,
+    d3d10_device_CreatePredicate,
+    d3d10_device_CreateCounter,
+    d3d10_device_CheckFormatSupport,
+    d3d10_device_CheckMultisampleQualityLevels,
+    d3d10_device_CheckCounterInfo,
+    d3d10_device_CheckCounter,
+    d3d10_device_GetCreationFlags,
+    d3d10_device_OpenSharedResource,
+    d3d10_device_SetTextFilterSize,
+    d3d10_device_GetTextFilterSize,
+    d3d10_device_CreateShaderResourceView1,
+    d3d10_device_CreateBlendState1,
+    d3d10_device_GetFeatureLevel,
+};
+
+static const struct IUnknownVtbl d3d_device_inner_unknown_vtbl =
+{
+    /* IUnknown methods */
+    d3d_device_inner_QueryInterface,
+    d3d_device_inner_AddRef,
+    d3d_device_inner_Release,
+};
+
+static const struct ID3D10MultithreadVtbl d3d10_multithread_vtbl =
+{
+    d3d10_multithread_QueryInterface,
+    d3d10_multithread_AddRef,
+    d3d10_multithread_Release,
+    d3d10_multithread_Enter,
+    d3d10_multithread_Leave,
+    d3d10_multithread_SetMultithreadProtected,
+    d3d10_multithread_GetMultithreadProtected,
+};
+
+void qemu_d3d11_device_guest_init(struct qemu_d3d11_device *device, void *outer_unknown)
+{
+    device->IUnknown_inner.lpVtbl = &d3d_device_inner_unknown_vtbl;
+    device->ID3D11Device2_iface.lpVtbl = &d3d11_device_vtbl.vtbl1;
+    device->ID3D10Device1_iface.lpVtbl = &d3d10_device1_vtbl;
+    device->ID3D10Multithread_iface.lpVtbl = &d3d10_multithread_vtbl;
+    device->outer_unk = outer_unknown;
+}
+
+#else
+
+#endif

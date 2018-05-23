@@ -381,6 +381,8 @@ static inline struct qemu_d3d11_device *impl_from_ID3D10Device(ID3D10Device1 *if
 extern HRESULT (* WINAPI p_DXGID3D10CreateDevice)(HMODULE d3d10core, IDXGIFactory *factory, IDXGIAdapter *adapter,
         unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, void **device);
 
+void qemu_d3d11_device_guest_init(struct qemu_d3d11_device *device, void *outer_unknown);
+
 #else
 
 extern const struct qemu_ops *qemu_ops;
