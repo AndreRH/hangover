@@ -110,7 +110,7 @@ static HRESULT WINAPI layer_create(enum dxgi_device_layer_id id, void **layer_ba
     struct qemu_layer_create call;
     struct qemu_d3d11_device *object;
 
-    WINE_FIXME("id %#x, layer_base %p, unknown0 %#x, device_object %p, riid %s, device_layer %p\n",
+    WINE_TRACE("id %#x, layer_base %p, unknown0 %#x, device_object %p, riid %s, device_layer %p\n",
             id, layer_base, unknown0, device_object, wine_dbgstr_guid(riid), device_layer);
 
     if (id != DXGI_DEVICE_LAYER_D3D10_DEVICE)
