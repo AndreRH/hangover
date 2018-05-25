@@ -138,7 +138,7 @@ void qemu_dxgi_device_AddRef(struct qemu_syscall *call)
     struct qemu_dxgi_device_AddRef *c = (struct qemu_dxgi_device_AddRef *)call;
     struct qemu_dxgi_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGIDevice2_AddRef(device->host);
@@ -169,15 +169,33 @@ static ULONG STDMETHODCALLTYPE dxgi_device_Release(IDXGIDevice2 *iface)
 
 #else
 
+static ULONG qemu_dxgi_device_Release_internal(struct qemu_dxgi_device *device)
+{
+    ULONG ref;
+    struct qemu_dxgi_adapter *adapter = device->adapter;
+
+    IDXGIAdapter2_AddRef(adapter->host);
+    ref = IDXGIDevice2_Release(device->host);
+    qemu_dxgi_adapter_Release_internal(adapter);
+    
+    if (!ref)
+    {
+        WINE_TRACE("Destroying dxgi device wrapper %p (host device %p.)\n", device, device->host);
+        HeapFree(GetProcessHeap(), 0, device);
+    }
+    
+    return ref;
+}
+
 void qemu_dxgi_device_Release(struct qemu_syscall *call)
 {
     struct qemu_dxgi_device_Release *c = (struct qemu_dxgi_device_Release *)call;
     struct qemu_dxgi_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGIDevice2_Release(device->host);
+    c->super.iret = qemu_dxgi_device_Release_internal(device);
 }
 
 #endif
