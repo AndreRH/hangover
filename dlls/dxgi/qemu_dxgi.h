@@ -305,7 +305,8 @@ void qemu_dxgi_output_TakeOwnership(struct qemu_syscall *call);
 void qemu_dxgi_output_WaitForVBlank(struct qemu_syscall *call);
 
 HRESULT qemu_dxgi_factory_create(DWORD flags, DWORD version, struct qemu_dxgi_factory **factory);
-HRESULT qemu_dxgi_adapter_create(struct qemu_dxgi_factory *factory, UINT idx, struct qemu_dxgi_adapter **adapter);
+HRESULT qemu_dxgi_adapter_create(struct qemu_dxgi_factory *factory, IDXGIAdapter3 *host,
+        struct qemu_dxgi_adapter **adapter);
 HRESULT qemu_dxgi_output_create(struct qemu_dxgi_adapter *adapter, UINT idx, struct qemu_dxgi_output **output);
 ULONG qemu_dxgi_factory_Release_internal(struct qemu_dxgi_factory *factory);
 ULONG qemu_dxgi_adapter_Release_internal(struct qemu_dxgi_adapter *adapter);

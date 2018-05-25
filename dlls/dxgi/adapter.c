@@ -911,10 +911,10 @@ struct qemu_dxgi_adapter *unsafe_impl_from_IDXGIAdapter(IDXGIAdapter *iface)
 
 #else
 
-HRESULT qemu_dxgi_adapter_create(struct qemu_dxgi_factory *factory, UINT idx, struct qemu_dxgi_adapter **adapter)
+HRESULT qemu_dxgi_adapter_create(struct qemu_dxgi_factory *factory, IDXGIAdapter3 *host,
+        struct qemu_dxgi_adapter **adapter)
 {
     struct qemu_dxgi_adapter *obj;
-    HRESULT hr;
 
     obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
     if (!obj)
@@ -924,13 +924,10 @@ HRESULT qemu_dxgi_adapter_create(struct qemu_dxgi_factory *factory, UINT idx, st
     }
 
     obj->factory = factory;
-
-    hr = IDXGIFactory5_EnumAdapters1(factory->host, idx, (IDXGIAdapter1 **)&obj->host);
-    if (FAILED(hr))
-        HeapFree(GetProcessHeap(), 0, obj);
+    obj->host = host;
 
     *adapter = obj;
-    return hr;
+    return S_OK;
 }
 
 #endif

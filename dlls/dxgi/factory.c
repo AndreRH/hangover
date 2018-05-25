@@ -422,6 +422,7 @@ void qemu_dxgi_factory_EnumAdapters(struct qemu_syscall *call)
     struct qemu_dxgi_factory_EnumAdapters *c = (struct qemu_dxgi_factory_EnumAdapters *)call;
     struct qemu_dxgi_factory *factory;
     struct qemu_dxgi_adapter *adapter;
+    IDXGIAdapter3 *host;
 
     WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
@@ -432,7 +433,14 @@ void qemu_dxgi_factory_EnumAdapters(struct qemu_syscall *call)
         return;
     }
 
-    c->super.iret = qemu_dxgi_adapter_create(factory, c->adapter_idx, &adapter);
+    c->super.iret = IDXGIFactory5_EnumAdapters1(factory->host, c->adapter_idx, (IDXGIAdapter1 **)&host);
+    if (FAILED(c->super.iret))
+        return;
+
+    c->super.iret = qemu_dxgi_adapter_create(factory, host, &adapter);
+    if (FAILED(c->super.iret))
+        IDXGIAdapter3_Release(host);
+
     c->adapter = QEMU_H2G(adapter);
 }
 
@@ -1141,27 +1149,35 @@ struct qemu_dxgi_factory_EnumAdapterByLuid
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t luid_low, luid_high;
-    uint64_t iid;
     uint64_t adapter;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_factory_EnumAdapterByLuid(IDXGIFactory5 *iface, LUID luid, REFIID iid, void **adapter)
+static HRESULT STDMETHODCALLTYPE dxgi_factory_EnumAdapterByLuid(IDXGIFactory5 *iface, LUID luid, REFIID iid,
+        void **adapter)
 {
     struct qemu_dxgi_factory_EnumAdapterByLuid call;
     struct qemu_dxgi_factory *factory = impl_from_IDXGIFactory5(iface);
+    struct qemu_dxgi_adapter *adapter_impl;
+    HRESULT hr;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_FACTORY_ENUMADAPTERBYLUID);
     call.iface = (ULONG_PTR)factory;
     call.luid_low = luid.LowPart;
     call.luid_high = luid.HighPart;
-    call.iid = (ULONG_PTR)iid;
-    call.adapter = (ULONG_PTR)adapter;
 
     qemu_syscall(&call.super);
+    hr = call.super.iret;
+    if (FAILED(hr))
+        return hr;
 
-    return call.super.iret;
+    adapter_impl = (struct qemu_dxgi_adapter *)(ULONG_PTR)call.adapter;
+    qemu_dxgi_adapter_guest_init(adapter_impl);
+    hr = IDXGIAdapter_QueryInterface(&adapter_impl->IDXGIAdapter3_iface, iid, adapter);
+    IDXGIAdapter_Release(&adapter_impl->IDXGIAdapter3_iface);
+
+    return hr;
 }
 
 #else
@@ -1170,14 +1186,24 @@ void qemu_dxgi_factory_EnumAdapterByLuid(struct qemu_syscall *call)
 {
     struct qemu_dxgi_factory_EnumAdapterByLuid *c = (struct qemu_dxgi_factory_EnumAdapterByLuid *)call;
     struct qemu_dxgi_factory *factory;
+    struct qemu_dxgi_adapter *adapter;
+    IDXGIAdapter3 *host;
     LUID luid;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
     luid.LowPart = c->luid_low;
     luid.HighPart = c->luid_high;
 
-    c->super.iret = IDXGIFactory5_EnumAdapterByLuid(factory->host, luid, QEMU_G2H(c->iid), QEMU_G2H(c->adapter));
+    c->super.iret = IDXGIFactory5_EnumAdapterByLuid(factory->host, luid, &IID_IDXGIAdapter3, (void **)&host);
+    if (FAILED(c->super.iret))
+        return;
+
+    c->super.iret = qemu_dxgi_adapter_create(factory, host, &adapter);
+    if (FAILED(c->super.iret))
+        IDXGIAdapter3_Release(host);
+
+    c->adapter = QEMU_H2G(adapter);
 }
 
 #endif
