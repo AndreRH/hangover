@@ -377,12 +377,15 @@ static HRESULT STDMETHODCALLTYPE dxgi_device_GetAdapter(IDXGIDevice2 *iface, IDX
 {
     struct qemu_dxgi_device_GetAdapter call;
     struct qemu_dxgi_device *device = impl_from_IDXGIDevice2(iface);
+    struct qemu_dxgi_adapter *adapter_impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_DEVICE_GETADAPTER);
     call.iface = (ULONG_PTR)device;
-    call.adapter = (ULONG_PTR)adapter;
 
     qemu_syscall(&call.super);
+    adapter_impl = (struct qemu_dxgi_adapter *)(ULONG_PTR)call.adapter;
+    if (SUCCEEDED(call.super.iret))
+        *adapter = (IDXGIAdapter *)&adapter_impl->IDXGIAdapter3_iface;
 
     return call.super.iret;
 }
@@ -393,11 +396,18 @@ void qemu_dxgi_device_GetAdapter(struct qemu_syscall *call)
 {
     struct qemu_dxgi_device_GetAdapter *c = (struct qemu_dxgi_device_GetAdapter *)call;
     struct qemu_dxgi_device *device;
+    IDXGIAdapter *adapter;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGIDevice2_GetAdapter(device->host, QEMU_G2H(c->adapter));
+    c->super.iret = IDXGIDevice2_GetAdapter(device->host, &adapter);
+    if (FAILED(c->super.iret))
+        return;
+    if (adapter != (IDXGIAdapter *)device->adapter->host)
+        WINE_FIXME("Did not get the adapter we expected.\n");
+
+    c->adapter = QEMU_H2G(device->adapter);
 }
 
 #endif
