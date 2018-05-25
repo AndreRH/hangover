@@ -43,6 +43,7 @@ DEFINE_GUID(IID_IDXGIAdapter3, 0x645967a4, 0x1392, 0x4310, 0xa7,0x98, 0x80,0x53,
 
 #endif
 
+#include "thunk/qemu_dxgi.h"
 #include "qemu_dxgi.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_dxgi);
@@ -451,11 +452,24 @@ void qemu_dxgi_adapter_GetDesc1(struct qemu_syscall *call)
 {
     struct qemu_dxgi_adapter_GetDesc1 *c = (struct qemu_dxgi_adapter_GetDesc1 *)call;
     struct qemu_dxgi_adapter *adapter;
+    DXGI_ADAPTER_DESC1 stack, *desc = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->desc);
+#else
+    if (!c->desc)
+        desc = NULL;
+#endif
     adapter = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGIAdapter3_GetDesc1(adapter->host, QEMU_G2H(c->desc));
+    c->super.iret = IDXGIAdapter3_GetDesc1(adapter->host, desc);
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret))
+    {
+        DXGI_ADAPTER_DESC1_h2g(QEMU_G2H(c->desc), desc);
+    }
+#endif
 }
 
 #endif
@@ -489,11 +503,22 @@ void qemu_dxgi_adapter_GetDesc(struct qemu_syscall *call)
 {
     struct qemu_dxgi_adapter_GetDesc *c = (struct qemu_dxgi_adapter_GetDesc *)call;
     struct qemu_dxgi_adapter *adapter;
-
-    WINE_FIXME("Unverified!\n");
+    DXGI_ADAPTER_DESC stack, *desc = &stack;
+    
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->desc);
+#else
+    if (!c->desc)
+        desc = NULL;
+#endif
     adapter = QEMU_G2H(c->iface);
-
-    c->super.iret = IDXGIAdapter3_GetDesc(adapter->host, QEMU_G2H(c->desc));
+    
+    c->super.iret = IDXGIAdapter3_GetDesc(adapter->host, desc);
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret))
+        DXGI_ADAPTER_DESC_h2g(QEMU_G2H(c->desc), desc);
+#endif
 }
 
 #endif
