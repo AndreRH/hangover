@@ -533,7 +533,8 @@ struct qemu_dxgi_adapter_CheckInterfaceSupport
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_adapter_CheckInterfaceSupport(IDXGIAdapter3 *iface, REFGUID guid, LARGE_INTEGER *umd_version)
+static HRESULT STDMETHODCALLTYPE dxgi_adapter_CheckInterfaceSupport(IDXGIAdapter3 *iface, REFGUID guid,
+        LARGE_INTEGER *umd_version)
 {
     struct qemu_dxgi_adapter_CheckInterfaceSupport call;
     struct qemu_dxgi_adapter *adapter = impl_from_IDXGIAdapter3(iface);
@@ -555,7 +556,7 @@ void qemu_dxgi_adapter_CheckInterfaceSupport(struct qemu_syscall *call)
     struct qemu_dxgi_adapter_CheckInterfaceSupport *c = (struct qemu_dxgi_adapter_CheckInterfaceSupport *)call;
     struct qemu_dxgi_adapter *adapter;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     adapter = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGIAdapter3_CheckInterfaceSupport(adapter->host, QEMU_G2H(c->guid), QEMU_G2H(c->umd_version));
