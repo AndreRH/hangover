@@ -345,7 +345,6 @@ struct qemu_d3d11_device
     ID3D11Device2 *host_d3d11;
     ID3D10Device1 *host_d3d10;
     ID3D10Multithread *host_mt;
-    IUnknown *host_inner;
 };
 
 struct d3d11_device_context

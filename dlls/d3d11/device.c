@@ -7631,7 +7631,7 @@ void qemu_d3d_device_inner_QueryInterface(struct qemu_syscall *call)
     WINE_TRACE("Unverified!\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IUnknown_QueryInterface(device->host_inner, QEMU_G2H(c->riid), (void **)&out);
+    c->super.iret = IUnknown_QueryInterface(device->host_d3d11, QEMU_G2H(c->riid), (void **)&out);
     if (SUCCEEDED(c->super.iret))
     {
         WINE_FIXME("Host device returned IID %s which this wrapper does not know about.\n",
@@ -7670,10 +7670,8 @@ void qemu_d3d_device_inner_AddRef(struct qemu_syscall *call)
     struct qemu_d3d_device_inner_AddRef *c = (struct qemu_d3d_device_inner_AddRef *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IUnknown_AddRef(device->host_inner);
+    WINE_FIXME("Did not expect this to be called\n");
+    c->super.iret = 2;
 }
 
 #endif
@@ -7706,10 +7704,8 @@ void qemu_d3d_device_inner_Release(struct qemu_syscall *call)
     struct qemu_d3d_device_inner_Release *c = (struct qemu_d3d_device_inner_Release *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IUnknown_Release(device->host_inner);
+    WINE_FIXME("Did not expect this to be called\n");
+    c->super.iret = 1;
 }
 
 #endif
