@@ -560,14 +560,17 @@ struct qemu_dxgi_swapchain_GetFullscreenState
     uint64_t iface;
     uint64_t fullscreen;
     uint64_t target;
+    uint64_t new_output;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetFullscreenState(IDXGISwapChain1 *iface, BOOL *fullscreen, IDXGIOutput **target)
+static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetFullscreenState(IDXGISwapChain1 *iface, BOOL *fullscreen,
+        IDXGIOutput **target)
 {
     struct qemu_dxgi_swapchain_GetFullscreenState call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
+    struct qemu_dxgi_output *output_impl = NULL;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETFULLSCREENSTATE);
     call.iface = (ULONG_PTR)swapchain;
@@ -575,6 +578,16 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetFullscreenState(IDXGISwapChai
     call.target = (ULONG_PTR)target;
 
     qemu_syscall(&call.super);
+
+    if (call.target)
+    {
+        output_impl = (struct qemu_dxgi_output *)(ULONG_PTR)call.target;
+        if (call.new_output)
+            qemu_dxgi_output_guest_init(output_impl);
+        *target = (IDXGIOutput *)&output_impl->IDXGIOutput4_iface;
+    }
+    else if(target)
+        *target = NULL;
 
     return call.super.iret;
 }
@@ -585,11 +598,28 @@ void qemu_dxgi_swapchain_GetFullscreenState(struct qemu_syscall *call)
 {
     struct qemu_dxgi_swapchain_GetFullscreenState *c = (struct qemu_dxgi_swapchain_GetFullscreenState *)call;
     struct qemu_dxgi_swapchain *swapchain;
+    IDXGIOutput4 *output = NULL;
+    struct qemu_dxgi_output *output_impl = NULL;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGISwapChain1_GetFullscreenState(swapchain->host, QEMU_G2H(c->fullscreen), QEMU_G2H(c->target));
+    c->new_output = FALSE;
+    c->super.iret = IDXGISwapChain1_GetFullscreenState(swapchain->host, QEMU_G2H(c->fullscreen),
+            c->target ? (IDXGIOutput **)&output : NULL);
+
+    if (output)
+    {
+        output_impl = output_from_host(output);
+        if (!output_impl)
+        {
+            c->new_output = 1;
+            c->super.iret = qemu_dxgi_output_create(swapchain->device->adapter, output, &output_impl);
+            if (FAILED(c->super.iret))
+                WINE_ERR("Failed to create an output wrapper.\n");
+        }
+    }
+    c->target = QEMU_H2G(output_impl);
 }
 
 #endif
