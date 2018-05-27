@@ -365,15 +365,16 @@ static HRESULT STDMETHODCALLTYPE dxgi_surface_GetParent(IDXGISurface1 *iface, RE
 {
     struct qemu_dxgi_surface_GetParent call;
     struct qemu_dxgi_surface *surface = impl_from_IDXGISurface1(iface);
-    
+    struct qemu_dxgi_device *device;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SURFACE_GETPARENT);
     call.iface = (ULONG_PTR)surface;
     call.riid = (ULONG_PTR)riid;
-    call.parent = (ULONG_PTR)parent;
 
     qemu_syscall(&call.super);
+    device = (struct qemu_dxgi_device *)(ULONG_PTR)call.parent;
 
-    return call.super.iret;
+    return IDXGIDevice_QueryInterface(&device->IDXGIDevice2_iface, riid, parent);
 }
 
 #else
@@ -383,10 +384,9 @@ void qemu_dxgi_surface_GetParent(struct qemu_syscall *call)
     struct qemu_dxgi_surface_GetParent *c = (struct qemu_dxgi_surface_GetParent *)call;
     struct qemu_dxgi_surface *surface;
     
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
-    
-    c->super.iret = IDXGISurface1_GetParent(surface->host, QEMU_G2H(c->riid), QEMU_G2H(c->parent));
+    c->parent = QEMU_H2G(surface->device);
 }
 
 #endif
