@@ -425,10 +425,13 @@ struct qemu_dxgi_device_CreateSurface
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_device_CreateSurface(IDXGIDevice2 *iface, const DXGI_SURFACE_DESC *desc, UINT surface_count, DXGI_USAGE usage, const DXGI_SHARED_RESOURCE *shared_resource, IDXGISurface **surface)
+static HRESULT STDMETHODCALLTYPE dxgi_device_CreateSurface(IDXGIDevice2 *iface, const DXGI_SURFACE_DESC *desc,
+        UINT surface_count, DXGI_USAGE usage, const DXGI_SHARED_RESOURCE *shared_resource, IDXGISurface **surface)
 {
     struct qemu_dxgi_device_CreateSurface call;
     struct qemu_dxgi_device *device = impl_from_IDXGIDevice2(iface);
+    struct qemu_dxgi_surface **obj;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_DEVICE_CREATESURFACE);
     call.iface = (ULONG_PTR)device;
@@ -436,9 +439,18 @@ static HRESULT STDMETHODCALLTYPE dxgi_device_CreateSurface(IDXGIDevice2 *iface, 
     call.surface_count = surface_count;
     call.usage = usage;
     call.shared_resource = (ULONG_PTR)shared_resource;
-    call.surface = (ULONG_PTR)surface;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+    
+    obj = (struct qemu_dxgi_surface **)(ULONG_PTR)call.surface;
+    for (i = 0; i < surface_count; ++i)
+    {
+        qemu_dxgi_surface_guest_init(obj[i], NULL);
+        surface[i] = &obj[i]->IDXGISurface1_iface;
+    }
+    HeapFree(GetProcessHeap(), 0, obj);
 
     return call.super.iret;
 }
@@ -449,11 +461,62 @@ void qemu_dxgi_device_CreateSurface(struct qemu_syscall *call)
 {
     struct qemu_dxgi_device_CreateSurface *c = (struct qemu_dxgi_device_CreateSurface *)call;
     struct qemu_dxgi_device *device;
+    IDXGISurface1 **host;
+    struct qemu_dxgi_surface **obj;
+    qemu_ptr *out32;
+    UINT count, i, j;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    count = c->surface_count;
 
-    c->super.iret = IDXGIDevice2_CreateSurface(device->host, QEMU_G2H(c->desc), c->surface_count, c->usage, QEMU_G2H(c->shared_resource), QEMU_G2H(c->surface));
+    host = HeapAlloc(GetProcessHeap(), 0, sizeof(*host) * count);
+    if (!host)
+    {
+        WINE_WARN("Out of memory\n");
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+    obj = HeapAlloc(GetProcessHeap(), 0, sizeof(*obj) * count);
+    if (!host)
+    {
+        WINE_WARN("Out of memory\n");
+        c->super.iret = E_OUTOFMEMORY;
+        HeapFree(GetProcessHeap(), 0, host);
+        return;
+    }
+
+    c->super.iret = IDXGIDevice2_CreateSurface(device->host, QEMU_G2H(c->desc), c->surface_count,
+            c->usage, QEMU_G2H(c->shared_resource), (IDXGISurface **)host);
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, obj);
+        HeapFree(GetProcessHeap(), 0, host);
+        return;
+    }
+
+    for (i = 0; i < count; ++i)
+    {
+        c->super.iret = qemu_dxgi_surface_create(host[i], &obj[i]);
+        if (FAILED(c->super.iret))
+            goto release;
+    }
+
+#if GUEST_BIT != HOST_BIT
+    out32 = (qemu_ptr *)obj;
+    for (i = 0; i < count; ++i)
+        out32[i] = QEMU_H2G(obj[i]);
+#endif
+    c->surface = QEMU_H2G(obj);
+    return;
+
+release:
+    for (j = 0; j < i; ++j)
+        HeapFree(GetProcessHeap(), 0, obj[i]);
+    for (i = 0; i < count; ++i)
+        IDXGISurface1_Release(host[i]);
+    HeapFree(GetProcessHeap(), 0, obj);
+    HeapFree(GetProcessHeap(), 0, host);
 }
 
 #endif

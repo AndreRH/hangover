@@ -112,6 +112,19 @@ enum dxgi_calls
     CALL_DXGI_OUTPUT_SUPPORTSOVERLAYS,
     CALL_DXGI_OUTPUT_TAKEOWNERSHIP,
     CALL_DXGI_OUTPUT_WAITFORVBLANK,
+    CALL_DXGI_SURFACE_GETDC,
+    CALL_DXGI_SURFACE_GETDESC,
+    CALL_DXGI_SURFACE_GETDEVICE,
+    CALL_DXGI_SURFACE_GETPARENT,
+    CALL_DXGI_SURFACE_GETPRIVATEDATA,
+    CALL_DXGI_SURFACE_INNER_ADDREF,
+    CALL_DXGI_SURFACE_INNER_QUERYINTERFACE,
+    CALL_DXGI_SURFACE_INNER_RELEASE,
+    CALL_DXGI_SURFACE_MAP,
+    CALL_DXGI_SURFACE_RELEASEDC,
+    CALL_DXGI_SURFACE_SETPRIVATEDATA,
+    CALL_DXGI_SURFACE_SETPRIVATEDATAINTERFACE,
+    CALL_DXGI_SURFACE_UNMAP,
     CALL_DXGID3D10CREATEDEVICE,
     CALL_INIT_DLL,
 };
@@ -122,6 +135,7 @@ enum dxgi_calls
 typedef IDXGIFactory2 IDXGIFactory5;
 typedef IDXGIAdapter2 IDXGIAdapter3;
 typedef IDXGIOutput IDXGIOutput4;
+typedef IDXGISurface IDXGISurface1;
 typedef enum DXGI_FEATURE
 {
     DXGI_FEATURE_PRESENT_ALLOW_TEARING = 0x0
@@ -200,12 +214,24 @@ struct qemu_dxgi_device
     struct qemu_dxgi_adapter *adapter;
 };
 
+struct qemu_dxgi_surface
+{
+    /* Guest fields */
+    IDXGISurface1 IDXGISurface1_iface;
+    IUnknown IUnknown_iface;
+    IUnknown *outer_unknown;
+    
+    /* Host fields */
+    IDXGISurface1 *host;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 void qemu_dxgi_factory_guest_init(struct qemu_dxgi_factory *factory);
 void qemu_dxgi_adapter_guest_init(struct qemu_dxgi_adapter *adapter);
 void qemu_dxgi_output_guest_init(struct qemu_dxgi_output *output);
 void qemu_dxgi_device_guest_init(struct qemu_dxgi_device *device);
+void qemu_dxgi_surface_guest_init(struct qemu_dxgi_surface *surface, IUnknown *outer_unknown);
 
 struct qemu_dxgi_factory *unsafe_impl_from_IDXGIFactory(IDXGIFactory *iface);
 struct qemu_dxgi_adapter *unsafe_impl_from_IDXGIAdapter(IDXGIAdapter *iface);
@@ -303,6 +329,19 @@ void qemu_dxgi_output_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_dxgi_output_SupportsOverlays(struct qemu_syscall *call);
 void qemu_dxgi_output_TakeOwnership(struct qemu_syscall *call);
 void qemu_dxgi_output_WaitForVBlank(struct qemu_syscall *call);
+void qemu_dxgi_surface_inner_QueryInterface(struct qemu_syscall *call);
+void qemu_dxgi_surface_inner_AddRef(struct qemu_syscall *call);
+void qemu_dxgi_surface_inner_Release(struct qemu_syscall *call);
+void qemu_dxgi_surface_SetPrivateData(struct qemu_syscall *call);
+void qemu_dxgi_surface_SetPrivateDataInterface(struct qemu_syscall *call);
+void qemu_dxgi_surface_GetPrivateData(struct qemu_syscall *call);
+void qemu_dxgi_surface_GetParent(struct qemu_syscall *call);
+void qemu_dxgi_surface_GetDevice(struct qemu_syscall *call);
+void qemu_dxgi_surface_GetDesc(struct qemu_syscall *call);
+void qemu_dxgi_surface_Map(struct qemu_syscall *call);
+void qemu_dxgi_surface_Unmap(struct qemu_syscall *call);
+void qemu_dxgi_surface_GetDC(struct qemu_syscall *call);
+void qemu_dxgi_surface_ReleaseDC(struct qemu_syscall *call);
 
 HRESULT qemu_dxgi_factory_create(DWORD flags, DWORD version, struct qemu_dxgi_factory **factory);
 HRESULT qemu_dxgi_adapter_create(struct qemu_dxgi_factory *factory, IDXGIAdapter3 *host,
@@ -313,6 +352,7 @@ ULONG qemu_dxgi_adapter_Release_internal(struct qemu_dxgi_adapter *adapter);
 HRESULT qemu_dxgi_device_create(HMODULE mod, struct qemu_dxgi_adapter *adapter, struct qemu_dxgi_factory *factory,
         unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, size_t layer_size,
         struct qemu_dxgi_device **device);
+HRESULT qemu_dxgi_surface_create(IDXGISurface1 *host, struct qemu_dxgi_surface **surface);
 
 #endif
 
