@@ -763,6 +763,7 @@ struct qemu_dxgi_swapchain_GetContainingOutput
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t output;
+    uint64_t new_output;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -782,6 +783,10 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetContainingOutput(IDXGISwapCha
         return call.super.iret;
 
     output_impl = (struct qemu_dxgi_output *)(ULONG_PTR)call.output;
+
+    if (call.new_output)
+        qemu_dxgi_output_guest_init(output_impl);
+
     *output = (IDXGIOutput *)&output_impl->IDXGIOutput4_iface;
 
     return call.super.iret;
@@ -806,7 +811,8 @@ void qemu_dxgi_swapchain_GetContainingOutput(struct qemu_syscall *call)
     output_impl = output_from_host(host);
     if (!output_impl)
     {
-        WINE_ERR("Creating new output wrapper for host output %p.\n", host);
+        WINE_TRACE("Creating new output wrapper for host output %p.\n", host);
+        c->new_output = 1;
         c->super.iret = qemu_dxgi_output_create(swapchain->device->adapter, host, &output_impl);
         if (FAILED(c->super.iret))
             IDXGIOutput4_Release(host);
