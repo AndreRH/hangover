@@ -548,13 +548,15 @@ static HRESULT STDMETHODCALLTYPE dxgi_surface_GetDC(IDXGISurface1 *iface, BOOL d
 {
     struct qemu_dxgi_surface_GetDC call;
     struct qemu_dxgi_surface *surface = impl_from_IDXGISurface1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SURFACE_GETDC);
     call.iface = (ULONG_PTR)surface;
     call.discard = discard;
     call.hdc = (ULONG_PTR)hdc;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+        *hdc = (HDC)(ULONG_PTR)call.hdc;
 
     return call.super.iret;
 }
@@ -565,11 +567,13 @@ void qemu_dxgi_surface_GetDC(struct qemu_syscall *call)
 {
     struct qemu_dxgi_surface_GetDC *c = (struct qemu_dxgi_surface_GetDC *)call;
     struct qemu_dxgi_surface *surface;
-    
-    WINE_FIXME("Unverified!\n");
+    HDC dc;
+
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
-    
-    c->super.iret = IDXGISurface1_GetDC(surface->host, c->discard, QEMU_G2H(c->hdc));
+
+    c->super.iret = IDXGISurface1_GetDC(surface->host, c->discard, c->hdc ? &dc : NULL);
+    c->hdc = QEMU_H2G(dc);
 }
 
 #endif
@@ -587,7 +591,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_surface_ReleaseDC(IDXGISurface1 *iface, RE
 {
     struct qemu_dxgi_surface_ReleaseDC call;
     struct qemu_dxgi_surface *surface = impl_from_IDXGISurface1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SURFACE_RELEASEDC);
     call.iface = (ULONG_PTR)surface;
     call.dirty_rect = (ULONG_PTR)dirty_rect;
@@ -603,8 +607,8 @@ void qemu_dxgi_surface_ReleaseDC(struct qemu_syscall *call)
 {
     struct qemu_dxgi_surface_ReleaseDC *c = (struct qemu_dxgi_surface_ReleaseDC *)call;
     struct qemu_dxgi_surface *surface;
-    
-    WINE_FIXME("Unverified!\n");
+
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGISurface1_ReleaseDC(surface->host, QEMU_G2H(c->dirty_rect));
