@@ -132,7 +132,7 @@ void qemu_dxgi_swapchain_AddRef(struct qemu_syscall *call)
     struct qemu_dxgi_swapchain_AddRef *c = (struct qemu_dxgi_swapchain_AddRef *)call;
     struct qemu_dxgi_swapchain *swapchain;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGISwapChain1_AddRef(swapchain->host);
@@ -167,11 +167,26 @@ void qemu_dxgi_swapchain_Release(struct qemu_syscall *call)
 {
     struct qemu_dxgi_swapchain_Release *c = (struct qemu_dxgi_swapchain_Release *)call;
     struct qemu_dxgi_swapchain *swapchain;
+    struct qemu_dxgi_factory *factory;
+    struct qemu_dxgi_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
+    factory = swapchain->factory;
+    device = swapchain->device;
+
+    IDXGIDevice2_AddRef(device->host);
+    if (factory)
+        IDXGIFactory5_AddRef(factory->host);
 
     c->super.iret = IDXGISwapChain1_Release(swapchain->host);
+
+    qemu_dxgi_device_Release_internal(device);
+    if (factory)
+        qemu_dxgi_factory_Release_internal(factory);
+
+    if (!c->super.iret)
+        HeapFree(GetProcessHeap(), 0, swapchain);
 }
 
 #endif
