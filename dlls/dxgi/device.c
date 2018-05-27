@@ -428,6 +428,7 @@ struct qemu_dxgi_device_CreateSurface
 static HRESULT STDMETHODCALLTYPE dxgi_device_CreateSurface(IDXGIDevice2 *iface, const DXGI_SURFACE_DESC *desc,
         UINT surface_count, DXGI_USAGE usage, const DXGI_SHARED_RESOURCE *shared_resource, IDXGISurface **surface)
 {
+    /* FIXME: This should be implemented on the client side by calling into d3d11. */
     struct qemu_dxgi_device_CreateSurface call;
     struct qemu_dxgi_device *device = impl_from_IDXGIDevice2(iface);
     struct qemu_dxgi_surface **obj;
