@@ -249,10 +249,14 @@ struct qemu_dxgi_surface
     IDXGISurface1 IDXGISurface1_iface;
     IUnknown IUnknown_iface;
     IUnknown *outer_unknown;
-    
+
     /* Host fields */
     IDXGISurface1 *host;
     struct qemu_dxgi_device *device;
+
+    /* For finding the wrapper from the host object. */
+    ULONG refcount;
+    IUnknown priv_data_iface;
 };
 
 struct qemu_dxgi_swapchain
@@ -427,6 +431,8 @@ HRESULT qemu_dxgi_device_create(HMODULE mod, struct qemu_dxgi_adapter *adapter, 
         struct qemu_dxgi_device **device);
 HRESULT qemu_dxgi_surface_create(IDXGISurface1 *host, struct qemu_dxgi_device *device,
         struct qemu_dxgi_surface **surface);
+
+struct qemu_dxgi_surface *surface_from_host(IDXGISurface1 *host);
 
 #endif
 
