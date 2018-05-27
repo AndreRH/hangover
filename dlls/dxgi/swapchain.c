@@ -938,6 +938,8 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetHwnd(IDXGISwapChain1 *iface, 
     call.hwnd = (ULONG_PTR)hwnd;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+        *hwnd = (HWND)(ULONG_PTR)call.hwnd;
 
     return call.super.iret;
 }
@@ -948,11 +950,13 @@ void qemu_dxgi_swapchain_GetHwnd(struct qemu_syscall *call)
 {
     struct qemu_dxgi_swapchain_GetHwnd *c = (struct qemu_dxgi_swapchain_GetHwnd *)call;
     struct qemu_dxgi_swapchain *swapchain;
+    HWND hwnd;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGISwapChain1_GetHwnd(swapchain->host, QEMU_G2H(c->hwnd));
+    c->super.iret = IDXGISwapChain1_GetHwnd(swapchain->host, c->hwnd ? &hwnd : NULL);
+    c->hwnd = QEMU_H2G(hwnd);
 }
 
 #endif
