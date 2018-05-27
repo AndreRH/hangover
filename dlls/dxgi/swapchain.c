@@ -890,7 +890,8 @@ struct qemu_dxgi_swapchain_GetFullscreenDesc
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetFullscreenDesc(IDXGISwapChain1 *iface, DXGI_SWAP_CHAIN_FULLSCREEN_DESC *desc)
+static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetFullscreenDesc(IDXGISwapChain1 *iface,
+        DXGI_SWAP_CHAIN_FULLSCREEN_DESC *desc)
 {
     struct qemu_dxgi_swapchain_GetFullscreenDesc call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
@@ -911,7 +912,8 @@ void qemu_dxgi_swapchain_GetFullscreenDesc(struct qemu_syscall *call)
     struct qemu_dxgi_swapchain_GetFullscreenDesc *c = (struct qemu_dxgi_swapchain_GetFullscreenDesc *)call;
     struct qemu_dxgi_swapchain *swapchain;
 
-    WINE_FIXME("Unverified!\n");
+    /* DXGI_SWAP_CHAIN_FULLSCREEN_DESC has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGISwapChain1_GetFullscreenDesc(swapchain->host, QEMU_G2H(c->desc));
