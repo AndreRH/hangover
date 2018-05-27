@@ -869,6 +869,32 @@ void qemu_dxgi_device_guest_init(struct qemu_dxgi_device *device)
     device->IDXGIDevice2_iface.lpVtbl = &dxgi_device_vtbl;
 }
 
+struct qemu_dxgi_device *unsafe_impl_from_IDXGIDevice(IUnknown *iface)
+{
+    IDXGIDevice2 *qemu_device;
+    struct qemu_dxgi_device *device;
+    HRESULT hr;
+    
+    if (!iface)
+        return NULL;
+    if (FAILED(hr = IDXGIAdapter_QueryInterface(iface, &IID_IDXGIDevice2, (void **)&qemu_device)))
+    {
+        WINE_ERR("Failed to get IDXGIDevice2 interface, hr %#x.\n", hr);
+        return NULL;
+    }
+    if (qemu_device->lpVtbl != (void *)&dxgi_device_vtbl)
+    {
+        WINE_ERR("Handle other people's device interfaces.\n");
+        device =  NULL;
+    }
+    else
+    {
+        device = CONTAINING_RECORD(qemu_device, struct qemu_dxgi_device, IDXGIDevice2_iface);
+    }
+    IDXGIDevice_Release(qemu_device);
+    return device;
+}
+
 #else
 
 extern HRESULT WINAPI DXGID3D10CreateDevice(HMODULE d3d10core, IDXGIFactory *factory, IDXGIAdapter *adapter,

@@ -236,6 +236,7 @@ void qemu_dxgi_surface_guest_init(struct qemu_dxgi_surface *surface, IUnknown *o
 
 struct qemu_dxgi_factory *unsafe_impl_from_IDXGIFactory(IDXGIFactory *iface);
 struct qemu_dxgi_adapter *unsafe_impl_from_IDXGIAdapter(IDXGIAdapter *iface);
+struct qemu_dxgi_device *unsafe_impl_from_IDXGIDevice(IUnknown *iface);
 
 #else
 

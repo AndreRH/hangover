@@ -444,15 +444,33 @@ struct qemu_dxgi_output_FindClosestMatchingMode
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_output_FindClosestMatchingMode(IDXGIOutput4 *iface, const DXGI_MODE_DESC *mode, DXGI_MODE_DESC *closest_match, IUnknown *device)
+static HRESULT STDMETHODCALLTYPE dxgi_output_FindClosestMatchingMode(IDXGIOutput4 *iface, const DXGI_MODE_DESC *mode,
+        DXGI_MODE_DESC *closest_match, IUnknown *device)
 {
     struct qemu_dxgi_output_FindClosestMatchingMode call;
     struct qemu_dxgi_output *output = impl_from_IDXGIOutput4(iface);
+    IDXGIDevice *my_device;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_OUTPUT_FINDCLOSESTMATCHINGMODE);
     call.iface = (ULONG_PTR)output;
     call.mode = (ULONG_PTR)mode;
     call.closest_match = (ULONG_PTR)closest_match;
+
+    if (device)
+    {
+        struct qemu_dxgi_device *device_impl = unsafe_impl_from_IDXGIDevice(device);
+        if (!device)
+        {
+            WINE_WARN("This is not the device we are looking for.\n");
+            return E_FAIL;
+        }
+        call.device = (ULONG_PTR)device_impl;
+    }
+    else
+    {
+        call.device = 0;
+    }
+    
     call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
@@ -466,11 +484,15 @@ void qemu_dxgi_output_FindClosestMatchingMode(struct qemu_syscall *call)
 {
     struct qemu_dxgi_output_FindClosestMatchingMode *c = (struct qemu_dxgi_output_FindClosestMatchingMode *)call;
     struct qemu_dxgi_output *output;
+    struct qemu_dxgi_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* DXGI_MODE_DESC has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     output = QEMU_G2H(c->iface);
+    device = QEMU_G2H(c->device);
 
-    c->super.iret = IDXGIOutput4_FindClosestMatchingMode(output->host, QEMU_G2H(c->mode), QEMU_G2H(c->closest_match), QEMU_G2H(c->device));
+    c->super.iret = IDXGIOutput4_FindClosestMatchingMode(output->host, QEMU_G2H(c->mode), QEMU_G2H(c->closest_match),
+            device ? (IUnknown *)device->host : NULL);
 }
 
 #endif
