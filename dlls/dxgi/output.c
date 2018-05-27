@@ -401,7 +401,8 @@ struct qemu_dxgi_output_GetDisplayModeList
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_output_GetDisplayModeList(IDXGIOutput4 *iface, DXGI_FORMAT format, UINT flags, UINT *mode_count, DXGI_MODE_DESC *desc)
+static HRESULT STDMETHODCALLTYPE dxgi_output_GetDisplayModeList(IDXGIOutput4 *iface, DXGI_FORMAT format, UINT flags,
+        UINT *mode_count, DXGI_MODE_DESC *desc)
 {
     struct qemu_dxgi_output_GetDisplayModeList call;
     struct qemu_dxgi_output *output = impl_from_IDXGIOutput4(iface);
@@ -425,10 +426,11 @@ void qemu_dxgi_output_GetDisplayModeList(struct qemu_syscall *call)
     struct qemu_dxgi_output_GetDisplayModeList *c = (struct qemu_dxgi_output_GetDisplayModeList *)call;
     struct qemu_dxgi_output *output;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     output = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGIOutput4_GetDisplayModeList(output->host, c->format, c->flags, QEMU_G2H(c->mode_count), QEMU_G2H(c->desc));
+    c->super.iret = IDXGIOutput4_GetDisplayModeList(output->host, c->format, c->flags, QEMU_G2H(c->mode_count),
+            QEMU_G2H(c->desc));
 }
 
 #endif
@@ -847,7 +849,8 @@ struct qemu_dxgi_output_GetDisplayModeList1
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_output_GetDisplayModeList1(IDXGIOutput4 *iface, DXGI_FORMAT format, UINT flags, UINT *mode_count, DXGI_MODE_DESC1 *modes)
+static HRESULT STDMETHODCALLTYPE dxgi_output_GetDisplayModeList1(IDXGIOutput4 *iface, DXGI_FORMAT format, UINT flags,
+        UINT *mode_count, DXGI_MODE_DESC1 *modes)
 {
     struct qemu_dxgi_output_GetDisplayModeList1 call;
     struct qemu_dxgi_output *output = impl_from_IDXGIOutput4(iface);
@@ -871,10 +874,11 @@ void qemu_dxgi_output_GetDisplayModeList1(struct qemu_syscall *call)
     struct qemu_dxgi_output_GetDisplayModeList1 *c = (struct qemu_dxgi_output_GetDisplayModeList1 *)call;
     struct qemu_dxgi_output *output;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     output = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGIOutput4_GetDisplayModeList1(output->host, c->format, c->flags, QEMU_G2H(c->mode_count), QEMU_G2H(c->modes));
+    c->super.iret = IDXGIOutput4_GetDisplayModeList1(output->host, c->format, c->flags, QEMU_G2H(c->mode_count),
+            QEMU_G2H(c->modes));
 }
 
 #endif
@@ -890,7 +894,8 @@ struct qemu_dxgi_output_FindClosestMatchingMode1
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_output_FindClosestMatchingMode1(IDXGIOutput4 *iface, const DXGI_MODE_DESC1 *mode, DXGI_MODE_DESC1 *closest_match, IUnknown *device)
+static HRESULT STDMETHODCALLTYPE dxgi_output_FindClosestMatchingMode1(IDXGIOutput4 *iface, const DXGI_MODE_DESC1 *mode,
+        DXGI_MODE_DESC1 *closest_match, IUnknown *device)
 {
     struct qemu_dxgi_output_FindClosestMatchingMode1 call;
     struct qemu_dxgi_output *output = impl_from_IDXGIOutput4(iface);
