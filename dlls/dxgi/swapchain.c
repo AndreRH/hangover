@@ -46,7 +46,6 @@ struct qemu_dxgi_swapchain_QueryInterface
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t riid;
-    uint64_t object;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -61,14 +60,26 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_QueryInterface(IDXGISwapChain1 *
     struct qemu_dxgi_swapchain_QueryInterface call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
 
+    WINE_TRACE("iface %p, riid %s, object %p\n", iface, wine_dbgstr_guid(riid), object);
+
+    if (IsEqualGUID(riid, &IID_IUnknown)
+            || IsEqualGUID(riid, &IID_IDXGIObject)
+            || IsEqualGUID(riid, &IID_IDXGIDeviceSubObject)
+            || IsEqualGUID(riid, &IID_IDXGISwapChain)
+            || IsEqualGUID(riid, &IID_IDXGISwapChain1))
+    {
+        IUnknown_AddRef(iface);
+        *object = iface;
+        return S_OK;
+    }
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_QUERYINTERFACE);
     call.iface = (ULONG_PTR)swapchain;
     call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
-
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    *object = NULL;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -77,11 +88,18 @@ void qemu_dxgi_swapchain_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_dxgi_swapchain_QueryInterface *c = (struct qemu_dxgi_swapchain_QueryInterface *)call;
     struct qemu_dxgi_swapchain *swapchain;
+    IUnknown *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGISwapChain1_QueryInterface(swapchain->host, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    c->super.iret = IDXGISwapChain1_QueryInterface(swapchain->host, QEMU_G2H(c->riid), (void **)&obj);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->riid)));
+        IUnknown_Release(obj);
+    }
 }
 
 #endif
@@ -296,6 +314,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetParent(IDXGISwapChain1 *iface
 {
     struct qemu_dxgi_swapchain_GetParent call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
+    struct qemu_dxgi_factory *factory;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETPARENT);
     call.iface = (ULONG_PTR)swapchain;
@@ -303,8 +322,14 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetParent(IDXGISwapChain1 *iface
     call.parent = (ULONG_PTR)parent;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+    {
+        *parent = NULL;
+        return call.super.iret;
+    }
 
-    return call.super.iret;
+    factory = (struct qemu_dxgi_factory *)(ULONG_PTR)call.parent;
+    return IDXGIFactory_QueryInterface(&factory->IDXGIFactory5_iface, riid, parent);
 }
 
 #else
@@ -314,10 +339,19 @@ void qemu_dxgi_swapchain_GetParent(struct qemu_syscall *call)
     struct qemu_dxgi_swapchain_GetParent *c = (struct qemu_dxgi_swapchain_GetParent *)call;
     struct qemu_dxgi_swapchain *swapchain;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGISwapChain1_GetParent(swapchain->host, QEMU_G2H(c->riid), QEMU_G2H(c->parent));
+    if (!swapchain->factory)
+    {
+        WINE_ERR("Implicit swapchain does not store reference to parent.\n");
+        c->super.iret = E_NOINTERFACE;
+    }
+    else
+    {
+        c->super.iret = S_OK;
+        c->parent = QEMU_H2G(swapchain->factory);
+    }
 }
 
 #endif
@@ -1285,7 +1319,7 @@ void qemu_dxgi_swapchain_guest_init(struct qemu_dxgi_swapchain *swapchain)
 #else
 
 HRESULT qemu_dxgi_swapchain_create(IDXGISwapChain1 *host, struct qemu_dxgi_device *device,
-        struct qemu_dxgi_swapchain **swapchain)
+        struct qemu_dxgi_factory *factory, struct qemu_dxgi_swapchain **swapchain)
 {
     struct qemu_dxgi_swapchain *obj;
     DXGI_SWAP_CHAIN_DESC desc;
@@ -1302,6 +1336,8 @@ HRESULT qemu_dxgi_swapchain_create(IDXGISwapChain1 *host, struct qemu_dxgi_devic
     }
 
     obj->host = host;
+    obj->device = device;
+    obj->factory = factory;
 
     hr = IDXGISwapChain1_GetDesc(host, &desc);
     if (FAILED(hr))

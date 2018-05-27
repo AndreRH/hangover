@@ -606,7 +606,7 @@ void qemu_dxgi_factory_CreateSwapChain(struct qemu_syscall *call)
     if (FAILED(c->super.iret))
         return;
 
-    c->super.iret = qemu_dxgi_swapchain_create(host, device, &obj);
+    c->super.iret = qemu_dxgi_swapchain_create(host, device, factory, &obj);
     if (FAILED(c->super.iret))
     {
         IDXGISwapChain1_Release(host);

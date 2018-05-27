@@ -440,7 +440,7 @@ HRESULT qemu_dxgi_device_create(HMODULE mod, struct qemu_dxgi_adapter *adapter, 
 HRESULT qemu_dxgi_surface_create(IDXGISurface1 *host, struct qemu_dxgi_device *device,
         struct qemu_dxgi_surface **surface);
 HRESULT qemu_dxgi_swapchain_create(IDXGISwapChain1 *host, struct qemu_dxgi_device *device,
-        struct qemu_dxgi_swapchain **swapchain);
+        struct qemu_dxgi_factory *factory, struct qemu_dxgi_swapchain **swapchain);
 
 struct qemu_dxgi_surface *surface_from_host(IDXGISurface1 *host);
 
