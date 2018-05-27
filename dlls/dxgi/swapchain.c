@@ -872,7 +872,8 @@ void qemu_dxgi_swapchain_GetDesc1(struct qemu_syscall *call)
     struct qemu_dxgi_swapchain_GetDesc1 *c = (struct qemu_dxgi_swapchain_GetDesc1 *)call;
     struct qemu_dxgi_swapchain *swapchain;
 
-    WINE_FIXME("Unverified!\n");
+    /* DXGI_SWAP_CHAIN_DESC1 (unlike the base DXGI_SWAP_CHAIN_DESC) has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGISwapChain1_GetDesc1(swapchain->host, QEMU_G2H(c->desc));
