@@ -393,7 +393,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_adapter_EnumOutputs(IDXGIAdapter3 *iface, 
 
     qemu_syscall(&call.super);
     obj = (struct qemu_dxgi_output *)(ULONG_PTR)call.output;
-    if (obj)
+    if (SUCCEEDED(call.super.iret))
     {
         qemu_dxgi_output_guest_init(obj);
         *output = (IDXGIOutput *)&obj->IDXGIOutput4_iface;
@@ -413,11 +413,19 @@ void qemu_dxgi_adapter_EnumOutputs(struct qemu_syscall *call)
     struct qemu_dxgi_adapter_EnumOutputs *c = (struct qemu_dxgi_adapter_EnumOutputs *)call;
     struct qemu_dxgi_adapter *adapter;
     struct qemu_dxgi_output *output;
+    IDXGIOutput4 *host;
 
     WINE_TRACE("\n");
     adapter = QEMU_G2H(c->iface);
 
-    c->super.iret = qemu_dxgi_output_create(adapter, c->output_idx, &output);
+    c->super.iret = IDXGIAdapter3_EnumOutputs(adapter->host, c->output_idx, (IDXGIOutput **)&host);
+    if (FAILED(c->super.iret))
+        return;
+
+    c->super.iret = qemu_dxgi_output_create(adapter, host, &output);
+    if (FAILED(c->super.iret))
+        IDXGIOutput4_Release(host);
+
     c->output = QEMU_H2G(output);
 }
 

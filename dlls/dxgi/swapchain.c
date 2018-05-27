@@ -741,12 +741,18 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetContainingOutput(IDXGISwapCha
 {
     struct qemu_dxgi_swapchain_GetContainingOutput call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
+    struct qemu_dxgi_output *output_impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETCONTAININGOUTPUT);
     call.iface = (ULONG_PTR)swapchain;
     call.output = (ULONG_PTR)output;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    output_impl = (struct qemu_dxgi_output *)(ULONG_PTR)call.output;
+    *output = (IDXGIOutput *)&output_impl->IDXGIOutput4_iface;
 
     return call.super.iret;
 }
@@ -757,11 +763,25 @@ void qemu_dxgi_swapchain_GetContainingOutput(struct qemu_syscall *call)
 {
     struct qemu_dxgi_swapchain_GetContainingOutput *c = (struct qemu_dxgi_swapchain_GetContainingOutput *)call;
     struct qemu_dxgi_swapchain *swapchain;
+    IDXGIOutput4 *host;
+    struct qemu_dxgi_output *output_impl;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGISwapChain1_GetContainingOutput(swapchain->host, QEMU_G2H(c->output));
+    c->super.iret = IDXGISwapChain1_GetContainingOutput(swapchain->host, c->output ? (IDXGIOutput **)&host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    output_impl = output_from_host(host);
+    if (!output_impl)
+    {
+        WINE_ERR("Creating new output wrapper for host output %p.\n", host);
+        c->super.iret = qemu_dxgi_output_create(swapchain->device->adapter, host, &output_impl);
+        if (FAILED(c->super.iret))
+            IDXGIOutput4_Release(host);
+    }
+    c->output = QEMU_H2G(output_impl);
 }
 
 #endif

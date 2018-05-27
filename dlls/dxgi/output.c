@@ -164,12 +164,6 @@ void qemu_dxgi_output_Release(struct qemu_syscall *call)
     IDXGIAdapter3_AddRef(adapter->host);
     c->super.iret = IDXGIOutput4_Release(output->host);
     qemu_dxgi_adapter_Release_internal(adapter);
-
-    if (!c->super.iret)
-    {
-        WINE_TRACE("Destroying dxgi output wrapper %p (host output %p).\n", output, output->host);
-        HeapFree(GetProcessHeap(), 0, output);
-    }
 }
 
 #endif
@@ -1184,9 +1178,72 @@ void qemu_dxgi_output_guest_init(struct qemu_dxgi_output *output)
 
 #else
 
-HRESULT qemu_dxgi_output_create(struct qemu_dxgi_adapter *adapter, UINT idx, struct qemu_dxgi_output **output)
+static inline struct qemu_dxgi_output *impl_from_priv_data(IUnknown *iface)
 {
+    return CONTAINING_RECORD(iface, struct qemu_dxgi_output, priv_data_iface);
+}
+
+static HRESULT STDMETHODCALLTYPE dxgi_surface_priv_data_QueryInterface(IUnknown *iface, REFIID riid, void **out)
+{
+    WINE_ERR("Unexpected call\n");
+    *out = NULL;
+    return E_NOINTERFACE;
+}
+
+static ULONG STDMETHODCALLTYPE dxgi_surface_priv_data_AddRef(IUnknown *iface)
+{
+    struct qemu_dxgi_output *output = impl_from_priv_data(iface);
+    ULONG refcount = InterlockedIncrement(&output->refcount);
+
+    WINE_TRACE("%p increasing refcount to %u.\n", output, refcount);
+
+    return refcount;
+}
+
+static ULONG STDMETHODCALLTYPE dxgi_surface_priv_data_Release(IUnknown *iface)
+{
+    struct qemu_dxgi_output *output = impl_from_priv_data(iface);
+    ULONG refcount = InterlockedDecrement(&output->refcount);
+
+    WINE_TRACE("%p decreasing refcount to %u.\n", output, refcount);
+
+    if (!refcount)
+    {
+        WINE_TRACE("Destroying output wrapper %p for host output %p.\n", output, output->host);
+        HeapFree(GetProcessHeap(), 0, output);
+    }
+
+    return refcount;
+}
+
+static const struct IUnknownVtbl priv_data_vtbl =
+{
+    /* IUnknown methods */
+    dxgi_surface_priv_data_QueryInterface,
+    dxgi_surface_priv_data_AddRef,
+    dxgi_surface_priv_data_Release,
+};
+
+#include <initguid.h>
+
+DEFINE_GUID(IID_Qemu_output_priv_data, 0xfd2efa6f, 0xaf8d, 0x4b6b, 0xbd, 0x1d, 0x12, 0x06, 0x3e, 0x15, 0x23, 0x33);
+
+struct qemu_dxgi_output *output_from_host(IDXGIOutput4 *host)
+{
+    IUnknown *priv;
+    DWORD size = sizeof(priv);
     HRESULT hr;
+
+    hr = IDXGIOutput4_GetPrivateData(host, &IID_Qemu_output_priv_data, &size, &priv);
+    if (FAILED(hr))
+        return NULL;
+
+    IUnknown_Release(priv);
+    return impl_from_priv_data(priv);
+}
+
+HRESULT qemu_dxgi_output_create(struct qemu_dxgi_adapter *adapter, IDXGIOutput4 *host, struct qemu_dxgi_output **output)
+{
     struct qemu_dxgi_output *obj;
 
     *output = NULL;
@@ -1197,13 +1254,14 @@ HRESULT qemu_dxgi_output_create(struct qemu_dxgi_adapter *adapter, UINT idx, str
         return E_OUTOFMEMORY;
     }
     obj->adapter = adapter;
+    obj->host = host;
 
-    hr = IDXGIAdapter3_EnumOutputs(adapter->host, idx, (IDXGIOutput **)&obj->host);
-    if (SUCCEEDED(hr))
-        *output = obj;
-    else
-        HeapFree(GetProcessHeap(), 0, obj);
-    return hr;
+    obj->priv_data_iface.lpVtbl = &priv_data_vtbl;
+    /* Leave the ref at 0, we want the host obj to own the only / final reference. */
+    IDXGIOutput4_SetPrivateDataInterface(obj->host, &IID_Qemu_output_priv_data, &obj->priv_data_iface);
+
+    *output = obj;
+    return S_OK;
 }
 
 #endif

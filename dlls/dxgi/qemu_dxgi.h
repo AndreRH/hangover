@@ -230,6 +230,10 @@ struct qemu_dxgi_output
     /* Host fields */
     IDXGIOutput4 *host;
     struct qemu_dxgi_adapter *adapter;
+
+    /* For finding the wrapper from the host object. */
+    ULONG refcount;
+    IUnknown priv_data_iface;
 };
 
 struct qemu_dxgi_device
@@ -429,7 +433,7 @@ void qemu_dxgi_swapchain_SetRotation(struct qemu_syscall *call);
 HRESULT qemu_dxgi_factory_create(DWORD flags, DWORD version, struct qemu_dxgi_factory **factory);
 HRESULT qemu_dxgi_adapter_create(struct qemu_dxgi_factory *factory, IDXGIAdapter3 *host,
         struct qemu_dxgi_adapter **adapter);
-HRESULT qemu_dxgi_output_create(struct qemu_dxgi_adapter *adapter, UINT idx, struct qemu_dxgi_output **output);
+HRESULT qemu_dxgi_output_create(struct qemu_dxgi_adapter *adapter, IDXGIOutput4 *host, struct qemu_dxgi_output **output);
 ULONG qemu_dxgi_factory_Release_internal(struct qemu_dxgi_factory *factory);
 ULONG qemu_dxgi_adapter_Release_internal(struct qemu_dxgi_adapter *adapter);
 ULONG qemu_dxgi_device_Release_internal(struct qemu_dxgi_device *device);
@@ -443,6 +447,7 @@ HRESULT qemu_dxgi_swapchain_create(IDXGISwapChain1 *host, struct qemu_dxgi_devic
         struct qemu_dxgi_factory *factory, struct qemu_dxgi_swapchain **swapchain);
 
 struct qemu_dxgi_surface *surface_from_host(IDXGISurface1 *host);
+struct qemu_dxgi_output *output_from_host(IDXGIOutput4 *host);
 
 #endif
 
