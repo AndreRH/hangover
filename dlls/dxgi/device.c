@@ -169,7 +169,7 @@ static ULONG STDMETHODCALLTYPE dxgi_device_Release(IDXGIDevice2 *iface)
 
 #else
 
-static ULONG qemu_dxgi_device_Release_internal(struct qemu_dxgi_device *device)
+ULONG qemu_dxgi_device_Release_internal(struct qemu_dxgi_device *device)
 {
     ULONG ref;
     struct qemu_dxgi_adapter *adapter = device->adapter;
@@ -497,7 +497,7 @@ void qemu_dxgi_device_CreateSurface(struct qemu_syscall *call)
 
     for (i = 0; i < count; ++i)
     {
-        c->super.iret = qemu_dxgi_surface_create(host[i], &obj[i]);
+        c->super.iret = qemu_dxgi_surface_create(host[i], device, &obj[i]);
         if (FAILED(c->super.iret))
             goto release;
     }

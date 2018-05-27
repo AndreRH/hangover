@@ -113,7 +113,7 @@ void qemu_dxgi_surface_inner_AddRef(struct qemu_syscall *call)
     struct qemu_dxgi_surface_inner_AddRef *c = (struct qemu_dxgi_surface_inner_AddRef *)call;
     struct qemu_dxgi_surface *surface;
     
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
     
     c->super.iret = IDXGISurface1_AddRef(surface->host);
@@ -148,11 +148,21 @@ void qemu_dxgi_surface_inner_Release(struct qemu_syscall *call)
 {
     struct qemu_dxgi_surface_inner_Release *c = (struct qemu_dxgi_surface_inner_Release *)call;
     struct qemu_dxgi_surface *surface;
+    struct qemu_dxgi_device *device;
     
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
+    device = surface->device;
     
+    IDXGIDevice2_AddRef(device->host);
     c->super.iret = IDXGISurface1_Release(surface->host);
+    qemu_dxgi_device_Release_internal(device);
+    
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying surface wrapper %p for host surface %p.\n", surface, surface->host);
+        HeapFree(GetProcessHeap(), 0, surface);
+    }
 }
 
 #endif
@@ -637,7 +647,8 @@ void qemu_dxgi_surface_guest_init(struct qemu_dxgi_surface *surface, IUnknown *o
 
 #else
 
-HRESULT qemu_dxgi_surface_create(IDXGISurface1 *host, struct qemu_dxgi_surface **surface)
+HRESULT qemu_dxgi_surface_create(IDXGISurface1 *host, struct qemu_dxgi_device *device,
+        struct qemu_dxgi_surface **surface)
 {
     struct qemu_dxgi_surface *out;
 
@@ -649,6 +660,7 @@ HRESULT qemu_dxgi_surface_create(IDXGISurface1 *host, struct qemu_dxgi_surface *
     }
 
     out->host = host;
+    out->device = device;
     *surface = out;
     return S_OK;
 }

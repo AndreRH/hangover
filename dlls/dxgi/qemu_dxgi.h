@@ -223,6 +223,7 @@ struct qemu_dxgi_surface
     
     /* Host fields */
     IDXGISurface1 *host;
+    struct qemu_dxgi_device *device;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -349,10 +350,13 @@ HRESULT qemu_dxgi_adapter_create(struct qemu_dxgi_factory *factory, IDXGIAdapter
 HRESULT qemu_dxgi_output_create(struct qemu_dxgi_adapter *adapter, UINT idx, struct qemu_dxgi_output **output);
 ULONG qemu_dxgi_factory_Release_internal(struct qemu_dxgi_factory *factory);
 ULONG qemu_dxgi_adapter_Release_internal(struct qemu_dxgi_adapter *adapter);
+ULONG qemu_dxgi_device_Release_internal(struct qemu_dxgi_device *device);
+
 HRESULT qemu_dxgi_device_create(HMODULE mod, struct qemu_dxgi_adapter *adapter, struct qemu_dxgi_factory *factory,
         unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, size_t layer_size,
         struct qemu_dxgi_device **device);
-HRESULT qemu_dxgi_surface_create(IDXGISurface1 *host, struct qemu_dxgi_surface **surface);
+HRESULT qemu_dxgi_surface_create(IDXGISurface1 *host, struct qemu_dxgi_device *device,
+        struct qemu_dxgi_surface **surface);
 
 #endif
 
