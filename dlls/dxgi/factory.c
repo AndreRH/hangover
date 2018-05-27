@@ -45,6 +45,7 @@ DEFINE_GUID(IID_IDXGIFactory5, 0x7632e1f5, 0xee65, 0x4dca, 0x87,0xfd, 0x84,0xcd,
 
 #endif
 
+#include "thunk/qemu_dxgi.h"
 #include "qemu_dxgi.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_dxgi);
@@ -539,18 +540,40 @@ struct qemu_dxgi_factory_CreateSwapChain
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_factory_CreateSwapChain(IDXGIFactory5 *iface, IUnknown *device, DXGI_SWAP_CHAIN_DESC *desc, IDXGISwapChain **swapchain)
+static HRESULT STDMETHODCALLTYPE dxgi_factory_CreateSwapChain(IDXGIFactory5 *iface, IUnknown *device,
+        DXGI_SWAP_CHAIN_DESC *desc, IDXGISwapChain **swapchain)
 {
     struct qemu_dxgi_factory_CreateSwapChain call;
     struct qemu_dxgi_factory *factory = impl_from_IDXGIFactory5(iface);
+    struct qemu_dxgi_swapchain *obj;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_FACTORY_CREATESWAPCHAIN);
     call.iface = (ULONG_PTR)factory;
-    call.device = (ULONG_PTR)device;
     call.desc = (ULONG_PTR)desc;
     call.swapchain = (ULONG_PTR)swapchain;
 
+    if (device)
+    {
+        struct qemu_dxgi_device *device_impl = unsafe_impl_from_IDXGIDevice(device);
+        if (!device)
+        {
+            WINE_WARN("This is not the device we are looking for.\n");
+            return E_FAIL;
+        }
+        call.device = (ULONG_PTR)device_impl;
+    }
+    else
+    {
+        call.device = 0;
+    }
+
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    obj = (struct qemu_dxgi_swapchain *)(ULONG_PTR)call.swapchain;
+    qemu_dxgi_swapchain_guest_init(obj);
+    *swapchain = (IDXGISwapChain *)&obj->IDXGISwapChain1_iface;
 
     return call.super.iret;
 }
@@ -561,11 +584,35 @@ void qemu_dxgi_factory_CreateSwapChain(struct qemu_syscall *call)
 {
     struct qemu_dxgi_factory_CreateSwapChain *c = (struct qemu_dxgi_factory_CreateSwapChain *)call;
     struct qemu_dxgi_factory *factory;
+    struct qemu_dxgi_device *device;
+    DXGI_SWAP_CHAIN_DESC stack, *desc = &stack;
+    IDXGISwapChain1 *host;
+    struct qemu_dxgi_swapchain *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
+    device = QEMU_G2H(c->device);
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->desc);
+#else
+    if (c->desc)
+        DXGI_SWAP_CHAIN_DESC_g2h(desc, QEMU_G2H(c->desc));
+    else
+        desc = NULL;
+#endif
 
-    c->super.iret = IDXGIFactory5_CreateSwapChain(factory->host, QEMU_G2H(c->device), QEMU_G2H(c->desc), QEMU_G2H(c->swapchain));
+    c->super.iret = IDXGIFactory5_CreateSwapChain(factory->host, device ? (IUnknown *)device->host : NULL,
+            desc, c->swapchain ? (IDXGISwapChain **)&host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    c->super.iret = qemu_dxgi_swapchain_create(host, device, &obj);
+    if (FAILED(c->super.iret))
+    {
+        IDXGISwapChain1_Release(host);
+        return;
+    }
+    c->swapchain = QEMU_H2G(obj);
 }
 
 #endif

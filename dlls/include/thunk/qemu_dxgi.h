@@ -55,28 +55,64 @@ static void DXGI_ADAPTER_DESC_h2g(struct qemu_DXGI_ADAPTER_DESC *guest, const st
     guest->DeviceId = host->DeviceId;
     guest->SubSysId = host->SubSysId;
     guest->Revision = host->Revision;
-    
+
     if (host->DedicatedVideoMemory > ~0U)
         guest->DedicatedVideoMemory = ~0U;
     else
         guest->DedicatedVideoMemory = host->DedicatedVideoMemory;
-    
+
     if (host->DedicatedSystemMemory > ~0U)
         guest->DedicatedSystemMemory = ~0U;
     else
         guest->DedicatedSystemMemory = host->DedicatedSystemMemory;
-    
+
     if (host->SharedSystemMemory > ~0U)
         guest->SharedSystemMemory = ~0U;
     else
         guest->SharedSystemMemory = host->SharedSystemMemory;
-    
+
     guest->AdapterLuid = host->AdapterLuid;
 }
 
 static void DXGI_ADAPTER_DESC1_h2g(struct qemu_DXGI_ADAPTER_DESC1 *guest, const struct DXGI_ADAPTER_DESC1 *host)
 {
     DXGI_ADAPTER_DESC_h2g((struct qemu_DXGI_ADAPTER_DESC *)guest, (DXGI_ADAPTER_DESC *)host);
+    guest->Flags = host->Flags;
+}
+
+struct qemu_DXGI_SWAP_CHAIN_DESC
+{
+    DXGI_MODE_DESC BufferDesc;
+    DXGI_SAMPLE_DESC SampleDesc;
+    DXGI_USAGE BufferUsage;
+    UINT BufferCount;
+    qemu_ptr OutputWindow;
+    BOOL Windowed;
+    DXGI_SWAP_EFFECT SwapEffect;
+    UINT Flags;
+};
+
+static void DXGI_SWAP_CHAIN_DESC_g2h(struct DXGI_SWAP_CHAIN_DESC *host, const struct qemu_DXGI_SWAP_CHAIN_DESC *guest)
+{
+    host->BufferDesc = guest->BufferDesc;
+    host->SampleDesc = guest->SampleDesc;
+    host->BufferUsage = guest->BufferUsage;
+    host->BufferCount = guest->BufferCount;
+    host->OutputWindow = (HWND)(ULONG_PTR)guest->OutputWindow;
+    host->Windowed = guest->Windowed;
+    host->SwapEffect = guest->SwapEffect;
+    host->Flags = guest->Flags;
+}
+
+static void DXGI_SWAP_CHAIN_DESC_h2g(struct qemu_DXGI_SWAP_CHAIN_DESC *guest, const struct DXGI_SWAP_CHAIN_DESC *host)
+{
+    guest->BufferDesc = host->BufferDesc;
+    guest->SampleDesc = host->SampleDesc;
+    guest->BufferUsage = host->BufferUsage;
+    guest->BufferCount = host->BufferCount;
+    guest->OutputWindow = (ULONG_PTR)host->OutputWindow;
+    guest->Windowed = host->Windowed;
+    guest->SwapEffect = host->SwapEffect;
     guest->Flags = host->Flags;
 }
 

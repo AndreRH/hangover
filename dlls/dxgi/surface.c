@@ -192,11 +192,6 @@ void qemu_dxgi_surface_inner_Release(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-static inline struct qemu_dxgi_surface *impl_from_IDXGISurface1(IDXGISurface1 *iface)
-{
-    return CONTAINING_RECORD(iface, struct qemu_dxgi_surface, IDXGISurface1_iface);
-}
-
 static HRESULT STDMETHODCALLTYPE dxgi_surface_QueryInterface(IDXGISurface1 *iface, REFIID riid,
                                                              void **object)
 {

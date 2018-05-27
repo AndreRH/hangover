@@ -272,11 +272,19 @@ struct qemu_dxgi_swapchain
 
 #ifdef QEMU_DLL_GUEST
 
+const GUID IID_IDXGISurface1;
+
+static inline struct qemu_dxgi_surface *impl_from_IDXGISurface1(IDXGISurface1 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_dxgi_surface, IDXGISurface1_iface);
+}
+
 void qemu_dxgi_factory_guest_init(struct qemu_dxgi_factory *factory);
 void qemu_dxgi_adapter_guest_init(struct qemu_dxgi_adapter *adapter);
 void qemu_dxgi_output_guest_init(struct qemu_dxgi_output *output);
 void qemu_dxgi_device_guest_init(struct qemu_dxgi_device *device);
 void qemu_dxgi_surface_guest_init(struct qemu_dxgi_surface *surface, IUnknown *outer_unknown);
+void qemu_dxgi_swapchain_guest_init(struct qemu_dxgi_swapchain *swapchain);
 
 struct qemu_dxgi_factory *unsafe_impl_from_IDXGIFactory(IDXGIFactory *iface);
 struct qemu_dxgi_adapter *unsafe_impl_from_IDXGIAdapter(IDXGIAdapter *iface);
@@ -431,6 +439,8 @@ HRESULT qemu_dxgi_device_create(HMODULE mod, struct qemu_dxgi_adapter *adapter, 
         struct qemu_dxgi_device **device);
 HRESULT qemu_dxgi_surface_create(IDXGISurface1 *host, struct qemu_dxgi_device *device,
         struct qemu_dxgi_surface **surface);
+HRESULT qemu_dxgi_swapchain_create(IDXGISwapChain1 *host, struct qemu_dxgi_device *device,
+        struct qemu_dxgi_swapchain **swapchain);
 
 struct qemu_dxgi_surface *surface_from_host(IDXGISurface1 *host);
 

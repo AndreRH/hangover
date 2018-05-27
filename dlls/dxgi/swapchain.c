@@ -36,6 +36,7 @@
 #include <wine/debug.h>
 #endif
 
+#include "thunk/qemu_dxgi.h"
 #include "qemu_dxgi.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_dxgi);
@@ -97,7 +98,7 @@ static ULONG STDMETHODCALLTYPE dxgi_swapchain_AddRef(IDXGISwapChain1 *iface)
 {
     struct qemu_dxgi_swapchain_AddRef call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_ADDREF);
     call.iface = (ULONG_PTR)swapchain;
 
@@ -133,7 +134,7 @@ static ULONG STDMETHODCALLTYPE dxgi_swapchain_Release(IDXGISwapChain1 *iface)
 {
     struct qemu_dxgi_swapchain_Release call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_RELEASE);
     call.iface = (ULONG_PTR)swapchain;
 
@@ -172,7 +173,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_SetPrivateData(IDXGISwapChain1 *
 {
     struct qemu_dxgi_swapchain_SetPrivateData call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_SETPRIVATEDATA);
     call.iface = (ULONG_PTR)swapchain;
     call.guid = (ULONG_PTR)guid;
@@ -213,7 +214,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_SetPrivateDataInterface(IDXGISwa
 {
     struct qemu_dxgi_swapchain_SetPrivateDataInterface call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_SETPRIVATEDATAINTERFACE);
     call.iface = (ULONG_PTR)swapchain;
     call.guid = (ULONG_PTR)guid;
@@ -254,7 +255,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetPrivateData(IDXGISwapChain1 *
 {
     struct qemu_dxgi_swapchain_GetPrivateData call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETPRIVATEDATA);
     call.iface = (ULONG_PTR)swapchain;
     call.guid = (ULONG_PTR)guid;
@@ -295,7 +296,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetParent(IDXGISwapChain1 *iface
 {
     struct qemu_dxgi_swapchain_GetParent call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETPARENT);
     call.iface = (ULONG_PTR)swapchain;
     call.riid = (ULONG_PTR)riid;
@@ -335,7 +336,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetDevice(IDXGISwapChain1 *iface
 {
     struct qemu_dxgi_swapchain_GetDevice call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETDEVICE);
     call.iface = (ULONG_PTR)swapchain;
     call.riid = (ULONG_PTR)riid;
@@ -375,7 +376,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_Present(IDXGISwapChain1 *iface, 
 {
     struct qemu_dxgi_swapchain_Present call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_PRESENT);
     call.iface = (ULONG_PTR)swapchain;
     call.sync_interval = sync_interval;
@@ -406,7 +407,6 @@ struct qemu_dxgi_swapchain_GetBuffer
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t buffer_idx;
-    uint64_t riid;
     uint64_t surface;
 };
 
@@ -416,15 +416,30 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetBuffer(IDXGISwapChain1 *iface
 {
     struct qemu_dxgi_swapchain_GetBuffer call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+    struct qemu_dxgi_surface *impl;
+    HRESULT hr;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETBUFFER);
     call.iface = (ULONG_PTR)swapchain;
     call.buffer_idx = buffer_idx;
-    call.riid = (ULONG_PTR)riid;
-    call.surface = (ULONG_PTR)surface;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
 
+    impl = (struct qemu_dxgi_surface *)(ULONG_PTR)call.surface;
+
+    if (impl->IDXGISurface1_iface.lpVtbl)
+    {
+        hr = IDXGISurface_QueryInterface(&impl->IDXGISurface1_iface, riid, surface);
+        IDXGISurface_Release(&impl->IDXGISurface1_iface);
+        return hr;
+    }
+    /* Ok, this is the call from qemu_dxgi_swapchain_guest_init. We can't call QI because we don't have a
+     * vtable yet. Keep the reference from the host call and return the interface manually. */
+    if (!IsEqualGUID(riid, &IID_IDXGISurface1))
+        WINE_ERR("Unexpected GUID.\n");
+    *surface = &impl->IDXGISurface1_iface;
     return call.super.iret;
 }
 
@@ -434,11 +449,18 @@ void qemu_dxgi_swapchain_GetBuffer(struct qemu_syscall *call)
 {
     struct qemu_dxgi_swapchain_GetBuffer *c = (struct qemu_dxgi_swapchain_GetBuffer *)call;
     struct qemu_dxgi_swapchain *swapchain;
+    IDXGISurface1 *host;
+    struct qemu_dxgi_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGISwapChain1_GetBuffer(swapchain->host, c->buffer_idx, QEMU_G2H(c->riid), QEMU_G2H(c->surface));
+    c->super.iret = IDXGISwapChain1_GetBuffer(swapchain->host, c->buffer_idx, &IID_IDXGISurface1, (void **)&host);
+    if (FAILED(c->super.iret))
+        return;
+
+    surface = surface_from_host(host);
+    c->surface = QEMU_H2G(surface);
 }
 
 #endif
@@ -457,7 +479,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_SetFullscreenState(IDXGISwapChai
 {
     struct qemu_dxgi_swapchain_SetFullscreenState call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_SETFULLSCREENSTATE);
     call.iface = (ULONG_PTR)swapchain;
     call.fullscreen = fullscreen;
@@ -497,7 +519,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetFullscreenState(IDXGISwapChai
 {
     struct qemu_dxgi_swapchain_GetFullscreenState call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETFULLSCREENSTATE);
     call.iface = (ULONG_PTR)swapchain;
     call.fullscreen = (ULONG_PTR)fullscreen;
@@ -536,7 +558,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetDesc(IDXGISwapChain1 *iface, 
 {
     struct qemu_dxgi_swapchain_GetDesc call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETDESC);
     call.iface = (ULONG_PTR)swapchain;
     call.desc = (ULONG_PTR)desc;
@@ -552,11 +574,23 @@ void qemu_dxgi_swapchain_GetDesc(struct qemu_syscall *call)
 {
     struct qemu_dxgi_swapchain_GetDesc *c = (struct qemu_dxgi_swapchain_GetDesc *)call;
     struct qemu_dxgi_swapchain *swapchain;
+    DXGI_SWAP_CHAIN_DESC stack, *desc = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->desc);
+#else
+    if (!c->desc)
+        desc = NULL;
+#endif
 
-    c->super.iret = IDXGISwapChain1_GetDesc(swapchain->host, QEMU_G2H(c->desc));
+    c->super.iret = IDXGISwapChain1_GetDesc(swapchain->host, desc);
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret))
+        DXGI_SWAP_CHAIN_DESC_h2g(QEMU_G2H(c->desc), desc);
+#endif
 }
 
 #endif
@@ -578,7 +612,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_ResizeBuffers(IDXGISwapChain1 *i
 {
     struct qemu_dxgi_swapchain_ResizeBuffers call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_RESIZEBUFFERS);
     call.iface = (ULONG_PTR)swapchain;
     call.buffer_count = buffer_count;
@@ -620,7 +654,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_ResizeTarget(IDXGISwapChain1 *if
 {
     struct qemu_dxgi_swapchain_ResizeTarget call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_RESIZETARGET);
     call.iface = (ULONG_PTR)swapchain;
     call.target_mode_desc = (ULONG_PTR)target_mode_desc;
@@ -658,7 +692,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetContainingOutput(IDXGISwapCha
 {
     struct qemu_dxgi_swapchain_GetContainingOutput call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETCONTAININGOUTPUT);
     call.iface = (ULONG_PTR)swapchain;
     call.output = (ULONG_PTR)output;
@@ -696,7 +730,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetFrameStatistics(IDXGISwapChai
 {
     struct qemu_dxgi_swapchain_GetFrameStatistics call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETFRAMESTATISTICS);
     call.iface = (ULONG_PTR)swapchain;
     call.stats = (ULONG_PTR)stats;
@@ -734,7 +768,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetLastPresentCount(IDXGISwapCha
 {
     struct qemu_dxgi_swapchain_GetLastPresentCount call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETLASTPRESENTCOUNT);
     call.iface = (ULONG_PTR)swapchain;
     call.last_present_count = (ULONG_PTR)last_present_count;
@@ -772,7 +806,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetDesc1(IDXGISwapChain1 *iface,
 {
     struct qemu_dxgi_swapchain_GetDesc1 call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETDESC1);
     call.iface = (ULONG_PTR)swapchain;
     call.desc = (ULONG_PTR)desc;
@@ -810,7 +844,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetFullscreenDesc(IDXGISwapChain
 {
     struct qemu_dxgi_swapchain_GetFullscreenDesc call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETFULLSCREENDESC);
     call.iface = (ULONG_PTR)swapchain;
     call.desc = (ULONG_PTR)desc;
@@ -848,7 +882,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetHwnd(IDXGISwapChain1 *iface, 
 {
     struct qemu_dxgi_swapchain_GetHwnd call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETHWND);
     call.iface = (ULONG_PTR)swapchain;
     call.hwnd = (ULONG_PTR)hwnd;
@@ -887,7 +921,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetCoreWindow(IDXGISwapChain1 *i
 {
     struct qemu_dxgi_swapchain_GetCoreWindow call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETCOREWINDOW);
     call.iface = (ULONG_PTR)swapchain;
     call.iid = (ULONG_PTR)iid;
@@ -928,7 +962,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_Present1(IDXGISwapChain1 *iface,
 {
     struct qemu_dxgi_swapchain_Present1 call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_PRESENT1);
     call.iface = (ULONG_PTR)swapchain;
     call.sync_interval = sync_interval;
@@ -967,7 +1001,7 @@ static BOOL STDMETHODCALLTYPE dxgi_swapchain_IsTemporaryMonoSupported(IDXGISwapC
 {
     struct qemu_dxgi_swapchain_IsTemporaryMonoSupported call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_ISTEMPORARYMONOSUPPORTED);
     call.iface = (ULONG_PTR)swapchain;
 
@@ -1004,7 +1038,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetRestrictToOutput(IDXGISwapCha
 {
     struct qemu_dxgi_swapchain_GetRestrictToOutput call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETRESTRICTTOOUTPUT);
     call.iface = (ULONG_PTR)swapchain;
     call.output = (ULONG_PTR)output;
@@ -1042,7 +1076,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_SetBackgroundColor(IDXGISwapChai
 {
     struct qemu_dxgi_swapchain_SetBackgroundColor call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_SETBACKGROUNDCOLOR);
     call.iface = (ULONG_PTR)swapchain;
     call.color = (ULONG_PTR)color;
@@ -1080,7 +1114,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetBackgroundColor(IDXGISwapChai
 {
     struct qemu_dxgi_swapchain_GetBackgroundColor call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETBACKGROUNDCOLOR);
     call.iface = (ULONG_PTR)swapchain;
     call.color = (ULONG_PTR)color;
@@ -1118,7 +1152,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_SetRotation(IDXGISwapChain1 *ifa
 {
     struct qemu_dxgi_swapchain_SetRotation call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_SETROTATION);
     call.iface = (ULONG_PTR)swapchain;
     call.rotation = rotation;
@@ -1156,7 +1190,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetRotation(IDXGISwapChain1 *ifa
 {
     struct qemu_dxgi_swapchain_GetRotation call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETROTATION);
     call.iface = (ULONG_PTR)swapchain;
     call.rotation = (ULONG_PTR)rotation;
@@ -1177,6 +1211,121 @@ void qemu_dxgi_swapchain_GetRotation(struct qemu_syscall *call)
     swapchain = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGISwapChain1_GetRotation(swapchain->host, QEMU_G2H(c->rotation));
+}
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
+static const struct IDXGISwapChain1Vtbl dxgi_swapchain_vtbl =
+{
+    /* IUnknown methods */
+    dxgi_swapchain_QueryInterface,
+    dxgi_swapchain_AddRef,
+    dxgi_swapchain_Release,
+    /* IDXGIObject methods */
+    dxgi_swapchain_SetPrivateData,
+    dxgi_swapchain_SetPrivateDataInterface,
+    dxgi_swapchain_GetPrivateData,
+    dxgi_swapchain_GetParent,
+    /* IDXGIDeviceSubObject methods */
+    dxgi_swapchain_GetDevice,
+    /* IDXGISwapChain methods */
+    dxgi_swapchain_Present,
+    dxgi_swapchain_GetBuffer,
+    dxgi_swapchain_SetFullscreenState,
+    dxgi_swapchain_GetFullscreenState,
+    dxgi_swapchain_GetDesc,
+    dxgi_swapchain_ResizeBuffers,
+    dxgi_swapchain_ResizeTarget,
+    dxgi_swapchain_GetContainingOutput,
+    dxgi_swapchain_GetFrameStatistics,
+    dxgi_swapchain_GetLastPresentCount,
+    /* IDXGISwapChain1 methods */
+    dxgi_swapchain_GetDesc1,
+    dxgi_swapchain_GetFullscreenDesc,
+    dxgi_swapchain_GetHwnd,
+    dxgi_swapchain_GetCoreWindow,
+    dxgi_swapchain_Present1,
+    dxgi_swapchain_IsTemporaryMonoSupported,
+    dxgi_swapchain_GetRestrictToOutput,
+    dxgi_swapchain_SetBackgroundColor,
+    dxgi_swapchain_GetBackgroundColor,
+    dxgi_swapchain_SetRotation,
+    dxgi_swapchain_GetRotation,
+};
+
+void qemu_dxgi_swapchain_guest_init(struct qemu_dxgi_swapchain *swapchain)
+{
+    DXGI_SWAP_CHAIN_DESC desc;
+    UINT i;
+    struct qemu_dxgi_surface *surface;
+    IDXGISurface1 *surface_iface;
+    HRESULT hr;
+
+    swapchain->IDXGISwapChain1_iface.lpVtbl = &dxgi_swapchain_vtbl;
+
+    hr = IDXGISwapChain_GetDesc(&swapchain->IDXGISwapChain1_iface, &desc);
+    if (FAILED(hr))
+        WINE_ERR("Failed to get swapchain desc.\n");
+
+    for (i = 0; i < desc.BufferCount; ++i)
+    {
+        hr = IDXGISwapChain_GetBuffer(&swapchain->IDXGISwapChain1_iface, i, &IID_IDXGISurface1,
+                (void **)&surface_iface);
+        if (FAILED(hr))
+            WINE_ERR("Failed to get buffer %u.\n", i);
+
+        surface = impl_from_IDXGISurface1(surface_iface);
+        qemu_dxgi_surface_guest_init(surface, NULL);
+        IDXGISurface_Release(surface_iface);
+    }
+}
+
+#else
+
+HRESULT qemu_dxgi_swapchain_create(IDXGISwapChain1 *host, struct qemu_dxgi_device *device,
+        struct qemu_dxgi_swapchain **swapchain)
+{
+    struct qemu_dxgi_swapchain *obj;
+    DXGI_SWAP_CHAIN_DESC desc;
+    HRESULT hr;
+    IDXGISurface1 *buffer;
+    struct qemu_dxgi_surface *surface;
+    UINT i;
+
+    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
+    if (!obj)
+    {
+        WINE_WARN("Out of memory.\n");
+        return E_OUTOFMEMORY;
+    }
+
+    obj->host = host;
+
+    hr = IDXGISwapChain1_GetDesc(host, &desc);
+    if (FAILED(hr))
+        WINE_ERR("Failed to get swapchain desc.\n");
+
+    for (i = 0; i < desc.BufferCount; ++i)
+    {
+        hr = IDXGISwapChain1_GetBuffer(host, i, &IID_IDXGISurface1, (void **)&buffer);
+        if (FAILED(hr))
+            WINE_ERR("Failed to get buffer %u.\n", i);
+
+        hr = qemu_dxgi_surface_create(buffer, device, &surface);
+        IDXGISurface1_Release(buffer);
+
+        /* Freeing the swapchain will free already created wrappers. */
+        if (FAILED(hr))
+        {
+            WINE_WARN("Creating a surface wrapper for buffer %u failed.\n", i);
+            return hr;
+        }
+    }
+    *swapchain = obj;
+
+    return S_OK;
 }
 
 #endif

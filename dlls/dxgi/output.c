@@ -472,7 +472,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_output_FindClosestMatchingMode(IDXGIOutput
     {
         call.device = 0;
     }
-    
+
     call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
