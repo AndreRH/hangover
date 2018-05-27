@@ -125,6 +125,35 @@ enum dxgi_calls
     CALL_DXGI_SURFACE_SETPRIVATEDATA,
     CALL_DXGI_SURFACE_SETPRIVATEDATAINTERFACE,
     CALL_DXGI_SURFACE_UNMAP,
+    CALL_DXGI_SWAPCHAIN_ADDREF,
+    CALL_DXGI_SWAPCHAIN_GETBACKGROUNDCOLOR,
+    CALL_DXGI_SWAPCHAIN_GETBUFFER,
+    CALL_DXGI_SWAPCHAIN_GETCONTAININGOUTPUT,
+    CALL_DXGI_SWAPCHAIN_GETCOREWINDOW,
+    CALL_DXGI_SWAPCHAIN_GETDESC,
+    CALL_DXGI_SWAPCHAIN_GETDESC1,
+    CALL_DXGI_SWAPCHAIN_GETDEVICE,
+    CALL_DXGI_SWAPCHAIN_GETFRAMESTATISTICS,
+    CALL_DXGI_SWAPCHAIN_GETFULLSCREENDESC,
+    CALL_DXGI_SWAPCHAIN_GETFULLSCREENSTATE,
+    CALL_DXGI_SWAPCHAIN_GETHWND,
+    CALL_DXGI_SWAPCHAIN_GETLASTPRESENTCOUNT,
+    CALL_DXGI_SWAPCHAIN_GETPARENT,
+    CALL_DXGI_SWAPCHAIN_GETPRIVATEDATA,
+    CALL_DXGI_SWAPCHAIN_GETRESTRICTTOOUTPUT,
+    CALL_DXGI_SWAPCHAIN_GETROTATION,
+    CALL_DXGI_SWAPCHAIN_ISTEMPORARYMONOSUPPORTED,
+    CALL_DXGI_SWAPCHAIN_PRESENT,
+    CALL_DXGI_SWAPCHAIN_PRESENT1,
+    CALL_DXGI_SWAPCHAIN_QUERYINTERFACE,
+    CALL_DXGI_SWAPCHAIN_RELEASE,
+    CALL_DXGI_SWAPCHAIN_RESIZEBUFFERS,
+    CALL_DXGI_SWAPCHAIN_RESIZETARGET,
+    CALL_DXGI_SWAPCHAIN_SETBACKGROUNDCOLOR,
+    CALL_DXGI_SWAPCHAIN_SETFULLSCREENSTATE,
+    CALL_DXGI_SWAPCHAIN_SETPRIVATEDATA,
+    CALL_DXGI_SWAPCHAIN_SETPRIVATEDATAINTERFACE,
+    CALL_DXGI_SWAPCHAIN_SETROTATION,
     CALL_DXGID3D10CREATEDEVICE,
     CALL_INIT_DLL,
 };
@@ -224,6 +253,17 @@ struct qemu_dxgi_surface
     /* Host fields */
     IDXGISurface1 *host;
     struct qemu_dxgi_device *device;
+};
+
+struct qemu_dxgi_swapchain
+{
+    /* Guest fields */
+    IDXGISwapChain1 IDXGISwapChain1_iface;
+
+    /* Host fields */
+    IDXGISwapChain1 *host;
+    struct qemu_dxgi_device *device;
+    struct qemu_dxgi_factory *factory;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -344,6 +384,35 @@ void qemu_dxgi_surface_Map(struct qemu_syscall *call);
 void qemu_dxgi_surface_Unmap(struct qemu_syscall *call);
 void qemu_dxgi_surface_GetDC(struct qemu_syscall *call);
 void qemu_dxgi_surface_ReleaseDC(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_QueryInterface(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_AddRef(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_Release(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_SetPrivateData(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_SetPrivateDataInterface(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_GetPrivateData(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_GetParent(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_GetDevice(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_Present(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_GetBuffer(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_SetFullscreenState(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_GetFullscreenState(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_GetDesc(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_ResizeBuffers(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_ResizeTarget(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_GetContainingOutput(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_GetFrameStatistics(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_GetLastPresentCount(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_GetDesc1(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_GetFullscreenDesc(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_GetHwnd(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_GetCoreWindow(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_Present1(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_IsTemporaryMonoSupported(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_GetRestrictToOutput(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_SetBackgroundColor(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_GetBackgroundColor(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_SetRotation(struct qemu_syscall *call);
+void qemu_dxgi_swapchain_GetRotation(struct qemu_syscall *call);
 
 HRESULT qemu_dxgi_factory_create(DWORD flags, DWORD version, struct qemu_dxgi_factory **factory);
 HRESULT qemu_dxgi_adapter_create(struct qemu_dxgi_factory *factory, IDXGIAdapter3 *host,
