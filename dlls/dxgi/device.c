@@ -328,7 +328,6 @@ struct qemu_dxgi_device_GetParent
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t riid;
     uint64_t parent;
 };
 
@@ -338,15 +337,15 @@ static HRESULT STDMETHODCALLTYPE dxgi_device_GetParent(IDXGIDevice2 *iface, REFI
 {
     struct qemu_dxgi_device_GetParent call;
     struct qemu_dxgi_device *device = impl_from_IDXGIDevice2(iface);
+    struct qemu_dxgi_adapter *adapter;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_DEVICE_GETPARENT);
     call.iface = (ULONG_PTR)device;
-    call.riid = (ULONG_PTR)riid;
-    call.parent = (ULONG_PTR)parent;
 
     qemu_syscall(&call.super);
+    adapter = (struct qemu_dxgi_adapter *)(ULONG_PTR)call.parent;
 
-    return call.super.iret;
+    return IDXGIAdapter_QueryInterface(&adapter->IDXGIAdapter3_iface, riid, parent);
 }
 
 #else
@@ -356,10 +355,9 @@ void qemu_dxgi_device_GetParent(struct qemu_syscall *call)
     struct qemu_dxgi_device_GetParent *c = (struct qemu_dxgi_device_GetParent *)call;
     struct qemu_dxgi_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDXGIDevice2_GetParent(device->host, QEMU_G2H(c->riid), QEMU_G2H(c->parent));
+    c->parent = QEMU_H2G(device->adapter);
 }
 
 #endif
