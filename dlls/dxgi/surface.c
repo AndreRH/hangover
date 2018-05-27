@@ -29,11 +29,18 @@
 #include "dll_list.h"
 
 #ifdef QEMU_DLL_GUEST
+
 #include <dxgi1_2.h>
 #include <debug.h>
+#include <initguid.h>
+
+DEFINE_GUID(IID_IDXGISurface1, 0x4ae63092, 0x6327, 0x4c1b, 0x80,0xae, 0xbf,0xe1,0x2e,0xa3,0x2b,0x86);
+
 #else
+
 #include <dxgi1_5.h>
 #include <wine/debug.h>
+
 #endif
 
 #include "qemu_dxgi.h"
@@ -60,14 +67,29 @@ static HRESULT STDMETHODCALLTYPE dxgi_surface_inner_QueryInterface(IUnknown *ifa
     struct qemu_dxgi_surface_inner_QueryInterface call;
     struct qemu_dxgi_surface *surface = impl_from_IUnknown(iface);
 
+    WINE_TRACE("iface %p, riid %s, out %p.\n", iface, wine_dbgstr_guid(riid), out);
+    
+    if (IsEqualGUID(riid, &IID_IDXGISurface1)
+            || IsEqualGUID(riid, &IID_IDXGISurface)
+            || IsEqualGUID(riid, &IID_IDXGIDeviceSubObject)
+            || IsEqualGUID(riid, &IID_IDXGIObject)
+            || IsEqualGUID(riid, &IID_IUnknown))
+    {
+        IDXGISurface_AddRef(&surface->IDXGISurface1_iface);
+        *out = &surface->IDXGISurface1_iface;
+        return S_OK;
+    }
+
+    /* Ask the host if we should know about it. */
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SURFACE_INNER_QUERYINTERFACE);
     call.iface = (ULONG_PTR)surface;
     call.riid = (ULONG_PTR)riid;
-    call.out = (ULONG_PTR)out;
-
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    WINE_WARN("%s not implemented, returning E_NOINTERFACE\n", wine_dbgstr_guid(riid));
+
+    *out = NULL;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -76,11 +98,18 @@ void qemu_dxgi_surface_inner_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_dxgi_surface_inner_QueryInterface *c = (struct qemu_dxgi_surface_inner_QueryInterface *)call;
     struct qemu_dxgi_surface *surface;
+    IUnknown *out;
     
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
     
-    c->super.iret = IDXGISurface1_QueryInterface(surface->host, QEMU_G2H(c->riid), QEMU_G2H(c->out));
+    c->super.iret = IDXGISurface1_QueryInterface(surface->host, QEMU_G2H(c->riid), (void **)&out);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host surface returned an interface for %s which this wrapper does not know.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->riid)));
+        IUnknown_Release(out);
+    }
 }
 
 #endif
