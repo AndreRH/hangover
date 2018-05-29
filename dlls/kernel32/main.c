@@ -67,9 +67,8 @@ static uint64_t __fastcall guest_completion_cb(struct qemu_completion_cb *data)
 #define EH_NESTED_CALL      0x10
 
 /* Copypasted and adapted from __wine_exception_handler. */
-static DWORD x86_exception_handler(EXCEPTION_RECORD *record,
-        EXCEPTION_REGISTRATION_RECORD *frame, CONTEXT *context,
-        EXCEPTION_REGISTRATION_RECORD **pdispatcher)
+static EXCEPTION_DISPOSITION NTAPI x86_exception_handler(EXCEPTION_RECORD *record,
+        void *frame, CONTEXT *context, void *pdispatcher)
 {
     EXCEPTION_POINTERS ptrs;
 
@@ -97,15 +96,26 @@ static void __fastcall kernel32_call_process_main(LPTHREAD_START_ROUTINE entry)
 {
 #ifdef _WIN64
     __try1(kernel32_UnhandledExceptionFilter)
-#else
-    __try1(x86_exception_handler)
-#endif
     {
         entry(NULL);
     }
     __except1
     {
     }
+#else
+    /* Don't use __try1 on 32 bit, gcc does not allocate stack space for the exception record
+     * correctly. */
+    NT_TIB *tib = (NT_TIB *)NtCurrentTeb();
+    EXCEPTION_REGISTRATION_RECORD except;
+
+    except.prev = tib->ExceptionList;
+    except.handler = x86_exception_handler;
+    tib->ExceptionList = &except;
+
+    entry(NULL);
+
+    tib->ExceptionList = except.prev;
+#endif
     kernel32_ExitProcess(kernel32_GetLastError());
 }
 
