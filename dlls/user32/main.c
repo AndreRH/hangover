@@ -54,11 +54,31 @@ struct LVM_SORTITEMS_cb_data
 
 #ifdef QEMU_DLL_GUEST
 
+#ifdef _WIN64
+
 long CALLBACK wndproc_except_handler(EXCEPTION_POINTERS *pointers, ULONG64 frame)
 {
     return EXCEPTION_EXECUTE_HANDLER;
 }
 
+#else
+
+#include <setjmp.h>
+
+struct my_exception
+{
+    EXCEPTION_REGISTRATION_RECORD parent;
+    jmp_buf buf;
+};
+
+static EXCEPTION_DISPOSITION NTAPI wndproc_except_handler(EXCEPTION_RECORD *record,
+        void *frame, CONTEXT *context, void *pdispatcher)
+{
+    struct my_exception *exception = frame;
+    longjmp(NULL, 1);
+}
+
+#endif
 static LRESULT __fastcall wndproc_wrapper(const struct wndproc_call *call)
 {
     WNDPROC proc = (WNDPROC)(ULONG_PTR)call->wndproc;
@@ -69,6 +89,7 @@ static LRESULT __fastcall wndproc_wrapper(const struct wndproc_call *call)
      * a pointer to store exception info to the handler. */
     if (call->msg == WM_TIMER || call->msg == WM_SYSTIMER)
     {
+#ifdef _WIN64
         __try1(wndproc_except_handler)
         {
             ret = proc((HWND)(ULONG_PTR)call->win, call->msg, call->wparam, call->lparam);
@@ -76,6 +97,25 @@ static LRESULT __fastcall wndproc_wrapper(const struct wndproc_call *call)
         __except1
         {
         }
+#else
+        struct my_exception frame;
+        NT_TIB *tib = (NT_TIB *)NtCurrentTeb();
+
+        frame.parent.prev = tib->ExceptionList;
+        frame.parent.handler = wndproc_except_handler;
+        tib->ExceptionList = &frame.parent;
+
+        if (!setjmp(frame.buf))
+        {
+            ret = proc((HWND)(ULONG_PTR)call->win, call->msg, call->wparam, call->lparam);
+        }
+        else
+        {
+            /* An exception has been thrown. Ignore. */
+        }
+
+        tib->ExceptionList = frame.parent.prev;
+#endif
     }
     else
     {
@@ -92,7 +132,7 @@ INT __fastcall LVM_SORTITEMS_guest_cb(void *data)
     return func(d->p1, d->p2, d->param);
 }
 
-BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
+BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_set_callbacks call;
 
