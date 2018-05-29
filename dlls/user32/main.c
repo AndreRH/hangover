@@ -75,7 +75,7 @@ static EXCEPTION_DISPOSITION NTAPI wndproc_except_handler(EXCEPTION_RECORD *reco
         void *frame, CONTEXT *context, void *pdispatcher)
 {
     struct my_exception *exception = frame;
-    longjmp(NULL, 1);
+    longjmp(exception->buf, 1);
 }
 
 #endif
