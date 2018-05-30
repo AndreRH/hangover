@@ -36,6 +36,9 @@
 
 #include <initguid.h>
 DEFINE_GUID(IID_IDXGIOutput4, 0xdc7dca35, 0x2196, 0x414d, 0x9f,0x53, 0x61,0x78,0x84,0x03,0x2a,0x60);
+DEFINE_GUID(IID_IDXGIOutput3, 0x8a6bb301, 0x7e7e, 0x41f4, 0xa8,0xe0, 0x5b,0x32,0xf7,0xf9,0x9b,0x18);
+DEFINE_GUID(IID_IDXGIOutput2, 0x595e39d1, 0x2724, 0x4663, 0x99,0xb1, 0xda,0x96,0x9d,0xe2,0x83,0x64);
+DEFINE_GUID(IID_IDXGIOutput1, 0x00cddea8, 0x939b, 0x4b83, 0xa3,0x40, 0xa6,0x85,0x22,0x66,0x66,0xcc);
 
 #else
 
@@ -55,7 +58,6 @@ struct qemu_dxgi_output_QueryInterface
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t riid;
-    uint64_t object;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -70,14 +72,29 @@ static HRESULT STDMETHODCALLTYPE dxgi_output_QueryInterface(IDXGIOutput4 *iface,
     struct qemu_dxgi_output_QueryInterface call;
     struct qemu_dxgi_output *output = impl_from_IDXGIOutput4(iface);
 
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
+
+    if (IsEqualGUID(riid, &IID_IDXGIOutput4)
+            || IsEqualGUID(riid, &IID_IDXGIOutput3)
+            || IsEqualGUID(riid, &IID_IDXGIOutput2)
+            || IsEqualGUID(riid, &IID_IDXGIOutput1)
+            || IsEqualGUID(riid, &IID_IDXGIOutput)
+            || IsEqualGUID(riid, &IID_IDXGIObject)
+            || IsEqualGUID(riid, &IID_IUnknown))
+    {
+        IUnknown_AddRef(iface);
+        *object = iface;
+        return S_OK;
+    }
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_OUTPUT_QUERYINTERFACE);
     call.iface = (ULONG_PTR)output;
     call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    *object = NULL;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -86,11 +103,19 @@ void qemu_dxgi_output_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_dxgi_output_QueryInterface *c = (struct qemu_dxgi_output_QueryInterface *)call;
     struct qemu_dxgi_output *output;
+    IUnknown *obj;
+    HRESULT hr;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     output = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGIOutput4_QueryInterface(output->host, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    hr = IDXGIOutput4_QueryInterface(output->host, QEMU_G2H(c->riid), (void **)&obj);
+    if (SUCCEEDED(hr))
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->riid)));
+        IUnknown_Release(obj);
+    }
 }
 
 #endif
