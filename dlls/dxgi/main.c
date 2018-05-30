@@ -346,6 +346,12 @@ WINBASEAPI HRESULT WINAPI DXGID3D10RegisterLayers(const struct dxgi_device_layer
 struct qemu_dll_init
 {
     struct qemu_syscall super;
+    uint64_t dxgi_factory_guest_destroy;
+    uint64_t dxgi_adapter_guest_destroy;
+    uint64_t dxgi_output_guest_destroy;
+    uint64_t dxgi_device_guest_destroy;
+    uint64_t dxgi_surface_guest_destroy;
+    uint64_t dxgi_swapchain_guest_destroy;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -357,8 +363,16 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
     if (reason == DLL_PROCESS_ATTACH)
     {
         call.super.id = QEMU_SYSCALL_ID(CALL_INIT_DLL);
+        call.dxgi_factory_guest_destroy = (ULONG_PTR)dxgi_factory_guest_destroy;
+        call.dxgi_adapter_guest_destroy = (ULONG_PTR)dxgi_adapter_guest_destroy;
+        call.dxgi_output_guest_destroy = (ULONG_PTR)dxgi_output_guest_destroy;
+        call.dxgi_device_guest_destroy = (ULONG_PTR)dxgi_device_guest_destroy;
+        call.dxgi_surface_guest_destroy = (ULONG_PTR)dxgi_surface_guest_destroy;
+        call.dxgi_swapchain_guest_destroy = (ULONG_PTR)dxgi_swapchain_guest_destroy;
+
         qemu_syscall(&call.super);
-    } else if (reason == DLL_PROCESS_DETACH)
+    }
+    else if (reason == DLL_PROCESS_DETACH)
     {
         if (!reserved)
             dxgi_main_cleanup();
@@ -367,11 +381,111 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
     return TRUE;
 }
 
+HRESULT dxgi_get_private_data(struct wined3d_private_store *store,
+        REFGUID guid, UINT *data_size, void *data)
+{
+    const struct wined3d_private_data *stored_data;
+    DWORD size_in;
+    HRESULT hr;
+
+    if (!data_size)
+        return E_INVALIDARG;
+
+    wined3d_mutex_lock();
+    if (!(stored_data = wined3d_private_store_get_private_data(store, guid)))
+    {
+        hr = DXGI_ERROR_NOT_FOUND;
+        *data_size = 0;
+        goto done;
+    }
+
+    size_in = *data_size;
+    *data_size = stored_data->size;
+    if (!data)
+    {
+        hr = S_OK;
+        goto done;
+    }
+    if (size_in < stored_data->size)
+    {
+        hr = DXGI_ERROR_MORE_DATA;
+        goto done;
+    }
+
+    if (stored_data->flags & WINED3DSPD_IUNKNOWN)
+        IUnknown_AddRef(stored_data->content.object);
+    memcpy(data, stored_data->content.data, stored_data->size);
+    hr = S_OK;
+
+done:
+    wined3d_mutex_unlock();
+
+    return hr;
+}
+
+HRESULT dxgi_set_private_data(struct wined3d_private_store *store,
+        REFGUID guid, UINT data_size, const void *data)
+{
+    struct wined3d_private_data *entry;
+    HRESULT hr;
+
+    if (!data)
+    {
+        wined3d_mutex_lock();
+        if (!(entry = wined3d_private_store_get_private_data(store, guid)))
+        {
+            wined3d_mutex_unlock();
+            return S_FALSE;
+        }
+
+        wined3d_private_store_free_private_data(store, entry);
+        wined3d_mutex_unlock();
+
+        return S_OK;
+    }
+
+    wined3d_mutex_lock();
+    hr = wined3d_private_store_set_private_data(store, guid, data, data_size, 0);
+    wined3d_mutex_unlock();
+
+    return hr;
+}
+
+HRESULT dxgi_set_private_data_interface(struct wined3d_private_store *store,
+        REFGUID guid, const IUnknown *object)
+{
+    HRESULT hr;
+
+    if (!object)
+        return dxgi_set_private_data(store, guid, sizeof(object), &object);
+
+    wined3d_mutex_lock();
+    hr = wined3d_private_store_set_private_data(store,
+            guid, object, sizeof(object), WINED3DSPD_IUNKNOWN);
+    wined3d_mutex_unlock();
+
+    return hr;
+}
+
 #else
+
+uint64_t dxgi_factory_guest_destroy;
+uint64_t dxgi_adapter_guest_destroy;
+uint64_t dxgi_output_guest_destroy;
+uint64_t dxgi_device_guest_destroy;
+uint64_t dxgi_surface_guest_destroy;
+uint64_t dxgi_swapchain_guest_destroy;
 
 static void qemu_init_dll(struct qemu_syscall *call)
 {
     struct qemu_dll_init *c = (struct qemu_dll_init *)call;
+
+    dxgi_factory_guest_destroy = c->dxgi_factory_guest_destroy;
+    dxgi_adapter_guest_destroy = c->dxgi_adapter_guest_destroy;
+    dxgi_output_guest_destroy = c->dxgi_output_guest_destroy;
+    dxgi_device_guest_destroy = c->dxgi_device_guest_destroy;
+    dxgi_surface_guest_destroy = c->dxgi_surface_guest_destroy;
+    dxgi_swapchain_guest_destroy = c->dxgi_swapchain_guest_destroy;
 }
 
 const struct qemu_ops *qemu_ops;
@@ -386,14 +500,11 @@ static const syscall_handler dll_functions[] =
     qemu_dxgi_adapter_GetDesc1,
     qemu_dxgi_adapter_GetDesc2,
     qemu_dxgi_adapter_GetParent,
-    qemu_dxgi_adapter_GetPrivateData,
     qemu_dxgi_adapter_QueryInterface,
     qemu_dxgi_adapter_QueryVideoMemoryInfo,
     qemu_dxgi_adapter_RegisterHardwareContentProtectionTeardownStatusEvent,
     qemu_dxgi_adapter_RegisterVideoMemoryBudgetChangeNotificationEvent,
     qemu_dxgi_adapter_Release,
-    qemu_dxgi_adapter_SetPrivateData,
-    qemu_dxgi_adapter_SetPrivateDataInterface,
     qemu_dxgi_adapter_SetVideoMemoryReservation,
     qemu_dxgi_adapter_UnregisterHardwareContentProtectionTeardownStatus,
     qemu_dxgi_adapter_UnregisterVideoMemoryBudgetChangeNotification,
@@ -404,7 +515,6 @@ static const syscall_handler dll_functions[] =
     qemu_dxgi_device_GetGPUThreadPriority,
     qemu_dxgi_device_GetMaximumFrameLatency,
     qemu_dxgi_device_GetParent,
-    qemu_dxgi_device_GetPrivateData,
     qemu_dxgi_device_OfferResources,
     qemu_dxgi_device_QueryInterface,
     qemu_dxgi_device_QueryResourceResidency,
@@ -412,8 +522,6 @@ static const syscall_handler dll_functions[] =
     qemu_dxgi_device_Release,
     qemu_dxgi_device_SetGPUThreadPriority,
     qemu_dxgi_device_SetMaximumFrameLatency,
-    qemu_dxgi_device_SetPrivateData,
-    qemu_dxgi_device_SetPrivateDataInterface,
     qemu_dxgi_factory_AddRef,
     qemu_dxgi_factory_CheckFeatureSupport,
     qemu_dxgi_factory_CreateSoftwareAdapter,
@@ -426,7 +534,6 @@ static const syscall_handler dll_functions[] =
     qemu_dxgi_factory_EnumWarpAdapter,
     qemu_dxgi_factory_GetCreationFlags,
     qemu_dxgi_factory_GetParent,
-    qemu_dxgi_factory_GetPrivateData,
     qemu_dxgi_factory_GetSharedResourceAdapterLuid,
     qemu_dxgi_factory_GetWindowAssociation,
     qemu_dxgi_factory_IsCurrent,
@@ -438,8 +545,6 @@ static const syscall_handler dll_functions[] =
     qemu_dxgi_factory_RegisterStereoStatusEvent,
     qemu_dxgi_factory_RegisterStereoStatusWindow,
     qemu_dxgi_factory_Release,
-    qemu_dxgi_factory_SetPrivateData,
-    qemu_dxgi_factory_SetPrivateDataInterface,
     qemu_dxgi_factory_UnregisterOcclusionStatus,
     qemu_dxgi_factory_UnregisterStereoStatus,
     qemu_dxgi_output_AddRef,
@@ -457,14 +562,11 @@ static const syscall_handler dll_functions[] =
     qemu_dxgi_output_GetGammaControl,
     qemu_dxgi_output_GetGammaControlCapabilities,
     qemu_dxgi_output_GetParent,
-    qemu_dxgi_output_GetPrivateData,
     qemu_dxgi_output_QueryInterface,
     qemu_dxgi_output_Release,
     qemu_dxgi_output_ReleaseOwnership,
     qemu_dxgi_output_SetDisplaySurface,
     qemu_dxgi_output_SetGammaControl,
-    qemu_dxgi_output_SetPrivateData,
-    qemu_dxgi_output_SetPrivateDataInterface,
     qemu_dxgi_output_SupportsOverlays,
     qemu_dxgi_output_TakeOwnership,
     qemu_dxgi_output_WaitForVBlank,
@@ -472,14 +574,11 @@ static const syscall_handler dll_functions[] =
     qemu_dxgi_surface_GetDesc,
     qemu_dxgi_surface_GetDevice,
     qemu_dxgi_surface_GetParent,
-    qemu_dxgi_surface_GetPrivateData,
     qemu_dxgi_surface_inner_AddRef,
     qemu_dxgi_surface_inner_QueryInterface,
     qemu_dxgi_surface_inner_Release,
     qemu_dxgi_surface_Map,
     qemu_dxgi_surface_ReleaseDC,
-    qemu_dxgi_surface_SetPrivateData,
-    qemu_dxgi_surface_SetPrivateDataInterface,
     qemu_dxgi_surface_Unmap,
     qemu_dxgi_swapchain_AddRef,
     qemu_dxgi_swapchain_GetBackgroundColor,
@@ -495,7 +594,6 @@ static const syscall_handler dll_functions[] =
     qemu_dxgi_swapchain_GetHwnd,
     qemu_dxgi_swapchain_GetLastPresentCount,
     qemu_dxgi_swapchain_GetParent,
-    qemu_dxgi_swapchain_GetPrivateData,
     qemu_dxgi_swapchain_GetRestrictToOutput,
     qemu_dxgi_swapchain_GetRotation,
     qemu_dxgi_swapchain_IsTemporaryMonoSupported,
@@ -507,8 +605,6 @@ static const syscall_handler dll_functions[] =
     qemu_dxgi_swapchain_ResizeTarget,
     qemu_dxgi_swapchain_SetBackgroundColor,
     qemu_dxgi_swapchain_SetFullscreenState,
-    qemu_dxgi_swapchain_SetPrivateData,
-    qemu_dxgi_swapchain_SetPrivateDataInterface,
     qemu_dxgi_swapchain_SetRotation,
     qemu_DXGID3D10CreateDevice,
     qemu_init_dll,

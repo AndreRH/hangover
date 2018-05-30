@@ -166,6 +166,11 @@ struct qemu_dxgi_factory_Release
 
 #ifdef QEMU_DLL_GUEST
 
+void __fastcall dxgi_factory_guest_destroy(struct qemu_dxgi_factory *factory)
+{
+    wined3d_private_store_cleanup(&factory->private_store);
+}
+
 static ULONG STDMETHODCALLTYPE dxgi_factory_Release(IDXGIFactory5 *iface)
 {
     struct qemu_dxgi_factory_Release call;
@@ -189,6 +194,7 @@ ULONG qemu_dxgi_factory_Release_internal(struct qemu_dxgi_factory *factory)
     if (!ret)
     {
         WINE_TRACE("Destroying dxgi factory wrapper %p (host factory %p).\n", factory, factory->host);
+        qemu_ops->qemu_execute(QEMU_G2H(dxgi_factory_guest_destroy), QEMU_H2G(factory));
         HeapFree(GetProcessHeap(), 0, factory);
     }
     return ret;
@@ -207,126 +213,36 @@ void qemu_dxgi_factory_Release(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_dxgi_factory_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_factory_SetPrivateData(IDXGIFactory5 *iface, REFGUID guid, UINT data_size, const void *data)
+static HRESULT STDMETHODCALLTYPE dxgi_factory_SetPrivateData(IDXGIFactory5 *iface,
+        REFGUID guid, UINT data_size, const void *data)
 {
-    struct qemu_dxgi_factory_SetPrivateData call;
     struct qemu_dxgi_factory *factory = impl_from_IDXGIFactory5(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_FACTORY_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)factory;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return dxgi_set_private_data(&factory->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_dxgi_factory_SetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE dxgi_factory_SetPrivateDataInterface(IDXGIFactory5 *iface,
+        REFGUID guid, const IUnknown *object)
 {
-    struct qemu_dxgi_factory_SetPrivateData *c = (struct qemu_dxgi_factory_SetPrivateData *)call;
-    struct qemu_dxgi_factory *factory;
-
-    WINE_FIXME("Unverified!\n");
-    factory = QEMU_G2H(c->iface);
-
-    c->super.iret = IDXGIFactory5_SetPrivateData(factory->host, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_dxgi_factory_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t object;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE dxgi_factory_SetPrivateDataInterface(IDXGIFactory5 *iface, REFGUID guid, const IUnknown *object)
-{
-    struct qemu_dxgi_factory_SetPrivateDataInterface call;
     struct qemu_dxgi_factory *factory = impl_from_IDXGIFactory5(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_FACTORY_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)factory;
-    call.guid = (ULONG_PTR)guid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, guid %s, object %p.\n", iface, wine_dbgstr_guid(guid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return dxgi_set_private_data_interface(&factory->private_store, guid, object);
 }
 
-#else
-
-void qemu_dxgi_factory_SetPrivateDataInterface(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE dxgi_factory_GetPrivateData(IDXGIFactory5 *iface,
+        REFGUID guid, UINT *data_size, void *data)
 {
-    struct qemu_dxgi_factory_SetPrivateDataInterface *c = (struct qemu_dxgi_factory_SetPrivateDataInterface *)call;
-    struct qemu_dxgi_factory *factory;
-
-    WINE_FIXME("Unverified!\n");
-    factory = QEMU_G2H(c->iface);
-
-    c->super.iret = IDXGIFactory5_SetPrivateDataInterface(factory->host, QEMU_G2H(c->guid), QEMU_G2H(c->object));
-}
-
-#endif
-
-struct qemu_dxgi_factory_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE dxgi_factory_GetPrivateData(IDXGIFactory5 *iface, REFGUID guid, UINT *data_size, void *data)
-{
-    struct qemu_dxgi_factory_GetPrivateData call;
     struct qemu_dxgi_factory *factory = impl_from_IDXGIFactory5(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_FACTORY_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)factory;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_dxgi_factory_GetPrivateData(struct qemu_syscall *call)
-{
-    struct qemu_dxgi_factory_GetPrivateData *c = (struct qemu_dxgi_factory_GetPrivateData *)call;
-    struct qemu_dxgi_factory *factory;
-
-    WINE_FIXME("Unverified!\n");
-    factory = QEMU_G2H(c->iface);
-
-    c->super.iret = IDXGIFactory5_GetPrivateData(factory->host, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
+    return dxgi_get_private_data(&factory->private_store, guid, data_size, data);
 }
 
 #endif
@@ -1394,6 +1310,7 @@ dxgi_factory_vtbl =
 void qemu_dxgi_factory_guest_init(struct qemu_dxgi_factory *factory)
 {
     factory->IDXGIFactory5_iface.lpVtbl = &dxgi_factory_vtbl.vtbl2;
+    wined3d_private_store_init(&factory->private_store);
 }
 
 struct qemu_dxgi_factory *unsafe_impl_from_IDXGIFactory(IDXGIFactory *iface)

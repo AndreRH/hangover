@@ -158,6 +158,11 @@ struct qemu_dxgi_surface_inner_Release
 
 #ifdef QEMU_DLL_GUEST
 
+void __fastcall dxgi_surface_guest_destroy(struct qemu_dxgi_surface *surface)
+{
+    wined3d_private_store_cleanup(&surface->private_store);
+}
+
 static ULONG STDMETHODCALLTYPE dxgi_surface_inner_Release(IUnknown *iface)
 {
     struct qemu_dxgi_surface_inner_Release call;
@@ -216,126 +221,36 @@ static ULONG STDMETHODCALLTYPE dxgi_surface_Release(IDXGISurface1 *iface)
 
 #endif
 
-struct qemu_dxgi_surface_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_surface_SetPrivateData(IDXGISurface1 *iface, REFGUID guid, UINT data_size, const void *data)
+static HRESULT STDMETHODCALLTYPE dxgi_surface_SetPrivateData(IDXGISurface1 *iface,
+        REFGUID guid, UINT data_size, const void *data)
 {
-    struct qemu_dxgi_surface_SetPrivateData call;
-    struct qemu_dxgi_surface *surface = impl_from_IDXGISurface1(iface);
-    
-    call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SURFACE_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)surface;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_dxgi_surface_SetPrivateData(struct qemu_syscall *call)
-{
-    struct qemu_dxgi_surface_SetPrivateData *c = (struct qemu_dxgi_surface_SetPrivateData *)call;
-    struct qemu_dxgi_surface *surface;
-    
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-    
-    c->super.iret = IDXGISurface1_SetPrivateData(surface->host, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_dxgi_surface_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t object;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE dxgi_surface_SetPrivateDataInterface(IDXGISurface1 *iface, REFGUID guid, const IUnknown *object)
-{
-    struct qemu_dxgi_surface_SetPrivateDataInterface call;
     struct qemu_dxgi_surface *surface = impl_from_IDXGISurface1(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SURFACE_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)surface;
-    call.guid = (ULONG_PTR)guid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return dxgi_set_private_data(&surface->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_dxgi_surface_SetPrivateDataInterface(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE dxgi_surface_SetPrivateDataInterface(IDXGISurface1 *iface,
+        REFGUID guid, const IUnknown *object)
 {
-    struct qemu_dxgi_surface_SetPrivateDataInterface *c = (struct qemu_dxgi_surface_SetPrivateDataInterface *)call;
-    struct qemu_dxgi_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDXGISurface1_SetPrivateDataInterface(surface->host, QEMU_G2H(c->guid), QEMU_G2H(c->object));
-}
-
-#endif
-
-struct qemu_dxgi_surface_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE dxgi_surface_GetPrivateData(IDXGISurface1 *iface, REFGUID guid, UINT *data_size, void *data)
-{
-    struct qemu_dxgi_surface_GetPrivateData call;
     struct qemu_dxgi_surface *surface = impl_from_IDXGISurface1(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SURFACE_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)surface;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, object %p.\n", iface, wine_dbgstr_guid(guid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return dxgi_set_private_data_interface(&surface->private_store, guid, object);
 }
 
-#else
-
-void qemu_dxgi_surface_GetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE dxgi_surface_GetPrivateData(IDXGISurface1 *iface,
+        REFGUID guid, UINT *data_size, void *data)
 {
-    struct qemu_dxgi_surface_GetPrivateData *c = (struct qemu_dxgi_surface_GetPrivateData *)call;
-    struct qemu_dxgi_surface *surface;
+    struct qemu_dxgi_surface *surface = impl_from_IDXGISurface1(iface);
 
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    c->super.iret = IDXGISurface1_GetPrivateData(surface->host, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
+    return dxgi_get_private_data(&surface->private_store, guid, data_size, data);
 }
 
 #endif
@@ -660,6 +575,7 @@ void qemu_dxgi_surface_guest_init(struct qemu_dxgi_surface *surface, IUnknown *o
 {
     surface->IDXGISurface1_iface.lpVtbl = &dxgi_surface_vtbl.vtbl1;
     surface->IUnknown_iface.lpVtbl = &dxgi_surface_inner_unknown_vtbl;
+    wined3d_private_store_init(&surface->private_store);
 
     if (outer_unknown)
         surface->outer_unknown = outer_unknown;
@@ -701,6 +617,7 @@ static ULONG STDMETHODCALLTYPE dxgi_surface_priv_data_Release(IUnknown *iface)
     if (!refcount)
     {
         WINE_TRACE("Destroying surface wrapper %p for host surface %p.\n", surface, surface->host);
+        qemu_ops->qemu_execute(QEMU_G2H(dxgi_surface_guest_destroy), QEMU_H2G(surface));
         HeapFree(GetProcessHeap(), 0, surface);
     }
 

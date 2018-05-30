@@ -154,6 +154,11 @@ struct qemu_dxgi_device_Release
 
 #ifdef QEMU_DLL_GUEST
 
+void __fastcall dxgi_device_guest_destroy(struct qemu_dxgi_device *device)
+{
+    wined3d_private_store_cleanup(&device->private_store);
+}
+
 static ULONG STDMETHODCALLTYPE dxgi_device_Release(IDXGIDevice2 *iface)
 {
     struct qemu_dxgi_device_Release call;
@@ -177,13 +182,14 @@ ULONG qemu_dxgi_device_Release_internal(struct qemu_dxgi_device *device)
     IDXGIAdapter2_AddRef(adapter->host);
     ref = IDXGIDevice2_Release(device->host);
     qemu_dxgi_adapter_Release_internal(adapter);
-    
+
     if (!ref)
     {
         WINE_TRACE("Destroying dxgi device wrapper %p (host device %p.)\n", device, device->host);
+        qemu_ops->qemu_execute(QEMU_G2H(dxgi_device_guest_destroy), QEMU_H2G(device));
         HeapFree(GetProcessHeap(), 0, device);
     }
-    
+
     return ref;
 }
 
@@ -200,126 +206,36 @@ void qemu_dxgi_device_Release(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_dxgi_device_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_device_SetPrivateData(IDXGIDevice2 *iface, REFGUID guid, UINT data_size, const void *data)
+static HRESULT STDMETHODCALLTYPE dxgi_device_SetPrivateData(IDXGIDevice2 *iface,
+        REFGUID guid, UINT data_size, const void *data)
 {
-    struct qemu_dxgi_device_SetPrivateData call;
     struct qemu_dxgi_device *device = impl_from_IDXGIDevice2(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_DEVICE_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)device;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return dxgi_set_private_data(&device->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_dxgi_device_SetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE dxgi_device_SetPrivateDataInterface(IDXGIDevice2 *iface,
+        REFGUID guid, const IUnknown *object)
 {
-    struct qemu_dxgi_device_SetPrivateData *c = (struct qemu_dxgi_device_SetPrivateData *)call;
-    struct qemu_dxgi_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDXGIDevice2_SetPrivateData(device->host, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_dxgi_device_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t object;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE dxgi_device_SetPrivateDataInterface(IDXGIDevice2 *iface, REFGUID guid, const IUnknown *object)
-{
-    struct qemu_dxgi_device_SetPrivateDataInterface call;
     struct qemu_dxgi_device *device = impl_from_IDXGIDevice2(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_DEVICE_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)device;
-    call.guid = (ULONG_PTR)guid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, guid %s, object %p.\n", iface, wine_dbgstr_guid(guid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return dxgi_set_private_data_interface(&device->private_store, guid, object);
 }
 
-#else
-
-void qemu_dxgi_device_SetPrivateDataInterface(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE dxgi_device_GetPrivateData(IDXGIDevice2 *iface,
+        REFGUID guid, UINT *data_size, void *data)
 {
-    struct qemu_dxgi_device_SetPrivateDataInterface *c = (struct qemu_dxgi_device_SetPrivateDataInterface *)call;
-    struct qemu_dxgi_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDXGIDevice2_SetPrivateDataInterface(device->host, QEMU_G2H(c->guid), QEMU_G2H(c->object));
-}
-
-#endif
-
-struct qemu_dxgi_device_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE dxgi_device_GetPrivateData(IDXGIDevice2 *iface, REFGUID guid, UINT *data_size, void *data)
-{
-    struct qemu_dxgi_device_GetPrivateData call;
     struct qemu_dxgi_device *device = impl_from_IDXGIDevice2(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_DEVICE_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)device;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_dxgi_device_GetPrivateData(struct qemu_syscall *call)
-{
-    struct qemu_dxgi_device_GetPrivateData *c = (struct qemu_dxgi_device_GetPrivateData *)call;
-    struct qemu_dxgi_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = IDXGIDevice2_GetPrivateData(device->host, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
+    return dxgi_get_private_data(&device->private_store, guid, data_size, data);
 }
 
 #endif
@@ -442,7 +358,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_device_CreateSurface(IDXGIDevice2 *iface, 
     qemu_syscall(&call.super);
     if (FAILED(call.super.iret))
         return call.super.iret;
-    
+
     obj = (struct qemu_dxgi_surface **)(ULONG_PTR)call.surface;
     for (i = 0; i < surface_count; ++i)
     {
@@ -867,6 +783,7 @@ static const struct IDXGIDevice2Vtbl dxgi_device_vtbl =
 void qemu_dxgi_device_guest_init(struct qemu_dxgi_device *device)
 {
     device->IDXGIDevice2_iface.lpVtbl = &dxgi_device_vtbl;
+    wined3d_private_store_init(&device->private_store);
 }
 
 struct qemu_dxgi_device *unsafe_impl_from_IDXGIDevice(IUnknown *iface)

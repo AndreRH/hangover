@@ -148,6 +148,11 @@ struct qemu_dxgi_swapchain_Release
 
 #ifdef QEMU_DLL_GUEST
 
+void __fastcall dxgi_swapchain_guest_destroy(struct qemu_dxgi_swapchain *swapchain)
+{
+    wined3d_private_store_cleanup(&swapchain->private_store);
+}
+
 static ULONG STDMETHODCALLTYPE dxgi_swapchain_Release(IDXGISwapChain1 *iface)
 {
     struct qemu_dxgi_swapchain_Release call;
@@ -186,131 +191,44 @@ void qemu_dxgi_swapchain_Release(struct qemu_syscall *call)
         qemu_dxgi_factory_Release_internal(factory);
 
     if (!c->super.iret)
+    {
+        qemu_ops->qemu_execute(QEMU_G2H(dxgi_swapchain_guest_destroy), QEMU_H2G(swapchain));
         HeapFree(GetProcessHeap(), 0, swapchain);
+    }
 }
 
 #endif
 
-struct qemu_dxgi_swapchain_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_swapchain_SetPrivateData(IDXGISwapChain1 *iface, REFGUID guid, UINT data_size, const void *data)
+static HRESULT STDMETHODCALLTYPE dxgi_swapchain_SetPrivateData(IDXGISwapChain1 *iface,
+        REFGUID guid, UINT data_size, const void *data)
 {
-    struct qemu_dxgi_swapchain_SetPrivateData call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)swapchain;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return dxgi_set_private_data(&swapchain->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_dxgi_swapchain_SetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE dxgi_swapchain_SetPrivateDataInterface(IDXGISwapChain1 *iface,
+        REFGUID guid, const IUnknown *object)
 {
-    struct qemu_dxgi_swapchain_SetPrivateData *c = (struct qemu_dxgi_swapchain_SetPrivateData *)call;
-    struct qemu_dxgi_swapchain *swapchain;
-
-    WINE_FIXME("Unverified!\n");
-    swapchain = QEMU_G2H(c->iface);
-
-    c->super.iret = IDXGISwapChain1_SetPrivateData(swapchain->host, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_dxgi_swapchain_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t object;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE dxgi_swapchain_SetPrivateDataInterface(IDXGISwapChain1 *iface, REFGUID guid, const IUnknown *object)
-{
-    struct qemu_dxgi_swapchain_SetPrivateDataInterface call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)swapchain;
-    call.guid = (ULONG_PTR)guid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, guid %s, object %p.\n", iface, wine_dbgstr_guid(guid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return dxgi_set_private_data_interface(&swapchain->private_store, guid, object);
 }
 
-#else
-
-void qemu_dxgi_swapchain_SetPrivateDataInterface(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetPrivateData(IDXGISwapChain1 *iface,
+        REFGUID guid, UINT *data_size, void *data)
 {
-    struct qemu_dxgi_swapchain_SetPrivateDataInterface *c = (struct qemu_dxgi_swapchain_SetPrivateDataInterface *)call;
-    struct qemu_dxgi_swapchain *swapchain;
-
-    WINE_FIXME("Unverified!\n");
-    swapchain = QEMU_G2H(c->iface);
-
-    c->super.iret = IDXGISwapChain1_SetPrivateDataInterface(swapchain->host, QEMU_G2H(c->guid), QEMU_G2H(c->object));
-}
-
-#endif
-
-struct qemu_dxgi_swapchain_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetPrivateData(IDXGISwapChain1 *iface, REFGUID guid, UINT *data_size, void *data)
-{
-    struct qemu_dxgi_swapchain_GetPrivateData call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)swapchain;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_dxgi_swapchain_GetPrivateData(struct qemu_syscall *call)
-{
-    struct qemu_dxgi_swapchain_GetPrivateData *c = (struct qemu_dxgi_swapchain_GetPrivateData *)call;
-    struct qemu_dxgi_swapchain *swapchain;
-
-    WINE_FIXME("Unverified!\n");
-    swapchain = QEMU_G2H(c->iface);
-
-    c->super.iret = IDXGISwapChain1_GetPrivateData(swapchain->host, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
+    return dxgi_get_private_data(&swapchain->private_store, guid, data_size, data);
 }
 
 #endif
@@ -1393,6 +1311,7 @@ void qemu_dxgi_swapchain_guest_init(struct qemu_dxgi_swapchain *swapchain)
     HRESULT hr;
 
     swapchain->IDXGISwapChain1_iface.lpVtbl = &dxgi_swapchain_vtbl;
+    wined3d_private_store_init(&swapchain->private_store);
 
     hr = IDXGISwapChain_GetDesc(&swapchain->IDXGISwapChain1_iface, &desc);
     if (FAILED(hr))
