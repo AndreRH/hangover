@@ -874,7 +874,7 @@ struct qemu_dxgi_device *unsafe_impl_from_IDXGIDevice(IUnknown *iface)
     IDXGIDevice2 *qemu_device;
     struct qemu_dxgi_device *device;
     HRESULT hr;
-    
+
     if (!iface)
         return NULL;
     if (FAILED(hr = IDXGIAdapter_QueryInterface(iface, &IID_IDXGIDevice2, (void **)&qemu_device)))

@@ -34,6 +34,9 @@
 #include <dxgi1_2.h>
 #include <debug.h>
 
+#include <initguid.h>
+DEFINE_GUID(IID_IDXGIOutput4, 0xdc7dca35, 0x2196, 0x414d, 0x9f,0x53, 0x61,0x78,0x84,0x03,0x2a,0x60);
+
 #else
 
 #include <dxgi1_5.h>
@@ -1170,6 +1173,32 @@ dxgi_output_vtbl =
     /* IDXGIOutput4 methods */
     dxgi_output_CheckOverlayColorSpaceSupport,
 };
+
+struct qemu_dxgi_output *unsafe_impl_from_IDXGIOutput(IUnknown *iface)
+{
+    IDXGIOutput4 *qemu_output;
+    struct qemu_dxgi_output *output;
+    HRESULT hr;
+
+    if (!iface)
+        return NULL;
+    if (FAILED(hr = IUnknown_QueryInterface(iface, &IID_IDXGIOutput4, (void **)&qemu_output)))
+    {
+        WINE_ERR("Failed to get IDXGIOutput4 interface, hr %#x.\n", hr);
+        return NULL;
+    }
+    if (qemu_output->lpVtbl != (void *)&dxgi_output_vtbl)
+    {
+        WINE_ERR("Handle other people's output interfaces.\n");
+        output = NULL;
+    }
+    else
+    {
+        output = CONTAINING_RECORD(qemu_output, struct qemu_dxgi_output, IDXGIOutput4_iface);
+    }
+    IDXGIOutput_Release(qemu_output);
+    return output;
+}
 
 void qemu_dxgi_output_guest_init(struct qemu_dxgi_output *output)
 {

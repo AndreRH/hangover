@@ -524,7 +524,8 @@ struct qemu_dxgi_swapchain_SetFullscreenState
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_swapchain_SetFullscreenState(IDXGISwapChain1 *iface, BOOL fullscreen, IDXGIOutput *target)
+static HRESULT STDMETHODCALLTYPE dxgi_swapchain_SetFullscreenState(IDXGISwapChain1 *iface, BOOL fullscreen,
+        IDXGIOutput *target)
 {
     struct qemu_dxgi_swapchain_SetFullscreenState call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
@@ -532,7 +533,20 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_SetFullscreenState(IDXGISwapChai
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_SETFULLSCREENSTATE);
     call.iface = (ULONG_PTR)swapchain;
     call.fullscreen = fullscreen;
-    call.target = (ULONG_PTR)target;
+
+    if (target)
+    {
+        call.target = (ULONG_PTR)unsafe_impl_from_IDXGIOutput((IUnknown *)target);
+        if (!call.target)
+        {
+            WINE_FIXME("This is not the output we're looking for.\n");
+            return E_FAIL;
+        }
+    }
+    else
+    {
+        call.target = (ULONG_PTR)0;
+    }
 
     qemu_syscall(&call.super);
 
@@ -545,11 +559,14 @@ void qemu_dxgi_swapchain_SetFullscreenState(struct qemu_syscall *call)
 {
     struct qemu_dxgi_swapchain_SetFullscreenState *c = (struct qemu_dxgi_swapchain_SetFullscreenState *)call;
     struct qemu_dxgi_swapchain *swapchain;
+    struct qemu_dxgi_output *target;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
+    target = QEMU_G2H(c->target);
 
-    c->super.iret = IDXGISwapChain1_SetFullscreenState(swapchain->host, c->fullscreen, QEMU_G2H(c->target));
+    c->super.iret = IDXGISwapChain1_SetFullscreenState(swapchain->host, c->fullscreen,
+            target ? (IDXGIOutput *)target->host : NULL);
 }
 
 #endif

@@ -293,6 +293,7 @@ void qemu_dxgi_swapchain_guest_init(struct qemu_dxgi_swapchain *swapchain);
 struct qemu_dxgi_factory *unsafe_impl_from_IDXGIFactory(IDXGIFactory *iface);
 struct qemu_dxgi_adapter *unsafe_impl_from_IDXGIAdapter(IDXGIAdapter *iface);
 struct qemu_dxgi_device *unsafe_impl_from_IDXGIDevice(IUnknown *iface);
+struct qemu_dxgi_output *unsafe_impl_from_IDXGIOutput(IUnknown *iface);
 
 #else
 
