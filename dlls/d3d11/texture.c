@@ -1074,7 +1074,7 @@ void qemu_d3d11_texture2d_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_texture2d_AddRef *c = (struct qemu_d3d11_texture2d_AddRef *)call;
     struct qemu_d3d11_texture2d *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11Texture2D_AddRef(texture->host11);
@@ -1110,7 +1110,7 @@ void qemu_d3d11_texture2d_Release(struct qemu_syscall *call)
     struct qemu_d3d11_texture2d_Release *c = (struct qemu_d3d11_texture2d_Release *)call;
     struct qemu_d3d11_texture2d *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11Texture2D_Release(texture->host11);
@@ -1495,7 +1495,7 @@ void qemu_d3d10_texture2d_AddRef(struct qemu_syscall *call)
     struct qemu_d3d10_texture2d_AddRef *c = (struct qemu_d3d10_texture2d_AddRef *)call;
     struct qemu_d3d11_texture2d *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Texture2D_AddRef(texture->host10);
@@ -1531,7 +1531,7 @@ void qemu_d3d10_texture2d_Release(struct qemu_syscall *call)
     struct qemu_d3d10_texture2d_Release *c = (struct qemu_d3d10_texture2d_Release *)call;
     struct qemu_d3d11_texture2d *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Texture2D_Release(texture->host10);
@@ -3011,6 +3011,57 @@ void qemu_d3d11_texture3d_guest_init(struct qemu_d3d11_texture3d *texture, struc
 
 #else
 
+static inline struct qemu_d3d11_texture2d *impl_from_priv_data(IUnknown *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture2d, priv_data_iface);
+}
+
+static HRESULT STDMETHODCALLTYPE d3d11_texture2d_priv_data_QueryInterface(IUnknown *iface, REFIID riid, void **out)
+{
+    WINE_ERR("Unexpected call\n");
+    *out = NULL;
+    return E_NOINTERFACE;
+}
+
+static ULONG STDMETHODCALLTYPE d3d11_texture2d_priv_data_AddRef(IUnknown *iface)
+{
+    struct qemu_d3d11_texture2d *texture = impl_from_priv_data(iface);
+    ULONG refcount = InterlockedIncrement(&texture->refcount);
+
+    WINE_TRACE("%p increasing refcount to %u.\n", texture, refcount);
+
+    return refcount;
+}
+
+static ULONG STDMETHODCALLTYPE d3d11_texture2d_priv_data_Release(IUnknown *iface)
+{
+    struct qemu_d3d11_texture2d *texture = impl_from_priv_data(iface);
+    ULONG refcount = InterlockedDecrement(&texture->refcount);
+
+    WINE_TRACE("%p decreasing refcount to %u.\n", texture, refcount);
+
+    if (!refcount)
+    {
+        WINE_TRACE("Destroying texture wrapper %p for host texture %p.\n", texture, texture->host11);
+        HeapFree(GetProcessHeap(), 0, texture);
+    }
+
+    return refcount;
+}
+
+static struct IUnknownVtbl priv_data_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_texture2d_priv_data_QueryInterface,
+    d3d11_texture2d_priv_data_AddRef,
+    d3d11_texture2d_priv_data_Release,
+};
+
+#include <initguid.h>
+
+/* Do not make this the same as IID_Qemu_surface_priv_data */
+DEFINE_GUID(IID_d3d11_texture_priv_data, 0x2b676c65, 0x7123, 0x4138, 0xb6, 0xdb, 0x96, 0xfe, 0xa9, 0xae, 0x00, 0x43);
+
 HRESULT qemu_d3d11_texture2d_create(ID3D11Texture2D *host, struct qemu_d3d11_device *device,
         uint64_t *dxgi_surface, struct qemu_d3d11_texture2d **texture)
 {
@@ -3043,6 +3094,10 @@ HRESULT qemu_d3d11_texture2d_create(ID3D11Texture2D *host, struct qemu_d3d11_dev
     {
         *dxgi_surface = 0;
     }
+
+    obj->priv_data_iface.lpVtbl = &priv_data_vtbl;
+    /* Leave the ref at 0, we want the host obj to own the only / final reference. */
+    ID3D11Texture2D_SetPrivateDataInterface(host, &IID_d3d11_texture_priv_data, &obj->priv_data_iface);
 
     *texture = obj;
     return S_OK;

@@ -449,6 +449,8 @@ struct qemu_d3d11_texture2d
     /* Host fields */
     ID3D11Texture2D *host11;
     ID3D10Texture2D *host10;
+    IUnknown priv_data_iface;
+    ULONG refcount;
 };
 
 struct qemu_d3d11_texture3d
