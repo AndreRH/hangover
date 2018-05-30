@@ -744,7 +744,8 @@ struct qemu_dxgi_swapchain_ResizeTarget
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_swapchain_ResizeTarget(IDXGISwapChain1 *iface, const DXGI_MODE_DESC *target_mode_desc)
+static HRESULT STDMETHODCALLTYPE dxgi_swapchain_ResizeTarget(IDXGISwapChain1 *iface,
+        const DXGI_MODE_DESC *target_mode_desc)
 {
     struct qemu_dxgi_swapchain_ResizeTarget call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
@@ -765,7 +766,8 @@ void qemu_dxgi_swapchain_ResizeTarget(struct qemu_syscall *call)
     struct qemu_dxgi_swapchain_ResizeTarget *c = (struct qemu_dxgi_swapchain_ResizeTarget *)call;
     struct qemu_dxgi_swapchain *swapchain;
 
-    WINE_FIXME("Unverified!\n");
+    /* DXGI_MODE_DESC has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGISwapChain1_ResizeTarget(swapchain->host, QEMU_G2H(c->target_mode_desc));
