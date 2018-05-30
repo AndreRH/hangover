@@ -375,7 +375,6 @@ struct qemu_dxgi_swapchain_GetDevice
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t riid;
     uint64_t device;
 };
 
@@ -385,15 +384,15 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetDevice(IDXGISwapChain1 *iface
 {
     struct qemu_dxgi_swapchain_GetDevice call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
+    struct qemu_dxgi_device *device_impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETDEVICE);
     call.iface = (ULONG_PTR)swapchain;
-    call.riid = (ULONG_PTR)riid;
-    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
+    device_impl = (struct qemu_dxgi_device *)(ULONG_PTR)call.device;
 
-    return call.super.iret;
+    return IDXGIDevice2_QueryInterface(&device_impl->IDXGIDevice2_iface, riid, device);
 }
 
 #else
@@ -403,10 +402,9 @@ void qemu_dxgi_swapchain_GetDevice(struct qemu_syscall *call)
     struct qemu_dxgi_swapchain_GetDevice *c = (struct qemu_dxgi_swapchain_GetDevice *)call;
     struct qemu_dxgi_swapchain *swapchain;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
-
-    c->super.iret = IDXGISwapChain1_GetDevice(swapchain->host, QEMU_G2H(c->riid), QEMU_G2H(c->device));
+    c->device = QEMU_H2G(swapchain->device);
 }
 
 #endif
