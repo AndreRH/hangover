@@ -49,7 +49,6 @@ enum d3d11_calls
     CALL_D3D10_DEVICE_CREATESHADERRESOURCEVIEW,
     CALL_D3D10_DEVICE_CREATESHADERRESOURCEVIEW1,
     CALL_D3D10_DEVICE_CREATETEXTURE1D,
-    CALL_D3D10_DEVICE_CREATETEXTURE2D,
     CALL_D3D10_DEVICE_CREATETEXTURE3D,
     CALL_D3D10_DEVICE_CREATEVERTEXSHADER,
     CALL_D3D10_DEVICE_DRAW,
@@ -466,6 +465,11 @@ struct qemu_d3d11_texture3d
 
 #ifdef QEMU_DLL_GUEST
 
+enum D3D11_USAGE d3d11_usage_from_d3d10_usage(enum D3D10_USAGE usage);
+UINT d3d11_bind_flags_from_d3d10_bind_flags(UINT bind_flags);
+UINT d3d11_cpu_access_flags_from_d3d10_cpu_access_flags(UINT cpu_access_flags);
+UINT d3d11_resource_misc_flags_from_d3d10_resource_misc_flags(UINT resource_misc_flags);
+
 static inline struct qemu_d3d11_device *impl_from_ID3D11Device2(ID3D11Device2 *iface)
 {
     return CONTAINING_RECORD(iface, struct qemu_d3d11_device, ID3D11Device2_iface);
@@ -480,6 +484,12 @@ extern HRESULT (* WINAPI p_DXGID3D10CreateDevice)(HMODULE d3d10core, IDXGIFactor
         unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, void **device);
 
 void qemu_d3d11_device_guest_init(struct qemu_d3d11_device *device, void *outer_unknown);
+void qemu_d3d11_texture1d_guest_init(struct qemu_d3d11_texture1d *texture, struct qemu_d3d11_device *device,
+        uint64_t dxgi_surface);
+void qemu_d3d11_texture2d_guest_init(struct qemu_d3d11_texture2d *texture, struct qemu_d3d11_device *device,
+        uint64_t dxgi_surface);
+void qemu_d3d11_texture3d_guest_init(struct qemu_d3d11_texture3d *texture, struct qemu_d3d11_device *device,
+        uint64_t dxgi_surface);
 
 #else
 
@@ -512,7 +522,6 @@ void qemu_d3d10_device_CreateSamplerState(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateShaderResourceView(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateShaderResourceView1(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateTexture1D(struct qemu_syscall *call);
-void qemu_d3d10_device_CreateTexture2D(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateTexture3D(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateVertexShader(struct qemu_syscall *call);
 void qemu_d3d10_device_Draw(struct qemu_syscall *call);
@@ -847,6 +856,9 @@ void qemu_d3d11_texture3d_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d_device_inner_AddRef(struct qemu_syscall *call);
 void qemu_d3d_device_inner_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d_device_inner_Release(struct qemu_syscall *call);
+
+HRESULT qemu_d3d11_texture2d_create(ID3D11Texture2D *host, struct qemu_d3d11_device *device,
+        uint64_t *dxgi_surface, struct qemu_d3d11_texture2d **texture);
 
 #endif
 

@@ -45,7 +45,6 @@ enum dxgi_calls
     CALL_DXGI_ADAPTER_UNREGISTERHARDWARECONTENTPROTECTIONTEARDOWNSTATUS,
     CALL_DXGI_ADAPTER_UNREGISTERVIDEOMEMORYBUDGETCHANGENOTIFICATION,
     CALL_DXGI_DEVICE_ADDREF,
-    CALL_DXGI_DEVICE_CREATESURFACE,
     CALL_DXGI_DEVICE_ENQUEUESETEVENT,
     CALL_DXGI_DEVICE_GETADAPTER,
     CALL_DXGI_DEVICE_GETGPUTHREADPRIORITY,
@@ -144,6 +143,7 @@ enum dxgi_calls
     CALL_DXGI_SWAPCHAIN_SETROTATION,
     CALL_DXGID3D10CREATEDEVICE,
     CALL_INIT_DLL,
+    CALL_QEMU_DEVICE_CREATE_SURFACE,
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -231,6 +231,7 @@ struct qemu_dxgi_device
 {
     /* Guest fields */
     IDXGIDevice2 IDXGIDevice2_iface;
+    IQemuDXGIDevice IQemuDXGIDevice_iface;
     IUnknown *child_layer;
     struct wined3d_private_store private_store;
 
@@ -330,7 +331,6 @@ void qemu_dxgi_adapter_SetVideoMemoryReservation(struct qemu_syscall *call);
 void qemu_dxgi_adapter_UnregisterHardwareContentProtectionTeardownStatus(struct qemu_syscall *call);
 void qemu_dxgi_adapter_UnregisterVideoMemoryBudgetChangeNotification(struct qemu_syscall *call);
 void qemu_dxgi_device_AddRef(struct qemu_syscall *call);
-void qemu_dxgi_device_CreateSurface(struct qemu_syscall *call);
 void qemu_dxgi_device_EnqueueSetEvent(struct qemu_syscall *call);
 void qemu_dxgi_device_GetAdapter(struct qemu_syscall *call);
 void qemu_dxgi_device_GetGPUThreadPriority(struct qemu_syscall *call);
@@ -343,6 +343,7 @@ void qemu_dxgi_device_ReclaimResources(struct qemu_syscall *call);
 void qemu_dxgi_device_Release(struct qemu_syscall *call);
 void qemu_dxgi_device_SetGPUThreadPriority(struct qemu_syscall *call);
 void qemu_dxgi_device_SetMaximumFrameLatency(struct qemu_syscall *call);
+void qemu_dxgi_device_create_surface(struct qemu_syscall *call);
 void qemu_dxgi_factory_AddRef(struct qemu_syscall *call);
 void qemu_dxgi_factory_CheckFeatureSupport(struct qemu_syscall *call);
 void qemu_dxgi_factory_CreateSoftwareAdapter(struct qemu_syscall *call);

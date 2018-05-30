@@ -55,4 +55,19 @@ struct dxgi_device_layer
             D3D_FEATURE_LEVEL feature_level);
 };
 
+DEFINE_GUID(IID_IQemuDXGIDevice,0xaa27c5fe,0xc616,0x4de7,0x80,0x3c,0x13,0x10,0xf5,0xfc,0x39,0xfe);
+
+#undef INTERFACE
+#define INTERFACE IQemuDXGIDevice
+DECLARE_INTERFACE_(IQemuDXGIDevice,IUnknown)
+{
+    /*** IUnknown methods ***/
+    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
+    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
+    STDMETHOD_(ULONG,Release)(THIS) PURE;
+    /*** IQemuDXGIDevice methods ***/
+    STDMETHOD(create_surface)(THIS_ uint64_t host, IUnknown **surface, IUnknown *outer) PURE;
+};
+#undef INTERFACE
+
 #endif

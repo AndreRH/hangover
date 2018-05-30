@@ -990,14 +990,38 @@ static HRESULT STDMETHODCALLTYPE d3d11_texture2d_QueryInterface(ID3D11Texture2D 
     struct qemu_d3d11_texture2d_QueryInterface call;
     struct qemu_d3d11_texture2d *texture = impl_from_ID3D11Texture2D(iface);
 
+    if (IsEqualGUID(riid, &IID_ID3D11Texture2D)
+            || IsEqualGUID(riid, &IID_ID3D11Resource)
+            || IsEqualGUID(riid, &IID_ID3D11DeviceChild)
+            || IsEqualGUID(riid, &IID_IUnknown))
+    {
+        *object = &texture->ID3D11Texture2D_iface;
+        IUnknown_AddRef((IUnknown *)*object);
+        return S_OK;
+    }
+    else if (IsEqualGUID(riid, &IID_ID3D10Texture2D)
+            || IsEqualGUID(riid, &IID_ID3D10Resource)
+            || IsEqualGUID(riid, &IID_ID3D10DeviceChild))
+    {
+        *object = &texture->ID3D10Texture2D_iface;
+        IUnknown_AddRef((IUnknown *)*object);
+        return S_OK;
+    }
+
+    if (texture->dxgi_surface)
+    {
+        WINE_TRACE("Forwarding to dxgi surface.\n");
+        return IUnknown_QueryInterface(texture->dxgi_surface, riid, object);
+    }
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE2D_QUERYINTERFACE);
     call.iface = (ULONG_PTR)texture;
     call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    *object = NULL;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -1006,11 +1030,18 @@ void qemu_d3d11_texture2d_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture2d_QueryInterface *c = (struct qemu_d3d11_texture2d_QueryInterface *)call;
     struct qemu_d3d11_texture2d *texture;
+    IUnknown *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture2D_QueryInterface(texture->host11, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    c->super.iret = ID3D11Texture2D_QueryInterface(texture->host11, QEMU_G2H(c->riid), (void **)&obj);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->riid)));
+        IUnknown_Release(obj);
+    }
 }
 
 #endif
@@ -2814,3 +2845,207 @@ void qemu_d3d10_texture3d_GetDesc(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+static struct ID3D11Texture1DVtbl d3d11_texture1d_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_texture1d_QueryInterface,
+    d3d11_texture1d_AddRef,
+    d3d11_texture1d_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_texture1d_GetDevice,
+    d3d11_texture1d_GetPrivateData,
+    d3d11_texture1d_SetPrivateData,
+    d3d11_texture1d_SetPrivateDataInterface,
+    /* ID3D11Resource methods */
+    d3d11_texture1d_GetType,
+    d3d11_texture1d_SetEvictionPriority,
+    d3d11_texture1d_GetEvictionPriority,
+    /* ID3D11Texture1D methods */
+    d3d11_texture1d_GetDesc,
+};
+
+static struct ID3D10Texture1DVtbl d3d10_texture1d_vtbl =
+{
+    /* IUnknown methods */
+    d3d10_texture1d_QueryInterface,
+    d3d10_texture1d_AddRef,
+    d3d10_texture1d_Release,
+    /* ID3D10DeviceChild methods */
+    d3d10_texture1d_GetDevice,
+    d3d10_texture1d_GetPrivateData,
+    d3d10_texture1d_SetPrivateData,
+    d3d10_texture1d_SetPrivateDataInterface,
+    /* ID3D10Resource methods */
+    d3d10_texture1d_GetType,
+    d3d10_texture1d_SetEvictionPriority,
+    d3d10_texture1d_GetEvictionPriority,
+    /* ID3D10Texture1D methods */
+    d3d10_texture1d_Map,
+    d3d10_texture1d_Unmap,
+    d3d10_texture1d_GetDesc,
+};
+
+static struct ID3D11Texture2DVtbl d3d11_texture2d_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_texture2d_QueryInterface,
+    d3d11_texture2d_AddRef,
+    d3d11_texture2d_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_texture2d_GetDevice,
+    d3d11_texture2d_GetPrivateData,
+    d3d11_texture2d_SetPrivateData,
+    d3d11_texture2d_SetPrivateDataInterface,
+    /* ID3D11Resource methods */
+    d3d11_texture2d_GetType,
+    d3d11_texture2d_SetEvictionPriority,
+    d3d11_texture2d_GetEvictionPriority,
+    /* ID3D11Texture2D methods */
+    d3d11_texture2d_GetDesc,
+};
+
+static struct ID3D10Texture2DVtbl d3d10_texture2d_vtbl =
+{
+    /* IUnknown methods */
+    d3d10_texture2d_QueryInterface,
+    d3d10_texture2d_AddRef,
+    d3d10_texture2d_Release,
+    /* ID3D10DeviceChild methods */
+    d3d10_texture2d_GetDevice,
+    d3d10_texture2d_GetPrivateData,
+    d3d10_texture2d_SetPrivateData,
+    d3d10_texture2d_SetPrivateDataInterface,
+    /* ID3D10Resource methods */
+    d3d10_texture2d_GetType,
+    d3d10_texture2d_SetEvictionPriority,
+    d3d10_texture2d_GetEvictionPriority,
+    /* ID3D10Texture2D methods */
+    d3d10_texture2d_Map,
+    d3d10_texture2d_Unmap,
+    d3d10_texture2d_GetDesc,
+};
+
+static struct ID3D11Texture3DVtbl d3d11_texture3d_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_texture3d_QueryInterface,
+    d3d11_texture3d_AddRef,
+    d3d11_texture3d_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_texture3d_GetDevice,
+    d3d11_texture3d_GetPrivateData,
+    d3d11_texture3d_SetPrivateData,
+    d3d11_texture3d_SetPrivateDataInterface,
+    /* ID3D11Resource methods */
+    d3d11_texture3d_GetType,
+    d3d11_texture3d_SetEvictionPriority,
+    d3d11_texture3d_GetEvictionPriority,
+    /* ID3D11Texture3D methods */
+    d3d11_texture3d_GetDesc,
+};
+
+static struct ID3D10Texture3DVtbl d3d10_texture3d_vtbl =
+{
+    /* IUnknown methods */
+    d3d10_texture3d_QueryInterface,
+    d3d10_texture3d_AddRef,
+    d3d10_texture3d_Release,
+    /* ID3D10DeviceChild methods */
+    d3d10_texture3d_GetDevice,
+    d3d10_texture3d_GetPrivateData,
+    d3d10_texture3d_SetPrivateData,
+    d3d10_texture3d_SetPrivateDataInterface,
+    /* ID3D10Resource methods */
+    d3d10_texture3d_GetType,
+    d3d10_texture3d_SetEvictionPriority,
+    d3d10_texture3d_GetEvictionPriority,
+    /* ID3D10Texture3D methods */
+    d3d10_texture3d_Map,
+    d3d10_texture3d_Unmap,
+    d3d10_texture3d_GetDesc,
+};
+
+void qemu_d3d11_texture1d_guest_init(struct qemu_d3d11_texture1d *texture, struct qemu_d3d11_device *device,
+        uint64_t dxgi_surface)
+{
+    texture->ID3D11Texture1D_iface.lpVtbl = &d3d11_texture1d_vtbl;
+    texture->ID3D10Texture1D_iface.lpVtbl = &d3d10_texture1d_vtbl;
+}
+
+void qemu_d3d11_texture2d_guest_init(struct qemu_d3d11_texture2d *texture, struct qemu_d3d11_device *device,
+        uint64_t dxgi_surface)
+{
+    HRESULT hr;
+
+    WINE_TRACE("Guest-side init of texture %p\n", texture);
+    texture->ID3D11Texture2D_iface.lpVtbl = &d3d11_texture2d_vtbl;
+    texture->ID3D10Texture2D_iface.lpVtbl = &d3d10_texture2d_vtbl;
+
+    if (dxgi_surface)
+    {
+        IQemuDXGIDevice *dxgi_device;
+
+        WINE_TRACE("Creating DXGI surface wrapper for texture %p.\n", texture);
+        hr = ID3D11Device_QueryInterface(&device->ID3D11Device2_iface, &IID_IQemuDXGIDevice, (void **)&dxgi_device);
+        if (FAILED(hr))
+            WINE_ERR("Failed to QI IQemuDXGIDevice.\n");
+
+        hr = dxgi_device->lpVtbl->create_surface(dxgi_device, dxgi_surface,
+                &texture->dxgi_surface, (IUnknown *)&texture->ID3D11Texture2D_iface);
+        if (FAILED(hr))
+            WINE_ERR("Failed to create a IDXGISurface for the texture.\n");
+
+        WINE_TRACE("Created dxgi surface %p for texture %p.\n", texture->dxgi_surface, texture);
+        dxgi_device->lpVtbl->Release(dxgi_device);
+    }
+}
+
+void qemu_d3d11_texture3d_guest_init(struct qemu_d3d11_texture3d *texture, struct qemu_d3d11_device *device,
+        uint64_t dxgi_surface)
+{
+    texture->ID3D11Texture3D_iface.lpVtbl = &d3d11_texture3d_vtbl;
+    texture->ID3D10Texture3D_iface.lpVtbl = &d3d10_texture3d_vtbl;
+}
+
+#else
+
+HRESULT qemu_d3d11_texture2d_create(ID3D11Texture2D *host, struct qemu_d3d11_device *device,
+        uint64_t *dxgi_surface, struct qemu_d3d11_texture2d **texture)
+{
+    struct qemu_d3d11_texture2d *obj;
+    IDXGISurface *surface_iface;
+    HRESULT hr;
+
+    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
+    if (!obj)
+    {
+        WINE_WARN("Out of memory\n");
+        return E_OUTOFMEMORY;
+    }
+
+    /* Note that we share the refcount with the host object, so we don't want to keep only one
+     * reference to it. */
+    obj->host11 = host;
+    hr = ID3D11Texture2D_QueryInterface(host, &IID_ID3D10Texture2D, (void **)&obj->host10);
+    if (FAILED(hr))
+        WINE_ERR("Failed to QI ID3D10Texture2D.\n");
+    ID3D10Texture2D_Release(obj->host10);
+
+    hr = ID3D11Texture2D_QueryInterface(host, &IID_IDXGISurface, (void **)&surface_iface);
+    if (SUCCEEDED(hr))
+    {
+        *dxgi_surface = QEMU_H2G(surface_iface);
+        IDXGISurface_Release(surface_iface);
+    }
+    else
+    {
+        *dxgi_surface = 0;
+    }
+
+    *texture = obj;
+    return S_OK;
+}
+
+#endif

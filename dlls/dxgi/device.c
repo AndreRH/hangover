@@ -27,6 +27,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
+#include "qemudxgi.h"
 
 #ifdef QEMU_DLL_GUEST
 #include <dxgi1_2.h>
@@ -70,6 +71,12 @@ static HRESULT STDMETHODCALLTYPE dxgi_device_QueryInterface(IDXGIDevice2 *iface,
     {
         IUnknown_AddRef(iface);
         *object = iface;
+        return S_OK;
+    }
+    if (IsEqualGUID(riid, &IID_IQemuDXGIDevice))
+    {
+        *object = &device->IQemuDXGIDevice_iface;
+        IUnknown_AddRef((IUnknown *)*object);
         return S_OK;
     }
 
@@ -198,7 +205,7 @@ void qemu_dxgi_device_Release(struct qemu_syscall *call)
     struct qemu_dxgi_device_Release *c = (struct qemu_dxgi_device_Release *)call;
     struct qemu_dxgi_device *device;
 
-    WINE_TRACE("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = qemu_dxgi_device_Release_internal(device);
@@ -326,112 +333,79 @@ void qemu_dxgi_device_GetAdapter(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_dxgi_device_CreateSurface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t desc;
-    uint64_t surface_count;
-    uint64_t usage;
-    uint64_t shared_resource;
-    uint64_t surface;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT STDMETHODCALLTYPE dxgi_device_CreateSurface(IDXGIDevice2 *iface, const DXGI_SURFACE_DESC *desc,
         UINT surface_count, DXGI_USAGE usage, const DXGI_SHARED_RESOURCE *shared_resource, IDXGISurface **surface)
 {
-    /* FIXME: This should be implemented on the client side by calling into d3d11. */
-    struct qemu_dxgi_device_CreateSurface call;
-    struct qemu_dxgi_device *device = impl_from_IDXGIDevice2(iface);
-    struct qemu_dxgi_surface **obj;
+    /* Taken from Wine's dxgi with some adjustments. */
+    ID3D11Device *d3d11_device;
+    ID3D11Texture2D *d3d11_texture;
+    HRESULT hr;
+    D3D11_TEXTURE2D_DESC d3d11_desc = {0};
     UINT i;
+    UINT j;
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_DEVICE_CREATESURFACE);
-    call.iface = (ULONG_PTR)device;
-    call.desc = (ULONG_PTR)desc;
-    call.surface_count = surface_count;
-    call.usage = usage;
-    call.shared_resource = (ULONG_PTR)shared_resource;
+    WINE_FIXME("iface %p, desc %p, surface_count %u, usage %#x, shared_resource %p, surface %p.\n",
+            iface, desc, surface_count, usage, shared_resource, surface);
 
-    qemu_syscall(&call.super);
-    if (FAILED(call.super.iret))
-        return call.super.iret;
+    hr = IDXGIDevice_QueryInterface(iface, &IID_ID3D11Device, (void **)&d3d11_device);
+    if (FAILED(hr))
+    {
+        WINE_ERR("Device should implement ID3D11Device.\n");
+        return E_FAIL;
+    }
 
-    obj = (struct qemu_dxgi_surface **)(ULONG_PTR)call.surface;
+    d3d11_desc.Width = desc->Width;
+    d3d11_desc.Height = desc->Height;
+    d3d11_desc.MipLevels = 1;
+    d3d11_desc.ArraySize = 1;
+    d3d11_desc.Format = desc->Format;
+    d3d11_desc.SampleDesc = desc->SampleDesc;
+    d3d11_desc.Usage = D3D11_USAGE_DEFAULT;
+    d3d11_desc.CPUAccessFlags = 0;
+    d3d11_desc.MiscFlags = 0;
+
+    d3d11_desc.BindFlags = 0;
+    if (usage & DXGI_USAGE_SHADER_INPUT)
+        d3d11_desc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+    if (usage & DXGI_USAGE_RENDER_TARGET_OUTPUT)
+        d3d11_desc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+
+    memset(surface, 0, surface_count * sizeof(*surface));
     for (i = 0; i < surface_count; ++i)
     {
-        qemu_dxgi_surface_guest_init(obj[i], NULL);
-        surface[i] = &obj[i]->IDXGISurface1_iface;
+        struct wined3d_texture *wined3d_texture;
+        IUnknown *parent;
+
+        if (FAILED(hr = ID3D11Device_CreateTexture2D(d3d11_device,
+                &d3d11_desc, NULL, &d3d11_texture)))
+        {
+            WINE_ERR("Failed to create surface, hr %#x.\n", hr);
+            goto fail;
+        }
+
+        hr = ID3D11Texture2D_QueryInterface(d3d11_texture, &IID_IDXGISurface, (void **)&surface[i]);
+        ID3D11Texture2D_Release(d3d11_texture);
+        if (FAILED(hr))
+        {
+            WINE_ERR("Surface should implement IDXGISurface.\n");
+            goto fail;
+        }
+
+        WINE_TRACE("Created IDXGISurface %p (%u/%u).\n", surface[i], i + 1, surface_count);
     }
-    HeapFree(GetProcessHeap(), 0, obj);
+    ID3D11Device_Release(d3d11_device);
 
-    return call.super.iret;
-}
+    return S_OK;
 
-#else
-
-void qemu_dxgi_device_CreateSurface(struct qemu_syscall *call)
-{
-    struct qemu_dxgi_device_CreateSurface *c = (struct qemu_dxgi_device_CreateSurface *)call;
-    struct qemu_dxgi_device *device;
-    IDXGISurface1 **host;
-    struct qemu_dxgi_surface **obj;
-    qemu_ptr *out32;
-    UINT count, i, j;
-
-    WINE_TRACE("\n");
-    device = QEMU_G2H(c->iface);
-    count = c->surface_count;
-
-    host = HeapAlloc(GetProcessHeap(), 0, sizeof(*host) * count);
-    if (!host)
-    {
-        WINE_WARN("Out of memory\n");
-        c->super.iret = E_OUTOFMEMORY;
-        return;
-    }
-    obj = HeapAlloc(GetProcessHeap(), 0, sizeof(*obj) * count);
-    if (!host)
-    {
-        WINE_WARN("Out of memory\n");
-        c->super.iret = E_OUTOFMEMORY;
-        HeapFree(GetProcessHeap(), 0, host);
-        return;
-    }
-
-    c->super.iret = IDXGIDevice2_CreateSurface(device->host, QEMU_G2H(c->desc), c->surface_count,
-            c->usage, QEMU_G2H(c->shared_resource), (IDXGISurface **)host);
-    if (FAILED(c->super.iret))
-    {
-        HeapFree(GetProcessHeap(), 0, obj);
-        HeapFree(GetProcessHeap(), 0, host);
-        return;
-    }
-
-    for (i = 0; i < count; ++i)
-    {
-        c->super.iret = qemu_dxgi_surface_create(host[i], device, &obj[i]);
-        if (FAILED(c->super.iret))
-            goto release;
-    }
-
-#if GUEST_BIT != HOST_BIT
-    out32 = (qemu_ptr *)obj;
-    for (i = 0; i < count; ++i)
-        out32[i] = QEMU_H2G(obj[i]);
-#endif
-    c->surface = QEMU_H2G(obj);
-    return;
-
-release:
+fail:
     for (j = 0; j < i; ++j)
-        HeapFree(GetProcessHeap(), 0, obj[i]);
-    for (i = 0; i < count; ++i)
-        IDXGISurface1_Release(host[i]);
-    HeapFree(GetProcessHeap(), 0, obj);
-    HeapFree(GetProcessHeap(), 0, host);
+    {
+        IDXGISurface_Release(surface[i]);
+    }
+    ID3D11Device_Release(d3d11_device);
+    return hr;
 }
 
 #endif
@@ -752,9 +726,74 @@ void qemu_dxgi_device_EnqueueSetEvent(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_dxgi_device_create_surface
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t host;
+    uint64_t surface;
+};
+
 #ifdef QEMU_DLL_GUEST
 
-static const struct IDXGIDevice2Vtbl dxgi_device_vtbl =
+static inline struct qemu_dxgi_device *impl_from_IQemuDXGIDevice(IQemuDXGIDevice *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_dxgi_device, IQemuDXGIDevice_iface);
+}
+
+static HRESULT STDMETHODCALLTYPE qemu_device_QueryInterface(IQemuDXGIDevice *iface, REFIID riid, void **out)
+{
+    struct qemu_dxgi_device *device = impl_from_IQemuDXGIDevice(iface);
+    return dxgi_device_QueryInterface(&device->IDXGIDevice2_iface, riid, out);
+}
+
+static ULONG STDMETHODCALLTYPE qemu_device_AddRef(IQemuDXGIDevice *iface)
+{
+    struct qemu_dxgi_device *device = impl_from_IQemuDXGIDevice(iface);
+    return dxgi_device_AddRef(&device->IDXGIDevice2_iface);
+}
+
+static ULONG STDMETHODCALLTYPE qemu_device_Release(IQemuDXGIDevice *iface)
+{
+    struct qemu_dxgi_device *device = impl_from_IQemuDXGIDevice(iface);
+    return dxgi_device_Release(&device->IDXGIDevice2_iface);
+}
+
+static HRESULT STDMETHODCALLTYPE qemu_device_create_surface(IQemuDXGIDevice *iface, uint64_t host,
+        IUnknown **surface, IUnknown *outer)
+{
+    struct qemu_dxgi_device *device = impl_from_IQemuDXGIDevice(iface);
+    struct qemu_dxgi_surface *obj;
+    struct qemu_dxgi_device_create_surface call;
+
+    WINE_FIXME("Creating a DXGI Surface for d3d11 texture %p.\n", outer);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_QEMU_DEVICE_CREATE_SURFACE);
+    call.iface = (ULONG_PTR)device;
+    call.host = host;
+
+    qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    obj = (struct qemu_dxgi_surface *)(ULONG_PTR)call.surface;
+    qemu_dxgi_surface_guest_init(obj, outer);
+    *surface = &obj->IUnknown_iface;
+
+    return S_OK;
+}
+
+static struct IQemuDXGIDeviceVtbl qemu_device_vtbl =
+{
+    /* IUnknown methods */
+    qemu_device_QueryInterface,
+    qemu_device_AddRef,
+    qemu_device_Release,
+    /* IQemuDXGIDeviceVtbl methods */
+    qemu_device_create_surface,
+};
+
+static struct IDXGIDevice2Vtbl dxgi_device_vtbl =
 {
     /* IUnknown methods */
     dxgi_device_QueryInterface,
@@ -783,6 +822,7 @@ static const struct IDXGIDevice2Vtbl dxgi_device_vtbl =
 void qemu_dxgi_device_guest_init(struct qemu_dxgi_device *device)
 {
     device->IDXGIDevice2_iface.lpVtbl = &dxgi_device_vtbl;
+    device->IQemuDXGIDevice_iface.lpVtbl = &qemu_device_vtbl;
     wined3d_private_store_init(&device->private_store);
 }
 
@@ -852,6 +892,19 @@ HRESULT qemu_dxgi_device_create(HMODULE mod, struct qemu_dxgi_adapter *adapter, 
 
     *device = obj;
     return hr;
+}
+
+void qemu_dxgi_device_create_surface(struct qemu_syscall *call)
+{
+    struct qemu_dxgi_device_create_surface *c = (struct qemu_dxgi_device_create_surface *)call;
+    struct qemu_dxgi_device *device;
+    struct qemu_dxgi_surface *obj;
+
+    WINE_FIXME("\n");
+    device = QEMU_G2H(c->iface);
+
+    c->super.iret = qemu_dxgi_surface_create(QEMU_G2H(c->host), device, &obj);
+    c->surface = QEMU_H2G(obj);
 }
 
 #endif

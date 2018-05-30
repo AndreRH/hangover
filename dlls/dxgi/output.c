@@ -27,6 +27,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
+#include "qemudxgi.h"
 
 #ifdef QEMU_DLL_GUEST
 #include <initguid.h>
@@ -1065,7 +1066,7 @@ void qemu_dxgi_output_CheckOverlayColorSpaceSupport(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-static const struct
+static struct
 {
     IDXGIOutputVtbl vtbl1;
     void *GetDisplayModeList1;
@@ -1187,7 +1188,7 @@ static ULONG STDMETHODCALLTYPE dxgi_surface_priv_data_Release(IUnknown *iface)
     return refcount;
 }
 
-static const struct IUnknownVtbl priv_data_vtbl =
+static struct IUnknownVtbl priv_data_vtbl =
 {
     /* IUnknown methods */
     dxgi_surface_priv_data_QueryInterface,

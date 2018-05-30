@@ -30,7 +30,6 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
-#include "qemudxgi.h"
 
 #ifdef QEMU_DLL_GUEST
 #include <dxgi1_2.h>
@@ -39,6 +38,9 @@
 #include <dxgi1_5.h>
 #include <wine/debug.h>
 #endif
+
+#include <initguid.h>
+#include "qemudxgi.h"
 
 #include "qemu_dxgi.h"
 
@@ -509,7 +511,6 @@ static const syscall_handler dll_functions[] =
     qemu_dxgi_adapter_UnregisterHardwareContentProtectionTeardownStatus,
     qemu_dxgi_adapter_UnregisterVideoMemoryBudgetChangeNotification,
     qemu_dxgi_device_AddRef,
-    qemu_dxgi_device_CreateSurface,
     qemu_dxgi_device_EnqueueSetEvent,
     qemu_dxgi_device_GetAdapter,
     qemu_dxgi_device_GetGPUThreadPriority,
@@ -608,6 +609,7 @@ static const syscall_handler dll_functions[] =
     qemu_dxgi_swapchain_SetRotation,
     qemu_DXGID3D10CreateDevice,
     qemu_init_dll,
+    qemu_dxgi_device_create_surface,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)

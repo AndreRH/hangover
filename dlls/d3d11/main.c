@@ -370,6 +370,70 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
     return TRUE;
 }
 
+enum D3D11_USAGE d3d11_usage_from_d3d10_usage(enum D3D10_USAGE usage)
+{
+    switch (usage)
+    {
+        case D3D10_USAGE_DEFAULT: return D3D11_USAGE_DEFAULT;
+        case D3D10_USAGE_IMMUTABLE: return D3D11_USAGE_IMMUTABLE;
+        case D3D10_USAGE_DYNAMIC: return D3D11_USAGE_DYNAMIC;
+        case D3D10_USAGE_STAGING: return D3D11_USAGE_STAGING;
+        default:
+            WINE_FIXME("Unhandled usage %#x.\n", usage);
+            return D3D11_USAGE_DEFAULT;
+    }
+}
+
+UINT d3d11_bind_flags_from_d3d10_bind_flags(UINT bind_flags)
+{
+    static const UINT handled_flags = D3D10_BIND_VERTEX_BUFFER
+            | D3D10_BIND_INDEX_BUFFER
+            | D3D10_BIND_CONSTANT_BUFFER
+            | D3D10_BIND_SHADER_RESOURCE
+            | D3D10_BIND_STREAM_OUTPUT
+            | D3D10_BIND_RENDER_TARGET
+            | D3D10_BIND_DEPTH_STENCIL;
+    UINT d3d11_bind_flags = bind_flags & handled_flags;
+
+    if (bind_flags & ~handled_flags)
+        WINE_FIXME("Unhandled bind flags %#x.\n", bind_flags & ~handled_flags);
+
+    return d3d11_bind_flags;
+}
+
+UINT d3d11_cpu_access_flags_from_d3d10_cpu_access_flags(UINT cpu_access_flags)
+{
+    static const UINT handled_flags = D3D10_CPU_ACCESS_WRITE
+            | D3D10_CPU_ACCESS_READ;
+    UINT d3d11_cpu_access_flags = cpu_access_flags & handled_flags;
+
+    if (cpu_access_flags & ~handled_flags)
+        WINE_FIXME("Unhandled cpu access flags %#x.\n", cpu_access_flags & ~handled_flags);
+
+    return d3d11_cpu_access_flags;
+}
+
+UINT d3d11_resource_misc_flags_from_d3d10_resource_misc_flags(UINT resource_misc_flags)
+{
+    static const UINT bitwise_identical_flags = D3D10_RESOURCE_MISC_GENERATE_MIPS
+            | D3D10_RESOURCE_MISC_SHARED
+            | D3D10_RESOURCE_MISC_TEXTURECUBE;
+    const UINT handled_flags = bitwise_identical_flags
+            | D3D10_RESOURCE_MISC_SHARED_KEYEDMUTEX
+            | D3D10_RESOURCE_MISC_GDI_COMPATIBLE;
+    UINT d3d11_resource_misc_flags = resource_misc_flags & bitwise_identical_flags;
+
+    if (resource_misc_flags & D3D10_RESOURCE_MISC_SHARED_KEYEDMUTEX)
+        d3d11_resource_misc_flags |= D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
+    if (resource_misc_flags & D3D10_RESOURCE_MISC_GDI_COMPATIBLE)
+        d3d11_resource_misc_flags |= D3D11_RESOURCE_MISC_GDI_COMPATIBLE;
+
+    if (resource_misc_flags & ~handled_flags)
+        WINE_FIXME("Unhandled resource misc flags %#x.\n", resource_misc_flags & ~handled_flags);
+
+    return d3d11_resource_misc_flags;
+}
+
 #else
 
 static void qemu_init_dll(struct qemu_syscall *call)
@@ -408,7 +472,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d10_device_CreateShaderResourceView,
     qemu_d3d10_device_CreateShaderResourceView1,
     qemu_d3d10_device_CreateTexture1D,
-    qemu_d3d10_device_CreateTexture2D,
     qemu_d3d10_device_CreateTexture3D,
     qemu_d3d10_device_CreateVertexShader,
     qemu_d3d10_device_Draw,

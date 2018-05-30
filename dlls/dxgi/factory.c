@@ -27,6 +27,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
+#include "qemudxgi.h"
 
 #ifdef QEMU_DLL_GUEST
 #include <initguid.h>
@@ -1259,7 +1260,7 @@ void qemu_dxgi_factory_CheckFeatureSupport(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-static const struct
+static struct
 {
     IDXGIFactory2Vtbl vtbl2;
     void *GetCreationFlags;

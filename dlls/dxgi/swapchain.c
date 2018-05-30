@@ -27,6 +27,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
+#include "qemudxgi.h"
 
 #ifdef QEMU_DLL_GUEST
 #include <dxgi1_2.h>
@@ -1264,7 +1265,7 @@ void qemu_dxgi_swapchain_GetRotation(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-static const struct IDXGISwapChain1Vtbl dxgi_swapchain_vtbl =
+static struct IDXGISwapChain1Vtbl dxgi_swapchain_vtbl =
 {
     /* IUnknown methods */
     dxgi_swapchain_QueryInterface,

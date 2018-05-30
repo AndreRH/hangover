@@ -27,6 +27,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
+#include "qemudxgi.h"
 
 #ifdef QEMU_DLL_GUEST
 #include <initguid.h>
@@ -764,7 +765,7 @@ void qemu_dxgi_adapter_UnregisterVideoMemoryBudgetChangeNotification(struct qemu
 
 #ifdef QEMU_DLL_GUEST
 
-static const struct
+static struct
 {
     IDXGIAdapter2Vtbl vtbl2;
     void *RegisterHardwareContentProtectionTeardownStatusEvent;

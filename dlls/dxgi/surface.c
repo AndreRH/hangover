@@ -27,6 +27,7 @@
 
 #include "windows-user-services.h"
 #include "dll_list.h"
+#include "qemudxgi.h"
 
 #ifdef QEMU_DLL_GUEST
 
@@ -533,7 +534,7 @@ void qemu_dxgi_surface_ReleaseDC(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-static const struct
+static struct
 {
     IDXGISurfaceVtbl vtbl1;
     void *GetDC;
@@ -563,7 +564,7 @@ dxgi_surface_vtbl =
     dxgi_surface_ReleaseDC,
 };
 
-static const struct IUnknownVtbl dxgi_surface_inner_unknown_vtbl =
+static struct IUnknownVtbl dxgi_surface_inner_unknown_vtbl =
 {
     /* IUnknown methods */
     dxgi_surface_inner_QueryInterface,
@@ -624,7 +625,7 @@ static ULONG STDMETHODCALLTYPE dxgi_surface_priv_data_Release(IUnknown *iface)
     return refcount;
 }
 
-static const struct IUnknownVtbl priv_data_vtbl =
+static struct IUnknownVtbl priv_data_vtbl =
 {
     /* IUnknown methods */
     dxgi_surface_priv_data_QueryInterface,
