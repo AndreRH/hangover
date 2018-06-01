@@ -162,7 +162,7 @@ void qemu_d3d11_texture1d_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_texture1d_AddRef *c = (struct qemu_d3d11_texture1d_AddRef *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11Texture1D_AddRef(texture->host11_1d);
@@ -198,7 +198,7 @@ void qemu_d3d11_texture1d_Release(struct qemu_syscall *call)
     struct qemu_d3d11_texture1d_Release *c = (struct qemu_d3d11_texture1d_Release *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11Texture1D_Release(texture->host11_1d);
@@ -571,7 +571,7 @@ void qemu_d3d10_texture1d_AddRef(struct qemu_syscall *call)
     struct qemu_d3d10_texture1d_AddRef *c = (struct qemu_d3d10_texture1d_AddRef *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Texture1D_AddRef(texture->host10_1d);
@@ -607,7 +607,7 @@ void qemu_d3d10_texture1d_Release(struct qemu_syscall *call)
     struct qemu_d3d10_texture1d_Release *c = (struct qemu_d3d10_texture1d_Release *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Texture1D_Release(texture->host10_1d);
@@ -1991,7 +1991,7 @@ void qemu_d3d11_texture3d_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_texture3d_AddRef *c = (struct qemu_d3d11_texture3d_AddRef *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11Texture3D_AddRef(texture->host11_3d);
@@ -2027,7 +2027,7 @@ void qemu_d3d11_texture3d_Release(struct qemu_syscall *call)
     struct qemu_d3d11_texture3d_Release *c = (struct qemu_d3d11_texture3d_Release *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11Texture3D_Release(texture->host11_3d);
@@ -2412,7 +2412,7 @@ void qemu_d3d10_texture3d_AddRef(struct qemu_syscall *call)
     struct qemu_d3d10_texture3d_AddRef *c = (struct qemu_d3d10_texture3d_AddRef *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Texture3D_AddRef(texture->host10_3d);
@@ -2448,7 +2448,7 @@ void qemu_d3d10_texture3d_Release(struct qemu_syscall *call)
     struct qemu_d3d10_texture3d_Release *c = (struct qemu_d3d10_texture3d_Release *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Texture3D_Release(texture->host10_3d);
