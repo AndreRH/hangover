@@ -55,6 +55,7 @@ struct qemu_layer_create
     struct qemu_syscall super;
     uint64_t device;
     uint64_t host_device;
+    uint64_t immediate_context;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -111,6 +112,7 @@ static HRESULT WINAPI layer_create(enum dxgi_device_layer_id id, void **layer_ba
 {
     struct qemu_layer_create call;
     struct qemu_d3d11_device *object;
+    struct qemu_d3d11_device_context *context;
 
     WINE_TRACE("id %#x, layer_base %p, unknown0 %#x, device_object %p, riid %s, device_layer %p\n",
             id, layer_base, unknown0, device_object, wine_dbgstr_guid(riid), device_layer);
@@ -130,6 +132,9 @@ static HRESULT WINAPI layer_create(enum dxgi_device_layer_id id, void **layer_ba
     call.device = (ULONG_PTR)object;
     call.host_device = host_dxgi_device;
     qemu_syscall(&call.super);
+
+    context = (struct qemu_d3d11_device_context *)(ULONG_PTR)call.immediate_context;
+    qemu_d3d11_context_guest_init(context);
 
     WINE_TRACE("Created d3d10 device at %p\n", object);
 
@@ -174,6 +179,7 @@ static void qemu_layer_create(struct qemu_syscall *call)
     struct qemu_layer_create *c = (struct qemu_layer_create *)call;
     struct qemu_d3d11_device *device;
     IUnknown *host_device;
+    ID3D11DeviceContext1 *immediate_context;
     HRESULT hr;
 
     device = QEMU_G2H(c->device);
@@ -195,6 +201,13 @@ static void qemu_layer_create(struct qemu_syscall *call)
     if (FAILED(hr))
         WINE_ERR("Could not get ID3D10Multithread host interface.\n");
     ID3D10Multithread_Release(device->host_mt);
+
+    ID3D11Device1_GetImmediateContext(device->host_d3d11, (ID3D11DeviceContext **)&immediate_context);
+    device->immediate_context.host = immediate_context;
+    ID3D11DeviceContext1_Release(immediate_context);
+
+    c->immediate_context = QEMU_H2G(&device->immediate_context);
+
 }
 
 #endif

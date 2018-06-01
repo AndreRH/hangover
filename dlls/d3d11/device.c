@@ -64,15 +64,15 @@ struct qemu_d3d11_immediate_context_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
-static inline struct d3d11_device_context *impl_from_ID3D11DeviceContext1(ID3D11DeviceContext1 *iface)
+static inline struct qemu_d3d11_device_context *impl_from_ID3D11DeviceContext1(ID3D11DeviceContext1 *iface)
 {
-    return CONTAINING_RECORD(iface, struct d3d11_device_context, ID3D11DeviceContext1_iface);
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_device_context, ID3D11DeviceContext1_iface);
 }
 
 static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_QueryInterface(ID3D11DeviceContext1 *iface, REFIID riid, void **out)
 {
     struct qemu_d3d11_immediate_context_QueryInterface call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_QUERYINTERFACE);
     call.iface = (ULONG_PTR)context;
@@ -89,7 +89,7 @@ static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_QueryInterface(ID3D11De
 void qemu_d3d11_immediate_context_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_QueryInterface *c = (struct qemu_d3d11_immediate_context_QueryInterface *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -110,7 +110,7 @@ struct qemu_d3d11_immediate_context_AddRef
 static ULONG STDMETHODCALLTYPE d3d11_immediate_context_AddRef(ID3D11DeviceContext1 *iface)
 {
     struct qemu_d3d11_immediate_context_AddRef call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_ADDREF);
     call.iface = (ULONG_PTR)context;
@@ -125,7 +125,7 @@ static ULONG STDMETHODCALLTYPE d3d11_immediate_context_AddRef(ID3D11DeviceContex
 void qemu_d3d11_immediate_context_AddRef(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_AddRef *c = (struct qemu_d3d11_immediate_context_AddRef *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -146,7 +146,7 @@ struct qemu_d3d11_immediate_context_Release
 static ULONG STDMETHODCALLTYPE d3d11_immediate_context_Release(ID3D11DeviceContext1 *iface)
 {
     struct qemu_d3d11_immediate_context_Release call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_RELEASE);
     call.iface = (ULONG_PTR)context;
@@ -161,7 +161,7 @@ static ULONG STDMETHODCALLTYPE d3d11_immediate_context_Release(ID3D11DeviceConte
 void qemu_d3d11_immediate_context_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_Release *c = (struct qemu_d3d11_immediate_context_Release *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -183,7 +183,7 @@ struct qemu_d3d11_immediate_context_GetDevice
 static void STDMETHODCALLTYPE d3d11_immediate_context_GetDevice(ID3D11DeviceContext1 *iface, ID3D11Device **device)
 {
     struct qemu_d3d11_immediate_context_GetDevice call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GETDEVICE);
     call.iface = (ULONG_PTR)context;
@@ -197,7 +197,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_GetDevice(ID3D11DeviceCont
 void qemu_d3d11_immediate_context_GetDevice(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GetDevice *c = (struct qemu_d3d11_immediate_context_GetDevice *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -221,7 +221,7 @@ struct qemu_d3d11_immediate_context_GetPrivateData
 static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_GetPrivateData(ID3D11DeviceContext1 *iface, REFGUID guid, UINT *data_size, void *data)
 {
     struct qemu_d3d11_immediate_context_GetPrivateData call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GETPRIVATEDATA);
     call.iface = (ULONG_PTR)context;
@@ -239,7 +239,7 @@ static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_GetPrivateData(ID3D11De
 void qemu_d3d11_immediate_context_GetPrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GetPrivateData *c = (struct qemu_d3d11_immediate_context_GetPrivateData *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -263,7 +263,7 @@ struct qemu_d3d11_immediate_context_SetPrivateData
 static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_SetPrivateData(ID3D11DeviceContext1 *iface, REFGUID guid, UINT data_size, const void *data)
 {
     struct qemu_d3d11_immediate_context_SetPrivateData call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_SETPRIVATEDATA);
     call.iface = (ULONG_PTR)context;
@@ -281,7 +281,7 @@ static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_SetPrivateData(ID3D11De
 void qemu_d3d11_immediate_context_SetPrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_SetPrivateData *c = (struct qemu_d3d11_immediate_context_SetPrivateData *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -304,7 +304,7 @@ struct qemu_d3d11_immediate_context_SetPrivateDataInterface
 static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_SetPrivateDataInterface(ID3D11DeviceContext1 *iface, REFGUID guid, const IUnknown *data)
 {
     struct qemu_d3d11_immediate_context_SetPrivateDataInterface call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_SETPRIVATEDATAINTERFACE);
     call.iface = (ULONG_PTR)context;
@@ -321,7 +321,7 @@ static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_SetPrivateDataInterface
 void qemu_d3d11_immediate_context_SetPrivateDataInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_SetPrivateDataInterface *c = (struct qemu_d3d11_immediate_context_SetPrivateDataInterface *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -345,7 +345,7 @@ struct qemu_d3d11_immediate_context_VSSetConstantBuffers
 static void STDMETHODCALLTYPE d3d11_immediate_context_VSSetConstantBuffers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer *const *buffers)
 {
     struct qemu_d3d11_immediate_context_VSSetConstantBuffers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_VSSETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)context;
@@ -361,7 +361,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_VSSetConstantBuffers(ID3D1
 void qemu_d3d11_immediate_context_VSSetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_VSSetConstantBuffers *c = (struct qemu_d3d11_immediate_context_VSSetConstantBuffers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -385,7 +385,7 @@ struct qemu_d3d11_immediate_context_PSSetShaderResources
 static void STDMETHODCALLTYPE d3d11_immediate_context_PSSetShaderResources(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11ShaderResourceView *const *views)
 {
     struct qemu_d3d11_immediate_context_PSSetShaderResources call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_PSSETSHADERRESOURCES);
     call.iface = (ULONG_PTR)context;
@@ -401,7 +401,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_PSSetShaderResources(ID3D1
 void qemu_d3d11_immediate_context_PSSetShaderResources(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_PSSetShaderResources *c = (struct qemu_d3d11_immediate_context_PSSetShaderResources *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -425,7 +425,7 @@ struct qemu_d3d11_immediate_context_PSSetShader
 static void STDMETHODCALLTYPE d3d11_immediate_context_PSSetShader(ID3D11DeviceContext1 *iface, ID3D11PixelShader *shader, ID3D11ClassInstance *const *class_instances, UINT class_instance_count)
 {
     struct qemu_d3d11_immediate_context_PSSetShader call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_PSSETSHADER);
     call.iface = (ULONG_PTR)context;
@@ -441,7 +441,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_PSSetShader(ID3D11DeviceCo
 void qemu_d3d11_immediate_context_PSSetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_PSSetShader *c = (struct qemu_d3d11_immediate_context_PSSetShader *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -465,7 +465,7 @@ struct qemu_d3d11_immediate_context_PSSetSamplers
 static void STDMETHODCALLTYPE d3d11_immediate_context_PSSetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT sampler_count, ID3D11SamplerState *const *samplers)
 {
     struct qemu_d3d11_immediate_context_PSSetSamplers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_PSSETSAMPLERS);
     call.iface = (ULONG_PTR)context;
@@ -481,7 +481,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_PSSetSamplers(ID3D11Device
 void qemu_d3d11_immediate_context_PSSetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_PSSetSamplers *c = (struct qemu_d3d11_immediate_context_PSSetSamplers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -505,7 +505,7 @@ struct qemu_d3d11_immediate_context_VSSetShader
 static void STDMETHODCALLTYPE d3d11_immediate_context_VSSetShader(ID3D11DeviceContext1 *iface, ID3D11VertexShader *shader, ID3D11ClassInstance *const *class_instances, UINT class_instance_count)
 {
     struct qemu_d3d11_immediate_context_VSSetShader call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_VSSETSHADER);
     call.iface = (ULONG_PTR)context;
@@ -521,7 +521,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_VSSetShader(ID3D11DeviceCo
 void qemu_d3d11_immediate_context_VSSetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_VSSetShader *c = (struct qemu_d3d11_immediate_context_VSSetShader *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -545,7 +545,7 @@ struct qemu_d3d11_immediate_context_DrawIndexed
 static void STDMETHODCALLTYPE d3d11_immediate_context_DrawIndexed(ID3D11DeviceContext1 *iface, UINT index_count, UINT start_index_location, INT base_vertex_location)
 {
     struct qemu_d3d11_immediate_context_DrawIndexed call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DRAWINDEXED);
     call.iface = (ULONG_PTR)context;
@@ -561,7 +561,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DrawIndexed(ID3D11DeviceCo
 void qemu_d3d11_immediate_context_DrawIndexed(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DrawIndexed *c = (struct qemu_d3d11_immediate_context_DrawIndexed *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -584,7 +584,7 @@ struct qemu_d3d11_immediate_context_Draw
 static void STDMETHODCALLTYPE d3d11_immediate_context_Draw(ID3D11DeviceContext1 *iface, UINT vertex_count, UINT start_vertex_location)
 {
     struct qemu_d3d11_immediate_context_Draw call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DRAW);
     call.iface = (ULONG_PTR)context;
@@ -599,7 +599,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_Draw(ID3D11DeviceContext1 
 void qemu_d3d11_immediate_context_Draw(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_Draw *c = (struct qemu_d3d11_immediate_context_Draw *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -625,7 +625,7 @@ struct qemu_d3d11_immediate_context_Map
 static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_Map(ID3D11DeviceContext1 *iface, ID3D11Resource *resource, UINT subresource_idx, D3D11_MAP map_type, UINT map_flags, D3D11_MAPPED_SUBRESOURCE *mapped_subresource)
 {
     struct qemu_d3d11_immediate_context_Map call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_MAP);
     call.iface = (ULONG_PTR)context;
@@ -645,7 +645,7 @@ static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_Map(ID3D11DeviceContext
 void qemu_d3d11_immediate_context_Map(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_Map *c = (struct qemu_d3d11_immediate_context_Map *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -668,7 +668,7 @@ struct qemu_d3d11_immediate_context_Unmap
 static void STDMETHODCALLTYPE d3d11_immediate_context_Unmap(ID3D11DeviceContext1 *iface, ID3D11Resource *resource, UINT subresource_idx)
 {
     struct qemu_d3d11_immediate_context_Unmap call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_UNMAP);
     call.iface = (ULONG_PTR)context;
@@ -683,7 +683,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_Unmap(ID3D11DeviceContext1
 void qemu_d3d11_immediate_context_Unmap(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_Unmap *c = (struct qemu_d3d11_immediate_context_Unmap *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -707,7 +707,7 @@ struct qemu_d3d11_immediate_context_PSSetConstantBuffers
 static void STDMETHODCALLTYPE d3d11_immediate_context_PSSetConstantBuffers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer *const *buffers)
 {
     struct qemu_d3d11_immediate_context_PSSetConstantBuffers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_PSSETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)context;
@@ -723,7 +723,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_PSSetConstantBuffers(ID3D1
 void qemu_d3d11_immediate_context_PSSetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_PSSetConstantBuffers *c = (struct qemu_d3d11_immediate_context_PSSetConstantBuffers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -745,7 +745,7 @@ struct qemu_d3d11_immediate_context_IASetInputLayout
 static void STDMETHODCALLTYPE d3d11_immediate_context_IASetInputLayout(ID3D11DeviceContext1 *iface, ID3D11InputLayout *input_layout)
 {
     struct qemu_d3d11_immediate_context_IASetInputLayout call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_IASETINPUTLAYOUT);
     call.iface = (ULONG_PTR)context;
@@ -759,7 +759,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_IASetInputLayout(ID3D11Dev
 void qemu_d3d11_immediate_context_IASetInputLayout(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_IASetInputLayout *c = (struct qemu_d3d11_immediate_context_IASetInputLayout *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -785,7 +785,7 @@ struct qemu_d3d11_immediate_context_IASetVertexBuffers
 static void STDMETHODCALLTYPE d3d11_immediate_context_IASetVertexBuffers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer *const *buffers, const UINT *strides, const UINT *offsets)
 {
     struct qemu_d3d11_immediate_context_IASetVertexBuffers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_IASETVERTEXBUFFERS);
     call.iface = (ULONG_PTR)context;
@@ -803,7 +803,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_IASetVertexBuffers(ID3D11D
 void qemu_d3d11_immediate_context_IASetVertexBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_IASetVertexBuffers *c = (struct qemu_d3d11_immediate_context_IASetVertexBuffers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -827,7 +827,7 @@ struct qemu_d3d11_immediate_context_IASetIndexBuffer
 static void STDMETHODCALLTYPE d3d11_immediate_context_IASetIndexBuffer(ID3D11DeviceContext1 *iface, ID3D11Buffer *buffer, DXGI_FORMAT format, UINT offset)
 {
     struct qemu_d3d11_immediate_context_IASetIndexBuffer call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_IASETINDEXBUFFER);
     call.iface = (ULONG_PTR)context;
@@ -843,7 +843,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_IASetIndexBuffer(ID3D11Dev
 void qemu_d3d11_immediate_context_IASetIndexBuffer(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_IASetIndexBuffer *c = (struct qemu_d3d11_immediate_context_IASetIndexBuffer *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -869,7 +869,7 @@ struct qemu_d3d11_immediate_context_DrawIndexedInstanced
 static void STDMETHODCALLTYPE d3d11_immediate_context_DrawIndexedInstanced(ID3D11DeviceContext1 *iface, UINT instance_index_count, UINT instance_count, UINT start_index_location, INT base_vertex_location, UINT start_instance_location)
 {
     struct qemu_d3d11_immediate_context_DrawIndexedInstanced call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DRAWINDEXEDINSTANCED);
     call.iface = (ULONG_PTR)context;
@@ -887,7 +887,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DrawIndexedInstanced(ID3D1
 void qemu_d3d11_immediate_context_DrawIndexedInstanced(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DrawIndexedInstanced *c = (struct qemu_d3d11_immediate_context_DrawIndexedInstanced *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -912,7 +912,7 @@ struct qemu_d3d11_immediate_context_DrawInstanced
 static void STDMETHODCALLTYPE d3d11_immediate_context_DrawInstanced(ID3D11DeviceContext1 *iface, UINT instance_vertex_count, UINT instance_count, UINT start_vertex_location, UINT start_instance_location)
 {
     struct qemu_d3d11_immediate_context_DrawInstanced call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DRAWINSTANCED);
     call.iface = (ULONG_PTR)context;
@@ -929,7 +929,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DrawInstanced(ID3D11Device
 void qemu_d3d11_immediate_context_DrawInstanced(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DrawInstanced *c = (struct qemu_d3d11_immediate_context_DrawInstanced *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -953,7 +953,7 @@ struct qemu_d3d11_immediate_context_GSSetConstantBuffers
 static void STDMETHODCALLTYPE d3d11_immediate_context_GSSetConstantBuffers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer *const *buffers)
 {
     struct qemu_d3d11_immediate_context_GSSetConstantBuffers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GSSETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)context;
@@ -969,7 +969,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_GSSetConstantBuffers(ID3D1
 void qemu_d3d11_immediate_context_GSSetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GSSetConstantBuffers *c = (struct qemu_d3d11_immediate_context_GSSetConstantBuffers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -993,7 +993,7 @@ struct qemu_d3d11_immediate_context_GSSetShader
 static void STDMETHODCALLTYPE d3d11_immediate_context_GSSetShader(ID3D11DeviceContext1 *iface, ID3D11GeometryShader *shader, ID3D11ClassInstance *const *class_instances, UINT class_instance_count)
 {
     struct qemu_d3d11_immediate_context_GSSetShader call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GSSETSHADER);
     call.iface = (ULONG_PTR)context;
@@ -1009,7 +1009,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_GSSetShader(ID3D11DeviceCo
 void qemu_d3d11_immediate_context_GSSetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GSSetShader *c = (struct qemu_d3d11_immediate_context_GSSetShader *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1031,7 +1031,7 @@ struct qemu_d3d11_immediate_context_IASetPrimitiveTopology
 static void STDMETHODCALLTYPE d3d11_immediate_context_IASetPrimitiveTopology(ID3D11DeviceContext1 *iface, D3D11_PRIMITIVE_TOPOLOGY topology)
 {
     struct qemu_d3d11_immediate_context_IASetPrimitiveTopology call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_IASETPRIMITIVETOPOLOGY);
     call.iface = (ULONG_PTR)context;
@@ -1045,7 +1045,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_IASetPrimitiveTopology(ID3
 void qemu_d3d11_immediate_context_IASetPrimitiveTopology(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_IASetPrimitiveTopology *c = (struct qemu_d3d11_immediate_context_IASetPrimitiveTopology *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1069,7 +1069,7 @@ struct qemu_d3d11_immediate_context_VSSetShaderResources
 static void STDMETHODCALLTYPE d3d11_immediate_context_VSSetShaderResources(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11ShaderResourceView *const *views)
 {
     struct qemu_d3d11_immediate_context_VSSetShaderResources call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_VSSETSHADERRESOURCES);
     call.iface = (ULONG_PTR)context;
@@ -1085,7 +1085,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_VSSetShaderResources(ID3D1
 void qemu_d3d11_immediate_context_VSSetShaderResources(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_VSSetShaderResources *c = (struct qemu_d3d11_immediate_context_VSSetShaderResources *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1109,7 +1109,7 @@ struct qemu_d3d11_immediate_context_VSSetSamplers
 static void STDMETHODCALLTYPE d3d11_immediate_context_VSSetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT sampler_count, ID3D11SamplerState *const *samplers)
 {
     struct qemu_d3d11_immediate_context_VSSetSamplers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_VSSETSAMPLERS);
     call.iface = (ULONG_PTR)context;
@@ -1125,7 +1125,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_VSSetSamplers(ID3D11Device
 void qemu_d3d11_immediate_context_VSSetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_VSSetSamplers *c = (struct qemu_d3d11_immediate_context_VSSetSamplers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1147,7 +1147,7 @@ struct qemu_d3d11_immediate_context_Begin
 static void STDMETHODCALLTYPE d3d11_immediate_context_Begin(ID3D11DeviceContext1 *iface, ID3D11Asynchronous *asynchronous)
 {
     struct qemu_d3d11_immediate_context_Begin call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_BEGIN);
     call.iface = (ULONG_PTR)context;
@@ -1161,7 +1161,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_Begin(ID3D11DeviceContext1
 void qemu_d3d11_immediate_context_Begin(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_Begin *c = (struct qemu_d3d11_immediate_context_Begin *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1183,7 +1183,7 @@ struct qemu_d3d11_immediate_context_End
 static void STDMETHODCALLTYPE d3d11_immediate_context_End(ID3D11DeviceContext1 *iface, ID3D11Asynchronous *asynchronous)
 {
     struct qemu_d3d11_immediate_context_End call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_END);
     call.iface = (ULONG_PTR)context;
@@ -1197,7 +1197,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_End(ID3D11DeviceContext1 *
 void qemu_d3d11_immediate_context_End(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_End *c = (struct qemu_d3d11_immediate_context_End *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1222,7 +1222,7 @@ struct qemu_d3d11_immediate_context_GetData
 static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_GetData(ID3D11DeviceContext1 *iface, ID3D11Asynchronous *asynchronous, void *data, UINT data_size, UINT data_flags)
 {
     struct qemu_d3d11_immediate_context_GetData call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GETDATA);
     call.iface = (ULONG_PTR)context;
@@ -1241,7 +1241,7 @@ static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_GetData(ID3D11DeviceCon
 void qemu_d3d11_immediate_context_GetData(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GetData *c = (struct qemu_d3d11_immediate_context_GetData *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1264,7 +1264,7 @@ struct qemu_d3d11_immediate_context_SetPredication
 static void STDMETHODCALLTYPE d3d11_immediate_context_SetPredication(ID3D11DeviceContext1 *iface, ID3D11Predicate *predicate, BOOL value)
 {
     struct qemu_d3d11_immediate_context_SetPredication call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_SETPREDICATION);
     call.iface = (ULONG_PTR)context;
@@ -1279,7 +1279,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_SetPredication(ID3D11Devic
 void qemu_d3d11_immediate_context_SetPredication(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_SetPredication *c = (struct qemu_d3d11_immediate_context_SetPredication *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1303,7 +1303,7 @@ struct qemu_d3d11_immediate_context_GSSetShaderResources
 static void STDMETHODCALLTYPE d3d11_immediate_context_GSSetShaderResources(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11ShaderResourceView *const *views)
 {
     struct qemu_d3d11_immediate_context_GSSetShaderResources call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GSSETSHADERRESOURCES);
     call.iface = (ULONG_PTR)context;
@@ -1319,7 +1319,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_GSSetShaderResources(ID3D1
 void qemu_d3d11_immediate_context_GSSetShaderResources(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GSSetShaderResources *c = (struct qemu_d3d11_immediate_context_GSSetShaderResources *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1343,7 +1343,7 @@ struct qemu_d3d11_immediate_context_GSSetSamplers
 static void STDMETHODCALLTYPE d3d11_immediate_context_GSSetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT sampler_count, ID3D11SamplerState *const *samplers)
 {
     struct qemu_d3d11_immediate_context_GSSetSamplers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GSSETSAMPLERS);
     call.iface = (ULONG_PTR)context;
@@ -1359,7 +1359,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_GSSetSamplers(ID3D11Device
 void qemu_d3d11_immediate_context_GSSetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GSSetSamplers *c = (struct qemu_d3d11_immediate_context_GSSetSamplers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1383,7 +1383,7 @@ struct qemu_d3d11_immediate_context_OMSetRenderTargets
 static void STDMETHODCALLTYPE d3d11_immediate_context_OMSetRenderTargets(ID3D11DeviceContext1 *iface, UINT render_target_view_count, ID3D11RenderTargetView *const *render_target_views, ID3D11DepthStencilView *depth_stencil_view)
 {
     struct qemu_d3d11_immediate_context_OMSetRenderTargets call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_OMSETRENDERTARGETS);
     call.iface = (ULONG_PTR)context;
@@ -1399,7 +1399,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_OMSetRenderTargets(ID3D11D
 void qemu_d3d11_immediate_context_OMSetRenderTargets(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_OMSetRenderTargets *c = (struct qemu_d3d11_immediate_context_OMSetRenderTargets *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1427,7 +1427,7 @@ struct qemu_d3d11_immediate_context_OMSetRenderTargetsAndUnorderedAccessViews
 static void STDMETHODCALLTYPE d3d11_immediate_context_OMSetRenderTargetsAndUnorderedAccessViews(ID3D11DeviceContext1 *iface, UINT render_target_view_count, ID3D11RenderTargetView *const *render_target_views, ID3D11DepthStencilView *depth_stencil_view, UINT unordered_access_view_start_slot, UINT unordered_access_view_count, ID3D11UnorderedAccessView *const *unordered_access_views, const UINT *initial_counts)
 {
     struct qemu_d3d11_immediate_context_OMSetRenderTargetsAndUnorderedAccessViews call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_OMSETRENDERTARGETSANDUNORDEREDACCESSVIEWS);
     call.iface = (ULONG_PTR)context;
@@ -1447,7 +1447,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_OMSetRenderTargetsAndUnord
 void qemu_d3d11_immediate_context_OMSetRenderTargetsAndUnorderedAccessViews(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_OMSetRenderTargetsAndUnorderedAccessViews *c = (struct qemu_d3d11_immediate_context_OMSetRenderTargetsAndUnorderedAccessViews *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1471,7 +1471,7 @@ struct qemu_d3d11_immediate_context_OMSetBlendState
 static void STDMETHODCALLTYPE d3d11_immediate_context_OMSetBlendState(ID3D11DeviceContext1 *iface, ID3D11BlendState *blend_state, const float blend_factor[4], UINT sample_mask)
 {
     struct qemu_d3d11_immediate_context_OMSetBlendState call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_OMSETBLENDSTATE);
     call.iface = (ULONG_PTR)context;
@@ -1487,7 +1487,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_OMSetBlendState(ID3D11Devi
 void qemu_d3d11_immediate_context_OMSetBlendState(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_OMSetBlendState *c = (struct qemu_d3d11_immediate_context_OMSetBlendState *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1510,7 +1510,7 @@ struct qemu_d3d11_immediate_context_OMSetDepthStencilState
 static void STDMETHODCALLTYPE d3d11_immediate_context_OMSetDepthStencilState(ID3D11DeviceContext1 *iface, ID3D11DepthStencilState *depth_stencil_state, UINT stencil_ref)
 {
     struct qemu_d3d11_immediate_context_OMSetDepthStencilState call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_OMSETDEPTHSTENCILSTATE);
     call.iface = (ULONG_PTR)context;
@@ -1525,7 +1525,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_OMSetDepthStencilState(ID3
 void qemu_d3d11_immediate_context_OMSetDepthStencilState(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_OMSetDepthStencilState *c = (struct qemu_d3d11_immediate_context_OMSetDepthStencilState *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1549,7 +1549,7 @@ struct qemu_d3d11_immediate_context_SOSetTargets
 static void STDMETHODCALLTYPE d3d11_immediate_context_SOSetTargets(ID3D11DeviceContext1 *iface, UINT buffer_count, ID3D11Buffer *const *buffers, const UINT *offsets)
 {
     struct qemu_d3d11_immediate_context_SOSetTargets call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_SOSETTARGETS);
     call.iface = (ULONG_PTR)context;
@@ -1565,7 +1565,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_SOSetTargets(ID3D11DeviceC
 void qemu_d3d11_immediate_context_SOSetTargets(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_SOSetTargets *c = (struct qemu_d3d11_immediate_context_SOSetTargets *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1586,7 +1586,7 @@ struct qemu_d3d11_immediate_context_DrawAuto
 static void STDMETHODCALLTYPE d3d11_immediate_context_DrawAuto(ID3D11DeviceContext1 *iface)
 {
     struct qemu_d3d11_immediate_context_DrawAuto call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DRAWAUTO);
     call.iface = (ULONG_PTR)context;
@@ -1599,7 +1599,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DrawAuto(ID3D11DeviceConte
 void qemu_d3d11_immediate_context_DrawAuto(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DrawAuto *c = (struct qemu_d3d11_immediate_context_DrawAuto *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1622,7 +1622,7 @@ struct qemu_d3d11_immediate_context_DrawIndexedInstancedIndirect
 static void STDMETHODCALLTYPE d3d11_immediate_context_DrawIndexedInstancedIndirect(ID3D11DeviceContext1 *iface, ID3D11Buffer *buffer, UINT offset)
 {
     struct qemu_d3d11_immediate_context_DrawIndexedInstancedIndirect call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DRAWINDEXEDINSTANCEDINDIRECT);
     call.iface = (ULONG_PTR)context;
@@ -1637,7 +1637,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DrawIndexedInstancedIndire
 void qemu_d3d11_immediate_context_DrawIndexedInstancedIndirect(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DrawIndexedInstancedIndirect *c = (struct qemu_d3d11_immediate_context_DrawIndexedInstancedIndirect *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1660,7 +1660,7 @@ struct qemu_d3d11_immediate_context_DrawInstancedIndirect
 static void STDMETHODCALLTYPE d3d11_immediate_context_DrawInstancedIndirect(ID3D11DeviceContext1 *iface, ID3D11Buffer *buffer, UINT offset)
 {
     struct qemu_d3d11_immediate_context_DrawInstancedIndirect call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DRAWINSTANCEDINDIRECT);
     call.iface = (ULONG_PTR)context;
@@ -1675,7 +1675,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DrawInstancedIndirect(ID3D
 void qemu_d3d11_immediate_context_DrawInstancedIndirect(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DrawInstancedIndirect *c = (struct qemu_d3d11_immediate_context_DrawInstancedIndirect *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1699,7 +1699,7 @@ struct qemu_d3d11_immediate_context_Dispatch
 static void STDMETHODCALLTYPE d3d11_immediate_context_Dispatch(ID3D11DeviceContext1 *iface, UINT thread_group_count_x, UINT thread_group_count_y, UINT thread_group_count_z)
 {
     struct qemu_d3d11_immediate_context_Dispatch call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DISPATCH);
     call.iface = (ULONG_PTR)context;
@@ -1715,7 +1715,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_Dispatch(ID3D11DeviceConte
 void qemu_d3d11_immediate_context_Dispatch(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_Dispatch *c = (struct qemu_d3d11_immediate_context_Dispatch *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1738,7 +1738,7 @@ struct qemu_d3d11_immediate_context_DispatchIndirect
 static void STDMETHODCALLTYPE d3d11_immediate_context_DispatchIndirect(ID3D11DeviceContext1 *iface, ID3D11Buffer *buffer, UINT offset)
 {
     struct qemu_d3d11_immediate_context_DispatchIndirect call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DISPATCHINDIRECT);
     call.iface = (ULONG_PTR)context;
@@ -1753,7 +1753,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DispatchIndirect(ID3D11Dev
 void qemu_d3d11_immediate_context_DispatchIndirect(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DispatchIndirect *c = (struct qemu_d3d11_immediate_context_DispatchIndirect *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1775,7 +1775,7 @@ struct qemu_d3d11_immediate_context_RSSetState
 static void STDMETHODCALLTYPE d3d11_immediate_context_RSSetState(ID3D11DeviceContext1 *iface, ID3D11RasterizerState *rasterizer_state)
 {
     struct qemu_d3d11_immediate_context_RSSetState call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_RSSETSTATE);
     call.iface = (ULONG_PTR)context;
@@ -1789,7 +1789,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_RSSetState(ID3D11DeviceCon
 void qemu_d3d11_immediate_context_RSSetState(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_RSSetState *c = (struct qemu_d3d11_immediate_context_RSSetState *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1812,7 +1812,7 @@ struct qemu_d3d11_immediate_context_RSSetViewports
 static void STDMETHODCALLTYPE d3d11_immediate_context_RSSetViewports(ID3D11DeviceContext1 *iface, UINT viewport_count, const D3D11_VIEWPORT *viewports)
 {
     struct qemu_d3d11_immediate_context_RSSetViewports call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_RSSETVIEWPORTS);
     call.iface = (ULONG_PTR)context;
@@ -1827,7 +1827,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_RSSetViewports(ID3D11Devic
 void qemu_d3d11_immediate_context_RSSetViewports(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_RSSetViewports *c = (struct qemu_d3d11_immediate_context_RSSetViewports *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1850,7 +1850,7 @@ struct qemu_d3d11_immediate_context_RSSetScissorRects
 static void STDMETHODCALLTYPE d3d11_immediate_context_RSSetScissorRects(ID3D11DeviceContext1 *iface, UINT rect_count, const D3D11_RECT *rects)
 {
     struct qemu_d3d11_immediate_context_RSSetScissorRects call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_RSSETSCISSORRECTS);
     call.iface = (ULONG_PTR)context;
@@ -1865,7 +1865,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_RSSetScissorRects(ID3D11De
 void qemu_d3d11_immediate_context_RSSetScissorRects(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_RSSetScissorRects *c = (struct qemu_d3d11_immediate_context_RSSetScissorRects *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1894,7 +1894,7 @@ struct qemu_d3d11_immediate_context_CopySubresourceRegion
 static void STDMETHODCALLTYPE d3d11_immediate_context_CopySubresourceRegion(ID3D11DeviceContext1 *iface, ID3D11Resource *dst_resource, UINT dst_subresource_idx, UINT dst_x, UINT dst_y, UINT dst_z, ID3D11Resource *src_resource, UINT src_subresource_idx, const D3D11_BOX *src_box)
 {
     struct qemu_d3d11_immediate_context_CopySubresourceRegion call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_COPYSUBRESOURCEREGION);
     call.iface = (ULONG_PTR)context;
@@ -1915,7 +1915,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CopySubresourceRegion(ID3D
 void qemu_d3d11_immediate_context_CopySubresourceRegion(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CopySubresourceRegion *c = (struct qemu_d3d11_immediate_context_CopySubresourceRegion *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1938,7 +1938,7 @@ struct qemu_d3d11_immediate_context_CopyResource
 static void STDMETHODCALLTYPE d3d11_immediate_context_CopyResource(ID3D11DeviceContext1 *iface, ID3D11Resource *dst_resource, ID3D11Resource *src_resource)
 {
     struct qemu_d3d11_immediate_context_CopyResource call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_COPYRESOURCE);
     call.iface = (ULONG_PTR)context;
@@ -1953,7 +1953,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CopyResource(ID3D11DeviceC
 void qemu_d3d11_immediate_context_CopyResource(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CopyResource *c = (struct qemu_d3d11_immediate_context_CopyResource *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -1980,7 +1980,7 @@ struct qemu_d3d11_immediate_context_UpdateSubresource
 static void STDMETHODCALLTYPE d3d11_immediate_context_UpdateSubresource(ID3D11DeviceContext1 *iface, ID3D11Resource *resource, UINT subresource_idx, const D3D11_BOX *box, const void *data, UINT row_pitch, UINT depth_pitch)
 {
     struct qemu_d3d11_immediate_context_UpdateSubresource call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_UPDATESUBRESOURCE);
     call.iface = (ULONG_PTR)context;
@@ -1999,7 +1999,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_UpdateSubresource(ID3D11De
 void qemu_d3d11_immediate_context_UpdateSubresource(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_UpdateSubresource *c = (struct qemu_d3d11_immediate_context_UpdateSubresource *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2023,7 +2023,7 @@ struct qemu_d3d11_immediate_context_CopyStructureCount
 static void STDMETHODCALLTYPE d3d11_immediate_context_CopyStructureCount(ID3D11DeviceContext1 *iface, ID3D11Buffer *dst_buffer, UINT dst_offset, ID3D11UnorderedAccessView *src_view)
 {
     struct qemu_d3d11_immediate_context_CopyStructureCount call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_COPYSTRUCTURECOUNT);
     call.iface = (ULONG_PTR)context;
@@ -2039,7 +2039,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CopyStructureCount(ID3D11D
 void qemu_d3d11_immediate_context_CopyStructureCount(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CopyStructureCount *c = (struct qemu_d3d11_immediate_context_CopyStructureCount *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2062,7 +2062,7 @@ struct qemu_d3d11_immediate_context_ClearRenderTargetView
 static void STDMETHODCALLTYPE d3d11_immediate_context_ClearRenderTargetView(ID3D11DeviceContext1 *iface, ID3D11RenderTargetView *render_target_view, const float color_rgba[4])
 {
     struct qemu_d3d11_immediate_context_ClearRenderTargetView call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CLEARRENDERTARGETVIEW);
     call.iface = (ULONG_PTR)context;
@@ -2077,7 +2077,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_ClearRenderTargetView(ID3D
 void qemu_d3d11_immediate_context_ClearRenderTargetView(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_ClearRenderTargetView *c = (struct qemu_d3d11_immediate_context_ClearRenderTargetView *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2100,7 +2100,7 @@ struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewUint
 static void STDMETHODCALLTYPE d3d11_immediate_context_ClearUnorderedAccessViewUint(ID3D11DeviceContext1 *iface, ID3D11UnorderedAccessView *unordered_access_view, const UINT values[4])
 {
     struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewUint call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CLEARUNORDEREDACCESSVIEWUINT);
     call.iface = (ULONG_PTR)context;
@@ -2115,7 +2115,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_ClearUnorderedAccessViewUi
 void qemu_d3d11_immediate_context_ClearUnorderedAccessViewUint(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewUint *c = (struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewUint *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2138,7 +2138,7 @@ struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewFloat
 static void STDMETHODCALLTYPE d3d11_immediate_context_ClearUnorderedAccessViewFloat(ID3D11DeviceContext1 *iface, ID3D11UnorderedAccessView *unordered_access_view, const float values[4])
 {
     struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewFloat call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CLEARUNORDEREDACCESSVIEWFLOAT);
     call.iface = (ULONG_PTR)context;
@@ -2153,7 +2153,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_ClearUnorderedAccessViewFl
 void qemu_d3d11_immediate_context_ClearUnorderedAccessViewFloat(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewFloat *c = (struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewFloat *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2178,7 +2178,7 @@ struct qemu_d3d11_immediate_context_ClearDepthStencilView
 static void STDMETHODCALLTYPE d3d11_immediate_context_ClearDepthStencilView(ID3D11DeviceContext1 *iface, ID3D11DepthStencilView *depth_stencil_view, UINT flags, FLOAT depth, UINT8 stencil)
 {
     struct qemu_d3d11_immediate_context_ClearDepthStencilView call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CLEARDEPTHSTENCILVIEW);
     call.iface = (ULONG_PTR)context;
@@ -2195,7 +2195,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_ClearDepthStencilView(ID3D
 void qemu_d3d11_immediate_context_ClearDepthStencilView(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_ClearDepthStencilView *c = (struct qemu_d3d11_immediate_context_ClearDepthStencilView *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2217,7 +2217,7 @@ struct qemu_d3d11_immediate_context_GenerateMips
 static void STDMETHODCALLTYPE d3d11_immediate_context_GenerateMips(ID3D11DeviceContext1 *iface, ID3D11ShaderResourceView *view)
 {
     struct qemu_d3d11_immediate_context_GenerateMips call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GENERATEMIPS);
     call.iface = (ULONG_PTR)context;
@@ -2231,7 +2231,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_GenerateMips(ID3D11DeviceC
 void qemu_d3d11_immediate_context_GenerateMips(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GenerateMips *c = (struct qemu_d3d11_immediate_context_GenerateMips *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2254,7 +2254,7 @@ struct qemu_d3d11_immediate_context_SetResourceMinLOD
 static void STDMETHODCALLTYPE d3d11_immediate_context_SetResourceMinLOD(ID3D11DeviceContext1 *iface, ID3D11Resource *resource, FLOAT min_lod)
 {
     struct qemu_d3d11_immediate_context_SetResourceMinLOD call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_SETRESOURCEMINLOD);
     call.iface = (ULONG_PTR)context;
@@ -2269,7 +2269,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_SetResourceMinLOD(ID3D11De
 void qemu_d3d11_immediate_context_SetResourceMinLOD(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_SetResourceMinLOD *c = (struct qemu_d3d11_immediate_context_SetResourceMinLOD *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2291,7 +2291,7 @@ struct qemu_d3d11_immediate_context_GetResourceMinLOD
 static FLOAT STDMETHODCALLTYPE d3d11_immediate_context_GetResourceMinLOD(ID3D11DeviceContext1 *iface, ID3D11Resource *resource)
 {
     struct qemu_d3d11_immediate_context_GetResourceMinLOD call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GETRESOURCEMINLOD);
     call.iface = (ULONG_PTR)context;
@@ -2307,7 +2307,7 @@ static FLOAT STDMETHODCALLTYPE d3d11_immediate_context_GetResourceMinLOD(ID3D11D
 void qemu_d3d11_immediate_context_GetResourceMinLOD(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GetResourceMinLOD *c = (struct qemu_d3d11_immediate_context_GetResourceMinLOD *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2333,7 +2333,7 @@ struct qemu_d3d11_immediate_context_ResolveSubresource
 static void STDMETHODCALLTYPE d3d11_immediate_context_ResolveSubresource(ID3D11DeviceContext1 *iface, ID3D11Resource *dst_resource, UINT dst_subresource_idx, ID3D11Resource *src_resource, UINT src_subresource_idx, DXGI_FORMAT format)
 {
     struct qemu_d3d11_immediate_context_ResolveSubresource call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_RESOLVESUBRESOURCE);
     call.iface = (ULONG_PTR)context;
@@ -2351,7 +2351,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_ResolveSubresource(ID3D11D
 void qemu_d3d11_immediate_context_ResolveSubresource(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_ResolveSubresource *c = (struct qemu_d3d11_immediate_context_ResolveSubresource *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2374,7 +2374,7 @@ struct qemu_d3d11_immediate_context_ExecuteCommandList
 static void STDMETHODCALLTYPE d3d11_immediate_context_ExecuteCommandList(ID3D11DeviceContext1 *iface, ID3D11CommandList *command_list, BOOL restore_state)
 {
     struct qemu_d3d11_immediate_context_ExecuteCommandList call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_EXECUTECOMMANDLIST);
     call.iface = (ULONG_PTR)context;
@@ -2389,7 +2389,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_ExecuteCommandList(ID3D11D
 void qemu_d3d11_immediate_context_ExecuteCommandList(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_ExecuteCommandList *c = (struct qemu_d3d11_immediate_context_ExecuteCommandList *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2413,7 +2413,7 @@ struct qemu_d3d11_immediate_context_HSSetShaderResources
 static void STDMETHODCALLTYPE d3d11_immediate_context_HSSetShaderResources(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11ShaderResourceView *const *views)
 {
     struct qemu_d3d11_immediate_context_HSSetShaderResources call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_HSSETSHADERRESOURCES);
     call.iface = (ULONG_PTR)context;
@@ -2429,7 +2429,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_HSSetShaderResources(ID3D1
 void qemu_d3d11_immediate_context_HSSetShaderResources(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_HSSetShaderResources *c = (struct qemu_d3d11_immediate_context_HSSetShaderResources *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2453,7 +2453,7 @@ struct qemu_d3d11_immediate_context_HSSetShader
 static void STDMETHODCALLTYPE d3d11_immediate_context_HSSetShader(ID3D11DeviceContext1 *iface, ID3D11HullShader *shader, ID3D11ClassInstance *const *class_instances, UINT class_instance_count)
 {
     struct qemu_d3d11_immediate_context_HSSetShader call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_HSSETSHADER);
     call.iface = (ULONG_PTR)context;
@@ -2469,7 +2469,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_HSSetShader(ID3D11DeviceCo
 void qemu_d3d11_immediate_context_HSSetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_HSSetShader *c = (struct qemu_d3d11_immediate_context_HSSetShader *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2493,7 +2493,7 @@ struct qemu_d3d11_immediate_context_HSSetSamplers
 static void STDMETHODCALLTYPE d3d11_immediate_context_HSSetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT sampler_count, ID3D11SamplerState *const *samplers)
 {
     struct qemu_d3d11_immediate_context_HSSetSamplers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_HSSETSAMPLERS);
     call.iface = (ULONG_PTR)context;
@@ -2509,7 +2509,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_HSSetSamplers(ID3D11Device
 void qemu_d3d11_immediate_context_HSSetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_HSSetSamplers *c = (struct qemu_d3d11_immediate_context_HSSetSamplers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2533,7 +2533,7 @@ struct qemu_d3d11_immediate_context_HSSetConstantBuffers
 static void STDMETHODCALLTYPE d3d11_immediate_context_HSSetConstantBuffers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer *const *buffers)
 {
     struct qemu_d3d11_immediate_context_HSSetConstantBuffers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_HSSETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)context;
@@ -2549,7 +2549,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_HSSetConstantBuffers(ID3D1
 void qemu_d3d11_immediate_context_HSSetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_HSSetConstantBuffers *c = (struct qemu_d3d11_immediate_context_HSSetConstantBuffers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2573,7 +2573,7 @@ struct qemu_d3d11_immediate_context_DSSetShaderResources
 static void STDMETHODCALLTYPE d3d11_immediate_context_DSSetShaderResources(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11ShaderResourceView *const *views)
 {
     struct qemu_d3d11_immediate_context_DSSetShaderResources call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DSSETSHADERRESOURCES);
     call.iface = (ULONG_PTR)context;
@@ -2589,7 +2589,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DSSetShaderResources(ID3D1
 void qemu_d3d11_immediate_context_DSSetShaderResources(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DSSetShaderResources *c = (struct qemu_d3d11_immediate_context_DSSetShaderResources *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2613,7 +2613,7 @@ struct qemu_d3d11_immediate_context_DSSetShader
 static void STDMETHODCALLTYPE d3d11_immediate_context_DSSetShader(ID3D11DeviceContext1 *iface, ID3D11DomainShader *shader, ID3D11ClassInstance *const *class_instances, UINT class_instance_count)
 {
     struct qemu_d3d11_immediate_context_DSSetShader call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DSSETSHADER);
     call.iface = (ULONG_PTR)context;
@@ -2629,7 +2629,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DSSetShader(ID3D11DeviceCo
 void qemu_d3d11_immediate_context_DSSetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DSSetShader *c = (struct qemu_d3d11_immediate_context_DSSetShader *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2653,7 +2653,7 @@ struct qemu_d3d11_immediate_context_DSSetSamplers
 static void STDMETHODCALLTYPE d3d11_immediate_context_DSSetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT sampler_count, ID3D11SamplerState *const *samplers)
 {
     struct qemu_d3d11_immediate_context_DSSetSamplers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DSSETSAMPLERS);
     call.iface = (ULONG_PTR)context;
@@ -2669,7 +2669,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DSSetSamplers(ID3D11Device
 void qemu_d3d11_immediate_context_DSSetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DSSetSamplers *c = (struct qemu_d3d11_immediate_context_DSSetSamplers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2693,7 +2693,7 @@ struct qemu_d3d11_immediate_context_DSSetConstantBuffers
 static void STDMETHODCALLTYPE d3d11_immediate_context_DSSetConstantBuffers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer *const *buffers)
 {
     struct qemu_d3d11_immediate_context_DSSetConstantBuffers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DSSETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)context;
@@ -2709,7 +2709,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DSSetConstantBuffers(ID3D1
 void qemu_d3d11_immediate_context_DSSetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DSSetConstantBuffers *c = (struct qemu_d3d11_immediate_context_DSSetConstantBuffers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2733,7 +2733,7 @@ struct qemu_d3d11_immediate_context_CSSetShaderResources
 static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetShaderResources(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11ShaderResourceView *const *views)
 {
     struct qemu_d3d11_immediate_context_CSSetShaderResources call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSSETSHADERRESOURCES);
     call.iface = (ULONG_PTR)context;
@@ -2749,7 +2749,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetShaderResources(ID3D1
 void qemu_d3d11_immediate_context_CSSetShaderResources(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CSSetShaderResources *c = (struct qemu_d3d11_immediate_context_CSSetShaderResources *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2774,7 +2774,7 @@ struct qemu_d3d11_immediate_context_CSSetUnorderedAccessViews
 static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetUnorderedAccessViews(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11UnorderedAccessView *const *views, const UINT *initial_counts)
 {
     struct qemu_d3d11_immediate_context_CSSetUnorderedAccessViews call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSSETUNORDEREDACCESSVIEWS);
     call.iface = (ULONG_PTR)context;
@@ -2791,7 +2791,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetUnorderedAccessViews(
 void qemu_d3d11_immediate_context_CSSetUnorderedAccessViews(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CSSetUnorderedAccessViews *c = (struct qemu_d3d11_immediate_context_CSSetUnorderedAccessViews *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2815,7 +2815,7 @@ struct qemu_d3d11_immediate_context_CSSetShader
 static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetShader(ID3D11DeviceContext1 *iface, ID3D11ComputeShader *shader, ID3D11ClassInstance *const *class_instances, UINT class_instance_count)
 {
     struct qemu_d3d11_immediate_context_CSSetShader call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSSETSHADER);
     call.iface = (ULONG_PTR)context;
@@ -2831,7 +2831,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetShader(ID3D11DeviceCo
 void qemu_d3d11_immediate_context_CSSetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CSSetShader *c = (struct qemu_d3d11_immediate_context_CSSetShader *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2855,7 +2855,7 @@ struct qemu_d3d11_immediate_context_CSSetSamplers
 static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT sampler_count, ID3D11SamplerState *const *samplers)
 {
     struct qemu_d3d11_immediate_context_CSSetSamplers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSSETSAMPLERS);
     call.iface = (ULONG_PTR)context;
@@ -2871,7 +2871,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetSamplers(ID3D11Device
 void qemu_d3d11_immediate_context_CSSetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CSSetSamplers *c = (struct qemu_d3d11_immediate_context_CSSetSamplers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2895,7 +2895,7 @@ struct qemu_d3d11_immediate_context_CSSetConstantBuffers
 static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetConstantBuffers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer *const *buffers)
 {
     struct qemu_d3d11_immediate_context_CSSetConstantBuffers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSSETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)context;
@@ -2911,7 +2911,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetConstantBuffers(ID3D1
 void qemu_d3d11_immediate_context_CSSetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CSSetConstantBuffers *c = (struct qemu_d3d11_immediate_context_CSSetConstantBuffers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2935,7 +2935,7 @@ struct qemu_d3d11_immediate_context_VSGetConstantBuffers
 static void STDMETHODCALLTYPE d3d11_immediate_context_VSGetConstantBuffers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer **buffers)
 {
     struct qemu_d3d11_immediate_context_VSGetConstantBuffers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_VSGETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)context;
@@ -2951,7 +2951,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_VSGetConstantBuffers(ID3D1
 void qemu_d3d11_immediate_context_VSGetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_VSGetConstantBuffers *c = (struct qemu_d3d11_immediate_context_VSGetConstantBuffers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -2975,7 +2975,7 @@ struct qemu_d3d11_immediate_context_PSGetShaderResources
 static void STDMETHODCALLTYPE d3d11_immediate_context_PSGetShaderResources(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11ShaderResourceView **views)
 {
     struct qemu_d3d11_immediate_context_PSGetShaderResources call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_PSGETSHADERRESOURCES);
     call.iface = (ULONG_PTR)context;
@@ -2991,7 +2991,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_PSGetShaderResources(ID3D1
 void qemu_d3d11_immediate_context_PSGetShaderResources(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_PSGetShaderResources *c = (struct qemu_d3d11_immediate_context_PSGetShaderResources *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3015,7 +3015,7 @@ struct qemu_d3d11_immediate_context_PSGetShader
 static void STDMETHODCALLTYPE d3d11_immediate_context_PSGetShader(ID3D11DeviceContext1 *iface, ID3D11PixelShader **shader, ID3D11ClassInstance **class_instances, UINT *class_instance_count)
 {
     struct qemu_d3d11_immediate_context_PSGetShader call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_PSGETSHADER);
     call.iface = (ULONG_PTR)context;
@@ -3031,7 +3031,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_PSGetShader(ID3D11DeviceCo
 void qemu_d3d11_immediate_context_PSGetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_PSGetShader *c = (struct qemu_d3d11_immediate_context_PSGetShader *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3055,7 +3055,7 @@ struct qemu_d3d11_immediate_context_PSGetSamplers
 static void STDMETHODCALLTYPE d3d11_immediate_context_PSGetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT sampler_count, ID3D11SamplerState **samplers)
 {
     struct qemu_d3d11_immediate_context_PSGetSamplers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_PSGETSAMPLERS);
     call.iface = (ULONG_PTR)context;
@@ -3071,7 +3071,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_PSGetSamplers(ID3D11Device
 void qemu_d3d11_immediate_context_PSGetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_PSGetSamplers *c = (struct qemu_d3d11_immediate_context_PSGetSamplers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3095,7 +3095,7 @@ struct qemu_d3d11_immediate_context_VSGetShader
 static void STDMETHODCALLTYPE d3d11_immediate_context_VSGetShader(ID3D11DeviceContext1 *iface, ID3D11VertexShader **shader, ID3D11ClassInstance **class_instances, UINT *class_instance_count)
 {
     struct qemu_d3d11_immediate_context_VSGetShader call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_VSGETSHADER);
     call.iface = (ULONG_PTR)context;
@@ -3111,7 +3111,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_VSGetShader(ID3D11DeviceCo
 void qemu_d3d11_immediate_context_VSGetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_VSGetShader *c = (struct qemu_d3d11_immediate_context_VSGetShader *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3135,7 +3135,7 @@ struct qemu_d3d11_immediate_context_PSGetConstantBuffers
 static void STDMETHODCALLTYPE d3d11_immediate_context_PSGetConstantBuffers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer **buffers)
 {
     struct qemu_d3d11_immediate_context_PSGetConstantBuffers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_PSGETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)context;
@@ -3151,7 +3151,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_PSGetConstantBuffers(ID3D1
 void qemu_d3d11_immediate_context_PSGetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_PSGetConstantBuffers *c = (struct qemu_d3d11_immediate_context_PSGetConstantBuffers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3173,7 +3173,7 @@ struct qemu_d3d11_immediate_context_IAGetInputLayout
 static void STDMETHODCALLTYPE d3d11_immediate_context_IAGetInputLayout(ID3D11DeviceContext1 *iface, ID3D11InputLayout **input_layout)
 {
     struct qemu_d3d11_immediate_context_IAGetInputLayout call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_IAGETINPUTLAYOUT);
     call.iface = (ULONG_PTR)context;
@@ -3187,7 +3187,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_IAGetInputLayout(ID3D11Dev
 void qemu_d3d11_immediate_context_IAGetInputLayout(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_IAGetInputLayout *c = (struct qemu_d3d11_immediate_context_IAGetInputLayout *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3213,7 +3213,7 @@ struct qemu_d3d11_immediate_context_IAGetVertexBuffers
 static void STDMETHODCALLTYPE d3d11_immediate_context_IAGetVertexBuffers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer **buffers, UINT *strides, UINT *offsets)
 {
     struct qemu_d3d11_immediate_context_IAGetVertexBuffers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_IAGETVERTEXBUFFERS);
     call.iface = (ULONG_PTR)context;
@@ -3231,7 +3231,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_IAGetVertexBuffers(ID3D11D
 void qemu_d3d11_immediate_context_IAGetVertexBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_IAGetVertexBuffers *c = (struct qemu_d3d11_immediate_context_IAGetVertexBuffers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3255,7 +3255,7 @@ struct qemu_d3d11_immediate_context_IAGetIndexBuffer
 static void STDMETHODCALLTYPE d3d11_immediate_context_IAGetIndexBuffer(ID3D11DeviceContext1 *iface, ID3D11Buffer **buffer, DXGI_FORMAT *format, UINT *offset)
 {
     struct qemu_d3d11_immediate_context_IAGetIndexBuffer call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_IAGETINDEXBUFFER);
     call.iface = (ULONG_PTR)context;
@@ -3271,7 +3271,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_IAGetIndexBuffer(ID3D11Dev
 void qemu_d3d11_immediate_context_IAGetIndexBuffer(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_IAGetIndexBuffer *c = (struct qemu_d3d11_immediate_context_IAGetIndexBuffer *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3295,7 +3295,7 @@ struct qemu_d3d11_immediate_context_GSGetConstantBuffers
 static void STDMETHODCALLTYPE d3d11_immediate_context_GSGetConstantBuffers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer **buffers)
 {
     struct qemu_d3d11_immediate_context_GSGetConstantBuffers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GSGETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)context;
@@ -3311,7 +3311,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_GSGetConstantBuffers(ID3D1
 void qemu_d3d11_immediate_context_GSGetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GSGetConstantBuffers *c = (struct qemu_d3d11_immediate_context_GSGetConstantBuffers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3335,7 +3335,7 @@ struct qemu_d3d11_immediate_context_GSGetShader
 static void STDMETHODCALLTYPE d3d11_immediate_context_GSGetShader(ID3D11DeviceContext1 *iface, ID3D11GeometryShader **shader, ID3D11ClassInstance **class_instances, UINT *class_instance_count)
 {
     struct qemu_d3d11_immediate_context_GSGetShader call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GSGETSHADER);
     call.iface = (ULONG_PTR)context;
@@ -3351,7 +3351,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_GSGetShader(ID3D11DeviceCo
 void qemu_d3d11_immediate_context_GSGetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GSGetShader *c = (struct qemu_d3d11_immediate_context_GSGetShader *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3373,7 +3373,7 @@ struct qemu_d3d11_immediate_context_IAGetPrimitiveTopology
 static void STDMETHODCALLTYPE d3d11_immediate_context_IAGetPrimitiveTopology(ID3D11DeviceContext1 *iface, D3D11_PRIMITIVE_TOPOLOGY *topology)
 {
     struct qemu_d3d11_immediate_context_IAGetPrimitiveTopology call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_IAGETPRIMITIVETOPOLOGY);
     call.iface = (ULONG_PTR)context;
@@ -3387,7 +3387,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_IAGetPrimitiveTopology(ID3
 void qemu_d3d11_immediate_context_IAGetPrimitiveTopology(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_IAGetPrimitiveTopology *c = (struct qemu_d3d11_immediate_context_IAGetPrimitiveTopology *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3411,7 +3411,7 @@ struct qemu_d3d11_immediate_context_VSGetShaderResources
 static void STDMETHODCALLTYPE d3d11_immediate_context_VSGetShaderResources(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11ShaderResourceView **views)
 {
     struct qemu_d3d11_immediate_context_VSGetShaderResources call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_VSGETSHADERRESOURCES);
     call.iface = (ULONG_PTR)context;
@@ -3427,7 +3427,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_VSGetShaderResources(ID3D1
 void qemu_d3d11_immediate_context_VSGetShaderResources(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_VSGetShaderResources *c = (struct qemu_d3d11_immediate_context_VSGetShaderResources *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3451,7 +3451,7 @@ struct qemu_d3d11_immediate_context_VSGetSamplers
 static void STDMETHODCALLTYPE d3d11_immediate_context_VSGetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT sampler_count, ID3D11SamplerState **samplers)
 {
     struct qemu_d3d11_immediate_context_VSGetSamplers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_VSGETSAMPLERS);
     call.iface = (ULONG_PTR)context;
@@ -3467,7 +3467,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_VSGetSamplers(ID3D11Device
 void qemu_d3d11_immediate_context_VSGetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_VSGetSamplers *c = (struct qemu_d3d11_immediate_context_VSGetSamplers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3490,7 +3490,7 @@ struct qemu_d3d11_immediate_context_GetPredication
 static void STDMETHODCALLTYPE d3d11_immediate_context_GetPredication(ID3D11DeviceContext1 *iface, ID3D11Predicate **predicate, BOOL *value)
 {
     struct qemu_d3d11_immediate_context_GetPredication call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GETPREDICATION);
     call.iface = (ULONG_PTR)context;
@@ -3505,7 +3505,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_GetPredication(ID3D11Devic
 void qemu_d3d11_immediate_context_GetPredication(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GetPredication *c = (struct qemu_d3d11_immediate_context_GetPredication *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3529,7 +3529,7 @@ struct qemu_d3d11_immediate_context_GSGetShaderResources
 static void STDMETHODCALLTYPE d3d11_immediate_context_GSGetShaderResources(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11ShaderResourceView **views)
 {
     struct qemu_d3d11_immediate_context_GSGetShaderResources call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GSGETSHADERRESOURCES);
     call.iface = (ULONG_PTR)context;
@@ -3545,7 +3545,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_GSGetShaderResources(ID3D1
 void qemu_d3d11_immediate_context_GSGetShaderResources(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GSGetShaderResources *c = (struct qemu_d3d11_immediate_context_GSGetShaderResources *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3569,7 +3569,7 @@ struct qemu_d3d11_immediate_context_GSGetSamplers
 static void STDMETHODCALLTYPE d3d11_immediate_context_GSGetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT sampler_count, ID3D11SamplerState **samplers)
 {
     struct qemu_d3d11_immediate_context_GSGetSamplers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GSGETSAMPLERS);
     call.iface = (ULONG_PTR)context;
@@ -3585,7 +3585,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_GSGetSamplers(ID3D11Device
 void qemu_d3d11_immediate_context_GSGetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GSGetSamplers *c = (struct qemu_d3d11_immediate_context_GSGetSamplers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3609,7 +3609,7 @@ struct qemu_d3d11_immediate_context_OMGetRenderTargets
 static void STDMETHODCALLTYPE d3d11_immediate_context_OMGetRenderTargets(ID3D11DeviceContext1 *iface, UINT render_target_view_count, ID3D11RenderTargetView **render_target_views, ID3D11DepthStencilView **depth_stencil_view)
 {
     struct qemu_d3d11_immediate_context_OMGetRenderTargets call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_OMGETRENDERTARGETS);
     call.iface = (ULONG_PTR)context;
@@ -3625,7 +3625,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_OMGetRenderTargets(ID3D11D
 void qemu_d3d11_immediate_context_OMGetRenderTargets(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_OMGetRenderTargets *c = (struct qemu_d3d11_immediate_context_OMGetRenderTargets *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3652,7 +3652,7 @@ struct qemu_d3d11_immediate_context_OMGetRenderTargetsAndUnorderedAccessViews
 static void STDMETHODCALLTYPE d3d11_immediate_context_OMGetRenderTargetsAndUnorderedAccessViews(ID3D11DeviceContext1 *iface, UINT render_target_view_count, ID3D11RenderTargetView **render_target_views, ID3D11DepthStencilView **depth_stencil_view, UINT unordered_access_view_start_slot, UINT unordered_access_view_count, ID3D11UnorderedAccessView **unordered_access_views)
 {
     struct qemu_d3d11_immediate_context_OMGetRenderTargetsAndUnorderedAccessViews call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_OMGETRENDERTARGETSANDUNORDEREDACCESSVIEWS);
     call.iface = (ULONG_PTR)context;
@@ -3671,7 +3671,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_OMGetRenderTargetsAndUnord
 void qemu_d3d11_immediate_context_OMGetRenderTargetsAndUnorderedAccessViews(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_OMGetRenderTargetsAndUnorderedAccessViews *c = (struct qemu_d3d11_immediate_context_OMGetRenderTargetsAndUnorderedAccessViews *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3695,7 +3695,7 @@ struct qemu_d3d11_immediate_context_OMGetBlendState
 static void STDMETHODCALLTYPE d3d11_immediate_context_OMGetBlendState(ID3D11DeviceContext1 *iface, ID3D11BlendState **blend_state, FLOAT blend_factor[4], UINT *sample_mask)
 {
     struct qemu_d3d11_immediate_context_OMGetBlendState call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_OMGETBLENDSTATE);
     call.iface = (ULONG_PTR)context;
@@ -3711,7 +3711,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_OMGetBlendState(ID3D11Devi
 void qemu_d3d11_immediate_context_OMGetBlendState(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_OMGetBlendState *c = (struct qemu_d3d11_immediate_context_OMGetBlendState *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3734,7 +3734,7 @@ struct qemu_d3d11_immediate_context_OMGetDepthStencilState
 static void STDMETHODCALLTYPE d3d11_immediate_context_OMGetDepthStencilState(ID3D11DeviceContext1 *iface, ID3D11DepthStencilState **depth_stencil_state, UINT *stencil_ref)
 {
     struct qemu_d3d11_immediate_context_OMGetDepthStencilState call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_OMGETDEPTHSTENCILSTATE);
     call.iface = (ULONG_PTR)context;
@@ -3749,7 +3749,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_OMGetDepthStencilState(ID3
 void qemu_d3d11_immediate_context_OMGetDepthStencilState(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_OMGetDepthStencilState *c = (struct qemu_d3d11_immediate_context_OMGetDepthStencilState *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3772,7 +3772,7 @@ struct qemu_d3d11_immediate_context_SOGetTargets
 static void STDMETHODCALLTYPE d3d11_immediate_context_SOGetTargets(ID3D11DeviceContext1 *iface, UINT buffer_count, ID3D11Buffer **buffers)
 {
     struct qemu_d3d11_immediate_context_SOGetTargets call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_SOGETTARGETS);
     call.iface = (ULONG_PTR)context;
@@ -3787,7 +3787,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_SOGetTargets(ID3D11DeviceC
 void qemu_d3d11_immediate_context_SOGetTargets(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_SOGetTargets *c = (struct qemu_d3d11_immediate_context_SOGetTargets *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3809,7 +3809,7 @@ struct qemu_d3d11_immediate_context_RSGetState
 static void STDMETHODCALLTYPE d3d11_immediate_context_RSGetState(ID3D11DeviceContext1 *iface, ID3D11RasterizerState **rasterizer_state)
 {
     struct qemu_d3d11_immediate_context_RSGetState call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_RSGETSTATE);
     call.iface = (ULONG_PTR)context;
@@ -3823,7 +3823,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_RSGetState(ID3D11DeviceCon
 void qemu_d3d11_immediate_context_RSGetState(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_RSGetState *c = (struct qemu_d3d11_immediate_context_RSGetState *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3846,7 +3846,7 @@ struct qemu_d3d11_immediate_context_RSGetViewports
 static void STDMETHODCALLTYPE d3d11_immediate_context_RSGetViewports(ID3D11DeviceContext1 *iface, UINT *viewport_count, D3D11_VIEWPORT *viewports)
 {
     struct qemu_d3d11_immediate_context_RSGetViewports call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_RSGETVIEWPORTS);
     call.iface = (ULONG_PTR)context;
@@ -3861,7 +3861,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_RSGetViewports(ID3D11Devic
 void qemu_d3d11_immediate_context_RSGetViewports(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_RSGetViewports *c = (struct qemu_d3d11_immediate_context_RSGetViewports *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3884,7 +3884,7 @@ struct qemu_d3d11_immediate_context_RSGetScissorRects
 static void STDMETHODCALLTYPE d3d11_immediate_context_RSGetScissorRects(ID3D11DeviceContext1 *iface, UINT *rect_count, D3D11_RECT *rects)
 {
     struct qemu_d3d11_immediate_context_RSGetScissorRects call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_RSGETSCISSORRECTS);
     call.iface = (ULONG_PTR)context;
@@ -3899,7 +3899,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_RSGetScissorRects(ID3D11De
 void qemu_d3d11_immediate_context_RSGetScissorRects(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_RSGetScissorRects *c = (struct qemu_d3d11_immediate_context_RSGetScissorRects *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3923,7 +3923,7 @@ struct qemu_d3d11_immediate_context_HSGetShaderResources
 static void STDMETHODCALLTYPE d3d11_immediate_context_HSGetShaderResources(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11ShaderResourceView **views)
 {
     struct qemu_d3d11_immediate_context_HSGetShaderResources call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_HSGETSHADERRESOURCES);
     call.iface = (ULONG_PTR)context;
@@ -3939,7 +3939,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_HSGetShaderResources(ID3D1
 void qemu_d3d11_immediate_context_HSGetShaderResources(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_HSGetShaderResources *c = (struct qemu_d3d11_immediate_context_HSGetShaderResources *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -3963,7 +3963,7 @@ struct qemu_d3d11_immediate_context_HSGetShader
 static void STDMETHODCALLTYPE d3d11_immediate_context_HSGetShader(ID3D11DeviceContext1 *iface, ID3D11HullShader **shader, ID3D11ClassInstance **class_instances, UINT *class_instance_count)
 {
     struct qemu_d3d11_immediate_context_HSGetShader call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_HSGETSHADER);
     call.iface = (ULONG_PTR)context;
@@ -3979,7 +3979,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_HSGetShader(ID3D11DeviceCo
 void qemu_d3d11_immediate_context_HSGetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_HSGetShader *c = (struct qemu_d3d11_immediate_context_HSGetShader *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4003,7 +4003,7 @@ struct qemu_d3d11_immediate_context_HSGetSamplers
 static void STDMETHODCALLTYPE d3d11_immediate_context_HSGetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT sampler_count, ID3D11SamplerState **samplers)
 {
     struct qemu_d3d11_immediate_context_HSGetSamplers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_HSGETSAMPLERS);
     call.iface = (ULONG_PTR)context;
@@ -4019,7 +4019,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_HSGetSamplers(ID3D11Device
 void qemu_d3d11_immediate_context_HSGetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_HSGetSamplers *c = (struct qemu_d3d11_immediate_context_HSGetSamplers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4043,7 +4043,7 @@ struct qemu_d3d11_immediate_context_HSGetConstantBuffers
 static void STDMETHODCALLTYPE d3d11_immediate_context_HSGetConstantBuffers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer **buffers)
 {
     struct qemu_d3d11_immediate_context_HSGetConstantBuffers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_HSGETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)context;
@@ -4059,7 +4059,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_HSGetConstantBuffers(ID3D1
 void qemu_d3d11_immediate_context_HSGetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_HSGetConstantBuffers *c = (struct qemu_d3d11_immediate_context_HSGetConstantBuffers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4083,7 +4083,7 @@ struct qemu_d3d11_immediate_context_DSGetShaderResources
 static void STDMETHODCALLTYPE d3d11_immediate_context_DSGetShaderResources(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11ShaderResourceView **views)
 {
     struct qemu_d3d11_immediate_context_DSGetShaderResources call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DSGETSHADERRESOURCES);
     call.iface = (ULONG_PTR)context;
@@ -4099,7 +4099,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DSGetShaderResources(ID3D1
 void qemu_d3d11_immediate_context_DSGetShaderResources(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DSGetShaderResources *c = (struct qemu_d3d11_immediate_context_DSGetShaderResources *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4123,7 +4123,7 @@ struct qemu_d3d11_immediate_context_DSGetShader
 static void STDMETHODCALLTYPE d3d11_immediate_context_DSGetShader(ID3D11DeviceContext1 *iface, ID3D11DomainShader **shader, ID3D11ClassInstance **class_instances, UINT *class_instance_count)
 {
     struct qemu_d3d11_immediate_context_DSGetShader call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DSGETSHADER);
     call.iface = (ULONG_PTR)context;
@@ -4139,7 +4139,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DSGetShader(ID3D11DeviceCo
 void qemu_d3d11_immediate_context_DSGetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DSGetShader *c = (struct qemu_d3d11_immediate_context_DSGetShader *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4163,7 +4163,7 @@ struct qemu_d3d11_immediate_context_DSGetSamplers
 static void STDMETHODCALLTYPE d3d11_immediate_context_DSGetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT sampler_count, ID3D11SamplerState **samplers)
 {
     struct qemu_d3d11_immediate_context_DSGetSamplers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DSGETSAMPLERS);
     call.iface = (ULONG_PTR)context;
@@ -4179,7 +4179,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DSGetSamplers(ID3D11Device
 void qemu_d3d11_immediate_context_DSGetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DSGetSamplers *c = (struct qemu_d3d11_immediate_context_DSGetSamplers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4203,7 +4203,7 @@ struct qemu_d3d11_immediate_context_DSGetConstantBuffers
 static void STDMETHODCALLTYPE d3d11_immediate_context_DSGetConstantBuffers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer **buffers)
 {
     struct qemu_d3d11_immediate_context_DSGetConstantBuffers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DSGETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)context;
@@ -4219,7 +4219,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DSGetConstantBuffers(ID3D1
 void qemu_d3d11_immediate_context_DSGetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DSGetConstantBuffers *c = (struct qemu_d3d11_immediate_context_DSGetConstantBuffers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4243,7 +4243,7 @@ struct qemu_d3d11_immediate_context_CSGetShaderResources
 static void STDMETHODCALLTYPE d3d11_immediate_context_CSGetShaderResources(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11ShaderResourceView **views)
 {
     struct qemu_d3d11_immediate_context_CSGetShaderResources call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSGETSHADERRESOURCES);
     call.iface = (ULONG_PTR)context;
@@ -4259,7 +4259,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CSGetShaderResources(ID3D1
 void qemu_d3d11_immediate_context_CSGetShaderResources(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CSGetShaderResources *c = (struct qemu_d3d11_immediate_context_CSGetShaderResources *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4283,7 +4283,7 @@ struct qemu_d3d11_immediate_context_CSGetUnorderedAccessViews
 static void STDMETHODCALLTYPE d3d11_immediate_context_CSGetUnorderedAccessViews(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11UnorderedAccessView **views)
 {
     struct qemu_d3d11_immediate_context_CSGetUnorderedAccessViews call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSGETUNORDEREDACCESSVIEWS);
     call.iface = (ULONG_PTR)context;
@@ -4299,7 +4299,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CSGetUnorderedAccessViews(
 void qemu_d3d11_immediate_context_CSGetUnorderedAccessViews(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CSGetUnorderedAccessViews *c = (struct qemu_d3d11_immediate_context_CSGetUnorderedAccessViews *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4323,7 +4323,7 @@ struct qemu_d3d11_immediate_context_CSGetShader
 static void STDMETHODCALLTYPE d3d11_immediate_context_CSGetShader(ID3D11DeviceContext1 *iface, ID3D11ComputeShader **shader, ID3D11ClassInstance **class_instances, UINT *class_instance_count)
 {
     struct qemu_d3d11_immediate_context_CSGetShader call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSGETSHADER);
     call.iface = (ULONG_PTR)context;
@@ -4339,7 +4339,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CSGetShader(ID3D11DeviceCo
 void qemu_d3d11_immediate_context_CSGetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CSGetShader *c = (struct qemu_d3d11_immediate_context_CSGetShader *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4363,7 +4363,7 @@ struct qemu_d3d11_immediate_context_CSGetSamplers
 static void STDMETHODCALLTYPE d3d11_immediate_context_CSGetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT sampler_count, ID3D11SamplerState **samplers)
 {
     struct qemu_d3d11_immediate_context_CSGetSamplers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSGETSAMPLERS);
     call.iface = (ULONG_PTR)context;
@@ -4379,7 +4379,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CSGetSamplers(ID3D11Device
 void qemu_d3d11_immediate_context_CSGetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CSGetSamplers *c = (struct qemu_d3d11_immediate_context_CSGetSamplers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4403,7 +4403,7 @@ struct qemu_d3d11_immediate_context_CSGetConstantBuffers
 static void STDMETHODCALLTYPE d3d11_immediate_context_CSGetConstantBuffers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer **buffers)
 {
     struct qemu_d3d11_immediate_context_CSGetConstantBuffers call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSGETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)context;
@@ -4419,7 +4419,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CSGetConstantBuffers(ID3D1
 void qemu_d3d11_immediate_context_CSGetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CSGetConstantBuffers *c = (struct qemu_d3d11_immediate_context_CSGetConstantBuffers *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4440,7 +4440,7 @@ struct qemu_d3d11_immediate_context_ClearState
 static void STDMETHODCALLTYPE d3d11_immediate_context_ClearState(ID3D11DeviceContext1 *iface)
 {
     struct qemu_d3d11_immediate_context_ClearState call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CLEARSTATE);
     call.iface = (ULONG_PTR)context;
@@ -4453,7 +4453,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_ClearState(ID3D11DeviceCon
 void qemu_d3d11_immediate_context_ClearState(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_ClearState *c = (struct qemu_d3d11_immediate_context_ClearState *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4474,7 +4474,7 @@ struct qemu_d3d11_immediate_context_Flush
 static void STDMETHODCALLTYPE d3d11_immediate_context_Flush(ID3D11DeviceContext1 *iface)
 {
     struct qemu_d3d11_immediate_context_Flush call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_FLUSH);
     call.iface = (ULONG_PTR)context;
@@ -4487,7 +4487,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_Flush(ID3D11DeviceContext1
 void qemu_d3d11_immediate_context_Flush(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_Flush *c = (struct qemu_d3d11_immediate_context_Flush *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4508,7 +4508,7 @@ struct qemu_d3d11_immediate_context_GetType
 static D3D11_DEVICE_CONTEXT_TYPE STDMETHODCALLTYPE d3d11_immediate_context_GetType(ID3D11DeviceContext1 *iface)
 {
     struct qemu_d3d11_immediate_context_GetType call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GETTYPE);
     call.iface = (ULONG_PTR)context;
@@ -4523,7 +4523,7 @@ static D3D11_DEVICE_CONTEXT_TYPE STDMETHODCALLTYPE d3d11_immediate_context_GetTy
 void qemu_d3d11_immediate_context_GetType(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GetType *c = (struct qemu_d3d11_immediate_context_GetType *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4544,7 +4544,7 @@ struct qemu_d3d11_immediate_context_GetContextFlags
 static UINT STDMETHODCALLTYPE d3d11_immediate_context_GetContextFlags(ID3D11DeviceContext1 *iface)
 {
     struct qemu_d3d11_immediate_context_GetContextFlags call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GETCONTEXTFLAGS);
     call.iface = (ULONG_PTR)context;
@@ -4559,7 +4559,7 @@ static UINT STDMETHODCALLTYPE d3d11_immediate_context_GetContextFlags(ID3D11Devi
 void qemu_d3d11_immediate_context_GetContextFlags(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GetContextFlags *c = (struct qemu_d3d11_immediate_context_GetContextFlags *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4582,7 +4582,7 @@ struct qemu_d3d11_immediate_context_FinishCommandList
 static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_FinishCommandList(ID3D11DeviceContext1 *iface, BOOL restore, ID3D11CommandList **command_list)
 {
     struct qemu_d3d11_immediate_context_FinishCommandList call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_FINISHCOMMANDLIST);
     call.iface = (ULONG_PTR)context;
@@ -4599,7 +4599,7 @@ static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_FinishCommandList(ID3D1
 void qemu_d3d11_immediate_context_FinishCommandList(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_FinishCommandList *c = (struct qemu_d3d11_immediate_context_FinishCommandList *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4629,7 +4629,7 @@ struct qemu_d3d11_immediate_context_CopySubresourceRegion1
 static void STDMETHODCALLTYPE d3d11_immediate_context_CopySubresourceRegion1(ID3D11DeviceContext1 *iface, ID3D11Resource *dst_resource, UINT dst_subresource_idx, UINT dst_x, UINT dst_y, UINT dst_z, ID3D11Resource *src_resource, UINT src_subresource_idx, const D3D11_BOX *src_box, UINT flags)
 {
     struct qemu_d3d11_immediate_context_CopySubresourceRegion1 call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_COPYSUBRESOURCEREGION1);
     call.iface = (ULONG_PTR)context;
@@ -4651,7 +4651,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CopySubresourceRegion1(ID3
 void qemu_d3d11_immediate_context_CopySubresourceRegion1(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CopySubresourceRegion1 *c = (struct qemu_d3d11_immediate_context_CopySubresourceRegion1 *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4679,7 +4679,7 @@ struct qemu_d3d11_immediate_context_UpdateSubresource1
 static void STDMETHODCALLTYPE d3d11_immediate_context_UpdateSubresource1(ID3D11DeviceContext1 *iface, ID3D11Resource *resource, UINT subresource_idx, const D3D11_BOX *box, const void *data, UINT row_pitch, UINT depth_pitch, UINT flags)
 {
     struct qemu_d3d11_immediate_context_UpdateSubresource1 call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_UPDATESUBRESOURCE1);
     call.iface = (ULONG_PTR)context;
@@ -4699,7 +4699,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_UpdateSubresource1(ID3D11D
 void qemu_d3d11_immediate_context_UpdateSubresource1(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_UpdateSubresource1 *c = (struct qemu_d3d11_immediate_context_UpdateSubresource1 *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4721,7 +4721,7 @@ struct qemu_d3d11_immediate_context_DiscardResource
 static void STDMETHODCALLTYPE d3d11_immediate_context_DiscardResource(ID3D11DeviceContext1 *iface, ID3D11Resource *resource)
 {
     struct qemu_d3d11_immediate_context_DiscardResource call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DISCARDRESOURCE);
     call.iface = (ULONG_PTR)context;
@@ -4735,7 +4735,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DiscardResource(ID3D11Devi
 void qemu_d3d11_immediate_context_DiscardResource(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DiscardResource *c = (struct qemu_d3d11_immediate_context_DiscardResource *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4757,7 +4757,7 @@ struct qemu_d3d11_immediate_context_DiscardView
 static void STDMETHODCALLTYPE d3d11_immediate_context_DiscardView(ID3D11DeviceContext1 *iface, ID3D11View *view)
 {
     struct qemu_d3d11_immediate_context_DiscardView call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DISCARDVIEW);
     call.iface = (ULONG_PTR)context;
@@ -4771,7 +4771,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DiscardView(ID3D11DeviceCo
 void qemu_d3d11_immediate_context_DiscardView(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DiscardView *c = (struct qemu_d3d11_immediate_context_DiscardView *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4797,7 +4797,7 @@ struct qemu_d3d11_immediate_context_VSSetConstantBuffers1
 static void STDMETHODCALLTYPE d3d11_immediate_context_VSSetConstantBuffers1(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer * const *buffers, const UINT *first_constant, const UINT *num_constants)
 {
     struct qemu_d3d11_immediate_context_VSSetConstantBuffers1 call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_VSSETCONSTANTBUFFERS1);
     call.iface = (ULONG_PTR)context;
@@ -4815,7 +4815,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_VSSetConstantBuffers1(ID3D
 void qemu_d3d11_immediate_context_VSSetConstantBuffers1(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_VSSetConstantBuffers1 *c = (struct qemu_d3d11_immediate_context_VSSetConstantBuffers1 *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4841,7 +4841,7 @@ struct qemu_d3d11_immediate_context_HSSetConstantBuffers1
 static void STDMETHODCALLTYPE d3d11_immediate_context_HSSetConstantBuffers1(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer * const *buffers, const UINT *first_constant, const UINT *num_constants)
 {
     struct qemu_d3d11_immediate_context_HSSetConstantBuffers1 call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_HSSETCONSTANTBUFFERS1);
     call.iface = (ULONG_PTR)context;
@@ -4859,7 +4859,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_HSSetConstantBuffers1(ID3D
 void qemu_d3d11_immediate_context_HSSetConstantBuffers1(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_HSSetConstantBuffers1 *c = (struct qemu_d3d11_immediate_context_HSSetConstantBuffers1 *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4885,7 +4885,7 @@ struct qemu_d3d11_immediate_context_DSSetConstantBuffers1
 static void STDMETHODCALLTYPE d3d11_immediate_context_DSSetConstantBuffers1(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer * const *buffers, const UINT *first_constant, const UINT *num_constants)
 {
     struct qemu_d3d11_immediate_context_DSSetConstantBuffers1 call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DSSETCONSTANTBUFFERS1);
     call.iface = (ULONG_PTR)context;
@@ -4903,7 +4903,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DSSetConstantBuffers1(ID3D
 void qemu_d3d11_immediate_context_DSSetConstantBuffers1(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DSSetConstantBuffers1 *c = (struct qemu_d3d11_immediate_context_DSSetConstantBuffers1 *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4929,7 +4929,7 @@ struct qemu_d3d11_immediate_context_GSSetConstantBuffers1
 static void STDMETHODCALLTYPE d3d11_immediate_context_GSSetConstantBuffers1(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer * const *buffers, const UINT *first_constant, const UINT *num_constants)
 {
     struct qemu_d3d11_immediate_context_GSSetConstantBuffers1 call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GSSETCONSTANTBUFFERS1);
     call.iface = (ULONG_PTR)context;
@@ -4947,7 +4947,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_GSSetConstantBuffers1(ID3D
 void qemu_d3d11_immediate_context_GSSetConstantBuffers1(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GSSetConstantBuffers1 *c = (struct qemu_d3d11_immediate_context_GSSetConstantBuffers1 *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -4973,7 +4973,7 @@ struct qemu_d3d11_immediate_context_PSSetConstantBuffers1
 static void STDMETHODCALLTYPE d3d11_immediate_context_PSSetConstantBuffers1(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer * const *buffers, const UINT *first_constant, const UINT *num_constants)
 {
     struct qemu_d3d11_immediate_context_PSSetConstantBuffers1 call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_PSSETCONSTANTBUFFERS1);
     call.iface = (ULONG_PTR)context;
@@ -4991,7 +4991,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_PSSetConstantBuffers1(ID3D
 void qemu_d3d11_immediate_context_PSSetConstantBuffers1(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_PSSetConstantBuffers1 *c = (struct qemu_d3d11_immediate_context_PSSetConstantBuffers1 *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -5017,7 +5017,7 @@ struct qemu_d3d11_immediate_context_CSSetConstantBuffers1
 static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetConstantBuffers1(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer * const *buffers, const UINT *first_constant, const UINT *num_constants)
 {
     struct qemu_d3d11_immediate_context_CSSetConstantBuffers1 call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSSETCONSTANTBUFFERS1);
     call.iface = (ULONG_PTR)context;
@@ -5035,7 +5035,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetConstantBuffers1(ID3D
 void qemu_d3d11_immediate_context_CSSetConstantBuffers1(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CSSetConstantBuffers1 *c = (struct qemu_d3d11_immediate_context_CSSetConstantBuffers1 *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -5061,7 +5061,7 @@ struct qemu_d3d11_immediate_context_VSGetConstantBuffers1
 static void STDMETHODCALLTYPE d3d11_immediate_context_VSGetConstantBuffers1(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer **buffers, UINT *first_constant, UINT *num_constants)
 {
     struct qemu_d3d11_immediate_context_VSGetConstantBuffers1 call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_VSGETCONSTANTBUFFERS1);
     call.iface = (ULONG_PTR)context;
@@ -5079,7 +5079,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_VSGetConstantBuffers1(ID3D
 void qemu_d3d11_immediate_context_VSGetConstantBuffers1(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_VSGetConstantBuffers1 *c = (struct qemu_d3d11_immediate_context_VSGetConstantBuffers1 *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -5105,7 +5105,7 @@ struct qemu_d3d11_immediate_context_HSGetConstantBuffers1
 static void STDMETHODCALLTYPE d3d11_immediate_context_HSGetConstantBuffers1(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer **buffers, UINT *first_constant, UINT *num_constants)
 {
     struct qemu_d3d11_immediate_context_HSGetConstantBuffers1 call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_HSGETCONSTANTBUFFERS1);
     call.iface = (ULONG_PTR)context;
@@ -5123,7 +5123,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_HSGetConstantBuffers1(ID3D
 void qemu_d3d11_immediate_context_HSGetConstantBuffers1(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_HSGetConstantBuffers1 *c = (struct qemu_d3d11_immediate_context_HSGetConstantBuffers1 *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -5149,7 +5149,7 @@ struct qemu_d3d11_immediate_context_DSGetConstantBuffers1
 static void STDMETHODCALLTYPE d3d11_immediate_context_DSGetConstantBuffers1(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer **buffers, UINT *first_constant, UINT *num_constants)
 {
     struct qemu_d3d11_immediate_context_DSGetConstantBuffers1 call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DSGETCONSTANTBUFFERS1);
     call.iface = (ULONG_PTR)context;
@@ -5167,7 +5167,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DSGetConstantBuffers1(ID3D
 void qemu_d3d11_immediate_context_DSGetConstantBuffers1(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DSGetConstantBuffers1 *c = (struct qemu_d3d11_immediate_context_DSGetConstantBuffers1 *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -5193,7 +5193,7 @@ struct qemu_d3d11_immediate_context_GSGetConstantBuffers1
 static void STDMETHODCALLTYPE d3d11_immediate_context_GSGetConstantBuffers1(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer **buffers, UINT *first_constant, UINT *num_constants)
 {
     struct qemu_d3d11_immediate_context_GSGetConstantBuffers1 call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GSGETCONSTANTBUFFERS1);
     call.iface = (ULONG_PTR)context;
@@ -5211,7 +5211,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_GSGetConstantBuffers1(ID3D
 void qemu_d3d11_immediate_context_GSGetConstantBuffers1(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GSGetConstantBuffers1 *c = (struct qemu_d3d11_immediate_context_GSGetConstantBuffers1 *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -5237,7 +5237,7 @@ struct qemu_d3d11_immediate_context_PSGetConstantBuffers1
 static void STDMETHODCALLTYPE d3d11_immediate_context_PSGetConstantBuffers1(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer **buffers, UINT *first_constant, UINT *num_constants)
 {
     struct qemu_d3d11_immediate_context_PSGetConstantBuffers1 call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_PSGETCONSTANTBUFFERS1);
     call.iface = (ULONG_PTR)context;
@@ -5255,7 +5255,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_PSGetConstantBuffers1(ID3D
 void qemu_d3d11_immediate_context_PSGetConstantBuffers1(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_PSGetConstantBuffers1 *c = (struct qemu_d3d11_immediate_context_PSGetConstantBuffers1 *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -5281,7 +5281,7 @@ struct qemu_d3d11_immediate_context_CSGetConstantBuffers1
 static void STDMETHODCALLTYPE d3d11_immediate_context_CSGetConstantBuffers1(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer **buffers, UINT *first_constant, UINT *num_constants)
 {
     struct qemu_d3d11_immediate_context_CSGetConstantBuffers1 call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSGETCONSTANTBUFFERS1);
     call.iface = (ULONG_PTR)context;
@@ -5299,7 +5299,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CSGetConstantBuffers1(ID3D
 void qemu_d3d11_immediate_context_CSGetConstantBuffers1(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CSGetConstantBuffers1 *c = (struct qemu_d3d11_immediate_context_CSGetConstantBuffers1 *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -5322,7 +5322,7 @@ struct qemu_d3d11_immediate_context_SwapDeviceContextState
 static void STDMETHODCALLTYPE d3d11_immediate_context_SwapDeviceContextState(ID3D11DeviceContext1 *iface, ID3DDeviceContextState *state, ID3DDeviceContextState **prev_state)
 {
     struct qemu_d3d11_immediate_context_SwapDeviceContextState call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_SWAPDEVICECONTEXTSTATE);
     call.iface = (ULONG_PTR)context;
@@ -5337,7 +5337,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_SwapDeviceContextState(ID3
 void qemu_d3d11_immediate_context_SwapDeviceContextState(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_SwapDeviceContextState *c = (struct qemu_d3d11_immediate_context_SwapDeviceContextState *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -5362,7 +5362,7 @@ struct qemu_d3d11_immediate_context_ClearView
 static void STDMETHODCALLTYPE d3d11_immediate_context_ClearView(ID3D11DeviceContext1 *iface, ID3D11View *view, const FLOAT color[4], const D3D11_RECT *rect, UINT num_rects)
 {
     struct qemu_d3d11_immediate_context_ClearView call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CLEARVIEW);
     call.iface = (ULONG_PTR)context;
@@ -5379,7 +5379,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_ClearView(ID3D11DeviceCont
 void qemu_d3d11_immediate_context_ClearView(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_ClearView *c = (struct qemu_d3d11_immediate_context_ClearView *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -5403,7 +5403,7 @@ struct qemu_d3d11_immediate_context_DiscardView1
 static void STDMETHODCALLTYPE d3d11_immediate_context_DiscardView1(ID3D11DeviceContext1 *iface, ID3D11View *view, const D3D11_RECT *rects, UINT num_rects)
 {
     struct qemu_d3d11_immediate_context_DiscardView1 call;
-    struct d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DISCARDVIEW1);
     call.iface = (ULONG_PTR)context;
@@ -5419,7 +5419,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_DiscardView1(ID3D11DeviceC
 void qemu_d3d11_immediate_context_DiscardView1(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DiscardView1 *c = (struct qemu_d3d11_immediate_context_DiscardView1 *)call;
-    struct d3d11_device_context *context;
+    struct qemu_d3d11_device_context *context;
 
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
@@ -7059,19 +7059,47 @@ struct qemu_d3d11_device_GetImmediateContext
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t immediate_context;
+    uint64_t context;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_device_GetImmediateContext(ID3D11Device2 *iface, ID3D11DeviceContext **immediate_context)
+static void STDMETHODCALLTYPE d3d11_device_GetImmediateContext(ID3D11Device2 *iface,
+        ID3D11DeviceContext **immediate_context)
+{
+    struct qemu_d3d11_device_GetImmediateContext call;
+    struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
+    struct qemu_d3d11_device_context *context;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_GETIMMEDIATECONTEXT);
+    call.iface = (ULONG_PTR)device;
+
+    qemu_syscall(&call.super);
+
+    context = (struct qemu_d3d11_device_context *)(ULONG_PTR)call.context;
+    *immediate_context = &context->ID3D11DeviceContext1_iface;
+}
+
+static void STDMETHODCALLTYPE d3d11_device_GetImmediateContext1(ID3D11Device2 *iface, ID3D11DeviceContext1 **context)
 {
     struct qemu_d3d11_device_GetImmediateContext call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_GETIMMEDIATECONTEXT);
+    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_GETIMMEDIATECONTEXT1);
     call.iface = (ULONG_PTR)device;
-    call.immediate_context = (ULONG_PTR)immediate_context;
+    call.context = (ULONG_PTR)context;
+
+    qemu_syscall(&call.super);
+}
+
+static void STDMETHODCALLTYPE d3d11_device_GetImmediateContext2(ID3D11Device2 *iface, ID3D11DeviceContext2 **context)
+{
+    struct qemu_d3d11_device_GetImmediateContext call;
+    struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_GETIMMEDIATECONTEXT2);
+    call.iface = (ULONG_PTR)device;
+    call.context = (ULONG_PTR)context;
 
     qemu_syscall(&call.super);
 }
@@ -7082,11 +7110,38 @@ void qemu_d3d11_device_GetImmediateContext(struct qemu_syscall *call)
 {
     struct qemu_d3d11_device_GetImmediateContext *c = (struct qemu_d3d11_device_GetImmediateContext *)call;
     struct qemu_d3d11_device *device;
+    ID3D11DeviceContext1 *host;
+
+    WINE_TRACE("\n");
+    device = QEMU_G2H(c->iface);
+    c->context = QEMU_H2G(&device->immediate_context);
+
+    /* For refcounting */
+    ID3D11Device2_GetImmediateContext(device->host_d3d11, (ID3D11DeviceContext **)&host);
+    if (host != device->immediate_context.host)
+        WINE_ERR("Got context %p, expected %p.\n", host, device->immediate_context.host);
+}
+
+void qemu_d3d11_device_GetImmediateContext1(struct qemu_syscall *call)
+{
+    struct qemu_d3d11_device_GetImmediateContext *c = (struct qemu_d3d11_device_GetImmediateContext *)call;
+    struct qemu_d3d11_device *device;
 
     WINE_FIXME("Unverified!\n");
     device = QEMU_G2H(c->iface);
 
-    ID3D11Device2_GetImmediateContext(device->host_d3d11, QEMU_G2H(c->immediate_context));
+    ID3D11Device2_GetImmediateContext1(device->host_d3d11, QEMU_G2H(c->context));
+}
+
+void qemu_d3d11_device_GetImmediateContext2(struct qemu_syscall *call)
+{
+    struct qemu_d3d11_device_GetImmediateContext *c = (struct qemu_d3d11_device_GetImmediateContext *)call;
+    struct qemu_d3d11_device *device;
+
+    WINE_FIXME("Unverified!\n");
+    device = QEMU_G2H(c->iface);
+
+    ID3D11Device2_GetImmediateContext2(device->host_d3d11, QEMU_G2H(c->context));
 }
 
 #endif
@@ -7161,42 +7216,6 @@ void qemu_d3d11_device_GetExceptionMode(struct qemu_syscall *call)
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11Device2_GetExceptionMode(device->host_d3d11);
-}
-
-#endif
-
-struct qemu_d3d11_device_GetImmediateContext1
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t context;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static void STDMETHODCALLTYPE d3d11_device_GetImmediateContext1(ID3D11Device2 *iface, ID3D11DeviceContext1 **context)
-{
-    struct qemu_d3d11_device_GetImmediateContext1 call;
-    struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_GETIMMEDIATECONTEXT1);
-    call.iface = (ULONG_PTR)device;
-    call.context = (ULONG_PTR)context;
-
-    qemu_syscall(&call.super);
-}
-
-#else
-
-void qemu_d3d11_device_GetImmediateContext1(struct qemu_syscall *call)
-{
-    struct qemu_d3d11_device_GetImmediateContext1 *c = (struct qemu_d3d11_device_GetImmediateContext1 *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    ID3D11Device2_GetImmediateContext1(device->host_d3d11, QEMU_G2H(c->context));
 }
 
 #endif
@@ -7453,42 +7472,6 @@ void qemu_d3d11_device_OpenSharedResourceByName(struct qemu_syscall *call)
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11Device2_OpenSharedResourceByName(device->host_d3d11, QEMU_G2H(c->name), c->access, QEMU_G2H(c->riid), QEMU_G2H(c->resource));
-}
-
-#endif
-
-struct qemu_d3d11_device_GetImmediateContext2
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t context;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static void STDMETHODCALLTYPE d3d11_device_GetImmediateContext2(ID3D11Device2 *iface, ID3D11DeviceContext2 **context)
-{
-    struct qemu_d3d11_device_GetImmediateContext2 call;
-    struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_GETIMMEDIATECONTEXT2);
-    call.iface = (ULONG_PTR)device;
-    call.context = (ULONG_PTR)context;
-
-    qemu_syscall(&call.super);
-}
-
-#else
-
-void qemu_d3d11_device_GetImmediateContext2(struct qemu_syscall *call)
-{
-    struct qemu_d3d11_device_GetImmediateContext2 *c = (struct qemu_d3d11_device_GetImmediateContext2 *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    ID3D11Device2_GetImmediateContext2(device->host_d3d11, QEMU_G2H(c->context));
 }
 
 #endif
@@ -12278,6 +12261,11 @@ void qemu_d3d11_device_guest_init(struct qemu_d3d11_device *device, void *outer_
     device->ID3D10Multithread_iface.lpVtbl = &d3d10_multithread_vtbl;
     device->IQemuD3D11Device_iface.lpVtbl = &qemu_device_vtbl;
     device->outer_unk = outer_unknown;
+}
+
+void qemu_d3d11_context_guest_init(struct qemu_d3d11_device_context *context)
+{
+    context->ID3D11DeviceContext1_iface.lpVtbl = &d3d11_immediate_context_vtbl.vtbl1;
 }
 
 #else

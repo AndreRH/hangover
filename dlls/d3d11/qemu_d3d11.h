@@ -403,6 +403,15 @@ typedef void D3D11_PACKED_MIP_DESC, D3D11_TILE_SHAPE, D3D11_SUBRESOURCE_TILING;
 
 #endif
 
+struct qemu_d3d11_device_context
+{
+    /* Guest fields */
+    ID3D11DeviceContext1 ID3D11DeviceContext1_iface;
+
+    /* Host fields */
+    ID3D11DeviceContext1 *host;
+};
+
 struct qemu_d3d11_device
 {
     /* Guest fields */
@@ -417,15 +426,7 @@ struct qemu_d3d11_device
     ID3D11Device2 *host_d3d11;
     ID3D10Device1 *host_d3d10;
     ID3D10Multithread *host_mt;
-};
-
-struct d3d11_device_context
-{
-    /* Guest fields */
-    ID3D11DeviceContext1 ID3D11DeviceContext1_iface;
-
-    /* Host fields */
-    ID3D11DeviceContext1 *host;
+    struct qemu_d3d11_device_context immediate_context;
 };
 
 struct qemu_d3d11_texture1d
@@ -487,6 +488,7 @@ extern HRESULT (* WINAPI p_DXGID3D10CreateDevice)(HMODULE d3d10core, IDXGIFactor
         unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, void **device);
 
 void qemu_d3d11_device_guest_init(struct qemu_d3d11_device *device, void *outer_unknown);
+void qemu_d3d11_context_guest_init(struct qemu_d3d11_device_context *context);
 void qemu_d3d11_texture1d_guest_init(struct qemu_d3d11_texture1d *texture, struct qemu_d3d11_device *device,
         uint64_t dxgi_surface);
 void qemu_d3d11_texture2d_guest_init(struct qemu_d3d11_texture2d *texture, struct qemu_d3d11_device *device,
@@ -546,6 +548,9 @@ void qemu_d3d10_device_GetCreationFlags(struct qemu_syscall *call);
 void qemu_d3d10_device_GetDeviceRemovedReason(struct qemu_syscall *call);
 void qemu_d3d10_device_GetExceptionMode(struct qemu_syscall *call);
 void qemu_d3d10_device_GetFeatureLevel(struct qemu_syscall *call);
+void qemu_d3d11_device_GetImmediateContext(struct qemu_syscall *call);
+void qemu_d3d11_device_GetImmediateContext1(struct qemu_syscall *call);
+void qemu_d3d11_device_GetImmediateContext2(struct qemu_syscall *call);
 void qemu_d3d10_device_GetPredication(struct qemu_syscall *call);
 void qemu_d3d10_device_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_device_GetTextFilterSize(struct qemu_syscall *call);
@@ -678,9 +683,6 @@ void qemu_d3d11_device_GetCreationFlags(struct qemu_syscall *call);
 void qemu_d3d11_device_GetDeviceRemovedReason(struct qemu_syscall *call);
 void qemu_d3d11_device_GetExceptionMode(struct qemu_syscall *call);
 void qemu_d3d11_device_GetFeatureLevel(struct qemu_syscall *call);
-void qemu_d3d11_device_GetImmediateContext(struct qemu_syscall *call);
-void qemu_d3d11_device_GetImmediateContext1(struct qemu_syscall *call);
-void qemu_d3d11_device_GetImmediateContext2(struct qemu_syscall *call);
 void qemu_d3d11_device_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d11_device_GetResourceTiling(struct qemu_syscall *call);
 void qemu_d3d11_device_OpenSharedResource(struct qemu_syscall *call);
