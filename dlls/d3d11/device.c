@@ -5517,7 +5517,7 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateTexture1D(ID3D11Device2 *ifa
 {
     struct qemu_d3d11_device_CreateTexture1D call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
-    struct qemu_d3d11_texture1d *obj;
+    struct qemu_d3d11_texture *obj;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_CREATETEXTURE1D);
     call.iface = (ULONG_PTR)device;
@@ -5528,7 +5528,7 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateTexture1D(ID3D11Device2 *ifa
     if (FAILED(call.super.iret))
         return call.super.iret;
 
-    obj = (struct qemu_d3d11_texture1d *)(ULONG_PTR)call.texture;
+    obj = (struct qemu_d3d11_texture *)(ULONG_PTR)call.texture;
     qemu_d3d11_texture1d_guest_init(obj, device, call.dxgi_surface);
     *texture = &obj->ID3D11Texture1D_iface;
 
@@ -5570,7 +5570,7 @@ void qemu_d3d11_device_CreateTexture1D(struct qemu_syscall *call)
 {
     struct qemu_d3d11_device_CreateTexture1D *c = (struct qemu_d3d11_device_CreateTexture1D *)call;
     struct qemu_d3d11_device *device;
-    struct qemu_d3d11_texture1d *obj;
+    struct qemu_d3d11_texture *obj;
     ID3D11Texture1D *host;
     D3D11_SUBRESOURCE_DATA stack, *data = &stack;
 
@@ -5615,7 +5615,7 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateTexture2D(ID3D11Device2 *ifa
 {
     struct qemu_d3d11_device_CreateTexture2D call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
-    struct qemu_d3d11_texture2d *obj;
+    struct qemu_d3d11_texture *obj;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_CREATETEXTURE2D);
     call.iface = (ULONG_PTR)device;
@@ -5626,7 +5626,7 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateTexture2D(ID3D11Device2 *ifa
     if (FAILED(call.super.iret))
         return call.super.iret;
 
-    obj = (struct qemu_d3d11_texture2d *)(ULONG_PTR)call.texture;
+    obj = (struct qemu_d3d11_texture *)(ULONG_PTR)call.texture;
     qemu_d3d11_texture2d_guest_init(obj, device, call.dxgi_surface);
     *texture = &obj->ID3D11Texture2D_iface;
 
@@ -5670,7 +5670,7 @@ void qemu_d3d11_device_CreateTexture2D(struct qemu_syscall *call)
 {
     struct qemu_d3d11_device_CreateTexture2D *c = (struct qemu_d3d11_device_CreateTexture2D *)call;
     struct qemu_d3d11_device *device;
-    struct qemu_d3d11_texture2d *obj;
+    struct qemu_d3d11_texture *obj;
     ID3D11Texture2D *host;
     D3D11_SUBRESOURCE_DATA stack, *data = &stack;
 
@@ -11871,7 +11871,7 @@ static HRESULT STDMETHODCALLTYPE qemu_device_wrap_implicit_surface(IQemuD3D11Dev
 {
     struct qemu_wrap_implicit_surface call;
     struct qemu_d3d11_device *device = impl_from_IQemuD3D11Device(iface);
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_TRACE("Creating d3d11 texture for host DXGI surface %p.\n", (void *)(ULONG_PTR)host);
 
@@ -11882,7 +11882,7 @@ static HRESULT STDMETHODCALLTYPE qemu_device_wrap_implicit_surface(IQemuD3D11Dev
     if (FAILED(call.super.iret))
         return call.super.iret;
 
-    texture = (struct qemu_d3d11_texture2d *)(ULONG_PTR)call.texture;
+    texture = (struct qemu_d3d11_texture *)(ULONG_PTR)call.texture;
     qemu_d3d11_texture2d_guest_init(texture, device, host);
     *surface = (IUnknown *)&texture->ID3D11Texture2D_iface;
     IUnknown_AddRef(*surface);
@@ -12295,7 +12295,7 @@ void qemu_wrap_implicit_surface(struct qemu_syscall *call)
 {
     struct qemu_wrap_implicit_surface *c = (struct qemu_wrap_implicit_surface *)call;
     struct qemu_d3d11_device *device;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
     ID3D11Texture2D *host;
     uint64_t dummy;
 

@@ -58,15 +58,15 @@ struct qemu_d3d11_texture1d_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
-static inline struct qemu_d3d11_texture1d *impl_from_ID3D11Texture1D(ID3D11Texture1D *iface)
+static inline struct qemu_d3d11_texture *impl_from_ID3D11Texture1D(ID3D11Texture1D *iface)
 {
-    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture1d, ID3D11Texture1D_iface);
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture, ID3D11Texture1D_iface);
 }
 
 static HRESULT STDMETHODCALLTYPE d3d11_texture1d_QueryInterface(ID3D11Texture1D *iface, REFIID iid, void **out)
 {
     struct qemu_d3d11_texture1d_QueryInterface call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D11Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE1D_QUERYINTERFACE);
     call.iface = (ULONG_PTR)texture;
@@ -83,12 +83,12 @@ static HRESULT STDMETHODCALLTYPE d3d11_texture1d_QueryInterface(ID3D11Texture1D 
 void qemu_d3d11_texture1d_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture1d_QueryInterface *c = (struct qemu_d3d11_texture1d_QueryInterface *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture1D_QueryInterface(texture->host11, QEMU_G2H(c->iid), QEMU_G2H(c->out));
+    c->super.iret = ID3D11Texture1D_QueryInterface(texture->host11_1d, QEMU_G2H(c->iid), QEMU_G2H(c->out));
 }
 
 #endif
@@ -104,7 +104,7 @@ struct qemu_d3d11_texture1d_AddRef
 static ULONG STDMETHODCALLTYPE d3d11_texture1d_AddRef(ID3D11Texture1D *iface)
 {
     struct qemu_d3d11_texture1d_AddRef call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D11Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE1D_ADDREF);
     call.iface = (ULONG_PTR)texture;
@@ -119,12 +119,12 @@ static ULONG STDMETHODCALLTYPE d3d11_texture1d_AddRef(ID3D11Texture1D *iface)
 void qemu_d3d11_texture1d_AddRef(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture1d_AddRef *c = (struct qemu_d3d11_texture1d_AddRef *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture1D_AddRef(texture->host11);
+    c->super.iret = ID3D11Texture1D_AddRef(texture->host11_1d);
 }
 
 #endif
@@ -140,7 +140,7 @@ struct qemu_d3d11_texture1d_Release
 static ULONG STDMETHODCALLTYPE d3d11_texture1d_Release(ID3D11Texture1D *iface)
 {
     struct qemu_d3d11_texture1d_Release call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D11Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE1D_RELEASE);
     call.iface = (ULONG_PTR)texture;
@@ -155,12 +155,12 @@ static ULONG STDMETHODCALLTYPE d3d11_texture1d_Release(ID3D11Texture1D *iface)
 void qemu_d3d11_texture1d_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture1d_Release *c = (struct qemu_d3d11_texture1d_Release *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture1D_Release(texture->host11);
+    c->super.iret = ID3D11Texture1D_Release(texture->host11_1d);
 }
 
 #endif
@@ -177,7 +177,7 @@ struct qemu_d3d11_texture1d_GetDevice
 static void STDMETHODCALLTYPE d3d11_texture1d_GetDevice(ID3D11Texture1D *iface, ID3D11Device **device)
 {
     struct qemu_d3d11_texture1d_GetDevice call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D11Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE1D_GETDEVICE);
     call.iface = (ULONG_PTR)texture;
@@ -191,12 +191,12 @@ static void STDMETHODCALLTYPE d3d11_texture1d_GetDevice(ID3D11Texture1D *iface, 
 void qemu_d3d11_texture1d_GetDevice(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture1d_GetDevice *c = (struct qemu_d3d11_texture1d_GetDevice *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D11Texture1D_GetDevice(texture->host11, QEMU_G2H(c->device));
+    ID3D11Texture1D_GetDevice(texture->host11_1d, QEMU_G2H(c->device));
 }
 
 #endif
@@ -215,7 +215,7 @@ struct qemu_d3d11_texture1d_GetPrivateData
 static HRESULT STDMETHODCALLTYPE d3d11_texture1d_GetPrivateData(ID3D11Texture1D *iface, REFGUID guid, UINT *data_size, void *data)
 {
     struct qemu_d3d11_texture1d_GetPrivateData call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D11Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE1D_GETPRIVATEDATA);
     call.iface = (ULONG_PTR)texture;
@@ -233,12 +233,12 @@ static HRESULT STDMETHODCALLTYPE d3d11_texture1d_GetPrivateData(ID3D11Texture1D 
 void qemu_d3d11_texture1d_GetPrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture1d_GetPrivateData *c = (struct qemu_d3d11_texture1d_GetPrivateData *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture1D_GetPrivateData(texture->host11, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
+    c->super.iret = ID3D11Texture1D_GetPrivateData(texture->host11_1d, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
 }
 
 #endif
@@ -257,7 +257,7 @@ struct qemu_d3d11_texture1d_SetPrivateData
 static HRESULT STDMETHODCALLTYPE d3d11_texture1d_SetPrivateData(ID3D11Texture1D *iface, REFGUID guid, UINT data_size, const void *data)
 {
     struct qemu_d3d11_texture1d_SetPrivateData call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D11Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE1D_SETPRIVATEDATA);
     call.iface = (ULONG_PTR)texture;
@@ -275,12 +275,12 @@ static HRESULT STDMETHODCALLTYPE d3d11_texture1d_SetPrivateData(ID3D11Texture1D 
 void qemu_d3d11_texture1d_SetPrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture1d_SetPrivateData *c = (struct qemu_d3d11_texture1d_SetPrivateData *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture1D_SetPrivateData(texture->host11, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
+    c->super.iret = ID3D11Texture1D_SetPrivateData(texture->host11_1d, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
 }
 
 #endif
@@ -298,7 +298,7 @@ struct qemu_d3d11_texture1d_SetPrivateDataInterface
 static HRESULT STDMETHODCALLTYPE d3d11_texture1d_SetPrivateDataInterface(ID3D11Texture1D *iface, REFGUID guid, const IUnknown *data)
 {
     struct qemu_d3d11_texture1d_SetPrivateDataInterface call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D11Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE1D_SETPRIVATEDATAINTERFACE);
     call.iface = (ULONG_PTR)texture;
@@ -315,12 +315,12 @@ static HRESULT STDMETHODCALLTYPE d3d11_texture1d_SetPrivateDataInterface(ID3D11T
 void qemu_d3d11_texture1d_SetPrivateDataInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture1d_SetPrivateDataInterface *c = (struct qemu_d3d11_texture1d_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture1D_SetPrivateDataInterface(texture->host11, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    c->super.iret = ID3D11Texture1D_SetPrivateDataInterface(texture->host11_1d, QEMU_G2H(c->guid), QEMU_G2H(c->data));
 }
 
 #endif
@@ -337,7 +337,7 @@ struct qemu_d3d11_texture1d_GetType
 static void STDMETHODCALLTYPE d3d11_texture1d_GetType(ID3D11Texture1D *iface, D3D11_RESOURCE_DIMENSION *resource_dimension)
 {
     struct qemu_d3d11_texture1d_GetType call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D11Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE1D_GETTYPE);
     call.iface = (ULONG_PTR)texture;
@@ -351,12 +351,12 @@ static void STDMETHODCALLTYPE d3d11_texture1d_GetType(ID3D11Texture1D *iface, D3
 void qemu_d3d11_texture1d_GetType(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture1d_GetType *c = (struct qemu_d3d11_texture1d_GetType *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D11Texture1D_GetType(texture->host11, QEMU_G2H(c->resource_dimension));
+    ID3D11Texture1D_GetType(texture->host11_1d, QEMU_G2H(c->resource_dimension));
 }
 
 #endif
@@ -373,7 +373,7 @@ struct qemu_d3d11_texture1d_SetEvictionPriority
 static void STDMETHODCALLTYPE d3d11_texture1d_SetEvictionPriority(ID3D11Texture1D *iface, UINT eviction_priority)
 {
     struct qemu_d3d11_texture1d_SetEvictionPriority call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D11Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE1D_SETEVICTIONPRIORITY);
     call.iface = (ULONG_PTR)texture;
@@ -387,12 +387,12 @@ static void STDMETHODCALLTYPE d3d11_texture1d_SetEvictionPriority(ID3D11Texture1
 void qemu_d3d11_texture1d_SetEvictionPriority(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture1d_SetEvictionPriority *c = (struct qemu_d3d11_texture1d_SetEvictionPriority *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D11Texture1D_SetEvictionPriority(texture->host11, c->eviction_priority);
+    ID3D11Texture1D_SetEvictionPriority(texture->host11_1d, c->eviction_priority);
 }
 
 #endif
@@ -408,7 +408,7 @@ struct qemu_d3d11_texture1d_GetEvictionPriority
 static UINT STDMETHODCALLTYPE d3d11_texture1d_GetEvictionPriority(ID3D11Texture1D *iface)
 {
     struct qemu_d3d11_texture1d_GetEvictionPriority call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D11Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE1D_GETEVICTIONPRIORITY);
     call.iface = (ULONG_PTR)texture;
@@ -423,12 +423,12 @@ static UINT STDMETHODCALLTYPE d3d11_texture1d_GetEvictionPriority(ID3D11Texture1
 void qemu_d3d11_texture1d_GetEvictionPriority(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture1d_GetEvictionPriority *c = (struct qemu_d3d11_texture1d_GetEvictionPriority *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture1D_GetEvictionPriority(texture->host11);
+    c->super.iret = ID3D11Texture1D_GetEvictionPriority(texture->host11_1d);
 }
 
 #endif
@@ -445,7 +445,7 @@ struct qemu_d3d11_texture1d_GetDesc
 static void STDMETHODCALLTYPE d3d11_texture1d_GetDesc(ID3D11Texture1D *iface, D3D11_TEXTURE1D_DESC *desc)
 {
     struct qemu_d3d11_texture1d_GetDesc call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D11Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE1D_GETDESC);
     call.iface = (ULONG_PTR)texture;
@@ -459,12 +459,12 @@ static void STDMETHODCALLTYPE d3d11_texture1d_GetDesc(ID3D11Texture1D *iface, D3
 void qemu_d3d11_texture1d_GetDesc(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture1d_GetDesc *c = (struct qemu_d3d11_texture1d_GetDesc *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D11Texture1D_GetDesc(texture->host11, QEMU_G2H(c->desc));
+    ID3D11Texture1D_GetDesc(texture->host11_1d, QEMU_G2H(c->desc));
 }
 
 #endif
@@ -479,15 +479,15 @@ struct qemu_d3d10_texture1d_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
-static inline struct qemu_d3d11_texture1d *impl_from_ID3D10Texture1D(ID3D10Texture1D *iface)
+static inline struct qemu_d3d11_texture *impl_from_ID3D10Texture1D(ID3D10Texture1D *iface)
 {
-    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture1d, ID3D10Texture1D_iface);
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture, ID3D10Texture1D_iface);
 }
 
 static HRESULT STDMETHODCALLTYPE d3d10_texture1d_QueryInterface(ID3D10Texture1D *iface, REFIID iid, void **out)
 {
     struct qemu_d3d10_texture1d_QueryInterface call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D10Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE1D_QUERYINTERFACE);
     call.iface = (ULONG_PTR)texture;
@@ -504,12 +504,12 @@ static HRESULT STDMETHODCALLTYPE d3d10_texture1d_QueryInterface(ID3D10Texture1D 
 void qemu_d3d10_texture1d_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture1d_QueryInterface *c = (struct qemu_d3d10_texture1d_QueryInterface *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture1D_QueryInterface(texture->host10, QEMU_G2H(c->iid), QEMU_G2H(c->out));
+    c->super.iret = ID3D10Texture1D_QueryInterface(texture->host10_1d, QEMU_G2H(c->iid), QEMU_G2H(c->out));
 }
 
 #endif
@@ -525,7 +525,7 @@ struct qemu_d3d10_texture1d_AddRef
 static ULONG STDMETHODCALLTYPE d3d10_texture1d_AddRef(ID3D10Texture1D *iface)
 {
     struct qemu_d3d10_texture1d_AddRef call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D10Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE1D_ADDREF);
     call.iface = (ULONG_PTR)texture;
@@ -540,12 +540,12 @@ static ULONG STDMETHODCALLTYPE d3d10_texture1d_AddRef(ID3D10Texture1D *iface)
 void qemu_d3d10_texture1d_AddRef(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture1d_AddRef *c = (struct qemu_d3d10_texture1d_AddRef *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture1D_AddRef(texture->host10);
+    c->super.iret = ID3D10Texture1D_AddRef(texture->host10_1d);
 }
 
 #endif
@@ -561,7 +561,7 @@ struct qemu_d3d10_texture1d_Release
 static ULONG STDMETHODCALLTYPE d3d10_texture1d_Release(ID3D10Texture1D *iface)
 {
     struct qemu_d3d10_texture1d_Release call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D10Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE1D_RELEASE);
     call.iface = (ULONG_PTR)texture;
@@ -576,12 +576,12 @@ static ULONG STDMETHODCALLTYPE d3d10_texture1d_Release(ID3D10Texture1D *iface)
 void qemu_d3d10_texture1d_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture1d_Release *c = (struct qemu_d3d10_texture1d_Release *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture1D_Release(texture->host10);
+    c->super.iret = ID3D10Texture1D_Release(texture->host10_1d);
 }
 
 #endif
@@ -598,7 +598,7 @@ struct qemu_d3d10_texture1d_GetDevice
 static void STDMETHODCALLTYPE d3d10_texture1d_GetDevice(ID3D10Texture1D *iface, ID3D10Device **device)
 {
     struct qemu_d3d10_texture1d_GetDevice call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D10Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE1D_GETDEVICE);
     call.iface = (ULONG_PTR)texture;
@@ -612,12 +612,12 @@ static void STDMETHODCALLTYPE d3d10_texture1d_GetDevice(ID3D10Texture1D *iface, 
 void qemu_d3d10_texture1d_GetDevice(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture1d_GetDevice *c = (struct qemu_d3d10_texture1d_GetDevice *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D10Texture1D_GetDevice(texture->host10, QEMU_G2H(c->device));
+    ID3D10Texture1D_GetDevice(texture->host10_1d, QEMU_G2H(c->device));
 }
 
 #endif
@@ -636,7 +636,7 @@ struct qemu_d3d10_texture1d_GetPrivateData
 static HRESULT STDMETHODCALLTYPE d3d10_texture1d_GetPrivateData(ID3D10Texture1D *iface, REFGUID guid, UINT *data_size, void *data)
 {
     struct qemu_d3d10_texture1d_GetPrivateData call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D10Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE1D_GETPRIVATEDATA);
     call.iface = (ULONG_PTR)texture;
@@ -654,12 +654,12 @@ static HRESULT STDMETHODCALLTYPE d3d10_texture1d_GetPrivateData(ID3D10Texture1D 
 void qemu_d3d10_texture1d_GetPrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture1d_GetPrivateData *c = (struct qemu_d3d10_texture1d_GetPrivateData *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture1D_GetPrivateData(texture->host10, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
+    c->super.iret = ID3D10Texture1D_GetPrivateData(texture->host10_1d, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
 }
 
 #endif
@@ -678,7 +678,7 @@ struct qemu_d3d10_texture1d_SetPrivateData
 static HRESULT STDMETHODCALLTYPE d3d10_texture1d_SetPrivateData(ID3D10Texture1D *iface, REFGUID guid, UINT data_size, const void *data)
 {
     struct qemu_d3d10_texture1d_SetPrivateData call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D10Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE1D_SETPRIVATEDATA);
     call.iface = (ULONG_PTR)texture;
@@ -696,12 +696,12 @@ static HRESULT STDMETHODCALLTYPE d3d10_texture1d_SetPrivateData(ID3D10Texture1D 
 void qemu_d3d10_texture1d_SetPrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture1d_SetPrivateData *c = (struct qemu_d3d10_texture1d_SetPrivateData *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture1D_SetPrivateData(texture->host10, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
+    c->super.iret = ID3D10Texture1D_SetPrivateData(texture->host10_1d, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
 }
 
 #endif
@@ -719,7 +719,7 @@ struct qemu_d3d10_texture1d_SetPrivateDataInterface
 static HRESULT STDMETHODCALLTYPE d3d10_texture1d_SetPrivateDataInterface(ID3D10Texture1D *iface, REFGUID guid, const IUnknown *data)
 {
     struct qemu_d3d10_texture1d_SetPrivateDataInterface call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D10Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE1D_SETPRIVATEDATAINTERFACE);
     call.iface = (ULONG_PTR)texture;
@@ -736,12 +736,12 @@ static HRESULT STDMETHODCALLTYPE d3d10_texture1d_SetPrivateDataInterface(ID3D10T
 void qemu_d3d10_texture1d_SetPrivateDataInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture1d_SetPrivateDataInterface *c = (struct qemu_d3d10_texture1d_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture1D_SetPrivateDataInterface(texture->host10, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    c->super.iret = ID3D10Texture1D_SetPrivateDataInterface(texture->host10_1d, QEMU_G2H(c->guid), QEMU_G2H(c->data));
 }
 
 #endif
@@ -758,7 +758,7 @@ struct qemu_d3d10_texture1d_GetType
 static void STDMETHODCALLTYPE d3d10_texture1d_GetType(ID3D10Texture1D *iface, D3D10_RESOURCE_DIMENSION *resource_dimension)
 {
     struct qemu_d3d10_texture1d_GetType call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D10Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE1D_GETTYPE);
     call.iface = (ULONG_PTR)texture;
@@ -772,12 +772,12 @@ static void STDMETHODCALLTYPE d3d10_texture1d_GetType(ID3D10Texture1D *iface, D3
 void qemu_d3d10_texture1d_GetType(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture1d_GetType *c = (struct qemu_d3d10_texture1d_GetType *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D10Texture1D_GetType(texture->host10, QEMU_G2H(c->resource_dimension));
+    ID3D10Texture1D_GetType(texture->host10_1d, QEMU_G2H(c->resource_dimension));
 }
 
 #endif
@@ -794,7 +794,7 @@ struct qemu_d3d10_texture1d_SetEvictionPriority
 static void STDMETHODCALLTYPE d3d10_texture1d_SetEvictionPriority(ID3D10Texture1D *iface, UINT eviction_priority)
 {
     struct qemu_d3d10_texture1d_SetEvictionPriority call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D10Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE1D_SETEVICTIONPRIORITY);
     call.iface = (ULONG_PTR)texture;
@@ -808,12 +808,12 @@ static void STDMETHODCALLTYPE d3d10_texture1d_SetEvictionPriority(ID3D10Texture1
 void qemu_d3d10_texture1d_SetEvictionPriority(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture1d_SetEvictionPriority *c = (struct qemu_d3d10_texture1d_SetEvictionPriority *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D10Texture1D_SetEvictionPriority(texture->host10, c->eviction_priority);
+    ID3D10Texture1D_SetEvictionPriority(texture->host10_1d, c->eviction_priority);
 }
 
 #endif
@@ -829,7 +829,7 @@ struct qemu_d3d10_texture1d_GetEvictionPriority
 static UINT STDMETHODCALLTYPE d3d10_texture1d_GetEvictionPriority(ID3D10Texture1D *iface)
 {
     struct qemu_d3d10_texture1d_GetEvictionPriority call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D10Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE1D_GETEVICTIONPRIORITY);
     call.iface = (ULONG_PTR)texture;
@@ -844,12 +844,12 @@ static UINT STDMETHODCALLTYPE d3d10_texture1d_GetEvictionPriority(ID3D10Texture1
 void qemu_d3d10_texture1d_GetEvictionPriority(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture1d_GetEvictionPriority *c = (struct qemu_d3d10_texture1d_GetEvictionPriority *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture1D_GetEvictionPriority(texture->host10);
+    c->super.iret = ID3D10Texture1D_GetEvictionPriority(texture->host10_1d);
 }
 
 #endif
@@ -869,7 +869,7 @@ struct qemu_d3d10_texture1d_Map
 static HRESULT STDMETHODCALLTYPE d3d10_texture1d_Map(ID3D10Texture1D *iface, UINT sub_resource_idx, D3D10_MAP map_type, UINT map_flags, void **data)
 {
     struct qemu_d3d10_texture1d_Map call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D10Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE1D_MAP);
     call.iface = (ULONG_PTR)texture;
@@ -888,12 +888,12 @@ static HRESULT STDMETHODCALLTYPE d3d10_texture1d_Map(ID3D10Texture1D *iface, UIN
 void qemu_d3d10_texture1d_Map(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture1d_Map *c = (struct qemu_d3d10_texture1d_Map *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture1D_Map(texture->host10, c->sub_resource_idx, c->map_type, c->map_flags, QEMU_G2H(c->data));
+    c->super.iret = ID3D10Texture1D_Map(texture->host10_1d, c->sub_resource_idx, c->map_type, c->map_flags, QEMU_G2H(c->data));
 }
 
 #endif
@@ -910,7 +910,7 @@ struct qemu_d3d10_texture1d_Unmap
 static void STDMETHODCALLTYPE d3d10_texture1d_Unmap(ID3D10Texture1D *iface, UINT sub_resource_idx)
 {
     struct qemu_d3d10_texture1d_Unmap call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D10Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE1D_UNMAP);
     call.iface = (ULONG_PTR)texture;
@@ -924,12 +924,12 @@ static void STDMETHODCALLTYPE d3d10_texture1d_Unmap(ID3D10Texture1D *iface, UINT
 void qemu_d3d10_texture1d_Unmap(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture1d_Unmap *c = (struct qemu_d3d10_texture1d_Unmap *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D10Texture1D_Unmap(texture->host10, c->sub_resource_idx);
+    ID3D10Texture1D_Unmap(texture->host10_1d, c->sub_resource_idx);
 }
 
 #endif
@@ -946,7 +946,7 @@ struct qemu_d3d10_texture1d_GetDesc
 static void STDMETHODCALLTYPE d3d10_texture1d_GetDesc(ID3D10Texture1D *iface, D3D10_TEXTURE1D_DESC *desc)
 {
     struct qemu_d3d10_texture1d_GetDesc call;
-    struct qemu_d3d11_texture1d *texture = impl_from_ID3D10Texture1D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE1D_GETDESC);
     call.iface = (ULONG_PTR)texture;
@@ -960,12 +960,12 @@ static void STDMETHODCALLTYPE d3d10_texture1d_GetDesc(ID3D10Texture1D *iface, D3
 void qemu_d3d10_texture1d_GetDesc(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture1d_GetDesc *c = (struct qemu_d3d10_texture1d_GetDesc *)call;
-    struct qemu_d3d11_texture1d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D10Texture1D_GetDesc(texture->host10, QEMU_G2H(c->desc));
+    ID3D10Texture1D_GetDesc(texture->host10_1d, QEMU_G2H(c->desc));
 }
 
 #endif
@@ -980,15 +980,15 @@ struct qemu_d3d11_texture2d_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
-static inline struct qemu_d3d11_texture2d *impl_from_ID3D11Texture2D(ID3D11Texture2D *iface)
+static inline struct qemu_d3d11_texture *impl_from_ID3D11Texture2D(ID3D11Texture2D *iface)
 {
-    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture2d, ID3D11Texture2D_iface);
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture, ID3D11Texture2D_iface);
 }
 
 static HRESULT STDMETHODCALLTYPE d3d11_texture2d_QueryInterface(ID3D11Texture2D *iface, REFIID riid, void **object)
 {
     struct qemu_d3d11_texture2d_QueryInterface call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D11Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture2D(iface);
 
     if (IsEqualGUID(riid, &IID_ID3D11Texture2D)
             || IsEqualGUID(riid, &IID_ID3D11Resource)
@@ -1029,13 +1029,13 @@ static HRESULT STDMETHODCALLTYPE d3d11_texture2d_QueryInterface(ID3D11Texture2D 
 void qemu_d3d11_texture2d_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture2d_QueryInterface *c = (struct qemu_d3d11_texture2d_QueryInterface *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
     IUnknown *obj;
 
     WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture2D_QueryInterface(texture->host11, QEMU_G2H(c->riid), (void **)&obj);
+    c->super.iret = ID3D11Texture2D_QueryInterface(texture->host11_2d, QEMU_G2H(c->riid), (void **)&obj);
     if (SUCCEEDED(c->super.iret))
     {
         WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
@@ -1057,7 +1057,7 @@ struct qemu_d3d11_texture2d_AddRef
 static ULONG STDMETHODCALLTYPE d3d11_texture2d_AddRef(ID3D11Texture2D *iface)
 {
     struct qemu_d3d11_texture2d_AddRef call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D11Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE2D_ADDREF);
     call.iface = (ULONG_PTR)texture;
@@ -1072,12 +1072,12 @@ static ULONG STDMETHODCALLTYPE d3d11_texture2d_AddRef(ID3D11Texture2D *iface)
 void qemu_d3d11_texture2d_AddRef(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture2d_AddRef *c = (struct qemu_d3d11_texture2d_AddRef *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture2D_AddRef(texture->host11);
+    c->super.iret = ID3D11Texture2D_AddRef(texture->host11_2d);
 }
 
 #endif
@@ -1093,7 +1093,7 @@ struct qemu_d3d11_texture2d_Release
 static ULONG STDMETHODCALLTYPE d3d11_texture2d_Release(ID3D11Texture2D *iface)
 {
     struct qemu_d3d11_texture2d_Release call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D11Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE2D_RELEASE);
     call.iface = (ULONG_PTR)texture;
@@ -1108,12 +1108,12 @@ static ULONG STDMETHODCALLTYPE d3d11_texture2d_Release(ID3D11Texture2D *iface)
 void qemu_d3d11_texture2d_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture2d_Release *c = (struct qemu_d3d11_texture2d_Release *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture2D_Release(texture->host11);
+    c->super.iret = ID3D11Texture2D_Release(texture->host11_2d);
 }
 
 #endif
@@ -1130,7 +1130,7 @@ struct qemu_d3d11_texture2d_GetDevice
 static void STDMETHODCALLTYPE d3d11_texture2d_GetDevice(ID3D11Texture2D *iface, ID3D11Device **device)
 {
     struct qemu_d3d11_texture2d_GetDevice call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D11Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE2D_GETDEVICE);
     call.iface = (ULONG_PTR)texture;
@@ -1144,12 +1144,12 @@ static void STDMETHODCALLTYPE d3d11_texture2d_GetDevice(ID3D11Texture2D *iface, 
 void qemu_d3d11_texture2d_GetDevice(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture2d_GetDevice *c = (struct qemu_d3d11_texture2d_GetDevice *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D11Texture2D_GetDevice(texture->host11, QEMU_G2H(c->device));
+    ID3D11Texture2D_GetDevice(texture->host11_2d, QEMU_G2H(c->device));
 }
 
 #endif
@@ -1168,7 +1168,7 @@ struct qemu_d3d11_texture2d_GetPrivateData
 static HRESULT STDMETHODCALLTYPE d3d11_texture2d_GetPrivateData(ID3D11Texture2D *iface, REFGUID guid, UINT *data_size, void *data)
 {
     struct qemu_d3d11_texture2d_GetPrivateData call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D11Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE2D_GETPRIVATEDATA);
     call.iface = (ULONG_PTR)texture;
@@ -1186,12 +1186,12 @@ static HRESULT STDMETHODCALLTYPE d3d11_texture2d_GetPrivateData(ID3D11Texture2D 
 void qemu_d3d11_texture2d_GetPrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture2d_GetPrivateData *c = (struct qemu_d3d11_texture2d_GetPrivateData *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture2D_GetPrivateData(texture->host11, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
+    c->super.iret = ID3D11Texture2D_GetPrivateData(texture->host11_2d, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
 }
 
 #endif
@@ -1210,7 +1210,7 @@ struct qemu_d3d11_texture2d_SetPrivateData
 static HRESULT STDMETHODCALLTYPE d3d11_texture2d_SetPrivateData(ID3D11Texture2D *iface, REFGUID guid, UINT data_size, const void *data)
 {
     struct qemu_d3d11_texture2d_SetPrivateData call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D11Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE2D_SETPRIVATEDATA);
     call.iface = (ULONG_PTR)texture;
@@ -1228,12 +1228,12 @@ static HRESULT STDMETHODCALLTYPE d3d11_texture2d_SetPrivateData(ID3D11Texture2D 
 void qemu_d3d11_texture2d_SetPrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture2d_SetPrivateData *c = (struct qemu_d3d11_texture2d_SetPrivateData *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture2D_SetPrivateData(texture->host11, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
+    c->super.iret = ID3D11Texture2D_SetPrivateData(texture->host11_2d, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
 }
 
 #endif
@@ -1251,7 +1251,7 @@ struct qemu_d3d11_texture2d_SetPrivateDataInterface
 static HRESULT STDMETHODCALLTYPE d3d11_texture2d_SetPrivateDataInterface(ID3D11Texture2D *iface, REFGUID guid, const IUnknown *data)
 {
     struct qemu_d3d11_texture2d_SetPrivateDataInterface call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D11Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE2D_SETPRIVATEDATAINTERFACE);
     call.iface = (ULONG_PTR)texture;
@@ -1268,12 +1268,12 @@ static HRESULT STDMETHODCALLTYPE d3d11_texture2d_SetPrivateDataInterface(ID3D11T
 void qemu_d3d11_texture2d_SetPrivateDataInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture2d_SetPrivateDataInterface *c = (struct qemu_d3d11_texture2d_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture2D_SetPrivateDataInterface(texture->host11, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    c->super.iret = ID3D11Texture2D_SetPrivateDataInterface(texture->host11_2d, QEMU_G2H(c->guid), QEMU_G2H(c->data));
 }
 
 #endif
@@ -1290,7 +1290,7 @@ struct qemu_d3d11_texture2d_GetType
 static void STDMETHODCALLTYPE d3d11_texture2d_GetType(ID3D11Texture2D *iface, D3D11_RESOURCE_DIMENSION *resource_dimension)
 {
     struct qemu_d3d11_texture2d_GetType call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D11Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE2D_GETTYPE);
     call.iface = (ULONG_PTR)texture;
@@ -1304,12 +1304,12 @@ static void STDMETHODCALLTYPE d3d11_texture2d_GetType(ID3D11Texture2D *iface, D3
 void qemu_d3d11_texture2d_GetType(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture2d_GetType *c = (struct qemu_d3d11_texture2d_GetType *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D11Texture2D_GetType(texture->host11, QEMU_G2H(c->resource_dimension));
+    ID3D11Texture2D_GetType(texture->host11_2d, QEMU_G2H(c->resource_dimension));
 }
 
 #endif
@@ -1326,7 +1326,7 @@ struct qemu_d3d11_texture2d_SetEvictionPriority
 static void STDMETHODCALLTYPE d3d11_texture2d_SetEvictionPriority(ID3D11Texture2D *iface, UINT eviction_priority)
 {
     struct qemu_d3d11_texture2d_SetEvictionPriority call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D11Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE2D_SETEVICTIONPRIORITY);
     call.iface = (ULONG_PTR)texture;
@@ -1340,12 +1340,12 @@ static void STDMETHODCALLTYPE d3d11_texture2d_SetEvictionPriority(ID3D11Texture2
 void qemu_d3d11_texture2d_SetEvictionPriority(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture2d_SetEvictionPriority *c = (struct qemu_d3d11_texture2d_SetEvictionPriority *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D11Texture2D_SetEvictionPriority(texture->host11, c->eviction_priority);
+    ID3D11Texture2D_SetEvictionPriority(texture->host11_2d, c->eviction_priority);
 }
 
 #endif
@@ -1361,7 +1361,7 @@ struct qemu_d3d11_texture2d_GetEvictionPriority
 static UINT STDMETHODCALLTYPE d3d11_texture2d_GetEvictionPriority(ID3D11Texture2D *iface)
 {
     struct qemu_d3d11_texture2d_GetEvictionPriority call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D11Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE2D_GETEVICTIONPRIORITY);
     call.iface = (ULONG_PTR)texture;
@@ -1376,12 +1376,12 @@ static UINT STDMETHODCALLTYPE d3d11_texture2d_GetEvictionPriority(ID3D11Texture2
 void qemu_d3d11_texture2d_GetEvictionPriority(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture2d_GetEvictionPriority *c = (struct qemu_d3d11_texture2d_GetEvictionPriority *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture2D_GetEvictionPriority(texture->host11);
+    c->super.iret = ID3D11Texture2D_GetEvictionPriority(texture->host11_2d);
 }
 
 #endif
@@ -1398,7 +1398,7 @@ struct qemu_d3d11_texture2d_GetDesc
 static void STDMETHODCALLTYPE d3d11_texture2d_GetDesc(ID3D11Texture2D *iface, D3D11_TEXTURE2D_DESC *desc)
 {
     struct qemu_d3d11_texture2d_GetDesc call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D11Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE2D_GETDESC);
     call.iface = (ULONG_PTR)texture;
@@ -1412,13 +1412,13 @@ static void STDMETHODCALLTYPE d3d11_texture2d_GetDesc(ID3D11Texture2D *iface, D3
 void qemu_d3d11_texture2d_GetDesc(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture2d_GetDesc *c = (struct qemu_d3d11_texture2d_GetDesc *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     /* D3D11_TEXTURE2D_DESC has the same size in 32 and 64 bit. */
     WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D11Texture2D_GetDesc(texture->host11, QEMU_G2H(c->desc));
+    ID3D11Texture2D_GetDesc(texture->host11_2d, QEMU_G2H(c->desc));
 }
 
 #endif
@@ -1433,15 +1433,15 @@ struct qemu_d3d10_texture2d_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
-static inline struct qemu_d3d11_texture2d *impl_from_ID3D10Texture2D(ID3D10Texture2D *iface)
+static inline struct qemu_d3d11_texture *impl_from_ID3D10Texture2D(ID3D10Texture2D *iface)
 {
-    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture2d, ID3D10Texture2D_iface);
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture, ID3D10Texture2D_iface);
 }
 
 static HRESULT STDMETHODCALLTYPE d3d10_texture2d_QueryInterface(ID3D10Texture2D *iface, REFIID riid, void **object)
 {
     struct qemu_d3d10_texture2d_QueryInterface call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D10Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE2D_QUERYINTERFACE);
     call.iface = (ULONG_PTR)texture;
@@ -1458,12 +1458,12 @@ static HRESULT STDMETHODCALLTYPE d3d10_texture2d_QueryInterface(ID3D10Texture2D 
 void qemu_d3d10_texture2d_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture2d_QueryInterface *c = (struct qemu_d3d10_texture2d_QueryInterface *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture2D_QueryInterface(texture->host10, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    c->super.iret = ID3D10Texture2D_QueryInterface(texture->host10_2d, QEMU_G2H(c->riid), QEMU_G2H(c->object));
 }
 
 #endif
@@ -1479,7 +1479,7 @@ struct qemu_d3d10_texture2d_AddRef
 static ULONG STDMETHODCALLTYPE d3d10_texture2d_AddRef(ID3D10Texture2D *iface)
 {
     struct qemu_d3d10_texture2d_AddRef call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D10Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE2D_ADDREF);
     call.iface = (ULONG_PTR)texture;
@@ -1494,12 +1494,12 @@ static ULONG STDMETHODCALLTYPE d3d10_texture2d_AddRef(ID3D10Texture2D *iface)
 void qemu_d3d10_texture2d_AddRef(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture2d_AddRef *c = (struct qemu_d3d10_texture2d_AddRef *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture2D_AddRef(texture->host10);
+    c->super.iret = ID3D10Texture2D_AddRef(texture->host10_2d);
 }
 
 #endif
@@ -1515,7 +1515,7 @@ struct qemu_d3d10_texture2d_Release
 static ULONG STDMETHODCALLTYPE d3d10_texture2d_Release(ID3D10Texture2D *iface)
 {
     struct qemu_d3d10_texture2d_Release call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D10Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE2D_RELEASE);
     call.iface = (ULONG_PTR)texture;
@@ -1530,12 +1530,12 @@ static ULONG STDMETHODCALLTYPE d3d10_texture2d_Release(ID3D10Texture2D *iface)
 void qemu_d3d10_texture2d_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture2d_Release *c = (struct qemu_d3d10_texture2d_Release *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture2D_Release(texture->host10);
+    c->super.iret = ID3D10Texture2D_Release(texture->host10_2d);
 }
 
 #endif
@@ -1552,7 +1552,7 @@ struct qemu_d3d10_texture2d_GetDevice
 static void STDMETHODCALLTYPE d3d10_texture2d_GetDevice(ID3D10Texture2D *iface, ID3D10Device **device)
 {
     struct qemu_d3d10_texture2d_GetDevice call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D10Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE2D_GETDEVICE);
     call.iface = (ULONG_PTR)texture;
@@ -1566,12 +1566,12 @@ static void STDMETHODCALLTYPE d3d10_texture2d_GetDevice(ID3D10Texture2D *iface, 
 void qemu_d3d10_texture2d_GetDevice(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture2d_GetDevice *c = (struct qemu_d3d10_texture2d_GetDevice *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D10Texture2D_GetDevice(texture->host10, QEMU_G2H(c->device));
+    ID3D10Texture2D_GetDevice(texture->host10_2d, QEMU_G2H(c->device));
 }
 
 #endif
@@ -1590,7 +1590,7 @@ struct qemu_d3d10_texture2d_GetPrivateData
 static HRESULT STDMETHODCALLTYPE d3d10_texture2d_GetPrivateData(ID3D10Texture2D *iface, REFGUID guid, UINT *data_size, void *data)
 {
     struct qemu_d3d10_texture2d_GetPrivateData call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D10Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE2D_GETPRIVATEDATA);
     call.iface = (ULONG_PTR)texture;
@@ -1608,12 +1608,12 @@ static HRESULT STDMETHODCALLTYPE d3d10_texture2d_GetPrivateData(ID3D10Texture2D 
 void qemu_d3d10_texture2d_GetPrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture2d_GetPrivateData *c = (struct qemu_d3d10_texture2d_GetPrivateData *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture2D_GetPrivateData(texture->host10, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
+    c->super.iret = ID3D10Texture2D_GetPrivateData(texture->host10_2d, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
 }
 
 #endif
@@ -1632,7 +1632,7 @@ struct qemu_d3d10_texture2d_SetPrivateData
 static HRESULT STDMETHODCALLTYPE d3d10_texture2d_SetPrivateData(ID3D10Texture2D *iface, REFGUID guid, UINT data_size, const void *data)
 {
     struct qemu_d3d10_texture2d_SetPrivateData call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D10Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE2D_SETPRIVATEDATA);
     call.iface = (ULONG_PTR)texture;
@@ -1650,12 +1650,12 @@ static HRESULT STDMETHODCALLTYPE d3d10_texture2d_SetPrivateData(ID3D10Texture2D 
 void qemu_d3d10_texture2d_SetPrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture2d_SetPrivateData *c = (struct qemu_d3d10_texture2d_SetPrivateData *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture2D_SetPrivateData(texture->host10, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
+    c->super.iret = ID3D10Texture2D_SetPrivateData(texture->host10_2d, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
 }
 
 #endif
@@ -1673,7 +1673,7 @@ struct qemu_d3d10_texture2d_SetPrivateDataInterface
 static HRESULT STDMETHODCALLTYPE d3d10_texture2d_SetPrivateDataInterface(ID3D10Texture2D *iface, REFGUID guid, const IUnknown *data)
 {
     struct qemu_d3d10_texture2d_SetPrivateDataInterface call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D10Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE2D_SETPRIVATEDATAINTERFACE);
     call.iface = (ULONG_PTR)texture;
@@ -1690,12 +1690,12 @@ static HRESULT STDMETHODCALLTYPE d3d10_texture2d_SetPrivateDataInterface(ID3D10T
 void qemu_d3d10_texture2d_SetPrivateDataInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture2d_SetPrivateDataInterface *c = (struct qemu_d3d10_texture2d_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture2D_SetPrivateDataInterface(texture->host10, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    c->super.iret = ID3D10Texture2D_SetPrivateDataInterface(texture->host10_2d, QEMU_G2H(c->guid), QEMU_G2H(c->data));
 }
 
 #endif
@@ -1712,7 +1712,7 @@ struct qemu_d3d10_texture2d_GetType
 static void STDMETHODCALLTYPE d3d10_texture2d_GetType(ID3D10Texture2D *iface, D3D10_RESOURCE_DIMENSION *resource_dimension)
 {
     struct qemu_d3d10_texture2d_GetType call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D10Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE2D_GETTYPE);
     call.iface = (ULONG_PTR)texture;
@@ -1726,12 +1726,12 @@ static void STDMETHODCALLTYPE d3d10_texture2d_GetType(ID3D10Texture2D *iface, D3
 void qemu_d3d10_texture2d_GetType(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture2d_GetType *c = (struct qemu_d3d10_texture2d_GetType *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D10Texture2D_GetType(texture->host10, QEMU_G2H(c->resource_dimension));
+    ID3D10Texture2D_GetType(texture->host10_2d, QEMU_G2H(c->resource_dimension));
 }
 
 #endif
@@ -1748,7 +1748,7 @@ struct qemu_d3d10_texture2d_SetEvictionPriority
 static void STDMETHODCALLTYPE d3d10_texture2d_SetEvictionPriority(ID3D10Texture2D *iface, UINT eviction_priority)
 {
     struct qemu_d3d10_texture2d_SetEvictionPriority call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D10Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE2D_SETEVICTIONPRIORITY);
     call.iface = (ULONG_PTR)texture;
@@ -1762,12 +1762,12 @@ static void STDMETHODCALLTYPE d3d10_texture2d_SetEvictionPriority(ID3D10Texture2
 void qemu_d3d10_texture2d_SetEvictionPriority(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture2d_SetEvictionPriority *c = (struct qemu_d3d10_texture2d_SetEvictionPriority *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D10Texture2D_SetEvictionPriority(texture->host10, c->eviction_priority);
+    ID3D10Texture2D_SetEvictionPriority(texture->host10_2d, c->eviction_priority);
 }
 
 #endif
@@ -1783,7 +1783,7 @@ struct qemu_d3d10_texture2d_GetEvictionPriority
 static UINT STDMETHODCALLTYPE d3d10_texture2d_GetEvictionPriority(ID3D10Texture2D *iface)
 {
     struct qemu_d3d10_texture2d_GetEvictionPriority call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D10Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE2D_GETEVICTIONPRIORITY);
     call.iface = (ULONG_PTR)texture;
@@ -1798,12 +1798,12 @@ static UINT STDMETHODCALLTYPE d3d10_texture2d_GetEvictionPriority(ID3D10Texture2
 void qemu_d3d10_texture2d_GetEvictionPriority(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture2d_GetEvictionPriority *c = (struct qemu_d3d10_texture2d_GetEvictionPriority *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture2D_GetEvictionPriority(texture->host10);
+    c->super.iret = ID3D10Texture2D_GetEvictionPriority(texture->host10_2d);
 }
 
 #endif
@@ -1823,7 +1823,7 @@ struct qemu_d3d10_texture2d_Map
 static HRESULT STDMETHODCALLTYPE d3d10_texture2d_Map(ID3D10Texture2D *iface, UINT sub_resource_idx, D3D10_MAP map_type, UINT map_flags, D3D10_MAPPED_TEXTURE2D *mapped_texture)
 {
     struct qemu_d3d10_texture2d_Map call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D10Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE2D_MAP);
     call.iface = (ULONG_PTR)texture;
@@ -1842,12 +1842,12 @@ static HRESULT STDMETHODCALLTYPE d3d10_texture2d_Map(ID3D10Texture2D *iface, UIN
 void qemu_d3d10_texture2d_Map(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture2d_Map *c = (struct qemu_d3d10_texture2d_Map *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture2D_Map(texture->host10, c->sub_resource_idx, c->map_type, c->map_flags, QEMU_G2H(c->mapped_texture));
+    c->super.iret = ID3D10Texture2D_Map(texture->host10_2d, c->sub_resource_idx, c->map_type, c->map_flags, QEMU_G2H(c->mapped_texture));
 }
 
 #endif
@@ -1864,7 +1864,7 @@ struct qemu_d3d10_texture2d_Unmap
 static void STDMETHODCALLTYPE d3d10_texture2d_Unmap(ID3D10Texture2D *iface, UINT sub_resource_idx)
 {
     struct qemu_d3d10_texture2d_Unmap call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D10Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE2D_UNMAP);
     call.iface = (ULONG_PTR)texture;
@@ -1878,12 +1878,12 @@ static void STDMETHODCALLTYPE d3d10_texture2d_Unmap(ID3D10Texture2D *iface, UINT
 void qemu_d3d10_texture2d_Unmap(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture2d_Unmap *c = (struct qemu_d3d10_texture2d_Unmap *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D10Texture2D_Unmap(texture->host10, c->sub_resource_idx);
+    ID3D10Texture2D_Unmap(texture->host10_2d, c->sub_resource_idx);
 }
 
 #endif
@@ -1900,7 +1900,7 @@ struct qemu_d3d10_texture2d_GetDesc
 static void STDMETHODCALLTYPE d3d10_texture2d_GetDesc(ID3D10Texture2D *iface, D3D10_TEXTURE2D_DESC *desc)
 {
     struct qemu_d3d10_texture2d_GetDesc call;
-    struct qemu_d3d11_texture2d *texture = impl_from_ID3D10Texture2D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture2D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE2D_GETDESC);
     call.iface = (ULONG_PTR)texture;
@@ -1914,13 +1914,13 @@ static void STDMETHODCALLTYPE d3d10_texture2d_GetDesc(ID3D10Texture2D *iface, D3
 void qemu_d3d10_texture2d_GetDesc(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture2d_GetDesc *c = (struct qemu_d3d10_texture2d_GetDesc *)call;
-    struct qemu_d3d11_texture2d *texture;
+    struct qemu_d3d11_texture *texture;
 
     /* D3D10_TEXTURE2D_DESC has the same size in 32 and 64 bit. */
     WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D10Texture2D_GetDesc(texture->host10, QEMU_G2H(c->desc));
+    ID3D10Texture2D_GetDesc(texture->host10_2d, QEMU_G2H(c->desc));
 }
 
 #endif
@@ -1935,15 +1935,15 @@ struct qemu_d3d11_texture3d_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
-static inline struct qemu_d3d11_texture3d *impl_from_ID3D11Texture3D(ID3D11Texture3D *iface)
+static inline struct qemu_d3d11_texture *impl_from_ID3D11Texture3D(ID3D11Texture3D *iface)
 {
-    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture3d, ID3D11Texture3D_iface);
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture, ID3D11Texture3D_iface);
 }
 
 static HRESULT STDMETHODCALLTYPE d3d11_texture3d_QueryInterface(ID3D11Texture3D *iface, REFIID riid, void **object)
 {
     struct qemu_d3d11_texture3d_QueryInterface call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D11Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE3D_QUERYINTERFACE);
     call.iface = (ULONG_PTR)texture;
@@ -1960,12 +1960,12 @@ static HRESULT STDMETHODCALLTYPE d3d11_texture3d_QueryInterface(ID3D11Texture3D 
 void qemu_d3d11_texture3d_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture3d_QueryInterface *c = (struct qemu_d3d11_texture3d_QueryInterface *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture3D_QueryInterface(texture->host11, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    c->super.iret = ID3D11Texture3D_QueryInterface(texture->host11_3d, QEMU_G2H(c->riid), QEMU_G2H(c->object));
 }
 
 #endif
@@ -1981,7 +1981,7 @@ struct qemu_d3d11_texture3d_AddRef
 static ULONG STDMETHODCALLTYPE d3d11_texture3d_AddRef(ID3D11Texture3D *iface)
 {
     struct qemu_d3d11_texture3d_AddRef call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D11Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE3D_ADDREF);
     call.iface = (ULONG_PTR)texture;
@@ -1996,12 +1996,12 @@ static ULONG STDMETHODCALLTYPE d3d11_texture3d_AddRef(ID3D11Texture3D *iface)
 void qemu_d3d11_texture3d_AddRef(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture3d_AddRef *c = (struct qemu_d3d11_texture3d_AddRef *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture3D_AddRef(texture->host11);
+    c->super.iret = ID3D11Texture3D_AddRef(texture->host11_3d);
 }
 
 #endif
@@ -2017,7 +2017,7 @@ struct qemu_d3d11_texture3d_Release
 static ULONG STDMETHODCALLTYPE d3d11_texture3d_Release(ID3D11Texture3D *iface)
 {
     struct qemu_d3d11_texture3d_Release call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D11Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE3D_RELEASE);
     call.iface = (ULONG_PTR)texture;
@@ -2032,12 +2032,12 @@ static ULONG STDMETHODCALLTYPE d3d11_texture3d_Release(ID3D11Texture3D *iface)
 void qemu_d3d11_texture3d_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture3d_Release *c = (struct qemu_d3d11_texture3d_Release *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture3D_Release(texture->host11);
+    c->super.iret = ID3D11Texture3D_Release(texture->host11_3d);
 }
 
 #endif
@@ -2054,7 +2054,7 @@ struct qemu_d3d11_texture3d_GetDevice
 static void STDMETHODCALLTYPE d3d11_texture3d_GetDevice(ID3D11Texture3D *iface, ID3D11Device **device)
 {
     struct qemu_d3d11_texture3d_GetDevice call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D11Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE3D_GETDEVICE);
     call.iface = (ULONG_PTR)texture;
@@ -2068,12 +2068,12 @@ static void STDMETHODCALLTYPE d3d11_texture3d_GetDevice(ID3D11Texture3D *iface, 
 void qemu_d3d11_texture3d_GetDevice(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture3d_GetDevice *c = (struct qemu_d3d11_texture3d_GetDevice *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D11Texture3D_GetDevice(texture->host11, QEMU_G2H(c->device));
+    ID3D11Texture3D_GetDevice(texture->host11_3d, QEMU_G2H(c->device));
 }
 
 #endif
@@ -2092,7 +2092,7 @@ struct qemu_d3d11_texture3d_GetPrivateData
 static HRESULT STDMETHODCALLTYPE d3d11_texture3d_GetPrivateData(ID3D11Texture3D *iface, REFGUID guid, UINT *data_size, void *data)
 {
     struct qemu_d3d11_texture3d_GetPrivateData call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D11Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE3D_GETPRIVATEDATA);
     call.iface = (ULONG_PTR)texture;
@@ -2110,12 +2110,12 @@ static HRESULT STDMETHODCALLTYPE d3d11_texture3d_GetPrivateData(ID3D11Texture3D 
 void qemu_d3d11_texture3d_GetPrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture3d_GetPrivateData *c = (struct qemu_d3d11_texture3d_GetPrivateData *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture3D_GetPrivateData(texture->host11, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
+    c->super.iret = ID3D11Texture3D_GetPrivateData(texture->host11_3d, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
 }
 
 #endif
@@ -2134,7 +2134,7 @@ struct qemu_d3d11_texture3d_SetPrivateData
 static HRESULT STDMETHODCALLTYPE d3d11_texture3d_SetPrivateData(ID3D11Texture3D *iface, REFGUID guid, UINT data_size, const void *data)
 {
     struct qemu_d3d11_texture3d_SetPrivateData call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D11Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE3D_SETPRIVATEDATA);
     call.iface = (ULONG_PTR)texture;
@@ -2152,12 +2152,12 @@ static HRESULT STDMETHODCALLTYPE d3d11_texture3d_SetPrivateData(ID3D11Texture3D 
 void qemu_d3d11_texture3d_SetPrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture3d_SetPrivateData *c = (struct qemu_d3d11_texture3d_SetPrivateData *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture3D_SetPrivateData(texture->host11, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
+    c->super.iret = ID3D11Texture3D_SetPrivateData(texture->host11_3d, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
 }
 
 #endif
@@ -2175,7 +2175,7 @@ struct qemu_d3d11_texture3d_SetPrivateDataInterface
 static HRESULT STDMETHODCALLTYPE d3d11_texture3d_SetPrivateDataInterface(ID3D11Texture3D *iface, REFGUID guid, const IUnknown *data)
 {
     struct qemu_d3d11_texture3d_SetPrivateDataInterface call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D11Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE3D_SETPRIVATEDATAINTERFACE);
     call.iface = (ULONG_PTR)texture;
@@ -2192,12 +2192,12 @@ static HRESULT STDMETHODCALLTYPE d3d11_texture3d_SetPrivateDataInterface(ID3D11T
 void qemu_d3d11_texture3d_SetPrivateDataInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture3d_SetPrivateDataInterface *c = (struct qemu_d3d11_texture3d_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture3D_SetPrivateDataInterface(texture->host11, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    c->super.iret = ID3D11Texture3D_SetPrivateDataInterface(texture->host11_3d, QEMU_G2H(c->guid), QEMU_G2H(c->data));
 }
 
 #endif
@@ -2214,7 +2214,7 @@ struct qemu_d3d11_texture3d_GetType
 static void STDMETHODCALLTYPE d3d11_texture3d_GetType(ID3D11Texture3D *iface, D3D11_RESOURCE_DIMENSION *resource_dimension)
 {
     struct qemu_d3d11_texture3d_GetType call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D11Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE3D_GETTYPE);
     call.iface = (ULONG_PTR)texture;
@@ -2228,12 +2228,12 @@ static void STDMETHODCALLTYPE d3d11_texture3d_GetType(ID3D11Texture3D *iface, D3
 void qemu_d3d11_texture3d_GetType(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture3d_GetType *c = (struct qemu_d3d11_texture3d_GetType *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D11Texture3D_GetType(texture->host11, QEMU_G2H(c->resource_dimension));
+    ID3D11Texture3D_GetType(texture->host11_3d, QEMU_G2H(c->resource_dimension));
 }
 
 #endif
@@ -2250,7 +2250,7 @@ struct qemu_d3d11_texture3d_SetEvictionPriority
 static void STDMETHODCALLTYPE d3d11_texture3d_SetEvictionPriority(ID3D11Texture3D *iface, UINT eviction_priority)
 {
     struct qemu_d3d11_texture3d_SetEvictionPriority call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D11Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE3D_SETEVICTIONPRIORITY);
     call.iface = (ULONG_PTR)texture;
@@ -2264,12 +2264,12 @@ static void STDMETHODCALLTYPE d3d11_texture3d_SetEvictionPriority(ID3D11Texture3
 void qemu_d3d11_texture3d_SetEvictionPriority(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture3d_SetEvictionPriority *c = (struct qemu_d3d11_texture3d_SetEvictionPriority *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D11Texture3D_SetEvictionPriority(texture->host11, c->eviction_priority);
+    ID3D11Texture3D_SetEvictionPriority(texture->host11_3d, c->eviction_priority);
 }
 
 #endif
@@ -2285,7 +2285,7 @@ struct qemu_d3d11_texture3d_GetEvictionPriority
 static UINT STDMETHODCALLTYPE d3d11_texture3d_GetEvictionPriority(ID3D11Texture3D *iface)
 {
     struct qemu_d3d11_texture3d_GetEvictionPriority call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D11Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE3D_GETEVICTIONPRIORITY);
     call.iface = (ULONG_PTR)texture;
@@ -2300,12 +2300,12 @@ static UINT STDMETHODCALLTYPE d3d11_texture3d_GetEvictionPriority(ID3D11Texture3
 void qemu_d3d11_texture3d_GetEvictionPriority(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture3d_GetEvictionPriority *c = (struct qemu_d3d11_texture3d_GetEvictionPriority *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture3D_GetEvictionPriority(texture->host11);
+    c->super.iret = ID3D11Texture3D_GetEvictionPriority(texture->host11_3d);
 }
 
 #endif
@@ -2322,7 +2322,7 @@ struct qemu_d3d11_texture3d_GetDesc
 static void STDMETHODCALLTYPE d3d11_texture3d_GetDesc(ID3D11Texture3D *iface, D3D11_TEXTURE3D_DESC *desc)
 {
     struct qemu_d3d11_texture3d_GetDesc call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D11Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE3D_GETDESC);
     call.iface = (ULONG_PTR)texture;
@@ -2336,12 +2336,12 @@ static void STDMETHODCALLTYPE d3d11_texture3d_GetDesc(ID3D11Texture3D *iface, D3
 void qemu_d3d11_texture3d_GetDesc(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture3d_GetDesc *c = (struct qemu_d3d11_texture3d_GetDesc *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D11Texture3D_GetDesc(texture->host11, QEMU_G2H(c->desc));
+    ID3D11Texture3D_GetDesc(texture->host11_3d, QEMU_G2H(c->desc));
 }
 
 #endif
@@ -2356,15 +2356,15 @@ struct qemu_d3d10_texture3d_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
-static inline struct qemu_d3d11_texture3d *impl_from_ID3D10Texture3D(ID3D10Texture3D *iface)
+static inline struct qemu_d3d11_texture *impl_from_ID3D10Texture3D(ID3D10Texture3D *iface)
 {
-    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture3d, ID3D10Texture3D_iface);
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture, ID3D10Texture3D_iface);
 }
 
 static HRESULT STDMETHODCALLTYPE d3d10_texture3d_QueryInterface(ID3D10Texture3D *iface, REFIID riid, void **object)
 {
     struct qemu_d3d10_texture3d_QueryInterface call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D10Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE3D_QUERYINTERFACE);
     call.iface = (ULONG_PTR)texture;
@@ -2381,12 +2381,12 @@ static HRESULT STDMETHODCALLTYPE d3d10_texture3d_QueryInterface(ID3D10Texture3D 
 void qemu_d3d10_texture3d_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture3d_QueryInterface *c = (struct qemu_d3d10_texture3d_QueryInterface *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture3D_QueryInterface(texture->host10, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    c->super.iret = ID3D10Texture3D_QueryInterface(texture->host10_3d, QEMU_G2H(c->riid), QEMU_G2H(c->object));
 }
 
 #endif
@@ -2402,7 +2402,7 @@ struct qemu_d3d10_texture3d_AddRef
 static ULONG STDMETHODCALLTYPE d3d10_texture3d_AddRef(ID3D10Texture3D *iface)
 {
     struct qemu_d3d10_texture3d_AddRef call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D10Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE3D_ADDREF);
     call.iface = (ULONG_PTR)texture;
@@ -2417,12 +2417,12 @@ static ULONG STDMETHODCALLTYPE d3d10_texture3d_AddRef(ID3D10Texture3D *iface)
 void qemu_d3d10_texture3d_AddRef(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture3d_AddRef *c = (struct qemu_d3d10_texture3d_AddRef *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture3D_AddRef(texture->host10);
+    c->super.iret = ID3D10Texture3D_AddRef(texture->host10_3d);
 }
 
 #endif
@@ -2438,7 +2438,7 @@ struct qemu_d3d10_texture3d_Release
 static ULONG STDMETHODCALLTYPE d3d10_texture3d_Release(ID3D10Texture3D *iface)
 {
     struct qemu_d3d10_texture3d_Release call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D10Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE3D_RELEASE);
     call.iface = (ULONG_PTR)texture;
@@ -2453,12 +2453,12 @@ static ULONG STDMETHODCALLTYPE d3d10_texture3d_Release(ID3D10Texture3D *iface)
 void qemu_d3d10_texture3d_Release(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture3d_Release *c = (struct qemu_d3d10_texture3d_Release *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture3D_Release(texture->host10);
+    c->super.iret = ID3D10Texture3D_Release(texture->host10_3d);
 }
 
 #endif
@@ -2475,7 +2475,7 @@ struct qemu_d3d10_texture3d_GetDevice
 static void STDMETHODCALLTYPE d3d10_texture3d_GetDevice(ID3D10Texture3D *iface, ID3D10Device **device)
 {
     struct qemu_d3d10_texture3d_GetDevice call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D10Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE3D_GETDEVICE);
     call.iface = (ULONG_PTR)texture;
@@ -2489,12 +2489,12 @@ static void STDMETHODCALLTYPE d3d10_texture3d_GetDevice(ID3D10Texture3D *iface, 
 void qemu_d3d10_texture3d_GetDevice(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture3d_GetDevice *c = (struct qemu_d3d10_texture3d_GetDevice *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D10Texture3D_GetDevice(texture->host10, QEMU_G2H(c->device));
+    ID3D10Texture3D_GetDevice(texture->host10_3d, QEMU_G2H(c->device));
 }
 
 #endif
@@ -2513,7 +2513,7 @@ struct qemu_d3d10_texture3d_GetPrivateData
 static HRESULT STDMETHODCALLTYPE d3d10_texture3d_GetPrivateData(ID3D10Texture3D *iface, REFGUID guid, UINT *data_size, void *data)
 {
     struct qemu_d3d10_texture3d_GetPrivateData call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D10Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE3D_GETPRIVATEDATA);
     call.iface = (ULONG_PTR)texture;
@@ -2531,12 +2531,12 @@ static HRESULT STDMETHODCALLTYPE d3d10_texture3d_GetPrivateData(ID3D10Texture3D 
 void qemu_d3d10_texture3d_GetPrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture3d_GetPrivateData *c = (struct qemu_d3d10_texture3d_GetPrivateData *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture3D_GetPrivateData(texture->host10, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
+    c->super.iret = ID3D10Texture3D_GetPrivateData(texture->host10_3d, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
 }
 
 #endif
@@ -2555,7 +2555,7 @@ struct qemu_d3d10_texture3d_SetPrivateData
 static HRESULT STDMETHODCALLTYPE d3d10_texture3d_SetPrivateData(ID3D10Texture3D *iface, REFGUID guid, UINT data_size, const void *data)
 {
     struct qemu_d3d10_texture3d_SetPrivateData call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D10Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE3D_SETPRIVATEDATA);
     call.iface = (ULONG_PTR)texture;
@@ -2573,12 +2573,12 @@ static HRESULT STDMETHODCALLTYPE d3d10_texture3d_SetPrivateData(ID3D10Texture3D 
 void qemu_d3d10_texture3d_SetPrivateData(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture3d_SetPrivateData *c = (struct qemu_d3d10_texture3d_SetPrivateData *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture3D_SetPrivateData(texture->host10, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
+    c->super.iret = ID3D10Texture3D_SetPrivateData(texture->host10_3d, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
 }
 
 #endif
@@ -2596,7 +2596,7 @@ struct qemu_d3d10_texture3d_SetPrivateDataInterface
 static HRESULT STDMETHODCALLTYPE d3d10_texture3d_SetPrivateDataInterface(ID3D10Texture3D *iface, REFGUID guid, const IUnknown *data)
 {
     struct qemu_d3d10_texture3d_SetPrivateDataInterface call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D10Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE3D_SETPRIVATEDATAINTERFACE);
     call.iface = (ULONG_PTR)texture;
@@ -2613,12 +2613,12 @@ static HRESULT STDMETHODCALLTYPE d3d10_texture3d_SetPrivateDataInterface(ID3D10T
 void qemu_d3d10_texture3d_SetPrivateDataInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture3d_SetPrivateDataInterface *c = (struct qemu_d3d10_texture3d_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture3D_SetPrivateDataInterface(texture->host10, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    c->super.iret = ID3D10Texture3D_SetPrivateDataInterface(texture->host10_3d, QEMU_G2H(c->guid), QEMU_G2H(c->data));
 }
 
 #endif
@@ -2635,7 +2635,7 @@ struct qemu_d3d10_texture3d_GetType
 static void STDMETHODCALLTYPE d3d10_texture3d_GetType(ID3D10Texture3D *iface, D3D10_RESOURCE_DIMENSION *resource_dimension)
 {
     struct qemu_d3d10_texture3d_GetType call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D10Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE3D_GETTYPE);
     call.iface = (ULONG_PTR)texture;
@@ -2649,12 +2649,12 @@ static void STDMETHODCALLTYPE d3d10_texture3d_GetType(ID3D10Texture3D *iface, D3
 void qemu_d3d10_texture3d_GetType(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture3d_GetType *c = (struct qemu_d3d10_texture3d_GetType *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D10Texture3D_GetType(texture->host10, QEMU_G2H(c->resource_dimension));
+    ID3D10Texture3D_GetType(texture->host10_3d, QEMU_G2H(c->resource_dimension));
 }
 
 #endif
@@ -2671,7 +2671,7 @@ struct qemu_d3d10_texture3d_SetEvictionPriority
 static void STDMETHODCALLTYPE d3d10_texture3d_SetEvictionPriority(ID3D10Texture3D *iface, UINT eviction_priority)
 {
     struct qemu_d3d10_texture3d_SetEvictionPriority call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D10Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE3D_SETEVICTIONPRIORITY);
     call.iface = (ULONG_PTR)texture;
@@ -2685,12 +2685,12 @@ static void STDMETHODCALLTYPE d3d10_texture3d_SetEvictionPriority(ID3D10Texture3
 void qemu_d3d10_texture3d_SetEvictionPriority(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture3d_SetEvictionPriority *c = (struct qemu_d3d10_texture3d_SetEvictionPriority *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D10Texture3D_SetEvictionPriority(texture->host10, c->eviction_priority);
+    ID3D10Texture3D_SetEvictionPriority(texture->host10_3d, c->eviction_priority);
 }
 
 #endif
@@ -2706,7 +2706,7 @@ struct qemu_d3d10_texture3d_GetEvictionPriority
 static UINT STDMETHODCALLTYPE d3d10_texture3d_GetEvictionPriority(ID3D10Texture3D *iface)
 {
     struct qemu_d3d10_texture3d_GetEvictionPriority call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D10Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE3D_GETEVICTIONPRIORITY);
     call.iface = (ULONG_PTR)texture;
@@ -2721,12 +2721,12 @@ static UINT STDMETHODCALLTYPE d3d10_texture3d_GetEvictionPriority(ID3D10Texture3
 void qemu_d3d10_texture3d_GetEvictionPriority(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture3d_GetEvictionPriority *c = (struct qemu_d3d10_texture3d_GetEvictionPriority *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture3D_GetEvictionPriority(texture->host10);
+    c->super.iret = ID3D10Texture3D_GetEvictionPriority(texture->host10_3d);
 }
 
 #endif
@@ -2746,7 +2746,7 @@ struct qemu_d3d10_texture3d_Map
 static HRESULT STDMETHODCALLTYPE d3d10_texture3d_Map(ID3D10Texture3D *iface, UINT sub_resource_idx, D3D10_MAP map_type, UINT map_flags, D3D10_MAPPED_TEXTURE3D *mapped_texture)
 {
     struct qemu_d3d10_texture3d_Map call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D10Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE3D_MAP);
     call.iface = (ULONG_PTR)texture;
@@ -2765,12 +2765,12 @@ static HRESULT STDMETHODCALLTYPE d3d10_texture3d_Map(ID3D10Texture3D *iface, UIN
 void qemu_d3d10_texture3d_Map(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture3d_Map *c = (struct qemu_d3d10_texture3d_Map *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture3D_Map(texture->host10, c->sub_resource_idx, c->map_type, c->map_flags, QEMU_G2H(c->mapped_texture));
+    c->super.iret = ID3D10Texture3D_Map(texture->host10_3d, c->sub_resource_idx, c->map_type, c->map_flags, QEMU_G2H(c->mapped_texture));
 }
 
 #endif
@@ -2787,7 +2787,7 @@ struct qemu_d3d10_texture3d_Unmap
 static void STDMETHODCALLTYPE d3d10_texture3d_Unmap(ID3D10Texture3D *iface, UINT sub_resource_idx)
 {
     struct qemu_d3d10_texture3d_Unmap call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D10Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE3D_UNMAP);
     call.iface = (ULONG_PTR)texture;
@@ -2801,12 +2801,12 @@ static void STDMETHODCALLTYPE d3d10_texture3d_Unmap(ID3D10Texture3D *iface, UINT
 void qemu_d3d10_texture3d_Unmap(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture3d_Unmap *c = (struct qemu_d3d10_texture3d_Unmap *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D10Texture3D_Unmap(texture->host10, c->sub_resource_idx);
+    ID3D10Texture3D_Unmap(texture->host10_3d, c->sub_resource_idx);
 }
 
 #endif
@@ -2823,7 +2823,7 @@ struct qemu_d3d10_texture3d_GetDesc
 static void STDMETHODCALLTYPE d3d10_texture3d_GetDesc(ID3D10Texture3D *iface, D3D10_TEXTURE3D_DESC *desc)
 {
     struct qemu_d3d10_texture3d_GetDesc call;
-    struct qemu_d3d11_texture3d *texture = impl_from_ID3D10Texture3D(iface);
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture3D(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE3D_GETDESC);
     call.iface = (ULONG_PTR)texture;
@@ -2837,12 +2837,12 @@ static void STDMETHODCALLTYPE d3d10_texture3d_GetDesc(ID3D10Texture3D *iface, D3
 void qemu_d3d10_texture3d_GetDesc(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture3d_GetDesc *c = (struct qemu_d3d10_texture3d_GetDesc *)call;
-    struct qemu_d3d11_texture3d *texture;
+    struct qemu_d3d11_texture *texture;
 
     WINE_FIXME("Unverified!\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D10Texture3D_GetDesc(texture->host10, QEMU_G2H(c->desc));
+    ID3D10Texture3D_GetDesc(texture->host10_3d, QEMU_G2H(c->desc));
 }
 
 #endif
@@ -2969,7 +2969,7 @@ static struct ID3D10Texture3DVtbl d3d10_texture3d_vtbl =
     d3d10_texture3d_GetDesc,
 };
 
-void qemu_d3d11_texture1d_guest_init(struct qemu_d3d11_texture1d *texture, struct qemu_d3d11_device *device,
+void qemu_d3d11_texture1d_guest_init(struct qemu_d3d11_texture *texture, struct qemu_d3d11_device *device,
         uint64_t dxgi_surface)
 {
     HRESULT hr;
@@ -2996,7 +2996,7 @@ void qemu_d3d11_texture1d_guest_init(struct qemu_d3d11_texture1d *texture, struc
     }
 }
 
-void qemu_d3d11_texture2d_guest_init(struct qemu_d3d11_texture2d *texture, struct qemu_d3d11_device *device,
+void qemu_d3d11_texture2d_guest_init(struct qemu_d3d11_texture *texture, struct qemu_d3d11_device *device,
         uint64_t dxgi_surface)
 {
     HRESULT hr;
@@ -3024,7 +3024,7 @@ void qemu_d3d11_texture2d_guest_init(struct qemu_d3d11_texture2d *texture, struc
     }
 }
 
-void qemu_d3d11_texture3d_guest_init(struct qemu_d3d11_texture3d *texture, struct qemu_d3d11_device *device,
+void qemu_d3d11_texture3d_guest_init(struct qemu_d3d11_texture *texture, struct qemu_d3d11_device *device,
         uint64_t dxgi_surface)
 {
     texture->ID3D11Texture3D_iface.lpVtbl = &d3d11_texture3d_vtbl;
@@ -3033,14 +3033,9 @@ void qemu_d3d11_texture3d_guest_init(struct qemu_d3d11_texture3d *texture, struc
 
 #else
 
-static inline struct qemu_d3d11_texture1d *impl_from_priv_data_1d(IUnknown *iface)
+static inline struct qemu_d3d11_texture *impl_from_priv_data(IUnknown *iface)
 {
-    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture1d, priv_data_iface);
-}
-
-static inline struct qemu_d3d11_texture2d *impl_from_priv_data_2d(IUnknown *iface)
-{
-    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture2d, priv_data_iface);
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture, priv_data_iface);
 }
 
 static HRESULT STDMETHODCALLTYPE d3d11_texture_priv_data_QueryInterface(IUnknown *iface, REFIID riid, void **out)
@@ -3050,9 +3045,9 @@ static HRESULT STDMETHODCALLTYPE d3d11_texture_priv_data_QueryInterface(IUnknown
     return E_NOINTERFACE;
 }
 
-static ULONG STDMETHODCALLTYPE d3d11_texture1d_priv_data_AddRef(IUnknown *iface)
+static ULONG STDMETHODCALLTYPE d3d11_texture_priv_data_AddRef(IUnknown *iface)
 {
-    struct qemu_d3d11_texture1d *texture = impl_from_priv_data_1d(iface);
+    struct qemu_d3d11_texture *texture = impl_from_priv_data(iface);
     ULONG refcount = InterlockedIncrement(&texture->refcount);
 
     WINE_TRACE("%p increasing refcount to %u.\n", texture, refcount);
@@ -3060,62 +3055,28 @@ static ULONG STDMETHODCALLTYPE d3d11_texture1d_priv_data_AddRef(IUnknown *iface)
     return refcount;
 }
 
-static ULONG STDMETHODCALLTYPE d3d11_texture2d_priv_data_AddRef(IUnknown *iface)
+static ULONG STDMETHODCALLTYPE d3d11_texture_priv_data_Release(IUnknown *iface)
 {
-    struct qemu_d3d11_texture2d *texture = impl_from_priv_data_2d(iface);
-    ULONG refcount = InterlockedIncrement(&texture->refcount);
-
-    WINE_TRACE("%p increasing refcount to %u.\n", texture, refcount);
-
-    return refcount;
-}
-
-static ULONG STDMETHODCALLTYPE d3d11_texture1d_priv_data_Release(IUnknown *iface)
-{
-    struct qemu_d3d11_texture1d *texture = impl_from_priv_data_1d(iface);
+    struct qemu_d3d11_texture *texture = impl_from_priv_data(iface);
     ULONG refcount = InterlockedDecrement(&texture->refcount);
 
     WINE_TRACE("%p decreasing refcount to %u.\n", texture, refcount);
 
     if (!refcount)
     {
-        WINE_TRACE("Destroying texture wrapper %p for host texture %p.\n", texture, texture->host11);
+        WINE_TRACE("Destroying texture wrapper %p for host texture %p.\n", texture, texture->host11_2d);
         HeapFree(GetProcessHeap(), 0, texture);
     }
 
     return refcount;
 }
 
-static ULONG STDMETHODCALLTYPE d3d11_texture2d_priv_data_Release(IUnknown *iface)
-{
-    struct qemu_d3d11_texture2d *texture = impl_from_priv_data_2d(iface);
-    ULONG refcount = InterlockedDecrement(&texture->refcount);
-
-    WINE_TRACE("%p decreasing refcount to %u.\n", texture, refcount);
-
-    if (!refcount)
-    {
-        WINE_TRACE("Destroying texture wrapper %p for host texture %p.\n", texture, texture->host11);
-        HeapFree(GetProcessHeap(), 0, texture);
-    }
-
-    return refcount;
-}
-
-static struct IUnknownVtbl priv_data_vtbl_1d =
+static struct IUnknownVtbl priv_data_vtbl =
 {
     /* IUnknown methods */
     d3d11_texture_priv_data_QueryInterface,
-    d3d11_texture1d_priv_data_AddRef,
-    d3d11_texture1d_priv_data_Release,
-};
-
-static struct IUnknownVtbl priv_data_vtbl_2d =
-{
-    /* IUnknown methods */
-    d3d11_texture_priv_data_QueryInterface,
-    d3d11_texture2d_priv_data_AddRef,
-    d3d11_texture2d_priv_data_Release,
+    d3d11_texture_priv_data_AddRef,
+    d3d11_texture_priv_data_Release,
 };
 
 #include <initguid.h>
@@ -3124,9 +3085,9 @@ static struct IUnknownVtbl priv_data_vtbl_2d =
 DEFINE_GUID(IID_d3d11_texture_priv_data, 0x2b676c65, 0x7123, 0x4138, 0xb6, 0xdb, 0x96, 0xfe, 0xa9, 0xae, 0x00, 0x43);
 
 HRESULT qemu_d3d11_texture1d_create(ID3D11Texture1D *host, struct qemu_d3d11_device *device,
-        uint64_t *dxgi_surface, struct qemu_d3d11_texture1d **texture)
+        uint64_t *dxgi_surface, struct qemu_d3d11_texture **texture)
 {
-    struct qemu_d3d11_texture1d *obj;
+    struct qemu_d3d11_texture *obj;
     IDXGISurface *surface_iface;
     HRESULT hr;
 
@@ -3139,11 +3100,11 @@ HRESULT qemu_d3d11_texture1d_create(ID3D11Texture1D *host, struct qemu_d3d11_dev
 
     /* Note that we share the refcount with the host object, so we don't want to keep only one
      * reference to it. */
-    obj->host11 = host;
-    hr = ID3D11Texture1D_QueryInterface(host, &IID_ID3D10Texture1D, (void **)&obj->host10);
+    obj->host11_1d = host;
+    hr = ID3D11Texture1D_QueryInterface(host, &IID_ID3D10Texture1D, (void **)&obj->host10_1d);
     if (FAILED(hr))
         WINE_ERR("Failed to QI ID3D10Texture1D.\n");
-    ID3D10Texture1D_Release(obj->host10);
+    ID3D10Texture1D_Release(obj->host10_1d);
 
     hr = ID3D11Texture1D_QueryInterface(host, &IID_IDXGISurface, (void **)&surface_iface);
     if (SUCCEEDED(hr))
@@ -3156,7 +3117,7 @@ HRESULT qemu_d3d11_texture1d_create(ID3D11Texture1D *host, struct qemu_d3d11_dev
         *dxgi_surface = 0;
     }
 
-    obj->priv_data_iface.lpVtbl = &priv_data_vtbl_1d;
+    obj->priv_data_iface.lpVtbl = &priv_data_vtbl;
     /* Leave the ref at 0, we want the host obj to own the only / final reference. */
     ID3D11Texture1D_SetPrivateDataInterface(host, &IID_d3d11_texture_priv_data, &obj->priv_data_iface);
 
@@ -3165,9 +3126,9 @@ HRESULT qemu_d3d11_texture1d_create(ID3D11Texture1D *host, struct qemu_d3d11_dev
 }
 
 HRESULT qemu_d3d11_texture2d_create(ID3D11Texture2D *host, struct qemu_d3d11_device *device,
-        uint64_t *dxgi_surface, struct qemu_d3d11_texture2d **texture)
+        uint64_t *dxgi_surface, struct qemu_d3d11_texture **texture)
 {
-    struct qemu_d3d11_texture2d *obj;
+    struct qemu_d3d11_texture *obj;
     IDXGISurface *surface_iface;
     HRESULT hr;
 
@@ -3180,11 +3141,11 @@ HRESULT qemu_d3d11_texture2d_create(ID3D11Texture2D *host, struct qemu_d3d11_dev
 
     /* Note that we share the refcount with the host object, so we don't want to keep only one
      * reference to it. */
-    obj->host11 = host;
-    hr = ID3D11Texture2D_QueryInterface(host, &IID_ID3D10Texture2D, (void **)&obj->host10);
+    obj->host11_2d = host;
+    hr = ID3D11Texture2D_QueryInterface(host, &IID_ID3D10Texture2D, (void **)&obj->host10_2d);
     if (FAILED(hr))
         WINE_ERR("Failed to QI ID3D10Texture2D.\n");
-    ID3D10Texture2D_Release(obj->host10);
+    ID3D10Texture2D_Release(obj->host10_2d);
 
     hr = ID3D11Texture2D_QueryInterface(host, &IID_IDXGISurface, (void **)&surface_iface);
     if (SUCCEEDED(hr))
@@ -3197,7 +3158,7 @@ HRESULT qemu_d3d11_texture2d_create(ID3D11Texture2D *host, struct qemu_d3d11_dev
         *dxgi_surface = 0;
     }
 
-    obj->priv_data_iface.lpVtbl = &priv_data_vtbl_2d;
+    obj->priv_data_iface.lpVtbl = &priv_data_vtbl;
     /* Leave the ref at 0, we want the host obj to own the only / final reference. */
     ID3D11Texture2D_SetPrivateDataInterface(host, &IID_d3d11_texture_priv_data, &obj->priv_data_iface);
 
