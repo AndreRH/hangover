@@ -360,7 +360,7 @@ void qemu_dxgi_swapchain_Present(struct qemu_syscall *call)
     struct qemu_dxgi_swapchain_Present *c = (struct qemu_dxgi_swapchain_Present *)call;
     struct qemu_dxgi_swapchain *swapchain;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     swapchain = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGISwapChain1_Present(swapchain->host, c->sync_interval, c->flags);
@@ -618,7 +618,8 @@ struct qemu_dxgi_swapchain_ResizeBuffers
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_swapchain_ResizeBuffers(IDXGISwapChain1 *iface, UINT buffer_count, UINT width, UINT height, DXGI_FORMAT format, UINT flags)
+static HRESULT STDMETHODCALLTYPE dxgi_swapchain_ResizeBuffers(IDXGISwapChain1 *iface, UINT buffer_count, UINT width,
+        UINT height, DXGI_FORMAT format, UINT flags)
 {
     struct qemu_dxgi_swapchain_ResizeBuffers call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
@@ -646,7 +647,8 @@ void qemu_dxgi_swapchain_ResizeBuffers(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     swapchain = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGISwapChain1_ResizeBuffers(swapchain->host, c->buffer_count, c->width, c->height, c->format, c->flags);
+    c->super.iret = IDXGISwapChain1_ResizeBuffers(swapchain->host, c->buffer_count, c->width, c->height,
+            c->format, c->flags);
 }
 
 #endif
@@ -1003,7 +1005,8 @@ struct qemu_dxgi_swapchain_Present1
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_swapchain_Present1(IDXGISwapChain1 *iface, UINT sync_interval, UINT flags, const DXGI_PRESENT_PARAMETERS *present_parameters)
+static HRESULT STDMETHODCALLTYPE dxgi_swapchain_Present1(IDXGISwapChain1 *iface, UINT sync_interval, UINT flags,
+        const DXGI_PRESENT_PARAMETERS *present_parameters)
 {
     struct qemu_dxgi_swapchain_Present1 call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);

@@ -366,7 +366,8 @@ void qemu_dxgi_surface_GetDesc(struct qemu_syscall *call)
     struct qemu_dxgi_surface_GetDesc *c = (struct qemu_dxgi_surface_GetDesc *)call;
     struct qemu_dxgi_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    /* DXGI_SURFACE_DESC has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGISurface1_GetDesc(surface->host, QEMU_G2H(c->desc));

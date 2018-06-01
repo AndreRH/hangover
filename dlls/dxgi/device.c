@@ -558,7 +558,7 @@ void qemu_dxgi_device_SetMaximumFrameLatency(struct qemu_syscall *call)
     struct qemu_dxgi_device_SetMaximumFrameLatency *c = (struct qemu_dxgi_device_SetMaximumFrameLatency *)call;
     struct qemu_dxgi_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGIDevice2_SetMaximumFrameLatency(device->host, c->max_latency);
@@ -596,7 +596,7 @@ void qemu_dxgi_device_GetMaximumFrameLatency(struct qemu_syscall *call)
     struct qemu_dxgi_device_GetMaximumFrameLatency *c = (struct qemu_dxgi_device_GetMaximumFrameLatency *)call;
     struct qemu_dxgi_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGIDevice2_GetMaximumFrameLatency(device->host, QEMU_G2H(c->max_latency));
