@@ -48,7 +48,6 @@ enum d3d11_calls
     CALL_D3D10_DEVICE_CREATESAMPLERSTATE,
     CALL_D3D10_DEVICE_CREATESHADERRESOURCEVIEW,
     CALL_D3D10_DEVICE_CREATESHADERRESOURCEVIEW1,
-    CALL_D3D10_DEVICE_CREATETEXTURE1D,
     CALL_D3D10_DEVICE_CREATETEXTURE3D,
     CALL_D3D10_DEVICE_CREATEVERTEXSHADER,
     CALL_D3D10_DEVICE_DRAW,
@@ -525,7 +524,6 @@ void qemu_d3d10_device_CreateRenderTargetView(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateSamplerState(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateShaderResourceView(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateShaderResourceView1(struct qemu_syscall *call);
-void qemu_d3d10_device_CreateTexture1D(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateTexture3D(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateVertexShader(struct qemu_syscall *call);
 void qemu_d3d10_device_Draw(struct qemu_syscall *call);

@@ -624,7 +624,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d10_device_CreateSamplerState,
     qemu_d3d10_device_CreateShaderResourceView,
     qemu_d3d10_device_CreateShaderResourceView1,
-    qemu_d3d10_device_CreateTexture1D,
     qemu_d3d10_device_CreateTexture3D,
     qemu_d3d10_device_CreateVertexShader,
     qemu_d3d10_device_Draw,
