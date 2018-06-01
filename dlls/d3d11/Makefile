@@ -12,7 +12,7 @@ d3d11.dll: d3d11.spec device_g.o main_g.o texture_g.o
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/d3d11.spec *_g.o -o d3d11.dll -nodefaultlibs -nostdlib -lwine -lmsvcrt -luuid -ldxguid -lkernel32 -ldxgi -L../../$(WINE_DIR)/libs/wine
 
 qemu_d3d11.dll.so: device_h.o main_h.o qemu_d3d11.spec texture_h.o
-	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_d3d11.spec *_h.o -o qemu_d3d11.dll.so -ld3d11
+	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_d3d11.spec *_h.o -o qemu_d3d11.dll.so
 
 %_g.o: %.c qemu_d3d11.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -I../../../wine/include/wine -Wno-format

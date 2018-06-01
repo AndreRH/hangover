@@ -243,13 +243,7 @@ HRESULT WINAPI D3D11CoreCreateDevice(IDXGIFactory *factory, IDXGIAdapter *adapte
     return S_OK;
 }
 
-#else
-
-#endif
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI HRESULT WINAPI D3D11CreateDevice(IDXGIAdapter *adapter, D3D_DRIVER_TYPE driver_type, HMODULE swrast,
+HRESULT WINAPI D3D11CreateDevice(IDXGIAdapter *adapter, D3D_DRIVER_TYPE driver_type, HMODULE swrast,
         UINT flags, const D3D_FEATURE_LEVEL *feature_levels, UINT levels, UINT sdk_version, ID3D11Device **device_out,
         D3D_FEATURE_LEVEL *obtained_feature_level, ID3D11DeviceContext **immediate_context)
 {
@@ -389,68 +383,96 @@ WINBASEAPI HRESULT WINAPI D3D11CreateDevice(IDXGIAdapter *adapter, D3D_DRIVER_TY
     return (device_out || immediate_context) ? S_OK : S_FALSE;
 }
 
-#endif
-
-struct qemu_D3D11CreateDeviceAndSwapChain
-{
-    struct qemu_syscall super;
-    uint64_t adapter;
-    uint64_t driver_type;
-    uint64_t swrast;
-    uint64_t flags;
-    uint64_t feature_levels;
-    uint64_t levels;
-    uint64_t sdk_version;
-    uint64_t swapchain_desc;
-    uint64_t swapchain;
-    uint64_t device_out;
-    uint64_t obtained_feature_level;
-    uint64_t immediate_context;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI HRESULT WINAPI D3D11CreateDeviceAndSwapChain(IDXGIAdapter *adapter, D3D_DRIVER_TYPE driver_type,
         HMODULE swrast, UINT flags, const D3D_FEATURE_LEVEL *feature_levels, UINT levels, UINT sdk_version,
         const DXGI_SWAP_CHAIN_DESC *swapchain_desc, IDXGISwapChain **swapchain, ID3D11Device **device_out,
         D3D_FEATURE_LEVEL *obtained_feature_level, ID3D11DeviceContext **immediate_context)
 {
-    struct qemu_D3D11CreateDeviceAndSwapChain call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11CREATEDEVICEANDSWAPCHAIN);
-    call.adapter = (ULONG_PTR)adapter;
-    call.driver_type = driver_type;
-    call.swrast = (ULONG_PTR)swrast;
-    call.flags = flags;
-    call.feature_levels = (ULONG_PTR)feature_levels;
-    call.levels = levels;
-    call.sdk_version = sdk_version;
-    call.swapchain_desc = (ULONG_PTR)swapchain_desc;
-    call.swapchain = (ULONG_PTR)swapchain;
-    call.device_out = (ULONG_PTR)device_out;
-    call.obtained_feature_level = (ULONG_PTR)obtained_feature_level;
-    call.immediate_context = (ULONG_PTR)immediate_context;
+    DXGI_SWAP_CHAIN_DESC desc;
+    IDXGIDevice *dxgi_device;
+    IDXGIFactory *factory;
+    ID3D11Device *device;
+    HRESULT hr;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("adapter %p, driver_type %x, swrast %p, flags %#x, feature_levels %p, levels %u, sdk_version %u, "
+            "swapchain_desc %p, swapchain %p, device %p, obtained_feature_level %p, immediate_context %p.\n",
+            adapter, driver_type, swrast, flags, feature_levels, levels, sdk_version,
+            swapchain_desc, swapchain, device_out, obtained_feature_level, immediate_context);
 
-    return call.super.iret;
-}
+    if (swapchain)
+        *swapchain = NULL;
+    if (device_out)
+        *device_out = NULL;
 
-#else
+    if (FAILED(hr = D3D11CreateDevice(adapter, driver_type, swrast, flags, feature_levels, levels, sdk_version,
+            &device, obtained_feature_level, immediate_context)))
+    {
+        WINE_WARN("Failed to create a device, returning %#x.\n", hr);
+        return hr;
+    }
 
-static void qemu_D3D11CreateDeviceAndSwapChain(struct qemu_syscall *call)
-{
-    struct qemu_D3D11CreateDeviceAndSwapChain *c = (struct qemu_D3D11CreateDeviceAndSwapChain *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = D3D11CreateDeviceAndSwapChain(QEMU_G2H(c->adapter), c->driver_type, QEMU_G2H(c->swrast),
-            c->flags, QEMU_G2H(c->feature_levels), c->levels, c->sdk_version, QEMU_G2H(c->swapchain_desc),
-            QEMU_G2H(c->swapchain), QEMU_G2H(c->device_out), QEMU_G2H(c->obtained_feature_level),
-            QEMU_G2H(c->immediate_context));
+    if (swapchain)
+    {
+        if (FAILED(hr = ID3D11Device_QueryInterface(device, &IID_IDXGIDevice, (void **)&dxgi_device)))
+        {
+            WINE_ERR("Failed to get a dxgi device from the d3d11 device, returning %#x.\n", hr);
+            goto cleanup;
+        }
+
+        hr = IDXGIDevice_GetAdapter(dxgi_device, &adapter);
+        IDXGIDevice_Release(dxgi_device);
+        if (FAILED(hr))
+        {
+            WINE_ERR("Failed to get the device adapter, returning %#x.\n", hr);
+            goto cleanup;
+        }
+
+        hr = IDXGIAdapter_GetParent(adapter, &IID_IDXGIFactory, (void **)&factory);
+        IDXGIAdapter_Release(adapter);
+        if (FAILED(hr))
+        {
+            WINE_ERR("Failed to get the adapter factory, returning %#x.\n", hr);
+            goto cleanup;
+        }
+
+        desc = *swapchain_desc;
+        hr = IDXGIFactory_CreateSwapChain(factory, (IUnknown *)device, &desc, swapchain);
+        IDXGIFactory_Release(factory);
+        if (FAILED(hr))
+        {
+            WINE_WARN("Failed to create a swapchain, returning %#x.\n", hr);
+            goto cleanup;
+        }
+
+        WINE_TRACE("Created IDXGISwapChain %p.\n", *swapchain);
+    }
+
+    if (device_out)
+        *device_out = device;
+    else
+        ID3D11Device_Release(device);
+
+    return (swapchain || device_out || immediate_context) ? S_OK : S_FALSE;
+
+cleanup:
+    ID3D11Device_Release(device);
+    if (obtained_feature_level)
+        *obtained_feature_level = 0;
+    if (immediate_context)
+    {
+        ID3D11DeviceContext_Release(*immediate_context);
+        *immediate_context = NULL;
+    }
+
+    return hr;
 }
 
 #endif
+
 struct qemu_dll_init
 {
     struct qemu_syscall super;
+    uint64_t reason;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -466,12 +488,19 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
     if (reason == DLL_PROCESS_ATTACH)
     {
         call.super.id = QEMU_SYSCALL_ID(CALL_INIT_DLL);
+        call.reason = DLL_PROCESS_ATTACH;
         qemu_syscall(&call.super);
 
         dxgi = GetModuleHandleA("dxgi");
         if (!dxgi)
             WINE_ERR("Cannot get dxgi.dll.\n");
         p_DXGID3D10CreateDevice = (void *)GetProcAddress(dxgi, "DXGID3D10CreateDevice");
+    }
+    else if (reason == DLL_PROCESS_DETACH)
+    {
+        call.super.id = QEMU_SYSCALL_ID(CALL_INIT_DLL);
+        call.reason = DLL_PROCESS_DETACH;
+        qemu_syscall(&call.super);
     }
 
     return TRUE;
@@ -546,6 +575,23 @@ UINT d3d11_resource_misc_flags_from_d3d10_resource_misc_flags(UINT resource_misc
 static void qemu_init_dll(struct qemu_syscall *call)
 {
     struct qemu_dll_init *c = (struct qemu_dll_init *)call;
+    HMODULE host_d3d11;
+
+    /* We don't call anything from d3d11 directly, so the build system won't link to it. But we need the
+     * host library present so that the dxgi wrapper will correctly translate the HMODULE passed to
+     * DXGID3D10CreateDevice via qemu_ops->qemu_module_g2h. */
+    switch (c->reason)
+    {
+        case DLL_PROCESS_ATTACH:
+            host_d3d11 = LoadLibraryA("d3d11");
+            if (!host_d3d11)
+                WINE_ERR("Failed to load d3d11.dll, expect problems.\n");
+            break;
+
+        case DLL_PROCESS_DETACH:
+            FreeLibrary(host_d3d11);
+            break;
+    }
 }
 
 const struct qemu_ops *qemu_ops;
@@ -910,7 +956,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d11_texture3d_SetEvictionPriority,
     qemu_d3d11_texture3d_SetPrivateData,
     qemu_d3d11_texture3d_SetPrivateDataInterface,
-    qemu_D3D11CreateDeviceAndSwapChain,
     qemu_d3d_device_inner_AddRef,
     qemu_d3d_device_inner_QueryInterface,
     qemu_d3d_device_inner_Release,
