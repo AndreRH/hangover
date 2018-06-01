@@ -288,7 +288,7 @@ void qemu_dxgi_surface_GetParent(struct qemu_syscall *call)
 {
     struct qemu_dxgi_surface_GetParent *c = (struct qemu_dxgi_surface_GetParent *)call;
     struct qemu_dxgi_surface *surface;
-    
+
     WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
     c->parent = QEMU_H2G(surface->device);
@@ -310,7 +310,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_surface_GetDevice(IDXGISurface1 *iface, RE
 {
     struct qemu_dxgi_surface_GetDevice call;
     struct qemu_dxgi_surface *surface = impl_from_IDXGISurface1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SURFACE_GETDEVICE);
     call.iface = (ULONG_PTR)surface;
     call.riid = (ULONG_PTR)riid;
@@ -327,10 +327,10 @@ void qemu_dxgi_surface_GetDevice(struct qemu_syscall *call)
 {
     struct qemu_dxgi_surface_GetDevice *c = (struct qemu_dxgi_surface_GetDevice *)call;
     struct qemu_dxgi_surface *surface;
-    
+
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
-    
+
     c->super.iret = IDXGISurface1_GetDevice(surface->host, QEMU_G2H(c->riid), QEMU_G2H(c->device));
 }
 
@@ -349,7 +349,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_surface_GetDesc(IDXGISurface1 *iface, DXGI
 {
     struct qemu_dxgi_surface_GetDesc call;
     struct qemu_dxgi_surface *surface = impl_from_IDXGISurface1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SURFACE_GETDESC);
     call.iface = (ULONG_PTR)surface;
     call.desc = (ULONG_PTR)desc;
@@ -365,10 +365,10 @@ void qemu_dxgi_surface_GetDesc(struct qemu_syscall *call)
 {
     struct qemu_dxgi_surface_GetDesc *c = (struct qemu_dxgi_surface_GetDesc *)call;
     struct qemu_dxgi_surface *surface;
-    
+
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
-    
+
     c->super.iret = IDXGISurface1_GetDesc(surface->host, QEMU_G2H(c->desc));
 }
 
@@ -388,7 +388,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_surface_Map(IDXGISurface1 *iface, DXGI_MAP
 {
     struct qemu_dxgi_surface_Map call;
     struct qemu_dxgi_surface *surface = impl_from_IDXGISurface1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SURFACE_MAP);
     call.iface = (ULONG_PTR)surface;
     call.mapped_rect = (ULONG_PTR)mapped_rect;
@@ -405,10 +405,10 @@ void qemu_dxgi_surface_Map(struct qemu_syscall *call)
 {
     struct qemu_dxgi_surface_Map *c = (struct qemu_dxgi_surface_Map *)call;
     struct qemu_dxgi_surface *surface;
-    
+
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
-    
+
     c->super.iret = IDXGISurface1_Map(surface->host, QEMU_G2H(c->mapped_rect), c->flags);
 }
 
@@ -426,7 +426,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_surface_Unmap(IDXGISurface1 *iface)
 {
     struct qemu_dxgi_surface_Unmap call;
     struct qemu_dxgi_surface *surface = impl_from_IDXGISurface1(iface);
-    
+
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SURFACE_UNMAP);
     call.iface = (ULONG_PTR)surface;
 
@@ -441,10 +441,10 @@ void qemu_dxgi_surface_Unmap(struct qemu_syscall *call)
 {
     struct qemu_dxgi_surface_Unmap *c = (struct qemu_dxgi_surface_Unmap *)call;
     struct qemu_dxgi_surface *surface;
-    
+
     WINE_FIXME("Unverified!\n");
     surface = QEMU_G2H(c->iface);
-    
+
     c->super.iret = IDXGISurface1_Unmap(surface->host);
 }
 
