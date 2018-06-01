@@ -127,7 +127,7 @@ void qemu_d3d11_immediate_context_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_immediate_context_AddRef *c = (struct qemu_d3d11_immediate_context_AddRef *)call;
     struct qemu_d3d11_device_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11DeviceContext1_AddRef(context->host);
@@ -163,7 +163,8 @@ void qemu_d3d11_immediate_context_Release(struct qemu_syscall *call)
     struct qemu_d3d11_immediate_context_Release *c = (struct qemu_d3d11_immediate_context_Release *)call;
     struct qemu_d3d11_device_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    /* As long as we only support the device-embedded immediate context we don't have to do anything here. */
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11DeviceContext1_Release(context->host);
