@@ -5507,22 +5507,30 @@ struct qemu_d3d11_device_CreateTexture1D
     uint64_t desc;
     uint64_t data;
     uint64_t texture;
+    uint64_t dxgi_surface;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_CreateTexture1D(ID3D11Device2 *iface, const D3D11_TEXTURE1D_DESC *desc, const D3D11_SUBRESOURCE_DATA *data, ID3D11Texture1D **texture)
+static HRESULT STDMETHODCALLTYPE d3d11_device_CreateTexture1D(ID3D11Device2 *iface, const D3D11_TEXTURE1D_DESC *desc,
+        const D3D11_SUBRESOURCE_DATA *data, ID3D11Texture1D **texture)
 {
     struct qemu_d3d11_device_CreateTexture1D call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
+    struct qemu_d3d11_texture1d *obj;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_CREATETEXTURE1D);
     call.iface = (ULONG_PTR)device;
     call.desc = (ULONG_PTR)desc;
     call.data = (ULONG_PTR)data;
-    call.texture = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    obj = (struct qemu_d3d11_texture1d *)(ULONG_PTR)call.texture;
+    qemu_d3d11_texture1d_guest_init(obj, device, call.dxgi_surface);
+    *texture = &obj->ID3D11Texture1D_iface;
 
     return call.super.iret;
 }
@@ -5562,11 +5570,30 @@ void qemu_d3d11_device_CreateTexture1D(struct qemu_syscall *call)
 {
     struct qemu_d3d11_device_CreateTexture1D *c = (struct qemu_d3d11_device_CreateTexture1D *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_texture1d *obj;
+    ID3D11Texture1D *host;
+    D3D11_SUBRESOURCE_DATA stack, *data = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    data = QEMU_G2H(c->data);
+#else
+    if (c->data)
+        D3D11_SUBRESOURCE_DATA_g2h(data, QEMU_G2H(c->data));
+    else
+        data = NULL;
+#endif
 
-    c->super.iret = ID3D11Device2_CreateTexture1D(device->host_d3d11, QEMU_G2H(c->desc), QEMU_G2H(c->data), QEMU_G2H(c->texture));
+    c->super.iret = ID3D11Device2_CreateTexture1D(device->host_d3d11, QEMU_G2H(c->desc), data, &host);
+    if (FAILED(c->super.iret))
+        return;
+
+    c->super.iret = qemu_d3d11_texture1d_create(host, device, &c->dxgi_surface, &obj);
+    if (FAILED(c->super.iret))
+        ID3D11Texture1D_Release(host);
+
+    c->texture = QEMU_H2G(obj);
 }
 
 #endif

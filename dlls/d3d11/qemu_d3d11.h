@@ -437,6 +437,8 @@ struct qemu_d3d11_texture1d
     /* Host fields */
     ID3D11Texture1D *host11;
     ID3D10Texture1D *host10;
+    IUnknown priv_data_iface;
+    ULONG refcount;
 };
 
 struct qemu_d3d11_texture2d
@@ -860,6 +862,8 @@ void qemu_d3d_device_inner_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d_device_inner_Release(struct qemu_syscall *call);
 void qemu_wrap_implicit_surface(struct qemu_syscall *call);
 
+HRESULT qemu_d3d11_texture1d_create(ID3D11Texture1D *host, struct qemu_d3d11_device *device,
+        uint64_t *dxgi_surface, struct qemu_d3d11_texture1d **texture);
 HRESULT qemu_d3d11_texture2d_create(ID3D11Texture2D *host, struct qemu_d3d11_device *device,
         uint64_t *dxgi_surface, struct qemu_d3d11_texture2d **texture);
 
