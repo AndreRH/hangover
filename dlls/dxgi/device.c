@@ -346,7 +346,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_device_CreateSurface(IDXGIDevice2 *iface, 
     UINT i;
     UINT j;
 
-    WINE_FIXME("iface %p, desc %p, surface_count %u, usage %#x, shared_resource %p, surface %p.\n",
+    WINE_TRACE("iface %p, desc %p, surface_count %u, usage %#x, shared_resource %p, surface %p.\n",
             iface, desc, surface_count, usage, shared_resource, surface);
 
     hr = IDXGIDevice_QueryInterface(iface, &IID_ID3D11Device, (void **)&d3d11_device);
@@ -766,7 +766,7 @@ static HRESULT STDMETHODCALLTYPE qemu_device_create_surface(IQemuDXGIDevice *ifa
     struct qemu_dxgi_surface *obj;
     struct qemu_dxgi_device_create_surface call;
 
-    WINE_FIXME("Creating a DXGI Surface for d3d11 texture %p.\n", outer);
+    WINE_TRACE("Creating a DXGI Surface for d3d11 texture %p.\n", outer);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_QEMU_DEVICE_CREATE_SURFACE);
     call.iface = (ULONG_PTR)device;
@@ -900,7 +900,7 @@ void qemu_dxgi_device_create_surface(struct qemu_syscall *call)
     struct qemu_dxgi_device *device;
     struct qemu_dxgi_surface *obj;
 
-    WINE_FIXME("\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = qemu_dxgi_surface_create(QEMU_G2H(c->host), device, &obj);

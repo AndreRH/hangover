@@ -811,6 +811,7 @@ static const syscall_handler dll_functions[] =
     qemu_init_dll,
     qemu_layer_create,
     qemu_layer_get_size,
+    qemu_wrap_implicit_surface,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)

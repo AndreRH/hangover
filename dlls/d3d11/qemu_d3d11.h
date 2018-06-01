@@ -388,6 +388,7 @@ enum d3d11_calls
     CALL_INIT_DLL,
     CALL_LAYER_CREATE,
     CALL_LAYER_GET_SIZE,
+    CALL_WRAP_IMPLICIT_SURFACE,
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -410,6 +411,7 @@ struct qemu_d3d11_device
     ID3D11Device2 ID3D11Device2_iface;
     ID3D10Device1 ID3D10Device1_iface;
     ID3D10Multithread ID3D10Multithread_iface;
+    IQemuD3D11Device IQemuD3D11Device_iface;
     IUnknown *outer_unk;
 
     /* Host fields */
@@ -858,6 +860,7 @@ void qemu_d3d11_texture3d_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d_device_inner_AddRef(struct qemu_syscall *call);
 void qemu_d3d_device_inner_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d_device_inner_Release(struct qemu_syscall *call);
+void qemu_wrap_implicit_surface(struct qemu_syscall *call);
 
 HRESULT qemu_d3d11_texture2d_create(ID3D11Texture2D *host, struct qemu_d3d11_device *device,
         uint64_t *dxgi_surface, struct qemu_d3d11_texture2d **texture);

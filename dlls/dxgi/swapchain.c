@@ -401,11 +401,8 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetBuffer(IDXGISwapChain1 *iface
         IDXGISurface_Release(&impl->IDXGISurface1_iface);
         return hr;
     }
-    /* Ok, this is the call from qemu_dxgi_swapchain_guest_init. We can't call QI because we don't have a
-     * vtable yet. Keep the reference from the host call and return the interface manually. */
-    if (!IsEqualGUID(riid, &IID_IDXGISurface1))
-        WINE_ERR("Unexpected GUID.\n");
-    *surface = &impl->IDXGISurface1_iface;
+    WINE_ERR("Did not expect to get here any more.\n");
+    ExitProcess(1);
     return call.super.iret;
 }
 
@@ -1303,13 +1300,14 @@ static struct IDXGISwapChain1Vtbl dxgi_swapchain_vtbl =
     dxgi_swapchain_GetRotation,
 };
 
-void qemu_dxgi_swapchain_guest_init(struct qemu_dxgi_swapchain *swapchain)
+void qemu_dxgi_swapchain_guest_init(struct qemu_dxgi_device *device, uint64_t *host_buffers,
+        struct qemu_dxgi_swapchain *swapchain)
 {
     DXGI_SWAP_CHAIN_DESC desc;
     UINT i;
-    struct qemu_dxgi_surface *surface;
-    IDXGISurface1 *surface_iface;
+    IUnknown *surface;
     HRESULT hr;
+    IQemuD3D11Device *qemu_device;
 
     swapchain->IDXGISwapChain1_iface.lpVtbl = &dxgi_swapchain_vtbl;
     wined3d_private_store_init(&swapchain->private_store);
@@ -1318,23 +1316,25 @@ void qemu_dxgi_swapchain_guest_init(struct qemu_dxgi_swapchain *swapchain)
     if (FAILED(hr))
         WINE_ERR("Failed to get swapchain desc.\n");
 
+    hr = IDXGIDevice2_QueryInterface(&device->IDXGIDevice2_iface, &IID_IQemuD3D11Device, (void **)&qemu_device);
+    if (FAILED(hr))
+        WINE_ERR("Device should implement IQemuD3D11Device.\n");
+
     for (i = 0; i < desc.BufferCount; ++i)
     {
-        hr = IDXGISwapChain_GetBuffer(&swapchain->IDXGISwapChain1_iface, i, &IID_IDXGISurface1,
-                (void **)&surface_iface);
+        hr = qemu_device->lpVtbl->wrap_implicit_surface(qemu_device, host_buffers[i], &surface);
         if (FAILED(hr))
-            WINE_ERR("Failed to get buffer %u.\n", i);
-
-        surface = impl_from_IDXGISurface1(surface_iface);
-        qemu_dxgi_surface_guest_init(surface, NULL);
-        IDXGISurface_Release(surface_iface);
+            WINE_ERR("Failed to create d3d11 wrapper for buffer %u.\n", i);
+        IUnknown_Release(surface);
     }
+
+    qemu_device->lpVtbl->Release(qemu_device);
 }
 
 #else
 
 HRESULT qemu_dxgi_swapchain_create(IDXGISwapChain1 *host, struct qemu_dxgi_device *device,
-        struct qemu_dxgi_factory *factory, struct qemu_dxgi_swapchain **swapchain)
+        struct qemu_dxgi_factory *factory, uint64_t **host_buffers, struct qemu_dxgi_swapchain **swapchain)
 {
     struct qemu_dxgi_swapchain *obj;
     DXGI_SWAP_CHAIN_DESC desc;
@@ -1358,21 +1358,21 @@ HRESULT qemu_dxgi_swapchain_create(IDXGISwapChain1 *host, struct qemu_dxgi_devic
     if (FAILED(hr))
         WINE_ERR("Failed to get swapchain desc.\n");
 
+    *host_buffers = HeapAlloc(GetProcessHeap(), 0, desc.BufferCount * sizeof(*host_buffers));
+    if (!host_buffers)
+    {
+        WINE_WARN("Out of memory\n");
+        HeapFree(GetProcessHeap(), 0, obj);
+    }
+
     for (i = 0; i < desc.BufferCount; ++i)
     {
         hr = IDXGISwapChain1_GetBuffer(host, i, &IID_IDXGISurface1, (void **)&buffer);
         if (FAILED(hr))
             WINE_ERR("Failed to get buffer %u.\n", i);
 
-        hr = qemu_dxgi_surface_create(buffer, device, &surface);
+        (*host_buffers)[i] = QEMU_H2G(buffer);
         IDXGISurface1_Release(buffer);
-
-        /* Freeing the swapchain will free already created wrappers. */
-        if (FAILED(hr))
-        {
-            WINE_WARN("Creating a surface wrapper for buffer %u failed.\n", i);
-            return hr;
-        }
     }
     *swapchain = obj;
 

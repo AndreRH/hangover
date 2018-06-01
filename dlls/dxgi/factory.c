@@ -453,6 +453,7 @@ struct qemu_dxgi_factory_CreateSwapChain
     uint64_t device;
     uint64_t desc;
     uint64_t swapchain;
+    uint64_t host_buffers;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -463,6 +464,8 @@ static HRESULT STDMETHODCALLTYPE dxgi_factory_CreateSwapChain(IDXGIFactory5 *ifa
     struct qemu_dxgi_factory_CreateSwapChain call;
     struct qemu_dxgi_factory *factory = impl_from_IDXGIFactory5(iface);
     struct qemu_dxgi_swapchain *obj;
+    uint64_t *host_buffers;
+    struct qemu_dxgi_device *device_impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_FACTORY_CREATESWAPCHAIN);
     call.iface = (ULONG_PTR)factory;
@@ -471,7 +474,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_factory_CreateSwapChain(IDXGIFactory5 *ifa
 
     if (device)
     {
-        struct qemu_dxgi_device *device_impl = unsafe_impl_from_IDXGIDevice(device);
+        device_impl = unsafe_impl_from_IDXGIDevice(device);
         if (!device)
         {
             WINE_WARN("This is not the device we are looking for.\n");
@@ -482,6 +485,7 @@ static HRESULT STDMETHODCALLTYPE dxgi_factory_CreateSwapChain(IDXGIFactory5 *ifa
     else
     {
         call.device = 0;
+        device_impl = NULL;
     }
 
     qemu_syscall(&call.super);
@@ -489,8 +493,12 @@ static HRESULT STDMETHODCALLTYPE dxgi_factory_CreateSwapChain(IDXGIFactory5 *ifa
         return call.super.iret;
 
     obj = (struct qemu_dxgi_swapchain *)(ULONG_PTR)call.swapchain;
-    qemu_dxgi_swapchain_guest_init(obj);
+    host_buffers = (uint64_t *)(ULONG_PTR)call.host_buffers;
+
+    qemu_dxgi_swapchain_guest_init(device_impl, host_buffers, obj);
     *swapchain = (IDXGISwapChain *)&obj->IDXGISwapChain1_iface;
+
+    HeapFree(GetProcessHeap(), 0, host_buffers);
 
     return call.super.iret;
 }
@@ -505,6 +513,7 @@ void qemu_dxgi_factory_CreateSwapChain(struct qemu_syscall *call)
     DXGI_SWAP_CHAIN_DESC stack, *desc = &stack;
     IDXGISwapChain1 *host;
     struct qemu_dxgi_swapchain *obj;
+    uint64_t *host_buffers;
 
     WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
@@ -523,13 +532,14 @@ void qemu_dxgi_factory_CreateSwapChain(struct qemu_syscall *call)
     if (FAILED(c->super.iret))
         return;
 
-    c->super.iret = qemu_dxgi_swapchain_create(host, device, factory, &obj);
+    c->super.iret = qemu_dxgi_swapchain_create(host, device, factory, &host_buffers, &obj);
     if (FAILED(c->super.iret))
     {
         IDXGISwapChain1_Release(host);
         return;
     }
     c->swapchain = QEMU_H2G(obj);
+    c->host_buffers = QEMU_H2G(host_buffers);
 }
 
 #endif

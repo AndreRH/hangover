@@ -7663,6 +7663,10 @@ static HRESULT STDMETHODCALLTYPE d3d_device_inner_QueryInterface(IUnknown *iface
     {
         *out = &device->ID3D10Multithread_iface;
     }
+    else if (IsEqualGUID(riid, &IID_IQemuD3D11Device))
+    {
+        *out = &device->IQemuD3D11Device_iface;
+    }
     else
     {
         /* Test if we're supposed to know about it. */
@@ -11825,7 +11829,72 @@ void qemu_d3d10_multithread_GetMultithreadProtected(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_wrap_implicit_surface
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t host_dxgi;
+    uint64_t texture;
+};
+
 #ifdef QEMU_DLL_GUEST
+
+static inline struct qemu_d3d11_device *impl_from_IQemuD3D11Device(IQemuD3D11Device *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_device, IQemuD3D11Device_iface);
+}
+
+static HRESULT STDMETHODCALLTYPE qemu_device_QueryInterface(IQemuD3D11Device *iface, REFIID riid, void **out)
+{
+    struct qemu_d3d11_device *device = impl_from_IQemuD3D11Device(iface);
+    return IUnknown_QueryInterface(device->outer_unk, riid, out);
+}
+
+static ULONG STDMETHODCALLTYPE qemu_device_AddRef(IQemuD3D11Device *iface)
+{
+    struct qemu_d3d11_device *device = impl_from_IQemuD3D11Device(iface);
+    return IUnknown_AddRef(device->outer_unk);
+}
+
+static ULONG STDMETHODCALLTYPE qemu_device_Release(IQemuD3D11Device *iface)
+{
+    struct qemu_d3d11_device *device = impl_from_IQemuD3D11Device(iface);
+    return IUnknown_Release(device->outer_unk);
+}
+
+static HRESULT STDMETHODCALLTYPE qemu_device_wrap_implicit_surface(IQemuD3D11Device *iface, uint64_t host,
+        IUnknown **surface)
+{
+    struct qemu_wrap_implicit_surface call;
+    struct qemu_d3d11_device *device = impl_from_IQemuD3D11Device(iface);
+    struct qemu_d3d11_texture2d *texture;
+
+    WINE_TRACE("Creating d3d11 texture for host DXGI surface %p.\n", (void *)(ULONG_PTR)host);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_WRAP_IMPLICIT_SURFACE);
+    call.iface = (ULONG_PTR)device;
+    call.host_dxgi = host;
+    qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    texture = (struct qemu_d3d11_texture2d *)(ULONG_PTR)call.texture;
+    qemu_d3d11_texture2d_guest_init(texture, device, host);
+    *surface = (IUnknown *)&texture->ID3D11Texture2D_iface;
+    IUnknown_AddRef(*surface);
+
+    return S_OK;
+}
+
+static struct IQemuD3D11DeviceVtbl qemu_device_vtbl =
+{
+    /* IUnknown methods */
+    qemu_device_QueryInterface,
+    qemu_device_AddRef,
+    qemu_device_Release,
+    /* IQemuDXGIDeviceVtbl methods */
+    qemu_device_wrap_implicit_surface,
+};
 
 static struct
 {
@@ -12207,9 +12276,31 @@ void qemu_d3d11_device_guest_init(struct qemu_d3d11_device *device, void *outer_
     device->ID3D11Device2_iface.lpVtbl = &d3d11_device_vtbl.vtbl1;
     device->ID3D10Device1_iface.lpVtbl = &d3d10_device1_vtbl;
     device->ID3D10Multithread_iface.lpVtbl = &d3d10_multithread_vtbl;
+    device->IQemuD3D11Device_iface.lpVtbl = &qemu_device_vtbl;
     device->outer_unk = outer_unknown;
 }
 
 #else
+
+void qemu_wrap_implicit_surface(struct qemu_syscall *call)
+{
+    struct qemu_wrap_implicit_surface *c = (struct qemu_wrap_implicit_surface *)call;
+    struct qemu_d3d11_device *device;
+    struct qemu_d3d11_texture2d *texture;
+    ID3D11Texture2D *host;
+    uint64_t dummy;
+
+    WINE_TRACE("\n");
+    device = QEMU_G2H(c->iface);
+
+    c->super.iret = IUnknown_QueryInterface((IUnknown *)QEMU_G2H(c->host_dxgi), &IID_ID3D11Texture2D, (void **)&host);
+    if (FAILED(c->super.iret))
+        WINE_ERR("Could not get ID3D11Texture2D interface.\n");
+
+    c->super.iret = qemu_d3d11_texture2d_create(host, device, &dummy, &texture);
+    c->texture = QEMU_H2G(texture);
+
+    ID3D11Texture2D_Release(host);
+}
 
 #endif

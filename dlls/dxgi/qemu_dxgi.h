@@ -283,7 +283,8 @@ void qemu_dxgi_adapter_guest_init(struct qemu_dxgi_adapter *adapter);
 void qemu_dxgi_output_guest_init(struct qemu_dxgi_output *output);
 void qemu_dxgi_device_guest_init(struct qemu_dxgi_device *device);
 void qemu_dxgi_surface_guest_init(struct qemu_dxgi_surface *surface, IUnknown *outer_unknown);
-void qemu_dxgi_swapchain_guest_init(struct qemu_dxgi_swapchain *swapchain);
+void qemu_dxgi_swapchain_guest_init(struct qemu_dxgi_device *device, uint64_t *host_buffers,
+        struct qemu_dxgi_swapchain *swapchain);
 
 void __fastcall dxgi_factory_guest_destroy(struct qemu_dxgi_factory *factory);
 void __fastcall dxgi_adapter_guest_destroy(struct qemu_dxgi_adapter *adapter);
@@ -443,7 +444,7 @@ HRESULT qemu_dxgi_device_create(HMODULE mod, struct qemu_dxgi_adapter *adapter, 
 HRESULT qemu_dxgi_surface_create(IDXGISurface1 *host, struct qemu_dxgi_device *device,
         struct qemu_dxgi_surface **surface);
 HRESULT qemu_dxgi_swapchain_create(IDXGISwapChain1 *host, struct qemu_dxgi_device *device,
-        struct qemu_dxgi_factory *factory, struct qemu_dxgi_swapchain **swapchain);
+        struct qemu_dxgi_factory *factory, uint64_t **host_buffers, struct qemu_dxgi_swapchain **swapchain);
 
 struct qemu_dxgi_surface *surface_from_host(IDXGISurface1 *host);
 struct qemu_dxgi_output *output_from_host(IDXGIOutput4 *host);

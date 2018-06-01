@@ -70,4 +70,19 @@ DECLARE_INTERFACE_(IQemuDXGIDevice,IUnknown)
 };
 #undef INTERFACE
 
+DEFINE_GUID(IID_IQemuD3D11Device,0x9b806582,0xef16,0x42e9,0x9e,0xea,0x04,0xcf,0xf3,0x2d,0xbf,0x67);
+
+#undef INTERFACE
+#define INTERFACE IQemuD3D11Device
+DECLARE_INTERFACE_(IQemuD3D11Device,IUnknown)
+{
+    /*** IUnknown methods ***/
+    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
+    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
+    STDMETHOD_(ULONG,Release)(THIS) PURE;
+    /*** IQemuD3D11Device methods ***/
+    STDMETHOD(wrap_implicit_surface)(THIS_ uint64_t host, IUnknown **surface) PURE;
+};
+#undef INTERFACE
+
 #endif
