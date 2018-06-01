@@ -174,6 +174,32 @@ static void qemu_layer_get_size(struct qemu_syscall *call)
     call->iret = sizeof(struct qemu_d3d11_device);
 }
 
+static HRESULT STDMETHODCALLTYPE d3d11_device_priv_data_QueryInterface(IUnknown *iface, REFIID riid, void **out)
+{
+    WINE_ERR("Unexpected call\n");
+    *out = NULL;
+    return E_NOINTERFACE;
+}
+
+static ULONG STDMETHODCALLTYPE d3d11_device_priv_data_AddRef(IUnknown *iface)
+{
+    return 2;
+}
+
+static ULONG STDMETHODCALLTYPE d3d11_device_priv_data_Release(IUnknown *iface)
+{
+    /* Don't bother freeing anything. The wrapper struct dies with the dxgi struct. */
+    return 1;
+}
+
+static struct IUnknownVtbl priv_data_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_device_priv_data_QueryInterface,
+    d3d11_device_priv_data_AddRef,
+    d3d11_device_priv_data_Release,
+};
+
 static void qemu_layer_create(struct qemu_syscall *call)
 {
     struct qemu_layer_create *c = (struct qemu_layer_create *)call;
@@ -208,6 +234,8 @@ static void qemu_layer_create(struct qemu_syscall *call)
 
     c->immediate_context = QEMU_H2G(&device->immediate_context);
 
+    device->priv_data_iface.lpVtbl = &priv_data_vtbl;
+    ID3D11Device_SetPrivateDataInterface(device->host_d3d11, &IID_d3d11_priv_data, &device->priv_data_iface);
 }
 
 #endif

@@ -12312,4 +12312,23 @@ void qemu_wrap_implicit_surface(struct qemu_syscall *call)
     ID3D11Texture2D_Release(host);
 }
 
+static inline struct qemu_d3d11_device *impl_from_priv_data(IUnknown *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_device, priv_data_iface);
+}
+
+struct qemu_d3d11_device *device_from_host(ID3D11Device2 *host)
+{
+    IUnknown *priv;
+    DWORD size = sizeof(priv);
+    HRESULT hr;
+
+    hr = ID3D11Device2_GetPrivateData(host, &IID_d3d11_priv_data, &size, &priv);
+    if (FAILED(hr))
+        WINE_ERR("Failed to get private data from host surface %p.\n", host);
+
+    IUnknown_Release(priv);
+    return impl_from_priv_data(priv);
+}
+
 #endif

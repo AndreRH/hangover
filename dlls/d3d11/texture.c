@@ -178,12 +178,15 @@ static void STDMETHODCALLTYPE d3d11_texture1d_GetDevice(ID3D11Texture1D *iface, 
 {
     struct qemu_d3d11_texture1d_GetDevice call;
     struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture1D(iface);
+    struct qemu_d3d11_device *dev_impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE1D_GETDEVICE);
     call.iface = (ULONG_PTR)texture;
-    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
+
+    dev_impl = (struct qemu_d3d11_device *)(ULONG_PTR)call.device;
+    *device = (ID3D11Device *)&dev_impl->ID3D11Device2_iface;
 }
 
 #else
@@ -192,11 +195,13 @@ void qemu_d3d11_texture1d_GetDevice(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture1d_GetDevice *c = (struct qemu_d3d11_texture1d_GetDevice *)call;
     struct qemu_d3d11_texture *texture;
+    ID3D11Device2 *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    ID3D11Texture1D_GetDevice(texture->host11_1d, QEMU_G2H(c->device));
+    ID3D11Texture1D_GetDevice(texture->host11_1d, (ID3D11Device **)&host);
+    c->device = QEMU_H2G(device_from_host(host));
 }
 
 #endif
@@ -3082,7 +3087,6 @@ static struct IUnknownVtbl priv_data_vtbl =
 #include <initguid.h>
 
 /* Do not make this the same as IID_Qemu_surface_priv_data */
-DEFINE_GUID(IID_d3d11_texture_priv_data, 0x2b676c65, 0x7123, 0x4138, 0xb6, 0xdb, 0x96, 0xfe, 0xa9, 0xae, 0x00, 0x43);
 
 HRESULT qemu_d3d11_texture1d_create(ID3D11Texture1D *host, struct qemu_d3d11_device *device,
         uint64_t *dxgi_surface, struct qemu_d3d11_texture **texture)
@@ -3119,7 +3123,7 @@ HRESULT qemu_d3d11_texture1d_create(ID3D11Texture1D *host, struct qemu_d3d11_dev
 
     obj->priv_data_iface.lpVtbl = &priv_data_vtbl;
     /* Leave the ref at 0, we want the host obj to own the only / final reference. */
-    ID3D11Texture1D_SetPrivateDataInterface(host, &IID_d3d11_texture_priv_data, &obj->priv_data_iface);
+    ID3D11Texture1D_SetPrivateDataInterface(host, &IID_d3d11_priv_data, &obj->priv_data_iface);
 
     *texture = obj;
     return S_OK;
@@ -3160,7 +3164,7 @@ HRESULT qemu_d3d11_texture2d_create(ID3D11Texture2D *host, struct qemu_d3d11_dev
 
     obj->priv_data_iface.lpVtbl = &priv_data_vtbl;
     /* Leave the ref at 0, we want the host obj to own the only / final reference. */
-    ID3D11Texture2D_SetPrivateDataInterface(host, &IID_d3d11_texture_priv_data, &obj->priv_data_iface);
+    ID3D11Texture2D_SetPrivateDataInterface(host, &IID_d3d11_priv_data, &obj->priv_data_iface);
 
     *texture = obj;
     return S_OK;

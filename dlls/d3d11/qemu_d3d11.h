@@ -425,6 +425,7 @@ struct qemu_d3d11_device
     ID3D10Device1 *host_d3d10;
     ID3D10Multithread *host_mt;
     struct qemu_d3d11_device_context immediate_context;
+    IUnknown priv_data_iface;
 };
 
 struct qemu_d3d11_texture
@@ -861,6 +862,10 @@ HRESULT qemu_d3d11_texture1d_create(ID3D11Texture1D *host, struct qemu_d3d11_dev
         uint64_t *dxgi_surface, struct qemu_d3d11_texture **texture);
 HRESULT qemu_d3d11_texture2d_create(ID3D11Texture2D *host, struct qemu_d3d11_device *device,
         uint64_t *dxgi_surface, struct qemu_d3d11_texture **texture);
+
+DEFINE_GUID(IID_d3d11_priv_data, 0x2b676c65, 0x7123, 0x4138, 0xb6, 0xdb, 0x96, 0xfe, 0xa9, 0xae, 0x00, 0x43);
+
+struct qemu_d3d11_device *device_from_host(ID3D11Device2 *host);
 
 #endif
 
