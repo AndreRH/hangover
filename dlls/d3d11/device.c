@@ -6982,7 +6982,7 @@ void qemu_d3d11_device_GetFeatureLevel(struct qemu_syscall *call)
     struct qemu_d3d11_device_GetFeatureLevel *c = (struct qemu_d3d11_device_GetFeatureLevel *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11Device2_GetFeatureLevel(device->host_d3d11);
@@ -11633,7 +11633,7 @@ void qemu_d3d10_device_GetFeatureLevel(struct qemu_syscall *call)
     struct qemu_d3d10_device_GetFeatureLevel *c = (struct qemu_d3d10_device_GetFeatureLevel *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Device1_GetFeatureLevel(device->host_d3d10);
