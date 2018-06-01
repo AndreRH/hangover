@@ -63,19 +63,53 @@ static inline struct qemu_d3d11_texture *impl_from_ID3D11Texture1D(ID3D11Texture
     return CONTAINING_RECORD(iface, struct qemu_d3d11_texture, ID3D11Texture1D_iface);
 }
 
+static inline struct qemu_d3d11_texture *impl_from_ID3D10Texture1D(ID3D10Texture1D *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture, ID3D10Texture1D_iface);
+}
+
 static HRESULT STDMETHODCALLTYPE d3d11_texture1d_QueryInterface(ID3D11Texture1D *iface, REFIID iid, void **out)
 {
     struct qemu_d3d11_texture1d_QueryInterface call;
     struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture1D(iface);
 
+    WINE_TRACE("iface %p, iid %s, out %p.\n", iface, wine_dbgstr_guid(iid), out);
+
+    if (IsEqualGUID(iid, &IID_ID3D11Texture1D)
+            || IsEqualGUID(iid, &IID_ID3D11Resource)
+            || IsEqualGUID(iid, &IID_ID3D11DeviceChild)
+            || IsEqualGUID(iid, &IID_IUnknown))
+    {
+        *out = iface;
+        IUnknown_AddRef(iface);
+        return S_OK;
+    }
+
+    if (IsEqualGUID(iid, &IID_ID3D10Texture1D)
+            || IsEqualGUID(iid, &IID_ID3D10Resource)
+            || IsEqualGUID(iid, &IID_ID3D10DeviceChild))
+    {
+        *out = &texture->ID3D10Texture1D_iface;
+        IUnknown_AddRef((IUnknown *)*out);
+        return S_OK;
+    }
+
+    if (texture->dxgi_surface)
+    {
+        WINE_TRACE("Forwarding to dxgi surface.\n");
+        return IUnknown_QueryInterface(texture->dxgi_surface, iid, out);
+    }
+
+    WINE_WARN("%s not implemented, returning E_NOINTERFACE.\n", wine_dbgstr_guid(iid));
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE1D_QUERYINTERFACE);
     call.iface = (ULONG_PTR)texture;
     call.iid = (ULONG_PTR)iid;
-    call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    *out = NULL;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -84,11 +118,18 @@ void qemu_d3d11_texture1d_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture1d_QueryInterface *c = (struct qemu_d3d11_texture1d_QueryInterface *)call;
     struct qemu_d3d11_texture *texture;
+    IUnknown *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture1D_QueryInterface(texture->host11_1d, QEMU_G2H(c->iid), QEMU_G2H(c->out));
+    c->super.iret = ID3D11Texture1D_QueryInterface(texture->host11_1d, QEMU_G2H(c->iid), (void **)&obj);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->iid)));
+        IUnknown_Release(obj);
+    }
 }
 
 #endif
@@ -187,6 +228,21 @@ static void STDMETHODCALLTYPE d3d11_texture1d_GetDevice(ID3D11Texture1D *iface, 
 
     dev_impl = (struct qemu_d3d11_device *)(ULONG_PTR)call.device;
     *device = (ID3D11Device *)&dev_impl->ID3D11Device2_iface;
+}
+
+static void STDMETHODCALLTYPE d3d10_texture1d_GetDevice(ID3D10Texture1D *iface, ID3D10Device **device)
+{
+    struct qemu_d3d11_texture1d_GetDevice call;
+    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
+    struct qemu_d3d11_device *dev_impl;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE1D_GETDEVICE);
+    call.iface = (ULONG_PTR)texture;
+
+    qemu_syscall(&call.super);
+
+    dev_impl = (struct qemu_d3d11_device *)(ULONG_PTR)call.device;
+    *device = (ID3D10Device *)&dev_impl->ID3D10Device1_iface;
 }
 
 #else
@@ -474,47 +530,15 @@ void qemu_d3d11_texture1d_GetDesc(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_texture1d_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t iid;
-    uint64_t out;
-};
-
 #ifdef QEMU_DLL_GUEST
-
-static inline struct qemu_d3d11_texture *impl_from_ID3D10Texture1D(ID3D10Texture1D *iface)
-{
-    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture, ID3D10Texture1D_iface);
-}
 
 static HRESULT STDMETHODCALLTYPE d3d10_texture1d_QueryInterface(ID3D10Texture1D *iface, REFIID iid, void **out)
 {
-    struct qemu_d3d10_texture1d_QueryInterface call;
     struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE1D_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)texture;
-    call.iid = (ULONG_PTR)iid;
-    call.out = (ULONG_PTR)out;
+    WINE_TRACE("iface %p, iid %s, out %p.\n", iface, wine_dbgstr_guid(iid), out);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_texture1d_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_texture1d_QueryInterface *c = (struct qemu_d3d10_texture1d_QueryInterface *)call;
-    struct qemu_d3d11_texture *texture;
-
-    WINE_FIXME("Unverified!\n");
-    texture = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Texture1D_QueryInterface(texture->host10_1d, QEMU_G2H(c->iid), QEMU_G2H(c->out));
+    return d3d11_texture1d_QueryInterface(&texture->ID3D11Texture1D_iface, iid, out);
 }
 
 #endif
@@ -587,42 +611,6 @@ void qemu_d3d10_texture1d_Release(struct qemu_syscall *call)
     texture = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Texture1D_Release(texture->host10_1d);
-}
-
-#endif
-
-struct qemu_d3d10_texture1d_GetDevice
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t device;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static void STDMETHODCALLTYPE d3d10_texture1d_GetDevice(ID3D10Texture1D *iface, ID3D10Device **device)
-{
-    struct qemu_d3d10_texture1d_GetDevice call;
-    struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE1D_GETDEVICE);
-    call.iface = (ULONG_PTR)texture;
-    call.device = (ULONG_PTR)device;
-
-    qemu_syscall(&call.super);
-}
-
-#else
-
-void qemu_d3d10_texture1d_GetDevice(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_texture1d_GetDevice *c = (struct qemu_d3d10_texture1d_GetDevice *)call;
-    struct qemu_d3d11_texture *texture;
-
-    WINE_FIXME("Unverified!\n");
-    texture = QEMU_G2H(c->iface);
-
-    ID3D10Texture1D_GetDevice(texture->host10_1d, QEMU_G2H(c->device));
 }
 
 #endif

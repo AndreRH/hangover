@@ -124,12 +124,10 @@ enum d3d11_calls
     CALL_D3D10_MULTITHREAD_SETMULTITHREADPROTECTED,
     CALL_D3D10_TEXTURE1D_ADDREF,
     CALL_D3D10_TEXTURE1D_GETDESC,
-    CALL_D3D10_TEXTURE1D_GETDEVICE,
     CALL_D3D10_TEXTURE1D_GETEVICTIONPRIORITY,
     CALL_D3D10_TEXTURE1D_GETPRIVATEDATA,
     CALL_D3D10_TEXTURE1D_GETTYPE,
     CALL_D3D10_TEXTURE1D_MAP,
-    CALL_D3D10_TEXTURE1D_QUERYINTERFACE,
     CALL_D3D10_TEXTURE1D_RELEASE,
     CALL_D3D10_TEXTURE1D_SETEVICTIONPRIORITY,
     CALL_D3D10_TEXTURE1D_SETPRIVATEDATA,
@@ -606,7 +604,6 @@ void qemu_d3d10_texture1d_GetEvictionPriority(struct qemu_syscall *call);
 void qemu_d3d10_texture1d_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_texture1d_GetType(struct qemu_syscall *call);
 void qemu_d3d10_texture1d_Map(struct qemu_syscall *call);
-void qemu_d3d10_texture1d_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_texture1d_Release(struct qemu_syscall *call);
 void qemu_d3d10_texture1d_SetEvictionPriority(struct qemu_syscall *call);
 void qemu_d3d10_texture1d_SetPrivateData(struct qemu_syscall *call);
