@@ -135,7 +135,6 @@ enum d3d11_calls
     CALL_D3D10_TEXTURE1D_UNMAP,
     CALL_D3D10_TEXTURE2D_ADDREF,
     CALL_D3D10_TEXTURE2D_GETDESC,
-    CALL_D3D10_TEXTURE2D_GETDEVICE,
     CALL_D3D10_TEXTURE2D_GETEVICTIONPRIORITY,
     CALL_D3D10_TEXTURE2D_GETPRIVATEDATA,
     CALL_D3D10_TEXTURE2D_GETTYPE,
@@ -611,7 +610,6 @@ void qemu_d3d10_texture1d_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d10_texture1d_Unmap(struct qemu_syscall *call);
 void qemu_d3d10_texture2d_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_texture2d_GetDesc(struct qemu_syscall *call);
-void qemu_d3d10_texture2d_GetDevice(struct qemu_syscall *call);
 void qemu_d3d10_texture2d_GetEvictionPriority(struct qemu_syscall *call);
 void qemu_d3d10_texture2d_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_texture2d_GetType(struct qemu_syscall *call);
