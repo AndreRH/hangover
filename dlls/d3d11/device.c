@@ -185,12 +185,15 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_GetDevice(ID3D11DeviceCont
 {
     struct qemu_d3d11_immediate_context_GetDevice call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_device *device_impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GETDEVICE);
     call.iface = (ULONG_PTR)context;
-    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
+
+    device_impl = (struct qemu_d3d11_device *)(ULONG_PTR)call.device;
+    *device = (ID3D11Device *)&device_impl->ID3D11Device2_iface;
 }
 
 #else
@@ -199,11 +202,14 @@ void qemu_d3d11_immediate_context_GetDevice(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GetDevice *c = (struct qemu_d3d11_immediate_context_GetDevice *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11Device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    c->device = QEMU_H2G(CONTAINING_RECORD(context, struct qemu_d3d11_device, immediate_context));
 
-    ID3D11DeviceContext1_GetDevice(context->host, QEMU_G2H(c->device));
+    /* For refcounting. */
+    ID3D11DeviceContext1_GetDevice(context->host, &device);
 }
 
 #endif
