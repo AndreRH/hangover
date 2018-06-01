@@ -1,4 +1,6 @@
 /*
+ * Copyright 2008 Henri Verbeet for CodeWeavers
+ * Copyright 2013 Austin English
  * Copyright 2017 André Hentschel
  * Copyright 2018 Stefan Dösinger for CodeWeavers
  *
@@ -199,7 +201,7 @@ static void qemu_layer_create(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI D3D11CoreCreateDevice(IDXGIFactory *factory, IDXGIAdapter *adapter, UINT flags,
+HRESULT WINAPI D3D11CoreCreateDevice(IDXGIFactory *factory, IDXGIAdapter *adapter, UINT flags,
         const D3D_FEATURE_LEVEL *feature_levels, UINT levels, ID3D11Device **device)
 {
     IUnknown *dxgi_device;
@@ -232,54 +234,146 @@ WINBASEAPI HRESULT WINAPI D3D11CoreCreateDevice(IDXGIFactory *factory, IDXGIAdap
 
 #endif
 
-struct qemu_D3D11CreateDevice
-{
-    struct qemu_syscall super;
-    uint64_t adapter;
-    uint64_t driver_type;
-    uint64_t swrast;
-    uint64_t flags;
-    uint64_t feature_levels;
-    uint64_t levels;
-    uint64_t sdk_version;
-    uint64_t device_out;
-    uint64_t obtained_feature_level;
-    uint64_t immediate_context;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 WINBASEAPI HRESULT WINAPI D3D11CreateDevice(IDXGIAdapter *adapter, D3D_DRIVER_TYPE driver_type, HMODULE swrast,
         UINT flags, const D3D_FEATURE_LEVEL *feature_levels, UINT levels, UINT sdk_version, ID3D11Device **device_out,
         D3D_FEATURE_LEVEL *obtained_feature_level, ID3D11DeviceContext **immediate_context)
 {
-    struct qemu_D3D11CreateDevice call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11CREATEDEVICE);
-    call.adapter = (ULONG_PTR)adapter;
-    call.driver_type = driver_type;
-    call.swrast = (ULONG_PTR)swrast;
-    call.flags = flags;
-    call.feature_levels = (ULONG_PTR)feature_levels;
-    call.levels = levels;
-    call.sdk_version = sdk_version;
-    call.device_out = (ULONG_PTR)device_out;
-    call.obtained_feature_level = (ULONG_PTR)obtained_feature_level;
-    call.immediate_context = (ULONG_PTR)immediate_context;
+    static const D3D_FEATURE_LEVEL default_feature_levels[] =
+    {
+        D3D_FEATURE_LEVEL_11_0,
+        D3D_FEATURE_LEVEL_10_1,
+        D3D_FEATURE_LEVEL_10_0,
+        D3D_FEATURE_LEVEL_9_3,
+        D3D_FEATURE_LEVEL_9_2,
+        D3D_FEATURE_LEVEL_9_1,
+    };
+    IDXGIFactory *factory;
+    ID3D11Device *device;
+    HRESULT hr;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("adapter %p, driver_type %x, swrast %p, flags %#x, feature_levels %p, levels %u, sdk_version %u, "
+            "device %p, obtained_feature_level %p, immediate_context %p.\n",
+            adapter, driver_type, swrast, flags, feature_levels, levels, sdk_version,
+            device_out, obtained_feature_level, immediate_context);
 
-    return call.super.iret;
-}
+    if (device_out)
+        *device_out = NULL;
+    if (obtained_feature_level)
+        *obtained_feature_level = 0;
+    if (immediate_context)
+        *immediate_context = NULL;
 
-#else
+    if (adapter)
+    {
+        IDXGIAdapter_AddRef(adapter);
+        hr = IDXGIAdapter_GetParent(adapter, &IID_IDXGIFactory, (void **)&factory);
+        if (FAILED(hr))
+        {
+            WINE_WARN("Failed to get dxgi factory, returning %#x.\n", hr);
+            return hr;
+        }
+    }
+    else
+    {
+        hr = CreateDXGIFactory1(&IID_IDXGIFactory, (void **)&factory);
+        if (FAILED(hr))
+        {
+            WINE_WARN("Failed to create dxgi factory, returning %#x.\n", hr);
+            return hr;
+        }
 
-static void qemu_D3D11CreateDevice(struct qemu_syscall *call)
-{
-    struct qemu_D3D11CreateDevice *c = (struct qemu_D3D11CreateDevice *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = D3D11CreateDevice(QEMU_G2H(c->adapter), c->driver_type, QEMU_G2H(c->swrast), c->flags,
-            QEMU_G2H(c->feature_levels), c->levels, c->sdk_version, QEMU_G2H(c->device_out),
-            QEMU_G2H(c->obtained_feature_level), QEMU_G2H(c->immediate_context));
+        switch(driver_type)
+        {
+            case D3D_DRIVER_TYPE_HARDWARE:
+            {
+                hr = IDXGIFactory_EnumAdapters(factory, 0, &adapter);
+                if (FAILED(hr))
+                {
+                    WINE_WARN("No adapters found, returning %#x.\n", hr);
+                    IDXGIFactory_Release(factory);
+                    return hr;
+                }
+                break;
+            }
+
+            case D3D_DRIVER_TYPE_NULL:
+                WINE_FIXME("NULL device not implemented, falling back to refrast.\n");
+                /* fall through, for now */
+            case D3D_DRIVER_TYPE_REFERENCE:
+            {
+                HMODULE refrast = LoadLibraryA("d3d11ref.dll");
+                if (!refrast)
+                {
+                    WINE_WARN("Failed to load refrast, returning E_FAIL.\n");
+                    IDXGIFactory_Release(factory);
+                    return E_FAIL;
+                }
+                hr = IDXGIFactory_CreateSoftwareAdapter(factory, refrast, &adapter);
+                FreeLibrary(refrast);
+                if (FAILED(hr))
+                {
+                    WINE_WARN("Failed to create a software adapter, returning %#x.\n", hr);
+                    IDXGIFactory_Release(factory);
+                    return hr;
+                }
+                break;
+            }
+
+            case D3D_DRIVER_TYPE_SOFTWARE:
+            {
+                if (!swrast)
+                {
+                    WINE_WARN("Software device requested, but NULL swrast passed, returning E_FAIL.\n");
+                    IDXGIFactory_Release(factory);
+                    return E_FAIL;
+                }
+                hr = IDXGIFactory_CreateSoftwareAdapter(factory, swrast, &adapter);
+                if (FAILED(hr))
+                {
+                    WINE_WARN("Failed to create a software adapter, returning %#x.\n", hr);
+                    IDXGIFactory_Release(factory);
+                    return hr;
+                }
+                break;
+            }
+
+            default:
+                WINE_FIXME("Unhandled driver type %#x.\n", driver_type);
+                IDXGIFactory_Release(factory);
+                return E_FAIL;
+        }
+    }
+
+    if (!feature_levels)
+    {
+        feature_levels = default_feature_levels;
+        levels = sizeof(default_feature_levels) / sizeof(*default_feature_levels);
+    }
+    hr = D3D11CoreCreateDevice(factory, adapter, flags, feature_levels, levels, &device);
+    IDXGIAdapter_Release(adapter);
+    IDXGIFactory_Release(factory);
+    if (FAILED(hr))
+    {
+        WINE_WARN("Failed to create a device, returning %#x.\n", hr);
+        return hr;
+    }
+
+    WINE_TRACE("Created ID3D11Device %p.\n", device);
+
+    if (obtained_feature_level)
+        *obtained_feature_level = ID3D11Device_GetFeatureLevel(device);
+
+    if (immediate_context)
+        ID3D11Device_GetImmediateContext(device, immediate_context);
+
+    if (device_out)
+        *device_out = device;
+    else
+        ID3D11Device_Release(device);
+
+    return (device_out || immediate_context) ? S_OK : S_FALSE;
 }
 
 #endif
@@ -803,7 +897,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d11_texture3d_SetEvictionPriority,
     qemu_d3d11_texture3d_SetPrivateData,
     qemu_d3d11_texture3d_SetPrivateDataInterface,
-    qemu_D3D11CreateDevice,
     qemu_D3D11CreateDeviceAndSwapChain,
     qemu_d3d_device_inner_AddRef,
     qemu_d3d_device_inner_QueryInterface,
