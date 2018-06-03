@@ -5705,24 +5705,62 @@ struct qemu_d3d11_device_CreateTexture3D
     uint64_t desc;
     uint64_t data;
     uint64_t texture;
+    uint64_t dxgi_surface;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_CreateTexture3D(ID3D11Device2 *iface, const D3D11_TEXTURE3D_DESC *desc, const D3D11_SUBRESOURCE_DATA *data, ID3D11Texture3D **texture)
+static HRESULT STDMETHODCALLTYPE d3d11_device_CreateTexture3D(ID3D11Device2 *iface, const D3D11_TEXTURE3D_DESC *desc,
+        const D3D11_SUBRESOURCE_DATA *data, ID3D11Texture3D **texture)
 {
     struct qemu_d3d11_device_CreateTexture3D call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
+    struct qemu_d3d11_texture *obj;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_CREATETEXTURE3D);
     call.iface = (ULONG_PTR)device;
     call.desc = (ULONG_PTR)desc;
     call.data = (ULONG_PTR)data;
-    call.texture = (ULONG_PTR)texture;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    obj = (struct qemu_d3d11_texture *)(ULONG_PTR)call.texture;
+    qemu_d3d11_texture_guest_init(obj, device, 3, call.dxgi_surface);
+    *texture = &obj->ID3D11Texture3D_iface;
 
     return call.super.iret;
+}
+
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreateTexture3D(ID3D10Device1 *iface, const D3D10_TEXTURE3D_DESC *desc,
+        const D3D10_SUBRESOURCE_DATA *data, ID3D10Texture3D **texture)
+{
+    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    D3D11_TEXTURE3D_DESC d3d11_desc;
+    ID3D11Texture3D *tex11;
+    HRESULT hr;
+
+    WINE_TRACE("iface %p, desc %p, data %p, texture %p.\n", iface, desc, data, texture);
+
+    d3d11_desc.Width = desc->Width;
+    d3d11_desc.Height = desc->Height;
+    d3d11_desc.Depth = desc->Depth;
+    d3d11_desc.MipLevels = desc->MipLevels;
+    d3d11_desc.Format = desc->Format;
+    d3d11_desc.Usage = d3d11_usage_from_d3d10_usage(desc->Usage);
+    d3d11_desc.BindFlags = d3d11_bind_flags_from_d3d10_bind_flags(desc->BindFlags);
+    d3d11_desc.CPUAccessFlags = d3d11_cpu_access_flags_from_d3d10_cpu_access_flags(desc->CPUAccessFlags);
+    d3d11_desc.MiscFlags = d3d11_resource_misc_flags_from_d3d10_resource_misc_flags(desc->MiscFlags);
+
+    hr = d3d11_device_CreateTexture3D(&device->ID3D11Device2_iface, &d3d11_desc,
+            (const D3D11_SUBRESOURCE_DATA *)data, &tex11);
+    if (FAILED(hr))
+        return hr;
+
+    hr = ID3D11Texture3D_QueryInterface(tex11, &IID_ID3D10Texture3D, (void **)texture);
+    ID3D11Texture3D_Release(tex11);
+    return hr;
 }
 
 #else
@@ -5731,11 +5769,30 @@ void qemu_d3d11_device_CreateTexture3D(struct qemu_syscall *call)
 {
     struct qemu_d3d11_device_CreateTexture3D *c = (struct qemu_d3d11_device_CreateTexture3D *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_texture *obj;
+    ID3D11Texture3D *host;
+    D3D11_SUBRESOURCE_DATA stack, *data = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    data = QEMU_G2H(c->data);
+#else
+    if (c->data)
+        D3D11_SUBRESOURCE_DATA_g2h(data, QEMU_G2H(c->data));
+    else
+        data = NULL;
+#endif
 
-    c->super.iret = ID3D11Device2_CreateTexture3D(device->host_d3d11, QEMU_G2H(c->desc), QEMU_G2H(c->data), QEMU_G2H(c->texture));
+    c->super.iret = ID3D11Device2_CreateTexture3D(device->host_d3d11, QEMU_G2H(c->desc), data, &host);
+    if (FAILED(c->super.iret))
+        return;
+
+    c->super.iret = qemu_d3d11_texture_create((ID3D11Resource *)host, device, &c->dxgi_surface, 3, &obj);
+    if (FAILED(c->super.iret))
+        ID3D11Texture3D_Release(host);
+
+    c->texture = QEMU_H2G(obj);
 }
 
 #endif
@@ -10539,48 +10596,6 @@ void qemu_d3d10_device_CreateBuffer(struct qemu_syscall *call)
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Device1_CreateBuffer(device->host_d3d10, QEMU_G2H(c->desc), QEMU_G2H(c->data), QEMU_G2H(c->buffer));
-}
-
-#endif
-
-struct qemu_d3d10_device_CreateTexture3D
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t desc;
-    uint64_t data;
-    uint64_t texture;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreateTexture3D(ID3D10Device1 *iface, const D3D10_TEXTURE3D_DESC *desc, const D3D10_SUBRESOURCE_DATA *data, ID3D10Texture3D **texture)
-{
-    struct qemu_d3d10_device_CreateTexture3D call;
-    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CREATETEXTURE3D);
-    call.iface = (ULONG_PTR)device;
-    call.desc = (ULONG_PTR)desc;
-    call.data = (ULONG_PTR)data;
-    call.texture = (ULONG_PTR)texture;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_device_CreateTexture3D(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_CreateTexture3D *c = (struct qemu_d3d10_device_CreateTexture3D *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_CreateTexture3D(device->host_d3d10, QEMU_G2H(c->desc), QEMU_G2H(c->data), QEMU_G2H(c->texture));
 }
 
 #endif
