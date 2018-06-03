@@ -5473,17 +5473,51 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateBuffer(ID3D11Device2 *iface,
 {
     struct qemu_d3d11_device_CreateBuffer call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
+    struct qemu_d3d11_buffer *obj;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_CREATEBUFFER);
     call.iface = (ULONG_PTR)device;
     call.desc = (ULONG_PTR)desc;
     call.data = (ULONG_PTR)data;
-    call.buffer = (ULONG_PTR)buffer;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    obj = (struct qemu_d3d11_buffer *)(ULONG_PTR)call.buffer;
+    qemu_d3d11_buffer_guest_init(obj);
+    *buffer = &obj->ID3D11Buffer_iface;
 
     return call.super.iret;
 }
+
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreateBuffer(ID3D10Device1 *iface,
+        const D3D10_BUFFER_DESC *desc, const D3D10_SUBRESOURCE_DATA *data, ID3D10Buffer **buffer)
+{
+    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    D3D11_BUFFER_DESC d3d11_desc;
+    ID3D11Buffer *buffer11;
+    HRESULT hr;
+
+    WINE_TRACE("iface %p, desc %p, data %p, buffer %p.\n", iface, desc, data, buffer);
+
+    d3d11_desc.ByteWidth = desc->ByteWidth;
+    d3d11_desc.Usage = d3d11_usage_from_d3d10_usage(desc->Usage);
+    d3d11_desc.BindFlags = d3d11_bind_flags_from_d3d10_bind_flags(desc->BindFlags);
+    d3d11_desc.CPUAccessFlags = d3d11_cpu_access_flags_from_d3d10_cpu_access_flags(desc->CPUAccessFlags);
+    d3d11_desc.MiscFlags = d3d11_resource_misc_flags_from_d3d10_resource_misc_flags(desc->MiscFlags);
+    d3d11_desc.StructureByteStride = 0;
+
+    hr = d3d11_device_CreateBuffer(&device->ID3D11Device2_iface, &d3d11_desc,
+            (const D3D11_SUBRESOURCE_DATA *)data, &buffer11);
+    if (FAILED(hr))
+        return hr;
+
+    hr = ID3D11Buffer_QueryInterface(buffer11, &IID_ID3D11Buffer, (void **)buffer);
+    ID3D11Buffer_Release(buffer11);
+    return hr;
+}
+
 
 #else
 
@@ -5491,11 +5525,31 @@ void qemu_d3d11_device_CreateBuffer(struct qemu_syscall *call)
 {
     struct qemu_d3d11_device_CreateBuffer *c = (struct qemu_d3d11_device_CreateBuffer *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_buffer *obj;
+    ID3D11Buffer *host;
 
-    WINE_FIXME("Unverified!\n");
+    D3D11_SUBRESOURCE_DATA stack, *data = &stack;
+
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    data = QEMU_G2H(c->data);
+#else
+    if (c->data)
+        D3D11_SUBRESOURCE_DATA_g2h(data, QEMU_G2H(c->data));
+    else
+        data = NULL;
+#endif
 
-    c->super.iret = ID3D11Device2_CreateBuffer(device->host_d3d11, QEMU_G2H(c->desc), QEMU_G2H(c->data), QEMU_G2H(c->buffer));
+    c->super.iret = ID3D11Device2_CreateBuffer(device->host_d3d11, QEMU_G2H(c->desc), data, &host);
+    if (FAILED(c->super.iret))
+        return;
+
+    c->super.iret = qemu_d3d11_buffer_create(host, &obj);
+    if (FAILED(c->super.iret))
+        ID3D11Buffer_Release(host);
+
+    c->buffer = QEMU_H2G(obj);
 }
 
 #endif
@@ -10554,48 +10608,6 @@ void qemu_d3d10_device_Flush(struct qemu_syscall *call)
     device = QEMU_G2H(c->iface);
 
     ID3D10Device1_Flush(device->host_d3d10);
-}
-
-#endif
-
-struct qemu_d3d10_device_CreateBuffer
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t desc;
-    uint64_t data;
-    uint64_t buffer;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreateBuffer(ID3D10Device1 *iface, const D3D10_BUFFER_DESC *desc, const D3D10_SUBRESOURCE_DATA *data, ID3D10Buffer **buffer)
-{
-    struct qemu_d3d10_device_CreateBuffer call;
-    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CREATEBUFFER);
-    call.iface = (ULONG_PTR)device;
-    call.desc = (ULONG_PTR)desc;
-    call.data = (ULONG_PTR)data;
-    call.buffer = (ULONG_PTR)buffer;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_device_CreateBuffer(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_CreateBuffer *c = (struct qemu_d3d10_device_CreateBuffer *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_CreateBuffer(device->host_d3d10, QEMU_G2H(c->desc), QEMU_G2H(c->data), QEMU_G2H(c->buffer));
 }
 
 #endif

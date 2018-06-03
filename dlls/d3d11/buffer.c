@@ -970,7 +970,7 @@ void qemu_d3d10_buffer_GetDesc(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-static const struct ID3D11BufferVtbl d3d11_buffer_vtbl =
+static struct ID3D11BufferVtbl d3d11_buffer_vtbl =
 {
     /* IUnknown methods */
     d3d11_buffer_QueryInterface,
@@ -997,7 +997,7 @@ struct qemu_d3d11_buffer *unsafe_impl_from_ID3D11Buffer(ID3D11Buffer *iface)
     return CONTAINING_RECORD(iface, struct qemu_d3d11_buffer, ID3D11Buffer_iface);
 }
 
-static const struct ID3D10BufferVtbl d3d10_buffer_vtbl =
+static struct ID3D10BufferVtbl d3d10_buffer_vtbl =
 {
     /* IUnknown methods */
     d3d10_buffer_QueryInterface,
@@ -1026,6 +1026,84 @@ struct qemu_d3d11_buffer *unsafe_impl_from_ID3D10Buffer(ID3D10Buffer *iface)
     return CONTAINING_RECORD(iface, struct qemu_d3d11_buffer, ID3D10Buffer_iface);
 }
 
+void qemu_d3d11_buffer_guest_init(struct qemu_d3d11_buffer *buffer)
+{
+    buffer->ID3D11Buffer_iface.lpVtbl = &d3d11_buffer_vtbl;
+    buffer->ID3D10Buffer_iface.lpVtbl = &d3d10_buffer_vtbl;
+}
+
 #else
+
+static inline struct qemu_d3d11_buffer *impl_from_priv_data(IUnknown *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_buffer, priv_data_iface);
+}
+
+static HRESULT STDMETHODCALLTYPE d3d11_texture_priv_data_QueryInterface(IUnknown *iface, REFIID riid, void **out)
+{
+    WINE_ERR("Unexpected call\n");
+    *out = NULL;
+    return E_NOINTERFACE;
+}
+
+static ULONG STDMETHODCALLTYPE d3d11_texture_priv_data_AddRef(IUnknown *iface)
+{
+    struct qemu_d3d11_buffer *buffer = impl_from_priv_data(iface);
+    ULONG refcount = InterlockedIncrement(&buffer->refcount);
+
+    WINE_TRACE("%p increasing refcount to %u.\n", buffer, refcount);
+
+    return refcount;
+}
+
+static ULONG STDMETHODCALLTYPE d3d11_texture_priv_data_Release(IUnknown *iface)
+{
+    struct qemu_d3d11_buffer *buffer = impl_from_priv_data(iface);
+    ULONG refcount = InterlockedDecrement(&buffer->refcount);
+
+    WINE_TRACE("%p decreasing refcount to %u.\n", buffer, refcount);
+
+    if (!refcount)
+    {
+        WINE_TRACE("Destroying buffer wrapper %p for host buffer %p.\n", buffer, buffer->host11);
+        HeapFree(GetProcessHeap(), 0, buffer);
+    }
+
+    return refcount;
+}
+
+static struct IUnknownVtbl priv_data_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_texture_priv_data_QueryInterface,
+    d3d11_texture_priv_data_AddRef,
+    d3d11_texture_priv_data_Release,
+};
+
+HRESULT qemu_d3d11_buffer_create(ID3D11Buffer *host, struct qemu_d3d11_buffer **buffer)
+{
+    struct qemu_d3d11_buffer *obj;
+    HRESULT hr;
+
+    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*buffer));
+    if (!obj)
+    {
+        WINE_WARN("Out of memory\n");
+        return E_OUTOFMEMORY;
+    }
+
+    obj->host11 = host;
+    hr = ID3D11Buffer_QueryInterface(host, &IID_ID3D10Buffer, (void **)&obj->host10);
+    if (FAILED(hr))
+        WINE_ERR("Failed to QI ID3D10Buffer.\n");
+    ID3D10Texture3D_Release(obj->host10);
+
+    obj->priv_data_iface.lpVtbl = &priv_data_vtbl;
+    /* Leave the ref at 0, we want the host obj to own the only / final reference. */
+    ID3D11Buffer_SetPrivateDataInterface(host, &IID_d3d11_priv_data, &obj->priv_data_iface);
+
+    *buffer = obj;
+    return S_OK;
+}
 
 #endif
