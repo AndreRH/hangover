@@ -158,7 +158,7 @@ void qemu_d3d11_buffer_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_buffer_AddRef *c = (struct qemu_d3d11_buffer_AddRef *)call;
     struct qemu_d3d11_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11Buffer_AddRef(buffer->host11);
@@ -194,7 +194,7 @@ void qemu_d3d11_buffer_Release(struct qemu_syscall *call)
     struct qemu_d3d11_buffer_Release *c = (struct qemu_d3d11_buffer_Release *)call;
     struct qemu_d3d11_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11Buffer_Release(buffer->host11);
@@ -596,7 +596,7 @@ void qemu_d3d10_buffer_AddRef(struct qemu_syscall *call)
     struct qemu_d3d10_buffer_AddRef *c = (struct qemu_d3d10_buffer_AddRef *)call;
     struct qemu_d3d11_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Buffer_AddRef(buffer->host10);
@@ -632,7 +632,7 @@ void qemu_d3d10_buffer_Release(struct qemu_syscall *call)
     struct qemu_d3d10_buffer_Release *c = (struct qemu_d3d10_buffer_Release *)call;
     struct qemu_d3d11_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Buffer_Release(buffer->host10);
