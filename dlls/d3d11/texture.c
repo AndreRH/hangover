@@ -1929,14 +1929,36 @@ static HRESULT STDMETHODCALLTYPE d3d11_texture3d_QueryInterface(ID3D11Texture3D 
     struct qemu_d3d11_texture3d_QueryInterface call;
     struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture3D(iface);
 
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
+
+    if (IsEqualGUID(riid, &IID_ID3D11Texture3D)
+            || IsEqualGUID(riid, &IID_ID3D11Resource)
+            || IsEqualGUID(riid, &IID_ID3D11DeviceChild)
+            || IsEqualGUID(riid, &IID_IUnknown))
+    {
+        IUnknown_AddRef(iface);
+        *object = iface;
+        return S_OK;
+    }
+    else if (IsEqualGUID(riid, &IID_ID3D10Texture3D)
+            || IsEqualGUID(riid, &IID_ID3D10Resource)
+            || IsEqualGUID(riid, &IID_ID3D10DeviceChild))
+    {
+        IUnknown_AddRef(iface);
+        *object = &texture->ID3D10Texture3D_iface;
+        return S_OK;
+    }
+
+    WINE_WARN("%s not implemented, returning E_NOINTERFACE.\n", wine_dbgstr_guid(riid));
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_TEXTURE3D_QUERYINTERFACE);
     call.iface = (ULONG_PTR)texture;
     call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    *object = NULL;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -1945,11 +1967,18 @@ void qemu_d3d11_texture3d_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d11_texture3d_QueryInterface *c = (struct qemu_d3d11_texture3d_QueryInterface *)call;
     struct qemu_d3d11_texture *texture;
+    IUnknown *object;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Texture3D_QueryInterface(texture->host11_3d, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    c->super.iret = ID3D11Texture3D_QueryInterface(texture->host11_3d, QEMU_G2H(c->riid), (void **)&object);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->riid)));
+        IUnknown_Release(object);
+    }
 }
 
 #endif
