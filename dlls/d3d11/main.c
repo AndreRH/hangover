@@ -750,7 +750,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d10_texture2d_Unmap,
     qemu_d3d10_texture3d_AddRef,
     qemu_d3d10_texture3d_GetDesc,
-    qemu_d3d10_texture3d_GetDevice,
     qemu_d3d10_texture3d_GetEvictionPriority,
     qemu_d3d10_texture3d_GetPrivateData,
     qemu_d3d10_texture3d_GetType,

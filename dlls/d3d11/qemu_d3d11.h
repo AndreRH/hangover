@@ -146,7 +146,6 @@ enum d3d11_calls
     CALL_D3D10_TEXTURE2D_UNMAP,
     CALL_D3D10_TEXTURE3D_ADDREF,
     CALL_D3D10_TEXTURE3D_GETDESC,
-    CALL_D3D10_TEXTURE3D_GETDEVICE,
     CALL_D3D10_TEXTURE3D_GETEVICTIONPRIORITY,
     CALL_D3D10_TEXTURE3D_GETPRIVATEDATA,
     CALL_D3D10_TEXTURE3D_GETTYPE,
@@ -592,7 +591,6 @@ void qemu_d3d10_multithread_Leave(struct qemu_syscall *call);
 void qemu_d3d10_multithread_SetMultithreadProtected(struct qemu_syscall *call);
 void qemu_d3d10_texture1d_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_texture1d_GetDesc(struct qemu_syscall *call);
-void qemu_d3d10_texture1d_GetDevice(struct qemu_syscall *call);
 void qemu_d3d10_texture1d_GetEvictionPriority(struct qemu_syscall *call);
 void qemu_d3d10_texture1d_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_texture1d_GetType(struct qemu_syscall *call);
@@ -616,7 +614,6 @@ void qemu_d3d10_texture2d_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d10_texture2d_Unmap(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_GetDesc(struct qemu_syscall *call);
-void qemu_d3d10_texture3d_GetDevice(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_GetEvictionPriority(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_GetType(struct qemu_syscall *call);
