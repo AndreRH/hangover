@@ -22,7 +22,20 @@
 
 enum d3d11_calls
 {
-    CALL_D3D10_DEVICE_CHECKCOUNTER = 0,
+    CALL_D3D10_BUFFER_ADDREF = 0,
+    CALL_D3D10_BUFFER_GETDESC,
+    CALL_D3D10_BUFFER_GETDEVICE,
+    CALL_D3D10_BUFFER_GETEVICTIONPRIORITY,
+    CALL_D3D10_BUFFER_GETPRIVATEDATA,
+    CALL_D3D10_BUFFER_GETTYPE,
+    CALL_D3D10_BUFFER_MAP,
+    CALL_D3D10_BUFFER_QUERYINTERFACE,
+    CALL_D3D10_BUFFER_RELEASE,
+    CALL_D3D10_BUFFER_SETEVICTIONPRIORITY,
+    CALL_D3D10_BUFFER_SETPRIVATEDATA,
+    CALL_D3D10_BUFFER_SETPRIVATEDATAINTERFACE,
+    CALL_D3D10_BUFFER_UNMAP,
+    CALL_D3D10_DEVICE_CHECKCOUNTER,
     CALL_D3D10_DEVICE_CHECKCOUNTERINFO,
     CALL_D3D10_DEVICE_CHECKFORMATSUPPORT,
     CALL_D3D10_DEVICE_CHECKMULTISAMPLEQUALITYLEVELS,
@@ -156,6 +169,17 @@ enum d3d11_calls
     CALL_D3D10_TEXTURE3D_SETPRIVATEDATA,
     CALL_D3D10_TEXTURE3D_SETPRIVATEDATAINTERFACE,
     CALL_D3D10_TEXTURE3D_UNMAP,
+    CALL_D3D11_BUFFER_ADDREF,
+    CALL_D3D11_BUFFER_GETDESC,
+    CALL_D3D11_BUFFER_GETDEVICE,
+    CALL_D3D11_BUFFER_GETEVICTIONPRIORITY,
+    CALL_D3D11_BUFFER_GETPRIVATEDATA,
+    CALL_D3D11_BUFFER_GETTYPE,
+    CALL_D3D11_BUFFER_QUERYINTERFACE,
+    CALL_D3D11_BUFFER_RELEASE,
+    CALL_D3D11_BUFFER_SETEVICTIONPRIORITY,
+    CALL_D3D11_BUFFER_SETPRIVATEDATA,
+    CALL_D3D11_BUFFER_SETPRIVATEDATAINTERFACE,
     CALL_D3D11_DEVICE_CHECKCOUNTER,
     CALL_D3D11_DEVICE_CHECKCOUNTERINFO,
     CALL_D3D11_DEVICE_CHECKFEATURESUPPORT,
@@ -458,6 +482,17 @@ struct qemu_d3d11_texture
     ULONG refcount;
 };
 
+struct qemu_d3d11_buffer
+{
+    /* Guest fields */
+    ID3D11Buffer ID3D11Buffer_iface;
+    ID3D10Buffer ID3D10Buffer_iface;
+
+    /* Host fields */
+    ID3D11Buffer *host11;
+    ID3D10Buffer *host10;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 enum D3D11_USAGE d3d11_usage_from_d3d10_usage(enum D3D10_USAGE usage);
@@ -487,6 +522,19 @@ void qemu_d3d11_texture_guest_init(struct qemu_d3d11_texture *texture, struct qe
 
 extern const struct qemu_ops *qemu_ops;
 
+void qemu_d3d10_buffer_AddRef(struct qemu_syscall *call);
+void qemu_d3d10_buffer_GetDesc(struct qemu_syscall *call);
+void qemu_d3d10_buffer_GetDevice(struct qemu_syscall *call);
+void qemu_d3d10_buffer_GetEvictionPriority(struct qemu_syscall *call);
+void qemu_d3d10_buffer_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d10_buffer_GetType(struct qemu_syscall *call);
+void qemu_d3d10_buffer_Map(struct qemu_syscall *call);
+void qemu_d3d10_buffer_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d10_buffer_Release(struct qemu_syscall *call);
+void qemu_d3d10_buffer_SetEvictionPriority(struct qemu_syscall *call);
+void qemu_d3d10_buffer_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d10_buffer_SetPrivateDataInterface(struct qemu_syscall *call);
+void qemu_d3d10_buffer_Unmap(struct qemu_syscall *call);
 void qemu_d3d10_device_CheckCounter(struct qemu_syscall *call);
 void qemu_d3d10_device_CheckCounterInfo(struct qemu_syscall *call);
 void qemu_d3d10_device_CheckFormatSupport(struct qemu_syscall *call);
@@ -533,9 +581,6 @@ void qemu_d3d10_device_GetCreationFlags(struct qemu_syscall *call);
 void qemu_d3d10_device_GetDeviceRemovedReason(struct qemu_syscall *call);
 void qemu_d3d10_device_GetExceptionMode(struct qemu_syscall *call);
 void qemu_d3d10_device_GetFeatureLevel(struct qemu_syscall *call);
-void qemu_d3d11_device_GetImmediateContext(struct qemu_syscall *call);
-void qemu_d3d11_device_GetImmediateContext1(struct qemu_syscall *call);
-void qemu_d3d11_device_GetImmediateContext2(struct qemu_syscall *call);
 void qemu_d3d10_device_GetPredication(struct qemu_syscall *call);
 void qemu_d3d10_device_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_device_GetTextFilterSize(struct qemu_syscall *call);
@@ -624,6 +669,17 @@ void qemu_d3d10_texture3d_SetEvictionPriority(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_Unmap(struct qemu_syscall *call);
+void qemu_d3d11_buffer_AddRef(struct qemu_syscall *call);
+void qemu_d3d11_buffer_GetDesc(struct qemu_syscall *call);
+void qemu_d3d11_buffer_GetDevice(struct qemu_syscall *call);
+void qemu_d3d11_buffer_GetEvictionPriority(struct qemu_syscall *call);
+void qemu_d3d11_buffer_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d11_buffer_GetType(struct qemu_syscall *call);
+void qemu_d3d11_buffer_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d11_buffer_Release(struct qemu_syscall *call);
+void qemu_d3d11_buffer_SetEvictionPriority(struct qemu_syscall *call);
+void qemu_d3d11_buffer_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d11_buffer_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d11_device_CheckCounter(struct qemu_syscall *call);
 void qemu_d3d11_device_CheckCounterInfo(struct qemu_syscall *call);
 void qemu_d3d11_device_CheckFeatureSupport(struct qemu_syscall *call);
@@ -664,6 +720,9 @@ void qemu_d3d11_device_GetCreationFlags(struct qemu_syscall *call);
 void qemu_d3d11_device_GetDeviceRemovedReason(struct qemu_syscall *call);
 void qemu_d3d11_device_GetExceptionMode(struct qemu_syscall *call);
 void qemu_d3d11_device_GetFeatureLevel(struct qemu_syscall *call);
+void qemu_d3d11_device_GetImmediateContext(struct qemu_syscall *call);
+void qemu_d3d11_device_GetImmediateContext1(struct qemu_syscall *call);
+void qemu_d3d11_device_GetImmediateContext2(struct qemu_syscall *call);
 void qemu_d3d11_device_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d11_device_GetResourceTiling(struct qemu_syscall *call);
 void qemu_d3d11_device_OpenSharedResource(struct qemu_syscall *call);
