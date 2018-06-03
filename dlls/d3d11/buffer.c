@@ -520,7 +520,8 @@ void qemu_d3d11_buffer_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d11_buffer_GetDesc *c = (struct qemu_d3d11_buffer_GetDesc *)call;
     struct qemu_d3d11_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    /* D3D11_BUFFER_DESC has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     ID3D11Buffer_GetDesc(buffer->host11, QEMU_G2H(c->desc));
@@ -976,7 +977,8 @@ void qemu_d3d10_buffer_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d10_buffer_GetDesc *c = (struct qemu_d3d10_buffer_GetDesc *)call;
     struct qemu_d3d11_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    /* D3D10_BUFFER_DESC has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     ID3D10Buffer_GetDesc(buffer->host10, QEMU_G2H(c->desc));
