@@ -628,7 +628,6 @@ static const syscall_handler dll_functions[] =
 {
     qemu_d3d10_buffer_AddRef,
     qemu_d3d10_buffer_GetDesc,
-    qemu_d3d10_buffer_GetDevice,
     qemu_d3d10_buffer_GetEvictionPriority,
     qemu_d3d10_buffer_GetPrivateData,
     qemu_d3d10_buffer_GetType,
