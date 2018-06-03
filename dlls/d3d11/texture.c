@@ -2371,7 +2371,8 @@ void qemu_d3d11_texture3d_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d11_texture3d_GetDesc *c = (struct qemu_d3d11_texture3d_GetDesc *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    /* D3D11_TEXTURE3D_DESC has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     ID3D11Texture3D_GetDesc(texture->host11_3d, QEMU_G2H(c->desc));
@@ -2831,7 +2832,8 @@ void qemu_d3d10_texture3d_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d10_texture3d_GetDesc *c = (struct qemu_d3d10_texture3d_GetDesc *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    /* D3D10_TEXTURE3D_DESC has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     ID3D10Texture3D_GetDesc(texture->host10_3d, QEMU_G2H(c->desc));
