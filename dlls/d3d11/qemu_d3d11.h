@@ -482,12 +482,8 @@ extern HRESULT (* WINAPI p_DXGID3D10CreateDevice)(HMODULE d3d10core, IDXGIFactor
 
 void qemu_d3d11_device_guest_init(struct qemu_d3d11_device *device, void *outer_unknown);
 void qemu_d3d11_context_guest_init(struct qemu_d3d11_device_context *context);
-void qemu_d3d11_texture1d_guest_init(struct qemu_d3d11_texture *texture, struct qemu_d3d11_device *device,
-        uint64_t dxgi_surface);
-void qemu_d3d11_texture2d_guest_init(struct qemu_d3d11_texture *texture, struct qemu_d3d11_device *device,
-        uint64_t dxgi_surface);
-void qemu_d3d11_texture3d_guest_init(struct qemu_d3d11_texture *texture, struct qemu_d3d11_device *device,
-        uint64_t dxgi_surface);
+void qemu_d3d11_texture_guest_init(struct qemu_d3d11_texture *texture, struct qemu_d3d11_device *device,
+        unsigned int dim, uint64_t dxgi_surface);
 
 #else
 
@@ -853,10 +849,8 @@ void qemu_d3d_device_inner_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d_device_inner_Release(struct qemu_syscall *call);
 void qemu_wrap_implicit_surface(struct qemu_syscall *call);
 
-HRESULT qemu_d3d11_texture1d_create(ID3D11Texture1D *host, struct qemu_d3d11_device *device,
-        uint64_t *dxgi_surface, struct qemu_d3d11_texture **texture);
-HRESULT qemu_d3d11_texture2d_create(ID3D11Texture2D *host, struct qemu_d3d11_device *device,
-        uint64_t *dxgi_surface, struct qemu_d3d11_texture **texture);
+HRESULT qemu_d3d11_texture_create(ID3D11Resource *host, struct qemu_d3d11_device *device,
+        uint64_t *dxgi_surface, unsigned int dim, struct qemu_d3d11_texture **texture);
 
 DEFINE_GUID(IID_d3d11_priv_data, 0x2b676c65, 0x7123, 0x4138, 0xb6, 0xdb, 0x96, 0xfe, 0xa9, 0xae, 0x00, 0x43);
 

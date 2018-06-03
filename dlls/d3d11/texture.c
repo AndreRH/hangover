@@ -2948,13 +2948,26 @@ static struct ID3D10Texture3DVtbl d3d10_texture3d_vtbl =
     d3d10_texture3d_GetDesc,
 };
 
-void qemu_d3d11_texture1d_guest_init(struct qemu_d3d11_texture *texture, struct qemu_d3d11_device *device,
-        uint64_t dxgi_surface)
+void qemu_d3d11_texture_guest_init(struct qemu_d3d11_texture *texture, struct qemu_d3d11_device *device,
+        unsigned int dim, uint64_t dxgi_surface)
 {
     HRESULT hr;
 
-    texture->ID3D11Texture1D_iface.lpVtbl = &d3d11_texture1d_vtbl;
-    texture->ID3D10Texture1D_iface.lpVtbl = &d3d10_texture1d_vtbl;
+    switch (dim)
+    {
+        case 1:
+            texture->ID3D11Texture1D_iface.lpVtbl = &d3d11_texture1d_vtbl;
+            texture->ID3D10Texture1D_iface.lpVtbl = &d3d10_texture1d_vtbl;
+            break;
+        case 2:
+            texture->ID3D11Texture2D_iface.lpVtbl = &d3d11_texture2d_vtbl;
+            texture->ID3D10Texture2D_iface.lpVtbl = &d3d10_texture2d_vtbl;
+            break;
+        case 3:
+            texture->ID3D11Texture3D_iface.lpVtbl = &d3d11_texture3d_vtbl;
+            texture->ID3D10Texture3D_iface.lpVtbl = &d3d10_texture3d_vtbl;
+            break;
+    }
 
     if (dxgi_surface)
     {
@@ -2967,34 +2980,6 @@ void qemu_d3d11_texture1d_guest_init(struct qemu_d3d11_texture *texture, struct 
 
         hr = dxgi_device->lpVtbl->create_surface(dxgi_device, dxgi_surface,
                 &texture->dxgi_surface, (IUnknown *)&texture->ID3D11Texture1D_iface);
-        if (FAILED(hr))
-            WINE_ERR("Failed to create a IDXGISurface for the texture.\n");
-
-        WINE_TRACE("Created dxgi surface %p for texture %p.\n", texture->dxgi_surface, texture);
-        dxgi_device->lpVtbl->Release(dxgi_device);
-    }
-}
-
-void qemu_d3d11_texture2d_guest_init(struct qemu_d3d11_texture *texture, struct qemu_d3d11_device *device,
-        uint64_t dxgi_surface)
-{
-    HRESULT hr;
-
-    WINE_TRACE("Guest-side init of texture %p\n", texture);
-    texture->ID3D11Texture2D_iface.lpVtbl = &d3d11_texture2d_vtbl;
-    texture->ID3D10Texture2D_iface.lpVtbl = &d3d10_texture2d_vtbl;
-
-    if (dxgi_surface)
-    {
-        IQemuDXGIDevice *dxgi_device;
-
-        WINE_TRACE("Creating DXGI surface wrapper for texture %p.\n", texture);
-        hr = ID3D11Device_QueryInterface(&device->ID3D11Device2_iface, &IID_IQemuDXGIDevice, (void **)&dxgi_device);
-        if (FAILED(hr))
-            WINE_ERR("Failed to QI IQemuDXGIDevice.\n");
-
-        hr = dxgi_device->lpVtbl->create_surface(dxgi_device, dxgi_surface,
-                &texture->dxgi_surface, (IUnknown *)&texture->ID3D11Texture2D_iface);
         if (FAILED(hr))
             WINE_ERR("Failed to create a IDXGISurface for the texture.\n");
 
@@ -3062,8 +3047,8 @@ static struct IUnknownVtbl priv_data_vtbl =
 
 /* Do not make this the same as IID_Qemu_surface_priv_data */
 
-HRESULT qemu_d3d11_texture1d_create(ID3D11Texture1D *host, struct qemu_d3d11_device *device,
-        uint64_t *dxgi_surface, struct qemu_d3d11_texture **texture)
+HRESULT qemu_d3d11_texture_create(ID3D11Resource *host, struct qemu_d3d11_device *device,
+        uint64_t *dxgi_surface, unsigned int dim, struct qemu_d3d11_texture **texture)
 {
     struct qemu_d3d11_texture *obj;
     IDXGISurface *surface_iface;
@@ -3078,13 +3063,32 @@ HRESULT qemu_d3d11_texture1d_create(ID3D11Texture1D *host, struct qemu_d3d11_dev
 
     /* Note that we share the refcount with the host object, so we don't want to keep only one
      * reference to it. */
-    obj->host11_1d = host;
-    hr = ID3D11Texture1D_QueryInterface(host, &IID_ID3D10Texture1D, (void **)&obj->host10_1d);
-    if (FAILED(hr))
-        WINE_ERR("Failed to QI ID3D10Texture1D.\n");
-    ID3D10Texture1D_Release(obj->host10_1d);
+    switch (dim)
+    {
+        case 1:
+            obj->host11_1d = (ID3D11Texture1D *)host;
+            hr = ID3D11Resource_QueryInterface(host, &IID_ID3D10Texture1D, (void **)&obj->host10_1d);
+            if (FAILED(hr))
+                WINE_ERR("Failed to QI ID3D10Texture1D.\n");
+            ID3D10Texture1D_Release(obj->host10_1d);
+            break;
+        case 2:
+            obj->host11_2d = (ID3D11Texture2D *)host;
+            hr = ID3D11Resource_QueryInterface(host, &IID_ID3D10Texture2D, (void **)&obj->host10_2d);
+            if (FAILED(hr))
+                WINE_ERR("Failed to QI ID3D10Texture1D.\n");
+            ID3D10Texture2D_Release(obj->host10_2d);
+            break;
+        case 3:
+            obj->host11_3d = (ID3D11Texture3D *)host;
+            hr = ID3D11Resource_QueryInterface(host, &IID_ID3D10Texture3D, (void **)&obj->host10_3d);
+            if (FAILED(hr))
+                WINE_ERR("Failed to QI ID3D10Texture1D.\n");
+            ID3D10Texture3D_Release(obj->host10_3d);
+            break;
+    }
 
-    hr = ID3D11Texture1D_QueryInterface(host, &IID_IDXGISurface, (void **)&surface_iface);
+    hr = ID3D11Resource_QueryInterface(host, &IID_IDXGISurface, (void **)&surface_iface);
     if (SUCCEEDED(hr))
     {
         *dxgi_surface = QEMU_H2G(surface_iface);
@@ -3097,51 +3101,11 @@ HRESULT qemu_d3d11_texture1d_create(ID3D11Texture1D *host, struct qemu_d3d11_dev
 
     obj->priv_data_iface.lpVtbl = &priv_data_vtbl;
     /* Leave the ref at 0, we want the host obj to own the only / final reference. */
-    ID3D11Texture1D_SetPrivateDataInterface(host, &IID_d3d11_priv_data, &obj->priv_data_iface);
+    ID3D11Resource_SetPrivateDataInterface(host, &IID_d3d11_priv_data, &obj->priv_data_iface);
 
     *texture = obj;
     return S_OK;
 }
 
-HRESULT qemu_d3d11_texture2d_create(ID3D11Texture2D *host, struct qemu_d3d11_device *device,
-        uint64_t *dxgi_surface, struct qemu_d3d11_texture **texture)
-{
-    struct qemu_d3d11_texture *obj;
-    IDXGISurface *surface_iface;
-    HRESULT hr;
-
-    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
-    if (!obj)
-    {
-        WINE_WARN("Out of memory\n");
-        return E_OUTOFMEMORY;
-    }
-
-    /* Note that we share the refcount with the host object, so we don't want to keep only one
-     * reference to it. */
-    obj->host11_2d = host;
-    hr = ID3D11Texture2D_QueryInterface(host, &IID_ID3D10Texture2D, (void **)&obj->host10_2d);
-    if (FAILED(hr))
-        WINE_ERR("Failed to QI ID3D10Texture2D.\n");
-    ID3D10Texture2D_Release(obj->host10_2d);
-
-    hr = ID3D11Texture2D_QueryInterface(host, &IID_IDXGISurface, (void **)&surface_iface);
-    if (SUCCEEDED(hr))
-    {
-        *dxgi_surface = QEMU_H2G(surface_iface);
-        IDXGISurface_Release(surface_iface);
-    }
-    else
-    {
-        *dxgi_surface = 0;
-    }
-
-    obj->priv_data_iface.lpVtbl = &priv_data_vtbl;
-    /* Leave the ref at 0, we want the host obj to own the only / final reference. */
-    ID3D11Texture2D_SetPrivateDataInterface(host, &IID_d3d11_priv_data, &obj->priv_data_iface);
-
-    *texture = obj;
-    return S_OK;
-}
 
 #endif
