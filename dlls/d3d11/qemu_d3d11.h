@@ -157,6 +157,13 @@ enum d3d11_calls
     CALL_D3D10_GEOMETRY_SHADER_RELEASE,
     CALL_D3D10_GEOMETRY_SHADER_SETPRIVATEDATA,
     CALL_D3D10_GEOMETRY_SHADER_SETPRIVATEDATAINTERFACE,
+    CALL_D3D10_INPUT_LAYOUT_ADDREF,
+    CALL_D3D10_INPUT_LAYOUT_GETDEVICE,
+    CALL_D3D10_INPUT_LAYOUT_GETPRIVATEDATA,
+    CALL_D3D10_INPUT_LAYOUT_QUERYINTERFACE,
+    CALL_D3D10_INPUT_LAYOUT_RELEASE,
+    CALL_D3D10_INPUT_LAYOUT_SETPRIVATEDATA,
+    CALL_D3D10_INPUT_LAYOUT_SETPRIVATEDATAINTERFACE,
     CALL_D3D10_MULTITHREAD_ENTER,
     CALL_D3D10_MULTITHREAD_GETMULTITHREADPROTECTED,
     CALL_D3D10_MULTITHREAD_LEAVE,
@@ -508,6 +515,13 @@ enum d3d11_calls
     CALL_D3D11_IMMEDIATE_CONTEXT_VSSETSAMPLERS,
     CALL_D3D11_IMMEDIATE_CONTEXT_VSSETSHADER,
     CALL_D3D11_IMMEDIATE_CONTEXT_VSSETSHADERRESOURCES,
+    CALL_D3D11_INPUT_LAYOUT_ADDREF,
+    CALL_D3D11_INPUT_LAYOUT_GETDEVICE,
+    CALL_D3D11_INPUT_LAYOUT_GETPRIVATEDATA,
+    CALL_D3D11_INPUT_LAYOUT_QUERYINTERFACE,
+    CALL_D3D11_INPUT_LAYOUT_RELEASE,
+    CALL_D3D11_INPUT_LAYOUT_SETPRIVATEDATA,
+    CALL_D3D11_INPUT_LAYOUT_SETPRIVATEDATAINTERFACE,
     CALL_D3D11_PIXEL_SHADER_ADDREF,
     CALL_D3D11_PIXEL_SHADER_GETDEVICE,
     CALL_D3D11_PIXEL_SHADER_GETPRIVATEDATA,
@@ -842,6 +856,20 @@ struct qemu_d3d11_query
     ULONG refcount;
 };
 
+struct qemu_d3d11_inputlayout
+{
+    /* Guest fields */
+    ID3D11InputLayout ID3D11InputLayout_iface;
+    ID3D10InputLayout ID3D10InputLayout_iface;
+
+    /* Host fields */
+    ID3D11InputLayout *host11;
+    ID3D10InputLayout *host10;
+
+    IUnknown priv_data_iface;
+    ULONG refcount;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 enum D3D11_USAGE d3d11_usage_from_d3d10_usage(enum D3D10_USAGE usage);
@@ -1045,6 +1073,13 @@ void qemu_d3d10_geometry_shader_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_geometry_shader_Release(struct qemu_syscall *call);
 void qemu_d3d10_geometry_shader_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_geometry_shader_SetPrivateDataInterface(struct qemu_syscall *call);
+void qemu_d3d10_input_layout_AddRef(struct qemu_syscall *call);
+void qemu_d3d10_input_layout_GetDevice(struct qemu_syscall *call);
+void qemu_d3d10_input_layout_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d10_input_layout_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d10_input_layout_Release(struct qemu_syscall *call);
+void qemu_d3d10_input_layout_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d10_input_layout_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d10_multithread_Enter(struct qemu_syscall *call);
 void qemu_d3d10_multithread_GetMultithreadProtected(struct qemu_syscall *call);
 void qemu_d3d10_multithread_Leave(struct qemu_syscall *call);
@@ -1396,6 +1431,13 @@ void qemu_d3d11_immediate_context_VSSetConstantBuffers1(struct qemu_syscall *cal
 void qemu_d3d11_immediate_context_VSSetSamplers(struct qemu_syscall *call);
 void qemu_d3d11_immediate_context_VSSetShader(struct qemu_syscall *call);
 void qemu_d3d11_immediate_context_VSSetShaderResources(struct qemu_syscall *call);
+void qemu_d3d11_input_layout_AddRef(struct qemu_syscall *call);
+void qemu_d3d11_input_layout_GetDevice(struct qemu_syscall *call);
+void qemu_d3d11_input_layout_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d11_input_layout_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d11_input_layout_Release(struct qemu_syscall *call);
+void qemu_d3d11_input_layout_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d11_input_layout_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d11_pixel_shader_AddRef(struct qemu_syscall *call);
 void qemu_d3d11_pixel_shader_GetDevice(struct qemu_syscall *call);
 void qemu_d3d11_pixel_shader_GetPrivateData(struct qemu_syscall *call);
