@@ -2234,6 +2234,9 @@ struct qemu_d3d11_state *state_from_host(ID3D11DeviceChild *host)
     DWORD size = sizeof(priv);
     HRESULT hr;
 
+    if (!host)
+        return NULL;
+
     hr = ID3D11DeviceChild_GetPrivateData(host, &IID_d3d11_priv_data, &size, &priv);
     if (FAILED(hr))
     {
