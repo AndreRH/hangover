@@ -873,6 +873,11 @@ void qemu_d3d11_buffer_guest_init(struct qemu_d3d11_buffer *buffer)
     wined3d_private_store_init(&buffer->private_store);
 }
 
+void __fastcall d3d11_buffer_guest_destroy(struct qemu_d3d11_buffer *buffer)
+{
+    wined3d_private_store_cleanup(&buffer->private_store);
+}
+
 #else
 
 static inline struct qemu_d3d11_buffer *impl_from_priv_data(IUnknown *iface)
@@ -907,6 +912,7 @@ static ULONG STDMETHODCALLTYPE d3d11_buffer_priv_data_Release(IUnknown *iface)
     if (!refcount)
     {
         WINE_TRACE("Destroying buffer wrapper %p for host buffer %p.\n", buffer, buffer->host11);
+        qemu_ops->qemu_execute(QEMU_G2H(d3d11_buffer_guest_destroy), QEMU_H2G(buffer));
         HeapFree(GetProcessHeap(), 0, buffer);
     }
 

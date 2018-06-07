@@ -461,6 +461,11 @@ void qemu_d3d11_input_layout_guest_init(struct qemu_d3d11_input_layout *layout)
     wined3d_private_store_init(&layout->private_store);
 }
 
+void __fastcall d3d11_input_layout_guest_destroy(struct qemu_d3d11_input_layout *layout)
+{
+    wined3d_private_store_cleanup(&layout->private_store);
+}
+
 struct qemu_d3d11_input_layout *unsafe_impl_from_ID3D11InputLayout(ID3D11InputLayout *iface)
 {
     if (!iface)
@@ -513,6 +518,7 @@ static ULONG STDMETHODCALLTYPE d3d11_input_layout_priv_data_Release(IUnknown *if
     if (!refcount)
     {
         WINE_TRACE("Destroying layout wrapper %p for host layout %p.\n", layout, layout->host11);
+        qemu_ops->qemu_execute(QEMU_G2H(d3d11_input_layout_guest_destroy), QEMU_H2G(layout));
         HeapFree(GetProcessHeap(), 0, layout);
     }
 

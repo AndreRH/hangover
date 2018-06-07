@@ -12721,6 +12721,11 @@ void qemu_d3d11_context_guest_init(struct qemu_d3d11_device_context *context)
     wined3d_private_store_init(&context->private_store);
 }
 
+void __fastcall d3d11_device_context_guest_destroy(struct qemu_d3d11_device_context *context)
+{
+    wined3d_private_store_cleanup(&context->private_store);
+}
+
 #else
 
 void qemu_wrap_implicit_surface(struct qemu_syscall *call)

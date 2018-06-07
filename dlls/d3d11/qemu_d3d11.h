@@ -558,6 +558,7 @@ struct qemu_d3d11_device
     ID3D10Multithread *host_mt;
     struct qemu_d3d11_device_context immediate_context;
     IUnknown priv_data_iface;
+    ULONG refcount;
 };
 
 struct qemu_d3d11_texture
@@ -842,6 +843,16 @@ HRESULT d3d_set_private_data(struct wined3d_private_store *store,
         REFGUID guid, UINT data_size, const void *data);
 HRESULT d3d_set_private_data_interface(struct wined3d_private_store *store,
         REFGUID guid, const IUnknown *object);
+
+void __fastcall d3d11_device_context_guest_destroy(struct qemu_d3d11_device_context *);
+void __fastcall d3d11_texture_guest_destroy(struct qemu_d3d11_texture *);
+void __fastcall d3d11_buffer_guest_destroy(struct qemu_d3d11_buffer *);
+void __fastcall d3d11_view_guest_destroy(struct qemu_d3d11_view *);
+void __fastcall d3d11_shader_guest_destroy(struct qemu_d3d11_shader *);
+void __fastcall d3d11_class_linkage_guest_destroy(struct qemu_d3d11_class_linkage *);
+void __fastcall d3d11_state_guest_destroy(struct qemu_d3d11_state *);
+void __fastcall d3d11_query_guest_destroy(struct qemu_d3d11_query *);
+void __fastcall d3d11_input_layout_guest_destroy(struct qemu_d3d11_input_layout *);
 
 #else
 
@@ -1345,6 +1356,16 @@ DEFINE_GUID(IID_d3d11_priv_data, 0x2b676c65, 0x7123, 0x4138, 0xb6, 0xdb, 0x96, 0
 
 struct qemu_d3d11_device *device_from_host(ID3D11Device2 *host);
 struct qemu_d3d11_state *state_from_host(ID3D11DeviceChild *host);
+
+extern uint64_t d3d11_device_context_guest_destroy;
+extern uint64_t d3d11_texture_guest_destroy;
+extern uint64_t d3d11_buffer_guest_destroy;
+extern uint64_t d3d11_view_guest_destroy;
+extern uint64_t d3d11_shader_guest_destroy;
+extern uint64_t d3d11_class_linkage_guest_destroy;
+extern uint64_t d3d11_state_guest_destroy;
+extern uint64_t d3d11_query_guest_destroy;
+extern uint64_t d3d11_input_layout_guest_destroy;
 
 #endif
 

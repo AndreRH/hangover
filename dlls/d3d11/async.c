@@ -744,6 +744,11 @@ void qemu_d3d11_query_guest_init(struct qemu_d3d11_query *query)
     wined3d_private_store_init(&query->private_store);
 }
 
+void __fastcall d3d11_query_guest_destroy(struct qemu_d3d11_query *query)
+{
+    wined3d_private_store_cleanup(&query->private_store);
+}
+
 struct qemu_d3d11_query *unsafe_impl_from_ID3D11Query(ID3D11Query *iface)
 {
     if (!iface)
@@ -791,6 +796,7 @@ static ULONG STDMETHODCALLTYPE d3d11_query_priv_data_Release(IUnknown *iface)
     if (!refcount)
     {
         WINE_TRACE("Destroying query wrapper %p for host query %p.\n", query, query->host11);
+        qemu_ops->qemu_execute(QEMU_G2H(d3d11_query_guest_destroy), QEMU_H2G(query));
         HeapFree(GetProcessHeap(), 0, query);
     }
 

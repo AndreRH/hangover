@@ -2581,6 +2581,11 @@ void qemu_d3d11_texture_guest_init(struct qemu_d3d11_texture *texture, struct qe
     wined3d_private_store_init(&texture->private_store);
 }
 
+void __fastcall d3d11_texture_guest_destroy(struct qemu_d3d11_texture *texture)
+{
+    wined3d_private_store_cleanup(&texture->private_store);
+}
+
 #else
 
 static inline struct qemu_d3d11_texture *impl_from_priv_data(IUnknown *iface)
@@ -2615,6 +2620,7 @@ static ULONG STDMETHODCALLTYPE d3d11_texture_priv_data_Release(IUnknown *iface)
     if (!refcount)
     {
         WINE_TRACE("Destroying texture wrapper %p for host texture %p.\n", texture, texture->host11_2d);
+        qemu_ops->qemu_execute(QEMU_G2H(d3d11_texture_guest_destroy), QEMU_H2G(texture));
         HeapFree(GetProcessHeap(), 0, texture);
     }
 

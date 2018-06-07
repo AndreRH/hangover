@@ -2073,6 +2073,11 @@ void qemu_d3d11_rasterizer_state_guest_init(struct qemu_d3d11_state *state)
     wined3d_private_store_init(&state->private_store);
 }
 
+void __fastcall d3d11_state_guest_destroy(struct qemu_d3d11_state *state)
+{
+    wined3d_private_store_cleanup(&state->private_store);
+}
+
 #else
 
 static inline struct qemu_d3d11_state *impl_from_priv_data(IUnknown *iface)
@@ -2107,6 +2112,7 @@ static ULONG STDMETHODCALLTYPE d3d11_state_priv_data_Release(IUnknown *iface)
     if (!refcount)
     {
         WINE_TRACE("Destroying state wrapper %p for host state %p.\n", state, state->host_ds11);
+        qemu_ops->qemu_execute(QEMU_G2H(d3d11_state_guest_destroy), QEMU_H2G(state));
         HeapFree(GetProcessHeap(), 0, state);
     }
 

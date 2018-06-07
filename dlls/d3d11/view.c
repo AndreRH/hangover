@@ -2157,6 +2157,11 @@ void qemu_d3d11_render_target_view_guest_init(struct qemu_d3d11_view *view)
     wined3d_private_store_init(&view->private_store);
 }
 
+void __fastcall d3d11_view_guest_destroy(struct qemu_d3d11_view *view)
+{
+    wined3d_private_store_cleanup(&view->private_store);
+}
+
 #else
 
 static inline struct qemu_d3d11_view *impl_from_priv_data(IUnknown *iface)
@@ -2191,6 +2196,7 @@ static ULONG STDMETHODCALLTYPE d3d11_view_priv_data_Release(IUnknown *iface)
     if (!refcount)
     {
         WINE_TRACE("Destroying view wrapper %p for host view %p.\n", view, view->host_ds11);
+        qemu_ops->qemu_execute(QEMU_G2H(d3d11_view_guest_destroy), QEMU_H2G(view));
         HeapFree(GetProcessHeap(), 0, view);
     }
 

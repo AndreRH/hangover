@@ -257,6 +257,11 @@ static void qemu_layer_get_size(struct qemu_syscall *call)
     call->iret = sizeof(struct qemu_d3d11_device);
 }
 
+static inline struct qemu_d3d11_device *impl_from_priv_data(IUnknown *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_device, priv_data_iface);
+}
+
 static HRESULT STDMETHODCALLTYPE d3d11_device_priv_data_QueryInterface(IUnknown *iface, REFIID riid, void **out)
 {
     WINE_ERR("Unexpected call\n");
@@ -266,13 +271,30 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_priv_data_QueryInterface(IUnknown 
 
 static ULONG STDMETHODCALLTYPE d3d11_device_priv_data_AddRef(IUnknown *iface)
 {
-    return 2;
+    struct qemu_d3d11_device *device = impl_from_priv_data(iface);
+    ULONG refcount = InterlockedIncrement(&device->refcount);
+
+    WINE_TRACE("%p increasing refcount to %u.\n", device, refcount);
+
+    return refcount;
 }
 
 static ULONG STDMETHODCALLTYPE d3d11_device_priv_data_Release(IUnknown *iface)
 {
-    /* Don't bother freeing anything. The wrapper struct dies with the dxgi struct. */
-    return 1;
+    struct qemu_d3d11_device *device = impl_from_priv_data(iface);
+    ULONG refcount = InterlockedDecrement(&device->refcount);
+
+    WINE_TRACE("%p decreasing refcount to %u.\n", device, refcount);
+
+    if (!refcount)
+    {
+        /* We don't free the device because it is part of the dxgi struct, but we have to clean up the
+         * immediate context. The device's private store is forwarded to dxgi. */
+        WINE_TRACE("Destroying device wrapper %p for host device %p.\n", device, device->host_d3d11);
+        qemu_ops->qemu_execute(QEMU_G2H(d3d11_device_context_guest_destroy), QEMU_H2G(&device->immediate_context));
+    }
+
+    return refcount;
 }
 
 static struct IUnknownVtbl priv_data_vtbl =
@@ -584,6 +606,15 @@ struct qemu_dll_init
 {
     struct qemu_syscall super;
     uint64_t reason;
+    uint64_t d3d11_device_context_guest_destroy;
+    uint64_t d3d11_texture_guest_destroy;
+    uint64_t d3d11_buffer_guest_destroy;
+    uint64_t d3d11_view_guest_destroy;
+    uint64_t d3d11_shader_guest_destroy;
+    uint64_t d3d11_class_linkage_guest_destroy;
+    uint64_t d3d11_state_guest_destroy;
+    uint64_t d3d11_query_guest_destroy;
+    uint64_t d3d11_input_layout_guest_destroy;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -600,6 +631,15 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
     {
         call.super.id = QEMU_SYSCALL_ID(CALL_INIT_DLL);
         call.reason = DLL_PROCESS_ATTACH;
+        call.d3d11_device_context_guest_destroy = (ULONG_PTR)d3d11_device_context_guest_destroy;
+        call.d3d11_texture_guest_destroy = (ULONG_PTR)d3d11_texture_guest_destroy;
+        call.d3d11_buffer_guest_destroy = (ULONG_PTR)d3d11_buffer_guest_destroy;
+        call.d3d11_view_guest_destroy = (ULONG_PTR)d3d11_view_guest_destroy;
+        call.d3d11_shader_guest_destroy = (ULONG_PTR)d3d11_shader_guest_destroy;
+        call.d3d11_class_linkage_guest_destroy = (ULONG_PTR)d3d11_class_linkage_guest_destroy;
+        call.d3d11_state_guest_destroy = (ULONG_PTR)d3d11_state_guest_destroy;
+        call.d3d11_query_guest_destroy = (ULONG_PTR)d3d11_query_guest_destroy;
+        call.d3d11_input_layout_guest_destroy = (ULONG_PTR)d3d11_input_layout_guest_destroy;
         qemu_syscall(&call.super);
 
         dxgi = GetModuleHandleA("dxgi");
@@ -683,6 +723,16 @@ UINT d3d11_resource_misc_flags_from_d3d10_resource_misc_flags(UINT resource_misc
 
 #else
 
+uint64_t d3d11_device_context_guest_destroy;
+uint64_t d3d11_texture_guest_destroy;
+uint64_t d3d11_buffer_guest_destroy;
+uint64_t d3d11_view_guest_destroy;
+uint64_t d3d11_shader_guest_destroy;
+uint64_t d3d11_class_linkage_guest_destroy;
+uint64_t d3d11_state_guest_destroy;
+uint64_t d3d11_query_guest_destroy;
+uint64_t d3d11_input_layout_guest_destroy;
+
 static void qemu_init_dll(struct qemu_syscall *call)
 {
     struct qemu_dll_init *c = (struct qemu_dll_init *)call;
@@ -697,6 +747,16 @@ static void qemu_init_dll(struct qemu_syscall *call)
             host_d3d11 = LoadLibraryA("d3d11");
             if (!host_d3d11)
                 WINE_ERR("Failed to load d3d11.dll, expect problems.\n");
+
+            d3d11_device_context_guest_destroy = c->d3d11_device_context_guest_destroy;
+            d3d11_texture_guest_destroy = c->d3d11_texture_guest_destroy;
+            d3d11_buffer_guest_destroy = c->d3d11_buffer_guest_destroy;
+            d3d11_view_guest_destroy = c->d3d11_view_guest_destroy;
+            d3d11_shader_guest_destroy = c->d3d11_shader_guest_destroy;
+            d3d11_class_linkage_guest_destroy = c->d3d11_class_linkage_guest_destroy;
+            d3d11_state_guest_destroy = c->d3d11_state_guest_destroy;
+            d3d11_query_guest_destroy = c->d3d11_query_guest_destroy;
+            d3d11_input_layout_guest_destroy = c->d3d11_input_layout_guest_destroy;
             break;
 
         case DLL_PROCESS_DETACH:

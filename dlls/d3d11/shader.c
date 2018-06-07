@@ -2285,6 +2285,16 @@ struct qemu_d3d11_shader *unsafe_impl_from_ID3D11ComputeShader(ID3D11ComputeShad
     return impl_from_ID3D11ComputeShader(iface);
 }
 
+void __fastcall d3d11_shader_guest_destroy(struct qemu_d3d11_shader *shader)
+{
+    wined3d_private_store_cleanup(&shader->private_store);
+}
+
+void __fastcall d3d11_class_linkage_guest_destroy(struct qemu_d3d11_class_linkage *link)
+{
+    wined3d_private_store_cleanup(&link->private_store);
+}
+
 #else
 
 static inline struct qemu_d3d11_shader *impl_from_priv_data(IUnknown *iface)
@@ -2319,6 +2329,7 @@ static ULONG STDMETHODCALLTYPE d3d11_shader_priv_data_Release(IUnknown *iface)
     if (!refcount)
     {
         WINE_TRACE("Destroying shader wrapper %p for host shader %p.\n", shader, shader->host_vs11);
+        qemu_ops->qemu_execute(QEMU_G2H(d3d11_shader_guest_destroy), QEMU_H2G(shader));
         HeapFree(GetProcessHeap(), 0, shader);
     }
 
