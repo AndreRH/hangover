@@ -399,7 +399,8 @@ struct qemu_d3d11_depthstencil_view_GetDesc
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_depthstencil_view_GetDesc(ID3D11DepthStencilView *iface, D3D11_DEPTH_STENCIL_VIEW_DESC *desc)
+static void STDMETHODCALLTYPE d3d11_depthstencil_view_GetDesc(ID3D11DepthStencilView *iface,
+        D3D11_DEPTH_STENCIL_VIEW_DESC *desc)
 {
     struct qemu_d3d11_depthstencil_view_GetDesc call;
     struct qemu_d3d11_view *view = impl_from_ID3D11DepthStencilView(iface);
@@ -418,7 +419,7 @@ void qemu_d3d11_depthstencil_view_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d11_depthstencil_view_GetDesc *c = (struct qemu_d3d11_depthstencil_view_GetDesc *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     ID3D11DepthStencilView_GetDesc(view->host_ds11, QEMU_G2H(c->desc));
@@ -707,7 +708,8 @@ struct qemu_d3d10_depthstencil_view_GetDesc
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_depthstencil_view_GetDesc(ID3D10DepthStencilView *iface, D3D10_DEPTH_STENCIL_VIEW_DESC *desc)
+static void STDMETHODCALLTYPE d3d10_depthstencil_view_GetDesc(ID3D10DepthStencilView *iface,
+        D3D10_DEPTH_STENCIL_VIEW_DESC *desc)
 {
     struct qemu_d3d10_depthstencil_view_GetDesc call;
     struct qemu_d3d11_view *view = impl_from_ID3D10DepthStencilView(iface);
@@ -726,7 +728,7 @@ void qemu_d3d10_depthstencil_view_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d10_depthstencil_view_GetDesc *c = (struct qemu_d3d10_depthstencil_view_GetDesc *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     ID3D10DepthStencilView_GetDesc(view->host_ds10, QEMU_G2H(c->desc));
