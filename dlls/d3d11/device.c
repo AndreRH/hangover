@@ -1387,16 +1387,24 @@ struct qemu_d3d11_immediate_context_OMSetRenderTargets
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_OMSetRenderTargets(ID3D11DeviceContext1 *iface, UINT render_target_view_count, ID3D11RenderTargetView *const *render_target_views, ID3D11DepthStencilView *depth_stencil_view)
+static void STDMETHODCALLTYPE d3d11_immediate_context_OMSetRenderTargets(ID3D11DeviceContext1 *iface,
+        UINT render_target_view_count, ID3D11RenderTargetView *const *render_target_views,
+        ID3D11DepthStencilView *depth_stencil_view)
 {
     struct qemu_d3d11_immediate_context_OMSetRenderTargets call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_view *ds_view = unsafe_impl_from_ID3D11DepthStencilView(depth_stencil_view);
+    uint64_t rt_views[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
+    UINT i;
+
+    for (i = 0; i < render_target_view_count; ++i)
+        rt_views[i] = (ULONG_PTR)unsafe_impl_from_ID3D11RenderTargetView(render_target_views[i]);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_OMSETRENDERTARGETS);
     call.iface = (ULONG_PTR)context;
     call.render_target_view_count = render_target_view_count;
-    call.render_target_views = (ULONG_PTR)render_target_views;
-    call.depth_stencil_view = (ULONG_PTR)depth_stencil_view;
+    call.render_target_views = (ULONG_PTR)rt_views;
+    call.depth_stencil_view = (ULONG_PTR)ds_view;
 
     qemu_syscall(&call.super);
 }
@@ -1405,13 +1413,24 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_OMSetRenderTargets(ID3D11D
 
 void qemu_d3d11_immediate_context_OMSetRenderTargets(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_OMSetRenderTargets *c = (struct qemu_d3d11_immediate_context_OMSetRenderTargets *)call;
+    struct qemu_d3d11_immediate_context_OMSetRenderTargets *c =
+            (struct qemu_d3d11_immediate_context_OMSetRenderTargets *)call;
     struct qemu_d3d11_device_context *context;
+    struct qemu_d3d11_view *ds_view;
+    struct qemu_d3d11_view **rt_views;
+    ID3D11RenderTargetView *view_ifaces[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
+    UINT i;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    ds_view = QEMU_G2H(c->depth_stencil_view);
+    rt_views = QEMU_G2H(c->render_target_views);
 
-    ID3D11DeviceContext1_OMSetRenderTargets(context->host, c->render_target_view_count, QEMU_G2H(c->render_target_views), QEMU_G2H(c->depth_stencil_view));
+    for (i = 0; i < c->render_target_view_count; ++i)
+        view_ifaces[i] = rt_views[i] ? rt_views[i]->host_rt11 : NULL;
+
+    ID3D11DeviceContext1_OMSetRenderTargets(context->host, c->render_target_view_count, view_ifaces,
+            ds_view ? ds_view->host_ds11 : NULL);
 }
 
 #endif
