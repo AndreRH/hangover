@@ -746,7 +746,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d10_multithread_SetMultithreadProtected,
     qemu_d3d10_rendertarget_view_AddRef,
     qemu_d3d10_rendertarget_view_GetDesc,
-    qemu_d3d10_rendertarget_view_GetDevice,
     qemu_d3d10_rendertarget_view_GetPrivateData,
     qemu_d3d10_rendertarget_view_GetResource,
     qemu_d3d10_rendertarget_view_QueryInterface,

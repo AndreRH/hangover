@@ -142,7 +142,6 @@ enum d3d11_calls
     CALL_D3D10_MULTITHREAD_SETMULTITHREADPROTECTED,
     CALL_D3D10_RENDERTARGET_VIEW_ADDREF,
     CALL_D3D10_RENDERTARGET_VIEW_GETDESC,
-    CALL_D3D10_RENDERTARGET_VIEW_GETDEVICE,
     CALL_D3D10_RENDERTARGET_VIEW_GETPRIVATEDATA,
     CALL_D3D10_RENDERTARGET_VIEW_GETRESOURCE,
     CALL_D3D10_RENDERTARGET_VIEW_QUERYINTERFACE,
@@ -760,7 +759,6 @@ void qemu_d3d10_multithread_Leave(struct qemu_syscall *call);
 void qemu_d3d10_multithread_SetMultithreadProtected(struct qemu_syscall *call);
 void qemu_d3d10_rendertarget_view_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_rendertarget_view_GetDesc(struct qemu_syscall *call);
-void qemu_d3d10_rendertarget_view_GetDevice(struct qemu_syscall *call);
 void qemu_d3d10_rendertarget_view_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_rendertarget_view_GetResource(struct qemu_syscall *call);
 void qemu_d3d10_rendertarget_view_QueryInterface(struct qemu_syscall *call);
