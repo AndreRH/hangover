@@ -3144,12 +3144,7 @@ void qemu_d3d11_immediate_context_PSGetShaderResources(struct qemu_syscall *call
     ID3D11DeviceContext1_PSGetShaderResources(context->host, c->start_slot, count, ifaces);
 
     for (i = 0; i < count; ++i)
-    {
-        if (!ifaces[i])
-            continue;
-
         view_impl[i] = view_from_host((ID3D11DeviceChild *)ifaces[i]);
-    }
 }
 
 #endif
@@ -3797,31 +3792,83 @@ struct qemu_d3d11_immediate_context_OMGetRenderTargets
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_OMGetRenderTargets(ID3D11DeviceContext1 *iface, UINT render_target_view_count, ID3D11RenderTargetView **render_target_views, ID3D11DepthStencilView **depth_stencil_view)
+static void STDMETHODCALLTYPE d3d11_immediate_context_OMGetRenderTargets(ID3D11DeviceContext1 *iface,
+        UINT render_target_view_count, ID3D11RenderTargetView **render_target_views,
+        ID3D11DepthStencilView **depth_stencil_view)
 {
     struct qemu_d3d11_immediate_context_OMGetRenderTargets call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_view *view;
+    uint64_t stack[16], *rtv_impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_OMGETRENDERTARGETS);
     call.iface = (ULONG_PTR)context;
     call.render_target_view_count = render_target_view_count;
-    call.render_target_views = (ULONG_PTR)render_target_views;
     call.depth_stencil_view = (ULONG_PTR)depth_stencil_view;
 
+    if (render_target_view_count > (sizeof(stack) / sizeof(*stack)))
+    {
+        rtv_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*rtv_impl) * render_target_view_count);
+        if (!rtv_impl)
+            WINE_ERR("Out of memory\n");
+    }
+
+    call.render_target_views = (ULONG_PTR)rtv_impl;
+
     qemu_syscall(&call.super);
+
+    for (i = 0; i < render_target_view_count; ++i)
+    {
+        if (!rtv_impl[i])
+        {
+            render_target_views[i] = NULL;
+            continue;
+        }
+
+        view = (struct qemu_d3d11_view *)(ULONG_PTR)rtv_impl[i];
+        render_target_views[i] = &view->ID3D11RenderTargetView_iface;
+    }
+
+    if (rtv_impl != stack)
+        HeapFree(GetProcessHeap(), 0, rtv_impl);
+
+    if (call.depth_stencil_view)
+    {
+        view = (struct qemu_d3d11_view *)(ULONG_PTR)call.depth_stencil_view;
+        *depth_stencil_view = &view->ID3D11DepthStencilView_iface;
+    }
+    else if (depth_stencil_view)
+    {
+        *depth_stencil_view = NULL;
+    }
 }
 
 #else
 
 void qemu_d3d11_immediate_context_OMGetRenderTargets(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_OMGetRenderTargets *c = (struct qemu_d3d11_immediate_context_OMGetRenderTargets *)call;
+    struct qemu_d3d11_immediate_context_OMGetRenderTargets *c =
+            (struct qemu_d3d11_immediate_context_OMGetRenderTargets *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11RenderTargetView **ifaces;
+    ID3D11DepthStencilView *host_ds = NULL;
+    struct qemu_d3d11_view **view_impl;
+    UINT i, count;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    ifaces = QEMU_G2H(c->render_target_views);
+    view_impl = QEMU_G2H(c->render_target_views);
+    count = c->render_target_view_count;
 
-    ID3D11DeviceContext1_OMGetRenderTargets(context->host, c->render_target_view_count, QEMU_G2H(c->render_target_views), QEMU_G2H(c->depth_stencil_view));
+    ID3D11DeviceContext1_OMGetRenderTargets(context->host, count, ifaces, 
+            c->depth_stencil_view ? &host_ds : NULL);
+
+    for (i = 0; i < count; ++i)
+        view_impl[i] = view_from_host((ID3D11DeviceChild *)ifaces[i]);
+
+    c->depth_stencil_view = QEMU_H2G(view_from_host((ID3D11DeviceChild *)host_ds));
 }
 
 #endif
