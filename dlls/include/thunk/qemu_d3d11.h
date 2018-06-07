@@ -18,4 +18,27 @@ static inline void D3D11_SUBRESOURCE_DATA_g2h(D3D11_SUBRESOURCE_DATA *host,
     host->SysMemSlicePitch = guest->SysMemSlicePitch;
 }
 
+struct qemu_D3D11_INPUT_ELEMENT_DESC
+{
+    qemu_ptr SemanticName;
+    UINT SemanticIndex;
+    DXGI_FORMAT Format;
+    UINT InputSlot;
+    UINT AlignedByteOffset;
+    D3D11_INPUT_CLASSIFICATION InputSlotClass;
+    UINT InstanceDataStepRate;
+};
+
+static inline void D3D11_INPUT_ELEMENT_DESC_g2h(D3D11_INPUT_ELEMENT_DESC *host,
+        const struct qemu_D3D11_INPUT_ELEMENT_DESC *guest)
+{
+    host->SemanticName = (const char *)(ULONG_PTR)guest->SemanticName;
+    host->SemanticIndex = guest->SemanticIndex;
+    host->Format = guest->Format;
+    host->InputSlot = guest->InputSlot;
+    host->AlignedByteOffset = guest->AlignedByteOffset;
+    host->InputSlotClass = guest->InputSlotClass;
+    host->InstanceDataStepRate = guest->InstanceDataStepRate;
+}
+
 #endif

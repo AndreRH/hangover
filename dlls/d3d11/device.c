@@ -6356,10 +6356,13 @@ struct qemu_d3d11_device_CreateInputLayout
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_CreateInputLayout(ID3D11Device2 *iface, const D3D11_INPUT_ELEMENT_DESC *element_descs, UINT element_count, const void *shader_byte_code, SIZE_T shader_byte_code_length, ID3D11InputLayout **input_layout)
+static HRESULT STDMETHODCALLTYPE d3d11_device_CreateInputLayout(ID3D11Device2 *iface,
+        const D3D11_INPUT_ELEMENT_DESC *element_descs, UINT element_count,
+        const void *shader_byte_code, SIZE_T shader_byte_code_length, ID3D11InputLayout **input_layout)
 {
     struct qemu_d3d11_device_CreateInputLayout call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
+    struct qemu_d3d11_input_layout *obj;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_CREATEINPUTLAYOUT);
     call.iface = (ULONG_PTR)device;
@@ -6367,9 +6370,15 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateInputLayout(ID3D11Device2 *i
     call.element_count = element_count;
     call.shader_byte_code = (ULONG_PTR)shader_byte_code;
     call.shader_byte_code_length = shader_byte_code_length;
-    call.input_layout = (ULONG_PTR)input_layout;
 
     qemu_syscall(&call.super);
+
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    obj = (struct qemu_d3d11_input_layout *)(ULONG_PTR)call.input_layout;
+    qemu_d3d11_input_layout_guest_init(obj);
+    *input_layout = &obj->ID3D11InputLayout_iface;
 
     return call.super.iret;
 }
@@ -6380,11 +6389,55 @@ void qemu_d3d11_device_CreateInputLayout(struct qemu_syscall *call)
 {
     struct qemu_d3d11_device_CreateInputLayout *c = (struct qemu_d3d11_device_CreateInputLayout *)call;
     struct qemu_d3d11_device *device;
+    D3D11_INPUT_ELEMENT_DESC stack[16], *desc = stack;
+    struct qemu_D3D11_INPUT_ELEMENT_DESC *desc32;
+    ID3D11InputLayout *host;
+    struct qemu_d3d11_input_layout *obj;
+    UINT i, count;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    count = c->element_count;
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->element_descs);
+#else
+    desc32 = QEMU_G2H(c->element_descs);
+    if (!desc32)
+    {
+        desc = NULL;
+    }
+    else
+    {
+        if (count > sizeof(stack) / sizeof(*stack))
+        {
+            desc = HeapAlloc(GetProcessHeap(), 0, c->element_count * sizeof(*desc));
+            if (!desc)
+                WINE_ERR("Out of memory\n");
+        }
 
-    c->super.iret = ID3D11Device2_CreateInputLayout(device->host_d3d11, QEMU_G2H(c->element_descs), c->element_count, QEMU_G2H(c->shader_byte_code), c->shader_byte_code_length, QEMU_G2H(c->input_layout));
+        for (i = 0; i < count; ++i)
+            D3D11_INPUT_ELEMENT_DESC_g2h(&desc[i], &desc32[i]);
+    }
+#endif
+
+    c->super.iret = ID3D11Device2_CreateInputLayout(device->host_d3d11, desc, count,
+            QEMU_G2H(c->shader_byte_code), c->shader_byte_code_length, &host);
+
+#if GUEST_BIT != HOST_BIT
+    if (desc && desc != stack)
+        HeapFree(GetProcessHeap(), 0, desc);
+#endif
+
+    if (FAILED(c->super.iret))
+        return;
+
+    c->super.iret = qemu_d3d11_input_layout_create(host, &obj);
+    if (FAILED(c->super.iret))
+    {
+        ID3D11InputLayout_Release(host);
+        return;
+    }
+    c->input_layout = QEMU_H2G(obj);
 }
 
 #endif

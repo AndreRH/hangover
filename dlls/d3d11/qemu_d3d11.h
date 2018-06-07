@@ -856,7 +856,7 @@ struct qemu_d3d11_query
     ULONG refcount;
 };
 
-struct qemu_d3d11_inputlayout
+struct qemu_d3d11_input_layout
 {
     /* Guest fields */
     ID3D11InputLayout ID3D11InputLayout_iface;
@@ -912,6 +912,8 @@ struct qemu_d3d11_shader *unsafe_impl_from_ID3D10GeometryShader(ID3D10GeometrySh
 struct qemu_d3d11_shader *unsafe_impl_from_ID3D11PixelShader(ID3D11PixelShader *iface);
 struct qemu_d3d11_shader *unsafe_impl_from_ID3D10PixelShader(ID3D10PixelShader *iface);
 struct qemu_d3d11_shader *unsafe_impl_from_ID3D11ComputeShader(ID3D11ComputeShader *iface);
+struct qemu_d3d11_input_layout *unsafe_impl_from_ID3D11InputLayout(ID3D11InputLayout *iface);
+struct qemu_d3d11_input_layout *unsafe_impl_from_ID3D10InputLayout(ID3D10InputLayout *iface);
 
 extern HRESULT (* WINAPI p_DXGID3D10CreateDevice)(HMODULE d3d10core, IDXGIFactory *factory, IDXGIAdapter *adapter,
         unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, void **device);
@@ -932,6 +934,7 @@ void qemu_d3d11_blend_state_guest_init(struct qemu_d3d11_state *state);
 void qemu_d3d11_depthstencil_state_guest_init(struct qemu_d3d11_state *state);
 void qemu_d3d11_rasterizer_state_guest_init(struct qemu_d3d11_state *state);
 void qemu_d3d11_query_guest_init(struct qemu_d3d11_query *view);
+void qemu_d3d11_input_layout_guest_init(struct qemu_d3d11_input_layout *layout);
 
 #else
 
@@ -1549,6 +1552,7 @@ HRESULT qemu_d3d11_view_create(ID3D11View *host, const IID *d3d10iface, struct q
 HRESULT qemu_d3d11_shader_create(ID3D11DeviceChild *host, const IID *d3d10iface, struct qemu_d3d11_shader **shader);
 HRESULT qemu_d3d11_state_create(ID3D11DeviceChild *host, const IID *d3d10iface, struct qemu_d3d11_state **state);
 HRESULT qemu_d3d11_query_create(ID3D11Query *host, struct qemu_d3d11_query **query);
+HRESULT qemu_d3d11_input_layout_create(ID3D11InputLayout *host, struct qemu_d3d11_input_layout **layout);
 
 DEFINE_GUID(IID_d3d11_priv_data, 0x2b676c65, 0x7123, 0x4138, 0xb6, 0xdb, 0x96, 0xfe, 0xa9, 0xae, 0x00, 0x43);
 
