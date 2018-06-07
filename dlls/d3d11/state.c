@@ -407,7 +407,7 @@ void qemu_d3d11_blend_state_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d11_blend_state_GetDesc *c = (struct qemu_d3d11_blend_state_GetDesc *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     ID3D11BlendState_GetDesc(state->host_bs11, QEMU_G2H(c->desc));
@@ -679,7 +679,7 @@ void qemu_d3d10_blend_state_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d10_blend_state_GetDesc *c = (struct qemu_d3d10_blend_state_GetDesc *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     ID3D10BlendState1_GetDesc(state->host_bs10, QEMU_G2H(c->desc));
@@ -1081,7 +1081,7 @@ void qemu_d3d11_depthstencil_state_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d11_depthstencil_state_GetDesc *c = (struct qemu_d3d11_depthstencil_state_GetDesc *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     ID3D11DepthStencilState_GetDesc(state->host_ds11, QEMU_G2H(c->desc));
@@ -1353,7 +1353,7 @@ void qemu_d3d10_depthstencil_state_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d10_depthstencil_state_GetDesc *c = (struct qemu_d3d10_depthstencil_state_GetDesc *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     ID3D10DepthStencilState_GetDesc(state->host_ds10, QEMU_G2H(c->desc));
@@ -1717,7 +1717,7 @@ void qemu_d3d11_rasterizer_state_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d11_rasterizer_state_GetDesc *c = (struct qemu_d3d11_rasterizer_state_GetDesc *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     ID3D11RasterizerState_GetDesc(state->host_rs11, QEMU_G2H(c->desc));
@@ -1989,7 +1989,7 @@ void qemu_d3d10_rasterizer_state_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d10_rasterizer_state_GetDesc *c = (struct qemu_d3d10_rasterizer_state_GetDesc *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     ID3D10RasterizerState_GetDesc(state->host_rs10, QEMU_G2H(c->desc));
@@ -2353,7 +2353,7 @@ void qemu_d3d11_sampler_state_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d11_sampler_state_GetDesc *c = (struct qemu_d3d11_sampler_state_GetDesc *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     ID3D11SamplerState_GetDesc(state->host_ss11, QEMU_G2H(c->desc));
@@ -2632,7 +2632,7 @@ void qemu_d3d10_sampler_state_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d10_sampler_state_GetDesc *c = (struct qemu_d3d10_sampler_state_GetDesc *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     ID3D10SamplerState_GetDesc(state->host_ss10, QEMU_G2H(c->desc));
