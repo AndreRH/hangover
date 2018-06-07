@@ -2737,6 +2737,12 @@ void qemu_d3d11_sampler_state_guest_init(struct qemu_d3d11_state *state)
     state->ID3D10SamplerState_iface.lpVtbl = &d3d10_sampler_state_vtbl;
 }
 
+void qemu_d3d11_blend_state_guest_init(struct qemu_d3d11_state *state)
+{
+    state->ID3D11BlendState_iface.lpVtbl = &d3d11_blend_state_vtbl;
+    state->ID3D10BlendState1_iface.lpVtbl = &d3d10_blend_state_vtbl;
+}
+
 #else
 
 static inline struct qemu_d3d11_state *impl_from_priv_data(IUnknown *iface)
