@@ -412,7 +412,7 @@ void qemu_d3d11_buffer_GetType(struct qemu_syscall *call)
     struct qemu_d3d11_buffer_GetType *c = (struct qemu_d3d11_buffer_GetType *)call;
     struct qemu_d3d11_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     ID3D11Buffer_GetType(buffer->host11, QEMU_G2H(c->resource_dimension));
@@ -793,7 +793,7 @@ void qemu_d3d10_buffer_GetType(struct qemu_syscall *call)
     struct qemu_d3d10_buffer_GetType *c = (struct qemu_d3d10_buffer_GetType *)call;
     struct qemu_d3d11_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     ID3D10Buffer_GetType(buffer->host10, QEMU_G2H(c->resource_dimension));

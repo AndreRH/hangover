@@ -395,7 +395,8 @@ struct qemu_d3d11_texture1d_GetType
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_texture1d_GetType(ID3D11Texture1D *iface, D3D11_RESOURCE_DIMENSION *resource_dimension)
+static void STDMETHODCALLTYPE d3d11_texture1d_GetType(ID3D11Texture1D *iface,
+        D3D11_RESOURCE_DIMENSION *resource_dimension)
 {
     struct qemu_d3d11_texture1d_GetType call;
     struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture1D(iface);
@@ -414,7 +415,7 @@ void qemu_d3d11_texture1d_GetType(struct qemu_syscall *call)
     struct qemu_d3d11_texture1d_GetType *c = (struct qemu_d3d11_texture1d_GetType *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     ID3D11Texture1D_GetType(texture->host11_1d, QEMU_G2H(c->resource_dimension));
@@ -749,7 +750,8 @@ struct qemu_d3d10_texture1d_GetType
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_texture1d_GetType(ID3D10Texture1D *iface, D3D10_RESOURCE_DIMENSION *resource_dimension)
+static void STDMETHODCALLTYPE d3d10_texture1d_GetType(ID3D10Texture1D *iface,
+        D3D10_RESOURCE_DIMENSION *resource_dimension)
 {
     struct qemu_d3d10_texture1d_GetType call;
     struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
@@ -768,7 +770,7 @@ void qemu_d3d10_texture1d_GetType(struct qemu_syscall *call)
     struct qemu_d3d10_texture1d_GetType *c = (struct qemu_d3d10_texture1d_GetType *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     ID3D10Texture1D_GetType(texture->host10_1d, QEMU_G2H(c->resource_dimension));
@@ -1307,7 +1309,8 @@ struct qemu_d3d11_texture2d_GetType
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_texture2d_GetType(ID3D11Texture2D *iface, D3D11_RESOURCE_DIMENSION *resource_dimension)
+static void STDMETHODCALLTYPE d3d11_texture2d_GetType(ID3D11Texture2D *iface,
+        D3D11_RESOURCE_DIMENSION *resource_dimension)
 {
     struct qemu_d3d11_texture2d_GetType call;
     struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture2D(iface);
@@ -1326,7 +1329,7 @@ void qemu_d3d11_texture2d_GetType(struct qemu_syscall *call)
     struct qemu_d3d11_texture2d_GetType *c = (struct qemu_d3d11_texture2d_GetType *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     ID3D11Texture2D_GetType(texture->host11_2d, QEMU_G2H(c->resource_dimension));
@@ -1688,7 +1691,8 @@ struct qemu_d3d10_texture2d_GetType
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_texture2d_GetType(ID3D10Texture2D *iface, D3D10_RESOURCE_DIMENSION *resource_dimension)
+static void STDMETHODCALLTYPE d3d10_texture2d_GetType(ID3D10Texture2D *iface,
+        D3D10_RESOURCE_DIMENSION *resource_dimension)
 {
     struct qemu_d3d10_texture2d_GetType call;
     struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture2D(iface);
@@ -1707,7 +1711,7 @@ void qemu_d3d10_texture2d_GetType(struct qemu_syscall *call)
     struct qemu_d3d10_texture2d_GetType *c = (struct qemu_d3d10_texture2d_GetType *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     ID3D10Texture2D_GetType(texture->host10_2d, QEMU_G2H(c->resource_dimension));
@@ -2244,7 +2248,8 @@ struct qemu_d3d11_texture3d_GetType
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_texture3d_GetType(ID3D11Texture3D *iface, D3D11_RESOURCE_DIMENSION *resource_dimension)
+static void STDMETHODCALLTYPE d3d11_texture3d_GetType(ID3D11Texture3D *iface,
+        D3D11_RESOURCE_DIMENSION *resource_dimension)
 {
     struct qemu_d3d11_texture3d_GetType call;
     struct qemu_d3d11_texture *texture = impl_from_ID3D11Texture3D(iface);
@@ -2263,7 +2268,7 @@ void qemu_d3d11_texture3d_GetType(struct qemu_syscall *call)
     struct qemu_d3d11_texture3d_GetType *c = (struct qemu_d3d11_texture3d_GetType *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     ID3D11Texture3D_GetType(texture->host11_3d, QEMU_G2H(c->resource_dimension));
@@ -2625,7 +2630,8 @@ struct qemu_d3d10_texture3d_GetType
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_texture3d_GetType(ID3D10Texture3D *iface, D3D10_RESOURCE_DIMENSION *resource_dimension)
+static void STDMETHODCALLTYPE d3d10_texture3d_GetType(ID3D10Texture3D *iface,
+        D3D10_RESOURCE_DIMENSION *resource_dimension)
 {
     struct qemu_d3d10_texture3d_GetType call;
     struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture3D(iface);
@@ -2644,7 +2650,7 @@ void qemu_d3d10_texture3d_GetType(struct qemu_syscall *call)
     struct qemu_d3d10_texture3d_GetType *c = (struct qemu_d3d10_texture3d_GetType *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     ID3D10Texture3D_GetType(texture->host10_3d, QEMU_G2H(c->resource_dimension));
