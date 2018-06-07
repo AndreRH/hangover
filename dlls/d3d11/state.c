@@ -155,7 +155,7 @@ void qemu_d3d11_blend_state_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_blend_state_AddRef *c = (struct qemu_d3d11_blend_state_AddRef *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11BlendState_AddRef(state->host_bs11);
@@ -191,7 +191,7 @@ void qemu_d3d11_blend_state_Release(struct qemu_syscall *call)
     struct qemu_d3d11_blend_state_Release *c = (struct qemu_d3d11_blend_state_Release *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11BlendState_Release(state->host_bs11);
@@ -483,7 +483,7 @@ void qemu_d3d10_blend_state_AddRef(struct qemu_syscall *call)
     struct qemu_d3d10_blend_state_AddRef *c = (struct qemu_d3d10_blend_state_AddRef *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10BlendState1_AddRef(state->host_bs10);
@@ -519,7 +519,7 @@ void qemu_d3d10_blend_state_Release(struct qemu_syscall *call)
     struct qemu_d3d10_blend_state_Release *c = (struct qemu_d3d10_blend_state_Release *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10BlendState1_Release(state->host_bs10);
@@ -827,7 +827,7 @@ void qemu_d3d11_depthstencil_state_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_depthstencil_state_AddRef *c = (struct qemu_d3d11_depthstencil_state_AddRef *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11DepthStencilState_AddRef(state->host_ds11);
@@ -863,7 +863,7 @@ void qemu_d3d11_depthstencil_state_Release(struct qemu_syscall *call)
     struct qemu_d3d11_depthstencil_state_Release *c = (struct qemu_d3d11_depthstencil_state_Release *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11DepthStencilState_Release(state->host_ds11);
@@ -1157,7 +1157,7 @@ void qemu_d3d10_depthstencil_state_AddRef(struct qemu_syscall *call)
     struct qemu_d3d10_depthstencil_state_AddRef *c = (struct qemu_d3d10_depthstencil_state_AddRef *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10DepthStencilState_AddRef(state->host_ds10);
@@ -1193,7 +1193,7 @@ void qemu_d3d10_depthstencil_state_Release(struct qemu_syscall *call)
     struct qemu_d3d10_depthstencil_state_Release *c = (struct qemu_d3d10_depthstencil_state_Release *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10DepthStencilState_Release(state->host_ds10);
@@ -1465,7 +1465,7 @@ void qemu_d3d11_rasterizer_state_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_rasterizer_state_AddRef *c = (struct qemu_d3d11_rasterizer_state_AddRef *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11RasterizerState_AddRef(state->host_rs11);
@@ -1501,7 +1501,7 @@ void qemu_d3d11_rasterizer_state_Release(struct qemu_syscall *call)
     struct qemu_d3d11_rasterizer_state_Release *c = (struct qemu_d3d11_rasterizer_state_Release *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11RasterizerState_Release(state->host_rs11);
@@ -1793,7 +1793,7 @@ void qemu_d3d10_rasterizer_state_AddRef(struct qemu_syscall *call)
     struct qemu_d3d10_rasterizer_state_AddRef *c = (struct qemu_d3d10_rasterizer_state_AddRef *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10RasterizerState_AddRef(state->host_rs10);
@@ -1829,7 +1829,7 @@ void qemu_d3d10_rasterizer_state_Release(struct qemu_syscall *call)
     struct qemu_d3d10_rasterizer_state_Release *c = (struct qemu_d3d10_rasterizer_state_Release *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10RasterizerState_Release(state->host_rs10);
@@ -2101,7 +2101,7 @@ void qemu_d3d11_sampler_state_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_sampler_state_AddRef *c = (struct qemu_d3d11_sampler_state_AddRef *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11SamplerState_AddRef(state->host_ss11);
@@ -2137,7 +2137,7 @@ void qemu_d3d11_sampler_state_Release(struct qemu_syscall *call)
     struct qemu_d3d11_sampler_state_Release *c = (struct qemu_d3d11_sampler_state_Release *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11SamplerState_Release(state->host_ss11);
@@ -2429,7 +2429,7 @@ void qemu_d3d10_sampler_state_AddRef(struct qemu_syscall *call)
     struct qemu_d3d10_sampler_state_AddRef *c = (struct qemu_d3d10_sampler_state_AddRef *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10SamplerState_AddRef(state->host_ss10);
@@ -2465,7 +2465,7 @@ void qemu_d3d10_sampler_state_Release(struct qemu_syscall *call)
     struct qemu_d3d10_sampler_state_Release *c = (struct qemu_d3d10_sampler_state_Release *)call;
     struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10SamplerState_Release(state->host_ss10);
