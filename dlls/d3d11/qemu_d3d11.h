@@ -25,7 +25,6 @@ enum d3d11_calls
     CALL_D3D10_BLEND_STATE_ADDREF = 0,
     CALL_D3D10_BLEND_STATE_GETDESC,
     CALL_D3D10_BLEND_STATE_GETDESC1,
-    CALL_D3D10_BLEND_STATE_GETDEVICE,
     CALL_D3D10_BLEND_STATE_GETPRIVATEDATA,
     CALL_D3D10_BLEND_STATE_QUERYINTERFACE,
     CALL_D3D10_BLEND_STATE_RELEASE,
@@ -865,7 +864,6 @@ extern const struct qemu_ops *qemu_ops;
 void qemu_d3d10_blend_state_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_blend_state_GetDesc(struct qemu_syscall *call);
 void qemu_d3d10_blend_state_GetDesc1(struct qemu_syscall *call);
-void qemu_d3d10_blend_state_GetDevice(struct qemu_syscall *call);
 void qemu_d3d10_blend_state_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_blend_state_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_blend_state_Release(struct qemu_syscall *call);

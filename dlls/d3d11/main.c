@@ -629,7 +629,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d10_blend_state_AddRef,
     qemu_d3d10_blend_state_GetDesc,
     qemu_d3d10_blend_state_GetDesc1,
-    qemu_d3d10_blend_state_GetDevice,
     qemu_d3d10_blend_state_GetPrivateData,
     qemu_d3d10_blend_state_QueryInterface,
     qemu_d3d10_blend_state_Release,
