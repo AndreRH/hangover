@@ -169,7 +169,6 @@ enum d3d11_calls
     CALL_D3D10_PIXEL_SHADER_SETPRIVATEDATAINTERFACE,
     CALL_D3D10_RASTERIZER_STATE_ADDREF,
     CALL_D3D10_RASTERIZER_STATE_GETDESC,
-    CALL_D3D10_RASTERIZER_STATE_GETDEVICE,
     CALL_D3D10_RASTERIZER_STATE_GETPRIVATEDATA,
     CALL_D3D10_RASTERIZER_STATE_QUERYINTERFACE,
     CALL_D3D10_RASTERIZER_STATE_RELEASE,
@@ -856,6 +855,7 @@ void qemu_d3d11_geometry_shader_guest_init(struct qemu_d3d11_shader *shader);
 void qemu_d3d11_sampler_state_guest_init(struct qemu_d3d11_state *state);
 void qemu_d3d11_blend_state_guest_init(struct qemu_d3d11_state *state);
 void qemu_d3d11_depthstencil_state_guest_init(struct qemu_d3d11_state *state);
+void qemu_d3d11_rasterizer_state_guest_init(struct qemu_d3d11_state *state);
 
 #else
 
@@ -1009,7 +1009,6 @@ void qemu_d3d10_pixel_shader_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_pixel_shader_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d10_rasterizer_state_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_rasterizer_state_GetDesc(struct qemu_syscall *call);
-void qemu_d3d10_rasterizer_state_GetDevice(struct qemu_syscall *call);
 void qemu_d3d10_rasterizer_state_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_rasterizer_state_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_rasterizer_state_Release(struct qemu_syscall *call);

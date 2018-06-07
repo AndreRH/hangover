@@ -6852,21 +6852,31 @@ struct qemu_d3d11_device_CreateRasterizerState
     uint64_t iface;
     uint64_t desc;
     uint64_t rasterizer_state;
+    uint64_t new_state;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_CreateRasterizerState(ID3D11Device2 *iface, const D3D11_RASTERIZER_DESC *desc, ID3D11RasterizerState **rasterizer_state)
+static HRESULT STDMETHODCALLTYPE d3d11_device_CreateRasterizerState(ID3D11Device2 *iface,
+        const D3D11_RASTERIZER_DESC *desc, ID3D11RasterizerState **rasterizer_state)
 {
     struct qemu_d3d11_device_CreateRasterizerState call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
+    struct qemu_d3d11_state *obj;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_CREATERASTERIZERSTATE);
     call.iface = (ULONG_PTR)device;
     call.desc = (ULONG_PTR)desc;
-    call.rasterizer_state = (ULONG_PTR)rasterizer_state;
 
     qemu_syscall(&call.super);
+
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    obj = (struct qemu_d3d11_state *)(ULONG_PTR)call.rasterizer_state;
+    if (call.new_state)
+        qemu_d3d11_rasterizer_state_guest_init(obj);
+    *rasterizer_state = &obj->ID3D11RasterizerState_iface;
 
     return call.super.iret;
 }
@@ -6877,11 +6887,33 @@ void qemu_d3d11_device_CreateRasterizerState(struct qemu_syscall *call)
 {
     struct qemu_d3d11_device_CreateRasterizerState *c = (struct qemu_d3d11_device_CreateRasterizerState *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_state *obj;
+    ID3D11RasterizerState *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Device2_CreateRasterizerState(device->host_d3d11, QEMU_G2H(c->desc), QEMU_G2H(c->rasterizer_state));
+    c->super.iret = ID3D11Device2_CreateRasterizerState(device->host_d3d11, QEMU_G2H(c->desc), &host);
+
+    if (FAILED(c->super.iret))
+        return;
+
+    if (!(obj = state_from_host((ID3D11DeviceChild *)host)))
+    {
+        c->super.iret = qemu_d3d11_state_create((ID3D11DeviceChild *)host, &IID_ID3D10RasterizerState, &obj);
+        if (FAILED(c->super.iret))
+        {
+            ID3D11RasterizerState_Release(host);
+            return;
+        }
+        c->new_state = 1;
+    }
+    else
+    {
+        c->new_state = 0;
+    }
+
+    c->rasterizer_state = QEMU_H2G(obj);
 }
 
 #endif

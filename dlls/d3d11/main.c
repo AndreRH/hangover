@@ -773,7 +773,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d10_pixel_shader_SetPrivateDataInterface,
     qemu_d3d10_rasterizer_state_AddRef,
     qemu_d3d10_rasterizer_state_GetDesc,
-    qemu_d3d10_rasterizer_state_GetDevice,
     qemu_d3d10_rasterizer_state_GetPrivateData,
     qemu_d3d10_rasterizer_state_QueryInterface,
     qemu_d3d10_rasterizer_state_Release,
