@@ -6362,15 +6362,21 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateGeometryShader(ID3D11Device2
 {
     struct qemu_d3d11_device_CreateGeometryShader call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
+    struct qemu_d3d11_shader *obj;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_CREATEGEOMETRYSHADER);
     call.iface = (ULONG_PTR)device;
     call.byte_code = (ULONG_PTR)byte_code;
     call.byte_code_length = byte_code_length;
     call.class_linkage = (ULONG_PTR)class_linkage;
-    call.shader = (ULONG_PTR)shader;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    obj = (struct qemu_d3d11_shader *)(ULONG_PTR)call.shader;
+    qemu_d3d11_geometry_shader_guest_init(obj);
+    *shader = &obj->ID3D11GeometryShader_iface;
 
     return call.super.iret;
 }
@@ -6381,11 +6387,27 @@ void qemu_d3d11_device_CreateGeometryShader(struct qemu_syscall *call)
 {
     struct qemu_d3d11_device_CreateGeometryShader *c = (struct qemu_d3d11_device_CreateGeometryShader *)call;
     struct qemu_d3d11_device *device;
+    ID3D11GeometryShader *host;
+    struct qemu_d3d11_shader *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    if (c->class_linkage)
+        WINE_FIXME("Class linkage is not implemented yet.\n");
 
-    c->super.iret = ID3D11Device2_CreateGeometryShader(device->host_d3d11, QEMU_G2H(c->byte_code), c->byte_code_length, QEMU_G2H(c->class_linkage), QEMU_G2H(c->shader));
+    c->super.iret = ID3D11Device2_CreateGeometryShader(device->host_d3d11, QEMU_G2H(c->byte_code), c->byte_code_length,
+            NULL, &host);
+
+    if (FAILED(c->super.iret))
+        return;
+
+    c->super.iret = qemu_d3d11_shader_create((ID3D11DeviceChild *)host, &IID_ID3D10GeometryShader, &obj);
+    if (FAILED(c->super.iret))
+    {
+        ID3D11GeometryShader_Release(host);
+        return;
+    }
+    c->shader = QEMU_H2G(obj);
 }
 
 #endif
