@@ -1191,10 +1191,11 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_End(ID3D11DeviceContext1 *
 {
     struct qemu_d3d11_immediate_context_End call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_query *query = unsafe_impl_from_ID3D11Asynchronous(asynchronous);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_END);
     call.iface = (ULONG_PTR)context;
-    call.asynchronous = (ULONG_PTR)asynchronous;
+    call.asynchronous = (ULONG_PTR)query;
 
     qemu_syscall(&call.super);
 }
@@ -1205,11 +1206,13 @@ void qemu_d3d11_immediate_context_End(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_End *c = (struct qemu_d3d11_immediate_context_End *)call;
     struct qemu_d3d11_device_context *context;
+    struct qemu_d3d11_query *query;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    query = QEMU_G2H(c->asynchronous);
 
-    ID3D11DeviceContext1_End(context->host, QEMU_G2H(c->asynchronous));
+    ID3D11DeviceContext1_End(context->host, query ? (ID3D11Asynchronous *)query->host11 : NULL);
 }
 
 #endif
