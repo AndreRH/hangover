@@ -167,6 +167,18 @@ enum d3d11_calls
     CALL_D3D10_PIXEL_SHADER_RELEASE,
     CALL_D3D10_PIXEL_SHADER_SETPRIVATEDATA,
     CALL_D3D10_PIXEL_SHADER_SETPRIVATEDATAINTERFACE,
+    CALL_D3D10_QUERY_ADDREF,
+    CALL_D3D10_QUERY_BEGIN,
+    CALL_D3D10_QUERY_END,
+    CALL_D3D10_QUERY_GETDATA,
+    CALL_D3D10_QUERY_GETDATASIZE,
+    CALL_D3D10_QUERY_GETDESC,
+    CALL_D3D10_QUERY_GETDEVICE,
+    CALL_D3D10_QUERY_GETPRIVATEDATA,
+    CALL_D3D10_QUERY_QUERYINTERFACE,
+    CALL_D3D10_QUERY_RELEASE,
+    CALL_D3D10_QUERY_SETPRIVATEDATA,
+    CALL_D3D10_QUERY_SETPRIVATEDATAINTERFACE,
     CALL_D3D10_RASTERIZER_STATE_ADDREF,
     CALL_D3D10_RASTERIZER_STATE_GETDESC,
     CALL_D3D10_RASTERIZER_STATE_GETPRIVATEDATA,
@@ -504,6 +516,15 @@ enum d3d11_calls
     CALL_D3D11_PIXEL_SHADER_RELEASE,
     CALL_D3D11_PIXEL_SHADER_SETPRIVATEDATA,
     CALL_D3D11_PIXEL_SHADER_SETPRIVATEDATAINTERFACE,
+    CALL_D3D11_QUERY_ADDREF,
+    CALL_D3D11_QUERY_GETDATASIZE,
+    CALL_D3D11_QUERY_GETDESC,
+    CALL_D3D11_QUERY_GETDEVICE,
+    CALL_D3D11_QUERY_GETPRIVATEDATA,
+    CALL_D3D11_QUERY_QUERYINTERFACE,
+    CALL_D3D11_QUERY_RELEASE,
+    CALL_D3D11_QUERY_SETPRIVATEDATA,
+    CALL_D3D11_QUERY_SETPRIVATEDATAINTERFACE,
     CALL_D3D11_RASTERIZER_STATE_ADDREF,
     CALL_D3D11_RASTERIZER_STATE_GETDESC,
     CALL_D3D11_RASTERIZER_STATE_GETDEVICE,
@@ -806,6 +827,20 @@ struct qemu_d3d11_state
     ULONG refcount;
 };
 
+struct qemu_d3d11_query
+{
+    /* Guest fields */
+    ID3D11Query ID3D11Query_iface;
+    ID3D10Query ID3D10Query_iface;
+
+    /* Host fields */
+    ID3D11Query *host11;
+    ID3D10Query *host10;
+
+    IUnknown priv_data_iface;
+    ULONG refcount;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 enum D3D11_USAGE d3d11_usage_from_d3d10_usage(enum D3D10_USAGE usage);
@@ -1007,6 +1042,18 @@ void qemu_d3d10_pixel_shader_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_pixel_shader_Release(struct qemu_syscall *call);
 void qemu_d3d10_pixel_shader_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_pixel_shader_SetPrivateDataInterface(struct qemu_syscall *call);
+void qemu_d3d10_query_AddRef(struct qemu_syscall *call);
+void qemu_d3d10_query_Begin(struct qemu_syscall *call);
+void qemu_d3d10_query_End(struct qemu_syscall *call);
+void qemu_d3d10_query_GetData(struct qemu_syscall *call);
+void qemu_d3d10_query_GetDataSize(struct qemu_syscall *call);
+void qemu_d3d10_query_GetDesc(struct qemu_syscall *call);
+void qemu_d3d10_query_GetDevice(struct qemu_syscall *call);
+void qemu_d3d10_query_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d10_query_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d10_query_Release(struct qemu_syscall *call);
+void qemu_d3d10_query_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d10_query_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d10_rasterizer_state_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_rasterizer_state_GetDesc(struct qemu_syscall *call);
 void qemu_d3d10_rasterizer_state_GetPrivateData(struct qemu_syscall *call);
@@ -1344,6 +1391,15 @@ void qemu_d3d11_pixel_shader_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d11_pixel_shader_Release(struct qemu_syscall *call);
 void qemu_d3d11_pixel_shader_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d11_pixel_shader_SetPrivateDataInterface(struct qemu_syscall *call);
+void qemu_d3d11_query_AddRef(struct qemu_syscall *call);
+void qemu_d3d11_query_GetDataSize(struct qemu_syscall *call);
+void qemu_d3d11_query_GetDesc(struct qemu_syscall *call);
+void qemu_d3d11_query_GetDevice(struct qemu_syscall *call);
+void qemu_d3d11_query_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d11_query_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d11_query_Release(struct qemu_syscall *call);
+void qemu_d3d11_query_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d11_query_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d11_rasterizer_state_AddRef(struct qemu_syscall *call);
 void qemu_d3d11_rasterizer_state_GetDesc(struct qemu_syscall *call);
 void qemu_d3d11_rasterizer_state_GetDevice(struct qemu_syscall *call);
