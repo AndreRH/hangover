@@ -36,7 +36,6 @@ enum d3d11_calls
     CALL_D3D10_BUFFER_UNMAP,
     CALL_D3D10_DEPTHSTENCIL_VIEW_ADDREF,
     CALL_D3D10_DEPTHSTENCIL_VIEW_GETDESC,
-    CALL_D3D10_DEPTHSTENCIL_VIEW_GETDEVICE,
     CALL_D3D10_DEPTHSTENCIL_VIEW_GETPRIVATEDATA,
     CALL_D3D10_DEPTHSTENCIL_VIEW_GETRESOURCE,
     CALL_D3D10_DEPTHSTENCIL_VIEW_QUERYINTERFACE,
@@ -654,7 +653,6 @@ void qemu_d3d10_buffer_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d10_buffer_Unmap(struct qemu_syscall *call);
 void qemu_d3d10_depthstencil_view_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_depthstencil_view_GetDesc(struct qemu_syscall *call);
-void qemu_d3d10_depthstencil_view_GetDevice(struct qemu_syscall *call);
 void qemu_d3d10_depthstencil_view_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_depthstencil_view_GetResource(struct qemu_syscall *call);
 void qemu_d3d10_depthstencil_view_QueryInterface(struct qemu_syscall *call);

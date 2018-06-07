@@ -640,7 +640,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d10_buffer_Unmap,
     qemu_d3d10_depthstencil_view_AddRef,
     qemu_d3d10_depthstencil_view_GetDesc,
-    qemu_d3d10_depthstencil_view_GetDevice,
     qemu_d3d10_depthstencil_view_GetPrivateData,
     qemu_d3d10_depthstencil_view_GetResource,
     qemu_d3d10_depthstencil_view_QueryInterface,

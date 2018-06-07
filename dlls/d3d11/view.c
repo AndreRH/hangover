@@ -185,12 +185,32 @@ static void STDMETHODCALLTYPE d3d11_depthstencil_view_GetDevice(ID3D11DepthStenc
 {
     struct qemu_d3d11_depthstencil_view_GetDevice call;
     struct qemu_d3d11_view *view = impl_from_ID3D11DepthStencilView(iface);
+    struct qemu_d3d11_device *dev_impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEPTHSTENCIL_VIEW_GETDEVICE);
     call.iface = (ULONG_PTR)view;
     call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
+
+    dev_impl = (struct qemu_d3d11_device *)(ULONG_PTR)call.device;
+    *device = (ID3D11Device *)&dev_impl->ID3D11Device2_iface;
+}
+
+static void STDMETHODCALLTYPE d3d10_depthstencil_view_GetDevice(ID3D10DepthStencilView *iface, ID3D10Device **device)
+{
+    struct qemu_d3d11_depthstencil_view_GetDevice call;
+    struct qemu_d3d11_view *view = impl_from_ID3D10DepthStencilView(iface);
+    struct qemu_d3d11_device *dev_impl;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEPTHSTENCIL_VIEW_GETDEVICE);
+    call.iface = (ULONG_PTR)view;
+    call.device = (ULONG_PTR)device;
+
+    qemu_syscall(&call.super);
+
+    dev_impl = (struct qemu_d3d11_device *)(ULONG_PTR)call.device;
+    *device = (ID3D10Device *)&dev_impl->ID3D10Device1_iface;
 }
 
 #else
@@ -199,11 +219,13 @@ void qemu_d3d11_depthstencil_view_GetDevice(struct qemu_syscall *call)
 {
     struct qemu_d3d11_depthstencil_view_GetDevice *c = (struct qemu_d3d11_depthstencil_view_GetDevice *)call;
     struct qemu_d3d11_view *view;
+    ID3D11Device2 *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
-    ID3D11DepthStencilView_GetDevice(view->host_ds11, QEMU_G2H(c->device));
+    ID3D11DepthStencilView_GetDevice(view->host_ds11, (ID3D11Device **)&host);
+    c->device = QEMU_H2G(device_from_host(host));
 }
 
 #endif
@@ -512,42 +534,6 @@ void qemu_d3d10_depthstencil_view_Release(struct qemu_syscall *call)
     view = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10DepthStencilView_Release(view->host_ds10);
-}
-
-#endif
-
-struct qemu_d3d10_depthstencil_view_GetDevice
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t device;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static void STDMETHODCALLTYPE d3d10_depthstencil_view_GetDevice(ID3D10DepthStencilView *iface, ID3D10Device **device)
-{
-    struct qemu_d3d10_depthstencil_view_GetDevice call;
-    struct qemu_d3d11_view *view = impl_from_ID3D10DepthStencilView(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEPTHSTENCIL_VIEW_GETDEVICE);
-    call.iface = (ULONG_PTR)view;
-    call.device = (ULONG_PTR)device;
-
-    qemu_syscall(&call.super);
-}
-
-#else
-
-void qemu_d3d10_depthstencil_view_GetDevice(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_depthstencil_view_GetDevice *c = (struct qemu_d3d10_depthstencil_view_GetDevice *)call;
-    struct qemu_d3d11_view *view;
-
-    WINE_FIXME("Unverified!\n");
-    view = QEMU_G2H(c->iface);
-
-    ID3D10DepthStencilView_GetDevice(view->host_ds10, QEMU_G2H(c->device));
 }
 
 #endif
