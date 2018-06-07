@@ -616,6 +616,8 @@ enum d3d11_calls
     CALL_WRAP_IMPLICIT_SURFACE,
 };
 
+#define MAX_CONSTANT_BUFFERS        15
+
 #ifdef QEMU_DLL_GUEST
 
 typedef ID3D11Device ID3D11Device2;
