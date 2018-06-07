@@ -1070,7 +1070,8 @@ struct qemu_d3d11_immediate_context_IASetPrimitiveTopology
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_IASetPrimitiveTopology(ID3D11DeviceContext1 *iface, D3D11_PRIMITIVE_TOPOLOGY topology)
+static void STDMETHODCALLTYPE d3d11_immediate_context_IASetPrimitiveTopology(ID3D11DeviceContext1 *iface,
+        D3D11_PRIMITIVE_TOPOLOGY topology)
 {
     struct qemu_d3d11_immediate_context_IASetPrimitiveTopology call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
@@ -1089,7 +1090,7 @@ void qemu_d3d11_immediate_context_IASetPrimitiveTopology(struct qemu_syscall *ca
     struct qemu_d3d11_immediate_context_IASetPrimitiveTopology *c = (struct qemu_d3d11_immediate_context_IASetPrimitiveTopology *)call;
     struct qemu_d3d11_device_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     ID3D11DeviceContext1_IASetPrimitiveTopology(context->host, c->topology);
