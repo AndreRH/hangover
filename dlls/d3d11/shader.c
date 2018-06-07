@@ -256,126 +256,36 @@ void qemu_d3d11_vertex_shader_GetDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d11_vertex_shader_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_vertex_shader_GetPrivateData(ID3D11VertexShader *iface, REFGUID guid, UINT *data_size, void *data)
+static HRESULT STDMETHODCALLTYPE d3d11_vertex_shader_GetPrivateData(ID3D11VertexShader *iface,
+        REFGUID guid, UINT *data_size, void *data)
 {
-    struct qemu_d3d11_vertex_shader_GetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11VertexShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_VERTEX_SHADER_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_get_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d11_vertex_shader_GetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d11_vertex_shader_SetPrivateData(ID3D11VertexShader *iface,
+        REFGUID guid, UINT data_size, const void *data)
 {
-    struct qemu_d3d11_vertex_shader_GetPrivateData *c = (struct qemu_d3d11_vertex_shader_GetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11VertexShader_GetPrivateData(shader->host_vs11, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d11_vertex_shader_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d11_vertex_shader_SetPrivateData(ID3D11VertexShader *iface, REFGUID guid, UINT data_size, const void *data)
-{
-    struct qemu_d3d11_vertex_shader_SetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11VertexShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_VERTEX_SHADER_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_set_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d11_vertex_shader_SetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d11_vertex_shader_SetPrivateDataInterface(ID3D11VertexShader *iface,
+        REFGUID guid, const IUnknown *data)
 {
-    struct qemu_d3d11_vertex_shader_SetPrivateData *c = (struct qemu_d3d11_vertex_shader_SetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11VertexShader_SetPrivateData(shader->host_vs11, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d11_vertex_shader_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d11_vertex_shader_SetPrivateDataInterface(ID3D11VertexShader *iface, REFGUID guid, const IUnknown *data)
-{
-    struct qemu_d3d11_vertex_shader_SetPrivateDataInterface call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11VertexShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_VERTEX_SHADER_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data %p.\n", iface, wine_dbgstr_guid(guid), data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d11_vertex_shader_SetPrivateDataInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d11_vertex_shader_SetPrivateDataInterface *c = (struct qemu_d3d11_vertex_shader_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11VertexShader_SetPrivateDataInterface(shader->host_vs11, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    return d3d_set_private_data_interface(&shader->private_store, guid, data);
 }
 
 #endif
@@ -492,126 +402,38 @@ void qemu_d3d10_vertex_shader_Release(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_vertex_shader_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_vertex_shader_GetPrivateData(ID3D10VertexShader *iface, REFGUID guid, UINT *data_size, void *data)
+static HRESULT STDMETHODCALLTYPE d3d10_vertex_shader_GetPrivateData(ID3D10VertexShader *iface,
+        REFGUID guid, UINT *data_size, void *data)
 {
-    struct qemu_d3d10_vertex_shader_GetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D10VertexShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_VERTEX_SHADER_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n",
+            iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_get_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d10_vertex_shader_GetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d10_vertex_shader_SetPrivateData(ID3D10VertexShader *iface,
+        REFGUID guid, UINT data_size, const void *data)
 {
-    struct qemu_d3d10_vertex_shader_GetPrivateData *c = (struct qemu_d3d10_vertex_shader_GetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10VertexShader_GetPrivateData(shader->host_vs10, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d10_vertex_shader_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_vertex_shader_SetPrivateData(ID3D10VertexShader *iface, REFGUID guid, UINT data_size, const void *data)
-{
-    struct qemu_d3d10_vertex_shader_SetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D10VertexShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_VERTEX_SHADER_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n",
+            iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_set_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d10_vertex_shader_SetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d10_vertex_shader_SetPrivateDataInterface(ID3D10VertexShader *iface,
+        REFGUID guid, const IUnknown *data)
 {
-    struct qemu_d3d10_vertex_shader_SetPrivateData *c = (struct qemu_d3d10_vertex_shader_SetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10VertexShader_SetPrivateData(shader->host_vs10, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d10_vertex_shader_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_vertex_shader_SetPrivateDataInterface(ID3D10VertexShader *iface, REFGUID guid, const IUnknown *data)
-{
-    struct qemu_d3d10_vertex_shader_SetPrivateDataInterface call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D10VertexShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_VERTEX_SHADER_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data %p.\n", iface, wine_dbgstr_guid(guid), data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_vertex_shader_SetPrivateDataInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_vertex_shader_SetPrivateDataInterface *c = (struct qemu_d3d10_vertex_shader_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10VertexShader_SetPrivateDataInterface(shader->host_vs10, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    return d3d_set_private_data_interface(&shader->private_store, guid, data);
 }
 
 #endif
@@ -769,126 +591,36 @@ void qemu_d3d11_hull_shader_GetDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d11_hull_shader_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_hull_shader_GetPrivateData(ID3D11HullShader *iface, REFGUID guid, UINT *data_size, void *data)
+static HRESULT STDMETHODCALLTYPE d3d11_hull_shader_GetPrivateData(ID3D11HullShader *iface,
+        REFGUID guid, UINT *data_size, void *data)
 {
-    struct qemu_d3d11_hull_shader_GetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11HullShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_HULL_SHADER_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_get_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d11_hull_shader_GetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d11_hull_shader_SetPrivateData(ID3D11HullShader *iface,
+        REFGUID guid, UINT data_size, const void *data)
 {
-    struct qemu_d3d11_hull_shader_GetPrivateData *c = (struct qemu_d3d11_hull_shader_GetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11HullShader_GetPrivateData(shader->host_hs11, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d11_hull_shader_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d11_hull_shader_SetPrivateData(ID3D11HullShader *iface, REFGUID guid, UINT data_size, const void *data)
-{
-    struct qemu_d3d11_hull_shader_SetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11HullShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_HULL_SHADER_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_set_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d11_hull_shader_SetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d11_hull_shader_SetPrivateDataInterface(ID3D11HullShader *iface,
+        REFGUID guid, const IUnknown *data)
 {
-    struct qemu_d3d11_hull_shader_SetPrivateData *c = (struct qemu_d3d11_hull_shader_SetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11HullShader_SetPrivateData(shader->host_hs11, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d11_hull_shader_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d11_hull_shader_SetPrivateDataInterface(ID3D11HullShader *iface, REFGUID guid, const IUnknown *data)
-{
-    struct qemu_d3d11_hull_shader_SetPrivateDataInterface call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11HullShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_HULL_SHADER_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data %p.\n", iface, wine_dbgstr_guid(guid), data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d11_hull_shader_SetPrivateDataInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d11_hull_shader_SetPrivateDataInterface *c = (struct qemu_d3d11_hull_shader_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11HullShader_SetPrivateDataInterface(shader->host_hs11, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    return d3d_set_private_data_interface(&shader->private_store, guid, data);
 }
 
 #endif
@@ -1046,126 +778,36 @@ void qemu_d3d11_domain_shader_GetDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d11_domain_shader_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_domain_shader_GetPrivateData(ID3D11DomainShader *iface, REFGUID guid, UINT *data_size, void *data)
+static HRESULT STDMETHODCALLTYPE d3d11_domain_shader_GetPrivateData(ID3D11DomainShader *iface,
+        REFGUID guid, UINT *data_size, void *data)
 {
-    struct qemu_d3d11_domain_shader_GetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11DomainShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DOMAIN_SHADER_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_get_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d11_domain_shader_GetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d11_domain_shader_SetPrivateData(ID3D11DomainShader *iface,
+        REFGUID guid, UINT data_size, const void *data)
 {
-    struct qemu_d3d11_domain_shader_GetPrivateData *c = (struct qemu_d3d11_domain_shader_GetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11DomainShader_GetPrivateData(shader->host_ds11, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d11_domain_shader_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d11_domain_shader_SetPrivateData(ID3D11DomainShader *iface, REFGUID guid, UINT data_size, const void *data)
-{
-    struct qemu_d3d11_domain_shader_SetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11DomainShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DOMAIN_SHADER_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_set_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d11_domain_shader_SetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d11_domain_shader_SetPrivateDataInterface(ID3D11DomainShader *iface,
+        REFGUID guid, const IUnknown *data)
 {
-    struct qemu_d3d11_domain_shader_SetPrivateData *c = (struct qemu_d3d11_domain_shader_SetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11DomainShader_SetPrivateData(shader->host_ds11, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d11_domain_shader_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d11_domain_shader_SetPrivateDataInterface(ID3D11DomainShader *iface, REFGUID guid, const IUnknown *data)
-{
-    struct qemu_d3d11_domain_shader_SetPrivateDataInterface call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11DomainShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DOMAIN_SHADER_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data %p.\n", iface, wine_dbgstr_guid(guid), data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d11_domain_shader_SetPrivateDataInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d11_domain_shader_SetPrivateDataInterface *c = (struct qemu_d3d11_domain_shader_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11DomainShader_SetPrivateDataInterface(shader->host_ds11, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    return d3d_set_private_data_interface(&shader->private_store, guid, data);
 }
 
 #endif
@@ -1374,126 +1016,36 @@ void qemu_d3d11_geometry_shader_GetDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d11_geometry_shader_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_geometry_shader_GetPrivateData(ID3D11GeometryShader *iface, REFGUID guid, UINT *data_size, void *data)
+static HRESULT STDMETHODCALLTYPE d3d11_geometry_shader_GetPrivateData(ID3D11GeometryShader *iface,
+        REFGUID guid, UINT *data_size, void *data)
 {
-    struct qemu_d3d11_geometry_shader_GetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11GeometryShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_GEOMETRY_SHADER_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_get_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d11_geometry_shader_GetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d11_geometry_shader_SetPrivateData(ID3D11GeometryShader *iface,
+        REFGUID guid, UINT data_size, const void *data)
 {
-    struct qemu_d3d11_geometry_shader_GetPrivateData *c = (struct qemu_d3d11_geometry_shader_GetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11GeometryShader_GetPrivateData(shader->host_gs11, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d11_geometry_shader_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d11_geometry_shader_SetPrivateData(ID3D11GeometryShader *iface, REFGUID guid, UINT data_size, const void *data)
-{
-    struct qemu_d3d11_geometry_shader_SetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11GeometryShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_GEOMETRY_SHADER_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_set_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d11_geometry_shader_SetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d11_geometry_shader_SetPrivateDataInterface(ID3D11GeometryShader *iface,
+        REFGUID guid, const IUnknown *data)
 {
-    struct qemu_d3d11_geometry_shader_SetPrivateData *c = (struct qemu_d3d11_geometry_shader_SetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11GeometryShader_SetPrivateData(shader->host_gs11, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d11_geometry_shader_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d11_geometry_shader_SetPrivateDataInterface(ID3D11GeometryShader *iface, REFGUID guid, const IUnknown *data)
-{
-    struct qemu_d3d11_geometry_shader_SetPrivateDataInterface call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11GeometryShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_GEOMETRY_SHADER_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data %p.\n", iface, wine_dbgstr_guid(guid), data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d11_geometry_shader_SetPrivateDataInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d11_geometry_shader_SetPrivateDataInterface *c = (struct qemu_d3d11_geometry_shader_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11GeometryShader_SetPrivateDataInterface(shader->host_gs11, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    return d3d_set_private_data_interface(&shader->private_store, guid, data);
 }
 
 #endif
@@ -1610,126 +1162,38 @@ void qemu_d3d10_geometry_shader_Release(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_geometry_shader_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_geometry_shader_GetPrivateData(ID3D10GeometryShader *iface, REFGUID guid, UINT *data_size, void *data)
+static HRESULT STDMETHODCALLTYPE d3d10_geometry_shader_GetPrivateData(ID3D10GeometryShader *iface,
+        REFGUID guid, UINT *data_size, void *data)
 {
-    struct qemu_d3d10_geometry_shader_GetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D10GeometryShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_GEOMETRY_SHADER_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n",
+            iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_get_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d10_geometry_shader_GetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d10_geometry_shader_SetPrivateData(ID3D10GeometryShader *iface,
+        REFGUID guid, UINT data_size, const void *data)
 {
-    struct qemu_d3d10_geometry_shader_GetPrivateData *c = (struct qemu_d3d10_geometry_shader_GetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10GeometryShader_GetPrivateData(shader->host_gs10, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d10_geometry_shader_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_geometry_shader_SetPrivateData(ID3D10GeometryShader *iface, REFGUID guid, UINT data_size, const void *data)
-{
-    struct qemu_d3d10_geometry_shader_SetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D10GeometryShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_GEOMETRY_SHADER_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n",
+            iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_set_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d10_geometry_shader_SetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d10_geometry_shader_SetPrivateDataInterface(ID3D10GeometryShader *iface,
+        REFGUID guid, const IUnknown *data)
 {
-    struct qemu_d3d10_geometry_shader_SetPrivateData *c = (struct qemu_d3d10_geometry_shader_SetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10GeometryShader_SetPrivateData(shader->host_gs10, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d10_geometry_shader_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_geometry_shader_SetPrivateDataInterface(ID3D10GeometryShader *iface, REFGUID guid, const IUnknown *data)
-{
-    struct qemu_d3d10_geometry_shader_SetPrivateDataInterface call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D10GeometryShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_GEOMETRY_SHADER_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data %p.\n", iface, wine_dbgstr_guid(guid), data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_geometry_shader_SetPrivateDataInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_geometry_shader_SetPrivateDataInterface *c = (struct qemu_d3d10_geometry_shader_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10GeometryShader_SetPrivateDataInterface(shader->host_gs10, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    return d3d_set_private_data_interface(&shader->private_store, guid, data);
 }
 
 #endif
@@ -1938,126 +1402,36 @@ void qemu_d3d11_pixel_shader_GetDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d11_pixel_shader_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_pixel_shader_GetPrivateData(ID3D11PixelShader *iface, REFGUID guid, UINT *data_size, void *data)
+static HRESULT STDMETHODCALLTYPE d3d11_pixel_shader_GetPrivateData(ID3D11PixelShader *iface,
+        REFGUID guid, UINT *data_size, void *data)
 {
-    struct qemu_d3d11_pixel_shader_GetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11PixelShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_PIXEL_SHADER_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_get_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d11_pixel_shader_GetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d11_pixel_shader_SetPrivateData(ID3D11PixelShader *iface,
+        REFGUID guid, UINT data_size, const void *data)
 {
-    struct qemu_d3d11_pixel_shader_GetPrivateData *c = (struct qemu_d3d11_pixel_shader_GetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11PixelShader_GetPrivateData(shader->host_ps11, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d11_pixel_shader_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d11_pixel_shader_SetPrivateData(ID3D11PixelShader *iface, REFGUID guid, UINT data_size, const void *data)
-{
-    struct qemu_d3d11_pixel_shader_SetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11PixelShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_PIXEL_SHADER_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_set_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d11_pixel_shader_SetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d11_pixel_shader_SetPrivateDataInterface(ID3D11PixelShader *iface,
+        REFGUID guid, const IUnknown *data)
 {
-    struct qemu_d3d11_pixel_shader_SetPrivateData *c = (struct qemu_d3d11_pixel_shader_SetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11PixelShader_SetPrivateData(shader->host_ps11, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d11_pixel_shader_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d11_pixel_shader_SetPrivateDataInterface(ID3D11PixelShader *iface, REFGUID guid, const IUnknown *data)
-{
-    struct qemu_d3d11_pixel_shader_SetPrivateDataInterface call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11PixelShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_PIXEL_SHADER_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data %p.\n", iface, wine_dbgstr_guid(guid), data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d11_pixel_shader_SetPrivateDataInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d11_pixel_shader_SetPrivateDataInterface *c = (struct qemu_d3d11_pixel_shader_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11PixelShader_SetPrivateDataInterface(shader->host_ps11, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    return d3d_set_private_data_interface(&shader->private_store, guid, data);
 }
 
 #endif
@@ -2174,126 +1548,38 @@ void qemu_d3d10_pixel_shader_Release(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_pixel_shader_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_pixel_shader_GetPrivateData(ID3D10PixelShader *iface, REFGUID guid, UINT *data_size, void *data)
+static HRESULT STDMETHODCALLTYPE d3d10_pixel_shader_GetPrivateData(ID3D10PixelShader *iface,
+        REFGUID guid, UINT *data_size, void *data)
 {
-    struct qemu_d3d10_pixel_shader_GetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D10PixelShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_PIXEL_SHADER_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n",
+            iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_get_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d10_pixel_shader_GetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d10_pixel_shader_SetPrivateData(ID3D10PixelShader *iface,
+        REFGUID guid, UINT data_size, const void *data)
 {
-    struct qemu_d3d10_pixel_shader_GetPrivateData *c = (struct qemu_d3d10_pixel_shader_GetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10PixelShader_GetPrivateData(shader->host_ps10, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d10_pixel_shader_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_pixel_shader_SetPrivateData(ID3D10PixelShader *iface, REFGUID guid, UINT data_size, const void *data)
-{
-    struct qemu_d3d10_pixel_shader_SetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D10PixelShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_PIXEL_SHADER_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n",
+            iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_set_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d10_pixel_shader_SetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d10_pixel_shader_SetPrivateDataInterface(ID3D10PixelShader *iface,
+        REFGUID guid, const IUnknown *data)
 {
-    struct qemu_d3d10_pixel_shader_SetPrivateData *c = (struct qemu_d3d10_pixel_shader_SetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10PixelShader_SetPrivateData(shader->host_ps10, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d10_pixel_shader_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_pixel_shader_SetPrivateDataInterface(ID3D10PixelShader *iface, REFGUID guid, const IUnknown *data)
-{
-    struct qemu_d3d10_pixel_shader_SetPrivateDataInterface call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D10PixelShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_PIXEL_SHADER_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data %p.\n", iface, wine_dbgstr_guid(guid), data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_pixel_shader_SetPrivateDataInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_pixel_shader_SetPrivateDataInterface *c = (struct qemu_d3d10_pixel_shader_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10PixelShader_SetPrivateDataInterface(shader->host_ps10, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    return d3d_set_private_data_interface(&shader->private_store, guid, data);
 }
 
 #endif
@@ -2451,126 +1737,36 @@ void qemu_d3d11_compute_shader_GetDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d11_compute_shader_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_compute_shader_GetPrivateData(ID3D11ComputeShader *iface, REFGUID guid, UINT *data_size, void *data)
+static HRESULT STDMETHODCALLTYPE d3d11_compute_shader_GetPrivateData(ID3D11ComputeShader *iface,
+        REFGUID guid, UINT *data_size, void *data)
 {
-    struct qemu_d3d11_compute_shader_GetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11ComputeShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_COMPUTE_SHADER_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_get_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d11_compute_shader_GetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d11_compute_shader_SetPrivateData(ID3D11ComputeShader *iface,
+        REFGUID guid, UINT data_size, const void *data)
 {
-    struct qemu_d3d11_compute_shader_GetPrivateData *c = (struct qemu_d3d11_compute_shader_GetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11ComputeShader_GetPrivateData(shader->host_gs11, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d11_compute_shader_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d11_compute_shader_SetPrivateData(ID3D11ComputeShader *iface, REFGUID guid, UINT data_size, const void *data)
-{
-    struct qemu_d3d11_compute_shader_SetPrivateData call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11ComputeShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_COMPUTE_SHADER_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_set_private_data(&shader->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d11_compute_shader_SetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d11_compute_shader_SetPrivateDataInterface(ID3D11ComputeShader *iface,
+        REFGUID guid, const IUnknown *data)
 {
-    struct qemu_d3d11_compute_shader_SetPrivateData *c = (struct qemu_d3d11_compute_shader_SetPrivateData *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11ComputeShader_SetPrivateData(shader->host_gs11, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d11_compute_shader_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d11_compute_shader_SetPrivateDataInterface(ID3D11ComputeShader *iface, REFGUID guid, const IUnknown *data)
-{
-    struct qemu_d3d11_compute_shader_SetPrivateDataInterface call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11ComputeShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_COMPUTE_SHADER_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)shader;
-    call.guid = (ULONG_PTR)guid;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data %p.\n", iface, wine_dbgstr_guid(guid), data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d11_compute_shader_SetPrivateDataInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d11_compute_shader_SetPrivateDataInterface *c = (struct qemu_d3d11_compute_shader_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11ComputeShader_SetPrivateDataInterface(shader->host_gs11, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    return d3d_set_private_data_interface(&shader->private_store, guid, data);
 }
 
 #endif
@@ -2728,126 +1924,36 @@ void qemu_d3d11_class_linkage_GetDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d11_class_linkage_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_class_linkage_GetPrivateData(ID3D11ClassLinkage *iface, REFGUID guid, UINT *data_size, void *data)
+static HRESULT STDMETHODCALLTYPE d3d11_class_linkage_GetPrivateData(ID3D11ClassLinkage *iface,
+        REFGUID guid, UINT *data_size, void *data)
 {
-    struct qemu_d3d11_class_linkage_GetPrivateData call;
-    struct qemu_d3d11_class_linkage *link = impl_from_ID3D11ClassLinkage(iface);
+    struct qemu_d3d11_class_linkage *class_linkage = impl_from_ID3D11ClassLinkage(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_CLASS_LINKAGE_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)link;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_get_private_data(&class_linkage->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d11_class_linkage_GetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d11_class_linkage_SetPrivateData(ID3D11ClassLinkage *iface,
+        REFGUID guid, UINT data_size, const void *data)
 {
-    struct qemu_d3d11_class_linkage_GetPrivateData *c = (struct qemu_d3d11_class_linkage_GetPrivateData *)call;
-    struct qemu_d3d11_class_linkage *link;
+    struct qemu_d3d11_class_linkage *class_linkage = impl_from_ID3D11ClassLinkage(iface);
 
-    WINE_FIXME("Unverified!\n");
-    link = QEMU_G2H(c->iface);
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    c->super.iret = ID3D11ClassLinkage_GetPrivateData(link->host, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
+    return d3d_set_private_data(&class_linkage->private_store, guid, data_size, data);
 }
 
-#endif
-
-struct qemu_d3d11_class_linkage_SetPrivateData
+static HRESULT STDMETHODCALLTYPE d3d11_class_linkage_SetPrivateDataInterface(ID3D11ClassLinkage *iface,
+        REFGUID guid, const IUnknown *data)
 {
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
+    struct qemu_d3d11_class_linkage *class_linkage = impl_from_ID3D11ClassLinkage(iface);
 
-#ifdef QEMU_DLL_GUEST
+    WINE_TRACE("iface %p, guid %s, data %p.\n", iface, wine_dbgstr_guid(guid), data);
 
-static HRESULT STDMETHODCALLTYPE d3d11_class_linkage_SetPrivateData(ID3D11ClassLinkage *iface, REFGUID guid, UINT data_size, const void *data)
-{
-    struct qemu_d3d11_class_linkage_SetPrivateData call;
-    struct qemu_d3d11_class_linkage *link = impl_from_ID3D11ClassLinkage(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_CLASS_LINKAGE_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)link;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d11_class_linkage_SetPrivateData(struct qemu_syscall *call)
-{
-    struct qemu_d3d11_class_linkage_SetPrivateData *c = (struct qemu_d3d11_class_linkage_SetPrivateData *)call;
-    struct qemu_d3d11_class_linkage *link;
-
-    WINE_FIXME("Unverified!\n");
-    link = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11ClassLinkage_SetPrivateData(link->host, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d11_class_linkage_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d11_class_linkage_SetPrivateDataInterface(ID3D11ClassLinkage *iface, REFGUID guid, const IUnknown *data)
-{
-    struct qemu_d3d11_class_linkage_SetPrivateDataInterface call;
-    struct qemu_d3d11_class_linkage *link = impl_from_ID3D11ClassLinkage(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_CLASS_LINKAGE_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)link;
-    call.guid = (ULONG_PTR)guid;
-    call.data = (ULONG_PTR)data;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d11_class_linkage_SetPrivateDataInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d11_class_linkage_SetPrivateDataInterface *c = (struct qemu_d3d11_class_linkage_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_class_linkage *link;
-
-    WINE_FIXME("Unverified!\n");
-    link = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11ClassLinkage_SetPrivateDataInterface(link->host, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    return d3d_set_private_data_interface(&class_linkage->private_store, guid, data);
 }
 
 #endif
@@ -3081,18 +2187,21 @@ void qemu_d3d11_pixel_shader_guest_init(struct qemu_d3d11_shader *shader)
 {
     shader->ID3D11PixelShader_iface.lpVtbl = &d3d11_pixel_shader_vtbl;
     shader->ID3D10PixelShader_iface.lpVtbl = &d3d10_pixel_shader_vtbl;
+    wined3d_private_store_init(&shader->private_store);
 }
 
 void qemu_d3d11_vertex_shader_guest_init(struct qemu_d3d11_shader *shader)
 {
     shader->ID3D11VertexShader_iface.lpVtbl = &d3d11_vertex_shader_vtbl;
     shader->ID3D10VertexShader_iface.lpVtbl = &d3d10_vertex_shader_vtbl;
+    wined3d_private_store_init(&shader->private_store);
 }
 
 void qemu_d3d11_geometry_shader_guest_init(struct qemu_d3d11_shader *shader)
 {
     shader->ID3D11GeometryShader_iface.lpVtbl = &d3d11_geometry_shader_vtbl;
     shader->ID3D10GeometryShader_iface.lpVtbl = &d3d10_geometry_shader_vtbl;
+    wined3d_private_store_init(&shader->private_store);
 }
 
 struct qemu_d3d11_shader *unsafe_impl_from_ID3D11VertexShader(ID3D11VertexShader *iface)

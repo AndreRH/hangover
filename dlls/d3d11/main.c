@@ -166,6 +166,89 @@ WINBASEAPI HRESULT WINAPI D3D11CoreRegisterLayers(void)
     return S_OK;
 }
 
+static inline void wined3d_mutex_lock() {};
+static inline void wined3d_mutex_unlock() {};
+
+HRESULT d3d_get_private_data(struct wined3d_private_store *store,
+        REFGUID guid, UINT *data_size, void *data)
+{
+    const struct wined3d_private_data *stored_data;
+    DWORD size_in;
+
+    if (!data_size)
+        return E_INVALIDARG;
+
+    wined3d_mutex_lock();
+    if (!(stored_data = wined3d_private_store_get_private_data(store, guid)))
+    {
+        *data_size = 0;
+        wined3d_mutex_unlock();
+        return DXGI_ERROR_NOT_FOUND;
+    }
+
+    size_in = *data_size;
+    *data_size = stored_data->size;
+    if (!data)
+    {
+        wined3d_mutex_unlock();
+        return S_OK;
+    }
+    if (size_in < stored_data->size)
+    {
+        wined3d_mutex_unlock();
+        return DXGI_ERROR_MORE_DATA;
+    }
+
+    if (stored_data->flags & WINED3DSPD_IUNKNOWN)
+        IUnknown_AddRef(stored_data->content.object);
+    memcpy(data, stored_data->content.data, stored_data->size);
+
+    wined3d_mutex_unlock();
+    return S_OK;
+}
+
+HRESULT d3d_set_private_data(struct wined3d_private_store *store,
+        REFGUID guid, UINT data_size, const void *data)
+{
+    struct wined3d_private_data *entry;
+    HRESULT hr;
+
+    wined3d_mutex_lock();
+    if (!data)
+    {
+        if (!(entry = wined3d_private_store_get_private_data(store, guid)))
+        {
+            wined3d_mutex_unlock();
+            return S_FALSE;
+        }
+        wined3d_private_store_free_private_data(store, entry);
+        wined3d_mutex_unlock();
+
+        return S_OK;
+    }
+
+    hr = wined3d_private_store_set_private_data(store, guid, data, data_size, 0);
+    wined3d_mutex_unlock();
+
+    return hr;
+}
+
+HRESULT d3d_set_private_data_interface(struct wined3d_private_store *store,
+        REFGUID guid, const IUnknown *object)
+{
+    HRESULT hr;
+
+    if (!object)
+        return d3d_set_private_data(store, guid, sizeof(object), &object);
+
+    wined3d_mutex_lock();
+    hr = wined3d_private_store_set_private_data(store,
+            guid, object, sizeof(object), WINED3DSPD_IUNKNOWN);
+    wined3d_mutex_unlock();
+
+    return hr;
+}
+
 #else
 
 static void qemu_layer_get_size(struct qemu_syscall *call)
@@ -629,38 +712,26 @@ static const syscall_handler dll_functions[] =
     qemu_d3d10_blend_state_AddRef,
     qemu_d3d10_blend_state_GetDesc,
     qemu_d3d10_blend_state_GetDesc1,
-    qemu_d3d10_blend_state_GetPrivateData,
     qemu_d3d10_blend_state_QueryInterface,
     qemu_d3d10_blend_state_Release,
-    qemu_d3d10_blend_state_SetPrivateData,
-    qemu_d3d10_blend_state_SetPrivateDataInterface,
     qemu_d3d10_buffer_AddRef,
     qemu_d3d10_buffer_GetDesc,
     qemu_d3d10_buffer_GetEvictionPriority,
-    qemu_d3d10_buffer_GetPrivateData,
     qemu_d3d10_buffer_GetType,
     qemu_d3d10_buffer_Map,
     qemu_d3d10_buffer_QueryInterface,
     qemu_d3d10_buffer_Release,
     qemu_d3d10_buffer_SetEvictionPriority,
-    qemu_d3d10_buffer_SetPrivateData,
-    qemu_d3d10_buffer_SetPrivateDataInterface,
     qemu_d3d10_buffer_Unmap,
     qemu_d3d10_depthstencil_state_AddRef,
     qemu_d3d10_depthstencil_state_GetDesc,
-    qemu_d3d10_depthstencil_state_GetPrivateData,
     qemu_d3d10_depthstencil_state_QueryInterface,
     qemu_d3d10_depthstencil_state_Release,
-    qemu_d3d10_depthstencil_state_SetPrivateData,
-    qemu_d3d10_depthstencil_state_SetPrivateDataInterface,
     qemu_d3d10_depthstencil_view_AddRef,
     qemu_d3d10_depthstencil_view_GetDesc,
-    qemu_d3d10_depthstencil_view_GetPrivateData,
     qemu_d3d10_depthstencil_view_GetResource,
     qemu_d3d10_depthstencil_view_QueryInterface,
     qemu_d3d10_depthstencil_view_Release,
-    qemu_d3d10_depthstencil_view_SetPrivateData,
-    qemu_d3d10_depthstencil_view_SetPrivateDataInterface,
     qemu_d3d10_device_CheckCounter,
     qemu_d3d10_device_CheckCounterInfo,
     qemu_d3d10_device_CheckFormatSupport,
@@ -699,7 +770,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d10_device_GetExceptionMode,
     qemu_d3d10_device_GetFeatureLevel,
     qemu_d3d10_device_GetPredication,
-    qemu_d3d10_device_GetPrivateData,
     qemu_d3d10_device_GetTextFilterSize,
     qemu_d3d10_device_GSGetConstantBuffers,
     qemu_d3d10_device_GSGetSamplers,
@@ -741,8 +811,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d10_device_RSSetViewports,
     qemu_d3d10_device_SetExceptionMode,
     qemu_d3d10_device_SetPredication,
-    qemu_d3d10_device_SetPrivateData,
-    qemu_d3d10_device_SetPrivateDataInterface,
     qemu_d3d10_device_SetTextFilterSize,
     qemu_d3d10_device_SOGetTargets,
     qemu_d3d10_device_SOSetTargets,
@@ -756,163 +824,109 @@ static const syscall_handler dll_functions[] =
     qemu_d3d10_device_VSSetShader,
     qemu_d3d10_device_VSSetShaderResources,
     qemu_d3d10_geometry_shader_AddRef,
-    qemu_d3d10_geometry_shader_GetPrivateData,
     qemu_d3d10_geometry_shader_QueryInterface,
     qemu_d3d10_geometry_shader_Release,
-    qemu_d3d10_geometry_shader_SetPrivateData,
-    qemu_d3d10_geometry_shader_SetPrivateDataInterface,
     qemu_d3d10_input_layout_AddRef,
     qemu_d3d10_input_layout_GetDevice,
-    qemu_d3d10_input_layout_GetPrivateData,
     qemu_d3d10_input_layout_QueryInterface,
     qemu_d3d10_input_layout_Release,
-    qemu_d3d10_input_layout_SetPrivateData,
-    qemu_d3d10_input_layout_SetPrivateDataInterface,
     qemu_d3d10_multithread_Enter,
     qemu_d3d10_multithread_GetMultithreadProtected,
     qemu_d3d10_multithread_Leave,
     qemu_d3d10_multithread_SetMultithreadProtected,
     qemu_d3d10_pixel_shader_AddRef,
-    qemu_d3d10_pixel_shader_GetPrivateData,
     qemu_d3d10_pixel_shader_QueryInterface,
     qemu_d3d10_pixel_shader_Release,
-    qemu_d3d10_pixel_shader_SetPrivateData,
-    qemu_d3d10_pixel_shader_SetPrivateDataInterface,
     qemu_d3d10_query_AddRef,
     qemu_d3d10_query_Begin,
     qemu_d3d10_query_End,
     qemu_d3d10_query_GetData,
     qemu_d3d10_query_GetDataSize,
     qemu_d3d10_query_GetDesc,
-    qemu_d3d10_query_GetPrivateData,
     qemu_d3d10_query_QueryInterface,
     qemu_d3d10_query_Release,
-    qemu_d3d10_query_SetPrivateData,
-    qemu_d3d10_query_SetPrivateDataInterface,
     qemu_d3d10_rasterizer_state_AddRef,
     qemu_d3d10_rasterizer_state_GetDesc,
-    qemu_d3d10_rasterizer_state_GetPrivateData,
     qemu_d3d10_rasterizer_state_QueryInterface,
     qemu_d3d10_rasterizer_state_Release,
-    qemu_d3d10_rasterizer_state_SetPrivateData,
-    qemu_d3d10_rasterizer_state_SetPrivateDataInterface,
     qemu_d3d10_rendertarget_view_AddRef,
     qemu_d3d10_rendertarget_view_GetDesc,
-    qemu_d3d10_rendertarget_view_GetPrivateData,
     qemu_d3d10_rendertarget_view_GetResource,
     qemu_d3d10_rendertarget_view_QueryInterface,
     qemu_d3d10_rendertarget_view_Release,
-    qemu_d3d10_rendertarget_view_SetPrivateData,
-    qemu_d3d10_rendertarget_view_SetPrivateDataInterface,
     qemu_d3d10_sampler_state_AddRef,
     qemu_d3d10_sampler_state_GetDesc,
-    qemu_d3d10_sampler_state_GetPrivateData,
     qemu_d3d10_sampler_state_QueryInterface,
     qemu_d3d10_sampler_state_Release,
-    qemu_d3d10_sampler_state_SetPrivateData,
-    qemu_d3d10_sampler_state_SetPrivateDataInterface,
     qemu_d3d10_shader_resource_view_AddRef,
     qemu_d3d10_shader_resource_view_GetDesc,
     qemu_d3d10_shader_resource_view_GetDesc1,
-    qemu_d3d10_shader_resource_view_GetPrivateData,
     qemu_d3d10_shader_resource_view_GetResource,
     qemu_d3d10_shader_resource_view_QueryInterface,
     qemu_d3d10_shader_resource_view_Release,
-    qemu_d3d10_shader_resource_view_SetPrivateData,
-    qemu_d3d10_shader_resource_view_SetPrivateDataInterface,
     qemu_d3d10_texture1d_AddRef,
     qemu_d3d10_texture1d_GetDesc,
     qemu_d3d10_texture1d_GetEvictionPriority,
-    qemu_d3d10_texture1d_GetPrivateData,
     qemu_d3d10_texture1d_GetType,
     qemu_d3d10_texture1d_Map,
     qemu_d3d10_texture1d_Release,
     qemu_d3d10_texture1d_SetEvictionPriority,
-    qemu_d3d10_texture1d_SetPrivateData,
-    qemu_d3d10_texture1d_SetPrivateDataInterface,
     qemu_d3d10_texture1d_Unmap,
     qemu_d3d10_texture2d_AddRef,
     qemu_d3d10_texture2d_GetDesc,
     qemu_d3d10_texture2d_GetEvictionPriority,
-    qemu_d3d10_texture2d_GetPrivateData,
     qemu_d3d10_texture2d_GetType,
     qemu_d3d10_texture2d_Map,
     qemu_d3d10_texture2d_QueryInterface,
     qemu_d3d10_texture2d_Release,
     qemu_d3d10_texture2d_SetEvictionPriority,
-    qemu_d3d10_texture2d_SetPrivateData,
-    qemu_d3d10_texture2d_SetPrivateDataInterface,
     qemu_d3d10_texture2d_Unmap,
     qemu_d3d10_texture3d_AddRef,
     qemu_d3d10_texture3d_GetDesc,
     qemu_d3d10_texture3d_GetEvictionPriority,
-    qemu_d3d10_texture3d_GetPrivateData,
     qemu_d3d10_texture3d_GetType,
     qemu_d3d10_texture3d_Map,
     qemu_d3d10_texture3d_QueryInterface,
     qemu_d3d10_texture3d_Release,
     qemu_d3d10_texture3d_SetEvictionPriority,
-    qemu_d3d10_texture3d_SetPrivateData,
-    qemu_d3d10_texture3d_SetPrivateDataInterface,
     qemu_d3d10_texture3d_Unmap,
     qemu_d3d10_vertex_shader_AddRef,
-    qemu_d3d10_vertex_shader_GetPrivateData,
     qemu_d3d10_vertex_shader_QueryInterface,
     qemu_d3d10_vertex_shader_Release,
-    qemu_d3d10_vertex_shader_SetPrivateData,
-    qemu_d3d10_vertex_shader_SetPrivateDataInterface,
     qemu_d3d11_blend_state_AddRef,
     qemu_d3d11_blend_state_GetDesc,
     qemu_d3d11_blend_state_GetDevice,
-    qemu_d3d11_blend_state_GetPrivateData,
     qemu_d3d11_blend_state_QueryInterface,
     qemu_d3d11_blend_state_Release,
-    qemu_d3d11_blend_state_SetPrivateData,
-    qemu_d3d11_blend_state_SetPrivateDataInterface,
     qemu_d3d11_buffer_AddRef,
     qemu_d3d11_buffer_GetDesc,
     qemu_d3d11_buffer_GetDevice,
     qemu_d3d11_buffer_GetEvictionPriority,
-    qemu_d3d11_buffer_GetPrivateData,
     qemu_d3d11_buffer_GetType,
     qemu_d3d11_buffer_QueryInterface,
     qemu_d3d11_buffer_Release,
     qemu_d3d11_buffer_SetEvictionPriority,
-    qemu_d3d11_buffer_SetPrivateData,
-    qemu_d3d11_buffer_SetPrivateDataInterface,
     qemu_d3d11_class_linkage_AddRef,
     qemu_d3d11_class_linkage_CreateClassInstance,
     qemu_d3d11_class_linkage_GetClassInstance,
     qemu_d3d11_class_linkage_GetDevice,
-    qemu_d3d11_class_linkage_GetPrivateData,
     qemu_d3d11_class_linkage_QueryInterface,
     qemu_d3d11_class_linkage_Release,
-    qemu_d3d11_class_linkage_SetPrivateData,
-    qemu_d3d11_class_linkage_SetPrivateDataInterface,
     qemu_d3d11_compute_shader_AddRef,
     qemu_d3d11_compute_shader_GetDevice,
-    qemu_d3d11_compute_shader_GetPrivateData,
     qemu_d3d11_compute_shader_QueryInterface,
     qemu_d3d11_compute_shader_Release,
-    qemu_d3d11_compute_shader_SetPrivateData,
-    qemu_d3d11_compute_shader_SetPrivateDataInterface,
     qemu_d3d11_depthstencil_state_AddRef,
     qemu_d3d11_depthstencil_state_GetDesc,
     qemu_d3d11_depthstencil_state_GetDevice,
-    qemu_d3d11_depthstencil_state_GetPrivateData,
     qemu_d3d11_depthstencil_state_QueryInterface,
     qemu_d3d11_depthstencil_state_Release,
-    qemu_d3d11_depthstencil_state_SetPrivateData,
-    qemu_d3d11_depthstencil_state_SetPrivateDataInterface,
     qemu_d3d11_depthstencil_view_AddRef,
     qemu_d3d11_depthstencil_view_GetDesc,
     qemu_d3d11_depthstencil_view_GetDevice,
-    qemu_d3d11_depthstencil_view_GetPrivateData,
     qemu_d3d11_depthstencil_view_GetResource,
     qemu_d3d11_depthstencil_view_QueryInterface,
     qemu_d3d11_depthstencil_view_Release,
-    qemu_d3d11_depthstencil_view_SetPrivateData,
-    qemu_d3d11_depthstencil_view_SetPrivateDataInterface,
     qemu_d3d11_device_CheckCounter,
     qemu_d3d11_device_CheckCounterInfo,
     qemu_d3d11_device_CheckFeatureSupport,
@@ -956,35 +970,23 @@ static const syscall_handler dll_functions[] =
     qemu_d3d11_device_GetImmediateContext,
     qemu_d3d11_device_GetImmediateContext1,
     qemu_d3d11_device_GetImmediateContext2,
-    qemu_d3d11_device_GetPrivateData,
     qemu_d3d11_device_GetResourceTiling,
     qemu_d3d11_device_OpenSharedResource,
     qemu_d3d11_device_OpenSharedResource1,
     qemu_d3d11_device_OpenSharedResourceByName,
     qemu_d3d11_device_SetExceptionMode,
-    qemu_d3d11_device_SetPrivateData,
-    qemu_d3d11_device_SetPrivateDataInterface,
     qemu_d3d11_domain_shader_AddRef,
     qemu_d3d11_domain_shader_GetDevice,
-    qemu_d3d11_domain_shader_GetPrivateData,
     qemu_d3d11_domain_shader_QueryInterface,
     qemu_d3d11_domain_shader_Release,
-    qemu_d3d11_domain_shader_SetPrivateData,
-    qemu_d3d11_domain_shader_SetPrivateDataInterface,
     qemu_d3d11_geometry_shader_AddRef,
     qemu_d3d11_geometry_shader_GetDevice,
-    qemu_d3d11_geometry_shader_GetPrivateData,
     qemu_d3d11_geometry_shader_QueryInterface,
     qemu_d3d11_geometry_shader_Release,
-    qemu_d3d11_geometry_shader_SetPrivateData,
-    qemu_d3d11_geometry_shader_SetPrivateDataInterface,
     qemu_d3d11_hull_shader_AddRef,
     qemu_d3d11_hull_shader_GetDevice,
-    qemu_d3d11_hull_shader_GetPrivateData,
     qemu_d3d11_hull_shader_QueryInterface,
     qemu_d3d11_hull_shader_Release,
-    qemu_d3d11_hull_shader_SetPrivateData,
-    qemu_d3d11_hull_shader_SetPrivateDataInterface,
     qemu_d3d11_immediate_context_AddRef,
     qemu_d3d11_immediate_context_Begin,
     qemu_d3d11_immediate_context_ClearDepthStencilView,
@@ -1040,7 +1042,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d11_immediate_context_GetData,
     qemu_d3d11_immediate_context_GetDevice,
     qemu_d3d11_immediate_context_GetPredication,
-    qemu_d3d11_immediate_context_GetPrivateData,
     qemu_d3d11_immediate_context_GetResourceMinLOD,
     qemu_d3d11_immediate_context_GetType,
     qemu_d3d11_immediate_context_GSGetConstantBuffers,
@@ -1100,8 +1101,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d11_immediate_context_RSSetState,
     qemu_d3d11_immediate_context_RSSetViewports,
     qemu_d3d11_immediate_context_SetPredication,
-    qemu_d3d11_immediate_context_SetPrivateData,
-    qemu_d3d11_immediate_context_SetPrivateDataInterface,
     qemu_d3d11_immediate_context_SetResourceMinLOD,
     qemu_d3d11_immediate_context_SOGetTargets,
     qemu_d3d11_immediate_context_SOSetTargets,
@@ -1121,110 +1120,74 @@ static const syscall_handler dll_functions[] =
     qemu_d3d11_immediate_context_VSSetShaderResources,
     qemu_d3d11_input_layout_AddRef,
     qemu_d3d11_input_layout_GetDevice,
-    qemu_d3d11_input_layout_GetPrivateData,
     qemu_d3d11_input_layout_QueryInterface,
     qemu_d3d11_input_layout_Release,
-    qemu_d3d11_input_layout_SetPrivateData,
-    qemu_d3d11_input_layout_SetPrivateDataInterface,
     qemu_d3d11_pixel_shader_AddRef,
     qemu_d3d11_pixel_shader_GetDevice,
-    qemu_d3d11_pixel_shader_GetPrivateData,
     qemu_d3d11_pixel_shader_QueryInterface,
     qemu_d3d11_pixel_shader_Release,
-    qemu_d3d11_pixel_shader_SetPrivateData,
-    qemu_d3d11_pixel_shader_SetPrivateDataInterface,
     qemu_d3d11_query_AddRef,
     qemu_d3d11_query_GetDataSize,
     qemu_d3d11_query_GetDesc,
     qemu_d3d11_query_GetDevice,
-    qemu_d3d11_query_GetPrivateData,
     qemu_d3d11_query_QueryInterface,
     qemu_d3d11_query_Release,
-    qemu_d3d11_query_SetPrivateData,
-    qemu_d3d11_query_SetPrivateDataInterface,
     qemu_d3d11_rasterizer_state_AddRef,
     qemu_d3d11_rasterizer_state_GetDesc,
     qemu_d3d11_rasterizer_state_GetDevice,
-    qemu_d3d11_rasterizer_state_GetPrivateData,
     qemu_d3d11_rasterizer_state_QueryInterface,
     qemu_d3d11_rasterizer_state_Release,
-    qemu_d3d11_rasterizer_state_SetPrivateData,
-    qemu_d3d11_rasterizer_state_SetPrivateDataInterface,
     qemu_d3d11_rendertarget_view_AddRef,
     qemu_d3d11_rendertarget_view_GetDesc,
     qemu_d3d11_rendertarget_view_GetDevice,
-    qemu_d3d11_rendertarget_view_GetPrivateData,
     qemu_d3d11_rendertarget_view_GetResource,
     qemu_d3d11_rendertarget_view_QueryInterface,
     qemu_d3d11_rendertarget_view_Release,
-    qemu_d3d11_rendertarget_view_SetPrivateData,
-    qemu_d3d11_rendertarget_view_SetPrivateDataInterface,
     qemu_d3d11_sampler_state_AddRef,
     qemu_d3d11_sampler_state_GetDesc,
     qemu_d3d11_sampler_state_GetDevice,
-    qemu_d3d11_sampler_state_GetPrivateData,
     qemu_d3d11_sampler_state_QueryInterface,
     qemu_d3d11_sampler_state_Release,
-    qemu_d3d11_sampler_state_SetPrivateData,
-    qemu_d3d11_sampler_state_SetPrivateDataInterface,
     qemu_d3d11_shader_resource_view_AddRef,
     qemu_d3d11_shader_resource_view_GetDesc,
     qemu_d3d11_shader_resource_view_GetDevice,
-    qemu_d3d11_shader_resource_view_GetPrivateData,
     qemu_d3d11_shader_resource_view_GetResource,
     qemu_d3d11_shader_resource_view_QueryInterface,
     qemu_d3d11_shader_resource_view_Release,
-    qemu_d3d11_shader_resource_view_SetPrivateData,
-    qemu_d3d11_shader_resource_view_SetPrivateDataInterface,
     qemu_d3d11_texture1d_AddRef,
     qemu_d3d11_texture1d_GetDesc,
     qemu_d3d11_texture1d_GetDevice,
     qemu_d3d11_texture1d_GetEvictionPriority,
-    qemu_d3d11_texture1d_GetPrivateData,
     qemu_d3d11_texture1d_GetType,
     qemu_d3d11_texture1d_QueryInterface,
     qemu_d3d11_texture1d_Release,
     qemu_d3d11_texture1d_SetEvictionPriority,
-    qemu_d3d11_texture1d_SetPrivateData,
-    qemu_d3d11_texture1d_SetPrivateDataInterface,
     qemu_d3d11_texture2d_AddRef,
     qemu_d3d11_texture2d_GetDesc,
     qemu_d3d11_texture2d_GetDevice,
     qemu_d3d11_texture2d_GetEvictionPriority,
-    qemu_d3d11_texture2d_GetPrivateData,
     qemu_d3d11_texture2d_GetType,
     qemu_d3d11_texture2d_QueryInterface,
     qemu_d3d11_texture2d_Release,
     qemu_d3d11_texture2d_SetEvictionPriority,
-    qemu_d3d11_texture2d_SetPrivateData,
-    qemu_d3d11_texture2d_SetPrivateDataInterface,
     qemu_d3d11_texture3d_AddRef,
     qemu_d3d11_texture3d_GetDesc,
     qemu_d3d11_texture3d_GetDevice,
     qemu_d3d11_texture3d_GetEvictionPriority,
-    qemu_d3d11_texture3d_GetPrivateData,
     qemu_d3d11_texture3d_GetType,
     qemu_d3d11_texture3d_QueryInterface,
     qemu_d3d11_texture3d_Release,
     qemu_d3d11_texture3d_SetEvictionPriority,
-    qemu_d3d11_texture3d_SetPrivateData,
-    qemu_d3d11_texture3d_SetPrivateDataInterface,
     qemu_d3d11_unordered_access_view_AddRef,
     qemu_d3d11_unordered_access_view_GetDesc,
     qemu_d3d11_unordered_access_view_GetDevice,
-    qemu_d3d11_unordered_access_view_GetPrivateData,
     qemu_d3d11_unordered_access_view_GetResource,
     qemu_d3d11_unordered_access_view_QueryInterface,
     qemu_d3d11_unordered_access_view_Release,
-    qemu_d3d11_unordered_access_view_SetPrivateData,
-    qemu_d3d11_unordered_access_view_SetPrivateDataInterface,
     qemu_d3d11_vertex_shader_AddRef,
     qemu_d3d11_vertex_shader_GetDevice,
-    qemu_d3d11_vertex_shader_GetPrivateData,
     qemu_d3d11_vertex_shader_QueryInterface,
     qemu_d3d11_vertex_shader_Release,
-    qemu_d3d11_vertex_shader_SetPrivateData,
-    qemu_d3d11_vertex_shader_SetPrivateDataInterface,
     qemu_d3d_device_inner_AddRef,
     qemu_d3d_device_inner_QueryInterface,
     qemu_d3d_device_inner_Release,

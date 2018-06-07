@@ -214,126 +214,36 @@ void qemu_d3d11_immediate_context_GetDevice(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d11_immediate_context_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_GetPrivateData(ID3D11DeviceContext1 *iface, REFGUID guid, UINT *data_size, void *data)
+static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_GetPrivateData(ID3D11DeviceContext1 *iface, REFGUID guid,
+        UINT *data_size, void *data)
 {
-    struct qemu_d3d11_immediate_context_GetPrivateData call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)context;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_get_private_data(&context->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d11_immediate_context_GetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_SetPrivateData(ID3D11DeviceContext1 *iface, REFGUID guid,
+        UINT data_size, const void *data)
 {
-    struct qemu_d3d11_immediate_context_GetPrivateData *c = (struct qemu_d3d11_immediate_context_GetPrivateData *)call;
-    struct qemu_d3d11_device_context *context;
-
-    WINE_FIXME("Unverified!\n");
-    context = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11DeviceContext1_GetPrivateData(context->host, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d11_immediate_context_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_SetPrivateData(ID3D11DeviceContext1 *iface, REFGUID guid, UINT data_size, const void *data)
-{
-    struct qemu_d3d11_immediate_context_SetPrivateData call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)context;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d_set_private_data(&context->private_store, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d11_immediate_context_SetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_SetPrivateDataInterface(ID3D11DeviceContext1 *iface,
+        REFGUID guid, const IUnknown *data)
 {
-    struct qemu_d3d11_immediate_context_SetPrivateData *c = (struct qemu_d3d11_immediate_context_SetPrivateData *)call;
-    struct qemu_d3d11_device_context *context;
-
-    WINE_FIXME("Unverified!\n");
-    context = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11DeviceContext1_SetPrivateData(context->host, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d11_immediate_context_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_SetPrivateDataInterface(ID3D11DeviceContext1 *iface, REFGUID guid, const IUnknown *data)
-{
-    struct qemu_d3d11_immediate_context_SetPrivateDataInterface call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)context;
-    call.guid = (ULONG_PTR)guid;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data %p.\n", iface, wine_dbgstr_guid(guid), data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d11_immediate_context_SetPrivateDataInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d11_immediate_context_SetPrivateDataInterface *c = (struct qemu_d3d11_immediate_context_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_device_context *context;
-
-    WINE_FIXME("Unverified!\n");
-    context = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11DeviceContext1_SetPrivateDataInterface(context->host, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    return d3d_set_private_data_interface(&context->private_store, guid, data);
 }
 
 #endif
@@ -7652,126 +7562,54 @@ void qemu_d3d11_device_CheckFeatureSupport(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d11_device_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_GetPrivateData(ID3D11Device2 *iface, REFGUID guid, UINT *data_size, void *data)
+static HRESULT STDMETHODCALLTYPE d3d11_device_GetPrivateData(ID3D11Device2 *iface, REFGUID guid,
+        UINT *data_size, void *data)
 {
-    struct qemu_d3d11_device_GetPrivateData call;
-    struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
+    IDXGIDevice *dxgi_device;
+    HRESULT hr;
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)device;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
+    if (FAILED(hr = ID3D11Device_QueryInterface(iface, &IID_IDXGIDevice, (void **)&dxgi_device)))
+        return hr;
+    hr = IDXGIDevice_GetPrivateData(dxgi_device, guid, data_size, data);
+    IDXGIDevice_Release(dxgi_device);
 
-    return call.super.iret;
+    return hr;
 }
 
-#else
-
-void qemu_d3d11_device_GetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d11_device_SetPrivateData(ID3D11Device2 *iface, REFGUID guid,
+        UINT data_size, const void *data)
 {
-    struct qemu_d3d11_device_GetPrivateData *c = (struct qemu_d3d11_device_GetPrivateData *)call;
-    struct qemu_d3d11_device *device;
+    IDXGIDevice *dxgi_device;
+    HRESULT hr;
 
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    c->super.iret = ID3D11Device2_GetPrivateData(device->host_d3d11, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
+    if (FAILED(hr = ID3D11Device_QueryInterface(iface, &IID_IDXGIDevice, (void **)&dxgi_device)))
+        return hr;
+    hr = IDXGIDevice_SetPrivateData(dxgi_device, guid, data_size, data);
+    IDXGIDevice_Release(dxgi_device);
+
+    return hr;
 }
 
-#endif
-
-struct qemu_d3d11_device_SetPrivateData
+static HRESULT STDMETHODCALLTYPE d3d11_device_SetPrivateDataInterface(ID3D11Device2 *iface, REFGUID guid,
+        const IUnknown *data)
 {
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
+    IDXGIDevice *dxgi_device;
+    HRESULT hr;
 
-#ifdef QEMU_DLL_GUEST
+    WINE_TRACE("iface %p, guid %s, data %p.\n", iface, wine_dbgstr_guid(guid), data);
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_SetPrivateData(ID3D11Device2 *iface, REFGUID guid, UINT data_size, const void *data)
-{
-    struct qemu_d3d11_device_SetPrivateData call;
-    struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
+    if (FAILED(hr = ID3D11Device_QueryInterface(iface, &IID_IDXGIDevice, (void **)&dxgi_device)))
+        return hr;
+    hr = IDXGIDevice_SetPrivateDataInterface(dxgi_device, guid, data);
+    IDXGIDevice_Release(dxgi_device);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)device;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d11_device_SetPrivateData(struct qemu_syscall *call)
-{
-    struct qemu_d3d11_device_SetPrivateData *c = (struct qemu_d3d11_device_SetPrivateData *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11Device2_SetPrivateData(device->host_d3d11, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d11_device_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d11_device_SetPrivateDataInterface(ID3D11Device2 *iface, REFGUID guid, const IUnknown *data)
-{
-    struct qemu_d3d11_device_SetPrivateDataInterface call;
-    struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)device;
-    call.guid = (ULONG_PTR)guid;
-    call.data = (ULONG_PTR)data;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d11_device_SetPrivateDataInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d11_device_SetPrivateDataInterface *c = (struct qemu_d3d11_device_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D11Device2_SetPrivateDataInterface(device->host_d3d11, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    return hr;
 }
 
 #endif
@@ -11075,126 +10913,36 @@ void qemu_d3d10_device_GetExceptionMode(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_device_GetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_device_GetPrivateData(ID3D10Device1 *iface, REFGUID guid, UINT *data_size, void *data)
+static HRESULT STDMETHODCALLTYPE d3d10_device_GetPrivateData(ID3D10Device1 *iface,
+        REFGUID guid, UINT *data_size, void *data)
 {
-    struct qemu_d3d10_device_GetPrivateData call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_GETPRIVATEDATA);
-    call.iface = (ULONG_PTR)device;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = (ULONG_PTR)data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %p, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d11_device_GetPrivateData(&device->ID3D11Device2_iface, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d10_device_GetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d10_device_SetPrivateData(ID3D10Device1 *iface,
+        REFGUID guid, UINT data_size, const void *data)
 {
-    struct qemu_d3d10_device_GetPrivateData *c = (struct qemu_d3d10_device_GetPrivateData *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_GetPrivateData(device->host_d3d10, QEMU_G2H(c->guid), QEMU_G2H(c->data_size), QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d10_device_SetPrivateData
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data_size;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_device_SetPrivateData(ID3D10Device1 *iface, REFGUID guid, UINT data_size, const void *data)
-{
-    struct qemu_d3d10_device_SetPrivateData call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_SETPRIVATEDATA);
-    call.iface = (ULONG_PTR)device;
-    call.guid = (ULONG_PTR)guid;
-    call.data_size = data_size;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data_size %u, data %p.\n", iface, wine_dbgstr_guid(guid), data_size, data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return d3d11_device_SetPrivateData(&device->ID3D11Device2_iface, guid, data_size, data);
 }
 
-#else
-
-void qemu_d3d10_device_SetPrivateData(struct qemu_syscall *call)
+static HRESULT STDMETHODCALLTYPE d3d10_device_SetPrivateDataInterface(ID3D10Device1 *iface,
+        REFGUID guid, const IUnknown *data)
 {
-    struct qemu_d3d10_device_SetPrivateData *c = (struct qemu_d3d10_device_SetPrivateData *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_SetPrivateData(device->host_d3d10, QEMU_G2H(c->guid), c->data_size, QEMU_G2H(c->data));
-}
-
-#endif
-
-struct qemu_d3d10_device_SetPrivateDataInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t guid;
-    uint64_t data;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_device_SetPrivateDataInterface(ID3D10Device1 *iface, REFGUID guid, const IUnknown *data)
-{
-    struct qemu_d3d10_device_SetPrivateDataInterface call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_SETPRIVATEDATAINTERFACE);
-    call.iface = (ULONG_PTR)device;
-    call.guid = (ULONG_PTR)guid;
-    call.data = (ULONG_PTR)data;
+    WINE_TRACE("iface %p, guid %s, data %p.\n", iface, wine_dbgstr_guid(guid), data);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_device_SetPrivateDataInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_SetPrivateDataInterface *c = (struct qemu_d3d10_device_SetPrivateDataInterface *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_SetPrivateDataInterface(device->host_d3d10, QEMU_G2H(c->guid), QEMU_G2H(c->data));
+    return d3d11_device_SetPrivateDataInterface(&device->ID3D11Device2_iface, guid, data);
 }
 
 #endif
@@ -12970,6 +12718,7 @@ void qemu_d3d11_device_guest_init(struct qemu_d3d11_device *device, void *outer_
 void qemu_d3d11_context_guest_init(struct qemu_d3d11_device_context *context)
 {
     context->ID3D11DeviceContext1_iface.lpVtbl = &d3d11_immediate_context_vtbl.vtbl1;
+    wined3d_private_store_init(&context->private_store);
 }
 
 #else
