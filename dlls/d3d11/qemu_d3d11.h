@@ -207,7 +207,6 @@ enum d3d11_calls
     CALL_D3D10_TEXTURE3D_SETPRIVATEDATAINTERFACE,
     CALL_D3D10_TEXTURE3D_UNMAP,
     CALL_D3D10_VERTEX_SHADER_ADDREF,
-    CALL_D3D10_VERTEX_SHADER_GETDEVICE,
     CALL_D3D10_VERTEX_SHADER_GETPRIVATEDATA,
     CALL_D3D10_VERTEX_SHADER_QUERYINTERFACE,
     CALL_D3D10_VERTEX_SHADER_RELEASE,
@@ -947,7 +946,6 @@ void qemu_d3d10_texture3d_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_Unmap(struct qemu_syscall *call);
 void qemu_d3d10_vertex_shader_AddRef(struct qemu_syscall *call);
-void qemu_d3d10_vertex_shader_GetDevice(struct qemu_syscall *call);
 void qemu_d3d10_vertex_shader_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_vertex_shader_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_vertex_shader_Release(struct qemu_syscall *call);

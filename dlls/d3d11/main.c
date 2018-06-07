@@ -811,7 +811,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d10_texture3d_SetPrivateDataInterface,
     qemu_d3d10_texture3d_Unmap,
     qemu_d3d10_vertex_shader_AddRef,
-    qemu_d3d10_vertex_shader_GetDevice,
     qemu_d3d10_vertex_shader_GetPrivateData,
     qemu_d3d10_vertex_shader_QueryInterface,
     qemu_d3d10_vertex_shader_Release,
