@@ -173,7 +173,6 @@ enum d3d11_calls
     CALL_D3D10_QUERY_GETDATA,
     CALL_D3D10_QUERY_GETDATASIZE,
     CALL_D3D10_QUERY_GETDESC,
-    CALL_D3D10_QUERY_GETDEVICE,
     CALL_D3D10_QUERY_GETPRIVATEDATA,
     CALL_D3D10_QUERY_QUERYINTERFACE,
     CALL_D3D10_QUERY_RELEASE,
@@ -1049,7 +1048,6 @@ void qemu_d3d10_query_End(struct qemu_syscall *call);
 void qemu_d3d10_query_GetData(struct qemu_syscall *call);
 void qemu_d3d10_query_GetDataSize(struct qemu_syscall *call);
 void qemu_d3d10_query_GetDesc(struct qemu_syscall *call);
-void qemu_d3d10_query_GetDevice(struct qemu_syscall *call);
 void qemu_d3d10_query_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_query_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_query_Release(struct qemu_syscall *call);
