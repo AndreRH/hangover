@@ -156,7 +156,7 @@ void qemu_d3d11_vertex_shader_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_vertex_shader_AddRef *c = (struct qemu_d3d11_vertex_shader_AddRef *)call;
     struct qemu_d3d11_shader *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11VertexShader_AddRef(shader->host_vs11);
@@ -192,7 +192,7 @@ void qemu_d3d11_vertex_shader_Release(struct qemu_syscall *call)
     struct qemu_d3d11_vertex_shader_Release *c = (struct qemu_d3d11_vertex_shader_Release *)call;
     struct qemu_d3d11_shader *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11VertexShader_Release(shader->host_vs11);
@@ -448,7 +448,7 @@ void qemu_d3d10_vertex_shader_AddRef(struct qemu_syscall *call)
     struct qemu_d3d10_vertex_shader_AddRef *c = (struct qemu_d3d10_vertex_shader_AddRef *)call;
     struct qemu_d3d11_shader *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10VertexShader_AddRef(shader->host_vs10);
@@ -484,7 +484,7 @@ void qemu_d3d10_vertex_shader_Release(struct qemu_syscall *call)
     struct qemu_d3d10_vertex_shader_Release *c = (struct qemu_d3d10_vertex_shader_Release *)call;
     struct qemu_d3d11_shader *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10VertexShader_Release(shader->host_vs10);
@@ -1274,7 +1274,7 @@ void qemu_d3d11_geometry_shader_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_geometry_shader_AddRef *c = (struct qemu_d3d11_geometry_shader_AddRef *)call;
     struct qemu_d3d11_shader *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11GeometryShader_AddRef(shader->host_gs11);
@@ -1310,7 +1310,7 @@ void qemu_d3d11_geometry_shader_Release(struct qemu_syscall *call)
     struct qemu_d3d11_geometry_shader_Release *c = (struct qemu_d3d11_geometry_shader_Release *)call;
     struct qemu_d3d11_shader *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11GeometryShader_Release(shader->host_gs11);
@@ -1566,7 +1566,7 @@ void qemu_d3d10_geometry_shader_AddRef(struct qemu_syscall *call)
     struct qemu_d3d10_geometry_shader_AddRef *c = (struct qemu_d3d10_geometry_shader_AddRef *)call;
     struct qemu_d3d11_shader *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10GeometryShader_AddRef(shader->host_gs10);
@@ -1602,7 +1602,7 @@ void qemu_d3d10_geometry_shader_Release(struct qemu_syscall *call)
     struct qemu_d3d10_geometry_shader_Release *c = (struct qemu_d3d10_geometry_shader_Release *)call;
     struct qemu_d3d11_shader *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10GeometryShader_Release(shader->host_gs10);
@@ -1838,7 +1838,7 @@ void qemu_d3d11_pixel_shader_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_pixel_shader_AddRef *c = (struct qemu_d3d11_pixel_shader_AddRef *)call;
     struct qemu_d3d11_shader *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11PixelShader_AddRef(shader->host_ps11);
@@ -1874,7 +1874,7 @@ void qemu_d3d11_pixel_shader_Release(struct qemu_syscall *call)
     struct qemu_d3d11_pixel_shader_Release *c = (struct qemu_d3d11_pixel_shader_Release *)call;
     struct qemu_d3d11_shader *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11PixelShader_Release(shader->host_ps11);
@@ -2130,7 +2130,7 @@ void qemu_d3d10_pixel_shader_AddRef(struct qemu_syscall *call)
     struct qemu_d3d10_pixel_shader_AddRef *c = (struct qemu_d3d10_pixel_shader_AddRef *)call;
     struct qemu_d3d11_shader *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10PixelShader_AddRef(shader->host_ps10);
@@ -2166,7 +2166,7 @@ void qemu_d3d10_pixel_shader_Release(struct qemu_syscall *call)
     struct qemu_d3d10_pixel_shader_Release *c = (struct qemu_d3d10_pixel_shader_Release *)call;
     struct qemu_d3d11_shader *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10PixelShader_Release(shader->host_ps10);
