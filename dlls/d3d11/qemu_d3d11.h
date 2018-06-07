@@ -1364,6 +1364,7 @@ DEFINE_GUID(IID_d3d11_priv_data, 0x2b676c65, 0x7123, 0x4138, 0xb6, 0xdb, 0x96, 0
 
 struct qemu_d3d11_device *device_from_host(ID3D11Device2 *host);
 struct qemu_d3d11_state *state_from_host(ID3D11DeviceChild *host);
+struct qemu_d3d11_view *view_from_host(ID3D11DeviceChild *host);
 
 extern uint64_t d3d11_device_context_guest_destroy;
 extern uint64_t d3d11_texture_guest_destroy;
