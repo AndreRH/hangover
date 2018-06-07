@@ -22,7 +22,16 @@
 
 enum d3d11_calls
 {
-    CALL_D3D10_BUFFER_ADDREF = 0,
+    CALL_D3D10_BLEND_STATE_ADDREF = 0,
+    CALL_D3D10_BLEND_STATE_GETDESC,
+    CALL_D3D10_BLEND_STATE_GETDESC1,
+    CALL_D3D10_BLEND_STATE_GETDEVICE,
+    CALL_D3D10_BLEND_STATE_GETPRIVATEDATA,
+    CALL_D3D10_BLEND_STATE_QUERYINTERFACE,
+    CALL_D3D10_BLEND_STATE_RELEASE,
+    CALL_D3D10_BLEND_STATE_SETPRIVATEDATA,
+    CALL_D3D10_BLEND_STATE_SETPRIVATEDATAINTERFACE,
+    CALL_D3D10_BUFFER_ADDREF,
     CALL_D3D10_BUFFER_GETDESC,
     CALL_D3D10_BUFFER_GETEVICTIONPRIORITY,
     CALL_D3D10_BUFFER_GETPRIVATEDATA,
@@ -34,6 +43,14 @@ enum d3d11_calls
     CALL_D3D10_BUFFER_SETPRIVATEDATA,
     CALL_D3D10_BUFFER_SETPRIVATEDATAINTERFACE,
     CALL_D3D10_BUFFER_UNMAP,
+    CALL_D3D10_DEPTHSTENCIL_STATE_ADDREF,
+    CALL_D3D10_DEPTHSTENCIL_STATE_GETDESC,
+    CALL_D3D10_DEPTHSTENCIL_STATE_GETDEVICE,
+    CALL_D3D10_DEPTHSTENCIL_STATE_GETPRIVATEDATA,
+    CALL_D3D10_DEPTHSTENCIL_STATE_QUERYINTERFACE,
+    CALL_D3D10_DEPTHSTENCIL_STATE_RELEASE,
+    CALL_D3D10_DEPTHSTENCIL_STATE_SETPRIVATEDATA,
+    CALL_D3D10_DEPTHSTENCIL_STATE_SETPRIVATEDATAINTERFACE,
     CALL_D3D10_DEPTHSTENCIL_VIEW_ADDREF,
     CALL_D3D10_DEPTHSTENCIL_VIEW_GETDESC,
     CALL_D3D10_DEPTHSTENCIL_VIEW_GETPRIVATEDATA,
@@ -152,6 +169,14 @@ enum d3d11_calls
     CALL_D3D10_PIXEL_SHADER_RELEASE,
     CALL_D3D10_PIXEL_SHADER_SETPRIVATEDATA,
     CALL_D3D10_PIXEL_SHADER_SETPRIVATEDATAINTERFACE,
+    CALL_D3D10_RASTERIZER_STATE_ADDREF,
+    CALL_D3D10_RASTERIZER_STATE_GETDESC,
+    CALL_D3D10_RASTERIZER_STATE_GETDEVICE,
+    CALL_D3D10_RASTERIZER_STATE_GETPRIVATEDATA,
+    CALL_D3D10_RASTERIZER_STATE_QUERYINTERFACE,
+    CALL_D3D10_RASTERIZER_STATE_RELEASE,
+    CALL_D3D10_RASTERIZER_STATE_SETPRIVATEDATA,
+    CALL_D3D10_RASTERIZER_STATE_SETPRIVATEDATAINTERFACE,
     CALL_D3D10_RENDERTARGET_VIEW_ADDREF,
     CALL_D3D10_RENDERTARGET_VIEW_GETDESC,
     CALL_D3D10_RENDERTARGET_VIEW_GETPRIVATEDATA,
@@ -160,6 +185,14 @@ enum d3d11_calls
     CALL_D3D10_RENDERTARGET_VIEW_RELEASE,
     CALL_D3D10_RENDERTARGET_VIEW_SETPRIVATEDATA,
     CALL_D3D10_RENDERTARGET_VIEW_SETPRIVATEDATAINTERFACE,
+    CALL_D3D10_SAMPLER_STATE_ADDREF,
+    CALL_D3D10_SAMPLER_STATE_GETDESC,
+    CALL_D3D10_SAMPLER_STATE_GETDEVICE,
+    CALL_D3D10_SAMPLER_STATE_GETPRIVATEDATA,
+    CALL_D3D10_SAMPLER_STATE_QUERYINTERFACE,
+    CALL_D3D10_SAMPLER_STATE_RELEASE,
+    CALL_D3D10_SAMPLER_STATE_SETPRIVATEDATA,
+    CALL_D3D10_SAMPLER_STATE_SETPRIVATEDATAINTERFACE,
     CALL_D3D10_SHADER_RESOURCE_VIEW_ADDREF,
     CALL_D3D10_SHADER_RESOURCE_VIEW_GETDESC,
     CALL_D3D10_SHADER_RESOURCE_VIEW_GETDESC1,
@@ -210,6 +243,14 @@ enum d3d11_calls
     CALL_D3D10_VERTEX_SHADER_RELEASE,
     CALL_D3D10_VERTEX_SHADER_SETPRIVATEDATA,
     CALL_D3D10_VERTEX_SHADER_SETPRIVATEDATAINTERFACE,
+    CALL_D3D11_BLEND_STATE_ADDREF,
+    CALL_D3D11_BLEND_STATE_GETDESC,
+    CALL_D3D11_BLEND_STATE_GETDEVICE,
+    CALL_D3D11_BLEND_STATE_GETPRIVATEDATA,
+    CALL_D3D11_BLEND_STATE_QUERYINTERFACE,
+    CALL_D3D11_BLEND_STATE_RELEASE,
+    CALL_D3D11_BLEND_STATE_SETPRIVATEDATA,
+    CALL_D3D11_BLEND_STATE_SETPRIVATEDATAINTERFACE,
     CALL_D3D11_BUFFER_ADDREF,
     CALL_D3D11_BUFFER_GETDESC,
     CALL_D3D11_BUFFER_GETDEVICE,
@@ -237,6 +278,14 @@ enum d3d11_calls
     CALL_D3D11_COMPUTE_SHADER_RELEASE,
     CALL_D3D11_COMPUTE_SHADER_SETPRIVATEDATA,
     CALL_D3D11_COMPUTE_SHADER_SETPRIVATEDATAINTERFACE,
+    CALL_D3D11_DEPTHSTENCIL_STATE_ADDREF,
+    CALL_D3D11_DEPTHSTENCIL_STATE_GETDESC,
+    CALL_D3D11_DEPTHSTENCIL_STATE_GETDEVICE,
+    CALL_D3D11_DEPTHSTENCIL_STATE_GETPRIVATEDATA,
+    CALL_D3D11_DEPTHSTENCIL_STATE_QUERYINTERFACE,
+    CALL_D3D11_DEPTHSTENCIL_STATE_RELEASE,
+    CALL_D3D11_DEPTHSTENCIL_STATE_SETPRIVATEDATA,
+    CALL_D3D11_DEPTHSTENCIL_STATE_SETPRIVATEDATAINTERFACE,
     CALL_D3D11_DEPTHSTENCIL_VIEW_ADDREF,
     CALL_D3D11_DEPTHSTENCIL_VIEW_GETDESC,
     CALL_D3D11_DEPTHSTENCIL_VIEW_GETDEVICE,
@@ -459,6 +508,14 @@ enum d3d11_calls
     CALL_D3D11_PIXEL_SHADER_RELEASE,
     CALL_D3D11_PIXEL_SHADER_SETPRIVATEDATA,
     CALL_D3D11_PIXEL_SHADER_SETPRIVATEDATAINTERFACE,
+    CALL_D3D11_RASTERIZER_STATE_ADDREF,
+    CALL_D3D11_RASTERIZER_STATE_GETDESC,
+    CALL_D3D11_RASTERIZER_STATE_GETDEVICE,
+    CALL_D3D11_RASTERIZER_STATE_GETPRIVATEDATA,
+    CALL_D3D11_RASTERIZER_STATE_QUERYINTERFACE,
+    CALL_D3D11_RASTERIZER_STATE_RELEASE,
+    CALL_D3D11_RASTERIZER_STATE_SETPRIVATEDATA,
+    CALL_D3D11_RASTERIZER_STATE_SETPRIVATEDATAINTERFACE,
     CALL_D3D11_RENDERTARGET_VIEW_ADDREF,
     CALL_D3D11_RENDERTARGET_VIEW_GETDESC,
     CALL_D3D11_RENDERTARGET_VIEW_GETDEVICE,
@@ -468,6 +525,14 @@ enum d3d11_calls
     CALL_D3D11_RENDERTARGET_VIEW_RELEASE,
     CALL_D3D11_RENDERTARGET_VIEW_SETPRIVATEDATA,
     CALL_D3D11_RENDERTARGET_VIEW_SETPRIVATEDATAINTERFACE,
+    CALL_D3D11_SAMPLER_STATE_ADDREF,
+    CALL_D3D11_SAMPLER_STATE_GETDESC,
+    CALL_D3D11_SAMPLER_STATE_GETDEVICE,
+    CALL_D3D11_SAMPLER_STATE_GETPRIVATEDATA,
+    CALL_D3D11_SAMPLER_STATE_QUERYINTERFACE,
+    CALL_D3D11_SAMPLER_STATE_RELEASE,
+    CALL_D3D11_SAMPLER_STATE_SETPRIVATEDATA,
+    CALL_D3D11_SAMPLER_STATE_SETPRIVATEDATAINTERFACE,
     CALL_D3D11_SHADER_RESOURCE_VIEW_ADDREF,
     CALL_D3D11_SHADER_RESOURCE_VIEW_GETDESC,
     CALL_D3D11_SHADER_RESOURCE_VIEW_GETDEVICE,
@@ -708,6 +773,43 @@ struct qemu_d3d11_class_linkage
     ULONG refcount;
 };
 
+struct qemu_d3d11_state
+{
+    /* Guest fields */
+    union
+    {
+        ID3D11BlendState ID3D11BlendState_iface;
+        ID3D11DepthStencilState ID3D11DepthStencilState_iface;
+        ID3D11RasterizerState ID3D11RasterizerState_iface;
+        ID3D11SamplerState ID3D11SamplerState_iface;
+    };
+    union
+    {
+        ID3D10BlendState1 ID3D10BlendState1_iface;
+        ID3D10DepthStencilState ID3D10DepthStencilState_iface;
+        ID3D10RasterizerState ID3D10RasterizerState_iface;
+        ID3D10SamplerState ID3D10SamplerState_iface;
+    };
+
+    /* Host fields */
+    union
+    {
+        ID3D11BlendState *host_bs11;
+        ID3D11DepthStencilState *host_ds11;
+        ID3D11RasterizerState *host_rs11;
+        ID3D11SamplerState *host_ss11;
+    };
+    union
+    {
+        ID3D10BlendState1 *host_bs10;
+        ID3D10DepthStencilState *host_ds10;
+        ID3D10RasterizerState *host_rs10;
+        ID3D10SamplerState *host_ss10;
+    };
+    IUnknown priv_data_iface;
+    ULONG refcount;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 enum D3D11_USAGE d3d11_usage_from_d3d10_usage(enum D3D10_USAGE usage);
@@ -759,6 +861,15 @@ void qemu_d3d11_geometry_shader_guest_init(struct qemu_d3d11_shader *shader);
 
 extern const struct qemu_ops *qemu_ops;
 
+void qemu_d3d10_blend_state_AddRef(struct qemu_syscall *call);
+void qemu_d3d10_blend_state_GetDesc(struct qemu_syscall *call);
+void qemu_d3d10_blend_state_GetDesc1(struct qemu_syscall *call);
+void qemu_d3d10_blend_state_GetDevice(struct qemu_syscall *call);
+void qemu_d3d10_blend_state_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d10_blend_state_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d10_blend_state_Release(struct qemu_syscall *call);
+void qemu_d3d10_blend_state_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d10_blend_state_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d10_buffer_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_buffer_GetDesc(struct qemu_syscall *call);
 void qemu_d3d10_buffer_GetDevice(struct qemu_syscall *call);
@@ -772,6 +883,14 @@ void qemu_d3d10_buffer_SetEvictionPriority(struct qemu_syscall *call);
 void qemu_d3d10_buffer_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_buffer_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d10_buffer_Unmap(struct qemu_syscall *call);
+void qemu_d3d10_depthstencil_state_AddRef(struct qemu_syscall *call);
+void qemu_d3d10_depthstencil_state_GetDesc(struct qemu_syscall *call);
+void qemu_d3d10_depthstencil_state_GetDevice(struct qemu_syscall *call);
+void qemu_d3d10_depthstencil_state_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d10_depthstencil_state_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d10_depthstencil_state_Release(struct qemu_syscall *call);
+void qemu_d3d10_depthstencil_state_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d10_depthstencil_state_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d10_depthstencil_view_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_depthstencil_view_GetDesc(struct qemu_syscall *call);
 void qemu_d3d10_depthstencil_view_GetPrivateData(struct qemu_syscall *call);
@@ -890,6 +1009,14 @@ void qemu_d3d10_pixel_shader_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_pixel_shader_Release(struct qemu_syscall *call);
 void qemu_d3d10_pixel_shader_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_pixel_shader_SetPrivateDataInterface(struct qemu_syscall *call);
+void qemu_d3d10_rasterizer_state_AddRef(struct qemu_syscall *call);
+void qemu_d3d10_rasterizer_state_GetDesc(struct qemu_syscall *call);
+void qemu_d3d10_rasterizer_state_GetDevice(struct qemu_syscall *call);
+void qemu_d3d10_rasterizer_state_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d10_rasterizer_state_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d10_rasterizer_state_Release(struct qemu_syscall *call);
+void qemu_d3d10_rasterizer_state_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d10_rasterizer_state_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d10_rendertarget_view_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_rendertarget_view_GetDesc(struct qemu_syscall *call);
 void qemu_d3d10_rendertarget_view_GetPrivateData(struct qemu_syscall *call);
@@ -898,6 +1025,14 @@ void qemu_d3d10_rendertarget_view_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_rendertarget_view_Release(struct qemu_syscall *call);
 void qemu_d3d10_rendertarget_view_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_rendertarget_view_SetPrivateDataInterface(struct qemu_syscall *call);
+void qemu_d3d10_sampler_state_AddRef(struct qemu_syscall *call);
+void qemu_d3d10_sampler_state_GetDesc(struct qemu_syscall *call);
+void qemu_d3d10_sampler_state_GetDevice(struct qemu_syscall *call);
+void qemu_d3d10_sampler_state_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d10_sampler_state_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d10_sampler_state_Release(struct qemu_syscall *call);
+void qemu_d3d10_sampler_state_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d10_sampler_state_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d10_shader_resource_view_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_shader_resource_view_GetDesc(struct qemu_syscall *call);
 void qemu_d3d10_shader_resource_view_GetDesc1(struct qemu_syscall *call);
@@ -948,6 +1083,14 @@ void qemu_d3d10_vertex_shader_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_vertex_shader_Release(struct qemu_syscall *call);
 void qemu_d3d10_vertex_shader_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_vertex_shader_SetPrivateDataInterface(struct qemu_syscall *call);
+void qemu_d3d11_blend_state_AddRef(struct qemu_syscall *call);
+void qemu_d3d11_blend_state_GetDesc(struct qemu_syscall *call);
+void qemu_d3d11_blend_state_GetDevice(struct qemu_syscall *call);
+void qemu_d3d11_blend_state_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d11_blend_state_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d11_blend_state_Release(struct qemu_syscall *call);
+void qemu_d3d11_blend_state_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d11_blend_state_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d11_buffer_AddRef(struct qemu_syscall *call);
 void qemu_d3d11_buffer_GetDesc(struct qemu_syscall *call);
 void qemu_d3d11_buffer_GetDevice(struct qemu_syscall *call);
@@ -975,6 +1118,14 @@ void qemu_d3d11_compute_shader_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d11_compute_shader_Release(struct qemu_syscall *call);
 void qemu_d3d11_compute_shader_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d11_compute_shader_SetPrivateDataInterface(struct qemu_syscall *call);
+void qemu_d3d11_depthstencil_state_AddRef(struct qemu_syscall *call);
+void qemu_d3d11_depthstencil_state_GetDesc(struct qemu_syscall *call);
+void qemu_d3d11_depthstencil_state_GetDevice(struct qemu_syscall *call);
+void qemu_d3d11_depthstencil_state_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d11_depthstencil_state_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d11_depthstencil_state_Release(struct qemu_syscall *call);
+void qemu_d3d11_depthstencil_state_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d11_depthstencil_state_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d11_depthstencil_view_AddRef(struct qemu_syscall *call);
 void qemu_d3d11_depthstencil_view_GetDesc(struct qemu_syscall *call);
 void qemu_d3d11_depthstencil_view_GetDevice(struct qemu_syscall *call);
@@ -1197,6 +1348,14 @@ void qemu_d3d11_pixel_shader_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d11_pixel_shader_Release(struct qemu_syscall *call);
 void qemu_d3d11_pixel_shader_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d11_pixel_shader_SetPrivateDataInterface(struct qemu_syscall *call);
+void qemu_d3d11_rasterizer_state_AddRef(struct qemu_syscall *call);
+void qemu_d3d11_rasterizer_state_GetDesc(struct qemu_syscall *call);
+void qemu_d3d11_rasterizer_state_GetDevice(struct qemu_syscall *call);
+void qemu_d3d11_rasterizer_state_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d11_rasterizer_state_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d11_rasterizer_state_Release(struct qemu_syscall *call);
+void qemu_d3d11_rasterizer_state_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d11_rasterizer_state_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d11_rendertarget_view_AddRef(struct qemu_syscall *call);
 void qemu_d3d11_rendertarget_view_GetDesc(struct qemu_syscall *call);
 void qemu_d3d11_rendertarget_view_GetDevice(struct qemu_syscall *call);
@@ -1206,6 +1365,14 @@ void qemu_d3d11_rendertarget_view_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d11_rendertarget_view_Release(struct qemu_syscall *call);
 void qemu_d3d11_rendertarget_view_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d11_rendertarget_view_SetPrivateDataInterface(struct qemu_syscall *call);
+void qemu_d3d11_sampler_state_AddRef(struct qemu_syscall *call);
+void qemu_d3d11_sampler_state_GetDesc(struct qemu_syscall *call);
+void qemu_d3d11_sampler_state_GetDevice(struct qemu_syscall *call);
+void qemu_d3d11_sampler_state_GetPrivateData(struct qemu_syscall *call);
+void qemu_d3d11_sampler_state_QueryInterface(struct qemu_syscall *call);
+void qemu_d3d11_sampler_state_Release(struct qemu_syscall *call);
+void qemu_d3d11_sampler_state_SetPrivateData(struct qemu_syscall *call);
+void qemu_d3d11_sampler_state_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d11_shader_resource_view_AddRef(struct qemu_syscall *call);
 void qemu_d3d11_shader_resource_view_GetDesc(struct qemu_syscall *call);
 void qemu_d3d11_shader_resource_view_GetDevice(struct qemu_syscall *call);
