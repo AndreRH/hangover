@@ -921,6 +921,19 @@ void qemu_d3d11_query_guest_init(struct qemu_d3d11_query *query)
     query->ID3D10Query_iface.lpVtbl = &d3d10_query_vtbl;
 }
 
+struct qemu_d3d11_query *unsafe_impl_from_ID3D11Query(ID3D11Query *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_query_vtbl);*/
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_query, ID3D11Query_iface);
+}
+
+struct qemu_d3d11_query *unsafe_impl_from_ID3D11Asynchronous(ID3D11Asynchronous *iface)
+{
+    return unsafe_impl_from_ID3D11Query((ID3D11Query *)iface);
+}
+
 #else
 
 static inline struct qemu_d3d11_query *impl_from_priv_data(IUnknown *iface)

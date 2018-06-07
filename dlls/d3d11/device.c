@@ -1226,14 +1226,16 @@ struct qemu_d3d11_immediate_context_GetData
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_GetData(ID3D11DeviceContext1 *iface, ID3D11Asynchronous *asynchronous, void *data, UINT data_size, UINT data_flags)
+static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_GetData(ID3D11DeviceContext1 *iface,
+        ID3D11Asynchronous *asynchronous, void *data, UINT data_size, UINT data_flags)
 {
     struct qemu_d3d11_immediate_context_GetData call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_query *query = unsafe_impl_from_ID3D11Asynchronous(asynchronous);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GETDATA);
     call.iface = (ULONG_PTR)context;
-    call.asynchronous = (ULONG_PTR)asynchronous;
+    call.asynchronous = (ULONG_PTR)query;
     call.data = (ULONG_PTR)data;
     call.data_size = data_size;
     call.data_flags = data_flags;
@@ -1249,11 +1251,14 @@ void qemu_d3d11_immediate_context_GetData(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GetData *c = (struct qemu_d3d11_immediate_context_GetData *)call;
     struct qemu_d3d11_device_context *context;
+    struct qemu_d3d11_query *query;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    query = QEMU_G2H(c->asynchronous);
 
-    c->super.iret = ID3D11DeviceContext1_GetData(context->host, QEMU_G2H(c->asynchronous), QEMU_G2H(c->data), c->data_size, c->data_flags);
+    c->super.iret = ID3D11DeviceContext1_GetData(context->host, query ? (ID3D11Asynchronous *)query->host11 : NULL,
+            QEMU_G2H(c->data), c->data_size, c->data_flags);
 }
 
 #endif
