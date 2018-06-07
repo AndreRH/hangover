@@ -2910,3 +2910,222 @@ void qemu_d3d11_class_linkage_CreateClassInstance(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+static struct ID3D11VertexShaderVtbl d3d11_vertex_shader_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_vertex_shader_QueryInterface,
+    d3d11_vertex_shader_AddRef,
+    d3d11_vertex_shader_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_vertex_shader_GetDevice,
+    d3d11_vertex_shader_GetPrivateData,
+    d3d11_vertex_shader_SetPrivateData,
+    d3d11_vertex_shader_SetPrivateDataInterface,
+};
+
+static struct ID3D10VertexShaderVtbl d3d10_vertex_shader_vtbl =
+{
+    /* IUnknown methods */
+    d3d10_vertex_shader_QueryInterface,
+    d3d10_vertex_shader_AddRef,
+    d3d10_vertex_shader_Release,
+    /* ID3D10DeviceChild methods */
+    d3d10_vertex_shader_GetDevice,
+    d3d10_vertex_shader_GetPrivateData,
+    d3d10_vertex_shader_SetPrivateData,
+    d3d10_vertex_shader_SetPrivateDataInterface,
+};
+
+static struct ID3D11HullShaderVtbl d3d11_hull_shader_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_hull_shader_QueryInterface,
+    d3d11_hull_shader_AddRef,
+    d3d11_hull_shader_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_hull_shader_GetDevice,
+    d3d11_hull_shader_GetPrivateData,
+    d3d11_hull_shader_SetPrivateData,
+    d3d11_hull_shader_SetPrivateDataInterface,
+};
+
+static struct ID3D11DomainShaderVtbl d3d11_domain_shader_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_domain_shader_QueryInterface,
+    d3d11_domain_shader_AddRef,
+    d3d11_domain_shader_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_domain_shader_GetDevice,
+    d3d11_domain_shader_GetPrivateData,
+    d3d11_domain_shader_SetPrivateData,
+    d3d11_domain_shader_SetPrivateDataInterface,
+};
+
+static struct ID3D11GeometryShaderVtbl d3d11_geometry_shader_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_geometry_shader_QueryInterface,
+    d3d11_geometry_shader_AddRef,
+    d3d11_geometry_shader_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_geometry_shader_GetDevice,
+    d3d11_geometry_shader_GetPrivateData,
+    d3d11_geometry_shader_SetPrivateData,
+    d3d11_geometry_shader_SetPrivateDataInterface,
+};
+
+static struct ID3D10GeometryShaderVtbl d3d10_geometry_shader_vtbl =
+{
+    /* IUnknown methods */
+    d3d10_geometry_shader_QueryInterface,
+    d3d10_geometry_shader_AddRef,
+    d3d10_geometry_shader_Release,
+    /* ID3D10DeviceChild methods */
+    d3d10_geometry_shader_GetDevice,
+    d3d10_geometry_shader_GetPrivateData,
+    d3d10_geometry_shader_SetPrivateData,
+    d3d10_geometry_shader_SetPrivateDataInterface,
+};
+
+static struct ID3D11PixelShaderVtbl d3d11_pixel_shader_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_pixel_shader_QueryInterface,
+    d3d11_pixel_shader_AddRef,
+    d3d11_pixel_shader_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_pixel_shader_GetDevice,
+    d3d11_pixel_shader_GetPrivateData,
+    d3d11_pixel_shader_SetPrivateData,
+    d3d11_pixel_shader_SetPrivateDataInterface,
+};
+
+static struct ID3D10PixelShaderVtbl d3d10_pixel_shader_vtbl =
+{
+    /* IUnknown methods */
+    d3d10_pixel_shader_QueryInterface,
+    d3d10_pixel_shader_AddRef,
+    d3d10_pixel_shader_Release,
+    /* ID3D10DeviceChild methods */
+    d3d10_pixel_shader_GetDevice,
+    d3d10_pixel_shader_GetPrivateData,
+    d3d10_pixel_shader_SetPrivateData,
+    d3d10_pixel_shader_SetPrivateDataInterface,
+};
+
+static struct ID3D11ComputeShaderVtbl d3d11_compute_shader_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_compute_shader_QueryInterface,
+    d3d11_compute_shader_AddRef,
+    d3d11_compute_shader_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_compute_shader_GetDevice,
+    d3d11_compute_shader_GetPrivateData,
+    d3d11_compute_shader_SetPrivateData,
+    d3d11_compute_shader_SetPrivateDataInterface,
+};
+
+static struct ID3D11ClassLinkageVtbl d3d11_class_linkage_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_class_linkage_QueryInterface,
+    d3d11_class_linkage_AddRef,
+    d3d11_class_linkage_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_class_linkage_GetDevice,
+    d3d11_class_linkage_GetPrivateData,
+    d3d11_class_linkage_SetPrivateData,
+    d3d11_class_linkage_SetPrivateDataInterface,
+    /* ID3D11ClassLinkage methods */
+    d3d11_class_linkage_GetClassInstance,
+    d3d11_class_linkage_CreateClassInstance,
+};
+
+void qemu_d3d11_pixel_shader_guest_init(struct qemu_d3d11_shader *shader)
+{
+    shader->ID3D11PixelShader_iface.lpVtbl = &d3d11_pixel_shader_vtbl;
+    shader->ID3D10PixelShader_iface.lpVtbl = &d3d10_pixel_shader_vtbl;
+}
+
+#else
+
+static inline struct qemu_d3d11_shader *impl_from_priv_data(IUnknown *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_shader, priv_data_iface);
+}
+
+static HRESULT STDMETHODCALLTYPE d3d11_shader_priv_data_QueryInterface(IUnknown *iface, REFIID riid, void **out)
+{
+    WINE_ERR("Unexpected call\n");
+    *out = NULL;
+    return E_NOINTERFACE;
+}
+
+static ULONG STDMETHODCALLTYPE d3d11_shader_priv_data_AddRef(IUnknown *iface)
+{
+    struct qemu_d3d11_shader *shader = impl_from_priv_data(iface);
+    ULONG refcount = InterlockedIncrement(&shader->refcount);
+
+    WINE_TRACE("%p increasing refcount to %u.\n", shader, refcount);
+
+    return refcount;
+}
+
+static ULONG STDMETHODCALLTYPE d3d11_shader_priv_data_Release(IUnknown *iface)
+{
+    struct qemu_d3d11_shader *shader = impl_from_priv_data(iface);
+    ULONG refcount = InterlockedDecrement(&shader->refcount);
+
+    WINE_TRACE("%p decreasing refcount to %u.\n", shader, refcount);
+
+    if (!refcount)
+    {
+        WINE_TRACE("Destroying shader wrapper %p for host shader %p.\n", shader, shader->host_vs11);
+        HeapFree(GetProcessHeap(), 0, shader);
+    }
+
+    return refcount;
+}
+
+static struct IUnknownVtbl priv_data_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_shader_priv_data_QueryInterface,
+    d3d11_shader_priv_data_AddRef,
+    d3d11_shader_priv_data_Release,
+};
+
+HRESULT qemu_d3d11_shader_create(ID3D11DeviceChild *host, const IID *d3d10iface, struct qemu_d3d11_shader **shader)
+{
+    struct qemu_d3d11_shader *obj;
+    HRESULT hr;
+
+    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
+    if (!obj)
+    {
+        WINE_WARN("Out of memory\n");
+        return E_OUTOFMEMORY;
+    }
+
+    obj->host_vs11 = (void *)host;
+    if (d3d10iface)
+    {
+        hr = ID3D11DeviceChild_QueryInterface(host, d3d10iface, (void **)&obj->host_vs10);
+        if (FAILED(hr))
+            WINE_ERR("Failed to QI %s.\n", wine_dbgstr_guid(d3d10iface));
+        IUnknown_Release(obj->host_vs10);
+    }
+
+    obj->priv_data_iface.lpVtbl = &priv_data_vtbl;
+    /* Leave the ref at 0, we want the host obj to own the only / final reference. */
+    ID3D11DeviceChild_SetPrivateDataInterface(host, &IID_d3d11_priv_data, &obj->priv_data_iface);
+
+    *shader = obj;
+    return S_OK;
+}
+
+#endif

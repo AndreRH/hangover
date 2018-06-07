@@ -754,6 +754,7 @@ void qemu_d3d11_buffer_guest_init(struct qemu_d3d11_buffer *buffer);
 void qemu_d3d11_depth_stencil_view_guest_init(struct qemu_d3d11_view *view);
 void qemu_d3d11_shader_resource_view_guest_init(struct qemu_d3d11_view *view);
 void qemu_d3d11_render_target_view_guest_init(struct qemu_d3d11_view *view);
+void qemu_d3d11_pixel_shader_guest_init(struct qemu_d3d11_shader *shader);
 
 #else
 
@@ -1276,6 +1277,7 @@ HRESULT qemu_d3d11_texture_create(ID3D11Resource *host, struct qemu_d3d11_device
         uint64_t *dxgi_surface, unsigned int dim, struct qemu_d3d11_texture **texture);
 HRESULT qemu_d3d11_buffer_create(ID3D11Buffer *host, struct qemu_d3d11_buffer **buffer);
 HRESULT qemu_d3d11_view_create(ID3D11View *host, const IID *d3d10iface, struct qemu_d3d11_view **view);
+HRESULT qemu_d3d11_shader_create(ID3D11DeviceChild *host, const IID *d3d10iface, struct qemu_d3d11_shader **shader);
 
 DEFINE_GUID(IID_d3d11_priv_data, 0x2b676c65, 0x7123, 0x4138, 0xb6, 0xdb, 0x96, 0xfe, 0xa9, 0xae, 0x00, 0x43);
 
