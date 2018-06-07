@@ -870,7 +870,7 @@ void qemu_d3d11_rendertarget_view_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_rendertarget_view_AddRef *c = (struct qemu_d3d11_rendertarget_view_AddRef *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11RenderTargetView_AddRef(view->host_rt11);
@@ -906,7 +906,7 @@ void qemu_d3d11_rendertarget_view_Release(struct qemu_syscall *call)
     struct qemu_d3d11_rendertarget_view_Release *c = (struct qemu_d3d11_rendertarget_view_Release *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11RenderTargetView_Release(view->host_rt11);
@@ -1139,7 +1139,8 @@ struct qemu_d3d11_rendertarget_view_GetDesc
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_rendertarget_view_GetDesc(ID3D11RenderTargetView *iface, D3D11_RENDER_TARGET_VIEW_DESC *desc)
+static void STDMETHODCALLTYPE d3d11_rendertarget_view_GetDesc(ID3D11RenderTargetView *iface,
+        D3D11_RENDER_TARGET_VIEW_DESC *desc)
 {
     struct qemu_d3d11_rendertarget_view_GetDesc call;
     struct qemu_d3d11_view *view = impl_from_ID3D11RenderTargetView(iface);
@@ -1158,7 +1159,7 @@ void qemu_d3d11_rendertarget_view_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d11_rendertarget_view_GetDesc *c = (struct qemu_d3d11_rendertarget_view_GetDesc *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     ID3D11RenderTargetView_GetDesc(view->host_rt11, QEMU_G2H(c->desc));
@@ -1234,7 +1235,7 @@ void qemu_d3d10_rendertarget_view_AddRef(struct qemu_syscall *call)
     struct qemu_d3d10_rendertarget_view_AddRef *c = (struct qemu_d3d10_rendertarget_view_AddRef *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10RenderTargetView_AddRef(view->host_rt10);
@@ -1270,7 +1271,7 @@ void qemu_d3d10_rendertarget_view_Release(struct qemu_syscall *call)
     struct qemu_d3d10_rendertarget_view_Release *c = (struct qemu_d3d10_rendertarget_view_Release *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10RenderTargetView_Release(view->host_rt10);
@@ -1447,7 +1448,8 @@ struct qemu_d3d10_rendertarget_view_GetDesc
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_rendertarget_view_GetDesc(ID3D10RenderTargetView *iface, D3D10_RENDER_TARGET_VIEW_DESC *desc)
+static void STDMETHODCALLTYPE d3d10_rendertarget_view_GetDesc(ID3D10RenderTargetView *iface,
+        D3D10_RENDER_TARGET_VIEW_DESC *desc)
 {
     struct qemu_d3d10_rendertarget_view_GetDesc call;
     struct qemu_d3d11_view *view = impl_from_ID3D10RenderTargetView(iface);
@@ -1466,7 +1468,7 @@ void qemu_d3d10_rendertarget_view_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d10_rendertarget_view_GetDesc *c = (struct qemu_d3d10_rendertarget_view_GetDesc *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     ID3D10RenderTargetView_GetDesc(view->host_rt10, QEMU_G2H(c->desc));
