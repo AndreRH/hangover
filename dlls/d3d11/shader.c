@@ -3095,6 +3095,86 @@ void qemu_d3d11_geometry_shader_guest_init(struct qemu_d3d11_shader *shader)
     shader->ID3D10GeometryShader_iface.lpVtbl = &d3d10_geometry_shader_vtbl;
 }
 
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D11VertexShader(ID3D11VertexShader *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_vertex_shader_vtbl);*/
+
+    return impl_from_ID3D11VertexShader(iface);
+}
+
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D10VertexShader(ID3D10VertexShader *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d10_vertex_shader_vtbl);*/
+
+    return impl_from_ID3D10VertexShader(iface);
+}
+
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D11HullShader(ID3D11HullShader *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_hull_shader_vtbl);*/
+
+    return impl_from_ID3D11HullShader(iface);
+}
+
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D11DomainShader(ID3D11DomainShader *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_domain_shader_vtbl);*/
+
+    return impl_from_ID3D11DomainShader(iface);
+}
+
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D11GeometryShader(ID3D11GeometryShader *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_geometry_shader_vtbl);*/
+
+    return impl_from_ID3D11GeometryShader(iface);
+}
+
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D10GeometryShader(ID3D10GeometryShader *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d10_geometry_shader_vtbl);*/
+
+    return impl_from_ID3D10GeometryShader(iface);
+}
+
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D11PixelShader(ID3D11PixelShader *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_pixel_shader_vtbl);*/
+
+    return impl_from_ID3D11PixelShader(iface);
+}
+
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D10PixelShader(ID3D10PixelShader *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d10_pixel_shader_vtbl);*/
+
+    return impl_from_ID3D10PixelShader(iface);
+}
+
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D11ComputeShader(ID3D11ComputeShader *iface)
+{
+    if (!iface)
+        return NULL;
+    /* assert(iface->lpVtbl == &d3d11_compute_shader_vtbl); */
+
+    return impl_from_ID3D11ComputeShader(iface);
+}
 
 #else
 

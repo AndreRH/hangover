@@ -873,6 +873,15 @@ struct qemu_d3d11_texture *unsafe_impl_from_ID3D10Texture3D(ID3D10Texture3D *ifa
 struct qemu_d3d11_texture *unsafe_impl_from_ID3D11Texture3D(ID3D11Texture3D *iface);
 struct qemu_d3d11_query *unsafe_impl_from_ID3D11Query(ID3D11Query *iface);
 struct qemu_d3d11_query *unsafe_impl_from_ID3D11Asynchronous(ID3D11Asynchronous *iface);
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D11VertexShader(ID3D11VertexShader *iface);
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D10VertexShader(ID3D10VertexShader *iface);
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D11HullShader(ID3D11HullShader *iface);
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D11DomainShader(ID3D11DomainShader *iface);
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D11GeometryShader(ID3D11GeometryShader *iface);
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D10GeometryShader(ID3D10GeometryShader *iface);
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D11PixelShader(ID3D11PixelShader *iface);
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D10PixelShader(ID3D10PixelShader *iface);
+struct qemu_d3d11_shader *unsafe_impl_from_ID3D11ComputeShader(ID3D11ComputeShader *iface);
 
 extern HRESULT (* WINAPI p_DXGID3D10CreateDevice)(HMODULE d3d10core, IDXGIFactory *factory, IDXGIAdapter *adapter,
         unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, void **device);
