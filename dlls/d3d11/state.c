@@ -75,14 +75,34 @@ static HRESULT STDMETHODCALLTYPE d3d11_blend_state_QueryInterface(ID3D11BlendSta
     struct qemu_d3d11_blend_state_QueryInterface call;
     struct qemu_d3d11_state *state = impl_from_ID3D11BlendState(iface);
 
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
+
+    if (IsEqualGUID(riid, &IID_ID3D11BlendState)
+            || IsEqualGUID(riid, &IID_ID3D11DeviceChild)
+            || IsEqualGUID(riid, &IID_IUnknown))
+    {
+        ID3D11BlendState_AddRef(iface);
+        *object = iface;
+        return S_OK;
+    }
+
+    if (IsEqualGUID(riid, &IID_ID3D10BlendState1)
+            || IsEqualGUID(riid, &IID_ID3D10BlendState)
+            || IsEqualGUID(riid, &IID_ID3D10DeviceChild))
+    {
+        ID3D10BlendState1_AddRef(&state->ID3D10BlendState1_iface);
+        *object = &state->ID3D10BlendState1_iface;
+        return S_OK;
+    }
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_BLEND_STATE_QUERYINTERFACE);
     call.iface = (ULONG_PTR)state;
     call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    *object = NULL;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -91,11 +111,18 @@ void qemu_d3d11_blend_state_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d11_blend_state_QueryInterface *c = (struct qemu_d3d11_blend_state_QueryInterface *)call;
     struct qemu_d3d11_state *state;
+    IUnknown *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     state = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11BlendState_QueryInterface(state->host_bs11, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    c->super.iret = ID3D11BlendState_QueryInterface(state->host_bs11, QEMU_G2H(c->riid), (void **)obj);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->riid)));
+        IUnknown_Release(obj);
+    }
 }
 
 #endif
