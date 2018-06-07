@@ -1585,7 +1585,7 @@ void qemu_d3d11_shader_resource_view_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_shader_resource_view_AddRef *c = (struct qemu_d3d11_shader_resource_view_AddRef *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11ShaderResourceView_AddRef(view->host_sr11);
@@ -1621,7 +1621,7 @@ void qemu_d3d11_shader_resource_view_Release(struct qemu_syscall *call)
     struct qemu_d3d11_shader_resource_view_Release *c = (struct qemu_d3d11_shader_resource_view_Release *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11ShaderResourceView_Release(view->host_sr11);
@@ -1854,7 +1854,8 @@ struct qemu_d3d11_shader_resource_view_GetDesc
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_shader_resource_view_GetDesc(ID3D11ShaderResourceView *iface, D3D11_SHADER_RESOURCE_VIEW_DESC *desc)
+static void STDMETHODCALLTYPE d3d11_shader_resource_view_GetDesc(ID3D11ShaderResourceView *iface,
+        D3D11_SHADER_RESOURCE_VIEW_DESC *desc)
 {
     struct qemu_d3d11_shader_resource_view_GetDesc call;
     struct qemu_d3d11_view *view = impl_from_ID3D11ShaderResourceView(iface);
@@ -1873,7 +1874,7 @@ void qemu_d3d11_shader_resource_view_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d11_shader_resource_view_GetDesc *c = (struct qemu_d3d11_shader_resource_view_GetDesc *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     ID3D11ShaderResourceView_GetDesc(view->host_sr11, QEMU_G2H(c->desc));
@@ -1949,7 +1950,7 @@ void qemu_d3d10_shader_resource_view_AddRef(struct qemu_syscall *call)
     struct qemu_d3d10_shader_resource_view_AddRef *c = (struct qemu_d3d10_shader_resource_view_AddRef *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10ShaderResourceView1_AddRef(view->host_sr10);
@@ -1985,7 +1986,7 @@ void qemu_d3d10_shader_resource_view_Release(struct qemu_syscall *call)
     struct qemu_d3d10_shader_resource_view_Release *c = (struct qemu_d3d10_shader_resource_view_Release *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10ShaderResourceView1_Release(view->host_sr10);
@@ -2162,7 +2163,8 @@ struct qemu_d3d10_shader_resource_view_GetDesc
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_shader_resource_view_GetDesc(ID3D10ShaderResourceView1 *iface, D3D10_SHADER_RESOURCE_VIEW_DESC *desc)
+static void STDMETHODCALLTYPE d3d10_shader_resource_view_GetDesc(ID3D10ShaderResourceView1 *iface,
+        D3D10_SHADER_RESOURCE_VIEW_DESC *desc)
 {
     struct qemu_d3d10_shader_resource_view_GetDesc call;
     struct qemu_d3d11_view *view = impl_from_ID3D10ShaderResourceView1(iface);
@@ -2181,7 +2183,7 @@ void qemu_d3d10_shader_resource_view_GetDesc(struct qemu_syscall *call)
     struct qemu_d3d10_shader_resource_view_GetDesc *c = (struct qemu_d3d10_shader_resource_view_GetDesc *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     ID3D10ShaderResourceView1_GetDesc(view->host_sr10, QEMU_G2H(c->desc));
