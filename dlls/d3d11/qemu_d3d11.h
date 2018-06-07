@@ -151,7 +151,6 @@ enum d3d11_calls
     CALL_D3D10_SHADER_RESOURCE_VIEW_ADDREF,
     CALL_D3D10_SHADER_RESOURCE_VIEW_GETDESC,
     CALL_D3D10_SHADER_RESOURCE_VIEW_GETDESC1,
-    CALL_D3D10_SHADER_RESOURCE_VIEW_GETDEVICE,
     CALL_D3D10_SHADER_RESOURCE_VIEW_GETPRIVATEDATA,
     CALL_D3D10_SHADER_RESOURCE_VIEW_GETRESOURCE,
     CALL_D3D10_SHADER_RESOURCE_VIEW_QUERYINTERFACE,
@@ -768,7 +767,6 @@ void qemu_d3d10_rendertarget_view_SetPrivateDataInterface(struct qemu_syscall *c
 void qemu_d3d10_shader_resource_view_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_shader_resource_view_GetDesc(struct qemu_syscall *call);
 void qemu_d3d10_shader_resource_view_GetDesc1(struct qemu_syscall *call);
-void qemu_d3d10_shader_resource_view_GetDevice(struct qemu_syscall *call);
 void qemu_d3d10_shader_resource_view_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_shader_resource_view_GetResource(struct qemu_syscall *call);
 void qemu_d3d10_shader_resource_view_QueryInterface(struct qemu_syscall *call);

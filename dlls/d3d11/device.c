@@ -5931,7 +5931,7 @@ void qemu_d3d11_device_CreateShaderResourceView(struct qemu_syscall *call)
     ID3D11ShaderResourceView *host;
     struct qemu_d3d11_view *obj;
 
-    WINE_FIXME("Untested\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
     if (c->buffer)
     {

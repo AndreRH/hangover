@@ -755,7 +755,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d10_shader_resource_view_AddRef,
     qemu_d3d10_shader_resource_view_GetDesc,
     qemu_d3d10_shader_resource_view_GetDesc1,
-    qemu_d3d10_shader_resource_view_GetDevice,
     qemu_d3d10_shader_resource_view_GetPrivateData,
     qemu_d3d10_shader_resource_view_GetResource,
     qemu_d3d10_shader_resource_view_QueryInterface,
