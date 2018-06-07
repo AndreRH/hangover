@@ -70,10 +70,30 @@ static inline struct qemu_d3d11_shader *impl_from_ID3D10VertexShader(ID3D10Verte
     return CONTAINING_RECORD(iface, struct qemu_d3d11_shader, ID3D10VertexShader_iface);
 }
 
-static HRESULT STDMETHODCALLTYPE d3d11_vertex_shader_QueryInterface(ID3D11VertexShader *iface, REFIID riid, void **object)
+static HRESULT STDMETHODCALLTYPE d3d11_vertex_shader_QueryInterface(ID3D11VertexShader *iface, REFIID riid,
+        void **object)
 {
     struct qemu_d3d11_vertex_shader_QueryInterface call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11VertexShader(iface);
+
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
+
+    if (IsEqualGUID(riid, &IID_ID3D11VertexShader)
+            || IsEqualGUID(riid, &IID_ID3D11DeviceChild)
+            || IsEqualGUID(riid, &IID_IUnknown))
+    {
+        ID3D11VertexShader_AddRef(iface);
+        *object = iface;
+        return S_OK;
+    }
+
+    if (IsEqualGUID(riid, &IID_ID3D10VertexShader)
+            || IsEqualGUID(riid, &IID_ID3D10DeviceChild))
+    {
+        IUnknown_AddRef(&shader->ID3D10VertexShader_iface);
+        *object = &shader->ID3D10VertexShader_iface;
+        return S_OK;
+    }
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_VERTEX_SHADER_QUERYINTERFACE);
     call.iface = (ULONG_PTR)shader;
@@ -82,7 +102,8 @@ static HRESULT STDMETHODCALLTYPE d3d11_vertex_shader_QueryInterface(ID3D11Vertex
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    *object = NULL;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -91,11 +112,18 @@ void qemu_d3d11_vertex_shader_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d11_vertex_shader_QueryInterface *c = (struct qemu_d3d11_vertex_shader_QueryInterface *)call;
     struct qemu_d3d11_shader *shader;
+    IUnknown *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11VertexShader_QueryInterface(shader->host_vs11, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    c->super.iret = ID3D11VertexShader_QueryInterface(shader->host_vs11, QEMU_G2H(c->riid), (void **)&obj);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->riid)));
+        IUnknown_Release(obj);
+    }
 }
 
 #endif
