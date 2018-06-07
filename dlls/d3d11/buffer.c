@@ -1057,14 +1057,14 @@ static inline struct qemu_d3d11_buffer *impl_from_priv_data(IUnknown *iface)
     return CONTAINING_RECORD(iface, struct qemu_d3d11_buffer, priv_data_iface);
 }
 
-static HRESULT STDMETHODCALLTYPE d3d11_texture_priv_data_QueryInterface(IUnknown *iface, REFIID riid, void **out)
+static HRESULT STDMETHODCALLTYPE d3d11_buffer_priv_data_QueryInterface(IUnknown *iface, REFIID riid, void **out)
 {
     WINE_ERR("Unexpected call\n");
     *out = NULL;
     return E_NOINTERFACE;
 }
 
-static ULONG STDMETHODCALLTYPE d3d11_texture_priv_data_AddRef(IUnknown *iface)
+static ULONG STDMETHODCALLTYPE d3d11_buffer_priv_data_AddRef(IUnknown *iface)
 {
     struct qemu_d3d11_buffer *buffer = impl_from_priv_data(iface);
     ULONG refcount = InterlockedIncrement(&buffer->refcount);
@@ -1074,7 +1074,7 @@ static ULONG STDMETHODCALLTYPE d3d11_texture_priv_data_AddRef(IUnknown *iface)
     return refcount;
 }
 
-static ULONG STDMETHODCALLTYPE d3d11_texture_priv_data_Release(IUnknown *iface)
+static ULONG STDMETHODCALLTYPE d3d11_buffer_priv_data_Release(IUnknown *iface)
 {
     struct qemu_d3d11_buffer *buffer = impl_from_priv_data(iface);
     ULONG refcount = InterlockedDecrement(&buffer->refcount);
@@ -1093,9 +1093,9 @@ static ULONG STDMETHODCALLTYPE d3d11_texture_priv_data_Release(IUnknown *iface)
 static struct IUnknownVtbl priv_data_vtbl =
 {
     /* IUnknown methods */
-    d3d11_texture_priv_data_QueryInterface,
-    d3d11_texture_priv_data_AddRef,
-    d3d11_texture_priv_data_Release,
+    d3d11_buffer_priv_data_QueryInterface,
+    d3d11_buffer_priv_data_AddRef,
+    d3d11_buffer_priv_data_Release,
 };
 
 HRESULT qemu_d3d11_buffer_create(ID3D11Buffer *host, struct qemu_d3d11_buffer **buffer)
@@ -1103,7 +1103,7 @@ HRESULT qemu_d3d11_buffer_create(ID3D11Buffer *host, struct qemu_d3d11_buffer **
     struct qemu_d3d11_buffer *obj;
     HRESULT hr;
 
-    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*buffer));
+    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
     if (!obj)
     {
         WINE_WARN("Out of memory\n");
