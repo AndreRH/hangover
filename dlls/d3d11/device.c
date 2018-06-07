@@ -6010,25 +6010,68 @@ struct qemu_d3d11_device_CreateRenderTargetView
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t resource;
+    uint64_t buffer;
+    uint64_t texture;
     uint64_t desc;
     uint64_t view;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_CreateRenderTargetView(ID3D11Device2 *iface, ID3D11Resource *resource, const D3D11_RENDER_TARGET_VIEW_DESC *desc, ID3D11RenderTargetView **view)
+static HRESULT STDMETHODCALLTYPE d3d11_device_CreateRenderTargetView(ID3D11Device2 *iface, ID3D11Resource *resource,
+        const D3D11_RENDER_TARGET_VIEW_DESC *desc, ID3D11RenderTargetView **view)
 {
     struct qemu_d3d11_device_CreateRenderTargetView call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
+    struct qemu_d3d11_view *obj;
+    struct qemu_d3d11_buffer *buffer;
+    struct qemu_d3d11_texture *texture;
+    ID3D11Buffer *buffer_iface;
+    ID3D11Texture1D *tex1d_iface;
+    ID3D11Texture2D *tex2d_iface;
+    ID3D11Texture3D *tex3d_iface;
+    HRESULT hr;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_CREATERENDERTARGETVIEW);
     call.iface = (ULONG_PTR)device;
-    call.resource = (ULONG_PTR)resource;
     call.desc = (ULONG_PTR)desc;
-    call.view = (ULONG_PTR)view;
+
+    if (!resource)
+    {
+        call.buffer = call.texture = 0;
+    }
+    else if (SUCCEEDED(hr = ID3D11Resource_QueryInterface(resource, &IID_ID3D11Buffer, (void **)&buffer_iface)))
+    {
+        call.texture = 0;
+        call.buffer = (ULONG_PTR)unsafe_impl_from_ID3D11Buffer(buffer_iface);
+        /* Release on the host side */
+    }
+    else if (SUCCEEDED(hr = ID3D11Resource_QueryInterface(resource, &IID_ID3D11Texture1D, (void **)&tex1d_iface)))
+    {
+        call.buffer = 0;
+        call.texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture1D(tex1d_iface);
+        /* Release on the host side */
+    }
+    else if (SUCCEEDED(hr = ID3D11Resource_QueryInterface(resource, &IID_ID3D11Texture2D, (void **)&tex2d_iface)))
+    {
+        call.buffer = 0;
+        call.texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture2D(tex2d_iface);
+        /* Release on the host side */
+    }
+    else if (SUCCEEDED(hr = ID3D11Resource_QueryInterface(resource, &IID_ID3D11Texture3D, (void **)&tex3d_iface)))
+    {
+        call.buffer = 0;
+        call.texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture3D(tex3d_iface);
+        /* Release on the host side */
+    }
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    obj = (struct qemu_d3d11_view *)(ULONG_PTR)call.view;
+    qemu_d3d11_render_target_view_guest_init(obj);
+    *view = &obj->ID3D11RenderTargetView_iface;
 
     return call.super.iret;
 }
@@ -6039,11 +6082,39 @@ void qemu_d3d11_device_CreateRenderTargetView(struct qemu_syscall *call)
 {
     struct qemu_d3d11_device_CreateRenderTargetView *c = (struct qemu_d3d11_device_CreateRenderTargetView *)call;
     struct qemu_d3d11_device *device;
+    ID3D11Resource *resource = NULL;
+    ID3D11RenderTargetView *host;
+    struct qemu_d3d11_view *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    if (c->buffer)
+    {
+        struct qemu_d3d11_buffer *buffer = QEMU_G2H(c->buffer);
+        resource = (ID3D11Resource *)buffer->host11;
+    }
+    else if (c->texture)
+    {
+        struct qemu_d3d11_texture *texture = QEMU_G2H(c->texture);
+        resource = (ID3D11Resource *)texture->host11_1d;
+    }
 
-    c->super.iret = ID3D11Device2_CreateRenderTargetView(device->host_d3d11, QEMU_G2H(c->resource), QEMU_G2H(c->desc), QEMU_G2H(c->view));
+    c->super.iret = ID3D11Device2_CreateRenderTargetView(device->host_d3d11, resource, QEMU_G2H(c->desc), &host);
+
+    /* For the QI we did inside the guest. */
+    if (resource)
+        ID3D11Resource_Release(resource);
+
+    if (FAILED(c->super.iret))
+        return;
+
+    c->super.iret = qemu_d3d11_view_create((ID3D11View *)host, &IID_ID3D10RenderTargetView, &obj);
+    if (FAILED(c->super.iret))
+    {
+        ID3D11RenderTargetView_Release(host);
+        return;
+    }
+    c->view = QEMU_H2G(obj);
 }
 
 #endif
@@ -6154,7 +6225,7 @@ void qemu_d3d11_device_CreateDepthStencilView(struct qemu_syscall *call)
     c->super.iret = qemu_d3d11_view_create((ID3D11View *)host, &IID_ID3D10DepthStencilView, &obj);
     if (FAILED(c->super.iret))
     {
-        ID3D11DepthStencilView(host);
+        ID3D11DepthStencilView_Release(host);
         return;
     }
     c->view = QEMU_H2G(obj);

@@ -633,6 +633,7 @@ void qemu_d3d11_texture_guest_init(struct qemu_d3d11_texture *texture, struct qe
 void qemu_d3d11_buffer_guest_init(struct qemu_d3d11_buffer *buffer);
 void qemu_d3d11_depth_stencil_view_guest_init(struct qemu_d3d11_view *view);
 void qemu_d3d11_shader_resource_view_guest_init(struct qemu_d3d11_view *view);
+void qemu_d3d11_render_target_view_guest_init(struct qemu_d3d11_view *view);
 
 #else
 

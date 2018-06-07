@@ -2742,6 +2742,12 @@ void qemu_d3d11_shader_resource_view_guest_init(struct qemu_d3d11_view *view)
     view->ID3D10ShaderResourceView1_iface.lpVtbl = &d3d10_shader_resource_view_vtbl;
 }
 
+void qemu_d3d11_render_target_view_guest_init(struct qemu_d3d11_view *view)
+{
+    view->ID3D11RenderTargetView_iface.lpVtbl = &d3d11_rendertarget_view_vtbl;
+    view->ID3D10RenderTargetView_iface.lpVtbl = &d3d10_rendertarget_view_vtbl;
+}
+
 #else
 
 static inline struct qemu_d3d11_view *impl_from_priv_data(IUnknown *iface)
