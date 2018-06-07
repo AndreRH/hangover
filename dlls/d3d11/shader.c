@@ -3051,6 +3051,12 @@ void qemu_d3d11_pixel_shader_guest_init(struct qemu_d3d11_shader *shader)
     shader->ID3D10PixelShader_iface.lpVtbl = &d3d10_pixel_shader_vtbl;
 }
 
+void qemu_d3d11_vertex_shader_guest_init(struct qemu_d3d11_shader *shader)
+{
+    shader->ID3D11VertexShader_iface.lpVtbl = &d3d11_vertex_shader_vtbl;
+    shader->ID3D10VertexShader_iface.lpVtbl = &d3d10_vertex_shader_vtbl;
+}
+
 #else
 
 static inline struct qemu_d3d11_shader *impl_from_priv_data(IUnknown *iface)
