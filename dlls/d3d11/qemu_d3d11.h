@@ -148,7 +148,6 @@ enum d3d11_calls
     CALL_D3D10_MULTITHREAD_LEAVE,
     CALL_D3D10_MULTITHREAD_SETMULTITHREADPROTECTED,
     CALL_D3D10_PIXEL_SHADER_ADDREF,
-    CALL_D3D10_PIXEL_SHADER_GETDEVICE,
     CALL_D3D10_PIXEL_SHADER_GETPRIVATEDATA,
     CALL_D3D10_PIXEL_SHADER_QUERYINTERFACE,
     CALL_D3D10_PIXEL_SHADER_RELEASE,
@@ -887,7 +886,6 @@ void qemu_d3d10_multithread_GetMultithreadProtected(struct qemu_syscall *call);
 void qemu_d3d10_multithread_Leave(struct qemu_syscall *call);
 void qemu_d3d10_multithread_SetMultithreadProtected(struct qemu_syscall *call);
 void qemu_d3d10_pixel_shader_AddRef(struct qemu_syscall *call);
-void qemu_d3d10_pixel_shader_GetDevice(struct qemu_syscall *call);
 void qemu_d3d10_pixel_shader_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_pixel_shader_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_pixel_shader_Release(struct qemu_syscall *call);
