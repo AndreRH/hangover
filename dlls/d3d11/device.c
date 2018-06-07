@@ -1835,7 +1835,8 @@ struct qemu_d3d11_immediate_context_RSSetViewports
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_RSSetViewports(ID3D11DeviceContext1 *iface, UINT viewport_count, const D3D11_VIEWPORT *viewports)
+static void STDMETHODCALLTYPE d3d11_immediate_context_RSSetViewports(ID3D11DeviceContext1 *iface, UINT viewport_count,
+        const D3D11_VIEWPORT *viewports)
 {
     struct qemu_d3d11_immediate_context_RSSetViewports call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
@@ -1854,8 +1855,10 @@ void qemu_d3d11_immediate_context_RSSetViewports(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_RSSetViewports *c = (struct qemu_d3d11_immediate_context_RSSetViewports *)call;
     struct qemu_d3d11_device_context *context;
+    D3D11_VIEWPORT stack[16], *viewports = stack;
 
-    WINE_FIXME("Unverified!\n");
+    /* D3D11_VIEWPORT has the same size in 32 and 64 bit and the input array is not an array of pointers. */
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     ID3D11DeviceContext1_RSSetViewports(context->host, c->viewport_count, QEMU_G2H(c->viewports));
