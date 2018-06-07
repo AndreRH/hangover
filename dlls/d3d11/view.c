@@ -2528,3 +2528,278 @@ void qemu_d3d11_unordered_access_view_GetDesc(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+static struct ID3D11DepthStencilViewVtbl d3d11_depthstencil_view_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_depthstencil_view_QueryInterface,
+    d3d11_depthstencil_view_AddRef,
+    d3d11_depthstencil_view_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_depthstencil_view_GetDevice,
+    d3d11_depthstencil_view_GetPrivateData,
+    d3d11_depthstencil_view_SetPrivateData,
+    d3d11_depthstencil_view_SetPrivateDataInterface,
+    /* ID3D11View methods */
+    d3d11_depthstencil_view_GetResource,
+    /* ID3D11DepthStencilView methods */
+    d3d11_depthstencil_view_GetDesc,
+};
+
+static struct ID3D10DepthStencilViewVtbl d3d10_depthstencil_view_vtbl =
+{
+    /* IUnknown methods */
+    d3d10_depthstencil_view_QueryInterface,
+    d3d10_depthstencil_view_AddRef,
+    d3d10_depthstencil_view_Release,
+    /* ID3D10DeviceChild methods */
+    d3d10_depthstencil_view_GetDevice,
+    d3d10_depthstencil_view_GetPrivateData,
+    d3d10_depthstencil_view_SetPrivateData,
+    d3d10_depthstencil_view_SetPrivateDataInterface,
+    /* ID3D10View methods */
+    d3d10_depthstencil_view_GetResource,
+    /* ID3D10DepthStencilView methods */
+    d3d10_depthstencil_view_GetDesc,
+};
+
+static struct ID3D11RenderTargetViewVtbl d3d11_rendertarget_view_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_rendertarget_view_QueryInterface,
+    d3d11_rendertarget_view_AddRef,
+    d3d11_rendertarget_view_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_rendertarget_view_GetDevice,
+    d3d11_rendertarget_view_GetPrivateData,
+    d3d11_rendertarget_view_SetPrivateData,
+    d3d11_rendertarget_view_SetPrivateDataInterface,
+    /* ID3D11View methods */
+    d3d11_rendertarget_view_GetResource,
+    /* ID3D11RenderTargetView methods */
+    d3d11_rendertarget_view_GetDesc,
+};
+
+static struct ID3D10RenderTargetViewVtbl d3d10_rendertarget_view_vtbl =
+{
+    /* IUnknown methods */
+    d3d10_rendertarget_view_QueryInterface,
+    d3d10_rendertarget_view_AddRef,
+    d3d10_rendertarget_view_Release,
+    /* ID3D10DeviceChild methods */
+    d3d10_rendertarget_view_GetDevice,
+    d3d10_rendertarget_view_GetPrivateData,
+    d3d10_rendertarget_view_SetPrivateData,
+    d3d10_rendertarget_view_SetPrivateDataInterface,
+    /* ID3D10View methods */
+    d3d10_rendertarget_view_GetResource,
+    /* ID3D10RenderTargetView methods */
+    d3d10_rendertarget_view_GetDesc,
+};
+
+static struct ID3D10ShaderResourceView1Vtbl d3d10_shader_resource_view_vtbl =
+{
+    /* IUnknown methods */
+    d3d10_shader_resource_view_QueryInterface,
+    d3d10_shader_resource_view_AddRef,
+    d3d10_shader_resource_view_Release,
+    /* ID3D10DeviceChild methods */
+    d3d10_shader_resource_view_GetDevice,
+    d3d10_shader_resource_view_GetPrivateData,
+    d3d10_shader_resource_view_SetPrivateData,
+    d3d10_shader_resource_view_SetPrivateDataInterface,
+    /* ID3D10View methods */
+    d3d10_shader_resource_view_GetResource,
+    /* ID3D10ShaderResourceView methods */
+    d3d10_shader_resource_view_GetDesc,
+    /* ID3D10ShaderResourceView1 methods */
+    d3d10_shader_resource_view_GetDesc1,
+};
+
+static struct ID3D11ShaderResourceViewVtbl d3d11_shader_resource_view_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_shader_resource_view_QueryInterface,
+    d3d11_shader_resource_view_AddRef,
+    d3d11_shader_resource_view_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_shader_resource_view_GetDevice,
+    d3d11_shader_resource_view_GetPrivateData,
+    d3d11_shader_resource_view_SetPrivateData,
+    d3d11_shader_resource_view_SetPrivateDataInterface,
+    /* ID3D11View methods */
+    d3d11_shader_resource_view_GetResource,
+    /* ID3D11ShaderResourceView methods */
+    d3d11_shader_resource_view_GetDesc,
+};
+
+static struct ID3D11UnorderedAccessViewVtbl d3d11_unordered_access_view_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_unordered_access_view_QueryInterface,
+    d3d11_unordered_access_view_AddRef,
+    d3d11_unordered_access_view_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_unordered_access_view_GetDevice,
+    d3d11_unordered_access_view_GetPrivateData,
+    d3d11_unordered_access_view_SetPrivateData,
+    d3d11_unordered_access_view_SetPrivateDataInterface,
+    /* ID3D11View methods */
+    d3d11_unordered_access_view_GetResource,
+    /* ID3D11UnorderedAccessView methods */
+    d3d11_unordered_access_view_GetDesc,
+};
+
+struct qemu_d3d11_view *unsafe_impl_from_ID3D11DepthStencilView(ID3D11DepthStencilView *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_depthstencil_view_vtbl);*/
+
+    return impl_from_ID3D11DepthStencilView(iface);
+}
+
+struct qemu_d3d11_view *unsafe_impl_from_ID3D10DepthStencilView(ID3D10DepthStencilView *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d10_depthstencil_view_vtbl);*/
+
+    return impl_from_ID3D10DepthStencilView(iface);
+}
+
+struct qemu_d3d11_view *unsafe_impl_from_ID3D11RenderTargetView(ID3D11RenderTargetView *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_rendertarget_view_vtbl);*/
+
+    return impl_from_ID3D11RenderTargetView(iface);
+}
+
+struct qemu_d3d11_view *unsafe_impl_from_ID3D10RenderTargetView(ID3D10RenderTargetView *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d10_rendertarget_view_vtbl);*/
+
+    return impl_from_ID3D10RenderTargetView(iface);
+}
+
+struct qemu_d3d11_view *unsafe_impl_from_ID3D11ShaderResourceView(ID3D11ShaderResourceView *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_shader_resource_view_vtbl);*/
+    return impl_from_ID3D11ShaderResourceView(iface);
+}
+
+struct qemu_d3d11_view *unsafe_impl_from_ID3D10ShaderResourceView(ID3D10ShaderResourceView *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == (ID3D10ShaderResourceViewVtbl *)&d3d10_shader_resource_view_vtbl);*/
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_view, ID3D10ShaderResourceView1_iface);
+}
+
+struct qemu_d3d11_view *unsafe_impl_from_ID3D11UnorderedAccessView(ID3D11UnorderedAccessView *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_unordered_access_view_vtbl);*/
+
+    return impl_from_ID3D11UnorderedAccessView(iface);
+}
+
+void qemu_d3d11_depth_stencil_view_guest_init(struct qemu_d3d11_view *view)
+{
+    view->ID3D11DepthStencilView_iface.lpVtbl = &d3d11_depthstencil_view_vtbl;
+    view->ID3D10DepthStencilView_iface.lpVtbl = &d3d10_depthstencil_view_vtbl;
+}
+
+void qemu_d3d11_shader_resource_view_guest_init(struct qemu_d3d11_view *view)
+{
+    view->ID3D11ShaderResourceView_iface.lpVtbl = &d3d11_shader_resource_view_vtbl;
+    view->ID3D10ShaderResourceView1_iface.lpVtbl = &d3d10_shader_resource_view_vtbl;
+}
+
+#else
+
+static inline struct qemu_d3d11_view *impl_from_priv_data(IUnknown *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_view, priv_data_iface);
+}
+
+static HRESULT STDMETHODCALLTYPE d3d11_view_priv_data_QueryInterface(IUnknown *iface, REFIID riid, void **out)
+{
+    WINE_ERR("Unexpected call\n");
+    *out = NULL;
+    return E_NOINTERFACE;
+}
+
+static ULONG STDMETHODCALLTYPE d3d11_view_priv_data_AddRef(IUnknown *iface)
+{
+    struct qemu_d3d11_view *view = impl_from_priv_data(iface);
+    ULONG refcount = InterlockedIncrement(&view->refcount);
+
+    WINE_TRACE("%p increasing refcount to %u.\n", view, refcount);
+
+    return refcount;
+}
+
+static ULONG STDMETHODCALLTYPE d3d11_view_priv_data_Release(IUnknown *iface)
+{
+    struct qemu_d3d11_view *view = impl_from_priv_data(iface);
+    ULONG refcount = InterlockedDecrement(&view->refcount);
+
+    WINE_TRACE("%p decreasing refcount to %u.\n", view, refcount);
+
+    if (!refcount)
+    {
+        WINE_TRACE("Destroying view wrapper %p for host view %p.\n", view, view->host_ds11);
+        HeapFree(GetProcessHeap(), 0, view);
+    }
+
+    return refcount;
+}
+
+static struct IUnknownVtbl priv_data_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_view_priv_data_QueryInterface,
+    d3d11_view_priv_data_AddRef,
+    d3d11_view_priv_data_Release,
+};
+
+HRESULT qemu_d3d11_view_create(ID3D11View *host, const IID *d3d10iface, struct qemu_d3d11_view **view)
+{
+    struct qemu_d3d11_view *obj;
+    HRESULT hr;
+
+    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
+    if (!obj)
+    {
+        WINE_WARN("Out of memory\n");
+        return E_OUTOFMEMORY;
+    }
+
+    obj->host_ds11 = (void *)host;
+    if (d3d10iface)
+    {
+        hr = ID3D11View_QueryInterface(host, d3d10iface, (void **)&obj->host_ds10);
+        if (FAILED(hr))
+            WINE_ERR("Failed to QI %s.\n", wine_dbgstr_guid(d3d10iface));
+        ID3D10View_Release(obj->host_ds10);
+    }
+
+    obj->priv_data_iface.lpVtbl = &priv_data_vtbl;
+    /* Leave the ref at 0, we want the host obj to own the only / final reference. */
+    ID3D11View_SetPrivateDataInterface(host, &IID_d3d11_priv_data, &obj->priv_data_iface);
+
+    *view = obj;
+    return S_OK;
+}
+
+#endif

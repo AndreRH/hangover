@@ -609,6 +609,21 @@ static inline struct qemu_d3d11_device *impl_from_ID3D10Device(ID3D10Device1 *if
     return CONTAINING_RECORD(iface, struct qemu_d3d11_device, ID3D10Device1_iface);
 }
 
+struct qemu_d3d11_buffer *unsafe_impl_from_ID3D11Buffer(ID3D11Buffer *iface);
+struct qemu_d3d11_view *unsafe_impl_from_ID3D11DepthStencilView(ID3D11DepthStencilView *iface);
+struct qemu_d3d11_view *unsafe_impl_from_ID3D10DepthStencilView(ID3D10DepthStencilView *iface);
+struct qemu_d3d11_view *unsafe_impl_from_ID3D11RenderTargetView(ID3D11RenderTargetView *iface);
+struct qemu_d3d11_view *unsafe_impl_from_ID3D10RenderTargetView(ID3D10RenderTargetView *iface);
+struct qemu_d3d11_view *unsafe_impl_from_ID3D11ShaderResourceView(ID3D11ShaderResourceView *iface);
+struct qemu_d3d11_view *unsafe_impl_from_ID3D10ShaderResourceView(ID3D10ShaderResourceView *iface);
+struct qemu_d3d11_view *unsafe_impl_from_ID3D11UnorderedAccessView(ID3D11UnorderedAccessView *iface);
+struct qemu_d3d11_texture *unsafe_impl_from_ID3D11Texture1D(ID3D11Texture1D *iface);
+struct qemu_d3d11_texture *unsafe_impl_from_ID3D10Texture1D(ID3D10Texture1D *iface);
+struct qemu_d3d11_texture *unsafe_impl_from_ID3D11Texture2D(ID3D11Texture2D *iface);
+struct qemu_d3d11_texture *unsafe_impl_from_ID3D10Texture2D(ID3D10Texture2D *iface);
+struct qemu_d3d11_texture *unsafe_impl_from_ID3D10Texture3D(ID3D10Texture3D *iface);
+struct qemu_d3d11_texture *unsafe_impl_from_ID3D11Texture3D(ID3D11Texture3D *iface);
+
 extern HRESULT (* WINAPI p_DXGID3D10CreateDevice)(HMODULE d3d10core, IDXGIFactory *factory, IDXGIAdapter *adapter,
         unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, void **device);
 
@@ -617,6 +632,8 @@ void qemu_d3d11_context_guest_init(struct qemu_d3d11_device_context *context);
 void qemu_d3d11_texture_guest_init(struct qemu_d3d11_texture *texture, struct qemu_d3d11_device *device,
         unsigned int dim, uint64_t dxgi_surface);
 void qemu_d3d11_buffer_guest_init(struct qemu_d3d11_buffer *buffer);
+void qemu_d3d11_depth_stencil_view_guest_init(struct qemu_d3d11_view *view);
+void qemu_d3d11_shader_resource_view_guest_init(struct qemu_d3d11_view *view);
 
 #else
 
@@ -1069,6 +1086,7 @@ void qemu_wrap_implicit_surface(struct qemu_syscall *call);
 HRESULT qemu_d3d11_texture_create(ID3D11Resource *host, struct qemu_d3d11_device *device,
         uint64_t *dxgi_surface, unsigned int dim, struct qemu_d3d11_texture **texture);
 HRESULT qemu_d3d11_buffer_create(ID3D11Buffer *host, struct qemu_d3d11_buffer **buffer);
+HRESULT qemu_d3d11_view_create(ID3D11View *host, const IID *d3d10iface, struct qemu_d3d11_view **view);
 
 DEFINE_GUID(IID_d3d11_priv_data, 0x2b676c65, 0x7123, 0x4138, 0xb6, 0xdb, 0x96, 0xfe, 0xa9, 0xae, 0x00, 0x43);
 

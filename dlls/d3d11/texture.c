@@ -2963,6 +2963,54 @@ static struct ID3D10Texture3DVtbl d3d10_texture3d_vtbl =
     d3d10_texture3d_GetDesc,
 };
 
+struct qemu_d3d11_texture *unsafe_impl_from_ID3D11Texture1D(ID3D11Texture1D *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_texture1d_vtbl);*/
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture, ID3D11Texture1D_iface);
+}
+
+struct qemu_d3d11_texture *unsafe_impl_from_ID3D10Texture1D(ID3D10Texture1D *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d10_texture1d_vtbl);*/
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture, ID3D10Texture1D_iface);
+}
+
+struct qemu_d3d11_texture *unsafe_impl_from_ID3D11Texture2D(ID3D11Texture2D *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_texture2d_vtbl);*/
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture, ID3D11Texture2D_iface);
+}
+
+struct qemu_d3d11_texture *unsafe_impl_from_ID3D10Texture2D(ID3D10Texture2D *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d10_texture2d_vtbl);*/
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture, ID3D10Texture2D_iface);
+}
+
+struct qemu_d3d11_texture *unsafe_impl_from_ID3D10Texture3D(ID3D10Texture3D *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d10_texture3d_vtbl);*/
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_texture, ID3D10Texture3D_iface);
+}
+
+struct qemu_d3d11_texture *unsafe_impl_from_ID3D11Texture3D(ID3D11Texture3D *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_texture3d_vtbl);*/
+    return impl_from_ID3D11Texture3D(iface);
+}
+
 void qemu_d3d11_texture_guest_init(struct qemu_d3d11_texture *texture, struct qemu_d3d11_device *device,
         unsigned int dim, uint64_t dxgi_surface)
 {
