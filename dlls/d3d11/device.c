@@ -1810,14 +1810,16 @@ struct qemu_d3d11_immediate_context_RSSetState
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_RSSetState(ID3D11DeviceContext1 *iface, ID3D11RasterizerState *rasterizer_state)
+static void STDMETHODCALLTYPE d3d11_immediate_context_RSSetState(ID3D11DeviceContext1 *iface,
+        ID3D11RasterizerState *rasterizer_state)
 {
     struct qemu_d3d11_immediate_context_RSSetState call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_state *state = unsafe_impl_from_ID3D11RasterizerState(rasterizer_state);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_RSSETSTATE);
     call.iface = (ULONG_PTR)context;
-    call.rasterizer_state = (ULONG_PTR)rasterizer_state;
+    call.rasterizer_state = (ULONG_PTR)state;
 
     qemu_syscall(&call.super);
 }
@@ -1828,11 +1830,13 @@ void qemu_d3d11_immediate_context_RSSetState(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_RSSetState *c = (struct qemu_d3d11_immediate_context_RSSetState *)call;
     struct qemu_d3d11_device_context *context;
+    struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    state = QEMU_G2H(c->rasterizer_state);
 
-    ID3D11DeviceContext1_RSSetState(context->host, QEMU_G2H(c->rasterizer_state));
+    ID3D11DeviceContext1_RSSetState(context->host, state ? state->host_rs11 : NULL);
 }
 
 #endif
