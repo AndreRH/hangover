@@ -6829,21 +6829,30 @@ struct qemu_d3d11_device_CreateSamplerState
     uint64_t iface;
     uint64_t desc;
     uint64_t sampler_state;
+    uint64_t new;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_CreateSamplerState(ID3D11Device2 *iface, const D3D11_SAMPLER_DESC *desc, ID3D11SamplerState **sampler_state)
+static HRESULT STDMETHODCALLTYPE d3d11_device_CreateSamplerState(ID3D11Device2 *iface, const D3D11_SAMPLER_DESC *desc,
+        ID3D11SamplerState **sampler_state)
 {
     struct qemu_d3d11_device_CreateSamplerState call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
+    struct qemu_d3d11_state *obj;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_CREATESAMPLERSTATE);
     call.iface = (ULONG_PTR)device;
     call.desc = (ULONG_PTR)desc;
-    call.sampler_state = (ULONG_PTR)sampler_state;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    obj = (struct qemu_d3d11_state *)(ULONG_PTR)call.sampler_state;
+    if (call.new)
+        qemu_d3d11_sampler_state_guest_init(obj);
+    *sampler_state = &obj->ID3D11SamplerState_iface;
 
     return call.super.iret;
 }
@@ -6854,11 +6863,33 @@ void qemu_d3d11_device_CreateSamplerState(struct qemu_syscall *call)
 {
     struct qemu_d3d11_device_CreateSamplerState *c = (struct qemu_d3d11_device_CreateSamplerState *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_state *obj;
+    ID3D11SamplerState *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Device2_CreateSamplerState(device->host_d3d11, QEMU_G2H(c->desc), QEMU_G2H(c->sampler_state));
+    c->super.iret = ID3D11Device2_CreateSamplerState(device->host_d3d11, QEMU_G2H(c->desc), &host);
+
+    if (FAILED(c->super.iret))
+        return;
+
+    if (!(obj = state_from_host((ID3D11DeviceChild *)host)))
+    {
+        c->super.iret = qemu_d3d11_state_create((ID3D11DeviceChild *)host, &IID_ID3D10SamplerState, &obj);
+        if (FAILED(c->super.iret))
+        {
+            ID3D11SamplerState_Release(host);
+            return;
+        }
+        c->new = 1;
+    }
+    else
+    {
+        c->new = 0;
+    }
+
+    c->sampler_state = QEMU_H2G(obj);
 }
 
 #endif

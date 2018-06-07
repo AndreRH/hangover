@@ -2589,3 +2589,229 @@ void qemu_d3d10_sampler_state_GetDesc(struct qemu_syscall *call)
 }
 
 #endif
+
+#ifdef QEMU_DLL_GUEST
+
+static struct ID3D11BlendStateVtbl d3d11_blend_state_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_blend_state_QueryInterface,
+    d3d11_blend_state_AddRef,
+    d3d11_blend_state_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_blend_state_GetDevice,
+    d3d11_blend_state_GetPrivateData,
+    d3d11_blend_state_SetPrivateData,
+    d3d11_blend_state_SetPrivateDataInterface,
+    /* ID3D11BlendState methods */
+    d3d11_blend_state_GetDesc,
+};
+
+static struct ID3D10BlendState1Vtbl d3d10_blend_state_vtbl =
+{
+    /* IUnknown methods */
+    d3d10_blend_state_QueryInterface,
+    d3d10_blend_state_AddRef,
+    d3d10_blend_state_Release,
+    /* ID3D10DeviceChild methods */
+    d3d10_blend_state_GetDevice,
+    d3d10_blend_state_GetPrivateData,
+    d3d10_blend_state_SetPrivateData,
+    d3d10_blend_state_SetPrivateDataInterface,
+    /* ID3D10BlendState methods */
+    d3d10_blend_state_GetDesc,
+    /* ID3D10BlendState1 methods */
+    d3d10_blend_state_GetDesc1,
+};
+
+static struct ID3D11DepthStencilStateVtbl d3d11_depthstencil_state_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_depthstencil_state_QueryInterface,
+    d3d11_depthstencil_state_AddRef,
+    d3d11_depthstencil_state_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_depthstencil_state_GetDevice,
+    d3d11_depthstencil_state_GetPrivateData,
+    d3d11_depthstencil_state_SetPrivateData,
+    d3d11_depthstencil_state_SetPrivateDataInterface,
+    /* ID3D11DepthStencilState methods */
+    d3d11_depthstencil_state_GetDesc,
+};
+
+static struct ID3D10DepthStencilStateVtbl d3d10_depthstencil_state_vtbl =
+{
+    /* IUnknown methods */
+    d3d10_depthstencil_state_QueryInterface,
+    d3d10_depthstencil_state_AddRef,
+    d3d10_depthstencil_state_Release,
+    /* ID3D10DeviceChild methods */
+    d3d10_depthstencil_state_GetDevice,
+    d3d10_depthstencil_state_GetPrivateData,
+    d3d10_depthstencil_state_SetPrivateData,
+    d3d10_depthstencil_state_SetPrivateDataInterface,
+    /* ID3D10DepthStencilState methods */
+    d3d10_depthstencil_state_GetDesc,
+};
+
+static struct ID3D11RasterizerStateVtbl d3d11_rasterizer_state_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_rasterizer_state_QueryInterface,
+    d3d11_rasterizer_state_AddRef,
+    d3d11_rasterizer_state_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_rasterizer_state_GetDevice,
+    d3d11_rasterizer_state_GetPrivateData,
+    d3d11_rasterizer_state_SetPrivateData,
+    d3d11_rasterizer_state_SetPrivateDataInterface,
+    /* ID3D11RasterizerState methods */
+    d3d11_rasterizer_state_GetDesc,
+};
+
+static struct ID3D10RasterizerStateVtbl d3d10_rasterizer_state_vtbl =
+{
+    /* IUnknown methods */
+    d3d10_rasterizer_state_QueryInterface,
+    d3d10_rasterizer_state_AddRef,
+    d3d10_rasterizer_state_Release,
+    /* ID3D10DeviceChild methods */
+    d3d10_rasterizer_state_GetDevice,
+    d3d10_rasterizer_state_GetPrivateData,
+    d3d10_rasterizer_state_SetPrivateData,
+    d3d10_rasterizer_state_SetPrivateDataInterface,
+    /* ID3D10RasterizerState methods */
+    d3d10_rasterizer_state_GetDesc,
+};
+
+static struct ID3D11SamplerStateVtbl d3d11_sampler_state_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_sampler_state_QueryInterface,
+    d3d11_sampler_state_AddRef,
+    d3d11_sampler_state_Release,
+    /* ID3D11DeviceChild methods */
+    d3d11_sampler_state_GetDevice,
+    d3d11_sampler_state_GetPrivateData,
+    d3d11_sampler_state_SetPrivateData,
+    d3d11_sampler_state_SetPrivateDataInterface,
+    /* ID3D11SamplerState methods */
+    d3d11_sampler_state_GetDesc,
+};
+
+static struct ID3D10SamplerStateVtbl d3d10_sampler_state_vtbl =
+{
+    /* IUnknown methods */
+    d3d10_sampler_state_QueryInterface,
+    d3d10_sampler_state_AddRef,
+    d3d10_sampler_state_Release,
+    /* ID3D10DeviceChild methods */
+    d3d10_sampler_state_GetDevice,
+    d3d10_sampler_state_GetPrivateData,
+    d3d10_sampler_state_SetPrivateData,
+    d3d10_sampler_state_SetPrivateDataInterface,
+    /* ID3D10SamplerState methods */
+    d3d10_sampler_state_GetDesc,
+};
+
+void qemu_d3d11_sampler_state_guest_init(struct qemu_d3d11_state *state)
+{
+    state->ID3D11SamplerState_iface.lpVtbl = &d3d11_sampler_state_vtbl;
+    state->ID3D10SamplerState_iface.lpVtbl = &d3d10_sampler_state_vtbl;
+}
+
+#else
+
+static inline struct qemu_d3d11_state *impl_from_priv_data(IUnknown *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_state, priv_data_iface);
+}
+
+static HRESULT STDMETHODCALLTYPE d3d11_state_priv_data_QueryInterface(IUnknown *iface, REFIID riid, void **out)
+{
+    WINE_ERR("Unexpected call\n");
+    *out = NULL;
+    return E_NOINTERFACE;
+}
+
+static ULONG STDMETHODCALLTYPE d3d11_state_priv_data_AddRef(IUnknown *iface)
+{
+    struct qemu_d3d11_state *state = impl_from_priv_data(iface);
+    ULONG refcount = InterlockedIncrement(&state->refcount);
+
+    WINE_TRACE("%p increasing refcount to %u.\n", state, refcount);
+
+    return refcount;
+}
+
+static ULONG STDMETHODCALLTYPE d3d11_state_priv_data_Release(IUnknown *iface)
+{
+    struct qemu_d3d11_state *state = impl_from_priv_data(iface);
+    ULONG refcount = InterlockedDecrement(&state->refcount);
+
+    WINE_TRACE("%p decreasing refcount to %u.\n", state, refcount);
+
+    if (!refcount)
+    {
+        WINE_TRACE("Destroying state wrapper %p for host state %p.\n", state, state->host_ds11);
+        HeapFree(GetProcessHeap(), 0, state);
+    }
+
+    return refcount;
+}
+
+static struct IUnknownVtbl priv_data_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_state_priv_data_QueryInterface,
+    d3d11_state_priv_data_AddRef,
+    d3d11_state_priv_data_Release,
+};
+
+HRESULT qemu_d3d11_state_create(ID3D11DeviceChild *host, const IID *d3d10iface, struct qemu_d3d11_state **state)
+{
+    struct qemu_d3d11_state *obj;
+    HRESULT hr;
+
+    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
+    if (!obj)
+    {
+        WINE_WARN("Out of memory\n");
+        return E_OUTOFMEMORY;
+    }
+
+    obj->host_bs11 = (void *)host;
+    if (d3d10iface)
+    {
+        hr = ID3D11View_QueryInterface(host, d3d10iface, (void **)&obj->host_bs10);
+        if (FAILED(hr))
+            WINE_ERR("Failed to QI %s.\n", wine_dbgstr_guid(d3d10iface));
+        ID3D10View_Release(obj->host_bs10);
+    }
+
+    obj->priv_data_iface.lpVtbl = &priv_data_vtbl;
+    /* Leave the ref at 0, we want the host obj to own the only / final reference. */
+    ID3D11View_SetPrivateDataInterface(host, &IID_d3d11_priv_data, &obj->priv_data_iface);
+
+    *state = obj;
+    return S_OK;
+}
+
+struct qemu_d3d11_state *state_from_host(ID3D11DeviceChild *host)
+{
+    IUnknown *priv;
+    DWORD size = sizeof(priv);
+    HRESULT hr;
+
+    hr = ID3D11DeviceChild_GetPrivateData(host, &IID_d3d11_priv_data, &size, &priv);
+    if (FAILED(hr))
+    {
+        WINE_TRACE("Failed to get private data from host surface %p.\n", host);
+        return NULL;
+    }
+
+    IUnknown_Release(priv);
+    return impl_from_priv_data(priv);
+}
+
+#endif

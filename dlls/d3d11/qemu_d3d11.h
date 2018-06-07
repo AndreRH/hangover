@@ -856,6 +856,7 @@ void qemu_d3d11_render_target_view_guest_init(struct qemu_d3d11_view *view);
 void qemu_d3d11_pixel_shader_guest_init(struct qemu_d3d11_shader *shader);
 void qemu_d3d11_vertex_shader_guest_init(struct qemu_d3d11_shader *shader);
 void qemu_d3d11_geometry_shader_guest_init(struct qemu_d3d11_shader *shader);
+void qemu_d3d11_sampler_state_guest_init(struct qemu_d3d11_state *state);
 
 #else
 
@@ -1441,10 +1442,12 @@ HRESULT qemu_d3d11_texture_create(ID3D11Resource *host, struct qemu_d3d11_device
 HRESULT qemu_d3d11_buffer_create(ID3D11Buffer *host, struct qemu_d3d11_buffer **buffer);
 HRESULT qemu_d3d11_view_create(ID3D11View *host, const IID *d3d10iface, struct qemu_d3d11_view **view);
 HRESULT qemu_d3d11_shader_create(ID3D11DeviceChild *host, const IID *d3d10iface, struct qemu_d3d11_shader **shader);
+HRESULT qemu_d3d11_state_create(ID3D11DeviceChild *host, const IID *d3d10iface, struct qemu_d3d11_state **state);
 
 DEFINE_GUID(IID_d3d11_priv_data, 0x2b676c65, 0x7123, 0x4138, 0xb6, 0xdb, 0x96, 0xfe, 0xa9, 0xae, 0x00, 0x43);
 
 struct qemu_d3d11_device *device_from_host(ID3D11Device2 *host);
+struct qemu_d3d11_state *state_from_host(ID3D11DeviceChild *host);
 
 #endif
 
