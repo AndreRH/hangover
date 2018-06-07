@@ -75,14 +75,47 @@ static HRESULT STDMETHODCALLTYPE d3d11_query_QueryInterface(ID3D11Query *iface, 
     struct qemu_d3d11_query_QueryInterface call;
     struct qemu_d3d11_query *query = impl_from_ID3D11Query(iface);
 
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_QUERY_QUERYINTERFACE);
     call.iface = (ULONG_PTR)query;
     call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    if (FAILED(call.super.iret))
+    {
+        *object = NULL;
+        return call.super.iret;
+    }
+
+    if (IsEqualGUID(riid, &IID_ID3D11Predicate)
+            || IsEqualGUID(riid, &IID_ID3D11Query)
+            || IsEqualGUID(riid, &IID_ID3D11Asynchronous)
+            || IsEqualGUID(riid, &IID_ID3D11DeviceChild)
+            || IsEqualGUID(riid, &IID_IUnknown))
+    {
+        *object = iface;
+        return S_OK;
+    }
+
+    if (IsEqualGUID(riid, &IID_ID3D10Predicate)
+            || IsEqualGUID(riid, &IID_ID3D10Query)
+            || IsEqualGUID(riid, &IID_ID3D10Asynchronous)
+            || IsEqualGUID(riid, &IID_ID3D10DeviceChild))
+    {
+        *object = &query->ID3D10Query_iface;
+        return S_OK;
+    }
+
+    WINE_FIXME("Host device returned IID %s which this wrapper does not know about.\n", wine_dbgstr_guid(riid));
+
+    /* Well, technically we don't know if we share refcounts with this unknown interface, but we're likely to
+     * crash anyway. */
+    ID3D11Query_Release(iface);
+
+    *object = NULL;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -91,11 +124,12 @@ void qemu_d3d11_query_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d11_query_QueryInterface *c = (struct qemu_d3d11_query_QueryInterface *)call;
     struct qemu_d3d11_query *query;
+    IUnknown *out;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     query = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Query_QueryInterface(query->host11, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    c->super.iret = ID3D11Query_QueryInterface(query->host11, QEMU_G2H(c->riid), (void **)&out);
 }
 
 #endif
