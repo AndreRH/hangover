@@ -815,6 +815,14 @@ struct qemu_d3d11_shader *unsafe_impl_from_ID3D10PixelShader(ID3D10PixelShader *
 struct qemu_d3d11_shader *unsafe_impl_from_ID3D11ComputeShader(ID3D11ComputeShader *iface);
 struct qemu_d3d11_input_layout *unsafe_impl_from_ID3D11InputLayout(ID3D11InputLayout *iface);
 struct qemu_d3d11_input_layout *unsafe_impl_from_ID3D10InputLayout(ID3D10InputLayout *iface);
+struct qemu_d3d11_state *unsafe_impl_from_ID3D11BlendState(ID3D11BlendState *iface);
+struct qemu_d3d11_state *unsafe_impl_from_ID3D10BlendState(ID3D10BlendState *iface);
+struct qemu_d3d11_state *unsafe_impl_from_ID3D11DepthStencilState(ID3D11DepthStencilState *iface);
+struct qemu_d3d11_state *unsafe_impl_from_ID3D10DepthStencilState(ID3D10DepthStencilState *iface);
+struct qemu_d3d11_state *unsafe_impl_from_ID3D11RasterizerState(ID3D11RasterizerState *iface);
+struct qemu_d3d11_state *unsafe_impl_from_ID3D10RasterizerState(ID3D10RasterizerState *iface);
+struct qemu_d3d11_state *unsafe_impl_from_ID3D11SamplerState(ID3D11SamplerState *iface);
+struct qemu_d3d11_state *unsafe_impl_from_ID3D10SamplerState(ID3D10SamplerState *iface);
 
 extern HRESULT (* WINAPI p_DXGID3D10CreateDevice)(HMODULE d3d10core, IDXGIFactory *factory, IDXGIAdapter *adapter,
         unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, void **device);

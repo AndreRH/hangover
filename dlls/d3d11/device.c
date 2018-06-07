@@ -386,18 +386,31 @@ struct qemu_d3d11_immediate_context_PSSetSamplers
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_PSSetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT sampler_count, ID3D11SamplerState *const *samplers)
+static void STDMETHODCALLTYPE d3d11_immediate_context_PSSetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot,
+        UINT sampler_count, ID3D11SamplerState *const *samplers)
 {
     struct qemu_d3d11_immediate_context_PSSetSamplers call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    uint64_t stack[16], *sampler_impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_PSSETSAMPLERS);
     call.iface = (ULONG_PTR)context;
     call.start_slot = start_slot;
     call.sampler_count = sampler_count;
-    call.samplers = (ULONG_PTR)samplers;
+
+    if (sampler_count > (sizeof(stack) / sizeof(*stack)))
+        sampler_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*sampler_impl) * sampler_count);
+
+    for (i = 0; i < sampler_count; ++i)
+        sampler_impl[i] = (ULONG_PTR)unsafe_impl_from_ID3D11SamplerState(samplers[i]);
+
+    call.samplers = (ULONG_PTR)sampler_impl;
 
     qemu_syscall(&call.super);
+
+    if (sampler_impl != stack)
+        HeapFree(GetProcessHeap(), 0, sampler_impl);
 }
 
 #else
@@ -406,11 +419,20 @@ void qemu_d3d11_immediate_context_PSSetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_PSSetSamplers *c = (struct qemu_d3d11_immediate_context_PSSetSamplers *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11SamplerState **ifaces;
+    UINT i, count;
+    struct qemu_d3d11_state **sampler_impl;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    count = c->sampler_count;
+    ifaces = QEMU_G2H(c->samplers);
+    sampler_impl = QEMU_G2H(c->samplers);
 
-    ID3D11DeviceContext1_PSSetSamplers(context->host, c->start_slot, c->sampler_count, QEMU_G2H(c->samplers));
+    for (i = 0; i < count; ++i)
+        ifaces[i] = sampler_impl[i] ? sampler_impl[i]->host_ss11 : NULL;
+
+    ID3D11DeviceContext1_PSSetSamplers(context->host, c->start_slot, c->sampler_count, ifaces);
 }
 
 #endif

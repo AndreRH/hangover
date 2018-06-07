@@ -2078,6 +2078,78 @@ void __fastcall d3d11_state_guest_destroy(struct qemu_d3d11_state *state)
     wined3d_private_store_cleanup(&state->private_store);
 }
 
+struct qemu_d3d11_state *unsafe_impl_from_ID3D11BlendState(ID3D11BlendState *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_blend_state_vtbl);*/
+
+    return impl_from_ID3D11BlendState(iface);
+}
+
+struct qemu_d3d11_state *unsafe_impl_from_ID3D10BlendState(ID3D10BlendState *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == (ID3D10BlendStateVtbl *)&d3d10_blend_state_vtbl);*/
+
+    return impl_from_ID3D10BlendState1((ID3D10BlendState1 *)iface);
+}
+
+struct qemu_d3d11_state *unsafe_impl_from_ID3D11DepthStencilState(ID3D11DepthStencilState *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_depthstencil_state_vtbl);*/
+
+    return impl_from_ID3D11DepthStencilState(iface);
+}
+
+struct qemu_d3d11_state *unsafe_impl_from_ID3D10DepthStencilState(ID3D10DepthStencilState *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d10_depthstencil_state_vtbl);*/
+
+    return impl_from_ID3D10DepthStencilState(iface);
+}
+
+struct qemu_d3d11_state *unsafe_impl_from_ID3D11RasterizerState(ID3D11RasterizerState *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_rasterizer_state_vtbl);*/
+
+    return impl_from_ID3D11RasterizerState(iface);
+}
+
+struct qemu_d3d11_state *unsafe_impl_from_ID3D10RasterizerState(ID3D10RasterizerState *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d10_rasterizer_state_vtbl);*/
+
+    return impl_from_ID3D10RasterizerState(iface);
+}
+
+struct qemu_d3d11_state *unsafe_impl_from_ID3D11SamplerState(ID3D11SamplerState *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d11_sampler_state_vtbl);*/
+
+    return impl_from_ID3D11SamplerState(iface);
+}
+
+struct qemu_d3d11_state *unsafe_impl_from_ID3D10SamplerState(ID3D10SamplerState *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d10_sampler_state_vtbl);*/
+
+    return impl_from_ID3D10SamplerState(iface);
+}
+
 #else
 
 static inline struct qemu_d3d11_state *impl_from_priv_data(IUnknown *iface)
