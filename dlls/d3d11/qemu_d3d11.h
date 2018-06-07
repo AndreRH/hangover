@@ -631,6 +631,7 @@ enum d3d11_calls
 };
 
 #define MAX_CONSTANT_BUFFERS        15
+#define MAX_STREAMS                 16
 
 #ifdef QEMU_DLL_GUEST
 
