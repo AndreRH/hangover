@@ -414,7 +414,7 @@ void qemu_d3d11_query_GetDataSize(struct qemu_syscall *call)
     struct qemu_d3d11_query_GetDataSize *c = (struct qemu_d3d11_query_GetDataSize *)call;
     struct qemu_d3d11_query *query;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     query = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11Query_GetDataSize(query->host11);
@@ -832,7 +832,7 @@ void qemu_d3d10_query_GetDataSize(struct qemu_syscall *call)
     struct qemu_d3d10_query_GetDataSize *c = (struct qemu_d3d10_query_GetDataSize *)call;
     struct qemu_d3d11_query *query;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     query = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Query_GetDataSize(query->host10);

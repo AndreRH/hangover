@@ -128,7 +128,7 @@ void qemu_d3d11_input_layout_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_input_layout_AddRef *c = (struct qemu_d3d11_input_layout_AddRef *)call;
     struct qemu_d3d11_input_layout *layout;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     layout = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11InputLayout_AddRef(layout->host11);
@@ -164,7 +164,7 @@ void qemu_d3d11_input_layout_Release(struct qemu_syscall *call)
     struct qemu_d3d11_input_layout_Release *c = (struct qemu_d3d11_input_layout_Release *)call;
     struct qemu_d3d11_input_layout *layout;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     layout = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11InputLayout_Release(layout->host11);
@@ -400,7 +400,7 @@ void qemu_d3d10_input_layout_AddRef(struct qemu_syscall *call)
     struct qemu_d3d10_input_layout_AddRef *c = (struct qemu_d3d10_input_layout_AddRef *)call;
     struct qemu_d3d11_input_layout *layout;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     layout = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10InputLayout_AddRef(layout->host10);
@@ -436,7 +436,7 @@ void qemu_d3d10_input_layout_Release(struct qemu_syscall *call)
     struct qemu_d3d10_input_layout_Release *c = (struct qemu_d3d10_input_layout_Release *)call;
     struct qemu_d3d11_input_layout *layout;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     layout = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10InputLayout_Release(layout->host10);

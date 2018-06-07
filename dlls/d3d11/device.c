@@ -602,7 +602,8 @@ struct qemu_d3d11_immediate_context_Draw
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_Draw(ID3D11DeviceContext1 *iface, UINT vertex_count, UINT start_vertex_location)
+static void STDMETHODCALLTYPE d3d11_immediate_context_Draw(ID3D11DeviceContext1 *iface, UINT vertex_count,
+        UINT start_vertex_location)
 {
     struct qemu_d3d11_immediate_context_Draw call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
@@ -622,7 +623,7 @@ void qemu_d3d11_immediate_context_Draw(struct qemu_syscall *call)
     struct qemu_d3d11_immediate_context_Draw *c = (struct qemu_d3d11_immediate_context_Draw *)call;
     struct qemu_d3d11_device_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     ID3D11DeviceContext1_Draw(context->host, c->vertex_count, c->start_vertex_location);
@@ -7487,7 +7488,8 @@ struct qemu_d3d11_device_CheckMultisampleQualityLevels
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_CheckMultisampleQualityLevels(ID3D11Device2 *iface, DXGI_FORMAT format, UINT sample_count, UINT *quality_level_count)
+static HRESULT STDMETHODCALLTYPE d3d11_device_CheckMultisampleQualityLevels(ID3D11Device2 *iface, DXGI_FORMAT format,
+        UINT sample_count, UINT *quality_level_count)
 {
     struct qemu_d3d11_device_CheckMultisampleQualityLevels call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
@@ -7510,7 +7512,7 @@ void qemu_d3d11_device_CheckMultisampleQualityLevels(struct qemu_syscall *call)
     struct qemu_d3d11_device_CheckMultisampleQualityLevels *c = (struct qemu_d3d11_device_CheckMultisampleQualityLevels *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11Device2_CheckMultisampleQualityLevels(device->host_d3d11, c->format, c->sample_count, QEMU_G2H(c->quality_level_count));
@@ -7874,7 +7876,7 @@ void qemu_d3d11_device_GetDeviceRemovedReason(struct qemu_syscall *call)
     struct qemu_d3d11_device_GetDeviceRemovedReason *c = (struct qemu_d3d11_device_GetDeviceRemovedReason *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11Device2_GetDeviceRemovedReason(device->host_d3d11);
