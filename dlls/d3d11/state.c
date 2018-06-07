@@ -2754,6 +2754,12 @@ void qemu_d3d11_blend_state_guest_init(struct qemu_d3d11_state *state)
     state->ID3D10BlendState1_iface.lpVtbl = &d3d10_blend_state_vtbl;
 }
 
+void qemu_d3d11_depthstencil_state_guest_init(struct qemu_d3d11_state *state)
+{
+    state->ID3D11DepthStencilState_iface.lpVtbl = &d3d11_depthstencil_state_vtbl;
+    state->ID3D10DepthStencilState_iface.lpVtbl = &d3d10_depthstencil_state_vtbl;
+}
+
 #else
 
 static inline struct qemu_d3d11_state *impl_from_priv_data(IUnknown *iface)

@@ -6780,21 +6780,31 @@ struct qemu_d3d11_device_CreateDepthStencilState
     uint64_t iface;
     uint64_t desc;
     uint64_t depth_stencil_state;
+    uint64_t new_state;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_CreateDepthStencilState(ID3D11Device2 *iface, const D3D11_DEPTH_STENCIL_DESC *desc, ID3D11DepthStencilState **depth_stencil_state)
+static HRESULT STDMETHODCALLTYPE d3d11_device_CreateDepthStencilState(ID3D11Device2 *iface,
+            const D3D11_DEPTH_STENCIL_DESC *desc, ID3D11DepthStencilState **depth_stencil_state)
 {
     struct qemu_d3d11_device_CreateDepthStencilState call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
+    struct qemu_d3d11_state *obj;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_CREATEDEPTHSTENCILSTATE);
     call.iface = (ULONG_PTR)device;
     call.desc = (ULONG_PTR)desc;
-    call.depth_stencil_state = (ULONG_PTR)depth_stencil_state;
 
     qemu_syscall(&call.super);
+
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    obj = (struct qemu_d3d11_state *)(ULONG_PTR)call.depth_stencil_state;
+    if (call.new_state)
+        qemu_d3d11_depthstencil_state_guest_init(obj);
+    *depth_stencil_state = &obj->ID3D11DepthStencilState_iface;
 
     return call.super.iret;
 }
@@ -6805,11 +6815,33 @@ void qemu_d3d11_device_CreateDepthStencilState(struct qemu_syscall *call)
 {
     struct qemu_d3d11_device_CreateDepthStencilState *c = (struct qemu_d3d11_device_CreateDepthStencilState *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_state *obj;
+    ID3D11DepthStencilState *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Device2_CreateDepthStencilState(device->host_d3d11, QEMU_G2H(c->desc), QEMU_G2H(c->depth_stencil_state));
+    c->super.iret = ID3D11Device2_CreateDepthStencilState(device->host_d3d11, QEMU_G2H(c->desc), &host);
+
+    if (FAILED(c->super.iret))
+        return;
+
+    if (!(obj = state_from_host((ID3D11DeviceChild *)host)))
+    {
+        c->super.iret = qemu_d3d11_state_create((ID3D11DeviceChild *)host, &IID_ID3D10DepthStencilState, &obj);
+        if (FAILED(c->super.iret))
+        {
+            ID3D11DepthStencilState_Release(host);
+            return;
+        }
+        c->new_state = 1;
+    }
+    else
+    {
+        c->new_state = 0;
+    }
+
+    c->depth_stencil_state = QEMU_H2G(obj);
 }
 
 #endif
