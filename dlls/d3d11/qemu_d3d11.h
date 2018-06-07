@@ -187,7 +187,6 @@ enum d3d11_calls
     CALL_D3D10_RENDERTARGET_VIEW_SETPRIVATEDATAINTERFACE,
     CALL_D3D10_SAMPLER_STATE_ADDREF,
     CALL_D3D10_SAMPLER_STATE_GETDESC,
-    CALL_D3D10_SAMPLER_STATE_GETDEVICE,
     CALL_D3D10_SAMPLER_STATE_GETPRIVATEDATA,
     CALL_D3D10_SAMPLER_STATE_QUERYINTERFACE,
     CALL_D3D10_SAMPLER_STATE_RELEASE,
@@ -1028,7 +1027,6 @@ void qemu_d3d10_rendertarget_view_SetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_rendertarget_view_SetPrivateDataInterface(struct qemu_syscall *call);
 void qemu_d3d10_sampler_state_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_sampler_state_GetDesc(struct qemu_syscall *call);
-void qemu_d3d10_sampler_state_GetDevice(struct qemu_syscall *call);
 void qemu_d3d10_sampler_state_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_sampler_state_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_sampler_state_Release(struct qemu_syscall *call);
