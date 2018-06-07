@@ -2088,14 +2088,16 @@ struct qemu_d3d11_immediate_context_ClearRenderTargetView
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_ClearRenderTargetView(ID3D11DeviceContext1 *iface, ID3D11RenderTargetView *render_target_view, const float color_rgba[4])
+static void STDMETHODCALLTYPE d3d11_immediate_context_ClearRenderTargetView(ID3D11DeviceContext1 *iface,
+        ID3D11RenderTargetView *render_target_view, const float color_rgba[4])
 {
     struct qemu_d3d11_immediate_context_ClearRenderTargetView call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_view *rtv = unsafe_impl_from_ID3D11RenderTargetView(render_target_view);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CLEARRENDERTARGETVIEW);
     call.iface = (ULONG_PTR)context;
-    call.render_target_view = (ULONG_PTR)render_target_view;
+    call.render_target_view = (ULONG_PTR)rtv;
     call.color_rgba = (ULONG_PTR)color_rgba;
 
     qemu_syscall(&call.super);
@@ -2105,13 +2107,16 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_ClearRenderTargetView(ID3D
 
 void qemu_d3d11_immediate_context_ClearRenderTargetView(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_ClearRenderTargetView *c = (struct qemu_d3d11_immediate_context_ClearRenderTargetView *)call;
+    struct qemu_d3d11_immediate_context_ClearRenderTargetView *c =
+            (struct qemu_d3d11_immediate_context_ClearRenderTargetView *)call;
     struct qemu_d3d11_device_context *context;
+    struct qemu_d3d11_view *rtv;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    rtv = QEMU_G2H(c->render_target_view);
 
-    ID3D11DeviceContext1_ClearRenderTargetView(context->host, QEMU_G2H(c->render_target_view), QEMU_G2H(c->color_rgba));
+    ID3D11DeviceContext1_ClearRenderTargetView(context->host, rtv ? rtv->host_rt11 : NULL, QEMU_G2H(c->color_rgba));
 }
 
 #endif
