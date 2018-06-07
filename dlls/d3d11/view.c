@@ -128,7 +128,7 @@ void qemu_d3d11_depthstencil_view_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_depthstencil_view_AddRef *c = (struct qemu_d3d11_depthstencil_view_AddRef *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11DepthStencilView_AddRef(view->host_ds11);
@@ -164,7 +164,7 @@ void qemu_d3d11_depthstencil_view_Release(struct qemu_syscall *call)
     struct qemu_d3d11_depthstencil_view_Release *c = (struct qemu_d3d11_depthstencil_view_Release *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11DepthStencilView_Release(view->host_ds11);
@@ -494,7 +494,7 @@ void qemu_d3d10_depthstencil_view_AddRef(struct qemu_syscall *call)
     struct qemu_d3d10_depthstencil_view_AddRef *c = (struct qemu_d3d10_depthstencil_view_AddRef *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10DepthStencilView_AddRef(view->host_ds10);
@@ -530,7 +530,7 @@ void qemu_d3d10_depthstencil_view_Release(struct qemu_syscall *call)
     struct qemu_d3d10_depthstencil_view_Release *c = (struct qemu_d3d10_depthstencil_view_Release *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10DepthStencilView_Release(view->host_ds10);
