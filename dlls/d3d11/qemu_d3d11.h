@@ -891,6 +891,7 @@ void qemu_d3d11_sampler_state_guest_init(struct qemu_d3d11_state *state);
 void qemu_d3d11_blend_state_guest_init(struct qemu_d3d11_state *state);
 void qemu_d3d11_depthstencil_state_guest_init(struct qemu_d3d11_state *state);
 void qemu_d3d11_rasterizer_state_guest_init(struct qemu_d3d11_state *state);
+void qemu_d3d11_query_guest_init(struct qemu_d3d11_query *view);
 
 #else
 
@@ -1494,6 +1495,7 @@ HRESULT qemu_d3d11_buffer_create(ID3D11Buffer *host, struct qemu_d3d11_buffer **
 HRESULT qemu_d3d11_view_create(ID3D11View *host, const IID *d3d10iface, struct qemu_d3d11_view **view);
 HRESULT qemu_d3d11_shader_create(ID3D11DeviceChild *host, const IID *d3d10iface, struct qemu_d3d11_shader **shader);
 HRESULT qemu_d3d11_state_create(ID3D11DeviceChild *host, const IID *d3d10iface, struct qemu_d3d11_state **state);
+HRESULT qemu_d3d11_query_create(ID3D11Query *host, struct qemu_d3d11_query **query);
 
 DEFINE_GUID(IID_d3d11_priv_data, 0x2b676c65, 0x7123, 0x4138, 0xb6, 0xdb, 0x96, 0xfe, 0xa9, 0xae, 0x00, 0x43);
 

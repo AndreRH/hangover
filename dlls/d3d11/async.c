@@ -897,6 +897,84 @@ static struct ID3D10QueryVtbl d3d10_query_vtbl =
     d3d10_query_GetDesc,
 };
 
+void qemu_d3d11_query_guest_init(struct qemu_d3d11_query *query)
+{
+    query->ID3D11Query_iface.lpVtbl = &d3d11_query_vtbl;
+    query->ID3D10Query_iface.lpVtbl = &d3d10_query_vtbl;
+}
+
 #else
+
+static inline struct qemu_d3d11_query *impl_from_priv_data(IUnknown *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_query, priv_data_iface);
+}
+
+static HRESULT STDMETHODCALLTYPE d3d11_query_priv_data_QueryInterface(IUnknown *iface, REFIID riid, void **out)
+{
+    WINE_ERR("Unexpected call\n");
+    *out = NULL;
+    return E_NOINTERFACE;
+}
+
+static ULONG STDMETHODCALLTYPE d3d11_query_priv_data_AddRef(IUnknown *iface)
+{
+    struct qemu_d3d11_query *query = impl_from_priv_data(iface);
+    ULONG refcount = InterlockedIncrement(&query->refcount);
+
+    WINE_TRACE("%p increasing refcount to %u.\n", query, refcount);
+
+    return refcount;
+}
+
+static ULONG STDMETHODCALLTYPE d3d11_query_priv_data_Release(IUnknown *iface)
+{
+    struct qemu_d3d11_query *query = impl_from_priv_data(iface);
+    ULONG refcount = InterlockedDecrement(&query->refcount);
+
+    WINE_TRACE("%p decreasing refcount to %u.\n", query, refcount);
+
+    if (!refcount)
+    {
+        WINE_TRACE("Destroying query wrapper %p for host query %p.\n", query, query->host11);
+        HeapFree(GetProcessHeap(), 0, query);
+    }
+
+    return refcount;
+}
+
+static struct IUnknownVtbl priv_data_vtbl =
+{
+    /* IUnknown methods */
+    d3d11_query_priv_data_QueryInterface,
+    d3d11_query_priv_data_AddRef,
+    d3d11_query_priv_data_Release,
+};
+
+HRESULT qemu_d3d11_query_create(ID3D11Query *host, struct qemu_d3d11_query **query)
+{
+    struct qemu_d3d11_query *obj;
+    HRESULT hr;
+
+    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
+    if (!obj)
+    {
+        WINE_WARN("Out of memory\n");
+        return E_OUTOFMEMORY;
+    }
+
+    obj->host11 = host;
+    hr = ID3D11View_QueryInterface(host, &IID_ID3D10Query, (void **)&obj->host10);
+    if (FAILED(hr))
+        WINE_ERR("Failed to QI ID3D10Query.\n");
+    ID3D11Query_Release(obj->host10);
+
+    obj->priv_data_iface.lpVtbl = &priv_data_vtbl;
+    /* Leave the ref at 0, we want the host obj to own the only / final reference. */
+    ID3D11View_SetPrivateDataInterface(host, &IID_d3d11_priv_data, &obj->priv_data_iface);
+
+    *query = obj;
+    return S_OK;
+}
 
 #endif
