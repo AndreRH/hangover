@@ -137,7 +137,6 @@ enum d3d11_calls
     CALL_D3D10_DEVICE_VSSETSHADER,
     CALL_D3D10_DEVICE_VSSETSHADERRESOURCES,
     CALL_D3D10_GEOMETRY_SHADER_ADDREF,
-    CALL_D3D10_GEOMETRY_SHADER_GETDEVICE,
     CALL_D3D10_GEOMETRY_SHADER_GETPRIVATEDATA,
     CALL_D3D10_GEOMETRY_SHADER_QUERYINTERFACE,
     CALL_D3D10_GEOMETRY_SHADER_RELEASE,
@@ -754,6 +753,7 @@ void qemu_d3d11_shader_resource_view_guest_init(struct qemu_d3d11_view *view);
 void qemu_d3d11_render_target_view_guest_init(struct qemu_d3d11_view *view);
 void qemu_d3d11_pixel_shader_guest_init(struct qemu_d3d11_shader *shader);
 void qemu_d3d11_vertex_shader_guest_init(struct qemu_d3d11_shader *shader);
+void qemu_d3d11_geometry_shader_guest_init(struct qemu_d3d11_shader *shader);
 
 #else
 
@@ -875,7 +875,6 @@ void qemu_d3d10_device_VSSetSamplers(struct qemu_syscall *call);
 void qemu_d3d10_device_VSSetShader(struct qemu_syscall *call);
 void qemu_d3d10_device_VSSetShaderResources(struct qemu_syscall *call);
 void qemu_d3d10_geometry_shader_AddRef(struct qemu_syscall *call);
-void qemu_d3d10_geometry_shader_GetDevice(struct qemu_syscall *call);
 void qemu_d3d10_geometry_shader_GetPrivateData(struct qemu_syscall *call);
 void qemu_d3d10_geometry_shader_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_geometry_shader_Release(struct qemu_syscall *call);

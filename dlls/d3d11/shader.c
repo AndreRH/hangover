@@ -1305,12 +1305,30 @@ static void STDMETHODCALLTYPE d3d11_geometry_shader_GetDevice(ID3D11GeometryShad
 {
     struct qemu_d3d11_geometry_shader_GetDevice call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D11GeometryShader(iface);
+    struct qemu_d3d11_device *dev_impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_GEOMETRY_SHADER_GETDEVICE);
     call.iface = (ULONG_PTR)shader;
-    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
+
+    dev_impl = (struct qemu_d3d11_device *)(ULONG_PTR)call.device;
+    *device = (ID3D11Device *)&dev_impl->ID3D11Device2_iface;
+}
+
+static void STDMETHODCALLTYPE d3d10_geometry_shader_GetDevice(ID3D10GeometryShader *iface, ID3D10Device **device)
+{
+    struct qemu_d3d11_geometry_shader_GetDevice call;
+    struct qemu_d3d11_shader *shader = impl_from_ID3D10GeometryShader(iface);
+    struct qemu_d3d11_device *dev_impl;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_GEOMETRY_SHADER_GETDEVICE);
+    call.iface = (ULONG_PTR)shader;
+
+    qemu_syscall(&call.super);
+
+    dev_impl = (struct qemu_d3d11_device *)(ULONG_PTR)call.device;
+    *device = (ID3D10Device *)&dev_impl->ID3D10Device1_iface;
 }
 
 #else
@@ -1319,11 +1337,13 @@ void qemu_d3d11_geometry_shader_GetDevice(struct qemu_syscall *call)
 {
     struct qemu_d3d11_geometry_shader_GetDevice *c = (struct qemu_d3d11_geometry_shader_GetDevice *)call;
     struct qemu_d3d11_shader *shader;
+    ID3D11Device2 *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     shader = QEMU_G2H(c->iface);
 
-    ID3D11GeometryShader_GetDevice(shader->host_gs11, QEMU_G2H(c->device));
+    ID3D11GeometryShader_GetDevice(shader->host_gs11, (ID3D11Device **)&host);
+    c->device = QEMU_H2G(device_from_host(host));
 }
 
 #endif
@@ -1560,42 +1580,6 @@ void qemu_d3d10_geometry_shader_Release(struct qemu_syscall *call)
     shader = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10GeometryShader_Release(shader->host_gs10);
-}
-
-#endif
-
-struct qemu_d3d10_geometry_shader_GetDevice
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t device;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static void STDMETHODCALLTYPE d3d10_geometry_shader_GetDevice(ID3D10GeometryShader *iface, ID3D10Device **device)
-{
-    struct qemu_d3d10_geometry_shader_GetDevice call;
-    struct qemu_d3d11_shader *shader = impl_from_ID3D10GeometryShader(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_GEOMETRY_SHADER_GETDEVICE);
-    call.iface = (ULONG_PTR)shader;
-    call.device = (ULONG_PTR)device;
-
-    qemu_syscall(&call.super);
-}
-
-#else
-
-void qemu_d3d10_geometry_shader_GetDevice(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_geometry_shader_GetDevice *c = (struct qemu_d3d10_geometry_shader_GetDevice *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    ID3D10GeometryShader_GetDevice(shader->host_gs10, QEMU_G2H(c->device));
 }
 
 #endif
@@ -3078,6 +3062,13 @@ void qemu_d3d11_vertex_shader_guest_init(struct qemu_d3d11_shader *shader)
     shader->ID3D11VertexShader_iface.lpVtbl = &d3d11_vertex_shader_vtbl;
     shader->ID3D10VertexShader_iface.lpVtbl = &d3d10_vertex_shader_vtbl;
 }
+
+void qemu_d3d11_geometry_shader_guest_init(struct qemu_d3d11_shader *shader)
+{
+    shader->ID3D11GeometryShader_iface.lpVtbl = &d3d11_geometry_shader_vtbl;
+    shader->ID3D10GeometryShader_iface.lpVtbl = &d3d10_geometry_shader_vtbl;
+}
+
 
 #else
 
