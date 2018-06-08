@@ -2912,14 +2912,16 @@ struct qemu_d3d11_immediate_context_GenerateMips
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_GenerateMips(ID3D11DeviceContext1 *iface, ID3D11ShaderResourceView *view)
+static void STDMETHODCALLTYPE d3d11_immediate_context_GenerateMips(ID3D11DeviceContext1 *iface,
+        ID3D11ShaderResourceView *view)
 {
     struct qemu_d3d11_immediate_context_GenerateMips call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_view *impl = unsafe_impl_from_ID3D11ShaderResourceView(view);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GENERATEMIPS);
     call.iface = (ULONG_PTR)context;
-    call.view = (ULONG_PTR)view;
+    call.view = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
 }
@@ -2930,11 +2932,13 @@ void qemu_d3d11_immediate_context_GenerateMips(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GenerateMips *c = (struct qemu_d3d11_immediate_context_GenerateMips *)call;
     struct qemu_d3d11_device_context *context;
+    struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    view = QEMU_G2H(c->view);
 
-    ID3D11DeviceContext1_GenerateMips(context->host, QEMU_G2H(c->view));
+    ID3D11DeviceContext1_GenerateMips(context->host, view ? view->host_sr11 : NULL);
 }
 
 #endif
