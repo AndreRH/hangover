@@ -7985,22 +7985,28 @@ void qemu_d3d11_device_GetImmediateContext1(struct qemu_syscall *call)
 {
     struct qemu_d3d11_device_GetImmediateContext *c = (struct qemu_d3d11_device_GetImmediateContext *)call;
     struct qemu_d3d11_device *device;
+    ID3D11DeviceContext1 *ctx = (ID3D11DeviceContext1 *)0xdeadbeef;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    ID3D11Device2_GetImmediateContext1(device->host_d3d11, QEMU_G2H(c->context));
+    ID3D11Device2_GetImmediateContext1(device->host_d3d11, &ctx);
+    if (ctx != (ID3D11DeviceContext1 *)0xdeadbeef)
+        WINE_FIXME("Host returned context %p.\n", ctx);
 }
 
 void qemu_d3d11_device_GetImmediateContext2(struct qemu_syscall *call)
 {
     struct qemu_d3d11_device_GetImmediateContext *c = (struct qemu_d3d11_device_GetImmediateContext *)call;
     struct qemu_d3d11_device *device;
+    ID3D11DeviceContext2 *ctx = (ID3D11DeviceContext2 *)0xdeadbeef;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    ID3D11Device2_GetImmediateContext2(device->host_d3d11, QEMU_G2H(c->context));
+    ID3D11Device2_GetImmediateContext2(device->host_d3d11, &ctx);
+    if (ctx != (ID3D11DeviceContext2 *)0xdeadbeef)
+        WINE_FIXME("Host returned context %p.\n", ctx);
 }
 
 #endif
