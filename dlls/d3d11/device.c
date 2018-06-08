@@ -900,14 +900,11 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_IASetVertexBuffers(ID3D11D
 {
     struct qemu_d3d11_immediate_context_IASetVertexBuffers call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
-    uint64_t buffer_impl[MAX_STREAMS];
+    uint64_t stack[MAX_STREAMS], *buffer_impl = stack;
     UINT i;
 
     if (buffer_count > MAX_STREAMS)
-    {
-        WINE_FIXME("MAX_STREAMS is too small.\n");
-        return;
-    }
+        buffer_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*buffer_impl) * buffer_count);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_IASETVERTEXBUFFERS);
     call.iface = (ULONG_PTR)context;
@@ -922,6 +919,9 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_IASetVertexBuffers(ID3D11D
     call.buffers = (ULONG_PTR)buffer_impl;
 
     qemu_syscall(&call.super);
+
+    if (buffer_impl != stack)
+        HeapFree(GetProcessHeap(), 0, buffer_impl);
 }
 
 #else
@@ -931,7 +931,7 @@ void qemu_d3d11_immediate_context_IASetVertexBuffers(struct qemu_syscall *call)
     struct qemu_d3d11_immediate_context_IASetVertexBuffers *c =
             (struct qemu_d3d11_immediate_context_IASetVertexBuffers *)call;
     struct qemu_d3d11_device_context *context;
-    ID3D11Buffer *buffer_iface[MAX_CONSTANT_BUFFERS];
+    ID3D11Buffer **buffer_iface;
     UINT i;
     struct qemu_d3d11_buffer *buffer;
     uint64_t *buffer_array;
@@ -939,6 +939,7 @@ void qemu_d3d11_immediate_context_IASetVertexBuffers(struct qemu_syscall *call)
     WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
     buffer_array = QEMU_G2H(c->buffers);
+    buffer_iface = QEMU_G2H(c->buffers);
     for (i = 0; i < c->buffer_count; ++i)
     {
         buffer = QEMU_G2H(buffer_array[i]);
