@@ -805,7 +805,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d10_device_CreateBlendState1,
     qemu_d3d10_device_CreateCounter,
     qemu_d3d10_device_CreateDepthStencilState,
-    qemu_d3d10_device_CreateDepthStencilView,
     qemu_d3d10_device_CreateGeometryShader,
     qemu_d3d10_device_CreateGeometryShaderWithStreamOutput,
     qemu_d3d10_device_CreateInputLayout,

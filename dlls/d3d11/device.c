@@ -8454,6 +8454,42 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateDepthStencilView(ID3D11Devic
     return call.super.iret;
 }
 
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreateDepthStencilView(ID3D10Device1 *iface, ID3D10Resource *resource,
+        const D3D10_DEPTH_STENCIL_VIEW_DESC *desc, ID3D10DepthStencilView **view)
+{
+    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    D3D11_DEPTH_STENCIL_VIEW_DESC d3d11_desc;
+    ID3D11DepthStencilView *view11;
+    ID3D11Resource *d3d11_resource;
+    HRESULT hr;
+
+    WINE_TRACE("iface %p, resource %p, desc %p, view %p.\n", iface, resource, desc, view);
+
+    if (desc)
+    {
+        d3d11_desc.Format = desc->Format;
+        d3d11_desc.ViewDimension = desc->ViewDimension;
+        d3d11_desc.Flags = 0;
+        memcpy(&d3d11_desc.Texture2DArray, &desc->Texture2DArray, sizeof(d3d11_desc.Texture2DArray));
+    }
+
+    if (FAILED(hr = ID3D10Resource_QueryInterface(resource, &IID_ID3D11Resource, (void **)&d3d11_resource)))
+    {
+        WINE_ERR("Resource does not implement ID3D11Resource.\n");
+        return E_FAIL;
+    }
+
+    hr = d3d11_device_CreateDepthStencilView(&device->ID3D11Device2_iface, d3d11_resource,
+            desc ? &d3d11_desc : NULL, &view11);
+    ID3D11Resource_Release(d3d11_resource);
+    if (FAILED(hr))
+        return hr;
+
+    hr = ID3D11DepthStencilView_QueryInterface(view11, &IID_ID3D10DepthStencilView, (void **)view);
+    ID3D11DepthStencilView_Release(view11);
+    return hr;
+}
+
 #else
 
 void qemu_d3d11_device_CreateDepthStencilView(struct qemu_syscall *call)
@@ -13486,48 +13522,6 @@ void qemu_d3d10_device_CreateRenderTargetView(struct qemu_syscall *call)
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Device1_CreateRenderTargetView(device->host_d3d10, QEMU_G2H(c->resource), QEMU_G2H(c->desc), QEMU_G2H(c->view));
-}
-
-#endif
-
-struct qemu_d3d10_device_CreateDepthStencilView
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t resource;
-    uint64_t desc;
-    uint64_t view;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreateDepthStencilView(ID3D10Device1 *iface, ID3D10Resource *resource, const D3D10_DEPTH_STENCIL_VIEW_DESC *desc, ID3D10DepthStencilView **view)
-{
-    struct qemu_d3d10_device_CreateDepthStencilView call;
-    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CREATEDEPTHSTENCILVIEW);
-    call.iface = (ULONG_PTR)device;
-    call.resource = (ULONG_PTR)resource;
-    call.desc = (ULONG_PTR)desc;
-    call.view = (ULONG_PTR)view;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_device_CreateDepthStencilView(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_CreateDepthStencilView *c = (struct qemu_d3d10_device_CreateDepthStencilView *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_CreateDepthStencilView(device->host_d3d10, QEMU_G2H(c->resource), QEMU_G2H(c->desc), QEMU_G2H(c->view));
 }
 
 #endif

@@ -64,7 +64,6 @@ enum d3d11_calls
     CALL_D3D10_DEVICE_CREATEBLENDSTATE1,
     CALL_D3D10_DEVICE_CREATECOUNTER,
     CALL_D3D10_DEVICE_CREATEDEPTHSTENCILSTATE,
-    CALL_D3D10_DEVICE_CREATEDEPTHSTENCILVIEW,
     CALL_D3D10_DEVICE_CREATEGEOMETRYSHADER,
     CALL_D3D10_DEVICE_CREATEGEOMETRYSHADERWITHSTREAMOUTPUT,
     CALL_D3D10_DEVICE_CREATEINPUTLAYOUT,
@@ -905,7 +904,6 @@ void qemu_d3d10_device_CreateBlendState(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateBlendState1(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateCounter(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateDepthStencilState(struct qemu_syscall *call);
-void qemu_d3d10_device_CreateDepthStencilView(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateGeometryShader(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateGeometryShaderWithStreamOutput(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateInputLayout(struct qemu_syscall *call);
