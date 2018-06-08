@@ -840,6 +840,7 @@ void qemu_d3d11_pixel_shader_guest_init(struct qemu_d3d11_shader *shader);
 void qemu_d3d11_vertex_shader_guest_init(struct qemu_d3d11_shader *shader);
 void qemu_d3d11_geometry_shader_guest_init(struct qemu_d3d11_shader *shader);
 void qemu_d3d11_hull_shader_guest_init(struct qemu_d3d11_shader *shader);
+void qemu_d3d11_domain_shader_guest_init(struct qemu_d3d11_shader *shader);
 void qemu_d3d11_sampler_state_guest_init(struct qemu_d3d11_state *state);
 void qemu_d3d11_blend_state_guest_init(struct qemu_d3d11_state *state);
 void qemu_d3d11_depthstencil_state_guest_init(struct qemu_d3d11_state *state);
