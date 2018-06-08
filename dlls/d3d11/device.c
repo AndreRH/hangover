@@ -3434,14 +3434,16 @@ struct qemu_d3d11_immediate_context_CSSetShader
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetShader(ID3D11DeviceContext1 *iface, ID3D11ComputeShader *shader, ID3D11ClassInstance *const *class_instances, UINT class_instance_count)
+static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetShader(ID3D11DeviceContext1 *iface,
+        ID3D11ComputeShader *shader, ID3D11ClassInstance *const *class_instances, UINT class_instance_count)
 {
     struct qemu_d3d11_immediate_context_CSSetShader call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_shader *shader_impl = unsafe_impl_from_ID3D11ComputeShader(shader);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSSETSHADER);
     call.iface = (ULONG_PTR)context;
-    call.shader = (ULONG_PTR)shader;
+    call.shader = (ULONG_PTR)shader_impl;
     call.class_instances = (ULONG_PTR)class_instances;
     call.class_instance_count = class_instance_count;
 
@@ -3454,11 +3456,16 @@ void qemu_d3d11_immediate_context_CSSetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CSSetShader *c = (struct qemu_d3d11_immediate_context_CSSetShader *)call;
     struct qemu_d3d11_device_context *context;
+    struct qemu_d3d11_shader *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    shader = QEMU_G2H(c->shader);
+    if (c->class_instances)
+        WINE_FIXME("ID3D11ClassInstance not supported.\n");
 
-    ID3D11DeviceContext1_CSSetShader(context->host, QEMU_G2H(c->shader), QEMU_G2H(c->class_instances), c->class_instance_count);
+    ID3D11DeviceContext1_CSSetShader(context->host, shader ? shader->host_cs11 : NULL,
+            QEMU_G2H(c->class_instances), c->class_instance_count);
 }
 
 #endif
