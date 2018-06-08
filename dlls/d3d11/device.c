@@ -2681,16 +2681,19 @@ struct qemu_d3d11_immediate_context_CopyStructureCount
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_CopyStructureCount(ID3D11DeviceContext1 *iface, ID3D11Buffer *dst_buffer, UINT dst_offset, ID3D11UnorderedAccessView *src_view)
+static void STDMETHODCALLTYPE d3d11_immediate_context_CopyStructureCount(ID3D11DeviceContext1 *iface,
+        ID3D11Buffer *dst_buffer, UINT dst_offset, ID3D11UnorderedAccessView *src_view)
 {
     struct qemu_d3d11_immediate_context_CopyStructureCount call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_buffer *buffer_impl = unsafe_impl_from_ID3D11Buffer(dst_buffer);
+    struct qemu_d3d11_view *view_impl = unsafe_impl_from_ID3D11UnorderedAccessView(src_view);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_COPYSTRUCTURECOUNT);
     call.iface = (ULONG_PTR)context;
-    call.dst_buffer = (ULONG_PTR)dst_buffer;
+    call.dst_buffer = (ULONG_PTR)buffer_impl;
     call.dst_offset = dst_offset;
-    call.src_view = (ULONG_PTR)src_view;
+    call.src_view = (ULONG_PTR)view_impl;
 
     qemu_syscall(&call.super);
 }
@@ -2699,13 +2702,19 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CopyStructureCount(ID3D11D
 
 void qemu_d3d11_immediate_context_CopyStructureCount(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_CopyStructureCount *c = (struct qemu_d3d11_immediate_context_CopyStructureCount *)call;
+    struct qemu_d3d11_immediate_context_CopyStructureCount *c =
+            (struct qemu_d3d11_immediate_context_CopyStructureCount *)call;
     struct qemu_d3d11_device_context *context;
+    struct qemu_d3d11_buffer *buffer;
+    struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    view = QEMU_G2H(c->src_view);
+    buffer = QEMU_G2H(c->dst_buffer);
 
-    ID3D11DeviceContext1_CopyStructureCount(context->host, QEMU_G2H(c->dst_buffer), c->dst_offset, QEMU_G2H(c->src_view));
+    ID3D11DeviceContext1_CopyStructureCount(context->host, buffer ? buffer->host11 : NULL, c->dst_offset,
+            view ? view->host_uav : NULL);
 }
 
 #endif
