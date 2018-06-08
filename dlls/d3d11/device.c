@@ -3004,27 +3004,78 @@ struct qemu_d3d11_immediate_context_ResolveSubresource
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t dst_resource;
+    uint64_t dst_buffer;
+    uint64_t dst_texture;
     uint64_t dst_subresource_idx;
-    uint64_t src_resource;
+    uint64_t src_buffer;
+    uint64_t src_texture;
     uint64_t src_subresource_idx;
     uint64_t format;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_ResolveSubresource(ID3D11DeviceContext1 *iface, ID3D11Resource *dst_resource, UINT dst_subresource_idx, ID3D11Resource *src_resource, UINT src_subresource_idx, DXGI_FORMAT format)
+static void STDMETHODCALLTYPE d3d11_immediate_context_ResolveSubresource(ID3D11DeviceContext1 *iface,
+        ID3D11Resource *dst_resource, UINT dst_subresource_idx, ID3D11Resource *src_resource,
+        UINT src_subresource_idx, DXGI_FORMAT format)
 {
     struct qemu_d3d11_immediate_context_ResolveSubresource call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    D3D11_RESOURCE_DIMENSION dim;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_RESOLVESUBRESOURCE);
     call.iface = (ULONG_PTR)context;
-    call.dst_resource = (ULONG_PTR)dst_resource;
     call.dst_subresource_idx = dst_subresource_idx;
-    call.src_resource = (ULONG_PTR)src_resource;
     call.src_subresource_idx = src_subresource_idx;
     call.format = format;
+
+    ID3D11Resource_GetType(dst_resource, &dim);
+    switch (dim)
+    {
+        case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
+            call.dst_buffer = 0;
+            call.dst_texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture1D((ID3D11Texture1D *)dst_resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
+            call.dst_buffer = 0;
+            call.dst_texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture2D((ID3D11Texture2D *)dst_resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
+            call.dst_buffer = 0;
+            call.dst_texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture3D((ID3D11Texture3D *)dst_resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_BUFFER:
+            call.dst_buffer = (ULONG_PTR)unsafe_impl_from_ID3D11Buffer((ID3D11Buffer *)dst_resource);
+            call.dst_texture = 0;
+            break;
+    }
+
+    ID3D11Resource_GetType(src_resource, &dim);
+    switch (dim)
+    {
+        case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
+            call.src_buffer = 0;
+            call.src_texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture1D((ID3D11Texture1D *)src_resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
+            call.src_buffer = 0;
+            call.src_texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture2D((ID3D11Texture2D *)src_resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
+            call.src_buffer = 0;
+            call.src_texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture3D((ID3D11Texture3D *)src_resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_BUFFER:
+            call.src_buffer = (ULONG_PTR)unsafe_impl_from_ID3D11Buffer((ID3D11Buffer *)src_resource);
+            call.src_texture = 0;
+            break;
+    }
 
     qemu_syscall(&call.super);
 }
@@ -3033,13 +3084,40 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_ResolveSubresource(ID3D11D
 
 void qemu_d3d11_immediate_context_ResolveSubresource(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_ResolveSubresource *c = (struct qemu_d3d11_immediate_context_ResolveSubresource *)call;
+    struct qemu_d3d11_immediate_context_ResolveSubresource *c =
+            (struct qemu_d3d11_immediate_context_ResolveSubresource *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11Resource *src, *dst;
+    struct qemu_d3d11_texture *tex;
+    struct qemu_d3d11_buffer *buf;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
-    ID3D11DeviceContext1_ResolveSubresource(context->host, QEMU_G2H(c->dst_resource), c->dst_subresource_idx, QEMU_G2H(c->src_resource), c->src_subresource_idx, c->format);
+    if (c->src_buffer)
+    {
+        buf = QEMU_G2H(c->src_buffer);
+        src = (ID3D11Resource *)buf->host11;
+    }
+    else
+    {
+        tex = QEMU_G2H(c->src_texture);
+        src = (ID3D11Resource *)tex->host11_1d;
+    }
+
+    if (c->dst_buffer)
+    {
+        buf = QEMU_G2H(c->dst_buffer);
+        dst = (ID3D11Resource *)buf->host11;
+    }
+    else
+    {
+        tex = QEMU_G2H(c->dst_texture);
+        dst = (ID3D11Resource *)tex->host11_1d;
+    }
+
+    ID3D11DeviceContext1_ResolveSubresource(context->host, dst, c->dst_subresource_idx, src,
+            c->src_subresource_idx, c->format);
 }
 
 #endif
