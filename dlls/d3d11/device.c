@@ -6515,7 +6515,8 @@ struct qemu_d3d11_immediate_context_UpdateSubresource1
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t resource;
+    uint64_t buffer;
+    uint64_t texture;
     uint64_t subresource_idx;
     uint64_t box;
     uint64_t data;
@@ -6526,20 +6527,46 @@ struct qemu_d3d11_immediate_context_UpdateSubresource1
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_UpdateSubresource1(ID3D11DeviceContext1 *iface, ID3D11Resource *resource, UINT subresource_idx, const D3D11_BOX *box, const void *data, UINT row_pitch, UINT depth_pitch, UINT flags)
+static void STDMETHODCALLTYPE d3d11_immediate_context_UpdateSubresource1(ID3D11DeviceContext1 *iface,
+        ID3D11Resource *resource, UINT subresource_idx, const D3D11_BOX *box, const void *data,
+        UINT row_pitch, UINT depth_pitch, UINT flags)
 {
     struct qemu_d3d11_immediate_context_UpdateSubresource1 call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    D3D11_RESOURCE_DIMENSION dim;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_UPDATESUBRESOURCE1);
     call.iface = (ULONG_PTR)context;
-    call.resource = (ULONG_PTR)resource;
     call.subresource_idx = subresource_idx;
     call.box = (ULONG_PTR)box;
     call.data = (ULONG_PTR)data;
     call.row_pitch = row_pitch;
     call.depth_pitch = depth_pitch;
     call.flags = flags;
+
+    ID3D11Resource_GetType(resource, &dim);
+    switch (dim)
+    {
+        case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
+            call.buffer = 0;
+            call.texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture1D((ID3D11Texture1D *)resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
+            call.buffer = 0;
+            call.texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture2D((ID3D11Texture2D *)resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
+            call.buffer = 0;
+            call.texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture3D((ID3D11Texture3D *)resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_BUFFER:
+            call.buffer = (ULONG_PTR)unsafe_impl_from_ID3D11Buffer((ID3D11Buffer *)resource);
+            call.texture = 0;
+            break;
+    }
 
     qemu_syscall(&call.super);
 }
@@ -6548,13 +6575,28 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_UpdateSubresource1(ID3D11D
 
 void qemu_d3d11_immediate_context_UpdateSubresource1(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_UpdateSubresource1 *c = (struct qemu_d3d11_immediate_context_UpdateSubresource1 *)call;
+    struct qemu_d3d11_immediate_context_UpdateSubresource1 *c =
+            (struct qemu_d3d11_immediate_context_UpdateSubresource1 *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11Resource *resource;
+    struct qemu_d3d11_buffer *buffer;
+    struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    if (c->texture)
+    {
+        texture = QEMU_G2H(c->texture);
+        resource = (ID3D11Resource *)texture->host11_1d;
+    }
+    else
+    {
+        buffer = QEMU_G2H(c->buffer);
+        resource = (ID3D11Resource *)buffer->host11;
+    }
 
-    ID3D11DeviceContext1_UpdateSubresource1(context->host, QEMU_G2H(c->resource), c->subresource_idx, QEMU_G2H(c->box), QEMU_G2H(c->data), c->row_pitch, c->depth_pitch, c->flags);
+    ID3D11DeviceContext1_UpdateSubresource1(context->host, resource, c->subresource_idx,
+            QEMU_G2H(c->box), QEMU_G2H(c->data), c->row_pitch, c->depth_pitch, c->flags);
 }
 
 #endif
