@@ -2041,7 +2041,8 @@ struct qemu_d3d11_immediate_context_RSSetScissorRects
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_RSSetScissorRects(ID3D11DeviceContext1 *iface, UINT rect_count, const D3D11_RECT *rects)
+static void STDMETHODCALLTYPE d3d11_immediate_context_RSSetScissorRects(ID3D11DeviceContext1 *iface, UINT rect_count,
+        const D3D11_RECT *rects)
 {
     struct qemu_d3d11_immediate_context_RSSetScissorRects call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
@@ -2058,10 +2059,11 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_RSSetScissorRects(ID3D11De
 
 void qemu_d3d11_immediate_context_RSSetScissorRects(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_RSSetScissorRects *c = (struct qemu_d3d11_immediate_context_RSSetScissorRects *)call;
+    struct qemu_d3d11_immediate_context_RSSetScissorRects *c =
+            (struct qemu_d3d11_immediate_context_RSSetScissorRects *)call;
     struct qemu_d3d11_device_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     ID3D11DeviceContext1_RSSetScissorRects(context->host, c->rect_count, QEMU_G2H(c->rects));
@@ -4355,7 +4357,8 @@ struct qemu_d3d11_immediate_context_RSGetScissorRects
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_RSGetScissorRects(ID3D11DeviceContext1 *iface, UINT *rect_count, D3D11_RECT *rects)
+static void STDMETHODCALLTYPE d3d11_immediate_context_RSGetScissorRects(ID3D11DeviceContext1 *iface,
+        UINT *rect_count, D3D11_RECT *rects)
 {
     struct qemu_d3d11_immediate_context_RSGetScissorRects call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
@@ -4372,10 +4375,11 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_RSGetScissorRects(ID3D11De
 
 void qemu_d3d11_immediate_context_RSGetScissorRects(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_RSGetScissorRects *c = (struct qemu_d3d11_immediate_context_RSGetScissorRects *)call;
+    struct qemu_d3d11_immediate_context_RSGetScissorRects *c =
+            (struct qemu_d3d11_immediate_context_RSGetScissorRects *)call;
     struct qemu_d3d11_device_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     ID3D11DeviceContext1_RSGetScissorRects(context->host, QEMU_G2H(c->rect_count), QEMU_G2H(c->rects));
