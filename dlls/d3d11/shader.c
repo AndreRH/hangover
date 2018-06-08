@@ -2216,6 +2216,12 @@ void qemu_d3d11_domain_shader_guest_init(struct qemu_d3d11_shader *shader)
     wined3d_private_store_init(&shader->private_store);
 }
 
+void qemu_d3d11_compute_shader_guest_init(struct qemu_d3d11_shader *shader)
+{
+    shader->ID3D11ComputeShader_iface.lpVtbl = &d3d11_compute_shader_vtbl;
+    wined3d_private_store_init(&shader->private_store);
+}
+
 struct qemu_d3d11_shader *unsafe_impl_from_ID3D11VertexShader(ID3D11VertexShader *iface)
 {
     if (!iface)
