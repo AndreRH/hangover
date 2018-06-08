@@ -4235,31 +4235,38 @@ struct qemu_d3d11_immediate_context_IAGetIndexBuffer
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_IAGetIndexBuffer(ID3D11DeviceContext1 *iface, ID3D11Buffer **buffer, DXGI_FORMAT *format, UINT *offset)
+static void STDMETHODCALLTYPE d3d11_immediate_context_IAGetIndexBuffer(ID3D11DeviceContext1 *iface,
+        ID3D11Buffer **buffer, DXGI_FORMAT *format, UINT *offset)
 {
     struct qemu_d3d11_immediate_context_IAGetIndexBuffer call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_buffer *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_IAGETINDEXBUFFER);
     call.iface = (ULONG_PTR)context;
-    call.buffer = (ULONG_PTR)buffer;
     call.format = (ULONG_PTR)format;
     call.offset = (ULONG_PTR)offset;
 
     qemu_syscall(&call.super);
+
+    impl = (struct qemu_d3d11_buffer *)(ULONG_PTR)call.buffer;
+    *buffer = impl ? &impl->ID3D11Buffer_iface : NULL;
 }
 
 #else
 
 void qemu_d3d11_immediate_context_IAGetIndexBuffer(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_IAGetIndexBuffer *c = (struct qemu_d3d11_immediate_context_IAGetIndexBuffer *)call;
+    struct qemu_d3d11_immediate_context_IAGetIndexBuffer *c =
+            (struct qemu_d3d11_immediate_context_IAGetIndexBuffer *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11Buffer *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
-    ID3D11DeviceContext1_IAGetIndexBuffer(context->host, QEMU_G2H(c->buffer), QEMU_G2H(c->format), QEMU_G2H(c->offset));
+    ID3D11DeviceContext1_IAGetIndexBuffer(context->host, &host, QEMU_G2H(c->format), QEMU_G2H(c->offset));
+    c->buffer = QEMU_H2G(buffer_from_host(host));
 }
 
 #endif
