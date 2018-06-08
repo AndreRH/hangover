@@ -6529,25 +6529,58 @@ struct qemu_d3d11_device_CreateUnorderedAccessView
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t resource;
+    uint64_t texture;
+    uint64_t buffer;
     uint64_t desc;
     uint64_t view;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_CreateUnorderedAccessView(ID3D11Device2 *iface, ID3D11Resource *resource, const D3D11_UNORDERED_ACCESS_VIEW_DESC *desc, ID3D11UnorderedAccessView **view)
+static HRESULT STDMETHODCALLTYPE d3d11_device_CreateUnorderedAccessView(ID3D11Device2 *iface,
+        ID3D11Resource *resource, const D3D11_UNORDERED_ACCESS_VIEW_DESC *desc, ID3D11UnorderedAccessView **view)
 {
     struct qemu_d3d11_device_CreateUnorderedAccessView call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
+    D3D11_RESOURCE_DIMENSION dim;
+    struct qemu_d3d11_view *obj;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_CREATEUNORDEREDACCESSVIEW);
     call.iface = (ULONG_PTR)device;
-    call.resource = (ULONG_PTR)resource;
     call.desc = (ULONG_PTR)desc;
-    call.view = (ULONG_PTR)view;
+
+    ID3D11Resource_GetType(resource, &dim);
+    switch (dim)
+    {
+        case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
+            call.buffer = 0;
+            call.texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture1D((ID3D11Texture1D *)resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
+            call.buffer = 0;
+            call.texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture2D((ID3D11Texture2D *)resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
+            call.buffer = 0;
+            call.texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture3D((ID3D11Texture3D *)resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_BUFFER:
+            call.buffer = (ULONG_PTR)unsafe_impl_from_ID3D11Buffer((ID3D11Buffer *)resource);
+            call.texture = 0;
+            break;
+    }
 
     qemu_syscall(&call.super);
+
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    obj = (struct qemu_d3d11_view *)(ULONG_PTR)call.view;
+    qemu_d3d11_unordered_access_view_guest_init(obj);
+    *view = &obj->ID3D11UnorderedAccessView_iface;
 
     return call.super.iret;
 }
@@ -6558,11 +6591,38 @@ void qemu_d3d11_device_CreateUnorderedAccessView(struct qemu_syscall *call)
 {
     struct qemu_d3d11_device_CreateUnorderedAccessView *c = (struct qemu_d3d11_device_CreateUnorderedAccessView *)call;
     struct qemu_d3d11_device *device;
+    ID3D11Resource *resource;
+    ID3D11UnorderedAccessView *host;
+    struct qemu_d3d11_texture *tex;
+    struct qemu_d3d11_buffer *buf;
+    struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    if (c->buffer)
+    {
+        buf = QEMU_G2H(c->buffer);
+        resource = (ID3D11Resource *)buf->host11;
+    }
+    else
+    {
+        tex = QEMU_G2H(c->texture);
+        resource = (ID3D11Resource *)tex->host11_1d;
+    }
 
-    c->super.iret = ID3D11Device2_CreateUnorderedAccessView(device->host_d3d11, QEMU_G2H(c->resource), QEMU_G2H(c->desc), QEMU_G2H(c->view));
+    c->super.iret = ID3D11Device2_CreateUnorderedAccessView(device->host_d3d11, resource, QEMU_G2H(c->desc), &host);
+
+    if (FAILED(c->super.iret))
+        return;
+
+    c->super.iret = qemu_d3d11_view_create((ID3D11View *)host, NULL, &view);
+    if (FAILED(c->super.iret))
+    {
+        ID3D11UnorderedAccessView_Release(host);
+        return;
+    }
+
+    c->view = QEMU_H2G(view);
 }
 
 #endif

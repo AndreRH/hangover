@@ -2157,6 +2157,12 @@ void qemu_d3d11_render_target_view_guest_init(struct qemu_d3d11_view *view)
     wined3d_private_store_init(&view->private_store);
 }
 
+void qemu_d3d11_unordered_access_view_guest_init(struct qemu_d3d11_view *view)
+{
+    view->ID3D11UnorderedAccessView_iface.lpVtbl = &d3d11_unordered_access_view_vtbl;
+    wined3d_private_store_init(&view->private_store);
+}
+
 void __fastcall d3d11_view_guest_destroy(struct qemu_d3d11_view *view)
 {
     wined3d_private_store_cleanup(&view->private_store);

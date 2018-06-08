@@ -835,6 +835,7 @@ void qemu_d3d11_buffer_guest_init(struct qemu_d3d11_buffer *buffer);
 void qemu_d3d11_depth_stencil_view_guest_init(struct qemu_d3d11_view *view);
 void qemu_d3d11_shader_resource_view_guest_init(struct qemu_d3d11_view *view);
 void qemu_d3d11_render_target_view_guest_init(struct qemu_d3d11_view *view);
+void qemu_d3d11_unordered_access_view_guest_init(struct qemu_d3d11_view *view);
 void qemu_d3d11_pixel_shader_guest_init(struct qemu_d3d11_shader *shader);
 void qemu_d3d11_vertex_shader_guest_init(struct qemu_d3d11_shader *shader);
 void qemu_d3d11_geometry_shader_guest_init(struct qemu_d3d11_shader *shader);
