@@ -1528,31 +1528,54 @@ struct qemu_d3d11_immediate_context_GSSetShaderResources
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_GSSetShaderResources(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11ShaderResourceView *const *views)
+static void STDMETHODCALLTYPE d3d11_immediate_context_GSSetShaderResources(ID3D11DeviceContext1 *iface,
+        UINT start_slot, UINT view_count, ID3D11ShaderResourceView *const *views)
 {
     struct qemu_d3d11_immediate_context_GSSetShaderResources call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    uint64_t stack[16], *view_impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GSSETSHADERRESOURCES);
     call.iface = (ULONG_PTR)context;
     call.start_slot = start_slot;
     call.view_count = view_count;
-    call.views = (ULONG_PTR)views;
+
+    if (view_count > (sizeof(stack) / sizeof(*stack)))
+        view_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*view_impl) * view_count);
+
+    for (i = 0; i < view_count; ++i)
+        view_impl[i] = (ULONG_PTR)unsafe_impl_from_ID3D11ShaderResourceView(views[i]);
+
+    call.views = (ULONG_PTR)view_impl;
 
     qemu_syscall(&call.super);
+
+    if (view_impl != stack)
+        HeapFree(GetProcessHeap(), 0, view_impl);
 }
 
 #else
 
 void qemu_d3d11_immediate_context_GSSetShaderResources(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_GSSetShaderResources *c = (struct qemu_d3d11_immediate_context_GSSetShaderResources *)call;
+    struct qemu_d3d11_immediate_context_GSSetShaderResources *c =
+            (struct qemu_d3d11_immediate_context_GSSetShaderResources *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11ShaderResourceView **views;
+    struct qemu_d3d11_view **impls;
+    UINT count, i;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    views = QEMU_G2H(c->views);
+    impls = QEMU_G2H(c->views);
+    count = c->view_count;
 
-    ID3D11DeviceContext1_GSSetShaderResources(context->host, c->start_slot, c->view_count, QEMU_G2H(c->views));
+    for (i = 0; i < count; ++i)
+        views[i] = impls[i] ? impls[i]->host_sr11 : NULL;
+
+    ID3D11DeviceContext1_GSSetShaderResources(context->host, c->start_slot, count, views);
 }
 
 #endif
