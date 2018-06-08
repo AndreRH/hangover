@@ -196,7 +196,6 @@ enum d3d11_calls
     CALL_D3D10_TEXTURE2D_GETEVICTIONPRIORITY,
     CALL_D3D10_TEXTURE2D_GETTYPE,
     CALL_D3D10_TEXTURE2D_MAP,
-    CALL_D3D10_TEXTURE2D_QUERYINTERFACE,
     CALL_D3D10_TEXTURE2D_RELEASE,
     CALL_D3D10_TEXTURE2D_SETEVICTIONPRIORITY,
     CALL_D3D10_TEXTURE2D_UNMAP,
@@ -205,7 +204,6 @@ enum d3d11_calls
     CALL_D3D10_TEXTURE3D_GETEVICTIONPRIORITY,
     CALL_D3D10_TEXTURE3D_GETTYPE,
     CALL_D3D10_TEXTURE3D_MAP,
-    CALL_D3D10_TEXTURE3D_QUERYINTERFACE,
     CALL_D3D10_TEXTURE3D_RELEASE,
     CALL_D3D10_TEXTURE3D_SETEVICTIONPRIORITY,
     CALL_D3D10_TEXTURE3D_UNMAP,
@@ -1039,7 +1037,6 @@ void qemu_d3d10_texture2d_GetDesc(struct qemu_syscall *call);
 void qemu_d3d10_texture2d_GetEvictionPriority(struct qemu_syscall *call);
 void qemu_d3d10_texture2d_GetType(struct qemu_syscall *call);
 void qemu_d3d10_texture2d_Map(struct qemu_syscall *call);
-void qemu_d3d10_texture2d_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_texture2d_Release(struct qemu_syscall *call);
 void qemu_d3d10_texture2d_SetEvictionPriority(struct qemu_syscall *call);
 void qemu_d3d10_texture2d_Unmap(struct qemu_syscall *call);
@@ -1048,7 +1045,6 @@ void qemu_d3d10_texture3d_GetDesc(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_GetEvictionPriority(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_GetType(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_Map(struct qemu_syscall *call);
-void qemu_d3d10_texture3d_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_Release(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_SetEvictionPriority(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_Unmap(struct qemu_syscall *call);

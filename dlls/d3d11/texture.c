@@ -1236,42 +1236,15 @@ void qemu_d3d11_texture2d_GetDesc(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_texture2d_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t object;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_texture2d_QueryInterface(ID3D10Texture2D *iface, REFIID riid, void **object)
+static HRESULT STDMETHODCALLTYPE d3d10_texture2d_QueryInterface(ID3D10Texture2D *iface, const IID *iid, void **object)
 {
-    struct qemu_d3d10_texture2d_QueryInterface call;
     struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture2D(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE2D_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)texture;
-    call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, iid %s, object %p.\n", iface, wine_dbgstr_guid(iid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_texture2d_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_texture2d_QueryInterface *c = (struct qemu_d3d10_texture2d_QueryInterface *)call;
-    struct qemu_d3d11_texture *texture;
-
-    WINE_FIXME("Unverified!\n");
-    texture = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Texture2D_QueryInterface(texture->host10_2d, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    return d3d11_texture2d_QueryInterface(&texture->ID3D11Texture2D_iface, iid, object);
 }
 
 #endif
@@ -1995,42 +1968,15 @@ void qemu_d3d11_texture3d_GetDesc(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_texture3d_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t object;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_texture3d_QueryInterface(ID3D10Texture3D *iface, REFIID riid, void **object)
+static HRESULT STDMETHODCALLTYPE d3d10_texture3d_QueryInterface(ID3D10Texture3D *iface, const IID *iid, void **object)
 {
-    struct qemu_d3d10_texture3d_QueryInterface call;
     struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture3D(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_TEXTURE3D_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)texture;
-    call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, iid %s, object %p.\n", iface, wine_dbgstr_guid(iid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_texture3d_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_texture3d_QueryInterface *c = (struct qemu_d3d10_texture3d_QueryInterface *)call;
-    struct qemu_d3d11_texture *texture;
-
-    WINE_FIXME("Unverified!\n");
-    texture = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Texture3D_QueryInterface(texture->host10_3d, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    return d3d11_texture3d_QueryInterface(&texture->ID3D11Texture3D_iface, iid, object);
 }
 
 #endif
