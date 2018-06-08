@@ -1823,12 +1823,15 @@ static void STDMETHODCALLTYPE d3d11_unordered_access_view_GetDevice(ID3D11Unorde
 {
     struct qemu_d3d11_unordered_access_view_GetDevice call;
     struct qemu_d3d11_view *view = impl_from_ID3D11UnorderedAccessView(iface);
+    struct qemu_d3d11_device *dev_impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_UNORDERED_ACCESS_VIEW_GETDEVICE);
     call.iface = (ULONG_PTR)view;
-    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
+
+    dev_impl = (struct qemu_d3d11_device *)(ULONG_PTR)call.device;
+    *device = (ID3D11Device *)&dev_impl->ID3D11Device2_iface;
 }
 
 #else
@@ -1837,11 +1840,13 @@ void qemu_d3d11_unordered_access_view_GetDevice(struct qemu_syscall *call)
 {
     struct qemu_d3d11_unordered_access_view_GetDevice *c = (struct qemu_d3d11_unordered_access_view_GetDevice *)call;
     struct qemu_d3d11_view *view;
+    ID3D11Device2 *host;
 
     WINE_FIXME("Unverified!\n");
     view = QEMU_G2H(c->iface);
 
-    ID3D11UnorderedAccessView_GetDevice(view->host_uav, QEMU_G2H(c->device));
+    ID3D11UnorderedAccessView_GetDevice(view->host_uav, (ID3D11Device **)&host);
+    c->device = QEMU_H2G(device_from_host(host));
 }
 
 #endif
