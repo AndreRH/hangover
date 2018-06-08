@@ -1766,7 +1766,7 @@ void qemu_d3d11_unordered_access_view_AddRef(struct qemu_syscall *call)
     struct qemu_d3d11_unordered_access_view_AddRef *c = (struct qemu_d3d11_unordered_access_view_AddRef *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11UnorderedAccessView_AddRef(view->host_uav);
@@ -1802,7 +1802,7 @@ void qemu_d3d11_unordered_access_view_Release(struct qemu_syscall *call)
     struct qemu_d3d11_unordered_access_view_Release *c = (struct qemu_d3d11_unordered_access_view_Release *)call;
     struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11UnorderedAccessView_Release(view->host_uav);
