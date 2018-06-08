@@ -4694,11 +4694,13 @@ struct qemu_d3d11_immediate_context_RSGetViewports
     uint64_t iface;
     uint64_t viewport_count;
     uint64_t viewports;
+    uint64_t size;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_RSGetViewports(ID3D11DeviceContext1 *iface, UINT *viewport_count, D3D11_VIEWPORT *viewports)
+static void STDMETHODCALLTYPE d3d11_immediate_context_RSGetViewports(ID3D11DeviceContext1 *iface,
+        UINT *viewport_count, D3D11_VIEWPORT *viewports)
 {
     struct qemu_d3d11_immediate_context_RSGetViewports call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
@@ -4707,6 +4709,7 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_RSGetViewports(ID3D11Devic
     call.iface = (ULONG_PTR)context;
     call.viewport_count = (ULONG_PTR)viewport_count;
     call.viewports = (ULONG_PTR)viewports;
+    call.size = (ULONG_PTR)sizeof(*viewports);
 
     qemu_syscall(&call.super);
 }
@@ -4718,7 +4721,8 @@ void qemu_d3d11_immediate_context_RSGetViewports(struct qemu_syscall *call)
     struct qemu_d3d11_immediate_context_RSGetViewports *c = (struct qemu_d3d11_immediate_context_RSGetViewports *)call;
     struct qemu_d3d11_device_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    /* D3D11_VIEWPORT has the same size in 32 and 64 bit and the input array is not an array of pointers. */
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     ID3D11DeviceContext1_RSGetViewports(context->host, QEMU_G2H(c->viewport_count), QEMU_G2H(c->viewports));
