@@ -3393,32 +3393,56 @@ struct qemu_d3d11_immediate_context_CSSetUnorderedAccessViews
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetUnorderedAccessViews(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11UnorderedAccessView *const *views, const UINT *initial_counts)
+static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetUnorderedAccessViews(ID3D11DeviceContext1 *iface,
+        UINT start_slot, UINT view_count, ID3D11UnorderedAccessView *const *views, const UINT *initial_counts)
 {
     struct qemu_d3d11_immediate_context_CSSetUnorderedAccessViews call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    uint64_t stack[16], *view_impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSSETUNORDEREDACCESSVIEWS);
     call.iface = (ULONG_PTR)context;
     call.start_slot = start_slot;
     call.view_count = view_count;
-    call.views = (ULONG_PTR)views;
     call.initial_counts = (ULONG_PTR)initial_counts;
 
+    if (view_count > (sizeof(stack) / sizeof(*stack)))
+        view_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*view_impl) * view_count);
+
+    for (i = 0; i < view_count; ++i)
+        view_impl[i] = (ULONG_PTR)unsafe_impl_from_ID3D11UnorderedAccessView(views[i]);
+
+    call.views = (ULONG_PTR)view_impl;
+
     qemu_syscall(&call.super);
+
+    if (view_impl != stack)
+        HeapFree(GetProcessHeap(), 0, view_impl);
 }
 
 #else
 
 void qemu_d3d11_immediate_context_CSSetUnorderedAccessViews(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_CSSetUnorderedAccessViews *c = (struct qemu_d3d11_immediate_context_CSSetUnorderedAccessViews *)call;
+    struct qemu_d3d11_immediate_context_CSSetUnorderedAccessViews *c =
+            (struct qemu_d3d11_immediate_context_CSSetUnorderedAccessViews *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11UnorderedAccessView **views;
+    struct qemu_d3d11_view **impls;
+    UINT count, i;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    views = QEMU_G2H(c->views);
+    impls = QEMU_G2H(c->views);
+    count = c->view_count;
 
-    ID3D11DeviceContext1_CSSetUnorderedAccessViews(context->host, c->start_slot, c->view_count, QEMU_G2H(c->views), QEMU_G2H(c->initial_counts));
+    for (i = 0; i < count; ++i)
+        views[i] = impls[i] ? impls[i]->host_uav : NULL;
+
+    ID3D11DeviceContext1_CSSetUnorderedAccessViews(context->host, c->start_slot, count, views,
+            QEMU_G2H(c->initial_counts));
 }
 
 #endif
