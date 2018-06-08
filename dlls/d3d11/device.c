@@ -8576,7 +8576,8 @@ struct qemu_d3d11_device_CreateGeometryShader
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_CreateGeometryShader(ID3D11Device2 *iface, const void *byte_code, SIZE_T byte_code_length, ID3D11ClassLinkage *class_linkage, ID3D11GeometryShader **shader)
+static HRESULT STDMETHODCALLTYPE d3d11_device_CreateGeometryShader(ID3D11Device2 *iface, const void *byte_code,
+        SIZE_T byte_code_length, ID3D11ClassLinkage *class_linkage, ID3D11GeometryShader **shader)
 {
     struct qemu_d3d11_device_CreateGeometryShader call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
@@ -8647,10 +8648,14 @@ struct qemu_d3d11_device_CreateGeometryShaderWithStreamOutput
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_CreateGeometryShaderWithStreamOutput(ID3D11Device2 *iface, const void *byte_code, SIZE_T byte_code_length, const D3D11_SO_DECLARATION_ENTRY *so_entries, UINT entry_count, const UINT *buffer_strides, UINT strides_count, UINT rasterizer_stream, ID3D11ClassLinkage *class_linkage, ID3D11GeometryShader **shader)
+static HRESULT STDMETHODCALLTYPE d3d11_device_CreateGeometryShaderWithStreamOutput(ID3D11Device2 *iface,
+        const void *byte_code, SIZE_T byte_code_length, const D3D11_SO_DECLARATION_ENTRY *so_entries,
+        UINT entry_count, const UINT *buffer_strides, UINT strides_count, UINT rasterizer_stream,
+        ID3D11ClassLinkage *class_linkage, ID3D11GeometryShader **shader)
 {
     struct qemu_d3d11_device_CreateGeometryShaderWithStreamOutput call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
+    struct qemu_d3d11_shader *obj;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEVICE_CREATEGEOMETRYSHADERWITHSTREAMOUTPUT);
     call.iface = (ULONG_PTR)device;
@@ -8662,9 +8667,15 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateGeometryShaderWithStreamOutp
     call.strides_count = strides_count;
     call.rasterizer_stream = rasterizer_stream;
     call.class_linkage = (ULONG_PTR)class_linkage;
-    call.shader = (ULONG_PTR)shader;
 
     qemu_syscall(&call.super);
+
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    obj = (struct qemu_d3d11_shader *)(ULONG_PTR)call.shader;
+    qemu_d3d11_geometry_shader_guest_init(obj);
+    *shader = &obj->ID3D11GeometryShader_iface;
 
     return call.super.iret;
 }
@@ -8673,13 +8684,51 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateGeometryShaderWithStreamOutp
 
 void qemu_d3d11_device_CreateGeometryShaderWithStreamOutput(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_device_CreateGeometryShaderWithStreamOutput *c = (struct qemu_d3d11_device_CreateGeometryShaderWithStreamOutput *)call;
+    struct qemu_d3d11_device_CreateGeometryShaderWithStreamOutput *c =
+            (struct qemu_d3d11_device_CreateGeometryShaderWithStreamOutput *)call;
     struct qemu_d3d11_device *device;
+    ID3D11GeometryShader *host;
+    struct qemu_d3d11_shader *obj;
+    D3D11_SO_DECLARATION_ENTRY *so_decl;
+    struct qemu_D3D11_SO_DECLARATION_ENTRY *so_decl32;
+    UINT i;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    if (c->class_linkage)
+        WINE_FIXME("Class linkage is not implemented yet.\n");
 
-    c->super.iret = ID3D11Device2_CreateGeometryShaderWithStreamOutput(device->host_d3d11, QEMU_G2H(c->byte_code), c->byte_code_length, QEMU_G2H(c->so_entries), c->entry_count, QEMU_G2H(c->buffer_strides), c->strides_count, c->rasterizer_stream, QEMU_G2H(c->class_linkage), QEMU_G2H(c->shader));
+#if GUEST_BIT == HOST_BIT
+    so_decl = QEMU_G2H(c->so_entries);
+#else
+    so_decl32 = QEMU_G2H(c->so_entries);
+    so_decl = HeapAlloc(GetProcessHeap(), 0, sizeof(*so_decl) * c->entry_count);
+    if (!so_decl)
+        WINE_ERR("Out of memory\n");
+
+    for (i = 0; i < c->entry_count; ++i)
+        D3D11_SO_DECLARATION_ENTRY_g2h(&so_decl[i], &so_decl32[i]);
+#endif
+
+    c->super.iret = ID3D11Device2_CreateGeometryShaderWithStreamOutput(device->host_d3d11, QEMU_G2H(c->byte_code),
+            c->byte_code_length, so_decl, c->entry_count, QEMU_G2H(c->buffer_strides), c->strides_count,
+            c->rasterizer_stream, QEMU_G2H(c->class_linkage), &host);
+
+#if GUEST_BIT != HOST_BIT
+    HeapFree(GetProcessHeap(), 0, so_decl);
+#endif
+
+    if (FAILED(c->super.iret))
+        return;
+
+    c->super.iret = qemu_d3d11_shader_create((ID3D11DeviceChild *)host, &IID_ID3D10GeometryShader, &obj);
+    if (FAILED(c->super.iret))
+    {
+        ID3D11GeometryShader_Release(host);
+        return;
+    }
+
+    c->shader = QEMU_H2G(obj);
 }
 
 #endif

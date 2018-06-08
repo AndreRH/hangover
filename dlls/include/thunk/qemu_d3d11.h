@@ -56,4 +56,25 @@ static inline void D3D11_MAPPED_SUBRESOURCE_h2g(struct qemu_D3D11_MAPPED_SUBRESO
     guest->DepthPitch = host->DepthPitch;
 }
 
+struct qemu_D3D11_SO_DECLARATION_ENTRY
+{
+    UINT Stream;
+    qemu_ptr SemanticName;
+    UINT SemanticIndex;
+    BYTE StartComponent;
+    BYTE ComponentCount;
+    BYTE OutputSlot;
+};
+
+static inline void D3D11_SO_DECLARATION_ENTRY_g2h(D3D11_SO_DECLARATION_ENTRY *host,
+        const struct qemu_D3D11_SO_DECLARATION_ENTRY *guest)
+{
+    host->Stream = guest->Stream;
+    host->SemanticName = (const char *)(ULONG_PTR)guest->SemanticName;
+    host->SemanticIndex = guest->SemanticIndex;
+    host->StartComponent = guest->StartComponent;
+    host->ComponentCount = guest->ComponentCount;
+    host->OutputSlot = guest->OutputSlot;
+}
+
 #endif
