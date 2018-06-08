@@ -559,4 +559,24 @@ HRESULT qemu_d3d11_input_layout_create(ID3D11InputLayout *host, struct qemu_d3d1
     return S_OK;
 }
 
+struct qemu_d3d11_input_layout *input_layout_from_host(ID3D11InputLayout *host)
+{
+    IUnknown *priv;
+    DWORD size = sizeof(priv);
+    HRESULT hr;
+
+    if (!host)
+        return NULL;
+
+    hr = ID3D11InputLayout_GetPrivateData(host, &IID_d3d11_priv_data, &size, &priv);
+    if (FAILED(hr))
+    {
+        WINE_TRACE("Failed to get private data from host state %p.\n", host);
+        return NULL;
+    }
+
+    IUnknown_Release(priv);
+    return impl_from_priv_data(priv);
+}
+
 #endif

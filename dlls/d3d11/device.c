@@ -4118,29 +4118,36 @@ struct qemu_d3d11_immediate_context_IAGetInputLayout
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_IAGetInputLayout(ID3D11DeviceContext1 *iface, ID3D11InputLayout **input_layout)
+static void STDMETHODCALLTYPE d3d11_immediate_context_IAGetInputLayout(ID3D11DeviceContext1 *iface,
+        ID3D11InputLayout **input_layout)
 {
     struct qemu_d3d11_immediate_context_IAGetInputLayout call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_input_layout *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_IAGETINPUTLAYOUT);
     call.iface = (ULONG_PTR)context;
-    call.input_layout = (ULONG_PTR)input_layout;
 
     qemu_syscall(&call.super);
+
+    impl = (struct qemu_d3d11_input_layout *)(ULONG_PTR)call.input_layout;
+    *input_layout = impl ? &impl->ID3D11InputLayout_iface : NULL;
 }
 
 #else
 
 void qemu_d3d11_immediate_context_IAGetInputLayout(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_IAGetInputLayout *c = (struct qemu_d3d11_immediate_context_IAGetInputLayout *)call;
+    struct qemu_d3d11_immediate_context_IAGetInputLayout *c =
+            (struct qemu_d3d11_immediate_context_IAGetInputLayout *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11InputLayout *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
-    ID3D11DeviceContext1_IAGetInputLayout(context->host, QEMU_G2H(c->input_layout));
+    ID3D11DeviceContext1_IAGetInputLayout(context->host, &host);
+    c->input_layout = QEMU_H2G(input_layout_from_host(host));
 }
 
 #endif
@@ -11910,12 +11917,15 @@ static void STDMETHODCALLTYPE d3d10_device_IAGetInputLayout(ID3D10Device1 *iface
 {
     struct qemu_d3d10_device_IAGetInputLayout call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_input_layout *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_IAGETINPUTLAYOUT);
     call.iface = (ULONG_PTR)device;
-    call.input_layout = (ULONG_PTR)input_layout;
 
     qemu_syscall(&call.super);
+
+    impl = (struct qemu_d3d11_input_layout *)(ULONG_PTR)call.input_layout;
+    *input_layout = impl ? &impl->ID3D10InputLayout_iface : NULL;
 }
 
 #else
@@ -11924,11 +11934,13 @@ void qemu_d3d10_device_IAGetInputLayout(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_IAGetInputLayout *c = (struct qemu_d3d10_device_IAGetInputLayout *)call;
     struct qemu_d3d11_device *device;
+    ID3D11InputLayout *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_FIXME("untested\n");
     device = QEMU_G2H(c->iface);
 
-    ID3D10Device1_IAGetInputLayout(device->host_d3d10, QEMU_G2H(c->input_layout));
+    ID3D11DeviceContext1_IAGetInputLayout(device->immediate_context.host, &host);
+    c->input_layout = QEMU_H2G(input_layout_from_host(host));
 }
 
 #endif
