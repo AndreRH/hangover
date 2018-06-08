@@ -2861,7 +2861,7 @@ struct qemu_d3d11_immediate_context_ClearDepthStencilView
     uint64_t iface;
     uint64_t depth_stencil_view;
     uint64_t flags;
-    uint64_t depth;
+    double depth;
     uint64_t stencil;
 };
 
@@ -2948,12 +2948,13 @@ struct qemu_d3d11_immediate_context_SetResourceMinLOD
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t resource;
-    uint64_t min_lod;
+    double min_lod;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_SetResourceMinLOD(ID3D11DeviceContext1 *iface, ID3D11Resource *resource, FLOAT min_lod)
+static void STDMETHODCALLTYPE d3d11_immediate_context_SetResourceMinLOD(ID3D11DeviceContext1 *iface,
+        ID3D11Resource *resource, FLOAT min_lod)
 {
     struct qemu_d3d11_immediate_context_SetResourceMinLOD call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
@@ -2990,7 +2991,8 @@ struct qemu_d3d11_immediate_context_GetResourceMinLOD
 
 #ifdef QEMU_DLL_GUEST
 
-static FLOAT STDMETHODCALLTYPE d3d11_immediate_context_GetResourceMinLOD(ID3D11DeviceContext1 *iface, ID3D11Resource *resource)
+static FLOAT STDMETHODCALLTYPE d3d11_immediate_context_GetResourceMinLOD(ID3D11DeviceContext1 *iface,
+        ID3D11Resource *resource)
 {
     struct qemu_d3d11_immediate_context_GetResourceMinLOD call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
@@ -3001,7 +3003,7 @@ static FLOAT STDMETHODCALLTYPE d3d11_immediate_context_GetResourceMinLOD(ID3D11D
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    return call.super.dret;
 }
 
 #else
@@ -3014,7 +3016,7 @@ void qemu_d3d11_immediate_context_GetResourceMinLOD(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     context = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11DeviceContext1_GetResourceMinLOD(context->host, QEMU_G2H(c->resource));
+    c->super.dret = ID3D11DeviceContext1_GetResourceMinLOD(context->host, QEMU_G2H(c->resource));
 }
 
 #endif
@@ -7478,7 +7480,8 @@ struct qemu_d3d11_immediate_context_ClearView
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_ClearView(ID3D11DeviceContext1 *iface, ID3D11View *view, const FLOAT color[4], const D3D11_RECT *rect, UINT num_rects)
+static void STDMETHODCALLTYPE d3d11_immediate_context_ClearView(ID3D11DeviceContext1 *iface, ID3D11View *view,
+        const FLOAT color[4], const D3D11_RECT *rect, UINT num_rects)
 {
     struct qemu_d3d11_immediate_context_ClearView call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
@@ -11655,7 +11658,8 @@ struct qemu_d3d10_device_OMSetBlendState
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_OMSetBlendState(ID3D10Device1 *iface, ID3D10BlendState *blend_state, const float blend_factor[4], UINT sample_mask)
+static void STDMETHODCALLTYPE d3d10_device_OMSetBlendState(ID3D10Device1 *iface, ID3D10BlendState *blend_state,
+        const float blend_factor[4], UINT sample_mask)
 {
     struct qemu_d3d10_device_OMSetBlendState call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
@@ -12052,7 +12056,8 @@ struct qemu_d3d10_device_ClearRenderTargetView
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_ClearRenderTargetView(ID3D10Device1 *iface, ID3D10RenderTargetView *render_target_view, const float color_rgba[4])
+static void STDMETHODCALLTYPE d3d10_device_ClearRenderTargetView(ID3D10Device1 *iface,
+        ID3D10RenderTargetView *render_target_view, const float color_rgba[4])
 {
     struct qemu_d3d10_device_ClearRenderTargetView call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
@@ -12086,13 +12091,14 @@ struct qemu_d3d10_device_ClearDepthStencilView
     uint64_t iface;
     uint64_t depth_stencil_view;
     uint64_t flags;
-    uint64_t depth;
+    double depth;
     uint64_t stencil;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_ClearDepthStencilView(ID3D10Device1 *iface, ID3D10DepthStencilView *depth_stencil_view, UINT flags, FLOAT depth, UINT8 stencil)
+static void STDMETHODCALLTYPE d3d10_device_ClearDepthStencilView(ID3D10Device1 *iface,
+        ID3D10DepthStencilView *depth_stencil_view, UINT flags, FLOAT depth, UINT8 stencil)
 {
     struct qemu_d3d10_device_ClearDepthStencilView call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
@@ -12922,7 +12928,8 @@ struct qemu_d3d10_device_OMGetBlendState
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_OMGetBlendState(ID3D10Device1 *iface, ID3D10BlendState **blend_state, FLOAT blend_factor[4], UINT *sample_mask)
+static void STDMETHODCALLTYPE d3d10_device_OMGetBlendState(ID3D10Device1 *iface, ID3D10BlendState **blend_state,
+        FLOAT blend_factor[4], UINT *sample_mask)
 {
     struct qemu_d3d10_device_OMGetBlendState call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
