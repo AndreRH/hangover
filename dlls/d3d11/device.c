@@ -1053,7 +1053,9 @@ struct qemu_d3d11_immediate_context_DrawInstanced
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_DrawInstanced(ID3D11DeviceContext1 *iface, UINT instance_vertex_count, UINT instance_count, UINT start_vertex_location, UINT start_instance_location)
+static void STDMETHODCALLTYPE d3d11_immediate_context_DrawInstanced(ID3D11DeviceContext1 *iface,
+        UINT instance_vertex_count, UINT instance_count, UINT start_vertex_location,
+        UINT start_instance_location)
 {
     struct qemu_d3d11_immediate_context_DrawInstanced call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
@@ -1075,10 +1077,11 @@ void qemu_d3d11_immediate_context_DrawInstanced(struct qemu_syscall *call)
     struct qemu_d3d11_immediate_context_DrawInstanced *c = (struct qemu_d3d11_immediate_context_DrawInstanced *)call;
     struct qemu_d3d11_device_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
-    ID3D11DeviceContext1_DrawInstanced(context->host, c->instance_vertex_count, c->instance_count, c->start_vertex_location, c->start_instance_location);
+    ID3D11DeviceContext1_DrawInstanced(context->host, c->instance_vertex_count, c->instance_count,
+            c->start_vertex_location, c->start_instance_location);
 }
 
 #endif
@@ -6185,7 +6188,7 @@ void qemu_d3d11_immediate_context_ClearState(struct qemu_syscall *call)
     struct qemu_d3d11_immediate_context_ClearState *c = (struct qemu_d3d11_immediate_context_ClearState *)call;
     struct qemu_d3d11_device_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     ID3D11DeviceContext1_ClearState(context->host);
