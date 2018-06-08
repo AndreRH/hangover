@@ -2757,14 +2757,16 @@ struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewUint
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_ClearUnorderedAccessViewUint(ID3D11DeviceContext1 *iface, ID3D11UnorderedAccessView *unordered_access_view, const UINT values[4])
+static void STDMETHODCALLTYPE d3d11_immediate_context_ClearUnorderedAccessViewUint(ID3D11DeviceContext1 *iface,
+        ID3D11UnorderedAccessView *unordered_access_view, const UINT values[4])
 {
     struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewUint call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_view *view = unsafe_impl_from_ID3D11UnorderedAccessView(unordered_access_view);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CLEARUNORDEREDACCESSVIEWUINT);
     call.iface = (ULONG_PTR)context;
-    call.unordered_access_view = (ULONG_PTR)unordered_access_view;
+    call.unordered_access_view = (ULONG_PTR)view;
     call.values = (ULONG_PTR)values;
 
     qemu_syscall(&call.super);
@@ -2774,13 +2776,17 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_ClearUnorderedAccessViewUi
 
 void qemu_d3d11_immediate_context_ClearUnorderedAccessViewUint(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewUint *c = (struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewUint *)call;
+    struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewUint *c =
+            (struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewUint *)call;
     struct qemu_d3d11_device_context *context;
+    struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    view = QEMU_G2H(c->unordered_access_view);
 
-    ID3D11DeviceContext1_ClearUnorderedAccessViewUint(context->host, QEMU_G2H(c->unordered_access_view), QEMU_G2H(c->values));
+    ID3D11DeviceContext1_ClearUnorderedAccessViewUint(context->host, view ? view->host_uav : NULL,
+            QEMU_G2H(c->values));
 }
 
 #endif
@@ -2795,14 +2801,16 @@ struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewFloat
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_ClearUnorderedAccessViewFloat(ID3D11DeviceContext1 *iface, ID3D11UnorderedAccessView *unordered_access_view, const float values[4])
+static void STDMETHODCALLTYPE d3d11_immediate_context_ClearUnorderedAccessViewFloat(ID3D11DeviceContext1 *iface,
+        ID3D11UnorderedAccessView *unordered_access_view, const float values[4])
 {
     struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewFloat call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_view *view = unsafe_impl_from_ID3D11UnorderedAccessView(unordered_access_view);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CLEARUNORDEREDACCESSVIEWFLOAT);
     call.iface = (ULONG_PTR)context;
-    call.unordered_access_view = (ULONG_PTR)unordered_access_view;
+    call.unordered_access_view = (ULONG_PTR)view;
     call.values = (ULONG_PTR)values;
 
     qemu_syscall(&call.super);
@@ -2814,11 +2822,14 @@ void qemu_d3d11_immediate_context_ClearUnorderedAccessViewFloat(struct qemu_sysc
 {
     struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewFloat *c = (struct qemu_d3d11_immediate_context_ClearUnorderedAccessViewFloat *)call;
     struct qemu_d3d11_device_context *context;
+    struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    view = QEMU_G2H(c->unordered_access_view);
 
-    ID3D11DeviceContext1_ClearUnorderedAccessViewFloat(context->host, QEMU_G2H(c->unordered_access_view), QEMU_G2H(c->values));
+    ID3D11DeviceContext1_ClearUnorderedAccessViewFloat(context->host, view ? view->host_uav : NULL,
+            QEMU_G2H(c->values));
 }
 
 #endif
