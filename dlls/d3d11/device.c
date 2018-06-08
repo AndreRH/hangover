@@ -2126,7 +2126,8 @@ struct qemu_d3d11_immediate_context_Dispatch
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_Dispatch(ID3D11DeviceContext1 *iface, UINT thread_group_count_x, UINT thread_group_count_y, UINT thread_group_count_z)
+static void STDMETHODCALLTYPE d3d11_immediate_context_Dispatch(ID3D11DeviceContext1 *iface, UINT thread_group_count_x,
+        UINT thread_group_count_y, UINT thread_group_count_z)
 {
     struct qemu_d3d11_immediate_context_Dispatch call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
@@ -2147,10 +2148,11 @@ void qemu_d3d11_immediate_context_Dispatch(struct qemu_syscall *call)
     struct qemu_d3d11_immediate_context_Dispatch *c = (struct qemu_d3d11_immediate_context_Dispatch *)call;
     struct qemu_d3d11_device_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
-    ID3D11DeviceContext1_Dispatch(context->host, c->thread_group_count_x, c->thread_group_count_y, c->thread_group_count_z);
+    ID3D11DeviceContext1_Dispatch(context->host, c->thread_group_count_x, c->thread_group_count_y,
+            c->thread_group_count_z);
 }
 
 #endif
