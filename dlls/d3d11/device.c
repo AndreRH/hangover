@@ -560,7 +560,8 @@ struct qemu_d3d11_immediate_context_DrawIndexed
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_DrawIndexed(ID3D11DeviceContext1 *iface, UINT index_count, UINT start_index_location, INT base_vertex_location)
+static void STDMETHODCALLTYPE d3d11_immediate_context_DrawIndexed(ID3D11DeviceContext1 *iface, UINT index_count,
+        UINT start_index_location, INT base_vertex_location)
 {
     struct qemu_d3d11_immediate_context_DrawIndexed call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
@@ -581,7 +582,7 @@ void qemu_d3d11_immediate_context_DrawIndexed(struct qemu_syscall *call)
     struct qemu_d3d11_immediate_context_DrawIndexed *c = (struct qemu_d3d11_immediate_context_DrawIndexed *)call;
     struct qemu_d3d11_device_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     ID3D11DeviceContext1_DrawIndexed(context->host, c->index_count, c->start_index_location, c->base_vertex_location);
