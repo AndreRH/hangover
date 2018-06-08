@@ -4561,18 +4561,42 @@ struct qemu_d3d11_immediate_context_GSGetSamplers
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_GSGetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT sampler_count, ID3D11SamplerState **samplers)
+static void STDMETHODCALLTYPE d3d11_immediate_context_GSGetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot,
+        UINT sampler_count, ID3D11SamplerState **samplers)
 {
     struct qemu_d3d11_immediate_context_GSGetSamplers call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    uint64_t stack[16], *sampler_impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GSGETSAMPLERS);
     call.iface = (ULONG_PTR)context;
     call.start_slot = start_slot;
     call.sampler_count = sampler_count;
-    call.samplers = (ULONG_PTR)samplers;
+
+    if (sampler_count > (sizeof(stack) / sizeof(*stack)))
+        sampler_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*sampler_impl) * sampler_count);
+
+    call.samplers = (ULONG_PTR)sampler_impl;
 
     qemu_syscall(&call.super);
+
+    for (i = 0; i < sampler_count; ++i)
+    {
+        struct qemu_d3d11_state *sampler;
+
+        if (!sampler_impl[i])
+        {
+            samplers[i] = NULL;
+            continue;
+        }
+
+        sampler = (struct qemu_d3d11_state *)(ULONG_PTR)sampler_impl[i];
+        samplers[i] = &sampler->ID3D11SamplerState_iface;
+    }
+
+    if (sampler_impl != stack)
+        HeapFree(GetProcessHeap(), 0, sampler_impl);
 }
 
 #else
@@ -4581,11 +4605,20 @@ void qemu_d3d11_immediate_context_GSGetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GSGetSamplers *c = (struct qemu_d3d11_immediate_context_GSGetSamplers *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11SamplerState **ifaces;
+    struct qemu_d3d11_state **sampler_impl;
+    UINT i, count;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    ifaces = QEMU_G2H(c->samplers);
+    sampler_impl = QEMU_G2H(c->samplers);
+    count = c->sampler_count;
 
-    ID3D11DeviceContext1_GSGetSamplers(context->host, c->start_slot, c->sampler_count, QEMU_G2H(c->samplers));
+    ID3D11DeviceContext1_GSGetSamplers(context->host, c->start_slot, count, ifaces);
+
+    for (i = 0; i < count; ++i)
+        sampler_impl[i] = state_from_host((ID3D11DeviceChild *)ifaces[i]);
 }
 
 #endif
@@ -5339,18 +5372,42 @@ struct qemu_d3d11_immediate_context_DSGetSamplers
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_DSGetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT sampler_count, ID3D11SamplerState **samplers)
+static void STDMETHODCALLTYPE d3d11_immediate_context_DSGetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot,
+        UINT sampler_count, ID3D11SamplerState **samplers)
 {
     struct qemu_d3d11_immediate_context_DSGetSamplers call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    uint64_t stack[16], *sampler_impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DSGETSAMPLERS);
     call.iface = (ULONG_PTR)context;
     call.start_slot = start_slot;
     call.sampler_count = sampler_count;
-    call.samplers = (ULONG_PTR)samplers;
+
+    if (sampler_count > (sizeof(stack) / sizeof(*stack)))
+        sampler_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*sampler_impl) * sampler_count);
+
+    call.samplers = (ULONG_PTR)sampler_impl;
 
     qemu_syscall(&call.super);
+
+    for (i = 0; i < sampler_count; ++i)
+    {
+        struct qemu_d3d11_state *sampler;
+
+        if (!sampler_impl[i])
+        {
+            samplers[i] = NULL;
+            continue;
+        }
+
+        sampler = (struct qemu_d3d11_state *)(ULONG_PTR)sampler_impl[i];
+        samplers[i] = &sampler->ID3D11SamplerState_iface;
+    }
+
+    if (sampler_impl != stack)
+        HeapFree(GetProcessHeap(), 0, sampler_impl);
 }
 
 #else
@@ -5359,11 +5416,20 @@ void qemu_d3d11_immediate_context_DSGetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DSGetSamplers *c = (struct qemu_d3d11_immediate_context_DSGetSamplers *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11SamplerState **ifaces;
+    struct qemu_d3d11_state **sampler_impl;
+    UINT i, count;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    ifaces = QEMU_G2H(c->samplers);
+    sampler_impl = QEMU_G2H(c->samplers);
+    count = c->sampler_count;
 
-    ID3D11DeviceContext1_DSGetSamplers(context->host, c->start_slot, c->sampler_count, QEMU_G2H(c->samplers));
+    ID3D11DeviceContext1_DSGetSamplers(context->host, c->start_slot, count, ifaces);
+
+    for (i = 0; i < count; ++i)
+        sampler_impl[i] = state_from_host((ID3D11DeviceChild *)ifaces[i]);
 }
 
 #endif
@@ -5547,18 +5613,42 @@ struct qemu_d3d11_immediate_context_CSGetSamplers
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_CSGetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT sampler_count, ID3D11SamplerState **samplers)
+static void STDMETHODCALLTYPE d3d11_immediate_context_CSGetSamplers(ID3D11DeviceContext1 *iface, UINT start_slot,
+        UINT sampler_count, ID3D11SamplerState **samplers)
 {
     struct qemu_d3d11_immediate_context_CSGetSamplers call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    uint64_t stack[16], *sampler_impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSGETSAMPLERS);
     call.iface = (ULONG_PTR)context;
     call.start_slot = start_slot;
     call.sampler_count = sampler_count;
-    call.samplers = (ULONG_PTR)samplers;
+
+    if (sampler_count > (sizeof(stack) / sizeof(*stack)))
+        sampler_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*sampler_impl) * sampler_count);
+
+    call.samplers = (ULONG_PTR)sampler_impl;
 
     qemu_syscall(&call.super);
+
+    for (i = 0; i < sampler_count; ++i)
+    {
+        struct qemu_d3d11_state *sampler;
+
+        if (!sampler_impl[i])
+        {
+            samplers[i] = NULL;
+            continue;
+        }
+
+        sampler = (struct qemu_d3d11_state *)(ULONG_PTR)sampler_impl[i];
+        samplers[i] = &sampler->ID3D11SamplerState_iface;
+    }
+
+    if (sampler_impl != stack)
+        HeapFree(GetProcessHeap(), 0, sampler_impl);
 }
 
 #else
@@ -5567,11 +5657,20 @@ void qemu_d3d11_immediate_context_CSGetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_CSGetSamplers *c = (struct qemu_d3d11_immediate_context_CSGetSamplers *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11SamplerState **ifaces;
+    struct qemu_d3d11_state **sampler_impl;
+    UINT i, count;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    ifaces = QEMU_G2H(c->samplers);
+    sampler_impl = QEMU_G2H(c->samplers);
+    count = c->sampler_count;
 
-    ID3D11DeviceContext1_CSGetSamplers(context->host, c->start_slot, c->sampler_count, QEMU_G2H(c->samplers));
+    ID3D11DeviceContext1_CSGetSamplers(context->host, c->start_slot, count, ifaces);
+
+    for (i = 0; i < count; ++i)
+        sampler_impl[i] = state_from_host((ID3D11DeviceChild *)ifaces[i]);
 }
 
 #endif
