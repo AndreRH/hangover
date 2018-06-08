@@ -9685,7 +9685,8 @@ struct qemu_d3d11_device_CheckFormatSupport
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_CheckFormatSupport(ID3D11Device2 *iface, DXGI_FORMAT format, UINT *format_support)
+static HRESULT STDMETHODCALLTYPE d3d11_device_CheckFormatSupport(ID3D11Device2 *iface, DXGI_FORMAT format,
+        UINT *format_support)
 {
     struct qemu_d3d11_device_CheckFormatSupport call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
@@ -9707,7 +9708,7 @@ void qemu_d3d11_device_CheckFormatSupport(struct qemu_syscall *call)
     struct qemu_d3d11_device_CheckFormatSupport *c = (struct qemu_d3d11_device_CheckFormatSupport *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D11Device2_CheckFormatSupport(device->host_d3d11, c->format, QEMU_G2H(c->format_support));
