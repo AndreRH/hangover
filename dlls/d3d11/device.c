@@ -4880,34 +4880,112 @@ struct qemu_d3d11_immediate_context_OMGetRenderTargetsAndUnorderedAccessViews
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_OMGetRenderTargetsAndUnorderedAccessViews(ID3D11DeviceContext1 *iface, UINT render_target_view_count, ID3D11RenderTargetView **render_target_views, ID3D11DepthStencilView **depth_stencil_view, UINT unordered_access_view_start_slot, UINT unordered_access_view_count, ID3D11UnorderedAccessView **unordered_access_views)
+static void STDMETHODCALLTYPE d3d11_immediate_context_OMGetRenderTargetsAndUnorderedAccessViews(
+        ID3D11DeviceContext1 *iface, UINT render_target_view_count, ID3D11RenderTargetView **render_target_views,
+        ID3D11DepthStencilView **depth_stencil_view, UINT unordered_access_view_start_slot,
+        UINT unordered_access_view_count, ID3D11UnorderedAccessView **unordered_access_views)
 {
     struct qemu_d3d11_immediate_context_OMGetRenderTargetsAndUnorderedAccessViews call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_view *view;
+    uint64_t rtv_stack[16], *rtv_impl = rtv_stack;
+    uint64_t uav_stack[16], *uav_impl = uav_stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_OMGETRENDERTARGETSANDUNORDEREDACCESSVIEWS);
     call.iface = (ULONG_PTR)context;
     call.render_target_view_count = render_target_view_count;
-    call.render_target_views = (ULONG_PTR)render_target_views;
     call.depth_stencil_view = (ULONG_PTR)depth_stencil_view;
     call.unordered_access_view_start_slot = unordered_access_view_start_slot;
     call.unordered_access_view_count = unordered_access_view_count;
     call.unordered_access_views = (ULONG_PTR)unordered_access_views;
 
+    if (render_target_view_count > (sizeof(rtv_stack) / sizeof(*rtv_stack)))
+    {
+        rtv_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*rtv_impl) * render_target_view_count);
+        if (!rtv_impl)
+            WINE_ERR("Out of memory\n");
+    }
+    call.render_target_views = (ULONG_PTR)rtv_impl;
+
+    if (unordered_access_view_count > (sizeof(uav_stack) / sizeof(*uav_stack)))
+    {
+        uav_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*uav_impl) * unordered_access_view_count);
+        if (!uav_impl)
+            WINE_ERR("Out of memory\n");
+    }
+    call.unordered_access_views = (ULONG_PTR)uav_impl;
+
     qemu_syscall(&call.super);
+
+    if (depth_stencil_view)
+    {
+        view = (struct qemu_d3d11_view *)(ULONG_PTR)call.depth_stencil_view;
+        *depth_stencil_view = view ? &view->ID3D11DepthStencilView_iface : NULL;
+    }
+
+    for (i = 0; i < render_target_view_count; ++i)
+    {
+        if (!rtv_impl[i])
+        {
+            render_target_views[i] = NULL;
+            continue;
+        }
+
+        view = (struct qemu_d3d11_view *)(ULONG_PTR)rtv_impl[i];
+        render_target_views[i] = &view->ID3D11RenderTargetView_iface;
+    }
+
+    for (i = 0; i < unordered_access_view_count; ++i)
+    {
+        if (!uav_impl[i])
+        {
+            unordered_access_views[i] = NULL;
+            continue;
+        }
+
+        view = (struct qemu_d3d11_view *)(ULONG_PTR)uav_impl[i];
+        unordered_access_views[i] = &view->ID3D11UnorderedAccessView_iface;
+    }
+
+    if (rtv_impl != rtv_stack)
+        HeapFree(GetProcessHeap(), 0, rtv_impl);
+    if (uav_impl != uav_stack)
+        HeapFree(GetProcessHeap(), 0, uav_impl);
 }
 
 #else
 
 void qemu_d3d11_immediate_context_OMGetRenderTargetsAndUnorderedAccessViews(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_OMGetRenderTargetsAndUnorderedAccessViews *c = (struct qemu_d3d11_immediate_context_OMGetRenderTargetsAndUnorderedAccessViews *)call;
+    struct qemu_d3d11_immediate_context_OMGetRenderTargetsAndUnorderedAccessViews *c =
+            (struct qemu_d3d11_immediate_context_OMGetRenderTargetsAndUnorderedAccessViews *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11DepthStencilView *host_ds = NULL;
+    ID3D11RenderTargetView **rt_ifaces;
+    struct qemu_d3d11_view **rt_impl;
+    ID3D11UnorderedAccessView **uav_ifaces;
+    struct qemu_d3d11_view **uav_impl;
+    UINT i;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    rt_ifaces = QEMU_G2H(c->render_target_views);
+    rt_impl = QEMU_G2H(c->render_target_views);
+    uav_ifaces = QEMU_G2H(c->unordered_access_views);
+    uav_impl = QEMU_G2H(c->unordered_access_views);
 
-    ID3D11DeviceContext1_OMGetRenderTargetsAndUnorderedAccessViews(context->host, c->render_target_view_count, QEMU_G2H(c->render_target_views), QEMU_G2H(c->depth_stencil_view), c->unordered_access_view_start_slot, c->unordered_access_view_count, QEMU_G2H(c->unordered_access_views));
+    ID3D11DeviceContext1_OMGetRenderTargetsAndUnorderedAccessViews(context->host,
+            c->render_target_view_count, rt_ifaces, c->depth_stencil_view ? &host_ds : NULL,
+            c->unordered_access_view_start_slot, c->unordered_access_view_count, uav_ifaces);
+
+    c->depth_stencil_view = QEMU_H2G(view_from_host((ID3D11DeviceChild *)host_ds));
+
+    for (i = 0; i < c->render_target_view_count; ++i)
+        rt_impl[i] = view_from_host((ID3D11DeviceChild *)rt_ifaces[i]);
+
+    for (i = 0; i < c->unordered_access_view_count; ++i)
+        uav_impl[i] = view_from_host((ID3D11DeviceChild *)uav_ifaces[i]);
 }
 
 #endif
