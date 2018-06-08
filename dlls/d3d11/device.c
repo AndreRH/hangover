@@ -684,21 +684,46 @@ struct qemu_d3d11_immediate_context_Unmap
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t resource;
+    uint64_t buffer, texture;
     uint64_t subresource_idx;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_Unmap(ID3D11DeviceContext1 *iface, ID3D11Resource *resource, UINT subresource_idx)
+static void STDMETHODCALLTYPE d3d11_immediate_context_Unmap(ID3D11DeviceContext1 *iface, ID3D11Resource *resource,
+        UINT subresource_idx)
 {
     struct qemu_d3d11_immediate_context_Unmap call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    D3D11_RESOURCE_DIMENSION dim;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_UNMAP);
     call.iface = (ULONG_PTR)context;
-    call.resource = (ULONG_PTR)resource;
     call.subresource_idx = subresource_idx;
+
+    ID3D11Resource_GetType(resource, &dim);
+    switch (dim)
+    {
+        case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
+            call.buffer = 0;
+            call.texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture1D((ID3D11Texture1D *)resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
+            call.buffer = 0;
+            call.texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture2D((ID3D11Texture2D *)resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
+            call.buffer = 0;
+            call.texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture3D((ID3D11Texture3D *)resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_BUFFER:
+            call.buffer = (ULONG_PTR)unsafe_impl_from_ID3D11Buffer((ID3D11Buffer *)resource);
+            call.texture = 0;
+            break;
+    }
 
     qemu_syscall(&call.super);
 }
@@ -709,11 +734,24 @@ void qemu_d3d11_immediate_context_Unmap(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_Unmap *c = (struct qemu_d3d11_immediate_context_Unmap *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11Resource *resource;
+    struct qemu_d3d11_texture *tex;
+    struct qemu_d3d11_buffer *buf;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    if (c->buffer)
+    {
+        buf = QEMU_G2H(c->buffer);
+        resource = (ID3D11Resource *)buf->host11;
+    }
+    else if (c->texture)
+    {
+        tex = QEMU_G2H(c->texture);
+        resource = (ID3D11Resource *)tex->host11_1d;
+    }
 
-    ID3D11DeviceContext1_Unmap(context->host, QEMU_G2H(c->resource), c->subresource_idx);
+    ID3D11DeviceContext1_Unmap(context->host, resource, c->subresource_idx);
 }
 
 #endif
@@ -6018,20 +6056,50 @@ void qemu_d3d11_device_CreateTexture1D(struct qemu_syscall *call)
     struct qemu_d3d11_device *device;
     struct qemu_d3d11_texture *obj;
     ID3D11Texture1D *host;
-    D3D11_SUBRESOURCE_DATA stack, *data = &stack;
+    D3D11_SUBRESOURCE_DATA *data;
+    UINT i;
+    D3D11_TEXTURE1D_DESC *desc, desc_out;
+    struct qemu_D3D11_SUBRESOURCE_DATA *data32;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    desc = QEMU_G2H(c->desc);
+
 #if GUEST_BIT == HOST_BIT
     data = QEMU_G2H(c->data);
 #else
-    if (c->data)
-        D3D11_SUBRESOURCE_DATA_g2h(data, QEMU_G2H(c->data));
+    data32 = QEMU_G2H(c->data);
+    if (data32)
+    {
+        /* We have to know how many subresources there are to convert the data pointers. */
+        c->super.iret = ID3D11Device2_CreateTexture1D(device->host_d3d11, desc, NULL, &host);
+        if (FAILED(c->super.iret))
+            return;
+
+        ID3D11Texture1D_GetDesc(host, &desc_out);
+        ID3D11Texture1D_Release(host);
+
+        WINE_TRACE("Converting %u D3D11_SUBRESOURCE_DATA structs.\n", desc_out.MipLevels * desc_out.ArraySize);
+        data = HeapAlloc(GetProcessHeap(), 0, sizeof(*data) * desc_out.MipLevels * desc_out.ArraySize);
+        if (!data)
+            WINE_ERR("Out of memory.\n");
+
+        for (i = 0; i < desc_out.MipLevels * desc_out.ArraySize; ++i)
+            D3D11_SUBRESOURCE_DATA_g2h(&data[i], &data32[i]);
+    }
     else
+    {
         data = NULL;
+    }
 #endif
 
-    c->super.iret = ID3D11Device2_CreateTexture1D(device->host_d3d11, QEMU_G2H(c->desc), data, &host);
+    c->super.iret = ID3D11Device2_CreateTexture1D(device->host_d3d11, desc, data, &host);
+
+#if GUEST_BIT != HOST_BIT
+    if (data32)
+        HeapFree(GetProcessHeap(), 0, data);
+#endif
+
     if (FAILED(c->super.iret))
         return;
 
@@ -6118,20 +6186,50 @@ void qemu_d3d11_device_CreateTexture2D(struct qemu_syscall *call)
     struct qemu_d3d11_device *device;
     struct qemu_d3d11_texture *obj;
     ID3D11Texture2D *host;
-    D3D11_SUBRESOURCE_DATA stack, *data = &stack;
+    D3D11_SUBRESOURCE_DATA *data;
+    UINT i;
+    D3D11_TEXTURE2D_DESC *desc, desc_out;
+    struct qemu_D3D11_SUBRESOURCE_DATA *data32;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    desc = QEMU_G2H(c->desc);
+
 #if GUEST_BIT == HOST_BIT
     data = QEMU_G2H(c->data);
 #else
-    if (c->data)
-        D3D11_SUBRESOURCE_DATA_g2h(data, QEMU_G2H(c->data));
+    data32 = QEMU_G2H(c->data);
+    if (data32)
+    {
+        /* We have to know how many subresources there are to convert the data pointers. */
+        c->super.iret = ID3D11Device2_CreateTexture2D(device->host_d3d11, desc, NULL, &host);
+        if (FAILED(c->super.iret))
+            return;
+
+        ID3D11Texture2D_GetDesc(host, &desc_out);
+        ID3D11Texture2D_Release(host);
+
+        WINE_TRACE("Converting %u D3D11_SUBRESOURCE_DATA structs.\n", desc_out.MipLevels * desc_out.ArraySize);
+        data = HeapAlloc(GetProcessHeap(), 0, sizeof(*data) * desc_out.MipLevels * desc_out.ArraySize);
+        if (!data)
+            WINE_ERR("Out of memory.\n");
+
+        for (i = 0; i < desc_out.MipLevels * desc_out.ArraySize; ++i)
+            D3D11_SUBRESOURCE_DATA_g2h(&data[i], &data32[i]);
+    }
     else
+    {
         data = NULL;
+    }
 #endif
 
-    c->super.iret = ID3D11Device2_CreateTexture2D(device->host_d3d11, QEMU_G2H(c->desc), data, &host);
+    c->super.iret = ID3D11Device2_CreateTexture2D(device->host_d3d11, desc, data, &host);
+
+#if GUEST_BIT != HOST_BIT
+    if (data32)
+        HeapFree(GetProcessHeap(), 0, data);
+#endif
+
     if (FAILED(c->super.iret))
         return;
 
@@ -6217,20 +6315,50 @@ void qemu_d3d11_device_CreateTexture3D(struct qemu_syscall *call)
     struct qemu_d3d11_device *device;
     struct qemu_d3d11_texture *obj;
     ID3D11Texture3D *host;
-    D3D11_SUBRESOURCE_DATA stack, *data = &stack;
+    D3D11_SUBRESOURCE_DATA *data;
+    UINT i;
+    D3D11_TEXTURE3D_DESC *desc, desc_out;
+    struct qemu_D3D11_SUBRESOURCE_DATA *data32;
 
     WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    desc = QEMU_G2H(c->desc);
+
 #if GUEST_BIT == HOST_BIT
     data = QEMU_G2H(c->data);
 #else
-    if (c->data)
-        D3D11_SUBRESOURCE_DATA_g2h(data, QEMU_G2H(c->data));
+    data32 = QEMU_G2H(c->data);
+    if (data32)
+    {
+        /* We have to know how many subresources there are to convert the data pointers. */
+        c->super.iret = ID3D11Device2_CreateTexture3D(device->host_d3d11, desc, NULL, &host);
+        if (FAILED(c->super.iret))
+            return;
+
+        ID3D11Texture3D_GetDesc(host, &desc_out);
+        ID3D11Texture3D_Release(host);
+
+        WINE_TRACE("Converting %u D3D11_SUBRESOURCE_DATA structs.\n", desc_out.MipLevels);
+        data = HeapAlloc(GetProcessHeap(), 0, sizeof(*data) * desc_out.MipLevels);
+        if (!data)
+            WINE_ERR("Out of memory.\n");
+
+        for (i = 0; i < desc_out.MipLevels; ++i)
+            D3D11_SUBRESOURCE_DATA_g2h(&data[i], &data32[i]);
+    }
     else
+    {
         data = NULL;
+    }
 #endif
 
-    c->super.iret = ID3D11Device2_CreateTexture3D(device->host_d3d11, QEMU_G2H(c->desc), data, &host);
+    c->super.iret = ID3D11Device2_CreateTexture3D(device->host_d3d11, desc, data, &host);
+
+#if GUEST_BIT != HOST_BIT
+    if (data32)
+        HeapFree(GetProcessHeap(), 0, data);
+#endif
+
     if (FAILED(c->super.iret))
         return;
 
