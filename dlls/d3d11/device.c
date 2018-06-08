@@ -2473,14 +2473,16 @@ struct qemu_d3d11_immediate_context_ClearDepthStencilView
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_ClearDepthStencilView(ID3D11DeviceContext1 *iface, ID3D11DepthStencilView *depth_stencil_view, UINT flags, FLOAT depth, UINT8 stencil)
+static void STDMETHODCALLTYPE d3d11_immediate_context_ClearDepthStencilView(ID3D11DeviceContext1 *iface,
+        ID3D11DepthStencilView *depth_stencil_view, UINT flags, FLOAT depth, UINT8 stencil)
 {
     struct qemu_d3d11_immediate_context_ClearDepthStencilView call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_view *view = unsafe_impl_from_ID3D11DepthStencilView(depth_stencil_view);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CLEARDEPTHSTENCILVIEW);
     call.iface = (ULONG_PTR)context;
-    call.depth_stencil_view = (ULONG_PTR)depth_stencil_view;
+    call.depth_stencil_view = (ULONG_PTR)view;
     call.flags = flags;
     call.depth = depth;
     call.stencil = stencil;
@@ -2492,13 +2494,17 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_ClearDepthStencilView(ID3D
 
 void qemu_d3d11_immediate_context_ClearDepthStencilView(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_ClearDepthStencilView *c = (struct qemu_d3d11_immediate_context_ClearDepthStencilView *)call;
+    struct qemu_d3d11_immediate_context_ClearDepthStencilView *c =
+            (struct qemu_d3d11_immediate_context_ClearDepthStencilView *)call;
     struct qemu_d3d11_device_context *context;
+    struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    view = QEMU_G2H(c->depth_stencil_view);
 
-    ID3D11DeviceContext1_ClearDepthStencilView(context->host, QEMU_G2H(c->depth_stencil_view), c->flags, c->depth, c->stencil);
+    ID3D11DeviceContext1_ClearDepthStencilView(context->host, view ? view->host_ds11 : NULL,
+            c->flags, c->depth, c->stencil);
 }
 
 #endif
