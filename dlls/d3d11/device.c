@@ -5086,31 +5086,65 @@ struct qemu_d3d11_immediate_context_HSGetConstantBuffers
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_HSGetConstantBuffers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer **buffers)
+static void STDMETHODCALLTYPE d3d11_immediate_context_HSGetConstantBuffers(ID3D11DeviceContext1 *iface,
+        UINT start_slot, UINT buffer_count, ID3D11Buffer **buffers)
 {
     struct qemu_d3d11_immediate_context_HSGetConstantBuffers call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    uint64_t stack[16], *impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_HSGETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)context;
     call.start_slot = start_slot;
     call.buffer_count = buffer_count;
-    call.buffers = (ULONG_PTR)buffers;
+
+    if (buffer_count > (sizeof(stack) / sizeof(*stack)))
+        impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*impl) * buffer_count);
+
+    call.buffers = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
+
+    for (i = 0; i < buffer_count; ++i)
+    {
+        struct qemu_d3d11_buffer *buffer;
+
+        if (!impl[i])
+        {
+            buffers[i] = NULL;
+            continue;
+        }
+
+        buffer = (struct qemu_d3d11_buffer *)(ULONG_PTR)impl[i];
+        buffers[i] = &buffer->ID3D11Buffer_iface;
+    }
+
+    if (impl != stack)
+        HeapFree(GetProcessHeap(), 0, impl);
 }
 
 #else
 
 void qemu_d3d11_immediate_context_HSGetConstantBuffers(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_HSGetConstantBuffers *c = (struct qemu_d3d11_immediate_context_HSGetConstantBuffers *)call;
+    struct qemu_d3d11_immediate_context_HSGetConstantBuffers *c =
+            (struct qemu_d3d11_immediate_context_HSGetConstantBuffers *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11Buffer **ifaces;
+    struct qemu_d3d11_buffer **impl;
+    UINT i, count;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    ifaces = QEMU_G2H(c->buffers);
+    impl = QEMU_G2H(c->buffers);
+    count = c->buffer_count;
 
-    ID3D11DeviceContext1_HSGetConstantBuffers(context->host, c->start_slot, c->buffer_count, QEMU_G2H(c->buffers));
+    ID3D11DeviceContext1_HSGetConstantBuffers(context->host, c->start_slot, count, ifaces);
+
+    for (i = 0; i < count; ++i)
+        impl[i] = buffer_from_host(ifaces[i]);
 }
 
 #endif
