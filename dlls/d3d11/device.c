@@ -3491,16 +3491,29 @@ struct qemu_d3d11_immediate_context_CSSetConstantBuffers
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetConstantBuffers(ID3D11DeviceContext1 *iface, UINT start_slot, UINT buffer_count, ID3D11Buffer *const *buffers)
+static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetConstantBuffers(ID3D11DeviceContext1 *iface,
+        UINT start_slot, UINT buffer_count, ID3D11Buffer *const *buffers)
 {
     struct qemu_d3d11_immediate_context_CSSetConstantBuffers call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    uint64_t buffer_impl[MAX_CONSTANT_BUFFERS];
+    UINT i;
+
+    if (buffer_count > MAX_CONSTANT_BUFFERS)
+    {
+        WINE_FIXME("MAX_CONSTANT_BUFFERS is too small.\n");
+        return;
+    }
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSSETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)context;
     call.start_slot = start_slot;
     call.buffer_count = buffer_count;
-    call.buffers = (ULONG_PTR)buffers;
+
+    for (i = 0; i < buffer_count; ++i)
+        buffer_impl[i] = (ULONG_PTR)unsafe_impl_from_ID3D11Buffer(buffers[i]);
+
+    call.buffers = (ULONG_PTR)buffer_impl;
 
     qemu_syscall(&call.super);
 }
@@ -3509,13 +3522,24 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_CSSetConstantBuffers(ID3D1
 
 void qemu_d3d11_immediate_context_CSSetConstantBuffers(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_CSSetConstantBuffers *c = (struct qemu_d3d11_immediate_context_CSSetConstantBuffers *)call;
+    struct qemu_d3d11_immediate_context_CSSetConstantBuffers *c =
+            (struct qemu_d3d11_immediate_context_CSSetConstantBuffers *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11Buffer *buffer_iface[MAX_CONSTANT_BUFFERS];
+    UINT i;
+    struct qemu_d3d11_buffer *buffer;
+    uint64_t *buffer_array;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    buffer_array = QEMU_G2H(c->buffers);
+    for (i = 0; i < c->buffer_count; ++i)
+    {
+        buffer = QEMU_G2H(buffer_array[i]);
+        buffer_iface[i] = buffer ? buffer->host11 : NULL;
+    }
 
-    ID3D11DeviceContext1_CSSetConstantBuffers(context->host, c->start_slot, c->buffer_count, QEMU_G2H(c->buffers));
+    ID3D11DeviceContext1_CSSetConstantBuffers(context->host, c->start_slot, c->buffer_count, buffer_iface);
 }
 
 #endif
