@@ -49,7 +49,6 @@ enum d3d11_calls
     CALL_D3D10_DEPTHSTENCIL_VIEW_ADDREF,
     CALL_D3D10_DEPTHSTENCIL_VIEW_GETDESC,
     CALL_D3D10_DEPTHSTENCIL_VIEW_GETRESOURCE,
-    CALL_D3D10_DEPTHSTENCIL_VIEW_QUERYINTERFACE,
     CALL_D3D10_DEPTHSTENCIL_VIEW_RELEASE,
     CALL_D3D10_DEVICE_CHECKCOUNTER,
     CALL_D3D10_DEVICE_CHECKCOUNTERINFO,
@@ -170,7 +169,6 @@ enum d3d11_calls
     CALL_D3D10_RENDERTARGET_VIEW_ADDREF,
     CALL_D3D10_RENDERTARGET_VIEW_GETDESC,
     CALL_D3D10_RENDERTARGET_VIEW_GETRESOURCE,
-    CALL_D3D10_RENDERTARGET_VIEW_QUERYINTERFACE,
     CALL_D3D10_RENDERTARGET_VIEW_RELEASE,
     CALL_D3D10_SAMPLER_STATE_ADDREF,
     CALL_D3D10_SAMPLER_STATE_GETDESC,
@@ -180,7 +178,6 @@ enum d3d11_calls
     CALL_D3D10_SHADER_RESOURCE_VIEW_GETDESC,
     CALL_D3D10_SHADER_RESOURCE_VIEW_GETDESC1,
     CALL_D3D10_SHADER_RESOURCE_VIEW_GETRESOURCE,
-    CALL_D3D10_SHADER_RESOURCE_VIEW_QUERYINTERFACE,
     CALL_D3D10_SHADER_RESOURCE_VIEW_RELEASE,
     CALL_D3D10_TEXTURE1D_ADDREF,
     CALL_D3D10_TEXTURE1D_GETDESC,
@@ -889,7 +886,6 @@ void qemu_d3d10_depthstencil_state_Release(struct qemu_syscall *call);
 void qemu_d3d10_depthstencil_view_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_depthstencil_view_GetDesc(struct qemu_syscall *call);
 void qemu_d3d10_depthstencil_view_GetResource(struct qemu_syscall *call);
-void qemu_d3d10_depthstencil_view_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_depthstencil_view_Release(struct qemu_syscall *call);
 void qemu_d3d10_device_CheckCounter(struct qemu_syscall *call);
 void qemu_d3d10_device_CheckCounterInfo(struct qemu_syscall *call);
@@ -1010,7 +1006,6 @@ void qemu_d3d10_rasterizer_state_Release(struct qemu_syscall *call);
 void qemu_d3d10_rendertarget_view_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_rendertarget_view_GetDesc(struct qemu_syscall *call);
 void qemu_d3d10_rendertarget_view_GetResource(struct qemu_syscall *call);
-void qemu_d3d10_rendertarget_view_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_rendertarget_view_Release(struct qemu_syscall *call);
 void qemu_d3d10_sampler_state_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_sampler_state_GetDesc(struct qemu_syscall *call);
@@ -1020,7 +1015,6 @@ void qemu_d3d10_shader_resource_view_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_shader_resource_view_GetDesc(struct qemu_syscall *call);
 void qemu_d3d10_shader_resource_view_GetDesc1(struct qemu_syscall *call);
 void qemu_d3d10_shader_resource_view_GetResource(struct qemu_syscall *call);
-void qemu_d3d10_shader_resource_view_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_shader_resource_view_Release(struct qemu_syscall *call);
 void qemu_d3d10_texture1d_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_texture1d_GetDesc(struct qemu_syscall *call);

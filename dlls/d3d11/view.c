@@ -364,42 +364,16 @@ void qemu_d3d11_depthstencil_view_GetDesc(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_depthstencil_view_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t object;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_depthstencil_view_QueryInterface(ID3D10DepthStencilView *iface, REFIID riid, void **object)
+static HRESULT STDMETHODCALLTYPE d3d10_depthstencil_view_QueryInterface(ID3D10DepthStencilView *iface, REFIID riid,
+        void **object)
 {
-    struct qemu_d3d10_depthstencil_view_QueryInterface call;
     struct qemu_d3d11_view *view = impl_from_ID3D10DepthStencilView(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEPTHSTENCIL_VIEW_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)view;
-    call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_depthstencil_view_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_depthstencil_view_QueryInterface *c = (struct qemu_d3d10_depthstencil_view_QueryInterface *)call;
-    struct qemu_d3d11_view *view;
-
-    WINE_FIXME("Unverified!\n");
-    view = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10DepthStencilView_QueryInterface(view->host_ds10, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    return d3d11_depthstencil_view_QueryInterface(&view->ID3D11DepthStencilView_iface, riid, object);
 }
 
 #endif
@@ -899,42 +873,16 @@ void qemu_d3d11_rendertarget_view_GetDesc(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_rendertarget_view_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t object;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_rendertarget_view_QueryInterface(ID3D10RenderTargetView *iface, REFIID riid, void **object)
+static HRESULT STDMETHODCALLTYPE d3d10_rendertarget_view_QueryInterface(ID3D10RenderTargetView *iface, REFIID riid,
+        void **object)
 {
-    struct qemu_d3d10_rendertarget_view_QueryInterface call;
     struct qemu_d3d11_view *view = impl_from_ID3D10RenderTargetView(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_RENDERTARGET_VIEW_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)view;
-    call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_rendertarget_view_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_rendertarget_view_QueryInterface *c = (struct qemu_d3d10_rendertarget_view_QueryInterface *)call;
-    struct qemu_d3d11_view *view;
-
-    WINE_FIXME("Unverified!\n");
-    view = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10RenderTargetView_QueryInterface(view->host_rt10, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    return d3d11_rendertarget_view_QueryInterface(&view->ID3D11RenderTargetView_iface, riid, object);
 }
 
 #endif
@@ -1436,42 +1384,16 @@ void qemu_d3d11_shader_resource_view_GetDesc(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_shader_resource_view_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t object;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_shader_resource_view_QueryInterface(ID3D10ShaderResourceView1 *iface, REFIID riid, void **object)
+static HRESULT STDMETHODCALLTYPE d3d10_shader_resource_view_QueryInterface(ID3D10ShaderResourceView1 *iface,
+        REFIID riid, void **object)
 {
-    struct qemu_d3d10_shader_resource_view_QueryInterface call;
     struct qemu_d3d11_view *view = impl_from_ID3D10ShaderResourceView1(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_SHADER_RESOURCE_VIEW_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)view;
-    call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_shader_resource_view_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_shader_resource_view_QueryInterface *c = (struct qemu_d3d10_shader_resource_view_QueryInterface *)call;
-    struct qemu_d3d11_view *view;
-
-    WINE_FIXME("Unverified!\n");
-    view = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10ShaderResourceView1_QueryInterface(view->host_sr10, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    return d3d11_shader_resource_view_QueryInterface(&view->ID3D11ShaderResourceView_iface, riid, object);
 }
 
 #endif
