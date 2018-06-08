@@ -4923,31 +4923,37 @@ struct qemu_d3d11_immediate_context_OMGetBlendState
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_OMGetBlendState(ID3D11DeviceContext1 *iface, ID3D11BlendState **blend_state, FLOAT blend_factor[4], UINT *sample_mask)
+static void STDMETHODCALLTYPE d3d11_immediate_context_OMGetBlendState(ID3D11DeviceContext1 *iface,
+        ID3D11BlendState **blend_state, FLOAT blend_factor[4], UINT *sample_mask)
 {
     struct qemu_d3d11_immediate_context_OMGetBlendState call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_state *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_OMGETBLENDSTATE);
     call.iface = (ULONG_PTR)context;
-    call.blend_state = (ULONG_PTR)blend_state;
     call.blend_factor = (ULONG_PTR)blend_factor;
     call.sample_mask = (ULONG_PTR)sample_mask;
 
     qemu_syscall(&call.super);
+    impl = (struct qemu_d3d11_state *)(ULONG_PTR)call.blend_state;
+    *blend_state = impl ? &impl->ID3D11BlendState_iface : NULL;
 }
 
 #else
 
 void qemu_d3d11_immediate_context_OMGetBlendState(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_OMGetBlendState *c = (struct qemu_d3d11_immediate_context_OMGetBlendState *)call;
+    struct qemu_d3d11_immediate_context_OMGetBlendState *c =
+            (struct qemu_d3d11_immediate_context_OMGetBlendState *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11BlendState *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
-    ID3D11DeviceContext1_OMGetBlendState(context->host, QEMU_G2H(c->blend_state), QEMU_G2H(c->blend_factor), QEMU_G2H(c->sample_mask));
+    ID3D11DeviceContext1_OMGetBlendState(context->host, &host, QEMU_G2H(c->blend_factor), QEMU_G2H(c->sample_mask));
+    c->blend_state = QEMU_H2G(state_from_host((ID3D11DeviceChild *)host));
 }
 
 #endif
