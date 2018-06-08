@@ -8771,7 +8771,10 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateGeometryShaderWithStreamOutp
     qemu_syscall(&call.super);
 
     if (FAILED(call.super.iret))
+    {
+        *shader = NULL;
         return call.super.iret;
+    }
 
     obj = (struct qemu_d3d11_shader *)(ULONG_PTR)call.shader;
     qemu_d3d11_geometry_shader_guest_init(obj);
