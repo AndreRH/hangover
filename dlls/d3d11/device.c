@@ -590,7 +590,8 @@ struct qemu_d3d11_immediate_context_Map
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t resource;
+    uint64_t buffer;
+    uint64_t texture;
     uint64_t subresource_idx;
     uint64_t map_type;
     uint64_t map_flags;
@@ -599,18 +600,43 @@ struct qemu_d3d11_immediate_context_Map
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_Map(ID3D11DeviceContext1 *iface, ID3D11Resource *resource, UINT subresource_idx, D3D11_MAP map_type, UINT map_flags, D3D11_MAPPED_SUBRESOURCE *mapped_subresource)
+static HRESULT STDMETHODCALLTYPE d3d11_immediate_context_Map(ID3D11DeviceContext1 *iface, ID3D11Resource *resource,
+        UINT subresource_idx, D3D11_MAP map_type, UINT map_flags, D3D11_MAPPED_SUBRESOURCE *mapped_subresource)
 {
     struct qemu_d3d11_immediate_context_Map call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    D3D11_RESOURCE_DIMENSION dim;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_MAP);
     call.iface = (ULONG_PTR)context;
-    call.resource = (ULONG_PTR)resource;
     call.subresource_idx = subresource_idx;
     call.map_type = map_type;
     call.map_flags = map_flags;
     call.mapped_subresource = (ULONG_PTR)mapped_subresource;
+
+    ID3D11Resource_GetType(resource, &dim);
+    switch (dim)
+    {
+        case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
+            call.buffer = 0;
+            call.texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture1D((ID3D11Texture1D *)resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
+            call.buffer = 0;
+            call.texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture2D((ID3D11Texture2D *)resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
+            call.buffer = 0;
+            call.texture = (ULONG_PTR)unsafe_impl_from_ID3D11Texture3D((ID3D11Texture3D *)resource);
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_BUFFER:
+            call.buffer = (ULONG_PTR)unsafe_impl_from_ID3D11Buffer((ID3D11Buffer *)resource);
+            call.texture = 0;
+            break;
+    }
 
     qemu_syscall(&call.super);
 
@@ -623,11 +649,33 @@ void qemu_d3d11_immediate_context_Map(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_Map *c = (struct qemu_d3d11_immediate_context_Map *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11Resource *resource;
+    struct qemu_d3d11_texture *tex;
+    struct qemu_d3d11_buffer *buf;
+    D3D11_MAPPED_SUBRESOURCE stack, *mapped_subresource = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    if (c->buffer)
+    {
+        buf = QEMU_G2H(c->buffer);
+        resource = (ID3D11Resource *)buf->host11;
+    }
+    else if (c->texture)
+    {
+        tex = QEMU_G2H(c->texture);
+        resource = (ID3D11Resource *)tex->host11_1d;
+    }
+#if GUEST_BIT == HOST_BIT
+    mapped_subresource = QEMU_G2H(c->mapped_subresource);
+#endif
 
-    c->super.iret = ID3D11DeviceContext1_Map(context->host, QEMU_G2H(c->resource), c->subresource_idx, c->map_type, c->map_flags, QEMU_G2H(c->mapped_subresource));
+    c->super.iret = ID3D11DeviceContext1_Map(context->host, resource, c->subresource_idx, c->map_type,
+            c->map_flags, mapped_subresource);
+
+#if GUEST_BIT != HOST_BIT
+    D3D11_MAPPED_SUBRESOURCE_h2g(QEMU_G2H(c->mapped_subresource), mapped_subresource);
+#endif
 }
 
 #endif

@@ -41,4 +41,19 @@ static inline void D3D11_INPUT_ELEMENT_DESC_g2h(D3D11_INPUT_ELEMENT_DESC *host,
     host->InstanceDataStepRate = guest->InstanceDataStepRate;
 }
 
+struct qemu_D3D11_MAPPED_SUBRESOURCE
+{
+    qemu_ptr pData;
+    UINT RowPitch;
+    UINT DepthPitch;
+};
+
+static inline void D3D11_MAPPED_SUBRESOURCE_h2g(struct qemu_D3D11_MAPPED_SUBRESOURCE *guest,
+        const D3D11_MAPPED_SUBRESOURCE *host)
+{
+    guest->pData = (ULONG_PTR)host->pData;
+    guest->RowPitch = host->RowPitch;
+    guest->DepthPitch = host->DepthPitch;
+}
+
 #endif
