@@ -9701,7 +9701,8 @@ struct qemu_d3d11_device_CheckFeatureSupport
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_CheckFeatureSupport(ID3D11Device2 *iface, D3D11_FEATURE feature, void *feature_support_data, UINT feature_support_data_size)
+static HRESULT STDMETHODCALLTYPE d3d11_device_CheckFeatureSupport(ID3D11Device2 *iface, D3D11_FEATURE feature,
+        void *feature_support_data, UINT feature_support_data_size)
 {
     struct qemu_d3d11_device_CheckFeatureSupport call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
@@ -9724,10 +9725,12 @@ void qemu_d3d11_device_CheckFeatureSupport(struct qemu_syscall *call)
     struct qemu_d3d11_device_CheckFeatureSupport *c = (struct qemu_d3d11_device_CheckFeatureSupport *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* Add D3D11_FEATURE_DATA_* structs have the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11Device2_CheckFeatureSupport(device->host_d3d11, c->feature, QEMU_G2H(c->feature_support_data), c->feature_support_data_size);
+    c->super.iret = ID3D11Device2_CheckFeatureSupport(device->host_d3d11, c->feature,
+            QEMU_G2H(c->feature_support_data), c->feature_support_data_size);
 }
 
 #endif
