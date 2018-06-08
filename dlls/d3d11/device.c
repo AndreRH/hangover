@@ -4593,27 +4593,60 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_GSGetShaderResources(ID3D1
 {
     struct qemu_d3d11_immediate_context_GSGetShaderResources call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    uint64_t stack[16], *view_impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GSGETSHADERRESOURCES);
     call.iface = (ULONG_PTR)context;
     call.start_slot = start_slot;
     call.view_count = view_count;
-    call.views = (ULONG_PTR)views;
+
+    if (view_count > (sizeof(stack) / sizeof(*stack)))
+        view_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*view_impl) * view_count);
+
+    call.views = (ULONG_PTR)view_impl;
 
     qemu_syscall(&call.super);
+
+    for (i = 0; i < view_count; ++i)
+    {
+        struct qemu_d3d11_view *view;
+
+        if (!view_impl[i])
+        {
+            views[i] = NULL;
+            continue;
+        }
+
+        view = (struct qemu_d3d11_view *)(ULONG_PTR)view_impl[i];
+        views[i] = &view->ID3D11ShaderResourceView_iface;
+    }
+
+    if (view_impl != stack)
+        HeapFree(GetProcessHeap(), 0, view_impl);
 }
 
 #else
 
 void qemu_d3d11_immediate_context_GSGetShaderResources(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_GSGetShaderResources *c = (struct qemu_d3d11_immediate_context_GSGetShaderResources *)call;
+    struct qemu_d3d11_immediate_context_GSGetShaderResources *c =
+            (struct qemu_d3d11_immediate_context_GSGetShaderResources *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11ShaderResourceView **ifaces;
+    struct qemu_d3d11_view **view_impl;
+    UINT i, count;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    ifaces = QEMU_G2H(c->views);
+    view_impl = QEMU_G2H(c->views);
+    count = c->view_count;
 
-    ID3D11DeviceContext1_GSGetShaderResources(context->host, c->start_slot, c->view_count, QEMU_G2H(c->views));
+    ID3D11DeviceContext1_GSGetShaderResources(context->host, c->start_slot, count, ifaces);
+
+    for (i = 0; i < count; ++i)
+        view_impl[i] = view_from_host((ID3D11DeviceChild *)ifaces[i]);
 }
 
 #endif
@@ -5352,31 +5385,65 @@ struct qemu_d3d11_immediate_context_DSGetShaderResources
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_DSGetShaderResources(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11ShaderResourceView **views)
+static void STDMETHODCALLTYPE d3d11_immediate_context_DSGetShaderResources(ID3D11DeviceContext1 *iface,
+        UINT start_slot, UINT view_count, ID3D11ShaderResourceView **views)
 {
     struct qemu_d3d11_immediate_context_DSGetShaderResources call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    uint64_t stack[16], *view_impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DSGETSHADERRESOURCES);
     call.iface = (ULONG_PTR)context;
     call.start_slot = start_slot;
     call.view_count = view_count;
-    call.views = (ULONG_PTR)views;
+
+    if (view_count > (sizeof(stack) / sizeof(*stack)))
+        view_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*view_impl) * view_count);
+
+    call.views = (ULONG_PTR)view_impl;
 
     qemu_syscall(&call.super);
+
+    for (i = 0; i < view_count; ++i)
+    {
+        struct qemu_d3d11_view *view;
+
+        if (!view_impl[i])
+        {
+            views[i] = NULL;
+            continue;
+        }
+
+        view = (struct qemu_d3d11_view *)(ULONG_PTR)view_impl[i];
+        views[i] = &view->ID3D11ShaderResourceView_iface;
+    }
+
+    if (view_impl != stack)
+        HeapFree(GetProcessHeap(), 0, view_impl);
 }
 
 #else
 
 void qemu_d3d11_immediate_context_DSGetShaderResources(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_DSGetShaderResources *c = (struct qemu_d3d11_immediate_context_DSGetShaderResources *)call;
+    struct qemu_d3d11_immediate_context_DSGetShaderResources *c =
+            (struct qemu_d3d11_immediate_context_DSGetShaderResources *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11ShaderResourceView **ifaces;
+    struct qemu_d3d11_view **view_impl;
+    UINT i, count;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    ifaces = QEMU_G2H(c->views);
+    view_impl = QEMU_G2H(c->views);
+    count = c->view_count;
 
-    ID3D11DeviceContext1_DSGetShaderResources(context->host, c->start_slot, c->view_count, QEMU_G2H(c->views));
+    ID3D11DeviceContext1_DSGetShaderResources(context->host, c->start_slot, count, ifaces);
+
+    for (i = 0; i < count; ++i)
+        view_impl[i] = view_from_host((ID3D11DeviceChild *)ifaces[i]);
 }
 
 #endif
@@ -5586,31 +5653,65 @@ struct qemu_d3d11_immediate_context_CSGetShaderResources
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_CSGetShaderResources(ID3D11DeviceContext1 *iface, UINT start_slot, UINT view_count, ID3D11ShaderResourceView **views)
+static void STDMETHODCALLTYPE d3d11_immediate_context_CSGetShaderResources(ID3D11DeviceContext1 *iface,
+        UINT start_slot, UINT view_count, ID3D11ShaderResourceView **views)
 {
     struct qemu_d3d11_immediate_context_CSGetShaderResources call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    uint64_t stack[16], *view_impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_CSGETSHADERRESOURCES);
     call.iface = (ULONG_PTR)context;
     call.start_slot = start_slot;
     call.view_count = view_count;
-    call.views = (ULONG_PTR)views;
+
+    if (view_count > (sizeof(stack) / sizeof(*stack)))
+        view_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*view_impl) * view_count);
+
+    call.views = (ULONG_PTR)view_impl;
 
     qemu_syscall(&call.super);
+
+    for (i = 0; i < view_count; ++i)
+    {
+        struct qemu_d3d11_view *view;
+
+        if (!view_impl[i])
+        {
+            views[i] = NULL;
+            continue;
+        }
+
+        view = (struct qemu_d3d11_view *)(ULONG_PTR)view_impl[i];
+        views[i] = &view->ID3D11ShaderResourceView_iface;
+    }
+
+    if (view_impl != stack)
+        HeapFree(GetProcessHeap(), 0, view_impl);
 }
 
 #else
 
 void qemu_d3d11_immediate_context_CSGetShaderResources(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_CSGetShaderResources *c = (struct qemu_d3d11_immediate_context_CSGetShaderResources *)call;
+    struct qemu_d3d11_immediate_context_CSGetShaderResources *c =
+            (struct qemu_d3d11_immediate_context_CSGetShaderResources *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11ShaderResourceView **ifaces;
+    struct qemu_d3d11_view **view_impl;
+    UINT i, count;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    ifaces = QEMU_G2H(c->views);
+    view_impl = QEMU_G2H(c->views);
+    count = c->view_count;
 
-    ID3D11DeviceContext1_CSGetShaderResources(context->host, c->start_slot, c->view_count, QEMU_G2H(c->views));
+    ID3D11DeviceContext1_CSGetShaderResources(context->host, c->start_slot, count, ifaces);
+
+    for (i = 0; i < count; ++i)
+        view_impl[i] = view_from_host((ID3D11DeviceChild *)ifaces[i]);
 }
 
 #endif
