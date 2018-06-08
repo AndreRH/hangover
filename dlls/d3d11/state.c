@@ -2240,7 +2240,7 @@ struct qemu_d3d11_state *state_from_host(ID3D11DeviceChild *host)
     hr = ID3D11DeviceChild_GetPrivateData(host, &IID_d3d11_priv_data, &size, &priv);
     if (FAILED(hr))
     {
-        WINE_TRACE("Failed to get private data from host surface %p.\n", host);
+        WINE_TRACE("Failed to get private data from host state %p.\n", host);
         return NULL;
     }
 

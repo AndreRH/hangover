@@ -837,4 +837,24 @@ HRESULT qemu_d3d11_query_create(ID3D11Query *host, struct qemu_d3d11_query **que
     return S_OK;
 }
 
+struct qemu_d3d11_query *query_from_host(ID3D11Query *host)
+{
+    IUnknown *priv;
+    DWORD size = sizeof(priv);
+    HRESULT hr;
+
+    if (!host)
+        return NULL;
+
+    hr = ID3D11Query_GetPrivateData(host, &IID_d3d11_priv_data, &size, &priv);
+    if (FAILED(hr))
+    {
+        WINE_TRACE("Failed to get private data from host query %p.\n", host);
+        return NULL;
+    }
+
+    IUnknown_Release(priv);
+    return impl_from_priv_data(priv);
+}
+
 #endif

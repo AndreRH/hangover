@@ -3677,17 +3677,21 @@ struct qemu_d3d11_immediate_context_GetPredication
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_GetPredication(ID3D11DeviceContext1 *iface, ID3D11Predicate **predicate, BOOL *value)
+static void STDMETHODCALLTYPE d3d11_immediate_context_GetPredication(ID3D11DeviceContext1 *iface,
+        ID3D11Predicate **predicate, BOOL *value)
 {
     struct qemu_d3d11_immediate_context_GetPredication call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_query *query;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_GETPREDICATION);
     call.iface = (ULONG_PTR)context;
-    call.predicate = (ULONG_PTR)predicate;
     call.value = (ULONG_PTR)value;
 
     qemu_syscall(&call.super);
+
+    query = (struct qemu_d3d11_query *)(ULONG_PTR)call.predicate;
+    *predicate = (ID3D11Predicate *)&query->ID3D11Query_iface;
 }
 
 #else
@@ -3696,11 +3700,13 @@ void qemu_d3d11_immediate_context_GetPredication(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_GetPredication *c = (struct qemu_d3d11_immediate_context_GetPredication *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11Query *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
-    ID3D11DeviceContext1_GetPredication(context->host, QEMU_G2H(c->predicate), QEMU_G2H(c->value));
+    ID3D11DeviceContext1_GetPredication(context->host, (ID3D11Predicate **)&host, QEMU_G2H(c->value));
+    c->predicate = QEMU_H2G(query_from_host(host));
 }
 
 #endif
