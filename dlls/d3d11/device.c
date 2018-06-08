@@ -2167,14 +2167,16 @@ struct qemu_d3d11_immediate_context_DispatchIndirect
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_DispatchIndirect(ID3D11DeviceContext1 *iface, ID3D11Buffer *buffer, UINT offset)
+static void STDMETHODCALLTYPE d3d11_immediate_context_DispatchIndirect(ID3D11DeviceContext1 *iface,
+        ID3D11Buffer *buffer, UINT offset)
 {
     struct qemu_d3d11_immediate_context_DispatchIndirect call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_buffer *impl = unsafe_impl_from_ID3D11Buffer(buffer);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_DISPATCHINDIRECT);
     call.iface = (ULONG_PTR)context;
-    call.buffer = (ULONG_PTR)buffer;
+    call.buffer = (ULONG_PTR)impl;
     call.offset = offset;
 
     qemu_syscall(&call.super);
@@ -2186,11 +2188,13 @@ void qemu_d3d11_immediate_context_DispatchIndirect(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_DispatchIndirect *c = (struct qemu_d3d11_immediate_context_DispatchIndirect *)call;
     struct qemu_d3d11_device_context *context;
+    struct qemu_d3d11_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    buffer = QEMU_G2H(c->buffer);
 
-    ID3D11DeviceContext1_DispatchIndirect(context->host, QEMU_G2H(c->buffer), c->offset);
+    ID3D11DeviceContext1_DispatchIndirect(context->host, buffer ? buffer->host11 : NULL, c->offset);
 }
 
 #endif
