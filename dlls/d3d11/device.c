@@ -3501,18 +3501,22 @@ struct qemu_d3d11_immediate_context_VSGetShader
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_VSGetShader(ID3D11DeviceContext1 *iface, ID3D11VertexShader **shader, ID3D11ClassInstance **class_instances, UINT *class_instance_count)
+static void STDMETHODCALLTYPE d3d11_immediate_context_VSGetShader(ID3D11DeviceContext1 *iface,
+        ID3D11VertexShader **shader, ID3D11ClassInstance **class_instances, UINT *class_instance_count)
 {
     struct qemu_d3d11_immediate_context_VSGetShader call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    struct qemu_d3d11_shader *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_VSGETSHADER);
     call.iface = (ULONG_PTR)context;
-    call.shader = (ULONG_PTR)shader;
     call.class_instances = (ULONG_PTR)class_instances;
     call.class_instance_count = (ULONG_PTR)class_instance_count;
 
     qemu_syscall(&call.super);
+
+    impl = (struct qemu_d3d11_shader *)(ULONG_PTR)call.shader;
+    *shader = impl ? &impl->ID3D11VertexShader_iface : NULL;
 }
 
 #else
@@ -3521,11 +3525,15 @@ void qemu_d3d11_immediate_context_VSGetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_VSGetShader *c = (struct qemu_d3d11_immediate_context_VSGetShader *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11VertexShader *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    if (c->class_instances)
+        WINE_FIXME("ID3D11ClassInstance not supported yet.\n");
 
-    ID3D11DeviceContext1_VSGetShader(context->host, QEMU_G2H(c->shader), QEMU_G2H(c->class_instances), QEMU_G2H(c->class_instance_count));
+    ID3D11DeviceContext1_VSGetShader(context->host, &host, NULL, 0);
+    c->shader = QEMU_H2G(shader_from_host((ID3D11DeviceChild *)host));
 }
 
 #endif
