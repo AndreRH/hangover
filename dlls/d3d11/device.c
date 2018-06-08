@@ -5091,17 +5091,41 @@ struct qemu_d3d11_immediate_context_SOGetTargets
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_immediate_context_SOGetTargets(ID3D11DeviceContext1 *iface, UINT buffer_count, ID3D11Buffer **buffers)
+static void STDMETHODCALLTYPE d3d11_immediate_context_SOGetTargets(ID3D11DeviceContext1 *iface,
+        UINT buffer_count, ID3D11Buffer **buffers)
 {
     struct qemu_d3d11_immediate_context_SOGetTargets call;
     struct qemu_d3d11_device_context *context = impl_from_ID3D11DeviceContext1(iface);
+    uint64_t stack[16], *impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_IMMEDIATE_CONTEXT_SOGETTARGETS);
     call.iface = (ULONG_PTR)context;
     call.buffer_count = buffer_count;
-    call.buffers = (ULONG_PTR)buffers;
+
+    if (buffer_count > (sizeof(stack) / sizeof(*stack)))
+        impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*impl) * buffer_count);
+
+    call.buffers = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
+
+    for (i = 0; i < buffer_count; ++i)
+    {
+        struct qemu_d3d11_buffer *buffer;
+
+        if (!impl[i])
+        {
+            buffers[i] = NULL;
+            continue;
+        }
+
+        buffer = (struct qemu_d3d11_buffer *)(ULONG_PTR)impl[i];
+        buffers[i] = &buffer->ID3D11Buffer_iface;
+    }
+
+    if (impl != stack)
+        HeapFree(GetProcessHeap(), 0, impl);
 }
 
 #else
@@ -5110,11 +5134,20 @@ void qemu_d3d11_immediate_context_SOGetTargets(struct qemu_syscall *call)
 {
     struct qemu_d3d11_immediate_context_SOGetTargets *c = (struct qemu_d3d11_immediate_context_SOGetTargets *)call;
     struct qemu_d3d11_device_context *context;
+    ID3D11Buffer **ifaces;
+    struct qemu_d3d11_buffer **impl;
+    UINT i, count;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
+    ifaces = QEMU_G2H(c->buffers);
+    impl = QEMU_G2H(c->buffers);
+    count = c->buffer_count;
 
-    ID3D11DeviceContext1_SOGetTargets(context->host, c->buffer_count, QEMU_G2H(c->buffers));
+    ID3D11DeviceContext1_SOGetTargets(context->host, count, ifaces);
+
+    for (i = 0; i < count; ++i)
+        impl[i] = buffer_from_host(ifaces[i]);
 }
 
 #endif
