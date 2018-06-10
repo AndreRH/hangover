@@ -9268,7 +9268,8 @@ struct qemu_d3d11_device_CreateBlendState
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_CreateBlendState(ID3D11Device2 *iface, const D3D11_BLEND_DESC *desc, ID3D11BlendState **blend_state)
+static HRESULT STDMETHODCALLTYPE d3d11_device_CreateBlendState(ID3D11Device2 *iface, const D3D11_BLEND_DESC *desc,
+        ID3D11BlendState **blend_state)
 {
     struct qemu_d3d11_device_CreateBlendState call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
@@ -9289,6 +9290,58 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateBlendState(ID3D11Device2 *if
     *blend_state = &obj->ID3D11BlendState_iface;
 
     return call.super.iret;
+}
+
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreateBlendState1(ID3D10Device1 *iface, const D3D10_BLEND_DESC1 *desc,
+        ID3D10BlendState1 **blend_state)
+{
+    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    ID3D11BlendState *state11;
+    HRESULT hr;
+
+    hr = d3d11_device_CreateBlendState(&device->ID3D11Device2_iface, (const D3D11_BLEND_DESC *)desc,
+            &state11);
+    if (FAILED(hr))
+        return hr;
+
+    hr = ID3D11BlendState_QueryInterface(state11, &IID_ID3D10BlendState1, (void **)blend_state);
+    ID3D11BlendState_Release(state11);
+    return hr;
+}
+
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreateBlendState(ID3D10Device1 *iface,
+        const D3D10_BLEND_DESC *desc, ID3D10BlendState **blend_state)
+{
+    D3D10_BLEND_DESC1 d3d10_1_desc;
+    unsigned int i;
+
+    WINE_TRACE("iface %p, desc %p, blend_state %p.\n", iface, desc, blend_state);
+
+    if (!desc)
+        return E_INVALIDARG;
+
+    d3d10_1_desc.AlphaToCoverageEnable = desc->AlphaToCoverageEnable;
+    d3d10_1_desc.IndependentBlendEnable = FALSE;
+    for (i = 0; i < D3D10_SIMULTANEOUS_RENDER_TARGET_COUNT - 1; ++i)
+    {
+        if (desc->BlendEnable[i] != desc->BlendEnable[i + 1]
+                || desc->RenderTargetWriteMask[i] != desc->RenderTargetWriteMask[i + 1])
+            d3d10_1_desc.IndependentBlendEnable = TRUE;
+    }
+
+    for (i = 0; i < D3D10_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
+    {
+        d3d10_1_desc.RenderTarget[i].BlendEnable = desc->BlendEnable[i];
+        d3d10_1_desc.RenderTarget[i].SrcBlend = desc->SrcBlend;
+        d3d10_1_desc.RenderTarget[i].DestBlend = desc->DestBlend;
+        d3d10_1_desc.RenderTarget[i].BlendOp = desc->BlendOp;
+        d3d10_1_desc.RenderTarget[i].SrcBlendAlpha = desc->SrcBlendAlpha;
+        d3d10_1_desc.RenderTarget[i].DestBlendAlpha = desc->DestBlendAlpha;
+        d3d10_1_desc.RenderTarget[i].BlendOpAlpha = desc->BlendOpAlpha;
+        d3d10_1_desc.RenderTarget[i].RenderTargetWriteMask = desc->RenderTargetWriteMask[i];
+    }
+
+    return d3d10_device_CreateBlendState1(iface, &d3d10_1_desc, (ID3D10BlendState1 **)blend_state);
 }
 
 #else
@@ -13901,87 +13954,6 @@ void qemu_d3d10_device_CreateGeometryShaderWithStreamOutput(struct qemu_syscall 
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Device1_CreateGeometryShaderWithStreamOutput(device->host_d3d10, QEMU_G2H(c->byte_code), c->byte_code_length, QEMU_G2H(c->output_stream_decls), c->output_stream_decl_count, c->output_stream_stride, QEMU_G2H(c->shader));
-}
-
-#endif
-
-struct qemu_d3d10_device_CreateBlendState1
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t desc;
-    uint64_t blend_state;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreateBlendState1(ID3D10Device1 *iface, const D3D10_BLEND_DESC1 *desc, ID3D10BlendState1 **blend_state)
-{
-    struct qemu_d3d10_device_CreateBlendState1 call;
-    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CREATEBLENDSTATE1);
-    call.iface = (ULONG_PTR)device;
-    call.desc = (ULONG_PTR)desc;
-    call.blend_state = (ULONG_PTR)blend_state;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_device_CreateBlendState1(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_CreateBlendState1 *c = (struct qemu_d3d10_device_CreateBlendState1 *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_CreateBlendState1(device->host_d3d10, QEMU_G2H(c->desc), QEMU_G2H(c->blend_state));
-}
-
-#endif
-
-struct qemu_d3d10_device_CreateBlendState
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t desc;
-    uint64_t blend_state;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreateBlendState(ID3D10Device1 *iface, const D3D10_BLEND_DESC *desc,
-        ID3D10BlendState **blend_state)
-{
-    struct qemu_d3d10_device_CreateBlendState call;
-    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CREATEBLENDSTATE);
-    call.iface = (ULONG_PTR)device;
-    call.desc = (ULONG_PTR)desc;
-    call.blend_state = (ULONG_PTR)blend_state;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_device_CreateBlendState(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_CreateBlendState *c = (struct qemu_d3d10_device_CreateBlendState *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_CreateBlendState(device->host_d3d10, QEMU_G2H(c->desc), QEMU_G2H(c->blend_state));
 }
 
 #endif
