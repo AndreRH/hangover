@@ -8698,6 +8698,22 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateVertexShader(ID3D11Device2 *
     return call.super.iret;
 }
 
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreateVertexShader(ID3D10Device1 *iface, const void *byte_code,
+        SIZE_T byte_code_length, ID3D10VertexShader **shader)
+{
+    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    ID3D11VertexShader *shader11;
+    HRESULT hr;
+
+    hr = d3d11_device_CreateVertexShader(&device->ID3D11Device2_iface, byte_code, byte_code_length, NULL, &shader11);
+    if (FAILED(hr))
+        return hr;
+
+    hr = ID3D11VertexShader_QueryInterface(shader11, &IID_ID3D10VertexShader, (void **)shader);
+    ID3D11VertexShader_Release(shader11);
+    return hr;
+}
+
 #else
 
 void qemu_d3d11_device_CreateVertexShader(struct qemu_syscall *call)
@@ -8763,6 +8779,22 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateGeometryShader(ID3D11Device2
     *shader = &obj->ID3D11GeometryShader_iface;
 
     return call.super.iret;
+}
+
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreateGeometryShader(ID3D10Device1 *iface, const void *byte_code,
+        SIZE_T byte_code_length, ID3D10GeometryShader **shader)
+{
+    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    ID3D11GeometryShader *shader11;
+    HRESULT hr;
+
+    hr = d3d11_device_CreateGeometryShader(&device->ID3D11Device2_iface, byte_code, byte_code_length, NULL, &shader11);
+    if (FAILED(hr))
+        return hr;
+
+    hr = ID3D11GeometryShader_QueryInterface(shader11, &IID_ID3D10GeometryShader, (void **)shader);
+    ID3D11GeometryShader_Release(shader11);
+    return hr;
 }
 
 #else
@@ -8935,6 +8967,22 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreatePixelShader(ID3D11Device2 *i
     *shader = &obj->ID3D11PixelShader_iface;
 
     return call.super.iret;
+}
+
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreatePixelShader(ID3D10Device1 *iface, const void *byte_code,
+        SIZE_T byte_code_length, ID3D10PixelShader **shader)
+{
+    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    ID3D11PixelShader *shader11;
+    HRESULT hr;
+
+    hr = d3d11_device_CreatePixelShader(&device->ID3D11Device2_iface, byte_code, byte_code_length, NULL, &shader11);
+    if (FAILED(hr))
+        return hr;
+
+    hr = ID3D11PixelShader_QueryInterface(shader11, &IID_ID3D10PixelShader, (void **)shader);
+    ID3D11PixelShader_Release(shader11);
+    return hr;
 }
 
 #else
@@ -13691,90 +13739,6 @@ void qemu_d3d10_device_CreateInputLayout(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_device_CreateVertexShader
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t byte_code;
-    uint64_t byte_code_length;
-    uint64_t shader;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreateVertexShader(ID3D10Device1 *iface, const void *byte_code, SIZE_T byte_code_length, ID3D10VertexShader **shader)
-{
-    struct qemu_d3d10_device_CreateVertexShader call;
-    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CREATEVERTEXSHADER);
-    call.iface = (ULONG_PTR)device;
-    call.byte_code = (ULONG_PTR)byte_code;
-    call.byte_code_length = byte_code_length;
-    call.shader = (ULONG_PTR)shader;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_device_CreateVertexShader(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_CreateVertexShader *c = (struct qemu_d3d10_device_CreateVertexShader *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_CreateVertexShader(device->host_d3d10, QEMU_G2H(c->byte_code), c->byte_code_length, QEMU_G2H(c->shader));
-}
-
-#endif
-
-struct qemu_d3d10_device_CreateGeometryShader
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t byte_code;
-    uint64_t byte_code_length;
-    uint64_t shader;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreateGeometryShader(ID3D10Device1 *iface, const void *byte_code, SIZE_T byte_code_length, ID3D10GeometryShader **shader)
-{
-    struct qemu_d3d10_device_CreateGeometryShader call;
-    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CREATEGEOMETRYSHADER);
-    call.iface = (ULONG_PTR)device;
-    call.byte_code = (ULONG_PTR)byte_code;
-    call.byte_code_length = byte_code_length;
-    call.shader = (ULONG_PTR)shader;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_device_CreateGeometryShader(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_CreateGeometryShader *c = (struct qemu_d3d10_device_CreateGeometryShader *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_CreateGeometryShader(device->host_d3d10, QEMU_G2H(c->byte_code), c->byte_code_length, QEMU_G2H(c->shader));
-}
-
-#endif
-
 struct qemu_d3d10_device_CreateGeometryShaderWithStreamOutput
 {
     struct qemu_syscall super;
@@ -13819,48 +13783,6 @@ void qemu_d3d10_device_CreateGeometryShaderWithStreamOutput(struct qemu_syscall 
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Device1_CreateGeometryShaderWithStreamOutput(device->host_d3d10, QEMU_G2H(c->byte_code), c->byte_code_length, QEMU_G2H(c->output_stream_decls), c->output_stream_decl_count, c->output_stream_stride, QEMU_G2H(c->shader));
-}
-
-#endif
-
-struct qemu_d3d10_device_CreatePixelShader
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t byte_code;
-    uint64_t byte_code_length;
-    uint64_t shader;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreatePixelShader(ID3D10Device1 *iface, const void *byte_code, SIZE_T byte_code_length, ID3D10PixelShader **shader)
-{
-    struct qemu_d3d10_device_CreatePixelShader call;
-    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CREATEPIXELSHADER);
-    call.iface = (ULONG_PTR)device;
-    call.byte_code = (ULONG_PTR)byte_code;
-    call.byte_code_length = byte_code_length;
-    call.shader = (ULONG_PTR)shader;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_device_CreatePixelShader(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_CreatePixelShader *c = (struct qemu_d3d10_device_CreatePixelShader *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_CreatePixelShader(device->host_d3d10, QEMU_G2H(c->byte_code), c->byte_code_length, QEMU_G2H(c->shader));
 }
 
 #endif

@@ -63,17 +63,14 @@ enum d3d11_calls
     CALL_D3D10_DEVICE_CREATEBLENDSTATE1,
     CALL_D3D10_DEVICE_CREATECOUNTER,
     CALL_D3D10_DEVICE_CREATEDEPTHSTENCILSTATE,
-    CALL_D3D10_DEVICE_CREATEGEOMETRYSHADER,
     CALL_D3D10_DEVICE_CREATEGEOMETRYSHADERWITHSTREAMOUTPUT,
     CALL_D3D10_DEVICE_CREATEINPUTLAYOUT,
-    CALL_D3D10_DEVICE_CREATEPIXELSHADER,
     CALL_D3D10_DEVICE_CREATEPREDICATE,
     CALL_D3D10_DEVICE_CREATEQUERY,
     CALL_D3D10_DEVICE_CREATERASTERIZERSTATE,
     CALL_D3D10_DEVICE_CREATESAMPLERSTATE,
     CALL_D3D10_DEVICE_CREATESHADERRESOURCEVIEW,
     CALL_D3D10_DEVICE_CREATESHADERRESOURCEVIEW1,
-    CALL_D3D10_DEVICE_CREATEVERTEXSHADER,
     CALL_D3D10_DEVICE_DRAW,
     CALL_D3D10_DEVICE_DRAWAUTO,
     CALL_D3D10_DEVICE_DRAWINDEXED,
@@ -900,17 +897,14 @@ void qemu_d3d10_device_CreateBlendState(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateBlendState1(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateCounter(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateDepthStencilState(struct qemu_syscall *call);
-void qemu_d3d10_device_CreateGeometryShader(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateGeometryShaderWithStreamOutput(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateInputLayout(struct qemu_syscall *call);
-void qemu_d3d10_device_CreatePixelShader(struct qemu_syscall *call);
 void qemu_d3d10_device_CreatePredicate(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateQuery(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateRasterizerState(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateSamplerState(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateShaderResourceView(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateShaderResourceView1(struct qemu_syscall *call);
-void qemu_d3d10_device_CreateVertexShader(struct qemu_syscall *call);
 void qemu_d3d10_device_Draw(struct qemu_syscall *call);
 void qemu_d3d10_device_DrawAuto(struct qemu_syscall *call);
 void qemu_d3d10_device_DrawIndexed(struct qemu_syscall *call);
