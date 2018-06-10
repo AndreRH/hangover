@@ -309,7 +309,8 @@ static void STDMETHODCALLTYPE d3d11_immediate_context_VSSetConstantBuffers(ID3D1
 
 void qemu_d3d11_immediate_context_VSSetConstantBuffers(struct qemu_syscall *call)
 {
-    struct qemu_d3d11_immediate_context_VSSetConstantBuffers *c = (struct qemu_d3d11_immediate_context_VSSetConstantBuffers *)call;
+    struct qemu_d3d11_immediate_context_VSSetConstantBuffers *c =
+            (struct qemu_d3d11_immediate_context_VSSetConstantBuffers *)call;
     struct qemu_d3d11_device_context *context;
     ID3D11Buffer *buffer_iface[MAX_CONSTANT_BUFFERS];
     UINT i;
@@ -7584,7 +7585,8 @@ struct qemu_d3d11_device_CreateBuffer
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d11_device_CreateBuffer(ID3D11Device2 *iface, const D3D11_BUFFER_DESC *desc, const D3D11_SUBRESOURCE_DATA *data, ID3D11Buffer **buffer)
+static HRESULT STDMETHODCALLTYPE d3d11_device_CreateBuffer(ID3D11Device2 *iface, const D3D11_BUFFER_DESC *desc,
+        const D3D11_SUBRESOURCE_DATA *data, ID3D11Buffer **buffer)
 {
     struct qemu_d3d11_device_CreateBuffer call;
     struct qemu_d3d11_device *device = impl_from_ID3D11Device2(iface);
@@ -7628,7 +7630,7 @@ static HRESULT STDMETHODCALLTYPE d3d10_device_CreateBuffer(ID3D10Device1 *iface,
     if (FAILED(hr))
         return hr;
 
-    hr = ID3D11Buffer_QueryInterface(buffer11, &IID_ID3D11Buffer, (void **)buffer);
+    hr = ID3D11Buffer_QueryInterface(buffer11, &IID_ID3D10Buffer, (void **)buffer);
     ID3D11Buffer_Release(buffer11);
     return hr;
 }
@@ -10909,16 +10911,29 @@ struct qemu_d3d10_device_VSSetConstantBuffers
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_VSSetConstantBuffers(ID3D10Device1 *iface, UINT start_slot, UINT buffer_count, ID3D10Buffer *const *buffers)
+static void STDMETHODCALLTYPE d3d10_device_VSSetConstantBuffers(ID3D10Device1 *iface, UINT start_slot,
+        UINT buffer_count, ID3D10Buffer *const *buffers)
 {
     struct qemu_d3d10_device_VSSetConstantBuffers call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    uint64_t buffer_impl[MAX_CONSTANT_BUFFERS];
+    UINT i;
+
+    if (buffer_count > MAX_CONSTANT_BUFFERS)
+    {
+        WINE_FIXME("MAX_CONSTANT_BUFFERS is too small.\n");
+        return;
+    }
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_VSSETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)device;
     call.start_slot = start_slot;
     call.buffer_count = buffer_count;
-    call.buffers = (ULONG_PTR)buffers;
+
+    for (i = 0; i < buffer_count; ++i)
+        buffer_impl[i] = (ULONG_PTR)unsafe_impl_from_ID3D10Buffer(buffers[i]);
+
+    call.buffers = (ULONG_PTR)buffer_impl;
 
     qemu_syscall(&call.super);
 }
@@ -10929,11 +10944,21 @@ void qemu_d3d10_device_VSSetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_VSSetConstantBuffers *c = (struct qemu_d3d10_device_VSSetConstantBuffers *)call;
     struct qemu_d3d11_device *device;
+    ID3D10Buffer *buffer_iface[MAX_CONSTANT_BUFFERS];
+    UINT i;
+    struct qemu_d3d11_buffer *buffer;
+    uint64_t *buffer_array;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    buffer_array = QEMU_G2H(c->buffers);
+    for (i = 0; i < c->buffer_count; ++i)
+    {
+        buffer = QEMU_G2H(buffer_array[i]);
+        buffer_iface[i] = buffer ? buffer->host10 : NULL;
+    }
 
-    ID3D10Device1_VSSetConstantBuffers(device->host_d3d10, c->start_slot, c->buffer_count, QEMU_G2H(c->buffers));
+    ID3D10Device1_VSSetConstantBuffers(device->host_d3d10, c->start_slot, c->buffer_count, buffer_iface);
 }
 
 #endif
@@ -10991,10 +11016,11 @@ static void STDMETHODCALLTYPE d3d10_device_PSSetShader(ID3D10Device1 *iface, ID3
 {
     struct qemu_d3d10_device_PSSetShader call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_shader *impl = unsafe_impl_from_ID3D10PixelShader(shader);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_PSSETSHADER);
     call.iface = (ULONG_PTR)device;
-    call.shader = (ULONG_PTR)shader;
+    call.shader = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
 }
@@ -11005,11 +11031,13 @@ void qemu_d3d10_device_PSSetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_PSSetShader *c = (struct qemu_d3d10_device_PSSetShader *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_shader *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    shader = QEMU_G2H(c->shader);
 
-    ID3D10Device1_PSSetShader(device->host_d3d10, QEMU_G2H(c->shader));
+    ID3D10Device1_PSSetShader(device->host_d3d10, shader ? shader->host_ps10 : NULL);
 }
 
 #endif
@@ -11067,10 +11095,11 @@ static void STDMETHODCALLTYPE d3d10_device_VSSetShader(ID3D10Device1 *iface, ID3
 {
     struct qemu_d3d10_device_VSSetShader call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_shader *impl = unsafe_impl_from_ID3D10VertexShader(shader);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_VSSETSHADER);
     call.iface = (ULONG_PTR)device;
-    call.shader = (ULONG_PTR)shader;
+    call.shader = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
 }
@@ -11081,11 +11110,13 @@ void qemu_d3d10_device_VSSetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_VSSetShader *c = (struct qemu_d3d10_device_VSSetShader *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_shader *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    shader = QEMU_G2H(c->shader);
 
-    ID3D10Device1_VSSetShader(device->host_d3d10, QEMU_G2H(c->shader));
+    ID3D10Device1_VSSetShader(device->host_d3d10, shader ? shader->host_vs10 : NULL);
 }
 
 #endif
@@ -11179,16 +11210,29 @@ struct qemu_d3d10_device_PSSetConstantBuffers
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_PSSetConstantBuffers(ID3D10Device1 *iface, UINT start_slot, UINT buffer_count, ID3D10Buffer *const *buffers)
+static void STDMETHODCALLTYPE d3d10_device_PSSetConstantBuffers(ID3D10Device1 *iface, UINT start_slot,
+        UINT buffer_count, ID3D10Buffer *const *buffers)
 {
     struct qemu_d3d10_device_PSSetConstantBuffers call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    uint64_t buffer_impl[MAX_CONSTANT_BUFFERS];
+    UINT i;
+
+    if (buffer_count > MAX_CONSTANT_BUFFERS)
+    {
+        WINE_FIXME("MAX_CONSTANT_BUFFERS is too small.\n");
+        return;
+    }
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_PSSETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)device;
     call.start_slot = start_slot;
     call.buffer_count = buffer_count;
-    call.buffers = (ULONG_PTR)buffers;
+
+    for (i = 0; i < buffer_count; ++i)
+        buffer_impl[i] = (ULONG_PTR)unsafe_impl_from_ID3D10Buffer(buffers[i]);
+
+    call.buffers = (ULONG_PTR)buffer_impl;
 
     qemu_syscall(&call.super);
 }
@@ -11199,11 +11243,21 @@ void qemu_d3d10_device_PSSetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_PSSetConstantBuffers *c = (struct qemu_d3d10_device_PSSetConstantBuffers *)call;
     struct qemu_d3d11_device *device;
+    ID3D10Buffer *buffer_iface[MAX_CONSTANT_BUFFERS];
+    UINT i;
+    struct qemu_d3d11_buffer *buffer;
+    uint64_t *buffer_array;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    buffer_array = QEMU_G2H(c->buffers);
+    for (i = 0; i < c->buffer_count; ++i)
+    {
+        buffer = QEMU_G2H(buffer_array[i]);
+        buffer_iface[i] = buffer ? buffer->host10 : NULL;
+    }
 
-    ID3D10Device1_PSSetConstantBuffers(device->host_d3d10, c->start_slot, c->buffer_count, QEMU_G2H(c->buffers));
+    ID3D10Device1_PSSetConstantBuffers(device->host_d3d10, c->start_slot, c->buffer_count, buffer_iface);
 }
 
 #endif
@@ -11425,16 +11479,29 @@ struct qemu_d3d10_device_GSSetConstantBuffers
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_GSSetConstantBuffers(ID3D10Device1 *iface, UINT start_slot, UINT buffer_count, ID3D10Buffer *const *buffers)
+static void STDMETHODCALLTYPE d3d10_device_GSSetConstantBuffers(ID3D10Device1 *iface, UINT start_slot,
+        UINT buffer_count, ID3D10Buffer *const *buffers)
 {
     struct qemu_d3d10_device_GSSetConstantBuffers call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    uint64_t buffer_impl[MAX_CONSTANT_BUFFERS];
+    UINT i;
+
+    if (buffer_count > MAX_CONSTANT_BUFFERS)
+    {
+        WINE_FIXME("MAX_CONSTANT_BUFFERS is too small.\n");
+        return;
+    }
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_GSSETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)device;
     call.start_slot = start_slot;
     call.buffer_count = buffer_count;
-    call.buffers = (ULONG_PTR)buffers;
+
+    for (i = 0; i < buffer_count; ++i)
+        buffer_impl[i] = (ULONG_PTR)unsafe_impl_from_ID3D10Buffer(buffers[i]);
+
+    call.buffers = (ULONG_PTR)buffer_impl;
 
     qemu_syscall(&call.super);
 }
@@ -11445,11 +11512,21 @@ void qemu_d3d10_device_GSSetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_GSSetConstantBuffers *c = (struct qemu_d3d10_device_GSSetConstantBuffers *)call;
     struct qemu_d3d11_device *device;
+    ID3D10Buffer *buffer_iface[MAX_CONSTANT_BUFFERS];
+    UINT i;
+    struct qemu_d3d11_buffer *buffer;
+    uint64_t *buffer_array;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    buffer_array = QEMU_G2H(c->buffers);
+    for (i = 0; i < c->buffer_count; ++i)
+    {
+        buffer = QEMU_G2H(buffer_array[i]);
+        buffer_iface[i] = buffer ? buffer->host10 : NULL;
+    }
 
-    ID3D10Device1_GSSetConstantBuffers(device->host_d3d10, c->start_slot, c->buffer_count, QEMU_G2H(c->buffers));
+    ID3D10Device1_GSSetConstantBuffers(device->host_d3d10, c->start_slot, c->buffer_count, buffer_iface);
 }
 
 #endif
@@ -11467,10 +11544,11 @@ static void STDMETHODCALLTYPE d3d10_device_GSSetShader(ID3D10Device1 *iface, ID3
 {
     struct qemu_d3d10_device_GSSetShader call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_shader *impl = unsafe_impl_from_ID3D10GeometryShader(shader);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_GSSETSHADER);
     call.iface = (ULONG_PTR)device;
-    call.shader = (ULONG_PTR)shader;
+    call.shader = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
 }
@@ -11481,11 +11559,13 @@ void qemu_d3d10_device_GSSetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_GSSetShader *c = (struct qemu_d3d10_device_GSSetShader *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_shader *shader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    shader = QEMU_G2H(c->shader);
 
-    ID3D10Device1_GSSetShader(device->host_d3d10, QEMU_G2H(c->shader));
+    ID3D10Device1_GSSetShader(device->host_d3d10, shader ? shader->host_gs10 : NULL);
 }
 
 #endif
