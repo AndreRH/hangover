@@ -779,7 +779,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d10_buffer_GetEvictionPriority,
     qemu_d3d10_buffer_GetType,
     qemu_d3d10_buffer_Map,
-    qemu_d3d10_buffer_QueryInterface,
     qemu_d3d10_buffer_Release,
     qemu_d3d10_buffer_SetEvictionPriority,
     qemu_d3d10_buffer_Unmap,

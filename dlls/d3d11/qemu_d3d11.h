@@ -38,7 +38,6 @@ enum d3d11_calls
     CALL_D3D10_BUFFER_GETEVICTIONPRIORITY,
     CALL_D3D10_BUFFER_GETTYPE,
     CALL_D3D10_BUFFER_MAP,
-    CALL_D3D10_BUFFER_QUERYINTERFACE,
     CALL_D3D10_BUFFER_RELEASE,
     CALL_D3D10_BUFFER_SETEVICTIONPRIORITY,
     CALL_D3D10_BUFFER_UNMAP,
@@ -872,7 +871,6 @@ void qemu_d3d10_buffer_GetDevice(struct qemu_syscall *call);
 void qemu_d3d10_buffer_GetEvictionPriority(struct qemu_syscall *call);
 void qemu_d3d10_buffer_GetType(struct qemu_syscall *call);
 void qemu_d3d10_buffer_Map(struct qemu_syscall *call);
-void qemu_d3d10_buffer_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_buffer_Release(struct qemu_syscall *call);
 void qemu_d3d10_buffer_SetEvictionPriority(struct qemu_syscall *call);
 void qemu_d3d10_buffer_Unmap(struct qemu_syscall *call);

@@ -439,42 +439,15 @@ void qemu_d3d11_buffer_GetDesc(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_buffer_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t out;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT STDMETHODCALLTYPE d3d10_buffer_QueryInterface(ID3D10Buffer *iface, REFIID riid, void **out)
 {
-    struct qemu_d3d10_buffer_QueryInterface call;
     struct qemu_d3d11_buffer *buffer = impl_from_ID3D10Buffer(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_BUFFER_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)buffer;
-    call.riid = (ULONG_PTR)riid;
-    call.out = (ULONG_PTR)out;
+    WINE_TRACE("iface %p, riid %s, out %p.\n", iface, wine_dbgstr_guid(riid), out);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_buffer_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_buffer_QueryInterface *c = (struct qemu_d3d10_buffer_QueryInterface *)call;
-    struct qemu_d3d11_buffer *buffer;
-
-    WINE_FIXME("Unverified!\n");
-    buffer = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Buffer_QueryInterface(buffer->host10, QEMU_G2H(c->riid), QEMU_G2H(c->out));
+    return d3d11_buffer_QueryInterface(&buffer->ID3D11Buffer_iface, riid, out);
 }
 
 #endif
@@ -833,7 +806,10 @@ struct qemu_d3d11_buffer *unsafe_impl_from_ID3D11Buffer(ID3D11Buffer *iface)
 {
     if (!iface)
         return NULL;
-    /*assert(iface->lpVtbl == &d3d11_buffer_vtbl);*/
+
+    if (iface->lpVtbl != &d3d11_buffer_vtbl)
+        WINE_ERR("Invalid ID3D11Buffer vtbl\n");
+
     return CONTAINING_RECORD(iface, struct qemu_d3d11_buffer, ID3D11Buffer_iface);
 }
 
@@ -862,7 +838,10 @@ struct qemu_d3d11_buffer *unsafe_impl_from_ID3D10Buffer(ID3D10Buffer *iface)
 {
     if (!iface)
         return NULL;
-    /*assert(iface->lpVtbl == &d3d10_buffer_vtbl);*/
+
+    if (iface->lpVtbl != &d3d10_buffer_vtbl)
+        WINE_ERR("Invalid ID3D10Buffer vtbl\n");
+
     return CONTAINING_RECORD(iface, struct qemu_d3d11_buffer, ID3D10Buffer_iface);
 }
 
