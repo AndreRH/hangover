@@ -11275,10 +11275,11 @@ static void STDMETHODCALLTYPE d3d10_device_IASetInputLayout(ID3D10Device1 *iface
 {
     struct qemu_d3d10_device_IASetInputLayout call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_input_layout *layout = unsafe_impl_from_ID3D10InputLayout(input_layout);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_IASETINPUTLAYOUT);
     call.iface = (ULONG_PTR)device;
-    call.input_layout = (ULONG_PTR)input_layout;
+    call.input_layout = (ULONG_PTR)layout;
 
     qemu_syscall(&call.super);
 }
@@ -11289,11 +11290,13 @@ void qemu_d3d10_device_IASetInputLayout(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_IASetInputLayout *c = (struct qemu_d3d10_device_IASetInputLayout *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_input_layout *layout;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    layout = QEMU_G2H(c->input_layout);
 
-    ID3D10Device1_IASetInputLayout(device->host_d3d10, QEMU_G2H(c->input_layout));
+    ID3D10Device1_IASetInputLayout(device->host_d3d10, layout ? layout->host10 : NULL);
 }
 
 #endif
