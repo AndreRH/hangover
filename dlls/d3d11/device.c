@@ -11318,16 +11318,28 @@ static void STDMETHODCALLTYPE d3d10_device_IASetVertexBuffers(ID3D10Device1 *ifa
 {
     struct qemu_d3d10_device_IASetVertexBuffers call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    uint64_t stack[MAX_STREAMS], *buffer_impl = stack;
+    UINT i;
+
+    if (buffer_count > MAX_STREAMS)
+        buffer_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*buffer_impl) * buffer_count);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_IASETVERTEXBUFFERS);
     call.iface = (ULONG_PTR)device;
     call.start_slot = start_slot;
     call.buffer_count = buffer_count;
-    call.buffers = (ULONG_PTR)buffers;
     call.strides = (ULONG_PTR)strides;
     call.offsets = (ULONG_PTR)offsets;
 
+    for (i = 0; i < buffer_count; ++i)
+        buffer_impl[i] = (ULONG_PTR)unsafe_impl_from_ID3D10Buffer(buffers[i]);
+
+    call.buffers = (ULONG_PTR)buffer_impl;
+
     qemu_syscall(&call.super);
+
+    if (buffer_impl != stack)
+        HeapFree(GetProcessHeap(), 0, buffer_impl);
 }
 
 #else
@@ -11336,11 +11348,23 @@ void qemu_d3d10_device_IASetVertexBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_IASetVertexBuffers *c = (struct qemu_d3d10_device_IASetVertexBuffers *)call;
     struct qemu_d3d11_device *device;
+    ID3D10Buffer **buffer_iface;
+    UINT i;
+    struct qemu_d3d11_buffer *buffer;
+    uint64_t *buffer_array;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    buffer_array = QEMU_G2H(c->buffers);
+    buffer_iface = QEMU_G2H(c->buffers);
+    for (i = 0; i < c->buffer_count; ++i)
+    {
+        buffer = QEMU_G2H(buffer_array[i]);
+        buffer_iface[i] = buffer ? buffer->host10 : NULL;
+    }
 
-    ID3D10Device1_IASetVertexBuffers(device->host_d3d10, c->start_slot, c->buffer_count, QEMU_G2H(c->buffers), QEMU_G2H(c->strides), QEMU_G2H(c->offsets));
+    ID3D10Device1_IASetVertexBuffers(device->host_d3d10, c->start_slot, c->buffer_count,
+            buffer_iface, QEMU_G2H(c->strides), QEMU_G2H(c->offsets));
 }
 
 #endif
