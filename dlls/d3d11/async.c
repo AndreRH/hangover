@@ -368,42 +368,15 @@ void qemu_d3d11_query_GetDesc(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_query_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t object;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT STDMETHODCALLTYPE d3d10_query_QueryInterface(ID3D10Query *iface, REFIID riid, void **object)
 {
-    struct qemu_d3d10_query_QueryInterface call;
     struct qemu_d3d11_query *query = impl_from_ID3D10Query(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_QUERY_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)query;
-    call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_query_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_query_QueryInterface *c = (struct qemu_d3d10_query_QueryInterface *)call;
-    struct qemu_d3d11_query *query;
-
-    WINE_FIXME("Unverified!\n");
-    query = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Query_QueryInterface(query->host10, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    return d3d11_query_QueryInterface(&query->ID3D11Query_iface, riid, object);
 }
 
 #endif

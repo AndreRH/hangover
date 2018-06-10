@@ -882,7 +882,6 @@ static const syscall_handler dll_functions[] =
     qemu_d3d10_query_GetData,
     qemu_d3d10_query_GetDataSize,
     qemu_d3d10_query_GetDesc,
-    qemu_d3d10_query_QueryInterface,
     qemu_d3d10_query_Release,
     qemu_d3d10_rasterizer_state_AddRef,
     qemu_d3d10_rasterizer_state_GetDesc,
