@@ -13478,17 +13478,20 @@ struct qemu_d3d10_device_OMGetDepthStencilState
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_OMGetDepthStencilState(ID3D10Device1 *iface, ID3D10DepthStencilState **depth_stencil_state, UINT *stencil_ref)
+static void STDMETHODCALLTYPE d3d10_device_OMGetDepthStencilState(ID3D10Device1 *iface,
+        ID3D10DepthStencilState **depth_stencil_state, UINT *stencil_ref)
 {
     struct qemu_d3d10_device_OMGetDepthStencilState call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_state *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_OMGETDEPTHSTENCILSTATE);
     call.iface = (ULONG_PTR)device;
-    call.depth_stencil_state = (ULONG_PTR)depth_stencil_state;
     call.stencil_ref = (ULONG_PTR)stencil_ref;
 
     qemu_syscall(&call.super);
+    impl = (struct qemu_d3d11_state *)(ULONG_PTR)call.depth_stencil_state;
+    *depth_stencil_state = impl ? &impl->ID3D10DepthStencilState_iface : NULL;
 }
 
 #else
@@ -13497,11 +13500,13 @@ void qemu_d3d10_device_OMGetDepthStencilState(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_OMGetDepthStencilState *c = (struct qemu_d3d10_device_OMGetDepthStencilState *)call;
     struct qemu_d3d11_device *device;
+    ID3D11DepthStencilState *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    ID3D10Device1_OMGetDepthStencilState(device->host_d3d10, QEMU_G2H(c->depth_stencil_state), QEMU_G2H(c->stencil_ref));
+    ID3D11DeviceContext1_OMGetDepthStencilState(device->immediate_context.host, &host, QEMU_G2H(c->stencil_ref));
+    c->depth_stencil_state = QEMU_H2G(state_from_host((ID3D11DeviceChild *)host));
 }
 
 #endif
@@ -13566,7 +13571,7 @@ static void STDMETHODCALLTYPE d3d10_device_RSGetState(ID3D10Device1 *iface, ID3D
 
     qemu_syscall(&call.super);
     impl = (struct qemu_d3d11_state *)(ULONG_PTR)call.rasterizer_state;
-    *rasterizer_state = impl ? (ID3D10RasterizerState *)&impl->ID3D10RasterizerState_iface : NULL;
+    *rasterizer_state = impl ? &impl->ID3D10RasterizerState_iface : NULL;
 }
 
 #else
