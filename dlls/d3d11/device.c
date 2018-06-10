@@ -13759,44 +13759,37 @@ void qemu_d3d10_device_CreateShaderResourceView1(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_device_CreateShaderResourceView
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t resource;
-    uint64_t desc;
-    uint64_t view;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreateShaderResourceView(ID3D10Device1 *iface, ID3D10Resource *resource, const D3D10_SHADER_RESOURCE_VIEW_DESC *desc, ID3D10ShaderResourceView **view)
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreateShaderResourceView(ID3D10Device1 *iface,
+        ID3D10Resource *resource, const D3D10_SHADER_RESOURCE_VIEW_DESC *desc, ID3D10ShaderResourceView **view)
 {
-    struct qemu_d3d10_device_CreateShaderResourceView call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct d3d_shader_resource_view *object;
+    ID3D11Resource *d3d11_resource;
+    ID3D11ShaderResourceView *view11;
+    HRESULT hr;
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CREATESHADERRESOURCEVIEW);
-    call.iface = (ULONG_PTR)device;
-    call.resource = (ULONG_PTR)resource;
-    call.desc = (ULONG_PTR)desc;
-    call.view = (ULONG_PTR)view;
+    WINE_TRACE("iface %p, resource %p, desc %p, view %p.\n", iface, resource, desc, view);
 
-    qemu_syscall(&call.super);
+    if (!resource)
+        return E_INVALIDARG;
 
-    return call.super.iret;
-}
+    if (FAILED(hr = ID3D10Resource_QueryInterface(resource, &IID_ID3D11Resource, (void **)&d3d11_resource)))
+    {
+        WINE_ERR("Resource does not implement ID3D11Resource.\n");
+        return E_FAIL;
+    }
 
-#else
+    hr = d3d11_device_CreateShaderResourceView(&device->ID3D11Device2_iface, d3d11_resource,
+            (const D3D11_SHADER_RESOURCE_VIEW_DESC *)desc, &view11);
+    ID3D11Resource_Release(d3d11_resource);
+    if (FAILED(hr))
+        return hr;
 
-void qemu_d3d10_device_CreateShaderResourceView(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_CreateShaderResourceView *c = (struct qemu_d3d10_device_CreateShaderResourceView *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_CreateShaderResourceView(device->host_d3d10, QEMU_G2H(c->resource), QEMU_G2H(c->desc), QEMU_G2H(c->view));
+    hr = ID3D11ShaderResourceView_QueryInterface(view11, &IID_ID3D10ShaderResourceView, (void **)view);
+    ID3D11ShaderResourceView_Release(view11);
+    return hr;
 }
 
 #endif
