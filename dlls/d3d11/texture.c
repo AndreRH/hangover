@@ -43,6 +43,8 @@
 
 #endif
 
+#include "thunk/qemu_d3d11.h"
+
 #include "qemudxgi.h"
 #include "qemu_d3d11.h"
 
@@ -712,7 +714,8 @@ struct qemu_d3d10_texture1d_Map
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_texture1d_Map(ID3D10Texture1D *iface, UINT sub_resource_idx, D3D10_MAP map_type, UINT map_flags, void **data)
+static HRESULT STDMETHODCALLTYPE d3d10_texture1d_Map(ID3D10Texture1D *iface, UINT sub_resource_idx,
+        D3D10_MAP map_type, UINT map_flags, void **data)
 {
     struct qemu_d3d10_texture1d_Map call;
     struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture1D(iface);
@@ -725,6 +728,8 @@ static HRESULT STDMETHODCALLTYPE d3d10_texture1d_Map(ID3D10Texture1D *iface, UIN
     call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
+    if (SUCCEEDED(call.super.iret))
+        *data = (void *)(ULONG_PTR)call.data;
 
     return call.super.iret;
 }
@@ -735,11 +740,13 @@ void qemu_d3d10_texture1d_Map(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture1d_Map *c = (struct qemu_d3d10_texture1d_Map *)call;
     struct qemu_d3d11_texture *texture;
+    void *data;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Texture1D_Map(texture->host10_1d, c->sub_resource_idx, c->map_type, c->map_flags, QEMU_G2H(c->data));
+    c->super.iret = ID3D10Texture1D_Map(texture->host10_1d, c->sub_resource_idx, c->map_type, c->map_flags, &data);
+    c->data = QEMU_H2G(data);
 }
 
 #endif
@@ -772,7 +779,7 @@ void qemu_d3d10_texture1d_Unmap(struct qemu_syscall *call)
     struct qemu_d3d10_texture1d_Unmap *c = (struct qemu_d3d10_texture1d_Unmap *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     ID3D10Texture1D_Unmap(texture->host10_1d, c->sub_resource_idx);
@@ -1476,7 +1483,8 @@ struct qemu_d3d10_texture2d_Map
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_texture2d_Map(ID3D10Texture2D *iface, UINT sub_resource_idx, D3D10_MAP map_type, UINT map_flags, D3D10_MAPPED_TEXTURE2D *mapped_texture)
+static HRESULT STDMETHODCALLTYPE d3d10_texture2d_Map(ID3D10Texture2D *iface, UINT sub_resource_idx,
+        D3D10_MAP map_type, UINT map_flags, D3D10_MAPPED_TEXTURE2D *mapped_texture)
 {
     struct qemu_d3d10_texture2d_Map call;
     struct qemu_d3d11_texture *texture = impl_from_ID3D10Texture2D(iface);
@@ -1499,11 +1507,20 @@ void qemu_d3d10_texture2d_Map(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture2d_Map *c = (struct qemu_d3d10_texture2d_Map *)call;
     struct qemu_d3d11_texture *texture;
+    D3D10_MAPPED_TEXTURE2D stack, *map_desc = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    map_desc = QEMU_G2H(c->mapped_texture);
+#endif
 
-    c->super.iret = ID3D10Texture2D_Map(texture->host10_2d, c->sub_resource_idx, c->map_type, c->map_flags, QEMU_G2H(c->mapped_texture));
+    c->super.iret = ID3D10Texture2D_Map(texture->host10_2d, c->sub_resource_idx, c->map_type, c->map_flags, map_desc);
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret))
+        D3D10_MAPPED_TEXTURE2D_h2g(QEMU_G2H(c->mapped_texture), map_desc);
+#endif
 }
 
 #endif
@@ -1536,7 +1553,7 @@ void qemu_d3d10_texture2d_Unmap(struct qemu_syscall *call)
     struct qemu_d3d10_texture2d_Unmap *c = (struct qemu_d3d10_texture2d_Unmap *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     ID3D10Texture2D_Unmap(texture->host10_2d, c->sub_resource_idx);
@@ -2233,11 +2250,20 @@ void qemu_d3d10_texture3d_Map(struct qemu_syscall *call)
 {
     struct qemu_d3d10_texture3d_Map *c = (struct qemu_d3d10_texture3d_Map *)call;
     struct qemu_d3d11_texture *texture;
+    D3D10_MAPPED_TEXTURE3D stack, *map_desc = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    map_desc = QEMU_G2H(c->mapped_texture);
+#endif
 
-    c->super.iret = ID3D10Texture3D_Map(texture->host10_3d, c->sub_resource_idx, c->map_type, c->map_flags, QEMU_G2H(c->mapped_texture));
+    c->super.iret = ID3D10Texture3D_Map(texture->host10_3d, c->sub_resource_idx, c->map_type, c->map_flags, map_desc);
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret))
+        D3D10_MAPPED_TEXTURE3D_h2g(QEMU_G2H(c->mapped_texture), map_desc);
+#endif
 }
 
 #endif
@@ -2270,7 +2296,7 @@ void qemu_d3d10_texture3d_Unmap(struct qemu_syscall *call)
     struct qemu_d3d10_texture3d_Unmap *c = (struct qemu_d3d10_texture3d_Unmap *)call;
     struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     texture = QEMU_G2H(c->iface);
 
     ID3D10Texture3D_Unmap(texture->host10_3d, c->sub_resource_idx);

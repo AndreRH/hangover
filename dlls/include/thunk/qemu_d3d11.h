@@ -77,4 +77,32 @@ static inline void D3D11_SO_DECLARATION_ENTRY_g2h(D3D11_SO_DECLARATION_ENTRY *ho
     host->OutputSlot = guest->OutputSlot;
 }
 
+struct qemu_D3D10_MAPPED_TEXTURE2D
+{
+    qemu_ptr pData;
+    UINT RowPitch;
+};
+
+static inline void D3D10_MAPPED_TEXTURE2D_h2g(struct qemu_D3D10_MAPPED_TEXTURE2D *guest,
+        const D3D10_MAPPED_TEXTURE2D *host)
+{
+    guest->pData = (ULONG_PTR)host->pData;
+    guest->RowPitch = host->RowPitch;
+}
+
+struct qemu_D3D10_MAPPED_TEXTURE3D
+{
+    qemu_ptr pData;
+    UINT RowPitch;
+    UINT DepthPitch;
+};
+
+static inline void D3D10_MAPPED_TEXTURE3D_h2g(struct qemu_D3D10_MAPPED_TEXTURE3D *guest,
+        const D3D10_MAPPED_TEXTURE3D *host)
+{
+    guest->pData = (ULONG_PTR)host->pData;
+    guest->RowPitch = host->RowPitch;
+    guest->DepthPitch = host->DepthPitch;
+}
+
 #endif
