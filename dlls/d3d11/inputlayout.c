@@ -55,7 +55,6 @@ struct qemu_d3d11_input_layout_QueryInterface
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t riid;
-    uint64_t object;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -75,14 +74,33 @@ static HRESULT STDMETHODCALLTYPE d3d11_input_layout_QueryInterface(ID3D11InputLa
     struct qemu_d3d11_input_layout_QueryInterface call;
     struct qemu_d3d11_input_layout *layout = impl_from_ID3D11InputLayout(iface);
 
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
+
+    if (IsEqualGUID(riid, &IID_ID3D11InputLayout)
+            || IsEqualGUID(riid, &IID_ID3D11DeviceChild)
+            || IsEqualGUID(riid, &IID_IUnknown))
+    {
+        ID3D11InputLayout_AddRef(iface);
+        *object = iface;
+        return S_OK;
+    }
+
+    if (IsEqualGUID(riid, &IID_ID3D10InputLayout)
+            || IsEqualGUID(riid, &IID_ID3D10DeviceChild))
+    {
+        ID3D10InputLayout_AddRef(&layout->ID3D10InputLayout_iface);
+        *object = &layout->ID3D10InputLayout_iface;
+        return S_OK;
+    }
+
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_INPUT_LAYOUT_QUERYINTERFACE);
     call.iface = (ULONG_PTR)layout;
     call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    *object = NULL;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -91,11 +109,18 @@ void qemu_d3d11_input_layout_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_d3d11_input_layout_QueryInterface *c = (struct qemu_d3d11_input_layout_QueryInterface *)call;
     struct qemu_d3d11_input_layout *layout;
+    IUnknown *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     layout = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D11InputLayout_QueryInterface(layout->host11, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    c->super.iret = ID3D11InputLayout_QueryInterface(layout->host11, QEMU_G2H(c->riid), (void **)&obj);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->riid)));
+        IUnknown_Release(obj);
+    }
 }
 
 #endif
@@ -242,42 +267,16 @@ static HRESULT STDMETHODCALLTYPE d3d11_input_layout_SetPrivateDataInterface(ID3D
 
 #endif
 
-struct qemu_d3d10_input_layout_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t object;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_input_layout_QueryInterface(ID3D10InputLayout *iface, REFIID riid, void **object)
+static HRESULT STDMETHODCALLTYPE d3d10_input_layout_QueryInterface(ID3D10InputLayout *iface,
+        REFIID riid, void **object)
 {
-    struct qemu_d3d10_input_layout_QueryInterface call;
     struct qemu_d3d11_input_layout *layout = impl_from_ID3D10InputLayout(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_INPUT_LAYOUT_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)layout;
-    call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_input_layout_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_input_layout_QueryInterface *c = (struct qemu_d3d10_input_layout_QueryInterface *)call;
-    struct qemu_d3d11_input_layout *layout;
-
-    WINE_FIXME("Unverified!\n");
-    layout = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10InputLayout_QueryInterface(layout->host10, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    return d3d11_input_layout_QueryInterface(&layout->ID3D11InputLayout_iface, riid, object);
 }
 
 #endif

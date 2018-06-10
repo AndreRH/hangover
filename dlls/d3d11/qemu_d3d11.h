@@ -63,7 +63,6 @@ enum d3d11_calls
     CALL_D3D10_DEVICE_CREATECOUNTER,
     CALL_D3D10_DEVICE_CREATEDEPTHSTENCILSTATE,
     CALL_D3D10_DEVICE_CREATEGEOMETRYSHADERWITHSTREAMOUTPUT,
-    CALL_D3D10_DEVICE_CREATEINPUTLAYOUT,
     CALL_D3D10_DEVICE_CREATEPREDICATE,
     CALL_D3D10_DEVICE_CREATEQUERY,
     CALL_D3D10_DEVICE_CREATERASTERIZERSTATE,
@@ -140,7 +139,6 @@ enum d3d11_calls
     CALL_D3D10_GEOMETRY_SHADER_RELEASE,
     CALL_D3D10_INPUT_LAYOUT_ADDREF,
     CALL_D3D10_INPUT_LAYOUT_GETDEVICE,
-    CALL_D3D10_INPUT_LAYOUT_QUERYINTERFACE,
     CALL_D3D10_INPUT_LAYOUT_RELEASE,
     CALL_D3D10_MULTITHREAD_ENTER,
     CALL_D3D10_MULTITHREAD_GETMULTITHREADPROTECTED,
@@ -896,7 +894,6 @@ void qemu_d3d10_device_CreateBlendState1(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateCounter(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateDepthStencilState(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateGeometryShaderWithStreamOutput(struct qemu_syscall *call);
-void qemu_d3d10_device_CreateInputLayout(struct qemu_syscall *call);
 void qemu_d3d10_device_CreatePredicate(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateQuery(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateRasterizerState(struct qemu_syscall *call);
@@ -973,7 +970,6 @@ void qemu_d3d10_geometry_shader_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_geometry_shader_Release(struct qemu_syscall *call);
 void qemu_d3d10_input_layout_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_input_layout_GetDevice(struct qemu_syscall *call);
-void qemu_d3d10_input_layout_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_input_layout_Release(struct qemu_syscall *call);
 void qemu_d3d10_multithread_Enter(struct qemu_syscall *call);
 void qemu_d3d10_multithread_GetMultithreadProtected(struct qemu_syscall *call);

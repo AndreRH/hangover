@@ -13786,22 +13786,22 @@ struct qemu_d3d10_device_CreateInputLayout
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreateInputLayout(ID3D10Device1 *iface, const D3D10_INPUT_ELEMENT_DESC *element_descs, UINT element_count, const void *shader_byte_code, SIZE_T shader_byte_code_length, ID3D10InputLayout **input_layout)
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreateInputLayout(ID3D10Device1 *iface,
+        const D3D10_INPUT_ELEMENT_DESC *element_descs, UINT element_count, const void *shader_byte_code,
+        SIZE_T shader_byte_code_length, ID3D10InputLayout **input_layout)
 {
-    struct qemu_d3d10_device_CreateInputLayout call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    ID3D11InputLayout *layout11;
+    HRESULT hr;
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CREATEINPUTLAYOUT);
-    call.iface = (ULONG_PTR)device;
-    call.element_descs = (ULONG_PTR)element_descs;
-    call.element_count = element_count;
-    call.shader_byte_code = (ULONG_PTR)shader_byte_code;
-    call.shader_byte_code_length = shader_byte_code_length;
-    call.input_layout = (ULONG_PTR)input_layout;
+    hr = d3d11_device_CreateInputLayout(&device->ID3D11Device2_iface, (const D3D11_INPUT_ELEMENT_DESC *)element_descs,
+            element_count, shader_byte_code, shader_byte_code_length, &layout11);
+    if (FAILED(hr))
+        return hr;
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    hr = ID3D11InputLayout_QueryInterface(layout11, &IID_ID3D10InputLayout, (void **)input_layout);
+    ID3D11InputLayout_Release(layout11);
+    return hr;
 }
 
 #else
