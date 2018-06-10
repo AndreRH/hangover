@@ -11933,7 +11933,8 @@ struct qemu_d3d10_device_RSSetViewports
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_RSSetViewports(ID3D10Device1 *iface, UINT viewport_count, const D3D10_VIEWPORT *viewports)
+static void STDMETHODCALLTYPE d3d10_device_RSSetViewports(ID3D10Device1 *iface, UINT viewport_count,
+        const D3D10_VIEWPORT *viewports)
 {
     struct qemu_d3d10_device_RSSetViewports call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
@@ -11953,7 +11954,7 @@ void qemu_d3d10_device_RSSetViewports(struct qemu_syscall *call)
     struct qemu_d3d10_device_RSSetViewports *c = (struct qemu_d3d10_device_RSSetViewports *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     ID3D10Device1_RSSetViewports(device->host_d3d10, c->viewport_count, QEMU_G2H(c->viewports));
