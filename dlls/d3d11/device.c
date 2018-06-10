@@ -12092,7 +12092,8 @@ struct qemu_d3d10_device_UpdateSubresource
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t resource;
+    uint64_t buffer;
+    uint64_t texture;
     uint64_t subresource_idx;
     uint64_t box;
     uint64_t data;
@@ -12106,15 +12107,39 @@ static void STDMETHODCALLTYPE d3d10_device_UpdateSubresource(ID3D10Device1 *ifac
 {
     struct qemu_d3d10_device_UpdateSubresource call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    D3D10_RESOURCE_DIMENSION dim;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_UPDATESUBRESOURCE);
     call.iface = (ULONG_PTR)device;
-    call.resource = (ULONG_PTR)resource;
     call.subresource_idx = subresource_idx;
     call.box = (ULONG_PTR)box;
     call.data = (ULONG_PTR)data;
     call.row_pitch = row_pitch;
     call.depth_pitch = depth_pitch;
+
+    ID3D10Resource_GetType(resource, &dim);
+    switch (dim)
+    {
+        case D3D10_RESOURCE_DIMENSION_TEXTURE1D:
+            call.buffer = 0;
+            call.texture = (ULONG_PTR)unsafe_impl_from_ID3D10Texture1D((ID3D10Texture1D *)resource);
+            break;
+
+        case D3D10_RESOURCE_DIMENSION_TEXTURE2D:
+            call.buffer = 0;
+            call.texture = (ULONG_PTR)unsafe_impl_from_ID3D10Texture2D((ID3D10Texture2D *)resource);
+            break;
+
+        case D3D10_RESOURCE_DIMENSION_TEXTURE3D:
+            call.buffer = 0;
+            call.texture = (ULONG_PTR)unsafe_impl_from_ID3D10Texture3D((ID3D10Texture3D *)resource);
+            break;
+
+        case D3D10_RESOURCE_DIMENSION_BUFFER:
+            call.buffer = (ULONG_PTR)unsafe_impl_from_ID3D10Buffer((ID3D10Buffer *)resource);
+            call.texture = 0;
+            break;
+    }
 
     qemu_syscall(&call.super);
 }
@@ -12125,11 +12150,25 @@ void qemu_d3d10_device_UpdateSubresource(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_UpdateSubresource *c = (struct qemu_d3d10_device_UpdateSubresource *)call;
     struct qemu_d3d11_device *device;
+    ID3D10Resource *resource = NULL;
+    struct qemu_d3d11_buffer *buffer;
+    struct qemu_d3d11_texture *texture;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    if (c->texture)
+    {
+        texture = QEMU_G2H(c->texture);
+        resource = (ID3D10Resource *)texture->host10_1d;
+    }
+    else if (c->buffer)
+    {
+        buffer = QEMU_G2H(c->buffer);
+        resource = (ID3D10Resource *)buffer->host10;
+    }
 
-    ID3D10Device1_UpdateSubresource(device->host_d3d10, QEMU_G2H(c->resource), c->subresource_idx, QEMU_G2H(c->box), QEMU_G2H(c->data), c->row_pitch, c->depth_pitch);
+    ID3D10Device1_UpdateSubresource(device->host_d3d10, resource, c->subresource_idx, QEMU_G2H(c->box),
+            QEMU_G2H(c->data), c->row_pitch, c->depth_pitch);
 }
 
 #endif

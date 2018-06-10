@@ -782,6 +782,7 @@ static inline struct qemu_d3d11_device *impl_from_ID3D10Device(ID3D10Device1 *if
 }
 
 struct qemu_d3d11_buffer *unsafe_impl_from_ID3D11Buffer(ID3D11Buffer *iface);
+struct qemu_d3d11_buffer *unsafe_impl_from_ID3D10Buffer(ID3D10Buffer *iface);
 struct qemu_d3d11_view *unsafe_impl_from_ID3D11DepthStencilView(ID3D11DepthStencilView *iface);
 struct qemu_d3d11_view *unsafe_impl_from_ID3D10DepthStencilView(ID3D10DepthStencilView *iface);
 struct qemu_d3d11_view *unsafe_impl_from_ID3D11RenderTargetView(ID3D11RenderTargetView *iface);
