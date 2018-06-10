@@ -325,42 +325,15 @@ void qemu_d3d11_blend_state_GetDesc(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_blend_state_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t object;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT STDMETHODCALLTYPE d3d10_blend_state_QueryInterface(ID3D10BlendState1 *iface, REFIID riid, void **object)
 {
-    struct qemu_d3d10_blend_state_QueryInterface call;
     struct qemu_d3d11_state *state = impl_from_ID3D10BlendState1(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_BLEND_STATE_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)state;
-    call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_blend_state_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_blend_state_QueryInterface *c = (struct qemu_d3d10_blend_state_QueryInterface *)call;
-    struct qemu_d3d11_state *state;
-
-    WINE_FIXME("Unverified!\n");
-    state = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10BlendState1_QueryInterface(state->host_bs10, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    return d3d11_blend_state_QueryInterface(&state->ID3D11BlendState_iface, riid, object);
 }
 
 #endif
@@ -821,42 +794,16 @@ void qemu_d3d11_depthstencil_state_GetDesc(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_depthstencil_state_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t object;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_depthstencil_state_QueryInterface(ID3D10DepthStencilState *iface, REFIID riid, void **object)
+static HRESULT STDMETHODCALLTYPE d3d10_depthstencil_state_QueryInterface(ID3D10DepthStencilState *iface,
+        REFIID riid, void **object)
 {
-    struct qemu_d3d10_depthstencil_state_QueryInterface call;
     struct qemu_d3d11_state *state = impl_from_ID3D10DepthStencilState(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEPTHSTENCIL_STATE_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)state;
-    call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_depthstencil_state_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_depthstencil_state_QueryInterface *c = (struct qemu_d3d10_depthstencil_state_QueryInterface *)call;
-    struct qemu_d3d11_state *state;
-
-    WINE_FIXME("Unverified!\n");
-    state = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10DepthStencilState_QueryInterface(state->host_ds10, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    return d3d11_depthstencil_state_QueryInterface(&state->ID3D11DepthStencilState_iface, riid, object);
 }
 
 #endif
@@ -1279,42 +1226,16 @@ void qemu_d3d11_rasterizer_state_GetDesc(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_rasterizer_state_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t object;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_rasterizer_state_QueryInterface(ID3D10RasterizerState *iface, REFIID riid, void **object)
+static HRESULT STDMETHODCALLTYPE d3d10_rasterizer_state_QueryInterface(ID3D10RasterizerState *iface,
+        REFIID riid, void **object)
 {
-    struct qemu_d3d10_rasterizer_state_QueryInterface call;
     struct qemu_d3d11_state *state = impl_from_ID3D10RasterizerState(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_RASTERIZER_STATE_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)state;
-    call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_rasterizer_state_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_rasterizer_state_QueryInterface *c = (struct qemu_d3d10_rasterizer_state_QueryInterface *)call;
-    struct qemu_d3d11_state *state;
-
-    WINE_FIXME("Unverified!\n");
-    state = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10RasterizerState_QueryInterface(state->host_rs10, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    return d3d11_rasterizer_state_QueryInterface(&state->ID3D11RasterizerState_iface, riid, object);
 }
 
 #endif
@@ -1737,42 +1658,16 @@ void qemu_d3d11_sampler_state_GetDesc(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_sampler_state_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t object;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_sampler_state_QueryInterface(ID3D10SamplerState *iface, REFIID riid, void **object)
+static HRESULT STDMETHODCALLTYPE d3d10_sampler_state_QueryInterface(ID3D10SamplerState *iface, REFIID riid,
+        void **object)
 {
-    struct qemu_d3d10_sampler_state_QueryInterface call;
     struct qemu_d3d11_state *state = impl_from_ID3D10SamplerState(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_SAMPLER_STATE_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)state;
-    call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_sampler_state_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_sampler_state_QueryInterface *c = (struct qemu_d3d10_sampler_state_QueryInterface *)call;
-    struct qemu_d3d11_state *state;
-
-    WINE_FIXME("Unverified!\n");
-    state = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10SamplerState_QueryInterface(state->host_ss10, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    return d3d11_sampler_state_QueryInterface(&state->ID3D11SamplerState_iface, riid, object);
 }
 
 #endif
