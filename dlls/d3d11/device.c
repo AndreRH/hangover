@@ -12194,10 +12194,11 @@ static void STDMETHODCALLTYPE d3d10_device_RSSetState(ID3D10Device1 *iface, ID3D
 {
     struct qemu_d3d10_device_RSSetState call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_state *state = unsafe_impl_from_ID3D10RasterizerState(rasterizer_state);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_RSSETSTATE);
     call.iface = (ULONG_PTR)device;
-    call.rasterizer_state = (ULONG_PTR)rasterizer_state;
+    call.rasterizer_state = (ULONG_PTR)state;
 
     qemu_syscall(&call.super);
 }
@@ -12208,11 +12209,13 @@ void qemu_d3d10_device_RSSetState(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_RSSetState *c = (struct qemu_d3d10_device_RSSetState *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    state = QEMU_G2H(c->rasterizer_state);
 
-    ID3D10Device1_RSSetState(device->host_d3d10, QEMU_G2H(c->rasterizer_state));
+    ID3D10Device1_RSSetState(device->host_d3d10, state ? state->host_rs10 : NULL);
 }
 
 #endif
