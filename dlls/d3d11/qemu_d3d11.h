@@ -66,7 +66,6 @@ enum d3d11_calls
     CALL_D3D10_DEVICE_CREATEPREDICATE,
     CALL_D3D10_DEVICE_CREATEQUERY,
     CALL_D3D10_DEVICE_CREATERASTERIZERSTATE,
-    CALL_D3D10_DEVICE_CREATESAMPLERSTATE,
     CALL_D3D10_DEVICE_CREATESHADERRESOURCEVIEW1,
     CALL_D3D10_DEVICE_DRAW,
     CALL_D3D10_DEVICE_DRAWAUTO,
@@ -893,7 +892,6 @@ void qemu_d3d10_device_CreateGeometryShaderWithStreamOutput(struct qemu_syscall 
 void qemu_d3d10_device_CreatePredicate(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateQuery(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateRasterizerState(struct qemu_syscall *call);
-void qemu_d3d10_device_CreateSamplerState(struct qemu_syscall *call);
 void qemu_d3d10_device_CreateShaderResourceView1(struct qemu_syscall *call);
 void qemu_d3d10_device_Draw(struct qemu_syscall *call);
 void qemu_d3d10_device_DrawAuto(struct qemu_syscall *call);

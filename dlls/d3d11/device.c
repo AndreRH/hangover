@@ -9506,6 +9506,23 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateSamplerState(ID3D11Device2 *
     return call.super.iret;
 }
 
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreateSamplerState(ID3D10Device1 *iface,
+        const D3D10_SAMPLER_DESC *desc, ID3D10SamplerState **sampler_state)
+{
+    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    ID3D11SamplerState *state11;
+    HRESULT hr;
+
+    hr = d3d11_device_CreateSamplerState(&device->ID3D11Device2_iface, (const D3D11_SAMPLER_DESC *)desc,
+            &state11);
+    if (FAILED(hr))
+        return hr;
+
+    hr = ID3D11SamplerState_QueryInterface(state11, &IID_ID3D10SamplerState, (void **)sampler_state);
+    ID3D11SamplerState_Release(state11);
+    return hr;
+}
+
 #else
 
 void qemu_d3d11_device_CreateSamplerState(struct qemu_syscall *call)
@@ -14045,46 +14062,6 @@ void qemu_d3d10_device_CreateRasterizerState(struct qemu_syscall *call)
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Device1_CreateRasterizerState(device->host_d3d10, QEMU_G2H(c->desc), QEMU_G2H(c->rasterizer_state));
-}
-
-#endif
-
-struct qemu_d3d10_device_CreateSamplerState
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t desc;
-    uint64_t sampler_state;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreateSamplerState(ID3D10Device1 *iface, const D3D10_SAMPLER_DESC *desc, ID3D10SamplerState **sampler_state)
-{
-    struct qemu_d3d10_device_CreateSamplerState call;
-    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CREATESAMPLERSTATE);
-    call.iface = (ULONG_PTR)device;
-    call.desc = (ULONG_PTR)desc;
-    call.sampler_state = (ULONG_PTR)sampler_state;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_device_CreateSamplerState(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_CreateSamplerState *c = (struct qemu_d3d10_device_CreateSamplerState *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_CreateSamplerState(device->host_d3d10, QEMU_G2H(c->desc), QEMU_G2H(c->sampler_state));
 }
 
 #endif
