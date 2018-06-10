@@ -9505,6 +9505,23 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateRasterizerState(ID3D11Device
     return call.super.iret;
 }
 
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreateRasterizerState(ID3D10Device1 *iface,
+        const D3D10_RASTERIZER_DESC *desc, ID3D10RasterizerState **rasterizer_state)
+{
+    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    ID3D11RasterizerState *state11;
+    HRESULT hr;
+
+    hr = d3d11_device_CreateRasterizerState(&device->ID3D11Device2_iface, (const D3D11_RASTERIZER_DESC *)desc,
+            &state11);
+    if (FAILED(hr))
+        return hr;
+
+    hr = ID3D11RasterizerState_QueryInterface(state11, &IID_ID3D10RasterizerState, (void **)rasterizer_state);
+    ID3D11RasterizerState_Release(state11);
+    return hr;
+}
+
 #else
 
 void qemu_d3d11_device_CreateRasterizerState(struct qemu_syscall *call)
@@ -13971,46 +13988,6 @@ void qemu_d3d10_device_CreateGeometryShaderWithStreamOutput(struct qemu_syscall 
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Device1_CreateGeometryShaderWithStreamOutput(device->host_d3d10, QEMU_G2H(c->byte_code), c->byte_code_length, QEMU_G2H(c->output_stream_decls), c->output_stream_decl_count, c->output_stream_stride, QEMU_G2H(c->shader));
-}
-
-#endif
-
-struct qemu_d3d10_device_CreateRasterizerState
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t desc;
-    uint64_t rasterizer_state;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreateRasterizerState(ID3D10Device1 *iface, const D3D10_RASTERIZER_DESC *desc, ID3D10RasterizerState **rasterizer_state)
-{
-    struct qemu_d3d10_device_CreateRasterizerState call;
-    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CREATERASTERIZERSTATE);
-    call.iface = (ULONG_PTR)device;
-    call.desc = (ULONG_PTR)desc;
-    call.rasterizer_state = (ULONG_PTR)rasterizer_state;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_device_CreateRasterizerState(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_CreateRasterizerState *c = (struct qemu_d3d10_device_CreateRasterizerState *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_CreateRasterizerState(device->host_d3d10, QEMU_G2H(c->desc), QEMU_G2H(c->rasterizer_state));
 }
 
 #endif
