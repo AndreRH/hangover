@@ -12054,21 +12054,71 @@ struct qemu_d3d10_device_CopyResource
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t dst_resource;
-    uint64_t src_resource;
+    uint64_t dst_buffer;
+    uint64_t dst_texture;
+    uint64_t src_buffer;
+    uint64_t src_texture;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_CopyResource(ID3D10Device1 *iface, ID3D10Resource *dst_resource, ID3D10Resource *src_resource)
+static void STDMETHODCALLTYPE d3d10_device_CopyResource(ID3D10Device1 *iface, ID3D10Resource *dst_resource,
+        ID3D10Resource *src_resource)
 {
     struct qemu_d3d10_device_CopyResource call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    D3D10_RESOURCE_DIMENSION dim;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_COPYRESOURCE);
     call.iface = (ULONG_PTR)device;
-    call.dst_resource = (ULONG_PTR)dst_resource;
-    call.src_resource = (ULONG_PTR)src_resource;
+
+    ID3D10Resource_GetType(dst_resource, &dim);
+    switch (dim)
+    {
+        case D3D10_RESOURCE_DIMENSION_TEXTURE1D:
+            call.dst_buffer = 0;
+            call.dst_texture = (ULONG_PTR)unsafe_impl_from_ID3D10Texture1D((ID3D10Texture1D *)dst_resource);
+            break;
+
+        case D3D10_RESOURCE_DIMENSION_TEXTURE2D:
+            call.dst_buffer = 0;
+            call.dst_texture = (ULONG_PTR)unsafe_impl_from_ID3D10Texture2D((ID3D10Texture2D *)dst_resource);
+            break;
+
+        case D3D10_RESOURCE_DIMENSION_TEXTURE3D:
+            call.dst_buffer = 0;
+            call.dst_texture = (ULONG_PTR)unsafe_impl_from_ID3D10Texture3D((ID3D10Texture3D *)dst_resource);
+            break;
+
+        case D3D10_RESOURCE_DIMENSION_BUFFER:
+            call.dst_buffer = (ULONG_PTR)unsafe_impl_from_ID3D10Buffer((ID3D10Buffer *)dst_resource);
+            call.dst_texture = 0;
+            break;
+    }
+
+    ID3D10Resource_GetType(src_resource, &dim);
+    switch (dim)
+    {
+        case D3D10_RESOURCE_DIMENSION_TEXTURE1D:
+            call.src_buffer = 0;
+            call.src_texture = (ULONG_PTR)unsafe_impl_from_ID3D10Texture1D((ID3D10Texture1D *)src_resource);
+            break;
+
+        case D3D10_RESOURCE_DIMENSION_TEXTURE2D:
+            call.src_buffer = 0;
+            call.src_texture = (ULONG_PTR)unsafe_impl_from_ID3D10Texture2D((ID3D10Texture2D *)src_resource);
+            break;
+
+        case D3D10_RESOURCE_DIMENSION_TEXTURE3D:
+            call.src_buffer = 0;
+            call.src_texture = (ULONG_PTR)unsafe_impl_from_ID3D10Texture3D((ID3D10Texture3D *)src_resource);
+            break;
+
+        case D3D10_RESOURCE_DIMENSION_BUFFER:
+            call.src_buffer = (ULONG_PTR)unsafe_impl_from_ID3D10Buffer((ID3D10Buffer *)src_resource);
+            call.src_texture = 0;
+            break;
+    }
 
     qemu_syscall(&call.super);
 }
@@ -12079,11 +12129,35 @@ void qemu_d3d10_device_CopyResource(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_CopyResource *c = (struct qemu_d3d10_device_CopyResource *)call;
     struct qemu_d3d11_device *device;
+    ID3D10Resource *src = NULL, *dst = NULL;
+    struct qemu_d3d11_texture *tex;
+    struct qemu_d3d11_buffer *buf;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    if (c->src_buffer)
+    {
+        buf = QEMU_G2H(c->src_buffer);
+        src = (ID3D10Resource *)buf->host10;
+    }
+    else if (c->src_texture)
+    {
+        tex = QEMU_G2H(c->src_texture);
+        src = (ID3D10Resource *)tex->host10_1d;
+    }
 
-    ID3D10Device1_CopyResource(device->host_d3d10, QEMU_G2H(c->dst_resource), QEMU_G2H(c->src_resource));
+    if (c->dst_buffer)
+    {
+        buf = QEMU_G2H(c->dst_buffer);
+        dst = (ID3D10Resource *)buf->host10;
+    }
+    else if (c->dst_texture)
+    {
+        tex = QEMU_G2H(c->dst_texture);
+        dst = (ID3D10Resource *)tex->host10_1d;
+    }
+
+    ID3D10Device1_CopyResource(device->host_d3d10, dst, src);
 }
 
 #endif
