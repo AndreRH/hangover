@@ -9681,6 +9681,23 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateQuery(ID3D11Device2 *iface, 
     return call.super.iret;
 }
 
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreateQuery(ID3D10Device1 *iface,
+        const D3D10_QUERY_DESC *desc, ID3D10Query **query)
+{
+    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    ID3D11Query *query11;
+    HRESULT hr;
+
+    hr = d3d11_device_CreateQuery(&device->ID3D11Device2_iface, (const D3D11_QUERY_DESC *)desc,
+            query ? &query11 : NULL);
+    if (FAILED(hr) || !query)
+        return hr;
+
+    hr = ID3D11Query_QueryInterface(query11, &IID_ID3D10Query, (void **)query);
+    ID3D11Query_Release(query11);
+    return hr;
+}
+
 #else
 
 void qemu_d3d11_device_CreateQuery(struct qemu_syscall *call)
@@ -9741,6 +9758,23 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreatePredicate(ID3D11Device2 *ifa
     *predicate = (ID3D11Predicate *)&obj->ID3D11Query_iface;
 
     return call.super.iret;
+}
+
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreatePredicate(ID3D10Device1 *iface, const D3D10_QUERY_DESC *desc,
+        ID3D10Predicate **predicate)
+{
+    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    ID3D11Predicate *query11;
+    HRESULT hr;
+
+    hr = d3d11_device_CreatePredicate(&device->ID3D11Device2_iface, (const D3D11_QUERY_DESC *)desc,
+            predicate ? &query11 : NULL);
+    if (FAILED(hr) || !predicate)
+        return hr;
+
+    hr = ID3D11Predicate_QueryInterface(query11, &IID_ID3D10Predicate, (void **)predicate);
+    ID3D11Predicate_Release(query11);
+    return hr;
 }
 
 #else
@@ -13988,86 +14022,6 @@ void qemu_d3d10_device_CreateGeometryShaderWithStreamOutput(struct qemu_syscall 
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Device1_CreateGeometryShaderWithStreamOutput(device->host_d3d10, QEMU_G2H(c->byte_code), c->byte_code_length, QEMU_G2H(c->output_stream_decls), c->output_stream_decl_count, c->output_stream_stride, QEMU_G2H(c->shader));
-}
-
-#endif
-
-struct qemu_d3d10_device_CreateQuery
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t desc;
-    uint64_t query;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreateQuery(ID3D10Device1 *iface, const D3D10_QUERY_DESC *desc, ID3D10Query **query)
-{
-    struct qemu_d3d10_device_CreateQuery call;
-    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CREATEQUERY);
-    call.iface = (ULONG_PTR)device;
-    call.desc = (ULONG_PTR)desc;
-    call.query = (ULONG_PTR)query;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_device_CreateQuery(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_CreateQuery *c = (struct qemu_d3d10_device_CreateQuery *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_CreateQuery(device->host_d3d10, QEMU_G2H(c->desc), QEMU_G2H(c->query));
-}
-
-#endif
-
-struct qemu_d3d10_device_CreatePredicate
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t desc;
-    uint64_t predicate;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreatePredicate(ID3D10Device1 *iface, const D3D10_QUERY_DESC *desc, ID3D10Predicate **predicate)
-{
-    struct qemu_d3d10_device_CreatePredicate call;
-    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CREATEPREDICATE);
-    call.iface = (ULONG_PTR)device;
-    call.desc = (ULONG_PTR)desc;
-    call.predicate = (ULONG_PTR)predicate;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_device_CreatePredicate(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_CreatePredicate *c = (struct qemu_d3d10_device_CreatePredicate *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_CreatePredicate(device->host_d3d10, QEMU_G2H(c->desc), QEMU_G2H(c->predicate));
 }
 
 #endif
