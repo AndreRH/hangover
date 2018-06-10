@@ -12044,10 +12044,11 @@ static void STDMETHODCALLTYPE d3d10_device_OMSetBlendState(ID3D10Device1 *iface,
 {
     struct qemu_d3d10_device_OMSetBlendState call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_state *state = unsafe_impl_from_ID3D10BlendState(blend_state);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_OMSETBLENDSTATE);
     call.iface = (ULONG_PTR)device;
-    call.blend_state = (ULONG_PTR)blend_state;
+    call.blend_state = (ULONG_PTR)state;
     call.blend_factor = (ULONG_PTR)blend_factor;
     call.sample_mask = sample_mask;
 
@@ -12060,11 +12061,14 @@ void qemu_d3d10_device_OMSetBlendState(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_OMSetBlendState *c = (struct qemu_d3d10_device_OMSetBlendState *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    state = QEMU_G2H(c->blend_state);
 
-    ID3D10Device1_OMSetBlendState(device->host_d3d10, QEMU_G2H(c->blend_state), QEMU_G2H(c->blend_factor), c->sample_mask);
+    ID3D10Device1_OMSetBlendState(device->host_d3d10, state ? (ID3D10BlendState *)state->host_bs10 : NULL,
+            QEMU_G2H(c->blend_factor), c->sample_mask);
 }
 
 #endif
@@ -13434,14 +13438,16 @@ static void STDMETHODCALLTYPE d3d10_device_OMGetBlendState(ID3D10Device1 *iface,
 {
     struct qemu_d3d10_device_OMGetBlendState call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_state *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_OMGETBLENDSTATE);
     call.iface = (ULONG_PTR)device;
-    call.blend_state = (ULONG_PTR)blend_state;
     call.blend_factor = (ULONG_PTR)blend_factor;
     call.sample_mask = (ULONG_PTR)sample_mask;
 
     qemu_syscall(&call.super);
+    impl = (struct qemu_d3d11_state *)(ULONG_PTR)call.blend_state;
+    *blend_state = impl ? (ID3D10BlendState *)&impl->ID3D10BlendState1_iface : NULL;
 }
 
 #else
@@ -13450,11 +13456,14 @@ void qemu_d3d10_device_OMGetBlendState(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_OMGetBlendState *c = (struct qemu_d3d10_device_OMGetBlendState *)call;
     struct qemu_d3d11_device *device;
+    ID3D11BlendState *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    ID3D10Device1_OMGetBlendState(device->host_d3d10, QEMU_G2H(c->blend_state), QEMU_G2H(c->blend_factor), QEMU_G2H(c->sample_mask));
+    ID3D11DeviceContext1_OMGetBlendState(device->immediate_context.host, &host, QEMU_G2H(c->blend_factor),
+            QEMU_G2H(c->sample_mask));
+    c->blend_state = QEMU_H2G(state_from_host((ID3D11DeviceChild *)host));
 }
 
 #endif
