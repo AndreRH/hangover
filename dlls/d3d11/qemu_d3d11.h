@@ -134,7 +134,6 @@ enum d3d11_calls
     CALL_D3D10_DEVICE_VSSETSHADER,
     CALL_D3D10_DEVICE_VSSETSHADERRESOURCES,
     CALL_D3D10_GEOMETRY_SHADER_ADDREF,
-    CALL_D3D10_GEOMETRY_SHADER_QUERYINTERFACE,
     CALL_D3D10_GEOMETRY_SHADER_RELEASE,
     CALL_D3D10_INPUT_LAYOUT_ADDREF,
     CALL_D3D10_INPUT_LAYOUT_GETDEVICE,
@@ -144,7 +143,6 @@ enum d3d11_calls
     CALL_D3D10_MULTITHREAD_LEAVE,
     CALL_D3D10_MULTITHREAD_SETMULTITHREADPROTECTED,
     CALL_D3D10_PIXEL_SHADER_ADDREF,
-    CALL_D3D10_PIXEL_SHADER_QUERYINTERFACE,
     CALL_D3D10_PIXEL_SHADER_RELEASE,
     CALL_D3D10_QUERY_ADDREF,
     CALL_D3D10_QUERY_BEGIN,
@@ -196,7 +194,6 @@ enum d3d11_calls
     CALL_D3D10_TEXTURE3D_SETEVICTIONPRIORITY,
     CALL_D3D10_TEXTURE3D_UNMAP,
     CALL_D3D10_VERTEX_SHADER_ADDREF,
-    CALL_D3D10_VERTEX_SHADER_QUERYINTERFACE,
     CALL_D3D10_VERTEX_SHADER_RELEASE,
     CALL_D3D11_BLEND_STATE_ADDREF,
     CALL_D3D11_BLEND_STATE_GETDESC,
@@ -964,7 +961,6 @@ void qemu_d3d10_device_VSSetSamplers(struct qemu_syscall *call);
 void qemu_d3d10_device_VSSetShader(struct qemu_syscall *call);
 void qemu_d3d10_device_VSSetShaderResources(struct qemu_syscall *call);
 void qemu_d3d10_geometry_shader_AddRef(struct qemu_syscall *call);
-void qemu_d3d10_geometry_shader_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_geometry_shader_Release(struct qemu_syscall *call);
 void qemu_d3d10_input_layout_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_input_layout_GetDevice(struct qemu_syscall *call);
@@ -974,7 +970,6 @@ void qemu_d3d10_multithread_GetMultithreadProtected(struct qemu_syscall *call);
 void qemu_d3d10_multithread_Leave(struct qemu_syscall *call);
 void qemu_d3d10_multithread_SetMultithreadProtected(struct qemu_syscall *call);
 void qemu_d3d10_pixel_shader_AddRef(struct qemu_syscall *call);
-void qemu_d3d10_pixel_shader_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_pixel_shader_Release(struct qemu_syscall *call);
 void qemu_d3d10_query_AddRef(struct qemu_syscall *call);
 void qemu_d3d10_query_Begin(struct qemu_syscall *call);
@@ -1026,7 +1021,6 @@ void qemu_d3d10_texture3d_Release(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_SetEvictionPriority(struct qemu_syscall *call);
 void qemu_d3d10_texture3d_Unmap(struct qemu_syscall *call);
 void qemu_d3d10_vertex_shader_AddRef(struct qemu_syscall *call);
-void qemu_d3d10_vertex_shader_QueryInterface(struct qemu_syscall *call);
 void qemu_d3d10_vertex_shader_Release(struct qemu_syscall *call);
 void qemu_d3d11_blend_state_AddRef(struct qemu_syscall *call);
 void qemu_d3d11_blend_state_GetDesc(struct qemu_syscall *call);

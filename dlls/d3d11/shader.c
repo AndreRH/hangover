@@ -290,42 +290,16 @@ static HRESULT STDMETHODCALLTYPE d3d11_vertex_shader_SetPrivateDataInterface(ID3
 
 #endif
 
-struct qemu_d3d10_vertex_shader_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t object;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_vertex_shader_QueryInterface(ID3D10VertexShader *iface, REFIID riid, void **object)
+static HRESULT STDMETHODCALLTYPE d3d10_vertex_shader_QueryInterface(ID3D10VertexShader *iface, REFIID riid,
+        void **object)
 {
-    struct qemu_d3d10_vertex_shader_QueryInterface call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D10VertexShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_VERTEX_SHADER_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)shader;
-    call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_vertex_shader_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_vertex_shader_QueryInterface *c = (struct qemu_d3d10_vertex_shader_QueryInterface *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10VertexShader_QueryInterface(shader->host_vs10, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    return d3d11_vertex_shader_QueryInterface(&shader->ID3D11VertexShader_iface, riid, object);
 }
 
 #endif
@@ -1050,42 +1024,16 @@ static HRESULT STDMETHODCALLTYPE d3d11_geometry_shader_SetPrivateDataInterface(I
 
 #endif
 
-struct qemu_d3d10_geometry_shader_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t object;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_geometry_shader_QueryInterface(ID3D10GeometryShader *iface, REFIID riid, void **object)
+static HRESULT STDMETHODCALLTYPE d3d10_geometry_shader_QueryInterface(ID3D10GeometryShader *iface, REFIID riid,
+        void **object)
 {
-    struct qemu_d3d10_geometry_shader_QueryInterface call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D10GeometryShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_GEOMETRY_SHADER_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)shader;
-    call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_geometry_shader_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_geometry_shader_QueryInterface *c = (struct qemu_d3d10_geometry_shader_QueryInterface *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10GeometryShader_QueryInterface(shader->host_gs10, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    return d3d11_geometry_shader_QueryInterface(&shader->ID3D11GeometryShader_iface, riid, object);
 }
 
 #endif
@@ -1436,42 +1384,15 @@ static HRESULT STDMETHODCALLTYPE d3d11_pixel_shader_SetPrivateDataInterface(ID3D
 
 #endif
 
-struct qemu_d3d10_pixel_shader_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t object;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT STDMETHODCALLTYPE d3d10_pixel_shader_QueryInterface(ID3D10PixelShader *iface, REFIID riid, void **object)
 {
-    struct qemu_d3d10_pixel_shader_QueryInterface call;
     struct qemu_d3d11_shader *shader = impl_from_ID3D10PixelShader(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_PIXEL_SHADER_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)shader;
-    call.riid = (ULONG_PTR)riid;
-    call.object = (ULONG_PTR)object;
+    WINE_TRACE("iface %p, riid %s, object %p.\n", iface, wine_dbgstr_guid(riid), object);
 
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_pixel_shader_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_pixel_shader_QueryInterface *c = (struct qemu_d3d10_pixel_shader_QueryInterface *)call;
-    struct qemu_d3d11_shader *shader;
-
-    WINE_FIXME("Unverified!\n");
-    shader = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10PixelShader_QueryInterface(shader->host_ps10, QEMU_G2H(c->riid), QEMU_G2H(c->object));
+    return d3d11_pixel_shader_QueryInterface(&shader->ID3D11PixelShader_iface, riid, object);
 }
 
 #endif
