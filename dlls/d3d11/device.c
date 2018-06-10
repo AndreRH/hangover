@@ -12556,10 +12556,11 @@ static void STDMETHODCALLTYPE d3d10_device_ClearRenderTargetView(ID3D10Device1 *
 {
     struct qemu_d3d10_device_ClearRenderTargetView call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_view *view = unsafe_impl_from_ID3D10RenderTargetView(render_target_view);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CLEARRENDERTARGETVIEW);
     call.iface = (ULONG_PTR)device;
-    call.render_target_view = (ULONG_PTR)render_target_view;
+    call.render_target_view = (ULONG_PTR)view;
     call.color_rgba = (ULONG_PTR)color_rgba;
 
     qemu_syscall(&call.super);
@@ -12571,11 +12572,13 @@ void qemu_d3d10_device_ClearRenderTargetView(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_ClearRenderTargetView *c = (struct qemu_d3d10_device_ClearRenderTargetView *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("Unverified!\n");
     device = QEMU_G2H(c->iface);
+    view = QEMU_G2H(c->render_target_view);
 
-    ID3D10Device1_ClearRenderTargetView(device->host_d3d10, QEMU_G2H(c->render_target_view), QEMU_G2H(c->color_rgba));
+    ID3D10Device1_ClearRenderTargetView(device->host_d3d10, view ? view->host_rt10 : NULL, QEMU_G2H(c->color_rgba));
 }
 
 #endif
