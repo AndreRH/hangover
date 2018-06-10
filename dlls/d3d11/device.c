@@ -13559,12 +13559,14 @@ static void STDMETHODCALLTYPE d3d10_device_RSGetState(ID3D10Device1 *iface, ID3D
 {
     struct qemu_d3d10_device_RSGetState call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_state *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_RSGETSTATE);
     call.iface = (ULONG_PTR)device;
-    call.rasterizer_state = (ULONG_PTR)rasterizer_state;
 
     qemu_syscall(&call.super);
+    impl = (struct qemu_d3d11_state *)(ULONG_PTR)call.rasterizer_state;
+    *rasterizer_state = impl ? (ID3D10RasterizerState *)&impl->ID3D10RasterizerState_iface : NULL;
 }
 
 #else
@@ -13573,11 +13575,13 @@ void qemu_d3d10_device_RSGetState(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_RSGetState *c = (struct qemu_d3d10_device_RSGetState *)call;
     struct qemu_d3d11_device *device;
+    ID3D11RasterizerState *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    ID3D10Device1_RSGetState(device->host_d3d10, QEMU_G2H(c->rasterizer_state));
+    ID3D11DeviceContext1_RSGetState(device->immediate_context.host, &host);
+    c->rasterizer_state = QEMU_H2G(state_from_host((ID3D11DeviceChild *)host));
 }
 
 #endif
