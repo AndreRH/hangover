@@ -544,7 +544,7 @@ WINUSERAPI BOOL WINAPI InSendMessage(void)
 void qemu_InSendMessage(struct qemu_syscall *call)
 {
     struct qemu_InSendMessage *c = (struct qemu_InSendMessage *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = InSendMessage();
 }
 
