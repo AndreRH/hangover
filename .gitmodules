@@ -7,3 +7,12 @@
 [submodule "glib"]
 	path = glib
 	url = https://github.com/AndreRH/glib.git
+[submodule "libxml2"]
+	path = libxml2
+	url = https://gitlab.gnome.org/GNOME/libxml2.git
+[submodule "libxslt"]
+	path = libxslt
+	url = https://gitlab.gnome.org/GNOME/libxslt.git
+[submodule "libiconv"]
+	path = libiconv
+	url = git://git.savannah.gnu.org/libiconv.git
