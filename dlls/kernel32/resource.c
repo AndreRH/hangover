@@ -141,7 +141,7 @@ void qemu_FindResourceExW(struct qemu_syscall *call)
     struct qemu_FindResourceExW *c = (struct qemu_FindResourceExW *)call;
     HMODULE mod;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     mod = qemu_ops->qemu_module_g2h(c->hModule);
 
     c->super.iret = (ULONG_PTR)FindResourceExW(mod, QEMU_G2H(c->type), QEMU_G2H(c->name), c->lang);
