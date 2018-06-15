@@ -29,6 +29,7 @@
 #include "qemu_kernel32.h"
 
 #ifndef QEMU_DLL_GUEST
+#include <wine/unicode.h>
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
@@ -215,21 +216,102 @@ WINBASEAPI BOOL WINAPI CreateProcessW(LPCWSTR app_name, LPWSTR cmd_line, LPSECUR
 void qemu_CreateProcessW(struct qemu_syscall *call)
 {
     struct qemu_CreateProcessW *c = (struct qemu_CreateProcessW *)call;
+    WCHAR *app_name, *cmd_line, *qemu = NULL, *combined = NULL;
+    size_t len;
     STARTUPINFOW stack, *si = &stack;
+    PROCESS_INFORMATION pi_stack, *pi = &pi_stack;
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *process_attr = &conv.sa;
+    static const WCHAR qemu_s[] = {'q','e','m','u',' ','%','s',0};
+    static const WCHAR dotso[] = {'.','s','o',0};
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+    app_name = QEMU_G2H(c->app_name);
+    cmd_line = QEMU_G2H(c->cmd_line);
+
 #if GUEST_BIT == HOST_BIT
     si = QEMU_G2H(c->startup_info);
+    pi = QEMU_G2H(c->info);
+    process_attr = QEMU_G2H(c->process_attr);
 #else
     if (QEMU_G2H(c->startup_info))
         STARTUPINFO_g2h(si, QEMU_G2H(c->startup_info));
     else
         si = NULL;
+
+    /* The actual implementation writes to it unconditionally, make sure we crash in the same
+     * place... */
+    if (!QEMU_G2H(c->info))
+        pi = NULL;
+
+    if (c->process_attr)
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->process_attr));
+    else
+        process_attr = NULL;
 #endif
 
-    c->super.iret = CreateProcessW(QEMU_G2H(c->app_name), QEMU_G2H(c->cmd_line), QEMU_G2H(c->process_attr),
-            QEMU_G2H(c->thread_attr), c->inherit, c->flags, QEMU_G2H(c->env), QEMU_G2H(c->cur_dir),
-            si, QEMU_G2H(c->info));
+    c->super.iret = CreateProcessW(app_name, cmd_line, process_attr, QEMU_G2H(c->thread_attr),
+            c->inherit, c->flags, QEMU_G2H(c->env), QEMU_G2H(c->cur_dir), si, pi);
+    if (!c->super.iret && GetLastError() == ERROR_BAD_EXE_FORMAT)
+    {
+        /* Try to run via qemu. */
+        len = MAX_PATH;
+        do
+        {
+            HeapFree(GetProcessHeap(), 0, qemu);
+            len *= 2;
+            qemu = HeapAlloc(GetProcessHeap(), 0, (len + 3) * sizeof(*qemu));
+            SetLastError(0);
+            GetModuleFileNameW(NULL, qemu, len);
+        } while(GetLastError());
+
+        lstrcatW(qemu, dotso);
+
+        if (app_name)
+        {
+            if (cmd_line)
+            {
+                static const WCHAR s_s[] = {'\"','%','s','\"',' ','%','s',0};
+                WINE_FIXME("Both app name and cmdline given\n");
+                /* This is probably wrong. what the app is passing is
+                 * CreateProcess(executable, argv0, argv1, argv2, ...). What we're making
+                 * here is CreateProcess(qemu, executable, argv0, argv1, ...), but we want
+                 * CreateProcess(qemu, argv0, executable, argv1, argv2, ...) */
+                len = strlenW(app_name) + strlenW(cmd_line) + 6;
+                combined = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*combined));
+                sprintfW(combined, s_s, app_name, cmd_line);
+                cmd_line = combined;
+            }
+            else
+            {
+                /* Add a dummy argv[0] for qemu. */
+                len = strlenW(app_name) + 6;
+                combined = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*combined));
+                sprintfW(combined, qemu_s, app_name);
+                cmd_line = combined;
+            }
+        }
+        else
+        {
+            /* The first parameter is argv[0], so if we want qemu to execute the file
+             * we pass as first argument in cmdline we have to add an argv[0] to the
+             * command line. */
+            len = strlenW(cmd_line) + 6;
+            combined = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*combined));
+            sprintfW(combined, qemu_s, cmd_line);
+            cmd_line = combined;
+        }
+
+        c->super.iret = CreateProcessW(qemu, cmd_line, process_attr, QEMU_G2H(c->thread_attr),
+                c->inherit, c->flags, QEMU_G2H(c->env), QEMU_G2H(c->cur_dir), si, pi);
+
+        HeapFree(GetProcessHeap(), 0, combined);
+        HeapFree(GetProcessHeap(), 0, qemu);
+    }
+
+#if GUEST_BIT != HOST_BIT
+    PROCESS_INFORMATION_h2g(QEMU_G2H(c->info), pi);
+#endif
 }
 
 #endif
