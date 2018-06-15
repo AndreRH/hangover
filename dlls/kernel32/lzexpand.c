@@ -53,7 +53,7 @@ WINBASEAPI INT WINAPI LZStart(void)
 void qemu_LZStart(struct qemu_syscall *call)
 {
     struct qemu_LZStart *c = (struct qemu_LZStart *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LZStart();
 }
 
@@ -83,7 +83,7 @@ WINBASEAPI HFILE WINAPI LZInit(HFILE hfSrc)
 void qemu_LZInit(struct qemu_syscall *call)
 {
     struct qemu_LZInit *c = (struct qemu_LZInit *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LZInit(c->hfSrc);
 }
 
@@ -109,7 +109,7 @@ WINBASEAPI void WINAPI LZDone(void)
 void qemu_LZDone(struct qemu_syscall *call)
 {
     struct qemu_LZDone *c = (struct qemu_LZDone *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     LZDone();
 }
 
@@ -141,7 +141,7 @@ WINBASEAPI INT WINAPI GetExpandedNameA(LPSTR in, LPSTR out)
 void qemu_GetExpandedNameA(struct qemu_syscall *call)
 {
     struct qemu_GetExpandedNameA *c = (struct qemu_GetExpandedNameA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetExpandedNameA(QEMU_G2H(c->in), QEMU_G2H(c->out));
 }
 
@@ -173,7 +173,7 @@ WINBASEAPI INT WINAPI GetExpandedNameW(LPWSTR in, LPWSTR out)
 void qemu_GetExpandedNameW(struct qemu_syscall *call)
 {
     struct qemu_GetExpandedNameW *c = (struct qemu_GetExpandedNameW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetExpandedNameW(QEMU_G2H(c->in), QEMU_G2H(c->out));
 }
 
@@ -207,7 +207,7 @@ WINBASEAPI INT WINAPI LZRead(HFILE fd, LPSTR vbuf, INT toread)
 void qemu_LZRead(struct qemu_syscall *call)
 {
     struct qemu_LZRead *c = (struct qemu_LZRead *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LZRead(c->fd, QEMU_G2H(c->vbuf), c->toread);
 }
 
@@ -241,7 +241,7 @@ WINBASEAPI LONG WINAPI LZSeek(HFILE fd, LONG off, INT type)
 void qemu_LZSeek(struct qemu_syscall *call)
 {
     struct qemu_LZSeek *c = (struct qemu_LZSeek *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LZSeek(c->fd, c->off, c->type);
 }
 
@@ -273,7 +273,7 @@ WINBASEAPI LONG WINAPI LZCopy(HFILE src, HFILE dest)
 void qemu_LZCopy(struct qemu_syscall *call)
 {
     struct qemu_LZCopy *c = (struct qemu_LZCopy *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LZCopy(c->src, c->dest);
 }
 
@@ -307,7 +307,8 @@ WINBASEAPI HFILE WINAPI LZOpenFileA(LPSTR fn, LPOFSTRUCT ofs, WORD mode)
 void qemu_LZOpenFileA(struct qemu_syscall *call)
 {
     struct qemu_LZOpenFileA *c = (struct qemu_LZOpenFileA *)call;
-    WINE_FIXME("Unverified!\n");
+    /* OFSTRUCT has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = LZOpenFileA(QEMU_G2H(c->fn), QEMU_G2H(c->ofs), c->mode);
 }
 
@@ -319,6 +320,7 @@ struct qemu_LZOpenFileW
     uint64_t fn;
     uint64_t ofs;
     uint64_t mode;
+    uint64_t size;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -330,6 +332,7 @@ WINBASEAPI HFILE WINAPI LZOpenFileW(LPWSTR fn, LPOFSTRUCT ofs, WORD mode)
     call.fn = (ULONG_PTR)fn;
     call.ofs = (ULONG_PTR)ofs;
     call.mode = mode;
+    call.size = sizeof(*ofs);
 
     qemu_syscall(&call.super);
 
@@ -341,7 +344,8 @@ WINBASEAPI HFILE WINAPI LZOpenFileW(LPWSTR fn, LPOFSTRUCT ofs, WORD mode)
 void qemu_LZOpenFileW(struct qemu_syscall *call)
 {
     struct qemu_LZOpenFileW *c = (struct qemu_LZOpenFileW *)call;
-    WINE_FIXME("Unverified!\n");
+    /* OFSTRUCT has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = LZOpenFileW(QEMU_G2H(c->fn), QEMU_G2H(c->ofs), c->mode);
 }
 
@@ -369,7 +373,7 @@ WINBASEAPI void WINAPI LZClose(HFILE fd)
 void qemu_LZClose(struct qemu_syscall *call)
 {
     struct qemu_LZClose *c = (struct qemu_LZClose *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     LZClose(c->fd);
 }
 
