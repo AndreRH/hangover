@@ -1169,8 +1169,12 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
         case WM_NCCREATE:
         {
             struct qemu_CREATESTRUCT *guest = (struct qemu_CREATESTRUCT *)msg_in->lParam;
-            CREATESTRUCTW *host = HeapAlloc(GetProcessHeap(), 0, sizeof(*host));
+            CREATESTRUCTW *host;
 
+            if (!guest)
+                break;
+
+            host = HeapAlloc(GetProcessHeap(), 0, sizeof(*host));
             CREATESTRUCT_g2h(host, guest);
 
             if (host->dwExStyle & WS_EX_MDICHILD)
@@ -1572,6 +1576,9 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
         case WM_NCCREATE:
         {
             CREATESTRUCTW *host = (CREATESTRUCTW *)conv->lParam;
+
+            if (!host)
+                break;
 
             if (host->dwExStyle & WS_EX_MDICHILD)
                 HeapFree(GetProcessHeap(), 0, host->lpCreateParams);
