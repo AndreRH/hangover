@@ -161,8 +161,22 @@ WINBASEAPI VOID WINAPI GetNativeSystemInfo(LPSYSTEM_INFO si)
 void qemu_GetNativeSystemInfo(struct qemu_syscall *call)
 {
     struct qemu_GetNativeSystemInfo *c = (struct qemu_GetNativeSystemInfo *)call;
+    SYSTEM_INFO stack, *si = &stack;
+
     WINE_FIXME("May need to overwrite some info.\n");
-    GetNativeSystemInfo(QEMU_G2H(c->si));
+#if GUEST_BIT == HOST_BIT
+    si = QEMU_G2H(c->si);
+#else
+    if (!c->si)
+        si = NULL;
+#endif
+
+    GetNativeSystemInfo(si);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->si)
+        SYSTEM_INFO_h2g(QEMU_G2H(c->si), si);
+#endif
 }
 
 #endif
