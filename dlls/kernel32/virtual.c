@@ -349,21 +349,25 @@ void qemu_VirtualQuery(struct qemu_syscall *call)
     MEMORY_BASIC_INFORMATION stack, *info = &stack;
     HMODULE mod;
     void *address;
+    SIZE_T size;
     WINE_TRACE("\n");
 
     address = QEMU_G2H(c->address);
 #if GUEST_BIT == HOST_BIT
     info = QEMU_G2H(c->info);
+    size = c->size;
+#else
+    size = c->size == sizeof(struct qemu_MEMORY_BASIC_INFORMATION) ? sizeof(stack) : 0;
 #endif
 
-    c->super.iret = VirtualQuery(address, info, c->size);
+    c->super.iret = VirtualQuery(address, info, size);
 
     if (qemu_ops->qemu_FindEntryForAddress(address, &mod))
         info->Type = MEM_IMAGE;
 
 #if GUEST_BIT != HOST_BIT
     MEMORY_BASIC_INFORMATION_h2g(info, QEMU_G2H(c->info));
-    if (c->super.iret == sizeof(info))
+    if (c->super.iret == sizeof(*info))
         c->super.iret = sizeof(struct qemu_MEMORY_BASIC_INFORMATION);
 #endif
 }
@@ -400,8 +404,30 @@ WINBASEAPI SIZE_T WINAPI VirtualQueryEx(HANDLE process, LPCVOID addr, PMEMORY_BA
 void qemu_VirtualQueryEx(struct qemu_syscall *call)
 {
     struct qemu_VirtualQueryEx *c = (struct qemu_VirtualQueryEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = VirtualQueryEx(QEMU_G2H(c->process), QEMU_G2H(c->addr), QEMU_G2H(c->info), c->len);
+    MEMORY_BASIC_INFORMATION stack, *info = &stack;
+    HMODULE mod;
+    void *address;
+    SIZE_T len = sizeof(stack);
+
+    WINE_TRACE("\n");
+    address = QEMU_G2H(c->addr);
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->info);
+    len = c->len;
+#else
+    len = c->len == sizeof(struct qemu_MEMORY_BASIC_INFORMATION) ? sizeof(stack) : 0;
+#endif
+
+    c->super.iret = VirtualQueryEx(QEMU_G2H(c->process), address, info, len);
+
+    if (qemu_ops->qemu_FindEntryForAddress(address, &mod))
+        info->Type = MEM_IMAGE;
+
+#if GUEST_BIT != HOST_BIT
+    MEMORY_BASIC_INFORMATION_h2g(info, QEMU_G2H(c->info));
+    if (c->super.iret == sizeof(*info))
+        c->super.iret = sizeof(struct qemu_MEMORY_BASIC_INFORMATION);
+#endif
 }
 
 #endif
