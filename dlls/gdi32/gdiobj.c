@@ -604,7 +604,7 @@ WINGDIAPI BOOL WINAPI GdiFlush(void)
 void qemu_GdiFlush(struct qemu_syscall *call)
 {
     struct qemu_GdiFlush *c = (struct qemu_GdiFlush *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GdiFlush();
 }
 
