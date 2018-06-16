@@ -180,13 +180,22 @@ static NTSTATUS init_cs32(struct qemu_RTL_CRITICAL_SECTION *crit32, DWORD flags)
 {
     RTL_CRITICAL_SECTION *crit;
     NTSTATUS ret;
+    qemu_ptr old;
 
     if (crit32->LockSemaphore)
         WINE_FIXME("Re-initializing a CS?\n");
 
     crit = HeapAlloc(GetProcessHeap(), 0, sizeof(RTL_CRITICAL_SECTION));
     ret = RtlInitializeCriticalSectionEx(crit, crit32->SpinCount, flags);
-    crit32->LockSemaphore = (ULONG_PTR)crit;
+
+    old = InterlockedCompareExchange(&crit32->LockSemaphore, (ULONG_PTR)crit, 0);
+    if (old)
+    {
+        /* Someone else initialized this CS in the meantime. */
+        RtlDeleteCriticalSection(crit);
+        HeapFree(GetProcessHeap(), 0, crit);
+        ret = STATUS_SUCCESS;
+    }
 
     return ret;
 }
