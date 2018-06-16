@@ -12889,18 +12889,41 @@ struct qemu_d3d10_device_VSGetConstantBuffers
 #ifdef QEMU_DLL_GUEST
 
 static void STDMETHODCALLTYPE d3d10_device_VSGetConstantBuffers(ID3D10Device1 *iface, UINT start_slot,
- UINT buffer_count, ID3D10Buffer **buffers)
+        UINT buffer_count, ID3D10Buffer **buffers)
 {
     struct qemu_d3d10_device_VSGetConstantBuffers call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    uint64_t stack[16], *impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_VSGETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)device;
     call.start_slot = start_slot;
     call.buffer_count = buffer_count;
-    call.buffers = (ULONG_PTR)buffers;
+
+    if (buffer_count > (sizeof(stack) / sizeof(*stack)))
+        impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*impl) * buffer_count);
+
+    call.buffers = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
+
+    for (i = 0; i < buffer_count; ++i)
+    {
+        struct qemu_d3d11_buffer *buffer;
+
+        if (!impl[i])
+        {
+            buffers[i] = NULL;
+            continue;
+        }
+
+        buffer = (struct qemu_d3d11_buffer *)(ULONG_PTR)impl[i];
+        buffers[i] = &buffer->ID3D10Buffer_iface;
+    }
+
+    if (impl != stack)
+        HeapFree(GetProcessHeap(), 0, impl);
 }
 
 #else
@@ -12909,11 +12932,20 @@ void qemu_d3d10_device_VSGetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_VSGetConstantBuffers *c = (struct qemu_d3d10_device_VSGetConstantBuffers *)call;
     struct qemu_d3d11_device *device;
+    ID3D11Buffer **ifaces;
+    struct qemu_d3d11_buffer **impl;
+    UINT i, count;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    ifaces = QEMU_G2H(c->buffers);
+    impl = QEMU_G2H(c->buffers);
+    count = c->buffer_count;
 
-    ID3D10Device1_VSGetConstantBuffers(device->host_d3d10, c->start_slot, c->buffer_count, QEMU_G2H(c->buffers));
+    ID3D11DeviceContext1_VSGetConstantBuffers(device->immediate_context.host, c->start_slot, count, ifaces);
+
+    for (i = 0; i < count; ++i)
+        impl[i] = buffer_from_host(ifaces[i]);
 }
 
 #endif
@@ -13085,14 +13117,37 @@ static void STDMETHODCALLTYPE d3d10_device_PSGetConstantBuffers(ID3D10Device1 *i
 {
     struct qemu_d3d10_device_PSGetConstantBuffers call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    uint64_t stack[16], *impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_PSGETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)device;
     call.start_slot = start_slot;
     call.buffer_count = buffer_count;
-    call.buffers = (ULONG_PTR)buffers;
+
+    if (buffer_count > (sizeof(stack) / sizeof(*stack)))
+        impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*impl) * buffer_count);
+
+    call.buffers = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
+
+    for (i = 0; i < buffer_count; ++i)
+    {
+        struct qemu_d3d11_buffer *buffer;
+
+        if (!impl[i])
+        {
+            buffers[i] = NULL;
+            continue;
+        }
+
+        buffer = (struct qemu_d3d11_buffer *)(ULONG_PTR)impl[i];
+        buffers[i] = &buffer->ID3D10Buffer_iface;
+    }
+
+    if (impl != stack)
+        HeapFree(GetProcessHeap(), 0, impl);
 }
 
 #else
@@ -13101,11 +13156,20 @@ void qemu_d3d10_device_PSGetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_PSGetConstantBuffers *c = (struct qemu_d3d10_device_PSGetConstantBuffers *)call;
     struct qemu_d3d11_device *device;
+    ID3D11Buffer **ifaces;
+    struct qemu_d3d11_buffer **impl;
+    UINT i, count;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    ifaces = QEMU_G2H(c->buffers);
+    impl = QEMU_G2H(c->buffers);
+    count = c->buffer_count;
 
-    ID3D10Device1_PSGetConstantBuffers(device->host_d3d10, c->start_slot, c->buffer_count, QEMU_G2H(c->buffers));
+    ID3D11DeviceContext1_PSGetConstantBuffers(device->immediate_context.host, c->start_slot, count, ifaces);
+
+    for (i = 0; i < count; ++i)
+        impl[i] = buffer_from_host(ifaces[i]);
 }
 
 #endif
@@ -13250,14 +13314,37 @@ static void STDMETHODCALLTYPE d3d10_device_GSGetConstantBuffers(ID3D10Device1 *i
 {
     struct qemu_d3d10_device_GSGetConstantBuffers call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    uint64_t stack[16], *impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_GSGETCONSTANTBUFFERS);
     call.iface = (ULONG_PTR)device;
     call.start_slot = start_slot;
     call.buffer_count = buffer_count;
-    call.buffers = (ULONG_PTR)buffers;
+
+    if (buffer_count > (sizeof(stack) / sizeof(*stack)))
+        impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*impl) * buffer_count);
+
+    call.buffers = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
+
+    for (i = 0; i < buffer_count; ++i)
+    {
+        struct qemu_d3d11_buffer *buffer;
+
+        if (!impl[i])
+        {
+            buffers[i] = NULL;
+            continue;
+        }
+
+        buffer = (struct qemu_d3d11_buffer *)(ULONG_PTR)impl[i];
+        buffers[i] = &buffer->ID3D10Buffer_iface;
+    }
+
+    if (impl != stack)
+        HeapFree(GetProcessHeap(), 0, impl);
 }
 
 #else
@@ -13266,11 +13353,20 @@ void qemu_d3d10_device_GSGetConstantBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_GSGetConstantBuffers *c = (struct qemu_d3d10_device_GSGetConstantBuffers *)call;
     struct qemu_d3d11_device *device;
+    ID3D11Buffer **ifaces;
+    struct qemu_d3d11_buffer **impl;
+    UINT i, count;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    ifaces = QEMU_G2H(c->buffers);
+    impl = QEMU_G2H(c->buffers);
+    count = c->buffer_count;
 
-    ID3D10Device1_GSGetConstantBuffers(device->host_d3d10, c->start_slot, c->buffer_count, QEMU_G2H(c->buffers));
+    ID3D11DeviceContext1_GSGetConstantBuffers(device->immediate_context.host, c->start_slot, count, ifaces);
+
+    for (i = 0; i < count; ++i)
+        impl[i] = buffer_from_host(ifaces[i]);
 }
 
 #endif
