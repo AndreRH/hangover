@@ -775,6 +775,7 @@ struct qemu_d3d11_texture *unsafe_impl_from_ID3D10Texture2D(ID3D10Texture2D *ifa
 struct qemu_d3d11_texture *unsafe_impl_from_ID3D10Texture3D(ID3D10Texture3D *iface);
 struct qemu_d3d11_texture *unsafe_impl_from_ID3D11Texture3D(ID3D11Texture3D *iface);
 struct qemu_d3d11_query *unsafe_impl_from_ID3D11Query(ID3D11Query *iface);
+struct qemu_d3d11_query *unsafe_impl_from_ID3D10Query(ID3D10Query *iface);
 struct qemu_d3d11_query *unsafe_impl_from_ID3D11Asynchronous(ID3D11Asynchronous *iface);
 struct qemu_d3d11_shader *unsafe_impl_from_ID3D11VertexShader(ID3D11VertexShader *iface);
 struct qemu_d3d11_shader *unsafe_impl_from_ID3D10VertexShader(ID3D10VertexShader *iface);

@@ -11957,10 +11957,11 @@ static void STDMETHODCALLTYPE d3d10_device_SetPredication(ID3D10Device1 *iface, 
 {
     struct qemu_d3d10_device_SetPredication call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_query *query = unsafe_impl_from_ID3D10Query((ID3D10Query *)predicate);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_SETPREDICATION);
     call.iface = (ULONG_PTR)device;
-    call.predicate = (ULONG_PTR)predicate;
+    call.predicate = (ULONG_PTR)query;
     call.value = value;
 
     qemu_syscall(&call.super);
@@ -11972,11 +11973,13 @@ void qemu_d3d10_device_SetPredication(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_SetPredication *c = (struct qemu_d3d10_device_SetPredication *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_query *query;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    query = QEMU_G2H(c->predicate);
 
-    ID3D10Device1_SetPredication(device->host_d3d10, QEMU_G2H(c->predicate), c->value);
+    ID3D10Device1_SetPredication(device->host_d3d10, query ? (ID3D10Predicate *)query->host10 : NULL, c->value);
 }
 
 #endif

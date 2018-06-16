@@ -735,6 +735,14 @@ struct qemu_d3d11_query *unsafe_impl_from_ID3D11Asynchronous(ID3D11Asynchronous 
     return unsafe_impl_from_ID3D11Query((ID3D11Query *)iface);
 }
 
+struct qemu_d3d11_query *unsafe_impl_from_ID3D10Query(ID3D10Query *iface)
+{
+    if (!iface)
+        return NULL;
+    /*assert(iface->lpVtbl == &d3d10_query_vtbl);*/
+    return CONTAINING_RECORD(iface, struct qemu_d3d11_query, ID3D10Query_iface);
+}
+
 #else
 
 static inline struct qemu_d3d11_query *impl_from_priv_data(IUnknown *iface)
