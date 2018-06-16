@@ -1554,7 +1554,7 @@ WINBASEAPI BOOL WINAPI GetStringTypeExW(LCID locale, DWORD type, LPCWSTR src, IN
 void qemu_GetStringTypeExW(struct qemu_syscall *call)
 {
     struct qemu_GetStringTypeExW *c = (struct qemu_GetStringTypeExW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetStringTypeExW(c->locale, c->type, QEMU_G2H(c->src), c->count, QEMU_G2H(c->chartype));
 }
 
