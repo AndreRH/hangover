@@ -11217,14 +11217,26 @@ static void STDMETHODCALLTYPE d3d10_device_PSSetSamplers(ID3D10Device1 *iface, U
 {
     struct qemu_d3d10_device_PSSetSamplers call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    uint64_t stack[16], *sampler_impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_PSSETSAMPLERS);
     call.iface = (ULONG_PTR)device;
     call.start_slot = start_slot;
     call.sampler_count = sampler_count;
-    call.samplers = (ULONG_PTR)samplers;
+
+    if (sampler_count > (sizeof(stack) / sizeof(*stack)))
+        sampler_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*sampler_impl) * sampler_count);
+
+    for (i = 0; i < sampler_count; ++i)
+        sampler_impl[i] = (ULONG_PTR)unsafe_impl_from_ID3D10SamplerState(samplers[i]);
+
+    call.samplers = (ULONG_PTR)sampler_impl;
 
     qemu_syscall(&call.super);
+
+    if (sampler_impl != stack)
+        HeapFree(GetProcessHeap(), 0, sampler_impl);
 }
 
 #else
@@ -11233,11 +11245,20 @@ void qemu_d3d10_device_PSSetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_PSSetSamplers *c = (struct qemu_d3d10_device_PSSetSamplers *)call;
     struct qemu_d3d11_device *device;
+    ID3D10SamplerState **ifaces;
+    UINT i, count;
+    struct qemu_d3d11_state **sampler_impl;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    count = c->sampler_count;
+    ifaces = QEMU_G2H(c->samplers);
+    sampler_impl = QEMU_G2H(c->samplers);
 
-    ID3D10Device1_PSSetSamplers(device->host_d3d10, c->start_slot, c->sampler_count, QEMU_G2H(c->samplers));
+    for (i = 0; i < count; ++i)
+        ifaces[i] = sampler_impl[i] ? sampler_impl[i]->host_ss10 : NULL;
+
+    ID3D10Device1_PSSetSamplers(device->host_d3d10, c->start_slot, count, ifaces);
 }
 
 #endif
@@ -11867,18 +11888,31 @@ struct qemu_d3d10_device_VSSetSamplers
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_VSSetSamplers(ID3D10Device1 *iface, UINT start_slot, UINT sampler_count, ID3D10SamplerState *const *samplers)
+static void STDMETHODCALLTYPE d3d10_device_VSSetSamplers(ID3D10Device1 *iface, UINT start_slot, UINT sampler_count,
+        ID3D10SamplerState *const *samplers)
 {
     struct qemu_d3d10_device_VSSetSamplers call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    uint64_t stack[16], *sampler_impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_VSSETSAMPLERS);
     call.iface = (ULONG_PTR)device;
     call.start_slot = start_slot;
     call.sampler_count = sampler_count;
-    call.samplers = (ULONG_PTR)samplers;
+
+    if (sampler_count > (sizeof(stack) / sizeof(*stack)))
+        sampler_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*sampler_impl) * sampler_count);
+
+    for (i = 0; i < sampler_count; ++i)
+        sampler_impl[i] = (ULONG_PTR)unsafe_impl_from_ID3D10SamplerState(samplers[i]);
+
+    call.samplers = (ULONG_PTR)sampler_impl;
 
     qemu_syscall(&call.super);
+
+    if (sampler_impl != stack)
+        HeapFree(GetProcessHeap(), 0, sampler_impl);
 }
 
 #else
@@ -11887,11 +11921,20 @@ void qemu_d3d10_device_VSSetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_VSSetSamplers *c = (struct qemu_d3d10_device_VSSetSamplers *)call;
     struct qemu_d3d11_device *device;
+    ID3D10SamplerState **ifaces;
+    UINT i, count;
+    struct qemu_d3d11_state **sampler_impl;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    count = c->sampler_count;
+    ifaces = QEMU_G2H(c->samplers);
+    sampler_impl = QEMU_G2H(c->samplers);
 
-    ID3D10Device1_VSSetSamplers(device->host_d3d10, c->start_slot, c->sampler_count, QEMU_G2H(c->samplers));
+    for (i = 0; i < count; ++i)
+        ifaces[i] = sampler_impl[i] ? sampler_impl[i]->host_ss10 : NULL;
+
+    ID3D10Device1_VSSetSamplers(device->host_d3d10, c->start_slot, count, ifaces);
 }
 
 #endif
@@ -12007,18 +12050,31 @@ struct qemu_d3d10_device_GSSetSamplers
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_GSSetSamplers(ID3D10Device1 *iface, UINT start_slot, UINT sampler_count, ID3D10SamplerState *const *samplers)
+static void STDMETHODCALLTYPE d3d10_device_GSSetSamplers(ID3D10Device1 *iface, UINT start_slot, UINT sampler_count,
+        ID3D10SamplerState *const *samplers)
 {
     struct qemu_d3d10_device_GSSetSamplers call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    uint64_t stack[16], *sampler_impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_GSSETSAMPLERS);
     call.iface = (ULONG_PTR)device;
     call.start_slot = start_slot;
     call.sampler_count = sampler_count;
-    call.samplers = (ULONG_PTR)samplers;
+
+    if (sampler_count > (sizeof(stack) / sizeof(*stack)))
+        sampler_impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*sampler_impl) * sampler_count);
+
+    for (i = 0; i < sampler_count; ++i)
+        sampler_impl[i] = (ULONG_PTR)unsafe_impl_from_ID3D10SamplerState(samplers[i]);
+
+    call.samplers = (ULONG_PTR)sampler_impl;
 
     qemu_syscall(&call.super);
+
+    if (sampler_impl != stack)
+        HeapFree(GetProcessHeap(), 0, sampler_impl);
 }
 
 #else
@@ -12027,11 +12083,20 @@ void qemu_d3d10_device_GSSetSamplers(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_GSSetSamplers *c = (struct qemu_d3d10_device_GSSetSamplers *)call;
     struct qemu_d3d11_device *device;
+    ID3D10SamplerState **ifaces;
+    UINT i, count;
+    struct qemu_d3d11_state **sampler_impl;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    count = c->sampler_count;
+    ifaces = QEMU_G2H(c->samplers);
+    sampler_impl = QEMU_G2H(c->samplers);
 
-    ID3D10Device1_GSSetSamplers(device->host_d3d10, c->start_slot, c->sampler_count, QEMU_G2H(c->samplers));
+    for (i = 0; i < count; ++i)
+        ifaces[i] = sampler_impl[i] ? sampler_impl[i]->host_ss10 : NULL;
+
+    ID3D10Device1_GSSetSamplers(device->host_d3d10, c->start_slot, count, ifaces);
 }
 
 #endif
