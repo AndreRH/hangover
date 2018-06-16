@@ -3406,8 +3406,34 @@ WINBASEAPI BOOL WINAPI PostQueuedCompletionStatus(HANDLE CompletionPort, DWORD d
 void qemu_PostQueuedCompletionStatus(struct qemu_syscall *call)
 {
     struct qemu_PostQueuedCompletionStatus *c = (struct qemu_PostQueuedCompletionStatus *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = PostQueuedCompletionStatus(QEMU_G2H(c->CompletionPort), c->dwNumberOfBytes, c->dwCompletionKey, QEMU_G2H(c->lpOverlapped));
+    struct OVERLAPPED_data *ov_wrapper;
+    struct qemu_OVERLAPPED *ov32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    c->super.iret = PostQueuedCompletionStatus(QEMU_G2H(c->CompletionPort), c->dwNumberOfBytes, c->dwCompletionKey,
+            QEMU_G2H(c->lpOverlapped));
+    return;
+#endif
+
+    ov32 = QEMU_G2H(c->lpOverlapped);
+    if (!ov32)
+    {
+        c->super.iret = PostQueuedCompletionStatus(QEMU_G2H(c->CompletionPort), c->dwNumberOfBytes,
+                c->dwCompletionKey, NULL);
+        return;
+    }
+
+    /* Don't use alloc_OVERLAPPED_data here because it expects a struct qemu_OVERLAPPED. PostQueuedCompletionStatus
+     * doesn't care what is inside the lpOverlapped pointer or that it points to valid memory at all. It will just
+     * cause that pointer to be returned 1:1 in GetQueuedCompletionStatus. */
+    ov_wrapper = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ov_wrapper));
+    ov_wrapper->guest_ov = ov32;
+
+    c->super.iret = PostQueuedCompletionStatus(QEMU_G2H(c->CompletionPort), c->dwNumberOfBytes, c->dwCompletionKey,
+            &ov_wrapper->ov);
+    /* Don't put it in the tree, we'll never get a callback for these operations. It'll just be reported in
+     * GetQueuedCompletionStatus. */
 }
 
 #endif
