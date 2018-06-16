@@ -12261,18 +12261,31 @@ struct qemu_d3d10_device_SOSetTargets
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_SOSetTargets(ID3D10Device1 *iface, UINT target_count, ID3D10Buffer *const *targets, const UINT *offsets)
+static void STDMETHODCALLTYPE d3d10_device_SOSetTargets(ID3D10Device1 *iface, UINT target_count,
+        ID3D10Buffer *const *targets, const UINT *offsets)
 {
     struct qemu_d3d10_device_SOSetTargets call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    uint64_t stack[16], *impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_SOSETTARGETS);
     call.iface = (ULONG_PTR)device;
     call.target_count = target_count;
-    call.targets = (ULONG_PTR)targets;
     call.offsets = (ULONG_PTR)offsets;
 
+    if (target_count > (sizeof(stack) / sizeof(*stack)))
+        impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*impl) * target_count);
+
+    for (i = 0; i < target_count; ++i)
+        impl[i] = (ULONG_PTR)unsafe_impl_from_ID3D10Buffer(targets[i]);
+
+    call.targets = (ULONG_PTR)impl;
+
     qemu_syscall(&call.super);
+
+    if (impl != stack)
+        HeapFree(GetProcessHeap(), 0, impl);
 }
 
 #else
@@ -12281,11 +12294,20 @@ void qemu_d3d10_device_SOSetTargets(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_SOSetTargets *c = (struct qemu_d3d10_device_SOSetTargets *)call;
     struct qemu_d3d11_device *device;
+    ID3D10Buffer **buffers;
+    struct qemu_d3d11_buffer **impls;
+    UINT count, i;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    buffers = QEMU_G2H(c->targets);
+    impls = QEMU_G2H(c->targets);
+    count = c->target_count;
 
-    ID3D10Device1_SOSetTargets(device->host_d3d10, c->target_count, QEMU_G2H(c->targets), QEMU_G2H(c->offsets));
+    for (i = 0; i < count; ++i)
+        buffers[i] = impls[i] ? impls[i]->host10 : NULL;
+
+    ID3D10Device1_SOSetTargets(device->host_d3d10, count, buffers, QEMU_G2H(c->offsets));
 }
 
 #endif
