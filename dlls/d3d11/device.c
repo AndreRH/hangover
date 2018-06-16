@@ -12218,14 +12218,16 @@ struct qemu_d3d10_device_OMSetDepthStencilState
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_OMSetDepthStencilState(ID3D10Device1 *iface, ID3D10DepthStencilState *depth_stencil_state, UINT stencil_ref)
+static void STDMETHODCALLTYPE d3d10_device_OMSetDepthStencilState(ID3D10Device1 *iface,
+        ID3D10DepthStencilState *depth_stencil_state, UINT stencil_ref)
 {
     struct qemu_d3d10_device_OMSetDepthStencilState call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_state *state_impl = unsafe_impl_from_ID3D10DepthStencilState(depth_stencil_state);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_OMSETDEPTHSTENCILSTATE);
     call.iface = (ULONG_PTR)device;
-    call.depth_stencil_state = (ULONG_PTR)depth_stencil_state;
+    call.depth_stencil_state = (ULONG_PTR)state_impl;
     call.stencil_ref = stencil_ref;
 
     qemu_syscall(&call.super);
@@ -12237,11 +12239,13 @@ void qemu_d3d10_device_OMSetDepthStencilState(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_OMSetDepthStencilState *c = (struct qemu_d3d10_device_OMSetDepthStencilState *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_state *state;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    state = QEMU_G2H(c->depth_stencil_state);
 
-    ID3D10Device1_OMSetDepthStencilState(device->host_d3d10, QEMU_G2H(c->depth_stencil_state), c->stencil_ref);
+    ID3D10Device1_OMSetDepthStencilState(device->host_d3d10, state ? state->host_ds10 : NULL, c->stencil_ref);
 }
 
 #endif
