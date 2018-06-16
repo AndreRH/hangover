@@ -11561,14 +11561,16 @@ struct qemu_d3d10_device_IASetIndexBuffer
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_IASetIndexBuffer(ID3D10Device1 *iface, ID3D10Buffer *buffer, DXGI_FORMAT format, UINT offset)
+static void STDMETHODCALLTYPE d3d10_device_IASetIndexBuffer(ID3D10Device1 *iface, ID3D10Buffer *buffer,
+        DXGI_FORMAT format, UINT offset)
 {
     struct qemu_d3d10_device_IASetIndexBuffer call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_buffer *buffer_impl = unsafe_impl_from_ID3D10Buffer(buffer);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_IASETINDEXBUFFER);
     call.iface = (ULONG_PTR)device;
-    call.buffer = (ULONG_PTR)buffer;
+    call.buffer = (ULONG_PTR)buffer_impl;
     call.format = format;
     call.offset = offset;
 
@@ -11581,11 +11583,13 @@ void qemu_d3d10_device_IASetIndexBuffer(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_IASetIndexBuffer *c = (struct qemu_d3d10_device_IASetIndexBuffer *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    buffer = QEMU_G2H(c->buffer);
 
-    ID3D10Device1_IASetIndexBuffer(device->host_d3d10, QEMU_G2H(c->buffer), c->format, c->offset);
+    ID3D10Device1_IASetIndexBuffer(device->host_d3d10, buffer ? buffer->host10 : NULL, c->format, c->offset);
 }
 
 #endif
