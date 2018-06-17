@@ -12457,7 +12457,7 @@ void qemu_d3d10_device_RSSetScissorRects(struct qemu_syscall *call)
     struct qemu_d3d10_device_RSSetScissorRects *c = (struct qemu_d3d10_device_RSSetScissorRects *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     ID3D10Device1_RSSetScissorRects(device->host_d3d10, c->rect_count, QEMU_G2H(c->rects));
