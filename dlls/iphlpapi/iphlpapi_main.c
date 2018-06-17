@@ -1052,7 +1052,8 @@ WINBASEAPI DWORD WINAPI GetIpForwardTable(PMIB_IPFORWARDTABLE pIpForwardTable, P
 void qemu_GetIpForwardTable(struct qemu_syscall *call)
 {
     struct qemu_GetIpForwardTable *c = (struct qemu_GetIpForwardTable *)call;
-    WINE_FIXME("Unverified!\n");
+    /* MIB_IPFORWARDTABLE has the same size on 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = GetIpForwardTable(QEMU_G2H(c->pIpForwardTable), QEMU_G2H(c->pdwSize), c->bOrder);
 }
 
@@ -1086,7 +1087,8 @@ WINBASEAPI DWORD WINAPI GetIpNetTable(PMIB_IPNETTABLE pIpNetTable, PULONG pdwSiz
 void qemu_GetIpNetTable(struct qemu_syscall *call)
 {
     struct qemu_GetIpNetTable *c = (struct qemu_GetIpNetTable *)call;
-    WINE_FIXME("Unverified!\n");
+    /* MIB_IPNETTABLE has the same size on 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = GetIpNetTable(QEMU_G2H(c->pIpNetTable), QEMU_G2H(c->pdwSize), c->bOrder);
 }
 
