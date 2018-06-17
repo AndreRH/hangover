@@ -1569,10 +1569,16 @@ WINBASEAPI DWORD WINAPI NotifyAddrChange(PHANDLE Handle, LPOVERLAPPED overlapped
 {
     struct qemu_NotifyAddrChange call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NOTIFYADDRCHANGE);
-    call.Handle = (ULONG_PTR)Handle;
     call.overlapped = (ULONG_PTR)overlapped;
 
     qemu_syscall(&call.super);
+
+    if (Handle)
+        *Handle = (HANDLE)(ULONG_PTR)call.Handle;
+
+    /* Copypasted from Wine, don't bother trying to convert it for the stub. */
+    if (overlapped)
+        ((IO_STATUS_BLOCK *) overlapped)->Status = STATUS_PENDING;
 
     return call.super.iret;
 }
@@ -1582,8 +1588,16 @@ WINBASEAPI DWORD WINAPI NotifyAddrChange(PHANDLE Handle, LPOVERLAPPED overlapped
 void qemu_NotifyAddrChange(struct qemu_syscall *call)
 {
     struct qemu_NotifyAddrChange *c = (struct qemu_NotifyAddrChange *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NotifyAddrChange(QEMU_G2H(c->Handle), QEMU_G2H(c->overlapped));
+    HANDLE h;
+
+    WINE_TRACE("\n");
+
+    c->super.iret = NotifyAddrChange(&h, QEMU_G2H(c->overlapped));
+
+    if (h != INVALID_HANDLE_VALUE)
+        WINE_FIXME("Got an unexpected response from the host.\n");
+
+    c->Handle = QEMU_H2G(h);
 }
 
 #endif
