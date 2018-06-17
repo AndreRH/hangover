@@ -591,7 +591,7 @@ WINBASEAPI void WINAPI FreeMibTable(void *ptr)
 void qemu_FreeMibTable(struct qemu_syscall *call)
 {
     struct qemu_FreeMibTable *c = (struct qemu_FreeMibTable *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     FreeMibTable(QEMU_G2H(c->ptr));
 }
 
