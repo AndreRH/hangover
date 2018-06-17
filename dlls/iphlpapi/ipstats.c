@@ -257,7 +257,8 @@ WINBASEAPI DWORD WINAPI GetUdpStatisticsEx(PMIB_UDPSTATS stats, DWORD family)
 void qemu_GetUdpStatisticsEx(struct qemu_syscall *call)
 {
     struct qemu_GetUdpStatisticsEx *c = (struct qemu_GetUdpStatisticsEx *)call;
-    WINE_FIXME("Unverified!\n");
+    /* MIB_UDPSTATS has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = GetUdpStatisticsEx(QEMU_G2H(c->stats), c->family);
 }
 
@@ -287,7 +288,8 @@ WINBASEAPI DWORD WINAPI GetUdpStatistics(PMIB_UDPSTATS stats)
 void qemu_GetUdpStatistics(struct qemu_syscall *call)
 {
     struct qemu_GetUdpStatistics *c = (struct qemu_GetUdpStatistics *)call;
-    WINE_FIXME("Unverified!\n");
+    /* MIB_UDPSTATS has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = GetUdpStatistics(QEMU_G2H(c->stats));
 }
 
