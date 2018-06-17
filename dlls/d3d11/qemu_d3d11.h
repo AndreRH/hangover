@@ -1316,6 +1316,7 @@ struct qemu_d3d11_view *view_from_host(ID3D11DeviceChild *host);
 struct qemu_d3d11_query *query_from_host(ID3D11Query *host);
 struct qemu_d3d11_shader *shader_from_host(ID3D11DeviceChild *host);
 struct qemu_d3d11_buffer *buffer_from_host(ID3D11Buffer *host);
+struct qemu_d3d11_buffer *buffer_from_host10(ID3D10Buffer *host);
 struct qemu_d3d11_input_layout *input_layout_from_host(ID3D11InputLayout *host);
 
 extern uint64_t d3d11_device_context_guest_destroy;
