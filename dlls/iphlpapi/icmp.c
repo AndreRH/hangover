@@ -220,7 +220,7 @@ WINBASEAPI DWORD WINAPI IcmpSendEcho(HANDLE IcmpHandle, IPAddr DestinationAddres
 void qemu_IcmpSendEcho(struct qemu_syscall *call)
 {
     struct qemu_IcmpSendEcho *c = (struct qemu_IcmpSendEcho *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = IcmpSendEcho(QEMU_G2H(c->IcmpHandle), c->DestinationAddress, QEMU_G2H(c->RequestData), c->RequestSize, QEMU_G2H(c->RequestOptions), QEMU_G2H(c->ReplyBuffer), c->ReplySize, c->Timeout);
 }
 

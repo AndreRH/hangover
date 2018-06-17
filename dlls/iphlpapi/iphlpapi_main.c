@@ -177,7 +177,7 @@ WINBASEAPI BOOL WINAPI CancelIPChangeNotify(LPOVERLAPPED overlapped)
 void qemu_CancelIPChangeNotify(struct qemu_syscall *call)
 {
     struct qemu_CancelIPChangeNotify *c = (struct qemu_CancelIPChangeNotify *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = CancelIPChangeNotify(QEMU_G2H(c->overlapped));
 }
 
@@ -347,7 +347,7 @@ extern DWORD WINAPI CreateSortedAddressPairs(const PSOCKADDR_IN6 src_list, DWORD
 void qemu_CreateSortedAddressPairs(struct qemu_syscall *call)
 {
     struct qemu_CreateSortedAddressPairs *c = (struct qemu_CreateSortedAddressPairs *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = CreateSortedAddressPairs(QEMU_G2H(c->src_list), c->src_count, QEMU_G2H(c->dst_list), c->dst_count, c->options, QEMU_G2H(c->pair_list), QEMU_G2H(c->pair_count));
 }
 
@@ -561,7 +561,7 @@ WINBASEAPI void WINAPI FreeMibTable(void *ptr)
 void qemu_FreeMibTable(struct qemu_syscall *call)
 {
     struct qemu_FreeMibTable *c = (struct qemu_FreeMibTable *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     FreeMibTable(QEMU_G2H(c->ptr));
 }
 
@@ -625,7 +625,7 @@ WINBASEAPI DWORD WINAPI GetAdaptersInfo(PIP_ADAPTER_INFO pAdapterInfo, PULONG pO
 void qemu_GetAdaptersInfo(struct qemu_syscall *call)
 {
     struct qemu_GetAdaptersInfo *c = (struct qemu_GetAdaptersInfo *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetAdaptersInfo(QEMU_G2H(c->pAdapterInfo), QEMU_G2H(c->pOutBufLen));
 }
 
@@ -663,7 +663,7 @@ WINBASEAPI ULONG WINAPI GetAdaptersAddresses(ULONG family, ULONG flags, PVOID re
 void qemu_GetAdaptersAddresses(struct qemu_syscall *call)
 {
     struct qemu_GetAdaptersAddresses *c = (struct qemu_GetAdaptersAddresses *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetAdaptersAddresses(c->family, c->flags, QEMU_G2H(c->reserved), QEMU_G2H(c->aa), QEMU_G2H(c->buflen));
 }
 
@@ -821,7 +821,7 @@ WINBASEAPI DWORD WINAPI GetIfEntry(PMIB_IFROW pIfRow)
 void qemu_GetIfEntry(struct qemu_syscall *call)
 {
     struct qemu_GetIfEntry *c = (struct qemu_GetIfEntry *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetIfEntry(QEMU_G2H(c->pIfRow));
 }
 
@@ -851,7 +851,7 @@ WINBASEAPI DWORD WINAPI GetIfEntry2(MIB_IF_ROW2 *row2)
 void qemu_GetIfEntry2(struct qemu_syscall *call)
 {
     struct qemu_GetIfEntry2 *c = (struct qemu_GetIfEntry2 *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetIfEntry2(QEMU_G2H(c->row2));
 }
 
@@ -885,7 +885,7 @@ WINBASEAPI DWORD WINAPI GetIfTable(PMIB_IFTABLE pIfTable, PULONG pdwSize, BOOL b
 void qemu_GetIfTable(struct qemu_syscall *call)
 {
     struct qemu_GetIfTable *c = (struct qemu_GetIfTable *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetIfTable(QEMU_G2H(c->pIfTable), QEMU_G2H(c->pdwSize), c->bOrder);
 }
 
@@ -919,7 +919,7 @@ extern DWORD WINAPI GetIfTable2Ex(MIB_IF_TABLE_LEVEL level, MIB_IF_TABLE2 **tabl
 void qemu_GetIfTable2Ex(struct qemu_syscall *call)
 {
     struct qemu_GetIfTable2Ex *c = (struct qemu_GetIfTable2Ex *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetIfTable2Ex(c->level, QEMU_G2H(c->table));
 }
 
@@ -949,7 +949,7 @@ WINBASEAPI DWORD WINAPI GetIfTable2(MIB_IF_TABLE2 **table)
 void qemu_GetIfTable2(struct qemu_syscall *call)
 {
     struct qemu_GetIfTable2 *c = (struct qemu_GetIfTable2 *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetIfTable2(QEMU_G2H(c->table));
 }
 
@@ -981,7 +981,7 @@ WINBASEAPI DWORD WINAPI GetInterfaceInfo(PIP_INTERFACE_INFO pIfTable, PULONG dwO
 void qemu_GetInterfaceInfo(struct qemu_syscall *call)
 {
     struct qemu_GetInterfaceInfo *c = (struct qemu_GetInterfaceInfo *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetInterfaceInfo(QEMU_G2H(c->pIfTable), QEMU_G2H(c->dwOutBufLen));
 }
 
@@ -1015,7 +1015,7 @@ WINBASEAPI DWORD WINAPI GetIpAddrTable(PMIB_IPADDRTABLE pIpAddrTable, PULONG pdw
 void qemu_GetIpAddrTable(struct qemu_syscall *call)
 {
     struct qemu_GetIpAddrTable *c = (struct qemu_GetIpAddrTable *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetIpAddrTable(QEMU_G2H(c->pIpAddrTable), QEMU_G2H(c->pdwSize), c->bOrder);
 }
 
@@ -1049,7 +1049,7 @@ WINBASEAPI DWORD WINAPI GetIpForwardTable(PMIB_IPFORWARDTABLE pIpForwardTable, P
 void qemu_GetIpForwardTable(struct qemu_syscall *call)
 {
     struct qemu_GetIpForwardTable *c = (struct qemu_GetIpForwardTable *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetIpForwardTable(QEMU_G2H(c->pIpForwardTable), QEMU_G2H(c->pdwSize), c->bOrder);
 }
 
@@ -1083,7 +1083,7 @@ WINBASEAPI DWORD WINAPI GetIpNetTable(PMIB_IPNETTABLE pIpNetTable, PULONG pdwSiz
 void qemu_GetIpNetTable(struct qemu_syscall *call)
 {
     struct qemu_GetIpNetTable *c = (struct qemu_GetIpNetTable *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetIpNetTable(QEMU_G2H(c->pIpNetTable), QEMU_G2H(c->pdwSize), c->bOrder);
 }
 
@@ -1115,7 +1115,7 @@ WINBASEAPI DWORD WINAPI GetNetworkParams(PFIXED_INFO pFixedInfo, PULONG pOutBufL
 void qemu_GetNetworkParams(struct qemu_syscall *call)
 {
     struct qemu_GetNetworkParams *c = (struct qemu_GetNetworkParams *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetNetworkParams(QEMU_G2H(c->pFixedInfo), QEMU_G2H(c->pOutBufLen));
 }
 
@@ -1145,7 +1145,7 @@ WINBASEAPI DWORD WINAPI GetNumberOfInterfaces(PDWORD pdwNumIf)
 void qemu_GetNumberOfInterfaces(struct qemu_syscall *call)
 {
     struct qemu_GetNumberOfInterfaces *c = (struct qemu_GetNumberOfInterfaces *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetNumberOfInterfaces(QEMU_G2H(c->pdwNumIf));
 }
 
@@ -1179,7 +1179,7 @@ WINBASEAPI DWORD WINAPI GetPerAdapterInfo(ULONG IfIndex, PIP_PER_ADAPTER_INFO pP
 void qemu_GetPerAdapterInfo(struct qemu_syscall *call)
 {
     struct qemu_GetPerAdapterInfo *c = (struct qemu_GetPerAdapterInfo *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetPerAdapterInfo(c->IfIndex, QEMU_G2H(c->pPerAdapterInfo), QEMU_G2H(c->pOutBufLen));
 }
 
@@ -1249,7 +1249,7 @@ WINBASEAPI DWORD WINAPI GetTcpTable(PMIB_TCPTABLE pTcpTable, PDWORD pdwSize, BOO
 void qemu_GetTcpTable(struct qemu_syscall *call)
 {
     struct qemu_GetTcpTable *c = (struct qemu_GetTcpTable *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetTcpTable(QEMU_G2H(c->pTcpTable), QEMU_G2H(c->pdwSize), c->bOrder);
 }
 
@@ -1289,7 +1289,7 @@ WINBASEAPI DWORD WINAPI GetExtendedTcpTable(PVOID pTcpTable, PDWORD pdwSize, BOO
 void qemu_GetExtendedTcpTable(struct qemu_syscall *call)
 {
     struct qemu_GetExtendedTcpTable *c = (struct qemu_GetExtendedTcpTable *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetExtendedTcpTable(QEMU_G2H(c->pTcpTable), QEMU_G2H(c->pdwSize), c->bOrder, c->ulAf, c->TableClass, c->Reserved);
 }
 
@@ -1323,7 +1323,7 @@ WINBASEAPI DWORD WINAPI GetUdpTable(PMIB_UDPTABLE pUdpTable, PDWORD pdwSize, BOO
 void qemu_GetUdpTable(struct qemu_syscall *call)
 {
     struct qemu_GetUdpTable *c = (struct qemu_GetUdpTable *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetUdpTable(QEMU_G2H(c->pUdpTable), QEMU_G2H(c->pdwSize), c->bOrder);
 }
 
@@ -1363,7 +1363,7 @@ WINBASEAPI DWORD WINAPI GetExtendedUdpTable(PVOID pUdpTable, PDWORD pdwSize, BOO
 void qemu_GetExtendedUdpTable(struct qemu_syscall *call)
 {
     struct qemu_GetExtendedUdpTable *c = (struct qemu_GetExtendedUdpTable *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetExtendedUdpTable(QEMU_G2H(c->pUdpTable), QEMU_G2H(c->pdwSize), c->bOrder, c->ulAf, c->TableClass, c->Reserved);
 }
 
@@ -1393,7 +1393,7 @@ WINBASEAPI DWORD WINAPI GetUnicastIpAddressEntry(MIB_UNICASTIPADDRESS_ROW *row)
 void qemu_GetUnicastIpAddressEntry(struct qemu_syscall *call)
 {
     struct qemu_GetUnicastIpAddressEntry *c = (struct qemu_GetUnicastIpAddressEntry *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetUnicastIpAddressEntry(QEMU_G2H(c->row));
 }
 
@@ -1427,7 +1427,7 @@ extern DWORD WINAPI GetUnicastIpAddressTable(ADDRESS_FAMILY family, MIB_UNICASTI
 void qemu_GetUnicastIpAddressTable(struct qemu_syscall *call)
 {
     struct qemu_GetUnicastIpAddressTable *c = (struct qemu_GetUnicastIpAddressTable *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = GetUnicastIpAddressTable(c->family, QEMU_G2H(c->table));
 }
 
@@ -1551,7 +1551,7 @@ WINBASEAPI DWORD WINAPI NotifyAddrChange(PHANDLE Handle, LPOVERLAPPED overlapped
 void qemu_NotifyAddrChange(struct qemu_syscall *call)
 {
     struct qemu_NotifyAddrChange *c = (struct qemu_NotifyAddrChange *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = NotifyAddrChange(QEMU_G2H(c->Handle), QEMU_G2H(c->overlapped));
 }
 
@@ -1879,7 +1879,7 @@ WINBASEAPI DWORD WINAPI SetTcpEntry(PMIB_TCPROW pTcpRow)
 void qemu_SetTcpEntry(struct qemu_syscall *call)
 {
     struct qemu_SetTcpEntry *c = (struct qemu_SetTcpEntry *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = SetTcpEntry(QEMU_G2H(c->pTcpRow));
 }
 
@@ -2227,7 +2227,7 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceGuidToLuid(const GUID *guid, NET_LUID *l
 void qemu_ConvertInterfaceGuidToLuid(struct qemu_syscall *call)
 {
     struct qemu_ConvertInterfaceGuidToLuid *c = (struct qemu_ConvertInterfaceGuidToLuid *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = ConvertInterfaceGuidToLuid(QEMU_G2H(c->guid), QEMU_G2H(c->luid));
 }
 
@@ -2259,7 +2259,7 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceIndexToLuid(NET_IFINDEX index, NET_LUID 
 void qemu_ConvertInterfaceIndexToLuid(struct qemu_syscall *call)
 {
     struct qemu_ConvertInterfaceIndexToLuid *c = (struct qemu_ConvertInterfaceIndexToLuid *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = ConvertInterfaceIndexToLuid(c->index, QEMU_G2H(c->luid));
 }
 
@@ -2291,7 +2291,7 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceLuidToGuid(const NET_LUID *luid, GUID *g
 void qemu_ConvertInterfaceLuidToGuid(struct qemu_syscall *call)
 {
     struct qemu_ConvertInterfaceLuidToGuid *c = (struct qemu_ConvertInterfaceLuidToGuid *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = ConvertInterfaceLuidToGuid(QEMU_G2H(c->luid), QEMU_G2H(c->guid));
 }
 
@@ -2323,7 +2323,7 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceLuidToIndex(const NET_LUID *luid, NET_IF
 void qemu_ConvertInterfaceLuidToIndex(struct qemu_syscall *call)
 {
     struct qemu_ConvertInterfaceLuidToIndex *c = (struct qemu_ConvertInterfaceLuidToIndex *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = ConvertInterfaceLuidToIndex(QEMU_G2H(c->luid), QEMU_G2H(c->index));
 }
 
@@ -2357,7 +2357,7 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceLuidToNameA(const NET_LUID *luid, char *
 void qemu_ConvertInterfaceLuidToNameA(struct qemu_syscall *call)
 {
     struct qemu_ConvertInterfaceLuidToNameA *c = (struct qemu_ConvertInterfaceLuidToNameA *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = ConvertInterfaceLuidToNameA(QEMU_G2H(c->luid), QEMU_G2H(c->name), c->len);
 }
 
@@ -2391,7 +2391,7 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceLuidToNameW(const NET_LUID *luid, WCHAR 
 void qemu_ConvertInterfaceLuidToNameW(struct qemu_syscall *call)
 {
     struct qemu_ConvertInterfaceLuidToNameW *c = (struct qemu_ConvertInterfaceLuidToNameW *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = ConvertInterfaceLuidToNameW(QEMU_G2H(c->luid), QEMU_G2H(c->name), c->len);
 }
 
@@ -2423,7 +2423,7 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceNameToLuidA(const char *name, NET_LUID *
 void qemu_ConvertInterfaceNameToLuidA(struct qemu_syscall *call)
 {
     struct qemu_ConvertInterfaceNameToLuidA *c = (struct qemu_ConvertInterfaceNameToLuidA *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = ConvertInterfaceNameToLuidA(QEMU_G2H(c->name), QEMU_G2H(c->luid));
 }
 
@@ -2455,7 +2455,7 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceNameToLuidW(const WCHAR *name, NET_LUID 
 void qemu_ConvertInterfaceNameToLuidW(struct qemu_syscall *call)
 {
     struct qemu_ConvertInterfaceNameToLuidW *c = (struct qemu_ConvertInterfaceNameToLuidW *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = ConvertInterfaceNameToLuidW(QEMU_G2H(c->name), QEMU_G2H(c->luid));
 }
 
@@ -2482,10 +2482,12 @@ WINBASEAPI IF_INDEX WINAPI IPHLP_if_nametoindex(const char *name)
 
 #else
 
+/* TODO: Add IPHLP_if_nametoindex to Wine headers? */
+extern IF_INDEX WINAPI IPHLP_if_nametoindex(const char *name);
 void qemu_IPHLP_if_nametoindex(struct qemu_syscall *call)
 {
     struct qemu_IPHLP_if_nametoindex *c = (struct qemu_IPHLP_if_nametoindex *)call;
-    WINE_TRACE("\n");
+    WINE_FIXME("Unverified!\n");
     c->super.iret = p_if_nametoindex(QEMU_G2H(c->name));
 }
 
