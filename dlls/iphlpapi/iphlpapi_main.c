@@ -2285,6 +2285,7 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceGuidToLuid(const GUID *guid, NET_LUID *l
 void qemu_ConvertInterfaceGuidToLuid(struct qemu_syscall *call)
 {
     struct qemu_ConvertInterfaceGuidToLuid *c = (struct qemu_ConvertInterfaceGuidToLuid *)call;
+    /* NET_LUID has the same size in 32 and 64 bit. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = ConvertInterfaceGuidToLuid(QEMU_G2H(c->guid), QEMU_G2H(c->luid));
 }
@@ -2317,6 +2318,7 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceIndexToLuid(NET_IFINDEX index, NET_LUID 
 void qemu_ConvertInterfaceIndexToLuid(struct qemu_syscall *call)
 {
     struct qemu_ConvertInterfaceIndexToLuid *c = (struct qemu_ConvertInterfaceIndexToLuid *)call;
+    /* NET_LUID has the same size in 32 and 64 bit. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = ConvertInterfaceIndexToLuid(c->index, QEMU_G2H(c->luid));
 }
@@ -2349,7 +2351,8 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceLuidToGuid(const NET_LUID *luid, GUID *g
 void qemu_ConvertInterfaceLuidToGuid(struct qemu_syscall *call)
 {
     struct qemu_ConvertInterfaceLuidToGuid *c = (struct qemu_ConvertInterfaceLuidToGuid *)call;
-    WINE_FIXME("Unverified!\n");
+    /* NET_LUID has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = ConvertInterfaceLuidToGuid(QEMU_G2H(c->luid), QEMU_G2H(c->guid));
 }
 
@@ -2381,6 +2384,7 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceLuidToIndex(const NET_LUID *luid, NET_IF
 void qemu_ConvertInterfaceLuidToIndex(struct qemu_syscall *call)
 {
     struct qemu_ConvertInterfaceLuidToIndex *c = (struct qemu_ConvertInterfaceLuidToIndex *)call;
+    /* NET_LUID has the same size in 32 and 64 bit. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = ConvertInterfaceLuidToIndex(QEMU_G2H(c->luid), QEMU_G2H(c->index));
 }
@@ -2415,6 +2419,7 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceLuidToNameA(const NET_LUID *luid, char *
 void qemu_ConvertInterfaceLuidToNameA(struct qemu_syscall *call)
 {
     struct qemu_ConvertInterfaceLuidToNameA *c = (struct qemu_ConvertInterfaceLuidToNameA *)call;
+    /* NET_LUID has the same size in 32 and 64 bit. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = ConvertInterfaceLuidToNameA(QEMU_G2H(c->luid), QEMU_G2H(c->name), c->len);
 }
@@ -2449,6 +2454,7 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceLuidToNameW(const NET_LUID *luid, WCHAR 
 void qemu_ConvertInterfaceLuidToNameW(struct qemu_syscall *call)
 {
     struct qemu_ConvertInterfaceLuidToNameW *c = (struct qemu_ConvertInterfaceLuidToNameW *)call;
+    /* NET_LUID has the same size in 32 and 64 bit. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = ConvertInterfaceLuidToNameW(QEMU_G2H(c->luid), QEMU_G2H(c->name), c->len);
 }
@@ -2481,6 +2487,7 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceNameToLuidA(const char *name, NET_LUID *
 void qemu_ConvertInterfaceNameToLuidA(struct qemu_syscall *call)
 {
     struct qemu_ConvertInterfaceNameToLuidA *c = (struct qemu_ConvertInterfaceNameToLuidA *)call;
+    /* NET_LUID has the same size in 32 and 64 bit. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = ConvertInterfaceNameToLuidA(QEMU_G2H(c->name), QEMU_G2H(c->luid));
 }
@@ -2513,6 +2520,7 @@ WINBASEAPI DWORD WINAPI ConvertInterfaceNameToLuidW(const WCHAR *name, NET_LUID 
 void qemu_ConvertInterfaceNameToLuidW(struct qemu_syscall *call)
 {
     struct qemu_ConvertInterfaceNameToLuidW *c = (struct qemu_ConvertInterfaceNameToLuidW *)call;
+    /* NET_LUID has the same size in 32 and 64 bit. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = ConvertInterfaceNameToLuidW(QEMU_G2H(c->name), QEMU_G2H(c->luid));
 }
